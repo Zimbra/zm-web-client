@@ -1086,13 +1086,13 @@ function(msgObj) {
 };
 
 ZmComposeView.prototype._fixMultipartRelatedImages_onTimer =
-function(msg) {
+function(msg, account) {
 	// first time the editor is initialized, idoc.getElementsByTagName("img") is empty
 	// Instead of waiting for 500ms, trying to add this callback. Risky but works.
 	if (!this._firstTimeFixImages) {
-		this._htmlEditor.addOnContentInitializedListener(new AjxCallback(this, this._fixMultipartRelatedImages, [msg, this._htmlEditor._getIframeDoc()]));
+		this._htmlEditor.addOnContentInitializedListener(new AjxCallback(this, this._fixMultipartRelatedImages, [msg, this._htmlEditor._getIframeDoc(), account]));
 	} else {
-		this._fixMultipartRelatedImages(msg, this._htmlEditor._getIframeDoc());
+		this._fixMultipartRelatedImages(msg, this._htmlEditor._getIframeDoc(), account);
 	}
 };
 
@@ -1103,12 +1103,12 @@ function(msg) {
  * @private
  */
 ZmComposeView.prototype._fixMultipartRelatedImages =
-function(msg, idoc) {
+function(msg, idoc, account) {
 	if (!this._firstTimeFixImages) {
 		this._htmlEditor.removeOnContentInitializedListener();
 		var self = this; // Fix possible hiccups during compose in new window
 		setTimeout(function() {
-				self._fixMultipartRelatedImages(msg, self._htmlEditor._getIframeDoc());
+				self._fixMultipartRelatedImages(msg, self._htmlEditor._getIframeDoc(), account);
 		}, 10);
 		this._firstTimeFixImages = true;
 		return;
@@ -1138,19 +1138,19 @@ function(msg, idoc) {
 			if (dfsrc.substring(0,4) == "cid:") {
 				num++;
 				var cid = "<" + dfsrc.substring(4).replace("%40","@") + ">";
-				var src = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, cid);
-				//Cache cleared, becoz part id's may change.
-				src = src + "&t=" + (new Date()).getTime();
+				var src = msg && msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, cid);
 				if (src) {
+                    //Cache cleared, becoz part id's may change.
+				    src = src + "&t=" + (new Date()).getTime();
 					images[i].src = src;
 					images[i].setAttribute("dfsrc", dfsrc);
 				}
 			} else if (dfsrc.substring(0,4) == "doc:") {
-				images[i].src = [appCtxt.get(ZmSetting.REST_URL), ZmFolder.SEP, dfsrc.substring(4)].join('');
-			} else if (msg && dfsrc.indexOf("//") == -1) { // check for content-location verison
-				var src = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_LOCATION, dfsrc);
-				//Cache cleared, becoz part id's may change.
+				images[i].src = [appCtxt.get(ZmSetting.REST_URL, null, account), ZmFolder.SEP, dfsrc.substring(4)].join('');
+			} else if (dfsrc.indexOf("//") == -1) { // check for content-location verison
+				var src = msg && msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_LOCATION, dfsrc);
 				if (src) {
+                    //Cache cleared, becoz part id's may change.
 					src = src + "&t=" + (new Date()).getTime();
 					num++;
 					images[i].src = src;
@@ -1487,7 +1487,7 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 	if (!donotsetcontent) {
 		this._htmlEditor.setContent(content);
 	}
-	this._fixMultipartRelatedImages_onTimer(this._msg, this.getHtmlEditor()._getIframeDoc());
+	this._fixMultipartRelatedImages_onTimer(this._msg, account);
 
 	//Caching previous Signature state.
 	this._previousSignature = signature;
@@ -2297,7 +2297,7 @@ function(action, msg, extraBodyText) {
 	}
 
 	var isHtmlEditorInitd = this._htmlEditor.isHtmlModeInited();
-	if (!isHtmlEditorInitd && msg) {
+	if (!isHtmlEditorInitd) {
 		this._fixMultipartRelatedImages_onTimer(msg);
 	}
 
@@ -2308,7 +2308,7 @@ function(action, msg, extraBodyText) {
 		this._htmlEditor.setContent(value);
 	}
 
-	if (isHtmlEditorInitd && msg) {
+	if (isHtmlEditorInitd) {
 		this._fixMultipartRelatedImages_onTimer(msg);
 	}
 
