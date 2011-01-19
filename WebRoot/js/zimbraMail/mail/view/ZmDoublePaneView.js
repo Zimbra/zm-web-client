@@ -311,9 +311,9 @@ function(delta) {
 	if (delta) {
 		this._mailListView._resetColWidth();
 		if (readingPaneOnRight) {
-			this._vertSashX = this._vertMsgSash.getLocation().x;
+			this._vertSashX = this._vertMsgSash.getLocation().x + delta;
 		} else {
-			this._horizSashY = this._horizMsgSash.getLocation().y;
+			this._horizSashY = this._horizMsgSash.getLocation().y + delta;
 		}
 	}
 
