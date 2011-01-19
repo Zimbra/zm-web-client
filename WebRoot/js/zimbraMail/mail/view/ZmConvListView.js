@@ -568,6 +568,11 @@ function(item) {
 		}
 	}
 
+	if (isConv) {
+		this._expanded[item.id] = false;
+		this._expandedItems[cid] = [];
+	}
+
 	this._resetColWidth();
 };
 
@@ -611,6 +616,12 @@ function(item) {
 	}
 	this._msgRowIdList[item.id] = [];	// start over
 	this._expanded[item.id] = false;
+	if (item.type == ZmItem.CONV) {
+		this._expandedItems[item.id] = [];
+	}
+	else {
+		AjxUtil.arrayRemove(this._expandedItems[item.cid], item);
+	}
 	return false;
 };
 
@@ -658,7 +669,7 @@ function() {
 	// remove change listeners on conv msg lists
 	for (var id in this._expandedItems) {
 		var item = this._expandedItems[id];
-		if (item.type == ZmItem.CONV && item.msgs) {
+		if (item.msgs) {
 			item.msgs.removeChangeListener(this._listChangeListener);
 		}
 	}
@@ -762,7 +773,6 @@ function(ev) {
 					if (this._expanded[conv.id] && rowIds && rowIds.length <= 1) {
 						this._setImage(conv, ZmItem.F_EXPAND, null);
 						this._collapse(conv);
-						this._expanded[conv.id] = false;
 					}
 					this._controller._app._checkReplenishListView = this;
 					this._setNextSelection();
@@ -800,6 +810,7 @@ function(ev) {
 			}
 			this._removeMsgRows(conv.id);	// conv move: remove msg rows
 			this._expanded[conv.id] = false;
+			this._expandedItems[conv.id] = [];
 			delete this._msgRowIdList[conv.id];
 		}
 	}
@@ -835,6 +846,7 @@ function(ev) {
 			DBG.println(AjxDebug.DBG1, "conv updated from ID " + item._oldId + " to ID " + item.id);
 		}
 		this._expanded[item.id] = this._expanded[item._oldId];
+		this._expandedItems[item.id] = this._expandedItems[item._oldId];
 		this._msgRowIdList[item.id] = this._msgRowIdList[item._oldId] || [];
 	}
 
@@ -1008,7 +1020,7 @@ function(force) {
 ZmConvListView.prototype._saveState =
 function(params) {
 	ZmMailListView.prototype._saveState.apply(this, arguments);
-	this._state.expanded = params && params.expansion && this._expandedItems;
+	this._state.expanded = params && params.expansion && this._expanded;
 };
 
 ZmConvListView.prototype._restoreState =
@@ -1018,9 +1030,7 @@ function() {
 	if (s.expanded) {
 		for (var id in s.expanded) {
 			if (s.expanded[id]) {
-				for (var i = 0; i < s.expanded[id].length; i++) {
-					this._expandItem(s.expanded[id][i]);
-				}
+				this._expandItem(s.expanded[id]);
 			}
 		}
 	}
