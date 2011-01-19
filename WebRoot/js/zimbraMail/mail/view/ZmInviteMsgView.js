@@ -419,16 +419,10 @@ function(subs, sentBy, sentByAddr) {
 	// convert to local timezone if necessary
 	var inviteTz = this._invite.getServerStartTimeTz();
 	var defaultTz = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
-    var sd,
-        ed;
-    if(this._invite.isAllDayEvent()) {
-        sd = this._invite.getServerStartDate(null, true);
-        ed = this._invite.getServerEndDate(null, true);
-    }
-    else {
-	    sd = AjxTimezone.convertTimezone(this._invite.getServerStartDate(null, true), AjxTimezone.getClientId(inviteTz), AjxTimezone.DEFAULT);
-	    ed = AjxTimezone.convertTimezone(this._invite.getServerEndDate(null, true), AjxTimezone.getClientId(inviteTz), AjxTimezone.DEFAULT);
-    }
+
+    var sd = AjxTimezone.convertTimezone(this._invite.getServerStartDate(null, true), AjxTimezone.getClientId(inviteTz), AjxTimezone.DEFAULT);
+	var ed = AjxTimezone.convertTimezone(this._invite.getServerEndDate(null, true), AjxTimezone.getClientId(inviteTz), AjxTimezone.DEFAULT);
+
 	subs.timezone = AjxTimezone.getMediumName(defaultTz);
 
 	// duration text
