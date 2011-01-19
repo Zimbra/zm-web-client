@@ -458,20 +458,6 @@ function(compNum) {
 };
 
 /**
- * Sets the invite an all day event.
- *
- * @param   {Boolean} value     the value to set
- * @param	{int}	compNum		the component number
- */
-ZmInvite.prototype.setAllDayEvent = 
-function(value, compNum) {
-	var cn = compNum || 0;
-	if(this.components[cn]) {
-        this.components[cn].allDay = value;
-    }
-};
-
-/**
  * Checks if the invite is multi-day.
  * 
  * @param	{int}	compNum		the component number
@@ -485,14 +471,6 @@ function(compNum) {
 
     if(!sd) return false;
 
-    var tmpDate = new Date(sd.getTime());
-    tmpDate.setDate(sd.getDate()+1);
-    tmpDate.setHours(0,0,0,0);
-    //if the time is next day's start time, shift to prev day's end time
-    if(ed.getTime() == tmpDate.getTime()) {
-        AjxDateUtil.rollToPrevDay(ed);
-        ed.setHours(23, 59, 59, 999);
-    }
 	return (sd.getDate() != ed.getDate()) || (sd.getMonth() != ed.getMonth()) || (sd.getFullYear() != ed.getFullYear());
 };
 
