@@ -372,7 +372,7 @@
 <template id='calendar.Appointment#ZmApptQuickAddDialog'>
 	<table border=0 width=330>
 		<tr>
-			<td class='ZmApptTabViewPageField'><div style='width:70px'><sup>*</sup><$= ZmMsg.subjectLabel $></div></td>
+			<td class='ZmApptTabViewPageField'><div style='padding-left: 25px;'><sup>*</sup><$= ZmMsg.subjectLabel $></div></td>
 			<td colspan=2 id='${id}_subject'></td>
 		</tr>
 		<tr>
