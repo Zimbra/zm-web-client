@@ -640,7 +640,12 @@ ZmDocsEditor.prototype.__popupUploadDialog = function(callback, title, enableLin
 	var dialog = appCtxt.getUploadDialog();
     dialog.enableLinkTitleOption(enableLinkTitle);
     dialog.addPopdownListener(new AjxListener(this, this.focus));
-	dialog.popup({id:ZmOrganizer.ID_BRIEFCASE}, callback, title);
+
+    var folderId = ZmOrganizer.ID_BRIEFCASE;
+    if(ZmDocsEditApp.fileInfo){
+        folderId = ZmDocsEditApp.fileInfo.folderId;
+    }
+	dialog.popup({id:folderId}, callback, title);
 };
 
 ZmDocsEditor.prototype._rteStateChangeListener =
