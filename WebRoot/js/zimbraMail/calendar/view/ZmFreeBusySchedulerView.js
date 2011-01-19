@@ -637,6 +637,12 @@ function(inputEl, attendee, useException) {
 			this._activeInputIdx = null;
 		}
 	} else if (curAttendee) {
+
+        if(this.isComposeMode) {
+            this._editView.parent.updateAttendees(curAttendee, type, ZmApptComposeView.MODE_REMOVE);
+            this._editView._setAttendees();
+        }
+
 		// user erased an attendee
 		this._resetRow(sched, false, type);
         // bug:43660 removing row (splicing array) causes index mismatch.
