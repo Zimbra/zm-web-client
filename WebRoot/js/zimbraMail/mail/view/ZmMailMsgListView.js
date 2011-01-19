@@ -241,11 +241,6 @@ function(ev) {
 	var msg = this._getItemFromEvent(ev);
 	if (!msg || ev.handled || !this._handleEventType[msg.type]) { return; }
 
-	// only update if we're currently visible or we're the view underneath
-	if (this._mode &&
-		(this._mode != appCtxt.getCurrentViewId()) &&
-		(this._mode != appCtxt.getAppViewMgr().getLastViewId())) { return; }
-
 	if ((ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) && this._mode == ZmId.VIEW_CONV) {
 		if (!this._controller.handleDelete()) {
 			if (ev.event == ZmEvent.E_DELETE) {
