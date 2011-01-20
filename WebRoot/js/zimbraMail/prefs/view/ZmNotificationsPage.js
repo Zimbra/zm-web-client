@@ -361,7 +361,7 @@ ZmNotificationsPageForm.prototype._getFormParams = function(templateId) {
                 onclick: "this.parent._resetPageListener()"
             },
             // email
-            { id: "EMAIL", type: "DwtInputField", hint: ZmMsg.exampleEmailAddr },
+            { id: "EMAIL", type: "DwtInputField", hint: ZmMsg.exampleEmailAddr, cols:100 },
             // device email (aka SMS)
             { id: "DEVICE_EMAIL_REGION", type: "DwtButton",
                 enabled: "this._smsData",
