@@ -1052,8 +1052,8 @@ function(signature) {
 	var o = signature._orig;
 	return (o.name != signature.name ||
 			o.contactId != signature.contactId ||
-			o.value != signature.getValue() ||
-			o.contentType != signature.getContentType());
+			o.contentType != signature.getContentType() ||
+			!AjxStringUtil.equalsHtmlPlatformIndependent(o.value, signature.getValue()));
 };
 
 ZmSignaturesPage.prototype._setOrig =

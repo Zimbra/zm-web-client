@@ -1015,33 +1015,17 @@ function(html, insertFontStyle, onlyInnerContent) {
 			return DwtHtmlEditor.prototype._embedHtmlContent.call(this, html);
 	}
 
-	if (onlyInnerContent) {
-		var cont = [], idx=0;
-
-		if (insertFontStyle) {
-			cont[idx++] = "<div";
-			cont[idx++] = " style='font-family:";
-			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
-			cont[idx++] = "; font-size: ";
-			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
-			cont[idx++] = "; color: ";
-			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
-			cont[idx++] = ";'>";
-			cont[idx++] = html;
-			cont[idx++] = "</div>";
-		} else {
-			cont[idx++] = html;
-		}
-
-		return cont.join("");
-	}
-
-	var p_style = "<style type='text/css'>p { margin: 0; }</style>"; // bug 3264
-
 	if (insertFontStyle) {
 		html = this._getFontStyle(html);
 	}
+
+	if (onlyInnerContent) {
+		return html;
+	}
+
 	var headContent = this._headContent ? this._headContent.join("") : "";
+
+	var p_style = "<style type='text/css'>p { margin: 0; }</style>"; // bug 3264
 
 	return [
 		"<html><head>",
