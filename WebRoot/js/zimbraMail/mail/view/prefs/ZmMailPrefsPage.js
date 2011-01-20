@@ -35,7 +35,7 @@ ZmMailPrefsPage.prototype.showMe =
 function() {
 	ZmPreferencesPage.prototype.showMe.call(this);
 
-	if (!this._initialized) {
+	if (!this._initialized || appCtxt.isOffline) {
 		this._initialized = true;
 		if (this._blackListControl && this._whiteListControl) {
 			var soapDoc = AjxSoapDoc.create("GetWhiteBlackListRequest", "urn:zimbraAccount");
@@ -401,9 +401,11 @@ ZmWhiteBlackList.prototype.loadFromJson =
 function(data) {
 	if (data) {
 		for (var i = 0; i < data.length; i++) {
-            var content = data[i]._content ? data[i]._content : data[i];
-			var item = this._addEmail(content);
-			this._list.push(item);
+            var content = AjxUtil.isSpecified(data[i]._content) ? data[i]._content : data[i];
+            if(content){
+			    var item = this._addEmail(content);
+			    this._list.push(item);
+            }
 		}
 	}
 	this.updateNumUsed();
