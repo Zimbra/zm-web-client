@@ -1879,10 +1879,7 @@ ZmComposeController.prototype.resetToolbarOperations =
 function() {
 	this._toolbar.enableAll(true);
 	if (this._composeView._isInviteReply(this._action)) {
-		var ops = [ ZmOperation.SAVE_DRAFT ];
-		if (this._action == ZmOperation.REPLY_CANCEL) {
-			ops.push(ZmOperation.ATTACHMENT);
-		}
+		var ops = [ ZmOperation.SAVE_DRAFT, ZmOperation.ATTACHMENT ];
 		this._toolbar.enable(ops, false);
 	}
 	var op = this._toolbar.getOp(ZmOperation.COMPOSE_OPTIONS);
