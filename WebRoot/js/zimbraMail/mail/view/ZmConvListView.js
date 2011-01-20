@@ -669,7 +669,7 @@ function() {
 	// remove change listeners on conv msg lists
 	for (var id in this._expandedItems) {
 		var item = this._expandedItems[id];
-		if (item.msgs) {
+		if (item && item.msgs) {
 			item.msgs.removeChangeListener(this._listChangeListener);
 		}
 	}
