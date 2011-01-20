@@ -1419,26 +1419,7 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 			var idoc = this.getHtmlEditor()._getIframeDoc();
 			var sigEl = idoc.getElementById(oldSignatureId);
 			if (sigEl) {
-				// find old sig via delimiters, so we preserve any user content that made it into sig span
-				var oldSigContent = sigEl.innerHTML, newSigContent;
-				var idx = oldSigContent.indexOf(ZmComposeView.SIG_KEY);
-				var lastIdx = oldSigContent.lastIndexOf(ZmComposeView.SIG_KEY);
-				if (idx == -1 || lastIdx == -1) {
-					idx = oldSigContent.indexOf(ZmComposeView.SIG_KEY_LC);
-					lastIdx = oldSigContent.lastIndexOf(ZmComposeView.SIG_KEY_LC);
-				}
-				if (idx != -1 && lastIdx != -1) {
-					var nIdx = newSig.indexOf(ZmComposeView.SIG_KEY);
-					if (nIdx != -1)
-						newSig = newSig.substring(nIdx);
-					var nLastIdx = newSig.lastIndexOf(ZmComposeView.SIG_KEY);
-					if (nLastIdx != -1)
-						newSig = newSig.substring(0, nLastIdx + ZmComposeView.SIG_KEY.length);
-					
-					newSigContent = oldSigContent.substring(0, idx) + newSig +
-									oldSigContent.substring(lastIdx + ZmComposeView.SIG_KEY.length);
-				}
-
+				newSigContent = this._replaceSignature(sigEl.innerHTML, newSig || "");
 				if (newSigContent) {
 					sigEl.innerHTML = newSigContent;
 
@@ -1537,6 +1518,32 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 	else if (hadVcard && !skipSave) {
 		this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_MANUAL);
 	}
+};
+
+/*
+ * Replaces the contents of a HTML signature block with the contents of another
+*/
+ZmComposeView.prototype._replaceSignature = 
+function(oldSigContent, newSigContent) {
+	// find old sig via delimiters, so we preserve any user content that made it into sig span
+	var idx = oldSigContent.indexOf(ZmComposeView.SIG_KEY);
+	var lastIdx = oldSigContent.lastIndexOf(ZmComposeView.SIG_KEY);
+	if (idx == -1 || lastIdx == -1) {
+		idx = oldSigContent.indexOf(ZmComposeView.SIG_KEY_LC);
+		lastIdx = oldSigContent.lastIndexOf(ZmComposeView.SIG_KEY_LC);
+	}
+	if (idx != -1 && lastIdx != -1) {
+		var nIdx = newSigContent.indexOf(ZmComposeView.SIG_KEY);
+		if (nIdx != -1)
+			newSigContent = newSigContent.substring(nIdx);
+		var nLastIdx = newSigContent.lastIndexOf(ZmComposeView.SIG_KEY);
+		if (nLastIdx != -1)
+			newSigContent = newSigContent.substring(0, nLastIdx + ZmComposeView.SIG_KEY.length);
+		
+		newSigContent = oldSigContent.substring(0, idx) + newSigContent +
+						oldSigContent.substring(lastIdx + ZmComposeView.SIG_KEY.length);
+	}
+	return newSigContent;
 };
 
 /*
@@ -2218,13 +2225,30 @@ function(action, msg, extraBodyText) {
 	var sigPre = (sigStyle == ZmSetting.SIG_OUTLOOK) ? sig : "";
 
 	extraBodyText = extraBodyText || "";
-	if (sigPre && extraBodyText) {
-		extraBodyText = extraBodyText.replace(new RegExp(AjxStringUtil.regExEscape(sigPre)+"[\\s\\S]*","i"),"");
-	}
-
-	var preText = extraBodyText + sigPre;
+	var preText;
 	if (sigPre) {
-		preText += crlf;
+		if (extraBodyText) {
+			if (htmlMode) {
+				var fragment = document.createElement("div");
+				fragment.innerHTML = extraBodyText;
+				var sigEl = Dwt.byId(sigId, fragment);
+				if (sigEl) { // Signature found in extraBodyText. Replace signature content
+					sigEl.innerHTML = this._replaceSignature(sigEl.innerHTML, sigPre);
+					preText = fragment.innerHTML;
+				} else { // Signature not found in extraBodyText. Append signature content
+					preText = extraBodyText + sigPre;
+				}
+			} else { // Remove existing signature from text message
+				extraBodyText = extraBodyText.replace(new RegExp(AjxStringUtil.regExEscape(sigPre)+"[\\s\\S]*","i"),"");
+				preText = extraBodyText + sigPre;
+				preText += crlf;
+			}
+			this.applySignature(extraBodyText, sigId, account, null, true); // Put in new signature
+		} else { // There is no pre-existing text. Just append the signature
+			preText = sigPre;
+		}
+	} else { // No signature, just take the extraBodyText
+		preText = extraBodyText;
 	}
 
 	if (incOptions.headers && msg) {
