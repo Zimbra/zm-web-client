@@ -38,8 +38,9 @@ function(parentNode, node, fields, organizer, treeView) {
 		(fields[ZmOrganizer.F_UNREAD] && organizer.isSystem()) ||
 		(fields[ZmOrganizer.F_TOTAL] && (organizer.nId == ZmFolder.ID_DRAFTS || organizer.nId == ZmOrganizer.ID_OUTBOX)))
 	{
-		var ovc = appCtxt.getApp(ZmApp.MAIL).getOverviewContainer();
-		ovc.updateLabel(organizer);
+		var ovc = appCtxt.getApp(ZmApp.MAIL).getOverviewContainer(true);
+		if (ovc)
+			ovc.updateLabel(organizer);
 	}
 };
 

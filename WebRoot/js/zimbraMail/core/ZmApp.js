@@ -450,8 +450,8 @@ function() {
  * @return	{ZmOverview}		the overview container
  */
 ZmApp.prototype.getOverviewContainer =
-function() {
-	if (!this._overviewContainer) {
+function(dontCreate) {
+	if (!this._overviewContainer && !dontCreate) {
 		var containerParams = {
 			appName: this._name,
 			containerId: ([ZmApp.OVERVIEW_ID, this._name].join("_")),
