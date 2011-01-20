@@ -31,6 +31,7 @@
  */
 ZmBackupPage = function(parent, section, controller) {
     ZmPreferencesPage.call(this, parent, section, controller);
+    //this.backupDetailsLoaded = false;
 };
 
 ZmBackupPage.prototype = new ZmPreferencesPage;
@@ -431,19 +432,27 @@ function() {
 };
 
 
-ZmBackupPage._getBackups = function(evt) {
+ZmBackupPage._getBackups =
+function(evt) {
 
-    var backups = new ZmPrefBackups();
     var soapDoc = AjxSoapDoc.create("AccountBackupEnumerationRequest", "urn:zimbraOffline");
     var result = appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:false});
 
-    this.backupDetailsLoaded = true;
     var _restoreAccts = result.AccountBackupEnumerationResponse.account;
+    var backups = new ZmPrefBackups();
     for (var i=0; i< _restoreAccts.length; i++) {
-        var fileSize = _restoreAccts[i].backup[0].fileSize;
-        var timestamp = _restoreAccts[i].backup[0].time;
         var acct =  _restoreAccts[i].id;
-        backups.addPrefBackup(new ZmPrefBackup(timestamp, false, fileSize, acct));
+        var backupArray = _restoreAccts[i].backup;
+        if(!backupArray) {
+            continue;
+        }
+
+        for(var k=0; k<backupArray.length; k++) {
+            var fileSize = backupArray[k].fileSize;
+            var timestamp = backupArray[k].time;
+            backups.addPrefBackup(new ZmPrefBackup(timestamp, false, fileSize, acct));
+        }
+
     }
     return backups;
 };
@@ -489,9 +498,7 @@ ZmPrefBackupListView.prototype.set =
 function(list) {
     this._checkboxIds = [];
     DwtListView.prototype.set.call(this, list);
-    //    if (!this.backupDetailsLoaded) {
-    this.loadBackupDetails();
-    //    }
+    //this.loadBackupDetails();
 };
 
 ZmPrefBackupListView.prototype.loadBackupDetails =
@@ -501,6 +508,7 @@ function() {
     for (var i = 0; i < restoreArr.length; i++) {
         item.timestamp = restoreArr[i].timestamp;
         item.size = restoreArr[i].fileSize;
+        item.acct = restoreArr[i].acct;
         this.setCellContents(item, ZmPrefBackupListView.COL_NAME, item.timestamp);
         this.setCellContents(item, ZmPrefBackupListView.COL_DESC, item.size);
     }
@@ -538,8 +546,12 @@ function(html, idx, item, field, colIdx, params) {
         html[idx++] = item.active ? "checked " : "";
         html[idx++] = "id='";
         html[idx++] = item.timestamp;
+        html[idx++] = "_";
+        html[idx++] = item.acct;
         html[idx++] = "_backupCheckbox' _name='";
         html[idx++] = item.timestamp;
+        html[idx++] = "_";
+        html[idx++] = item.acct;
         html[idx++] = "' _bkId='";
         html[idx++] = this._internalId;
         html[idx++] = "' onchange='ZmPrefBackupListView._activeStateChange'>";
@@ -553,17 +565,15 @@ function(html, idx, item, field, colIdx, params) {
     else if (field == ZmPrefBackupListView.COL_NAME) {
         html[idx++] = "<div id='";
         html[idx++] = this._getCellId(item, ZmPrefBackupListView.COL_NAME);
-        html[idx++] = "' title='";
-        html[idx++] = item.name;
         html[idx++] = "'>";
-        html[idx++] = item.timestamp;
+        html[idx++] = AjxDateFormat.getTimeInstance(AjxDateFormat.MEDIUM).format(new Date(item.timestamp));
         html[idx++] = "</div>";
     }
     else if (field == ZmPrefBackupListView.COL_ACTION) {
         html[idx++] = "<div id='";
         html[idx++] = this._getCellId(item, ZmPrefBackupListView.COL_ACTION);
         html[idx++] = "'>";
-        html[idx++] = appCtxt.accountList.getAccount(item.id).name;
+        html[idx++] = appCtxt.accountList.getAccount(item.acct).name;
         html[idx++] = "</div>";
     }
     return idx;
@@ -614,18 +624,20 @@ function() {
 ZmPrefBackups.prototype.addPrefBackup =
 function(Backup) {
     this._vector.add(Backup);
-    this._zNameHash[Backup.timestamp] = Backup;
+    var hash = [Backup.timestamp, "_", Backup.acct].join("");
+    this._zNameHash[hash] = Backup;
 };
 
 ZmPrefBackups.prototype.removePrefBackup =
 function(Backup) {
-    delete this._zNameHash[Backup.timestamp];
+    var hash = [Backup.timestamp, "_", Backup.acct].join("");
+    delete this._zNameHash[hash];
     this._vector.remove(Backup);
 };
 
 ZmPrefBackups.prototype.getPrefBackupByName =
-function(timestamp) {
-    return this._zNameHash[timestamp];
+function(hash) {
+    return this._zNameHash[hash];
 };
 
 /**
