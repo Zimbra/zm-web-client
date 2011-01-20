@@ -59,11 +59,13 @@ ZmNotificationsPage.prototype.showMe = function() {
     var initialize = !this.hasRendered;
     ZmPreferencesPage.prototype.showMe.apply(this, arguments);
 
+    var acct = appCtxt.multiAccounts && appCtxt.getActiveAccount();
+
     // setup controls
-    var status = appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS) ?
+    var status = appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS, null, acct) ?
             ZmNotificationsPageForm.CONFIRMED : ZmNotificationsPageForm.UNCONFIRMED;
     this._form.setValue("DEVICE_EMAIL_CODE_STATUS_VALUE", status);
-    this._form.setValue("EMAIL", appCtxt.get(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS));
+    this._form.setValue("EMAIL", appCtxt.get(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS, null, acct));
     this._form.update();
 
     // load SMS data, if needed
@@ -129,10 +131,20 @@ ZmNotificationsPage.prototype.getFormValue = function(id, setup, control) {
  */
 ZmNotificationsPage.prototype._createPageTemplate = function() {
     DBG.println(AjxDebug.DBG2, "rendering preferences page " + this._section.id);
+    this._cleanup();
     this.setVisible(false); // hide until ready
 };
 
+ZmNotificationsPage.prototype._cleanup =
+function(){
+    this.setContent("<div>&nbsp;</div>");
+}
+
 ZmNotificationsPage.prototype._createControls = function() {
+
+    //cleanup
+    this._cleanup();
+
     // create form controls
     this._form = this._setupCustomForm();
     this._form.reparentHtmlElement(this.getContentHtmlElement());

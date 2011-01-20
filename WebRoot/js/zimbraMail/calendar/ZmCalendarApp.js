@@ -133,8 +133,8 @@ function(settings) {
 	var settings = settings || appCtxt.getSettings();
 	settings.registerSetting("CAL_ALWAYS_SHOW_MINI_CAL",	{name: "zimbraPrefCalendarAlwaysShowMiniCal", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
 	settings.registerSetting("CAL_APPT_VISIBILITY",			{name: "zimbraPrefCalendarApptVisibility", type: ZmSetting.T_PREF, dataType: ZmSetting.D_STRING, defaultValue: "public", isGlobal:true});
-    settings.registerSetting("CAL_EMAIL_REMINDERS_ADDRESS",	{name: "zimbraPrefCalendarReminderEmail", type:ZmSetting.T_PREF, isGlobal:true});
-    settings.registerSetting("CAL_DEVICE_EMAIL_REMINDERS_ADDRESS",	{name: "zimbraCalendarReminderDeviceEmail", type:ZmSetting.T_PREF, isGlobal:true});
+    settings.registerSetting("CAL_EMAIL_REMINDERS_ADDRESS",	{name: "zimbraPrefCalendarReminderEmail", type:ZmSetting.T_PREF});
+    settings.registerSetting("CAL_DEVICE_EMAIL_REMINDERS_ADDRESS",	{name: "zimbraCalendarReminderDeviceEmail", type:ZmSetting.T_PREF});
     settings.registerSetting("CAL_DEVICE_EMAIL_REMINDERS_ENABLED",	{name: "zimbraFeatureCalendarReminderDeviceEmailEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("CAL_EXPORT",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("CAL_FIRST_DAY_OF_WEEK",		{name: "zimbraPrefCalendarFirstDayOfWeek", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 0, isGlobal:true});

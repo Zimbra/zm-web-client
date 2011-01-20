@@ -120,7 +120,8 @@ function(account, sectionId) {
 			if (sectionId == "FILTERS" ||
 				sectionId == "SHARING" ||
 				sectionId == "SIGNATURES" ||
-				sectionId == "ACCOUNTS")
+				sectionId == "ACCOUNTS" ||
+                sectionId == "NOTIFICATIONS")
 			{
 				return false;
 			}
@@ -132,11 +133,13 @@ function(account, sectionId) {
 			if (!account.isZimbraAccount &&
 				(sectionId == "MAIL" ||
 				 sectionId == "SHARING" ||
-				 sectionId == "CALENDAR"))
+				 sectionId == "CALENDAR" ||
+                 sectionId == "NOTIFICATIONS"))
 			{
 				return false;
 			}
 		}
+
 	}
 
 	return (account.isMain ||
