@@ -121,7 +121,8 @@ function(account, sectionId) {
 				sectionId == "SHARING" ||
 				sectionId == "SIGNATURES" ||
 				sectionId == "ACCOUNTS" ||
-                sectionId == "NOTIFICATIONS")
+                sectionId == "NOTIFICATIONS" ||
+                sectionId == "TRUSTED_ADDR")
 			{
 				return false;
 			}
@@ -134,7 +135,8 @@ function(account, sectionId) {
 				(sectionId == "MAIL" ||
 				 sectionId == "SHARING" ||
 				 sectionId == "CALENDAR" ||
-                 sectionId == "NOTIFICATIONS"))
+                 sectionId == "NOTIFICATIONS" ||
+                 sectionId == "TRUSTED_ADDR" ))
 			{
 				return false;
 			}
