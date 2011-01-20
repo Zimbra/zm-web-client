@@ -113,6 +113,11 @@ ZmListView.DEFAULT_REPLENISH_THRESHOLD		= 0;
 
 ZmListView.COL_JOIN = "|";
 
+ZmListView.CHECKED_CLASS = "ImgCheckboxChecked";
+ZmListView.UNCHECKED_CLASS = "ImgCheckboxUnchecked";
+ZmListView.ORIG_SEL_CLASS_NAME = "origSelClassName";
+
+
 ZmListView.prototype._getHeaderList = function() {};
 
 /**
@@ -543,7 +548,7 @@ function(ev, div) {
 		var m = this._parseId(id);
 		if (m && m.field) {
 			if (m.field == ZmItem.F_SELECTION) {
-				var origClassName = this._getItemData(div, "origSelClassName");
+				var origClassName = this._getItemData(div, ZmListView.ORIG_SEL_CLASS_NAME);
 				if (origClassName) {
 					ev.target.className = origClassName;
 				}
@@ -575,24 +580,23 @@ function(clickedEl, ev) {
 			// get the field being clicked
 			var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1)	? ev.target.id : clickedEl.id;
 			var m = id ? this._parseId(id) : null;
-			if (m && (m.field == ZmItem.F_SELECTION) || (m.field == ZmItem.F_SELECTION_CELL) ) {
+			if (m && (m.field == ZmItem.F_SELECTION || m.field == ZmItem.F_SELECTION_CELL)) {
+				//user clicked on a checkbox
 				if (this._selectedItems.size() == 1) {
 					var sel = this._selectedItems.get(0);
 					var item = this.getItemFromElement(sel);
 					var selFieldId = item ? this._getFieldId(item, ZmItem.F_SELECTION) : null;
 					var selField = selFieldId ? document.getElementById(selFieldId) : null;
 					if (selField && sel == clickedEl) {
-						var origClass = this._getItemData(sel, "origSelClassName");
-						if (origClass == "ImgCheckboxChecked") {
-							selField.className = "ImgCheckboxUnchecked";
-							this._setItemData(sel, "origSelClassName", "ImgCheckboxUnchecked");
-						} else if (origClass == "ImgCheckboxUnchecked") {
-							selField.className = "ImgCheckboxChecked";
-							this._setItemData(sel, "origSelClassName", "ImgCheckboxChecked");
-							return;
+						var origClass = this._getItemData(sel, ZmListView.ORIG_SEL_CLASS_NAME);
+						var newClass = (origClass == ZmListView.CHECKED_CLASS) ? ZmListView.UNCHECKED_CLASS : ZmListView.CHECKED_CLASS; //this fixes bug 50435 - if original is undefined (valid case) it's like it's unchecked
+						selField.className = newClass;
+						this._setItemData(sel, ZmListView.ORIG_SEL_CLASS_NAME, newClass);
+						if (newClass == ZmListView.CHECKED_CLASS) {
+							return; //nothing else to do. It's already selected, and was the only selected one. Nothing to remove
 						}
 					} else {
-						if (selField && selField.className == "ImgCheckboxUnchecked") {
+						if (selField && selField.className == ZmListView.UNCHECKED_CLASS) {
 							DwtListView.prototype.deselectAll.call(this);
 						}
 					}
@@ -638,16 +642,16 @@ function(clickedCol, ev) {
 			var hdrId = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ICON, this._view, item._field);
 			var hdrDiv = document.getElementById(hdrId);
 			if (hdrDiv) {
-				if (hdrDiv.className == "ImgCheckboxChecked") {
+				if (hdrDiv.className == ZmListView.CHECKED_CLASS) {
 					if (ev.shiftKey && !this.allSelected) {
 						this.selectAll(ev.shiftKey);
 					} else {
 						this.deselectAll();
-						hdrDiv.className = "ImgCheckboxUnchecked";
+						hdrDiv.className = ZmListView.UNCHECKED_CLASS;
 					}
 				} else {
 					this.allSelected = false;
-					hdrDiv.className = "ImgCheckboxChecked";
+					hdrDiv.className = ZmListView.CHECKED_CLASS;
 					this.selectAll(ev.shiftKey);
 				}
 			}
@@ -698,8 +702,8 @@ function(obj, bContained) {
 	var selFieldId = item ? this._getFieldId(item, ZmItem.F_SELECTION) : null;
 	var selField = selFieldId ? document.getElementById(selFieldId) : null;
 	if (selField) {
-		selField.className = bContained ? "ImgCheckboxUnchecked" : "ImgCheckboxChecked";
-		this._setItemData(obj, "origSelClassName", selField.className);
+		selField.className = bContained ? ZmListView.UNCHECKED_CLASS : ZmListView.CHECKED_CLASS;
+		this._setItemData(obj, ZmListView.ORIG_SEL_CLASS_NAME, selField.className);
 	}
 };
 
@@ -715,8 +719,8 @@ function(check) {
 	var hdrDiv = hdrId ? document.getElementById(hdrId) : null;
 	if (hdrDiv) {
 		hdrDiv.className = check
-			? "ImgCheckboxChecked"
-			: "ImgCheckboxUnchecked";
+			? ZmListView.CHECKED_CLASS
+			: ZmListView.UNCHECKED_CLASS;
 	}
 };
 
@@ -774,7 +778,7 @@ function() {
 		var hdrId = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ICON, this._view, ZmItem.F_SELECTION);
 		var hdrDiv = document.getElementById(hdrId);
 		if (hdrDiv) {
-			hdrDiv.className = "ImgCheckboxUnchecked";
+			hdrDiv.className = ZmListView.UNCHECKED_CLASS;
 		}
 		var sel = this._selectedItems.getArray();
 		for (var i=0; i<sel.length; i++) {
@@ -968,9 +972,9 @@ ZmListView.prototype._getToolTip =
 function(params) {
     var tooltip, field = params.field, target = params.ev.target, item = params.item;
     if (field == ZmItem.F_SELECTION) {
-		this._setItemData(params.div, "origSelClassName", target.className);
-        if (target.className != "ImgCheckboxChecked") {
-            target.className = "ImgCheckboxChecked";
+		this._setItemData(params.div, ZmListView.ORIG_SEL_CLASS_NAME, target.className);
+        if (target.className != ZmListView.CHECKED_CLASS) {
+            target.className = ZmListView.CHECKED_CLASS;
         }
     } else if (field == ZmItem.F_FLAG) {
         if (!item.isFlagged) {
