@@ -56,7 +56,8 @@ function() {
 	var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
 
 	this._prefsController._resetOperations(this._prefsController._toolbar, section && section.id);
-	if (this.hasRendered) { return; }
+    //TODO: We got to optimize / avoid force-rendering logic for multi-account setup
+	if (this.hasRendered && !appCtxt.isOffline) { return; }
 
 	// create the html
 	var data = {id:this._htmlElId};
