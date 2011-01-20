@@ -104,7 +104,7 @@ function(parent, type, id) {
 	if (nId == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder())) {
 		var isShareVisible = (!folder.link || folder.isAdmin());
         if (appCtxt.isOffline) {
-            isShareVisible = (folder && !folder.getAccount().isMain);            
+            isShareVisible = !folder.getAccount().isMain && folder.getAccount().isZimbraAccount;
         }
 		parent.enableAll(true);
 		parent.enable(ZmOperation.SYNC, folder.isFeed()/* || folder.hasFeeds()*/);
@@ -145,6 +145,10 @@ function(parent, type, id) {
 		if (!folder.link && (nId == ZmFolder.ID_INBOX || nId == ZmFolder.ID_SENT || nId == ZmFolder.ID_DRAFTS)) {
 			parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.EDIT_PROPS], true);
 		}
+        if (appCtxt.multiAccounts) {
+            var isShareVisible = !folder.getAccount().isMain && folder.getAccount().isZimbraAccount;
+            parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.EDIT_PROPS], isShareVisible);
+        }
 		// bug fix #30435 - enable empty folder for sync failures folder
 		if (appCtxt.isOffline && nId == ZmOrganizer.ID_SYNC_FAILURES && hasContent) {
 			parent.enable(ZmOperation.EMPTY_FOLDER, true);
