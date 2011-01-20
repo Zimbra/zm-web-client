@@ -132,7 +132,8 @@ function(parent, type, id) {
                 parent.enable([ZmOperation.SHARE_ADDRBOOK], !addrBook.link || addrBook.isAdmin());
             }
             if (appCtxt.isOffline) {
-                parent.enable([ZmOperation.SHARE_ADDRBOOK], !addrBook.getAccount().isMain);
+                var acct = addrBook.getAccount();
+                parent.enable([ZmOperation.SHARE_ADDRBOOK], !acct.isMain && acct.isZimbraAccount);
             }
         }
     }

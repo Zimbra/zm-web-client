@@ -158,7 +158,8 @@ function(actionMenu, type, id) {
 			nId = calendar.nId;
             var isShareVisible = (!calendar.link || calendar.isAdmin()) && nId != ZmFolder.ID_TRASH;
             if (appCtxt.isOffline) {
-                isShareVisible = !calendar.getAccount().isMain;
+                var acct = calendar.getAccount();
+                isShareVisible = !acct.isMain && acct.isZimbraAccount;
             }
 			actionMenu.enable(ZmOperation.SHARE_CALENDAR, isShareVisible);
 			actionMenu.enable(ZmOperation.SYNC, calendar.isFeed());
