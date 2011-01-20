@@ -29,7 +29,7 @@
  */
 ZmNewSearchDialog = function(parent, className) {
 
-	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.saveSearch});
+	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.saveSearch, id:"SaveSearch"});
 
 	this._omit = {};
 	this._omit[ZmFolder.ID_SPAM] = true;
