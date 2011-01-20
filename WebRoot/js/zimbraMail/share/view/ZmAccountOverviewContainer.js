@@ -126,7 +126,8 @@ function(params) {
 		if (appCtxt.isOffline && acct.isMain && this._appName != ZmApp.PREFERENCES) { continue; }
 		if (!acct.active) { continue; }
 
-		params.omit = {};
+        // bug:51665 - Subfolder gets created under Draft folder
+		 params.omit = params.omit || {};
 
 		if (acct.type == ZmAccount.TYPE_POP) {
 			params.omit[ZmFolder.ID_SPAM]   = true;
