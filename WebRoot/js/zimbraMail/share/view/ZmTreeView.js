@@ -188,8 +188,9 @@ function(params) {
     //determine if call is from dialog/picker rather than nav tree
     var isApp = this._overview && this._overview.isAppOverview;
     var isZimbraAccount = true;
+    var acct;
     if(appCtxt.multiAccounts && params.account){
-        var acct = params.account;
+        acct = params.account;
         isZimbraAccount = acct.isZimbraAccount && !acct.isMain;
     }
 
@@ -217,7 +218,7 @@ function(params) {
         var id = item.getHTMLElId();
         item.setText(AjxTemplate.expand(this.SHARE_LINK_TEMPLATE, id));
         var linkEl = document.getElementById(id+"_addshare_link");
-        linkEl.onclick = AjxCallback.simpleClosure(this._handleAddShareLink, this, acct.id);
+        linkEl.onclick = AjxCallback.simpleClosure(this._handleAddShareLink, this, (acct? acct.id : null));
         this._addShareLink = item;
     }
 
@@ -643,9 +644,11 @@ function() {
 
 ZmTreeView.prototype._handleAddShareLink = function(acctId, htmlEvent) {
 
-    var account  = appCtxt.accountList.getAccount(acctId);
-    if (appCtxt.multiAccounts && account && account.isZimbraAccount) {
-        appCtxt.accountList.setActiveAccount(account);
+    if( appCtxt.multiAccounts && acctId) {
+        var account  = appCtxt.accountList.getAccount(acctId);
+        if (account && account.isZimbraAccount) {
+            appCtxt.accountList.setActiveAccount(account);
+        }
     }
     try {
         var dialog = appCtxt.getShareSearchDialog();
