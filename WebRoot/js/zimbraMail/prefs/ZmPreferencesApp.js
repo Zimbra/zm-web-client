@@ -360,7 +360,8 @@ function() {
             priority: 140,
 			precondition: ZmSetting.CHECKED_ZIMLETS_ENABLED,
 			prefs: [
-				ZmSetting.CHECKED_ZIMLETS    
+				ZmSetting.CHECKED_ZIMLETS,
+                ZmSetting.OFFLINE_ZIMLET_SYNC_ACCOUNT_ID
 			],
             createView: function(parent, section, controller) {
 				return new ZmZimletsPage(parent, section, controller);
@@ -429,6 +430,29 @@ function() {
         AjxMessageFormat.format(ZmMsg.pt,"24"), AjxMessageFormat.format(ZmMsg.pt,"36")];
     //Server values are stored with 'pt' to work irrespective of locale, while display options are as per the respective locale 
     var fontSizeValueOptions = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
+    var getZimbraAccountList = function(){
+        var visAccts = appCtxt.accountList.visibleAccounts;
+        var accts = [];
+        accts.push(ZmMsg.zimletPrefDontSync);
+        for (var k=0; k<visAccts.length; k++) {
+            if(visAccts[k].isZimbraAccount && !visAccts[k].isMain) {
+                accts.push([ZmMsg.zimletPrefSyncWith, " ", visAccts[k].name].join(""));
+            }
+        }
+        return accts;
+    };
+    var getZimbraAccountIds = function(){
+        var visAccts = appCtxt.accountList.visibleAccounts;
+        var accts = [];
+        accts.push("");
+        for (var k=0; k<visAccts.length; k++) {
+            if(visAccts[k].isZimbraAccount && !visAccts[k].isMain) {
+                accts.push(visAccts[k].id);
+            }
+        }
+        return accts;
+
+    };
 	ZmPref.registerPref("COMPOSE_INIT_FONT_SIZE", {
 		displayName:		null,
 		displayContainer:	ZmPref.TYPE_SELECT,
@@ -445,6 +469,13 @@ function() {
     ZmPref.registerPref("CHECKED_ZIMLETS", {
 		displayName:		ZmMsg.zimlets,
 		displayContainer:	ZmPref.TYPE_CUSTOM
+	});
+
+    ZmPref.registerPref("OFFLINE_ZIMLET_SYNC_ACCOUNT_ID", {
+		displayName:		ZmMsg.zimletSyncPref,
+		displayContainer:	ZmPref.TYPE_SELECT,
+        displayOptions:     getZimbraAccountList(),
+        options:            getZimbraAccountIds()
 	});
 
     ZmPref.registerPref("DEFAULT_TIMEZONE", {
