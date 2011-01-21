@@ -32,6 +32,7 @@ ZmDebugLogDialog = function(parent) {
 
 	this.setButtonListener(ZmDebugLogDialog.EMAIL_BUTTON, new AjxListener(this, this._handleEmailButton));
 
+	this._setAllowSelection();
 	this.setContent(this._contentHtml());
 };
 
