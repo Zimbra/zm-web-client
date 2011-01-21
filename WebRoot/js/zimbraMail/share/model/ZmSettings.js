@@ -901,7 +901,7 @@ function() {
     this.registerSetting("OFFLINE_BACKUP_ACCOUNT_ID",       {name:"zimbraPrefOfflineBackupAccountId", type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, isGlobal:true});
     this.registerSetting("OFFLINE_BACKUP_RESTORE",          {name:"zimbraPrefOfflineBackupRestore", dataType:ZmSetting.D_INT, isGlobal:true});
     this.registerSetting("OFFLINE_BACKUP_NOW_BUTTON",       {name:"zimbraPrefOfflineBackupAccount", dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
-    this.registerSetting("OFFLINE_ZIMLET_SYNC_ACCOUNT_ID",  {name:"zimbraPrefOfflineZimletSyncAccountId", dataType:ZmSetting.D_STRING, isGlobal:true});
+    this.registerSetting("OFFLINE_ZIMLET_SYNC_ACCOUNT_ID",  {name:"zimbraPrefOfflineZimletSyncAccountId", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, isGlobal:true});
 	this.registerSetting("OFFLINE_WEBAPP_URI",				{name:"offlineWebappUri", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING});
 
 	// reset the help URI to zimbra.com for offline
