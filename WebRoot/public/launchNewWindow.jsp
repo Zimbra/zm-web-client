@@ -120,7 +120,7 @@
     appRequestLocaleId = "${locale}";
 	// NOTE: Force zimlets to load individually to avoid aggregation!
 	appExtension   = "js";
-	window.appDevMode     = true;
+	window.appDevMode     = ${isDevMode};
 </script>
 <script>
 <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
