@@ -115,7 +115,7 @@ ZmListView.COL_JOIN = "|";
 
 ZmListView.CHECKED_CLASS = "ImgCheckboxChecked";
 ZmListView.UNCHECKED_CLASS = "ImgCheckboxUnchecked";
-ZmListView.ORIG_SEL_CLASS_NAME = "origSelClassName";
+ZmListView.ITEM_CHECKED_ATT_NAME = "itemChecked";
 
 
 ZmListView.prototype._getHeaderList = function() {};
@@ -547,12 +547,7 @@ function(ev, div) {
 	if (type && type == DwtListView.TYPE_LIST_ITEM) {
 		var m = this._parseId(id);
 		if (m && m.field) {
-			if (m.field == ZmItem.F_SELECTION) {
-				var origClassName = this._getItemData(div, ZmListView.ORIG_SEL_CLASS_NAME);
-				if (origClassName) {
-					ev.target.className = origClassName;
-				}
-			} else if (m.field == ZmItem.F_FLAG) {
+			if (m.field == ZmItem.F_FLAG) {
 				var item = this.getItemFromElement(div);
 				if (!item.isFlagged) {
 					AjxImg.setImage(ev.target, this._getFlagIcon(item.isFlagged, false), true);
@@ -588,10 +583,10 @@ function(clickedEl, ev) {
 					var selFieldId = item ? this._getFieldId(item, ZmItem.F_SELECTION) : null;
 					var selField = selFieldId ? document.getElementById(selFieldId) : null;
 					if (selField && sel == clickedEl) {
-						var origClass = this._getItemData(sel, ZmListView.ORIG_SEL_CLASS_NAME);
-						var newClass = (origClass == ZmListView.CHECKED_CLASS) ? ZmListView.UNCHECKED_CLASS : ZmListView.CHECKED_CLASS; //this fixes bug 50435 - if original is undefined (valid case) it's like it's unchecked
+						var isChecked = this._getItemData(sel, ZmListView.ITEM_CHECKED_ATT_NAME);
+						var newClass = isChecked ? ZmListView.UNCHECKED_CLASS : ZmListView.CHECKED_CLASS; //this fixes bug 50435 - if original is undefined (valid case) it's like it's unchecked
 						selField.className = newClass;
-						this._setItemData(sel, ZmListView.ORIG_SEL_CLASS_NAME, newClass);
+						this._setItemData(sel, ZmListView.ITEM_CHECKED_ATT_NAME, !isChecked);
 						if (newClass == ZmListView.CHECKED_CLASS) {
 							return; //nothing else to do. It's already selected, and was the only selected one. Nothing to remove
 						}
@@ -703,7 +698,7 @@ function(obj, bContained) {
 	var selField = selFieldId ? document.getElementById(selFieldId) : null;
 	if (selField) {
 		selField.className = bContained ? ZmListView.UNCHECKED_CLASS : ZmListView.CHECKED_CLASS;
-		this._setItemData(obj, ZmListView.ORIG_SEL_CLASS_NAME, selField.className);
+		this._setItemData(obj, ZmListView.ITEM_CHECKED_ATT_NAME, !bContained);
 	}
 };
 
@@ -971,12 +966,7 @@ function(field, itemIdx, isOutboundFolder) {
 ZmListView.prototype._getToolTip =
 function(params) {
     var tooltip, field = params.field, target = params.ev.target, item = params.item;
-    if (field == ZmItem.F_SELECTION) {
-		this._setItemData(params.div, ZmListView.ORIG_SEL_CLASS_NAME, target.className);
-        if (target.className != ZmListView.CHECKED_CLASS) {
-            target.className = ZmListView.CHECKED_CLASS;
-        }
-    } else if (field == ZmItem.F_FLAG) {
+	if (field == ZmItem.F_FLAG) {
         if (!item.isFlagged) {
             AjxImg.setDisabledImage(target, this._getFlagIcon(item.isFlagged, true), true);
         }
