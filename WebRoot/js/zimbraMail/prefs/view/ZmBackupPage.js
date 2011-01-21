@@ -229,7 +229,7 @@ function() {
 ZmBackupPage._getAccounts =
 function() {
     var savedAccounts = appCtxt.get(ZmSetting.OFFLINE_BACKUP_ACCOUNT_ID);
-    savedAccounts = savedAccounts.split(",") || [];
+    savedAccounts = savedAccounts && savedAccounts.split(",") || [];
     var accounts = new ZmPrefAccounts();
     var visAccts = appCtxt.accountList.visibleAccounts;
     for (var i=0; i< visAccts.length; i++) {
@@ -609,7 +609,20 @@ function(html, idx, item, field, colIdx, params) {
         html[idx++] = "<div id='";
         html[idx++] = this._getCellId(item, ZmPrefBackupListView.COL_DESC);
         html[idx++] = "'>";
-        html[idx++] = item.fileSize;
+        var fSize = item.fileSize;
+        var numFormater = AjxNumberFormat.getInstance();
+        if (fSize != null && fSize >= 0) {
+            if (fSize < 1024) { //" B";
+                fSize = numFormater.format(fSize) + " "+ZmMsg.b;
+            }
+            else if (fSize < (1024*1024) ) { //" KB";
+                fSize = numFormater.format(Math.round((fSize / 1024) * 10) / 10) + " "+ZmMsg.kb;
+            }
+            else { //" MB";
+                fSize = numFormater.format(Math.round((fSize / (1024*1024)) * 10) / 10) + " "+ZmMsg.mb;
+            }
+        } else { fSize = 0+" "+ZmMsg.b; }
+        html[idx++] = fSize;
         html[idx++] = "</div>";
     }
     else if (field == ZmPrefBackupListView.COL_NAME) {
