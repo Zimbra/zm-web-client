@@ -1480,7 +1480,7 @@ function() {
 				htmlArr[idx++] = ZmMsg.download;
 				htmlArr[idx++] = "</a>";
 			}
-			if (att.briefcaseLink) {
+			if (att.briefcaseLink && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
 				if (att.htmlLink || att.vcardLink || att.download) {
 					htmlArr[idx++] = " | ";
 				}
