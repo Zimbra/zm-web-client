@@ -628,6 +628,7 @@ function(ev) {
 	if ((ev.type != this.type) && (ZmList.MIXED != this.type))
 		return;
 
+    //TODO: Optimize ChangeListener logic
 	var items = ev.getDetail("items") || ev.items;
     items = AjxUtil.toArray(items);
     if (ev.event == ZmEvent.E_CREATE) {
@@ -661,7 +662,10 @@ function(ev) {
 			}
 
 			this._list.add(item, idx);
-			appCtxt.getSearchController().redoSearch(appCtxt.getCurrentSearch());
+
+            if(appCtxt.getCurrentApp().getName() == ZmApp.TASKS){
+			    appCtxt.getSearchController().redoSearch(appCtxt.getCurrentSearch());
+            }
             this._renderList(this.getList(),true,false);
             if(this._list && this._list.size() == 1) { this.setSelection(this._list.get(0)); }
 		}
@@ -677,7 +681,9 @@ function(ev) {
 			    task.getDetails(ZmCalItem.MODE_EDIT, new AjxCallback(this._controller, this._controller._showTaskReadOnlyView, task));
 		    }
             //bug:53715 refreshed the listview after modification
-            appCtxt.getSearchController().redoSearch(appCtxt.getCurrentSearch());
+            if(appCtxt.getCurrentApp().getName() == ZmApp.TASKS){
+                appCtxt.getSearchController().redoSearch(appCtxt.getCurrentSearch());
+            }
             this._renderList(this.getList(),true,false);
 		}
 	} else if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
