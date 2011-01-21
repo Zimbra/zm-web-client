@@ -217,7 +217,7 @@ function(params) {
         var id = item.getHTMLElId();
         item.setText(AjxTemplate.expand(this.SHARE_LINK_TEMPLATE, id));
         var linkEl = document.getElementById(id+"_addshare_link");
-        linkEl.onclick = AjxCallback.simpleClosure(this._handleAddShareLink, this);
+        linkEl.onclick = AjxCallback.simpleClosure(this._handleAddShareLink, this, acct.id);
         this._addShareLink = item;
     }
 
@@ -641,7 +641,12 @@ function() {
 	return null;
 };
 
-ZmTreeView.prototype._handleAddShareLink = function(htmlEvent) {
+ZmTreeView.prototype._handleAddShareLink = function(acctId, htmlEvent) {
+
+    var account  = appCtxt.accountList.getAccount(acctId);
+    if (appCtxt.multiAccounts && account && account.isZimbraAccount) {
+        appCtxt.accountList.setActiveAccount(account);
+    }
     try {
         var dialog = appCtxt.getShareSearchDialog();
         var addCallback = new AjxCallback(this, this._handleAddShare);
