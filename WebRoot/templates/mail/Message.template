@@ -459,8 +459,12 @@
 				<$ } $>
 			</td>
 			<td class='nobreak'>
-				<!-- The open A element is within the attachment.link string -->
-				<$= attachment.link $><$= AjxStringUtil.htmlEncode(AjxStringUtil.clipFile(attachment.label,100)) $></a>
+                <$ if(appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) { $>
+                    <$= AjxStringUtil.htmlEncode(AjxStringUtil.clipFile(attachment.label,100)) $>
+                <$ } else { $>
+                    <!-- The open A element is within the attachment.link string -->
+				    <$= attachment.link $><$= AjxStringUtil.htmlEncode(AjxStringUtil.clipFile(attachment.label,100)) $></a>
+                <$ } $>
 				<$ if (attachment.size) { $>
 					(<$= attachment.size $>)
 				<$ } $>
