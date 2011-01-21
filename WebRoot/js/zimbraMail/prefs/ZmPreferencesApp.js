@@ -371,6 +371,7 @@ function() {
         sections["BACKUP"] = {
 			title: ZmMsg.offlineBackups,
 			icon: "backup",
+            manageDirty: true,
 			templateId: "prefs.Pages#BackUp",
 			priority: 130,
             prefs: [
@@ -581,7 +582,7 @@ function() {
             displayName:		ZmMsg.offlineBackUpInterval,
             displayContainer:	ZmPref.TYPE_SELECT,
             displayOptions:		[ZmMsg.pollNever, ZmMsg.everyDay, ZmMsg.everyWeek, ZmMsg.everyMonth],
-            options:			[-1, ZmSetting.CAL_DAY, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH]
+            options:			[0, 86400000, 604800000, 2628000000]
         });
 
         ZmPref.registerPref("OFFLINE_BACKUP_PATH", {
@@ -592,7 +593,7 @@ function() {
         ZmPref.registerPref("OFFLINE_BACKUP_KEEP", {
             displayName:		ZmMsg.offlineBackUpKeep,
             displayContainer:	ZmPref.TYPE_SELECT,
-            displayOptions:		["1", "2", "3"]
+            displayOptions:		["1", "2", "3", "4", "5"]
         });
 
 	}

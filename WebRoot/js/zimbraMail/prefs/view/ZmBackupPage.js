@@ -187,6 +187,27 @@ function(id, resp) {
     }
 };
 
+ZmBackupPage.prototype.addCommand  =
+function(batchCommand) {
+
+    var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
+    var accts = this.getAccounts()._vector.getArray();
+
+    var settingsObj = appCtxt.getSettings();
+    var setting = settingsObj.getSetting(ZmSetting.OFFLINE_BACKUP_ACCOUNT_ID);
+
+    var checked = [];
+    for (var i = 0; i < accts.length; i++) {
+        if (accts[i].active) {
+            checked.push(accts[i].id);
+        }
+    }
+    var node = soapDoc.set("pref", checked.join(","));
+    node.setAttribute("name", "zimbraPrefOfflineBackupAccountId");
+    setting.setValue(checked.join(", "));
+    batchCommand.addNewRequestParams(soapDoc);
+};
+
 /**
  * Gets the account preferences.
  *
@@ -207,16 +228,44 @@ function() {
 
 ZmBackupPage._getAccounts =
 function() {
+    var savedAccounts = appCtxt.get(ZmSetting.OFFLINE_BACKUP_ACCOUNT_ID);
+    savedAccounts = savedAccounts.split(",") || [];
     var accounts = new ZmPrefAccounts();
     var visAccts = appCtxt.accountList.visibleAccounts;
     for (var i=0; i< visAccts.length; i++) {
         var name =  visAccts[i].getDisplayName();
         var desc = visAccts[i].name;
         var id = visAccts[i].id;
-        accounts.addPrefAccount(new ZmPrefAccount(name, false, desc, id));
+
+        loop1: for (var k=0; k < savedAccounts.length ; k++)  {
+                var checked = (id == AjxStringUtil.trim(savedAccounts[k]));
+                if(checked) { break loop1; }
+            }
+        accounts.addPrefAccount(new ZmPrefAccount(name, checked, desc, id));
     }
     return accounts;
 };
+
+ZmBackupPage.prototype._isChecked =
+function(name) {
+    var z = this.getAccounts().getPrefAccountByName(name);
+    return (z && z.active);
+};
+
+ZmBackupPage.prototype.isDirty =
+function() {
+    var allAccountss = this.getAccounts();
+    var r = false;
+    var arr = allAccountss._vector.getArray();
+    for (var i = 0; i < arr.length; i++) {
+        if (arr[i]._origStatus != arr[i].active) {
+            r = true;
+            break;
+        }
+    }
+    return r;
+};
+
 
 /**
  * ZmPrefAcctListView
@@ -567,7 +616,7 @@ function(html, idx, item, field, colIdx, params) {
         html[idx++] = "<div id='";
         html[idx++] = this._getCellId(item, ZmPrefBackupListView.COL_NAME);
         html[idx++] = "'>";
-        html[idx++] = AjxDateFormat.getTimeInstance(AjxDateFormat.MEDIUM).format(new Date(item.timestamp));
+        html[idx++] = AjxDateFormat.getDateTimeInstance(AjxDateFormat.MEDIUM).format(new Date(item.timestamp));
         html[idx++] = "</div>";
     }
     else if (field == ZmPrefBackupListView.COL_ACTION) {
