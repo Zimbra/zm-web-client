@@ -951,7 +951,7 @@ function(ev) {
 		cd.setMessage(ZmMsg.accountChangeRestart, DwtMessageDialog.WARNING_STYLE);
 		cd.popup();
 	} else if (appCtxt.isOffline && id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
-		appCtxt.getAppController().registerMailtoHandler(true);
+		appCtxt.getAppController().registerMailtoHandler(true, ev.source.getValue());
 	}
 };
 

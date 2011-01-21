@@ -511,7 +511,7 @@ function(params, result) {
 		if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && window.platform && 
 			window.platform.isRegisteredProtocolHandler("mailto")) {  
 		    // bug fix #34342 - always register the protocol handler for mac and linux on start up
-		    this.registerMailtoHandler(!AjxEnv.isWindows);
+		    this.registerMailtoHandler(!AjxEnv.isWindows, true);
 		}    
 	}
 
@@ -1143,23 +1143,32 @@ function() {
 };
 
 ZmZimbraMail.prototype.registerMailtoHandler =
-function(regProto) {
+function(regProto, selected) {
 	if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && window.platform) {
 		try { // add try/catch - see bug #33870
-			// register mailto handler
-			if (regProto) {
-				var url = appCtxt.get(ZmSetting.OFFLINE_WEBAPP_URI, null, appCtxt.accountList.mainAccount);
-				window.platform.registerProtocolHandler("mailto", url + "&mailto=%s");
-			}
+			if (selected) { // user selected zd as default mail app 
+				// register mailto handler
+				if (regProto) {
+					var url = appCtxt.get(ZmSetting.OFFLINE_WEBAPP_URI, null, appCtxt.accountList.mainAccount);
+					window.platform.registerProtocolHandler("mailto", url + "&mailto=%s");
+				}
 
-			// register mailto callback
-			var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);
-			window.platform.registerProtocolCallback("mailto", callback);
+				// register mailto callback
+				var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);
+				window.platform.registerProtocolCallback("mailto", callback);
 
-			// handle "send to mail recipient" on windows (requires mapi@zimbra.com extension)
-			if (AjxEnv.isWindows) {
-				var shell = new ZimbraDesktopShell;
-				shell.defaultClient = true;
+				// handle "send to mail recipient" on windows (requires mapi@zimbra.com extension)
+				if (AjxEnv.isWindows) {
+					var shell = new ZimbraDesktopShell;
+					shell.defaultClient = true;
+				}
+			} else { // unselected (box unchecked) 
+				window.platform.unregisterProtocolHandler("mailto");
+
+				if (AjxEnv.isWindows) {
+					var shell = new ZimbraDesktopShell;
+					shell.defaultClient = false;
+				}
 			}
 		} catch(ex) {
 			// do nothing

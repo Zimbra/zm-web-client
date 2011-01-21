@@ -406,17 +406,11 @@ function(id, value, setup, control) {
 			if (id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
 				try { // add try/catch - see bug #33870
 					if (window.platform && !window.platform.isRegisteredProtocolHandler("mailto")) {
-						object.setEnabled(true);
 						object.setSelected(false);
-						
-						// this accont pref might have been set to true before. so we must set origValue = false
-						// so that when user selects the checkbox, it will be considered "dirty"
-						var setting = appCtxt.accountList.mainAccount.settings.getSetting(id);
-						setting.origValue = false;
 					} else {
-						object.setEnabled(false);
 						object.setSelected(true);
 					}
+					object.setEnabled(true);
 				} catch(ex) {
 					object.setEnabled(false);
 					object.setSelected(false);
@@ -715,15 +709,6 @@ function(id, setup, value) {
 	else if (id == ZmSetting.NOTIF_ENABLED) {
 		this._handleNotifyChange();
 		checkbox.addSelectionListener(new AjxListener(this, this._handleNotifyChange));
-	}
-	else if (id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER && window.platform) {
-		try { // add try/catch - see bug #33870
-			if (window.platform.isRegisteredProtocolHandler("mailto")) {
-				checkbox.setEnabled(false);
-			}
-		} catch(ex) {
-			checkbox.setEnabled(false);
-		}
 	}
 	return checkbox;
 };
