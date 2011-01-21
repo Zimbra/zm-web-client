@@ -2306,7 +2306,9 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 ZmHtmlEditor.WRAP_LENGTH		= 72;
 ZmHtmlEditor.HTML_QUOTE_PRE		= '<blockquote style="border-left:2px solid ' +
 									 AjxStringUtil.HTML_QUOTE_COLOR +
-									 ';margin-left:5px;padding-left:5px;">';
+									 ';margin-left:5px;padding-left:5px;'+
+									 AjxStringUtil.HTML_QUOTE_STYLE +
+									 '">';
 ZmHtmlEditor.HTML_QUOTE_POST	= '</blockquote><br/>';
 
 // returns a standard set of params for wrapping text of HTML content
