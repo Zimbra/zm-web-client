@@ -122,6 +122,8 @@ function(settings) {
 	settings.registerSetting("IMPORT",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("MAX_CONTACTS",					{name: "zimbraContactMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 0});
 	settings.registerSetting("NEW_ADDR_BOOK_ENABLED",			{name: "zimbraFeatureNewAddrBookEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+    // TODO: Make real COS setting? 
+    settings.registerSetting("PHONETIC_CONTACT_FIELDS",         {type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:/^ja/.test(AjxEnv.DEFAULT_LOCALE)});
 };
 
 /**

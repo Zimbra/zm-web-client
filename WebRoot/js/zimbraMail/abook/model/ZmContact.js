@@ -105,6 +105,9 @@ ZmContact.F_otherState				= "otherState";
 ZmContact.F_otherStreet				= "otherStreet";
 ZmContact.F_otherURL				= "otherURL";
 ZmContact.F_pager					= "pager";
+ZmContact.F_phoneticFirstName       = "phoneticFirstName";
+ZmContact.F_phoneticLastName        = "phoneticLastName";
+ZmContact.F_phoneticCompany         = "phoneticCompany";
 ZmContact.F_type					= "type";
 ZmContact.F_workAltPhone			= "workAltPhone";
 ZmContact.F_workCity				= "workCity";
@@ -206,14 +209,17 @@ ZmContact.PRIMARY_FIELDS = [
     ZmContact.F_image,
     ZmContact.F_namePrefix,
     ZmContact.F_firstName,
+    ZmContact.F_phoneticFirstName,
     ZmContact.F_middleName,
 	ZmContact.F_maidenName,
     ZmContact.F_lastName,
+    ZmContact.F_phoneticLastName,
     ZmContact.F_nameSuffix,
     ZmContact.F_nickname,
     ZmContact.F_jobTitle,
     ZmContact.F_department,
 	ZmContact.F_company,
+    ZmContact.F_phoneticCompany,
 	ZmContact.F_fileAs,
 	ZmContact.F_folderId,
 	ZmContact.F_notes
@@ -1237,12 +1243,14 @@ function() {
  * @return	{String}	the full name
  */
 ZmContact.prototype.getFullName =
-function() {
-	if (!this._fullName) {
+function(html) {
+    var fullNameHtml = null;
+	if (!this._fullName || html) {
 		var fullName = this.getAttr(ZmContact.X_fullName); // present if GAL contact
 		if (fullName) {
 			this._fullName = (fullName instanceof Array) ? fullName[0] : fullName;
-		} else {
+		}
+        if (!fullName || html) {
 			var fn = [];
 			var idx = 0;
 			var prefix = this.getAttr(ZmContact.F_namePrefix);
@@ -1258,8 +1266,14 @@ function() {
 			else if (maiden) {
 				pattern = ZmMsg.fullnameMaiden;
 			}
+            var formatter = new AjxMessageFormat(pattern);
 			var args = [prefix,first,middle,maiden,last,suffix];
-			this._fullName = AjxStringUtil.trim(AjxMessageFormat.format(pattern, args), true);
+            if (!fullName) {
+			    this._fullName = AjxStringUtil.trim(formatter.format(args), true);
+            }
+            if (html) {
+                fullNameHtml = this._getFullNameHtml(formatter, args);
+            }
 		}
 	}
 
@@ -1268,8 +1282,35 @@ function() {
 		this._fullName = this.getFileAs();
 	}
 
-	return this._fullName;
+	return fullNameHtml || this._fullName;
 };
+
+/**
+ * @param formatter
+ * @param parts {Array} Name parts: [prefix,first,middle,maiden,last,suffix]
+ */
+ZmContact.prototype._getFullNameHtml = function(formatter, parts) {
+    var a = [];
+    var segments = formatter.getSegments();
+    for (var i = 0; i < segments.length; i++) {
+        var segment = segments[i];
+        if (segment instanceof AjxFormat.TextSegment) {
+            a.push(segment.format());
+            continue;
+        }
+        // NOTE: Assume that it's a AjxMessageFormat.MessageSegment
+        // NOTE: if not a AjxFormat.TextSegment.
+        var index = segment.getIndex();
+        var base = parts[index];
+        var text = ZmContact.__RUBY_FIELDS[index] && this.getAttr(ZmContact.__RUBY_FIELDS[index]);
+        a.push(AjxStringUtil.htmlRubyEncode(base, text));
+    }
+    return a.join("");
+};
+ZmContact.__RUBY_FIELDS = [
+    null, ZmContact.F_phoneticFirstName, null, null,
+    ZmContact.F_phoneticLastName, null
+];
 
 /**
  * Gets the tool tip for this contact.
