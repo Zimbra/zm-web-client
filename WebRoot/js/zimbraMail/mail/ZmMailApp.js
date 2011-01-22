@@ -1350,6 +1350,9 @@ function(creates, type, items, currList, sortBy, convs, last) {
 		var item = appCtxt.getById(create.id);
 		if (!item) {
 			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: create " + type + " object " + create.id);
+			if (type == ZmItem.CONV) {
+				DBG.dumpObj(AjxDebug.NOTIFY, create);
+			}
 			var itemClass = eval(ZmList.ITEM_CLASS[type]);
 			item = itemClass.createFromDom(create, {}, true);
 		}

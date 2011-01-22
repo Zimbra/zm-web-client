@@ -403,8 +403,8 @@ function(convs, msgs) {
 					AjxDebug.println(AjxDebug.NOTIFY, "conv is null!");
 				}
 				else {
-					var folders = AjxUtil.keys(conv.folders) || "";
-					AjxDebug.println(AjxDebug.NOTIFY, "conv folders: " + folders.join(" "));
+					var folders = AjxUtil.keys(conv.folders);
+					AjxDebug.println(AjxDebug.NOTIFY, "conv spans " + folders.length + " folder(s): " + folders.join(" "));
 				}
 			}
 		}

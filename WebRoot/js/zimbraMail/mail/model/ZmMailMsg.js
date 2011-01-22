@@ -1851,15 +1851,21 @@ function(msgNode) {
 		this._convCreateNode = msgNode._convCreateNode;
 	}
 
+	AjxDebug.println(AjxDebug.NOTIFY, "ZmMailMsg::_loadFromDom - msg ID: " + msgNode.id);
+	AjxDebug.println(AjxDebug.NOTIFY, "cid: " + msgNode.cid + ", folder: " + msgNode.l);
 	if (msgNode.cid && msgNode.l) {
 		var conv = appCtxt.getById(msgNode.cid);
 		if (conv) {
 			// update conv's folder list
+			AjxDebug.println(AjxDebug.NOTIFY, "update conv folder list");
 			conv.folders[msgNode.l] = true;
 			// update msg list if none exists since we know this conv has at least one msg
 			if (!conv.msgIds) {
 				conv.msgIds = [this.id];
 			}
+		}
+		else {
+			AjxDebug.println(AjxDebug.NOTIFY, "could not find conv with ID: " + msgNode.cid);
 		}
 	}
 
