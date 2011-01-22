@@ -133,16 +133,25 @@
                 </select>
             </td>
         </tr>
+        <%-- NOTE: fmt:getLocale is a non-standard tag --%>
+        <fmt:getLocale var="locale" />
+        <c:set var="showPhoneticFields" value="${locale.language eq 'ja'}" />
         <tr><app:contactEditField contact="${contact}" field="lastName"/>
-            <app:contactEditField contact="${contact}" field="phoneticLastName"/>
+            <c:if test="${showPhoneticFields}">
+                <app:contactEditField contact="${contact}" field="phoneticLastName"/>
+            </c:if>
         </tr>
         <tr><app:contactEditField contact="${contact}" field="firstName"/>
-            <app:contactEditField contact="${contact}" field="phoneticFirstName"/>
+            <c:if test="${showPhoneticFields}">
+                <app:contactEditField contact="${contact}" field="phoneticFirstName"/>
+            </c:if>
         </tr>
         <tr><app:contactEditField contact="${contact}" field="middleName"/></tr>
         <tr><app:contactEditField contact="${contact}" field="jobTitle"/></tr>
         <tr><app:contactEditField contact="${contact}" field="company"/>
-            <app:contactEditField contact="${contact}" field="phoneticCompany"/>
+            <c:if test="${showPhoneticFields}">
+                <app:contactEditField contact="${contact}" field="phoneticCompany"/>
+            </c:if>
         </tr>
 
         <tr><td colspan="4" class="sectionLabel" valign="top"><fmt:message key="email"/></td></tr>
