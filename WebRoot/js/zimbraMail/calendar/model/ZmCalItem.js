@@ -559,10 +559,7 @@ function() {
 		}
 	}
 
-	// if dealing w/ a shared cal, check for write access
-	var share = folder.link && folder.getMainShare();
-
-	return (!this.isOrganizer() || (share && !share.isWrite()));
+	return (!this.isOrganizer() || (folder.link && folder.isReadOnly()));
 };
 
 /**
