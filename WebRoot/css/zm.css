@@ -3469,6 +3469,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	@Text-disabled@;
 	padding: 6px;
 	width: 250px;
+    background-color: #FFFFFF;
 }
 
 .shortcutKeys-panel {
@@ -3490,6 +3491,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding: 5px;
 	@SeparatorBorder@
 	color: black;
+    background-color: #FFFFFF;
 }
 
 .shortcutDescription-panel, .shortcutDescription-print {
@@ -3525,6 +3527,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	@SeparatorBorder@
 	@Text@
 	line-height: 22px;
+    background-color: @AppC@;
 }
 
 .shortcutKey-panel, .shortcutKey-print {
