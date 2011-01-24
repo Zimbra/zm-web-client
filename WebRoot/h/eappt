@@ -613,10 +613,10 @@
     }
 
     checkForChanges = function(){
-        if(${uploader.isRepeatDone})
-            return (confirm("<fmt:message key="optionsExitConfirmation"/>"));
-
-        if(${uploader.isContactDone})
+        /**
+         * Check if the Repeat settings or attendees/resources details has changed
+         */
+        if(${uploader.hasChanged})
             return (confirm("<fmt:message key="optionsExitConfirmation"/>"));
 
         var _el = _form.elements;
