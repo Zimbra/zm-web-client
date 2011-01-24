@@ -275,6 +275,11 @@ function() {
 
 ZmCalendar.prototype.getRestUrl =
 function(acct) {
+
+    if(!appCtxt.multiAccounts){
+        return ZmOrganizer.prototype.getRestUrl.call(this);
+    }
+
 	// return REST URL as seen by server
 	if (this.restUrl) {
 		return this.restUrl;
