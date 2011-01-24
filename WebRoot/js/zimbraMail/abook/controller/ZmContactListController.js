@@ -40,7 +40,6 @@ ZmContactListController = function(container, contactsApp) {
 	ZmListController.call(this, container, contactsApp);
 
 	this._viewFactory = {};
-	this._viewFactory[ZmId.VIEW_CONTACT_CARDS] = ZmContactCardsView;
 	this._viewFactory[ZmId.VIEW_CONTACT_SIMPLE] = ZmContactSplitView;
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -62,18 +61,16 @@ ZmContactListController.prototype.constructor = ZmContactListController;
 
 ZmContactListController.ICON = {};
 ZmContactListController.ICON[ZmId.VIEW_CONTACT_SIMPLE]		= "ListView";
-ZmContactListController.ICON[ZmId.VIEW_CONTACT_CARDS]		= "CardsView";
 
 ZmContactListController.MSG_KEY = {};
 ZmContactListController.MSG_KEY[ZmId.VIEW_CONTACT_SIMPLE]	= "contactList";
-ZmContactListController.MSG_KEY[ZmId.VIEW_CONTACT_CARDS]	= "detailedCards";
 
 ZmContactListController.SEARCH_TYPE_CANONICAL	= 1 << 0;
 ZmContactListController.SEARCH_TYPE_GAL			= 1 << 1;
 ZmContactListController.SEARCH_TYPE_NEW			= 1 << 2;
 ZmContactListController.SEARCH_TYPE_ANYWHERE	= 1 << 3;
 
-ZmContactListController.VIEWS = [ZmId.VIEW_CONTACT_SIMPLE, ZmId.VIEW_CONTACT_CARDS];
+ZmContactListController.VIEWS = [ZmId.VIEW_CONTACT_SIMPLE];
 
 /**
  * Returns a string representation of the object.
@@ -360,9 +357,7 @@ function() {
  */
 ZmContactListController.prototype._defaultView =
 function() {
-	return (appCtxt.get(ZmSetting.CONTACTS_VIEW) == "cards")
-		? ZmId.VIEW_CONTACT_CARDS
-		: ZmId.VIEW_CONTACT_SIMPLE;
+	return ZmId.VIEW_CONTACT_SIMPLE;
 };
 
 /**
