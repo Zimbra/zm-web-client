@@ -132,14 +132,14 @@ function(msg) {
 				for (var i = 0; i < calendars.length; i++) {
 					var calendar = calendars[i];
 					var calAcct = calendar.getAccount();
-					var icon = appCtxt.multiAccounts ? calAcct.getIcon() : calendar.getIcon();
+					var icon = appCtxt.multiAccounts ? calAcct.getIcon() : (calendar.getIcon() + ",color=" + calendar.color);
 					var name = appCtxt.multiAccounts
 						? ([calendar.name, " (", calAcct.getDisplayName(), ")"].join(""))
 						: calendar.name;
 					var isSelected = (calAcct && msgAcct)
 						? (calAcct == msgAcct && calendar.nId == ZmOrganizer.ID_CALENDAR)
 						: calendar.nId == ZmOrganizer.ID_CALENDAR;
-					var option = new DwtSelectOptionData(calendar.id, name, isSelected, null);
+					var option = new DwtSelectOptionData(calendar.id, name, isSelected, null, icon);
 					this._inviteMoveSelect.addOption(option);
 				}
 
