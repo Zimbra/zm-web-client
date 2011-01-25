@@ -314,10 +314,7 @@ function(index, notify, callback, result) {
 };
 
 /**
- * The save failed. Show an error dialog, then reload the rules and display them afresh.
- * We do that because our internal version of the rules changed, but we couldn't save 
- * them, and we don't want the list view to be out of sync with the list.
- *
+ * The save failed. Show an error dialog.
  * @param {AjxException}	ex		the exception
  * 
  * @private
@@ -330,8 +327,15 @@ function(ex) {
 		var msgDialog = appCtxt.getMsgDialog();
 		msgDialog.setMessage([ZmMsg.filterError, " ", ex.msg].join(""), DwtMessageDialog.CRITICAL_STYLE);
 		msgDialog.popup();
-		var respCallback = new AjxCallback(this, this._handleResponseHandleErrorSaveRules);
-		this.loadRules(true, respCallback);
+        //only reload rules if the filter rule dialog is not popped up or if a new rule is being added
+        //get index for refreshing list view
+        if (!appCtxt.getFilterRuleDialog() || !appCtxt.getFilterRuleDialog().isPoppedUp() || !appCtxt.getFilterRuleDialog().isEditMode()) {
+            var filterRulesController = ZmPreferencesApp.getFilterRulesController(this._outgoing);
+            var sel = filterRulesController.getListView() ? filterRulesController.getListView().getSelection()[0] : null;
+            var index = sel ? this.getIndexOfRule(sel) - 1: null;   //new filter is inserted into vector, subtract 1 to get the selected index
+		    var respCallback = new AjxCallback(this, this._handleResponseHandleErrorSaveRules, [index]);
+		    this.loadRules(true, respCallback);
+        }
 		return true;
 	}
 	return false;
@@ -339,14 +343,13 @@ function(ex) {
 
 // XXX: the caller should probably be the one doing this
 ZmFilterRules.prototype._handleResponseHandleErrorSaveRules =
-function() {
+function(index) {
 	var prefController = AjxDispatcher.run("GetPrefController");
 	var prefsView = prefController.getPrefsView();
 	var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
 	if (section && prefsView && prefsView.getView(section.id)) {
-		var filterController = prefController.getFilterController();
-		var filterRulesController = this._outgoing ? filterController.getOutgoingFilterRulesController() : filterController.getIncomingFilterRulesController();
-		filterRulesController.resetListView();
+        var filterRulesController = ZmPreferencesApp.getFilterRulesController(this._outgoing);
+		filterRulesController.resetListView(index);
 	}
 };
 
@@ -364,3 +367,4 @@ function(rule, index) {
 	this._ruleIdHash[rule.id] = rule;
 	this._ruleNameHash[rule.name] = rule;
 };
+

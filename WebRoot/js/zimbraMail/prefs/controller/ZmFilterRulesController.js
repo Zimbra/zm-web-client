@@ -512,3 +512,8 @@ function(parent, numSel, sel) {
 		parent.enable(ZmOperation.REMOVE_FILTER_RULE, false);
 	}
 };
+
+ZmFilterRulesController.prototype.getListView =
+function(){
+    return this._listView;
+};

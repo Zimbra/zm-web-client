@@ -46,6 +46,7 @@ ZmFilterRuleDialog = function() {
 	this._browseLstnr		= new AjxListener(this, this._browseListener);
 	
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
+    this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
 	this._conditionErrorFormatter = new AjxMessageFormat(ZmMsg.filterErrorCondition);
 	this._actionErrorFormatter = new AjxMessageFormat(ZmMsg.filterErrorAction);
 };
@@ -940,9 +941,7 @@ function(ev) {
 		var active = target.checked;
 		var cancelCallback = new AjxCallback(this, function(){target.checked = false;});
 		if (active) {
-			var app = appCtxt.getApp(ZmApp.PREFERENCES);
-			var filterController = app.getFilterController();
-			var outgoingFilterController = filterController.getOutgoingFilterRulesController();
+			var outgoingFilterController = ZmPreferencesApp.getFilterRulesController(this._outgoing);
 			outgoingFilterController.handleBeforeFilterChange(null, cancelCallback);
 		}
 	}
@@ -992,6 +991,23 @@ function(rowId) {
 	}
 };
 
+ZmFilterRuleDialog.prototype._cancelButtonListener =
+function(ev) {
+    var filterRulesController = ZmPreferencesApp.getFilterRulesController(this._outgoing);
+    //get index before loading rules to keep selection on cancel
+    var sel = filterRulesController.getListView() ? filterRulesController.getListView().getSelection()[0] : null;
+    var index = sel ? this._rules.getIndexOfRule(sel) : null;
+    var callback = new AjxCallback(this, this._handleResponseLoadRules, [index]);
+    this._rules.loadRules(true, callback);
+    this.popdown();
+};
+
+ZmFilterRuleDialog.prototype._handleResponseLoadRules =
+function(index) {
+    var filterRulesController = ZmPreferencesApp.getFilterRulesController(this._outgoing);
+    filterRulesController.resetListView(index);
+};
+
 /**
  * Saves the newly created/edited rule.
  *
@@ -1009,8 +1025,8 @@ function(ev) {
 		msg = ZmMsg.filterErrorNoName;
 	}
 
-	var rule1 = this._rules.getRuleByName(name);
-	if ( rule1 && (rule1 != rule) )  {
+   	var rule1 = this._rules.getRuleByName(name);
+	if ( rule1 && (rule1 != rule))  {
 		msg = ZmMsg.filterErrorNameExists;
 	}
 	if (msg) {
@@ -1019,6 +1035,7 @@ function(ev) {
 	    msgDialog.popup();
 	    return;
 	}
+
 	var active = Dwt.byId(this._activeCheckboxId).checked;
 	var anyAll = this._conditionSelect.getValue();
 
@@ -1063,7 +1080,7 @@ function(ev) {
 			rule.addAction(action.actionType, action.value);
 		}
 	}
-
+    
 	if (msg) {
 		// bug #35912 - restore values from cached rule
 		if (cachedRule) {
@@ -1083,7 +1100,7 @@ function(ev) {
 	if (stopAction) {
 		rule.addAction(ZmFilterRule.A_STOP);
 	}
-
+    
 	var respCallback = new AjxCallback(this, this._handleResponseOkButtonListener);
 	if (this._editMode) {
 		this._rules._saveRules(this._rules.getIndexOfRule(rule), true, respCallback);
@@ -1271,4 +1288,9 @@ function(action) {
 	if (conf.validationFunction && !conf.validationFunction(action.value)) {
 		return conf.errorMessage;
 	}
+};
+
+ZmFilterRuleDialog.prototype.isEditMode =
+function() {
+    return this._editMode;
 };
