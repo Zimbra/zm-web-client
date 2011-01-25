@@ -1785,6 +1785,24 @@ function() {
  */
 ZmMailApp.prototype.getMsgController =
 function(sessionId) {
+
+    //if message is already open get that session controller
+    var controllers = this._sessionController[ZmId.VIEW_MSG];
+    var controller;
+    for (var id in controllers) {
+        if (controllers[id].getMsg() && controllers[id].getMsg().nId == sessionId) {
+            controller = controllers[id];
+            break;
+        }
+    }
+
+    if (controller){
+        sessionId = controller.sessionId;
+        this._curSessionId[ZmId.VIEW_MSG] = sessionId;
+        controller.inactive = false;
+        return controller;
+    }
+        
 	return this.getSessionController(ZmId.VIEW_MSG, "ZmMsgController", sessionId);
 };
 
@@ -2102,3 +2120,4 @@ ZmMailApp.prototype.resetTrustedSendersList =
 function() {
     this._trustedList = null;
 };
+
