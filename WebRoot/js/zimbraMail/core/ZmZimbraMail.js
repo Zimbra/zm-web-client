@@ -1151,17 +1151,17 @@ function(regProto, selected) {
 				if (regProto) {
 					var url = appCtxt.get(ZmSetting.OFFLINE_WEBAPP_URI, null, appCtxt.accountList.mainAccount);
 					window.platform.registerProtocolHandler("mailto", url + "&mailto=%s");
+				
+					// handle "send to mail recipient" on windows (requires mapi@zimbra.com extension)
+					if (AjxEnv.isWindows) {
+						var shell = new ZimbraDesktopShell;
+						shell.defaultClient = true;
+					}
 				}
 
 				// register mailto callback
 				var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);
 				window.platform.registerProtocolCallback("mailto", callback);
-
-				// handle "send to mail recipient" on windows (requires mapi@zimbra.com extension)
-				if (AjxEnv.isWindows) {
-					var shell = new ZimbraDesktopShell;
-					shell.defaultClient = true;
-				}
 			} else { // unselected (box unchecked) 
 				window.platform.unregisterProtocolHandler("mailto");
 
