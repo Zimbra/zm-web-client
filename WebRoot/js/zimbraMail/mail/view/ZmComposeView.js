@@ -2222,7 +2222,7 @@ function(action, msg, extraBodyText) {
 		sigStyle = sig && ac.get(ZmSetting.SIGNATURE_STYLE, null, account);
 		sigId = this._controller.getSelectedSignature();
 	}
-	var sigPre = (sigStyle == ZmSetting.SIG_OUTLOOK) ? sig : "";
+	var sigPre = (sigStyle == ZmSetting.SIG_OUTLOOK) ? sig + crlf : "";
 
 	extraBodyText = extraBodyText || "";
 	var preText;
