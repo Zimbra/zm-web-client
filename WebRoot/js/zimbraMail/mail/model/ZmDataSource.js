@@ -361,6 +361,10 @@ ZmDataSource.prototype.reset = function() {
 	var identity = this.identity = new ZmIdentity();
 	identity.id = this.id;
 	identity.isFromDataSource = true;
+	// defensive programming
+	identity.create = null;
+	identity.save = null;
+	identity.doDelete = null;
 };
 
 ZmDataSource.prototype.getProvider = function() {

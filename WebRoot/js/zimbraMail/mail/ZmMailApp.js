@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -1350,9 +1350,6 @@ function(creates, type, items, currList, sortBy, convs, last) {
 		var item = appCtxt.getById(create.id);
 		if (!item) {
 			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: create " + type + " object " + create.id);
-			if (type == ZmItem.CONV) {
-				DBG.dumpObj(AjxDebug.NOTIFY, create);
-			}
 			var itemClass = eval(ZmList.ITEM_CLASS[type]);
 			item = itemClass.createFromDom(create, {}, true);
 		}
