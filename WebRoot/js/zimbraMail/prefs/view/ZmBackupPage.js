@@ -55,7 +55,7 @@ function(){
 
     if (this._restoreListView) {
         var r = this._restoreListView.getSelection();
-        this._restoreListView.set(this.getBackups()._vector.clone());
+        this._restoreListView.set(this.getBackups(true)._vector.clone());
         if (r && r[0]) {
             this._restoreListView.setSelection(r[0]);
         }
@@ -86,9 +86,9 @@ ZmBackupPage.prototype._createControls =
 function() {
 
     // add "Backup" button
-    this._uploadButton = new DwtButton({parent:this, parentElement: this._htmlElId+"_button"});
-    this._uploadButton.setText(ZmMsg.offlineBackUpButton);
-    this._uploadButton.addSelectionListener(new AjxListener(this, this._handleBackupAccountsButton));
+    this._backupButton = new DwtButton({parent:this, parentElement: this._htmlElId+"_button"});
+    this._backupButton.setText(ZmMsg.offlineBackUpButton);
+    this._backupButton.addSelectionListener(new AjxListener(this, this._handleBackupAccountsButton));
 
     this._restoreButton = new DwtButton({parent:this, parentElement: this._htmlElId+"_restore_button"});
     this._restoreButton.setText(ZmMsg.offlineBackUpRestore);
@@ -99,7 +99,7 @@ function() {
 
 ZmBackupPage.prototype._handleBackupAccountsButton =
 function() {
-    this._uploadButton.setEnabled(false);
+    this._backupButton.setEnabled(false);
 
     var accts = this.getAccounts()._vector.getArray();
 
@@ -113,7 +113,7 @@ function() {
         }
     }
     if(checked.length < 1) {
-        this._uploadButton.setEnabled(true);
+        this._backupButton.setEnabled(true);
         return;
     }
 
@@ -138,10 +138,41 @@ function() {
     appController.sendRequest(params);
 };
 
+ZmBackupPage._handleBackupNowLink =
+function(id, obj) {
+    var backupPage = DwtControl.fromElementId(obj);
+    backupPage._handleBackupNowLink(id);
+};
+
+ZmBackupPage.prototype._handleBackupNowLink =
+function(id) {
+
+    try{
+        var soapDoc = AjxSoapDoc.create("AccountBackupRequest", "urn:zimbraOffline");
+        var method = soapDoc.getMethod();
+        method.setAttribute("id", id);
+        var respCallback = new AjxCallback(this, this._handleBackupAcctStarted , id);
+        var params = {
+            soapDoc:soapDoc,
+            callback:respCallback,
+            asyncMode:true
+        };
+        appCtxt.getAppController().sendRequest(params);
+    }
+    finally { // do
+        return false;
+    }
+};
+
+ZmBackupPage.prototype._handleBackupAcctStarted =
+function(id) {
+    appCtxt.setStatusMsg(AjxMessageFormat.format(ZmMsg.offlineBackupStartedForAcct, appCtxt.accountList.getAccount(id).getDisplayName()));
+};
+
 ZmBackupPage.prototype._handleBackupStarted =
 function(result) {
     appCtxt.setStatusMsg(ZmMsg.offlineBackUpStarted);
-    this._uploadButton.setEnabled(true);
+    this._backupButton.setEnabled(true);
 };
 
 ZmBackupPage.prototype._handleRestoreBackupButton =
@@ -382,8 +413,10 @@ function(html, idx, item, field, colIdx, params) {
         html[idx++] = AjxStringUtil.stripTags(item.name, true);
         html[idx++] = "</div>";
     } else if (field == ZmPrefAcctListView.COL_ACTION) {
-        html[idx++] = "<a href='javascript:;' onclick='alert(";
-        html[idx++] = '"' + item.name + '"';
+        html[idx++] = "<a href='javascript:;' onclick='ZmBackupPage._handleBackupNowLink(";
+        var accId = appCtxt.accountList.getAccountByName(AjxStringUtil.trim(item.desc)).id;
+        html[idx++] = '"' + accId.toString();
+        html[idx++] = '","' + this.parent._htmlElId + '"';
         html[idx++] = ");'>";
         html[idx++] = ZmMsg.offlineBackUpNow;
         html[idx++] = "</a>";
@@ -474,8 +507,8 @@ ZmPrefAccount = function(name, active, desc, id) {
 };
 
 ZmBackupPage.prototype.getBackups =
-function() {
-    if (!this._backups) {
+function(force) {
+    if (!this._backups || force) {
         this._backups = ZmBackupPage._getBackups();
     }
     return this._backups;
@@ -648,7 +681,17 @@ function(ev) {
     var bkId = target.getAttribute("_bkId");
     var bk = AjxCore.objectWithId(bkId);
     var name = target.getAttribute("_name");
-    var z = bk.parent.getBackups().getPrefBackupByName(name);
+    var bkups = bk.parent.getBackups();
+    var z = bkups.getPrefBackupByName(name);
+    var bkarray = bkups._vector.getArray();
+    // Make checkbox behave like radio button
+    for (var k=0; k<bkarray.length; k++) {
+        if(bkarray[k].active && (bkarray[k].timestamp != z.timestamp)) {
+            var y = document.getElementById([bkarray[k].timestamp, "_", bkarray[k].acct, "_backupCheckbox"].join(""));
+            y.checked = false;
+            bkarray[k].active = false;
+        }
+    }
     if (z) {
         z.active = !z.active;
     }
