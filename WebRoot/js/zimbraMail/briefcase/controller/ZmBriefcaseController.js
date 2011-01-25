@@ -81,26 +81,7 @@ function() {
 
 // Constants
 ZmBriefcaseController._VIEWS = {};
-ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE]			= "ZmBriefcaseView";
 ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_DETAIL]	= "ZmPreviewPaneView";
-ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_COLUMN]	= "ZmMultiColView";
-
-// Stuff for the View menu
-ZmBriefcaseController.GROUP_BY_ICON = {};
-ZmBriefcaseController.GROUP_BY_MSG_KEY = {};
-ZmBriefcaseController.GROUP_BY_VIEWS = [];
-
-ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE]			= "explorerView";
-ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE_DETAIL]	= "previewView";
-ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE_COLUMN]	= "columnBrowserView";
-
-ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE]			= "IconView";
-ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE_DETAIL]		= "TasksListView";
-ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE_COLUMN]		= "ListView";
-
-ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE);
-ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE_DETAIL);
-ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE_COLUMN);
 
 ZmBriefcaseController.RP_IDS = [ZmSetting.RP_BOTTOM, ZmSetting.RP_RIGHT, ZmSetting.RP_OFF];
 
@@ -1050,8 +1031,7 @@ function(view, firstTime) {
 		if (!menu) {
 			menu = new ZmPopupMenu(btn);
 			btn.setMenu(menu);
-            
-            //this._setupGroupByMenu(menu);
+
             this._setupPreviewPaneMenu(menu);
 		}
 	}
@@ -1062,36 +1042,6 @@ function(view, firstTime) {
     }
 	
     this._resetPreviewPaneMenu(menu, view);
-};
-
-ZmBriefcaseController.prototype._groupbyListener =
-function(id, ev){
-    var view = this._parentView[this._currentView];
-    view.enableRevisionView((id == ZmId.VIEW_BRIEFCASE_REVISION));
-    view.reRenderListView(true);
-};
-
-
-ZmBriefcaseController.prototype._setupGroupByMenu =
-function(menu){
-
-    if (menu.getItemCount() > 0) {
-        new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE, id:"PREVIEW_SEPERATOR"});
-    }
-
-    var listViews = ZmBriefcaseController.LIST_VIEW, mi;
-    for(var id in listViews){
-        var desc = listViews[id];
-        if(!menu._menuItems[id]){
-            desc.style = DwtMenuItem.RADIO_STYLE;
-            desc.radioGroupId = "LV";
-            mi = menu.createMenuItem(id, desc);
-            mi.setData(ZmOperation.MENUITEM_ID, id);
-            mi.addSelectionListener(new AjxListener(this, this._groupbyListener, id));
-            if(id == ZmId.VIEW_BRIEFCASE_DETAIL)
-                mi.setChecked(true, true);
-        }
-    }
 };
 
 ZmBriefcaseController.prototype._setupPreviewPaneMenu =
