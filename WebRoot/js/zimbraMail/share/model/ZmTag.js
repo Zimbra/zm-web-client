@@ -73,8 +73,11 @@ ZmTag.ID_ATTACHED	= 37;
  */
 ZmTag.createFromJs =
 function(parent, obj, tree, sorted, account) {
+	var tag;
 	var nId = ZmOrganizer.normalizeId(obj.id);
 	if (nId < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG]) { return; }
+	tag = tree.getById(obj.id);
+	if (tag) { return tag; }
 
 	var params = {
 		id: obj.id,
@@ -86,7 +89,7 @@ function(parent, obj, tree, sorted, account) {
 		numUnread: obj.u,
 		account: account
 	};
-	var tag = new ZmTag(params);
+	tag = new ZmTag(params);
 	var index = sorted ? ZmOrganizer.getSortIndex(tag, ZmTag.sortCompare) : null;
 	parent.children.add(tag, index);
 
