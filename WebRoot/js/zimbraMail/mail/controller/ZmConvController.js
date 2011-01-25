@@ -252,7 +252,7 @@ function(ev) {
 	var handled = ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
 	if (!handled && ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
-		AjxDispatcher.run("GetMsgController").show(item, this._msgControllerMode, respCallback, true);
+		AjxDispatcher.run("GetMsgController", item && item.nId).show(item, this._msgControllerMode, respCallback, true);
 	}
 };
 
