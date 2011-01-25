@@ -392,6 +392,14 @@ function(shares, result) {
 				tmpShare.link.id = tmpShare.object.id;
                 tmpShare.link.name = tmpShare.object.name;
 			}
+            // If folder is not synced before sharing, link ID might have changed in ZD.
+            // Always get from response.
+            if(appCtxt.isOffline) {
+                var linkId = this.getLinkIdfromResp(result);
+                if(linkId) {
+                    tmpShare.link.id =  [tmpShare.grantor.id, linkId].join(":");
+                }
+            }
 
 			tmpShare.link.perm = share.link.perm;
 			tmpShare.link.view = ZmOrganizer.getViewName(tmpShare.object.type);
@@ -427,6 +435,18 @@ function(shares, result) {
         appCtxt.setStatusMsg(shareMsg);
 
 	}
+};
+
+ZmSharePropsDialog.prototype.getLinkIdfromResp =
+function(result){
+
+    if (!result) { return; }
+    var resp = result.getResponse().BatchResponse.FolderActionResponse || [];
+    if (resp.length > 0 && resp[0].action) {
+        return resp[0].action.id;
+    } else {
+        return null;
+    }
 };
 
 // HACK: grep the Faults in BatchResponse and sift out the bad emails
