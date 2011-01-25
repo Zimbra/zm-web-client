@@ -281,7 +281,7 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
 		}
 
 		var selected = ((calItem.folderId == cal.id) || (calItem.folderId == id));
-		var icon = appCtxt.multiAccounts ? acct.getIcon() : null;
+		var icon = appCtxt.multiAccounts ? acct.getIcon() : (cal.getIcon() + ",color=" + cal.color);
 		var name = AjxStringUtil.htmlDecode(appCtxt.multiAccounts
 			? ([cal.getName(), " (", acct.getDisplayName(), ")"].join(""))
 			: cal.getName());
