@@ -51,6 +51,20 @@ function() {
 	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
 };
 
+ZmBriefcaseBaseView.prototype._sortIndex =
+function(list, item){
+    var a = list.getArray(), index = a.length;
+	for(var i = 0; i < a.length; i++) {
+        var lItem = a[i];
+		if (!lItem.isFolder && item.name.toLowerCase() < lItem.name.toLowerCase()) {
+			index = i;
+            break;
+		}
+
+	}
+	return index;
+};
+
 ZmBriefcaseBaseView.prototype._changeListener =
 function(ev) {
 
@@ -62,7 +76,9 @@ function(ev) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			if (this._list && this._list.contains(item)) { continue; }			// skip if we already have it
-			this.addItem(item, 0);
+			this.addItem(item, this._sortIndex(this._list, item));
+            this.scrollToItem(item);
+            this.selectItem(item, true);
 		}
 	}
 
