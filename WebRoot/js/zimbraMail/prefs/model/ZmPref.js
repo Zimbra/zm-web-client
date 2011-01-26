@@ -148,12 +148,18 @@ function(interval) {
 
 ZmPref.pollingIntervalDisplay =
 function(seconds) {
-	return seconds / 60;
+    if (appCtxt.get(ZmSetting.INSTANT_NOTIFY) && seconds == appCtxt.get(ZmSetting.INSTANT_NOTIFY_INTERVAL))
+        return seconds;
+    else
+	    return seconds / 60;
 };
 
 ZmPref.pollingIntervalValue =
 function(minutes) {
-	return minutes * 60;
+    if (appCtxt.get(ZmSetting.INSTANT_NOTIFY) && minutes == appCtxt.get(ZmSetting.INSTANT_NOTIFY_INTERVAL))
+        return minutes;
+    else
+	    return minutes * 60;
 };
 
 ZmPref.dateLocal2GMT =

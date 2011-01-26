@@ -506,7 +506,10 @@ function(params, result) {
 	}
 
 	if (!appCtxt.isOffline) {
-		this.setPollInterval(true);
+        if (appCtxt.get(ZmSetting.INSTANT_NOTIFY) && appCtxt.get(ZmSetting.INSTANT_NOTIFY_INTERVAL) == appCtxt.get(ZmSetting.POLLING_INTERVAL))
+            AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.setInstantNotify, [true]), 4000);
+        else
+		    this.setPollInterval(true);
 	} else {
 		if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && window.platform && 
 			window.platform.isRegisteredProtocolHandler("mailto")) {  
@@ -694,6 +697,7 @@ function(params) {
 	if (!this._doingPostRenderStartup) {
 		this._postRenderStartup();
 	}
+
 };
 
 /**

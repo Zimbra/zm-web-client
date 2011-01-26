@@ -630,37 +630,46 @@ function() {
 	}
 
 	// Polling Interval Options - Dynamically constructed according to MIN_POLLING_INTERVAL,POLLING_INTERVAL
-	var options = [525600];
+    var neverValue = 525600;
+    var numOptions = 10;
+	var options = [neverValue];
+    var displayOptions = [ZmMsg.pollManually];
+    var pollInstant = appCtxt.get(ZmSetting.INSTANT_NOTIFY) ? true : false;
 
-	var startValue = ZmPref.pollingIntervalDisplay(appCtxt.get(ZmSetting.MIN_POLLING_INTERVAL));
+    if (pollInstant) {
+        options.push(appCtxt.get(ZmSetting.INSTANT_NOTIFY_INTERVAL));
+        displayOptions.push(ZmMsg.pollInstant);
+    }
+
+    var startValue = ZmPref.pollingIntervalDisplay(appCtxt.get(ZmSetting.MIN_POLLING_INTERVAL));
 	startValue = (startValue < 1) ? 1 : Math.round(startValue);
 
 	var pollInterval = ZmPref.pollingIntervalDisplay(appCtxt.get(ZmSetting.POLLING_INTERVAL));
 	pollInterval = Math.round(pollInterval);
 
-	while (startValue <= 10) {
+	while (startValue <= numOptions) {
 		options.push(startValue);
 		startValue++;
 	}
 	startValue = startValue - 1;
 
 	var count = options.length;
-	while (count < 10) {
+	while (count < numOptions) {
 		startValue = startValue + 5;
 		options.push(startValue);
 		count++;
 	}
 
-	if (pollInterval > startValue) {
+	if (pollInterval > startValue && pollInterval !=neverValue && (pollInstant && pollInterval != appCtxt.get(ZmSetting.INSTANT_NOTIFY_INTERVAL))) {
+        //pollInterval may have been set by admin
 		var p = pollInterval % 5;
 		p = (p == 0) ? pollInterval : ((pollInterval / 5 + 1) * 5);
-		options.push(p);
+        options.push(p);
 	} else {
 		startValue = startValue + 5;
 		options.push(startValue);
 	}
 
-	var displayOptions = [ZmMsg.pollNever];
 	while (displayOptions.length <= count) {
 		displayOptions.push(ZmMsg.pollEveryNMinutes);
 	}
