@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -646,7 +646,6 @@ function() {
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_SRC, true, true);
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_TGT, true, true);
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_SIMPLE, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_CARDS, true, true);
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_ASC, ZmId.VIEW_CAL, true, true);
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DUE_DATE_ASC, ZmId.VIEW_TASKLIST, true, true);
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.SUBJ_ASC, ZmId.VIEW_BRIEFCASE_DETAIL, true, true);
