@@ -191,9 +191,7 @@ function(method, idOnly, respCallback, errorCallback, batchCmd) {
 	}
 	if (!idOnly) {
 		sig.name = this.name;
-		if (this.contactId) {
-			sig.cid = this.contactId;
-		}
+		sig.cid = this.contactId || null;
 		sig.content = [];
 		sig.content.push({_content:this.value, type:this.contentType});
 
@@ -210,9 +208,7 @@ function(method, idOnly, respCallback, errorCallback, batchCmd) {
 	}
 	if (!idOnly) {
 		signatureEl.setAttribute("name", this.name);
-		if (this.contactId) {
-			soapDoc.set("cid", this.contactId, signatureEl);
-		}
+		soapDoc.set("cid", this.contactId || null, signatureEl);
 		var contentEl = soapDoc.set("content", this.value, signatureEl);
 		contentEl.setAttribute("type", this.contentType);
 
