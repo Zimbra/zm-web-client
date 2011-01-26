@@ -777,7 +777,7 @@ function(item){
     var visible = item.subject;
     Dwt.setVisible(this._headerNotesSection, visible);
     if(visible && this._headerNotes){
-        this._headerNotes.innerHTML = item.subject
+        this._headerNotes.innerHTML = AjxStringUtil.nl2br(item.subject);
     }
     this.expandNotes(false);
 };
