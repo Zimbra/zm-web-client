@@ -1510,23 +1510,8 @@ function(op) {
 		this._curIncOptions.what = ZmComposeController.INC_MAP[op];
 	}
 
-	var canInclude = (origWhat == ZmSetting.INC_BODY || origWhat == ZmSetting.INC_SMART);
 	var cv = this._composeView;
-	var userText = "";
 	if (op != ZmOperation.FORMAT_HTML && op != ZmOperation.FORMAT_TEXT) {
-		if (cv._preface || !canInclude) {
-			var curText = this._getBodyContent();
-			if (cv._preface) {
-				var idx = curText.indexOf(cv._preface);
-				if (idx > 0) {
-					userText = curText.substr(0, idx);//.replace(/\n$/,"");
-				} else {
-					userText = curText;
-				}
-			} else {
-				userText = curText;
-			}
-		}
 		if (cv._composeMode == DwtHtmlEditor.TEXT) {
 			AjxTimedAction.scheduleAction(new AjxTimedAction(this, function() { cv.getHtmlEditor().moveCaretToTop(); }), 200);
 		}
@@ -1541,7 +1526,7 @@ function(op) {
 		this._action = ZmOperation.FORWARD_INLINE;
 	}
 
-	cv.resetBody(this._action, this._msg, userText);
+	cv.resetBody(this._action, this._msg);
 };
 
 ZmComposeController.prototype._detachListener =
