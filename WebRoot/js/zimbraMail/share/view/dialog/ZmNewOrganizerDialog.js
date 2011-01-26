@@ -32,7 +32,7 @@
 ZmNewOrganizerDialog = function(parent, className, title, type) {
 	if (arguments.length == 0) return;
 	
-	ZmDialog.call(this, {parent:parent, className:className, title:title});
+	ZmDialog.call(this, {parent:parent, className:className, title:title, id:"CreateNewFolderDialog"});
 	this._organizerType = type;
 	this._setupControls();
 };
