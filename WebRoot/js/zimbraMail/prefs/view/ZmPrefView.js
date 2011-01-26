@@ -36,7 +36,7 @@ ZmPrefView = function(params) {
 	this._parent = params.parent;
 	this._controller = params.controller;
 
-	this.setScrollStyle(DwtControl.SCROLL);
+	
 	this.prefView = {};
 	this._tabId = {};
 	this._sectionId = {};
