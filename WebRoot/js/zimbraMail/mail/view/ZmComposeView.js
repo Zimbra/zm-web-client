@@ -2212,6 +2212,24 @@ function(action, msg, extraBodyText) {
 		if (this._isInviteReply(action)) {
 			body = body.replace(ZmItem.NOTES_SEPARATOR, "");
 		}
+		if (what == ZmSetting.INC_SMART) {
+			if (htmlMode) {
+				body = body.replace(this._preface,""); // Remove preface and anything inside <blockquote> tags
+				var lastTag = "</blockquote>";
+				var fidx = body.indexOf("<blockquote");
+				var lidx = body.lastIndexOf(lastTag);
+				if (fidx!=-1 && lidx!=-1) {
+					body = body.substring(0, fidx) + body.substring(lidx + lastTag.length);
+				}
+			} else {
+				if (this._preface) {
+					var idx = body.indexOf(this._preface); // Remove everything after preface
+					if (idx > 0) {
+						body = body.substr(0, idx);
+					}
+				}
+			}
+		}
 	}
 
 	var sigStyle, sig, sigId;
