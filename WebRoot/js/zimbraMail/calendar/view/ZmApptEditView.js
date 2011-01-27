@@ -797,7 +797,9 @@ function(width) {
     this.updateToolbarOps();
 
     Dwt.setVisible(this._optionalAttendeesContainer, false);
-    Dwt.setVisible(this._resourcesContainer, false);
+    if (this._resourcesContainer) {
+        Dwt.setVisible(this._resourcesContainer, false);
+    }
     Dwt.setVisible(this._optAttendeesInputField.getInputElement(), false);
     Dwt.setVisible(this._resourceInputField.getInputElement(), false);
 
