@@ -143,7 +143,7 @@
                     <zm:forEachFolder var="folder">
                         <c:if test="${count lt sessionScope.F_LIMIT and folder.isContactCreateTarget}">
                             <option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or param.folderid eq folder.id or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.id)}">selected="selected"</c:if> value="${folder.id}" />
-                            ${fn:escapeXml(folder.rootRelativePath)}<c:set var="count" value="${count+1}"/>
+                            ${zm:getFolderPath(pageContext, folder.id)}<c:set var="count" value="${count+1}"/>
                         </c:if>
                     </zm:forEachFolder>
                 </select>

@@ -89,7 +89,7 @@
         </optgroup>
         <optgroup label="<fmt:message key="moveAction"/>"><c:set var="count" value="${0}"/>
         <zm:forEachFolder var="folder">
-        <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
+        <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
         </optgroup>
         <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
             <c:set var="allTags" value="${mailbox.mailbox.allTags}"/>
@@ -230,7 +230,7 @@
 <c:if test="${!singleMessage && convSearchResult.size gt 0}">
     <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'));">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
-        <optgroup label="Delete">
+        <optgroup label="<fmt:message key="delete"/>">
             <c:choose>
                 <c:when test="${not context.folder.isInTrash}"><option value="actionHardDelete"><fmt:message key="delete"/></option></c:when>
                 <c:otherwise><option value="actionDelete"><fmt:message key="delete"/></option></c:otherwise>
@@ -251,7 +251,7 @@
         </optgroup>
         <optgroup label="<fmt:message key="moveAction"/>"><c:set var="count" value="${0}"/>
         <zm:forEachFolder var="folder">
-        <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
+        <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
         </optgroup>
         <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
             <c:set var="allTags" value="${mailbox.mailbox.allTags}"/>
@@ -304,7 +304,7 @@
         </optgroup>
         <optgroup label="<fmt:message key="moveAction"/>"><c:set var="count" value="${0}"/>
         <zm:forEachFolder var="folder">
-        <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
+        <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}"><option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
         </optgroup>
         <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
             <c:set var="allTags" value="${mailbox.mailbox.allTags}"/>
