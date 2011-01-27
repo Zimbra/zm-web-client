@@ -227,10 +227,6 @@ function(params) {
 		appCtxt.set(ZmSetting.HTTPS_PORT, params.httpsPort);
 	}
 
-	if (/dogfood/.test(location.hostname) || (params.devMode == "1")) {
-		AjxUtil.enableLogType("rpc", true);
-	}
-
 	// Create the shell
 	var userShell = params.userShell = window.document.getElementById(ZmId.SKIN_SHELL);
 	if (!userShell) {
