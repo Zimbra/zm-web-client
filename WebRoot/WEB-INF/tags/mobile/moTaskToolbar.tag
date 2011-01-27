@@ -121,7 +121,7 @@
                         <c:set var="count" value="${0}"/>
                         <zm:forEachFolder var="folder">
                             <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isTaskMoveTarget and !folder.isTrash and !folder.isSpam}">
-                                <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
+                                <option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option>
                             <c:set var="count" value="${count+1}"/></c:if>
                         </zm:forEachFolder>
             </optgroup>
@@ -233,7 +233,7 @@
                     <c:set var="count" value="${0}"/>
                     <zm:forEachFolder var="folder">
                         <c:if test="${count lt sessionScope.F_LIMIT and folder.id != context.folder.id and folder.isTaskMoveTarget and !folder.isTrash and !folder.isSpam}">
-                            <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
+                            <option value="moveTo_${folder.id}">${zm:getFolderPath(pageContext, folder.id)}</option>
                         <c:set var="count" value="${count+1}"/></c:if>
                     </zm:forEachFolder>
         </optgroup>
