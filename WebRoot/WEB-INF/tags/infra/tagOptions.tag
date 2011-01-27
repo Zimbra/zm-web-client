@@ -30,5 +30,5 @@
     <zm:forEachTag var="tag">
         <option <c:if test="${keys}">id="OPUNTAG${tag.id}"</c:if> value="u:${tag.id}" />${fn:escapeXml(tag.name)}
     </zm:forEachTag>
-    <option value="u:all" />all
+    <option value="u:all" /><fmt:message key ="all"/>
 </c:if>
