@@ -2733,7 +2733,7 @@ function() {
 			for (var i = 0; i < menuItems.length; i++) {
 				var item = this._recurringActionMenu.getMenuItem(menuItems[i]);
 				var recurMenuItems = this._getActionMenuOps(menuItems[i]);
-				var recurActionMenu = this._createActionMenu(recurMenuItems);
+				var recurActionMenu = this._createActionMenu(recurMenuItems, item);
 				if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 					this._setupTagMenu(recurActionMenu);
 				}
@@ -2752,8 +2752,8 @@ function() {
 };
 
 ZmCalViewController.prototype._createActionMenu =
-function(menuItems) {
-	var params = {parent:this._shell, menuItems:menuItems, context:this._getMenuContext()};
+function(menuItems, parentMenuItem) {
+	var params = {parent:parentMenuItem ? parentMenuItem : this._shell, menuItems:menuItems, context:this._getMenuContext()};
 	var actionMenu = new ZmActionMenu(params);
 	menuItems = actionMenu.opList;
 	for (var i = 0; i < menuItems.length; i++) {
