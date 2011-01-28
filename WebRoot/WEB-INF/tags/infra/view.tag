@@ -172,7 +172,7 @@
 								</c:otherwise>
 							</c:choose>
 						</td>
-						<td width="90%"></td>
+						<td width="90%"><app:appStatus/></td>
 						<td nowrap="nowrap" class="link">
 							<a href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a>
 						</td>
@@ -202,7 +202,7 @@
 			<app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
 		</td>
 		</tr></table>
-		<app:appStatus/>
+	
 		</td>
 	</tr>
 
