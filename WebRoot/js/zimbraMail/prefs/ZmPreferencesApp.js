@@ -591,7 +591,8 @@ function() {
 		if (appCtxt.accountList.accountTypeExists(ZmAccount.TYPE_ZIMBRA)) {
 			ZmPref.registerPref("OFFLINE_NOTEBOOK_SYNC_ENABLED", {
 				displayName:		ZmMsg.enableDocuments,
-				displayContainer:	ZmPref.TYPE_CHECKBOX
+				displayContainer:	ZmPref.TYPE_CHECKBOX,
+                preCondition:       ZmSetting.NOTEBOOK_ENABLED
 			});
 		}
 
