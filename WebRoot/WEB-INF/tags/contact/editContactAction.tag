@@ -24,7 +24,7 @@
     <zm:moveContact var="result" id="${id}" folderid="${param.folderid}"/>
 </c:if>
 
-<zm:modifyContact var="id" id="${id}" replace="true" folderid="${param.folderid}">
+<zm:modifyContact var="id" id="${id}" folderid="${param.folderid}">
     <zm:field name="firstName" value="${param.firstName}"/>
     <zm:field name="phoneticFirstName" value="${param.phoneticFirstName}"/>
     <zm:field name="lastName" value="${param.lastName}"/>
