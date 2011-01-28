@@ -358,6 +358,11 @@
     </tag-file>
 
     <tag-file>
+        <name>contactSectionInfo</name>
+        <path>/WEB-INF/tags/contact/contactSectionInfo.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>contactAddress</name>
         <path>/WEB-INF/tags/contact/contactAddress.tag</path>
     </tag-file>
