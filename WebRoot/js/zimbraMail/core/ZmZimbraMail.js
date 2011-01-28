@@ -783,6 +783,8 @@ function(online) {
 
 	this._networkStatusIcon.setToolTipContent(online ? ZmMsg.networkStatusOffline : ZmMsg.networkStatusOnline);
 	this._networkStatusIcon.getHtmlElement().innerHTML = AjxImg.getImageHtml(online ? "Connect" : "Disconnect");
+	var netStatus = online ? ZmMsg.imStatusOnline : ZmMsg.imStatusOffline;
+	this._networkStatusText.getHtmlElement().innerHTML = netStatus.substr(0, 1).toUpperCase() + netStatus.substr(1);
 };
 
 /**
@@ -1974,6 +1976,12 @@ function() {
 		parentElement: (htmlElId+"_networkStatusIcon")
 	};
 	this._networkStatusIcon = new DwtComposite(params);
+
+	var params1 = {
+		parent: this._userNameField,
+		parentElement: (htmlElId+"_networkStatusText")
+	};
+	this._networkStatusText = new DwtComposite(params1);
 
 	var topTreeEl = document.getElementById("skin_container_tree_top");
 	if (topTreeEl) {
