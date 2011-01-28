@@ -110,7 +110,7 @@
         <table border="0" cellpadding="0" cellspacing="3" width="100%">
         <tr><td valign='center' class="editContactLabel"><label for="folderIdSelect"><fmt:message key="addressBook"/> :</label></td>
             <td><input type="hidden" name="origFolderId" value="${empty contact ? '': contact.folderId}"/>
-                <select name="folderid" id="folderIdSelect">
+                <select name="folderid" id="folderIdSelect" tabindex=100>
                     <zm:forEachFolder var="folder">
                         <c:if test="${folder.isContactCreateTarget}">
                             <option <c:if test="${(empty contact and ((context.selectedId eq (folder.isMountPoint ? folder.canonicalId : folder.id)) or (empty context.selectedId and folder.isContacts)))
@@ -122,7 +122,7 @@
             </td>
             <td valign='center' class="editContactLabel"><label for="fileAs"><fmt:message key="fileAs"/> :</label></td>
             <td><c:set var="selected" value="${empty contact? '1' : contact.fileAs}"/>
-                <select name="fileAs" id="fileAs">
+                <select name="fileAs" id="fileAs" tabindex=150>
                     <option <c:if test="${selected eq '1'}">selected</c:if> value="1"><fmt:message key="AB_FILE_AS_lastFirst"/></option>
                     <option <c:if test="${selected eq '2'}">selected</c:if> value="2"><fmt:message key="AB_FILE_AS_firstLast"/></option>
                     <option <c:if test="${selected eq '3'}">selected</c:if> value="3"><fmt:message key="AB_FILE_AS_company"/></option>
@@ -136,101 +136,98 @@
         <%-- NOTE: fmt:getLocale is a non-standard tag --%>
         <fmt:getLocale var="locale" />
         <c:set var="showPhoneticFields" value="${locale.language eq 'ja'}" />
-        <tr><app:contactEditField contact="${contact}" field="lastName"/>
+        <tr><app:contactEditField contact="${contact}" field="lastName" tabindex="101" />
             <c:if test="${showPhoneticFields}">
-                <app:contactEditField contact="${contact}" field="phoneticLastName"/>
+                <app:contactEditField contact="${contact}" field="phoneticLastName" tabindex="151" />
             </c:if>
         </tr>
-        <tr><app:contactEditField contact="${contact}" field="firstName"/>
+        <tr><app:contactEditField contact="${contact}" field="firstName" tabindex="102" />
             <c:if test="${showPhoneticFields}">
-                <app:contactEditField contact="${contact}" field="phoneticFirstName"/>
+                <app:contactEditField contact="${contact}" field="phoneticFirstName" tabindex="152" />
             </c:if>
         </tr>
-        <tr><app:contactEditField contact="${contact}" field="middleName"/></tr>
-        <tr><app:contactEditField contact="${contact}" field="jobTitle"/></tr>
-        <tr><app:contactEditField contact="${contact}" field="company"/>
+        <tr><app:contactEditField contact="${contact}" field="middleName" tabindex="103"/></tr>
+        <tr><app:contactEditField contact="${contact}" field="company" tabindex="104" />
             <c:if test="${showPhoneticFields}">
-                <app:contactEditField contact="${contact}" field="phoneticCompany"/>
+                <app:contactEditField contact="${contact}" field="phoneticCompany" tabindex="154" />
             </c:if>
         </tr>
+        <tr><app:contactEditField contact="${contact}" field="jobTitle" tabindex="105" /></tr>
+        <tr><app:contactEditField contact="${contact}" field="department" label="AB_FIELD_otherDepartment" tabindex="106" /></tr>
 
         <tr><td colspan="4" class="sectionLabel" valign="top"><fmt:message key="email"/></td></tr>
 
-        <tr><app:contactEditField contact="${contact}" field="email"/></tr>
-        <tr><app:contactEditField contact="${contact}" field="email2"/></tr>
-        <tr><app:contactEditField contact="${contact}" field="email3"/></tr>
+        <tr><app:contactEditField contact="${contact}" field="email" tabindex="200" /></tr>
+        <tr><app:contactEditField contact="${contact}" field="email2" tabindex="201" /></tr>
+        <tr><app:contactEditField contact="${contact}" field="email3" tabindex="202" /></tr>
 
         <tr><td><br></td></tr>
 
         <tr><td colspan="4" class="sectionLabel" valign="top"><fmt:message key="work"/></td></tr>
 
-        <tr><app:contactEditField contact="${contact}" field="workStreet" address="true"/>
-            <app:contactEditField contact="${contact}" field="workPhone"/>
+        <tr><app:contactEditField contact="${contact}" field="workStreet" address="true" tabindex="300" />
+            <app:contactEditField contact="${contact}" field="workPhone" tabindex="350" />
         </tr>
-        <tr><app:contactEditField contact="${contact}" field="workCity"/>
-            <app:contactEditField contact="${contact}" field="workPhone2"/>
+        <tr><app:contactEditField contact="${contact}" field="workCity" tabindex="301" />
+            <app:contactEditField contact="${contact}" field="workPhone2" tabindex="351" />
         </tr>
-        <tr><app:contactEditField contact="${contact}" field="workState"/>
-            <app:contactEditField contact="${contact}" field="workFax"/>
+        <tr><app:contactEditField contact="${contact}" field="workState" tabindex="302" />
+            <app:contactEditField contact="${contact}" field="workFax" tabindex="352" />
         </tr>
-        <tr><app:contactEditField contact="${contact}" field="workPostalCode"/>
-            <app:contactEditField contact="${contact}" field="assistantPhone"/>
+        <tr><app:contactEditField contact="${contact}" field="workPostalCode" tabindex="303" />
+            <app:contactEditField contact="${contact}" field="assistantPhone" tabindex="353" />
         </tr>
-        <tr><app:contactEditField contact="${contact}" field="workCountry"/>
-            <app:contactEditField contact="${contact}" field="companyPhone"/>
+        <tr><app:contactEditField contact="${contact}" field="workCountry" tabindex="304" />
+            <app:contactEditField contact="${contact}" field="companyPhone" tabindex="354" />
         </tr>
-        <tr><app:contactEditField contact="${contact}" field="workURL"/>
-            <app:contactEditField contact="${contact}" field="callbackPhone"/>
+        <tr><app:contactEditField contact="${contact}" field="workURL" tabindex="305" />
+            <app:contactEditField contact="${contact}" field="callbackPhone" tabindex="355" />
         </tr>
 
         <tr><td><br></td></tr>
 
         <tr><td colspan="4" class="sectionLabel" valign="top"><fmt:message key="home"/></td></tr>
 
-        <tr><app:contactEditField contact="${contact}" field="homeStreet" address="true"/>
-            <app:contactEditField contact="${contact}" field="homePhone"/>
+        <tr><app:contactEditField contact="${contact}" field="homeStreet" address="true" tabindex="400" />
+            <app:contactEditField contact="${contact}" field="homePhone" tabindex="450" />
         </tr>
-        <tr><app:contactEditField contact="${contact}" field="homeCity"/>
-            <app:contactEditField contact="${contact}" field="homePhone2"/>
+        <tr><app:contactEditField contact="${contact}" field="homeCity" tabindex="401" />
+            <app:contactEditField contact="${contact}" field="homePhone2" tabindex="451" />
         </tr>
-        <tr><app:contactEditField contact="${contact}" field="homeState"/>
-            <app:contactEditField contact="${contact}" field="homeFax"/>
+        <tr><app:contactEditField contact="${contact}" field="homeState" tabindex="402" />
+            <app:contactEditField contact="${contact}" field="homeFax" tabindex="452" />
         </tr>
-        <tr><app:contactEditField contact="${contact}" field="homePostalCode"/>
-            <app:contactEditField contact="${contact}" field="mobilePhone"/>
+        <tr><app:contactEditField contact="${contact}" field="homePostalCode" tabindex="403" />
+            <app:contactEditField contact="${contact}" field="mobilePhone" tabindex="453" />
         </tr>
-        <tr><app:contactEditField contact="${contact}" field="homeCountry"/>
-            <app:contactEditField contact="${contact}" field="pager"/>
+        <tr><app:contactEditField contact="${contact}" field="homeCountry" tabindex="404" />
+            <app:contactEditField contact="${contact}" field="pager" tabindex="454" />
         </tr>
-        <tr><app:contactEditField contact="${contact}" field="homeURL"/>
-            <app:contactEditField contact="${contact}" field="carPhone"/>
+        <tr><app:contactEditField contact="${contact}" field="homeURL" tabindex="405" />
+            <app:contactEditField contact="${contact}" field="carPhone" tabindex="455" />
         </tr>
 
         <tr><td><br></td></tr>
 
         <tr><td colspan="4" class="sectionLabel" valign="top"><fmt:message key="other"/></td></tr>
 
-        <tr><app:contactEditField contact="${contact}" field="otherStreet" address="true"/>
-            <app:contactEditField contact="${contact}" field="otherPhone"/>
+        <tr><app:contactEditField contact="${contact}" field="otherStreet" address="true" tabindex="500" />
+            <app:contactEditField contact="${contact}" field="otherPhone" tabindex="550" />
         </tr>
-        <tr><app:contactEditField contact="${contact}" field="otherCity"/>
-            <app:contactEditField contact="${contact}" field="otherFax"/>
+        <tr><app:contactEditField contact="${contact}" field="otherCity" tabindex="501" />
+            <app:contactEditField contact="${contact}" field="otherFax" tabindex="551" />
         </tr>
-        <tr><app:contactEditField contact="${contact}" field="otherState"/>
-        </tr>
-        <tr><app:contactEditField contact="${contact}" field="otherPostalCode"/>
-        </tr>
-        <tr><app:contactEditField contact="${contact}" field="otherCountry"/>
-        </tr>
-        <tr><app:contactEditField contact="${contact}" field="otherURL"/>
-        </tr>
+        <tr><app:contactEditField contact="${contact}" field="otherState" tabindex="502" /></tr>
+        <tr><app:contactEditField contact="${contact}" field="otherPostalCode" tabindex="503" /></tr>
+        <tr><app:contactEditField contact="${contact}" field="otherCountry" tabindex="504" /></tr>
+        <tr><app:contactEditField contact="${contact}" field="otherURL" tabindex="505" /></tr>
 
         <tr><td><br></td></tr>
 
         <tr><td colspan="4" class="sectionLabel" valign="top"><label for="notes"><fmt:message key="notes"/></label></td></tr>
 
         <tr><td colspan="4">
-                <textarea id="notes" rows="8" cols="60" style="width:90%" name="notes">${contact != null ? contact.notes : ''}</textarea>
+                <textarea id="notes" rows="8" cols="60" style="width:90%" name="notes" tabindex="600">${contact != null ? contact.notes : ''}</textarea>
             </td>
         </tr>
         </table>

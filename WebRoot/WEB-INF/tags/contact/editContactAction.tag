@@ -31,9 +31,10 @@
     <zm:field name="phoneticLastName" value="${param.phoneticLastName}"/>
     <zm:field name="middleName" value="${param.middleName}"/>
     <zm:field name="fileAs" value="${param.fileAs}"/>
-    <zm:field name="jobTitle" value="${param.jobTitle}"/>
     <zm:field name="company" value="${param.company}"/>
     <zm:field name="phoneticCompany" value="${param.phoneticCompany}"/>
+    <zm:field name="jobTitle" value="${param.jobTitle}"/>
+    <zm:field name="department" value="${param.department}"/>
 
     <zm:field name="email" value="${fn:replace(param.email,'\"','')}"/>
     <zm:field name="email2" value="${fn:replace(param.email2,'\"','')}"/>
