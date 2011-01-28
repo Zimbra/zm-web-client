@@ -18,6 +18,7 @@
 <%@ attribute name="field" rtexprvalue="true" required="true" %>
 <%@ attribute name="hint" rtexprvalue="true" required="false" %>
 <%@ attribute name="address" rtexprvalue="true" required="false" %>
+<%@ attribute name="tabindex" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -31,10 +32,10 @@
 </td>
 <td><c:choose>
         <c:when test="${address}">
-            <textarea name='${field}' id='${field}' cols=32 rows='2'>${fn:escapeXml(value)}</textarea>
+            <textarea name='${field}' id='${field}' cols=32 rows='2' tabindex="${tabindex}">${fn:escapeXml(value)}</textarea>
         </c:when>
         <c:otherwise>
-            <input name='${field}' id='${field}' type='text' autocomplete='off' size='35' value="${fn:escapeXml(value)}">
+            <input name='${field}' id='${field}' type='text' autocomplete='off' size='35' value="${fn:escapeXml(value)}" tabindex="${tabindex}">
             <c:if test="${not empty hint}">
                 <span class="ZOptionsHint">(<fmt:message key="${hint}" />)</span>
             </c:if>
