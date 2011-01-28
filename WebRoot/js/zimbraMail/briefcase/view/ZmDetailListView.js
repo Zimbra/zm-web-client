@@ -115,7 +115,7 @@ function(parent) {
                 name:ZmMsg.tag}));
         }
         headers.push(
-                new DwtListHeaderItem({field:ZmItem.F_LOCK, icon: "PadLock", width:ZmDetailListView.COLWIDTH_ICON}),
+                new DwtListHeaderItem({field:ZmItem.F_LOCK, text:ZmMsg.lock, icon: "PadLock", width:ZmDetailListView.COLWIDTH_ICON}),
                 new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"GenericDoc", width:ZmDetailListView.COLWIDTH_ICON, name:ZmMsg.icon}),
                 new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, sortable:ZmItem.F_NAME}),
                 new DwtListHeaderItem({field:ZmItem.F_FILE_TYPE, text:ZmMsg.type, width:ZmMsg.COLUMN_WIDTH_TYPE_DLV}),
