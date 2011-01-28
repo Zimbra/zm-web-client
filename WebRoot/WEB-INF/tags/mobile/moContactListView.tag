@@ -1,7 +1,7 @@
  <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -59,21 +59,28 @@
             </c:if>
             <div class="tr list-row" id="conv${chit.id}">
                 <c:set value=",${hit.id}," var="stringToCheck"/>
-                <c:set var="class" value="Contact${chit.isGroup ? 'Group' : ''}"/>
             <span class="td f" <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if>>
                     <c:if test="${!context.isGALSearch}">
                         <input <c:if test="${ua.isiPad == true}" >onclick='return zCheckUnCheck(this);'</c:if> class="chk" type="checkbox" ${requestScope.select ne 'none' && (fn:contains(requestScope._selectedIds,stringToCheck) || requestScope.select eq 'all') ? 'checked="checked"' : ''}
                                name="id" value="${chit.id}"/></c:if>
             <c:if test="${ua.isiPad == false}">
-                <span class="Img Img${class}">&nbsp;</span>
+                <span class="Img Img${chit.isGroup ? 'Group' : 'Contact'}">&nbsp;</span>
             </c:if>               
             </span>
             <span class="td m">
             <span onclick='return zClickLink("a${chit.id}");'>
             <a id="a${chit.id}" href="${contactUrl}">
-                <div>
-                    <strong>${zm:truncate(fn:escapeXml(empty chit.fileAsStr ? (context.isGALSearch ? chit.fullName : '<None>') : chit.fileAsStr),23, true)}</strong>
-                </div>
+                <div><strong>
+                    <c:choose>
+                        <c:when test="${empty chit.fileAsStr}">
+                            <fmt:message var="noDisplayAs" key="noDisplayAs" />
+                            ${fn:escapeXml(noDisplayAs)}
+                        </c:when>
+                        <c:otherwise>
+                            ${zm:truncate(fn:escapeXml(context.isGALSearch ? chit.fullName : chit.fileAsStr),23,true)}
+                        </c:otherwise>
+                    </c:choose>
+                </strong></div>
             </a>
             <div class="Email">
                 <c:choose>
