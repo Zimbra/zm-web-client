@@ -699,6 +699,7 @@ ZmComposeController.prototype.handleKeyAction =
 function(actionCode) {
 	switch (actionCode) {
 		case ZmKeyMap.CANCEL:
+			DBG.println("aif1", "Compose ctlr: CANCEL");
 			this._cancelCompose();
 			break;
 

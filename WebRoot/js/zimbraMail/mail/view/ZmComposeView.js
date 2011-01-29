@@ -45,6 +45,11 @@ ZmComposeView = function(parent, controller, composeMode) {
 	ZmComposeView.NOTIFY_ACTION_MAP[ZmOperation.REPLY_DECLINE]		= ZmOperation.REPLY_DECLINE_NOTIFY;
 	ZmComposeView.NOTIFY_ACTION_MAP[ZmOperation.REPLY_TENTATIVE]	= ZmOperation.REPLY_TENTATIVE_NOTIFY;
 
+	ZmComposeView.MOVE_TO_FIELD = {};
+	ZmComposeView.MOVE_TO_FIELD[ZmOperation.MOVE_TO_TO]		= AjxEmailAddress.TO;
+	ZmComposeView.MOVE_TO_FIELD[ZmOperation.MOVE_TO_CC]		= AjxEmailAddress.CC;
+	ZmComposeView.MOVE_TO_FIELD[ZmOperation.MOVE_TO_BCC]	= AjxEmailAddress.BCC;
+	
 	this._onMsgDataChange = new AjxCallback(this, this._onMsgDataChange);
 	this._useAcAddrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 
@@ -872,7 +877,8 @@ function(type, addr) {
 		}
 		else {
 			if (addr.isAjxEmailAddress) {
-				addrInput.add(addrStr, {isDL: addr.isGroup && addr.canExpand, email: addrStr}, true);
+				var match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
+				addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
 			}
 			else {
 				this._setAddrFieldValue(type, addrStr);
@@ -1910,29 +1916,65 @@ function(name) {
 	return forAttIds;
 };
 
-
 /**
  * a callback that's called when bubbles are added or removed, since we need to resize the msg body in those cases.
  */
 ZmComposeView.prototype._bubblesChangedCallback =
 function() {
-
-	if (!this._useAcAddrBubbles) {
-		return;
-	}
-
+	if (!this._useAcAddrBubbles) { return; }
 	this._resetBodySize(); // body size might change due to change in size of address field (due to new bubbles).
-
 };
 
+ZmComposeView.prototype._bubbleMenuCreated =
+function(addrInput, menu) {
+
+	if (!this._useAcAddrBubbles) { return; }
+
+	this._bubbleActionMenu = menu;
+
+	menu.addOp(ZmOperation.SEP);
+	var ops = [ZmOperation.MOVE_TO_TO, ZmOperation.MOVE_TO_CC, ZmOperation.MOVE_TO_BCC];
+	var listener = new AjxListener(this, this._bubbleMove);
+	for (var i = 0; i < ops.length; i++) {
+		menu.addOp(ops[i]);
+		menu.addSelectionListener(ops[i], listener);
+	}
+};
+
+ZmComposeView.prototype._bubbleMenuResetOperations =
+function(addrInput, menu) {
+	var sel = addrInput.getSelection();
+	var ops = [ZmOperation.MOVE_TO_TO, ZmOperation.MOVE_TO_CC, ZmOperation.MOVE_TO_BCC];
+	for (var i = 0; i < ops.length; i++) {
+		var op = ops[i];
+		var type = ZmComposeView.MOVE_TO_FIELD[op];
+		menu.enable(op, sel.length > 0 && (type != addrInput.type));
+	}
+};
+
+ZmComposeView.prototype._bubbleMove =
+function(ev) {
+
+	var sourceInput = ZmAddressInputField.menuContext.addrInput;
+	var op = ev && ev.item && ev.item.getData(ZmOperation.KEY_ID);
+	var type = ZmComposeView.MOVE_TO_FIELD[op];
+	var targetInput = this._addrInputField[type];
+	if (sourceInput && targetInput) {
+		var sel = sourceInput.getSelection();
+		if (sel.length) {
+			for (var i = 0; i < sel.length; i++) {
+				var bubble = sel[i];
+				targetInput.addBubble({bubble:bubble});
+				this._showAddressField(type, true);
+				sourceInput.removeBubble(bubble.id);
+			}
+		}
+	}
+};
 
 ZmComposeView.prototype._acCompHandler =
 function(text, el, match) {
-
-	if (this._useAcAddrBubbles) {
-		return;
-	}
-
+	if (this._useAcAddrBubbles) { return; }
 	this._adjustAddrHeight(el);
 };
 
@@ -2684,10 +2726,14 @@ function(templateId, data) {
 		var aifId;
 		if (this._useAcAddrBubbles) {
 			var aifParams = {
-				autocompleteListView:	this._acAddrSelectList,
-				bubbleAddedCallback:	(new AjxCallback(this, this._bubblesChangedCallback)),
-				bubbleRemovedCallback:	(new AjxCallback(this, this._bubblesChangedCallback)),
-				inputId:				inputId
+				parent:								this,
+				autocompleteListView:				this._acAddrSelectList,
+				bubbleAddedCallback:				(new AjxCallback(this, this._bubblesChangedCallback)),
+				bubbleRemovedCallback:				(new AjxCallback(this, this._bubblesChangedCallback)),
+				bubbleMenuCreatedCallback:			(new AjxCallback(this, this._bubbleMenuCreated)),
+				bubbleMenuResetOperationsCallback:	(new AjxCallback(this, this._bubbleMenuResetOperations)),
+				inputId:							inputId,
+				type:								type
 			}
 			var aif = this._addrInputField[type] = new ZmAddressInputField(aifParams);
 			aifId = aif._htmlElId;

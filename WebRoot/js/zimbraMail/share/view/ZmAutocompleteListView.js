@@ -90,7 +90,9 @@ ZmAutocompleteListView = function(params) {
 		this._isDelim[','] = this._isDelimCode[188] = appCtxt.get(ZmSetting.AUTOCOMPLETE_ON_COMMA); 
 		var listener = new AjxListener(this, this._settingChangeListener);
 		var aoc = appCtxt.getSettings().getSetting(ZmSetting.AUTOCOMPLETE_ON_COMMA);
-		if (aoc) aoc.addChangeListener(listener);
+		if (aoc) {
+			aoc.addChangeListener(listener);
+		}
 	}
 
     // mouse event handling
@@ -171,18 +173,6 @@ function(ev) {
 	}
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
 	var aclv = element && DwtControl.ALL_BY_ID[element._aclvId];
-
-	// check for empty value before input is updated - looking for Delete when field was already empty
-	var value = element && element.value;
-	if (!value) {
-		if (aclv && aclv._options.addrBubbles && key == 8) {
-			var addrInput = DwtControl.ALL_BY_ID[element._aifId];
-			if (addrInput) {
-				addrInput.handleDelete();
-			}
-		}
-	}
-
 	if (aclv) {
 		aclv._inputLength = element.value.length;
 		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYDOWN, element && element.id, [ev, aclv, result, element]);
@@ -813,7 +803,7 @@ function(text, match, ev) {
 				addrInput.setValue(text);
 			}
 			else {
-				addrInput.add(text, match);
+				addrInput.addBubble({address:text, match:match});
 			}
 			el = addrInput._input;
 			if (AjxEnv.isIE) // Input field loses focus along the way. Restore it when the stack is finished
@@ -1287,7 +1277,7 @@ function(email, textId, rowId, ev, loc, element) {
 			contactsApp.updateCache(contact, true);
 		}
 		contact.isDL = true;
-		if (textId) {
+		if (textId && rowId) {
 			this._curExpanded = textId;
 			this._setExpandText(textId, true);
 		}
