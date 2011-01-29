@@ -1133,7 +1133,8 @@ function(addrVec, addrInput) {
 				var addr = addrs[i];
 				var addrStr = addr.isAjxEmailAddress ? addr.toString() : addr;
 				if (addr.isAjxEmailAddress) {
-					addrInput.add(addrStr, {isDL: addr.isGroup && addr.canExpand, email: addrStr}, true);
+					var match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
+					addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
 				}
 				else {
 					addrInput.setValue(addrStr, true);

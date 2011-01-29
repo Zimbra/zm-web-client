@@ -741,7 +741,7 @@ INPUT[type="text"].people_search_input {
 	margin-left: 0;
 }
 
-.addrBubble, .addrBubble-selected {
+.addrBubble, .addrBubble-selected, .addrBubble-actioned {
 	color: black;
 	border: 1px solid #999999;
 	padding: 1px 3px;
@@ -765,6 +765,10 @@ INPUT[type="text"].people_search_input {
 	background-color: @SelC@;
 }
 
+.addrBubble-actioned {
+	background-color: @RightClickColor@;
+}
+
 .addrBubbleHolder span:hover {
 	cursor: pointer;
 }
@@ -772,6 +776,14 @@ INPUT[type="text"].people_search_input {
 .addrBubble .link {
 	color: #666666;
 	cursor: pointer;
+}
+
+.addrBubbleInsertionBar {
+	background-color: black;
+	width: 2px;
+	height: auto;
+	margin-bottom: 2px;
+	margin-left: 3px;
 }
 
 /*

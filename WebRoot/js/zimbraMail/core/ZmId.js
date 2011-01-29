@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -1097,6 +1097,9 @@ ZmId.OP_MOUNT_NOTEBOOK			= "MOUNT_NOTEBOOK";
 ZmId.OP_MOUNT_TASK_FOLDER		= "MOUNT_TASK_FOLDER";
 ZmId.OP_MOVE					= "MOVE";
 ZmId.OP_MOVE_DOWN_FILTER_RULE	= "MOVE_DOWN_FILTER_RULE";
+ZmId.OP_MOVE_TO_BCC				= "MOVE_TO_BCC";
+ZmId.OP_MOVE_TO_CC				= "MOVE_TO_CC";
+ZmId.OP_MOVE_TO_TO				= "MOVE_TO_TO";
 ZmId.OP_MOVE_UP_FILTER_RULE		= "MOVE_UP_FILTER_RULE";
 ZmId.OP_NEW_ADDRBOOK			= "NEW_ADDRBOOK";
 ZmId.OP_NEW_ALLDAY_APPT			= "NEW_ALLDAY_APPT";
