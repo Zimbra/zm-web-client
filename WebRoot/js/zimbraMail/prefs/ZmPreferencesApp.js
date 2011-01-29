@@ -587,14 +587,14 @@ function() {
 			displayContainer:	ZmPref.TYPE_CHECKBOX
 		});
 
-		// only offer "enable notebooks" pref if a ZCS account exists
-		if (appCtxt.accountList.accountTypeExists(ZmAccount.TYPE_ZIMBRA)) {
-			ZmPref.registerPref("OFFLINE_NOTEBOOK_SYNC_ENABLED", {
-				displayName:		ZmMsg.enableDocuments,
-				displayContainer:	ZmPref.TYPE_CHECKBOX,
-                preCondition:       ZmSetting.NOTEBOOK_ENABLED
-			});
-		}
+		// Do not show enable document preference.
+        //		if (appCtxt.accountList.accountTypeExists(ZmAccount.TYPE_ZIMBRA)) {
+        //			ZmPref.registerPref("OFFLINE_NOTEBOOK_SYNC_ENABLED", {
+        //				displayName:		ZmMsg.enableDocuments,
+        //				displayContainer:	ZmPref.TYPE_CHECKBOX,
+        //                preCondition:       ZmSetting.NOTEBOOK_ENABLED
+        //			});
+        //		}
 
         ZmPref.registerPref("OFFLINE_BACKUP_ACCOUNT_ID", {
             displayName:		ZmMsg.offlineBackUpAccounts,
