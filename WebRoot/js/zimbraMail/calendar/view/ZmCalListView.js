@@ -454,7 +454,7 @@ function(list) {
  *
  * @param	{array}		itemArray		an array of items
  */
-DwtListView.prototype.addItems =
+ZmCalListView.prototype.addItems =
 function(itemArray) {
 	if (AjxUtil.isArray(itemArray)) {
 		if (!this._list) {
@@ -467,6 +467,12 @@ function(itemArray) {
 		}
 		this._renderList(AjxVector.fromArray(itemArray), this._list.size() != 0, true);
 		this._list.addList(itemArray);
+        this._resetColWidth();
+        if(AjxEnv.isIE) {
+            //Does not make sense but required to make the scrollbar appear
+            var size = this.getSize();
+            this._listDiv.style.height = (size.y - DwtListView.HEADERITEM_HEIGHT)+"px";
+        }
 	}
 };
 
