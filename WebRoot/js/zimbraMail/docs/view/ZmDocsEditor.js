@@ -580,11 +580,7 @@ ZmDocsEditor.prototype.insertLinks = function(filenames, files) {
 		}
 		var link = this._getIframeDoc().createElement("A");
         var wAppCtxt = window.opener && window.opener.appCtxt;
-        var folder = wAppCtxt && wAppCtxt.getById(ZmDocsEditApp.fileInfo.folderId);            
-        var url = [
-            ( folder ? folder.getRestUrl() : "" ), "/", AjxStringUtil.urlComponentEncode(files[i].name)
-        ].join("");
-        link.href = url;
+        link.href = AjxStringUtil.urlComponentEncode(files[i].name);
         var filename = decodeURI(files[i].name);
 		link.innerHTML = (files[i].linkText)? files[i].linkText : filename;
 		this._insertLink(link, insertTarget, true);
