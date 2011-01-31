@@ -2077,8 +2077,8 @@ function() {
     if(AjxEnv.isIE)
         rowHeight = rowHeight - 10;
 
-    if(rowHeight < 100){
-        rowHeight = 100;
+    if(rowHeight < 350){
+        rowHeight = 350;
     }
 
     //	if(window.isTinyMCE) {
