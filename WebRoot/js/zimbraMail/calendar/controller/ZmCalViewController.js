@@ -3418,24 +3418,28 @@ function() {
         // NOTE: It's important that we go straight to the view!
 		var view = this._viewMgr ? this._viewMgr.getView(this._currentView) : null;
 		if (view && view.needsRefresh()) {
-			var rt = view.getTimeRange();
-			var params = {
-				start: rt.start,
-				end: rt.end,
-				fanoutAllDay: view._fanoutAllDay(),
-				callback: (new AjxCallback(this, this._maintGetApptCallback, [work, view])),
-				accountFolderIds: ([].concat(this._checkedAccountCalendarIds)), // pass in a copy, not a reference
-				query: this._userQuery
-			};
+            var rt = view.getTimeRange();
+            if(this._currentView == ZmId.VIEW_CAL_LIST) {
+                view.searchRefresh(rt);
+            }
+            else {
+                var params = {
+                    start: rt.start,
+                    end: rt.end,
+                    fanoutAllDay: view._fanoutAllDay(),
+                    callback: (new AjxCallback(this, this._maintGetApptCallback, [work, view])),
+                    accountFolderIds: ([].concat(this._checkedAccountCalendarIds)), // pass in a copy, not a reference
+                    query: this._userQuery
+                };
 
-			var reminderParams;
-			if (maintainRemainder) {
-				reminderParams = this._app.getReminderController().getRefreshParams();
-				reminderParams.callback = null;
-			}
+                var reminderParams;
+                if (maintainRemainder) {
+                    reminderParams = this._app.getReminderController().getRefreshParams();
+                    reminderParams.callback = null;
+                }
 
-			this.apptCache.batchRequest(params, this.getMiniCalendarParams(), reminderParams);
-
+                this.apptCache.batchRequest(params, this.getMiniCalendarParams(), reminderParams);
+            }
 			view.setNeedsRefresh(false);
 		} else {
 			this.searchInProgress = false;
