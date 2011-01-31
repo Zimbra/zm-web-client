@@ -1672,12 +1672,18 @@ function(appt, mode) {
 	var cancelNoReplyCallback = new AjxCallback(this, this._continueDelete, [appt, mode]);
 	var confirmDialog = appCtxt.getConfirmationDialog();
     confirmDialog.setTitle(ZmMsg.confirmDeleteApptTitle);
-	if (appt.otherAttendees && !appt.inviteNeverSent && appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+
+    var calendar = appt && appt.getFolder();
+    var isTrash = calendar && calendar.id==ZmOrganizer.ID_TRASH;
+
+	if (!isTrash && appt.otherAttendees && !appt.inviteNeverSent && appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		var cancelReplyCallback = new AjxCallback(this, this._continueDeleteReply, [appt, mode]);
 		confirmDialog.popup(ZmMsg.confirmCancelApptReply, cancelReplyCallback, cancelNoReplyCallback);
 	} else {
-		var msg = ZmMsg.confirmCancelAppt;
-		if (appt.isRecurring()) {
+
+		var msg = isTrash ? ZmMsg.confirmPermanentCancelAppt : ZmMsg.confirmCancelAppt;
+
+		if (appt.isRecurring() && !isTrash) {
 			msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, appt.name) :  ZmMsg.confirmCancelApptSeries;
 		}
 		confirmDialog.popup(msg, cancelNoReplyCallback);
@@ -1716,6 +1722,7 @@ function(appt, mode) {
 
 	var cancelNoReplyCallback = new AjxCallback(this, this._continueDelete, [appt, mode]);
 	var confirmDialog = appCtxt.getConfirmationDialog();
+
 	if (appt.otherAttendees && !appt.inviteNeverSent && appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		var cancelReplyCallback = new AjxCallback(this, this._continueDeleteReply, [appt, mode]);
 		confirmDialog.popup(ZmMsg.confirmCancelApptReply, cancelReplyCallback, cancelNoReplyCallback);
@@ -1776,7 +1783,10 @@ ZmCalViewController.prototype._deleteAppointment =
 function(appt) {
 	if (!appt) { return; }
 
-	if (appt.isRecurring() && !appt.isException) {
+    var calendar = appt.getFolder();
+    var isTrash =  calendar && calendar.id == ZmOrganizer.ID_TRASH;
+
+	if (appt.isRecurring() && !isTrash && !appt.isException) {
 		this._showTypeDialog(appt, ZmCalItem.MODE_DELETE);
 	} else {
 		this._promptDeleteAppt(appt, ZmCalItem.MODE_DELETE);
@@ -2562,6 +2572,13 @@ function(parent, num) {
 		parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
 		parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()));
 		parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null);
+
+        parent.enable(ZmOperation.VIEW_APPT_INSTANCE,!isTrash);
+
+        var apptAccess = ((appt && appt.isPrivate() && calendar.isRemote()) ? calendar.hasPrivateAccess() : true );
+        parent.enable(ZmOperation.DUPLICATE_APPT,apptAccess);
+        parent.enable(ZmOperation.SHOW_ORIG,apptAccess);
+
 	}
 
 	if (currViewName == ZmId.VIEW_CAL_LIST) {
@@ -2885,14 +2902,14 @@ function(appt, actionMenu) {
 	}
 
 	var del = actionMenu.getMenuItem(ZmOperation.DELETE);
-	if (del) {
+	if (del && !isTrash) {
 		del.setText((isOrganizer && appt.otherAttendees) ? ZmMsg.cancel : ZmMsg.del);
 		var isSynced = Boolean(calendar.url);
 		del.setEnabled(!calendar.isReadOnly() && !isSynced && !isPrivate);
 	}
 
 	// recurring action menu options
-	if (this._recurringActionMenu) {
+	if (this._recurringActionMenu && !isTrash) {
 		this._recurringActionMenu.enable(ZmOperation.VIEW_APPT_SERIES, !appt.exception);
 	}
 };
@@ -2902,13 +2919,15 @@ function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
 	var appt = ev.item;
 	var actionMenu = this.getActionMenu();
-	var menu = appt.isRecurring() ? this._recurringActionMenu : actionMenu;
+    var calendar = appt && appt.getFolder();
+    var isTrash = calendar && calendar.id == ZmOrganizer.ID_TRASH;
+	var menu = (appt.isRecurring() && !isTrash) ? this._recurringActionMenu : actionMenu;
 	this._enableActionMenuReplyOptions(appt, menu);
 	var op = (menu == actionMenu) && appt.exception ? ZmOperation.VIEW_APPT_INSTANCE : null;
 	actionMenu.__appt = appt;
 	menu.setData(ZmOperation.KEY_ID, op);
 
-	if (appt.isRecurring()) {
+	if (appt.isRecurring() && !isTrash) {
 		var menuItem = menu.getMenuItem(ZmOperation.VIEW_APPT_INSTANCE);
 		this._setTagMenu(menuItem.getMenu());
 		this._enableActionMenuReplyOptions(appt, menuItem.getMenu());
