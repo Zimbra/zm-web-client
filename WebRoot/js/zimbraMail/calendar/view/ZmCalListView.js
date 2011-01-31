@@ -79,6 +79,14 @@ function(needsRefresh) {
 	this._needsRefresh = needsRefresh;
 };
 
+ZmCalListView.prototype.searchRefresh =
+function(timeRange) {
+	this._segmentedDates = [];
+    this._segmentDates(timeRange.start, timeRange.end);
+    this.set((new AjxVector()), null, true); // clear the current list
+    this._search();
+};
+
 ZmCalListView.prototype.getDate =
 function() {
 	return this._date;
