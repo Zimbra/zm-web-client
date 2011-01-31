@@ -130,7 +130,7 @@
 </template>
 
 <!-- NOTE: The tab indexes need to go sequentially across all #ZmEditContactView_* templates -->
-<template id="abook.Contacts#ZmEditContactView-body">
+<template id="abook.Contacts#ZmEditContactView_body">
     <tr valign=top>
         <td class=rowLabel><$=ZmMsg.emailLabel$></td>
         <td class=rowValue><div id="${id}_EMAIL" tabindex="500"></div></td>
