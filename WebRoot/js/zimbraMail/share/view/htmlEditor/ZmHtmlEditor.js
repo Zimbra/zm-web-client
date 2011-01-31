@@ -2328,6 +2328,12 @@ function(htmlMode, incOptions) {
 	return params;
 };
 
+ZmHtmlEditor.prototype._updateState =
+function() {
+	var defaultFontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+	DwtHtmlEditor.prototype._updateState.call(this, defaultFontSize);
+};
+
 ZmHtmlEditorColorPicker = function(parent,style,className) {
 	DwtButtonColorPicker.call(this, parent,style,className);
 };
