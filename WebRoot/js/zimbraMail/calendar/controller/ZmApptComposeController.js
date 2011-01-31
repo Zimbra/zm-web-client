@@ -413,10 +413,6 @@ function() {
     mi.setText(ZmMsg.requestResponses);
     mi.setChecked(true, true);
 
-    mi = this._markAsPrivate = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
-    mi.setText(ZmMsg.markApptPrivate);
-    mi.setChecked(false, true);
-
 	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
 };
 
@@ -428,21 +424,6 @@ function(requestResponses) {
 ZmApptComposeController.prototype.getRequestResponses =
 function() {
    return this._requestResponses.getEnabled() ? this._requestResponses.getChecked() : true;
-};
-
-ZmApptComposeController.prototype.markApptAsPrivate =
-function(isPrivate) {
-   this._markAsPrivate.setChecked(isPrivate);
-};
-
-ZmApptComposeController.prototype.isApptPrivate =
-function() {
-   return this._markAsPrivate.getChecked();
-};
-
-ZmApptComposeController.prototype.enablePrivateOption =
-function(enabled) {
-   return this._markAsPrivate.setEnabled(enabled);
 };
 
 ZmApptComposeController.prototype.getNotifyList =

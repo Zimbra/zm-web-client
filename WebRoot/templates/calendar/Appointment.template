@@ -122,6 +122,10 @@
                 <td><table border=0>
                         <tr><td id='${id}_showAsSelect' align="right"></td>
                             <td id='${id}_folderSelect'></td>
+                            <td>
+                                <input type='checkbox' id='${id}_privateCheckbox'>
+                                <nobr>&nbsp;<label for="${id}_privateCheckbox"><$= ZmMsg.markAsPrivate $></label></nobr>
+                            </td>
                         </tr>
                     </table>
                 </td>

@@ -382,7 +382,7 @@ function(calItem) {
     }
 
 	calItem.freeBusy = this._showAsSelect.getValue();
-	calItem.privacy = this._controller.isApptPrivate() ? ZmApptEditView.PRIVACY_OPTION_PRIVATE : ZmApptEditView.PRIVACY_OPTION_PUBLIC;
+	calItem.privacy = this._privateCheckbox.checked ? ZmApptEditView.PRIVACY_OPTION_PRIVATE : ZmApptEditView.PRIVACY_OPTION_PUBLIC;
 
 	// set the start date by aggregating start date/time fields
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
@@ -464,8 +464,7 @@ function(calItem, mode) {
 
 	this._showAsSelect.setSelectedValue(calItem.freeBusy);
     this._showAsSelect.setEnabled(enableApptDetails);
-    this._controller.markApptAsPrivate(calItem.privacy == ZmApptEditView.PRIVACY_OPTION_PRIVATE);
-
+    this._privateCheckbox.checked = (calItem.privacy == ZmApptEditView.PRIVACY_OPTION_PRIVATE);
 
 	// reset the date/time values based on current time
 	var sd = new Date(calItem.startDate.getTime());
@@ -567,8 +566,8 @@ function(calItem, mode) {
     var isPrivacyEnabled = ((!isRemote || (cal && cal.hasPrivateAccess())) && enableApptDetails);
     var defaultPrivacyOption = (appCtxt.get(ZmSetting.CAL_APPT_VISIBILITY) == ZmSetting.CAL_VISIBILITY_PRIV);
 
-    this._controller.markApptAsPrivate((isPrivacyEnabled ? ((calItem.privacy == ZmApptEditView.PRIVACY_OPTION_PRIVATE) || defaultPrivacyOption) : false));
-    this._controller.enablePrivateOption(isPrivacyEnabled);
+    this._privateCheckbox.checked = (isPrivacyEnabled ? ((calItem.privacy == ZmApptEditView.PRIVACY_OPTION_PRIVATE) || defaultPrivacyOption) : false);
+    this._privateCheckbox.disabled = !isPrivacyEnabled;
 
 	if (this.GROUP_CALENDAR_ENABLED) {
         this._controller.setRequestResponses((attendees && attendees.length) ? calItem.shouldRsvp() : true);
@@ -732,6 +731,8 @@ function(width) {
 	}
 
 	this._folderSelect.addChangeListener(new AjxListener(this, this._folderListener));
+
+    this._privateCheckbox = document.getElementById(this._htmlElId + "_privateCheckbox");
 
 	// time ZmTimeSelect
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
@@ -1271,7 +1272,7 @@ function() {
 	var isRemote = (id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0);
 	var isEnabled = !isRemote || cal.hasPrivateAccess();
 
-    this._controller.enablePrivateOption(isEnabled);
+    this._privateCheckbox.disabled = !isEnabled;
 
     if(this._schedulerOpened) {
         var organizer = this._isProposeTime ? this.getCalItemOrganizer() : this.getOrganizer();
@@ -1611,7 +1612,7 @@ function(type, attribs){
        case ZmApptEditView.CHANGES_INSIGNIFICANT:
            vals.push(this._subjectField.getValue());
            vals.push(this._notesHtmlEditor.getContent());
-           vals.push(this._controller.isApptPrivate() ? ZmApptEditView.PRIVACY_OPTION_PRIVATE : ZmApptEditView.PRIVACY_OPTION_PUBLIC);
+           vals.push(this._privateCheckbox.checked ? ZmApptEditView.PRIVACY_OPTION_PRIVATE : ZmApptEditView.PRIVACY_OPTION_PUBLIC);
            //TODO: Attachments, Priority    
            break;
    }
