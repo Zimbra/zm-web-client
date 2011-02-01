@@ -19,6 +19,15 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
+    <%-- email --%>
+    <c:if test="${zm:anySet(contact,'email email2 email3')}">
+        <mo:contactSection>
+            <mo:contactField noborder="${contact.email2==null}" isemail="true" label="MO_AB_email" value="${contact.email}"/>
+            <mo:contactField noborder="${contact.email3==null}" isemail="true" label="MO_AB_email2" value="${contact.email2}"/>
+            <mo:contactField noborder="true" isemail="true" label="MO_AB_email3" value="${contact.email3}"/>
+        </mo:contactSection>
+    </c:if>
+
     <c:if test="${zm:anySet(contact,'mobilePhone workPhone workPhone2 workFax homePhone homePhone2 homeFax assistantPhone otherPhone otherFax pager carPhone companyPhone callbackPhone')}">
         <%-- phones --%>
         <mo:contactSection>
@@ -39,14 +48,6 @@
         </mo:contactSection>
     </c:if>
 
-    <%-- email --%>
-    <c:if test="${zm:anySet(contact,'email email2 email3')}">
-        <mo:contactSection>
-            <mo:contactField noborder="${contact.email2==null}" isemail="true" label="MO_AB_email" value="${contact.email}"/>
-            <mo:contactField noborder="${contact.email3==null}" isemail="true" label="MO_AB_email2" value="${contact.email2}"/>
-            <mo:contactField noborder="true" isemail="true" label="MO_AB_email3" value="${contact.email3}"/>
-        </mo:contactSection>
-    </c:if>
     <%-- url --%>
     <c:if test="${zm:anySet(contact,'workURL homeURL otherURL')}">
         <mo:contactSection>
@@ -59,23 +60,22 @@
 
     <c:if test="${zm:anySet(contact,'homeStreet homeCity homeState homePostalCode homeCountry workStreet workCity workState workPostalCode workCountry otherStreet otherCity otherState otherPostalCode otherCountry')}">
         <mo:contactSection>
-            <c:if test="${zm:anySet(contact,'homeStreet homeCity homeState homePostalCode homeCountry')}">
-                <mo:contactField noborder="${!zm:anySet(contact,'workStreet workCity workState workPostalCode workCountry')}"  isaddress="true" label="MO_AB_home"
-                                 street="${contact.homeStreet}"
-                                 city="${contact.homeCity}"
-                                 state="${contact.homeState}"
-                                 postalcode="${contact.homePostalCode}"
-                                 country="${contact.homeCountry}"/>
-            </c:if>
             <c:if test="${zm:anySet(contact,'workStreet workCity workState workPostalCode workCountry')}">
-                <mo:contactField noborder="${!zm:anySet(contact,'otherStreet otherCity otherState otherPostalCode otherCountry')}" isaddress="true" label="MO_AB_work"
+                <mo:contactField noborder="${!zm:anySet(contact,'homeStreet homeCity homeState homePostalCode homeCountry')}" isaddress="true" label="MO_AB_work"
                                  street="${contact.workStreet}"
                                  city="${contact.workCity}"
                                  state="${contact.workState}"
                                  postalcode="${contact.workPostalCode}"
                                  country="${contact.workCountry}"/>
             </c:if>
-
+            <c:if test="${zm:anySet(contact,'homeStreet homeCity homeState homePostalCode homeCountry')}">
+                <mo:contactField noborder="${!zm:anySet(contact,'otherStreet otherCity otherState otherPostalCode otherCountry')}"  isaddress="true" label="MO_AB_home"
+                                 street="${contact.homeStreet}"
+                                 city="${contact.homeCity}"
+                                 state="${contact.homeState}"
+                                 postalcode="${contact.homePostalCode}"
+                                 country="${contact.homeCountry}"/>
+            </c:if>
             <c:if test="${zm:anySet(contact,'otherStreet otherCity otherState otherPostalCode otherCountry')}">
                 <mo:contactField noborder="true" isaddress="true" label="MO_AB_other"
                                  street="${contact.otherStreet}"
