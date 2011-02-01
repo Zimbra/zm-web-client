@@ -22,6 +22,7 @@
  * 	- When the user creates a new briefcase or uploaded file
  */
 AjxPackage.require("zimbraMail.briefcase.view.ZmBriefcaseBaseView");
+AjxPackage.require("zimbraMail.briefcase.view.ZmBriefcaseIconView");
 AjxPackage.require("zimbraMail.briefcase.view.ZmDetailListView");
 AjxPackage.require("zimbraMail.briefcase.view.ZmPreviewPaneView");
 AjxPackage.require("zimbraMail.briefcase.view.ZmNewBriefcaseDialog");
