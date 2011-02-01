@@ -77,7 +77,14 @@
                             ${fn:escapeXml(noDisplayAs)}
                         </c:when>
                         <c:otherwise>
-                            ${zm:truncate(fn:escapeXml(context.isGALSearch ? chit.fullName : chit.fileAsStr),23,true)}
+                            <c:set var="fileAsStr">
+                                <app:contactFileAs
+                                    fileAs="${chit.fileAs}"
+                                    firstName="${chit.firstName}" lastName="${chit.lastName}" company="${chit.company}"
+                                    fullName="${chit.fullName}" nickname="${chit.nickname}"
+                                />
+                            </c:set>
+                            ${zm:truncate(fn:escapeXml(context.isGALSearch ? chit.fullName : fileAsStr),23,true)}
                         </c:otherwise>
                     </c:choose>
                 </strong></div>
