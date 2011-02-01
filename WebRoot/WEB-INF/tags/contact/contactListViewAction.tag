@@ -48,7 +48,7 @@
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionSearch')}">
         <c:redirect url="/h/search?st=${not empty param.st ? param.st : 'contact' }&search=Search"> <%-- st can be gal for gal search --%>
-            <c:param name="sq" value="${fn:escapeXml(searchQuery)}"/>
+            <c:param name="sq" value="${searchQuery}"/>
         </c:redirect>
     </c:when>
 </c:choose>
