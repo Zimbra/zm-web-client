@@ -677,3 +677,9 @@ SELECT						{	@FieldBorder@	}
 .Row-matched, .RowDouble-matched {
     background-color:@SearchResultColor@;
 }
+
+/* Mobile Client*/
+
+.center-small .ImgAltBanner{
+	background-image: none;
+}
