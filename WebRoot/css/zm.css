@@ -2904,7 +2904,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	@TabRoundCorners@
 }
 
-.ZOptionsSectionTabView .ZTab.ZSelected .ZTabBorder {
+.ZOptionsSectionTabView .ZSelected .ZTabBorder {
 	background-color: @AppC@;
 	border-bottom-color: @AppC@;
 }
