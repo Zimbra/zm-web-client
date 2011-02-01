@@ -988,7 +988,7 @@ function(attr, callback) {
 	}
 
     // bug: 45026
-    if (ZmContact.F_firstName in attr || ZmContact.F_lastName in attr || ZmContact.F_company in attr) {
+    if (ZmContact.F_firstName in attr || ZmContact.F_lastName in attr || ZmContact.F_company in attr || ZmContact.X_fileAs in attr) {
         var contact = {};
         var fields = [ZmContact.F_firstName, ZmContact.F_lastName, ZmContact.F_company, ZmContact.X_fileAs];
         for (var i = 0; i < fields.length; i++) {

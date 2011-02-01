@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -31,7 +31,10 @@
         <td class="ZhBottomSep" width=20 align="center">
             <app:img src="${contact.isGroup or isgroup ? 'contacts/ImgGroup.png' : 'contacts/ImgContact.png'}" altkey="${contact.isGroup or isgroup ? 'ALT_CONTACT_GROUP' : 'ALT_CONTACT_CONTACT'}"/>
         </td>
-        <td class='ZhBottomSep contactHeader'>${fn:escapeXml(title)}</td>
+        <td class='ZhBottomSep contactHeader'>
+            <c:set var="fileAsStr"><app:contactFileAs contact="${contact}" ruby="true" /></c:set>
+            ${fileAsStr}
+        </td>
     </tr>
 </table>
 <c:choose>
@@ -107,6 +110,8 @@
         </table>
     </c:when>
     <c:otherwise>
+        <input type="hidden" name="fullName" value="${fn:escapeXml(not empty contact ? contact.fullName : '')}" />
+        <input type="hidden" name="nickname" value="${fn:escapeXml(not empty contact ? contact.nickname : '')}" />
         <table border="0" cellpadding="0" cellspacing="3" width="100%">
         <tr><td valign='center' class="editContactLabel"><label for="folderIdSelect"><fmt:message key="addressBook"/> :</label></td>
             <td><input type="hidden" name="origFolderId" value="${empty contact ? '': contact.folderId}"/>

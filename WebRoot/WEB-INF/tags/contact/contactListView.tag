@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -89,9 +89,26 @@
                                        <zm:currentResultUrl var="contactUrl" value="/h/search" id="${hit.contactHit.id}" index="${status.index}" context="${context}"/>
                                        <fmt:message var="noNameStr" key="noName"/>
                                        <c:set var="noName" value="${noNameStr} ${not empty hit.contactHit.email ? hit.contactHit.email : hit.contactHit.email2 }" />
-                                       <a  href="${fn:escapeXml(contactUrl)}" id="A${status.index}">
-                                               ${fn:escapeXml(empty hit.contactHit.fileAsStr ? (context.isGALSearch ? hit.contactHit.fullName : noName) : hit.contactHit.fileAsStr)}
-                                       </a></span>
+                                       <c:choose>
+                                           <c:when test="${not empty hit.contactHit.fileAsStr}">
+                                               <c:set var="contactUrlText">
+                                                   <app:contactFileAs
+                                                       fileAs="${hit.contactHit.fileAs}"
+                                                       firstName="${hit.contactHit.firstName}" lastName="${hit.contactHit.lastName}"
+                                                       company="${hit.contactHit.company}" fullName="${hit.contactHit.fullName}"
+                                                       nickname="${hit.contactHit.nickname}"
+                                                    />
+                                               </c:set>
+                                           </c:when>
+                                           <c:when test="${empty hit.contactHit.fileAsStr and context.isGALSearch}">
+                                               <c:set var="contactUrlText" value="${fn:escapeXml(hit.contactHit.fullName)}" />
+                                           </c:when>
+                                           <c:otherwise>
+                                               <c:set var="contactUrlText" value="${fn:escapeXml(noName)}" />
+                                           </c:otherwise>
+                                       </c:choose>
+                                       <a href="${fn:escapeXml(contactUrl)}" id="A${status.index}">${contactUrlText}</a>
+                                       </span>
                                        <c:if test="${hit.contactHit.id == context.currentItem.id}">
                                            <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
 

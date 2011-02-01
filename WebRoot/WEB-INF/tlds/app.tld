@@ -378,6 +378,11 @@
     </tag-file>
 
     <tag-file>
+        <name>contactFileAs</name>
+        <path>/WEB-INF/tags/contact/contactFileAs.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>contactEditField</name>
         <path>/WEB-INF/tags/contact/contactEditField.tag</path>
     </tag-file>
