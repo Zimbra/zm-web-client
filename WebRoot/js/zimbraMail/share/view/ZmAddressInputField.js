@@ -287,14 +287,14 @@ function(text, add, skipNotify) {
 /**
  * Removes the selected bubble. If none are selected, selects the last one.
  *
- * @param {boolean}		force	if true, don't check for empty input field, just remove the bubble
+ * @param {boolean}		checkInput		if true, make sure INPUT is empty
  *
  * @return {boolean}	true if the delete selected or removed a bubble
  */
 ZmAddressInputField.prototype.handleDelete =
-function(force) {
+function(checkInput) {
 
-	if (!force && !this._input.value.length) {
+	if (checkInput && this._input.value.length > 0) {
 		return false;
 	}
 
@@ -306,7 +306,7 @@ function(force) {
 		this.focus();
 		return true;
 	}
-	else {
+	else if (!this._input.value) {
 		var index = this._getInputIndex();
 		var span = (index > 0) && this._holder.childNodes[index - 1];
 		var bubble = DwtControl.fromElement(span);
@@ -518,6 +518,7 @@ function(params) {
 
 ZmAddressInputField.prototype._reset =
 function() {
+
 	this._bubble		= {};	// bubbles by bubble ID
 	this._addressHash	= {};	// used addresses, so we can check for dupes
 	this._selected		= {};	// which bubbles are selected
@@ -562,13 +563,15 @@ function(value) {
 	this._resizeInput();
 };
 
-// Check for Esc while in edit mode
+// Handles key events that occur in the INPUT.
 ZmAddressInputField.prototype._keyDownCallback =
 function(ev, aclv) {
 
 	ev = DwtUiEvent.getEvent(ev);
 	var key = DwtKeyEvent.getCharCode(ev);
 	var propagate = true;
+
+	// Esc in edit mode restores the original address to the bubble
 	if (key == 27 && this._editMode) {
 		DBG.println("aif1", "_keyDownCallback found ESC key in edit mode");
 		this._leaveEditMode(true);
@@ -577,13 +580,24 @@ function(ev, aclv) {
 			AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._setInputValue, [""]), 20);
 		}
 	}
-	else if (key == 9) {	// TAB
+	// Tab checks to see if current input is an address
+	else if (key == 9) {
 		this._checkInput();
 	}
+	// Del removes selected bubbles, or selects last bubble if there is no input
 	else if (key == 8) {
 		DBG.println("aif", "_keyDownCallback found DEL key");
-		propagate = !this.handleDelete();
+		propagate = !this.handleDelete(true);
 	}
+	// Left arrow selects last bubble if there is no input
+	else if (key == 37 && !this._input.value) {
+		var list = this._getBubbleList();
+		if (list && list.length) {
+			this.setSelected(list[list.length - 1], true);
+			this.blur();
+		}
+	}
+
 	DwtUiEvent.setBehaviour(ev, !propagate, propagate);
 	return propagate;
 };
@@ -983,33 +997,68 @@ function() {
 };
 
 /**
- * Handle delete key when one or more bubbles is selected. We can't do it the normal way through
- * a keyboard shortcut, since that requires browser focus to be set to the hidden keyboard input
- * field, which would undo the text selection. All this is necessary for Firefox only, because
- * a blur is required to make text selection work (maybe because only Firefox supports multiple
- * selected ranges). After the blur, the BODY has focus, and a Delete keypress results in the
- * browser going Back (which takes the user to the compose page).
+ * Global key event handler which we use to point shortcut handling at us without actually
+ * setting focus (which breaks auto-selection of text).
+ *
+ * Note: It's important (at least in FF) that the event for Delete does not propagate after
+ * text has been auto-selected, since at that point the BODY has focus and the Delete gets
+ * interpreted as a browser Back action. Normal shortcut handling will not propagate the
+ * event.
  *
  * @private
  */
 ZmAddressInputField.prototype._handleKeyDown =
 function(ev) {
-
 	ev = DwtUiEvent.getEvent(ev);
-	var propagate = true;
-	var key = DwtKeyEvent.getCharCode(ev);
-	if (key == 8 && this.getSelectionCount()) {
-		DBG.println("aif", "_handleKeyDown found DEL key - " + ev.MARKER);
-		this.handleDelete();
-		propagate = false;	// don't let the browser catch it and interpret it as Back
+	ev.focusObj = this;
+};
+
+ZmAddressInputField.prototype.hasFocus =
+function(ev) {
+	return true;
+};
+
+ZmAddressInputField.prototype.getKeyMapName =
+function() {
+	return "ZmAddressBubble";
+};
+
+ZmAddressInputField.prototype.handleKeyAction =
+function(actionCode, ev) {
+
+	var selCount = this.getSelectionCount();
+	if (selCount == 0) {
+		return true;
 	}
-	DwtUiEvent.setBehaviour(ev, !propagate, propagate);
-	return propagate;
+
+	switch (actionCode) {
+
+		case DwtKeyMap.DELETE:
+			this.handleDelete();
+			break;
+
+		case DwtKeyMap.SELECT_NEXT:
+			if (selCount == 1) {
+				this.selectBubble(true);
+			}
+			break;
+
+		case DwtKeyMap.SELECT_PREV:
+			if (selCount == 1) {
+				this.selectBubble(false);
+			}
+			break;
+
+		default:
+			return false;
+	}
+
+	return true;
 };
 
 // Returns an ordered list of bubbles
 ZmAddressInputField.prototype._getBubbleList =
-function(id) {
+function() {
 
 	var list = [];
 	var children = this._holder.childNodes;
@@ -1038,34 +1087,38 @@ function() {
 };
 
 /**
- * Selects the next or previous bubble relative to the given one.
+ * Selects the next or previous bubble relative to the selected one.
  *
- * @param {ZmAddressBubble}	bubble		reference bubble
  * @param {boolean}			next		if true, select next bubble; otherwise select previous bubble
  */
-/*
 ZmAddressInputField.prototype.selectBubble =
-function(bubble, next) {
+function(next) {
+
+	var sel = this.getSelection();
+	var bubble = sel && sel.length && sel[0];
+	if (!bubble) { return; }
 
 	var index = this._getBubbleIndex(bubble);
-	var newIndex = next ? index + 1 : index - 1;
-	if (newIndex >= 0 && newIndex < this._holder.childNodes.length) {
-		var el = this._holder.childNodes[newIndex];
-		if (el) {
-			this.deselectAll();
-			if (el == this._input) {
-				this.focus();
-			}
-			else {
-				var newBubble = DwtControl.fromElement(el);
-				if (newBubble) {
-					this.setSelected(newBubble, true);
-				}
+	index = next ? index + 1 : index - 1;
+	var children = this._holder.childNodes;
+	var el = (index >= 0 && index < children.length) && children[index];
+	if (el == this._dragInsertionBar) {
+		index = next ? index + 1 : index - 1;
+		el = (index >= 0 && index < children.length) && children[index];
+	}
+	if (el) {
+		this.deselectAll();
+		if (el == this._input) {
+			this.focus();
+		}
+		else {
+			var newBubble = DwtControl.fromElement(el);
+			if (newBubble) {
+				this.setSelected(newBubble, true);
 			}
 		}
 	}
 };
-*/
 
 /**
  * Returns an ordered list of bubble addresses.
@@ -1405,34 +1458,3 @@ function() {
 	}
 	return null;
 };
-
-/*
-ZmAddressBubble.prototype.getKeyMapName =
-function() {
-	return "ZmAddressBubble";
-};
-
-ZmAddressBubble.prototype.handleKeyAction =
-function(actionCode, ev) {
-
-	switch (actionCode) {
-
-		case DwtKeyMap.DELETE:
-			this.addrInput.handleDelete();
-			break;
-
-		case DwtKeyMap.SELECT_NEXT:
-			this.addrInput.selectBubble(this, true);
-			break;
-
-		case DwtKeyMap.SELECT_PREV:
-			this.addrInput.selectBubble(this, false);
-			break;
-
-		default:
-			return false;
-	}
-
-	return true;
-};
-*/
