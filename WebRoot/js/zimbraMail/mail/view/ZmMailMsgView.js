@@ -2031,8 +2031,7 @@ function(itemId, attachments, viewAllImages, filename) {
 		filename = null;
 	}
 	filename = AjxStringUtil.urlComponentEncode(filename || ZmMsg.downloadAllDefaultFileName);
-
-	var url = [appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", itemId, "&filename=", filename, "&part="].join("");
+	var url = [appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", itemId, "&filename=", filename,"&charset=", appCtxt.getCharset(), "&part="].join("");
 	var parts = [];
 	for (var j = 0; j < attachments.length; j++) {
 		parts.push(attachments[j].part);
