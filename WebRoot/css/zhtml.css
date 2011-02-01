@@ -463,6 +463,14 @@ A:visited { color: blue; }
 	@FontSize-big@
 }
 
+.MsgBody-html {
+	padding: 10px;
+}
+
+.MsgBody-html pre, .MsgBody-html pre * {
+	@WordWrapPRE@
+}
+
 .MsgCompose {
 	@FontFamily-fixed@
 	@FontSize-big@
