@@ -84,8 +84,13 @@ function() {
     this._customizeBtn.setToolTipContent(ZmMsg.customizeSuggestions);
     this._customizeBtn.addSelectionListener(new AjxListener(this, this._prefListener));
 
-
     this._createMiniCalendar();
+
+    this._suggestBtn = new DwtButton({parent:this, className: 'ZButton SuggestBtn'});
+    this._suggestBtn.setSize('100%', Dwt.DEFAULT);
+    this._suggestBtn.setText(ZmMsg.suggestTimes);
+    this._suggestBtn.setToolTipContent(ZmMsg.suggestTimes);
+    this._suggestBtn.addSelectionListener(new AjxListener(this, this.suggestAction, true, false));
 
     var id = this.getHTMLElId();
     this._timeSuggestions = new ZmTimeSuggestionView(this, this._controller, this._editView);
@@ -769,6 +774,8 @@ ZmScheduleAssistantView.prototype.resizeTimeSuggestions =
 function() {
 
     if(!this._timeSuggestions) return;
+
+    this._suggestBtn.setVisible(!this.isSuggestionsEnabled());
 
     var calSize = Dwt.getSize(this._miniCalendar.getHtmlElement());
     var btnSize = Dwt.getSize(this._customizeBtn.getHtmlElement());
