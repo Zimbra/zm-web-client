@@ -1560,15 +1560,36 @@ function(text, delims) {
 			break;
 		}
 	}
-	var parts = text.split(delim, 3);
-	this.setAttr(ZmContact.F_firstName, parts[0]);
-	if (parts.length == 2) {
-		this.setAttr(ZmContact.F_lastName, parts[1]);
-	} else if (parts.length == 3) {
-		this.setAttr(ZmContact.F_middleName, parts[1]);
-		this.setAttr(ZmContact.F_lastName, parts[2]);
-	}
+    var parts = text.split(delim);
+    var func = this["__setFullName_"+AjxEnv.DEFAULT_LOCALE] || this.__setFullName;
+    func.call(this, parts, text, delims);
 };
+
+ZmContact.prototype.__setFullName = function(parts, text, delims) {
+    this.setAttr(ZmContact.F_firstName, parts[0]);
+    if (parts.length == 2) {
+        this.setAttr(ZmContact.F_lastName, parts[1]);
+    } else if (parts.length == 3) {
+        this.setAttr(ZmContact.F_middleName, parts[1]);
+        this.setAttr(ZmContact.F_lastName, parts[2]);
+    }
+};
+ZmContact.prototype.__setFullName_ja = function(parts, text, delims) {
+    if (parts.length > 2) {
+        this.__setFullName(parts, text, delims);
+        return;
+    }
+    // TODO: Perhaps do some analysis to auto-detect Japanese vs.
+    // TODO: non-Japanese names. For example, if the name text is
+    // TODO: comprised of kanji, treat it as "last first"; else if
+    // TODO: first part is all uppercase, treat it as "last first";
+    // TODO: else treat it as "first last".
+    this.setAttr(ZmContact.F_lastName, parts[0]);
+    if (parts.length > 1) {
+        this.setAttr(ZmContact.F_firstName, parts[1]);
+    }
+};
+ZmContact.prototype.__setFullName_ja_JP = ZmContact.prototype.__setFullName_ja;
 
 /**
  * @private
