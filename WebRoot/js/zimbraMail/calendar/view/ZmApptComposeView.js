@@ -218,7 +218,12 @@ function() {
     return this._apptEditView.getForwardAddress();
 };
 
-ZmApptComposeView.prototype.getHtmlEditor = 
+ZmApptComposeView.prototype.gotNewAttachments =
+function() {
+    return this._apptEditView.gotNewAttachments();
+};
+
+ZmApptComposeView.prototype.getHtmlEditor =
 function() {
 	return this._apptEditView.getHtmlEditor();
 };

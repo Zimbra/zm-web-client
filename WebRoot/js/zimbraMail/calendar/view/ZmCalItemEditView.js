@@ -837,6 +837,11 @@ function() {
 	return false;
 };
 
+ZmCalItemEditView.prototype.gotNewAttachments =
+function() {
+    return this._gotAttachments();
+};
+
 ZmCalItemEditView.prototype._removedAttachments =
 function(){
     var attCheckboxes = document.getElementsByName(ZmCalItem.ATTACHMENT_CHECKBOX_NAME);
