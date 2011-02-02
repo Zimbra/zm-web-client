@@ -61,7 +61,7 @@
  launchZCS.jsp
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -328,7 +328,7 @@ document.write("</DIV>");
 // compile locale specific templates
 for (var pkg in window.AjxTemplateMsg) {
 	var text = AjxTemplateMsg[pkg];
-	AjxTemplate.compile(pkg, true, true, text);
+	AjxTemplate.compile(pkg, true, false, text);
 }
 </script>
 
