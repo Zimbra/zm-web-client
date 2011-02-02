@@ -462,3 +462,20 @@ function(ev) {
     appCtxt.getAppViewMgr().popView();
 };
 
+ZmMsgController.prototype._handleResponseDoAction =
+function(params, msg) {
+
+    var action = params.action;
+    if ( !appCtxt.isChildWindow &&
+       (  action == ZmOperation.REPLY
+       || action == ZmOperation.REPLY_ALL
+       || action == ZmOperation.FORWARD_INLINE
+       || action == ZmOperation.FORWARD_ATT
+       || action == ZmOperation.FORWARD)) {
+
+        this._backListener(); //close the message view
+    }
+
+    //complete action to open compose window
+    ZmMailListController.prototype._handleResponseDoAction.call(this, params, msg);
+};
