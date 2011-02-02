@@ -896,15 +896,24 @@ function(appt, attId, attendees, origAttendees) {
 ZmApptComposeController.prototype._cancelListener =
 function(ev) {
 
-    var appt = this._composeView.getAppt(this._attId);
-    if (appt && !appt.inviteNeverSent){
-        //Check for Significant Changes
-        if(this._checkIsDirty(ZmApptEditView.CHANGES_SIGNIFICANT)){
-            this._getChangesDialog().popup();
-            this.enableToolbar(true);
-            return;
+    var isDirty = false;
+
+    if(this._composeView.gotNewAttachments()) {
+        isDirty = true;
+    }else {
+        var appt = this._composeView.getAppt(this._attId);
+        if (appt && !appt.inviteNeverSent){
+           //Check for Significant Changes
+            isDirty = this._checkIsDirty(ZmApptEditView.CHANGES_SIGNIFICANT)
         }
     }
+
+    if(isDirty){
+        this._getChangesDialog().popup();
+        this.enableToolbar(true);
+        return;
+    }
+
 	this._app.getCalController().setNeedsRefresh(true);
 
 	ZmCalItemComposeController.prototype._cancelListener.call(this, ev);
