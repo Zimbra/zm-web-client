@@ -147,7 +147,7 @@
 		</c:choose>
 </c:if>
 <fmt:message key="newTask" var="newTaskSub"/>
-<div class="sectionLbl"><b>${fn:escapeXml(apptSubject)}</b></div>
+<div class="sectionLbl"><b>${fn:escapeXml(zm:truncate(apptSubject, 24, true))}</b></div>
 <c:if test="${isInstance}"><div class="View"><div class="tbl"><div class="tr">
                 <span class="td ZhApptRecurrInfo"><app:img src="dwt/ImgInformation.png"/></span>
                 <span class="td">

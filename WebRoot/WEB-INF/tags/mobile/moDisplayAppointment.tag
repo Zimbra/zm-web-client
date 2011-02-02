@@ -44,7 +44,7 @@
 <fmt:message var="noSubject" key="noSubject"/>
 <c:set var="isPart" value="${!empty message.partName}"/>
 <div class='View'>
-    <div><strong>${fn:escapeXml(empty appt.name ? noSubject : appt.name)}</strong></div>
+    <div><strong>${fn:escapeXml(empty appt.name ? noSubject : zm:truncate(appt.name, 24, true))}</strong></div>
     <c:if test="${not empty appt.location}">
         <div class='small-gray-text'><fmt:message key="locationLabel"/>&nbsp;${fn:escapeXml(appt.location)}</div>
     </c:if>                                                                          
