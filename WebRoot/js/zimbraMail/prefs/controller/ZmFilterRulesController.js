@@ -44,6 +44,8 @@ ZmFilterRulesController = function(container, prefsApp, prefsView, parent, outgo
 	this._buttonListeners[ZmOperation.RUN_FILTER_RULE] = new AjxListener(this, this._runListener);
 	this._buttonListeners[ZmOperation.MOVE_UP_FILTER_RULE] = new AjxListener(this, this._moveUpListener);
 	this._buttonListeners[ZmOperation.MOVE_DOWN_FILTER_RULE] = new AjxListener(this, this._moveDownListener);
+
+	this._progressController = new ZmProgressController(container, prefsApp);
 };
 
 ZmFilterRulesController.prototype = new ZmController();
@@ -397,43 +399,15 @@ ZmFilterRulesController.prototype._runFilterOkCallback =
 function(dialog, folderList) {
 	dialog.popdown();
 
-	var sel = this._listView && this._listView.getSelection();
-	if (sel && sel.length) {
-		var soapDoc = AjxSoapDoc.create(this._outgoing ? "ApplyOutgoingFilterRulesRequest" : "ApplyFilterRulesRequest", "urn:zimbraMail");
-		var filterRules = soapDoc.set("filterRules", null);
-		for (var i = 0; i < sel.length; i++) {
-			var rule = soapDoc.set("filterRule", null, filterRules);
-			rule.setAttribute("name", sel[i].name);
-		}
-
-		if (!(folderList instanceof Array)) {
-			folderList = [folderList];
-		}
-		var query = [];
-		for (var j = 0; j < folderList.length; j++) {
-			query.push(folderList[j].createQuery());
-		}
-		soapDoc.set("query", query.join(" OR "));
-
-		var params = {
-			soapDoc: soapDoc,
-			asyncMode: true,
-			callback: (new AjxCallback(this, this._handleRunFilter))
-		};
-		appCtxt.getAppController().sendRequest(params);
+	var filterSel = this._listView && this._listView.getSelection();
+	if (!(filterSel && filterSel.length)) {
+		return;
 	}
-};
 
-ZmFilterRulesController.prototype._handleRunFilter =
-function(result) {
-	var r = result.getResponse();
-	var resp = this._outgoing ? r.ApplyOutgoingFilterRulesResponse : r.ApplyFilterRulesResponse;
-	var num = (resp && resp.m && resp.m.length)
-		? (resp.m[0].ids.split(",").length) : 0;
-	var msg = AjxMessageFormat.format(ZmMsg.filterRuleApplied, num);
-	var dlg = appCtxt.getMsgDialog();
-	dlg.setMessage(msg);
-	dlg.popup();
+	var work = new ZmFilterWork(filterSel);
+
+	this._progressController.start(folderList, work);
+
 };
 
 /**
@@ -517,3 +491,85 @@ ZmFilterRulesController.prototype.getListView =
 function(){
     return this._listView;
 };
+
+
+
+/**
+ * class that holds the work specification (in this case, filtering specific filters. Keeps track of progress stats too.
+ * an instance of this is passed to ZmFilterRulesController to callback for stuff specific to this work. (template pattern, I believe)
+ * @param filterSel
+ */
+ZmFilterWork = function(filterSel) {
+	this._filterSel = filterSel;
+	this._totalNumMessagesAffected = 0;
+
+};
+
+/**
+ * return the summary message when finished everything.
+ */
+ZmFilterWork.prototype.getFinishedMessage =
+function(messagesProcessed) {
+	return AjxMessageFormat.format(ZmMsg.filterRuleApplied, [messagesProcessed, this._totalNumMessagesAffected]);
+};
+
+/**
+ * return the progress so far summary.
+ */
+ZmFilterWork.prototype.getProgressMessage =
+function(messagesProcessed) {
+	return AjxMessageFormat.format(ZmMsg.filterRunInProgress, [messagesProcessed, this._totalNumMessagesAffected]);
+};
+
+
+/**
+ * do the work. (in this case apply filters).
+ * @param msgIds - chunk of message ids to do the work on.
+ * @param callback
+ */
+ZmFilterWork.prototype.doWork =
+function(msgIds, callback) {
+	var filterSel = this._filterSel;
+	var soapDoc = AjxSoapDoc.create(this._outgoing ? "ApplyOutgoingFilterRulesRequest" : "ApplyFilterRulesRequest", "urn:zimbraMail");
+	var filterRules = soapDoc.set("filterRules", null);
+	for (var i = 0; i < filterSel.length; i++) {
+		var rule = soapDoc.set("filterRule", null, filterRules);
+		rule.setAttribute("name", filterSel[i].name);
+	}
+
+	var m = soapDoc.set("m");
+	m.setAttribute("ids", msgIds.join(","));
+
+	var params = {
+		soapDoc: soapDoc,
+		asyncMode: true,
+		callback: (new AjxCallback(this, this._handleRunFilter, [callback]))
+	};
+	appCtxt.getAppController().sendRequest(params);
+};
+
+/**
+ * private method - gets the result of the filter request, and keeps track of total messages affected.
+ * @param callback
+ * @param result
+ */
+ZmFilterWork.prototype._handleRunFilter =
+function(callback, result) {
+	var r = result.getResponse();
+	var resp = this._outgoing ? r.ApplyOutgoingFilterRulesResponse : r.ApplyFilterRulesResponse;
+	var num = (resp && resp.m && resp.m.length)
+		? (resp.m[0].ids.split(",").length) : 0;
+	this._totalNumMessagesAffected += num;
+	callback.run();
+};
+
+/**
+ * return pause between chunks
+ */
+ZmFilterWork.prototype.getChunkPause =
+function() {
+	return 500;
+};
+
+
+
