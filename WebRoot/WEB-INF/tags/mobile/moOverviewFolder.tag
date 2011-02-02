@@ -56,7 +56,7 @@
                     <c:set var="folderName" value="${label}"/>
                 </c:otherwise>
             </c:choose>
-            ${fn:escapeXml(zm:truncateFixed(folderName,24,true))}
+            ${fn:escapeXml(zm:truncateFixed(folderName,20,true))}
         </a>
     </span>
     <c:if test="${!folder.isSystemFolder}">
