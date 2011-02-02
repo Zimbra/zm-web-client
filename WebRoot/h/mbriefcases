@@ -64,7 +64,7 @@
                                         <td><div class='vertSep'></div></td>
                                         <app:button id="OPNEWCAL" name="actionNewBriefcaseFolder" src="startup/ImgFolder.png" tooltip="briefcaseNew" text="briefcaseNew"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWLINK" name="actionNewSharedBriefcase" src="tasks/ImgNewTaskList.png" tooltip="briefcaseNewShared" text="briefcaseNewShared"/>
+                                        <app:button id="OPNEWLINK" name="actionNewSharedBriefcase" src="tasks/ImgNewFolder.png" tooltip="briefcaseNewShared" text="briefcaseNewShared"/>
                                     </tr>
                                 </table>
                             </td>
