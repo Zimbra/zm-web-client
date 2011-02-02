@@ -53,6 +53,9 @@ function() {
 
 ZmBriefcaseBaseView.prototype._sortIndex =
 function(list, item){
+    if(!list){
+        return 0;
+    }
     var a = list.getArray(), index = a.length;
 	for(var i = 0; i < a.length; i++) {
         var lItem = a[i];
