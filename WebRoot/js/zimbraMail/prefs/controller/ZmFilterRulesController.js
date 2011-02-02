@@ -521,6 +521,22 @@ function(messagesProcessed) {
 	return AjxMessageFormat.format(ZmMsg.filterRunInProgress, [messagesProcessed, this._totalNumMessagesAffected]);
 };
 
+/**
+ * return the finished dialog title.
+ */
+ZmFilterWork.prototype.getFinishedTitle =
+function(messagesProcessed) {
+	return AjxMessageFormat.format(ZmMsg.filterRunFinished);
+};
+
+/**
+ * return the progress dialog title.
+ */
+ZmFilterWork.prototype.getProgressTitle =
+function(messagesProcessed) {
+	return AjxMessageFormat.format(ZmMsg.filterRunInProgressTitle);
+};
+
 
 /**
  * do the work. (in this case apply filters).
