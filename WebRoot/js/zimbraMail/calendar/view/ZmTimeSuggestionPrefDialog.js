@@ -161,7 +161,6 @@ function(text) {
     disableCheckbox._dlgId = this._dlgId;
     var disableRoomCheckbox = document.getElementById(this.getHTMLElId() + "_" + ZmTimeSuggestionPrefDialog.SUGGESTROOMS_FIELD);
     disableRoomCheckbox._dlgId = this._dlgId;
-    Dwt.setHandler(disableCheckbox, DwtEvent.ONCLICK, ZmTimeSuggestionPrefDialog._handleDisableCheckbox);
     Dwt.setHandler(disableRoomCheckbox, DwtEvent.ONCLICK, ZmTimeSuggestionPrefDialog._handleRoomCheckbox);
 };
 
@@ -236,8 +235,6 @@ function(metadataResponse) {
             this.setPreferenceFieldValue(id, ZmTimeSuggestionPrefDialog.DEFAULT_VAL[id]);            
         }
     }
-
-    this.handleDisableCheckbox();
 };
 
 ZmTimeSuggestionPrefDialog.prototype.setSearchPreference =
@@ -276,28 +273,4 @@ function(ev) {
 	var dlg = AjxCore.objectWithId(el._dlgId);
 	if (!dlg) { return; }
     dlg.handleRoomCheckbox();
-};
-
-ZmTimeSuggestionPrefDialog.prototype.handleDisableCheckbox =
-function() {
-    var field = this._prefFields[ZmTimeSuggestionPrefDialog.DISABLE_SUGGESTIONS_FIELD];
-    var enableSuggestions = !field.checked;
-
-    field = this._prefFields[ZmTimeSuggestionPrefDialog.SUGGESTROOMS_FIELD];
-    field.disabled = !enableSuggestions;
-    this.enableLocationFields(field.checked && enableSuggestions);
-
-    field = this._prefFields[ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD];
-    field.setEnabled(enableSuggestions);
-
-    field = this._prefFields[ZmTimeSuggestionPrefDialog.GREEN_SUGGESTIONS_FIELD];
-    field.disabled = !enableSuggestions;
-};
-
-ZmTimeSuggestionPrefDialog._handleDisableCheckbox =
-function(ev) {
-	var el = DwtUiEvent.getTarget(ev);
-	var dlg = AjxCore.objectWithId(el._dlgId);
-	if (!dlg) { return; }
-    dlg.handleDisableCheckbox();
 };
