@@ -105,13 +105,14 @@
     <c:when test="${context.isTaskSearch}">
         <mo:taskListView context="${context}"/>
     </c:when>
-
+    <%-- bug:56196
     <c:when test="${context.isWikiSearch && (empty sessionScope.l_view || sessionScope.l_view eq 'explorer' || param.view eq 'explorer')}">
         <mo:wikiExplorerView context="${context}"/>
     </c:when>
     <c:when test="${context.isWikiSearch && ( sessionScope.l_view eq 'list' || param.view eq 'list')}">
             <mo:wikiListView context="${context}"/>
     </c:when>
+    --%>
      <c:when test="${context.isBriefcaseSearch && (empty sessionScope.l_view || sessionScope.l_view eq 'explorer' || param.view eq 'explorer')}">
         <mo:briefcaseExplorerView context="${context}"/>
     </c:when>
