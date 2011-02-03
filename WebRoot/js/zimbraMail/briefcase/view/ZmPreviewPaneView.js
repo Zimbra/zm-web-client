@@ -560,6 +560,8 @@ function(){
 
     Dwt.setHandler(this._headerExpand, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleExpand, this));
 
+    this._iframePreview.getIframe().onload = AjxCallback.simpleClosure(this._updatePreview, this);
+
 };
 
 ZmPreviewView._errorCallback =
@@ -627,6 +629,8 @@ function(item){
     this._previewItem = item;
     this.enablePreview(true);
 
+    this._previewContent = false;
+
     if(item.isFolder){
         this._setFolder(item);
         return;
@@ -654,6 +658,7 @@ function(item){
 
 ZmPreviewView.prototype._setupLoading =
 function(){
+
     var html = [
         "<div style='height:100%;width:100%;text-align:center;vertical-align:middle;padding-top:30px;'>",ZmMsg.generatingPreview,"</div>"
     ].join('');
@@ -689,18 +694,29 @@ ZmPreviewView.prototype._setFolder =
 function(item){
 
     this._cleanup();
-
     //Name
     this._headerName.innerHTML = item.name;
-
     //Briefcase icon
     this._headerImage.className = "ImgBriefcase_48";
-
     if(this._headerModifier)
         this._headerModifier.innerHTML = item.getOwner();
-
-    this._iframePreview.setIframeContent(AjxTemplate.expand('briefcase.Briefcase#FolderPreview'));
+    this._setIframeContent(AjxTemplate.expand('briefcase.Briefcase#FolderPreview'));
 };
+
+ZmPreviewView.prototype._setIframeContent =
+function(html){
+    this._previewContent = html;
+    this._iframePreview.setSrc('javascript:\"\";');
+};
+
+ZmPreviewView.prototype._updatePreview =
+function(){
+    if(this._previewContent){
+        this._iframePreview.setIframeContent(this._previewContent);
+        this._previewContent = false;
+    }
+};
+
 
 ZmPreviewView.prototype._cleanup =
 function(){
@@ -724,6 +740,8 @@ function(){
         this._headerLockUser.innerHTML = "";
     }
     Dwt.setVisible(this._headerNotesSection, false);
+
+    this._previewContent = false;
 
 };
 
