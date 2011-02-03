@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -250,8 +250,18 @@ function(list, noResultsOk, doAdd) {
                 currentSec = null;
             }
 
-			var div = this._createItemHtml(item, {now:now}, !doAdd, i);
-			if (div) {
+            var taskStatusClass = this._normalClass;
+
+            if(item.status == ZmCalendarApp.STATUS_COMP && currentSec != ZmTaskListView.SEC_PASTDUE) {
+               taskStatusClass += " ZmCompletedtask"
+            } else if(item.status == ZmCalendarApp.STATUS_COMP && currentSec == ZmTaskListView.SEC_PASTDUE) {
+               taskStatusClass += " ZmOverdueCompletedtask"
+            } else if(item.status != ZmCalendarApp.STATUS_COMP && currentSec == ZmTaskListView.SEC_PASTDUE) {
+               taskStatusClass += " ZmOverduetask"
+            }
+
+			var div = this._createItemHtml(item, {now:now,divClass:taskStatusClass}, !doAdd, i);
+            if (div) {
 				if (div instanceof Array) {
 					for (var j = 0; j < div.length; j++){
 						this._addRow(div[j]);
@@ -259,8 +269,7 @@ function(list, noResultsOk, doAdd) {
 				} else if (div.tagName || doAdd) {
 					this._addRow(div);
 				} else {
-					
-					//bug:47781
+                    //bug:47781
 					if(this._controller.getAllowableTaskStatus() == ZmTaskListController.SOAP_STATUS[ZmId.VIEW_TASK_TODO] && item.status == ZmCalendarApp.STATUS_WAIT) {
 							if(currentSec == ZmTaskListView.SEC_PASTDUE) {
 								htmlPastDueArr.push(div);
