@@ -1251,7 +1251,19 @@ line-height:normal;
 	overflow: hidden;
 }
 
+.ZmCompletedtask td{
+    text-decoration: line-through;
+    color: #999999;
+}
 
+.ZmOverduetask td{
+    color: red;
+}
+
+.ZmOverdueCompletedtask td{
+    text-decoration: line-through;
+    color: red;
+}
 
 /*
  *	Calendar application
