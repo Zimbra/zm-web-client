@@ -177,7 +177,7 @@ function() {
 		progDialog.popup();
 	}
 
-	AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._nextChunk), work.getChunkPause());
+	this._nextChunk();
 };
 
 

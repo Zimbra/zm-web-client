@@ -579,13 +579,4 @@ function(callback, result) {
 	callback.run();
 };
 
-/**
- * return pause between chunks
- */
-ZmFilterWork.prototype.getChunkPause =
-function() {
-	return 500;
-};
-
-
 
