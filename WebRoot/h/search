@@ -325,6 +325,7 @@
     <c:when test="${context.isBriefcaseSearch and param.view eq 'ev'}">
         <app:briefcaseExplorerView context="${context}"/>
     </c:when>
+    <%--bug:56196
     <c:when test="${context.isWikiSearch}">
         <c:choose>
             <c:when test="${context.isTagSearch}">
@@ -335,6 +336,7 @@
             </c:otherwise>
         </c:choose>
     </c:when>
+    --%>
     <c:otherwise>
         <fmt:message key="error" var="title"/>
         <app:view mailbox="${mailbox}" title="${title}" selected="${not mailbox.features.mail ? 'calendar' : 'mail'}" context="${context}" folders="true" tags="true" searches="true" ads="" keys="true">
