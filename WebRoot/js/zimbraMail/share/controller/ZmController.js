@@ -135,7 +135,9 @@ function(ex) {
 		if (ex.name)		{ text.push("Error: " + ex.name); }
 		if (ex.stack)		{ text.push("Stack: " + ex.stack.replace("\n", eol, "g")); }
 	}
-	appCtxt.getAppController().popupErrorDialog(msg, text.join(eol), null, false, true);
+	var content = text.join(eol);
+	AjxDebug.println(AjxDebug.EXCEPTION, [msg, content].join(eol + eol));
+	appCtxt.getAppController().popupErrorDialog(msg, content, null, false, true);
 };
 
 /**
