@@ -104,12 +104,14 @@
 					</td>
 					<app:button id="${keys ? 'OPGO' : ''}" name="action" tooltip="actionMessageGoTT" text="actionGo" />
 
-					<td><div class='vertSep'></div></td>
-					<c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
-						<app:button id="${keys ? 'OPSPAM' :''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.png"/>
-					</c:if>
-					<c:if test="${context.isFolderSearch and context.folder.isSpam}">
-						<app:button id="${keys ? 'OPSPAM' : ''}" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgInbox.png"/>
+					<c:if test="${mailbox.features.spam}">
+						<td><div class='vertSep'></div></td>
+						<c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
+							<app:button id="${keys ? 'OPSPAM' :''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.png"/>
+						</c:if>
+						<c:if test="${context.isFolderSearch and context.folder.isSpam}">
+							<app:button id="${keys ? 'OPSPAM' : ''}" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgInbox.png"/>
+						</c:if>
 					</c:if>
 					<c:if test="${context.isFolderSearch}">
 						<c:choose>

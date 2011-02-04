@@ -64,13 +64,15 @@
                         </select>
                     </td>
                     <app:button id="${keys ? 'OPGO' : ''}" name="action" tooltip="actionMessageGoTT" text="actionGo" />
-                    <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
-                        <td><div class='vertSep'></div></td>
-                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.png"/>
-                    </c:if>
-                    <c:if test="${context.isFolderSearch and context.folder.isSpam}">
-                        <td><div class='vertSep'></div></td>
-                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgInbox.png"/>
+                    <c:if test="${mailbox.features.spam}">
+                        <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
+                            <td><div class='vertSep'></div></td>
+                            <app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.png"/>
+                        </c:if>
+                        <c:if test="${context.isFolderSearch and context.folder.isSpam}">
+                            <td><div class='vertSep'></div></td>
+                            <app:button id="${keys ? 'OPSPAM' : ''}" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgInbox.png"/>
+                        </c:if>
                     </c:if>
                 </tr>
             </table>

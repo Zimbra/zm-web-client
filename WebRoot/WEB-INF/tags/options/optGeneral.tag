@@ -144,6 +144,7 @@
             <fmt:message key="optionsSearchFolders"/>
             :
         </td>
+        <c:if test="${mailbox.features.spam}">
         <td>
             <app:optCheckbox boxfirst="true" label="includeJunkFolder" pref="zimbraPrefIncludeSpamInSearch"
                              checked="${mailbox.prefs.includeSpamInSearch}"/>
@@ -151,6 +152,7 @@
     </tr>
     <tr>
         <td>&nbsp;</td>
+        </c:if>
         <td>
             <app:optCheckbox boxfirst="true" label="includeTrashFolder" pref="zimbraPrefIncludeTrashInSearch"
                              checked="${mailbox.prefs.includeTrashInSearch}"/>
