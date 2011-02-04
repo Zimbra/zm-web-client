@@ -85,6 +85,7 @@ AjxPackage.require("ajax.dwt.dnd.DwtDragEvent");
 AjxPackage.require("ajax.dwt.dnd.DwtDragSource");
 AjxPackage.require("ajax.dwt.dnd.DwtDropEvent");
 AjxPackage.require("ajax.dwt.dnd.DwtDropTarget");
+AjxPackage.require("ajax.dwt.dnd.DwtDragBox");
 
 AjxPackage.require("ajax.dwt.widgets.DwtHoverMgr");
 AjxPackage.require("ajax.dwt.widgets.DwtControl");
