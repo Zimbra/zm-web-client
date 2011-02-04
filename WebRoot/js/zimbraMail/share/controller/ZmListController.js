@@ -372,7 +372,7 @@ function() {
  */
 ZmListController.prototype._participantOps =
 function() {
-	var ops = [ZmOperation.SEARCH, ZmOperation.BROWSE];
+	var ops = [ZmOperation.SEARCH_MENU, ZmOperation.BROWSE];
 
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		ops.push(ZmOperation.NEW_MESSAGE);
@@ -590,6 +590,10 @@ function(ev) {
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		this._setTagMenu(actionMenu);
 	}
+
+    if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+        this._setSearchMenu(actionMenu);
+    }
 	this._resetOperations(actionMenu, this.getSelectionCount());
 };
 
@@ -629,6 +633,7 @@ function(ev, op, params) {
 		ZmController.prototype._newListener.call(this, ev, op);
 	}
 };
+
 
 /**
  * Tag button has been pressed. We don't tag anything (since no tag has been selected),
@@ -784,14 +789,47 @@ function(ev) {
 // Participant listeners
 
 /**
- * Search based on email address.
+ * From Search based on email address.
  * 
  * @private
  */
 ZmListController.prototype._participantSearchListener =
 function(ev) {
-	var name = this._actionEv.address.getAddress();
-	appCtxt.getSearchController().fromSearch(name);
+    var folder = this._getSearchFolder();
+    if (folder && (folder.nId == ZmFolder.ID_SENT || folder.nId == ZmFolder.ID_DRAFTS)) {
+        /* sent/drafts search from all recipients */
+        var ccAddrs = this._actionEv.item.getAddresses(AjxEmailAddress.CC).getArray();
+        var toAddrs = this._actionEv.item.getAddresses(AjxEmailAddress.TO).getArray();
+        var name = toAddrs.concat(ccAddrs);
+        appCtxt.getSearchController().fromSearch(name);
+    }
+    else{
+	    var name = this._actionEv.address.getAddress();
+        appCtxt.getSearchController().fromSearch(name);
+    }
+};
+
+// Participant listeners
+
+/**
+ * To Search based on email address.
+ *
+ * @private
+ */
+ZmListController.prototype._participantSearchToListener =
+function(ev) {
+	var folder = this._getSearchFolder();
+    if (folder && (folder.nId == ZmFolder.ID_SENT || folder.nId == ZmFolder.ID_DRAFTS)) {
+        /* sent/drafts search to all recipients */
+        var toAddrs = this._actionEv.item.getAddresses(AjxEmailAddress.TO).getArray();
+        var ccAddrs = this._actionEv.item.getAddresses(AjxEmailAddress.CC).getArray();
+        var name = toAddrs.concat(ccAddrs).concat(ccAddrs);
+        appCtxt.getSearchController().toSearch(name);
+    }
+    else{
+	    var name = this._actionEv.address.getAddress();
+        appCtxt.getSearchController().toSearch(name);
+    }
 };
 
 /**
@@ -1207,6 +1245,23 @@ function(parent, op, listener) {
 		for (var i = 0; i < cnt; i++) {
 			items[i].addSelectionListener(listener);
 		}
+	}
+};
+
+
+/**
+ * Add listener to search menu
+ *
+ * @param parent
+ */
+
+ZmListController.prototype._setSearchMenu =
+function(parent) {
+  if (!parent) return;
+  var searchMenu = parent.getSearchMenu();
+	if (searchMenu) {
+        searchMenu.addSelectionListener(ZmOperation.SEARCH, new AjxListener(this, this._participantSearchListener));
+        searchMenu.addSelectionListener(ZmOperation.SEARCH_TO, new AjxListener(this, this._participantSearchToListener));     
 	}
 };
 

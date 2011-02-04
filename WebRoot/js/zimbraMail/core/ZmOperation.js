@@ -140,7 +140,12 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_RENAME_SEARCH, {textKey:"renameSearch", image:"Rename"});
 	ZmOperation.registerOp(ZmId.OP_RENAME_TAG, {textKey:"renameTag", image:"Rename"}, ZmSetting.TAGGING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SAVE, {textKey:"save", image:"Save", shortcut:ZmKeyMap.SAVE});
-	ZmOperation.registerOp(ZmId.OP_SEARCH, {textKey:"findEmailBySender", image:"Search"}, ZmSetting.SEARCH_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SEARCH, {textKey:"findEmailFromSender", image:"Search"}, ZmSetting.SEARCH_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_SEARCH_TO, {textKey:"findEmailToSender", image:"Search"}, ZmSetting.SEARCH_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_SEARCH_MENU, {textKey:"findEmails", image:"Search"}, ZmSetting.SEARCH_ENABLED,
+		AjxCallback.simpleClosure(function(parent) {
+			ZmOperation.addDeferredMenu(ZmOperation.addSearchMenu, parent, true);
+		}));
 	ZmOperation.registerOp(ZmId.OP_SEND, {textKey:"send", tooltipKey:"sendTooltip", image:"Send", shortcut:ZmKeyMap.SEND});
     ZmOperation.registerOp(ZmId.OP_FREE_BUSY_LINK, {textKey:"freeBusyLink", tooltipKey:"freeBusyLinkTooltip", image:"Send"});
     ZmOperation.registerOp(ZmId.OP_SHARE, {textKey:"share", tooltipKey:"shareTooltip"}, ZmSetting.SHARING_ENABLED);
@@ -314,7 +319,7 @@ function(parent, id, opHash, index) {
 	} else if (id == ZmOperation.FILLER) {	// toolbar only
 		parent.addFiller(null, index);
 	} else {
-		if (index) {
+		if (index != null) {
 			opDesc.index = index;
 		}
 		opHash[id] = parent.createOp(id, opDesc);
@@ -451,6 +456,22 @@ function(parent) {
 	}
 
 	var menu = new ZmActionMenu({parent:parent, menuItems:list, overrides:overrides});
+	parent.setMenu(menu);
+
+	return menu;
+};
+
+/**
+ * Adds a "Search" submenu for searching from/to sender/recipient.
+ *
+ * @param {DwtComposite}	parent		parent widget (a toolbar or action menu)
+ * @return	{ZmActionMenu}	the menu
+ */
+ZmOperation.addSearchMenu =
+function(parent) {
+	var list = [ZmOperation.SEARCH, ZmOperation.SEARCH_TO];
+
+	var menu = new ZmActionMenu({parent:parent, menuItems:list});
 	parent.setMenu(menu);
 
 	return menu;

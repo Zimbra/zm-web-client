@@ -131,6 +131,19 @@ function() {
 	}
 };
 
+/**
+ * Gets the menu search sub-menu (if any).
+ *
+ * @return {DwtMenu}        the menu
+ */
+ZmActionMenu.prototype.getSearchMenu =
+function() {
+    var menuItem = this.getMenuItem(ZmOperation.SEARCH_MENU);
+    if (menuItem) {
+        return menuItem.getMenu();
+    }
+};
+
 // Private methods
 
 // Returns the ID for the given menu item.

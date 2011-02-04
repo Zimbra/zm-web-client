@@ -500,6 +500,9 @@
 	background-color: #000000;
 }
 
+.DwtDefaultCursor {
+    cursor: default;
+}
 
 /* Header of the currently selected column */
 .DwtListView-ColumnActive {
