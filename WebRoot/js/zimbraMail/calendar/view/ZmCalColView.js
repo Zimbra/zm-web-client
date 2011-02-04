@@ -2529,6 +2529,7 @@ function(list, skipMiniCalUpdate) {
 	}
 	this._resetList();
 	this._list = newList;
+    this._apptCount = 0;
 	var timeRange = this.getTimeRange();
 	if (list) {
 		var size = list.size();
@@ -2539,12 +2540,20 @@ function(list, skipMiniCalUpdate) {
 				var ao = list.get(i);
 				if (ao && ao.isInRange(timeRange.start, timeRange.end)) {
 					this.addAppt(ao);
+                    this._apptCount ++;
 				}
 			}
 			this._computeAllDayApptLayout();
 		}
 	}
 	this._layout();
+
+    if(list && list.size() > 0 && this._apptCount == 0) {
+        DBG.println(AjxDebug.NOTIFY, " ---------------- ZmCalColView::set - calendar is blank");
+        DBG.println(AjxDebug.NOTIFY, " list size :" + list.size());
+        DBG.dumpObj(AjxDebug.NOTIFY, this._layouts);
+    }
+
     if(this._fbBarEnabled){
         this._layoutFBBar();
     }
