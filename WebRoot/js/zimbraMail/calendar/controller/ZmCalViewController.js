@@ -450,11 +450,11 @@ function(ev) {
 
 	if (ev.item) {
         var organizer = ev.item.getData && ev.item.getData(Dwt.KEY_OBJECT);
-        if (organizer && organizer.id == ZmOrganizer.ID_TRASH) {
+        if (organizer && organizer.nId == ZmOrganizer.ID_TRASH) {
             var found = false;
             var organizers = this.getCheckedOrganizers(true);
             for (var i = 0; i < organizers.length; i++) {
-                var id = organizers[i].id;
+                var id = organizers[i].nId;
                 if (id == ZmOrganizer.ID_TRASH) {
                     found = true;
                     break;
