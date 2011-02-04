@@ -958,13 +958,13 @@ function(field, itemIdx, isOutboundFolder) {
 	if (field == ZmItem.F_SELECTION) {
 		tooltip = ZmMsg.selectionColumn;
 	} else if (field == ZmItem.F_FLAG) {
-        tooltip = ZmMsg.flag;
+        tooltip = ZmMsg.flagHeaderToolTip;
     } else if (field == ZmItem.F_PRIORITY){
         tooltip = ZmMsg.priority;
     } else if (field == ZmItem.F_TAG) {
         tooltip = ZmMsg.tag;
     } else if (field == ZmItem.F_ATTACHMENT) {
-        tooltip = ZmMsg.attachment;
+        tooltip = ZmMsg.attachmentHeaderToolTip;
     } else if (field == ZmItem.F_SUBJECT) {
         tooltip = sortable ? ZmMsg.sortBySubject : ZmMsg.subject;
     } else if (field == ZmItem.F_DATE) {

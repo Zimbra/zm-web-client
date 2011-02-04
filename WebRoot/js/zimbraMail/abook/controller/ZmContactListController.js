@@ -473,8 +473,13 @@ function(view) {
 	}
 
 	ZmOperation.setOperation(this._actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT);
-    if (this._actionMenu.getOp("SEARCH"))
-        ZmOperation.setOperation(this._actionMenu, ZmOperation.SEARCH, ZmOperation.SEARCH, ZmMsg.findEmailByContact);
+    if (this._actionMenu.getSearchMenu()){
+       if (this._actionMenu.getSearchMenu().getOp("SEARCH_TO"))
+        ZmOperation.setOperation(this._actionMenu.getSearchMenu(), ZmOperation.SEARCH_TO, ZmOperation.SEARCH_TO, ZmMsg.findEmailToContact);
+       if (this._actionMenu.getSearchMenu().getOp("SEARCH"))
+        ZmOperation.setOperation(this._actionMenu.getSearchMenu(), ZmOperation.SEARCH, ZmOperation.SEARCH, ZmMsg.findEmailFromContact);
+    }   
+
 };
 
 /**
@@ -679,7 +684,7 @@ function(parent, num) {
 
     
 	if (!this.isGalSearch()) {
-		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
+		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
 		parent.enable(printOp, num > 0);
         appCtxt.notifyZimlets("resetToolbarOperations",[parent, num]);
 
@@ -709,7 +714,7 @@ function(parent, num) {
 	} else {
 		// gal contacts cannot be tagged/moved/deleted
 		parent.enableAll(false);
-		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
+		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
 		parent.enable([ZmOperation.NEW_MESSAGE, printOp], num > 0);
 		parent.enable(ZmOperation.CONTACT, num == 1);
 	}
@@ -724,6 +729,17 @@ function(parent, num) {
 ZmContactListController.prototype._participantSearchListener = function(ev) {
 	var addresses = this._actionEv.contact.getEmails();
 	appCtxt.getSearchController().fromSearch(addresses);
+};
+
+/**
+ * To Search based on email address.
+ *
+ * @private
+ */
+ZmContactListController.prototype._participantSearchToListener =
+function(ev) {
+	var name = this._actionEv.address.getAddress();
+	appCtxt.getSearchController().toSearch(name);
 };
 
 /**
@@ -805,10 +821,10 @@ function(ev) {
 	// enable/disable New Email menu item per valid email found for this contact
 	var enableNewEmail = email != null && this._listView[this._currentView].getSelectionCount() == 1;
 	var actionMenu = this.getActionMenu();
-	actionMenu.enable([ZmOperation.SEARCH, ZmOperation.BROWSE], enableNewEmail);
+	actionMenu.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE], enableNewEmail);
 
 	if (contact.isGroup()) {
-		actionMenu.enable([ZmOperation.SEARCH, ZmOperation.BROWSE], false);
+		actionMenu.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE], false);
 		ZmOperation.setOperation(actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT, ZmMsg.AB_EDIT_GROUP);
 	} else {
 		this._setContactText(!this.isGalSearch());

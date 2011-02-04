@@ -441,8 +441,12 @@ function() {
 		if (ops && ops.length) {
 			menuItems = menuItems.concat(ops);
 		}
+
 		this._participantActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems, controller:this,
 														context:this._currentView, menuType:ZmId.MENU_PARTICIPANT});
+        if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+            this._setSearchMenu(this._participantActionMenu);
+        }
 		this._addMenuListeners(this._participantActionMenu);
 		this._participantActionMenu.addPopdownListener(this._menuPopdownListener);
 		this._setupTagMenu(this._participantActionMenu);
@@ -458,6 +462,8 @@ ZmMailListController.prototype._initializeDraftsActionMenu =
 function() {
 	if (!this._draftsActionMenu) {
 		var menuItems = [
+            ZmOperation.SEARCH_MENU,
+            ZmOperation.SEP,
 			ZmOperation.EDIT,
 			ZmOperation.SEP,
 			ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.PRINT,
@@ -466,6 +472,9 @@ function() {
 		];
 		this._draftsActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems,
 												   context:this._currentView, menuType:ZmId.MENU_DRAFTS});
+        if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+            this._setSearchMenu(this._draftsActionMenu);
+        }
 		this._addMenuListeners(this._draftsActionMenu);
 		this._draftsActionMenu.addPopdownListener(this._menuPopdownListener);
 		this._setupTagMenu(this._draftsActionMenu);
@@ -622,6 +631,14 @@ function(ev) {
 	if (folder && folder.nId == ZmFolder.ID_DRAFTS || (item && item.isDraft)) {
 		// show drafts menu
 		this._initializeDraftsActionMenu();
+        if (item && (item.getAddresses(AjxEmailAddress.TO).getArray().length + item.getAddresses(AjxEmailAddress.CC).getArray().length) > 1){
+            ZmOperation.setOperation(this._draftsActionMenu.getSearchMenu(), ZmOperation.SEARCH_TO, ZmOperation.SEARCH_TO, ZmMsg.findEmailToRecipients);
+            ZmOperation.setOperation(this._draftsActionMenu.getSearchMenu(), ZmOperation.SEARCH, ZmOperation.SEARCH, ZmMsg.findEmailFromRecipients);
+        }
+        else{
+            ZmOperation.setOperation(this._draftsActionMenu.getSearchMenu(), ZmOperation.SEARCH_TO, ZmOperation.SEARCH_TO, ZmMsg.findEmailToRecipient);
+            ZmOperation.setOperation(this._draftsActionMenu.getSearchMenu(), ZmOperation.SEARCH, ZmOperation.SEARCH, ZmMsg.findEmailFromRecipient);
+        }
 		this._setTagMenu(this._draftsActionMenu);
         this._resetOperations(this._draftsActionMenu, items.length);
 		this._draftsActionMenu.popup(0, ev.docX, ev.docY);
@@ -671,6 +688,27 @@ function(ev) {
 			actionMenu.setSelectedItem(0);
 		}
 	}
+
+    if (!folder) {
+        //might have come from searching on sent items and want to stay in search sent view (i.e. recipient instead of sender)
+        folder = this._getActiveSearchFolder();
+    }
+
+    if (folder && (folder.nId == ZmFolder.ID_SENT  &&
+                  (this._participantActionMenu && this._participantActionMenu.getOp(ZmOperation.SEARCH_MENU)))) {
+        if (item && (item.getAddresses(AjxEmailAddress.TO).getArray().length + item.getAddresses(AjxEmailAddress.CC).getArray().length) > 1){
+            ZmOperation.setOperation(this._participantActionMenu.getSearchMenu(), ZmOperation.SEARCH_TO, ZmOperation.SEARCH_TO, ZmMsg.findEmailToRecipients);
+            ZmOperation.setOperation(this._participantActionMenu.getSearchMenu(), ZmOperation.SEARCH, ZmOperation.SEARCH, ZmMsg.findEmailFromRecipients);
+        }
+        else{
+            ZmOperation.setOperation(this._participantActionMenu.getSearchMenu(), ZmOperation.SEARCH_TO, ZmOperation.SEARCH_TO, ZmMsg.findEmailToRecipient);
+            ZmOperation.setOperation(this._participantActionMenu.getSearchMenu(), ZmOperation.SEARCH, ZmOperation.SEARCH, ZmMsg.findEmailFromRecipient);
+        }
+    }
+    else if (this._participantActionMenu && this._participantActionMenu.getOp(ZmOperation.SEARCH_MENU)) {
+        ZmOperation.setOperation(this._participantActionMenu.getSearchMenu(), ZmOperation.SEARCH_TO, ZmOperation.SEARCH_TO, ZmMsg.findEmailToSender);
+        ZmOperation.setOperation(this._participantActionMenu.getSearchMenu(), ZmOperation.SEARCH, ZmOperation.SEARCH, ZmMsg.findEmailFromSender);
+    }
 };
 
 ZmMailListController.prototype._handleResponseGetContact =
@@ -1757,3 +1795,20 @@ function(addr, callback, errorCallback) {
    });
 };
 
+/**
+ * @private
+ */
+ZmMailListController.prototype._getActiveSearchFolderId =
+function() {
+	var s = this._activeSearch && this._activeSearch.search;
+	return s && s.folderId;
+};
+
+/**
+ * @private
+ */
+ZmMailListController.prototype._getActiveSearchFolder =
+function() {
+	var id = this._getActiveSearchFolderId();
+	return id && appCtxt.getById(id);
+};

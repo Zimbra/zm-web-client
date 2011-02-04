@@ -98,12 +98,33 @@ function(address) {
 	for (var i = 0; i < query.length; i++) {
 		query[i] = ["from:(", query[i], ")"].join("");
 	}
-	this.search({query:query.join(" OR "), types:[groupBy]});
+
+    this.search({query:query.join(" OR "), types:[groupBy]});
+};
+
+
+/**
+ * Performs a search by to address.
+ *
+ * @param	{String}	address		the to address
+ */
+ZmSearchController.prototype.toSearch =
+function(address) {
+	// always search for mail when doing a "tocc: <address>" search
+	var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
+	var query = address instanceof Array ? address.concat() : [ address ];
+	for (var i = 0; i < query.length; i++) {
+		query[i] = ["tocc:(", query[i], ")"].join("");
+	}
+    if (this.currentSearch && this.currentSearch.folderId == ZmFolder.ID_SENT)
+        this.search({query:"in:sent AND (" + query.join(" OR ") + ")", types:[groupBy], folderId:ZmFolder.ID_SENT});
+    else
+	    this.search({query:query.join(" OR "), types:[groupBy]});
 };
 
 /**
  * Shows the browse view by from name.
- * 
+ *
  * @param	{String}	name	the name
  */
 ZmSearchController.prototype.fromBrowse =
