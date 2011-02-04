@@ -1723,6 +1723,10 @@ input.xform_field {
 						left:4px;top:22px;right:4px;bottom:4px;
 					}
 
+/* Drag selection box (rubber-band style DnD selection) */
+.dndSelectionBox {
+	border: 1px black dotted;
+}
 
 /* New widget template styles */
 

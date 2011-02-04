@@ -19,9 +19,11 @@
  * @class
  * This class creates and manages a control for entering email addresses and displaying
  * them in bubbles. An address's surrounding bubble can be used to remove it, or, if the
- * address is a distribution list, expand it.
+ * address is a distribution list, expand it. They can be dragged to other address fields,
+ * or reordered within this one. They can be selected via a "rubber band" selection box.
+ * The bubbles support a few shortcuts.
  *
- * It is not a DwtInputField. If you don't want bubbles, use that instead.
+ * It is not a DwtInputField. If you don't want bubbles, use that (or a native INPUT) instead.
  *
  * @author Conrad Damon
  *
@@ -57,17 +59,23 @@ ZmAddressInputField = function(params) {
 	this._listeners[ZmOperation.EXPAND]			= new AjxListener(null, ZmAddressInputField.prototype._expandListener);
 	this._listeners[ZmOperation.CONTACT]		= new AjxListener(null, ZmAddressInputField.prototype._contactListener);
 
-	if (ZmAddressInputField.AUTO_SELECT_TEXT && AjxEnv.isGeckoBased) {
+	if (ZmAddressInputField.AUTO_SELECT_TEXT) {
 		this._keyDownListener = new AjxListener(this, this._handleKeyDown);
 	}
 
 	this._outsideListener = new AjxListener(null, ZmAddressInputField._outsideMouseDownListener);
 
-	// drag-and-drop
+	// drag-and-drop of bubbles
 	this._dropTgt = new DwtDropTarget("ZmAddressBubble");
 	this._dropTgt.markAsMultiple();
 	this._dropTgt.addDropListener(new AjxListener(this, this._dropListener));
 	this.setDropTarget(this._dropTgt);
+
+	// rubber-band selection of bubbles
+	this._setEventHdlrs([DwtEvent.ONMOUSEDOWN, DwtEvent.ONMOUSEMOVE, DwtEvent.ONMOUSEUP]);
+	this._dragBox = new DwtDragBox();
+	this._dragBox.addDragListener(new AjxListener(this, this._dragBoxListener));
+	this.setDragBox(this._dragBox);
 
 	this._reset();
 };
@@ -312,6 +320,7 @@ function(checkInput) {
 		var bubble = DwtControl.fromElement(span);
 		if (bubble) {
 			this.setSelected(bubble, true);
+			this._checkSelection();
 			return true;
 		}
 	}
@@ -335,7 +344,6 @@ function(bubble, selected) {
 
 	this._numSelected = selected ? this._numSelected + 1 : this._numSelected - 1;
 	DBG.println("aif", "**** selected: " + selected + ", num = " + this._numSelected);
-	this._checkSelectionCount();
 };
 
 /**
@@ -360,7 +368,8 @@ function(bubble) {
 		}
 	}
 	sel = (ref && !refIncluded) ? [ref] : sel;
-//	DBG.println("aif", "getSelection, sel length: " + sel.length);
+	DBG.println("aif", "getSelection, sel length: " + sel.length);
+
 	return sel;
 };
 
@@ -377,6 +386,7 @@ function() {
 	for (var i = 0, len = sel.length; i < len; i++) {
 		this.setSelected(sel[i], false);
 	}
+	this._checkSelection();
 	this._selected = {};
 };
 
@@ -412,7 +422,7 @@ function(ev) {
 ZmAddressInputField.prototype._checkInput =
 function(text) {
 	text = text || this._input.value;
-	DBG.println("aif1", "CHECK input: " + AjxStringUtil.htmlEncode(text));
+	DBG.println("aif", "CHECK input: " + AjxStringUtil.htmlEncode(text));
 	if (text) {
 		this.setValue(text, true);
 	}
@@ -424,6 +434,7 @@ function(ev) {
 	DBG.println("aif", "ZmAddressInputField.onHolderClick");
 	var addrInput = ZmAddressInputField._getAddrInputFromEvent(ev);
 	if (addrInput) {
+		addrInput.blur();	// focus in Chrome won't work without this if any bubbles are selected, no idea why
 		addrInput.focus();
 	}
 };
@@ -439,7 +450,7 @@ ZmAddressInputField.removeBubble =
 function(bubbleId, skipNotify) {
 
 	var bubble = document.getElementById(bubbleId);
-	DBG.println("aif1", "REMOVE bubble: " + AjxStringUtil.htmlEncode(bubble.address));
+	DBG.println("aif", "REMOVE bubble: " + AjxStringUtil.htmlEncode(bubble.address));
 	var parentId = bubble._aifId || ZmAddressInputField.BUBBLE_OBJ_ID[bubbleId];
 	var addrInput = bubble && DwtControl.ALL_BY_ID[parentId];
 	if (addrInput && addrInput.getEnabled()) {
@@ -521,7 +532,7 @@ function() {
 
 	this._bubble		= {};	// bubbles by bubble ID
 	this._addressHash	= {};	// used addresses, so we can check for dupes
-	this._selected		= {};	// which bubbles are selected
+	this._selected		= {};	// which bubbles are selected, by bubble ID
 	this._expandable	= {};	// whether an addr is an expandable DL addr
 
 	this._numBubbles	= 0;
@@ -542,7 +553,6 @@ function() {
 ZmAddressInputField.prototype.focus =
 function() {
 	if (this.getEnabled()) {
-		this._hasFocus = true;
 		this._input.focus();
 	}
 };
@@ -557,8 +567,7 @@ function() {
 
 ZmAddressInputField.prototype._setInputValue =
 function(value) {
-
-	DBG.println("aif1", "SET input value to: " + AjxStringUtil.htmlEncode(value));
+	DBG.println("aif", "SET input value to: " + AjxStringUtil.htmlEncode(value));
 	this._input.value = value;
 	this._resizeInput();
 };
@@ -573,7 +582,7 @@ function(ev, aclv) {
 
 	// Esc in edit mode restores the original address to the bubble
 	if (key == 27 && this._editMode) {
-		DBG.println("aif1", "_keyDownCallback found ESC key in edit mode");
+		DBG.println("aif", "_keyDownCallback found ESC key in edit mode");
 		this._leaveEditMode(true);
 		propagate = false;	// eat the event - eg don't let compose view catch Esc and pop the view
 		if (AjxEnv.isGeckoBased) {
@@ -594,6 +603,7 @@ function(ev, aclv) {
 		var list = this._getBubbleList();
 		if (list && list.length) {
 			this.setSelected(list[list.length - 1], true);
+			this._checkSelection();
 			this.blur();
 		}
 	}
@@ -655,27 +665,8 @@ function(ev, bubble) {
 		this._lastSelectedId = wasOnlyOneSelected ? null : bubble.id;
 	}
 
+	this._checkSelection(bubble);
 	this._resetOperations();
-
-	if (ZmAddressInputField.AUTO_SELECT_TEXT) {
-		this.focus();
-		AjxTimedAction.scheduleAction(new AjxTimedAction(this,
-			function() {
-				Dwt.deselectText();
-				// only FF supports multiple selected ranges; if not FF, select the bubble that was clicked
-				var sel = AjxEnv.isGeckoBased ? this.getSelection() : [bubble];
-				for (var i = 0, len = sel.length; i < len; i++) {
-					var textNode = sel[i].getTextNode();
-					if (textNode) {
-						DBG.println("aif", "select text: " + textNode.data);
-						Dwt.selectText(textNode);
-					}
-				}
-				if (sel.length > 0 && AjxEnv.isGeckoBased) {
-					this.blur();	// make text selection work in FF
-				}
-			}), 10);
-	}
 };
 
 // Double-clicking a bubble moves it into edit mode. It is replaced by the
@@ -906,7 +897,7 @@ function() {
 ZmAddressInputField.prototype._enterEditMode =
 function(bubble) {
 
-	DBG.println("aif1", "ENTER edit mode");
+	DBG.println("aif", "ENTER edit mode");
 	if (this._editMode) {
 		// user double-clicked a bubble while another bubble was being edited
 		this._leaveEditMode();
@@ -914,7 +905,7 @@ function(bubble) {
 
 	this._editMode = true;
 	this._editModeIndex = this._getBubbleIndex(bubble);
-	DBG.println("aif1", "MOVE input");
+	DBG.println("aif", "MOVE input");
 	this._holder.insertBefore(this._input, bubble.getHtmlElement());
 	this.removeBubble(bubble.id, true);
 
@@ -932,7 +923,7 @@ function(bubble) {
 ZmAddressInputField.prototype._leaveEditMode =
 function(restore) {
 
-	DBG.println("aif1", "LEAVE edit mode");
+	DBG.println("aif", "LEAVE edit mode");
 	if (!this._editMode) { return; }
 
 	if (this._holder.lastChild != this._input) {
@@ -943,14 +934,69 @@ function(restore) {
 
 	this._editMode = false;
 	this._editModeIndex = this._editModeAddress = null;
-	DBG.println("aif1", "input value: " + AjxStringUtil.htmlEncode(this._input.value));
+	DBG.println("aif", "input value: " + AjxStringUtil.htmlEncode(this._input.value));
 };
 
+/**
+ * This function should be called after selection of one or more bubbles has been done. It does two things:
+ *
+ * 1. If we are going from no selected bubbles to one or more, add global keydown and outside mouse event
+ * listeners. If vice-versa, remove the listeners.
+ *
+ * 2. Select the text within selected bubbles. That operation is very focus-sensitive. Since it's done on
+ * a timer, we have to be careful with what happens before.
+ *
+ * @param bubble
+ * @private
+ */
+ZmAddressInputField.prototype._checkSelection =
+function(bubble) {
+
+	DBG.println("aif", "_checkSelection");
+	this._checkSelectionCount();
+
+	if (ZmAddressInputField.AUTO_SELECT_TEXT) {
+		if (AjxEnv.isGeckoBased && this.getSelectionCount() > 0) {
+			this.focus();
+		}
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this,
+			function() {
+				DBG.println("aif", "select text");
+				Dwt.deselectText();
+				// only FF supports multiple selected ranges; if not FF, select the bubble that was clicked
+				var sel = [];
+				if (AjxEnv.isGeckoBased) {
+					sel = this.getSelection();
+				}
+				else if (bubble && this._selected[bubble.id]) {
+					sel = [bubble];
+				}
+				for (var i = 0, len = sel.length; i < len; i++) {
+					var textNode = sel[i].getTextNode();
+					if (textNode) {
+						DBG.println("aif", "select text: " + textNode.data);
+						Dwt.selectText(textNode);
+					}
+				}
+				if (sel.length > 0 && AjxEnv.isGeckoBased) {
+					this.blur();	// make text selection work in FF
+				}
+			}), 10);
+	}
+};
+
+/**
+ * There are two things we want to have in place when at least one bubble is selected: a global key
+ * event handler (to trap Delete so it doesn't cause a browser back action), and an outside mouse
+ * event listener so that we can deselect if the user clicks outside the address field.
+ *
+ * @private
+ */
 ZmAddressInputField.prototype._checkSelectionCount =
 function() {
 
 	DBG.println("aif", "selection count: " + this._numSelected);
-	if (!this._selectionMode && this._numSelected == 1) {
+	if (!this._selectionMode && this._numSelected > 0) {
 		if (this._keyDownListener) {
 			appCtxt.getKeyboardMgr().addListener(DwtEvent.ONKEYDOWN, this._keyDownListener);
 		}
@@ -1107,14 +1153,16 @@ function(next) {
 		el = (index >= 0 && index < children.length) && children[index];
 	}
 	if (el) {
-		this.deselectAll();
 		if (el == this._input) {
+			this.setSelected(bubble, false);
 			this.focus();
 		}
 		else {
 			var newBubble = DwtControl.fromElement(el);
 			if (newBubble) {
+				this.setSelected(bubble, false);
 				this.setSelected(newBubble, true);
+				this._checkSelection();
 			}
 		}
 	}
@@ -1171,7 +1219,7 @@ function(ev) {
 ZmAddressInputField.prototype._dropListener =
 function(dragEv) {
 
-	var sel = dragEv.srcData.selection;
+	var sel = dragEv.srcData && dragEv.srcData.selection;
 	if (!(sel && sel.length)) { return; }
 
 	DBG.println("aif", "target obj: " + dragEv.uiEvent.dwtObj.toString());
@@ -1216,6 +1264,31 @@ function(dragEv) {
 			sourceInput.removeBubble(id);
 		}
 		this._setInsertionBar(null);
+	}
+};
+
+ZmAddressInputField.prototype._dragBoxListener =
+function(ev) {
+
+	if (ev.action == DwtDragEvent.DRAG_START) {
+		DBG.println("aif", "ZmAddressInputField DRAG_START");
+		this.deselectAll();
+	}
+	else if (ev.action == DwtDragEvent.DRAG_MOVE) {
+//		DBG.println("aif", "ZmAddressInputField DRAG_MOVE");
+		var box = this._dragSelectionBox;
+		for (var id in this._bubble) {
+			var bubble = this._bubble[id];
+			var span = bubble.getHtmlElement();
+			var sel = Dwt.doOverlap(box, span);
+			if (sel != this._selected[id]) {
+				this.setSelected(bubble, sel);
+			}
+		}
+	}
+	else if (ev.action == DwtDragEvent.DRAG_END) {
+		DBG.println("aif", "ZmAddressInputField DRAG_END");
+		this._checkSelection();
 	}
 };
 
@@ -1457,4 +1530,9 @@ function() {
 		}
 	}
 	return null;
+};
+
+ZmAddressBubble.prototype._dragOver =
+function(ev) {
+	this.addrInput._dragOver(ev);
 };

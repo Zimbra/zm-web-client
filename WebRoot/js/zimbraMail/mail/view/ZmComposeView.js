@@ -2745,7 +2745,9 @@ function(templateId, data) {
 		this._field[type] = document.getElementById(this._fieldId[type]);
 		if (this._field[type]) {
 			this._field[type].addrType = type;
-			this._setEventHandler(this._fieldId[type], "onFocus");
+			if (!this._useAcAddrBubbles) {
+				this._setEventHandler(this._fieldId[type], "onFocus");
+			}
 		}
 
 		// create picker
