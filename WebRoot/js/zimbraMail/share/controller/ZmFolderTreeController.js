@@ -147,6 +147,9 @@ function(parent, type, id) {
 		}
         if (appCtxt.multiAccounts) {
             var isShareVisible = !folder.getAccount().isMain && folder.getAccount().isZimbraAccount;
+            if(nId == ZmFolder.ID_SPAM || nId == ZmFolder.ID_TRASH) {
+                isShareVisible = false;
+            }
             parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.EDIT_PROPS], isShareVisible);
         }
 		// bug fix #30435 - enable empty folder for sync failures folder
