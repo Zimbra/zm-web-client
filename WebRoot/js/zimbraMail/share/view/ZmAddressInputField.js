@@ -91,7 +91,9 @@ function() {
 };
 
 ZmAddressInputField.AUTO_SELECT_TEXT = true;
-ZmAddressInputField.INPUT_EXTRA = 30;
+
+ZmAddressInputField.INPUT_EXTRA = 30;		// extra width for the INPUT
+ZmAddressInputField.INPUT_EXTRA_SMALL = 10;	// edit mode
 
 // tie a bubble SPAN to a widget that can handle clicks
 ZmAddressInputField.BUBBLE_OBJ_ID = {};
@@ -705,6 +707,7 @@ function(ev, bubble) {
 		}
 	}
 	else {
+		this._setContactText(false);
 		menu.popup(0, ev.docX, ev.docY);
 	}
 
@@ -1033,8 +1036,11 @@ function() {
 		// FF/Win: fudge factor since string is longer in INPUT than when measured in SPAN
 		strW = strW * 1.2;
 	}
-	var pad = this._editMode ? 0 : ZmAddressInputField.INPUT_EXTRA;
+	var pad = this._editMode ? ZmAddressInputField.INPUT_EXTRA_SMALL : ZmAddressInputField.INPUT_EXTRA;
 	var inputWidth = Math.min(strW, holderWidth) + pad;
+	if (this._editMode) {
+		inputWidth = Math.max(inputWidth, ZmAddressInputField.INPUT_EXTRA);
+	}
 	Dwt.setSize(this._input, inputWidth, Dwt.DEFAULT);
 
 	if (AjxEnv.isIE) {
@@ -1398,7 +1404,7 @@ ZmAddressBubble = function(params) {
 	this.addrInput = params.parent;
 	this.address = params.address;
 	var match = this.match = params.match;
-	this.email = params.email;
+	this.email = params.email || params.address;
 	this.dlAddress = params.dlAddress = params.dlAddress || params.email;
 	this.type = params.type;
 	this.isAddressBubble = true;
