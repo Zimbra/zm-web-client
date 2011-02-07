@@ -1857,8 +1857,9 @@ function(msgNode) {
 		var conv = appCtxt.getById(msgNode.cid);
 		if (conv) {
 			// update conv's folder list
-			AjxDebug.println(AjxDebug.NOTIFY, "update conv folder list");
 			conv.folders[msgNode.l] = true;
+			var folders = AjxUtil.keys(conv.folders);
+			AjxDebug.println(AjxDebug.NOTIFY, "update conv folder list: conv spans " + folders.length + " folder(s): " + folders.join(" "));
 			// update msg list if none exists since we know this conv has at least one msg
 			if (!conv.msgIds) {
 				conv.msgIds = [this.id];
