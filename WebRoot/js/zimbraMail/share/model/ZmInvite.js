@@ -582,10 +582,7 @@ function(compNum) {
 ZmInvite.prototype.getServerEndDate =
 function(compNum, noSpecialUtcCase) {
 	var cn = compNum || 0;
-	if (this._serverEndDate == null) {
-		this._serverEndDate = AjxDateUtil.parseServerDateTime(this.getServerEndTime(cn), noSpecialUtcCase);
-	}
-	return this._serverEndDate;
+    return AjxDateUtil.parseServerDateTime(this.getServerEndTime(cn), noSpecialUtcCase);
 };
 
 /**
@@ -608,12 +605,9 @@ function(compNum) {
  * @return	{Date}	the start date
  */
 ZmInvite.prototype.getServerStartDate =
-function(compNum, noSpecialUtcCase) {
+function(compNum, noSpecialUtcCase, force) {
 	var cn = compNum || 0;
-	if (this._serverStartDate == null) {
-		this._serverStartDate = AjxDateUtil.parseServerDateTime(this.getServerStartTime(cn), noSpecialUtcCase);
-	}
-	return this._serverStartDate;
+    return AjxDateUtil.parseServerDateTime(this.getServerStartTime(cn), noSpecialUtcCase);
 };
 
 /**
