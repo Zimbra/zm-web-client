@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -102,23 +102,27 @@
 							<option <c:if test="${keys}">id="OPFLAG" </c:if> value="flag"><fmt:message key="actionAddFlag"/>
 							<option <c:if test="${keys}">id="OPUNFLAG" </c:if> value="unflag"><fmt:message key="actionRemoveFlag"/>
 							</c:if>
-							<c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
-								<option <c:if test="${keys}">id="OPSPAM" </c:if> value="actionSpam"/><fmt:message key="actionSpam"/>
-							</c:if>
-							<c:if test="${context.isFolderSearch and context.folder.isSpam}">
-								<option <c:if test="${keys}">id="OPNOTSPAM" </c:if> value="actionNotSpam"/><fmt:message key="actionNotSpam"/>
+							<c:if test="${mailbox.features.spam}">
+								<c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
+									<option <c:if test="${keys}">id="OPSPAM" </c:if> value="actionSpam"/><fmt:message key="actionSpam"/>
+								</c:if>
+								<c:if test="${context.isFolderSearch and context.folder.isSpam}">
+									<option <c:if test="${keys}">id="OPNOTSPAM" </c:if> value="actionNotSpam"/><fmt:message key="actionNotSpam"/>
+								</c:if>
 							</c:if>
 								<app:tagOptions mailbox="${mailbox}" keys="${keys}"/>
 						</select>
 					</td>
 					<app:button id="${keys ? 'OPGO' : ''}" name="action" tooltip="actionConvGoTT" text="actionGo"/>
 					<%--
-					<td><div class='vertSep'></div></td>
-					<c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
-						<app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.png"/>
-					</c:if>
-					<c:if test="${context.isFolderSearch and context.folder.isSpam}">
-						<app:button id="${keys  ?'OPSPAM' : ''}" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgInbox.png"/>
+					<c:if test="${mailbox.features.spam}">
+						<td><div class='vertSep'></div></td>
+						<c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
+							<app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.png"/>
+						</c:if>
+						<c:if test="${context.isFolderSearch and context.folder.isSpam}">
+							<app:button id="${keys  ?'OPSPAM' : ''}" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgInbox.png"/>
+						</c:if>
 					</c:if>
 					--%>
 					<c:if test="${context.isFolderSearch}">
