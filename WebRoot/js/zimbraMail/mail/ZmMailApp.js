@@ -928,9 +928,6 @@ function(notify) {
 
 	if (!(notify.deleted && notify.created && notify.modified))	{ return notify; }
 
-	DBG.println(AjxDebug.NOTIFY, " ---------------- ZmMailApp::preNotify - entry");
-	DBG.dumpObj(AjxDebug.NOTIFY, notify);
-
 	// first, see if we are deleting any virtual convs (which have negative IDs)
 	var virtConvDeleted = false;
 	var deletedIds = notify.deleted.id && notify.deleted.id.split(",");
@@ -947,7 +944,6 @@ function(notify) {
 		}
 	}
 	if (!virtConvDeleted) {
-		DBG.println(AjxDebug.NOTIFY, "no virtual convs deleted, return");
 		return notify;
 	}
 
@@ -974,7 +970,6 @@ function(notify) {
 		}
 	}
 	if (!gotNewConv) {
-		DBG.println(AjxDebug.NOTIFY, "no virtual convs promoted, return");
 		return notify;
 	}
 
@@ -1005,7 +1000,6 @@ function(notify) {
 		}
 	}
 	if (!msgMoved) {
-		DBG.println(AjxDebug.NOTIFY, "no msgs changed cid, return");
 		return notify;
 	}
 
@@ -1066,8 +1060,6 @@ function(notify) {
 		mods["c"] = newMods;
 		appCtxt.getRequestMgr()._handleModifies(mods);
 	}
-	DBG.println(AjxDebug.NOTIFY, " ---------------- ZmMailApp::preNotify - exit");
-	DBG.dumpObj(AjxDebug.NOTIFY, notify);
     appCtxt.setNotifyDebug("Handling NOTIFY: in ZmMailApp - End of Prenotify");
 };
 
@@ -1352,7 +1344,6 @@ function(creates, type, items, currList, sortBy, convs, last) {
 		}
 
 		DBG.println(AjxDebug.DBG1, "ZmMailApp: handling CREATE for node: " + nodeName);
-		AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: item passed _checkType " + create.id);
 
 		var item = appCtxt.getById(create.id);
 		if (!item) {

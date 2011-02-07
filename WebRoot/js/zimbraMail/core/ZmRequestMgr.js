@@ -601,10 +601,12 @@ ZmRequestMgr.prototype._notifyHandler =
 function(notify) {
 	DBG.println(AjxDebug.DBG1, "Handling NOTIFY");
     if (window.isNotifyDebugOn) {
-        var notifyStr = AjxStringUtil.objToString(notify)
+        var notifyStr = AjxStringUtil.objToString(notify);
         appCtxt.setNotifyDebug("Handling NOTIFY: in ZmRequestMgr _notifyHandler");
         appCtxt.setNotifyDebug(notifyStr);
     }
+	AjxDebug.println(AjxDebug.NOTIFY, "Notification block:");
+	AjxDebug.dumpObj(AjxDebug.NOTIFY, notify);
 	this._controller.runAppFunction("preNotify", false, notify);
 	if (notify.deleted && notify.deleted.id) {
 		this._handleDeletes(notify.deleted);

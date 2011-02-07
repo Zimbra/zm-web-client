@@ -617,6 +617,9 @@ function(convNode) {
 				this.folderId = msgNode.l;
 				this.folders[msgNode.l] = true;
 			}
+			else {
+				AjxDebug.println(AjxDebug.NOTIFY, "no folder added for conv");
+			}
 			if (msgNode.s) {
 				this.size = msgNode.s;
 			}
