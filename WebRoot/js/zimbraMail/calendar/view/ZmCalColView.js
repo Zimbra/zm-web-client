@@ -2549,9 +2549,9 @@ function(list, skipMiniCalUpdate) {
 	this._layout();
 
     if(list && list.size() > 0 && this._apptCount == 0) {
-        AjxDebug.println(AjxDebug.NOTIFY, " ---------------- ZmCalColView::set - calendar is blank");
-        AjxDebug.println(AjxDebug.NOTIFY, " list size :" + list.size());
-        AjxDebug.dumpObj(AjxDebug.NOTIFY, this._layouts);
+        AjxDebug.println(AjxDebug.CALENDAR, " ---------------- ZmCalColView::set - calendar is blank");
+        AjxDebug.println(AjxDebug.CALENDAR, " list size :" + list.size());
+        AjxDebug.dumpObj(AjxDebug.CALENDAR, this._layouts);
     }
 
     if(this._fbBarEnabled){
