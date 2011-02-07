@@ -526,3 +526,15 @@
 		</tr>
 	</table>
 </template>
+
+<template id='mail.Message#EmptyMessage'>
+	<table width='100%' cellspacing='0' cellpadding='1'>
+		<tr>
+            <td class='NoResults' style="text-align:center;">
+                <br>
+                <$= data.isHtml ? ZmMsg.messageEmptyTextContent : ZmMsg.messageEmptyTextContent $>
+            </td>
+		</tr>
+	</table>
+</template>
+

@@ -1222,6 +1222,11 @@ function(msg, container, callback) {
 						return partToCid[p2] ? [p1, '"cid:', partToCid[p2], '"', p3].join("") : s;
 					});
 				}
+
+                if(!c){
+                    c = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: true});
+                }
+
 				this._makeIframeProxy(el, c, false, bodyPart.truncated);
 			} else if (ZmMimeTable.isRenderableImage(bodyPart.ct)) {
 				var html = [
@@ -1254,7 +1259,13 @@ function(msg, container, callback) {
 						c = this._inviteMsgView.truncateBodyContent(c);
 					}
 
-					this._makeIframeProxy(el, c, true, bodyPart.truncated);
+                    var isTextMsg = true;
+                    if(!c){
+                        c = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: false});
+                        isTextMsg = false; //To make sure we display html content properly
+
+                    }
+					this._makeIframeProxy(el, c, isTextMsg, bodyPart.truncated);
 				}
 			}
 		}
