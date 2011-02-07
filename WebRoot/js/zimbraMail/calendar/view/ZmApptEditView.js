@@ -55,6 +55,9 @@ ZmApptEditView = function(parent, attendees, controller, dateInfo) {
     //used to preserve original attendees while forwarding appt
     this._fwdApptOrigAttendees = [];
     this._attendeesHashMap = {};
+
+    // Store Appt form values.
+    this._apptFormValue = {};
 };
 
 ZmApptEditView.prototype = new ZmCalItemEditView;
