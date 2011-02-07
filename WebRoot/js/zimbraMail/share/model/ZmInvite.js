@@ -605,7 +605,7 @@ function(compNum) {
  * @return	{Date}	the start date
  */
 ZmInvite.prototype.getServerStartDate =
-function(compNum, noSpecialUtcCase, force) {
+function(compNum, noSpecialUtcCase) {
 	var cn = compNum || 0;
     return AjxDateUtil.parseServerDateTime(this.getServerStartTime(cn), noSpecialUtcCase);
 };
