@@ -685,7 +685,7 @@ function() {
 
 		function getURL() {
 				var url = dlg.linkTarget.getValue();
-				if (url && !/^(https?|ftp):\x2f\x2f/i.test(url)) {
+                if (url && !/^(https?|ftp):\x2f\x2f/i.test(url) && !/^mailto:([a-zA-Z0-9_.-])+@([a-zA-Z0-9_.-])+\.([a-zA-Z])+([a-zA-Z])+/i.test(url)){
 					url = "http://" + url;
 					dlg.linkTarget.setValue(url);
 				}
