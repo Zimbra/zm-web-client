@@ -590,7 +590,9 @@ function(ev) {
     if(type == ZmCalBaseItem.LOCATION) {
         var location = ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.LOCATION].getArray(), ZmCalBaseItem.LOCATION);
         var apptTab = this._tabPages[ZmApptComposeView.TAB_APPOINTMENT];
-        //apptTab.setApptLocation(location);
+        if(!this._proposeNewTime) {
+            apptTab.setApptLocation(location);
+        }
     }
 };
 
