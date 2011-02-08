@@ -93,7 +93,8 @@ ZmImportExportPage.prototype._handleImportButton = function() {
 
 	// get import params
 	var importView = this.getFormObject("IMPORT_FOLDER");
-	var params = importView.getParams();
+	var params = {};
+    params = importView && importView.getParams();
 	params.callback = params.errorCallback = new AjxCallback(this, this._handleImportComplete);
 
 	// import
