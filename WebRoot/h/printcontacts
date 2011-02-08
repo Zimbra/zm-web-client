@@ -31,7 +31,12 @@
 <style>
     .ZhCallListPrintView td, .zPrintMsgs *{
         font-family:Tahoma,Arial,Helvetica,sans-serif;
-        font-size:${mailbox.prefs.defaultPrintFontSize} !important;
+    }
+    .ZhCallListPrintView td, .zPrintMsgs .contactHeader {
+        font-size:${mailbox.prefs.defaultPrintFontSize};
+    }
+    .zPrintMsgs RUBY RT, .zPrintMsgs RUBY RP {
+        font-weight: normal;
     }
     .companyName{
         color: #555555 !important;
