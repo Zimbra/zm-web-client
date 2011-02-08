@@ -121,7 +121,7 @@
 							<app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.png"/>
 						</c:if>
 						<c:if test="${context.isFolderSearch and context.folder.isSpam}">
-							<app:button id="${keys  ?'OPSPAM' : ''}" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgInbox.png"/>
+							<app:button id="${keys  ?'OPSPAM' : ''}" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgNotJunk.png"/>
 						</c:if>
 					</c:if>
 					--%>

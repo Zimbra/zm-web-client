@@ -85,7 +85,7 @@
                         </c:if>
                         <c:if test="${context.isFolderSearch and context.folder.isSpam}">
                             <td><div class='vertSep'></div></td>
-                            <app:button name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgInbox.png"/>
+                            <app:button name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgNotJunk.png"/>
                         </c:if>
                     </c:if>
                     --%>
