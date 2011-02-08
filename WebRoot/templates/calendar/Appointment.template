@@ -1023,9 +1023,15 @@
 
 <template id='calendar.Appointment#TimeLocationPreference'>
     <table cellspacing="5" cellpadding="0" border="0">
-            <tbody>
-                <tr><td><input type="checkbox" id="${id}_disablesuggestions"><$= ZmMsg.turnOffSuggestions $></td></tr>
-            </tbody>
+        <tbody>
+            <tr>
+                <td align="right"><$= ZmMsg.suggestionsLabel $>&nbsp;</td>
+                <td>
+                    <input type='radio' name="suggestiontype" id='${id}_autosuggest' checked/>&nbsp;<$=ZmMsg.suggestionsAutomatic $>
+                    <input type='radio' name="suggestiontype" id='${id}_disablesuggestions'/>&nbsp;<$=ZmMsg.suggestionsManual $>
+                </td>
+            </tr>
+        </tbody>
     </table>
     <table cellspacing="5" cellpadding="0" border="0" id="${id}_locationpref">
         <tbody>
