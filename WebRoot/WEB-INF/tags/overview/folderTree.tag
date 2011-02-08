@@ -53,8 +53,10 @@
             <app:overviewFolder folder="${mailbox.drafts}" keys="${keys}"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.drafts.id}" skipsystem="false"/>
 
-            <app:overviewFolder folder="${mailbox.spam}" keys="${keys}"/>
-            <app:doFolderTree skiproot="${true}" parentid="${mailbox.spam.id}" skipsystem="false"/>
+            <c:if test="${mailbox.features.spam}">
+                <app:overviewFolder folder="${mailbox.spam}" keys="${keys}"/>
+                <app:doFolderTree skiproot="${true}" parentid="${mailbox.spam.id}" skipsystem="false"/>
+            </c:if>
 
             <app:overviewFolder folder="${mailbox.trash}" keys="${keys}"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>

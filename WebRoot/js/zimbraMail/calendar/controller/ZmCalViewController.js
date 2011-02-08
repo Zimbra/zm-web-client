@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -1349,7 +1349,7 @@ function(ev) {
 		for (var i = 0; i < list.length; i++) {
 			ids.push(list[i].invId);
 		}
-		url = "/h/printappointments?id=" + ids.join(",") + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT);  //bug:53493
+		url = "/h/printappointments?id=" + ids.join(",") + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 
 	} else {
 		var date = this._viewMgr
@@ -1381,7 +1381,7 @@ function(ev) {
 			"/h/printcalendar?view=", view,
 			"&l=", l,
 			"&date=", date.getFullYear(), month, day,
-            "&tz=",AjxTimezone.getServerId(AjxTimezone.DEFAULT)                 //bug:53493
+			"&tz=",AjxTimezone.getServerId(AjxTimezone.DEFAULT)
 		].join("");
 	}
 
@@ -1685,7 +1685,7 @@ function(appt, mode) {
 		var msg = isTrash ? ZmMsg.confirmPermanentCancelAppt : ZmMsg.confirmCancelAppt;
 
 		if (appt.isRecurring() && !isTrash) {
-			msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, appt.name) :  ZmMsg.confirmCancelApptSeries;
+	    	msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, appt.name) :  ZmMsg.confirmCancelApptSeries; 
 		}
 		confirmDialog.popup(msg, cancelNoReplyCallback);
 	}
