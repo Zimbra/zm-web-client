@@ -382,6 +382,7 @@ function() {
 ZmCalItemComposeController.prototype.showErrorMessage =
 function(errorMsg) {
 	var dialog = appCtxt.getMsgDialog();
+    dialog.reset();
 	//var msg = ZmMsg.errorSaving + (errorMsg ? (":<p>" + errorMsg) : ".");
 	var msg = errorMsg ? AjxMessageFormat.format(ZmMsg.errorSavingWithMessage, errorMsg) : ZmMsg.errorSaving;
 	dialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
