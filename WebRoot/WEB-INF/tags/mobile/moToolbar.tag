@@ -59,7 +59,7 @@
 </c:choose>
 </span><c:if test="${context.searchResult.size gt 0 && !context.isGALSearch}">
 <span>
-    <select class="zo_select_button" name="anAction" onchange="return submitForm(document.getElementById('zForm'),null,this.value);">
+    <select class="zo_select_button" name="${isTop ? 'anAction' : 'anActionBottom'}" onchange="return submitForm(document.getElementById('zForm'),null,this.value);">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <c:choose><c:when test="${not context.folder.isInTrash}"><option value="actionDelete"><fmt:message key="delete"/></option></c:when>
             <c:otherwise><option value="actionHardDelete"><fmt:message key="delete"/></option></c:otherwise>
@@ -147,7 +147,7 @@
 </c:if>
 <c:if test="${context.searchResult.size gt 0 && !context.isGALSearch}">
 <span>
-    <select class="zo_select_button" name="anAction" onchange="return submitForm(document.getElementById('zForm'),null,this.value);">
+    <select class="zo_select_button" name="${isTop ? 'anAction' : 'anActionBottom'}" onchange="return submitForm(document.getElementById('zForm'),null,this.value);">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <c:choose><c:when test="${not context.folder.isInTrash}"><option value="actionDelete"><fmt:message key="delete"/></option></c:when>
             <c:otherwise><option value="actionHardDelete"><fmt:message key="delete"/></option></c:otherwise>
