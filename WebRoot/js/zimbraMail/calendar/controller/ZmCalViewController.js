@@ -483,6 +483,7 @@ function(item, checked) {
 	item.setChecked(checked);
 	var organizer = item.getData(Dwt.KEY_OBJECT);
 	if (organizer && organizer.type == ZmOrganizer.CALENDAR) {
+        AjxDebug.println(AjxDebug.CALENDAR, " ---------------- calendar " +  organizer.name + " [" + organizer.id + "] is " + (checked ? "checked" : "unchecked"));
 		this._calItemStatus[organizer.id] = {item: organizer, checked: checked};
 	}
 

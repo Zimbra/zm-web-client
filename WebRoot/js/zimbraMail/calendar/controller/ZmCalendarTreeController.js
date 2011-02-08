@@ -392,6 +392,8 @@ function(ev, treeView, overviewId) {
 
 		// if calendar is deleted, notify will initiate the refresh action
 		if (ev.event != ZmEvent.E_DELETE) {
+            var calIds = controller.getCheckedCalendarFolderIds();
+            AjxDebug.println(AjxDebug.CALENDAR, "tree change listener refreshing calendar event '" + ev.event + "' with checked folder ids " + calIds.join(","));
 			controller._refreshAction(true);
 			ev.handled = true;
 		}
