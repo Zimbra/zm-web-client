@@ -158,6 +158,8 @@
 
 </div>
 </div>
+<c:if test="${ua.isiPad == true}">
 </div>
 </div>
 </div>
+</c:if> 

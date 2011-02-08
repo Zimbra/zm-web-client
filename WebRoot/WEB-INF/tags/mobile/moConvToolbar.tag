@@ -67,7 +67,7 @@
 
         <c:if test="${context.searchResult.size gt 0}">
         <span>
-            <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm1'));">
+            <select class="zo_select_button" name="${isTop ? 'anAction' : 'anActionBottom'}" onchange="submitForm(document.getElementById('zForm1'));">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <optgroup label="Delete">
             <c:choose>
@@ -189,7 +189,7 @@
     </c:if>
 </span><span>
 <c:if test="${singleMessage}">
-    <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'));">
+    <select class="zo_select_button" name="${isTop ? 'anAction' : 'anActionBottom'}" onchange="submitForm(document.getElementById('zForm'));">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <c:set var="myFolder" value="${zm:getFolder(pageContext, message.folderId)}"/>
         <c:set var="inTrash" value="${myFolder.isInTrash}"/>
@@ -228,7 +228,7 @@
     <script type="text/javascript">var actGo=document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>
 </c:if>
 <c:if test="${!singleMessage && convSearchResult.size gt 0}">
-    <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'));">
+    <select class="zo_select_button" name="${isTop ? 'anAction' : 'anActionBottom'}" onchange="submitForm(document.getElementById('zForm'));">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <optgroup label="<fmt:message key="delete"/>">
             <c:choose>
@@ -281,7 +281,7 @@
 </span>
 <c:if test="${context.searchResult.size gt 0}">
 <span>
-    <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'));">
+    <select class="zo_select_button" name="${isTop ? 'anAction' : 'anActionBottom'}" onchange="submitForm(document.getElementById('zForm'));">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
         <optgroup label="Delete">
             <c:choose>

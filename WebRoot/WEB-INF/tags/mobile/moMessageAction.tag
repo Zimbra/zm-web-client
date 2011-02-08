@@ -33,7 +33,7 @@
 </c:forEach>
 <c:set var="selectedCidsString" scope="request" value=",${requestScope.selectedIdsString},"/>
 <c:set var="anAction"
-       value="${not empty paramValues.anAction[0] ? paramValues.anAction[0] :  paramValues.anAction[1]}"/>
+       value="${not empty paramValues.anAction[0] ? paramValues.anAction[0] :  (not empty paramValues.anAction[1] ? paramValues.anAction[1] : paramValues.anActionBottom[0])}"/>
 <c:catch var="msgActionException">
 <c:choose>
 <c:when test="${zm:actionSet(param,'moreActions') && anAction eq 'selectAll'}">
