@@ -530,6 +530,10 @@ function(zimletArray, zimletNames, isJS) {
     var includes = [];
     if (window.appDevMode && isJS) {
         var zimlets = appCtxt.get(ZmSetting.ZIMLETS) || [];
+        if(appCtxt.isChildWindow) {
+            var winOpener = window.opener || window;
+            zimlets = winOpener.appCtxt.get(ZmSetting.ZIMLETS) || []
+        }
         for (var i = 0; i < zimlets.length; i++) {
             var zimlet = zimlets[i].zimlet[0];
             includes.push([appContextPath, "/res/", zimlet.name, ".js", query, locid].join(""));

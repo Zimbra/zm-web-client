@@ -101,7 +101,7 @@
 	pageContext.setAttribute("vers", vers);
 	pageContext.setAttribute("locale", locale);
     pageContext.setAttribute("isOfflineMode", offlineMode != null && offlineMode.equals("true"));    
-	pageContext.setAttribute("isDevMode", isDevMode);
+	pageContext.setAttribute("isDevMode", isDev);
 	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
 %>
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
@@ -119,7 +119,7 @@
 	appCurrentSkin = "${zm:cook(skin)}";
     appRequestLocaleId = "${locale}";
 	// NOTE: Force zimlets to load individually to avoid aggregation!
-	appExtension   = "js";
+	appExtension   = "${zm:jsEncode(ext)}";
 	window.appDevMode     = ${isDevMode};
 </script>
 <script>
