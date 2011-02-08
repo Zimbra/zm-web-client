@@ -369,6 +369,9 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 			} else if (attendee && type == ZmCalBaseItem.PERSON) {
 				// remember actual address (in case it's email2 or email3)
 				attendee._inviteAddress = addr;
+                attendee.getEmail = function() {
+				    return this._inviteAddress || this.constructor.prototype.getEmail.apply(this);
+			    }
 			}
 		}
 	}
