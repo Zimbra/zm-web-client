@@ -514,10 +514,11 @@
 
 <template id="share.Dialogs#ZmSelectAddrDialog">
 	<tr>
-		<td colspan=2><$= ZmMsg.selectAddrText $></td>
+		<td colspan=2>&nbsp;</td>
 	</tr>
 	<tr>
-		<td colspan=2 id='${id}_addrListTd'></td>
+		<td class="Label" style="padding-right: 5px">Addresses: </td>
+		<td id='${id}_addrListTd'></td>
 	</tr>
 </template>
 

@@ -460,10 +460,8 @@ function() {
 
 ZmMailListController.prototype._initializeDraftsActionMenu =
 function() {
-	if (!this._draftsActionMenu) {
+    if (!this._draftsActionMenu) {
 		var menuItems = [
-            ZmOperation.SEARCH_MENU,
-            ZmOperation.SEP,
 			ZmOperation.EDIT,
 			ZmOperation.SEP,
 			ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.PRINT,
@@ -479,6 +477,28 @@ function() {
 		this._draftsActionMenu.addPopdownListener(this._menuPopdownListener);
 		this._setupTagMenu(this._draftsActionMenu);
 	}
+};
+
+ZmMailListController.prototype._setDraftSearchMenu =
+function(address, item, ev){
+   if (address && appCtxt.get(ZmSetting.SEARCH_ENABLED) && (ev.field == ZmItem.F_PARTICIPANT || ev.field == ZmItem.F_FROM)){
+        if (!this._draftsActionMenu.getOp(ZmOperation.SEARCH_MENU)) {
+            ZmOperation.addOperation(this._draftsActionMenu, ZmOperation.SEARCH_MENU, [ZmOperation.SEARCH_MENU, ZmOperation.SEP], 0);
+            this._setSearchMenu(this._draftsActionMenu);
+        }
+        if (item && (item.getAddresses(AjxEmailAddress.TO).getArray().length + item.getAddresses(AjxEmailAddress.CC).getArray().length) > 1){
+            ZmOperation.setOperation(this._draftsActionMenu.getSearchMenu(), ZmOperation.SEARCH_TO, ZmOperation.SEARCH_TO, ZmMsg.findEmailToRecipients);
+            ZmOperation.setOperation(this._draftsActionMenu.getSearchMenu(), ZmOperation.SEARCH, ZmOperation.SEARCH, ZmMsg.findEmailFromRecipients);
+        }
+        else{
+            ZmOperation.setOperation(this._draftsActionMenu.getSearchMenu(), ZmOperation.SEARCH_TO, ZmOperation.SEARCH_TO, ZmMsg.findEmailToRecipient);
+            ZmOperation.setOperation(this._draftsActionMenu.getSearchMenu(), ZmOperation.SEARCH, ZmOperation.SEARCH, ZmMsg.findEmailFromRecipient);
+        }
+     }
+     else if (this._draftsActionMenu.getOp(ZmOperation.SEARCH_MENU)) {
+            this._draftsActionMenu = null;
+            this._initializeDraftsActionMenu();
+     }
 };
 
 ZmMailListController.prototype._initializeToolBar =
@@ -631,14 +651,9 @@ function(ev) {
 	if (folder && folder.nId == ZmFolder.ID_DRAFTS || (item && item.isDraft)) {
 		// show drafts menu
 		this._initializeDraftsActionMenu();
-        if (item && (item.getAddresses(AjxEmailAddress.TO).getArray().length + item.getAddresses(AjxEmailAddress.CC).getArray().length) > 1){
-            ZmOperation.setOperation(this._draftsActionMenu.getSearchMenu(), ZmOperation.SEARCH_TO, ZmOperation.SEARCH_TO, ZmMsg.findEmailToRecipients);
-            ZmOperation.setOperation(this._draftsActionMenu.getSearchMenu(), ZmOperation.SEARCH, ZmOperation.SEARCH, ZmMsg.findEmailFromRecipients);
-        }
-        else{
-            ZmOperation.setOperation(this._draftsActionMenu.getSearchMenu(), ZmOperation.SEARCH_TO, ZmOperation.SEARCH_TO, ZmMsg.findEmailToRecipient);
-            ZmOperation.setOperation(this._draftsActionMenu.getSearchMenu(), ZmOperation.SEARCH, ZmOperation.SEARCH, ZmMsg.findEmailFromRecipient);
-        }
+        this._setDraftSearchMenu(address, item, ev);
+        if (address)
+            this._actionEv.address = address;
 		this._setTagMenu(this._draftsActionMenu);
         this._resetOperations(this._draftsActionMenu, items.length);
 		this._draftsActionMenu.popup(0, ev.docX, ev.docY);

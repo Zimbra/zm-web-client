@@ -117,7 +117,7 @@ function(address) {
 		query[i] = ["tocc:(", query[i], ")"].join("");
 	}
     if (this.currentSearch && this.currentSearch.folderId == ZmFolder.ID_SENT)
-        this.search({query:"in:sent AND (" + query.join(" OR ") + ")", types:[groupBy], folderId:ZmFolder.ID_SENT});
+        this.search({query:"in:sent AND (" + query.join(" OR ") + ")", types:[groupBy]});
     else
 	    this.search({query:query.join(" OR "), types:[groupBy]});
 };

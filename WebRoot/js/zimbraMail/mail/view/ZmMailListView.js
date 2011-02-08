@@ -567,7 +567,7 @@ function(field, itemIdx) {
 
 	var isOutboundFolder = this._isOutboundFolder();
 	if (field == ZmItem.F_FROM && isOutboundFolder) {
-	   return this._headerList[itemIdx]._sortable ? ZmMsg.sortByTo : ZmMsg.to;
+	   return this._headerList[itemIdx]._sortable ? ZmMsg.findEmailsSentFolderTitle : ZmMsg.to;
 	} else if (field == ZmItem.F_STATUS) {
 		return ZmMsg.messageStatus;
 	} else {
