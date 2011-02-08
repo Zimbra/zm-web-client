@@ -251,7 +251,7 @@ function() {
 	if (appCtxt.multiAccounts) {
 		var list = appCtxt.accountList.visibleAccounts;
 		for (var i = 0; i < list.length; i++) {
-			this._setSearchFor(account);
+			this._setSearchFor(list[i]);
 			if (this._searchFor.length > 1) {
 				showSelect = true;
 				break;
