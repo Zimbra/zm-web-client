@@ -703,7 +703,8 @@ ZmListController.prototype._printListener =
 function(ev) {
 	var items = this.getSelection();
 	var item = (items instanceof Array) ? items[0] : items;
-	window.open(item.getRestUrl(), "_blank");
+    if(item)
+	    window.open(item.getRestUrl(), "_blank");
 };
 
 ZmListController.prototype._backListener =
