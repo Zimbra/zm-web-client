@@ -33,6 +33,8 @@ ZmApptComposeController = function(container, app) {
 	this._addedAttendees = [];
 	this._removedAttendees = [];
 	this._kbMgr = appCtxt.getKeyboardMgr();
+
+	appCtxt.getSettings().getSetting(ZmSetting.USE_ADDR_BUBBLES).addChangeListener(new AjxListener(this, this._handleSettingChange));
 };
 
 ZmApptComposeController.prototype = new ZmCalItemComposeController;
@@ -1063,7 +1065,7 @@ function(newAppt) {
 ZmApptComposeController.prototype.initComposeView =
 function(initHide) {
     
-	if (!this._composeView) {
+	if (!this._composeView || this._needComposeViewRefresh) {
 		this._composeView = this._createComposeView();
         var appEditView = this._composeView.getApptEditView();
         this._smartScheduler = this._createScheduler(appEditView);
@@ -1085,6 +1087,7 @@ function(initHide) {
 		if (initHide) {
 			this._composeView.preload();
 		}
+		this._needComposeViewRefresh = false;
 		return true;
 	}
     else{
@@ -1162,4 +1165,15 @@ function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay) 
 ZmApptComposeController.prototype._resetToolbarOperations =
 function() {
     //do nothing - this  gets called when this controller handles a list view
+};
+
+ZmApptComposeController.prototype._handleSettingChange =
+function(ev) {
+
+	if (ev.type != ZmEvent.S_SETTING) { return; }
+
+	var id = ev.source.id;
+	if (id == ZmSetting.USE_ADDR_BUBBLES) {
+		this._needComposeViewRefresh = true;
+	}
 };

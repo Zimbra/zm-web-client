@@ -1652,12 +1652,13 @@ function(content, sigStyle, sig, newLine) {
 	return content;
 };
 
-ZmComposeView.prototype._dispose =
+ZmComposeView.prototype.dispose =
 function() {
 	if (this._identityChangeListenerObj) {
 		var collection = appCtxt.getIdentityCollection();
 		collection.removeChangeListener(this._identityChangeListenerObj);
 	}
+	DwtComposite.prototype.dispose.call(this);
 };
 
 ZmComposeView.prototype.getSignatureById =
