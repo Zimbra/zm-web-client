@@ -629,7 +629,8 @@ function(tasks, mode) {
     if (!tasks || tasks.length == 0) return;
 
     // check to see if this is a cancel or delete
-    var isTrash = tasks[0].folderId == ZmOrganizer.ID_TRASH;
+    var nId = ZmOrganizer.normalizeId(tasks[0].folderId);
+    var isTrash = nId == ZmOrganizer.ID_TRASH;
     if (isTrash) {
         this._handleDelete(tasks);
     }
