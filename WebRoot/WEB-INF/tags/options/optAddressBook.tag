@@ -79,6 +79,7 @@
                     </td>
                 </tr>
                 <app:optSeparator/>
+                <%--
                 <tr>
                     <td>
                         <table>
@@ -94,6 +95,7 @@
                         </td>
                 </tr>
                 <app:optSeparator/>
+                --%>
                 <tr>
                     <td >
                         <table width="100%">

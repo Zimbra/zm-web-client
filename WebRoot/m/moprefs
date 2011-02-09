@@ -126,6 +126,7 @@
                 <option <c:if test="${pageSize eq 25}"> selected="selected"</c:if>>25</option>
             </select></span>
                 </div>
+            <%--
                 <div class="tr nr">
                     <span class="label aleft td"><b><fmt:message key="autoAddContacts"/></b></span>
         <span class="value aleft td">
@@ -134,7 +135,8 @@
                    class="check <c:if test="${mailbox.prefs.autoAddAddressEnabled}">on" checked="checked</c:if>">
         </span>
                 </div>
-            </div>
+                --%>
+            </div> 
         </div>
         <div class="sectionLbl"><div class="tr"><div class="td titleText"><b><fmt:message key="calendar"/></b></div></div></div>
         <div class="View prefBody">
