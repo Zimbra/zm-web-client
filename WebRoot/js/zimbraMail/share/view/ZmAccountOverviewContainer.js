@@ -284,7 +284,7 @@ function(params) {
 		var headerDataId = params.overviewId = appCtxt.getOverviewId([this.containerId, headerLabel], null);
 		var headerParams = {
 			label: ZmMsg[headerLabel],
-			icon: "Resource",
+			icon: "Zimlet",
 			dataId: headerDataId,
 			className: "ZmOverviewZimletHeader"
 		};
