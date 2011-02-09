@@ -467,7 +467,7 @@ A:visited { color: blue; }
 	padding: 10px;
 }
 
-.MsgBody-html pre, .MsgBody-html pre * {
+.MsgBody-html pre, .MsgBody-html pre *, .MsgBody-html body, .MsgBody-html Section1 {
 	@WordWrapPRE@
 }
 
