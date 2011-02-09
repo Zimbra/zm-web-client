@@ -741,18 +741,19 @@ function(allResults) {
  */
 ZmListView.prototype.deselectAll =
 function() {
+
+	this.allSelected = false;
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 		this._checkSelectedItems(false);
-		this.allSelected = false;
 		var hdrId = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ICON, this._view, ZmItem.F_SELECTION);
 		var hdrDiv = document.getElementById(hdrId);
 		if (hdrDiv) {
 			hdrDiv.className = "ImgCheckboxUnchecked";
 		}
 		var sel = this._selectedItems.getArray();
-		for (var i=0; i<sel.length; i++)
+		for (var i=0; i<sel.length; i++) {
 			this.setSelectionCbox(sel[i], true);
-		
+		}
 	}
 
 	DwtListView.prototype.deselectAll.call(this);
