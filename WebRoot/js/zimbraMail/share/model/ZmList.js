@@ -867,9 +867,11 @@ function(params, batchCmd) {
 	};
 
 	var dialog = ZmList.progressDialog;
-	if (idList.length > ZmList.CHUNK_SIZE) {
+	if (idList.length >= ZmList.CHUNK_SIZE) {
 		if (!dialog) {
 			dialog = ZmList.progressDialog = appCtxt.getCancelMsgDialog();
+			dialog.reset();
+			dialog.setTitle(AjxMessageFormat.format(ZmMsg.inProgress));
 			dialog.registerCallback(DwtDialog.CANCEL_BUTTON, new AjxCallback(this, this._cancelAction, [params1]));
 		}
 	}
