@@ -661,7 +661,13 @@ function(msg, idoc, id, iframe) {
         var target = DwtUiEvent.getTarget(ev),
             targetId = target ? target.id : null,
             addrToAdd = "";
-        if(targetId) {
+        var diEl = document.getElementById(id);
+        
+        //This is required in case of the address is marked as trusted, the function is called without any target being set
+        var force = (msg && msg.showImages) ||  appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES);
+
+        if(!force) {
+            if(!targetId) { return; }
             if(targetId.indexOf("domain") != -1) {
                 //clicked on domain
                 addrToAdd = msg.sentByDomain;
@@ -670,12 +676,26 @@ function(msg, idoc, id, iframe) {
                 //clicked on email
                 addrToAdd = msg.sentByAddr;
             }
-            //Create a modifyprefs req and add the addr to modify
-            if(addrToAdd) {
-                self.getTrustedSendersList().add(addrToAdd, null, true);
-                self._controller.addTrustedAddr(self.getTrustedSendersList().join(","), new AjxCallback(self, self._addTrustedAddrCallback, [addrToAdd]), new AjxCallback(self, self._addTrustedAddrErrorCallback, [addrToAdd]));
+            else if(targetId.indexOf("dispImgs") != -1) {
+               //do nothing here - just load the images
+            }
+            else if(targetId.indexOf("close") != -1) {
+                if (diEl) {
+                    diEl.style.display = "none";
+                }
+                return;
+            }
+            else {
+                //clicked elsewhere in the info bar - DO NOTHING AND RETURN
+                return;
             }
         }
+        //Create a modifyprefs req and add the addr to modify
+        if(addrToAdd) {
+            self.getTrustedSendersList().add(addrToAdd, null, true);
+            self._controller.addTrustedAddr(self.getTrustedSendersList().join(","), new AjxCallback(self, self._addTrustedAddrCallback, [addrToAdd]), new AjxCallback(self, self._addTrustedAddrErrorCallback, [addrToAdd]));
+        }
+
 		var images = idoc.getElementsByTagName("img");
 		var onload = function() {            
 			ZmMailMsgView._resetIframeHeight(self, iframe);
@@ -697,7 +717,7 @@ function(msg, idoc, id, iframe) {
 				}
 			}
 		}
-		var diEl = document.getElementById(id);
+
 		if (diEl) {
 			diEl.style.display = "none";
 		}
@@ -933,6 +953,11 @@ ZmMailMsgView.prototype._addTrustedAddrCallback =
 function(addr) {
     this.getTrustedSendersList().add(addr, null, true);
     appCtxt.set(ZmSetting.TRUSTED_ADDR_LIST, [this.getTrustedSendersList().getArray().join(",")]);
+    var prefApp = appCtxt.getApp(ZmApp.PREFERENCES);
+    var func = prefApp && prefApp["refresh"];
+    if (func && (typeof(func) == "function")) {
+        func.apply(prefApp, [null, addr]);
+    }
 };
 
 ZmMailMsgView.prototype._addTrustedAddrErrorCallback =
