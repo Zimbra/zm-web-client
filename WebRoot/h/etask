@@ -402,9 +402,6 @@
     function statusChanged(value) {
         if (value != 'COMP') {
             document.getElementById("completed").checked = false;
-            if(document.getElementById("percent").value == "100") {
-                document.getElementById("percent0").selected = true;
-            }
         } else {
             document.getElementById("completed").checked = true;
             document.getElementById("percent100").selected = true;
