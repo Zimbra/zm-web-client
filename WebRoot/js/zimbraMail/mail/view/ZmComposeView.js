@@ -603,7 +603,20 @@ function(attId, isDraft, dummyMsg) {
 		}
 
 		htmlPart.setContent(defangedContent);
+         //set img src to cid and remove dfsrc before sending
+        var content = htmlPart.getContent();
+        var imgContent = content.split(/<img/i);
+        for(var i=0; i<imgContent.length; i++){
+            var dfsrc = imgContent[i].match(/cid:[^\"\']+/); //look for CID assignment in image
+            if (dfsrc && dfsrc.length > 0){
+                var tempStr = imgContent[i].replace(/\s+src=[\"\'][^\"\']+[\"\']/," src=\""+dfsrc[0]+"\"");
+                tempStr = tempStr.replace(/dfsrc=[\"\'][^\"\']+[\"\']+/,"");
+                content = content.replace(imgContent[i], tempStr);
+            }
+        }
 
+        htmlPart.setContent(content);
+        
 		this._handleInlineAtts(msg, true); // Better Code
 		var inlineAtts = msg.getInlineAttachments();
 		var inlineDocAtts = msg.getInlineDocAttachments();
