@@ -48,7 +48,7 @@ ZmComposeController = function(container, mailApp) {
 	this._dialogPopdownListener = new AjxListener(this, this._dialogPopdownActionListener);
 
 	var settings = appCtxt.getSettings();
-	var scl = this._settingChangeListener = new AjxListener(this, this._settingChangeListener);
+	var scl = this._settingChangeListener = new AjxListener(this, this._handleSettingChange);
 	for (var i = 0; i < ZmComposeController.SETTINGS.length; i++) {
 		settings.getSetting(ZmComposeController.SETTINGS[i]).addChangeListener(scl);
 	}
@@ -97,7 +97,7 @@ function() {
 	if (ZmComposeController.SETTINGS) { return; }
 
 	// settings whose changes affect us (so we add a listener to them)
-	ZmComposeController.SETTINGS = [ZmSetting.SHOW_BCC];
+	ZmComposeController.SETTINGS = [ZmSetting.SHOW_BCC, ZmSetting.USE_ADDR_BUBBLES];
 
 	// radio groups for options items
 	ZmComposeController.RADIO_GROUP = {};
@@ -156,7 +156,7 @@ function() {
 	for (var i = 0; i < ZmComposeController.SETTINGS.length; i++) {
 		settings.getSetting(ZmComposeController.SETTINGS[i]).removeChangeListener(this._settingChangeListener);
 	}
-	this._composeView._dispose();
+	this._composeView.dispose();
 
 	var app = this.getApp();
 	app.disposeTreeControllers();
@@ -856,6 +856,12 @@ function(params) {
 
 	this._composeMode = params.composeMode || this._getComposeMode(msg, identity);
 	this._curIncOptions = null;
+
+	if (this._needComposeViewRefresh) {
+		this._composeView.dispose();
+		this._composeView = null;
+		this._needComposeViewRefresh = false;
+	}
 
 	var cv = this._composeView;
 	if (!cv) {
@@ -1599,13 +1605,16 @@ function(ev) {
 	}
 };
 
-ZmComposeController.prototype._settingChangeListener =
+ZmComposeController.prototype._handleSettingChange =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 
 	var id = ev.source.id;
 	if (id == ZmSetting.SHOW_BCC) {
 		//Handle, if SHOW_BCC setting is changed, need to do when we come up with a COS Preference.
+	}
+	else if (id == ZmSetting.USE_ADDR_BUBBLES) {
+		this._needComposeViewRefresh = true;
 	}
 };
 
