@@ -617,15 +617,27 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 
 		htmlPart.setContent(defangedContent);
         
-        //set img src to cid and remove dfsrc before sending
+        //set img src to cid for inline or dfsrc if external image and remove dfsrc before sending
         var content = htmlPart.getContent();
         var imgContent = content.split(/<img/i);
         for(var i=0; i<imgContent.length; i++){
+            var externalImage = false;
             var dfsrc = imgContent[i].match(/cid:[^\"\']+/); //look for CID assignment in image
-            if (dfsrc && dfsrc.length > 0){
-                var tempStr = imgContent[i].replace(/\s+src=[\"\'][^\"\']+[\"\']/," src=\""+dfsrc[0]+"\"");
-                tempStr = tempStr.replace(/dfsrc=[\"\'][^\"\']+[\"\']+/,"");
+            if (!dfsrc){
+                dfsrc = imgContent[i].match(/\s+dfsrc=[\"\'][^\"\']+[\"\']+/); //look for dfsrc="" in image
+                externalImage = dfsrc ? true : false;
+            }
+            if (dfsrc && dfsrc.length > 0 && !externalImage){
+                var tempStr = imgContent[i].replace(/\s+src=[\"\'][^\"\']+[\"\']/," src=\""+dfsrc[0]+"\""); //set src to cid
+                tempStr = tempStr.replace(/\s+dfsrc=[\"\'][^\"\']+[\"\']+/,"");
                 content = content.replace(imgContent[i], tempStr);
+            }
+            else if (dfsrc && dfsrc.length > 0 && externalImage){
+                var tempArr = imgContent[i].match(/\s+dfsrc=[\"\']([^\"\']+)[\"\']/); //match dfsrc
+                if (tempArr && tempArr.length > 1) {
+                   var tempStr = imgContent[i].replace(/\s+dfsrc=[\"\'][^\"\']+[\"\']/," src=\""+tempArr[1]+"\"");
+                   content = content.replace(imgContent[i], tempStr);
+                }
             }
         }
 
@@ -1235,7 +1247,7 @@ function(idoc) {
 				img.setAttribute("doc", dfsrc.substring(4, dfsrc.length));
 			} else {
 				// If "Display External Images" is false then handle Reply/Forward
-				if (dfsrc)
+				if (dfsrc && this._msg.showImages)
 					//IE: Over HTTPS, http src urls for images might cause an issue.
 					try{ img.src = dfsrc; }catch(ex){};
 				}
