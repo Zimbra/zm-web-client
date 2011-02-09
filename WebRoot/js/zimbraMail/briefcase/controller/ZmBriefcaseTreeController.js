@@ -61,17 +61,17 @@ ZmBriefcaseTreeController.prototype.resetOperations =
 function(actionMenu, type, id) {
 
 	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
-	if (actionMenu && id != rootId) {
+     if (actionMenu && id != rootId) {
 		var briefcase = appCtxt.getById(id);
 		if (!briefcase) { return; }
-
+        var nId = ZmOrganizer.normalizeId(id);
 		var briefcaseId = ZmOrganizer.getSystemId(ZmOrganizer.ID_BRIEFCASE);
-		var isRoot = (briefcase.id == rootId);
-		var isBriefcase = (briefcase.id == briefcaseId);
+		var isRoot = (nId == rootId);
+		var isBriefcase = (nId == briefcaseId);
 		var isTopLevel = (!isRoot && briefcase.parent.id == rootId);
 		var isLink = briefcase.link;
 		var isLinkOrRemote = isLink || briefcase.isRemote();
-        var isTrash = (briefcase.id == ZmFolder.ID_TRASH);
+        var isTrash = (nId == ZmFolder.ID_TRASH);
 
         var deleteText = ZmMsg.del;
 
