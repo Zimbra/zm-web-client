@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -104,14 +104,12 @@
 					</td>
 					<app:button id="${keys ? 'OPGO' : ''}" name="action" tooltip="actionMessageGoTT" text="actionGo" />
 
-					<c:if test="${mailbox.features.spam}">
-						<td><div class='vertSep'></div></td>
-						<c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
-							<app:button id="${keys ? 'OPSPAM' :''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.png"/>
-						</c:if>
-						<c:if test="${context.isFolderSearch and context.folder.isSpam}">
-							<app:button id="${keys ? 'OPSPAM' : ''}" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgNotJunk.png"/>
-						</c:if>
+					<td><div class='vertSep'></div></td>
+					<c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
+						<app:button id="${keys ? 'OPSPAM' :''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.png"/>
+					</c:if>
+					<c:if test="${context.isFolderSearch and context.folder.isSpam}">
+						<app:button id="${keys ? 'OPSPAM' : ''}" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgNotJunk.png"/>
 					</c:if>
 					<c:if test="${context.isFolderSearch}">
 						<c:choose>

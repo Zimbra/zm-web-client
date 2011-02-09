@@ -149,6 +149,11 @@ function(ev) {
 					this.addItem(newContact, index);
 				}
 
+				// only relayout if this is cards view
+				if (this instanceof ZmContactCardsView) {
+					this._layout();
+				}
+
 				// always select newly added contact if its been added to the
 				// current page of contacts
 				this.setSelection(newContact, false, true);

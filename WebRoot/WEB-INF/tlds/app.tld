@@ -26,16 +26,6 @@
     </tag-file>
 
     <tag-file>
-         <name>contactDisplayName</name>
-         <path>/WEB-INF/tags/contact/contactDisplayName.tag</path>
-     </tag-file>
-
-    <tag-file>
-         <name>ruby</name>
-         <path>/WEB-INF/tags/ruby.tag</path>
-     </tag-file>
-
-    <tag-file>
         <name>taskListView</name>
         <path>/WEB-INF/tags/task/taskListView.tag</path>
     </tag-file>
@@ -358,28 +348,8 @@
     </tag-file>
 
     <tag-file>
-        <name>contactSectionInfo</name>
-        <path>/WEB-INF/tags/contact/contactSectionInfo.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>contactAddress</name>
-        <path>/WEB-INF/tags/contact/contactAddress.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>contactJobInfo</name>
-        <path>/WEB-INF/tags/contact/contactJobInfo.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>contactEmail</name>
         <path>/WEB-INF/tags/contact/contactEmail.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>contactFileAs</name>
-        <path>/WEB-INF/tags/contact/contactFileAs.tag</path>
     </tag-file>
 
     <tag-file>

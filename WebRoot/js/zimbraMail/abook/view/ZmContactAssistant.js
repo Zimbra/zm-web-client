@@ -220,20 +220,20 @@ function(dialog, verb, args) {
 		while (match = this._matchTypedObject(args, objType, obj)) {
 			var field = this._lookupField(match.type);
 			var type = field ? field.key : match.type;
-			this._contactFields[type] = field && field.capitalize ? this._capitalize(match.data) : match.data;
+			this._contactFields[type] = field.capitalize ? this._capitalize(match.data) : match.data;
 			args = match.args;
 		}
 	}
 
 	if (!this._contactFields.notes) {
-		match = args.match(/[\p{Z}\z\s]*\(([^)]*)\)?[\p{Z}\z\s]*/);
+		match = args.match(/\s*\(([^)]*)\)?\s*/);
 		if (match) {
 			this._contactFields.notes = match[1];
 			args = args.replace(match[0], " ");
 		}
 	}
 
-	while(match = args.match(/(([^\p{Z}\z\s]+):[\p{Z}\z\s]*(.*?)[\p{Z}\z\s]*)([^\p{Z}\z\s]+:|$)/m)) {
+	while(match = args.match(/((\w+):\s*(.*?)\s*)(\w+:|$)/m)) {
 		var k = match[2];
 		var v = match[3];
 		var field = this._lookupField(k);
@@ -244,7 +244,7 @@ function(dialog, verb, args) {
 		args = args.replace(match[1],"");
 	}
 
-	var fullName = args.replace(/^[\p{Z}\z\s]+|[\p{Z}\z\s]+$/, "").replace(/[\p{Z}\z\s]+/g, ' '); //.split(",", 3);
+	var fullName = args.replace(/^\s+/, "").replace(/\s+$/, "").replace(/\s+/g, ' '); //.split(",", 3);
 
 	if (this._contactFields[ZmContact.F_firstName] || this._contactFields[ZmContact.F_middleName] || this._contactFields[ZmContact.F_lastName]) {
 		fullName = null;
@@ -258,7 +258,7 @@ function(dialog, verb, args) {
 			fullName += this._contactFields[ZmContact.F_lastName];
 		}
 	} else {
-		var parts = fullName.split(/[\p{Z}\z\s]+/);
+		var parts = fullName.split(/\s+/);
 		for (var i=0; i < parts.length; i++) parts[i] = parts[i].substring(0,1).toUpperCase() + parts[i].substring(1);
 		fullName = parts.join(" ");
 		switch (parts.length) {

@@ -24,7 +24,7 @@
 				<td class=appt${newState}_name style='height:100%'>
 					${name}
 					<$ if (data.location) { $>
-						${location}
+						<BR>${location}
 					<$ } $>
 				</td>
 			</tr>
@@ -65,11 +65,7 @@
 			<div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
 		<$ } $>
 		<table width=100% cellspacing=0 cellpadding=0 style='width:100%;height:100%;${headerStyle}'>
-            <$ if(data.headerStyle) {$>
-            <tr style='${headerStyle}'>
-            <$ }else { $>
-            <tr class='${headerColor}'>         
-            <$ } $>
+			<tr>
 				<td width='4px' class='${showAsColor}' ></td>
 				<td class=appt_30${newState}_name>${name}</td>
 				<$ if ((AjxEnv.isIE || AjxEnv.isFirefox3up) && data.tagIcon) { $>
@@ -86,11 +82,7 @@
 <template id='calendar.Calendar#calendar_appt_allday' width='4' height='4'>
 	<div id='${id}_body' class='appt_allday_body ${headerColor} ${boxBorder}'>
 		<table width=100% cellspacing=0 cellpadding=0 style='width:100%;height:100%;${headerStyle}'>
-            <$ if(data.headerStyle) {$>
-            <tr style='${headerStyle}'>
-            <$ }else { $>
-            <tr class='${headerColor}'>         
-            <$ } $>
+			<tr>
 				<td width='4px' class='${showAsColor}' ></td>
 				<td class=appt_allday${newState}_name>
 					<$ if (data.icon) { $>

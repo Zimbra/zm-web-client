@@ -42,7 +42,7 @@ function() {
 
 ZmDebugAssistant.prototype.handle =
 function(dialog, verb, args) {
-	var	match = args.match(/^[\p{Z}\z\s]*([0123])[\p{Z}\z\s]*$/);
+	var	match = args.match(/^\s*([0123])\s*$/);
 	this._newLevel = match ? parseInt(match[1]) : -1;
 	var set = this._newLevel >= 0;
 	dialog._setOkButton(AjxMsg.ok, true, set);
