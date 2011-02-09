@@ -467,9 +467,10 @@ A:visited { color: blue; }
 
 .MsgBody-html {
 	padding: 10px;
+
 }
 
-.MsgBody-html pre, .MsgBody-html pre * {
+.MsgBody-html pre, .MsgBody-html pre *, .MsgBody-html body, .MsgBody-html Section1{
 	@WordWrapPRE@
 }
 
@@ -1059,7 +1060,7 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 }
 
 .ZhCallListPrintView {
-	padding:10px;
+	/*padding:10px; */
 }
 
 .ZhCallListPrintTable TH {
