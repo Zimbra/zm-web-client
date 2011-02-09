@@ -70,6 +70,11 @@ function(id, setup, value) {
 	}
 };
 
+ZmTrustedPage.prototype.addItem =
+function(addr) {
+    this._trustedListControl.loadFromJson([addr]);
+};
+
 ZmTrustedPage.prototype.reset =
 function(useDefaults) {
 	ZmPreferencesPage.prototype.reset.apply(this, arguments);

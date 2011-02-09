@@ -161,8 +161,11 @@ function(modifies, force) {
 };
 
 ZmPreferencesApp.prototype.refresh =
-function(refresh) {
-
+function(refresh, addr) {
+    var trustedPage = this.getPreferencesPage("TRUSTED_ADDR");
+    if(trustedPage) {
+        trustedPage.addItem(addr);
+    }
 	if (!appCtxt.inStartup) {
 		var sharingView = this._getSharingView();
 		if (sharingView) {
