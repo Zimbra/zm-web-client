@@ -761,13 +761,14 @@ function(check) {
  * Sets the selected items.
  * 
  * @param	{Array}	selectedArray		an array of {Element} objects to select
+ * @param	{boolean}	dontCheck		do not check the selected item. (special case. see ZmListView.prototype._restoreState)
  */
 ZmListView.prototype.setSelectedItems =
-function(selectedArray) {
+function(selectedArray, dontCheck) {
 	DwtListView.prototype.setSelectedItems.call(this, selectedArray);
 
-	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		this._checkSelectedItems(true);
+	if (!dontCheck && appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+		this._checkSelectedItems(true, true);
 	}
 };
 
@@ -1333,6 +1334,11 @@ function(params) {
 	params = params || {};
 	if (params.selection) {
 		s.selected = this.getSelection();
+		if (s.selected.length == 1) {
+			//still a special case for now till we rewrite this thing.
+			var el = this._getElFromItem(s.selected[0]); //terribly ugly, get back to the html element so i can have access to the item data
+			s.singleItemChecked = this._getItemData(el, ZmListView.ITEM_CHECKED_ATT_NAME);
+		}
 	}
 	if (params.focus) {
 		s.focused = this.hasFocus();
@@ -1349,7 +1355,8 @@ function() {
 
 	var s = this._state;
 	if (s.selected && s.selected.length) {
-		this.setSelectedItems(s.selected);
+		var dontCheck = s.selected.length == 1 && !s.singleItemChecked;
+		this.setSelectedItems(s.selected, dontCheck);
 	}
 	if (s.anchorItem) {
 		var el = this._getElFromItem(s.anchorItem);
