@@ -337,11 +337,35 @@ function() {
 	this._addRow(div);
 
     //add event handlers for no results action link
-    this._searchAllId = this.getHTMLElId() + "_showall"
+    this._searchAllId = this.getHTMLElId() + "_showall";
     this._searchAllLink = document.getElementById(this._searchAllId);
     if(this._searchAllLink) {
         this._searchAllLink._viewId = AjxCore.assignId(this);
         Dwt.setHandler(this._searchAllLink, DwtEvent.ONCLICK, ZmTimeSuggestionView._onClick);
+    }
+};
+
+ZmTimeSuggestionView.prototype.setShowSuggestionsHTML =
+function(date) {
+	var	div = document.createElement("div");
+    var params = [
+        '<span class="fakeanchor" id="' + this.getHTMLElId() + '_showsuggestions">',
+        '</span>',
+        date
+    ];
+	var subs = {
+		message: AjxMessageFormat.format(ZmMsg.showSuggestionsFor, params),
+        id: this.getHTMLElId()
+	};
+	div.innerHTML = AjxTemplate.expand("calendar.Appointment#TimeSuggestion-ShowSuggestions", subs);
+	this._addRow(div);
+
+    //add event handlers for showing link
+    this._suggestId = this.getHTMLElId() + "_showsuggestions";
+    this._suggestLink = document.getElementById(this._suggestId);
+    if(this._suggestLink) {
+        this._suggestLink._viewId = AjxCore.assignId(this);
+        Dwt.setHandler(this._suggestLink, DwtEvent.ONCLICK, ZmTimeSuggestionView._onClick);
     }
 };
 
@@ -450,9 +474,11 @@ function(ev) {
 
 ZmTimeSuggestionView.prototype._handleOnClick =
 function(el) {
-    if(!el) return;
+    if(!el || !el.id) return;
 	// figure out which input field was clicked
 	if (el.id == this._searchAllId) {
          this.parent.suggestAction(true, true);
+	}else if (el.id == this._suggestId) {
+         this.parent.suggestAction(true, false);
 	}
 };
