@@ -479,6 +479,7 @@ function(el) {
 	if (el.id == this._searchAllId) {
          this.parent.suggestAction(true, true);
 	}else if (el.id == this._suggestId) {
+         this.parent.overrideManualSuggestion(true);
          this.parent.suggestAction(true, false);
 	}
 };
