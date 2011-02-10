@@ -97,6 +97,12 @@ ZmTaskListController.READING_PANE_TEXT[ZmSetting.RP_OFF]	= ZmMsg.readingPaneOff;
 ZmTaskListController.READING_PANE_TEXT[ZmSetting.RP_BOTTOM]	= ZmMsg.readingPaneAtBottom;
 ZmTaskListController.READING_PANE_TEXT[ZmSetting.RP_RIGHT]	= ZmMsg.readingPaneOnRight;
 
+// convert key mapping to view menu item
+ZmTaskListController.ACTION_CODE_TO_MENU_ID = {};
+ZmTaskListController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_OFF]		= ZmSetting.RP_OFF;
+ZmTaskListController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_BOTTOM]	= ZmSetting.RP_BOTTOM;
+ZmTaskListController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_RIGHT]	= ZmSetting.RP_RIGHT;
+
 ZmTaskListController.READING_PANE_ICON = {};
 ZmTaskListController.READING_PANE_ICON[ZmSetting.RP_OFF]	= "SplitPaneOff";
 ZmTaskListController.READING_PANE_ICON[ZmSetting.RP_BOTTOM]	= "SplitPane";
@@ -203,6 +209,18 @@ function() {
 	return ZmTaskListController.SOAP_STATUS[id];
 };
 
+ZmTaskListController.prototype._updateViewMenu =
+function(id) {
+	var viewBtn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
+	var menu = viewBtn && viewBtn.getMenu();
+	if (menu) {
+		var mi = menu.getItemById(ZmOperation.MENUITEM_ID, id);
+		if (mi) {
+			mi.setChecked(true, true);
+		}
+	}
+};
+
 ZmTaskListController.prototype.getKeyMapName =
 function() {
 	return "ZmTaskListController";
@@ -212,20 +230,31 @@ ZmTaskListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmTaskListController.handleKeyAction");
 
-	if (actionCode == ZmKeyMap.MARK_COMPLETE ||
-		actionCode == ZmKeyMap.MARK_UNCOMPLETE)
-	{
-		var task = this._listView[this._currentView].getSelection()[0];
-		if ((task.isComplete() && actionCode == ZmKeyMap.MARK_UNCOMPLETE) ||
-			(!task.isComplete() && actionCode == ZmKeyMap.MARK_COMPLETE))
-		{
-			this._doCheckCompleted(task);
-		}
-	}
-	else
-	{
-		return ZmListController.prototype.handleKeyAction.call(this, actionCode);
-	}
+    switch(actionCode) {
+
+        case ZmKeyMap.MARK_COMPLETE:
+        case ZmKeyMap.MARK_UNCOMPLETE:
+            var task = this._listView[this._currentView].getSelection()[0];
+            if ((task.isComplete() && actionCode == ZmKeyMap.MARK_UNCOMPLETE) ||
+                    (!task.isComplete() && actionCode == ZmKeyMap.MARK_COMPLETE))
+            {
+                this._doCheckCompleted(task);
+            }
+            break;
+
+        case ZmKeyMap.READING_PANE_BOTTOM:
+		case ZmKeyMap.READING_PANE_RIGHT:
+		case ZmKeyMap.READING_PANE_OFF:
+			var menuId = ZmTaskListController.ACTION_CODE_TO_MENU_ID[actionCode];
+			this._updateViewMenu(menuId);
+            this.switchView(menuId);
+			break;
+
+        default:
+            return ZmListController.prototype.handleKeyAction.call(this, actionCode);
+    }
+
+    return true;
 };
 
 ZmTaskListController.prototype.mapSupported =

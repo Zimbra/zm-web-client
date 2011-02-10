@@ -96,6 +96,12 @@ ZmBriefcaseController.PREVIEW_PANE_ICON[ZmSetting.RP_OFF]	    = "SplitPaneOff";
 ZmBriefcaseController.PREVIEW_PANE_ICON[ZmSetting.RP_BOTTOM]	= "SplitPane";
 ZmBriefcaseController.PREVIEW_PANE_ICON[ZmSetting.RP_RIGHT]	    = "SplitPaneVertical";
 
+// convert key mapping to view menu item
+ZmBriefcaseController.ACTION_CODE_TO_MENU_ID = {};
+ZmBriefcaseController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_OFF]		= ZmSetting.RP_OFF;
+ZmBriefcaseController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_BOTTOM]	= ZmSetting.RP_BOTTOM;
+ZmBriefcaseController.ACTION_CODE_TO_MENU_ID[ZmKeyMap.READING_PANE_RIGHT]	= ZmSetting.RP_RIGHT;
+
 //List Views
 
 ZmBriefcaseController.LIST_VIEW = {};
@@ -1059,7 +1065,7 @@ function(menu){
 		if (!menu._menuItems[id]) {
 			miParams.text = ZmBriefcaseController.PREVIEW_PANE_TEXT[id];
 			miParams.image = ZmBriefcaseController.PREVIEW_PANE_ICON[id];
-			var mi = menu.createMenuItem(id, miParams);
+            var mi = menu.createMenuItem(id, miParams);
 			mi.setData(ZmOperation.MENUITEM_ID, id);
 			mi.addSelectionListener(new AjxListener(this, this._previewPaneListener, id));
 			if (id == pref) {
@@ -1462,3 +1468,26 @@ function(){
     return this._nameConflictDialog;
 };
 
+ZmBriefcaseController.prototype.getKeyMapName =
+function() {
+	return "ZmBriefcaseController";
+};
+
+ZmBriefcaseController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println(AjxDebug.DBG3, "ZmBriefcaseController.handleKeyAction");
+
+    switch(actionCode) {
+
+        case ZmKeyMap.READING_PANE_BOTTOM:
+		case ZmKeyMap.READING_PANE_RIGHT:
+		case ZmKeyMap.READING_PANE_OFF:
+			var menuId = ZmBriefcaseController.ACTION_CODE_TO_MENU_ID[actionCode];
+			this._previewPaneListener(menuId, true);
+			break;
+
+        default:
+            return ZmListController.prototype.handleKeyAction.call(this, actionCode);
+    }
+    return true;
+};
