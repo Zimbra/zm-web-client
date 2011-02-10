@@ -714,7 +714,7 @@ function(){
  */
 ZmFolder.prototype._remoteMoveOk =
 function(folder) {
-	if (!this.isRemote() && folder.isMountpoint) { return true; } 
+	if (!this.isRemote() && folder.isMountpoint && folder.rid) { return true; }
     if (!this.link || !folder.link || this.zid != folder.zid) { return false; }
 	if (this.id.split(":")[0] != folder.id.split(":")[0]) { return false; }
 	var share = this.shares && this.shares[0];

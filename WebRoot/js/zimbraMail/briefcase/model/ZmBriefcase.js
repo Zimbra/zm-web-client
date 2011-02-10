@@ -187,6 +187,16 @@ function(what, targetFolderType) {
         var items = AjxUtil.toArray(what);
 		var item = items[0];
         if(item.type == ZmItem.BRIEFCASE_ITEM){
+            if (item instanceof ZmBriefcaseFolderItem){
+            invalid = (
+                    item.parent == this || this.isChildOf(item)
+                 || targetFolderType == ZmOrganizer.SEARCH || targetFolderType == ZmOrganizer.TAG
+                 || (!this.isInTrash() && this.hasChild(item.name))
+                 || (item.id == this.id)
+                 || (item.folder && item.folder.isRemote() && !this.isRemote() && !item.folder.rid)
+                 || (item.folder && this.isRemote())
+                    );
+            }
             // can't move items to folder they're already in; we're okay if
             // we have one item from another folder
             if (!invalid && item.folderId) {
