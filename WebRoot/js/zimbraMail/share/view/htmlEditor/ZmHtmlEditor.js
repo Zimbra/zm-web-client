@@ -54,7 +54,7 @@ ZmHtmlEditor.prototype.constructor = ZmHtmlEditor;
 ZmHtmlEditor._VALUE = "value";
 ZmHtmlEditor.FONT_SIZE_VALUES = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
 ZmHtmlEditor.__makeFontName = function(value) {
-	return value.replace(/,.*/,"").replace(/\b[a-z]/g, ZmHtmlEditor.__toUpperCase);
+	return value.replace(/,.*/,"").replace(/[']/g,"").replace(/\b[a-z]/g, ZmHtmlEditor.__toUpperCase);
 };
 ZmHtmlEditor.__toUpperCase = function(s) {
 	return s.toUpperCase();
