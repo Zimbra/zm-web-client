@@ -86,18 +86,19 @@ function() {
 
     this._createMiniCalendar();
 
-    this._suggestBtn = new DwtButton({parent:this, className: 'ZButton SuggestBtn'});
-    this._suggestBtn.setSize('100%', Dwt.DEFAULT);
-    this._suggestBtn.setText(ZmMsg.suggestTimes);
-    this._suggestBtn.setToolTipContent(ZmMsg.suggestTimes);
-    this._suggestBtn.addSelectionListener(new AjxListener(this, this.suggestAction, true, false));
-
     var id = this.getHTMLElId();
     this._timeSuggestions = new ZmTimeSuggestionView(this, this._controller, this._editView);
 
     var prefDlg = this.getPrefDialog();
     prefDlg.setCallback(new AjxCallback(this, this._prefChangeListener));
-    prefDlg.getSearchPreference(appCtxt.getActiveAccount());
+    prefDlg.getSearchPreference(appCtxt.getActiveAccount(), new AjxCallback(this, this.onSearchPrefLoaded));
+};
+
+ZmScheduleAssistantView.prototype.onSearchPrefLoaded =
+function() {
+    if(!this.isSuggestionsEnabled()) {
+        this.reset();
+    }
 };
 
 ZmScheduleAssistantView.prototype._setSuggestionLabel =
@@ -278,8 +279,13 @@ function(date, attendees, forceRefresh) {
     if(!this._editView.isSuggestionsNeeded() || !this.isSuggestionsEnabled()) {
         if(this._timeSuggestions) this._timeSuggestions.removeAll();
         this.clearMiniCal();
+        if(!this.isSuggestionsEnabled()) {
+            this._date = date || this._miniCalendar.getDate();
+            this._timeSuggestions.setShowSuggestionsHTML(this._date);
+        }
         return;
     }
+
 
     var newDuration = this._editView.getDuration();
     var newKey = this.getFormKey(date, attendees);
@@ -774,8 +780,6 @@ ZmScheduleAssistantView.prototype.resizeTimeSuggestions =
 function() {
 
     if(!this._timeSuggestions) return;
-
-    this._suggestBtn.setVisible(!this.isSuggestionsEnabled());
 
     var calSize = Dwt.getSize(this._miniCalendar.getHtmlElement());
     var btnSize = Dwt.getSize(this._customizeBtn.getHtmlElement());

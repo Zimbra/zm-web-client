@@ -1012,6 +1012,15 @@
     </center>
 </template>
 
+<template id='calendar.Appointment#TimeSuggestion-ShowSuggestions'>
+    <center>
+        <div class='NoSuggestions'>
+            <br><br>
+            <br>${message}
+        </div>
+    </center>
+</template>
+
 <template id='calendar.Appointment#TimeSuggestion-Loading'>
     <center>
         <div>
@@ -1027,8 +1036,8 @@
             <tr>
                 <td align="right"><$= ZmMsg.suggestionsLabel $>&nbsp;</td>
                 <td>
-                    <input type='radio' name="suggestiontype" id='${id}_autosuggest' checked/>&nbsp;<$=ZmMsg.suggestionsAutomatic $>
-                    <input type='radio' name="suggestiontype" id='${id}_disablesuggestions'/>&nbsp;<$=ZmMsg.suggestionsManual $>
+                    <input type='radio' name="suggestiontype" id='${id}_autosuggest' checked/>&nbsp;<label for="${id}_autosuggest"><$=ZmMsg.suggestionsAutomatic $></label>
+                    <input type='radio' name="suggestiontype" id='${id}_disablesuggestions'/>&nbsp;<label for="${id}_disablesuggestions"><$=ZmMsg.suggestionsManual $></label>
                 </td>
             </tr>
         </tbody>

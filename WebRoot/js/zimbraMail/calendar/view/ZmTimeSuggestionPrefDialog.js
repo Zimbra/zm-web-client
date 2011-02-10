@@ -211,14 +211,14 @@ function(id, value) {
 };
 
 ZmTimeSuggestionPrefDialog.prototype.getSearchPreference =
-function(account) {
+function(account, prefSearchCallback) {
     var md = new ZmMetaData(account || this._account);
-    var callback = new AjxCallback(this, this.processSearchPreference);
+    var callback = new AjxCallback(this, this.processSearchPreference, [prefSearchCallback]);
     md.get(ZmTimeSuggestionPrefDialog.META_DATA_KEY, null, callback);
 };
 
 ZmTimeSuggestionPrefDialog.prototype.processSearchPreference =
-function(metadataResponse) {
+function(prefSearchCallback, metadataResponse) {
     this._prefs = {};
 
     var objPrefs = metadataResponse.getResponse().BatchResponse.GetMailboxMetadataResponse[0].meta[0]._attrs;
@@ -235,6 +235,8 @@ function(metadataResponse) {
             this.setPreferenceFieldValue(id, ZmTimeSuggestionPrefDialog.DEFAULT_VAL[id]);            
         }
     }
+
+    if(prefSearchCallback) prefSearchCallback.run();
 };
 
 ZmTimeSuggestionPrefDialog.prototype.setSearchPreference =
