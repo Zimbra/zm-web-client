@@ -90,3 +90,8 @@
         </td>
     </tr>
 </table>
+<SCRIPT TYPE="text/javascript">
+<!--
+function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.location = a.href;} }
+//-->
+</SCRIPT>
