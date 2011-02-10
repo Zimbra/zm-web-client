@@ -594,7 +594,12 @@ function() {
 
 ZmScheduleAssistantView.prototype.isSuggestionsEnabled =
 function() {
-      return this._prefDialog ? (this._prefDialog.getPreference(ZmTimeSuggestionPrefDialog.DISABLE_SUGGESTIONS_FIELD) != 'true') : true;
+      return this._manualOverrideFlag || (this._prefDialog ? (this._prefDialog.getPreference(ZmTimeSuggestionPrefDialog.DISABLE_SUGGESTIONS_FIELD) != 'true') : true);
+};
+
+ZmScheduleAssistantView.prototype.overrideManualSuggestion =
+function(enable) {
+    this._manualOverrideFlag = enable;
 };
 
 ZmScheduleAssistantView.prototype.isSuggestRooms =
