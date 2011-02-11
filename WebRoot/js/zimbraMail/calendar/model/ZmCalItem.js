@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -2440,12 +2440,12 @@ function(task, id) {
 	switch (task.priority) {
 		case ZmCalItem.PRIORITY_LOW:
 			return id
-				? AjxImg.getImageHtml("TaskLow", null, ["id='", id, "'"].join(""))
-				: AjxImg.getImageHtml("TaskLow");
+				? AjxImg.getImageHtml("PriorityLow_list", null, ["id='", id, "'"].join(""))
+				: AjxImg.getImageHtml("PriorityLow_list");
 		case ZmCalItem.PRIORITY_HIGH:
 			return id
-				? AjxImg.getImageHtml("TaskHigh", null, ["id='", id, "'"].join(""))
-				: AjxImg.getImageHtml("TaskHigh");
+				? AjxImg.getImageHtml("PriorityHigh_list", null, ["id='", id, "'"].join(""))
+				: AjxImg.getImageHtml("PriorityHigh_list");
 		default: return "";
 	}
 };
