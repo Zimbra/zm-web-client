@@ -122,6 +122,9 @@
 	appExtension   = "${zm:jsEncode(ext)}";
 	window.appDevMode     = ${isDevMode};
 </script>
+
+<jsp:include page="loadImgData.jsp" />
+    
 <script>
 <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
 </script>
