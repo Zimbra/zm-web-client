@@ -232,8 +232,13 @@ function() {
 
 	if (subj && subj.length) {
 		var startDate = AjxStringUtil.trim(this._startDateField.value);
+        var endDate =   AjxStringUtil.trim(this._endDateField.value);
 		if (startDate.length > 0 && (!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField))) {
-			errorMsg = ZmMsg.errorInvalidDates;
+            if(endDate.length <= 0) {
+                errorMsg = ZmMsg.errorEmptyTaskDueDate;
+            } else {
+                errorMsg = ZmMsg.errorInvalidDates;
+            }
 		}
 		var remindTime =  ZmTimeSelect.parse(this._remindTimeSelect.getInputField().getValue());
 		if (!remindTime) {
