@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -379,9 +379,6 @@ function(obj, batchMode) {
 			}
 		}
 		conv.folders = AjxUtil.hashCopy(this.folders);
-		AjxDebug.println(AjxDebug.NOTIFY, "ZmConv::notifyModify - conv changed ID from " + conv._oldId + " to " + conv.id);
-		var folders = AjxUtil.keys(conv.folders);
-		AjxDebug.println(AjxDebug.NOTIFY, "copied " + folders.length + " folders: " + folders.join(" "));
 		if (conv.list && conv._oldId && conv.list._idHash[conv._oldId]) {
 			delete conv.list._idHash[conv._oldId];
 			conv.list._idHash[conv.id] = conv;
@@ -586,7 +583,6 @@ function(msg, callback) {
 
 ZmConv.prototype._loadFromDom =
 function(convNode) {
-	AjxDebug.println(AjxDebug.NOTIFY, "ZmConv::_loadFromDom - conv ID: " + convNode.id);
 	this.numMsgs = convNode.n;
 	this.date = convNode.d;
 	this._parseFlags(convNode.f);
@@ -608,7 +604,6 @@ function(convNode) {
 			this.msgIds.push(convNode.m[i].id);
 		}
 		if (count == 1) {
-			AjxDebug.println(AjxDebug.NOTIFY, "single msg conv");
 			var msgNode = convNode.m[0];
 
 			// bug 49067 - SearchConvResponse does not return the folder ID w/in
@@ -618,11 +613,9 @@ function(convNode) {
 			if (searchFolderId) {
 				this.folderId = searchFolderId;
 				this.folders[searchFolderId] = true;
-				AjxDebug.println(AjxDebug.NOTIFY, "added folder (from search): " + searchFolderId);
 			} else if (msgNode.l) {
 				this.folderId = msgNode.l;
 				this.folders[msgNode.l] = true;
-				AjxDebug.println(AjxDebug.NOTIFY, "added folder (from msg): " + msgNode.l);
 			}
 			else {
 				AjxDebug.println(AjxDebug.NOTIFY, "no folder added for conv");
@@ -652,8 +645,6 @@ function(convNode) {
 			}
 		}
 	}
-	var folders = AjxUtil.keys(this.folders);
-	AjxDebug.println(AjxDebug.NOTIFY, "ZmConv::_loadFromDom - conv spans " + folders.length + " folder(s): " + folders.join(" "));
 };
 
 ZmConv.prototype._loadFromMsg =
