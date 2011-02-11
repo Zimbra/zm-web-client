@@ -621,7 +621,7 @@ function(what, folderType, ignoreExisting) {
 						invalid = true;
 						break;
 					}
-				} else if (item instanceof ZmBriefcaseFolderItem){
+				} else if (Dwt.instanceOf(item, "ZmBriefcaseFolderItem")) {
                      if (item.folder && item.folder.isRemote() && !item.folder.rid) {
                         invalid = true;
                         break;
