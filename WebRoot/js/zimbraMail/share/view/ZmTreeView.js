@@ -195,7 +195,7 @@ function(params) {
     }
 
 
-    // TODO: Find a better way to indicate which trees show the share link 
+    // TODO: Find a better way to indicate which trees show the share link
     var addShareLink =
         appCtxt.get(ZmSetting.SHARING_ENABLED)  && isApp  && isZimbraAccount &&
         (
@@ -207,8 +207,12 @@ function(params) {
         )
     ;
     if (addShareLink) {
+        //bug 56122: If folderes are deferred for creation, the sort order is messed up.
+        var parentNode = this._treeItemHash[root.id];
+        parentNode._realizeDeferredChildren();
+
         var item = new DwtTreeItem({
-            parent:this._treeItemHash[root.id],
+            parent: parentNode,
             deferred:false // NOTE: Needed so we can grab link element
         });
         item.setImage("Blank_16");
