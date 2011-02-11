@@ -672,10 +672,6 @@ function(result) {
 	appCtxt.getDataSourceCollection(this).initialize(obj.dataSources);
 	appCtxt.getSignatureCollection(this).initialize(obj.signatures);
 
-	// read receipts are not currently allowed for non zimbra accounts
-	if (!this.isZimbraAccount) {
-		appCtxt.set(ZmSetting.MAIL_READ_RECEIPT_ENABLED, false, null, null, null, this);
-	}
 };
 
 /**
