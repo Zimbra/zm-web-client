@@ -163,7 +163,7 @@ function(modifies, force) {
 ZmPreferencesApp.prototype.refresh =
 function(refresh, addr) {
     var trustedPage = this.getPreferencesPage("TRUSTED_ADDR");
-    if(trustedPage) {
+    if(trustedPage && addr) {
         trustedPage.addItem(addr);
     }
 	if (!appCtxt.inStartup) {

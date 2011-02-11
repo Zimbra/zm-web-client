@@ -72,7 +72,9 @@ function(id, setup, value) {
 
 ZmTrustedPage.prototype.addItem =
 function(addr) {
-    this._trustedListControl.loadFromJson([addr]);
+    if(addr && this._trustedListControl) {
+        this._trustedListControl.loadFromJson([addr]);
+    }
 };
 
 ZmTrustedPage.prototype.reset =
