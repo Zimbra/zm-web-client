@@ -608,6 +608,9 @@ function(appt) {
 		div.style.top = apptY + 'px';
 	}
 	div.className = this._getStyle();
+    if (this.view == ZmId.VIEW_CAL_FB) {
+        div.style.overflow = "hidden";
+    }
 
 	ZmCalColView._setApptOpacity(appt, div);
 
@@ -669,7 +672,9 @@ function(appt) {
 		if (!this.isStartInView(appt._orig)) bs = "border-left:none;";
 		if (!this.isEndInView(appt._orig)) bs += "border-right:none;";
 		if (bs != "") subs.bodyStyle = bs;
-	} else if (is30) {
+	} else if (this.view == ZmId.VIEW_CAL_FB) {
+        template = "calendar_fb_appt";
+    } else if (is30) {
 		template = "calendar_appt_30";
 	} else if (appt._fanoutNum > 0) {
 		template = "calendar_appt_bottom_only";
@@ -680,7 +685,7 @@ function(appt) {
 	div.innerHTML = AjxTemplate.expand("calendar.Calendar#"+template, subs);
 
 	// if (we can edit this appt) then create sash....
-	if (!appt.isReadOnly() && !appt.isAllDayEvent() && !isRemote) {
+	if (!appt.isReadOnly() && !appt.isAllDayEvent() && !isRemote && this.view != ZmId.VIEW_CAL_FB) {
 		if (appt._fanoutLast || (!appt._fanoutFirst && (!appt._fanoutNum))) {
 			var bottom = document.createElement("div");
 			var id = appt.id + "-bs";

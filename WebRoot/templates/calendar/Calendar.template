@@ -106,6 +106,12 @@
 	</div>
 </template>
 
+<template id='calendar.Calendar#calendar_fb_appt' width='4' height='4'>
+	<div id='${id}_body' class='appt_allday_body'>
+		<div style="padding:3px;overflow:hidden;height:21px;">${name}</div>
+	</div>
+</template>
+
 <template id='calendar.Calendar#month_appt'>
 	<$ var continues = data.multiday && !data.last; $>
 	<$ var continued = data.multiday && !data.first; $>

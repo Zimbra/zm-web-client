@@ -745,7 +745,6 @@ function(organizer, attendees) {
     if(this.isComposeMode) ZmApptViewHelper.getDateInfo(this._editView, this._dateInfo);
 
     var emails = [], email;
-    var isOrganizer = this._appt.isOrganizer();
 
 	// create a slot for the organizer
 	this._organizerIndex = this._addAttendeeRow(false, organizer.getAttendeeText(ZmCalBaseItem.PERSON, true), false);
@@ -787,7 +786,7 @@ function(list, updateCycle) {
 
     if(!updateCycle) updateCycle = 0;
 
-    var isOrganizer = this._appt.isOrganizer();
+    var isOrganizer = this.isComposeMode ? this._appt.isOrganizer() : null;
     var emails = [], type;
 
     for(var i=0; i < ZmFreeBusySchedulerView.BATCH_SIZE; i++) {
@@ -797,7 +796,7 @@ function(list, updateCycle) {
         this.addAttendee(att, type, isOrganizer, emails);
     }
     
-    this._editView.autoSize();
+    if(this.isComposeMode) this._editView.autoSize();
     this.batchUpdateSequence(list, updateCycle+1);
 };
 

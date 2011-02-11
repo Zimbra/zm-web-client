@@ -1235,7 +1235,7 @@ function(date, duration, roll) {
 		if (ZmId.VIEW_CAL_MONTH == this._currentView) {
 			title = this._viewMgr.getCurrentView().getShortCalTitle();
 		}
-        if (ZmId.VIEW_CAL_SCHEDULE == this._currentView && roll && appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
+        if (ZmId.VIEW_CAL_FB == this._currentView && roll && appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
             currentView._navDateChangeListener(date);
 		}
 		this._navToolBar[ZmId.VIEW_CAL].setText(title);
@@ -2066,8 +2066,9 @@ function(appt, mode) {
 ZmCalViewController.prototype._replyAppointment =
 function(appt, all) {
 	AjxDispatcher.require(["MailCore", "Mail"]);
-	var respCallback = new AjxCallback(this, this._replyDetailsHandler, [appt, all]);
-	appt.getDetails(null, respCallback, this._errorCallback, true, true);
+    var clone = ZmAppt.quickClone(appt);
+	var respCallback = new AjxCallback(this, this._replyDetailsHandler, [clone, all]);
+	clone.getDetails(null, respCallback, this._errorCallback, true, true);
 };
 
 ZmCalViewController.prototype._replyDetailsHandler =

@@ -33,7 +33,7 @@ function() {
 
 /****************** NEW VERSION OF SCHEDULE VIEW *********************/
 ZmCalNewScheduleView = function(parent, posStyle, controller, dropTgt) {
-	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmId.VIEW_CAL_SCHEDULE, 1, true);
+	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmId.VIEW_CAL_FB, 1, true);
 };
 
 ZmCalNewScheduleView.prototype = new ZmCalColView;
