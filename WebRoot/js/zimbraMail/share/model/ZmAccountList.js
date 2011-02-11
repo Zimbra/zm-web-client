@@ -189,7 +189,9 @@ function(folderId, types) {
 		var part = [syntax, ':"', ZmOrganizer.getSystemId(fid, acct, true), '"'];
 		query.push(part.join(""));
 	}
-
+    if(fid == ZmOrganizer.ID_ROOT) {
+        query.push([syntax, ':"', appCtxt.accountList.mainAccount.id, ':', fid, '"'].join(""));
+    }
 	DBG.println(AjxDebug.DBG2, "query = " + query.join(" OR "));
 	return (query.join(" OR "));
 };
