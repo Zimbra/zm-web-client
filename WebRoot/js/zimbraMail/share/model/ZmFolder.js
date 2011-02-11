@@ -613,7 +613,12 @@ function(what, folderType) {
 						invalid = true;
 						break;
 					}
-				} else if (items[i].isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
+				} else if (Dwt.instanceOf(item, "ZmBriefcaseFolderItem")) {
+                     if (item.folder && item.folder.isRemote() && !item.folder.rid) {
+                        invalid = true;
+                        break;
+                     }
+                } else if (items[i].isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
 					// can move drafts into Trash or Drafts
 					invalid = true;
 					break;
