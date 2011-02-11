@@ -619,7 +619,10 @@ function(calItem, mode) {
         }
     }
 
-    if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true);
+    if(this._scheduleAssistant) {
+        this._scheduleAssistant.updateTime(true);
+        if(this.isSuggestionsNeeded()) this._scheduleAssistant.showSuggestActionLinks();
+    }
     
     this.setApptMessage(this._getMeetingStatusMsg(calItem));
 

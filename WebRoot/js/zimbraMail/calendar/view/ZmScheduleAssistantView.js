@@ -221,7 +221,14 @@ function(clearSelection, forceRefresh) {
     if(clearSelection) this._date = null;
     var tf = this._getTimeFrame();
     this._miniCalendar.setDate(tf.start, true);
-    this.reset(tf.start, this._attendees, forceRefresh);    
+    this.reset(tf.start, this._attendees, forceRefresh);
+};
+
+//shows a link which triggers on demand suggestions
+ZmScheduleAssistantView.prototype.showSuggestActionLinks =
+function() {
+    var date = this._date || this._miniCalendar.getDate();
+    this._timeSuggestions.setShowSuggestionsHTML(date);
 };
 
 ZmScheduleAssistantView.prototype.addOrganizer =
