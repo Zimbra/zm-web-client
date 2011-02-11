@@ -1185,9 +1185,18 @@ function() {
 
 ZmCalViewController.prototype._postHideCallback =
 function() {
-	var overview = this._app.getOverview();
-	overview.zShow(false);
-	this._viewVisible = false;
+    if (appCtxt.multiAccounts) {
+        var ovc = this._app.getOverviewContainer();
+        var overviews = ovc.getOverviews();
+        var overview;
+        for (var ov in overviews) {
+            ovc.getOverview(ov).zShow(false);
+        }
+    } else {
+        overview =  this._app.getOverview();
+        overview.zShow(false);
+    }
+    this._viewVisible = false;
 };
 
 ZmCalViewController.prototype._paginate =
