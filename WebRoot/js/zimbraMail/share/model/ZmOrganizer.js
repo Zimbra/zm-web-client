@@ -94,9 +94,6 @@ ZmOrganizer = function(params) {
 		this.account = appCtxt.accountList.mainAccount;
 	}
 
-	// for offline, POP accounts are not allowed to create subfolders
-	this.disallowSubFolder = appCtxt.isOffline && this.account && this.account.type == ZmAccount.TYPE_POP;
-
 	if (id && params.tree) {
 		appCtxt.cacheSet(id, this);
 		if (this.link) {
