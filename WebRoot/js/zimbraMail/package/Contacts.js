@@ -28,6 +28,7 @@ AjxPackage.require("zimbraMail.share.view.ZmImAddressEntry");
 AjxPackage.require("zimbraMail.abook.view.ZmEditContactView");
 AjxPackage.require("zimbraMail.abook.view.ZmGroupView");
 AjxPackage.require("zimbraMail.abook.view.ZmContactsBaseView");
+AjxPackage.require("zimbraMail.abook.view.ZmContactCardsView");
 AjxPackage.require("zimbraMail.abook.view.ZmContactSplitView");
 AjxPackage.require("zimbraMail.abook.view.ZmNewAddrBookDialog");
 AjxPackage.require("zimbraMail.abook.view.ZmContactAssistant");

@@ -431,7 +431,6 @@ function(params) {
 	if (params.skipMeta) { formParams["meta"] = "0"; }
 	if (params.filename) { formParams["filename"] = params.filename; }
 	formParams.emptyname = ZmMsg.exportEmptyName;
-	formParams["charset"] = appCtxt.getCharset();
 
 	// initialize form
 	var form = ZmImportExportController.__createForm(url, formParams);

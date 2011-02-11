@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -1708,20 +1708,4 @@ function() {
 ZmAppCtxt.prototype.getOutsideMouseEventMgr =
 function() {
 	return DwtOutsideMouseEventMgr.INSTANCE;
-};
-
-
-/**
-* @return Returns language specific charset. Currently supports only Japanese. 
-* Returns "Windows-31J" for Japanese or returns "UTF-8" for everything else
-*/
-ZmAppCtxt.prototype.getCharset =
-function() {
-	var lang = AjxEnv.isIE ? window.navigator.systemLanguage : window.navigator.language;
-	//Currently only differs for Japanese, but can extend for different languages as/if we need it.
-	if(lang == "ja" && AjxEnv.isWindows) {
-		return "Windows-31J";
-	} else {
-		return "UTF-8";
-	}
 };

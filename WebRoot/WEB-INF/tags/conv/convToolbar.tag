@@ -65,28 +65,24 @@
                                 <option <c:if test="${keys}">id="OPFLAG" </c:if> value="flag"/><fmt:message key="actionAddFlag"/>
                                 <option <c:if test="${keys}">id="OPUNFLAG" </c:if> value="unflag"/><fmt:message key="actionRemoveFlag"/>
                             </c:if>
-                            <c:if test="${mailbox.features.spam}">
-                                <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
-                                    <option <c:if test="${keys}">id="OPSPAM" </c:if> value="actionSpam"/><fmt:message key="actionSpam"/>
-                                </c:if>
-                                <c:if test="${context.isFolderSearch and context.folder.isSpam}">
-                                    <option <c:if test="${keys}">id="OPNOTSPAM" </c:if> value="actionNotSpam"/><fmt:message key="actionNotSpam"/>
-                                </c:if>
+                            <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
+                                <option <c:if test="${keys}">id="OPSPAM" </c:if> value="actionSpam"/><fmt:message key="actionSpam"/>
+                            </c:if>
+                            <c:if test="${context.isFolderSearch and context.folder.isSpam}">
+                                <option <c:if test="${keys}">id="OPNOTSPAM" </c:if> value="actionNotSpam"/><fmt:message key="actionNotSpam"/>
                             </c:if>
                             <app:tagOptions mailbox="${mailbox}" keys="${keys}"/>
                         </select>
                     </td>
                     <app:button id="${keys ? 'OPGO' :''}" name="action" tooltip="actionMessageGoTT" text="actionGo" />
                     <%--
-                    <c:if test="${mailbox.features.spam}">
-                        <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
-                            <td><div class='vertSep'></div></td>
-                            <app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.png"/>
-                        </c:if>
-                        <c:if test="${context.isFolderSearch and context.folder.isSpam}">
-                            <td><div class='vertSep'></div></td>
-                            <app:button name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgNotJunk.png"/>
-                        </c:if>
+                    <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
+                        <td><div class='vertSep'></div></td>
+                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="startup/ImgJunkMail.png"/>
+                    </c:if>
+                    <c:if test="${context.isFolderSearch and context.folder.isSpam}">
+                        <td><div class='vertSep'></div></td>
+                        <app:button name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgNotJunk.png"/>
                     </c:if>
                     --%>
                     <td><div class='vertSep'></div>                    <input type="hidden" name="contextConvId" value="${convSearchResult.conversationSummary.id}"></td>

@@ -45,7 +45,7 @@ ZmAssistantBuddy.prototype.handleInput = function(args) {
 		    stop : true };
 
 	// disallow leading space.
-	if (/^[\p{Z}\z\s]+$/.test(args.str)) {
+	if (/^\s+$/.test(args.str)) {
 		ret.str = "";
 		return ret;
 	}
@@ -58,8 +58,8 @@ ZmAssistantBuddy.prototype.handleInput = function(args) {
 	}
 
 	var assistant = null;
-	var cmd = args.str.replace(/^[\p{Z}\z\s]+/, "");
-	var match = cmd.match(/^([\.[^\p{Z}\z\s]]+)[\p{Z}\z\s]*(.*)/);
+	var cmd = args.str.replace(/^\s+/, "");
+	var match = cmd.match(/^([\.\w]+)\s*(.*)/);
 	if (match) {
 		var rest = match[2];
 		var mainCommand = match[1];

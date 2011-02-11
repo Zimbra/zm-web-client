@@ -170,8 +170,8 @@ function() {
 ZmAssistantDialog.prototype._parseAction =
 function() {
 	var assistant = null;	
-	var cmd = this._commandEl.value.replace(/^[\p{Z}\z\s]*/, '');
-	var match = cmd.match(/^((?:[^\p{Z}\z\s]|\.)+)[\p{Z}\z\s]*/);
+	var cmd = this._commandEl.value.replace(/^\s*/, '');
+	var match = cmd.match(/^([\.\w]+)\s*/);
 	if (match) {
 		var args = cmd.substring(match[0].length);
 		var mainCommand = match[1];

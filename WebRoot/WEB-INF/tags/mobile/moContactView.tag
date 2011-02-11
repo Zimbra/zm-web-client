@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -43,28 +43,20 @@
     <div class="wrap-dcontent" id="wrap-dcontent-view">
                     <div id="dcontent-view" style="padding-bottom:5px;">
         <div class="Stripes header">
-            <div>
-                <div>
-                    <span class="${contact.isGroup ? 'ImgGroupPerson_48' : 'ImgPerson_48'}" style="float:left;">&nbsp;</span>
-                    <div class="td aleft">
-                        <strong>
-                            <c:choose>
-                                <c:when test="${empty contact.displayFileAs}">
-                                    <fmt:message var="noDisplayAs" key="noDisplayAs" />
-                                    ${fn:escapeXml(noDisplayAs)}
-                                </c:when>
-                                <c:otherwise>
-                                    <app:contactDisplayName contact="${contact}" />
-                                </c:otherwise>
-                            </c:choose>
-                        </strong>
-                        <c:if test="${not empty contact.jobTitle}">
-                            <div style="font-size:0.9em;">${fn:escapeXml(contact.jobTitle)}</div>
-                        </c:if>
-                        <c:if test="${not empty contact.company}">
-                            <div style="font-size:0.9em;">${fn:escapeXml(contact.company)}</div>
-                        </c:if>
-                    </div>
+            <div class="tbl">
+                <div class="tr">
+                    <span class="td aleft ImgPerson_48">&nbsp;</span>
+                    <span class="td aleft">
+                       <div>
+                           <strong>${fn:escapeXml(contact.displayFileAs)}</strong>
+                       </div>
+                       <c:if test="${not empty contact.jobTitle}">
+                           <div>${fn:escapeXml(contact.jobTitle)}</div>
+                       </c:if>
+                       <c:if test="${not empty contact.company}">
+                           <div>${fn:escapeXml(contact.company)}</div>
+                       </c:if>
+                    </span>
                 </div>
             </div>
             <c:if test="${contact.isFlagged || (contact.hasTags && mailbox.features.tagging)}">

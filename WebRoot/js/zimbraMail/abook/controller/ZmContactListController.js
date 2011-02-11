@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -40,6 +40,7 @@ ZmContactListController = function(container, contactsApp) {
 	ZmListController.call(this, container, contactsApp);
 
 	this._viewFactory = {};
+	this._viewFactory[ZmId.VIEW_CONTACT_CARDS] = ZmContactCardsView;
 	this._viewFactory[ZmId.VIEW_CONTACT_SIMPLE] = ZmContactSplitView;
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -61,16 +62,18 @@ ZmContactListController.prototype.constructor = ZmContactListController;
 
 ZmContactListController.ICON = {};
 ZmContactListController.ICON[ZmId.VIEW_CONTACT_SIMPLE]		= "ListView";
+ZmContactListController.ICON[ZmId.VIEW_CONTACT_CARDS]		= "CardsView";
 
 ZmContactListController.MSG_KEY = {};
 ZmContactListController.MSG_KEY[ZmId.VIEW_CONTACT_SIMPLE]	= "contactList";
+ZmContactListController.MSG_KEY[ZmId.VIEW_CONTACT_CARDS]	= "detailedCards";
 
 ZmContactListController.SEARCH_TYPE_CANONICAL	= 1 << 0;
 ZmContactListController.SEARCH_TYPE_GAL			= 1 << 1;
 ZmContactListController.SEARCH_TYPE_NEW			= 1 << 2;
 ZmContactListController.SEARCH_TYPE_ANYWHERE	= 1 << 3;
 
-ZmContactListController.VIEWS = [ZmId.VIEW_CONTACT_SIMPLE];
+ZmContactListController.VIEWS = [ZmId.VIEW_CONTACT_SIMPLE, ZmId.VIEW_CONTACT_CARDS];
 
 /**
  * Returns a string representation of the object.
@@ -357,7 +360,9 @@ function() {
  */
 ZmContactListController.prototype._defaultView =
 function() {
-	return ZmId.VIEW_CONTACT_SIMPLE;
+	return (appCtxt.get(ZmSetting.CONTACTS_VIEW) == "cards")
+		? ZmId.VIEW_CONTACT_CARDS
+		: ZmId.VIEW_CONTACT_SIMPLE;
 };
 
 /**
