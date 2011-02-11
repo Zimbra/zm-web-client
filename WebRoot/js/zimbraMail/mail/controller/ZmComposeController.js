@@ -503,7 +503,7 @@ function(attId, docIds, draftType, callback, contactId) {
 
 	// check for read receipt
 	var requestReadReceipt = false;
-	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) {
+	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED, null, this._composeView.getFromAccount())) {
 		var menu = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS).getMenu();
         if (menu){
 		    var mi = menu.getItemById(ZmOperation.KEY_ID, ZmOperation.REQUEST_READ_RECEIPT);
@@ -1038,10 +1038,11 @@ function(action) {
 	var isInviteReply = this._composeView._isInviteReply(action);
 	var isForward = this._composeView._isForward(action);
 	var list = [];
+    var ac = window.parentAppCtxt || window.appCtxt;
 	if (isReply || isCalReply) {
 		list.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.SEP);
 	}
-	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+	if (ac.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		list.push(ZmOperation.FORMAT_HTML, ZmOperation.FORMAT_TEXT, ZmOperation.SEP);
 	}
 	if (isInviteReply) { // Accept/decline/etc... an appointment invitation
@@ -1058,8 +1059,7 @@ function(action) {
     }
 
 	// add read receipt
-	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED)) {
-		var ac = window.parentAppCtxt || window.appCtxt;
+	if (ac.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED, null, ac.getActiveAccount())) {
 		var fid = this._msg && this._msg.folderId;
 		var folder = fid ? ac.getById(fid) : null;
 		if (!folder || (folder && !folder.isRemote())) {
@@ -1131,7 +1131,7 @@ function(composeMode, incOptions) {
 			}
 
 			if (appCtxt.multiAccounts) {
-				mi.setEnabled(appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED));
+                mi.setEnabled(appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED, null, this._composeView.getFromAccount()));
 			}
 		}
 	}
