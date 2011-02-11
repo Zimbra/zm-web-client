@@ -306,13 +306,16 @@ function(actionCode) {
 		case ZmKeyMap.SHOW_FRAGMENT:
 			if (num == 1) {
 				var item = lv.getSelection()[0];
-				var id = lv._getFieldId(item, ZmItem.F_SUBJECT);
-				var subjectField = document.getElementById(id);
-				if (subjectField) {
-					var loc = Dwt.getLocation(subjectField);
+                if (!item) { break; }
+                var id = lv._getFieldId(item, ZmItem.F_SUBJECT);
+                var subjectField = document.getElementById(id);
+                if (subjectField) {
+                    var loc = Dwt.getLocation(subjectField);
 					var frag;
-					if (item.type == ZmItem.MSG && item.isInvite() && item.needsRsvp()) {
-						frag = item.invite.getToolTip();
+					if ((item.type == ZmItem.MSG && item.isInvite() && item.needsRsvp()) ||
+                        (item.type == ZmId.ITEM_CONV && this.getMsg() && this.getMsg().isInvite() && this.getMsg().needsRsvp()))
+                    {
+						frag = item.invite ? item.invite.getToolTip() : this.getMsg().invite.getToolTip();
 					} else {
 						frag = item.fragment ? item.fragment : ZmMsg.fragmentIsEmpty;
 						if (frag != "") { lv.setToolTipContent(AjxStringUtil.htmlEncode(frag)); }
@@ -320,7 +323,7 @@ function(actionCode) {
 					var tooltip = this._shell.getToolTip();
 					tooltip.popdown();
 					if (frag != "") {
-						tooltip.setContent(AjxStringUtil.htmlEncode(frag));
+						tooltip.setContent(frag);
 						tooltip.popup(loc.x, loc.y);
 					}
 				}
