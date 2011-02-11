@@ -17,7 +17,7 @@
 
 <template id="share.App#Banner">
 	<table border=0 cellpadding=0 cellspacing=0 style='width:100%;height:100%'>
-		<tr><td align='center' valign='middle'><a<$ if (data.url && data.url != '') { $> href='${url}' target='_blank'<$ } $>><div class='ImgAppBanner'></div></a></td></tr>
+		<tr><td align='center' valign='middle'><a<$ if (data.url && data.url != '') { $> href='${url}' target='_blank'<$ } $>><div class='ImgAppBanner' <$ if (data.isOffline) { $> style='width:220px;' <$ } $>></div></a></td></tr>
 	</table>
 </template>
 
