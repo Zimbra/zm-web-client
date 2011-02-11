@@ -804,7 +804,9 @@ function(items){
 			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
 			restUrl += (restUrl.match(/\?/) ? "&" : "?") + "localeId=" + AjxEnv.DEFAULT_LOCALE;
 		} else {
-			if (!ZmMimeTable.isRenderable(item.contentType) && !ZmMimeTable.isMultiMedia(item.contentType)) {
+            // do not try to
+            //ZD doesn't support ConvertD.
+			if (!ZmMimeTable.isRenderable(item.contentType) && !ZmMimeTable.isMultiMedia(item.contentType) && !appCtxt.isOffline) {
                	restUrl += (restUrl.match(/\?/) ? "&" : "?") + "view=html";
 			}
         }
