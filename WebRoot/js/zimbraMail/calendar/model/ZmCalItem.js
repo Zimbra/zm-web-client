@@ -2440,12 +2440,12 @@ function(task, id) {
 	switch (task.priority) {
 		case ZmCalItem.PRIORITY_LOW:
 			return id
-				? AjxImg.getImageHtml("TaskLow", null, ["id='", id, "'"].join(""))
-				: AjxImg.getImageHtml("TaskLow");
+				? AjxImg.getImageHtml("PriorityLow_list", null, ["id='", id, "'"].join(""))
+				: AjxImg.getImageHtml("PriorityLow_list");
 		case ZmCalItem.PRIORITY_HIGH:
 			return id
-				? AjxImg.getImageHtml("TaskHigh", null, ["id='", id, "'"].join(""))
-				: AjxImg.getImageHtml("TaskHigh");
+				? AjxImg.getImageHtml("PriorityHigh_list", null, ["id='", id, "'"].join(""))
+				: AjxImg.getImageHtml("PriorityHigh_list");
 		default: return "";
 	}
 };
