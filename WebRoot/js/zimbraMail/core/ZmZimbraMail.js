@@ -2348,7 +2348,7 @@ ZmZimbraMail.prototype._createBanner =
 function() {
 	var banner = new DwtComposite({parent:this._shell, posStyle:Dwt.ABSOLUTE_STYLE, id:ZmId.BANNER});
 	var logoUrl = appCtxt.getSkinHint("banner", "url") || appCtxt.get(ZmSetting.LOGO_URI);
-	var data = {url:logoUrl};
+	var data = {url:logoUrl, isOffline:appCtxt.isOffline};
 	banner.getHtmlElement().innerHTML  = AjxTemplate.expand('share.App#Banner', data);
 	return banner;
 };
