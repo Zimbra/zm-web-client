@@ -84,6 +84,14 @@ function(organizer) {
 		} else {
 			colorCode = organizer.color;
 		}
+        var defaultColorCode = ZmOrganizer.DEFAULT_COLOR[organizer.type],
+            defaultColor = ZmOrganizer.COLOR_VALUES[defaultColorCode],
+            colorMenu = this._color.getMenu(),
+            moreColorMenu;
+        if(colorMenu) {
+            moreColorMenu = (colorMenu.toString() == "ZmMoreColorMenu") ? colorMenu : colorMenu._getMoreColorMenu();
+            if(moreColorMenu) moreColorMenu.setDefaultColor(defaultColor);
+        }
         this._color.setValue(colorCode);
         this._color.setEnabled(organizer.id != ZmFolder.ID_DRAFTS);
 	}

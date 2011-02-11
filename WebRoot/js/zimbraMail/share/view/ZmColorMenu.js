@@ -183,6 +183,10 @@ ZmMoreColorMenu.prototype.__DwtColorPicker_getData = function(key) {
     return DwtColorPicker.prototype.getData.apply(this, arguments);
 };
 
+ZmMoreColorMenu.prototype.setDefaultColor = function(color) {
+    this._colorPicker.setDefaultColor(color);
+}
+
 /**
  * A custom menu item class for the "More colors..." and
  * "Fewer colors..." options which should not leave space for
