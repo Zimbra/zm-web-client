@@ -1035,7 +1035,10 @@ function(msg, idoc) {
 					images[i].setAttribute("dfsrc", dfsrc);
 				}
 			} else if (dfsrc.substring(0,4) == "doc:") {
-				images[i].src = [appCtxt.get(ZmSetting.REST_URL), ZmFolder.SEP, dfsrc.substring(4)].join('');
+                //IE: Over HTTPS, http src urls for images might cause an issue.
+				try{
+                    images[i].src = [appCtxt.get(ZmSetting.REST_URL), ZmFolder.SEP, dfsrc.substring(4)].join('');
+                }catch(ex){};
 			} else if (msg && dfsrc.indexOf("//") == -1) { // check for content-location verison
 				var src = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_LOCATION, dfsrc);
 				//Cache cleared, becoz part id's may change.
@@ -1096,6 +1099,7 @@ function(idoc) {
 				cid = "cid:"+Dwt.getNextId();
 				img.removeAttribute("dfsrc");
 				img.setAttribute("doc", dfsrc.substring(4, dfsrc.length));
+                img.setAttribute("dfsrc", cid);
 			} else {
 				// If "Display External Images" is false then handle Reply/Forward
 				if (dfsrc)
@@ -1103,7 +1107,8 @@ function(idoc) {
 					try{ img.src = dfsrc; }catch(ex){};
 				}
 			if (cid) {
-				img.src = cid;
+                //IE: Over HTTPS, http src urls for images might cause an issue.
+                try{ img.src = cid; }catch(ex){};
 			}
 		}
 	}
