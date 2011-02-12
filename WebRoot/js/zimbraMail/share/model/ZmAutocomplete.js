@@ -571,7 +571,7 @@ ZmSearchAutocomplete = function() {
 	var params = {
 		loader:		this._loadTags,
 		text:		function(o) { return o.getName(false, null, true, true); },
-		icon:		function(o) { return o.getIcon(); },
+		icon:		function(o) { return o.getIconWithColor(); },
 		matchText:	function(o) { return o.createQuery(); }
 	};
 	this._registerHandler("tag", params);
