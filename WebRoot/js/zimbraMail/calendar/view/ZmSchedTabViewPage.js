@@ -1282,7 +1282,7 @@ function(status) {
 
 ZmSchedTabViewPage.prototype._handleResponseFreeBusy =
 function(result) {
-	var args = result.getResponse().GetFreeBusyResponse.usr;
+	var args = result.getResponse().GetFreeBusyResponse.usr || [];
 
 	for (var i = 0; i < args.length; i++) {
 		var usr = args[i];

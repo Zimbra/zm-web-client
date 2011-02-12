@@ -858,7 +858,7 @@ ZmApptChooserTabViewPage.prototype._handleResponseFreeBusy =
 function(itemsById, result) {
 	this._freeBusyRequest = null;
 
-	var args = result.getResponse().GetFreeBusyResponse.usr;
+	var args = result.getResponse().GetFreeBusyResponse.usr || [];
 	for (var i = args.length; --i >= 0;) {
 		var el = args[i];
 		var id = el.id;
