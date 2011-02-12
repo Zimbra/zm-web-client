@@ -579,7 +579,7 @@ ZmSearchAutocomplete = function() {
 	params = {
 		listType:	ZmId.ORG_FOLDER,
 		text:		function(o) { return o.getPath(false, false, null, true, false); },
-		icon:		function(o) { return o.getIcon(); },
+		icon:		function(o) { return o.getIconWithColor(); },
 		matchText:	function(o) { return o.createQuery(); }
 	};
 	this._loadFunc[ZmId.ORG_FOLDER] = this._loadFolders;
