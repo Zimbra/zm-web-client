@@ -37,44 +37,39 @@ ZmZimbraMail = function(params) {
 
 	ZmController.call(this, null);
 
-	this._userShell = params.userShell;
-	this._requestMgr = new ZmRequestMgr(this);
-
-	// app event handling
-	this._evt = new ZmAppEvent();
-	this._evtMgr = new AjxEventMgr();
-	// copy over any statically registered listeners
-	for (var type in ZmZimbraMail._listeners) {
-		var list = ZmZimbraMail._listeners[type];
-		if (list && list.length) {
-			for (var i = 0; i < list.length; i++) {
-				this._evtMgr.addListener(type, list[i]);
-			}
-		}
-	}
-
-	// all subsequent calls to register static app listeners go to instance
-	ZmZimbraMail.addListener = AjxCallback.simpleClosure(this.addListener, this);
-	ZmZimbraMail.addAppListener = AjxCallback.simpleClosure(this.addAppListener, this);
+    appCtxt.setAppController(this);
 
 	// ALWAYS set back reference into our world (also used by unload handler)
 	window._zimbraMail = this;
 
-	// setup history support
-	if (appCtxt.get(ZmSetting.HISTORY_SUPPORT_ENABLED) && !AjxEnv.isSafari) {
-		window.historyMgr = appCtxt.getHistoryMgr();
-	}
-
-	// settings structure and defaults
-	this._settings = appCtxt.getSettings();
-	var branch = appCtxt.get(ZmSetting.BRANCH);
-    if (window.DBG && !DBG.isDisabled()) {
-		DBG.setTitle("Debug (" + branch + ")");
+    // app event handling
+    this._evt = new ZmAppEvent();
+    this._evtMgr = new AjxEventMgr();
+    // copy over any statically registered listeners
+    for (var type in ZmZimbraMail._listeners) {
+        var list = ZmZimbraMail._listeners[type];
+        if (list && list.length) {
+            for (var i = 0; i < list.length; i++) {
+                this._evtMgr.addListener(type, list[i]);
+            }
+        }
     }
 
-	appCtxt.setAppController(this);
+    // all subsequent calls to register static app listeners go to instance
+    ZmZimbraMail.addListener = AjxCallback.simpleClosure(this.addListener, this);
+    ZmZimbraMail.addAppListener = AjxCallback.simpleClosure(this.addAppListener, this);
 
+    // Create generic operations
+    ZmOperation.initialize();
+
+    // settings
+    this._initializeSettings(params);
+
+    // set internal state
 	this._shell = appCtxt.getShell();
+    this._userShell = params.userShell;
+
+    this._requestMgr = new ZmRequestMgr(this); // NOTE: requires settings to be initialized
 
 	this._apps = {};
 	this._upsellView = {};
@@ -87,6 +82,15 @@ ZmZimbraMail = function(params) {
 
 	this.statusView = null;
 
+    // setup history support
+    if (appCtxt.get(ZmSetting.HISTORY_SUPPORT_ENABLED) && !AjxEnv.isSafari) {
+        window.historyMgr = appCtxt.getHistoryMgr();
+    }
+
+    // create app view manager
+    this._appViewMgr = new ZmAppViewMgr(this._shell, this, false, true);
+
+    // register handlers
 	AjxDispatcher.setPackageLoadFunction("Zimlet", new AjxCallback(this, this._postLoadZimlet));
 
 	AjxDispatcher.setPreLoadFunction(new AjxCallback(this, function() {
@@ -102,7 +106,8 @@ ZmZimbraMail = function(params) {
 
 	this._shell.addGlobalSelectionListener(new AjxListener(this, this._globalSelectionListener));
 
-	this.startup(params);
+    /// go!
+    this.startup(params);
 };
 
 ZmZimbraMail.prototype = new ZmController;
@@ -167,60 +172,6 @@ function(params) {
 	if (params.offlineMode) {
 		DBG.println(AjxDebug.DBG1, "OFFLINE MODE");
 		appCtxt.isOffline = true;
-	}
-
-	// Create and initialize settings
-	var settings = new ZmSettings();
-	appCtxt.setSettings(settings);
-
-	// Note: removing cookie support will affect zdesktop when connecting 4.x remote server
-	if (params.offlineMode) {
-		var apps = AjxCookie.getCookie(document, ZmSetting.APPS_COOKIE);
-		DBG.println(AjxDebug.DBG1, "apps: " + apps);
-		if (apps) {
-			for (var appsetting in ZmSetting.APP_LETTER) {
-				var letter = ZmSetting.APP_LETTER[appsetting];
-				if (apps.indexOf(letter) != -1) {
-					settings.getSetting(appsetting).setValue(true);
-				}
-			}
-		}
-	}
-
-	if (params.settings) {
-		for (var name in params.settings) {
-			var id = settings.getSettingByName(name);
-			if (id) {
-				settings.getSetting(id).setValue(params.settings[name]);
-			}
-		}
-	}
-
-	// Create generic operations
-	ZmOperation.initialize();
-
-	// reset polling interval for offline
-	if (appCtxt.isOffline) {
-		appCtxt.set(ZmSetting.POLLING_INTERVAL, 60, null, null, true);
-	}
-
-	// Handle dev mode
-	if (params.devMode == "1") {
-		DBG.println(AjxDebug.DBG1, "DEV MODE");
-		appCtxt.set(ZmSetting.DEV, true);
-		appCtxt.set(ZmSetting.POLLING_INTERVAL, 0);
-	}
-
-	// Handle protocol mode - standardize on trailing :
-	if (params.protocolMode) {
-		var proto = (params.protocolMode.indexOf(":") == -1) ? params.protocolMode + ":" : params.protocolMode;
-		appCtxt.set(ZmSetting.PROTOCOL_MODE, proto);
-	}
-	if (params.httpPort) {
-		appCtxt.set(ZmSetting.HTTP_PORT, params.httpPort);
-	}
-	if (params.httpsPort) {
-		appCtxt.set(ZmSetting.HTTPS_PORT, params.httpsPort);
 	}
 
 	// Create the shell
@@ -326,10 +277,6 @@ function(params) {
 		DBG.println(AjxDebug.DBG1, "No skin!");
 	}
 
-	if (!this._appViewMgr) {
-		this._appViewMgr = new ZmAppViewMgr(this._shell, this, false, true);
-	}
-
 	skin.show("skin", true);
 	if (!this._components) {
 		this._components = {};
@@ -363,31 +310,6 @@ function(params) {
 		}
 	}
 
-	// We've received canned SOAP responses for GetInfoRequest and SearchRequest from the
-	// launch JSP, wrapped in a BatchRequest. Jiggle them so that they look like real
-	// responses, and pass them along.
-	if (params.batchInfoResponse) {
-		var br = params.batchInfoResponse.Body.BatchResponse;
-		if (br.GetInfoResponse) {
-			var girJSON = params.getInfoResponse = {};
-			girJSON.Body = {};
-			girJSON.Body.GetInfoResponse = br.GetInfoResponse[0];
-			girJSON.Header = params.batchInfoResponse.Header;
-			if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.session) {
-				ZmCsfeCommand.setSessionId(girJSON.Header.context.session);
-			}
-			DBG.println(AjxDebug.DBG1, ["<b>RESPONSE (from JSP tag)</b>"].join(""), "GetInfoResponse");
-			DBG.dumpObj(AjxDebug.DBG1, girJSON, -1);
-		}
-		if (br.SearchResponse) {
-			var srJSON = params.searchResponse = {};
-			srJSON.Body = {};
-			srJSON.Body.SearchResponse = br.SearchResponse[0];
-			DBG.println(AjxDebug.DBG1, ["<b>RESPONSE (from JSP tag)</b>"].join(""), "SearchResponse");
-			DBG.dumpObj(AjxDebug.DBG1, srJSON, -1);
-		}
-	}
-
 	this._getStartApp(params);
 
 	this._postRenderCallbacks = [];
@@ -410,9 +332,112 @@ function(params) {
 		this.addPostRenderCallback(callback, 0, 0, true);
 	}
 
+    // NOTE: We must go through the request mgr for default handling
+    var getInfoResponse = AjxUtil.get(params, "getInfoResponse");
+    if (getInfoResponse) {
+        this._requestMgr.sendRequest({response:getInfoResponse});
+    }
+
 	// fetch meta data for the main account
 	var respCallback = new AjxCallback(this, this._handleResponseGetMetaData, params);
 	appCtxt.accountList.mainAccount.loadMetaData(respCallback);
+};
+
+ZmZimbraMail.prototype._initializeSettings = function(params) {
+    // We've received canned SOAP responses for GetInfoRequest and SearchRequest from the
+    // launch JSP, wrapped in a BatchRequest. Jiggle them so that they look like real
+    // responses, and pass them along.
+    if (params.batchInfoResponse) {
+        var br = params.batchInfoResponse.Body.BatchResponse;
+        if (br.GetInfoResponse) {
+            var girJSON = params.getInfoResponse = {};
+            girJSON.Body = {};
+            girJSON.Body.GetInfoResponse = br.GetInfoResponse[0];
+            girJSON.Header = params.batchInfoResponse.Header;
+            if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.session) {
+                ZmCsfeCommand.setSessionId(girJSON.Header.context.session);
+            }
+            DBG.println(AjxDebug.DBG1, ["<b>RESPONSE (from JSP tag)</b>"].join(""), "GetInfoResponse");
+            DBG.dumpObj(AjxDebug.DBG1, girJSON, -1);
+        }
+        if (br.SearchResponse) {
+            var srJSON = params.searchResponse = {};
+            srJSON.Body = {};
+            srJSON.Body.SearchResponse = br.SearchResponse[0];
+            DBG.println(AjxDebug.DBG1, ["<b>RESPONSE (from JSP tag)</b>"].join(""), "SearchResponse");
+            DBG.dumpObj(AjxDebug.DBG1, srJSON, -1);
+        }
+    }
+
+    // Create and initialize settings
+    var settings = this._settings = new ZmSettings();
+    appCtxt.setSettings(settings);
+
+    if (params.getInfoResponse) {
+        var info = params.getInfoResponse.Body.GetInfoResponse;
+        // NOTE: Skip notify to avoid callbacks which reference objects that aren't set, yet
+        settings.setUserSettings(info, null, true, true, true);
+        settings.userSettingsLoaded = true;
+
+        // admin mail enabled setting takes precedence if admin delegated
+        if (settings.get(ZmSetting.ADMIN_DELEGATED) && !settings.get(ZmSetting.ADMIN_MAIL_ENABLED)) {
+            settings.getSetting(ZmSetting.MAIL_ENABLED).setValue(false);
+        }
+    }
+
+    // settings structure and defaults
+    var branch = appCtxt.get(ZmSetting.BRANCH);
+    if (window.DBG && !DBG.isDisabled()) {
+        DBG.setTitle("Debug (" + branch + ")");
+    }
+
+    // Note: removing cookie support will affect zdesktop when connecting 4.x remote server
+    if (params.offlineMode) {
+        var apps = AjxCookie.getCookie(document, ZmSetting.APPS_COOKIE);
+        DBG.println(AjxDebug.DBG1, "apps: " + apps);
+        if (apps) {
+            for (var appsetting in ZmSetting.APP_LETTER) {
+                var letter = ZmSetting.APP_LETTER[appsetting];
+                if (apps.indexOf(letter) != -1) {
+                    settings.getSetting(appsetting).setValue(true);
+                }
+            }
+        }
+    }
+
+    // setting overrides
+    if (params.settings) {
+        for (var name in params.settings) {
+            var id = settings.getSettingByName(name);
+            if (id) {
+                settings.getSetting(id).setValue(params.settings[name]);
+            }
+        }
+    }
+
+    // reset polling interval for offline
+    if (appCtxt.isOffline) {
+        appCtxt.set(ZmSetting.POLLING_INTERVAL, 60, null, null, true);
+    }
+
+    // Handle dev mode
+    if (params.devMode == "1") {
+        DBG.println(AjxDebug.DBG1, "DEV MODE");
+        appCtxt.set(ZmSetting.DEV, true);
+        appCtxt.set(ZmSetting.POLLING_INTERVAL, 0);
+    }
+
+    // Handle protocol mode - standardize on trailing :
+    if (params.protocolMode) {
+        var proto = (params.protocolMode.indexOf(":") == -1) ? params.protocolMode + ":" : params.protocolMode;
+        appCtxt.set(ZmSetting.PROTOCOL_MODE, proto);
+    }
+    if (params.httpPort) {
+        appCtxt.set(ZmSetting.HTTP_PORT, params.httpPort);
+    }
+    if (params.httpsPort) {
+        appCtxt.set(ZmSetting.HTTPS_PORT, params.httpsPort);
+    }
 };
 
 /**
@@ -420,9 +445,7 @@ function(params) {
  */
 ZmZimbraMail.prototype._handleResponseGetMetaData =
 function(params) {
-	var respCallback = new AjxCallback(this, this._handleResponseLoadUserSettings, params);
-	this._errorCallback = new AjxCallback(this, this._handleErrorStartup, params);
-	this._settings.loadUserSettings(respCallback, this._errorCallback, null, params.getInfoResponse);
+    this._handleResponseLoadUserSettings(params);
 };
 
 /**

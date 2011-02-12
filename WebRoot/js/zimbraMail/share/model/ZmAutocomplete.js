@@ -606,8 +606,14 @@ ZmSearchAutocomplete = function() {
 	this._registerHandler("type", params);
 	this._registerHandler("attachment", params);
 
-	appCtxt.getFolderTree().addChangeListener(new AjxListener(this, this._folderTreeChangeListener));
-	appCtxt.getTagTree().addChangeListener(new AjxListener(this, this._tagTreeChangeListener));
+	var folderTree = appCtxt.getFolderTree();
+    if (folderTree) {
+        folderTree.addChangeListener(new AjxListener(this, this._folderTreeChangeListener));
+    }
+	var tagTree = appCtxt.getTagTree();
+    if (tagTree) {
+        tagTree.addChangeListener(new AjxListener(this, this._tagTreeChangeListener));
+    }
 };
 
 ZmSearchAutocomplete.ICON = {};
@@ -735,7 +741,8 @@ ZmSearchAutocomplete.prototype._loadFolders =
 function(listType, callback) {
 
 	var list = this._list[listType];
-	var folders = appCtxt.getFolderTree().asList({includeRemote:true});
+    var folderTree = appCtxt.getFolderTree();
+	var folders = folderTree ? folderTree.asList({includeRemote:true}) : [];
 	for (var i = 0, len = folders.length; i < len; i++) {
 		var folder = folders[i];
 		if (folder.id != ZmOrganizer.ID_ROOT && folder.type == ZmOrganizer.FOLDER && !ZmFolder.HIDE_ID[folder.id]) {
