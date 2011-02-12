@@ -219,7 +219,7 @@ ZmFreeBusyCache.prototype._handleResponseWorkingHrs =
 function(params, result) {
 
     var freeBusyKey;
-	var args = result.getResponse().GetWorkingHoursResponse.usr;
+	var args = result.getResponse().GetWorkingHoursResponse.usr || [];
     for (var i = 0; i < args.length; i++) {
 		var usr = args[i];
         var id = usr.id;
