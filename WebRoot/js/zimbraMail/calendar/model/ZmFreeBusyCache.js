@@ -140,7 +140,7 @@ ZmFreeBusyCache.prototype. _handleResponseFreeBusy =
 function(params, result) {
 
     var freeBusyKey;
-	var args = result.getResponse().GetFreeBusyResponse.usr;
+	var args = result.getResponse().GetFreeBusyResponse.usr || [];
     for (var i = 0; i < args.length; i++) {
 		var usr = args[i];
         var id = usr.id;
