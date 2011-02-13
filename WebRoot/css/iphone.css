@@ -19,6 +19,9 @@ body {
     padding: 0px;
     margin: 0px;
 }
+
+pre{ @WordWrapPRE@ }
+
 a {
     color: #0066cc;
     text-decoration: none;

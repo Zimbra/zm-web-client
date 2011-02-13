@@ -23,6 +23,8 @@ body *{
     font-family: Helvetica, Arial, Verdana, Sans-serif;
 }
 
+pre{ @WordWrapPRE@ }
+
 a {
     color: #0066cc;
     text-decoration: none;
