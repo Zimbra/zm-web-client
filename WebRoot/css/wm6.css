@@ -18,6 +18,9 @@ body {
     padding:0px;
     margin:0px;
 }
+
+pre{ @WordWrapPRE@ }
+
 .hiddenFrame {
     z-index:-9999;
     position:absolute;

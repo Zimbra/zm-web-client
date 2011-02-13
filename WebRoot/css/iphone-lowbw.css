@@ -35,6 +35,9 @@ body[orient="landscape"] div.row span.m {
     min-width: 347px;
     width: 347px;
 }
+
+pre{ @WordWrapPRE@ }
+
 a {
     color: #4D8DC3;
     text-decoration: none;
