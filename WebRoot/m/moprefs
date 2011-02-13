@@ -43,7 +43,7 @@
         <c:otherwise>
                 <div class="tb tbl">
                 <div class="tr">
-                    <div class="td aleft"><fmt:message key="options"/></div>
+                    <div class="td aleft titleText"><b><fmt:message key="options"/></b></div>
                 </div>
                 </div>
         </c:otherwise>
@@ -164,13 +164,13 @@
                 </div>
             </div>
         </div>
-    </div>
-    </div>    
+ 
+   
     <c:if test="${ua.isiPad == false}">
-    <div class="sectionLbl tb tbl folderBar"><div class="tr"><div class="td aleft"><fmt:message key="MO_SessionPrefs"/></div></div></div> 
-    <div class='View'>
+    <div class="sectionLbl"><div class="tr"><div class="td titleText"><b><fmt:message key="MO_SessionPrefs"/></b></div></div></div> 
+    <div class='View prefBody'>
         <div class="tbl small-gray-text">
-                <div class="tr"><div class="td aleft"><fmt:message key="MO_SessionPrefsNote"/></div></div>
+                <div class="tr"><div class="td aleft"><b><fmt:message key="MO_SessionPrefsNote"/></b></div></div>
          </div>    
         <div class="tbl">
             <div class="tr nr">
@@ -182,7 +182,7 @@
         <div class="tbl small-gray-text">
             <div class="tr nr"><div class="td aleft"><fmt:message key="MO_MaxFoldersAllowedNote"/></div></div>
         </div>
-
+    </div> 
     </div>
     </div>
     <div class="tb tbl">
