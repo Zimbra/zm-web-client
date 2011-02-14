@@ -1495,6 +1495,8 @@ function() {
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmCalItemEditView._onMouseOut);
 	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
 	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
+	Dwt.setHandler(this._startDateField, DwtEvent.ONFOCUS, ZmCalItemEditView._onFocus);
+	Dwt.setHandler(this._endDateField, DwtEvent.ONFOCUS, ZmCalItemEditView._onFocus);
 
 	this._allDayCheckbox._editViewId = this._repeatDescField._editViewId = edvId;
 	this._startDateField._editViewId = this._endDateField._editViewId = edvId;
