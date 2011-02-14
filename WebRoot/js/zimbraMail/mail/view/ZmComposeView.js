@@ -378,7 +378,7 @@ function(msg) {
 ZmComposeView.prototype._handleInlineAtts =
 function(msg, handleInlineDocs){
 
-	var handled = false, ci, cid, dfsrc, inlineAtt;
+	var handled = false, ci, cid, dfsrc, inlineAtt, attached = {};
 
 	var idoc = this._htmlEditor._getIframeDoc();
 	var images = idoc.getElementsByTagName("img");
@@ -398,8 +398,11 @@ function(msg, handleInlineDocs){
 						inlineAtt = this._msg.findInlineAtt(ci);
 					}
 					if (inlineAtt) {
-						msg.addInlineAttachmentId(cid, null, inlineAtt.part);
-						handled = true;
+                        if(!attached[(cid+"_"+inlineAtt.part)]){
+                            msg.addInlineAttachmentId(cid, null, inlineAtt.part);
+                            handled = true;
+                            attached[(cid+"_"+inlineAtt.part)] = true;
+                        }
 					}
 				}
 			}
