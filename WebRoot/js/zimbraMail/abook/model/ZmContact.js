@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -105,6 +105,9 @@ ZmContact.F_otherState				= "otherState";
 ZmContact.F_otherStreet				= "otherStreet";
 ZmContact.F_otherURL				= "otherURL";
 ZmContact.F_pager					= "pager";
+ZmContact.F_phoneticFirstName       = "phoneticFirstName";
+ZmContact.F_phoneticLastName        = "phoneticLastName";
+ZmContact.F_phoneticCompany         = "phoneticCompany";
 ZmContact.F_type					= "type";
 ZmContact.F_workAltPhone			= "workAltPhone";
 ZmContact.F_workCity				= "workCity";
@@ -206,14 +209,17 @@ ZmContact.PRIMARY_FIELDS = [
     ZmContact.F_image,
     ZmContact.F_namePrefix,
     ZmContact.F_firstName,
+    ZmContact.F_phoneticFirstName,
     ZmContact.F_middleName,
 	ZmContact.F_maidenName,
     ZmContact.F_lastName,
+    ZmContact.F_phoneticLastName,
     ZmContact.F_nameSuffix,
     ZmContact.F_nickname,
     ZmContact.F_jobTitle,
     ZmContact.F_department,
 	ZmContact.F_company,
+    ZmContact.F_phoneticCompany,
 	ZmContact.F_fileAs,
 	ZmContact.F_folderId,
 	ZmContact.F_notes
@@ -982,7 +988,7 @@ function(attr, callback) {
 	}
 
     // bug: 45026
-    if (ZmContact.F_firstName in attr || ZmContact.F_lastName in attr || ZmContact.F_company in attr) {
+    if (ZmContact.F_firstName in attr || ZmContact.F_lastName in attr || ZmContact.F_company in attr || ZmContact.X_fileAs in attr) {
         var contact = {};
         var fields = [ZmContact.F_firstName, ZmContact.F_lastName, ZmContact.F_company, ZmContact.X_fileAs];
         for (var i = 0; i < fields.length; i++) {
@@ -1237,12 +1243,14 @@ function() {
  * @return	{String}	the full name
  */
 ZmContact.prototype.getFullName =
-function() {
-	if (!this._fullName) {
+function(html) {
+    var fullNameHtml = null;
+	if (!this._fullName || html) {
 		var fullName = this.getAttr(ZmContact.X_fullName); // present if GAL contact
 		if (fullName) {
 			this._fullName = (fullName instanceof Array) ? fullName[0] : fullName;
-		} else {
+		}
+        if (!fullName || html) {
 			var fn = [];
 			var idx = 0;
 			var prefix = this.getAttr(ZmContact.F_namePrefix);
@@ -1258,8 +1266,14 @@ function() {
 			else if (maiden) {
 				pattern = ZmMsg.fullnameMaiden;
 			}
+            var formatter = new AjxMessageFormat(pattern);
 			var args = [prefix,first,middle,maiden,last,suffix];
-			this._fullName = AjxStringUtil.trim(AjxMessageFormat.format(pattern, args), true);
+            if (!fullName) {
+			    this._fullName = AjxStringUtil.trim(formatter.format(args), true);
+            }
+            if (html) {
+                fullNameHtml = this._getFullNameHtml(formatter, args);
+            }
 		}
 	}
 
@@ -1268,8 +1282,35 @@ function() {
 		this._fullName = this.getFileAs();
 	}
 
-	return this._fullName;
+	return fullNameHtml || this._fullName;
 };
+
+/**
+ * @param formatter
+ * @param parts {Array} Name parts: [prefix,first,middle,maiden,last,suffix]
+ */
+ZmContact.prototype._getFullNameHtml = function(formatter, parts) {
+    var a = [];
+    var segments = formatter.getSegments();
+    for (var i = 0; i < segments.length; i++) {
+        var segment = segments[i];
+        if (segment instanceof AjxFormat.TextSegment) {
+            a.push(segment.format());
+            continue;
+        }
+        // NOTE: Assume that it's a AjxMessageFormat.MessageSegment
+        // NOTE: if not a AjxFormat.TextSegment.
+        var index = segment.getIndex();
+        var base = parts[index];
+        var text = ZmContact.__RUBY_FIELDS[index] && this.getAttr(ZmContact.__RUBY_FIELDS[index]);
+        a.push(AjxStringUtil.htmlRubyEncode(base, text));
+    }
+    return a.join("");
+};
+ZmContact.__RUBY_FIELDS = [
+    null, ZmContact.F_phoneticFirstName, null, null,
+    ZmContact.F_phoneticLastName, null
+];
 
 /**
  * Gets the tool tip for this contact.
@@ -1519,15 +1560,36 @@ function(text, delims) {
 			break;
 		}
 	}
-	var parts = text.split(delim, 3);
-	this.setAttr(ZmContact.F_firstName, parts[0]);
-	if (parts.length == 2) {
-		this.setAttr(ZmContact.F_lastName, parts[1]);
-	} else if (parts.length == 3) {
-		this.setAttr(ZmContact.F_middleName, parts[1]);
-		this.setAttr(ZmContact.F_lastName, parts[2]);
-	}
+    var parts = text.split(delim);
+    var func = this["__setFullName_"+AjxEnv.DEFAULT_LOCALE] || this.__setFullName;
+    func.call(this, parts, text, delims);
 };
+
+ZmContact.prototype.__setFullName = function(parts, text, delims) {
+    this.setAttr(ZmContact.F_firstName, parts[0]);
+    if (parts.length == 2) {
+        this.setAttr(ZmContact.F_lastName, parts[1]);
+    } else if (parts.length == 3) {
+        this.setAttr(ZmContact.F_middleName, parts[1]);
+        this.setAttr(ZmContact.F_lastName, parts[2]);
+    }
+};
+ZmContact.prototype.__setFullName_ja = function(parts, text, delims) {
+    if (parts.length > 2) {
+        this.__setFullName(parts, text, delims);
+        return;
+    }
+    // TODO: Perhaps do some analysis to auto-detect Japanese vs.
+    // TODO: non-Japanese names. For example, if the name text is
+    // TODO: comprised of kanji, treat it as "last first"; else if
+    // TODO: first part is all uppercase, treat it as "last first";
+    // TODO: else treat it as "first last".
+    this.setAttr(ZmContact.F_lastName, parts[0]);
+    if (parts.length > 1) {
+        this.setAttr(ZmContact.F_firstName, parts[1]);
+    }
+};
+ZmContact.prototype.__setFullName_ja_JP = ZmContact.prototype.__setFullName_ja;
 
 /**
  * @private
