@@ -1606,7 +1606,6 @@ function() {
 		var email = attendee.getEmail();
 
 		var startDate  = new Date(this._getStartTime());
-		startDate.setHours(0,0,0,0);
 		var startTime = startDate.getTime() +  cellIndex*30*60*1000;
 		startDate = new Date(startTime);
 		var endTime = startTime + 30*60*1000;
