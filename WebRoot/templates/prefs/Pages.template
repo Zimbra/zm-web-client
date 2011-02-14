@@ -146,8 +146,12 @@ and the container element is replaced with that control.
 						<td class='ZOptionsField'><select id='${id}_DEFAULT_PRINTFONTSIZE' tabindex='130'></select></td>
 					</tr>
 					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.emailAddrs$></td>
+						<td class='ZOptionsField'><div id='${id}_SHORT_ADDRESS' tabindex='140'></div></td>
+					</tr>
+					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.bubbles$></td>
-						<td class='ZOptionsField'><div id='${id}_USE_ADDR_BUBBLES' tabindex='140'></div></td>
+						<td class='ZOptionsField'><div id='${id}_USE_ADDR_BUBBLES' tabindex='150'></div></td>
 					</tr>
 				</table>
 			</td>

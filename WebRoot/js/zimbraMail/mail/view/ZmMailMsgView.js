@@ -1038,6 +1038,7 @@ function(msg, container, callback) {
 
 	var options = {};
 	options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
+	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 	
 	if (this._objectManager) {
 		this._lazyCreateObjectManager();
