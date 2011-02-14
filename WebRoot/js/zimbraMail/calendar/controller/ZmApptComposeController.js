@@ -950,8 +950,31 @@ function(appt, attId, dlg) {
 
 ZmApptComposeController.prototype._saveCalItemFoRealz =
 function(calItem, attId, notifyList, force){
-    force = force || ( this._action == ZmCalItemComposeController.SEND );    
+    force = force || ( this._action == ZmCalItemComposeController.SEND );
+
+    //organizer forwarding an appt is same as organizer editing appt while adding new attendees
+    if(calItem.isForward) {
+        notifyList = this.getForwardNotifyList(calItem);
+    }
+
     ZmCalItemComposeController.prototype._saveCalItemFoRealz.call(this, calItem, attId, notifyList, force);    
+};
+
+/**
+ * To get the array of forward email addresses
+ *
+ * @param	{ZmAppt}	appt		the appointment
+ * @return	{Array}	an array of email addresses
+ */
+ZmApptComposeController.prototype.getForwardNotifyList =
+function(calItem){
+    var fwdAddrs = calItem.getForwardAddress();
+    var notifyList = [];
+    for(var i=0;i<fwdAddrs.length;i++) {
+        var email = fwdAddrs[i].getAddress();
+        notifyList.push(email);
+    }
+    return notifyList;
 };
 
 ZmApptComposeController.prototype._doSaveCalItem =
