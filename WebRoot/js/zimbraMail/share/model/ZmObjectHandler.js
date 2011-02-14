@@ -196,7 +196,7 @@ function(html, idx, obj, spanId, context, options) {
 	html[idx++] = "' id='";
 	html[idx++] = spanId;
 	html[idx++] = "'>";
-	idx = this._getHtmlContent(html, idx, obj, context, spanId);
+	idx = this._getHtmlContent(html, idx, obj, context, spanId, options);
 	html[idx++] = "</span>";
 	return idx;
 };

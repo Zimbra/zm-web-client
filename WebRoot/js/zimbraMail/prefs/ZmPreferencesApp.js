@@ -261,6 +261,7 @@ function() {
                 ZmSetting.DEFAULT_PRINTFONTSIZE,
 				ZmSetting.OFFLINE_IS_MAILTO_HANDLER,
 				ZmSetting.OFFLINE_NOTEBOOK_SYNC_ENABLED, // offline
+				ZmSetting.SHORT_ADDRESS,
 				ZmSetting.USE_ADDR_BUBBLES
 			]
 		},
@@ -579,6 +580,11 @@ function() {
 		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
 
+	ZmPref.registerPref("SHORT_ADDRESS", {
+		displayName:		ZmMsg.shortAddress,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+	
 	ZmPref.registerPref("USE_ADDR_BUBBLES", {
 		displayName:		ZmMsg.useAddressBubbles,
 		displayContainer:	ZmPref.TYPE_CHECKBOX

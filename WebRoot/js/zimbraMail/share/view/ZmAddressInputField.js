@@ -259,6 +259,7 @@ function() {
 /**
  * Parses the given text into email addresses, and adds a bubble for each one
  * that we don't already have. Any part that doesn't parse is left in the input.
+ * Since text is passed in, we don't recognize expandable DLs.
  *
  * @param {string}	text		email addresses
  * @param {boolean}	add			if true, control is not cleared first
@@ -959,7 +960,9 @@ function(bubble) {
 	this._checkSelectionCount();
 
 	if (ZmAddressInputField.AUTO_SELECT_TEXT) {
-		if (AjxEnv.isGeckoBased && this.getSelectionCount() > 0) {
+		// make multiple text selection work in FF
+		var multiOkay = (AjxEnv.isGeckoBased && this.getSelectionCount() > 0);
+		if (multiOkay) {
 			this.focus();
 		}
 		AjxTimedAction.scheduleAction(new AjxTimedAction(this,
@@ -975,14 +978,14 @@ function(bubble) {
 					sel = [bubble];
 				}
 				for (var i = 0, len = sel.length; i < len; i++) {
-					var textNode = sel[i].getTextNode();
-					if (textNode) {
-						DBG.println("aif", "select text: " + textNode.data);
-						Dwt.selectText(textNode);
+					var selectId = sel[i]._htmlElId + "_select";
+					var node = document.getElementById(selectId);
+					if (node) {
+						Dwt.selectText(node);
 					}
 				}
-				if (sel.length > 0 && AjxEnv.isGeckoBased) {
-					this.blur();	// make text selection work in FF
+				if (multiOkay) {
+					this.blur();
 				}
 			}), 10);
 	}
@@ -1189,7 +1192,7 @@ function(asObjects) {
 		var addr = bubble.address;
 		if (asObjects) {
 			var addrObj = AjxEmailAddress.parse(addr);
-			if (bubble.match && bubble.match.isDL) {
+			if (this._expandable[bubble.email] || (bubble.match && bubble.match.isDL)) {
 				addrObj.isGroup = true;
 				addrObj.canExpand = true;
 			}
@@ -1240,7 +1243,7 @@ function(dragEv) {
 		else if (targetInput._numBubbles <= 1) {
 			dragEv.doIt = false;
 		}
-		if (dragEv.doIt && targetInput._numBubbles >= 2) {
+		if (dragEv.doIt && targetInput._numBubbles >= 1) {
 			var idx = targetInput._getIndexFromEvent(dragEv.uiEvent);
 			var bubbleIdx = targetInput._getBubbleIndex(dragBubble);
 			DBG.println("aif", "idx: " + idx + ", bubbleIdx: " + bubbleIdx);
@@ -1276,7 +1279,12 @@ function(dragEv) {
 ZmAddressInputField.prototype._dragBoxListener =
 function(ev) {
 
-	if (ev.action == DwtDragEvent.DRAG_START) {
+	if (ev.action == DwtDragEvent.DRAG_INIT) {
+		// okay to draw drag box if we have at least one bubble, and user isn't clicking in
+		// the non-empty INPUT (might be trying to select text)
+		return (this._numBubbles > 0 && (ev.target != this._input || this._input.value == ""));
+	}
+	else if (ev.action == DwtDragEvent.DRAG_START) {
 		DBG.println("aif", "ZmAddressInputField DRAG_START");
 		this.deselectAll();
 	}
@@ -1412,6 +1420,7 @@ ZmAddressBubble = function(params) {
 	this._createHtml(params);
 
 	this._setEventHdlrs([DwtEvent.ONCLICK, DwtEvent.ONDBLCLICK,
+						 DwtEvent.ONMOUSEOVER, DwtEvent.ONMOUSEOUT,
 						 DwtEvent.ONMOUSEDOWN, DwtEvent.ONMOUSEMOVE, DwtEvent.ONMOUSEUP]);
 	this.addListener(DwtEvent.ONCLICK, new AjxListener(this, this._clickListener));
 	this.addListener(DwtEvent.ONDBLCLICK, new AjxListener(this, this._dblClickListener));
@@ -1420,6 +1429,10 @@ ZmAddressBubble = function(params) {
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 	this.setDragSource(this._dragSrc);
+	
+	if (appCtxt.get(ZmSetting.SHORT_ADDRESS)) {
+		this.setToolTipContent(AjxStringUtil.htmlEncode(params.address));
+	}
 };
 
 ZmAddressBubble.prototype = new DwtControl;
@@ -1454,7 +1467,18 @@ ZmAddressBubble.getContent =
 function(params) {
 
 	var id = params.id;
-	var address = AjxStringUtil.htmlEncode(params.address);
+	var addrObj = params.addrObj || AjxEmailAddress.parse(params.address);
+	var fullAddress = AjxStringUtil.htmlEncode(addrObj.toString());
+	var text = AjxStringUtil.htmlEncode(addrObj.toString(appCtxt.get(ZmSetting.SHORT_ADDRESS)));
+	var selectId = id + "_select";
+	var sep = params.separator ? AjxStringUtil.trim(params.separator) : "";
+	
+	var html = [], idx = 0;
+	html[idx++] = "<span>";
+	html[idx++] = "<span>" + text + " </span>";
+	html[idx++] = "<span class='addrBubbleHide' id='" + selectId + "'>" + fullAddress + sep + " </span>";
+	html[idx++] = "</span>";
+	var addrText = html.join("");
 
 	var expandLinkText = "", removeLinkText = "";
 	var style = "display:inline-block;cursor:pointer;";
@@ -1471,15 +1495,13 @@ function(params) {
 		var expandLinkText = AjxImg.getImageHtml("BubbleExpand", expStyle, "id='" + expandLinkId + "' onclick='" + expandLink + "'");
 	}
 
-	var sep = params.separator ? AjxStringUtil.trim(params.separator) : "";
-
 	if (params.canRemove) {
 		var removeLinkId = id + "_remove";
 		var removeLink = 'ZmAddressInputField.removeBubble("' + id + '");';
 		var removeLinkText = AjxImg.getImageHtml("BubbleDelete", style, "id='" + removeLinkId + "' onclick='" + removeLink + "'");
 	}
 
-	return expandLinkText + address + sep + removeLinkText;
+	return expandLinkText + addrText + removeLinkText;
 };
 
 ZmAddressBubble.prototype._clickListener =
@@ -1508,7 +1530,15 @@ function(dragOp) {
 	icon.className = this._className;
 	Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE);
 	var count = this.addrInput.getSelectionCount(this);
-	icon.innerHTML = (count == 1) ? AjxStringUtil.htmlEncode(this.address) : AjxMessageFormat.format(ZmMsg.numAddresses, count);
+	var content;
+	if (count == 1) {
+		var addrObj = AjxEmailAddress.parse(this.address);
+		content = AjxStringUtil.htmlEncode(addrObj.toString(appCtxt.get(ZmSetting.SHORT_ADDRESS)));
+	}
+	else {
+		content = AjxMessageFormat.format(ZmMsg.numAddresses, count);
+	}
+	icon.innerHTML = content;
 	this.shell.getHtmlElement().appendChild(icon);
 	Dwt.setZIndex(icon, Dwt.Z_DND);
 	return icon;
@@ -1520,22 +1550,6 @@ function(ev) {
 		ev.srcData = {selection: this.addrInput.getSelection(this),
 					  addrInput: this.addrInput};
 	}
-};
-
-ZmAddressBubble.prototype.getTextNode =
-function() {
-
-	var el = this.getHtmlElement();
-	var children = el && el.childNodes;
-	if (children && children.length) {
-		for (var i = 0; i < children.length; i++) {
-			var node = children[i];
-			if (node.nodeType == AjxUtil.TEXT_NODE) {
-				return node;
-			}
-		}
-	}
-	return null;
 };
 
 ZmAddressBubble.prototype._dragOver =

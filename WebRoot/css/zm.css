@@ -786,6 +786,14 @@ INPUT[type="text"].people_search_input {
 	margin-left: 3px;
 }
 
+.addrBubbleHide {
+	display:inline-block;
+	overflow:hidden;
+	width:1px;
+	height:1px;
+	color:transparent;
+}
+
 /*
  *	ZmHtmlEditor -- HTML editor stuff
  */
