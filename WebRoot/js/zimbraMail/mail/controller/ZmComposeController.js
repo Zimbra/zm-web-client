@@ -503,7 +503,8 @@ function(attId, docIds, draftType, callback, contactId) {
 
 	// check for read receipt
 	var requestReadReceipt = false;
-	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED, null, this._composeView.getFromAccount())) {
+    var acct = acctName && appCtxt.accountList.getAccountByName(acctName);
+	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED, null, acct)) {
 		var menu = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS).getMenu();
 		var mi = menu.getItemById(ZmOperation.KEY_ID, ZmOperation.REQUEST_READ_RECEIPT);
 		requestReadReceipt = (!!(mi && mi.getChecked()));
