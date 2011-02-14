@@ -88,7 +88,7 @@ function(item, params) {
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
 	htmlArr[idx++] = "</td><tr></table>";
 	
-	if (params.isDragProxy) {
+	if (params && params.isDragProxy) {
 		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
 	}
 	div.innerHTML = htmlArr.join("");
