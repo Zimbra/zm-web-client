@@ -885,7 +885,7 @@
 		$>
 				<tr valign='top'>
 					<td align='right' style='padding-right:5px;' nowrap>
-						<b><$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(i)) $></b>
+						<b><$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(i)+"&nbsp;(&nbsp;"+ptstStatus[i].split(",").length+"&nbsp;)&nbsp;") $></b>
 					</td>
 					<td nowrap>
 						<$= ptstStatus[i] $>
