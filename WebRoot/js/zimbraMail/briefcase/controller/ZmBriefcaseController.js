@@ -123,7 +123,7 @@ function(ev) {
 	var view = this._listView[this._currentView];
 	var div = view.getTargetItemDiv(ev.uiEvent);
 	var item = view.getItemFromElement(div);
-	if(!item || !item.isRevision) {
+	if(!item || !( item.isRevision || item.isFolder) ) {
 		ZmListController.prototype._dropListener.call(this,ev);
 	} else {
 		ev.doIt = false;
