@@ -346,13 +346,16 @@ function(items) {
     if(item.isRevision){
         var view = this._parentView[this._currentView];
         view.deleteVersions(items);
-        //this._delVersionListener(items);
     }else if(item.isFolder){
         var delBatchCmd = new ZmBatchCommand(true), folder;
-        var trashFolder = appCtxt.getById(ZmFolder.ID_TRASH);
         for(var i=0; i< items.length; i++){
             folder = items[i].folder;
-            delBatchCmd.add(new AjxCallback(folder, folder.move, [trashFolder, false, null, delBatchCmd]));
+            if(folder.isHardDelete()){
+                delBatchCmd.add(new AjxCallback(folder, folder._delete, [delBatchCmd]));
+            }else{
+                var trashFolder = appCtxt.getById(ZmFolder.ID_TRASH);
+                delBatchCmd.add(new AjxCallback(folder, folder.move, [trashFolder, false, null, delBatchCmd]));
+            }
         }
         delBatchCmd.run();
     }else{
