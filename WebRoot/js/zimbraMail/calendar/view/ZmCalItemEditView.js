@@ -32,10 +32,10 @@
  * 
  * @private
  */
-ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle, className) {
+ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle, className, uid) {
 	if (arguments.length == 0) { return; }
 
-	DwtComposite.call(this, {parent:parent, posStyle:posStyle, className:className});
+	DwtComposite.call(this, {parent:parent, posStyle:posStyle, className:className, id:uid});
 
 	this._attendees = attendees;
 	this._controller = controller;
