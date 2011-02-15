@@ -29,7 +29,11 @@
  * @extends		ZmCalItemEditView
  */
 ZmTaskEditView = function(parent, controller) {
-	ZmCalItemEditView.call(this, parent, null, controller, null, DwtControl.ABSOLUTE_STYLE, "ZmTaskEditView");
+
+    this._view = ZmId.VIEW_TASKEDIT + controller.sessionId;
+	this._sessionId = controller.sessionId;
+
+    ZmCalItemEditView.call(this, parent, null, controller, null, DwtControl.ABSOLUTE_STYLE, "ZmTaskEditView", ZmId.getViewId(this._view));
 };
 
 ZmTaskEditView.prototype = new ZmCalItemEditView;
