@@ -1996,6 +1996,8 @@ function(el) {
 		if (el.checked && this._reminderSelect) {
 			this._reminderSelect.setSelectedValue(1080);
 		}
+        this._scheduleView.handleTimeChange();
+        if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true, true);
 	} else if(el.id == this._schButtonId || el.id == this._htmlElId + "_scheduleImage") {
         this._toggleInlineScheduler();
 	} else if(el.id == this._showOptionalId) {
