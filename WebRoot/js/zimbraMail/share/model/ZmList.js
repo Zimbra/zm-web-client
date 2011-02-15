@@ -873,7 +873,6 @@ function(params, batchCmd) {
 		if (!dialog) {
 			dialog = ZmList.progressDialog = appCtxt.getCancelMsgDialog();
 			dialog.reset();
-			dialog.setTitle(AjxMessageFormat.format(ZmMsg.inProgress));
 			dialog.registerCallback(DwtDialog.CANCEL_BUTTON, new AjxCallback(this, this._cancelAction, [params1]));
 		}
 	}
@@ -958,7 +957,7 @@ function(params, result) {
 				summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
 			}
 			if (dialog && summary) {
-				dialog.setContent(summary);
+				dialog.setMessage(summary, DwtMessageDialog.INFO_STYLE, AjxMessageFormat.format(ZmMsg.inProgress));
 				if (!dialog.isPoppedUp()) {
 					dialog.popup();
 				}
