@@ -628,6 +628,8 @@ function(calItem, mode) {
 
     this.updateToolbarOps();
 
+    showScheduleView = showScheduleView && !this._isForward;
+
     if(showScheduleView && this._controller.isSave()){
         this._toggleInlineScheduler(true);
     }else{
@@ -1924,7 +1926,7 @@ function(type, attendees) {
         this._scheduleView.update(this._dateInfo, organizer, this._attendees);
         this.autoSize();
     }else {
-        if(this._schedulerOpened == null && attendees.length > 0) {
+        if(this._schedulerOpened == null && attendees.length > 0 && !this._isForward) {
             this._toggleInlineScheduler(true);
         }else {
             this.updateScheduleAssistant(attendees, type)
