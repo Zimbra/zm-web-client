@@ -57,7 +57,6 @@ function() {
 	if (!ZmProgressController._progressDialog) {
 		var dialog = ZmProgressController._progressDialog = appCtxt.getCancelMsgDialog();
 		dialog.reset();
-		dialog.setTitle(this._currentWork.getProgressTitle());
 		dialog.registerCallback(DwtDialog.CANCEL_BUTTON, new AjxCallback(this, this._cancelAction));
 	}
 	return ZmProgressController._progressDialog;
@@ -68,7 +67,6 @@ function() {
 	if (!ZmProgressController._finishedDialog) {
 		var dialog = ZmProgressController._finishedDialog = appCtxt.getMsgDialog();
 		dialog.reset();
-		dialog.setTitle(this._currentWork.getFinishedTitle());
 	}
 
 	return ZmProgressController._finishedDialog;
@@ -165,13 +163,13 @@ function() {
 		}
 		var finishedMessage = work.getFinishedMessage(run._totalMessagesProcessed);
 		var finishDialog = this._getFinishedDialog();
-		finishDialog.setContent(finishedMessage);
+		finishDialog.setMessage(finishedMessage, DwtMessageDialog.INFO_STYLE, work.getFinishedTitle());
 		finishDialog.popup();
 		return;
 	}
 
 	var workMessage = work.getProgressMessage(run._totalMessagesProcessed);
-	progDialog.setContent(workMessage);
+	progDialog.setMessage(workMessage, DwtMessageDialog.INFO_STYLE, work.getProgressTitle());
 
 	if (!progDialog.isPoppedUp()) {
 		progDialog.popup();
