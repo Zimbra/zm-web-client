@@ -118,8 +118,10 @@ function(request, params) {
 	}
     if(params.tz){
         request.tz = [];
-        request.tz.push({id:params.tz})
+        var timezone = AjxTimezone.getRule(params.tz);
+        request.tz.push({id:params.tz,stdoff:timezone.standard.offset});
     }
+
 };
 
 ZmMiniCalCache.prototype.setFaultHandler =
