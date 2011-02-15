@@ -42,10 +42,6 @@ ZmMailApp = function(container, parentController) {
 	this.numEntries				= 0; // offline, initial sync
 	this.globalMailCount		= 0; // offline, new mail count
 
-	if (!appCtxt.get(ZmSetting.SPAM_ENABLED)) {
-		ZmFolder.HIDE_ID[ZmFolder.ID_SPAM] = true;
-	}
-
 	this._addSettingsChangeListeners();
 };
 
@@ -227,7 +223,6 @@ function(settings) {
 	settings.registerSetting("SIGNATURE",						{name:"zimbraPrefMailSignature", type:ZmSetting.T_PREF});
 	settings.registerSetting("SIGNATURE_ENABLED",				{name:"zimbraPrefMailSignatureEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("SIGNATURE_STYLE",					{name:"zimbraPrefMailSignatureStyle", type:ZmSetting.T_PREF, defaultValue:ZmSetting.SIG_OUTLOOK});
-	settings.registerSetting("SPAM_ENABLED",					{name:"zimbraFeatureAntispamEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("START_DATE_ENABLED",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("USER_FOLDERS_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("VACATION_FROM",					{name:"zimbraPrefOutOfOfficeFromDate", type:ZmSetting.T_PREF, defaultValue:""});
@@ -1388,7 +1383,7 @@ function(refresh) {
 
 		// mark all existing mail list views as stale
 		var viewIds = [ZmId.VIEW_TRAD, ZmId.VIEW_CONVLIST, ZmId.VIEW_CONV];
-		var views = this._appViewMgr._views;
+		var views = appCtxt.getAppViewMgr()._views;
 		for (var i = 0; i < viewIds.length; i++) {
 			var view = views[viewIds[i]];
 			var dpv = view && view[ZmAppViewMgr.C_APP_CONTENT];
