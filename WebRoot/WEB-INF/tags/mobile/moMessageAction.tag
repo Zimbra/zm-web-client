@@ -240,6 +240,9 @@
             <fmt:param value="${result.idCount}"/>
         </fmt:message>
     </mo:status>
+    <script type="text/javascript">
+        var elem = document.getElementById('inboxUnread'); if(elem) elem.innerHTML = ${mailbox.inbox.unreadCount};
+    </script>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionMarkUnread') || (zm:actionSet(param,'moreActions') && anAction eq 'actionMarkUnread')}">
     <c:choose>
@@ -255,6 +258,9 @@
             <fmt:param value="${result.idCount}"/>
         </fmt:message>
     </mo:status>
+    <script type="text/javascript">
+        var elem = document.getElementById('inboxUnread'); if(elem) elem.innerHTML = ${mailbox.inbox.unreadCount};
+    </script>
     <c:set var="idsMarkedUnread" value="${paramValues.id}" scope="request"/>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionFlag') || (zm:actionSet(param,'moreActions') && anAction eq 'actionFlag')}">

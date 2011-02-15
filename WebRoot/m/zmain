@@ -174,7 +174,7 @@
     <c:set var="active" value="${empty param.st || param.st eq 'message' || param.st eq 'conversation' || param.st eq 'folders' ? '-active' : ''}"
     /><div class="tr"><c:if test="${mailbox.features.mail}"><a style='width: ${95/appcount}%;'  accesskey="${requestScope.mailapp_accesskey}" id="mail" class="mail${active} appTab${active} td" href="${aurl}?st=${mailbox.prefs.groupMailBy}">
             <span onclick="return zClickLink('mail')" class="nstd"><fmt:message key="mail"/></span>
-            <span onclick="return zClickLink('mail')" style="display:none;" class="apunread nstd">${mailbox.inbox.unreadCount > 0 ? mailbox.inbox.unreadCount : ''}</span>
+            <span onclick="return zClickLink('mail')" style="display:none;" class="apunread nstd" id="inboxUnread">${mailbox.inbox.unreadCount > 0 ? mailbox.inbox.unreadCount : ''}</span>
         </a></c:if><c:if test="${mailbox.features.contacts}"><c:set var="active" value="${param.st eq 'contact' || param.st eq 'ab' ? '-active' : ''}"/>
         <a style='width: ${95/appcount}%;'  accesskey="${requestScope.contactapp_accesskey}" id="contact" class="contact${active} appTab${active} td" href="${aurl}?st=contact">
             <span onclick="return zClickLink('contact')" class="nstd"><fmt:message key="contacts"/></span>
