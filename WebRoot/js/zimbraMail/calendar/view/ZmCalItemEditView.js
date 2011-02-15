@@ -1064,8 +1064,12 @@ function(ev) {
 	// change the start/end date if they mismatch
 	if (parentButton == this._startDateButton) {
 		var ed = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
-		if (ed && (ed.valueOf() < ev.detail.valueOf()))
+		if (ed && (ed.valueOf() < ev.detail.valueOf())) {
 			this._endDateField.value = newDate;
+        }else if(this._endDateField.value != newDate) {
+            var delta = this._oldEndDate.getTime() - this._oldStartDate.getTime();
+            this._endDateField.value = AjxDateUtil.simpleComputeDateStr(new Date(ev.detail.getTime() + delta));
+        }
 		this._startDateField.value = newDate;
 	} else if(parentButton == this._endDateButton) {
 		var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
@@ -1274,8 +1278,26 @@ function(el) {
 	}
 };
 
+ZmCalItemEditView.prototype.handleDateFocus =
+function(el) {
+    var isStartDate = (el == this._startDateField);
+    if(isStartDate) {
+        this._oldStartDateValue = el.value;
+    }else {
+        this._oldEndDateValue = el.value;
+    }
+};
+
+ZmCalItemEditView.prototype.handleDateFieldChange =
+function(el) {
+    var sdField = this._startDateField;
+    var edField = this._endDateField;
+    var oldStartDate = this._oldStartDateValue ? AjxDateUtil.simpleParseDateStr(this._oldStartDateValue) : null;
+    ZmApptViewHelper.handleDateChange(sdField, edField, (el == sdField), false, oldStartDate);
+};
+
 ZmCalItemEditView.prototype.handleStartDateChange =
-function(sd) {	
+function(sd) {
 	var calItem = this._calItem;
 	var repeatType = this._repeatSelect.getValue();
 	if (calItem.isCustomRecurrence() &&
@@ -1388,10 +1410,16 @@ function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var edv = AjxCore.objectWithId(el._editViewId);
 	var sdField = edv._startDateField;
-	var edField = edv._endDateField;
-	ZmApptViewHelper.handleDateChange(sdField, edField, (el == sdField));
+    edv.handleDateFieldChange(el);
 
 	var calItem = edv._calItem;
 	var sd = AjxDateUtil.simpleParseDateStr(sdField.value);
 	edv.handleStartDateChange(sd);
+};
+
+ZmCalItemEditView._onFocus =
+function(ev) {
+	var el = DwtUiEvent.getTarget(ev);
+	var edv = AjxCore.objectWithId(el._editViewId);
+	edv.handleDateFocus(el);
 };

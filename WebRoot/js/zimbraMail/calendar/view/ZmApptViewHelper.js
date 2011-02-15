@@ -115,7 +115,7 @@ function(tabView, dateInfo) {
 };
 
 ZmApptViewHelper.handleDateChange = 
-function(startDateField, endDateField, isStartDate, skipCheck) {
+function(startDateField, endDateField, isStartDate, skipCheck, oldStartDate) {
 	var needsUpdate = false;
 	var sd = AjxDateUtil.simpleParseDateStr(startDateField.value);
 	var ed = AjxDateUtil.simpleParseDateStr(endDateField.value);
@@ -131,8 +131,13 @@ function(startDateField, endDateField, isStartDate, skipCheck) {
 			startDateField.value = AjxDateUtil.simpleComputeDateStr(sd);
 		}
 
-		if (ed.valueOf() < sd.valueOf())
+		if (ed.valueOf() < sd.valueOf()) {
 			endDateField.value = startDateField.value;
+        }else if(oldStartDate != null) {
+            var delta = ed.getTime() - oldStartDate.getTime();
+            var newEndDate = new Date(sd.getTime() + delta);
+            endDateField.value = AjxDateUtil.simpleComputeDateStr(newEndDate);
+        }
 		needsUpdate = true;
 	} else {
 		// if date was input by user and it's foobar, reset to today's date
