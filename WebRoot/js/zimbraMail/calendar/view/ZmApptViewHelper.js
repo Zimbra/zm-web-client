@@ -353,6 +353,9 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 													new ZmResource(type);
 			attendee.initFromEmail(item, true);
 		}
+		
+		attendee.isGroup = item.isGroup;
+		attendee.canExpand = item.canExpand;
 	} else if (typeof item == "string") {
 		item = AjxStringUtil.trim(item);	// trim white space
 		item = item.replace(/;$/, "");		// trim separator
@@ -543,4 +546,26 @@ function(id) {
 		case "O": return "ZmSchedulerApptBorder-outOfOffice";
 	}
 	return "ZmSchedulerApptBorder-busy";
+};
+
+/**
+ * Returns a list of attendees with the given role.
+ *
+ * @param	{array}		list		list of attendees
+ * @param	{constant}	role		defines the role of the attendee (required/optional)
+ *
+ * @return	{array}	a list of attendees
+ */
+ZmApptViewHelper.filterAttendeesByRole =
+function(list, role) {
+
+	var result = [];
+	for (var i = 0; i < list.length; i++) {
+		var attendee = list[i];
+		var attRole = attendee.getParticipantRole() || ZmCalItem.ROLE_REQUIRED;
+		if (attRole == role){
+			result.push(attendee);
+		}
+	}
+	return result;
 };
