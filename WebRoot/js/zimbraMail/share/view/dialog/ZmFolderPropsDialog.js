@@ -293,7 +293,7 @@ function(event) {
 	}
 	this._ownerEl.innerHTML = AjxStringUtil.htmlEncode(organizer.owner);
 	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[organizer.type]] || ZmMsg.folder;
-	this._urlEl.innerHTML = organizer.url || "";
+
 	if (this._color) {
 		var colorCode = 0;
 		if(ZmOrganizer.COLOR_VALUES[organizer.color] && (organizer.rgb != ZmOrganizer.COLOR_VALUES[organizer.color])) {
@@ -320,7 +320,20 @@ function(event) {
 		this._populateShares(organizer);
 	}
 
+    var url = organizer.url ? AjxStringUtil.htmlEncode(organizer.url).replace(/&amp;/g,'%26') : null;
+	var urlDisplayString = url;
+	if (urlDisplayString) {
+        urlDisplayString = AjxStringUtil.clipByLength(urlDisplayString,50);
+    }
+
+    if(urlDisplayString){
+        urlDisplayString = ['<a target=_new href="',url,'">',urlDisplayString,'</a>'].join("");
+    }
+
+    this._urlEl.innerHTML = urlDisplayString || "";
+
 	this._props.setPropertyVisible(this._ownerId, organizer.owner != null);
+
 	this._props.setPropertyVisible(this._urlId, organizer.url);
 	this._props.setPropertyVisible(this._permId, showPerm);
 
