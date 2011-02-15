@@ -124,7 +124,7 @@ function(addrs, folderId) {
     }
 	this._recipientInput.setValue(inputValue);
     var size = this.getSize();
-	Dwt.setSize(this._recipientInput.getInputElement(), size.x * .85);
+	Dwt.setSize(this._recipientInput.getInputElement(), size.x - 87);
     DwtDialog.prototype.popup.call(this);
 
     if (addrs.length == 0)
