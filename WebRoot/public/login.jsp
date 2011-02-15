@@ -6,6 +6,10 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%-- this checks and redirects to admin if need be --%>
+<zm:adminRedirect/>
+<app:skinAndRedirect />
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
@@ -14,12 +18,6 @@
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
 <c:set var="ignoredQueryParams" value="loginOp,loginNewPassword,loginConfirmNewPassword,loginErrorCode,username,password,zrememberme,zlastserver,client"/>
-<c:set var="prefsToFetch" value="zimbraPrefSkin,zimbraPrefClientType,zimbraPrefLocale,zimbraPrefMailItemsPerPage,zimbraPrefGroupMailBy,zimbraPrefAdvancedClientEnforceMinDisplay,zimbraPrefItemsPerVirtualPage"/>
-<c:set var="attrsToFetch" value="zimbraFeatureMailEnabled,zimbraFeatureCalendarEnabled,zimbraFeatureContactsEnabled,zimbraFeatureIMEnabled,zimbraFeatureNotebookEnabled,zimbraFeatureOptionsEnabled,zimbraFeaturePortalEnabled,zimbraFeatureTasksEnabled,zimbraFeatureVoiceEnabled,zimbraFeatureBriefcasesEnabled,zimbraFeatureMailUpsellEnabled,zimbraFeatureContactsUpsellEnabled,zimbraFeatureCalendarUpsellEnabled,zimbraFeatureVoiceUpsellEnabled,zimbraFeatureConversationsEnabled"/>
-
-<%-- this checks and redirects to admin if need be --%>
-<zm:adminRedirect/>
-<app:skinAndRedirect />
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
@@ -59,7 +57,6 @@
 	        	<c:when test="${!empty cookie.ZM_TEST}">
 		            <zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
 		                      newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
-		                      prefs="${prefsToFetch}" attrs="${attrsToFetch}"
 							  requestedSkin="${param.skin}"/>
 		            <%-- continue on at not empty authResult test --%>
 		    	</c:when>
@@ -76,7 +73,6 @@
 	            <zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
 	                      varRedirectUrl="postLoginUrl" varAuthResult="authResult"
 	                      rememberme="${param.zrememberme == '1'}"
-                          prefs="${prefsToFetch}" attrs="${attrsToFetch}"
 						  requestedSkin="${param.skin}"/>
 	            <%-- continue on at not empty authResult test --%>
 	        </c:if>
@@ -230,7 +226,7 @@ if (application.getInitParameter("offlineMode") != null)  {
  login.jsp
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
