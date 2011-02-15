@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -84,8 +84,20 @@ ZmSearch = function(params) {
 	}
 
 	if (!(this.types instanceof AjxVector)) {
-		this.types = AjxVector.fromArray(AjxUtil.toArray(this.types));
+		this.types = AjxUtil.toArray(this.types);
+        if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+            this.types = AjxUtil.arrayAsHash(this.types);
+            delete this.types[ZmSearch.TYPE[ZmItem.MSG]];
+            delete this.types[ZmSearch.TYPE[ZmItem.CONV]];
+            this.types = AjxUtil.keys(this.types);
+        }
+        this.types = AjxVector.fromArray(this.types);
 	}
+
+    // a search of no types is equivalent to a search of all allowed types
+    if (this.types.size() == 0) {
+        this.types = AjxVector.fromArray(AjxUtil.keys(ZmSearch.TYPE));
+    }
 };
 
 // Search types

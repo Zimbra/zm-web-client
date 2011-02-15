@@ -120,19 +120,19 @@ function(dialog, verb, args) {
 
 	var match;
 
-	match = args.match(/\s*\"([^\"]*)\"?\s*/);
+	match = args.match(/[\p{Z}\z\s]*\"([^\"]*)\"?[\p{Z}\z\s]*/);
 	if (match) {
 		tdata.subject = match[1];
 		args = args.replace(match[0], " ");
 	}
 
-	match = args.match(/\s*\[([^\]]*)\]?\s*/);
+	match = args.match(/[\p{Z}\z\s]*\[([^\]]*)\]?[\p{Z}\z\s]*/);
 	if (match) {
 		tdata.location = match[1];
 		args = args.replace(match[0], " ");
 	}
 
-	match = args.match(/\s*\(([^)]*)\)?\s*/);
+	match = args.match(/[\p{Z}\z\s]*\(([^)]*)\)?[\p{Z}\z\s]*/);
 	if (match) {
 		tdata.notes = match[1];
 		args = args.replace(match[0], " ");
@@ -163,7 +163,7 @@ function(dialog, verb, args) {
 	}
 
 	if (tdata.subject == null) {
-		tdata.subject = args.replace(/^\s+/, "").replace(/\s+$/, "").replace(/\s+/g, ' ');
+		tdata.subject = args.replace(/^[\p{Z}\z\s]+|[\p{Z}\z\s]+$/, "").replace(/[\p{Z}\z\s]+/g, ' ');
 	}
 
 	var subStr = AjxStringUtil.convertToHtml(tdata.subject == "" ? ZmMsg.ASST_APPT_subject : tdata.subject);

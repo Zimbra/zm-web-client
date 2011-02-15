@@ -254,7 +254,9 @@
 	</c:if>
 	<zm:bindKey message="mail.MarkRead" func="zread"/>
 	<zm:bindKey message="mail.MarkUnread" func="zunread"/>
-	<zm:bindKey message="mail.Spam" func="zjunk"/>
+	<c:if test="${mailbox.features.spam}">
+		<zm:bindKey message="mail.Spam" func="zjunk"/>
+	</c:if>
 	<zm:bindKey message="mail.Delete" func="function() { zclick('SOPDELETE')}"/>
 	<zm:bindKey message="global.CheckCheckBox" func="zcs"/>
 
