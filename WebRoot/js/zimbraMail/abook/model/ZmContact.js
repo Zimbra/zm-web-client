@@ -1164,16 +1164,27 @@ function(phone, field) {
 /**
  * Gets the email address.
  * 
+ * @param {boolean}		asObj	if true, return an AjxEmailAddress
+ * 
  * @return	the email address
  */
 ZmContact.prototype.getEmail =
-function() {
-	return (this.getAttr(ZmContact.F_email) ||
-            this.getAttr(ZmContact.F_workEmail1) ||
-			this.getAttr(ZmContact.F_email2) ||
-            this.getAttr(ZmContact.F_workEmail2) ||
-			this.getAttr(ZmContact.F_email3) ||
-			this.getAttr(ZmContact.F_workEmail3));
+function(asObj) {
+
+	var email = (this.getAttr(ZmContact.F_email) ||
+				 this.getAttr(ZmContact.F_workEmail1) ||
+				 this.getAttr(ZmContact.F_email2) ||
+				 this.getAttr(ZmContact.F_workEmail2) ||
+				 this.getAttr(ZmContact.F_email3) ||
+				 this.getAttr(ZmContact.F_workEmail3));
+	
+	if (asObj) {
+		email = AjxEmailAddress.parse(email);
+		email.isGroup = this.isGroup;
+		email.canExpand = this.canExpand;
+	}
+	
+	return email;
 };
     
 /**
@@ -1688,17 +1699,8 @@ function(node) {
  */
 ZmContact.prototype.getAttendeeText =
 function(type, shortForm) {
-	var text = "";
-	var name = this.getFullName();
-	var email = this.getEmail();
-	if (shortForm || (type && type != ZmCalBaseItem.PERSON)) {
-		text = name || email || "";
-	} else {
-		var e = new AjxEmailAddress(email, null, name);
-		text = e.toString();
-	}
-
-	return text;
+	var email = this.getEmail(true);
+	return email.toString(shortForm || (type && type != ZmCalBaseItem.PERSON));
 };
 
 /**

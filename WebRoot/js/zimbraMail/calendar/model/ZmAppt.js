@@ -695,16 +695,19 @@ function(message) {
 	var attendees = message.invite.getAttendees();
 	if (attendees) {
 		for (var i = 0; i < attendees.length; i++) {
-			var addr = attendees[i].a;
-			var name = attendees[i].d;
+			var att = attendees[i];
+			var addr = att.a;
+			var name = att.d;
 			var email = new AjxEmailAddress(addr, null, name);
-            if (attendees[i].rsvp) {
+			email.isGroup = att.isGroup;
+			email.canExpand = att.exp;
+            if (att.rsvp) {
 				rsvp = true;
 			}
 			var attendee = ZmApptViewHelper.getAttendeeFromItem(email, ZmCalBaseItem.PERSON);
 			if (attendee) {
-				attendee.setParticipantStatus(ptstReplies[addr] || attendees[i].ptst);
-				attendee.setParticipantRole(attendees[i].role || ZmCalItem.ROLE_REQUIRED);
+				attendee.setParticipantStatus(ptstReplies[addr] || att.ptst);
+				attendee.setParticipantRole(att.role || ZmCalItem.ROLE_REQUIRED);
 				this._attendees[ZmCalBaseItem.PERSON].push(attendee);
 				this.origAttendees.push(attendee);
 			}

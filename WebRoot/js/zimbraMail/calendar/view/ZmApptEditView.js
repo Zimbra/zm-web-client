@@ -124,7 +124,7 @@ function() {
         this._adjustAddrHeight(this._attendeesInputField.getInputElement());
         this._adjustAddrHeight(this._optAttendeesInputField.getInputElement());
 	}
-    this._attInputField[ZmCalBaseItem.LOCATION].setValue("");
+    this._attInputField[ZmCalBaseItem.LOCATION].clear();
 	this._locationTextMap = {};
 
 	if (this._resourcesContainer) {
@@ -516,9 +516,12 @@ function(calItem, mode) {
 	var attendees = calItem.getAttendees(ZmCalBaseItem.PERSON);
 	if (attendees && attendees.length) {
 		if (this.GROUP_CALENDAR_ENABLED) {
-			this._attendeesInputField.setValue(calItem.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED));
-			this._optAttendeesInputField.setValue(calItem.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_OPTIONAL));
-            if(this._optAttendeesInputField.getValue() != "") {
+			var people = calItem.getAttendees(ZmCalBaseItem.PERSON);
+			var reqAttendees = ZmApptViewHelper.filterAttendeesByRole(people, ZmCalItem.ROLE_REQUIRED);
+			this._setAddresses(this._attendeesInputField, reqAttendees, ZmCalBaseItem.PERSON);
+			var optAttendees = ZmApptViewHelper.filterAttendeesByRole(people, ZmCalItem.ROLE_OPTIONAL);
+			this._setAddresses(this._optAttendeesInputField, optAttendees, ZmCalBaseItem.PERSON);
+            if (optAttendees.length) {
                 this._toggleOptionalAttendees(true);
             }
 		}
@@ -546,11 +549,11 @@ function(calItem, mode) {
 	if (locations && locations.length) {
 		this._attendees[ZmCalBaseItem.LOCATION] = AjxVector.fromArray(locations);
         var locStr = ZmApptViewHelper.getAttendeesString(locations, ZmCalBaseItem.LOCATION);
-        this._attInputField[ZmCalBaseItem.LOCATION].setValue(locStr);
+        this._setAddresses(this._attInputField[ZmCalBaseItem.LOCATION], locStr);
         showScheduleView = true;
 	}else{
         // set the location *label*
-	    this._attInputField[ZmCalBaseItem.LOCATION].setValue(calItem.getLocation());
+	    this._setAddresses(this._attInputField[ZmCalBaseItem.LOCATION], calItem.getLocation());
     }
 
     // set the equipment attendee(s)
@@ -559,7 +562,7 @@ function(calItem, mode) {
         this._toggleResourcesField(true);
 		this._attendees[ZmCalBaseItem.EQUIPMENT] = AjxVector.fromArray(equipment);
         var equipStr = ZmApptViewHelper.getAttendeesString(equipment, ZmCalBaseItem.EQUIPMENT);
-        this._attInputField[ZmCalBaseItem.EQUIPMENT].setValue(equipStr);
+        this._setAddresses(this._attInputField[ZmCalBaseItem.EQUIPMENT], equipStr);
         showScheduleView = true;
 	}
 
@@ -586,7 +589,7 @@ function(calItem, mode) {
         this._calItemOrganizer =  calItem.getOrganizer() || "";
 
         //enable forward field/picker if its not propose time view
-        this._forwardToField.setValue(this._isProposeTime ? calItem.getOrganizer() : "");
+        this._setAddresses(this._forwardToField, this._isProposeTime ? calItem.getOrganizer() : "");
         this._forwardToField.setEnabled(!this._isProposeTime);
         this._forwardPicker.setEnabled(!this._isProposeTime);
 
@@ -1124,37 +1127,81 @@ function(addrType, addrs) {
 
     this._attInputField[addrType].setEnabled(true);
     var vec = (addrs instanceof AjxVector) ? addrs : addrs[AjxEmailAddress.TO];
-	this._setAddresses(vec, this._attInputField[addrType]);
+	this._setAddresses(this._attInputField[addrType], vec);
 
     this._activeInputField = addrType; 
     this._handleAttendeeField(addrType);
 	this._attendeePicker[addrType].popdown();
 };
 
+/**
+ * One-stop shop for setting address field content. The input may be either a DwtInputField or a
+ * ZmAddressInputField. The address(es) passed in may be a string, an array, or an AjxVector. The
+ * latter two types may have a member type of string, AjxEmailAddress, or ZmContact/ZmResource.
+ * 
+ * @param addrInput
+ * @param addrs
+ * @param type
+ * @param shortForm
+ * 
+ * @private
+ */
 ZmApptEditView.prototype._setAddresses =
-function(addrVec, addrInput) {
+function(addrInput, addrs, type, shortForm) {
+
+	// non-person attendees are shown in short form by default
+	shortForm = (shortForm || (type && type != ZmCalBaseItem.PERSON));
+
+	// if we get a string with multiple email addresses, split it
+	if (typeof addrs == "string" && (addrs.indexOf(ZmAppt.ATTENDEES_SEPARATOR) != -1)) {
+		var result = AjxEmailAddress.parseEmailString(addrs, type);
+		addrs = result.good;
+	}
+
+	// make sure we have an array to deal with
+	addrs = (addrs instanceof AjxVector) ? addrs.getArray() : (typeof addrs == "string") ? [addrs] : addrs;
 
 	if (this._useAcAddrBubbles) {
 		addrInput.clear();
-		var addrs = addrVec && addrVec.getArray();
 		if (addrs && addrs.length) {
 			for (var i = 0, len = addrs.length; i < len; i++) {
 				var addr = addrs[i];
-				var addrStr = addr.isAjxEmailAddress ? addr.toString() : addr;
-				if (addr.isAjxEmailAddress) {
-					var match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
-					addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
+				var addrStr, email, match;
+				if (typeof addr == "string") {
+					addrStr = addr;
 				}
-				else {
-					addrInput.setValue(addrStr, true);
+				else if (addr.isAjxEmailAddress) {
+					addrStr = addr.toString(shortForm);
+					match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
 				}
+				else if (addr instanceof ZmContact) {
+					email = addr.getEmail(true);
+					addrStr = email.toString(shortForm);
+					match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
+				}
+				addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
 			}
 		}
 	}
 	else {
-		var addr = (addrVec.size() > 0) ? addrVec.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR : "";
-		addr = addr ? addr : "";
-		addrInput.setValue(addr);
+		var list = [];
+		if (addrs && addrs.length) {
+			for (var i = 0, len = addrs.length; i < len; i++) {
+				var addr = addrs[i];
+				if (typeof addr == "string") {
+					list.push(addr);
+				}
+				else if (addr.isAjxEmailAddress) {
+					list.push(addr.toString(shortForm));
+				}
+				else if (addr instanceof ZmContact) {
+					var email = addr.getEmail(true);
+					list.push(email.toString(shortForm));
+				}
+			}
+		}
+		var addrStr = (list.length > 0) ? addrs.join(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR : "";
+		addrInput.setValue(addrStr || "");
 	}
 };
 
@@ -1179,7 +1226,7 @@ function(addrType, attendees) {
 
 ZmApptEditView.prototype.setAttendeesField =
 function(addrType, attendees){
-    this._attInputField[addrType].setValue(attendees);
+    this._setAddresses(this._attInputField[addrType], attendees);
     this._handleAttendeeField(addrType);
 };
 
@@ -1197,7 +1244,7 @@ ZmApptEditView.prototype._contactPickerOkCallback =
 function(addrs) {
     this._forwardToField.setEnabled(true);
     var vec = (addrs instanceof AjxVector) ? addrs : addrs[AjxEmailAddress.TO];
-	this._setAddresses(vec, this._forwardToField);
+	this._setAddresses(this._forwardToField, vec);
     this._activeInputField = ZmCalBaseItem.PERSON;
     this._handleAttendeeField(ZmCalBaseItem.PERSON);
 	//this._contactPicker.removePopdownListener(this._controller._dialogPopdownListener);
@@ -1738,49 +1785,39 @@ function(ev) {
 */
 ZmApptEditView.prototype._setAttendees =
 function() {
+	
 	for (var t = 0; t < this._attTypes.length; t++) {
 		var type = this._attTypes[t];
 		var attendees = this._attendees[type].getArray();
-		var list = [];
-		var optionalList = [];
-		for (var i = 0; i < attendees.length; i++) {
-            if(attendees[i].getParticipantRole() == ZmCalItem.ROLE_OPTIONAL) {
-                optionalList.push(attendees[i].getAttendeeText(type));                
-            }/*else if(type == ZmCalBaseItem.LOCATION){
-                var displayName = attendees[i].getAttr(ZmResource.F_locationName);
-			    list.push(displayName || attendees[i].getAttendeeText(type));
-            }*/else {
-			    list.push(attendees[i].getAttendeeText(type));
-            }
+		var numAttendees = attendees.length;
+		var addrInput = this._attInputField[type];
+		var curVal = AjxStringUtil.trim(this._attInputField[type].getValue());
+		if (type == ZmCalBaseItem.PERSON) {
+			var reqAttendees = ZmApptViewHelper.filterAttendeesByRole(attendees, ZmCalItem.ROLE_REQUIRED);
+			this._setAddresses(addrInput, reqAttendees, type);
+			var optAttendees = ZmApptViewHelper.filterAttendeesByRole(attendees, ZmCalItem.ROLE_OPTIONAL);
+			this._setAddresses(this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON], optAttendees, type);
 		}
-		var val = list.length ? list.join(ZmAppt.ATTENDEES_SEPARATOR) : "";
-
-		if (type == ZmCalBaseItem.EQUIPMENT) {
-			var curVal = AjxStringUtil.trim(this._attInputField[type].getValue());
-			if (curVal == "" || (val!= "" && curVal != val)) {
-                if(val != ""){
-                    this._toggleResourcesField(true);
-                }
-				this._attInputField[type].setValue(val);
-			}
-		}else if (type == ZmCalBaseItem.LOCATION) {
-			var curVal = AjxStringUtil.trim(this._attInputField[type].getValue());
-			if (curVal == "" || (!this._knownLocation && val!= "" && curVal != val) || this._isKnownLocation) {
-				this._attInputField[type].setValue(val);
+		else if (type == ZmCalBaseItem.LOCATION) {
+			if (!curVal || numAttendees || this._isKnownLocation) {
+				this._setAddresses(addrInput, attendees, type);
 				this._isKnownLocation = true;
 			}
-		} else if (type == ZmCalBaseItem.PERSON) {
-			this._attInputField[type].setValue(val);
-
-            var optionalAttendees = optionalList.length ? optionalList.join(ZmAppt.ATTENDEES_SEPARATOR) : "";
-            this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON].setValue(optionalAttendees);            
+		}
+		else if (type == ZmCalBaseItem.EQUIPMENT) {
+			if (!curVal || numAttendees) {
+				if (numAttendees) {
+					this._toggleResourcesField(true);
+				}
+				this._setAddresses(addrInput, attendees, type);
+			}
 		}
 	}
 };
 
 ZmApptEditView.prototype.setApptLocation =
 function(val) {
-    this._attInputField[ZmCalBaseItem.LOCATION].setValue(val);
+    this._setAddresses(this._attInputField[ZmCalBaseItem.LOCATION], val);
 };
 
 ZmApptEditView.prototype.getAttendees =
