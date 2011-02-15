@@ -89,7 +89,7 @@ function(actionMenu, type, id) {
 
             menuItem = actionMenu.getMenuItem(ZmOperation.NEW_BRIEFCASE);
             menuItem.setText(ZmMsg.newFolder);
-            menuItem.setImage("NewSection");
+            menuItem.setImage("NewFolder");
             menuItem.setEnabled(!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR) || briefcase.isAdmin() || ZmShare.getRoleFromPerm(briefcase.perm) == ZmShare.ROLE_MANAGER);
 
             if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
