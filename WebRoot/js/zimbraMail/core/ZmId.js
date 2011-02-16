@@ -785,7 +785,6 @@ ZmId.VIEW_CALL_LIST				= "CLIST";
  * @type String
  */
 ZmId.VIEW_COMPOSE				= "COMPOSE";
-ZmId.VIEW_CONTACT_CARDS			= "CNC";
 ZmId.VIEW_CONTACT_SIMPLE 		= "CNS";
 ZmId.VIEW_CONTACT_SRC			= "CNSRC";
 ZmId.VIEW_CONTACT_TGT			= "CNTGT";
@@ -922,6 +921,7 @@ ZmId.FLD_ATTACHMENT		= "at";
 ZmId.FLD_CAPACITY		= "cp";
 ZmId.FLD_COMPANY		= "co";
 ZmId.FLD_DATE			= "dt";
+ZmId.FLD_DEPARTMENT		= "de";
 ZmId.FLD_EMAIL			= "em";
 ZmId.FLD_EXPAND			= "ex";	// CLV
 ZmId.FLD_FILE_TYPE		= "ft";	// Notebook
