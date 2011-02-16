@@ -735,6 +735,7 @@ INPUT[type="text"].people_search_input {
 	border: 0px !important;
 	outline: none !important;
 	margin-left: 3px;
+    margin-bottom: 3px;
 }
 
 .addrBubbleContainer input:first-child {
