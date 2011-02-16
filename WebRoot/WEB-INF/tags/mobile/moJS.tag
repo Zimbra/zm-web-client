@@ -306,10 +306,13 @@ var getFormValues = function(obj) {
         if (type == "button" || (type == "submit" && control._wasClicked) || type == "hidden" || type == "password") {
             getstr += control.name + "=" + escape(control.value) + "&";
         }
-        if (type == "text" || type == "checkbox" || type == "radio") {
+        if (type == "checkbox" || type == "radio") {
             if (control.checked) {
                 getstr += control.name + "=" + control.value + "&";
             }
+        }
+        if (type == "text") {
+            getstr += control.name + "=" + control.value + "&";
         }
         if (control.tagName == "SELECT") {
             getstr += control.name + "=" + control.options[control.selectedIndex].value + "&";
