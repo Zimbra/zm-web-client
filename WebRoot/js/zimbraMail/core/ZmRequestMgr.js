@@ -507,8 +507,28 @@ function(refresh) {
 		}
 	}
 
-	// Run any app-requested refresh routines
-	this._controller.runAppFunction("refresh", false, refresh);
+	if (!this._recentlyRefreshed) {
+		// Run any app-requested refresh routines
+		this._controller.runAppFunction("refresh", false, refresh);
+		this._recentlyRefreshed = true;
+		this._lastSkippedRefresh = null;
+	} else {
+		this._lastSkippedRefresh = refresh;
+	}
+
+	if (!this._refreshTimer)
+		this._refreshTimer = new AjxTimedAction(this, this._refreshTimeout);
+
+	AjxTimedAction.scheduleAction(this._refreshTimer, 5000);
+};
+
+ZmRequestMgr.prototype._refreshTimeout =
+function() {
+	if (this._lastSkippedRefresh) {
+		this._controller.runAppFunction("refresh", false, this._lastSkippedRefresh);
+		this._lastSkippedRefresh = null;
+	}
+	this._recentlyRefreshed = false;
 };
 
 ZmRequestMgr.prototype._loadTrees =
