@@ -208,7 +208,9 @@ function(method, idOnly, respCallback, errorCallback, batchCmd) {
 	}
 	if (!idOnly) {
 		signatureEl.setAttribute("name", this.name);
-		soapDoc.set("cid", this.contactId || null, signatureEl);
+		if (this.contactId || (method == "ModifySignatureRequest")) {
+			soapDoc.set("cid", this.contactId || null, signatureEl);
+		}
 		var contentEl = soapDoc.set("content", this.value, signatureEl);
 		contentEl.setAttribute("type", this.contentType);
 
