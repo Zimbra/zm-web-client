@@ -2401,6 +2401,8 @@ function(action, msg, extraBodyText) {
 		this._fixMultipartRelatedImages_onTimer(msg);
 	}
 
+	var vLen = value ? value.length : 0;
+	AjxDebug.println(AjxDebug.REPLY, "Compose view, reply length: " + vLen);
 	if (!isDraft && sigStyle == ZmSetting.SIG_INTERNET) {
 		this.addSignature(value);
 	} else {
