@@ -43,6 +43,15 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
 
     this._expanded = {};
     this._itemRowIdList = {};
+
+    this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
+	this.setDragSource(this._dragSrc);
+
+    this._dropTgt = new DwtDropTarget("ZmDetailListView");
+	this._dropTgt.markAsMultiple();
+	this._dropTgt.addDropListener(new AjxListener(this, this._dropListener));
+	this.setDropTarget(this._dropTgt);
 };
 
 ZmDetailListView.prototype = new ZmBriefcaseBaseView;
@@ -83,9 +92,15 @@ function(enabled){
 
 ZmDetailListView.prototype._changeListener =
 function(ev){
+    if(ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE){
+        if (this.getDnDSelection() && this.getDnDSelection instanceof AjxVector)
+            this.dragDeselect(this.getDnDSelection().get(0));
+        else if (this.getDnDSelection())
+            this.dragDeselect(this.getDnDSelection());
+    }
+
 
     ZmBriefcaseBaseView.prototype._changeListener.call(this, ev);
-
     if (this._revisionView && ( ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE )) {
         var items = ev.getDetail("items") ? ev.getDetail("items") : [this._getItemFromEvent(ev)];
         for (var i = 0, len = items.length; i < len; i++) {
@@ -533,6 +548,10 @@ function(ev){
             refresh = true;
     }else if(ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE){
         refresh = true;
+        if (this.getDnDSelection() && this.getDnDSelection instanceof AjxVector)
+            this.dragDeselect(this.getDnDSelection().get(0));
+        else if (this.getDnDSelection())
+            this.dragDeselect(this.getDnDSelection());
         if(currentFolderId != organizer.id){
             this.collapseAll();
         }
@@ -544,4 +563,38 @@ function(ev){
         
 };
 
+//drag and drop listeners
+ZmDetailListView.prototype._dropListener =
+function(ev) {
+    var data = ev.srcData.data;
+	var div = this.getTargetItemDiv(ev.uiEvent);
+	var dropFolder = this.getItemFromElement(div);
 
+    //handle drag from tree to listview by calling controller
+    if (ev.srcData && ev.srcData.controller != appCtxt.getCurrentController()){
+        appCtxt.getCurrentController()._dropListener(ev);
+        return;
+    }
+
+	// only briefcase items can be dropped on us
+	if (ev.action == DwtDropEvent.DRAG_ENTER) {
+		ev.doIt = (dropFolder && (dropFolder instanceof ZmBriefcaseFolderItem) && (dropFolder.folder && dropFolder.folder.mayContain(data)));
+		DBG.println(AjxDebug.DBG3, "DRAG_ENTER: doIt = " + ev.doIt);
+        this.dragSelect(div);
+	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
+        this.dragDeselect(div);
+		appCtxt.getCurrentController()._doMove(data, dropFolder.folder);
+	} else if (ev.action == DwtDropEvent.DRAG_LEAVE) {
+		view.dragDeselect(div);
+	} else if (ev.action == DwtDropEvent.DRAG_OP_CHANGED) {
+		// nothing
+	}
+
+};
+
+ZmDetailListView.prototype._dragListener =
+function(ev) {
+	if (ev.action == DwtDragEvent.SET_DATA) {
+		ev.srcData = {data: ev.srcControl.getDnDSelection(), controller: this};
+	}
+};

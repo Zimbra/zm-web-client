@@ -187,16 +187,7 @@ function(what, targetFolderType) {
         var items = AjxUtil.toArray(what);
 		var item = items[0];
         if (item.type == ZmItem.BRIEFCASE_ITEM) {
-         if (item instanceof ZmBriefcaseFolderItem){
-            invalid = (
-                    item.parent == this || this.isChildOf(item)
-                 || targetFolderType == ZmOrganizer.SEARCH || targetFolderType == ZmOrganizer.TAG
-                 || (!this.isInTrash() && this.hasChild(item.name))
-                 || (item.id == this.id)
-                 || (item.folder && item.folder.isRemote() && !this.isRemote() && !item.folder.rid)
-                 || (item.folder && this.isRemote())
-                    );
-            }
+            invalid = this._checkInvalidFolderItems(items);
 
             if (!invalid) {
                 for (var i = 0; i < items.length; i++) {
@@ -237,6 +228,25 @@ function(what, targetFolderType) {
     }	
 
 	return !invalid;
+};
+
+ZmBriefcase.prototype._checkInvalidFolderItems =
+function(items, targetFolderType) {
+  var invalid = false;
+  for (var i=0; i<items.length && !invalid; i++) {
+    if (items[i] instanceof ZmBriefcaseFolderItem) {
+        var item = items[i];
+        invalid = (
+           item.parent == this || this.isChildOf(item)
+        || targetFolderType == ZmOrganizer.SEARCH || targetFolderType == ZmOrganizer.TAG
+        || (!this.isInTrash() && this.hasChild(item.name))
+        || (item.id == this.id)
+        || (item.folder && item.folder.isRemote() && !this.isRemote() && !item.folder.rid)
+        || (item.folder && this.isRemote())
+        );
+    }
+  }
+    return invalid;
 };
 
 ZmBriefcase.prototype.supportsPublicAccess =
