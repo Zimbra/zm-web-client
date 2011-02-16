@@ -111,19 +111,20 @@ function() {
 ZmContactsApp.prototype._registerSettings =
 function(settings) {
 	var settings = settings || appCtxt.getSettings();
-	settings.registerSetting("AUTO_ADD_ADDRESS",				{name: "zimbraPrefAutoAddAddressEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
-	settings.registerSetting("AUTOCOMPLETE_LIMIT",				{name: "zimbraContactAutoCompleteMaxResults", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:20});
-	settings.registerSetting("AUTOCOMPLETE_NO_GROUP_MATCH",		{name: "zimbraPrefContactsDisableAutocompleteOnContactGroupMembers", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	settings.registerSetting("AUTOCOMPLETE_ON_COMMA",			{name: "zimbraPrefAutoCompleteQuickCompletionOnComma", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	settings.registerSetting("AUTOCOMPLETE_SHARE",				{name: "zimbraPrefShareContactsInAutoComplete", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("AUTO_ADD_ADDRESS",				{name: "zimbraPrefAutoAddAddressEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal: true});
+	settings.registerSetting("AUTOCOMPLETE_LIMIT",				{name: "zimbraContactAutoCompleteMaxResults", type:ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 20});
+	settings.registerSetting("AUTOCOMPLETE_NO_GROUP_MATCH",		{name: "zimbraPrefContactsDisableAutocompleteOnContactGroupMembers", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("AUTOCOMPLETE_ON_COMMA",			{name: "zimbraPrefAutoCompleteQuickCompletionOnComma", type: ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue: true});
+	settings.registerSetting("AUTOCOMPLETE_SHARE",				{name: "zimbraPrefShareContactsInAutoComplete", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("AUTOCOMPLETE_SHARED_ADDR_BOOKS",	{name: "zimbraPrefSharedAddrBookAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("EXPORT",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("GAL_AUTOCOMPLETE",				{name: "zimbraPrefGalAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("IMPORT",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("MAX_CONTACTS",					{name: "zimbraContactMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 0});
-	settings.registerSetting("NEW_ADDR_BOOK_ENABLED",			{name: "zimbraFeatureNewAddrBookEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("NEW_ADDR_BOOK_ENABLED",			{name: "zimbraFeatureNewAddrBookEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
     // TODO: Make real COS setting? 
-    settings.registerSetting("PHONETIC_CONTACT_FIELDS",         {type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:/^ja/.test(AjxEnv.DEFAULT_LOCALE)});
+	settings.registerSetting("PHONETIC_CONTACT_FIELDS",         {type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: /^ja/.test(AjxEnv.DEFAULT_LOCALE)});
+	settings.registerSetting("DETAILED_CONTACT_SEARCH_ENABLED",	{name: "zimbraFeatureContactsDetailedSearchEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 };
 
 /**
