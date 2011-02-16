@@ -1284,7 +1284,7 @@ ZmAccountsPage.prototype._getAddressesFromAccounts = function(accounts, addresse
 		var account = accounts[i];
 		if (account.isMain || account.enabled) {
 			var address = account.getEmail();
-			if (!AjxUtil.isEmpty(address) && (!valid || AjxUtil.isEmailAddress(address)) && (!unique || AjxUtil.indexOf(addresses, address, false) == -1)) // Make sure we are not adding an empty address and that we are not adding the address twice
+			if (!AjxUtil.isEmpty(address) && (!valid || AjxEmailAddress.isValid(address)) && (!unique || AjxUtil.indexOf(addresses, address, false) == -1)) // Make sure we are not adding an empty address and that we are not adding the address twice
 				addresses.push(address);
 		}
 	}
@@ -1563,7 +1563,7 @@ function(email) {
 
 ZmAccountsPage.prototype._updateReplyToEmail =
 function(email) {
-	if (AjxUtil.isEmailAddress(email)) {
+	if (AjxEmailAddress.isValid(email)) {
 		this._updateComboBox("REPLY_TO_EMAIL", email);
 	} else {
 		this._updateComboBox("REPLY_TO_EMAIL");
