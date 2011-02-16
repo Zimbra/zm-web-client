@@ -359,7 +359,7 @@ function(calItemNode, instNode) {
 	this.folderId 		= calItemNode.l || this._getDefaultFolderId();
 	this.invId			= calItemNode.invId;
 	this.isException 	= instNode.ex; 
-	this.id 			= this._getAttr(calItemNode, instNode, "id");
+	this.id 			= calItemNode.id;
 	this.name 			= this._getAttr(calItemNode, instNode, "name");
 	this.fragment 		= this._getAttr(calItemNode, instNode, "fr");
 	this.status 		= this._getAttr(calItemNode, instNode, "status");
