@@ -93,7 +93,7 @@ function(actionMenu, type, id) {
             menuItem.setEnabled(!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR) || briefcase.isAdmin() || ZmShare.getRoleFromPerm(briefcase.perm) == ZmShare.ROLE_MANAGER);
 
             if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-                isBriefcase = (!isRoot && briefcase.parent.id == rootId);
+                isBriefcase = (!isRoot && briefcase.parent.id == rootId) || type==ZmOrganizer.BRIEFCASE;
                 menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_BRIEFCASE);
                 menuItem.setText(ZmMsg.shareFolder);
                 menuItem.setImage(isBriefcase ? "SharedMailFolder" : "Section");
