@@ -279,7 +279,7 @@ function(text, add, skipNotify) {
 	}
 
 	var parsed = AjxEmailAddress.parseEmailString(text);
-	var addrs = parsed.good.getArray();
+	var addrs = parsed.good.size() ? parsed.good.getArray() : parsed.all.getArray();
 	for (var i = 0, len = addrs.length; i < len; i++) {
 		var addr = addrs[i].toString();
 		var email = addrs[i].getAddress();
@@ -542,7 +542,7 @@ function() {
 	this._numSelected	= 0;	// does not include right-click selection
 
 	this._editMode = false;
-	this._editModeIndex = this._editModeAddress = null;
+	this._editModeIndex = this._editModeBubble = null;
 
 	this._dragInsertionBarIndex = null;	// node index vertical bar indicating insertion point
 
@@ -582,15 +582,14 @@ function(ev, aclv) {
 	ev = DwtUiEvent.getEvent(ev);
 	var key = DwtKeyEvent.getCharCode(ev);
 	var propagate = true;
+	var clearInput = false;
 
 	// Esc in edit mode restores the original address to the bubble
 	if (key == 27 && this._editMode) {
 		DBG.println("aif", "_keyDownCallback found ESC key in edit mode");
 		this._leaveEditMode(true);
 		propagate = false;	// eat the event - eg don't let compose view catch Esc and pop the view
-		if (AjxEnv.isGeckoBased) {
-			AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._setInputValue, [""]), 20);
-		}
+		clearInput = true;
 	}
 	// Tab checks to see if current input is an address
 	else if (key == 9) {
@@ -610,7 +609,19 @@ function(ev, aclv) {
 			this.blur();
 		}
 	}
+	else if (key == 3 || key == 13) {
+		var bubble = this._editMode && this._editModeBubble;
+		if (bubble && !bubble.addrObj) {
+			this._leaveEditMode();
+			propagate = false;
+			clearInput = true;
+		}
+	}
 
+	if (clearInput && AjxEnv.isGeckoBased) {
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._setInputValue, [""]), 20);
+	}
+	
 	DwtUiEvent.setBehaviour(ev, !propagate, propagate);
 	return propagate;
 };
@@ -913,8 +924,8 @@ function(bubble) {
 	this._holder.insertBefore(this._input, bubble.getHtmlElement());
 	this.removeBubble(bubble.id, true);
 
-	var addr = this._editModeAddress = bubble.address;
-	this._setInputValue(addr);
+	this._editModeBubble = bubble;
+	this._setInputValue(bubble.address);
 
 	// Chrome triggers BLUR after DBLCLICK, so use a timer to make sure select works
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
@@ -933,11 +944,12 @@ function(restore) {
 	if (this._holder.lastChild != this._input) {
 		this._holder.appendChild(this._input);
 	}
-	this._checkInput(restore ? this._editModeAddress : null);
+	var bubble = restore && this._editModeBubble;
+	this._checkInput(bubble && bubble.address);
 	this.focus();
 
 	this._editMode = false;
-	this._editModeIndex = this._editModeAddress = null;
+	this._editModeIndex = this._editModeBubble = null;
 	DBG.println("aif", "input value: " + AjxStringUtil.htmlEncode(this._input.value));
 };
 
@@ -1191,7 +1203,7 @@ function(asObjects) {
 		var bubble = bubbles[i];
 		var addr = bubble.address;
 		if (asObjects) {
-			var addrObj = AjxEmailAddress.parse(addr);
+			var addrObj = AjxEmailAddress.parse(addr) || new AjxEmailAddress("", null, addr);
 			if (this._expandable[bubble.email] || (bubble.match && bubble.match.isDL)) {
 				addrObj.isGroup = true;
 				addrObj.canExpand = true;
@@ -1391,9 +1403,10 @@ function(element) {
  *
  * @param {hash}				params		the hash of parameters:
  * @param {ZmAddressInputField}	parent		parent control
- * @param {string}				id			element ID for the bubble (optional)
- * @param {string}				className	CSS class for the bubble (optional)
+ * @param {string}				id			element ID for the bubble
+ * @param {string}				className	CSS class for the bubble
  * @param {string}				address		email address to display in the bubble
+ * @param {AjxEmailAddress}		addrObj		email address (alternative form)
  * @param {string}				dlAddress	distribution list address
  * @param {boolean}				canRemove	if true, an x will be provided to remove the address bubble
  * @param {boolean}				canExpand	if true, a + will be provided to expand the DL address
@@ -1411,12 +1424,13 @@ ZmAddressBubble = function(params) {
 
 	this.addrInput = params.parent;
 	this.address = params.address;
+	this.addrObj = params.addrObj || AjxEmailAddress.parse(params.address);
 	var match = this.match = params.match;
 	this.email = params.email || params.address;
 	this.dlAddress = params.dlAddress = params.dlAddress || params.email;
 	this.type = params.type;
 	this.isAddressBubble = true;
-
+	
 	this._createHtml(params);
 
 	this._setEventHdlrs([DwtEvent.ONCLICK, DwtEvent.ONDBLCLICK,
@@ -1461,13 +1475,23 @@ function(params) {
 /**
  * Returns HTML for the content of a bubble.
  *
- * @param params
+ * @param {hash}				params		the hash of parameters:
+ * @param {ZmAddressInputField}	parent		parent control
+ * @param {string}				id			element ID for the bubble
+ * @param {string}				className	CSS class for the bubble
+ * @param {string}				address		email address to display in the bubble
+ * @param {AjxEmailAddress}		addrObj		email address (alternative form)
+ * @param {string}				dlAddress	distribution list address
+ * @param {boolean}				canRemove	if true, an x will be provided to remove the address bubble
+ * @param {boolean}				canExpand	if true, a + will be provided to expand the DL address
+ * @param {boolean}				returnSpan	if true, return SPAN element rather than HTML
+ * @param {string}				separator	address separator - hidden, present for copy of text (optional)
  */
 ZmAddressBubble.getContent =
 function(params) {
 
 	var id = params.id;
-	var addrObj = params.addrObj || AjxEmailAddress.parse(params.address);
+	var addrObj = params.addrObj || AjxEmailAddress.parse(params.address) || params.address || ZmMsg.unknown;
 	var fullAddress = AjxStringUtil.htmlEncode(addrObj.toString());
 	var text = AjxStringUtil.htmlEncode(addrObj.toString(appCtxt.get(ZmSetting.SHORT_ADDRESS)));
 	var selectId = id + "_select";
@@ -1532,7 +1556,7 @@ function(dragOp) {
 	var count = this.addrInput.getSelectionCount(this);
 	var content;
 	if (count == 1) {
-		var addrObj = AjxEmailAddress.parse(this.address);
+		var addrObj = AjxEmailAddress.parse(this.address) || this.address;
 		content = AjxStringUtil.htmlEncode(addrObj.toString(appCtxt.get(ZmSetting.SHORT_ADDRESS)));
 	}
 	else {
