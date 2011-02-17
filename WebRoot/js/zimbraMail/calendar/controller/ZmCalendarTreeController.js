@@ -347,9 +347,7 @@ function(ev) {
 	else if (ev.action == DwtDropEvent.DRAG_DROP) {
 		var ctlr = ev.srcData.controller;
 		var cc = AjxDispatcher.run("GetCalController");
-        if (!isShiftKey && cc.isMovingBetwAccounts(appts, dropFolder.id)) {
-            var controller = appCtxt.getApp(ZmApp.CALENDAR).getCalController();
-            controller.apptCache.batchRequest({accountFolderIds:[dropFolder.id],callback:new AjxCallback(this, this._dropToRemoteFolder, [dropFolder.name])});
+		if (!isShiftKey && cc.isMovingBetwAccounts(appts, dropFolder.id)) {
 			var dlg = appCtxt.getYesNoMsgDialog();
 			dlg.registerCallback(DwtDialog.YES_BUTTON, this._changeOrgCallback, this, [ctlr, dlg, appts, dropFolder]);
 			var msg = AjxMessageFormat.format(ZmMsg.orgChange, dropFolder.getOwner());
@@ -361,23 +359,10 @@ function(ev) {
 	}
 };
 
-ZmCalendarTreeController.prototype._dropToRemoteFolder =
-function(name) {
-    appCtxt.setStatusMsg(AjxMessageFormat.format(ZmMsg.calStatusUpdate, name));
-}
-
 ZmCalendarTreeController.prototype._changeOrgCallback =
 function(controller, dialog, appts, dropFolder) {
 	dialog.popdown();
-    if(!dropFolder.noSuchFolder){
-	    controller._doMove(appts, dropFolder, null, false);
-    }
-    else{
-        var dialog = appCtxt.getMsgDialog();
-        var msg = AjxMessageFormat.format(ZmMsg.noFolderExists, dropFolder.name);
-        dialog.setMessage(msg);
-        dialog.popup();
-    }
+	controller._doMove(appts, dropFolder, null, false);
 };
 
 /*

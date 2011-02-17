@@ -50,12 +50,31 @@ function() {
 
 ZmMixedApp.prototype._registerApp =
 function() {
+    var trees = [], types = [];
+    if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+        trees.push(ZmOrganizer.FOLDER);
+        types.push(ZmItem.MSG, ZmItem.CONV);
+    }
+    if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+        trees.push(ZmOrganizer.ADDRBOOK);
+    }
+    if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+        trees.push(ZmOrganizer.CALENDAR);
+    }
+    if (appCtxt.get(ZmSetting.TASKS_ENABLED)) {
+        trees.push(ZmOrganizer.TASKS);
+    }
+    if (appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
+        trees.push(ZmOrganizer.BRIEFCASE);
+    }
+    trees.push(ZmOrganizer.SEARCH, ZmOrganizer.TAG);
+
 	ZmApp.registerApp(ZmApp.MIXED,
 							 {mainPkg:			"Mixed",
 							  nameKey:			"zimbraTitle",
 							  icon:				"Globe",
-							  overviewTrees:	[ZmOrganizer.FOLDER, ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
-							  searchTypes:		[ZmItem.MSG, ZmItem.CONV]
+							  overviewTrees:	trees,
+							  searchTypes:		types
 							  });
 };
 

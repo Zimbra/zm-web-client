@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -189,13 +189,7 @@ function(attId) {
 		if (!this._attendeeValidated && this._invalidAttendees && this._invalidAttendees.length > 0) {
 			var dlg = appCtxt.getYesNoMsgDialog();
 			dlg.registerCallback(DwtDialog.YES_BUTTON, this._clearInvalidAttendeesCallback, this, [appt, attId, dlg]);
-			var msg = "";
-            if(this._action == ZmCalItemComposeController.SAVE){
-               msg = AjxMessageFormat.format(ZmMsg.compSaveBadAttendees, this._invalidAttendees.join(","));
-            }
-            else{
-                msg = AjxMessageFormat.format(ZmMsg.compBadAttendees, this._invalidAttendees.join(","));
-            }
+			var msg = AjxMessageFormat.format(ZmMsg.compBadAttendees, this._invalidAttendees.join(","));
 			dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 			dlg.popup();
             this.enableToolbar(true);
@@ -694,9 +688,7 @@ function(names, appt, attId, notifyList) {
 			by: "name",
 			_content: names[i]
 		};
-
-		    permRequest.right = {_content: "invite"};
-
+		permRequest.right = {_content: "invite"};
 		chkPermRequest.push(permRequest);
 	}
 
