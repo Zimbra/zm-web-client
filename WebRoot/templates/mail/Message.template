@@ -269,9 +269,9 @@
 </template>
 
 <template id='mail.Message#ExtImageInformationBar'>
-	<div class='DisplayImages' id='${id}' style="height:15px;">
+	<div class='DisplayImages' id='${id}' style="height:18px;">
 		<div style="float:left;padding-right:5px;"><div class="ImgWarning"></div></div>
-        <div style="float:left;">${text} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline' id='${id}_dispImgs'>${link}</a> - ${alwaysText} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline' id='${id}_domain'>${domain}</a> ${or} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline' id='${id}_email'>${email}<a></div>
+        <div style="float:left; width:90%;">${text} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline' id='${id}_dispImgs'>${link}</a> - ${alwaysText} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline' id='${id}_domain'>${domain}</a> ${or} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline' id='${id}_email'>${email}<a></div>
         <div class="ImgClose" id='${id}_close' style="float:right"></div>
 	</div>
 </template>
