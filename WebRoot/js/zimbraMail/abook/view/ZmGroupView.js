@@ -46,6 +46,7 @@ ZmGroupView = function(parent, controller) {
 	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 
 	this._changeListener = new AjxListener(this, this._groupChangeListener);
+	this._detailedSearch = appCtxt.get(ZmSetting.DETAILED_CONTACT_SEARCH_ENABLED);
 };
 
 ZmGroupView.prototype = new DwtComposite;
@@ -63,6 +64,15 @@ function() {
 
 ZmGroupView.DIALOG_X = 50;
 ZmGroupView.DIALOG_Y = 100;
+
+ZmGroupView.SEARCH_BASIC = "search";
+ZmGroupView.SEARCH_NAME = "name";
+ZmGroupView.SEARCH_EMAIL = "email";
+ZmGroupView.SEARCH_DEPT = "dept";
+ZmGroupView.SEARCH_PHONETIC = "phonetic";
+
+ZmGroupView.SHOW_ON_GAL = [ZmGroupView.SEARCH_BASIC, ZmGroupView.SEARCH_NAME, ZmGroupView.SEARCH_EMAIL, ZmGroupView.SEARCH_DEPT];
+ZmGroupView.SHOW_ON_NONGAL = [ZmGroupView.SEARCH_BASIC, ZmGroupView.SEARCH_NAME, ZmGroupView.SEARCH_PHONETIC, ZmGroupView.SEARCH_EMAIL];
 
 //
 // Public methods
@@ -205,7 +215,9 @@ function(bEnable) {
 	if (!this._noManualEntry) {
 		this._groupMembers.disabled = !bEnable;
 	}
-	document.getElementById(this._searchFieldId).disabled = !bEnable;
+	for (var fieldId in this._searchField) {
+		this._searchField[fieldId].disabled = !bEnable;
+	}
 };
 
 ZmGroupView.prototype.isDirty =
@@ -238,7 +250,9 @@ function(x, y, width, height) {
 
 ZmGroupView.prototype.cleanup  =
 function() {
-	document.getElementById(this._searchFieldId).value = "";
+	for (var fieldId in this._searchField) {
+		this._searchField[fieldId].value = "";
+	}
 	this._listview.removeAll(true);
 	this._groupListView.removeAll(true);
 	this._addButton.setEnabled(false);
@@ -253,21 +267,53 @@ function() {
 
 ZmGroupView.prototype.search =
 function() {
-	var query = AjxStringUtil.trim(document.getElementById(this._searchFieldId).value);
+	var query;
+	var queryHint = [];
+	var conds = [];
+	if (this._detailedSearch) {
+		var nameQuery = this.getSearchFieldValue(ZmGroupView.SEARCH_NAME);
+		var emailQuery = this.getSearchFieldValue(ZmGroupView.SEARCH_EMAIL);
+		var deptQuery = this.getSearchFieldValue(ZmGroupView.SEARCH_DEPT);
+		var phoneticQuery = this.getSearchFieldValue(ZmGroupView.SEARCH_PHONETIC);
+		var isGal = this._searchInSelect && (this._searchInSelect.getValue() == ZmContactsApp.SEARCHFOR_GAL);
+		query = nameQuery || "";
+		if (emailQuery) {
+			if (isGal) {
+				conds.push([{attr:ZmContact.F_email, op:"has", value: emailQuery},
+				{attr:ZmContact.F_email2, op:"has", value: emailQuery},
+				{attr:ZmContact.F_email3, op:"has", value: emailQuery}]);
+			} else {
+				queryHint.push("to:"+emailQuery+"*");
+			}
+		}
+		if (deptQuery && isGal) {
+			conds.push({attr:ZmContact.F_department, op:"has", value: deptQuery});
+		}
+		if (phoneticQuery && !isGal) {
+			var condArr = [];
+			var phoneticQueryPieces = phoneticQuery.split(/\s+/);
+			for (var i=0; i<phoneticQueryPieces.length; i++) {
+				condArr.push("#"+ZmContact.F_phoneticFirstName + ":" + phoneticQueryPieces[i]);
+				condArr.push("#"+ZmContact.F_phoneticLastName + ":" + phoneticQueryPieces[i]);
+			}
+			queryHint.push(condArr.join(" || "));
+		}
+	} else {
+		query = this.getSearchFieldValue(ZmGroupView.SEARCH_BASIC);
+	}
 	if (!query.length) {
 		query = this._defaultQuery;
 	}
 
-	var queryHint;
 	if (this._searchInSelect) {
 		var searchFor = this._searchInSelect.getValue();
 		this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
 			? ZmItem.CONTACT
 			: ZmId.SEARCH_GAL;
 		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-			queryHint = ZmSearchController.generateQueryForShares([ZmId.ITEM_CONTACT]) || "is:local";
+			queryHint.push(ZmSearchController.generateQueryForShares([ZmId.ITEM_CONTACT]) || "is:local");
 		} else if (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) {
-			queryHint = "is:local";
+			queryHint.push("is:local");
 		}
 	} else {
 		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)
@@ -275,14 +321,15 @@ function() {
 			: ZmId.SEARCH_GAL;
 
 		if (this._contactSource == ZmItem.CONTACT) {
-			queryHint = "is:local";
+			queryHint.push("is:local");
 		}
 	}
 	var params = {
 		obj: this,
 		ascending: true,
 		query: query,
-		queryHint: queryHint,
+		queryHint: queryHint.join(" "),
+		conds: conds,
 		offset: this._offset,
 		respCallback: this._searchRespCallback
 	};
@@ -320,6 +367,14 @@ function() {
 	return document.getElementById(this._tagsId);
 };
 
+ZmGroupView.prototype.getSearchFieldValue =
+function(fieldId) {
+	if (!fieldId && !this._detailedSearch)
+		fieldId = ZmGroupView.SEARCH_BASIC;
+	var field = this._searchField[fieldId];
+	return field && AjxStringUtil.trim(field.value) || "";
+};
+
 ZmGroupView.prototype._createHtml =
 function() {
 	this._headerRowId = 		this._htmlElId + "_headerRow";
@@ -335,7 +390,8 @@ function() {
 	}
 	var params = {
 		id: this._htmlElId,
-		showSearchIn: showSearchIn
+		showSearchIn: showSearchIn,
+		detailed: this._detailedSearch
 	};
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#GroupView", params);
 	this._htmlInitialized = true;
@@ -429,6 +485,32 @@ function() {
 		this._addNewButton.setText(ZmMsg.add);
 		this._addNewButton.addSelectionListener(new AjxListener(this, this._addNewListener));
 	}
+
+	this._searchField = {};
+	this._searchRow = {};
+	var fieldMap = {}, field, rowMap = {};
+	if (this._detailedSearch) {
+		fieldMap[ZmGroupView.SEARCH_NAME] = this._htmlElId + "_searchNameField";
+		fieldMap[ZmGroupView.SEARCH_EMAIL] = this._htmlElId + "_searchEmailField";
+		fieldMap[ZmGroupView.SEARCH_DEPT] = this._htmlElId + "_searchDepartmentField";
+		fieldMap[ZmGroupView.SEARCH_PHONETIC] = this._htmlElId + "_searchPhoneticField";
+		rowMap[ZmGroupView.SEARCH_NAME] = this._htmlElId + "_searchNameRow";
+		rowMap[ZmGroupView.SEARCH_EMAIL] = this._htmlElId + "_searchEmailRow";
+		rowMap[ZmGroupView.SEARCH_DEPT] = this._htmlElId + "_searchDepartmentRow";
+		rowMap[ZmGroupView.SEARCH_PHONETIC] = this._htmlElId + "_searchPhoneticRow";
+	} else {
+		fieldMap[ZmGroupView.SEARCH_BASIC] = this._htmlElId + "_searchField";
+		rowMap[ZmGroupView.SEARCH_BASIC] = this._htmlElId + "_searchRow";
+	}
+	for (var fieldId in fieldMap) {
+		field = Dwt.byId(fieldMap[fieldId]);
+		if (field) this._searchField[fieldId] = field;
+	}
+	for (var rowId in rowMap) {
+		row = Dwt.byId(rowMap[rowId]);
+		if (row) this._searchRow[rowId] = row;
+	}
+	this._updateSearchRows(this._searchInSelect && this._searchInSelect.getValue() || ZmContactsApp.SEARCHFOR_CONTACTS);
 };
 
 ZmGroupView.prototype._installKeyHandlers =
@@ -442,9 +524,11 @@ function() {
 		Dwt.associateElementWithObject(this._groupMembers, this);
 	}
 
-	var searchField = document.getElementById(this._searchFieldId);
-	Dwt.setHandler(searchField, DwtEvent.ONKEYPRESS, ZmGroupView._keyPressHdlr);
-	Dwt.associateElementWithObject(searchField, this);
+	for (var fieldId in this._searchField) {
+		var searchField = this._searchField[fieldId];
+		Dwt.setHandler(searchField, DwtEvent.ONKEYPRESS, ZmGroupView._keyPressHdlr);
+		Dwt.associateElementWithObject(searchField, this);
+	}
 };
 
 ZmGroupView.prototype._getTabGroupMembers =
@@ -454,7 +538,9 @@ function() {
 	if (!this._noManualEntry) {
 		fields.push(this._groupMembers);
 	}
-	fields.push(document.getElementById(this._searchFieldId));
+	for (var fieldId in this._searchField) {
+		fields.push(this._searchField[fieldId]);
+	}
 	return fields;
 };
 
@@ -660,6 +746,7 @@ function(ev) {
 	var newValue = ev._args.newValue;
 
 	if (oldValue != newValue) {
+		this._updateSearchRows(newValue);
 		this._searchButtonListener();
 	}
 };
@@ -806,6 +893,7 @@ function(result) {
 
 	var list = ZmContactsHelper._processSearchResponse(resp);
 	this._listview.setItems(list);
+	this._resetSearchColHeaders();
 
 	this._addButton.setEnabled(list.length > 0);
 	this._addAllButton.setEnabled(list.length > 0);
@@ -830,6 +918,30 @@ ZmGroupView.prototype._groupChangeListener = function(ev) {
 	}
 };
 
+ZmGroupView.prototype._updateSearchRows =
+function(searchFor) {
+	var fieldIds = (searchFor == ZmContactsApp.SEARCHFOR_GAL) ? ZmGroupView.SHOW_ON_GAL : ZmGroupView.SHOW_ON_NONGAL;
+	for (var fieldId in this._searchRow) {
+		Dwt.setVisible(this._searchRow[fieldId], AjxUtil.indexOf(fieldIds, fieldId)!=-1);
+	}
+};
+
+ZmGroupView.prototype._resetSearchColHeaders =
+function() {
+	var lv = this._listview;
+	lv.headerColCreated = false;
+	var isGal = this._searchInSelect && (this._searchInSelect.getValue() == ZmContactsApp.SEARCHFOR_GAL);
+
+	for (var i = 0; i < lv._headerList.length; i++) {
+		var field = lv._headerList[i]._field;
+		if (field == ZmItem.F_DEPARTMENT) {
+			lv._headerList[i]._visible = isGal && this._detailedSearch;
+		}
+	}
+
+	var sortable = isGal ? null : ZmItem.F_NAME;
+	lv.createHeaderHtml(sortable);
+};
 
 // Static methods
 
@@ -905,7 +1017,8 @@ function() {
 	return [
 		(new DwtListHeaderItem({field:ZmItem.F_TYPE,	icon:"Contact",		width:ZmMsg.COLUMN_WIDTH_TYPE_CN})),
 		(new DwtListHeaderItem({field:ZmItem.F_NAME,	text:ZmMsg._name,	width:ZmMsg.COLUMN_WIDTH_NAME_CN})),
-		(new DwtListHeaderItem({field:ZmItem.F_EMAIL,	text:ZmMsg.email}))
+		(new DwtListHeaderItem({field:ZmItem.F_EMAIL,	text:ZmMsg.email})),
+		(new DwtListHeaderItem({field:ZmItem.F_DEPARTMENT,	text:ZmMsg.department,	width:ZmMsg.COLUMN_WIDTH_DEPARTMENT_CN}))
 	];
 };
 
