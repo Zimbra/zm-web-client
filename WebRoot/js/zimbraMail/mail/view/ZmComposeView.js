@@ -957,9 +957,11 @@ function(composeMode, switchPreface) {
 
 			// Do the mode switch
 			this._htmlEditor.setMode(composeMode, true);
-			// Re-set the whole body, with optional replied/forwarded msg and signature automatically added. baseContent is the text that the user may have written before switching
-			this._setBody(this._action, this._msg || null, baseContent || "\n", null, true);
-
+			
+			if (this._action != ZmOperation.DRAFT) {
+				// Re-set the whole body, with optional replied/forwarded msg and signature automatically added. baseContent is the text that the user may have written before switching
+				this._setBody(this._action, this._msg || null, baseContent || "\n", null, true);
+			}
 		} else {
 
 			var self = this;
