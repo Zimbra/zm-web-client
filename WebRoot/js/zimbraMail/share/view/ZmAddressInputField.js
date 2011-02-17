@@ -258,8 +258,8 @@ function() {
 
 /**
  * Parses the given text into email addresses, and adds a bubble for each one
- * that we don't already have. Any part that doesn't parse is left in the input.
- * Since text is passed in, we don't recognize expandable DLs.
+ * that we don't already have. Since text is passed in, we don't recognize expandable DLs.
+ * A bubble will be added for a string even if it doesn't parse as an email address.
  *
  * @param {string}	text		email addresses
  * @param {boolean}	add			if true, control is not cleared first
@@ -288,11 +288,7 @@ function(text, add, skipNotify) {
 		}
 	}
 
-	var value = "";
-	if (parsed.bad && parsed.bad.size()) {
-		value = parsed.bad.toString(AjxEmailAddress.SEPARATOR);
-	}
-	this._setInputValue(value);
+	this._setInputValue("");
 };
 
 /**
@@ -1556,7 +1552,7 @@ function(dragOp) {
 	var count = this.addrInput.getSelectionCount(this);
 	var content;
 	if (count == 1) {
-		var addrObj = AjxEmailAddress.parse(this.address) || this.address;
+		var addrObj = AjxEmailAddress.parse(this.address) || this.address || ZmMsg.unknown;
 		content = AjxStringUtil.htmlEncode(addrObj.toString(appCtxt.get(ZmSetting.SHORT_ADDRESS)));
 	}
 	else {

@@ -790,19 +790,23 @@ function(ev) {
     if (selection.length == 0 && this._actionEv) {
         selection.push(this._actionEv.contact);
     }
-    var name = '', contact, email;
-    for(var i=0; i<selection.length; i++){
+    var emailStr = '', contact, email;
+    for (var i = 0; i < selection.length; i++){
         contact = selection[i];
-        email   = contact.isGroup() ? contact.getGroupMembers().good : contact.getEmail();
-        if(email){
-            email   = contact.isGroup() ? email : new AjxEmailAddress(email, AjxEmailAddress.TO, contact.getFullName());
-            email   = email.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR;
-            name   += email;
-        }
+		if (contact.isGroup()) {
+			var members = contact.getGroupMembers().good;
+			if (members.size()) {
+				emailStr += members.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR;
+			}
+		}
+		else {
+			var addr = new AjxEmailAddress(contact.getEmail(), AjxEmailAddress.TO, contact.getFullName());
+			emailStr += addr.toString() + AjxEmailAddress.SEPARATOR;
+		}
     }
 
 	AjxDispatcher.run("Compose", {action: ZmOperation.NEW_MESSAGE, inNewWindow: this._app._inNewWindow(ev),
-								  toOverride: name});
+								  toOverride: emailStr});
 };
 
 /**
