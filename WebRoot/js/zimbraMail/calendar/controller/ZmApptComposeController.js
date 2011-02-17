@@ -189,7 +189,13 @@ function(attId) {
 		if (!this._attendeeValidated && this._invalidAttendees && this._invalidAttendees.length > 0) {
 			var dlg = appCtxt.getYesNoMsgDialog();
 			dlg.registerCallback(DwtDialog.YES_BUTTON, this._clearInvalidAttendeesCallback, this, [appt, attId, dlg]);
-			var msg = AjxMessageFormat.format(ZmMsg.compBadAttendees, this._invalidAttendees.join(","));
+			var msg = "";
+            if(this._action == ZmCalItemComposeController.SAVE){
+               msg = AjxMessageFormat.format(ZmMsg.compSaveBadAttendees, this._invalidAttendees.join(","));
+            }
+            else{
+                msg = AjxMessageFormat.format(ZmMsg.compBadAttendees, this._invalidAttendees.join(","));
+            }
 			dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 			dlg.popup();
             this.enableToolbar(true);
@@ -688,7 +694,9 @@ function(names, appt, attId, notifyList) {
 			by: "name",
 			_content: names[i]
 		};
-		permRequest.right = {_content: "invite"};
+
+		    permRequest.right = {_content: "invite"};
+
 		chkPermRequest.push(permRequest);
 	}
 
