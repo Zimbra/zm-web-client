@@ -109,7 +109,7 @@ function(actionCode) {
 		case ZmKeyMap.COLLAPSE:
 			if (mlv.getSelectionCount() != 1) { return false; }
 			var item = mlv.getItemFromElement(mlv._kbAnchor);
-			if (!item || !mlv._isExpandable(item)) { return false; }
+			if (!item) { return false; }
 			if ((actionCode == ZmKeyMap.EXPAND) != mlv._expanded[item.id]) {
 				mlv._expandItem(item);
 			}
