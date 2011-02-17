@@ -173,9 +173,9 @@ function(miniCalResponse, data) {
 	for (var i = 0; i < miniCalResponse.length; i++) {
 		var dates = (miniCalResponse[i] && miniCalResponse[i].date);
 		if (dates) {
-			for (var i = 0; i < dates.length; i++) {
-				if (dates[i]._content) {
-					data.push(dates[i]._content);
+			for (var j = 0; j < dates.length; j++) {
+				if (dates[j]._content) {
+					data.push(dates[j]._content);
 				}
 			}
 		}
@@ -189,7 +189,7 @@ ZmMiniCalCache.prototype.handleError =
 function(errors) {
     if (errors && errors.length) {
         for (var i = 0; i < errors.length; i++) {
-            if (errors[i].code == ZmCsfeException.MAIL_NO_SUCH_MOUNTPOINT || errors[i].code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT || errors[i].code == ZmCsfeException.SVC_PERM_DENIED) {
+            if (errors[i].code == ZmCsfeException.MAIL_NO_SUCH_FOLDER || errors[i].code == ZmCsfeException.MAIL_NO_SUCH_MOUNTPOINT || errors[i].code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT || errors[i].code == ZmCsfeException.SVC_PERM_DENIED) {
                 var id = errors[i].id;
                 if (id && appCtxt.getById(id)) {
                     var folder = appCtxt.getById(id);
