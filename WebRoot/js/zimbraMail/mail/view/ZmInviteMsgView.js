@@ -319,7 +319,7 @@ function(reset) {
                     if (bodyDiv) bodyDiv.style.overflow  = Dwt.CLIP;
                     if (el) {
                         el.style.overflow = "auto";
-                        el.style.height = (mvHeight - this._inviteToolbar.getYH() + 10) + "px";
+                        el.style.height = (mvHeight - ( this._inviteToolbar ? this._inviteToolbar.getYH() : 0 ) + 10) + "px";
                     }
                 }
             }
