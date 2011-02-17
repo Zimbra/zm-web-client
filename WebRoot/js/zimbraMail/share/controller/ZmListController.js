@@ -945,7 +945,9 @@ function(ev) {
            }
         }
 		DBG.println(AjxDebug.DBG3, "DRAG_ENTER: doIt = " + ev.doIt);
-		view.dragSelect(div);
+		if (ev.doIt) {
+			view.dragSelect(div);
+		}
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
 		view.dragDeselect(div);
 		var items = [item];
