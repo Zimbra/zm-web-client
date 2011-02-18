@@ -256,7 +256,7 @@
 		}
 	</c:if>
 </script>
-<jsp:include page="loadImgData.jsp" />
+<%@ include file="loadImgData.jsp" %>
     
 <script>
 <jsp:include page="/js/ajax/util/AjxTimezoneData.js" />
