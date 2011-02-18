@@ -85,7 +85,31 @@ function(date) {
 	if (!app._active) {
 		this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
 	}
+
+    this._dayRollTimer = null;
 };
+
+
+
+ZmCalMgr.prototype.startDayRollTimer =
+function(){
+  if(!this._dayRollTimer){
+    var curTime = new Date();
+    var rollTime = new Date();
+    rollTime.setHours(23,59,59,999);
+    var interval = rollTime.getTime() - curTime.getTime();
+    var dayRollAction = new AjxTimedAction(this,this._rollDay);
+    AjxTimedAction.scheduleAction(dayRollAction,interval);
+  }
+}
+
+
+ZmCalMgr.prototype._rollDay =
+function(){
+    this._dayRollTimer = null;
+    this._miniCalendar.setDate(new Date());
+    this.startDayRollTimer();
+}
 
 ZmCalMgr.prototype._miniCalDropTargetListener =
 function(ev) {

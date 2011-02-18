@@ -467,6 +467,7 @@ function() {
 	calMgr.getMiniCalendar();
 	appCtxt.getAppViewMgr().showTreeFooter(true);
     calMgr.highlightMiniCal();
+    calMgr.startDayRollTimer();
 };
 
 /**
