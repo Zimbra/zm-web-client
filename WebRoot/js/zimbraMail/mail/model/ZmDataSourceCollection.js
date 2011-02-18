@@ -34,6 +34,11 @@ ZmDataSourceCollection.prototype.constructor = ZmDataSourceCollection;
 // Public methods
 //
 
+ZmDataSourceCollection.prototype.toString =
+function() {
+	return "ZmDataSourceCollection";
+};
+
 ZmDataSourceCollection.prototype.getItems = function() {
 	return AjxUtil.values(this._itemMap);
 };
