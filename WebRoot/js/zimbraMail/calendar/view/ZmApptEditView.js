@@ -449,6 +449,9 @@ function(){
 
 ZmApptEditView.prototype.isAttendeesEmpty =
 function() {
+
+    if(!this.GROUP_CALENDAR_ENABLED) return true;
+
     var locations = this._attendees[ZmCalBaseItem.LOCATION];
     //non-resource location labels also contributes to empty attendee
     var isLocationResource =(locations && locations.size() > 0);
@@ -808,12 +811,15 @@ function(width) {
     this._setIdentityVisible();
     this.updateToolbarOps();
 
-    Dwt.setVisible(this._optionalAttendeesContainer, false);
     if (this._resourcesContainer) {
         Dwt.setVisible(this._resourcesContainer, false);
     }
-    Dwt.setVisible(this._optAttendeesInputField.getInputElement(), false);
-    Dwt.setVisible(this._resourceInputField.getInputElement(), false);
+
+    if(this.GROUP_CALENDAR_ENABLED) {
+        Dwt.setVisible(this._optionalAttendeesContainer, false);
+        Dwt.setVisible(this._optAttendeesInputField.getInputElement(), false);
+        Dwt.setVisible(this._resourceInputField.getInputElement(), false);
+    }
 
     this._inviteMsgContainer = document.getElementById(this._htmlElId + "_invitemsg_container");
     this._inviteMsg = document.getElementById(this._htmlElId + "_invitemsg");
@@ -1538,8 +1544,8 @@ function() {
 	// add event listeners where necessary
 	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
-	Dwt.setHandler(this._showOptional, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
-    Dwt.setHandler(this._showResources, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+	if(this._showOptional) Dwt.setHandler(this._showOptional, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+    if(this._showResources) Dwt.setHandler(this._showResources, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmCalItemEditView._onMouseOver);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmCalItemEditView._onMouseOut);
 	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
@@ -1549,12 +1555,13 @@ function() {
 
 	this._allDayCheckbox._editViewId = this._repeatDescField._editViewId = edvId;
 	this._startDateField._editViewId = this._endDateField._editViewId = edvId;
-    this._showOptional._editViewId = edvId;
-    this._showResources._editViewId = edvId;
+    if(this._showOptional) this._showOptional._editViewId = edvId;
+    if(this._showResources) this._showResources._editViewId = edvId;
 
 	var inputFields = [this._attendeesInputField, this._optAttendeesInputField,
 					   this._locationInputField, this._forwardToField, this._resourceInputField];
 	for (var i = 0; i < inputFields.length; i++) {
+        if(!inputFields[i]) continue;
 		var inputEl = inputFields[i].getInputElement();
         inputEl._editViewId = edvId;
 		inputEl.onfocus = AjxCallback.simpleClosure(this._handleOnFocus, this, inputEl);
@@ -2063,7 +2070,7 @@ function(member) {
 
 ZmApptEditView.prototype._handleOnBlur =
 function(inputEl) {
-	this._handleAttendeeField(inputEl._attType);
+    this._handleAttendeeField(inputEl._attType);
 	this._activeInputField = null;
 };
 
