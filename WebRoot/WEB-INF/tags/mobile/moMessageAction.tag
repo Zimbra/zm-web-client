@@ -241,7 +241,7 @@
         </fmt:message>
     </mo:status>
     <script type="text/javascript">
-        var elem = document.getElementById('inboxUnread'); if(elem) elem.innerHTML = ${mailbox.inbox.unreadCount};
+        var elem = document.getElementById('inboxUnread'); var unreadCount = ${mailbox.inbox.unreadCount}; if(elem) {elem.innerHTML = (unreadCount > 0 ? unreadCount : '');} 
     </script>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionMarkUnread') || (zm:actionSet(param,'moreActions') && anAction eq 'actionMarkUnread')}">
@@ -259,7 +259,7 @@
         </fmt:message>
     </mo:status>
     <script type="text/javascript">
-        var elem = document.getElementById('inboxUnread'); if(elem) elem.innerHTML = ${mailbox.inbox.unreadCount};
+        var elem = document.getElementById('inboxUnread'); var unreadCount = ${mailbox.inbox.unreadCount}; if(elem) {elem.innerHTML = (unreadCount > 0 ? unreadCount : '');}
     </script>
     <c:set var="idsMarkedUnread" value="${paramValues.id}" scope="request"/>
 </c:when>
