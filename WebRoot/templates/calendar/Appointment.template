@@ -41,6 +41,7 @@
             <tr><td class='ZmFieldLabelRight'><nobr><$= ZmMsg.subjectLabel $></nobr></td>
                 <td colspan='4' id='${id}_subject'></td>
             </tr>
+            <$ if(data.isGroupCalEnabled) { $>
             <tr id="${id}_attendeesContainer">
                 <td class='ZmFieldLabelRight'><div id='${id}_req_att_picker'><$= ZmMsg.attendeesLabel $></div></td>
                 <td colspan='3' id='${id}_person'></td>
@@ -50,12 +51,13 @@
                 <td class='ZmFieldLabelRight'><div id='${id}_opt_att_picker'><$= ZmMsg.optionalLabel $></div></td>
                 <td colspan='3' id='${id}_optional'></td>
             </tr>
+            <$ } $>
             <tr>
                 <td class='ZmFieldLabelRight'><div id='${id}_loc_picker'><$= ZmMsg.locationLabel $></div></td>
                 <td colspan='3' id='${id}_location'></td>
                  <td id='${id}_show_resources' class='fakeAnchor'><$= ZmMsg.showResources $></td>
             </tr>
-            <$ if (data.isGalEnabled) { $>
+            <$ if (data.isGalEnabled && data.isGroupCalEnabled) { $>
             <tr id='${id}_resourcesContainer'>
                 <td class='ZmFieldLabelRight'><div id='${id}_res_btn'><$= ZmMsg.resources $></div></td>
                 <td colspan='4' id='${id}_resourcesData'></td>
