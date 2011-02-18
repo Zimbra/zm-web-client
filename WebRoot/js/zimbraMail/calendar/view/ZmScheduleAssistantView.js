@@ -734,7 +734,8 @@ function(slots, startTime, endTime) {
     for (var i = 0; i < slots.length; i++) {
         var startConflict = startTime >= slots[i].s && startTime < slots[i].e;
         var endConflict = endTime > slots[i].s && endTime <= slots[i].e;
-        if(startConflict || endConflict) {
+        var inlineSlotConflict = slots[i].s >= startTime && slots[i].e <= endTime;
+        if(startConflict || endConflict || inlineSlotConflict) {
             return false;
         }
     };
