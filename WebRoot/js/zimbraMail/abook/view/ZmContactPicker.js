@@ -214,9 +214,7 @@ function(colItem, ascending, firstTime, lastId, lastSortVal) {
 	} else {
 		query = this.getSearchFieldValue(ZmContactPicker.SEARCH_BASIC);
 	}
-	if (!query.length) {
-		query = this._defaultQuery;
-	}
+	
 
 	if (this._selectDiv) {
 		var searchFor = this._selectDiv.getValue();
@@ -239,6 +237,10 @@ function(colItem, ascending, firstTime, lastId, lastSortVal) {
 		if (this._contactSource == ZmItem.CONTACT) {
 			queryHint.push("is:local");
 		}
+	}
+    
+    if (!query.length && this._contactSource == ZmId.SEARCH_GAL) {
+		query = this._defaultQuery;
 	}
 
     if (this._contactSource == ZmItem.CONTACT) {
