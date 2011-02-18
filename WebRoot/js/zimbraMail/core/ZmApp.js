@@ -37,7 +37,6 @@ ZmApp = function(name, container, parentController) {
 	if (arguments.length == 0) return;
 	
 	this._name = name;
-	this._appViewMgr = appCtxt.getAppViewMgr();
 	this._container = container;
 	this._parentController = parentController;
 	this._active = false;
@@ -315,7 +314,7 @@ function(offset) {
  */
 ZmApp.prototype.setAppView =
 function(view) {
-	this._appViewMgr.setAppView(this._name, view);
+	appCtxt.getAppViewMgr().setAppView(this._name, view);
 };
 
 /**
@@ -328,7 +327,7 @@ function(view) {
 ZmApp.prototype.createView =
 function(params) {
 	params.appName = this._name;
-	return this._appViewMgr.createView(params);
+	return appCtxt.getAppViewMgr().createView(params);
 };
 
 /**
@@ -340,7 +339,7 @@ function(params) {
  */
 ZmApp.prototype.pushView =
 function(name, force) {
-	return this._appViewMgr.pushView(name, force);
+	return appCtxt.getAppViewMgr().pushView(name, force);
 };
 
 /**
@@ -351,7 +350,7 @@ function(name, force) {
  */
 ZmApp.prototype.popView =
 function(force, viewId, skipHistory) {
-	return this._appViewMgr.popView(force, viewId, skipHistory);
+	return appCtxt.getAppViewMgr().popView(force, viewId, skipHistory);
 };
 
 /**
@@ -363,7 +362,7 @@ function(force, viewId, skipHistory) {
  */
 ZmApp.prototype.setView =
 function(name, force) {
-	return this._appViewMgr.setView(name, force);
+	return appCtxt.getAppViewMgr().setView(name, force);
 };
 
 /**
@@ -374,7 +373,7 @@ function(name, force) {
  */
 ZmApp.prototype.stageView =
 function(name) {
-	return this._appViewMgr.stageView(name);
+	return appCtxt.getAppViewMgr().stageView(name);
 };
 
 /**

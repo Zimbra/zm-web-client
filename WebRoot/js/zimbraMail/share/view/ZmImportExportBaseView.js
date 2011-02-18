@@ -161,9 +161,15 @@ ZmImportExportBaseView.prototype._folderButton_onclick = function() {
 
 	if (!this._TREES) {
 		this._TREES = {};
-		this._TREES[ZmImportExportController.TYPE_TGZ] = AjxUtil.keys(ZmOrganizer.VIEWS);
-		this._TREES[ZmImportExportController.TYPE_CSV] = [ZmOrganizer.ADDRBOOK];
-		this._TREES[ZmImportExportController.TYPE_ICS] = [ZmOrganizer.CALENDAR];
+		this._TREES[ZmImportExportController.TYPE_TGZ] = [];
+        for (var org in ZmOrganizer.VIEWS) {
+            var settingId = ZmApp.SETTING[ZmOrganizer.APP2ORGANIZER_R[org]];
+            if (settingId == null || appCtxt.get(settingId)) {
+                this._TREES[ZmImportExportController.TYPE_TGZ].push(org);
+            }
+        }
+		this._TREES[ZmImportExportController.TYPE_CSV] = appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? [ZmOrganizer.ADDRBOOK] : [];
+		this._TREES[ZmImportExportController.TYPE_ICS] = appCtxt.get(ZmSetting.CALENDAR_ENABLED) ? [ZmOrganizer.CALENDAR] : [];
 	}
 
 	// pop-up dialog
