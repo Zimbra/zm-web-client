@@ -54,8 +54,12 @@
             <$ } $>
             <tr>
                 <td class='ZmFieldLabelRight'><div id='${id}_loc_picker'><$= ZmMsg.locationLabel $></div></td>
+                <$ if (data.isGalEnabled && data.isGroupCalEnabled) { $>
                 <td colspan='3' id='${id}_location'></td>
-                 <td id='${id}_show_resources' class='fakeAnchor'><$= ZmMsg.showResources $></td>
+                <td id='${id}_show_resources' class='fakeAnchor'><$= ZmMsg.showResources $></td>
+                <$ }else { $>
+                <td colspan='4' id='${id}_location'></td>
+                <$ } $>
             </tr>
             <$ if (data.isGalEnabled && data.isGroupCalEnabled) { $>
             <tr id='${id}_resourcesContainer'>

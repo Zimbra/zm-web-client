@@ -97,6 +97,10 @@ function() {
 	ZmCalItemEditView.prototype.show.call(this);
 	this._setAttendees();
 
+    if(!this.GROUP_CALENDAR_ENABLED) {
+        this.setSchedulerVisibility(false);
+    }
+
     //bug:48189 Hide schedule tab for non-ZCS acct
     if (appCtxt.isOffline) {
         var currAcct = appCtxt.getActiveAccount();
@@ -1307,7 +1311,7 @@ function(calItem, mode, isDirty, apptComposeMode) {
 
 ZmApptEditView.prototype.isSuggestionsNeeded =
 function() {
-    return !this._isForward;
+    return !this._isForward && this.GROUP_CALENDAR_ENABLED;
 };
 
 ZmApptEditView.prototype.getCalendarAccount =
@@ -1865,7 +1869,7 @@ function() {
 
 ZmApptEditView.prototype._handleAttendeeField =
 function(type, useException) {
-	if (!this._activeInputField) { return; }
+	if (!this._activeInputField || !this.GROUP_CALENDAR_ENABLED) { return; }
 	if (type != ZmCalBaseItem.LOCATION) {
 		this._controller.clearInvalidAttendees();
 	}
