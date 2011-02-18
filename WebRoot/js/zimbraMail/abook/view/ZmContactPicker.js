@@ -154,11 +154,6 @@ function(colItem, ascending, firstTime, lastId, lastSortVal) {
 		ascending = true;
 	}
 
-	var query = this._searchCleared ? AjxStringUtil.trim(this._searchField.value) : "";
-	if (!query.length) {
-		query = this._defaultQuery;
-	}
-
 	var queryHint;
 	if (this._selectDiv) {
 		var searchFor = this._selectDiv.getValue();
@@ -182,6 +177,12 @@ function(colItem, ascending, firstTime, lastId, lastSortVal) {
 			queryHint = "is:local";
 		}
 	}
+
+    var query = this._searchCleared ? AjxStringUtil.trim(this._searchField.value) : "";
+	if (!query.length && this._contactSource == ZmId.SEARCH_GAL) {
+		query = this._defaultQuery;
+	}
+
 
     if (this._contactSource == ZmItem.CONTACT) {
         query = query.replace(/\"/g, '\\"');
