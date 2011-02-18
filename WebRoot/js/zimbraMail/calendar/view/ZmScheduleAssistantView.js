@@ -288,7 +288,7 @@ function(date, attendees, forceRefresh) {
         this.clearMiniCal();
         if(!this.isSuggestionsEnabled()) {
             this._date = date || this._miniCalendar.getDate();
-            this._timeSuggestions.setShowSuggestionsHTML(this._date);
+            if(appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) this._timeSuggestions.setShowSuggestionsHTML(this._date);
         }
         return;
     }
@@ -601,7 +601,8 @@ function() {
 
 ZmScheduleAssistantView.prototype.isSuggestionsEnabled =
 function() {
-      return this._manualOverrideFlag || (this._prefDialog ? (this._prefDialog.getPreference(ZmTimeSuggestionPrefDialog.DISABLE_SUGGESTIONS_FIELD) != 'true') : true);
+    if(!appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) return false;
+    return this._manualOverrideFlag || (this._prefDialog ? (this._prefDialog.getPreference(ZmTimeSuggestionPrefDialog.DISABLE_SUGGESTIONS_FIELD) != 'true') : true);
 };
 
 ZmScheduleAssistantView.prototype.overrideManualSuggestion =
