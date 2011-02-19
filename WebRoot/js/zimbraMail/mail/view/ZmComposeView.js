@@ -155,6 +155,7 @@ function(params) {
 	// list of msg Id's to add as attachments
 	this._msgIds = params.msgIds;
 
+	AjxDebug.println(AjxDebug.REPLY, "Reset compose view: set compose view");
 	this.reset(true);
 
 	this._setFromSelect(msg);
