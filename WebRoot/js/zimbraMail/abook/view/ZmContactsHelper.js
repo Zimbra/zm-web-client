@@ -96,7 +96,10 @@ function(resp) {
  */
 ZmContactsHelper._addContactToList = 
 function(list, contact, addr, isGroup) {
-	var email = new AjxEmailAddress(addr, null, contact.getFileAs(), null, isGroup);
+	
+	var fileAs = contact.getFileAs();
+	var name = (fileAs != addr) ? fileAs : "";
+	var email = new AjxEmailAddress(addr, null, name, null, isGroup);
 	email.id = Dwt.getNextId();
 	email.__contact = contact;
 	email.icon = contact.getIcon();

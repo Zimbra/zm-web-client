@@ -146,22 +146,32 @@ ZmAddressInputField.prototype.addBubble =
 function(params) {
 
 	params = params || {};
-	var address = params.address = params.bubble ? params.bubble.address : params.address;
-	DBG.println("aif1", "ADD bubble: " + AjxStringUtil.htmlEncode(address));
-	var match = params.match = params.bubble ? params.bubble.match : params.match;
-	params.email = match ? match.email : params.address;
-	if (!address) { return; }
-
+	if (!params.address && !params.bubble) { return; }
+	
+	if (params.bubble) {
+		params.address = params.bubble.address;
+		params.match = params.bubble.match;
+		params.canExpand = params.bubble.canExpand;
+	}
+	params.parent		= this;
+	params.parentId		= this._htmlElId;
+	params.className	= this._bubbleClassName;
+	params.canRemove	= true;
+	params.separator	= this._separator;
+	params.type			= this.type;
+	
 	// if it's a local group, expand it and add each address separately
+	var match = params.match;
 	if (match && match.isGroup && match.type == ZmAutocomplete.AC_TYPE_CONTACT) {
-		var addrs = AjxEmailAddress.split(address);
+		var addrs = AjxEmailAddress.split(params.address);
 		for (var i = 0, len = addrs.length; i < len; i++) {
-			var index = (params.index != null) ? params.index + i : null;
-			this._addBubble({address:addrs[i].toString(), match:match, index:index});
+			params.index = (params.index != null) ? params.index + i : null;
+			params.addrObj = addrs[i];
+			this._addBubble(new ZmAddressBubble(params));
 		}
 	}
 	else {
-		this._addBubble(params);
+		this._addBubble(new ZmAddressBubble(params));
 	}
 
 	this._holder.className = "addrBubbleHolder";
@@ -173,26 +183,23 @@ function(params) {
 };
 
 ZmAddressInputField.prototype._addBubble =
-function(params) {
+function(bubble) {
 
-	params.parent		= this;
-	params.parentId		= this._htmlElId;
-	params.className	= this._bubbleClassName;
-	params.canRemove	= true;
-	params.canExpand	= (params.match && params.match.isDL) || this._expandable[params.email];
-	params.separator	= this._separator;
-	params.type			= this.type;
-
-	var bubble = new ZmAddressBubble(params);
+	DBG.println("aif1", "ADD bubble: " + AjxStringUtil.htmlEncode(bubble.address));
 	bubble.setDropTarget(this._dropTgt);
 	this._numBubbles++;
 
 	var bubbleId = bubble._htmlElId;
 	this._bubble[bubbleId] = bubble;
-	this._addressHash[params.email] = true;
-	this._expandable[params.email] = params.canExpand;
+	this._addressHash[bubble.email] = true;
+	this._expandable[bubble.email] = bubble.canExpand;
 
 	this.focus();
+};
+
+ZmAddressInputField.prototype.isExpandable =
+function(bubble) {
+	return bubble && this._expandable[bubble.email];
 };
 
 /**
@@ -774,7 +781,7 @@ function() {
 		menu.enable(ZmOperation.DELETE, sel.length > 0);
 		menu.enable(ZmOperation.EDIT, Boolean(bubble));
 		var email = bubble && bubble.email;
-		menu.enable(ZmOperation.EXPAND, email && this._expandable[email]);
+		menu.enable(ZmOperation.EXPAND, email && this.isExpandable(bubble));
 		menu.enable(ZmOperation.CONTACT, Boolean(bubble));
 	}
 
@@ -1200,7 +1207,7 @@ function(asObjects) {
 		var addr = bubble.address;
 		if (asObjects) {
 			var addrObj = AjxEmailAddress.parse(addr) || new AjxEmailAddress("", null, addr);
-			if (this._expandable[bubble.email] || (bubble.match && bubble.match.isDL)) {
+			if (this.isExpandable(bubble) || (bubble.match && bubble.match.isDL)) {
 				addrObj.isGroup = true;
 				addrObj.canExpand = true;
 			}
@@ -1403,7 +1410,6 @@ function(element) {
  * @param {string}				className	CSS class for the bubble
  * @param {string}				address		email address to display in the bubble
  * @param {AjxEmailAddress}		addrObj		email address (alternative form)
- * @param {string}				dlAddress	distribution list address
  * @param {boolean}				canRemove	if true, an x will be provided to remove the address bubble
  * @param {boolean}				canExpand	if true, a + will be provided to expand the DL address
  * @param {boolean}				returnSpan	if true, return SPAN element rather than HTML
@@ -1419,13 +1425,14 @@ ZmAddressBubble = function(params) {
 	DwtControl.call(this, params);
 
 	this.addrInput = params.parent;
-	this.address = params.address;
-	this.addrObj = params.addrObj || AjxEmailAddress.parse(params.address);
-	var match = this.match = params.match;
-	this.email = params.email || params.address;
-	this.dlAddress = params.dlAddress = params.dlAddress || params.email;
 	this.type = params.type;
 	this.isAddressBubble = true;
+
+	var addrObj = this.addrObj = params.addrObj || AjxEmailAddress.parse(params.address || (match && match.email));
+	this.address = params.address || (addrObj && addrObj.toString());
+	var match = this.match = params.match;
+	this.email = params.email = params.email || (addrObj && addrObj.getAddress()) || "";
+	this.canExpand = params.canExpand = params.canExpand || (match && match.isDL) || this.addrInput.isExpandable(this);
 	
 	this._createHtml(params);
 
@@ -1477,7 +1484,6 @@ function(params) {
  * @param {string}				className	CSS class for the bubble
  * @param {string}				address		email address to display in the bubble
  * @param {AjxEmailAddress}		addrObj		email address (alternative form)
- * @param {string}				dlAddress	distribution list address
  * @param {boolean}				canRemove	if true, an x will be provided to remove the address bubble
  * @param {boolean}				canExpand	if true, a + will be provided to expand the DL address
  * @param {boolean}				returnSpan	if true, return SPAN element rather than HTML
@@ -1508,7 +1514,7 @@ function(params) {
 	}
 
 	if (params.canExpand) {
-		var addr = params.dlAddress || params.address;
+		var addr = params.email || params.address;
 		var expandLinkId = id + "_expand";
 		var expandLink = 'ZmAddressInputField.expandBubble("' + id + '","' + addr + '");';
 		var expStyle = style + "margin-right:3px;";
