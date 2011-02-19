@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -44,6 +44,7 @@ ZmContactsHelper = function() {};
  * @param {AjxCallback}	params.respCallback	the callback to call once response comes back from server
  * @param {AjxCallback}	params.errorCallback	the callback to call if error returned from server
  * @param {String}	params.accountName	the account to make search request on behalf of
+ * @param {Array}   params.conds	the conds to restrict the search by (array of {attr:"", op:"", value:""} hashes)
  */
 ZmContactsHelper.search =
 function(params) {
@@ -125,6 +126,10 @@ function(html, idx, item, field, colIdx) {
 		html[idx++] = "</nobr>";
 	} else if (field == ZmItem.F_EMAIL) {
 		html[idx++] = AjxStringUtil.htmlEncode(item.address);
+	} else if (field == ZmItem.F_DEPARTMENT) {
+		if (item.__contact) {
+			html[idx++] = AjxStringUtil.htmlEncode(ZmContact.getAttr(item.__contact, ZmContact.F_department));
+		}
 	}
 	return idx;
 };

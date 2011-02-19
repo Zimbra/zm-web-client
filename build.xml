@@ -244,7 +244,6 @@
 			<classes dir='${java.dir}' includes='**/*.properties' />
             <classes dir='${web.dir}' includes='messages/**,keys/**'/>
             <lib dir='${lib.dir}' includes='gifencoder.jar'/>
-            <lib dir='${webinf.lib.dir}'/>
         	<lib dir='${soap.build.dir}' includes='zimbrasoap.jar'/>
             <lib dir='${taglib.build.dir}' includes='zimbrataglib.jar'/>
             <lib dir='${server.build.dir}' includes='zimbrastore.jar'/>
@@ -475,6 +474,7 @@
             <srcfileset dir='${template.dir}' includes='**/*.template'/>
             <srcfileset dir='${skins.dir}' includes='**/*.template'/>
             <targetfileset dir='${build.template.dir}' includes='**/*.template.js'/>
+            <targetfileset dir='${build.classes.dir}/messages/AjxTemplateMsg*.properties' />
             <targetfilelist dir='.' files="${templates.done}"/>
         </dependset>
         <if>
