@@ -140,6 +140,9 @@
 				<div id="${id}_DATA_TYPES" tabindex="600"></div>
 			</td>
 		</tr>
+		<tr id="${id}_DATE_row">
+			<td class="ZOptionsLabelTop"><$=ZmMsg.date$>:</td><$= AjxTemplate.expand("#DatePickers", data) $>
+		</tr>
 		<tr id="${id}_SEARCH_FILTER_row">
 			<td class="ZOptionsLabelTop" style="width:inherit;"><$=ZmMsg.searchFilterLabel$></td>
 			<td class="ZOptionsField">
@@ -176,4 +179,26 @@
 		<td><label for='${id}_input' id='${id}_text_right' class='Text' style='text-align:left'></label></td>
 	  </tr>
 	</table>
+</template>
+
+<template id='data.ImportExport#DateField'>
+	<td><input autocomplete='off' style='height:22px;' type='text' size=14 id='${id}' value='${value}'></td>
+</template>
+
+<template id='data.ImportExport#DatePickers'>
+	<td><table border=0 cellpadding=0 cellspacing=0>
+		<$= AjxTemplate.expand("#StartDate", data) $>
+		&nbsp;
+		<$= AjxTemplate.expand("#EndDate", data) $>
+	</table></td>
+</template>
+
+<template id='data.ImportExport#StartDate'>
+	<td class="quickAddDateFld"><$=ZmMsg.startOn$>&nbsp;<$=AjxTemplate.expand("#DateField",{id:data.id+"_startDateField"})$></td>
+	<td><div id='${id}_startMiniCalBtn'/></td>
+</template>
+
+<template id='data.ImportExport#EndDate'>
+        <td class="quickAddDateFld"><$=ZmMsg.endOn$>&nbsp;<$=AjxTemplate.expand("#DateField",{id:data.id+"_endDateField"})$></td>
+        <td><div id='${id}_endMiniCalBtn'/></td>
 </template>
