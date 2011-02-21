@@ -380,14 +380,11 @@ function(treeItem, organizer, treeView, skipNotify) {
 
 ZmTreeController.prototype._expandTreeItem =
 function(treeItem) {
-	var expanded = appCtxt.get(ZmSetting.FOLDERS_EXPANDED);
 	var folderId = treeItem.getData(Dwt.KEY_ID);
 	var parentTi = treeItem.parent;
 
 	// only expand if the parent is also expanded
-	if (expanded[folderId] &&
-		parentTi && (parentTi instanceof DwtTreeItem) && parentTi.getExpanded())
-	{
+	if (parentTi && (parentTi instanceof DwtTreeItem) && parentTi.getExpanded()) {
 		treeItem.setExpanded(true);
 	}
 };
@@ -839,8 +836,6 @@ function(ev) {
 		? treeItem.getData(Dwt.KEY_ID) : null;
 
 	if (folderId && !treeItem._isHeader) {
-		appCtxt.set(ZmSetting.FOLDERS_EXPANDED, isExpand, folderId);
-
 		// check if any of this treeItem's children need to be expanded as well
 		if (isExpand) {
 			this._expandTreeItems(treeItem);
