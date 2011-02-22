@@ -27,8 +27,12 @@
  *
  * @author Conrad Damon
  *
- * @param {ZmAutocompleteListView}	autocompleteListView
- * @param {string}      			params.inputId			an explicit ID to use for the control's INPUT element
+ * @param {hash}					params						hash of params:
+ * @param {ZmAutocompleteListView}	params.autocompleteListView	associated autocomplete control
+ * @param {string}      			params.inputId				an explicit ID to use for the control's INPUT element
+ * @param {string}					params.templateId			custom template to use
+ * @param {string}					params.type					arbitrary type to uniquely identify this among others
+ * @param {boolean}					params.strictMode			if true (default), bubbles must contain valid addresses
  */
 ZmAddressInputField = function(params) {
 
@@ -43,6 +47,7 @@ ZmAddressInputField = function(params) {
 	}
 
 	this.type = params.type;
+	this._strictMode = (params.strictMode !== false);
 
     this._bubbleAddedCallback = params.bubbleAddedCallback;
     this._bubbleRemovedCallback = params.bubbleRemovedCallback;
@@ -160,6 +165,8 @@ function(params) {
 	params.separator	= this._separator;
 	params.type			= this.type;
 	
+	var bubbleAdded = false;
+	
 	// if it's a local group, expand it and add each address separately
 	var match = params.match;
 	if (match && match.isGroup && match.type == ZmAutocomplete.AC_TYPE_CONTACT) {
@@ -168,24 +175,39 @@ function(params) {
 			params.id = params.addrObj = params.match = params.email = params.canExpand = null;
 			params.address = addrs[i];
 			params.index = (params.index != null) ? params.index + i : null;
-			this._addBubble(new ZmAddressBubble(params));
+			if (this._hasValidAddress(params)) {
+				this._addBubble(new ZmAddressBubble(params));
+				bubbleAdded = true;
+			}
 		}
 	}
 	else {
-		this._addBubble(new ZmAddressBubble(params));
+		if (this._hasValidAddress(params)) {
+			this._addBubble(new ZmAddressBubble(params));
+			bubbleAdded = true;
+		}
+		else {
+			// if handed a non-address while in strict mode, append it to the INPUT and bail
+			var value = this._input.value;
+			var sep = value ? this._separator : "";
+			this._setInputValue([value, sep, params.address].join(""));
+		}
 	}
 
-	this._holder.className = "addrBubbleHolder";
-	this._setInputValue("");
-
-	if (this._bubbleAddedCallback && !params.skipNotify) {
-		this._bubbleAddedCallback.run();
+	if (bubbleAdded) {
+		this._holder.className = "addrBubbleHolder";
+		this._setInputValue("");
+		if (this._bubbleAddedCallback && !params.skipNotify) {
+			this._bubbleAddedCallback.run();
+		}
 	}
 };
 
 ZmAddressInputField.prototype._addBubble =
 function(bubble) {
 
+	if (!bubble) { return; }
+	
 	DBG.println("aif1", "ADD bubble: " + AjxStringUtil.htmlEncode(bubble.address));
 	bubble.setDropTarget(this._dropTgt);
 	this._numBubbles++;
@@ -197,6 +219,13 @@ function(bubble) {
 
 	this.focus();
 };
+
+ZmAddressInputField.prototype._hasValidAddress =
+function(params) {
+	var addr = (params.addrObj && params.addrObj.getAddress()) || params.address || (params.match && params.match.email);
+	return (!this._strictMode || Boolean(AjxEmailAddress.parse(addr)));
+};
+
 
 ZmAddressInputField.prototype.isExpandable =
 function(bubble) {
@@ -213,12 +242,13 @@ ZmAddressInputField.prototype.removeBubble =
 function(bubbleId, skipNotify) {
 
 	var bubble = DwtControl.fromElementId(bubbleId);
-	if (bubble) {
-		if (bubble == this._rightSelBubble) {
-			this._rightSelBubble = null;
-		}
-		bubble.dispose();
+	if (!bubble) { return; }
+	
+	if (bubble == this._rightSelBubble) {
+		this._rightSelBubble = null;
 	}
+	bubble.dispose();
+
 	if (this._selected[bubbleId]) {
 		this._numSelected--;
 		this._checkSelectionCount();
@@ -287,7 +317,13 @@ function(text, add, skipNotify) {
 	}
 
 	var parsed = AjxEmailAddress.parseEmailString(text);
-	var addrs = parsed.good.size() ? parsed.good.getArray() : parsed.all.getArray();
+	var addrs;
+	if (this._strictMode) {
+		addrs = parsed.good.getArray();
+	}
+	else {
+		addrs = parsed.good.size() ? parsed.good.getArray() : parsed.all.getArray();
+	}
 	for (var i = 0, len = addrs.length; i < len; i++) {
 		var addr = addrs[i].toString();
 		var email = addrs[i].getAddress();
@@ -296,7 +332,11 @@ function(text, add, skipNotify) {
 		}
 	}
 
-	this._setInputValue("");
+	var value = "";
+	if (this._strictMode && parsed.bad && parsed.bad.size()) {
+		value = parsed.bad.toString(AjxEmailAddress.SEPARATOR);
+	}
+	this._setInputValue(value);
 };
 
 /**
@@ -615,7 +655,9 @@ function(ev, aclv) {
 			this.blur();
 		}
 	}
-	else if (key == 3 || key == 13) {
+	// Handle case where user is leaving edit while we're not in strict mode
+	// (in strict mode, aclv will call addrFoundCallback if it gets a Return)
+	else if (!this._strictMode && (key == 3 || key == 13)) {
 		var bubble = this._editMode && this._editModeBubble;
 		if (bubble && !bubble.addrObj) {
 			this._leaveEditMode();
@@ -1429,13 +1471,13 @@ ZmAddressBubble = function(params) {
 	params.className = params.className || "addrBubble";
 	DwtControl.call(this, params);
 
-	this.addrInput = params.parent;
 	this.type = params.type;
 	this.isAddressBubble = true;
 
+	var addrInput = this.addrInput = params.parent;
+	var match = this.match = params.match;
 	var addrObj = this.addrObj = params.addrObj || AjxEmailAddress.parse(params.address || (match && match.email));
 	this.address = params.address || (addrObj && addrObj.toString());
-	var match = this.match = params.match;
 	this.email = params.email = params.email || (addrObj && addrObj.getAddress()) || "";
 	this.canExpand = params.canExpand = params.canExpand || (match && match.isDL) || this.addrInput.isExpandable(this);
 	
