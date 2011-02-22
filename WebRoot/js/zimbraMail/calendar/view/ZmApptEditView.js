@@ -150,7 +150,7 @@ function() {
 		this._acLocationsList.show(false);
 	}
 
-	if (this._useAcAddrBubbles) {
+	if (this._useAcAddrBubbles && this.GROUP_CALENDAR_ENABLED) {
 		for (var attType in this._attInputField) {
 			this._attInputField[attType].clear();
 		}
