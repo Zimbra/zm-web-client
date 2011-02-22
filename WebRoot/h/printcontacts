@@ -85,7 +85,7 @@
 
 <c:if test="${empty contactIds}">
     <c:if test="${param.st ne 'gal'}">
-    <zm:computeSearchContext var="context" types="contact" limit="1000" usecache="true" query="*"/>
+    <zm:computeSearchContext var="context" types="contact" limit="1000" usecache="true"/>
     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <zm:getContact id="${hit.contactHit.id}" var="contact"/>
         <div style="border:1px solid rgb(204, 204, 204); padding:1px;margin:10px;float:left;min-width:45%;">
