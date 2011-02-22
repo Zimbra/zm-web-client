@@ -653,12 +653,13 @@ function(isMainSelect, testType, field, rowData) {
 		else if (testType == ZmFilterRule.TEST_INVITE) {
 			if (field == "ops") {
 				var isRequested = ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_REQUESTED];
+                var tmpValue = rowData.method && rowData.method[0]._content;
                 if (rowData.negative!=1) {
-				    dataValue = (isRequested == rowData.method[0]._content)
+				    dataValue = (isRequested == tmpValue)
 					? ZmFilterRule.OP_IS_REQUESTED
 					: ZmFilterRule.OP_IS_REPLIED;
                 }else {
-                    dataValue = (isRequested == rowData.method[0]._content)
+                    dataValue = (isRequested == tmpValue)
 					? ZmFilterRule.OP_NOT_REQUESTED
 					: ZmFilterRule.OP_NOT_REPLIED;
                 }
