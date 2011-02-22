@@ -1066,7 +1066,7 @@ function(ev) {
 		var ed = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 		if (ed && (ed.valueOf() < ev.detail.valueOf())) {
 			this._endDateField.value = newDate;
-        }else if(this._endDateField.value != newDate) {
+        }else if(this._oldEndDate && this._endDateField.value != newDate) {
             var delta = this._oldEndDate.getTime() - this._oldStartDate.getTime();
             this._endDateField.value = AjxDateUtil.simpleComputeDateStr(new Date(ev.detail.getTime() + delta));
         }
