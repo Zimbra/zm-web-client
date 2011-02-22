@@ -657,7 +657,8 @@ function(accounts, params) {
 	if (items) {
 		delete accounts[i];
 
-		params.accountName = appCtxt.accountList.getAccount(i).name;
+        var ac = window.parentAppCtxt || window.appCtxt;
+        params.accountName = ac.accountList.getAccount(i).name;
 		params.items = items;
 		params.folder = appCtxt.getById(ZmFolder.ID_TRASH);
 
