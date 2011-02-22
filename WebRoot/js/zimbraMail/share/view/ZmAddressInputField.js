@@ -165,8 +165,9 @@ function(params) {
 	if (match && match.isGroup && match.type == ZmAutocomplete.AC_TYPE_CONTACT) {
 		var addrs = AjxEmailAddress.split(params.address);
 		for (var i = 0, len = addrs.length; i < len; i++) {
+			params.id = params.addrObj = params.match = params.email = params.canExpand = null;
+			params.address = addrs[i];
 			params.index = (params.index != null) ? params.index + i : null;
-			params.addrObj = addrs[i];
 			this._addBubble(new ZmAddressBubble(params));
 		}
 	}
@@ -315,7 +316,9 @@ function(checkInput) {
 	var sel = this.getSelection();
 	if (sel.length) {
 		for (var i = 0, len = sel.length; i < len; i++) {
-			this.removeBubble(sel[i].id);
+			if (sel[i]) {
+				this.removeBubble(sel[i].id);
+			}
 		}
 		this.focus();
 		return true;
@@ -983,7 +986,6 @@ function(bubble) {
 		AjxTimedAction.scheduleAction(new AjxTimedAction(this,
 			function() {
 				DBG.println("aif", "select text");
-				Dwt.deselectText();
 				// only FF supports multiple selected ranges; if not FF, select the bubble that was clicked
 				var sel = [];
 				if (AjxEnv.isGeckoBased) {
@@ -992,15 +994,18 @@ function(bubble) {
 				else if (bubble && this._selected[bubble.id]) {
 					sel = [bubble];
 				}
-				for (var i = 0, len = sel.length; i < len; i++) {
-					var selectId = sel[i]._htmlElId + "_select";
-					var node = document.getElementById(selectId);
-					if (node) {
-						Dwt.selectText(node);
+				Dwt.deselectText();
+				if (sel && sel.length) {
+					for (var i = 0, len = sel.length; i < len; i++) {
+						var selectId = sel[i] && (sel[i]._htmlElId + "_select");
+						var node = selectId && document.getElementById(selectId);
+						if (node) {
+							Dwt.selectText(node);
+						}
 					}
-				}
-				if (multiOkay) {
-					this.blur();
+					if (multiOkay) {
+						this.blur();
+					}
 				}
 			}), 10);
 	}
