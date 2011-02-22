@@ -587,7 +587,9 @@ function(params) {
 	else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
 			(field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT))
 	{
-		tooltip = {callback:new AjxCallback(this, this._getParticipantToolTip, [item.getAddress(AjxEmailAddress.FROM)]), loading:true};
+		//Let a Zimlet[Email Zimlet] handle creating and displaying tooltip.
+		appCtxt.notifyZimlets("onHoverOverEmailInList", [item.getAddress(AjxEmailAddress.FROM), params.ev]);
+		return;
 	}
 	else if (field == ZmItem.F_SUBJECT) {
 		if ((item.type == ZmItem.MSG) && item.isInvite() && item.needsRsvp()) {
@@ -623,42 +625,6 @@ function(params) {
 	}
 	
 	return tooltip;
-};
-
-/**
- * Get the tooltip for the given address. May invoke a server request. The caller will pass
- * a callback if there may be a server request. If it does not pass a callback, return a
- * tooltip based on cached data.
- *
- * @param address		[AjxEmailAddress]
- * @param callback		[AjxCallback]
- */
-ZmMailListView.prototype._getParticipantToolTip =
-function(address, callback) {
-	var addr = address && address.getAddress();
-	if (!addr || !appCtxt.get(ZmSetting.CONTACTS_ENABLED)) { return; }
-
-	if (callback) {
-		var respCallback = new AjxCallback(this, this._handleResponseGetContact, [address, callback]);
-		appCtxt.getApp(ZmApp.CONTACTS).getContactByEmail(addr, respCallback);
-	} else {
-		return this._handleResponseGetContact(address, null, appCtxt.getApp(ZmApp.CONTACTS).getContactByEmail(addr));
-	}
-};
-
-ZmMailListView.prototype._handleResponseGetContact =
-function(address, callback, contact) {
-	var tooltip;
-	if (contact) {
-		tooltip = contact.getToolTip(address.getAddress());
-	} else {
-		tooltip = address && AjxTemplate.expand("abook.Contacts#TooltipNotInAddrBook", {addrstr:address.toString()});
-	}
-	if (callback) {
-		callback.run(tooltip);
-	} else {
-		return tooltip;
-	}
 };
 
 /**
