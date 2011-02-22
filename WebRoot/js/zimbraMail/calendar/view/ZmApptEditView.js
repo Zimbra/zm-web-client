@@ -715,12 +715,12 @@ function(width) {
 	}
 
 	// add location input field
-	this._locationInputField = this._createInputField("_location", ZmCalBaseItem.LOCATION);
+	this._locationInputField = this._createInputField("_location", ZmCalBaseItem.LOCATION, {strictMode:false});
 
     //add Resources Field
-    this._resourceInputField = this._createInputField("_resourcesData", ZmCalBaseItem.EQUIPMENT);
+    this._resourceInputField = this._createInputField("_resourcesData", ZmCalBaseItem.EQUIPMENT, {strictMode:false});
 
-    var edvId = AjxCore.assignId(this);    
+    var edvId = AjxCore.assignId(this);
     this._schButtonId = this._htmlElId + "_scheduleButton";
     this._showOptionalId = this._htmlElId + "_show_optional";
     this._showResourcesId = this._htmlElId + "_show_resources";
@@ -844,7 +844,9 @@ function(idTag, attType, params) {
 		var aifParams = {
 			autocompleteListView:	this._acAddrSelectList,
 			inputId:				inputId,
-            bubbleRemovedCallback:  params.bubbleRemovedCallback
+            bubbleRemovedCallback:  params.bubbleRemovedCallback,
+			type:					attType,
+			strictMode:				params.strictMode
 		}
 		var input = this._attInputField[attType] = new ZmAddressInputField(aifParams);
 		input.reparentHtmlElement(cellId);
