@@ -745,6 +745,11 @@ function(ev) {
 			}
 			return;
 		}
+        if (item && item.type == ZmOrganizer.SEARCH) {
+            var controller = this._opc.getTreeController(ZmOrganizer.SEARCH);
+            if(controller)
+                controller._actionedOrganizer = item;
+        }
 	}
 
 	var id = treeItem.getData(Dwt.KEY_ID);
