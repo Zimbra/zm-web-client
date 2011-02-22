@@ -1358,7 +1358,15 @@ function(ev) {
 		for (var i = 0; i < list.length; i++) {
 			ids.push(list[i].invId);
 		}
-		url = "/h/printappointments?id=" + ids.join(",") + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT);  //bug:53493
+        url = ["/h/printappointments?id=", ids.join(','), "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)];
+        if(appCtxt.isOffline) {
+            if (ids.length == 1) {
+                var appt = this.getSelection()[0];
+                url.push("&acct=", appt.getFolder().getAccount().name);
+            }
+            url.push("&zd=", "true");
+        }
+        url = url.join("");
 
 	} else {
 		var date = this._viewMgr
