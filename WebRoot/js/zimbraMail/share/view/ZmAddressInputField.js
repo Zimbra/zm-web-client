@@ -1507,7 +1507,10 @@ function(params) {
 	var html = [], idx = 0;
 	html[idx++] = "<span>";
 	html[idx++] = "<span>" + text + " </span>";
-	html[idx++] = "<span class='addrBubbleHide' id='" + selectId + "'>" + fullAddress + sep + " </span>";
+	//span is not selectable in this area for IE (so Dwt.selectText would not work, since the range.select() call would not work. See bug 56731)
+	//textarea is not so good for FF since the copy keeps the border. So keeping span for non IE.
+	var selectElement = AjxEnv.isIE ? "textarea" : "span";
+	html[idx++] = "<" + selectElement + " class='addrBubbleHide' id='" + selectId + "'>" + fullAddress + sep + " </" + selectElement + ">";
 	html[idx++] = "</span>";
 	var addrText = html.join("");
 
