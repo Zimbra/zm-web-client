@@ -49,10 +49,11 @@
 
 </head>
 <body style='background:white;'>
+<c:set var="zd" value="${not empty param.zd}" />
 <table width="90%" align="center">
     <tr>
         <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
-        <td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
+        <td nowrap width='1%'><b>${(not empty param.acct ? param.acct : (zd ? "" : mailbox.name))}</b></td>
     </tr>
 </table>
 <hr/>
