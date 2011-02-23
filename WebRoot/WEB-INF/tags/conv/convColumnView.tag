@@ -324,7 +324,7 @@
 		}catch(ex){
 		}
 		if(c == ""){
-			alert("<fmt:message key="actionNoConvSelected"/>");return;
+			alert('<fmt:message key="actionNoConvSelected"/>');return;
 		}
 		window.open("/h/printmessage?id="+c);
 	}
