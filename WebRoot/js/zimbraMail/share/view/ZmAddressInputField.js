@@ -71,16 +71,16 @@ ZmAddressInputField = function(params) {
 	this._outsideListener = new AjxListener(null, ZmAddressInputField._outsideMouseDownListener);
 
 	// drag-and-drop of bubbles
-	this._dropTgt = new DwtDropTarget("ZmAddressBubble");
-	this._dropTgt.markAsMultiple();
-	this._dropTgt.addDropListener(new AjxListener(this, this._dropListener));
-	this.setDropTarget(this._dropTgt);
+	var dropTgt = new DwtDropTarget("ZmAddressBubble");
+	dropTgt.markAsMultiple();
+	dropTgt.addDropListener(new AjxListener(this, this._dropListener));
+	this.setDropTarget(dropTgt);
 
 	// rubber-band selection of bubbles
 	this._setEventHdlrs([DwtEvent.ONMOUSEDOWN, DwtEvent.ONMOUSEMOVE, DwtEvent.ONMOUSEUP]);
-	this._dragBox = new DwtDragBox();
-	this._dragBox.addDragListener(new AjxListener(this, this._dragBoxListener));
-	this.setDragBox(this._dragBox);
+	var dragBox = new DwtDragBox();
+	dragBox.addDragListener(new AjxListener(this, this._dragBoxListener));
+	this.setDragBox(dragBox);
 
 	this._reset();
 };
@@ -209,7 +209,7 @@ function(bubble) {
 	if (!bubble) { return; }
 	
 	DBG.println("aif1", "ADD bubble: " + AjxStringUtil.htmlEncode(bubble.address));
-	bubble.setDropTarget(this._dropTgt);
+	bubble.setDropTarget(this.getDropTarget());
 	this._numBubbles++;
 
 	var bubbleId = bubble._htmlElId;
@@ -1036,8 +1036,8 @@ function(bubble) {
 				else if (bubble && this._selected[bubble.id]) {
 					sel = [bubble];
 				}
-				Dwt.deselectText();
 				if (sel && sel.length) {
+					Dwt.deselectText();
 					for (var i = 0, len = sel.length; i < len; i++) {
 						var selectId = sel[i] && (sel[i]._htmlElId + "_select");
 						var node = selectId && document.getElementById(selectId);
@@ -1365,6 +1365,10 @@ function(ev) {
 	else if (ev.action == DwtDragEvent.DRAG_END) {
 		DBG.println("aif", "ZmAddressInputField DRAG_END");
 		this._checkSelection();
+		if (AjxEnv.isWindows && (this.getSelectionCount() == 0)) {
+			this.blur();
+			this.focus();
+		}
 	}
 };
 
@@ -1490,9 +1494,9 @@ ZmAddressBubble = function(params) {
 	this.addListener(DwtEvent.ONDBLCLICK, new AjxListener(this, this._dblClickListener));
 	this.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._mouseUpListener));
 
-	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
-	this.setDragSource(this._dragSrc);
+	var dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+	dragSrc.addDragListener(new AjxListener(this, this._dragListener));
+	this.setDragSource(dragSrc);
 	
 	if (appCtxt.get(ZmSetting.SHORT_ADDRESS)) {
 		this.setToolTipContent(AjxStringUtil.htmlEncode(params.address));
