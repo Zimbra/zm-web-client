@@ -287,7 +287,7 @@ function(emptyAllDay,startOnly) {
 	}
 
 	var pattern = isMultiDay ? ZmMsg.apptTimeInstanceMulti : ZmMsg.apptTimeInstance;
-	return AjxMessageFormat.format(pattern, [this.startDate, this.endDate, ""]);
+	return AjxMessageFormat.format(pattern, [this.getDateInLocalTimezone(this.startDate), this.getDateInLocalTimezone(this.endDate), ""]);
 };
 
 /**
@@ -492,3 +492,16 @@ function() {
 
 	return url;
 };
+
+ZmCalBaseItem.prototype.getDateInLocalTimezone =
+function(date) {
+    var apptTZ = this.getTimezone();
+    var localTZ = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+    if(apptTZ != localTZ) {
+        var offset1 = AjxTimezone.getOffset(AjxTimezone.DEFAULT, date);
+        var offset2 = AjxTimezone.getOffset(AjxTimezone.getClientId(apptTZ), date);
+        return new Date(date.getTime() + (offset1 - offset2)*60*1000);
+    }
+    return date;
+};
+
