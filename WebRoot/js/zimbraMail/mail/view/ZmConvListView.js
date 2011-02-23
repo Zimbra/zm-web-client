@@ -478,12 +478,9 @@ function(params) {
 	{
 		var addr = params.item.participants && params.item.participants.get(params.match.participant || 0);
 		if (!addr) { return ""; }
-		var contact = appCtxt.getApp(ZmApp.CONTACTS).getContactByEmail(addr.getAddress());
-		if (contact) {
-			return this._getParticipantToolTip(addr);
-		} else {
-			return {callback:new AjxCallback(this, this._getParticipantToolTip, [addr]), loading:true};
-		}
+		//Let a Zimlet[Email Zimlet] handle creating and displaying tooltip.
+		appCtxt.notifyZimlets("onHoverOverEmailInList", [addr, params.ev]);
+		return;//return null as Zimlet takes care of showing the tooltip
 	} else {
 		return ZmMailListView.prototype._getToolTip.apply(this, arguments);
 	}
