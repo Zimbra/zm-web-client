@@ -685,6 +685,7 @@ function(results, callback) {
 
 ZmCalendarApp.prototype.activate =
 function(active) {
+    this._createDeferredFolders(ZmApp.CALENDAR);
 	ZmApp.prototype.activate.apply(this, arguments);
 
 	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
