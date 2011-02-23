@@ -1709,3 +1709,19 @@ ZmAppCtxt.prototype.getOutsideMouseEventMgr =
 function() {
 	return DwtOutsideMouseEventMgr.INSTANCE;
 };
+
+
+/**
+* @return Returns language specific charset. Currently supports only Japanese. 
+* Returns "Windows-31J" for Japanese or returns "UTF-8" for everything else
+*/
+ZmAppCtxt.prototype.getCharset =
+function() {
+	var lang = AjxEnv.isIE ? window.navigator.systemLanguage : window.navigator.language;
+	//Currently only differs for Japanese, but can extend for different languages as/if we need it.
+	if(lang == "ja" && AjxEnv.isWindows) {
+		return "Windows-31J";
+	} else {
+		return "UTF-8";
+	}
+};
