@@ -67,8 +67,11 @@
             <table cellpadding="2" cellspacing="2" >
                 <tr>
                 <c:forEach items="${checkedCalendars}" var="checkedcal" >
-                        <c:set var="folder" value="${zm:getFolder(pageContext,checkedcal)}"/> 
-                        <td width="10px" height="10px" style="background-color:${zm:lightenColor(folder.rgb != 'null' ? folder.rgb : folder.rgbColor)}">
+                        <c:set var="folder" value="${zm:getFolder(pageContext,checkedcal)}"/>
+                        <c:set var="isRgb" value="${(folder.rgb ne 'null' and not empty folder.rgb)}"/>
+                        <c:set var="isRgbColor" value="${(folder.rgbColor ne 'null' and not empty folder.rgbColor)}"/>
+                        <fmt:message var="colorOrange" key="colorOrange"/>
+                        <td width="10px" height="10px" style="background-color:${zm:lightenColor((isRgb) ? folder.rgb : ((isRgbColor) ? folder.rgbColor : colorOrange))}">
                             &nbsp;
                         </td>
                         <td>
