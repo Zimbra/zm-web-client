@@ -1,7 +1,7 @@
 	/*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -91,9 +91,17 @@ function(parent, obj, tree, elementType, path, account) {
 		if (obj.types) {
 			var t = obj.types.split(",");
 			types = [];
+            var mailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
 			for (var i = 0; i < t.length; i++) {
-				types.push(ZmSearch.TYPE_MAP[t[i]]);
+                var type = ZmSearch.TYPE_MAP[t[i]];
+                if (!type || (!mailEnabled && (type == ZmItem.CONV || type == ZmItem.MSG))) {
+                    continue;
+                }
+				types.push(type);
 			}
+            if (types.length == 0) {
+                return null;
+            }
 		}
 		DBG.println(AjxDebug.DBG2, "Creating SEARCH with id " + obj.id + " and name " + obj.name);
 		var params = {
