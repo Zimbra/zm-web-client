@@ -93,7 +93,8 @@
 /* other UI pieces */
 
 .currentAppLabel {
-	margin-top: 3px ;	
+	margin-top: 3px  ;
+	margin-left: 6px ;	
 }
 
 .currentAppLabel td {
