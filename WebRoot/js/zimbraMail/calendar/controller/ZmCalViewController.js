@@ -326,9 +326,9 @@ function(localOnly, includeTrash) {
  *
  * @return {Array} array of {ZmOrganizer}
  */
-ZmCalViewController.prototype.getCheckedOrganizers = function(includeTrash) {
+ZmCalViewController.prototype.getCheckedOrganizers = function(includeTrash, acct) {
     var controller = appCtxt.getOverviewController();
-    var overviewId = appCtxt.getApp(ZmApp.CALENDAR).getOverviewId();
+    var overviewId = appCtxt.getApp(ZmApp.CALENDAR).getOverviewId(acct);
     var treeId = ZmOrganizer.CALENDAR;
     var treeView = controller.getTreeView(overviewId, treeId);
     var organizers = treeView.getSelected();
@@ -452,7 +452,8 @@ function(ev) {
         var organizer = ev.item.getData && ev.item.getData(Dwt.KEY_OBJECT);
         if (organizer && organizer.nId == ZmOrganizer.ID_TRASH) {
             var found = false;
-            var organizers = this.getCheckedOrganizers(true);
+            var acct = organizer.getAccount();
+            var organizers = this.getCheckedOrganizers(true, acct);
             for (var i = 0; i < organizers.length; i++) {
                 var id = organizers[i].nId;
                 if (id == ZmOrganizer.ID_TRASH) {
