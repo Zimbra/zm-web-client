@@ -25,14 +25,25 @@
     <c:choose>
         <c:when test="${uploader.isContactSearch}">
             <c:choose>
-                <c:when test="${uploader.contactLocation eq 'gal'}">
-                    <zm:searchGal var="searchGal" query="${uploader.contactSearchQuery}" type="account"/>
+                <c:when test="${mailbox.features.contactsDetailedSearch}">
+                    <c:set var="nameQuery" value="${uploader.contactSearchNameQuery}"/>
+                    <c:set var="phoneticQuery" value="${uploader.contactSearchPhoneticQuery}"/>
+                    <c:set var="emailQuery" value="${uploader.contactSearchEmailQuery}"/>
+                    <c:set var="deptQuery" value="${uploader.contactSearchDeptQuery}"/>
+                    <c:set var="query" value="${nameQuery}${emailQuery}${deptQuery}"/>
                 </c:when>
                 <c:otherwise>
-                    <zm:search var="search" query="${uploader.contactSearchQuery}" sort="nameAsc" types="contact" field="contact:" start="${0}" end="${0}" timezone="${mailbox.prefs.timeZone}" folderid=""/>
+                    <c:set var="query" value="${uploader.contactSearchQuery}"/>
                 </c:otherwise>
             </c:choose>
-            <c:set var="query" value="${uploader.contactSearchQuery}"/>
+            <c:choose>
+                <c:when test="${uploader.contactLocation eq 'gal'}">
+                    <zm:searchGal var="searchGal" query="${query}" type="account"/>
+                </c:when>
+                <c:otherwise>
+                    <zm:search var="search" query="${query}" sort="nameAsc" types="contact" field="contact:" start="${0}" end="${0}" timezone="${mailbox.prefs.timeZone}" folderid=""/>
+                </c:otherwise>
+            </c:choose>
         </c:when>
         <c:otherwise>
             <zm:search var="search" limit="100"  query="is:local" sort="nameAsc" types="contact" field="contact:" start="${0}" end="${0}" timezone="${mailbox.prefs.timeZone}" folderid=""/>
@@ -148,15 +159,50 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                 <tr>
                     <td class='SearchBar'>
                             &nbsp;
-                            <label for="findField"><fmt:message key="find"/>
-                            :</label>
-                            <input id="findField" class="searchField" style='width:50%' maxlength=2048 name='contactSearchQuery'
-                                   value="${fn:escapeXml(query)}" onkeypress="return checkEnter(this,event)">
+                            <c:choose>
+                                <c:when test="${mailbox.features.contactsDetailedSearch}">
+
+                                    <label for="nameField"><fmt:message key="name"/>:</label>
+                                    <input type="text" id="nameField" class="searchField" style='width:16%' maxlength=2048 name='contactSearchNameQuery' value="${fn:escapeXml(nameQuery)}" onkeypress="return checkEnter(this,event)"/>
+
+                                    <span id="phoneticNameDisplay" style="display:${(empty uploader.contactLocation || uploader.contactLocation eq 'personal' || uploader.contactLocation eq 'contact') ? 'inline':'none'}">
+                                        <label for="phoneticNameField"><fmt:message key="phoneticName"/>:</label>
+                                        <input type="text" id="phoneticNameField" class="searchField" style='width:20%' maxlength=2048 name='contactSearchPhoneticQuery' value="${fn:escapeXml(phoneticQuery)}" onkeypress="return checkEnter(this,event)"/>
+                                    </span>
+
+                                    <label for="emailField"><fmt:message key="email"/>:</label>
+                                    <input type="text" id="emailField" class="searchField" style='width:16%' maxlength=2048 name='contactSearchEmailQuery' value="${fn:escapeXml(emailQuery)}" onkeypress="return checkEnter(this,event)"/>
+
+                                    <span id="departmentDisplay" style="display:${uploader.contactLocation eq 'gal' ? 'inline':'none'}">
+                                        <label for="deptField"><fmt:message key="department"/>:</label>
+                                        <input type="text" id="deptField" class="searchField" style='width:20%' maxlength=2048 name='contactSearchDeptQuery' value="${fn:escapeXml(deptQuery)}" onkeypress="return checkEnter(this,event)"/>
+                                    </span>
+
+                                </c:when>
+                                <c:otherwise>
+                                    <label for="findField"><fmt:message key="find"/>:</label>
+                                    <input type="text" id="findField" class="searchField" style='width:50%' maxlength=2048 name='contactSearchQuery' value="${fn:escapeXml(query)}" onkeypress="return checkEnter(this,event)">
+                                </c:otherwise>
+                            </c:choose>
+                            <c:if test="${mailbox.features.contactsDetailedSearch}">
+                                <script type="text/javascript">
+                                    function changeSearchType(value) {
+                                        var phonetic = document.getElementById("phoneticNameDisplay");
+                                        var department = document.getElementById("departmentDisplay");
+                                        if (phonetic) {
+                                            phonetic.style.display = (value=="contact") ? "inline":"none";
+                                        }
+                                        if (department) {
+                                            department.style.display = (value=="gal") ? "inline":"none";
+                                        }
+                                    }
+                                </script>
+                            </c:if>
                             &nbsp;
                             <fmt:message key="in"/>
                             &nbsp;
 
-                            <select name="contactLocation">
+                            <select name="contactLocation" <c:if test="${mailbox.features.contactsDetailedSearch}">onchange="changeSearchType(this.value)"</c:if>>
                                 <c:if test="${mailbox.features.contacts}">
                                 <option
                                         <c:if test="${empty uploader.contactLocation or uploader.contactLocation eq 'personal'}">

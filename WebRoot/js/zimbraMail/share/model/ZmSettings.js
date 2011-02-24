@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -145,7 +145,10 @@ function(id) {
  * @param {Hash}	list		a hash of preference or attribute values
  */
 ZmSettings.prototype.createFromJs =
-function(list) {
+function(list, setDefault, skipNotify, skipImplicit) {
+    // default skipImplicit value is true
+    skipImplicit = skipImplicit == null || skipImplicit; 
+
 	for (var i in list) {
 		var val = list[i];
 		var setting = this._settings[this._nameToId[i]];
@@ -159,7 +162,7 @@ function(list) {
 				}
 				val = value;
 			}
-			setting.setValue(val, null, false, false, true);
+			setting.setValue(val, null, setDefault, skipNotify, skipImplicit);
 			if (ZmSetting.IS_IMPLICIT[setting.id]) {
 				setting.origValue = setting.copyValue();
 			}
@@ -231,56 +234,93 @@ function(callback, errorCallback, accountName, response, batchCommand) {
  */
 ZmSettings.prototype._handleResponseLoadUserSettings =
 function(callback, accountName, result) {
+    this.setUserSettings(result.getResponse().GetInfoResponse, accountName);
+    this.userSettingsLoaded = true;
+    if (callback) {
+        callback.run(result);
+    }
+};
 
-	var obj = this.getInfoResponse = result.getResponse().GetInfoResponse;
-	if (obj.name) 			{ this._settings[ZmSetting.USERNAME].setValue(obj.name); }
-	if (obj.lifetime)		{ this._settings[ZmSetting.TOKEN_LIFETIME].setValue(obj.lifetime); }
-	if (obj.accessed)		{ this._settings[ZmSetting.LAST_ACCESS].setValue(obj.accessed); }
-	if (obj.prevSession)	{ this._settings[ZmSetting.PREVIOUS_SESSION].setValue(obj.prevSession); }
-	if (obj.recent)			{ this._settings[ZmSetting.RECENT_MESSAGES].setValue(obj.recent); }
-	if (obj.used)			{ this._settings[ZmSetting.QUOTA_USED].setValue(obj.used); }
-    if (obj.rest)			{ this._settings[ZmSetting.REST_URL].setValue(obj.rest); }
-	if (obj.license)		{ this._settings[ZmSetting.LICENSE_STATUS].setValue(obj.license.status); }
-	if (obj.attSizeLimit)   { this._settings[ZmSetting.ATTACHMENT_SIZE_LIMIT].setValue(obj.attSizeLimit); }
-    if (obj.docSizeLimit)   { this._settings[ZmSetting.DOCUMENT_SIZE_LIMIT].setValue(obj.docSizeLimit); }
+/**
+ * Sets the user settings.
+ *
+ * @param {hash}    params
+ * @param {object}  params.info             The GetInfoResponse object.
+ * @param {string}  [params.accountName]    The name of the account.
+ * @param {boolean} [params.setDefault]     Set default value
+ * @param {boolean} [params.skipNotify]     Skip change notification
+ * @param {boolean} [params.skipImplicit]   Skip implicit changes
+ * @param {boolean} [params.preInit]        Only init base settings for startup
+ */
+ZmSettings.prototype.setUserSettings = function(params) {
+    params = Dwt.getParams(arguments, ["info", "accountName", "setDefault", "skipNotify", "skipImplicit", "preInit"]);
 
-	if (obj.prefs && obj.prefs._attrs) {
-		this.createFromJs(obj.prefs._attrs);
-	}
-	if (obj.attrs && obj.attrs._attrs) {
-		this.createFromJs(obj.attrs._attrs);
-	}
+    var info = this.getInfoResponse = params.info;
+    var accountName = params.accountName;
+    var setDefault = params.preInit ? false : params.setDefault;
+    var skipNotify = params.preInit ? true : params.skipNotify;
+    var skipImplicit = params.preInit ? true : params.skipImplicit;
 
+    var settings = [
+        ZmSetting.ADMIN_DELEGATED,          info.adminDelegated,
+        ZmSetting.ATTACHMENT_SIZE_LIMIT,    info.attSizeLimit,
+        ZmSetting.CHANGE_PASSWORD_URL,      info.changePasswordURL,
+        ZmSetting.DOCUMENT_SIZE_LIMIT,      info.docSizeLimit,
+        ZmSetting.LAST_ACCESS,              info.accessed,
+        ZmSetting.LICENSE_STATUS,           info.license && info.license.status,
+        ZmSetting.PREVIOUS_SESSION,         info.prevSession,
+        ZmSetting.PUBLIC_URL,               info.publicURL,
+        ZmSetting.QUOTA_USED,               info.used,
+        ZmSetting.RECENT_MESSAGES,          info.recent,
+        ZmSetting.REST_URL,                 info.rest,
+        ZmSetting.TOKEN_LIFETIME,           info.lifetime,
+        ZmSetting.USERNAME,                 info.name
+    ];
+    for (var i = 0; i < settings.length; i += 2) {
+        var value = settings[i+1];
+        if (value != null) {
+            this._settings[settings[i]].setValue(value, null, setDefault, skipNotify, skipImplicit);
+        }
+    }
+
+    // features and other settings
+    if (info.attrs && info.attrs._attrs) {
+        this.createFromJs(info.attrs._attrs, setDefault, skipNotify, skipImplicit);
+    }
+
+    // admin mail enabled setting takes precedence if admin delegated
+    if (this.get(ZmSetting.ADMIN_DELEGATED) && !this.get(ZmSetting.ADMIN_MAIL_ENABLED)) {
+        this.getSetting(ZmSetting.MAIL_ENABLED).setValue(false);
+    }
+
+    if (params.preInit) return;
+
+    // preferences
+    if (info.prefs && info.prefs._attrs) {
+        this.createFromJs(info.prefs._attrs, setDefault, skipNotify, skipImplicit);
+    }
+
+    // accounts
 	if (!accountName) {
 		// NOTE: only the main account can have children
-		appCtxt.accountList.createAccounts(this, obj);
+		appCtxt.accountList.createAccounts(this, info);
 
 		// for offline, find out whether this client supports prism-specific features
 		if (appCtxt.isOffline) {
 			if (AjxEnv.isPrism && window.platform) {
 				var setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_MAILTO];
 				if (setting) {
-					setting.setValue(true);
+					setting.setValue(true, null, setDefault, skipNotify, skipImplicit);
 				}
 				setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE];
 				if (setting) {
-					setting.setValue(true);
+					setting.setValue(true, null, setDefault, skipNotify, skipImplicit);
 				}
 			}
 
 			// bug #45804 - sharing always enabled for offline
-			appCtxt.set(ZmSetting.SHARING_ENABLED, true);
+			appCtxt.set(ZmSetting.SHARING_ENABLED, true, null, setDefault, skipNotify);
 		}
-	}
-
-	if (obj.changePasswordURL) {
-		setting = this._settings[ZmSetting.CHANGE_PASSWORD_URL];
-		setting.setValue(obj.changePasswordURL);
-	}
-
-	if (obj.publicURL) {
-		setting = this._settings[ZmSetting.PUBLIC_URL];
-		setting.setValue(obj.publicURL);
 	}
 
 	// handle settings whose values may depend on other settings
@@ -291,28 +331,28 @@ function(callback, accountName, result) {
 	if (!this.get(ZmSetting.SEARCH_ENABLED)) {
 		setting = this._settings[ZmSetting.BROWSE_ENABLED];
 		if (setting) {
-			setting.setValue(false, null, true);
+			setting.setValue(false, null, setDefault, skipNotify, skipImplicit);
 		}
 	}
 	if (this.get(ZmSetting.FORCE_CAL_OFF)) {
 		setting = this._settings[ZmSetting.CALENDAR_ENABLED];
 		if (setting) {
-			setting.setValue(false, null, true);
+			setting.setValue(false, null, setDefault, skipNotify, skipImplicit);
 		}
 	}
 	if (!this.get(ZmSetting.OPTIONS_ENABLED)) {
 		setting = this._settings[ZmSetting.FILTERS_ENABLED];
 		if (setting) {
-			setting.setValue(false, null, true);
+			setting.setValue(false, null, setDefault, skipNotify, skipImplicit);
 		}
 	}
 
 	// load zimlets *only* for the main account
 	if (!accountName) {
-		if (obj.zimlets && obj.zimlets.zimlet) {
+		if (info.zimlets && info.zimlets.zimlet) {
 			var listener = new AjxListener(this,
 				function() {
-					var zimletsCallback = new AjxCallback(this, this._loadZimlets, [obj.zimlets.zimlet, obj.props.prop]);
+					var zimletsCallback = new AjxCallback(this, this._loadZimlets, [info.zimlets.zimlet, info.props.prop]);
 					AjxDispatcher.require("Zimlet", false, zimletsCallback);
 				});
 			appCtxt.getAppController().addListener(ZmAppEvent.POST_STARTUP, listener);
@@ -324,23 +364,17 @@ function(callback, accountName, result) {
 	var value = appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG);
 	if (value) {
 		var list = ZmMailApp.INC_MAP[value];
-		appCtxt.set(ZmSetting.REPLY_INCLUDE_WHAT, list[0]);
-		appCtxt.set(ZmSetting.REPLY_USE_PREFIX, list[1]);
-		appCtxt.set(ZmSetting.REPLY_INCLUDE_HEADERS, list[2]);
+		appCtxt.set(ZmSetting.REPLY_INCLUDE_WHAT, list[0], null, setDefault, skipNotify);
+		appCtxt.set(ZmSetting.REPLY_USE_PREFIX, list[1], null, setDefault, skipNotify);
+		appCtxt.set(ZmSetting.REPLY_INCLUDE_HEADERS, list[2], null, setDefault, skipNotify);
 	}
 
 	var value = appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
 	if (value) {
 		var list = ZmMailApp.INC_MAP[value];
-		appCtxt.set(ZmSetting.FORWARD_INCLUDE_WHAT, list[0]);
-		appCtxt.set(ZmSetting.FORWARD_USE_PREFIX, list[1]);
-		appCtxt.set(ZmSetting.FORWARD_INCLUDE_HEADERS, list[2]);
-	}
-
-	// DONE
-	this.userSettingsLoaded = true;
-	if (callback) {
-		callback.run(result);
+		appCtxt.set(ZmSetting.FORWARD_INCLUDE_WHAT, list[0], null, setDefault, skipNotify);
+		appCtxt.set(ZmSetting.FORWARD_USE_PREFIX, list[1], null, setDefault, skipNotify);
+		appCtxt.set(ZmSetting.FORWARD_INCLUDE_HEADERS, list[2], null, setDefault, skipNotify);
 	}
 };
 
@@ -646,7 +680,6 @@ function() {
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_SRC, true, true);
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_TGT, true, true);
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_SIMPLE, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_CARDS, true, true);
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_ASC, ZmId.VIEW_CAL, true, true);
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DUE_DATE_ASC, ZmId.VIEW_TASKLIST, true, true);
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.SUBJ_ASC, ZmId.VIEW_BRIEFCASE_DETAIL, true, true);
@@ -678,6 +711,7 @@ function(AjxExceptionClassVar, handler) {
 ZmSettings.prototype._initialize =
 function() {
 	// CONFIG SETTINGS
+    this.registerSetting("ADMIN_DELEGATED",                 {type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("AC_TIMER_INTERVAL",				{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:300});
 	this.registerSetting("ASYNC_MODE",						{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"main"});
@@ -724,7 +758,8 @@ function() {
 	this.registerSetting("CONTACTS_UPSELL_URL",				{name:"zimbraFeatureContactsUpsellURL", type:ZmSetting.T_COS});
 	this.registerSetting("IM_ENABLED",						{name:"zimbraFeatureIMEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("IMPORT_EXPORT_ENABLED",			{name:"zimbraFeatureImportExportFolderEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("MAIL_ENABLED",					{name:"zimbraFeatureMailEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+    this.registerSetting("MAIL_ENABLED",					{name:"zimbraFeatureMailEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+    this.registerSetting("ADMIN_MAIL_ENABLED",				{name:"zimbraFeatureAdminMailEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("MAIL_UPSELL_ENABLED",				{name:"zimbraFeatureMailUpsellEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("MAIL_UPSELL_URL",					{name:"zimbraFeatureMailUpsellURL", type:ZmSetting.T_COS});
 	this.registerSetting("NOTEBOOK_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});

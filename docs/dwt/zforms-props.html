@@ -127,7 +127,7 @@
 			the value changes.
 		</td>
 	</tr>
-	<tr><th rowspan="3">SelectOption</th><td>value</td><td>string</td><td>Y</td>
+	<tr><th rowspan="4">SelectOption</th><td>value</td><td>string</td><td>Y</td>
 		<td>Option value.</td>
 	</tr>
 	<tr><td>label</td><td>string</td><td></td>
@@ -166,7 +166,7 @@
 			represents a file input element in the template.
 		</td>
 	</tr>
-	<tr><th rowspan="6">Control</th><td>type</td><td>string</td><td>Y</td>
+	<tr><th rowspan="8">Control</th><td>type</td><td>string</td><td>Y</td>
 		<td>A generic DWT control. For example, "DwtButton" or "DwtSelect".</td>
 	</tr>
 	<tr><td>template</td><td>string</td><td></td>
@@ -187,6 +187,12 @@
 	<tr><td>visible</td><td>boolean, function</td><td></td>
 		<td>Specifies if control is visible or not.</td>
 	</tr>
+    <tr><td>width</td><td>number</td><td></td>
+        <td>The initial width of the control.</td>
+    </tr>
+    <tr><td>height</td><td>number</td><td></td>
+        <td>The initial height of the control.</td>
+    </tr>
 	<tr><td>params</td><td>object</td><td></td>
 		<td>Additional parameters passed to the constructor for this control.</td>
 	</tr>
