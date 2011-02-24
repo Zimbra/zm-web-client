@@ -155,13 +155,6 @@ function(status, aid) {
 
 ZmZimletsPage.prototype._getAdminAuth =
 function(callback) {
-	if (this._adminAuthToken) {
-		if (callback) {
-			callback.run();
-		}
-		return;
-	}
-
 	// first, make sure we have a valid admin password (parsed from location)
 	var pword;
 	var searches = document.location.search.split("&");
