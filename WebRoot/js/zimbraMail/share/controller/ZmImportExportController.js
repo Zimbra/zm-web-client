@@ -428,6 +428,8 @@ function(params) {
 	if (isCSV) { formParams[type+"fmt"] = subType; }
 	if (isTGZ && params.views) { formParams["types"] = params.views; }
 	if (isTGZ && params.searchFilter) { formParams["query"] = params.searchFilter; }
+	if (params.start) { formParams["start"] = params.start; }
+	if (params.end) { formParams["end"] = params.end; }
 	if (params.skipMeta) { formParams["meta"] = "0"; }
 	if (params.filename) { formParams["filename"] = params.filename; }
 	formParams.emptyname = ZmMsg.exportEmptyName;
