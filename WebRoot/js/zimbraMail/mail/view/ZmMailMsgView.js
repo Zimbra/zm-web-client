@@ -97,6 +97,7 @@ ZmMailMsgView.SETHEIGHT_MAX_TRIES	= 3;
 ZmMailMsgView._URL_RE = /^((https?|ftps?):\x2f\x2f.+)$/;
 ZmMailMsgView._MAILTO_RE = /^mailto:[\x27\x22]?([^@?&\x22\x27]+@[^@?&]+\.[^@?&\x22\x27]+)[\x27\x22]?/;
 
+ZmMailMsgView.MAX_ADDRESSES_IN_FIELD = 5;
 
 // Public methods
 
@@ -981,6 +982,26 @@ function() {
     return this._controller.getApp().getTrustedSendersList();
 };
 
+ZmMailMsgView.showMore =
+function(elementId, type) {
+	var showMore = document.getElementById(this._getShowMoreId(elementId, type));
+	var more = document.getElementById(this._getMoreId(elementId, type));
+	showMore.style.display = "none";
+	more.style.display = "inline";
+};
+
+
+ZmMailMsgView._getShowMoreId =
+function(elementId, type) {
+	return elementId + 'showmore_' + type;
+};
+
+ZmMailMsgView._getMoreId =
+function(elementId, type) {
+	return elementId + 'more_addrs_' + type;
+};
+
+
 ZmMailMsgView.prototype._renderMessage =
 function(msg, container, callback) {
 	var acctId = appCtxt.getActiveAccount().id;
@@ -1074,12 +1095,21 @@ function(msg, container, callback) {
 		if (addrs.length > 0) {
 			var idx = 0;
 			var parts = [];
+			var showMoreLink = false;
 			for (var j = 0; j < addrs.length; j++) {
 				if (j > 0) {
 					// no need for semicolon if we're showing addr bubbles
 					parts[idx++] = options.addrBubbles ? " " : AjxStringUtil.htmlEncode(AjxEmailAddress.SEPARATOR);
 				}
 
+				if (j == ZmMailMsgView.MAX_ADDRESSES_IN_FIELD) {
+					showMoreLink = true;
+					var showMoreId = ZmMailMsgView._getShowMoreId(this._htmlElId, type);
+					var moreId = ZmMailMsgView._getMoreId(this._htmlElId, type);
+					parts[idx++] = "<span id='" + showMoreId + "'>&nbsp;<a href='' onclick='ZmMailMsgView.showMore(\"" + this._htmlElId + "\", \"" + type + "\"); return false;'>";
+					parts[idx++] = ZmMsg.showMore;
+					parts[idx++] = "</a></span><span style='display:none;' id='" + moreId + "'>";
+				}
 				var email = addrs[j];
 				if (email.address) {
 					parts[idx++] = this._objectManager
@@ -1088,6 +1118,9 @@ function(msg, container, callback) {
 				} else {
 					parts[idx++] = AjxStringUtil.htmlEncode(email.name);
 				}
+			}
+			if (showMoreLink) {
+				parts[idx++] = "</span>";
 			}
 			var prefix = AjxStringUtil.htmlEncode(ZmMsg[AjxEmailAddress.TYPE_STRING[type]]);
 			var partStr = parts.join("");
