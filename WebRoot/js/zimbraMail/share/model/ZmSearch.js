@@ -160,7 +160,7 @@ ZmSearch.prototype._executeSoap =
 function(params) {
 
 	this.isGalSearch = (this.contactSource && (this.contactSource == ZmId.SEARCH_GAL));
-	this.isCalResSearch = (this.conds != null);
+	this.isCalResSearch = (!this.contactSource && this.conds != null);
 	if (!this.query && !this.isCalResSearch) return;
 
 	var soapDoc;
@@ -176,6 +176,11 @@ function(params) {
 				method.setAttribute("needExp", 1);
 			}
 			soapDoc.set("name", this.query);
+			var searchFilterEl = soapDoc.set("searchFilter");
+			if (this.conds && this.conds.length) {
+				var condsEl = soapDoc.set("conds", null, searchFilterEl);
+				this._applySoapCond(this.conds, soapDoc, condsEl);
+			}
 		} else if (this.isAutocompleteSearch) {
 			soapDoc = AjxSoapDoc.create("AutoCompleteRequest", "urn:zimbraMail");
 			var method = soapDoc.getMethod();
@@ -208,20 +213,7 @@ function(params) {
 			var searchFilterEl = soapDoc.set("searchFilter");
 			if (this.conds && this.conds.length) {
 				var condsEl = soapDoc.set("conds", null, searchFilterEl);
-				if (this.join == ZmSearch.JOIN_OR) {
-					condsEl.setAttribute("or", 1);
-				}
-				for (var i = 0; i < this.conds.length; i++) {
-					var cond = this.conds[i];
-					if (cond.attr=="fullName" && cond.op=="has") {
-						var nameEl = soapDoc.set("name", cond.value);
-					} else {
-						var condEl = soapDoc.set("cond", null, condsEl);
-						condEl.setAttribute("attr", cond.attr);
-						condEl.setAttribute("op", cond.op);
-						condEl.setAttribute("value", cond.value);
-					}
-				}
+				this._applySoapCond(this.conds, soapDoc, condsEl);
 			}
 		} else {
 			if (this.soapInfo) {
@@ -303,7 +295,7 @@ ZmSearch.prototype._executeJson =
 function(params) {
 
 	this.isGalSearch = (this.contactSource && (this.contactSource == ZmId.SEARCH_GAL));
-	this.isCalResSearch = (this.conds != null);
+	this.isCalResSearch = (!this.contactSource && this.conds != null);
 	if (!this.query && !this.queryHint && !this.isCalResSearch) { return; }
 
 	var jsonObj, request, soapDoc;
@@ -328,6 +320,10 @@ function(params) {
 			}
 			if (this.sortBy) {
 				request.sortBy = this.sortBy;
+			}
+			if (this.conds && this.conds.length) {
+				request.searchFilter = {conds:{}};
+				request.searchFilter.conds = ZmSearch.prototype._applyJsonCond(this.conds, request);
 			}
 		} else if (this.isAutocompleteSearch) {
 			jsonObj = {AutoCompleteRequest:{_jsns:"urn:zimbraMail"}};
@@ -362,19 +358,7 @@ function(params) {
             request.limit = this._getLimit();
 			if (this.conds && this.conds.length) {
 				request.searchFilter = {conds:{}};
-				var conds = request.searchFilter.conds;
-				var cond = conds.cond = [];
-				if (this.join == ZmSearch.JOIN_OR) {
-					conds.or = 1;
-				}
-				for (var i = 0; i < this.conds.length; i++) {
-					var c = this.conds[i];
-					if (c.attr=="fullName" && c.op=="has") { // Optimization for bug #50841
-						request.name = {_content: c.value};
-					} else {
-						cond.push({attr:c.attr, op:c.op, value:c.value});
-					}
-				}
+				request.searchFilter.conds = ZmSearch.prototype._applyJsonCond(this.conds, request);
 			}
 		} else {
 			if (this.soapInfo) {
@@ -460,6 +444,51 @@ function(params) {
 		};
 		return appCtxt.getAppController().sendRequest(searchParams);
 	}
+};
+
+ZmSearch.prototype._applySoapCond =
+function(inConds, soapDoc, condsEl, or) {
+	if (or || this.join == ZmSearch.JOIN_OR) {
+		condsEl.setAttribute("or", 1);
+	}
+	for (var i = 0; i < inConds.length; i++) {
+		var c = inConds[i];
+		if (AjxUtil.isArray(c)) {
+			var subCondsEl = soapDoc.set("conds", null, condsEl);
+			this._applySoapCond(c, soapDoc, subCondsEl, true);
+		} else if (c.attr=="fullName" && c.op=="has") {
+			var nameEl = soapDoc.set("name", c.value);
+		} else {
+			var condEl = soapDoc.set("cond", null, condsEl);
+			condEl.setAttribute("attr", c.attr);
+			condEl.setAttribute("op", c.op);
+			condEl.setAttribute("value", c.value);
+		}
+	}
+};
+
+ZmSearch.prototype._applyJsonCond =
+function(inConds, request, or) {
+	var outConds = {};
+	if (or || this.join == ZmSearch.JOIN_OR) {
+		outConds.or = 1;
+	}
+
+	for (var i = 0; i < inConds.length; i++) {
+		var c = inConds[i];
+		if (AjxUtil.isArray(c)) {
+			if (!outConds.conds)
+				outConds.conds = [];
+			outConds.conds.push(this._applyJsonCond(c, request, true));
+		} else if (c.attr=="fullName" && c.op=="has") {
+			request.name = {_content: c.value};
+		} else {
+			if (!outConds.cond)
+				outConds.cond = [];
+			outConds.cond.push({attr:c.attr, op:c.op, value:c.value});
+		}
+	}
+	return outConds;
 };
 
 /**

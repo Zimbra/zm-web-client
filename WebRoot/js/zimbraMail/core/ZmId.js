@@ -922,6 +922,7 @@ ZmId.FLD_ATTACHMENT		= "at";
 ZmId.FLD_CAPACITY		= "cp";
 ZmId.FLD_COMPANY		= "co";
 ZmId.FLD_DATE			= "dt";
+ZmId.FLD_DEPARTMENT		= "de";
 ZmId.FLD_EMAIL			= "em";
 ZmId.FLD_EXPAND			= "ex";	// CLV
 ZmId.FLD_FILE_TYPE		= "ft";	// Notebook

@@ -626,11 +626,34 @@
 				<fieldset>
 					<legend class='groupFieldset'><$= ZmMsg.addMembers $></legend>
 					<table border=0>
-						<tr>
+						<$ if (data.detailed) { $>
+						<tr id='${id}_searchNameRow'>
+							<td align=right><$= ZmMsg.nameLabel $></td>
+							<td><input type='text' id='${id}_searchNameField'></td>
+							<td id='${id}_searchButton' valign=top rowspan=3></td>
+						</tr>
+						<$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
+						<tr id='${id}_searchPhoneticRow'>
+							<td align=right><$= ZmMsg.phoneticNameLabel $></td>
+							<td><input type='text' id='${id}_searchPhoneticField'></td>
+						</tr>
+						<$ } $>
+						<tr id='${id}_searchEmailRow'>
+							<td align=right><$= ZmMsg.emailAddrLabel $></td>
+							<td><input type='text' id='${id}_searchEmailField'></td>
+						</tr>
+						<tr id='${id}_searchDepartmentRow'>
+							<td align=right><$= ZmMsg.departmentLabel $></td>
+							<td><input type='text' id='${id}_searchDepartmentField'></td>
+						</tr>
+						<$ } else { $>
+						<tr id='${id}_searchRow'>
 							<td align=right><$= ZmMsg.findLabel $></td>
 							<td><input type='text' id='${id}_searchField'></td>
 							<td id='${id}_searchButton'></td>
 						</tr>
+						<$ } $>
+						
 						<$ if (data.showSearchIn) { $>
 						<tr>
 							<td align=right><$= ZmMsg.searchIn $></td>
@@ -823,16 +846,41 @@
 	<div class='ZmContactPicker'>
 		<table border=0 cellpadding=1 cellspacing=1 width=100%>
 			<tr>
-				<td>
+				<td width=600>
 					<table border=0 cellpadding=0 cellspacing=0>
+						<$ if (data.detailed) { $>
 						<tr>
+							<td valign=middle colspan=3 width=400><div id='${id}_searchIcon' class="ImgSearch"></div></td>
+						</tr>
+						<tr id='${id}_searchNameRow'>
+							<td align=right><$= ZmMsg.nameLabel $></td>
+							<td>&nbsp;<input type='text' autocomplete='off' size=30 nowrap id='${id}_searchNameField'>&nbsp;</td>
+							<td id='${id}_searchButton' rowspan=3 valign=top></td>
+						</tr>
+						<$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
+						<tr id='${id}_searchPhoneticRow'>
+							<td align=right><$= ZmMsg.phoneticNameLabel $></td>
+							<td>&nbsp;<input type='text' autocomplete='off' size=30 nowrap id='${id}_searchPhoneticField'>&nbsp;</td>
+						</tr>
+						<$ } $>
+						<tr id='${id}_searchEmailRow'>
+							<td align=right><$= ZmMsg.emailAddrLabel $></td>
+							<td>&nbsp;<input type='text' autocomplete='off' size=30 nowrap id='${id}_searchEmailField'>&nbsp;</td>
+						</tr>
+						<tr id='${id}_searchDepartmentRow'>
+							<td align=right><$= ZmMsg.departmentLabel $></td>
+							<td>&nbsp;<input type='text' autocomplete='off' size=30 nowrap id='${id}_searchDepartmentField'>&nbsp;</td>
+						</tr>
+						<$ } else { $>
+						<tr id='${id}_searchRow'>
 							<td width=20 valign=middle><div id='${id}_searchIcon' class="ImgSearch"></div></td>
 							<td><input type='text' autocomplete='off' size=30 nowrap id='${id}_searchField'>&nbsp;</td>
 							<td id='${id}_searchButton'></td>
 						</tr>
+						<$ } $>
 					</table>
 				</td>
-				<td align=right>
+				<td align=right valign=bottom>
 					<$ if (data.showSelect) { $>
 						<table border=0 cellpadding=0 cellspacing=0>
 							<tr>
