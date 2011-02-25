@@ -1224,6 +1224,10 @@ function(fullVersion, width, height) {
 	if (window.appDevMode) {
 		url[i++] = "&dev=1";
 	}
+    if (window.appCoverageMode) {
+        url[i++] = "&coverage=1";
+    }
+
 
 	width = width || 705;
 	height = height || 465;
