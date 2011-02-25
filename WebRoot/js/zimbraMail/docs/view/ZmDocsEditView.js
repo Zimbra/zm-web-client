@@ -43,7 +43,48 @@ function() {
 	this._buttons.fileName.focus();
 };
 
-ZmDocsEditView.prototype.save = function(){
+
+ZmDocsEditView.prototype._showVersionDescDialog =
+function(callback){
+
+    if(!this._descDialog){
+        var dlg = this._descDialog = new DwtDialog({parent:appCtxt.getShell()});
+        var id = Dwt.getNextId();
+        dlg.setContent(AjxTemplate.expand("briefcase.Briefcase#VersionNotes", {id: id}));
+        dlg.setTitle(ZmMsg.addVersionNotes);
+        this._versionNotes = document.getElementById(id+"_notes");
+    }
+
+    ZmDocsEditApp.fileInfo.desc = "";
+    this._versionNotes.value = "";
+
+    this._descDialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okCallback, callback));
+    this._descDialog.popup();
+};
+
+ZmDocsEditView.prototype._okCallback =
+function(callback){
+
+    ZmDocsEditApp.fileInfo.desc = this._versionNotes.value;
+
+    if(callback){
+        callback.run();
+    }
+
+    this._descDialog.popdown();
+};
+
+
+
+
+ZmDocsEditView.prototype.save = function(force){
+
+    ZmDocsEditApp.fileInfo.descEnabled = this._getVersionNotesChk().checked;
+
+    if(!force && this._getVersionNotesChk().checked){
+        this._showVersionDescDialog(new AjxCallback(this, this.save, true));
+        return;
+    }
 
     var fileInfo = ZmDocsEditApp.fileInfo;
     var fileName = this._buttons.fileName.getValue();
@@ -604,9 +645,19 @@ ZmDocsEditView.prototype._createToolbar = function(toolbar) {
     b.addSelectionListener(new AjxListener(this, this._saveCloseButtonListener));
     b.setToolTipContent(ZmMsg.saveClose);
 
-    var listener = new AjxListener(this, this._tbActionListener);
+    toolbar.addFiller();
 
-    /*
+    b = new DwtComposite({parent:toolbar});
+    b.setContent([
+        "<div style='white-space: nowrap; padding-right:10px;'>",
+            "<input type='checkbox' name='enableDesc' id='enableDesc' value='enableVersions'>",
+            "&nbsp; Enable Version Notes",
+        "</div>"
+    ].join(''));
+
+    /* var listener = new AjxListener(this, this._tbActionListener);
+
+
     new DwtControl({parent:toolbar, className:"vertSep"});
 
     b = this._buttons.clipboardCopy = new DwtToolBarButton(params);
@@ -645,6 +696,20 @@ ZmDocsEditView.prototype._createToolbar = function(toolbar) {
     */
     
 };
+
+ZmDocsEditView.prototype._getVersionNotesChk =
+function(){
+    if(!this._verNotesChk){
+        this._verNotesChk = document.getElementById('enableDesc');
+    }
+    return this._verNotesChk;
+}
+
+ZmDocsEditView.prototype.enableVersionNotes =
+function(enable){
+    this._getVersionNotesChk().checked = !!enable;
+};
+
 
 ZmDocsEditView.prototype._pushIframeContent =
 function(iframeN) {

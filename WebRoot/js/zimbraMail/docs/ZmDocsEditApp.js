@@ -87,7 +87,8 @@ ZmDocsEditApp.setFile = function(fileId, fileName, folderId){
        contentType: ZmDocsEditApp.APP_ZIMBRA_DOC,
        name:    fileName,
        id:      fileId,
-       version: 1
+       version: 1,
+       descEnabled: true
    };
 };
 
