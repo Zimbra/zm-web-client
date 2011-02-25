@@ -311,7 +311,7 @@ function(reset) {
                 if (this.mode && this.mode != "MSG") {
                     if (el){
                         el.style.height = mvHeight + "px";
-                        el.style.overflow = Dwt.Scroll
+                        el.style.overflow = "auto"
                     }
                 }
                 else {
