@@ -309,6 +309,8 @@ function(contentType, name, winName) {
 
     if(this.getBriefcaseController().chkFolderPermission(folderId)) {
         var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId + "&skin=" + appCurrentSkin + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
+        if (window.appCoverageMode)
+            url = url + "&coverage=1";
         var winname = winName || name || (new Date()).getTime().toString();
         window.open(url, winname); //bug:44324 removed new launching window
     }

@@ -48,6 +48,15 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         request.setAttribute("packages", "dev");
     }
 
+    boolean isCoverage = getParameter(request, "coverage", "0").equals("1");
+    if (isCoverage) {
+		request.setAttribute("gzip", "false");
+		if (request.getAttribute("debug") == null) {
+			request.setAttribute("debug", "0");
+		}
+		request.setAttribute("packages", "dev");
+    }
+
     //  boolean isTinyMce = getParameter(request, "editor", "").equals("tinymce");
     //  Support for TinyMCE suspended.
     boolean isTinyMce = false;
@@ -104,6 +113,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     pageContext.setAttribute("isOfflineMode", offlineMode != null && offlineMode.equals("true"));
     pageContext.setAttribute("isProdMode", !prodMode.equals(""));
     pageContext.setAttribute("isDebug", isDevMode);
+    pageContext.setAttribute("isCoverage", isCoverage);
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -130,13 +140,13 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         String extraPackages = request.getParameter("packages");
         if (extraPackages != null) packages += ","+ BeanUtils.cook(extraPackages);
 
-        String pprefix = isDevMode ? "public/jsp" : "js";
-        String psuffix = isDevMode ? ".jsp" : "_all.js";
+        String pprefix = isDevMode && !isCoverage ? "public/jsp" : "js";
+        String psuffix = isDevMode && !isCoverage ? ".jsp" : "_all.js";
 
         String[] pnames = packages.split(",");
         for (String pname : pnames) {
             String pageurl = "/"+pprefix+"/"+pname+psuffix;
-            if (isDevMode) { %>
+            if (isDevMode && !isCoverage) { %>
             <jsp:include>
                 <jsp:attribute name='page'><%=pageurl%></jsp:attribute>
             </jsp:include>
@@ -165,6 +175,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     window.isRestView = false;
     window.isTinyMCE = <%= isTinyMce %>;
     window.appDevMode     = ${isDevMode};
+    window.appCoverageMode = ${isCoverage};
 	window.DBG = new AjxDebug(AjxDebug.NONE, null, false);  
     ZmDocsEditApp.setFile('${fileId}', '${fileName}', '${folderId}');
 

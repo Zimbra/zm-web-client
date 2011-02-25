@@ -87,6 +87,16 @@
 		}
 		request.setAttribute("packages", "dev");
 	}
+
+    boolean isCoverage = getParameter(request, "coverage", "0").equals("1");
+    if (isCoverage) {
+		request.setAttribute("gzip", "false");
+		if (request.getAttribute("debug") == null) {
+			request.setAttribute("debug", "0");
+		}
+		request.setAttribute("packages", "dev");
+    }
+
     boolean isScriptErrorOn = getParameter(request, "scripterrors", "0").equals("1");
     boolean isNotifyDebugOn = getParameter(request, "notifydebug", "0").equals("1");
 	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
@@ -139,6 +149,7 @@
 	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
 	pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
 	pageContext.setAttribute("editor", editor);
+    pageContext.setAttribute("isCoverage", isCoverage);
 %>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <fmt:setLocale value='${locale}' scope='request' />
@@ -164,6 +175,7 @@
 	appExtension   = "${zm:jsEncode(ext)}";
 	appRequestLocaleId = "${locale}";
 	window.appDevMode     = ${isDevMode};
+    window.appCoverageMode = ${isCoverage};
     window.isScriptErrorOn   = ${isScriptErrorOn};
     window.isNotifyDebugOn   = ${isNotifyDebugOn};
 </script>
@@ -270,14 +282,14 @@
     	allPackages += "," + extraPackages;
     }
 
-    String pprefix = isDevMode ? "public/jsp" : "js";
-    String psuffix = isDevMode ? ".jsp" : "_all.js";
+    String pprefix = isDevMode  && !isCoverage ? "public/jsp" : "js";
+    String psuffix = isDevMode && !isCoverage ? ".jsp" : "_all.js";
 
     String[] pnames = allPackages.split(",");
     for (String pname : pnames) {
         String pageurl = "/" + pprefix + "/" + pname + psuffix;
 		pageContext.setAttribute("pageurl", pageurl);
-		if (isDevMode) { %>
+		if (isDevMode && !isCoverage) { %>
             <jsp:include page='${pageurl}' />
         <% } else { %>
             <script src="${contextPath}${pageurl}${ext}?v=${vers}"></script>

@@ -63,6 +63,15 @@
 	}
 	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
 
+    boolean isCoverage = getParameter(request, "coverage", "0").equals("1");
+    if (isCoverage) {
+		request.setAttribute("gzip", "false");
+		if (request.getAttribute("debug") == null) {
+			request.setAttribute("debug", "0");
+		}
+		request.setAttribute("packages", "dev");
+    }
+
 	String mode = getAttribute(request, "mode", null);
 	boolean isDevMode = mode != null && mode.equalsIgnoreCase("mjsf");
 	boolean isSkinDebugMode = mode != null && mode.equalsIgnoreCase("skindebug");
@@ -103,6 +112,7 @@
     pageContext.setAttribute("isOfflineMode", offlineMode != null && offlineMode.equals("true"));    
 	pageContext.setAttribute("isDevMode", isDev);
 	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
+    pageContext.setAttribute("isCoverage", isCoverage);
 %>
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <title><fmt:setBundle basename="/messages/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
@@ -121,6 +131,7 @@
 	// NOTE: Force zimlets to load individually to avoid aggregation!
 	appExtension   = "${zm:jsEncode(ext)}";
 	window.appDevMode     = ${isDevMode};
+    window.appCoverageMode = ${isCoverage};
 </script>
 
 <%@ include file="loadImgData.jsp" %>
@@ -134,8 +145,8 @@
     String extraPackages = request.getParameter("packages");
     if (extraPackages != null) packages += ","+extraPackages;
 
-    String pprefix = isDevMode ? "public/jsp" : "js";
-    String psuffix = isDevMode ? ".jsp" : "_all.js";
+    String pprefix = isDevMode && !isCoverage ? "public/jsp" : "js";
+    String psuffix = isDevMode && !isCoverage ? ".jsp" : "_all.js";
 
     Pattern p = Pattern.compile("\\.|\\/|\\\\");
     String[] pnames = packages.split(",");
@@ -148,7 +159,7 @@
         }
         String pageurl = "/"+pprefix+"/"+pname+psuffix;
 		pageContext.setAttribute("pageurl", pageurl);
-		if (isDevMode) { %>
+		if (isDevMode && !isCoverage) { %>
             <jsp:include page='${pageurl}' />
         <% } else { %>
             <script type="text/javascript" src="${contextPath}${pageurl}${ext}?v=${vers}"></script>
