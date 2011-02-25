@@ -1537,8 +1537,16 @@ function(items, op) {
  */
 ZmCalViewController.prototype._doDelete =
 function(items, hardDelete, attrs, op) {
+
+    var isTrash = false;
+
 	// listview can handle deleting multiple items at once
-	if (this._viewMgr.getCurrentViewName() == ZmId.VIEW_CAL_LIST && items.length > 1) {
+    if(items.length>0){
+        var calendar = items[0].getFolder();
+        isTrash = calendar && calendar.nId==ZmOrganizer.ID_TRASH;
+    }
+
+	if ((this._viewMgr.getCurrentViewName() == ZmId.VIEW_CAL_LIST || isTrash) && items.length > 1) {
 		var divvied = this._divvyItems(items);
 
 		// data structure to keep track of which appts to delete and how
@@ -1663,8 +1671,11 @@ function() {
 	if (this._deleteList[ZmCalItem.MODE_DELETE] &&
 		this._deleteList[ZmCalItem.MODE_DELETE].length > 0)
 	{
+        var calendar = this._deleteList[ZmCalItem.MODE_DELETE][0].getFolder();
+        var isTrash = calendar && calendar.nId==ZmOrganizer.ID_TRASH;
+        var msg = (isTrash) ? ZmMsg.confirmCancelApptListPermanently : ZmMsg.confirmCancelApptList;
 		var callback = new AjxCallback(this, this._handleMultiDelete);
-		appCtxt.getConfirmationDialog().popup(ZmMsg.confirmCancelApptList, callback);
+		appCtxt.getConfirmationDialog().popup(msg, callback);
 	}
 };
 
@@ -2584,13 +2595,19 @@ function(parent, num) {
 		var isPrivate = appt && appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
 		var isForwardable = !isTrash && calendar && !calendar.isReadOnly();
 		var isReplyable = !isTrash && appt && (num == 1);
-		parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], !disabled);
-		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], isReplyable);
-		parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
-		parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate);
-		parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
-		parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()));
-		parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null);
+        if(isTrash && num>1){
+            parent.enableAll(false);
+        }
+        else{
+		    parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], isReplyable);
+            parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
+            parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate);
+            parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
+            parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()));
+            parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null);
+        }
+
+        parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], !disabled);
 
         parent.enable(ZmOperation.VIEW_APPT_INSTANCE,!isTrash);
 
