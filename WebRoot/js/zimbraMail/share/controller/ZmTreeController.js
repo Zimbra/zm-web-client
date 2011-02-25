@@ -747,8 +747,10 @@ function(ev) {
 		}
         if (item && item.type == ZmOrganizer.SEARCH) {
             var controller = this._opc.getTreeController(ZmOrganizer.SEARCH);
-            if(controller)
+            if(controller){
                 controller._actionedOrganizer = item;
+                controller._actionedOverviewId = treeItem.getData(ZmTreeView.KEY_ID);
+            }
         }
 	}
 
