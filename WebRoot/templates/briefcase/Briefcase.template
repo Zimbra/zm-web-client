@@ -234,3 +234,17 @@
 		</tr>
 	</table>
 </template>
+
+<template id="briefcase.Briefcase#VersionNotes">
+	<table cellpadding='5' cellspacing='0' border='0' width='300'>
+		<tr>
+			<td><$=ZmMsg.notesLabel$></td>
+		</tr>
+		<tr>
+			<td style='white-space:nowrap;'>
+                <textarea rows="8" style='width:400px;' id='${id}_notes'>&nbsp;</textarea>
+            </td>
+		</tr>
+	</table>
+</template>
+

@@ -24,11 +24,11 @@ ZmDocletMgr = function() {
 
 ZmDocletMgr.prototype.saveDocument =
 function(item) {
-    this._uploadSaveDocs2([{id: item.id, name: item.name, version: (item.version ? item.version :1), folderId: item.folderId}], null, null, item.name, item.content, item.contentType);
+    this._uploadSaveDocs2([{id: item.id, name: item.name, version: (item.version ? item.version :1), folderId: item.folderId}], null, null, item.name, item.content, item.contentType, item.descEnabled, item.desc);
 };
 
 ZmDocletMgr.prototype._uploadSaveDocs2 =
-function(files, status, guids, name, content, ct) {
+function(files, status, guids, name, content, ct, enableDesc, desc) {
     // create document wrappers
     var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra", null);
     soapDoc.setMethodAttribute("onerror", "continue");
@@ -60,6 +60,11 @@ function(files, status, guids, name, content, ct) {
         if(name!=null && content!=null) {
             var contentNode = soapDoc.set("content", content, docNode);
             docNode.setAttribute("name", name);
+        }
+
+        docNode.setAttribute("descEnabled", enableDesc ? "true" : "false");
+        if(desc){
+            docNode.setAttribute("desc", desc);
         }
     }
 
@@ -285,6 +290,7 @@ function(params,response)
             item.lockUser = data.loe;
             item.lockTime = new Date(Number(data.lt));
         }
+        item.descEnabled = data.descEnabled;
     }
 
     if(callback){

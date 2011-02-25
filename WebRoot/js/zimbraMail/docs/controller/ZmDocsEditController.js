@@ -102,8 +102,10 @@ ZmDocsEditController.prototype._initModel = function(){
             this._docsEdit._buttons.fileName.setValue(item.name);
             this.loadDocument(item);
             this._docsEdit.setFooterInfo(item);
+            this._docsEdit.enableVersionNotes(item.descEnabled);
         }
-
+    }else if (ZmDocsEditApp.fileInfo){
+        this._docsEdit.enableVersionNotes(ZmDocsEditApp.fileInfo.descEnabled);
     }
 };
 
