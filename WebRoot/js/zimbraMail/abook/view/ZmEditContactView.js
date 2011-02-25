@@ -844,7 +844,7 @@ ZmEditContactView.prototype._handleFolderButton = function(ev) {
 		title:			ZmMsg.chooseAddrBook,
 		treeIds:		[ZmOrganizer.ADDRBOOK],
 		skipReadOnly:	true,
-		skipRemote:		true,
+		skipRemote:		false,
 		noRootSelect:	true,
 		appName:		ZmApp.CONTACTS
 	};
