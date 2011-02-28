@@ -939,7 +939,7 @@ function(ev) {
         // Bug: 44488 - Don't allow dropping tag of one account to other account's item
         if (appCtxt.multiAccounts) {
            var listAcctId = item ? item.getAccount().id : null;
-           var tagAcctId = data.account.id;
+           var tagAcctId = data[0].account.id;
            if (listAcctId != tagAcctId) {
                ev.doIt = false;
            }
