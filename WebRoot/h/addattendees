@@ -52,7 +52,7 @@
                     <c:set var="phoneticQuery" value="${uploader.contactSearchPhoneticQuery}"/>
                     <c:set var="emailQuery" value="${uploader.contactSearchEmailQuery}"/>
                     <c:set var="deptQuery" value="${uploader.contactSearchDeptQuery}"/>
-                    <c:set var="query" value="${nameQuery}${emailQuery}${deptQuery}"/>
+                    <c:set var="query" value="${nameQuery}"/>
                 </c:when>
                 <c:otherwise>
                     <c:set var="query" value="${uploader.contactSearchQuery}"/>
@@ -60,10 +60,10 @@
             </c:choose>
             <c:choose>
                 <c:when test="${uploader.contactLocation eq 'gal'}">
-                    <zm:searchGal var="searchGal" query="${query}" type="account"/>
+                    <zm:searchGal var="searchGal" query="${query}" dept="${deptQuery}" email="${emailQuery}" type="account"/>
                 </c:when>
                  <c:when test="${uploader.contactLocation eq 'resources'}">
-                     <zm:searchGal var="searchGal" query="${query}" type="resource"/>
+                     <zm:searchGal var="searchGal" query="${query}" dept="${deptQuery}" email="${emailQuery}" type="resource"/>
                 </c:when>
                 <c:otherwise>
                     <zm:search var="search" query="${query}" sort="nameAsc" types="contact" field="contact:" start="${0}" end="${0}" timezone="${mailbox.prefs.timeZone}" folderid=""/>
