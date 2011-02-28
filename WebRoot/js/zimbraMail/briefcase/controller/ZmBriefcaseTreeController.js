@@ -65,9 +65,9 @@ function(actionMenu, type, id) {
 		var briefcase = appCtxt.getById(id);
 		if (!briefcase) { return; }
         var nId = ZmOrganizer.normalizeId(id);
-		var briefcaseId = ZmOrganizer.getSystemId(ZmOrganizer.ID_BRIEFCASE);
 		var isRoot = (nId == rootId);
-		var isBriefcase = (nId == briefcaseId);
+		var isBriefcase = (nId == ZmOrganizer.getSystemId(ZmOrganizer.ID_BRIEFCASE));
+        var isNotebook = ( nId == ZmOrganizer.getSystemId(ZmOrganizer.ID_NOTEBOOK));
 		var isTopLevel = (!isRoot && briefcase.parent.id == rootId);
 		var isLink = briefcase.link;
 		var isLinkOrRemote = isLink || briefcase.isRemote();
@@ -85,7 +85,7 @@ function(actionMenu, type, id) {
         }else{
             actionMenu.enableAll(true);
             var menuItem = actionMenu.getMenuItem(ZmOperation.DELETE);
-            menuItem.setEnabled(!isBriefcase && (!isLinkOrRemote || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
+            menuItem.setEnabled(!isNotebook && !isBriefcase && (!isLinkOrRemote || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
 
             menuItem = actionMenu.getMenuItem(ZmOperation.NEW_BRIEFCASE);
             menuItem.setText(ZmMsg.newFolder);
