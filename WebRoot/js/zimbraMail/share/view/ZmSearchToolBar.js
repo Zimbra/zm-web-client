@@ -510,7 +510,8 @@ function(ev) {
 ZmSearchToolBar.prototype._handleEnterKeyPress =
 function(ev) {
 	var menu = this._searchMenuButton && this._searchMenuButton.getMenu();
-	var data = menu && menu.getSelectedItem().getData("CustomSearchItem");
+    var item = menu ? menu.getSelectedItem() || menu.getItems()[0] : null
+	var data = item && item.getData("CustomSearchItem");
 	if (data) {
 		data[2].run(ev); // call original listener
 	} else {
