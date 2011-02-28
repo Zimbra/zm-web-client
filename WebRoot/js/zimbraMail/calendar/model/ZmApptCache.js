@@ -659,6 +659,12 @@ function(params, ex) {
 		return true;
 	}
 
+    if (code == ZmCsfeException.MAIL_NO_SUCH_TAG) {
+        var msg = ex.getErrorMsg();
+        appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
+        return true;
+    }
+
 	var ids = {};
 	var invalidAccountMarker = {};
 
