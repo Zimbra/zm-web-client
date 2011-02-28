@@ -354,11 +354,11 @@ function(params) {
     if (appCtxt.multiAccounts) {
 		// check if we're flagging item from remote folder, in which case, always send
 		// request on-behalf-of the account the item originally belongs to.
-        var folderId = params.items[0].getFolderId();
-        var fromFolder = appCtxt.getById(folderId);
-		if (fromFolder.isRemote()) {
-			params.accountName = params.items[0].getAccount().name;
-		}
+        var folderId = this.search.folderId;
+        var fromFolder = folderId && appCtxt.getById(folderId);
+        if (fromFolder && fromFolder.isRemote()) {
+                params.accountName = params.items[0].getAccount().name;
+        }
 	}
 
 	this._itemAction(params);
