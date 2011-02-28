@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -2304,12 +2304,16 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 };
 
 ZmHtmlEditor.WRAP_LENGTH		= 72;
-ZmHtmlEditor.HTML_QUOTE_PRE		= '<blockquote style="border-left:2px solid ' +
+ZmHtmlEditor.HTML_QUOTE_PREFIX_PRE		= '<blockquote style="border-left:2px solid ' +
 									 AjxStringUtil.HTML_QUOTE_COLOR +
 									 ';margin-left:5px;padding-left:5px;'+
 									 AjxStringUtil.HTML_QUOTE_STYLE +
 									 '">';
-ZmHtmlEditor.HTML_QUOTE_POST	= '</blockquote><br/>';
+ZmHtmlEditor.HTML_QUOTE_PREFIX_POST	= '</blockquote><br/>';
+ZmHtmlEditor.HTML_QUOTE_NONPREFIX_PRE		= '<div style="' +
+									 AjxStringUtil.HTML_QUOTE_STYLE +
+									 '">';
+ZmHtmlEditor.HTML_QUOTE_NONPREFIX_POST	= '</div><br/>';
 
 // returns a standard set of params for wrapping text of HTML content
 ZmHtmlEditor.getWrapParams =
@@ -2322,8 +2326,8 @@ function(htmlMode, incOptions) {
 	params.len		= ZmHtmlEditor.WRAP_LENGTH;
 	params.eol		= htmlMode ? '<br/>' : '\n';
 	params.pre		= (htmlMode || !incOptions.prefix) ? "" : appCtxt.get(ZmSetting.REPLY_PREFIX) + " ";
-	params.before	= (htmlMode && incOptions.prefix) ? ZmHtmlEditor.HTML_QUOTE_PRE : "";
-	params.after	= (htmlMode && incOptions.prefix) ? ZmHtmlEditor.HTML_QUOTE_POST : "";
+	params.before	= (htmlMode) ? ((incOptions.prefix) ? ZmHtmlEditor.HTML_QUOTE_PREFIX_PRE : ZmHtmlEditor.HTML_QUOTE_NONPREFIX_PRE) : "";
+	params.after	= (htmlMode) ? ((incOptions.prefix) ? ZmHtmlEditor.HTML_QUOTE_PREFIX_POST : ZmHtmlEditor.HTML_QUOTE_NONPREFIX_POST) : "";
 
 	return params;
 };
