@@ -252,12 +252,10 @@ function(list, noResultsOk, doAdd) {
 
             var taskStatusClass = this._normalClass;
 
-            if(item.status == ZmCalendarApp.STATUS_COMP && currentSec != ZmTaskListView.SEC_PASTDUE) {
-               taskStatusClass += " ZmCompletedtask"
-            } else if(item.status == ZmCalendarApp.STATUS_COMP && currentSec == ZmTaskListView.SEC_PASTDUE) {
-               taskStatusClass += " ZmOverdueCompletedtask"
+            if(item.status == ZmCalendarApp.STATUS_COMP) {
+               taskStatusClass += " ZmCompletedtask";
             } else if(item.status != ZmCalendarApp.STATUS_COMP && currentSec == ZmTaskListView.SEC_PASTDUE) {
-               taskStatusClass += " ZmOverduetask"
+               taskStatusClass += " ZmOverduetask";
             }
 
 			var div = this._createItemHtml(item, {now:now,divClass:taskStatusClass}, !doAdd, i);
