@@ -311,14 +311,14 @@ function(reset) {
                 if (this.mode && this.mode != "MSG") {
                     if (el){
                         el.style.height = mvHeight + "px";
-                        el.style.overflow = "auto"
+                        Dwt.setScrollStyle(el, Dwt.SCROLL);
                     }
                 }
                 else {
                     var bodyDiv = this.parent.getMsgBodyElement();
-                    if (bodyDiv) bodyDiv.style.overflow  = Dwt.CLIP;
+                    if (bodyDiv) Dwt.setScrollStyle(bodyDiv, Dwt.CLIP);
                     if (el) {
-                        el.style.overflow = "auto";
+                        Dwt.setScrollStyle(el, Dwt.SCROLL);
                         el.style.height = (mvHeight - ( this._inviteToolbar ? this._inviteToolbar.getYH() : 0 ) + 10) + "px";
                     }
                 }
