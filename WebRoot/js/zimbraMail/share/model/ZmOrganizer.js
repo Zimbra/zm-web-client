@@ -265,6 +265,7 @@ ZmOrganizer.DISPLAY_ORDER	= {};		// sort number to determine order of tree view 
 ZmOrganizer.HIDE_EMPTY		= {};		// if true, hide tree header if tree is empty
 
 ZmOrganizer.APP2ORGANIZER	= {};		// organizer types, keyed by app name
+ZmOrganizer.APP2ORGANIZER_R = {};		// app names, keyed by app organizer type
 
 // allowed permission bits
 ZmOrganizer.PERM_READ		= "r";
@@ -317,6 +318,7 @@ function(org, params) {
 			ZmOrganizer.APP2ORGANIZER[params.app] = [];
 		}
 		ZmOrganizer.APP2ORGANIZER[params.app].push(org);
+        ZmOrganizer.APP2ORGANIZER_R[org] = params.app;
 	}
 	if (params.defaultFolder)	{ ZmOrganizer.DEFAULT_FOLDER[org]		= params.defaultFolder; }
 	if (params.precondition)	{ ZmOrganizer.PRECONDITION[org]			= params.precondition; }
