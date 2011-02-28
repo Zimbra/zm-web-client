@@ -409,7 +409,11 @@ function(calItem) {
 	calItem.setEndDate(endDate, true);
 	if (Dwt.getVisibility(this._tzoneSelectStartElement)) {
         calItem.timezone = this._tzoneSelectStart.getValue();
-        calItem.setEndTimezone(this._tzoneSelectEnd.getValue());
+        if (Dwt.getVisibility(this._tzoneSelectEndElement)) {
+            calItem.setEndTimezone(this._tzoneSelectEnd.getValue());
+        }else {
+            calItem.setEndTimezone(this._tzoneSelectStart.getValue());
+        }
     }
 
     // set attendees
@@ -1597,18 +1601,18 @@ function(calItem, isAllDayAppt) {
 
 ZmApptEditView.prototype._setTimezoneVisible =
 function(dateInfo) {
-	var showTimezone = !dateInfo.isAllDay && this._repeatSelect && this._repeatSelect.getValue()=="NON";
-	if (showTimezone) {
-		showTimezone = appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) ||
-					   dateInfo.timezone != AjxTimezone.getServerId(AjxTimezone.DEFAULT);
-	}
+    var showTimezones = appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) || dateInfo.timezone != AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+	var showStartTimezone = showTimezones && !dateInfo.isAllDay;
+	var showEndTimezone = showStartTimezone && this._repeatSelect && this._repeatSelect.getValue()=="NON";
+
     if (this._tzoneSelectStartElement) {
-        Dwt.setVisible(this._tzoneSelectStartElement, showTimezone);
-        Dwt.setVisibility(this._tzoneSelectStartElement, showTimezone);
+        Dwt.setVisible(this._tzoneSelectStartElement, showStartTimezone);
+        Dwt.setVisibility(this._tzoneSelectStartElement, showStartTimezone);
     }
+
     if (this._tzoneSelectEndElement) {
-        Dwt.setVisible(this._tzoneSelectEndElement, showTimezone);
-        Dwt.setVisibility(this._tzoneSelectEndElement, showTimezone);
+        Dwt.setVisible(this._tzoneSelectEndElement, showEndTimezone);
+        Dwt.setVisibility(this._tzoneSelectEndElement, showEndTimezone);
     }
 };
 
