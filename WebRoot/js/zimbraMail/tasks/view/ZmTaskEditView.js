@@ -291,9 +291,9 @@ function() {
 
 ZmTaskEditView.prototype._getPriorityImage =
 function(flag) {
-	if (flag == ZmCalItem.PRIORITY_HIGH)	{ return "PriorityHigh"; }
-	if (flag == ZmCalItem.PRIORITY_LOW)	{ return "PriorityLow"; }
-	return "PriorityNormal";
+	if (flag == ZmCalItem.PRIORITY_HIGH)	{ return "PriorityHigh_list"; }
+	if (flag == ZmCalItem.PRIORITY_LOW)	{ return "PriorityLow_list"; }
+	return "PriorityNormal_list";
 };
 
 ZmTaskEditView.prototype._getPriorityText =

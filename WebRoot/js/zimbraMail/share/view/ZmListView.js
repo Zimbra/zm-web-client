@@ -461,7 +461,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
         } else if (item.isLowPriority) {
 			priorityImage = "PriorityLow_list";
 		} else {
-			priorityImage = "PriorityNormal_list";
+			priorityImage = "";
 		}
         idx = this._getImageHtml(htmlArr, idx, priorityImage, this._getFieldId(item, field));
 	} else {
