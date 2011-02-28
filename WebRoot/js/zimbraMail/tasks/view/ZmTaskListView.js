@@ -360,7 +360,7 @@ function() {
 
 ZmTaskListView.prototype._getCellId =
 function(item, field) {
-    if(field == ZmItem.F_PRIORITY) {
+    if(field == ZmItem.F_PRIORITY || field == ZmItem.F_SUBJECT || field == ZmItem.F_STATUS || field == ZmItem.F_PCOMPLETE || field == ZmItem.F_DATE) {
 	    return this._getFieldId(item, field)
     } else if (field == ZmItem.F_SELECTION) {
 		return this._getFieldId(item, ZmItem.F_SELECTION_CELL);
