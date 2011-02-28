@@ -3457,7 +3457,7 @@ function() {
             var rt = view.getTimeRange();
             if(this._currentView == ZmId.VIEW_CAL_LIST) {
                 view.searchRefresh(rt);
-                this.nsearchInProgress = false;
+                this.searchInProgress = false;
             }
             else {
                 var params = {
