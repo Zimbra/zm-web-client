@@ -74,7 +74,9 @@ function() {
 
 	var tlv = this._taskListView, tv = this._taskView;
 	var readingPaneEnabled = this._controller.isReadingPaneOn();
-	if (!readingPaneEnabled) {
+    var readingPaneOnRight = this._controller.isReadingPaneOnRight();
+
+    if (!readingPaneEnabled) {
 		tv.setVisible(false);
 		this._vertMsgSash.setVisible(false);
 		this._horizMsgSash.setVisible(false);
@@ -87,7 +89,6 @@ function() {
 			}
 		}
 		tv.setVisible(true);
-		var readingPaneOnRight = this._controller.isReadingPaneOnRight();
 		var newSash = readingPaneOnRight ? this._vertMsgSash : this._horizMsgSash;
 		var oldSash = readingPaneOnRight ? this._horizMsgSash : this._vertMsgSash;
 		oldSash.setVisible(false);
@@ -95,8 +96,13 @@ function() {
 	}
 
 	tlv.reRenderListView();
+    if(readingPaneOnRight) {
+        tlv.setSortByAsc(ZmItem.F_SORTED_BY, true);
+    } else {
+        tlv.setSortByAsc(ZmItem.F_DATE, true);
+    }
 
-	tv.noTab = !readingPaneEnabled || AjxEnv.isIE;
+    tv.noTab = !readingPaneEnabled || AjxEnv.isIE;
 	var sz = this.getSize();
 	this._resetSize(sz.x, sz.y, true);
 };
