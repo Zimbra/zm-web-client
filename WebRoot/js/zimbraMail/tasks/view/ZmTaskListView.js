@@ -506,9 +506,9 @@ ZmTaskListView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
 	switch (field) {
 		case ZmItem.F_PRIORITY: 	return ZmMsg.priority;
-		case ZmItem.F_STATUS:		return ZmMsg.status;
-		case ZmItem.F_PCOMPLETE:	return ZmMsg.percentComplete;
-		case ZmItem.F_DATE:			return ZmMsg.dateDue;
+		case ZmItem.F_STATUS:		return ZmMsg.sortByStatus;
+		case ZmItem.F_PCOMPLETE:	return ZmMsg.sortByPComplete;
+		case ZmItem.F_DATE:			return ZmMsg.sortByDueDate;
 	}
 	return ZmListView.prototype._getHeaderToolTip.call(this, field, itemIdx);
 };
@@ -521,8 +521,8 @@ function(columnItem, bSortAsc) {
 		case ZmItem.F_SUBJECT:		sortBy = bSortAsc ? ZmSearch.SUBJ_ASC : ZmSearch.SUBJ_DESC; break;
 		case ZmItem.F_STATUS:		sortBy = bSortAsc ? ZmSearch.STATUS_ASC : ZmSearch.STATUS_DESC; break;
 		case ZmItem.F_PCOMPLETE:	sortBy = bSortAsc ? ZmSearch.PCOMPLETE_ASC : ZmSearch.PCOMPLETE_DESC; break;
-		case ZmItem.F_DATE:			sortBy = bSortAsc ? ZmSearch.DUE_DATE_DESC : ZmSearch.DUE_DATE_ASC;	break; //bug:50890 changed the default order
-        case ZmItem.F_SORTED_BY:    sortBy = bSortAsc ? ZmSearch.DUE_DATE_DESC : ZmSearch.DUE_DATE_ASC;	break;
+		case ZmItem.F_DATE:			sortBy = bSortAsc ? ZmSearch.DUE_DATE_ASC : ZmSearch.DUE_DATE_DESC;	break; //bug:50890 changed the default order
+        case ZmItem.F_SORTED_BY:    sortBy = bSortAsc ? ZmSearch.DUE_DATE_ASC : ZmSearch.DUE_DATE_DESC;	break;
 	}
 
     if (sortBy) {
@@ -625,7 +625,7 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 		htmlArr[idx++] = textTdId;
 		htmlArr[idx++] = "'></td></tr></table></div></td>";
 	} else {
-		return DwtListView.prototype._createHeader.apply(this, arguments);
+        return DwtListView.prototype._createHeader.apply(this, arguments);
 	}
 };
 
@@ -820,7 +820,7 @@ function() {
 		this._normalClass = isMultiColumn ? DwtListView.ROW_CLASS : ZmTaskListView.ROW_DOUBLE_CLASS;
 		var list = this.getList() || (new AjxVector());
 		this.set(list.clone());
-		this._restoreState();
+        this._restoreState();
 	}
 };
 
