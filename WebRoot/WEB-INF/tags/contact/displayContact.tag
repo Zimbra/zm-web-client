@@ -19,8 +19,6 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-
-<c:set var="noDisplayAs"><fmt:message key="noDisplayAs"/></c:set>
 <zm:getMailbox var="mailbox"/>
 <c:set var="folder" value="${zm:getFolder(pageContext, contact.folderId)}"/>
 <fmt:message var="colorGray" key="colorGray"/>
@@ -31,7 +29,16 @@
         <table width="100%" cellspacing="0" cellpadding="0">
             <tr style="background-color:${color}">
         <td width="20"><center><app:img src="${contact.isGroup ? 'contacts/ImgGroup.png' : 'contacts/ImgContact.png'}" altkey="${contact.imageAltKey}"/></center></td>
-        <td class='contactHeader'>${fn:escapeXml(empty contact.displayFileAs ? noDisplayAs : (contact.isGalContact ? contact.fullName : contact.displayFileAs))} <c:if test="${contact.isGalContact}"> (${fn:escapeXml(contact.displayFileAs)}) </c:if>
+        <td class='contactHeader'>
+            <c:choose>
+                <c:when test="${empty contact.displayFileAs}">
+                    <fmt:message var="noDisplayAs" key="noDisplayAs" />
+                    ${fn:escapeXml(noDisplayAs)}
+                </c:when>
+                <c:otherwise>
+                    <app:contactDisplayName contact="${contact}" />
+                </c:otherwise>
+            </c:choose>
         </td>
         <td align='right' class='Tags'>
             <c:if test="${contact.hasTags and mailbox.features.tagging}">
@@ -53,8 +60,8 @@
         <td class="companyName" width="100%">
             <c:if test="${zm:anySet(contact,'jobTitle company')}">
                 ${fn:escapeXml(contact.jobTitle)}
-                <c:if test="${!((empty contact.jobTitle) or (empty contact.company))}">,&nbsp;</c:if>
-                ${fn:escapeXml(contact.company)}
+                <c:if test="${!(empty contact.jobTitle or (empty contact.company or empty contact.phoneticCompany))}">,&nbsp;</c:if>
+                <app:ruby base="${contact.company}" text="${contact.phoneticCompany}" />
             </c:if>
         </td><td width="20">
         <c:if test="${!contact.isGalContact}">

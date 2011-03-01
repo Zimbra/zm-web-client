@@ -35,7 +35,18 @@
 				<div id="${id}_TAG"></div>
 				<$ } $>
 				<div id="${id}_NAME_row" style='padding-bottom:4;'>
-					<table border=0 cellpadding=0 cellspacing=0><tr>
+					<table border=0 cellpadding=0 cellspacing=0>
+                        <$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
+                        <tr id="${id}_PHONETIC_row">
+                            <td id="${id}_PHONETIC_PREFIX"></td>
+                            <td id="${id}_PHONETIC_FIRST_row"><div id="${id}_PHONETIC_FIRST" tabindex="190"></div></td>
+                            <td id="${id}_PHONETIC_MIDDLE"></td>
+                            <td id="${id}_PHONETIC_MAIDEN"></td>
+                            <td id="${id}_PHONETIC_LAST_row"><div id="${id}_PHONETIC_LAST" tabindex="191"></div></td>
+                            <td id="${id}_PHONETIC_SUFFIX"></td>
+                        </tr>
+                        <$ } $>
+                        <tr>
 						<td id="${id}_PREFIX_row" style='padding-right:4;'>
 						    <div id="${id}_PREFIX" tabindex="200"></div>
                         </td>
@@ -79,9 +90,14 @@
 					</tr></table>
 				</div>
 				<div id="${id}_COMPANY_row" style='padding-bottom:4;'>
-					<table border=0 cellpadding=0 cellspacing=0><tr>
-						<td><div id="${id}_COMPANY" tabindex="305"></div></td>
-					</tr></table>
+					<table border=0 cellpadding=0 cellspacing=0>
+                        <$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
+                        <tr id="${id}_PHONETIC_COMPANY_row">
+                            <td><div id="${id}_PHONETIC_COMPANY" tabindex="304"></div></td>
+                        </tr>
+                        <$ } $>
+                        <tr><td><div id="${id}_COMPANY" tabindex="305"></div></td></tr>
+                    </table>
 				</div>
 			</td>
 			<td class=contactHeaderCell>
@@ -242,7 +258,11 @@
 		var company		= contact.getAttr(ZmContact.F_company);
 		var title		= contact.getAttr(ZmContact.F_jobTitle);
 		var department	= contact.getAttr(ZmContact.F_department);
-		var fullname	= contact.getFullName();
+        var isPhonetic  = appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS);
+		var fullnameHtml= contact.getFullName(isPhonetic);
+        if (!isPhonetic) {
+            fullnameHtml = AjxStringUtil.htmlEncode(fullnameHtml);
+        }
 		var accountName = appCtxt.multiAccounts && contact.account && contact.account.getDisplayName();
 		var imgClassName = contact.isGroup() ? "GroupPerson_48" : "Person_48"; 
 	$>
@@ -263,7 +283,7 @@
 		</tr>
 		<tr>
 			<td valign=bottom>
-				<div class='contactHeader <$= data.isInTrash ? "Trash" : "" $>'><$= AjxStringUtil.htmlEncode(fullname) $></div>
+				<div class='contactHeader <$= data.isInTrash ? "Trash" : "" $>'><$= fullnameHtml $></div>
 				<$ if (nickname) { $>
 					<div class='companyName'>&ldquo;<$= AjxStringUtil.htmlEncode(nickname) $>&rdquo;</div>
 				<$ } $>
@@ -280,8 +300,11 @@
 					<$ } $>
 					</div>
 				<$ } $>
-				<$ if (company) { $>
-					<div class='companyName'><$= AjxStringUtil.htmlEncode(company) $></div>
+				<$ if (company) {
+                    var phoneticCompany = isPhonetic && contact.getAttr(ZmContact.F_phoneticCompany);
+                    var companyHtml = AjxStringUtil.htmlRubyEncode(company, phoneticCompany);
+                    $>
+					<div class='companyName'><$= companyHtml $></div>
 				<$ } $>
 			</td>
 			<td valign=bottom align='right'>
