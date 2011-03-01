@@ -1383,7 +1383,7 @@ function(refresh) {
 
 		// mark all existing mail list views as stale
 		var viewIds = [ZmId.VIEW_TRAD, ZmId.VIEW_CONVLIST, ZmId.VIEW_CONV];
-		var views = this._appViewMgr._views;
+		var views = appCtxt.getAppViewMgr()._views;
 		for (var i = 0; i < viewIds.length; i++) {
 			var view = views[viewIds[i]];
 			var dpv = view && view[ZmAppViewMgr.C_APP_CONTENT];

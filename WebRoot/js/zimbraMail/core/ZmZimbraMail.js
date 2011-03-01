@@ -63,6 +63,8 @@ ZmZimbraMail = function(params) {
     ZmOperation.initialize();
 
     // settings
+    this._createSettings(params);
+    this._createEnabledApps();
     this._initializeSettings(params);
 
     // set internal state
@@ -71,7 +73,6 @@ ZmZimbraMail = function(params) {
 
     this._requestMgr = new ZmRequestMgr(this); // NOTE: requires settings to be initialized
 
-	this._apps = {};
 	this._upsellView = {};
 	this._activeApp = null;
 	this._sessionTimer = new AjxTimedAction(null, ZmZimbraMail.logOff);
@@ -295,7 +296,6 @@ function(params) {
 		}
 	}
 
-	this._createEnabledApps();
 	this._registerOrganizers();
 
 	// set up map of search types to item types
@@ -343,47 +343,51 @@ function(params) {
 	appCtxt.accountList.mainAccount.loadMetaData(respCallback);
 };
 
-ZmZimbraMail.prototype._initializeSettings = function(params) {
+ZmZimbraMail.prototype._createSettings = function(params) {
     // We've received canned SOAP responses for GetInfoRequest and SearchRequest from the
     // launch JSP, wrapped in a BatchRequest. Jiggle them so that they look like real
     // responses, and pass them along.
     if (params.batchInfoResponse) {
-        var br = params.batchInfoResponse.Body.BatchResponse;
-        if (br.GetInfoResponse) {
-            var girJSON = params.getInfoResponse = {};
-            girJSON.Body = {};
-            girJSON.Body.GetInfoResponse = br.GetInfoResponse[0];
-            girJSON.Header = params.batchInfoResponse.Header;
-            if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.session) {
-                ZmCsfeCommand.setSessionId(girJSON.Header.context.session);
-            }
-            DBG.println(AjxDebug.DBG1, ["<b>RESPONSE (from JSP tag)</b>"].join(""), "GetInfoResponse");
-            DBG.dumpObj(AjxDebug.DBG1, girJSON, -1);
+        var batchResponse = params.batchInfoResponse.Body.BatchResponse;
+
+        // always assume there's a get info response
+        params.getInfoResponse = {
+            Header: params.batchInfoResponse.Header,
+            Body: { GetInfoResponse: batchResponse.GetInfoResponse[0] }
+        };
+        var session = AjxUtil.get(params.getInfoResponse, "Header", "context", "session");
+        if (session) {
+            ZmCsfeCommand.setSessionId(session);
         }
-        if (br.SearchResponse) {
-            var srJSON = params.searchResponse = {};
-            srJSON.Body = {};
-            srJSON.Body.SearchResponse = br.SearchResponse[0];
+        DBG.println(AjxDebug.DBG1, ["<b>RESPONSE (from JSP tag)</b>"].join(""), "GetInfoResponse");
+        DBG.dumpObj(AjxDebug.DBG1, params.getInfoResponse, -1);
+
+        // we may have an initial search response
+        if (batchResponse.SearchResponse) {
+            params.searchResponse = {
+                Body: { SearchResponse: batchResponse.SearchResponse[0] }
+            };
             DBG.println(AjxDebug.DBG1, ["<b>RESPONSE (from JSP tag)</b>"].join(""), "SearchResponse");
-            DBG.dumpObj(AjxDebug.DBG1, srJSON, -1);
+            DBG.dumpObj(AjxDebug.DBG1, params.searchResponse, -1);
         }
     }
 
-    // Create and initialize settings
-    var settings = this._settings = new ZmSettings();
+    // create settings
+    var settings = new ZmSettings()
     appCtxt.setSettings(settings);
 
-    if (params.getInfoResponse) {
-        var info = params.getInfoResponse.Body.GetInfoResponse;
-        // NOTE: Skip notify to avoid callbacks which reference objects that aren't set, yet
-        settings.setUserSettings(info, null, true, true, true);
-        settings.userSettingsLoaded = true;
+    // We have to pre-initialize the settings in order to create
+    // the enabled apps correctly.
+    settings.setUserSettings({info:params.getInfoResponse.Body.GetInfoResponse, preInit:true});
+};
 
-        // admin mail enabled setting takes precedence if admin delegated
-        if (settings.get(ZmSetting.ADMIN_DELEGATED) && !settings.get(ZmSetting.ADMIN_MAIL_ENABLED)) {
-            settings.getSetting(ZmSetting.MAIL_ENABLED).setValue(false);
-        }
-    }
+ZmZimbraMail.prototype._initializeSettings = function(params) {
+    var info = params.getInfoResponse.Body.GetInfoResponse;
+
+    var settings = appCtxt.getSettings();
+    // NOTE: Skip notify to avoid callbacks which reference objects that aren't set, yet
+    settings.setUserSettings(info, null, true, true, true);
+    settings.userSettingsLoaded = true;
 
     // settings structure and defaults
     var branch = appCtxt.get(ZmSetting.BRANCH);
@@ -437,6 +441,11 @@ ZmZimbraMail.prototype._initializeSettings = function(params) {
     }
     if (params.httpsPort) {
         appCtxt.set(ZmSetting.HTTPS_PORT, params.httpsPort);
+    }
+
+    // hide spam if not enabled
+    if (!appCtxt.get(ZmSetting.SPAM_ENABLED)) {
+        ZmFolder.HIDE_ID[ZmFolder.ID_SPAM] = true;
     }
 };
 
@@ -522,7 +531,7 @@ function(params, result) {
 	if (params && params.settingOverrides) {
 		this._needOverviewLayout = true;
 		for (var id in params.settingOverrides) {
-			var setting = this._settings.getSetting(id);
+			var setting = appCtxt.getSetting(id);
 			if (setting) {
 				setting.setValue(params.settingOverrides[id]);
 			}
@@ -997,6 +1006,8 @@ function(funcName, force) {
  */
 ZmZimbraMail.prototype._createEnabledApps =
 function(apps) {
+    this._apps = {};
+
 	for (var app in ZmApp.CLASS) {
 		if (!apps || apps[app]) {
 			ZmApp.APPS.push(app);

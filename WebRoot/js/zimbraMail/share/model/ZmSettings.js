@@ -244,13 +244,22 @@ function(callback, accountName, result) {
 /**
  * Sets the user settings.
  *
- * @param {object}  info            The GetInfoResponse object.
- * @param {string}  [accountName]   The name of the account.
+ * @param {hash}    params
+ * @param {object}  params.info             The GetInfoResponse object.
+ * @param {string}  [params.accountName]    The name of the account.
+ * @param {boolean} [params.setDefault]     Set default value
+ * @param {boolean} [params.skipNotify]     Skip change notification
+ * @param {boolean} [params.skipImplicit]   Skip implicit changes
+ * @param {boolean} [params.preInit]        Only init base settings for startup
  */
-ZmSettings.prototype.setUserSettings =
-function(info, accountName, setDefault, skipNotify, skipImplicit) {
+ZmSettings.prototype.setUserSettings = function(params) {
+    params = Dwt.getParams(arguments, ["info", "accountName", "setDefault", "skipNotify", "skipImplicit", "preInit"]);
 
-	this.getInfoResponse = info;
+    var info = this.getInfoResponse = params.info;
+    var accountName = params.accountName;
+    var setDefault = params.preInit ? false : params.setDefault;
+    var skipNotify = params.preInit ? true : params.skipNotify;
+    var skipImplicit = params.preInit ? true : params.skipImplicit;
 
     var settings = [
         ZmSetting.ADMIN_DELEGATED,          info.adminDelegated,
@@ -274,13 +283,24 @@ function(info, accountName, setDefault, skipNotify, skipImplicit) {
         }
     }
 
-	if (info.prefs && info.prefs._attrs) {
-		this.createFromJs(info.prefs._attrs, setDefault, skipNotify, skipImplicit);
-	}
-	if (info.attrs && info.attrs._attrs) {
-		this.createFromJs(info.attrs._attrs, setDefault, skipNotify, skipImplicit);
-	}
+    // features and other settings
+    if (info.attrs && info.attrs._attrs) {
+        this.createFromJs(info.attrs._attrs, setDefault, skipNotify, skipImplicit);
+    }
 
+    // admin mail enabled setting takes precedence if admin delegated
+    if (this.get(ZmSetting.ADMIN_DELEGATED) && !this.get(ZmSetting.ADMIN_MAIL_ENABLED)) {
+        this.getSetting(ZmSetting.MAIL_ENABLED).setValue(false);
+    }
+
+    if (params.preInit) return;
+
+    // preferences
+    if (info.prefs && info.prefs._attrs) {
+        this.createFromJs(info.prefs._attrs, setDefault, skipNotify, skipImplicit);
+    }
+
+    // accounts
 	if (!accountName) {
 		// NOTE: only the main account can have children
 		appCtxt.accountList.createAccounts(this, info);
