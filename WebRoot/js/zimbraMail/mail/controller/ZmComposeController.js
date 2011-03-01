@@ -1111,17 +1111,18 @@ function(composeMode, incOptions) {
 
 	composeMode = composeMode || this._composeMode;
 	incOptions = incOptions || this._curIncOptions || {};
+    var ac = window.parentAppCtxt || window.appCtxt;
 
 	var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	button.setToolTipContent(ZmMsg[ZmComposeController.OPTIONS_TT[this._action]]);
 	var menu = this._optionsMenu[this._action];
 	if (!menu) { return; }
 
-	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+	if (ac.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		menu.checkItem(ZmHtmlEditor._VALUE, composeMode, true);
 	}
 
-	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED) || appCtxt.multiAccounts) {
+	if (ac.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED) || ac.multiAccounts) {
 		var mi = menu.getOp(ZmOperation.REQUEST_READ_RECEIPT);
 		if (mi) {
 			// did this draft have "request read receipt" option set?
@@ -1132,8 +1133,8 @@ function(composeMode, incOptions) {
 				mi.setChecked(false, true);
 			}
 
-			if (appCtxt.multiAccounts) {
-                mi.setEnabled(appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED, null, this._composeView.getFromAccount()));
+			if (ac.multiAccounts) {
+                mi.setEnabled(ac.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED, null, this._composeView.getFromAccount()));
 			}
 		}
 	}
