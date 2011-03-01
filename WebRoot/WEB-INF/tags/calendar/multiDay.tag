@@ -32,7 +32,15 @@
     <c:set var="context" value="${null}"/>
     <fmt:message var="yearTitleFormat" key="CAL_DAY_TITLE_YEAR_FORMAT"/>
 
-    <c:set var="currentDay" value="${zm:getFirstDayOfMultiDayView(date, mailbox.prefs.calendarFirstDayOfWeek, view)}"/>
+    <c:choose>
+    <c:when test="${scheduleView or view eq 'day'}">
+        <c:set var="currentDay" value="${zm:getCurrentDay(date)}"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="currentDay" value="${zm:getFirstDayOfMultiDayView(date, mailbox.prefs.calendarFirstDayOfWeek, view)}"/>
+    </c:otherwise>
+    </c:choose>
+
     <c:set var="scheduleView" value="${view eq 'schedule'}"/>
     <c:set var="today" value="${zm:getToday(timezone)}"/>
     <c:set var="rangeEnd" value="${zm:addDay(currentDay,numdays).timeInMillis}"/>
