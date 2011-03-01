@@ -28,6 +28,7 @@
 <fmt:message var="label" key="${label}" />
 <c:set var="value" value="${not empty contact ? contact.attrs[field] : ''}"/>
 <td valign="${address ? 'top' : 'middle'}" class="editContactLabel">
+    <%-- TODO: The colon should be part of the message text!!! --%>
     <label for="${field}">${fn:escapeXml(label)}:</label>
 </td>
 <td><c:choose>
