@@ -109,7 +109,7 @@ ZmCalViewController = function(container, calApp) {
 ZmCalViewController.prototype = new ZmListController();
 ZmCalViewController.prototype.constructor = ZmCalViewController;
 
-ZmCalViewController.DEFAULT_APPOINTMENT_DURATION = 3600000;
+ZmCalViewController.DEFAULT_APPOINTMENT_DURATION = 30*60*1000;
 
 // maintenance needed on views and/or minical
 ZmCalViewController.MAINT_NONE 		= 0x0; // no work to do

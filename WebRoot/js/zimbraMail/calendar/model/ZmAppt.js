@@ -37,7 +37,7 @@ ZmAppt = function(list, noinit) {
 	this.privacy = "PUB";														// Privacy class (PUB|PRI|CON) (public/private/confidential)
 	this.transparency = "O";
 	this.startDate = new Date();
-	this.endDate = new Date(this.startDate.getTime() + (30*60*1000));
+	this.endDate = new Date(this.startDate.getTime() + ZmCalViewController.DEFAULT_APPOINTMENT_DURATION);
 	this.otherAttendees = false;
 	this.rsvp = true;
     this.inviteNeverSent = true;
@@ -913,7 +913,7 @@ function(soapDoc, inv, comp) {
 
 ZmAppt.prototype.setRsvp =
 function(rsvp) {
-	this.rsvp = rsvp;
+   this.rsvp = rsvp;
 };
 
 ZmAppt.prototype.shouldRsvp =
