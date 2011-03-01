@@ -14,8 +14,8 @@
 							</table>
 						</div>
 					<$ } $>
-					<div class="ZmMailMsgViewDiv">
-						<table cellspacing=0 cellpadding=0 border=0 width=100%>
+					<div>
+						<table cellspacing=0 cellpadding=0 border=0 width=100% style="margin-left:5px;">
 							<tr id='${hdrTableTopRowId}'>
 								<$ if (data.closeBtnCellId) { $>
 									<td>&nbsp;</td>
