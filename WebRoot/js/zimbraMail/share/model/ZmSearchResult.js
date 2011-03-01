@@ -86,7 +86,7 @@ function(type) {
 		return this._results;
 	} else {
 		// if we don't have results for the requested type, the search was probably for the wrong type
-		return this._results[type] ? this._results[type] : ZmItem.RESULTS_LIST[type](this.search);
+		return this._results[type] ? this._results[type] : type && ZmItem.RESULTS_LIST[type](this.search);
 	}
 };
 
@@ -168,7 +168,7 @@ function(respEl) {
 		if (!defaultType) {
 			var curApp = appCtxt.getCurrentAppName();
 			var types = ZmApp.SEARCH_TYPES[curApp];
-			defaultType = (types && types.length) ? types[0] : ZmItem.MSG;
+			defaultType = types && types.length && types[0];
 		}
 
 		for (var i = 0; i < types.length; i++) {
@@ -177,7 +177,7 @@ function(respEl) {
 
 			// A chat isa message. Futz with the types to deal with this.
 			// (Eventually we'll avoid this problem by displying chat history in im app.)
-			if (!data && (type == "MSG")) {
+			if (!data && (type == ZmItem.MSG)) {
 				data = respEl["chat"];
 			}
 

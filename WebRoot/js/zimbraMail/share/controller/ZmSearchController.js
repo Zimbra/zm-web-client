@@ -34,7 +34,7 @@ ZmSearchController = function(container) {
 	this._inited = false;
 
 	// default menu values
-	this._searchFor = ZmId.SEARCH_MAIL;
+	this._searchFor = appCtxt.get(ZmSetting.MAIL_ENABLED) ? ZmId.SEARCH_MAIL : ZmId.SEARCH_ANY;
 	this._contactSource = ZmItem.CONTACT;
 	this._results = null;
 

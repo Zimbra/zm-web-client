@@ -91,9 +91,17 @@ function(parent, obj, tree, elementType, path, account) {
 		if (obj.types) {
 			var t = obj.types.split(",");
 			types = [];
+            var mailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
 			for (var i = 0; i < t.length; i++) {
-				types.push(ZmSearch.TYPE_MAP[t[i]]);
+                var type = ZmSearch.TYPE_MAP[t[i]];
+                if (!type || (!mailEnabled && (type == ZmItem.CONV || type == ZmItem.MSG))) {
+                    continue;
+                }
+				types.push(type);
 			}
+            if (types.length == 0) {
+                return null;
+            }
 		}
 		DBG.println(AjxDebug.DBG2, "Creating SEARCH with id " + obj.id + " and name " + obj.name);
 		var params = {
