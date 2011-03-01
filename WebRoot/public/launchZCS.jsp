@@ -329,7 +329,7 @@
 // compile locale specific templates
 for (var pkg in window.AjxTemplateMsg) {
 	var text = AjxTemplateMsg[pkg];
-	AjxTemplate.compile(pkg, true, true, text);
+	AjxTemplate.compile(pkg, true, false, text);
 }
 </script>
 
