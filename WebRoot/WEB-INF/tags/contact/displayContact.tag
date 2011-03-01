@@ -106,21 +106,21 @@
 </c:if>
 
 <c:if test="${zm:anySet(contact,'workStreet workCity workState workPostalCode workCountry workURL workPhone workPhone2 workFax assistantPhone companyPhone callbackPhone')}">
-    <app:contactAddress contact="${contact}" prefix="work" phoneFields="workPhone workPhone2 workFax assistantPhone companyPhone callbackPhone" />
+    <app:contactSectionInfo contact="${contact}" prefix="work" phoneFields="workPhone workPhone2 workFax assistantPhone companyPhone callbackPhone" />
 </c:if>
 <c:if test="${zm:anySet(contact,'homeStreet homeCity homeState homePostalCode homeCountry homeURL homePhone homePhone2 homeFax mobilePhone pager carPhone')}">
-    <app:contactAddress contact="${contact}" prefix="home" phoneFields="homePhone homePhone2 homeFax mobilePhone pager carPhone" />
+    <app:contactSectionInfo contact="${contact}" prefix="home" phoneFields="homePhone homePhone2 homeFax mobilePhone pager carPhone" />
 </c:if>
 
 <c:if test="${zm:anySet(contact,'otherStreet otherCity otherState otherPostalCode otherCountry otherURL otherPhone otherFax')}">
-    <app:contactAddress contact="${contact}" prefix="other" phoneFields="otherPhone otherFax" />
+    <app:contactSectionInfo contact="${contact}" prefix="other" phoneFields="otherPhone otherFax" />
 </c:if>
 <c:if test="${!empty contact.notes}">
     <tr>
         <td colspan="4" class="sectionLabel" valign="top"><fmt:message key="notes"/></td>
     </tr>
     <tr>
-        <td colspan="4" class="contactOutput"><pre>${fn:escapeXml(contact.notes)}</pre><br><br></td>
+        <td colspan="4" class="contactOutput">${zm:htmlNewlineEncode(fn:escapeXml(contact.notes))}</td>
     </tr>
 </c:if>
 </tbody>
