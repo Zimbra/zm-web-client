@@ -93,6 +93,11 @@
                 </app:status>
             </c:if>
         </c:when>
+            <c:when test="${uploader.isSave and empty uploader.compose.endDate and not empty uploader.compose.startDate}">
+                <app:status style="Critical">
+                    <fmt:message key="errorEmptyTaskDueDate"/>
+                </app:status>
+            </c:when>
             <c:when test="${uploader.isSave and not empty uploader.compose.startDate and not uploader.compose.isValidStartTime}">
                 <app:status style="Critical">
                     <fmt:message key="errorInvalidApptStartDate"/>
