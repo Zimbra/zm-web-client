@@ -27,9 +27,15 @@
     <fmt:setTimeZone value="${timezone}"/>
     <c:set var="context" value="${null}"/>
     <fmt:message var="yearTitleFormat" key="CAL_DAY_TITLE_YEAR_FORMAT"/>
-
-    <c:set var="currentDay" value="${zm:getFirstDayOfMultiDayView(date, mailbox.prefs.calendarFirstDayOfWeek, view)}"/>
     <c:set var="scheduleView" value="${view eq 'schedule'}"/>
+    <c:choose>
+    <c:when test="${view eq 'schedule' or view eq 'day'}">
+        <c:set var="currentDay" value="${zm:getCurrentDay(date)}"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="currentDay" value="${zm:getFirstDayOfMultiDayView(date, mailbox.prefs.calendarFirstDayOfWeek, view)}"/>
+    </c:otherwise>
+    </c:choose>
     <c:choose>
         <c:when test="${scheduleView}">
             <fmt:message var="titleFormat" key="CAL_SCHEDULE_TITLE_FORMAT"/>
@@ -58,7 +64,6 @@
     <c:set var="prevDate" value="${zm:addDay(date, -dayIncr)}"/>
     <c:set var="nextDate" value="${zm:addDay(date,  dayIncr)}"/>
 
-    <c:set var="rangeEnd" value="${zm:addDay(currentDay,numdays).timeInMillis}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
     
     <app:skin mailbox="${mailbox}" />
