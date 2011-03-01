@@ -66,7 +66,7 @@ ZmDeclineShareDialog.prototype.popup =
 function(share, fromAddr) {
 	this._share = share;
 	this._fromAddr = fromAddr;
-	var message = this._formatter.format([share.grantee.name, share.link.name]);
+	var message = this._formatter.format([share.grantor.name, share.link.name]);
 	this._confirmMsgEl.innerHTML = AjxStringUtil.htmlEncode(message);
 
 	this._reply.setReplyType(ZmShareReply.STANDARD);
