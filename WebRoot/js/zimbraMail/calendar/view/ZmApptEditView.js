@@ -1177,20 +1177,22 @@ function(addrInput, addrs, type, shortForm) {
 		if (addrs && addrs.length) {
 			for (var i = 0, len = addrs.length; i < len; i++) {
 				var addr = addrs[i];
-				var addrStr, email, match;
-				if (typeof addr == "string") {
-					addrStr = addr;
+				if (addr) {
+					var addrStr, email, match;
+					if (typeof addr == "string") {
+						addrStr = addr;
+					}
+					else if (addr.isAjxEmailAddress) {
+						addrStr = addr.toString(shortForm);
+						match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
+					}
+					else if (addr instanceof ZmContact) {
+						email = addr.getEmail(true);
+						addrStr = email.toString(shortForm);
+						match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
+					}
+					addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
 				}
-				else if (addr.isAjxEmailAddress) {
-					addrStr = addr.toString(shortForm);
-					match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
-				}
-				else if (addr instanceof ZmContact) {
-					email = addr.getEmail(true);
-					addrStr = email.toString(shortForm);
-					match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
-				}
-				addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
 			}
 		}
 	}
@@ -1199,19 +1201,21 @@ function(addrInput, addrs, type, shortForm) {
 		if (addrs && addrs.length) {
 			for (var i = 0, len = addrs.length; i < len; i++) {
 				var addr = addrs[i];
-				if (typeof addr == "string") {
-					list.push(addr);
-				}
-				else if (addr.isAjxEmailAddress) {
-					list.push(addr.toString(shortForm));
-				}
-				else if (addr instanceof ZmContact) {
-					var email = addr.getEmail(true);
-					list.push(email.toString(shortForm));
+				if (addr) {
+					if (typeof addr == "string") {
+						list.push(addr);
+					}
+					else if (addr.isAjxEmailAddress) {
+						list.push(addr.toString(shortForm));
+					}
+					else if (addr instanceof ZmContact) {
+						var email = addr.getEmail(true);
+						list.push(email.toString(shortForm));
+					}
 				}
 			}
 		}
-		var addrStr = (list.length > 0) ? addrs.join(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR : "";
+		var addrStr = (list.length > 0) ? list.join(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR : "";
 		addrInput.setValue(addrStr || "");
 	}
 };
