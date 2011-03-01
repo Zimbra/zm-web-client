@@ -333,7 +333,7 @@ function() {
 			icon: "SendReceive",
 			templateId: "data.ImportExport#ImportExportPrefPage",
 			priority: 100,
-			precondition: ZmSetting.IMPORT_EXPORT_ENABLED,
+			precondition: [ZmSetting.IMPORT_ENABLED, ZmSetting.EXPORT_ENABLED],
 			prefs: [
 				ZmSetting.IMPORT_FOLDER,
 				ZmSetting.IMPORT_BUTTON,
