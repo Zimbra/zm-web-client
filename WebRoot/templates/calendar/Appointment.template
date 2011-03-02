@@ -63,8 +63,9 @@
             </tr>
             <$ if (data.isGalEnabled && data.isGroupCalEnabled) { $>
             <tr id='${id}_resourcesContainer'>
-                <td class='ZmFieldLabelRight'><div id='${id}_res_btn'><$= ZmMsg.resources $></div></td>
-                <td colspan='4' id='${id}_resourcesData'></td>
+                <td class='ZmFieldLabelRight'><div id='${id}_res_btn'><$= ZmMsg.resourcesLabel $></div></td>
+                <td colspan='3' id='${id}_resourcesData'></td>
+                <td>&nbsp;</td>
             </tr>
             <$ } $>
             <tr>
