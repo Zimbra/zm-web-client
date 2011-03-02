@@ -185,7 +185,12 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     window.appDevMode     = ${isDevMode};
 	window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
 
-    ZmSpreadSheetApp.setFile('${fileId}', '${fileName}', '${folderId}');
+    if(ZmCsfeCommand.getAuthToken()){
+        ZmSpreadSheetApp.setFile('${fileId}', '${fileName}', '${folderId}');
+    }else{
+        window.location = window.appContextPath;
+    }
+
 
 </script>
 </body>

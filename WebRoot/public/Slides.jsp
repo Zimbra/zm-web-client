@@ -172,6 +172,10 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     window.appRequestLocaleId = "${locale}";
     window.appDevMode     = ${isDevMode};
 
+    if(!ZmCsfeCommand.getAuthToken()){
+        window.location = window.appContextPath;
+    }
+
     function launch() {
 
         window.DBG = new AjxDebug(AjxDebug.NONE, null, false);

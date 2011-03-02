@@ -176,8 +176,13 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     window.isTinyMCE = <%= isTinyMce %>;
     window.appDevMode     = ${isDevMode};
     window.appCoverageMode = ${isCoverage};
-	window.DBG = new AjxDebug(AjxDebug.NONE, null, false);  
-    ZmDocsEditApp.setFile('${fileId}', '${fileName}', '${folderId}');
+    window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
+
+    if(ZmCsfeCommand.getAuthToken()){
+        ZmDocsEditApp.setFile('${fileId}', '${fileName}', '${folderId}');
+    }else{
+        window.location = window.appContextPath;
+    }
 
 </script>
 </body>
