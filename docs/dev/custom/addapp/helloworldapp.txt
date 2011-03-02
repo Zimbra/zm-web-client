@@ -49,50 +49,6 @@ To complete the registration of the application, please do the following.
 Ignore lines that begin with the double slash comment (//) mark.
 
 
-
-//////////////////////// Edit ZimbraWebClient/WebRoot/js/zimbraMail/core/ZmId.js
-// Our application needs an Identification
-// find the following line:
-// ZmId.APP_BRIEFCASE = "Briefcase";
-// and add the following:
-/**
- * Defines the "briefcase" application.
- * This string must be unique across all ids in the code.
- */
-ZmId.APP_HELLOWORLD	= "HelloWorld";
-//
-// Further down in the same file, find:
-//ZmId.VIEW_ACCOUNT				= "ACCT";
-// and right above it place
-ZmId.VIEW_HELLOWORLD = "HELLOWORLD";
-
-
-
-//////////// Edit ZimbraWebClient/WebRoot/js/zimbraMail/share/model/ZmSetting.js
-// We want to set up the helloworld app so that it is visible.
-// find the line
-// ZmSetting.VOICE_ENABLED			= "VOICE_ENABLED";
-// and add the following below it
-// For helloworld test app
-ZmSetting.HELLOWORLD_ENABLED    = "HELLOWORLD_ENABLED";
-
-
-
-////////// Edit: ZimbraWebClient/WebRoot/js/zimbraMail/share/model/ZmSettings.js
-// Now that we have a name for our setting (see the change in ZmSetting.js)
-// we need to create a setting object that tells the Zimbra Web Client what
-// is the default setup for our app.
-// Find the line:
-// this.registerSetting("ASSISTANT_ENABLED",				{name:"zimbraFeatureZimbraAssistantEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-// and right above it, add the definition for "HELLOWORLD_ENABLED".
-// Notice we leave the "name" field off of the object literal. It is not needed
-// for our application as our application will not have an equivalent LDAP
-// configuration. If it did, and this was the real world, we would need that
-// name field to map to the name of the setting on the server.
-this.registerSetting("HELLOWORLD_ENABLED", {type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-
-
-
 ////////////// Edit: ZimbraWebClient/WebRoot/js/zimbraMail/package/Startup1_2.js
 // We need to make sure our App gets loaded in the initial package load,
 // as it is the entry point for everything else we do.
@@ -110,6 +66,65 @@ AjxPackage.require("zimbraMail.helloworld.ZmHelloWorldApp");
 // our application tooltip
 helloworld = Hello World
 gotoHelloWorld = Go to Hello World
+
+
+
+//////////////////////// Edit ZimbraWebClient/WebRoot/js/zimbraMail/core/ZmId.js
+// NOTE: Due to file load order, the following setting should not
+// need to be made within the ZmSetting.js file. The setting should
+// be done at the end of the application file.
+// See the ZmHelloWorldApp.js
+//////// Old method below
+// Our application needs an Identification
+// find the following line:
+// ZmId.APP_BRIEFCASE = "Briefcase";
+// and add the following:
+///**
+// * Defines the "briefcase" application.
+// * This string must be unique across all ids in the code.
+// */
+//ZmId.APP_HELLOWORLD	= "HelloWorld";
+//
+// Further down in the same file, find:
+//ZmId.VIEW_ACCOUNT				= "ACCT";
+// and right above it place
+//ZmId.VIEW_HELLOWORLD = "HELLOWORLD";
+
+
+
+//////////// Edit ZimbraWebClient/WebRoot/js/zimbraMail/share/model/ZmSetting.js
+// NOTE: Due to file load order, the following setting should not
+// need to be made within the ZmSetting.js file. The setting should
+// be done at the end of the application file.
+// See the ZmHelloWorldApp.js
+//////// Old method below
+// We want to set up the helloworld app so that it is visible.
+// find the line
+// ZmSetting.VOICE_ENABLED			= "VOICE_ENABLED";
+// and add the following below it
+// For helloworld test app
+// ZmSetting.HELLOWORLD_ENABLED    = "HELLOWORLD_ENABLED";
+
+
+
+////////// Edit: ZimbraWebClient/WebRoot/js/zimbraMail/share/model/ZmSettings.js
+// NOTE: The below settings can now be handled via the new registerSettings
+// class method, if the application class implements the registerSettings
+// function. See the ZmHelloWorldApp.js code for an example, and use that
+// procedure for registering settings.
+//////// Old method below
+// Now that we have a name for our setting (see the change in ZmSetting.js)
+// we need to create a setting object that tells the Zimbra Web Client what
+// is the default setup for our app.
+// Find the line:
+// this.registerSetting("ASSISTANT_ENABLED",				{name:"zimbraFeatureZimbraAssistantEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+// and right above it, add the definition for "HELLOWORLD_ENABLED".
+// Notice we leave the "name" field off of the object literal. It is not needed
+// for our application as our application will not have an equivalent LDAP
+// configuration. If it did, and this was the real world, we would need that
+// name field to map to the name of the setting on the server.
+// this.registerSetting("HELLOWORLD_ENABLED", {type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+
 
 
 

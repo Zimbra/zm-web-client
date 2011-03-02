@@ -49,6 +49,27 @@ ZmHelloWorldApp = function(container, parentController) {
 ZmHelloWorldApp.prototype = new ZmApp;
 ZmHelloWorldApp.prototype.constructor = ZmHelloWorldApp;
 
+//-------------------------------------------------------- Class Methods
+/**
+ * Called during the settings registration phase of the ZWC.
+ * Allows this application to register default application settings with
+ * the active ZmSettings object.
+ * @param settings {ZmSettings} Settings instance on which to register our
+ * app.
+ */
+ZmHelloWorldApp.registerSettings =
+function(settings) {
+    settings.registerSetting(ZmSetting.HELLOWORLD_ENABLED, {
+        // @TODO set to the corect name for the HelloWorld server side pref
+        //name:"zimbraFeatureHelloWorldEnabled",
+        type: ZmSetting.T_COS,
+        dataType: ZmSetting.D_BOOLEAN,
+        defaultValue: true
+    });
+};
+
+
+//-------------------------------------------------------- Properties
 /**
  * Exact string name of the app class name. Used during
  * construction.
@@ -56,8 +77,6 @@ ZmHelloWorldApp.prototype.constructor = ZmHelloWorldApp;
  */
 ZmHelloWorldApp.prototype.appClassName = "ZmHelloWorldApp";
 
-
-//-------------------------------------------------------- Properties
 /**
  * Pointer to the main app controller.
  * @type ZmHelloWorldController
@@ -340,7 +359,28 @@ function() {
 
 /*
  * Defines the "Hello world application" settings and constants.
+ * NOTE: It is assumed that the static classes/objects referenced here have
+ * been loaded and are accessible.
  */
+/**
+ * Defines the "Hello World" application.
+ * This string must be unique across all ids in the code.
+ * @type String
+ * @static
+ */
+ZmId.APP_HELLOWORLD = "HelloWorld";
+/**
+ * Defines the default HelloWorld view.
+ * @type String
+ * @static
+ */
+ZmId.VIEW_HELLOWORLD = "HELLOWORLD";
+/**
+ * Setting for our enabled application.
+ * (This seems extraordinarily circular).
+ * @type string
+ */
+ZmSetting.HELLOWORLD_ENABLED    = "HELLOWORLD_ENABLED";
 /**
  * Local reference to the ZmId.APP_HELLOWORLD id.
  * Various settings are each application are hashed against the code
