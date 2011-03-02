@@ -539,22 +539,22 @@ function(ev) {
 
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var item = ev.item;
-		var restUrl = item.getRestUrl();
 
         if(item.isFolder){
             this._app.search({folderId:item.id, noClear:true});
             return;
         }
 
+		var restUrl = item.getRestUrl();
+        //added for bug: 45150
+        restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
         if (item.isWebDoc()) {
-            //added for bug: 45150
-            restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
 			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
             restUrl += (restUrl.match(/\?/) ? "&" : "?") + "localeId=" + AjxEnv.DEFAULT_LOCALE;
 
 		}
 		if (restUrl) {
-            if(item.isDownloadable()) {
+            if(item.isDownloadable() && !(item.contentType == ZmMimeTable.APP_ADOBE_PDF && this.hasPDFReader())) {
                 this._downloadFile(restUrl);
             }else {
 			    window.open(restUrl, this._getWindowName(item.name), item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
@@ -562,6 +562,14 @@ function(ev) {
 		}
 	}
 };
+
+ZmBriefcaseController.prototype.hasPDFReader =
+function(){
+    if(AjxUtil.isUndefined(this._hasPDFReader)){
+        this._hasPDFReader = AjxPluginDetector.detectPDFReader();
+    }
+    return this._hasPDFReader;
+}
 
 ZmBriefcaseController.prototype._listActionListener =
 function(ev) {
