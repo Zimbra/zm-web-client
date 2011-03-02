@@ -44,7 +44,8 @@ ZmFreeBusySchedulerView = function(parent, attendees, controller, dateInfo) {
 	this._allAttendees = [];
 	this._allAttendeesStatus = [];
 	this._allAttendeesSlot = null;
-
+    this._sharedCalIds = {};
+    
 	this._attTypes = [ZmCalBaseItem.PERSON];
 	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		this._attTypes.push(ZmCalBaseItem.LOCATION);
@@ -1629,11 +1630,12 @@ function() {
 
 ZmFreeBusySchedulerView.prototype.popupFreeBusyToolTop =
 function(params) {
-    var cc = AjxDispatcher.run("GetCalController");
-    var treeController =  cc.getCalTreeController();
-    var calendars = treeController ? treeController.getOwnedCalendars(appCtxt.getApp(ZmApp.CALENDAR).getOverviewId(), params.email) : [];
-    var tooltipContent = "";
-
+    var cc = AjxDispatcher.run("GetCalController"),
+        treeController =  cc.getCalTreeController(),
+        calendars = treeController ? treeController.getOwnedCalendars(appCtxt.getApp(ZmApp.CALENDAR).getOverviewId(), params.email) : [],
+        tooltipContent = "",
+        i,
+        length;
     if(!params.status) params.status = ZmFreeBusySchedulerView.STATUS_FREE;
 
     var fbStatusMsg = [];
@@ -1644,17 +1646,69 @@ function(params) {
     fbStatusMsg[ZmFreeBusySchedulerView.STATUS_UNKNOWN]  = ZmMsg.unknown;
     fbStatusMsg[ZmFreeBusySchedulerView.STATUS_WORKING]  = ZmMsg.free;
 
-    if(calendars.length == 0) {
+    var calIds = [];
+    var calRemoteIds = new AjxVector();
+    for (i = 0, length = calendars.length; i < length; i++) {
+        var cal = calendars[i];
+        if (cal && (cal.nId != ZmFolder.ID_TRASH)) {
+            calIds.push(appCtxt.multiAccounts ? cal.id : cal.nId);
+            calRemoteIds.add(cal.getRemoteId(), null, true);
+        }
+    }
+    var sharedCalIds = this.getUserSharedCalIds(params.email);
+    var id;
+    // Check and remove the duplicates
+    // otherwise results will be duplicated
+    if(sharedCalIds) {
+        for(i=0, length = sharedCalIds.length; i<length; i++) {
+            id = sharedCalIds[i];
+            if(id && !calRemoteIds.contains(id)) {
+                calIds.push(id);
+            }
+        }
+    }
+
+    if(calIds.length == 0) {
         tooltipContent = "<b>" + ZmMsg.statusLabel + " " + fbStatusMsg[params.status] + "</b>";
     }else {
         var acct = this._editView.getCalendarAccount();
         var emptyMsg = acct && (acct.name == params.email) ? fbStatusMsg[params.status] : ZmMsg.unknown;
-        tooltipContent = cc.getUserStatusToolTipText(params.startDate, params.endDate, true, params.email, emptyMsg);
+        tooltipContent = cc.getUserStatusToolTipText(params.startDate, params.endDate, true, params.email, emptyMsg, calIds);
     }
     var shell = DwtShell.getShell(window);
     var tooltip = shell.getToolTip();
     tooltip.setContent(tooltipContent, true);
     tooltip.popup(params.x, params.y, true);
+};
+
+ZmFreeBusySchedulerView.prototype.getUserSharedCalIds =
+function(email) {
+    if(this._sharedCalIds && this._sharedCalIds[email]) {
+        return this._sharedCalIds[email];
+    }
+    var jsonObj = {GetShareInfoRequest:{_jsns:"urn:zimbraAccount"}};
+	var request = jsonObj.GetShareInfoRequest;
+	if (email) {
+		request.owner = {by:"name", _content:email};
+	}
+	var result = appCtxt.getAppController().sendRequest({jsonObj:	jsonObj});
+
+    //parse the response
+    var resp = result.GetShareInfoResponse;
+    var share = (resp && resp.share) ? resp.share : null;
+    var ids = [];
+    if(share) {
+        for(var i=0; i<share.length; i++) {
+            if(share[i].ownerId && share[i].folderId) {
+                var folderId = share[i].ownerId + ":" + share[i].folderId;
+            }
+        }
+        if(!this._sharedCalIds) {
+            this._sharedCalIds = {};
+        }
+    }
+    this._sharedCalIds[email] = ids;
+    return ids;
 };
 
 //bug: 30989 - getting proper email address from alias

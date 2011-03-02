@@ -866,7 +866,7 @@
 		</tr>
 	<$ } $>
 
-	<$ if (data.appt.isOrganizer() && data.appt.otherAttendees) { $>
+	<$ if (data.appt.isOrganizer() && data.appt.otherAttendees && !data.hideAttendees) { $>
 		<tr valign='center'>
 			<td colspan=2>
 				<div class='calendar_tooltip_attendees'>
