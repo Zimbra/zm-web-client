@@ -1803,7 +1803,7 @@ function(appt, type, mode) {
 	msgController.setMsg(appt.message);
 	// poke the msgController
 	var instanceDate = mode == ZmCalItem.MODE_DELETE_INSTANCE ? new Date(appt.uniqStartTime) : null;
-	msgController._sendInviteReply(type, appt.compNum || 0, instanceDate, appt.getRemoteFolderOwner(), true);
+	msgController._sendInviteReply(type, appt.compNum || 0, instanceDate, appt.getRemoteFolderOwner());
 	this._continueDelete(appt, mode);
 };
 
@@ -2703,7 +2703,41 @@ function(appt, type, op) {
 	msgController.setMsg(appt.message);
 	// poke the msgController
 	var instanceDate = op == ZmOperation.VIEW_APPT_INSTANCE ? new Date(appt.uniqStartTime) : null;
-	msgController._sendInviteReply(type, appt.compNum || 0, instanceDate, appt.getRemoteFolderOwner());
+
+    if(type == ZmOperation.REPLY_DECLINE) {
+        var callback = new AjxCallback(this, this._sendInviteReply, [type, instanceDate]);
+        this._promptDeclineNotify(appt, callback);
+    }else {
+        msgController._sendInviteReply(type, appt.compNum || 0, instanceDate, appt.getRemoteFolderOwner());
+    }
+};
+
+ZmCalViewController.prototype._promptDeclineNotify =
+function(appt, callback) {
+	if (!this._declineNotifyDialog) {
+		var msg = ZmMsg.confirmDeclineAppt;
+		this._declineNotifyDialog = new ZmApptDeleteNotifyDialog({
+			parent: this._shell,
+			title: AjxMsg.confirmTitle,
+			confirmMsg: msg,
+			choiceLabel1: ZmMsg.dontNotifyOrganizer,
+			choiceLabel2 : ZmMsg.notifyOrganizer
+		});
+	}
+	this._declineNotifyDialog.popup(new AjxCallback(this, this._declineNotifyYesCallback, [appt, callback]));
+};
+
+ZmCalViewController.prototype._declineNotifyYesCallback =
+function(appt, callback) {
+	var notifyOrg = !this._declineNotifyDialog.isDefaultOptionChecked();
+    if(callback) callback.run(appt, notifyOrg);
+};
+
+
+ZmCalViewController.prototype._sendInviteReply =
+function(type, instanceDate, appt, notifyOrg) {
+    var msgController = this._getMsgController();
+    msgController._sendInviteReply(type, appt.compNum || 0, instanceDate, appt.getRemoteFolderOwner(), !notifyOrg);
 };
 
 ZmCalViewController.prototype._handleApptEditRespondAction =
