@@ -503,13 +503,13 @@ function(attId, docIds, draftType, callback, contactId) {
 
 	// check for read receipt
 	var requestReadReceipt = false;
-    var acct = acctName && appCtxt.accountList.getAccountByName(acctName);
+	var acct = acctName && appCtxt.accountList.getAccountByName(acctName);
 	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED, null, acct)) {
 		var menu = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS).getMenu();
-        if (menu){
-		    var mi = menu.getItemById(ZmOperation.KEY_ID, ZmOperation.REQUEST_READ_RECEIPT);
-		    requestReadReceipt = (!!(mi && mi.getChecked()));
-        }
+		if (menu) {
+			var mi = menu.getItemById(ZmOperation.KEY_ID, ZmOperation.REQUEST_READ_RECEIPT);
+			requestReadReceipt = (!!(mi && mi.getChecked()));
+		}
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
@@ -1538,7 +1538,9 @@ function(op) {
 		this._action = ZmOperation.FORWARD_INLINE;
 	}
 
-	cv.resetBody(this._action, this._msg);
+	var unquotedContent = cv.getUnQuotedContent();
+
+	cv.resetBody(this._action, this._msg, unquotedContent);
 };
 
 ZmComposeController.prototype._detachListener =
