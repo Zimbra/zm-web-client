@@ -2304,12 +2304,16 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 };
 
 ZmHtmlEditor.WRAP_LENGTH		= 72;
-ZmHtmlEditor.HTML_QUOTE_PRE		= '<blockquote style="border-left:2px solid ' +
+ZmHtmlEditor.HTML_QUOTE_PREFIX_PRE		= '<blockquote style="border-left:2px solid ' +
 									 AjxStringUtil.HTML_QUOTE_COLOR +
 									 ';margin-left:5px;padding-left:5px;'+
 									 AjxStringUtil.HTML_QUOTE_STYLE +
 									 '">';
-ZmHtmlEditor.HTML_QUOTE_POST	= '</blockquote><br/>';
+ZmHtmlEditor.HTML_QUOTE_PREFIX_POST	= '</blockquote><br/>';
+ZmHtmlEditor.HTML_QUOTE_NONPREFIX_PRE		= '<div style="' +
+									 AjxStringUtil.HTML_QUOTE_STYLE +
+									 '">';
+ZmHtmlEditor.HTML_QUOTE_NONPREFIX_POST	= '</div><br/>';
 
 // returns a standard set of params for wrapping text of HTML content
 ZmHtmlEditor.getWrapParams =
@@ -2322,8 +2326,8 @@ function(htmlMode, incOptions) {
 	params.len		= ZmHtmlEditor.WRAP_LENGTH;
 	params.eol		= htmlMode ? '<br/>' : '\n';
 	params.pre		= (htmlMode || !incOptions.prefix) ? "" : appCtxt.get(ZmSetting.REPLY_PREFIX) + " ";
-	params.before	= (htmlMode && incOptions.prefix) ? ZmHtmlEditor.HTML_QUOTE_PRE : "";
-	params.after	= (htmlMode && incOptions.prefix) ? ZmHtmlEditor.HTML_QUOTE_POST : "";
+	params.before	= (htmlMode) ? ((incOptions.prefix) ? ZmHtmlEditor.HTML_QUOTE_PREFIX_PRE : ZmHtmlEditor.HTML_QUOTE_NONPREFIX_PRE) : "";
+	params.after	= (htmlMode) ? ((incOptions.prefix) ? ZmHtmlEditor.HTML_QUOTE_PREFIX_POST : ZmHtmlEditor.HTML_QUOTE_NONPREFIX_POST) : "";
 
 	return params;
 };
