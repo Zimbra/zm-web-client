@@ -2342,7 +2342,7 @@ function(appt, startDateOffset, endDateOffset, callback, errorCallback, ev) {
 ZmCalViewController.prototype._handleResponseUpdateApptDate =
 function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback, result) {
 	// skip prompt if no attendees
-	if (!appt.otherAttendees) {
+	if (appt.inviteNeverSent || !appt.otherAttendees) {
 		this._handleResponseUpdateApptDateSave.apply(this, arguments);
 		return;
 	}
@@ -2403,7 +2403,12 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [callback]);
 		var respErrCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [errorCallback]);
 		appCtxt.getShell().setBusy(true);
-		appt.send(null, respCallback, respErrCallback);
+        if(appt.inviteNeverSent) {
+            appt.save(null, respCallback, respErrCallback);
+        }
+        else {
+		    appt.send(null, respCallback, respErrCallback);
+        }
 	} catch (ex) {
 		appCtxt.getShell().setBusy(false);
 		if (ex.msg) {
@@ -2468,22 +2473,24 @@ function(start, noheader, callback, result) {
 };
 
 ZmCalViewController.prototype.getUserStatusToolTipText =
-function(start, end, noheader, email, emptyMsg) {
+function(start, end, noheader, email, emptyMsg, calIds) {
 	try {
-		var calIds = [];
-		if (this._calTreeController) {
-			var calendars = this._calTreeController.getOwnedCalendars(this._app.getOverviewId(),email);
-			for (var i = 0; i < calendars.length; i++) {
-				var cal = calendars[i];
-				if (cal && (cal.nId != ZmFolder.ID_TRASH)) {
-					calIds.push(appCtxt.multiAccounts ? cal.id : cal.nId);
-				}
-			}
-		}		
-		
-		if ((calIds.length == 0) || !email) {
-			return "<b>" + ZmMsg.statusFree + "</b>";
-		}
+        if(!calIds) {
+            calIds = [];
+            if (this._calTreeController) {
+                var calendars = this._calTreeController.getOwnedCalendars(this._app.getOverviewId(),email);
+                for (var i = 0; i < calendars.length; i++) {
+                    var cal = calendars[i];
+                    if (cal && (cal.nId != ZmFolder.ID_TRASH)) {
+                        calIds.push(appCtxt.multiAccounts ? cal.id : cal.nId);
+                    }
+                }
+            }
+
+            if ((calIds.length == 0) || !email) {
+                return "<b>" + ZmMsg.statusFree + "</b>";
+            }
+        }
 
 		var startTime = start.getTime();
 		var endTime = end.getTime();
@@ -2495,7 +2502,7 @@ function(start, end, noheader, email, emptyMsg) {
 
 		// to avoid frequent request to server we cache the appt for the entire
 		// day first before getting the appts for selected time interval
-		this.getApptSummaries({start:dayStart.getTime(), end:dayEnd.getTime(), fanoutAllDay:true, folderIds: calIds});		
+		this.getApptSummaries({start:dayStart.getTime(), end:dayEnd.getTime(), fanoutAllDay:true, folderIds: calIds});
 
 		var result = this.getApptSummaries({start:startTime, end:endTime, fanoutAllDay:true, folderIds: calIds});
 
