@@ -972,16 +972,16 @@ function(contentType) {
 };
 
 ZmMailMsg.prototype.sendInviteReply =
-function(edited, componentId, callback, errorCallback, instanceDate, accountName, ignoreNotifyDlg) {
+function(edited, componentId, callback, errorCallback, instanceDate, accountName, ignoreNotify) {
 	this._origMsg = this._origMsg || this;
 	if (componentId == 0){ // editing reply, custom message
 		this._origMsg._customMsg = true;
 	}
-	return this._sendInviteReply(edited, componentId || 0, callback, errorCallback, instanceDate, accountName, ignoreNotifyDlg);
+	return this._sendInviteReply(edited, componentId || 0, callback, errorCallback, instanceDate, accountName, ignoreNotify);
 };
 
 ZmMailMsg.prototype._sendInviteReply =
-function(edited, componentId, callback, errorCallback, instanceDate, accountName, ignoreNotifyDlg) {
+function(edited, componentId, callback, errorCallback, instanceDate, accountName, ignoreNotify) {
 	var jsonObj = {SendInviteReplyRequest:{_jsns:"urn:zimbraMail"}};
 	var request = jsonObj.SendInviteReplyRequest;
 
@@ -1060,6 +1060,7 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 	if (!replyActionMap[this.inviteMode]) {
 		needsRsvp = this._origMsg.needsRsvp();
 	}
+    if(ignoreNotify) needsRsvp = false;
 	return this._sendInviteReplyContinue(jsonObj, needsRsvp ? "TRUE" : "FALSE", edited, callback, errorCallback, instanceDate, accountName, toastMessage);
 };
 
@@ -1194,7 +1195,7 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 	// if we have an invite reply, we have to send a different message
 	if (this.isInviteReply && !isDraft) {
 		// TODO: support for batchCmd here as well
-		return this.sendInviteReply(true, 0, callback, errorCallback, this._instanceDate, aName, true);
+		return this.sendInviteReply(true, 0, callback, errorCallback, this._instanceDate, aName, false);
 	} else {
 		var jsonObj, request;
 		if (isDraft) {
