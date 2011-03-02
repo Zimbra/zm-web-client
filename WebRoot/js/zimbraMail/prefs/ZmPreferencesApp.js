@@ -423,8 +423,12 @@ function() {
 	ZmPref.registerPref("COMPOSE_INIT_FONT_FAMILY", {
 		displayName:		ZmMsg.defaultFontSettings,
 		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions: 	["Arial", "Arial Black","Comic Sans MS","Courier New", "Lucida Console", "Tahoma", "Times New Roman", "Trebuchet MS", "Verdana"],
-		options: 			["Arial", "Arial Black","Comic Sans MS","Courier New", "Lucida Console", "Tahoma", "Times New Roman", "Trebuchet MS", "Verdana"],
+		displayOptions: 	["Andale Mono","Arial", "Arial Black","Book Antiqua","Bookman Old Style","Comic Sans MS","Courier New", "Garamond",
+                             "Georgia", "Helvetica", "Impact", "Lucida Console", "Symbol", "Tahoma", "Terminal", "Times New Roman", "Trebuchet MS",
+                             "Verdana","Webdings","Wingdings"],
+		options: 			["Andale Mono","Arial", "Arial Black","Book Antiqua","Bookman Old Style","Comic Sans MS","Courier New", "Garamond",
+                             "Georgia", "Helvetica", "Impact", "Lucida Console", "Symbol", "Tahoma", "Terminal", "Times New Roman", "Trebuchet MS",
+                             "Verdana","Webdings","Wingdings"],
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
 
