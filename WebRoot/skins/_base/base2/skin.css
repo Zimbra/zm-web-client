@@ -189,7 +189,7 @@ BODY						{	margin:0px; 				}
     top:0px;
     width:100%;
     height:100%;
-    font-family:@font-default@;
+    font-family:@FontFamily-default@;
     font-size:11px;
     background-color: @AltC@;
     background-image: -moz-linear-gradient(top, @AltC@, @darken(AltC,19)@); /* FF3.6 */
