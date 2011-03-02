@@ -363,7 +363,6 @@ function(params) {
 			request = jsonObj.SearchCalendarResourcesRequest;
 			if (this.attrs) {
 				var attrs = [].concat(this.attrs);
-				AjxUtil.arrayRemove(attrs, "fullName");
 				request.attrs = attrs.join(",");
 			}
             request.offset = this.offset = (this.offset || 0);
