@@ -498,7 +498,7 @@ function(calItem, mode) {
 
 		// bug 9969: HACK - remove the all day durtion for display
 		var isNew = (mode == ZmCalItem.MODE_NEW || mode == ZmCalItem.MODE_NEW_FROM_QUICKADD);
-		if (!isNew && ed.getHours() == 0 && ed.getMinutes() == 0 && ed.getSeconds() == 0) {
+		if (!isNew && ed.getHours() == 0 && ed.getMinutes() == 0 && ed.getSeconds() == 0 && sd.getTime() != ed.getTime()) {
 			ed.setHours(-12);
 		}
 	} else {
