@@ -70,10 +70,12 @@ ZmNotificationsPage.prototype.showMe = function() {
 
     // load SMS data, if needed
     if (initialize && this._form.getControl("DEVICE_EMAIL_REGION") != null) {
+        var locid = window.appRequestLocaleId ? "&locid=" + window.appRequestLocaleId : "";
         var includes = [
             [   appContextPath,
                 "/res/ZmSMS.js",
                 "?v=",cacheKillerVersion,
+                locid,
                 appDevMode ? "&debug=1" : ""
             ].join("")
         ];
