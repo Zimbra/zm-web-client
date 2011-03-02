@@ -35,6 +35,7 @@ ZmFilterRuleDialog = function() {
 
 	// set content
 	this.setContent(this._contentHtml());
+    this._createControls();
 	this._setConditionSelect();
 	this._createTabGroup();
 
@@ -159,6 +160,13 @@ function() {
 
 	// content html
 	return AjxTemplate.expand("prefs.Pages#MailFilterRule", id);
+};
+
+ZmFilterRuleDialog.prototype._createControls =
+function() {
+ this._stopFiltersCheckbox = new DwtCheckbox({parent: this, id: this._stopCheckboxId, checked: true});
+ this._stopFiltersCheckbox.replaceElement(document.getElementById(this._stopCheckboxId));
+ this._stopFiltersCheckbox.setText(ZmMsg.stopFilterProcessing);
 };
 
 ZmFilterRuleDialog.prototype._setConditionSelect =
