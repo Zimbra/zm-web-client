@@ -507,7 +507,7 @@ function() {
     var width = this.getSize().x;
 	// add chooser
 	this._chooser = new ZmApptChooser(this);
-    this._chooserWidth = width;
+    this._chooserWidth = width - 50;
     this._chooser.resize(this._chooserWidth, ZmAttendeePicker.CHOOSER_HEIGHT);
     
 	var chooserSourceListViewDiv = document.getElementById(this._chooserSourceListViewDivId);
