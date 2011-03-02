@@ -999,6 +999,7 @@ ZmInvite.prototype.hasInviteReplyMethod =
 function(compNum) {
 	var methodName = this.getInviteMethod(compNum);
 	var publishOrRequest = (methodName == ZmCalendarApp.METHOD_REQUEST ||
+							methodName == ZmCalendarApp.METHOD_REPLY   ||
 							methodName == ZmCalendarApp.METHOD_PUBLISH);
 	return ((methodName == null) || publishOrRequest);
 };
