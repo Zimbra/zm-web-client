@@ -69,6 +69,7 @@ function() {
     this._attendees = [];
     this._schedule = {};
 
+    this._manualOverrideFlag = false;
     if(this._timeSuggestions) this._timeSuggestions.removeAll();
     if(this._miniCalendar) this.clearMiniCal();
 
