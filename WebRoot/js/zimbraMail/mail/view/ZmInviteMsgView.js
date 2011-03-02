@@ -75,7 +75,6 @@ function(msg) {
 	var invite = this._invite = msg.invite;
 
 	if (invite && invite.hasAcceptableComponents() &&
-		msg.folderId != ZmFolder.ID_TRASH &&
 		msg.folderId != ZmFolder.ID_SENT)
 	{
 		if (invite.hasCounterMethod()) {

@@ -991,17 +991,32 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 	var verb = "ACCEPT";
 	var needsRsvp = true;
 
+	var toastMessage; //message to display after action is done.
+	
 	switch (this.inviteMode) {
-		case ZmOperation.REPLY_ACCEPT_IGNORE:		needsRsvp = false;
-		case ZmOperation.REPLY_ACCEPT_NOTIFY:
-		case ZmOperation.REPLY_ACCEPT:				verb = "ACCEPT"; break;
-		case ZmOperation.REPLY_DECLINE_IGNORE:		needsRsvp = false;
-		case ZmOperation.REPLY_DECLINE_NOTIFY:
-		case ZmOperation.REPLY_DECLINE:				verb = "DECLINE"; break;
-		case ZmOperation.REPLY_TENTATIVE_IGNORE:	needsRsvp = false;
-		case ZmOperation.REPLY_TENTATIVE_NOTIFY:
-		case ZmOperation.REPLY_TENTATIVE:			verb = "TENTATIVE"; break;
-		case ZmOperation.REPLY_NEW_TIME:			verb = "DELEGATED"; break; // XXX: WRONG MAPPING!
+		case ZmOperation.REPLY_ACCEPT_IGNORE:				//falls-through on purpose
+			needsRsvp = false;
+		case ZmOperation.REPLY_ACCEPT_NOTIFY:               //falls-through on purpose
+		case ZmOperation.REPLY_ACCEPT:
+			verb = "ACCEPT";
+			toastMessage = ZmMsg.inviteAccepted;
+			break;
+		case ZmOperation.REPLY_DECLINE_IGNORE:				//falls-through on purpose
+			needsRsvp = false;
+		case ZmOperation.REPLY_DECLINE_NOTIFY:              //falls-through on purpose
+		case ZmOperation.REPLY_DECLINE:
+			verb = "DECLINE";
+			toastMessage = ZmMsg.inviteDeclined;
+			break;
+		case ZmOperation.REPLY_TENTATIVE_IGNORE:            //falls-through on purpose
+			needsRsvp = false;
+		case ZmOperation.REPLY_TENTATIVE_NOTIFY:            //falls-through on purpose
+		case ZmOperation.REPLY_TENTATIVE:
+			verb = "TENTATIVE";
+			toastMessage = ZmMsg.inviteAcceptedTentatively;
+			break;
+		case ZmOperation.REPLY_NEW_TIME:
+			verb = "DELEGATED"; break; // XXX: WRONG MAPPING!
 	}
 	request.verb = verb;
 
@@ -1045,11 +1060,11 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 	if (!replyActionMap[this.inviteMode]) {
 		needsRsvp = this._origMsg.needsRsvp();
 	}
-	return this._sendInviteReplyContinue(jsonObj, needsRsvp ? "TRUE" : "FALSE", edited, callback, errorCallback, instanceDate, accountName);
+	return this._sendInviteReplyContinue(jsonObj, needsRsvp ? "TRUE" : "FALSE", edited, callback, errorCallback, instanceDate, accountName, toastMessage);
 };
 
 ZmMailMsg.prototype._sendInviteReplyContinue =
-function(jsonObj, updateOrganizer, edited, callback, errorCallback, instanceDate, accountName) {
+function(jsonObj, updateOrganizer, edited, callback, errorCallback, instanceDate, accountName, toastMessage) {
 
 	var request = jsonObj.SendInviteReplyRequest;
 	request.updateOrganizer = updateOrganizer;
@@ -1066,7 +1081,7 @@ function(jsonObj, updateOrganizer, edited, callback, errorCallback, instanceDate
 		this._createMessageNode(request, null, accountName);
 	}
 
-	var respCallback = new AjxCallback(this, this._handleResponseSendInviteReply, [callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseSendInviteReply, [callback, toastMessage]);
 	var resp = this._sendMessage({ jsonObj:jsonObj,
 								isInvite:true,
 								isDraft:false,
@@ -1081,7 +1096,7 @@ function(jsonObj, updateOrganizer, edited, callback, errorCallback, instanceDate
 };
 
 ZmMailMsg.prototype._handleResponseSendInviteReply =
-function(callback, result) {
+function(callback, toastMessage, result) {
 	var resp = result.getResponse();
 
 	var id = resp.id ? resp.id.split("-")[0] : null;
@@ -1104,6 +1119,10 @@ function(callback, result) {
 
 	if (this.acceptFolderId && allowMove && resp.apptId != null) {
 		this.moveApptItem(resp.apptId, this.acceptFolderId);
+	}
+
+	if (toastMessage) {
+		appCtxt.setStatusMsg(toastMessage);
 	}
 
 	if (callback) {
@@ -1473,7 +1492,7 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
  *        callback				[AjxCallback]	async callback
  *        errorCallback			[AjxCallback]	async error callback
  *        batchCmd				[ZmBatchCommand]	if set, request gets added to this batch command
- *        
+ *
  * @private
  */
 ZmMailMsg.prototype._sendMessage =
