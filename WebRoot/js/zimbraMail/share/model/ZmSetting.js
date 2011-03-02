@@ -355,8 +355,10 @@ function(value, key, setDefault, skipNotify, skipImplicit) {
 		changed = Boolean(newValue != this.value);
 		this.value = newValue;
 	} else if (this.dataType == ZmSetting.D_HASH) {
-		if (key) {
+		changed = true;
+        if (key) {
 			if (newValue) {
+                changed = Boolean(newValue != this.value[key]);
 				this.value[key] = newValue;
 			} else {
 				delete this.value[key];
@@ -364,7 +366,6 @@ function(value, key, setDefault, skipNotify, skipImplicit) {
 		} else {
 			this.value = newValue;
 		}
-		changed = true;
 	} else if (this.dataType == ZmSetting.D_LIST) {
 		if (newValue instanceof Array) {
 			this.value = newValue;
