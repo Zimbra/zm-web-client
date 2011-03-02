@@ -1421,7 +1421,6 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	</fieldset>
 
 	<input id='${id}_stop' type='checkbox' name='cbStop' checked tabindex='60'>
-	<$=ZmMsg.stopFilterProcessing$>
 </template>
 
 <template id='prefs.Pages#Calendar'>
