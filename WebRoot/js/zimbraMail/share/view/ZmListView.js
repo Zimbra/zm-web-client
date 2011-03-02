@@ -714,11 +714,21 @@ function(clickedEl, bContained, ev) {
 	DwtListView.prototype.setMultiSelection.call(this, clickedEl, bContained);
 
 	this.setSelectionCbox(clickedEl, bContained);
-	this.setSelectionHdrCbox(this.getSelection().length == this.getList().size());
+	this.setSelectionHdrCbox(this._isAllChecked());
 
 	// reset toolbar operations LAST
 	this._controller._resetToolbarOperations();
 };
+
+/**
+ * check whether all items in the list are checked
+ * @return {Boolean} true if all items are checked
+ */
+ZmListView.prototype._isAllChecked = 
+function() {
+	return getSelection().length == this.getList().size();
+};
+
 
 /**
  * Sets the selection checkbox.

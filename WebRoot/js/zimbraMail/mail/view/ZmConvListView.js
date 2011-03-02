@@ -116,6 +116,30 @@ function(actionCode, ev) {
 	}
 };
 
+/**
+ * check whether all conversations are checked
+ * overrides ZmListView.prototype._isAllChecked since the list here contains both conversations and messages, and we care only about messages
+ * @return {Boolean} true if all conversations are checked
+ */
+ZmConvListView.prototype._isAllChecked =
+function() {
+	var selection = this.getSelection();
+	//let's see how many conversations are checked.
+	//ignore checked messages. Sure, if the user selects manually all messages in a conversation, the
+	//conversation is not selected automatically too, but that's fine I think.
+	//This method returns true if and only if all the conversations (in the conversation layer of the tree) are selected
+	var convsSelected = 0;
+	for (var i = 0; i < selection.length; i++) {
+		if (selection[i].type == ZmItem.CONV) {
+			convsSelected++;
+		}
+	}
+
+
+	return convsSelected == this.getList().size();
+};
+
+
 ZmConvListView.prototype.markUIAsRead = 
 function(item) {
 	ZmMailListView.prototype.markUIAsRead.apply(this, arguments);
