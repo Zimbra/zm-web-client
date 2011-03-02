@@ -1179,7 +1179,7 @@ function(html, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_HOME_PHONE) {
 		html[idx++] = AjxStringUtil.htmlEncode(item.getAttr(ZmContact.F_homePhone));
 	} else if (field == ZmItem.F_LOCATION) {
-		html[idx++] = AjxStringUtil.htmlEncode(item.getAttr(ZmResource.F_locationName));
+		html[idx++] = AjxStringUtil.htmlEncode(item.getAttr(ZmResource.F_locationName) || item.getFullName());
 	} else if (field == ZmItem.F_CONTACT) {
 		html[idx++] = AjxStringUtil.htmlEncode(item.getAttr(ZmResource.F_contactMail));
 	} else if (field == ZmItem.F_CAPACITY) {
