@@ -400,7 +400,24 @@ function(msg, oldMsg) {
 	}
 
 	// reset scroll view to top most
-	this.getHtmlElement().scrollTop = 0;
+	var htmlElement = this.getHtmlElement();
+	htmlElement.scrollTop = 0;
+	if (htmlElement.scrollTop != 0) {
+		/* situation that happens only on Chrome, without repro steps - bug 55775/57090 */
+		AjxDebug.println(AjxDebug.SCROLL, "scrollTop not set to 0. scrollTop=" + htmlElement.scrollTop + " offsetHeight=" + htmlElement.offsetHeight + " scrollHeight=" + htmlElement.scrollHeight + " browser=" + navigator.userAgent);
+		AjxDebug.dumpObj(AjxDebug.SCROLL, htmlElement.outerHTML);
+		/*
+			trying this hack for solution -
+			explanation: The scroll bar does not appear if the scrollHeight of the div is bigger than the total height of the iframe and header together (i.e. if htmlElement.scrollHeight >= htmlElement.offsetHeight)
+			If the scrollbar does not appear it's set to, and stays 0 when the scrollbar reappears due to resizing the iframe in _resetIframeHeight (which is later, I think always on timer).
+			So what I do here is set the height of the iframe to very small (since the default is 150px), so the scroll bar disappears.
+			it will reappear when we reset the size in _resetIframeHeight. I hope this will solve the issue.
+		*/
+		var iframe = document.getElementById(this._iframeId);
+		iframe.style.height = "1px";
+		AjxDebug.println(AjxDebug.SCROLL, "scrollTop after reseting it with the hack =" + htmlElement.scrollTop);
+
+	}
 
 	// notify zimlets that a new message has been opened
 	appCtxt.notifyZimlets("onMsgView", [msg, oldMsg, this]);
