@@ -44,6 +44,7 @@ ZmPrefView = function(params) {
 
 	this.setVisible(false);
 	this.getTabBar().setVisible(false);
+    this.addStateChangeListener(new AjxListener(this, this._stateChangeListener));
 };
 
 ZmPrefView.prototype = new DwtTabView;
@@ -461,4 +462,15 @@ function(sectionId) {
 		if (treeView)
 			treeView.setSelected(organizer, true, false);
 	}
+};
+
+ZmPrefView.prototype._stateChangeListener =
+function(ev) {
+  if (ev && ev.item && ev.item instanceof ZmPrefView) {
+      var view = ev.item.getActiveView();
+      if (view instanceof ZmFilterPage) {
+          view._controller._stateChangeListener(ev);
+      }
+  }
+
 };
