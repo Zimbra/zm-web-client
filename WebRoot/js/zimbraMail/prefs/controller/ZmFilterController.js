@@ -99,4 +99,24 @@ function(callback) {
 	return outgoingActive;
 };
 
+ZmFilterController.prototype._stateChangeListener =
+function (ev) {
+   var index, sel, rules = null;
 
+   var listView = this._incomingFilterRulesController.getListView();
+   if (listView) {
+       sel = listView.getSelection()[0];
+       rules = this._incomingFilterRulesController.getRules();
+       index = sel ? rules.getIndexOfRule(sel) : null;
+       this._incomingFilterRulesController.resetListView(index);
+   }
+
+   var outListView = this._outgoingFilterRulesController.getListView();
+   if (outListView) {
+       sel = outListView.getSelection()[0];
+       rules = this._outgoingFilterRulesController.getRules();
+       index = sel ? rules.getIndexOfRule(sel) : null;
+       this._outgoingFilterRulesController.resetListView(index);
+   }
+
+};
