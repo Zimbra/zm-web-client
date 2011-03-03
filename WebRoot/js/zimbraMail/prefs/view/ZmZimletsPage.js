@@ -454,6 +454,7 @@ ZmPrefZimletListView = function(parent, controller) {
 		parent: parent,
 		className: "ZmPrefZimletListView",
 		headerList: this._getHeaderList(),
+        id: "ZmPrefZimletListView",
 		view: ZmId.VIEW_PREF_ZIMLETS
 	});
 
@@ -501,6 +502,18 @@ ZmPrefZimletListView.prototype._handleZimletsLoaded = function(evt) {
         this.setCellContents(item, ZmPrefZimletListView.COL_DESC, AjxStringUtil.htmlEncode(item.desc));
     }
 };
+
+ZmPrefZimletListView.prototype._getRowId =
+function(item, params) {
+    if (item) {
+        var rowIndex = this._list && this._list.indexOf(item);
+        if (rowIndex && rowIndex != -1)
+            return "ZmPrefZimletListView_row_" + rowIndex;
+    }
+
+    return null;
+};
+
 
 ZmPrefZimletListView.prototype.setCellContents = function(item, field, html) {
 	var el = this.getCellElement(item, field);
