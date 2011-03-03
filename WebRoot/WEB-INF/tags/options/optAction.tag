@@ -152,6 +152,15 @@
     </c:choose>
 </zm:modifyPrefs>
 
+<c:if test="${selected eq 'calendar'}">
+    <c:set var="startHour" value="${zm:cookInt(param.zimbraPrefCalendarDayHourStart, 0)}"/>
+    <c:set var="endHour" value="${zm:cookInt(param.zimbraPrefCalendarDayHourEnd, 0)}"/>
+    <c:if test="${startHour gt endHour}">
+        <c:set var="calendarHoursWarning" value="${true}" scope="request"/>
+        <app:status style="Warning"><fmt:message key="calendarHoursInvalid"/></app:status>
+    </c:if>
+</c:if>
+    
 <c:if test="${selected eq 'signatures'}">
     <c:forEach var="i" begin="0" end="${param.numSignatures}">
         <c:set var="origSignatureNameKey" value="origSignatureName${i}"/>
@@ -201,7 +210,7 @@
     <c:remove var="skin" scope="session"/> <%-- remove old var so that new skin gets applied using skin.tag --%>    
 </c:if>
 <c:choose>
-    <c:when test="${newSignatureWarning or modSignatureWarning}">
+    <c:when test="${newSignatureWarning or modSignatureWarning or calendarHoursWarning}">
         <%-- do nothing --%>
     </c:when>
     <c:when test="${updated or signatureUpdated}">
