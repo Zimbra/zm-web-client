@@ -706,31 +706,27 @@ function(params) {
 		this._appViewMgr.addComponents(viewComponents, true);
 	}
 
-	if (appCtxt.get(ZmSetting.LICENSE_STATUS) != ZmSetting.LICENSE_GOOD) {
-		AjxDispatcher.require("Startup2");
-        var licenseStatus = appCtxt.get(ZmSetting.LICENSE_STATUS);
-        var licenseMsg;
-        switch (licenseStatus) {
-            case ZmSetting.LICENSE_NOT_INSTALLED:
-                licenseMsg = ZmMsg.licenseNotInstalled;
-                break;
-            case ZmSetting.LICENSE_NOT_ACTIVATED:
-                licenseMsg = ZmMsg.licenseNotActivated;
-                break;
-            default:
-                licenseMsg = ZmMsg.licenseExpired;
-        }
-              
-		var dlg = appCtxt.getMsgDialog();
-		dlg.reset();
-        dlg.setMessage(licenseMsg, DwtMessageDialog.WARNING_STYLE);
-		dlg.popup();
-	}
+	this._checkLicense();
 
 	if (!this._doingPostRenderStartup) {
 		this._postRenderStartup();
 	}
 
+};
+
+// popup a warning dialog if there is a problem with the license
+ZmZimbraMail.prototype._checkLicense =
+function(ev) {
+
+	var status = appCtxt.get(ZmSetting.LICENSE_STATUS);
+	var msg = ZmSetting.LICENSE_MSG[status];
+	if (msg) {
+		AjxDispatcher.require("Startup2");
+		var dlg = appCtxt.getMsgDialog();
+		dlg.reset();
+        dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+		dlg.popup();
+	}
 };
 
 /**
