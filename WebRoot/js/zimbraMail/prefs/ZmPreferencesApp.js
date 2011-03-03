@@ -842,6 +842,10 @@ function() {
 ZmPreferencesApp.getFilterRulesController =
 function(outgoing) {
     var prefController = AjxDispatcher.run("GetPrefController");
-    var filterController = prefController.getFilterController();
-    return outgoing ? filterController.getOutgoingFilterRulesController() : filterController.getIncomingFilterRulesController();
+    if (prefController && prefController.getPrefsView()) {
+        var filterController = prefController.getFilterController();
+        return outgoing ? filterController.getOutgoingFilterRulesController() : filterController.getIncomingFilterRulesController();
+    }
+
+    return null;
 };

@@ -951,7 +951,9 @@ function(ev) {
 		var cancelCallback = new AjxCallback(this, function(){target.checked = false;});
 		if (active) {
 			var outgoingFilterController = ZmPreferencesApp.getFilterRulesController(this._outgoing);
-			outgoingFilterController.handleBeforeFilterChange(null, cancelCallback);
+            if (outgoingFilterContrller) {
+			    outgoingFilterController.handleBeforeFilterChange(null, cancelCallback);
+            }
 		}
 	}
 };
@@ -1003,18 +1005,22 @@ function(rowId) {
 ZmFilterRuleDialog.prototype._cancelButtonListener =
 function(ev) {
     var filterRulesController = ZmPreferencesApp.getFilterRulesController(this._outgoing);
-    //get index before loading rules to keep selection on cancel
-    var sel = filterRulesController.getListView() ? filterRulesController.getListView().getSelection()[0] : null;
-    var index = sel ? this._rules.getIndexOfRule(sel) : null;
-    var callback = new AjxCallback(this, this._handleResponseLoadRules, [index]);
-    this._rules.loadRules(true, callback);
+    if (filterRulesController) {
+        //get index before loading rules to keep selection on cancel
+        var sel = filterRulesController.getListView() ? filterRulesController.getListView().getSelection()[0] : null;
+        var index = sel ? this._rules.getIndexOfRule(sel) : null;
+        var callback = new AjxCallback(this, this._handleResponseLoadRules, [index]);
+        this._rules.loadRules(true, callback);
+    }
     this.popdown();
 };
 
 ZmFilterRuleDialog.prototype._handleResponseLoadRules =
 function(index) {
     var filterRulesController = ZmPreferencesApp.getFilterRulesController(this._outgoing);
-    filterRulesController.resetListView(index);
+    if (filterRulesController) {
+        filterRulesController.resetListView(index);
+    }
 };
 
 /**
