@@ -368,38 +368,11 @@ function(treeItem, organizer, treeView, skipNotify) {
 				treeItem.enableSelection(true);
 			}
 		}
-
-		// set expand state per user's prefs
-		this._expandTreeItem(treeItem);
 	}
     var treeItems = treeItem.getItems();
     for (var i = 0; i < treeItems.length; i++) {
         this._fixupTreeNode(treeItems[i], null, treeView, skipNotify);
     }
-};
-
-ZmTreeController.prototype._expandTreeItem =
-function(treeItem) {
-	var folderId = treeItem.getData(Dwt.KEY_ID);
-	var parentTi = treeItem.parent;
-
-	// only expand if the parent is also expanded
-	if (parentTi && (parentTi instanceof DwtTreeItem) && parentTi.getExpanded()) {
-		treeItem.setExpanded(true);
-	}
-};
-
-ZmTreeController.prototype._expandTreeItems =
-function(treeItem) {
-	if (treeItem._isSeparator) { return; }
-
-	this._expandTreeItem(treeItem);
-
-	// recurse!
-	var treeItems = treeItem.getItems();
-	for (var i = 0; i < treeItems.length; i++) {
-		this._expandTreeItems(treeItems[i]);
-	}
 };
 
 /**
@@ -829,18 +802,6 @@ ZmTreeController.prototype._treeListener =
 function(ev) {
 	var treeItem = ev && ev.item;
 	var overviewId = treeItem && treeItem._tree && treeItem._tree.overviewId;
-
-	// persist expand/collapse state for folders
-	var isExpand = ev.detail == DwtTree.ITEM_EXPANDED;
-	var folderId = (ev.detail == DwtTree.ITEM_COLLAPSED || isExpand)
-		? treeItem.getData(Dwt.KEY_ID) : null;
-
-	if (folderId && !treeItem._isHeader) {
-		// check if any of this treeItem's children need to be expanded as well
-		if (isExpand) {
-			this._expandTreeItems(treeItem);
-		}
-	}
 
 	// only handle events that come from headers in app overviews
 	var overview = appCtxt.getOverviewController().getOverview(overviewId);
