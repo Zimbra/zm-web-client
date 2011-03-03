@@ -158,11 +158,6 @@ function(id, params) {
 	mi.setEnabled(params.enabled !== false);
 	mi.setData(ZmPopupMenu.MENU_ITEM_ID_KEY, id);
 
-    //set context menu tr id
-    var row = mi.getRowElement();
-    if (row)
-        row.setAttribute("id", "POPUP" + "_" + id.replace(/\s/g, ""));
-
 	return mi;
 };
 
