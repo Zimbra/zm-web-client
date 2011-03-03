@@ -410,6 +410,11 @@ function(id, value, setup, control) {
 				try { // add try/catch - see bug #33870
 					if (window.platform && !window.platform.isRegisteredProtocolHandler("mailto")) {
 						object.setSelected(false);
+
+						// this pref might have been set to true before. so we must set origValue = false
+						// so that when user selects the checkbox, it will be considered "dirty"
+						var setting = appCtxt.getSettings(appCtxt.accountList.mainAccount).getSetting(id);
+						setting.origValue = false;
 					} else {
 						object.setSelected(true);
 					}
