@@ -600,12 +600,7 @@ function(params) {
 			if (folder && folder.parent) {
 				folderTip = AjxMessageFormat.format(ZmMsg.accountDownloadToFolder, folder.getPath());
 			}
-			tooltip = tooltip +
-					(tooltip && folderTip ? "<br>" : "") +
-					folderTip;
-            if (tooltip == "") {
-				tooltip = null;
-			}
+			tooltip = folderTip ? [tooltip, folderTip].join("<br>") : tooltip;
         }
 	}
 	else if (field == ZmItem.F_FOLDER) {
