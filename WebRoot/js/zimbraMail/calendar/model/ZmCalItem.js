@@ -1596,7 +1596,7 @@ function(mode, callback, msg, batchCmd, result) {
 			this._sendRequest(soapDoc, accountName, callback);
 		}
 	} else {
-	    if(mode == ZmCalItem.MODE_DELETE_SERIES && this._cancelFutureInstances) {
+	    if(mode == ZmCalItem.MODE_DELETE_SERIES && this._cancelFutureInstances && this.getOrigStartDate().getTime() != this.getStartTime()) {
 	
 	        var recurrence = this._recurrence;
 	        var untilDate = new Date(this.getOrigStartDate().getTime());
