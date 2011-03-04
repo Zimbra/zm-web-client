@@ -138,7 +138,7 @@
                     </tr>
                     <tr>
                         <td><fmt:message key="labelBy"/>&nbsp;${doc.creator}</td>
-                        <td align="right"><fmt:message key="labelVersion"/>: <span id="version_cont">${doc.version}</span>  |  <fmt:message key="labelModifiedOn"/>: <fmt:formatDate value="${doc.modifiedDate}" pattern="M/d/yyyy h:mm a" timeZone="${timeZone}"/></td>
+                        <td align="right"><fmt:message key="labelVersion"/>: <span id="version_cont">${doc.version}</span>  |  <fmt:message key="labelModifiedOn"/>: <span id="date_container">&nbsp;</span></td>
                     </tr>
                     </table>
                 </td>
@@ -165,7 +165,9 @@
         window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
         ZmDocsPreview.launch('zdocument', {
             version: '${zm:cook(version)}',
-            versionCont: "version_cont"
+            versionCont: "version_cont",
+            dateContainer: "date_container",
+            dateModified: '<fmt:formatDate value="${doc.modifiedDate}" pattern="M/d/yyyy h:mm a" timeZone="${timeZone}"/>'
         });
     </script>
     </body>

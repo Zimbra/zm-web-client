@@ -20,6 +20,9 @@ ZmDocsPreview = function(container, params){
     params = params || {};
     if(params.versionCont)
         params.versionCont = document.getElementById(params.versionCont);
+    if(params.dateContainer){
+        params.dateContainer = document.getElementById(params.dateContainer);
+    }
     this._params = params;
 
     if(!params.deferInit)   this.init();
@@ -87,7 +90,16 @@ ZmDocsPreview.prototype.show =
 function(){
     var previewHTML = this._content;
     this._container.innerHTML = previewHTML;
-    if(this._params.versionCont){
-        this._params.versionCont.innerHTML = this._params.version;
+    var params = this._params;
+    if(params.versionCont){
+       params.versionCont.innerHTML = this._params.version;
     }
+    if(params.dateContainer && params.dateModified){
+        //bug:50533, Server sends GMT, convert it into Client timezone
+        var dateModified = new Date(params.dateModified);
+        params.dateModified = AjxTimezone.convertTimezone(dateModified, AjxTimezone.GMT ,AjxTimezone.DEFAULT);
+        var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
+        params.dateContainer.innerHTML = dateFormatter.format(params.dateModified) || params.dateModified;
+    }
+
 };
