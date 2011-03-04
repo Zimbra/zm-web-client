@@ -287,7 +287,7 @@ function(ev) {
 			if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 				var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
 				if (item.type == ZmItem.MSG) {
-					AjxDispatcher.run("GetMsgController").show(item, this._msgControllerMode, respCallback, true);
+					AjxDispatcher.run("GetMsgController", item && item.nId).show(item, this._msgControllerMode, respCallback, true);
 				} else {
 					AjxDispatcher.run("GetConvController").show(this._activeSearch, item, this, respCallback, true);
 				}
