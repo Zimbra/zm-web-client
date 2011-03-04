@@ -333,6 +333,7 @@ function(ev) {
         //IE has to add 12px to width and height to adjust the calendar
         var menuSize = menu.getSize();
         menu.setSize(menuSize.x+12, menuSize.y+12);
+        menu.getHtmlElement().style.width = "180px";
     }
 };
 
