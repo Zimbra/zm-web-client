@@ -343,7 +343,7 @@ function(reset) {
 };
 
 ZmInviteMsgView.prototype.addSubs =
-function(subs, sentBy, sentByAddr) {
+function(subs, sentBy, sentByAddr, obo) {
     AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	subs.invite = this._invite;
 
@@ -390,6 +390,10 @@ function(subs, sentBy, sentByAddr) {
 	// organizer
 	var org = new AjxEmailAddress(this._invite.getOrganizerEmail(), null, this._invite.getOrganizerName());
 	subs.invOrganizer = om ? om.findObjects(org, true, ZmObjectManager.EMAIL) : org.toString();
+
+    if(obo) {
+        subs.obo = om ? om.findObjects(obo, true, ZmObjectManager.EMAIL) : obo.toString();
+    }
 
 	// sent-by
 	var sentBy = this._invite.getSentBy();

@@ -169,6 +169,12 @@
 									<td class='LabelColValue'><$= data.invSentBy $></td>
 								</tr>
 							<$ } $>
+                            <$ if (data.obo && (AjxStringUtil.stripTags(data.obo) != AjxStringUtil.stripTags(data.invSentBy))) { $>
+                                <tr>
+                                    <td class='LabelColName' width=75><$= ZmMsg.onBehalfOfLabel $> </td>
+                                    <td class='LabelColValue'><$= data.obo $></td>
+                                </tr>
+                            <$ } $>
 							<tr>
 								<td class='LabelColName ${timeChangeClass}'><$= data.counterInvMsg ? ZmMsg.proposedTimeLabel : ZmMsg.timeLabel $></td>
 								<td class='LabelColValue ${timeChangeClass}'>

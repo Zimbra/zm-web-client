@@ -1179,7 +1179,7 @@ function(msg, container, callback) {
 	};
 
 	if (invite && !invite.isEmpty() && this._inviteMsgView) {
-		this._inviteMsgView.addSubs(subs, sentBy, sentByAddr);
+		this._inviteMsgView.addSubs(subs, sentBy, sentByAddr, sender ? addr : null);
 	}
 	else {
 		subs.sentBy = sentBy;

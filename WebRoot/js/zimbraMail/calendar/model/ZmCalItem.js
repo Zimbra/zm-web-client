@@ -2028,7 +2028,11 @@ function(soapDoc, attachmentId, notifyList, accountName) {
         }
         if(displayName){
              e.setAttribute("p", displayName);
-        }        
+        }
+
+        if (identity && identity.isFromDataSource && !isRemote) {
+            this._addIdentityFrom(identity, e, m, soapDoc);
+        }
 	}
 
     //SENDER Address
@@ -2119,6 +2123,31 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 	}
 
 	return {'inv': inv, 'm': m};
+};
+
+ZmCalItem.prototype._addIdentityFrom =
+function(identity, e, m, soapDoc) {
+    var dataSource = appCtxt.getDataSourceCollection().getById(identity.id);
+    if (dataSource) {
+        var newAddrNode = e;
+        var provider = ZmDataSource.getProviderForAccount(dataSource);
+        var doNotAddSender = provider && provider._nosender;
+        // main account is "sender"
+        if (!doNotAddSender) {
+            e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.SENDER]);
+            e.setAttribute("p", appCtxt.get(ZmSetting.DISPLAY_NAME) || "");
+            newAddrNode = soapDoc.set("e", null, m);
+        }
+        // mail is "from" external account
+        newAddrNode.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
+        newAddrNode.setAttribute("a", dataSource.getEmail());
+
+        if (appCtxt.get(ZmSetting.DEFAULT_DISPLAY_NAME)) {
+            var displayName = dataSource.identity && dataSource.identity.sendFromDisplay;
+            displayName = displayName || dataSource.userName || dataSource.getName();
+            if(displayName) e.setAttribute("p", displayName);
+        }
+    }
 };
 
 /**
