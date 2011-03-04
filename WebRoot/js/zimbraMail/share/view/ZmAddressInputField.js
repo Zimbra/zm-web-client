@@ -908,11 +908,12 @@ function(ev) {
 ZmAddressInputField.prototype._handleLoadContactListener =
 function() {
 
-	var cc = AjxDispatcher.run("GetContactController");
+	var ctlr = window.parentAppCtxt ? window.parentAppCtxt.getApp(ZmApp.CONTACTS).getContactController() :
+									  AjxDispatcher.run("GetContactController");
 	var contact = ZmAddressInputField.menuContext.contact;
 	if (contact) {
 		if (contact.isLoaded) {
-			cc.show(contact, true);
+			ctlr.show(contact, true);
 		} else {
 			var callback = new AjxCallback(this, this._loadContactCallback);
 			contact.load(callback);
@@ -923,14 +924,16 @@ function() {
 		var email = bubble && bubble.email;
 		if (email) {
 			contact.initFromEmail(email);
-			cc.show(contact, true);
+			ctlr.show(contact, true);
 		}
 	}
 };
 
 ZmAddressInputField.prototype._loadContactCallback =
 function(resp, contact) {
-	AjxDispatcher.run("GetContactController").show(contact);
+	var ctlr = window.parentAppCtxt ? window.parentAppCtxt.getApp(ZmApp.CONTACTS).getContactController() :
+									  AjxDispatcher.run("GetContactController");
+	ctlr.show(contact);
 };
 
 ZmAddressInputField.prototype._menuPopdownListener =
