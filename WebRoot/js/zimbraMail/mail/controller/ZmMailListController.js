@@ -1359,7 +1359,7 @@ function(origMsg) {
 };
 
 ZmMailListController.prototype._sendInviteReply =
-function(type, componentId, instanceDate, accountName, ignoreNotify, origMsg, acceptFolderId) {
+function(type, componentId, instanceDate, accountName, ignoreNotify, origMsg, acceptFolderId, callback) {
 	var msg = new ZmMailMsg();
 	AjxDispatcher.require("CalendarCore");
 
@@ -1399,7 +1399,7 @@ function(type, componentId, instanceDate, accountName, ignoreNotify, origMsg, ac
 		msg.setSubject(subject);
 	}
 	var errorCallback = new AjxCallback(this, this._handleErrorInviteReply);
-	return msg.sendInviteReply(true, componentId, null, errorCallback, instanceDate, accountName, ignoreNotify);
+	return msg.sendInviteReply(true, componentId, callback, errorCallback, instanceDate, accountName, ignoreNotify);
 };
 
 ZmMailListController.prototype._handleErrorInviteReply =
