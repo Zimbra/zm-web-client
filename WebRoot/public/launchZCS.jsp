@@ -116,7 +116,7 @@
 	String editor = getParameter(request, "editor", "");
 
 	String ext = getAttribute(request, "fileExtension", null);
-	if (ext == null || isDevMode) ext = "";
+	if (ext == null || isDevMode || isCoverage) ext = "";
 	
 	String offlineMode = getParameter(request, "offline", application.getInitParameter("offlineMode"));
 
