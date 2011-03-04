@@ -160,8 +160,9 @@ function(id, params) {
 
     //set context menu tr id
     var row = mi.getRowElement();
-    if (row)
+    if (row && id && typeof id == "string") {
         row.setAttribute("id", "POPUP" + "_" + id.replace(/\s/g, ""));
+    }
 
 	return mi;
 };
