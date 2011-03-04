@@ -107,7 +107,7 @@ function(){
 ZmCalMgr.prototype._rollDay =
 function(){
     this._dayRollTimer = null;
-    this._miniCalendar.setDate(new Date());
+    this._miniCalendar.setDate(new Date(),true);
     this.startDayRollTimer();
 }
 
