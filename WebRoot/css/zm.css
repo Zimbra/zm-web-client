@@ -3349,6 +3349,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 .ZmDataSourceTestDialog .DwtDialogBody {
 	width: 400px;
+    overflow-x: auto;
 }
 .ZmDataSourceTestTable {
     margin: 0.5em;
