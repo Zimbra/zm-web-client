@@ -126,6 +126,7 @@ ZmExportView.prototype.getParams = function() {
 			"-",
 			AjxDateFormat.format("yyyy-MM-dd-HHmmss", new Date())
 		].join("");
+		params.filename = AjxStringUtil.urlEncode(params.filename);
 	}
 
 	return params;
