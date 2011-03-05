@@ -309,7 +309,7 @@ function() {
  */
 ZmApp.prototype.getDisplayName =
 function() {
-	return ZmMsg[ZmApp.NAME[this._name]];
+	return ZmMsg[ZmApp.NAME[this._name]] || ZmApp.NAME[this._name];
 };
 
 /**

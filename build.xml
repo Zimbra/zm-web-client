@@ -245,46 +245,47 @@
     <target name='war'
             depends='templates,timezones,images,styles,settings,jam-files,compress,help,webxml-package-replace'>
         <mkdir dir='${build.war.dir}'/>
-        <war warfile="${build.war.file}" webxml='${build.dir}/web.xml' compress='${war.compress}' update="${war.update}">
-            <webinf refid="webinf.fileset" />
+        <war warfile="${build.war.file}" webxml='${build.dir}/web.xml'
+             compress='${war.compress}' duplicate="preserve">
+            <webinf refid='customer.webinf.fileset' />
             <webinf refid="overlay.webinf.fileset" />
-			<webinf refid='customer.webinf.fileset' />
+            <webinf refid="webinf.fileset" />
 
-            <classes refid="src.props.fileset" />
-            <classes refid="overlay.src.props.fileset" />
-            <classes refid="messages.fileset" />
-            <classes refid="overlay.messages.fileset" />
             <classes dir='${build.classes.dir}' excludes='**/kabuki/tools/i18n/**,**/build/**'/>
 			<classes dir='${build.classes.dir}' includes='**/kabuki/util/**,**/kabuki/tools/**' />
+            <classes refid="overlay.src.props.fileset" />
+            <classes refid="src.props.fileset" />
+            <classes refid="overlay.messages.fileset" />
+            <classes refid="messages.fileset" />
 
             <lib dir='${lib.dir}' includes='gifencoder.jar'/>
         	<lib dir='${soap.build.dir}' includes='zimbrasoap.jar'/>
             <lib dir='${taglib.build.dir}' includes='zimbrataglib.jar'/>
             <lib dir='${server.build.dir}' includes='zimbrastore.jar'/>
 
+            <!-- files from build tree -->
+            <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
+			<zipfileset dir='${build.web.dir}' includes='js/Boot_all.js${jsmin.ext}' />
+
             <!-- primary files from source trees -->
-            <zipfileset refid="web.fileset" />
+            <zipfileset refid='customer.web.fileset'/>
             <zipfileset refid="overlay.web.fileset" />
-			<zipfileset refid='customer.web.fileset'/>
+            <zipfileset refid="web.fileset" />
 
-            <zipfileset refid="jsp.fileset" prefix='public'/>
-            <zipfileset refid="overlay.jsp.fileset" prefix='public'/>
             <zipfileset refid="customer.jsp.fileset" prefix="public"/>
+            <zipfileset refid="overlay.jsp.fileset" prefix='public'/>
+            <zipfileset refid="jsp.fileset" prefix='public'/>
 
-            <zipfileset refid="img.fileset" prefix='img'/>
             <zipfileset refid="overlay.img.fileset" prefix='img'/>
+            <zipfileset refid="img.fileset" prefix='img'/>
 
-            <zipfileset refid='skins.fileset' prefix='skins' />
             <zipfileset refid='overlay.skins.fileset' prefix='skins' />
+            <zipfileset refid='skins.fileset' prefix='skins' />
 
             <zipfileset refid='help.fileset' prefix='help' />
 			<zipfileset refid='network.help.fileset' prefix='help' />
 
             <zipfileset dir='${tinymce.zplugins.dir}' includes='**' prefix='tiny_mce/${tinymce.version}/plugins'/>
-
-            <!-- files from build tree -->
-            <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
-			<zipfileset dir='${build.web.dir}' includes='js/Boot_all.js${jsmin.ext}' />
         </war>
     </target>
 
