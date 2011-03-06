@@ -52,7 +52,7 @@ function(id, day) {
 
 //filter free busy slots for given time from compressed/accumulated free busy response that got cached already
 ZmFreeBusyCache.prototype.getFreeBusySlot =
-function(startTime, endTime, id) {
+function(startTime, endTime, id, excludeTimeSlots) {
     var slotDate = new Date(startTime);
     slotDate.setHours(0, 0, 0, 0);
 
@@ -70,34 +70,71 @@ function(startTime, endTime, id) {
             if(!newSearchIsInRange) continue;
         }
 
-        if (usr.n) this._addFBInfo(usr.n, id, ZmFreeBusyCache.STATUS_UNKNOWN, startTime, endTime, fbResult);
-        if (usr.t) this._addFBInfo(usr.t, id, ZmFreeBusyCache.STATUS_TENTATIVE, startTime, endTime, fbResult);
-        if (usr.b) this._addFBInfo(usr.b, id, ZmFreeBusyCache.STATUS_BUSY, startTime, endTime, fbResult);
-        if (usr.u) this._addFBInfo(usr.u, id, ZmFreeBusyCache.STATUS_OUT, startTime, endTime, fbResult);
-        if (usr.f) this._addFBInfo(usr.f, id, ZmFreeBusyCache.STATUS_FREE, startTime, endTime, fbResult);
+        if (usr.n) this._addFBInfo(usr.n, id, ZmFreeBusyCache.STATUS_UNKNOWN, startTime, endTime, fbResult, excludeTimeSlots);
+        if (usr.t) this._addFBInfo(usr.t, id, ZmFreeBusyCache.STATUS_TENTATIVE, startTime, endTime, fbResult, excludeTimeSlots);
+        if (usr.b) this._addFBInfo(usr.b, id, ZmFreeBusyCache.STATUS_BUSY, startTime, endTime, fbResult, excludeTimeSlots);
+        if (usr.u) this._addFBInfo(usr.u, id, ZmFreeBusyCache.STATUS_OUT, startTime, endTime, fbResult, excludeTimeSlots);
+        if (usr.f) this._addFBInfo(usr.f, id, ZmFreeBusyCache.STATUS_FREE, startTime, endTime, fbResult, excludeTimeSlots);
     }
 
     return fbResult;
 };
 
 ZmFreeBusyCache.prototype._addFBInfo =
-function(slots, id, status, startTime, endTime, fbResult) {
+function(slots, id, status, startTime, endTime, fbResult, excludeTimeSlots) {
 
     if(!fbResult[status]) fbResult[status] = [];
 
     for (var i = 0; i < slots.length; i++) {
+        var fbSlot;
         if(slots[i].s >= startTime && slots[i].e  <= endTime) {
-            fbResult[status].push({s: slots[i].s, e: slots[i].e});
+            fbSlot = {s: slots[i].s, e: slots[i].e};
         }else if(startTime >= slots[i].s && endTime  <= slots[i].e) {
-            fbResult[status].push({s: startTime, e: endTime});
+            fbSlot = {s: startTime, e: endTime};
         }else if(startTime >= slots[i].s && startTime  <= slots[i].e) {
-            fbResult[status].push({s: startTime, e: slots[i].e});            
+            fbSlot = {s: startTime, e: slots[i].e};
         }else if(endTime >= slots[i].s && endTime  <= slots[i].e) {
-            fbResult[status].push({s: slots[i].s, e: endTime});
+            fbSlot = {s: slots[i].s, e: endTime};
+        }
+
+        if(fbSlot) {
+            if(excludeTimeSlots && status != ZmFreeBusyCache.STATUS_FREE && status != ZmFreeBusyCache.STATUS_UNKNOWN) {
+                this._addByExcludingTime(excludeTimeSlots, fbSlot, fbResult, status);
+            }else {
+                fbResult[status].push(fbSlot);
+            }
         }
     };
 
     if(fbResult[status].length == 0) fbResult[status] = null;
+};
+
+ZmFreeBusyCache.prototype._addByExcludingTime =
+function(excludeTimeSlots, fbSlot, fbResult, status) {
+    var startTime =  excludeTimeSlots.s;
+    var endTime =  excludeTimeSlots.e;
+    var newFBSlot;
+
+    if(fbSlot.s == startTime && fbSlot.e == endTime) {
+        return;
+    }
+
+    if(fbSlot.s < startTime && fbSlot.e > endTime) {
+        fbResult[status].push({s: fbSlot.s, e: startTime});
+        newFBSlot = {s: endTime, e: fbSlot.e};
+    }else if(fbSlot.s < startTime && fbSlot.e >= startTime) {
+        newFBSlot = {s: fbSlot.s, e: startTime};
+    }else if(fbSlot.s <= endTime && fbSlot.e > endTime) {
+        newFBSlot = {s: endTime, e: fbSlot.e};
+    }else if(fbSlot.s <= startTime && fbSlot.e <= startTime) {
+        newFBSlot = {s: fbSlot.s, e: fbSlot.e};
+    }else if(fbSlot.s >= endTime && fbSlot.e >= endTime) {
+        newFBSlot = {s: fbSlot.s, e: fbSlot.e};
+    }
+
+    if(newFBSlot) {
+        fbResult[status].push(newFBSlot);
+    }
 };
 
 ZmFreeBusyCache.prototype.getFreeBusyInfo =

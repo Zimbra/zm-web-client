@@ -90,6 +90,11 @@ function() {
     var id = this.getHTMLElId();
     this._timeSuggestions = new ZmTimeSuggestionView(this, this._controller, this._editView);
 
+    AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.loadPreference), 300);
+};
+
+ZmScheduleAssistantView.prototype.loadPreference =
+function() {
     var prefDlg = this.getPrefDialog();
     prefDlg.setCallback(new AjxCallback(this, this._prefChangeListener));
     prefDlg.getSearchPreference(appCtxt.getActiveAccount(), new AjxCallback(this, this.onSearchPrefLoaded));
@@ -646,17 +651,19 @@ function(startTime, endTime, params) {
     var attendee, sched, isFree;
     for(var i = this._attendees.length; --i >= 0;) {
         attendee = this._attendees[i];
-        sched = this._fbCache.getFreeBusySlot(dayStartTime, dayEndTime, attendee);
+
+        var excludeTimeSlots = this._editView.getFreeBusyExcludeInfo(attendee);
+        sched = this._fbCache.getFreeBusySlot(dayStartTime, dayEndTime, attendee, excludeTimeSlots);
 
         //show suggestions only in the organizer's working hours.
         isFree = params.includeNonWorkingHours ? true : this.isUnderWorkingHour((this.getWorkingHoursPref() == ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS) ? attendee : this._organizerEmail, startTime, endTime);
 
         //ignore time slots for non-working hours of this user
         if(!isFree) continue;
-        
+
         if(sched.b) isFree = isFree && this.isBooked(sched.b, startTime, endTime);
         if(sched.t) isFree = isFree && this.isBooked(sched.t, startTime, endTime);
-        if(sched.u) isFree = isFree && this.isBooked(sched.u, startTime, endTime);        
+        if(sched.u) isFree = isFree && this.isBooked(sched.u, startTime, endTime);
 
         //collect all the item indexes of the attendees available at this slot
         if(isFree) {
@@ -675,7 +682,10 @@ function(startTime, endTime, params) {
             if (resource instanceof Array) {
                 resource = resource[0];
             }
-            sched = this._fbCache.getFreeBusySlot(dayStartTime, dayEndTime, resource);
+
+
+            var excludeTimeSlots = this._editView.getFreeBusyExcludeInfo(resource);
+            sched = this._fbCache.getFreeBusySlot(dayStartTime, dayEndTime, resource, excludeTimeSlots);
             isFree = true;
             if(sched.b) isFree = isFree && this.isBooked(sched.b, startTime, endTime);
             if(sched.t) isFree = isFree && this.isBooked(sched.t, startTime, endTime);
