@@ -115,19 +115,19 @@ function(dialog, verb, args) {
 
 	var match;
 	
-	match = args.match(/\s*\"([^\"]*)\"?\s*/);
+	match = args.match(/[\p{Z}\z\s]*\"([^\"]*)\"?[\p{Z}\z\s]*/);
 	if (match) {
 		adata.subject = match[1];
 		args = args.replace(match[0], " ");
 	}
 
-	match = args.match(/\s*\[([^\]]*)\]?\s*/);	
+	match = args.match(/[\p{Z}\z\s]*\[([^\]]*)\]?[\p{Z}\z\s]*/);
 	if (match) {
 		adata.location = match[1];
 		args = args.replace(match[0], " ");
 	}
 
-	match = args.match(/\s*\(([^)]*)\)?\s*/);
+	match = args.match(/[\p{Z}\z\s]*\(([^)]*)\)?[\p{Z}\z\s]*/);
 	if (match) {
 		adata.notes = match[1];
 		args = args.replace(match[0], " ");
@@ -170,19 +170,19 @@ function(dialog, verb, args) {
 		}
 	}
 
-//	match = args.match(/\s*repeats?\s+(\S+)\s*/);	
+//	match = args.match(/[\p{Z}\z\s]*repeats?[\p{Z}\z\s]+([^\p{Z}\z\s]+)[\p{Z}\z\s]*/);
 //	if (match) {
 //		adata.repeat = match[1];
 //		args = args.replace(match[0], " ");
 //	}
 
-//	match = args.match(/\s*invite\s+(\S+)\s*/);
+//	match = args.match(/[\p{Z}\z\s]*invite[\p{Z}\z\s]+([^\p{Z}\z\s]+)[\p{Z}\z\s]*/);
 //	if (match) {
 //		args = args.replace(match[0], " ");
 //	}
 
 	if (adata.subject == null) {
-		adata.subject = args.replace(/^\s+/, "").replace(/\s+$/, "").replace(/\s+/g, ' ');
+		adata.subject = args.replace(/^[\p{Z}\z\s]+|[\p{Z}\z\s]+$/, "").replace(/[\p{Z}\z\s]+/g, ' ');
 	}
 
 	//dialog._setOkButton(null, true, adata.subject != null && adata.subject != "");

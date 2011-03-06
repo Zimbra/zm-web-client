@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -376,17 +376,6 @@ ZmSettings.prototype.setUserSettings = function(params) {
 		appCtxt.set(ZmSetting.FORWARD_USE_PREFIX, list[1], null, setDefault, skipNotify);
 		appCtxt.set(ZmSetting.FORWARD_INCLUDE_HEADERS, list[2], null, setDefault, skipNotify);
 	}
-
-    // Disable SORTING PREF for MAIL, Overwrite Mail Sort Settings to Defaults
-    // We do this becoz we fetch initial mail response inline, have no control over sortBy
-    var sortOrderSetting = this._settings[ZmSetting.SORTING_PREF];
-    if (sortOrderSetting) {
-        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONVLIST, true, true);
-        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONV, true, true);
-        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_TRAD, true, true);
-    }
-
-
 };
 
 /**
@@ -684,19 +673,16 @@ function() {
 
 	this.setReportScriptErrorsSettings(AjxException, ZmController.handleScriptError);
 
-    var sortOrderSetting = this._settings[ZmSetting.SORTING_PREF];
-    if(!sortOrderSetting.getValue(ZmId.VIEW_CONVLIST)){
-        // default sorting preferences
-        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONVLIST, true, true);
-        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONV, true, true);
-        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_TRAD, true, true);
-        sortOrderSetting.setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_SRC, true, true);
-        sortOrderSetting.setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_TGT, true, true);
-        sortOrderSetting.setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_SIMPLE, true, true);
-        sortOrderSetting.setValue(ZmSearch.DATE_ASC, ZmId.VIEW_CAL, true, true);
-        sortOrderSetting.setValue(ZmSearch.DUE_DATE_ASC, ZmId.VIEW_TASKLIST, true, true);
-        sortOrderSetting.setValue(ZmSearch.SUBJ_ASC, ZmId.VIEW_BRIEFCASE_DETAIL, true, true);
-    }
+	// default sorting preferences
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONVLIST, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONV, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmId.VIEW_TRAD, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_SRC, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_TGT, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_SIMPLE, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_ASC, ZmId.VIEW_CAL, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DUE_DATE_ASC, ZmId.VIEW_TASKLIST, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.SUBJ_ASC, ZmId.VIEW_BRIEFCASE_DETAIL, true, true);
 };
 
 
@@ -895,8 +881,8 @@ function() {
 	this.registerSetting("SIGNATURES_MAX",					{name:"zimbraSignatureMaxNumEntries", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:20});
 	this.registerSetting("SIGNATURES_MIN",					{name:"zimbraSignatureMinNumEntries", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1});
 	this.registerSetting("SKIN_NAME",						{name:"zimbraPrefSkin", type:ZmSetting.T_PREF, defaultValue:"skin", isGlobal:true});
-	this.registerSetting("SORTING_PREF",					{name:"zimbraPrefSortOrder", type:ZmSetting.T_PREF, dataType:ZmSetting.D_HASH, isImplicit:true, isGlobal:true});
-	this.registerSetting("USE_ADDR_BUBBLES",				{name:"zimbraPrefAutocompleteAddressBubblesEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
+	this.registerSetting("SORTING_PREF",					{type:ZmSetting.T_PREF, dataType:ZmSetting.D_HASH});
+	this.registerSetting("USE_ADDR_BUBBLES",				{name: "zimbraPrefAutocompleteAddressBubblesEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	this.registerSetting("USE_KEYBOARD_SHORTCUTS",			{name:"zimbraPrefUseKeyboardShortcuts", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("VIEW_AS_HTML",					{name:"zimbraPrefMessageViewHtmlPreferred", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	this.registerSetting("VOICE_ACCOUNTS",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
@@ -911,6 +897,8 @@ function() {
 	//shared settings
 	this.registerSetting("MAIL_ALIASES",					{name:"zimbraMailAlias", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
 	this.registerSetting("ALLOW_FROM_ADDRESSES",			{name:"zimbraAllowFromAddress", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
+
+    ZmApp.runAppFunction("registerSettings", this);
 };
 
 /**
