@@ -138,6 +138,8 @@ function(msg) {
 					var isSelected = (calAcct && msgAcct)
 						? (calAcct == msgAcct && calendar.nId == ZmOrganizer.ID_CALENDAR)
 						: calendar.nId == ZmOrganizer.ID_CALENDAR;
+                    //bug: 57538 - this invite is intended for owner of shared calendar which should be selected
+                    if(msg.cif && calendar.owner == msg.cif && calendar.rid == ZmOrganizer.ID_CALENDAR) isSelected = true;
 					var option = new DwtSelectOptionData(calendar.id, name, isSelected, null, icon);
 					this._inviteMoveSelect.addOption(option);
 				}
@@ -400,6 +402,11 @@ function(subs, sentBy, sentByAddr, obo) {
 	if (sentBy) {
 		subs.invSentBy = om ? om.findObjects(sentBy, true, ZmObjectManager.EMAIL) : sentBy.toString();
 	}
+
+    if(this._msg.cif) {
+        subs.intendedForMsg = AjxMessageFormat.format(ZmMsg.intendedForInfo, [this._msg.cif]);
+        subs.intendedForClassName = "InviteIntendedFor";
+    }
 
 	// inviteees
 	var str = [];
