@@ -126,6 +126,17 @@
 							</table>
 						</div>
 					<$ } $>
+					<$ if (data.intendedForMsg) { $>
+						<div class="${intendedForClassName}">
+							<table border=0 cellpadding=0 cellspacing=0>
+								<tr>
+								    <td><$= AjxImg.getImageHtml("Information") $></td>
+									<td>&nbsp;</td>
+									<td>${intendedForMsg}</td>
+								</tr>
+							</table>
+						</div>
+					<$ } $>
 					<div class='InvHeaderDiv'>
 						<table cellspacing=0 cellpadding=0 border=0 width=100%>
 							<tr id='${hdrTableTopRowId}'>
