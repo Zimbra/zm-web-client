@@ -648,6 +648,8 @@ function(list, callback, result) {
 	}
 };
 
+ZmSettings.DEFAULT_SORT_PREF = {};
+
 /**
  * Set defaults which are determined dynamically (which can't be set in static code).
  *
@@ -684,21 +686,32 @@ function() {
 
 	this.setReportScriptErrorsSettings(AjxException, ZmController.handleScriptError);
 
+
+    var sortPref =  ZmSettings.DEFAULT_SORT_PREF;
+    sortPref[ZmId.VIEW_CONVLIST]            = ZmSearch.DATE_DESC;
+    sortPref[ZmId.VIEW_CONV]                = ZmSearch.DATE_DESC;
+    sortPref[ZmId.VIEW_TRAD]                = ZmSearch.DATE_DESC;
+    sortPref[ZmId.VIEW_CONTACT_SRC]         = ZmSearch.NAME_ASC;
+    sortPref[ZmId.VIEW_CONTACT_TGT]         = ZmSearch.NAME_ASC;
+    sortPref[ZmId.VIEW_CONTACT_SIMPLE]      = ZmSearch.NAME_ASC;
+    sortPref[ZmId.VIEW_CAL]                 = ZmSearch.DATE_ASC;
+    sortPref[ZmId.VIEW_TASKLIST]            = ZmSearch.DUE_DATE_ASC;
+    sortPref[ZmId.VIEW_BRIEFCASE_DETAIL]    = ZmSearch.SUBJ_ASC;
+
+
     var sortOrderSetting = this._settings[ZmSetting.SORTING_PREF];
-    if(!sortOrderSetting.getValue(ZmId.VIEW_CONVLIST)){
-        // default sorting preferences
-        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONVLIST, true, true);
-        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONV, true, true);
-        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_TRAD, true, true);
-        sortOrderSetting.setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_SRC, true, true);
-        sortOrderSetting.setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_TGT, true, true);
-        sortOrderSetting.setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_SIMPLE, true, true);
-        sortOrderSetting.setValue(ZmSearch.DATE_ASC, ZmId.VIEW_CAL, true, true);
-        sortOrderSetting.setValue(ZmSearch.DUE_DATE_ASC, ZmId.VIEW_TASKLIST, true, true);
-        sortOrderSetting.setValue(ZmSearch.SUBJ_ASC, ZmId.VIEW_BRIEFCASE_DETAIL, true, true);
+    var defaultPrefs = ZmSettings.DEFAULT_SORT_PREF;
+    for(var pref in defaultPrefs){
+        if(!sortOrderSetting.getValue(pref)){
+            sortOrderSetting.setValue(defaultPrefs[pref], pref, true, true);
+        }
     }
 };
 
+ZmSettings.prototype.persistImplicitSortPrefs =
+function(id){
+    return (ZmSettings.DEFAULT_SORT_PREF && ZmSettings.DEFAULT_SORT_PREF[id]);
+};
 
 /**
  * sets AjxException static attributes. This is extracted so it can be called from ZmNewwindow as well.

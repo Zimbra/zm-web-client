@@ -134,7 +134,9 @@ ZmListView.prototype.set =
 function(list, sortField) {
 
 	this._sortByString = this._controller._currentSearch && this._controller._currentSearch.sortBy;
-	if(this.view) appCtxt.set(ZmSetting.SORTING_PREF, this._sortByString, this.view);
+    var settings = appCtxt.getSettings();
+	if(this.view && ( settings && settings.persistImplicitSortPrefs(this.view) ) )
+        appCtxt.set(ZmSetting.SORTING_PREF, this._sortByString, this.view);
 
 	this.setSelectionHdrCbox(false);
 
