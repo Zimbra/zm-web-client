@@ -202,7 +202,7 @@ function(errors) {
 
 ZmMiniCalCache.prototype.highlightMiniCal =
 function(dateArr) {
-	var highlight = [];
+	var highlight = {};
 	for (var i = 0; i < dateArr.length; i++) {
 		if (dateArr[i]) {
 			highlight[dateArr[i]] = AjxDateFormat.parse("yyyyMMdd", dateArr[i]);

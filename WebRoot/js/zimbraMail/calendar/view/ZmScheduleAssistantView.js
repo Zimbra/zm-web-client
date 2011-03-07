@@ -315,7 +315,7 @@ function(date, attendees, forceRefresh) {
 ZmScheduleAssistantView.prototype._miniCalDateRangeListener =
 function(ev) {
     //clear current mini calendar suggestions
-    this._miniCalendar.setColor([], true, []);
+    this._miniCalendar.setColor({}, true, {});
     if(!this._editView.isSuggestionsNeeded()) return;
     this.highlightMiniCal();
 };
@@ -830,7 +830,7 @@ function() {
 
 ZmScheduleAssistantView.prototype.clearMiniCal =
 function() {
-    this._miniCalendar.setColor([], true, []);
+    this._miniCalendar.setColor({}, true, {});
 };
 
 ZmScheduleAssistantView.prototype.getLocationByEmail =
@@ -1013,8 +1013,8 @@ function(params) {
     this._totalUsers = this._attendees.length;
     this._totalLocations =  this._resources.length;
 
-    params.dates = [];
-    params.colors = [];
+    params.dates = {};
+    params.colors = {};
 
     var key, fbStat, freeSlotFound = false, dayStartTime, dayEndTime;
 
