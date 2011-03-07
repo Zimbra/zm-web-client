@@ -710,7 +710,7 @@ function() {
 
 ZmSettings.prototype.persistImplicitSortPrefs =
 function(id){
-    return (ZmSettings.DEFAULT_SORT_PREF && ZmSettings.DEFAULT_SORT_PREF[id]);
+    return ZmSettings.DEFAULT_SORT_PREF[id];
 };
 
 /**
