@@ -553,8 +553,7 @@ function(el) {
 		Dwt.setHandler(this._newTaskInputEl, DwtEvent.ONKEYPRESS, ZmTaskListView._handleKeyPress);
 		this.shell.getHtmlElement().appendChild(this._newTaskInputEl);
 
-		var bounds = Dwt.getBounds(el);
-		Dwt.setBounds(this._newTaskInputEl, bounds.x, bounds.y, bounds.width, bounds.height);
+		this._resetInputSize(el);
 	} else {
 		this._newTaskInputEl.value = "";
 	}
@@ -827,6 +826,7 @@ function(newWidth, newHeight) {
 	this.setSize(newWidth, newHeight);
 	var height = (newHeight == Dwt.DEFAULT) ? newHeight : newHeight - DwtListView.HEADERITEM_HEIGHT;
 	Dwt.setSize(this._parentEl, newWidth, height);
+	this._resetInputSize();
 };
 
 ZmTaskListView.prototype._resetColWidth =
@@ -839,6 +839,18 @@ function() {
         var lastCol = this._headerList[lastColIdx];
 		if (lastCol._field != ZmItem.F_SORTED_BY) {
 			DwtListView.prototype._resetColWidth.apply(this, arguments);
+		}
+	}
+};
+
+ZmTaskListView.prototype._resetInputSize =
+function(el) {
+
+	if (this._newTaskInputEl) {
+		el = el || document.getElementById(this.dId);
+		if (el) {
+			var bounds = Dwt.getBounds(el);
+			Dwt.setBounds(this._newTaskInputEl, bounds.x, bounds.y, bounds.width, bounds.height);
 		}
 	}
 };
