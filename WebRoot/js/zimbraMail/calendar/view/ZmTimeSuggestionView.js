@@ -347,6 +347,7 @@ function() {
 
 ZmTimeSuggestionView.prototype.setShowSuggestionsHTML =
 function(date) {
+    this.removeAll();
 	var	div = document.createElement("div");
     var params = [
         '<span class="fakeanchor" id="' + this.getHTMLElId() + '_showsuggestions">',
