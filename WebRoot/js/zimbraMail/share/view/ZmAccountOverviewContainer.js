@@ -426,7 +426,7 @@ function(parent, data) {
 	parent.getOp(ZmOperation.DELETE).setVisible(false);
 
 	if (isAcctType) {
-		parent.enable(this._newOp, (acct && acct.type != ZmAccount.TYPE_POP));
+		parent.enable(this._newOp, true); 
 		parent.enable(ZmOperation.SYNC, (!acct || (acct && !acct.isMain)));
 	} else {
 		// reset mark all based on a "friendly" hack ;)
