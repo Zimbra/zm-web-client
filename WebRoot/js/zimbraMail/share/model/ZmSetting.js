@@ -68,6 +68,8 @@ ZmSetting = function(id, params) {
 	} else {
 		this.value = null;
 	}
+
+    this.dontSaveDefault = params.dontSaveDefault;
 };
 
 ZmSetting.prototype = new ZmModel;
@@ -286,7 +288,23 @@ function(key, serialize) {
 		return null;
 	}
 
+    if(this.dontSaveDefault && serialize && !key){
+        value = this.getRefinedValue(value);
+    }
+
 	return serialize ? ZmSetting.serialize(value, this.dataType) : value;
+};
+
+ZmSetting.prototype.getRefinedValue =
+function(value){
+    if(this.dataType == ZmSetting.D_HASH){
+        var refinedValue = {}, dValue = this.defaultValue;
+        for(var key in value){
+             refinedValue[key] = (dValue[key] != value[key]) ? value[key] : "";
+        }
+        return refinedValue;
+    }
+    return value;
 };
 
 /**

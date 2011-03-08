@@ -377,15 +377,37 @@ ZmSettings.prototype.setUserSettings = function(params) {
 		appCtxt.set(ZmSetting.FORWARD_INCLUDE_HEADERS, list[2], null, setDefault, skipNotify);
 	}
 
-    // Disable SORTING PREF for MAIL, Overwrite Mail Sort Settings to Defaults
-    // We do this becoz we fetch initial mail response inline, have no control over sortBy
+    //Populate Sort Order Defaults
+    var sortPref =  ZmSettings.DEFAULT_SORT_PREF;
+    sortPref[ZmId.VIEW_CONVLIST]            = ZmSearch.DATE_DESC;
+    sortPref[ZmId.VIEW_CONV]                = ZmSearch.DATE_DESC;
+    sortPref[ZmId.VIEW_TRAD]                = ZmSearch.DATE_DESC;
+    sortPref[ZmId.VIEW_CONTACT_SRC]         = ZmSearch.NAME_ASC;
+    sortPref[ZmId.VIEW_CONTACT_TGT]         = ZmSearch.NAME_ASC;
+    sortPref[ZmId.VIEW_CONTACT_SIMPLE]      = ZmSearch.NAME_ASC;
+    sortPref[ZmId.VIEW_CAL]                 = ZmSearch.DATE_ASC;
+    sortPref[ZmId.VIEW_TASKLIST]            = ZmSearch.DUE_DATE_ASC;
+    sortPref[ZmId.VIEW_BRIEFCASE_DETAIL]    = ZmSearch.SUBJ_ASC;
+
     var sortOrderSetting = this._settings[ZmSetting.SORTING_PREF];
     if (sortOrderSetting) {
-        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONVLIST, true, true);
-        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONV, true, true);
-        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_TRAD, true, true);
-    }
 
+        //Populate empty sort pref's with defaultValues
+        for(var pref in sortPref){
+            if(!sortOrderSetting.getValue(pref)){
+                sortOrderSetting.setValue(sortPref[pref], pref, false, true);
+            }
+        }
+
+        // Disable SORTING PREF for MAIL, Overwrite Mail Sort Settings to Defaults
+        // We do this becoz we fetch initial mail response inline, have no control over sortBy
+        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONVLIST, false, true);
+        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONV, false, true);
+        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_TRAD, false, true);
+
+        //Explicitly Set defaultValue
+        sortOrderSetting.defaultValue = AjxUtil.hashCopy(sortPref);
+    }
 
 };
 
@@ -686,26 +708,6 @@ function() {
 
 	this.setReportScriptErrorsSettings(AjxException, ZmController.handleScriptError);
 
-
-    var sortPref =  ZmSettings.DEFAULT_SORT_PREF;
-    sortPref[ZmId.VIEW_CONVLIST]            = ZmSearch.DATE_DESC;
-    sortPref[ZmId.VIEW_CONV]                = ZmSearch.DATE_DESC;
-    sortPref[ZmId.VIEW_TRAD]                = ZmSearch.DATE_DESC;
-    sortPref[ZmId.VIEW_CONTACT_SRC]         = ZmSearch.NAME_ASC;
-    sortPref[ZmId.VIEW_CONTACT_TGT]         = ZmSearch.NAME_ASC;
-    sortPref[ZmId.VIEW_CONTACT_SIMPLE]      = ZmSearch.NAME_ASC;
-    sortPref[ZmId.VIEW_CAL]                 = ZmSearch.DATE_ASC;
-    sortPref[ZmId.VIEW_TASKLIST]            = ZmSearch.DUE_DATE_ASC;
-    sortPref[ZmId.VIEW_BRIEFCASE_DETAIL]    = ZmSearch.SUBJ_ASC;
-
-
-    var sortOrderSetting = this._settings[ZmSetting.SORTING_PREF];
-    var defaultPrefs = ZmSettings.DEFAULT_SORT_PREF;
-    for(var pref in defaultPrefs){
-        if(!sortOrderSetting.getValue(pref)){
-            sortOrderSetting.setValue(defaultPrefs[pref], pref, true, true);
-        }
-    }
 };
 
 ZmSettings.prototype.persistImplicitSortPrefs =
@@ -908,7 +910,7 @@ function() {
 	this.registerSetting("SIGNATURES_MAX",					{name:"zimbraSignatureMaxNumEntries", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:20});
 	this.registerSetting("SIGNATURES_MIN",					{name:"zimbraSignatureMinNumEntries", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1});
 	this.registerSetting("SKIN_NAME",						{name:"zimbraPrefSkin", type:ZmSetting.T_PREF, defaultValue:"skin", isGlobal:true});
-	this.registerSetting("SORTING_PREF",					{name:"zimbraPrefSortOrder", type:ZmSetting.T_PREF, dataType:ZmSetting.D_HASH, isImplicit:true, isGlobal:true});
+	this.registerSetting("SORTING_PREF",					{name:"zimbraPrefSortOrder", type:ZmSetting.T_PREF, dataType:ZmSetting.D_HASH, isImplicit:true, isGlobal:true, dontSaveDefault: true});
 	this.registerSetting("USE_ADDR_BUBBLES",				{name:"zimbraPrefAutocompleteAddressBubblesEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	this.registerSetting("USE_KEYBOARD_SHORTCUTS",			{name:"zimbraPrefUseKeyboardShortcuts", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("VIEW_AS_HTML",					{name:"zimbraPrefMessageViewHtmlPreferred", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
