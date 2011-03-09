@@ -119,7 +119,7 @@ function(request, params) {
     if(params.tz){
         request.tz = [];
         var timezone = AjxTimezone.getRule(params.tz);
-        request.tz.push({id:params.tz,stdoff:timezone.standard.offset});
+        request.tz.push({id:params.tz,stdoff: timezone ? timezone.standard.offset : 0});
     }
 
 };
