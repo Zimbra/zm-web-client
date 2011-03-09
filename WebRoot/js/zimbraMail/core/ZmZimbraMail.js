@@ -2292,7 +2292,7 @@ function() {
 
 		if (appCtxt.get(ZmSetting.WARN_ON_EXIT) && !ZmZimbraMail._isOkToExit()) {
 			ZmZimbraMail._isLogOff = false;
-			return ZmMsg.appExitWarning;
+			return (appCtxt.isOffline) ? ZmMsg.appExitWarningZD : ZmMsg.appExitWarning;
 		}
 
 		ZmZimbraMail._endSession();
