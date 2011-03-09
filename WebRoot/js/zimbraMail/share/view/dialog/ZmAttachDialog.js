@@ -57,10 +57,9 @@ ZmAttachDialog = function(shell, className) {
 
 	// Add Default MyComputer tab
 	this._addMyComputerTab();
-
-	if (appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
-		this._addBriefcaseViewTab();
-	}
+    if (appCtxt.multiAccounts || appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
+        this._addBriefcaseViewTab();
+    }
 };
 
 ZmAttachDialog.prototype = new DwtDialog;
@@ -265,6 +264,13 @@ function() {
 
 	DwtDialog.prototype.popup.call(this);
 	this.setFooter("");
+    if (appCtxt.multiAccounts) {
+        var acct = appCtxt.getAppViewMgr().getCurrentView().getFromAccount();
+        var isBC_Enabled = appCtxt.get(ZmSetting.BRIEFCASE_ENABLED, null, acct);
+        tabKey = this.getTabKey(ZmAttachDialog.TABKEY_BRIEFCASE);
+        var el = this._tabView.getTabButton(tabKey);
+        el.setVisible(acct.isZimbraAccount && isBC_Enabled)
+    }
 };
 
 // Upload Utitlity Methods
