@@ -745,7 +745,7 @@ function(force) {
 
 	if (!this.isMultiColumn()) {
 		if (!this._colHeaderActionMenu || force) {
-			this._colHeaderActionMenu = this._getSortMenu(ZmMailListView.SINGLE_COLUMN_SORT, ZmItem.F_DATE);
+			this._colHeaderActionMenu = this._getSortMenu(this._getSingleColumnSortFields(), ZmItem.F_DATE);
 		}
 		var mi = this._colHeaderActionMenu.getItemById(ZmItem.F_FROM);
 		if (mi) {
@@ -763,6 +763,11 @@ function(force) {
 	}
 
 	return menu;
+};
+
+ZmMailListView.prototype._getSingleColumnSortFields =
+function() {
+	return ZmMailListView.SINGLE_COLUMN_SORT;
 };
 
 ZmMailListView.prototype._colHeaderActionListener =
