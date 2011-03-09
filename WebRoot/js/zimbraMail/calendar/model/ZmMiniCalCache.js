@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -202,7 +202,7 @@ function(errors) {
 
 ZmMiniCalCache.prototype.highlightMiniCal =
 function(dateArr) {
-	var highlight = [];
+	var highlight = {};
 	for (var i = 0; i < dateArr.length; i++) {
 		if (dateArr[i]) {
 			highlight[dateArr[i]] = AjxDateFormat.parse("yyyyMMdd", dateArr[i]);
