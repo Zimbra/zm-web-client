@@ -241,8 +241,11 @@ function(parent, num) {
     isMixedSelected = isFolderSelected ? (isBriefcaseItemSelected || isRevisionSelected) :  (isBriefcaseItemSelected && isRevisionSelected);
 
     var briefcase = appCtxt.getById(this._folderId);
+    if(!(briefcase instanceof ZmBriefcase)){
+        briefcase = null;
+    }
     var isTrash = (briefcase && briefcase.nId == ZmOrganizer.ID_TRASH);
-    var isShared = ((briefcase && briefcase.nId != ZmOrganizer.ID_TRASH) && briefcase.isShared());
+    var isShared = ((briefcase && briefcase.nId != ZmOrganizer.ID_TRASH && briefcase.isShared()));
 	var isReadOnly = briefcase ? briefcase.isReadOnly() : false;
 	var isMultiFolder = (noOfFolders > 1);
 	var isItemSelected = (num>0);
