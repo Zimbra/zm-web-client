@@ -236,6 +236,7 @@ function() {
 	var sendUID = view.sendUID;
 	var action = view._action || this._action;
 	var identity = view.getIdentity();
+    var requestReadReceipt = this.isRequestReadReceipt();
 
 	var addrList = {};
 	var addrs = !view._useAcAddrBubbles && view.getRawAddrFields();
@@ -262,7 +263,8 @@ function() {
 		sendUID: sendUID,
 		msgIds: this._msgIds,
 		forAttIds: this._forAttIds,
-		sessionId: this.sessionId
+		sessionId: this.sessionId,
+        readReceipt: requestReadReceipt
 	};
 };
 
@@ -502,15 +504,7 @@ function(attId, docIds, draftType, callback, contactId) {
 	}
 
 	// check for read receipt
-	var requestReadReceipt = false;
-	var acct = acctName && appCtxt.accountList.getAccountByName(acctName);
-	if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED, null, acct)) {
-		var menu = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS).getMenu();
-		if (menu) {
-			var mi = menu.getItemById(ZmOperation.KEY_ID, ZmOperation.REQUEST_READ_RECEIPT);
-			requestReadReceipt = (!!(mi && mi.getChecked()));
-		}
-	}
+	var requestReadReceipt = this.isRequestReadReceipt();
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg, msg);
@@ -834,6 +828,7 @@ function(delMsg) {
  * @param composeMode	[constant]*		HTML or text compose
  * @param accountName	[string]*		on-behalf-of From address
  * @param msgIds		[Array]*		list of msg Id's to be added as attachments
+ * @param readReceipt   [boolean]       true/false read receipt setting
  */
 ZmComposeController.prototype._setView =
 function(params) {
@@ -885,6 +880,15 @@ function(params) {
 
 	cv.set(params);
 	this._setOptionsMenu();
+
+    if (params.readReceipt) {
+        var menu = this._optionsMenu[this._action];
+        var mi = menu && menu.getOp(ZmOperation.REQUEST_READ_RECEIPT);
+        if (mi && this.isReadReceiptEnabled()) {
+            mi.setChecked(true, true);
+        }
+    }
+
 	this._setComposeTabGroup();
 	this._app.pushView(this.viewId);
 	if (!appCtxt.isChildWindow) {
@@ -1897,4 +1901,39 @@ function() {
 ZmComposeController.prototype._canSaveDraft =
 function() {
 	return appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED) && !this._composeView._isInviteReply(this._action);
+};
+
+/*
+ * Return true/false if read receipt is being requested
+ */
+ZmComposeController.prototype.isRequestReadReceipt =
+function(){
+
+  	// check for read receipt
+	var requestReadReceipt = false;
+    var isEnabled = this.isReadReceiptEnabled();
+	if (isEnabled) {
+		var menu = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS).getMenu();
+		if (menu) {
+			var mi = menu.getItemById(ZmOperation.KEY_ID, ZmOperation.REQUEST_READ_RECEIPT);
+			requestReadReceipt = (!!(mi && mi.getChecked()));
+		}
+	}
+
+    return requestReadReceipt;
+};
+
+/*
+ * Return true/false if read receipt is enabled
+ */
+ZmComposeController.prototype.isReadReceiptEnabled =
+function(){
+    var acctName = appCtxt.multiAccounts
+		? this._composeView.getFromAccount().name : this._accountName;
+    var acct = acctName && appCtxt.accountList.getAccountByName(acctName);
+    if (appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED, null, acct)){
+        return true;
+    }
+
+    return false;
 };
