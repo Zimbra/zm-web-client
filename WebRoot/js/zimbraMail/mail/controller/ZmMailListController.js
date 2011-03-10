@@ -1717,6 +1717,15 @@ function(currentItem, forward) {
 	if (i == len) { return; }
 
 	var itemIdx = forward ? i + 1 : i - 1;
+
+	if (itemIdx >= len) {
+		//we are looking for the next item after the current list, not yet loaded
+		if (!this._list.hasMore()) {
+			return;
+		}
+		this._paginate(this._currentView, true, itemIdx);
+		return;
+	}
 	return list[itemIdx];
 };
 

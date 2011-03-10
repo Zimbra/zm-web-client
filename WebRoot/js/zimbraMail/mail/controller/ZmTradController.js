@@ -117,5 +117,5 @@ function(ev) {
 ZmTradController.prototype._handleResponsePaginate = 
 function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 	// bug fix #5134 - overload to ignore resetting the selection since it is handled by setView
-	ZmListController.prototype._handleResponsePaginate.call(this, view, saveSelection, loadIndex, offset, result, true);
+	ZmMailListController.prototype._handleResponsePaginate.call(this, view, saveSelection, loadIndex, offset, result, true);
 };
