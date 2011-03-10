@@ -728,7 +728,7 @@ function(clickedEl, bContained, ev) {
  */
 ZmListView.prototype._isAllChecked = 
 function() {
-	return getSelection().length == this.getList().size();
+	return this.getSelection().length == this.getList().size();
 };
 
 
