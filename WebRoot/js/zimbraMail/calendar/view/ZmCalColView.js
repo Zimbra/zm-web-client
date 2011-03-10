@@ -1911,7 +1911,7 @@ function(ev, div) {
 	//ZmCalBaseView.prototype._mouseDownAction.call(this, ev, div);
     // bug: 55168 Disable ffScrollbarCheck for WeekView
     // Actual fix, to disable ffScrollbarCheck for 3.6.4+ versions of firefox ( bug 55342 )
-	if (this.view != ZmId.VIEW_CAL_WEEK && Dwt.ffScrollbarCheck(ev)) { return false; }
+	if (this.view != ZmId.VIEW_CAL_WEEK && this.view != ZmId.VIEW_CAL_WEEK && Dwt.ffScrollbarCheck(ev)) { return false; }
 
 	var type = this._getItemData(div, "type");
 	switch (type) {
