@@ -704,6 +704,7 @@ function(actionCode) {
 	switch (actionCode) {
 		case ZmKeyMap.CANCEL:
 			DBG.println("aif1", "Compose ctlr: CANCEL");
+			AjxDebug.println(AjxDebug.REPLY, "Reset compose view: handleKeyAction");
 			this._cancelCompose();
 			break;
 
@@ -1419,6 +1420,7 @@ function(ev) {
 // Cancel button was pressed
 ZmComposeController.prototype._cancelListener =
 function(ev) {
+	AjxDebug.println(AjxDebug.REPLY, "Reset compose view: _cancelListener");
 	this._cancelCompose();
 };
 
