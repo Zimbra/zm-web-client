@@ -96,3 +96,12 @@ function(item, params) {
 	this.associateItemWithElement(item, div);
 	return div;
 };
+
+ZmBriefcaseIconView.prototype.set =
+function(list, sortField, doNotIncludeFolders){
+
+    doNotIncludeFolders = true;
+
+    ZmBriefcaseBaseView.prototype.set.call(this, list, sortField, doNotIncludeFolders);
+
+};
