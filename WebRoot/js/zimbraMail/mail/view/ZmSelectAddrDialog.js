@@ -51,6 +51,7 @@ ZmSelectAddrDialog = function(parent) {
 
 	this.setContent(this._contentHtml());
     this._createInputView();
+    this._createControls();
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 };
 
@@ -70,6 +71,16 @@ function() {
 	html[idx++] = AjxTemplate.expand("share.Dialogs#ZmSelectAddrDialog", {id:this._htmlElId});
 	html[idx++] = "</table>";
 	return html.join("");
+};
+
+ZmSelectAddrDialog.prototype._createControls =
+function() {
+ if (this._htmlElId) {
+     var cboxId = this._htmlElId + "_cboxFind";
+     this._findEmailsCheckbox = new DwtCheckbox({parent: this, id: cboxId, checked: true});
+     this._findEmailsCheckbox.replaceElement(document.getElementById(cboxId));
+     this._findEmailsCheckbox.setText(ZmMsg.findEmailsToAll);
+ }
 };
 
 ZmSelectAddrDialog.prototype._createInputView =
@@ -164,8 +175,8 @@ function() {
             }
 
         }
-
-		appCtxt.getSearchController().search({query:"in:" + folder + " AND " + query.join(" AND ")});
+        var operator =  this._findEmailsCheckbox && this._findEmailsCheckbox.isSelected() ? " AND " : " OR ";
+		appCtxt.getSearchController().search({query:"in:" + folder + " AND (" + query.join(operator) + ")"});
 	}
 	this.popdown();
 };
