@@ -527,6 +527,7 @@ function(view) {
 	}
 	this._setupCheckMailButton(this._toolbar[view]);
 
+    this._setupPrintButton(this._toolbar[view]);
 	// reset new button properties
 	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 };
@@ -1168,6 +1169,18 @@ function(parent) {
 			item.setToolTipContent(ZmOperation.getToolTip(ZmOperation.SPAM, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip));
 		}
 	}
+};
+
+// set tooltip for print button
+ZmMailListController.prototype._setupPrintButton =
+function(parent) {
+    if (!parent) { return; }
+
+    var item = parent.getOp(ZmOperation.PRINT);
+    if (item) {
+        item.setToolTipContent(ZmMsg.printMultiTooltip);
+
+    }
 };
 
 ZmMailListController.prototype._setupEditButton =
