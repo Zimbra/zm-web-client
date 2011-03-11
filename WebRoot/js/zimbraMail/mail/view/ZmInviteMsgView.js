@@ -84,7 +84,7 @@ function(msg) {
 			this._counterToolbar.reparentHtmlElement(this.parent.getHtmlElement(), 0);
 			this._counterToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 		}
-		else if (invite.hasInviteReplyMethod()) {
+		else if (!invite.isOrganizer() && invite.hasInviteReplyMethod()) {
 			var ac = window.parentAppCtxt || window.appCtxt;
 			if (AjxEnv.isIE && this._inviteToolbar) {
 				//according to fix to bug 52412 reparenting doestn't work on IE. so I don't reparent for IE but also if the toolbar element exists,
