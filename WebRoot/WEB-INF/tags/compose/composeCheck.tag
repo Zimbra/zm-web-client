@@ -52,7 +52,7 @@
                 </c:otherwise>
             </c:choose>
             <c:set var="needComposeView" value="${false}"/>
-            <jsp:forward page="/h/addcontacts"/>
+            <c:import url="/h/addcontacts"/>
         </c:when>
         <c:when test="${uploader.isAttachAdd}">
             <c:choose>
