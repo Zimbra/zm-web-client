@@ -22,8 +22,31 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 
-<jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
-<c:set var="expanded" value="${sessionScope.expanded.tags ne 'collapse'}"/>
+<app:handleError>    
+    <zm:getMailbox var="mailbox"/>
+    <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
+    <c:choose>
+        <c:when test="${empty sessionScope.expanded.tags}">
+            <c:set var="expanded" value="${mailbox.prefs.tagTreeOpen}"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="expanded" value="${sessionScope.expanded.tags ne 'collapse'}"/>
+        </c:otherwise>
+    </c:choose>
+    <c:if test="${expanded}">
+         <zm:modifyPrefs var="updated">
+            <zm:pref name="zimbraPrefTagTreeOpen" value="TRUE"/>
+         </zm:modifyPrefs>
+    </c:if>
+    <c:if test="${not expanded}">
+         <zm:modifyPrefs var="updated">
+            <zm:pref name="zimbraPrefTagTreeOpen" value="FALSE"/>
+         </zm:modifyPrefs>
+    </c:if>
+    <c:if test="${updated}">
+        <zm:getMailbox var="mailbox" refreshaccount="${true}"/>
+    </c:if>
+</app:handleError>
 
 <div class="TagTree Tree">
     <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -35,17 +58,17 @@
 	    <c:set var="url" value="${calendars ? '/h/calendar' : '/h/search' }"  />  
         <tr>
             <c:url var="toggleUrl" value="${url}">
-                <c:param name="${expanded ? 'collapse' : 'expand'}" value="tags"/>
+                <c:param name="${mailbox.prefs.tagTreeOpen ? 'collapse' : 'expand'}" value="tags"/>
                 <c:if test="${not empty param.st}"><c:param name="st" value="${param.st}"/></c:if>
             </c:url>
-            <th style="width:20px"><a href="${fn:escapeXml(toggleUrl)}"><app:img src="${ expanded ? 'startup/ImgNodeExpanded.png' : 'startup/ImgNodeCollapsed.png'}" altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/></a></th>
+            <th style="width:20px"><a href="${fn:escapeXml(toggleUrl)}"><app:img src="${mailbox.prefs.tagTreeOpen ? 'startup/ImgNodeExpanded.png' : 'startup/ImgNodeCollapsed.png'}" altkey="${mailbox.prefs.tagTreeOpen ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/></a></th>
             <th class="Header" nowrap="nowrap" width="99%"> <fmt:message key="tags"/></th>
             
             <th nowrap="nowrap" align="right" class="ZhTreeEdit">
                 <a id="MTAGS" href="${fn:escapeXml(mtagsUrl)}"><fmt:message key="TREE_EDIT"/> </a>
             </th>
         </tr>
-        <c:if test="${expanded}">
+        <c:if test="${mailbox.prefs.tagTreeOpen}">
             <zm:forEachTag var="tag">
                 <app:overviewTag calendars="${calendars}" tag="${tag}"/>
             </zm:forEachTag>

@@ -21,9 +21,32 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
 
-<zm:getMailbox var="mailbox"/>
-<jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
-<c:set var="expanded" value="${sessionScope.expanded.folders ne 'collapse'}"/>
+<app:handleError>
+    <zm:getMailbox var="mailbox"/>
+    <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
+    <c:choose>
+        <c:when test="${empty sessionScope.expanded.folders}">
+            <c:set var="expanded" value="${mailbox.prefs.folderTreeOpen}"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="expanded" value="${sessionScope.expanded.folders ne 'collapse'}"/>
+        </c:otherwise>
+    </c:choose>
+    <c:if test="${expanded}">
+         <zm:modifyPrefs var="updated">
+            <zm:pref name="zimbraPrefFolderTreeOpen" value="TRUE"/>
+         </zm:modifyPrefs>
+    </c:if>
+    <c:if test="${not expanded}">
+         <zm:modifyPrefs var="updated">
+            <zm:pref name="zimbraPrefFolderTreeOpen" value="FALSE"/>
+         </zm:modifyPrefs>
+    </c:if>
+    <c:if test="${updated}">
+        <zm:getMailbox var="mailbox" refreshaccount="${true}"/>
+    </c:if>
+</app:handleError>
+
 
 <div class="Tree">
     <table width="100%" cellpadding="0" cellspacing="0">
@@ -31,7 +54,7 @@
             <c:url var="toggleUrl" value="/h/search">
                    <c:param name="${expanded ? 'collapse' : 'expand'}" value="folders"/>
                </c:url>
-               <th style="width:20px"><a href="${toggleUrl}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'startup/ImgNodeExpanded.png' : 'startup/ImgNodeCollapsed.png'}"/></a></th>
+               <th style="width:20px"><a href="${toggleUrl}"><app:img altkey="${ mailbox.prefs.folderTreeOpen ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ mailbox.prefs.folderTreeOpen ? 'startup/ImgNodeExpanded.png' : 'startup/ImgNodeCollapsed.png'}"/></a></th>
             <th class="Header" nowrap="nowrap" width="99%"><fmt:message key="folders"/></th>
             <th nowrap="nowrap" align="right"  class="ZhTreeEdit">
                 <c:url value="/h/mfolders" var="mfoldersUrl">
@@ -43,7 +66,7 @@
             </th>
         </tr>
  
-        <c:if test="${expanded}">
+        <c:if test="${mailbox.prefs.folderTreeOpen}">
             <app:overviewFolder folder="${mailbox.inbox}" keys="${keys}"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.inbox.id}" skipsystem="false"/>
 
@@ -62,7 +85,7 @@
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
         </c:if>
     </table>
-    <c:if test="${expanded}">
+    <c:if test="${mailbox.prefs.folderTreeOpen}">
         <app:doFolderTree skiproot="${true}" skipsystem="${true}" skiptopsearch="${true}" table="true"/>
     </c:if>
 </div>

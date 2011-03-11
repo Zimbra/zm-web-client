@@ -21,8 +21,32 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 
-<jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
-<c:set var="expanded" value="${sessionScope.expanded.searches ne 'collapse'}"/>
+<app:handleError>
+    <zm:getMailbox var="mailbox"/>
+    <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
+    <c:choose>
+        <c:when test="${empty sessionScope.expanded.searches}">
+            <c:set var="expanded" value="${mailbox.prefs.searchTreeOpen}"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="expanded" value="${sessionScope.expanded.searches ne 'collapse'}"/>
+        </c:otherwise>
+    </c:choose>
+    <c:if test="${expanded}">
+         <zm:modifyPrefs var="updated">
+            <zm:pref name="zimbraPrefSearchTreeOpen" value="TRUE"/>
+         </zm:modifyPrefs>
+    </c:if>
+    <c:if test="${not expanded}">
+         <zm:modifyPrefs var="updated">
+            <zm:pref name="zimbraPrefSearchTreeOpen" value="FALSE"/>
+         </zm:modifyPrefs>
+    </c:if>
+    <c:if test="${updated}">
+        <zm:getMailbox var="mailbox" refreshaccount="${true}"/>
+    </c:if>
+</app:handleError>
+
 
 <div class="Tree">
     <table width="100%" cellpadding="0" cellspacing="0">
@@ -30,7 +54,7 @@
             <c:url var="toggleUrl" value="/h/search">
                   <c:param name="${expanded ? 'collapse' : 'expand'}" value="searches"/>
               </c:url>
-            <th style="width:20px"><a href="${toggleUrl}"><app:img src="${ expanded ? 'startup/ImgNodeExpanded.png' : 'startup/ImgNodeCollapsed.png'}" altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/></a></th>
+            <th style="width:20px"><a href="${toggleUrl}"><app:img src="${ mailbox.prefs.searchTreeOpen ? 'startup/ImgNodeExpanded.png' : 'startup/ImgNodeCollapsed.png'}" altkey="${ mailbox.prefs.searchTreeOpen ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/></a></th>
             <th class="Header" nowrap="nowrap" width="99%"><fmt:message key="searches"/></th>
             <th nowrap="nowrap" align="right" class="ZhTreeEdit">
                 <c:url value="/h/mfolders" var="mfoldersUrl">
@@ -42,7 +66,7 @@
             </th>
         </tr>
         <jsp:useBean id="done" scope="page" class="java.util.HashMap" />
-        <c:if test="${expanded}">
+        <c:if test="${mailbox.prefs.searchTreeOpen}">
             <zm:forEachFolder var="folder">
                 <c:if test="${(folder.isSearchFolder and (folder.depth eq 0)) or (done[folder.parentId]) eq 'true'}">
                     <app:overviewSearchFolder folder="${folder}"/>
