@@ -1683,6 +1683,12 @@ function(params) {
 
 ZmFreeBusySchedulerView.prototype.getUserSharedCalIds =
 function(email) {
+    var organizer = this._schedTable[this._organizerIndex] ? this._schedTable[this._organizerIndex].attendee : null,
+        organizerEmail = organizer ? organizer.getEmail() : "";
+
+    if(!email || email == organizerEmail) {
+        return [];
+    }
     if(this._sharedCalIds && this._sharedCalIds[email]) {
         return this._sharedCalIds[email];
     }
@@ -1701,6 +1707,7 @@ function(email) {
         for(var i=0; i<share.length; i++) {
             if(share[i].ownerId && share[i].folderId) {
                 var folderId = share[i].ownerId + ":" + share[i].folderId;
+                ids.push(folderId);
             }
         }
         if(!this._sharedCalIds) {
