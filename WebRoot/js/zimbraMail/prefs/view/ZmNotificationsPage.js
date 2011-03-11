@@ -603,20 +603,16 @@ ZmNotificationsPageForm.prototype._handleInvalidateDevice = function() {
 };
 
 ZmNotificationsPageForm.prototype._handleInvalidateDeviceResponse = function(resp) {
-    var success = AjxUtil.get(resp.getResponse(), "InvalidateReminderDeviceResponse", "success") == "1";
+	var dummy = resp.getResponse(); //to get the exception thrown if there was some unexpected error.
     var params = {
-        msg: success ?
-                ZmMsg.deviceEmailNotificationsVerificationCodeInvalidateSuccess :
-                ZmMsg.deviceEmailNotificationsVerificationCodeInvalidateFailure,
-        level: success ? ZmStatusView.LEVEL_INFO : ZmStatusView.LEVEL_CRITICAL
+        msg: ZmMsg.deviceEmailNotificationsVerificationCodeInvalidateSuccess,
+        level: ZmStatusView.LEVEL_INFO
     };
     appCtxt.setStatusMsg(params);
 
-	if (success) {
-		appCtxt.set(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS, null);
-		this.setValue("DEVICE_EMAIL_CODE_STATUS_VALUE", ZmNotificationsPageForm.UNCONFIRMED);
-		this.update();
-	}
+	appCtxt.set(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ADDRESS, null);
+	this.setValue("DEVICE_EMAIL_CODE_STATUS_VALUE", ZmNotificationsPageForm.UNCONFIRMED);
+	this.update();
 };
 
 
