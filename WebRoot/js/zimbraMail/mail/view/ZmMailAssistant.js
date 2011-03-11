@@ -198,14 +198,14 @@ function(dialog, verb, args) {
 	this._mailFields = {};	
 
 	if (!this._mailFields.subject) {
-		match = args.match(/\s*\"([^\"]*)\"?\s*/);
+		match = args.match(/[\p{Z}\z\s]*\"([^\"]*)\"?[\p{Z}\z\s]*/);
 		if (match) {
 			this._mailFields.subject = match[1];
 			args = args.replace(match[0], " ");
 		}
 	}
 
-	while(match = args.match(/((\w+)(:\s*)(.*?)\s*)(\w+:|$)/m)) {
+	while(match = args.match(/(([^\p{Z}\z\s]+)(:[\p{Z}\z\s]*)(.*?)[\p{Z}\z\s]*)([^\p{Z}\z\s]+:|$)/m)) {
 		var k = match[2];
 		var v = match[4];
 		var strip = match[1];
@@ -213,7 +213,7 @@ function(dialog, verb, args) {
 		if (field) {
 			if (field.key == 'body') {
 				strip = match[2] + match[3];
-				v = args.replace(strip,"").replace(/^\s*/, '');
+				v = args.replace(strip,"").replace(/^[\p{Z}\z\s]*/, '');
 				args = "";
 			}
 			if (v == null) v = "";
