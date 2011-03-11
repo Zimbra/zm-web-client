@@ -861,7 +861,6 @@ ZmEditContactView.prototype._handleFolderButton = function(ev) {
 	};
 	params.omit = {};
 	params.omit[ZmFolder.ID_TRASH] = true;
-	params.omit[ZmOrganizer.ID_AUTO_ADDED] = true;
 	dialog.popup(params);
 };
 
