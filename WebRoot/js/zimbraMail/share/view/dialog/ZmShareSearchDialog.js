@@ -54,11 +54,21 @@ ZmShareSearchDialog.prototype.toString = function() {
 
 ZmShareSearchDialog.ADD_BUTTON = DwtDialog.OK_BUTTON; //++DwtDialog.LAST_BUTTON;
 
+ZmShareSearchDialog._ORG_TYPES = [ZmOrganizer.FOLDER, ZmOrganizer.ADDRBOOK, ZmOrganizer.CALENDAR,
+					ZmOrganizer.TASKS, ZmOrganizer.BRIEFCASE];
+ZmShareSearchDialog._ORG_KEY = {};
+ZmShareSearchDialog._ORG_KEY[ZmOrganizer.FOLDER]		= "mailSharesOnly";
+ZmShareSearchDialog._ORG_KEY[ZmOrganizer.TASKS]		= "taskSharesOnly";
+ZmShareSearchDialog._ORG_KEY[ZmOrganizer.BRIEFCASE]	= "briefcaseSharesOnly";
+ZmShareSearchDialog._ORG_KEY[ZmOrganizer.CALENDAR]    = "calendarSharesOnly";
+ZmShareSearchDialog._ORG_KEY[ZmOrganizer.ADDRBOOK]    = "addrbookSharesOnly";
+
 //
 // Data
 //
 
 ZmShareSearchDialog.prototype.CONTENT_TEMPLATE = "share.Widgets#ZmShareSearchView";
+
 
 //
 // Public methods
@@ -94,7 +104,7 @@ ZmShareSearchDialog.prototype._collectShares = function(treeView, node, shares) 
             this._collectShares(treeView, children[i], shares);
         }
     }
-}
+};
 
 ZmShareSearchDialog.prototype._filterResults = function() {
     var treeView = this._form.getControl("TREE");
@@ -106,6 +116,7 @@ ZmShareSearchDialog.prototype._filterResults = function() {
 ZmShareSearchDialog.prototype._filterNode = function(treeView, node, text) {
     // process children
     var count = node.children.size();
+    var app = this._form.getValue("APP") || "";
     if (count > 0) {
         var filtered = 0;
         for (var i = 0; i < count; i++) {
@@ -120,7 +131,8 @@ ZmShareSearchDialog.prototype._filterNode = function(treeView, node, text) {
     // filter child node
     var isInfoNode = String(node.id).match(/^-/);
     var textMatches = !text || (node.name.toLowerCase().indexOf(text) != -1);
-    var matches = !text || (!isInfoNode && textMatches);
+    var appMatches = !app || (node.shareInfo && node.shareInfo.view == app);
+    var matches = !isInfoNode && textMatches && appMatches;
     var childItem = treeView.getTreeItemById(node.id);
     childItem.setVisible(matches);
     return matches;
@@ -360,6 +372,7 @@ ZmShareSearchDialog.prototype._appendChild = function(childNode, parentNode, che
     treeItem.setExpanded(true);
     treeItem.enableSelection(false);
     treeItem.showCheckBox(checkable);
+    treeItem.setVisible(false);   //filterResults will set visibility
     return treeItem;
 };
 
@@ -468,7 +481,7 @@ ZmShareSearchDialog.prototype.popup = function(organizerType, addCallback, cance
     form.setValue("FILTER", "");
     form.setValue("EMAIL", "");
     form.setEnabled("SEARCH", false);   //disable search button by default
-    
+    this._selectApplicationOption();
     this._resetTree();
     this._doGroupSearch();
 
@@ -506,6 +519,9 @@ ZmShareSearchDialog.prototype._createHtmlFromTemplate = function(templateId, dat
                 { id: "EMAIL", type: "DwtInputField", hint: ZmMsg.sharedFoldersUserSearchHint },
                 { id: "SEARCH", type: "DwtButton", label: ZmMsg.searchInput,
                     enabled: "get('EMAIL')", onclick: "this.parent._doUserSearch(get('EMAIL'))"
+                },
+                { id: "APP", type: "DwtSelect",  items: this._getAppOptions(), onchange: "this.parent._filterResults()"
+
                 }
             ]
         }
@@ -536,4 +552,39 @@ ZmShareSearchDialog.prototype._handleEmailEnter = function(htmlEvent) {
     if (false) {
         this._doUserSearch(this.getValue("EMAIL"));
     }
+};
+
+/**
+ * Gets the include applications options.
+ *
+ * @return	{Array}	an array of include shares options
+ */
+ZmShareSearchDialog.prototype._getAppOptions = function() {
+	var options = [];
+    options.push({value: "", label: ZmMsg.allApplications});
+    for (var i = 0; i < ZmShareSearchDialog._ORG_TYPES.length; i++) {
+		var orgType = ZmShareSearchDialog._ORG_TYPES[i];
+	    var key = ZmShareSearchDialog._ORG_KEY[orgType];
+		options.push({id: orgType, value: ZmOrganizer.VIEWS[orgType][0], label: ZmMsg[key]});
+	}
+
+    return options;
+};
+
+ZmShareSearchDialog.prototype._selectApplicationOption = function() {
+  var activeApp = appCtxt.getCurrentApp();
+  var appSelect = this._form.getControl("APP");
+  var appOptions = this._getAppOptions();
+
+  if (!activeApp || !appSelect || !appOptions)
+    return;
+
+  for (var i=0; i<appOptions.length; i++) {
+      if (appOptions[i].hasOwnProperty('id') &&
+          ZmOrganizer.APP[appOptions[i].id] == activeApp.getName()) {
+            appSelect.setSelectedValue(appOptions[i].value);
+            return;
+      }
+  }
+
 };
