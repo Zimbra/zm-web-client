@@ -241,6 +241,9 @@
             <td><div id="${id}_EMAIL" tabindex="300"></div></td>
             <td><div id="${id}_SEARCH" tabindex="400"></div></td>
         </tr>
+        <tr><td><$=ZmMsg.includeLabel$>:</td>
+            <td colspan='2'><div id="${id}_APP" tabindex="500"></div></td>
+        </tr>
     </table>
 </template>
 
