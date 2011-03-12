@@ -60,6 +60,9 @@ function(callback){
 
     this._descDialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okCallback, callback));
     this._descDialog.popup();
+
+    this._versionNotes.focus();
+
 };
 
 ZmDocsEditView.prototype._okCallback =
