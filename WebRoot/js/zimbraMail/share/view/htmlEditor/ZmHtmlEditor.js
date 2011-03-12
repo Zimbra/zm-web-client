@@ -856,7 +856,9 @@ function(menu) {
 		// Can we split? (the cell has to be a merged cell)
 		var td = this.getNearestElement("td");
 		var splitEnabled = td && ((td.colSpan && td.colSpan > 1) || (td.rowSpan && td.rowSpan > 1));
-		items.splitCells.setEnabled(splitEnabled);
+		if (items.splitCells) { //this is only if geckoBased
+			items.splitCells.setEnabled(splitEnabled);
+		}
 
 		// Can we merge? (multiple cells are selected and none of them is previously merged)
 		var a = this.getSelectedCells();
@@ -878,7 +880,9 @@ function(menu) {
 		}
 		if (howMany < 2)
 			canMerge = false;
-		items.mergeCells.setEnabled(canMerge);
+		if (items.mergeCells) { //this is only if geckoBased
+			items.mergeCells.setEnabled(canMerge);
+		}
 	}
 };
 
