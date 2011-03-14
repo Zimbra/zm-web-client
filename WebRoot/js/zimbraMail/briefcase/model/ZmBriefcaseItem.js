@@ -544,7 +544,7 @@ function(data) {
 
 ZmBriefcaseItem.prototype.getNotes =
 function(){
-    return AjxMessageFormat.format(ZmMsg.revisionNotes, [this.version, (this.notes || ZmMsg.emptyNotes)]);
+    return AjxMessageFormat.format(ZmMsg.revisionNotes, [this.version, (this.notes || "")]);
 };
 
 ZmBriefcaseFolderItem = function(folder) {
