@@ -32,7 +32,7 @@
  */
 ZmFolderTreeController = function(type, dropTgt) {
 
-	if (!arguments.length) { return; }
+	if (arguments.length == 0) { return; }
 
 	ZmTreeController.call(this, (type || ZmOrganizer.FOLDER));
 
@@ -532,17 +532,7 @@ function(ev) {
 
 ZmFolderTreeController.prototype._recoverListener =
 function(ev) {
-	appCtxt.getDumpsterDialog().popup(this._getSearchFor(), this._getSearchTypes());
-};
-
-ZmFolderTreeController.prototype._getSearchFor =
-function(ev) {
-	return ZmId.SEARCH_ANY; // Fallback value; subclasses should return differently
-};
-
-ZmFolderTreeController.prototype._getSearchTypes =
-function(ev) {
-	return [ZmItem.MSG]; // Fallback value; subclasses should return differently
+	appCtxt.getDumpsterDialog().popup();
 };
 
 /**
