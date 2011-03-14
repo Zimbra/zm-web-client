@@ -1216,7 +1216,8 @@ function(addrInput, addrs, type, shortForm) {
 	if (this._useAcAddrBubbles) {
 		addrInput.clear();
 		if (addrs && addrs.length) {
-			for (var i = 0, len = addrs.length; i < len; i++) {
+            var len = addrs.length;
+			for (var i = 0; i < len; i++) {
 				var addr = addrs[i];
 				if (addr) {
 					var addrStr, email, match;
@@ -1229,7 +1230,8 @@ function(addrInput, addrs, type, shortForm) {
 					}
 					else if (addr instanceof ZmContact) {
 						email = addr.getEmail(true);
-						addrStr = email.toString(shortForm);
+                        //bug: 57858 - give preference to lookup email address if its present
+						addrStr = addr.getLookupEmail() || email.toString(shortForm);
 						match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
 					}
 					addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
@@ -1537,7 +1539,7 @@ function(text, el, match) {
             return;
         }
 		if (type == ZmCalBaseItem.LOCATION || type == ZmCalBaseItem.EQUIPMENT) {
-			var name = attendee.getAttendeeText();
+			var name = ZmApptViewHelper.getAttendeesText(attendee);
 			if(name) {
 				this._locationTextMap[name] = attendee;
 			}
@@ -1843,8 +1845,8 @@ function(ev) {
 */
 ZmApptEditView.prototype._setAttendees =
 function() {
-	
-	for (var t = 0; t < this._attTypes.length; t++) {
+
+    for (var t = 0; t < this._attTypes.length; t++) {
 		var type = this._attTypes[t];
 		var attendees = this._attendees[type].getArray();
 		var numAttendees = attendees.length;

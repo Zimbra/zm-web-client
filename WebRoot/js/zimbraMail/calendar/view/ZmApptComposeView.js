@@ -292,7 +292,7 @@ function() {
 
 ZmApptComposeView.prototype._getAttendeeKey =
 function(attendee) {
-	var email = attendee.getEmail();
+	var email = attendee.getLookupEmail() || attendee.getEmail();
 	var name = attendee.getFullName();
 	return email ? email : name;
 };

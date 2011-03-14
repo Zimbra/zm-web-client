@@ -489,7 +489,7 @@ function(list, type, includeDisplayName, includeRole) {
 	var a = [];
 	for (var i = 0; i < list.length; i++) {
 		var attendee = list[i];
-		var text = attendee.getAttendeeText(type);
+		var text = ZmApptViewHelper.getAttendeesText(attendee, type);
 		if (includeDisplayName && list.length == 1) {
 			var displayName = attendee.getAttr(ZmResource.F_locationName);
 			if (displayName) {
@@ -503,6 +503,16 @@ function(list, type, includeDisplayName, includeRole) {
 	}
 
 	return a.join(ZmAppt.ATTENDEES_SEPARATOR);
+};
+
+ZmApptViewHelper.getAttendeesText =
+function(attendee, type, shortForm) {
+
+    //give preference to lookup email is the attendee object is located by looking up email address
+    var lookupEmailObj = attendee.getLookupEmail(true);
+    if(lookupEmailObj) return lookupEmailObj.toString(shortForm || (type && type != ZmCalBaseItem.PERSON))
+
+    return attendee.getAttendeeText(type, shortForm);
 };
 
 /**

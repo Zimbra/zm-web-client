@@ -1188,8 +1188,29 @@ function(asObj) {
 };
     
 /**
+ * Gets the lookup email address, when an contact object is located using email address we store
+ * the referred email address in this variable for easy lookup
+ *
+ * @param {boolean}		asObj	if true, return an AjxEmailAddress
+ *
+ * @return	the lookup address
+ */
+ZmContact.prototype.getLookupEmail =
+function(asObj) {
+    var email = this._lookupEmail;
+
+    if (asObj && email) {
+        email = AjxEmailAddress.parse(email);
+        email.isGroup = this.isGroup;
+        email.canExpand = this.canExpand;
+    }
+
+	return  email;
+};
+
+/**
  * Gets the IM address.
- * 
+ *
  * @return	the IM address
  */
 ZmContact.prototype.getIMAddress =

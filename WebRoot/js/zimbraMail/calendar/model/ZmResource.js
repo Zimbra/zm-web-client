@@ -123,7 +123,7 @@ ZmResource.prototype.getAttendeeText =
 function(type, shortForm) {
 	var text = "";
 	var name = this.getFullName();
-	var email = this.getEmail();
+	var email = this._lookupEmail || this.getEmail();
 	if (shortForm) {
 		text = name || email || "";
 	} else {
