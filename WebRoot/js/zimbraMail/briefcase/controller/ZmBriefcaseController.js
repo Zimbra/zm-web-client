@@ -274,7 +274,7 @@ function(parent, num) {
     parent.enable(ZmOperation.RENAME_FILE, ( num ==1 && !isFolderSelected && !isReadOnly && !isRevision && (isLocked ? isLockOwner : true) ));
 
     //Download - Files
-    parent.enable(ZmOperation.SAVE_FILE, isItemSelected && firstItem.isRealFile() && num == 1);
+    parent.enable(ZmOperation.SAVE_FILE, num >0 );
 
     // Edit
     parent.enable(ZmOperation.OPEN_FILE, (num == 1 && isWebDoc));
@@ -866,19 +866,33 @@ function() {
 
 	items = AjxUtil.toArray(items);
 
-	    // Allow download to only one file.
-        this.downloadFile(items[0]);
+	// Allow download to only one file.
+    this.downloadFile(items);
 };
 
 ZmBriefcaseController.prototype.downloadFile =
-function(item){
-    var restUrl = item.getRestUrl();
+function(items){
+
+    var restUrl, length= items.length;
+    if(length > 1){
+        var params = [];
+        for(var i=0; i< length; i++){
+            var item = items[i];
+            params.push((item.isRevision ? item.parent.id : item.id)+"."+item.version);
+        }
+        var organizer = appCtxt.getById(items[0].folderId);
+        restUrl = [ organizer.getRestUrl(), "?fmt=zip&list=", params.join(',')].join('');
+    }else{
+       var item = items[0];
+       restUrl = item.getRestUrl();
+       restUrl += "?disp=a"+(item.version ? "&ver="+item.version : "");
+    }
+
     if (!restUrl) {
         return false;
     }
     restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
     if (restUrl) {
-        restUrl += "?disp=a"+(item.version ? "&ver="+item.version : "");
         this._downloadFile(restUrl)
     }
 };
