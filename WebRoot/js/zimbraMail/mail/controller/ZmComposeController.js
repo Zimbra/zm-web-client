@@ -1646,7 +1646,7 @@ function() {
 	var time = this._delayDialog.getValue(); //Returns {date: Date, timezone: String (see AjxTimezone)}
 
 	var date = time.date;
-	var dateOffset = AjxTimezone.getOffset(AjxTimezone.getClientId(time.timezone), date);
+	var dateOffset = AjxTimezone.getOffset(AjxTimezone.getRule(AjxTimezone.getClientId(time.timezone)), date);
 	var utcDate = new Date(date.getTime() - dateOffset*60*1000);
 
 	var now = new Date();
