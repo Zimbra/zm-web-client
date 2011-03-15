@@ -1058,7 +1058,7 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 		address = attendee._inviteAddress;
 		delete attendee._inviteAddress;
 	} else {
-		address = attendee.getEmail();
+		address = attendee.getLookupEmail() || attendee.getEmail();
 	}
 	if (!address) return;
 
