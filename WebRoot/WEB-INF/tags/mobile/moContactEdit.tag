@@ -125,8 +125,8 @@
     </div>
    </div> 
 </c:if>
-<div class="View  msgBody">
-    <div class="tbl">
+<div class="msgBody">
+    <div class="View tbl">
         <mo:contactEditField label="AB_FIELD_lastName" contact="${contact}" field="lastName" index="0"/>
         <mo:contactEditField label="AB_FIELD_firstName" contact="${contact}" field="firstName"/>
         <mo:contactEditField label="AB_FIELD_jobTitle" contact="${contact}" field="jobTitle"/>
@@ -146,6 +146,22 @@
                             ${zm:getFolderPath(pageContext, folder.id)}<c:set var="count" value="${count+1}"/>
                         </c:if>
                     </zm:forEachFolder>
+                </select>
+            </span>
+        </div>
+        <div class="tr nr">
+            <span class="td label"><label for="fileAs"><fmt:message key="fileAs"/></label></span>
+            <span class="td value">
+                <input type="hidden" name="origFileAs" value="${empty contact ? '': contact.fileAs}" />
+                <c:set var="selected" value="${empty contact? '1' : contact.fileAs}"/>
+                <select name="fileAs" id="fileAs">
+                    <option <c:if test="${selected eq '1'}">selected</c:if> value="1"><fmt:message key="AB_FILE_AS_lastFirst"/></option>
+                    <option <c:if test="${selected eq '2'}">selected</c:if> value="2"><fmt:message key="AB_FILE_AS_firstLast"/></option>
+                    <option <c:if test="${selected eq '3'}">selected</c:if> value="3"><fmt:message key="AB_FILE_AS_company"/></option>
+                    <option <c:if test="${selected eq '4'}">selected</c:if> value="4"><fmt:message key="AB_FILE_AS_lastFirstCompany"/></option>
+                    <option <c:if test="${selected eq '5'}">selected</c:if> value="5"><fmt:message key="AB_FILE_AS_firstLastCompany"/></option>
+                    <option <c:if test="${selected eq '6'}">selected</c:if> value="6"><fmt:message key="AB_FILE_AS_companyLastFirst"/></option>
+                    <option <c:if test="${selected eq '7'}">selected</c:if> value="7"><fmt:message key="AB_FILE_AS_companyFirstLast"/></option>
                 </select>
             </span>
         </div>
