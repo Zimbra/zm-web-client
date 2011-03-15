@@ -97,7 +97,7 @@ ZmMailMsgView.SETHEIGHT_MAX_TRIES	= 3;
 ZmMailMsgView._URL_RE = /^((https?|ftps?):\x2f\x2f.+)$/;
 ZmMailMsgView._MAILTO_RE = /^mailto:[\x27\x22]?([^@?&\x22\x27]+@[^@?&]+\.[^@?&\x22\x27]+)[\x27\x22]?/;
 
-ZmMailMsgView.MAX_ADDRESSES_IN_FIELD = 5;
+ZmMailMsgView.MAX_ADDRESSES_IN_FIELD = 10;
 
 // Public methods
 
