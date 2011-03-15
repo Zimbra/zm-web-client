@@ -47,7 +47,10 @@ static File getImageSrc(File appdir, String src, Locale locale) {
 }
 %><fmt:getLocale var='locale' scope='page' /><%
 PageContext pageContext = (PageContext)getJspContext();
-
+%>
+<c:set var="zimbraMailURL" value="${zm:getMailURL(pageContext)}"/>
+<c:set var="contextURL" value="${zimbraMailURL}/css/skin.css"/>
+<%
 // generate cache-id
 String skin = (String)pageContext.findAttribute("skin");
 if (skin == null) skin = V_NO_SKIN;
@@ -59,11 +62,14 @@ String cacheId = skin + ":" + locale + ":" + value;
 Map<String,SkinResources.ImageInfo> cache = null;
 synchronized (this) {
     // NOTE: The context URL *must* be one serviced by SkinResources.
-    ServletContext resources = pageContext.getServletContext().getContext("/zimbra/css/skin.css");
-    cache = (Map<String,SkinResources.ImageInfo>)resources.getAttribute(SkinResources.A_IMAGE_CACHE);
-    if (cache == null) {
-        cache = new HashMap<String,SkinResources.ImageInfo>();
-        resources.setAttribute(SkinResources.A_IMAGE_CACHE, cache);
+    String contextURL = (String)pageContext.getAttribute("contextURL");
+    ServletContext resources = pageContext.getServletContext().getContext(contextURL);
+    if (resources != null) {
+        cache = (Map<String,SkinResources.ImageInfo>)resources.getAttribute(SkinResources.A_IMAGE_CACHE);
+        if (cache == null) {
+            cache = new HashMap<String,SkinResources.ImageInfo>();
+            resources.setAttribute(SkinResources.A_IMAGE_CACHE, cache);
+        }
     }
 }
 
