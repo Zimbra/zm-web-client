@@ -804,11 +804,12 @@ function(online) {
 			this._isUserOnline = online;
 		}
 		this._currentNetworkStatus = ZmZimbraMail.UI_NETWORK_UP;
+        this.sendClientEventNotify(this._currentNetworkStatus, true);
 	} else {
 		this.setStatusMsg(ZmMsg.networkChangeOffline, ZmStatusView.LEVEL_WARNING);
 		this._currentNetworkStatus = ZmZimbraMail.UI_NETWORK_DOWN;
+        this.sendClientEventNotify(this._currentNetworkStatus);
 	}
-	this.sendClientEventNotify(this._currentNetworkStatus);
 
 	this._networkStatusIcon.setToolTipContent(online ? ZmMsg.networkStatusOffline : ZmMsg.networkStatusOnline);
 	this._networkStatusIcon.getHtmlElement().innerHTML = AjxImg.getImageHtml(online ? "Connect" : "Disconnect");
@@ -1131,7 +1132,7 @@ function() {
  * @param	{Object}	event		the event
  */
 ZmZimbraMail.prototype.sendClientEventNotify =
-function(event) {
+function(event, isNetworkOn) {
 	var params = {
 		jsonObj: {
 			ClientEventNotifyRequest: {
@@ -1139,11 +1140,29 @@ function(event) {
 				e: event
 			}
 		},
-		callback: (new AjxCallback(this, this.setInstantNotify, true)),
-		asyncMode:true,
-		noBusyOverlay:true
+		asyncMode:true
 	};
+    if (isNetworkOn) {
+        params.callback = new AjxCallback(this, this.handleClientEventNotifyResponse, event);
+        params.noBusyOverlay = true;
+    } else {
+        params.callback = new AjxCallback(this, this.setInstantNotify, true);
+    }
 	this.sendRequest(params);
+};
+
+ZmZimbraMail.prototype.handleClientEventNotifyResponse =
+function(event, res) {
+    var response = res.body.ClientEventNotifyResponse;
+    if (response) {
+        this.setInstantNotify(true);
+        if (this.clientEventNotifyTimerId) {
+            AjxTimedAction.cancelAction(this.clientEventNotifyTimerId);
+            this.clientEventNotityTimerId = null;
+        }
+    } else {
+        this.clientEventNotifyTimerId = AjxTimedAction.scheduleAction(this.sendClientEventNotify(event, true), 2000);
+    }
 };
 
 /**
