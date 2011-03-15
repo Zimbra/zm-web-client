@@ -619,8 +619,9 @@ function(force, viewId, skipHistory) {
 
 	if (!this._hidden.length && !this._isNewWindow) {
 		DBG.println(AjxDebug.DBG1, "ERROR: no view to replace popped view");
+        var qsParams = AjxStringUtil.parseQueryString();
 		// bug fix #11264 - if logged in w/ view=compose, popView should reload mail app
-		if (location && (location.search.match(/\bview=compose\b/))) {
+		if (qsParams && ((qsParams.view && qsParams.view=="compose") || qsParams.id)) {
 			// bug fix #45068 - also remove the compose tab after asking to save
 			this._deactivateView(this._views[this._currentView]);
 			if (this._isTabView[this._currentView] && this._tabParams[this._currentView] && this._tabParams[this._currentView].id)
