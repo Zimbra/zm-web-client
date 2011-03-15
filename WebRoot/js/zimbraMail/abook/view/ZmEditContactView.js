@@ -761,7 +761,7 @@ ZmEditContactView.prototype._getFullName = function() {
  * @private
  */
 ZmEditContactView.prototype._getDefaultFocusItem = function() {
-	return this.getControl("FIRST");
+	return this.getControl(appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS) ? "LAST" : "FIRST");
 };
 
 /**
