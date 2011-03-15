@@ -1601,8 +1601,8 @@ function(appt, type, mode) {
 	msgController.setMsg(appt.message);
 	// poke the msgController
 	var instanceDate = mode == ZmCalItem.MODE_DELETE_INSTANCE ? new Date(appt.uniqStartTime) : null;
-	msgController._sendInviteReply(type, appt.compNum || 0, instanceDate, appt.getRemoteFolderOwner(), true);
-	this._continueDelete(appt, mode);
+	var delContCallback = new AjxCallback(this, this._continueDelete, [appt, mode]);
+	msgController._sendInviteReply(type, appt.compNum || 0, instanceDate, appt.getRemoteFolderOwner(),true,null,null,delContCallback);
 };
 
 
