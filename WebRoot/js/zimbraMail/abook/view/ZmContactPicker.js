@@ -706,7 +706,7 @@ ZmContactPicker._keyPressHdlr =
 function(ev) {
 	var stb = DwtControl.getTargetControl(ev);
 	var charCode = DwtKeyEvent.getCharCode(ev);
-	stb.clearSearch(ev.currentTarget);
+	stb.clearSearch(DwtUiEvent.getTarget(ev));
 	if (stb._keyPressCallback && (charCode == 13 || charCode == 3)) {
 		stb._keyPressCallback.run();
 		return false;
@@ -720,7 +720,7 @@ function(ev) {
 ZmContactPicker._onclickHdlr =
 function(ev) {
 	var stb = DwtControl.getTargetControl(ev);
-	stb.clearSearch(ev.currentTarget);
+	stb.clearSearch(DwtUiEvent.getTarget(ev));
 };
 
 /***********************************************************************************/
