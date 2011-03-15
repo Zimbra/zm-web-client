@@ -640,7 +640,7 @@ function(deletes) {
 		if (!id) { continue; }
 		var item = appCtxt.cacheGet(id);
 		DBG.println(AjxDebug.DBG2, "ZmRequestMgr: handling delete notif for ID " + id);
-		if (item) {
+		if (item && item.notifyDelete) {
 			item.notifyDelete();
 			appCtxt.cacheRemove(id);
 			item = null;
@@ -682,7 +682,7 @@ function(creates) {
 			} else if (name == "folder" || name == "search" || name == "link") {
 				var parentId = create.l;
 				var parent = appCtxt.getById(parentId);
-				if (parent && parent.type != ZmOrganizer.TAG) { // bug #37148
+				if (parent && parent.notifyCreate && parent.type != ZmOrganizer.TAG) { // bug #37148
 					parent.notifyCreate(create, name);
 				}
 			}
@@ -733,7 +733,7 @@ function(modifies) {
 				}
 			}
 
-			if (item) {
+			if (item && item.notifyModify) {
 				mod._isRemote = (name == "folder" && item.link);	// remote subfolder
 				item.notifyModify(mod);
 			}
