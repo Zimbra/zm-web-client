@@ -1723,7 +1723,7 @@ ZmAppCtxt.prototype.getCharset =
 function() {
 	var lang = AjxEnv.isIE ? window.navigator.systemLanguage : window.navigator.language;
 	//Currently only differs for Japanese, but can extend for different languages as/if we need it.
-	if(lang == "ja" && AjxEnv.isWindows) {
+	if((AjxEnv.DEFAULT_LOCALE == "ja" || lang == "ja") && AjxEnv.isWindows) {
 		return "Windows-31J";
 	} else {
 		return "UTF-8";
