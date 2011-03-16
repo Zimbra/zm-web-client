@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -761,7 +761,7 @@ ZmEditContactView.prototype._getFullName = function() {
  * @private
  */
 ZmEditContactView.prototype._getDefaultFocusItem = function() {
-	return this.getControl(appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS) ? "LAST" : "FIRST");
+	return this.getControl("FIRST");
 };
 
 /**

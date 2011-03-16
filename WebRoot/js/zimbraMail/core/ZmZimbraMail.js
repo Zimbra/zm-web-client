@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -804,12 +804,11 @@ function(online) {
 			this._isUserOnline = online;
 		}
 		this._currentNetworkStatus = ZmZimbraMail.UI_NETWORK_UP;
-        this.sendClientEventNotify(this._currentNetworkStatus, true);
 	} else {
 		this.setStatusMsg(ZmMsg.networkChangeOffline, ZmStatusView.LEVEL_WARNING);
 		this._currentNetworkStatus = ZmZimbraMail.UI_NETWORK_DOWN;
-        this.sendClientEventNotify(this._currentNetworkStatus);
 	}
+	this.sendClientEventNotify(this._currentNetworkStatus);
 
 	this._networkStatusIcon.setToolTipContent(online ? ZmMsg.networkStatusOffline : ZmMsg.networkStatusOnline);
 	this._networkStatusIcon.getHtmlElement().innerHTML = AjxImg.getImageHtml(online ? "Connect" : "Disconnect");
@@ -1132,7 +1131,7 @@ function() {
  * @param	{Object}	event		the event
  */
 ZmZimbraMail.prototype.sendClientEventNotify =
-function(event, isNetworkOn) {
+function(event) {
 	var params = {
 		jsonObj: {
 			ClientEventNotifyRequest: {
@@ -1140,29 +1139,11 @@ function(event, isNetworkOn) {
 				e: event
 			}
 		},
-		asyncMode:true
+		callback: (new AjxCallback(this, this.setInstantNotify, true)),
+		asyncMode:true,
+		noBusyOverlay:true
 	};
-    if (isNetworkOn) {
-        params.callback = new AjxCallback(this, this.handleClientEventNotifyResponse, event);
-        params.noBusyOverlay = true;
-    } else {
-        params.callback = new AjxCallback(this, this.setInstantNotify, true);
-    }
 	this.sendRequest(params);
-};
-
-ZmZimbraMail.prototype.handleClientEventNotifyResponse =
-function(event, res) {
-    var response = res.body.ClientEventNotifyResponse;
-    if (response) {
-        this.setInstantNotify(true);
-        if (this.clientEventNotifyTimerId) {
-            AjxTimedAction.cancelAction(this.clientEventNotifyTimerId);
-            this.clientEventNotityTimerId = null;
-        }
-    } else {
-        this.clientEventNotifyTimerId = AjxTimedAction.scheduleAction(this.sendClientEventNotify(event, true), 2000);
-    }
 };
 
 /**
