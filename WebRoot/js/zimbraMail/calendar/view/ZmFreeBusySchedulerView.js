@@ -579,8 +579,8 @@ function(inputEl, attendee, useException) {
 		if (curAttendee) {
 			// user edited slot with an attendee in it
             var lookupEmailObj = curAttendee.getLookupEmail(true);
-            var lookupEmail = lookupEmailObj.toString(shortForm || (type && type != ZmCalBaseItem.PERSON))
-			if (value == lookupEmail || value == curAttendee.getAttendeesText(type, true)) {
+            var lookupEmail = lookupEmailObj ? lookupEmailObj.toString(shortForm || (type && type != ZmCalBaseItem.PERSON)) : null;
+			if (value == lookupEmail || value == ZmApptViewHelper.getAttendeesText(curAttendee, type, true)) {
 				return;
 			} else {
 				this._resetRow(sched, false, type, true);
