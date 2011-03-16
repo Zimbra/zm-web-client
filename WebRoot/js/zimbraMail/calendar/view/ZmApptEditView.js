@@ -1275,11 +1275,27 @@ function(addrType, attendees) {
     }
 
     if(addrType == ZmCalBaseItem.LOCATION || addrType == ZmCalBaseItem.EQUIPMENT) {
+        this.updateAttendeesCache(addrType, this._attendees[addrType].getArray());
         var attendeeStr = ZmApptViewHelper.getAttendeesString(this._attendees[addrType].getArray(), addrType);
         this.setAttendeesField(addrType, attendeeStr);        
     }
     
 	this._attendeePicker[addrType].popdown();
+};
+
+// Updates the local cache with attendee objects
+ZmApptEditView.prototype.updateAttendeesCache =
+function(addrType, attendees){
+
+    if (!(attendees && attendees.length)) return "";
+
+    var a = [];
+    for (var i = 0; i < attendees.length; i++) {
+        var attendee = attendees[i];
+        var addr = attendee.getLookupEmail() || attendee.getEmail();
+        var key = addr + "-" + addrType;
+        this._attendeesHashMap[key] = attendee;
+    }
 };
 
 ZmApptEditView.prototype.setAttendeesField =
