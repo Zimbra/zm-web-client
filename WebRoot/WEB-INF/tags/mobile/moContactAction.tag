@@ -71,6 +71,8 @@
             <zm:field name="homePhone2" value="${param.homePhone2}"/>
             <zm:field name="mobilePhone" value="${param.mobilePhone}"/>
 
+            <zm:field name="fileAs" value="${param.fileAs}" />
+
             <%--<zm:field name="homeFax" value="${param.homeFax}"/>
             
             <zm:field name="pager" value="${param.pager}"/>
