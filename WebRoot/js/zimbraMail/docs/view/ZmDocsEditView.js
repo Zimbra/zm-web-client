@@ -84,14 +84,7 @@ ZmDocsEditView.prototype.save = function(force){
 
     ZmDocsEditApp.fileInfo.descEnabled = this._getVersionNotesChk().checked;
 
-    if(!force && this._getVersionNotesChk().checked){
-        this._showVersionDescDialog(new AjxCallback(this, this.save, true));
-        return;
-    }
-
-    var fileInfo = ZmDocsEditApp.fileInfo;
     var fileName = this._buttons.fileName.getValue();
-    
     var message = this._docMgr.checkInvalidDocName(fileName);
     if (message) {
 		var style = DwtMessageDialog.WARNING_STYLE;
@@ -101,16 +94,17 @@ ZmDocsEditView.prototype.save = function(force){
 	    dialog.registerCallback(DwtDialog.OK_BUTTON, this._focusPageInput, this);
 		return false;
 	}
-
     ZmDocsEditApp.fileInfo.name    = fileName;
-    //    if(window.isTinyMCE) { //temp check
-    //        var ed = tinyMCE.get('tiny_mce_content');
-    //        ZmDocsEditApp.fileInfo.content = ed.getContent();
-    //    } else {
-        ZmDocsEditApp.fileInfo.content = this._editor.getContent();
-    //    }
+
+    if(!force && this._getVersionNotesChk().checked){
+        this._showVersionDescDialog(new AjxCallback(this, this.save, true));
+        return false;
+    }
+
+    ZmDocsEditApp.fileInfo.content = this._editor.getContent();
     ZmDocsEditController.savedDoc = ZmDocsEditApp.fileInfo.content; 
     ZmDocsEditApp.fileInfo.contentType = ZmDocsEditApp.APP_ZIMBRA_DOC;
+
     this._docMgr.setSaveCallback(new AjxCallback(this, this._saveHandler));
     this._docMgr.saveDocument(ZmDocsEditApp.fileInfo);
 
