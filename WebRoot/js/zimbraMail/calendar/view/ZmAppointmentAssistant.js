@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -76,6 +76,10 @@ function() {
 	return appt;
 };
 
+ZmAppointmentAssistant.__RE_handleQuotes = new RegExp([ZmAssistant.SPACES,"\"([^\"]*)\"?",ZmAssistant.SPACES].join(""));
+ZmAppointmentAssistant.__RE_handleBrackets = new RegExp([ZmAssistant.SPACES,"\\[([^\\]]*)\\]?",ZmAssistant.SPACES].join(""));
+ZmAppointmentAssistant.__RE_handleParens = new RegExp([ZmAssistant.SPACES,"\\(([^)]*)\\)?",ZmAssistant.SPACES].join(""));
+
 /**
  * 
  * (...)                 matched as notes, stripped out
@@ -115,19 +119,19 @@ function(dialog, verb, args) {
 
 	var match;
 	
-	match = args.match(/[\p{Z}\z\s]*\"([^\"]*)\"?[\p{Z}\z\s]*/);
+	match = args.match(ZmAppointmentAssistant.__RE_handleQuotes);
 	if (match) {
 		adata.subject = match[1];
 		args = args.replace(match[0], " ");
 	}
 
-	match = args.match(/[\p{Z}\z\s]*\[([^\]]*)\]?[\p{Z}\z\s]*/);
+	match = args.match(ZmAppointmentAssistant.__RE_handleBrackets);
 	if (match) {
 		adata.location = match[1];
 		args = args.replace(match[0], " ");
 	}
 
-	match = args.match(/[\p{Z}\z\s]*\(([^)]*)\)?[\p{Z}\z\s]*/);
+	match = args.match(ZmAppointmentAssistant.__RE_handleParens);
 	if (match) {
 		adata.notes = match[1];
 		args = args.replace(match[0], " ");
@@ -170,23 +174,10 @@ function(dialog, verb, args) {
 		}
 	}
 
-//	match = args.match(/[\p{Z}\z\s]*repeats?[\p{Z}\z\s]+([^\p{Z}\z\s]+)[\p{Z}\z\s]*/);
-//	if (match) {
-//		adata.repeat = match[1];
-//		args = args.replace(match[0], " ");
-//	}
-
-//	match = args.match(/[\p{Z}\z\s]*invite[\p{Z}\z\s]+([^\p{Z}\z\s]+)[\p{Z}\z\s]*/);
-//	if (match) {
-//		args = args.replace(match[0], " ");
-//	}
-
 	if (adata.subject == null) {
-		adata.subject = args.replace(/^[\p{Z}\z\s]+|[\p{Z}\z\s]+$/, "").replace(/[\p{Z}\z\s]+/g, ' ');
+		adata.subject = ZmAssistant.normalize(ZmAssistant.trim(args));
 	}
 
-	//dialog._setOkButton(null, true, adata.subject != null && adata.subject != "");
-	
 	var subStr = AjxStringUtil.convertToHtml(adata.subject == "" ? ZmMsg.ASST_APPT_subject : adata.subject);
 	var locStr = AjxStringUtil.convertToHtml(adata.location == null ? ZmMsg.ASST_APPT_location : adata.location);
 	var notesStr = AjxStringUtil.convertToHtml(adata.notes == null ? ZmMsg.ASST_APPT_notes : adata.notes);
@@ -198,7 +189,6 @@ function(dialog, verb, args) {
 	var cc = appCtxt.getApp(ZmApp.CALENDAR).getCalController();
 	var agenda = cc.getDayToolTipText(adata.startDate, true);
 	this._setField(ZmMsg.agenda, agenda, false, false);
-	//this._setOptField(ZmMsg.repeat, repeat, false, true);
 	return;
 };
 
