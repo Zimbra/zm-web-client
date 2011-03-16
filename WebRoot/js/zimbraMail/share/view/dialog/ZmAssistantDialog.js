@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -33,7 +33,6 @@ ZmAssistantDialog = function() {
 														   
 	DwtDialog.call(this, {parent:appCtxt.getShell(), className:"ZmAssistantDialog", title:ZmMsg.zimbraAssistant,
 						  extraButtons:[helpButton, extraButton]});
-//	ZmQuickAddDialog.call(this, appCtxt.getShell(), null, null, []);
 
 	this.setContent(this._contentHtml());
 	this._initContent();
@@ -63,7 +62,6 @@ ZmAssistantDialog.initializeAssistants = function() {
 	if (!ZmAssistantDialog._handlerInit) {
 		ZmAssistant.register(new ZmVersionAssistant());
 		ZmAssistant.register(new ZmDebugAssistant());
-		// ZmAssistant.register(new ZmCallAssistant());
 		for (var i = 0; i < ZmApp.APPS.length; i++) {
 			var app = ZmApp.APPS[i];
 			var setting = ZmApp.SETTING[app];
@@ -111,7 +109,6 @@ function() {
 	this._commandTitleId = Dwt.getNextId();
 	html.append("<table cellspacing=3 border=0 width=400>");
 	html.append("<tr><td colspan=3>", ZmMsg.enterCommand, "&nbsp;<span class='ZmAsstField' id='", this._commandTitleId, "'></span></td></tr>");	
-	//html.append("<tr><td colspan=3 id='", this._commandTitleId, "'>", ZmMsg.enterCommand, "</td></tr>");		
 	html.append("<tr><td colspan=3><div>");
 	html.append("<textarea rows=", AjxEnv.isIE ? "3" : "2", " style='width:100%' id='",this._commandId,"'>");
 	html.append("</textarea>");
@@ -157,7 +154,6 @@ function(ev) {
 	keyEv.setFromDhtmlEvent(ev, true);
 	var obj = keyEv.dwtObj;
 	obj._commandUpdated();
-//	DBG.println("value = "+obj._commandEl.value);
 };
 
 ZmAssistantDialog.prototype._commandUpdated =
@@ -167,11 +163,13 @@ function() {
 	this._parseActionId = AjxTimedAction.scheduleAction(this._parseTimedAction, this._parseInterval);
 }
 
+ZmAssistantDialog.__RE_parseActionLeadingWord = new RegExp(["^((?:\\.|",ZmAssistant.NONSPACE,")+)",ZmAssistant.SPACES].join(""));
+
 ZmAssistantDialog.prototype._parseAction =
 function() {
 	var assistant = null;	
-	var cmd = this._commandEl.value.replace(/^\s*/, '');
-	var match = cmd.match(/^([\.\w]+)\s*/);
+	var cmd = ZmAssistant.trimLeading(this._commandEl.value);
+	var match = cmd.match(ZmAssistantDialog.__RE_parseActionLeadingWord);
 	if (match) {
 		var args = cmd.substring(match[0].length);
 		var mainCommand = match[1];
@@ -236,7 +234,6 @@ function(title, visible, enabled) {
 	if (title) ok.setText(title);
 	ok.setEnabled(enabled);
 	ok.setVisible(visible);
-	//if (setImage) ok.setImage(image);
 };
 
 ZmAssistantDialog.prototype._setExtraButton =
@@ -245,7 +242,6 @@ function(title, visible, enabled) {
 	if (title) ok.setText(title);
 	ok.setEnabled(enabled);
 	ok.setVisible(visible);
-	//if (setImage) ok.setImage(image);
 };
 
 ZmAssistantDialog.prototype._setHelpButton =
@@ -254,7 +250,6 @@ function(title, visible, enabled) {
 	if (title) b.setText(title);
 	b.setEnabled(enabled);
 	b.setVisible(visible);
-	//if (setImage) ok.setImage(image);
 };
 
 ZmAssistantDialog.prototype.popdown =

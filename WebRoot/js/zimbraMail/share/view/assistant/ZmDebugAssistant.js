@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -40,9 +40,11 @@ function() {
 	return true;
 };
 
+ZmDebugAssistant.__RE_handleNumber = new RegExp(["^",ZmAssistant.SPACES,"([0123])",ZmAssistant.SPACES,"$"].join(""));
+
 ZmDebugAssistant.prototype.handle =
 function(dialog, verb, args) {
-	var	match = args.match(/^\s*([0123])\s*$/);
+	var	match = args.match(ZmDebugAssistant.__RE_handleNumber);
 	this._newLevel = match ? parseInt(match[1]) : -1;
 	var set = this._newLevel >= 0;
 	dialog._setOkButton(AjxMsg.ok, true, set);

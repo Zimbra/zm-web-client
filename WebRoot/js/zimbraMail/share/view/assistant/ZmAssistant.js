@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -44,6 +44,24 @@ ZmAssistant = function(title, command, commandSummary) {
 
 ZmAssistant.prototype.constructor = ZmAssistant;
 
+ZmAssistant.SPACE = "[\\s\\u00a0\\u2000-\\u200B\\u202F\\u3000]";
+ZmAssistant.NONSPACE = "[^\\s\\u00a0\\u2000-\\u200B\\u202F\\u3000]";
+
+ZmAssistant.SPACES = ZmAssistant.SPACE+"*";
+ZmAssistant.WORD = ZmAssistant.NONSPACE+"+";
+
+ZmAssistant.LEADING_SPACE = "^"+ZmAssistant.SPACES;
+ZmAssistant.TRAILING_SPACE = ZmAssistant.SPACES+"$";
+
+ZmAssistant.RE_trimLeading = new RegExp(ZmAssistant.LEADING_SPACE);
+ZmAssistant.RE_trimTrailing = new RegExp(ZmAssistant.LEADING_SPACE);
+ZmAssistant.RE_normalizeSpaces = new RegExp(ZmAssistant.SPACE+"+","g");
+
+ZmAssistant.trimLeading = function(s) { return s.replace(ZmAssistant.RE_trimLeading,""); };
+ZmAssistant.trimTrailing = function(s) { return s.replace(ZmAssistant.RE_trimTrailing,""); };
+ZmAssistant.trim = function(s) { return ZmAssistant.trimLeading(ZmAssistant.trimTrailing(s)); };
+ZmAssistant.normalize = function(s) { return s.replace(ZmAssistant.RE_normalizeSpaces," "); };
+ZmAssistant.split = function(s) { return s.split(ZmAssistant.RE_normalizeSpaces); };
 
 ZmAssistant._handlers = {};
 ZmAssistant._commands = [];
@@ -211,11 +229,22 @@ function(dialog) {
 	return true; //override
 };
 
+ZmAssistant.__RE_matchTimeMatch1 = new RegExp([
+    ZmAssistant.SPACES,
+    "(?:(?:@|at|\\-)",ZmAssistant.SPACES,")?(\\d+):(\\d\\d)(?:",ZmAssistant.SPACES,"(AM|PM))?",
+    ZmAssistant.SPACES
+].join(""),"i");
+ZmAssistant.__RE_matchTimeMatch2 = new RegExp([
+    ZmAssistant.SPACES,
+    "(?:(?:@|at|\\-)",ZmAssistant.SPACES,")?(\\d+)(AM|PM)",
+    ZmAssistant.SPACES
+].join(""),"i");
+
 ZmAssistant.prototype._matchTime =
 function(args) {
 	var hour, minute, ampm = null;
-	var match1 = args.match(/\s*(?:(?:@|at|\-)\s*)?(\d+):(\d\d)(?:\s*(AM|PM))?\s*/i);
-	var match2 = args.match(/\s*(?:(?:@|at|\-)\s*)?(\d+)(AM|PM)\s*/i);	
+	var match1 = args.match(ZmAssistant.__RE_matchTimeMatch1);
+	var match2 = args.match(ZmAssistant.__RE_matchTimeMatch2);
 	// take the first match
 	if (match1 && match2) {
 		if  (match1.index < match2.index) match2 = null;
@@ -244,6 +273,13 @@ function(args) {
 ZmAssistant._BRACKETS = "ZmAssistantBrackets";
 ZmAssistant._PARENS = "ZmAssistantParens";
 
+ZmAssistant.__RE_matchTypedObjectBrackets = new RegExp([
+    ZmAssistant.SPACES,"\\[([^\\]]*)\\]?",ZmAssistant.SPACES
+].join(""), "i");
+ZmAssistant.__RE_matchTypedObjectType = new RegExp([
+    "\\b(",ZmAssistant.WORD,"):",ZmAssistant.SPACES,"$"
+].join(""), "i");
+
 ZmAssistant.prototype._matchTypedObject =
 function(args, objType, obj) {
 	
@@ -251,7 +287,7 @@ function(args, objType, obj) {
 	var matchIndex = 0;
 	
 	if (objType == ZmAssistant._BRACKETS) {
-		match = args.match(/\s*\[([^\]]*)\]?\s*/);
+		match = args.match(ZmAssistant.__RE_matchTypedObjectBrackets);
 		matchIndex = 1;
 	} else {
 		match = this._objectManager.findMatch(args, objType);
@@ -263,7 +299,7 @@ function(args, objType, obj) {
 	if (match.index > 0) {
 		// check for a type
 		var targs = args.substring(0, match.index);
-		matchType = targs.match(/\b(\w+):\s*$/i);
+		matchType = targs.match(ZmAssistant.__RE_matchTypedObjectType);
 		if (matchType) {
 			type = matchType[1].toLowerCase();
 		}

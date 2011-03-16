@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -38,6 +38,8 @@ ZmAssistantBuddy.prototype.getDisplayName = function() {
 	return ZmMsg.zimbraAssistant;
 };
 
+ZmAssistantBuddy.__RE_handleInputLeadingWord = new RegExp(["^((?:\\.|",ZmAssistant.NONSPACE,")+)",ZmAssistant.SPACES,"(.*)"].join(""));
+
 ZmAssistantBuddy.prototype.handleInput = function(args) {
 //	console.log("Received: %s (%d:%d) %d / ENTER? %s", args.str, args.sel_start, args.sel_end, args.last_key, args.enter);
 
@@ -58,8 +60,8 @@ ZmAssistantBuddy.prototype.handleInput = function(args) {
 	}
 
 	var assistant = null;
-	var cmd = args.str.replace(/^\s+/, "");
-	var match = cmd.match(/^([\.\w]+)\s*(.*)/);
+	var cmd = ZmAssistant.trimLeading(str);
+	var match = cmd.match(ZmAssistantBuddy.__RE_handleInputLeadingWord);
 	if (match) {
 		var rest = match[2];
 		var mainCommand = match[1];
@@ -95,12 +97,6 @@ ZmAssistantBuddy.prototype.handleInput = function(args) {
 				}
 			}
 		}
-// 		if (assistant && mainCommand == cmd && this._assistant != assistant) {
-// 			ret.str = assistant.getCommand() + " ";
-// 			ret.sel_start = args.sel_start;
-// 			ret.sel_end = ret.str.length;
-// 			ret.sel_timeout = 1000;
-// 		}
 	} else {
 		this._availableCommands = ZmMsg.ASST_availableCommands+ " " + ZmAssistant.getHandlerCommands().join(", ");
 	}
@@ -229,17 +225,6 @@ ZmAssistantBuddy.buttonClicked = function(span, ev, type) {
 		break;
 	}
 };
-
-// ZmAssistantBuddy.prototype.getIcon = function() {
-// 	return "ZimbraIcon";
-// };
-
-// ZmAssistantBuddy.prototype.getName = function() {
-// 	return ZmMsg.zimbraAssistant;
-// };
-
-
-
 
 //!!! in order to use the existing Assistant framework, we need to
 //    define some functions that are called in various assistants on

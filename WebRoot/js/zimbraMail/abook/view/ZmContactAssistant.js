@@ -52,10 +52,6 @@ function(key) {
 	} else {
 		return null;
 	}
-//	for (var i=0; i < ZmContactAssistant._CONTACT_FIELDS.length; i++) {
-//		var f = ZmContactAssistant._CONTACT_FIELDS[i];
-//		if (f.scmd == key) return f;
-//	}
 }
 
 // fields are displayed in this order as they are populated
@@ -171,7 +167,7 @@ function(addr, type) {
 	var fields = ZmContactAssistant._ADDR_FIELDS[type];
 	var values= addr.split(";");
 	for (var i = 0; i < values.length; i++) {
-		var v = values[i].replace(/^\s+/,'').replace(/\s+$/,'');
+		var v = ZmAssistant.trim(values[i]);
 		this._contactFields[fields[i]] = (i == 2) ? v.toUpperCase() : this._capitalize(v);
 	}
 };
@@ -197,10 +193,16 @@ function() {
  */
 ZmContactAssistant.prototype._capitalize =
 function(v) {
-	var words = v.split(/\s+/);
+	var words = ZmAssistant.split(v);
 	for (var i=0; i < words.length; i++) words[i] = words[i].substring(0,1).toUpperCase() + words[i].substring(1);
 	return words.join(" ");
 };
+
+ZmContactAssistant.__RE_handleNotes = new RegExp([ZmAssistant.SPACES,"\\(([^)]*)\\)?",ZmAssistant.SPACES].join(""));
+ZmContactAssistant.__RE_handleKeyValue = new RegExp([
+    "((",ZmAssistant.WORD,"):",ZmAssistant.SPACES,"(.*?)",ZmAssistant.SPACES,")",
+    "(",ZmAssistant.WORD,":|$)"
+].join(""),"m");
 
 /**
  * @private
@@ -226,14 +228,14 @@ function(dialog, verb, args) {
 	}
 
 	if (!this._contactFields.notes) {
-		match = args.match(/\s*\(([^)]*)\)?\s*/);
+		match = args.match(ZmContactAssistant.__RE_handleNotes);
 		if (match) {
 			this._contactFields.notes = match[1];
 			args = args.replace(match[0], " ");
 		}
 	}
 
-	while(match = args.match(/((\w+):\s*(.*?)\s*)(\w+:|$)/m)) {
+	while(match = args.match(ZmContactAssistant.__RE_handleKeyValue)) {
 		var k = match[2];
 		var v = match[3];
 		var field = this._lookupField(k);
@@ -244,7 +246,7 @@ function(dialog, verb, args) {
 		args = args.replace(match[1],"");
 	}
 
-	var fullName = args.replace(/^\s+/, "").replace(/\s+$/, "").replace(/\s+/g, ' '); //.split(",", 3);
+	var fullName = ZmAssistant.normalize(ZmAssistant.trim(args));
 
 	if (this._contactFields[ZmContact.F_firstName] || this._contactFields[ZmContact.F_middleName] || this._contactFields[ZmContact.F_lastName]) {
 		fullName = null;
@@ -258,9 +260,8 @@ function(dialog, verb, args) {
 			fullName += this._contactFields[ZmContact.F_lastName];
 		}
 	} else {
-		var parts = fullName.split(/\s+/);
-		for (var i=0; i < parts.length; i++) parts[i] = parts[i].substring(0,1).toUpperCase() + parts[i].substring(1);
-		fullName = parts.join(" ");
+        fullName = this._capitalize(fullName);
+        var parts = ZmAssistant.split(fullName);
 		switch (parts.length) {
 			case 0:
 				break;
@@ -305,7 +306,6 @@ function(dialog, verb, args) {
 			value = field.multiLine ? AjxStringUtil.convertToHtml(value) : AjxStringUtil.htmlEncode(value);
 		}
 		if (field.defaultValue || value != null) {
-			//var useDefault = (value == null || value == "");
 			var useDefault = (value == null);
 			ri = this._setField(field.field, useDefault ? field.defaultValue : value, useDefault, false, index+1);
 		} else {

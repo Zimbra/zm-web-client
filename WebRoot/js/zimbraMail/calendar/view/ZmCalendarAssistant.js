@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -46,7 +46,6 @@ function(dialog, verb, args) {
 	if (match) {
 		args = args.replace(match[0], " ");
 		this._startDate = match.context.date;
-		//if (startTime) startDate.setHours(startTime.hour, startTime.minute);
 	}
 
 	match = args.match(RegExp("\\b("
@@ -88,7 +87,7 @@ function(dialog, verb, args) {
 			this._view = null;
 	}
 
-	dialog._setOkButton(AjxMsg.ok, true, true); //, true, icon);
+	dialog._setOkButton(AjxMsg.ok, true, true);
 	
 	if (this._startDate == null) this._startDate = new Date();
 	var startDateValue = DwtCalendar.getDateFullFormatter().format(this._startDate);

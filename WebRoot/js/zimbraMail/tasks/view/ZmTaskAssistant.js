@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -86,6 +86,10 @@ function() {
 	return task;
 };
 
+ZmTaskAssistant.__RE_handleSubject = new RegExp([ZmAssistant.SPACES,"\"([^\"]*)\"?",ZmAssistant.SPACES].join(""));
+ZmTaskAssistant.__RE_handleLocation = new RegExp([ZmAssistant.SPACES,"\\[([^\\]]*)\\]?",ZmAssistant.SPACES].join(""));
+ZmTaskAssistant.__RE_handleNotes = new RegExp([ZmAssistant.SPACES,"\\(([^)]*)\\)?",ZmAssistant.SPACES].join(""));
+
 /**
  *
  * (...)                 matched as notes, stripped out
@@ -120,19 +124,19 @@ function(dialog, verb, args) {
 
 	var match;
 
-	match = args.match(/\s*\"([^\"]*)\"?\s*/);
+	match = args.match(ZmTaskAssistant.__RE_handleSubject);
 	if (match) {
 		tdata.subject = match[1];
 		args = args.replace(match[0], " ");
 	}
 
-	match = args.match(/\s*\[([^\]]*)\]?\s*/);
+	match = args.match(ZmTaskAssistant.__RE_handleLocation);
 	if (match) {
 		tdata.location = match[1];
 		args = args.replace(match[0], " ");
 	}
 
-	match = args.match(/\s*\(([^)]*)\)?\s*/);
+	match = args.match(ZmTaskAssistant.__RE_handleNotes);
 	if (match) {
 		tdata.notes = match[1];
 		args = args.replace(match[0], " ");
@@ -163,7 +167,7 @@ function(dialog, verb, args) {
 	}
 
 	if (tdata.subject == null) {
-		tdata.subject = args.replace(/^\s+/, "").replace(/\s+$/, "").replace(/\s+/g, ' ');
+		tdata.subject = ZmAssistant.normalize(ZmAssistant.trim(args));
 	}
 
 	var subStr = AjxStringUtil.convertToHtml(tdata.subject == "" ? ZmMsg.ASST_APPT_subject : tdata.subject);

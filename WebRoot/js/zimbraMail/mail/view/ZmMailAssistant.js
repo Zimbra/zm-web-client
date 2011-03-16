@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -191,6 +191,11 @@ function(bad, good) {
 	return msg;
 }
 
+ZmMailAssistant.__RE_handleSubject = new RegExp([ZmAssistant.SPACES,"\"([^\"]*)\"?",ZmAssistant.SPACES].join(""));
+ZmMailAssistant.__RE_handleKeyValue = new RegExp([
+    "((",ZmAssistant.WORD,")(:",ZmAssistant.SPACES,")(.*?)",ZmAssistant.SPACES,")(",ZmAssistant.WORD,":|$)"
+].join(""),"m");
+
 ZmMailAssistant.prototype.handle =
 function(dialog, verb, args) {
 	dialog._setOkButton(AjxMsg.ok, true, true); //, true, "NewMessage");
@@ -198,14 +203,14 @@ function(dialog, verb, args) {
 	this._mailFields = {};	
 
 	if (!this._mailFields.subject) {
-		match = args.match(/\s*\"([^\"]*)\"?\s*/);
+		match = args.match(ZmMailAssistant.__RE_handleSubject);
 		if (match) {
 			this._mailFields.subject = match[1];
 			args = args.replace(match[0], " ");
 		}
 	}
 
-	while(match = args.match(/((\w+)(:\s*)(.*?)\s*)(\w+:|$)/m)) {
+	while(match = args.match(ZmMailAssistant.__RE_handleKeyValue)) {
 		var k = match[2];
 		var v = match[4];
 		var strip = match[1];
@@ -213,7 +218,7 @@ function(dialog, verb, args) {
 		if (field) {
 			if (field.key == 'body') {
 				strip = match[2] + match[3];
-				v = args.replace(strip,"").replace(/^\s*/, '');
+				v = ZmAssistant.trimLeading(args.replace(strip,""));
 				args = "";
 			}
 			if (v == null) v = "";
