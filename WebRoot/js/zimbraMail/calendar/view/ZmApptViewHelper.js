@@ -221,7 +221,7 @@ function(date, list, controller, noheader, emptyMsg) {
 		var ao = list.get(i);
 		if (ao.isAllDayEvent()) {
             if(ao.toString() == "ZmAppt") {
-                html.append(ZmApptViewHelper.getApptToolTipText(ao, date, list, controller, noheader, emptyMsg));
+                html.append(ZmApptViewHelper.getApptToolTipText(ao, controller));
             }
             else {
                 //DBG.println("AO    "+ao);
