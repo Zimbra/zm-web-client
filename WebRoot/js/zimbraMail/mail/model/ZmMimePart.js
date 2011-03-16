@@ -186,6 +186,10 @@ function(partNode, attachments, bodyParts, parentNode) {
             var hasContent = AjxUtil.isSpecified(this.node.content);
             if((ZmMimeTable.isRenderableImage(this.node.ct) || hasContent)) {
                 bodyParts.push(this.node);
+                if(isAtt){
+                    //To avoid duplication, Remove attachment that was just added as bodypart.
+                    attachments.pop();
+                }
             }else if(!isAtt && this.node.size != 0 && !this.isIgnoredPart(parentNode)){
                 attachments.push(this.node);
                 isAtt = true;
