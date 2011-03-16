@@ -566,7 +566,7 @@ function(ev) {
 		var lv = this._listView[this._currentView];
 
 		if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-			if (!ev.ctrlKey) {
+			if (!ev.ctrlKey && lv.setSelectionHdrCbox) {
 				lv.setSelectionHdrCbox(false);
 			}
 		}
