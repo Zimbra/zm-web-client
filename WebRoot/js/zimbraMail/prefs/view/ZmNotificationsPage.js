@@ -68,6 +68,7 @@ ZmNotificationsPage.prototype.showMe = function() {
     var status = this._getValidatedDevice() ?
             ZmNotificationsPageForm.CONFIRMED : ZmNotificationsPageForm.UNCONFIRMED;
     this._form.setValue("DEVICE_EMAIL_CODE_STATUS_VALUE", status);
+	var acct = appCtxt.multiAccounts && appCtxt.getActiveAccount();
     this._form.setValue("EMAIL", appCtxt.get(ZmSetting.CAL_EMAIL_REMINDERS_ADDRESS, null, acct));
     this._form.update();
 
