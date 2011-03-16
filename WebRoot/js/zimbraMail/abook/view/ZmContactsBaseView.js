@@ -388,8 +388,11 @@ function(cell, letter, endLetter) {
 	var clc = AjxDispatcher.run("GetContactListController");
 	var alphabetBar = clc && clc.getParentView() && clc.getParentView().getAlphabetBar();
 	if (alphabetBar && alphabetBar.enabled()) {
-		if (alphabetBar.reset(cell))
+		if (alphabetBar.reset(cell)) {
+            letter = letter && String(letter).substr(0,1);
+            endLetter = endLetter && String(endLetter).substr(0,1);
 			clc.searchAlphabet(letter, endLetter);
+        }
 	}
 };
 
