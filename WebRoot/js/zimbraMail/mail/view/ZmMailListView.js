@@ -577,7 +577,7 @@ function(field, itemIdx) {
 
 ZmMailListView.prototype._getToolTip =
 function(params) {
-	var tooltip, field = params.field, item = params.item;
+	var tooltip, field = params.field, item = params.item, matchIndex = params.match.participant;
 	if (!item) { return; }
 	var folder = appCtxt.getById(item.folderId);
 
@@ -587,8 +587,18 @@ function(params) {
 	else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
 			(field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT))
 	{
-		//Let a Zimlet[Email Zimlet] handle creating and displaying tooltip.
-		appCtxt.notifyZimlets("onHoverOverEmailInList", [item.getAddress(AjxEmailAddress.FROM), params.ev]);
+		var addr;
+		if(field == ZmItem.F_FROM) { 
+			addr = item.getAddress(AjxEmailAddress.FROM);
+		} else if(field == ZmItem.F_PARTICIPANT) {
+			var matchIndex = matchIndex ? parseInt(matchIndex) -1 : 0;
+			addr = item.participants && item.participants.get(matchIndex);
+		}
+		if(!addr) {
+			return;
+		}
+		//Let a Zimlet[Email Zimlet] handle creating and displaying tooltip.		
+		appCtxt.notifyZimlets("onHoverOverEmailInList", [addr, params.ev]);
 		return;
 	}
 	else if (field == ZmItem.F_SUBJECT) {
