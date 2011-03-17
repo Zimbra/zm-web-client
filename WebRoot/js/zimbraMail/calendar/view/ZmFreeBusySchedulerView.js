@@ -294,6 +294,9 @@ function() {
 // Add the attendee, then create a new empty slot since we've now filled one.
 ZmFreeBusySchedulerView.prototype._autocompleteCallback =
 function(text, el, match) {
+    if(match.fullAddress) {
+        el.value = match.fullAddress;
+    }
 	if (match && match.item) {
 		if (match.item.isGroup && match.item.isGroup()) {
 			var members = match.item.getGroupMembers().good.getArray();
@@ -579,7 +582,7 @@ function(inputEl, attendee, useException) {
 		if (curAttendee) {
 			// user edited slot with an attendee in it
             var lookupEmailObj = curAttendee.getLookupEmail(true);
-            var lookupEmail = lookupEmailObj ? lookupEmailObj.toString(shortForm || (type && type != ZmCalBaseItem.PERSON)) : null;
+            var lookupEmail = lookupEmailObj ? lookupEmailObj.toString(type && type != ZmCalBaseItem.PERSON) : null;
 			if (value == lookupEmail || value == ZmApptViewHelper.getAttendeesText(curAttendee, type, true)) {
 				return;
 			} else {
@@ -1014,6 +1017,20 @@ function(sched, resetRole, type, noClear, noUpdate) {
         if (input) {
 			input.setToolTipContent(null);
 		}
+
+        var email = this.getEmail(sched.attendee);
+
+        if (email instanceof Array) {
+            for (var i in email) {
+                var m = email[i];
+                this._emailToIdx[m] = null;
+                delete this._emailToIdx[m];
+            }
+        } else {
+            this._emailToIdx[email] = null;
+            delete this._emailToIdx[email];
+        }
+
 		sched.attendee = null;
 	}
 
@@ -1042,6 +1059,7 @@ function(sched, resetRole, type, noClear, noUpdate) {
 
 	sched.uid = null;
 	this._activeInputIdx = null;
+
 };
 
 ZmFreeBusySchedulerView.prototype._resetTimezoneSelect =
