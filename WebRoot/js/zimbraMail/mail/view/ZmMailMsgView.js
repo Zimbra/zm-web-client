@@ -921,7 +921,7 @@ function(container, html, isTextMsg, isTruncated) {
 		? "MsgBody MsgBody-text"
 		: "MsgBody MsgBody-html";
 
-	idoc.body.style.height = ""; //see bug 56899 - if the body has height such as 100% or 94%, it causes a problem in FF in calcualting the iframe height. Make sure the height is clear.
+	idoc.body.style.height = "auto"; //see bug 56899 - if the body has height such as 100% or 94%, it causes a problem in FF in calcualting the iframe height. Make sure the height is clear.
 
 	ifw.getIframe().onload = AjxCallback.simpleClosure(this._onloadIframe, this, ifw);
 
