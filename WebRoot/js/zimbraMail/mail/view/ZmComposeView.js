@@ -1643,8 +1643,8 @@ function(content, sigStyle, sig, newLine) {
 
 	if (sigStyle == ZmSetting.SIG_OUTLOOK && hasQuotedContent) {
 		var preface = this._getPreface();
-		var regexp = new RegExp(re_newlines + preface, "i");
-
+		var re_preface = AjxStringUtil.regExEscape(preface).replace(/\\\"/g,"\\\"?"); // IE has a funny idea of forgetting to put quotes around html attributes, so we make the quotes optional in the regex
+		var regexp = new RegExp(re_newlines + re_preface, "i");
 		if (content.match(regexp)) {
 			content = content.replace(regexp, [sig, newLine, preface].join(""));
 		} else {
