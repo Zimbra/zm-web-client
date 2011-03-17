@@ -127,8 +127,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 						htmlArr[idx++] = AjxStringUtil.LIST_SEP;
 					}
 					htmlArr[idx++] = "<span style='white-space: nowrap' id='";
-					// bug fix #3001 - always add one to index value (to take FROM: address into account)
-					htmlArr[idx++] = [fieldId, parts[j].index + 1].join(DwtId.SEP);
+					htmlArr[idx++] = [fieldId, parts[j].index].join(DwtId.SEP);
 					htmlArr[idx++] = "'>";
 					htmlArr[idx++] = parts[j].name;
 					htmlArr[idx++] = "</span>";

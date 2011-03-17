@@ -588,13 +588,13 @@ function(params) {
 			(field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT))
 	{
 		var addr;
-		if(field == ZmItem.F_FROM) { 
+		if (field == ZmItem.F_FROM) { 
 			addr = item.getAddress(AjxEmailAddress.FROM);
-		} else if(field == ZmItem.F_PARTICIPANT) {
-			var matchIndex = matchIndex ? parseInt(matchIndex) -1 : 0;
+		} else if (field == ZmItem.F_PARTICIPANT) {
+			var matchIndex = (matchIndex != null) ? parseInt(matchIndex) : 0;
 			addr = item.participants && item.participants.get(matchIndex);
 		}
-		if(!addr) {
+		if (!addr) {
 			return;
 		}
 		//Let a Zimlet[Email Zimlet] handle creating and displaying tooltip.		
