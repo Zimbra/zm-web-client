@@ -88,14 +88,16 @@
                 <span class="td Person48 aleft">&nbsp;</span>
                 <span class="td aleft">
                    <div>
-                       <b>${fn:escapeXml(contact.displayFileAs)}</b>
+                       <c:choose>
+                           <c:when test="${empty contact.displayFileAs}">
+                               <fmt:message var="noDisplayAs" key="noDisplayAs" />
+                               ${fn:escapeXml(noDisplayAs)}
+                           </c:when>
+                           <c:otherwise>
+                               <app:contactFileAs contact="${contact}" />
+                           </c:otherwise>
+                       </c:choose>
                    </div>
-                   <c:if test="${not empty contact.jobTitle}">
-                        <div>${fn:escapeXml(contact.jobTitle)}</div>
-                   </c:if>
-                   <c:if test="${not empty contact.company}">
-                        <div>${fn:escapeXml(contact.company)}</div>
-                    </c:if>
              </span>
             </div>
             </div>
