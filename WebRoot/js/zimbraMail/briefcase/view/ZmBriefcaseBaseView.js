@@ -81,7 +81,11 @@ function(ev) {
 			if (this._list && this._list.contains(item)) { continue; }			// skip if we already have it
 			this.addItem(item, this._sortIndex(this._list, item));
             this.scrollToItem(item);
-            this.selectItem(item, true);
+            if(this.getSelection().length > 0){
+                this.selectItem(item, true);
+            }else{
+                this.setSelection(item);
+            }
 		}
 	}
 
