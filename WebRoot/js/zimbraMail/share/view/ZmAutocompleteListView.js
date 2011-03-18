@@ -1273,8 +1273,7 @@ function(email, textId, rowId, ev, loc, element) {
 		var contact = contactsApp.getContactByEmail(email);
 		if (!contact) {
 			contact = new ZmContact(null);
-			contact.initFromEmail(email);
-			contactsApp.updateCache(contact, true);
+			contact.initFromEmail(email);	// don't cache, since it's not a real contact (no ID)
 		}
 		contact.isDL = true;
 		if (textId && rowId) {
