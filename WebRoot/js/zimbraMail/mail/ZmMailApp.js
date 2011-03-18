@@ -1859,8 +1859,20 @@ function() {
  */
 ZmMailApp.prototype.compose =
 function(params) {
-	var controller = AjxDispatcher.run("GetComposeController");
-	appCtxt.composeCtlrSessionId = controller.sessionId; //this is used in ZmNewWindow.js. For disposing of the controller and its listeners, overview, and tree listeners.
+    var controllers = this._sessionController[ZmId.VIEW_COMPOSE];
+    var controller;
+    var msgId = params.msg && params.msg.nId;
+    for (var id in controllers) {
+          if (controllers[id].getMsg() && controllers[id].getMsg().nId == msgId){
+             controller = controllers[id];
+             break;
+          }
+    }
+    if (!controller) {
+	    controller = AjxDispatcher.run("GetComposeController");
+    }
+
+    appCtxt.composeCtlrSessionId = controller.sessionId; //this is used in ZmNewWindow.js. For disposing of the controller and its listeners, overview, and tree listeners.
 	controller.doAction(params);
 };
 

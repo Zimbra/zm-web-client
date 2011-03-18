@@ -1203,9 +1203,10 @@ function() {
  * @param	{Boolean}	fullView		<code>true</code> to include the full version
  * @param	{int}		width			the width
  * @param	{int}		height			the height
+ * @param   {String}    name            window name
  */
 ZmAppCtxt.prototype.getNewWindow = 
-function(fullVersion, width, height) {
+function(fullVersion, width, height, name) {
 	// build url
 	var url = [];
 	var i = 0;
@@ -1227,7 +1228,7 @@ function(fullVersion, width, height) {
     if (window.appCoverageMode) {
         url[i++] = "&coverage=1";
     }
-
+     name = name || "_blank";
 
 	width = width || 705;
 	height = height || 465;
@@ -1235,7 +1236,7 @@ function(fullVersion, width, height) {
 	if (window.appDevMode) {
 		args = ["height=", height, ",width=", width, ",location=yes,menubar=yes,resizable=yes,scrollbars=no,status=yes,toolbar=yes"].join("");
 	}
-	var newWin = window.open(url.join(""), "_blank", args);
+	var newWin = window.open(url.join(""), name, args);
 	this.handlePopupBlocker(newWin);
 	if(newWin) {
 		// add this new window to global list so parent can keep track of child windows!
