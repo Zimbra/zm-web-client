@@ -191,11 +191,15 @@ function(params) {
 
 	this._msgSent = false;
 	if (params.inNewWindow) {
-		var newWinObj = ac.getNewWindow();
+        var msgId = params.msg ? params.msg.nId : (this._msg ? this._msg.nId : Dwt.getNextId());
+		var newWinObj = ac.getNewWindow(false, null, null, ZmId.VIEW_COMPOSE + "_" + msgId);
 
 		// this is how child window knows what to do once loading:
 		newWinObj.command = "compose";
 		newWinObj.params = params;
+        if (newWinObj.win) {
+            newWinObj.win.focus();
+        }
 	} else {
 		this._setView(params);
 		this._listController = params.listController;
@@ -246,7 +250,11 @@ function() {
 	}
 
 	// this is how child window knows what to do once loading:
-	var newWinObj = appCtxt.getNewWindow();
+    var msgId = (msg && msg.nId) || Dwt.getNextId();
+	var newWinObj = appCtxt.getNewWindow(false, null, null, ZmId.VIEW_COMPOSE + "_" + msgId);
+    if (newWinObj.win) {
+        newWinObj.win.focus();
+    }
 	newWinObj.command = "composeDetach";
 	newWinObj.params = {
 		action: action,
@@ -1937,3 +1945,12 @@ function(){
 
     return false;
 };
+
+/*
+ * Return ZmMailMsg object
+ * @return {ZmMailMsg} message object
+ */
+ZmComposeController.prototype.getMsg =
+function(){
+    return this._msg;
+}
