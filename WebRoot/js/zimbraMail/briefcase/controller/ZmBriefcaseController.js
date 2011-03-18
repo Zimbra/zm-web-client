@@ -557,13 +557,21 @@ function(ev) {
 
 		}
 		if (restUrl) {
-            if(item.isDownloadable() && !(item.contentType == ZmMimeTable.APP_ADOBE_PDF && this.hasPDFReader())) {
+            if(item.isDownloadable() && !this._alwaysOpenInNewWindow(item)) {
                 this._downloadFile(restUrl);
             }else {
 			    window.open(restUrl, this._getWindowName(item.name), item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
             }
 		}
 	}
+};
+
+ZmBriefcaseController.prototype._alwaysOpenInNewWindow =
+function(item){
+
+    return (item.contentType == ZmMimeTable.APP_ADOBE_PDF && this.hasPDFReader())
+            || (item.contentType == ZmMimeTable.TEXT_XML) || (item.contentType == ZmMimeTable.APP_XML);
+
 };
 
 ZmBriefcaseController.prototype.hasPDFReader =
