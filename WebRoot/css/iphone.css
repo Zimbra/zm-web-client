@@ -260,6 +260,7 @@ form {
     color:#232323;
     font-weight:bold;
     font-size:14px;
+    width: 200px; 
 }
 .value input[type="text"],.value textarea,.value select{
     -webkit-border-radius: 0px;
@@ -268,11 +269,14 @@ form {
     background:transparent;
     border:0px;
     color:#4b5878;
-    padding:inherit 0px;
-    margin:inherit 0px;
     font-size:14px;
     overflow:hidden;    
 }
+
+#timeZone{
+	width: 100% !important;
+}
+
 .searchButton, input[type="submit"], input.submit,input[type="reset"],input[type="button"] {
     background-color: #2e69e0;
     background-position: 0px -129px;
@@ -503,7 +507,6 @@ form {
 select {
     height: 28px;
     vertical-align: middle !important;
-    padding: 0 0 0 5px;
 }
 
 .zo_select_button {
