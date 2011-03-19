@@ -884,8 +884,13 @@ function(params, msg) {
 	// special handling for multiple forward action
 	var action = params.action;
 	if (action == ZmOperation.FORWARD_ATT || action == ZmOperation.FORWARD_INLINE) {
+		var cview = this._listView[this._currentView];
+		if (cview) {
+			var selection = cview.getSelection();
+			var selCount = selection.length;
+		}
 		// bug 43428 - invitation should be forwarded using apt forward view
-		if (msg.forwardAsInvite()) {
+		if (selCount == 1 && msg.forwardAsInvite()) {
 			var ac = window.parentAppCtxt || window.appCtxt;
 			var controller = ac.getApp(ZmApp.CALENDAR).getCalController();
 			controller.forwardInvite(msg);
@@ -896,16 +901,8 @@ function(params, msg) {
 		}
 
 		// reset the action if user is forwarding multiple mail items inline
-		var cview = this._listView[this._currentView];
-		var selection, selCount;
-		if (cview) {
-			selection = cview.getSelection();
-			selCount = selection.length;
-			if (cview && (action == ZmOperation.FORWARD_INLINE) && (selCount > 1)) {
-				action = params.action = ZmOperation.FORWARD_ATT;
-			}
-		}
-		if (action == ZmOperation.FORWARD_ATT && selCount > 1) {
+		if (selCount > 1) {
+			action = params.action = ZmOperation.FORWARD_ATT;
 			// get msg Id's for each conversation selected
 			var batchCmd = new ZmBatchCommand();
 			var callback = new AjxCallback(this, this._handleLoadMsgs, [params, selection]);
