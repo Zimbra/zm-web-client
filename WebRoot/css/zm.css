@@ -4643,3 +4643,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .SuggestionPrefTitle {
     font-weight: bold;
 }
+
+.Icon{
+	width: 25px;
+}
