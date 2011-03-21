@@ -478,10 +478,12 @@ function(attId, docIds, draftType, callback, contactId) {
 		} else {
 			acctName = ac.getActiveAccount().name;
 		}
-        // if shared folder, make sure we save the draft under the owner account name
-		var folder = msg.folderId ? ac.getById(msg.folderId) : null;
-		if (folder && folder.isRemote()) {
-			acctName = folder.getOwner();
+		if (msg._origMsg && msg._origMsg.isDraft) {
+			// if shared folder, make sure we save the draft under the owner account name
+			var folder = msg.folderId ? ac.getById(msg.folderId) : null;
+			if (folder && folder.isRemote()) {
+				acctName = folder.getOwner();
+			}
 		}
 	} else {
 		// if shared folder, make sure we send the email on-behalf-of
