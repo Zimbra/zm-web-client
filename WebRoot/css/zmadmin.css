@@ -151,6 +151,10 @@
 	margin-left: 5px;
 }
 
+.ZaAutoCompleteListRow {
+	@ListItemContainer-normal@
+}
+
 .userquotaused {
 	height: 6px; 
 	font-size: 6px; /* WEIRD IE QUIRK */
