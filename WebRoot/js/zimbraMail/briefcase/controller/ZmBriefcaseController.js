@@ -220,6 +220,7 @@ function(parent, num) {
 
 	var items = this._listView[this._currentView].getSelection();
 	var isFolderSelected=false, noOfFolders = 0, isRevisionSelected=false, isBriefcaseItemSelected=false, isMixedSelected=false;
+    var isWebDocSelected= false, hasLocked = false, allLocked = true, sameLockOwner=true;
     var hasHighestRevisionSelected = false;
 	if (items) {
 		for (var i = 0; i < items.length; i++) {
@@ -235,6 +236,14 @@ function(parent, num) {
             }else{
                 isBriefcaseItemSelected = true;
             }
+
+            isWebDocSelected = isWebDocSelected || ( !item.isFolder && item.isWebDoc() );
+
+            allLocked = allLocked && item.locked;
+
+            hasLocked = hasLocked || item.locked;
+
+            sameLockOwner = sameLockOwner && (item.locked && item.lockUser == appCtxt.getActiveAccount().name);
 		}
 	}
 
@@ -297,14 +306,14 @@ function(parent, num) {
         parent.enable(ZmOperation.CHECKIN, checkinEnabled && num == 1 );
 
         //Checkout
-        var checkoutEnabled = !isReadOnly && !isLocked && !isRevision;
+        var checkoutEnabled = !isReadOnly && !hasLocked && !isRevisionSelected;
         parent.getOp(ZmOperation.CHECKOUT) && parent.getOp(ZmOperation.CHECKOUT).setVisible(!isRevision && !isLocked);
-        parent.enable(ZmOperation.CHECKOUT, checkoutEnabled && num == 1);
+        parent.enable(ZmOperation.CHECKOUT, checkoutEnabled);
 
         //Discard Checkout
-        var discardCheckoutEnabled = (num == 1) && isLocked && !isRevision;
+        var discardCheckoutEnabled = sameLockOwner && !isRevisionSelected;
         parent.getOp(ZmOperation.DISCARD_CHECKOUT) && parent.getOp(ZmOperation.DISCARD_CHECKOUT).setVisible(discardCheckoutEnabled);
-        parent.enable(ZmOperation.DISCARD_CHECKOUT, discardCheckoutEnabled && (isAdmin || isLockOwner || !isShared));
+        parent.enable(ZmOperation.DISCARD_CHECKOUT, discardCheckoutEnabled && (isAdmin || sameLockOwner || !isShared));
 
         //Versioning
         var versionEnabled = (!isReadOnly && num == 1 && isRevision);
@@ -621,9 +630,19 @@ function(){
 
 ZmBriefcaseController.prototype._checkoutListener =
 function(){
-     var item = this._getSelectedItem();
-     if(item && item instanceof ZmBriefcaseItem){
-        this.checkout(item, item.isWebDoc() ? null : new AjxCallback(this, this._postCheckout, item));
+     var items = this._getSelectedItems();
+     if(items.length > 1){
+        for(var i=0; i< items.length; i++){
+           var item = items[i];
+           if(item && item instanceof ZmBriefcaseItem){
+                this.checkout(item);
+           }
+        }
+     }else{
+        var item = items[0];
+        if(item && item instanceof ZmBriefcaseItem){
+            this.checkout(item, item.isWebDoc() ? null : new AjxCallback(this, this._postCheckout, item));
+        }
      }
 };
 
@@ -656,9 +675,12 @@ function(item, file){
 
 ZmBriefcaseController.prototype._handleDiscardCheckout =
 function(){    
-    var item = this._getSelectedItem();
-    if(item && item instanceof ZmBriefcaseItem)
-        this.unlockItem(item);
+    var items = this._getSelectedItems();
+    for(var i=0; i< items.length; i++){
+        var item = items[i];
+        if(item && item instanceof ZmBriefcaseItem)
+            this.unlockItem(item);
+    }
 };
 
 ZmBriefcaseController.prototype.refreshItem =
@@ -717,6 +739,12 @@ function(){
     var view = this._listView[this._currentView];
 	var items = view.getSelection();    
     return ( items && items.length > 0 ) ? items[0] : null;
+};
+
+ZmBriefcaseController.prototype._getSelectedItems =
+function(){
+    var view = this._listView[this._currentView];
+	return view.getSelection();
 };
 
 ZmBriefcaseController.prototype._getCheckinDlg =
@@ -891,7 +919,7 @@ function(items){
         var organizer = appCtxt.getById(items[0].folderId);
         restUrl = [ organizer.getRestUrl(), "?fmt=zip&list=", params.join(',')].join('');
     }else{
-       var item = items[0];
+       var item = AjxUtil.isArray(items) ? items[0] : items;
        restUrl = item.getRestUrl();
        restUrl += "?disp=a"+(item.version ? "&ver="+item.version : "");
     }
