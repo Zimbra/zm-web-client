@@ -1214,15 +1214,15 @@ function(msg, identity) {
                 composeMode = DwtHtmlEditor.HTML;
             }
         } 
+		else if (this._action == ZmOperation.DRAFT) {
+			if (msg && msg.isHtmlMail()) {
+				composeMode = DwtHtmlEditor.HTML;
+			}
+		}
 		else if (identity) {
 			var sameFormat = appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
 			var asFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 			if ((!sameFormat && asFormat == ZmSetting.COMPOSE_HTML) ||  (sameFormat && msg && msg.isHtmlMail())) {
-				composeMode = DwtHtmlEditor.HTML;
-			}
-		}
-        else if (this._action == ZmOperation.DRAFT) {
-			if (msg && msg.isHtmlMail()) {
 				composeMode = DwtHtmlEditor.HTML;
 			}
 		}
