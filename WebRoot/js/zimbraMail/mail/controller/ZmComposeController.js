@@ -1318,11 +1318,6 @@ function(draftType, msg, resp) {
 			AjxDebug.println(AjxDebug.REPLY, "Reset compose view: _processSendMsg");
 			this._composeView.reset(false);
 
-			// if the original message was a draft and we're not autosending, we need to nuke it
-			var origMsg = msg._origMsg;
-			if (origMsg && origMsg.isDraft && !isScheduled)
-				this._deleteDraft(origMsg);
-
 			// bug 36341
 			if (!appCtxt.isOffline && resp && appCtxt.get(ZmSetting.SAVE_TO_IMAP_SENT) && msg.identity) {
 				var datasources = appCtxt.getDataSourceCollection();
