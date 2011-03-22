@@ -29,7 +29,7 @@
  */
 ZmRenameTagDialog = function(parent, className) {
 
-	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.renameTag});
+	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.renameTag, id:"RenameTagDialog"});
 
 	this._setNameField(this._nameFieldId);
 };

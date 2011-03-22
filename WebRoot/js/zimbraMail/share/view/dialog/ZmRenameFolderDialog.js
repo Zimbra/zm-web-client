@@ -29,7 +29,7 @@
  */
 ZmRenameFolderDialog = function(parent, className) {
 
-	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.renameFolder});
+	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.renameFolder, id:"RenameFolderDialog"});
 
 	this._setNameField(this._nameFieldId);
 };
