@@ -804,6 +804,14 @@ function(sigId, account) {
 
 ZmComposeController.prototype._deleteDraft =
 function(delMsg) {
+    var ac = window.parentAppCtxt || window.appCtxt;
+
+    if (delMsg && delMsg.isSent) {
+      var folder = delMsg.folderId ? ac.getById(delMsg.folderId) : null;
+	  if (folder && folder.isRemote() && !folder.isPermAllowed(ZmShare.PERM_DELETE)) {
+         return;   //remote folder no permission to delete, exit
+	  }
+    }
 
 	var list = delMsg.list;
 	var mailItem, request;
