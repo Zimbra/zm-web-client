@@ -1691,12 +1691,10 @@ function(params) {
             }
         }
     }
-
-    if(calIds.length == 0) {
-        tooltipContent = "<b>" + ZmMsg.statusLabel + " " + fbStatusMsg[params.status] + "</b>";
-    }else {
+    tooltipContent = "<b>" + ZmMsg.statusLabel + " " + fbStatusMsg[params.status] + "</b>";
+    if(calIds.length > 0) {
         var acct = this._editView.getCalendarAccount();
-        var emptyMsg = acct && (acct.name == params.email) ? fbStatusMsg[params.status] : ZmMsg.unknown;
+        var emptyMsg = tooltipContent || (acct && (acct.name == params.email) ? fbStatusMsg[params.status] : ZmMsg.unknown);
         tooltipContent = cc.getUserStatusToolTipText(params.startDate, params.endDate, true, params.email, emptyMsg, calIds);
     }
     var shell = DwtShell.getShell(window);
