@@ -192,11 +192,16 @@ function(result) {
 		var idx = 0;
 		var attendees = appt.inv[0].comp[0].at || [];
         AjxDispatcher.require(["CalendarCore"]);
+
+        var options = {};
+	    options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
+	    options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
+
 		for (var i = 0; i < attendees.length; i++) {
 			var at = attendees[i];
 			var subs = {
 				icon: ZmCalItem.getParticipationStatusIcon(at.ptst),
-				attendee: (om ? om.findObjects((new AjxEmailAddress(at.a)), true, ZmObjectManager.EMAIL) : at.a)
+				attendee: (om ? om.findObjects((new AjxEmailAddress(at.a)), true, ZmObjectManager.EMAIL, false, options) : at.a)
 			};
 			html[idx++] = AjxTemplate.expand("mail.Message#InviteHeaderPtst", subs);
 		}
@@ -387,11 +392,14 @@ function(subs, sentBy, sentByAddr, obo) {
         subs.ptstId = this._ptstId = (this.parent._htmlElId + "_ptst");
     }
 
-	var om = this.parent._objectManager;
+    var options = {};
+	options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
+	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 
+	var om = this.parent._objectManager;
 	// organizer
 	var org = new AjxEmailAddress(this._invite.getOrganizerEmail(), null, this._invite.getOrganizerName());
-	subs.invOrganizer = om ? om.findObjects(org, true, ZmObjectManager.EMAIL) : org.toString();
+	subs.invOrganizer = om ? om.findObjects(org, true, ZmObjectManager.EMAIL, false, options) : org.toString();
 
     if(obo) {
         subs.obo = om ? om.findObjects(obo, true, ZmObjectManager.EMAIL) : obo.toString();
@@ -400,7 +408,7 @@ function(subs, sentBy, sentByAddr, obo) {
 	// sent-by
 	var sentBy = this._invite.getSentBy();
 	if (sentBy) {
-		subs.invSentBy = om ? om.findObjects(sentBy, true, ZmObjectManager.EMAIL) : sentBy.toString();
+		subs.invSentBy = om ? om.findObjects(sentBy, true, ZmObjectManager.EMAIL, false, options) : sentBy.toString();
 	}
 
     if(this._msg.cif) {
@@ -417,14 +425,14 @@ function(subs, sentBy, sentByAddr, obo) {
 		var at = list[i];
 		var attendee = new AjxEmailAddress(at.a, null, at.d);
         if(at.role == ZmCalItem.ROLE_OPTIONAL) {
-            opt.push(om ? om.findObjects(attendee, true, ZmObjectManager.EMAIL) : attendee.toString());
+            opt.push(om ? om.findObjects(attendee, true, ZmObjectManager.EMAIL, false, options) : attendee.toString());
         }
         else {
-            str.push(om ? om.findObjects(attendee, true, ZmObjectManager.EMAIL) : attendee.toString());
+            str.push(om ? om.findObjects(attendee, true, ZmObjectManager.EMAIL, false, options) : attendee.toString());
         }
 	}
-	subs.invitees = str.join(AjxEmailAddress.SEPARATOR);
-	subs.optInvitees = opt.join(AjxEmailAddress.SEPARATOR);
+	subs.invitees = str.join(om ? "" : AjxEmailAddress.SEPARATOR );
+	subs.optInvitees = opt.join(om ? "" : AjxEmailAddress.SEPARATOR );
 
 	// convert to local timezone if necessary
 	var inviteTz = this._invite.getServerStartTimeTz();
