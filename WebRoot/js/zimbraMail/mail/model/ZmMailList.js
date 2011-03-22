@@ -120,6 +120,7 @@ function(params) {
  *        markAsSpam	[boolean]		if true, mark as "spam"
  *        folder		[ZmFolder]		destination folder
  *        childWin		[window]*		the child window this action is happening in
+ *        closeChildWin	[boolean]*		is the child window closed at the end of the action?
  *        callback		[AjxCallback]*	callback to run after each sub-request
  *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
  *        count			[int]*			starting count for number of items processed

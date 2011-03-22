@@ -473,6 +473,9 @@ function(params) {
 	var params1 = AjxUtil.hashCopy(params);
 	params1.items = AjxUtil.toArray(params.items);
 	params1.attrs = params.attrs || {};
+	params1.childWin = params.childWin;
+	params1.closeChildWin = params.closeChildWin;
+	
 	if (params1.folder.id == ZmFolder.ID_TRASH) {
 		params1.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.actionTrash) : null;
 		params1.action = "trash";
@@ -866,7 +869,9 @@ function(params, batchCmd) {
 		numItems:		params.count || 0,
 		actionText:		params.actionText,
 		actionArg:		params.actionArg,
-		actionLogItem:		actionLogItem
+		actionLogItem:		actionLogItem,
+		childWin:		params.childWin,
+		closeChildWin: 	params.closeChildWin
 	};
 
 	var dialog = ZmList.progressDialog;
@@ -978,7 +983,7 @@ function(params, result) {
 			params.finalCallback.run(params);
 		} else {
 			DBG.println("sa", "no final callback");
-			ZmList.killProgressDialog(params.actionSummary, params.actionLogItem);
+			ZmList.killProgressDialog(params.actionSummary, params.actionLogItem, params.closeChildWin);
 		}
 	}
 };
@@ -988,10 +993,10 @@ function(params, result) {
  *
  * @param {String}      summary          the text that summarizes the recent action
  * @param {ZmAction}    actionLogItem    the logged action for possible undoing
+ * @param {boolean}    showToastOnParentWindow    the toast message should be on the parent window (since the child window is being closed)
  */
 ZmList.killProgressDialog =
-function(summary, actionLogItem) {
-
+function(summary, actionLogItem, showToastOnParentWindow) {
 	DBG.println("sa", "kill progress dialog");
 	var dialog = ZmList.progressDialog;
 	if (dialog) {
@@ -1000,13 +1005,14 @@ function(summary, actionLogItem) {
 		ZmList.progressDialog = null;
 	}
 	if (summary) {
-		var actionController = appCtxt.getActionController();
+		var ctxt = showToastOnParentWindow ? parentAppCtxt : appCtxt;
+		var actionController = ctxt.getActionController();
 		var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
 		if (undoLink && actionController) {
 			actionController.onPopup();
-			appCtxt.setStatusMsg({msg: summary+undoLink, transitions: actionController.getStatusTransitions()});
+			ctxt.setStatusMsg({msg: summary+undoLink, transitions: actionController.getStatusTransitions()});
 		} else {
-			appCtxt.setStatusMsg(summary);
+			ctxt.setStatusMsg(summary);
 		}
 	}
 };
