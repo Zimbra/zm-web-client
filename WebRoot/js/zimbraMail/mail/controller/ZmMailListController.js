@@ -975,7 +975,12 @@ function(items, markAsSpam, folder) {
 	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
 	items = AjxUtil.toArray(items);
 
-	var params = {items:items, markAsSpam:markAsSpam, folder:folder, childWin:appCtxt.isChildWindow && window};
+	var params = {items:items,
+					markAsSpam:markAsSpam,
+					folder:folder,
+					childWin:appCtxt.isChildWindow && window,
+					closeChildWin: appCtxt.isChildWindow};
+
 	var allDoneCallback = new AjxCallback(this, this._checkItemCount);
 	var list = this._setupContinuation(this._doSpam, [markAsSpam, folder], params, allDoneCallback);
 	list.spamItems(params);

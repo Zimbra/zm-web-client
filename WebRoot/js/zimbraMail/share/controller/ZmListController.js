@@ -1081,7 +1081,11 @@ function(items, hardDelete, attrs) {
 	items = AjxUtil.toArray(items);
 	if (!items.length) { return; }
 
-	var params = {items:items, hardDelete:hardDelete, attrs:attrs, childWin:appCtxt.isChildWindow && window};
+	var params = {items: items,
+					hardDelete: hardDelete,
+					attrs: attrs,
+					childWin: appCtxt.isChildWindow && window,
+					closeChildWin: appCtxt.isChildWindow};
 	var allDoneCallback = new AjxCallback(this, this._checkItemCount);
 	var list = this._setupContinuation(this._doDelete, [hardDelete, attrs], params, allDoneCallback);
 
@@ -2039,7 +2043,7 @@ function(params, actionParams) {
 			params.allDoneCallback.run();
 		}
 
-		ZmList.killProgressDialog(actionParams.actionSummary, actionParams.actionLogItem);
+		ZmList.killProgressDialog(actionParams.actionSummary, actionParams.actionLogItem, actionParams.closeChildWin);
 	}
 };
 
