@@ -102,12 +102,6 @@ function(parent, type, id) {
 		emptyFolderOp.setText(ZmMsg.emptyTrash);
 	}
 
-	var recoverOp = parent.getOp(ZmOperation.RECOVER_DELETED_ITEMS);
-	if (recoverOp) {
-		recoverOp.setVisible(isTrash);
-		recoverOp.setEnabled(isTrash);
-	}
-
 
 	var op = parent.getOp(ZmOperation.DELETE);
 	if (op) {
@@ -124,10 +118,6 @@ function() {
 	return ZmTreeController.prototype._getAllowedSubTypes.call(this);
 };
 
-ZmTaskTreeController.prototype._getSearchTypes =
-function(ev) {
-	return [ZmItem.TASK];
-};
 /*
 * Returns a "New Task Folder" dialog.
 */
@@ -154,8 +144,7 @@ function() {
 		ZmOperation.RENAME_FOLDER,
 		ZmOperation.EDIT_PROPS,
 		ZmOperation.SYNC,
-		ZmOperation.EMPTY_FOLDER,
-		ZmOperation.RECOVER_DELETED_ITEMS
+        ZmOperation.EMPTY_FOLDER
 	];
 };
 
