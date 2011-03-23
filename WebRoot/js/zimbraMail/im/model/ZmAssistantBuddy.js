@@ -47,7 +47,7 @@ ZmAssistantBuddy.prototype.handleInput = function(args) {
 		    stop : true };
 
 	// disallow leading space.
-	if (/^[\p{Z}\z\s]+$/.test(args.str)) {
+	if (/^\s+$/.test(args.str)) {
 		ret.str = "";
 		return ret;
 	}

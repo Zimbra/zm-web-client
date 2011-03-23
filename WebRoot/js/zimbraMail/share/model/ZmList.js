@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -501,35 +501,10 @@ function(params) {
 			params1.accountName = params.items[0].getAccount().name;
 		}
 	}
-	//Error Callback
-	params1.errorCallback = params.errorCallback;
 
-	if (params.folder.id == ZmFolder.ID_TRASH) { // Bug 26103: when deleting an item in a folder shared to us, save a copy in our own trash
-		var toCopy = [];
-		for (var i=0; i<params.items.length; i++) {
-			var item = params.items[i];
-			if (item.isShared()) {
-				var index = item.id.indexOf(":");
-				if (index != -1) {
-					var acctId = item.id.substring(0, index);
-					if (!appCtxt.accountList.getAccount(acctId)) {
-						toCopy.push(item);
-					}
-				}
-			}
-		}
-		if (toCopy.length) {
-			var params2 = {
-				items: toCopy,
-				folder: params.folder, // Should refer to our own trash folder
-				finalCallback: new AjxCallback(this, this._itemAction, [params1, null]),
-				actionText: null
-			};
-			this.copyItems(params2);
-			return;
-		}
-	}
-    
+    //Error Callback
+    params1.errorCallback = params.errorCallback;
+
 	this._itemAction(params1);
 };
 
@@ -573,19 +548,18 @@ function(params, result) {
  * @param	{Hash}	params.attrs			the additional attrs for SOAP command
  * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
  * @param	{int}	params.count		the starting count for number of items processed
- * @param	{String}	params.actionText		optional text to display in the confirmation toast instead of the default summary. May be set explicitly to null to disable the confirmation toast
  */
 ZmList.prototype.copyItems =
 function(params) {
 
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "actionText"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs"]);
 
 	params.items = AjxUtil.toArray(params.items);
 	params.attrs = params.attrs || {};
 	params.attrs.l = params.folder.id;
 	params.action = "copy";
-	params.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.itemCopied) : null;
-	params.actionArg = params.folder.getName(false, false, true);
+    params.actionText = ZmMsg.actionCopied;
+    params.actionArg = params.folder.getName(false, false, true);
 	params.callback = new AjxCallback(this, this._handleResponseCopyItems, params);
 
 	if (appCtxt.multiAccounts && params.folder.isRemote()) {
@@ -602,10 +576,8 @@ ZmList.prototype._handleResponseCopyItems =
 function(params, result) {
 	var resp = result.getResponse();
 	if (resp.length > 0) {
-		if (params.actionText) {
-			var msg = AjxMessageFormat.format(params.actionText, resp.length);
-			appCtxt.getAppController().setStatusMsg(msg);
-		}
+		var msg = AjxMessageFormat.format(ZmMsg.itemCopied, resp.length);
+		appCtxt.getAppController().setStatusMsg(msg);
 	}
 };
 
