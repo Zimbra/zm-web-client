@@ -197,7 +197,7 @@ function(params) {
 
     // TODO: Find a better way to indicate which trees show the share link
     var addShareLink =
-        appCtxt.get(ZmSetting.SHARING_ENABLED)  && isApp  && isZimbraAccount &&
+        appCtxt.get(ZmSetting.SHARING_ENABLED, null, acct)  && isApp  && isZimbraAccount &&
         (
             this.type == ZmOrganizer.FOLDER   ||
             this.type == ZmOrganizer.ADDRBOOK ||
