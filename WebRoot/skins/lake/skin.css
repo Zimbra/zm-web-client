@@ -66,10 +66,6 @@ body {
 	color: #fff;
 }
 
-.ZmTaskbarButtonParent .ZToolbarButtonTable .ZWidgetTitle {
-	color: #333;
-}
-
 .ZAppTab {
 	height: 29px;
 }
@@ -107,9 +103,10 @@ body {
 	@TreeHeaderContainer@
 }
 
-.ZOptionsSectionTable .ZToolbarButtonTable .ZWidgetTitle {
+.ZOptionsSectionTable .ZToolbarButtonTable .ZWidgetTitle, .ZmTaskbarButtonParent .ZToolbarButtonTable .ZWidgetTitle , .ZmSearchToolbarCell .ZSelected .ZToolbarButtonTable .ZWidgetTitle{
 	color: #333;
 }
+
 
 .ZmPickerOverview .DwtCalendarTitle {
 	 color: #ffffff;
