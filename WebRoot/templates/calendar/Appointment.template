@@ -677,8 +677,11 @@
             <table style='padding-left:3px; padding-top: 5px;' border=0 cellpadding=3 cellspacing=0>
                 <tr>
                     <td id='${id}_graphKeySpacer'>&nbsp;</td>
-                    <td><div class='ZmGraphKeyColorBox ZmScheduler-free'></div></td>
+                    <td><div class='ZmGraphKeyColorBox ZmScheduler-working'></div></td>
                     <td class='ZmGraphKeyColorText'><$= ZmMsg.free $></td>
+                    <td>&nbsp;</td>
+                    <td><div class='ZmGraphKeyColorBox ZmScheduler-free'></div></td>
+                    <td class='ZmGraphKeyColorText'><$= ZmMsg.nonWorking $></td>
                     <td>&nbsp;</td>
                     <td><div class='ZmGraphKeyColorBox ZmScheduler-busy'></div></td>
                     <td class='ZmGraphKeyColorText'><$= ZmMsg.busy $></td>
