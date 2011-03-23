@@ -1153,7 +1153,7 @@ function(event, isNetworkOn) {
 
 ZmZimbraMail.prototype.handleClientEventNotifyResponse =
 function(event, res) {
-    var response = res.body.ClientEventNotifyResponse;
+    var response = res.body && res.body.ClientEventNotifyResponse;
     if (response) {
         this.setInstantNotify(true);
         if (this.clientEventNotifyTimerId) {
