@@ -2233,17 +2233,18 @@ function(action, msg, extraBodyText) {
 
 	// get reply/forward prefs as necessary
 	var incOptions = this._controller._curIncOptions;
+    var ac = window.parentAppCtxt || window.appCtxt;
 	if (!incOptions) {
 		if (this._isReply(action)) {
-			incOptions = {what:		appCtxt.get(ZmSetting.REPLY_INCLUDE_WHAT),
-						  prefix:	appCtxt.get(ZmSetting.REPLY_USE_PREFIX),
-						  headers:	appCtxt.get(ZmSetting.REPLY_INCLUDE_HEADERS)};
+			incOptions = {what:		ac.get(ZmSetting.REPLY_INCLUDE_WHAT),
+						  prefix:	ac.get(ZmSetting.REPLY_USE_PREFIX),
+						  headers:	ac.get(ZmSetting.REPLY_INCLUDE_HEADERS)};
 		} else if (isDraft) {
 			incOptions = {what:			ZmSetting.INC_BODY};
 		} else if (action == ZmOperation.FORWARD_INLINE) {
 			incOptions = {what:		ZmSetting.INC_BODY,
-						  prefix:	appCtxt.get(ZmSetting.FORWARD_USE_PREFIX),
-						  headers:	appCtxt.get(ZmSetting.FORWARD_INCLUDE_HEADERS)};
+						  prefix:	ac.get(ZmSetting.FORWARD_USE_PREFIX),
+						  headers:	ac.get(ZmSetting.FORWARD_INCLUDE_HEADERS)};
 		} else if (action == ZmOperation.FORWARD_ATT) {
 			incOptions = {what:		ZmSetting.INC_ATTACH};
 		} else if (action == ZmOperation.DECLINE_PROPOSAL) {
@@ -2294,8 +2295,7 @@ function(action, msg, extraBodyText) {
 	}
 
 	var sigStyle, sig, sigId;
-	var account = appCtxt.multiAccounts && this.getFromAccount();
-	var ac = window.parentAppCtxt || window.appCtxt;
+	var account = ac.multiAccounts && this.getFromAccount();
 	if (ac.get(ZmSetting.SIGNATURES_ENABLED, null, account)) {
 		sig = this.getSignatureContentSpan(null, null, account);
 		sigStyle = sig && ac.get(ZmSetting.SIGNATURE_STYLE, null, account);
