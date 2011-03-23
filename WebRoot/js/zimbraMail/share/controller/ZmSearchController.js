@@ -180,29 +180,38 @@ function(name, bv) {
  * toggled.
  * 
  * @param {Boolean}	forceShow		if <code>true</code>, show panel
+ * @param {Boolean}	forceHide		if <code>true</code>, hide panel (takes precenence over forceShow)
  * @param {AjxCallback}	callback		the callback to run after display is done
  */
 ZmSearchController.prototype.showBrowseView =
-function(forceShow, callback) {
+function(forceShow, callback, forceHide) {
 	if (!this._browseViewController) {
-		var loadCallback = new AjxCallback(this, this._handleLoadShowBrowseView, [callback]);
-		AjxDispatcher.require("Browse", false, loadCallback, null, false);
-	} else {
-		var bvc = this._browseViewController;
-		bvc.setBrowseViewVisible(forceShow || !bvc.getBrowseViewVisible());
-		if (callback) {
-			callback.run(bvc.getBrowseView());
+		if (forceHide) {
+			return; //it was never displayed yet anyway so no need to hide
 		}
+		var loadCallback = new AjxCallback(this, this._handleLoadShowBrowseView, [forceShow, forceHide, callback]);
+		AjxDispatcher.require("Browse", false, loadCallback, null, false);
+		return;
 	}
+	this._doShowBrowseView(forceShow, forceHide, callback);
 };
 
 /**
  * @private
  */
 ZmSearchController.prototype._handleLoadShowBrowseView =
-function(callback) {
-	var bvc = this._browseViewController = new ZmBrowseController(this.searchPanel);
-	bvc.setBrowseViewVisible(true);
+function(forceShow, forceHide, callback) {
+	this._browseViewController = new ZmBrowseController(this.searchPanel);
+	this._doShowBrowseView(forceShow, forceHide, callback);
+};
+
+/**
+ * @private
+ */
+ZmSearchController.prototype._doShowBrowseView =
+function(forceShow, forceHide, callback) {
+	var bvc = this._browseViewController;
+	bvc.setBrowseViewVisible(!forceHide && (forceShow || !bvc.getBrowseViewVisible()));
 	if (callback) {
 		callback.run(bvc.getBrowseView());
 	}

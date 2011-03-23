@@ -806,6 +806,11 @@ function(visible) {
 		return;
 	}
 
+	//hide advanced search if open
+	if (!visible) {
+		appCtxt.getSearchController().showBrowseView(false, null, true);
+	}
+
 	var tb = document.getElementById(ZmId.SEARCH_TOOLBAR);
 
 	if (!tb) {
