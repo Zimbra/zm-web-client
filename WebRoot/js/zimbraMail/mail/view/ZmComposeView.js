@@ -2417,8 +2417,8 @@ function(action, msg, extraBodyText) {
 		this._fixMultipartRelatedImages_onTimer(msg);
 	}
 
-	var hasInlineImages = (bodyInfo && bodyInfo.hasInlineImages) || !appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	this._showForwardField(msg, action, incOptions, hasInlineImages, bodyInfo && bodyInfo.hasInlineAtts);
+	var hasInlineImages = (bodyInfo && bodyInfo.hasInlineImages) || !ac.get(ZmSetting.VIEW_AS_HTML);
+	this._showForwardField(msg || this._msg, action, incOptions, hasInlineImages, bodyInfo && bodyInfo.hasInlineAtts);
 
 	if (sigId && !isDraft) {
         this._attachSignatureVcard(sigId);
