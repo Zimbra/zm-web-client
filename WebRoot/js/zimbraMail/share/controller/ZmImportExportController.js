@@ -368,7 +368,9 @@ function(funcName, params, type, fault1 /* , ... , faultN */) {
 	// cleanup
 	delete window[funcName];
 	var iframe = params.iframe;
-	iframe.parentNode.removeChild(iframe);
+	setTimeout(function() { // Right now we are actually in the iframe's onload handler, so we defer killing the iframe until we're out of it
+		iframe.parentNode.removeChild(iframe);
+	}, 0);
 };
 
 /**
