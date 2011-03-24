@@ -92,6 +92,15 @@ function(params, account) {
 	}
 
     if (this._colorSelect) {
+        var defaultColorCode = ZmOrganizer.DEFAULT_COLOR[this._organizerType],
+            defaultColor = ZmOrganizer.COLOR_VALUES[defaultColorCode],
+            colorMenu = this._colorSelect.getMenu(),
+            moreColorMenu;
+        if(colorMenu) {
+            moreColorMenu = (colorMenu.toString() == "ZmMoreColorMenu") ? colorMenu : colorMenu._getMoreColorMenu();
+            if(moreColorMenu) moreColorMenu.setDefaultColor(defaultColor);
+        }
+
         var icon = null;
         var orgType = this._organizerType; 
         var orgClass = ZmOrganizer.ORG_CLASS[orgType];
@@ -219,7 +228,7 @@ function(html, idx) {
 	return idx;
 };
 
-ZmNewOrganizerDialog.prototype._createFolderContentHtml = 
+ZmNewOrganizerDialog.prototype._createFolderContentHtml =
 function(html, idx) {
 	this._folderTreeCellId = this._htmlElId + "_folderTree";
 	html[idx++] = AjxTemplate.expand("share.Dialogs#ZmNewOrgDialogFolder", {id:this._htmlElId});
