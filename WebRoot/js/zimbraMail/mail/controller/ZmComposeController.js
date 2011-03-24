@@ -552,6 +552,7 @@ function() {
 	AjxDebug.println(AjxDebug.REPLY, "Reset compose view: _handleResponseCancelOrModifyAppt");
 	this._composeView.reset(false);
 	this._app.popView(true);
+    appCtxt.setStatusMsg(ZmMsg.messageSent);
 };
 
 ZmComposeController.prototype._handleErrorSendMsg =
