@@ -344,7 +344,16 @@ function(visible) {
 
 ZmMailMsgView.prototype._getShareToolbar =
 function() {
-	if (this._shareToolbar) { return this._shareToolbar; }
+	if (this._shareToolbar) {
+		if (AjxEnv.isIE) {
+			//reparenting on IE does not work. So recreating in this case. (similar to bug 52412 for the invite toolbar)
+			this._shareToolbar.dispose();
+			this._shareToolbar = null;
+		}
+		else {
+			return this._shareToolbar;
+		}
+	}
 
 	var buttonIds = [ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE];
 	var params = {
