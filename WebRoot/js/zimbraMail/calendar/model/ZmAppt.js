@@ -214,7 +214,7 @@ function(controller) {
 	var appt = this.apptClone || this._orig || this;
 	var needDetails = (!appt._toolTip || (appt.otherAttendees && !appt.ptstHashMap));
 	if (needDetails) {
-		return {callback:new AjxCallback(appt, appt._getToolTip, [controller]), loading:true};
+		return {callback:new AjxCallback(appt, appt._getToolTip, [controller]), loading:false};
 	} else {
 		return appt._toolTip || appt._getToolTip(controller);
 	}
