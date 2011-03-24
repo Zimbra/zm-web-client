@@ -366,7 +366,13 @@ function(funcName, params, type, fault1 /* , ... , faultN */) {
 	}
 
 	// cleanup
-	delete window[funcName];
+	try {
+		delete window[funcName]; // IE fails on this one (bug #57952)
+	} catch (e) {
+		if (window[funcName]) {
+			window[funcName] = undefined;
+		}
+	}
 	var iframe = params.iframe;
 	setTimeout(function() { // Right now we are actually in the iframe's onload handler, so we defer killing the iframe until we're out of it
 		iframe.parentNode.removeChild(iframe);
