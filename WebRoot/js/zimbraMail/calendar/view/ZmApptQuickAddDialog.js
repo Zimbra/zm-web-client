@@ -84,6 +84,7 @@ function(appt) {
 	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(appt.endDate);
 	var isAllDay = appt.isAllDayEvent();
 	this._showTimeFields(!isAllDay);
+    this._showAsSelect.setSelectedValue("B");
 	if (!isAllDay) {
 		this._startTimeSelect.set(appt.startDate);
 		this._endTimeSelect.set(appt.endDate);
@@ -91,9 +92,9 @@ function(appt) {
         ZmApptViewHelper.getDateInfo(this, this._dateInfo);        
 	} else {
         this._dateInfo = {};
+        this._showAsSelect.setSelectedValue("F");
     }
 
-	this._showAsSelect.setSelectedValue("B");
     this._privacySelect.enable();
 	this._privacySelect.setSelectedValue("PUB");
     this._calendarOrgs = {};

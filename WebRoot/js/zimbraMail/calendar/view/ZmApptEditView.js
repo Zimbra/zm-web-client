@@ -58,6 +58,7 @@ ZmApptEditView = function(parent, attendees, controller, dateInfo) {
 
     // Store Appt form values.
     this._apptFormValue = {};
+    this._showAsValueChanged = false;
 };
 
 ZmApptEditView.prototype = new ZmCalItemEditView;
@@ -163,6 +164,7 @@ function() {
 	}
 
     this._attendeesHashMap = {};
+    this._showAsValueChanged = false;
 
     //Default Persona
     this.setIdentity();
@@ -251,6 +253,23 @@ function(isAllDay) {
 ZmApptEditView.prototype.toggleAllDayField =
 function() {
 	this.updateAllDayField(!this._allDayCheckbox.checked);
+};
+
+ZmApptEditView.prototype.updateShowAsField =
+function(isAllDay) {
+    if(!this._showAsValueChanged) {
+        if(isAllDay) {
+            this._showAsSelect.setSelectedValue("F");
+        }
+        else {
+            this._showAsSelect.setSelectedValue("B");
+        }
+    }
+};
+
+ZmApptEditView.prototype.setShowAsFlag =
+function(flag) {
+    this._showAsValueChanged = flag;
 };
 
 ZmApptEditView.prototype.updateTimeField =
@@ -495,6 +514,9 @@ function(calItem, mode) {
 	if (isAllDayAppt) {
 		this._allDayCheckbox.checked = true;
 		this._showTimeFields(false);
+        this.updateShowAsField(true);
+        this._showAsSelect.setSelectedValue(calItem.freeBusy);
+        this._showAsSelect.setEnabled(enableApptDetails);
 
 		// set time anyway to current time and default duration (in case user changes mind)
 		var now = AjxDateUtil.roundTimeMins(new Date(), 30);
@@ -789,6 +811,7 @@ function(width) {
 		this._showAsSelect.addOption(option.label, option.selected, option.value, "showAs" + option.value);
 	}
 
+	this._showAsSelect.addChangeListener(new AjxListener(this, this.setShowAsFlag, [true]));
 	this._folderSelect.addChangeListener(new AjxListener(this, this._folderListener));
 
     this._privateCheckbox = document.getElementById(this._htmlElId + "_privateCheckbox");
@@ -2112,6 +2135,7 @@ function(el) {
 		var edv = AjxCore.objectWithId(el._editViewId);
 		ZmApptViewHelper.getDateInfo(edv, edv._dateInfo);
 		this._showTimeFields(!el.checked);
+        this.updateShowAsField(el.checked);
 		if (el.checked && this._reminderSelect) {
 			this._reminderSelect.setSelectedValue(1080);
 		}
