@@ -2429,7 +2429,13 @@ ZmComposeView.prototype.getUnQuotedContent =
 function() {
 	var body = this._htmlEditor.getContent();
 	var prefaceIndex = body.indexOf(this._getPreface());
-	return (prefaceIndex!=-1) ? AjxStringUtil.htmlPlatformIndependent(body.substring(0, prefaceIndex)) : body;
+	if (prefaceIndex != -1) {
+		body = body.substring(0, prefaceIndex);
+	}
+	if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
+		body = AjxStringUtil.htmlPlatformIndependent(body);
+	}
+	return body;
 };
 
 ZmComposeView.prototype._getBodyContent =
