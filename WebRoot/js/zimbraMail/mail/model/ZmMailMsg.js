@@ -2,7 +2,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -1876,6 +1876,8 @@ function(msgNode) {
 		this._convCreateNode = msgNode._convCreateNode;
 	}
 
+	AjxDebug.println(AjxDebug.NOTIFY, "ZmMailMsg::_loadFromDom - msg ID: " + msgNode.id);
+	AjxDebug.println(AjxDebug.NOTIFY, "cid: " + msgNode.cid + ", folder: " + msgNode.l);
 	if (msgNode.cid && msgNode.l) {
 		var conv = appCtxt.getById(msgNode.cid);
 		if (conv) {
@@ -1887,6 +1889,9 @@ function(msgNode) {
 			if (!conv.msgIds) {
 				conv.msgIds = [this.id];
 			}
+		}
+		else {
+			AjxDebug.println(AjxDebug.NOTIFY, "could not find conv with ID: " + msgNode.cid);
 		}
 	}
 

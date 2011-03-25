@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -1318,6 +1318,11 @@ function(draftType, msg, resp) {
 		if (resp || !appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
 			AjxDebug.println(AjxDebug.REPLY, "Reset compose view: _processSendMsg");
 			this._composeView.reset(false);
+
+			// if the original message was a draft and we're not autosending, we need to nuke it
+			var origMsg = msg._origMsg;
+			if (origMsg && origMsg.isDraft && !isScheduled)
+				this._deleteDraft(origMsg);
 
 			// bug 36341
 			if (!appCtxt.isOffline && resp && appCtxt.get(ZmSetting.SAVE_TO_IMAP_SENT) && msg.identity) {

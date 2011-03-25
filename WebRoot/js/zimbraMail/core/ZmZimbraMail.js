@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -1142,31 +1142,26 @@ function(event, isNetworkOn) {
 		},
 		asyncMode:true
 	};
-
     if (isNetworkOn) {
         params.callback = new AjxCallback(this, this.handleClientEventNotifyResponse, event);
         params.noBusyOverlay = true;
-
-        if (this.clientEventNotifyReqId) {
-            appCtxt.getRequestMgr().cancelRequest(this.clientEventNotifyReqId);
-        }
-        this.clientEventNotifyTimerId = 
-            AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.sendClientEventNotify, [event, true]), 3000);
     } else {
         params.callback = new AjxCallback(this, this.setInstantNotify, true);
     }
-
-    this.clientEventNotifyReqId = this.sendRequest(params);
+	this.sendRequest(params);
 };
 
 ZmZimbraMail.prototype.handleClientEventNotifyResponse =
 function(event, res) {
-    if (!res.isException() && res.getResponse()) {
+    var response = res.body && res.body.ClientEventNotifyResponse;
+    if (response) {
+        this.setInstantNotify(true);
         if (this.clientEventNotifyTimerId) {
             AjxTimedAction.cancelAction(this.clientEventNotifyTimerId);
             this.clientEventNotityTimerId = null;
         }
-        this.setInstantNotify(true);
+    } else {
+        this.clientEventNotifyTimerId = AjxTimedAction.scheduleAction(this.sendClientEventNotify(event, true), 2000);
     }
 };
 
