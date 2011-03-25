@@ -526,7 +526,7 @@ function(calItem, mode) {
 		this._endTimeSelect.set(now);
 
 		// bug 9969: HACK - remove the all day durtion for display
-		if (!isNew && ed.getHours() == 0 && ed.getMinutes() == 0 && ed.getSeconds() == 0 && sd.getTime() != ed.getTime()) {
+		if (!isNew && !calItem.draftUpdated && ed.getHours() == 0 && ed.getMinutes() == 0 && ed.getSeconds() == 0 && sd.getTime() != ed.getTime()) {
 			ed.setHours(-12);
 		}
 	} else {

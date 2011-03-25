@@ -1029,6 +1029,7 @@ function(calItem, result) {
         calItem.setFromSavedResponse(result);
         if(this._action == ZmCalItemComposeController.SAVE){
             calItem.isDraft = this._draftFlag;
+            calItem.draftUpdated = true;
         }
         this._composeView.set(calItem, viewMode);        
     }
