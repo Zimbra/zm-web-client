@@ -384,6 +384,7 @@ function(msg) {
 		dlg.registerCallback(DwtDialog.YES_BUTTON, this._sendReadReceipt, this, [msg, dlg]);
 		dlg.registerCallback(DwtDialog.NO_BUTTON, this._sendReadReceiptNotified, this, [msg, dlg]);
 		dlg.setMessage(ZmMsg.readReceiptSend, DwtMessageDialog.WARNING_STYLE);
+        dlg.associateEnterWithButton(DwtDialog.NO_BUTTON);
 		dlg.popup();
 	} else if (rrPref == ZmMailApp.SEND_RECEIPT_ALWAYS) {
 		this._sendReadReceipt(msg);
