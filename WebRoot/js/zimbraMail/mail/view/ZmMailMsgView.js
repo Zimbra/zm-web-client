@@ -2104,19 +2104,20 @@ function(result) {
 	// notifications have been processed.
 	var msgNode = result.getResponse().RemoveAttachmentsResponse.m[0];
 	ac.getApp(ZmApp.MAIL).getMailListController().actionedMsgId = msgNode.id;
-
-	var currView = appCtxt.getAppController().getAppViewMgr().getCurrentView();
-	var msgView = appCtxt.isChildWindow 
+    var list = ac.getApp(ZmApp.MAIL).getMailListController().getList();
+    var currView = appCtxt.getAppController().getAppViewMgr().getCurrentView();
+	var msgView = appCtxt.isChildWindow || currView instanceof ZmMailMsgView
 		? currView : (currView.getMsgView && currView.getMsgView());
 
-	if (msgView) {
-		var msg = msgView._msg;
-		msg.attachments.length = 0;
-		msg._bodyParts = [];
-		msg._loadFromDom(msgNode);
-		msgView._msg = null;
-		msgView.set(msg);
-	}
+    if (currView && Dwt.instanceOf(currView, "ZmConvView")) {
+        ZmConvView._handleRemoveAttachment(result);
+    }
+	else if (msgView) {
+        var msg = new ZmMailMsg(msgNode.id, list, true);
+        msg._loadFromDom(msgNode);
+        msgView._msg = null;
+        msgView.set(msg);
+    }
 };
 
 ZmMailMsgView._buildZipUrl =

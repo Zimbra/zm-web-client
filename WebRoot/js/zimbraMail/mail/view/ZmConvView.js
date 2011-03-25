@@ -67,7 +67,7 @@ function(conv) {
 	}
 	this._conv = conv;
 	conv.addChangeListener(this._changeListener);
-	
+
 	this._mailListView.set(conv.msgs, ZmItem.F_DATE);
 	this.isStale = false;
 	this._setSubject(conv.subject);
@@ -95,6 +95,7 @@ function() {
 	}
 	this._conv.removeChangeListener(this._changeListener);
 };
+
 
 ZmConvView.prototype.getTitle =
 function() {
@@ -397,4 +398,38 @@ ZmConvView._tagClick =
 function(myId, tagId) {
 	var dwtObj = DwtControl.fromElementId(myId);
 	dwtObj.notifyListeners(ZmConvView._TAG_CLICK, tagId);
+};
+
+ZmConvView._handleRemoveAttachment =
+function(result) {
+
+	var ac = window.parentAppCtxt || window.appCtxt;
+
+	// cache this actioned ID so we can reset selection to it once the CREATE
+	// notifications have been processed.
+	var msgNode = result.getResponse().RemoveAttachmentsResponse.m[0];
+	ac.getApp(ZmApp.MAIL).getMailListController().actionedMsgId = msgNode.id;
+    var list = ac.getApp(ZmApp.MAIL).getMailListController().getList();
+	var currView = appCtxt.getAppController().getAppViewMgr().getCurrentView();
+	var msgView = currView.getMsgView && currView.getMsgView();
+
+	if (msgView) {
+        var msg = new ZmMailMsg(msgNode.id, list, false);
+        msg._loadFromDom(msgNode);
+        var mailListView = currView.getMailListView();
+        if (mailListView) {
+           var mailList = mailListView.getList();
+           var pos = mailList.indexOf(msgView._msg);
+           mailList.replace(pos, msg);
+           mailListView.set(mailList.clone(), mailListView._sortByString);
+           mailListView.setSelection(msg);
+        }
+        if (currView._conv) {
+            //hack to avoid popview if only one message in conversation; delete notification will cause view to be popped otherwise
+            currView._conv.addMsg(msg);
+            currView._conv.numMsgs = currView._conv.msgIds.length;
+        }
+        msgView._msg = null;
+        currView.setMsg(msg);
+    }
 };
