@@ -62,6 +62,7 @@ ZmMailMsgView = function(params) {
 	}
 
 	this.noTab = true;
+    this._attachmentLinkIdToFileNameMap = null;
 };
 
 ZmMailMsgView.prototype = new DwtComposite;
@@ -1496,7 +1497,7 @@ function(msg) {
 
 ZmMailMsgView.prototype._setAttachmentLinks =
 function() {
-
+    this._attachmentLinkIdToFileNameMap = null;
 	var isTextView = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	var attLinks = this._msg.getAttachmentLinks(true, isTextView, true);
 	var el = document.getElementById(this._attLinksId + "_container");
@@ -1542,10 +1543,18 @@ function() {
 		} else {
 			var linkArr = [];
 			var j = 0;
-			linkArr[j++] = att.isHit ? "<span class='AttName-matched'>" : "";
-			linkArr[j++] = att.link;
-			linkArr[j++] = AjxStringUtil.htmlEncode( AjxStringUtil.clipFile(att.label, 30) );
-			linkArr[j++] = att.isHit ? "</a></span>" : "</a>";
+            var lnk = att.link;
+            var displayFileName = AjxStringUtil.clipFile(att.label, 30);
+            if (displayFileName != att.label) {
+                if (!this._attachmentLinkIdToFileNameMap) {this._attachmentLinkIdToFileNameMap = {}};
+                this._attachmentLinkIdToFileNameMap[att.attachmentLinkId] = att.label;
+            }
+
+            linkArr[j++] = att.isHit ? "<span class='AttName-matched'>" : "";
+            linkArr[j++] = lnk;
+            linkArr[j++] = AjxStringUtil.htmlEncode(displayFileName);
+            linkArr[j++] = att.isHit ? "</a></span>" : "</a>";
+
 			var link = linkArr.join("");
 			// objectify if this attachment is an image
 			if (att.objectify && this._objectManager) {
@@ -1646,6 +1655,23 @@ function() {
 
 	var attLinksDiv = document.getElementById(this._attLinksId);
 	attLinksDiv.innerHTML = htmlArr.join("");
+};
+
+ZmMailMsgView.prototype.getToolTipContent =
+function(evt) {
+    if (!this._attachmentLinkIdToFileNameMap) {return null};
+
+    var tgt = DwtUiEvent.getTarget(evt, false);
+    if (tgt && tgt.nodeName.toLowerCase() == "a") {
+        var id = tgt.getAttribute("id");
+        if (id) {
+            var fileName = this._attachmentLinkIdToFileNameMap[id];
+            if (fileName) {
+                return AjxStringUtil.htmlEncode(fileName);
+            }
+        }
+    }
+    return null;
 };
 
 // AttachmentLink Handlers

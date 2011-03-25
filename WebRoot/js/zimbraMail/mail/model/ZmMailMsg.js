@@ -1724,7 +1724,10 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 					url = url.substring(0,insertIdx) + fn + url.substring(insertIdx);
 				}
 
-				props.link = "<a target='_blank' class='AttLink' href='" + url + "'>";
+                props.attachmentLinkId = Dwt.getNextId();
+				props.link = "<a target='_blank' class='AttLink'" +
+                        AjxStringUtil.buildAttribute("href", url) +
+                        AjxStringUtil.buildAttribute("id", props.attachmentLinkId) + ">";
 				if (!useCL) {
 					props.download = [
 						"<a style='text-decoration:underline' class='AttLink' href='",
