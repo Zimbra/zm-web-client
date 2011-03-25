@@ -821,12 +821,15 @@ function(ev) {
 		var items = ev.batchMode ? this._getItemsFromBatchEvent(ev) : [item];
 		for (var i = 0, len = items.length; i < len; i++) {
 			var conv = items[i];
-			if (this._itemToSelect && this._itemToSelect.cid == conv.id) {
+			if (this._itemToSelect && (this._itemToSelect.cid == conv.id  //the item to select is in this conv.
+										|| this._itemToSelect.id == conv.id)) { //the item to select IS this conv
 				var a = conv.msgs.getArray();
 				var omit = {};
 				for (var j = 0, len1 = a.length; j < len1; j++) {
 					omit[a[j].id] = true;
 				}
+				//omit the conv too, since if we have ZmSetting.DELETE_SELECT_PREV, going up will get back to this conv, but the conv is gone
+				omit[conv.id] = true;
 				this._itemToSelect = this._controller._getNextItemToSelect(omit);
 			}
 			this._removeMsgRows(conv.id);	// conv move: remove msg rows
