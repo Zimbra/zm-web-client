@@ -34,6 +34,7 @@ ZmCalendarTreeController = function() {
 	this._listeners[ZmOperation.DETACH_WIN] = new AjxListener(this, this._detachListener);
 	this._listeners[ZmOperation.FREE_BUSY_LINK] = new AjxListener(this, this._freeBusyLinkListener);
 	this._listeners[ZmOperation.SHARE_CALENDAR] = new AjxListener(this, this._shareCalListener);
+	this._listeners[ZmOperation.RECOVER_DELETED_ITEMS] = new AjxListener(this, this._recoverListener);
 
 	this._eventMgrs = {};
 };
@@ -166,12 +167,11 @@ function(actionMenu, type, id) {
 		} else {
 			nId = ZmOrganizer.normalizeId(id);
 		}
-
-
+		var isTrash = (nId == ZmFolder.ID_TRASH);
 		actionMenu.enable(ZmOperation.DELETE, (nId != ZmOrganizer.ID_CALENDAR && nId != ZmOrganizer.ID_TRASH));        
 		this.setVisibleIfExists(actionMenu, ZmOperation.EMPTY_FOLDER, nId == ZmFolder.ID_TRASH);
-        var hasContent = ((calendar.numTotal > 0) || (calendar.children && (calendar.children.size() > 0)));
-        actionMenu.enable(ZmOperation.EMPTY_FOLDER,hasContent);
+		var hasContent = ((calendar.numTotal > 0) || (calendar.children && (calendar.children.size() > 0)));
+		actionMenu.enable(ZmOperation.EMPTY_FOLDER,hasContent);
 
 		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 		if (id == rootId) {
@@ -185,6 +185,12 @@ function(actionMenu, type, id) {
 			}
 			actionMenu.enable(ZmOperation.CHECK_ALL, foundUnchecked);
 			actionMenu.enable(ZmOperation.CLEAR_ALL, foundChecked);
+		}
+
+		var op = actionMenu.getOp(ZmOperation.RECOVER_DELETED_ITEMS);
+		if (op) {
+			op.setVisible(isTrash);
+			op.setEnabled(isTrash);
 		}
 
 		// we always enable sharing in case we're in multi-mbox mode
@@ -232,6 +238,21 @@ function(ev){
 	AjxDispatcher.run("Compose", params);
 };
 
+ZmCalendarTreeController.prototype._recoverListener =
+function(ev) {
+	appCtxt.getDumpsterDialog().popup(this._getSearchFor(), this._getSearchTypes());
+};
+
+ZmCalendarTreeController.prototype._getSearchFor =
+function(ev) {
+	return ZmId.SEARCH_ANY;
+};
+
+ZmCalendarTreeController.prototype._getSearchTypes =
+function(ev) {
+	return [ZmItem.APPT];
+};
+
 // Returns a list of desired header action menu operations
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps =
 function() {
@@ -254,7 +275,8 @@ function() {
         ZmOperation.EDIT_PROPS,
         ZmOperation.SYNC,
         ZmOperation.DETACH_WIN,
-        ZmOperation.EMPTY_FOLDER
+        ZmOperation.EMPTY_FOLDER,
+        ZmOperation.RECOVER_DELETED_ITEMS
     ];
 };
 
