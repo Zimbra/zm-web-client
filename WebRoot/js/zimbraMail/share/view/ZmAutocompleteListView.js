@@ -688,6 +688,7 @@ function(chunk, callback) {
 		}
 	}
 
+	//start and end of the chunk we are autocompleting, i.e. the range we might replace.
 	this._start = chunk.start;
 	this._end = chunk.end;
 
@@ -768,6 +769,7 @@ function(text, str, hasDelim, match) {
 	var value = this._getCompletionValue(match);
 	var newText = this._options.addrBubbles ? value :
 				  [text.substring(0, start), value, this._separator, text.substring(end, text.length)].join("");
+	this._start = this._end = newText.length; //update in case this is called multiple times from ZmDLAutocompleteListView for selecitng all items from a DL
 	if (value) {
 		this._done[value] = true;
 	}
