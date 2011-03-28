@@ -190,7 +190,10 @@ function(bEnableInputs) {
 		this._attendeesInputField.setEnabled(bEnableAttendees);
 		this._optAttendeesInputField.setEnabled(bEnableAttendees);
         this.enablePickers(bEnableAttendees);        
-	}
+	}else {
+        //bug 57083 - disabling group calendar should disable attendee pickers
+        this.enablePickers(false);
+    }
 	this._attInputField[ZmCalBaseItem.LOCATION].setEnabled(bEnableInputs);
 };
 
