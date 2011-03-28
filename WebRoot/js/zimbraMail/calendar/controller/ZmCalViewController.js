@@ -2442,7 +2442,7 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
  * @param	{AjxCallback}	callback		the callback
  */
 ZmCalViewController.prototype.getDayToolTipText =
-function(date, noheader, callback) {
+function(date, noheader, callback, isMinical) {
 	try {
 		var start = new Date(date.getTime());
 		start.setHours(0, 0, 0, 0);
@@ -2450,11 +2450,11 @@ function(date, noheader, callback) {
 		var end = start.getTime() + AjxDateUtil.MSEC_PER_DAY;
 		var params = {start:startTime, end:end, fanoutAllDay:true};
 		if(callback) {
-			params.callback = new AjxCallback(this, this._handleToolTipSearchResponse, [start, noheader, callback]);
+			params.callback = new AjxCallback(this, this._handleToolTipSearchResponse, [start, noheader, callback, isMinical]);
 			this.getApptSummaries(params);
 		} else {
 			var result = this.getApptSummaries(params);
-			return ZmApptViewHelper.getDayToolTipText(start, result, this, noheader);
+			return ZmApptViewHelper.getDayToolTipText(start, result, this, noheader, null, isMinical);
 		}
 	} catch (ex) {
 		DBG.println(ex);
@@ -2463,9 +2463,9 @@ function(date, noheader, callback) {
 };
 
 ZmCalViewController.prototype._handleToolTipSearchResponse =
-function(start, noheader, callback, result) {
+function(start, noheader, callback, isMinical, result) {
 	try {
-		var tooltip = ZmApptViewHelper.getDayToolTipText(start, result, this, noheader);
+		var tooltip = ZmApptViewHelper.getDayToolTipText(start, result, this, noheader, null, isMinical);
 		callback.run(tooltip);
 	} catch (ex) {
 		DBG.println(ex);
@@ -2962,6 +2962,8 @@ function(appt, actionMenu) {
 	actionMenu.enable(ZmOperation.REPLY_TENTATIVE, enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
 	actionMenu.enable(ZmOperation.INVITE_REPLY_MENU, enabled && isReplyable);
 	actionMenu.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
+
+	actionMenu.enable(ZmOperation.PROPOSE_NEW_TIME, !isOrganizer);
 
 	actionMenu.enable(ZmOperation.REPLY, isReplyable && !isOrganizer);
 	actionMenu.enable(ZmOperation.REPLY_ALL, isReplyable);

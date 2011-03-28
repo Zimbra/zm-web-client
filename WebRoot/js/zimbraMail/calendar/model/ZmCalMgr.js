@@ -251,7 +251,7 @@ function(control, day) {
         var mouseEv = DwtShell.mouseEvent;
         if(mouseEv && mouseEv.docX > 0 && mouseEv.docY > 0) {
             var callback = new AjxCallback(this, this.showTooltip, [control, mouseEv.docX, mouseEv.docY]);
-            this.getCalViewController().getDayToolTipText(day, false, callback);
+            this.getCalViewController().getDayToolTipText(day, false, callback, true);
         }
 	}
 };
