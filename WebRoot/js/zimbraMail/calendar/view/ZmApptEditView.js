@@ -84,6 +84,10 @@ ZmApptEditView.REMINDER_MAX_VALUE[ZmCalItem.REMINDER_UNIT_MINUTES]		= 20160;
 ZmApptEditView.REMINDER_MAX_VALUE[ZmCalItem.REMINDER_UNIT_HOURS]		= 336;
 ZmApptEditView.REMINDER_MAX_VALUE[ZmCalItem.REMINDER_UNIT_WEEKS]		= 2;
 
+ZmApptEditView.TIMEZONE_TYPE = "TZ_TYPE";
+
+ZmApptEditView.START_TIMEZONE = 1;
+ZmApptEditView.END_TIMEZONE = 2;
 
 // Public Methods
 
@@ -832,16 +836,17 @@ function(width) {
     }
 
 	// timezone DwtSelect
-	var timezoneListener = new AjxListener(this, this._timezoneListener);
-
+    var timezoneListener = new AjxListener(this, this._timezoneListener);
     this._tzoneSelectStartElement = document.getElementById(this._htmlElId + "_tzoneSelectStart");
 	this._tzoneSelectStart = new DwtSelect({parent:this, parentElement:this._tzoneSelectStartElement, layout:DwtMenu.LAYOUT_SCROLL, maxRows:7});
 	this._tzoneSelectStart.addChangeListener(timezoneListener);
+    this._tzoneSelectStart.setData(ZmApptEditView.TIMEZONE_TYPE, ZmApptEditView.START_TIMEZONE);
     this._tzoneSelectStart.dynamicButtonWidth();
 
     this._tzoneSelectEndElement = document.getElementById(this._htmlElId + "_tzoneSelectEnd");
 	this._tzoneSelectEnd = new DwtSelect({parent:this, parentElement:this._tzoneSelectEndElement, layout:DwtMenu.LAYOUT_SCROLL, maxRows:7});
 	this._tzoneSelectEnd.addChangeListener(timezoneListener);
+    this._tzoneSelectEnd.setData(ZmApptEditView.TIMEZONE_TYPE, ZmApptEditView.END_TIMEZONE);
     this._tzoneSelectEnd.dynamicButtonWidth();
 
 	// NOTE: tzone select is initialized later
@@ -1863,6 +1868,13 @@ function() {
 
 ZmApptEditView.prototype._timezoneListener =
 function(ev) {
+    var dwtSelect = ev.item.parent.parent;
+    var type = dwtSelect ? dwtSelect.getData(ZmApptEditView.TIMEZONE_TYPE) : ZmApptEditView.START_TIMEZONE;
+    //bug: 55256 - Changing start timezone should auto-change end timezone
+    if(type == ZmApptEditView.START_TIMEZONE) {
+        var tzValue = dwtSelect.getValue();
+        this._tzoneSelectEnd.setSelectedValue(tzValue);
+    }
     this.handleTimezoneOverflow();
 	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
     if(this._schedulerOpened) {
