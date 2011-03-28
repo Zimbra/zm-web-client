@@ -837,9 +837,9 @@ function() {
 	var startDate = AjxDateUtil.simpleParseDateStr(di.startDate);
 	var endDate;
 	if (di.isAllDay) {
-		endDate = new Date(startDate);
-		endDate.setHours(23, 59, 0, 0);
 		startDate.setHours(0, 0, 0, 0);
+        endDate = AjxDateUtil.simpleParseDateStr(di.endDate);
+        endDate.setHours(23, 59, 0, 0);
 	} else {
 		endDate = AjxDateUtil.simpleParseDateStr(di.endDate);
 		startDate = this._editView._startTimeSelect.getValue(startDate);
