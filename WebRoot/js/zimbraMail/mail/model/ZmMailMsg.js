@@ -1413,7 +1413,9 @@ function(params) {
 												noBusyOverlay:params.isDraft,
 												callback:respCallback,
 												errorCallback:params.errorCallback,
-												accountName:params.accountName });
+												accountName:params.accountName,
+                                                timeout: ( ( params.isDraft && this.attId ) ? 0 : null )
+                                                });
 	}
 };
 
