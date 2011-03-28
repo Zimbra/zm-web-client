@@ -598,3 +598,36 @@ function(ev) {
 		ev.srcData = {data: ev.srcControl.getDnDSelection(), controller: this};
 	}
 };
+
+ZmDetailListView.prototype._createHeader =
+function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
+
+	if (headerCol._field == ZmItem.F_SORTED_BY) {
+		var field = headerCol._field;
+		var textTdId = this._itemCountTextTdId = DwtId._makeId(this.view, ZmSetting.RP_RIGHT, "td");
+		htmlArr[idx++] = "<td id='";
+		htmlArr[idx++] = id;
+		htmlArr[idx++] = "' class='";
+		htmlArr[idx++] = (id == this._currentColId)	? "DwtListView-Column DwtListView-ColumnActive'" :
+													  "DwtListView-Column'";
+		htmlArr[idx++] = " width='auto'><table border=0 cellpadding=0 cellspacing=0 width='100%'><tr><td id='";
+		htmlArr[idx++] = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, field);
+		htmlArr[idx++] = "' class='DwtListHeaderItem-label'>";
+		htmlArr[idx++] = headerCol._label;
+		htmlArr[idx++] = "</td>";
+
+		// sort icon
+		htmlArr[idx++] = "<td class='itemSortIcon' id='";
+		htmlArr[idx++] = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ARROW, this._view, field);
+		htmlArr[idx++] = "'>";
+		htmlArr[idx++] = AjxImg.getImageHtml(this._bSortAsc ? "ColumnUpArrow" : "ColumnDownArrow");
+		htmlArr[idx++] = "</td>";
+
+		// item count text
+		htmlArr[idx++] = "<td align=right class='itemCountText' id='";
+		htmlArr[idx++] = textTdId;
+		htmlArr[idx++] = "'></td></tr></table></div></td>";
+	} else {
+		return DwtListView.prototype._createHeader.apply(this, arguments);
+	}
+};
