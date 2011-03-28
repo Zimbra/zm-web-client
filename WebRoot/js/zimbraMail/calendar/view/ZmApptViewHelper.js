@@ -197,12 +197,12 @@ function(origAppt, controller) {
 
 
 ZmApptViewHelper.getDayToolTipText =
-function(date, list, controller, noheader, emptyMsg) {
+function(date, list, controller, noheader, emptyMsg, isMinical) {
 	
 	if(!emptyMsg){
 		emptyMsg = ZmMsg.noAppts;
 	}
-	
+
 	var html = new AjxBuffer();
 
 	var formatter = DwtCalendar.getDateFullFormatter();	
@@ -220,7 +220,7 @@ function(date, list, controller, noheader, emptyMsg) {
 	for (var i = 0; i < size; i++) {
 		var ao = list.get(i);
 		if (ao.isAllDayEvent()) {
-            if(ao.toString() == "ZmAppt") {
+            if(!isMinical && ao.toString() == "ZmAppt") {
                 html.append(ZmApptViewHelper.getApptToolTipText(ao, controller));
             }
             else {
@@ -235,7 +235,7 @@ function(date, list, controller, noheader, emptyMsg) {
             }
 		}
 	    else {
-		    if(ao.toString() == "ZmAppt") {
+		    if(!isMinical && ao.toString() == "ZmAppt") {
                 html.append(ZmApptViewHelper.getApptToolTipText(ao, controller));
             }
             else {
