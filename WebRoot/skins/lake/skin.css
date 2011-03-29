@@ -121,8 +121,8 @@ body {
 	background-color: #ffffff;
 }
 
-.ZmApptComposeView {
-	@PanelBg@
+.ZmApptComposeView,.ZmTaskEditView {
+	@PageBg@
 }
 
 #skin_spacing_filler{	
