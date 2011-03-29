@@ -817,6 +817,7 @@ function(ev) {
 	var menu = btn && btn.getMenu();
 	var mi = menu && menu.getSelectedItem();
 	var data = mi && mi.getData("CustomSearchItem");
+    var opId = mi && mi.getData(ZmOperation.MENUITEM_ID);
 	if (data) {
 		data[2].run(ev);
 	} else {
@@ -829,7 +830,7 @@ function(ev) {
 		}
 		appCtxt.notifyZimlets("onSearchButtonClick", [queryString]);
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-		this.search({query: queryString, userText: userText, getHtml: getHtml});
+		this.search({query: queryString, userText: userText, getHtml: getHtml, searchFor: opId});
 	}
 };
 
