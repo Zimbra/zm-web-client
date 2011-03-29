@@ -462,6 +462,7 @@ function() {
         var isWorkingDay = wHrs && wHrs.isWorkingDay ? wHrs.isWorkingDay : false;
         if (this.view === ZmId.VIEW_CAL_WEEK    || 
             this.view === ZmId.VIEW_CAL_DAY     ||
+            this._scheduleMode === true         ||
             isWorkingDay === true ) {
 
             var day = this._days[j] = {};
