@@ -550,6 +550,16 @@ function(folder) {
 	return (folder && folder.isOutbound());
 };
 
+/**
+ * Returns the current folder
+ *
+ */
+ZmMailListView.prototype.getFolder =
+function() {
+	return this._folderId && appCtxt.getById(this._folderId);
+};
+
+
 ZmMailListView.prototype._getRowClass =
 function(item) {
 	return item.isUnread ? "Unread" : null;

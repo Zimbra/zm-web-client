@@ -302,7 +302,11 @@ function(ev, op) {
 	switch (op) {
 		// new organizers
 		case ZmOperation.NEW_FOLDER: {
-			ZmController.showDialog(appCtxt.getNewFolderDialog(), this.getNewFolderCallback());
+			var currentView = appCtxt.getCurrentView();
+			var mailListView = currentView.getMailListView ? currentView.getMailListView() : null;
+			var currentFolder = mailListView && mailListView.getFolder ? mailListView.getFolder() : null;
+
+			ZmController.showDialog(appCtxt.getNewFolderDialog(), this.getNewFolderCallback(), currentFolder);
 			break;
 		}
 		case ZmOperation.NEW_TAG: {
