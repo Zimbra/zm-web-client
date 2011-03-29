@@ -1258,7 +1258,7 @@ function(params, callback) {
 	if (!msg) {
 		callback.run();
 	}
-	if (msg._loaded) {
+	if (msg._loaded && !params.forceLoad) {
 		callback.run(msg);
 	} else {
 		if (msg.id == this._pendingMsg) { return; }
@@ -1266,7 +1266,7 @@ function(params, callback) {
 		this._pendingMsg = msg.id;
 		// use prototype in callback because these functions are overridden by ZmConvListController
 		var respCallback = new AjxCallback(this, ZmMailListController.prototype._handleResponseGetLoadedMsg, [callback, msg]);
-		msg.load({getHtml:params.getHtml, markRead:params.markRead, callback:respCallback, noBusyOverlay:false});
+		msg.load({getHtml:params.getHtml, markRead:params.markRead, callback:respCallback, noBusyOverlay:false, forceLoad: params.forceLoad, noTruncate: params.noTruncate});
 	}
 };
 
