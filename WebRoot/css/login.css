@@ -273,20 +273,33 @@ FORM {
 }
 
 .LaunchButton input{
-    background-color:@lighten(AltC,15)@;
-    border-color:@lighten(AltC,45)@ @darken(AltC,25)@ @darken(AltC,25)@ @lighten(AltC,45)@;
-    border-style:solid;
-    border-width:1px;
+	border: 1px solid #66ccff;
+	@borderRadius@: 26px;
+	height: 35px;
+	font-weight: bold;
+	width: 250px;
+	font-size: 15px;
     color:#000000;
     display:inline-block;
     text-align:center;
-    text-decoration:none;
-    width: 300px;
-    height: 30px;
     cursor:pointer;
-    font-size: 15px;
-    font-weight: bold;
+	background-color: #dcf9fe;
+	background-image: -moz-linear-gradient(top, #dcf9fe, #9ff0ff); /* FF3.6 */
+	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #dcf9fe),color-stop(1, #9ff0ff)); /* Saf4+, Chrome */
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#dcf9fe', EndColorStr='#9ff0ff');
+	-moz-box-shadow: 0px 0px 3px #000; /* FF3.5+ */
+	-webkit-box-shadow: 0px 0px 3px #000; /* Saf3.0+, Chrome */
+	box-shadow: 0px 0px 3px #000; /* Opera 10.5, IE 9.0 */
+
 }
+	.LaunchButton input:hover{
+		background-image: -moz-linear-gradient(top, #9ff0ff, #dcf9fe); /* FF3.6 */
+		background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #9ff0ff),color-stop(1, #dcf9fe)); /* Saf4+, Chrome */
+		filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#9ff0ff', EndColorStr='#dcf9fe');
+		-moz-box-shadow: 0px 0px 3px #000; /* FF3.5+ */
+		-webkit-box-shadow: 0px 0px 1px #000; /* Saf3.0+, Chrome */
+		box-shadow: 0px 0px 1px #000; /* Opera 10.5, IE 9.0 */
+	}
 
 .spacer{
 	padding: 5px;
@@ -374,4 +387,3 @@ FORM {
 .Footer-small #ZLoginNotice{
 	display: none;
 }
-
