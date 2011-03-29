@@ -404,7 +404,7 @@ function(dialog, folderList) {
 		return;
 	}
 
-	var work = new ZmFilterWork(filterSel);
+	var work = new ZmFilterWork(filterSel, this._outgoing);
 
 	this._progressController.start(folderList, work);
 
@@ -498,9 +498,11 @@ function(){
  * class that holds the work specification (in this case, filtering specific filters. Keeps track of progress stats too.
  * an instance of this is passed to ZmFilterRulesController to callback for stuff specific to this work. (template pattern, I believe)
  * @param filterSel
+ * @param outgoing
  */
-ZmFilterWork = function(filterSel) {
+ZmFilterWork = function(filterSel, outgoing) {
 	this._filterSel = filterSel;
+	this._outgoing = outgoing;
 	this._totalNumMessagesAffected = 0;
 
 };
