@@ -1262,7 +1262,7 @@ function(addrInput, addrs, type, shortForm) {
 					else if (addr instanceof ZmContact) {
 						email = addr.getEmail(true);
                         //bug: 57858 - give preference to lookup email address if its present
-						addrStr = addr.getLookupEmail() || email.toString(shortForm);
+						addrStr = addr.getLookupEmail() || ZmApptViewHelper.getAttendeesText(addr, type);
 						match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
 					}
 					addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
