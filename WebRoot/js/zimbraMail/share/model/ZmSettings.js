@@ -974,7 +974,7 @@ function() {
 	this.registerSetting("OFFLINE_WEBAPP_URI",				{name:"offlineWebappUri", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING});
 
 	// reset the help URI to zimbra.com for offline
-	this.registerSetting("HELP_URI",						{type:ZmSetting.T_CONFIG, defaultValue:"http://www.zimbra.com/desktop2/"});
+	this.registerSetting("HELP_URI",						{type:ZmSetting.T_CONFIG, defaultValue:"http://www.zimbra.com/desktop7/"});
 };
 
 /**
