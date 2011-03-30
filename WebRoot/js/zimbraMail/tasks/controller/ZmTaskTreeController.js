@@ -67,6 +67,7 @@ function() {
 ZmTaskTreeController.prototype.show = function(params) {
 	params.include = params.include || {};
     params.include[ZmFolder.ID_TRASH] = true;
+    params.showUnread = false;
     return ZmFolderTreeController.prototype.show.call(this, params);
 };
 
