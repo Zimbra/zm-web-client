@@ -1049,6 +1049,7 @@ function(params) {
 	}
 
 	this._subjectField.value = params.subj || "";
+	this._setPriority(params.priority);
 	this.updateTabTitle();
 
 	var content = params.body || "";
