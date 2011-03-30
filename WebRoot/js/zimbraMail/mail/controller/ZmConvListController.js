@@ -209,7 +209,7 @@ function(currentItem, forward) {
 	if (!found) { return; }
 	
 	var msgIdx = forward ? i + 1 : i - 1;
-	if (msgIdx > 0 && msgIdx < list.length) {
+	if (msgIdx >= 0 && msgIdx < list.length) {
 		var msg = list[msgIdx];
 		var clv = this._listView[this._currentView];
 		clv.emulateDblClick(msg);
