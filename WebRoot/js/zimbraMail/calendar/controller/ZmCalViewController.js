@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -1368,8 +1368,7 @@ function(ev) {
             url.push("&zd=", "true");
         }
         url = url.join("");
-
-	} else {
+    } else {
 		var date = this._viewMgr
 			? this._viewMgr.getDate()
 			: (new Date());
@@ -1399,7 +1398,7 @@ function(ev) {
 			"/h/printcalendar?view=", view,
 			"&l=", l,
 			"&date=", date.getFullYear(), month, day,
-            "&tz=",AjxTimezone.getServerId(AjxTimezone.DEFAULT)                 //bug:53493
+			"&tz=",AjxTimezone.getServerId(AjxTimezone.DEFAULT)
 		].join("");
 	}
 
@@ -1714,7 +1713,7 @@ function(appt, mode) {
 		var msg = isTrash ? ZmMsg.confirmPermanentCancelAppt : ZmMsg.confirmCancelAppt;
 
 		if (appt.isRecurring() && !isTrash) {
-			msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, appt.name) :  ZmMsg.confirmCancelApptSeries;
+	    	msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, appt.name) :  ZmMsg.confirmCancelApptSeries; 
 		}
 		confirmDialog.popup(msg, cancelNoReplyCallback);
 	}
@@ -2603,23 +2602,25 @@ function(parent, num) {
 		var isPrivate = appt && appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
 		var isForwardable = !isTrash && calendar && !calendar.isReadOnly();
 		var isReplyable = !isTrash && appt && (num == 1);
-        var isTrashMultiple = isTrash && (num && num>1);
-
-		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (isReplyable && !isTrashMultiple));
-        parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
-        parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate && !isTrashMultiple);
-        parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable && !isTrashMultiple);
-        parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()) && !isTrashMultiple);
-        parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null && !isTrashMultiple);
-
+        if(isTrash && num>1){
+            parent.enableAll(false);
+        }
+        else{
+		    parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], isReplyable);
+            parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
+            parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate);
+            parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
+            parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()));
+            parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null);
+        }
 
         parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], !disabled);
 
         parent.enable(ZmOperation.VIEW_APPT_INSTANCE,!isTrash);
 
         var apptAccess = ((appt && appt.isPrivate() && calendar.isRemote()) ? calendar.hasPrivateAccess() : true );
-        parent.enable(ZmOperation.DUPLICATE_APPT,apptAccess && !isTrashMultiple);
-        parent.enable(ZmOperation.SHOW_ORIG,apptAccess && !isTrashMultiple);
+        parent.enable(ZmOperation.DUPLICATE_APPT,apptAccess);
+        parent.enable(ZmOperation.SHOW_ORIG,apptAccess);
 
 	}
 
