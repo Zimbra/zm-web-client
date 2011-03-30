@@ -142,7 +142,7 @@ function() {
 
 ZmPeopleAutocompleteListView.prototype._setSelected =
 function(id) {
-    if (id && id instanceof String) {
+    if (id && typeof id == "string") {
         id = id.split("-")[0]; 
     }
 
@@ -237,11 +237,15 @@ function(ev) {
 
 ZmPeopleAutocompleteListView.prototype._peopleItemListener =
  function(ev){
+    if (!this._activeContact) {
+        return;
+    }
+
     var target = DwtUiEvent.getTargetWithProp(ev, "id");
     var action = "";
     if (target && target.id)
         action = target.id.split("_")[0]; //ids are inserted by DwtText, clean up as necessary
-     
+
     switch (action){
         case "NewMsg":
             var params = {action:ZmOperation.NEW_MESSAGE, toOverride: new AjxEmailAddress(this._activeContact.getEmail(),
@@ -266,7 +270,7 @@ ZmPeopleAutocompleteListView.prototype._peopleItemListener =
             break;
     }
 
-    this.show(false); 
+    this.show(false);
 
  };
 
