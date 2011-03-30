@@ -1407,7 +1407,12 @@ function(calItem, mode, isDirty, apptComposeMode) {
 
 ZmApptEditView.prototype.isSuggestionsNeeded =
 function() {
-    return !this._isForward && this.GROUP_CALENDAR_ENABLED;
+    if (appCtxt.isOffline) {
+        var ac = window["appCtxt"].getAppController();
+        return !this._isForward && this.GROUP_CALENDAR_ENABLED && ac._isPrismOnline && ac._isUserOnline;
+    } else {
+        return !this._isForward && this.GROUP_CALENDAR_ENABLED;
+    }
 };
 
 ZmApptEditView.prototype.getCalendarAccount =
