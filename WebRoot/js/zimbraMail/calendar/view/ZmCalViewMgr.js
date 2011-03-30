@@ -143,14 +143,38 @@ ZmCalViewMgr.prototype.getSubContentView = function() {
     return this._list || this._createSubContent();
 };
 
+ZmCalViewMgr.prototype.getSelTrashCount = function() {
+
+    var folders  = this._controller.getCheckedCalendars(true);
+    this._multiAccTrashQuery = [];
+    for (var i=0; i< folders.length; i++) {
+        if (folders[i].nId == ZmOrganizer.ID_TRASH) {
+            this._multiAccTrashQuery.push(['inid:', '"', folders[i].getAccount().id, ':', ZmOrganizer.ID_TRASH, '"'].join(""));
+        }
+    }
+    return this._multiAccTrashQuery.length;
+};
+
 ZmCalViewMgr.prototype.setSubContentVisible = function(visible) {
-    if (this._subContentShown != visible) {
+
+    if (appCtxt.multiAccounts) {
+        var selCount = this.getSelTrashCount();
+        // if no trash is checked
+        if (selCount < 1) {
+            this._subContentShown = false;
+            this._subContentInitialized = true;
+            this._controller.setCurrentListView(null);
+        } else {
+        // if more one or more trash is checked
+            this._subContentShown = true;
+        }
+    } else if (this._subContentShown != visible) {
         this._subContentShown = visible;
         if (!visible) {
             this._controller.setCurrentListView(null);
         }
-        this._layout();
     }
+    this._layout();
 };
 
 ZmCalViewMgr.prototype._createSubContent = function() {
@@ -196,13 +220,20 @@ ZmCalViewMgr.prototype._handleSashAdjustment = function(delta) {
 ZmCalViewMgr.prototype._populateTrashListView = function(listView) {
     var params = {
         searchFor:ZmItem.APPT,
-        query:"inid:"+ZmOrganizer.ID_TRASH,
         limit:20,
         types:AjxVector.fromArray([ZmId.ITEM_APPOINTMENT]),
         forceSearch: true,
 //        noRender: true,
         callback: new AjxCallback(this, this._populateTrashListViewResults, [listView])
     };
+
+    if (appCtxt.multiAccounts) {
+        var query = ;
+        params.query = this._multiAccTrashQuery.join(" OR ");
+        params.account = appCtxt.accountList.mainAccount.name;
+    } else {
+        params.query = "inid:"+ZmOrganizer.ID_TRASH;
+    }
     var search = new ZmSearch(params);
     search.execute(params);
 };
@@ -272,6 +303,10 @@ function() {
         // NOTE: The list maintains its size so we can toggle back and forth
         var size = this.getSize();
         this._list.setSize(null, size.y / 3);
+    }
+    // Always re-populate trash list for multi-accounts
+    if (appCtxt.multiAccounts && this._subContentInitialized) {
+        this._populateTrashListView(this._list);
     }
 
     // show sub-content
