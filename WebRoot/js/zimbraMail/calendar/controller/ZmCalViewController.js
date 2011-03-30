@@ -2602,25 +2602,23 @@ function(parent, num) {
 		var isPrivate = appt && appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
 		var isForwardable = !isTrash && calendar && !calendar.isReadOnly();
 		var isReplyable = !isTrash && appt && (num == 1);
-        if(isTrash && num>1){
-            parent.enableAll(false);
-        }
-        else{
-		    parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], isReplyable);
-            parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
-            parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate);
-            parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
-            parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()));
-            parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null);
-        }
+        var isTrashMultiple = isTrash && (num && num>1);
+
+		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (isReplyable && !isTrashMultiple));
+        parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
+        parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate && !isTrashMultiple);
+        parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable && !isTrashMultiple);
+        parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()) && !isTrashMultiple);
+        parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null && !isTrashMultiple);
+
 
         parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], !disabled);
 
         parent.enable(ZmOperation.VIEW_APPT_INSTANCE,!isTrash);
 
         var apptAccess = ((appt && appt.isPrivate() && calendar.isRemote()) ? calendar.hasPrivateAccess() : true );
-        parent.enable(ZmOperation.DUPLICATE_APPT,apptAccess);
-        parent.enable(ZmOperation.SHOW_ORIG,apptAccess);
+        parent.enable(ZmOperation.DUPLICATE_APPT,apptAccess && !isTrashMultiple);
+        parent.enable(ZmOperation.SHOW_ORIG,apptAccess && !isTrashMultiple);
 
 	}
 
