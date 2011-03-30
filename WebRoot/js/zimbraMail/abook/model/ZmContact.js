@@ -1282,31 +1282,13 @@ function(html) {
 		if (fullName) {
 			this._fullName = (fullName instanceof Array) ? fullName[0] : fullName;
 		}
-        if (!fullName || html) {
-			var fn = [];
-			var idx = 0;
-			var prefix = this.getAttr(ZmContact.F_namePrefix);
-			var first = this.getAttr(ZmContact.F_firstName);
-			var middle = this.getAttr(ZmContact.F_middleName);
-			var maiden = this.getAttr(ZmContact.F_maidenName);
-			var last = this.getAttr(ZmContact.F_lastName);
-			var suffix = this.getAttr(ZmContact.F_nameSuffix);
-			var pattern = ZmMsg.fullname;
-			if (suffix) {
-				pattern = maiden ? ZmMsg.fullnameMaidenSuffix : ZmMsg.fullnameSuffix;
-			}
-			else if (maiden) {
-				pattern = ZmMsg.fullnameMaiden;
-			}
-            var formatter = new AjxMessageFormat(pattern);
-			var args = [prefix,first,middle,maiden,last,suffix];
-            if (!fullName) {
-			    this._fullName = AjxStringUtil.trim(formatter.format(args), true);
-            }
-            if (html) {
-                fullNameHtml = this._getFullNameHtml(formatter, args);
-            }
-		}
+        else {
+            this._fullName = this.getFullNameForDisplay(false);
+        }
+
+        if (html) {
+            fullNameHtml = this.getFullNameForDisplay(html);
+        }
 	}
 
 	// as a last resort, set it to fileAs
@@ -1315,6 +1297,36 @@ function(html) {
 	}
 
 	return fullNameHtml || this._fullName;
+};
+
+/*
+* Gets the fullname for display -- includes (if applicable): prefix, first, middle, maiden, last, suffix
+*
+* @param {boolean}  if phonetic fields should be used
+* @return {String}  the fullname for display
+*/
+ZmContact.prototype.getFullNameForDisplay =
+function(html){
+    var prefix = this.getAttr(ZmContact.F_namePrefix);
+    var first = this.getAttr(ZmContact.F_firstName);
+    var middle = this.getAttr(ZmContact.F_middleName);
+    var maiden = this.getAttr(ZmContact.F_maidenName);
+    var last = this.getAttr(ZmContact.F_lastName);
+    var suffix = this.getAttr(ZmContact.F_nameSuffix);
+    var pattern = ZmMsg.fullname;
+    if (suffix) {
+        pattern = maiden ? ZmMsg.fullnameMaidenSuffix : ZmMsg.fullnameSuffix;
+    }
+    else if (maiden) {
+        pattern = ZmMsg.fullnameMaiden;
+    }
+    var formatter = new AjxMessageFormat(pattern);
+    var args = [prefix,first,middle,maiden,last,suffix];
+    if (!html){
+        return AjxStringUtil.trim(formatter.format(args), true);
+    }
+
+    return this._getFullNameHtml(formatter, args);
 };
 
 /**

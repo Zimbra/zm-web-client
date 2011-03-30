@@ -329,7 +329,7 @@
     <$
         var contact		= data.contact;
         var isPhonetic  = appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS);
-        var fullnameHtml= contact.getFullName(isPhonetic);
+        var fullnameHtml= contact.getFullNameForDisplay(isPhonetic);
         if (!isPhonetic) {
             fullnameHtml = AjxStringUtil.htmlEncode(fullnameHtml);
         }
@@ -692,7 +692,8 @@
 
 <template id="abook.Contacts#AddTooltipEntry">
 	<$ if (data.val == null) {
-		data.val = data.field == "fullName" ? data.data.contact.getFullName() : data.data.contact.getAttr(data.field);
+	    var isPhonetic  = appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS);
+		data.val = data.field == "fullName" ? data.data.contact.getFullNameForDisplay(isPhonetic) : data.data.contact.getAttr(data.field);
 	} $>
 
 	<$ if (data.val != null && data.val != "") { $>
@@ -704,8 +705,9 @@
 		<$ if (data.truncate) { $>
 			<td><$= AjxMessageFormat.format(ZmMsg.makeLabel,
 											AjxStringUtil.htmlEncode(data.val.substring(0,data.truncate))) $></td>
-		<$ } else { $>
-			<td style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.val) $></td>
+		<$ } else {
+	          var field = isPhonetic ? data.val : AjxStringUtil.htmlEncode(data.val); $>
+			  <td style='white-space:nowrap;'><$= field $></td>
 		<$ } $>
 		</tr>
 	<$ } $>
