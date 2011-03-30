@@ -424,14 +424,12 @@ function(ev) {
 			restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
             restUrl = restUrl + "&preview=1" + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
 		}
-        var name = item.name || 'Briefcase';
-        if(AjxEnv.isIE)
-            name = name.replace(/[^\w]/g,'');
+
 		if (restUrl) {
             if(item.isDownloadable()) {
                 location.href = restUrl;
             }else {
-			    window.open(restUrl, name, item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
+			    window.open(restUrl, this._getWindowName(item.name), item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
             }
 		}
 	}
@@ -514,7 +512,7 @@ function(items){
                 restUrl = this._app.fixCrossDomainReference(restUrl);
                 restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
                 restUrl = restUrl + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
-                window.open(restUrl, item.name, "");
+                window.open(restUrl, this._getWindowName(item.name), "");
             }
         }
     }
@@ -543,7 +541,7 @@ function(items){
                 restUrl = ZmBriefcaseApp.addEditorParam(restUrl);
                 restUrl = restUrl + "&preview=1" + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
 			}
-			window.open(restUrl, item.name, item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
+			window.open(restUrl, this._getWindowName(item.name), item.isWebDoc() ? "" : ZmBriefcaseApp.getDocWindowFeatures());
 		}
 	}
 };
@@ -906,4 +904,13 @@ function(create){
             }
         }
     }
+};
+
+ZmBriefcaseController.prototype._getWindowName =
+function(name){
+    if(!name){
+        return ZmMsg.briefcase;
+    }
+    //IE does not like special chars as part of window name.
+    return AjxEnv.isIE ? name.replace(/[^\w]/g,'') : name;
 };
