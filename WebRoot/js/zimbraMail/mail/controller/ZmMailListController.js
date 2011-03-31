@@ -881,6 +881,10 @@ function(params, msg) {
 
 	params.inNewWindow = (!appCtxt.isChildWindow && this._app._inNewWindow(params.ev));
 
+    if (msg.list && msg.isUnread && !appCtxt.getById(msg.folderId).isReadOnly()) {
+        msg.list.markRead({items:[msg], value:true});
+    }
+
 	// special handling for multiple forward action
 	var action = params.action;
 	if (action == ZmOperation.FORWARD_ATT || action == ZmOperation.FORWARD_INLINE) {
