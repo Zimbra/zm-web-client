@@ -816,7 +816,9 @@ ZmEditContactView.prototype._handleDetailCheck = function(itemId, id) {
 	this.update();
 	var control = this.getControl(id);
 	if (control) {
+        control.disableFocusHdlr(); //disable focus handler so hint is displayed
 		control.focus();
+        control.enableFocusHdlr(); //re-enable
 	}
 };
 
