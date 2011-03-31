@@ -1984,8 +1984,8 @@ function(ev) {
 		if (sel.length) {
 			for (var i = 0; i < sel.length; i++) {
 				var bubble = sel[i];
-				targetInput.addBubble({bubble:bubble});
 				this._showAddressField(type, true);
+				targetInput.addBubble({bubble:bubble});
 				sourceInput.removeBubble(bubble.id);
 			}
 		}
