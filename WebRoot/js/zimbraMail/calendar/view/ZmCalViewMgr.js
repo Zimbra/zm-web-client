@@ -228,7 +228,6 @@ ZmCalViewMgr.prototype._populateTrashListView = function(listView) {
     };
 
     if (appCtxt.multiAccounts) {
-        var query = ;
         params.query = this._multiAccTrashQuery.join(" OR ");
         params.account = appCtxt.accountList.mainAccount.name;
     } else {
