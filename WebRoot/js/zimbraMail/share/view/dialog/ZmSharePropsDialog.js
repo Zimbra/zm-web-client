@@ -29,7 +29,7 @@
  */
 ZmSharePropsDialog = function(shell, className) {
 	className = className || "ZmSharePropsDialog";
-	DwtDialog.call(this, {parent:shell, className:className, title:ZmMsg.shareProperties});
+	DwtDialog.call(this, {parent:shell, className:className, title:ZmMsg.shareProperties, id:"ShareDialog"});
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
 	
 	// create auto-completer	
@@ -609,13 +609,13 @@ function() {
 	var shareWith = new DwtPropertySheet(this, null, null, DwtPropertySheet.RIGHT);
 	var shareWithProperties = [
 		{ label: ZmMsg.shareWithUserOrGroup,
-		  field: ["<input type='radio' name='",shareWithRadioName,"' value='",ZmShare.TYPE_USER,"'>"].join("")
+		  field: ["<input type='radio' id='ShareWith_user' name='",shareWithRadioName,"' value='",ZmShare.TYPE_USER,"'>"].join("")
 		},
 		{ label: ZmMsg.shareWithGuest,
-		  field: ["<input type='radio' name='",shareWithRadioName,"' value='",ZmShare.TYPE_GUEST,"'>"].join("")
+		  field: ["<input type='radio' id='ShareWith_external' name='",shareWithRadioName,"' value='",ZmShare.TYPE_GUEST,"'>"].join("")
 		},
 		{ label: ZmMsg.shareWithPublicLong,
-		  field: ["<input type='radio' name='",shareWithRadioName,"' value='",ZmShare.TYPE_PUBLIC,"'>"].join("")
+		  field: ["<input type='radio' id='ShareWith_public' name='",shareWithRadioName,"' value='",ZmShare.TYPE_PUBLIC,"'>"].join("")
 		}
 	];
 	for (var i = 0; i < shareWithProperties.length; i++) {
@@ -623,16 +623,16 @@ function() {
 		var propId = shareWith.addProperty(property.label, property.field);
 	}
 
-	this._granteeInput = new DwtInputField({parent: this});
+	this._granteeInput = new DwtInputField({parent: this, id:"ShareDialog_grantee"});
 	this._granteeInput.setData(Dwt.KEY_OBJECT, this);
 	this._granteeInput.setRequired(true);
 	Dwt.associateElementWithObject(this._granteeInput.getInputElement(), this);
 
 	var password = new DwtComposite(this);
-	this._passwordInput = new DwtInputField({parent: password});
+	this._passwordInput = new DwtInputField({parent: password, id:"ShareDialog_password"});
 	this._passwordInput.setData(Dwt.KEY_OBJECT, this);
 	this._passwordInput.setRequired(true);
-	this._passwordButton = new DwtButton({parent:password});
+	this._passwordButton = new DwtButton({parent:password, id:"ShareDialog_Button"});
 	this._passwordButton.setText(ZmMsg.changePassword);
 	this._passwordButton.addSelectionListener(new AjxListener(this, this._handleChangeButton));
 	Dwt.associateElementWithObject(this._passwordInput.getInputElement(), this);
@@ -678,7 +678,9 @@ function() {
 		html[idx++] = roleRadioName;
 		html[idx++] = "' value='";
 		html[idx++] = role;
-		html[idx++] = "'></td><td style='font-weight:bold; padding-right:0.25em'>";
+		html[idx++] = "' id='ShareRole_";
+        html[idx++] = role;
+        html[idx++] = "'></td><td style='font-weight:bold; padding-right:0.25em'>";
 		html[idx++] = ZmShare.getRoleName(role);
 		html[idx++] = "</td><td style='white-space:nowrap'>";
 		html[idx++] = ZmShare.getRoleActions(role);
