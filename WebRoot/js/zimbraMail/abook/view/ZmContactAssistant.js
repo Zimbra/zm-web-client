@@ -222,7 +222,7 @@ function(dialog, verb, args) {
 		while (match = this._matchTypedObject(args, objType, obj)) {
 			var field = this._lookupField(match.type);
 			var type = field ? field.key : match.type;
-			this._contactFields[type] = field && field.capitalize ? this._capitalize(match.data) : match.data;
+			this._contactFields[type] = field.capitalize ? this._capitalize(match.data) : match.data;
 			args = match.args;
 		}
 	}

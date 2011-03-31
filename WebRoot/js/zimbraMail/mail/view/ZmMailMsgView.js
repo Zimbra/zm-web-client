@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -35,7 +35,7 @@ ZmMailMsgView = function(params) {
 	this._expandHeader = true;
 	this._expandDivId = ZmId.getViewId(this._viewId, ZmId.MV_EXPAND_DIV, this._mode);
 
-	this._scrollWithIframe = ZmMailMsgView.SCROLL_WITH_IFRAME; // Making it local var
+	this._scrollWithIframe = false;
 	this._limitAttachments = this._scrollWithIframe ? 3 : 0; //making it local
 	this._attcMaxSize = this._limitAttachments * 16 + 8;
 	this.setScrollStyle(this._scrollWithIframe ? DwtControl.CLIP : DwtControl.SCROLL);
@@ -2130,19 +2130,20 @@ function(result) {
 	// notifications have been processed.
 	var msgNode = result.getResponse().RemoveAttachmentsResponse.m[0];
 	ac.getApp(ZmApp.MAIL).getMailListController().actionedMsgId = msgNode.id;
-
-	var currView = appCtxt.getAppController().getAppViewMgr().getCurrentView();
-	var msgView = appCtxt.isChildWindow 
+    var list = ac.getApp(ZmApp.MAIL).getMailListController().getList();
+    var currView = appCtxt.getAppController().getAppViewMgr().getCurrentView();
+	var msgView = appCtxt.isChildWindow || currView instanceof ZmMailMsgView
 		? currView : (currView.getMsgView && currView.getMsgView());
 
-	if (msgView) {
-		var msg = msgView._msg;
-		msg.attachments.length = 0;
-		msg._bodyParts = [];
-		msg._loadFromDom(msgNode);
-		msgView._msg = null;
-		msgView.set(msg);
-	}
+    if (currView && Dwt.instanceOf(currView, "ZmConvView")) {
+        ZmConvView._handleRemoveAttachment(result);
+    }
+	else if (msgView) {
+        var msg = new ZmMailMsg(msgNode.id, list, true);
+        msg._loadFromDom(msgNode);
+        msgView._msg = null;
+        msgView.set(msg);
+    }
 };
 
 ZmMailMsgView._buildZipUrl =
