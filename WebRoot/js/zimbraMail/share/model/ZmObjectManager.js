@@ -900,6 +900,7 @@ function(ev) {
 			manager.setHoverOverData(object);
 			manager.setHoverOverListener(this._hoverOverListener);
 			manager.hoverOver(ev.docX, ev.docY);
+			ev.hoverStarted = true;
 		}
 	}
 
@@ -1041,10 +1042,11 @@ function(event) {
 	var handler = event.object.handler;
 	var object = event.object.object;
 	var context = event.object.context;
+	var id = event.object.id;
 	var x = event.x;
 	var y = event.y;
 
-	handler.hoverOver(object, context, x, y, span);
+	handler.hoverOver(object, context, x, y, span, id);
 };
 
 /**
@@ -1058,8 +1060,9 @@ function(event) {
 	var handler = event.object.handler;
 	var object = event.object.object;
 	var context = event.object.context;
+	var id = event.object.id;
 
-	handler.hoverOut(object, context, span);
+	handler.hoverOut(object, context, span, id);
 };
 
 // Private static functions
