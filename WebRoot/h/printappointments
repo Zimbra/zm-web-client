@@ -257,7 +257,7 @@ action="compose" paction="view" id="${msg.id}"/>
         </c:choose>
         <c:if test="${not empty message.attachments}">
             <hr/>
-            <app:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>
+            <app:attachments mailbox="${mailbox}" message="${message}" print="${true}" composeUrl="${composeUrl}"/>
         </c:if>
     </td>
 </tr>
