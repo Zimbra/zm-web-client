@@ -378,7 +378,7 @@ function() {
 ZmAppCtxt.prototype.getOkCancelMsgDialog =
 function() {
 	if (!this._okCancelMsgDialog) {
-		this._okCancelMsgDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
+		this._okCancelMsgDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON], id:"OkCancel"});
 	}	
 	return this._okCancelMsgDialog;
 };
