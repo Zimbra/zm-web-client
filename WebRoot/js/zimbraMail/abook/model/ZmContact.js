@@ -1720,6 +1720,10 @@ function(node) {
 	this.isDL = this.isGal && (this.attr[ZmContact.F_type] == "group");
 	if (this.isDL) {
 		this.canExpand = node.exp;
+		var emails = this.getEmails();
+		for (var i = 0; i < emails.length; i++) {
+			appCtxt.setIsExpandableDL(emails[i], this.canExpand);
+		}
 	}
 };
 

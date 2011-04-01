@@ -48,6 +48,7 @@ ZmAppCtxt = function() {
 	this._itemCache			= {};
 	this._itemCacheDeferred	= {};
 	this._acCache			= {};	// autocomplete
+	this._isExpandableDL	= {};	// distribution lists
 };
 
 ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
@@ -1729,4 +1730,27 @@ function() {
 	} else {
 		return "UTF-8";
 	}
+};
+
+/**
+ * Returns true if an address is an expandable DL.
+ *  
+ * @param {string}	addr	email address
+ */
+ZmAppCtxt.prototype.isExpandableDL =
+function(addr) {
+	return addr && this._isExpandableDL[addr];
+};
+
+/**
+ * Cache whether an address is an expandable DL.
+ * 
+ * @param {string}	addr			email address
+ * @param {boolean}	isExpandableDL	if true, address is expandable DL
+ * 
+ * TODO: consider caching AjxEmailAddress objects by addr so we also save display name
+ */
+ZmAppCtxt.prototype.setIsExpandableDL =
+function(addr, isExpandableDL) {
+	this._isExpandableDL[addr] = isExpandableDL;
 };
