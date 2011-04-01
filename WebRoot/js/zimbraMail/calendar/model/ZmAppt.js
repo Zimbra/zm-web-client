@@ -700,7 +700,8 @@ function(message) {
 			var name = att.d;
 			var email = new AjxEmailAddress(addr, null, name);
 			email.isGroup = att.isGroup;
-			email.canExpand = att.exp;
+			email.canExpand = att.isGroup && att.exp;
+			appCtxt.setIsExpandableDL(att.a, email.canExpand);
             if (att.rsvp) {
 				rsvp = true;
 			}

@@ -222,7 +222,6 @@ function(bubble, index) {
 	var bubbleId = bubble._htmlElId;
 	this._bubble[bubbleId] = bubble;
 	this._addressHash[bubble.email] = true;
-	this._expandable[bubble.email] = bubble.canExpand;
 
 	this.focus();
 };
@@ -231,12 +230,6 @@ ZmAddressInputField.prototype._hasValidAddress =
 function(params) {
 	var addr = (params.addrObj && params.addrObj.getAddress()) || params.address || (params.match && params.match.email);
 	return (!this._strictMode || Boolean(AjxEmailAddress.parse(addr)));
-};
-
-
-ZmAddressInputField.prototype.isExpandable =
-function(bubble) {
-	return bubble && this._expandable[bubble.email];
 };
 
 /**
@@ -563,7 +556,6 @@ function() {
 
 	this._bubble		= {};	// bubbles by bubble ID
 	this._addressHash	= {};	// used addresses, so we can check for dupes
-	this._expandable	= {};	// whether an addr is an expandable DL addr
 
 	this._numBubbles	= 0;
 
@@ -772,7 +764,7 @@ function() {
 		menu.enable(ZmOperation.DELETE, sel.length > 0);
 		menu.enable(ZmOperation.EDIT, Boolean(bubble));
 		var email = bubble && bubble.email;
-		menu.enable(ZmOperation.EXPAND, email && this.isExpandable(bubble));
+		menu.enable(ZmOperation.EXPAND, appCtxt.isExpandableDL(email));
 		menu.enable(ZmOperation.CONTACT, Boolean(bubble));
 	}
 
@@ -1176,7 +1168,7 @@ function(asObjects) {
 		var addr = bubble.address;
 		if (asObjects) {
 			var addrObj = AjxEmailAddress.parse(addr) || new AjxEmailAddress("", null, addr);
-			if (this.isExpandable(bubble) || (bubble.match && bubble.match.isDL)) {
+			if (appCtxt.isExpandableDL(bubble.email) || (bubble.match && bubble.match.isDL)) {
 				addrObj.isGroup = true;
 				addrObj.canExpand = true;
 			}
@@ -1405,7 +1397,7 @@ ZmAddressBubble = function(params) {
 	var addrObj = this.addrObj = params.addrObj || AjxEmailAddress.parse(params.address || (match && match.email));
 	this.address = params.address || (addrObj && addrObj.toString());
 	this.email = params.email = params.email || (addrObj && addrObj.getAddress()) || "";
-	this.canExpand = params.canExpand = params.canExpand || (match && match.isDL) || (addrInput && addrInput.isExpandable(this));
+	this.canExpand = params.canExpand = params.canExpand || appCtxt.isExpandableDL(this.email);
 	
 	this._createHtml(params);
 

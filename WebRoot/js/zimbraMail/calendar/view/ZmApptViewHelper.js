@@ -398,6 +398,7 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 		
 		attendee.isGroup = item.isGroup;
 		attendee.canExpand = item.canExpand;
+		appCtxt.setIsExpandableDL(addr, attendee.canExpand);
 	} else if (typeof item == "string") {
 		item = AjxStringUtil.trim(item);	// trim white space
 		item = item.replace(/;$/, "");		// trim separator
