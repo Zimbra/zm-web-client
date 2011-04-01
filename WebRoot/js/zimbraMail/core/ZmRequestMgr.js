@@ -662,31 +662,33 @@ function(creates) {
 	this._controller.runAppFunction("createNotify", false, creates);
 
 	for (var name in creates) {
-		var list = creates[name];
-		for (var i = 0; i < list.length; i++) {
-			var create = list[i];
-			if (create._handled) { continue; }
-			// ignore create notif for item we already have (except tags, which can reuse IDs)
-			if (appCtxt.cacheGet(create.id) && name != "tag") { continue; }
-	
-			DBG.println(AjxDebug.DBG1, "ZmRequestMgr: handling CREATE for node: " + name);
-            if (window.isNotifyDebugOn) {
-    			appCtxt.setNotifyDebug(["Handling NOTIFY: in ZmRequestMgr - _handleCreates handling CREATE for node: ", name].join(""));
+        if (creates.hasOwnProperty(name)) {
+            var list = creates[name];
+            for (var i = 0; i < list.length; i++) {
+                var create = list[i];
+                if (create._handled) { continue; }
+                // ignore create notif for item we already have (except tags, which can reuse IDs)
+                if (appCtxt.cacheGet(create.id) && name != "tag") { continue; }
+
+                DBG.println(AjxDebug.DBG1, "ZmRequestMgr: handling CREATE for node: " + name);
+                if (window.isNotifyDebugOn) {
+                    appCtxt.setNotifyDebug(["Handling NOTIFY: in ZmRequestMgr - _handleCreates handling CREATE for node: ", name].join(""));
+                }
+                if (name == "tag") {
+                    var account = appCtxt.multiAccounts && ZmOrganizer.parseId(create.id).account;
+                    var tagTree = appCtxt.getTagTree(account);
+                    if (tagTree) {
+                        tagTree.root.notifyCreate(create);
+                    }
+                } else if (name == "folder" || name == "search" || name == "link") {
+                    var parentId = create.l;
+                    var parent = appCtxt.getById(parentId);
+                    if (parent && parent.notifyCreate && parent.type != ZmOrganizer.TAG) { // bug #37148
+                        parent.notifyCreate(create, name);
+                    }
+                }
             }
-			if (name == "tag") {
-				var account = appCtxt.multiAccounts && ZmOrganizer.parseId(create.id).account;
-				var tagTree = appCtxt.getTagTree(account);
-				if (tagTree) {
-					tagTree.root.notifyCreate(create);
-				}
-			} else if (name == "folder" || name == "search" || name == "link") {
-				var parentId = create.l;
-				var parent = appCtxt.getById(parentId);
-				if (parent && parent.notifyCreate && parent.type != ZmOrganizer.TAG) { // bug #37148
-					parent.notifyCreate(create, name);
-				}
-			}
-		}
+        }
 	}
 };
 
