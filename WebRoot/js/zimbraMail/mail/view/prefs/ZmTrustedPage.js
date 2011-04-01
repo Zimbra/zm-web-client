@@ -60,12 +60,9 @@ function(id, setup, value) {
 
 	if (id == ZmSetting.TRUSTED_ADDR_LIST) {
 		this._trustedListControl = new ZmWhiteBlackList(this, id, "TrustedList");
-        var arrTrustedList = [],
-            trustedList = appCtxt.get(ZmSetting.TRUSTED_ADDR_LIST);
-        if(trustedList && trustedList[0]) {
-            arrTrustedList = trustedList[0].split(",");
-        }
-        this._trustedListControl.loadFromJson(arrTrustedList);
+        var trustedList = appCtxt.get(ZmSetting.TRUSTED_ADDR_LIST);
+
+        this._trustedListControl.loadFromJson(trustedList);
 		this._replaceControlElement(el, this._trustedListControl);
 	}
 };
@@ -103,18 +100,22 @@ function() {
 ZmTrustedPage.prototype.addCommand =
 function(batchCmd) {
     if(this._trustedListControl && this._trustedListControl.isDirty()) {
-        var value = this._trustedListControl.getValue(),
+        var i,
+            value = this._trustedListControl.getValue(),
             soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount"),
-            node = soapDoc.set("pref", value),
-            respCallback = new AjxCallback(this, this._postSaveBatchCmd, [value]);
-        node.setAttribute("name", "zimbraPrefMailTrustedSenderList");
+            node,
+            respCallback = new AjxCallback(this, this._postSaveBatchCmd, value.join(','));
+        for(i=0; i<value.length;i++) {
+            node = soapDoc.set("pref", AjxStringUtil.trim(value[i]));
+            node.setAttribute("name", "zimbraPrefMailTrustedSenderList");
+        }
         batchCmd.addNewRequestParams(soapDoc, respCallback);
     }
 };
 
 ZmTrustedPage.prototype._postSaveBatchCmd =
 function(value) {
-    appCtxt.set(ZmSetting.TRUSTED_ADDR_LIST, [value]);
+    appCtxt.set(ZmSetting.TRUSTED_ADDR_LIST, value.split(','));
     var settings = appCtxt.getSettings();
     var trustedListSetting = settings.getSetting(ZmSetting.TRUSTED_ADDR_LIST);
     trustedListSetting._notify(ZmEvent.E_MODIFY); 

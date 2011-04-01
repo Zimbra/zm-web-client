@@ -721,7 +721,7 @@ function(msg, idoc, id, iframe) {
         //Create a modifyprefs req and add the addr to modify
         if(addrToAdd) {
             self.getTrustedSendersList().add(addrToAdd, null, true);
-            self._controller.addTrustedAddr(self.getTrustedSendersList().join(","), new AjxCallback(self, self._addTrustedAddrCallback, [addrToAdd]), new AjxCallback(self, self._addTrustedAddrErrorCallback, [addrToAdd]));
+            self._controller.addTrustedAddr(self.getTrustedSendersList(), new AjxCallback(self, self._addTrustedAddrCallback, [addrToAdd]), new AjxCallback(self, self._addTrustedAddrErrorCallback, [addrToAdd]));
         }
 
 		var images = idoc.getElementsByTagName("img");
@@ -982,7 +982,7 @@ function(container, html, isTextMsg, isTruncated) {
 ZmMailMsgView.prototype._addTrustedAddrCallback =
 function(addr) {
     this.getTrustedSendersList().add(addr, null, true);
-    appCtxt.set(ZmSetting.TRUSTED_ADDR_LIST, [this.getTrustedSendersList().getArray().join(",")]);
+    appCtxt.set(ZmSetting.TRUSTED_ADDR_LIST, this.getTrustedSendersList().getArray());
     var prefApp = appCtxt.getApp(ZmApp.PREFERENCES);
     var func = prefApp && prefApp["refresh"];
     if (func && (typeof(func) == "function")) {

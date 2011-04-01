@@ -410,7 +410,7 @@ function() {
 
 ZmWhiteBlackList.prototype.getValue =
 function() {
-    return this._listView.getList().clone().getArray().join(",");
+    return this._listView.getList().clone().getArray().join(',').replace(';', ',').split(',');
 };
 
 
@@ -530,12 +530,19 @@ function() {
 		return;
 	}
 
-	var val = AjxStringUtil.trim(this._inputEl.getValue());
-	if (val.length) {
-		this._addEmail(val);
-		if (!this._add[val]) {
-			this._add[val] = true;
-		}
+	var val,
+        items = AjxStringUtil.trim(this._inputEl.getValue(), true);
+	if (items.length) {
+        items = AjxStringUtil.split(items, [',', ';', ' ']);
+        for(var i=0; i<items.length; i++) {
+            val = items[i];
+            if(val) {
+                this._addEmail(val);
+                if (!this._add[val]) {
+                    this._add[val] = true;
+                }
+            }
+        }
 		this._inputEl.setValue("", true);
 		this._inputEl.blur();
 		this._inputEl.focus();

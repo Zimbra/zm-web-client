@@ -2113,8 +2113,8 @@ ZmMailApp.prototype.getTrustedSendersList =
 function() {
     if(!this._trustedList) {
         var trustedList = appCtxt.get(ZmSetting.TRUSTED_ADDR_LIST);
-        if(trustedList && trustedList[0]) {
-            this._trustedList = AjxVector.fromArray(trustedList[0].split(","));
+        if(trustedList) {
+            this._trustedList = AjxVector.fromArray(trustedList);
         }
         else {
             this._trustedList = new AjxVector();
