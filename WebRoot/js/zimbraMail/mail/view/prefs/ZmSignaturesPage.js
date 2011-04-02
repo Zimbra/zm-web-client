@@ -73,7 +73,7 @@ function(onlyValid) {
 	this._rehashByName();
 	for (var id in this._signatures) {
 		var signature = this._signatures[id];
-		if (signature._new && !(onlyValid && this._isInvalidSig(signature, true))) {
+		if (signature._new && !this._isAutoAddedAndBlank(signature) && !(onlyValid && this._isInvalidSig(signature, true))) {
 			list.push(signature);
 		}
 	}
@@ -161,7 +161,7 @@ function() {
 			var field = ZmSignaturesPage.SIG_FIELDS[j];
 			var savedSigId = u1[field];
 			var curSigId = this._newSigId[u2[field]] || u2[field];
-			if (savedSigId != curSigId) {
+			if ((savedSigId != curSigId) && !this._autoAddedSig) {
 				list.push({identity:identityId, sig:field, value:curSigId});
 			}
 		}
@@ -688,6 +688,7 @@ function(reset) {
 	}
 	this._calcAutoSignatureNames(signatures);
 	for (var i = count; i < this._minEntries; i++) {
+        this._autoAddedSig = true;
 		this._addNewSignature(true);
 	}
 
@@ -1341,4 +1342,18 @@ function(ev) {
 	}
 
 	this.popdown();
+};
+
+/*
+ * determines if signature was auto-added (e.g. user had no signatures) and is blank.
+ * returns true if both auto added and blank, else false
+ *
+ */
+ZmSignaturesPage.prototype._isAutoAddedAndBlank =
+function(signature) {
+  if (this._autoAddedSig) {
+    var hasValue = AjxStringUtil._NON_WHITESPACE.test(signature.getValue());
+    return !hasValue;
+  }
+  return false;
 };
