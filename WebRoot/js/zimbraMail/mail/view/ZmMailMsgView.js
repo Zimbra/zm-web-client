@@ -1052,6 +1052,7 @@ function(msg, container, callback) {
     }
 	var sentByIcon = cl	? (cl.getContactByEmail((sentBy && sentBy.address ) ? sentBy.address : sentByAddr ) ? "Contact" : "NewContact")	: null;
 	var obo = sender ? addr : null;
+	var oboAddr = obo && obo != ZmMsg.unknown ? obo.getAddress() : null;
 	var additionalHdrs = [];
 	var invite = msg.invite;
 	var autoSendTime = AjxUtil.isDate(msg.autoSendTime) ? AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM).format(msg.autoSendTime) : null;
@@ -1195,7 +1196,9 @@ function(msg, container, callback) {
 		subs.sentBy = sentBy;
 		subs.sentByNormal = sentByAddr;
 		subs.sentByIcon = sentByIcon;
+		subs.sentByAddr = sentByAddr;
 		subs.obo = obo;
+		subs.oboAddr = oboAddr;
 		subs.participants = participants;
 		subs.reportBtnCellId = reportBtnCellId;
 		subs.isSyncFailureMsg = isSyncFailureMsg;
