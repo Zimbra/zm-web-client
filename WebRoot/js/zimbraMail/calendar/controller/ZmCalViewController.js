@@ -632,6 +632,7 @@ function(ev) {
 	sc.setSearchField("");
 	sc.getSearchToolbar().blur();
 	this._refreshMaintenance = true;
+    this.searchInProgress = false;
 	this._refreshAction(false);
 };
 
@@ -3465,6 +3466,12 @@ function(work, forceMaintenance) {
 	{
 		this._pendingWork |= work;
 	}
+};
+
+ZmCalViewController.prototype.resetSearchFlags =
+function() {
+    this.searchInProgress = false;
+    this._pendingWork = ZmCalViewController.MAINT_NONE;
 };
 
 ZmCalViewController.prototype._errorRecovery =
