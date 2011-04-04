@@ -834,7 +834,7 @@ function(icon) {
         var container = appCtxt.getCurrentApp().getOverviewContainer();
         var overviewId = appCtxt.getOverviewId([container.containerId, ZmOrganizer.LABEL[ZmOrganizer.ZIMLET]], null);
         var ov = container.getOverview(overviewId);
-        treeItem = ov.getTreeItemById(this.xmlObj().getOrganizer().id);
+        treeItem = ov && ov.getTreeItemById(this.xmlObj().getOrganizer().id);
     } else {
         var treeView = appCtxt.getAppViewMgr().getCurrentViewComponent(ZmAppViewMgr.C_TREE);
         treeItem = treeView && treeView.getTreeItemById(this.xmlObj().getOrganizer().id);
