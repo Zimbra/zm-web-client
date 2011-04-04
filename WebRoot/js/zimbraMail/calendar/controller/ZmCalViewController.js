@@ -2548,7 +2548,7 @@ function(recurrenceMode) {
 	var deleteOp = ZmOperation.DELETE;
 	var viewOp = ZmOperation.VIEW_APPOINTMENT;
 	var forwardOp = ZmOperation.FORWARD_APPT;
-
+	
 	if (recurrenceMode == ZmOperation.VIEW_APPT_INSTANCE) {
 		deleteOp = ZmOperation.DELETE_INSTANCE;
 		viewOp = ZmOperation.OPEN_APPT_INSTANCE;
@@ -2558,17 +2558,27 @@ function(recurrenceMode) {
 		viewOp = ZmOperation.OPEN_APPT_SERIES;
 		forwardOp = ZmOperation.FORWARD_APPT_SERIES;
 	}
-
-	return [
-		viewOp,
-		ZmOperation.SEP,
-		ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE, ZmOperation.INVITE_REPLY_MENU,
-		ZmOperation.SEP,
-		forwardOp,
-        ZmOperation.PROPOSE_NEW_TIME,
-		deleteOp, ZmOperation.MOVE, ZmOperation.TAG_MENU,
-		ZmOperation.SHOW_ORIG
-	];
+	
+	var retVal = [viewOp,
+	      		ZmOperation.SEP,
+	    		ZmOperation.REPLY_ACCEPT,
+	    		ZmOperation.REPLY_TENTATIVE,
+	    		ZmOperation.REPLY_DECLINE,
+	    		ZmOperation.INVITE_REPLY_MENU,
+	    		ZmOperation.PROPOSE_NEW_TIME,
+	    		ZmOperation.DUPLICATE_APPT,
+	    		ZmOperation.SEP,
+	    		ZmOperation.REPLY,
+	    		ZmOperation.REPLY_ALL,
+	    		forwardOp,
+	    		deleteOp,
+	    		ZmOperation.SEP];
+	if (recurrenceMode == ZmOperation.VIEW_APPT_SERIES) {
+		retVal.push(ZmOperation.MOVE);
+	}
+	retVal.push(ZmOperation.TAG_MENU);
+	retVal.push(ZmOperation.SHOW_ORIG);
+	return retVal;
 };
 
 ZmCalViewController.prototype._getRecurringActionMenuOps =
