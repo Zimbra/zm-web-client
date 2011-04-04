@@ -57,7 +57,7 @@
 												<td>&nbsp;</td>
 											<$ } $>
 											<td>${sentBy}&nbsp;&nbsp;</td>
-                                            <$ if (data.obo && (AjxStringUtil.stripTags(data.obo) != AjxStringUtil.stripTags(data.sentBy))) { // if Email zimlet is deployed. $>
+                                            <$ if (data.obo && (data.oboAddr != data.sentByAddr)) { // if Email zimlet is deployed. $>
                                                 <td id='OBJ_PREFIX_obo_label' class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></td>
                                                 <td id='OBJ_PREFIX_obo' class='LabelColValue' colspan=10><$= data.obo $></td>
                                             <$ } $>
