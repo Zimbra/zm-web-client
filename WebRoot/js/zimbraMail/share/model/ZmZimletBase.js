@@ -828,8 +828,18 @@ function(icon) {
 	if (!this.xmlObj("zimletPanelItem"))
 		return;
 	this.xmlObj().icon = icon;
-	var treeView = appCtxt.getAppViewMgr().getCurrentViewComponent(ZmAppViewMgr.C_TREE);
-	var treeItem = treeView && treeView.getTreeItemById(this.xmlObj().getOrganizer().id);
+    var treeItem;
+    if (appCtxt.multiAccounts) {
+        //get overview from the overview container
+        var container = appCtxt.getCurrentApp().getOverviewContainer();
+        var overviewId = appCtxt.getOverviewId([container.containerId, ZmOrganizer.LABEL[ZmOrganizer.ZIMLET]], null);
+        var ov = container.getOverview(overviewId);
+        treeItem = ov.getTreeItemById(this.xmlObj().getOrganizer().id);
+    } else {
+        var treeView = appCtxt.getAppViewMgr().getCurrentViewComponent(ZmAppViewMgr.C_TREE);
+        treeItem = treeView && treeView.getTreeItemById(this.xmlObj().getOrganizer().id);
+    }
+
 	if (treeItem) {
 		treeItem.setImage(icon);
 	}
