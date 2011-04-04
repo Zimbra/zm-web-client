@@ -686,9 +686,11 @@ function(items, nId) {
     }
 
 	for (var i = 0; i < folders.length; i++) {
-		var folder = folders[i];
-		if (nId != folder) {
-			chars.push(ZmFolder.TCON_CODE[folder]);
+		var folderId = folders[i];
+		var folder = appCtxt.getById(folderId);
+		var nFolder = appCtxt.getById(nId);
+		if (nId != folderId && folder && nFolder && !nFolder.isChildOf(folder)) {
+			chars.push(ZmFolder.TCON_CODE[folderId]);
 		}
 	}
 	return (chars.length) ?  ("-" + chars.join("")) : "";
