@@ -341,21 +341,22 @@ function(setting, right) {
 
 ZmCalendarPrefsPage.prototype.addCommand =
 function(batchCmd) {
-	if (!this._isAclSupported) { return; }
+    if (this._isAclSupported) {
+        var respCallback = new AjxCallback(this, this._handleResponseACLChange);
+        if (this._revokes.length) {
+            this._acl.revoke(this._revokes, respCallback, batchCmd);
+        }
+        if (this._grants.length) {
+            this._acl.grant(this._grants, respCallback, batchCmd);
+        }
+    }
 
-	var respCallback = new AjxCallback(this, this._handleResponseACLChange);
-	if (this._revokes.length) {
-		this._acl.revoke(this._revokes, respCallback, batchCmd);
-	}
-	if (this._grants.length) {
-		this._acl.grant(this._grants, respCallback, batchCmd);
-	}
     if(this._workHoursControl) {
         if(this._workHoursControl.isValid()) {
             var value = this._workHoursControl.getValue(),
-                soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount"),
-                node = soapDoc.set("pref", value),
-                respCallback = new AjxCallback(this, this._postSaveBatchCmd, [value]);
+                    soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount"),
+                    node = soapDoc.set("pref", value),
+                    respCallback = new AjxCallback(this, this._postSaveBatchCmd, [value]);
             node.setAttribute("name", "zimbraPrefCalendarWorkingHours");
             batchCmd.addNewRequestParams(soapDoc, respCallback);
         }
