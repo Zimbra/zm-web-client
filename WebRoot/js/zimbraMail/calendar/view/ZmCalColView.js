@@ -2213,6 +2213,8 @@ function(ev) {
 	var draggedOut = data.view._apptDraggedOut(mouseEv.docX, mouseEv.docY);
 
 	if (data.dndStarted) {
+		//notify Zimlet when an appt is dragged.
+		appCtxt.notifyZimlets("onApptDrag", [data]);	
 		ZmCalColView._setApptOpacity(data.appt, data.apptEl);
 		if (data.startDate.getTime() != data.appt.getStartTime() && !draggedOut) {
 			if (data.icon) Dwt.setVisible(data.icon, false);

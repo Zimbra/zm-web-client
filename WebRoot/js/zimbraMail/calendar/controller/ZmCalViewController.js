@@ -2316,7 +2316,7 @@ function(appt, mode) {
  * @private
  */
 ZmCalViewController.prototype.dndUpdateApptDate =
-function(appt, startDateOffset, endDateOffset, callback, errorCallback, ev) {
+function(appt, startDateOffset, endDateOffset, callback, errorCallback, ev) {	
 	appt.dndUpdate = true;
 	if (!appt.isRecurring()) {
 		var viewMode = ZmCalItem.MODE_EDIT;
@@ -2338,6 +2338,7 @@ function(appt, startDateOffset, endDateOffset, callback, errorCallback, ev) {
 			}
 		}
 	}
+	appCtxt.notifyZimlets("onApptDrop", [appt, startDateOffset, endDateOffset]);		
 };
 
 ZmCalViewController.prototype._handleResponseUpdateApptDate =
