@@ -298,6 +298,7 @@ function(startDate, endDate, ignoreTimeUpdate) {
     if(this._schedulerOpened) {
         this._scheduleView.handleTimeChange();
     }
+    appCtxt.notifyZimlets("onEditAppt_updateTime", [this, {startDate:startDate, endDate:endDate}]);//notify Zimlets    
 };
 
 ZmApptEditView.prototype.updateTimezone =
@@ -2064,6 +2065,7 @@ function(type, attendees) {
 	// *always* force replace of attendees list with what we've found
 	this.parent.updateAttendees(attendees, type);
     this._updateScheduler(type, attendees);
+   appCtxt.notifyZimlets("onEditAppt_updateAttendees", [this]);//notify Zimlets
 };
 
 ZmApptEditView.prototype._updateScheduler =

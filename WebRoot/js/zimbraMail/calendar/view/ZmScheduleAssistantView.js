@@ -228,6 +228,7 @@ function(clearSelection, forceRefresh) {
     var tf = this._getTimeFrame();
     this._miniCalendar.setDate(tf.start, true);
     this.reset(tf.start, this._attendees, forceRefresh);
+    appCtxt.notifyZimlets("onEditAppt_updateTime", [this._editView, tf]);//notify Zimlets
 };
 
 //shows a link which triggers on demand suggestions
