@@ -442,6 +442,27 @@ function(ev) {
 	}
 };
 
+/**
+ * Handle arrow up, arrow down for bubble holder
+ *
+ * @param ev
+ */
+ZmAddressInputField.onHolderKeyClick =
+function(ev) {
+    ev = DwtUiEvent.getEvent(ev);
+    var key = DwtKeyEvent.getCharCode(ev);
+    if (key == 38) {
+        if (this.clientHeight >= this.scrollHeight) { return; }
+	    this.scrollTop = Math.max(this.scrollTop - this.clientHeight, 0);
+        DBG.println("aif", "this.scrollTop  = " + this.scrollTop);
+    }
+    else if (key == 40) {
+         if (this.clientHeight >= this.scrollHeight) { return; }
+	     this.scrollTop = Math.min(this.scrollTop + this.clientHeight, this.scrollHeight - this.clientHeight);
+         DBG.println("aif", "this.scrollTop  = " + this.scrollTop);
+    }
+};
+
 // looks for valid addresses in the input, and converts them to bubbles
 ZmAddressInputField.prototype._checkInput =
 function(text) {
@@ -549,6 +570,12 @@ function(params) {
 	Dwt.setHandler(this._holder, DwtEvent.ONCLICK, ZmAddressInputField.onHolderClick);
 	Dwt.setHandler(this._input, DwtEvent.ONCUT, ZmAddressInputField.onCut);
 	Dwt.setHandler(this._input, DwtEvent.ONPASTE, ZmAddressInputField.onPaste);
+    Dwt.setHandler(this._holder, DwtEvent.ONKEYDOWN, ZmAddressInputField.onHolderKeyClick);
+
+    var args = {container:this._holder, threshold:10, amount:15, interval:5, id:this._holderId};
+    this._dndScrollCallback = new AjxCallback(null, DwtControl._dndScrollCallback, [args]);
+    this._dndScrollId = this._holderId;
+
 };
 
 ZmAddressInputField.prototype._reset =
@@ -1254,6 +1281,19 @@ function(dragEv) {
 
 ZmAddressInputField.prototype._dragBoxListener =
 function(ev) {
+    // Check if user is using scroll bar rather than trying to drag.
+    if (ev && ev.srcControl && this._holder) {
+        var scrollWidth = this._holder.scrollWidth;  //returns width w/out scrollbar
+        var scrollPos = scrollWidth + Dwt.getLocation(this._holder).x;
+        var dBox = ev.srcControl.getDragBox();
+        if (dBox) {
+            DBG.println("aif", "DRAG_DROP x =" + dBox.getStartX() + " scrollWidth = " + scrollWidth);
+            if (dBox.getStartX() > scrollPos) {
+                DBG.println("aif", "DRAG_DROP x =" + dBox.getStartX() + " scrollPos = " + scrollPos);
+                return false;
+            }
+        }
+    }
 
 	if (ev.action == DwtDragEvent.DRAG_INIT) {
 		// okay to draw drag box if we have at least one bubble, and user isn't clicking in
