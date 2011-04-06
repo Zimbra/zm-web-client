@@ -35,7 +35,8 @@
 ZmApptComposeView = function(parent, className, calApp, controller) {
 
 	className = className ? className : "ZmApptComposeView";
-	DwtComposite.call(this, parent, className, Dwt.ABSOLUTE_STYLE);
+    var params = {parent:parent, className:className, posStyle:Dwt.ABSOLUTE_STYLE, id:Dwt.getNextId("APPT_COMPOSE_")};
+	DwtComposite.call(this, params);
 
 	this.setScrollStyle(DwtControl.CLIP);
 	this._app = calApp;
