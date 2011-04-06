@@ -188,6 +188,9 @@ function() {
 
 ZmCalendarPrefsPage.prototype._postSave =
 function(callback) {
+    var settings = appCtxt.getSettings();
+    var workHoursSetting = settings.getSetting(ZmSetting.CAL_WORKING_HOURS);
+    workHoursSetting._notify(ZmEvent.E_MODIFY);
 	if (this._workHoursControl) {
 		this._workHoursControl.reloadWorkHours(this._workHoursControl.getValue());
 	}

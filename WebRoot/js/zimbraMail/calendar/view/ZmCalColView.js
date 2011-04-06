@@ -1466,7 +1466,32 @@ function(refreshApptLayout) {
 		this._setBounds(this._unionGridSepDivId, unionSepX, bodyY, this._daySepWidth, this._apptBodyDivHeight);
 	}
 
-	var currentX = 0;
+    this.layoutWorkingHours(this.workingHours);
+	this._layoutAllDayAppts();
+
+	this._apptBodyDivOffset = Dwt.toWindow(document.getElementById(this._apptBodyDivId), 0, 0, null, true);
+
+	if (this._scheduleMode || refreshApptLayout) {
+		this._layoutAppts();
+		if (this._scheduleMode) {
+			this._layoutUnionData();
+		}
+	}
+};
+
+ZmCalColView.prototype.layoutWorkingHours =
+function(workingHours){
+    if(!workingHours) {
+        workingHours = ZmCalBaseView.parseWorkingHours(ZmCalBaseView.getWorkingHours());
+        this.workingHours = workingHours;
+    }
+    var numCols = this._columns.length;
+    var dayWidth = this._calcColWidth(this._apptBodyDivWidth - Dwt.SCROLLBAR_WIDTH, numCols);
+
+    var allDayHeadingDiv = document.getElementById(this._allDayHeadingDivId);
+	var allDayHeadingDivHeight = Dwt.getSize(allDayHeadingDiv).y;
+
+    var currentX = 0;
 
 	for (var i = 0; i < numCols; i++) {
 		var col = this._columns[i];
@@ -1519,17 +1544,6 @@ function(refreshApptLayout) {
 		this._setBounds(col.headingDaySepDivId, currentX, 0, this._daySepWidth, allDayHeadingDivHeight + this._allDayDivHeight);
 		this._setBounds(col.daySepDivId, currentX, 0, this._daySepWidth, this._apptBodyDivHeight);
 		currentX += this._daySepWidth;
-	}
-
-	this._layoutAllDayAppts();
-
-	this._apptBodyDivOffset = Dwt.toWindow(document.getElementById(this._apptBodyDivId), 0, 0, null, true);
-
-	if (this._scheduleMode || refreshApptLayout) {
-		this._layoutAppts();
-		if (this._scheduleMode) {
-			this._layoutUnionData();
-		}
 	}
 };
 

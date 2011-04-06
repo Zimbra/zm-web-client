@@ -689,11 +689,15 @@ function() {
 	}
 
 	var settings = appCtxt.getSettings();
-	setting = settings.getSetting(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);
+	var setting = settings.getSetting(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);
 	if (setting) {
 		setting.addChangeListener(this._settingListener);
 	}
 	setting = settings.getSetting(ZmSetting.CAL_FIRST_DAY_OF_WEEK);
+	if (setting) {
+		setting.addChangeListener(this._settingListener);
+	}
+    setting = settings.getSetting(ZmSetting.CAL_WORKING_HOURS);
 	if (setting) {
 		setting.addChangeListener(this._settingListener);
 	}
@@ -723,6 +727,13 @@ function(ev) {
 		var date = minical.getDate();
 		controller.setDate(date, 0, true);
 	}
+    else if (setting.id == ZmSetting.CAL_WORKING_HOURS) {
+        var controller = AjxDispatcher.run("GetCalController");
+		var view = controller.getViewMgr().getCurrentView();
+        if(view) {
+            view.layoutWorkingHours();
+        }
+    }
 };
 
 /**
