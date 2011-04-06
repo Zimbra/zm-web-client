@@ -634,6 +634,31 @@ function(startTime, endTime) {
 };
 
 /**
+ * Checks whether the duration of this item is valid.
+ *
+ * @return	{Boolean}	<code>true</code> if the item is in duration.
+ */
+ZmCalItem.prototype.isValidDuration =
+function(){
+    var startOffset = AjxTimezone.getRule(this.timezone).standard.offset;
+    var endOffset = AjxTimezone.getRule(this.endTimezone).standard.offset;
+
+    var startTime = (this.getStartTime()-(startOffset*60000));
+    var endTime = (this.getEndTime()-(endOffset*60000));
+
+    if(startTime>endTime){
+        var msgDlg = appCtxt.getMsgDialog(true);
+        msgDlg.setMessage(ZmMsg.timezoneConflictMsg,DwtMessageDialog.WARNING_STYLE);
+        msgDlg.setTitle(ZmMsg.timezoneConflictTitle);
+        msgDlg.popup();
+        return false;
+    }
+
+    return true;
+
+}
+
+/**
  * @private
  */
 ZmCalItem.prototype.parseAlarmData =
