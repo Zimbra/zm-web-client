@@ -146,6 +146,13 @@ function(id){
 ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
 	var appt = this._composeView.getAppt(attId);
+
+
+    if(!appt.isValidDuration()){
+        this.enableToolbar(true);
+        return false;
+    }
+
 	if (appt) {
 
         if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
