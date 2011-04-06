@@ -703,9 +703,12 @@ function(ev) {
 	}
     else if (setting.id == ZmSetting.CAL_WORKING_HOURS) {
         var controller = AjxDispatcher.run("GetCalController");
-		var view = controller.getViewMgr().getCurrentView();
-        if(view) {
-            view.layoutWorkingHours();
+		var viewMgr = controller.getViewMgr();
+        if(viewMgr) {
+            var view = viewMgr.getCurrentView();
+            if(view) {
+                view.layoutWorkingHours();
+            }
         }
     }
 };
