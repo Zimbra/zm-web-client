@@ -990,6 +990,7 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 
 	var verb = "ACCEPT";
 	var needsRsvp = true;
+	var newPtst;
 
 	var toastMessage; //message to display after action is done.
 	
@@ -999,6 +1000,7 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 		case ZmOperation.REPLY_ACCEPT_NOTIFY:               //falls-through on purpose
 		case ZmOperation.REPLY_ACCEPT:
 			verb = "ACCEPT";
+			newPtst = ZmCalBaseItem.PSTATUS_ACCEPT;
 			toastMessage = ZmMsg.inviteAccepted;
 			break;
 		case ZmOperation.REPLY_DECLINE_IGNORE:				//falls-through on purpose
@@ -1006,6 +1008,7 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 		case ZmOperation.REPLY_DECLINE_NOTIFY:              //falls-through on purpose
 		case ZmOperation.REPLY_DECLINE:
 			verb = "DECLINE";
+			newPtst = ZmCalBaseItem.PSTATUS_DECLINED;
 			toastMessage = ZmMsg.inviteDeclined;
 			break;
 		case ZmOperation.REPLY_TENTATIVE_IGNORE:            //falls-through on purpose
@@ -1013,6 +1016,7 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 		case ZmOperation.REPLY_TENTATIVE_NOTIFY:            //falls-through on purpose
 		case ZmOperation.REPLY_TENTATIVE:
 			verb = "TENTATIVE";
+			newPtst = ZmCalBaseItem.PSTATUS_TENTATIVE;
 			toastMessage = ZmMsg.inviteAcceptedTentatively;
 			break;
 		case ZmOperation.REPLY_NEW_TIME:
@@ -1021,6 +1025,15 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 	request.verb = verb;
 
 	var inv = this._origMsg.invite;
+	//update the ptst to new one (we currently don't use the rest of the info in "replies" so it's ok to remove it for now)
+	//note - this updated value is used later in _handleResponseSendInviteReply, and also in the list view when re-displaying the message (not reloaded from server)
+	if (newPtst) {
+		inv.replies = [{
+			reply: [{
+				ptst: newPtst
+			}]
+		}];
+	}
 	if (this.getAddress(AjxEmailAddress.TO) == null && !inv.isOrganizer()) {
 		var to = inv.getOrganizerEmail() || inv.getSentBy();
 		if (to == null) {
@@ -1127,8 +1140,16 @@ function(callback, toastMessage, result) {
 	}
 
 	if (callback) {
-		callback.run(result);
+		callback.run(result, this._origMsg.getPtst()); // the ptst was updated in _sendInviteReply
 	}
+};
+
+/**
+ * returns this user's reply to this invite.
+ */
+ZmMailMsg.prototype.getPtst =
+function () {
+	return this.invite && this.invite.replies && this.invite.replies[0].reply[0].ptst;
 };
 
 ZmMailMsg.prototype.moveApptItem =
