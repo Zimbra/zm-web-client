@@ -1018,13 +1018,24 @@ function(ev) {
 		this._editInviteReply(ZmMailListController.INVITE_REPLY_MAP[type], ev._inviteComponentId, null, null, ev._inviteReplyFolderId);
 	}
 	else {
+		var callback = new AjxCallback(this, this._handleInviteReplySent);
 		var accountName = ac.multiAccounts && ac.accountList.mainAccount.name;
-		var resp = this._sendInviteReply(type, ev._inviteComponentId, null, accountName, null, ev._msg, ev._inviteReplyFolderId);
+		var resp = this._sendInviteReply(type, ev._inviteComponentId, null, accountName, null, ev._msg, ev._inviteReplyFolderId, callback);
 		if (resp && appCtxt.isChildWindow) {
 			window.close();
 		}
 	}
 	return false;
+};
+
+ZmMailListController.prototype._handleInviteReplySent =
+function(result, newPtst) {
+	var inviteMsgView = this.getReferenceView().getMsgView()._inviteMsgView;
+	if (!inviteMsgView || !newPtst) {
+		return;
+	}
+	inviteMsgView.enableToolbarButtons(newPtst);
+	inviteMsgView.hidePtstMsg();
 };
 
 ZmMailListController.prototype._shareHandler =

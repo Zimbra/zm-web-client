@@ -38,6 +38,7 @@ ZmInviteMsgView = function(params) {
 // Consts
 ZmInviteMsgView.REPLY_INVITE_EVENT	= "inviteReply";
 
+ZmInviteMsgView.APPT_TRASH_FOLDER = 3;
 
 ZmInviteMsgView.prototype.toString =
 function() {
@@ -77,6 +78,10 @@ function(msg) {
 	if (invite && invite.hasAcceptableComponents() &&
 		msg.folderId != ZmFolder.ID_SENT)
 	{
+		if (invite.components[0].ciFolder == ZmInviteMsgView.APPT_TRASH_FOLDER) {
+			//appointment was canceled (not necessarily on this instance, but by now it is canceled. Do not show the toolbar.
+			return;
+		}
 		if (invite.hasCounterMethod()) {
 			if (!this._counterToolbar) {
 				this._counterToolbar = this._getCounterToolbar();
@@ -349,10 +354,67 @@ function(reset) {
 	}
 };
 
+/**
+ * enables all invite toolbar buttons, except one that matches the current ptst
+ * @param ptst participant status
+ */
+ZmInviteMsgView.prototype.enableToolbarButtons =
+function(ptst) {
+	var disableButtonId;
+	switch (ptst) {
+		case ZmCalBaseItem.PSTATUS_ACCEPT:
+			disableButtonId = ZmOperation.REPLY_ACCEPT;
+			break;
+		case ZmCalBaseItem.PSTATUS_DECLINED:
+			disableButtonId = ZmOperation.REPLY_DECLINE;
+			break;
+		case ZmCalBaseItem.PSTATUS_TENTATIVE:
+			disableButtonId = ZmOperation.REPLY_TENTATIVE;
+			break;
+	}
+	var inviteToolbar = this.getInviteToolbar();
+
+	var buttonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE];
+	for (var i = 0; i < buttonIds.length; i++) {
+		var buttonId = buttonIds[i];
+		inviteToolbar.getButton(buttonId).setEnabled(buttonId != disableButtonId);
+	}
+};
+
+/**
+ * hide the participant status message (no longer relevant)
+ */
+ZmInviteMsgView.prototype.hidePtstMsg =
+function() {
+	var ptstMsgDiv = document.getElementById(this._ptstMsgId);
+	if (!ptstMsgDiv) {
+		return;
+	}
+	ptstMsgDiv.style.display = "none"; //hide the ptst message since it's no longer relevant (the user gets a new toast message)
+};
+
 ZmInviteMsgView.prototype.addSubs =
 function(subs, sentBy, sentByAddr, obo) {
     AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	subs.invite = this._invite;
+
+	var yourPtst = this._msg.getPtst();
+	switch (yourPtst) {
+		case ZmCalBaseItem.PSTATUS_ACCEPT:
+			subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteAccepted);
+			subs.ptstClassName = "InviteStatusAccept";
+			break;
+		case ZmCalBaseItem.PSTATUS_DECLINED:
+			subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteDeclined);
+			subs.ptstClassName = "InviteStatusDecline";
+			break;
+		case ZmCalBaseItem.PSTATUS_TENTATIVE:
+			subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteAcceptedTentatively);
+			subs.ptstClassName = "InviteStatusTentative";
+			break;
+	}
+	this.enableToolbarButtons(yourPtst);
+	subs.ptstMsgId = this._ptstMsgId = (this.parent._htmlElId + "_ptstMsg");
 
 	var isOrganizer = this._invite && this._invite.isOrganizer();
 	
