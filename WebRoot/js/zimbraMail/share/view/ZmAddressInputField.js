@@ -1032,10 +1032,10 @@ function() {
 // size the input to a bit more than its current content
 ZmAddressInputField.prototype._resizeInput =
 function() {
-
 	var val = AjxStringUtil.htmlEncode(this._input.value);
 	var holderWidth = Dwt.getSize(this._holder).x;
-	var strW = AjxStringUtil.getWidth(val);
+	var inputFontSize = DwtCssStyle.getProperty(this._input, "font-size");
+	var strW = AjxStringUtil.getWidth(val, false, inputFontSize);
 	if (AjxEnv.isWindows && AjxEnv.isFirefox) {
 		// FF/Win: fudge factor since string is longer in INPUT than when measured in SPAN
 		strW = strW * 1.2;
