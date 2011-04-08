@@ -1721,8 +1721,9 @@ function(node) {
 	if (this.isDL) {
 		this.canExpand = node.exp;
 		var emails = this.getEmails();
+		var ac = window.parentAppCtxt || window.appCtxt;
 		for (var i = 0; i < emails.length; i++) {
-			appCtxt.setIsExpandableDL(emails[i], this.canExpand);
+			ac.setIsExpandableDL(emails[i], this.canExpand);
 		}
 	}
 };

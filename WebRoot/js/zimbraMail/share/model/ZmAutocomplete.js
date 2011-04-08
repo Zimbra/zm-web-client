@@ -499,7 +499,8 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 			}
 			this.icon = this.isDL ? "Group" : ZmAutocomplete.AC_ICON[match.type];
 			this.canExpand = this.isDL && match.exp;
-			appCtxt.setIsExpandableDL(this.email, this.canExpand);
+			var ac = window.parentAppCtxt || window.appCtxt;
+			ac.setIsExpandableDL(this.email, this.canExpand);
 		}
 	}
 	this.score = (match.ranking && parseInt(match.ranking)) || 0;
