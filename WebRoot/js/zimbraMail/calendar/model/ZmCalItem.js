@@ -644,7 +644,7 @@ function(){
     var startTime = this.getStartTime();
     var endTime = this.getEndTime();
 
-    if(this.endTimezone){
+    if(this.endTimezone && this.endTimezone!=this.timezone){
       var startOffset = AjxTimezone.getRule(this.timezone).standard.offset;
       var endOffset = AjxTimezone.getRule(this.endTimezone).standard.offset;
 
