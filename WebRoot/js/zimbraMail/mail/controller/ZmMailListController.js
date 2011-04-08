@@ -1035,7 +1035,7 @@ function(result, newPtst) {
 		return;
 	}
 	inviteMsgView.enableToolbarButtons(newPtst);
-	inviteMsgView.hidePtstMsg();
+	inviteMsgView.updatePtstMsg(newPtst);
 };
 
 ZmMailListController.prototype._shareHandler =

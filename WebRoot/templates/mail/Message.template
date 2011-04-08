@@ -117,17 +117,15 @@
 			<tr>
                 <td>&nbsp;</td>
 				<td>
-					<$ if (data.ptstMsg) { $>
-						<div id="${ptstMsgId}" class="${ptstClassName}">
-							<table border=0 cellpadding=0 cellspacing=0>
-								<tr>
-									<td><$= AjxImg.getImageHtml(data.ptstIcon) $></td>
-									<td>&nbsp;</td>
-									<td>${ptstMsg}</td>
-								</tr>
-							</table>
-						</div>
-					<$ } $>
+					<div id="${ptstMsgBannerId}" class="${ptstClassName}" <$ if (!data.ptstMsg) { $> style="display:none" <$ } $> >
+						<table border=0 cellpadding=0 cellspacing=0>
+							<tr>
+								<td id="${ptstMsgIconId}"><$= AjxImg.getImageHtml(data.ptstIcon) $></td>
+								<td>&nbsp;</td>
+								<td id="${ptstMsgId}">${ptstMsg}</td>
+							</tr>
+						</table>
+					</div>
 					<$ if (data.intendedForMsg) { $>
 						<div class="${intendedForClassName}">
 							<table border=0 cellpadding=0 cellspacing=0>
