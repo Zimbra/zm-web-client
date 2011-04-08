@@ -1148,8 +1148,19 @@ function(callback, toastMessage, result) {
  * returns this user's reply to this invite.
  */
 ZmMailMsg.prototype.getPtst =
-function () {
+function() {
 	return this.invite && this.invite.replies && this.invite.replies[0].reply[0].ptst;
+};
+
+ZmMailMsg.APPT_TRASH_FOLDER = 3;
+
+ZmMailMsg.prototype.isInviteCanceled =
+function() {
+	var invite = this.invite;
+	if (!invite) {
+		return false;
+	}
+	return invite.components[0].ciFolder == ZmMailMsg.APPT_TRASH_FOLDER;
 };
 
 ZmMailMsg.prototype.moveApptItem =

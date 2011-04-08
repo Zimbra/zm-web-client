@@ -38,7 +38,6 @@ ZmInviteMsgView = function(params) {
 // Consts
 ZmInviteMsgView.REPLY_INVITE_EVENT	= "inviteReply";
 
-ZmInviteMsgView.APPT_TRASH_FOLDER = 3;
 
 ZmInviteMsgView.prototype.toString =
 function() {
@@ -78,7 +77,7 @@ function(msg) {
 	if (invite && invite.hasAcceptableComponents() &&
 		msg.folderId != ZmFolder.ID_SENT)
 	{
-		if (invite.components[0].ciFolder == ZmInviteMsgView.APPT_TRASH_FOLDER) {
+		if (msg.isInviteCanceled()) {
 			//appointment was canceled (not necessarily on this instance, but by now it is canceled. Do not show the toolbar.
 			return;
 		}
@@ -384,37 +383,49 @@ function(ptst) {
 /**
  * hide the participant status message (no longer relevant)
  */
-ZmInviteMsgView.prototype.hidePtstMsg =
-function() {
-	var ptstMsgDiv = document.getElementById(this._ptstMsgId);
-	if (!ptstMsgDiv) {
+ZmInviteMsgView.prototype.updatePtstMsg =
+function(ptst) {
+	var ptstMsgBannerDiv = document.getElementById(this._ptstMsgBannerId);
+	if (!ptstMsgBannerDiv) {
 		return;
 	}
-	ptstMsgDiv.style.display = "none"; //hide the ptst message since it's no longer relevant (the user gets a new toast message)
+	ptstMsgBannerDiv.className = ZmInviteMsgView.PTST_MSG[ptst].className;
+	ptstMsgBannerDiv.style.display = "block"; // since it might be display none if there's no message to begin with (this is the first time ptst is set by buttons)
+
+	var ptstMsgElement = document.getElementById(this._ptstMsgId);
+	ptstMsgElement.innerHTML = ZmInviteMsgView.PTST_MSG[ptst].msg;
+
+	var ptstIconImg = document.getElementById(this._ptstMsgIconId);
+	var icon = ZmCalItem.getParticipationStatusIcon(ptst);
+	ptstIconImg.innerHTML = AjxImg.getImageHtml(icon)
+
+
 };
+
+
+ZmInviteMsgView.PTST_MSG = [];
+ZmInviteMsgView.PTST_MSG[ZmCalBaseItem.PSTATUS_ACCEPT] = {msg: AjxMessageFormat.format(ZmMsg.inviteAccepted), className: "InviteStatusAccept"};
+ZmInviteMsgView.PTST_MSG[ZmCalBaseItem.PSTATUS_DECLINED] = {msg: AjxMessageFormat.format(ZmMsg.inviteDeclined), className: "InviteStatusDecline"};
+ZmInviteMsgView.PTST_MSG[ZmCalBaseItem.PSTATUS_TENTATIVE] = {msg: AjxMessageFormat.format(ZmMsg.inviteAcceptedTentatively), className: "InviteStatusTentative"};
 
 ZmInviteMsgView.prototype.addSubs =
 function(subs, sentBy, sentByAddr, obo) {
     AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	subs.invite = this._invite;
 
-	var yourPtst = this._msg.getPtst();
-	switch (yourPtst) {
-		case ZmCalBaseItem.PSTATUS_ACCEPT:
-			subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteAccepted);
-			subs.ptstClassName = "InviteStatusAccept";
-			break;
-		case ZmCalBaseItem.PSTATUS_DECLINED:
-			subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteDeclined);
-			subs.ptstClassName = "InviteStatusDecline";
-			break;
-		case ZmCalBaseItem.PSTATUS_TENTATIVE:
-			subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteAcceptedTentatively);
-			subs.ptstClassName = "InviteStatusTentative";
-			break;
+	if (!this._msg.isInviteCanceled()) {
+		var yourPtst = this._msg.getPtst();
+		this.enableToolbarButtons(yourPtst);
+		if (yourPtst) {
+			subs.ptstMsg = ZmInviteMsgView.PTST_MSG[yourPtst].msg;
+			subs.ptstClassName = ZmInviteMsgView.PTST_MSG[yourPtst].className;
+			subs.ptstIcon = ZmCalItem.getParticipationStatusIcon(yourPtst);
+		}
 	}
-	this.enableToolbarButtons(yourPtst);
+	//ids for updating later
+	subs.ptstMsgBannerId = this._ptstMsgBannerId = (this.parent._htmlElId + "_ptstMsgBanner");
 	subs.ptstMsgId = this._ptstMsgId = (this.parent._htmlElId + "_ptstMsg");
+	subs.ptstMsgIconId = this._ptstMsgIconId = (this.parent._htmlElId + "_ptstMsgIcon");
 
 	var isOrganizer = this._invite && this._invite.isOrganizer();
 	
