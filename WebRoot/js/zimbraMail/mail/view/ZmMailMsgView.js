@@ -720,8 +720,9 @@ function(msg, idoc, id, iframe) {
         }
         //Create a modifyprefs req and add the addr to modify
         if(addrToAdd) {
-            self.getTrustedSendersList().add(addrToAdd, null, true);
-            self._controller.addTrustedAddr(self.getTrustedSendersList(), new AjxCallback(self, self._addTrustedAddrCallback, [addrToAdd]), new AjxCallback(self, self._addTrustedAddrErrorCallback, [addrToAdd]));
+            var trustedList = self.getTrustedSendersList();
+            trustedList.add(addrToAdd, null, true);
+            self._controller.addTrustedAddr(trustedList.getArray(), new AjxCallback(self, self._addTrustedAddrCallback, [addrToAdd]), new AjxCallback(self, self._addTrustedAddrErrorCallback, [addrToAdd]));
         }
 
 		var images = idoc.getElementsByTagName("img");
