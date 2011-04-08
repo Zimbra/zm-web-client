@@ -636,15 +636,21 @@ function(startTime, endTime) {
 /**
  * Checks whether the duration of this item is valid.
  *
- * @return	{Boolean}	<code>true</code> if the item is in duration.
+ * @return	{Boolean}	<code>true</code> if the item possess valid duration.
  */
 ZmCalItem.prototype.isValidDuration =
 function(){
-    var startOffset = AjxTimezone.getRule(this.timezone).standard.offset;
-    var endOffset = AjxTimezone.getRule(this.endTimezone).standard.offset;
 
-    var startTime = (this.getStartTime()-(startOffset*60000));
-    var endTime = (this.getEndTime()-(endOffset*60000));
+    var startTime = this.getStartTime();
+    var endTime = this.getEndTime();
+
+    if(this.endTimezone){
+      var startOffset = AjxTimezone.getRule(this.timezone).standard.offset;
+      var endOffset = AjxTimezone.getRule(this.endTimezone).standard.offset;
+
+      startTime = startTime - (startOffset*60000);
+      endTime = endTime - (endOffset*60000);
+    }
 
     if(startTime>endTime){
         var msgDlg = appCtxt.getMsgDialog(true);
@@ -654,7 +660,8 @@ function(){
         return false;
     }
 
-    return true;
+
+  return true;
 
 }
 
