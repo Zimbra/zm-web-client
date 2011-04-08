@@ -107,7 +107,8 @@ function(list, contact, addr, isGroup) {
 	if (contact.isDL) {
 		email.isGroup = true;
 		email.canExpand = contact.canExpand;
-		appCtxt.setIsExpandableDL(addr, email.canExpand);
+		var ac = window.parentAppCtxt || window.appCtxt;
+		ac.setIsExpandableDL(addr, email.canExpand);
 	}
 	list.push(email);
 };

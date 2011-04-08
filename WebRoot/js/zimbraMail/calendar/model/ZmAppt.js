@@ -694,6 +694,7 @@ function(message) {
 	var rsvp;
 	var attendees = message.invite.getAttendees();
 	if (attendees) {
+		var ac = window.parentAppCtxt || window.appCtxt;
 		for (var i = 0; i < attendees.length; i++) {
 			var att = attendees[i];
 			var addr = att.a;
@@ -701,7 +702,7 @@ function(message) {
 			var email = new AjxEmailAddress(addr, null, name);
 			email.isGroup = att.isGroup;
 			email.canExpand = att.isGroup && att.exp;
-			appCtxt.setIsExpandableDL(att.a, email.canExpand);
+			ac.setIsExpandableDL(att.a, email.canExpand);
             if (att.rsvp) {
 				rsvp = true;
 			}

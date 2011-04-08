@@ -791,7 +791,8 @@ function() {
 		menu.enable(ZmOperation.DELETE, sel.length > 0);
 		menu.enable(ZmOperation.EDIT, Boolean(bubble));
 		var email = bubble && bubble.email;
-		menu.enable(ZmOperation.EXPAND, appCtxt.isExpandableDL(email));
+		var ac = window.parentAppCtxt || window.appCtxt;
+		menu.enable(ZmOperation.EXPAND, ac.isExpandableDL(email));
 		menu.enable(ZmOperation.CONTACT, Boolean(bubble));
 	}
 
@@ -1190,12 +1191,13 @@ function(asObjects) {
 
 	var addrs = [];
 	var bubbles = this._getBubbleList().getArray();
+	var ac = window.parentAppCtxt || window.appCtxt;
 	for (var i = 0; i < bubbles.length; i++) {
 		var bubble = bubbles[i];
 		var addr = bubble.address;
 		if (asObjects) {
 			var addrObj = AjxEmailAddress.parse(addr) || new AjxEmailAddress("", null, addr);
-			if (appCtxt.isExpandableDL(bubble.email) || (bubble.match && bubble.match.isDL)) {
+			if (ac.isExpandableDL(bubble.email) || (bubble.match && bubble.match.isDL)) {
 				addrObj.isGroup = true;
 				addrObj.canExpand = true;
 			}
@@ -1437,7 +1439,8 @@ ZmAddressBubble = function(params) {
 	var addrObj = this.addrObj = params.addrObj || AjxEmailAddress.parse(params.address || (match && match.email));
 	this.address = params.address || (addrObj && addrObj.toString());
 	this.email = params.email = params.email || (addrObj && addrObj.getAddress()) || "";
-	this.canExpand = params.canExpand = params.canExpand || appCtxt.isExpandableDL(this.email);
+	var ac = window.parentAppCtxt || window.appCtxt;
+	this.canExpand = params.canExpand = params.canExpand || ac.isExpandableDL(this.email);
 	
 	this._createHtml(params);
 
