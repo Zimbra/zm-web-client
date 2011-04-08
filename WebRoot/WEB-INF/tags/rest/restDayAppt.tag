@@ -61,7 +61,11 @@
 </c:if>
 <c:set var="needImages" value="${appt.otherAttendees or appt.exception or appt.hasTags or appt.isFlagged}"/>
 <c:set var="apptId" value="APPT${appt.id}${appt.startTime lt start ? start : appt.startTime}"/>
-
+<c:set var="fbaOpacity" value="1"/>
+<c:choose>
+    <c:when test="${appt.freeBusyActual eq 'F'}"><c:set var="fbaOpacity" value="0.4"/></c:when>
+    <c:when test="${appt.freeBusyActual eq 'T'}"><c:set var="fbaOpacity" value="0.6"/></c:when>
+</c:choose>
 <c:choose>
     <c:when test="${appt.allDay}">
         <c:if test="${appt.startTime lt start}"><c:set var="bleft" value='border-left:none;'/></c:if>
@@ -69,7 +73,7 @@
 
         <table onclick='zSelectRow(event,"${apptId}")' 
                 class='ZhCalDayAllDayAppt${needsAction ? 'New ' : ' '} ${color}${needsAction ? 'Dark' : 'Light'}'
-                width="100%" style="height:100%;${bleft}${bright}" border="0" cellspacing="0" cellpadding="1">
+                width="100%" style="height:100%;opacity:${fbaOpacity};${bleft}${bright}" border="0" cellspacing="0" cellpadding="1">
             <tr>
                 <td>
                     <a id="${apptId}" href="${fn:escapeXml(apptUrl)}">${fn:escapeXml(subject)}</a>
@@ -94,7 +98,7 @@
         </table>
     </c:when>
     <c:when test="${appt.duration gt 1000*60*15}">
-        <table onclick='zSelectRow(event,"${apptId}")' class='ZhCalDayAppt${needsAction ? 'New' : ''}' width="100%" style="height:100%;" border="0" cellspacing="0" cellpadding="2">
+        <table onclick='zSelectRow(event,"${apptId}")' class='ZhCalDayAppt${needsAction ? 'New' : ''}' width="100%" style="height:100%;opacity:${fbaOpacity};" border="0" cellspacing="0" cellpadding="2">
             <tr>
                 <td colspan="${needImages ? 1 : 2}" nowrap class='${color}${appt.partStatusNeedsAction ? 'Dark' : 'Light'}' valign="top">
                     <c:choose>
@@ -145,7 +149,7 @@
         </table>
     </c:when>
     <c:otherwise>
-        <table class='ZhCalDayAppt' width="100%" style="height:100%;" border="0" cellspacing="0" cellpadding="2">
+        <table class='ZhCalDayAppt' width="100%" style="height:100%;opacity:${fbaOpacity};" border="0" cellspacing="0" cellpadding="2">
             <tr>
                 <td class='${color}${needsAction ? 'Dark' : 'Light'}' valign="top">
                     <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
