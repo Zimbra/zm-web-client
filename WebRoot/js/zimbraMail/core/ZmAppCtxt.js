@@ -1754,3 +1754,11 @@ ZmAppCtxt.prototype.setIsExpandableDL =
 function(addr, isExpandableDL) {
 	this._isExpandableDL[addr] = isExpandableDL;
 };
+
+ZmAppCtxt.prototype.getUnitTestMgr =
+function() {
+	if (!this._unitTestMgr) {
+		this._unitTestMgr = new ZmUnitTestManager();
+	}
+	return this._unitTestMgr;
+};

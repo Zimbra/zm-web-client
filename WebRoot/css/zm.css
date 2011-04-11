@@ -4651,3 +4651,10 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .Icon{
 	width: 25px;
 }
+
+.ZmUnitTestPanel {
+	width: 100%;
+	height: 300;
+	border-top: 2px solid black;
+	background-color: white;
+}

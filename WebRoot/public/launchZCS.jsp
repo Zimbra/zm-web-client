@@ -105,6 +105,7 @@
 	String startApp = getParameter(request, "app", "");
 	String noSplashScreen = getParameter(request, "nss", null);
 	boolean isLeakDetectorOn = getParameter(request, "leak", "0").equals("1");
+	String unitTest = getParameter(request, "unittest", "");
 
 	String mode = getAttribute(request, "mode", null);
 	boolean isDevMode = mode != null && mode.equalsIgnoreCase("mjsf");
@@ -148,6 +149,7 @@
 	pageContext.setAttribute("isProdMode", !prodMode.equals(""));
 	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
 	pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
+	pageContext.setAttribute("unitTest", unitTest);
 	pageContext.setAttribute("editor", editor);
     pageContext.setAttribute("isCoverage", isCoverage);
 %>
@@ -164,6 +166,10 @@
 		<c:param name="customerDomain"	value="${param.customerDomain}" />
 	</c:if>		
 </c:url>" rel="stylesheet" type="text/css" />
+<c:if test="${not empty unitTest}">
+	<link rel="stylesheet" href="/zimbra/qunit/qunit.css" />
+	<script src="/zimbra/qunit/qunit.js"></script>
+</c:if>
 <zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
 <c:if test="${empty favIconUrl}">
 	<fmt:message key="favIconUrl" var="favIconUrl"/>
@@ -281,6 +287,9 @@
     	}
     	allPackages += "," + extraPackages;
     }
+    if (unitTest != null) {
+    	allPackages += ",UnitTest";
+    }
 
     String pprefix = isDevMode  && !isCoverage ? "public/jsp" : "js";
     String psuffix = isDevMode && !isCoverage ? ".jsp" : "_all.js";
@@ -397,7 +406,7 @@ for (var pkg in window.AjxTemplateMsg) {
 			settings:settings, batchInfoResponse:batchInfoResponse,
 			offlineMode:${isOfflineMode}, devMode:${isDevMode},
 			protocolMode:protocolMode, httpPort:"<%=httpPort%>", httpsPort:"<%=httpsPort%>",
-			noSplashScreen:noSplashScreen
+			noSplashScreen:noSplashScreen, unitTest:"${unitTest}"
 		};
 		ZmZimbraMail.run(params);
 	}

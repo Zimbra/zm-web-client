@@ -184,7 +184,7 @@
         <property name='skins.dir' value='${web.dir}/skins'/>
         <property name='help.dir' value='${web.dir}/help'/>
         <property name='build.help.dir' value='${build.web.dir}/help'/>
-        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/**,tiny_mce/**'/>
+        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/**,tiny_mce/**,qunit/**'/>
         <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp'/>
@@ -239,7 +239,7 @@
     <target name='prod'>
         <property name='build.prod' value='true'/>
         <property name='war.compress' value='true'/>
-        <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**,test/**'/>
+        <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**,test/**,qunit/**'/>
     </target>
 
     <target name='war'

@@ -688,6 +688,15 @@ function(params) {
 	else {
 		Dwt.hide(ZmId.SKIN_PEOPLE_SEARCH);
 	}
+	
+	if (params.unitTest) {
+		var utm = this._components[ZmAppViewMgr.C_UNITTEST] = window.unitTestManager;
+		var callback = new AjxCallback(this,
+			function() {
+				utm.runTests(params.unitTest);
+			});
+		this.addPostRenderCallback(callback, 6, 100);
+	}
 
 	this.getKeyMapMgr();	// make sure keyboard handling is initialized
 
