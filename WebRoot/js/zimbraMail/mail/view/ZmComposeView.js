@@ -2172,7 +2172,7 @@ function(type, addrVec, used) {
 		}
 		if (!this._useAcAddrBubbles) {
 			// calls implicit toString() on each addr object
-			var addrStr = addrs.join(AjxEmailAddress.SEPARATOR);
+			var addrStr = addrList.join(AjxEmailAddress.SEPARATOR);
 			this.setAddress(type, addrStr);
 		}
 	}
