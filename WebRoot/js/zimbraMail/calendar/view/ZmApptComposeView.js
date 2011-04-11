@@ -344,6 +344,14 @@ function(msg, style, cb, cbObj, cbArgs) {
     msgDialog.registerCallback(DwtDialog.OK_BUTTON, cb, cbObj, cbArgs);
 };
 
+ZmApptComposeView.prototype.showInvalidDurationMsg =
+function(msg, style, cb, cbObj, cbArgs) {
+        var msgDlg = appCtxt.getMsgDialog(true);
+        msgDlg.setMessage(ZmMsg.timezoneConflictMsg,DwtMessageDialog.WARNING_STYLE);
+        msgDlg.setTitle(ZmMsg.timezoneConflictTitle);
+        msgDlg.popup();
+}
+
 // Private / Protected methods
 
 ZmApptComposeView.prototype._initialize =

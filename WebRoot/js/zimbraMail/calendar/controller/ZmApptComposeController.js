@@ -149,6 +149,7 @@ function(attId) {
 
 
     if(!appt.isValidDuration()){
+        this._composeView.showInvalidDurationMsg();
         this.enableToolbar(true);
         return false;
     }

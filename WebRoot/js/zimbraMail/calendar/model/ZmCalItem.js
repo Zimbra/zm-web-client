@@ -652,16 +652,7 @@ function(){
       endTime = endTime - (endOffset*60000);
     }
 
-    if(startTime>endTime){
-        var msgDlg = appCtxt.getMsgDialog(true);
-        msgDlg.setMessage(ZmMsg.timezoneConflictMsg,DwtMessageDialog.WARNING_STYLE);
-        msgDlg.setTitle(ZmMsg.timezoneConflictTitle);
-        msgDlg.popup();
-        return false;
-    }
-
-
-  return true;
+    return (startTime<=endTime);
 
 }
 
