@@ -41,7 +41,7 @@
 				</td>
 			<$ } $>
             <td id='skin_container_help'>
-							<a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'><$= ZmMsg.help $></a>
+                <span id='skin_container_help_button'></span>
 			</td>
 			<td id='skin_container_logoff'>
 							<a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'>${logoutText}</a>

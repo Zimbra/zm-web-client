@@ -2013,7 +2013,104 @@ function() {
 		};
 		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data);
 	}
+	
+	el = document.getElementById("skin_container_help_button");
+	if (el) {
+		this._helpButton = this.getHelpButton(DwtShell.getShell(window));
+		this._helpButton.reparentHtmlElement("skin_container_help_button");
+	}
 };
+
+
+ZmZimbraMail.ONLINE_HELP_URL = "http://help.zimbra.com/?";
+ZmZimbraMail.NEW_FEATURES_URL = "http://www.zimbra.com/docs/shared/{VERSION}/whats-new.html?";
+
+/**
+* Adds a "help" submenu.
+*
+* @param {DwtComposite}		parent		the parent widget
+* @return {ZmActionMenu}	the menu
+*/
+ZmZimbraMail.prototype.getHelpButton =
+function(parent) {
+
+	var button = new DwtLinkButton({parent: parent, className: DwtButton.LINK_BUTTON_CLASS});
+	button.dontStealFocus();
+	button.setSize(Dwt.DEFAULT);
+	button.setAlign(DwtLabel.ALIGN_LEFT);
+	button.setText(ZmMsg.help);
+	var menu = new ZmPopupMenu(button);
+
+	var helpListener = new AjxListener(this, this._helpListener);
+	button.addSelectionListener(helpListener);
+
+	var mi = menu.createMenuItem("documentation", {text: ZmMsg.documentation});
+	mi.addSelectionListener(helpListener);
+
+	var mi = menu.createMenuItem("onlinehelp", {text: ZmMsg.onlineHelp});
+	mi.addSelectionListener(new AjxListener(this, this._onlineHelpListener));
+
+
+	mi = menu.createMenuItem("newFeatures", {text: ZmMsg.newFeatures});
+	mi.addSelectionListener(new AjxListener(this, this._newFeaturesListener));
+
+	menu.createSeparator();
+
+	mi = menu.createMenuItem("about", {text: ZmMsg.about});
+	mi.addSelectionListener(new AjxListener(this, this._aboutListener));
+
+	button.setMenu(menu);
+	return button;
+};
+
+ZmZimbraMail.prototype._helpListener =
+function(ev) {
+	ZmZimbraMail.helpLinkCallback();
+};
+
+
+ZmZimbraMail.prototype._getVersion =
+function() {
+	return appCtxt.get(ZmSetting.CLIENT_VERSION);
+};
+
+
+ZmZimbraMail.prototype._getQueryParams =
+function() {
+
+	var appName = appCtxt.getCurrentAppName().toLowerCase();
+	var prod = appCtxt.isDesktop ? "zd" : "zcs";
+	return ["a=", appName, "&p=", prod, "&v=", this._getVersion()].join("");
+};
+
+
+ZmZimbraMail.prototype._onlineHelpListener =
+function(ev) {
+	ZmZimbraMail.unloadHackCallback();
+	var url = [ZmZimbraMail.ONLINE_HELP_URL, this._getQueryParams()].join("");
+	window.open(url);
+};
+
+ZmZimbraMail.prototype._newFeaturesListener =
+function(ev) {
+	ZmZimbraMail.unloadHackCallback();
+	var baseUrl = ZmZimbraMail.NEW_FEATURES_URL.replace("{VERSION}", this._getVersion());
+	var url = [baseUrl, this._getQueryParams()].join("");
+	window.open(url);
+};
+
+ZmZimbraMail.prototype._aboutListener =
+function(ev) {
+	var dialog = appCtxt.getMsgDialog();
+	dialog.reset();
+	var version = this._getVersion();
+	var release = appCtxt.get(ZmSetting.CLIENT_RELEASE);
+	
+	dialog.setMessage(AjxMessageFormat.format(ZmMsg.aboutMessage, [version, release]), DwtMessageDialog.INFO_STYLE, "About");
+	dialog.popup();
+
+};
+
 
 ZmZimbraMail.prototype._initOfflineUserInfo =
 function() {

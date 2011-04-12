@@ -1809,6 +1809,7 @@ input.xform_field {
 .ZActive	.ZButtonTable .ZWidgetTitle		{					@ButtonText-active@		}
 .ZSelected	.ZButtonTable .ZWidgetTitle		{					@ButtonText-selected@	}
 
+#skin_container_help .ZButtonLink  {cursor: pointer}
 
 
 
