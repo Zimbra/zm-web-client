@@ -341,13 +341,15 @@
     </c:if>
     <tr>
         <td id="iframeBody${counter}" class=MsgBody valign='top' colspan="${needExtraCol ? 1 : 2}">
-            <app:body message="${message}" body="${body}" theBody="${theBody}" mailbox="${mailbox}" counter="${counter}"/>
+            <app:body message="${message}" body="${body}" theBody="${body.isTextHtml ? zm:stripHtmlComments(theBody) : theBody}" mailbox="${mailbox}" counter="${counter}"/>
             <c:set var="bodies" value="${zm:getAdditionalBodies(body,message)}"/>
             <c:if test="${not empty bodies}">
                 <br/>
                 <c:forEach var="addbody" items="${bodies}" varStatus="bstatus">
+                    <c:set var="html" value="${zm:getPartHtmlContent(addbody, message)}"/>
+                    <c:set var="messageBody" value="${addbody.isTextHtml ? zm:stripHtmlComments(html) : html}"/>
                     <app:body message="${message}" body="${addbody}" mailbox="${mailbox}"
-                              theBody="${zm:getPartHtmlContent(addbody, message)}" counter="${counter}X${bstatus.count}"/>
+                              theBody="${messageBody}" counter="${counter}X${bstatus.count}"/>
                 </c:forEach>
             </c:if>
             <c:if test="${not empty message.attachments}">
