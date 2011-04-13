@@ -159,6 +159,7 @@ ZmId.SKIN_USER_INFO					= "skin_container_username";
 ZmId.SKIN_TASKBAR					= "skin_container_taskbar";
 ZmId.SKIN_FOOTER					= "skin_footer";
 ZmId.SKIN_AD						= "skin_adsrvc";
+ZmId.SKIN_UNITTEST					= "skin_unittest";
 
 //
 // Literal IDs
