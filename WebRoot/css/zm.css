@@ -787,6 +787,7 @@ INPUT[type="text"].people_search_input {
 	overflow:hidden;
 	width:1px;
 	height:1px;
+	visibility:hidden;
 	#IFDEF MSIE
 	border: 0px !important;
 	outline: none !important;
