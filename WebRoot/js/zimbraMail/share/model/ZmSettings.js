@@ -926,8 +926,6 @@ function() {
 	//shared settings
 	this.registerSetting("MAIL_ALIASES",					{name:"zimbraMailAlias", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
 	this.registerSetting("ALLOW_FROM_ADDRESSES",			{name:"zimbraAllowFromAddress", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
-
-    ZmApp.runAppFunction("registerSettings", this);
 };
 
 /**
@@ -974,7 +972,7 @@ function() {
 	this.registerSetting("OFFLINE_WEBAPP_URI",				{name:"offlineWebappUri", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING});
 
 	// reset the help URI to zimbra.com for offline
-	this.registerSetting("HELP_URI",						{type:ZmSetting.T_CONFIG, defaultValue:"http://www.zimbra.com/desktop7/"});
+	this.registerSetting("HELP_URI",						{type:ZmSetting.T_CONFIG, defaultValue:"http://www.zimbra.com/desktop2/"});
 };
 
 /**

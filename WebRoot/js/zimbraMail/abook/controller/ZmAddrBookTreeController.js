@@ -114,30 +114,29 @@ function(parent, type, id) {
 	var deleteText = ZmMsg.del;
 	var addrBook = appCtxt.getById(id);
 	var nId = addrBook ? addrBook.nId : ZmOrganizer.normalizeId(id);
-	var isTrash = (nId == ZmFolder.ID_TRASH);
 
 	this.setVisibleIfExists(parent, ZmOperation.EMPTY_FOLDER, nId == ZmFolder.ID_TRASH);
 
-	if (isTrash) {
+	if (nId == ZmFolder.ID_TRASH) {
 		parent.enableAll(false);
-		parent.enable(ZmOperation.DELETE, false);
-		var hasContent = ((addrBook.numTotal > 0) || (addrBook.children && (addrBook.children.size() > 0)));
-		parent.enable(ZmOperation.EMPTY_FOLDER,hasContent);
-		parent.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);        
+        parent.enable(ZmOperation.DELETE, false);
+        var hasContent = ((addrBook.numTotal > 0) || (addrBook.children && (addrBook.children.size() > 0)));
+        parent.enable(ZmOperation.EMPTY_FOLDER,hasContent);
+        parent.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);        
 	} else {
 		parent.enableAll(true);        
-		if (addrBook) {
-			if (addrBook.isSystem()) {
-				parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
-			} else if (addrBook.link) {
-				parent.enable([ZmOperation.SHARE_ADDRBOOK], !addrBook.link || addrBook.isAdmin());
-			}
-			if (appCtxt.isOffline) {
-				var acct = addrBook.getAccount();
-				parent.enable([ZmOperation.SHARE_ADDRBOOK], !acct.isMain && acct.isZimbraAccount);
-			}
-		}
-	}
+        if (addrBook) {
+            if (addrBook.isSystem()) {
+                parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
+            } else if (addrBook.link) {
+                parent.enable([ZmOperation.SHARE_ADDRBOOK], !addrBook.link || addrBook.isAdmin());
+            }
+            if (appCtxt.isOffline) {
+                var acct = addrBook.getAccount();
+                parent.enable([ZmOperation.SHARE_ADDRBOOK], !acct.isMain && acct.isZimbraAccount);
+            }
+        }
+    }
 
 	if (addrBook) {
 		parent.enable(ZmOperation.EXPAND_ALL, (addrBook.size() > 0));
@@ -146,11 +145,6 @@ function(parent, type, id) {
 	var op = parent.getOp(ZmOperation.DELETE);
 	if (op) {
 		op.setText(deleteText);
-	}
-	op = parent.getOp(ZmOperation.RECOVER_DELETED_ITEMS);
-	if (op) {
-		op.setVisible(isTrash);
-		op.setEnabled(isTrash);
 	}
 
 	// we always enable sharing in case we're in multi-mbox mode
@@ -169,11 +163,6 @@ function() {
 	types[ZmOrganizer.SEARCH] = true;
 	types[this.type] = true;
 	return types;
-};
-
-ZmAddrBookTreeController.prototype._getSearchTypes =
-function(ev) {
-	return [ZmItem.CONTACT, ZmItem.GROUP];
 };
 
 /**
@@ -206,8 +195,7 @@ function() {
 			ZmOperation.RENAME_FOLDER,
 			ZmOperation.EDIT_PROPS,
 			ZmOperation.EXPAND_ALL,
-			ZmOperation.EMPTY_FOLDER,
-			ZmOperation.RECOVER_DELETED_ITEMS);
+            ZmOperation.EMPTY_FOLDER);
 
 	return ops;
 };
