@@ -1,0 +1,63 @@
+Unit testing in AJAX land is not straightforward. The code that you want to
+test is normally dependent on user interaction via the browser, which makes
+testing much more complex than simply passing input to a method and checking
+its output. Selenium is one tool that simulates browser interaction, however
+that is more of an automation tool suited to QA. We looked for a tool which
+would allow a developer to easily add unit tests, and to run them quickly,
+neither of which is afforded by Selenium. There are several frameworks out
+there for testing JS, but ZCS is large and complex enough that it seems much
+easier to develop our own. It is built on top of QUnit, which provides the UI
+and some methods for running a test that makes various assertions.
+
+Tests are grouped into collections called modules. For example, a group of
+tests that test the compose page might be placed in a module called Compose.
+Each one of those tests will also have a name.
+
+Below are instructions that should get you going. Note that this documentation
+is subject to lots of change as we iron out the lumpier details. Note that
+unit testing is only available within a dev build. Unit testing can be done
+with or without the "dev=1" argument.
+
+
+Running Tests
+-------------
+
+To run ZCS unit tests, add a query string argument "unittest". Set its value
+to "all" or "1" in order to run all tests. To run tests for one or more
+modules, put them in a list separated by commas.
+
+http://localhost:7070/zimbra/?unittest=all
+http://localhost:7070/zimbra/?unittest=1
+http://localhost:7070/zimbra/?unittest=Compose
+http://localhost:7070/zimbra/?unittest=Sample,Compose
+
+Sign in as user "unittest" with the usual password. That account has been set
+up with sample data to test against. If you sign in as another user, tests
+which rely on that data will not work.
+
+The easiest way to add a test or a module is to follow existing code. There is
+a file called Template.js that can be copied and modified to easily create a
+new module.
+
+
+Adding Modules and Tests
+------------------------
+
+Module names start with "Ut". To add a module "UtFoo":
+
+1. Create and edit the file UtFoo.js in .../js/zimbraMail/unittest
+
+2. Create the class UtFoo as a subclass of ZmUnitTestModule.
+
+3. For each test, create a subclass of ZmUnitTest. The name of your test class
+doesn't matter. By convention it starts with "UtFooTest".
+
+4. Implement a run() method within your test class. It should return true if 
+the test succeeded, and false otherwise.
+
+5. If appropriate, implement a cleanup() method within your test class.
+
+6. At the end of UtFoo.js, instantiate the module class in order to add the
+module and its tests:
+
+	new UtFoo();
