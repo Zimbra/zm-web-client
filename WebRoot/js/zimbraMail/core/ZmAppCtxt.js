@@ -1739,7 +1739,7 @@ function() {
  */
 ZmAppCtxt.prototype.isExpandableDL =
 function(addr) {
-	return addr && this._isExpandableDL[addr];
+	return addr && this._isExpandableDL[addr] && this.get("EXPAND_DL_ENABLED");
 };
 
 /**
