@@ -82,7 +82,7 @@ function(actionMenu, type, id) {
             actionMenu.enableAll(false);
             actionMenu.enable(ZmOperation.EMPTY_FOLDER,hasContent);
             actionMenu.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);            
-        } else {
+        }else{
             actionMenu.enableAll(true);
             var menuItem = actionMenu.getMenuItem(ZmOperation.DELETE);
             menuItem.setEnabled(!isNotebook && !isBriefcase && (!isLinkOrRemote || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
@@ -109,11 +109,6 @@ function(actionMenu, type, id) {
         if (op) {
             op.setText(deleteText);
         }
-        op = actionMenu.getOp(ZmOperation.RECOVER_DELETED_ITEMS);
-        if (op) {
-            op.setVisible(isTrash);
-            op.setEnabled(isTrash);
-        }
 
         // we always enable sharing in case we're in multi-mbox mode
         this._resetButtonPerSetting(actionMenu, ZmOperation.SHARE_BRIEFCASE, appCtxt.get(ZmSetting.SHARING_ENABLED));
@@ -125,11 +120,6 @@ function(actionMenu, type, id) {
 ZmBriefcaseTreeController.prototype._getAllowedSubTypes =
 function() {
 	return ZmTreeController.prototype._getAllowedSubTypes.call(this);
-};
-
-ZmBriefcaseTreeController.prototype._getSearchTypes =
-function(ev) {
-	return [ZmItem.BRIEFCASE_ITEM];
 };
 
 ZmBriefcaseTreeController.__isAllowed =
@@ -166,7 +156,7 @@ function() {
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.SHARE_BRIEFCASE);
 	}
-	ops.push(ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.EMPTY_FOLDER, ZmOperation.RECOVER_DELETED_ITEMS);    
+	ops.push(ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.EMPTY_FOLDER);    
 	return ops;
 };
 
