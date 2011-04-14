@@ -1101,7 +1101,8 @@ function(jsonObj, updateOrganizer, edited, callback, errorCallback, instanceDate
 								isDraft:false,
 								callback:respCallback,
 								errorCallback:errorCallback,
-								accountName:accountName });
+								accountName:accountName,
+								toastMessage: toastMessage}); //send it since in the child window, syncronious case, we dont' call the respCallback. Don't want to call it since I'm not sure of implications.
 
 	if (window.parentController) {
 		window.close();
@@ -1136,7 +1137,9 @@ function(callback, toastMessage, result) {
 	}
 
 	if (toastMessage) {
-		appCtxt.setStatusMsg(toastMessage);
+		//note - currently this is not called from child window, but just in case it will in the future.
+		var ctxt = parentAppCtxt || appCtxt; //show on parent window if this is a child window, since we close this child window on accept/decline/etc
+		ctxt.setStatusMsg(toastMessage);
 	}
 
 	if (callback) {
@@ -1541,6 +1544,9 @@ function(params) {
 		};
 		var resp = appCtxt.getAppController().sendRequest(newParams);
 		if (!resp) { return; } // bug fix #9154
+		if (params.toastMessage) {
+			parentAppCtxt.setStatusMsg(params.toastMessage); //show on parent window since this is a child window, since we close this child window on accept/decline/etc
+		}
 
 		if (resp.SendInviteReplyResponse) {
 			return resp.SendInviteReplyResponse;
