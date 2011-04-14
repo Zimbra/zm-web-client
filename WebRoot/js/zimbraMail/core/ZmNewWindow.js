@@ -624,6 +624,10 @@ function(msg) {
 		}
 	}
 
+	if (msg.invite) {
+		newMsg.invite = msg.invite;
+	}
+
 	return newMsg;
 };
 
