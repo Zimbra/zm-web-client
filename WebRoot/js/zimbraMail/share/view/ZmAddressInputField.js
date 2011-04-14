@@ -1456,11 +1456,6 @@ ZmAddressBubble = function(params) {
 		dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 		this.setDragSource(dragSrc);
 	}
-
-	var tooltip = params.tooltip || (appCtxt.get(ZmSetting.SHORT_ADDRESS) && AjxStringUtil.htmlEncode(params.address));
-	if (tooltip) {
-		this.setToolTipContent(tooltip);
-	}
 };
 
 ZmAddressBubble.prototype = new DwtControl;
@@ -1599,6 +1594,25 @@ ZmAddressBubble.prototype._dragOver =
 function(ev) {
 	this.addrInput._dragOver(ev);
 };
+
+/**
+ * Gets the tool tip content.
+ * 
+ * @param	{Object}	ev		the hover event
+ * @return	{String}	the tool tip content
+ */
+ZmAddressBubble.prototype.getToolTipContent =
+function(ev) {
+
+	var ttParams = {address:this.addrObj, ev:ev};
+	var ttCallback = new AjxCallback(this,
+		function(callback) {
+			appCtxt.getToolTipMgr().getToolTip(ZmToolTipMgr.PERSON, ttParams, callback);
+		});
+	return {callback:ttCallback};
+};
+
+
 
 
 /**

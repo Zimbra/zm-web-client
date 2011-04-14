@@ -1171,9 +1171,16 @@ function(htmlArr, idx, contact, field, colIdx, params) {
  */
 ZmContactSimpleView.prototype._getToolTip =
 function(params) {
-	return (params.item && (params.field == ZmItem.F_FROM)) ?
-			params.item.getToolTip(params.item.getAttr(ZmContact.F_email)) :
-			ZmContactsBaseView.prototype._getToolTip.apply(this, arguments);
+
+	var ttParams = {
+		contact:		params.item,
+		ev:				params.ev
+	};
+	var ttCallback = new AjxCallback(this,
+		function(callback) {
+			appCtxt.getToolTipMgr().getToolTip(ZmToolTipMgr.PERSON, ttParams, callback);
+		});
+	return {callback:ttCallback};
 };
 
 /**

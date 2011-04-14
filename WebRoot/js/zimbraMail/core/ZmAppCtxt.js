@@ -1456,7 +1456,7 @@ function(event, args, options) {
 		return;
 	}
 
-	this.getZimletMgr().notifyZimlets(event, args);
+	return this.getZimletMgr().notifyZimlets(event, args);
 };
 
 /**
@@ -1753,4 +1753,12 @@ function(addr) {
 ZmAppCtxt.prototype.setIsExpandableDL =
 function(addr, isExpandableDL) {
 	this._isExpandableDL[addr] = isExpandableDL;
+};
+
+ZmAppCtxt.prototype.getToolTipMgr =
+function() {
+	if (!this._toolTipMgr) {
+		this._toolTipMgr = new ZmToolTipMgr();
+	}
+	return this._toolTipMgr;
 };

@@ -77,6 +77,7 @@ AjxPackage.require("zimbraMail.share.view.dialog.ZmFolderPropsDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmQuickAddDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmTimeDialog");
 AjxPackage.require("zimbraMail.core.ZmNewWindow");
+AjxPackage.require("zimbraMail.core.ZmToolTipMgr");
 
 AjxPackage.require("zimbraMail.calendar.model.ZmCalMgr");
 AjxPackage.require("zimbraMail.tasks.model.ZmTaskMgr");

@@ -497,14 +497,18 @@ ZmConvListView.prototype._getToolTip =
 function(params) {
 	if (!params.item) { return; }
 
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
-		(params.field == ZmItem.F_PARTICIPANT || params.field == ZmItem.F_FROM))
-	{
-		var addr = params.item.participants && params.item.participants.get(params.match.participant || 0);
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && (params.field == ZmItem.F_PARTICIPANT || params.field == ZmItem.F_FROM)) { 
+		var parts = params.item.participants;
+		var matchedPart = params.match && params.match.participant;
+		var addr = parts && parts.get(matchedPart || 0);
 		if (!addr) { return ""; }
-		//Let a Zimlet[Email Zimlet] handle creating and displaying tooltip.
-		appCtxt.notifyZimlets("onHoverOverEmailInList", [addr, params.ev]);
-		return;//return null as Zimlet takes care of showing the tooltip
+
+		var ttParams = {address:addr, ev:params.ev};
+		var ttCallback = new AjxCallback(this,
+			function(callback) {
+				appCtxt.getToolTipMgr().getToolTip(ZmToolTipMgr.PERSON, ttParams, callback);
+			});
+		return {callback:ttCallback};
 	} else {
 		return ZmMailListView.prototype._getToolTip.apply(this, arguments);
 	}
