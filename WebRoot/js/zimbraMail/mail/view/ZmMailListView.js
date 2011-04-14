@@ -607,9 +607,16 @@ function(params) {
 		if (!addr) {
 			return;
 		}
-		//Let a Zimlet[Email Zimlet] handle creating and displaying tooltip.		
-		appCtxt.notifyZimlets("onHoverOverEmailInList", [addr, params.ev]);
-		return;
+		
+		var ttParams = {
+			address:	item.getAddress(AjxEmailAddress.FROM),
+			ev:			params.ev
+		}
+		var ttCallback = new AjxCallback(this,
+			function(callback) {
+				appCtxt.getToolTipMgr().getToolTip(ZmToolTipMgr.PERSON, ttParams, callback);
+			});
+		tooltip = {callback:ttCallback};
 	}
 	else if (field == ZmItem.F_SUBJECT) {
 		if ((item.type == ZmItem.MSG) && item.isInvite() && item.needsRsvp()) {

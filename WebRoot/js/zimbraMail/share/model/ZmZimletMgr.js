@@ -344,20 +344,26 @@ function(name) {
  * @param	{Object}	event	the event
  * @param	{Object}	args	the arguments
  * 
+ * @return true if any zimlet handled the notification
+ * 
  * @private
  */
 ZmZimletMgr.prototype.notifyZimlets =
 function(event, args) {
-	if (args && (!(args instanceof Array))) { args = [args]; }
+	
+	args = AjxUtil.toArray(args);
 
+	var handled = false;
 	for (var i = 0; i < this._ZIMLETS.length; ++i) {
 		var z = this._ZIMLETS[i].handlerObject;
-		if (z && (z instanceof ZmZimletBase) && z.getEnabled() &&
-		    (typeof z[event] == "function"))
-		{
-			z[event].apply(z, args);
+		if (z && (z instanceof ZmZimletBase) && z.getEnabled() && (typeof z[event] == "function")) {
+			if (z[event].apply(z, args)) {
+				handled = true;
+			}
 		}
 	}
+	
+	return handled;
 };
 
 /**

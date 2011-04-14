@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -1755,10 +1755,10 @@ function(addr, isExpandableDL) {
 	this._isExpandableDL[addr] = isExpandableDL;
 };
 
-ZmAppCtxt.prototype.getUnitTestMgr =
+ZmAppCtxt.prototype.getToolTipMgr =
 function() {
-	if (!this._unitTestMgr) {
-		this._unitTestMgr = new ZmUnitTestManager();
+	if (!this._toolTipMgr) {
+		this._toolTipMgr = new ZmToolTipMgr();
 	}
-	return this._unitTestMgr;
+	return this._toolTipMgr;
 };

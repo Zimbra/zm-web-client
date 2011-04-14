@@ -805,6 +805,27 @@ function() {
 	return "ZmContactChooserSourceListView";
 };
 
+ZmContactChooserSourceListView.prototype.getToolTipContent =
+function(ev) {
+	
+	if (this._hoveredItem) {
+		var ttParams = {
+			address:		this._hoveredItem.address,
+			contact:		this._hoveredItem.__contact,
+			ev:				ev,
+			noRightClick:	true
+		};
+		var ttCallback = new AjxCallback(this,
+			function(callback) {
+				appCtxt.getToolTipMgr().getToolTip(ZmToolTipMgr.PERSON, ttParams, callback);
+			});
+		return {callback:ttCallback};
+	}
+	else {
+		return "";
+	}
+};
+
 /**
  * @private
  */
@@ -827,19 +848,7 @@ function(ev, div) {
 	DwtChooserListView.prototype._mouseOverAction.call(this, ev, div);
 	var id = ev.target.id || div.id;
 	var item = this.getItemFromElement(div);
-
-	if (id && item) {
-		var contact = item.__contact;
-		if (contact) {
-			var tt = contact.getToolTip(item.address, contact.isGal);
-			this.setToolTipContent(tt);
-		} else {
-			this.setToolTipContent(item.address);
-		}
-	} else {
-		this.setToolTipContent(null);
-	}
-
+	this._hoveredItem = (id && item) ? item : null;
 	return true;
 };
 
