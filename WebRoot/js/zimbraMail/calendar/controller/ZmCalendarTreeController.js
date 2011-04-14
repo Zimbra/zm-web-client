@@ -177,12 +177,7 @@ function(actionMenu, type, id) {
 
 
         var moveItem = actionMenu.getItemById(ZmOperation.KEY_ID,ZmOperation.MOVE);
-        if(calendar.parent.nId == ZmOrganizer.ID_TRASH){
-            moveItem.setVisible(true);
-        }
-        else{
-            moveItem.setVisible(false);
-        }
+        if(moveItem){moveItem.setVisible((calendar.parent && calendar.parent.nId == ZmOrganizer.ID_TRASH));}
 
 
 		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
