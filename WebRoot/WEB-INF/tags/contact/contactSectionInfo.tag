@@ -40,9 +40,10 @@
     <c:if test="${not empty phoneFields}">
         <td valign="top" width="100%">
             <table width="100%" border="0" cellspacing='3'>
+                <c:set var="contactAttrs" value="${contact.attrs}"/>
                 <c:forTokens var="phoneField" varStatus="status" items="${phoneFields}" delims=",; ">
-                    <c:set var="phoneLabel" value="AB_FIELD_${phoneField}" />
-                    <app:contactPhone label="${phoneLabel}" phone="${phoneField}"/>
+                    <c:set var="phoneLabel" value="AB_FIELD_${phoneField}"/>
+                    <app:contactPhone label="${phoneLabel}" phone="${contactAttrs[phoneField]}"/>
                 </c:forTokens>
             </table>
         </td>

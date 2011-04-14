@@ -492,6 +492,11 @@ A:visited { color: blue; }
 	text-align: right;
 }
 
+.contactImage {
+    max-width: 48px;
+    max-height: 48px;
+}
+
 .editContactLabel {
 	@Text@  white-space:nowrap; overflow:hidden;
 	width: 18em;

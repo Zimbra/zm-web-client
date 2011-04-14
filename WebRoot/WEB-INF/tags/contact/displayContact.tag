@@ -29,7 +29,8 @@
         <table width="100%" cellspacing="0" cellpadding="0" style="padding:3px;">
         <tr>
         <td rowspan="2" width="20" align="center" valign="bottom" style="padding-right:3px;">
-            <app:img src="large/Img${contact.isGroup ? 'Group' : 'Person'}_48.png" altkey="${contact.imageAltKey}" />
+            <c:set var="imageUrl" value="/service/home/~/?id=${contact.id}&amp;part=${contact.imagePart}&amp;auth=co"/>
+            <app:img clazz="contactImage" src="${contact.imagePart != null ? imageUrl : (contact.isGroup ? 'large/ImgGroup_48.png' : 'large/ImgPerson_48.png')}" altkey="${contact.imageAltKey}" />
         </td>
         <td>
             <c:choose>
@@ -105,15 +106,57 @@
     <tr><td><br></td></tr>
 </c:if>
 
+<c:if test="${zm:anySet(contact, 'imAddress1 imAddress2 imAddress3')}">
+    <tr><td colspan="4" class="sectionLabel" valign="top"><fmt:message key="im"/></td></tr>
+    <tr>
+        <td width="5">&nbsp;</td>
+        <td class="contactOutput">
+            <table>
+            <app:contactIM address="${contact.IMAddress1}"/>
+            <app:contactIM address="${contact.IMAddress2}"/>
+            <app:contactIM address="${contact.IMAddress3}"/>
+            </table>    
+        </td>
+    </tr>
+    <tr><td><br></td></tr>
+</c:if>
+
 <c:if test="${zm:anySet(contact,'workStreet workCity workState workPostalCode workCountry workURL workPhone workPhone2 workFax assistantPhone companyPhone callbackPhone')}">
     <app:contactSectionInfo contact="${contact}" prefix="work" phoneFields="workPhone workPhone2 workFax assistantPhone companyPhone callbackPhone" />
 </c:if>
 <c:if test="${zm:anySet(contact,'homeStreet homeCity homeState homePostalCode homeCountry homeURL homePhone homePhone2 homeFax mobilePhone pager carPhone')}">
     <app:contactSectionInfo contact="${contact}" prefix="home" phoneFields="homePhone homePhone2 homeFax mobilePhone pager carPhone" />
 </c:if>
-
 <c:if test="${zm:anySet(contact,'otherStreet otherCity otherState otherPostalCode otherCountry otherURL otherPhone otherFax')}">
     <app:contactSectionInfo contact="${contact}" prefix="other" phoneFields="otherPhone otherFax" />
+</c:if>
+
+<c:if test="${!empty contact.birthday}">
+    <tr>
+        <td colspan="4" class="sectionLabel" valign="top"><fmt:message key="AB_FIELD_birthDay"/></td>
+    </tr>
+    <tr>
+        <td colspan="4" class="contactOutput">${contact.birthday}</td>
+    </tr>
+    <tr><td><br></td></tr>
+</c:if>
+<c:if test="${!empty contact.otherAnniversary}">
+    <tr>
+        <td colspan="4" class="sectionLabel" valign="top"><fmt:message key="AB_FIELD_otherAnniversary"/></td>
+    </tr>
+    <tr>
+        <td colspan="4" class="contactOutput">${contact.otherAnniversary}</td>
+    </tr>
+    <tr><td><br></td></tr>
+</c:if>
+<c:if test="${!empty contact.otherCustom1}">
+    <tr>
+        <td colspan="4" class="sectionLabel" valign="top"><fmt:message key="AB_FIELD_otherCustom1"/></td>
+    </tr>
+    <tr>
+        <td colspan="4" class="contactOutput">${contact.otherCustom1}</td> 
+    </tr>
+    <tr><td><br></td></tr>
 </c:if>
 <c:if test="${!empty contact.notes}">
     <tr>
@@ -125,6 +168,6 @@
 </c:if>
 </tbody>
 </table>
-    </td>
+</td>
 </tr>
 </table>
