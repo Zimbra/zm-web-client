@@ -420,7 +420,7 @@ function(subs, sentBy, sentByAddr, obo) {
     AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	subs.invite = this._invite;
 
-	if (!this._msg.isInviteCanceled()) {
+	if (!this._msg.isInviteCanceled() && !subs.invite.isOrganizer() && subs.invite.hasInviteReplyMethod()) {
 		var yourPtst = this._msg.getPtst();
 		this.enableToolbarButtons(yourPtst);
 		if (yourPtst) {
@@ -586,9 +586,12 @@ ZmInviteMsgView.prototype.getInviteToolbar =
 function() {
 	if (!this._inviteToolbar) {
 		this._inviteToolbar = this._createInviteToolbar();
+		//hide it till needed. Just in case after the fix I submit with this, some future change will call it before needs to be displayed.
+		this._inviteToolbar.setDisplay(Dwt.DISPLAY_NONE);
+		
 	}
 	return this._inviteToolbar;
-}
+};
 
 
 ZmInviteMsgView.prototype._createInviteToolbar =
