@@ -604,7 +604,7 @@ function(calItem, mode) {
         showScheduleView = true;
 	}else{
         // set the location *label*
-	    this._setAddresses(this._attInputField[ZmCalBaseItem.LOCATION], calItem.getLocation());
+	    this._attInputField[ZmCalBaseItem.LOCATION].setValue(calItem.getLocation());
     }
 
     // set the equipment attendee(s)
