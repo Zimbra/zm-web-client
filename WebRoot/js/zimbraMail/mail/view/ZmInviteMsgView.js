@@ -169,7 +169,7 @@ function(msg) {
  *    with the results returned.
  */
 ZmInviteMsgView.prototype.showMoreInfo =
-function() {
+function(callback) {
 	var apptId = this._invite && this._invite.hasAttendeeResponse() && this._invite.getAppointmentId();
 	if (apptId) {
 		var jsonObj = {GetAppointmentRequest:{_jsns:"urn:zimbraMail"}};
@@ -179,16 +179,19 @@ function() {
 		appCtxt.getAppController().sendRequest({
 			jsonObj: jsonObj,
 			asyncMode: true,
-			callback: (new AjxCallback(this, this._handleShowMoreInfo))
+			callback: (new AjxCallback(this, this._handleShowMoreInfo, [callback]))
 		});
 	}
 	else {
 		this._showFreeBusy();
+		if (callback) {
+			callback.run();
+		}
 	}
 };
 
 ZmInviteMsgView.prototype._handleShowMoreInfo =
-function(result) {
+function(callback, result) {
 	var appt = result && result.getResponse().GetAppointmentResponse.appt[0];
 	if (appt) {
 		var om = this.parent._objectManager;
@@ -213,6 +216,10 @@ function(result) {
 		var ptstEl = document.getElementById(this._ptstId);
         if(ptstEl)
             ptstEl.innerHTML = html.join("");
+	}
+
+	if (callback) {
+		callback.run();
 	}
 
 	this._showFreeBusy();
