@@ -1138,7 +1138,7 @@ function(callback, toastMessage, result) {
 
 	if (toastMessage) {
 		//note - currently this is not called from child window, but just in case it will in the future.
-		var ctxt = parentAppCtxt || appCtxt; //show on parent window if this is a child window, since we close this child window on accept/decline/etc
+		var ctxt = window.parentAppCtxt || window.appCtxt; //show on parent window if this is a child window, since we close this child window on accept/decline/etc
 		ctxt.setStatusMsg(toastMessage);
 	}
 
