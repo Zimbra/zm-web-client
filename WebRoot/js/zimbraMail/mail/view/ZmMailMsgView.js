@@ -383,16 +383,25 @@ function() {
 	return this._shareToolbar;
 };
 
+ZmMailMsgView.prototype._notifyZimletsNewMsg =
+function(msg, oldMsg) {
+	// notify zimlets that a new message has been opened
+	appCtxt.notifyZimlets("onMsgView", [msg, oldMsg, this]);
+};
+
+
 ZmMailMsgView.prototype._handleResponseSet =
 function(msg, oldMsg) {
 
+	var notifyZimletsInShowMore = false;
 	if (this._inviteMsgView) {
 		// always show F/B view if in stand-alone message view otherwise, check
 		// if reading pane is on
 		if (this._inviteMsgView.isActive() &&
 			(this._controller.isReadingPaneOn() || (this._controller instanceof ZmMsgController)))
 		{
-			this._inviteMsgView.showMoreInfo();
+			notifyZimletsInShowMore = true;
+			this._inviteMsgView.showMoreInfo(new AjxCallback(this, this._notifyZimletsNewMsg, [msg, oldMsg]));
 		}
 		else {
 			// resize the message view without F/B view
@@ -429,8 +438,9 @@ function(msg, oldMsg) {
 
 	}
 
-	// notify zimlets that a new message has been opened
-	appCtxt.notifyZimlets("onMsgView", [msg, oldMsg, this]);
+	if (!notifyZimletsInShowMore) {
+		this._notifyZimletsNewMsg(msg, oldMsg);
+	}
 
 	if (!msg.isDraft && msg.readReceiptRequested) {
 		this._controller.sendReadReceipt(msg);
