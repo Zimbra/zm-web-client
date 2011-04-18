@@ -763,3 +763,38 @@ div.ZaSearchBuilderOptionRemoveAll table  {
     background-image:url("@LogoImgDir@/AltBanner.png");
     background-repeat:repeat-x;
 }
+
+/***************
+ *
+ *	Toast -- popup info panel
+ *
+ ***************/
+
+.ZaToast {
+	position: absolute;
+	top: -10000; left: -10000;
+	overflow: visible;
+
+	/* change the following to set the top of the toaster
+	margin-top: 10px;  */
+}
+.ZaToastContent {
+	@ToastContent@
+}
+
+.ZaToastIcon {
+  float: left;
+  position : relative;
+}
+
+.ZaToastText {
+	max-width: 500px;
+	@ToastText@
+}
+
+.ZaToastText a.undo {
+	font-size: 0.75em;
+	margin-left: 20px;
+}
+
+.ZaToastBG 				{	@ToastContainer@		}
