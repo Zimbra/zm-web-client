@@ -355,6 +355,8 @@ function(str, acType, list, hasGal, cacheable, baseCache, account) {
 
 /**
  * @private
+ * 
+ * TODO: substring result matching for multiple tokens, eg "tim d"
  */
 ZmAutocomplete.prototype._checkCache =
 function(str, acType, account) {
@@ -364,6 +366,10 @@ function(str, acType, account) {
 	var list = cache && cache.list;
 	if (list !== null) { return list; }
 	if (str.length <= 1) { return null; }
+	
+	// bug 58913: don't do client-side substring matching since the server matches on
+	// fields that are not returned in the results
+	return null;
 
 	// forward matching: if we have complete results for a beginning part of this
 	// string, we can cull those down to results for this string
