@@ -609,7 +609,7 @@ function() {
 ZmScheduleAssistantView.prototype.isSuggestionsEnabled =
 function() {
     if(!appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) || !appCtxt.get(ZmSetting.GAL_ENABLED)) return false;
-    return this._manualOverrideFlag || (this._prefDialog ? (this._prefDialog.getPreference(ZmTimeSuggestionPrefDialog.DISABLE_SUGGESTIONS_FIELD) != 'true') : true);
+    return this._manualOverrideFlag || (this._prefDialog ? (this._prefDialog.getPreference(ZmTimeSuggestionPrefDialog.MANUAL_SUGGESTIONS_FIELD) != 'true') : true);
 };
 
 ZmScheduleAssistantView.prototype.overrideManualSuggestion =

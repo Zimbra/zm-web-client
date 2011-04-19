@@ -46,7 +46,7 @@ ZmTimeSuggestionPrefDialog.prototype.constructor = ZmTimeSuggestionPrefDialog;
 // Constants
 
 ZmTimeSuggestionPrefDialog.META_DATA_KEY = "MD_LOCATION_SEARCH_PREF";
-ZmTimeSuggestionPrefDialog.PREF_FIELDS = ["name", "site", "capacity", "building", "desc", "floor", "green_suggestions", "working_hrs_pref", "disablesuggestions", "suggestrooms"];
+ZmTimeSuggestionPrefDialog.PREF_FIELDS = ["name", "site", "capacity", "building", "desc", "floor", "green_suggestions", "working_hrs_pref", "manualsuggest", "suggestrooms"];
 
 // corresponding attributes for search command
 ZmTimeSuggestionPrefDialog.SF_ATTR = {};
@@ -75,15 +75,17 @@ ZmTimeSuggestionPrefDialog.INCLUDE_OPTIONS = [
 
 ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD = 'working_hrs_pref';
 ZmTimeSuggestionPrefDialog.GREEN_SUGGESTIONS_FIELD = 'green_suggestions';
-ZmTimeSuggestionPrefDialog.DISABLE_SUGGESTIONS_FIELD = 'disablesuggestions';
+ZmTimeSuggestionPrefDialog.MANUAL_SUGGESTIONS_FIELD = 'manualsuggest';
+ZmTimeSuggestionPrefDialog.AUTO_SUGGESTIONS_FIELD = 'autosuggest';
 ZmTimeSuggestionPrefDialog.SUGGESTROOMS_FIELD = 'suggestrooms';
 
 ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS = {};
 ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[ZmTimeSuggestionPrefDialog.GREEN_SUGGESTIONS_FIELD]      = true;
-ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[ZmTimeSuggestionPrefDialog.DISABLE_SUGGESTIONS_FIELD]    = true;    
+ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[ZmTimeSuggestionPrefDialog.MANUAL_SUGGESTIONS_FIELD]    = true;
 ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[ZmTimeSuggestionPrefDialog.SUGGESTROOMS_FIELD]           = true;
 
 ZmTimeSuggestionPrefDialog.DEFAULT_VAL = {};
+ZmTimeSuggestionPrefDialog.DEFAULT_VAL[ZmTimeSuggestionPrefDialog.MANUAL_SUGGESTIONS_FIELD] = 'true';
 ZmTimeSuggestionPrefDialog.DEFAULT_VAL[ZmTimeSuggestionPrefDialog.SUGGESTROOMS_FIELD] = 'true';
 ZmTimeSuggestionPrefDialog.DEFAULT_VAL[ZmTimeSuggestionPrefDialog.WORKING_HOURS_FIELD] = ZmTimeSuggestionPrefDialog.INCLUDE_ALL_WORKING_HOURS;
 
@@ -157,8 +159,8 @@ function(text) {
         this._prefs[id] = this.getPreferenceFieldValue(id);
     }
 
-    var disableCheckbox = document.getElementById(this.getHTMLElId() + "_" + ZmTimeSuggestionPrefDialog.DISABLE_SUGGESTIONS_FIELD);
-    disableCheckbox._dlgId = this._dlgId;
+    var manualSuggestCheckbox = document.getElementById(this.getHTMLElId() + "_" + ZmTimeSuggestionPrefDialog.MANUAL_SUGGESTIONS_FIELD);
+    manualSuggestCheckbox._dlgId = this._dlgId;
     var disableRoomCheckbox = document.getElementById(this.getHTMLElId() + "_" + ZmTimeSuggestionPrefDialog.SUGGESTROOMS_FIELD);
     disableRoomCheckbox._dlgId = this._dlgId;
     Dwt.setHandler(disableRoomCheckbox, DwtEvent.ONCLICK, ZmTimeSuggestionPrefDialog._handleRoomCheckbox);
