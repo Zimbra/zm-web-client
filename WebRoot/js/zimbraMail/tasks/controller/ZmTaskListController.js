@@ -418,13 +418,6 @@ function(view) {
 	this._initializeNavToolBar(view);
 };
 
-ZmTaskListController.prototype._initializeNavToolBar =
-function(view) {
-	this._toolbar[view].addOp(ZmOperation.TEXT);
-	var text = this._itemCountText[view] = this._toolbar[view].getButton(ZmOperation.TEXT);
-	text.addClassName("itemCountText");
-};
-
 /**
  * Create a Send/Recieve Button and add listeners
  * @param view

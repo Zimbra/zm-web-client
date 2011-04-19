@@ -1479,6 +1479,9 @@ function(view, forward, loadIndex, limit) {
 	var needMore = false;
 	var lv = this._listView[view];
 	var offset, max;
+
+    limit = limit || lv.getLimit(offset);
+
 	if (lv._isPageless) {
 		offset = this._list.size();
 		needMore = true;
@@ -1488,7 +1491,6 @@ function(view, forward, loadIndex, limit) {
 		this.currentPage = this.currentPage + (forward ? 1 : -1);
 		this.maxPage = Math.max(this.maxPage, this.currentPage);
 	}
-	limit = limit || lv.getLimit(offset);
 
 	// see if we're out of items and the server has more
 	if (needMore && this._list.hasMore()) {

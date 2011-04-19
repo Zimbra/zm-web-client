@@ -332,6 +332,13 @@ function(node, instNode) {
 		this.uniqStartTime = this.startDate.getTime();
 	} else {
         this.startDate = null;
+        if(comp && comp.s && comp.s[0].d) {
+            var start = comp.s[0].d;
+            var yyyy = parseInt(start.substr(0,4), 10);
+            var MM = parseInt(start.substr(4,2), 10);
+            var dd = parseInt(start.substr(6,2), 10);
+            this.startDate = new Date(yyyy, MM -1, dd);
+        }
     }
 
     if (nodeInst && nodeInst.dueDate) {
@@ -340,6 +347,13 @@ function(node, instNode) {
 		this.endDate = new Date(endTime);
 	} else {
         this.endDate = null;
+        if(comp && comp.e && comp.e[0].d) {
+            var end = comp.e[0].d;
+            var yyyy = parseInt(end.substr(0,4), 10);
+            var MM = parseInt(end.substr(4,2), 10);
+            var dd = parseInt(end.substr(6,2), 10);
+            this.endDate = new Date(yyyy, MM -1, dd);
+        }
     }
 
     if(node.alarm) this.alarm = node.alarm;
