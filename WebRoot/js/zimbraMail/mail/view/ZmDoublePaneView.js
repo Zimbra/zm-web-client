@@ -124,6 +124,12 @@ function() {
 	return this._msgView;
 };
 
+ZmDoublePaneView.prototype.getInviteMsgView =
+function() {
+	return this._msgView.getInviteMsgView();
+};
+
+
 ZmDoublePaneView.prototype.getSelectionCount = 
 function() {
 	return this._mailListView.getSelectionCount();

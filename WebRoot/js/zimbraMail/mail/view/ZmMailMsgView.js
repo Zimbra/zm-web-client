@@ -146,6 +146,12 @@ function() {
 	this.setScrollWithIframe(this._scrollWithIframe);
 };
 
+ZmMailMsgView.prototype.getInviteMsgView =
+function() {
+	return this._inviteMsgView;
+};
+
+
 ZmMailMsgView.prototype.preventSelection =
 function() {
 	return false;
