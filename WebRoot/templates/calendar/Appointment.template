@@ -1046,8 +1046,8 @@
             <tr>
                 <td align="right"><$= ZmMsg.suggestionsLabel $>&nbsp;</td>
                 <td>
-                    <input type='radio' name="suggestiontype" id='${id}_autosuggest' checked/>&nbsp;<label for="${id}_autosuggest"><$=ZmMsg.suggestionsAutomatic $></label>
-                    <input type='radio' name="suggestiontype" id='${id}_disablesuggestions'/>&nbsp;<label for="${id}_disablesuggestions"><$=ZmMsg.suggestionsManual $></label>
+                    <input type='radio' name="suggestiontype" id='${id}_autosuggest' />&nbsp;<label for="${id}_autosuggest"><$=ZmMsg.suggestionsAutomatic $></label>
+                    <input type='radio' name="suggestiontype" id='${id}_manualsuggest' checked/>&nbsp;<label for="${id}_disablesuggestions"><$=ZmMsg.suggestionsManual $></label>
                 </td>
             </tr>
         </tbody>
