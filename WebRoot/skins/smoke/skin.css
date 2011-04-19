@@ -33,7 +33,7 @@ body	{  @ChromeBg@ }
 #skin_spacing_top_row					{	height:36px; 
 											background-color: @AltC@;
 											background-image: -moz-linear-gradient(top, @AppC@, @AltC@); /* FF3.6 */
- 											background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AppC)@),color-stop(1, @AltC@)); /* Saf4+, Chrome */
+ 											background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AppC@),color-stop(1, @AltC@)); /* Saf4+, Chrome */
     										filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@AltC@'); /* IE6,IE7 */
     										-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@AltC@')"; /* IE8 */
 }
