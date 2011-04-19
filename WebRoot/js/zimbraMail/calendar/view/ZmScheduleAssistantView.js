@@ -212,7 +212,7 @@ function() {
 
 ZmScheduleAssistantView.prototype._miniCalSelectionListener =
 function(ev) {
-	if (ev.item instanceof DwtCalendar) {
+	if (ev.item instanceof ZmMiniCalendar) {
         var date = ev.detail;
         this.reset(date, this._attendees, true);
         //set edit view start/end date
