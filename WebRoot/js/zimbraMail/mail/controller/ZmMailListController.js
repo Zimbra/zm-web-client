@@ -1030,7 +1030,7 @@ function(ev) {
 
 ZmMailListController.prototype._handleInviteReplySent =
 function(result, newPtst) {
-	var inviteMsgView = this.getReferenceView().getMsgView()._inviteMsgView;
+	var inviteMsgView = this.getReferenceView().getInviteMsgView();
 	if (!inviteMsgView || !newPtst) {
 		return;
 	}
