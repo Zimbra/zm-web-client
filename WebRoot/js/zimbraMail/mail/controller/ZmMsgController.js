@@ -305,7 +305,7 @@ ZmMsgController.prototype._goToMsg =
 function(view, next) {
 	var controller = this._getParentListController();
 	if (controller) {
-		controller.pageItemSilently(this._msg, next);
+		controller.pageItemSilently(this._msg, next, this);
 	}
 };
 
