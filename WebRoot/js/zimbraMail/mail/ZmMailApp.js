@@ -1346,6 +1346,13 @@ function(creates, type, items, currList, sortBy, convs, last) {
 			var itemClass = eval(ZmList.ITEM_CLASS[type]);
 			item = itemClass.createFromDom(create, {}, true);
 		}
+		else if (item.type == ZmItem.MSG) {
+			// bug 47589: make sure conv knows its folders
+			var conv = appCtxt.getById(item.cid);
+			if (conv) {
+				conv.folders[item.folderId] = true;
+			}
+		}
 		items[item.id] = item;
 		result.gotMail = true;
 	}
