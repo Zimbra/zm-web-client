@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2010, 2011 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -1033,10 +1033,10 @@ function() {
 // size the input to a bit more than its current content
 ZmAddressInputField.prototype._resizeInput =
 function() {
+
 	var val = AjxStringUtil.htmlEncode(this._input.value);
 	var holderWidth = Dwt.getSize(this._holder).x;
-	var inputFontSize = DwtCssStyle.getProperty(this._input, "font-size");
-	var strW = AjxStringUtil.getWidth(val, false, inputFontSize);
+	var strW = AjxStringUtil.getWidth(val);
 	if (AjxEnv.isWindows && AjxEnv.isFirefox) {
 		// FF/Win: fudge factor since string is longer in INPUT than when measured in SPAN
 		strW = strW * 1.2;

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -662,33 +662,31 @@ function(creates) {
 	this._controller.runAppFunction("createNotify", false, creates);
 
 	for (var name in creates) {
-        if (creates.hasOwnProperty(name)) {
-            var list = creates[name];
-            for (var i = 0; i < list.length; i++) {
-                var create = list[i];
-                if (create._handled) { continue; }
-                // ignore create notif for item we already have (except tags, which can reuse IDs)
-                if (appCtxt.cacheGet(create.id) && name != "tag") { continue; }
-
-                DBG.println(AjxDebug.DBG1, "ZmRequestMgr: handling CREATE for node: " + name);
-                if (window.isNotifyDebugOn) {
-                    appCtxt.setNotifyDebug(["Handling NOTIFY: in ZmRequestMgr - _handleCreates handling CREATE for node: ", name].join(""));
-                }
-                if (name == "tag") {
-                    var account = appCtxt.multiAccounts && ZmOrganizer.parseId(create.id).account;
-                    var tagTree = appCtxt.getTagTree(account);
-                    if (tagTree) {
-                        tagTree.root.notifyCreate(create);
-                    }
-                } else if (name == "folder" || name == "search" || name == "link") {
-                    var parentId = create.l;
-                    var parent = appCtxt.getById(parentId);
-                    if (parent && parent.notifyCreate && parent.type != ZmOrganizer.TAG) { // bug #37148
-                        parent.notifyCreate(create, name);
-                    }
-                }
+		var list = creates[name];
+		for (var i = 0; i < list.length; i++) {
+			var create = list[i];
+			if (create._handled) { continue; }
+			// ignore create notif for item we already have (except tags, which can reuse IDs)
+			if (appCtxt.cacheGet(create.id) && name != "tag") { continue; }
+	
+			DBG.println(AjxDebug.DBG1, "ZmRequestMgr: handling CREATE for node: " + name);
+            if (window.isNotifyDebugOn) {
+    			appCtxt.setNotifyDebug(["Handling NOTIFY: in ZmRequestMgr - _handleCreates handling CREATE for node: ", name].join(""));
             }
-        }
+			if (name == "tag") {
+				var account = appCtxt.multiAccounts && ZmOrganizer.parseId(create.id).account;
+				var tagTree = appCtxt.getTagTree(account);
+				if (tagTree) {
+					tagTree.root.notifyCreate(create);
+				}
+			} else if (name == "folder" || name == "search" || name == "link") {
+				var parentId = create.l;
+				var parent = appCtxt.getById(parentId);
+				if (parent && parent.notifyCreate && parent.type != ZmOrganizer.TAG) { // bug #37148
+					parent.notifyCreate(create, name);
+				}
+			}
+		}
 	}
 };
 

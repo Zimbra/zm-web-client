@@ -1456,7 +1456,7 @@ function(event, args, options) {
 		return;
 	}
 
-	this.getZimletMgr().notifyZimlets(event, args);
+	return this.getZimletMgr().notifyZimlets(event, args);
 };
 
 /**
@@ -1739,7 +1739,7 @@ function() {
  */
 ZmAppCtxt.prototype.isExpandableDL =
 function(addr) {
-	return addr && this._isExpandableDL[addr] && this.get("EXPAND_DL_ENABLED");
+	return addr && this._isExpandableDL[addr];
 };
 
 /**

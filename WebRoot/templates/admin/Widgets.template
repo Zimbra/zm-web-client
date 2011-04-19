@@ -13,11 +13,3 @@
     <td id='${id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
   </tr></table>
 </template>
-<template id='admin.Widgets#ZaToast' class='ZaToastInfo'>
-	<div class='ZaToastBG'>
-		<div class='ZaToastContent'>
-			<div id='${id}_icon' class='ZaToastIcon'></div>
-			<div id='${id}_text' class='ZaToastText'></div>
-		</div>
-	</div>
-</template>
