@@ -570,12 +570,17 @@ function(zimletArray, zimletNames, isJS) {
 
 	// add link to aggregated files
 	if (!window.appDevMode) {
+		var cosId = null;
+		if (appCtxt.getSettings() && appCtxt.getSettings().getInfoResponse && appCtxt.getSettings().getInfoResponse.cos) {
+			cosId = appCtxt.getSettings().getInfoResponse.cos.id;
+		}
 		var extension = (!AjxEnv.isIE || (!AjxEnv.isIE6 && AjxEnv.isIE6up)) ? appExtension : "";
 		includes.unshift([
 			"/service/zimlet/res/Zimlets-nodev_all",
 			(isJS ? (".js" + extension) : ".css"),
 			(languageId ? "?language=" + languageId : ""),
-			(countryId ? "&country=" + countryId : "")
+			(countryId ? "&country=" + countryId : ""),
+			(cosId ? "&cosId=" + cosId : "")  // For an explanation of why we add cosId here, please see bug #58979
 		].join(""));
 	}
 
