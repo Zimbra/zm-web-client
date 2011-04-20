@@ -656,7 +656,7 @@ function(ev) {
 			if (appCtxt.getById(folderId) &&
 				appCtxt.getById(folderId).isRemote())
 			{
-				folderId = appCtxt.getById(folderId)._remoteId; //getRemoteId();
+				folderId = appCtxt.getById(folderId).getRemoteId();
 			}
 
 			if (appCtxt.isOffline) {
@@ -695,10 +695,30 @@ function(ev) {
             this.checkTaskReplenishListView();
 		}
 	} else if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
-        for (var i = 0; i < items.length; i++) {
-			this.removeItem(items[i], true);
+        var needsSort = false;
+        for (var i = 0, len = items.length; i < len; i++) {
+			var item = items[i];
+            var movedHere = item.type == ZmId.ITEM_CONV ? item.folders[this._folderId] : item.folderId == this._folderId;
+			if (movedHere && ev.event == ZmEvent.E_MOVE) {
+				// We've moved the item into this folder
+				if (this._getRowIndex(item) === null) { // Not already here
+					this.addItem(item);
+					needsSort = true;
+				}
+			} else {
+				this.removeItem(item, true, ev.batchMode);
+				// if we've removed it from the view, we should remove it from the reference
+				// list as well so it doesn't get resurrected via replenishment *unless*
+				// we're dealing with a canonical list (i.e. contacts)
+				var itemList = this.getItemList();
+				if (ev.event != ZmEvent.E_MOVE || !itemList.isCanonical) {
+					itemList.remove(item);
+				}
+			}
 		}
-		this.checkTaskReplenishListView();
+        if(needsSort) {
+            this.checkTaskReplenishListView();
+        }
 		this._controller._resetToolbarOperations();
 		if(this._controller.isReadingPaneOn()) {
 			this._controller.getTaskMultiView().getTaskView().reset();
