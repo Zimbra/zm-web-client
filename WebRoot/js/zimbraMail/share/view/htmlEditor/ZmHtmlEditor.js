@@ -177,8 +177,18 @@ function(insertFontStyle, onlyInnerContent ) {
 	// (which shouldnt be in base).
 	var content;
 	if (this._mode == DwtHtmlEditor.HTML) {
+		AjxDebug.println(AjxDebug.REPLY, "ZmHtmlEditor.prototype.getContent in HTML mode");
 		var iframeDoc = this._getIframeDoc();
-		var html = this._pendingContent || (iframeDoc && iframeDoc.body ? (this._getIframeDoc().body.innerHTML) : "");
+
+		var html = (iframeDoc && iframeDoc.body && iframeDoc.body.innerHTML) || "";
+		AjxDebug.println(AjxDebug.REPLY, "content from iframe body: " + AjxStringUtil.htmlEncode(html.substr(0,200)));
+		this._blankDiv = this._blankDiv || this._getFontStyle("");
+		this._blankHtml = this._blankHtml || this._embedHtmlContent("", true);
+		if (this._pendingContent && (!html || html == this._blankDiv || html == this._blankHtml)) {
+			html = this._pendingContent;
+			AjxDebug.println(AjxDebug.REPLY, "using pending content: " + AjxStringUtil.htmlEncode(html.substr(0,200)));
+			AjxDebug.println(AjxDebug.REPLY, "HTML mode inited: " + this._htmlModeInited);
+		}
 		content = this._embedHtmlContent(html, insertFontStyle, onlyInnerContent);
 		if (this.ACE_ENABLED) {
 			content = this._serializeAceObjects(content);

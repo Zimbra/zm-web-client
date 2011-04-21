@@ -196,12 +196,15 @@ ZmMetaData.prototype._handleLoad =
 function(callback, result) {
 	this._sections = {};
 
-	var metaDataResp = (this._itemId != null)
-		? result.getResponse().BatchResponse.GetCustomMetadataResponse
-		: result.getResponse().BatchResponse.GetMailboxMetadataResponse;
-	for (var i = 0; i < metaDataResp.length; i++) {
-		var data = metaDataResp[i].meta[0];
-		this._sections[data.section] = data._attrs;
+	var br = result.getResponse().BatchResponse;
+	if (br) {
+		var metaDataResp = (this._itemId != null) ? br.GetCustomMetadataResponse : br.GetMailboxMetadataResponse;
+		if (metaDataResp && metaDataResp.length) {
+			for (var i = 0; i < metaDataResp.length; i++) {
+				var data = metaDataResp[i].meta[0];
+				this._sections[data.section] = data._attrs;
+			}
+		}
 	}
 
 	if (callback) {
