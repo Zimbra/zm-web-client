@@ -810,7 +810,7 @@ function(delMsg) {
 
     if (delMsg && delMsg.isSent) {
       var folder = delMsg.folderId ? ac.getById(delMsg.folderId) : null;
-	  if (folder && folder.isRemote() && !folder.isPermAllowed(ZmShare.PERM_DELETE)) {
+	  if (folder && folder.isRemote() && !folder.isPermAllowed(ZmOrganizer.PERM_DELETE)) {
          return;   //remote folder no permission to delete, exit
 	  }
     }
