@@ -2044,7 +2044,7 @@ function(parent) {
 	var helpListener = new AjxListener(this, this._helpListener);
 	button.addSelectionListener(helpListener);
 
-	var mi = menu.createMenuItem("documentation", {text: ZmMsg.documentation});
+	var mi = menu.createMenuItem("documentation", {text: ZmMsg.productHelp});
 	mi.addSelectionListener(helpListener);
 
 	var mi = menu.createMenuItem("onlinehelp", {text: ZmMsg.onlineHelp});
