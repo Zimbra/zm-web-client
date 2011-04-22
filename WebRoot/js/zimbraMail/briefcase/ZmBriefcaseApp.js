@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -112,8 +112,8 @@ function() {
 ZmBriefcaseApp.prototype._registerSettings =
 function(settings) {
 	settings = settings || appCtxt.getSettings();
-	settings.registerSetting("SPREADSHEET_ENABLED",	{name:"zimbraFeatureBriefcaseSpreadsheetEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true});
-	settings.registerSetting("SLIDES_ENABLED",		{name:"zimbraFeatureBriefcaseSlidesEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("SPREADSHEET_ENABLED",	{name:"zimbraFeatureBriefcaseSpreadsheetEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("SLIDES_ENABLED",		{name:"zimbraFeatureBriefcaseSlidesEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("DOCS_ENABLED",		{name:"zimbraFeatureBriefcaseDocsEnabled", type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:true});
     settings.registerSetting("PREVIEW_ENABLED",		{ type:ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("READING_PANE_LOCATION_BRIEFCASE",		{name:"zimbraPrefBriefcaseReadingPaneLocation", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.RP_BOTTOM, isImplicit:true});
