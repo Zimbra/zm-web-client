@@ -1121,6 +1121,7 @@ function(signatures) {
 // ZmSignatureEditor
 
 ZmSignatureEditor = function(parent) {
+    this.setTextAreaId("TEXTAREA_SIGNATURE");
 	ZmHtmlEditor.call(this, parent);
 };
 
