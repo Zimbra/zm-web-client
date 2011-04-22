@@ -111,6 +111,8 @@ AjxPackage.require("ajax.dwt.widgets.DwtText");
 AjxPackage.require("ajax.dwt.widgets.DwtIframe");
 AjxPackage.require("ajax.dwt.widgets.DwtForm");
 
+AjxPackage.require("ajax.dwt.managers.DwtClipboardManager");
+
 AjxPackage.require("zimbra.csfe.ZmBatchCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeException");
@@ -124,3 +126,4 @@ AjxPackage.require("zimbraMail.share.model.ZmSetting");
 AjxPackage.require("zimbraMail.core.ZmAppCtxt");
 AjxPackage.require("zimbraMail.core.ZmOperation");
 AjxPackage.require("zimbraMail.core.ZmMimeTable");
+

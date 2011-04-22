@@ -65,6 +65,7 @@ ZmAddressInputField = function(params) {
 	this._listeners[ZmOperation.EDIT]			= new AjxListener(null, ZmAddressInputField.prototype._editListener);
 	this._listeners[ZmOperation.EXPAND]			= new AjxListener(null, ZmAddressInputField.prototype._expandListener);
 	this._listeners[ZmOperation.CONTACT]		= new AjxListener(null, ZmAddressInputField.prototype._contactListener);
+	this._listeners[ZmOperation.COPY_TEXT]      = new AjxListener(null, ZmAddressInputField.prototype._copyListener);
 
 	if (ZmAddressInputField.AUTO_SELECT_TEXT) {
 		this._keyDownListener = new AjxListener(this, this._handleKeyDown);
@@ -807,7 +808,8 @@ function() {
 		ZmOperation.DELETE,
 		ZmOperation.EDIT,
 		ZmOperation.EXPAND,
-		ZmOperation.CONTACT
+		ZmOperation.CONTACT,
+        ZmOperation.COPY_TEXT
 	];
 };
 
@@ -866,6 +868,30 @@ function(ev) {
 		var loadCallback = new AjxCallback(addrInput, addrInput._handleLoadContactListener);
 		AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
 	}
+};
+
+/**
+ * Copy operation handler that helps in copying the emaill address to the clipboard
+ */
+ZmAddressInputField.prototype._copyListener =
+function() {
+    var copyText;
+	var addrInput = ZmAddressInputField.menuContext.addrInput;
+	var sel = addrInput && addrInput.getSelection();
+	if (sel && sel.length) {
+        var addresses = [];
+        for (var i = 0; i < sel.length; i++) {
+            var address = sel[i].address;
+            if (address) {
+                addresses.push(address);
+            }
+        }
+        if (addresses.length) {copyText = addresses.join(AjxEmailAddress.separator)};
+	}
+
+    if (copyText) {
+        DwtClipboardManager.getInstance().copyToClipboard(copyText);
+    }
 };
 
 /**
