@@ -1588,10 +1588,6 @@ function(perm) {
 ZmOrganizer.prototype.isReadOnly =
 function() {
 	if (this._isReadOnly == null) {
-		if (this.isFeed()) {
-			this._isReadOnly = true;
-			return this._isReadOnly;
-		}
 		var share = this.getMainShare();
 		this._isReadOnly = (share != null)
 			? (this.isRemote() && !share.isWrite())

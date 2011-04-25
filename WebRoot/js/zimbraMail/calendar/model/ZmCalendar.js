@@ -314,3 +314,17 @@ function(acct) {
 	].join("");
 };
 
+
+/**
+ * Checks if the calendar is read-only.
+ *
+ * @return	{Boolean}	<code>true</code> if read-only
+ */
+ZmCalendar.prototype.isReadOnly =
+function() {
+	if (this.isFeed()) {
+		return true; //feed calendar is read-only
+	}
+	return ZmOrganizer.prototype.isReadOnly.call(this);
+};
+
