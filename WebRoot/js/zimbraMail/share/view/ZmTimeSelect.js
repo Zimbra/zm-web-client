@@ -739,13 +739,21 @@ function() {
 
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Appointment#ApptTimeInput", {id: this._htmlElId});
 
+    var inputId = Dwt.getNextId();
+    if (this.id && this.id == ZmTimeSelect.START) {
+       inputId += "_startTimeInput";
+    }
+    else if (this.id && this.id == ZmTimeSelect.END) {
+        inputId += "_endTimeInput";
+    }
     //create time select input field
     var params = {
         parent: this,
         parentElement: (this._htmlElId + "_timeSelectInput"),
         type: DwtInputField.STRING,
         errorIconStyle: DwtInputField.ERROR_ICON_NONE,
-        validationStyle: DwtInputField.CONTINUAL_VALIDATION
+        validationStyle: DwtInputField.CONTINUAL_VALIDATION,
+        inputId: inputId
     };
 
     this._timeSelectInput = new DwtInputField(params);

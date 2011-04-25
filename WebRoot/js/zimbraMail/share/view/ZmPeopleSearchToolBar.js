@@ -44,7 +44,7 @@ function() {
 	var inputFieldId = this._htmlElId + "_inputField";
 	var inputField = document.getElementById(inputFieldId);
 	if (inputField) {
-		this._searchField = new DwtInputField({parent:this, hint:ZmMsg.peopleSearchHint, inputId:ZmId.SEARCH_INPUT});
+		this._searchField = new DwtInputField({parent:this, hint:ZmMsg.peopleSearchHint, inputId:ZmId.PEOPLE_SEARCH_INPUTFIELD});
 		var inputEl = this._searchField.getInputElement();
 		Dwt.addClass(inputEl, "people_search_input");
 		this._searchField.reparentHtmlElement(inputFieldId);
