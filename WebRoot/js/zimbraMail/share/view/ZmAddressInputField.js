@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2010, 2011 Zimbra, Inc.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -65,6 +65,7 @@ ZmAddressInputField = function(params) {
 	this._listeners[ZmOperation.EDIT]			= new AjxListener(null, ZmAddressInputField.prototype._editListener);
 	this._listeners[ZmOperation.EXPAND]			= new AjxListener(null, ZmAddressInputField.prototype._expandListener);
 	this._listeners[ZmOperation.CONTACT]		= new AjxListener(null, ZmAddressInputField.prototype._contactListener);
+	this._listeners[ZmOperation.COPY_TEXT]      = new AjxListener(null, ZmAddressInputField.prototype._copyListener);
 
 	if (ZmAddressInputField.AUTO_SELECT_TEXT) {
 		this._keyDownListener = new AjxListener(this, this._handleKeyDown);
@@ -807,7 +808,8 @@ function() {
 		ZmOperation.DELETE,
 		ZmOperation.EDIT,
 		ZmOperation.EXPAND,
-		ZmOperation.CONTACT
+		ZmOperation.CONTACT,
+        ZmOperation.COPY_TEXT
 	];
 };
 
@@ -866,6 +868,30 @@ function(ev) {
 		var loadCallback = new AjxCallback(addrInput, addrInput._handleLoadContactListener);
 		AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
 	}
+};
+
+/**
+ * Copy operation handler that helps in copying the emaill address to the clipboard
+ */
+ZmAddressInputField.prototype._copyListener =
+function() {
+    var copyText;
+	var addrInput = ZmAddressInputField.menuContext.addrInput;
+	var sel = addrInput && addrInput.getSelection();
+	if (sel && sel.length) {
+        var addresses = [];
+        for (var i = 0; i < sel.length; i++) {
+            var address = sel[i].address;
+            if (address) {
+                addresses.push(address);
+            }
+        }
+        if (addresses.length) {copyText = addresses.join(AjxEmailAddress.separator)};
+	}
+
+    if (copyText) {
+        DwtClipboardManager.getInstance().copyToClipboard(copyText);
+    }
 };
 
 /**
@@ -1033,10 +1059,10 @@ function() {
 // size the input to a bit more than its current content
 ZmAddressInputField.prototype._resizeInput =
 function() {
-
 	var val = AjxStringUtil.htmlEncode(this._input.value);
 	var holderWidth = Dwt.getSize(this._holder).x;
-	var strW = AjxStringUtil.getWidth(val);
+	var inputFontSize = DwtCssStyle.getProperty(this._input, "font-size");
+	var strW = AjxStringUtil.getWidth(val, false, inputFontSize);
 	if (AjxEnv.isWindows && AjxEnv.isFirefox) {
 		// FF/Win: fudge factor since string is longer in INPUT than when measured in SPAN
 		strW = strW * 1.2;

@@ -1150,7 +1150,7 @@ function() {
 	var organizers = treeView && treeView.getSelected();
 	if (organizers) {
 		if (!(organizers instanceof Array)) organizers = [organizers];
-		for (var i in organizers) {
+		for (var i = 0; i <  organizers.length; i++) {
 			var organizer = organizers[i];
 			if (organizer && (organizer == this || organizer.isChildOf(this))) {
 				var folderId = this.parent.id;

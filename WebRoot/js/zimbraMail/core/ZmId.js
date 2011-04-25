@@ -159,6 +159,7 @@ ZmId.SKIN_USER_INFO					= "skin_container_username";
 ZmId.SKIN_TASKBAR					= "skin_container_taskbar";
 ZmId.SKIN_FOOTER					= "skin_footer";
 ZmId.SKIN_AD						= "skin_adsrvc";
+ZmId.SKIN_UNITTEST					= "skin_unittest";
 
 //
 // Literal IDs
@@ -980,6 +981,7 @@ ZmId.OP_CLOSE					= "CLOSE";
 ZmId.OP_COMPOSE_FORMAT			= "COMPOSE_FORMAT";
 ZmId.OP_COMPOSE_OPTIONS			= "COMPOSE_OPTIONS";
 ZmId.OP_CONTACT					= "CONTACT";
+ZmId.OP_COPY_TEXT  				= "COPY_TEXT";
 ZmId.OP_CREATE_APPT     		= "CREATE_APPT";
 ZmId.OP_CREATE_TASK     		= "CREATE_TASK";
 ZmId.OP_CREATE_SLIDE_SHOW		= "CREATE_SLIDE_SHOW";
