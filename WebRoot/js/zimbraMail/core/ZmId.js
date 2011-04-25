@@ -449,6 +449,8 @@ ZmId.getPrefPageId = function(tabKey) {
  */
  
 ZmId.SEARCH_INPUT			= "zi_search";			// text input in search toolbar
+ZmId.SEARCH_INPUTFIELD      = ZmId.SEARCH_INPUT + "_inputfield";
+ZmId.PEOPLE_SEARCH_INPUTFIELD = "zi_peoplesearch_inputfield";
 
 // context
 ZmId.SEARCH					= "Search";				// element is within search panel
