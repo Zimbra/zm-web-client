@@ -1458,26 +1458,20 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 				}
 			}
 		} else {
-			//Construct Regex
 			var sigContent = this.getSignatureContent(oldSignatureId);
 			replaceSignature = AjxStringUtil.convertHtml2Text(sigContent, {"#text": ZmComposeView._convertTextNode});
-			if (replaceSignature) {
-				var newLinesRe = "(" + AjxStringUtil.regExEscape(newLine) + ")*";
-				var replaceRe = newLinesRe + AjxStringUtil.regExEscape(replaceSignature) + newLinesRe; // Eat up all whitespace before and after the signature
-				replaceRe = replaceRe.replace(/(\\n|\\r)/g, "\\s*");
-				if (!isAbove) {
-					replaceRe += "\\s*" + newLinesRe + "$";
+			var sigIndex = content.indexOf(replaceSignature);
+			var sigLength = replaceSignature.length;
+
+			if (sigIndex != -1) {
+				var contentBefore = content.substring(0, sigIndex).replace(/\s+$/,""); // Get the message content before the signature and cut off any trailing whitespace
+				var contentAfter = content.substring(sigIndex + sigLength).replace(/^\s+/,""); // Get the message content after the signature and cut off any leading whitespace
+
+				if (contentAfter) {
+					newSig += "\n";
 				}
-				var contentAfterRe = new RegExp(replaceRe+"\\s*\\S","i");
-				replaceRe = new RegExp(replaceRe, "i");
-				//Replace Signature
-				if (replaceRe.test(content)) {
-					if (contentAfterRe.test(content)) {// There is content after the signature, add one more newline
-						newSig += "\n";
-					}
-					content = content.replace(replaceRe, newSig || "\n");
-					done = true;
-				}
+				content = contentBefore + (newSig || "\n") + contentAfter;
+				done = true;
 			}
 		}
 	}
