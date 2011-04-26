@@ -286,9 +286,14 @@ td.DDSepInvisible div {
 
 
 /* Search input field */
-.search_input, .people_search_input {
+.people_search_input {
 	width:100%;
 }
+
+.search_input {
+	width:400px;
+}
+
 
 INPUT[type="text"].people_search_input {
 	border: 0px !important;
