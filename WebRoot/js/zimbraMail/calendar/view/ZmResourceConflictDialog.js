@@ -230,7 +230,7 @@ function(list, appt, callback) {
 	var div = document.getElementById(this._listId);
 	div.innerHTML = html.toString();
 
-    if(!appt.isRecurring() && size==1) {
+    if(appt.getRecurType() == ZmRecurrence.NONE && size==1) {
         return;
     }
 
