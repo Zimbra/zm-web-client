@@ -506,30 +506,60 @@ function(address, item, ev){
      }
 };
 
+ZmMailListController.prototype._getToolBarOps =
+function(noViewMenu) {
+	list = this._standardToolBarOps();
+	list.push(ZmOperation.SEP);
+	list = list.concat(this._msgOps());
+	list.push(ZmOperation.SEP,
+			ZmOperation.MOVE,
+			ZmOperation.TAG_MENU);
+
+	if (!noViewMenu) {
+    	list.push(ZmOperation.VIEW_MENU);
+	}
+	return list;
+};
+
+ZmMailListController.prototype._getSecondaryToolBarOps =
+function() {
+	var list = [ZmOperation.PRINT,
+			ZmOperation.SPAM];
+	if (!appCtxt.isChildWindow && appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
+		list.push(ZmOperation.SEP, ZmOperation.DETACH);
+	}
+	return list;
+
+};
+
+
 ZmMailListController.prototype._initializeToolBar =
-function(view) {
+function(view, className) {
 
 	if (!this._toolbar[view]) {
-		ZmListController.prototype._initializeToolBar.call(this, view);
+		ZmListController.prototype._initializeToolBar.call(this, view, className);
 		this._createViewMenu(view);
 		if (appCtxt.isOffline && appCtxt.accountList.size() > 2) {
 			this._createSendReceiveMenu(this._toolbar[view]);
 		}
 		this._setReplyText(this._toolbar[view]);
-		this._toolbar[view].addOp(ZmOperation.FILLER);
-		this._initializeNavToolBar(view);
+//		this._toolbar[view].addOp(ZmOperation.FILLER);
+		if (!appCtxt.isChildWindow) {
+			this._initializeNavToolBar(view);
+		}
 	}
 
-	this._setupViewMenu(view);
+	if (!appCtxt.isChildWindow) {
+		this._setupViewMenu(view);
+		this._setupCheckMailButton(this._toolbar[view]);
+		// reset new button properties
+		this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
+	}
 	this._setupDeleteButton(this._toolbar[view]);
 	if (appCtxt.get(ZmSetting.SPAM_ENABLED)) {
 		this._setupSpamButton(this._toolbar[view]);
 	}
-	this._setupCheckMailButton(this._toolbar[view]);
-
     this._setupPrintButton(this._toolbar[view]);
-	// reset new button properties
-	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 };
 
 ZmMailListController.prototype._getNumTotal =
@@ -560,10 +590,12 @@ function() {
 
 ZmMailListController.prototype._standardToolBarOps =
 function() {
+	if (appCtxt.isChildWindow) {
+		return [];
+	}
 	return [
 		ZmOperation.NEW_MENU, ZmOperation.SEP,
-		ZmOperation.CHECK_MAIL, ZmOperation.SEP,
-		ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT, ZmOperation.SEP
+		ZmOperation.CHECK_MAIL, ZmOperation.SEP
 	];
 };
 
@@ -584,7 +616,16 @@ function() {
 		list.push(ZmOperation.FORWARD);
 	}
 
+	list.push(this.getDeleteOperation());
+
+	list.push(ZmOperation.EDIT); // hidden except for Drafts)
+
 	return list;
+};
+
+ZmMailListController.prototype.getDeleteOperation =
+function() {
+	return ZmOperation.DELETE;
 };
 
 ZmMailListController.prototype._setActiveSearch =

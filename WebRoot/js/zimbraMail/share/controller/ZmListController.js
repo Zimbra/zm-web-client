@@ -318,6 +318,9 @@ ZmListController.prototype._getMoveDialogTitle	= function(num) {};
 // Returns a list of desired toolbar operations
 ZmListController.prototype._getToolBarOps 		= function() {};
 
+// Returns a list of secondary (non primary) toolbar operations
+ZmListController.prototype._getSecondaryToolBarOps 		= function() {};
+
 // Returns a list of desired action menu operations
 ZmListController.prototype._getActionMenuOps 	= function() {};
 
@@ -364,7 +367,7 @@ function() {
  */
 ZmListController.prototype._standardActionMenuOps =
 function() {
-	return [ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT];
+	return [ZmOperation.TAG_MENU, ZmOperation.MOVE, ZmOperation.PRINT];
 };
 
 /**
@@ -395,14 +398,15 @@ function() {
  * @private
  */
 ZmListController.prototype._initializeToolBar =
-function(view) {
+function(view, className) {
 	if (this._toolbar[view]) { return; }
 
 	var buttons = this._getToolBarOps();
-	if (!buttons) { return; }
+	var secondaryButtons = this._getSecondaryToolBarOps();
+	if (!(buttons || secondaryButtons)) { return; }
 
-	var tb = this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:view, controller:this,
-														refElementId:ZmId.SKIN_APP_TOP_TOOLBAR});
+	var tb = this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, secondaryButtons:secondaryButtons, context:view, controller:this,
+														refElementId:ZmId.SKIN_APP_TOP_TOOLBAR, className: className});
 
 	var button;
 	for (var i = 0; i < tb.opList.length; i++) {

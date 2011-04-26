@@ -217,24 +217,7 @@ function(view) {
 	text.addClassName("itemCountText");
 };
 
-ZmDoublePaneController.prototype._getToolBarOps =
-function() {
-	var list = this._standardToolBarOps();
-	list.push(ZmOperation.SEP);
-	list = list.concat(this._msgOps());
-	list.push(ZmOperation.EDIT,			// hidden except for Drafts
-			  ZmOperation.SEP,
-			  ZmOperation.SPAM,
-			  ZmOperation.SEP,
-			  ZmOperation.TAG_MENU);
 
-	if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
-		list.push(ZmOperation.SEP, ZmOperation.DETACH);
-	}
-
-    list.push(ZmOperation.SEP,ZmOperation.VIEW_MENU);
-	return list;
-};
 
 ZmDoublePaneController.prototype._getActionMenuOps =
 function() {
