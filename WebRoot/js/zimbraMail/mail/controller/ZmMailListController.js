@@ -1716,7 +1716,9 @@ function(currentItem, forward, msgController) {
 
 	var newItem = this._getNextItem(currentItem, forward);
 	if (newItem) {
-		msgController.inactive = true; //make it inactive so it can be reused instead of creating a new one for each item paged.
+		if (msgController) {
+			msgController.inactive = true; //make it inactive so it can be reused instead of creating a new one for each item paged.
+		}
 		var lv = this._listView[this._currentView];
 		lv.emulateDblClick(newItem);
 	}
