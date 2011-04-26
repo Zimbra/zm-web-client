@@ -68,7 +68,7 @@ BODY						{	margin:0px; 				}
 	
 /** Search box **/	
 #skin_spacing_search_row				{	text-align:left;	}
-#skin_spacing_search					{	width:100%; padding-bottom:3px @cssValue(HSashContainer,width)@; text-align:right;			}
+#skin_spacing_search					{	width:100%; padding-bottom:3px @cssValue(HSashContainer,width)@; }
 #skin_container_search					{	max-width:700px;	}
 
 #skin_container_people_search			{	width:200px; }
