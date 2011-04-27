@@ -590,7 +590,7 @@ ZmContactListController.prototype._handleListChange =
 function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY || ev.event == ZmEvent.E_CREATE) {
 		var item = ev && ev._details && ev._details.items && ev._details.items.length && ev._details.items[0];
-		if (item instanceof ZmContact && this._currentView == ZmId.VIEW_CONTACT_SIMPLE) {
+		if (item instanceof ZmContact && this._currentView == ZmId.VIEW_CONTACT_SIMPLE && item.folderId == this._folderId) {
 			this._parentView[this._currentView].setContact(item, this.isGalSearch());
 		}
 	}
