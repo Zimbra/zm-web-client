@@ -14,93 +14,58 @@
  */
 
 
-UtString = function() {
+UT.module("String");
 
-	ZmUnitTestModule.call(this, "String");
+UT.test("buildAttribute() method, prependSpace argument test",
+	function() {
+		UT.expect(1);
+		UT.equal(AjxStringUtil.buildAttribute("attrName", "attrValue", true), " attrName='attrValue'");
+	}
+);
 
-	this.addTest(new UtStringTestPrependSpace());
-	this.addTest(new UtStringTestDoubleQuotes());
-	this.addTest(new UtStringTestJsEscape());
-	this.addTest(new UtStringTestHtmlEscape());
-	this.addTest(new UtStringTestSingleQuotes());
-	this.addTest(new UtStringTestDoubleQuotes1());
-};
-UtString.prototype = new ZmUnitTestModule;
-UtString.prototype.constructor = UtString;
+UT.test("buildAttribute() method, doubleQuotes argument test",
+	function() {
+		UT.expect(1);
+		UT.equal(AjxStringUtil.buildAttribute("attrName", "attrValue", false, true), 'attrName="attrValue"');
+	}
+);
 
-UtStringTestPrependSpace = function() {
-	ZmUnitTest.call(this, "buildAttribute() method, prependSpace argument test");
-};
-UtStringTestPrependSpace.prototype = new ZmUnitTest;
-UtStringTestPrependSpace.prototype.constructor = UtStringTestPrependSpace;
+UT.test("buildAttribute() method, jsEscape argument test",
+	function() {
+		UT.expect(1);
+		var val = " any <value> &   with '*! special <<characters>> ";
+		var result = AjxStringUtil.buildAttribute("attrName", val, false, false, true);
+		var expected = "attrName=" + AjxStringUtil.quoteString(escape(val));
+		UT.equal(result, expected);
+	}
+);
 
-UtStringTestPrependSpace.prototype.run = function() {
-	var result = AjxStringUtil.buildAttribute("attrName", "attrValue", true);
-	return (result == " attrName='attrValue'");	 
-};
+UT.test("buildAttribute() method, htmlEscape argument test",
+	function() {
+		UT.expect(1);
+		var val = " any <value> &   with '*! special <<characters>> ";
+		var result = AjxStringUtil.buildAttribute("attrName", val, false, false, false, true);
+		var expected = "attrName=" + AjxStringUtil.quoteString(AjxStringUtil.htmlEncode(val));
+		UT.equal(result, expected);
+	}
+);
 
-UtStringTestDoubleQuotes = function() {
-	ZmUnitTest.call(this, "buildAttribute() method, doubleQuotes argument test");
-};
-UtStringTestDoubleQuotes.prototype = new ZmUnitTest;
-UtStringTestDoubleQuotes.prototype.constructor = UtStringTestDoubleQuotes;
+UT.test("quoteString() method, singleQuotes test",
+	function() {
+		UT.expect(1);
+		var val = " any <value> &   with '*! special <<characters>> ";
+		var result = AjxStringUtil.quoteString(val);
+		var expected = "'" + val + "'";
+		UT.equal(result, expected);
+	}
+);
 
-UtStringTestDoubleQuotes.prototype.run = function() {
-	var result = AjxStringUtil.buildAttribute("attrName", "attrValue", false, true);
-	return (result == 'attrName="attrValue"');	 
-};
-
-UtStringTestJsEscape = function() {
-	ZmUnitTest.call(this, "buildAttribute() method, jsEscape argument test");
-};
-UtStringTestJsEscape.prototype = new ZmUnitTest;
-UtStringTestJsEscape.prototype.constructor = UtStringTestJsEscape;
-
-UtStringTestJsEscape.prototype.run = function() {
-	var val = " any <value> &   with '*! special <<characters>> ";
-	var result = AjxStringUtil.buildAttribute("attrName", val, false, false, true);
-	var expected = "attrName=" + AjxStringUtil.quoteString(escape(val));
-	return (result == expected);
-};
-
-UtStringTestHtmlEscape = function() {
-	ZmUnitTest.call(this, "buildAttribute() method, htmlEscape argument test");
-};
-UtStringTestHtmlEscape.prototype = new ZmUnitTest;
-UtStringTestHtmlEscape.prototype.constructor = UtStringTestHtmlEscape;
-
-UtStringTestHtmlEscape.prototype.run = function() {
-	var val = " any <value> &   with '*! special <<characters>> ";
-	var result = AjxStringUtil.buildAttribute("attrName", val, false, false, false, true);
-	var expected = "attrName=" + AjxStringUtil.quoteString(AjxStringUtil.htmlEncode(val));
-	return (result == expected);
-};
-
-UtStringTestSingleQuotes = function() {
-	ZmUnitTest.call(this, "quoteString() method, singleQuotes test");
-};
-UtStringTestSingleQuotes.prototype = new ZmUnitTest;
-UtStringTestSingleQuotes.prototype.constructor = UtStringTestSingleQuotes;
-
-UtStringTestSingleQuotes.prototype.run = function() {
-	var val = " any <value> &   with '*! special <<characters>> ";
-	var result = AjxStringUtil.quoteString(val);
-	var expected = "'" + val + "'";
-	return (result == expected);
-};
-
-UtStringTestDoubleQuotes1 = function() {
-	ZmUnitTest.call(this, "quoteString() method, doubleQuotes test");
-};
-UtStringTestDoubleQuotes1.prototype = new ZmUnitTest;
-UtStringTestDoubleQuotes1.prototype.constructor = UtStringTestDoubleQuotes1;
-
-UtStringTestDoubleQuotes1.prototype.run = function() {
-	var val = " any <value> &   with '*! special <<characters>> ";
-	var result = AjxStringUtil.quoteString(val, true);
-	var expected = '"' + val + '"';
-	return (result == expected);
-};
-
-// Instantiate this module and add it and its tests to the test suite.
-new UtString();
+UT.test("quoteString() method, doubleQuotes test",
+	function() {
+		UT.expect(1);
+		var val = " any <value> &   with '*! special <<characters>> ";
+		var result = AjxStringUtil.quoteString(val, true);
+		var expected = '"' + val + '"';
+		UT.equal(result, expected);
+	}
+);

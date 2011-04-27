@@ -6,8 +6,9 @@ that is more of an automation tool suited to QA. We looked for a tool which
 would allow a developer to easily add unit tests, and to run them quickly,
 neither of which is afforded by Selenium. There are several frameworks out
 there for testing JS, but ZCS is large and complex enough that it seems much
-easier to develop our own. It is built on top of QUnit, which provides the UI
-and some methods for running a test that makes various assertions.
+easier to use one that allows us to run the tests within a browser rather
+than from a command line. We are using QUnit, which provides the UI, various
+assertion methods, and methods for controlling the running of the tests.
 
 Tests are grouped into collections called modules. For example, a group of
 tests that test the compose page might be placed in a module called Compose.
@@ -22,42 +23,137 @@ with or without the "dev=1" argument.
 Running Tests
 -------------
 
-To run ZCS unit tests, add a query string argument "unittest". Set its value
-to "all" or "1" in order to run all tests. To run tests for one or more
-modules, put them in a list separated by commas.
+To run ZCS unit tests, add a query string argument "unittest=1". By default, all
+tests will be run. To run tests for one or more modules, put them in a list
+separated by commas and use it as the value of a "filter" query string argument.
 
-http://localhost:7070/zimbra/?unittest=all
 http://localhost:7070/zimbra/?unittest=1
-http://localhost:7070/zimbra/?unittest=Compose
-http://localhost:7070/zimbra/?unittest=Sample,Compose
+http://localhost:7070/zimbra/?unittest=1&filter=Compose
+http://localhost:7070/zimbra/?unittest=1&filter=Compose,Bubbles
 
 Sign in as user "unittest" with the usual password. That account has been set
 up with sample data to test against. If you sign in as another user, tests
 which rely on that data will not work.
 
-The easiest way to add a test or a module is to follow existing code. There is
-a file called Template.js that can be copied and modified to easily create a
-new module.
+The easiest way to add a test or a module is to follow existing code.
 
 
-Adding Modules and Tests
-------------------------
+QUnit
+-----
 
-Module names start with "Ut". To add a module "UtFoo":
+QUnit documentation can be found at:
 
-1. Create and edit the file UtFoo.js in .../js/zimbraMail/unittest
+    http://docs.jquery.com/Qunit
+    
+There's not a whole lot of it, so it may take some trial and error, especially
+if you're writing async tests (more on that later). QUnit provides a number of
+public methods which we've imported into a namespace called "UT". They are listed
+below. Not all possible arguments are detailed, just the ones you're likely to
+use.
 
-2. Create the class UtFoo as a subclass of ZmUnitTestModule.
 
-3. For each test, create a subclass of ZmUnitTest. The name of your test class
-doesn't matter. By convention it starts with "UtFooTest".
+---- Basics ----
 
-4. Implement a run() method within your test class. It should return true if 
-the test succeeded, and false otherwise.
+UT.module(name)
 
-5. If appropriate, implement a cleanup() method within your test class.
+	Declares a module.
+	
+UT.test(name, env, func)
 
-6. At the end of UtFoo.js, instantiate the module class in order to add the
-module and its tests:
+	This is the heart of QUnit. The unit test code is in the 'func' argument.
+	It should make at least one assertion. The 'env' argument is used if you want
+	to run setup and/or teardown functions before or after the test runs. You just
+	pass them in a hash: {setup: function() {}, teardown: function() {}}.
 
-	new UtFoo();
+UT.expect(num)
+
+	Tells QUnit how many assertions are in the test, so that it knows something
+	went wrong if there's an early exit. You should always call this at the start
+	of your test.
+
+
+---- Assertions ----
+
+Assertions are your way of telling QUnit whether something worked or not. You can
+check something for truthiness, or compare two values. The 'msg' argument in the
+assertions is the string to print out if the assertion fails.
+
+UT.ok(val, msg)
+
+	Tests whether the value is true. Try not to use an expression as the value if
+	you can use one of the *Equal assertions below.
+	
+UT.equal(actual, expected, msg)
+
+	Compares 'actual' to 'expected' using the == operator.
+
+UT.notEqual(actual, expected, msg)
+
+	Compares 'actual' to 'expected' using the != operator.
+
+UT.strictEqual(actual, expected, msg)
+
+	Compares 'actual' to 'expected' using the === operator.
+
+UT.notStrictEqual(actual, expected, msg)
+
+	Compares 'actual' to 'expected' using the !== operator.
+
+UT.deepEqual(actual, expected, msg)
+UT.notDeepEqual(actual, expected, msg)
+
+	Does a deep compare of 'actual' to 'expected'. For details, see
+	http://philrathe.com/articles/equiv.
+
+UT.raises(block, expected, msg)
+
+	Use this if you expect your test code to throw an exception.
+
+
+---- Flow control ----
+
+UT.stop(timeout)
+
+	Pauses the testrunner. Used when JS code exits via a timeout or a server,
+	so that the testrunner itself does not exit. The test fails if the timeout
+	(which is optional) is reached before a call to UT.start() happens.
+
+UT.start
+
+	Resumes the testrunner.
+	
+
+Async Testing
+-------------
+
+One challenging aspect of writing unit tests is handling async situations. There
+are two varieties of async: on the browser side (setTimeout calls), and on the 
+server side (XHR calls). Each is handled in its own way. The tricky thing about
+async is that the JS execution thread ends, but we don't want the QUnit test loop
+to end.
+
+If the code you're testing uses a timer, you'll have to use one as well to make
+sure that the code you're testing runs before you test its effects. To do that,
+put that part of your unit test code in a block and set a timer that is a bit
+longer than the one in the code you're testing. That of course assumes that
+browsers run timeouts in order of their length, which they appear to do.
+
+One obvious approach for server calls is to use setTimeout() to hang out for a bit
+while the server responds to the request. That has the disadvantage that we have
+to guess how long to wait. Too little, and our tests will likely fail. Too long,
+and we're wasting time. Fortunately, there is a way to make it behave like a sync
+call. An event has been added to the request manager which will notify listeners
+after a response has been processed. It is an app event which is handled by the
+app controller: ZmAppEvent.RESPONSE. The event that is passed back to the listener
+has a 'request' field which contains the name of the request. You can check
+that to make sure it's the request you think it is.
+
+		var respCallback = new AjxListener(function(evt) {
+			if (evt.request != "SomeRequest") { return; }
+			... some code with assertions ...
+			appCtxt.getAppController().removeListener(ZmAppEvent.RESPONSE, respCallback);
+		});
+		appCtxt.getAppController().addListener(ZmAppEvent.RESPONSE, respCallback);
+
+The first test in the UtBubbles module tests code that makes a server call and
+then uses a timer, so it's a good example to look at.

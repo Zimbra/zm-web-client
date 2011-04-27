@@ -13,36 +13,21 @@
  * ***** END LICENSE BLOCK *****
  */
 
-UtCompose = function() {
+UT.module("Compose");
 
-	ZmUnitTestModule.call(this, "Compose");
-
-	this.addTest(new UtComposeTestComposePage());
-};
-UtCompose.prototype = new ZmUnitTestModule;
-UtCompose.prototype.constructor = UtCompose;
-
-// Make sure compose page is displayed when New button is pressed
-
-UtComposeTestComposePage = function() {
-	ZmUnitTest.call(this, "Show compose page");
-};
-UtComposeTestComposePage.prototype = new ZmUnitTest;
-UtComposeTestComposePage.prototype.constructor = UtComposeTestComposePage;
-
-UtComposeTestComposePage.prototype.run = function() {
+// Make sure the compose page comes up when the New button is pressed.
+UT.test("Show compose page", {
 	
-	var ctlr = appCtxt.getApp(ZmApp.MAIL).getMailListController();
-	ctlr._newListener(ZmUnitTest.selectionEvent, ZmOperation.NEW_MENU);
+	teardown: function() {
+		var ctlr = appCtxt.getCurrentController();
+		ctlr._cancelListener();	
+	}},
+		
+	function() {
+		UT.expect(1);
+		ZmUnitTestUtil.goToCompose();
 	
-	var viewId = appCtxt.getCurrentViewId();
-	return (viewId.indexOf("COMPOSE") == 0);
-};
-
-UtComposeTestComposePage.prototype.cleanup = function() {
-	var ctlr = appCtxt.getCurrentController();
-	ctlr._cancelListener();	
-};
-
-// Instantiate this module and add it and its tests to the test suite.
-new UtCompose();
+		var viewId = appCtxt.getCurrentViewId();
+		UT.equal(viewId.indexOf("COMPOSE"), 0);
+	}
+);

@@ -105,7 +105,6 @@
 	String startApp = getParameter(request, "app", "");
 	String noSplashScreen = getParameter(request, "nss", null);
 	boolean isLeakDetectorOn = getParameter(request, "leak", "0").equals("1");
-	String unitTest = getParameter(request, "unittest", "");
 
 	String mode = getAttribute(request, "mode", null);
 	boolean isDevMode = mode != null && mode.equalsIgnoreCase("mjsf");
@@ -134,6 +133,8 @@
 			locale = new Locale(language, country);
 		}
     }
+
+	String unitTest = getParameter(request, "unittest", "");
 
 	// make variables available in page context (e.g. ${foo})
 	pageContext.setAttribute("contextPath", contextPath);
@@ -167,8 +168,13 @@
 	</c:if>		
 </c:url>" rel="stylesheet" type="text/css" />
 <c:if test="${not empty unitTest}">
+	<script>
+		window.exports = window.UT = {};
+		window.require = true;
+	</script>
 	<link rel="stylesheet" href="/zimbra/qunit/qunit.css" />
 	<script src="/zimbra/qunit/qunit.js"></script>
+	<script src="/js/zimbraMail/unittest/ZmUnitTestManager.js"></script>
 </c:if>
 <zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
 <c:if test="${empty favIconUrl}">
@@ -286,9 +292,6 @@
     		extraPackages = "Leaks,Startup2,CalendarCore,Calendar,CalendarAppt,ContactsCore,Contacts,IMCore,IM,MailCore,Mail,Mixed,NotebookCore,Notebook,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,ZimletApp,Portal,Alert,ImportExport,BrowserPlus";
     	}
     	allPackages += "," + extraPackages;
-    }
-    if (unitTest != null) {
-    	allPackages += ",UnitTest";
     }
 
     String pprefix = isDevMode  && !isCoverage ? "public/jsp" : "js";

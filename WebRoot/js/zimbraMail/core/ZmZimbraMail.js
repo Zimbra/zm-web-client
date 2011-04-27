@@ -564,7 +564,7 @@ function(params, result) {
         AjxTimezone.DEFAULT = AjxTimezone.getClientId(AjxTimezone.DEFAULT_RULE.serverId);
     }
 
-	this._evtMgr.notifyListeners(ZmAppEvent.PRE_STARTUP, this._evt);
+	this.notify(ZmAppEvent.PRE_STARTUP);
 
 	params.result = result;
 	var respCallback = new AjxCallback(this, this._handleResponseStartup1, params);
@@ -598,7 +598,7 @@ function(params, result) {
 		function() {
 			AjxDispatcher.enableLoadFunctions(true);
 			appCtxt.inStartup = false;
-			this._evtMgr.notifyListeners(ZmAppEvent.POST_STARTUP, this._evt);
+			this.notify(ZmAppEvent.POST_STARTUP);
 
 			// bug fix #31996
 			if (appCtxt.isOffline) {
@@ -693,7 +693,7 @@ function(params) {
 		var utm = this._components[ZmAppViewMgr.C_UNITTEST] = window.unitTestManager;
 		var callback = new AjxCallback(this,
 			function() {
-				utm.runTests(params.unitTest);
+				utm.runTests();
 			});
 		this.addPostRenderCallback(callback, 6, 100);
 	}
@@ -1844,7 +1844,7 @@ function(appName, force, callback, errorCallback, params) {
 			var respCallback = new AjxCallback(this, this._handleResponseActivateApp, [callback, appName]);
 			var eventType = [appName, ZmAppEvent.PRE_LAUNCH].join("_");
 			this._evt.item = this._apps[appName];
-			this._evtMgr.notifyListeners(eventType, this._evt);
+			this.notify(eventType);
 			params = params || {};
 			params.searchResponse = this._searchResponse;
 			this._apps[appName].launch(params, respCallback);
@@ -1868,7 +1868,7 @@ function(callback, appName) {
 
 	var eventType = [appName, ZmAppEvent.POST_LAUNCH].join("_");
 	this._evt.item = this._apps[appName];
-	this._evtMgr.notifyListeners(eventType, this._evt);
+	this.notify(eventType);
 };
 
 /**
@@ -1941,7 +1941,7 @@ function(appName, view, isTabView) {
 			}
 		}
 		this._evt.item = this._apps[appName];
-		this._evtMgr.notifyListeners(ZmAppEvent.ACTIVATE, this._evt);
+		this.notify(ZmAppEvent.ACTIVATE);
 	}
 };
 
@@ -1965,7 +1965,7 @@ function(id) {
 ZmZimbraMail.prototype.appRendered =
 function(appName) {
 	var eventType = [appName, ZmAppEvent.POST_RENDER].join("_");
-	this._evtMgr.notifyListeners(eventType, this._evt);
+	this.notify(eventType);
 
 	if (window._facadeCleanup) {
 		window._facadeCleanup();
@@ -2973,6 +2973,11 @@ function() {
 		errorCallback: errorCallback
 	};
 	appCtxt.getAppController().sendRequest(args);
+};
+
+ZmZimbraMail.prototype.notify =
+function(eventType) {
+	this._evtMgr.notifyListeners(eventType, this._evt);
 };
 
 // YUCK:

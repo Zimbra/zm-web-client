@@ -24,26 +24,35 @@
  * @author Conrad Damon
  */
 ZmUnitTestManager = function() {
-	this._modules = [];
+
+	// hash for setting a callback for a particular server request
+	window.UT.callback = {};
+
+	// clean up hack for getting QUnit to export into UT namespace
+	delete window.exports;
+	delete window.require;
 };
 
 ZmUnitTestManager.prototype.toString = function() { return "ZmUnitTestManager"; };
 
-ZmUnitTestManager.prototype.addModule =
-function(module) {
-	this._modules.push(module);
+ZmUnitTestManager.prototype.runTests =
+function() {
+	this._initialize();
+	AjxDispatcher.require("UnitTest");
 };
 
-/**
- * Runs unit tests. Check the query string argument that was passed to us to
- * see which tests to run: all of them, or a select subset.
- * 
- * @param {string}	which		value of "unittest" query string argument
- */
-ZmUnitTestManager.prototype.runTests =
-function(which) {
+ZmUnitTestManager.prototype.rerunTests =
+function() {
+	UT.QUnit.reset();
+	AjxDispatcher.require("UnitTest");
+};
 
-	this._panel = new ZmUnitTestPanel();
+ZmUnitTestManager.prototype._initialize =
+function() {
+
+	if (this._initialized) { return; }
+	
+	this._panel = this._createTestPanel();
 	
 	// Resize the shell to allow room for the unit test panel. We need to do
 	// that after ZCS has finished its layout, so we do it here.
@@ -57,133 +66,110 @@ function(which) {
 	Dwt.setSize(shell.getHtmlElement(), Dwt.DEFAULT, newH);
 	// Tell the app view mgr that shell dimensions have changed.
 	appCtxt.getAppViewMgr()._shellControlListener(ev);
-	this._panel.setLocation(0, newH);
-	this._panel.setScrollStyle(Dwt.SCROLL);
-
-	// If we're only to run tests for specified modules, put them in a hash
-	var modHash;
-	if (which && which != "1" && which != "all") {
-		modHash = AjxUtil.arrayAsHash(which.split(","));
-	}
+	Dwt.setLocation(this._panel, 0, newH);
+	Dwt.setScrollStyle(this._panel, Dwt.SCROLL);
 	
-	// This is our unit testing run loop. The window.* function calls are into QUnit.
-	var modules = this._modules;
-	for (var i = 0; i < this._modules.length; i++) {
-		var mod = this._modules[i];
-		if (!modHash || modHash[mod.name]) {
-			window.module(mod.name);
-			var utests = mod.getTests();
-			if (utests && utests.length) {
-				for (var j = 0; j < utests.length; j++) {
-					var utest = utests[j];
-					window.test(utest.name, function() {
-						window.ok(utest.run());
-					});
-					utest.cleanup();
-				}
-			}
-		}
-	}
+	this._initialized = true;
 };
 
-window.unitTestManager = new ZmUnitTestManager();
-
-
-/**
- * Creates a DIV to hold the QUnit UI.
- * @constructor
- * @class
- * This is a panel below the shell that contains the QUnit UI.
- * 
- * @param {hash}	params		standard DwtControl params
- * 
- * TODO: Does this need to be a control? I doubt it.
- */
-ZmUnitTestPanel = function(params) {
+ZmUnitTestManager.prototype._createTestPanel =
+function() {
 	
-	params = params || {};
-	params.className = "ZmUnitTestPanel";
-	DwtControl.call(this, params);
-	this.__ctrlInited = true;
-	var htmlElement = document.createElement("div");
-	this._htmlElId = htmlElement.id = params.id || Dwt.getNextId();
-	DwtControl.ALL_BY_ID[this._htmlElId] = this;
-	htmlElement.className = params.className;
-	htmlElement.style.position = Dwt.ABSOLUTE_STYLE;
-	htmlElement.style.overflow = Dwt.SCROLL;
-	document.body.appendChild(htmlElement);
+	var panel = document.createElement("div");
+	panel.id = Dwt.getNextId();
+	panel.className = "ZmUnitTestPanel";
+	panel.style.position = Dwt.ABSOLUTE_STYLE;
+	panel.style.overflow = Dwt.SCROLL;
+	document.body.appendChild(panel);
+	
+	var qs = AjxStringUtil.parseQueryString();
+	var utLink = 'javascript:window.unitTestManager.rerunTests("' + qs.unittest + '")';
 	
 	// QUnit UI
 	var html = [], idx = 0;
-	html[idx++] = "<h1 id='qunit-header'>QUnit Test</h1>";
+	html[idx++] = "<h1 id='qunit-header'><a href='" + utLink + "'>QUnit Test</a></h1>";
 	html[idx++] = "<h2 id='qunit-banner'></h2>";
 	html[idx++] = "<div id='qunit-testrunner-toolbar'></div>";
 	html[idx++] = "<h2 id='qunit-userAgent'></h2>";
 	html[idx++] = "<ol id='qunit-tests'></ol>";
 	html[idx++] = "<p id='qunit-testresult' class='result'></p>";
 	html[idx++] = "<div id='qunit-fixture'>test markup</div>";
-	htmlElement.innerHTML = html.join("");
-};
-
-ZmUnitTestPanel.prototype = new DwtControl;
-ZmUnitTestPanel.prototype.constructor = ZmUnitTestPanel;
-
-ZmUnitTestPanel.prototype.toString = function() { return "ZmUnitTestPanel"; };
-
-
-
-
-ZmUnitTestModule = function(name) {
+	panel.innerHTML = html.join("");
 	
-	if (arguments.length == 0) { return; }
-	
-	this.name = name;
-	window.unitTestManager.addModule(this);
-	this._tests = [];
+	return panel;
 };
 
-ZmUnitTestModule.prototype.toString = function() { return "ZmUnitTestModule"; };
+if (window.UT) {
+	window.unitTestManager = new ZmUnitTestManager();
+}
 
-ZmUnitTestModule.prototype.addTest =
-function(utest) {
-	this._tests.push(utest);
-};
-
-ZmUnitTestModule.prototype.getTests =
-function() {
-	return this._tests;
-};
 
 /**
- * Creates a new unit test.
- * @constructor
- * @class
- * This class represents a single unit test. To add a unit test, create an instance
- * of this class and define its run method (and, optionally, its cleanup method).
- * 
- * @param {string}	module		module name
- * @param {string}	name		unit test name
- * 
- * TODO: add utility methods to help with ZCS tests
+ * Static utility class with unit test helper functions.
  */
-ZmUnitTest = function(name) {
-	if (arguments.length == 0) { return; }
-	this.name = name;
+ZmUnitTestUtil = function() {};
+
+/**
+ * Simulate a key being typed. Note that keyCode and charCode are not the same thing,
+ * and we need both. The key code is the physical key that was pressed, so it's
+ * case-independent. The char code represent the resulting symbol, so it can have a
+ * case.
+ * 
+ * See QUnit.triggerEvent for simulating mouse events.
+ * 
+ * @param {Element}	element
+ * @param {number}	keyCode
+ * @param {number}	charCode
+ */
+ZmUnitTestUtil.emulateKeyPress =
+function(element, keyCode, charCode) {
+	element = (typeof element == "string") ? document.getElementById(element) : element;
+	element.value += String.fromCharCode(charCode);	
+	ZmUnitTestUtil.fireKeyEvent(element, "keyup", keyCode);
 };
 
-ZmUnitTest.prototype.toString = function() { return "ZmUnitTest"; };
+ZmUnitTestUtil.fireKeyEvent =
+function(element, event, keyCode, altKey, ctrlKey, metaKey) {
 
-// default implementation: pass the test
-ZmUnitTest.prototype.run = function() {
-	return true;
+	var ev = ZmUnitTestUtil.getEvent(event);
+	ev.keyCode = ev.charCode = ev.which = keyCode;
+	ev.altKey = altKey;
+	ev.ctrlKey = ctrlKey;
+	ev.metaKey = metaKey;
+	
+	ZmUnitTestUtil.fireEvent(element, event, ev);
 };
 
-ZmUnitTest.prototype.cleanup = function() {};
+ZmUnitTestUtil.getEvent =
+function(event) {
+	
+	var ev = (AjxEnv.isIE) ? document.createEventObject() : document.createEvent("HTMLEvents");
+	if (AjxEnv.isIE) {
+		ev.type = event;
+	}
+	else {
+		ev.initEvent(event, true, true);
+	}
+	
+	return ev;
+};
 
-// fake events that tests can pass to listeners
-ZmUnitTest.controlEvent 	= new DwtControlEvent();
-ZmUnitTest.focusEvent 		= new DwtFocusEvent();
-ZmUnitTest.keyEvent 		= new DwtKeyEvent();
-ZmUnitTest.mouseEvent 		= new DwtMouseEvent();
-ZmUnitTest.selectionEvent	= new DwtSelectionEvent(true);
-ZmUnitTest.treeEvent 		= new DwtTreeEvent();
+ZmUnitTestUtil.fireEvent =
+function(element, event, ev) {
+	
+	element = (typeof element == "string") ? document.getElementById(element) : element;
+	
+	ev = ev || ZmUnitTestUtil.getEvent(event);
+	if (AjxEnv.isIE) {
+		return element.fireEvent("on" + event, ev);
+	}
+	else {
+		return !element.dispatchEvent(ev);
+	}
+};
+
+ZmUnitTestUtil.goToCompose =
+function() {
+	var ctlr = appCtxt.getApp(ZmApp.MAIL).getMailListController();
+	ctlr._newListener(new DwtSelectionEvent(true), ZmOperation.NEW_MENU);
+};

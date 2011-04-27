@@ -1897,6 +1897,11 @@ function(list) {
 	this._numSelected = 0;
 };
 
+ZmAddressBubbleList.prototype.size =
+function() {
+	return this._bubbleList.length;
+};
+
 ZmAddressBubbleList.prototype.selectText =
 function(bubble, focusObj) {
 

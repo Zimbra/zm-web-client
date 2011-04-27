@@ -314,7 +314,7 @@ function(params, result) {
 		this._controller._kickPolling(true);
 	}
 
-	var methodName = (DBG && DBG.getDebugLevel() > 0) ? ZmCsfeCommand.getMethodName(params.jsonObj || params.soapDoc) : "";
+	var methodName = (DBG && DBG.getDebugLevel()) ? ZmCsfeCommand.getMethodName(params.jsonObj || params.soapDoc) : "";
 	if (params.asyncMode && params.callback) {
 		DBG.println(AjxDebug.DBG1, "------------------------- Running response callback for " + methodName);
 		params.callback.run(result);
@@ -331,6 +331,12 @@ function(params, result) {
 	
 	if (!params.asyncMode) {
 		return response.Body;
+	}
+	
+	var ctlr = this._controller;
+	if (ctlr._evtMgr.isListenerRegistered(ZmAppEvent.RESPONSE)) {
+		ctlr._evt.request = methodName;
+		ctlr.notify(ZmAppEvent.RESPONSE);
 	}
 };
 
