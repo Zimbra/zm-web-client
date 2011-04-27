@@ -64,10 +64,10 @@ function(timeString) {
 		date = new Date();
 		date.setMinutes(0);
 		date.setSeconds(0);
-			date.setHours(lTimeString === ZmMsg.noon.toLowerCase() ? 12 : 0);
+		date.setHours(lTimeString === ZmMsg.noon.toLowerCase() ? 12 : 0);
 	} else {
 		var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);    
-		date = timeFormatter.parse(timeString);
+		date = timeFormatter.parse(timeString) || AjxDateFormat.parseTime(timeString);
 	}
     return date;
 };
