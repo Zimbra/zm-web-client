@@ -1,0 +1,44 @@
+Group By List Design:
+https://wiki.eng.vmware.com/ZUE/GroupByList
+
+The goal of group by list functionality is to group a mail list view into sections.  A group is the common attribute by which the messages are ordered; sections are then a further breakdown of the group.  For example, a size group will have sections based on message size: Enormous (>5MB), Huge (1-5MB), Large (100KB-1MB), etc.
+
+This phase provides the following groupings:
+* Date which has sections: Today, Yesterday, Day of this week (e.g. Monday, Tuesday, Wednesday, etc), Last Week, Two Weeks Ago, Three Weeks Ago, Last Month, Older
+* Size which has sections: Enormous, Huge, Very Large, Large, Medium, Small, Tiny
+* From -- groups by from using display name or email address for sections
+
+Future groupings:
+* Priority -- Important, Important & Unread, Flagged?
+* Tag
+* Subject?
+
+Design:
+The design for group by list introduces the following components:
+
+ZmMailListGroup -- This is the base class for creating groups.  It provides public methods:
+getAllSections -- returns HTML string of all sections including the headers.  Takes a sortAsc parameter.
+addMsgToSection -- based on a mail message, files HTML string into the correct section
+isMsgInGroup -- determines if a message is in a group
+clearSections -- clear the sections
+getSectionSize 
+getSectionTitle 
+getSectionHeader 
+getSortBy 
+getAllSectionHeaders
+
+For each section in a group there is a ZmMailListSectionHeader object.  This object extends DwtControl and provides the dividing bar between sections.  It has methods to collapse, expand, mouseover, mouseout, mousedown support.  It also supports a right-click action menu to expand/collapse all sections.
+
+Caching Groups:
+Groups are cached by folderId.  When a user chooses to arrange by group, the group is set and saved to cache (ZmSetting.GROUPBY_LIST). The group sort (e.g. ZmSearch.SIZE_ASC) is also persisted under the ZmSetting.SORTING_PREF with the folderId as key.  This value is then persisted to the server. When a mail folder is clicked in the folder tree, the sortBy value is retrieved from SORTING_PREF and passed to the search controller. 
+
+Displaying Groups:
+When the mail list view is set, the group is looked up by folderId.  In the case of a search, which has no folderId, the group is set based upon the last view.  So if the user had a group set (e.g. Date), then does a search, the results are arranged by Date group.
+
+Open Issues:
+* Persisting Groups to the server (bug 30319)
+* Date Group arrangement when Sunday is not the first day of the week
+* In folders with a large number of messages, a user may arrange by group.  Not all groups will be displayed until the user scrolls the whole list view.  This could be an issue if the user wants to collapse the groups and jump to a group that is not yet loaded.
+* Tags: punting on grouping by tags for now.  Initial design is to get all tags then do a batch request for each tag.  Need to handle duplicates, etc.  
+* A lot of work is done to set the appropriate checks in the action menu (e.g. reading pane on right, user groups by date then chooses sort by size).  There are still some minor issues here.
+* I've persisted the sorting for folders, but initial loading is still dateDesc.   So if user groups by size, then logs out and comes back, mailbox will be ordered by dateDesc.  User clicks on another mail folder, the returns to inbox, view is now sorted by size.
