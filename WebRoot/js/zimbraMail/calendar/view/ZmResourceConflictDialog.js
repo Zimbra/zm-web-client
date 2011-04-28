@@ -38,7 +38,7 @@ ZmResourceConflictDialog = function(parent) {
 	};
 
     this.registerCallback(ZmResourceConflictDialog.SAVE_BUTTON, this._handleSaveButton, this);
-    this.registerCallback(ZmResourceConflictDialog.CANCEL_BUTTON, this.popdown, this);
+    this.registerCallback(ZmResourceConflictDialog.CANCEL_BUTTON, this._handleCancelButton, this);
 };
 
 ZmResourceConflictDialog.prototype = new DwtDialog;
@@ -293,6 +293,12 @@ function() {
 ZmResourceConflictDialog.prototype._handleSaveButton =
 function() {
     if(this._callback) this._callback.run();
+    this.popdown();
+};
+
+ZmResourceConflictDialog.prototype._handleCancelButton =
+function() {
+    if(this._appt) this._appt.getRecurrence().resetCancelRecurIds();
     this.popdown();
 };
 

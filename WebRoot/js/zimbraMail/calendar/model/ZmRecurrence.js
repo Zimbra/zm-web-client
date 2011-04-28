@@ -474,6 +474,11 @@ function(ridZ) {
     this._cancelRecurIds[ridZ] = true;        
 };
 
+ZmRecurrence.prototype.resetCancelRecurIds =
+function(   ) {
+    this._cancelRecurIds = {};
+};
+
 ZmRecurrence.prototype.isInstanceCanceled =
 function(ridZ) {
     return this._cancelRecurIds[ridZ];
