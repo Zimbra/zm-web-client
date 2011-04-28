@@ -598,6 +598,7 @@ function(calItem, mode) {
 	// set the location attendee(s)
 	var locations = calItem.getAttendees(ZmCalBaseItem.LOCATION);
 	if (locations && locations.length) {
+        this.updateAttendeesCache(ZmCalBaseItem.LOCATION, locations);
 		this._attendees[ZmCalBaseItem.LOCATION] = AjxVector.fromArray(locations);
         var locStr = ZmApptViewHelper.getAttendeesString(locations, ZmCalBaseItem.LOCATION);
         this._setAddresses(this._attInputField[ZmCalBaseItem.LOCATION], locStr);
@@ -612,6 +613,7 @@ function(calItem, mode) {
 	if (equipment && equipment.length) {
         this._toggleResourcesField(true);
 		this._attendees[ZmCalBaseItem.EQUIPMENT] = AjxVector.fromArray(equipment);
+        this.updateAttendeesCache(ZmCalBaseItem.EQUIPMENT, equipment);
         var equipStr = ZmApptViewHelper.getAttendeesString(equipment, ZmCalBaseItem.EQUIPMENT);
         this._setAddresses(this._attInputField[ZmCalBaseItem.EQUIPMENT], equipStr);
         showScheduleView = true;
