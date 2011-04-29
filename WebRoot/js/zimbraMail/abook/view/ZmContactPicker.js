@@ -308,24 +308,64 @@ function(account) {
  */
 ZmContactPicker.prototype._resetSelectDiv =
 function() {
-	this._selectDiv.clearOptions();
+    this._selectDiv.clearOptions();
 
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, this._account)) {
-		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
+    if (appCtxt.multiAccounts) {
+        var accts = appCtxt.accountList.visibleAccounts;
+        var org = ZmOrganizer.ITEM_ORGANIZER;
+        org = ZmOrganizer.ITEM_ORGANIZER[ZmItem.CONTACT];
 
-		if (appCtxt.get(ZmSetting.SHARING_ENABLED, null, this._account))
-			this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
-	}
+        for (var i = 0; i < accts.length; i++) {
+            this._selectDiv.addOption(accts[i].displayName, false, accts[i].id);
+            var folderTree = appCtxt.getFolderTree(accts[i]);
+            var data = [];
+            data = data.concat(folderTree.getByType(org));
+            for (var j = 0; j < data.length; j++) {
+                var addrsbk = data[j];
+                if(addrsbk.noSuchFolder) { continue; }
+                this._selectDiv.addOption(addrsbk.getName(), false, addrsbk.id, "ImgContact");
+            }
+            if(accts[i].isZimbraAccount && !accts[i].isMain) {
+                if (appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, this._account)) {
+                    if (appCtxt.get(ZmSetting.SHARING_ENABLED, null, this._account))
+                        this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS, "ImgContact");
+                }
 
-	if (appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account)) {
-		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
-	}
+                if (appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account)) {
+                    this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL, "ImgContact");
+                }
 
-	if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL, null, this._account) ||
-		!appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account))
-	{
-		this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
-	}
+                if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL, null, this._account) ||
+                        !appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account))
+                {
+                    this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
+                }
+            }
+        }
+
+        for (var k = 0; k < accts.length; k++) {
+            this._selectDiv.enableOption(accts[k].id, false);
+        }
+    } else {
+
+        if (appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, this._account)) {
+            this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
+
+            if (appCtxt.get(ZmSetting.SHARING_ENABLED, null, this._account))
+                this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
+        }
+
+        if (appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account)) {
+            this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
+        }
+
+        if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL, null, this._account) ||
+                !appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account))
+        {
+            this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
+        }
+
+    }
 };
 
 ZmContactPicker.prototype.clearSearch =
