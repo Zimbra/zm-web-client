@@ -676,15 +676,14 @@ function(search, noRender, isMixed, callback, noUpdateOverview, noClear, result)
 
 	if (results.type == ZmItem.APPT) {
 		this._results = new ZmSearchResult(search);
-		return;
-	}
+	} else {
+		this.currentSearch = search;
+		DBG.timePt("execute search", true);
 
-	this.currentSearch = search;
-	DBG.timePt("execute search", true);
-
-	// bug fix #34776 - don't show search results if user is in the composer
-	if (!noRender) {
-		this._showResults(results, search, isMixed, noUpdateOverview, noClear);
+		// bug fix #34776 - don't show search results if user is in the composer
+		if (!noRender) {
+			this._showResults(results, search, isMixed, noUpdateOverview, noClear);
+		}
 	}
 
 	if (callback) {

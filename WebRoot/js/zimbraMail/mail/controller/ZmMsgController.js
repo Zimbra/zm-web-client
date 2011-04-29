@@ -165,60 +165,19 @@ function(map) {
 
 ZmMsgController.prototype._getToolBarOps = 
 function() {
-	var list;
+	var list = [];
 	if (appCtxt.isChildWindow) {
-		list = [ZmOperation.CLOSE, ZmOperation.SEP, ZmOperation.PRINT, ZmOperation.DELETE];
-		list.push(ZmOperation.SEP);
-		list = list.concat(this._msgOps());
-		list.push(ZmOperation.SEP, ZmOperation.SPAM, ZmOperation.SEP, ZmOperation.TAG_MENU);
+		list = [ZmOperation.CLOSE, ZmOperation.SEP];
 	}
-	else {
-		list = this._standardToolBarOps();
-		list.push(ZmOperation.SEP);
-		list = list.concat(this._msgOps());
-		list.push(ZmOperation.SEP,
-					ZmOperation.SPAM,
-					ZmOperation.SEP,
-					ZmOperation.TAG_MENU,
-					ZmOperation.SEP);
-		if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
-			list.push(ZmOperation.DETACH);
-		}
-	}
+	list = list.concat(ZmMailListController.prototype._getToolBarOps(true));
 	return list;
 };
 
 ZmMsgController.prototype._initializeToolBar =
 function(view) {
-	if (!appCtxt.isChildWindow) {
-		ZmMailListController.prototype._initializeToolBar.call(this, view);
-	} else {
-		var buttons = this._getToolBarOps();
-		if (!buttons) return;
-		var params = {
-			parent:this._container,
-			buttons:buttons,
-			className:"ZmMsgViewToolBar_cw",
-			context:this._getViewType(),
-			controller:this
-		};
-		var tb = this._toolbar[view] = new ZmButtonToolBar(params);
+	var className = appCtxt.isChildWindow ? "ZmMsgViewToolBar_cw" : null;
 
-		buttons = tb.opList;
-		for (var i = 0; i < buttons.length; i++) {
-			var button = buttons[i];
-			if (this._listeners[button]) {
-				tb.addSelectionListener(button, this._listeners[button]);
-			}
-		}
-
-		this._setupSpamButton(tb);
-		button = tb.getButton(ZmOperation.TAG_MENU);
-		if (button) {
-			button.noMenuBar = true;
-			this._setupTagMenu(tb);
-		}
-	}
+	ZmMailListController.prototype._initializeToolBar.call(this, view, className);
 };
 
 ZmMsgController.prototype._navBarListener =
