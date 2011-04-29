@@ -400,7 +400,7 @@
 					<span><$=address.City$></span>
 					<$ if (address.City && address.State) { $>, <$ } $>
 					<span><$=address.State$></span>
-					<$ if (address.City && address.State) { $>&nbsp;<$ } $>
+					<$ if (address.City || address.State) { $>&nbsp;<$ } $>
 					<span><$=address.PostalCode$></span>
 				</div>
 			<$ }
