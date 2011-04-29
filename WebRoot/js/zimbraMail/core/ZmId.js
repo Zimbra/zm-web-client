@@ -450,6 +450,8 @@ ZmId.getPrefPageId = function(tabKey) {
  */
  
 ZmId.SEARCH_INPUT			= "zi_search";			// text input in search toolbar
+ZmId.SEARCH_INPUTFIELD      = ZmId.SEARCH_INPUT + "_inputfield";
+ZmId.PEOPLE_SEARCH_INPUTFIELD = "zi_peoplesearch_inputfield";
 
 // context
 ZmId.SEARCH					= "Search";				// element is within search panel
@@ -1036,6 +1038,13 @@ ZmId.OP_FORWARD_APPT			= "FORWARD_APPT";
 ZmId.OP_FORWARD_APPT_INSTANCE	= "FORWARD_APPT_INSTANCE";
 ZmId.OP_FORWARD_APPT_SERIES		= "FORWARD_APPT_SERIES";
 ZmId.OP_FREE_BUSY_LINK			= "FREE_BUSY_LINK";
+ZmId.OP_GROUPBY                 = "GROUPBY";
+ZmId.OP_GROUPBY_DATE            = "GROUPBY_DATE";
+ZmId.OP_GROUPBY_NONE            = "GROUPBY_NONE";
+ZmId.OP_GROUPBY_FROM            = "GROUPBY_FROM";
+ZmId.OP_GROUPBY_PRIORITY        = "GROUPBY_PRIORITY";
+ZmId.OP_GROUPBY_SIZE            = "GROUPBY_SIZE";
+ZmId.OP_GROUPBY_TAG             = "GROUPBY_TAG";
 ZmId.OP_GO_TO_URL				= "GO_TO_URL";
 ZmId.OP_IM						= "IM";
 ZmId.OP_IMPORT_FILE				= "IMPORT_FILE";
@@ -1200,6 +1209,8 @@ ZmId.OP_SHOW_BCC				= "SHOW_BCC";
 ZmId.OP_SHOW_ONLY_CONTACTS		= "SHOW_ONLY_CONTACTS";
 ZmId.OP_SHOW_ONLY_MAIL			= "SHOW_ONLY_MAIL";
 ZmId.OP_SHOW_ORIG				= "SHOW_ORIG";
+ZmId.OP_SORT_ASC                = "SORT_ASC";
+ZmId.OP_SORT_DESC               = "SORT_DESC";
 ZmId.OP_SPAM					= "SPAM";
 ZmId.OP_SPELL_CHECK				= "SPELL_CHECK";
 ZmId.OP_SYNC					= "SYNC";
@@ -1226,3 +1237,11 @@ ZmId.OP_WEEK_VIEW				= "WEEK_VIEW";
 ZmId.OP_WORK_WEEK_VIEW			= "WORK_WEEK_VIEW";
 ZmId.OP_ZIMLET					= "ZIMLET";
 ZmId.OP_SYNC_ALL				= "SYNC_ALL";
+
+//Group By IDs
+ZmId.GROUPBY_DATE               = "GROUPBY_DATE";
+ZmId.GROUPBY_FROM               = "GROUPBY_FROM";
+ZmId.GROUPBY_NONE               = "GROUPBY_NONE";
+ZmId.GROUPBY_PRIORITY           = "GROUPBY_PRIORITY";
+ZmId.GROUPBY_SIZE               = "GROUPBY_SIZE";
+ZmId.GROUPBY_TAG                = "GROUPBY_TAG";
