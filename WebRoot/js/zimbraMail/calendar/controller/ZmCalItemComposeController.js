@@ -259,7 +259,10 @@ function(skipNotify, composeMode) {
 
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 	if (formatBtn) {
-		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, mode, skipNotify);
+        var menu = formatBtn.getMenu ? formatBtn.getMenu() : null;
+        if(menu) {
+		    menu.checkItem(ZmHtmlEditor._VALUE, mode, skipNotify);
+        }
 	}
 };
 
