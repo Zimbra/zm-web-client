@@ -1125,7 +1125,7 @@ function() {
 
 	// create inputs for week fields
 	this._weeklyField = new DwtInputField({parent: this, type: DwtInputField.INTEGER,
-										   initialValue: "2", size: 2, maxLen: 2,
+										   initialValue: "1", size: 2, maxLen: 2,
 										   errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 										   validationStyle: DwtInputField.ONEXIT_VALIDATION,
 										   validator: this._weeklyValidator,
