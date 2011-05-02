@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -217,24 +217,7 @@ function(view) {
 	text.addClassName("itemCountText");
 };
 
-ZmDoublePaneController.prototype._getToolBarOps =
-function() {
-	var list = this._standardToolBarOps();
-	list.push(ZmOperation.SEP);
-	list = list.concat(this._msgOps());
-	list.push(ZmOperation.EDIT,			// hidden except for Drafts
-			  ZmOperation.SEP,
-			  ZmOperation.SPAM,
-			  ZmOperation.SEP,
-			  ZmOperation.TAG_MENU);
 
-	if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
-		list.push(ZmOperation.SEP, ZmOperation.DETACH);
-	}
-
-    list.push(ZmOperation.SEP,ZmOperation.VIEW_MENU);
-	return list;
-};
 
 ZmDoublePaneController.prototype._getActionMenuOps =
 function() {
