@@ -40,7 +40,7 @@
     <c:set property="${contentToSet}" value="${theBody}" target="${uploader.compose}"/>
 
     <c:choose>
-        <c:when test="${uploader.isContactAdd or uploader.isContactSearch}">
+        <c:when test="${uploader.isContactAdd or uploader.isContactSearch or uploader.isContactSearchMore or uploader.isContactSearchPrev }">
            <c:choose>
                 <c:when test="${not empty uploader.compose.draftId}">
                     <c:set scope="request" var="draftid" value="${uploader.compose.draftId}"/>

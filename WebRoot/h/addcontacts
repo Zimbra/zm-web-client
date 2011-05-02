@@ -21,10 +21,7 @@
 
     <zm:composeUploader var="uploader"/>
     <c:set var="compose" value="${uploader.compose}"/>
-
     <c:choose>
-        <c:when test="${uploader.isContactSearch}">
-            <c:choose>
                 <c:when test="${mailbox.features.contactsDetailedSearch}">
                     <c:set var="nameQuery" value="${uploader.contactSearchNameQuery}"/>
                     <c:set var="phoneticQuery" value="${uploader.contactSearchPhoneticQuery}"/>
@@ -35,7 +32,9 @@
                 <c:otherwise>
                     <c:set var="query" value="${uploader.contactSearchQuery}"/>
                 </c:otherwise>
-            </c:choose>
+    </c:choose>
+    <c:choose>
+        <c:when test="${uploader.isContactSearch}">
             <c:choose>
                 <c:when test="${uploader.contactLocation eq 'gal'}">
                     <zm:searchGal var="searchGal" query="${query}" dept="${deptQuery}" email="${emailQuery}" type="account"/>
@@ -45,8 +44,11 @@
                 </c:otherwise>
             </c:choose>
         </c:when>
+        <c:when test="${uploader.isContactSearchMore or uploader.isContactSearchPrev}">
+            <zm:search var="search" query="${empty query ? 'is:local' : query}" offset="${uploader.isContactSearchMore ? uploader.nextSearchOffset : uploader.prevSearchOffset}" sort="nameAsc" types="contact" field="contact:" start="${0}" end="${0}" timezone="${mailbox.prefs.timeZone}" folderid=""/>
+        </c:when>
         <c:otherwise>
-            <zm:search var="search" limit="100"  query="is:local" sort="nameAsc" types="contact" field="contact:" start="${0}" end="${0}" timezone="${mailbox.prefs.timeZone}" folderid=""/>
+            <zm:search var="search" query="is:local" sort="nameAsc" types="contact" field="contact:" start="${0}" end="${0}" timezone="${mailbox.prefs.timeZone}" folderid=""/>
             <c:set var="query" value=""/>
         </c:otherwise>
     </c:choose>
@@ -69,6 +71,19 @@
                     </tr>
                 </table>
             </td>
+            <c:if test="${uploader.contactLocation ne 'gal'}">
+            <td nowrap align=right>
+                <table cellspacing=0 cellpadding=0 class='Tb'>
+                <tr>
+                <app:button id="doSearchPrev" name="actionContactSearchPrev" src="startup/ImgLeftArrow.png" disabled="${search.hasPrevPage ? '' : 'true'}"/>
+                <td>
+                   <app:searchPageOffset searchResult="${search}"/>
+                </td>
+                <app:button id="doSearchMore" name="actionContactSearchMore" src="startup/ImgRightArrow.png" disabled="${search.hasNextPage? '' : 'true'}"/>
+                </tr>
+                </table>
+            </td>
+            </c:if> 
         </tr>
     </table>
 </c:set>
@@ -223,6 +238,8 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                 <tr>
                     <td class='List'>
                         <app:contactAddListView searchResult="${search}" searchGalResult="${searchGal}" uploader="${uploader}"/>
+                        <input type="hidden" name='nextSearchOffset' id="nextSearchOffset" value="${search.nextOffset}"/>
+                        <input type="hidden" name='prevSearchOffset' id="prevSearchOffset" value="${search.prevOffset}"/>
                     </td>
                 </tr>
             </table>
