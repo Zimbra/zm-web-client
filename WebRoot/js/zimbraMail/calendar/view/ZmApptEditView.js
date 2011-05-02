@@ -685,6 +685,7 @@ function(calItem, mode) {
     this.setApptMessage(this._getMeetingStatusMsg(calItem));
 
     this.updateToolbarOps();
+    this._controller.setRequestResponses(calItem && calItem.hasAttendees() ? calItem.shouldRsvp() : true);
 
     showScheduleView = showScheduleView && !this._isForward;
 
