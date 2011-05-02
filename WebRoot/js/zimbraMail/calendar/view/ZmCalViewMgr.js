@@ -79,6 +79,19 @@ function() {
 	}
 };
 
+ZmCalViewMgr.prototype.layoutWorkingHours =
+function() {
+	for (var name in this._views) {
+		if (name == ZmId.VIEW_CAL_DAY ||
+            name == ZmId.VIEW_CAL_WORK_WEEK ||
+            name == ZmId.VIEW_CAL_WEEK ||
+            name == ZmId.VIEW_CAL_FB ||
+            name == ZmId.VIEW_CAL_SCHEDULE
+            )
+			this._views[name].layoutWorkingHours();
+	}
+};
+
 ZmCalViewMgr.prototype.needsRefresh =
 function(viewId) {
 	viewId = viewId || this._currentViewName;

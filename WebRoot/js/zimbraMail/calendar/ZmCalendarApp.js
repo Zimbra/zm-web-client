@@ -1178,10 +1178,25 @@ function(resource) {
 
 ZmCalendarApp.prototype._addSettingsChangeListeners =
 function() {
-	ZmApp.prototype._addSettingsChangeListeners.call(this);
+
+    ZmApp.prototype._addSettingsChangeListeners.call(this);
 
 	if (!this._settingsListener) {
 		this._settingsListener = new AjxListener(this, this._settingsChangeListener);
+	}
+
+    var settings = appCtxt.getSettings();
+	var setting = settings.getSetting(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);
+	if (setting) {
+		setting.addChangeListener(this._settingListener);
+	}
+	setting = settings.getSetting(ZmSetting.CAL_FIRST_DAY_OF_WEEK);
+	if (setting) {
+		setting.addChangeListener(this._settingListener);
+	}
+    setting = settings.getSetting(ZmSetting.CAL_WORKING_HOURS);
+	if (setting) {
+		setting.addChangeListener(this._settingListener);
 	}
 
 	var settings = appCtxt.getSettings();
@@ -1192,6 +1207,36 @@ function() {
 /**
  * Settings listener to process changed settings.
  */
+ZmCalendarApp.prototype._settingChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_SETTING) { return; }
+
+	var setting = ev.source;
+    if (setting.id == ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL) {
+		if (setting.getValue()) {
+			AjxDispatcher.run("ShowMiniCalendar", true);
+		} else if (!this._active) {
+			AjxDispatcher.run("ShowMiniCalendar", false);
+		}
+	} else if (setting.id == ZmSetting.CAL_FIRST_DAY_OF_WEEK) {
+		var controller = AjxDispatcher.run("GetCalController");
+		var minical = controller.getMiniCalendar();
+
+		var firstDayOfWeek = setting.getValue();
+		minical.setFirstDayOfWeek(firstDayOfWeek);
+
+		var date = minical.getDate();
+		controller.setDate(date, 0, true);
+	}
+    else if (setting.id == ZmSetting.CAL_WORKING_HOURS) {
+        var controller = AjxDispatcher.run("GetCalController");
+		var viewMgr = controller.getViewMgr();
+        if(viewMgr) {
+            viewMgr.layoutWorkingHours();
+        }
+    }
+};
+
 ZmCalendarApp.prototype._settingsChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTINGS) { return; }
