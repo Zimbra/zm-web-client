@@ -292,8 +292,6 @@ function(mode, appt) {
         sendButton.setVisible(false);
 
         this._requestResponses.setEnabled(false);
-        this.setRequestResponses(false);
-
     }else {
         sendButton.setVisible(true);
         saveButton.setVisible(true);
@@ -306,8 +304,6 @@ function(mode, appt) {
 		cancelButton.setImage("Close");
 
         this._requestResponses.setEnabled(true);
-        this.setRequestResponses(appt && appt.hasAttendees() ? appt.shouldRsvp() : true);
-
     }
 
     if((this._mode == ZmCalItem.MODE_PROPOSE_TIME) || ZmCalItem.FORWARD_MAPPING[this._mode]) {
