@@ -249,7 +249,10 @@ function(html, idx, item, field, colIdx, params) {
  */
 ZmFilterListView.prototype._changeListener =
 function(ev) {
-	if (ev.type != ZmEvent.S_FILTER) { return; }
+	if (ev.type != ZmEvent.S_FILTER) {
+		DBG.println(AjxDebug.DBG3, "FILTER RULES: ev.type == " + ev.type);
+		return;
+	}
 
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: change listener");
 	if (ev.event == ZmEvent.E_MODIFY && !ev.handled) {
