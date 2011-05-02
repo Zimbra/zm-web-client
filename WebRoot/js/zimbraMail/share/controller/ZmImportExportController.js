@@ -363,6 +363,7 @@ function(funcName, params, type, fault1 /* , ... , faultN */) {
 	}
 	else {
 		this._importSuccess(params.callback);
+		appCtxt.getAppController().sendNoOp(); //send no-op to refresh
 	}
 
 	// cleanup
