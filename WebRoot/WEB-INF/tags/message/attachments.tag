@@ -41,17 +41,10 @@
             <tr>
                 <td>
                     <c:choose>
-                        <c:when test="${part.isImage and print and param.zd}">
+                    	<c:when test="${part.isImage and print and not zm:isProvOrAttr(pageContext, 'zimbraAttachmentsBlocked')}">
                             <a target="_blank" href="${url}&amp;disp=i">
                                 <img class='AttachmentImage' src="${url}" alt="${fn:escapeXml(part.displayName)}" width="120" height="80" border="0"/>
                             </a>
-                        </c:when>
-                        <c:when test="${part.isImage and print}">
-                            <c:if test="${not zm:isProvOrAttr(pageContext, 'zimbraAttachmentsBlocked')}" >
-                                <a target="_blank" href="${url}&amp;disp=i">
-                                    <img class='AttachmentImage' src="${url}" alt="${fn:escapeXml(part.displayName)}" width="120" height="80" border="0"/>
-                                </a>
-                            </c:if>
                         </c:when>
                         <c:when test="${part.isImage and not print and not zm:isProvOrAttr(pageContext, 'zimbraAttachmentsBlocked')}">
                             <a target="_blank" href="${url}&amp;disp=i">
@@ -65,34 +58,30 @@
                 </td>
                 <td><b>${fn:escapeXml(pname)}</b><br />
                         ${zm:displaySize(pageContext,part.size)}&nbsp;
-                    <c:if test="${not print}" >
-                        <c:if test="${not zm:isProvOrAttr(pageContext, 'zimbraAttachmentsBlocked')}">
-                            <a target="_blank" href="${url}&amp;disp=i"><fmt:message key="view"/></a>&nbsp;
-                            <c:if test="${mailbox.features.viewInHtml and part.isViewAsHtmlTarget}">
-                                <a target="_blank" href="${url}&amp;view=html"><fmt:message key="viewAsHtml"/></a>
-                                &nbsp;
-                            </c:if>
-                            <a href="${url}&amp;disp=a"><fmt:message key="download"/></a>
-                        </c:if>
+                    <c:if test="${not print and not zm:isProvOrAttr(pageContext, 'zimbraAttachmentsBlocked')}">
+                    <a target="_blank" href="${url}&amp;disp=i"><fmt:message key="view"/></a>&nbsp;
+                    <c:if test="${mailbox.features.viewInHtml and part.isViewAsHtmlTarget}">
+                        <a target="_blank" href="${url}&amp;view=html"><fmt:message key="viewAsHtml"/></a>
+                        &nbsp;
                     </c:if>
+                    <a href="${url}&amp;disp=a"><fmt:message key="download"/></a>
+                    </c:if>    
                 </td>
             </tr>
         </table>
     </c:if>
 </c:forEach>
 
-<c:if test="${message.numberOfAttachments gt 1 and not print}" >
-    <c:if test="${not zm:isProvOrAttr(pageContext, 'zimbraAttachmentsBlocked')}">
-        <c:set var="url" value="/service/home/~/?id=${message.id}&part=${message.attachmentIds}&amp;auth=co&amp;disp=a&amp;fmt=zip"/>
-        <table cellspacing="8">
-            <tr>
-                <td>
-                    <app:img src="zimbra/ImgZipDoc.png" alt="zip" title="zip"/>
-                </td>
-                <td>
-                    <a href="${url}"><fmt:message key="downloadAllAttachments"/></a>
-                </td>
-            </tr>
-        </table>
-    </c:if>
+<c:if test="${message.numberOfAttachments gt 1 and not print and not zm:isProvOrAttr(pageContext, 'zimbraAttachmentsBlocked')}">
+    <c:set var="url" value="/service/home/~/?id=${message.id}&part=${message.attachmentIds}&amp;auth=co&amp;disp=a&amp;fmt=zip"/>
+    <table cellspacing="8">
+        <tr>
+            <td>
+                <app:img src="zimbra/ImgZipDoc.png" alt="zip" title="zip"/>
+            </td>
+            <td>
+                <a href="${url}"><fmt:message key="downloadAllAttachments"/></a>
+            </td>
+        </tr>
+    </table>
 </c:if>

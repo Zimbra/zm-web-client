@@ -1606,8 +1606,7 @@ function(callback){
  */
 ZmCalItem.prototype._doCancel =
 function(mode, callback, msg, batchCmd, result) {
-    var folderId = this.getFolder().nId;
-	if(folderId == ZmOrganizer.ID_TRASH) {
+	if(this.folderId == ZmOrganizer.ID_TRASH) {
 		mode = ZmCalItem.MODE_PURGE;
 		var soapDoc = AjxSoapDoc.create(this._getSoapForMode(mode), "urn:zimbraMail");
 		var action = soapDoc.set("action");

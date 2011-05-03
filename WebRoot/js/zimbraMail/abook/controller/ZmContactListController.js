@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -170,7 +170,9 @@ function(view, force, initialized, stageView) {
 		this._setup(view);
 		DBG.timePt("done setting up view");
 
-		var elements = this.getViewElements(view, this._parentView[view]);
+		var elements = {};
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
 
 		// call initialize before _setView since we havent set the new view yet
 		if (!initialized) {

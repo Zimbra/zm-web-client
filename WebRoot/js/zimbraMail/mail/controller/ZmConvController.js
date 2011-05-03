@@ -171,11 +171,14 @@ function(view) {
 /**
  * Override to replace DELETE with DELETE_MENU
  */
-ZmConvController.prototype.getDeleteOperation =
+ZmConvController.prototype._standardToolBarOps =
 function() {
-	return ZmOperation.DELETE_MENU;
+	return [ZmOperation.NEW_MENU,
+			ZmOperation.SEP,
+			ZmOperation.CHECK_MAIL,
+			ZmOperation.SEP,
+			ZmOperation.DELETE_MENU, ZmOperation.MOVE, ZmOperation.PRINT];
 };
-
 
 ZmConvController.prototype._getViewType =
 function() {

@@ -32,7 +32,7 @@
  */
 ZmFolderTreeController = function(type, dropTgt) {
 
-	if (!arguments.length) { return; }
+	if (arguments.length == 0) { return; }
 
 	ZmTreeController.call(this, (type || ZmOrganizer.FOLDER));
 
@@ -130,7 +130,7 @@ function(parent, type, id) {
 			parent.enable(ZmOperation.NEW_FOLDER, true);
 		}
 		// "Empty" for Chats, Junk and Trash
-		if (nId == ZmFolder.ID_SPAM  ||
+		if (nId == ZmFolder.ID_SPAM ||
 			nId == ZmFolder.ID_TRASH ||
 			nId == ZmFolder.ID_CHATS)
 		{
@@ -217,7 +217,7 @@ function(parent, type, id) {
 
 	button = parent.getOp(ZmOperation.SYNC_OFFLINE_FOLDER);
 	if (button) {
-		if (!folder.isOfflineSyncable) {
+		if (!folder.isOfflineSyncable || isTrash) {
 			button.setVisible(false);
 		} else {
 			button.setVisible(true);
@@ -343,8 +343,7 @@ function(folder) {
 	} else if (folder.id == ZmFolder.ID_ATTACHMENTS) {
 		var attController = AjxDispatcher.run("GetAttachmentsController");
 		attController.show();
-	}
-    else {
+	} else {
 		var searchFor = ZmId.SEARCH_MAIL;
 		if (folder.isInTrash()) {
 			var app = appCtxt.getCurrentAppName();
@@ -356,24 +355,14 @@ function(folder) {
 		var sc = appCtxt.getSearchController();
 		var acct = folder.getAccount();
 
-		var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, folder.nId);
-		if (!sortBy) {
-			sortBy = (sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC;
-		}
 		var params = {
 			query: folder.createQuery(),
 			searchFor: searchFor,
 			getHtml: (folder.nId == ZmFolder.ID_DRAFTS) || appCtxt.get(ZmSetting.VIEW_AS_HTML),
 			types: ((folder.nId == ZmOrganizer.ID_SYNC_FAILURES) ? [ZmItem.MSG] : null), // for Sync Failures folder, always show in traditional view
-			sortBy: sortBy,
+			sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC),
 			accountName: (acct && acct.name)
 		};
-
-		//TODO: experiemental for now
-        if (folder.id == ZmFolder.ID_PRIORITYINBOX) {
-           params.query = "in:Inbox";
-           params.searchId = ZmFolder.ID_PRIORITYINBOX;
-        }
 
 		sc.resetSearchAllAccounts();
 
@@ -543,17 +532,7 @@ function(ev) {
 
 ZmFolderTreeController.prototype._recoverListener =
 function(ev) {
-	appCtxt.getDumpsterDialog().popup(this._getSearchFor(), this._getSearchTypes());
-};
-
-ZmFolderTreeController.prototype._getSearchFor =
-function(ev) {
-	return ZmId.SEARCH_ANY; // Fallback value; subclasses should return differently
-};
-
-ZmFolderTreeController.prototype._getSearchTypes =
-function(ev) {
-	return [ZmItem.MSG]; // Fallback value; subclasses should return differently
+	appCtxt.getDumpsterDialog().popup();
 };
 
 /**
