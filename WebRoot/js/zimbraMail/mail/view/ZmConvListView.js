@@ -827,10 +827,12 @@ function(ev) {
 			var conv = items[i];
 			if (this._itemToSelect && (this._itemToSelect.cid == conv.id  //the item to select is in this conv.
 										|| this._itemToSelect.id == conv.id)) { //the item to select IS this conv
-				var a = conv.msgs.getArray();
 				var omit = {};
-				for (var j = 0, len1 = a.length; j < len1; j++) {
-					omit[a[j].id] = true;
+				if (conv.msgs) { //for some reason, msgs might not be set for the conv.
+					var a = conv.msgs.getArray();
+					for (var j = 0, len1 = a.length; j < len1; j++) {
+						omit[a[j].id] = true;
+					}
 				}
 				//omit the conv too, since if we have ZmSetting.DELETE_SELECT_PREV, going up will get back to this conv, but the conv is gone
 				omit[conv.id] = true;
