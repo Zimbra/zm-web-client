@@ -139,6 +139,7 @@ ZmId.SKIN_APP_MAIN					= "skin_container_app_main";
 ZmId.SKIN_APP_MAIN_ROW_FULL			= "skin_tr_main_full";
 ZmId.SKIN_APP_MAIN_ROW				= "skin_tr_main";
 ZmId.SKIN_APP_TOP_TOOLBAR			= "skin_container_app_top_toolbar";
+ZmId.SKIN_APP_NEW_BUTTON			= "skin_container_app_new_button"; 
 ZmId.SKIN_LINKS						= "skin_container_links";
 ZmId.SKIN_LOGO						= "skin_container_logo";
 ZmId.SKIN_QUOTA_INFO				= "skin_container_quota";

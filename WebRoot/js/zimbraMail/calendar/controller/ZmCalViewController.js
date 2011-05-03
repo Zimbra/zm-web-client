@@ -181,9 +181,8 @@ function(viewId, startDate, skipMaintenance) {
 	this._viewMgr.setView(viewId);
 	DBG.timePt("setup and set view");
 
-	var elements = {};
-	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[ZmId.VIEW_CAL];
-	elements[ZmAppViewMgr.C_APP_CONTENT] = this._viewMgr;
+	var elements = this.getViewElements(ZmId.VIEW_CAL, this._viewMgr);
+
 	this._setView({view:ZmId.VIEW_CAL, elements:elements, isAppView:true});
 	this._currentView = this._viewMgr.getCurrentViewName();
     this.setCurrentListView(null);
@@ -763,7 +762,7 @@ function(items) {
 ZmCalViewController.prototype._getToolBarOps =
 function() {
 	return [
-		ZmOperation.NEW_MENU, ZmOperation.CAL_REFRESH,
+		ZmOperation.CAL_REFRESH,
 		ZmOperation.SEP,
 		ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
 		ZmOperation.SEP,

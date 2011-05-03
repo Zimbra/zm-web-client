@@ -65,9 +65,8 @@ function() {
 		this._toolbar = new ZmToolBar({parent:DwtShell.getShell(window)});
 
 		// setup app elements
-		var elements = {};
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._view;
+		var elements = this.getViewElements(null, this._view, this._toolbar);
+
 
 		// create callbacks
 		var callbacks = {};

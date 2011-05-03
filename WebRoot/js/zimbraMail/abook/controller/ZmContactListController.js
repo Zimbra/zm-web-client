@@ -170,9 +170,7 @@ function(view, force, initialized, stageView) {
 		this._setup(view);
 		DBG.timePt("done setting up view");
 
-		var elements = {};
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
+		var elements = this.getViewElements(view, this._parentView[view]);
 
 		// call initialize before _setView since we havent set the new view yet
 		if (!initialized) {

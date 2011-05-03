@@ -617,10 +617,9 @@ function(initHide, composeMode) {
 	callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 	callbacks[ZmAppViewMgr.CB_PRE_SHOW] = new AjxCallback(this, this._preShowCallback);
 	callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
-	var elements = {};
 	this._initializeToolBar();
-	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-	elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
+	var elements = this.getViewElements(null, this._composeView, this._toolbar);
+
 	this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, tabParams:this._getTabParams()});
 	if (initHide) {
 		this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
@@ -942,6 +941,8 @@ ZmComposeController.prototype._initializeToolBar =
 function() {
 	if (this._toolbar) { return; }
 
+	this._setNewButtonProps(null, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
+	
 	var buttons = [];
 	if (this._canSaveDraft() && appCtxt.get(ZmSetting.MAIL_SEND_LATER_ENABLED)) {
 		buttons.push(ZmOperation.SEND_MENU);

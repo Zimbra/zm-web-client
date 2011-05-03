@@ -68,6 +68,15 @@ function() {
     return this._action == ZmCalItemComposeController.SAVE;
 };
 
+ZmTaskController.prototype._createToolBar =
+function() {
+	ZmCalItemComposeController.prototype._createToolBar.call(this);
+
+	//override the new button properties, since we want it to default to task.
+	this._setNewButtonProps(null, ZmMsg.createNewTask, "NewTask", "NewTaskDis", ZmOperation.NEW_TASK);
+};
+
+
 ZmTaskController.prototype._handleResponseSave =
 function(calItem, result) {
 	ZmCalItemComposeController.prototype._handleResponseSave.call(this, calItem);

@@ -46,6 +46,7 @@ ZmListController = function(container, app) {
 	ZmController.call(this, container, app);
 
 	this._toolbar = {};			// ZmButtonToolbar (one per view)
+	this._newButton = null;
 	this._navToolBar = {};		// ZmNavToolBar (one per view)
 	this._listView = {};		// ZmListView (one per view)
 	this._tabGroups = {};		// DwtTabGroup (one per view)
@@ -426,13 +427,6 @@ function(view, className) {
 		button.setText(null);
 	}
 
-	button = tb.getButton(ZmOperation.NEW_MENU);
-	if (button) {
-		var listener = new AjxListener(tb, ZmListController._newDropDownListener);
-		button.addDropDownSelectionListener(listener);
-		tb._ZmListController_this = this;
-		tb._ZmListController_newDropDownListener = listener;
-	}
 
 	button = tb.getButton(ZmOperation.TAG_MENU);
 	if (button) {
@@ -610,33 +604,6 @@ function() {
 
 // Operation listeners
 
-/**
- * Create some new thing, via a dialog. If just the button has been pressed (rather than
- * a menu item), the action taken depends on the app.
- *
- * @param {DwtUiEvent}	ev		the ui event
- * @param {constant}	op		the operation ID
- * @param {Boolean}		newWin	<code>true</code> if in a separate window
- * 
- * @private
- */
-ZmListController.prototype._newListener =
-function(ev, op, params) {
-	if (!ev && !op) { return; }
-	op = op || ev.item.getData(ZmOperation.KEY_ID);
-	if (!op || op == ZmOperation.NEW_MENU) {
-		op = this._defaultNewId;
-	}
-
-	var app = ZmApp.OPS_R[op];
-	if (app) {
-		params = params || {};
-		params.ev = ev;
-		appCtxt.getApp(app).handleOp(op, params);
-	} else {
-		ZmController.prototype._newListener.call(this, ev, op);
-	}
-};
 
 
 /**
@@ -1330,20 +1297,6 @@ function(parent) {
 	}
 };
 
-/**
- * Set up the New button based on the current app.
- * 
- * @private
- */
-ZmListController.prototype._setNewButtonProps =
-function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
-	var newButton = this._toolbar[view].getButton(ZmOperation.NEW_MENU);
-	if (newButton) {
-		newButton.setToolTipContent(toolTip);
-		newButton.setImage(enabledIconId);
-		this._defaultNewId = defaultId;
-	}
-};
 
 /**
  * Sets text to "add" or "edit" based on whether a participant is a contact or not.
@@ -1841,28 +1794,6 @@ function() {
 	return null;
 };
 
-/**
- * Creates the New menu's drop down menu the first time the drop down arrow is used,
- * then removes itself as a listener.
- * 
- * @private
- */
-ZmListController._newDropDownListener =
-function(event) {
-	var toolbar = this;
-
-	var controller = toolbar._ZmListController_this;
-	controller._propagateMenuListeners(toolbar, ZmOperation.NEW_MENU);
-
-	var button = toolbar.getButton(ZmOperation.NEW_MENU);
-	var listener = toolbar._ZmListController_newDropDownListener;
-	button.removeDropDownSelectionListener(listener);
-	//Called explicitly as its a selection listener. Refer DwtButton._dropDownCellMouseDownHdlr()
-	button.popup();
-
-	delete toolbar._ZmListController_this;
-	delete toolbar._ZmListController_newDropDownListener;
-};
 
 /**
  * @private

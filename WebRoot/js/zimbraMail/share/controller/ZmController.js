@@ -72,6 +72,120 @@ ZmController.prototype.getApp = function() {
 	return this._app;
 };
 
+
+ZmController.prototype.getNewButton =
+function(overrides) {
+	if (this._newButton) {
+		return this._newButton;
+	}
+	overrides = overrides || {};
+	var newButton = this._newButton = new DwtToolBarButton({parent: this._container, posStyle: DwtControl.ABSOLUTE_STYLE});
+	newButton.setText(ZmMsg._new);
+
+	ZmOperation.addNewMenu(newButton);
+
+	var selectionListener = new AjxListener(this, this._newButtonListener);
+	var listener = new AjxListener(this, this._newDropDownListener, selectionListener);
+	this._ZmController_newDropDownListener = listener;
+	newButton.addSelectionListener(selectionListener);
+	newButton.addDropDownSelectionListener(listener);
+
+	return newButton;
+};
+
+
+/**
+ * Creates the New menu's drop down menu the first time the drop down arrow is used,
+ * then removes itself as a listener.
+ *
+ * @private
+ */
+ZmController.prototype._newDropDownListener =
+function(selectionListener, event) {
+
+	var menu = this._newButton.getMenu();
+	var items = menu.getItems();
+	for (var i = 0; i < menu.getItemCount(); i++) {
+		items[i].addSelectionListener(selectionListener);
+	}
+
+
+	var listener = this._ZmController_newDropDownListener;
+	this._newButton.removeDropDownSelectionListener(listener);
+	//Called explicitly as its a selection listener. Refer DwtButton._dropDownCellMouseDownHdlr()
+	this._newButton.popup();
+
+	delete this._ZmController_newDropDownListener;
+};
+
+/**
+ * Create some new thing, via a dialog. If just the button has been pressed (rather than
+ * a menu item), the action taken depends on the app.
+ *
+ * @param {DwtUiEvent}	ev		the ui event
+ * @param {constant}	op		the operation ID
+ * @param {Boolean}		newWin	<code>true</code> if in a separate window
+ *
+ * @private
+ */
+ZmController.prototype._newButtonListener =
+function(ev, op, params) {
+	if (!ev && !op) { return; }
+	op = op || ev.item.getData(ZmOperation.KEY_ID);
+	if (!op || op == ZmOperation.NEW_MENU) {
+		op = this._defaultNewId;
+	}
+
+	var app = ZmApp.OPS_R[op];
+	if (app) {
+		params = params || {};
+		params.ev = ev;
+		appCtxt.getApp(app).handleOp(op, params);
+	} else {
+		this._newListener(ev, op);
+	}
+};
+
+
+/**
+ * Set up the New button based on the current app.
+ *
+ * @private
+ */
+ZmController.prototype._setNewButtonProps =
+function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
+	var newButton = this.getNewButton();
+	newButton.setToolTipContent(toolTip);
+	newButton.setImage(enabledIconId);
+	this._defaultNewId = defaultId;
+};
+
+
+/**
+ * return the view elements. Currently a toolbar, app content, and "new" button.
+ * 
+ * @param view (optional if provided toolbar)
+ * @param appContentView
+ * @param toolbar (used only if view param is null)
+ *
+ */
+ZmController.prototype.getViewElements =
+function(view, appContentView, toolbar) {
+	var elements = {};
+	toolbar = toolbar || this._toolbar[view];
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = toolbar;
+
+	if (this._newButton && !appCtxt.isChildWindow) {
+		elements[ZmAppViewMgr.C_NEW_BUTTON] = this._newButton;
+	}
+
+	elements[ZmAppViewMgr.C_APP_CONTENT] = appContentView;
+
+	return elements;
+};
+
+
+
 /**
  * Pops-up the error dialog.
  * 
@@ -814,6 +928,10 @@ function(visible) {
 	if (!visible) {
 		appCtxt.getSearchController().showBrowseView(false, null, true);
 	}
+
+	//todo - returning now since we are moving the search toolbar to the header anyway, and it causes weird stuff with my new layout.
+	//todo - remove the rest later when moving the search toolbar up.
+	return;
 
 	var tb = document.getElementById(ZmId.SEARCH_TOOLBAR);
 

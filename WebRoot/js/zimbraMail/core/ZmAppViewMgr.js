@@ -157,6 +157,7 @@ ZmAppViewMgr.C_APP_CHOOSER				= "appChooser";
 ZmAppViewMgr.C_TREE						= "tree";
 ZmAppViewMgr.C_TREE_FOOTER				= "treeFooter";
 ZmAppViewMgr.C_TOOLBAR_TOP				= "topToolbar";
+ZmAppViewMgr.C_NEW_BUTTON				= "newButton";
 ZmAppViewMgr.C_TOOLBAR_BOTTOM			= "bottomToolbar";
 ZmAppViewMgr.C_APP_CONTENT				= "main";
 ZmAppViewMgr.C_APP_CONTENT_FULL			= "fullScreen";
@@ -172,7 +173,7 @@ ZmAppViewMgr.ALL_COMPONENTS = [
 	ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_PEOPLE_SEARCH, ZmAppViewMgr.C_SEARCH_BUILDER,
 	ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
 	ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
-	ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_TOOLBAR_BOTTOM,
+	ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_TOOLBAR_BOTTOM,
 	ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL,
 	ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_TASKBAR, ZmAppViewMgr.C_FOOTER,
 	ZmAppViewMgr.C_AD, ZmAppViewMgr.C_UNITTEST
@@ -220,6 +221,7 @@ function() {
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TREE]					= ZmId.SKIN_TREE;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TREE_FOOTER]			= ZmId.SKIN_TREE_FOOTER;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TOOLBAR_TOP]			= ZmId.SKIN_APP_TOP_TOOLBAR;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_NEW_BUTTON]				= ZmId.SKIN_APP_NEW_BUTTON;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TOOLBAR_BOTTOM]			= ZmId.SKIN_APP_BOTTOM_TOOLBAR;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT]			= ZmId.SKIN_APP_MAIN;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT_FULL]		= ZmId.SKIN_APP_MAIN_FULL;
@@ -982,7 +984,7 @@ function(view) {
 	// if skin, elements already laid out by being placed in their containers
 	if (this._hasSkin) { return; }
 	
-	var topToolbar = this._components[ZmAppViewMgr.C_TOOLBAR_TOP];
+	var topToolbar = this._components[ZmAppViewMgr.C_TOOLBAR_TOP]; //todo - need something here for the new button???
 	var sz = topToolbar.getSize();
 	var height = sz.y ? sz.y : topToolbar.getHtmlElement().clientHeight;
 	topToolbar.setBounds(0, 0, this._shellSz.x, height);
@@ -1181,7 +1183,7 @@ function(ev) {
 			var view = this._views[this._currentView];
 			if (view) {
 				// reset width of top toolbar
-				var topToolbar = view[ZmAppViewMgr.C_TOOLBAR_TOP];
+				var topToolbar = view[ZmAppViewMgr.C_TOOLBAR_TOP]; //todo - something similar for new button here?
 				if (topToolbar) {
 					topToolbar.setSize(ev.newWidth, Dwt.DEFAULT);
 				}
@@ -1205,7 +1207,7 @@ function(ev) {
 				var list = [
 					ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_PEOPLE_SEARCH, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
 					ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
-					ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL,
+					ZmAppViewMgr.C_TOOLBAR_TOP,ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL,
 					ZmAppViewMgr.C_TOOLBAR_BOTTOM, ZmAppViewMgr.C_TASKBAR, ZmAppViewMgr.C_AD, ZmAppViewMgr.C_FOOTER
 				];
 				this._fitToContainer(list, true);

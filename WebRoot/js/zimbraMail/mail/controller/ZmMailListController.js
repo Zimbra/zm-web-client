@@ -594,7 +594,6 @@ function() {
 		return [];
 	}
 	return [
-		ZmOperation.NEW_MENU, ZmOperation.SEP,
 		ZmOperation.CHECK_MAIL, ZmOperation.SEP
 	];
 };
