@@ -250,11 +250,10 @@ function(html, idx, item, field, colIdx, params) {
 ZmFilterListView.prototype._changeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_FILTER) {
-		DBG.println(AjxDebug.DBG3, "FILTER RULES: ev.type == " + ev.type);
+		AjxDebug.println(AjxDebug.FILTER, "FILTER RULES: ev.type is not S_FILTER; ev.type == " + ev.type);
 		return;
 	}
-
-	DBG.println(AjxDebug.DBG3, "FILTER RULES: change listener");
+	AjxDebug.println(AjxDebug.FILTER, "FILTER RULES: ev.type == '" + ev.type);
 	if (ev.event == ZmEvent.E_MODIFY && !ev.handled) {
 		this._controller.resetListView(ev.getDetail("index"));
 		ev.handled = true;

@@ -99,6 +99,9 @@ function(toolbar, listView) {
 		listView.addActionListener(new AjxListener(this, this._listActionListener));
 		this.resetListView();
 	}
+	else {
+		AjxDebug.println(AjxDebug.FILTER, "FILTER RULES CONTROLLER: initialize has no listview");
+	}
 };
 
 ZmFilterRulesController.prototype.getRules =
