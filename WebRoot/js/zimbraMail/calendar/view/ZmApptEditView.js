@@ -294,7 +294,7 @@ function(calItem) {
 	}
 	calItem.setStartDate(startDate, true);
 	calItem.setEndDate(endDate, true);
-	if (Dwt.getVisibility(this._tzoneSelect.getHtmlElement()))
+	if (Dwt.getDisplay(this._tzoneSelect.getHtmlElement()) != Dwt.DISPLAY_NONE)
 		calItem.timezone = this._tzoneSelect.getValue();
 
 	// set attendees
