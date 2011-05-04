@@ -841,7 +841,7 @@ function() {
 	if (bodyPart && (bodyPart.ct == ZmMimeTable.TEXT_PLAIN || bodyPart.body && ZmMimeTable.isTextType(bodyPart.ct))) {
 		return bodyPart.content;
 	}
-    else if (bodyPart.ct == ZmMimeTable.TEXT_CAL) {
+    else if (bodyPart && bodyPart.ct == ZmMimeTable.TEXT_CAL) {
         // NOTE: IE doesn't match multi-line regex, even when explicitly
         // specifying the "m" attribute.
         var lines = bodyPart.content.split(/\r\n/);
