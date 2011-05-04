@@ -993,13 +993,12 @@ function() {
  * Checks the invite has a reply method.
  * 
  * @param	{int}	compNum		the component number
- * @return	{Boolean}	<code>true</code> if the invite has a reply method
+ * @return	{Boolean}	<code>true</code> if the invite has a method that REQUIRES a reply (ironically NOT REPLY method but rather REQUEST or PUBLISH)
  */
 ZmInvite.prototype.hasInviteReplyMethod =
 function(compNum) {
 	var methodName = this.getInviteMethod(compNum);
 	var publishOrRequest = (methodName == ZmCalendarApp.METHOD_REQUEST ||
-							methodName == ZmCalendarApp.METHOD_REPLY   ||
 							methodName == ZmCalendarApp.METHOD_PUBLISH);
 	return ((methodName == null) || publishOrRequest);
 };
