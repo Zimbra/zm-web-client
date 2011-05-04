@@ -497,22 +497,22 @@ function(subs, sentBy, sentByAddr, obo) {
     }
 
 	// inviteees
-	var str = [];
-    var opt = [];
+	var invitees = [];
+    var optInvitees = [];
 
 	var list = this._invite.getAttendees();
 	for (var i = 0; i < list.length; i++) {
 		var at = list[i];
 		var attendee = new AjxEmailAddress(at.a, null, at.d);
-        if(at.role == ZmCalItem.ROLE_OPTIONAL) {
-            opt.push(om ? om.findObjects(attendee, true, ZmObjectManager.EMAIL, false, options) : attendee.toString());
+        if (at.role == ZmCalItem.ROLE_OPTIONAL) {
+            optInvitees.push(attendee);
         }
         else {
-            str.push(om ? om.findObjects(attendee, true, ZmObjectManager.EMAIL, false, options) : attendee.toString());
+            invitees.push(attendee);
         }
 	}
-	subs.invitees = str.join(om ? "" : AjxEmailAddress.SEPARATOR );
-	subs.optInvitees = opt.join(om ? "" : AjxEmailAddress.SEPARATOR );
+	subs.invitees = this.parent.getAddressesFieldHtml(invitees, options, "inv");
+	subs.optInvitees = this.parent.getAddressesFieldHtml(optInvitees, options, "opt");
 
 	// convert to local timezone if necessary
 	var inviteTz = this._invite.getServerStartTimeTz();

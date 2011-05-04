@@ -1046,6 +1046,52 @@ function(elementId, type) {
 };
 
 
+/**
+ *
+ * formats the array of addresses as HTML with possible "show more" expand link if more than a certain number of addresses are in the field.
+ *
+ * @param addrs array of addresses
+ * @param options
+ * @param type some type identifier (one per page)
+ *
+ * returns {String} the html
+ */
+ZmMailMsgView.prototype.getAddressesFieldHtml =
+function(addrs, options, type) {
+	var idx = 0;
+	var parts = [];
+	var showMoreLink = false;
+	var om = this._objectManager;
+	for (var i = 0; i < addrs.length; i++) {
+		if (i > 0) {
+			// no need for semicolon if we're showing addr bubbles
+			parts[idx++] = options.addrBubbles ? " " : AjxStringUtil.htmlEncode(AjxEmailAddress.SEPARATOR);
+		}
+
+		if (i == ZmMailMsgView.MAX_ADDRESSES_IN_FIELD) {
+			showMoreLink = true;
+			var showMoreId = ZmMailMsgView._getShowMoreId(this._htmlElId, type);
+			var moreId = ZmMailMsgView._getMoreId(this._htmlElId, type);
+			parts[idx++] = "<span id='" + showMoreId + "'>&nbsp;<a href='' onclick='ZmMailMsgView.showMore(\"" + this._htmlElId + "\", \"" + type + "\"); return false;'>";
+			parts[idx++] = ZmMsg.showMore;
+			parts[idx++] = "</a></span><span style='display:none;' id='" + moreId + "'>";
+		}
+		var email = addrs[i];
+		if (email.address) {
+			parts[idx++] = om
+				? (om.findObjects(email, true, ZmObjectManager.EMAIL, false, options))
+				: AjxStringUtil.htmlEncode(email.address);
+		}
+		else {
+			parts[idx++] = AjxStringUtil.htmlEncode(email.name);
+		}
+	}
+	if (showMoreLink) {
+		parts[idx++] = "</span>";
+	}
+	return parts.join("");
+};
+
 ZmMailMsgView.prototype._renderMessage =
 function(msg, container, callback) {
 	var acctId = appCtxt.getActiveAccount().id;
@@ -1138,37 +1184,8 @@ function(msg, container, callback) {
 
 		var addrs = msg.getAddresses(type).getArray();
 		if (addrs.length > 0) {
-			var idx = 0;
-			var parts = [];
-			var showMoreLink = false;
-			for (var j = 0; j < addrs.length; j++) {
-				if (j > 0) {
-					// no need for semicolon if we're showing addr bubbles
-					parts[idx++] = options.addrBubbles ? " " : AjxStringUtil.htmlEncode(AjxEmailAddress.SEPARATOR);
-				}
-
-				if (j == ZmMailMsgView.MAX_ADDRESSES_IN_FIELD) {
-					showMoreLink = true;
-					var showMoreId = ZmMailMsgView._getShowMoreId(this._htmlElId, type);
-					var moreId = ZmMailMsgView._getMoreId(this._htmlElId, type);
-					parts[idx++] = "<span id='" + showMoreId + "'>&nbsp;<a href='' onclick='ZmMailMsgView.showMore(\"" + this._htmlElId + "\", \"" + type + "\"); return false;'>";
-					parts[idx++] = ZmMsg.showMore;
-					parts[idx++] = "</a></span><span style='display:none;' id='" + moreId + "'>";
-				}
-				var email = addrs[j];
-				if (email.address) {
-					parts[idx++] = this._objectManager
-						? (this._objectManager.findObjects(email, true, ZmObjectManager.EMAIL, false, options))
-						: AjxStringUtil.htmlEncode(email.address);
-				} else {
-					parts[idx++] = AjxStringUtil.htmlEncode(email.name);
-				}
-			}
-			if (showMoreLink) {
-				parts[idx++] = "</span>";
-			}
 			var prefix = AjxStringUtil.htmlEncode(ZmMsg[AjxEmailAddress.TYPE_STRING[type]]);
-			var partStr = parts.join("");
+			var partStr = this.getAddressesFieldHtml(addrs, options, type);
 			participants.push({ prefix: prefix, partStr: partStr });
 		}
 	}
