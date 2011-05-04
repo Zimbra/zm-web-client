@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -564,7 +564,7 @@ function(params, result) {
         AjxTimezone.DEFAULT = AjxTimezone.getClientId(AjxTimezone.DEFAULT_RULE.serverId);
     }
 
-	this.notify(ZmAppEvent.PRE_STARTUP);
+	this._evtMgr.notifyListeners(ZmAppEvent.PRE_STARTUP, this._evt);
 
 	params.result = result;
 	var respCallback = new AjxCallback(this, this._handleResponseStartup1, params);
@@ -598,7 +598,7 @@ function(params, result) {
 		function() {
 			AjxDispatcher.enableLoadFunctions(true);
 			appCtxt.inStartup = false;
-			this.notify(ZmAppEvent.POST_STARTUP);
+			this._evtMgr.notifyListeners(ZmAppEvent.POST_STARTUP, this._evt);
 
 			// bug fix #31996
 			if (appCtxt.isOffline) {
@@ -687,15 +687,6 @@ function(params) {
 	}
 	else {
 		Dwt.hide(ZmId.SKIN_PEOPLE_SEARCH);
-	}
-	
-	if (params.unitTest) {
-		var utm = this._components[ZmAppViewMgr.C_UNITTEST] = window.unitTestManager;
-		var callback = new AjxCallback(this,
-			function() {
-				utm.runTests();
-			});
-		this.addPostRenderCallback(callback, 6, 100);
 	}
 
 	this.getKeyMapMgr();	// make sure keyboard handling is initialized
@@ -1844,7 +1835,7 @@ function(appName, force, callback, errorCallback, params) {
 			var respCallback = new AjxCallback(this, this._handleResponseActivateApp, [callback, appName]);
 			var eventType = [appName, ZmAppEvent.PRE_LAUNCH].join("_");
 			this._evt.item = this._apps[appName];
-			this.notify(eventType);
+			this._evtMgr.notifyListeners(eventType, this._evt);
 			params = params || {};
 			params.searchResponse = this._searchResponse;
 			this._apps[appName].launch(params, respCallback);
@@ -1868,7 +1859,7 @@ function(callback, appName) {
 
 	var eventType = [appName, ZmAppEvent.POST_LAUNCH].join("_");
 	this._evt.item = this._apps[appName];
-	this.notify(eventType);
+	this._evtMgr.notifyListeners(eventType, this._evt);
 };
 
 /**
@@ -1941,7 +1932,7 @@ function(appName, view, isTabView) {
 			}
 		}
 		this._evt.item = this._apps[appName];
-		this.notify(ZmAppEvent.ACTIVATE);
+		this._evtMgr.notifyListeners(ZmAppEvent.ACTIVATE, this._evt);
 	}
 };
 
@@ -1965,7 +1956,7 @@ function(id) {
 ZmZimbraMail.prototype.appRendered =
 function(appName) {
 	var eventType = [appName, ZmAppEvent.POST_RENDER].join("_");
-	this.notify(eventType);
+	this._evtMgr.notifyListeners(eventType, this._evt);
 
 	if (window._facadeCleanup) {
 		window._facadeCleanup();
@@ -2973,11 +2964,6 @@ function() {
 		errorCallback: errorCallback
 	};
 	appCtxt.getAppController().sendRequest(args);
-};
-
-ZmZimbraMail.prototype.notify =
-function(eventType) {
-	this._evtMgr.notifyListeners(eventType, this._evt);
 };
 
 // YUCK:

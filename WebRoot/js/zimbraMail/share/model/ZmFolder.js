@@ -77,7 +77,6 @@ ZmFolder.ID_SYNC_FAILURES						= ZmOrganizer.ID_SYNC_FAILURES;
 ZmFolder.ID_OUTBOX	 							= ZmOrganizer.ID_OUTBOX;
 ZmFolder.ID_CHATS	 							= ZmOrganizer.ID_CHATS;
 ZmFolder.ID_ATTACHMENTS                         = ZmOrganizer.ID_ATTACHMENTS;
-ZmFolder.ID_PRIORITYINBOX                       = ZmOrganizer.ID_PRIORITYINBOX;
 
 // system folder names
 ZmFolder.MSG_KEY = {};
@@ -98,7 +97,6 @@ ZmFolder.MSG_KEY[ZmOrganizer.ID_ALL_MAILBOXES]	= "allMailboxes";
 ZmFolder.MSG_KEY[ZmFolder.ID_OUTBOX]			= "outbox";
 ZmFolder.MSG_KEY[ZmFolder.ID_SYNC_FAILURES]		= "errorReports";
 ZmFolder.MSG_KEY[ZmFolder.ID_ATTACHMENTS]       = "attachments";
-ZmFolder.MSG_KEY[ZmFolder.ID_PRIORITYINBOX]     = "priorityInbox";
 
 // system folder icons
 ZmFolder.ICON = {};
@@ -112,7 +110,6 @@ ZmFolder.ICON[ZmFolder.ID_DRAFTS]				= "DraftFolder";
 ZmFolder.ICON[ZmFolder.ID_CHATS]				= "ChatFolder";
 ZmFolder.ICON[ZmFolder.ID_LOAD_FOLDERS]			= "Plus";
 ZmFolder.ICON[ZmFolder.ID_ATTACHMENTS]          = "Attachment";
-ZmFolder.ICON[ZmFolder.ID_PRIORITYINBOX]        = "Folder";
 
 // name to use within the query language
 ZmFolder.QUERY_NAME = {};
@@ -137,16 +134,15 @@ for (var id in ZmFolder.QUERY_NAME) {
 
 // order within the overview panel
 ZmFolder.SORT_ORDER = {};
-ZmFolder.SORT_ORDER[ZmFolder.ID_PRIORITYINBOX]  = 1;
-ZmFolder.SORT_ORDER[ZmFolder.ID_INBOX]			= 2;
-ZmFolder.SORT_ORDER[ZmFolder.ID_CHATS]			= 3;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SENT]			= 4;
-ZmFolder.SORT_ORDER[ZmFolder.ID_DRAFTS]			= 5;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SPAM]			= 6;
-ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]			= 7;
-ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]			= 8;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SYNC_FAILURES]	= 9;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]			= 10;
+ZmFolder.SORT_ORDER[ZmFolder.ID_INBOX]			= 1;
+ZmFolder.SORT_ORDER[ZmFolder.ID_CHATS]			= 2;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SENT]			= 3;
+ZmFolder.SORT_ORDER[ZmFolder.ID_DRAFTS]			= 4;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SPAM]			= 5;
+ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]			= 6;
+ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]			= 7;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SYNC_FAILURES]	= 8;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]			= 9;
 ZmFolder.SORT_ORDER[ZmFolder.ID_ATTACHMENTS]    = 99; // Last
 
 // character codes for "tcon" attribute in conv action request, which controls

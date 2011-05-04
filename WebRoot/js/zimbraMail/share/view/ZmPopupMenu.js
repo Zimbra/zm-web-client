@@ -38,7 +38,6 @@ ZmPopupMenu = function(parent, className, id, controller) {
 	var params = Dwt.getParams(arguments, ZmPopupMenu.PARAMS);
 	params.className = params.className ? params.className : "ActionMenu";
 	params.style = params.style || DwtMenu.POPUP_STYLE;
-    params.id = params.id || "POPUP_" + Dwt.getNextId();
 	DwtMenu.call(this, params);
 
 	controller = controller || appCtxt.getCurrentController();
