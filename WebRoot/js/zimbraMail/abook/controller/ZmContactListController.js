@@ -315,7 +315,7 @@ function(map) {
  */
 ZmContactListController.prototype._getToolBarOps =
 function() {
-    var toolbarOps =  [ZmOperation.NEW_MENU, ZmOperation.SEP];
+    var toolbarOps =  [];
     if(appCtxt.isOffline) {
         /* Add a send/recieve button *only* for ZD */
         toolbarOps.push(ZmOperation.CHECK_MAIL, ZmOperation.SEP);

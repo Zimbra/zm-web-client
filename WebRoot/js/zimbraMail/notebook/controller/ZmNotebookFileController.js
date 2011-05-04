@@ -110,7 +110,7 @@ function(parent, num) {
 
 ZmNotebookFileController.prototype._getToolBarOps =
 function() {
-	var list = [ZmOperation.NEW_MENU, ZmOperation.EDIT, ZmOperation.SEP];
+	var list = [ZmOperation.EDIT, ZmOperation.SEP];
 
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		list.push(ZmOperation.TAG_MENU, ZmOperation.SEP);

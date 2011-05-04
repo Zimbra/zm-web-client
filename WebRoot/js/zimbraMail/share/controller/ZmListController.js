@@ -358,9 +358,7 @@ function(view) {
  */
 ZmListController.prototype._standardToolBarOps =
 function() {
-	return [ZmOperation.NEW_MENU,
-			ZmOperation.SEP,
-			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT];
+	return [ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT];
 };
 
 /**

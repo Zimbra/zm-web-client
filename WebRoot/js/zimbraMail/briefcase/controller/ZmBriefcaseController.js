@@ -137,9 +137,7 @@ function() {
 
 ZmBriefcaseController.prototype._getToolBarOps =
 function() {
-    var ops = [ZmOperation.NEW_MENU,
-			ZmOperation.SEP,
-			ZmOperation.NEW_FILE,
+    var ops = [ZmOperation.NEW_FILE,
             ZmOperation.SAVE_FILE,
             ZmOperation.EDIT_FILE,
 			ZmOperation.SEP,

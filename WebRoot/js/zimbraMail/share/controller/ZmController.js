@@ -74,12 +74,13 @@ ZmController.prototype.getApp = function() {
 
 
 ZmController.prototype.getNewButton =
-function(overrides) {
+function(view, overrides) {
 	if (this._newButton) {
 		return this._newButton;
 	}
 	overrides = overrides || {};
-	var newButton = this._newButton = new DwtToolBarButton({parent: this._container, posStyle: DwtControl.ABSOLUTE_STYLE});
+	var buttonId = ZmId.getButtonId(view || this.viewId, ZmOperation.NEW_MENU); 
+	var newButton = this._newButton = new DwtToolBarButton({parent: this._container, id: buttonId, posStyle: DwtControl.ABSOLUTE_STYLE});
 	newButton.setText(ZmMsg._new);
 
 	ZmOperation.addNewMenu(newButton);
@@ -154,7 +155,7 @@ function(ev, op, params) {
  */
 ZmController.prototype._setNewButtonProps =
 function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
-	var newButton = this.getNewButton();
+	var newButton = this.getNewButton(view);
 	newButton.setToolTipContent(toolTip);
 	newButton.setImage(enabledIconId);
 	this._defaultNewId = defaultId;
