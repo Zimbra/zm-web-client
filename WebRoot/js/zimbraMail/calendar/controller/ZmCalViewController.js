@@ -1463,7 +1463,7 @@ function(appt, mode, params) {
 	if(params.startDate) appt.setStartDate(params.startDate);
 	if(params.endDate) appt.setEndDate(params.endDate);
 
-    if(!appt.isOrganizer())
+    if(!appt.isOrganizer() || appt.isShared())
     {
           var origOrganizer=appt.organizer;
           var myEmail=appt.getFolder().getAccount().getEmail();
