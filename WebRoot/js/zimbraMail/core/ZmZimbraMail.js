@@ -1142,26 +1142,31 @@ function(event, isNetworkOn) {
 		},
 		asyncMode:true
 	};
+
     if (isNetworkOn) {
         params.callback = new AjxCallback(this, this.handleClientEventNotifyResponse, event);
         params.noBusyOverlay = true;
+
+        if (this.clientEventNotifyReqId) {
+            appCtxt.getRequestMgr().cancelRequest(this.clientEventNotifyReqId);
+        }
+        this.clientEventNotifyTimerId = 
+            AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.sendClientEventNotify, [event, true]), 3000);
     } else {
         params.callback = new AjxCallback(this, this.setInstantNotify, true);
     }
-	this.sendRequest(params);
+
+    this.clientEventNotifyReqId = this.sendRequest(params);
 };
 
 ZmZimbraMail.prototype.handleClientEventNotifyResponse =
 function(event, res) {
-    var response = res.body && res.body.ClientEventNotifyResponse;
-    if (response) {
-        this.setInstantNotify(true);
+    if (!res.isException() && res.getResponse()) {
         if (this.clientEventNotifyTimerId) {
             AjxTimedAction.cancelAction(this.clientEventNotifyTimerId);
             this.clientEventNotityTimerId = null;
         }
-    } else {
-        this.clientEventNotifyTimerId = AjxTimedAction.scheduleAction(this.sendClientEventNotify(event, true), 2000);
+        this.setInstantNotify(true);
     }
 };
 
