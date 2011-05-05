@@ -615,7 +615,13 @@ function(parent, num) {
 		parent.enable(ZmOperation.EDIT, !isTrash && canEdit && num == 1);
 		parent.enable(ZmOperation.MARK_AS_COMPLETED, !isTrash && canEdit && num > 0);
 		parent.enable(ZmOperation.TAG_MENU, (!isShare && num > 0));
-	}
+	} else {
+      	var task = this._listView[this._currentView].getSelection()[0];
+		var canEdit = (num == 1 && !task.isReadOnly() && !ZmTask.isInTrash(task));
+		parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.TAG_MENU], num > 0);
+		parent.enable(ZmOperation.EDIT, canEdit);
+        parent.enable(ZmOperation.MARK_AS_COMPLETED, canEdit && !task.isComplete())
+    }
 	var printButton = (parent instanceof ZmButtonToolBar) ? parent.getButton(ZmOperation.PRINT) : null;
 	var printMenu = printMenu && printButton.getMenu();
 	var printMenuItem = printMenu && printMenu.getItem(1);

@@ -554,3 +554,15 @@ function(absStr) {
     this._reminderAbs = absStr;
 };
 
+/**
+ * Checks if the task is in the trash.
+ *
+ * @param	{ZmTask}	task		the task
+ * @return	{Boolean}	<code>true</code> if in trash
+ */
+ZmTask.isInTrash =
+function(task) {
+	var folderId = (task instanceof ZmTask) ? task.folderId : task.l;
+	var folder = appCtxt.getById(folderId);
+	return (folder && folder.isInTrash());
+};
