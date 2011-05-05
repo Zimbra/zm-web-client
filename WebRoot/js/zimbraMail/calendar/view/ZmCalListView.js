@@ -370,7 +370,7 @@ function(isStartDate) {
 	var end = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 
 	var startTime = start.getTime();
-	var endTime = end.getTime();
+	var endTime = end.getTime() + AjxDateUtil.MSEC_PER_DAY;
 
 	// normalize dates
 	if (isStartDate && startTime >= endTime) {
@@ -379,7 +379,7 @@ function(isStartDate) {
 		this._endDateField.value = AjxDateUtil.simpleComputeDateStr(end);
 	}
 	else if (endTime <= startTime) {
-		startTime = endTime - AjxDateUtil.MSEC_PER_DAY;
+		startTime = end.getTime() - AjxDateUtil.MSEC_PER_DAY;
 		start = new Date(startTime);
 		this._startDateField.value = AjxDateUtil.simpleComputeDateStr(start);
 	}
