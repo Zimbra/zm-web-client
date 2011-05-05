@@ -34,6 +34,7 @@
  * @param	{String}	params.className			the CSS class name
  * @param	{Stirng}	params.buttonClassName	the CSS class name for buttons
  * @param	{Hash}	params.overrides			a hash of overrides by op ID
+ * @param	{Array}	params.secondaryButtons		a list of operation IDs
  * @param	{constant}	params.context			the vcontextID (used to generate button IDs)
  * @param	{constant}	params.toolbarType		the toolbar type (used to generate button IDs)
  * @param	{ZmController}	params.controller		the owning controller
@@ -52,21 +53,65 @@ ZmButtonToolBar = function(params) {
 	this._buttonStyle = params.buttonClassName;
 
 	// standard buttons default to New/Tag/Print/Delete
-	var buttons = params.buttons;
-	if (!buttons) {
-		buttons = [ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.PRINT, ZmOperation.DELETE];
-	} else if (buttons == ZmOperation.NONE) {
-		buttons = null;
+	var buttonOps = params.buttons;
+	if (!buttonOps) {
+		buttonOps = [ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.PRINT, ZmOperation.DELETE];
+	} else if (buttonOps == ZmOperation.NONE) {
+		buttonOps = null;
 	}
 	// weed out disabled ops, save list of ones that make it
 	/**
 	 * The operation list property.
 	 * @type Array
 	 */
-	this.opList = ZmOperation.filterOperations(buttons);
+	this.opList = ZmOperation.filterOperations(buttonOps);
+
+	var addViewAtEnd = false;
+	if (this.opList[this.opList.length - 1] == ZmOperation.VIEW_MENU) {
+		this.opList.splice(this.opList.length - 1, 1);
+		addViewAtEnd = true;
+	}
+
+	this._zimletButtonLocation = this.opList.length;
+
+	var secondaryOpList = ZmOperation.filterOperations(params.secondaryButtons);
+
+	if (secondaryOpList && secondaryOpList.length) {
+		this.opList.push(ZmOperation.SEP); //separator before actions menu
+	}
+
 	this._buttons = ZmOperation.createOperations(this, this.opList, params.overrides);
 
-	this._createPrecedenceList();
+
+	if (secondaryOpList && secondaryOpList.length) {
+		var actionsButton = new DwtToolBarButton({parent: this});
+		actionsButton.setText("Actions");
+
+		var secondaryMenu = this._secondaryButtonsMenu = new ZmActionMenu({parent: actionsButton, menuItems: ZmOperation.NONE});
+		var secondaryButtons  = ZmOperation.createOperations(secondaryMenu, secondaryOpList, params.overrides);
+		actionsButton.setMenu(secondaryMenu);
+
+		//add secondary buttons to buttons list as I believe from now on it shouldn't matter if they are primary or under the secondary "actions" menu.
+		//that way we don't need to operate on 2 different collections when enabling/disabling, adding listeners, etc.
+		//var secondaryButtons = secondaryMenu._menuItems;
+		for (var id in secondaryButtons) {
+			this._buttons[id] = secondaryButtons[id];
+		}
+		//same as buttons, with opList.
+		this.opList = this.opList.concat(secondaryOpList);
+
+	}
+
+	if (addViewAtEnd) {
+		this.addOp(ZmOperation.FILLER);
+
+		var viewButton = ZmOperation.createOperations(this, [ZmOperation.VIEW_MENU], params.overrides);
+		this._buttons[ZmOperation.VIEW_MENU] = viewButton[ZmOperation.VIEW_MENU];
+		this.opList.push(ZmOperation.VIEW_MENU);
+	}
+
+	//todo - I guess in the new UI a button (primary) will have either text or image. not both. Think of whether this precedence is still required then.
+	this._createPrecedenceList(); //this is only done to the primary, not the secondary buttons (since the secondary are in a drop-down so removing one's image or text won't make sense.)
 	
 	this._inited = true;
 };
@@ -117,6 +162,18 @@ function(id, params) {
 
 	return b;
 };
+
+/**
+ * Creates a zimlet button and adds its operation ID as data. This method selects the best location for the zimlet, so zimlets don't have to do it and it's consistent.
+ *
+ * for parameters see createOp
+ */
+ZmButtonToolBar.prototype.createZimletOp =
+function(id, params) {
+	params.index = this._zimletButtonLocation;
+	return this.createOp(id, params);
+};
+
 
 /**
  * Adds the operation.
