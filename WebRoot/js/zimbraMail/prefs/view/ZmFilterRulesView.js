@@ -249,12 +249,14 @@ function(html, idx, item, field, colIdx, params) {
  */
 ZmFilterListView.prototype._changeListener =
 function(ev) {
-	if (ev.type != ZmEvent.S_FILTER) { return; }
-
-	DBG.println(AjxDebug.DBG3, "FILTER RULES: change listener");
-	if (ev.event == ZmEvent.E_MODIFY && !ev.handled) {
+	if (ev.type != ZmEvent.S_FILTER) {
+		AjxDebug.println(AjxDebug.FILTER, "FILTER RULES: ev.type is not S_FILTER; ev.type == " + ev.type);
+		return;
+	}
+	AjxDebug.println(AjxDebug.FILTER, "FILTER RULES: ev.type == " + ev.type);
+	if (ev.event == ZmEvent.E_MODIFY) {
 		this._controller.resetListView(ev.getDetail("index"));
-		ev.handled = true;
+		AjxDebug.println(AjxDebug.FILTER, "FILTER RULES: MODIFY event, called resetListview");
 	}
 };
 
