@@ -4364,7 +4364,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 
 .InviteSelectLabel {
-    text-align: right;
+    text-align: right; white-space: nowrap;
 }
 
 .InviteStatusAccept, .InviteStatusDecline, .InviteStatusTentative, .InviteOutDated, .InviteIntendedFor {
