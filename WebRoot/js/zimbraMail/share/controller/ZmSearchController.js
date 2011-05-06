@@ -350,7 +350,12 @@ function(menu) {
 ZmSearchController.prototype.search =
 function(params) {
 	if (params.searchFor != ZmItem.APPT && (!params.query && !params.queryHint)) {
-		return;
+		if (params.searchFor == ZmItem.MAIL) {
+			params.query = appCtxt.get(ZmSetting.INITIAL_SEARCH, null, appCtxt.getActiveAccount());
+			params.userText = false;
+		} else {
+			return;
+		}
 	}
 
 	// if the search string starts with "$set:" then it is a command to the client
