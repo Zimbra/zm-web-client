@@ -150,9 +150,9 @@ function() {
 ZmSearch.prototype.execute =
 function(params) {
 	if (params.batchCmd || this.soapInfo) {
-		this._executeSoap(params);
+		return this._executeSoap(params);
 	} else {
-		this._executeJson(params);
+		return this._executeJson(params);
 	}
 };
 

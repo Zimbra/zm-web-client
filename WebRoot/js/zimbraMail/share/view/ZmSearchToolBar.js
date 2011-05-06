@@ -498,10 +498,10 @@ function(button, hint, text, image) {
 	}
 };
 
-ZmSearchToolBar.prototype._handleKeyUp =
+ZmSearchToolBar.prototype._handleKeyDown =
 function(ev) {
-	var code = DwtKeyEvent.getCharCode(ev);
-	if (code == 0x0D) {
+	var key = DwtKeyEvent.getCharCode(ev);
+	if (key == 3 || key == 13) {
 		return this._handleEnterKeyPress(ev);
 	}
 	return true;
@@ -531,7 +531,7 @@ function(id) {
 		delims:				[" ", "\t"],
 		delimCodes:			[3, 13, 32, 9],
 		separator:			" ",
-		enterCallback:		new AjxCallback(this, this._handleEnterKeyPress)
+		keyDownCallback:	new AjxCallback(this, this._handleKeyDown)
 	};
 	this._acList = new ZmAutocompleteListView(params);
 	this._acList.handle(this.getSearchField());

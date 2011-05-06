@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -31,8 +31,6 @@
 ZmAutocomplete = function(params) {
 
 	if (arguments.length == 0) { return; }
-
-	this._acRequests = {};		// request mgmt (timeout, cancel)
 
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		var listener = new AjxListener(this, this._settingChangeListener);
@@ -85,14 +83,14 @@ function() {
  * Returns a list of matching contacts for a given string. The first name, last
  * name, full name, first/last name, and email addresses are matched against.
  *
- * @param {String}					str			the string to match against
- * @param {AjxCallback}				callback	the callback to run with results
- * @param {ZmAutocompleteListView}	aclv		the needed to show wait msg
- * @param {ZmZimbraAccount}			account		the account to fetch cached items from
- * @param {Hash}					options		additional options:
- *  @param {constant} 				 type		 		type of result to match; default is {@link ZmAutocomplete.AC_TYPE_CONTACT}; other valid values are for location or equipment
- *  @param {Boolean}				 needItem	 		if <code>true</code>, return a {@link ZmItem} as part of match result
- *  @param {Boolean}				 supportForget		allow user to reset ranking for a contact (defaults to true)
+ * @param {String}					str				the string to match against
+ * @param {AjxCallback}				callback		the callback to run with results
+ * @param {ZmAutocompleteListView}	aclv			the needed to show wait msg
+ * @param {ZmZimbraAccount}			account			the account to fetch cached items from
+ * @param {Hash}					options			additional options:
+ * @param {constant} 				type		 	type of result to match; default is {@link ZmAutocomplete.AC_TYPE_CONTACT}; other valid values are for location or equipment
+ * @param {Boolean}					needItem	 	if <code>true</code>, return a {@link ZmItem} as part of match result
+ * @param {Boolean}					supportForget	allow user to reset ranking for a contact (defaults to true)
  */
 ZmAutocomplete.prototype.autocompleteMatch =
 function(str, callback, aclv, options, account) {
@@ -104,59 +102,27 @@ function(str, callback, aclv, options, account) {
 	var acType = (options && options.type) || ZmAutocomplete.AC_TYPE_CONTACT;
 
 	var list = this._checkCache(str, acType, account);
-	if (list !== null) {
+	if (!str || (list !== null)) {
 		this._handleResponseAutocompleteMatch(str, callback, list);
 		return;
 	}
 
-	aclv.setWaiting(true);
+	aclv.setWaiting(true, str);
 	var respCallback = new AjxCallback(this, this._handleResponseAutocompleteMatch, [str, callback]);
-	this._doAutocomplete(str, aclv, options, acType, respCallback, account);
+	return this._doSearch(str, aclv, options, acType, respCallback, account);
 };
+
 /**
  * @private
  */
 ZmAutocomplete.prototype._handleResponseAutocompleteMatch =
 function(str, callback, list) {
-	// return results - we check str against curAcStr because we want to make sure
-	// that we're returning results for the most recent (current) query
-	if (str == this._curAcStr) {
-		callback.run(list);
-	}
-};
-
-/**
- * Fetches autocomplete matches for the given string from the server.
- *
- * @param str		[string]					string to match against
- * @param aclv		[ZmAutocompleteListView]	autocomplete popup
- * @param options	[hash]						additional options
- * @param acType	[constant]					type of result to match
- * @param callback	[AjxCallback]				callback to run with results
- * @param account	[ZmZimbraAccount]*			accout to fetch from
- * 
- * @private
- */
-ZmAutocomplete.prototype._doAutocomplete =
-function(str, aclv, options, acType, callback, account) {
-
-	if (this._acRequests[str]) // A request for this particular string is already active.
-		return;
-
-	// cancel any outstanding requests for strings that are substrings of this one
-	for (var substr in this._acRequests) {
-		if (str != substr) {
-			DBG.println("ac", "canceling autocomplete request for '" + substr + "' due to request for '" + str + "'");
-			appCtxt.getAppController().cancelRequest(this._acRequests[substr], null, true);
-			delete this._acRequests[str];
-		}
-	}
-
-	this._doSearch(str, aclv, options, acType, callback, account);
+	callback.run(list);
 };
 
 ZmAutocomplete.prototype._doSearch =
 function(str, aclv, options, acType, callback, account) {
+
 	var params = {query:str, isAutocompleteSearch:true};
 	if (acType != ZmAutocomplete.AC_TYPE_CONTACT) {
 		params.isGalAutocompleteSearch = true;
@@ -178,7 +144,7 @@ function(str, aclv, options, acType, callback, account) {
 		timeout: ZmAutocomplete.AC_TIMEOUT,
 		noBusyOverlay: true
 	};
-	this._acRequests[str] = search.execute(searchParams);
+	return search.execute(searchParams);
 };
 
 /**
@@ -188,13 +154,7 @@ ZmAutocomplete.prototype._handleResponseDoAutocomplete =
 function(str, aclv, options, acType, callback, account, result) {
 
 	DBG.println("ac", "got response for " + str);
-
-	// if we get back results for other than the current string, ignore them
-	if (str != this._curAcStr) { return; }
-
 	aclv.setWaiting(false);
-
-	delete this._acRequests[str];
 
 	var resultList, gotContacts = false, hasGal = false;
 	var resp = result.getResponse();
@@ -210,7 +170,7 @@ function(str, aclv, options, acType, callback, account, result) {
 
 	var list = [];
 	for (var i = 0; i < resultList.length; i++) {
-		var match = new ZmAutocompleteMatch(resultList[i], options, gotContacts);
+		var match = new ZmAutocompleteMatch(resultList[i], options, gotContacts, str);
 		if (match.acType == acType) {
 			if (match.type == ZmAutocomplete.AC_TYPE_GAL) {
 				hasGal = true;
@@ -232,11 +192,9 @@ function(str, aclv, options, acType, callback, account, result) {
  */
 ZmAutocomplete.prototype._handleErrorDoAutocomplete =
 function(str, aclv, ex) {
-	DBG.println("ac", "error on request for " + str + ", canceling");
+	DBG.println("ac", "error on request for " + str + ": " + ex.toString());
 	aclv.setWaiting(false);
-	appCtxt.getAppController().cancelRequest(this._acRequests[str], null, true);
 	appCtxt.setStatusMsg({msg:ZmMsg.autocompleteFailed, level:ZmStatusView.LEVEL_WARNING});
-	delete this._acRequests[str];
 
 	return true;
 };
@@ -254,7 +212,6 @@ function(a, b) {
 	var bScore = (b && b.score) || 0;
 	return (aScore > bScore) ? 1 : (aScore < bScore) ? -1 : 0;
 };
-
 
 /**
  * Checks if the given string is a valid email.
@@ -291,24 +248,23 @@ function(callback) {
 ZmAutocomplete.prototype.expandDL =
 function(contact, offset, callback) {
 
-	var respCallback = new AjxCallback(this, this._handleResponseExpandDL, [callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseExpandDL, [contact, callback]);
 	contact.getDLMembers(offset, null, respCallback);
 };
 
 ZmAutocomplete.prototype._handleResponseExpandDL =
-function(callback, result) {
+function(contact, callback, result) {
 
 	var list = result.list;
 	var matches = [];
 	if (list && list.length) {
 		for (var i = 0, len = list.length; i < len; i++) {
-			var match = new ZmAutocompleteMatch();
 			var addr = list[i];
-			match.text = match.fullAddress = match.email = addr;
+			var match = {};
 			match.type = ZmAutocomplete.AC_TYPE_GAL;
-			match.isDL = result.isDL[addr];
-			match.icon = match.isDL ? "Group" : ZmAutocomplete.AC_ICON[match.type];
-			matches.push(match);
+			match.email = addr;
+			match.isGroup = result.isDL[addr];
+			matches.push(new ZmAutocompleteMatch(match, null, false, contact && contact.str));
 		}
 	}
 	if (callback) {
@@ -460,10 +416,11 @@ function(ev) {
  * @param {Object}	options		the matching options
  * @param {Boolean}	isContact	if <code>true</code>, provided match is a {@link ZmContact}
  */
-ZmAutocompleteMatch = function(match, options, isContact) {
+ZmAutocompleteMatch = function(match, options, isContact, str) {
     AjxDispatcher.require("CalendarCore");
 	if (!match) { return; }
 	this.type = match.type;
+	this.str = str;
 	if (isContact) {
 		this.text = this.name = match.getFullName();
 		this.email = match.getEmail();
@@ -475,17 +432,17 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 		this.isDL = (this.isGroup && this.type == ZmAutocomplete.AC_TYPE_GAL);
 		if (this.isGroup && !this.isDL) {
 			// Local contact group
-			this.fullAddress = match.email;
-			this.name        = match.display;
-			var emails = [];
-			var eIds = match.email.split(',');
-			for (var i = 0; i < eIds.length; i++) {
-				var email = AjxEmailAddress.parse(eIds[i]);
-				if (email && email.getAddress()) {
-					emails.push(email.getAddress());
-				}
+			this.name = match.display;
+			var emails = [], addrs = [];
+			var addresses = AjxEmailAddress.parseEmailString(match.email);
+			addresses = ((addresses.good.size()) && addresses.good.getArray()) || [];
+			for (var i = 0; i < addresses.length; i++) {
+				var addr = addresses[i];
+				emails.push(addr.getAddress());
+				addrs.push(addr.toString());
 			}
-			this.email = emails.join(";");
+			this.email = emails.join(AjxEmailAddress.SEPARATOR);
+			this.fullAddress = addrs.join(AjxEmailAddress.SEPARATOR);
 			this.text = match.display || this.email;
 			this.icon = "Group";
 		} else {
@@ -864,7 +821,7 @@ function(ev) {
  */
 ZmPeopleSearchAutocomplete = function() {
 	// no need to call ctor
-	this._acRequests = {}; 
+//	this._acRequests = {};
 };
 
 ZmPeopleSearchAutocomplete.prototype = new ZmAutocomplete;
@@ -893,7 +850,7 @@ function(str, aclv, options, acType, callback, account) {
 		timeout: ZmAutocomplete.AC_TIMEOUT,
 		noBusyOverlay: true
 	};
-	this._acRequests[str] = search.execute(searchParams);
+	return search.execute(searchParams);
 };
 
 /**
@@ -903,8 +860,6 @@ ZmPeopleSearchAutocomplete.prototype._handleResponseDoAutocomplete =
 function(str, aclv, options, acType, callback, account, result) {
 	// if we get back results for other than the current string, ignore them
 	if (str != this._curAcStr) { return; }
-
-	delete this._acRequests[str];
 
 	var resp = result.getResponse();
 	var cl = resp.getResults(ZmItem.CONTACT);

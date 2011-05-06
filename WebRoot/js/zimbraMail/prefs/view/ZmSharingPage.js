@@ -443,7 +443,7 @@ function() {
 			dataClass:		appCtxt.getAutocompleter(),
 			matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
 			separator:		"",
-			enterCallback:	new AjxCallback(this, this._enterCallback)
+			keyUpCallback:	new AjxCallback(this, this._enterCallback)
 		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 		var inputCtrl = this._shareForm.getControl(ZmSharingView.ID_OWNER);
@@ -485,8 +485,12 @@ function(id) {
 
 ZmSharingView.prototype._enterCallback =
 function(ev) {
-	this._onClick.call(this._shareForm, ZmSharingView.ID_FIND_BUTTON);
-	return false;
+	var key = DwtKeyEvent.getCharCode(ev);
+	if (key == 3 || key == 13) {
+		this._onClick.call(this._shareForm, ZmSharingView.ID_FIND_BUTTON);
+		return false;
+	}
+	return true;
 };
 
 ZmSharingView.prototype._showChooser =

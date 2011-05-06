@@ -114,70 +114,15 @@ function(params) {
 	}
 	
 	var reqId = params.reqId = ("Req_"+ZmRequestMgr._nextReqId++);
-	var timeout = (params.timeout != null) ? params.timeout : this._stdTimeout;
+	DBG.println("req", "assign req ID: " + reqId);
+	var timeout = params.timeout = (params.timeout != null) ? params.timeout : this._stdTimeout;
 	if (timeout) {
 		timeout = timeout * 1000; // convert seconds to ms
 	}
 	var asyncCallback = params.asyncMode ? new AjxCallback(this, this._handleResponseSendRequest, [params]) : null;
 
 	if (params.sensitive) {
-		DBG.println(AjxDebug.DBG2, "request contains sensitive data");
-		// NOTE: If only http mode is available, there's nothing we can
-		//       do. And if we're already using https mode, then there's
-		//       nothing we need to do. We only attempt to send the
-		//       request securely if mixed mode is enabled and the app
-		//       was loaded using http.
-		var isHttp = document.location.protocol == ZmSetting.PROTO_HTTP;
-		var isMixedMode = appCtxt.get(ZmSetting.PROTOCOL_MODE) == ZmSetting.PROTO_MIXED;
-		if (isHttp && isMixedMode) {
-			DBG.println(AjxDebug.DBG2, "sending request securely");
-			// adjust command parameters
-			// TODO: Because of timing issues, should we not use session info?
-			// TODO: But for batch commands, some updates would not be seen immediately.
-			// TODO: To avoid security warning, send response in URL; so limit length
-			params.noSession = true;
-
-			// information
-			var requestStr = ZmCsfeCommand.getRequestStr(params);
-			var loc = document.location;
-			var port = appCtxt.get(ZmSetting.HTTPS_PORT);
-			if (port && port != ZmSetting.DEFAULT_HTTPS_PORT) {
-				port = ":"+port;
-			}
-
-			// create iframe
-			var iframe = document.createElement("IFRAME");
-			iframe.style.display = "none";
-			iframe.id = Dwt.getNextId();
-			document.body.appendChild(iframe);
-
-			// set contents
-			var iframeDoc = Dwt.getIframeDoc(iframe);
-			iframeDoc.write(
-				"<form ",
-					"id=",iframe.id,"-form ",
-					"target=",iframe.id,"-iframe ",
-					"method=POST ",
-					"action='https://",loc.hostname,port,appContextPath,"/public/secureRequest.jsp'",
-				">",
-					"<input type=hidden name=reqId value='",reqId,"'>",
-					"<textarea name=data>",
-						AjxStringUtil.htmlEncode(requestStr),
-					"</textarea>",
-				"</form>",
-				"<iframe name=",iframe.id,"-iframe></iframe>"
-			);
-			iframeDoc.close();
-
-			// save the params for the response
-			params.iframeId = iframe.id;
-			this._pendingRequests[reqId] = params;
-
-			// submit form
-			var form = iframeDoc.getElementById(iframe.id+"-form");
-			form.submit();
-			return;
-		}
+		return this._sensitiveRequest(params, reqId);
 	}
 
 	var command = new ZmCsfeCommand();
@@ -213,13 +158,13 @@ function(params) {
 	}
 
 	appCtxt.currentRequestParams = params;
-	DBG.println(AjxDebug.DBG2, "sendRequest(" + reqId + "): " + methodName);
+	DBG.println("req", "send request " + reqId + ": " + methodName);
 	var cancelParams = timeout ? [reqId, params.errorCallback, params.noBusyOverlay] : null;
 	if (!params.noBusyOverlay) {
 		var cancelCallback = null;
 		var showBusyDialog = false;
 		if (timeout) {
-			DBG.println(AjxDebug.DBG1, "ZmRequestMgr.sendRequest: timeout for " + reqId + " is " + timeout);
+			DBG.println("req", "ZmRequestMgr.sendRequest: timeout for " + reqId + " is " + timeout);
 			cancelCallback = new AjxCallback(this, this.cancelRequest, cancelParams);
 			this._shell.setBusyDialogText(ZmMsg.askCancel);
 			showBusyDialog = true;
@@ -229,14 +174,17 @@ function(params) {
 	} else if (timeout) {
 		var action = new AjxTimedAction(this, this.cancelRequest, cancelParams);
 		this._cancelActionId[reqId] = AjxTimedAction.scheduleAction(action, timeout);
+		DBG.println("req", "schedule cancel action for reqId " + reqId + ": " + this._cancelActionId[reqId]);
 	}
 
 	this._pendingRequests[reqId] = command;
 
 	try {
+		DBG.println("req", "invoke req: " + params.reqId);
 		var response = params.restUri ? command.invokeRest(cmdParams) : command.invoke(cmdParams);
 		command.state = ZmRequestMgr._SENT;
 	} catch (ex) {
+		DBG.println("req", "caught exception on invoke of req: " + params.reqId);
 		this._handleResponseSendRequest(params, new ZmCsfeResult(ex, true));
 		return;
 	}
@@ -249,14 +197,15 @@ function(params) {
  */
 ZmRequestMgr.prototype._handleResponseSendRequest =
 function(params, result) {
+	DBG.println("req", "ZmRequestMgr.handleResponseSendRequest for req: " + params.reqId);
 	var isCannedResponse = (params.response != null);
 	if (!isCannedResponse) {
 		if (!this._pendingRequests[params.reqId]) {
-			DBG.println(AjxDebug.DBG2, "ZmRequestMgr.handleResponseSendRequest no pendingRequest entry for " + params.reqId);
+			DBG.println("req", "ZmRequestMgr.handleResponseSendRequest no pending request for " + params.reqId);
 			return;
 		}
 		if (this._pendingRequests[params.reqId].state == ZmRequestMgr._CANCEL) {
-			DBG.println(AjxDebug.DBG2, "ZmRequestMgr.handleResponseSendRequest state=CANCEL for " + params.reqId);
+			DBG.println("req", "ZmRequestMgr.handleResponseSendRequest state=CANCEL for " + params.reqId);
 			return;
 		}
 	
@@ -265,8 +214,6 @@ function(params, result) {
 		if (!params.noBusyOverlay) {
 			this._shell.setBusy(false, params.reqId); // remove busy overlay
 		} else if (params.timeout) {
-			AjxTimedAction.cancelAction(this._cancelActionId[params.reqId]);
-			this._cancelActionId[params.reqId] = -1;
 		}
 	}
 
@@ -286,7 +233,7 @@ function(params, result) {
 			refreshBlock = this._handleHeader(response.Header);
 		}
 	} catch (ex) {
-		DBG.println(AjxDebug.DBG2, "Request " + params.reqId + " got an exception");
+		DBG.println("req", "Request " + params.reqId + " got an exception");
 		if (params.errorCallback) {
 			var handled = params.errorCallback.run(ex);
 			if (!handled) {
@@ -349,6 +296,7 @@ function(params, result) {
  */
 ZmRequestMgr.prototype.cancelRequest =
 function(reqId, errorCallback, noBusyOverlay) {
+	DBG.println("req", "ZmRequestMgr.cancelRequest: " + reqId);
 	if (!this._pendingRequests[reqId]) { return; }
 	if (this._pendingRequests[reqId].state == ZmRequestMgr._RESPONSE) { return; }
 
@@ -356,9 +304,10 @@ function(reqId, errorCallback, noBusyOverlay) {
 	if (!noBusyOverlay) {
 		this._shell.setBusy(false, reqId);
 	}
-	DBG.println(AjxDebug.DBG1, "ZmRequestMgr.cancelRequest: " + reqId);
+	DBG.println("req", "canceling the XHR");
 	this._pendingRequests[reqId].cancel();
 	if (errorCallback) {
+		DBG.println("req", "calling the error callback");
 		var ex = new AjxException("Request canceled", AjxException.CANCELED, "ZmRequestMgr.prototype.cancelRequest");
 		errorCallback.run(ex);
 	}
@@ -379,6 +328,12 @@ function(reqId) {
 			}
 		}
 		delete this._pendingRequests[reqId];
+	}
+	var cancelId = this._cancelActionId[reqId];
+	if (cancelId && cancelId != -1) {
+		DBG.println("req", "unschedule cancel action for reqId " + reqId + ": " + cancelId);
+		AjxTimedAction.cancelAction(cancelId);
+		this._cancelActionId[reqId] = -1;
 	}
 };
 
@@ -780,4 +735,65 @@ function(ev) {
 			}
 		}
 	}
+};
+
+ZmRequestMgr.prototype._sensitiveRequest =
+function(params, reqId) {
+
+	DBG.println(AjxDebug.DBG2, "request contains sensitive data");
+	// NOTE: If only http mode is available, there's nothing we can
+	//       do. And if we're already using https mode, then there's
+	//       nothing we need to do. We only attempt to send the
+	//       request securely if mixed mode is enabled and the app
+	//       was loaded using http.
+	var isHttp = document.location.protocol == ZmSetting.PROTO_HTTP;
+	var isMixedMode = appCtxt.get(ZmSetting.PROTOCOL_MODE) == ZmSetting.PROTO_MIXED;
+	if (!isHttp || !isMixedMode) { return; }
+	
+	DBG.println(AjxDebug.DBG2, "sending request securely");
+	// adjust command parameters
+	// TODO: Because of timing issues, should we not use session info?
+	// TODO: But for batch commands, some updates would not be seen immediately.
+	// TODO: To avoid security warning, send response in URL; so limit length
+	params.noSession = true;
+
+	// information
+	var requestStr = ZmCsfeCommand.getRequestStr(params);
+	var loc = document.location;
+	var port = appCtxt.get(ZmSetting.HTTPS_PORT);
+	if (port && port != ZmSetting.DEFAULT_HTTPS_PORT) {
+		port = ":"+port;
+	}
+
+	// create iframe
+	var iframe = document.createElement("IFRAME");
+	iframe.style.display = "none";
+	iframe.id = Dwt.getNextId();
+	document.body.appendChild(iframe);
+
+	// set contents
+	var iframeDoc = Dwt.getIframeDoc(iframe);
+	iframeDoc.write(
+		"<form ",
+			"id=",iframe.id,"-form ",
+			"target=",iframe.id,"-iframe ",
+			"method=POST ",
+			"action='https://",loc.hostname,port,appContextPath,"/public/secureRequest.jsp'",
+		">",
+			"<input type=hidden name=reqId value='",reqId,"'>",
+			"<textarea name=data>",
+				AjxStringUtil.htmlEncode(requestStr),
+			"</textarea>",
+		"</form>",
+		"<iframe name=",iframe.id,"-iframe></iframe>"
+	);
+	iframeDoc.close();
+
+	// save the params for the response
+	params.iframeId = iframe.id;
+	this._pendingRequests[reqId] = params;
+
+	// submit form
+	var form = iframeDoc.getElementById(iframe.id+"-form");
+	form.submit();
 };
