@@ -221,7 +221,9 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
 		var ao = list.get(i);
 		if (ao.isAllDayEvent()) {
             if(!isMinical && ao.toString() == "ZmAppt") {
+                html.append("<tr><td><div class=appt>");
                 html.append(ZmApptViewHelper.getApptToolTipText(ao, controller));
+                html.append("</div></td></tr>");
             }
             else {
                 //DBG.println("AO    "+ao);
@@ -236,7 +238,9 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
 		}
 	    else {
 		    if(!isMinical && ao.toString() == "ZmAppt") {
+                html.append("<tr><td><div class=appt>");
                 html.append(ZmApptViewHelper.getApptToolTipText(ao, controller));
+                html.append("</div></td></tr>");
             }
             else {
                 var color = ZmCalendarApp.COLORS[controller.getCalendarColor(ao.folderId)];
@@ -262,7 +266,7 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
 		html.append("<tr><td>"+emptyMsg+"</td></tr>");
 	}
 	html.append("</table>");
-	html.append("</tr></td></table>");
+	html.append("</td></tr></table>");
 	html.append("</div>");
 
 	return html.toString();
