@@ -134,6 +134,11 @@ ZmSetting.ACL_NONE				= "none";
  */
 ZmSetting.ACL_PUBLIC			= "pub";
 /**
+ * Defines the "domain" ACL grantee type.
+ * @type String
+ */
+ZmSetting.ACL_DOMAIN			= "dom";
+/**
  * Defines the "user" ACL grantee type.
  * @type String
  */
