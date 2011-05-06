@@ -1215,9 +1215,10 @@ function(nfolder, resp) {
  * @param {Boolean}	requestReadReceipt	if set, a read receipt is sent to *all* recipients
  * @param {ZmBatchCommand} batchCmd		if set, request gets added to this batch command
  * @param {Date} sendTime				if set, tell server that this message should be sent at the specified time
+ * @param {Boolean} isAutoSave          if <code>true</code>, this an auto-save draft
  */
 ZmMailMsg.prototype.send =
-function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd, sendTime) {
+function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd, sendTime, isAutoSave) {
 
 	var aName = accountName;
 	if (!aName) {
@@ -1252,6 +1253,7 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 			jsonObj: jsonObj,
 			isInvite: false,
 			isDraft: isDraft,
+			isAutoSave: isAutoSave,
 			accountName: aName,
 			callback: (new AjxCallback(this, this._handleResponseSend, [isDraft, callback])),
 			errorCallback: errorCallback,
@@ -1562,7 +1564,7 @@ function(params) {
 	} else {
 		appCtxt.getAppController().sendRequest({jsonObj:params.jsonObj,
 												asyncMode:true,
-												noBusyOverlay:params.isDraft,
+												noBusyOverlay:params.isDraft && params.isAutoSave,
 												callback:respCallback,
 												errorCallback:params.errorCallback,
 												accountName:params.accountName,
