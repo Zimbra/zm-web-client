@@ -1117,11 +1117,11 @@ function(initHide) {
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 		callbacks[ZmAppViewMgr.CB_PRE_SHOW] = new AjxCallback(this, this._preShowCallback);
 		callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
-		var elements = {};
 		if (!this._toolbar)
 			this._createToolBar();
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
+
+		var elements = this.getViewElements(null, this._composeView, this._toolbar);
+
 		this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, tabParams:this._getTabParams()});
 		if (initHide) {
 			this._composeView.preload();

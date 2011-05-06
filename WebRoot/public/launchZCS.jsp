@@ -61,7 +61,7 @@
  launchZCS.jsp
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -134,6 +134,8 @@
 		}
     }
 
+	String unitTest = getParameter(request, "unittest", "");
+
 	// make variables available in page context (e.g. ${foo})
 	pageContext.setAttribute("contextPath", contextPath);
 	pageContext.setAttribute("skin", skin);
@@ -148,6 +150,7 @@
 	pageContext.setAttribute("isProdMode", !prodMode.equals(""));
 	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
 	pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
+	pageContext.setAttribute("unitTest", unitTest);
 	pageContext.setAttribute("editor", editor);
     pageContext.setAttribute("isCoverage", isCoverage);
 %>
@@ -164,6 +167,15 @@
 		<c:param name="customerDomain"	value="${param.customerDomain}" />
 	</c:if>		
 </c:url>" rel="stylesheet" type="text/css" />
+<c:if test="${not empty unitTest}">
+	<script>
+		window.exports = window.UT = {};
+		window.require = true;
+	</script>
+	<link rel="stylesheet" href="/zimbra/qunit/qunit.css" />
+	<script src="/zimbra/qunit/qunit.js"></script>
+	<script src="/js/zimbraMail/unittest/ZmUnitTestManager.js"></script>
+</c:if>
 <zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
 <c:if test="${empty favIconUrl}">
 	<fmt:message key="favIconUrl" var="favIconUrl"/>
@@ -397,7 +409,7 @@ for (var pkg in window.AjxTemplateMsg) {
 			settings:settings, batchInfoResponse:batchInfoResponse,
 			offlineMode:${isOfflineMode}, devMode:${isDevMode},
 			protocolMode:protocolMode, httpPort:"<%=httpPort%>", httpsPort:"<%=httpsPort%>",
-			noSplashScreen:noSplashScreen
+			noSplashScreen:noSplashScreen, unitTest:"${unitTest}"
 		};
 		ZmZimbraMail.run(params);
 	}
