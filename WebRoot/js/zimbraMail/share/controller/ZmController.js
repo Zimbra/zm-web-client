@@ -745,9 +745,14 @@ function(continuation, username, password, rememberMe) {
 ZmController.prototype._handleResponseDoAuth =
 function(continuation, rememberMe, result) {
 	try {
-		result.getResponse();
+		var result = result.getResponse();
 		this._authenticating = false;
 		appCtxt.rememberMe = rememberMe;
+		//set up auth token expires time
+		if (result && result.Body && result.Body.AuthResponse) {
+			appCtxt.set(ZmSetting.TOKEN_LIFETIME, result.Body.AuthResponse.lifetime)
+		}
+		ZmZimbraMail.setAuthTokenEndTime();
 		if (continuation) {
 			if (continuation.continueCallback) {
 				// sync request

@@ -34,7 +34,7 @@
  * @extends	ZmController
  */
 ZmZimbraMail = function(params) {
-
+	this._startTime = new Date().getTime(); //time we started up
 	ZmController.call(this, null);
 
     appCtxt.setAppController(this);
@@ -701,6 +701,7 @@ function(params) {
 	this.getKeyMapMgr();	// make sure keyboard handling is initialized
 
 	this.setSessionTimer(true);
+	ZmZimbraMail.setAuthTokenEndTime(this._startTime);
 	ZmZimbraMail.killSplash();
 
 	// Give apps a chance to add their own ui components.
@@ -2322,6 +2323,24 @@ function(bStartTimer) {
 			this._shell.clearHandler(DwtEvent.ONMOUSEDOWN);
 		else
 			window.onkeydown = null;
+	}
+};
+
+/**
+ * Sets the ZmSetting.TOKEN_ENDTIME
+ * @param {int} startTime   auth token creation time in milliseconds; uses current time if not specified
+ */
+ZmZimbraMail.setAuthTokenEndTime =
+function(startTime) {
+	if(!startTime) {
+		startTime = new Date().getTime();
+	}
+	var authTokenLifetime = appCtxt.get(ZmSetting.TOKEN_LIFETIME);
+	if (authTokenLifetime) {
+		var authTokenEndTime = startTime + authTokenLifetime;
+		appCtxt.set(ZmSetting.TOKEN_ENDTIME, authTokenEndTime);
+		DBG.println(AjxDebug.DBG1, "Setting authTokenEndTime to " + new Date(authTokenEndTime).toLocaleString());
+
 	}
 };
 
