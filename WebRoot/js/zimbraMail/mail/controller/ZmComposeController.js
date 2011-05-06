@@ -247,6 +247,7 @@ ZmComposeController.prototype.popShield =
 function() {
 	var dirty = this._composeView.isDirty();
 	if (!dirty && (this._draftType != ZmComposeController.DRAFT_TYPE_AUTO)) {
+		this._cancelAuthTimedSave(); //cancel the timer
 		return true;
 	}
 
@@ -494,7 +495,9 @@ function(draftType, msg, callback, result) {
     if(this.sendMsgCallback) {
         this.sendMsgCallback.run(result);
     }
-
+	if (draftType && draftType == ZmComposeController.DRAFT_TYPE_NONE) {
+		this._cancelAuthTimedSave(); //message sent; cancel auth token timer
+	}
 	appCtxt.notifyZimlets("onSendMsgSuccess", [this, msg]);//notify Zimlets on success	
 };
 
@@ -939,6 +942,21 @@ function() {
 		} else {
 			this._autoSaveTimer.resurrect(autoSaveInterval * 1000);
 		}
+	}
+
+	var authTokenEndTime = appCtxt.get(ZmSetting.TOKEN_ENDTIME);  //get time for auth token expiration
+	if (authTokenEndTime) {
+		var now = new Date();
+		var interval = authTokenEndTime - now.getTime() - 5000; //set timer for auth token expire time - 5 seconds
+		DBG.println(AjxDebug.DBG1, "ZmComposeController: setting auth token timer interval to " + interval);
+		DBG.println(AjxDebug.DBG1, "ZmComposeController: auth token timer callback scheduled for " + new Date(now.getTime() + interval).toLocaleString());
+		//check to see if we need to reschedule  -- auth token may have expired or timer was canceled
+		if (authTokenEndTime != this._authTokenEndTime || !this._authTimedAction) {
+			this._authTokenEndTime = authTokenEndTime;
+			this._authTimedAction = new AjxTimedAction(this, this._authSaveCallback)
+			AjxTimedAction.scheduleAction(this._authTimedAction, interval);
+		}
+
 	}
 };
 
@@ -1455,6 +1473,13 @@ function(idle) {
 	}
 };
 
+ZmComposeController.prototype._authSaveCallback =
+function() {
+	DBG.println(AjxDebug.DBG1, "ZmComposeController: authSaveCallback -- now = " + new Date().toLocaleString());
+	DBG.println(AjxDebug.DBG1, "ZmComposeController: auth token to expire, auto saving draft");
+	this._autoSaveCallback(true);
+};
+
 ZmComposeController.prototype.saveDraft =
 function(draftType, attId, docIds, callback) {
 
@@ -1573,6 +1598,7 @@ function(mailtoParams) {
 ZmComposeController.prototype._popShieldYesDraftSaved =
 function() {
 	appCtxt.getAppViewMgr().showPendingView(true);
+	this._cancelAuthTimedSave();
 };
 
 // Called as: No, don't save as draft
@@ -1588,6 +1614,7 @@ function(mailtoParams) {
 		}
 
         this._composeView.reset(false);
+		this._cancelAuthTimedSave();
 
 		if (!mailtoParams) {
 			appCtxt.getAppViewMgr().showPendingView(true);
@@ -1735,4 +1762,13 @@ function(type, sessionId) {
 ZmComposeController.prototype._canSaveDraft =
 function() {
 	return appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED) && !this._composeView._isInviteReply(this._action);
+};
+
+ZmComposeController.prototype._cancelAuthTimedSave =
+function() {
+	if (this._authTimedAction && this._authTimedAction._id) {
+		AjxTimedAction.cancelAction(this._authTimedAction._id);
+		DBG.println(AjxDebug.DBG1, "ZmComposeController: auth time save canceled. Action ID = " + this._authTimedAction._id);
+		this._authTimedAction = null;
+	}
 };
