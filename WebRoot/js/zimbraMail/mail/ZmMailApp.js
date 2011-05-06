@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -189,8 +189,7 @@ function(settings) {
 	settings.registerSetting("MAIL_NOTIFY_BROWSER",				{name:"zimbraPrefMailFlashTitle", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("MAIL_NOTIFY_TOASTER",				{name:"zimbraPrefMailToasterEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("MAIL_PRIORITY_ENABLED",			{name:"zimbraFeatureMailPriorityEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	settings.registerSetting("MAIL_PRIORITYINBOX_ENABLED",      {name:"zimbraFeatureMailPriorityInboxEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOLLeAN, defaultValue:true});
-    settings.registerSetting("MAIL_READ_RECEIPT_ENABLED",		{name:"zimbraFeatureReadReceiptsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("MAIL_READ_RECEIPT_ENABLED",		{name:"zimbraFeatureReadReceiptsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("MAIL_SEND_READ_RECEIPTS",			{name:"zimbraPrefMailSendReadReceipts", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:"never"});
 	settings.registerSetting("MAIL_WHITELIST",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_LIST});
 	settings.registerSetting("MAIL_WHITELIST_MAX_NUM_ENTRIES",	{name:"zimbraMailWhitelistMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue:100});
@@ -1406,24 +1405,23 @@ function(refresh) {
 		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._checkRefresh, [curViewId]), 1000);
 	}
 
-	// Create PRIORITY INBOX folder
-	if (appCtxt.get(ZmSetting.MAIL_PRIORITYINBOX_ENABLED)) {
+	// Create a virtual ATTACHMENTS folder
+	if (appCtxt.get(ZmSetting.MAIL_ATTACH_VIEW_ENABLED)) {
 		var folderTree = appCtxt.getFolderTree();
-		if (!folderTree.getById(ZmFolder.ID_PRIORITYINBOX)) {
+		if (!folderTree.getById(ZmFolder.ID_ATTACHMENTS)) {
 			var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
 			var params = {
-				id: ZmFolder.ID_PRIORITYINBOX,
+				id: ZmFolder.ID_ATTACHMENTS,
 				parent: root,
 				tree: root.tree,
 				type: ZmOrganizer.FOLDER,
 				numTotal: 1
 			};
-			var priorityInboxFolder = new ZmFolder(params);
-			root.children.add(priorityInboxFolder);
-			priorityInboxFolder._notify(ZmEvent.E_CREATE);
+			var attachFolder = new ZmFolder(params);
+			root.children.add(attachFolder);
+			attachFolder._notify(ZmEvent.E_CREATE);
 		}
 	}
-
 };
 
 ZmMailApp.prototype._checkRefresh =
@@ -1647,12 +1645,6 @@ function(results, callback) {
 ZmMailApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
 	var controller = (results.type == ZmItem.MSG) ? this.getTradController() : this.getConvListController();
-	//TODO: Refactor; experimental support for Priority Inbox
-    if (this.currentSearch && this.currentSearch.searchId == ZmFolder.ID_PRIORITYINBOX) {
-	   if (controller._mailListView) {
-        controller._mailListView.setGroup(ZmId.GROUPBY_PRIORITY);
-	   }
-    }
 	controller.show(results);
 	if (this._forceMsgView) {
 		controller.selectFirstItem();
