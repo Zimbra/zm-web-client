@@ -313,7 +313,9 @@ function(ev) {
 	// if the field is empty, clear the list
 	if (!value) {
 		aclv.reset();
-		return ZmAutocompleteListView._echoKey(true, ev);
+		if (key != 13 && key != 3) { // If the key is ENTER, we want to continue and eventually call the enter-listeners
+			return ZmAutocompleteListView._echoKey(true, ev);
+		}
 	}
 	if (key == 37 || key == 39) { // left/right arrow key
 		return ZmAutocompleteListView._echoKey(true, ev);
