@@ -42,6 +42,7 @@ ZmTaskListController = function(container, app) {
 	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._syncAllListener);
 	this._listeners[ZmOperation.SHOW_ORIG] = new AjxListener(this, this._showOrigListener);
 	this._listeners[ZmOperation.MARK_AS_COMPLETED] = new AjxListener(this, this._markAsCompletedListener);
+    this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
 
 	this._currentTaskView = ZmId.VIEW_TASK_ALL;
 };
@@ -642,6 +643,41 @@ function(parent, num) {
     }
 };
 
+ZmTaskListController.prototype._deleteListener =
+function(ev) {
+
+    var tasks = this._listView[this._currentView].getSelection();
+
+    if (!tasks || tasks.length == 0) return;
+
+    var folderId = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;
+    if (!folderId) {
+        var showWarDlg = false;
+        for (var i=0, cnt=tasks.length; i<cnt; i++) {
+            if (tasks[i] && ZmTask.isInTrash(tasks[i])) {
+                showWarDlg = true;
+                break;
+            }
+        }
+        if(showWarDlg) {
+            var dialog = appCtxt.getOkCancelMsgDialog();
+            dialog.reset();
+            dialog.setMessage(ZmMsg.confirmItemDelete, DwtMessageDialog.WARNING_STYLE);
+            dialog.registerCallback(DwtDialog.OK_BUTTON, this._deleteCallback, this, [dialog]);
+            dialog.popup();
+        }
+    } else {
+       this._doDelete(this._listView[this._currentView].getSelection());
+    }
+};
+
+ZmTaskListController.prototype._deleteCallback =
+function(dialog) {
+	dialog.popdown();
+	// hard delete
+	this._doDelete(this._listView[this._currentView].getSelection());
+};
+
 ZmTaskListController.prototype._doDelete =
 function(tasks, mode) {
 	/*
@@ -657,6 +693,7 @@ function(tasks, mode) {
     // check to see if this is a cancel or delete
     var nId = ZmOrganizer.normalizeId(tasks[0].folderId);
     var isTrash = nId == ZmOrganizer.ID_TRASH;
+
     if (isTrash) {
         this._handleDelete(tasks);
     }
