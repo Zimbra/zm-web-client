@@ -676,7 +676,7 @@
 
             <table style='padding-left:3px; padding-top: 5px;' border=0 cellpadding=3 cellspacing=0>
                 <tr>
-                    <td id='${id}_graphKeySpacer'>&nbsp;</td>
+                    <td id='${id}_graphKeySpacer'><span id='${id}_showMoreLink' class="removeLink" style='display: none;'><$= ZmMsg.showMore $></span></td>
                     <td><div class='ZmGraphKeyColorBox ZmScheduler-working'></div></td>
                     <td class='ZmGraphKeyColorText'><$= ZmMsg.free $></td>
                     <td>&nbsp;</td>

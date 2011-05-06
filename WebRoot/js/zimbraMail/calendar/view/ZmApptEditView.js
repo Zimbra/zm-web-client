@@ -1028,6 +1028,7 @@ function(forceShow) {
     //todo: scheduler auto complete
     Dwt.setVisible(this._schedulerContainer, true);
     scheduleView.setVisible(true);
+    scheduleView.resetPagelessMode(false);
     scheduleView.showMe();
     this.autoSize();
 };
