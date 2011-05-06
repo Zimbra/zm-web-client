@@ -1053,15 +1053,16 @@ function(elementId, type) {
  * @param addrs array of addresses
  * @param options
  * @param type some type identifier (one per page)
+ * @param om {ZmObjectManager}
+ * @param htmlElId - unique view id so it works with multiple views open.
  *
  * returns {String} the html
  */
-ZmMailMsgView.prototype.getAddressesFieldHtml =
-function(addrs, options, type) {
+ZmMailMsgView.getAddressesFieldHtmlHelper =
+function(addrs, options, type, om, htmlElId) {
 	var idx = 0;
 	var parts = [];
 	var showMoreLink = false;
-	var om = this._objectManager;
 	for (var i = 0; i < addrs.length; i++) {
 		if (i > 0) {
 			// no need for semicolon if we're showing addr bubbles
@@ -1070,9 +1071,9 @@ function(addrs, options, type) {
 
 		if (i == ZmMailMsgView.MAX_ADDRESSES_IN_FIELD) {
 			showMoreLink = true;
-			var showMoreId = ZmMailMsgView._getShowMoreId(this._htmlElId, type);
-			var moreId = ZmMailMsgView._getMoreId(this._htmlElId, type);
-			parts[idx++] = "<span id='" + showMoreId + "'>&nbsp;<a href='' onclick='ZmMailMsgView.showMore(\"" + this._htmlElId + "\", \"" + type + "\"); return false;'>";
+			var showMoreId = ZmMailMsgView._getShowMoreId(htmlElId, type);
+			var moreId = ZmMailMsgView._getMoreId(htmlElId, type);
+			parts[idx++] = "<span id='" + showMoreId + "'>&nbsp;<a href='' onclick='ZmMailMsgView.showMore(\"" + htmlElId + "\", \"" + type + "\"); return false;'>";
 			parts[idx++] = ZmMsg.showMore;
 			parts[idx++] = "</a></span><span style='display:none;' id='" + moreId + "'>";
 		}
@@ -1090,6 +1091,22 @@ function(addrs, options, type) {
 		parts[idx++] = "</span>";
 	}
 	return parts.join("");
+};
+
+
+/**
+ *
+ * formats the array of addresses as HTML with possible "show more" expand link if more than a certain number of addresses are in the field.
+ *
+ * @param addrs array of addresses
+ * @param options
+ * @param type some type identifier (one per page)
+ *
+ * returns {String} the html
+ */
+ZmMailMsgView.prototype.getAddressesFieldHtml =
+function(addrs, options, type) {
+	return ZmMailMsgView.getAddressesFieldHtmlHelper(addrs, options, type, this._objectManager, this._htmlElId);
 };
 
 ZmMailMsgView.prototype._renderMessage =

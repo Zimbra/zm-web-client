@@ -108,12 +108,17 @@ function(type, inclDispName) {
  *
  * @param	{constant}		type		the type
  * @param	{constant}		role		defines the role of the attendee (required/optional)
+ * @param	{Boolean} collapseLongList - if true, long lists have a "show more" link that expands.
+ * @param	{String}  htmlElId - required if collapseLongList is true - identifier for this view
  *
  * @return	{String}	the attendee string by role
  */
 ZmAppt.prototype.getAttendeesTextByRole =
-function(type, role) {
-	return ZmApptViewHelper.getAttendeesByRole(this._attendees[type], type, role);
+function(type, role, collapseLongList, objectManager, htmlElId) {
+	if (collapseLongList) {
+		return ZmApptViewHelper.getAttendeesByRoleCollapsed(this.getAttendees(type), type, role, objectManager, htmlElId);
+	}
+	return ZmApptViewHelper.getAttendeesByRole(this.getAttendees(type), type, role);
 };
 
 

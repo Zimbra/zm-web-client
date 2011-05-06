@@ -359,8 +359,8 @@ function(calItem) {
 	var dateStr = this._getTimeString(calItem);
 	//var attendees = calItem.getAttendeesText(ZmCalBaseItem.PERSON);
     var isAttendees = false;
-    var reqAttendees = calItem.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED);
-    var optAttendees = calItem.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_OPTIONAL);
+    var reqAttendees = calItem.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED, true, this._objectManager, this._htmlElId);
+    var optAttendees = calItem.getAttendeesTextByRole(ZmCalBaseItem.PERSON, ZmCalItem.ROLE_OPTIONAL, true, this._objectManager, this._htmlElId);
     if(reqAttendees || optAttendees) isAttendees = true;
 	var org, obo;
 	var recurStr = calItem.isRecurring() ? calItem.getRecurBlurb() : null;
@@ -387,8 +387,6 @@ function(calItem) {
 		dateStr = this._objectManager.findObjects(dateStr, true);
 		if (org) org = this._objectManager.findObjects(org, true, ZmObjectManager.EMAIL);
 		if (obo) obo = this._objectManager.findObjects(obo, true, ZmObjectManager.EMAIL);
-		if (optAttendees) optAttendees = this._objectManager.findObjects(optAttendees, true);
-        if (reqAttendees) reqAttendees = this._objectManager.findObjects(reqAttendees, true);
 	}
 
 	return {

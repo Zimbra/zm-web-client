@@ -521,6 +521,34 @@ function(attendee, type, shortForm) {
 * Creates a string of attendees by role. If an item
 * doesn't have a name, its address is used.
 *
+* calls common code from mail msg view to get the collapse/expand "show more" funcitonality for large lists.
+*
+* @param list					[array]			list of attendees (ZmContact or ZmResource)
+* @param type					[constant]		attendee type
+* @param role      		        [constant]      attendee role
+* @param count                  [number]        number of attendees to be returned
+*/
+ZmApptViewHelper.getAttendeesByRoleCollapsed =
+function(list, type, role, objectManager, htmlElId) {
+    if (!(list && list.length)) return "";
+	var attendees = ZmApptViewHelper.getAttendeesArrayByRole(list, type, role);
+
+	var emails = [];
+	for (var i = 0; i < attendees.length; i++) {
+		var att = attendees[i];
+		emails.push(new AjxEmailAddress(att.getEmail(), type, att.getFullName(), att.getFullName())); 
+	}
+
+	var options = {};
+	options.addrBubbles = false; //todo - do we really want false here? why not use bubbles?
+	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
+	return ZmMailMsgView.getAddressesFieldHtmlHelper(emails, options, role, objectManager, htmlElId);
+};
+
+
+/**
+* Creates a string of attendees by role. this allows to show only count elements, with "..." appended.
+*
 * @param list					[array]			list of attendees (ZmContact or ZmResource)
 * @param type					[constant]		attendee type
 * @param role      		        [constant]      attendee role
@@ -530,24 +558,45 @@ ZmApptViewHelper.getAttendeesByRole =
 function(list, type, role, count) {
     if (!(list && list.length)) return "";
 
+	var res = [];
+
+	var attendees = ZmApptViewHelper.getAttendeesArrayByRole(list, type, role);
+	for (i = 0; i < attendees.length; i++) {
+		if (i > count) {
+			res.push(" ...");
+			break;
+		}
+		if (i > 0) {
+			res.push(ZmAppt.ATTENDEES_SEPARATOR);
+		}
+		res.push(attendees[i].getAttendeeText(type));
+	}
+	return res.join("");
+};
+
+
+
+/**
+* returns array of attendees by role.
+*
+* @param list					[array]			list of attendees (ZmContact or ZmResource)
+* @param type					[constant]		attendee type
+* @param role      		        [constant]      attendee role
+*/
+ZmApptViewHelper.getAttendeesArrayByRole =
+function(list, type, role, count) {
+    if (!(list && list.length)) return "";
+
     var a = [];
-    var str = "";
-    var hasMore = false;
     for (var i = 0; i < list.length; i++) {
         var attendee = list[i];
-        var text = attendee.getAttendeeText(type);
         var _attendeeRole = attendee.getParticipantRole() || ZmCalItem.ROLE_REQUIRED;
-        if(_attendeeRole == role){
-            a.push(text);
+        if (_attendeeRole == role){
+            a.push(attendee);
         }
     }
-    if (count && a.length > count){
-        hasMore = true;
-        a = a.slice(0, count);
-    }
+	return a;
 
-    str = a.join(ZmAppt.ATTENDEES_SEPARATOR);
-    return hasMore ?  str+= ZmAppt.ATTENDEES_SEPARATOR + " ..." : str;
 };
 
 ZmApptViewHelper._allDayItemHtml =
