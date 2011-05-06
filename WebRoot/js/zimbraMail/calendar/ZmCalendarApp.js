@@ -260,8 +260,8 @@ function() {
 
 	ZmPref.registerPref("CAL_FREE_BUSY_ACL", {
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-		displayOptions:		[ZmMsg.freeBusyAllowAll, ZmMsg.freeBusyAllowLocal, ZmMsg.freeBusyAllowNone, ZmMsg.freeBusyAllowSome],
-		options:			[ZmSetting.ACL_PUBLIC, ZmSetting.ACL_AUTH, ZmSetting.ACL_NONE, ZmSetting.ACL_USER]
+		displayOptions:		[ZmMsg.freeBusyAllowAll, ZmMsg.freeBusyAllowLocal, ZmMsg.freeBusyAllowDomain, ZmMsg.freeBusyAllowNone, ZmMsg.freeBusyAllowSome],
+		options:			[ZmSetting.ACL_PUBLIC, ZmSetting.ACL_AUTH, ZmSetting.ACL_DOMAIN, ZmSetting.ACL_NONE, ZmSetting.ACL_USER]
 	});
 
 	ZmPref.registerPref("CAL_FREE_BUSY_ACL_USERS", {
