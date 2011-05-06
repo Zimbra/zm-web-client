@@ -764,12 +764,13 @@ function(organizer, attendees) {
 	this._organizerIndex = this._addAttendeeRow(false, ZmApptViewHelper.getAttendeesText(organizer, ZmCalBaseItem.PERSON, true), false);
 	emails.push(this._setAttendee(this._organizerIndex, organizer, ZmCalBaseItem.PERSON, true));
 
-    var list = [];
+    var list = [], totalAttendeesCount = 0;
     for (var t = 0; t < this._attTypes.length; t++) {
         var type = this._attTypes[t];
         if(attendees[type]) {
             var att = attendees[type].getArray ? attendees[type].getArray() : attendees[type];
             var attLength = att.length;
+            totalAttendeesCount += att.length;
             if(this.isComposeMode && !this._isPageless && att.length > 10) {
                 attLength = 10;
                 showMoreLink = true;
@@ -784,6 +785,8 @@ function(organizer, attendees) {
     }
 
     Dwt.setDisplay(this._showMoreLink, showMoreLink ? Dwt.DISPLAY_INLINE : Dwt.DISPLAY_NONE);
+    //exclude organizer while reporting no of attendees remaining
+    this.updateNMoreAttendeesLabel(totalAttendeesCount - (emails.length - 1));
 
     this._updateBorders(this._allAttendeesSlot, true);
     
@@ -878,7 +881,7 @@ function(attendees) {
 ZmFreeBusySchedulerView.prototype._updateAttendees =
 function(organizer, attendees) {
 
-    var emails = [], newEmails = {}, showMoreLink = false;
+    var emails = [], newEmails = {}, showMoreLink = false, totalAttendeesCount = 0, attendeesRendered = 0;
 
     //update newly added attendee
 	for (var t = 0; t < this._attTypes.length; t++) {
@@ -888,6 +891,7 @@ function(organizer, attendees) {
 
             //debug: remove this limitation
             var attLengthLimit = att.length;
+            totalAttendeesCount += att.length;
             if(this.isComposeMode && !this._isPageless && att.length > 10) {
                 attLengthLimit = 10;
                 showMoreLink = true;
@@ -906,11 +910,15 @@ function(organizer, attendees) {
                         emails.push(this._setAttendee(index, att[i], type, false));
                     }
                 }
+
+                //keep track of total attendees rendered
+                if (this._emailToIdx[email]) attendeesRendered++;
             }
         }
 	}
 
     Dwt.setDisplay(this._showMoreLink, showMoreLink ? Dwt.DISPLAY_INLINE : Dwt.DISPLAY_NONE);
+    this.updateNMoreAttendeesLabel(totalAttendeesCount - attendeesRendered);
 
     //update deleted attendee
     for(var id in this._emailToIdx) {
@@ -937,6 +945,11 @@ function(organizer, attendees) {
 	}else {
         this.postUpdateHandler();
     }
+};
+
+ZmFreeBusySchedulerView.prototype.updateNMoreAttendeesLabel =
+function(count) {
+    this._showMoreLink.innerHTML = AjxMessageFormat.format(ZmMsg.moreAttendees, count);
 };
 
 ZmFreeBusySchedulerView.prototype._setAttendee =
