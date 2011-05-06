@@ -60,6 +60,8 @@ ZmFreeBusySchedulerView = function(parent, attendees, controller, dateInfo) {
     this.addListener(DwtEvent.ONMOUSEDOWN, parent._listenerMouseDown);
 
     this.isComposeMode = true;
+    this._resultsPaginated = true;
+    this._isPageless = false;
 
     this._fbCache = controller.getApp().getFreeBusyCache();
 };
@@ -243,6 +245,9 @@ function() {
     Dwt.setHandler(this.getHtmlElement(), DwtEvent.ONMOUSEOUT, ZmFreeBusySchedulerView._onFreeBusyMouseOut);
 
 
+    Dwt.setHandler(this._showMoreLink, DwtEvent.ONCLICK, ZmFreeBusySchedulerView._onShowMore);
+
+
 	this._rendered = true;
 };
 
@@ -250,6 +255,7 @@ ZmFreeBusySchedulerView.prototype._createHTML =
 function() {
 	this._navToolbarId		= this._htmlElId + "_navToolbar";
 	this._attendeesTableId	= this._htmlElId + "_attendeesTable";
+	this._showMoreLinkId	= this._htmlElId + "_showMoreLink";
 
 	this._schedTable[0] = null;	// header row has no attendee data
 
@@ -535,6 +541,8 @@ function() {
 	this._allAttendeesIndex = this._addAttendeeRow(true, null, false);
 	this._allAttendeesSlot = this._schedTable[this._allAttendeesIndex];
 	this._allAttendeesTable = document.getElementById(this._allAttendeesSlot.dwtTableId);
+	this._showMoreLink = document.getElementById(this._showMoreLinkId);
+    this._showMoreLink._schedViewPageId = this._svpId;
 };
 
 ZmFreeBusySchedulerView.prototype._showTimeFields =
@@ -736,7 +744,8 @@ function() {
 	this._resetAttendeeCount();
 
 	if (uids.length) {
-		var emails = uids.join(",");
+        //all attendees status need to be update even for unshown attendees
+		var emails = this._allAttendeeEmails ? this._allAttendeeEmails.join(",") : uids.join(",");
 		this._getFreeBusyInfo(this._getStartTime(), emails);
 	}
 };
@@ -749,7 +758,7 @@ function(organizer, attendees) {
     //sync with date info from schedule view
     if(this.isComposeMode) ZmApptViewHelper.getDateInfo(this._editView, this._dateInfo);
 
-    var emails = [], email;
+    var emails = [], email, showMoreLink = false;
 
 	// create a slot for the organizer
 	this._organizerIndex = this._addAttendeeRow(false, ZmApptViewHelper.getAttendeesText(organizer, ZmCalBaseItem.PERSON, true), false);
@@ -760,7 +769,13 @@ function(organizer, attendees) {
         var type = this._attTypes[t];
         if(attendees[type]) {
             var att = attendees[type].getArray ? attendees[type].getArray() : attendees[type];
-            for (var i = 0; i < att.length; i++) {
+            var attLength = att.length;
+            if(this.isComposeMode && !this._isPageless && att.length > 10) {
+                attLength = 10;
+                showMoreLink = true;
+            }
+
+            for (var i = 0; i < attLength; i++) {
                 list.push(att[i]);
                 email = att[i] ? this.getEmail(att[i]) : null;
                 emails.push(email);
@@ -768,13 +783,17 @@ function(organizer, attendees) {
         }
     }
 
+    Dwt.setDisplay(this._showMoreLink, showMoreLink ? Dwt.DISPLAY_INLINE : Dwt.DISPLAY_NONE);
+
     this._updateBorders(this._allAttendeesSlot, true);
     
     //chunk processing of UI rendering
     this.batchUpdate(list);
 
     if (emails.length) {
-        this._getFreeBusyInfo(this._getStartTime(), emails.join(","));
+        //all attendees status need to be update even for unshown attendees
+        var allAttendeeEmails = this._allAttendeeEmails = this.getAllAttendeeEmails(attendees);
+        this._getFreeBusyInfo(this._getStartTime(), allAttendeeEmails.join(","));
 	}
 };
 
@@ -840,20 +859,44 @@ function() {
     }
 };
 
+
+ZmFreeBusySchedulerView.prototype.getAllAttendeeEmails =
+function(attendees) {
+    var emails = [];
+    for (var t = 0; t < this._attTypes.length; t++) {
+        var type = this._attTypes[t];
+        var att = attendees[type].getArray ? attendees[type].getArray() : attendees[type];
+        var attLength = att.length;
+        for (var i = 0; i < attLength; i++) {
+            var email = att[i] ? this.getEmail(att[i]) : null;
+            if (email) emails.push(email);
+        }
+    }
+    return emails;
+};
+
 ZmFreeBusySchedulerView.prototype._updateAttendees =
 function(organizer, attendees) {
 
-    var emails = [], newEmails = {};
+    var emails = [], newEmails = {}, showMoreLink = false;
 
     //update newly added attendee
 	for (var t = 0; t < this._attTypes.length; t++) {
 		var type = this._attTypes[t];
         if(attendees[type]) {
             var att = attendees[type].getArray ? attendees[type].getArray() : attendees[type];
+
+            //debug: remove this limitation
+            var attLengthLimit = att.length;
+            if(this.isComposeMode && !this._isPageless && att.length > 10) {
+                attLengthLimit = 10;
+                showMoreLink = true;
+            }
+
             for (var i = 0; i < att.length; i++) {
                 var email = att[i] ? this.getEmail(att[i]) : null;
                 if(email) newEmails[email] = true;
-                if (email && !this._emailToIdx[email]) {
+                if (i < attLengthLimit && email && !this._emailToIdx[email]) {
                     var index;
                     if(this._emptyRowIndex != null) {
                         emails.push(this._setAttendee(this._emptyRowIndex, att[i], type, false));
@@ -866,6 +909,8 @@ function(organizer, attendees) {
             }
         }
 	}
+
+    Dwt.setDisplay(this._showMoreLink, showMoreLink ? Dwt.DISPLAY_INLINE : Dwt.DISPLAY_NONE);
 
     //update deleted attendee
     for(var id in this._emailToIdx) {
@@ -886,7 +931,9 @@ function(organizer, attendees) {
     }
 
 	if (emails.length) {
-		this._getFreeBusyInfo(this._getStartTime(), emails.join(","));
+        //all attendees status need to be update even for unshown attendees
+        var allAttendeeEmails =  this._allAttendeeEmails = this.getAllAttendeeEmails(attendees);
+		this._getFreeBusyInfo(this._getStartTime(), allAttendeeEmails.join(","));
 	}else {
         this.postUpdateHandler();
     }
@@ -1270,6 +1317,45 @@ function(status, slots, table, sched) {
 	}
 };
 
+ZmFreeBusySchedulerView.prototype._updateAllAttendees =
+function(status, slots) {
+
+    var currentDate = this._getStartDate();
+
+    for (var i = 0; i < slots.length; i++) {
+        if(status == ZmFreeBusySchedulerView.STATUS_WORKING) {
+            this._fbCache.convertWorkingHours(slots[i], currentDate);
+        }
+        var startIdx = this._getIndexFromTime(slots[i].s);
+        var endIdx = this._getIndexFromTime(slots[i].e, true);
+
+        if(slots[i].s <= currentDate.getTime()) {
+            startIdx = 0;
+        }
+
+        if(slots[i].e >= currentDate.getTime() + AjxDateUtil.MSEC_PER_DAY) {
+            endIdx = ZmFreeBusySchedulerView.FREEBUSY_NUM_CELLS - 1;
+        }
+
+        //bug:45623 assume start index is zero if its negative
+        if(startIdx < 0) {startIdx = 0;}
+        //bug:45623 skip the slot that has negative end index.
+        if(endIdx < 0) { continue; }
+
+        // normalize
+        if (endIdx < startIdx) {
+            endIdx = ZmFreeBusySchedulerView.FREEBUSY_NUM_CELLS - 1;
+        }
+
+        for (j = startIdx; j <= endIdx; j++) {
+            if (status != ZmFreeBusySchedulerView.STATUS_UNKNOWN) {
+                this._allAttendees[j] = this._allAttendees[j] + 1;
+                this.updateAllAttendeeCellStatus(j, status);
+            }
+        }
+    }
+};
+
 /**
  * Draws a dark border for the appt's start and end times.
  */
@@ -1451,11 +1537,11 @@ function(params, result) {
 		// first clear out the whole row for this email id
 		var sched = this._schedTable[this._emailToIdx[email]];
 		var table = sched ? document.getElementById(sched.dwtTableId) : null;
+        var usr = this._fbCache.getFreeBusySlot(params.startTime, params.endTime, email);
 		if (table) {
 			table.rows[0].className = "ZmSchedulerNormalRow";
 			this._clearColoredCells(sched);
 
-            var usr = this._fbCache.getFreeBusySlot(params.startTime, params.endTime, email);
             if(!usr) continue;
 			sched.uid = usr.id;
 
@@ -1464,7 +1550,17 @@ function(params, result) {
 			if (usr.t) this._colorSchedule(ZmFreeBusySchedulerView.STATUS_TENTATIVE, usr.t, table, sched);
 			if (usr.b) this._colorSchedule(ZmFreeBusySchedulerView.STATUS_BUSY, usr.b, table, sched);
 			if (usr.u) this._colorSchedule(ZmFreeBusySchedulerView.STATUS_OUT, usr.u, table, sched);
-		}
+		}else {
+
+            //update all attendee status - we update all attendee status correctly even if we have slight
+            if(!usr) continue;
+
+            if (usr.n) this._updateAllAttendees(ZmFreeBusySchedulerView.STATUS_UNKNOWN, usr.n);
+            if (usr.t) this._updateAllAttendees(ZmFreeBusySchedulerView.STATUS_TENTATIVE, usr.t);
+            if (usr.b) this._updateAllAttendees(ZmFreeBusySchedulerView.STATUS_BUSY, usr.b);
+            if (usr.u) this._updateAllAttendees(ZmFreeBusySchedulerView.STATUS_OUT, usr.u);
+
+        }
 	}
 
     var acct = (appCtxt.multiAccounts)
@@ -1875,6 +1971,19 @@ function(ev) {
 	}
 };
 
+/**
+ * Called when "Show more" link is clicked, this module shows all the attendees without pagination
+ * @param ev click event
+ */
+ZmFreeBusySchedulerView._onShowMore =
+function(ev) {
+	ev = DwtUiEvent.getEvent(ev);
+    var showMoreLink = DwtUiEvent.getTarget(ev);
+    var svp = AjxCore.objectWithId(showMoreLink._schedViewPageId);
+    if (!svp) { return; }
+    svp.showMoreResults();
+};
+
 ZmFreeBusySchedulerView._onFreeBusyMouseOut =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
@@ -1944,4 +2053,24 @@ function(enable) {
           }
       }
   }
+};
+
+
+/**
+ * Resets pageless mode while rendering attendees list, when pageless mode is enabled all attendees will be shown in
+ * single list without 'Show more' controls
+ *
+ * @param enable	[boolean]*		if true, enable pageless mode
+ */
+ZmFreeBusySchedulerView.prototype.resetPagelessMode =
+function(enable) {
+    this._isPageless = enable;
+};
+
+ZmFreeBusySchedulerView.prototype.showMoreResults =
+function() {
+    //enable pageless mode and render entire list
+    this.resetPagelessMode(true);
+    Dwt.setDisplay(this._showMoreLink, Dwt.DISPLAY_NONE);
+    this.showMe();
 };
