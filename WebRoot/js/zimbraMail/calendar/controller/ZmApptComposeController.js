@@ -261,8 +261,9 @@ function(attId) {
 								   (resources && resources.length > 0) ||
 								   (locations && locations.length > 0);
 
-		var needsConflictCheck = (resources && resources.length > 0) ||
-								 (locations && locations.length > 0);
+		var needsConflictCheck = !appt.isForward &&
+                                 ((resources && resources.length > 0) ||
+								 (locations && locations.length > 0));
 
 		if (needsConflictCheck) {
 			this.checkConflicts(appt, attId, notifyList);
