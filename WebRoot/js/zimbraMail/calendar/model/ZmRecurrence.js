@@ -488,3 +488,35 @@ ZmRecurrence.prototype.removeCancelRecurId =
 function(ridZ) {
     this._cancelRecurIds[ridZ] = null;
 };
+
+ZmRecurrence.prototype.parseExcludeInfo =
+function(recurInfo) {
+
+    if (!recurInfo) { return; }
+
+    for(var i=0; i < recurInfo.length; i++) {
+        var excludeInfo = (recurInfo[i] && recurInfo[i].exclude) ? recurInfo[i].exclude : null;
+        if(!excludeInfo) continue;
+        for(var j=0; j < excludeInfo.length; j++) {
+            var datesInfo = excludeInfo[j].dates;
+            if(datesInfo) this._parseExcludeDates(datesInfo);
+        }
+    }
+
+};
+
+ZmRecurrence.prototype._parseExcludeDates =
+function(datesInfo) {
+    for(var j=0; j < datesInfo.length; j++) {
+
+        var dtval = datesInfo[j].dtval;
+        if(!dtval) continue;
+
+        for(var k=0; k < dtval.length; k++) {
+            var dinfo = dtval[k];
+            var excludeDate = (dinfo && dinfo.s) ? dinfo.s[0].d : null;
+            if(excludeDate) this.addCancelRecurId(excludeDate);
+        }
+    }
+};
+
