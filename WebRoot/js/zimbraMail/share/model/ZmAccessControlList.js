@@ -122,6 +122,7 @@ function(right) {
 	var denyPublic  = (gtMap[ZmSetting.ACL_PUBLIC] == -1);
 	var allowLocal  = (gtMap[ZmSetting.ACL_AUTH] == 1);
 	var denyLocal   = (gtMap[ZmSetting.ACL_AUTH] == -1);
+    var allowDomainOnly   = (gtMap[ZmSetting.ACL_DOMAIN] == 1);
 	
 	var allowUser = (gtMap[ZmSetting.ACL_USER] == 1);
 	var allowNone = (denyPublic || denyLocal) && (gtMap[ZmSetting.ACL_USER] == null);
@@ -142,6 +143,10 @@ function(right) {
 	
 	if(allowUser) {
 		return ZmSetting.ACL_USER;
+	}
+
+    if(allowDomainOnly) {
+		return ZmSetting.ACL_DOMAIN;
 	}
 	
 	if(allowNone) {
