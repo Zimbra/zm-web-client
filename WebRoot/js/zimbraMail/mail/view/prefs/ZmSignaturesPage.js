@@ -161,7 +161,7 @@ function() {
 			var field = ZmSignaturesPage.SIG_FIELDS[j];
 			var savedSigId = u1[field];
 			var curSigId = this._newSigId[u2[field]] || u2[field];
-			if ((savedSigId != curSigId) && !this._autoAddedSig) {
+			if (savedSigId != curSigId) {
 				list.push({identity:identityId, sig:field, value:curSigId});
 			}
 		}
