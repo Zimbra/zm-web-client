@@ -630,6 +630,14 @@ function(appt, callback, recurInfo) {
 	var comp = soapDoc.set("comp", null, soapDoc.getMethod());
 
 	appt._addDateTimeToSoap(soapDoc, soapDoc.getMethod(), comp);
+
+    //preserve the EXDATE (exclude recur) information
+    if(recurInfo) {
+        var recurrence = appt.getRecurrence();
+        var recur = (recurInfo && recurInfo.comp) ? recurInfo.comp[0].recur : null;
+        recurrence.parseExcludeInfo(recur);
+    }
+
 	if(mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) appt._recurrence.setSoap(soapDoc, comp);
 
 	this.setExceptFromRecurInfo(soapDoc, recurInfo);
