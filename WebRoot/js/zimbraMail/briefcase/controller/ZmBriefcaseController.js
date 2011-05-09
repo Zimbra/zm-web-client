@@ -991,7 +991,16 @@ function(event) {
 
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-		var url = item.getRestUrl();
+		briefcase = appCtxt.getById(item.folderId);
+		var url;
+		if (briefcase.url) {
+			//present if the briefcase is a share from another user. In this case, keep that URL as the base.
+			url = [briefcase.url, "/", AjxStringUtil.urlComponentEncode(item.name)].join("")
+		}
+		else {
+			//item is in this user's briefcase, so build the rest url.
+			url = item.getRestUrl();
+		}
 		if (appCtxt.isOffline) {
 			var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
 			url = remoteUri + url.substring((url.indexOf("/",7)));
@@ -1002,7 +1011,6 @@ function(event) {
 
 		if (noprompt) { continue; }
 
-		briefcase = appCtxt.getById(item.folderId);
 		shares = briefcase && briefcase.shares;
 		if (shares) {
 			for (var j = 0; j < shares.length; j++) {
