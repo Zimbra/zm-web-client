@@ -336,7 +336,7 @@ function(parent, id, opHash, index) {
 	}
 	var callback = ZmOperation.CALLBACK[id];
 	if (callback) {
-		if (callback.run) {
+		if (callback.isAjxCallback) {
 			callback.run(opHash[id]);
 		} else {
 			callback(opHash[id]);

@@ -977,7 +977,7 @@ function(callback, errorCallback, account) {
 			throw ex;
 		}
 	} else {
-		if (callback && callback.run) {
+		if (callback && callback.isAjxCallback) {
 			callback.run(this._contactList[acctId]);
 		}
 		return this._contactList[acctId];
@@ -992,7 +992,7 @@ function(callback) {
 	var acctId = appCtxt.getActiveAccount().id;
 	this.contactsLoaded[acctId] = true;
 
-	if (callback && callback.run) {
+	if (callback && callback.isAjxCallback) {
 		callback.run(this._contactList[acctId]);
 	}
 };
