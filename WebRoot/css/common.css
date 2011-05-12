@@ -611,6 +611,10 @@ DIV.vSpace {
 	font-family:Verdana;
 	font-size:13px;
 }
+.inlineContactTagIcon {
+    font-size:11px;
+    vertical-align:middle;
+}
 
 .TooltipHint {
 	font-style: italic;

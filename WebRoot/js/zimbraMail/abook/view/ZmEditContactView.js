@@ -685,7 +685,7 @@ function(tagIds) {
 		html[idx++] = tag.id;
 		html[idx++] = '"';
 		html[idx++] = "); return false;'>";
-		html[idx++] = AjxImg.getImageSpanHtml(icon, null, attr, tag.name);
+		html[idx++] = AjxImg.getImageSpanHtml(icon, "vertical-align:middle; margin-right:4px", attr, tag.name, "inlineContactTagIcon");
 		html[idx++] = "</a>&nbsp;";
 	}
 	return html.join("");
