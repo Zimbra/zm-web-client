@@ -234,32 +234,6 @@ function(app, params) {
 	}
 };
 
-
-/**
- * Runs the given function for all known (e.g. part of ZmApp.CLASS)
- * app classes, passing args.
- * NOTE: This runs class functions only, not instance (prototype) functions.
- * @static
- * @param funcName {String} The name of the function we will run on each
- * application.
- * @param mixed {mixed} 0 to n additional arguments are passed to funcName
- * via apply.
- */
-ZmApp.runAppFunction =
-function(funcName) {
-    var args;
-
-    for (var appName in ZmApp.CLASS) {
-        var app = window[ZmApp.CLASS[appName]];
-        var func = app && app[funcName];
-        if (func && (typeof(func) == "function")) {
-            args = args || Array.prototype.slice.call(arguments, 1);
-            func.apply(app, args);
-        }
-    }
-};
-
-
 // Public instance methods
 
 /**
@@ -309,7 +283,7 @@ function() {
  */
 ZmApp.prototype.getDisplayName =
 function() {
-	return ZmMsg[ZmApp.NAME[this._name]] || ZmApp.NAME[this._name];
+	return ZmMsg[ZmApp.NAME[this._name]];
 };
 
 /**
