@@ -503,6 +503,7 @@ function(ex, continuation) {
 			return;
 		} else {
 			// NO_AUTH_TOKEN
+			reloginMode = true;
 			loginDialog.setError(null);
 		}
 		loginDialog.setReloginMode(reloginMode);
