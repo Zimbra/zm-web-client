@@ -260,7 +260,7 @@ function() {
 ZmBackupPage._getAccounts =
 function() {
     var savedAccounts = appCtxt.get(ZmSetting.OFFLINE_BACKUP_ACCOUNT_ID);
-    savedAccounts = savedAccounts && savedAccounts.split(",") || [];
+    savedAccounts = (savedAccounts && savedAccounts.length) ? savedAccounts.split(",") : [];
     var accounts = new ZmPrefAccounts();
     var visAccts = appCtxt.accountList.visibleAccounts;
     for (var i=0; i< visAccts.length; i++) {
