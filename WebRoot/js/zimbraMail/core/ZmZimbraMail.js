@@ -2284,7 +2284,12 @@ function(locationStr) {
  */
 ZmZimbraMail.redir =
 function(locationStr){
-	window.location = locationStr;
+	// IE has a tendency to throw a mysterious error when the "are you sure" dialog pops up and the user presses "cancel".
+	// Pressing cancel, however, equals doing nothing, so we can just catch the exception and ignore it (bug #59853)
+	try {
+		window.location = locationStr;
+	} catch (e) {
+	}
 };
 
 /**
