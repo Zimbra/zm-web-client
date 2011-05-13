@@ -230,7 +230,7 @@ function(parent, operations, overrides) {
 		for (var i = 0; i < operations.length; i++) {
 			var id = operations[i];
 			ZmOperation.defineOperation(id, overrides[id]);
-			ZmOperation.addOperation(parent, id, opHash);
+			ZmOperation.addOperation(parent, id, opHash, null, overrides[id] && overrides[id].htmlElId);
 		}
 	}
 
@@ -313,7 +313,7 @@ function(id) {
  * @param	{String}	[index]		the index
  */
 ZmOperation.addOperation =
-function(parent, id, opHash, index) {
+function(parent, id, opHash, index, htmlElId) {
 
 	var opDesc = ZmOperation._operationDesc[id] || ZmOperation.defineOperation(id);
 
@@ -332,7 +332,7 @@ function(parent, id, opHash, index) {
 		if (index != null) {
 			opDesc.index = index;
 		}
-		opHash[id] = parent.createOp(id, opDesc);
+		opHash[id] = parent.createOp(id, opDesc, htmlElId);
 	}
 	var callback = ZmOperation.CALLBACK[id];
 	if (callback) {
@@ -459,9 +459,11 @@ function(parent) {
 	var overrides = {};
 	for (var i = 0; i < list.length; i++) {
 		var op = list[i];
+		var htmlElId = parent._htmlElId + "_" + op;
+		overrides[op] = {htmlElId: htmlElId};
 		var textKey = ZmOperation.NEW_ITEM_KEY[op] || ZmOperation.NEW_ORG_KEY[op];
 		if (textKey) {
-			overrides[op] = {textKey:textKey};
+			overrides[op].textKey = textKey;
 		}
 	}
 
