@@ -715,14 +715,19 @@ function() {
 ZmConv.prototype.updateFragment =
 function(ignore) {
 	var best;
-	for (var j = this.msgs.size()-1; j >= 0; j--) {
-		var candidate = this.msgs.get(j);
-		if (ignore && AjxUtil.indexOf(ignore,candidate)!=-1) continue;
-		if (candidate.fragment && (!best || candidate.date > best.date))
-			best = candidate;
+	var size = this.msgs && this.msgs.size();
+	if (size) {
+		for (var j = size - 1; j >= 0; j--) {
+			var candidate = this.msgs.get(j);
+			if (ignore && AjxUtil.indexOf(ignore, candidate) != -1) { continue; }
+			if (candidate.fragment && (!best || candidate.date > best.date)) {
+				best = candidate;
+			}
+		}
 	}
-	if (best)
+	if (best) {
 		this.fragment = best.fragment;
+	}
 };
 
 /**
