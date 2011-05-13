@@ -110,11 +110,11 @@ function(table, match, rowId) {
 };
 
 ZmDLAutocompleteListView.prototype._update =
-function(hasDelim, match, ev) {
+function(context, match, ev) {
 
 	if (this._selected == this._selectAllRowId) {
 		if (!this._matchHash[this._selectAllRowId]) {
-			var callback = new AjxCallback(this, this._handleResponseGetAllDLMembers, [hasDelim, ev]);
+			var callback = this._handleResponseGetAllDLMembers.bind(this, ev);
 			this._dlContact.getAllDLMembers(callback);
 		}
 	} else {
@@ -124,7 +124,7 @@ function(hasDelim, match, ev) {
 };
 
 ZmDLAutocompleteListView.prototype._handleResponseGetAllDLMembers =
-function(hasDelim, ev, result) {
+function(ev, result) {
 
 	var mv = this._parentAclv._matchValue;
 	var field = (mv instanceof Array) ? mv[0] : mv;
@@ -151,7 +151,7 @@ ZmDLAutocompleteListView.prototype._doUpdate =
 function() {
 	var sel = this._matchHash[this._selected];
 	if (sel) {
-		this._parentAclv._update({element:this._element, add:true}, sel);
+		this._parentAclv._update(null, sel);
 	}
 };
 
@@ -174,7 +174,7 @@ function(ev) {
 		DBG.println("dl", "scroll, items needed: " + needed);
 		if (needed) {
 			DBG.println("dl", "new offset: " + listSize);
-			var respCallback = new AjxCallback(null, ZmDLAutocompleteListView._handleResponseDLScroll, [view]);
+			var respCallback = ZmDLAutocompleteListView._handleResponseDLScroll.bind(null, view);
 			view._parentAclv._dataAPI.expandDL(view._dlContact, listSize, respCallback);
 		}
 	}

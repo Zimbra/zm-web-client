@@ -126,7 +126,6 @@
  * @param	{AjxCallback}	keyDownCallback		the additional client ONKEYDOWN handler
  * @param	{AjxCallback}	keyPressCallback	the additional client ONKEYPRESS handler
  * @param	{AjxCallback}	keyUpCallback		the additional client ONKEYUP handler
- * @param	{AjxCallback}	enterCallback		the client handler for Enter key
  * @param	{Hash}			options				the additional options for the data class
  * 
  * @extends		DwtComposite
@@ -787,7 +786,7 @@ function(context) {
 	DBG.println("ac", "autocomplete: " + context.str);
 	
 	this._currentContext = context;	// so we can figure out where to pop up the "waiting" indicator
-	var respCallback = new AjxCallback(this, this._handleResponseAutocomplete, [context]);
+	var respCallback = this._handleResponseAutocomplete.bind(this, context);
 	context.state = ZmAutocompleteListView.STATE_REQUEST;
 	context.reqId = this._dataAPI.autocompleteMatch(str, respCallback, this, this._options, this._activeAccount);
 	DBG.println("ac", "Request ID for " + context.element.id + " / '" + context.str + "': " + context.reqId);
@@ -807,7 +806,7 @@ function(context, list) {
 			this._update(context, list[0]);
 		} else {
 			// pop up the list of matches
-			this._set(list);
+			this._set(list, context);
 			this._visibleContext = context;
 			this.show(true);
 		}
@@ -978,7 +977,7 @@ function() {
 // Creates the list and its member elements based on the matches we have. Each match becomes a
 // row. The first match is automatically selected.
 ZmAutocompleteListView.prototype._set =
-function(list) {
+function(list, context) {
 
 	this._removeAll();
 	var table = this._getTable();
@@ -1015,11 +1014,11 @@ function(list) {
 	}
 	if (forgetEnabled) {
 		this._forgetText = {};
-		this._addLinks(this._forgetText, "Forget", ZmMsg.forget, ZmMsg.forgetTooltip, this._handleForgetLink);
+		this._addLinks(this._forgetText, "Forget", ZmMsg.forget, ZmMsg.forgetTooltip, this._handleForgetLink, context);
 	}
 	if (expandEnabled) {
 		this._expandText = {};
-		this._addLinks(this._expandText, "Expand", ZmMsg.expand, ZmMsg.expandTooltip, this.expandDL);
+		this._addLinks(this._expandText, "Expand", ZmMsg.expand, ZmMsg.expandTooltip, this.expandDL, context);
 	}
 
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
@@ -1048,7 +1047,7 @@ function(type, num) {
 
 // Add a DwtText to the link so it can have a tooltip.
 ZmAutocompleteListView.prototype._addLinks =
-function(textHash, idLabel, label, tooltip, handler) {
+function(textHash, idLabel, label, tooltip, handler, context) {
 
 	var len = this._matches.length;
 	for (var i = 0; i < len; i++) {
@@ -1063,7 +1062,7 @@ function(textHash, idLabel, label, tooltip, handler) {
 			text.isLinkText = true;
 			text.setText(label);
 			text.setToolTipContent(tooltip);
-			var listener = new AjxListener(this, handler, [match.email, textId, rowId]);
+			var listener = handler.bind(this, {email:match.email, textId:textId, rowId:rowId, element:context.element});
 			text.addListener(DwtEvent.ONMOUSEDOWN, listener);
 			text.reparentHtmlElement(link);
 		}
@@ -1329,9 +1328,9 @@ function(ev) {
 };
 
 ZmAutocompleteListView.prototype._handleForgetLink =
-function(email, textId, rowId) {
+function(params) {
 	if (this._dataAPI.forget) {
-		this._dataAPI.forget(email, new AjxCallback(this, this._handleResponseForget, [email, rowId]));
+		this._dataAPI.forget(params.email, this._handleResponseForget.bind(this, params.email, params.rowId));
 	}
 };
 
@@ -1386,7 +1385,7 @@ function(params) {
 			this._curExpanded = params.textId;
 			this._setExpandText(params.textId, true);
 		}
-		this._dataAPI.expandDL(contact, 0, new AjxCallback(this, this._handleResponseExpandDL, [contact, params]));
+		this._dataAPI.expandDL(contact, 0, this._handleResponseExpandDL.bind(this, contact, params));
 	}
 	if (params.element) {
 		params.element.focus();
@@ -1400,7 +1399,6 @@ function(contact, params, matches) {
 	if (!mlv) {
 		mlv = this._memberListView = new ZmDLAutocompleteListView({parent:appCtxt.getShell(), parentAclv:this});
 	}
-	mlv._element = params.element;
 	mlv._dlContact = contact;
 	mlv._dlBubbleId = params.textId;
 	mlv._set(matches, contact);
@@ -1461,7 +1459,7 @@ function(type, inputId, args) {
 		for (var i = 0; i < list.length; i++) {
 			var cbObj = list[i];
 			if (inputId && cbObj.inputId && (inputId != cbObj.inputId)) { continue; }
-			var r = AjxCallback.prototype.run.apply(cbObj.callback, args);
+			var r = (typeof cbObj == "function") ? cbObj(args) : AjxCallback.prototype.run.apply(cbObj.callback, args);
 			if (r === true || r === false) {
 				result = (result == null) ? r : result && r;
 			}
