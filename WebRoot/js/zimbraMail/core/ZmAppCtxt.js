@@ -1456,7 +1456,7 @@ function(event, args, options) {
 		return;
 	}
 
-	return this.getZimletMgr().notifyZimlets(event, args);
+	this.getZimletMgr().notifyZimlets(event, args);
 };
 
 /**
