@@ -2160,6 +2160,15 @@ function() {
 		}
 	}
 
+    this.setQuotaInfo(login, username);
+};
+
+ZmZimbraMail.prototype.setQuotaInfo =
+function(login, username) {
+    var quota = appCtxt.get(ZmSetting.QUOTA);
+    if(!quota) {
+        return;
+    }
 	// quota
 	var usedQuota = (appCtxt.get(ZmSetting.QUOTA_USED)) || 0;
 
@@ -2167,7 +2176,7 @@ function() {
 		id: this._usedQuotaField._htmlElId,
 		login: login,
 		username: username,
-		quota: appCtxt.get(ZmSetting.QUOTA),
+		quota: quota,
 		usedQuota: usedQuota,
 		size: (AjxUtil.formatSize(usedQuota, false, 1))
 	};
@@ -2190,7 +2199,6 @@ function() {
 	this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(html);
 	this._components[ZmAppViewMgr.C_QUOTA_INFO].setToolTipContent(html);
 };
-
 
 // Listeners
 
