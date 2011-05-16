@@ -2113,6 +2113,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmSchedulerInputDisabled {
 	@TextPadding@
     @FreeBusyViewGridHeight@
+	@NoWrap@
 }
 
 /*
