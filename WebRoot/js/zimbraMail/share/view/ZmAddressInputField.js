@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2010, 2011 Zimbra, Inc.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -65,6 +65,7 @@ ZmAddressInputField = function(params) {
 	this._listeners[ZmOperation.EDIT]			= new AjxListener(null, ZmAddressInputField.prototype._editListener);
 	this._listeners[ZmOperation.EXPAND]			= new AjxListener(null, ZmAddressInputField.prototype._expandListener);
 	this._listeners[ZmOperation.CONTACT]		= new AjxListener(null, ZmAddressInputField.prototype._contactListener);
+	this._listeners[ZmOperation.COPY_TEXT]      = new AjxListener(null, ZmAddressInputField.prototype._copyListener);
 
 	if (ZmAddressInputField.AUTO_SELECT_TEXT) {
 		this._keyDownListener = new AjxListener(this, this._handleKeyDown);
@@ -114,7 +115,6 @@ function(aclv) {
 	this._separator = (aclv._separator) || AjxEmailAddress.SEPARATOR;
 	aclv.addCallback(ZmAutocompleteListView.CB_KEYDOWN, new AjxCallback(this, this._keyDownCallback), this._inputId);
 	aclv.addCallback(ZmAutocompleteListView.CB_KEYUP, new AjxCallback(this, this._keyUpCallback), this._inputId);
-	aclv.addCallback(ZmAutocompleteListView.CB_ADDR_FOUND, new AjxCallback(this, this._addrFoundCallback), this._inputId);
 };
 
 // Override since we normally want to add bubble before the INPUT, and not at the end. If we're
@@ -147,6 +147,7 @@ function(child, index) {
  * @param {ZmAddressBubble}		params.bubble		bubble to clone
  * @param {int}					params.index		position (relative to bubbles, not elements) at which to add bubble
  * @param {boolean}				params.skipNotify	if true, don't call bubbleAddedCallback
+ * @param {boolean}				params.noFocus		if true, don't focus input after bubble is added
  */
 ZmAddressInputField.prototype.addBubble =
 function(params) {
@@ -189,7 +190,7 @@ function(params) {
 	}
 	else {
 		if (this._hasValidAddress(params)) {
-			this._addBubble(new ZmAddressBubble(params), params.index);
+			this._addBubble(new ZmAddressBubble(params), params.index, params.noFocus);
 			bubbleAdded = true;
 		}
 		else {
@@ -202,7 +203,6 @@ function(params) {
 
 	if (bubbleAdded) {
 		this._holder.className = "addrBubbleHolder";
-		this._setInputValue("");
 		if (this._bubbleAddedCallback && !params.skipNotify) {
 			this._bubbleAddedCallback.run();
 		}
@@ -210,7 +210,7 @@ function(params) {
 };
 
 ZmAddressInputField.prototype._addBubble =
-function(bubble, index) {
+function(bubble, index, noFocus) {
 
 	if (!bubble) { return; }
 	
@@ -223,7 +223,9 @@ function(bubble, index) {
 	this._bubble[bubbleId] = bubble;
 	this._addressHash[bubble.email] = true;
 
-	this.focus();
+	if (!noFocus) {
+		this.focus();
+	}
 };
 
 ZmAddressInputField.prototype._hasValidAddress =
@@ -310,27 +312,25 @@ function(text, add, skipNotify) {
 		index = this._getInsertionIndex(this._holder.childNodes[this._editModeIndex]);
 	}
 
-	var parsed = AjxEmailAddress.parseEmailString(text);
-	var addrs;
-	if (this._strictMode) {
-		addrs = parsed.good.getArray();
-	}
-	else {
-		addrs = parsed.good.size() ? parsed.good.getArray() : parsed.all.getArray();
-	}
-	for (var i = 0, len = addrs.length; i < len; i++) {
-		var addr = addrs[i].toString();
-		var email = addrs[i].getAddress();
-		if (!this._addressHash[email]) {
-			this.addBubble({address:addr, index:(index != null) ? index + i : null, skipNotify:skipNotify});
+	var newParts = [];
+	var parts = text.split(";");
+	for (var i = 0; i < parts.length; i++) {
+		var part = AjxStringUtil.trim(parts[i]);
+		var addr = AjxEmailAddress.parse(part);
+		if (!this._strictMode || (addr && !this._addressHash[addr.address])) {
+			this.addBubble({address:addr.toString(), index:(index != null) ? index + i : null, skipNotify:skipNotify});
+		}
+		else {
+			newParts.push(part);
 		}
 	}
 
-	var value = "";
-	if (this._strictMode && parsed.bad && parsed.bad.size()) {
-		value = parsed.bad.toString(AjxEmailAddress.SEPARATOR);
-	}
-	this._setInputValue(value);
+	this._setInputValue(newParts.join(";"));
+};
+
+ZmAddressInputField.prototype.addValue =
+function(text, skipNotify) {
+	this.setValue(text, true, skipNotify);
 };
 
 /**
@@ -517,7 +517,7 @@ function(bubbleId, email) {
 	if (bubble) {
 		var loc = bubble.getLocation();
 		loc.y += bubble.getSize().y + 2;
-		this._aclv.expandDL(email, bubble._htmlElId, null, null, loc, this._input);
+		this._aclv.expandDL({email:email, textId:bubble._htmlElId, loc:loc, element:this._input});
 	}
 };
 
@@ -638,10 +638,6 @@ function(ev, aclv) {
 		propagate = false;	// eat the event - eg don't let compose view catch Esc and pop the view
 		clearInput = true;
 	}
-	// Tab checks to see if current input is an address
-	else if (key == 9) {
-		this._checkInput();
-	}
 	// Del removes selected bubbles, or selects last bubble if there is no input
 	else if (key == 8) {
 		DBG.println("aif", "_keyDownCallback found DEL key");
@@ -674,19 +670,6 @@ function(ev, aclv) {
 ZmAddressInputField.prototype._keyUpCallback =
 function(ev, aclv) {
 	this._resizeInput();
-};
-
-ZmAddressInputField.prototype._addrFoundCallback =
-function(aclv, addr, delim) {
-
-	var index = null;
-	if (this._editModeIndex != null) {
-		index = this._getInsertionIndex(this._holder.childNodes[this._editModeIndex]);
-	}
-
-	this.addBubble({address:addr, index:index, skipNotify:true});
-	this._leaveEditMode();
-	return true;
 };
 
 ZmAddressInputField.prototype._selectionListener =
@@ -807,7 +790,8 @@ function() {
 		ZmOperation.DELETE,
 		ZmOperation.EDIT,
 		ZmOperation.EXPAND,
-		ZmOperation.CONTACT
+		ZmOperation.CONTACT,
+        ZmOperation.COPY_TEXT
 	];
 };
 
@@ -866,6 +850,30 @@ function(ev) {
 		var loadCallback = new AjxCallback(addrInput, addrInput._handleLoadContactListener);
 		AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
 	}
+};
+
+/**
+ * Copy operation handler that helps in copying the emaill address to the clipboard
+ */
+ZmAddressInputField.prototype._copyListener =
+function() {
+    var copyText;
+	var addrInput = ZmAddressInputField.menuContext.addrInput;
+	var sel = addrInput && addrInput.getSelection();
+	if (sel && sel.length) {
+        var addresses = [];
+        for (var i = 0; i < sel.length; i++) {
+            var address = sel[i].address;
+            if (address) {
+                addresses.push(address);
+            }
+        }
+        if (addresses.length) {copyText = addresses.join(AjxEmailAddress.separator)};
+	}
+
+    if (copyText) {
+        DwtClipboardManager.getInstance().copyToClipboard(copyText);
+    }
 };
 
 /**
@@ -1033,10 +1041,10 @@ function() {
 // size the input to a bit more than its current content
 ZmAddressInputField.prototype._resizeInput =
 function() {
-
 	var val = AjxStringUtil.htmlEncode(this._input.value);
 	var holderWidth = Dwt.getSize(this._holder).x;
-	var strW = AjxStringUtil.getWidth(val);
+	var inputFontSize = DwtCssStyle.getProperty(this._input, "font-size");
+	var strW = AjxStringUtil.getWidth(val, false, inputFontSize);
 	if (AjxEnv.isWindows && AjxEnv.isFirefox) {
 		// FF/Win: fudge factor since string is longer in INPUT than when measured in SPAN
 		strW = strW * 1.2;
@@ -1869,6 +1877,11 @@ function(list) {
 	this._bubbleList = [];
 	this._selected = {};
 	this._numSelected = 0;
+};
+
+ZmAddressBubbleList.prototype.size =
+function() {
+	return this._bubbleList.length;
 };
 
 ZmAddressBubbleList.prototype.selectText =

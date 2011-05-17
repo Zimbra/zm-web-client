@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -181,9 +181,8 @@ function(viewId, startDate, skipMaintenance) {
 	this._viewMgr.setView(viewId);
 	DBG.timePt("setup and set view");
 
-	var elements = {};
-	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[ZmId.VIEW_CAL];
-	elements[ZmAppViewMgr.C_APP_CONTENT] = this._viewMgr;
+	var elements = this.getViewElements(ZmId.VIEW_CAL, this._viewMgr);
+
 	this._setView({view:ZmId.VIEW_CAL, elements:elements, isAppView:true});
 	this._currentView = this._viewMgr.getCurrentViewName();
     this.setCurrentListView(null);
@@ -763,7 +762,7 @@ function(items) {
 ZmCalViewController.prototype._getToolBarOps =
 function() {
 	return [
-		ZmOperation.NEW_MENU, ZmOperation.CAL_REFRESH,
+		ZmOperation.CAL_REFRESH,
 		ZmOperation.SEP,
 		ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
 		ZmOperation.SEP,
@@ -1369,8 +1368,7 @@ function(ev) {
             url.push("&zd=", "true");
         }
         url = url.join("");
-
-	} else {
+    } else {
 		var date = this._viewMgr
 			? this._viewMgr.getDate()
 			: (new Date());
@@ -1400,7 +1398,7 @@ function(ev) {
 			"/h/printcalendar?view=", view,
 			"&l=", l,
 			"&date=", date.getFullYear(), month, day,
-            "&tz=",AjxTimezone.getServerId(AjxTimezone.DEFAULT)                 //bug:53493
+			"&tz=",AjxTimezone.getServerId(AjxTimezone.DEFAULT)
 		].join("");
 	}
 
@@ -1715,7 +1713,7 @@ function(appt, mode) {
 		var msg = isTrash ? ZmMsg.confirmPermanentCancelAppt : ZmMsg.confirmCancelAppt;
 
 		if (appt.isRecurring() && !isTrash) {
-			msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, appt.name) :  ZmMsg.confirmCancelApptSeries;
+	    	msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, appt.name) :  ZmMsg.confirmCancelApptSeries; 
 		}
 		confirmDialog.popup(msg, cancelNoReplyCallback);
 	}
