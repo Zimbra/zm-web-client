@@ -226,12 +226,19 @@
 </template>
 
 <template id='dwt.Widgets#ZLinkButton' class='ZWidget'>
-	<table class='ZWidgetTable' cellspacing=0 cellpadding=0 style='table-layout:auto;'>
+	<table class='DwtLinkButtonTable' cellspacing=0 cellpadding=0 style='table-layout:auto;'>
 		<tr>
-			<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
 			<td class='ZWidgetTitle'><a href='javascript:;' onclick='return false;' id='${id}_title'></a></td>
-			<td id='${id}_right_icon' 	class='ZRightIcon ZWidgetIcon'></td>
-			<td id='${id}_dropdown' 	class='ZDropDown'></td>
+			<td id='${id}_dropdown' class='DwtLinkButtonDropDownArrowTd'>
+				<div class='DwtLinkButtonDropDownArrow'>
+					<center>
+						<div class='DwtLinkButtonDropDownArrowRow' style='width:7px;'>&nbsp;</div>
+						<div class='DwtLinkButtonDropDownArrowRow' style='width:5px;'>&nbsp;</div>
+						<div class='DwtLinkButtonDropDownArrowRow' style='width:3px;'>&nbsp;</div>
+						<div class='DwtLinkButtonDropDownArrowRow' style='width:1px;'>&nbsp;</div>
+					</center>
+				</div>
+			</td>
 		</tr>
 	</table>
 </template>

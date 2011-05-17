@@ -128,6 +128,13 @@
 .DwtToolTipTopPointer	 {		position:absolute;	width:30px; }
 .DwtToolTipBottomPointer {		position:absolute;	width:30px;	}
 
+/* drop-down arrow for DwtLinkButton */
+.DwtLinkButtonDropDownArrow {		width:16px; 	}
+.DwtLinkButtonDropDownArrowTd	{padding-left:1px;}
+.DwtLinkButtonTable:hover .DwtLinkButtonDropDownArrowTd, /* this selector doesn't work on IE and FF (works on Chrome). I prefer this so I keep it, since it would work for any instance of a LinkButton (if we have more than just the help one in the future) and the border stays when the user clicks on the drow-down arrow */
+.ZHover .DwtLinkButtonDropDownArrowTd /* this works for all browsers but the border disappears when the arrow is clicked since ZHover class is removed */
+{ padding-left:0; border-left:solid 1px @LinkButtonArrowColor@	}
+
 /* One row of the tooltip pointer -- used to do arrows without images */
 .DwtToolTipPointerRow {
 	position:relative; overflow:hidden;
@@ -135,6 +142,12 @@
 	@TooltipArrowContainer@
 }
 
+/* One row of the DwtLinkButton drop-down arrow -- used to do arrows without images */
+.DwtLinkButtonDropDownArrowRow {
+	position:relative; overflow:hidden;
+	font-size:1px; height:1px;
+	@LinkButtonArrowContainer@
+}
 
 
 
