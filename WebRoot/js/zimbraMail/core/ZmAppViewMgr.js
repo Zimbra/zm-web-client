@@ -312,6 +312,11 @@ function(components, doFit, noSetZ) {
 		if (cid == ZmAppViewMgr.C_SASH) {
 			if (this._sashSupported){
 				comp.registerCallback(this._appTreeSashCallback, this);
+				if (appCtxt.get(ZmSetting.FOLDER_TREE_SASH_WIDTH)) {
+					var newWidth =  appCtxt.get(ZmSetting.FOLDER_TREE_SASH_WIDTH);
+					var oldWidth = skin.getTreeWidth();
+					this._appTreeSashCallback(newWidth - oldWidth);
+				}
 			}
 			comp.setCursor("default");
 		}

@@ -283,6 +283,7 @@ function(params) {
 		this._components = {};
 		this._components[ZmAppViewMgr.C_SASH] = new DwtSash({parent:this._shell, style:DwtSash.HORIZONTAL_STYLE,
 															 className:"console_inset_app_l", threshold:20, id:ZmId.MAIN_SASH});
+		this._components[ZmAppViewMgr.C_SASH].addListener(DwtEvent.ONMOUSEUP, ZmZimbraMail._folderTreeSashRelease);
 		this._components[ZmAppViewMgr.C_BANNER] = this._createBanner();
 		this._components[ZmAppViewMgr.C_USER_INFO] = this._userNameField =
 			this._createUserInfo("BannerTextUser", ZmAppViewMgr.C_USER_INFO, ZmId.USER_NAME);
@@ -2988,6 +2989,14 @@ function(ev) {
 		var lastViewId = avm.getLastViewId();
 		var action = (AjxStringUtil.split((""+text), " ")).join("");
 		appCtxt.notifyZimlets("onAction", [type, action, currentViewId, lastViewId]);
+	}
+};
+
+ZmZimbraMail._folderTreeSashRelease =
+function(sash) {
+	var currentWidth = skin.getTreeWidth();
+	if (currentWidth) {
+		appCtxt.set(ZmSetting.FOLDER_TREE_SASH_WIDTH, currentWidth);
 	}
 };
 
