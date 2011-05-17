@@ -795,7 +795,7 @@ function(organizer, attendees) {
 
     if (emails.length) {
         //all attendees status need to be update even for unshown attendees
-        var allAttendeeEmails = this._allAttendeeEmails = this.getAllAttendeeEmails(attendees);
+        var allAttendeeEmails = this._allAttendeeEmails = this.getAllAttendeeEmails(attendees, organizer);
         this._getFreeBusyInfo(this._getStartTime(), allAttendeeEmails.join(","));
 	}
 };
@@ -864,7 +864,7 @@ function() {
 
 
 ZmFreeBusySchedulerView.prototype.getAllAttendeeEmails =
-function(attendees) {
+function(attendees, organizer) {
     var emails = [];
     for (var t = 0; t < this._attTypes.length; t++) {
         var type = this._attTypes[t];
@@ -874,6 +874,10 @@ function(attendees) {
             var email = att[i] ? this.getEmail(att[i]) : null;
             if (email) emails.push(email);
         }
+    }
+    if(organizer) {
+        var organizerEmail =  this.getEmail(organizer);
+        emails.push(organizerEmail);
     }
     return emails;
 };
@@ -940,7 +944,7 @@ function(organizer, attendees) {
 
 	if (emails.length) {
         //all attendees status need to be update even for unshown attendees
-        var allAttendeeEmails =  this._allAttendeeEmails = this.getAllAttendeeEmails(attendees);
+        var allAttendeeEmails =  this._allAttendeeEmails = this.getAllAttendeeEmails(attendees, organizer);
 		this._getFreeBusyInfo(this._getStartTime(), allAttendeeEmails.join(","));
 	}else {
         this.postUpdateHandler();
