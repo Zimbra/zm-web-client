@@ -88,9 +88,9 @@ function() {
  * @private
  */
 ZmActionMenu.prototype.createOp =
-function(id, params, elementId) {
+function(id, params) {
 	params.id = this._context ? ZmId.getMenuItemId(this._context, id, this._menuType) : null;
-	var mi = this.createMenuItem(id, params, elementId);
+	var mi = this.createMenuItem(id, params);
 	mi.setData(ZmOperation.KEY_ID, id);
 
 	return mi;

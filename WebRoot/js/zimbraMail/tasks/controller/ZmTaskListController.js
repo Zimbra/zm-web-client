@@ -149,8 +149,10 @@ function(results, folderId) {
 	var lv = this._listView[this._currentView];
 	if (lv) { lv.offset = 0; }
 
-	var elements = this.getViewElements(this._currentView, this._taskMultiView);
-	
+	var elements = {};
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._taskMultiView;
+
 	this._setView({view:this._currentView, elements:elements, isAppView:true});
 
 	this._setTabGroup(this._tabGroups[this._currentView]);
@@ -352,7 +354,7 @@ function() {
 
 ZmTaskListController.prototype._getToolBarOps =
 function() {
-	var toolbarOps =  [];
+	var toolbarOps =  [ZmOperation.NEW_MENU, ZmOperation.SEP];
 	if(appCtxt.isOffline) {
 		// Add a send/recieve button *only* for ZD
 		toolbarOps.push(ZmOperation.CHECK_MAIL, ZmOperation.SEP);
@@ -837,8 +839,9 @@ function(task) {
         calItemView.set(task, ZmId.VIEW_TASKLIST);
         this._resetOperations(this._toolbar[viewId], 1); // enable all buttons
 
-		var elements = this.getViewElements(viewId, this._listView[viewId]);
-		
+        var elements = {};
+        elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[viewId];
+        elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[viewId];
         this._setView({view:viewId, elements:elements, pushOnly:true});
     } else {
         var calItemView = this._taskMultiView._taskView;
