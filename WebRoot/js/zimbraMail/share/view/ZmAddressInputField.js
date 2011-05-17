@@ -1889,7 +1889,7 @@ function(bubble, focusObj) {
 
 	// programmatic text selection works consistently only if the BODY is the active element,
 	// so blur whatever currently has focus
-	if (document.activeElement && document.activeElement.blur) {
+	if (document.activeElement && document.activeElement.blur && document.activeElement != document.body) {
 			document.activeElement.blur();
 	}
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
