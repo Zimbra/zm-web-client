@@ -11,7 +11,7 @@
 	$>
 	<div class='BannerBar'>
 	 	<div class='quotabar'>
-			<div style='width:${percent}' class='<$= progressClassName $>'></div>
+			<div style='width:${percent}%' class='<$= progressClassName $>'></div>
 	 	</div>
     </div>	
 	
@@ -20,14 +20,14 @@
 
 <!-- Show amount used with no quota -->
 <template id='share.Quota#UsedUnlimited'>
-	<div class='BannerTextQuota'>${desc}</div>
+    <div class='BannerTextQuota' style='display:none;'>${desc}</div>
 </template>
 
 
 <template id='share.Quota#Tooltip'>
-		<$ if (data.username != data.login) { $>
-			<div style="text-align:center;">${login}</div>
-		<$ } $>
+        <$ if (data.username != data.login) { $>
+            <div style="text-align:center;">${login}</div>
+        <$ } $>
             <div style="text-align:center;margin-top:3px;">
                 <$ if (data.quota) { $>
                     <$

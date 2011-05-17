@@ -73,8 +73,8 @@ BODY						{	margin:0px; 				}
 #skin_container_links					{	}
 
 /** User Name section **/
-#skin_container_username				{	height:auto; padding-top:2px;	}
-#skin_container_username *				{	@SkinTextUsername@ margin-top: 3px;	}
+#skin_container_username				{	height:auto; padding-bottom:2px; padding-top:4px;	}
+#skin_container_username *				{	@SkinTextUsername@	}
 
 /** Quota section **/	
 #skin_container_quota					{	@SkinBorderQuota@	}
