@@ -628,7 +628,7 @@ function(ev, aclv) {
 
 	ev = DwtUiEvent.getEvent(ev);
 	var key = DwtKeyEvent.getCharCode(ev);
-	var propagate = true;
+	var propagate;
 	var clearInput = false;
 
 	// Esc in edit mode restores the original address to the bubble
@@ -662,7 +662,6 @@ function(ev, aclv) {
 		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._setInputValue, [""]), 20);
 	}
 	
-	DwtUiEvent.setBehaviour(ev, !propagate, propagate);
 	return propagate;
 };
 
