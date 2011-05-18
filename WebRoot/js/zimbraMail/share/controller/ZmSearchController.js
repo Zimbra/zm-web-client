@@ -349,11 +349,36 @@ function(menu) {
  */
 ZmSearchController.prototype.search =
 function(params) {
-	if (params.searchFor != ZmItem.APPT && (!params.query && !params.queryHint)) {
-		if (params.searchFor == ZmItem.MAIL) {
-			params.query = appCtxt.get(ZmSetting.INITIAL_SEARCH, null, appCtxt.getActiveAccount());
+
+	if (!params.query && !params.queryHint) { // What to do when the search field is empty?
+		var appName;
+		switch (params.searchFor) {
+			case ZmId.SEARCH_MAIL:
+				appName = ZmApp.MAIL;
+				break;
+			case ZmId.SEARCH_GAL:
+				// Do not search in GAL when query is empty
+				return;
+			case ZmId.SEARCH_ANY:
+				params.query = "is:anywhere";
+				break;
+			default:
+				// Get the app of the item type being searched
+				appName = ZmItem.APP[params.searchFor];
+				break;
+		}
+		if (appName) {
+			// Get the "main" folder of the app related to the searched item type
+			var organizerName = ZmOrganizer.APP2ORGANIZER[appName];
+			var defaultFolder = organizerName && ZmOrganizer.DEFAULT_FOLDER[organizerName];
+			var folder = defaultFolder && appCtxt.getById(defaultFolder);
+			if (folder) {
+				params.query = "in:" + folder.name;
+			}
+		}
+		if (params.query) {
 			params.userText = false;
-		} else {
+		} else if (params.searchFor != ZmItem.APPT) { // Appointment searches without query are ok, all others should fail
 			return;
 		}
 	}
@@ -365,7 +390,6 @@ function(params) {
 	}
 
 	params.searchAllAccounts = this.searchAllAccounts;
-
 	var respCallback = new AjxCallback(this, this._handleResponseSearch, [params.callback]);
 	this._doSearch(params, params.noRender, respCallback, params.errorCallback);
 };
@@ -804,9 +828,9 @@ function(types, account) {
  * @private
  */
 ZmSearchController.prototype._searchFieldCallback =
-function(queryString) {
+function(queryString, searchFor) {
 	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	this.search({query: queryString, userText: true, getHtml: getHtml});
+	this.search({query: queryString, userText: true, getHtml: getHtml, searchFor: searchFor});
 };
 
 /**
