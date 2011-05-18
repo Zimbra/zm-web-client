@@ -2039,7 +2039,7 @@ function() {
 
 
 ZmZimbraMail.ONLINE_HELP_URL = "http://help.zimbra.com/?";
-ZmZimbraMail.NEW_FEATURES_URL = "http://www.zimbra.com/docs/shared/{VERSION}/whats-new.html?";
+ZmZimbraMail.NEW_FEATURES_URL = "http://www.zimbra.com/docs/whats-new/?";
 
 /**
 * Adds a "help" submenu.
@@ -2096,7 +2096,7 @@ function() {
 
 	var appName = appCtxt.getCurrentAppName().toLowerCase();
 	var prod = appCtxt.isDesktop ? "zd" : "zcs";
-	return ["a=", appName, "&p=", prod, "&v=", this._getVersion()].join("");
+	return ["utm_source=", appName, "&utm_medium=", prod, "&utm_content=", this._getVersion(), "&utm_campaign=help"].join("");
 };
 
 
@@ -2110,8 +2110,7 @@ function(ev) {
 ZmZimbraMail.prototype._newFeaturesListener =
 function(ev) {
 	ZmZimbraMail.unloadHackCallback();
-	var baseUrl = ZmZimbraMail.NEW_FEATURES_URL.replace("{VERSION}", this._getVersion());
-	var url = [baseUrl, this._getQueryParams()].join("");
+	var url = [ZmZimbraMail.NEW_FEATURES_URL, this._getQueryParams()].join("");
 	window.open(url);
 };
 
