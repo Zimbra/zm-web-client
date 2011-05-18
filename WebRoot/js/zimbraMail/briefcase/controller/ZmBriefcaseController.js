@@ -998,9 +998,9 @@ function(event) {
 		var item = items[i];
 		briefcase = appCtxt.getById(item.folderId);
 		var url;
-		if (briefcase.url) {
+		if (briefcase.restUrl) {
 			//present if the briefcase is a share from another user. In this case, keep that URL as the base.
-			url = [briefcase.url, "/", AjxStringUtil.urlComponentEncode(item.name)].join("")
+			url = [briefcase.restUrl, "/", AjxStringUtil.urlComponentEncode(item.name)].join("")
 		}
 		else {
 			//item is in this user's briefcase, so build the rest url.
