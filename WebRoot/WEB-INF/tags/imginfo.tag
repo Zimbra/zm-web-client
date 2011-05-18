@@ -71,6 +71,11 @@ synchronized (this) {
             resources.setAttribute(SkinResources.A_IMAGE_CACHE, cache);
         }
     }
+    else {
+       // Initialize the cache for future references
+       if (cache == null)
+            cache = new HashMap<String,SkinResources.ImageInfo>();
+    }
 }
 
 // find image
