@@ -1694,15 +1694,16 @@ function(parent, num) {
 					item = sel[0];
 				}
 			}
+			var itemFolder = item && item.folderId && appCtxt.getById(item.folderId); // We may be looking at a search result, so the items in the list may not all be in the same folder
 			var isDrafts = (item && item.isDraft) || (folderId == ZmFolder.ID_DRAFTS);
-			var isFeed = (folder && folder.isFeed());
+			var isFeed = (itemFolder && itemFolder.isFeed());
 			parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (!isDrafts && !isFeed && num == 1));
 			parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !isDrafts && num == 1));
 			parent.enable([ZmOperation.SPAM, ZmOperation.MOVE, ZmOperation.FORWARD], (!isDrafts && num > 0));
 			parent.enable([ZmOperation.CHECK_MAIL, ZmOperation.VIEW_MENU], true);
 			var editButton = parent.getOp(ZmOperation.EDIT);
 			if (editButton) {
-				editButton.setVisible(isDrafts && !folder.isReadOnly());
+				editButton.setVisible(isDrafts && (!itemFolder || !itemFolder.isReadOnly()));
 			}
 		}
 	} else {
