@@ -796,6 +796,12 @@ function(sessionId) {
 	return this.getSessionController(ZmId.VIEW_APPOINTMENT, "ZmApptComposeController", sessionId);
 };
 
+ZmCalendarApp.prototype.getApptViewController =
+function(sessionId) {
+	AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+	return this.getSessionController(ZmId.VIEW_APPOINTMENT_READONLY, "ZmApptViewController", sessionId);
+};
+
 ZmCalendarApp.prototype.initResources =
 function() {
 	if (!this._locations) {

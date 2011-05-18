@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -108,6 +108,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_CLEAR_ALL, {textKey:"clearAll", image:"Cancel"});
 	ZmOperation.registerOp(ZmId.OP_CLOSE, {textKey:"close", tooltipKey:"closeTooltip", image:"Close", shortcut:ZmKeyMap.CANCEL});
 	ZmOperation.registerOp(ZmId.OP_COMPOSE_FORMAT, {textKey:"format", tooltipKey:"formatTooltip", image:"SwitchFormat", shortcut:ZmKeyMap.HTML_FORMAT}, ZmSetting.HTML_COMPOSE_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_COPY_TEXT, {textKey:"copy", image:"copy"});
 	ZmOperation.registerOp(ZmId.OP_DELETE, {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete", shortcut:ZmKeyMap.DEL, textPrecedence:60});
 	ZmOperation.registerOp(ZmId.OP_DETACH, {tooltipKey:"detachTT", image:"OpenInNewWindow"});
     ZmOperation.registerOp(ZmId.OP_DETACH_WIN, {textKey:"detachTT", tooltipKey:"detachTT", image:"OpenInNewWindow"});
@@ -119,6 +120,13 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_EMPTY_FOLDER,{textKey:"emptyFolder",image:"EmptyFolder"});
 	ZmOperation.registerOp(ZmId.OP_FORMAT_HTML, {textKey:"formatAsHtml", image:"HtmlDoc"}, ZmSetting.HTML_COMPOSE_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_FORMAT_TEXT, {textKey:"formatAsText", image:"GenericDoc"}, ZmSetting.HTML_COMPOSE_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_GROUPBY, {textKey:"groupBy"});
+    ZmOperation.registerOp(ZmId.OP_GROUPBY_NONE, {textKey:"groupByNone"});
+    ZmOperation.registerOp(ZmId.OP_GROUPBY_DATE, {textKey:"groupByDate"});
+    ZmOperation.registerOp(ZmId.OP_GROUPBY_FROM, {textKey:"groupByFrom"});
+    ZmOperation.registerOp(ZmId.OP_GROUPBY_PRIORITY, {textKey:"groupByPriority"});
+    ZmOperation.registerOp(ZmId.OP_GROUPBY_SIZE, {textKey:"groupBySize"});
+    ZmOperation.registerOp(ZmId.OP_GROUPBY_TAG,  {textKey:"groupByTag"});
 	ZmOperation.registerOp(ZmId.OP_GO_TO_URL, {image:"URL"});
 //	ZmOperation.registerOp(ZmId.OP_IMPORT_FOLDER, {textKey:"importFolder", image:"MailImport"});
 	ZmOperation.registerOp(ZmId.OP_MARK_ALL_READ, {textKey:"markAllRead", image:"ReadMessage"});
@@ -153,6 +161,8 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SHARE_DECLINE, {textKey:"declineShare", image:"Cancel"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_FOLDER, {textKey:"shareFolder", image:"SharedMailFolder"});
 	ZmOperation.registerOp(ZmId.OP_SHOW_ALL_ITEM_TYPES, {textKey:"showAllItemTypes", image:"Globe"});
+    ZmOperation.registerOp(ZmId.OP_SORT_ASC, {textKey:"sortAscending"});
+    ZmOperation.registerOp(ZmId.OP_SORT_DESC, {textKey:"sortDescending"});
 	ZmOperation.registerOp(ZmId.OP_SPELL_CHECK, {textKey:"spellCheck", image:"SpellCheck", tooltipKey:"spellCheckTooltip", shortcut:ZmKeyMap.SPELLCHECK}, ZmSetting.SPELL_CHECK_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SYNC, {textKey:"reload", image:"Refresh", shortcut:ZmKeyMap.REFRESH});
     ZmOperation.registerOp(ZmId.OP_SYNC_ALL, {textKey:"checkAllFeed", image:"Refresh"});
@@ -220,7 +230,7 @@ function(parent, operations, overrides) {
 		for (var i = 0; i < operations.length; i++) {
 			var id = operations[i];
 			ZmOperation.defineOperation(id, overrides[id]);
-			ZmOperation.addOperation(parent, id, opHash);
+			ZmOperation.addOperation(parent, id, opHash, null, overrides[id] && overrides[id].htmlElId);
 		}
 	}
 
@@ -303,7 +313,7 @@ function(id) {
  * @param	{String}	[index]		the index
  */
 ZmOperation.addOperation =
-function(parent, id, opHash, index) {
+function(parent, id, opHash, index, htmlElId) {
 
 	var opDesc = ZmOperation._operationDesc[id] || ZmOperation.defineOperation(id);
 
@@ -322,11 +332,11 @@ function(parent, id, opHash, index) {
 		if (index != null) {
 			opDesc.index = index;
 		}
-		opHash[id] = parent.createOp(id, opDesc);
+		opHash[id] = parent.createOp(id, opDesc, htmlElId);
 	}
 	var callback = ZmOperation.CALLBACK[id];
 	if (callback) {
-		if (callback.run) {
+		if (callback.isAjxCallback) {
 			callback.run(opHash[id]);
 		} else {
 			callback(opHash[id]);
@@ -449,9 +459,11 @@ function(parent) {
 	var overrides = {};
 	for (var i = 0; i < list.length; i++) {
 		var op = list[i];
+		var htmlElId = parent._htmlElId + "_" + op;
+		overrides[op] = {htmlElId: htmlElId};
 		var textKey = ZmOperation.NEW_ITEM_KEY[op] || ZmOperation.NEW_ORG_KEY[op];
 		if (textKey) {
-			overrides[op] = {textKey:textKey};
+			overrides[op].textKey = textKey;
 		}
 	}
 

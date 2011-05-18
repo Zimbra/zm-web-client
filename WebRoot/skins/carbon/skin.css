@@ -68,7 +68,7 @@ BODY						{	margin:0px; 				}
 	
 /** Search box **/	
 #skin_spacing_search_row				{	text-align:left;	}
-#skin_spacing_search					{	width:100%; padding-bottom:3px @cssValue(HSashContainer,width)@; }
+#skin_spacing_search					{	padding-bottom:3px @cssValue(HSashContainer,width)@; }
 #skin_container_search					{	max-width:700px;	}
 
 #skin_container_people_search			{	width:200px; }
@@ -158,6 +158,7 @@ BODY						{	margin:0px; 				}
 /** App Toolbar **/
 #skin_spacing_app_top_toolbar			{	}
 #skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@	width:auto;	}
+#skin_container_app_new_button			{	@SkinBorderNewButtonContainer@	width:auto;	padding-left: 5px; padding-right:5px; padding-bottom:2px;}
 
 /** App  **/
 #skin_spacing_app_main					{	height:100%;			}
@@ -193,7 +194,7 @@ BODY						{	margin:0px; 				}
 /*** HACKS: this makes the tables work properly -- rationalize this!  **/
 #skin_td_tree				{	width:@TreeStartWidth@;	}
 #skin_td_tree_app_sash 		{	width:@SashSize@;	}
-#skin_td_main				{	width:auto;	}
+#skin_td_main				{	width:auto;	height:100%}
 #skin_td_sidebar_ad			{	width:@SidebarAdWidth@;	}
 
 

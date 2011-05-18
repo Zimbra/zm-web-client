@@ -118,6 +118,7 @@ BODY						{	margin:0px; 				}
 /** App Toolbar **/
 #skin_spacing_app_top_toolbar			{	}
 #skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@	width:auto;	}
+#skin_container_app_new_button			{	@SkinBorderAppToolbar@	width:auto;	padding-left: 5px; padding-right:5px; padding-bottom:2px;}			
 #skin_spacing_filler				{	
 	height:12px; 
 	background-color: @AltC@;
@@ -171,10 +172,10 @@ BODY						{	margin:0px; 				}
 /*** HACKS: this makes the tables work properly -- rationalize this!  **/
 #skin_td_tree				{	width:@TreeStartWidth@;	}
 #skin_td_tree_app_sash 		{	width:@SashSize@;	}
-#skin_td_main				{	width:auto;	}
+#skin_td_main				{	width:auto;	height: 100%}
 #skin_td_sidebar_ad			{	width:@SidebarAdWidth@;	}
 
-
+#skin_td_new_button			{padding:2px;}
 
 /** LoginPanel and Splash screen **/
 #skin_container_splash_screen			{	@SkinOuter@	@FullWindow@ z-index:90000000;		}

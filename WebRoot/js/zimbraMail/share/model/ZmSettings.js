@@ -399,12 +399,6 @@ ZmSettings.prototype.setUserSettings = function(params) {
             }
         }
 
-        // Disable SORTING PREF for MAIL, Overwrite Mail Sort Settings to Defaults
-        // We do this becoz we fetch initial mail response inline, have no control over sortBy
-        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONVLIST, false, true);
-        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONV, false, true);
-        sortOrderSetting.setValue(ZmSearch.DATE_DESC, ZmId.VIEW_TRAD, false, true);
-
         //Explicitly Set defaultValue
         sortOrderSetting.defaultValue = AjxUtil.hashCopy(sortPref);
     }
@@ -743,7 +737,7 @@ function() {
     this.registerSetting("ADMIN_DELEGATED",                 {type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("AC_TIMER_INTERVAL",				{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:300});
 	this.registerSetting("ASYNC_MODE",						{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"HELIX"});
+	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"main"});
 
 	// next 3 are replaced during deployment
 	this.registerSetting("CLIENT_DATETIME",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildDateTime@"});
@@ -812,6 +806,7 @@ function() {
 	this.registerSetting("FLAGGING_ENABLED",				{name:"zimbraFeatureFlaggingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("FOLDERS_EXPANDED",				{name:"zimbraPrefFoldersExpanded", type:ZmSetting.T_METADATA, dataType: ZmSetting.D_HASH, isImplicit:true, section:ZmSetting.M_IMPLICIT});
 	this.registerSetting("FOLDER_TREE_OPEN",				{name:"zimbraPrefFolderTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isImplicit:true});
+	this.registerSetting("FOLDER_TREE_SASH_WIDTH",          {name:"zimbraPrefFolderTreeSash", type:ZmSetting.T_METADATA, dataType:ZmSetting.D_INT, isImplicit:true, section:ZmSetting.M_IMPLICIT});
 	this.registerSetting("GAL_AUTOCOMPLETE_ENABLED",		{name:"zimbraFeatureGalAutoCompleteEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN,	defaultValue:false});
 	this.registerSetting("GAL_ENABLED",						{name:"zimbraFeatureGalEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN,	defaultValue:true});
 	this.registerSetting("GROUP_CALENDAR_ENABLED",			{name:"zimbraFeatureGroupCalendarEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -892,7 +887,8 @@ function() {
 	this.registerSetting("COMPOSE_INIT_FONT_SIZE",			{name:"zimbraPrefHtmlEditorDefaultFontSize", type:ZmSetting.T_PREF, defaultValue:ZmSetting.COMPOSE_FONT_SIZE, isGlobal:true});
 	this.registerSetting("DEFAULT_TIMEZONE",				{name:"zimbraPrefTimeZoneId", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:AjxTimezone.getServerId(AjxTimezone.DEFAULT), isGlobal:true});
     this.registerSetting("DEFAULT_PRINTFONTSIZE",	    	{name:"zimbraPrefDefaultPrintFontSize", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.PRINT_FONT_SIZE, isGlobal:true});    
-	this.registerSetting("FILTERS",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
+	this.registerSetting("GROUPBY_LIST",                    {type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
+    this.registerSetting("FILTERS",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
 	this.registerSetting("IDENTITIES",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
 	this.registerSetting("INITIALLY_SEARCH_GAL",			{name:"zimbraPrefGalSearchEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("LIST_VIEW_COLUMNS",				{name:"zimbraPrefListViewColumns", type:ZmSetting.T_PREF, dataType:ZmSetting.D_HASH, isImplicit:true});
@@ -928,6 +924,8 @@ function() {
 	//shared settings
 	this.registerSetting("MAIL_ALIASES",					{name:"zimbraMailAlias", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
 	this.registerSetting("ALLOW_FROM_ADDRESSES",			{name:"zimbraAllowFromAddress", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
+
+    ZmApp.runAppFunction("registerSettings", this);
 };
 
 /**
