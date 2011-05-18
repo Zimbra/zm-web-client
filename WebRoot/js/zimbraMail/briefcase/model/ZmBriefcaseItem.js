@@ -632,7 +632,7 @@ function(data){
 
 ZmRevisionItem.prototype.getNotes =
 function(){
-    return AjxMessageFormat.format(ZmMsg.revisionNotes, [this.version, (this.notes || ZmMsg.emptyNotes)]);  
+    return ((this.notes)?AjxMessageFormat.format(ZmMsg.revisionNotes, [this.version, this.notes]):AjxMessageFormat.format(ZmMsg.revisionWithoutNotes, [this.version]));
 };
 
 ZmRevisionItem.prototype.getRestUrl =
