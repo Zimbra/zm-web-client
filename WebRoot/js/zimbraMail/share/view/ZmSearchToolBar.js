@@ -515,9 +515,10 @@ function(ev) {
 	if (data) {
 		data[2].run(ev); // call original listener
 	} else {
+		var searchFor = item.getData(ZmSearchToolBar.MENUITEM_ID);
 		var queryString = this.getSearchFieldValue();
 		appCtxt.notifyZimlets("onKeyPressSearchField", [queryString]);
-		this._callback.run(queryString);
+		this._callback.run(queryString, searchFor);
 	}
 	return false;
 };
