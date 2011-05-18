@@ -1461,7 +1461,7 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 			var sigContent = this.getSignatureContent(oldSignatureId);
 			replaceSignature = AjxStringUtil.convertHtml2Text(sigContent, {"#text": ZmComposeView._convertTextNode});
 			var sigIndex = content.indexOf(replaceSignature);
-			var sigLength = replaceSignature.length;
+			var sigLength = replaceSignature && replaceSignature.length || 0;
 
 			if (sigIndex != -1) {
 				var contentBefore = content.substring(0, sigIndex).replace(/\s+$/,""); // Get the message content before the signature and cut off any trailing whitespace
