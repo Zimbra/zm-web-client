@@ -121,7 +121,6 @@
                     </c:choose>
                     <c:set var="aid" value="A${status.index}"/>
                     <c:set var="briefUrl" value="/service/home/~/?id=${bchit.id}&auth=co"/>
-                    <a href="${fn:escapeXml(briefUrl)}" id="${aid}" target="_blank">
                         <div class="ZmThumbnailItem" style="">
                             <div align="left">
                                 <input class="chk"
@@ -133,6 +132,7 @@
                                 </c:if>
                                 &nbsp;
                             </div>
+                            <a href="${fn:escapeXml(briefUrl)}" id="${aid}" target="_blank">                           
                             <div class="ZmThumbnailIcon" align="center">
                                 <c:choose>
                                     <c:when test="${zm:contains(bchit.document.contentType,'image')}">
@@ -171,8 +171,8 @@
                                     <fmt:param value="${fn:escapeXml(zm:displayDate(pageContext, bchit.modifiedDate))}"/>
                                 </fmt:message>
                             </div>
+                            </a>
                         </div>
-                    </a>
                 </c:forEach>
             </div>
         </div>
