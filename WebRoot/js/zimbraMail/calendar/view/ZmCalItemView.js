@@ -83,14 +83,15 @@ ZmCalItemView.prototype.set =
 function(calItem, prevView, mode) {
 	if (this._calItem == calItem) { return; }
 
-	// so that Close button knows which view to go to
-    //condition introduced to avoid irrelevant view being persisted as previous view
-	this._prevView = prevView || (!( calItem.folderId==ZmFolder.ID_TRASH || this.getController().getViewMgr().getCurrentViewName()==ZmId.VIEW_CAL_APPT) ? this._controller._viewMgr.getCurrentViewName():this._prevView);
+	// So that Close button knows which view to go to
+    // condition introduced to avoid irrelevant view being persisted as previous view
+	this._prevView = prevView || (calItem.folderId != ZmFolder.ID_TRASH) ?
+	                              this._controller._viewMgr.getCurrentViewName() : this._prevView;
 
 	this.reset();
 	this._calItem = calItem;
 	this._mode = mode;
-	this._renderCalItem(calItem);
+	this._renderCalItem(calItem, true);
 };
 
 ZmCalItemView.prototype.reset =
@@ -107,7 +108,7 @@ ZmCalItemView.prototype.changeReminder = function() {}; // override
 // Private / protected methods
 
 ZmCalItemView.prototype._renderCalItem =
-function(calItem) {
+function(calItem, renderButtons) {
 	this._lazyCreateObjectManager();
 
 	var subs = this._getSubs(calItem);
@@ -122,24 +123,26 @@ function(calItem) {
 	var el = this.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
 
-	// add the close button
-	this._closeButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
-	this._closeButton.setImage("Close");
-	this._closeButton.setText(ZmMsg.close);
-	this._closeButton.addSelectionListener(new AjxListener(this, this.close));
-	this._closeButton.reparentHtmlElement(closeBtnCellId);
+    if (renderButtons) {
+        // add the close button
+        this._closeButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
+        this._closeButton.setImage("Close");
+        this._closeButton.setText(ZmMsg.close);
+        this._closeButton.addSelectionListener(new AjxListener(this, this.close));
+        this._closeButton.reparentHtmlElement(closeBtnCellId);
 
-	if (document.getElementById(editBtnCellId)) {
-		// add the save button for reminders and  move select
-		this._editButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
-		this._editButton.setImage("Edit");
-		this._editButton.setText(ZmMsg.edit);
-		this._editButton.addSelectionListener(new AjxListener(this, this.edit));
-        var calendar = calItem && appCtxt.getById(calItem.folderId);
-        var isTrash = calendar && calendar.id == ZmOrganizer.ID_TRASH;
-        this._editButton.setEnabled(!isTrash);
-		this._editButton.reparentHtmlElement(editBtnCellId);
-	}
+        if (document.getElementById(editBtnCellId)) {
+            // add the save button for reminders and  move select
+            this._editButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
+            this._editButton.setImage("Edit");
+            this._editButton.setText(ZmMsg.edit);
+            this._editButton.addSelectionListener(new AjxListener(this, this.edit));
+            var calendar = calItem && appCtxt.getById(calItem.folderId);
+            var isTrash = calendar && calendar.id == ZmOrganizer.ID_TRASH;
+            this._editButton.setEnabled(!isTrash);
+            this._editButton.reparentHtmlElement(editBtnCellId);
+        }
+    }
 
 	// content/body
 	var hasHtmlPart = (calItem.notesTopPart && calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
@@ -446,4 +449,12 @@ function(calItem) {
 	var params = [sd, ed, tz];
 
 	return AjxMessageFormat.format(pattern, params);
+};
+
+ZmApptView.prototype.set =
+function(appt, mode) {
+	this.reset();
+	this._calItem = appt;
+	this._mode = mode;
+	this._renderCalItem(appt, false);
 };

@@ -212,7 +212,7 @@ function() {
 ZmCalMgr.prototype._miniCalDateRangeListener =
 function(ev) { 
 	var viewId = appCtxt.getCurrentViewId();
-	if (viewId == ZmId.VIEW_CAL_APPT || viewId == ZmId.VIEW_CAL) {
+	if (viewId == ZmId.VIEW_CAL) {
 		var calController = this.getCalViewController();
 		calController._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL);
 	} else {

@@ -799,7 +799,7 @@ function(sessionId) {
 ZmCalendarApp.prototype.getApptViewController =
 function(sessionId) {
 	AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
-	return this.getSessionController(ZmId.VIEW_APPOINTMENT_READONLY, "ZmApptViewController", sessionId);
+	return this.getSessionController(ZmId.VIEW_APPOINTMENT_READONLY, "ZmApptController", sessionId);
 };
 
 ZmCalendarApp.prototype.initResources =

@@ -1928,7 +1928,7 @@ function(params, actionParams) {
 	var lv = this._listView[this._currentView];
 	var cancelled = actionParams && actionParams.cancelled;
 	var contResult = this._continuation.result;
-	var hasMore = contResult ? contResult.getAttribute("more") : this._list.hasMore();
+	var hasMore = contResult ? contResult.getAttribute("more") : (this._list ? this._list.hasMore() : false);
 	DBG.println("sa", "lv.allSelected: " + lv.allSelected + ", hasMore: " + hasMore);
 	if (lv.allSelected && hasMore && !cancelled) {
 		var cs = this._currentSearch;
