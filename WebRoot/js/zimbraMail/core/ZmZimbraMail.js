@@ -2464,7 +2464,7 @@ function() {
 	var appCtlr = window._zimbraMail;
 	if (!appCtlr) { return true; }
 	var okToExit = appCtlr._appViewMgr.isOkToUnload() && ZmZimbraMail._childWindowsOkToUnload();
-	if (okToExit && appCtlr._pollRequest) {
+	if (okToExit && !AjxEnv.isPrism && appCtlr._pollRequest) {
 		appCtlr._requestMgr.cancelRequest(appCtlr._pollRequest);
 	}
 	return okToExit;
@@ -2981,15 +2981,16 @@ function(ev) {
  */
 ZmZimbraMail._endSession =
 function() {
-
-	// Let the server know that the session is ending.
-	var errorCallback = new AjxCallback(null, function() { return true; } ); // Ignores any error.
-	var args = {
-		jsonObj: { EndSessionRequest: { _jsns: "urn:zimbraAccount" } },
-		asyncMode: true,
-		errorCallback: errorCallback
-	};
-	appCtxt.getAppController().sendRequest(args);
+	if (!AjxEnv.isPrism) {
+		// Let the server know that the session is ending.
+		var errorCallback = new AjxCallback(null, function() { return true; } ); // Ignores any error.
+		var args = {
+			jsonObj: { EndSessionRequest: { _jsns: "urn:zimbraAccount" } },
+			asyncMode: true,
+			errorCallback: errorCallback
+		};
+		appCtxt.getAppController().sendRequest(args);
+	}
 };
 
 // YUCK:
