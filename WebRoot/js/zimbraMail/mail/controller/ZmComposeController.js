@@ -1054,7 +1054,7 @@ function() {
 	var authTokenEndTime = appCtxt.get(ZmSetting.TOKEN_ENDTIME);  //get time for auth token expiration
 	if (authTokenEndTime) {
 		var now = new Date();
-		var interval = authTokenEndTime - now.getTime() - 5000; //set timer for auth token expire time - 5 seconds
+		var interval = authTokenEndTime - now.getTime() - 10000; //set timer for auth token expire time - 10 seconds
 		DBG.println(AjxDebug.DBG1, "ZmComposeController: setting auth token timer interval to " + interval);
 		DBG.println(AjxDebug.DBG1, "ZmComposeController: auth token timer callback scheduled for " + new Date(now.getTime() + interval).toLocaleString());
 		//check to see if we need to reschedule  -- auth token may have expired or timer was canceled
