@@ -1824,6 +1824,7 @@ input.xform_field {
 
 #skin_container_help .ZButtonLink  {cursor: pointer}
 
+.ZImageOnlyButton	{cursor: pointer}
 
 
 /* normal buttons with text should be at least a certain width */

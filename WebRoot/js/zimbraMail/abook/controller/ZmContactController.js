@@ -72,9 +72,8 @@ function(contact, isDirty) {
 		this._listView[this._currentView].enableInputs(true);
 	this._setup(this._currentView);
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
-	var elements = {};
-	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+	var elements = this.getViewElements(this._currentView, this._listView[this._currentView]);
+
 	this._setView({view:this._currentView, elements:elements, isTransient:true, stageView:!this._editPageLoaded});
 	if (!this._editPageLoaded) {
 		this._app.popView(true, ZmId.VIEW_LOADING, true); // pop "Loading..." page
@@ -174,6 +173,8 @@ function(view) {
 ZmContactController.prototype._initializeToolBar =
 function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
+
+	this._setNewButtonProps(view, ZmMsg.createNewContact, "NewContact", "NewContactDis", ZmOperation.NEW_CONTACT);
 
 	var tb = this._toolbar[view];
 
