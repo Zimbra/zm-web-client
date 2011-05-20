@@ -2554,11 +2554,6 @@ function(className, cid, id) {
 	var position = appCtxt.getSkinHint(cid, "position");
 	var posStyle = position || Dwt.ABSOLUTE_STYLE;
 	var ui = new DwtComposite({parent:this._shell, className:className, posStyle:posStyle, id:id});
-	if (AjxEnv.isIE) {
-		var container = document.getElementById("skin_td_tree");
-		var w = container ? Dwt.getSize(document.getElementById("skin_td_tree")).x : null;
-		if (w) ui.setSize(w);
-	}
 	ui._setMouseEventHdlrs();
 	return ui;
 };

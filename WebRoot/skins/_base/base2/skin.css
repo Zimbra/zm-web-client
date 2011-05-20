@@ -449,6 +449,7 @@ TEXTAREA
 
 .BannerBar {
 	padding-top:1px;
+    height: 1px;
 }
 .BannerBar TD {
 	padding-right:0px;
