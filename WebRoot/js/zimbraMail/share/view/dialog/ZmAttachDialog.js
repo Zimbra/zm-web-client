@@ -266,7 +266,8 @@ function() {
 	this.setFooter("");
     if (appCtxt.multiAccounts) {
         var acct = appCtxt.getAppViewMgr().getCurrentView().getFromAccount();
-        var isBC_Enabled = appCtxt.get(ZmSetting.BRIEFCASE_ENABLED, null, acct);
+        var ac = window.parentAppCtxt || window.appCtxt;
+        var isBC_Enabled = ac.get(ZmSetting.BRIEFCASE_ENABLED, null, acct);
         tabKey = this.getTabKey(ZmAttachDialog.TABKEY_BRIEFCASE);
         var el = this._tabView.getTabButton(tabKey);
         el.setVisible(acct.isZimbraAccount && isBC_Enabled)
