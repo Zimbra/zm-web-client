@@ -291,11 +291,11 @@ td.DDSepInvisible div {
 }
 
 .search_input {
-	width:400px;
+	width:300px;
 }
 
 
-INPUT[type="text"].people_search_input {
+INPUT[type="text"].search_input {
 	border: 0px !important;
 	height: 100% !important;
 }

@@ -675,16 +675,12 @@ function(params) {
 	this._setExternalLinks();
 	this.setUserInfo();
 
-	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
-		this._components[ZmAppViewMgr.C_SEARCH] = appCtxt.getSearchController().searchPanel;
-	}
-
-	if (appCtxt.get(ZmSetting.PEOPLE_SEARCH_ENABLED) &&
-		(appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
-		appCtxt.get(ZmSetting.GAL_ENABLED) ||
-		appCtxt.isOffline))
-	{
-		this._components[ZmAppViewMgr.C_PEOPLE_SEARCH] = appCtxt.getSearchController().peopleSearchToolBar;
+	if (appCtxt.get(ZmSetting.SEARCH_ENABLED) ||
+			(appCtxt.get(ZmSetting.PEOPLE_SEARCH_ENABLED) &&
+				(appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
+					appCtxt.get(ZmSetting.GAL_ENABLED) ||
+					appCtxt.isOffline))) {
+		this._components[ZmAppViewMgr.C_SEARCH] = appCtxt.getSearchController().getSearchToolbar();
 	}
 	else {
 		Dwt.hide(ZmId.SKIN_PEOPLE_SEARCH);
