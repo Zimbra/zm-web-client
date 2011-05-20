@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -83,15 +83,14 @@ ZmCalItemView.prototype.set =
 function(calItem, prevView, mode) {
 	if (this._calItem == calItem) { return; }
 
-	// So that Close button knows which view to go to
-    // condition introduced to avoid irrelevant view being persisted as previous view
-	this._prevView = prevView || (calItem.folderId != ZmFolder.ID_TRASH) ?
-	                              this._controller._viewMgr.getCurrentViewName() : this._prevView;
+	// so that Close button knows which view to go to
+    //condition introduced to avoid irrelevant view being persisted as previous view
+	this._prevView = prevView || (!( calItem.folderId==ZmFolder.ID_TRASH || this.getController().getViewMgr().getCurrentViewName()==ZmId.VIEW_CAL_APPT) ? this._controller._viewMgr.getCurrentViewName():this._prevView);
 
 	this.reset();
 	this._calItem = calItem;
 	this._mode = mode;
-	this._renderCalItem(calItem, true);
+	this._renderCalItem(calItem);
 };
 
 ZmCalItemView.prototype.reset =
@@ -108,7 +107,7 @@ ZmCalItemView.prototype.changeReminder = function() {}; // override
 // Private / protected methods
 
 ZmCalItemView.prototype._renderCalItem =
-function(calItem, renderButtons) {
+function(calItem) {
 	this._lazyCreateObjectManager();
 
 	var subs = this._getSubs(calItem);
@@ -123,26 +122,24 @@ function(calItem, renderButtons) {
 	var el = this.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
 
-    if (renderButtons) {
-        // add the close button
-        this._closeButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
-        this._closeButton.setImage("Close");
-        this._closeButton.setText(ZmMsg.close);
-        this._closeButton.addSelectionListener(new AjxListener(this, this.close));
-        this._closeButton.reparentHtmlElement(closeBtnCellId);
+	// add the close button
+	this._closeButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
+	this._closeButton.setImage("Close");
+	this._closeButton.setText(ZmMsg.close);
+	this._closeButton.addSelectionListener(new AjxListener(this, this.close));
+	this._closeButton.reparentHtmlElement(closeBtnCellId);
 
-        if (document.getElementById(editBtnCellId)) {
-            // add the save button for reminders and  move select
-            this._editButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
-            this._editButton.setImage("Edit");
-            this._editButton.setText(ZmMsg.edit);
-            this._editButton.addSelectionListener(new AjxListener(this, this.edit));
-            var calendar = calItem && appCtxt.getById(calItem.folderId);
-            var isTrash = calendar && calendar.id == ZmOrganizer.ID_TRASH;
-            this._editButton.setEnabled(!isTrash);
-            this._editButton.reparentHtmlElement(editBtnCellId);
-        }
-    }
+	if (document.getElementById(editBtnCellId)) {
+		// add the save button for reminders and  move select
+		this._editButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
+		this._editButton.setImage("Edit");
+		this._editButton.setText(ZmMsg.edit);
+		this._editButton.addSelectionListener(new AjxListener(this, this.edit));
+        var calendar = calItem && appCtxt.getById(calItem.folderId);
+        var isTrash = calendar && calendar.id == ZmOrganizer.ID_TRASH;
+        this._editButton.setEnabled(!isTrash);
+		this._editButton.reparentHtmlElement(editBtnCellId);
+	}
 
 	// content/body
 	var hasHtmlPart = (calItem.notesTopPart && calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
@@ -449,12 +446,4 @@ function(calItem) {
 	var params = [sd, ed, tz];
 
 	return AjxMessageFormat.format(pattern, params);
-};
-
-ZmApptView.prototype.set =
-function(appt, mode) {
-	this.reset();
-	this._calItem = appt;
-	this._mode = mode;
-	this._renderCalItem(appt, false);
 };

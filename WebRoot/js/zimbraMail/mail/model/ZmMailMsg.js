@@ -2,7 +2,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -1215,10 +1215,9 @@ function(nfolder, resp) {
  * @param {Boolean}	requestReadReceipt	if set, a read receipt is sent to *all* recipients
  * @param {ZmBatchCommand} batchCmd		if set, request gets added to this batch command
  * @param {Date} sendTime				if set, tell server that this message should be sent at the specified time
- * @param {Boolean} isAutoSave          if <code>true</code>, this an auto-save draft
  */
 ZmMailMsg.prototype.send =
-function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd, sendTime, isAutoSave) {
+function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd, sendTime) {
 
 	var aName = accountName;
 	if (!aName) {
@@ -1253,7 +1252,6 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 			jsonObj: jsonObj,
 			isInvite: false,
 			isDraft: isDraft,
-			isAutoSave: isAutoSave,
 			accountName: aName,
 			callback: (new AjxCallback(this, this._handleResponseSend, [isDraft, callback])),
 			errorCallback: errorCallback,
@@ -1564,7 +1562,7 @@ function(params) {
 	} else {
 		appCtxt.getAppController().sendRequest({jsonObj:params.jsonObj,
 												asyncMode:true,
-												noBusyOverlay:params.isDraft && params.isAutoSave,
+												noBusyOverlay:params.isDraft,
 												callback:respCallback,
 												errorCallback:params.errorCallback,
 												accountName:params.accountName,
@@ -1916,6 +1914,8 @@ function(msgNode) {
 		this._convCreateNode = msgNode._convCreateNode;
 	}
 
+	AjxDebug.println(AjxDebug.NOTIFY, "ZmMailMsg::_loadFromDom - msg ID: " + msgNode.id);
+	AjxDebug.println(AjxDebug.NOTIFY, "cid: " + msgNode.cid + ", folder: " + msgNode.l);
 	if (msgNode.cid && msgNode.l) {
 		var conv = appCtxt.getById(msgNode.cid);
 		if (conv) {
@@ -1927,6 +1927,9 @@ function(msgNode) {
 			if (!conv.msgIds) {
 				conv.msgIds = [this.id];
 			}
+		}
+		else {
+			AjxDebug.println(AjxDebug.NOTIFY, "could not find conv with ID: " + msgNode.cid);
 		}
 	}
 
@@ -2058,9 +2061,14 @@ function () {
 ZmMailMsg.prototype._addAddressNodes =
 function(addrNodes, type, isDraft) {
 
+	var doAdd = appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS);
 	var addrs = this._addrs[type];
 	var num = addrs.size();
 	if (num) {
+		var contactsApp = appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.getApp(ZmApp.CONTACTS);
+		if (contactsApp && !contactsApp.isContactListLoaded()) {
+			contactsApp = null;
+		}
 		for (var i = 0; i < num; i++) {
 			var addr = addrs.get(i);
 			var email = addr.getAddress();
@@ -2068,6 +2076,10 @@ function(addrNodes, type, isDraft) {
 			var addrNode = {t:AjxEmailAddress.toSoapType[type], a:email};
 			if (name) {
 				addrNode.p = name;
+			}
+			if (contactsApp) {
+				var contact = contactsApp.getContactByEmail(email);
+				addrNode.add = (doAdd && !contact) ? "1" : "0";
 			}
 			addrNodes.push(addrNode);
 		}

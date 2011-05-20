@@ -139,7 +139,6 @@ ZmId.SKIN_APP_MAIN					= "skin_container_app_main";
 ZmId.SKIN_APP_MAIN_ROW_FULL			= "skin_tr_main_full";
 ZmId.SKIN_APP_MAIN_ROW				= "skin_tr_main";
 ZmId.SKIN_APP_TOP_TOOLBAR			= "skin_container_app_top_toolbar";
-ZmId.SKIN_APP_NEW_BUTTON			= "skin_container_app_new_button"; 
 ZmId.SKIN_LINKS						= "skin_container_links";
 ZmId.SKIN_LOGO						= "skin_container_logo";
 ZmId.SKIN_QUOTA_INFO				= "skin_container_quota";
@@ -160,7 +159,6 @@ ZmId.SKIN_USER_INFO					= "skin_container_username";
 ZmId.SKIN_TASKBAR					= "skin_container_taskbar";
 ZmId.SKIN_FOOTER					= "skin_footer";
 ZmId.SKIN_AD						= "skin_adsrvc";
-ZmId.SKIN_UNITTEST					= "skin_unittest";
 
 //
 // Literal IDs
@@ -764,7 +762,6 @@ ZmId.APP_VOICE			= "Voice";
 // views - often used as context for ID
 ZmId.VIEW_ACCOUNT				= "ACCT";
 ZmId.VIEW_APPOINTMENT 			= "APPT";
-ZmId.VIEW_APPOINTMENT_READONLY  = "APPTRO";
 ZmId.VIEW_APPT_SCHEDULE			= "APPTS";
 ZmId.VIEW_BRIEFCASE			    = "BC";
 ZmId.VIEW_BRIEFCASE_DETAIL		= "BCD";
@@ -985,7 +982,6 @@ ZmId.OP_CLOSE					= "CLOSE";
 ZmId.OP_COMPOSE_FORMAT			= "COMPOSE_FORMAT";
 ZmId.OP_COMPOSE_OPTIONS			= "COMPOSE_OPTIONS";
 ZmId.OP_CONTACT					= "CONTACT";
-ZmId.OP_COPY_TEXT  				= "COPY_TEXT";
 ZmId.OP_CREATE_APPT     		= "CREATE_APPT";
 ZmId.OP_CREATE_TASK     		= "CREATE_TASK";
 ZmId.OP_CREATE_SLIDE_SHOW		= "CREATE_SLIDE_SHOW";
@@ -1040,13 +1036,6 @@ ZmId.OP_FORWARD_APPT			= "FORWARD_APPT";
 ZmId.OP_FORWARD_APPT_INSTANCE	= "FORWARD_APPT_INSTANCE";
 ZmId.OP_FORWARD_APPT_SERIES		= "FORWARD_APPT_SERIES";
 ZmId.OP_FREE_BUSY_LINK			= "FREE_BUSY_LINK";
-ZmId.OP_GROUPBY                 = "GROUPBY";
-ZmId.OP_GROUPBY_DATE            = "GROUPBY_DATE";
-ZmId.OP_GROUPBY_NONE            = "GROUPBY_NONE";
-ZmId.OP_GROUPBY_FROM            = "GROUPBY_FROM";
-ZmId.OP_GROUPBY_PRIORITY        = "GROUPBY_PRIORITY";
-ZmId.OP_GROUPBY_SIZE            = "GROUPBY_SIZE";
-ZmId.OP_GROUPBY_TAG             = "GROUPBY_TAG";
 ZmId.OP_GO_TO_URL				= "GO_TO_URL";
 ZmId.OP_IM						= "IM";
 ZmId.OP_IMPORT_FILE				= "IMPORT_FILE";
@@ -1211,8 +1200,6 @@ ZmId.OP_SHOW_BCC				= "SHOW_BCC";
 ZmId.OP_SHOW_ONLY_CONTACTS		= "SHOW_ONLY_CONTACTS";
 ZmId.OP_SHOW_ONLY_MAIL			= "SHOW_ONLY_MAIL";
 ZmId.OP_SHOW_ORIG				= "SHOW_ORIG";
-ZmId.OP_SORT_ASC                = "SORT_ASC";
-ZmId.OP_SORT_DESC               = "SORT_DESC";
 ZmId.OP_SPAM					= "SPAM";
 ZmId.OP_SPELL_CHECK				= "SPELL_CHECK";
 ZmId.OP_SYNC					= "SYNC";
@@ -1239,11 +1226,3 @@ ZmId.OP_WEEK_VIEW				= "WEEK_VIEW";
 ZmId.OP_WORK_WEEK_VIEW			= "WORK_WEEK_VIEW";
 ZmId.OP_ZIMLET					= "ZIMLET";
 ZmId.OP_SYNC_ALL				= "SYNC_ALL";
-
-//Group By IDs
-ZmId.GROUPBY_DATE               = "GROUPBY_DATE";
-ZmId.GROUPBY_FROM               = "GROUPBY_FROM";
-ZmId.GROUPBY_NONE               = "GROUPBY_NONE";
-ZmId.GROUPBY_PRIORITY           = "GROUPBY_PRIORITY";
-ZmId.GROUPBY_SIZE               = "GROUPBY_SIZE";
-ZmId.GROUPBY_TAG                = "GROUPBY_TAG";
