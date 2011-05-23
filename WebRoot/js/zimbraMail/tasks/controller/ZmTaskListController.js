@@ -702,11 +702,12 @@ function(tasks, mode) {
     }
 };
 
-ZmTaskListController.prototype._handleDelete = function(tasks) {
+ZmTaskListController.prototype._handleDelete =
+function(tasks) {
     var params = {
-        items: tasks,
-        hardDelete: true,
-        finalCallback: new AjxCallback(this, this._handleDeleteResponse, [tasks])
+        items:			tasks,
+        hardDelete:		true,
+        finalCallback:	this._handleDeleteResponse.bind(this, tasks)
     };
     // NOTE: This makes the assumption that the task items to be deleted are
     // NOTE: always in a list (which knows how to hard delete items). But since

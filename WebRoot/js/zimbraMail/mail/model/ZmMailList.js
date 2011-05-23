@@ -63,7 +63,7 @@ function() {
  *        folder		[ZmFolder]		destination folder
  *        attrs			[hash]			additional attrs for SOAP command
  *        callback		[AjxCallback]*	callback to run after each sub-request
- *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
+ *        finalCallback	[closure]*		callback to run after all items have been processed
  *        count			[int]*			starting count for number of items processed
  *        fromFolderId  [String]*       optional folder to represent when calculating tcon. If unspecified, use current search folder nId
  *        
@@ -125,7 +125,7 @@ function(params) {
  *        childWin		[window]*		the child window this action is happening in
  *        closeChildWin	[boolean]*		is the child window closed at the end of the action?
  *        callback		[AjxCallback]*	callback to run after each sub-request
- *        finalCallback	[AjxCallback]*	callback to run after all items have been processed
+ *        finalCallback	[closure]*		callback to run after all items have been processed
  *        count			[int]*			starting count for number of items processed
  * @private
  */
@@ -305,7 +305,7 @@ function() {
  *        items			[array]				a list of items to mark read/unread
  *        value			[boolean]			if true, mark items read
  *        callback		[AjxCallback]*		callback to run after each sub-request
- *        finalCallback	[AjxCallback]*		callback to run after all items have been processed
+ *        finalCallback	[closure]*			callback to run after all items have been processed
  *        count			[int]*				starting count for number of items processed
  *        
  * @private
