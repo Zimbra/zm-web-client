@@ -210,6 +210,7 @@ function(settings) {
 	settings.registerSetting("POP_DOWNLOAD_SINCE_VALUE",		{type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:""});
     settings.registerSetting("POP_DOWNLOAD_SINCE",				{name:"zimbraPrefPop3DownloadSince", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:""});
     settings.registerSetting("POP_DELETE_OPTION",				{name:"zimbraPrefPop3DeleteOption", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmMailApp.POP_DELETE_OPTION_HARD_DELETE});
+    settings.registerSetting("POP_INCLUDE_SPAM",				{name:"zimbraPrefPop3IncludeSpam", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("READING_PANE_LOCATION",			{name:"zimbraPrefReadingPaneLocation", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.RP_BOTTOM, isImplicit:true, isGlobal:true});
 	settings.registerSetting("READING_PANE_LOCATION_CV",		{name:"zimbraPrefConvReadingPaneLocation", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.RP_BOTTOM, isImplicit:true});
 	settings.registerSetting("READING_PANE_SASH_HORIZONTAL",    {name:"zimbraPrefReadingPaneSashHorizontal", type:ZmSetting.T_METADATA, dataType:ZmSetting.D_INT, isImplicit:true, section:ZmSetting.M_IMPLICIT});
@@ -281,7 +282,8 @@ function() {
 				ZmSetting.PAGE_SIZE,
 				ZmSetting.POP_DOWNLOAD_SINCE_VALUE,
 				ZmSetting.POP_DOWNLOAD_SINCE,
-				ZmSetting.POP_DELETE_OPTION,
+                ZmSetting.POP_DELETE_OPTION,
+                ZmSetting.POP_INCLUDE_SPAM,
 				ZmSetting.POLLING_INTERVAL,
 				ZmSetting.SHOW_FRAGMENTS,
 				ZmSetting.VACATION_MSG_ENABLED,
@@ -571,19 +573,23 @@ function() {
 	});
 	ZmPref.registerPref("POP_DELETE_OPTION", {
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-		displayOptions:     [   ZmMsg.popDeleteKeep,
-                                ZmMsg.popDeleteRead,
+		displayOptions:     [   ZmMsg.popDeleteHardDelete,
                                 ZmMsg.popDeleteTrash,
-                                ZmMsg.popDeleteHardDelete
+                                ZmMsg.popDeleteRead,
+                                ZmMsg.popDeleteKeep
                             ],
-		options:            [   ZmMailApp.POP_DELETE_OPTION_KEEP,
-                                ZmMailApp.POP_DELETE_OPTION_READ,
+		options:            [   ZmMailApp.POP_DELETE_OPTION_HARD_DELETE,
                                 ZmMailApp.POP_DELETE_OPTION_TRASH,
-                                ZmMailApp.POP_DELETE_OPTION_HARD_DELETE
+                                ZmMailApp.POP_DELETE_OPTION_READ,
+                                ZmMailApp.POP_DELETE_OPTION_KEEP
                             ],
 		precondition:       ZmSetting.POP_ENABLED
 	});
-	ZmPref.registerPref("REPLY_TO_ADDRESS", {
+	ZmPref.registerPref("POP_INCLUDE_SPAM", {
+		displayName:		ZmMsg.popIncludeSpam,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+    ZmPref.registerPref("REPLY_TO_ADDRESS", {
 		displayName:		ZmMsg.replyToAddress,
 		displayContainer:	ZmPref.TYPE_INPUT,
 		validationFunction: ZmPref.validateEmail,

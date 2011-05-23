@@ -479,18 +479,23 @@ and the container element is replaced with that control.
 							<td class='ZOptionsLabel'><$=ZmMsg.externalAccessPop$></td>
 							<td></td>
 						</tr>
-						<tr>
-							<td class='ZOptionsLabelTop'><$=ZmMsg.downloadPop$></td>
-							<td class='ZOptionsField'><input id='${id}_POP_DOWNLOAD_SINCE' tabindex='200' type=radio></td>
-						</tr>
-						<tr>
-							<td></td>
-							<td class='ZOptionsInfo'><span id='${id}_POP_DOWNLOAD_SINCE_VALUE'></span></td>
-						</tr>
 						<tr><td colspan=2><hr></td></tr>
 						<tr>
-							<td class='ZOptionsLabelTop'><$=ZmMsg.popDeletePref$></td>
-							<td class='ZOptionsField'><div id='${id}_POP_DELETE_OPTION' tabindex='210'></div></td>
+							<td class='ZOptionsLabelTop'><$=ZmMsg.downloadPop$></td>
+							<td class='ZOptionsField'>
+							    <div id='${id}_POP_DOWNLOAD_SINCE' tabindex='200'></div>
+							    <div id='${id}_POP_DOWNLOAD_SINCE_VALUE'></div>
+							</td>
+						</tr>
+						<tr><td colspan=2>&nbsp;</td></tr>
+						<tr>
+							<td class='ZOptionsLabelTop'><$=ZmMsg.incomingPOPJunk$></td>
+							<td class='ZOptionsField'><div id='${id}_POP_INCLUDE_SPAM' tabindex='210'></div></td>
+						</tr>
+						<tr><td colspan=2>&nbsp;</td></tr>
+						<tr>
+							<td class='ZOptionsLabelTop'><$=ZmMsg.incomingPOPDeleted$></td>
+							<td class='ZOptionsField'><div id='${id}_POP_DELETE_OPTION' tabindex='220'></div></td>
 						</tr>
 					</table>
 				</td>
