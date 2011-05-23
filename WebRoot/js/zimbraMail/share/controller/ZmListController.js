@@ -64,7 +64,7 @@ ZmListController.prototype.toString = function() { return "ZmListController"; };
 // When performing a search action (bug 10317) on all items (including those not loaded),
 // number of items to load on each search to work through all results. Should be a multiple
 // of ZmList.CHUNK_SIZE. Make sure to test if you change these.
-ZmListController.CONTINUATION_SEARCH_ITEMS = 50;
+ZmListController.CONTINUATION_SEARCH_ITEMS = 500;
 
 // states of the progress dialog
 ZmListController.PROGRESS_DIALOG_INIT	= "INIT";

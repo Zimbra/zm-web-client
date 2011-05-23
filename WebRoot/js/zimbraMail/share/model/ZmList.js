@@ -72,7 +72,7 @@ ZmList.NODE = {};
 // item types based on node name (reverse map of above)
 ZmList.ITEM_TYPE = {};
 
-ZmList.CHUNK_SIZE	= 10;	// how many items to act on at a time via a server request
+ZmList.CHUNK_SIZE	= 100;	// how many items to act on at a time via a server request
 ZmList.CHUNK_PAUSE	= 500;	// how long to pause to allow UI to catch up
 
 /**
