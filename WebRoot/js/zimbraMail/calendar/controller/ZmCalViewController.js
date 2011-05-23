@@ -1040,8 +1040,29 @@ ZmCalViewController.prototype._msgLoadedCallback =
 function(mailItem, date, subject) {
 	var newAppt = this._newApptObject(date, null, null, mailItem);
 	newAppt.setFromMailMessage(mailItem, subject);
-	this.newAppointment(newAppt, ZmCalItem.MODE_NEW, true);
+	
+	var addAttendeeDlg = this._attAttendeeDlg = appCtxt.getYesNoMsgDialog();
+	addAttendeeDlg.reset();
+	addAttendeeDlg.setMessage(ZmMsg.addRecipientstoAppt, DwtMessageDialog.WARNING_STYLE, ZmMsg.addAttendees);
+	addAttendeeDlg.registerCallback(DwtDialog.YES_BUTTON, this._addAttendeeYesCallback, this, [newAppt]);
+	addAttendeeDlg.registerCallback(DwtDialog.NO_BUTTON, this._addAttendeeNoCallback, this, [newAppt]);
+	addAttendeeDlg.popup();
+	
 };
+
+ZmCalViewController.prototype._addAttendeeYesCallback =
+function(newAppt) {
+    this._attAttendeeDlg.popdown();
+    this.newAppointment(newAppt, ZmCalItem.MODE_NEW, true);
+};
+
+ZmCalViewController.prototype._addAttendeeNoCallback =
+function(newAppt) {
+    this._attAttendeeDlg.popdown();
+    newAppt.setAttendees(null,ZmCalBaseItem.PERSON);
+    this.newAppointment(newAppt, ZmCalItem.MODE_NEW, true);
+};
+
 
 /**
  * This method will create a new appointment from a contact.
