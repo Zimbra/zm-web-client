@@ -939,6 +939,9 @@ function(folderId, opId) {
 	}
 
 	bc.run();
+	if (appCtxt.isOffline) {
+		appCtxt.getApp(ZmApp.MAIL).clearNewMailBadge();
+	}
 };
 
 ZmAccountOverviewContainer.prototype._handleStatusClick =
