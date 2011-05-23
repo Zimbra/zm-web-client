@@ -1054,14 +1054,14 @@ ZmCalViewController.prototype._addAttendeeYesCallback =
 function(newAppt) {
     this._attAttendeeDlg.popdown();
     this.newAppointment(newAppt, ZmCalItem.MODE_NEW, true);
-}
+};
 
 ZmCalViewController.prototype._addAttendeeNoCallback =
 function(newAppt) {
     this._attAttendeeDlg.popdown();
     newAppt.setAttendees(null,ZmCalBaseItem.PERSON);
     this.newAppointment(newAppt, ZmCalItem.MODE_NEW, true);
-}
+};
 
 /**
  * This method will create a new appointment from a contact.
