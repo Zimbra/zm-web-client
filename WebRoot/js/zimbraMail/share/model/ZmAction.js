@@ -176,11 +176,11 @@ ZmItemMoveAction.prototype.getToFolderId = function() {
 
 ZmItemMoveAction.prototype._doMove = function(callback, errorCallback, folderId) {
 	this._item.list.moveItems({
-		items: [this._item],
-		folder: appCtxt.getById(folderId),
-		noUndo: true,
-		finalCallback: new AjxCallback(this, this._handleDoMove, [this._item.folderId, folderId]),
-		actionText: ZmItemMoveAction.UNDO_MSG[this._op],
+		items:			[this._item],
+		folder:			appCtxt.getById(folderId),
+		noUndo:			true,
+		finalCallback:	this._handleDoMove.bind(this, this._item.folderId, folderId),
+		actionText:		ZmItemMoveAction.UNDO_MSG[this._op],
 
 		fromFolderId: this._toFolderId
 	});
@@ -199,7 +199,8 @@ ZmItemMoveAction.prototype._handleDoMove = function(oldFolderId, newFolderId, pa
 	for (var i=0; i<lists.length; i++) {
 		lists[i]._notify(ZmEvent.E_MOVE, {oldFolderId:oldFolderId});
 	}
-	ZmList.killProgressDialog(params.actionSummary);
+	ZmListController.handleProgress({state:ZmListController.PROGRESS_DIALOG_CLOSE});
+	ZmBaseController.showSummary(params.actionSummary);
 };
 
 ZmItemMoveAction.prototype.undo = function(callback, errorCallback) {

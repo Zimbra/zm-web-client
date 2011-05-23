@@ -68,11 +68,12 @@ function(contact, isDirty) {
 	if (isDirty) this._contactDirty = true;
 	this._list = contact.list;
 	// re-enable input fields if list view exists
-	if (this._listView[this._currentView])
-		this._listView[this._currentView].enableInputs(true);
+	if (this._view[this._currentView]) {
+		this._view[this._currentView].enableInputs(true);
+	}
 	this._setup(this._currentView);
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
-	var elements = this.getViewElements(this._currentView, this._listView[this._currentView]);
+	var elements = this.getViewElements(this._currentView, this._view[this._currentView]);
 
 	this._setView({view:this._currentView, elements:elements, isTransient:true, stageView:!this._editPageLoaded});
 	if (!this._editPageLoaded) {
@@ -153,15 +154,15 @@ function() {
 /**
  * @private
  */
-ZmContactController.prototype._initializeListView =
+ZmContactController.prototype._initializeView =
 function(view) {
-	if (!this._listView[view]) {
+	if (!this._view[view]) {
 		switch (view) {
 			case ZmId.VIEW_CONTACT:
-				this._listView[view] = new ZmEditContactView(this._container, this);
+				this._view[view] = new ZmEditContactView(this._container, this);
 				break;
 			case ZmId.VIEW_GROUP:
-				this._listView[view] = new ZmGroupView(this._container, this);
+				this._view[view] = new ZmGroupView(this._container, this);
 				break;
 		}
 	}
@@ -214,7 +215,7 @@ function() {
  */
 ZmContactController.prototype._setViewContents =
 function(view) {
-	var cv = this._listView[view];
+	var cv = this._view[view];
 	cv.set(this._contact, this._contactDirty);
 	if (this._contactDirty) {
 		delete this._contactDirty;
@@ -276,7 +277,7 @@ function(parent, num) {
 ZmContactController.prototype._saveListener =
 function(ev, bIsPopCallback) {
 	var fileAsChanged = false;
-	var view = this._listView[this._currentView];
+	var view = this._view[this._currentView];
 	if (view instanceof DwtForm)
 		view.validate();
 	if (!view.isValid()) {
@@ -415,7 +416,7 @@ function(items, hardDelete, attrs, skipPostProcessing) {
 
 	if (!skipPostProcessing) {
 		// disable input fields (to prevent blinking cursor from bleeding through)
-		this._listView[this._currentView].enableInputs(false);
+		this._view[this._currentView].enableInputs(false);
 		this._app.popView(true);
 	}
 };
@@ -427,9 +428,9 @@ ZmContactController.prototype._preHideCallback =
 function(view, force) {
 	if (force) return true;
 	
-	var view = this._listView[this._currentView];
+	var view = this._view[this._currentView];
 	if (!view.isDirty()) {
-		this._listView[this._currentView].cleanup();
+		this._view[this._currentView].cleanup();
 		return true;
 	}
 
@@ -448,7 +449,7 @@ function(view, force) {
  */
 ZmContactController.prototype._preUnloadCallback =
 function(view) {
-	return !this._listView[this._currentView].isDirty();
+	return !this._view[this._currentView].isDirty();
 };
 
 /**
@@ -476,7 +477,7 @@ function() {
  */
 ZmContactController.prototype._popShieldCallback = function() {
     appCtxt.getAppViewMgr().showPendingView(true);
-    this._listView[this._currentView].cleanup();
+    this._view[this._currentView].cleanup();
 };
 
 /**
@@ -492,5 +493,5 @@ function(ev) {
  */
 ZmContactController.prototype._getDefaultFocusItem = 
 function() {
-	return this._listView[this._currentView]._getDefaultFocusItem();
+	return this._view[this._currentView]._getDefaultFocusItem();
 };

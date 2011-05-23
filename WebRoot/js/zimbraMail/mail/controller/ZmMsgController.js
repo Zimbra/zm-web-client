@@ -107,7 +107,7 @@ ZmMsgController.prototype._showMsg =
 function() {
 	var avm = appCtxt.getAppViewMgr();
 	this._setup(this._currentView);
-	var elements = this.getViewElements(this._currentView, this._listView[this._currentView]);
+	var elements = this.getViewElements(this._currentView, this._view[this._currentView]);
 
 	var curView = avm.getCurrentViewId();
 	var tabId = (curView && curView.indexOf(ZmId.VIEW_MSG) == 0) ? ZmMsgController.viewToTab[curView] : Dwt.getNextId();
@@ -200,9 +200,9 @@ function() {
 	return this.viewId;
 };
 
-ZmMsgController.prototype._initializeListView =
+ZmMsgController.prototype._initializeView =
 function(view) {
-	if (!this._listView[view]) {
+	if (!this._view[view]) {
 		var params = {
 			parent:		this._container,
 			id:			ZmId.getViewId(ZmId.VIEW_MSG, null, view),
@@ -210,15 +210,15 @@ function(view) {
 			mode:		ZmId.VIEW_MSG,
 			controller:	this
 		};
-		this._listView[view] = new ZmMailMsgView(params);
-		this._listView[view].addInviteReplyListener(this._inviteReplyListener);
-		this._listView[view].addShareListener(this._shareListener);
+		this._view[view] = new ZmMailMsgView(params);
+		this._view[view].addInviteReplyListener(this._inviteReplyListener);
+		this._view[view].addShareListener(this._shareListener);
 	}
 };
 
 ZmMsgController.prototype.getReferenceView =
 function () {
-	return this._listView[this._currentView];
+	return this._view[this._currentView];
 };
 
 ZmMsgController.prototype._getSearchFolderId =
@@ -239,7 +239,7 @@ function() {
 
 ZmMsgController.prototype._setViewContents =
 function(view) {
-	this._listView[view].set(this._msg);
+	this._view[view].set(this._msg);
 };
 
 ZmMsgController.prototype._resetNavToolBarButtons =
@@ -271,7 +271,7 @@ ZmMsgController.prototype._selectNextItemInParentListView =
 function() {
 	var controller = this._getParentListController();
 	if (controller) {
-		controller._listView[controller._currentView]._itemToSelect = controller._getNextItemToSelect();
+		controller._view[controller._currentView]._itemToSelect = controller._getNextItemToSelect();
 	}
 };
 

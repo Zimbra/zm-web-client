@@ -113,6 +113,7 @@ AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmHtmlEditor");
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmAdvancedHtmlEditor");
 
 AjxPackage.require("zimbraMail.share.controller.ZmController");
+AjxPackage.require("zimbraMail.share.controller.ZmBaseController");
 AjxPackage.require("zimbraMail.share.controller.ZmListController");
 AjxPackage.require("zimbraMail.share.controller.ZmTreeController");
 AjxPackage.require("zimbraMail.share.controller.ZmFolderTreeController");

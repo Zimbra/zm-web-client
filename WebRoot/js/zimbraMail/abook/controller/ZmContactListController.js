@@ -985,14 +985,16 @@ function(items, folder, attrs, isShiftKey) {
     var allDoneCallback = new AjxCallback(this, this._checkItemCount);
 	if (move.length) {
         var params = {items:move, folder:folder, attrs:attrs, outOfTrash:outOfTrash};
-        var list = this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
+		var list = params.list = this._getList(params.items);
+        this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
         list = outOfTrash ? this._list : list;
 		list.moveItems(params);
 	}
 
 	if (copy.length) {
         var params = {items:copy, folder:folder, attrs:attrs};
-        var list = this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
+		var list = params.list = this._getList(params.items);
+        this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
         list = outOfTrash ? this._list : list;
 		list.copyItems(params);
 	}

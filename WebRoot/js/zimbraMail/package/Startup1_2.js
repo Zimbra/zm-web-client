@@ -68,6 +68,7 @@ AjxPackage.require("zimbraMail.share.view.ZmUpsellView");
 AjxPackage.require("zimbraMail.share.view.ZmTimeSelect");
 
 AjxPackage.require("zimbraMail.share.controller.ZmController");
+AjxPackage.require("zimbraMail.share.controller.ZmBaseController");
 AjxPackage.require("zimbraMail.share.controller.ZmListController");
 AjxPackage.require("zimbraMail.share.controller.ZmTreeController");
 AjxPackage.require("zimbraMail.share.controller.ZmTagTreeController");
