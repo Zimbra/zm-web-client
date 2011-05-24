@@ -250,17 +250,6 @@ function(view, className) {
 		}
 	}
 
-	button = tb.getButton(ZmOperation.PRINT);
-	if (button) {
-		button.setText(null);
-	}
-
-	button = tb.getButton(ZmOperation.MOVE);
-	if (button) {
-		button.setText(null);
-	}
-
-
 	button = tb.getButton(ZmOperation.TAG_MENU);
 	if (button) {
 		button.noMenuBar = true;
