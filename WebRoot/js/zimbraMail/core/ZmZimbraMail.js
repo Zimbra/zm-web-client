@@ -429,7 +429,6 @@ ZmZimbraMail.prototype._initializeSettings = function(params) {
     if (params.devMode == "1") {
         DBG.println(AjxDebug.DBG1, "DEV MODE");
         appCtxt.set(ZmSetting.DEV, true);
-        appCtxt.set(ZmSetting.POLLING_INTERVAL, 0);
     }
 
     // Handle protocol mode - standardize on trailing :
