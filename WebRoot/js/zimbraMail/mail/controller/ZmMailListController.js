@@ -615,7 +615,7 @@ function() {
 		list.push(ZmOperation.FORWARD);
 	}
 
-	list.push(this.getDeleteOperation());
+	list.push(ZmOperation.SEP, this.getDeleteOperation());
 
 	list.push(ZmOperation.EDIT); // hidden except for Drafts)
 
@@ -1276,8 +1276,8 @@ function(parent) {
 		checkMailBtn.setToolTipContent(ZmMsg.checkExternalMail);
 	}
 	else {
-		var checkMailMsg = appCtxt.isOffline ? ZmMsg.sendReceive : ZmMsg.checkMail;
-		checkMailBtn.setText(checkMailMsg);
+//		var checkMailMsg = appCtxt.isOffline ? ZmMsg.sendReceive : ZmMsg.checkMail;
+//		checkMailBtn.setText(checkMailMsg);
 
 		var tooltip;
 		if (appCtxt.isOffline) {

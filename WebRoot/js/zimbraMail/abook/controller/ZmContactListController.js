@@ -322,9 +322,9 @@ function() {
     }
     toolbarOps.push(ZmOperation.EDIT,
             ZmOperation.SEP,
-            ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
-            ZmOperation.SEP,
-            ZmOperation.TAG_MENU);
+            ZmOperation.DELETE, ZmOperation.SEP,
+			ZmOperation.MOVE, ZmOperation.TAG_MENU, ZmOperation.SEP,
+			ZmOperation.PRINT);
     return toolbarOps;
 };
 

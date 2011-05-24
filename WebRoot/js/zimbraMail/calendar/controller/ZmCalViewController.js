@@ -766,12 +766,12 @@ function() {
 	return [
 		ZmOperation.CAL_REFRESH,
 		ZmOperation.SEP,
-		ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
-		ZmOperation.SEP,
+		ZmOperation.DELETE, ZmOperation.SEP, ZmOperation.MOVE,
 		ZmOperation.TAG_MENU,
 		ZmOperation.SEP,
+		ZmOperation.PRINT,			
+		ZmOperation.SEP,
 		ZmOperation.TODAY,
-        ZmOperation.SEP,
         ZmOperation.VIEW_MENU
 	];
 };

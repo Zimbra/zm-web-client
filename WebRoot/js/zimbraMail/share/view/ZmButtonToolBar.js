@@ -139,6 +139,7 @@ function() {
  * @param {String}	params.className		the CSS class name
  * @param {String}	params.style			thebutton style
  * @param {int} params.index			the position at which to add the button
+ * @param {Boolean}	params.imageToolbarButton		if <code>true</code>, the button should be image only
  */
 ZmButtonToolBar.prototype.createOp =
 function(id, params) {
@@ -156,7 +157,9 @@ function(id, params) {
 		params.id = this._context ? ZmId.getButtonId(this._context, id, this._toolbarType) : null;
 		params.textPrecedence = ZmOperation.getProp(id, "textPrecedence");
 		params.iconPrecedence = ZmOperation.getProp(id, "iconPrecedence");
-		b = this.createButton(id, params);
+		var ignoreImage = params.text && !params.imageToolbarButton;
+		var ignoreText = params.image && params.imageToolbarButton;
+		b = this.createButton(id, params, ignoreImage, ignoreText);
 	}
 	b.setData(ZmOperation.KEY_ID, id);
 

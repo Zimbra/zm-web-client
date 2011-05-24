@@ -299,17 +299,14 @@ function(mode) {
 	var cancelButton = this._toolbar.getButton(ZmOperation.CANCEL);
 	if (isNew) {
 		cancelButton.setText(ZmMsg.cancel);
-		cancelButton.setImage("Cancel");
 	} else {
 		cancelButton.setText(ZmMsg.close);
-		cancelButton.setImage("Close");
 	}
 
     var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
     //use send button for forward appt view
     if(ZmCalItem.FORWARD_MAPPING[mode]) {
         saveButton.setText(ZmMsg.send);
-        saveButton.setImage("Send");
     }
 
 	var printButton = this._toolbar.getButton(ZmOperation.PRINT);

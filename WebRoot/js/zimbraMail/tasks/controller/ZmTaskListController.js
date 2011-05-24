@@ -359,14 +359,13 @@ function() {
 	}
 	toolbarOps.push(ZmOperation.EDIT,
 			ZmOperation.SEP,
-			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
+			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.TAG_MENU,
 			ZmOperation.SEP,
-			ZmOperation.TAG_MENU,
+			ZmOperation.PRINT,
 			ZmOperation.SEP,
             ZmOperation.SORTBY_MENU,
             ZmOperation.SEP,
             ZmOperation.MARK_AS_COMPLETED,
-            ZmOperation.SEP,
             ZmOperation.VIEW_MENU
             );
 	

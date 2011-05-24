@@ -139,11 +139,12 @@ ZmBriefcaseController.prototype._getToolBarOps =
 function() {
     var ops = [ZmOperation.NEW_FILE,
             ZmOperation.SAVE_FILE,
+			ZmOperation.SEP,
             ZmOperation.EDIT_FILE,
 			ZmOperation.SEP,
-			ZmOperation.DELETE, ZmOperation.MOVE,
-            ZmOperation.NEW_BRIEFCASE_WIN,
+			ZmOperation.DELETE,
 			ZmOperation.SEP,
+			ZmOperation.MOVE,
 			ZmOperation.TAG_MENU,
 			ZmOperation.SEP
 			];
@@ -159,10 +160,10 @@ function() {
 	}
 
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-		ops.push(ZmOperation.SEND_FILE_MENU,ZmOperation.SEP);
+		ops.push(ZmOperation.SEND_FILE_MENU, ZmOperation.SEP);
 	}
 
-    ops.push(ZmOperation.VIEW_MENU);
+    ops.push(ZmOperation.NEW_BRIEFCASE_WIN, ZmOperation.VIEW_MENU);
 
 	return ops;
 };

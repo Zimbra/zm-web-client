@@ -183,15 +183,8 @@ function(view) {
 	var cancelButton = tb.getButton(ZmOperation.CANCEL);
 	if (this._contact.id == undefined || this._contact.isGal) {
 		cancelButton.setText(ZmMsg.cancel);
-		cancelButton.setImage("Cancel");
 	} else {
 		cancelButton.setText(ZmMsg.close);
-		cancelButton.setImage("Close");
-	}
-
-	var printButton = tb.getButton(ZmOperation.PRINT);
-	if (printButton) {
-		printButton.setText(ZmMsg.print);
 	}
 
 	var saveButton = tb.getButton(ZmOperation.SAVE);

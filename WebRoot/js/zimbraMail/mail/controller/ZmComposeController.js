@@ -959,16 +959,16 @@ function() {
 	buttons.push(ZmOperation.CANCEL, ZmOperation.SEP, ZmOperation.SAVE_DRAFT);
 
 	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
-		buttons.push(ZmOperation.ATTACHMENT);
+		buttons.push(ZmOperation.SEP, ZmOperation.ATTACHMENT);
 	}
 
 	if (!appCtxt.isOffline) {
-		buttons.push(ZmOperation.SPELL_CHECK);
+		buttons.push(ZmOperation.SEP, ZmOperation.SPELL_CHECK);
 	}
 	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
-		buttons.push(ZmOperation.ADD_SIGNATURE);
+		buttons.push(ZmOperation.SEP, ZmOperation.ADD_SIGNATURE);
 	}
-	buttons.push(ZmOperation.COMPOSE_OPTIONS, ZmOperation.FILLER);
+	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_OPTIONS, ZmOperation.FILLER);
 
 	if (appCtxt.get(ZmSetting.DETACH_COMPOSE_ENABLED) && !appCtxt.isChildWindow) {
 		buttons.push(ZmOperation.DETACH_COMPOSE);

@@ -288,7 +288,6 @@ function(mode, appt) {
 
     if(mode == ZmCalItemComposeController.APPT_MODE) {
         saveButton.setText(ZmMsg.saveClose);
-        saveButton.setImage("Save");
         saveButton.setVisible(true);
         sendButton.setVisible(false);
 
@@ -297,12 +296,10 @@ function(mode, appt) {
         sendButton.setVisible(true);
         saveButton.setVisible(true);
         saveButton.setText(ZmMsg.save);
-        saveButton.setImage("Save");
 
         //change cancel button's text/icon to close
         var cancelButton = this._toolbar.getButton(ZmOperation.CANCEL);
         cancelButton.setText(ZmMsg.close);
-		cancelButton.setImage("Close");
 
         this._requestResponses.setEnabled(true);
     }
@@ -417,7 +414,6 @@ function() {
 
     var optionsButton = new DwtToolBarButton({id:ZmOperation.COMPOSE_OPTIONS, parent:this._toolbar});
     optionsButton.setText(ZmMsg.options);
-    optionsButton.setImage("Preferences");
 
     var m = new DwtMenu({parent:optionsButton});
     optionsButton.setMenu(m);
