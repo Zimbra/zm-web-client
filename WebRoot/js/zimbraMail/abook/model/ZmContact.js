@@ -1180,8 +1180,10 @@ function(asObj) {
 	
 	if (asObj) {
 		email = AjxEmailAddress.parse(email);
-		email.isGroup = this.isGroup;
-		email.canExpand = this.canExpand;
+        if(email){
+		    email.isGroup = this.isGroup;
+		    email.canExpand = this.canExpand;
+        }
 	}
 	
 	return email;
@@ -1738,7 +1740,7 @@ function(node) {
 ZmContact.prototype.getAttendeeText =
 function(type, shortForm) {
 	var email = this.getEmail(true);
-	return email.toString(shortForm || (type && type != ZmCalBaseItem.PERSON));
+	return (email?email.toString(shortForm || (type && type != ZmCalBaseItem.PERSON)):"");
 };
 
 /**
