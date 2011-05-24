@@ -84,10 +84,11 @@ ZmButtonToolBar = function(params) {
 
 
 	if (secondaryOpList && secondaryOpList.length) {
-		var actionsButton = new DwtToolBarButton({parent: this});
+		var actionsButtonId = this._context ? ZmId.getButtonId(this._context, "ACTIONS", this._toolbarType) : null;
+		var actionsButton = new DwtToolBarButton({parent: this, id: actionsButtonId});
 		actionsButton.setText("Actions");
 
-		var secondaryMenu = this._secondaryButtonsMenu = new ZmActionMenu({parent: actionsButton, menuItems: ZmOperation.NONE});
+		var secondaryMenu = this._secondaryButtonsMenu = new ZmActionMenu({parent: actionsButton, menuItems: ZmOperation.NONE, context: this._context});
 		var secondaryButtons  = ZmOperation.createOperations(secondaryMenu, secondaryOpList, params.overrides);
 		actionsButton.setMenu(secondaryMenu);
 
