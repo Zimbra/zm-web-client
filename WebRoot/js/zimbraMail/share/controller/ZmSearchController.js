@@ -362,6 +362,8 @@ function(params) {
 			case ZmId.SEARCH_ANY:
 				params.query = "is:anywhere";
 				break;
+			case ZmItem.APPT:
+				break;
 			default:
 				// Get the app of the item type being searched
 				appName = ZmItem.APP[params.searchFor];
@@ -696,7 +698,7 @@ function(params, noRender, callback, errorCallback) {
 ZmSearchController.prototype._handleResponseDoSearch =
 function(search, noRender, isMixed, callback, noUpdateOverview, noClear, result) {
 
-	var results = result.getResponse();
+	var results = result && result.getResponse();
 	if (!results) { return; }
 
 	if (!results.type) {
