@@ -171,5 +171,5 @@ function(element, event, ev) {
 ZmUnitTestUtil.goToCompose =
 function() {
 	var ctlr = appCtxt.getApp(ZmApp.MAIL).getMailListController();
-	ctlr._newListener(new DwtSelectionEvent(true), ZmOperation.NEW_MENU);
+	ctlr._newButtonListener(new DwtSelectionEvent(true), ZmOperation.NEW_MENU);
 };

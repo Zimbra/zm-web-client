@@ -261,7 +261,7 @@ function(params, result) {
 		this._controller._kickPolling(true);
 	}
 
-	var methodName = (DBG && DBG.getDebugLevel()) ? ZmCsfeCommand.getMethodName(params.jsonObj || params.soapDoc) : "";
+	var methodName = ZmCsfeCommand.getMethodName(params.jsonObj || params.soapDoc);
 	if (params.asyncMode && params.callback) {
 		DBG.println(AjxDebug.DBG1, "------------------------- Running response callback for " + methodName);
 		params.callback.run(result);
