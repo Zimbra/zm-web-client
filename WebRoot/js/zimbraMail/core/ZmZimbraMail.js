@@ -2090,7 +2090,7 @@ ZmZimbraMail.prototype._getQueryParams =
 function() {
 
 	var appName = appCtxt.getCurrentAppName().toLowerCase();
-	var prod = appCtxt.isDesktop ? "zd" : "zcs";
+	var prod = appCtxt.isOffline ? "zd" : "zcs";
 	return ["utm_source=", appName, "&utm_medium=", prod, "&utm_content=", this._getVersion(), "&utm_campaign=help"].join("");
 };
 
