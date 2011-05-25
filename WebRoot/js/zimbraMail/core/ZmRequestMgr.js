@@ -234,8 +234,9 @@ function(params, result) {
 		}
 	} catch (ex) {
 		DBG.println("req", "Request " + params.reqId + " got an exception");
-		if (params.errorCallback) {
-			var handled = params.errorCallback.run(ex);
+		var ecb = params.errorCallback;
+		if (ecb) {
+			var handled = ecb.isAjxCallback ? ecb.run(ex) : ecb(ex);
 			if (!handled) {
 				this._handleException(ex, params);
 			}
@@ -264,7 +265,8 @@ function(params, result) {
 	var methodName = ZmCsfeCommand.getMethodName(params.jsonObj || params.soapDoc);
 	if (params.asyncMode && params.callback) {
 		DBG.println(AjxDebug.DBG1, "------------------------- Running response callback for " + methodName);
-		params.callback.run(result);
+		var cb = params.callback;
+		cb.isAjxCallback ? cb.run(result) : cb(result);
 	}
 
 	DBG.println(AjxDebug.DBG1, "------------------------- Processing notifications for " + methodName);
@@ -309,7 +311,7 @@ function(reqId, errorCallback, noBusyOverlay) {
 	if (errorCallback) {
 		DBG.println("req", "calling the error callback");
 		var ex = new AjxException("Request canceled", AjxException.CANCELED, "ZmRequestMgr.prototype.cancelRequest");
-		errorCallback.run(ex);
+		errorCallback.isAjxCallback ? errorCallback.run(ex) : errorCallback(ex);
 	}
 	this._clearPendingRequest(reqId);
 };

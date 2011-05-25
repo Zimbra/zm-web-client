@@ -2350,3 +2350,18 @@ function(autoSendTime) {
 		conv.setAutoSendTime(autoSendTime);
 	}
 };
+
+/**
+ * Sends a read receipt.
+ * 
+ * @param {closure}	callback	response callback
+ */
+ZmMailMsg.prototype.sendReadReceipt =
+function(callback) {
+
+	var jsonObj = {SendDeliveryReportRequest:{_jsns:"urn:zimbraMail"}};
+	var request = jsonObj.SendDeliveryReportRequest;
+	request.mid = this.id;
+	var ac = window.parentAppCtxt || window.appCtxt;
+	ac.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:callback});
+};

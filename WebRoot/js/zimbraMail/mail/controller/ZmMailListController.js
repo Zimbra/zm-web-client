@@ -379,7 +379,6 @@ function(msg) {
 	var rrPref = appCtxt.get(ZmSetting.MAIL_SEND_READ_RECEIPTS);
 
 	if (rrPref == ZmMailApp.SEND_RECEIPT_PROMPT) {
-		var callback = new AjxCallback(this, this._sendReadReceipt, msg);
 		var dlg = appCtxt.getYesNoMsgDialog();
 		dlg.registerCallback(DwtDialog.YES_BUTTON, this._sendReadReceipt, this, [msg, dlg]);
 		dlg.registerCallback(DwtDialog.NO_BUTTON, this._sendReadReceiptNotified, this, [msg, dlg]);
@@ -395,12 +394,7 @@ function(msg, dlg) {
 	if (dlg) {
 		dlg.popdown();
 	}
-	var jsonObj = {SendDeliveryReportRequest:{_jsns:"urn:zimbraMail"}};
-	request = jsonObj.SendDeliveryReportRequest;
-	request.mid = msg.id;
-	var callback = new AjxCallback(this, this._handleSendReadReceipt);
-	var ac = window.parentAppCtxt || window.appCtxt;
-	ac.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:callback});
+	msg.sendReadReceipt(this._handleSendReadReceipt.bind(this));
 };
 
 ZmMailListController.prototype._handleSendReadReceipt =
@@ -999,7 +993,8 @@ ZmMailListController.prototype._doMarkRead =
 function(items, on, callback) {
 
 	var params = {items:items, value:on, callback:callback};
-	var list = this._setupContinuation(this._doMarkRead, [on, callback], params);
+	var list = params.list = this._getList(params.items);
+	this._setupContinuation(this._doMarkRead, [on, callback], params);
 	list.markRead(params);
 };
 
