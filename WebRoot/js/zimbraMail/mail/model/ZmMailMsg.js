@@ -710,8 +710,8 @@ function(params, callback, result) {
 		this.participants.removeAll();
 	}
 
-	// clear all attachments
-	this.attachments.length = 0;
+	// clear all attachments and body data
+	this.attachments.length = this._bodyParts.length = 0;
 
 	this._loadFromDom(response.m[0]);
 	if (!this.isReadOnly() && params.markRead) {
