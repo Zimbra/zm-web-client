@@ -622,6 +622,7 @@ function(params, result) {
  * @param	{window}	params.childWin			the child window this action is happening in
  * @param	{closure}	params.finalCallback	the callback to run after all items have been processed
  * @param	{int}		params.count			the starting count for number of items processed
+ * @param	{Boolean}	params.confirmDelete		the user confirmed hard delete
  */
 ZmList.prototype.deleteItems =
 function(params) {
@@ -646,6 +647,13 @@ function(params) {
 		}
 	} else {
 		toMove = items;
+	}
+
+	if (toDelete.length && !params.confirmDelete) {
+		params.confirmDelete = true;
+		var callback = ZmList.prototype.deleteItems.bind(this, params);
+		this._popupDeleteWarningDialog(callback, toMove.length, toDelete.length);
+		return;
 	}
 
 	params.callback = params.childWin && new AjxCallback(this._handleDeleteNewWindowResponse, params.childWin);
@@ -674,6 +682,24 @@ function(params) {
 		this._itemAction(params);
 	}
 };
+
+
+ZmList.prototype._popupDeleteWarningDialog =
+function(callback, onlySome, count) {
+	var dialog = appCtxt.getOkCancelMsgDialog();
+	dialog.reset();
+	dialog.setMessage(AjxMessageFormat.format(ZmMsg[onlySome ? "confirmDeleteSomeForever" : "confirmDeleteForever"], [count]), DwtMessageDialog.WARNING_STYLE); 
+	dialog.registerCallback(DwtDialog.OK_BUTTON, this._deleteWarningDialogListener.bind(this, callback, dialog));
+	dialog.associateEnterWithButton(DwtDialog.OK_BUTTON);
+	dialog.popup(null, DwtDialog.OK_BUTTON);
+};
+
+ZmList.prototype._deleteWarningDialogListener =
+function(callback, dialog) {
+	dialog.popdown();
+	callback();
+};
+
 
 /**
  * @private

@@ -246,7 +246,8 @@ function(params, result) {
  * @param {Boolean}      params.hardDelete	whether to force physical removal of items
  * @param {Object}      params.attrs			additional attrs for SOAP command
  * @param {window}       params.childWin		the child window this action is happening in
- *        
+ * @param	{Boolean}	params.confirmDelete		the user confirmed hard delete
+ *
  * @private
  */
 ZmMailList.prototype.deleteItems =
@@ -257,6 +258,14 @@ function(params) {
 	if (this.type == ZmItem.CONV) {
 		var searchFolder = this.search ? appCtxt.getById(this.search.folderId) : null;
 		if (searchFolder && searchFolder.isHardDelete()) {
+
+			if (!params.confirmDelete) {
+				params.confirmDelete = true;
+				var callback = ZmMailList.prototype.deleteItems.bind(this, params);
+				this._popupDeleteWarningDialog(callback, false, params.items.length);
+				return;
+			}
+
 			var instantOn = appCtxt.getAppController().getInstantNotify();
 			if (instantOn) {
 				// bug fix #32005 - disable instant notify for ops that might take awhile
