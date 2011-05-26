@@ -162,18 +162,14 @@ function(enabled) {
  * @param {constant}	params.shortcut		the shortcut id (from {@link ZmKeyMap}) for showing hint
  * @param {AjxCallback|DwtMenu}	params.menu				the menu creation callback (recommended) or menu
  * @param {Boolean}	params.menuAbove	if <code>true</code>, popup menu above the button.
- *
- * @param {Boolean}	ignoreImage		if <code>true</code>, don't display image
- * @param {Boolean}	ignoreText		if <code>true</code>, don't display text
- *
  */
 ZmToolBar.prototype.createButton =
-function(id, params, ignoreImage, ignoreText) {
+function(id, params) {
 	var b = this._buttons[id] = this._createButton(params);
-	if (params.image && !ignoreImage) {
+	if (params.image) {
 		b.setImage(params.image);
 	}
-	if (params.text && !ignoreText) {
+	if (params.text) {
 		b.setText(params.text);
 	}
 	if (params.tooltip) {

@@ -137,14 +137,15 @@ function() {
 
 ZmBriefcaseController.prototype._getToolBarOps =
 function() {
-    var ops = [ZmOperation.NEW_FILE,
-            ZmOperation.SAVE_FILE,
+    var ops = [ZmOperation.NEW_MENU,
 			ZmOperation.SEP,
+			ZmOperation.NEW_FILE,
+            ZmOperation.SAVE_FILE,
             ZmOperation.EDIT_FILE,
 			ZmOperation.SEP,
-			ZmOperation.DELETE,
+			ZmOperation.DELETE, ZmOperation.MOVE,
+            ZmOperation.NEW_BRIEFCASE_WIN,
 			ZmOperation.SEP,
-			ZmOperation.MOVE,
 			ZmOperation.TAG_MENU,
 			ZmOperation.SEP
 			];
@@ -160,10 +161,10 @@ function() {
 	}
 
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-		ops.push(ZmOperation.SEND_FILE_MENU, ZmOperation.SEP);
+		ops.push(ZmOperation.SEND_FILE_MENU,ZmOperation.SEP);
 	}
 
-    ops.push(ZmOperation.NEW_BRIEFCASE_WIN, ZmOperation.VIEW_MENU);
+    ops.push(ZmOperation.VIEW_MENU);
 
 	return ops;
 };
@@ -463,7 +464,9 @@ function(results) {
 	lv.offset = 0;
 	lv._folderId = this._folderId;
 
-	var elements = this.getViewElements(this._currentView, this._parentView[this._currentView]);
+	var elements = {};
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[this._currentView];//this.isMultiColView() ? this._multiColView : lv;
 
 	this._setView({view:this._currentView, elements:elements, isAppView:true});
 	this._resetNavToolBarButtons(this._currentView);
@@ -490,8 +493,9 @@ function(view, force) {
 	this._resetOperations(this._toolbar[view], 0);
 
 	if (viewChanged) {
-		var elements = this.getViewElements(view, this._parentView[view]);
-		
+		var elements = {};
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
 		this._setView({view:view, elements:elements, isAppView:true});
 		this._resetNavToolBarButtons(view);
 	}

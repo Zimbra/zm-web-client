@@ -38,7 +38,6 @@ ZmPopupMenu = function(parent, className, id, controller) {
 	var params = Dwt.getParams(arguments, ZmPopupMenu.PARAMS);
 	params.className = params.className ? params.className : "ActionMenu";
 	params.style = params.style || DwtMenu.POPUP_STYLE;
-    params.id = params.id || "POPUP_" + Dwt.getNextId();
 	DwtMenu.call(this, params);
 
 	controller = controller || appCtxt.getCurrentController();
@@ -143,9 +142,9 @@ function(enabled) {
  * @see		DwtMenuItem
  */
 ZmPopupMenu.prototype.createMenuItem =
-function(id, params, htmlElId) {
+function(id, params) {
 	var mi = this._menuItems[id] = new DwtMenuItem({parent:this, style:params.style, radioGroupId:params.radioGroupId,
-													id: (htmlElId || params.id), index: params.index});
+													id:params.id, index:params.index});
 	if (params.image) {
 		mi.setImage(params.image);
 	}

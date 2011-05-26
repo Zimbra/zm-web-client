@@ -906,9 +906,6 @@ function(ev, id) {
 	var selItem = menu.getSelectedItem();
 	var sharedMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_SHARED);
 
-	this._searchToolBar.initAutocomplete(id);
-
-
 	// enable shared menu item if not a gal search
 	if (id == ZmId.SEARCH_GAL) {
 		this._contactSource = ZmId.SEARCH_GAL;
@@ -948,7 +945,10 @@ function(ev, id) {
 			? allAccountsMI.getImage() : selItem.getImage();
 
 		if (this._inclSharedItems) {
-			icon = this._getSharedImage(selItem);
+			var selItemId = selItem && selItem.getData(ZmSearchToolBar.MENUITEM_ID);
+			icon = selItemId
+				? ((ZmSearchToolBar.SHARE_ICON[selItemId]) || item.getImage())
+				: item.getImage();
 		}
 
 		btn.setImage(icon);
@@ -972,19 +972,16 @@ function(ev, id) {
 		}
 
 		btn.setImage(icon);
+		btn.setText(item.getText());
 	}
 
 	// set button tooltip
 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
-	//commented out the following since it doesn't currently work, and I don't see why we would want to have
-	// a tooltip that's conv/msg view specific. I think saying "mail" is enough.
-//	if (id == ZmId.SEARCH_MAIL) {
-//		var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
-//		tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
-//	}
-	if (id != ZmId.SEARCH_SHARED) { 
-		btn.setToolTipContent(tooltip);
+	if (id == ZmId.SEARCH_MAIL) {
+		var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
+		tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
 	}
+	btn.setToolTipContent(tooltip);
 };
 
 /**
@@ -995,7 +992,7 @@ function(selItem) {
 	var selItemId = selItem && selItem.getData(ZmSearchToolBar.MENUITEM_ID);
 	return (selItemId && ZmSearchToolBar.SHARE_ICON[selItemId])
 		? ZmSearchToolBar.SHARE_ICON[selItemId]
-		: ZmSearchToolBar.ICON[selItemId]; //use regular icon if no share icon
+		: ZmSearchToolBar.ICON[ZmId.SEARCH_SHARED];
 };
 
 /**
