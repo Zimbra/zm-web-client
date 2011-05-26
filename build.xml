@@ -810,7 +810,7 @@
 							jsfile='${build.css.filename}.js'>
 					<dirset dir='${srcdir}' includes='*' excludes='?*_??,?*_??_??' />
 				</imagemerge>
-				<replace token="@jsVersion@" value="${build.simpleDate}" file='${destdir}/${build.css.filename}'/>
+				<!-- <replace token="@jsVersion@" value="${build.simpleDate}" file='${destdir}/${build.css.filename}'/> Moved to SkinResources servlet -->
 
 				<!-- other locale images -->
 				<dirset id='this.images.l10n.dirset' dir='${srcdir}' includes='?*_??,?*_??_??' />
@@ -827,9 +827,9 @@
 											jsfile='${build.css.filename}.js'>
 									<dirset dir='${srcdir}' includes='?*_@{locale}' />
 								</imagemerge>
-								<replace token="@jsVersion@" value="${build.simpleDate}"
+								<!-- <replace token="@jsVersion@" value="${build.simpleDate}"
 										 file='${destdir}/${build.css.file}_@{locale}${build.css.ext}'
-								/>
+								/> Moved to SkinResources servlet -->
 							</then>
 						</if>
 					</sequential>
@@ -865,7 +865,7 @@
             <dirset dir='${skinbasedir}/skins/${skindir}' includes='img/**'/>
         </imagemerge>
 
-        <replace token="@jsVersion@" value="${build.simpleDate}" file='${build.this.skin.dir}/${build.css.filename}'/>
+        <!-- <replace token="@jsVersion@" value="${build.simpleDate}" file='${build.this.skin.dir}/${build.css.filename}'/>  Moved to SkinResources servlet -->
     </target>
 
     <target name='build-skin-images-init'>
