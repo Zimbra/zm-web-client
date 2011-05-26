@@ -1931,7 +1931,7 @@ function(obj) {
  */
 ZmOrganizer.prototype._notify =
 function(event, details) {
-    appCtxt.setNotifyDebug("ZmOrganizer notify called. --- This should update the folder tree");
+
 	if (details) {
 		details.organizers = [this];
 	} else {

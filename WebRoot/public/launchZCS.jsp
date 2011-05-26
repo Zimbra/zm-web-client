@@ -98,7 +98,6 @@
     }
 
     boolean isScriptErrorOn = getParameter(request, "scripterrors", "0").equals("1");
-    boolean isNotifyDebugOn = getParameter(request, "notifydebug", "0").equals("1");
 	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
 	String debugLogTarget = getParameter(request, "log", getAttribute(request, "log", null));
 	String extraPackages = getParameter(request, "packages", getAttribute(request, "packages", null));
@@ -145,7 +144,6 @@
 	pageContext.setAttribute("locale", locale);
 	pageContext.setAttribute("isDevMode", isDev);
 	pageContext.setAttribute("isScriptErrorOn", isScriptErrorOn);
-    pageContext.setAttribute("isNotifyDebugOn", isNotifyDebugOn);
 	pageContext.setAttribute("isOfflineMode", offlineMode != null && offlineMode.equals("true"));
 	pageContext.setAttribute("isProdMode", !prodMode.equals(""));
 	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
@@ -189,7 +187,6 @@
 	window.appDevMode     = ${isDevMode};
     window.appCoverageMode = ${isCoverage};
     window.isScriptErrorOn   = ${isScriptErrorOn};
-    window.isNotifyDebugOn   = ${isNotifyDebugOn};
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >

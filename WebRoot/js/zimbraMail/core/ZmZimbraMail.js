@@ -1517,11 +1517,6 @@ function() {
             var method = soapDoc.getMethod();
             method.setAttribute("wait", 1);
             method.setAttribute("limitToOneBlocked", 1);
-            if (window.isNotifyDebugOn) {
-                var str = appCtxt.getNotifyDebug();
-                soapDoc.set("DEBUG", str);
-                appCtxt.clearNotifyDebug();
-            }
         }
 		var params = {
 			soapDoc: soapDoc,

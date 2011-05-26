@@ -402,7 +402,6 @@ function(convs, msgs) {
 					conv.list = this;
 					newConvs.push(conv);
 					AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: conv added " + id);
-                    appCtxt.setNotifyDebug("Handling NOTIFY: notifyCreate ZmMailList --- New conv added");
 				}
 				else {
 					AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: conv failed account checks " + id);
@@ -451,7 +450,6 @@ function(convs, msgs) {
 					newConvId[cid] = conv;
 					conv.folders[msg.folderId] = true;
 					newConvs.push(conv);
-                    appCtxt.setNotifyDebug("Handling NOTIFY: in ZmMailList - notifyCreate - New message becomes a conv");
 				}
 				conv.list = this;
 			}
@@ -518,9 +516,6 @@ function(convs, msgs) {
 				}
 			}
 		}
-        if (window.isNotifyDebugOn && newMsgs.length > 1) {
-            appCtxt.setNotifyDebug("Handling NOTIFY: notifyCreate ZmMailList --- New message added to list");
-        }
 	}
 
 	// sort item list in reverse so they show up in correct order when processed (oldest appears first)
