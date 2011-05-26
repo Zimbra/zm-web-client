@@ -564,7 +564,7 @@ ZmRequestMgr.prototype._notifyHandler =
 function(notify) {
 	DBG.println(AjxDebug.DBG1, "Handling NOTIFY");
     if (window.isNotifyDebugOn) {
-        var notifyStr = AjxStringUtil.objToString(notify);
+        var notifyStr = JSON.stringify(notify);
         appCtxt.setNotifyDebug("Handling NOTIFY: in ZmRequestMgr _notifyHandler");
         appCtxt.setNotifyDebug(notifyStr);
     }
