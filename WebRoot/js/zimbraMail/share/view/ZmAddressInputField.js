@@ -630,6 +630,10 @@ function(ev, aclv) {
 	var key = DwtKeyEvent.getCharCode(ev);
 	var propagate;
 	var clearInput = false;
+	
+	if (DwtKeyMapMgr.hasModifier(ev) || ev.shiftKey) {
+		return propagate;
+	}
 
 	// Esc in edit mode restores the original address to the bubble
 	if (key == 27 && this._editMode) {
