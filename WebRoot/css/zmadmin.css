@@ -760,7 +760,7 @@ div.ZaSearchBuilderOptionRemoveAll table  {
     margin:20px 0px 0px 20px;
     width:71px;
     height:11px;
-    background-image:url("@LogoImgDir@/AltBanner.png");
+    background-image:url("@LogoImgDir@/AltBanner.png?v=@jsVersion@");
     background-repeat:repeat-x;
 }
 

@@ -1117,13 +1117,13 @@
 
 /* ??? USE? NO IMAGE? */
 .DwtPropertyEditor table tr.expander-collapsed td div {
-  background: url(@DwtImgDir@/Expand.gif) no-repeat 100% 50%;
+  background: url("@DwtImgDir@/Expand.gif?v=@jsVersion@") no-repeat 100% 50%;
   padding-right: 15px;
 }
 
 /* ??? USE? NO IMAGE? */
 .DwtPropertyEditor table tr.expander-expanded td div {
-  background: url(@DwtImgDir@/Collapse.gif) no-repeat 100% 50%;
+  background: url("@DwtImgDir@/Collapse.gif?v=@jsVersion@") no-repeat 100% 50%;
   padding-right: 15px;
 }
 
@@ -1610,19 +1610,19 @@ input.xform_field {
 
 .DwtShellBusyDialog .WaitIcon,
 .DwtWait64Icon {
-	background-image:url(@SkinAnimatedImgDir@/Imgwait_64.gif);
+	background-image:url("@SkinAnimatedImgDir@/Imgwait_64.gif?v=@jsVersion@");
 	width:64px;
 	height:64px;
 }
 
 .DwtWait16Icon {
-	background-image:url(@SkinAnimatedImgDir@/Imgwait_16.gif);
+	background-image:url("@SkinAnimatedImgDir@/Imgwait_16.gif?v=@jsVersion@");
 	width:16px;
 	height:16px;
 }
 
 .DwtWait32Icon {
-	background-image:url(@SkinAnimatedImgDir@/Imgwait_32.gif);
+	background-image:url("@SkinAnimatedImgDir@/Imgwait_32.gif?v=@jsVersion@");
 	width:32px;
 	height:32px;
 }

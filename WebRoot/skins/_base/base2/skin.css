@@ -248,7 +248,7 @@ BODY						{	margin:0px; 				}
     cursor:pointer;
 }
 .SplashScreen .ImgAltBanner {
-    background-image:url("@LogoImgDir@/AltBanner.png");
+    background-image:url("@LogoImgDir@/AltBanner.png?v=@jsVersion@");
     background-repeat:repeat-x;
     height:11px;
     margin:20px 0px 0px 20px;
