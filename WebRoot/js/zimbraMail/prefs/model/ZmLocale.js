@@ -114,7 +114,7 @@ function() {
 		/* don't show both if they are the same - it looks extremely funny */
 		return this.name;
 	}
-	return [this.name, " - ", this.localName].join("");
+	return [this.localName, " - ", this.name].join("");
 };
 
 ZmLocale.prototype._add =
