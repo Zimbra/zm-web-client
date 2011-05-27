@@ -163,17 +163,17 @@ function(enabled) {
  * @param {AjxCallback|DwtMenu}	params.menu				the menu creation callback (recommended) or menu
  * @param {Boolean}	params.menuAbove	if <code>true</code>, popup menu above the button.
  *
- * @param {Boolean}	ignoreImage		if <code>true</code>, don't display image
- * @param {Boolean}	ignoreText		if <code>true</code>, don't display text
+ * @param {Boolean}	showImage		if <code>true</code>, display image
+ * @param {Boolean}	showText		if <code>true</code>, display text
  *
  */
 ZmToolBar.prototype.createButton =
-function(id, params, ignoreImage, ignoreText) {
+function(id, params, showImage, showText) {
 	var b = this._buttons[id] = this._createButton(params);
-	if (params.image && !ignoreImage) {
+	if (params.image && showImage) {
 		b.setImage(params.image);
 	}
-	if (params.text && !ignoreText) {
+	if (params.text && showText) {
 		b.setText(params.text);
 	}
 	if (params.tooltip) {

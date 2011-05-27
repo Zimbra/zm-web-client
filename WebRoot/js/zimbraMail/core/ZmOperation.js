@@ -100,7 +100,7 @@ ZmOperation._operationDesc = {};
  */
 ZmOperation.initialize =
 function() {
-	ZmOperation.registerOp(ZmId.OP_ATTACHMENT, {textKey:"addAttachment", tooltipKey:"attachmentTooltip", image:"Attachment", shortcut:ZmKeyMap.ATTACHMENT, imageToolbarButton: true});
+	ZmOperation.registerOp(ZmId.OP_ATTACHMENT, {textKey:"addAttachment", tooltipKey:"attachmentTooltip", image:"Attachment", shortcut:ZmKeyMap.ATTACHMENT, showImageInToolbar: true});
 	ZmOperation.registerOp(ZmId.OP_BROWSE, {textKey:"advancedSearch", image:"SearchBuilder", tooltipKey: "advancedSearchTooltip"}, ZmSetting.BROWSE_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_CALL, {image:"Telephone"});
 	ZmOperation.registerOp(ZmId.OP_CANCEL, {textKey:"cancel", tooltipKey:"cancelTooltip", image:"Cancel", shortcut:ZmKeyMap.CANCEL});
@@ -131,7 +131,7 @@ function() {
 //	ZmOperation.registerOp(ZmId.OP_IMPORT_FOLDER, {textKey:"importFolder", image:"MailImport"});
 	ZmOperation.registerOp(ZmId.OP_MARK_ALL_READ, {textKey:"markAllRead", image:"ReadMessage"});
 //	ZmOperation.registerOp(ZmId.OP_MOUNT_FOLDER, {textKey:"mountFolder", image:"Folder"});
-	ZmOperation.registerOp(ZmId.OP_MOVE, {textKey:"move", tooltipKey:"moveTooltip", image:"MoveToFolder", textPrecedence:40, imageToolbarButton: true});
+	ZmOperation.registerOp(ZmId.OP_MOVE, {textKey:"move", tooltipKey:"moveTooltip", image:"MoveToFolder", textPrecedence:40, showImageInToolbar: true});
 	ZmOperation.registerOp(ZmId.OP_NEW_FOLDER, {textKey:"newFolder", tooltipKey:"newFolderTooltip", image:"NewFolder", shortcut:ZmKeyMap.NEW_FOLDER}, ZmSetting.USER_FOLDERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_NEW_MENU, {textKey:"_new", shortcut:ZmKeyMap.NEW, textPrecedence:100}, null,
 		AjxCallback.simpleClosure(function(parent) {
@@ -141,7 +141,7 @@ function() {
     ZmOperation.registerOp(ZmId.OP_NOTIFY, {textKey: "notify", image:"Feedback"});
 	ZmOperation.registerOp(ZmId.OP_PAGE_BACK, {image:"LeftArrow", shortcut:ZmKeyMap.PREV_PAGE});
 	ZmOperation.registerOp(ZmId.OP_PAGE_FORWARD, {image:"RightArrow", shortcut:ZmKeyMap.NEXT_PAGE});
-	ZmOperation.registerOp(ZmId.OP_PRINT, {textKey:"print", tooltipKey:"printTooltip", image:"Print", shortcut:ZmKeyMap.PRINT, textPrecedence:30, imageToolbarButton: true}, ZmSetting.PRINT_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_PRINT, {textKey:"print", tooltipKey:"printTooltip", image:"Print", shortcut:ZmKeyMap.PRINT, textPrecedence:30, showImageInToolbar: true}, ZmSetting.PRINT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_RECOVER_DELETED_ITEMS, {textKey:"recoverDeletedItems", image:"Trash", tooltipKey:"recoverDeletedItems"}, ZmSetting.DUMPSTER_ENABLED);
     ZmOperation.registerOp(ZmId.OP_REFRESH, {textKey:"refresh", tooltipKey:"refreshTooltip"});
 	ZmOperation.registerOp(ZmId.OP_RENAME_FOLDER, {textKey:"renameFolder", image:"Rename"});
@@ -163,7 +163,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SHOW_ALL_ITEM_TYPES, {textKey:"showAllItemTypes", image:"Globe"});
     ZmOperation.registerOp(ZmId.OP_SORT_ASC, {textKey:"sortAscending"});
     ZmOperation.registerOp(ZmId.OP_SORT_DESC, {textKey:"sortDescending"});
-	ZmOperation.registerOp(ZmId.OP_SPELL_CHECK, {textKey:"spellCheck", image:"SpellCheck", tooltipKey:"spellCheckTooltip", shortcut:ZmKeyMap.SPELLCHECK, imageToolbarButton: true}, ZmSetting.SPELL_CHECK_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SPELL_CHECK, {textKey:"spellCheck", image:"SpellCheck", tooltipKey:"spellCheckTooltip", shortcut:ZmKeyMap.SPELLCHECK, showImageInToolbar: true}, ZmSetting.SPELL_CHECK_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SYNC, {textKey:"reload", image:"Refresh", shortcut:ZmKeyMap.REFRESH});
     ZmOperation.registerOp(ZmId.OP_SYNC_ALL, {textKey:"checkAllFeed", image:"Refresh"});
 	ZmOperation.registerOp(ZmId.OP_SYNC_OFFLINE_FOLDER, {textKey:"syncOfflineFolderOff", image:"Refresh"}, ZmSetting.OFFLINE_ENABLED); /* offline only */
@@ -253,13 +253,14 @@ function(baseId, overrides) {
 	var tooltipKey = (overrides && overrides.tooltipKey) || ZmOperation.getProp(baseId, "tooltipKey");
 	var tooltip = tooltipKey && ZmMsg[tooltipKey];
 	var image = ZmOperation.getProp(baseId, "image");
-	var imageToolbarButton = ZmOperation.getProp(baseId, "imageToolbarButton");
+	var showImageInToolbar = ZmOperation.getProp(baseId, "showImageInToolbar");
+	var showTextInToolbar = ZmOperation.getProp(baseId, "showTextInToolbar");
 	var disImage = ZmOperation.getProp(baseId, "disImage");
 	var enabled = (overrides && (overrides.enabled !== false));
 	var style = ZmOperation.getProp(baseId, "style");
 	var shortcut = ZmOperation.getProp(baseId, "shortcut");
 
-    var opDesc = {id:id, text:text, image:image, imageToolbarButton:imageToolbarButton, disImage:disImage, enabled:enabled,
+    var opDesc = {id:id, text:text, image:image, showImageInToolbar:showImageInToolbar, showTextInToolbar:showTextInToolbar, disImage:disImage, enabled:enabled,
 				  tooltip:tooltip, style:style, shortcut:shortcut};
 	if (overrides) {
 		for (var i in overrides) {

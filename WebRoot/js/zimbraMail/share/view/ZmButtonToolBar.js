@@ -140,7 +140,8 @@ function() {
  * @param {String}	params.className		the CSS class name
  * @param {String}	params.style			thebutton style
  * @param {int} params.index			the position at which to add the button
- * @param {Boolean}	params.imageToolbarButton		if <code>true</code>, the button should be image only
+ * @param {Boolean}	params.showImageInToolbar	if <code>true</code>, the button should show image (default is false)
+ * @param {Boolean}	params.showTextInToolbar	if <code>true</code>, the button should show text (default is !params.showImageInToolbar)
  */
 ZmButtonToolBar.prototype.createOp =
 function(id, params) {
@@ -158,9 +159,11 @@ function(id, params) {
 		params.id = this._context ? ZmId.getButtonId(this._context, id, this._toolbarType) : null;
 		params.textPrecedence = ZmOperation.getProp(id, "textPrecedence");
 		params.iconPrecedence = ZmOperation.getProp(id, "iconPrecedence");
-		var ignoreImage = params.text && !params.imageToolbarButton;
-		var ignoreText = params.image && params.imageToolbarButton;
-		b = this.createButton(id, params, ignoreImage, ignoreText);
+		var showImage = params.showImageInToolbar || false; //default to false;
+		var showText = !showImage || params.showTextInToolbar;
+		showImage = showImage || !params.text; //no text? gotta show image
+		showText = showText || !params.image; //no image? gotta show text
+		b = this.createButton(id, params, showImage, showText);
 	}
 	b.setData(ZmOperation.KEY_ID, id);
 
