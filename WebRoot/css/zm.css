@@ -480,6 +480,13 @@ INPUT[type="text"].search_input {
 }
 
 
+.Tag {
+	@NoWrap@ display:inline-block; vertical-align:middle; padding:1px 4px;
+}
+
+.TagImage {
+	vertical-align:top; display:inline-block; padding-right:1px;
+}
 
 /* Container for the view of one particular message
 	-- there can be two instances, one for "conversation" view and one for "messages" view */

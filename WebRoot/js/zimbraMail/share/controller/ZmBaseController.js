@@ -391,6 +391,7 @@ function(ev, items) {
 			ZmController.showDialog(newTagDialog, this._newTagCb);
 			newTagDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newTagDialog);
 		} else if (tagEvent == ZmEvent.E_TAGS && !tagAdded) {
+			//remove tag
 			this._doTag(items, ev.getData(Dwt.KEY_OBJECT), false);
 		} else if (tagEvent == ZmEvent.E_REMOVE_ALL) {
 			// bug fix #607

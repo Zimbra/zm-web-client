@@ -1478,24 +1478,23 @@ function(msg) {
 	var tagCell = null;
 
 	if (tagRow != null && table.rows[table.rows.length-1] == tagRow) {
-		if (numTags > 0) {
-			tagCell = tagRow.cells[1];
-		} else {
+		if (numTags == 0) {
 			table.deleteRow(-1);
 			return;
 		}
-	} else {
-		if (numTags > 0) {
-			tagRow = table.insertRow(-1);
-			tagRow.id = this._tagRowId;
-			var tagLabelCell = tagRow.insertCell(-1);
-			tagLabelCell.className = "LabelColName";
-			tagLabelCell.innerHTML = ZmMsg.tags + ":";
-			tagLabelCell.style.verticalAlign = "middle";
-			tagCell = tagRow.insertCell(-1);
-		} else {
+		tagCell = tagRow.cells[1];
+	}
+	else {
+		if (numTags == 0) {
 			return;
 		}
+		tagRow = table.insertRow(-1);
+		tagRow.id = this._tagRowId;
+		var tagLabelCell = tagRow.insertCell(-1);
+		tagLabelCell.className = "LabelColName";
+		tagLabelCell.innerHTML = ZmMsg.tags + ":";
+		tagLabelCell.style.verticalAlign = "middle";
+		tagCell = tagRow.insertCell(-1);
 	}
 
 	// get sorted list of tags for this msg
@@ -1511,21 +1510,15 @@ function(msg) {
 	html[i++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%><tr>";
 	html[i++] = "<td style='overflow:hidden; id='";
 	html[i++] = this._tagCellId;
-	html[i++] = AjxEnv.isIE || AjxEnv.isSafari ? "' class='Tags'>" : "'>";
+	html[i++] = "'>";
 
-	if (AjxEnv.isGeckoBased)
-		html[i++] = "<table border=0 cellspacing=0 cellpadding=0><tr>";
 	for (var j = 0; j < ta.length; j++) {
 		var tag = ta[j];
 		if (!tag) continue;
 		var anchorId = [this._tagCellId, ZmMailMsgView._TAG_ANCHOR, tag.id].join("");
 		var imageId = [this._tagCellId, ZmMailMsgView._TAG_IMG, tag.id].join("");
 
-		if (AjxEnv.isGeckoBased) {
-			html[i++] = "<td width=16>";
-			html[i++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, ["id='", imageId, "'"].join(""));
-			html[i++] = "</td><td class='Tags' style='white-space:nowrap;'>";
-		}
+		html[i++] = "<span class='Tag'>";
 		html[i++] = "<a href='javascript:' onclick='ZmMailMsgView._tagClick(\"";
 		html[i++] = this._htmlElId;
 		html[i++] = '","';
@@ -1533,18 +1526,28 @@ function(msg) {
 		html[i++] = "\"); return false;' id='";
 		html[i++] = anchorId;
 		html[i++] = "'>";
-		if (AjxEnv.isIE || AjxEnv.isSafari) {
-			html[i++] = "<table style='display:inline; vertical-align:middle; width:16px' border=0 cellspacing=0 cellpadding=0><tr><td>";
+
+		html[i++] = "<span class='TagImage'>";
 			html[i++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, ["id='", imageId, "'"].join(""));
-			html[i++] = "</td></tr></table>";
-		}
+		html[i++] = "</span>";
+		
 		html[i++] = AjxStringUtil.htmlEncodeSpace(tag.name);
 		html[i++] = "</a>";
-		if (AjxEnv.isGeckoBased)
-			html[i++] = "</td>";
+		
+		html[i++] = "&nbsp;|&nbsp;";
+		html[i++] = "<a href='javascript:;' onclick='ZmMailMsgView._removeTagClick(\"";
+		html[i++] = this._htmlElId;
+		html[i++] = '","';
+		html[i++] = tag.id;
+		html[i++] = "\"); return false;' id='";
+		html[i++] = anchorId;
+		html[i++] = "'>";
+		html[i++] = "x";
+		html[i++] = "</a>";
+		html[i++] = "</span>";
+
+
 	}
-	if (AjxEnv.isGeckoBased)
-		html[i++] = "</tr></table>";
 	html[i++] = "</td></tr></table>";
 	tagCell.innerHTML = html.join("");
 };
@@ -2079,6 +2082,14 @@ function(myId, tagId) {
 	var dwtObj = DwtControl.fromElementId(myId);
 	dwtObj.notifyListeners(ZmMailMsgView._TAG_CLICK, tagId);
 };
+
+ZmMailMsgView._removeTagClick =
+function(myId, tagId) {
+	var dwtObj = DwtControl.fromElementId(myId);
+	var tag = appCtxt.getById(tagId);
+	ZmListController.prototype._doTag.call(dwtObj._controller, dwtObj._msg, tag, false);
+};
+
 
 ZmMailMsgView._detachCallback =
 function(isRfc822, mode, result) {
