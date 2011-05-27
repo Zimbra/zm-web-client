@@ -92,16 +92,18 @@ function() {
 /**
  * Sets the free/busy.
  * 
- * @param	{Boolean}	exclude		if <code>true</code>, exclude free busy
- * @param	{AjxCallback}	callback		the callback
- * @param	{AjxCallback}	errorCallback		the error callback
+ * @param	{Boolean}	        exclude		    if <code>true</code>, exclude free busy
+ * @param	{AjxCallback}	    callback		the callback
+ * @param	{AjxCallback}	    errorCallback	the error callback
+ * @param   {ZmBatchCommand}    batchCmd        optional batch command
  */
 ZmCalendar.prototype.setFreeBusy = 
-function(exclude, callback, errorCallback) {
+function(exclude, callback, errorCallback, batchCmd) {
 	if (this.excludeFreeBusy == exclude) { return; }
 	// NOTE: Don't need to store the value since the response will
 	//       report that the object was modified.
-	this._organizerAction({action: "fb", attrs: {excludeFreeBusy: exclude ? "1" : "0"}, callback: callback, errorCallback: errorCallback});
+	this._organizerAction({action: "fb", attrs: {excludeFreeBusy: exclude ? "1" : "0"},
+                           callback: callback, errorCallback: errorCallback, batchCmd: batchCmd});
 };
 
 ZmCalendar.prototype.setChecked = 

@@ -752,3 +752,25 @@ function() {
 	}
 	return false;
 };
+
+
+/**
+ * Sets the Global Mark Read flag.  When the user sets this flag, read flags are global for all
+ * shared instances of the folder. When not set, each user accessing the shared folder will maintain
+ * their own read/unread flag.
+ *
+ * @param	{Object}	        globalMarkRead		the globalMarkRead boolean flag
+ * @param	{AjxCallback}	    callback		    the callback
+ * @param	{AjxCallback}	    errorCallback		the error callback
+ * @param   {ZmBatchCommand}    batchCmd            optional batch command
+ */
+ZmOrganizer.prototype.setGlobalMarkRead = function(globalMarkRead, callback, errorCallback, batchCmd) {
+	if (this.globalMarkRead == globalMarkRead) { return; }
+    // TODO: Bug 59559, awaiting server side implementation (Bug 24567)
+    // TODO: - For ZmFolderPropsDialog and ZmSharePropsDialog:
+    // TODO:     Make sure that the attrName is indeed globalMarkRead - used in the dialogs
+    // TODO:     Make the globalMarkRead labels and controls visible.
+    // TODO: - Uncomment this once the server call is ready, make sure action/attrs are correct
+	//this._organizerAction({action: "globalMarkRead", attrs: {globalMarkRead: globalMarkRead}, callback: callback,
+    //                       errorCallback: errorCallback, batchCmd: batchCmd});
+};

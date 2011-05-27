@@ -971,28 +971,32 @@ function(name, callback, errorCallback, batchCmd) {
 /**
  * Sets the color.
  * 
- * @param	{String}	color		the color
- * @param	{AjxCallback}	callback		the callback
- * @param	{AjxCallback}	errorCallback		the error callback
+ * @param	{String}	        color		    the color
+ * @param	{AjxCallback}	    callback		the callback
+ * @param	{AjxCallback}	    errorCallback   the error callback
+ * @param   {ZmBatchCommand}    batchCmd        optional batch command
  */
 ZmOrganizer.prototype.setColor =
-function(color, callback, errorCallback) {
+function(color, callback, errorCallback, batchCmd) {
 	var color = ZmOrganizer.checkColor(color);
 	if (this.color == color) { return; }
 
-	this._organizerAction({action: "color", attrs: {color: color}, callback: callback, errorCallback: errorCallback});
+	this._organizerAction({action: "color", attrs: {color: color}, callback: callback,
+                           errorCallback: errorCallback, batchCmd: batchCmd});
 };
 
 /**
  * Sets the RGB color.
  * 
- * @param	{Object}	rgb		the rgb
- * @param	{AjxCallback}	callback		the callback
- * @param	{AjxCallback}	errorCallback		the error callback
+ * @param	{Object}	        rgb		        the rgb
+ * @param	{AjxCallback}	    callback		the callback
+ * @param	{AjxCallback}	    errorCallback	the error callback
+ * @param   {ZmBatchCommand}    batchCmd        optional batch command
  */
-ZmOrganizer.prototype.setRGB = function(rgb, callback, errorCallback) {
+ZmOrganizer.prototype.setRGB = function(rgb, callback, errorCallback, batchCmd) {
 	if (this.rgb == rgb) { return; }
-	this._organizerAction({action: "color", attrs: {rgb: rgb}, callback: callback, errorCallback: errorCallback});
+	this._organizerAction({action: "color", attrs: {rgb: rgb}, callback: callback,
+                           errorCallback: errorCallback, batchCmd: batchCmd});
 };
 
 /**
@@ -1016,6 +1020,7 @@ function(color) {
 	}
 	return -1;
 };
+
 
 /**
  * Updates the folder. Although it is possible to use this method to change just about any folder
@@ -1783,7 +1788,7 @@ function(params) {
 	var actionLogItem = (!params.noUndo && actionController && actionController.actionPerformed({op: params.action, id: params.id || this.id, attrs: params.attrs})) || null;
 	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, [params, actionLogItem]);
 	if (params.batchCmd) {
-		params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
+		params.batchCmd.addNewRequestParams(soapDoc, respCallback, params.errorCallback);
 	} else {
 		var accountName;
 		if (appCtxt.multiAccounts) {
