@@ -684,12 +684,15 @@ function(node, args) {
 ZmMailMsg.prototype.load =
 function(params) {
 	// If we are already loaded, then don't bother loading
-	if (!this._loaded || params.forceLoad) {
+	if ((!this._loaded && !this._loading) || params.forceLoad) {
+		this._loading = true;
 		var respCallback = new AjxCallback(this, this._handleResponseLoad, [params, params.callback]);
 		params.getHtml = params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		params.sender = appCtxt.getAppController();
 		params.msgId = this.id;
 		params.callback = respCallback;
+		var errorCallback = new AjxCallback(this, this._handleResponseLoadFail, [params, params.errorCallback]);
+		params.errorCallback = errorCallback;
 		ZmMailMsg.fetchMsg(params);
 	} else {
 		this._markReadLocal(true);
@@ -701,6 +704,7 @@ function(params) {
 
 ZmMailMsg.prototype._handleResponseLoad =
 function(params, callback, result) {
+	this._loading = false;
 	var response = result.getResponse().GetMsgResponse;
 
 	this.clearAddresses();
@@ -724,6 +728,14 @@ function(params, callback, result) {
 		this._loadCallback.run(result);
 		this._loadCallback = null;
 	} else if (callback) {
+		callback.run(result);
+	}
+};
+
+ZmMailMsg.prototype._handleResponseLoadFail =
+function(params, callback, result) {
+	this._loading = false;
+	if (callback) {
 		callback.run(result);
 	}
 };
