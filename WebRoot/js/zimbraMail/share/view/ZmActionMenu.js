@@ -151,3 +151,17 @@ ZmActionMenu.prototype._menuItemId =
 function(menuItem) {
 	return menuItem.getData(ZmOperation.KEY_ID);
 };
+
+ZmActionMenu.prototype.removeMenuItemById =
+function(menuItemId) {
+    var mi = this.getMenuItem(menuItemId);
+    this.removeMenuItem(mi);
+};
+
+ZmActionMenu.prototype.removeMenuItem =
+function(menuItem) {
+    if (!menuItem) {return};
+    this.removeChild(menuItem);
+    menuItem.dispose();
+};
+

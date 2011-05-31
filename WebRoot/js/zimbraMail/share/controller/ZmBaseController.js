@@ -36,6 +36,9 @@ ZmBaseController = function(container, app) {
 	if (arguments.length == 0) { return; }
 	ZmController.call(this, container, app);
 
+    this._refreshQuickCommandsClosure = this._refreshQuickCommands.bind(this);
+    this._quickCommandMenuHandlerClosure = this._quickCommandMenuHandler.bind(this);
+
 	// hashes keyed by view type
 	this._view		= {};
 	this._toolbar	= {};	// ZmButtonToolbar
@@ -888,7 +891,9 @@ function(parent, num) {
 	var folder = (num > 0) && this._getSearchFolder();
 	if (folder && folder.isRemote()) {
 		parent.enable(ZmOperation.TAG_MENU, false);
-	}
+	};
+
+    this._resetQuickCommandOperations(parent);
 };
 
 /**
@@ -942,4 +947,99 @@ function(params) {
 		params.allDoneCallback();
 	}
 	ZmBaseController.showSummary(params.actionSummary, params.actionLogItem, params.closeChildWin);
+};
+
+ZmBaseController.prototype._quickCommandMenuHandler = function(evt, batchCmd) {
+    var selectedItems = this.getItems();
+    if (!selectedItems || !selectedItems.length) {return;}
+
+    var menuItem = evt.dwtObj;
+    var quickCommand = menuItem.getData(Dwt.KEY_OBJECT);
+    if (!quickCommand) {return;}
+
+    var actions = quickCommand.actions;
+    var len = actions.length;
+    for (var i = 0; i < len; i++) {
+        var action = actions[i];
+        if (!action.isActive) {continue;}
+        var actionValue = action.value;
+        if (action.type == ZmQuickCommandAction[ZmFilterRule.A_NAME_TAG]) {
+            if (actionValue) {
+                var tag = appCtxt.getById(actionValue);
+                if (tag) {
+                    this._doTag(selectedItems, tag, true);
+                }
+            }
+        } else if (action.type == ZmQuickCommandAction[ZmFilterRule.A_NAME_FLAG]) {
+            if (actionValue == "flagged" || actionValue == "unflagged") {
+                this._applyAction(selectedItems, "_doFlag", [actionValue == "flagged"]);
+            }
+
+        } else if (action.type == ZmQuickCommandAction[ZmFilterRule.A_NAME_FOLDER]) {
+            if (actionValue) {
+                var folder = appCtxt.getById(actionValue);
+                if (folder) {
+                    this._doMove(selectedItems, folder);
+                }
+            }
+        }
+    }
+};
+
+ZmBaseController.prototype._refreshQuickCommands = function(evt) {
+    if (!this._app) {return;}
+
+    var quickCommandType = ZmApp.QUICK_COMMAND_TYPE[this._app._name];
+    if (!quickCommandType) {return;}
+    
+    var quickCommand;
+    var quickCommandMenuItem = evt.dwtObj;
+    var quickCommands = ZmQuickCommands.getInstance().getQuickCommandsByItemType(quickCommandType, false);
+    var quickCommandSubMenu = quickCommandMenuItem.getMenu(true);
+    var existingMenuItems = quickCommandSubMenu.getMenuItems();
+    existingMenuItems = AjxUtil.hashCopy(existingMenuItems);
+
+    if (quickCommands) {
+        for (var i = 0; i < quickCommands.length; i++) {
+            quickCommand = quickCommands[i];
+
+            if (quickCommand.isActive) {
+                var mi = existingMenuItems[quickCommand.id];
+                if (!mi) {
+                    mi = quickCommandSubMenu.createMenuItem(quickCommand.id, {text:quickCommand.name});
+                    mi.setData(Dwt.KEY_OBJECT, quickCommand);
+                    mi.addSelectionListener(this._quickCommandMenuHandlerClosure);
+                } else {
+                    //refresh the object reference and the text.
+                    mi.setText(quickCommand.name);
+                    mi.setData(Dwt.KEY_OBJECT, quickCommand);
+                    delete existingMenuItems[quickCommand.id];
+                }
+            }
+        }
+    }
+
+    for (var quickCommandId in existingMenuItems) {
+        quickCommandSubMenu.removeMenuItemById(quickCommandId);
+    }
+};
+
+ZmBaseController.prototype._resetQuickCommandOperations = function(parent) {
+    if (!this._app) {return;}
+
+    var quickCommandType = ZmApp.QUICK_COMMAND_TYPE[this._app._name];
+    if (quickCommandType) {
+        var quickCommandMenuItem = parent.getOp(ZmOperation.QUICK_COMMANDS);
+        if (quickCommandMenuItem) {
+            var quickCommands = ZmQuickCommands.getInstance().getQuickCommandsByItemType(quickCommandType, false);
+            var quickCommandSubMenu = quickCommandMenuItem.getMenu(true);
+            if (!quickCommandSubMenu) {
+                //add listener and quickCommandSubMenu one time only
+                quickCommandMenuItem.addListener(DwtEvent.ONMOUSEOVER, this._refreshQuickCommandsClosure);
+                quickCommandSubMenu = new ZmActionMenu({parent:parent, menuItems:ZmOperation.NONE});
+                quickCommandMenuItem.setMenu(quickCommandSubMenu);
+            }
+            parent.enable(ZmOperation.QUICK_COMMANDS, (quickCommands && quickCommands.length));
+        }
+    }
 };

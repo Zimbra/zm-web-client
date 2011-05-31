@@ -2456,3 +2456,76 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
     </div>
     <$ } $>
 </template>
+
+<template id='prefs.Pages#QuickCommandList'>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.quickCommands$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr>
+			<td class='ZOptionsSectionMain'>
+				<table width=100% cellpadding=0>
+					<tr>
+						<td><div id='${id}_toolbar' tabindex='20'></div></td>
+					</tr>
+					<tr>
+						<td><div id='${id}_list' tabindex='30'></div></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<template id='prefs.Pages#QuickCommandDialog'>
+    <div style="height:400px; width:450px">
+        <table style='width:100%; height:100px'>
+            <tr>
+                <td width='1%' nowrap><$=ZmMsg.quickCommandNameLabel$></td>
+                <td>
+                    <input id='${id}_name' type='text' style="width:100px" tabindex='10' maxlength='25'>
+                </td>
+                <td width='1%' style='text-align:right; white-space:nowrap;'>
+                    <input id='${id}_active' type='checkbox' name='cbActive' tabindex='20'>
+                    <$=ZmMsg.active$>
+                </td>
+            </tr>
+            <tr>
+                <td width='1%' nowrap><$=ZmMsg.description$></td>
+                <td colspan="2"><input id='${id}_description' type='text' style="width:250px" tabindex='15'maxlength='100'></td>
+            </tr>
+            <tr>
+                <td width='1%' nowrap><$=ZmMsg.itemType$></td>
+                <td colspan="2" id="${id}_itemTypeContainer"></td>
+            </tr>
+        </table>
+
+        <div style='width:100%; height:350px'>
+            <div style='margin-bottom:5px; vertical-align:bottom'>
+                <p style='color:#555555; float:left'><$=ZmMsg.quickCommandActions$></p>
+                <div id="${id}_addButtonContainer" style='float:right'></div>
+            </div>
+        
+            <fieldset class='FilterRuleSection' style='width:417px; height:250px; clear:both'>
+                <div style='overflow-x:hidden; overflow-y:scroll; height:100%'>
+                    <table id='${id}_actions' width='100%' border=0 cellpadding=0 cellspacing=0 tabindex='50'>
+                        <tbody id="${id}_actionsTbody"></tbody>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</template>
+
+<template id='prefs.Pages#QuickCommandDialogActionRow'>
+    <tr style='width:100%' id='${id}'>
+        <td style='padding:4px' id='${id}_activeContainer'></td>
+        <td style='padding:4px' id='${id}_typeContainer'></td>
+        <td style='padding:4px' id='${id}_valueContainer'></td>
+        <td style='padding:4px' nowrap=nowrap' id='${id}_buttonsContainer'></td>
+    </tr>
+</template>

@@ -34,7 +34,7 @@
  */
 ZmCalViewController = function(container, calApp) {
 	ZmListController.call(this, container, calApp);
-
+    
 	var apptListener = new AjxListener(this, this._handleApptRespondAction);
 	var apptEditListener = new AjxListener(this, this._handleApptEditRespondAction);
 
@@ -2630,7 +2630,9 @@ function(parent, num) {
 	var op = ZmCalViewController.VIEW_TO_OP[currViewName];
 	if (op) {
 		parent.enable(op, false);
-	}
+	};
+
+    this._resetQuickCommandOperations(parent);
 };
 
 ZmCalViewController.prototype._listSelectionListener =
@@ -2922,6 +2924,7 @@ function(recurrenceMode) {
 	}
 	retVal.push(ZmOperation.TAG_MENU);
 	retVal.push(ZmOperation.SHOW_ORIG);
+    retVal.push(ZmOperation.QUICK_COMMANDS);
 	return retVal;
 };
 

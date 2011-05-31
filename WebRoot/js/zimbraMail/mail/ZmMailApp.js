@@ -919,7 +919,8 @@ function() {
 							  trashViewOp:			ZmOperation.SHOW_ONLY_MAIL,
 							  chooserSort:			10,
 							  defaultSort:			10,
-							  upsellUrl:			ZmSetting.MAIL_UPSELL_URL
+							  upsellUrl:			ZmSetting.MAIL_UPSELL_URL,
+                              quickCommandType:		ZmQuickCommand[ZmId.ITEM_MSG]
 							  });
 };
 

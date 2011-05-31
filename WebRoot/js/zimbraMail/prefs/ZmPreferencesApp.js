@@ -46,7 +46,7 @@ ZmEvent.S_PREF_BACKUP				= "PREF_BACKUP";
 /**
  * Defines the "preferences" application.
  */
-ZmApp.PREFERENCES					= ZmId.APP_PREFERENCES;
+ZmApp.PREFERENCES					= ZmId.APP_PREFERENCES; 
 ZmApp.CLASS[ZmApp.PREFERENCES]		= "ZmPreferencesApp";
 ZmApp.SETTING[ZmApp.PREFERENCES]	= ZmSetting.OPTIONS_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.PREFERENCES]	= 10;
@@ -209,6 +209,10 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_MOBILE_SUSPEND_SYNC, {textKey:"mobileSuspendSync", image:"Offline"});
 	ZmOperation.registerOp(ZmId.OP_MOBILE_WIPE, {textKey:"mobileWipe", image:"MobileWipe"}, ZmSetting.MOBILE_POLICY_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOBILE_CANCEL_WIPE, {textKey:"mobileWipeCancel", image:"MobileWipeCancel"}, ZmSetting.MOBILE_POLICY_ENABLED);
+
+    ZmOperation.registerOp(ZmId.OP_ADD_QUICK_COMMAND, {textKey:"quickCommandAdd", image:"Plus"}, ZmSetting.FILTERS_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_EDIT_QUICK_COMMAND, {textKey:"quickCommandEdit", image:"Edit"}, ZmSetting.FILTERS_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_REMOVE_QUICK_COMMAND, {textKey:"quickCommandRemove", image:"Delete"}, ZmSetting.FILTERS_ENABLED);
 };
 
 ZmPreferencesApp.prototype._registerSettings =
@@ -221,6 +225,7 @@ function(settings) {
 	settings.registerSetting("PREF_SECTIONS",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_HASH, isGlobal:true});
 	settings.registerSetting("SIGNATURE_MAX_LENGTH",		{name:"zimbraMailSignatureMaxLength", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1024});
 	settings.registerSetting("DISCARD_IN_FILTER_ENABLED",	{name:"zimbraFeatureDiscardInFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+    settings.registerSetting("QUICK_COMMAND_LIST",			{name:"zimbraPrefQuickCommand", type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
 };
 
 ZmPreferencesApp.prototype._registerApp =
@@ -370,6 +375,21 @@ function() {
             createView: function(parent, section, controller) {
 				return new ZmZimletsPage(parent, section, controller);
 			}
+		},
+		QUICKCOMMANDS: {
+			parentId: "MAIL",
+			icon: "QuickCommand",
+			title: ZmMsg.quickCommands,
+			templateId: "prefs.Pages#QuickCommandList",
+			priority: 60,
+			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.FILTERS_ENABLED)),
+			prefs: [
+				ZmSetting.QUICK_COMMAND_LIST
+			],
+			manageChanges: true,
+			createView: function(parent, section, controller) {
+				return new ZmQuickCommandPage(parent, section, controller, new ZmQuickCommandListViewController());
+			}
 		}
 	};
     if (appCtxt.isOffline) {
@@ -430,6 +450,10 @@ function() {
                              "Georgia", "Helvetica", "Impact", "Lucida Console", "Symbol", "Tahoma", "Terminal", "Times New Roman", "Trebuchet MS",
                              "Verdana","Webdings","Wingdings"],
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
+	});
+
+    ZmPref.registerPref("QUICK_COMMAND_LIST", {
+		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
 
 	// Yuck: Should add functionality in Pref. to add prefix/postfix to all options. Meanwhile...

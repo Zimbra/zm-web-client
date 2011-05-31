@@ -526,7 +526,8 @@ function() {
 							  newActionCode:		ZmKeyMap.NEW_APPT,
 							  chooserSort:			30,
 							  defaultSort:			20,
-							  upsellUrl:			ZmSetting.CALENDAR_UPSELL_URL
+							  upsellUrl:			ZmSetting.CALENDAR_UPSELL_URL,
+                              quickCommandType:		ZmQuickCommand[ZmId.ITEM_APPOINTMENT]
 							  });
 };
 

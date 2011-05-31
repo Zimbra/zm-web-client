@@ -339,6 +339,8 @@ function() {
 				ZmOperation.DELETE,
 				ZmOperation.MOVE,
 				ZmOperation.PRINT_CONTACT);
+    list.push(ZmOperation.QUICK_COMMANDS);
+
 	return list;
 };
 
@@ -710,7 +712,9 @@ function(parent, num) {
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
 		parent.enable([ZmOperation.NEW_MESSAGE, printOp], num > 0);
 		parent.enable(ZmOperation.CONTACT, num == 1);
-	}
+	};
+
+    this._resetQuickCommandOperations(parent);
 };
 
 

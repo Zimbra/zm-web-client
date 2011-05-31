@@ -352,7 +352,8 @@ function() {
 							  trashViewOp:			ZmOperation.SHOW_ONLY_CONTACTS,
 							  chooserSort:			20,
 							  defaultSort:			40,
-							  upsellUrl:			ZmSetting.CONTACTS_UPSELL_URL
+							  upsellUrl:			ZmSetting.CONTACTS_UPSELL_URL,
+							  quickCommandType:		ZmQuickCommand[ZmId.ITEM_CONTACT]
 							  });
 };
 

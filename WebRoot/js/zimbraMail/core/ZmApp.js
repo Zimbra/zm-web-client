@@ -101,6 +101,7 @@ ZmApp.OPS_R					= {};	// map of operation ID to app
 ZmApp.QS_VIEWS				= {};	// list of views to handle in query string
 ZmApp.TRASH_VIEW_OP			= {};	// menu choice for "Show Only ..." in Trash view
 ZmApp.UPSELL_URL			= {};	// URL for content of upsell
+ZmApp.QUICK_COMMAND_TYPE	= {};	
 ZmApp.DROP_TARGETS			= {};	// drop targets (organizers) by item/organizer type
 
 // assistants for each app; each value is a hash where key is the name of the
@@ -189,6 +190,7 @@ function(app, params) {
 	if (params.defaultSort)			{ ZmApp.DEFAULT_SORT[app]		= params.defaultSort; }
 	if (params.trashViewOp)			{ ZmApp.TRASH_VIEW_OP[app]		= params.trashViewOp; }
 	if (params.upsellUrl)			{ ZmApp.UPSELL_URL[app]			= params.upsellUrl; }
+	if (params.quickCommandType)	{ ZmApp.QUICK_COMMAND_TYPE[app]	= params.quickCommandType; }
 
 	if (params.searchTypes) {
 		ZmApp.SEARCH_TYPES_R[app] = {};
@@ -232,6 +234,10 @@ function(app, params) {
 			ZmApp.QS_VIEWS[params.qsViews[i]] = app;
 		}
 	}
+
+    if (params.quickCommandType) {
+        ZmQuickCommand.itemTypes.push(params.quickCommandType);
+    }
 };
 
 

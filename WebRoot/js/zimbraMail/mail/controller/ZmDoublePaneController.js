@@ -69,7 +69,6 @@ function() {
  */
 ZmDoublePaneController.prototype.show =
 function(search, item, callback, markRead) {
-
 	ZmMailListController.prototype.show.call(this, search);
 
 	if (this._doublePaneView) {
@@ -239,6 +238,7 @@ function() {
     if(appCtxt.get(ZmSetting.TASKS_ENABLED)) {
         list.push(ZmOperation.CREATE_TASK);        
     }
+    list.push(ZmOperation.QUICK_COMMANDS);
 	return list;
 };
 

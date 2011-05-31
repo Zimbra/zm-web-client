@@ -1918,3 +1918,30 @@ function() {
 	var id = this._getActiveSearchFolderId();
 	return id && appCtxt.getById(id);
 };
+
+ZmMailListController.prototype._quickCommandMenuHandler = function(evt, batchCmd) {
+    var selectedItems = this.getItems();
+
+    ZmListController.prototype._quickCommandMenuHandler.call(this, evt);
+
+    if (!selectedItems || !selectedItems.length) {return;}
+
+    var menuItem = evt.dwtObj;
+    var quickCommand = menuItem.getData(Dwt.KEY_OBJECT);
+    if (!quickCommand) {return;}
+            
+    var actions = quickCommand.actions;
+    var len = actions.length;
+    for (var i = 0; i < len; i++) {
+        var action = actions[i];
+        if (!action.isActive) {continue;}
+        var actionValue = action.value;
+        if (action.type == ZmQuickCommandAction[ZmFilterRule.A_NAME_FORWARD]) {
+
+        } else if (action.type == ZmQuickCommandAction[ZmFilterRule.A_NAME_FLAG]) {
+            if (actionValue == "read" || actionValue == "unread") {
+                this._doMarkRead(selectedItems, (actionValue == "read"));
+            }
+        }
+    }
+};
