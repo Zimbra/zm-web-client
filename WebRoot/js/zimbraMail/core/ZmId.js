@@ -645,6 +645,9 @@ ZmId.MV_TAG_ROW				= "_tagRow";			// TR for tags
 ZmId.MV_TAG_CELL			= "_tagCell";			// TD for tags
 ZmId.MV_MSG_BODY			= "_body";				// DIV that contains content iframe
 
+ZmId.MV_PRIORITY			= "_msgPriority";
+
+
 /*
  * ------------
  * Compose view

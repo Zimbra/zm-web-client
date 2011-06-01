@@ -1240,6 +1240,12 @@ function(msg, container, callback) {
 		attachmentsCount:	attachmentsCount
 	};
 
+	if (msg.isHighPriority || msg.isLowPriority) {
+		subs.priority =			msg.isHighPriority ? "high" : "low";
+		subs.priorityImg =		msg.isHighPriority ? "ImgPriorityHigh_list" : "ImgPriorityLow_list";
+		subs.priorityDivId =	ZmId.getViewId(this._view, ZmId.MV_PRIORITY);
+	}
+
 	if (invite && !invite.isEmpty() && this._inviteMsgView) {
 		this._inviteMsgView.addSubs(subs, sentBy, sentByAddr, sender ? addr : null);
 	}
@@ -1716,9 +1722,16 @@ function() {
 
 ZmMailMsgView.prototype.getToolTipContent =
 function(evt) {
+
+	var tgt = DwtUiEvent.getTarget(evt, false);
+
+	//see if this is the priority icon. If so, it has a "priority" attribute high/low.
+	if (tgt.id == ZmId.getViewId(this._view, ZmId.MV_PRIORITY)) {
+		return tgt.getAttribute('priority') =='high' ? ZmMsg.highPriorityTooltip : ZmMsg.lowPriorityTooltip;
+	}
+	
     if (!this._attachmentLinkIdToFileNameMap) {return null};
 
-    var tgt = DwtUiEvent.getTarget(evt, false);
     if (tgt && tgt.nodeName.toLowerCase() == "a") {
         var id = tgt.getAttribute("id");
         if (id) {
