@@ -38,7 +38,7 @@ function(list) {
 ZmTaskMgr.prototype.getReminderController =
 function() {
 	if (!this._reminderController) {
-		this._reminderController = new ZmReminderController(this);
+		this._reminderController = new ZmReminderController(this, "task");
 	}
 	return this._reminderController;
 };

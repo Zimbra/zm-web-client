@@ -134,7 +134,7 @@ function(list) {
 ZmCalMgr.prototype.getReminderController =
 function() {
 	if (!this._reminderController) {
-		this._reminderController = new ZmReminderController(this);
+		this._reminderController = new ZmReminderController(this, "appt");
 	}
 	return this._reminderController;
 };
