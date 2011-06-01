@@ -1738,7 +1738,3 @@ function() {
 	}
 	return this._toolTipMgr;
 };
-
-ZmAppCtxt.prototype.prepareQuickCommands = function() {
-	AjxDispatcher.require(["PreferencesCore", "Preferences"]);
-};
