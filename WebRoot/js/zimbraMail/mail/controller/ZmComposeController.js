@@ -777,7 +777,7 @@ function(map) {
  */
 ZmComposeController.prototype.getSelectedSignature =
 function() {
-	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
+	var button = this._getSignatureButton();
 	var menu = button ? button.getMenu() : null;
 	if (menu) {
 		var menuitem = menu.getSelectedItem(DwtMenuItem.RADIO_STYLE);
@@ -792,7 +792,7 @@ function() {
  */
 ZmComposeController.prototype.setSelectedSignature =
 function(value) {
-	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
+	var button = this._getSignatureButton();
 	var menu = button ? button.getMenu() : null;
 	if (menu) {
 		menu.checkItem(ZmComposeController.SIGNATURE_KEY, value, true);
@@ -900,11 +900,12 @@ function(params) {
 
 	this._initializeToolBar();
 	this.resetToolbarOperations();
+	this._setOptionsMenu();
+
+	cv.set(params);
 
 	this._setAddSignatureVisibility();
 
-	cv.set(params);
-	this._setOptionsMenu();
 
     if (params.readReceipt) {
         var menu = this._optionsMenu[this._action];
@@ -965,9 +966,6 @@ function() {
 	if (!appCtxt.isOffline) {
 		buttons.push(ZmOperation.SEP, ZmOperation.SPELL_CHECK);
 	}
-	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
-		buttons.push(ZmOperation.SEP, ZmOperation.ADD_SIGNATURE);
-	}
 	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_OPTIONS, ZmOperation.FILLER);
 
 	if (appCtxt.get(ZmSetting.DETACH_COMPOSE_ENABLED) && !appCtxt.isChildWindow) {
@@ -987,8 +985,6 @@ function() {
 			tb.addSelectionListener(button, this._listeners[button]);
 		}
 	}
-
-	this._setAddSignatureVisibility();
 
 	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED) || appCtxt.multiAccounts) {
 		var sc = appCtxt.getSignatureCollection();
@@ -1069,14 +1065,34 @@ function() {
 	}
 };
 
+ZmComposeController.prototype._getOptionsMenu =
+function() {
+	return this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS).getMenu();
+};
+
+
+/**
+ * returns the signature button - not exactly a button but a menu item in the options menu, that has a sub-menu attached to it.
+ */
+ZmComposeController.prototype._getSignatureButton =
+function() {
+	return this._getOptionsMenu().getItemById(ZmPopupMenu.MENU_ITEM_ID_KEY, ZmOperation.ADD_SIGNATURE);
+};
+
 ZmComposeController.prototype._setAddSignatureVisibility =
 function(account) {
 	var ac = window.parentAppCtxt || window.appCtxt;
-	var button = ac.get(ZmSetting.SIGNATURES_ENABLED, null, account) &&
-				 this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
-	if (button) {
-		button.setVisible(appCtxt.getSignatureCollection(account).getSize() > 0);
+	if (!ac.get(ZmSetting.SIGNATURES_ENABLED, null, account)) {
+		return;
 	}
+	
+	var button = this._getSignatureButton();
+
+	var visible = ac.getSignatureCollection(account).getSize() > 0;
+
+	button.setVisible(visible);
+	var sep = this._getOptionsMenu().getItem(button.index - 1); //hide/show the separator too
+	sep.setVisible(visible);	
 };
 
 ZmComposeController.prototype._createOptionsMenu =
@@ -1106,6 +1122,10 @@ function(action) {
     if (isReply || isForward || isCalReply) {
         list.push(ZmOperation.SEP, ZmOperation.USE_PREFIX, ZmOperation.INCLUDE_HEADERS);
     }
+
+	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
+		list.push(ZmOperation.SEP, ZmOperation.ADD_SIGNATURE);
+	}
 
 	// add read receipt
 	if (ac.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED, null, ac.getActiveAccount())) {
@@ -1886,7 +1906,7 @@ ZmComposeController.prototype._createSignatureMenu =
 function(button, account) {
 	if (!this._composeView) { return null; }
 
-	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
+	var button = this._getSignatureButton();
 	if (!button) { return null; }
 
 	var menu;
@@ -1921,7 +1941,7 @@ function(ev) {
  */
 ZmComposeController.prototype.resetSignatureToolbar =
 function(selected, account) {
-	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
+	var button = this._getSignatureButton();
 	var menu = button && this._createSignatureMenu(null, account);
 	if (menu) {
 		button.setMenu(menu);
