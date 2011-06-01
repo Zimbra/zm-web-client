@@ -53,6 +53,8 @@ ZmContactList = function(search, isGal, type) {
 	this._emailToContact = this._app._byEmail;
 	this._imAddressToContact = this._app._byIM;
 	this._phoneToContact = this._app._byPhone;
+
+	this._alwaysUpdateHashes = true; // Should we update the phone & IM fast-lookup hashes even when account features don't require it? (bug #60411)
 };
 
 ZmContactList.prototype = new ZmList;
@@ -671,7 +673,7 @@ function(contact, doAdd) {
 	}
 
 	// Update phone hash.
-	if (appCtxt.get(ZmSetting.VOICE_ENABLED)) {
+	if (appCtxt.get(ZmSetting.VOICE_ENABLED) || this._alwaysUpdateHashes) {
 		for (var index = 0; index < ZmContact.PHONE_FIELDS.length; index++) {
 			var field = ZmContact.PHONE_FIELDS[index];
 			for (var i = 1; true; i++) {
@@ -691,7 +693,7 @@ function(contact, doAdd) {
 	}
 
 	// Update IM hash.
-	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
+	if (appCtxt.get(ZmSetting.IM_ENABLED) || this._alwaysUpdateHashes) {
 		for (var index = 0; index < ZmContact.IM_FIELDS.length; index++) {
 			var field = ZmContact.IM_FIELDS[index];
 			for (var i = 1; true; i++) {
