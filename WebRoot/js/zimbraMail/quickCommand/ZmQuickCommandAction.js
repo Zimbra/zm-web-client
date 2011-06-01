@@ -67,18 +67,32 @@ function(newId, actionType) {
     return new ZmQuickCommandAction(newId, actionType, "");
 };
 
-ZmQuickCommandAction.VALUE_TYPE_FORWARD = ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD];
-ZmQuickCommandAction.VALUE_TYPE_TAG     = ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG];
-ZmQuickCommandAction.VALUE_TYPE_FLAG    = {
-	param:				ZmFilterRule.TYPE_SELECT,
-	pOptions:			[{label: ZmMsg.read, value: "read"}, {label: ZmMsg.unread, value: "unread"}, {label: ZmMsg.flagged, value: "flagged"}, {label: ZmMsg.unflagged, value: "unflagged"}]
-};
-ZmQuickCommandAction.VALUE_TYPE_FOLDER  = ZmFilterRule.ACTIONS[ZmFilterRule.A_FOLDER];
 
-ZmQuickCommandAction[ZmFilterRule.A_NAME_FORWARD] = {id:ZmFilterRule.A_NAME_FORWARD , label:ZmMsg.forwardToAddress, valueType:ZmQuickCommandAction.VALUE_TYPE_FORWARD};
-ZmQuickCommandAction[ZmFilterRule.A_NAME_TAG]     = {id:ZmFilterRule.A_NAME_TAG     , label:ZmMsg.tagWith         , valueType:ZmQuickCommandAction.VALUE_TYPE_TAG};
-ZmQuickCommandAction[ZmFilterRule.A_NAME_FLAG]    = {id:ZmFilterRule.A_NAME_FLAG    , label:ZmMsg.mark            , valueType:ZmQuickCommandAction.VALUE_TYPE_FLAG};
-ZmQuickCommandAction[ZmFilterRule.A_NAME_FOLDER]  = {id:ZmFilterRule.A_NAME_FOLDER  , label:ZmMsg.moveIntoFolder  , valueType:ZmQuickCommandAction.VALUE_TYPE_FOLDER};
+ZmQuickCommandAction.TYPE_SELECT          = "SELECT";
+ZmQuickCommandAction.TYPE_FOLDER_PICKER	  = "FOLDER_PICKER";
+ZmQuickCommandAction.TYPE_INPUT	          = "INPUT";
+ZmQuickCommandAction.TYPE_TAG_PICKER      = "TAG_PICKER";
+
+ZmQuickCommandAction.A_NAME_FORWARD	= "actionRedirect";
+ZmQuickCommandAction.A_NAME_TAG		= "actionTag";
+ZmQuickCommandAction.A_NAME_FLAG	= "actionFlag";
+ZmQuickCommandAction.A_NAME_FOLDER	= "actionFileInto";
+
+
+//define value types
+ZmQuickCommandAction.VALUE_TYPE_FORWARD = {param:ZmQuickCommandAction.TYPE_INPUT};
+ZmQuickCommandAction.VALUE_TYPE_TAG     = {param:ZmQuickCommandAction.TYPE_TAG_PICKER};
+ZmQuickCommandAction.VALUE_TYPE_FLAG    = {
+	param   :ZmQuickCommandAction.TYPE_SELECT,
+	pOptions:[{label: ZmMsg.read, value: "read"}, {label: ZmMsg.unread, value: "unread"}, {label: ZmMsg.flagged, value: "flagged"}, {label: ZmMsg.unflagged, value: "unflagged"}]
+};
+ZmQuickCommandAction.VALUE_TYPE_FOLDER  = {param:ZmQuickCommandAction.TYPE_FOLDER_PICKER};
+
+
+ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FORWARD] = {id:ZmQuickCommandAction.A_NAME_FORWARD , label:ZmMsg.forwardToAddress, valueType:ZmQuickCommandAction.VALUE_TYPE_FORWARD};
+ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_TAG]     = {id:ZmQuickCommandAction.A_NAME_TAG     , label:ZmMsg.tagWith         , valueType:ZmQuickCommandAction.VALUE_TYPE_TAG};
+ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FLAG]    = {id:ZmQuickCommandAction.A_NAME_FLAG    , label:ZmMsg.mark            , valueType:ZmQuickCommandAction.VALUE_TYPE_FLAG};
+ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FOLDER]  = {id:ZmQuickCommandAction.A_NAME_FOLDER  , label:ZmMsg.moveIntoFolder  , valueType:ZmQuickCommandAction.VALUE_TYPE_FOLDER};
 
 ZmQuickCommandAction.getActionTypeByActionTypeId = function(actionTypeId) {
     if (!actionTypeId) {return null;}

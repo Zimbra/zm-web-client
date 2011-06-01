@@ -290,7 +290,7 @@ ZmQuickCommandDialog.prototype._createValueTypeControl = function(actionType, ac
         var valueType = actionType.valueType;
         var controlType = valueType.param;
         var organizer;
-        if (controlType == ZmFilterRule.TYPE_FOLDER_PICKER) {
+        if (controlType == ZmQuickCommandAction.TYPE_FOLDER_PICKER) {
             var folderTree = appCtxt.getFolderTree();
             if (folderTree && actionValue) {
                 organizer = folderTree.getById(actionValue, true);
@@ -305,7 +305,7 @@ ZmQuickCommandDialog.prototype._createValueTypeControl = function(actionType, ac
             rowDetails.valueControlFolderPicker = valueControlFolderPicker;
             valueControlFolderPicker.setData(ZmQuickCommandDialog.ROW_ID, rowId);
 
-        } else if (controlType == ZmFilterRule.TYPE_TAG_PICKER) {
+        } else if (controlType == ZmQuickCommandAction.TYPE_TAG_PICKER) {
             var tagTree = appCtxt.getTagTree();
             if (tagTree && actionValue) {
                 organizer = tagTree.getById(actionValue);
@@ -320,7 +320,7 @@ ZmQuickCommandDialog.prototype._createValueTypeControl = function(actionType, ac
             rowDetails.valueControlTagPicker = valueControlTagPicker;
             valueControlTagPicker.setData(ZmQuickCommandDialog.ROW_ID, rowId);
 
-        } else if (controlType == ZmFilterRule.TYPE_SELECT) {
+        } else if (controlType == ZmQuickCommandAction.TYPE_SELECT) {
             var valueControlSelect = new DwtSelect({parent:this, parentElement:rowDetails.idValueContainer});
             var options = valueType.pOptions;
             for (var i = 0; i < options.length; i++) {
@@ -333,7 +333,7 @@ ZmQuickCommandDialog.prototype._createValueTypeControl = function(actionType, ac
             rowDetails.valueControlSelect = valueControlSelect;
             valueControlSelect.setData(ZmQuickCommandDialog.ROW_ID, rowId);
 
-        } else if (controlType == ZmFilterRule.TYPE_INPUT) {
+        } else if (controlType == ZmQuickCommandAction.TYPE_INPUT) {
             var valueControlTextInput = new DwtInputField({parent:this, type:DwtInputField.STRING, initialValue:actionValue, parentElement:rowDetails.idValueContainer});
             rowDetails.valueControlTextInput = valueControlTextInput;
             valueControlTextInput.setData(ZmQuickCommandDialog.ROW_ID, rowId);
@@ -497,16 +497,16 @@ ZmQuickCommandDialog.prototype._getUIData = function() {
 
             var value = null;
             var controlType = action.type.valueType.param;
-            if (controlType == ZmFilterRule.TYPE_FOLDER_PICKER) {
+            if (controlType == ZmQuickCommandAction.TYPE_FOLDER_PICKER) {
                 value = rowDetails.valueControlFolderPicker.getData(ZmFilterRuleDialog.DATA);
 
-            } else if (controlType == ZmFilterRule.TYPE_INPUT) {
+            } else if (controlType == ZmQuickCommandAction.TYPE_INPUT) {
                 value = rowDetails.valueControlTextInput.getValue();
 
-            } else if (controlType == ZmFilterRule.TYPE_TAG_PICKER) {
+            } else if (controlType == ZmQuickCommandAction.TYPE_TAG_PICKER) {
                 value = rowDetails.valueControlTagPicker.getData(ZmFilterRuleDialog.DATA);
 
-            } else if (controlType == ZmFilterRule.TYPE_SELECT) {
+            } else if (controlType == ZmQuickCommandAction.TYPE_SELECT) {
                 value = rowDetails.valueControlSelect.getValue();
             }
             action.value = value;

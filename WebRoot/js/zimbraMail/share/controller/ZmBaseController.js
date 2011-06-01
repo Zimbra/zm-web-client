@@ -963,19 +963,19 @@ ZmBaseController.prototype._quickCommandMenuHandler = function(evt, batchCmd) {
         var action = actions[i];
         if (!action.isActive) {continue;}
         var actionValue = action.value;
-        if (action.type == ZmQuickCommandAction[ZmFilterRule.A_NAME_TAG]) {
+        if (action.type == ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_TAG]) {
             if (actionValue) {
                 var tag = appCtxt.getById(actionValue);
                 if (tag) {
                     this._doTag(selectedItems, tag, true);
                 }
             }
-        } else if (action.type == ZmQuickCommandAction[ZmFilterRule.A_NAME_FLAG]) {
+        } else if (action.type == ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FLAG]) {
             if (actionValue == "flagged" || actionValue == "unflagged") {
                 this._applyAction(selectedItems, "_doFlag", [actionValue == "flagged"]);
             }
 
-        } else if (action.type == ZmQuickCommandAction[ZmFilterRule.A_NAME_FOLDER]) {
+        } else if (action.type == ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FOLDER]) {
             if (actionValue) {
                 var folder = appCtxt.getById(actionValue);
                 if (folder) {
