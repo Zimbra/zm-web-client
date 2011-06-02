@@ -51,7 +51,6 @@ AjxPackage.require("ajax.util.AjxTimezone");
 AjxPackage.require("ajax.dwt.core.Dwt");
 AjxPackage.require("ajax.dwt.core.DwtException");
 AjxPackage.require("ajax.dwt.core.DwtDraggable");
-AjxPackage.require("ajax.dwt.core.DwtDragTracker");
 
 AjxPackage.require("ajax.dwt.graphics.DwtCssStyle");
 AjxPackage.require("ajax.dwt.graphics.DwtPoint");
