@@ -1119,7 +1119,7 @@ function(view, firstTime) {
 			menu = new ZmPopupMenu(btn);
 			btn.setMenu(menu);
 
-            this._setupPreviewPaneMenu(menu);
+            this._setupPreviewPaneMenu(menu, btn);
 		}
 	}
 
@@ -1132,7 +1132,7 @@ function(view, firstTime) {
 };
 
 ZmBriefcaseController.prototype._setupPreviewPaneMenu =
-function(menu){
+function(menu, btn){
 
     if (menu.getItemCount() > 0) {
 		new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE, id:"PREVIEW_SEPERATOR"});
@@ -1151,6 +1151,7 @@ function(menu){
 			mi.addSelectionListener(new AjxListener(this, this._previewPaneListener, id));
 			if (id == pref) {
 				mi.setChecked(true, true);
+				btn.setImage(mi.getImage());
 			}
 		}
 	}
@@ -1206,6 +1207,12 @@ function(newPreviewStatus){
     appCtxt.set(ZmSetting.READING_PANE_LOCATION_BRIEFCASE, newPreviewStatus);
     var lv = this._parentView[this._currentView];
     lv.resetPreviewPane(newPreviewStatus, oldPreviewStatus);
+	//update view button icon to reflect current selection
+	var btn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
+	if (btn) {
+		btn.setImage(ZmBriefcaseController.PREVIEW_PANE_ICON[newPreviewStatus]);
+	}
+
 };
 
 ZmBriefcaseController.CONVERTABLE = {
