@@ -547,6 +547,17 @@ function(){
     return AjxMessageFormat.format(ZmMsg.revisionNotes, [this.version, (this.notes || "")]);
 };
 
+/**
+ * Gets the normalized item id by splitting it from a/c id if any associated
+ *
+ * @return	{Int}	normalized item id
+ */
+ZmBriefcaseItem.prototype.getNormalizedItemId =
+function(){
+    if(!this.getBriefcaseFolder().isShared()){return this.id;}
+    return AjxStringUtil.split(this.id,':')[1];
+};
+
 ZmBriefcaseFolderItem = function(folder) {
 
 	ZmBriefcaseItem.call(this, folder.id, null, true);

@@ -778,6 +778,20 @@ function() {
 	return url;
 };
 
+/**
+ * Gets the OWNER'S REST URL,used to fetch resturl of shared folders.
+ *
+ * @return	{String}	the URL
+ */
+ZmOrganizer.prototype.getOwnerRestUrl =
+function(){
+  var restUrl=this.restUrl;
+  var path = AjxStringUtil.urlEncode(this.oname).replace("#","%23");
+
+  // return REST URL as seen by the GetInfoResponse
+  return ([restUrl, "/", path].join(""));
+};
+
 ZmOrganizer.prototype._generateRestUrl =
 function() {
 	var loc = document.location;
