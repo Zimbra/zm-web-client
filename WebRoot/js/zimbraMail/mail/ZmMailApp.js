@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -79,6 +79,11 @@ ZmMailApp.DEFAULT_MAX_MESSAGE_SIZE			= 250000;
 ZmMailApp.POP_DOWNLOAD_SINCE_ALL			= 0;
 ZmMailApp.POP_DOWNLOAD_SINCE_NO_CHANGE		= 1;
 ZmMailApp.POP_DOWNLOAD_SINCE_FROM_NOW		= 2;
+
+ZmMailApp.POP_DELETE_OPTION_KEEP            = "keep";
+ZmMailApp.POP_DELETE_OPTION_READ            = "read";
+ZmMailApp.POP_DELETE_OPTION_TRASH           = "trash";
+ZmMailApp.POP_DELETE_OPTION_HARD_DELETE     = "delete";
 
 ZmMailApp.SEND_RECEIPT_NEVER				= "never";
 ZmMailApp.SEND_RECEIPT_ALWAYS				= "always";
@@ -189,7 +194,8 @@ function(settings) {
 	settings.registerSetting("MAIL_NOTIFY_BROWSER",				{name:"zimbraPrefMailFlashTitle", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("MAIL_NOTIFY_TOASTER",				{name:"zimbraPrefMailToasterEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("MAIL_PRIORITY_ENABLED",			{name:"zimbraFeatureMailPriorityEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	settings.registerSetting("MAIL_READ_RECEIPT_ENABLED",		{name:"zimbraFeatureReadReceiptsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("MAIL_PRIORITYINBOX_ENABLED",      {name:"zimbraFeatureMailPriorityInboxEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOLLeAN, defaultValue:true});
+    settings.registerSetting("MAIL_READ_RECEIPT_ENABLED",		{name:"zimbraFeatureReadReceiptsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("MAIL_SEND_READ_RECEIPTS",			{name:"zimbraPrefMailSendReadReceipts", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:"never"});
 	settings.registerSetting("MAIL_WHITELIST",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_LIST});
 	settings.registerSetting("MAIL_WHITELIST_MAX_NUM_ENTRIES",	{name:"zimbraMailWhitelistMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue:100});
@@ -202,9 +208,13 @@ function(settings) {
 	settings.registerSetting("OPEN_MAIL_IN_NEW_WIN",			{name:"zimbraPrefOpenMailInNewWindow", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("POP_ENABLED",						{name:"zimbraPop3Enabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:!appCtxt.isOffline});
 	settings.registerSetting("POP_DOWNLOAD_SINCE_VALUE",		{type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:""});
-	settings.registerSetting("POP_DOWNLOAD_SINCE",				{name:"zimbraPrefPop3DownloadSince", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:""});
+    settings.registerSetting("POP_DOWNLOAD_SINCE",				{name:"zimbraPrefPop3DownloadSince", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:""});
+    settings.registerSetting("POP_DELETE_OPTION",				{name:"zimbraPrefPop3DeleteOption", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmMailApp.POP_DELETE_OPTION_HARD_DELETE});
+    settings.registerSetting("POP_INCLUDE_SPAM",				{name:"zimbraPrefPop3IncludeSpam", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("READING_PANE_LOCATION",			{name:"zimbraPrefReadingPaneLocation", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.RP_BOTTOM, isImplicit:true, isGlobal:true});
 	settings.registerSetting("READING_PANE_LOCATION_CV",		{name:"zimbraPrefConvReadingPaneLocation", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.RP_BOTTOM, isImplicit:true});
+	settings.registerSetting("READING_PANE_SASH_HORIZONTAL",    {name:"zimbraPrefReadingPaneSashHorizontal", type:ZmSetting.T_METADATA, dataType:ZmSetting.D_INT, isImplicit:true, section:ZmSetting.M_IMPLICIT});
+	settings.registerSetting("READING_PANE_SASH_VERTICAL",      {name:"zimbraPrefReadingPaneSashVertical", type:ZmSetting.T_METADATA, dataType:ZmSetting.D_INT, isImplicit:true, section:ZmSetting.M_IMPLICIT});
 	settings.registerSetting("REPLY_INCLUDE_HEADERS",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
 	settings.registerSetting("REPLY_INCLUDE_ORIG",				{name:"zimbraPrefReplyIncludeOriginalText", type:ZmSetting.T_PREF, defaultValue:ZmSetting.INC_BODY, isGlobal:true});
 	settings.registerSetting("REPLY_INCLUDE_WHAT",				{type:ZmSetting.T_PREF, defaultValue:ZmSetting.INC_BODY, isGlobal:true});
@@ -272,6 +282,8 @@ function() {
 				ZmSetting.PAGE_SIZE,
 				ZmSetting.POP_DOWNLOAD_SINCE_VALUE,
 				ZmSetting.POP_DOWNLOAD_SINCE,
+                ZmSetting.POP_DELETE_OPTION,
+                ZmSetting.POP_INCLUDE_SPAM,
 				ZmSetting.POLLING_INTERVAL,
 				ZmSetting.SHOW_FRAGMENTS,
 				ZmSetting.VACATION_MSG_ENABLED,
@@ -559,8 +571,25 @@ function() {
 		valueFunction:		ZmPref.downloadSinceValue,
 		precondition:		ZmSetting.POP_ENABLED
 	});
-
-	ZmPref.registerPref("REPLY_TO_ADDRESS", {
+	ZmPref.registerPref("POP_DELETE_OPTION", {
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		displayOptions:     [   ZmMsg.popDeleteHardDelete,
+                                ZmMsg.popDeleteTrash,
+                                ZmMsg.popDeleteRead,
+                                ZmMsg.popDeleteKeep
+                            ],
+		options:            [   ZmMailApp.POP_DELETE_OPTION_HARD_DELETE,
+                                ZmMailApp.POP_DELETE_OPTION_TRASH,
+                                ZmMailApp.POP_DELETE_OPTION_READ,
+                                ZmMailApp.POP_DELETE_OPTION_KEEP
+                            ],
+		precondition:       ZmSetting.POP_ENABLED
+	});
+	ZmPref.registerPref("POP_INCLUDE_SPAM", {
+		displayName:		ZmMsg.popIncludeSpam,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+    ZmPref.registerPref("REPLY_TO_ADDRESS", {
 		displayName:		ZmMsg.replyToAddress,
 		displayContainer:	ZmPref.TYPE_INPUT,
 		validationFunction: ZmPref.validateEmail,
@@ -736,7 +765,7 @@ function() {
     ZmOperation.registerOp(ZmId.OP_ACCEPT_PROPOSAL, {textKey:"replyAccept", image:"Check"});
 	ZmOperation.registerOp(ZmId.OP_ADD_FILTER_RULE, {textKey:"newFilter", image:"Plus"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_ADD_SIGNATURE, {textKey:"signature", image:"AddSignature", tooltipKey:"chooseSignature"}, ZmSetting.SIGNATURES_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_CHECK_MAIL, {textKey:"checkMail", tooltipKey:"checkMailPrefDefault", image:"Refresh", textPrecedence:90});
+	ZmOperation.registerOp(ZmId.OP_CHECK_MAIL, {textKey:"checkMail", tooltipKey:"checkMailPrefDefault", image:"Refresh", textPrecedence:90, showImageInToolbar: true});
 	ZmOperation.registerOp(ZmId.OP_CHECK_MAIL_DEFAULT, {textKey:"checkMailDefault"});
 	ZmOperation.registerOp(ZmId.OP_CHECK_MAIL_UPDATE, {textKey:"checkMailUpdate"});
 	ZmOperation.registerOp(ZmId.OP_COMPOSE_OPTIONS, {textKey:"options", image:"Preferences"});
@@ -745,7 +774,7 @@ function() {
     ZmOperation.registerOp(ZmId.OP_DECLINE_PROPOSAL, {textKey:"replyDecline", image:"Cancel"});
 	ZmOperation.registerOp(ZmId.OP_DELETE_CONV, {textKey:"delConv", image:"DeleteConversation"}, ZmSetting.CONVERSATIONS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_DELETE_MSG, {textKey:"delMsg", image:"DeleteMessage"});
-	ZmOperation.registerOp(ZmId.OP_DELETE_MENU, {tooltipKey:"deleteTooltip", image:"Delete"});
+	ZmOperation.registerOp(ZmId.OP_DELETE_MENU, {textKey:"del", image:"Delete", tooltipKey:"deleteTooltip"});
 	ZmOperation.registerOp(ZmId.OP_DETACH_COMPOSE, {tooltipKey:"detachTooltip", image:"OpenInNewWindow"});
 	ZmOperation.registerOp(ZmId.OP_DRAFT, null, ZmSetting.SAVE_DRAFT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_EDIT_FILTER_RULE, {textKey:"filterEdit", image:"Edit"}, ZmSetting.FILTERS_ENABLED);
@@ -890,7 +919,8 @@ function() {
 							  trashViewOp:			ZmOperation.SHOW_ONLY_MAIL,
 							  chooserSort:			10,
 							  defaultSort:			10,
-							  upsellUrl:			ZmSetting.MAIL_UPSELL_URL
+							  upsellUrl:			ZmSetting.MAIL_UPSELL_URL,
+                              quickCommandType:		ZmQuickCommand[ZmId.ITEM_MSG]
 							  });
 };
 
@@ -1055,7 +1085,6 @@ function(notify) {
 		mods["c"] = newMods;
 		appCtxt.getRequestMgr()._handleModifies(mods);
 	}
-    appCtxt.setNotifyDebug("Handling NOTIFY: in ZmMailApp - End of Prenotify");
 };
 
 /**
@@ -1072,7 +1101,6 @@ function(notify) {
  */
 ZmMailApp.prototype.createNotify =
 function(creates, force) {
-    appCtxt.setNotifyDebug("Handling NOTIFY: In ZmMailAppcreateNotify");
 	if (!creates["m"] && !creates["c"] && !creates["link"]) { return; }
 	if (!force && !this._noDefer && this._deferNotifications("create", creates)) {
 		AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: skipping/deferring notifications"); 
@@ -1405,23 +1433,24 @@ function(refresh) {
 		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._checkRefresh, [curViewId]), 1000);
 	}
 
-	// Create a virtual ATTACHMENTS folder
-	if (appCtxt.get(ZmSetting.MAIL_ATTACH_VIEW_ENABLED)) {
+	// Create PRIORITY INBOX folder
+	if (appCtxt.get(ZmSetting.MAIL_PRIORITYINBOX_ENABLED)) {
 		var folderTree = appCtxt.getFolderTree();
-		if (!folderTree.getById(ZmFolder.ID_ATTACHMENTS)) {
+		if (!folderTree.getById(ZmFolder.ID_PRIORITYINBOX)) {
 			var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
 			var params = {
-				id: ZmFolder.ID_ATTACHMENTS,
+				id: ZmFolder.ID_PRIORITYINBOX,
 				parent: root,
 				tree: root.tree,
 				type: ZmOrganizer.FOLDER,
 				numTotal: 1
 			};
-			var attachFolder = new ZmFolder(params);
-			root.children.add(attachFolder);
-			attachFolder._notify(ZmEvent.E_CREATE);
+			var priorityInboxFolder = new ZmFolder(params);
+			root.children.add(priorityInboxFolder);
+			priorityInboxFolder._notify(ZmEvent.E_CREATE);
 		}
 	}
+
 };
 
 ZmMailApp.prototype._checkRefresh =
@@ -1645,6 +1674,12 @@ function(results, callback) {
 ZmMailApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
 	var controller = (results.type == ZmItem.MSG) ? this.getTradController() : this.getConvListController();
+	//TODO: Refactor; experimental support for Priority Inbox
+    if (this.currentSearch && this.currentSearch.searchId == ZmFolder.ID_PRIORITYINBOX) {
+	   if (controller._mailListView) {
+        controller._mailListView.setGroup(ZmId.GROUPBY_PRIORITY);
+	   }
+    }
 	controller.show(results);
 	if (this._forceMsgView) {
 		controller.selectFirstItem();

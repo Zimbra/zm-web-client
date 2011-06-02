@@ -847,7 +847,7 @@ ZmPreferencesPage.prototype._showLocale =
 function(localeId, button) {
 	var locale = ZmLocale.localeMap[localeId];
 	button.setImage(locale ? locale.getImage() : null);
-	button.setText(locale ? locale.name : "");
+	button.setText(locale ? locale.getNativeAndLocalName() : "");
 	button._localeId = localeId;
 };
 
@@ -860,19 +860,19 @@ function(setup) {
 	var listener = new AjxListener(this, this._localeSelectionListener);
 	for (var language in ZmLocale.languageMap) {
 		var languageObj = ZmLocale.languageMap[language];
-		var array = languageObj.locales;
-		if (array && array.length == 1) {
-			this._createLocaleItem(result, array[0], listener);
-		} else if (array && array.length > 1) {
+		var locales = languageObj.locales;
+		if (!locales) {
+			this._createLocaleItem(result, languageObj, listener);
+		}
+		else if (locales.length > 0) {
+			/* show submenu even if just one item, for cases such as Portugeuse (Brasil), since we want country (locale) specific items in the submenu level */
 			var menuItem = new DwtMenuItem({parent:result, style:DwtMenuItem.CASCADE_STYLE});
-			menuItem.setText(ZmLocale.languageMap[language].name);
+			menuItem.setText(ZmLocale.languageMap[language].getNativeAndLocalName());
 			var subMenu = new DwtMenu({parent:result, style:DwtMenu.DROPDOWN_STYLE});
 			menuItem.setMenu(subMenu);
-			for (var i = 0, count = array.length; i < count; i++) {
-				this._createLocaleItem(subMenu, array[i], listener);
+			for (var i = 0, count = locales.length; i < count; i++) {
+				this._createLocaleItem(subMenu, locales[i], listener);
 			}
-		} else {
-			this._createLocaleItem(result, languageObj, listener);
 		}
 	}
 	return result;
@@ -881,8 +881,10 @@ function(setup) {
 ZmPreferencesPage.prototype._createLocaleItem =
 function(parent, locale, listener) {
 	var result = new DwtMenuItem({parent:parent});
-	result.setText(locale.name);
-	result.setImage(locale.getImage());
+	result.setText(locale.getNativeAndLocalName());
+	if (locale.getImage()) {
+		result.setImage(locale.getImage());
+	}
 	result._localeId = locale.id;
 	result.addSelectionListener(listener);
 	return result;

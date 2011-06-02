@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -1240,6 +1240,12 @@ function(msg, container, callback) {
 		attachmentsCount:	attachmentsCount
 	};
 
+	if (msg.isHighPriority || msg.isLowPriority) {
+		subs.priority =			msg.isHighPriority ? "high" : "low";
+		subs.priorityImg =		msg.isHighPriority ? "ImgPriorityHigh_list" : "ImgPriorityLow_list";
+		subs.priorityDivId =	ZmId.getViewId(this._view, ZmId.MV_PRIORITY);
+	}
+
 	if (invite && !invite.isEmpty() && this._inviteMsgView) {
 		this._inviteMsgView.addSubs(subs, sentBy, sentByAddr, sender ? addr : null);
 	}
@@ -1478,24 +1484,23 @@ function(msg) {
 	var tagCell = null;
 
 	if (tagRow != null && table.rows[table.rows.length-1] == tagRow) {
-		if (numTags > 0) {
-			tagCell = tagRow.cells[1];
-		} else {
+		if (numTags == 0) {
 			table.deleteRow(-1);
 			return;
 		}
-	} else {
-		if (numTags > 0) {
-			tagRow = table.insertRow(-1);
-			tagRow.id = this._tagRowId;
-			var tagLabelCell = tagRow.insertCell(-1);
-			tagLabelCell.className = "LabelColName";
-			tagLabelCell.innerHTML = ZmMsg.tags + ":";
-			tagLabelCell.style.verticalAlign = "middle";
-			tagCell = tagRow.insertCell(-1);
-		} else {
+		tagCell = tagRow.cells[1];
+	}
+	else {
+		if (numTags == 0) {
 			return;
 		}
+		tagRow = table.insertRow(-1);
+		tagRow.id = this._tagRowId;
+		var tagLabelCell = tagRow.insertCell(-1);
+		tagLabelCell.className = "LabelColName";
+		tagLabelCell.innerHTML = ZmMsg.tags + ":";
+		tagLabelCell.style.verticalAlign = "middle";
+		tagCell = tagRow.insertCell(-1);
 	}
 
 	// get sorted list of tags for this msg
@@ -1511,21 +1516,15 @@ function(msg) {
 	html[i++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%><tr>";
 	html[i++] = "<td style='overflow:hidden; id='";
 	html[i++] = this._tagCellId;
-	html[i++] = AjxEnv.isIE || AjxEnv.isSafari ? "' class='Tags'>" : "'>";
+	html[i++] = "'>";
 
-	if (AjxEnv.isGeckoBased)
-		html[i++] = "<table border=0 cellspacing=0 cellpadding=0><tr>";
 	for (var j = 0; j < ta.length; j++) {
 		var tag = ta[j];
 		if (!tag) continue;
 		var anchorId = [this._tagCellId, ZmMailMsgView._TAG_ANCHOR, tag.id].join("");
 		var imageId = [this._tagCellId, ZmMailMsgView._TAG_IMG, tag.id].join("");
 
-		if (AjxEnv.isGeckoBased) {
-			html[i++] = "<td width=16>";
-			html[i++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, ["id='", imageId, "'"].join(""));
-			html[i++] = "</td><td class='Tags' style='white-space:nowrap;'>";
-		}
+		html[i++] = "<span class='Tag'>";
 		html[i++] = "<a href='javascript:' onclick='ZmMailMsgView._tagClick(\"";
 		html[i++] = this._htmlElId;
 		html[i++] = '","';
@@ -1533,18 +1532,28 @@ function(msg) {
 		html[i++] = "\"); return false;' id='";
 		html[i++] = anchorId;
 		html[i++] = "'>";
-		if (AjxEnv.isIE || AjxEnv.isSafari) {
-			html[i++] = "<table style='display:inline; vertical-align:middle; width:16px' border=0 cellspacing=0 cellpadding=0><tr><td>";
+
+		html[i++] = "<span class='TagImage'>";
 			html[i++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, ["id='", imageId, "'"].join(""));
-			html[i++] = "</td></tr></table>";
-		}
+		html[i++] = "</span>";
+		
 		html[i++] = AjxStringUtil.htmlEncodeSpace(tag.name);
 		html[i++] = "</a>";
-		if (AjxEnv.isGeckoBased)
-			html[i++] = "</td>";
+		
+		html[i++] = "&nbsp;|&nbsp;";
+		html[i++] = "<a href='javascript:;' onclick='ZmMailMsgView._removeTagClick(\"";
+		html[i++] = this._htmlElId;
+		html[i++] = '","';
+		html[i++] = tag.id;
+		html[i++] = "\"); return false;' id='";
+		html[i++] = anchorId;
+		html[i++] = "'>";
+		html[i++] = "x";
+		html[i++] = "</a>";
+		html[i++] = "</span>";
+
+
 	}
-	if (AjxEnv.isGeckoBased)
-		html[i++] = "</tr></table>";
 	html[i++] = "</td></tr></table>";
 	tagCell.innerHTML = html.join("");
 };
@@ -1713,9 +1722,16 @@ function() {
 
 ZmMailMsgView.prototype.getToolTipContent =
 function(evt) {
+
+	var tgt = DwtUiEvent.getTarget(evt, false);
+
+	//see if this is the priority icon. If so, it has a "priority" attribute high/low.
+	if (tgt.id == ZmId.getViewId(this._view, ZmId.MV_PRIORITY)) {
+		return tgt.getAttribute('priority') =='high' ? ZmMsg.highPriorityTooltip : ZmMsg.lowPriorityTooltip;
+	}
+	
     if (!this._attachmentLinkIdToFileNameMap) {return null};
 
-    var tgt = DwtUiEvent.getTarget(evt, false);
     if (tgt && tgt.nodeName.toLowerCase() == "a") {
         var id = tgt.getAttribute("id");
         if (id) {
@@ -2080,6 +2096,14 @@ function(myId, tagId) {
 	dwtObj.notifyListeners(ZmMailMsgView._TAG_CLICK, tagId);
 };
 
+ZmMailMsgView._removeTagClick =
+function(myId, tagId) {
+	var dwtObj = DwtControl.fromElementId(myId);
+	var tag = appCtxt.getById(tagId);
+	ZmListController.prototype._doTag.call(dwtObj._controller, dwtObj._msg, tag, false);
+};
+
+
 ZmMailMsgView._detachCallback =
 function(isRfc822, mode, result) {
 	var ac = window.parentAppCtxt || window.appCtxt;
@@ -2184,20 +2208,19 @@ function(result) {
 	// notifications have been processed.
 	var msgNode = result.getResponse().RemoveAttachmentsResponse.m[0];
 	ac.getApp(ZmApp.MAIL).getMailListController().actionedMsgId = msgNode.id;
-    var list = ac.getApp(ZmApp.MAIL).getMailListController().getList();
-    var currView = appCtxt.getAppController().getAppViewMgr().getCurrentView();
-	var msgView = appCtxt.isChildWindow || currView instanceof ZmMailMsgView
+
+	var currView = appCtxt.getAppController().getAppViewMgr().getCurrentView();
+	var msgView = appCtxt.isChildWindow 
 		? currView : (currView.getMsgView && currView.getMsgView());
 
-    if (currView && Dwt.instanceOf(currView, "ZmConvView")) {
-        ZmConvView._handleRemoveAttachment(result);
-    }
-	else if (msgView) {
-        var msg = new ZmMailMsg(msgNode.id, list, true);
-        msg._loadFromDom(msgNode);
-        msgView._msg = null;
-        msgView.set(msg);
-    }
+	if (msgView) {
+		var msg = msgView._msg;
+		msg.attachments.length = 0;
+		msg._bodyParts = [];
+		msg._loadFromDom(msgNode);
+		msgView._msg = null;
+		msgView.set(msg);
+	}
 };
 
 ZmMailMsgView._buildZipUrl =

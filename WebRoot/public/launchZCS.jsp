@@ -61,7 +61,7 @@
  launchZCS.jsp
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -98,7 +98,6 @@
     }
 
     boolean isScriptErrorOn = getParameter(request, "scripterrors", "0").equals("1");
-    boolean isNotifyDebugOn = getParameter(request, "notifydebug", "0").equals("1");
 	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
 	String debugLogTarget = getParameter(request, "log", getAttribute(request, "log", null));
 	String extraPackages = getParameter(request, "packages", getAttribute(request, "packages", null));
@@ -134,6 +133,8 @@
 		}
     }
 
+	String unitTest = getParameter(request, "unittest", "");
+
 	// make variables available in page context (e.g. ${foo})
 	pageContext.setAttribute("contextPath", contextPath);
 	pageContext.setAttribute("skin", skin);
@@ -143,11 +144,11 @@
 	pageContext.setAttribute("locale", locale);
 	pageContext.setAttribute("isDevMode", isDev);
 	pageContext.setAttribute("isScriptErrorOn", isScriptErrorOn);
-    pageContext.setAttribute("isNotifyDebugOn", isNotifyDebugOn);
 	pageContext.setAttribute("isOfflineMode", offlineMode != null && offlineMode.equals("true"));
 	pageContext.setAttribute("isProdMode", !prodMode.equals(""));
 	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
 	pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
+	pageContext.setAttribute("unitTest", unitTest);
 	pageContext.setAttribute("editor", editor);
     pageContext.setAttribute("isCoverage", isCoverage);
 %>
@@ -164,6 +165,15 @@
 		<c:param name="customerDomain"	value="${param.customerDomain}" />
 	</c:if>		
 </c:url>" rel="stylesheet" type="text/css" />
+<c:if test="${not empty unitTest}">
+	<script>
+		window.exports = window.UT = {};
+		window.require = true;
+	</script>
+	<link rel="stylesheet" href="/zimbra/qunit/qunit.css" />
+	<script src="/zimbra/qunit/qunit.js"></script>
+	<script src="/js/zimbraMail/unittest/ZmUnitTestManager.js"></script>
+</c:if>
 <zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
 <c:if test="${empty favIconUrl}">
 	<fmt:message key="favIconUrl" var="favIconUrl"/>
@@ -177,7 +187,6 @@
 	window.appDevMode     = ${isDevMode};
     window.appCoverageMode = ${isCoverage};
     window.isScriptErrorOn   = ${isScriptErrorOn};
-    window.isNotifyDebugOn   = ${isNotifyDebugOn};
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >
@@ -200,19 +209,19 @@
     %>
     <%--preloading the splash screen images to avoid latency --%>
     <div style="display:none;">
-      <img src="<%=contextPath%>/skins/<%=splashLocation%>/logos/LoginBanner.png" alt=""/>
+      <img src="<%=contextPath%>/skins/<%=splashLocation%>/logos/LoginBanner.png?v=${vers}" alt=""/>
       <%if(splashLocation.equals("carbon")){%>
-        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/vmwarePeel.png" alt=""/>
-        <img src="<%=contextPath%>/skins/<%=splashLocation%>/logos/AltBanner.png" alt=""/>
+        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/vmwarePeel.png?v=${vers}" alt=""/>
+        <img src="<%=contextPath%>/skins/<%=splashLocation%>/logos/AltBanner.png?v=${vers}" alt=""/>
       <%}%>
       <%if(splashLocation.equals("lemongrass")){%>
-        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/bg_lemongrass.png" alt=""/>
+        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/bg_lemongrass.png?v=${vers}" alt=""/>
       <%}%>
-      <%if(splashLocation.equals("twilight")||splashLocation.equals("waves")){%><img src="<%=contextPath%>/skins/<%=splashLocation%>/img/skins/login_bg.png" alt=""/><%}%>
-      <%if(splashLocation.equals("steel")){%><img src="<%=contextPath%>/skins/<%=splashLocation%>/img/SkinOuter.repeat.gif" alt=""/><%}%>
+      <%if(splashLocation.equals("twilight")||splashLocation.equals("waves")){%><img src="<%=contextPath%>/skins/<%=splashLocation%>/img/skins/login_bg.png?v=${vers}" alt=""/><%}%>
+      <%if(splashLocation.equals("steel")){%><img src="<%=contextPath%>/skins/<%=splashLocation%>/img/SkinOuter.repeat.gif?v=${vers}" alt=""/><%}%>
       <%if(splashLocation.equals("waves")){%>
-        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/login_bg.png" alt=""/>
-        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/login_page_bg.png" alt=""/>
+        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/login_bg.png?v=${vers}" alt=""/>
+        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/login_page_bg.png?v=${vers}" alt=""/>
       <%}%>
     </div>
     <%--preloading the splash screen images to avoid latency ends --%>
@@ -397,7 +406,7 @@ for (var pkg in window.AjxTemplateMsg) {
 			settings:settings, batchInfoResponse:batchInfoResponse,
 			offlineMode:${isOfflineMode}, devMode:${isDevMode},
 			protocolMode:protocolMode, httpPort:"<%=httpPort%>", httpsPort:"<%=httpsPort%>",
-			noSplashScreen:noSplashScreen
+			noSplashScreen:noSplashScreen, unitTest:"${unitTest}"
 		};
 		ZmZimbraMail.run(params);
 	}

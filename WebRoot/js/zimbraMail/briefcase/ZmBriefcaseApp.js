@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -174,7 +174,7 @@ function() {
 								{msgKey:		"searchBriefcase",
 								 tooltipKey:	"searchForFiles",
 								 icon:			"Doc",
-								 shareIcon:		"SharedBriefcase",
+								 shareIcon:		null, // the following doesn't work now, so keep the regular icon. doesn't really matter in my opinion --> "SharedBriefcase",
 								 setting:		ZmSetting.BRIEFCASE_ENABLED,
 								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_BRIEFCASE)
 								});

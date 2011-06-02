@@ -1456,7 +1456,7 @@ function(event, args, options) {
 		return;
 	}
 
-	return this.getZimletMgr().notifyZimlets(event, args);
+	this.getZimletMgr().notifyZimlets(event, args);
 };
 
 /**
@@ -1685,30 +1685,6 @@ function(type, account) {
 			this._acCache[acct.id][ZmAutocomplete.AC_TYPE_EQUIPMENT]	=	{};
 		}
 	}
-};
-
-ZmAppCtxt.prototype.setNotifyDebug =
-function(notify) {
-
-    if (!window.isNotifyDebugOn) {
-        return;
-    }
-
-    if (this._notify) {
-        this._notify =  [this._notify, notify, "\n\n"].join("");
-    } else {
-        this._notify = ["\n\n", notify, "\n\n"].join("");
-    }
-};
-
-ZmAppCtxt.prototype.getNotifyDebug =
-function() {
-    return this._notify;
-};
-
-ZmAppCtxt.prototype.clearNotifyDebug =
-function() {
-    this._notify = "";
 };
 
 ZmAppCtxt.prototype.getOutsideMouseEventMgr =
