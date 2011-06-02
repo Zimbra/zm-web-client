@@ -481,11 +481,20 @@ INPUT[type="text"].search_input {
 
 
 .Tag {
-	@NoWrap@ display:inline-block; vertical-align:middle; padding:1px 4px;
+	@NoWrap@ display:inline-block; vertical-align:middle;
+}
+
+.Tag a {
+	display:inline-block; vertical-align:middle;
+}
+
+
+.Tag .ImgBubbleDelete {
+	display:inline-block; cursor:pointer; vertical-align:middle;
 }
 
 .TagImage {
-	vertical-align:top; display:inline-block; padding-right:1px;
+	vertical-align:middle; display:inline-block; padding-right:2px;
 }
 
 /* Container for the view of one particular message

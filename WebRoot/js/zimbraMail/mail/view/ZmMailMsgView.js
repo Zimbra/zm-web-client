@@ -1524,7 +1524,12 @@ function(msg) {
 		var anchorId = [this._tagCellId, ZmMailMsgView._TAG_ANCHOR, tag.id].join("");
 		var imageId = [this._tagCellId, ZmMailMsgView._TAG_IMG, tag.id].join("");
 
-		html[i++] = "<span class='Tag'>";
+		html[i++] = "<span class='addrBubble Tag'>";
+
+		html[i++] = "<span class='TagImage'>";
+			html[i++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, ["id='", imageId, "'"].join(""));
+		html[i++] = "</span>";
+
 		html[i++] = "<a href='javascript:' onclick='ZmMailMsgView._tagClick(\"";
 		html[i++] = this._htmlElId;
 		html[i++] = '","';
@@ -1532,26 +1537,19 @@ function(msg) {
 		html[i++] = "\"); return false;' id='";
 		html[i++] = anchorId;
 		html[i++] = "'>";
-
-		html[i++] = "<span class='TagImage'>";
-			html[i++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, ["id='", imageId, "'"].join(""));
-		html[i++] = "</span>";
-		
 		html[i++] = AjxStringUtil.htmlEncodeSpace(tag.name);
 		html[i++] = "</a>";
 		
-		html[i++] = "&nbsp;|&nbsp;";
-		html[i++] = "<a href='javascript:;' onclick='ZmMailMsgView._removeTagClick(\"";
+		html[i++] = "&nbsp;";
+		html[i++] = "<span class='ImgBubbleDelete' onclick='ZmMailMsgView._removeTagClick(\"";
 		html[i++] = this._htmlElId;
 		html[i++] = '","';
 		html[i++] = tag.id;
 		html[i++] = "\"); return false;' id='";
 		html[i++] = anchorId;
 		html[i++] = "'>";
-		html[i++] = "x";
-		html[i++] = "</a>";
 		html[i++] = "</span>";
-
+		html[i++] = "</span>";
 
 	}
 	html[i++] = "</td></tr></table>";
