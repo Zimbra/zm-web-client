@@ -53,6 +53,7 @@ ZmBaseController = function(container, app) {
 	this._listeners = {};
 	this._listeners[ZmOperation.NEW_MENU]		= this._newListener.bind(this);
 	this._listeners[ZmOperation.TAG_MENU]		= this._tagButtonListener.bind(this);
+	this._listeners[ZmOperation.ACTIONS_MENU]	= this._actionsButtonListener.bind(this);
 	this._listeners[ZmOperation.TAG]			= this._tagListener.bind(this);
 	this._listeners[ZmOperation.PRINT]			= this._printListener.bind(this);
 	this._listeners[ZmOperation.DELETE]			= this._deleteListener.bind(this);
@@ -259,6 +260,13 @@ function(view, className) {
 		this._setupTagMenu(tb);
 	}
 
+	// add the selection listener for when user clicks on the little drop-down arrow (unfortunately we have to do that here separately) It is done for the main button area in a generic way to all toolbar buttons elsewhere
+	var actionsButton = tb.getActionsButton();
+	if (actionsButton) {
+		actionsButton.addDropDownSelectionListener(this._listeners[ZmOperation.ACTIONS_MENU]);
+	}
+
+
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, view], {waitUntilLoaded:true});
 };
 
@@ -369,6 +377,19 @@ function(ev) {
 		this._setTagMenu(toolbar);
 	}
 };
+
+/**
+ * Tag button has been pressed. We don't tag anything (since no tag has been selected),
+ * we just show the dynamic tag menu.
+ *
+ * @private
+ */
+ZmBaseController.prototype._actionsButtonListener =
+function(ev) {
+	var menu = this._getCurrentToolbar().getActionsMenu();
+	menu.parent.popup();	
+};
+
 
 /**
  * Tag/untag items.
@@ -884,7 +905,7 @@ function(parent, num) {
 	} else if (num > 1) {
 		// enable only the tag and delete operations
 		parent.enableAll(false);
-		parent.enable([ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.FORWARD], true);
+		parent.enable([ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.FORWARD, ZmOperation.ACTIONS_MENU], true);
     }
 
 	// bug: 41758 - don't allow shared items to be tagged

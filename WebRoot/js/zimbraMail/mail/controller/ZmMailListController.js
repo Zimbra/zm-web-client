@@ -409,9 +409,14 @@ function(msg, dlg) {
 	msg.list.flagItems({items:[msg], op:"update", value:flags, callback:callback});
 };
 
+ZmMailListController.prototype._getCurrentToolbar =
+function() {
+	return this._toolbar[this._currentView];
+};
+
 ZmMailListController.prototype._updateViewMenu =
 function(id) {
-	var viewBtn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
+	var viewBtn = this._getCurrentToolbar().getButton(ZmOperation.VIEW_MENU);
 	var menu = viewBtn && viewBtn.getMenu();
 	if (menu) {
 		var mi = menu.getItemById(ZmOperation.MENUITEM_ID, id);
@@ -522,6 +527,7 @@ function() {
 	if (!appCtxt.isChildWindow && appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
 		list.push(ZmOperation.SEP, ZmOperation.DETACH);
 	}
+	list.push(ZmOperation.SEP, ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD);
 	return list;
 
 };
@@ -635,6 +641,74 @@ function(view) {
 };
 
 
+/**
+ * checks whether some of the selected messages are read and unread. returns it as a 2 flag object with "hasRead" and "hasUnread" attributes.
+ *
+ * @private
+ */
+ZmMailListController.prototype._getReadStatus =
+function() {
+
+	var status = {hasRead : false, hasUnread : false}
+
+	// dont bother checking for read/unread state for read-only folders
+	var folder = this._getSearchFolder();
+	if (folder && folder.isReadOnly()) {
+		return status;
+	}
+
+	var items = this.getItems();
+
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		if (item.type == ZmItem.MSG) {
+			status[item.isUnread ? "hasUnread" : "hasRead"] = true;
+		}
+		else if (item.type == ZmItem.CONV) {
+			status.hasUnread = status.hasUnread || item.hasFlag(ZmItem.FLAG_UNREAD, true);
+			status.hasRead = status.hasRead || item.hasFlag(ZmItem.FLAG_UNREAD, false);
+		}
+		if (status.hasUnread && status.hasRead) {
+			break;
+		}
+	}
+
+	return status;
+
+};
+
+
+/**
+ * Dynamically enable/disable the mark read/unread menu items.
+ *
+ * @private
+ */
+ZmMailListController.prototype._enableReadUnreadToolbarActions =
+function() {
+
+//	if (!parent) { return; }
+
+	var status = this._getReadStatus();
+
+	var hasRead = false;
+	var hasUnread = false;
+
+	var menu = this._getCurrentToolbar().getActionsMenu();
+
+	this._enableFlags(menu, status.hasUnread, status.hasRead);
+
+};
+
+
+ZmMailListController.prototype._actionsButtonListener =
+function(ev) {
+
+	this._enableReadUnreadToolbarActions();
+	
+	ZmBaseController.prototype._actionsButtonListener.call(this, ev);
+
+};
+
 // List listeners
 
 ZmMailListController.prototype._listSelectionListener =
@@ -660,29 +734,12 @@ function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
 
 	var items = this._listView[this._currentView].getSelection();
+	var folder = this._getSearchFolder();
 
 	// enable/disable mark as read/unread as necessary
-	var hasRead = false;
-	var hasUnread = false;
-
-	// dont bother checking for read/unread state for read-only folders
-	var folder = this._getSearchFolder();
-	if (!folder || (folder && !folder.isReadOnly())) {
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			if (item.type == ZmItem.MSG) {
-				if (item.isUnread) {
-					hasUnread = true;
-				} else {
-					hasRead = true;
-				}
-			} else if (item.type == ZmItem.CONV) {
-				hasUnread = item.hasFlag(ZmItem.FLAG_UNREAD, true);
-				hasRead = item.hasFlag(ZmItem.FLAG_UNREAD, false);
-			}
-			if (hasUnread && hasRead) { break; }
-		}
-	}
+	var readStatus = this._getReadStatus();
+	var hasRead = readStatus.hasRead;
+	var hasUnread = readStatus.hasUnread;
 
 	// bug fix #3602
 	var address = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && ev.field == ZmItem.F_PARTICIPANT)

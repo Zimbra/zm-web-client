@@ -38,7 +38,7 @@
  * @param	{constant}	params.context			the vcontextID (used to generate button IDs)
  * @param	{constant}	params.toolbarType		the toolbar type (used to generate button IDs)
  * @param	{ZmController}	params.controller		the owning controller
- * 
+ *
  * @extends		ZmToolBar
  */
 ZmButtonToolBar = function(params) {
@@ -77,18 +77,18 @@ ZmButtonToolBar = function(params) {
 	var secondaryOpList = ZmOperation.filterOperations(params.secondaryButtons);
 
 	if (secondaryOpList && secondaryOpList.length) {
-		this.opList.push(ZmOperation.SEP); //separator before actions menu
+		this.opList.push(ZmOperation.SEP, ZmOperation.ACTIONS_MENU);
 	}
 
 	this._buttons = ZmOperation.createOperations(this, this.opList, params.overrides);
 
 
 	if (secondaryOpList && secondaryOpList.length) {
-		var actionsButtonId = this._context ? ZmId.getButtonId(this._context, "ACTIONS", this._toolbarType) : null;
-		var actionsButton = new DwtToolBarButton({parent: this, id: actionsButtonId});
-		actionsButton.setText("Actions");
+		var actionsButton =  this._secondaryButton = this.getButton(ZmOperation.ACTIONS_MENU);
 
-		var secondaryMenu = this._secondaryButtonsMenu = new ZmActionMenu({parent: actionsButton, menuItems: ZmOperation.NONE, context: this._context});
+		actionsButton.noMenuBar = true;
+
+		var secondaryMenu = this._secondaryButtonMenu = new ZmActionMenu({parent: actionsButton, menuItems: ZmOperation.NONE, context: this._context});
 		var secondaryButtons  = ZmOperation.createOperations(secondaryMenu, secondaryOpList, params.overrides);
 		actionsButton.setMenu(secondaryMenu);
 
@@ -232,6 +232,23 @@ function() {
 		return button.getMenu();
 	}
 };
+
+/**
+ * gets the secondary menu (the "Actions" menu in the toolbar)
+ */
+ZmButtonToolBar.prototype.getActionsMenu =
+function() {
+	return this._secondaryButtonMenu;
+};
+
+/**
+ * gets the secondary button (the "Actions" button in the toolbar)
+ */
+ZmButtonToolBar.prototype.getActionsButton =
+function() {
+	return this._secondaryButton;
+};
+
 
 //
 // Private methods

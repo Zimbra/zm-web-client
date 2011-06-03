@@ -100,6 +100,8 @@ ZmOperation._operationDesc = {};
  */
 ZmOperation.initialize =
 function() {
+	ZmOperation.registerOp(ZmId.OP_ACTIONS_MENU, {textKey:"actions", tooltipKey:"", textPrecedence:40});
+	
 	ZmOperation.registerOp(ZmId.OP_ATTACHMENT, {textKey:"addAttachment", tooltipKey:"attachmentTooltip", image:"Attachment", shortcut:ZmKeyMap.ATTACHMENT, showImageInToolbar: true});
 	ZmOperation.registerOp(ZmId.OP_BROWSE, {textKey:"advancedSearch", image:"SearchBuilder", tooltipKey: "advancedSearchTooltip"}, ZmSetting.BROWSE_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_CALL, {image:"Telephone"});
