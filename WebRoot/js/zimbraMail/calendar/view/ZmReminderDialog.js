@@ -210,31 +210,51 @@ function(parent, buttonId, buttonListener, menuSelectionListener) {
     snoozeMenu.setSize("150");
     snoozeSelectButton.setMenu(snoozeMenu, true);
 
-    // Snooze period in minutes:       1hr  2hr  4hr  8hr  1day  2days  3days  4days  1week  2weeks
-    var snooze = [1, 5, 10, 15, 30, 45, 60, 120, 240, 480, 1440, 2880,  4320,   5760, 10080, 20160];
-    // Minutes per:   minute    hour   day   week  endMarker
-    var scale = [        1,      60,  1440, 10080, 1000000];
+    var defaultSnooze = -5;
+    var snooze =
+    // Snooze period in minutes (negative is 'minutes before appt', zero is separator:
+        [-30, -15, -5, -1, 0,
+           1, 5, 10, 15, 30, 45, 60, 120, 240, 480,  1440, 2880,  4320,   5760, 10080, 20160];
+    //                          1hr  2hr  4hr  8hr  1day  2days  3days  4days  1week  2weeks
+
+    // Minutes per:          minute    hour  day   week   endMarker
+    var scaleMinutes = [        1,      60,  1440, 10080, 1000000];
     var snoozeFormatter = [];
-    snoozeFormatter[0] = new AjxMessageFormat(ZmMsg.reminderSnoozeMinutes);     // Minute Formatter
-    snoozeFormatter[1] = new AjxMessageFormat(ZmMsg.reminderSnoozeHours);       // Hour   Formatter
-    snoozeFormatter[2] = new AjxMessageFormat(ZmMsg.reminderSnoozeDays);        // Day    Formatter
-    snoozeFormatter[3] = new AjxMessageFormat(ZmMsg.reminderSnoozeWeeks);       // Week   Formatter
+    snoozeFormatterBefore = new AjxMessageFormat(ZmMsg.apptRemindNMinutesBefore); // Before Appt Formatter
+    snoozeFormatter[0] = new AjxMessageFormat(ZmMsg.reminderSnoozeMinutes);       // Minute Formatter
+    snoozeFormatter[1] = new AjxMessageFormat(ZmMsg.reminderSnoozeHours);         // Hour   Formatter
+    snoozeFormatter[2] = new AjxMessageFormat(ZmMsg.reminderSnoozeDays);          // Day    Formatter
+    snoozeFormatter[3] = new AjxMessageFormat(ZmMsg.reminderSnoozeWeeks);         // Week   Formatter
     var iFormatter = 0;
-    var firstMenuItem = false;
+    var formatter = null;
+    var snoozeDisplayValue = 0;
+    var scale = 1;
     for (var i = 0; i < snooze.length; i++) {
-        if (snooze[i] >= scale[iFormatter+1]) {
-            iFormatter++;
+        snoozeDisplayValue = snooze[i];
+        if (snooze[i] == 0) {
+            new DwtMenuItem({parent:snoozeMenu, style:DwtMenuItem.SEPARATOR_STYLE});
+        } else {
+            if (snoozeDisplayValue < 0) {
+                snoozeDisplayValue = -snooze[i];
+                formatter = snoozeFormatterBefore;
+                scale = 1;
+            }else {
+                formatter = snoozeFormatter[iFormatter];
+                scale = scaleMinutes[iFormatter];
+                if (snooze[i] >= scaleMinutes[iFormatter+1]) {
+                    iFormatter++;
+                }
+            }
+            var label = formatter.format(snoozeDisplayValue/scale);
+            var mi = new DwtMenuItem({parent: snoozeMenu, style: DwtMenuItem.NO_STYLE});
+            mi.setText(label);
+            mi.setData("value", snooze[i]);
+            if (snooze[i] == defaultSnooze) {
+                mi.setChecked(true);
+                this._snoozeSelectInput.setValue(label);
+            }
+            if(menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
         }
-        var label = snoozeFormatter[iFormatter].format(snooze[i]/scale[iFormatter]);
-        var mi = new DwtMenuItem({parent: snoozeMenu, style: DwtMenuItem.NO_STYLE});
-        if (!firstMenuItem) {
-            firstMenuItem = true;
-            mi.setChecked(true);
-            this._snoozeSelectInput.setValue(label);
-        }
-        mi.setText(label);
-        mi.setData("value", snooze[i]);
-        if(menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
     }
 
     // reparent and cleanup
@@ -387,11 +407,13 @@ ZmReminderDialog.prototype._handleSnoozeButton =
 function() {
     // check if all fields are populated w/ valid values
     var errorMsg = [];
+    var snoozeInfo = null;
+    var beforeAppt = false;
     var snoozeString = this._snoozeSelectInput.getValue();
     if (!snoozeString) {
          errorMsg.push(ZmMsg.reminderSnoozeClickNoDuration);
     } else {
-        var snoozeInfo = ZmCalendarApp.parseReminderString(snoozeString);
+        snoozeInfo = ZmCalendarApp.parseReminderString(snoozeString);
         if (snoozeInfo.reminderValue === "" ) {
             // Returned when no number was specified in the snooze input field
             errorMsg.push(ZmMsg.reminderSnoozeClickNoNumber);
@@ -401,6 +423,9 @@ function() {
             var valid = this._testSnoozeString(snoozeString);
             if (!valid) {
                  errorMsg.push(ZmMsg.reminderSnoozeClickUnknownUnit);
+            } else {
+                // Detect 'before'
+                beforeAppt = (snoozeString.indexOf('before') >= 0);
             }
         }
     }
@@ -415,7 +440,7 @@ function() {
         var snoozeMinutes = ZmCalendarApp.convertReminderUnits(snoozeInfo.reminderValue,
                                                                snoozeInfo.reminderUnits);
 	    this._reminderController.snoozeAppt(this._list);
-        this._reminderController._snoozeApptAction(this._list, snoozeMinutes)
+        this._reminderController._snoozeApptAction(this._list, snoozeMinutes, beforeAppt)
     }
 
 };

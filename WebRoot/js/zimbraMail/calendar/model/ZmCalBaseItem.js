@@ -183,6 +183,13 @@ ZmCalBaseItem.prototype.getEndTime 		= function() { return this.endDate.getTime(
 ZmCalBaseItem.prototype.getStartTime 	= function() { return this.startDate.getTime(); }; 	// start time in ms
 
 /**
+ * Gets the alarm instance start time
+ *
+ * @return	{Date}	the alarmInst time
+ */
+ZmCalBaseItem.prototype.getAlarmInstStart = function() { return this._alarmInstStart; }; 	// alarm inst time in ms
+
+/**
  * Gets the duration.
  * 
  * @return	{int}	the duration (in milliseconds)

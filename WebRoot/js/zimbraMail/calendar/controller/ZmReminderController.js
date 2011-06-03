@@ -500,14 +500,21 @@ function() {
 
 
 ZmReminderController.prototype._snoozeApptAction =
-function(apptList, snoozeMinutes) {
+function(apptList, snoozeMinutes, beforeAppt) {
     var snoozeMilliseconds = snoozeMinutes*60*1000;
-    var untilTime =  (new Date()).getTime() + snoozeMilliseconds;
+    var untilTime =  0;
+    if (!beforeAppt) {
+        untilTime =  (new Date()).getTime() + snoozeMilliseconds;
+    }
 	var soapDoc = AjxSoapDoc.create("SnoozeCalendarItemAlarmRequest", "urn:zimbraMail");
     for (var i = 0; i < apptList.size(); i++) {
         var appt = apptList.get(i);
+
         var actionNode = soapDoc.set(this._apptType);
         actionNode.setAttribute("id", appt.id);
+        if (beforeAppt) {
+            untilTime = appt.getAlarmInstStart() - snoozeMilliseconds;
+        }
         actionNode.setAttribute("until", untilTime)
     }
 
