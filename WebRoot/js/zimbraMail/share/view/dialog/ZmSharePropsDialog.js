@@ -426,8 +426,11 @@ function(shares, result) {
 					url = remoteUri + url.substring((url.indexOf("/",7)));
 				}
 
+                //bug:34647 added webcal url for subscribing to outlook/ical on a click
+                var webcalURL = "webcal:" + url.substring((url.indexOf("//")));
+
 				var password = this._passwordInput.getValue();
-				guestnotes = this._guestFormatter.format([url, email, password, notes]);
+				guestnotes = this._guestFormatter.format([url, webcalURL, email, password, notes]);
 			}
 			tmpShare.notes = guestnotes || notes;
 
