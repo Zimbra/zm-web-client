@@ -2691,6 +2691,7 @@ function(ev) {
 ZmCalViewController.prototype._handleApptRespondAction =
 function(ev) {
 	var appt = this.getSelection()[0];
+    if(!appt){return;}
 	var type = ev.item.getData(ZmOperation.KEY_ID);
 	var op = ev.item.parent.getData(ZmOperation.KEY_ID);
 	var respCallback = new AjxCallback(this, this._handleResponseHandleApptRespondAction, [appt, type, op]);
