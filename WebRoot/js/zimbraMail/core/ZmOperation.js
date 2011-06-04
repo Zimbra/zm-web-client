@@ -110,6 +110,10 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_CLEAR_ALL, {textKey:"clearAll", image:"Cancel"});
 	ZmOperation.registerOp(ZmId.OP_CLOSE, {textKey:"close", tooltipKey:"closeTooltip", image:"Close", shortcut:ZmKeyMap.CANCEL});
 	ZmOperation.registerOp(ZmId.OP_COMPOSE_FORMAT, {textKey:"format", tooltipKey:"formatTooltip", image:"SwitchFormat", shortcut:ZmKeyMap.HTML_FORMAT}, ZmSetting.HTML_COMPOSE_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_CONTACTGROUP_MENU, {tooltipKey:"contactGroupTooltip", image:"Group"}, ZmSetting.TAGGING_ENABLED,
+		AjxCallback.simpleClosure(function(parent) {
+			ZmOperation.addDeferredMenu(ZmOperation.addContactGroupMenu, parent, true);
+	}));
     ZmOperation.registerOp(ZmId.OP_COPY_TEXT, {textKey:"copy", image:"copy"});
 	ZmOperation.registerOp(ZmId.OP_DELETE, {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete", shortcut:ZmKeyMap.DEL, textPrecedence:60});
 	ZmOperation.registerOp(ZmId.OP_DETACH, {textKey:"detachTT", tooltipKey:"detachTT", image:"OpenInNewWindow"});
@@ -492,6 +496,18 @@ function(parent) {
 	parent.setMenu(menu);
 
 	return menu;
+};
+
+/**
+ * Adds a contact group menu for creating a contacts from the contact list
+ * @param {DwtComposite}    parent  parent widget (a toolbar or action menu)
+ * @return {ZmActionMenu) the menu
+ */
+ZmOperation.addContactGroupMenu =
+function(parent) {
+	var contactGroupMenu = new ZmContactGroupMenu(parent);
+	parent.setMenu(contactGroupMenu);
+	return contactGroupMenu;
 };
 
 /**

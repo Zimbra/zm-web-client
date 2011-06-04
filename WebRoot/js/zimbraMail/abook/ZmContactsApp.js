@@ -1077,3 +1077,20 @@ ZmContactsApp.prototype.cacheDL =
 function(addr, dl) {
 	this._dlCache[addr] = dl;
 };
+
+/**
+ * Adds/remove contacts from the contact list hash
+ * @param contact  {Object}     contact object
+ * @param doDelete {boolean}    true to delete from hash
+ */
+ZmContactsApp.prototype.updateIdHash =
+function(contact, doDelete) {
+	var id = contact.id;
+	var hash = this.getContactList().getIdHash();
+	if (!doDelete) {
+		hash[id] = contact;
+	}
+	else {
+		delete hash[id];
+	}
+};

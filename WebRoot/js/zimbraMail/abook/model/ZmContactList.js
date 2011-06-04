@@ -737,6 +737,15 @@ function(contact) {
 };
 
 /**
+ * Gets the list ID hash
+ * @return idHash {Ojbect} list ID hash
+ */
+ZmContactList.prototype.getIdHash =
+function() {
+	return this._idHash;
+}
+
+/**
  * @private
  */
 ZmContactList.prototype._handleResponseModifyItem =

@@ -406,6 +406,7 @@ function(ev) {
 ZmContactController.prototype._doDelete = 
 function(items, hardDelete, attrs, skipPostProcessing) {
 	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
+	appCtxt.getApp(ZmApp.CONTACTS).updateIdHash(items, true);
 
 	if (!skipPostProcessing) {
 		// disable input fields (to prevent blinking cursor from bleeding through)

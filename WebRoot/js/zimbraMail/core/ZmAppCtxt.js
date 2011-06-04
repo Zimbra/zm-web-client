@@ -425,6 +425,19 @@ function() {
 };
 
 /**
+ * Gets the new contact group dialog.
+ *
+ * @return	{ZmNewContactGroupDialog}	the new contact group dialog
+ */
+ZmAppCtxt.prototype.getNewContactGroupDialog =
+function() {
+	if (!this._newContactGroupDialog) {
+		this._newContactGroupDialog = new ZmNewContactGroupDialog(this._shell);
+	}
+	return this._newContactGroupDialog;
+};
+
+/**
  * Gets the rename tag dialog.
  * 
  * @return	{ZmRenameTagDialog}		the rename tag dialog

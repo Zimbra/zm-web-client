@@ -920,6 +920,7 @@ function(attr, isBatchMode, result) {
 		}
 		var msg = this.isGroup() ? ZmMsg.groupCreated : ZmMsg.contactCreated;
 		appCtxt.getAppController().setStatusMsg(msg);
+		appCtxt.getApp(ZmApp.CONTACTS).updateIdHash(cn, false);
 	} else {
 		var msg = this.isGroup() ? ZmMsg.errorCreateGroup : ZmMsg.errorCreateContact;
 		var detail = ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
@@ -1025,6 +1026,7 @@ function(attr, callback, result) {
 		if (attr[ZmContact.F_folderId] && this.folderId != attr[ZmContact.F_folderId]) {
 			this._setFolder(attr[ZmContact.F_folderId]);
 		}
+		appCtxt.getApp(ZmApp.CONTACTS).updateIdHash(cn, false);
 	} else {
         var detail = ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
         appCtxt.getAppController().setStatusMsg(ZmMsg.errorModifyContact, ZmStatusView.LEVEL_CRITICAL, detail);

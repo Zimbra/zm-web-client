@@ -52,7 +52,7 @@ ZmContactListController = function(container, contactsApp) {
 	this._listeners[ZmOperation.PRINT_CONTACT] = new AjxListener(this, this._printListener);
 	this._listeners[ZmOperation.PRINT_ADDRBOOK] = new AjxListener(this, this._printAddrBookListener);
     this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._syncAllListener);
-
+	this._listeners[ZmOperation.NEW_GROUP]	= this._groupListener.bind(this);
 	this._parentView = {};
 };
 
@@ -335,6 +335,7 @@ ZmContactListController.prototype._getActionMenuOps =
 function() {
 	var list = this._participantOps();
 	list.push(ZmOperation.SEP,
+				ZmOperation.CONTACTGROUP_MENU,
 				ZmOperation.TAG_MENU,
 				ZmOperation.DELETE,
 				ZmOperation.MOVE,
@@ -473,7 +474,8 @@ function(view) {
         ZmOperation.setOperation(this._actionMenu.getSearchMenu(), ZmOperation.SEARCH_TO, ZmOperation.SEARCH_TO, ZmMsg.findEmailToContact);
        if (this._actionMenu.getSearchMenu().getOp("SEARCH"))
         ZmOperation.setOperation(this._actionMenu.getSearchMenu(), ZmOperation.SEARCH, ZmOperation.SEARCH, ZmMsg.findEmailFromContact);
-    }   
+    }
+	this._setupContactGroupMenu(this._actionMenu);
 
 };
 
@@ -690,6 +692,7 @@ function(parent, num) {
 			var isInTrash = folder && folder.isInTrash();
 			var canEdit = (folder == null || !folder.isReadOnly());
 
+			parent.enable([ZmOperation.CONTACTGROUP_MENU], (num > 0));
 			parent.enable([ZmOperation.TAG_MENU], (!isShare && num > 0));
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], canEdit && num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1 && !isInTrash);
@@ -705,10 +708,12 @@ function(parent, num) {
 			var canEdit = (num == 1 && !contact.isReadOnly() && !ZmContact.isInTrash(contact));
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.TAG_MENU], num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit);
+			parent.enable([ZmOperation.CONTACTGROUP_MENU], (num > 0));
 		}
 	} else {
 		// gal contacts cannot be tagged/moved/deleted
 		parent.enableAll(false);
+		parent.enable([ZmOperation.CONTACTGROUP_MENU], (num > 0));
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
 		parent.enable([ZmOperation.NEW_MESSAGE, printOp], num > 0);
 		parent.enable(ZmOperation.CONTACT, num == 1);
@@ -834,8 +839,9 @@ function(ev) {
 			ZmImApp.updateImMenuItemByContact(imItem, contact);
 		}
 	}
+	ZmOperation.setOperation(actionMenu, ZmOperation.CONTACTGROUP_MENU, ZmOperation.CONTACTGROUP_MENU, ZmMsg.AB_CONTACT_GROUP);
 	ZmOperation.setOperation(actionMenu, ZmOperation.TAG_MENU, ZmOperation.TAG_MENU, contact.isGroup() ? ZmMsg.AB_TAG_GROUP : ZmMsg.AB_TAG_CONTACT);
-
+	this._setContactGroupMenu(actionMenu);
 	actionMenu.popup(0, ev.docX, ev.docY);
 	if (ev.ersatz) {
 		// menu popped up via keyboard nav
@@ -1032,7 +1038,9 @@ function(result) {
 ZmContactListController.prototype._doDelete =
 function(items, hardDelete, attrs) {
 	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
-
+	for (var i=0; i<items.length; i++) {
+		appCtxt.getApp(ZmApp.CONTACTS).updateIdHash(items[i], true);
+	}
 	// if more contacts to show,
 	var size = this._listView[this._currentView].getSelectedItems().size();
 	if (size == 0) {
@@ -1064,3 +1072,153 @@ function() {
 };
 
 
+ZmContactListController.prototype._setContactGroupMenu =
+function(parent) {
+	if (!parent) { return; }
+
+	var groupOp = parent.getOp(ZmOperation.CONTACTGROUP_MENU);
+	if (groupOp) {
+		var groupMenu = parent.getContactGroupMenu();
+		var items = this.getItems();
+		items = AjxUtil.toArray(items);
+		var contacts = this._getContactsFromCache();
+		var contactGroups = this._filterGroups(contacts);
+		var sortedGroups = this._sortContactGroups(contactGroups);
+		groupMenu.set(items, sortedGroups);
+	}
+};
+
+ZmContactListController.prototype._setupContactGroupMenu =
+function(parent) {
+	if (!parent) return;
+	var groupMenu = parent.getContactGroupMenu();
+	if (groupMenu) {
+		groupMenu.addSelectionListener(this._listeners[ZmOperation.NEW_GROUP]);
+	}
+};
+
+/**
+ * handles updating the group item data
+ * @param ev
+ */
+ZmContactListController.prototype._contactListChange =
+function(ev) {
+	if (ev && ev.source && ev.type == ZmId.ITEM_CONTACT) {
+			var item = ev.source;
+			var id = DwtId.WIDGET_ITEM + "__" + this._currentView + "__" + ev.source.id;
+			var view = this._listView[this._currentView];
+			view._setItemData(null, "item", item, id);
+	}
+
+
+};
+
+ZmContactListController.prototype._groupListener =
+function(ev, items) {
+	var curView = appCtxt.getAppViewMgr().getCurrentViewId();
+	if (curView == this._getViewType() || curView == ZmId.VIEW_MIXED) {
+		var groupEvent = ev.getData(ZmContactGroupMenu.KEY_GROUP_EVENT);
+		var groupAdded = ev.getData(ZmContactGroupMenu.KEY_GROUP_ADDED);
+		items = items || this.getItems();
+		if (groupEvent == ZmEvent.E_MODIFY) {
+			var mods = {};
+			var groupId = ev.getData(Dwt.KEY_OBJECT).id;
+			var group = appCtxt.getApp(ZmApp.CONTACTS).getContactList().getById(groupId);
+			if (group) {
+				group.addChangeListener(this._contactListChange.bind(this), 0);//update the group data
+				mods[ZmContact.F_dlist] = this._getGroupMembers(items, group);
+				this._doModify(group, mods);
+			}
+		}
+		else if (groupEvent == ZmEvent.E_CREATE) {
+			this._pendingActionData = items;
+			var newContactGroupDialog = appCtxt.getNewContactGroupDialog();
+			if (!this._newContactGroupCb) {
+				this._newContactGroupCb = new AjxCallback(this, this._newContactGroupCallback);
+			}
+			ZmController.showDialog(newContactGroupDialog, this._newContactGroupCb);
+			newContactGroupDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newContactGroupDialog);
+		}
+	}
+};
+
+ZmController.prototype._newContactGroupCallback =
+function(params) {
+	var groupName = params.name;
+	appCtxt.getNewContactGroupDialog().popdown();
+	var items = this.getItems();
+	var mods = {};
+	mods[ZmContact.F_dlist] = this._getGroupMembers(items);
+	mods[ZmContact.F_folderId] = this._folderId;
+	mods[ZmContact.F_fileAs] = ZmContact.computeCustomFileAs(groupName);
+	mods[ZmContact.F_nickname] = groupName;
+	mods[ZmContact.F_type] = "group";
+	this._doCreate(this._list, mods);
+};
+
+//methods for dealing with contact groups
+ZmController.prototype._getGroupMembers =
+function(items, group) {
+	var mods = {};
+	var groupEmails = [];
+	for (var i=0; i<items.length; i++) {
+		if (!items[i].isGroup()) {
+			var email = items[i].getEmail();
+			if (email != "") {
+				var ajxEmailAddress = new AjxEmailAddress(email, null, items[i].getFileAs(), items[i].getFullNameForDisplay(), false);
+				groupEmails.push(ajxEmailAddress.toString());
+			}
+		}
+		else {
+			var arr = AjxEmailAddress.split(items[i].getAttr(ZmContact.F_dlist));
+			groupEmails = AjxUtil.mergeArrays(groupEmails, arr);
+		}
+	}
+	if (group) {
+		//handle potential duplicates
+		var groupArr = AjxEmailAddress.split(group.getAttr(ZmContact.F_dlist));
+		var listArr = AjxUtil.mergeArrays(groupArr, groupEmails);
+		return listArr.join(", ");
+	}
+
+	return groupEmails.join(", ");
+};
+
+ZmController.prototype._getContactsFromCache =
+function() {
+	var contactList = appCtxt.getApp(ZmApp.CONTACTS).getContactList();
+	if (contactList){
+		return contactList.getIdHash();
+	}
+	return {};
+};
+
+ZmController.prototype._sortContactGroups =
+function(contactGroups) {
+	var sortByNickname = function(a, b) {
+		if (!a._attrs && !b._attrs) {
+			return 1;
+		}
+		a = a._attrs.nickname.toLowerCase();
+		b = b._attrs.nickname.toLowerCase();
+		if (a > b)
+			return 1;
+		if (a < b)
+			return -1;
+		return 0;
+	};
+
+	return contactGroups.sort(sortByNickname);
+};
+
+ZmContactListController.prototype._filterGroups =
+function(contacts) {
+	var groups = [];
+	for (var id in contacts) {
+		var typeAttr = ZmContact.getAttr(contacts[id], "type");
+		if (typeAttr && typeAttr.toUpperCase() == ZmItem.GROUP.toUpperCase()) {
+			groups.push(contacts[id]);
+		}
+	}
+	return groups;
+};

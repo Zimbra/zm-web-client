@@ -173,3 +173,9 @@ function() {
 	var ctlr = appCtxt.getApp(ZmApp.MAIL).getMailListController();
 	ctlr._newButtonListener(new DwtSelectionEvent(true), ZmOperation.NEW_MENU);
 };
+
+
+ZmUnitTestUtil.goToContacts =
+function() {
+	appCtxt.getApp(ZmApp.CONTACTS).launch();
+};

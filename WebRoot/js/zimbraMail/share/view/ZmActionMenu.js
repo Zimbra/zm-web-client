@@ -144,6 +144,14 @@ function() {
     }
 };
 
+ZmActionMenu.prototype.getContactGroupMenu =
+function() {
+	var menuItem = this.getMenuItem(ZmOperation.CONTACTGROUP_MENU);
+	if (menuItem) {
+		return menuItem.getMenu();
+	}
+};
+
 // Private methods
 
 // Returns the ID for the given menu item.
