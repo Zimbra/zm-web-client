@@ -13,7 +13,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-UT.module("YouTube");
+UT.module("YouTube", ["Zimlet"]);
 
 // Validate possible YouTube links
 UT.test("YouTube link http://www.youtube.com/watch?v=ID", {

@@ -687,11 +687,7 @@ function(params) {
 	
 	if (params.unitTest) {
 		var utm = this._components[ZmAppViewMgr.C_UNITTEST] = window.unitTestManager;
-		var callback = new AjxCallback(this,
-			function() {
-				utm.runTests();
-			});
-		this.addPostRenderCallback(callback, 6, 100);
+		appCtxt.addZimletsLoadedListener(utm.runTests.bind(utm));
 	}
 
 	this.getKeyMapMgr();	// make sure keyboard handling is initialized

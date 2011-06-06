@@ -13,7 +13,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-UT.module("Compose");
+UT.module("Compose", ["Mail", "Smoke"]);
 
 // Make sure the compose page comes up when the New button is pressed.
 UT.test("Show compose page", {

@@ -13,7 +13,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-UT.module("Bubbles");
+UT.module("Bubbles", ["Mail"]);
 
 // Pretend that a "d" was typed into the To: field in compose, and that the user then selected
 // the first result from the autocomplete list. A bubble should be placed in the To: field.

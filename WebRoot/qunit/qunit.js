@@ -252,8 +252,10 @@ Test.prototype = {
 var QUnit = {
 
 	// call on start of module test to prepend name to all tests
-	module: function(name, testEnvironment) {
+	module: function(name, testEnvironment, tags) {
 		config.currentModule = name;
+		tags = (testEnvironment instanceof Array) ? testEnvironment : tags;
+		config.tags = tags;
 		config.currentModuleTestEnviroment = testEnvironment;
 	},
 
@@ -283,7 +285,7 @@ var QUnit = {
 			name = '<span class="module-name">' + config.currentModule + "</span>: " + name;
 		}
 
-		if ( !validTest(config.currentModule + ": " + testName) ) {
+		if ( !validTest(config.currentModule) ) {
 			return;
 		}
 		
@@ -469,8 +471,15 @@ var config = {
 	}
 
 	QUnit.urlParams = urlParams;
-	config.filter = urlParams.filter;
-
+	
+	var filters = urlParams.filter.split(",");
+	if (filters && filters.length) {
+		config.filter = {};
+		for (var i = 0; i < filters.length; i++) {
+			config.filter[filters[i]] = true;
+		}
+	}
+	
 	// Figure out if we're running the tests from a server or not
 	QUnit.isLocal = !!(location.protocol === 'file:');
 })();
@@ -787,27 +796,19 @@ function done() {
 }
 
 function validTest( name ) {
-	var filter = config.filter,
-		run = false;
-
-	if ( !filter ) {
+	
+	if (!config.filter || config.filter[name]) {
 		return true;
 	}
-
-	not = filter.charAt( 0 ) === "!";
-	if ( not ) {
-		filter = filter.slice( 1 );
+	var tags = config.tags;
+	if (tags) {
+		for (var i = 0; i < tags.length; i++) {
+			if (config.filter[tags[i]]) {
+				return true;
+			}
+		}
 	}
-
-	if ( name.indexOf( filter ) !== -1 ) {
-		return !not;
-	}
-
-	if ( not ) {
-		run = true;
-	}
-
-	return run;
+	return false;
 }
 
 // so far supports only Firefox, Chrome and Opera (buggy)

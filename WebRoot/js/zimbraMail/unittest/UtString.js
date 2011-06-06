@@ -14,7 +14,7 @@
  */
 
 
-UT.module("String");
+UT.module("String", ["Util"]);
 
 UT.test("buildAttribute() method, prependSpace argument test",
 	function() {

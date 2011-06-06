@@ -26,10 +26,15 @@ Running Tests
 To run ZCS unit tests, add a query string argument "unittest=1". By default, all
 tests will be run. To run tests for one or more modules, put them in a list
 separated by commas and use it as the value of a "filter" query string argument.
+Modules have also been grouped through the use of tags. For example, there might
+be a tag "Mail" applied to all the mail-related modules. You can mix module names
+and tags in the filter list.
 
 http://localhost:7070/zimbra/?unittest=1
 http://localhost:7070/zimbra/?unittest=1&filter=Compose
 http://localhost:7070/zimbra/?unittest=1&filter=Compose,Bubbles
+http://localhost:7070/zimbra/?unittest=1&filter=Mail
+http://localhost:7070/zimbra/?unittest=1&filter=Mail,String
 
 Sign in as user "unittest" with the usual password. That account has been set
 up with sample data to test against. If you sign in as another user, tests
@@ -54,9 +59,9 @@ use.
 
 ---- Basics ----
 
-UT.module(name)
+UT.module(name, tags)
 
-	Declares a module.
+	Declares a module and optionally assigns a list of tags to it.
 	
 UT.test(name, env, func)
 
