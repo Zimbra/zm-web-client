@@ -34,8 +34,8 @@ ZmMailListSizeGroup.GROUP = [ZmMailListSizeGroup.ENORMOUS, ZmMailListSizeGroup.H
 
 ZmMailListSizeGroup.SIZE = {};
 ZmMailListSizeGroup.SIZE[ZmMailListSizeGroup.ENORMOUS] = {min: 5 * ZmMailListSizeGroup.MEGABYTE - ZmMailListSizeGroup.MEGABYTE/2}; // > 4.5MB
-ZmMailListSizeGroup.SIZE[ZmMailListSizeGroup.HUGE] = {min: ZmMailListSizeGroup.MEGABYTE - 512, max: (5 * ZmMailListSizeGroup.MEGABYTE) - ZmMailListSizeGroup.MEGABYTE/2};    //999.5KB - 4.5MB
-ZmMailListSizeGroup.SIZE[ZmMailListSizeGroup.VERY_LARGE] = {min: 500 * ZmMailListSizeGroup.KILOBYTE - 512, max: ZmMailListSizeGroup.MEGABYTE - 512}; //499.5KB - 999.5KB
+ZmMailListSizeGroup.SIZE[ZmMailListSizeGroup.HUGE] = {min: (ZmMailListSizeGroup.MEGABYTE) - 512, max: (5 * ZmMailListSizeGroup.MEGABYTE) - ZmMailListSizeGroup.MEGABYTE/2};    //1023.5KB - 4.5MB
+ZmMailListSizeGroup.SIZE[ZmMailListSizeGroup.VERY_LARGE] = {min: (500 * ZmMailListSizeGroup.KILOBYTE) - 512, max: ZmMailListSizeGroup.MEGABYTE - 512}; //499.5KB - 1023.5KB
 ZmMailListSizeGroup.SIZE[ZmMailListSizeGroup.LARGE] = {min: 100 * ZmMailListSizeGroup.KILOBYTE - 512, max: (500 * ZmMailListSizeGroup.KILOBYTE) - 512};//99.5KB - 499.5KB
 ZmMailListSizeGroup.SIZE[ZmMailListSizeGroup.MEDIUM] = {min: 25 * ZmMailListSizeGroup.KILOBYTE -512, max: (100 * ZmMailListSizeGroup.KILOBYTE)- 512};  //24.5KB - 99.5KB
 ZmMailListSizeGroup.SIZE[ZmMailListSizeGroup.SMALL] = {min: 10 * ZmMailListSizeGroup.KILOBYTE - 512, max: (25 * ZmMailListSizeGroup.KILOBYTE) - 512}; //9.5KB - 24.5KB
@@ -165,7 +165,7 @@ function() {
 
 ZmMailListSizeGroup.prototype._isInSizeRange =
 function(size, section) {
-	if (size && section) {
+	if (size >= 0 && section) {
 		var min = ZmMailListSizeGroup.SIZE[section].min;
 		var max = ZmMailListSizeGroup.SIZE[section].max;
 		if (min && max) {

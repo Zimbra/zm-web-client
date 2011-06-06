@@ -13,6 +13,9 @@
  */
 ZmMailListDateGroup = function(){
     this.id = ZmId.GROUPBY_DATE;
+	this._weekStartDay = appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
+	var dayOfWeek = this._getToday().getDay();
+	this._keys = this._sortKeys(dayOfWeek, false);
     ZmMailListGroup.call(this);
 };
 
@@ -35,10 +38,13 @@ ZmMailListDateGroup.EARLIER_THIS_MONTH = "EARLIER_THIS_MONTH";
 ZmMailListDateGroup.LAST_MONTH = "LAST_MONTH";
 ZmMailListDateGroup.OLDER = "OLDER";
 
-ZmMailListDateGroup.GROUP = [ZmMailListDateGroup.TODAY, ZmMailListDateGroup.YESTERDAY, ZmMailListDateGroup.MONDAY, ZmMailListDateGroup.TUESDAY,
-							 ZmMailListDateGroup.WEDNESDAY, ZmMailListDateGroup.THURSDAY, ZmMailListDateGroup.FRIDAY, ZmMailListDateGroup.SATURDAY,
-							 ZmMailListDateGroup.SUNDAY, ZmMailListDateGroup.LAST_WEEK, ZmMailListDateGroup.TWO_WEEKS_AGO, ZmMailListDateGroup.THREE_WEEKS_AGO,
+ZmMailListDateGroup.GROUP = [ZmMailListDateGroup.TODAY, ZmMailListDateGroup.YESTERDAY, ZmMailListDateGroup.SUNDAY, ZmMailListDateGroup.MONDAY,
+							 ZmMailListDateGroup.TUESDAY, ZmMailListDateGroup.WEDNESDAY, ZmMailListDateGroup.THURSDAY, ZmMailListDateGroup.FRIDAY,
+							 ZmMailListDateGroup.SATURDAY, ZmMailListDateGroup.LAST_WEEK, ZmMailListDateGroup.TWO_WEEKS_AGO, ZmMailListDateGroup.THREE_WEEKS_AGO,
 							 ZmMailListDateGroup.EARLIER_THIS_MONTH, ZmMailListDateGroup.LAST_MONTH, ZmMailListDateGroup.OLDER];
+
+ZmMailListDateGroup.WEEKDAYS = [ZmMailListDateGroup.SUNDAY, ZmMailListDateGroup.MONDAY, ZmMailListDateGroup.TUESDAY, ZmMailListDateGroup.WEDNESDAY,
+							    ZmMailListDateGroup.THURSDAY, ZmMailListDateGroup.FRIDAY, ZmMailListDateGroup.SATURDAY];
 
 ZmMailListDateGroup.SECTION_TITLE = {};
 ZmMailListDateGroup.SECTION_TITLE[ZmMailListDateGroup.TODAY] = ZmMsg.today;
@@ -73,7 +79,8 @@ ZmMailListDateGroup.TIME["THREE_WEEKS_AGO"] = AjxDateUtil.MSEC_PER_DAY * 21;
 ZmMailListDateGroup.prototype.getAllSections =
 function(sortAsc) {
     var htmlArr = [];
-    var keys = this._sortKeys(sortAsc);
+	var dayOfWeek = this._getToday().getDay();
+    var keys = sortAsc ? this._sortKeys(dayOfWeek, sortAsc) : this._keys; //keys have already been sorted desc
     for (var i=0; i<keys.length; i++) {
         if (this._section[keys[i]].length > 0) {
             htmlArr.push(this.getSectionHeader(ZmMailListDateGroup.SECTION_TITLE[keys[i]]));
@@ -94,11 +101,10 @@ function(sortAsc) {
  */
 ZmMailListDateGroup.prototype.addMsgToSection =
 function(msg, item) {
-   var keys = this._sortKeys(false);
-   for (var i=0; i<keys.length; i++) {
-       if (this.isMsgInSection(keys[i], msg)) {
-        this._section[keys[i]].push(item);
-        return keys[i];
+   for (var i=0; i<this._keys.length; i++) {
+       if (this.isMsgInSection(this._keys[i], msg)) {
+        this._section[this._keys[i]].push(item);
+        return this._keys[i];
        }
    }
 };
@@ -196,6 +202,11 @@ function(){
   this._section[ZmMailListDateGroup.OLDER] = [];
 };
 
+/**
+ * determines if mail message was received today
+ * @param msg {ZmMailMsg} mail msg
+ * @return {boolean}
+ */
 ZmMailListDateGroup.prototype._isToday =
 function(msg){
     if(msg){
@@ -208,6 +219,11 @@ function(msg){
     return false;
 };
 
+/**
+ * determines if msg was received yesterday
+ * @param msg {ZmMailMsg} mail msg
+ * @return {boolean}
+ */
 ZmMailListDateGroup.prototype._isYesterday =
 function(msg) {
     if (msg) {
@@ -223,6 +239,12 @@ function(msg) {
     return false;
 };
 
+/**
+ * message is this week, but not today or yesterday
+ * @param msg {ZmMailMsg} mail msg
+ * @param dayOfWeek {integer} the day of the week to check against (e.g. Monday)
+ * @return {boolean}
+ */
 ZmMailListDateGroup.prototype._isDayOfWeek =
 function(msg, dayOfWeek) {
     if (msg) {
@@ -253,14 +275,18 @@ function(msg, minGroup, maxGroup) {
 		var min = today.getTime() - ZmMailListDateGroup.TIME[minGroup];
 		var d = this._getDateFromMsg(msg, true);
 		if (d) {
-			return d.getTime() >= min && d.getTime() < max;  //TODO: handle last Friday email when today is Monday.
+			return d.getTime() >= min && d.getTime() < max;
 		}
 	}
 
 	return false;
 };
 
-
+/**
+ * message is earlier this month and also more than 3 weeks ago
+ * @param msg {ZmMailMsg} mail msg
+ * @return {boolbean}
+ */
 ZmMailListDateGroup.prototype._isEarlierThisMonth =
 function(msg) {
     if (msg) {
@@ -276,10 +302,16 @@ function(msg) {
     return false;
 };
 
+/**
+ * message is last month and also more than 3 weeks ago from today
+ * @param msg {ZmMailMsg} mail message
+ * @return {boolean}
+ */
 ZmMailListDateGroup.prototype._isLastMonth =
 function(msg) {
     if (msg) {
         var today = this._getToday();
+	    var threeWeeksAgo = today.getTime() - ZmMailListDateGroup.TIME[ZmMailListDateGroup.THREE_WEEKS_AGO];
         var thisMonth = today.getMonth();
         var thisYear = today.getYear();
         var lastMonth = this._calculateLastMonth(thisMonth);
@@ -287,7 +319,7 @@ function(msg) {
         if (d) {
             if(d.getMonth() != thisMonth) {
                 if (d.getYear() == thisYear || d.getYear() == thisYear -1) {
-                    return d.getMonth() == lastMonth;
+                    return d.getMonth() == lastMonth && d.getTime() < threeWeeksAgo;
                 }
             }
         }
@@ -296,6 +328,11 @@ function(msg) {
     return false;
 };
 
+/**
+ * message is more than a month old
+ * @param msg {ZmMailMsg} mail msg
+ * @return {boolean}
+ */
 ZmMailListDateGroup.prototype._isOlder =
 function(msg) {
     if (msg) {
@@ -321,14 +358,24 @@ function(msg, resetHours) {
     return null;
 };
 
+/**
+ * Sorts sections (e.g. Today, Yesterday, Days, Last Week, etc) by ASC or DESC order.  dayOfWeek is used to sort the week days in ASC/DESC order
+ * @param dayOfWeek {integer} day value of today
+ * @param sortAsc  {boolean} true if sort ascending
+ * @return keys {array} sorted keys
+ */
 ZmMailListDateGroup.prototype._sortKeys =
-function(sortAsc) {
-	//TODO: handle first day of week is not Sunday setting
-    var keys = ZmMailListDateGroup.GROUP.slice(0);  //copy array
+function(dayOfWeek, sortAsc) {
+    var keys = [];
+	var sortedDays = this._sortThisWeek(dayOfWeek);
+	sortedDays = sortedDays.slice(2); //account for today & yesterday
+	keys = [ZmMailListDateGroup.TODAY, ZmMailListDateGroup.YESTERDAY];
+	keys = keys.concat(sortedDays);
+	keys = keys.concat([ZmMailListDateGroup.LAST_WEEK, ZmMailListDateGroup.TWO_WEEKS_AGO, ZmMailListDateGroup.THREE_WEEKS_AGO,
+						ZmMailListDateGroup.EARLIER_THIS_MONTH, ZmMailListDateGroup.LAST_MONTH, ZmMailListDateGroup.OLDER]);
     if (sortAsc) {
         keys.reverse();
     }
-
     return keys;
 };
 
@@ -357,3 +404,27 @@ function(section) {
    return "";
 };
 
+/**
+ * Sort days for this week.  If today is Monday & preferences is start week with Sunday, result will by [Monday, Sunday]
+ * @param firstDay {integer}  day value of today
+ * @return sorteDays {array} array of sorted days
+ */
+ZmMailListDateGroup.prototype._sortThisWeek =
+function(firstDay) {
+	var sortedDays = [];
+	var count = 0;
+	var foundStart = false;
+	while (count < 7 && !foundStart) {
+		if (firstDay == this._weekStartDay) {
+			foundStart = true;
+		}
+		sortedDays[count] = ZmMailListDateGroup.WEEKDAYS[firstDay];
+		firstDay--;
+		if (firstDay < 0) {
+			firstDay = 6;
+		}
+		count++;
+	}
+
+	return sortedDays;
+};

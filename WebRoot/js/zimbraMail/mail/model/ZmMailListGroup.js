@@ -5,7 +5,7 @@
  * message and a section header.
  */
 ZmMailListGroup = function(){
-    this._showEmptySectionHeader = false; //TODO: get from preference?
+    this._showEmptySectionHeader = false;
     this._sectionHeaders = [];
     this._init();
 };

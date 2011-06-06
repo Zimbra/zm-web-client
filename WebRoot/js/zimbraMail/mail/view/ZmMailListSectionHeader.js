@@ -13,10 +13,9 @@ ZmMailListSectionHeader= function(group, params) {
   this._group = group;
   this.setHtmlElementId(Dwt.getNextId(ZmMailListSectionHeader.HEADER_ID));
   this._createHtml(params);
-  this._setEventHdlrs([DwtEvent.ONCLICK, DwtEvent.ONMOUSEOVER, DwtEvent.ONMOUSEOUT, DwtEvent.ONMOUSEDOWN]);
+  this._setEventHdlrs([DwtEvent.ONMOUSEDOWN]);
   this.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._groupHeaderMouseClick));
-  this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._groupHeaderMouseOver));
-  this.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(this, this._groupHeaderMouseOut));
+
   this._collapsed = false;
 };
 
@@ -55,18 +54,6 @@ function(headerTitle) {
     htmlArr[idx++] = "</td></tr></table>"
 	htmlArr[idx++] = "</div>";
     return htmlArr.join("");
-};
-
-ZmMailListSectionHeader.prototype._groupHeaderMouseOver =
-function(ev) {
-    var target = DwtUiEvent.getTarget(ev);
-    target.style.textDecoration = "underline";
-};
-
-ZmMailListSectionHeader.prototype._groupHeaderMouseOut =
-function(ev) {
-    var target = DwtUiEvent.getTarget(ev);
-    target.style.textDecoration = "none";
 };
 
 ZmMailListSectionHeader.prototype._groupHeaderMouseClick =
