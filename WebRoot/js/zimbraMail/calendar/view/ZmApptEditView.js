@@ -786,13 +786,12 @@ function(width) {
         };
 		this._attendeesInputField = this._createInputField("_person", ZmCalBaseItem.PERSON, params);
 		this._optAttendeesInputField = this._createInputField("_optional", ZmCalBaseItem.OPTIONAL_PERSON);
+        //add Resources Field
+        this._resourceInputField = this._createInputField("_resourcesData", ZmCalBaseItem.EQUIPMENT, {strictMode:false});
 	}
 
-	// add location input field
+    // add location input field
 	this._locationInputField = this._createInputField("_location", ZmCalBaseItem.LOCATION, {strictMode:false});
-
-    //add Resources Field
-    this._resourceInputField = this._createInputField("_resourcesData", ZmCalBaseItem.EQUIPMENT, {strictMode:false});
 
     var edvId = AjxCore.assignId(this);
     this._schButtonId = this._htmlElId + "_scheduleButton";
@@ -1537,7 +1536,7 @@ function() {
 		this._setAutocompleteHandler(aclv, ZmCalBaseItem.LOCATION);
 	}
 
-    if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+    if (appCtxt.get(ZmSetting.GAL_ENABLED) && this.GROUP_CALENDAR_ENABLED) {
 		// autocomplete for locations
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
         params.keyUpCallback = new AjxCallback(this, this._handleResourceChange);
@@ -2358,10 +2357,12 @@ function(ev) {
 	// forward recipient is not an attendee
 
     var key = DwtKeyEvent.getCharCode(ev);
+    var _nodeName = el.nodeName;
+    if (_nodeName && _nodeName.toLowerCase() === "textarea") {
         this._adjustAddrHeight(el);
-    if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
-                    this.GROUP_CALENDAR_ENABLED) {
-                ZmAutocompleteListView.onKeyUp(ev);
+    }
+    if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) ){
+        ZmAutocompleteListView.onKeyUp(ev);
     }
     if (key == 32 || key == 59 || key == 186) {
         this.handleAttendeeChange();
