@@ -528,6 +528,7 @@ function() {
 		list.push(ZmOperation.SEP, ZmOperation.DETACH);
 	}
 	list.push(ZmOperation.SEP, ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD);
+	list.push(ZmOperation.SEP, ZmOperation.SHOW_ORIG);
 	return list;
 
 };
@@ -1268,6 +1269,11 @@ function(parent) {
 							(!folder && folderId == ZmFolder.ID_SPAM)  ||
                             (this._currentSearch && this._currentSearch.folderId == ZmFolder.ID_SPAM)); // fall back
 		var inPopupMenu = (parent instanceof ZmActionMenu);
+		if (parent instanceof ZmButtonToolBar) {
+			//might still be in a popup if it's in the Actions menu. That's the case now but I do this generically so it works if one day we move it as a main button (might want to do that in the spam folder at least)
+			inPopupMenu = parent.getActionsMenu() && parent.getActionsMenu().getOp(ZmOperation.SPAM);
+		}
+
 		if (inPopupMenu) {
 			item.setText(inSpamFolder ? ZmMsg.notJunkMarkLabel : ZmMsg.junkMarkLabel);
 		} else {
