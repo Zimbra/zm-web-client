@@ -412,12 +412,12 @@ function() {
 
     ZmCalItemComposeController.prototype._createToolBar.call(this);
 
-    var optionsButton = new DwtToolBarButton({id:ZmOperation.COMPOSE_OPTIONS, parent:this._toolbar});
-    optionsButton.setText(ZmMsg.options);
+	var optionsButton = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+	optionsButton.setVisible(true); //might be invisible if not ZmSetting.HTML_COMPOSE_ENABLED (see ZmCalItemComposeController._createToolBar)
 
-    var m = new DwtMenu({parent:optionsButton});
-    optionsButton.setMenu(m);
+	var m = optionsButton.getMenu();
 
+	var sepMi = new DwtMenuItem({parent:m, style:DwtMenuItem.SEPARATOR_STYLE});
     var mi = this._requestResponses = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
     mi.setText(ZmMsg.requestResponses);
     mi.setChecked(true, true);

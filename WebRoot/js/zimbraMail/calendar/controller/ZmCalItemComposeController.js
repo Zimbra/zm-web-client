@@ -215,7 +215,7 @@ function(actionCode) {
 				var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 				this._formatListener(null, newMode);
 				// reset the radio button for the format button menu
-				var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+				var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 				if (formatBtn) {
 					formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, newMode, true);
 				}
@@ -256,7 +256,7 @@ function(skipNotify, composeMode) {
 			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	}
 
-	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	if (formatBtn) {
         var menu = formatBtn.getMenu ? formatBtn.getMenu() : null;
         if(menu) {
@@ -277,7 +277,7 @@ function(skipNotify, composeMode) {
 			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	}
 
-	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	if (formatBtn) {
 		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, mode, skipNotify);
 	}
@@ -336,7 +336,7 @@ function() {
 	if (!appCtxt.isOffline) {
 		buttons.push(ZmOperation.SPELL_CHECK);
 	}
-	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT);
+	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_OPTIONS);
 
 	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this.viewId, controller:this});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
@@ -359,20 +359,24 @@ function() {
 		spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
 	}
 
+	var optionsButton = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+	optionsButton.setVisible(false); //start it hidden, and show in case it's needed.
+
 	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		var formatButton = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-		var m = new DwtMenu({parent:formatButton});
-		formatButton.setMenu(m);
+		optionsButton.setVisible(true); 
+
+		var m = new DwtMenu({parent:optionsButton});
+		optionsButton.setMenu(m);
 
 		var mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE});
 		mi.setImage("HtmlDoc");
-		mi.setText(ZmMsg.htmlDocument);
+		mi.setText(ZmMsg.formatAsHtml);
 		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML);
 		mi.addSelectionListener(new AjxListener(this, this._formatListener));
 
 		mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE});
 		mi.setImage("GenericDoc");
-		mi.setText(ZmMsg.plainText);
+		mi.setText(ZmMsg.formatAsText);
 		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.TEXT);
 		mi.addSelectionListener(new AjxListener(this, this._formatListener));
 	}
@@ -639,7 +643,7 @@ ZmCalItemComposeController.prototype._textModeCancelCallback =
 function(ev) {
 	this._textModeOkCancel.popdown();
 	// reset the radio button for the format button menu
-	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	if (formatBtn) {
 		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML, true);
 	}
