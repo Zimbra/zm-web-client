@@ -1144,6 +1144,7 @@ function(ev) {
 	}
 	else {
 		if (!oldGroup || (oldGroup.id != groupId)) {
+			hdr._sortable = ZmMailListGroup.getHeaderField(groupId);
 			this.setGroup(groupId);
 		}
 	}
