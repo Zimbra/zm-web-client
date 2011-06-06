@@ -16,6 +16,7 @@
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar" %>
 <%@ attribute name="rangeDate" rtexprvalue="true" required="false" type="java.util.Calendar"%>
 <%@ attribute name="print" rtexprvalue="true" required="false" %>
+<%@ attribute name="checkedCalendars" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -47,7 +48,9 @@
 
     <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
     <c:set var="currentWeekDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
-    <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
+    <c:if test="${empty checkedCalendars}">
+        <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
+    </c:if>
     <zm:getMiniCal var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${zm:addDay(currentDay, 42).timeInMillis}" varexception="gasException"/>
 </app:handleError>
 
