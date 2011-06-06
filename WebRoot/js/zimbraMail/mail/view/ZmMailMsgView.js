@@ -1524,29 +1524,29 @@ function(msg) {
 		var anchorId = [this._tagCellId, ZmMailMsgView._TAG_ANCHOR, tag.id].join("");
 		var imageId = [this._tagCellId, ZmMailMsgView._TAG_IMG, tag.id].join("");
 
-		html[i++] = "<span class='addrBubble Tag'>";
+		var tagClick = ['ZmMailMsgView._tagClick("', this._htmlElId, '","', tag.id, '");'].join("");
+		var removeClick = ['ZmMailMsgView._removeTagClick("', this._htmlElId, '","', tag.id, '");'].join("");
 
-		html[i++] = "<span class='TagImage'>";
-			html[i++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, ["id='", imageId, "'"].join(""));
-		html[i++] = "</span>";
 
-		html[i++] = "<a href='javascript:' onclick='ZmMailMsgView._tagClick(\"";
-		html[i++] = this._htmlElId;
-		html[i++] = '","';
-		html[i++] = tag.id;
-		html[i++] = "\"); return false;' id='";
+		html[i++] = "<span class='addrBubble Tag'";
+		html[i++] = " id='";
 		html[i++] = anchorId;
 		html[i++] = "'>";
+
+		html[i++] = "<span class='TagImage' onclick='";
+		html[i++] = tagClick;
+		html[i++] = "'>";
+		html[i++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, ["id='", imageId, "'"].join(""));
+		html[i++] = "</span>";
+
+		html[i++] = "<span class='TagName' onclick='";
+		html[i++] = tagClick;
+		html[i++] = "'>";
 		html[i++] = AjxStringUtil.htmlEncodeSpace(tag.name);
-		html[i++] = "</a>";
-		
-		html[i++] = "&nbsp;";
-		html[i++] = "<span class='ImgBubbleDelete' onclick='ZmMailMsgView._removeTagClick(\"";
-		html[i++] = this._htmlElId;
-		html[i++] = '","';
-		html[i++] = tag.id;
-		html[i++] = "\"); return false;' id='";
-		html[i++] = anchorId;
+		html[i++] = "&nbsp;</span>";
+
+		html[i++] = "<span class='ImgBubbleDelete' onclick='";
+		html[i++] = removeClick;
 		html[i++] = "'>";
 		html[i++] = "</span>";
 		html[i++] = "</span>";
