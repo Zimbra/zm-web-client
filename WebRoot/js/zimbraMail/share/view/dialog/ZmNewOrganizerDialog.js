@@ -406,3 +406,13 @@ function(event) {
 		urlField.focus();
 	}
 };
+
+ZmNewOrganizerDialog.prototype.setRemoteURL =
+function(url) {
+    this._remoteCheckboxField.checked = true;
+    this._urlField.value = url;
+    var urlRow = document.getElementById(this._remoteCheckboxFieldId + "URLrow");
+	var urlField= document.getElementById(this._remoteCheckboxFieldId + "URLfield");
+	urlRow.style.display = AjxEnv.isIE ? "block" : "table-row";
+
+};
