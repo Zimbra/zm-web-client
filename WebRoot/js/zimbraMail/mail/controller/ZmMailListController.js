@@ -1078,7 +1078,7 @@ function(items, markAsSpam, folder) {
 					childWin:appCtxt.isChildWindow && window,
 					closeChildWin: appCtxt.isChildWindow};
 
-	var allDoneCallback = new AjxCallback(this, this._checkItemCount);
+	var allDoneCallback = this._getAllDoneCallback();
 	var list = params.list = this._getList(params.items);
 	this._setupContinuation(this._doSpam, [markAsSpam, folder], params, allDoneCallback);
 	list.spamItems(params);

@@ -992,7 +992,7 @@ function(items, folder, attrs, isShiftKey) {
 	var moveOutFolder = appCtxt.getById(this.getFolderId());
 	var outOfTrash = (moveOutFolder && moveOutFolder.isInTrash() && !folder.isInTrash());
 
-    var allDoneCallback = new AjxCallback(this, this._checkItemCount);
+    var allDoneCallback = this._getAllDoneCallback();
 	if (move.length) {
         var params = {items:move, folder:folder, attrs:attrs, outOfTrash:outOfTrash};
 		var list = params.list = this._getList(params.items);
