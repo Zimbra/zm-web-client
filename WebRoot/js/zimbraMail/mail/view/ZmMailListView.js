@@ -42,7 +42,10 @@ ZmMailListView.SINGLE_COLUMN_SORT = [
 	{field:ZmItem.F_FROM,	msg:"from"		},
 	{field:ZmItem.F_SUBJECT,msg:"subject"	},
 	{field:ZmItem.F_SIZE,	msg:"size"		},
-	{field:ZmItem.F_DATE,	msg:"date"		}
+	{field:ZmItem.F_DATE,	msg:"date"		},
+    {field:ZmItem.F_ATTACHMENT, msg:"attachment" },
+    {field:ZmItem.F_FLAG, msg:"flag" },
+    {field:ZmItem.F_PRIORITY, msg:"priority" }
 ];
 
 
@@ -268,7 +271,7 @@ function() {
 		this._headerInit = {};
 		this._headerInit[ZmItem.F_SELECTION]	= {icon:"CheckboxUnchecked", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection, precondition:ZmSetting.SHOW_SELECTION_CHECKBOX};
 		this._headerInit[ZmItem.F_FLAG]			= {icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.flag, sortable:ZmItem.F_FLAG, noSortArrow:true, precondition:ZmSetting.FLAGGING_ENABLED};
-		this._headerInit[ZmItem.F_PRIORITY]		= {icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, precondition:ZmSetting.MAIL_PRIORITY_ENABLED};
+		this._headerInit[ZmItem.F_PRIORITY]		= {icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, sortable:ZmItem.F_PRIORITY, noSortArrow:true, precondition:ZmSetting.MAIL_PRIORITY_ENABLED};
 		this._headerInit[ZmItem.F_TAG]			= {icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, precondition:ZmSetting.TAGGING_ENABLED};
 		this._headerInit[ZmItem.F_ACCOUNT]		= {icon:"AccountAll", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.account, noRemove:true, resizeable:true};
 		this._headerInit[ZmItem.F_STATUS]		= {icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status};
@@ -504,24 +507,8 @@ function(mouseEv, div) {
 ZmMailListView.prototype._columnClicked =
 function(clickedCol, ev) {
 
-	// Bug 6830 - since server can't sort on recipient, let user search via dialog
-	var hdr = this.getItemFromElement(clickedCol);
-	if (hdr && hdr._sortable && hdr._sortable == ZmItem.F_FROM) {
-		if (this._isOutboundFolder()) {
-			var sel = this.getSelection();
-			var addrs = [];
-			for (var i = 0, len = sel.length; i < len; i++) {
-				var vec = sel[i].getAddresses(AjxEmailAddress.TO);
-				addrs = addrs.concat(vec.getArray());
-			}
-			var dlg = appCtxt.getAddrSelectDialog();
-			dlg.popup(addrs, this._folderId);
-			this._checkSelectionColumnClicked(clickedCol, ev);
-			return;
-		}
-	}
-
-    //var group = this._group ? this._group : this.getGroup(this._folderId);
+	//var group = this._group ? this._group : this.getGroup(this._folderId);
+    var hdr = this.getItemFromElement(clickedCol);
     var group = this.getGroup(this._folderId);
 	if (group && hdr && hdr._sortable) {
         var groupId = ZmMailListGroup.getGroupIdFromSortField(hdr._field);
@@ -538,8 +525,10 @@ function() {
 	var headerCol = this._headerHash[ZmItem.F_FROM];
 	if (headerCol) {
 		var colLabel = this._isOutboundFolder() ? ZmMsg.to : ZmMsg.from;
+        //bug:1108 & 43789#c19 since sort-by-rcpt affects server performance avoid using in convList instead used in outbound folder
+        headerCol._sortable = this._isOutboundFolder() ? ZmItem.F_TO : ((this.view == ZmId.VIEW_CONVLIST) ? null : ZmItem.F_FROM);
 
-		var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
+        var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
 		if (fromColSpan) {
 			fromColSpan.innerHTML = "&nbsp;" + colLabel;
 		}
@@ -590,7 +579,7 @@ function(field, itemIdx) {
 
 	var isOutboundFolder = this._isOutboundFolder();
 	if (field == ZmItem.F_FROM && isOutboundFolder) {
-	   return this._headerList[itemIdx]._sortable ? ZmMsg.findEmailsSentFolderTitle : ZmMsg.to;
+	   return this._headerList[itemIdx]._sortable ? ZmMsg.to : ZmMsg.to;
 	} else if (field == ZmItem.F_STATUS) {
 		return ZmMsg.messageStatus;
 	} else {

@@ -586,6 +586,11 @@ function(types) {
 		if (viewType) {
 			sortBy = appCtxt.get(ZmSetting.SORTING_PREF, viewType);
 		}
+        //bug:1108 & 43789#c19 since sort-by-rcpt gives exception with querystring, avoided rpct sorting with querysting instead used date sorting
+        var queryString = this._searchToolBar.getSearchFieldValue();
+        if((sortBy == ZmSearch.RCPT_ASC || sortBy == ZmSearch.RCPT_DESC) && queryString && queryString.length > 0) {
+           sortBy = (sortBy == ZmSearch.RCPT_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
+        }
 	}
 
 	return sortBy;
@@ -860,6 +865,13 @@ function(ev) {
 		}
 		appCtxt.notifyZimlets("onSearchButtonClick", [queryString]);
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
+
+        var searchQuery = {query: queryString, userText: userText, getHtml: getHtml, searchFor: opId};
+
+        if (this.currentSearch && this.currentSearch.folderId == ZmFolder.ID_SENT) {
+
+        }
+
 		this.search({query: queryString, userText: userText, getHtml: getHtml, searchFor: opId});
 	}
 };

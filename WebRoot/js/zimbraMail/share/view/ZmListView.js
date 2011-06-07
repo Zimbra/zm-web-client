@@ -973,7 +973,7 @@ function(field, itemIdx, isOutboundFolder) {
 	} else if (field == ZmItem.F_FLAG) {
         tooltip = ZmMsg.flagHeaderToolTip;
     } else if (field == ZmItem.F_PRIORITY){
-        tooltip = ZmMsg.priority;
+        tooltip = ZmMsg.priorityHeaderTooltip;
     } else if (field == ZmItem.F_TAG) {
         tooltip = ZmMsg.tag;
     } else if (field == ZmItem.F_ATTACHMENT) {
@@ -1147,12 +1147,16 @@ function(columnItem, bSortAsc, callback) {
 	// change the sort preference for this view in the settings
 	var sortBy;
 	switch (columnItem._sortable) {
-		case ZmItem.F_FROM:		sortBy = bSortAsc ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC; break;
-		case ZmItem.F_NAME:		sortBy = bSortAsc ? ZmSearch.SUBJ_ASC : ZmSearch.SUBJ_DESC; break; //used for Briefcase only now. SUBJ is mappaed to the filename of the document on the server side
-		case ZmItem.F_SUBJECT:	sortBy = bSortAsc ? ZmSearch.SUBJ_ASC : ZmSearch.SUBJ_DESC;	break;
-		case ZmItem.F_DATE:		sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;	break;
-		case ZmItem.F_SIZE:		sortBy = bSortAsc ? ZmSearch.SIZE_ASC : ZmSearch.SIZE_DESC;	break;
-		case ZmItem.F_SORTED_BY:sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;	break;
+		case ZmItem.F_FROM:		    sortBy = bSortAsc ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC; break;
+        case ZmItem.F_TO:           sortBy = bSortAsc ? ZmSearch.RCPT_ASC : ZmSearch.RCPT_DESC; break;
+		case ZmItem.F_NAME:		    sortBy = bSortAsc ? ZmSearch.SUBJ_ASC : ZmSearch.SUBJ_DESC; break; //used for Briefcase only now. SUBJ is mappaed to the filename of the document on the server side
+		case ZmItem.F_SUBJECT:	    sortBy = bSortAsc ? ZmSearch.SUBJ_ASC : ZmSearch.SUBJ_DESC;	break;
+		case ZmItem.F_DATE:		    sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;	break;
+		case ZmItem.F_SIZE:		    sortBy = bSortAsc ? ZmSearch.SIZE_ASC : ZmSearch.SIZE_DESC;	break;
+        case ZmItem.F_FLAG:		    sortBy = bSortAsc ? ZmSearch.FLAG_ASC : ZmSearch.FLAG_DESC;	break;
+        case ZmItem.F_ATTACHMENT:   sortBy = bSortAsc ? ZmSearch.ATTACH_ASC : ZmSearch.ATTACH_DESC; break;
+        case ZmItem.F_PRIORITY:     sortBy = bSortAsc ? ZmSearch.PRIORITY_ASC : ZmSearch.PRIORITY_DESC; break;
+		case ZmItem.F_SORTED_BY:    sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;	break;
 	}
 
 	if (sortBy) {
