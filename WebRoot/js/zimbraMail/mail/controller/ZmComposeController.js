@@ -322,7 +322,8 @@ ZmComposeController.prototype._preHideCallback =
 function(view, force) {
 
 	if (force && this._autoSaveTimer) {
-		this._autoSaveTimer.kill();
+		clearInterval(this._autoSaveTimer);
+		this._autoSaveTimer = null;
 
 		// auto-save if we leave this compose tab and the message has not yet been sent
 		if (!this._msgSent) {
@@ -859,7 +860,8 @@ ZmComposeController.prototype._setView =
 function(params) {
 
 	if (this._autoSaveTimer) {
-		this._autoSaveTimer.kill();
+		window.clearInterval(this._autoSaveTimer);
+		this._autoSaveTimer = null;
 	}
 
 	// save args in case we need to re-display (eg go from Reply to Reply All)
@@ -1043,9 +1045,7 @@ function() {
 	var autoSaveInterval = appCtxt.get(ZmSetting.AUTO_SAVE_DRAFT_INTERVAL);
 	if (autoSaveInterval) {
 		if (!this._autoSaveTimer) {
-			this._autoSaveTimer = new DwtIdleTimer(autoSaveInterval * 1000, new AjxCallback(this, this._autoSaveCallback));
-		} else {
-			this._autoSaveTimer.resurrect(autoSaveInterval * 1000);
+			this._autoSaveTimer = window.setInterval(AjxCallback.simpleClosure(this._autoSaveCallback, this, true), autoSaveInterval * 1000);
 		}
 	}
 
