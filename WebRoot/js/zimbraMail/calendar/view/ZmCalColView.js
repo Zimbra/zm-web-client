@@ -663,7 +663,10 @@ function(appt) {
 		hideTime: is60,
 		showAsColor : ZmApptViewHelper._getShowAsColorFromId(fba),
         boxBorder: ZmApptViewHelper.getBoxBorderFromId(fba),
-        isDraft: appt.isDraft
+        isDraft: appt.isDraft,
+        otherAttendees: appt.otherAttendees,
+        isException: appt.isException,
+        isRecurring: appt.isRecurring()
 	};
 
 	var template;

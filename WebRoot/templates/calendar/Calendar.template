@@ -8,16 +8,31 @@
 			<$ } $>
                 <td class="${showAsColor}" width=4 rowspan="<$= data.hideTime ? 2 : 3 $>"></td>
 				<td class='appt${newState}_time' id='${id}_st'>
-					<$ if (data.icon) { $>
-						<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
-					<$ } $>
-					<$ if (data.tagIcon) { $>
-						<div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
-					<$ } $>
-                    <$ if(data.isDraft) { $>
-                        <div class='appt_icon'><$= AjxImg.getImageHtml("Edit", "width:16") $></div>
-                    <$ } $>
-					${starttime}
+					<table cellspacing=0 cellpadding=0 style='background: none repeat scroll 0 0 transparent;border: 0 none;'>
+                        <tr>
+                            <td style='padding-right: 3px;'>
+                                <$ if (data.icon) { $>
+                                    <div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
+                                <$ } $>
+                                <$ if (data.tagIcon) { $>
+                                    <div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
+                                <$ } $>
+                                <$ if(data.isDraft) { $>
+                                    <div class='appt_icon'><$= AjxImg.getImageHtml("Edit", "width:16") $></div>
+                                <$ } $>
+                                ${starttime}
+                            </td>
+
+                            <$ if (data.otherAttendees) { $>
+                                <td style='padding-right: 3px;'><$= AjxImg.getImageHtml("ApptMeeting") $></td>
+                            <$ } $>
+                            <$ if (data.isException) { $>
+                                <td style='padding-right: 3px;'><$= AjxImg.getImageHtml("ApptException") $></td>
+                            <$ } else if (data.isRecurring) { $>
+                                <td style='padding-right: 3px;'><$= AjxImg.getImageHtml("ApptRecur") $></td>
+                            <$ } $>
+                        </tr>
+                    </table>
 				</td>
 			</tr>
 			<tr valign=top>
