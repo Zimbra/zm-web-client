@@ -52,6 +52,7 @@ ZmApp.SETTING[ZmApp.PREFERENCES]	= ZmSetting.OPTIONS_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.PREFERENCES]	= 10;
 ZmApp.QS_ARG[ZmApp.PREFERENCES]		= "options";
 ZmOrganizer.PREF_PAGE				= "PREF_PAGE";
+ZmPreferencesApp.QS_ARG_SECTION		= "section";
 
 ZmPreferencesApp.prototype = new ZmApp;
 ZmPreferencesApp.prototype.constructor = ZmPreferencesApp;
@@ -84,6 +85,11 @@ function(params, callback) {
 	if (appCtxt.multiAccounts) {
 		appCtxt.accountList.setActiveAccount(appCtxt.accountList.mainAccount);
 	}
+
+	if (params.qsParams && params.qsParams[ZmPreferencesApp.QS_ARG_SECTION]) {
+		callback = new AjxCallback(this, this.gotoSection, [params.qsParams[ZmPreferencesApp.QS_ARG_SECTION], callback]);
+	}
+
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require(["PreferencesCore", "Preferences"], true, loadCallback, null, true);
 };
@@ -173,6 +179,21 @@ function(refresh, addr) {
 		}
 	}
 };
+
+ZmPreferencesApp.prototype.gotoSection =
+function(section, callback) {
+	if (section) {
+		var prefCtlr = this.getPrefController();
+		var prefsView = prefCtlr && prefCtlr.getPrefsView();
+		if (prefsView) {
+			prefsView.selectSection(section);
+		}
+	}
+	if (callback instanceof AjxCallback) {
+		callback.run();
+	}
+};
+
 
 
 //
