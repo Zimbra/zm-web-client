@@ -544,6 +544,12 @@ function(refresh) {
 	}
 };
 
+ZmCalendarApp.prototype.runRefresh =
+function() {
+	appCtxt.getCalManager().getCalViewController().runRefresh();
+};
+
+
 ZmCalendarApp.prototype.deleteNotify =
 function(ids, force) {
 	if (!force && this._deferNotifications("delete", ids)) { return; }

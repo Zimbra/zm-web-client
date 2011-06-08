@@ -554,6 +554,12 @@ function(results, callback) {
 	}
 };
 
+ZmContactsApp.prototype.runRefresh =
+function() {
+	this.getContactListController().runRefresh();
+};
+
+
 /**
  * Sets the app as active.
  * 

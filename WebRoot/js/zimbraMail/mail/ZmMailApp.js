@@ -165,7 +165,6 @@ function(settings) {
 	settings.registerSetting("FORWARD_INCLUDE_WHAT",			{type:ZmSetting.T_PREF, defaultValue:ZmSetting.INC_BODY, isGlobal:true});
 	settings.registerSetting("FORWARD_MENU_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("FORWARD_USE_PREFIX",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
-	settings.registerSetting("GET_MAIL_ACTION",					{name:"zimbraPrefGetMailAction", type:ZmSetting.T_PREF, defaultValue:ZmSetting.GETMAIL_ACTION_DEFAULT, isGlobal:true});
 	settings.registerSetting("GROUP_MAIL_BY",					{name:"zimbraPrefGroupMailBy", type:ZmSetting.T_PREF, defaultValue:ZmSetting.GROUP_BY_MESSAGE, isImplicit:true, isGlobal:true});
 	settings.registerSetting("HTML_SIGNATURE_ENABLED",			{type:ZmSetting.T_PREF,dataType:ZmSetting.D_BOOLEAN,defaultValue:true});
 	settings.registerSetting("IDENTITIES_ENABLED",				{name:"zimbraFeatureIdentitiesEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -402,13 +401,6 @@ function() {
 		displayName:		ZmMsg.endOn,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
-	});
-
-	ZmPref.registerPref("GET_MAIL_ACTION", {
-		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-		orientation:		ZmPref.ORIENT_VERTICAL,
-		displayOptions: 	[ZmMsg.checkMailPrefDefault, ZmMsg.checkMailPrefUpdate],
-		options: 			[ZmSetting.GETMAIL_ACTION_DEFAULT, ZmSetting.GETMAIL_ACTION_UPDATE]
 	});
 
 	ZmPref.registerPref("INITIAL_SEARCH", {
@@ -1880,6 +1872,12 @@ function() {
 	var groupMailBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 	return (groupMailBy == ZmSetting.GROUP_BY_CONV) ? AjxDispatcher.run("GetConvListController") :
 													  AjxDispatcher.run("GetTradController");
+};
+
+
+ZmMailApp.prototype.runRefresh =
+function() {
+	this.getMailListController().runRefresh();
 };
 
 /**

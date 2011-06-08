@@ -149,6 +149,7 @@ ZmId.SKIN_SEARCH_BUILDER_TOOLBAR	= "skin_container_search_builder_toolbar";
 ZmId.SKIN_SEARCH_BUILDER_TR			= "skin_tr_search_builder";
 ZmId.SKIN_SEARCH					= "skin_container_search";
 ZmId.SKIN_PEOPLE_SEARCH				= "skin_container_people_search";
+ZmId.SKIN_REFRESH					= "skin_container_refresh";
 ZmId.SKIN_SHELL						= "skin_outer";
 ZmId.SKIN_SPACING_SEARCH			= "skin_spacing_search";
 ZmId.SKIN_SPLASH_SCREEN				= "skin_container_splash_screen";

@@ -68,7 +68,6 @@ ZmCalViewController = function(container, calApp) {
 	this._listeners[ZmOperation.NEW_APPT] = new AjxListener(this, this._newApptAction);
 	this._listeners[ZmOperation.NEW_ALLDAY_APPT] = new AjxListener(this, this._newAllDayApptAction);
 	this._listeners[ZmOperation.SEARCH_MAIL] = new AjxListener(this, this._searchMailAction);
-	this._listeners[ZmOperation.CAL_REFRESH] = new AjxListener(this, this._refreshButtonListener);
 	this._listeners[ZmOperation.MOVE] = new AjxListener(this, this._apptMoveListener);
 	this._listeners[ZmOperation.DELETE_INSTANCE] = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.DELETE_SERIES] = new AjxListener(this, this._deleteListener);
@@ -764,8 +763,6 @@ function(items) {
 ZmCalViewController.prototype._getToolBarOps =
 function() {
 	return [
-		ZmOperation.CAL_REFRESH,
-		ZmOperation.SEP,
 		ZmOperation.DELETE, ZmOperation.SEP, ZmOperation.MOVE,
 		ZmOperation.TAG_MENU,
 		ZmOperation.SEP,
@@ -795,7 +792,6 @@ function(viewId) {
 	this._toolbar[ZmId.VIEW_CAL] = toolbar;
 
 	// Setup the toolbar stuff
-	toolbar.enable([ZmOperation.CAL_REFRESH], true);
 	toolbar.enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], true);
 	toolbar.enable([ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.DAY_VIEW], true);
 
@@ -823,6 +819,12 @@ function(viewId) {
 	}
 
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, toolbar, this, viewId], {waitUntilLoaded:true});
+};
+
+
+ZmCalViewController.prototype.runRefresh =
+function() {
+	this._refreshButtonListener();
 };
 
 ZmCalViewController.prototype._setViewContents =

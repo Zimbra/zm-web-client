@@ -64,7 +64,6 @@ ZmMailListController = function(container, mailApp) {
 		this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
 	}
 	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
-	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._checkMailListener);
 
 	if (appCtxt.get(ZmSetting.SPAM_ENABLED)) {
 		this._listeners[ZmOperation.SPAM] = new AjxListener(this, this._spamListener);
@@ -540,9 +539,6 @@ function(view, className) {
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view, className);
 		this._createViewMenu(view);
-		if (appCtxt.isOffline && appCtxt.accountList.size() > 2) {
-			this._createSendReceiveMenu(this._toolbar[view]);
-		}
 		this._setReplyText(this._toolbar[view]);
 //		this._toolbar[view].addOp(ZmOperation.FILLER);
 		if (!appCtxt.isChildWindow) {
@@ -552,7 +548,6 @@ function(view, className) {
 
 	if (!appCtxt.isChildWindow) {
 		this._setupViewMenu(view);
-		this._setupCheckMailButton(this._toolbar[view]);
 		// reset new button properties
 		this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 	}
@@ -591,12 +586,7 @@ function() {
 
 ZmMailListController.prototype._standardToolBarOps =
 function() {
-	if (appCtxt.isChildWindow) {
-		return [];
-	}
-	return [
-		ZmOperation.CHECK_MAIL, ZmOperation.SEP
-	];
+	return [];
 };
 
 ZmMailListController.prototype._flagOps =
@@ -1181,13 +1171,6 @@ function(view) {
 	btn.noMenuBar = true;
 };
 
-ZmMailListController.prototype._createSendReceiveMenu =
-function(toolbar) {
-	var btn = toolbar.getButton(ZmOperation.CHECK_MAIL);
-	if (!btn) { return; }
-
-	btn.setMenu(new AjxCallback(this, this._setupSendReceiveMenuItems, [toolbar, btn]));
-};
 
 ZmMailListController.prototype._setupViewMenu =
 function(view) {
@@ -1220,25 +1203,6 @@ function(view, btn) {
 	return menu;
 };
 
-ZmMailListController.prototype._setupSendReceiveMenuItems =
-function(toolbar, btn) {
-	var menu = new ZmPopupMenu(btn, null, null, this);
-	btn.setMenu(menu);
-
-	var listener = new AjxListener(this, this._sendReceiveListener);
-	var list = appCtxt.accountList.visibleAccounts;
-	for (var i = 0; i < list.length; i++) {
-		var acct = list[i];
-		if (acct.isMain) { continue; }
-
-		var id = [ZmOperation.CHECK_MAIL, acct.id].join("-");
-		var mi = menu.createMenuItem(id, {image:acct.getIcon(), text:acct.getDisplayName()});
-		mi.setData(ZmOperation.MENUITEM_ID, acct.id);
-		mi.addSelectionListener(listener);
-	}
-
-	return menu;
-};
 
 // If we're in the Trash folder, change the "Delete" button tooltip
 ZmMailListController.prototype._setupDeleteButton =
@@ -1309,44 +1273,6 @@ function(parent) {
 	}
 };
 
-ZmMailListController.prototype._setupCheckMailButton =
-function(parent) {
-	var checkMailBtn = parent ? parent.getButton(ZmOperation.CHECK_MAIL) : null;
-	if (!checkMailBtn) { return; }
-
-	var folderId = this._getSearchFolderId();
-	var folder = appCtxt.getById(folderId);
-	var isInbox = (folderId == ZmFolder.ID_INBOX);
-	var isFeed = (folder && folder.isFeed());
-	var hasExternalAccounts = false;
-
-	var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
-	if (folder && !isInbox && !isFeed && isEnabled) {
-		hasExternalAccounts = folder.isDataSource(null, true);
-	}
-
-	if (!isInbox && isFeed) {
-		checkMailBtn.setText(ZmMsg.checkFeed);
-		checkMailBtn.setToolTipContent(ZmMsg.checkRssTooltip);
-	}
-	else if (!isInbox && hasExternalAccounts) {
-		checkMailBtn.setText(ZmMsg.checkExternalMail);
-		checkMailBtn.setToolTipContent(ZmMsg.checkExternalMail);
-	}
-	else {
-//		var checkMailMsg = appCtxt.isOffline ? ZmMsg.sendReceive : ZmMsg.checkMail;
-//		checkMailBtn.setText(checkMailMsg);
-
-		var tooltip;
-		if (appCtxt.isOffline) {
-			tooltip = ZmMsg.sendReceive;
-		} else {
-			tooltip = (appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT)
-				? ZmMsg.checkMailPrefDefault : ZmMsg.checkMailPrefUpdate;
-		}
-		checkMailBtn.setToolTipContent(tooltip);
-	}
-};
 
 /**
  * Gets the selected message.
@@ -1649,23 +1575,19 @@ function() {
 		}
 
 		if ((folder && folder.nId == ZmFolder.ID_INBOX) || !hasExternalAccounts) {
-			// bug: 23268 - call explicitly from mail app (this may be mixed controller)
-			if (appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT) {
-				appCtxt.getApp(ZmApp.MAIL).mailSearch();
-			} else {
-				appCtxt.getAppController().sendNoOp();
-			}
+			appCtxt.getAppController().sendNoOp();
 		}
 	}
 };
 
 ZmMailListController.prototype._handleSyncAll =
 function() {
-	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) &&
-		appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT)
-	{
-		this._app.getOverviewContainer().highlightAllMboxes();
-	}
+	//doesn't do anything now after I removed the appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT preference stuff
+};
+
+ZmMailListController.prototype.runRefresh =
+function() {
+	this._checkMailListener();
 };
 
 ZmMailListController.prototype._sendReceiveListener =
@@ -1734,7 +1656,7 @@ function(parent, num) {
 
 	if (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES) {
 		parent.enableAll(false);
-		parent.enable([ZmOperation.NEW_MENU, ZmOperation.CHECK_MAIL], true);
+		parent.enable([ZmOperation.NEW_MENU], true);
 		parent.enable([ZmOperation.DELETE, ZmOperation.FORWARD], num > 0);
 		return;
 	}
@@ -1759,7 +1681,7 @@ function(parent, num) {
 			parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (!isDrafts && !isFeed && num == 1));
 			parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !isDrafts && num == 1));
 			parent.enable([ZmOperation.SPAM, ZmOperation.MOVE, ZmOperation.FORWARD], (!isDrafts && num > 0));
-			parent.enable([ZmOperation.CHECK_MAIL, ZmOperation.VIEW_MENU], true);
+			parent.enable([ZmOperation.VIEW_MENU], true);
 			var editButton = parent.getOp(ZmOperation.EDIT);
 			if (editButton) {
 				editButton.setVisible(isDrafts && (!itemFolder || !itemFolder.isReadOnly()));

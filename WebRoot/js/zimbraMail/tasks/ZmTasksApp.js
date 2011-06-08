@@ -288,6 +288,12 @@ function(results, callback) {
 	if (callback) callback.run();
 };
 
+ZmTasksApp.prototype.runRefresh =
+function() {
+	this.getTaskListController().runRefresh();
+};
+
+
 // common API shared by calendar app
 
 /**

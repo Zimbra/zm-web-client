@@ -51,7 +51,6 @@ ZmContactListController = function(container, contactsApp) {
 	this._listeners[ZmOperation.PRINT] = null; // override base class to do nothing
 	this._listeners[ZmOperation.PRINT_CONTACT] = new AjxListener(this, this._printListener);
 	this._listeners[ZmOperation.PRINT_ADDRBOOK] = new AjxListener(this, this._printAddrBookListener);
-    this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._syncAllListener);
 	this._listeners[ZmOperation.NEW_GROUP]	= this._groupListener.bind(this);
 	this._parentView = {};
 };
@@ -316,10 +315,6 @@ function(map) {
 ZmContactListController.prototype._getToolBarOps =
 function() {
     var toolbarOps =  [];
-    if(appCtxt.isOffline) {
-        /* Add a send/recieve button *only* for ZD */
-        toolbarOps.push(ZmOperation.CHECK_MAIL, ZmOperation.SEP);
-    }
     toolbarOps.push(ZmOperation.EDIT,
             ZmOperation.SEP,
             ZmOperation.DELETE, ZmOperation.SEP,
@@ -431,12 +426,6 @@ function(view) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
 //		this._setupViewMenu(view, true);
 		this._setNewButtonProps(view, ZmMsg.createNewContact, "NewContact", "NewContactDis", ZmOperation.NEW_CONTACT);
-        if(appCtxt.isOffline) {
-            this._setupSendRecieveButton(view);
-            if (appCtxt.accountList.size() > 2) {
-                this._setupSendReceiveMenu(view);
-            }
-        }
 		this._setupPrintMenu(view);
 		this._toolbar[view].addFiller();
 		this._initializeNavToolBar(view);
@@ -511,34 +500,9 @@ function(view) {
 	DBG.timePt("done setting list");
 };
 
-/**
- *  Create a Send/Recieve Button and add listeners
- *  *only* for ZD
- *  @private
- */
-ZmContactListController.prototype._setupSendRecieveButton =
-function(view) {
-    var checkMailBtn = this._toolbar[view].getButton(ZmOperation.CHECK_MAIL);
-    var checkMailMsg = appCtxt.isOffline ? ZmMsg.sendReceive : ZmMsg.checkMail;
-    checkMailBtn.setText(checkMailMsg);
-
-    var tooltip;
-    if (appCtxt.isOffline) {
-        tooltip = ZmMsg.sendReceive;
-    } else {
-        tooltip = (appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT)
-                ? ZmMsg.checkMailPrefDefault : ZmMsg.checkMailPrefUpdate;
-    }
-    checkMailBtn.setToolTipContent(tooltip);
-};
-
 ZmContactListController.prototype._handleSyncAll =
 function() {
-    if (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) &&
-        appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT)
-    {
-        this._app.getOverviewContainer().highlightAllMboxes();
-    }
+	//doesn't do anything now after I removed the appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT preference stuff
 };
 
 ZmContactListController.prototype._syncAllListener =
@@ -547,38 +511,17 @@ function(view) {
     appCtxt.accountList.syncAll(callback);
 };
 
-/**
- *  Create menu for Send/Recieve button and add listeners
- *  *only* for ZD
- *  @private
- */
+ZmContactListController.prototype.runRefresh =
+function() {
+	
+	if (!appCtxt.isOffline) {
+		return;
+	}
+	//should only happen in ZD
 
-ZmContactListController.prototype._setupSendReceiveMenu =
-function(view) {
-    var btn = this._toolbar[view].getButton(ZmOperation.CHECK_MAIL);
-    if (!btn) { return; }
-    btn.setMenu(new AjxCallback(this, this._setupSendReceiveMenuItems, [this._toolbar, btn]));
+	this._syncAllListener();
 };
 
-ZmContactListController.prototype._setupSendReceiveMenuItems =
-function(toolbar, btn) {
-    var menu = new ZmPopupMenu(btn, null, null, this);
-    btn.setMenu(menu);
-
-    var listener = new AjxListener(this, this._sendReceiveListener);
-    var list = appCtxt.accountList.visibleAccounts;
-    for (var i = 0; i < list.length; i++) {
-        var acct = list[i];
-        if (acct.isMain) { continue; }
-
-        var id = [ZmOperation.CHECK_MAIL, acct.id].join("-");
-        var mi = menu.createMenuItem(id, {image:acct.getIcon(), text:acct.getDisplayName()});
-        mi.setData(ZmOperation.MENUITEM_ID, acct.id);
-        mi.addSelectionListener(listener);
-    }
-
-    return menu;
-};
 
 ZmContactListController.prototype._sendReceiveListener =
 function(ev) {

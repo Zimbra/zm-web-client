@@ -39,7 +39,6 @@ ZmTaskListController = function(container, app) {
 	this._listeners[ZmOperation.PRINT] = null; // override base class to do nothing
 	this._listeners[ZmOperation.PRINT_TASK] = new AjxListener(this, this._printTaskListener);
 	this._listeners[ZmOperation.PRINT_TASKFOLDER] = new AjxListener(this, this._printTaskFolderListener);
-	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._syncAllListener);
 	this._listeners[ZmOperation.SHOW_ORIG] = new AjxListener(this, this._showOrigListener);
 	this._listeners[ZmOperation.MARK_AS_COMPLETED] = new AjxListener(this, this._markAsCompletedListener);
     this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
@@ -353,10 +352,6 @@ function() {
 ZmTaskListController.prototype._getToolBarOps =
 function() {
 	var toolbarOps =  [];
-	if(appCtxt.isOffline) {
-		// Add a send/recieve button *only* for ZD
-		toolbarOps.push(ZmOperation.CHECK_MAIL, ZmOperation.SEP);
-	}
 	toolbarOps.push(ZmOperation.EDIT,
 			ZmOperation.SEP,
 			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.TAG_MENU,
@@ -399,12 +394,6 @@ function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
 	this._setNewButtonProps(view, ZmMsg.createNewTask, "NewTask", "NewTaskDis", ZmOperation.NEW_TASK);
-	if(appCtxt.isOffline) {
-		this._setupSendRecieveButton(view);
-		if (appCtxt.accountList.size() > 2) {
-			this._setupSendReceiveMenu(view);
-		}
-	}
 	this._setupPrintMenu(view);
     this._setupViewMenu(view);
 	this._setupSortByMenu(view);
@@ -416,34 +405,21 @@ function(view) {
 	this._initializeNavToolBar(view);
 };
 
-/**
- * Create a Send/Recieve Button and add listeners
- * @param view
- */
-ZmTaskListController.prototype._setupSendRecieveButton =
-function(view) {
-	var checkMailBtn = this._toolbar[view].getButton(ZmOperation.CHECK_MAIL);
-	var checkMailMsg = appCtxt.isOffline ? ZmMsg.sendReceive : ZmMsg.checkMail;
-	checkMailBtn.setText(checkMailMsg);
-
-	var tooltip;
-	if (appCtxt.isOffline) {
-		tooltip = ZmMsg.sendReceive;
-	} else {
-		tooltip = (appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT)
-			? ZmMsg.checkMailPrefDefault : ZmMsg.checkMailPrefUpdate;
-	}
-	checkMailBtn.setToolTipContent(tooltip);
-};
-
 ZmTaskListController.prototype._handleSyncAll =
 function() {
-	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) &&
-		appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT)
-	{
-		this._app.getOverviewContainer().highlightAllMboxes();
-	}
+	//doesn't do anything now after I removed the appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT preference stuff
 };
+
+ZmTaskListController.prototype.runRefresh =
+function() {
+	if (!appCtxt.isOffline) {
+		return;
+	}
+	//should only happen in ZD
+
+	this._syncAllListener();
+};
+
 
 ZmTaskListController.prototype._syncAllListener =
 function(view) {
@@ -451,38 +427,6 @@ function(view) {
 	appCtxt.accountList.syncAll(callback);
 };
 
-/**
- *  Create menu for Send/Recieve button and add listeners
- *  *only* for ZD
- *  @private
- */
-
-ZmTaskListController.prototype._setupSendReceiveMenu =
-function(view) {
-	var btn = this._toolbar[view].getButton(ZmOperation.CHECK_MAIL);
-	if (!btn) { return; }
-	btn.setMenu(new AjxCallback(this, this._setupSendReceiveMenuItems, [this._toolbar, btn]));
-};
-
-ZmTaskListController.prototype._setupSendReceiveMenuItems =
-function(toolbar, btn) {
-	var menu = new ZmPopupMenu(btn, null, null, this);
-	btn.setMenu(menu);
-
-	var listener = new AjxListener(this, this._sendReceiveListener);
-	var list = appCtxt.accountList.visibleAccounts;
-	for (var i = 0; i < list.length; i++) {
-		var acct = list[i];
-		if (acct.isMain) { continue; }
-
-		var id = [ZmOperation.CHECK_MAIL, acct.id].join("-");
-		var mi = menu.createMenuItem(id, {image:acct.getIcon(), text:acct.getDisplayName()});
-		mi.setData(ZmOperation.MENUITEM_ID, acct.id);
-		mi.addSelectionListener(listener);
-	}
-
-	return menu;
-};
 
 ZmTaskListController.prototype._sendReceiveListener =
 function(ev) {

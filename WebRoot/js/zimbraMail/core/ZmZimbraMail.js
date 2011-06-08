@@ -673,6 +673,7 @@ function(params) {
 
 	this._setExternalLinks();
 	this.setUserInfo();
+	this._setRefresh();
 
 	if (appCtxt.get(ZmSetting.SEARCH_ENABLED) ||
 			(appCtxt.get(ZmSetting.PEOPLE_SEARCH_ENABLED) &&
@@ -715,6 +716,37 @@ function(params) {
 	}
 
 };
+
+/**
+ * set the refresh button at the masthead.
+ */
+ZmZimbraMail.prototype._setRefresh =
+function() {
+	var containerEl = document.getElementById(ZmId.SKIN_REFRESH);
+	if (!containerEl) {
+		return;
+	}
+	var button = this._refreshButton = new DwtToolBarButton({parent:DwtShell.getShell(window), id: ZmId.OP_CHECK_MAIL}); //use ToolbarButton just for the style, for now it looks ok.
+	button.setImage("Refresh");
+	button.setToolTipContent(ZmMsg.checkMailPrefUpdate);
+
+	button.reparentHtmlElement(ZmId.SKIN_REFRESH);
+
+	var refreshListener = this._refreshListener.bind(this);
+	button.addSelectionListener(refreshListener);
+
+};
+
+
+/**
+ * refresh button listener. call runRefresh() of all the enabled apps that have this method defined.
+ */
+ZmZimbraMail.prototype._refreshListener =
+function() {
+	this.runAppFunction("runRefresh");
+};
+
+
 
 // popup a warning dialog if there is a problem with the license
 ZmZimbraMail.prototype._checkLicense =
