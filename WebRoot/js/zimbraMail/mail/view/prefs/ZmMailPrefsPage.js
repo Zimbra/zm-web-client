@@ -120,12 +120,12 @@ function() {
 
 	this._sId = this._htmlElId + "_startMiniCal";
 	this._eId = this._htmlElId + "_endMiniCal";
-	this._startDateField = document.getElementById(this._htmlElId + "_VACATION_FROM1");
-	this._endDateField = document.getElementById(this._htmlElId + "_VACATION_UNTIL1");
+	this._startDateField = Dwt.byId(this._htmlElId + "_VACATION_FROM1");
+	this._endDateField = Dwt.byId(this._htmlElId + "_VACATION_UNTIL1");
 
 	if (this._startDateField && this._endDateField) {
-		this._startDateVal = document.getElementById(this._htmlElId + "_VACATION_FROM");
-		this._endDateVal = document.getElementById(this._htmlElId + "_VACATION_UNTIL");
+		this._startDateVal = Dwt.byId(this._htmlElId + "_VACATION_FROM");
+		this._endDateVal = Dwt.byId(this._htmlElId + "_VACATION_UNTIL");
         if(this._startDateVal.value.length < 15){
             this._startDateVal.value = appCtxt.get(ZmSetting.VACATION_FROM);
         }
@@ -144,9 +144,13 @@ function() {
 
 		var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 		var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
+		var dateFieldListener = AjxCallback.simpleClosure(this._dateFieldListener, this);
 
 		this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._sId, dateButtonListener, dateCalSelectionListener);
 		this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._eId, dateButtonListener, dateCalSelectionListener);
+
+		Dwt.setHandler(this._startDateField, DwtEvent.ONBLUR, dateFieldListener);
+		Dwt.setHandler(this._endDateField, DwtEvent.ONBLUR, dateFieldListener);
 
 		this._startDateCheckbox = this.getFormObject(ZmSetting.START_DATE_ENABLED);
 		this._endDateCheckbox = this.getFormObject(ZmSetting.END_DATE_ENABLED);
@@ -211,27 +215,52 @@ ZmMailPrefsPage.prototype._dateCalSelectionListener =
 function(ev) {
 	var parentButton = ev.item.parent.parent;
 
-	var sd = this._fixAndGetValidDateFromField(this._startDateField);
-	var ed = this._fixAndGetValidDateFromField(this._endDateField);
 	var newDate = AjxDateUtil.simpleComputeDateStr(ev.detail);
 
-	// change the start/end date if they mismatch
 	if (parentButton == this._startDateButton) {
-		if (ed.valueOf() < ev.detail.valueOf())
-			this._endDateField.value = AjxDateUtil.simpleComputeDateStr(AjxDateUtil.getDateForNextDay(AjxDateUtil.simpleParseDateStr(newDate),AjxDateUtil.FRIDAY));
 		this._startDateField.value = newDate;
 	} else {
 		if (ev.detail < new Date()) { return; }
-		if (sd.valueOf() > ev.detail.valueOf()) {
-			this._startDateField.value = newDate;
-		}
 		this._endDateField.value = newDate;
 	}
+
+	var sd = this._fixAndGetValidDateFromField(this._startDateField);
+	var ed = this._fixAndGetValidDateFromField(this._endDateField);
+	
+	this._fixDates(sd, ed, parentButton == this._endDateButton);
+
 	if (this._startDateCheckbox.isSelected()) {
 		this._startDateVal.value = this._formatter.format(AjxDateUtil.simpleParseDateStr(this._startDateField.value));
 	}
 	if (this._endDateCheckbox.isSelected()) {
 		this._endDateVal.value = this._formatter.format(AjxDateUtil.simpleParseDateStr(this._endDateField.value));
+	}
+};
+
+ZmMailPrefsPage.prototype._dateFieldListener =
+function(ev) {
+	var sd = this._fixAndGetValidDateFromField(this._startDateField);
+	var ed = this._fixAndGetValidDateFromField(this._endDateField);
+	this._fixDates(sd, ed, ev.target == this._endDateField);
+};
+
+/* Fixes the field values so that end date always is later than or equal to start date
+ * @param startDate	{Date}	The value of the start date field or calendar selection
+ * @param endDate	{Date}	The value of the end date field or calendar selection
+ * @param modifyStart {boolean}	Whether to modify the start date or end date when dates overlap. true for start date, false for end date
+*/
+
+ZmMailPrefsPage.prototype._fixDates =
+function(startDate, endDate, modifyStart) {
+	if (startDate > endDate) {
+		// Mismatch; start date is after end date
+		if (modifyStart) {
+			// Set them to be equal
+			this._startDateField.value = AjxDateUtil.simpleComputeDateStr(endDate);
+		} else {
+			// Put endDate a bit into the future
+			this._endDateField.value = AjxDateUtil.simpleComputeDateStr(AjxDateUtil.getDateForNextDay(startDate,AjxDateUtil.FRIDAY));
+		}
 	}
 };
 
