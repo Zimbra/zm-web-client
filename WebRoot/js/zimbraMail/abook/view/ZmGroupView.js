@@ -590,7 +590,7 @@ function() {
 	var members = this._contact.getGroupMembers().all.getArray();
 	var membersList = [];
 	for (var i = 0; i < members.length; i++) {
-		membersList[i] = members[i].toString();
+		membersList[i] = members[i].toString(false, true);
 	}
 	this._setGroupMembersListView(membersList, false);
 };
