@@ -355,3 +355,8 @@ function() {
 		appCtxt.getSearchController().redoSearch(search);
 	}
 };
+
+ZmDoublePaneView.prototype.handleRemoveAttachment =
+function(oldMsgId, newMsg) {
+	this._msgView.handleRemoveAttachment(oldMsgId, newMsg);
+};

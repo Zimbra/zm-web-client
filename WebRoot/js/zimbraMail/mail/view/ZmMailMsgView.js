@@ -2170,34 +2170,44 @@ function(msgId, partIds) {
 	var searchParams = {
 		jsonObj: jsonObj,
 		asyncMode: true,
-		callback: (new AjxCallback(null, ZmMailMsgView._handleRemoveAttachment)),
+		callback: (new AjxCallback(null, ZmMailMsgView._handleRemoveAttachment, [msgId])),
 		noBusyOverlay: true
 	};
 	return appCtxt.getAppController().sendRequest(searchParams);
 };
 
 ZmMailMsgView._handleRemoveAttachment =
-function(result) {
+function(oldMsgId, result) {
 	var ac = window.parentAppCtxt || window.appCtxt;
-
 	// cache this actioned ID so we can reset selection to it once the CREATE
 	// notifications have been processed.
 	var msgNode = result.getResponse().RemoveAttachmentsResponse.m[0];
-	ac.getApp(ZmApp.MAIL).getMailListController().actionedMsgId = msgNode.id;
-    var list = ac.getApp(ZmApp.MAIL).getMailListController().getList();
-    var currView = appCtxt.getAppController().getAppViewMgr().getCurrentView();
-	var msgView = appCtxt.isChildWindow || currView instanceof ZmMailMsgView
-		? currView : (currView.getMsgView && currView.getMsgView());
+	var mailListCtlr = ac.getApp(ZmApp.MAIL).getMailListController();
+	mailListCtlr.actionedMsgId = msgNode.id;
+	var list = mailListCtlr.getList();
 
-    if (currView && Dwt.instanceOf(currView, "ZmConvView")) {
-        ZmConvView._handleRemoveAttachment(result);
-    }
-	else if (msgView) {
-        var msg = new ZmMailMsg(msgNode.id, list, true);
-        msg._loadFromDom(msgNode);
-        msgView._msg = null;
-        msgView.set(msg);
-    }
+	var avm = appCtxt.getAppViewMgr();
+	var views = avm._views;
+	var msg = new ZmMailMsg(msgNode.id, list, true);
+	msg._loadFromDom(msgNode);
+
+	for (var viewId in views) {
+		var viewObj = views[viewId];
+		var view = viewObj && (viewObj[ZmAppViewMgr.C_APP_CONTENT] || viewObj[ZmAppViewMgr.C_APP_CONTENT_FULL]);
+		if (view) {
+			if (AjxUtil.isFunction(view.handleRemoveAttachment)) {
+				view.handleRemoveAttachment(oldMsgId, msg);
+			}
+		}
+	}
+};
+
+ZmMailMsgView.prototype.handleRemoveAttachment =
+function(oldMsgId, newMsg) {
+	if (!this._msg || this._msg.id == oldMsgId) {
+		this._msg = null;
+		this.set(newMsg);
+	}
 };
 
 ZmMailMsgView._buildZipUrl =
