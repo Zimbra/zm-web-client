@@ -186,7 +186,7 @@ function(section, callback) {
 		var prefCtlr = this.getPrefController();
 		var prefsView = prefCtlr && prefCtlr.getPrefsView();
 		if (prefsView) {
-			prefsView.selectSection(section);
+			prefsView.selectSection(section.toUpperCase());
 		}
 	}
 	if (callback instanceof AjxCallback) {
