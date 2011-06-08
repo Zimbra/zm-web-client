@@ -361,6 +361,11 @@ function() {
 	}
 };
 
+ZmDoublePaneView.prototype.handleRemoveAttachment =
+function(oldMsgId, newMsg) {
+	this._msgView.handleRemoveAttachment(oldMsgId, newMsg);
+};
+
 /**
  * return the sash location based on reading pane preference
  * @param readingPaneOnRight {boolean}  true if reading pane is on the right

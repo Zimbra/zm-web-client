@@ -400,36 +400,27 @@ function(myId, tagId) {
 	dwtObj.notifyListeners(ZmConvView._TAG_CLICK, tagId);
 };
 
-ZmConvView._handleRemoveAttachment =
-function(result) {
-
+ZmConvView.prototype.handleRemoveAttachment =
+function(oldMsgId, newMsg) {
 	var ac = window.parentAppCtxt || window.appCtxt;
-
 	// cache this actioned ID so we can reset selection to it once the CREATE
 	// notifications have been processed.
-	var msgNode = result.getResponse().RemoveAttachmentsResponse.m[0];
-	ac.getApp(ZmApp.MAIL).getMailListController().actionedMsgId = msgNode.id;
-    var list = ac.getApp(ZmApp.MAIL).getMailListController().getList();
-	var currView = appCtxt.getAppController().getAppViewMgr().getCurrentView();
-	var msgView = currView.getMsgView && currView.getMsgView();
-
+	ac.getApp(ZmApp.MAIL).getMailListController().actionedMsgId = newMsg.id;
+	var msgView = this.getMsgView();
 	if (msgView) {
-        var msg = new ZmMailMsg(msgNode.id, list, false);
-        msg._loadFromDom(msgNode);
-        var mailListView = currView.getMailListView();
-        if (mailListView) {
-           var mailList = mailListView.getList();
-           var pos = mailList.indexOf(msgView._msg);
-           mailList.replace(pos, msg);
-           mailListView.set(mailList.clone(), mailListView._sortByString);
-           mailListView.setSelection(msg);
-        }
-        if (currView._conv) {
-            //hack to avoid popview if only one message in conversation; delete notification will cause view to be popped otherwise
-            currView._conv.addMsg(msg);
-            currView._conv.numMsgs = currView._conv.msgIds.length;
-        }
-        msgView._msg = null;
-        currView.setMsg(msg);
-    }
+		var mailListView = this.getMailListView();
+		if (mailListView) {
+			var mailList = mailListView.getList();
+			var pos = mailList.indexOf(msgView._msg);
+			mailList.replace(pos, newMsg);
+			mailListView.set(mailList.clone(), mailListView._sortByString);
+			mailListView.setSelection(newMsg);
+		}
+		if (this._conv) {
+			//hack to avoid popview if only one message in conversation; delete notification will cause view to be popped otherwise
+			this._conv.addMsg(newMsg);
+			this._conv.numMsgs = this._conv.msgIds.length;
+		}
+		msgView.handleRemoveAttachment(oldMsgId, newMsg);
+	}
 };
