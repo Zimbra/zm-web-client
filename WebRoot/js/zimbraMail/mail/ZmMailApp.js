@@ -152,7 +152,8 @@ function(settings) {
 	settings.registerSetting("CONVERSATION_ORDER",				{name:"zimbraPrefConversationOrder", type:ZmSetting.T_PREF, defaultValue:ZmSearch.DATE_DESC, isImplicit:true});
 	settings.registerSetting("CONVERSATION_PAGE_SIZE",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:250, isGlobal:true});
 	settings.registerSetting("DEDUPE_MSG_TO_SELF",				{name:"zimbraPrefDedupeMessagesSentToSelf", type:ZmSetting.T_PREF, defaultValue:ZmSetting.DEDUPE_NONE});
-	settings.registerSetting("DEFAULT_DISPLAY_NAME",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+    settings.registerSetting("DEDUPE_MSG_ENABLED",				{name:"zimbraPrefMessageIdDedupingEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+    settings.registerSetting("DEFAULT_DISPLAY_NAME",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("DETACH_COMPOSE_ENABLED",			{name:"zimbraFeatureComposeInNewWindowEnabled",type:ZmSetting.T_PREF,dataType:ZmSetting.D_BOOLEAN,defaultValue:true});
 	settings.registerSetting("DETACH_MAILVIEW_ENABLED",			{name:"zimbraFeatureOpenMailInNewWindowEnabled",type:ZmSetting.T_PREF,dataType:ZmSetting.D_BOOLEAN,defaultValue:true});
 	settings.registerSetting("DISPLAY_EXTERNAL_IMAGES",			{name:"zimbraPrefDisplayExternalImages", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
@@ -257,6 +258,7 @@ function() {
 			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
 			prefs: [
 				ZmSetting.DEDUPE_MSG_TO_SELF,
+                ZmSetting.DEDUPE_MSG_ENABLED,
 				ZmSetting.DISPLAY_EXTERNAL_IMAGES,
 				ZmSetting.GET_MAIL_ACTION,
 				ZmSetting.INITIAL_SEARCH,
@@ -384,6 +386,11 @@ function() {
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
 		displayOptions:		[ZmMsg.dedupeNone, ZmMsg.dedupeSecondCopy, ZmMsg.dedupeAll],
 		options:			[ZmSetting.DEDUPE_NONE, ZmSetting.DEDUPE_SECOND, ZmSetting.DEDUPE_ALL]
+	});
+
+    ZmPref.registerPref("DEDUPE_MSG_ENABLED", {
+		displayName:		ZmMsg.autoDeleteDedupeMsg,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
 	ZmPref.registerPref("DISPLAY_EXTERNAL_IMAGES", {

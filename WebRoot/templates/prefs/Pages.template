@@ -429,6 +429,13 @@ and the container element is replaced with that control.
 						<tr>
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'><div id='${id}_DEDUPE_MSG_TO_SELF' tabindex='180'></div></td>
+					    </tr>
+
+                        <tr><td colspan=2><hr></td></tr>
+
+                        <tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.duplicateMessageLabel$></td>
+							<td class='ZOptionsField'><div id='${id}_DEDUPE_MSG_ENABLED' tabindex='105' type=checkbox /></td>
 						</tr>
 
 					<$ } $>
