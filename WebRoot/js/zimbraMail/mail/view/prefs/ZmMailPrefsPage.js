@@ -295,10 +295,11 @@ function(cbox, id, evt) {
 		} else if (id == ZmSetting.END_DATE_ENABLED) {
 			this._setEnabledEndDate(cbox.isSelected());
 		} else {
-			textarea.setEnabled(cbox.isSelected());
+			var enabled = cbox.isSelected();
+			textarea.setEnabled(enabled);
 
-			this._startDateCheckbox.setEnabled(cbox.isSelected());
-			this._endDateCheckbox.setEnabled(cbox.isSelected());
+			this._startDateCheckbox.setEnabled(enabled);
+			this._endDateCheckbox.setEnabled(enabled);
 
 			var val = !this._startDateVal.value ? false : true;
 			this._startDateCheckbox.setSelected(val);
@@ -306,8 +307,8 @@ function(cbox, id, evt) {
 			val = !this._endDateVal.value ? false : true;
 			this._endDateCheckbox.setSelected(val);
 
-			this._setEnabledStartDate(this._startDateCheckbox.isSelected());
-			this._setEnabledEndDate(this._endDateCheckbox.isSelected());
+			this._setEnabledStartDate(enabled && this._startDateCheckbox.isSelected());
+			this._setEnabledEndDate(enabled && this._endDateCheckbox.isSelected());
 		}
 	}
 };
