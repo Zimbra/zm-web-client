@@ -1642,6 +1642,18 @@ function(draftType, attId, docIds, callback, contactId) {
 	if (!this._canSaveDraft()) { return; }
 
 	draftType = draftType || ZmComposeController.DRAFT_TYPE_MANUAL;
+	
+	var addrs = this._composeView._collectAddrs();
+	if (addrs && addrs._bad_addrs_ && addrs._bad_addrs_.size()) {
+		if (draftType == ZmComposeController.DRAFT_TYPE_MANUAL) {
+			var dlg = appCtxt.getMsgDialog();
+			dlg.reset();
+			dlg.setMessage(AjxMessageFormat.format(ZmMsg.errorSavingDraftInvalidEmails, [addrs._bad_addrs_.getArray().join("<br/>")]));
+			dlg.popup();
+		}
+		return;
+	}
+
 	var respCallback = new AjxCallback(this, this._handleResponseSaveDraftListener, [draftType, callback]);
 	this._resetDelayTime();
 	if (!docIds) {
