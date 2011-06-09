@@ -59,15 +59,16 @@ function() {
  * @param {constant}	mode		the owning view ID
  * @param {AjxCallback}	callback	the client callback
  * @param {Boolean}	markRead	if <code>true</code>, mark msg read
+ * @param {Boolean}	hidePagination	if <code>true</code>, hide the pagination buttons
  */
 ZmMsgController.prototype.show = 
-function(msg, mode, callback, markRead) {
+function(msg, mode, callback, markRead, hidePagination) {
 	this.setMsg(msg);
 	this._mode = mode;
 	this._currentView = this._getViewType();
 	this._list = msg.list;
 	if (!msg._loaded) {
-		var respCallback = new AjxCallback(this, this._handleResponseShow, [callback]);
+		var respCallback = new AjxCallback(this, this._handleResponseShow, [callback, hidePagination]);
 		if (msg._loadPending) {
 			// override any local callback if we're being launched by double-pane view,
 			// so that multiple GetMsgRequest's aren't made
@@ -77,13 +78,14 @@ function(msg, mode, callback, markRead) {
 			msg.load({callback:respCallback, markRead:markRead});
 		}
 	} else {
-		this._handleResponseShow(callback);
+		this._handleResponseShow(callback, hidePagination);
 	}
 };
 
 ZmMsgController.prototype._handleResponseShow = 
-function(callback, result) {
+function(callback, hidePagination, result) {
 	this._showMsg();
+	this._showNavToolBarButtons(this._currentView, !hidePagination);
 	if (callback instanceof AjxCallback) {
 		callback.run();
 	}
@@ -256,6 +258,16 @@ function(view) {
 
 		this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousMessage);
 		this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextMessage);
+	}
+};
+
+ZmMsgController.prototype._showNavToolBarButtons =
+function(view, show) {
+	var toolbar = this._navToolBar[view];
+	if (!toolbar) { return; }
+	if (!appCtxt.isChildWindow) {
+		toolbar.getButton(ZmOperation.PAGE_BACK).setVisible(show);
+		toolbar.getButton(ZmOperation.PAGE_FORWARD).setVisible(show);
 	}
 };
 

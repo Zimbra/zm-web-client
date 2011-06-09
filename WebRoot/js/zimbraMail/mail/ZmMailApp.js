@@ -1589,7 +1589,7 @@ function(msg, callback) {
 	AjxDispatcher.require("Startup2");
 	var msgCtlr = AjxDispatcher.run("GetMsgController");
 	if (msgCtlr) {
-		msgCtlr.show(msg);
+		msgCtlr.show(msg, null, null, null, true); // Show the message without pagination buttons
 		if (callback) {
 			callback.run();
 		}
