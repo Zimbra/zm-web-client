@@ -1041,7 +1041,7 @@ function() {
 	var val = AjxStringUtil.htmlEncode(this._input.value);
 	var holderWidth = Dwt.getSize(this._holder).x;
 	var strW = AjxStringUtil.getWidth(val);
-	if (AjxEnv.isWindows && AjxEnv.isFirefox) {
+	if (AjxEnv.isWindows && (AjxEnv.isFirefox || AjxEnv.isSafari || AjxEnv.isChrome) ){
 		// FF/Win: fudge factor since string is longer in INPUT than when measured in SPAN
 		strW = strW * 1.2;
 	}
