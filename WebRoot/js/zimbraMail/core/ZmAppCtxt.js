@@ -425,6 +425,19 @@ function() {
 };
 
 /**
+ * Gets the new contact group dialog.
+ *
+ * @return	{ZmNewContactGroupDialog}	the new contact group dialog
+ */
+ZmAppCtxt.prototype.getNewContactGroupDialog =
+function() {
+	if (!this._newContactGroupDialog) {
+		this._newContactGroupDialog = new ZmNewContactGroupDialog(this._shell);
+	}
+	return this._newContactGroupDialog;
+};
+
+/**
  * Gets the rename tag dialog.
  * 
  * @return	{ZmRenameTagDialog}		the rename tag dialog
@@ -1456,7 +1469,7 @@ function(event, args, options) {
 		return;
 	}
 
-	return this.getZimletMgr().notifyZimlets(event, args);
+	this.getZimletMgr().notifyZimlets(event, args);
 };
 
 /**
@@ -1685,30 +1698,6 @@ function(type, account) {
 			this._acCache[acct.id][ZmAutocomplete.AC_TYPE_EQUIPMENT]	=	{};
 		}
 	}
-};
-
-ZmAppCtxt.prototype.setNotifyDebug =
-function(notify) {
-
-    if (!window.isNotifyDebugOn) {
-        return;
-    }
-
-    if (this._notify) {
-        this._notify =  [this._notify, notify, "\n\n"].join("");
-    } else {
-        this._notify = ["\n\n", notify, "\n\n"].join("");
-    }
-};
-
-ZmAppCtxt.prototype.getNotifyDebug =
-function() {
-    return this._notify;
-};
-
-ZmAppCtxt.prototype.clearNotifyDebug =
-function() {
-    this._notify = "";
 };
 
 ZmAppCtxt.prototype.getOutsideMouseEventMgr =

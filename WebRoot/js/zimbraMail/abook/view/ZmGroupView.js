@@ -943,6 +943,16 @@ function() {
 	lv.createHeaderHtml(sortable);
 };
 
+ZmGroupView.prototype._checkItemCount =
+function() {
+	this._listview._checkItemCount();
+};
+
+ZmGroupView.prototype._handleResponseCheckReplenish =
+function(skipSelection) {
+	this._listview._handleResponseCheckReplenish(skipSelection);
+};
+
 // Static methods
 
 ZmGroupView._onKeyUp =
@@ -1045,6 +1055,17 @@ function(ev, div) {
 	return !Dwt.ffScrollbarCheck(ev);
 };
 
+//stub method
+ZmGroupListView.prototype._checkItemCount =
+function() {
+	return true;
+};
+
+//stub method
+ZmGroupListView.prototype._handleResponseCheckReplenish =
+function() {
+	return true;
+};
 
 /**
  * Creates a group members list view

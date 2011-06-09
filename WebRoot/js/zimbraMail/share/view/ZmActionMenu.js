@@ -88,9 +88,9 @@ function() {
  * @private
  */
 ZmActionMenu.prototype.createOp =
-function(id, params) {
+function(id, params, elementId) {
 	params.id = this._context ? ZmId.getMenuItemId(this._context, id, this._menuType) : null;
-	var mi = this.createMenuItem(id, params);
+	var mi = this.createMenuItem(id, params, elementId);
 	mi.setData(ZmOperation.KEY_ID, id);
 
 	return mi;
@@ -144,6 +144,14 @@ function() {
     }
 };
 
+ZmActionMenu.prototype.getContactGroupMenu =
+function() {
+	var menuItem = this.getMenuItem(ZmOperation.CONTACTGROUP_MENU);
+	if (menuItem) {
+		return menuItem.getMenu();
+	}
+};
+
 // Private methods
 
 // Returns the ID for the given menu item.
@@ -151,3 +159,17 @@ ZmActionMenu.prototype._menuItemId =
 function(menuItem) {
 	return menuItem.getData(ZmOperation.KEY_ID);
 };
+
+ZmActionMenu.prototype.removeMenuItemById =
+function(menuItemId) {
+    var mi = this.getMenuItem(menuItemId);
+    this.removeMenuItem(mi);
+};
+
+ZmActionMenu.prototype.removeMenuItem =
+function(menuItem) {
+    if (!menuItem) {return};
+    this.removeChild(menuItem);
+    menuItem.dispose();
+};
+

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -405,4 +405,14 @@ function(event) {
 	if (target.checked) {
 		urlField.focus();
 	}
+};
+
+ZmNewOrganizerDialog.prototype.setRemoteURL =
+function(url) {
+    this._remoteCheckboxField.checked = true;
+    this._urlField.value = url;
+    var urlRow = document.getElementById(this._remoteCheckboxFieldId + "URLrow");
+	var urlField= document.getElementById(this._remoteCheckboxFieldId + "URLfield");
+	urlRow.style.display = AjxEnv.isIE ? "block" : "table-row";
+
 };

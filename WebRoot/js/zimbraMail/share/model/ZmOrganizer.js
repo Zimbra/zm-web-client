@@ -132,6 +132,7 @@ ZmOrganizer.ID_ZIMLET			= -1000;	// zimlets need a range.  start from -1000 incr
 ZmOrganizer.ID_ROSTER_LIST		= -11;
 ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
 ZmOrganizer.ID_ATTACHMENTS		= -17;		// Attachments View
+ZmOrganizer.ID_PRIORITYINBOX    = 300;  //TODO: Replace with real id; experimental for now
 
 // fields that can be part of a displayed organizer
 ZmOrganizer.F_NAME				= "name";
@@ -984,28 +985,32 @@ function(name, callback, errorCallback, batchCmd) {
 /**
  * Sets the color.
  * 
- * @param	{String}	color		the color
- * @param	{AjxCallback}	callback		the callback
- * @param	{AjxCallback}	errorCallback		the error callback
+ * @param	{String}	        color		    the color
+ * @param	{AjxCallback}	    callback		the callback
+ * @param	{AjxCallback}	    errorCallback   the error callback
+ * @param   {ZmBatchCommand}    batchCmd        optional batch command
  */
 ZmOrganizer.prototype.setColor =
-function(color, callback, errorCallback) {
+function(color, callback, errorCallback, batchCmd) {
 	var color = ZmOrganizer.checkColor(color);
 	if (this.color == color) { return; }
 
-	this._organizerAction({action: "color", attrs: {color: color}, callback: callback, errorCallback: errorCallback});
+	this._organizerAction({action: "color", attrs: {color: color}, callback: callback,
+                           errorCallback: errorCallback, batchCmd: batchCmd});
 };
 
 /**
  * Sets the RGB color.
  * 
- * @param	{Object}	rgb		the rgb
- * @param	{AjxCallback}	callback		the callback
- * @param	{AjxCallback}	errorCallback		the error callback
+ * @param	{Object}	        rgb		        the rgb
+ * @param	{AjxCallback}	    callback		the callback
+ * @param	{AjxCallback}	    errorCallback	the error callback
+ * @param   {ZmBatchCommand}    batchCmd        optional batch command
  */
-ZmOrganizer.prototype.setRGB = function(rgb, callback, errorCallback) {
+ZmOrganizer.prototype.setRGB = function(rgb, callback, errorCallback, batchCmd) {
 	if (this.rgb == rgb) { return; }
-	this._organizerAction({action: "color", attrs: {rgb: rgb}, callback: callback, errorCallback: errorCallback});
+	this._organizerAction({action: "color", attrs: {rgb: rgb}, callback: callback,
+                           errorCallback: errorCallback, batchCmd: batchCmd});
 };
 
 /**
@@ -1029,6 +1034,7 @@ function(color) {
 	}
 	return -1;
 };
+
 
 /**
  * Updates the folder. Although it is possible to use this method to change just about any folder
@@ -1164,7 +1170,7 @@ function() {
 	var organizers = treeView && treeView.getSelected();
 	if (organizers) {
 		if (!(organizers instanceof Array)) organizers = [organizers];
-		for (var i in organizers) {
+		for (var i = 0; i <  organizers.length; i++) {
 			var organizer = organizers[i];
 			if (organizer && (organizer == this || organizer.isChildOf(this))) {
 				var folderId = this.parent.id;
@@ -1796,7 +1802,7 @@ function(params) {
 	var actionLogItem = (!params.noUndo && actionController && actionController.actionPerformed({op: params.action, id: params.id || this.id, attrs: params.attrs})) || null;
 	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, [params, actionLogItem]);
 	if (params.batchCmd) {
-		params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
+		params.batchCmd.addNewRequestParams(soapDoc, respCallback, params.errorCallback);
 	} else {
 		var accountName;
 		if (appCtxt.multiAccounts) {
@@ -1944,7 +1950,7 @@ function(obj) {
  */
 ZmOrganizer.prototype._notify =
 function(event, details) {
-    appCtxt.setNotifyDebug("ZmOrganizer notify called. --- This should update the folder tree");
+
 	if (details) {
 		details.organizers = [this];
 	} else {

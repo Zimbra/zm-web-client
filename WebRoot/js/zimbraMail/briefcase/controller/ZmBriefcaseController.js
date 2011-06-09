@@ -137,15 +137,14 @@ function() {
 
 ZmBriefcaseController.prototype._getToolBarOps =
 function() {
-    var ops = [ZmOperation.NEW_MENU,
-			ZmOperation.SEP,
-			ZmOperation.NEW_FILE,
+    var ops = [ZmOperation.NEW_FILE,
             ZmOperation.SAVE_FILE,
+			ZmOperation.SEP,
             ZmOperation.EDIT_FILE,
 			ZmOperation.SEP,
-			ZmOperation.DELETE, ZmOperation.MOVE,
-            ZmOperation.NEW_BRIEFCASE_WIN,
+			ZmOperation.DELETE,
 			ZmOperation.SEP,
+			ZmOperation.MOVE,
 			ZmOperation.TAG_MENU,
 			ZmOperation.SEP
 			];
@@ -161,10 +160,10 @@ function() {
 	}
 
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-		ops.push(ZmOperation.SEND_FILE_MENU,ZmOperation.SEP);
+		ops.push(ZmOperation.SEND_FILE_MENU, ZmOperation.SEP);
 	}
 
-    ops.push(ZmOperation.VIEW_MENU);
+    ops.push(ZmOperation.NEW_BRIEFCASE_WIN, ZmOperation.VIEW_MENU);
 
 	return ops;
 };
@@ -464,9 +463,7 @@ function(results) {
 	lv.offset = 0;
 	lv._folderId = this._folderId;
 
-	var elements = {};
-	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-	elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[this._currentView];//this.isMultiColView() ? this._multiColView : lv;
+	var elements = this.getViewElements(this._currentView, this._parentView[this._currentView]);
 
 	this._setView({view:this._currentView, elements:elements, isAppView:true});
 	this._resetNavToolBarButtons(this._currentView);
@@ -493,9 +490,8 @@ function(view, force) {
 	this._resetOperations(this._toolbar[view], 0);
 
 	if (viewChanged) {
-		var elements = {};
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
+		var elements = this.getViewElements(view, this._parentView[view]);
+		
 		this._setView({view:view, elements:elements, isAppView:true});
 		this._resetNavToolBarButtons(view);
 	}
@@ -1123,7 +1119,7 @@ function(view, firstTime) {
 			menu = new ZmPopupMenu(btn);
 			btn.setMenu(menu);
 
-            this._setupPreviewPaneMenu(menu);
+            this._setupPreviewPaneMenu(menu, btn);
 		}
 	}
 
@@ -1136,7 +1132,7 @@ function(view, firstTime) {
 };
 
 ZmBriefcaseController.prototype._setupPreviewPaneMenu =
-function(menu){
+function(menu, btn){
 
     if (menu.getItemCount() > 0) {
 		new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE, id:"PREVIEW_SEPERATOR"});
@@ -1155,6 +1151,7 @@ function(menu){
 			mi.addSelectionListener(new AjxListener(this, this._previewPaneListener, id));
 			if (id == pref) {
 				mi.setChecked(true, true);
+				btn.setImage(mi.getImage());
 			}
 		}
 	}
@@ -1210,6 +1207,12 @@ function(newPreviewStatus){
     appCtxt.set(ZmSetting.READING_PANE_LOCATION_BRIEFCASE, newPreviewStatus);
     var lv = this._parentView[this._currentView];
     lv.resetPreviewPane(newPreviewStatus, oldPreviewStatus);
+	//update view button icon to reflect current selection
+	var btn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
+	if (btn) {
+		btn.setImage(ZmBriefcaseController.PREVIEW_PANE_ICON[newPreviewStatus]);
+	}
+
 };
 
 ZmBriefcaseController.CONVERTABLE = {

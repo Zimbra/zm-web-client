@@ -200,61 +200,55 @@ function(event) {
 		this._handleRenameErrorCallback = new AjxCallback(this, this._handleRenameError);
 	}
 
-	// rename folder
-	var callback = new AjxCallback(this, this._handleColor);
+	// rename folder followed by attribute processing
 	var organizer = this._organizer;
-	if (!organizer.isSystem() && !organizer.isDataSource()) {
+
+	// New batch command, stop on error
+	var batchCommand = new ZmBatchCommand();
+
+    if (!organizer.isSystem() && !organizer.isDataSource()) {
 		var name = this._nameInputEl.value;
 		if (organizer.name != name) {
-			organizer.rename(name, callback, this._handleRenameErrorCallback);
-			return;
+			organizer.rename(name, callback, this._handleRenameErrorCallback, batchCommand);
 		}
 	}
 
-	// else, start by changing color
-	callback.run(null);
-};
-
-ZmFolderPropsDialog.prototype._handleColor =
-function(response) {
-	// change color
-	var callback = new AjxCallback(this, this._handleFreeBusy);
-	var organizer = this._organizer;
 	var color = this._color.getValue() || ZmOrganizer.DEFAULT_COLOR[organizer.type];
 	if (organizer.color != color) {
-        if (String(color).match(/^#/)) {
-            organizer.setRGB(color, callback, this._handleErrorCallback);
-        }
-        else {
-            organizer.setColor(color, callback, this._handleErrorCallback);
-        }
-		return;
-	}
-
-	// else, change free/busy
-	callback.run(response);
-};
-
-ZmFolderPropsDialog.prototype._handleFreeBusy =
-function(response) {
-	// set free/busy
-	var callback = new AjxCallback(this, this.popdown);
-	var organizer = this._organizer;
-	if (Dwt.getVisible(this._excludeFbEl) && organizer.setFreeBusy) {
-		var excludeFreeBusy = this._excludeFbCheckbox.checked;
-		if (organizer.excludeFreeBusy != excludeFreeBusy) {
-			organizer.setFreeBusy(excludeFreeBusy, callback, this._handleErrorCallback);
-			return;
+		if (String(color).match(/^#/)) {
+			organizer.setRGB(color, null, this._handleErrorCallback, batchCommand);
+		}
+		else {
+			organizer.setColor(color, null, this._handleErrorCallback, batchCommand);
 		}
 	}
 
-	// else, popdown
-	callback.run(response);
+    if (Dwt.getVisible(this._excludeFbEl) && organizer.setFreeBusy) {
+        var excludeFreeBusy = this._excludeFbCheckbox.checked;
+		if (organizer.excludeFreeBusy != excludeFreeBusy) {
+			organizer.setFreeBusy(excludeFreeBusy, null, this._handleErrorCallback, batchCommand);
+		}
+    }
+
+    // Mail Folders only
+    if (Dwt.getVisible(this._globalMarkReadEl) && organizer.globalMarkRead) {
+        var globalMarkRead = this._globalMarkReadCheckbox.checked;
+        if (organizer.globalMarkRead != globalMarkRead) {
+            organizer.setGlobalMarkRead(globalMarkRead, null, this._handleErrorCallback, batchCommand);
+        }
+    }
+
+    var callback = new AjxCallback(this, this.popdown);
+	batchCommand.run(callback);
 };
+
+
 
 ZmFolderPropsDialog.prototype._handleError =
 function(response) {
-	// TODO: Default handling?
+	// Returned 'not handled' so that the batch command will preform the default
+	// ZmController._handleException
+	return false;
 };
 
 ZmFolderPropsDialog.prototype._handleRenameError =
@@ -265,7 +259,7 @@ function(response) {
 		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [value]);
 	} else if (response.code == ZmCsfeException.MAIL_IMMUTABLE) {
 		msg = AjxMessageFormat.format(ZmMsg.errorCannotRename, [value]);
-	} else if (response.code == ZmCsfeException.SVC_INVALID_REQUEST) { 
+	} else if (response.code == ZmCsfeException.SVC_INVALID_REQUEST) {
 		msg = response.msg; // triggered on an empty name
 	}
 	appCtxt.getAppController().popupErrorDialog(msg, response.msg, null, true);
@@ -338,6 +332,10 @@ function(event) {
 	this._props.setPropertyVisible(this._permId, showPerm);
 
 	Dwt.setVisible(this._excludeFbEl, !organizer.link && (organizer.type == ZmOrganizer.CALENDAR));
+	// TODO: False until server handling of the flag is added
+	//Dwt.setVisible(this._globalMarkReadEl, organizer.type == ZmOrganizer.FOLDER);
+	Dwt.setVisible(this._globalMarkReadEl, false);
+
 };
 
 ZmFolderPropsDialog.prototype._populateShares =
@@ -499,6 +497,16 @@ function() {
 	this._excludeFbEl.appendChild(this._excludeFbCheckbox);
 	this._excludeFbEl.appendChild(document.createTextNode(ZmMsg.excludeFromFreeBusy));
 
+	this._globalMarkReadCheckbox = document.createElement("INPUT");
+	this._globalMarkReadCheckbox.type = "checkbox";
+	this._globalMarkReadCheckbox._dialog = this;
+
+	this._globalMarkReadEl = document.createElement("DIV");
+	this._globalMarkReadEl.style.display = "none";
+	this._globalMarkReadEl.appendChild(this._globalMarkReadCheckbox);
+	this._globalMarkReadEl.appendChild(document.createTextNode(ZmMsg.globalMarkRead));
+
+
 	// setup properties group
 	var propsGroup = new DwtGrouper(view);
 	propsGroup.setLabel(ZmMsg.properties);
@@ -508,14 +516,15 @@ function() {
 
 	this._props.addProperty(ZmMsg.nameLabel, nameEl);
 	this._props.addProperty(ZmMsg.typeLabel, this._typeEl);
-	this._ownerId = this._props.addProperty(ZmMsg.ownerLabel, this._ownerEl);
-	this._urlId = this._props.addProperty(ZmMsg.urlLabel, this._urlEl);
-	this._permId = this._props.addProperty(ZmMsg.permissions, this._permEl);
-	this._colorId = this._props.addProperty(ZmMsg.colorLabel, this._color);
+	this._ownerId = this._props.addProperty(ZmMsg.ownerLabel,  this._ownerEl);
+	this._urlId   = this._props.addProperty(ZmMsg.urlLabel,    this._urlEl);
+	this._permId  = this._props.addProperty(ZmMsg.permissions, this._permEl);
+	this._colorId = this._props.addProperty(ZmMsg.colorLabel,  this._color);
 
 	var propsContainer = document.createElement("DIV");
 	propsContainer.appendChild(this._props.getHtmlElement());
 	propsContainer.appendChild(this._excludeFbEl);
+	propsContainer.appendChild(this._globalMarkReadEl)
 	
 	propsGroup.setElement(propsContainer);
 
