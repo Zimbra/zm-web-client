@@ -180,6 +180,21 @@ function(id) {
 };
 
 /**
+ * sets an item visibility. finds the menu item by id. 
+ *
+ * @param	{String}	id  the operation id
+ * @param	{Boolean}	visible
+ */
+ZmPopupMenu.prototype.setItemVisible =
+function(id, visible) {
+	var item = this.getMenuItem(id);
+	if (!item) {
+		return;
+	}
+	item.setVisible(visible);
+};
+
+/**
  * Gets the menu items.
  *
  * @return	{array}		an array of {@link DwtMenuItem} objects

@@ -612,6 +612,31 @@ function() {
 	return id && appCtxt.getById(id);
 };
 
+/**
+ * returns true if the search folder is drafts
+ */
+ZmListController.prototype.isDraftsFolder =
+function() {
+	var folder = this._getSearchFolder();
+	if (!folder) {
+		return false;
+	}
+	return folder.nId ==  ZmFolder.ID_DRAFTS;
+};
+
+/**
+ * returns true if the search folder is sync failures
+ */
+ZmListController.prototype.isSyncFailuresFolder =
+function() {
+	var folder = this._getSearchFolder();
+	if (!folder) {
+		return false;
+	}
+	return folder.nId ==  ZmFolder.ID_SYNC_FAILURES;
+};
+
+
 // Actions on items are performed through their containing list
 ZmListController.prototype._getList =
 function(items) {

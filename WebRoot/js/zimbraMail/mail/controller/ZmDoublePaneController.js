@@ -223,7 +223,7 @@ function() {
 	var list = this._flagOps();
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._msgOps());
-	list.push(ZmOperation.EDIT);		// bug #28717
+	list.push(ZmOperation.EDIT_AS_NEW);		// bug #28717
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	list.push(ZmOperation.SEP);
@@ -450,7 +450,7 @@ ZmDoublePaneController.prototype._resetOperations =
 function(parent, num) {
 	ZmMailListController.prototype._resetOperations.call(this, parent, num);
 	var isMsg = false;
-	var isDraft = false;
+	var isDraft = this.isDraftsFolder();
 	if (num == 1) {
 		var item = this._mailListView.getSelection()[0];
 		if (item) {
@@ -460,12 +460,17 @@ function(parent, num) {
 	}
 	parent.enable(ZmOperation.SHOW_ORIG, isMsg);
 	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
-		var folder = this._getSearchFolder();
-		var isSyncFailuresFolder = (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES);
+		var isSyncFailuresFolder = this.isSyncFailuresFolder();
 		parent.enable(ZmOperation.ADD_FILTER_RULE, isMsg && !isSyncFailuresFolder);
 	}
 	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && isMsg && !isDraft));
 	parent.enable(ZmOperation.TEXT, true);
+
+	parent.setItemVisible(ZmOperation.ADD_FILTER_RULE, !isDraft);
+	parent.setItemVisible(ZmOperation.CREATE_APPT, !isDraft);
+	parent.setItemVisible(ZmOperation.CREATE_TASK, !isDraft);
+
+	this._cleanupToolbar(parent);
 };
 
 // top level view means this view is allowed to get shown when user clicks on 

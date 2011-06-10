@@ -105,6 +105,22 @@ function(buttonId) {
 };
 
 /**
+ * sets an item visibility. finds the button by id. 
+ *
+ * @param	{String}	buttonId	the button id
+ * @param	{Boolean}	visible
+ */
+ZmToolBar.prototype.setItemVisible =
+function(buttonId, visible) {
+	var button = this.getButton(buttonId);
+	if (!button) {
+		return;
+	}
+	button.setVisible(visible);
+};
+
+
+/**
  * Sets the data.
  * 
  * @param	{String}	buttonId	the button id

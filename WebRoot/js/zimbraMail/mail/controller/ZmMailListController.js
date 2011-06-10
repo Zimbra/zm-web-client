@@ -64,6 +64,7 @@ ZmMailListController = function(container, mailApp) {
 		this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
 	}
 	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
+	this._listeners[ZmOperation.EDIT_AS_NEW] = new AjxListener(this, this._editListener);
 
 	if (appCtxt.get(ZmSetting.SPAM_ENABLED)) {
 		this._listeners[ZmOperation.SPAM] = new AjxListener(this, this._spamListener);
@@ -215,9 +216,8 @@ ZmMailListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmMailListController.handleKeyAction");
 
-	var folder = this._getSearchFolder();
-	var isSyncFailures = (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES);
-	var isDrafts = (folder && folder.nId == ZmFolder.ID_DRAFTS);
+	var isSyncFailures = this.isSyncFailuresFolder(); 
+	var isDrafts = this.isDraftsFolder();
 	var lv = this._listView[this._currentView];
 	var num = lv.getSelectionCount();
 
@@ -453,8 +453,7 @@ function() {
 		this._addMenuListeners(this._participantActionMenu);
 		this._participantActionMenu.addPopdownListener(this._menuPopdownListener);
 		this._setupTagMenu(this._participantActionMenu);
-		this._setupEditButton(this._participantActionMenu);
-		
+
 		//notify Zimlet before showing 
 		appCtxt.notifyZimlets("onParticipantActionMenuInitialized", [this, this._participantActionMenu]);
 	}
@@ -528,6 +527,23 @@ function() {
 	}
 	list.push(ZmOperation.SEP, ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD);
 	list.push(ZmOperation.SEP, ZmOperation.SHOW_ORIG);
+	list.push(ZmOperation.SEP, ZmOperation.EDIT_AS_NEW);
+
+	if (!appCtxt.isChildWindow) {
+		list.push(ZmOperation.SEP);
+		if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
+			list.push(ZmOperation.ADD_FILTER_RULE);
+		}
+	    if(appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+	        list.push(ZmOperation.CREATE_APPT);
+	    }
+	    if(appCtxt.get(ZmSetting.TASKS_ENABLED)) {
+	        list.push(ZmOperation.CREATE_TASK);
+	    }
+	    list.push(ZmOperation.QUICK_COMMANDS);
+	}
+
+
 	return list;
 
 };
@@ -574,9 +590,6 @@ function() {
 
 	if (this._actionMenu) {
 		this._setupSpamButton(this._actionMenu);
-		if (!isInitialized) {
-			this._setupEditButton(this._actionMenu);
-		}
 	}
 	//notify Zimlet before showing
 	appCtxt.notifyZimlets("onActionMenuInitialized", [this, this._actionMenu]);
@@ -598,6 +611,8 @@ ZmMailListController.prototype._msgOps =
 function() {
 	var list = [];
 
+	list.push(ZmOperation.EDIT, this.getDeleteOperation(), ZmOperation.SEP); // hidden except for Drafts)
+
 	if (appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
 		list.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
 	}
@@ -605,10 +620,6 @@ function() {
 	if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
 		list.push(ZmOperation.FORWARD);
 	}
-
-	list.push(ZmOperation.SEP, this.getDeleteOperation());
-
-	list.push(ZmOperation.EDIT); // hidden except for Drafts)
 
 	return list;
 };
@@ -738,7 +749,7 @@ function(ev) {
 		: ((ev.item instanceof ZmMailMsg) ? ev.item.getAddress(AjxEmailAddress.FROM) : null);
 
 	var item = (items && items.length == 1) ? items[0] : null;
-	if (folder && folder.nId == ZmFolder.ID_DRAFTS || (item && item.isDraft)) {
+	if (this.isDraftsFolder() || (item && item.isDraft)) {
 		// show drafts menu
 		this._initializeDraftsActionMenu();
         this._setDraftSearchMenu(address, item, ev);
@@ -1263,15 +1274,6 @@ function(parent) {
     }
 };
 
-ZmMailListController.prototype._setupEditButton =
-function(parent) {
-	if (!parent) { return; }
-
-	var item = parent.getOp(ZmOperation.EDIT);
-	if (item) {
-		item.setText(ZmMsg.editAsNew);
-	}
-};
 
 
 /**
@@ -1661,6 +1663,27 @@ function(parent, num) {
 		return;
 	}
 
+	var item;
+	if (num == 1 && !this.isDraftsFolder()) {
+		var sel = this._listView[this._currentView].getSelection();
+		if (sel && sel.length) {
+			item = sel[0];
+		}
+	}
+	var itemFolder = item && item.folderId && appCtxt.getById(item.folderId); // We may be looking at a search result, so the items in the list may not all be in the same folder
+	var isDrafts = (item && item.isDraft) || this.isDraftsFolder();
+	var isFeed = (itemFolder && itemFolder.isFeed());
+
+	var editButton = parent.getOp(ZmOperation.EDIT);
+	if (editButton) {
+		editButton.setVisible(isDrafts && (!itemFolder || !itemFolder.isReadOnly())); //I don't know how something can be drafts AND read only, but I copied the existing logic
+	}
+	var editAsNewButton = parent.getOp(ZmOperation.EDIT_AS_NEW);
+	if (editAsNewButton) {
+		editAsNewButton.setVisible(!isDrafts);
+	}
+	
+
 	if (parent && parent instanceof ZmToolBar) {
 		// bug fix #37154 - disable non-applicable buttons if rfc/822 message
 		var isRfc822 = appCtxt.isChildWindow && window.newWindowParams && window.newWindowParams.isRfc822;
@@ -1668,24 +1691,10 @@ function(parent, num) {
 		if (isRfc822 || (folder && folder.isReadOnly() && num > 0)) {
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.SPAM, ZmOperation.TAG_MENU], false);
 		} else {
-			var item;
-			if (num == 1 && (folderId != ZmFolder.ID_DRAFTS)) {
-				var sel = this._listView[this._currentView].getSelection();
-				if (sel && sel.length) {
-					item = sel[0];
-				}
-			}
-			var itemFolder = item && item.folderId && appCtxt.getById(item.folderId); // We may be looking at a search result, so the items in the list may not all be in the same folder
-			var isDrafts = (item && item.isDraft) || (folderId == ZmFolder.ID_DRAFTS);
-			var isFeed = (itemFolder && itemFolder.isFeed());
 			parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (!isDrafts && !isFeed && num == 1));
 			parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !isDrafts && num == 1));
 			parent.enable([ZmOperation.SPAM, ZmOperation.MOVE, ZmOperation.FORWARD], (!isDrafts && num > 0));
 			parent.enable([ZmOperation.VIEW_MENU], true);
-			var editButton = parent.getOp(ZmOperation.EDIT);
-			if (editButton) {
-				editButton.setVisible(isDrafts && (!itemFolder || !itemFolder.isReadOnly()));
-			}
 		}
 	} else {
 		if (folder && folder.isReadOnly() && num > 0) {
@@ -1699,7 +1708,7 @@ function(parent, num) {
 		var editMenu = this._draftsActionMenu.getOp(ZmOperation.EDIT);
 		if (editMenu) {
 			// Enable|disable 'edit' context menu item based on selection count
-			editMenu.setEnabled(num == 1 && !folder.isReadOnly());
+			editMenu.setEnabled(num == 1 && itemFolder && !itemFolder.isReadOnly());
 		}
 	}
 
@@ -1708,7 +1717,29 @@ function(parent, num) {
 	{
 		parent.enable(ZmOperation.TAG_MENU, false);
 	}
+
+	this._cleanupToolbar(parent);
 };
+
+/**
+ * if parent is a toolbar, it might have an actionsMenu. If it does, we can clean up the separators in that menu.
+ * (to prevent multiple consecutive separators, etc)
+ * @param parent
+ */
+ZmMailListController.prototype._cleanupToolbar =
+function(parent) {
+	//cleanup the separators of the toolbar Actions menu
+	if (!parent.getActionsMenu) {
+		return;
+	}
+	var actionsMenu = parent.getActionsMenu();
+	if (!actionsMenu) {
+		return;
+	}
+	actionsMenu.cleanupSeparators();
+};
+
+
 
 // Enable mark read/unread as appropriate.
 ZmMailListController.prototype._enableFlags =

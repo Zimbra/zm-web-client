@@ -1091,8 +1091,7 @@ function(account) {
 	var visible = ac.getSignatureCollection(account).getSize() > 0;
 
 	button.setVisible(visible);
-	var sep = this._getOptionsMenu().getItem(button.index - 1); //hide/show the separator too
-	sep.setVisible(visible);	
+	button.parent.cleanupSeparators();
 };
 
 ZmComposeController.prototype._createOptionsMenu =

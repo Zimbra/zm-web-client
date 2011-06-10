@@ -116,7 +116,6 @@ function(view) {
 	}
 	this._setupDeleteMenu(view);	// ALWAYS call setup to turn delete menu on/off
 	this._setupSpamButton(this._toolbar[view]);
-	this._setupCheckMailButton(this._toolbar[view]);
 };
 
 // conv view has arrows to go to prev/next conv, so needs regular nav toolbar
