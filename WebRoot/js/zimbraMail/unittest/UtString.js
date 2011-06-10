@@ -16,56 +16,53 @@
 
 UT.module("String", ["Util"]);
 
-UT.test("buildAttribute() method, prependSpace argument test",
-	function() {
-		UT.expect(1);
-		UT.equal(AjxStringUtil.buildAttribute("attrName", "attrValue", true), " attrName='attrValue'");
-	}
+UT.test("AjxStringUtil.buildAttribute()",
+    function() {
+        var val = " any <value> &   with '*! special <<characters>> ";
+        UT.expect(4);
+
+        UT.strictEqual(
+            AjxStringUtil.buildAttribute("attrName", "attrValue", true),
+            " attrName='attrValue'",
+            'buildAttribute() method should prepend a space if param prependSpace=true'
+        );
+
+        UT.strictEqual(
+            AjxStringUtil.buildAttribute("attrName", "attrValue", false, true),
+            'attrName="attrValue"',
+            'buildAttribute() method should enclose the value in doubleQuotes if param doubleQuotes=true'
+        );
+
+        UT.strictEqual(
+            AjxStringUtil.buildAttribute("attrName", val, false, false, true),
+            "attrName=" + AjxStringUtil.quoteString(escape(val)),
+            'buildAttribute() method should javascript escape if param jsEscape=true'
+        );
+
+        UT.strictEqual(
+            AjxStringUtil.buildAttribute("attrName", val, false, false, false, true),
+            "attrName=" + AjxStringUtil.quoteString(AjxStringUtil.htmlEncode(val)),
+            'buildAttribute() method should html escape if param htmlEscape=true'
+        );
+
+    }
 );
 
-UT.test("buildAttribute() method, doubleQuotes argument test",
-	function() {
-		UT.expect(1);
-		UT.equal(AjxStringUtil.buildAttribute("attrName", "attrValue", false, true), 'attrName="attrValue"');
-	}
-);
+UT.test("AjxStringUtil.quoteString()",
+    function() {
+        var val = " any <value> &   with '*! special <<characters>> ";
+        UT.expect(2);
 
-UT.test("buildAttribute() method, jsEscape argument test",
-	function() {
-		UT.expect(1);
-		var val = " any <value> &   with '*! special <<characters>> ";
-		var result = AjxStringUtil.buildAttribute("attrName", val, false, false, true);
-		var expected = "attrName=" + AjxStringUtil.quoteString(escape(val));
-		UT.equal(result, expected);
-	}
-);
+        UT.strictEqual(
+            AjxStringUtil.quoteString(val),
+            "'" + val + "'",
+            'quoteString() method should enclose the string in single quotes by default'
+        );
 
-UT.test("buildAttribute() method, htmlEscape argument test",
-	function() {
-		UT.expect(1);
-		var val = " any <value> &   with '*! special <<characters>> ";
-		var result = AjxStringUtil.buildAttribute("attrName", val, false, false, false, true);
-		var expected = "attrName=" + AjxStringUtil.quoteString(AjxStringUtil.htmlEncode(val));
-		UT.equal(result, expected);
-	}
-);
-
-UT.test("quoteString() method, singleQuotes test",
-	function() {
-		UT.expect(1);
-		var val = " any <value> &   with '*! special <<characters>> ";
-		var result = AjxStringUtil.quoteString(val);
-		var expected = "'" + val + "'";
-		UT.equal(result, expected);
-	}
-);
-
-UT.test("quoteString() method, doubleQuotes test",
-	function() {
-		UT.expect(1);
-		var val = " any <value> &   with '*! special <<characters>> ";
-		var result = AjxStringUtil.quoteString(val, true);
-		var expected = '"' + val + '"';
-		UT.equal(result, expected);
-	}
+        UT.strictEqual(
+            AjxStringUtil.quoteString(val, true),
+            '"' + val + '"',
+            'quoteString() method should enclose the string in double quotes if doubleQuotes=true'
+        );
+    }
 );
