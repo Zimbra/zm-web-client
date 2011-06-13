@@ -27,6 +27,7 @@ ZmMailListView = function(params) {
 	if (!this._isMultiColumn) {
 		this._normalClass = ZmMailListView.ROW_DOUBLE_CLASS;
 	}
+
 };
 
 ZmMailListView.prototype = new ZmListView;
@@ -47,6 +48,22 @@ ZmMailListView.SINGLE_COLUMN_SORT = [
     {field:ZmItem.F_FLAG, msg:"flag" },
     {field:ZmItem.F_PRIORITY, msg:"priority" }
 ];
+
+ZmMailListView.SORTBY_HASH = [];
+ZmMailListView.SORTBY_HASH[ZmSearch.NAME_ASC] = {field:ZmItem.F_FROM, msg:"from"};
+ZmMailListView.SORTBY_HASH[ZmSearch.NAME_DESC] = {field:ZmItem.F_FROM, msg:"from"};
+ZmMailListView.SORTBY_HASH[ZmSearch.SUBJ_ASC] = {field:ZmItem.F_SUBJECT, msg:"subject"};
+ZmMailListView.SORTBY_HASH[ZmSearch.SUBJ_DESC] = {field:ZmItem.F_SUBJECT, msg:"subject"};
+ZmMailListView.SORTBY_HASH[ZmSearch.SIZE_ASC] = {field:ZmItem.F_SIZE, msg:"size"};
+ZmMailListView.SORTBY_HASH[ZmSearch.SIZE_DESC] = {field:ZmItem.F_SIZE, msg:"size"};
+ZmMailListView.SORTBY_HASH[ZmSearch.DATE_ASC] = {field:ZmItem.F_DATE, msg:"date"};
+ZmMailListView.SORTBY_HASH[ZmSearch.DATE_DESC] = {field:ZmItem.F_DATE, msg:"date"};
+ZmMailListView.SORTBY_HASH[ZmSearch.ATTACH_ASC] = {field:ZmItem.F_ATTACHMENT, msg:"attachment"};
+ZmMailListView.SORTBY_HASH[ZmSearch.ATTACH_DESC] = {field:ZmItem.F_ATTACHMENT, msg:"attachment"};
+ZmMailListView.SORTBY_HASH[ZmSearch.FLAG_ASC] = {field:ZmItem.F_FLAG, msg:"flag"};
+ZmMailListView.SORTBY_HASH[ZmSearch.FLAG_DESC] = {field:ZmItem.F_FLAG, msg:"flag"};
+ZmMailListView.SORTBY_HASH[ZmSearch.PRIORITY_ASC] = {field:ZmItem.F_PRIORITY, msg:"priority"};
+ZmMailListView.SORTBY_HASH[ZmSearch.PRIORITY_DESC] = {field:ZmItem.F_PRIORITY, msg:"priority"};
 
 
 // Public methods
@@ -98,6 +115,7 @@ function(list, sortField) {
 			this.setSortByAsc(column, sortByAsc);
 		}
 	}
+
 
     ZmListView.prototype.set.apply(this, arguments);
 
@@ -383,6 +401,7 @@ function(userHeaders, headerList) {
 ZmMailListView.prototype.createHeaderHtml =
 function(defaultColumnSort) {
 
+	var activeSortBy = this.getActiveSearchSortBy();
 	// for multi-account, hide/show Account column header depending on whether
 	// user is search across all accounts or not.
 	if (appCtxt.multiAccounts) {
@@ -405,7 +424,10 @@ function(defaultColumnSort) {
 			this._controller._itemCountText[rpLoc].dispose();
 		}
 
-		DwtListView.prototype.createHeaderHtml.apply(this, arguments);
+		if (activeSortBy) {
+			defaultColumnSort = ZmMailListView.SORTBY_HASH[activeSortBy].field;
+		}
+		DwtListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
 
 		if (rpLoc == ZmSetting.RP_RIGHT) {
 			var td = document.getElementById(this._itemCountTextTdId);
@@ -421,21 +443,50 @@ function(defaultColumnSort) {
 		}
 	}
 
-	// Show "From" or "To" depending on which folder we're looking at
+	// Setting label on date column
 	this._resetFromColumnLabel();
-	var headerCol = this._headerHash[ZmItem.F_DATE];
+	var col = Dwt.byId(this._currentColId);
+    var headerCol = this._isMultiColumn ? this._headerHash[ZmItem.F_DATE] :
+		            (col && this.getItemFromElement(col)) || (this._headerHash && this._headerHash[ZmItem.F_SORTED_BY]) || null;
 	if (headerCol) {
-		// set the received column name based on search folder
-		var colLabel = ZmMsg.received;
-		if (this._isOutboundFolder()) {
-			colLabel = (this._folderId == ZmFolder.ID_DRAFTS) ? ZmMsg.lastSaved : ZmMsg.sentAt;
+		var colLabel = "";
+		var column;
+		if (this._isMultiColumn) {
+			// set the received column name based on search folder
+			colLabel = ZmMsg.received;
+			if (this._isOutboundFolder()) {
+				colLabel = "&nbsp;" + (this._folderId == ZmFolder.ID_DRAFTS) ? ZmMsg.lastSaved : ZmMsg.sentAt;
+			}
 		}
-		var recdColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
-		if (recdColSpan) {
-			recdColSpan.innerHTML = "&nbsp;" + colLabel;
+		else if (activeSortBy){
+			var msg = ZmMailListView.SORTBY_HASH[activeSortBy].msg;
+			var field = ZmMailListView.SORTBY_HASH[activeSortBy].field;
+			if (msg) {
+				colLabel = AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg[msg]);
+			}
+			if (field) {
+				headerCol._sortable = field;
+			}
+		}
+
+		//Set colulmn label; for multi-column this changes the received text. For single column this sets to the sort by text
+		var colSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
+		if (colSpan) {
+			colSpan.innerHTML = colLabel;
 		}
 		if (this._colHeaderActionMenu) {
-			this._colHeaderActionMenu.getItem(headerCol._index).setText(colLabel);
+			if (this._isMultiColumn) {
+				var item = this._colHeaderActionMenu.getItem(headerCol._index);
+				if (item) {
+					item.setText(colLabel);
+				}
+			}
+			else {
+				var mi = this._colHeaderActionMenu.getMenuItem(field);
+				if (mi) {
+					mi.setChecked(true, true);
+				}
+			}
 		}
 	}
 };
@@ -507,12 +558,13 @@ function(mouseEv, div) {
 ZmMailListView.prototype._columnClicked =
 function(clickedCol, ev) {
 
-	//var group = this._group ? this._group : this.getGroup(this._folderId);
-    var hdr = this.getItemFromElement(clickedCol);
-    var group = this.getGroup(this._folderId);
+	var hdr = this.getItemFromElement(clickedCol);
+	var group = this.getGroup(this._folderId);
 	if (group && hdr && hdr._sortable) {
-        var groupId = ZmMailListGroup.getGroupIdFromSortField(hdr._field);
-        this.setGroup(groupId);
+        var groupId = ZmMailListGroup.getGroupIdFromSortField(hdr._sortable);
+		if (groupId != group.id) {
+            this.setGroup(groupId);
+		}
     }
 
 	ZmListView.prototype._columnClicked.call(this, clickedCol, ev);
@@ -771,10 +823,11 @@ function(participants, item, availWidth) {
 
 ZmMailListView.prototype._getActionMenuForColHeader =
 function(force) {
-
+	var activeSortBy = this.getActiveSearchSortBy();
 	if (!this.isMultiColumn()) {
 		if (!this._colHeaderActionMenu || force) {
-			this._colHeaderActionMenu = this._getSortMenu(this._getSingleColumnSortFields(), ZmItem.F_DATE);
+			var defaultSort = activeSortBy ? ZmMailListView.SORTBY_HASH[activeSortBy].field : ZmItem.F_DATE;
+			this._colHeaderActionMenu = this._getSortMenu(this._getSingleColumnSortFields(), defaultSort);
             this._getGroupByActionMenu(this._colHeaderActionMenu);
 		}
 		var mi = this._colHeaderActionMenu.getItemById(ZmItem.F_FROM);
@@ -1008,7 +1061,7 @@ function(colHeader) {
 //GROUP SUPPORT
 ZmMailListView.prototype.reset =
 function() {
-	this.clearGroupSections(this._folderId);
+	this.clearGroupSections(this.getActiveSearchFolderId());
 	ZmListView.prototype.reset.call(this);
 };
 
@@ -1040,7 +1093,8 @@ function(groupId) {
 	//TODO: hack for now since priority inbox has same folderId as Inbox
 	var folder = this._isPriorityInbox() ? ZmFolder.ID_PRIORITYINBOX : this._folderId;
     if (this._folderId) {
-        appCtxt.set(ZmSetting.GROUPBY_LIST, this._group, folder); //cache group object
+	    appCtxt.set(ZmSetting.GROUPBY_LIST, groupId, this._folderId); //persist group Id
+	    appCtxt.set(ZmSetting.GROUPBY_HASH, this._group, this._folderId); //local cache for group object
     }
 };
 
@@ -1051,13 +1105,28 @@ function(groupId) {
  */
 ZmMailListView.prototype.getGroup =
 function(folderId) {
-    //TODO: Upon initialization may need to create group based on ID
+	//TODO: hack for priority inbox folder for now
 	if (this._isPriorityInbox()) {
 		folderId = ZmFolder.ID_PRIORITYINBOX;
 	}
     if (folderId) {
-        var group = appCtxt.get(ZmSetting.GROUPBY_LIST, folderId);
-        return group;
+	    var group = appCtxt.get(ZmSetting.GROUPBY_HASH, folderId);
+	    if (!group) {
+			var groupId = appCtxt.get(ZmSetting.GROUPBY_LIST, folderId);
+			group = ZmMailListGroup.getGroup(groupId);
+			appCtxt.set(ZmSetting.GROUPBY_HASH, group, folderId);
+	    }
+
+	    var activeSortBy = this.getActiveSearchSortBy();
+	    if (activeSortBy && group && group.field != ZmMailListView.SORTBY_HASH[activeSortBy].field) {
+		    //switching views can cause problems; make sure the group and sortBy match
+		    group = null;
+		    appCtxt.set(ZmSetting.GROUPBY_HASH, group, folderId); //clear cache
+		    appCtxt.set(ZmSetting.GROUPBY_LIST, group, folderId); //persist groupId
+	    }
+
+
+	    return group;
     }
 	else {
 	    return this._group;
@@ -1139,7 +1208,7 @@ function(ev) {
 	}
 
 	if (!this._isMultiColumn) {
-	   //TODO: Refactor; this sets the "Sort by: Field" for reading pane on right
+	   //this sets the "Sort by: Field" for reading pane on right
 		var column = ZmMailListGroup.getHeaderField(groupId);
 		for (var i=0; i< ZmMailListView.SINGLE_COLUMN_SORT.length; i++) {
 			if (column == ZmMailListView.SINGLE_COLUMN_SORT[i].field) {
@@ -1147,7 +1216,7 @@ function(ev) {
 				if (mi) {
 					mi.setChecked(true, true);
 					var label = AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg[ZmMailListView.SINGLE_COLUMN_SORT[i].msg]);
-					var column = this._headerHash[ZmItem.F_SORTED_BY];
+					column = this._headerHash[ZmItem.F_SORTED_BY];
 					var cell = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, field));
 					if (cell) {
 						cell.innerHTML = label;
@@ -1276,4 +1345,23 @@ function(item, index, skipNotify, itemIndex) {
 	}
 };
 
+/**
+ * return the active search sortby value
+ * @return {String} sortby value or null
+ */
+ZmMailListView.prototype.getActiveSearchSortBy =
+function() {
+	var sortBy = AjxUtil.get(this._controller, "_activeSearch", "search", "sortBy") || null;
+	return sortBy;
+};
+
+/**
+ * return folderId for the active search
+ * @return {String} folderId or null
+ */
+ZmMailListView.prototype.getActiveSearchFolderId =
+function() {
+	var folderId = AjxUtil.get(this._controller, "_activeSearch", "search", "folderId") || null;
+	return folderId;
+};
 

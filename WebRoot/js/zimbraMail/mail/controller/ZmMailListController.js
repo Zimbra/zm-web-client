@@ -163,7 +163,12 @@ function(view, force) {
 			return;
 		}
 
+
 		var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, view);
+		if (this._mailListView) {
+			//clear the groups to address "from" grouping for conversation
+			this._mailListView.setGroup(ZmId.GROUPBY_NONE);
+		}
 		var limit = this._listView[this._currentView].getLimit();
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		var groupByItem = this._app.getGroupMailBy();

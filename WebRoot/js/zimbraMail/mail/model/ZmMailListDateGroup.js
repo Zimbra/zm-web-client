@@ -13,6 +13,7 @@
  */
 ZmMailListDateGroup = function(){
     this.id = ZmId.GROUPBY_DATE;
+	this.field = ZmItem.F_DATE;
 	this._weekStartDay = appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
 	var dayOfWeek = this._getToday().getDay();
 	this._keys = this._sortKeys(dayOfWeek, false);

@@ -3,6 +3,7 @@
  */
 ZmMailListFromGroup = function() {
     this.id = ZmId.GROUPBY_FROM;
+	this.field = ZmItem.F_FROM;
     ZmMailListGroup.call(this);
 
 };

@@ -12,6 +12,7 @@
  */
 ZmMailListSizeGroup = function(){
     this.id = ZmId.GROUPBY_SIZE;
+	this.field = ZmItem.F_SIZE;
     ZmMailListGroup.call(this);
 };
 

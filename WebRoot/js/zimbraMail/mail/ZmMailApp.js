@@ -1630,6 +1630,7 @@ function(query, callback, response, type) {
 
 	var types = new AjxVector();
 	types.add(type || this.getGroupMailBy());
+	var sortBy = AjxUtil.get(response, "Body", "SearchResponse", "sortBy") || ZmSearch.DATE_DESC;
 
 	var params = {
 		searchFor:			ZmId.SEARCH_MAIL,
@@ -1641,7 +1642,8 @@ function(query, callback, response, type) {
 		noUpdateOverview:	noUpdateOverview,
 		accountName:		(account && account.name),
 		callback:			callback,
-		response:			response
+		response:			response,
+		sortBy:             sortBy
 	};
 	params.errorCallback = new AjxCallback(this, this._handleErrorLaunch, params);
 	sc.search(params);

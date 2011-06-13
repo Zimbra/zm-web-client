@@ -738,7 +738,8 @@ function(columnItem, bSortAsc, callback) {
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
 
 	var query;
-	if (this.getList().size() > 1 && this._sortByString) {
+	var list = this.getList();
+	if (list && list.size() > 1 && this._sortByString) {
 		query = this._controller.getSearchString();
 	}
 
