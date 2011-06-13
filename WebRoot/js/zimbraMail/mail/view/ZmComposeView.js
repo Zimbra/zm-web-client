@@ -1383,7 +1383,7 @@ function(signature, sigContent, account) {
 	var signatureId = signature.id;
 	sigContent = sigContent || this.getSignatureContent(signatureId);
 	if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
-		sigContent = ["<span id=\"", signatureId, "\">", sigContent, "</span>"].join('');
+		sigContent = [this._getSignatureSeparator(), "<span id=\"", signatureId, "\">", sigContent, "</span>"].join('');
 	}
 
 	return sigContent;
@@ -1446,15 +1446,31 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 			if (sigEl) {
 				newSigContent = this._replaceSignature(sigEl.innerHTML, newSig || "");
 				if (newSigContent) {
-					sigEl.innerHTML = newSigContent;
-
 					if (signature) {
-						sigEl.id = signature.id;
-					} else {
-						sigEl.removeAttribute("id");
+						sigEl.innerHTML = newSigContent;
+	
+						if (signature) {
+							sigEl.id = signature.id;
+						} else {
+							sigEl.removeAttribute("id");
+						}
+						done = true;
+						donotsetcontent = true;
 					}
-					done = true;
-					donotsetcontent = true;
+					else {
+						replaceSignature = Dwt.getOuterHTML(sigEl);
+						var sigIndex = content.indexOf(replaceSignature);
+						var sigLength = replaceSignature && replaceSignature.length || 0;
+						if (sigIndex != -1) {
+							var contentBefore = content.substring(0, sigIndex).replace(/\s+$/, "");
+							contentBefore = contentBefore.replace(new RegExp(AjxStringUtil.regExEscape(this._getSignatureSeparator()) + "$"), "");
+							var contentAfter = content.substring(sigIndex + sigLength).replace(/^\s+/, "");
+							contentAfter = contentAfter.replace(/^<br\/?>/,"");
+							var newContent = contentBefore + newSig + contentAfter;
+							content = newContent;
+							done = true;
+						}
+					}
 				}
 			}
 		} else {
