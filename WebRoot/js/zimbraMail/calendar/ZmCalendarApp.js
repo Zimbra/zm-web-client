@@ -107,6 +107,7 @@ ZmCalendarApp.METHOD_REQUEST			= "REQUEST";
 ZmCalendarApp.METHOD_COUNTER			= "COUNTER";
 
 ZmCalendarApp.DEFAULT_WORKING_HOURS			= "1:N:0800:1700,2:Y:0800:1700,3:Y:0800:1700,4:Y:0800:1700,5:Y:0800:1700,6:Y:0800:1700,7:N:0800:1700";
+ZmCalendarApp.DEFAULT_APPT_DURATION         = "3600"; //60minutes
 
 ZmCalendarApp.prototype = new ZmApp;
 ZmCalendarApp.prototype.constructor = ZmCalendarApp;
@@ -162,6 +163,8 @@ function(settings) {
 	settings.registerSetting("CAL_APPT_ALLOW_ATTENDEE_EDIT",    {name: "zimbraPrefCalendarApptAllowAtendeeEdit", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue: true, isGlobal:true});
 	settings.registerSetting("CAL_RESOURCE_DBL_BOOKING_ALLOWED",	{name: "zimbraCalendarResourceDoubleBookingAllowed", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: true, isGlobal:true});
 	settings.registerSetting("CAL_SHOW_RESOURCE_TABS",	    {name: "zimbraCalendarShowResourceTabs", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue: true, isGlobal:true});
+    settings.registerSetting("CAL_DEFAULT_APPT_DURATION",   {name: "zimbraPrefCalendarDefaultApptDuration", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LDAP_TIME, defaultValue:ZmCalendarApp.DEFAULT_APPT_DURATION, isGlobal:true});
+
 };
 
 ZmCalendarApp.prototype._registerPrefs =
@@ -197,7 +200,8 @@ function() {
 				ZmSetting.CAL_REMINDER_NOTIFY_TOASTER,
 				ZmSetting.CAL_INV_FORWARDING_ADDRESS,
 				ZmSetting.CAL_SHOW_PAST_DUE_REMINDERS,
-				ZmSetting.CAL_SHOW_CALENDAR_WEEK
+				ZmSetting.CAL_SHOW_CALENDAR_WEEK,
+                ZmSetting.CAL_DEFAULT_APPT_DURATION
 			],
 			manageDirty: true,
 			createView: function(parent, section, controller) {
@@ -356,6 +360,13 @@ function() {
 	ZmPref.registerPref("CAL_SHOW_CALENDAR_WEEK", {
 		displayName: ZmMsg.showWeekNumber,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
+    ZmPref.registerPref("CAL_DEFAULT_APPT_DURATION", {
+		displayName:		ZmMsg.defaultApptDuration,
+		displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		["30","60","90","120"],
+		options:			["1800", "3600", "5400", "7200"]
 	});
 };
 

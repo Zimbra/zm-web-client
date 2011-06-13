@@ -2017,7 +2017,7 @@ ZmCalViewController.prototype.newAppointment =
 function(newAppt, mode, isDirty, startDate) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	var sd = startDate || (this._viewVisible ? this._viewMgr.getDate() : new Date());
-	var appt = newAppt || this._newApptObject(sd, AjxDateUtil.MSEC_PER_HALF_HOUR);
+	var appt = newAppt || this._newApptObject(sd, (appCtxt.get(ZmSetting.CAL_DEFAULT_APPT_DURATION) * 1000));  //bug:50121 added appt duration as configurable from preference
 
     //certain views can set attendees before creating appointment
     if(this._viewVisible && this._viewMgr.getCurrentView().getAtttendees) {
