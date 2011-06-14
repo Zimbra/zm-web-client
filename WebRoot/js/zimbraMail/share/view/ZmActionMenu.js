@@ -131,26 +131,6 @@ function() {
 	}
 };
 
-/**
- * Gets the menu search sub-menu (if any).
- *
- * @return {DwtMenu}        the menu
- */
-ZmActionMenu.prototype.getSearchMenu =
-function() {
-    var menuItem = this.getMenuItem(ZmOperation.SEARCH_MENU);
-    if (menuItem) {
-        return menuItem.getMenu();
-    }
-};
-
-ZmActionMenu.prototype.getContactGroupMenu =
-function() {
-	var menuItem = this.getMenuItem(ZmOperation.CONTACTGROUP_MENU);
-	if (menuItem) {
-		return menuItem.getMenu();
-	}
-};
 
 // Private methods
 

@@ -413,11 +413,6 @@ function(msg, dlg) {
 	msg.list.flagItems({items:[msg], op:"update", value:flags, callback:callback});
 };
 
-ZmMailListController.prototype._getCurrentToolbar =
-function() {
-	return this._toolbar[this._currentView];
-};
-
 ZmMailListController.prototype._updateViewMenu =
 function(id) {
 	var viewBtn = this._getCurrentToolbar().getButton(ZmOperation.VIEW_MENU);

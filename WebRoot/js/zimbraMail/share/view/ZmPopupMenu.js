@@ -205,6 +205,28 @@ function() {
 };
 
 /**
+ * Gets the menu search sub-menu (if any).
+ *
+ * @return {DwtMenu}        the menu
+ */
+ZmPopupMenu.prototype.getSearchMenu =
+function() {
+    var menuItem = this.getMenuItem(ZmOperation.SEARCH_MENU);
+    if (menuItem) {
+        return menuItem.getMenu();
+    }
+};
+
+ZmPopupMenu.prototype.getContactGroupMenu =
+function() {
+	var menuItem = this.getMenuItem(ZmOperation.CONTACTGROUP_MENU);
+	if (menuItem) {
+		return menuItem.getMenu();
+	}
+};
+
+
+/**
  * Creates a menu item separator.
  * 
  * @return	{DwtMenuItem}	the separator menu item

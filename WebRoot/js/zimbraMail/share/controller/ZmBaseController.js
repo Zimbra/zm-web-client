@@ -266,6 +266,10 @@ function(view, className) {
 		actionsButton.addDropDownSelectionListener(this._listeners[ZmOperation.ACTIONS_MENU]);
 	}
 
+	var actionsMenu = tb.getActionsMenu();
+	if (actionsMenu) {
+		this._setSearchMenu(actionsMenu, true);
+	}	
 
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, view], {waitUntilLoaded:true});
 };
@@ -379,9 +383,7 @@ function(ev) {
 };
 
 /**
- * Tag button has been pressed. We don't tag anything (since no tag has been selected),
- * we just show the dynamic tag menu.
- *
+ * Actions button has been pressed.
  * @private
  */
 ZmBaseController.prototype._actionsButtonListener =

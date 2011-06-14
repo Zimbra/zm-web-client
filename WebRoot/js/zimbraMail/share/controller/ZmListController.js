@@ -200,7 +200,7 @@ function(actionCode) {
 			return listView.handleKeyAction(actionCode);
 
 		case ZmKeyMap.DEL:
-			var tb = this._toolbar[this._currentView];
+			var tb = this._getCurrentToolbar();
 			var button = tb && (tb.getButton(ZmOperation.DELETE) || tb.getButton(ZmOperation.DELETE_MENU));
 			if (button && button.getEnabled()) {
 				this._doDelete(this.getSelection());
@@ -334,9 +334,15 @@ function(ev) {
 			}
 		}
 
-		this._resetOperations(this._toolbar[this._currentView], lv.getSelectionCount());
+		this._resetOperations(this._getCurrentToolbar(), lv.getSelectionCount());
 	}
 };
+
+ZmListController.prototype._getCurrentToolbar =
+function() {
+	return this._toolbar[this._currentView];
+};
+
 
 /**
  * List action event - set the dynamic tag menu, and enable operations in the
@@ -362,17 +368,42 @@ function(ev) {
 };
 
 /**
+ * override to override the text from "received from sender"
+ */
+ZmBaseController.prototype.getSearchFromText =
+function() {
+	return null;
+};
+
+/**
+ * override to override the text from "sent to sender"
+ */
+ZmBaseController.prototype.getSearchToText =
+function() {
+	return null;
+};
+
+
+/**
  * Add listener to search menu
  *
  * @param parent
  */
-ZmBaseController.prototype._setSearchMenu =
-function(parent) {
-  if (!parent) return;
-  var searchMenu = parent.getSearchMenu();
-	if (searchMenu) {
-        searchMenu.addSelectionListener(ZmOperation.SEARCH, this._participantSearchListener.bind(this));
-        searchMenu.addSelectionListener(ZmOperation.SEARCH_TO, this._participantSearchToListener.bind(this));     
+ZmListController.prototype._setSearchMenu =
+function(parent, isToolbar) {
+	if (!parent) return;
+	var searchMenu = parent.getSearchMenu();
+	if (!searchMenu) {
+		return;
+	}
+	searchMenu.addSelectionListener(ZmOperation.SEARCH, this._participantSearchListener.bind(this, isToolbar));
+	searchMenu.addSelectionListener(ZmOperation.SEARCH_TO, this._participantSearchToListener.bind(this, isToolbar));
+
+	if (this.getSearchFromText()) {
+		searchMenu.getMenuItem(ZmOperation.SEARCH).setText(this.getSearchFromText());
+	}
+	if (this.getSearchToText()) {
+		searchMenu.getMenuItem(ZmOperation.SEARCH_TO).setText(this.getSearchToText());
 	}
 };
 
@@ -588,7 +619,7 @@ ZmListController.prototype._setContactText =
 function(isContact) {
 	var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
 	var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
-	ZmOperation.setOperation(this._toolbar[this._currentView], ZmOperation.CONTACT, newOp, ZmMsg.AB_ADD_CONTACT);
+	ZmOperation.setOperation(this._getCurrentToolbar(), ZmOperation.CONTACT, newOp, ZmMsg.AB_ADD_CONTACT);
 	ZmOperation.setOperation(this.getActionMenu(), ZmOperation.CONTACT, newOp, newText);
 };
 
