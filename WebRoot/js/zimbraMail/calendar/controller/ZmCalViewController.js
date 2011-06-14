@@ -1369,9 +1369,32 @@ function(ev) {
 
 ZmCalViewController.prototype._printListener =
 function(ev) {
-	var url;
-	var viewId = this._viewMgr.getCurrentViewName();
+	var url,
+	    viewId = this._viewMgr.getCurrentViewName(),
+        printDialog = this._printDialog,
+        wHrs = ZmCalBaseView.parseWorkingHours(ZmCalBaseView.getWorkingHours()),
+        curDate = this._viewMgr.getDate() || new Date();
 
+    if(!printDialog) {
+        printDialog = this.createPrintDialog();
+    }
+
+    var org = ZmApp.ORGANIZER[this._app._name] || ZmOrganizer.FOLDER;
+    var params = {
+                overviewId: appCtxt.getOverviewId(["ZmCalPrintDialog", this._app._name], null),
+                treeIds: [org],
+                treeStyle: DwtTree.CHECKEDITEM_STYLE,
+                appName: this._app._name,
+                currentViewId: viewId,
+                workHours: wHrs[curDate.getDay()],
+                currentDate: curDate,
+                timeRange: this.getViewMgr().getView(viewId).getTimeRange()
+            };
+
+    printDialog.popup(params);
+
+    this._printDialog = printDialog;
+    /*
 	if (viewId == ZmId.VIEW_CAL_LIST)
 	{
 		var ids = [];
@@ -1420,9 +1443,21 @@ function(ev) {
 			"&date=", date.getFullYear(), month, day,
 			"&tz=",AjxTimezone.getServerId(AjxTimezone.DEFAULT)
 		].join("");
-	}
+	} */
 
-	window.open(appContextPath+url, "_blank");
+	//window.open(appContextPath+url, "_blank");
+};
+
+ZmCalViewController.prototype.createPrintDialog =
+function() {
+    var pd,
+        params = {},
+        curDate = this._viewMgr.getDate() || new Date();
+
+    //params.calendars = this.getCalTreeController().getOwnedCalendars(this._app.getOverviewId(), appCtxt.getActiveAccount().getEmail());
+    params.parent = this._shell;
+    pd = new ZmCalPrintDialog(params);
+    return pd;
 };
 
 ZmCalViewController.prototype._deleteListener =
@@ -1880,6 +1915,13 @@ function(appt, mode) {
 
 ZmCalViewController.prototype._handleResponseContinueDelete =
 function(appt) {
+
+    var currentView = appCtxt.getAppViewMgr().getCurrentView();
+
+    if(currentView.toString() == "ZmApptView") {
+        currentView.close();
+    }
+
 	var summary = ZmList.getActionSummary(ZmMsg.actionDelete, 1, ZmItem.APPT);
 	appCtxt.setStatusMsg(summary);
 	appCtxt.notifyZimlets("onAppointmentDelete", [appt]);//notify Zimlets on delete 

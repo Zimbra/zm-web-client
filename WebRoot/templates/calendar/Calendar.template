@@ -158,6 +158,81 @@
 	</table>
 </template>
 
+<template id='calendar.Calendar#PrintDialog'>
+	<div id='${id}_printDialogContainer'>
+	    <table align=center border=0 width=600>
+            <tr>
+                <td width=30% valign=top><div id='${id}_calTreeContainer'></div></td>
+                <td width=70% valign=top>
+                    <div id='${id}_printOptionsContainer'>
+                        <table>
+                            <tr>
+                                <td width=25><input checked value='sel_date' type='radio' id='${id}_selDateRadio' name='${id}_selDateRange'></td>
+                                <td width=80><$= ZmMsg.calPrintSelDate $></td>
+                                <td id='${id}_selDateContainer'></td>
+                                <td>&nbsp;</td>
+                                <td id='${id}_todayButtonContainer'></td>
+                            </tr>
+                            <tr>
+                                <td width=25><input value="date_range" type='radio' id='${id}_dateRangeRadio' name='${id}_selDateRange'></td>
+                                <td width=80><$= ZmMsg.calPrintDateRange $></td>
+                                <td id='${id}_dateRangeFromContainer'></td>
+                                <td><$= ZmMsg.to $></td>
+                                <td id='${id}_dateRangeToContainer'></td>
+                            </tr>
+                        </table>
+                        <div class="horizSep"></div>
+                        <table width=100%>
+                            <tr style='display:block;'>
+                                <td align=right width=111><$= ZmMsg.calPrintView $></td>
+                                <td colspan=4><div id='${id}_printViewContainer'></div></td>
+                            </tr>
+                            <tr id='${id}_fitToPageContainer' style='display:block;'>
+                                <td align=right width=111><$= ZmMsg.calPrintFitToPage $></td>
+                                <td colspan=4><div id='${id}_fitToPageSelectContainer'></div></td>
+                            </tr>
+                            <tr id='${id}_hoursContainer' style='display:block;'>
+                                <td align=right width=111><$= ZmMsg.calPrintHours $></td>
+                                <td id='${id}_fromHoursContainer'></td>
+                                <td><$= ZmMsg.to $></td>
+                                <td id='${id}_toHoursContainer'></td>
+                                <td></td>
+                            </tr>
+                            <tr style='display:block;'>
+                                <td align=right valign=top width=111><$= ZmMsg.calPrintOptions $></td>
+                                <td colspan=4>
+                                    <table width=100% cellspacing=0>
+                                        <tr id='${id}_workDaysOnlyContainer'>
+                                            <td><input value="1" type='checkbox' id='${id}_workDaysOnly' name='${id}_workDaysOnly'></td>
+                                            <td><$= ZmMsg.calPrintWorkDaysOnly $></td>
+                                        </tr>
+                                        <tr id='${id}_oneWeekPerPageContainer'>
+                                            <td><input value="1" type='checkbox' id='${id}_oneWeekPerPage' name='${id}_oneWeekPerPage'></td>
+                                            <td><$= ZmMsg.calPrintOneWeekPerPage $></td>
+                                        </tr>
+                                        <tr id='${id}_oneDayPerPageContainer'>
+                                            <td><input value="1" type='checkbox' id='${id}_oneDayPerPage' name='${id}_oneDayPerPage'></td>
+                                            <td><$= ZmMsg.calPrintOneDayPerPage $></td>
+                                        </tr>
+                                        <tr id='${id}_includeTasksContainer'>
+                                            <td><input value="1" type='checkbox' id='${id}_includeTasks' name='${id}_includeTasks'></td>
+                                            <td><$= ZmMsg.calPrintIncludeTasks $></td>
+                                        </tr>
+                                        <tr id='${id}_includeMiniCalContainer'>
+                                            <td><input value="1" type='checkbox' id='${id}_includeMiniCal' name='${id}_includeMiniCal'></td>
+                                            <td><$= ZmMsg.calPrintIncludeMiniCal $></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    <div>
+</template>
+
 <template id='calendar.Calendar#ApptDragProxy'>
 	<div class='${color}'>
 		<table>
