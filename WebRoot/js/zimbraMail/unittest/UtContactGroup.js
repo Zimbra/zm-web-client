@@ -257,3 +257,74 @@ UT.test("Handle Duplicates in adding to group", {
 	}
 );
 
+//TODO: Cleanup to not hijack the response callback
+UT.test("Group View: Verify contacts query uses is:local", {},
+	function() {
+		ZmUnitTestUtil.goToContacts();
+		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
+		var controller = contactsApp.getContactController();
+		var contact = new ZmContact(null, null, "GROUP");
+		setTimeout(function() {
+			controller.show(contact, false);
+			var ev = [];
+			var groupView = controller._view[controller._currentView];
+			var query = null;
+			var queryHint = null;
+
+			var _handleResponseSearch = function(result) {
+				query = result._data.search.query;
+				queryHint = result._data.search.queryHint;
+				UT.equal(query, '\"\"', "query = " + query);
+				UT.equal(queryHint, "is:local", "queryHint = " + queryHint);
+				UT.start();
+
+			}
+			groupView._searchRespCallback = new AjxCallback(this, _handleResponseSearch);
+			var selectedOption = groupView._searchInSelect.getOptionWithValue(ZmContactsApp.SEARCHFOR_CONTACTS);
+			ev.item = selectedOption._menuItem;
+			groupView._searchInSelect._handleOptionSelection(ev);
+			}, 200);
+			UT.stop(10000);
+			UT.expect(2);
+
+	}
+
+);
+
+//TODO: Cleanup to not hijack the response callback
+UT.test("Group View: Verify contacts query uses quotes", {},
+
+	function() {
+		ZmUnitTestUtil.goToContacts();
+		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
+		var controller = contactsApp.getContactController();
+		var contact = new ZmContact(null, null, "GROUP");
+		setTimeout(function() {
+			controller.show(contact, false);
+			var ev = [];
+			var groupView = controller._view[controller._currentView];
+			groupView._searchRespCallback = null;
+			var query = null;
+			var queryHint = null;
+			var _handleResponseSearch2 = function() {
+				if (evt.request != "SearchRequest") { return; }
+				if (!evt.result) { return; }
+				query = evt.result._data.search.query;
+				queryHint = evt.result._data.search.queryHint;
+				UT.equal(query, '\"\\\\"Zimbra\\\\"\\"', "query = " + query);  //ugly; but it's escaped value of ""\"Zimbra\""
+				UT.equal(queryHint, "is:local", "queryHint = " + queryHint);
+				UT.start();
+				appCtxt.getAppController().removeListener(ZmAppEvent.RESPONSE, respCallback);
+			}
+			groupView._searchRespCallback = new AjxCallback(this, _handleResponseSearch2);
+			groupView._searchField[ZmGroupView.SEARCH_BASIC].value = "\"Zimbra\"";
+			var selectedOption = groupView._searchInSelect.getOptionWithValue(ZmContactsApp.SEARCHFOR_CONTACTS);
+			ev.item = selectedOption._menuItem;
+			groupView._searchInSelect._handleOptionSelection(ev);
+			}, 200);
+		    UT.stop(10000);
+			UT.expect(2);
+
+	}
+
+);
