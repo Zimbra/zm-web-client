@@ -407,7 +407,7 @@ function(items) {
         }
         delBatchCmd.run();
     }else{
-        ZmListController.prototype._doDelete.call(this, items);
+        ZmListController.prototype._doDelete.call(this, items, null, null, true);
     }
 };
 

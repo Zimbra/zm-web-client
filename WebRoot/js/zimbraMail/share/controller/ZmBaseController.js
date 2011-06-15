@@ -663,11 +663,12 @@ function(items) {
 * @param items			[Array]			list of items to delete
 * @param hardDelete		[boolean]*		if true, physically delete items
 * @param attrs			[Object]*		additional attrs for SOAP command
+* @param confirmDelete  [Boolean]       user already confirmed hard delete (see ZmBriefcaseController.prototype._doDelete and ZmBriefcaseController.prototype._doDelete2) 
 * 
 * @private
 */
 ZmBaseController.prototype._doDelete =
-function(items, hardDelete, attrs) {
+function(items, hardDelete, attrs, confirmDelete) {
 
 	items = AjxUtil.toArray(items);
 	if (!items.length) { return; }
@@ -677,7 +678,8 @@ function(items, hardDelete, attrs) {
 		hardDelete:		hardDelete,
 		attrs:			attrs,
 		childWin:		appCtxt.isChildWindow && window,
-		closeChildWin:	appCtxt.isChildWindow
+		closeChildWin:	appCtxt.isChildWindow,
+		confirmDelete:	confirmDelete
 	};
 	var allDoneCallback = this._getAllDoneCallback();
 	var list = params.list = this._getList(params.items);
