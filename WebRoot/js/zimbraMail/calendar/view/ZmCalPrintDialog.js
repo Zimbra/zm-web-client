@@ -268,8 +268,8 @@ function(enabled) {
         //Enable selected date controls
         this._selDate.setEnabled(true);
         this._todayButton.setEnabled(true);
-        //selDateRadio.checked = true;
-        //selDateRadio.disabled = false;
+        selDateRadio.checked = true;
+        selDateRadio.disabled = false;
     }
     else {
         //Enable date range controls
@@ -281,8 +281,8 @@ function(enabled) {
         //Disable selected date controls
         this._selDate.setEnabled(false);
         this._todayButton.setEnabled(false);
-        //selDateRadio.checked = false;
-        //selDateRadio.disabled = true;
+        selDateRadio.checked = false;
+        selDateRadio.disabled = true;
     }
 };
 
@@ -361,6 +361,19 @@ function() {
     window.open(url, "_blank");
 };
 
+ZmCalPrintDialog.prototype._getPrintViewName =
+function(view) {
+    var viewStyle;
+    switch (view) {
+        case ZmId.VIEW_CAL_DAY: 		viewStyle = "day"; break;
+        case ZmId.VIEW_CAL_WORK_WEEK:	viewStyle = "workWeek"; break;
+        case ZmId.VIEW_CAL_WEEK:		viewStyle = "week"; break;
+        case ZmId.VIEW_CAL_SCHEDULE:	viewStyle = "schedule"; break;
+        default:						viewStyle = "month"; break;				// default is month
+    }
+    return viewStyle;
+};
+
 ZmCalPrintDialog.prototype._getPrintOptions =
 function() {
     var cals,
@@ -370,12 +383,12 @@ function() {
         j=0,
         params = [],
         printURL = "",
-        selDate = this._selDate.getTimeValue(),
-        dateRangeFrom = this._dateRangeFrom.getTimeValue(),
-        dateRangeTo = this._dateRangeTo.getTimeValue(),
+        selDate = this._selDate.getValue(),
+        dateRangeFrom = this._dateRangeFrom.getValue(),
+        dateRangeTo = this._dateRangeTo.getValue(),
         fromTime = this._fromTimeSelect.getValue().getTime(),
         toTime = this._toTimeSelect.getValue().getTime(),
-        viewStyle = ZmCalViewController.OP_TO_VIEW[this._viewSelect.getValue()],
+        viewStyle = this._getPrintViewName(ZmCalViewController.OP_TO_VIEW[this._viewSelect.getValue()]),
         workDaysOnly = document.getElementById(this._htmlElId + "_workDaysOnly").checked,
         oneWeekPerPage = document.getElementById(this._htmlElId + "_oneWeekPerPage").checked,
         oneDayPerPage = document.getElementById(this._htmlElId + "_oneDayPerPage").checked,
@@ -395,14 +408,14 @@ function() {
     params[i++] = "cids=";
     params[i++] = calIds.join(',');
     params[i++] = "&view=";
-    params[i++] = this.currentViewId;
+    params[i++] = this._getPrintViewName(this.currentViewId);
     params[i++] = "&vs=";
     params[i++] = viewStyle;
     params[i++] = "&sd=";
     params[i++] = selDate;
-    params[i++] = "&drf=";
+    params[i++] = "&date=";
     params[i++] = dateRangeFrom;
-    params[i++] = "&drt=";
+    params[i++] = "&endDate=";
     params[i++] = dateRangeTo;
     params[i++] = "&ft=";
     params[i++] = fromTime;
@@ -420,6 +433,10 @@ function() {
     params[i++] = includeMiniCal;
     params[i++] = "&ftp=";
     params[i++] = fitToPage;
+    params[i++] = "&wdays=";
+    params[i++] = ZmCalBaseView.getWorkingHours();
+    params[i++] = "&tz=";
+    params[i++] = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 
     printURL = appContextPath + params.join("");
     //console.log(printURL);
@@ -439,7 +456,19 @@ ZmDateInput.prototype.constructor = ZmDateInput;
 
 ZmDateInput.prototype.getValue =
 function() {
-    return AjxDateUtil.simpleParseDateStr(this._dateInputField.getValue());
+    var date = AjxDateUtil.simpleParseDateStr(this._dateInputField.getValue());
+    /*var day = (date.getDate() < 10)
+			? ('0' + date.getDate())
+			: date.getDate();
+
+    var month = date.getMonth() + 1;
+    if (month < 10) {
+        month = '0' + month;
+    }
+
+    return [date.getFullYear(), month, day].join("");*/
+
+    return AjxDateFormat.format("yyyyMMddThhmm", date);
 };
 
 ZmDateInput.prototype.getTimeValue =
