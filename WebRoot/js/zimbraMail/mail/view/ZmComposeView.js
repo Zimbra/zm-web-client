@@ -1383,7 +1383,7 @@ function(signature, sigContent, account) {
 	var signatureId = signature.id;
 	sigContent = sigContent || this.getSignatureContent(signatureId);
 	if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
-		sigContent = [this._getSignatureSeparator(), "<span id=\"", signatureId, "\">", sigContent, "</span>"].join('');
+		sigContent = ["<span id=\"", signatureId, "\">", sigContent, "</span>"].join('');
 	}
 
 	return sigContent;
