@@ -369,6 +369,7 @@ function(view) {
         case ZmId.VIEW_CAL_WORK_WEEK:	viewStyle = "workWeek"; break;
         case ZmId.VIEW_CAL_WEEK:		viewStyle = "week"; break;
         case ZmId.VIEW_CAL_SCHEDULE:	viewStyle = "schedule"; break;
+        case ZmId.VIEW_CAL_LIST:	    viewStyle = "list"; break;
         default:						viewStyle = "month"; break;				// default is month
     }
     return viewStyle;
@@ -407,9 +408,9 @@ function() {
     params[i++] = "/h/printcalendar?";
     params[i++] = "cids=";
     params[i++] = calIds.join(',');
-    params[i++] = "&view=";
+    params[i++] = "&origView=";
     params[i++] = this._getPrintViewName(this.currentViewId);
-    params[i++] = "&vs=";
+    params[i++] = "&view=";
     params[i++] = viewStyle;
     params[i++] = "&sd=";
     params[i++] = selDate;

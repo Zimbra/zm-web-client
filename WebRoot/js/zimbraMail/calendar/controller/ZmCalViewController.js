@@ -2666,9 +2666,9 @@ function(parent, num) {
     parent.enable(ZmOperation.DUPLICATE_APPT,apptAccess && !isTrashMultiple);
     parent.enable(ZmOperation.SHOW_ORIG,apptAccess && !isTrashMultiple);
 
-	if (currViewName == ZmId.VIEW_CAL_LIST) {
+	/*if (currViewName == ZmId.VIEW_CAL_LIST) {
 		parent.enable(ZmOperation.PRINT, num > 0);
-	}
+	} */
 
 	// disable button for current view
 	var op = ZmCalViewController.VIEW_TO_OP[currViewName];
