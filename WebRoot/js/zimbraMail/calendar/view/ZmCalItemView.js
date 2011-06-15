@@ -85,8 +85,9 @@ function(calItem, prevView, mode) {
 
 	// So that Close button knows which view to go to
     // condition introduced to avoid irrelevant view being persisted as previous view
-	this._prevView = prevView || (calItem.folderId != ZmFolder.ID_TRASH) ?
-	                              this._controller._viewMgr.getCurrentViewName() : this._prevView;
+	var viewMgr = this._controller._viewMgr;
+	this._prevView = prevView || (viewMgr && (calItem.folderId != ZmFolder.ID_TRASH) ?
+	                              viewMgr.getCurrentViewName() : this._prevView);
 
 	this.reset();
 	this._calItem = calItem;
