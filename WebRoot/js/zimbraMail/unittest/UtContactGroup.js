@@ -328,3 +328,104 @@ UT.test("Group View: Verify contacts query uses quotes", {},
 	}
 
 );
+
+UT.test("Create Group: Verify group is in alphabet bar", {
+	setup: function(){
+		this._allContact = new ZmMockContact();
+		this._allContact.fileAs = "User, Zimbra";
+
+		this._AContact = new ZmMockContact();
+		this._AContact.fileAs = "Anderson, Derek";
+
+		this._digitContact = new ZmMockContact();
+		this._digitContact.fileAs = "99 Center Store";
+
+		this._spanishContact = new ZmMockContact();
+		this._spanishContact.fileAs = "\u00d1ana";
+
+		this._japaneseContact = new ZmMockContact();
+		this._japaneseContact.fileAs = "\u3042";
+	}},
+
+	function() {
+		UT.expect(18);
+		ZmUnitTestUtil.goToContacts();
+		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
+		var controller = contactsApp.getContactListController();
+		var alphabetBar = controller.getParentView().getAlphabetBar();
+
+		alphabetBar._currentLetter = null; //"all"
+		var result = alphabetBar.isItemInAlphabetLetter(this._allContact);
+		UT.equal(true, result, "result = " + result + " for 'All' test with user " + this._allContact.fileAs);
+
+		alphabetBar._currentLetter = "A";
+		var result = alphabetBar.isItemInAlphabetLetter(this._allContact);
+		UT.equal(false, result, "result = " + result + " for 'A' test with user " + this._allContact.fileAs);
+
+		alphabetBar._currentLetter = "123";
+		var result = alphabetBar.isItemInAlphabetLetter(this._allContact);
+		UT.equal(false, result, "result = " + result + " for '123' test with user " + this._allContact.fileAs);
+
+		alphabetBar._currentLetter = null;
+		var result = alphabetBar.isItemInAlphabetLetter(this._AContact);
+		UT.equal(true, result, "result = " + result + " for 'All' test with user " + this._AContact.fileAs);
+
+		alphabetBar._currentLetter = "A";
+		var result = alphabetBar.isItemInAlphabetLetter(this._AContact);
+		UT.equal(true, result, "result = " + result + " for 'A' test with user " + this._AContact.fileAs);
+
+		alphabetBar._currentLetter = "Z";
+		var result = alphabetBar.isItemInAlphabetLetter(this._AContact);
+		UT.equal(false, result, "result = " + result + " for 'Z' test with user " + this._AContact.fileAs);
+
+		alphabetBar._currentLetter = "123";
+		var result = alphabetBar.isItemInAlphabetLetter(this._AContact);
+		UT.equal(false, result, "result = " + result + " for '123' test with user " + this._AContact.fileAs);
+
+		alphabetBar._currentLetter = null;
+		var result = alphabetBar.isItemInAlphabetLetter(this._digitContact);
+		UT.equal(true, result, "result = " + result + " for 'All' test with user " + this._digitContact.fileAs);
+
+		alphabetBar._currentLetter = "A";
+		var result = alphabetBar.isItemInAlphabetLetter(this._digitContact);
+		UT.equal(false, result, "result = " + result + " for '123' test with user " + this._digitContact.fileAs);
+
+		alphabetBar._currentLetter = '123';
+		var result = alphabetBar.isItemInAlphabetLetter(this._digitContact);
+		UT.equal(true, result, "result = " + result + " for '123' test with user " + this._digitContact.fileAs);
+
+		alphabetBar._currentLetter = null;
+		var result = alphabetBar.isItemInAlphabetLetter(this._spanishContact);
+		UT.equal(true, result, "result = " + result + " for 'All' test with user " + this._spanishContact.fileAs);
+
+		alphabetBar._currentLetter = 'A';
+		var result = alphabetBar.isItemInAlphabetLetter(this._spanishContact);
+		UT.equal(false, result, "result = " + result + " for 'A' test with user " + this._spanishContact.fileAs);
+
+		alphabetBar._currentLetter = "\u00d1";
+		var result = alphabetBar.isItemInAlphabetLetter(this._spanishContact);
+		UT.equal(true, result, "result = " + result + " for '\u00d1' test with user " + this._spanishContact.fileAs);
+
+		alphabetBar._currentLetter = "N";
+		var result = alphabetBar.isItemInAlphabetLetter(this._spanishContact);
+		UT.equal(false, result, "result = " + result + " for 'N' test with user " + this._spanishContact.fileAs);
+
+		alphabetBar._currentLetter = null;
+		var result = alphabetBar.isItemInAlphabetLetter(this._japaneseContact);
+		UT.equal(true, result, "result = " + result + " for 'All' test with user " + this._japaneseContact.fileAs);
+
+		alphabetBar._currentLetter = "A-Z";
+		var result = alphabetBar.isItemInAlphabetLetter(this._japaneseContact);
+		UT.equal(false, result, "result = " + result + " for 'A-Z' test with user " + this._japaneseContact.fileAs);
+
+		alphabetBar._currentLetter = "\u3042";
+		var result = alphabetBar.isItemInAlphabetLetter(this._japaneseContact);
+		UT.equal(true, result, "result = " + result + " for '\u3042' test with user " + this._japaneseContact.fileAs);
+
+		alphabetBar._currentLetter = "\u304b";
+		var result = alphabetBar.isItemInAlphabetLetter(this._japaneseContact);
+		UT.equal(false, result, "result = " + result + " for '\u304b' test with user " + this._japaneseContact.fileAs);
+
+	}
+
+);

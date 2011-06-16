@@ -563,7 +563,11 @@ function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY || ev.event == ZmEvent.E_CREATE) {
 		var item = ev && ev._details && ev._details.items && ev._details.items.length && ev._details.items[0];
 		if (item instanceof ZmContact && this._currentView == ZmId.VIEW_CONTACT_SIMPLE && item.folderId == this._folderId) {
-			this._parentView[this._currentView].setContact(item, this.isGalSearch());
+			var alphaBar = this._parentView[this._currentView].getAlphabetBar();
+			//only set the view if the contact is in the list
+			if(!alphaBar || alphaBar.isItemInAlphabetLetter(item)) {
+				this._parentView[this._currentView].setContact(item, this.isGalSearch());
+			}
 		}
 	}
 };
@@ -1149,6 +1153,11 @@ function(ev, items) {
 				group.addChangeListener(this._contactListChange.bind(this), 0);//update the group data
 				mods[ZmContact.F_dlist] = this._getGroupMembers(items, group);
 				this._doModify(group, mods);
+				this._menuPopdownActionListener();
+				var idx = this._list.getIndexById(group.id);
+				if (idx) {
+					this._resetSelection(idx);
+				}
 			}
 		}
 		else if (groupEvent == ZmEvent.E_CREATE) {
@@ -1163,7 +1172,7 @@ function(ev, items) {
 	}
 };
 
-ZmController.prototype._newContactGroupCallback =
+ZmContactListController.prototype._newContactGroupCallback =
 function(params) {
 	var groupName = params.name;
 	appCtxt.getNewContactGroupDialog().popdown();
@@ -1175,10 +1184,12 @@ function(params) {
 	mods[ZmContact.F_nickname] = groupName;
 	mods[ZmContact.F_type] = "group";
 	this._doCreate(this._list, mods);
+	this._pendingActionData = null;
+	this._menuPopdownActionListener();
 };
 
 //methods for dealing with contact groups
-ZmController.prototype._getGroupMembers =
+ZmContactListController.prototype._getGroupMembers =
 function(items, group) {
 	var mods = {};
 	var groupEmails = [];
@@ -1205,7 +1216,7 @@ function(items, group) {
 	return groupEmails.join(", ");
 };
 
-ZmController.prototype._getContactsFromCache =
+ZmContactListController.prototype._getContactsFromCache =
 function() {
 	var contactList = appCtxt.getApp(ZmApp.CONTACTS).getContactList();
 	if (contactList){
@@ -1214,18 +1225,21 @@ function() {
 	return {};
 };
 
-ZmController.prototype._sortContactGroups =
+ZmContactListController.prototype._sortContactGroups =
 function(contactGroups) {
 	var sortByNickname = function(a, b) {
-		if (!a._attrs && !b._attrs) {
-			return 1;
+		var aNickname = ZmContact.getAttr(a, "nickname");
+		var bNickname = ZmContact.getAttr(b, "nickname");
+
+		if (!aNickname || !bNickname) {
+			return 0;
 		}
-		a = a._attrs.nickname.toLowerCase();
-		b = b._attrs.nickname.toLowerCase();
-		if (a > b)
+
+		if (aNickname.toLowerCase() > bNickname.toLowerCase())
 			return 1;
-		if (a < b)
+		if (aNickname.toLowerCase() < bNickname.toLowerCase())
 			return -1;
+
 		return 0;
 	};
 

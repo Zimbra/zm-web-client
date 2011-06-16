@@ -242,7 +242,7 @@ function(contact, idx) {
 
 	if (this.isCanonical) {
 		var a = this.getArray();
-		idx = idx || this._getIndexById(contact.id);
+		idx = idx || this.getIndexById(contact.id);
 		a[idx] = realContact;
 		this._updateHashes(realContact, true);
 		this._idHash[contact.id] = realContact;
@@ -258,7 +258,7 @@ function(contact, idx) {
  * @return	{int}	the index
  * @private
  */
-ZmContactList.prototype._getIndexById =
+ZmContactList.prototype.getIndexById =
 function(id) {
 	var a = this.getArray();
 	for (var i = 0; i < a.length; i++) {
