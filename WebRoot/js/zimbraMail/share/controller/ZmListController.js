@@ -709,8 +709,9 @@ function(params) {
 	if (params.state == ZmListController.PROGRESS_DIALOG_INIT) {
 		dialog.reset();
 		dialog.registerCallback(DwtDialog.CANCEL_BUTTON, params.callback);
+		ZmListController.progressDialogReady = true;
 	}
-	else if (params.state == ZmListController.PROGRESS_DIALOG_UPDATE) {
+	else if (params.state == ZmListController.PROGRESS_DIALOG_UPDATE && ZmListController.progressDialogReady) {
 		dialog.setMessage(params.summary, DwtMessageDialog.INFO_STYLE, AjxMessageFormat.format(ZmMsg.inProgress));
 		if (!dialog.isPoppedUp()) {
 			dialog.popup();
@@ -719,6 +720,7 @@ function(params) {
 	else if (params.state == ZmListController.PROGRESS_DIALOG_CLOSE) {
 		dialog.unregisterCallback(DwtDialog.CANCEL_BUTTON);
 		dialog.popdown();
+		ZmListController.progressDialogReady = false;
 	}
 };
 
