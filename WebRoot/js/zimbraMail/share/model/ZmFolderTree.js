@@ -113,7 +113,9 @@ function(parent, obj, tree, elementType, path, account) {
 			query: obj.query,
 			types: types,
 			sortBy: obj.sortBy,
-			account: account
+			account: account,
+			color: obj.color,
+			rgb: obj.rgb
 		};
 		folder = new ZmSearchFolder(params);
 		ZmFolderTree._fillInFolder(folder, obj, path);

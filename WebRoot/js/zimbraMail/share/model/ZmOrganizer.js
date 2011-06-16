@@ -375,6 +375,20 @@ function(org, params) {
 ZmOrganizer.sortCompare = function(organizerA, organizerB) {};
 
 /**
+ * nulls value that is the default color for the type.
+ * @param value
+ */
+ZmOrganizer.getColorValue =
+function(value, type) {
+	// no need to save color if missing or default
+	if (value == ZmOrganizer.DEFAULT_COLOR[type]) {
+		return null;
+	}
+
+	return value;
+};
+
+/**
  * Creates an organizer via <code>&lt;CreateFolderRequest&gt;</code>. Attribute pairs can
  * be passed in and will become attributes of the folder node in the request.
  * 
@@ -394,10 +408,7 @@ function(params) {
 
 		var value = params[i];
 		if (i == "color") {
-			// no need to save color if missing or default
-			if (!value || (value == ZmOrganizer.DEFAULT_COLOR[type])) {
-				value = null;
-			}
+			value = ZmOrganizer.getColorValue(value, type);
 		}
 		if (value) {
 			folder[i] = value;

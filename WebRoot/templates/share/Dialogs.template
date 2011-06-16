@@ -517,7 +517,7 @@
 
 <template id="share.Dialogs#ZmNewOrgDialogFolder">
 	<tr>
-		<td class='Label' colspan=2><$= ZmMsg.newFolderParent $></td>
+		<td class='Label' colspan=2>${label}</td>
 	</tr>
 	<tr>
 		<td colspan=2 id='${id}_folderTree'></td>

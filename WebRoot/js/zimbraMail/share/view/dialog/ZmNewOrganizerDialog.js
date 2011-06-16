@@ -45,6 +45,10 @@ function() {
 	return "ZmNewOrganizerDialog";
 };
 
+//override the following if needed
+ZmNewOrganizerDialog.prototype._folderLocationLabel = ZmMsg.newFolderParent;
+ZmNewOrganizerDialog.prototype._folderNameAlreadyExistsMsg = ZmMsg.errorAlreadyExists;
+
 // Public methods
 
 /**
@@ -231,7 +235,7 @@ function(html, idx) {
 ZmNewOrganizerDialog.prototype._createFolderContentHtml =
 function(html, idx) {
 	this._folderTreeCellId = this._htmlElId + "_folderTree";
-	html[idx++] = AjxTemplate.expand("share.Dialogs#ZmNewOrgDialogFolder", {id:this._htmlElId});
+	html[idx++] = AjxTemplate.expand("share.Dialogs#ZmNewOrgDialogFolder", {id:this._htmlElId, label:this._folderLocationLabel});
 	return idx;
 };
 
@@ -305,6 +309,16 @@ function(overview, treeIds, omit, noRootSelect) {
 	this._folderTreeView = overview.getTreeView(this._organizerType);
 };
 
+ZmNewOrganizerDialog.prototype._getOverviewOrOverviewContainer =
+function() {
+	if (appCtxt.multiAccounts) {
+		return this._opc.getOverviewContainer(this.toString());
+	}
+	return this._opc.getOverview(this._curOverviewId);
+
+};
+
+
 /** 
  * Checks the input for validity and returns the following array of values:
  * <ul>
@@ -317,11 +331,14 @@ function(overview, treeIds, omit, noRootSelect) {
 ZmNewOrganizerDialog.prototype._getFolderData =
 function() {
 	// make sure a parent was selected
-	var ov = appCtxt.multiAccounts 
-		? this._opc.getOverviewContainer(this.toString())
-		: this._opc.getOverview(this._curOverviewId);
+	var ov = this._getOverviewOrOverviewContainer();
 
 	var parentFolder = ov ? ov.getSelected() : appCtxt.getFolderTree(this._account).root;
+
+	if (this._isGlobalSearch) {
+		//special case for global search (only possible if this is ZmNewSearchDialog
+		parentFolder = appCtxt.getById(ZmOrganizer.ID_ROOT);
+	}
 
 	// check name for presence and validity
 	var name = AjxStringUtil.trim(this._nameField.value);
@@ -329,7 +346,7 @@ function() {
 
 	// make sure parent doesn't already have a child by this name
 	if (!msg && parentFolder.hasChild(name)) {
-		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name]);
+		msg = AjxMessageFormat.format(this._folderNameAlreadyExistsMsg, [name]); 
 	}
 
 	var color = null;
