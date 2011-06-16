@@ -219,7 +219,7 @@ function() {
 
     this._fromTimeSelect = new ZmTimeInput(this, ZmTimeInput.START, this._htmlElId + "_fromHoursContainer");
 	this._toTimeSelect = new ZmTimeInput(this, ZmTimeInput.END, this._htmlElId + "_toHoursContainer");
-
+    this._printErrorMsgContainer = document.getElementById(this._htmlElId + "_printErrorMsgContainer");
 
     this._fitToPageSelect = new DwtSelect({parent:this, parentElement:this._htmlElId + "_fitToPageSelectContainer"});
     fitToPageOptions = [
@@ -263,27 +263,56 @@ function(enabled) {
         this._dateRangeFrom.setEnabled(false);
         this._dateRangeTo.setEnabled(false);
         dateRangeRadio.checked = false;
-        dateRangeRadio.disabled = true;
+        //dateRangeRadio.disabled = true;
 
         //Enable selected date controls
         this._selDate.setEnabled(true);
         this._todayButton.setEnabled(true);
         selDateRadio.checked = true;
-        selDateRadio.disabled = false;
+        //selDateRadio.disabled = false;
     }
     else {
         //Enable date range controls
         this._dateRangeFrom.setEnabled(true);
         this._dateRangeTo.setEnabled(true);
         dateRangeRadio.checked = true;
-        dateRangeRadio.disabled = false;
+        //dateRangeRadio.disabled = false;
 
         //Disable selected date controls
         this._selDate.setEnabled(false);
         this._todayButton.setEnabled(false);
         selDateRadio.checked = false;
-        selDateRadio.disabled = true;
+        //selDateRadio.disabled = true;
     }
+};
+
+ZmCalPrintDialog.prototype._validateDateRange =
+function(ev) {
+    var hoursContainer = document.getElementById(this._htmlElId + "_hoursContainer"),
+        isValid = true;
+    if( this._dateRangeFrom.getEnabled() &&
+        this._dateRangeTo.getEnabled()) {
+        var startDate = this._dateRangeFrom.getTimeValue();
+        var endDate = this._dateRangeTo.getTimeValue();
+
+        if(endDate < startDate) {
+            isValid = false;
+        }
+    }
+
+    if(Dwt.getDisplay(hoursContainer) == Dwt.DISPLAY_BLOCK) {
+        var startTime = this._fromTimeSelect.getValue();
+        var endTime = this._toTimeSelect.getValue();
+
+        if(endTime < startTime) {
+            isValid = false;
+        }
+    }
+    if(!isValid) {
+        Dwt.setDisplay(this._printErrorMsgContainer, Dwt.DISPLAY_BLOCK);
+        this._printErrorMsgContainer.innerHTML = ZmMsg.errorInvalidDates;
+    }
+    return isValid;
 };
 
 ZmCalPrintDialog.prototype._setViewOptions =
@@ -356,9 +385,18 @@ function() {
 
 ZmCalPrintDialog.prototype._printButtonListener =
 function() {
+    if(!this._validateDateRange()) {
+        return false;
+    }
     var url = this._getPrintOptions();
     this.popdown();
     window.open(url, "_blank");
+};
+
+ZmCalPrintDialog.prototype.popdown =
+function() {
+    Dwt.setDisplay(this._printErrorMsgContainer, Dwt.DISPLAY_NONE);
+    DwtDialog.prototype.popdown.call(this);
 };
 
 ZmCalPrintDialog.prototype._getPrintViewName =
@@ -406,7 +444,7 @@ function() {
     }
 
     params[i++] = "/h/printcalendar?";
-    params[i++] = "cids=";
+    params[i++] = "l=";
     params[i++] = calIds.join(',');
     params[i++] = "&origView=";
     params[i++] = this._getPrintViewName(this.currentViewId);
@@ -438,6 +476,8 @@ function() {
     params[i++] = ZmCalBaseView.getWorkingHours();
     params[i++] = "&tz=";
     params[i++] = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+    params[i++] = "&skin=";
+    params[i++] = appCurrentSkin;
 
     printURL = appContextPath + params.join("");
     //console.log(printURL);
@@ -469,7 +509,7 @@ function() {
 
     return [date.getFullYear(), month, day].join("");*/
 
-    return AjxDateFormat.format("yyyyMMddThhmm", date);
+    return AjxDateFormat.format("yyyyMMddThhmmss", date);
 };
 
 ZmDateInput.prototype.getTimeValue =
