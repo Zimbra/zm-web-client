@@ -1155,7 +1155,7 @@ function(ev, items) {
 				this._doModify(group, mods);
 				this._menuPopdownActionListener();
 				var idx = this._list.getIndexById(group.id);
-				if (idx) {
+				if (idx != null) {
 					this._resetSelection(idx);
 				}
 			}
