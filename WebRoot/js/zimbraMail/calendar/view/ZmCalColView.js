@@ -2305,10 +2305,12 @@ function(ev) {
 
 ZmCalColView.prototype._apptDraggedOut =
 function(docX, docY) {
-    return (docY < this._containerRect.y) ||
-           (docY > (this._containerRect.y + this._containerRect.height)) ||
-           (docX < this._containerRect.x) ||
-           (docX > (this._containerRect.x + this._containerRect.width));
+    var draggedOut = this._containerRect ? true : false;
+    return draggedOut &&
+           ((docY < this._containerRect.y) ||
+            (docY > (this._containerRect.y + this._containerRect.height)) ||
+            (docX < this._containerRect.x) ||
+            (docX > (this._containerRect.x + this._containerRect.width)));
 };
 
 ZmCalColView._restoreApptLoc =
