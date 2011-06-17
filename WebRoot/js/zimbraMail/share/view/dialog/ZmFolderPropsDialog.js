@@ -98,8 +98,10 @@ function(organizer) {
 
 	this._handleFolderChange();
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
+		var isShareable = ZmOrganizer.SHAREABLE[organizer.type];
+
 		var isVisible = (!organizer.link || organizer.isAdmin());
-		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, isVisible);
+		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, isVisible && isShareable);
 	}
 
 	DwtDialog.prototype.popup.call(this);

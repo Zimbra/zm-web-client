@@ -264,6 +264,7 @@ ZmOrganizer.OPEN_SETTING	= {};		// setting that controls whether the tree view i
 ZmOrganizer.NEW_OP			= {};		// name of operation for new button in tree header (optional)
 ZmOrganizer.DISPLAY_ORDER	= {};		// sort number to determine order of tree view (optional)
 ZmOrganizer.HIDE_EMPTY		= {};		// if true, hide tree header if tree is empty
+ZmOrganizer.SHAREABLE 		= {};		// allow share or not
 
 ZmOrganizer.APP2ORGANIZER	= {};		// organizer types, keyed by app name
 ZmOrganizer.APP2ORGANIZER_R = {};		// app names, keyed by app organizer type
@@ -339,6 +340,7 @@ function(org, params) {
 	if (params.newOp)			{ ZmOrganizer.NEW_OP[org]				= params.newOp; }
 	if (params.displayOrder)	{ ZmOrganizer.DISPLAY_ORDER[org]		= params.displayOrder; }
 	if (params.hideEmpty)		{ ZmOrganizer.HIDE_EMPTY[org]			= params.hideEmpty; }
+	ZmOrganizer.SHAREABLE[org]	= !params.disableShare; 
 
 	if (!appCtxt.isChildWindow || params.childWindow ) {
 		if (params.compareFunc)		{ ZmTreeView.COMPARE_FUNC[org]			= params.compareFunc; }
