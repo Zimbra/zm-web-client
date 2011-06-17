@@ -1457,6 +1457,7 @@ function() {
  */
 ZmAppCtxt.prototype.notifyZimlets =
 function(event, args, options) {
+	this.notifySkin(event, args, options); // Also notify skin
 
 	var context = this.isChildWindow ? parentAppCtxt : this;
 
@@ -1471,6 +1472,16 @@ function(event, args, options) {
 
 	this.getZimletMgr().notifyZimlets(event, args);
 };
+
+ZmAppCtxt.prototype.notifySkin =
+function(event, args, options) {
+	var context = this.isChildWindow ? parentAppCtxt : this;
+	if (options && options.noChildWindow && this.isChildWindow) { return; }
+	try {
+		return window.skin && AjxUtil.isFunction(window.skin.handleNotification) && window.skin.handleNotification(event, args);
+	} catch (e) {}
+};
+
 
 /**
  * Gets the calendar manager.

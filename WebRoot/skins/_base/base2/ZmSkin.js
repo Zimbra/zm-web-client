@@ -182,6 +182,16 @@ ZmSkin.prototype = {
 	getSidebarAdContainer : function() {
 		return this._getEl("skin_container_sidebar_ad");
 	},
+
+	handleNotification : function(event, args) {
+		/*
+			Override me in individual skins
+			@param [String] event		The event type, e.g. "onAction", "onSelectApp", "initializeToolbar", ...
+										basically anything that would get passed into appCtxt.notifyZimlets()
+			@param [Array]	args		Array of the arguments that get passed to appCtxt.notifyZimlets()
+		*/
+	},
+
 	
 	//
 	// Protected methods
