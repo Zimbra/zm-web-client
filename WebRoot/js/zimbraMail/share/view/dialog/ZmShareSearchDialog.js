@@ -54,14 +54,13 @@ ZmShareSearchDialog.prototype.toString = function() {
 
 ZmShareSearchDialog.ADD_BUTTON = DwtDialog.OK_BUTTON; //++DwtDialog.LAST_BUTTON;
 
-ZmShareSearchDialog._ORG_TYPES = [ZmOrganizer.FOLDER, ZmOrganizer.ADDRBOOK, ZmOrganizer.CALENDAR,
-					ZmOrganizer.TASKS, ZmOrganizer.BRIEFCASE];
-ZmShareSearchDialog._ORG_KEY = {};
-ZmShareSearchDialog._ORG_KEY[ZmOrganizer.FOLDER]		= "mailSharesOnly";
-ZmShareSearchDialog._ORG_KEY[ZmOrganizer.TASKS]		= "taskSharesOnly";
-ZmShareSearchDialog._ORG_KEY[ZmOrganizer.BRIEFCASE]	= "briefcaseSharesOnly";
-ZmShareSearchDialog._ORG_KEY[ZmOrganizer.CALENDAR]    = "calendarSharesOnly";
-ZmShareSearchDialog._ORG_KEY[ZmOrganizer.ADDRBOOK]    = "addrbookSharesOnly";
+ZmShareSearchDialog._APP_TYPES = [ZmApp.MAIL, ZmApp.CONTACTS, ZmApp.CALENDAR, ZmApp.TASKS, ZmApp.BRIEFCASE];
+ZmShareSearchDialog._APP_KEY = {};
+ZmShareSearchDialog._APP_KEY[ZmApp.MAIL]		= "mailSharesOnly";
+ZmShareSearchDialog._APP_KEY[ZmApp.TASKS]		= "taskSharesOnly";
+ZmShareSearchDialog._APP_KEY[ZmApp.BRIEFCASE]	= "briefcaseSharesOnly";
+ZmShareSearchDialog._APP_KEY[ZmApp.CALENDAR]    = "calendarSharesOnly";
+ZmShareSearchDialog._APP_KEY[ZmApp.CONTACTS]    = "addrbookSharesOnly";
 
 //
 // Data
@@ -562,10 +561,16 @@ ZmShareSearchDialog.prototype._handleEmailEnter = function(htmlEvent) {
 ZmShareSearchDialog.prototype._getAppOptions = function() {
 	var options = [];
     options.push({value: "", label: ZmMsg.allApplications});
-    for (var i = 0; i < ZmShareSearchDialog._ORG_TYPES.length; i++) {
-		var orgType = ZmShareSearchDialog._ORG_TYPES[i];
-	    var key = ZmShareSearchDialog._ORG_KEY[orgType];
-		options.push({id: orgType, value: ZmOrganizer.VIEWS[orgType][0], label: ZmMsg[key]});
+    for (var i = 0; i < ZmShareSearchDialog._APP_TYPES.length; i++) {
+		var appType = ZmShareSearchDialog._APP_TYPES[i];
+	    var key = ZmShareSearchDialog._APP_KEY[appType];
+	    var appEnabled = appCtxt.get(ZmApp.SETTING[appType]);
+	    if (appEnabled) {
+		    var shareKey = ZmApp.ORGANIZER[appType];
+		    if (AjxUtil.isArray1(ZmOrganizer.VIEWS[shareKey])) {
+				options.push({id: appType, value: ZmOrganizer.VIEWS[shareKey][0], label: ZmMsg[key]});
+		    }
+	    }
 	}
 
     return options;
@@ -581,7 +586,7 @@ ZmShareSearchDialog.prototype._selectApplicationOption = function() {
 
   for (var i=0; i<appOptions.length; i++) {
       if (appOptions[i].hasOwnProperty('id') &&
-          ZmOrganizer.APP[appOptions[i].id] == activeApp.getName()) {
+          appOptions[i].id == activeApp.getName()) {
             appSelect.setSelectedValue(appOptions[i].value);
             return;
       }

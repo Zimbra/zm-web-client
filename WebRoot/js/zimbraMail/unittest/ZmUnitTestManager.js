@@ -174,6 +174,10 @@ function() {
 	ctlr._newButtonListener(new DwtSelectionEvent(true), ZmOperation.NEW_MENU);
 };
 
+ZmUnitTestUtil.goToMail =
+function() {
+	appCtxt.getApp(ZmApp.MAIL).launch();
+}
 
 ZmUnitTestUtil.goToContacts =
 function() {
