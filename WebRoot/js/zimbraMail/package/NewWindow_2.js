@@ -164,3 +164,6 @@ AjxPackage.require("zimbraMail.mail.view.object.ZmImageAttachmentObjectHandler")
 
 AjxPackage.require("zimbra.common.ZmErrorDialog");
 
+AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommandAction");
+AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommand");
+AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommands");

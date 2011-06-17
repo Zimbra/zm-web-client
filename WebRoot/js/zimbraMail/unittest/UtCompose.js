@@ -31,3 +31,23 @@ UT.test("Show compose page", {
 		UT.equal(viewId.indexOf("COMPOSE"), 0);
 	}
 );
+
+// Launch New window compose
+UT.test("New window compose",
+
+    // New window compose.
+    function() {
+        var args = {
+            action: ZmOperation.NEW_MESSAGE,
+            inNewWindow: true,
+            callback: function() {
+                UT.ok(true, "New Window Loaded");
+                UT.start();
+            }
+        };
+        appCtxt.getApp(ZmApp.MAIL).compose(args);
+        UT.stop(10000);
+        UT.expect(1);
+    }
+
+);

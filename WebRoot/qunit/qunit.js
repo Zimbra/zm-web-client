@@ -472,7 +472,7 @@ var config = {
 
 	QUnit.urlParams = urlParams;
 	
-	var filters = urlParams.filter.split(",");
+	var filters = urlParams.filter && urlParams.filter.split(",");
 	if (filters && filters.length) {
 		config.filter = {};
 		for (var i = 0; i < filters.length; i++) {
