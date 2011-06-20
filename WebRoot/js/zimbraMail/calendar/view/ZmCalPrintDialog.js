@@ -45,6 +45,8 @@ ZmCalPrintDialog.prototype.constructor = ZmCalPrintDialog;
 
 ZmCalPrintDialog.PRINT_BUTTON = ++DwtDialog.LAST_BUTTON;
 ZmCalPrintDialog.PRINT_CANCEL_BUTTON = ++DwtDialog.LAST_BUTTON;
+ZmCalPrintDialog.DATE_FORMAT = "yyyyMMddTHHmmss";
+ZmCalPrintDialog.TIME_FORMAT = "HH:mm";
 
 // Public methods
 
@@ -422,12 +424,13 @@ function() {
         j=0,
         params = [],
         printURL = "",
-        selDate = this._selDate.getValue(),
+        selDate = this._selDate.getEnabled() ? AjxDateFormat.format(ZmCalPrintDialog.DATE_FORMAT, this._selDate.getValue()) : "",
         dateRangeFrom = this._dateRangeFrom.getValue(),
         dateRangeTo = this._dateRangeTo.getValue(),
-        fromTime = this._fromTimeSelect.getValue().getTime(),
-        toTime = this._toTimeSelect.getValue().getTime(),
-        viewStyle = this._getPrintViewName(ZmCalViewController.OP_TO_VIEW[this._viewSelect.getValue()]),
+        fromTime = AjxDateFormat.format(ZmCalPrintDialog.TIME_FORMAT, this._fromTimeSelect.getValue()),
+        toTime = AjxDateFormat.format(ZmCalPrintDialog.TIME_FORMAT, this._toTimeSelect.getValue()),
+        viewSelected = ZmCalViewController.OP_TO_VIEW[this._viewSelect.getValue()],
+        viewStyle = this._getPrintViewName(viewSelected),
         workDaysOnly = document.getElementById(this._htmlElId + "_workDaysOnly").checked,
         oneWeekPerPage = document.getElementById(this._htmlElId + "_oneWeekPerPage").checked,
         oneDayPerPage = document.getElementById(this._htmlElId + "_oneDayPerPage").checked,
@@ -442,6 +445,20 @@ function() {
     for(j=0; j<cals.length; j++) {
         calIds.push(cals[j].id);
     }
+
+    if(viewSelected == ZmId.VIEW_CAL_MONTH) {
+        var endMonthDate = AjxDateUtil._daysPerMonth[dateRangeTo.getMonth()];
+        dateRangeTo.setDate(endMonthDate);
+        dateRangeFrom.setDate(1);
+    }
+    else if(viewSelected == ZmId.VIEW_CAL_WEEK ||
+            viewSelected == ZmId.VIEW_CAL_WORK_WEEK) {
+        dateRangeFrom = AjxDateUtil.getFirstDayOfWeek(dateRangeFrom);
+        dateRangeTo = AjxDateUtil.getLastDayOfWeek(dateRangeTo);
+    }
+
+    dateRangeFrom = AjxDateFormat.format(ZmCalPrintDialog.DATE_FORMAT, dateRangeFrom);
+    dateRangeTo = AjxDateFormat.format(ZmCalPrintDialog.DATE_FORMAT, dateRangeTo);
 
     params[i++] = "/h/printcalendar?";
     params[i++] = "l=";
@@ -509,7 +526,8 @@ function() {
 
     return [date.getFullYear(), month, day].join("");*/
 
-    return AjxDateFormat.format("yyyyMMddThhmmss", date);
+    //return AjxDateFormat.format("yyyyMMddThhmmss", date);
+    return date;
 };
 
 ZmDateInput.prototype.getTimeValue =
