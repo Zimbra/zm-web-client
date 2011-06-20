@@ -1651,6 +1651,8 @@ ZmEditContactViewInputSelect.prototype._createInput = function() {
 	input.setHint(this._hint);
 	input.setHandler(DwtEvent.ONKEYDOWN, AjxCallback.simpleClosure(this._handleInputKeyDown, this, input));
 	input.setHandler(DwtEvent.ONKEYUP, AjxCallback.simpleClosure(this._handleInputKeyUp, this, input));
+	input.setHandler(DwtEvent.ONMOUSEDOWN, AjxCallback.simpleClosure(this._handleMouseDown, this, input));
+	input.setHandler(DwtEvent.ONPASTE, AjxCallback.simpleClosure(this._onPaste, this, input));
 	return input;
 };
 
@@ -1697,6 +1699,32 @@ ZmEditContactViewInputSelect.prototype._handleInputKeyUp = function(input, evt) 
 	}
 	return true;
 };
+
+ZmEditContactViewInputSelect.prototype._handleMouseDown =
+function(input, evt) {
+	var value = input.getValue();
+	input.setData("OLD_VALUE", value);
+	return true;
+};
+
+ZmEditContactViewInputSelect.prototype._onPaste =
+function(input, evt) {
+	var ovalue = input.getData("OLD_VALUE");
+	if (ovalue != null) {
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._checkInput, [input]), 100);
+	}
+};
+
+ZmEditContactViewInputSelect.prototype._checkInput =
+function(input) {
+	var ovalue = input.getData("OLD_VALUE");
+	var nvalue = input.getValue();
+	if (ovalue != null && ovalue != nvalue) {
+		this.setDirty(true);
+	}
+	return true;
+};
+
 
 ZmEditContactViewInputSelect.prototype._handleSelectChange = function(evt, skipFocus) {
 	var args = evt._args;
