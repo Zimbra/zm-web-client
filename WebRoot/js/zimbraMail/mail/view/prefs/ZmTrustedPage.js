@@ -85,8 +85,11 @@ function(useDefaults) {
 
 ZmTrustedPage.prototype.isDirty =
 function() {
-	var isDirty = ZmPreferencesPage.prototype.isDirty.call(this);
-	return (!isDirty) ? this.isTrustedListDirty() : isDirty;
+	var isDirty = ZmPreferencesPage.prototype.isDirty.call(this) || this.isTrustedListDirty();
+	if (isDirty) {
+		AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\n" + "zimbraPrefMailTrustedSenderList");
+	}
+	return isDirty;
 };
 
 ZmTrustedPage.prototype.isTrustedListDirty =

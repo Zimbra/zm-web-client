@@ -392,15 +392,28 @@ function(name) {
 ZmZimletsPage.prototype.isDirty =
 function() {
 	var allZimlets = this.getZimlets();
-	var r = false;
+	var dirty = false;
 	var arr = allZimlets._vector.getArray();
+	var dirtyZimlets = [];
+
+	var printZimlet = function(zimlet) {
+		if (AjxUtil.isArray(zimlet)) {
+			return AjxUtil.map(zimlet, printZimlet).join("\n");
+		}
+		return [zimlet.name," (from ",zimlet._origStatus," to ",zimlet.active,")"].join("");
+	}
+
 	for (var i = 0; i < arr.length; i++) {
 		if (arr[i]._origStatus != arr[i].active) {
-			r = true;
-			break;
+			dirty = true;
+			dirtyZimlets.push(arr[i]);
 		}
 	}
-	return r;
+
+	if (dirty) {
+		AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\n" + "Dirty zimlets:\n" + printZimlet(dirtyZimlets));
+	}
+	return dirty;
 };
 
 /**
