@@ -161,6 +161,22 @@
 
     <c:set var="view" value="${not empty param.view ? param.view : mailbox.prefs.calendarInitialView}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
+    <c:if test="${view eq 'list'}">
+        <fmt:message var="dateFormat" key="CAL_APPT_EDIT_DATE_FORMAT"/>
+        <c:if test="${not empty param.startDate}">
+            <fmt:parseDate pattern="${dateFormat}" value="${param.startDate}" var="parsedStartDate" timeZone="${tz}"/>
+            <fmt:formatDate value="${parsedStartDate}" pattern="yyyyMMdd'T'HHmmss" var="fmtStartDate" timeZone="${tz}"/>
+            <fmt:parseDate value="${fmtStartDate}" pattern="yyyyMMdd'T'HHmmss" var="start" timeZone="${tz}" />
+            <c:set scope="request" var="startDateContext" value="${zm:getCalendar(start.time, tz)}"/>
+        </c:if>
+
+        <c:if test="${not empty param.endDate}">
+            <fmt:parseDate pattern="${dateFormat}" value="${param.endDate}" var="parsedEndDate" timeZone="${tz}"/>
+            <fmt:formatDate value="${parsedEndDate}" pattern="yyyyMMdd'T'HHmmss" var="fmtEndDate" timeZone="${tz}"/>
+            <fmt:parseDate value="${fmtEndDate}" pattern="yyyyMMdd'T'HHmmss" var="end" timeZone="${tz}"/>
+            <c:set scope="request" var="endDateContext" value="${zm:getCalendar(end.time, tz)}"/>
+        </c:if>
+    </c:if>
 </app:handleError>
 
 <app:handleError>
@@ -184,6 +200,9 @@
     <c:when test="${view eq 'schedule'}">
         <app:multiDayView timezone="${tz}" date="${dateContext}" numdays="1" view="${view}"/>
     </c:when>
+    <c:when test="${view eq 'list'}">
+        <app:listView timezone="${tz}" date="${not empty param.startDate? startDateContext : dateContext}" endDate="${not empty param.endDate ? endDateContext : ''}" view="${view}" numdays="7"/>
+    </c:when>
     <c:otherwise>
         <app:monthView timezone="${tz}" date="${dateContext}"/>
     </c:otherwise>
@@ -191,6 +210,13 @@
 </app:handleError>
 <script type="text/javascript">
     <!--
-    var zprint = function(){ try{ var idex = 0; var c =""; while (idex <= zrc ) { if(document.getElementById("C"+idex).checked) { cid = document.getElementById("C"+idex).value; c += cid + ","; } idex++ ; } }catch(ex){ } window.open("/h/printcalendar?view=${view}&l=${checkedCalendars}&date=${param.date}&action=print"); }
+    var zprint = function(){
+        try{ var idex = 0; var c =""; while (idex <= zrc ) { if(document.getElementById("C"+idex).checked) { cid = document.getElementById("C"+idex).value; c += cid + ","; } idex++ ; } }catch(ex){ }
+        if (${view eq 'list'}) {
+            window.open("/h/printcalendar?view=${view}&l=${checkedCalendars}&date=${fmtStartDate}&endDate=${fmtEndDate}&action=print");
+        } else {
+            window.open("/h/printcalendar?view=${view}&l=${checkedCalendars}&date=${param.date}&action=print");
+        }
+    };
         //-->
 </script>
