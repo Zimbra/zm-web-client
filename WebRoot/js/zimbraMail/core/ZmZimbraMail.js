@@ -1025,6 +1025,7 @@ function(funcName, force) {
 			}
 		}
 	}
+	appCtxt.notifyZimlets("runAppFunction", [funcName]);
 };
 
 /**
