@@ -466,11 +466,6 @@ function(parent, num) {
 	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && isMsg && !isDraft));
 	parent.enable(ZmOperation.TEXT, true);
 
-	parent.setItemVisible(ZmOperation.ADD_FILTER_RULE, !isDraft);
-	parent.setItemVisible(ZmOperation.CREATE_APPT, !isDraft);
-	parent.setItemVisible(ZmOperation.CREATE_TASK, !isDraft);
-
-	this._cleanupToolbar(parent);
 };
 
 // top level view means this view is allowed to get shown when user clicks on 

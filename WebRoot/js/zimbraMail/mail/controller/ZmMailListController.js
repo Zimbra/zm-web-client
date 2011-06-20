@@ -1656,7 +1656,7 @@ function(parent, num) {
 
 	parent.enable(ZmOperation.PRINT, num > 0);
 
-	if (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES) {
+	if (this.isSyncFailuresFolder()) {
 		parent.enableAll(false);
 		parent.enable([ZmOperation.NEW_MENU], true);
 		parent.enable([ZmOperation.DELETE, ZmOperation.FORWARD], num > 0);
@@ -1674,15 +1674,19 @@ function(parent, num) {
 	var isDrafts = (item && item.isDraft) || this.isDraftsFolder();
 	var isFeed = (itemFolder && itemFolder.isFeed());
 
-	var editButton = parent.getOp(ZmOperation.EDIT);
-	if (editButton) {
-		editButton.setVisible(isDrafts && (!itemFolder || !itemFolder.isReadOnly())); //I don't know how something can be drafts AND read only, but I copied the existing logic
-	}
-	var editAsNewButton = parent.getOp(ZmOperation.EDIT_AS_NEW);
-	if (editAsNewButton) {
-		editAsNewButton.setVisible(!isDrafts);
-	}
-	
+	parent.setItemVisible(ZmOperation.EDIT, isDrafts && (!itemFolder || !itemFolder.isReadOnly()));
+	parent.setItemVisible(ZmOperation.EDIT_AS_NEW, !isDrafts);
+
+	parent.setItemVisible(ZmOperation.MARK_READ, !isDrafts);
+	parent.setItemVisible(ZmOperation.MARK_UNREAD, !isDrafts);
+	parent.setItemVisible(ZmOperation.SPAM, !isDrafts);
+	parent.setItemVisible(ZmOperation.DETACH, !isDrafts);
+	parent.setItemVisible(ZmOperation.QUICK_COMMANDS, !isDrafts);
+
+	parent.setItemVisible(ZmOperation.ADD_FILTER_RULE, !isDrafts);
+	parent.setItemVisible(ZmOperation.CREATE_APPT, !isDrafts);
+	parent.setItemVisible(ZmOperation.CREATE_TASK, !isDrafts);
+
 
 	if (parent && parent instanceof ZmToolBar) {
 		// bug fix #37154 - disable non-applicable buttons if rfc/822 message
