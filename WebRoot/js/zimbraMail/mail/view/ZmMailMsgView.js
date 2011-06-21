@@ -88,8 +88,6 @@ ZmMailMsgView._inited 				= false;
 ZmMailMsgView._TAG_CLICK 			= "ZmMailMsgView._TAG_CLICK";
 ZmMailMsgView._TAG_ANCHOR 			= "TA";
 ZmMailMsgView._TAG_IMG 				= "TI";
-ZmMailMsgView.OBJ_SIZE_TEXT 		= 70; // max. size of text emails that will automatically highlight objects
-ZmMailMsgView.OBJ_SIZE_HTML 		= 100; // similar for HTML emails.
 ZmMailMsgView.SHARE_EVENT 			= "share";
 ZmMailMsgView.IMG_FIX_RE			= new RegExp("(<img\\s+.*dfsrc\\s*=\\s*)[\"']http[^'\"]+part=([\\d\\.]+)[\"']([^>]*>)", "gi");
 ZmMailMsgView.FILENAME_INV_CHARS_RE = /[\./?*:;{}'\\]/g; // Chars we do not allow in a filename
@@ -862,9 +860,10 @@ function(container, html, isTextMsg, isTruncated) {
 
 	var callback;
 	var msgSize = (html.length / 1024);
+	var maxHighlightSize = appCtxt.get(ZmSetting.HIGHLIGHT_OBJECTS);
 	if (isTextMsg) {
 		if (this._objectManager) {
-			if (msgSize <= ZmMailMsgView.OBJ_SIZE_TEXT) {
+			if (msgSize <= maxHighlightSize) {
 				//Using callback to lazily find objects instead of doing it on a run.
 				callback = new AjxCallback(this, this.lazyFindMailMsgObjects, [500]);
 				html = AjxStringUtil.convertToHtml(html);
@@ -884,7 +883,7 @@ function(container, html, isTextMsg, isTruncated) {
 		html = this._stripHtmlComments(html);
 		if (this._objectManager) {
 			// this callback will post-process the HTML after the IFRAME is created
-			if (msgSize <= ZmMailMsgView.OBJ_SIZE_HTML) {
+			if (msgSize <= maxHighlightSize) {
 				callback = new AjxCallback(this, this._processHtmlDoc);
 			} else {
 				this._makeHighlightObjectsDiv();
