@@ -1090,8 +1090,6 @@ function(folderId) {
 ZmMailListView.prototype.setGroup =
 function(groupId) {
     this._group = ZmMailListGroup.getGroup(groupId);
-	//TODO: hack for now since priority inbox has same folderId as Inbox
-	var folder = this._isPriorityInbox() ? ZmFolder.ID_PRIORITYINBOX : this._folderId;
     if (this._folderId) {
 	    appCtxt.set(ZmSetting.GROUPBY_LIST, groupId, this._folderId); //persist group Id
 	    appCtxt.set(ZmSetting.GROUPBY_HASH, this._group, this._folderId); //local cache for group object
@@ -1105,10 +1103,6 @@ function(groupId) {
  */
 ZmMailListView.prototype.getGroup =
 function(folderId) {
-	//TODO: hack for priority inbox folder for now
-	if (this._isPriorityInbox()) {
-		folderId = ZmFolder.ID_PRIORITYINBOX;
-	}
     if (folderId) {
 	    var group = appCtxt.get(ZmSetting.GROUPBY_HASH, folderId);
 	    if (!group) {
@@ -1131,13 +1125,6 @@ function(folderId) {
 	else {
 	    return this._group;
     }
-};
-
-ZmMailListView.prototype._isPriorityInbox =
-function() {
-	var sc = appCtxt.getSearchController();
-	var searchId = sc.currentSearch && sc.currentSearch.searchId;
-	return searchId && searchId == ZmFolder.ID_PRIORITYINBOX;
 };
 
 ZmMailListView.prototype._getGroupByActionMenu =
