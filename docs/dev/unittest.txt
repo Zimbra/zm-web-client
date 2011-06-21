@@ -61,12 +61,17 @@ use.
 
 UT.module(name, tags)
 
-	Declares a module and optionally assigns a list of tags to it.
+	Declares a module and optionally assigns a list of tags to it. There is no
+	need to include the name in the list of tags.
 	
 UT.test(name, env, func)
 
 	This is the heart of QUnit. The unit test code is in the 'func' argument.
-	It should make at least one assertion. The 'env' argument is used if you want
+	It should make at least one assertion. The 'env' argument is used to pass
+	additional arguments
+	
+	
+	if you want
 	to run setup and/or teardown functions before or after the test runs. You just
 	pass them in a hash: {setup: function() {}, teardown: function() {}}.
 
@@ -80,8 +85,9 @@ UT.expect(num)
 ---- Assertions ----
 
 Assertions are your way of telling QUnit whether something worked or not. You can
-check something for truthiness, or compare two values. The 'msg' argument in the
-assertions is the string to print out if the assertion fails.
+check something for truthiness, or compare two values. The 'msg' argument in an
+assertion should describe what it's testing. It will be shown if the assertion
+fails, or if you click on the test in the results panel.
 
 UT.ok(val, msg)
 
@@ -137,7 +143,43 @@ server side (XHR calls). Each is handled in its own way. The tricky thing about
 async is that the JS execution thread ends, but we don't want the QUnit test loop
 to end.
 
-If the code you're testing uses a timer, you'll have to use one as well to make
+QUnit uses two methods called start() and stop() to handle async. They can be tricky
+to understand and use correctly. You always call stop() first, to pause the QUnit
+testrunner. You should call it any time your execution thread ends and you have
+more assertions to make. The most common examples of that are after invoking a
+function that may result in a server call, or after calling setTimeout() to give the
+browser a chance to update so you can check its state later. The stop() function
+takes one argument, which is how long to wait (in ms) before giving up and failing
+the test. Here are a couple of examples:
+
+	composeCtlr.send(msg, respCallback);
+	UT.stop(10000);
+	
+	setTimeout(UtCompose.checkComposeForm, 2000);
+	UT.stop(2500);
+	
+Knowing when to call start() is a bit trickier. While it seems that you'd want to
+call it as soon as your code resumes execution, that's probably not going to work.
+Each test has a lifecycle which takes it through the following stages: init, setup,
+run, teardown, finish. Calling stop() keeps it from moving to the next stage. Calling
+start() allows it to move to the next stage. You will typically call stop() in the
+"run" stage. When you call start(), it moves out of "run" to the "teardown" stage,
+instead of continuing with "run" as you might think. That's why you need to perform
+all your assertions before calling start().
+
+Each of the two made-up examples above has a function that will run when execution
+resumes after the async event, respCallback and checkComposeForm respectively. Each
+of those would continue making assertions, and then call start(). The latter might
+look something like this:
+
+	UtCompose.checkComposeForm = function() {
+		var composeView = ctlr.getComposeView();
+		var body = composeView.getBody();
+		UT.equal(body.indexOf(mySignature), 0, "Signature at beginning");
+		start();
+	}
+
+If the core code you're testing uses a timer, you'll have to use one as well to make
 sure that the code you're testing runs before you test its effects. To do that,
 put that part of your unit test code in a block and set a timer that is a bit
 longer than the one in the code you're testing. That of course assumes that

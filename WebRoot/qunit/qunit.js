@@ -269,7 +269,7 @@ var QUnit = {
 	},
 	
 	test: function(testName, expected, callback, async) {
-		var name = '<span class="test-name">' + testName + '</span>', testEnvironmentArg;
+		var name = '<span class="test-name">' + testName + '</span>', testEnvironmentArg = {};
 
 		if ( arguments.length === 2 ) {
 			callback = expected;
@@ -285,7 +285,7 @@ var QUnit = {
 			name = '<span class="module-name">' + config.currentModule + "</span>: " + name;
 		}
 
-		if ( !validTest(config.currentModule) ) {
+		if ( !validTest(config.currentModule, testEnvironmentArg.tags) ) {
 			return;
 		}
 		
@@ -473,6 +473,12 @@ var config = {
 	QUnit.urlParams = urlParams;
 	
 	var filters = urlParams.filter && urlParams.filter.split(",");
+	if (!filters) {
+		var ut = urlParams.unittest;
+		if (ut != "1" && ut != "all") {
+			filters = ut.split(",");
+		}
+	}
 	if (filters && filters.length) {
 		config.filter = {};
 		for (var i = 0; i < filters.length; i++) {
@@ -795,12 +801,12 @@ function done() {
 	} );
 }
 
-function validTest( name ) {
+function validTest( moduleName, tags ) {
 	
-	if (!config.filter || config.filter[name]) {
+	if (!config.filter || config.filter[moduleName]) {
 		return true;
 	}
-	var tags = config.tags;
+	var tags = [].concat(config.tags).concat(tags);
 	if (tags) {
 		for (var i = 0; i < tags.length; i++) {
 			if (config.filter[tags[i]]) {

@@ -1,15 +1,21 @@
-/**
- * Created by .
- * User: prajain
- * Date: 6/1/11
- * Time: 11:04 AM
- * To change this template use File | Settings | File Templates.
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2004 - 2011 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.3 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
  */
 
+UT.module("Mail");
 
-ZmUnitTestManager.module("Mail", null, ["Mail"]);
-
-ZmUnitTestManager.test("Show view",
+UT.test("Show view",
     function() {
         console.debug("starting mail test");
 
@@ -33,9 +39,10 @@ ZmUnitTestManager.test("Show view",
     }
 );
 
-ZmUnitTestManager.test("Close compose views",
+UT.test("Close compose views",
     function() {
-        var newButton = appCtxt.getApp(ZmApp.MAIL).getMailListController().getNewButton();
+		console.debug("mail test #2 - close compose views");
+		var newButton = appCtxt.getApp(ZmApp.MAIL).getMailListController().getNewButton();
         newButton._emulateSingleClick();
         newButton._emulateSingleClick();
         newButton._emulateSingleClick();
@@ -51,6 +58,7 @@ UtMail = {
 
         UT.test("Send email",
             function() {
+				console.debug("send email");
                 var newButton = appCtxt.getApp(ZmApp.MAIL).getMailListController().getNewButton();
                 newButton._emulateSingleClick();
 
@@ -70,6 +78,7 @@ UtMail = {
                 composeViewController._handleResponseSendMsg = postSendMessageClosure;
                 composeViewController._send();
 
+				console.debug("call stop");
                 UT.stop(UtZWCUtils.MAX_STOP);
                 UT.expect(2);
             }
@@ -82,6 +91,7 @@ UtMail = {
         composeViewController._handleResponseSendMsg = originalHandleResponse;
         composeViewController._handleResponseSendMsg(draftType, msg, callback, result);
 
+		console.debug("returned, call start");
         UT.start();
         UtZWCUtils.closeAllComposeViews();
     }

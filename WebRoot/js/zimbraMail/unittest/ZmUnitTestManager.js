@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004 - 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -35,6 +35,8 @@ ZmUnitTestManager = function() {
 
 ZmUnitTestManager.prototype.toString = function() { return "ZmUnitTestManager"; };
 
+ZmUnitTestManager.DEBUG_LEVEL = "ut";
+
 ZmUnitTestManager.prototype.runTests =
 function() {
 	this._initialize();
@@ -51,6 +53,10 @@ ZmUnitTestManager.prototype._initialize =
 function() {
 
 	if (this._initialized) { return; }
+	
+	if (window.DBG) {
+		DBG.setDebugLevel(ZmUnitTestManager.DEBUG_LEVEL);
+	}
 	
 	this._panel = this._createTestPanel();
 	
@@ -108,6 +114,16 @@ if (window.UT) {
  * Static utility class with unit test helper functions.
  */
 ZmUnitTestUtil = function() {};
+
+ZmUnitTestUtil.log =
+function(msg) {
+	if (window.DBG) {
+		DBG.println(ZmUnitTestManager.DEBUG_LEVEL, msg);
+	}
+	else if (window.console && window.console.log) {
+		console.log(msg);
+	}
+};
 
 /**
  * Simulate a key being typed. Note that keyCode and charCode are not the same thing,
@@ -177,9 +193,52 @@ function() {
 ZmUnitTestUtil.goToMail =
 function() {
 	appCtxt.getApp(ZmApp.MAIL).launch();
-}
+};
 
 ZmUnitTestUtil.goToContacts =
 function() {
 	appCtxt.getApp(ZmApp.CONTACTS).launch();
+};
+
+ZmUnitTestUtil.clickButton =
+function(button) {
+	button._emulateSingleClick();
+};
+
+ZmUnitTestUtil.chooseApp =
+function(appId) {
+    var appChooser = appCtxt.getAppChooser();
+    var appButton = appChooser && appChooser.getButton(appId);
+    if (appButton) {
+	    ZmUnitTestUtil.clickButton(appButton);
+	}
+};
+
+/**
+ * Performs the async handling of code that may make an async server request.
+ * 
+ * @param {hash}		params		a hash of params:
+ * @param {function}	request		a bound function that may make a server request
+ * @param {function}	response	a bound function to continue with the response
+ * @param {string}		method		request method (optional)
+ * @param {int}			timeout		how long to wait (optional)
+ */
+ZmUnitTestUtil.handleServerCall =
+function(params) {
+
+	if (!params || !params.request) { return; }
+	
+	if (params.response) {
+		var respCallback = ZmUnitTestUtil.__handleServerResponse.bind(null, params);
+		appCtxt.getAppController().addListener(ZmAppEvent.RESPONSE, respCallback);
+	}
+	params.request();
+	UT.stop(params.timeout || 10000);
+};
+
+ZmUnitTestUtil.__handleServerResponse =
+function(params, evt) {
+	if (!params.method || params.method == evt.request) {
+		params.response(evt);
+	}
 };
