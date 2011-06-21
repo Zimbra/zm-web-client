@@ -164,6 +164,7 @@
             <tr>
                 <td width=30% valign=top><div id='${id}_calTreeContainer'></div></td>
                 <td width=70% valign=top>
+                    <div id='${id}_printErrorMsgContainer'></div>
                     <div id='${id}_printOptionsContainer'>
                         <table>
                             <tr>
