@@ -625,7 +625,7 @@ function(appt) {
 	var isRemote = Boolean(calendar.url);
 	var is30 = (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
 	var is60 = (appt._orig.getDuration() <= 2*AjxDateUtil.MSEC_PER_HALF_HOUR);
-	var apptName = AjxStringUtil.htmlEncode(appt.getName());
+	var apptName = appt.getName();
 	var tagIcon = (!appt.getFolder().link && appt.tags.length > 0)
 		? appt.getTagImageInfo() : null;
 	// normalize location
@@ -641,7 +641,7 @@ function(appt) {
 		if (apptName.length > widthLimit) {
 			apptName = apptName.substring(0, widthLimit) + "...";
 		}
-		apptName = appt.getDurationText(true, true) + " - " + AjxStringUtil.htmlEncode(apptName);
+		apptName = appt.getDurationText(true, true) + " - " + apptName;
 	}
 
 	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
@@ -653,7 +653,7 @@ function(appt) {
 		id: id,
 		newState: isNew ? "_new" : "",
 		headerStyle: bodyStyle,
-		name: apptName,
+		name: AjxStringUtil.htmlEncode(apptName),
 		starttime: appt.getDurationText(true, true),
 		endtime: ((!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalBaseItem._getTTHour(appt.endDate)),
 		location: location,
