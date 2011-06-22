@@ -922,9 +922,6 @@ function(composeMode, switchPreface) {
 	if (!htmlMode || appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 
 		var curMember = (this._composeMode == DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor;
-		// get these before we change mode so we can find them in current body
-		var sig = this.getSignatureContent(sigId);
-		var sigSep = this._getSignatureSeparator();
 		this._composeMode = composeMode;
 		if (!htmlMode && switchPreface) {
 			this._switchPreface();
@@ -948,11 +945,11 @@ function(composeMode, switchPreface) {
 			}
 
 			// Strip away signature
+			var sig = this.getSignatureContent(sigId);
 			if (sig) {
-				if (sig) {
-					var sigSepRE = AjxStringUtil.regExEscape(sigSep);
-					var sigRE = AjxStringUtil.regExEscape(sig.replace(/[\n\r]*$/,""));
-					var sigRe = new RegExp(sigSepRE + sigRE.replace(/\\n/g,"\\s?\\n") + anyChar + "*$");
+				var textsig = AjxStringUtil.convertHtml2Text(sig, {"#text": ZmComposeView._convertTextNode});
+				if (textsig) {
+					var sigRe = new RegExp(AjxStringUtil.regExEscape(textsig.replace(/[\n\r]*$/,"")).replace(/\\n/g,"\\s?\\n")+anyChar+"*$");
 					baseContent = baseContent.replace(sigRe, "");
 				}
 			}
@@ -1386,10 +1383,10 @@ function(signature, sigContent, account) {
 	var signatureId = signature.id;
 	sigContent = sigContent || this.getSignatureContent(signatureId);
 	if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
-		sigContent = ["<div id=\"", signatureId, "\">", sigContent, "</div>"].join('');
+		sigContent = ["<span id=\"", signatureId, "\">", sigContent, "</span>"].join('');
 	}
 
-	return this._getSignatureSeparator() + sigContent;
+	return sigContent;
 };
 
 ZmComposeView.prototype._attachSignatureVcard =
@@ -1447,24 +1444,38 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 			var idoc = this.getHtmlEditor()._getIframeDoc();
 			var sigEl = idoc.getElementById(oldSignatureId);
 			if (sigEl) {
-				var newSigContent = this._replaceSignature(sigEl.innerHTML, newSig || "");
+				newSigContent = this._replaceSignature(sigEl.innerHTML, newSig || "");
 				if (newSigContent) {
-					sigEl.innerHTML = newSigContent;
-
 					if (signature) {
-						sigEl.id = signature.id;
-					} else {
-						sigEl.removeAttribute("id");
+						sigEl.innerHTML = newSigContent;
+	
+						if (signature) {
+							sigEl.id = signature.id;
+						} else {
+							sigEl.removeAttribute("id");
+						}
+						done = true;
+						donotsetcontent = true;
 					}
-					done = true;
-					donotsetcontent = true;
+					else {
+						replaceSignature = Dwt.getOuterHTML(sigEl);
+						var sigIndex = content.indexOf(replaceSignature);
+						var sigLength = replaceSignature && replaceSignature.length || 0;
+						if (sigIndex != -1) {
+							var contentBefore = content.substring(0, sigIndex).replace(/\s+$/, "");
+							contentBefore = contentBefore.replace(new RegExp(AjxStringUtil.regExEscape(this._getSignatureSeparator()) + "$"), "");
+							var contentAfter = content.substring(sigIndex + sigLength).replace(/^\s+/, "");
+							contentAfter = contentAfter.replace(/^<br\/?>/,"");
+							var newContent = contentBefore + newSig + contentAfter;
+							content = newContent;
+							done = true;
+						}
+					}
 				}
 			}
 		} else {
 			var sigContent = this.getSignatureContent(oldSignatureId);
-			var oldSignature = this.getSignatureById(oldSignatureId);
-			replaceSignature = (oldSignature && (oldSignature.getContentType() == ZmMimeTable.TEXT_HTML)) ?
-				AjxStringUtil.convertHtml2Text(sigContent, {"#text": ZmComposeView._convertTextNode}) : sigContent;
+			replaceSignature = AjxStringUtil.convertHtml2Text(sigContent, {"#text": ZmComposeView._convertTextNode});
 			var sigIndex = content.indexOf(replaceSignature);
 			var sigLength = replaceSignature && replaceSignature.length || 0;
 
@@ -1475,7 +1486,7 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 				if (contentAfter) {
 					newSig += "\n";
 				}
-				content = contentBefore + this._getSignatureSeparator() + (newSig || "\n") + contentAfter;
+				content = contentBefore + (newSig || "\n") + contentAfter;
 				done = true;
 			}
 		}
@@ -1589,7 +1600,10 @@ function(el, ctxt) {
 
 ZmComposeView.prototype.getSignatureContent =
 function(signatureId) {
-	return this._getSignature(signatureId) || "";
+	var sig = this._getSignature(signatureId);
+	if (!sig) { return ""; }
+
+	return this._getSignatureSeparator() + sig;
 };
 
 /**
@@ -2291,18 +2305,14 @@ function(action, msg, extraBodyText) {
 		}
 	}
 
-	var sigStyle, sig, sigId, sigFormat;
+	var sigStyle, sig, sigId;
 	var account = ac.multiAccounts && this.getFromAccount();
 	if (ac.get(ZmSetting.SIGNATURES_ENABLED, null, account)) {
 		sig = this.getSignatureContentSpan(null, null, account);
 		sigStyle = sig && ac.get(ZmSetting.SIGNATURE_STYLE, null, account);
 		sigId = this._controller.getSelectedSignature();
-		var signature = this.getSignatureById(sigId);
-		sigFormat = signature && signature.getContentType();
 	}
-	if (sigStyle == ZmSetting.SIG_OUTLOOK) {
-		sigPre = (this._composeMode == DwtHtmlEditor.TEXT || sigFormat == ZmMimeTable.TEXT_PLAIN) ? sig + crlf : sig;
-	}
+	var sigPre = (sigStyle == ZmSetting.SIG_OUTLOOK) ? sig + crlf : "";
 
 	extraBodyText = extraBodyText || "";
 	var preText;

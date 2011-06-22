@@ -715,7 +715,10 @@ ZmCalBaseView.prototype._updateRange =
 function() { 
 	this._updateDays();
 	this._timeRangeStart = this._days[0].date.getTime();
-	this._timeRangeEnd = this._days[this.numDays-1].date.getTime() + AjxDateUtil.MSEC_PER_DAY;
+	//this._timeRangeEnd = this._days[this.numDays-1].date.getTime() + AjxDateUtil.MSEC_PER_DAY;
+    var endDate = this._days[this.numDays-1].date;
+    endDate.setHours(23, 59, 59, 999);
+	this._timeRangeEnd = endDate.getTime();
 };
 
 // override 
