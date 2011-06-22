@@ -24,7 +24,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/><c:set var="count" value="${0}"/>
 <zm:forEachFolder var="folder" skiproot="${skiproot}" parentid="${parentid}" skipsystem="${skipsystem}"  skiptopsearch="${skiptopsearch}">
-    <c:if test="${count lt sessionScope.F_LIMIT and !folder.isSystemFolder and (folder.isNullView or folder.isMessageView or folder.isConversationView)}">
+    <c:if test="${count lt sessionScope.F_LIMIT and !folder.isSystemFolder and (folder.isNullView or folder.isUnknownView or folder.isMessageView or folder.isConversationView)}">
         <c:if test="${!folder.isSearchFolder}">
             <mo:overviewFolder base="${context_url}" folder="${folder}" types="${folder.types}"/>
         </c:if>
