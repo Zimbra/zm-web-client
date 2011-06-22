@@ -1623,6 +1623,15 @@ function(params, result) {
             sched.uid = usr.id;
             // next, for each free/busy status, color the row for given start/end times
 			if (usr.f) this._colorSchedule(ZmFreeBusySchedulerView.STATUS_WORKING, usr.f, table, sched);
+            //show entire day as working hours if the information is not available (e.g. external accounts)
+            if (usr.n) {
+                var currentDay = this._getStartDate();
+                var entireDaySlot = {
+                    s: currentDay.getTime(),
+                    e: currentDay.getTime() + AjxDateUtil.MSEC_PER_DAY
+                };
+                this._colorSchedule(ZmFreeBusySchedulerView.STATUS_WORKING, [entireDaySlot], table, sched);
+            }
 		}
 	}
 
