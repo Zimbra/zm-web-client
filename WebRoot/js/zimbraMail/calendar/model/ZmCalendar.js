@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -92,18 +92,16 @@ function() {
 /**
  * Sets the free/busy.
  * 
- * @param	{Boolean}	        exclude		    if <code>true</code>, exclude free busy
- * @param	{AjxCallback}	    callback		the callback
- * @param	{AjxCallback}	    errorCallback	the error callback
- * @param   {ZmBatchCommand}    batchCmd        optional batch command
+ * @param	{Boolean}	exclude		if <code>true</code>, exclude free busy
+ * @param	{AjxCallback}	callback		the callback
+ * @param	{AjxCallback}	errorCallback		the error callback
  */
 ZmCalendar.prototype.setFreeBusy = 
-function(exclude, callback, errorCallback, batchCmd) {
+function(exclude, callback, errorCallback) {
 	if (this.excludeFreeBusy == exclude) { return; }
 	// NOTE: Don't need to store the value since the response will
 	//       report that the object was modified.
-	this._organizerAction({action: "fb", attrs: {excludeFreeBusy: exclude ? "1" : "0"},
-                           callback: callback, errorCallback: errorCallback, batchCmd: batchCmd});
+	this._organizerAction({action: "fb", attrs: {excludeFreeBusy: exclude ? "1" : "0"}, callback: callback, errorCallback: errorCallback});
 };
 
 ZmCalendar.prototype.setChecked = 

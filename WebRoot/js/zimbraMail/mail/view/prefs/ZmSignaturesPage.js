@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -188,36 +188,10 @@ function() {
 
 	this._updateSignature();
 
-	var printSigs = function(sig) {
-		if (AjxUtil.isArray(sig)) {
-			return AjxUtil.map(sig, printSigs).join("\n");
-		}
-		return [sig.name, " (", ((sig._orig && sig._orig.value != sig.value) ? (sig._orig.value+" changed to ") : ""), sig.value, ")"].join("");
-	}
-
-	var printUsages = function(usage) {
-		if (AjxUtil.isArray(usage)) {
-			return AjxUtil.map(usage, printUsages).join("\n");
-		}
-		return ["identityId: ", usage.identity, ", type: ", usage.sig, ", signatureId: ", usage.value].join("");
-	}
-
-	if (this.getNewSignatures(false).length > 0) {
-		AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\nNew signatures:\n" + printSigs(this.getNewSignatures(false)));
-		return true;
-	}
-	if (this.getDeletedSignatures().length > 0) {
-		AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\nDeleted signatures:\n" + printSigs(this.getDeletedSignatures()));
-		return true;
-	}
-	if (this.getModifiedSignatures().length > 0) {
-		AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\nModified signatures:\n" + printSigs(this.getModifiedSignatures()));
-		return true;
-	}
-	if (this.getChangedUsage().length > 0) {
-		AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\nSignature usage changed:\n" + printUsages(this.getChangedUsage()));
-		return true;
-	}
+	return this.getNewSignatures(false).length > 0 || // Let invalid new signatures count as dirtiness, so validation kicks in
+		   this.getDeletedSignatures().length > 0 ||
+		   this.getModifiedSignatures().length > 0 ||
+		   this.getChangedUsage().length > 0;
 };
 
 ZmSignaturesPage.prototype.validate =

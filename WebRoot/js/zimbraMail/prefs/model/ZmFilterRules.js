@@ -305,7 +305,7 @@ function(index, notify, callback, result) {
 	if (notify) {
 		this._notify(ZmEvent.E_MODIFY, {index: index});
 	}
-
+	AjxDebug.println(AjxDebug.FILTER, "_handleResponseSaveRules: notify == " + notify);
 	appCtxt.setStatusMsg(ZmMsg.filtersSaved);
 
 	if (callback) {

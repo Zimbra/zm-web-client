@@ -116,6 +116,7 @@ function(view) {
 	}
 	this._setupDeleteMenu(view);	// ALWAYS call setup to turn delete menu on/off
 	this._setupSpamButton(this._toolbar[view]);
+	this._setupCheckMailButton(this._toolbar[view]);
 };
 
 // conv view has arrows to go to prev/next conv, so needs regular nav toolbar
@@ -170,11 +171,14 @@ function(view) {
 /**
  * Override to replace DELETE with DELETE_MENU
  */
-ZmConvController.prototype.getDeleteOperation =
+ZmConvController.prototype._standardToolBarOps =
 function() {
-	return ZmOperation.DELETE_MENU;
+	return [ZmOperation.NEW_MENU,
+			ZmOperation.SEP,
+			ZmOperation.CHECK_MAIL,
+			ZmOperation.SEP,
+			ZmOperation.DELETE_MENU, ZmOperation.MOVE, ZmOperation.PRINT];
 };
-
 
 ZmConvController.prototype._getViewType =
 function() {

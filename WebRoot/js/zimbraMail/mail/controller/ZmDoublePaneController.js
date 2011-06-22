@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -69,6 +69,7 @@ function() {
  */
 ZmDoublePaneController.prototype.show =
 function(search, item, callback, markRead) {
+
 	ZmMailListController.prototype.show.call(this, search);
 
 	if (this._doublePaneView) {
@@ -216,14 +217,31 @@ function(view) {
 	text.addClassName("itemCountText");
 };
 
+ZmDoublePaneController.prototype._getToolBarOps =
+function() {
+	var list = this._standardToolBarOps();
+	list.push(ZmOperation.SEP);
+	list = list.concat(this._msgOps());
+	list.push(ZmOperation.EDIT,			// hidden except for Drafts
+			  ZmOperation.SEP,
+			  ZmOperation.SPAM,
+			  ZmOperation.SEP,
+			  ZmOperation.TAG_MENU);
 
+	if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
+		list.push(ZmOperation.SEP, ZmOperation.DETACH);
+	}
+
+    list.push(ZmOperation.SEP,ZmOperation.VIEW_MENU);
+	return list;
+};
 
 ZmDoublePaneController.prototype._getActionMenuOps =
 function() {
 	var list = this._flagOps();
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._msgOps());
-	list.push(ZmOperation.EDIT_AS_NEW);		// bug #28717
+	list.push(ZmOperation.EDIT);		// bug #28717
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	list.push(ZmOperation.SEP);
@@ -238,7 +256,6 @@ function() {
     if(appCtxt.get(ZmSetting.TASKS_ENABLED)) {
         list.push(ZmOperation.CREATE_TASK);        
     }
-    list.push(ZmOperation.QUICK_COMMANDS);
 	return list;
 };
 
@@ -404,8 +421,9 @@ function(view, callback, result) {
 
 ZmDoublePaneController.prototype._displayResults =
 function(view) {
-	var elements = this.getViewElements(view, this._doublePaneView);
-	
+	var elements = {};
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._doublePaneView;
 	this._doublePaneView.setReadingPane();
 	this._setView({view:view, elements:elements, isAppView:this._isTopLevelView()});
 	this._resetNavToolBarButtons(view);
@@ -450,7 +468,7 @@ ZmDoublePaneController.prototype._resetOperations =
 function(parent, num) {
 	ZmMailListController.prototype._resetOperations.call(this, parent, num);
 	var isMsg = false;
-	var isDraft = this.isDraftsFolder();
+	var isDraft = false;
 	if (num == 1) {
 		var item = this._mailListView.getSelection()[0];
 		if (item) {
@@ -460,12 +478,12 @@ function(parent, num) {
 	}
 	parent.enable(ZmOperation.SHOW_ORIG, isMsg);
 	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
-		var isSyncFailuresFolder = this.isSyncFailuresFolder();
+		var folder = this._getSearchFolder();
+		var isSyncFailuresFolder = (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES);
 		parent.enable(ZmOperation.ADD_FILTER_RULE, isMsg && !isSyncFailuresFolder);
 	}
 	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && isMsg && !isDraft));
 	parent.enable(ZmOperation.TEXT, true);
-
 };
 
 // top level view means this view is allowed to get shown when user clicks on 

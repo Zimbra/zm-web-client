@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -167,6 +167,8 @@ ZmSetting.DEDUPE_ALL			= "dedupeAll";
 ZmSetting.DELETE_SELECT_NEXT	= "next";					// zimbraPrefMailSelectAfterDelete
 ZmSetting.DELETE_SELECT_PREV	= "previous";
 ZmSetting.DELETE_SELECT_ADAPT	= "adaptive";
+ZmSetting.GETMAIL_ACTION_DEFAULT= "default";				// zimbraPrefGetMailAction
+ZmSetting.GETMAIL_ACTION_UPDATE = "update";
 ZmSetting.GROUP_BY_CONV			= "conversation";			// zimbraPrefGroupMailBy
 ZmSetting.GROUP_BY_MESSAGE		= "message";
 ZmSetting.HTTP_DEFAULT_PORT		= 80;
