@@ -117,7 +117,7 @@ ZmFreeBusySchedulerView.ROLE_OPTIONS = {};
 ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalBaseItem.PERSON]          = { label: ZmMsg.requiredAttendee, 			value: ZmCalBaseItem.PERSON, 	        image: "AttendeesRequired" };
 ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalItem.ROLE_OPTIONAL]       = { label: ZmMsg.optionalAttendee, 			value: ZmCalItem.ROLE_OPTIONAL, 	image: "AttendeesOptional" };
 ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalBaseItem.LOCATION]        = { label: ZmMsg.location, 			        value: ZmCalBaseItem.LOCATION, 	        image: "Location" };
-ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalBaseItem.EQUIPMENT]       = { label: ZmMsg.resourceAttendee, 			value: ZmCalBaseItem.EQUIPMENT, 	    image: "Resource" };
+ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalBaseItem.EQUIPMENT]       = { label: ZmMsg.equipmentAttendee, 			value: ZmCalBaseItem.EQUIPMENT, 	    image: "Resource" };
 
 // Hold on to this one separately because we use it often
 ZmFreeBusySchedulerView.FREE_CLASS = ZmFreeBusySchedulerView.STATUS_CLASSES[ZmFreeBusySchedulerView.STATUS_FREE];
