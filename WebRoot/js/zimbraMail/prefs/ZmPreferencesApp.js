@@ -398,11 +398,10 @@ function() {
 			}
 		},
 		QUICKCOMMANDS: {
-			parentId: "MAIL",
 			icon: "QuickCommand",
 			title: ZmMsg.quickCommands,
 			templateId: "prefs.Pages#QuickCommandList",
-			priority: 60,
+			priority: 130,
 			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.FILTERS_ENABLED)),
 			prefs: [
 				ZmSetting.QUICK_COMMAND_LIST
