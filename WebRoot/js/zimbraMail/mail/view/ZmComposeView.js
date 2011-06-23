@@ -54,6 +54,10 @@ ZmComposeView = function(parent, controller, composeMode) {
 	this._useAcAddrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 
 	this._controller = controller;
+    var resetBodySize = this._resetBodySize.bind(this);
+    var enableInputs  = this.enableInputs.bind(this);
+    var reenter       = this.reEnableDesignMode.bind(this);
+    this._recipients = new ZmRecipients(this._controller, resetBodySize, enableInputs, reenter);
 	this._initialize(composeMode);
 
 	// make sure no unnecessary scrollbars show up
@@ -171,11 +175,7 @@ function(params) {
 		}
 	}
 
-	// reset To/Cc/Bcc fields
-	this._showAddressField(AjxEmailAddress.TO, true, true, true);
-	this._showAddressField(AjxEmailAddress.CC, true, true, true);
-	//Set BCC Field to Default
-	this._toggleBccField(null, appCtxt.get(ZmSetting.SHOW_BCC));
+    this._recipients.setup();
 
 	// populate fields based on the action and user prefs
 	this._setAddresses(action, AjxEmailAddress.TO, params.toOverrideObj || params.toOverride);
@@ -232,7 +232,7 @@ function(params) {
 	}
 	// Force focus on the TO field
 	if (!this._isReply()) {
-		appCtxt.getKeyboardMgr().grabFocus(this._field[AjxEmailAddress.TO]);
+		appCtxt.getKeyboardMgr().grabFocus(this._recipients.getField(AjxEmailAddress.TO));
 	}
 };
 
@@ -291,27 +291,38 @@ function() {
  */
 ZmComposeView.prototype.getRawAddrFields =
 function() {
-	var addrs = {};
-	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		if (this._using[type]) {
-			addrs[type] = this._getAddrFieldValue(type);
-		}
-	}
-	return addrs;
+    return this._recipients.getRawAddrFields();
 };
 
 // returns address fields that are currently visible
 ZmComposeView.prototype.getAddrFields =
 function() {
-	var addrs = [];
-	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		if (this._using[type]) {
-			addrs.push(this._field[type]);
-		}
-	}
-	return addrs;
+    return this._recipients.getAddrFields();
+};
+
+ZmComposeView.prototype.getAddrInputField =
+function(type) {
+    return this._recipients.getAddrInputField(type);
+};
+
+ZmComposeView.prototype.getRecipientField =
+function(type) {
+    return this._recipients.getField(type);
+};
+
+ZmComposeView.prototype.getAddressButtonListener =
+function() {
+    return this._recipients.addressButtonListener;
+};
+
+ZmComposeView.prototype.setAddress =
+function(type, addr) {
+    return this._recipients.setAddress(type, addr);
+};
+
+ZmComposeView.prototype.collectAddrs =
+function() {
+    return this._recipients.collectAddrs();
 };
 
 // returns list of attachment field values (used by detachCompose)
@@ -457,7 +468,7 @@ function() {
 ZmComposeView.prototype.getMsg =
 function(attId, isDraft, dummyMsg, forceBail, contactId) {
 	// Check destination addresses.
-	var addrs = this._collectAddrs();
+	var addrs = this._recipients.collectAddrs();
 
 	// Any addresses at all provided? If not, bail.
 	if ((!isDraft || forceBail) && !addrs.gotAddress) {
@@ -863,56 +874,6 @@ function(msg, docIds) {
 	}
 };
 
-/**
- * Sets an address field.
- *
- * @param type	the address type
- * @param addr	the address string
- *
- * XXX: if addr empty, check if should hide field
- * 
- * @private
- */
-ZmComposeView.prototype.setAddress =
-function(type, addr) {
-
-	addr = addr || "";
-
-	var addrStr = addr.isAjxEmailAddress ? addr.toString() : addr;
-
-	//show first, so focus works on IE.
-	if (addrStr.length && !this._using[type]) {
-		this._using[type] = true;
-		this._showAddressField(type, true);
-	}
-
-	if (this._useAcAddrBubbles) {
-		var addrInput = this._addrInputField[type];
-		if (!addrStr) {
-			addrInput.clear();
-		}
-		else {
-			if (addr.isAjxEmailAddress) {
-				var match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
-				addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
-			}
-			else {
-				this._setAddrFieldValue(type, addrStr);
-			}
-		}
-	}
-	else {
-		this._setAddrFieldValue(type, addrStr);
-	}
-
-	// Use a timed action so that first time through, addr textarea
-	// has been sized by browser based on content before we try to
-	// adjust it (bug 20926)
-	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
-		function() {
-			this._adjustAddrHeight(this._field[type]);
-		}), 0);
-};
 
 // Sets the mode ZmHtmlEditor should be in.
 ZmComposeView.prototype.setComposeMode =
@@ -1043,9 +1004,9 @@ function(params) {
 
 	// set the addr fields as populated
 	for (var type in params.addrs) {
-		this.setAddress(type, "");
+		this._recipients.setAddress(type, "");
 		var addrs = AjxUtil.toArray(params.addrs[type]);
-		this._addAddresses(type, AjxVector.fromArray(addrs));
+		this._recipients.addAddresses(type, AjxVector.fromArray(addrs));
 	}
 
 	this._subjectField.value = params.subj || "";
@@ -1300,19 +1261,7 @@ function(bEnableInputs) {
 		this._acAddrSelectList.show(false);
 	}
 
-	// reset To/CC/BCC fields
-	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		var textarea = this._field[type];
-		textarea.value = "";
-		this._adjustAddrHeight(textarea, true);
-		if (this._useAcAddrBubbles) {
-			var addrInput = this._addrInputField[type];
-			if (addrInput) {
-				addrInput.clear();
-			}
-		}
-	}
+    this._recipients.reset();
 
 	// reset subject / body fields
 	this._subjectField.value = "";
@@ -1353,10 +1302,7 @@ function(bEnableInputs) {
 
 ZmComposeView.prototype.enableInputs =
 function(bEnable) {
-	// disable input elements so they dont bleed into top zindex'd view
-	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-		this._field[ZmMailMsg.COMPOSE_ADDRS[i]].disabled = !bEnable;
-	}
+    this._recipients.enableInputs(bEnable);
 	this._subjectField.disabled = this._bodyField.disabled = !bEnable;
 };
 
@@ -1946,130 +1892,6 @@ function(name) {
 	return forAttIds;
 };
 
-/**
- * a callback that's called when bubbles are added or removed, since we need to resize the msg body in those cases.
- */
-ZmComposeView.prototype._bubblesChangedCallback =
-function() {
-	if (!this._useAcAddrBubbles) { return; }
-	this._resetBodySize(); // body size might change due to change in size of address field (due to new bubbles).
-};
-
-ZmComposeView.prototype._bubbleMenuCreated =
-function(addrInput, menu) {
-
-	if (!this._useAcAddrBubbles) { return; }
-
-	this._bubbleActionMenu = menu;
-
-	menu.addOp(ZmOperation.SEP);
-	var ops = [ZmOperation.MOVE_TO_TO, ZmOperation.MOVE_TO_CC, ZmOperation.MOVE_TO_BCC];
-	var listener = new AjxListener(this, this._bubbleMove);
-	for (var i = 0; i < ops.length; i++) {
-		menu.addOp(ops[i]);
-		menu.addSelectionListener(ops[i], listener);
-	}
-};
-
-ZmComposeView.prototype._bubbleMenuResetOperations =
-function(addrInput, menu) {
-	var sel = addrInput.getSelection();
-	var ops = [ZmOperation.MOVE_TO_TO, ZmOperation.MOVE_TO_CC, ZmOperation.MOVE_TO_BCC];
-	for (var i = 0; i < ops.length; i++) {
-		var op = ops[i];
-		var type = ZmComposeView.MOVE_TO_FIELD[op];
-		menu.enable(op, sel.length > 0 && (type != addrInput.type));
-	}
-};
-
-ZmComposeView.prototype._bubbleMove =
-function(ev) {
-
-	var sourceInput = ZmAddressInputField.menuContext.addrInput;
-	var op = ev && ev.item && ev.item.getData(ZmOperation.KEY_ID);
-	var type = ZmComposeView.MOVE_TO_FIELD[op];
-	var targetInput = this._addrInputField[type];
-	if (sourceInput && targetInput) {
-		var sel = sourceInput.getSelection();
-		if (sel.length) {
-			for (var i = 0; i < sel.length; i++) {
-				var bubble = sel[i];
-				this._showAddressField(type, true);
-				targetInput.addBubble({bubble:bubble});
-				sourceInput.removeBubble(bubble.id);
-			}
-		}
-	}
-};
-
-ZmComposeView.prototype._acCompHandler =
-function(text, el, match) {
-	if (this._useAcAddrBubbles) { return; }
-	this._adjustAddrHeight(el);
-};
-
-ZmComposeView.prototype._acKeyupHandler =
-function(ev, acListView, result, element) {
-	var key = DwtKeyEvent.getCharCode(ev);
-	// process any printable character or enter/backspace/delete keys
-	if (result && element && (ev.inputLengthChanged ||
-		(key == 3 || key == 13 || key == 8 || key == 46 ||
-		(AjxEnv.isMac && key == 224)))) // bug fix #24670
-	{
-		this._adjustAddrHeight(element);
-	}
-};
-
-ZmComposeView.prototype._adjustAddrHeight =
-function(textarea, skipResetBodySize) {
-
-	if (this._useAcAddrBubbles || !textarea) { return; }
-
-	if (textarea.value.length == 0) {
-		textarea.style.height = "21px";
-
-		if (AjxEnv.isIE) {
-			// for IE use overflow-y
-			textarea.style.overflowY = "hidden";
-		}
-		else {
-			textarea.style.overflow = "hidden";
-		}
-
-		if (!skipResetBodySize) {
-			this._resetBodySize();
-		}
-
-		return;
-	}
-
-	var sh = textarea.scrollHeight;
-	if (sh > textarea.clientHeight) {
-		var taHeight = parseInt(textarea.style.height) || 0;
-		if (taHeight <= 65) {
-			if (sh >= 65) {
-				sh = 65;
-				if (AjxEnv.isIE)
-					textarea.style.overflowY = "scroll";
-				else
-					textarea.style.overflow = "auto";
-			}
-			textarea.style.height = sh + 13;
-			this._resetBodySize();
-		} else {
-			if (AjxEnv.isIE) {
-				// for IE use overflow-y
-				textarea.style.overflowY = "scroll";
-			}
-			else {
-				textarea.style.overflow = "auto";
-			}
-
-			textarea.scrollTop = sh;
-		}
-	}
-};
-
 /*
 * Set various address headers based on the original message and the mode we're in.
 * Make sure not to duplicate any addresses, even across fields.
@@ -2079,7 +1901,7 @@ function(action, type, override) {
 	this._action = action;
 
 	if (action == ZmOperation.NEW_MESSAGE && override) {
-		this.setAddress(type, override);
+		this._recipients.setAddress(type, override);
 	} else if (this._isReply(action)) {
 		var ac = window.parentAppCtxt || window.appCtxt;
 
@@ -2112,7 +1934,7 @@ function(action, type, override) {
 				var isDefaultIdentity = defaultIdentity.id == this.identitySelect.getValue(); 
 			}
 			addrVec = this._addressesMsg.getReplyAddresses(action, used, isDefaultIdentity);
-			addrAdded = this._addAddresses(AjxEmailAddress.TO, addrVec, used);
+			addrAdded = this._recipients.addAddresses(AjxEmailAddress.TO, addrVec, used);
 			if (action == ZmOperation.REPLY_ALL) {
 				for (var i = 0, len = addrVec.size(); i < len; i++) {
 					var a = addrVec.get(i).address;
@@ -2121,73 +1943,40 @@ function(action, type, override) {
 			}
 		} else if (action == ZmOperation.REPLY) {
 			addrVec = this._addressesMsg.getAddresses(AjxEmailAddress.TO);
-			addrAdded = this._addAddresses(AjxEmailAddress.TO, addrVec);
+			addrAdded = this._recipients.addAddresses(AjxEmailAddress.TO, addrVec);
 		}
 		if (!addrAdded && addrVec && addrVec.size()) {
 			// make sure we have at least one TO address if possible
-			this._addAddresses(AjxEmailAddress.TO, addrVec.slice(0, 1));
+			this._recipients.addAddresses(AjxEmailAddress.TO, addrVec.slice(0, 1));
 		}
 
 		// reply to all senders if reply all (includes To: and Cc:)
 		if (action == ZmOperation.REPLY) {
-			this.setAddress(AjxEmailAddress.CC, "");
+			this._recipients.setAddress(AjxEmailAddress.CC, "");
 		} else if (action == ZmOperation.REPLY_ALL) {
 			var addrs = new AjxVector();
 			addrs.addList(this._addressesMsg.getAddresses(AjxEmailAddress.CC));
 			var toAddrs = this._addressesMsg.getAddresses(AjxEmailAddress.TO);
 			if (this._addressesMsg.isSent) {
 				// sent msg replicates To: and Cc: (minus duplicates)
-				this._addAddresses(AjxEmailAddress.TO, toAddrs, used);
+				this._recipients.addAddresses(AjxEmailAddress.TO, toAddrs, used);
 			} else {
 				addrs.addList(toAddrs);
 			}
-			this._addAddresses(AjxEmailAddress.CC, addrs, used);
+			this._recipients.addAddresses(AjxEmailAddress.CC, addrs, used);
 		}
 	} else if (action == ZmOperation.DRAFT || action == ZmOperation.SHARE) {
 		for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 			var addrs = this._msg.getAddresses(ZmMailMsg.COMPOSE_ADDRS[i]);
-			this._addAddresses(ZmMailMsg.COMPOSE_ADDRS[i], addrs);
+			this._recipients.addAddresses(ZmMailMsg.COMPOSE_ADDRS[i], addrs);
 		}
 	} else if(action == ZmOperation.DECLINE_PROPOSAL) {
         var toAddrs = this._addressesMsg.getAddresses(AjxEmailAddress.FROM);
-		this._addAddresses(AjxEmailAddress.TO, toAddrs);
+		this._recipients.addAddresses(AjxEmailAddress.TO, toAddrs);
     }
 };
 
-// Adds the given addresses to the form. If we're using address bubbles, we need to add each
-// address separately in case it's a DL.
-ZmComposeView.prototype._addAddresses =
-function(type, addrVec, used) {
 
-	var addrAdded = false;
-	used = used || {};
-	var addrList = [];
-	var addrs = addrVec && addrVec.getArray();
-	if (addrs && addrs.length) {
-		for (var i = 0, len = addrs.length; i < len; i++) {
-			var addr = addrs[i];
-			var email = addr.isAjxEmailAddress ? addr && addr.getAddress() : addr;
-			if (!email) { continue; }
-			email = email.toLowerCase();
-			if (!used[email]) {
-				if (this._useAcAddrBubbles) {
-					this.setAddress(type, addr);	// add the bubble now
-				}
-				else {
-					addrList.push(addr);
-				}
-				used[email] = true;
-				addrAdded = true;
-			}
-		}
-		if (!this._useAcAddrBubbles) {
-			// calls implicit toString() on each addr object
-			var addrStr = addrList.join(AjxEmailAddress.SEPARATOR);
-			this.setAddress(type, addrStr);
-		}
-	}
-	return addrAdded;
-};
 
 ZmComposeView.prototype._setObo =
 function(obo) {
@@ -2650,17 +2439,6 @@ function() {
 ZmComposeView.prototype._initialize =
 function(composeMode) {
 
-	// init address field objects
-	this._divId = {};
-	this._buttonTdId = {};
-	this._fieldId = {};
-	this._using = {};
-	this._button = {};
-	this._field = {};
-	this._divEl = {};
-	if (this._useAcAddrBubbles) {
-		this._addrInputField = {};
-	}
 	this._internalId = AjxCore.assignId(this);
 
 	// init html
@@ -2739,86 +2517,8 @@ function(templateId, data) {
 	// global identifiers
 	this._identityDivId = data.identityRowId;
 
-	// init autocomplete list
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.isOffline) {
-		var params = {
-			dataClass:		appCtxt.getAutocompleter(),
-			matchValue:		ZmAutocomplete.AC_VALUE_FULL,
-			compCallback:	(new AjxCallback(this, this._acCompHandler)),
-			keyUpCallback:	(new AjxCallback(this, this._acKeyupHandler)),
-			options:		{addrBubbles:this._useAcAddrBubbles}
-		};
-		this._acAddrSelectList = new ZmAutocompleteListView(params);
-	}
-
-	var isPickerEnabled = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
-						   appCtxt.get(ZmSetting.GAL_ENABLED) ||
-						   appCtxt.multiAccounts);
-	this._pickerButton = {};
-
-	// process compose fields
-	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		var typeStr = AjxEmailAddress.TYPE_STRING[type];
-
-		// save identifiers
-		this._divId[type] = [data.id, typeStr, "row"].join("_");
-		this._buttonTdId[type] = [data.id, typeStr, "picker"].join("_");
-		var inputId = this._fieldId[type] = [data.id, typeStr, "control"].join("_");
-
-		// save field elements
-		this._divEl[type] = document.getElementById(this._divId[type]);
-		var aifId;
-		if (this._useAcAddrBubbles) {
-			var aifParams = {
-				parent:								this,
-				autocompleteListView:				this._acAddrSelectList,
-				bubbleAddedCallback:				(new AjxCallback(this, this._bubblesChangedCallback)),
-				bubbleRemovedCallback:				(new AjxCallback(this, this._bubblesChangedCallback)),
-				bubbleMenuCreatedCallback:			(new AjxCallback(this, this._bubbleMenuCreated)),
-				bubbleMenuResetOperationsCallback:	(new AjxCallback(this, this._bubbleMenuResetOperations)),
-				inputId:							inputId,
-				type:								type
-			}
-			var aif = this._addrInputField[type] = new ZmAddressInputField(aifParams);
-			aifId = aif._htmlElId;
-			var cellId = [data.id, typeStr, "cell"].join("_");
-			aif.reparentHtmlElement(cellId);
-		}
-
-		// save field control
-		this._field[type] = document.getElementById(this._fieldId[type]);
-		if (this._field[type]) {
-			this._field[type].addrType = type;
-			if (!this._useAcAddrBubbles) {
-				this._setEventHandler(this._fieldId[type], "onFocus");
-			}
-		}
-
-		// create picker
-		if (isPickerEnabled) {
-			var pickerId = this._buttonTdId[type];
-			var pickerEl = document.getElementById(pickerId);
-			if (pickerEl) {
-				var buttonId = ZmId.getButtonId(this._view, ZmComposeView.OP[type]);
-				var button = this._pickerButton[type] = new DwtButton({parent:this, id:buttonId});
-				button.setText(pickerEl.innerHTML);
-				button.replaceElement(pickerEl);
-
-				button.addSelectionListener(new AjxListener(this, this._addressButtonListener));
-				button.addrType = type;
-
-				// autocomplete-related handlers
-				if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.isOffline) {
-					this._acAddrSelectList.handle(this._field[type], aifId);
-				} else {
-					this._setEventHandler(this._fieldId[type], "onKeyUp");
-				}
-
-				this._button[type] = button;
-			}
-		}
-	}
+    this._recipients.createRecipientHtml(this, this._view, data.id, ZmMailMsg.COMPOSE_ADDRS, data.bccToggleId);
+    this._acAddrSelectList = this._recipients.getACAddrSelectList();
 
 	// save reference to DOM objects per ID's
 	this._headerEl = document.getElementById(data.headerId);
@@ -2836,6 +2536,7 @@ function(templateId, data) {
 		if (!this._fromSelect) {
 			this._fromSelect = new DwtSelect({parent:this, parentElement:data.fromSelectId});
 			this._fromSelect.addChangeListener(new AjxListener(this, this._handleFromListener));
+            this._recipients.attachFromSelect(this._fromSelect);
 		}
 	} else {
 		// initialize identity select
@@ -2865,11 +2566,7 @@ function(templateId, data) {
 		this._priorityButton.setToolTipContent(ZmMsg.setPriority);
 	}
 
-	// Toggle BCC
-	this._toggleBccEl = document.getElementById(data.bccToggleId);
-	if (this._toggleBccEl) {
-		Dwt.setHandler(this._toggleBccEl, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleBccField, this));
-	}
+
 };
 
 ZmComposeView.prototype._handleFromListener =
@@ -2910,7 +2607,7 @@ function(ev) {
 		this._controller.saveDraft(this._controller._draftType, null, null, callback);
 	}
 
-	this._resetPickerButtons(newAccount);
+	this._recipients.resetPickerButtons(newAccount);
 };
 
 ZmComposeView.prototype._handleMoveDraft =
@@ -2929,14 +2626,6 @@ function(accountName, msgId) {
 	appCtxt.getAppController().sendRequest(params);
 };
 
-ZmComposeView.prototype._toggleBccField =
-function(ev, force) {
-	var isBccFieldVisible = Dwt.getVisible(this._divEl[AjxEmailAddress.BCC]);
-	if (typeof force != "undefined") {
-		isBccFieldVisible = !force;
-	}
-	this._showAddressField(AjxEmailAddress.BCC, !isBccFieldVisible);
-};
 
 ZmComposeView.prototype._createPriorityMenuItem =
 function(menu, text, flag) {
@@ -3164,17 +2853,6 @@ function() {
 	}
 };
 
-ZmComposeView.prototype._resetPickerButtons =
-function(account) {
-	var ac = window.parentAppCtxt || window.appCtxt;
-	var isEnabled = ac.get(ZmSetting.CONTACTS_ENABLED, null, account) ||
-					ac.get(ZmSetting.GAL_ENABLED, null, account);
-
-	for (var i in this._pickerButton) {
-		var button = this._pickerButton[i];
-		button.setEnabled(isEnabled);
-	}
-};
 
 ZmComposeView.prototype._setFromSelect =
 function(msg) {
@@ -3238,53 +2916,10 @@ function(msg) {
 		this._acAddrSelectList.setActiveAccount(active);
 	}
 
-	this._resetPickerButtons(active);
+	this._recipients.resetPickerButtons(active);
 };
 
-// Show address field
-ZmComposeView.prototype._showAddressField =
-function(type, show, skipNotify, skipFocus) {
-	this._using[type] = show;
-	Dwt.setVisible(this._divEl[type], show);
-	this._setAddrFieldValue(type, "");	 // bug fix #750 and #3680
-	this._field[type].noTab = !show;
-	var setting = ZmComposeView.ADDR_SETTING[type];
-	if (setting) {
-		appCtxt.set(setting, show, null, false, skipNotify);
-	}
-	if (type == AjxEmailAddress.BCC) {
-		Dwt.setInnerHtml(this._toggleBccEl, show ? ZmMsg.hideBCC : ZmMsg.showBCC );
-	}
-	this._resetBodySize();
-};
 
-// Grab the addresses out of the form. Optionally, they can be returned broken
-// out into good and bad addresses, with an aggregate list of the bad ones also
-// returned. If the field is hidden, its contents are ignored.
-ZmComposeView.prototype._collectAddrs =
-function() {
-
-	var addrs = {};
-	addrs[ZmComposeView.BAD] = new AjxVector();
-	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		if (!this._using[type]) { continue; }
-
-		var val = this._getAddrFieldValue(type);
-		if (val.length == 0) { continue; }
-		var result = AjxEmailAddress.parseEmailString(val, type, false);
-		if (result.all.size() == 0) { continue; }
-		addrs.gotAddress = true;
-		addrs[type] = result;
-		if (result.bad.size()) {
-			addrs[ZmComposeView.BAD].addList(result.bad);
-			if (!addrs.badType) {
-				addrs.badType = type;
-			}
-		}
-	}
-	return addrs;
-};
 
 // Returns a string representing the form content
 ZmComposeView.prototype._formValue =
@@ -3293,8 +2928,8 @@ function(incAddrs, incSubject) {
 	if (incAddrs) {
 		for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 			var type = ZmMailMsg.COMPOSE_ADDRS[i];
-			if (this._using[type]) {
-				vals.push(this._getAddrFieldValue(type));
+			if (this._recipients.getUsing(type)) {
+				vals.push(this._recipients.getAddrFieldValue(type));
 			}
 		}
 	}
@@ -3309,43 +2944,6 @@ function(incAddrs, incSubject) {
 
 // Listeners
 
-// Address buttons invoke contact picker
-ZmComposeView.prototype._addressButtonListener =
-function(ev, addrType) {
-	var obj = ev ? DwtControl.getTargetControl(ev) : null;
-	this.enableInputs(false);
-
-	if (!this._contactPicker) {
-		AjxDispatcher.require("ContactsCore");
-		var buttonInfo = [
-			{ id: AjxEmailAddress.TO,	label: ZmMsg[AjxEmailAddress.TYPE_STRING[AjxEmailAddress.TO]] },
-			{ id: AjxEmailAddress.CC,	label: ZmMsg[AjxEmailAddress.TYPE_STRING[AjxEmailAddress.CC]] },
-			{ id: AjxEmailAddress.BCC,	label: ZmMsg[AjxEmailAddress.TYPE_STRING[AjxEmailAddress.BCC]] }
-		];
-		this._contactPicker = new ZmContactPicker(buttonInfo);
-		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOkCallback, this);
-		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancelCallback, this);
-	}
-
-	var curType = obj ? obj.addrType : addrType;
-	var addrList = {};
-	var addrs = !this._useAcAddrBubbles && this._collectAddrs();
-	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		addrList[type] = this._useAcAddrBubbles ? this._addrInputField[type].getAddresses(true) :
-				   								  addrs[type] && addrs[type].good.getArray();
-	}
-	this._contactPicker.addPopdownListener(this._controller._dialogPopdownListener);
-	var str = (this._field[curType].value && !(addrList[curType] && addrList[curType].length))
-		? this._field[curType].value : "";
-
-	var account;
-	if (appCtxt.multiAccounts && this._fromSelect) {
-		var addr = this._fromSelect.getSelectedOption().addr;
-		account = appCtxt.accountList.getAccountByEmail(addr.address);
-	}
-	this._contactPicker.popup(curType, addrList, str, account);
-};
 
 ZmComposeView.prototype._controlListener =
 function() {
@@ -3355,32 +2953,6 @@ function() {
 
 // Callbacks
 
-// Transfers addresses from the contact picker to the compose view.
-ZmComposeView.prototype._contactPickerOkCallback =
-function(addrs) {
-
-	this.enableInputs(true);
-	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		this.setAddress(type, "");
-		this._addAddresses(type, addrs[type]);
-	}
-
-	//I still need this here since REMOVING stuff with the picker does not call removeBubble in the ZmAddresInputField.
-	//Also - it's better to do it once than for every bubble in this case. user might add many addresses with the picker
-	this._bubblesChangedCallback();
-
-	this._contactPicker.removePopdownListener(this._controller._dialogPopdownListener);
-	this._contactPicker.popdown();
-	this.reEnableDesignMode();
-};
-
-ZmComposeView.prototype._contactPickerCancelCallback =
-function() {
-	this.enableInputs(true);
-	this.reEnableDesignMode();
-};
-
 // this callback is triggered when an event occurs inside the html editor (when in HTML mode)
 // it is used to set focus to the To: field when user hits the TAB key
 ZmComposeView.prototype._htmlEditorEventCallback =
@@ -3389,7 +2961,7 @@ function(args) {
 	if (args.type == "keydown") {
 		var key = DwtKeyEvent.getCharCode(args);
 		if (key == DwtKeyEvent.KEY_TAB) {
-			var toField = document.getElementById(this._fieldId[AjxEmailAddress.TO]);
+			var toField = this._recipients.getField(AjxEmailAddress.TO);
 			if (toField) {
 				appCtxt.getKeyboardMgr().grabFocus(toField);
 			}
@@ -3486,8 +3058,8 @@ function(type, dialog) {
 	this.enableInputs(true);
 	this._badAddrsOkay = false;
 	dialog.popdown();
-	if (this._using[type]) {
-		appCtxt.getKeyboardMgr().grabFocus(this._field[type]);
+	if (this._recipients.getUsing(type)) {
+		appCtxt.getKeyboardMgr().grabFocus(this._recipients.getField(type));
 	}
 	this._controller.resetToolbarOperations();
 	this.reEnableDesignMode();
@@ -3619,9 +3191,6 @@ function(ev) {
 	if (!element) { return true; }
 	var cv = AjxCore.objectWithId(element._composeView);
 
-	if (element != cv._subjectField) {
-		cv._adjustAddrHeight(element);
-	}
 	return true;
 };
 
@@ -3664,35 +3233,3 @@ ZmComposeView.prototype.deactivate =
 function() {
 	this._controller.inactive = true;
 };
-
-ZmComposeView.prototype._getAddrFieldValue =
-function(type) {
-
-	var val = "";
-	if (this._useAcAddrBubbles) {
-		var addrInput = this._addrInputField[type];
-		if (addrInput) {
-			val = addrInput.getValue();
-		}
-	}
-	else {
-		val = AjxStringUtil.trim(this._field[type].value)
-	}
-
-	return val;
-};
-
-ZmComposeView.prototype._setAddrFieldValue =
-function(type, value) {
-
-	if (this._useAcAddrBubbles) {
-		var addrInput = this._addrInputField[type];
-		if (addrInput) {
-			addrInput.setValue(value, true);
-		}
-	}
-	else {
-		this._field[type].value = value || "";
-	}
-};
-

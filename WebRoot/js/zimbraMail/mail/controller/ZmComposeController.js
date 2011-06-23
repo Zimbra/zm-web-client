@@ -246,7 +246,7 @@ function() {
 	var addrs = !view._useAcAddrBubbles && view.getRawAddrFields();
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		addrList[type] = view._useAcAddrBubbles ? view._addrInputField[type].getAddresses(true) : addrs[type];
+		addrList[type] = view._useAcAddrBubbles ? view.getAddrInputField(type).getAddresses(true) : addrs[type];
 	}
 
 	// this is how child window knows what to do once loading:
@@ -694,7 +694,7 @@ function() {
 	tg.newParent(rootTg);
 	tg.addMember(this._toolbar);
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-		tg.addMember(this._composeView._field[ZmMailMsg.COMPOSE_ADDRS[i]]);
+		tg.addMember(this._composeView.getRecipientField(ZmMailMsg.COMPOSE_ADDRS[i]));
 	}
 	tg.addMember(this._composeView._subjectField);
 	var mode = this._composeView.getComposeMode();
@@ -750,7 +750,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.ADDRESS_PICKER:
-			this._composeView._addressButtonListener(null, AjxEmailAddress.TO);
+			this._composeView.getAddressButtonListener(null, AjxEmailAddress.TO);
 			break;
 
 		case ZmKeyMap.NEW_WINDOW:
@@ -1642,7 +1642,7 @@ function(draftType, attId, docIds, callback, contactId) {
 
 	draftType = draftType || ZmComposeController.DRAFT_TYPE_MANUAL;
 	
-	var addrs = this._composeView._collectAddrs();
+	var addrs = this._composeView.collectAddrs();
 	if (addrs && addrs._bad_addrs_ && addrs._bad_addrs_.size()) {
 		if (draftType == ZmComposeController.DRAFT_TYPE_MANUAL) {
 			var dlg = appCtxt.getMsgDialog();
@@ -1905,7 +1905,7 @@ function() {
 		this._action == ZmOperation.FORWARD_INLINE ||
 		this._action == ZmOperation.FORWARD_ATT)
 	{
-		return this._composeView._field[AjxEmailAddress.TO];
+		return this._composeView.getRecipientField(AjxEmailAddress.TO);
 	}
 
 	return (this._composeView.getComposeMode() == DwtHtmlEditor.TEXT)
