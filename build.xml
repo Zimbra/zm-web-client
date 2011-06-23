@@ -1035,7 +1035,7 @@
                         basepath='&lt;%=contextPath%>/js/'
                         extension='.js?v=&lt;%=vers%>'>
                     <prefix output='html'><![CDATA[<%
-String contextPath = request.getContextPath();
+String contextPath = request.getParameter("contextPath") == null ? request.getContextPath() : (String) request.getParameter("contextPath");
 if(contextPath.equals("/")) contextPath = "";
 String vers = (String) request.getAttribute("version");
 if (vers == null) vers = "";
