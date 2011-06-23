@@ -989,7 +989,7 @@ function(forceShow) {
 
 ZmApptEditView.prototype.showResourceField =
 function(show){
-    this._showResources.innerHTML = show ? ZmMsg.hideResources : ZmMsg.showResources;
+    this._showResources.innerHTML = show ? ZmMsg.hideEquipment : ZmMsg.showEquipment;
     Dwt.setVisible(this._resourcesContainer, Boolean(show))
 };
 
