@@ -437,6 +437,14 @@ ZmFilterRule.A_NAME_TAG							= "actionTag";
  * Defines the "forward" action name.
  */
 ZmFilterRule.A_NAME_FORWARD						= "actionRedirect";
+/**
+ * Defines the "reply" action name.
+ */
+ZmFilterRule.A_REPLY                            = "actionReply";
+/**
+ * Defines the "notify" action name.
+ */
+ZmFilterRule.A_NOTIFY                           = "actionNotify";
 
 ZmFilterRule.A_VALUE = {};
 ZmFilterRule.A_VALUE[ZmFilterRule.A_KEEP]		= ZmFilterRule.A_NAME_KEEP;
@@ -447,6 +455,8 @@ ZmFilterRule.A_VALUE[ZmFilterRule.A_STOP]		= ZmFilterRule.A_NAME_STOP;
 ZmFilterRule.A_VALUE[ZmFilterRule.A_FLAG]		= ZmFilterRule.A_NAME_FLAG;
 ZmFilterRule.A_VALUE[ZmFilterRule.A_TAG]		= ZmFilterRule.A_NAME_TAG;
 ZmFilterRule.A_VALUE[ZmFilterRule.A_FORWARD]	= ZmFilterRule.A_NAME_FORWARD;
+ZmFilterRule.A_VALUE[ZmFilterRule.A_REPLY]      = ZmFilterRule.A_REPLY;
+ZmFilterRule.A_VALUE[ZmFilterRule.A_NOTIFY]     = ZmFilterRule.A_NOTIFY;
 
 ZmFilterRule.A_VALUE_MAP = {};
 for (var i in ZmFilterRule.A_VALUE) {
@@ -502,6 +512,7 @@ ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD] = {
 	validationFunction:	ZmPref.validateEmail,
 	errorMessage:		ZmMsg.errorInvalidEmail
 };
+
 
 ZmFilterRule.ACTIONS_LIST = [
 	ZmFilterRule.A_KEEP,
