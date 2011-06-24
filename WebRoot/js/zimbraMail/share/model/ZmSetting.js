@@ -49,6 +49,7 @@ ZmSetting = function(id, params) {
 	this.type = params.type;
 	this.dataType = params.dataType || ZmSetting.D_STRING;
 	this.defaultValue = params.defaultValue;
+	this.canPreset = params.canPreset;
 	if (this.type == ZmSetting.T_METADATA) {
 		this.section = params.section;
 	}

@@ -563,4 +563,40 @@
 		</tr>
 	</table>
 </template>
+		
+<template id='mail.Message#Conv2View'>
+	<div>
+		<div id="${messagesDivId}" style='overflow:auto'></div>
+		<div id="${replyDivId}">
+			<table>
+				<tr>
+					<td>
+						<input id="${replyInputId}" type="text" />
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div id="${replyToolbarId}"></div>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</template>
 
+<template id='mail.Message#Conv2MsgHeader'>
+	<div class='${headerClass}'>
+		<table class='MsgHeaderTable' id='${id}_headerElement' cellspacing=0 cellpadding=0 border=0 width=100%>
+			<tr>
+				<td>&nbsp;</td>
+				<td width=16>${expandIcon}</td>
+				<td class='LabelColValue ${unreadClass}' valign=top width=100%>
+					<$= data.from $>
+				</td>
+				<td class='LabelColValue DateCol ${unreadClass}' align=right>${date}</td>
+				<td>&nbsp;</td>
+			</tr>
+		</table>
+	</div>
+</template>
+	

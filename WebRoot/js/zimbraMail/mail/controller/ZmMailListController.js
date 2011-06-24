@@ -81,6 +81,9 @@ ZmMailListController = function(container, mailApp) {
 ZmMailListController.prototype = new ZmListController;
 ZmMailListController.prototype.constructor = ZmMailListController;
 
+ZmMailListController.prototype.isZmMailListController = true;
+ZmMailListController.prototype.toString = function() { return "ZmMailListController"; };
+
 ZmMailListController.GROUP_BY_ITEM		= {};	// item type to search for
 ZmMailListController.GROUP_BY_SETTING	= {};	// associated setting on server
 
@@ -137,11 +140,6 @@ ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.PREV_UNREAD]	= DwtKeyMap.SELECT_
 
 // Public methods
 
-ZmMailListController.prototype.toString =
-function() {
-	return "ZmMailListController";
-};
-
 /**
  * Handles switching views based on action from view menu.
  *
@@ -150,6 +148,7 @@ function() {
  */
 ZmMailListController.prototype.switchView =
 function(view, force) {
+
 	if (view == ZmId.VIEW_TRAD || view == ZmId.VIEW_CONVLIST) {
 		if (appCtxt.multiAccounts) {
 			delete this._showingAccountColumn;
@@ -243,7 +242,7 @@ function(actionCode) {
 		case ZmKeyMap.GOTO_JUNK:
 		case ZmKeyMap.GOTO_SENT:
 		case ZmKeyMap.GOTO_TRASH:
-			if (actionCode==ZmKeyMap.GOTO_JUNK && !appCtxt.get(ZmSetting.SPAM_ENABLED)) { break; }
+			if (actionCode == ZmKeyMap.GOTO_JUNK && !appCtxt.get(ZmSetting.SPAM_ENABLED)) { break; }
 			this._folderSearch(ZmMailListController.ACTION_CODE_TO_FOLDER[actionCode]);
 			break;
 
@@ -251,7 +250,7 @@ function(actionCode) {
 		case ZmKeyMap.MOVE_TO_TRASH:
 		case ZmKeyMap.MOVE_TO_JUNK:
 			if (isSyncFailures) { break; }
-			if (actionCode==ZmKeyMap.MOVE_TO_JUNK && !appCtxt.get(ZmSetting.SPAM_ENABLED)) { break; }
+			if (actionCode == ZmKeyMap.MOVE_TO_JUNK && !appCtxt.get(ZmSetting.SPAM_ENABLED)) { break; }
 			if (num && !(isDrafts && actionCode != ZmKeyMap.MOVE_TO_TRASH)) {
 			 	var folderId = ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[actionCode];
 				folder = appCtxt.getById(folderId);
@@ -318,6 +317,7 @@ function(actionCode) {
                 if (subjectField) {
                     var loc = Dwt.getLocation(subjectField);
 					var frag;
+					// TODO: refactor / clean up
 					if ((item.type == ZmItem.MSG && item.isInvite() && item.needsRsvp()) ||
                         (item.type == ZmId.ITEM_CONV && this.getMsg() && this.getMsg().isInvite() && this.getMsg().needsRsvp()))
                     {
@@ -376,6 +376,7 @@ function(map) {
  */
 ZmMailListController.prototype.sendReadReceipt =
 function(msg) {
+
 	if (!appCtxt.get(ZmSetting.MAIL_READ_RECEIPT_ENABLED) || msg.readReceiptSent || msg.isSent) {
 		return;
 	}
@@ -521,7 +522,7 @@ function(noViewMenu) {
 ZmMailListController.prototype._getSecondaryToolBarOps =
 function() {
 	var list = [ZmOperation.PRINT,
-			ZmOperation.SPAM];
+				ZmOperation.SPAM];
 	if (!appCtxt.isChildWindow && appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
 		list.push(ZmOperation.SEP, ZmOperation.DETACH);
 	}
@@ -545,7 +546,6 @@ function() {
 
 
 	return list;
-
 };
 
 
@@ -663,6 +663,7 @@ function() {
 
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
+		// TODO: refactor / clean up
 		if (item.type == ZmItem.MSG) {
 			status[item.isUnread ? "hasUnread" : "hasRead"] = true;
 		}
@@ -676,7 +677,6 @@ function() {
 	}
 
 	return status;
-
 };
 
 
@@ -687,28 +687,15 @@ function() {
  */
 ZmMailListController.prototype._enableReadUnreadToolbarActions =
 function() {
-
-//	if (!parent) { return; }
-
 	var status = this._getReadStatus();
-
-	var hasRead = false;
-	var hasUnread = false;
-
 	var menu = this._getCurrentToolbar().getActionsMenu();
-
 	this._enableFlags(menu, status.hasUnread, status.hasRead);
-
 };
-
 
 ZmMailListController.prototype._actionsButtonListener =
 function(ev) {
-
 	this._enableReadUnreadToolbarActions();
-	
 	ZmBaseController.prototype._actionsButtonListener.call(this, ev);
-
 };
 
 // List listeners
@@ -872,11 +859,11 @@ function() {
 
 	if (this.isReadingPaneOn() && appCtxt.get(ZmSetting.MARK_MSG_READ) == -1) {
 		// check if current message being read is the message in the selection list
-		var msg = view.parent.getMsgView ? view.parent.getMsgView().getMsg() : null;
+		var msg = view.parent.getItemView && view.parent.getItemView().getMsg();
 		if (msg && msg.readReceiptRequested) {
 			for (var i = 0; i < items.length; i++) {
 				var item = items[i];
-				var itemId = (item.id < 0) ? (item.id*(-1)) : item.id;
+				var itemId = (item.id < 0) ? (item.id * (-1)) : item.id;
 				if (itemId == msg.id) {
 					return (new AjxCallback(this, this.sendReadReceipt, msg));
 				}
@@ -1613,10 +1600,13 @@ function(view, menu) {
 
 	for (var i = 0; i < ZmMailListController.GROUP_BY_VIEWS.length; i++) {
 		var id = ZmMailListController.GROUP_BY_VIEWS[i];
-		var mi = menu.createMenuItem(id, {image:ZmMailListController.GROUP_BY_ICON[id],
-										  text:ZmMsg[ZmMailListController.GROUP_BY_MSG_KEY[id]],
-										  shortcut:ZmMailListController.GROUP_BY_SHORTCUT[id],
-										  style:DwtMenuItem.RADIO_STYLE});
+		if ((id == ZmId.VIEW_CONVLIST || id == ZmId.VIEW_CONVLIST2) && (id != appCtxt.get(ZmSetting.CONV_MODE))) {
+			continue;
+		}
+		var mi = menu.createMenuItem(id, {image:	ZmMailListController.GROUP_BY_ICON[id],
+										  text:		ZmMsg[ZmMailListController.GROUP_BY_MSG_KEY[id]],
+										  shortcut:	ZmMailListController.GROUP_BY_SHORTCUT[id],
+										  style:	DwtMenuItem.RADIO_STYLE});
 		mi.setData(ZmOperation.MENUITEM_ID, id);
 		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 		if (id == this._defaultView()) {

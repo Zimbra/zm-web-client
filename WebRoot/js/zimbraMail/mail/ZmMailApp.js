@@ -48,6 +48,9 @@ ZmMailApp = function(container, parentController) {
 ZmMailApp.prototype = new ZmApp;
 ZmMailApp.prototype.constructor = ZmMailApp;
 
+ZmMailApp.prototype.isZmMailApp = true;
+ZmMailApp.prototype.toString = function() {	return "ZmMailApp"; };
+
 // Organizer and item-related constants
 ZmEvent.S_CONV				= ZmId.ITEM_CONV;
 ZmEvent.S_MSG				= ZmId.ITEM_MSG;
@@ -117,11 +120,6 @@ function() {
 	ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_MESSAGE]	= ZmItem.MSG;
 };
 
-ZmMailApp.prototype.toString =
-function() {
-	return "ZmMailApp";
-};
-
 // Construction
 
 ZmMailApp.prototype._defineAPI =
@@ -151,6 +149,7 @@ function(settings) {
 	settings.registerSetting("CONVERSATIONS_ENABLED",			{name:"zimbraFeatureConversationsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("CONVERSATION_ORDER",				{name:"zimbraPrefConversationOrder", type:ZmSetting.T_PREF, defaultValue:ZmSearch.DATE_DESC, isImplicit:true});
 	settings.registerSetting("CONVERSATION_PAGE_SIZE",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:250, isGlobal:true});
+	settings.registerSetting("CONV_MODE",						{type:ZmSetting.T_PREF, defaultValue:ZmId.VIEW_CONVLIST, canPreset:true});
 	settings.registerSetting("DEDUPE_MSG_TO_SELF",				{name:"zimbraPrefDedupeMessagesSentToSelf", type:ZmSetting.T_PREF, defaultValue:ZmSetting.DEDUPE_NONE});
     settings.registerSetting("DEDUPE_MSG_ENABLED",				{name:"zimbraPrefMessageIdDedupingEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
     settings.registerSetting("DEFAULT_DISPLAY_NAME",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -1755,7 +1754,7 @@ function(callback, queryStr) {
 /**
  * Gets the controller.
  * 
- * @return	{ZmDoublePaneController}	the controller
+ * @return	{ZmConvListController}	the controller
  */
 ZmMailApp.prototype.getConvListController =
 function() {
@@ -1766,9 +1765,9 @@ function() {
 };
 
 /**
- * Gets the message controller.
+ * Gets the conversation controller.
  * 
- * @return	{ZmMsgController}		the controller
+ * @return	{ZmConvController}		the controller
  */
 ZmMailApp.prototype.getConvController =
 function() {
@@ -1779,9 +1778,9 @@ function() {
 };
 
 /**
- * Gets the controller.
+ * Gets the traditional (msg list) controller.
  * 
- * @return	{ZmDoublePaneController}	the controller
+ * @return	{ZmTradController}	the controller
  */
 ZmMailApp.prototype.getTradController =
 function() {
@@ -2093,7 +2092,7 @@ function(ev) {
 		var msg = dpv ? dpv.getMsg() : null;
 		if (msg) {
 			dpv.reset();
-			dpv.setMsg(msg);
+			dpv.setItem(msg);
 		}
 	}
 };

@@ -41,16 +41,18 @@ ZmConvDoublePaneView = function(params) {
 ZmConvDoublePaneView.prototype = new ZmDoublePaneView;
 ZmConvDoublePaneView.prototype.constructor = ZmConvDoublePaneView;
 
-ZmConvDoublePaneView.prototype.toString = 
-function() {
-	return "ZmConvDoublePaneView";
-};
+ZmConvDoublePaneView.prototype.isZmConvDoublePaneView = true;
+ZmConvDoublePaneView.prototype.toString = function() { return "ZmConvDoublePaneView"; };
 
 ZmConvDoublePaneView.prototype._createMailListView =
 function(params) {
-	params.parent = this;
-	params.posStyle = Dwt.ABSOLUTE_STYLE;
 	return new ZmConvListView(params);
+};
+
+ZmConvDoublePaneView.prototype._createMailItemView =
+function(params) {
+	params.id = ZmId.getViewId(ZmId.VIEW_MSG, null, params.view);
+	return new ZmMailMsgView(params);
 };
 
 /**

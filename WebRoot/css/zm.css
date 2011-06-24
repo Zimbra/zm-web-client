@@ -610,6 +610,44 @@ INPUT[type="text"].search_input {
 	font-style: italic;
 }
 
+/* Styles for Conv2.0 */
+
+.ZmMailMsgCapsuleView {
+	margin: 2px;
+	border: 1px black solid;
+}
+
+.ZmMailMsgCapsuleView .OddMsg {
+	background-color: #EEEEEE;
+}
+
+.ZmMailMsgCapsuleView .EvenMsg {
+	background-color: #CCCCCC;
+}
+
+.ZmMailMsgCapsuleView .LabelColValue {
+	@MailMsgHeaderText@
+	white-space: normal;
+	vertical-align: top;
+	padding: 3px;
+}
+
+.ZmMailMsgCapsuleView .SubjectCol {
+	@FontSize-big@
+	font-weight: bold;
+	@MailMsgHeaderText@
+}
+
+.ZmMailMsgCapsuleView .DateCol {
+	white-space: nowrap;
+    padding-right: 10px;
+}
+
+.ZmMailMsgCapsuleView .MsgHeaderTable .Unread {
+	font-weight: bold;
+}
+
+
 /* the sash next to overview does not need borders or a background color */
 .console_inset_app_l .DwtHorizontalSash {
 	border: 0px;

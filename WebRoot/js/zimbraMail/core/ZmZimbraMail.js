@@ -528,12 +528,23 @@ function(params, result) {
 ZmZimbraMail.prototype._handleResponseStartup =
 function(params, result) {
 
-	if (params && params.settingOverrides) {
+	params = params || {};
+	if (params.settingOverrides) {
 		this._needOverviewLayout = true;
 		for (var id in params.settingOverrides) {
 			var setting = appCtxt.getSetting(id);
 			if (setting) {
 				setting.setValue(params.settingOverrides[id]);
+			}
+		}
+	}
+	if (params.preset) {
+		var presets = params.preset.split(",");
+		for (var i = 0; i < presets.length; i++) {
+			var fields = presets[i].split(":");
+			var setting = appCtxt.getSettings().getSetting(fields[0]);
+			if (setting && setting.canPreset) {
+				setting.setValue(fields[1]);
 			}
 		}
 	}

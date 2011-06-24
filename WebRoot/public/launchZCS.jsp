@@ -134,6 +134,7 @@
     }
 
 	String unitTest = getParameter(request, "unittest", "");
+	String preset = getParameter(request, "preset", "");
 
 	// make variables available in page context (e.g. ${foo})
 	pageContext.setAttribute("contextPath", contextPath);
@@ -149,6 +150,7 @@
 	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
 	pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
 	pageContext.setAttribute("unitTest", unitTest);
+	pageContext.setAttribute("preset", preset);
 	pageContext.setAttribute("editor", editor);
     pageContext.setAttribute("isCoverage", isCoverage);
 %>
@@ -413,7 +415,7 @@ for (var pkg in window.AjxTemplateMsg) {
 			settings:settings, batchInfoResponse:batchInfoResponse,
 			offlineMode:${isOfflineMode}, devMode:${isDevMode},
 			protocolMode:protocolMode, httpPort:"<%=httpPort%>", httpsPort:"<%=httpsPort%>",
-			noSplashScreen:noSplashScreen, unitTest:"${unitTest}"
+			noSplashScreen:noSplashScreen, unitTest:"${unitTest}", preset:"${preset}"
 		};
 		ZmZimbraMail.run(params);
 	}

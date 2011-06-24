@@ -18,11 +18,11 @@ ZmMailMsgView = function(params) {
 	if (arguments.length == 0) { return; }
 
 	params.className = params.className || "ZmMailMsgView";
-	DwtComposite.call(this, params);
+	ZmMailItemView.call(this, params);
 
 	this._mode = params.mode;
 	this._controller = params.controller;
-	this._viewId = (this._controller && this._controller.sessionId) ? ZmId.VIEW_MSG + this._controller.sessionId: ZmId.VIEW_MSG;
+	this._viewId = this._getViewId();
 
 	this._displayImagesId	= ZmId.getViewId(this._viewId, ZmId.MV_DISPLAY_IMAGES, this._mode);
 	this._msgTruncatedId	= ZmId.getViewId(this._viewId, ZmId.MV_MSG_TRUNC, this._mode);
@@ -65,8 +65,11 @@ ZmMailMsgView = function(params) {
     this._attachmentLinkIdToFileNameMap = null;
 };
 
-ZmMailMsgView.prototype = new DwtComposite;
+ZmMailMsgView.prototype = new ZmMailItemView;
 ZmMailMsgView.prototype.constructor = ZmMailMsgView;
+
+ZmMailMsgView.prototype.isZmMailMsgView = true;
+ZmMailMsgView.prototype.toString = function() {	return "ZmMailMsgView"; };
 
 
 // displays any additional headers in messageView
@@ -99,11 +102,6 @@ ZmMailMsgView._MAILTO_RE = /^mailto:[\x27\x22]?([^@?&\x22\x27]+@[^@?&]+\.[^@?&\x
 ZmMailMsgView.MAX_ADDRESSES_IN_FIELD = 10;
 
 // Public methods
-
-ZmMailMsgView.prototype.toString =
-function() {
-	return "ZmMailMsgView";
-};
 
 ZmMailMsgView.prototype.getController =
 function() {
@@ -161,7 +159,7 @@ function(msg, force) {
 
 	var oldMsg = this._msg;
 	this.reset();
-	var contentDiv = this.getHtmlElement();
+	var contentDiv = this._getContainer();
 	this._msg = msg;
 
 	if (!msg) {
@@ -173,9 +171,7 @@ function(msg, force) {
 		return;
 	}
 
-	this._dateObjectHandlerDate = msg.sentDate
-		? new Date(msg.sentDate)
-		: new Date(msg.date);
+	this._dateObjectHandlerDate = new Date(msg.sentDate || msg.date);
 
 	var invite = msg.invite;
 	var ac = window.parentAppCtxt || window.appCtxt;
@@ -211,6 +207,16 @@ function(msg, force) {
 	var respCallback = new AjxCallback(this, this._handleResponseSet, [msg, oldMsg]);
 	this._renderMessage(msg, contentDiv, respCallback);
 	this.noTab = AjxEnv.isIE;
+};
+
+ZmMailMsgView.prototype._getViewId =
+function() {
+	return (this._controller && this._controller.sessionId) ? ZmId.VIEW_MSG + this._controller.sessionId: ZmId.VIEW_MSG;
+};
+
+ZmMailMsgView.prototype._getContainer =
+function() {
+	return this.getHtmlElement();
 };
 
 ZmMailMsgView.prototype.__hasMountpoint =
@@ -261,14 +267,17 @@ function(origText) {
 ZmMailMsgView.prototype.resetMsg =
 function(newMsg) {
 	// Remove listener for current msg if it exists
-	if (this._msg != null)
+	if (this._msg) {
 		this._msg.removeChangeListener(this._changeListener);
+	}
 };
 
 ZmMailMsgView.prototype.getMsg =
 function() {
 	return this._msg;
 };
+
+ZmMailMsgView.prototype.getItem = ZmMailMsgView.prototype.getMsg;
 
 // Following two overrides are a hack to allow this view to pretend it's a list view
 ZmMailMsgView.prototype.getSelection =
@@ -279,11 +288,6 @@ function() {
 ZmMailMsgView.prototype.getSelectionCount =
 function() {
 	return 1;
-};
-
-ZmMailMsgView.prototype.getMinWidth =
-function() {
-	return 20;
 };
 
 ZmMailMsgView.prototype.getMinHeight =
@@ -917,16 +921,17 @@ function(container, html, isTextMsg, isTruncated) {
 	// bug fix #9475 - IE isnt resolving MsgBody class in iframe so set styles explicitly
 	var inner_styles = AjxEnv.isIE ? ".MsgBody-text, .MsgBody-text * { font: 10pt monospace; }" : "";
 	var params = {
-		parent: this,
-		className: "MsgBody",
-		id: ZmId.getViewId(this._viewId, ZmId.MV_MSG_BODY, this._mode),
-		hidden: true,
-		html: html,
-		styles: inner_styles,
-		noscroll: !this._scrollWithIframe,
-		posStyle: DwtControl.STATIC_STYLE,
-		processHtmlCallback: callback,
-		useKbMgmt: true
+		parent:					this,
+		parentElement:			container,
+		className:				this._getBodyClass(),
+		id:						ZmId.getViewId(this._viewId, ZmId.MV_MSG_BODY, this._mode),
+		hidden:					true,
+		html:					html,
+		styles:					inner_styles,
+		noscroll:				!this._scrollWithIframe,
+		posStyle:				DwtControl.STATIC_STYLE,
+		processHtmlCallback:	callback,
+		useKbMgmt:				true
 	};
 	var ifw = this._ifw = new DwtIframe(params);
 	this._iframeId = ifw.getIframe().id;
@@ -946,9 +951,7 @@ function(container, html, isTextMsg, isTruncated) {
 	}
 
 	// assign the right class name to the iframe body
-	idoc.body.className = isTextMsg
-		? "MsgBody MsgBody-text"
-		: "MsgBody MsgBody-html";
+	idoc.body.className = this._getBodyClass() + (isTextMsg ? " MsgBody-text" : " MsgBody-html");
 
 	idoc.body.style.height = "auto"; //see bug 56899 - if the body has height such as 100% or 94%, it causes a problem in FF in calcualting the iframe height. Make sure the height is clear.
 
@@ -996,6 +999,11 @@ function(container, html, isTextMsg, isTruncated) {
 
 	// set height of view according to height of iframe on timer
 	this._resetIframeHeightOnTimer(ifw.getIframe());
+};
+
+ZmMailMsgView.prototype._getBodyClass =
+function() {
+	return "MsgBody";
 };
 
 ZmMailMsgView.prototype._addTrustedAddrCallback =
@@ -1113,11 +1121,17 @@ function(addrs, options, type) {
 
 ZmMailMsgView.prototype._renderMessage =
 function(msg, container, callback) {
+	
+	this._renderMessageHeader(msg, container);
+	this._renderMessageBody(msg, container, callback);
+};
+
+ZmMailMsgView.prototype._renderMessageHeader =
+function(msg, container) {
+
 	var acctId = appCtxt.getActiveAccount().id;
 	var cl;
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
-		appCtxt.getApp(ZmApp.CONTACTS).contactsLoaded[acctId])
-	{
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.getApp(ZmApp.CONTACTS).contactsLoaded[acctId]) {
 		cl = AjxDispatcher.run("GetContacts");
 	}
 	var subject = msg.subject || ZmMsg.noSubject;
@@ -1309,7 +1323,20 @@ function(msg, container, callback) {
 		reportBtn.setText(ZmMsg.reportSyncFailure);
 		reportBtn.addSelectionListener(new AjxListener(this, this._reportButtonListener, msg));
 	}
+};
 
+/**
+ * Renders the message body. There is a chance a server call will be made to fetch the text part.
+ * 
+ * @param msg
+ * @param container
+ * @param callback
+ */
+ZmMailMsgView.prototype._renderMessageBody =
+function(msg, container, callback) {
+
+	var el = container || this.getHtmlElement();
+	
 	// if multiple body parts, ignore prefs and just append everything
 	var bodyParts = msg.getBodyParts();
 	var len = bodyParts.length;
@@ -1318,24 +1345,25 @@ function(msg, container, callback) {
 		var hasHtmlPart = msg.hasHtmlPart();
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
+			var content = this._getBodyContent(bp);
 			if (ZmMimeTable.isRenderableImage(bp.ct)) {
 				// Hack: (Bug:27320) Done specifically for sMime implementationu are.
-				var imgHtml = (bp.content)
+				var imgHtml = content
 					? ["<img zmforced='1' class='InlineImage' src='", bp.content, "'>"].join("")
 					: ["<img zmforced='1' class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
 				html.push(imgHtml);
 			} else {
 				if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
 					html.push(hasHtmlPart ? "<pre>" : "");
-					html.push(bp.content);
+					html.push(content);
 					html.push(hasHtmlPart ? "</pre>" : "");
 				} else {
 					if (appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
-						html.push(bp.content);
+						html.push(content);
 					} else {
 						// bug fix #31840 - convert HTML to text
 						var div = document.createElement("div");
-						div.innerHTML = bp.content;
+						div.innerHTML = content;
 						var convert = AjxStringUtil.convertHtml2Text(div);
 
 						html.push(hasHtmlPart ? "<pre>" : "");
@@ -1349,16 +1377,17 @@ function(msg, container, callback) {
 	} else {
 		var bodyPart = msg.getBodyPart();
 		if (bodyPart) {
-			var c = bodyPart.content;
+			var content = this._getBodyContent(bodyPart);
+			var invite = msg.invite;
 
 			if (bodyPart.ct == ZmMimeTable.TEXT_HTML && appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
 				if (invite && !invite.isEmpty() && this._inviteMsgView) {
-					c = this._inviteMsgView.truncateBodyContent(c, true);
+					content = this._inviteMsgView.truncateBodyContent(content, true);
 				}
 
 				// fix broken inline images - take one like this: <img dfsrc="http:...part=1.2.2">
 				// and make it look like this: <img dfsrc="cid:DWT123"> by looking up the cid for that part
-				if (msg._attachments && ZmMailMsgView.IMG_FIX_RE.test(c)) {
+				if (msg._attachments && ZmMailMsgView.IMG_FIX_RE.test(content)) {
 					var partToCid = {};
 					for (var i = 0; i < msg._attachments.length; i++) {
 						var att = msg._attachments[i];
@@ -1366,16 +1395,16 @@ function(msg, container, callback) {
 							partToCid[att.part] = att.ci.substring(1, att.ci.length - 1);
 						}
 					}
-					c = c.replace(ZmMailMsgView.IMG_FIX_RE, function(s, p1, p2, p3) {
+					content = content.replace(ZmMailMsgView.IMG_FIX_RE, function(s, p1, p2, p3) {
 						return partToCid[p2] ? [p1, '"cid:', partToCid[p2], '"', p3].join("") : s;
 					});
 				}
 
-                if(!c){
+                if (!content) {
                     c = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: true});
                 }
 
-				this._makeIframeProxy(el, c, false, bodyPart.truncated);
+				this._makeIframeProxy(el, content, false, bodyPart.truncated);
 			} else if (ZmMimeTable.isRenderableImage(bodyPart.ct)) {
 				var html = [
 					"<img zmforced='1' class='InlineImage' src='",
@@ -1404,16 +1433,16 @@ function(msg, container, callback) {
 
 				} else {
 					if (invite && !invite.isEmpty() && this._inviteMsgView) {
-						c = this._inviteMsgView.truncateBodyContent(c);
+						content = this._inviteMsgView.truncateBodyContent(content);
 					}
 
                     var isTextMsg = true;
-                    if(!c){
-                        c = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: false});
+                    if (!content) {
+                        content = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: false});
                         isTextMsg = false; //To make sure we display html content properly
 
                     }
-					this._makeIframeProxy(el, c, isTextMsg, bodyPart.truncated);
+					this._makeIframeProxy(el, content, isTextMsg, bodyPart.truncated);
 				}
 			}
 		}
@@ -1423,6 +1452,11 @@ function(msg, container, callback) {
 	this._expandRows(this._expandHeader);
 
 	if (callback) { callback.run(); }
+};
+
+ZmMailMsgView.prototype._getBodyContent =
+function(bodyPart) {
+	return bodyPart.content;
 };
 
 ZmMailMsgView.prototype._handleResponseRenderMessage =

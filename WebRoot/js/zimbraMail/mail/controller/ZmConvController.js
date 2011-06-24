@@ -40,39 +40,71 @@ ZmConvController = function(container, mailApp) {
 ZmConvController.prototype = new ZmDoublePaneController;
 ZmConvController.prototype.constructor = ZmConvController;
 
+ZmConvController.prototype.isZmConvController = true;
+ZmConvController.prototype.toString = function() { return "ZmConvController"; };
+
 ZmMailListController.GROUP_BY_ICON[ZmId.VIEW_CONV]			= "ConversationView";
 
-// Public methods
-
-ZmConvController.prototype.toString = 
-function() {
-	return "ZmConvController";
-};
 
 /**
- * Displays the given conversation in a two-pane view. The view is actually
- * created in _loadConv(), since it is a scheduled method and must execute
- * last.
+ * Displays the given conversation in a two-pane view.
  *
- * @param {ZmSearch}	activeSearch		the current search results
- * @param {ZmConv}	conv				a conversation
+ * @param {ZmSearch}			activeSearch		the current search results
+ * @param {ZmConv}				conv				a conversation
  * @param {ZmMailController}	parentController	the controller that called this method
- * @param {AjxCallback}	callback			the client callback
- * @param {Boolean}	markRead		if <code>true</code>, mark msg read
+ * @param {AjxCallback}			callback			the client callback
+ * @param {Boolean}				markRead		if <code>true</code>, mark msg read
  */
 ZmConvController.prototype.show =
 function(activeSearch, conv, parentController, callback, markRead) {
+
 	this._conv = conv;
-	var lv = this._listView[this._currentView];
+
 	// always reset offset & sortby to asc.
+	var lv = this._listView[this._currentView];
 	if (lv) {
 		lv.offset = 0;
 		lv.setSortByAsc(ZmItem.F_DATE, false);
 	}
 	this._parentController = parentController;
 
-	// this._list will be set when conv is loaded
-	ZmDoublePaneController.prototype.show.call(this, activeSearch, conv, callback, markRead);
+	ZmMailListController.prototype.show.call(this, activeSearch);
+
+	if (this._doublePaneView) {
+		this._doublePaneView._mailListView.reset();
+	}
+	this._setup(this._currentView);
+	
+	if (!conv._loaded) {
+		var respCallback = this._handleResponseLoadConv.bind(this, conv, callback);
+		var getFirstMsg = this.isReadingPaneOn();
+		markRead = markRead || (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
+		conv.load({getFirstMsg:getFirstMsg, markRead:markRead}, respCallback);
+	} else {
+		this._handleResponseLoadConv(conv, callback, conv._createResult());
+	}
+};
+
+ZmConvController.prototype._handleResponseLoadConv =
+function(conv, callback, result) {
+
+	var searchResult = result.getResponse();
+	var list = searchResult.getResults(ZmItem.MSG);
+	if (list instanceof ZmList) {
+		this._list = list;
+		this._activeSearch = searchResult;
+	}
+	
+	this._displayResults(this._currentView);
+	
+	if (callback) {
+		callback.run();
+	}
+};
+
+ZmConvController.prototype._setViewContents =
+function(view) {
+	this._doublePaneView.setConv(this._conv);
 };
 
 ZmConvController.prototype.getConv =
