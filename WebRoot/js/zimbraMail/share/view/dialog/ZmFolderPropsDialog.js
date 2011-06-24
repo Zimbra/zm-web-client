@@ -240,6 +240,14 @@ function(event) {
         }
     }
 
+    // Shared Calendars only
+    if (Dwt.getVisible(this._calendarReminderEl)) {
+        var reminder = this._calendarReminderCheckbox.checked;
+        if (organizer.reminder != reminder) {
+            organizer.setSharedReminder(reminder, null, this._handleErrorCallback, batchCommand);
+        }
+    }
+
     var callback = new AjxCallback(this, this.popdown);
 	batchCommand.run(callback);
 };
@@ -302,7 +310,8 @@ function(event) {
 						 (organizer.type == ZmOrganizer.FOLDER && appCtxt.get(ZmSetting.MAIL_FOLDER_COLORS_ENABLED)));
 		this._props.setPropertyVisible(this._colorId, isVisible);
 	}
-	this._excludeFbCheckbox.checked = organizer.excludeFreeBusy;
+    this._excludeFbCheckbox.checked = organizer.excludeFreeBusy;
+    this._calendarReminderCheckbox.checked = organizer.reminder;
 
 	var showPerm = organizer.isMountpoint;
 	if (showPerm) {
@@ -336,7 +345,9 @@ function(event) {
 	Dwt.setVisible(this._excludeFbEl, !organizer.link && (organizer.type == ZmOrganizer.CALENDAR));
 	// TODO: False until server handling of the flag is added
 	//Dwt.setVisible(this._globalMarkReadEl, organizer.type == ZmOrganizer.FOLDER);
-	Dwt.setVisible(this._globalMarkReadEl, false);
+    Dwt.setVisible(this._globalMarkReadEl, false);
+
+    Dwt.setVisible(this._calendarReminderEl, (organizer.type == ZmOrganizer.CALENDAR) && organizer.link);
 
 };
 
@@ -490,23 +501,9 @@ function() {
 	nameEl.appendChild(this._nameOutputEl);
 	nameEl.appendChild(nameElement);
 
-	this._excludeFbCheckbox = document.createElement("INPUT");
-	this._excludeFbCheckbox.type = "checkbox";
-	this._excludeFbCheckbox._dialog = this;
-
-	this._excludeFbEl = document.createElement("DIV");
-	this._excludeFbEl.style.display = "none";
-	this._excludeFbEl.appendChild(this._excludeFbCheckbox);
-	this._excludeFbEl.appendChild(document.createTextNode(ZmMsg.excludeFromFreeBusy));
-
-	this._globalMarkReadCheckbox = document.createElement("INPUT");
-	this._globalMarkReadCheckbox.type = "checkbox";
-	this._globalMarkReadCheckbox._dialog = this;
-
-	this._globalMarkReadEl = document.createElement("DIV");
-	this._globalMarkReadEl.style.display = "none";
-	this._globalMarkReadEl.appendChild(this._globalMarkReadCheckbox);
-	this._globalMarkReadEl.appendChild(document.createTextNode(ZmMsg.globalMarkRead));
+	var excludeFbEl      = this._createCheckboxItem("excludeFb",        ZmMsg.excludeFromFreeBusy);
+	var globalMarkReadEl = this._createCheckboxItem("globalMarkRead",   ZmMsg.globalMarkRead);
+	var calReminderEl    = this._createCheckboxItem("calendarReminder", ZmMsg.sharedCalendarReminder);
 
 
 	// setup properties group
@@ -525,9 +522,10 @@ function() {
 
 	var propsContainer = document.createElement("DIV");
 	propsContainer.appendChild(this._props.getHtmlElement());
-	propsContainer.appendChild(this._excludeFbEl);
-	propsContainer.appendChild(this._globalMarkReadEl)
-	
+	propsContainer.appendChild(excludeFbEl);
+	propsContainer.appendChild(globalMarkReadEl);
+	propsContainer.appendChild(calReminderEl);
+
 	propsGroup.setElement(propsContainer);
 
 	// setup shares group
@@ -547,3 +545,21 @@ function() {
 
 	return view;
 };
+
+
+ZmFolderPropsDialog.prototype._createCheckboxItem =
+function(name, label) {
+    var checkboxName  = "_" + name + "Checkbox"
+    var containerName = "_" + name + "El"
+
+    this[checkboxName] = document.createElement("INPUT");
+    this[checkboxName].type = "checkbox";
+    this[checkboxName]._dialog = this;
+
+    this[containerName] = document.createElement("DIV");
+    this[containerName].style.display = "none";
+    this[containerName].appendChild(this[checkboxName]);
+    this[containerName].appendChild(document.createTextNode(label));
+
+    return this[containerName];
+}

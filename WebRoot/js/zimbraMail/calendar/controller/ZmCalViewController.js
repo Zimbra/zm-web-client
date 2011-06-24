@@ -422,7 +422,7 @@ function() {
 		checkedAccountCalendarIds[acctId].push(cal.id);
 
 		this._checkedCalendarIds.push(cal.id);
-		if (cal.isRemote && !cal.isRemote()) {
+		if ((cal.isRemote && !cal.isRemote()) || cal.reminder) {
 			this._checkedLocalCalendarIds.push(cal.id);
 		}
 	}

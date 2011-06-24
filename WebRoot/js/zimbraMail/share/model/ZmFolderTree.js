@@ -251,7 +251,8 @@ function(type, parent, obj, tree, path, elementType, account) {
 		sizeTotal: 	obj.s,
 		perm: 		obj.perm,
 		link: 		elementType == "link",
-		account:	account
+		account:	account,
+		reminder:	obj.reminder
 	};
 
 	var folder = new orgClass(params);

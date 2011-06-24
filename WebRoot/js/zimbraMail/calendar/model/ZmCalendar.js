@@ -37,6 +37,7 @@
 ZmCalendar = function(params) {
 	params.type = ZmOrganizer.CALENDAR;
 	ZmOrganizer.call(this, params);
+	this.reminder = params.reminder;
 };
 
 ZmCalendar.prototype = new ZmOrganizer;
@@ -212,6 +213,11 @@ function(obj) {
 		fields["excludeFreeBusy"] = true;
 		doNotify = true;
 	}
+	if (obj.reminder !== undefined && !obj._isRemote) {
+		this.reminder = obj.reminder;
+		fields["reminder"] = true;
+		doNotify = true;
+	}
 
 	if (doNotify) {
 		this._notify(ZmEvent.E_MODIFY, {fields: fields});
@@ -330,3 +336,27 @@ function() {
 	return ZmOrganizer.prototype.isReadOnly.call(this);
 };
 
+
+/**
+ * Sets the reminder flag
+ *
+ * @param	{Boolean}	        sharedReminder  if <code>true</code>, display reminders from shared calendars
+ * @param	{AjxCallback}	    callback		the callback
+ * @param	{AjxCallback}	    errorCallback	the error callback
+ * @param   {ZmBatchCommand}    batchCmd        optional batch command
+ */
+ZmCalendar.prototype.setSharedReminder =
+function(sharedReminder, callback, errorCallback, batchCmd) {
+	if (this.reminder == sharedReminder) { return; }
+
+    var soapDoc = AjxSoapDoc.create("EnableSharedReminderRequest", "urn:zimbraMail");
+
+    var linkNode = soapDoc.set("link");
+    linkNode.setAttribute("id", this.id);
+    linkNode.setAttribute("reminder", sharedReminder ? "1" : "0");
+
+    appCtxt.getAppController().sendRequest({soapDoc:soapDoc,
+                                            asyncMode:true,
+                                            callback:callback,
+                                            errorCallback:errorCallback});
+};
