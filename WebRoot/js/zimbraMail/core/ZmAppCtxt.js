@@ -425,19 +425,6 @@ function() {
 };
 
 /**
- * Gets the new contact group dialog.
- *
- * @return	{ZmNewContactGroupDialog}	the new contact group dialog
- */
-ZmAppCtxt.prototype.getNewContactGroupDialog =
-function() {
-	if (!this._newContactGroupDialog) {
-		this._newContactGroupDialog = new ZmNewContactGroupDialog(this._shell);
-	}
-	return this._newContactGroupDialog;
-};
-
-/**
  * Gets the rename tag dialog.
  * 
  * @return	{ZmRenameTagDialog}		the rename tag dialog
@@ -1457,7 +1444,6 @@ function() {
  */
 ZmAppCtxt.prototype.notifyZimlets =
 function(event, args, options) {
-	this.notifySkin(event, args, options); // Also notify skin
 
 	var context = this.isChildWindow ? parentAppCtxt : this;
 
@@ -1470,18 +1456,8 @@ function(event, args, options) {
 		return;
 	}
 
-	this.getZimletMgr().notifyZimlets(event, args);
+	return this.getZimletMgr().notifyZimlets(event, args);
 };
-
-ZmAppCtxt.prototype.notifySkin =
-function(event, args, options) {
-	var context = this.isChildWindow ? parentAppCtxt : this;
-	if (options && options.noChildWindow && this.isChildWindow) { return; }
-	try {
-		return window.skin && AjxUtil.isFunction(window.skin.handleNotification) && window.skin.handleNotification(event, args);
-	} catch (e) {}
-};
-
 
 /**
  * Gets the calendar manager.
@@ -1709,6 +1685,30 @@ function(type, account) {
 			this._acCache[acct.id][ZmAutocomplete.AC_TYPE_EQUIPMENT]	=	{};
 		}
 	}
+};
+
+ZmAppCtxt.prototype.setNotifyDebug =
+function(notify) {
+
+    if (!window.isNotifyDebugOn) {
+        return;
+    }
+
+    if (this._notify) {
+        this._notify =  [this._notify, notify, "\n\n"].join("");
+    } else {
+        this._notify = ["\n\n", notify, "\n\n"].join("");
+    }
+};
+
+ZmAppCtxt.prototype.getNotifyDebug =
+function() {
+    return this._notify;
+};
+
+ZmAppCtxt.prototype.clearNotifyDebug =
+function() {
+    this._notify = "";
 };
 
 ZmAppCtxt.prototype.getOutsideMouseEventMgr =
