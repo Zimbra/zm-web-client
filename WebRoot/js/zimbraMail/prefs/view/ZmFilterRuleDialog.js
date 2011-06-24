@@ -323,6 +323,9 @@ function(data, test, isCondition, rowId) {
 		html[i++] = this._createRowComponent(conf, "ops", conf.opsOptions, data, test, rowId);
 		html[i++] = this._createRowComponent(conf, "value", conf.vOptions, data, test, rowId);
 		html[i++] = this._createRowComponent(conf, "valueMod", conf.vmOptions, data, test, rowId);
+		if (data && data.caseSensitive) {
+			this._inputs[rowId]["caseSensitive"] = {value: data.caseSensitive}; //save case sensitive value if it exists
+		}
 	} else {
 		if (test == ZmFilterRule.A_NAME_STOP) {
 			var stopField = Dwt.byId(this._stopCheckboxId);
@@ -1081,7 +1084,7 @@ function(ev) {
 		if (msg = this._checkCondition(c)) {
 			break;
 		} else {
-			rule.addCondition(c.testType, c.comparator, c.value, c.subjectMod);
+			rule.addCondition(c.testType, c.comparator, c.value, c.subjectMod, c.caseSensitive);
 		}
 	}
 	if (!msg) {
@@ -1147,6 +1150,7 @@ function(rowId) {
 	var subjectMod = this._getInputValue(inputs, conf, "subjectMod");
 	var valueMod = this._getInputValue(inputs, conf, "valueMod");
 	var testType = ZmFilterRule.C_TEST_MAP[subject];
+	var caseSensitive = null;
 
 	if (testType == ZmFilterRule.TEST_HEADER) {
 		if (subject == ZmFilterRule.C_HEADER &&
@@ -1169,8 +1173,12 @@ function(rowId) {
 		subjectMod = "Content-Type";
 		value = ZmMimeTable.MSG_READ_RECEIPT;
 	}
+	
+	if (testType == ZmFilterRule.TEST_HEADER || testType == ZmFilterRule.TEST_MIME_HEADER || testType == ZmFilterRule.TEST_ADDRESS) {
+		caseSensitive = inputs["caseSensitive"] ? inputs["caseSensitive"].value : null;	
+	}
 
-	return { testType:testType, comparator:comparator, value:value, subjectMod:subjectMod };
+	return { testType:testType, comparator:comparator, value:value, subjectMod:subjectMod, caseSensitive:caseSensitive };
 };
 
 /**

@@ -567,12 +567,12 @@ function(groupOp) {
 };
 
 ZmFilterRule.prototype.addCondition =
-function(testType, comparator, value, subjectMod) {
+function(testType, comparator, value, subjectMod, caseSensitive) {
 	if (!this.conditions[testType]) {
 		this.conditions[testType] = [];
 	}
 
-	var cdata = ZmFilterRule.getConditionData(testType, comparator, value, subjectMod);
+	var cdata = ZmFilterRule.getConditionData(testType, comparator, value, subjectMod, caseSensitive);
 	this.conditions[testType].push(cdata);
 };
 
@@ -633,7 +633,7 @@ function() {
 // Static methods
 
 ZmFilterRule.getConditionData =
-function(testType, comparator, value, subjectMod) {
+function(testType, comparator, value, subjectMod, caseSensitive) {
 	var conditionData = {};
 
 	// add subject modifier
@@ -683,6 +683,9 @@ function(testType, comparator, value, subjectMod) {
 
 	if (testType == ZmFilterRule.TEST_INVITE) {
 	    conditionData.method = [{_content:ZmFilterRule.OP_VALUE[negativeOp || comparator]}];
+	}
+	if (caseSensitive != null) {
+		conditionData.caseSensitive = caseSensitive;
 	}
 
 	return conditionData;
