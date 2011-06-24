@@ -24,6 +24,7 @@
  */
 AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
 
+AjxPackage.require("zimbraMail.mail.view.ZmRecipients");
 AjxPackage.require("zimbraMail.mail.view.ZmComposeView");
 AjxPackage.require("zimbraMail.mail.view.ZmConvView");
 AjxPackage.require("zimbraMail.mail.view.ZmMailAssistant");

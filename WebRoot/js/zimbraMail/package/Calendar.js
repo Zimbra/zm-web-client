@@ -48,5 +48,7 @@ AjxPackage.require("zimbraMail.calendar.view.ZmCalScheduleView");
 AjxPackage.require("zimbraMail.calendar.view.ZmCalListView");
 AjxPackage.require("zimbraMail.calendar.view.ZmApptDeleteNotifyDialog");
 
+AjxPackage.require("zimbraMail.calendar.view.ZmCalPrintDialog");
+
 AjxPackage.require("zimbraMail.calendar.view.ZmCalItemView");
 AjxPackage.require("zimbraMail.calendar.controller.ZmCalendarTreeController");

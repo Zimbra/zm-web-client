@@ -389,12 +389,9 @@ function(columnItem, bSortAsc, callback) {
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
 
 	var query;
+	var list = this.getList();
 	var controller = AjxDispatcher.run((this._mode == ZmId.VIEW_CONV) ? "GetConvController" : "GetTradController");
-	if (this._columnHasCustomQuery(columnItem)) 
-	{
-		query = this._getSearchForSort(columnItem._sortable, controller);
-	}
-	else if (this.getList().size() > 1 && this._sortByString) {
+	if (list && list.size() > 1 && this._sortByString) {
 		query = controller.getSearchString();
 	}
 
@@ -425,11 +422,6 @@ function(columnItem, bSortAsc, callback) {
 			appCtxt.getSearchController().search(params);
 		}
 	}
-};
-
-ZmMailMsgListView.prototype._columnHasCustomQuery =
-function(columnItem) {
-	return (columnItem._sortable == ZmItem.F_FLAG || columnItem._sortable == ZmItem.F_ATTACHMENT);
 };
 
 ZmMailMsgListView.prototype._handleResponseSortColumn =
