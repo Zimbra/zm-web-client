@@ -584,6 +584,9 @@ function(img) {
 	var attachments = this._msg.attachments;
 	var csfeMsgFetch = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 	var src = img.getAttribute("src") || img.getAttribute("dfsrc");
+	if (!src) {
+		return;
+	}
 	var cid;
 	if (/^cid:(.*)/.test(src)) {
 		cid = "<" + RegExp.$1 + ">";
@@ -597,7 +600,7 @@ function(img) {
 		if (cid && att.ci == cid) {
 			att.foundInMsgBody = true;
 			break;
-		} else if (src && src.indexOf(csfeMsgFetch) == 0) {
+		} else if (src.indexOf(csfeMsgFetch) == 0) {
 			var mpId = src.substring(src.lastIndexOf("=") + 1);
 			if (mpId == att.part) {
 				att.foundInMsgBody = true;
