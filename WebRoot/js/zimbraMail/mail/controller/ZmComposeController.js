@@ -1239,10 +1239,10 @@ function(msg, identity) {
 
 	// depending on COS/user preference set compose format
 	var composeMode = DwtHtmlEditor.TEXT;
-
-	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+    var ac = window.parentAppCtxt || window.appCtxt;
+	if (ac.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
         if (this._action == ZmOperation.NEW_MESSAGE) {
-            if (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML) {
+            if (ac.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML) {
                 composeMode = DwtHtmlEditor.HTML;
             }
         } 
@@ -1252,8 +1252,8 @@ function(msg, identity) {
 			}
 		}
 		else if (identity) {
-			var sameFormat = appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
-			var asFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+			var sameFormat = ac.get(ZmSetting.COMPOSE_SAME_FORMAT);
+			var asFormat = ac.get(ZmSetting.COMPOSE_AS_FORMAT);
 			if ((!sameFormat && asFormat == ZmSetting.COMPOSE_HTML) ||  (sameFormat && msg && msg.isHtmlMail())) {
 				composeMode = DwtHtmlEditor.HTML;
 			}
