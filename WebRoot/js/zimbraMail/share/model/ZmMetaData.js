@@ -76,9 +76,10 @@ function() {
  * @param {ZmBatchCommand}	batchCommand	if part of a batch command
  * @param {AjxCallback}	callback		the callback to trigger on successful save
  * @param {AjxCallback}	errorCallback	the error callback to trigger on error
+ * @param {Boolean} sensitive if <code>true</code>, attempt to use secure conn to protect data
  */
 ZmMetaData.prototype.set =
-function(section, data, batchCommand, callback, errorCallback) {
+function(section, data, batchCommand, callback, errorCallback, sensitive) {
 	var soapDoc;
 	if (this._itemId) {
 		soapDoc = AjxSoapDoc.create("SetCustomMetadataRequest", "urn:zimbraMail");
@@ -109,7 +110,8 @@ function(section, data, batchCommand, callback, errorCallback) {
 			asyncMode: true,
 			callback: callback,
 			errorCallback: errorCallback,
-			accountName: (this._account ? this._account.name : null)
+			accountName: (this._account ? this._account.name : null),
+			sensitive: sensitive
 		};
 
 		appCtxt.getAppController().sendRequest(params);

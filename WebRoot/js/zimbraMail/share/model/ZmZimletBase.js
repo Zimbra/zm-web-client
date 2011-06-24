@@ -898,15 +898,14 @@ function(callback) {
 		p.setAttribute("name", props[i].name);
 	}
 
-	var cmd = new ZmCsfeCommand();
 	var ajxcallback = null;
 	if (callback)
 		ajxcallback = new AjxCallback(this, function(result) {
 			// TODO: handle errors
 			callback.run();
 		});
-	cmd.invoke({ soapDoc: soapDoc, callback: ajxcallback, asyncMode: true });
-
+	var params = { soapDoc: soapDoc, callback: ajxcallback, asyncMode: true, sensitive:true};
+	appCtxt.getAppController().sendRequest(params);
 	if (this._dlg_propertyEditor) {
 		this._dlg_propertyEditor.popdown();
 		// force the dialog to be reconstructed next time
