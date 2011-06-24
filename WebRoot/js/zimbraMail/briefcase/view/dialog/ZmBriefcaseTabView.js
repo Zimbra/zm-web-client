@@ -144,7 +144,15 @@ ZmBriefcaseTabView.prototype.showFolder =
 function(folderId) {
     this._folderId = folderId;
     var callback = new AjxCallback(this, this.showFolderContents, [folderId]);
-	this._app.search({folderId:folderId, callback:callback, noRender:true});
+    var params = {
+        folderId:folderId,
+        callback:callback,
+        noRender:true
+    };
+    if (appCtxt.multiAccounts) {
+        params.accountName = appCtxt.getAppViewMgr().getCurrentView().getFromAccount().name;
+    }
+    this._app.search(params);
 };
 
 /**
