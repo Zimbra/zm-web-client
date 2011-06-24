@@ -1310,6 +1310,11 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 	// if origId is given, means we're saving a draft or sending a msg that was
 	// originally a reply/forward
 	if (this.origId) {
+         // always Qualify ID when forwarding mail using a child account
+        if (appCtxt.isOffline) {
+            var origAccount = this._origMsg && this._origMsg.getAccount();
+            doQualifyIds = ac.multiAccounts  && origAccount.id == mainAccount.id;
+        }
 		var id = this.origId;
 		if(doQualifyIds) {
 			id = ZmOrganizer.getSystemId(this.origId, mainAccount, true);
