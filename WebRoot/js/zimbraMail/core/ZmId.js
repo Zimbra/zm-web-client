@@ -588,6 +588,8 @@ ZmId.MV_INFO_BAR			= "_infoBar";			// DIV that is placeholder for optional links
 ZmId.MV_TAG_ROW				= "_tagRow";			// TR for tags
 ZmId.MV_TAG_CELL			= "_tagCell";			// TD for tags
 ZmId.MV_MSG_BODY			= "_body";				// DIV that contains content iframe
+ZmId.MV_MSG_HEADER			= "_header";			// DIV that contains header (conv 2.0 msg capsule view)
+ZmId.MV_MSG_FOOTER			= "_footer";			// DIV that contains footer (conv 2.0 msg capsule view)
 
 ZmId.MV_PRIORITY			= "_msgPriority";
 
