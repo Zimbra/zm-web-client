@@ -98,7 +98,7 @@
             </table>
 
         </td>
-        <td nowrap width='1%'>${fn:escapeXml(mailbox.name)}</td>
+        <td nowrap width='1%'><c:if test="${mailbox.name ne 'local@host.local'}">${fn:escapeXml(mailbox.name)}</c:if></td>
     </tr>
 </table>
 <hr/>
