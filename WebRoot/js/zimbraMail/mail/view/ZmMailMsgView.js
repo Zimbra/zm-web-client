@@ -1568,7 +1568,7 @@ function(msg) {
 		var removeClick = ['ZmMailMsgView._removeTagClick("', this._htmlElId, '","', tag.id, '");'].join("");
 
 
-		html[i++] = "<span class='addrBubble Tag'";
+		html[i++] = "<span class='addrBubble TagBubble'";
 		html[i++] = " id='";
 		html[i++] = anchorId;
 		html[i++] = "'>";
