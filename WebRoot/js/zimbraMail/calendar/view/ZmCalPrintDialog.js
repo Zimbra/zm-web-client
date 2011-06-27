@@ -424,9 +424,9 @@ function() {
         j=0,
         params = [],
         printURL = "",
-        selDate = this._selDate.getEnabled() ? AjxDateFormat.format(ZmCalPrintDialog.DATE_FORMAT, this._selDate.getValue()) : "",
-        dateRangeFrom = this._dateRangeFrom.getValue(),
-        dateRangeTo = this._dateRangeTo.getValue(),
+        selDate = this._selDate.getEnabled() ? this._selDate.getValue() : "",
+        dateRangeFrom = this._dateRangeFrom.getEnabled() ? this._dateRangeFrom.getValue() : new Date(selDate.getTime()),
+        dateRangeTo = this._dateRangeTo.getEnabled() ? this._dateRangeTo.getValue() : new Date(selDate.getTime()),
         fromTime = AjxDateFormat.format(ZmCalPrintDialog.TIME_FORMAT, this._fromTimeSelect.getValue()),
         toTime = AjxDateFormat.format(ZmCalPrintDialog.TIME_FORMAT, this._toTimeSelect.getValue()),
         viewSelected = ZmCalViewController.OP_TO_VIEW[this._viewSelect.getValue()],
@@ -457,6 +457,7 @@ function() {
         dateRangeTo = AjxDateUtil.getLastDayOfWeek(dateRangeTo);
     }
 
+    dateRangeTo.setHours(23, 59, 59, 999);
     dateRangeFrom = AjxDateFormat.format(ZmCalPrintDialog.DATE_FORMAT, dateRangeFrom);
     dateRangeTo = AjxDateFormat.format(ZmCalPrintDialog.DATE_FORMAT, dateRangeTo);
 
@@ -467,8 +468,6 @@ function() {
     params[i++] = this._getPrintViewName(this.currentViewId);
     params[i++] = "&view=";
     params[i++] = viewStyle;
-    params[i++] = "&sd=";
-    params[i++] = selDate;
     params[i++] = "&date=";
     params[i++] = dateRangeFrom;
     params[i++] = "&endDate=";
@@ -490,7 +489,7 @@ function() {
     params[i++] = "&ftp=";
     params[i++] = fitToPage;
     params[i++] = "&wdays=";
-    params[i++] = ZmCalBaseView.getWorkingHours();
+    params[i++] = workDaysOnly ? ZmCalPrintDialog.encodeWorkingDays() : "";
     params[i++] = "&tz=";
     params[i++] = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
     params[i++] = "&skin=";
@@ -499,6 +498,17 @@ function() {
     printURL = appContextPath + params.join("");
     //console.log(printURL);
     return printURL;
+};
+
+ZmCalPrintDialog.encodeWorkingDays = function () {
+    var wHrs = ZmCalBaseView.parseWorkingHours(ZmCalBaseView.getWorkingHours()),
+        wDays = [];
+    for (var i=0; i<wHrs.length; i++) {
+        if(wHrs[i].isWorkingDay) {
+            wDays.push(i);
+        }
+    }
+    return wDays.join(",");
 };
 
 
@@ -514,25 +524,17 @@ ZmDateInput.prototype.constructor = ZmDateInput;
 
 ZmDateInput.prototype.getValue =
 function() {
-    var date = AjxDateUtil.simpleParseDateStr(this._dateInputField.getValue());
-    /*var day = (date.getDate() < 10)
-			? ('0' + date.getDate())
-			: date.getDate();
-
-    var month = date.getMonth() + 1;
-    if (month < 10) {
-        month = '0' + month;
+    var date = "";
+    if(this.getEnabled()) {
+        date = AjxDateUtil.simpleParseDateStr(this._dateInputField.getValue());
+        //date.setHours(23, 59, 59, 999);
     }
-
-    return [date.getFullYear(), month, day].join("");*/
-
-    //return AjxDateFormat.format("yyyyMMddThhmmss", date);
     return date;
 };
 
 ZmDateInput.prototype.getTimeValue =
 function() {
-    if(this._dateInputField.getEnabled() && this._dateButton.getEnabled()) {
+    if(this.getEnabled()) {
         return AjxDateUtil.simpleParseDateStr(this._dateInputField.getValue()).getTime();
     }
     else {
@@ -549,6 +551,11 @@ ZmDateInput.prototype.setEnabled =
 function(enabled) {
     this._dateInputField.setEnabled(enabled);
     this._dateButton.setEnabled(enabled);
+};
+
+ZmDateInput.prototype.getEnabled =
+function(enabled) {
+    return this._dateInputField.getEnabled() && this._dateButton.getEnabled();
 };
 
 
