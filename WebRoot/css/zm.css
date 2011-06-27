@@ -1382,6 +1382,33 @@ line-height:normal;
 .calendar_grid_day_table td {
 	padding:0px;
 }
+/*strip to indicate the current time*/
+.calendar_hour_arrow_indicator{
+    position:absolute;
+    top:-12px;
+    height:25px;
+    font-size:25px;
+    right:0px;
+}
+.calendar_cur_time_indicator_arr,.calendar_cur_time_indicator_strip{
+    margin: 0;
+    padding: 0;
+    z-index:1000000;
+    position:absolute;
+    width:100%;
+}
+.calendar_cur_time_indicator_arr{
+    height:10px;
+    color:#C33C16;
+    overflow:hidden;
+    right:1px;
+}
+.calendar_cur_time_indicator_strip{
+    font-size: 0;
+    line-height:0;
+    background-color:#C33C16;
+    height:1px;
+}
 
 /* cell in the calendar grid that is selected */
 .calendar_time_selection {
@@ -1465,6 +1492,8 @@ line-height:normal;
 	position:absolute;
 	overflow: hidden;
 }
+
+.15active .15active{}
 
 .calendar_union_scroll,
 .calendar_allday_appt {

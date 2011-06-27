@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -27,7 +27,7 @@ ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, sc
     this._fbBarEnabled = this.fbStatusBarEnabled();
 
 	//we need special alignment for this case.
-	this._isInviteMessage = isInviteMessage; 
+	this._isInviteMessage = isInviteMessage;
 	this._isRight = isRight;
 
 	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, controller, view, readonly);
@@ -449,7 +449,7 @@ function() {
         AjxDateUtil.rollToNextDay(d);
         daylightAdjustment = true;
     }
-    
+
 	this._dateToDayIndex = new Object();
 
 	var today = new Date();
@@ -460,7 +460,7 @@ function() {
 	for (var i=0; i < 7; i++) {
         var wHrs = this.workingHours[d.getDay()];
         var isWorkingDay = wHrs && wHrs.isWorkingDay ? wHrs.isWorkingDay : false;
-        if (this.view === ZmId.VIEW_CAL_WEEK    || 
+        if (this.view === ZmId.VIEW_CAL_WEEK    ||
             this.view === ZmId.VIEW_CAL_DAY     ||
             this._scheduleMode === true         ||
             isWorkingDay === true ) {
@@ -475,6 +475,7 @@ function() {
             this._dateToDayIndex[this._dayKey(day.date)] = day;
             if (!this._scheduleMode && this._columns[j]) {
                 var id = this._columns[j].titleId;
+                this._calendarTodayHeaderDivId=day.isToday?id:this._calendarTodayHeaderDivId;
                 var te = document.getElementById(id);
                 te.innerHTML = this._dayTitle(d);
                 this.associateItemWithElement(null, te, ZmCalBaseView.TYPE_DAY_HEADER, id, {dayIndex:j});
@@ -713,25 +714,33 @@ function(appt) {
 // TODO: i18n
 ZmCalColView.prototype._createHoursHtml =
 function(html) {
+
 	html.append("<div style='position:absolute; top:-8; width:", ZmCalColView._HOURS_DIV_WIDTH, "px;' id='", this._bodyHourDivId, "'>");
-	html.append("<table class=calendar_grid_day_table>");
+
 	var formatter = DwtCalendar.getHourFormatter();
+    var curDate = new Date();
 	var date = new Date();
 	date.setHours(0, 0, 0, 0);
     var timeTDWidth = ZmCalColView._HOURS_DIV_WIDTH - (this._fbBarEnabled ? ZmCalColView._FBBAR_DIV_WIDTH : 0 );
+    html.append("<table class=calendar_grid_day_table>");
 	for (var h=0; h < 25; h++) {
 		html.append("<tr><td class=calendar_grid_body_time_td style='height:",
-		ZmCalColView._HOUR_HEIGHT ,"px; width:", timeTDWidth, "px'><div class=calendar_grid_body_time_text>");
+		ZmCalColView._HOUR_HEIGHT ,"px; width:", timeTDWidth, "px'><div id='"+this._hourColDivId+"_"+h+"' class=calendar_grid_body_time_text>");
 		date.setHours(h);
 		html.append(h > 0 && h < 24 ? AjxStringUtil.htmlEncode(formatter.format([h, date])) : "&nbsp;");
-		html.append("</div></td>");
+		html.append("</div>");
+        html.append("</td>");
         if(this._fbBarEnabled){
             html.append("<td class=calendar_grid_body_fbbar_td style='height:",ZmCalColView._HOUR_HEIGHT ,"px; width:", ZmCalColView._FBBAR_DIV_WIDTH,"px; border-left:1px solid #A7A194;'>&nbsp;</td>");
         }
         html.append("</tr>");
 	}
-	html.append("</table>", "</div>");
+	html.append("</table>");
+    html.append("<div id='"+this._curTimeIndicatorHourDivId+"' class='calendar_cur_time_indicator_arr'><div class='calendar_hour_arrow_indicator'>&rarr;</div></div>");
+
+    html.append( "</div>");
 };
+
 
 ZmCalColView.prototype._createHtml =
 function(abook) {
@@ -760,7 +769,11 @@ function(abook) {
 	this._apptBodyDivId = Dwt.getNextId();
 	this._newApptDivId = Dwt.getNextId();
 	this._newAllDayApptDivId = Dwt.getNextId();
-	this._timeSelectionDivId = Dwt.getNextId();    
+	this._timeSelectionDivId = Dwt.getNextId();
+    this._curTimeIndicatorHourDivId = Dwt.getNextId();
+    this._curTimeIndicatorGridDivId = Dwt.getNextId();
+    this._hourColDivId = Dwt.getNextId();
+
 
 	if (this._scheduleMode) {
 		this._unionHeadingDivId = Dwt.getNextId();
@@ -885,7 +898,11 @@ function(abook) {
         html.append("<div id='", this._workingHrsFirstDivId, "' class='ImgCalendarDayGrid' style='background-color:#FFFFFF;position:absolute;'></div>");
         html.append("<div id='", this._workingHrsSecondDivId, "' class='ImgCalendarDayGrid' style='background-color:#FFFFFF;position:absolute;'></div>");
     }
+
+
 	html.append("</div>");
+    //Strip to indicate the current time
+    html.append("<div id='"+this._curTimeIndicatorGridDivId+"' class='calendar_cur_time_indicator_strip' style='position:absolute;background-color:#F16426; height: 1px;'></div>");
 	html.append("</div>");
 
 	this.getHtmlElement().innerHTML = html.toString();
@@ -900,8 +917,40 @@ function(abook) {
 		this.associateItemWithElement(null, document.getElementById(ids[i]), types[i], ids[i]);
 	}
 	this._scrollToTime(8);
-
 };
+ZmCalColView.timerCounter=0;
+ZmCalColView.prototype.setTimer=function(min){
+    var period = min*60*1000;
+    return AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.updateTimeIndicator), period);
+}
+
+ZmCalColView.prototype.updateTimeIndicator=function(){
+    var curDate = new Date();
+    var  hr = curDate.getHours();
+    var min = curDate.getMinutes();
+    var curHourDiv = document.getElementById(this._hourColDivId+"_"+hr);
+    curTimeHourIndicator = document.getElementById(this._curTimeIndicatorHourDivId);
+    curTimeHourIndicator.style.left=curHourDiv.offsetParent.offsetLeft;
+    var currentTopPosition = Math.round((ZmCalColView._HOUR_HEIGHT/60)*min)+parseInt(curHourDiv.offsetParent.offsetTop);
+    curTimeHourIndicator.style.top=(currentTopPosition+3)+"px";
+    var calendarStrip = document.getElementById(this._curTimeIndicatorGridDivId);
+    Dwt.setVisibility(calendarStrip,true);
+    var todayColDiv = document.getElementById(this._calendarTodayHeaderDivId);
+    if(todayColDiv){
+     calendarStrip.style.left=todayColDiv.offsetLeft;
+     calendarStrip.style.top=currentTopPosition+"px";
+     calendarStrip.style.width=todayColDiv.offsetWidth;
+    }
+    else{Dwt.setVisibility(calendarStrip,false);}
+    return this.setTimer(1);
+}
+
+ZmCalColView.prototype.startIndicatorTimer=function(){
+   if(!this._indicatorTimer){
+    console.log((ZmCalColView.timerCounter++));
+    this._indicatorTimer = this.updateTimeIndicator();
+   }
+}
 
 ZmCalColView.__onScroll = function(myView) {
     myView._syncScroll();

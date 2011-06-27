@@ -190,36 +190,41 @@ function(viewId, startDate, skipMaintenance) {
 	this._listView[this._currentView] = this._viewMgr.getCurrentView();
 	this._resetToolbarOperations(viewId);
 
-	switch(viewId) {
-		case ZmId.VIEW_CAL_DAY:
-		case ZmId.VIEW_CAL_SCHEDULE:
-			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
-			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousDay);
-			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextDay);
-			break;
-		case ZmId.VIEW_CAL_WORK_WEEK:
-			this._miniCalendar.setSelectionMode(DwtCalendar.WORK_WEEK);
-			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWorkWeek);
-			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWorkWeek);
-			break;
-		case ZmId.VIEW_CAL_WEEK:
-			this._miniCalendar.setSelectionMode(DwtCalendar.WEEK);
-			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWeek);
-			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWeek);
-			break;
-		case ZmId.VIEW_CAL_MONTH:
-			// use day until month does something
-			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
-			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousMonth);
-			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextMonth);
-			break;
-		case ZmId.VIEW_CAL_LIST:
-			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
-			break;
-	}
+
 	DBG.timePt("switching selection mode and tooltips");
 
-	if (viewId == ZmId.VIEW_CAL_LIST) {
+    switch(viewId) {
+        case ZmId.VIEW_CAL_DAY:
+            this._viewMgr.getView(viewId).startIndicatorTimer();
+        case ZmId.VIEW_CAL_SCHEDULE:
+            this._viewMgr.getView(viewId).startIndicatorTimer();
+            this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
+            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousDay);
+            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextDay);
+            break;
+        case ZmId.VIEW_CAL_WORK_WEEK:
+            this._viewMgr.getView(viewId).startIndicatorTimer();
+            this._miniCalendar.setSelectionMode(DwtCalendar.WORK_WEEK);
+            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWorkWeek);
+            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWorkWeek);
+            break;
+        case ZmId.VIEW_CAL_WEEK:
+            this._viewMgr.getView(viewId).startIndicatorTimer();
+            this._miniCalendar.setSelectionMode(DwtCalendar.WEEK);
+            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWeek);
+            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWeek);
+            break;
+        case ZmId.VIEW_CAL_MONTH:
+            // use day until month does something
+            this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
+            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousMonth);
+            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextMonth);
+            break;
+        case ZmId.VIEW_CAL_LIST:
+            this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
+            break;
+    }
+    if (viewId == ZmId.VIEW_CAL_LIST) {
 		this._navToolBar[ZmId.VIEW_CAL].setVisible(false);
 	} else {
 		this._navToolBar[ZmId.VIEW_CAL].setVisible(true);
@@ -2641,6 +2646,7 @@ function(parent, num) {
     var appt = this.getSelection()[0];
     var calendar = appt && appt.getFolder();
     var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;
+    num = ( isTrash && this.getCurrentListView() ) ? this.getCurrentListView().getSelectionCount() : num ;
     var isReadOnly = calendar ? calendar.isReadOnly() : false;
     var isSynced = Boolean(calendar && calendar.url);
     var isShared = calendar ? calendar.isRemote() : false;
@@ -2651,14 +2657,14 @@ function(parent, num) {
     var isTrashMultiple = isTrash && (num && num>1);
 
     parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (isReplyable && !isTrashMultiple));
-    parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
+    parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0) || isTrashMultiple);
     parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate && !isTrashMultiple);
     parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable && !isTrashMultiple);
     parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()) && !isTrashMultiple);
     parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null && !isTrashMultiple);
 
 
-    parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], !disabled);
+    parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], !disabled || isTrashMultiple);
 
     parent.enable(ZmOperation.VIEW_APPT_INSTANCE,!isTrash);
 
@@ -2681,6 +2687,12 @@ function(parent, num) {
 
 ZmCalViewController.prototype._listSelectionListener =
 function(ev) {
+
+    /*var selectedItems = this.getSelection();
+    var folder = selectedItems && selectedItems[0].getFolder();
+    var isTrash = folder && folder.nId == ZmOrganizer.ID_TRASH;
+    this._currentView = this.getCurrentListView();*/
+
 	ZmListController.prototype._listSelectionListener.call(this, ev);
     // to avoid conflicts on opening a readonly appointment in readonly view
 	if (ev.detail == DwtListView.ITEM_SELECTED) {
