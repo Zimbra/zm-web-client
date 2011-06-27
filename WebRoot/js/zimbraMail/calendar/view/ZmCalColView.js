@@ -947,7 +947,6 @@ ZmCalColView.prototype.updateTimeIndicator=function(){
 
 ZmCalColView.prototype.startIndicatorTimer=function(){
    if(!this._indicatorTimer){
-    console.log((ZmCalColView.timerCounter++));
     this._indicatorTimer = this.updateTimeIndicator();
    }
 }
