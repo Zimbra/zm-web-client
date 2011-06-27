@@ -647,6 +647,16 @@ INPUT[type="text"].search_input {
 	font-weight: bold;
 }
 
+.ZmMailMsgCapsuleView .Expand {
+	cursor: pointer;
+}
+
+.ZmMailMsgCapsuleView .Link {
+	cursor: pointer;
+	color: blue;
+/*	text-decoration: underline;*/
+	margin-right: 10px;
+}
 
 /* the sash next to overview does not need borders or a background color */
 .console_inset_app_l .DwtHorizontalSash {

@@ -52,30 +52,30 @@ ZmMailListController = function(container, mailApp) {
 	ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.FORWARD_INLINE]	= ZmOperation.FORWARD_INLINE;
 	ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.FORWARD_ATT]	= ZmOperation.FORWARD_ATT;
 
-	this._listeners[ZmOperation.MARK_READ] = new AjxListener(this, this._markReadListener);
-	this._listeners[ZmOperation.MARK_UNREAD] = new AjxListener(this, this._markUnreadListener);
+	this._listeners[ZmOperation.MARK_READ] = this._markReadListener.bind(this);
+	this._listeners[ZmOperation.MARK_UNREAD] = this._markUnreadListener.bind(this);
 	//fixed bug:15460 removed reply and forward menu.
 	if (appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
-		this._listeners[ZmOperation.REPLY] = new AjxListener(this, this._replyListener);
-		this._listeners[ZmOperation.REPLY_ALL] = new AjxListener(this, this._replyListener);
+		this._listeners[ZmOperation.REPLY] = this._replyListener.bind(this);
+		this._listeners[ZmOperation.REPLY_ALL] = this._replyListener.bind(this);
 	}
 
 	if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
-		this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
+		this._listeners[ZmOperation.FORWARD] = this._forwardListener.bind(this);
 	}
-	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
-	this._listeners[ZmOperation.EDIT_AS_NEW] = new AjxListener(this, this._editListener);
+	this._listeners[ZmOperation.EDIT] = this._editListener.bind(this);
+	this._listeners[ZmOperation.EDIT_AS_NEW] = this._editListener.bind(this);
 
 	if (appCtxt.get(ZmSetting.SPAM_ENABLED)) {
-		this._listeners[ZmOperation.SPAM] = new AjxListener(this, this._spamListener);
+		this._listeners[ZmOperation.SPAM] = this._spamListener.bind(this);
 	}
 
-	this._listeners[ZmOperation.DETACH] = new AjxListener(this, this._detachListener);
-	this._inviteReplyListener = new AjxListener(this, this._inviteReplyHandler);
-	this._shareListener = new AjxListener(this, this._shareHandler);
+	this._listeners[ZmOperation.DETACH] = this._detachListener.bind(this);
+	this._inviteReplyListener = this._inviteReplyHandler.bind(this);
+	this._shareListener = this._shareHandler.bind(this);
 
-	this._acceptShareListener = new AjxListener(this, this._acceptShareHandler);
-	this._declineShareListener = new AjxListener(this, this._declineShareHandler);
+	this._acceptShareListener = this._acceptShareHandler.bind(this);
+	this._declineShareListener = this._declineShareHandler.bind(this);
 };
 
 ZmMailListController.prototype = new ZmListController;
@@ -687,9 +687,8 @@ function() {
  */
 ZmMailListController.prototype._enableReadUnreadToolbarActions =
 function() {
-	var status = this._getReadStatus();
 	var menu = this._getCurrentToolbar().getActionsMenu();
-	this._enableFlags(menu, status.hasUnread, status.hasRead);
+	this._enableFlags(menu);
 };
 
 ZmMailListController.prototype._actionsButtonListener =
@@ -725,11 +724,6 @@ function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 	var folder = this._getSearchFolder();
 
-	// enable/disable mark as read/unread as necessary
-	var readStatus = this._getReadStatus();
-	var hasRead = readStatus.hasRead;
-	var hasUnread = readStatus.hasUnread;
-
 	// bug fix #3602
 	var address = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && ev.field == ZmItem.F_PARTICIPANT)
 		? ev.detail
@@ -755,7 +749,7 @@ function(ev) {
 		this._actionEv.address = address;
 		this._setupSpamButton(this._participantActionMenu);
 		this._resetOperations(this._participantActionMenu, items.length);
-		this._enableFlags(this._participantActionMenu, hasUnread, hasRead);
+		this._enableFlags(this._participantActionMenu);
 		var imItem = this._participantActionMenu.getOp(ZmOperation.IM);
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		if (contactsApp) {
@@ -784,7 +778,7 @@ function(ev) {
 	} else {
 		var actionMenu = this.getActionMenu();
 		this._setupSpamButton(actionMenu);
-		this._enableFlags(actionMenu, hasUnread, hasRead);
+		this._enableFlags(actionMenu);
 		actionMenu.popup(0, ev.docX, ev.docY);
 		if (ev.ersatz) {
 			// menu popped up via keyboard nav
@@ -1737,12 +1731,14 @@ function(parent) {
 
 // Enable mark read/unread as appropriate.
 ZmMailListController.prototype._enableFlags =
-function(menu, hasUnread, hasRead) {
+function(menu) {
+
+	var status = this._getReadStatus();
 	menu.enable([ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD], true);
-	if (!hasUnread) {
+	if (!status.hasUnread) {
 		menu.enable(ZmOperation.MARK_READ, false);
 	}
-	if (!hasRead) {
+	if (!status.hasRead) {
 		menu.enable(ZmOperation.MARK_UNREAD, false);
 	}
 };

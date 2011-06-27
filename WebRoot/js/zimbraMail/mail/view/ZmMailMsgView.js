@@ -918,13 +918,14 @@ function(container, html, isTextMsg, isTruncated) {
 		}
 	}
 
+	this._msgBodyDivId = ZmId.getViewId(this._viewId, ZmId.MV_MSG_BODY, this._mode);
 	// bug fix #9475 - IE isnt resolving MsgBody class in iframe so set styles explicitly
 	var inner_styles = AjxEnv.isIE ? ".MsgBody-text, .MsgBody-text * { font: 10pt monospace; }" : "";
 	var params = {
 		parent:					this,
 		parentElement:			container,
 		className:				this._getBodyClass(),
-		id:						ZmId.getViewId(this._viewId, ZmId.MV_MSG_BODY, this._mode),
+		id:						this._msgBodyDivId,
 		hidden:					true,
 		html:					html,
 		styles:					inner_styles,
@@ -1124,6 +1125,7 @@ function(msg, container, callback) {
 	
 	this._renderMessageHeader(msg, container);
 	this._renderMessageBody(msg, container, callback);
+	this._renderMessageFooter(msg, container);
 };
 
 ZmMailMsgView.prototype._renderMessageHeader =
@@ -1509,6 +1511,8 @@ function(el, bodyPart, callback, result, isTruncated) {
 	if (callback) { callback.run(); }
 	
 };
+
+ZmMailMsgView.prototype._renderMessageFooter = function(msg, container) {};
 
 ZmMailMsgView.prototype._setTags =
 function(msg) {

@@ -379,13 +379,8 @@ function(params, callback) {
 	if (item) {
 		params.markRead = (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
 		if (item.type == ZmItem.CONV) {
-			if (this._currentView == ZmId.VIEW_CONVLIST2) {
-				callback.run(item);
-			}
-			else {
-				var respCallback = new AjxCallback(this, this._handleResponseGetLoadedMsg, callback);
-				item.getFirstHotMsg(params, respCallback);
-			}
+			var respCallback = new AjxCallback(this, this._handleResponseGetLoadedMsg, callback);
+			item.getFirstHotMsg(params, respCallback);
 		} else if (item.type == ZmItem.MSG) {
 			ZmDoublePaneController.prototype._getLoadedMsg.apply(this, arguments);
 		}

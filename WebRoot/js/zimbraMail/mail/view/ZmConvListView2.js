@@ -81,6 +81,11 @@ ZmConvListView2.prototype.toString = function() { return "ZmConvListView2"; };
 ZmConvListView2.prototype._changeFolderName = ZmMailMsgListView.prototype._changeFolderName;
 ZmConvListView2.prototype._changeTrashStatus = ZmMailMsgListView.prototype._changeTrashStatus;
 
+// See if we've been rigged to return a particular msg
+ZmConvListView2.prototype.getSelection =
+function() {
+	return this._selectedMsg ? [this._selectedMsg] : ZmMailListView.prototype.getSelection.apply(this, arguments);
+};
 
 // Enter is normally a list view widget shortcut for DBLCLICK; we need to no-op
 // it here so that it gets handled as an app shortcut (app shortcuts happen
@@ -100,7 +105,6 @@ ZmConvListView2.prototype._initHeaders =
 function() {
 	if (!this._headerInit) {
 		ZmMailListView.prototype._initHeaders.call(this);
-//		this._headerInit[ZmItem.F_EXPAND]	= {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand};
         //bug:45171 removed sorted from converstaion for FROM field
         this._headerInit[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_CLV, resizeable:true};
 	}

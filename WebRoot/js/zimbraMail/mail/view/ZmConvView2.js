@@ -12,15 +12,24 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
-
 ZmConvView2 = function(params) {
 
 	params.className = params.className || "ZmConvView2";
-//	params.className = params.className || "ZmMailMsgView";
 	ZmMailItemView.call(this, params);
 
 	this._mode = params.mode;
 	this._controller = params.controller;
+
+	// A single action menu is shared by the msgs in this conv
+	var opList = this._controller._getActionMenuOps();
+	var menu = this._actionsMenu = new ZmActionMenu({parent:appCtxt.getShell(), menuItems: opList, context: this._mode});
+	for (var i = 0; i < opList.length; i++) {
+		var menuItem = opList[i];
+		if (this._controller._listeners[menuItem]) {
+			var listener = this._listenerProxy.bind(this, this._controller._listeners[menuItem], menu.getOp(menuItem));
+			menu.addSelectionListener(menuItem, listener, 0);
+		}
+	}
 };
 
 ZmConvView2.prototype = new ZmMailItemView;
@@ -49,7 +58,6 @@ function(conv, force) {
 		this.noTab = true;
 		return;
 	}
-	
 	this._renderConv(conv, this._handleResponseSet.bind(this, conv, oldConv));
 };
 
@@ -94,17 +102,27 @@ function(conv, container) {
 		parent:			this,
 		parentElement:	container,
 		controller:		this._controller,
-		mode:			this._mode
+		mode:			this._mode,
+		isSolo:			(msgs.length == 1)
 	}
 	var isOdd = true;
 	for (var i = 0, len = msgs.length; i < len; i++) {
 		var msg = msgs[i];
-		params.msg = msg;
+		params.msgId = msg.id;
 		params.isOdd = isOdd;
+		params.actionsMenu = this._actionsMenu;
 		var msgView = new ZmMailMsgCapsuleView(params);
 		msgView.set(msg);
 		isOdd = !isOdd;
 	}
+};
+
+ZmConvView2.prototype._listenerProxy =
+function(listener, item, ev) {
+	this._controller._mailListView._selectedMsg = this.msg;
+	var retVal = listener.handleEvent ? listener.handleEvent(ev) : listener(ev);
+	this._controller._mailListView._selectedMsg = null;
+	return retVal;
 };
 
 ZmConvView2.prototype.addInviteReplyListener =
@@ -127,19 +145,24 @@ function(newMsg) {
 };
 
 
-
+/**
+ * 
+ * 
+ * @param params
+ */
 ZmMailMsgCapsuleView = function(params) {
 
-//	params.className = (params.className || "ZmMailMsgCapsuleView") + " " + (params.isOdd ? "OddMsg" : "EvenMsg");
 	params.className = params.className || "ZmMailMsgCapsuleView";
-	params.id = ZmId.getViewId(this._viewId, params.msg.id, this._mode);
-	this.msg = params.msg;
+	this._msgId = params.msgId;
+	params.id = this._getViewId();
 	ZmMailMsgView.call(this, params);
 
 	this._isOdd = params.isOdd;
 	this._mode = params.mode;
 	this._controller = params.controller;
 	this._container = params.container;
+	this._isSolo = params.isSolo;
+	this._actionsMenu = params.actionsMenu;
 };
 
 ZmMailMsgCapsuleView.prototype = new ZmMailMsgView;
@@ -150,7 +173,7 @@ ZmMailMsgCapsuleView.prototype.toString = function() { return "ZmMailMsgCapsuleV
 
 ZmMailMsgCapsuleView.prototype._getViewId =
 function() {
-	return ZmId.VIEW_MSG_CAPSULE + this.msg.id;
+	return ZmId.VIEW_MSG_CAPSULE + this._msgId;
 };
 
 ZmMailMsgCapsuleView.prototype._getContainer =
@@ -158,27 +181,122 @@ function() {
 	return this._container;
 };
 
+ZmMailMsgCapsuleView.prototype.set =
+function(msg, force) {
+	this._expanded = this._isSolo || msg.isUnread;
+	ZmMailMsgView.prototype.set.apply(this, arguments);
+};
+
+ZmMailMsgCapsuleView.prototype._renderMessage =
+function(msg, container, callback) {
+	
+	if (this._expanded) {
+		this._renderMessageHeader(msg, container);
+		this._renderMessageBody(msg, container, callback);
+		this._renderMessageFooter(msg, container);
+	}
+	else {
+		this._renderMessageHeader(msg, container);
+	}
+};
+
 ZmMailMsgCapsuleView.prototype._renderMessageHeader =
 function(msg, container) {
 
+	this._tableRowId = Dwt.getNextId();
+	this._expandIconId = Dwt.getNextId();
+
+	var expandIcon = AjxImg.getImageHtml("NodeCollapsed", null, ["id='", this._expandIconId, "'"].join(""));
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
 	var dateString = msg.sentDate ? dateFormatter.format(new Date(msg.sentDate)) : dateFormatter.format(new Date(msg.date));
+
+	this._headerId = ZmId.getViewId(this._viewId, ZmId.MV_MSG_HEADER, this._mode);
+	
 	var subs = {
-		id:				this._htmlElId,
-		headerClass:	this._isOdd ? "OddMsg" : "EvenMsg",
-		unreadClass:	this.msg.isUnread ? "Unread" : "",
-		expandIcon:		AjxImg.getImageHtml("NodeCollapsed"),
+		headerId:		this._headerId,
+		parityClass:	this._isOdd ? "OddMsg" : "EvenMsg",
+		tableRowId:		this._tableRowId,
+		unreadClass:	this._msg.isUnread ? "Unread" : "",
+		expandIcon:		expandIcon,
 		from:			msg.getAddress(AjxEmailAddress.FROM).toString(true),
 		date:			dateString
 	}
 	var html = AjxTemplate.expand("mail.Message#Conv2MsgHeader", subs);
 	this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
+	
+	var expandIcon = document.getElementById(this._expandIconId);
+	if (expandIcon) {
+		expandIcon.onclick = this._toggleExpansion.bind(this);
+	}
 };
 
 ZmMailMsgCapsuleView.prototype._getBodyContent =
 function(bodyPart) {
 	var chunks =  AjxStringUtil.getTopLevel(bodyPart.content);
 	return chunks[0];
+};
+
+ZmMailMsgCapsuleView.prototype._renderMessageFooter =
+function(msg, container) {
+	
+	this._buttonCellId = Dwt.getNextId();
+	var replyLinkId = Dwt.getNextId();
+	this._footerId = ZmId.getViewId(this._viewId, ZmId.MV_MSG_FOOTER, this._mode);
+
+	var subs = {
+		footerId:		this._footerId,
+		parityClass:	this._isOdd ? "OddMsg" : "EvenMsg",
+		replyLinkId:	replyLinkId,
+		buttonCellId:	this._buttonCellId
+	}
+	var html = AjxTemplate.expand("mail.Message#Conv2MsgFooter", subs);
+	this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
+	
+	var replyLink = document.getElementById(replyLinkId);
+	if (replyLink) {
+		replyLink.onclick = this._handleReplyLink.bind(this);
+	}
+	
+	var buttonId = ZmId.getButtonId(this._mode, this._msg.id, ZmId.OP_ACTIONS_MENU);
+	var ab = this._actionsButton = new DwtButton({parent:this, id:buttonId});
+	ab.setImage("Preferences");
+	ab.setMenu(this._actionsMenu);
+	ab.reparentHtmlElement(this._buttonCellId);
+	ab.addDropDownSelectionListener(this._setActionMenu.bind(this));
+	
+	this._resetOperations();
+};
+
+ZmMailMsgCapsuleView.prototype._setActionMenu =
+function(ev) {
+	this._actionsMenu.parent = this._actionsButton;
+	this._actionsButton._toggleMenu();
+};
+
+/**
+ * Expand the msg view by hiding/showing the body and footer. If the msg hasn't
+ * been rendered, we need to render it to expand it.
+ */
+ZmMailMsgCapsuleView.prototype._toggleExpansion =
+function() {
+	
+	var body = document.getElementById(this._msgBodyDivId);
+	var footer = document.getElementById(this._footerId);
+	if (this._expanded) {
+		Dwt.setVisible(body, false);
+		Dwt.setVisible(footer, false);
+	}
+	else {
+		if (body && footer) {
+			Dwt.setVisible(body, true);
+			Dwt.setVisible(footer, true);
+		}
+		else {
+			this.getHtmlElement().innerHTML = "";
+			this._renderMessage(this._msg);
+		}
+	}
+	this._expanded = !this._expanded;
 };
 
 ZmMailMsgCapsuleView.prototype._setTags =
@@ -188,4 +306,48 @@ function(msg) {
 ZmMailMsgCapsuleView.prototype._getBodyClass =
 function() {
 	return "MsgBody " + (this._isOdd ? "OddMsg" : "EvenMsg");
+};
+
+ZmMailMsgCapsuleView.prototype._handleReplyLink =
+function(listener, item, ev) {
+	this._controller._mailListView._selectedMsg = this._msg;
+	this._controller._doAction({action:ZmOperation.REPLY});
+	this._controller._mailListView._selectedMsg = null;
+};
+
+ZmMailMsgCapsuleView.prototype._msgChangeListener =
+function(ev) {
+
+	if (ev.type != ZmEvent.S_MSG) { return; }
+
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
+		
+	}
+	else if (ev.event == ZmEvent.E_FLAGS) {
+		var flags = ev.getDetail("flags");
+		for (var j = 0; j < flags.length; j++) {
+			var flag = flags[j];
+			if (flag == ZmItem.FLAG_UNREAD) {
+				var row = document.getElementById(this._tableRowId);
+				if (row) {
+					var on = this._msg[ZmItem.FLAG_PROP[flag]];
+					row.className = on ? "Unread" : "";
+				}
+			}
+		}
+	}
+	else {
+		ZmMailMsgView.prototype._msgChangeListener.apply(this, arguments);
+	}
+
+	this._resetOperations();
+};
+
+ZmMailMsgCapsuleView.prototype._resetOperations =
+function() {
+	this._controller._mailListView._selectedMsg = this._msg;
+	this._controller._resetOperations(this._actionsMenu, 1);
+	this._actionsMenu.enable(ZmOperation.MARK_READ, this._msg.isUnread);
+	this._actionsMenu.enable(ZmOperation.MARK_UNREAD, !this._msg.isUnread);
+	this._controller._mailListView._selectedMsg = null;
 };

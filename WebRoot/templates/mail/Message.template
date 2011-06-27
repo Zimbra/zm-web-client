@@ -585,18 +585,32 @@
 </template>
 
 <template id='mail.Message#Conv2MsgHeader'>
-	<div class='${headerClass}'>
-		<table class='MsgHeaderTable' id='${id}_headerElement' cellspacing=0 cellpadding=0 border=0 width=100%>
-			<tr>
+	<div id='${headerId}' class='${parityClass}'>
+		<table class='MsgHeaderTable' cellspacing=0 cellpadding=0 border=0 width=100%>
+			<tr id='${tableRowId}' class='${unreadClass}'>
 				<td>&nbsp;</td>
-				<td width=16>${expandIcon}</td>
-				<td class='LabelColValue ${unreadClass}' valign=top width=100%>
+				<td class='Expand' width=16>${expandIcon}</td>
+				<td class='LabelColValue' width=100%>
 					<$= data.from $>
 				</td>
-				<td class='LabelColValue DateCol ${unreadClass}' align=right>${date}</td>
+				<td class='LabelColValue DateCol' align=right>${date}</td>
 				<td>&nbsp;</td>
 			</tr>
 		</table>
 	</div>
 </template>
-	
+
+<template id='mail.Message#Conv2MsgFooter'>
+	<div id='${footerId}' class='${parityClass}'>
+		<table class='MsgHeaderTable' cellspacing=0 cellpadding=0 border=0 width=100%>
+			<tr>
+				<td width=100%>&nbsp;</td>
+				<td align=right>
+					<a class='Link' id='${replyLinkId}'><$= ZmMsg.reply $></a>
+				</td>
+				<td id='${buttonCellId}' align=right></td>
+				<td>&nbsp;</td>
+			</tr>
+		</table>
+	</div>
+</template>
