@@ -1030,6 +1030,7 @@ function() {
 		appCtxt.getAppController().appRendered(this._name);
 		this._hasRendered = true;
 	}
+	this.stopAlert();
 };
 
 /**
