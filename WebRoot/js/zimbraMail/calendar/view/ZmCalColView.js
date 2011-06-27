@@ -918,7 +918,7 @@ function(abook) {
 	}
 	this._scrollToTime(8);
 };
-ZmCalColView.timerCounter=0;
+
 ZmCalColView.prototype.setTimer=function(min){
     var period = min*60*1000;
     return AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.updateTimeIndicator), period);
