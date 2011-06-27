@@ -480,12 +480,12 @@ INPUT[type="text"].search_input {
 }
 
 
-.Tag {
+.TagBubble {
 	@NoWrap@ display:inline-block; vertical-align:middle; cursor:pointer;
 }
 
-.Tag .TagName,
-.Tag .ImgBubbleDelete {
+.TagBubble .TagName,
+.TagBubble .ImgBubbleDelete {
 	display:inline-block; vertical-align:middle;
 }
 
