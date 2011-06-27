@@ -1038,8 +1038,10 @@ function(items, view, skipNotify, id) {
 	} else {
 		newList = items;
 	}
-
-	DwtChooser.prototype.addItems.call(this, newList, view, skipNotify, id);
+    if(this.parent.type == ZmCalBaseItem.LOCATION && newList.length <= 0) {
+        this.sourceListView.setUI(null, false);
+    }
+    DwtChooser.prototype.addItems.call(this, newList, view, skipNotify, id);
 };
 
 ZmApptChooser.prototype._createSourceListView =
