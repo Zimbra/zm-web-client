@@ -2111,7 +2111,7 @@ function(ev) {
 	var version = this._getVersion();
 	var release = appCtxt.get(ZmSetting.CLIENT_RELEASE);
 	var aboutMsg = appCtxt.isOffline ? ZmMsg.aboutMessageZD : ZmMsg.aboutMessage;
-	dialog.setMessage(AjxMessageFormat.format(aboutMsg, [version, release]), DwtMessageDialog.INFO_STYLE, "About");
+	dialog.setMessage(AjxMessageFormat.format(aboutMsg, [version, release]), DwtMessageDialog.INFO_STYLE, ZmMsg.about);
 	dialog.popup();
 
 };
