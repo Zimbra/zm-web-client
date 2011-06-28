@@ -65,7 +65,7 @@
  
 #skin_spacing_app_row					{ 
 /*	background-color:@AppC@; 
-	background-image: url("@SkinImgDir@/vmwareLogo.png");
+	background-image: url("@SkinImgDir@/vmwareLogo.png?v=@jsVersion@");
 	background-position: right center;
 	background-repeat:no-repeat; */
 	padding:0px 7px;

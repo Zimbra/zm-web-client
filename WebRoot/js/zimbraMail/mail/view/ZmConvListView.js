@@ -41,16 +41,18 @@ ZmConvDoublePaneView = function(params) {
 ZmConvDoublePaneView.prototype = new ZmDoublePaneView;
 ZmConvDoublePaneView.prototype.constructor = ZmConvDoublePaneView;
 
-ZmConvDoublePaneView.prototype.toString = 
-function() {
-	return "ZmConvDoublePaneView";
-};
+ZmConvDoublePaneView.prototype.isZmConvDoublePaneView = true;
+ZmConvDoublePaneView.prototype.toString = function() { return "ZmConvDoublePaneView"; };
 
 ZmConvDoublePaneView.prototype._createMailListView =
 function(params) {
-	params.parent = this;
-	params.posStyle = Dwt.ABSOLUTE_STYLE;
 	return new ZmConvListView(params);
+};
+
+ZmConvDoublePaneView.prototype._createMailItemView =
+function(params) {
+	params.id = ZmId.getViewId(ZmId.VIEW_MSG, null, params.view);
+	return new ZmMailMsgView(params);
 };
 
 /**
@@ -193,7 +195,8 @@ function() {
 	if (!this._headerInit) {
 		ZmMailListView.prototype._initHeaders.call(this);
 		this._headerInit[ZmItem.F_EXPAND]	= {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand};
-		this._headerInit[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_CLV, resizeable:true};
+        //bug:45171 removed sorted from converstaion for FROM field
+        this._headerInit[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_CLV, resizeable:true};
 	}
 };
 
@@ -737,11 +740,8 @@ function(columnItem, bSortAsc, callback) {
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
 
 	var query;
-	if (this._columnHasCustomQuery(columnItem))
-	{
-		query = this._getSearchForSort(columnItem._sortable);
-	}
-	else if (this.getList().size() > 1 && this._sortByString) {
+	var list = this.getList();
+	if (list && list.size() > 1 && this._sortByString) {
 		query = this._controller.getSearchString();
 	}
 
@@ -758,11 +758,6 @@ function(columnItem, bSortAsc, callback) {
 		};
 		appCtxt.getSearchController().search(params);
 	}
-};
-
-ZmConvListView.prototype._columnHasCustomQuery =
-function(columnItem) {
-	return (columnItem._sortable == ZmItem.F_FLAG || columnItem._sortable == ZmItem.F_ATTACHMENT);
 };
 
 ZmConvListView.prototype._changeListener =
