@@ -24,14 +24,12 @@
  */
 AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
 
-AjxPackage.require("zimbraMail.mail.view.ZmRecipients");
 AjxPackage.require("zimbraMail.mail.view.ZmComposeView");
 AjxPackage.require("zimbraMail.mail.view.ZmConvView");
 AjxPackage.require("zimbraMail.mail.view.ZmMailAssistant");
 AjxPackage.require("zimbraMail.mail.view.ZmAttachmentsView");
 AjxPackage.require("zimbraMail.mail.view.ZmMailConfirmView");
 AjxPackage.require("zimbraMail.mail.view.ZmSelectAddrDialog");
-AjxPackage.require("zimbraMail.mail.view.ZmMailRedirectDialog");
 
 AjxPackage.require("zimbraMail.mail.controller.ZmComposeController");
 AjxPackage.require("zimbraMail.mail.controller.ZmMsgController");

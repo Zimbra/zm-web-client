@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- *
+ * Copyright (C) 2010, 2011 Zimbra, Inc.
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -117,7 +117,7 @@ ZmFreeBusySchedulerView.ROLE_OPTIONS = {};
 ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalBaseItem.PERSON]          = { label: ZmMsg.requiredAttendee, 			value: ZmCalBaseItem.PERSON, 	        image: "AttendeesRequired" };
 ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalItem.ROLE_OPTIONAL]       = { label: ZmMsg.optionalAttendee, 			value: ZmCalItem.ROLE_OPTIONAL, 	image: "AttendeesOptional" };
 ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalBaseItem.LOCATION]        = { label: ZmMsg.location, 			        value: ZmCalBaseItem.LOCATION, 	        image: "Location" };
-ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalBaseItem.EQUIPMENT]       = { label: ZmMsg.equipmentAttendee, 			value: ZmCalBaseItem.EQUIPMENT, 	    image: "Resource" };
+ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalBaseItem.EQUIPMENT]       = { label: ZmMsg.resourceAttendee, 			value: ZmCalBaseItem.EQUIPMENT, 	    image: "Resource" };
 
 // Hold on to this one separately because we use it often
 ZmFreeBusySchedulerView.FREE_CLASS = ZmFreeBusySchedulerView.STATUS_CLASSES[ZmFreeBusySchedulerView.STATUS_FREE];

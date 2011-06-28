@@ -67,9 +67,6 @@ ZmAppEvent.POST_RENDER	= "POSTRENDER";
 
 ZmAppEvent.ACTIVATE	= "ACTIVATE";
 
-// Triggered after processing of an async response finishes
-ZmAppEvent.RESPONSE = "RESPONSE";
-
 /**
  * Returns a string representation of the object.
  * 
