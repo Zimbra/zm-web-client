@@ -372,6 +372,10 @@ function(ev){
     	return;
     }
 
+    var cs = appCtxt.isOffline && appCtxt.getCurrentSearch();
+    if (cs) {
+        appCtxt.accountList.setActiveAccount(item.getAccount());
+    }
     var noChange = ev && ev._details && ev._details.oldFolderId == item.folderId;
     if ((ev.event == ZmEvent.E_MOVE && noChange) || ev.event == ZmEvent.E_DELETE)
         return;
