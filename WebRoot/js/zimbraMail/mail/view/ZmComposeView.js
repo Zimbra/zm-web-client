@@ -57,7 +57,8 @@ ZmComposeView = function(parent, controller, composeMode) {
     var resetBodySize = this._resetBodySize.bind(this);
     var enableInputs  = this.enableInputs.bind(this);
     var reenter       = this.reEnableDesignMode.bind(this);
-    this._recipients = new ZmRecipients(this._controller, resetBodySize, enableInputs, reenter);
+    this._recipients = new ZmRecipients(resetBodySize, enableInputs, reenter,
+                                        this._controller._dialogPopdownListener);
 	this._initialize(composeMode);
 
 	// make sure no unnecessary scrollbars show up

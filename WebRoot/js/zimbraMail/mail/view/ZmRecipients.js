@@ -14,7 +14,8 @@
  */
 
 
-ZmRecipients = function(controller, resetContainerSizeMethod, enableContainerInputs, reenter) {
+ZmRecipients = function(resetContainerSizeMethod, enableContainerInputs, reenter,
+                        contactPopdownListener) {
 
     //DwtComposite.call(this, {parent:parent, posStyle:posStyle, className:className, id:uid});
 
@@ -30,15 +31,36 @@ ZmRecipients = function(controller, resetContainerSizeMethod, enableContainerInp
         this._addrInputField = {};
     }
 
-    this._controller = controller;
     this._resetContainerSize = resetContainerSizeMethod;
     this._enableContainerInputs = enableContainerInputs;
     this._reenter = reenter;
+    this._contactPopdownListener = contactPopdownListener;
+
+    this._bubbleOps = {};
+    this._bubbleOps[AjxEmailAddress.TO]  = ZmOperation.MOVE_TO_TO;
+    this._bubbleOps[AjxEmailAddress.CC]  = ZmOperation.MOVE_TO_CC;
+    this._bubbleOps[AjxEmailAddress.BCC] = ZmOperation.MOVE_TO_BCC;
+    this._opToField = {};
+    this._opToField[ZmOperation.MOVE_TO_TO]  = AjxEmailAddress.TO;
+    this._opToField[ZmOperation.MOVE_TO_CC] = AjxEmailAddress.CC;
+    this._opToField[ZmOperation.MOVE_TO_BCC] = AjxEmailAddress.BCC;
+
+
 };
 
 ZmRecipients.prototype.attachFromSelect =
 function(fromSelect) {
     this._fromSelect = fromSelect;
+}
+
+ZmRecipients.prototype.createRecipientIds =
+function(htmlElId, typeStr) {
+    var ids = {};
+    var components = ["row", "picker", "control", "cell"];
+    for (var i = 0; i < components.length; i++) {
+        ids[components[i]] = [htmlElId, typeStr, components[i]].join("_")
+    }
+    return ids;
 }
 
 
@@ -69,9 +91,10 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 		var typeStr = AjxEmailAddress.TYPE_STRING[type];
 
 		// save identifiers
-		this._divId[type] = [htmlElId, typeStr, "row"].join("_");
-		this._buttonTdId[type] = [htmlElId, typeStr, "picker"].join("_");
-		var inputId = this._fieldId[type] = [htmlElId, typeStr, "control"].join("_");
+        var ids = this.createRecipientIds(htmlElId, typeStr);
+		this._divId[type] = ids.row;
+		this._buttonTdId[type] = ids.picker;
+		var inputId = this._fieldId[type] = ids.control;
 
 		// save field elements
 		this._divEl[type] = document.getElementById(this._divId[type]);
@@ -89,8 +112,7 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 			}
 			var aif = this._addrInputField[type] = new ZmAddressInputField(aifParams);
 			aifId = aif._htmlElId;
-			var cellId = [htmlElId, typeStr, "cell"].join("_");
-			aif.reparentHtmlElement(cellId);
+			aif.reparentHtmlElement(ids.cell);
 		}
 
 		// save field control
@@ -128,10 +150,12 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 	}
 
 	// Toggle BCC
-	this._toggleBccEl = document.getElementById(bccToggleId);
-	if (this._toggleBccEl) {
-		Dwt.setHandler(this._toggleBccEl, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleBccField, this));
-	}
+    if (bccToggleId){
+        this._toggleBccEl = document.getElementById(bccToggleId);
+        if (this._toggleBccEl) {
+            Dwt.setHandler(this._toggleBccEl, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleBccField, this));
+        }
+    }
 }
 
 ZmRecipients.prototype.reset =
@@ -168,10 +192,16 @@ function(account) {
 ZmRecipients.prototype.setup =
 function() {
     // reset To/Cc/Bcc fields
-    this._showAddressField(AjxEmailAddress.TO, true, true, true);
-    this._showAddressField(AjxEmailAddress.CC, true, true, true);
-    //Set BCC Field to Default
-    this._toggleBccField(null, appCtxt.get(ZmSetting.SHOW_BCC));
+    if (this._field[AjxEmailAddress.TO]) {
+        this._showAddressField(AjxEmailAddress.TO, true, true, true);
+    }
+    if (this._field[AjxEmailAddress.CC]) {
+        this._showAddressField(AjxEmailAddress.CC, true, true, true);
+    }
+    if (this._field[AjxEmailAddress.BCC]) {
+        //Set BCC Field to Default
+        this._toggleBccField(null, appCtxt.get(ZmSetting.SHOW_BCC));
+    }
 }
 
 ZmRecipients.prototype.getField =
@@ -380,11 +410,11 @@ function(ev, addrTypet) {
 
 	if (!this._contactPicker) {
 		AjxDispatcher.require("ContactsCore");
-		var buttonInfo = [
-			{ id: AjxEmailAddress.TO,	label: ZmMsg[AjxEmailAddress.TYPE_STRING[AjxEmailAddress.TO]] },
-			{ id: AjxEmailAddress.CC,	label: ZmMsg[AjxEmailAddress.TYPE_STRING[AjxEmailAddress.CC]] },
-			{ id: AjxEmailAddress.BCC,	label: ZmMsg[AjxEmailAddress.TYPE_STRING[AjxEmailAddress.BCC]] }
-		];
+		var buttonInfo = [];
+        for (var i = 0; i < this._fieldNames.length; i++) {
+            buttonInfo[i] = { id: this._fieldNames[i],
+                              label : ZmMsg[AjxEmailAddress.TYPE_STRING[this._fieldNames[i]]]};
+        }
 		this._contactPicker = new ZmContactPicker(buttonInfo);
 		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOkCallback, this);
 		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancelCallback, this);
@@ -398,7 +428,7 @@ function(ev, addrTypet) {
 		addrList[type] = this._useAcAddrBubbles ? this._addrInputField[type].getAddresses(true) :
 				   								  addrs[type] && addrs[type].good.getArray();
 	}
-	this._contactPicker.addPopdownListener(this._controller._dialogPopdownListener);
+	this._contactPicker.addPopdownListener(this._contactPopdownListener);
 	var str = (this._field[curType].value && !(addrList[curType] && addrList[curType].length))
 		? this._field[curType].value : "";
 
@@ -518,23 +548,25 @@ function(addrInput, menu) {
 	if (!this._useAcAddrBubbles) { return; }
 
 	this._bubbleActionMenu = menu;
+    if (this._fieldNames.length > 1) {
+        menu.addOp(ZmOperation.SEP);
+        var listener = new AjxListener(this, this._bubbleMove);
 
-	menu.addOp(ZmOperation.SEP);
-	var ops = [ZmOperation.MOVE_TO_TO, ZmOperation.MOVE_TO_CC, ZmOperation.MOVE_TO_BCC];
-	var listener = new AjxListener(this, this._bubbleMove);
-	for (var i = 0; i < ops.length; i++) {
-		menu.addOp(ops[i]);
-		menu.addSelectionListener(ops[i], listener);
-	}
+        for (var i = 0; i < this._fieldNames.length; i++) {
+            var type = this._fieldNames[i];
+            var op = this._bubbleOps[type];
+            menu.addOp(op);
+            menu.addSelectionListener(op, listener);
+        }
+    }
 };
 
 ZmRecipients.prototype._bubbleMenuResetOperations =
 function(addrInput, menu) {
 	var sel = addrInput.getSelection();
-	var ops = [ZmOperation.MOVE_TO_TO, ZmOperation.MOVE_TO_CC, ZmOperation.MOVE_TO_BCC];
-	for (var i = 0; i < ops.length; i++) {
-		var op = ops[i];
-		var type = ZmComposeView.MOVE_TO_FIELD[op];
+    for (var i = 0; i < this._fieldNames.length; i++) {
+        var type = this._fieldNames[i];
+		var op = this._bubbleOps[type];
 		menu.enable(op, sel.length > 0 && (type != addrInput.type));
 	}
 };
@@ -544,7 +576,7 @@ function(ev) {
 
 	var sourceInput = ZmAddressInputField.menuContext.addrInput;
 	var op = ev && ev.item && ev.item.getData(ZmOperation.KEY_ID);
-	var type = ZmComposeView.MOVE_TO_FIELD[op];
+	var type = this._opToField[op];
 	var targetInput = this._addrInputField[type];
 	if (sourceInput && targetInput) {
 		var sel = sourceInput.getSelection();
@@ -621,14 +653,17 @@ function(addrs) {
 	for (var i = 0; i < this._fieldNames.length; i++) {
 		var type = this._fieldNames[i];
 		this.setAddress(type, "");
-		this.addAddresses(type, addrs[type]);
+        // If there was only one button, the picker will just return the list of selections,
+        // not a list per button type
+        var typeAddrs = (this._fieldNames.length == 1) ? addrs :  addrs[type];
+		this.addAddresses(type, typeAddrs);
 	}
 
 	//I still need this here since REMOVING stuff with the picker does not call removeBubble in the ZmAddresInputField.
 	//Also - it's better to do it once than for every bubble in this case. user might add many addresses with the picker
 	this._bubblesChangedCallback();
 
-	this._contactPicker.removePopdownListener(this._controller._dialogPopdownListener);
+	this._contactPicker.removePopdownListener(this._contactPopdownListener);
 	this._contactPicker.popdown();
 	this._reenter();
 };

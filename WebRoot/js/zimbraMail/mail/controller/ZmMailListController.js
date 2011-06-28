@@ -63,6 +63,7 @@ ZmMailListController = function(container, mailApp) {
 	if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
 		this._listeners[ZmOperation.FORWARD] = this._forwardListener.bind(this);
 	}
+	this._listeners[ZmOperation.REDIRECT] = new AjxListener(this, this._redirectListener);
 	this._listeners[ZmOperation.EDIT] = this._editListener.bind(this);
 	this._listeners[ZmOperation.EDIT_AS_NEW] = this._editListener.bind(this);
 
@@ -620,7 +621,7 @@ function() {
 	if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
 		list.push(ZmOperation.FORWARD);
 	}
-
+    list.push(ZmOperation.REDIRECT);
 	return list;
 };
 
@@ -1010,6 +1011,67 @@ function(params, msg) {
 	params.msg = msg;
 	AjxDispatcher.run("Compose", params);
 };
+
+
+ZmMailListController.prototype._redirectListener =
+function(ev) {
+    var redirectDialog = appCtxt.getMailRedirectDialog();
+    if (!this._redirectDialogCB) {
+        this._redirectDialogCB = this._redirectCallback.bind(this);
+    }
+    ZmController.showDialog(redirectDialog, this._redirectDialogCB);
+};
+
+
+ZmMailListController.prototype._redirectCallback =
+function(event) {
+	var redirectDialog = appCtxt.getMailRedirectDialog();
+	var addrs = redirectDialog.getAddrs();
+	// Code copied from ZmComposeView.  Should consolidate along with the
+	// ZmRecipient code, i.e. the corresponding recipient controller code.
+	if (addrs.gotAddress) {
+        if (addrs[ZmComposeView.BAD].size()) {
+            // Any bad addresses?  If there are bad ones, ask the user if they want to send anyway.
+            var bad = AjxStringUtil.htmlEncode(addrs[ZmComposeView.BAD].toString(AjxEmailAddress.SEPARATOR));
+            var msg = AjxMessageFormat.format(ZmMsg.compBadAddresses, bad);
+            var cd = appCtxt.getOkCancelMsgDialog();
+            cd.reset();
+            cd.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+            cd.registerCallback(DwtDialog.OK_BUTTON, this._badRedirectAddrsOkCallback, this, [addrs, cd]);
+            cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._badRedirectAddrsCancelCallback, this, cd);
+            cd.setVisible(true); // per fix for bug 3209
+            cd.popup();
+        } else {
+            redirectDialog.popdown();
+            var msg = this.getMsg();
+            if (msg) {
+                msg.redirect(addrs);
+            }
+        }
+    } else {
+        redirectDialog.popdown();
+    }
+};
+
+// User has agreed to send message with bad addresses
+ZmMailListController.prototype._badRedirectAddrsOkCallback =
+function(addrs, dialog) {
+    dialog.popdown();
+    appCtxt.getMailRedirectDialog().popdown();
+    var msg = this.getMsg();
+    if (msg) {
+        msg.redirect(addrs);
+    }
+};
+
+
+// User has declined to send message with bad addresses - popdown the bad addr dialog,
+// returning to the redirect dialog
+ZmMailListController.prototype._badRedirectAddrsCancelCallback =
+function(dialog) {
+    dialog.popdown();
+};
+
 
 ZmMailListController.prototype._handleLoadMsgs =
 function(params, selection) {

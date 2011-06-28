@@ -435,6 +435,14 @@
 	<!-- compose editor is automatically appended below the header -->
 </template>
 
+<template id='mail.Message#RedirectDialog'>
+	<$ var labelStyle = data.labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap"; $>
+	<$ var inputStyle = data.inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
+	<table border=0 cellpadding=2 cellspacing=2 width=500px>
+		<$= AjxTemplate.expand("#To_Recipient",  data) $>
+	</table>
+</template>
+
 <template id='mail.Message#ForwardMessages'>
 	<table cellspacing=0 cellpadding=0 border=0 width=100%>
 	<$ for (var i = 0; i < data.messages.length; i++) { $>

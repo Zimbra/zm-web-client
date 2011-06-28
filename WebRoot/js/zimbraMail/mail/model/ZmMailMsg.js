@@ -2390,3 +2390,37 @@ function(callback) {
 	var ac = window.parentAppCtxt || window.appCtxt;
 	ac.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:callback});
 };
+
+
+// Execute the mail redirect server side call
+ZmMailMsg.prototype.redirect =
+function(addrs) {
+    var redirectType = {};
+    redirectType[AjxEmailAddress.TO]  = "t";
+    redirectType[AjxEmailAddress.CC]  = "c",
+    redirectType[AjxEmailAddress.BCC] = "b";
+
+    var soapDoc = AjxSoapDoc.create("BounceMsgRequest", "urn:zimbraMail");
+    var mailNode = soapDoc.set("m");
+    mailNode.setAttribute("id", this.id);
+    for (var iType = 0; iType < ZmMailMsg.COMPOSE_ADDRS.length; iType++) {
+        if (addrs[ZmMailMsg.COMPOSE_ADDRS[iType]]) {
+            var all =  addrs[ZmMailMsg.COMPOSE_ADDRS[iType]].all;
+            for (var i = 0; i < all.size(); i++) {
+                var addr = all.get(i);
+                var emailNode = soapDoc.set("e", null, mailNode);
+                var rType = redirectType[addr.type];
+                emailNode.setAttribute("t", rType);
+                emailNode.setAttribute("a", addr.address);
+            }
+        }
+    }
+
+    // No Success callback, nothing of interest returned
+    var acct = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
+    appCtxt.getAppController().sendRequest({
+        soapDoc:       soapDoc,
+        asyncMode:     true,
+        accountName:   acct
+    });
+};

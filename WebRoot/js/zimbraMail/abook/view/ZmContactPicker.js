@@ -827,7 +827,7 @@ function(item, list) {
  * @private
  */
 ZmContactChooserSourceListView = function(parent) {
-	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE, view:ZmId.VIEW_CONTACT_SRC});
+	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE});
 	this.setScrollStyle(Dwt.CLIP);
 };
 
@@ -916,8 +916,7 @@ function(html, idx, item, field, colIdx, params) {
 ZmContactChooserTargetListView = function(parent, showType) {
 	this._showType = showType; // call before base class since base calls getHeaderList
 
-	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.TARGET,
-								   view:ZmId.VIEW_CONTACT_TGT});
+	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.TARGET});
 
 	this.setScrollStyle(Dwt.CLIP);
 };

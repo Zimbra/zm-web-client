@@ -810,6 +810,21 @@ function() {
 	return this._dumpsterDialog;
 };
 
+
+/**
+ * Gets the mail redirect dialog.
+ *
+ * @return	{ZmMailRedirectDialog}	the new mail redirect dialog
+ */
+ZmAppCtxt.prototype.getMailRedirectDialog =
+function() {
+	if (!this._mailRedirectDialog) {
+		this._mailRedirectDialog = new ZmMailRedirectDialog(this._shell);
+	}
+	return this._mailRedirectDialog;
+};
+
+
 /**
  * Runs the attach dialog callbacks.
  *
