@@ -2154,8 +2154,8 @@ function(ev) {
 	dialog.reset();
 	var version = this._getVersion();
 	var release = appCtxt.get(ZmSetting.CLIENT_RELEASE);
-	var title = appCtxt.isOffline ? ZmMsg.splashScreenOfflineName : "";
-	dialog.setMessage(AjxMessageFormat.format(ZmMsg.aboutMessage, [title, version, release]), DwtMessageDialog.INFO_STYLE, ZmMsg.about);
+	var aboutMsg = appCtxt.isOffline ? ZmMsg.aboutMessageZD : ZmMsg.aboutMessage;
+	dialog.setMessage(AjxMessageFormat.format(aboutMsg, [version, release]), DwtMessageDialog.INFO_STYLE, ZmMsg.about);
 	dialog.popup();
 
 };
