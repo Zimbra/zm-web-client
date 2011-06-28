@@ -157,6 +157,7 @@ function(params) {
     var cv = ZmCalViewController.VIEW_TO_OP[params.currentViewId];
     if(cv == ZmOperation.WORK_WEEK_VIEW) {
         cv = ZmOperation.WEEK_VIEW;
+        document.getElementById(this._htmlElId + "_workDaysOnly").checked = true;
     }
     else if (cv == ZmOperation.SCHEDULE_VIEW ||
              cv == ZmOperation.FB_VIEW) {
@@ -398,6 +399,13 @@ function() {
 ZmCalPrintDialog.prototype.popdown =
 function() {
     Dwt.setDisplay(this._printErrorMsgContainer, Dwt.DISPLAY_NONE);
+
+    document.getElementById(this._htmlElId + "_workDaysOnly").checked = false;
+    document.getElementById(this._htmlElId + "_oneWeekPerPage").checked = false;
+    document.getElementById(this._htmlElId + "_oneDayPerPage").checked = false;
+    document.getElementById(this._htmlElId + "_includeTasks").checked = false;
+    document.getElementById(this._htmlElId + "_includeMiniCal").checked = false;
+
     DwtDialog.prototype.popdown.call(this);
 };
 
