@@ -18,7 +18,14 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="rest" uri="com.zimbra.restclient" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>  	
+<%	
+// no caching    
+response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
+response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+response.setHeader("Pragma", "no-cache");
+%>
+
 <rest:handleError>
     <zm:getItemInfoJSON var="fileInfoJSON" authtoken="${requestScope.zimbra_authToken}" id="${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}"/>
 <c:if test="${not empty param.dev and param.dev eq '1'}">
