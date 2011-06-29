@@ -157,7 +157,6 @@ function(params) {
     var cv = ZmCalViewController.VIEW_TO_OP[params.currentViewId];
     if(cv == ZmOperation.WORK_WEEK_VIEW) {
         cv = ZmOperation.WEEK_VIEW;
-        document.getElementById(this._htmlElId + "_workDaysOnly").checked = true;
     }
     else if (cv == ZmOperation.SCHEDULE_VIEW ||
              cv == ZmOperation.FB_VIEW) {
@@ -170,6 +169,9 @@ function(params) {
     this._selDate.setValue(params.currentDate);
     this._dateRangeFrom.setValue(new Date(params.timeRange.start));
     this._dateRangeTo.setValue(new Date(params.timeRange.end));
+    if(ZmId.VIEW_CAL_WORK_WEEK == this.currentViewId) {
+        document.getElementById(this._htmlElId + "_workDaysOnly").checked = true;
+    }
 };
 
 ZmCalPrintDialog.prototype.setWorkingHours =
@@ -334,6 +336,7 @@ function(ev) {
     Dwt.setDisplay(includeMiniCalContainer, Dwt.DISPLAY_BLOCK);
     Dwt.setDisplay(hoursContainer, Dwt.DISPLAY_BLOCK);
     Dwt.setDisplay(fitToPageContainer, Dwt.DISPLAY_NONE);
+    this._resetCheckboxes(false);
 
     switch(val) {
         case ZmOperation.FB_VIEW:
@@ -399,14 +402,17 @@ function() {
 ZmCalPrintDialog.prototype.popdown =
 function() {
     Dwt.setDisplay(this._printErrorMsgContainer, Dwt.DISPLAY_NONE);
-
-    document.getElementById(this._htmlElId + "_workDaysOnly").checked = false;
-    document.getElementById(this._htmlElId + "_oneWeekPerPage").checked = false;
-    document.getElementById(this._htmlElId + "_oneDayPerPage").checked = false;
-    document.getElementById(this._htmlElId + "_includeTasks").checked = false;
-    document.getElementById(this._htmlElId + "_includeMiniCal").checked = false;
-
+    this._resetCheckboxes(false);
     DwtDialog.prototype.popdown.call(this);
+};
+
+ZmCalPrintDialog.prototype._resetCheckboxes =
+function(value) {
+    document.getElementById(this._htmlElId + "_workDaysOnly").checked = value;
+    document.getElementById(this._htmlElId + "_oneWeekPerPage").checked = value;
+    document.getElementById(this._htmlElId + "_oneDayPerPage").checked = value;
+    document.getElementById(this._htmlElId + "_includeTasks").checked = value;
+    document.getElementById(this._htmlElId + "_includeMiniCal").checked = value;
 };
 
 ZmCalPrintDialog.prototype._getPrintViewName =
@@ -461,8 +467,9 @@ function() {
     }
     else if(viewSelected == ZmId.VIEW_CAL_WEEK ||
             viewSelected == ZmId.VIEW_CAL_WORK_WEEK) {
-        dateRangeFrom = AjxDateUtil.getFirstDayOfWeek(dateRangeFrom);
-        dateRangeTo = AjxDateUtil.getLastDayOfWeek(dateRangeTo);
+        var fdow = appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
+        dateRangeFrom = AjxDateUtil.getFirstDayOfWeek(dateRangeFrom, fdow);
+        dateRangeTo = AjxDateUtil.getLastDayOfWeek(dateRangeTo, fdow);
     }
 
     dateRangeTo.setHours(23, 59, 59, 999);
