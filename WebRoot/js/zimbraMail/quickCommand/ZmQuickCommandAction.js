@@ -73,7 +73,6 @@ ZmQuickCommandAction.TYPE_FOLDER_PICKER	  = "FOLDER_PICKER";
 ZmQuickCommandAction.TYPE_INPUT	          = "INPUT";
 ZmQuickCommandAction.TYPE_TAG_PICKER      = "TAG_PICKER";
 
-ZmQuickCommandAction.A_NAME_FORWARD	= "actionRedirect";
 ZmQuickCommandAction.A_NAME_TAG		= "actionTag";
 ZmQuickCommandAction.A_NAME_FLAG	= "actionFlag";
 ZmQuickCommandAction.A_NAME_FOLDER	= "actionFileInto";
@@ -89,7 +88,6 @@ ZmQuickCommandAction.VALUE_TYPE_FLAG    = {
 ZmQuickCommandAction.VALUE_TYPE_FOLDER  = {param:ZmQuickCommandAction.TYPE_FOLDER_PICKER};
 
 
-ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FORWARD] = {id:ZmQuickCommandAction.A_NAME_FORWARD , label:ZmMsg.forwardToAddress, valueType:ZmQuickCommandAction.VALUE_TYPE_FORWARD};
 ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_TAG]     = {id:ZmQuickCommandAction.A_NAME_TAG     , label:ZmMsg.tagWith         , valueType:ZmQuickCommandAction.VALUE_TYPE_TAG};
 ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FLAG]    = {id:ZmQuickCommandAction.A_NAME_FLAG    , label:ZmMsg.mark            , valueType:ZmQuickCommandAction.VALUE_TYPE_FLAG};
 ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FOLDER]  = {id:ZmQuickCommandAction.A_NAME_FOLDER  , label:ZmMsg.moveIntoFolder  , valueType:ZmQuickCommandAction.VALUE_TYPE_FOLDER};

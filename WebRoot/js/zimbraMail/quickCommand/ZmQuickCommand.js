@@ -145,7 +145,6 @@ ZmQuickCommand[ZmId.ITEM_MSG] = {
     label:ZmMsg.mail,
     id:ZmId.ITEM_MSG,
     actions: [
-        ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FORWARD],
         ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_TAG],
         ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FLAG],
         ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FOLDER]
@@ -156,7 +155,6 @@ ZmQuickCommand[ZmId.ITEM_APPOINTMENT] = {
     label:ZmMsg.appointment,
     id:ZmId.ITEM_APPOINTMENT,
     actions:[
-        ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FORWARD],
         ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_TAG],
         ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FLAG],
         ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FOLDER]

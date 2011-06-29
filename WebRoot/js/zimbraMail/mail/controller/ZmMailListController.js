@@ -2004,9 +2004,7 @@ ZmMailListController.prototype._quickCommandMenuHandler = function(evt, batchCmd
         var action = actions[i];
         if (!action.isActive) {continue;}
         var actionValue = action.value;
-        if (action.type == ZmQuickCommandAction[ZmFilterRule.A_NAME_FORWARD]) {
-
-        } else if (action.type == ZmQuickCommandAction[ZmFilterRule.A_NAME_FLAG]) {
+        if (action.type == ZmQuickCommandAction[ZmFilterRule.A_NAME_FLAG]) {
             if (actionValue == "read" || actionValue == "unread") {
                 this._doMarkRead(selectedItems, (actionValue == "read"));
             }
