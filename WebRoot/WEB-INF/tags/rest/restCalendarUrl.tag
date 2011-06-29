@@ -101,4 +101,7 @@
             <c:param name='${a.key}' value='${a.value}'/>
         </c:if>
     </c:forEach>
+    <c:if test="${not empty param.fmt}">
+        <c:param name="fmt" value="${param.fmt}"/>
+    </c:if>
 </c:url>
