@@ -211,6 +211,18 @@ function(params) {
 	ZmDialog.prototype.popup.call(this);
 };
 
+/**
+ * Clears selected items
+ */
+ZmChooseFolderDialog.prototype.popdown = 
+function() {
+	var ov = this._getOverview();
+	if (ov) {
+		ov.itemSelected(null);  //clear selected items
+	}
+	DwtDialog.prototype.popdown.call(this);
+};
+
 ZmChooseFolderDialog.prototype.getOverviewId =
 function(part) {
 	return appCtxt.getOverviewId([this.toString(), part], null);
