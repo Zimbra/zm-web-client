@@ -1646,6 +1646,13 @@ line-height:normal;
 .calendar_month_day_table {
 	@FullWidth@
 }
+/* Dnd based off of calendar_mont_day */
+.dnd_calendar_month_day_table {
+	@FullWidth@
+    border: 0 none black;
+    margin: 0;
+    padding:0;
+}
 
 /* label of a particular day in various states */
 .calendar_month_day_label,
@@ -1819,14 +1826,14 @@ line-height:normal;
     border-color:#A3A3A3;
 #IFDEF SAFARI
     border-width:0;
-    -webkit-box-shadow:1px 1px 3px #666666;
-    box-shadow:1px 1px 3px #666666;
+    -webkit-box-shadow:0px 1px 3px #666666;
+    box-shadow:0px 1px 3px #666666;
 #ENDIF
 #IFDEF GECKO
     border-width:0;
     -moz-user-select:none;
-    -moz-box-shadow:1px 1px 3px #666666;
-    box-shadow:1px 1px 3px #666666;
+    -moz-box-shadow:0px 1px 3px #666666;
+    box-shadow:0px 1px 3px #666666;
 #ENDIF
 #IFDEF MSIE
     border-width:0px 3px 2px 0px;

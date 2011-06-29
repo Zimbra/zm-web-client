@@ -227,12 +227,8 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
             }
             else {
                 //DBG.println("AO    "+ao);
-                var bs = "";
-                if (!ao._fanoutFirst) bs = "border-left:none;";
-                if (!ao._fanoutLast) bs += "border-right:none;";
-                var body_style = (bs != "") ? "style='"+bs+"'" : "";
                 html.append("<tr><td><div class=appt>");
-                html.append(ZmApptViewHelper._allDayItemHtml(ao, Dwt.getNextId(), body_style, controller));
+                html.append(ZmApptViewHelper._allDayItemHtml(ao, Dwt.getNextId(), controller, true, true));
                 html.append("</div></td></tr>");
             }
 		}
@@ -604,7 +600,7 @@ function(list, type, role, count) {
 };
 
 ZmApptViewHelper._allDayItemHtml =
-function(appt, id, bodyStyle, controller) {
+function(appt, id, controller, first, last) {
 	var isNew = appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 	var isAccepted = appt.ptst == ZmCalBaseItem.PSTATUS_ACCEPT;
 	var calendar = appt.getFolder();
@@ -612,21 +608,28 @@ function(appt, id, bodyStyle, controller) {
 	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
 	var headerStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.header : colors.standard.header);
     var fba = isNew ? ZmCalBaseItem.PSTATUS_NEEDS_ACTION : appt.fba;
-	bodyStyle += ZmCalBaseView._toColorsCss(isNew ? colors.deeper.body : colors.standard.body);
+	bodyStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.body : colors.standard.body);
+
+    var borderLeft  = first ? "" : "border-left:0;";
+    var borderRight = last  ? "" : "border-right:0;";
+
+    var newState = isNew ? "_new" : "";
 	var subs = {
-		id: id,
-		headerStyle: headerStyle,
-		bodyStyle: bodyStyle,
-		newState: isNew ? "_new" : "",
-		name: AjxStringUtil.htmlEncode(appt.getName()),
+		id:           id,
+		headerStyle:  headerStyle,
+		bodyStyle:    bodyStyle,
+		newState:     newState,
+		name:         first ? AjxStringUtil.htmlEncode(appt.getName()) : "&nbsp;",
 //		tag: isNew ? "NEW" : "",		//  HACK: i18n
-		starttime: appt.getDurationText(true, true),
-		endtime: (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalBaseItem._getTTHour(appt.endDate),
-		location: AjxStringUtil.htmlEncode(appt.getLocation()),
-		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr(),
-		icon: appt.isPrivate() ? "ReadOnly" : null,
-		showAsColor : ZmApptViewHelper._getShowAsColorFromId(fba),
-        boxBorder: ZmApptViewHelper.getBoxBorderFromId(fba)
+		starttime:    appt.getDurationText(true, true),
+		endtime:      (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalBaseItem._getTTHour(appt.endDate),
+		location:     AjxStringUtil.htmlEncode(appt.getLocation()),
+		status:       appt.isOrganizer() ? "" : appt.getParticipantStatusStr(),
+		icon:         first && appt.isPrivate() ? "ReadOnly" : null,
+		showAsColor:  first ? ZmApptViewHelper._getShowAsColorFromId(fba) : "appt_allday" + newState + "_name",
+        boxBorder:    ZmApptViewHelper.getBoxBorderFromId(fba),
+        borderLeft:   borderLeft,
+        borderRight:  borderRight
 	};
     return AjxTemplate.expand("calendar.Calendar#calendar_appt_allday", subs);
 };

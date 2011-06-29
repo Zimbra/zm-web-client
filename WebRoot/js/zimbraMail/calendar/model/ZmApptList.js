@@ -124,16 +124,13 @@ function(orig, result, startTime, endTime, fanoutAllDay, includeReminders) {
 		origEndTime = origEndDate.getTime();
 	}
 
-	while (appt.isInRange(startTime,endTime) || (appt.isAlarmInRange() && includeReminders)) {
+    //while (appt.isInRange(startTime,endTime) || (appt.isAlarmInRange() && includeReminders)) {
+    while (orig.isInRange(startTime,endTime) || (appt.isAlarmInRange() && includeReminders)) {
 		if (appt.isMultiDay()) {
 			var apptStartTime = appt.getStartTime();
 			// bug 12205: If someone mistypes "2007" as "200", we get into
 			//            a seemingly never-ending loop trying to fanout
 			//            every day even *before* the startTime of the view.
-			var outOfBounds = apptStartTime < startTime;
-			if (outOfBounds) {
-				apptStartTime = startTime;
-			}
 			var nextDay = new Date(apptStartTime);
 			nextDay.setDate(nextDay.getDate()+1);
 			if (origEndTime < nextDay.getTime()) {
@@ -144,25 +141,21 @@ function(orig, result, startTime, endTime, fanoutAllDay, includeReminders) {
                 AjxDateUtil.rollToNextDay(nextDay);
             }
 
-			if (AjxDateUtil.isInRange(apptStartTime, nextDay.getTime(), startTime, endTime)) {
-				var slice = ZmAppt.quickClone(appt);
-				if (outOfBounds) {
-					slice.startDate = new Date(startTime);
-				}
-				slice._fanoutFirst = (fanoutNum == 0);
-				slice._orig = orig;
-				slice.setEndDate(nextDay);
-				slice._fanoutLast = (slice.getEndTime() == origEndTime);
-				slice._fanoutNum = fanoutNum;
-				slice.uniqStartTime = slice.getStartTime();					// need to construct uniq id later
-				result.add(slice);
-			}
+            var slice = ZmAppt.quickClone(appt);
+            slice._fanoutFirst = (fanoutNum == 0);
+            slice._orig = orig;
+            slice.setEndDate(nextDay);
+            slice._fanoutLast = (slice.getEndTime() == origEndTime);
+            slice._fanoutNum = fanoutNum;
+            slice.uniqStartTime = slice.getStartTime();					// need to construct uniq id later
+            result.add(slice);
+
 			fanoutNum++;
 			appt.setStartDate(nextDay);
 			if (appt.getStartTime() >= appt.getEndTime())
 				break;
 		} else {
-			if (appt.isInRange(startTime,endTime)  || (appt.isAlarmInRange() && includeReminders) ) {
+			if (orig.isInRange(startTime,endTime)  || (appt.isAlarmInRange() && includeReminders) ) {
 				appt._fanoutFirst = fanoutNum == 0;
 				appt._fanoutLast = appt.getEndTime() == origEndTime;
 				if (!appt._fanoutFirst)
