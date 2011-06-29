@@ -164,6 +164,9 @@ function() {
 		}));
 	ZmOperation.registerOp(ZmId.OP_SEND, {textKey:"send", tooltipKey:"sendTooltip", image:"Send", shortcut:ZmKeyMap.SEND});
     ZmOperation.registerOp(ZmId.OP_FREE_BUSY_LINK, {textKey:"freeBusyLink", tooltipKey:"freeBusyLinkTooltip", image:"Send"});
+    ZmOperation.registerOp(ZmId.OP_SEND_FB_HTML, {textKey:"sendHTMLLink", tooltipKey:"freeBusyLinkTooltip"});
+    ZmOperation.registerOp(ZmId.OP_SEND_FB_ICS, {textKey:"sendICSLink", tooltipKey:"freeBusyLinkTooltip"});
+    ZmOperation.registerOp(ZmId.OP_SEND_FB_ICS_EVENT, {textKey:"sendICSEventLink", tooltipKey:"freeBusyLinkTooltip"});
     ZmOperation.registerOp(ZmId.OP_SHARE, {textKey:"share", tooltipKey:"shareTooltip"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_ACCEPT, {textKey:"acceptShare", image:"Check"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_DECLINE, {textKey:"declineShare", image:"Cancel"}, ZmSetting.SHARING_ENABLED);

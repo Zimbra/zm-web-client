@@ -32,7 +32,6 @@ ZmCalendarTreeController = function() {
 	this._listeners[ZmOperation.CLEAR_ALL] = new AjxListener(this, this._clearAllListener);
 	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
 	this._listeners[ZmOperation.DETACH_WIN] = new AjxListener(this, this._detachListener);
-	this._listeners[ZmOperation.FREE_BUSY_LINK] = new AjxListener(this, this._freeBusyLinkListener);
 	this._listeners[ZmOperation.SHARE_CALENDAR] = new AjxListener(this, this._shareCalListener);
 	this._listeners[ZmOperation.MOVE] = new AjxListener(this, this._moveListener);
 	this._listeners[ZmOperation.RECOVER_DELETED_ITEMS] = new AjxListener(this, this._recoverListener);
@@ -203,8 +202,25 @@ function(actionMenu, type, id) {
 		// we always enable sharing in case we're in multi-mbox mode
 		this._resetButtonPerSetting(actionMenu, ZmOperation.SHARE_CALENDAR, appCtxt.get(ZmSetting.SHARING_ENABLED));
 		this._resetButtonPerSetting(actionMenu, ZmOperation.FREE_BUSY_LINK, appCtxt.getActiveAccount().isZimbraAccount);
+
+        //setting up free busy link submenu
+        this._fbLinkSubMenu = (this._fbLinkSubMenu) ? this._fbLinkSubMenu : this._getFreeBusySubMenu(actionMenu);
+
+        actionMenu.getMenuItem(ZmOperation.FREE_BUSY_LINK).setMenu(this._fbLinkSubMenu);
+
 	}
 };
+
+ZmCalendarTreeController.prototype._getFreeBusySubMenu =
+function(actionMenu){
+        var subMenuItems = [ZmOperation.SEND_FB_HTML,ZmOperation.SEND_FB_ICS,ZmOperation.SEND_FB_ICS_EVENT];
+        var params = {parent:actionMenu, menuItems:subMenuItems};
+	    var subMenu = new ZmActionMenu(params);
+        for(var s=0;s<subMenuItems.length;s++){
+            subMenu.addSelectionListener(subMenuItems[s], new AjxListener(this, this._freeBusyLinkListener, subMenuItems[s]) );
+        }
+        return subMenu;
+}
 
 ZmCalendarTreeController.prototype._browseListener =
 function(ev){
@@ -234,7 +250,7 @@ function(ev){
 	}
 	var restUrl = appCtxt.get(ZmSetting.REST_URL);
 	if (restUrl) {
-	   restUrl += "?fmt=freebusy";
+	   restUrl += ev==ZmOperation.SEND_FB_ICS_EVENT ? "?fmt=ifb&fbfmt=event" : ev==ZmOperation.SEND_FB_ICS ? "?fmt=ifb" : "?fmt=freebusy";
 	}
 	var params = {
 		action: ZmOperation.NEW_MESSAGE, 
