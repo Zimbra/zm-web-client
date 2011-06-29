@@ -460,6 +460,10 @@ function(ev, treeView, overviewId) {
 			ev.handled = true;
 		}
 	}
+    else if(ev.event === ZmEvent.E_MOVE){
+        var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+        aCtxt.setStatusMsg(AjxMessageFormat.format(ZmMsg.actionTrash, [ZmMsg.calendar, this._actionedOrganizer.name]));
+    }
 };
 
 ZmCalendarTreeController.prototype._treeViewListener =
