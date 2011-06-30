@@ -26,7 +26,7 @@
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
 <c:set var="_selectedIds" scope="request" value=",${ids},"/>
 <c:set var="anAction"
-       value="${not empty paramValues.anAction[0] ? paramValues.anAction[0] :  paramValues.anAction[1]}"/>
+       value="${not empty paramValues.anAction[0] ? paramValues.anAction[0] :  (not empty paramValues.anAction[1] ? paramValues.anAction[1] : paramValues.anActionBottom[0])}"/>
 <c:choose>
     <c:when test="${zm:actionSet(param,'moreActions') && anAction eq 'actionViewList'}">
         <c:set var="l_view" value="list" scope="session"/>

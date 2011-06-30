@@ -66,7 +66,7 @@
 <c:if test="${not empty document}">
 <c:set var="zfolder" value="${zm:getFolder(pageContext, document.folderId)}"/>    
 <span>
-        <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'),null,this.value)">
+        <select class="zo_select_button" name="${isTop ? 'anAction' : 'anActionBottom'}" onchange="submitForm(document.getElementById('zForm'),null,this.value)">
             <option value="" selected="selected"><fmt:message key="moreActions"/></option>
             <c:choose>
                 <c:when test="${not zfolder.isInTrash}">
@@ -104,7 +104,7 @@
 </c:if>    
 <c:if test="${context.searchResult.size gt 0}">
     <span>
-        <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'),null,this.value)">
+        <select class="zo_select_button" name="${isTop ? 'anAction' : 'anActionBottom'}" onchange="submitForm(document.getElementById('zForm'),null,this.value)">
             <option value="" selected="selected"><fmt:message key="moreActions"/></option>
             <c:choose>
                 <c:when test="${not context.folder.isInTrash}">
@@ -183,7 +183,7 @@
 <input type='submit' class='zo_button delete_button' name='action${context.folder.isInTrash ? 'Hard' : ''}Delete' value='<fmt:message key="delete"/>'>
 <c:if test="${context.searchResult.size gt 0}">
 <span>
-    <select class="zo_select_button" name="anAction" onchange="submitForm(document.getElementById('zForm'),null,this.value)">
+    <select class="zo_select_button" name="${isTop ? 'anAction' : 'anActionBottom'}" onchange="submitForm(document.getElementById('zForm'),null,this.value)">
             <option value="" selected="selected"><fmt:message key="moreActions"/></option>
             <c:choose>
                 <c:when test="${not context.folder.isInTrash}">
@@ -228,7 +228,7 @@
 </span>
 <c:if test="${context.isBriefcaseSearch}">
 <span class=" f-right"><input type='button' class='zo_button' value='<fmt:message key="send"/>' onclick="$('zForm').anAction[0].value='actionAttachToCompose';submitForm($('zForm'));"></span>
-</c:if>    
+</c:if>
 </c:if>
 <span class="zo_button1" onclick="return checkAll($('zForm').getElementsByClassName('chk'),false);"><span class="ImgCancel"></span></span></span></div>
 </div>
