@@ -72,17 +72,32 @@
     </mo:status>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionSaveDocs') || (zm:actionSet(param,'moreActions') && fn:startsWith(anAction,'actionSaveDocs'))}">
-    <c:set var="mid" value="${param.mid}"/>
+    <c:set var="partId" value="${paramValues.attachIds}"/>
     <c:set var="briefcase" value="${param.briefcase}"/>
-    <zm:saveAttachmentsToBriefcase mid="${mid}" partId="${paramValues.attachIds}" folderId="${briefcase}" var="res"/>
-    <c:if test="${fn:length(res) gt 0}">
-        <mo:status>
-        <fmt:message key="documentsSaved">
-            <fmt:param value="${fn:length(res)}"/>
-            <fmt:param value="${zm:getFolderName(pageContext, briefcase)}"/>
-        </fmt:message>
-    </mo:status>
-    </c:if>
+    <c:choose>
+    <c:when test="${partId == null}">
+        <mo:status style="Critical">
+            <fmt:message key="actionNoItemSelected"/>
+        </mo:status>
+    </c:when>
+    <c:when test="${empty briefcase}">
+        <mo:status style="Critical">
+            <fmt:message key="actionNoFolderSelected"/>
+        </mo:status> 
+    </c:when>
+    <c:otherwise>
+        <c:set var="mid" value="${param.mid}"/>
+        <zm:saveAttachmentsToBriefcase mid="${mid}" partId="${paramValues.attachIds}" folderId="${briefcase}" var="res"/>
+        <c:if test="${fn:length(res) gt 0}">
+            <mo:status>
+            <fmt:message key="documentsSaved">
+                <fmt:param value="${fn:length(res)}"/>
+                <fmt:param value="${zm:getFolderName(pageContext, briefcase)}"/>
+            </fmt:message>
+            </mo:status>
+        </c:if>
+    </c:otherwise>
+    </c:choose>
 </c:when>
 
 <c:when test="${zm:actionSet(param, 'actionEmpty') and (param.contextFolderId eq mailbox.trash.id or param.contextFolderId eq mailbox.spam.id)}">
