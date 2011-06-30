@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -27,7 +27,7 @@ ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, sc
     this._fbBarEnabled = this.fbStatusBarEnabled();
 
 	//we need special alignment for this case.
-	this._isInviteMessage = isInviteMessage; 
+	this._isInviteMessage = isInviteMessage;
 	this._isRight = isRight;
 
 	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, controller, view, readonly);
@@ -449,7 +449,7 @@ function() {
         AjxDateUtil.rollToNextDay(d);
         daylightAdjustment = true;
     }
-    
+
 	this._dateToDayIndex = new Object();
 
 	var today = new Date();
@@ -460,7 +460,7 @@ function() {
 	for (var i=0; i < 7; i++) {
         var wHrs = this.workingHours[d.getDay()];
         var isWorkingDay = wHrs && wHrs.isWorkingDay ? wHrs.isWorkingDay : false;
-        if (this.view === ZmId.VIEW_CAL_WEEK    || 
+        if (this.view === ZmId.VIEW_CAL_WEEK    ||
             this.view === ZmId.VIEW_CAL_DAY     ||
             this._scheduleMode === true         ||
             isWorkingDay === true ) {
@@ -475,6 +475,7 @@ function() {
             this._dateToDayIndex[this._dayKey(day.date)] = day;
             if (!this._scheduleMode && this._columns[j]) {
                 var id = this._columns[j].titleId;
+                this._calendarTodayHeaderDivId=day.isToday?id:this._calendarTodayHeaderDivId;
                 var te = document.getElementById(id);
                 te.innerHTML = this._dayTitle(d);
                 this.associateItemWithElement(null, te, ZmCalBaseView.TYPE_DAY_HEADER, id, {dayIndex:j});
@@ -663,7 +664,10 @@ function(appt) {
 		hideTime: is60,
 		showAsColor : ZmApptViewHelper._getShowAsColorFromId(fba),
         boxBorder: ZmApptViewHelper.getBoxBorderFromId(fba),
-        isDraft: appt.isDraft
+        isDraft: appt.isDraft,
+        otherAttendees: appt.otherAttendees,
+        isException: appt.isException,
+        isRecurring: appt.isRecurring()
 	};
 
 	var template;
@@ -710,25 +714,33 @@ function(appt) {
 // TODO: i18n
 ZmCalColView.prototype._createHoursHtml =
 function(html) {
+
 	html.append("<div style='position:absolute; top:-8; width:", ZmCalColView._HOURS_DIV_WIDTH, "px;' id='", this._bodyHourDivId, "'>");
-	html.append("<table class=calendar_grid_day_table>");
+
 	var formatter = DwtCalendar.getHourFormatter();
+    var curDate = new Date();
 	var date = new Date();
 	date.setHours(0, 0, 0, 0);
     var timeTDWidth = ZmCalColView._HOURS_DIV_WIDTH - (this._fbBarEnabled ? ZmCalColView._FBBAR_DIV_WIDTH : 0 );
+    html.append("<table class=calendar_grid_day_table>");
 	for (var h=0; h < 25; h++) {
 		html.append("<tr><td class=calendar_grid_body_time_td style='height:",
-		ZmCalColView._HOUR_HEIGHT ,"px; width:", timeTDWidth, "px'><div class=calendar_grid_body_time_text>");
+		ZmCalColView._HOUR_HEIGHT ,"px; width:", timeTDWidth, "px'><div id='"+this._hourColDivId+"_"+h+"' class=calendar_grid_body_time_text>");
 		date.setHours(h);
 		html.append(h > 0 && h < 24 ? AjxStringUtil.htmlEncode(formatter.format([h, date])) : "&nbsp;");
-		html.append("</div></td>");
+		html.append("</div>");
+        html.append("</td>");
         if(this._fbBarEnabled){
             html.append("<td class=calendar_grid_body_fbbar_td style='height:",ZmCalColView._HOUR_HEIGHT ,"px; width:", ZmCalColView._FBBAR_DIV_WIDTH,"px; border-left:1px solid #A7A194;'>&nbsp;</td>");
         }
         html.append("</tr>");
 	}
-	html.append("</table>", "</div>");
+	html.append("</table>");
+    html.append("<div id='"+this._curTimeIndicatorHourDivId+"' class='calendar_cur_time_indicator_arr'><div class='calendar_hour_arrow_indicator'>&rarr;</div></div>");
+
+    html.append( "</div>");
 };
+
 
 ZmCalColView.prototype._createHtml =
 function(abook) {
@@ -757,7 +769,11 @@ function(abook) {
 	this._apptBodyDivId = Dwt.getNextId();
 	this._newApptDivId = Dwt.getNextId();
 	this._newAllDayApptDivId = Dwt.getNextId();
-	this._timeSelectionDivId = Dwt.getNextId();    
+	this._timeSelectionDivId = Dwt.getNextId();
+    this._curTimeIndicatorHourDivId = Dwt.getNextId();
+    this._curTimeIndicatorGridDivId = Dwt.getNextId();
+    this._hourColDivId = Dwt.getNextId();
+
 
 	if (this._scheduleMode) {
 		this._unionHeadingDivId = Dwt.getNextId();
@@ -882,7 +898,11 @@ function(abook) {
         html.append("<div id='", this._workingHrsFirstDivId, "' class='ImgCalendarDayGrid' style='background-color:#FFFFFF;position:absolute;'></div>");
         html.append("<div id='", this._workingHrsSecondDivId, "' class='ImgCalendarDayGrid' style='background-color:#FFFFFF;position:absolute;'></div>");
     }
+
+
 	html.append("</div>");
+    //Strip to indicate the current time
+    html.append("<div id='"+this._curTimeIndicatorGridDivId+"' class='calendar_cur_time_indicator_strip' style='position:absolute;background-color:#F16426; height: 1px;'></div>");
 	html.append("</div>");
 
 	this.getHtmlElement().innerHTML = html.toString();
@@ -897,8 +917,39 @@ function(abook) {
 		this.associateItemWithElement(null, document.getElementById(ids[i]), types[i], ids[i]);
 	}
 	this._scrollToTime(8);
-
 };
+
+ZmCalColView.prototype.setTimer=function(min){
+    var period = min*60*1000;
+    return AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.updateTimeIndicator), period);
+}
+
+ZmCalColView.prototype.updateTimeIndicator=function(){
+    var curDate = new Date();
+    var  hr = curDate.getHours();
+    var min = curDate.getMinutes();
+    var curHourDiv = document.getElementById(this._hourColDivId+"_"+hr);
+    curTimeHourIndicator = document.getElementById(this._curTimeIndicatorHourDivId);
+    curTimeHourIndicator.style.left=curHourDiv.offsetParent.offsetLeft;
+    var currentTopPosition = Math.round((ZmCalColView._HOUR_HEIGHT/60)*min)+parseInt(curHourDiv.offsetParent.offsetTop);
+    curTimeHourIndicator.style.top=(currentTopPosition+3)+"px";
+    var calendarStrip = document.getElementById(this._curTimeIndicatorGridDivId);
+    Dwt.setVisibility(calendarStrip,true);
+    var todayColDiv = document.getElementById(this._calendarTodayHeaderDivId);
+    if(todayColDiv){
+     calendarStrip.style.left=todayColDiv.offsetLeft;
+     calendarStrip.style.top=currentTopPosition+"px";
+     calendarStrip.style.width=todayColDiv.offsetWidth;
+    }
+    else{Dwt.setVisibility(calendarStrip,false);}
+    return this.setTimer(1);
+}
+
+ZmCalColView.prototype.startIndicatorTimer=function(){
+   if(!this._indicatorTimer){
+    this._indicatorTimer = this.updateTimeIndicator();
+   }
+}
 
 ZmCalColView.__onScroll = function(myView) {
     myView._syncScroll();
@@ -1067,10 +1118,10 @@ function(colIndex, data) {
 		data.numDays = 1;
 		if (this.view != ZmId.VIEW_CAL_SCHEDULE) {
 			if (startTime != endTime) {
-				data.numDays = Math.round((endTime-startTime) / AjxDateUtil.MSEC_PER_DAY);
+				data.numDays = this._calcNumDays(startTime, endTime);
 			}
 			if (startTime < data.startTime) {
-				data.numDays -= Math.round(data.startTime - startTime) / AjxDateUtil.MSEC_PER_DAY;
+				data.numDays -= this._calcNumDays(startTime, data.startTime);
 			}
 		}
 	}
@@ -1094,6 +1145,19 @@ function(colIndex, data) {
 
 	this._fillAllDaySlot(row, colIndex, data);
 };
+
+ZmCalColView.prototype._calcNumDays =
+function(startTime, endTime) {
+    return Math.round((endTime-startTime) / AjxDateUtil.MSEC_PER_DAY);
+}
+// Calculate the offset in days from the 0th column date.  Used for
+// multi-day appt dragging.
+ZmCalColView.prototype._calcOffsetFromZeroColumn =
+function(time) {
+    var dayIndex = this._columns[0].dayIndex;
+    var day = this._days[dayIndex];
+    return Math.round((time-day.date.getTime()) / AjxDateUtil.MSEC_PER_DAY);
+}
 
 /*
  * compute layout info for all day appts
@@ -1126,16 +1190,16 @@ function() {
 			var slot = row[j];
 			if (slot.data) {
 				var appt = slot.data.appt;
-				var div = document.getElementById(this._getItemId(appt));
+                var div = document.getElementById(this._getItemId(appt));
                 if(div) {
                     if (this._scheduleMode) {
                         var cal = this._getColForFolderId(appt.folderId);
                         this._positionAppt(div, cal.allDayX+0, rowY);
-                        this._sizeAppt(div, cal.allDayWidth * slot.data.numDays - this._daySepWidth - 1,
+                        this._sizeAppt(div, ((cal.allDayWidth + this._daySepWidth) * slot.data.numDays) - this._daySepWidth - 1,
                                      ZmCalColView._ALL_DAY_APPT_HEIGHT);
                     } else {
                         this._positionAppt(div, this._columns[j].allDayX+0, rowY);
-                        this._sizeAppt(div, this._columns[j].allDayWidth * slot.data.numDays - this._daySepWidth - 1,
+                        this._sizeAppt(div, ((this._columns[j].allDayWidth + this._daySepWidth) * slot.data.numDays) - this._daySepWidth - 1,
                                      ZmCalColView._ALL_DAY_APPT_HEIGHT);
                     }
                 }
@@ -1144,6 +1208,7 @@ function() {
 		rowY += ZmCalColView._ALL_DAY_APPT_HEIGHT + ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD;
 	}
 };
+
 
 ZmCalColView._getApptWidthPercent =
 function(numCols) {
@@ -1273,9 +1338,10 @@ function(d, duration, folderId) {
 };
 
 ZmCalColView.prototype._getBoundsForAllDayDate =
-function(startSnap, endSnap) {
+function(startSnap, endSnap, useYPadding) {
 	if (startSnap == null || endSnap == null) return null;
-	return new DwtRectangle(startSnap.col.allDayX, 0,
+    var yOffset = useYPadding ? ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD + 2 : 0;
+	return new DwtRectangle(startSnap.col.allDayX, yOffset,
 			(endSnap.col.allDayX + endSnap.col.allDayWidth) - startSnap.col.allDayX - this._daySepWidth-1,
 			ZmCalColView._ALL_DAY_APPT_HEIGHT);
 };
@@ -1304,6 +1370,23 @@ function(x, y) {
 	x = col.allDayX;
 	return {x:x, y:0, col:col};
 };
+
+ZmCalColView.prototype._snapAllDayOutsideGrid =
+function(x) {
+    var colWidth = this._columns[0].allDayWidth + this._daySepWidth;
+    var colIndex = Math.floor(x/colWidth);
+    var colX = (colIndex * colWidth) + 2;
+    return {x:colX, y:0, col:{index:colIndex}};
+}
+
+// Generate a date (time hour/min/sec == 0) from an arbitrary index
+// i.e. an index that may not have a col object
+ZmCalColView.prototype._createAllDayDateFromIndex =
+function(colIndex) {
+    var dayIndex =  this._columns[0].dayIndex;
+    var day = this._days[dayIndex];
+    return new Date(day.date.getTime() + (AjxDateUtil.MSEC_PER_DAY * colIndex));
+}
 
 ZmCalColView.prototype._getDateFromXY =
 function(x, y, snapMinutes, roundUp) {
@@ -1469,7 +1552,8 @@ function(refreshApptLayout) {
     this.layoutWorkingHours(this.workingHours);
 	this._layoutAllDayAppts();
 
-	this._apptBodyDivOffset = Dwt.toWindow(document.getElementById(this._apptBodyDivId), 0, 0, null, true);
+    this._apptBodyDivOffset   = Dwt.toWindow(document.getElementById(this._apptBodyDivId), 0, 0, null, true);
+    this._apptAllDayDivOffset = Dwt.toWindow(document.getElementById(this._allDayDivId), 0, 0, null, true);
 
 	if (this._scheduleMode || refreshApptLayout) {
 		this._layoutAppts();
@@ -1546,6 +1630,18 @@ function(workingHours){
 		currentX += this._daySepWidth;
 	}
 };
+
+// Must remain in sync with layoutWorkingHours
+ZmCalColView.prototype._calculateColumnApptLeft =
+function(index, dayWidth, numDays) {
+    if (index < 0) {
+        numDays = 0;
+    }  else {
+        numDays -= 1;
+    }
+    return (dayWidth * index) + (this._daySepWidth * numDays) + 2;
+}
+
 
 //Free Busy Bar
 
@@ -1776,8 +1872,8 @@ ZmCalColView.prototype._handleApptScrollRegion =
 function(docX, docY, incr) {
 	var offset = 0;
 	var upper = docY < this._apptBodyDivOffset.y;
-	var lower = docY > this._apptBodyDivOffset.y+this._bodyDivHeight;
-
+    // Trigger scroll when scroll is within 8 px of the bottom
+	var lower = docY > this._apptBodyDivOffset.y+this._bodyDivHeight - 8;
 	if (upper || lower) {
 		var div = document.getElementById(this._bodyDivId);
 		var sTop = div.scrollTop;
@@ -1990,7 +2086,7 @@ function(ev, apptEl) {
 	var appt = this.getItemFromElement(apptEl);
 	var calendar = appCtxt.getById(appt.folderId);
 	var isRemote = Boolean(calendar.url);
-	if (appt.isReadOnly() || appt.isAllDayEvent() || (appt._fanoutNum > 0) || isRemote) return false;
+	if (appt.isReadOnly() || (appt._fanoutNum > 0) || isRemote) return false;
 
 	var apptOffset = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, apptEl, true);
 
@@ -2015,7 +2111,7 @@ function(ev, apptEl) {
 
     this._controller.setCurrentListView(this);
 
-	capture.capture();
+ 	capture.capture();
 	return false;
 };
 
@@ -2056,6 +2152,7 @@ function(data) {
 	return icon;
 };
 
+
 // called when DND is confirmed after threshold
 ZmCalColView.prototype._apptDndBegin =
 function(data) {
@@ -2063,14 +2160,55 @@ function(data) {
 	data.dndObj = {};
 	data.apptX = loc.x;
 	data.apptY = loc.y;
-	data.apptsDiv = document.getElementById(this._apptBodyDivId);
-	data.bodyDivEl = document.getElementById(this._bodyDivId);
-	data.apptBodyEl = document.getElementById(data.apptEl.id + "_body");
-	data.snap = this._snapXY(data.apptX + data.apptOffset.x, data.apptY, 15); 	// get orig grid snap
-	if (data.snap == null) return false;
-	data.startDate = new Date(data.appt.getStartTime());
+
+	data.apptsDiv    = document.getElementById(this._apptBodyDivId);
+	data.bodyDivEl   = document.getElementById(this._bodyDivId);
+	data.apptBodyEl  = document.getElementById(data.apptEl.id + "_body");
+    Dwt.addClass(data.apptBodyEl, DwtCssStyle.DROPPABLE);
+
+	data.startDate   = new Date(data.appt.getStartTime());
 	data.startTimeEl = document.getElementById(data.apptEl.id +"_st");
-	data.endTimeEl = document.getElementById(data.apptEl.id +"_et");
+	data.endTimeEl   = document.getElementById(data.apptEl.id +"_et");
+
+    this._containerRect = null;
+    if (data.appt.isAllDayEvent()) {
+        // Adjust apptOffset.x to be the offset from the clicked on column.  Then create the
+        // start snap using this offset (so that start column of a multi-day is tracked).
+        var leftSnap = this._snapXY(data.apptX, data.apptY, 15);
+        var colSnap  = this._snapXY(data.apptX + data.apptOffset.x, data.apptY, 15);
+        data.apptOffset.x = data.apptOffset.x - colSnap.x + leftSnap.x;
+
+        // Multi day appt may have its start off the grid.  It's will be truncated
+        // by the layout code, so calculate the true start
+        var dayOffset = this._calcOffsetFromZeroColumn(data.appt.getStartTime());
+        // All columns should be the same width. Choose the 0th
+        var colWidth = this._columns[0].allDayWidth + this._daySepWidth;
+
+        var endTime = data.appt.getEndTime();
+        var numDays = this._calcNumDays(data.startDate, endTime);
+        data.apptX = this._calculateColumnApptLeft(dayOffset, colWidth, numDays);
+        data.snap = this._snapAllDayOutsideGrid(data.apptX + data.apptOffset.x);
+        data.apptWidth = (colWidth * numDays) - this._daySepWidth - 1;
+
+        // Offset the y fudge that is applied in _layout, _positionAppt
+        data.apptY -= ZmCalColView._APPT_Y_FUDGE;
+        var bounds = new DwtRectangle(data.apptX, data.apptY,
+            data.apptWidth, ZmCalColView._ALL_DAY_APPT_HEIGHT);
+
+        this._layoutAppt(data.appt, data.apptEl, bounds.x, bounds.y, bounds.width, bounds.height);
+
+        this._containerRect = new DwtRectangle(this._apptAllDayDivOffset.x,
+                this._apptAllDayDivOffset.y,
+                this._bodyDivWidth,
+                this._allDayDivHeight + this._bodyDivHeight + ZmCalColView._SCROLL_PRESSURE_FUDGE);
+    } else {
+        data.snap = this._snapXY(data.apptX + data.apptOffset.x, data.apptY, 15); 	// get orig grid snap
+        this._containerRect = new DwtRectangle(this._apptAllDayDivOffset.x,
+                this._apptBodyDivOffset.y - ZmCalColView._SCROLL_PRESSURE_FUDGE,
+                this._bodyDivWidth,
+                this._bodyDivHeight + ZmCalColView._SCROLL_PRESSURE_FUDGE);
+    }
+    if (data.snap == null) return false;
 
 	this.deselectAll();
 	this.setSelection(data.appt);
@@ -2113,6 +2251,7 @@ function(ev) {
 				data.icon = data.view._getApptDragProxy(data);
 			}
 			Dwt.setVisible(data.icon, true);
+            Dwt.delClass(data.apptBodyEl, DwtCssStyle.DROPPABLE);
 		}
 		Dwt.setLocation(data.icon, mouseEv.docX+5, mouseEv.docY+5);
 		var destDwtObj = mouseEv.dwtObj;
@@ -2160,24 +2299,44 @@ function(ev) {
 				Dwt.setVisible(data.icon, false);
 			}
 			Dwt.setOpacity(data.apptEl, ZmCalColView._OPACITY_APPT_DND);
+            Dwt.addClass(data.apptBodyEl, DwtCssStyle.DROPPABLE);
 		}
 		obj._lastDestDwtObj = null;
-		var scrollOffset = data.view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, ZmCalColView._HOUR_HEIGHT);
-		if (scrollOffset != 0) {
-			data.docY -= scrollOffset;
-			deltaY += scrollOffset;
-		}
+        if (!data.appt.isAllDayEvent()) {
+            var scrollOffset = data.view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, ZmCalColView._HOUR_HEIGHT);
+            if (scrollOffset != 0) {
+                data.docY -= scrollOffset;
+                deltaY += scrollOffset;
+            }
+        }
 
 		// snap new location to grid
+		var newDate = null;
 		var snap = data.view._snapXY(data.apptX + data.apptOffset.x + deltaX, data.apptY + deltaY, 15);
+        if ((snap == null) && data.appt.isAllDayEvent()) {
+            // For a multi day appt , the start snap may have started or be pushed off the grid.
+            // Create a snap with a pseudo column.
+            snap = data.view._snapAllDayOutsideGrid(data.apptX + data.apptOffset.x + deltaX);
+            newDate = data.view._createAllDayDateFromIndex(snap.col.index);
+        } else {
+            newDate = data.view._getDateFromXY(snap.x, snap.y, 15);
+        }
+
 		//DBG.println("mouseMove new snap: "+snap.x+","+snap.y+ " data snap: "+data.snap.x+","+data.snap.y);
 		if (snap != null && ((snap.x != data.snap.x || snap.y != data.snap.y))) {
-			var newDate = data.view._getDateFromXY(snap.x, snap.y, 15);
 			if (newDate != null &&
 				(!(data.view._scheduleMode && snap.col != data.snap.col)) && // don't allow col moves in sched view
 				(newDate.getTime() != data.startDate.getTime()))
 			{
-				var bounds = data.view._getBoundsForDate(newDate, data.appt._orig.getDuration(), snap.col);
+                var bounds = null;
+                if (data.appt.isAllDayEvent()) {
+                    // Not using snapXY and GeBoundsForAllDayDate - snap requires that a date
+                    // fall within one of its columns, which may not be so for a multi day appt.
+                    var bounds = new DwtRectangle(snap.x, data.apptY,
+                        data.apptWidth, ZmCalColView._ALL_DAY_APPT_HEIGHT);
+                } else {
+                    bounds = data.view._getBoundsForDate(newDate, data.appt._orig.getDuration(), snap.col);
+                }
 				data.view._layoutAppt(null, data.apptEl, bounds.x, bounds.y, bounds.width, bounds.height);
 				data.startDate = newDate;
 				data.snap = snap;
@@ -2194,11 +2353,12 @@ function(ev) {
 
 ZmCalColView.prototype._apptDraggedOut =
 function(docX, docY) {
-//DBG.println(" docX,Y = ("+docX+", "+docY+") abdoX,Y = ("+this._apptBodyDivOffset.x+","+this._apptBodyDivOffset.y+")");
-	return (docY < (this._apptBodyDivOffset.y - ZmCalColView._SCROLL_PRESSURE_FUDGE)) ||
-			(docY > (this._apptBodyDivOffset.y + this._bodyDivHeight + ZmCalColView._SCROLL_PRESSURE_FUDGE)) ||
-			(docX < this._apptBodyDivOffset.x) ||
-			(docX > this._apptBodyDivOffset.x + this._bodyDivWidth);
+    var draggedOut = this._containerRect ? true : false;
+    return draggedOut &&
+           ((docY < this._containerRect.y) ||
+            (docY > (this._containerRect.y + this._containerRect.height)) ||
+            (docX < this._containerRect.x) ||
+            (docX > (this._containerRect.x + this._containerRect.width)));
 };
 
 ZmCalColView._restoreApptLoc =
@@ -2220,7 +2380,9 @@ function(ev) {
 	var data = DwtMouseEventCapture.getTargetObj();
 
 	var mouseEv = DwtShell.mouseEvent;
-	mouseEv.setFromDhtmlEvent(ev, true);
+    if (ev && mouseEv) {
+	    mouseEv.setFromDhtmlEvent(ev, true);
+    }
 
 	DwtMouseEventCapture.getCaptureObj().release();
 
@@ -2228,7 +2390,8 @@ function(ev) {
 
 	if (data.dndStarted) {
 		//notify Zimlet when an appt is dragged.
-		appCtxt.notifyZimlets("onApptDrag", [data]);	
+        Dwt.delClass(data.apptBodyEl, DwtCssStyle.DROPPABLE);
+		appCtxt.notifyZimlets("onApptDrag", [data]);
 		ZmCalColView._setApptOpacity(data.appt, data.apptEl);
 		if (data.startDate.getTime() != data.appt.getStartTime() && !draggedOut) {
 			if (data.icon) Dwt.setVisible(data.icon, false);
@@ -2244,6 +2407,10 @@ function(ev) {
 			//cc.dndUpdateApptDate(data.appt._orig, data.startDate, endDate, null, errorCallback);
 		} else {
 //			ZmCalColView._restoreApptLoc(data);
+            if (data.appt.isAllDayEvent()) {
+                // Re-layout the all day appts - may have lost the header of one offscreen
+                data.view._layoutAllDayAppts();
+            }
 		}
 
 		if (draggedOut) {
@@ -2284,10 +2451,13 @@ function(ev) {
 		}
 	}
 
-	mouseEv._stopPropagation = true;
-	mouseEv._returnValue = false;
-	mouseEv.setToDhtmlEvent(ev);
-
+    if (mouseEv) {
+        mouseEv._stopPropagation = true;
+        mouseEv._returnValue = false;
+        if (ev) {
+            mouseEv.setToDhtmlEvent(ev);
+        }
+    }
 	return false;
 };
 
@@ -2313,6 +2483,7 @@ function(m, c, d) {
 		bd.icon = null;
 	}
 };
+
 
 // END APPT ACTION HANDLERS
 

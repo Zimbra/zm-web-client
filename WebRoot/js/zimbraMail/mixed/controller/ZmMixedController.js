@@ -97,9 +97,8 @@ function(searchResults) {
 		}
 	}
 
-	var elements = {};
-	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-	elements[ZmAppViewMgr.C_APP_CONTENT] = lv;
+	var elements = this.getViewElements(this._currentView, lv);
+	
 	this._setView({view:this._currentView, elements:elements, isAppView:true});
 	this._resetNavToolBarButtons(this._currentView);
 
@@ -165,7 +164,7 @@ function(view) {
 	this._setNavToolBar(tb, view);
 
 	// TODO: mail enabled?
-	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
+	this._setNewButtonProps(view, ZmMsg.newMessage, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 };
 
 ZmMixedController.prototype._getToolBarOps =

@@ -29,6 +29,14 @@
 	@MailMsgBody@
 }
 
+.MsgBody.OddMsg {
+	background-color: #EEEEEE;
+}
+
+.MsgBody.EvenMsg {
+	background-color: #CCCCCC;
+}
+
 /* text message font (eg: not HTML) */
 .MsgBody-text {
 	@MailMsgBodyText@

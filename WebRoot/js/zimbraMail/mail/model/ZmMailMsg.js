@@ -2,7 +2,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -684,12 +684,15 @@ function(node, args) {
 ZmMailMsg.prototype.load =
 function(params) {
 	// If we are already loaded, then don't bother loading
-	if (!this._loaded || params.forceLoad) {
+	if ((!this._loaded && !this._loading) || params.forceLoad) {
+		this._loading = true;
 		var respCallback = new AjxCallback(this, this._handleResponseLoad, [params, params.callback]);
 		params.getHtml = params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		params.sender = appCtxt.getAppController();
 		params.msgId = this.id;
 		params.callback = respCallback;
+		var errorCallback = new AjxCallback(this, this._handleResponseLoadFail, [params, params.errorCallback]);
+		params.errorCallback = errorCallback;
 		ZmMailMsg.fetchMsg(params);
 	} else {
 		this._markReadLocal(true);
@@ -701,6 +704,7 @@ function(params) {
 
 ZmMailMsg.prototype._handleResponseLoad =
 function(params, callback, result) {
+	this._loading = false;
 	var response = result.getResponse().GetMsgResponse;
 
 	this.clearAddresses();
@@ -710,8 +714,8 @@ function(params, callback, result) {
 		this.participants.removeAll();
 	}
 
-	// clear all attachments
-	this.attachments.length = 0;
+	// clear all attachments and body data
+	this.attachments.length = this._bodyParts.length = 0;
 
 	this._loadFromDom(response.m[0]);
 	if (!this.isReadOnly() && params.markRead) {
@@ -724,6 +728,14 @@ function(params, callback, result) {
 		this._loadCallback.run(result);
 		this._loadCallback = null;
 	} else if (callback) {
+		callback.run(result);
+	}
+};
+
+ZmMailMsg.prototype._handleResponseLoadFail =
+function(params, callback, result) {
+	this._loading = false;
+	if (callback) {
 		callback.run(result);
 	}
 };
@@ -1215,9 +1227,10 @@ function(nfolder, resp) {
  * @param {Boolean}	requestReadReceipt	if set, a read receipt is sent to *all* recipients
  * @param {ZmBatchCommand} batchCmd		if set, request gets added to this batch command
  * @param {Date} sendTime				if set, tell server that this message should be sent at the specified time
+ * @param {Boolean} isAutoSave          if <code>true</code>, this an auto-save draft
  */
 ZmMailMsg.prototype.send =
-function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd, sendTime) {
+function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd, sendTime, isAutoSave) {
 
 	var aName = accountName;
 	if (!aName) {
@@ -1252,6 +1265,7 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 			jsonObj: jsonObj,
 			isInvite: false,
 			isDraft: isDraft,
+			isAutoSave: isAutoSave,
 			accountName: aName,
 			callback: (new AjxCallback(this, this._handleResponseSend, [isDraft, callback])),
 			errorCallback: errorCallback,
@@ -1567,7 +1581,7 @@ function(params) {
 	} else {
 		appCtxt.getAppController().sendRequest({jsonObj:params.jsonObj,
 												asyncMode:true,
-												noBusyOverlay:params.isDraft,
+												noBusyOverlay:params.isDraft && params.isAutoSave,
 												callback:respCallback,
 												errorCallback:params.errorCallback,
 												accountName:params.accountName,
@@ -1919,8 +1933,6 @@ function(msgNode) {
 		this._convCreateNode = msgNode._convCreateNode;
 	}
 
-	AjxDebug.println(AjxDebug.NOTIFY, "ZmMailMsg::_loadFromDom - msg ID: " + msgNode.id);
-	AjxDebug.println(AjxDebug.NOTIFY, "cid: " + msgNode.cid + ", folder: " + msgNode.l);
 	if (msgNode.cid && msgNode.l) {
 		var conv = appCtxt.getById(msgNode.cid);
 		if (conv) {
@@ -1932,9 +1944,6 @@ function(msgNode) {
 			if (!conv.msgIds) {
 				conv.msgIds = [this.id];
 			}
-		}
-		else {
-			AjxDebug.println(AjxDebug.NOTIFY, "could not find conv with ID: " + msgNode.cid);
 		}
 	}
 
@@ -2066,7 +2075,6 @@ function () {
 ZmMailMsg.prototype._addAddressNodes =
 function(addrNodes, type, isDraft) {
 
-	var doAdd = appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS);
 	var addrs = this._addrs[type];
 	var num = addrs.size();
 	if (num) {
@@ -2085,10 +2093,6 @@ function(addrNodes, type, isDraft) {
 			var addrNode = {t:AjxEmailAddress.toSoapType[type], a:email};
 			if (name) {
 				addrNode.p = name;
-			}
-			if (contactsApp) {
-				var contact = contactsApp.getContactByEmail(email);
-				addrNode.add = (doAdd && !contact) ? "1" : "0";
 			}
 			addrNodes.push(addrNode);
 		}
@@ -2370,4 +2374,53 @@ function(autoSendTime) {
 	if (Dwt.instanceOf(conv, "ZmConv")) {
 		conv.setAutoSendTime(autoSendTime);
 	}
+};
+
+/**
+ * Sends a read receipt.
+ * 
+ * @param {closure}	callback	response callback
+ */
+ZmMailMsg.prototype.sendReadReceipt =
+function(callback) {
+
+	var jsonObj = {SendDeliveryReportRequest:{_jsns:"urn:zimbraMail"}};
+	var request = jsonObj.SendDeliveryReportRequest;
+	request.mid = this.id;
+	var ac = window.parentAppCtxt || window.appCtxt;
+	ac.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:callback});
+};
+
+
+// Execute the mail redirect server side call
+ZmMailMsg.prototype.redirect =
+function(addrs) {
+    var redirectType = {};
+    redirectType[AjxEmailAddress.TO]  = "t";
+    redirectType[AjxEmailAddress.CC]  = "c",
+    redirectType[AjxEmailAddress.BCC] = "b";
+
+    var soapDoc = AjxSoapDoc.create("BounceMsgRequest", "urn:zimbraMail");
+    var mailNode = soapDoc.set("m");
+    mailNode.setAttribute("id", this.id);
+    for (var iType = 0; iType < ZmMailMsg.COMPOSE_ADDRS.length; iType++) {
+        if (addrs[ZmMailMsg.COMPOSE_ADDRS[iType]]) {
+            var all =  addrs[ZmMailMsg.COMPOSE_ADDRS[iType]].all;
+            for (var i = 0; i < all.size(); i++) {
+                var addr = all.get(i);
+                var emailNode = soapDoc.set("e", null, mailNode);
+                var rType = redirectType[addr.type];
+                emailNode.setAttribute("t", rType);
+                emailNode.setAttribute("a", addr.address);
+            }
+        }
+    }
+
+    // No Success callback, nothing of interest returned
+    var acct = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
+    appCtxt.getAppController().sendRequest({
+        soapDoc:       soapDoc,
+        asyncMode:     true,
+        accountName:   acct
+    });
 };

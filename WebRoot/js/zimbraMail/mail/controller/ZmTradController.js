@@ -38,6 +38,9 @@ ZmTradController = function(container, mailApp) {
 ZmTradController.prototype = new ZmDoublePaneController;
 ZmTradController.prototype.constructor = ZmTradController;
 
+ZmTradController.prototype.isZmTradController = true;
+ZmTradController.prototype.toString = function() { return "ZmTradController"; };
+
 ZmMailListController.GROUP_BY_ITEM[ZmId.VIEW_TRAD]		= ZmItem.MSG;
 ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_TRAD]	= ZmSetting.GROUP_BY_MESSAGE;
 
@@ -48,11 +51,6 @@ ZmMailListController.GROUP_BY_SHORTCUT[ZmId.VIEW_TRAD]	= ZmKeyMap.VIEW_BY_MSG;
 ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_TRAD);
 
 // Public methods
-
-ZmTradController.prototype.toString = 
-function() {
-	return "ZmTradController";
-};
 
 ZmTradController.prototype.show =
 function(search) {

@@ -97,16 +97,16 @@ function(result) {
 ZmMailPrefsPage.prototype._setPopDownloadSinceControls =
 function() {
 	var popDownloadSinceValue = this.getFormObject(ZmSetting.POP_DOWNLOAD_SINCE_VALUE);
-	if (popDownloadSinceValue) {
-		var value = appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE);
-		if (value) {
-			var date = AjxDateFormat.parse("yyyyMMddHHmmss'Z'", value);
-			date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-			value = date;
-		}
-		var pattern = value ? ZmMsg.externalAccessPopCurrentValue : ZmMsg.externalAccessPopNotSet;
-		popDownloadSinceValue.setText(AjxMessageFormat.format(pattern, value));
-	}
+    var value = appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE);
+	if (popDownloadSinceValue && value) {
+		var date = AjxDateFormat.parse("yyyyMMddHHmmss'Z'", value);
+		date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+
+		popDownloadSinceValue.setText(AjxMessageFormat.format(ZmMsg.externalAccessPopCurrentValue, date));
+        popDownloadSinceValue.setVisible(true);
+	}  else {
+        popDownloadSinceValue.setVisible(false);
+    }
 
 	var popDownloadSince = this.getFormObject(ZmSetting.POP_DOWNLOAD_SINCE);
 	if (popDownloadSince) {
