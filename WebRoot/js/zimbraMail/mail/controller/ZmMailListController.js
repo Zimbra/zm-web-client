@@ -221,7 +221,8 @@ ZmMailListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmMailListController.handleKeyAction");
 
-	var isSyncFailures = this.isSyncFailuresFolder(); 
+	var folder = this._getSearchFolder();
+	var isSyncFailures = this.isSyncFailuresFolder();
 	var isDrafts = this.isDraftsFolder();
 	var lv = this._listView[this._currentView];
 	var num = lv.getSelectionCount();
