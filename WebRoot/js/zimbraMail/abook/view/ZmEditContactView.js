@@ -145,7 +145,7 @@ ZmEditContactView.prototype.getFormItems = function() {
 			} },
 			{ id: "OTHER", type: "ZmEditContactViewInputSelectRows", rowitem: {
 				type: "ZmEditContactViewOther", equals:ZmEditContactViewInputSelect.equals, params: {
-					inputWidth: 155, selectInputWidth: 112, hint: ZmMsg.genericTextHint, options: this.getOtherOptions()
+					inputWidth: 300, selectInputWidth: 112, hint: ZmMsg.genericTextHint, options: this.getOtherOptions()
 				}
 			}, validator: ZmEditContactViewOther.validator },
 			// other controls
