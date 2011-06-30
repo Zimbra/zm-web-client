@@ -965,7 +965,7 @@ ZmComposeController.prototype._initializeToolBar =
 function() {
 	if (this._toolbar) { return; }
 
-	this._setNewButtonProps(null, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
+	this._setNewButtonProps(null, ZmMsg.newMessage, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 	
 	var buttons = [];
 	if (this._canSaveDraft() && appCtxt.get(ZmSetting.MAIL_SEND_LATER_ENABLED)) {

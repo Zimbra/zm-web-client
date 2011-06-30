@@ -54,7 +54,7 @@ function(appt, mode) {
 
 	var avm = appCtxt.getAppViewMgr();
 	this._setup(this._currentView);
-    this._setNewButtonProps(this._currentView, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
+    this._setNewButtonProps(this._currentView, ZmMsg.newAppt, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
 	var elements = this.getViewElements(this._currentView, this._listView[this._currentView]);
 
 	var curView = avm.getCurrentViewId();

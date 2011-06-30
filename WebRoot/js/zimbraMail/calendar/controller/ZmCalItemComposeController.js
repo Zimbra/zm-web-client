@@ -321,7 +321,7 @@ function(mode) {
 ZmCalItemComposeController.prototype._createToolBar =
 function() {
 
-	this._setNewButtonProps(null, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
+	this._setNewButtonProps(null, ZmMsg.newAppt, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
 
 	var buttons = [ZmOperation.SEND_INVITE, ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP];
 

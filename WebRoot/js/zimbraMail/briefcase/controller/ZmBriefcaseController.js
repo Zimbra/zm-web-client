@@ -196,7 +196,7 @@ function(view) {
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
 		this._setupViewMenu(view, true);
-		this._setNewButtonProps(view, ZmMsg.newDocument, "Doc", "DocDis", ZmOperation.NEW_DOC);
+		this._setNewButtonProps(view, ZmMsg.newDocument, ZmMsg.newDocument, "NewDoc", "NewDocDis", ZmOperation.NEW_DOC);
         var toolbar = this._toolbar[view];
 		toolbar.addFiller();
 		this._initializeNavToolBar(view);

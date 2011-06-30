@@ -73,7 +73,7 @@ function() {
 	ZmCalItemComposeController.prototype._createToolBar.call(this);
 
 	//override the new button properties, since we want it to default to task.
-	this._setNewButtonProps(null, ZmMsg.createNewTask, "NewTask", "NewTaskDis", ZmOperation.NEW_TASK);
+	this._setNewButtonProps(null, ZmMsg.newTask, ZmMsg.createNewTask, "NewTask", "NewTaskDis", ZmOperation.NEW_TASK);
 };
 
 

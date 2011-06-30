@@ -154,8 +154,9 @@ function(ev, op, params) {
  * @private
  */
 ZmController.prototype._setNewButtonProps =
-function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
+function(view, text, toolTip, enabledIconId, disabledIconId, defaultId) {
 	var newButton = this.getNewButton(view);
+	newButton.setText(text);
 	newButton.setToolTipContent(toolTip);
 	newButton.setImage(enabledIconId);
 	this._defaultNewId = defaultId;

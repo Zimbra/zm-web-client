@@ -164,7 +164,7 @@ function(view) {
 	this._setNavToolBar(tb, view);
 
 	// TODO: mail enabled?
-	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
+	this._setNewButtonProps(view, ZmMsg.newMessage, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 };
 
 ZmMixedController.prototype._getToolBarOps =

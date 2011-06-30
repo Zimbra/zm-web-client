@@ -204,7 +204,7 @@ ZmContactController.prototype._initializeToolBar =
 function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
-	this._setNewButtonProps(view, ZmMsg.createNewContact, "NewContact", "NewContactDis", ZmOperation.NEW_CONTACT);
+	this._setNewButtonProps(view, ZmMsg.newContact, ZmMsg.createNewContact, "NewContact", "NewContactDis", ZmOperation.NEW_CONTACT);
 
 	var tb = this._toolbar[view];
 
