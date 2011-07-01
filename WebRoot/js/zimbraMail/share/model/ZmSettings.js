@@ -526,7 +526,7 @@ function(response) {
 			var locale = locales[i];
 			// bug: 38038
 			locale.id = locale.id.replace(/^in/,"id");
-			ZmLocale.create(locale.id, locale.name, locale.localName);
+			ZmLocale.create(locale.id, locale.name, ZmMsg["localeName_" + locale.id]);
 		}
 		this.getSetting(ZmSetting.LOCALE_CHANGE_ENABLED).setValue(ZmLocale.hasChoices());
 	}
