@@ -66,7 +66,7 @@
            <select name="st" class="st">
             <c:if test="${mailbox.features.mail}">
             <option value="${mailbox.prefs.groupMailBy}" ${param.s eq mailbox.prefs.groupMailBy ? 'selected=selected' : ''}>
-                <fmt:message key="mails"/>
+                <fmt:message key="mail"/>
             </option>
             </c:if>
             <c:if test="${mailbox.features.contacts}">
