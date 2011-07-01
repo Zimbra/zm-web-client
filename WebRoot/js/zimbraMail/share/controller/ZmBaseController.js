@@ -464,7 +464,7 @@ function(ev) {
  */
 ZmBaseController.prototype._deleteListener =
 function(ev) {
-	this._doDelete(this.getItems());
+	this._doDelete(this.getItems(), ev.shiftKey);
 };
 
 /**

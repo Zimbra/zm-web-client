@@ -193,17 +193,23 @@ ZmListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmListController.handleKeyAction");
 	var listView = this._view[this._currentView];
+	var hardDelete = false;
 
 	switch (actionCode) {
 
 		case DwtKeyMap.DBLCLICK:
 			return listView.handleKeyAction(actionCode);
 
+
+		case ZmKeyMap.SHIFT_DEL:
+			hardDelete = true;
+			//Intentional fall-through to the next case. Watch out not to add something after this. 
+
 		case ZmKeyMap.DEL:
 			var tb = this._getCurrentToolbar();
 			var button = tb && (tb.getButton(ZmOperation.DELETE) || tb.getButton(ZmOperation.DELETE_MENU));
 			if (button && button.getEnabled()) {
-				this._doDelete(this.getSelection());
+				this._doDelete(this.getSelection(), hardDelete);
 			}
 			break;
 
