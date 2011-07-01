@@ -238,7 +238,7 @@
                 <div class="tbl avs"><div class="tr">
                     <span class="td aleft">
                         <select name="st" style="border:1px solid gray;">
-                                <c:if test="${mailbox.features.mail}"><option value="${mailbox.prefs.groupMailBy}" ${empty st or st eq  mailbox.prefs.groupMailBy ? 'selected="selected"' : ''}><fmt:message key="mails"/></option></c:if>
+                                <c:if test="${mailbox.features.mail}"><option value="${mailbox.prefs.groupMailBy}" ${empty st or st eq  mailbox.prefs.groupMailBy ? 'selected="selected"' : ''}><fmt:message key="mail"/></option></c:if>
                                 <c:if test="${mailbox.features.contacts}"><option value="contact" ${st eq 'contact' ? 'selected=selected' : ''}><fmt:message key="contacts"/></option></c:if>
                                 <c:if test="${mailbox.features.gal}"><option value="gal" ${st eq 'gal' ? 'selected=selected' : ''}><fmt:message key="GAL"/></option></c:if>
                                 <c:if test="${mailbox.features.calendar}"><option value="cal" ${st eq 'cal' ? 'selected=selected' : ''}><fmt:message key="appointments"/></option></c:if>
