@@ -2165,12 +2165,7 @@ function() {
 ZmZimbraMail.prototype.setQuotaInfo =
 function(login, username) {
     var quota = appCtxt.get(ZmSetting.QUOTA);
-    if(!quota) {
-        return;
-    }
-	// quota
 	var usedQuota = (appCtxt.get(ZmSetting.QUOTA_USED)) || 0;
-
 	var data = {
 		id: this._usedQuotaField._htmlElId,
 		login: login,
@@ -2187,12 +2182,11 @@ function(login, username) {
 		data.percent = Math.min(Math.round((data.usedQuota / data.quota) * 100), 100);
 		data.desc = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [data.percent+'%', data.limit]);
 	}
-	else {
+    else {
 		data.desc = AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [data.size]);
 		quotaTemplateId = 'UsedUnlimited';
 	}
-	this._usedQuotaField.getHtmlElement().innerHTML = AjxTemplate.expand('share.Quota#'+quotaTemplateId, data);
-
+    this._usedQuotaField.getHtmlElement().innerHTML = AjxTemplate.expand('share.Quota#'+quotaTemplateId, data);
 	// tooltip for username/quota fields
 	var html = AjxTemplate.expand('share.Quota#Tooltip', data);
 	this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(html);
