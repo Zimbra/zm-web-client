@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -920,6 +920,7 @@ function(attr, isBatchMode, result) {
 		}
 		var msg = this.isGroup() ? ZmMsg.groupCreated : ZmMsg.contactCreated;
 		appCtxt.getAppController().setStatusMsg(msg);
+		appCtxt.getApp(ZmApp.CONTACTS).updateIdHash(cn, false);
 	} else {
 		var msg = this.isGroup() ? ZmMsg.errorCreateGroup : ZmMsg.errorCreateContact;
 		var detail = ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
@@ -1025,6 +1026,7 @@ function(attr, callback, result) {
 		if (attr[ZmContact.F_folderId] && this.folderId != attr[ZmContact.F_folderId]) {
 			this._setFolder(attr[ZmContact.F_folderId]);
 		}
+		appCtxt.getApp(ZmApp.CONTACTS).updateIdHash(cn, false);
 	} else {
         var detail = ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
         appCtxt.getAppController().setStatusMsg(ZmMsg.errorModifyContact, ZmStatusView.LEVEL_CRITICAL, detail);
