@@ -48,6 +48,17 @@ ZmRecipients = function(resetContainerSizeMethod, enableContainerInputs, reenter
 
 };
 
+ZmRecipients.OP = {};
+ZmRecipients.OP[AjxEmailAddress.TO]	= ZmId.CMP_TO;
+ZmRecipients.OP[AjxEmailAddress.CC]	= ZmId.CMP_CC;
+ZmRecipients.OP[AjxEmailAddress.BCC]	= ZmId.CMP_BCC;
+
+ZmRecipients.ADDR_SETTING = {};
+ZmRecipients.ADDR_SETTING[AjxEmailAddress.BCC]= ZmSetting.SHOW_BCC;
+
+ZmRecipients.BAD = "_bad_addrs_";
+
+
 ZmRecipients.prototype.attachFromSelect =
 function(fromSelect) {
     this._fromSelect = fromSelect;
@@ -69,7 +80,7 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
     this._fieldNames = fieldNames;
 
     	// init autocomplete list
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.isOffline) {
+    if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.isOffline) {
 		var params = {
 			dataClass:		appCtxt.getAutocompleter(),
 			matchValue:		ZmAutocomplete.AC_VALUE_FULL,
@@ -129,7 +140,7 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 			var pickerId = this._buttonTdId[type];
 			var pickerEl = document.getElementById(pickerId);
 			if (pickerEl) {
-				var buttonId = ZmId.getButtonId(viewId, ZmComposeView.OP[type]);
+				var buttonId = ZmId.getButtonId(viewId, ZmRecipients.OP[type]);
 				var button = this._pickerButton[type] = new DwtButton({parent:parent, id:buttonId});
 				button.setText(pickerEl.innerHTML);
 				button.replaceElement(pickerEl);
@@ -140,7 +151,7 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 				// autocomplete-related handlers
 				if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.isOffline) {
 					this._acAddrSelectList.handle(this._field[type], aifId);
-				} else {
+ 				} else {
 					this._setEventHandler(this._fieldId[type], "onKeyUp");
 				}
 
@@ -352,7 +363,7 @@ ZmRecipients.prototype.collectAddrs =
 function() {
 
 	var addrs = {};
-	addrs[ZmComposeView.BAD] = new AjxVector();
+	addrs[ZmRecipients.BAD] = new AjxVector();
 	for (var i = 0; i < this._fieldNames.length; i++) {
 		var type = this._fieldNames[i];
 		if (!this._using[type]) { continue; }
@@ -364,7 +375,7 @@ function() {
 		addrs.gotAddress = true;
 		addrs[type] = result;
 		if (result.bad.size()) {
-			addrs[ZmComposeView.BAD].addList(result.bad);
+			addrs[ZmRecipients.BAD].addList(result.bad);
 			if (!addrs.badType) {
 				addrs.badType = type;
 			}
@@ -452,7 +463,7 @@ function(type, show, skipNotify, skipFocus) {
 	Dwt.setVisible(this._divEl[type], show);
 	this._setAddrFieldValue(type, "");	 // bug fix #750 and #3680
 	this._field[type].noTab = !show;
-	var setting = ZmComposeView.ADDR_SETTING[type];
+	var setting = ZmRecipients.ADDR_SETTING[type];
 	if (setting) {
 		appCtxt.set(setting, show, null, false, skipNotify);
 	}

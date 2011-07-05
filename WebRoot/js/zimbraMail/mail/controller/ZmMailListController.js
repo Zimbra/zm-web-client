@@ -1031,9 +1031,9 @@ function(event) {
 	// Code copied from ZmComposeView.  Should consolidate along with the
 	// ZmRecipient code, i.e. the corresponding recipient controller code.
 	if (addrs.gotAddress) {
-        if (addrs[ZmComposeView.BAD].size()) {
+        if (addrs[ZmRecipients.BAD].size()) {
             // Any bad addresses?  If there are bad ones, ask the user if they want to send anyway.
-            var bad = AjxStringUtil.htmlEncode(addrs[ZmComposeView.BAD].toString(AjxEmailAddress.SEPARATOR));
+            var bad = AjxStringUtil.htmlEncode(addrs[ZmRecipients.BAD].toString(AjxEmailAddress.SEPARATOR));
             var msg = AjxMessageFormat.format(ZmMsg.compBadAddresses, bad);
             var cd = appCtxt.getOkCancelMsgDialog();
             cd.reset();
