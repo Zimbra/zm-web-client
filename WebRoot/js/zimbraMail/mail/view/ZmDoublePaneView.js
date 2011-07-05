@@ -118,6 +118,9 @@ function() {
 	return this._itemView;
 };
 
+// back-compatibility
+ZmDoublePaneView.prototype.getMsgView = ZmDoublePaneView.prototype.getItemView;
+
 ZmDoublePaneView.prototype.getInviteMsgView =
 function() {
 	return this._itemView.getInviteMsgView();
