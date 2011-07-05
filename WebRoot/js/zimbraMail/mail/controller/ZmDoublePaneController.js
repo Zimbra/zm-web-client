@@ -212,7 +212,8 @@ function() {
 	var list = this._flagOps();
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._msgOps());
-	list.push(ZmOperation.EDIT_AS_NEW);		// bug #28717
+    list.push(ZmOperation.REDIRECT);
+    list.push(ZmOperation.EDIT_AS_NEW);		// bug #28717
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	list.push(ZmOperation.SEP);

@@ -530,7 +530,8 @@ function() {
 	}
 	list.push(ZmOperation.SEP, ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD);
 	list.push(ZmOperation.SEP, ZmOperation.SHOW_ORIG);
-	list.push(ZmOperation.SEP, ZmOperation.EDIT_AS_NEW);
+    list.push(ZmOperation.SEP, ZmOperation.REDIRECT);
+    list.push(ZmOperation.SEP, ZmOperation.EDIT_AS_NEW);
 
 	if (!appCtxt.isChildWindow) {
 		list.push(ZmOperation.SEP);
@@ -622,7 +623,6 @@ function() {
 	if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
 		list.push(ZmOperation.FORWARD);
 	}
-    list.push(ZmOperation.REDIRECT);
 	return list;
 };
 
@@ -1724,6 +1724,8 @@ function(parent, num) {
 	parent.setItemVisible(ZmOperation.EDIT, isDrafts && (!itemFolder || !itemFolder.isReadOnly()));
 	parent.setItemVisible(ZmOperation.EDIT_AS_NEW, !isDrafts);
 
+	parent.setItemVisible(ZmOperation.REDIRECT, !isDrafts);
+
 	parent.setItemVisible(ZmOperation.MARK_READ, !isDrafts);
 	parent.setItemVisible(ZmOperation.MARK_UNREAD, !isDrafts);
 	parent.setItemVisible(ZmOperation.SPAM, !isDrafts);
@@ -1733,7 +1735,6 @@ function(parent, num) {
 	parent.setItemVisible(ZmOperation.ADD_FILTER_RULE, !isDrafts);
 	parent.setItemVisible(ZmOperation.CREATE_APPT, !isDrafts);
 	parent.setItemVisible(ZmOperation.CREATE_TASK, !isDrafts);
-
 
 	if (parent && parent instanceof ZmToolBar) {
 		// bug fix #37154 - disable non-applicable buttons if rfc/822 message
