@@ -610,27 +610,27 @@ function(what, folderType, ignoreExisting) {
 			invalid = true;														// convs which are a result of a search for this folder
 		} else {																// checks that need to be done for each item
 			for (var i = 0; i < items.length; i++) {
-				var item = items[i];
-				if (!item) {
+				var childItem = items[i];
+				if (!childItem) {
 					invalid = true;
 					break;
 				}
-				if (item == ZmItem.CONTACT) {
+				if (childItem == ZmItem.CONTACT) {
 					if (this.nId != ZmFolder.ID_TRASH) {
 						// can only move contacts into Trash
 						invalid = true;
 						break;
 					}
-				} else if (Dwt.instanceOf(item, "ZmBriefcaseFolderItem")) {
-                     if (item.folder && item.folder.isRemote() && !item.folder.rid) {
+				} else if (Dwt.instanceOf(childItem, "ZmBriefcaseFolderItem")) {
+                     if (childItem.folder && childItem.folder.isRemote() && !childItem.folder.rid) {
                         invalid = true;
                         break;
                      }
-                } else if (item.isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
+                } else if (childItem.isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
 					// can move drafts into Trash or Drafts
 					invalid = true;
 					break;
-				} else if ((this.nId == ZmFolder.ID_DRAFTS || this.rid == ZmFolder.ID_DRAFTS) && !item.isDraft)	{
+				} else if ((this.nId == ZmFolder.ID_DRAFTS || this.rid == ZmFolder.ID_DRAFTS) && !childItem.isDraft)	{
 					// only drafts can be moved into Drafts
 					invalid = true;
 					break;
