@@ -59,6 +59,7 @@ ZmMailRedirectDialog = function(parent, className) {
 
 
     this._recipients.createRecipientHtml(this, this._htmlElId, this._htmlElId, this._fieldNames);
+    this._tabGroup.addMember(this._recipients.getField(AjxEmailAddress.TO));
 };
 
 ZmMailRedirectDialog.prototype = new DwtDialog;
@@ -89,10 +90,12 @@ ZmMailRedirectDialog.prototype.popup =
 function(mail) {
     this._recipients.setup();
 
-	// Force focus on the TO field
-    appCtxt.getKeyboardMgr().grabFocus(this._recipients.getField(AjxEmailAddress.TO));
-
 	DwtDialog.prototype.popup.call(this);
+};
+
+ZmMailRedirectDialog.prototype._resetTabFocus =
+function(){
+	this._tabGroup.setFocusMember(this._recipients.getField(AjxEmailAddress.TO), true);
 };
 
 
