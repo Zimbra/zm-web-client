@@ -1172,7 +1172,7 @@ function(msg, container) {
 		if (obo) { lookupAddrs.push(obo); }
 		for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
 			var type = ZmMailMsg.ADDRS[i];
-			if (type == AjxEmailAddress.SENDER) { continue; }
+			if ((type == AjxEmailAddress.SENDER) || (type == AjxEmailAddress.RESENT_FROM)) { continue; }
 			var addrs = msg.getAddresses(type).getArray();
 			for (var j = 0; j < addrs.length; j++) {
 				if (addrs[j]) {
@@ -1215,7 +1215,7 @@ function(msg, container) {
 	var participants = [];
 	for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
 		var type = ZmMailMsg.ADDRS[i];
-		if (type == AjxEmailAddress.SENDER) { continue; }
+		if ((type == AjxEmailAddress.SENDER) || (type == AjxEmailAddress.RESENT_FROM)) { continue; }
 
 		var addrs = msg.getAddresses(type).getArray();
 		if (addrs.length > 0) {
