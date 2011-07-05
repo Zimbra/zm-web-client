@@ -2664,6 +2664,11 @@ ZmCalColView.prototype._gridMouseDownAction =
 function(ev, gridEl, gridLoc, isAllDay) {
 	if (ev.button != DwtMouseEvent.LEFT) { return false; }
 
+    if(ZmCalViewController._contextMenuOpened){
+        ZmCalViewController._contextMenuOpened = false;
+        return false;
+    }
+
 	var data = {
 		dndStarted: false,
 		view: this,
@@ -2830,6 +2835,40 @@ function(ev) {
 	mouseEv.setFromDhtmlEvent(ev);
 
 	DwtMouseEventCapture.getCaptureObj().release();
+
+    if (!data.dndStarted && appCtxt.get(ZmSetting.CAL_USE_QUICK_ADD)) {
+        var newStart, newEnd;
+        var deltaY = mouseEv.docY - data.docY;
+
+        if (deltaY >= 0) { // dragging down
+            newStart = data.view._snapXY(data.gridX, data.gridY, 30);
+            newEnd = data.view._snapXY(data.gridX, data.gridY + deltaY, 30, true);
+        } else { // dragging up
+            newEnd = data.view._snapXY(data.gridX, data.gridY, 30);
+            newStart = data.view._snapXY(data.gridX, data.gridY + deltaY, 30);
+        }
+
+        if (newStart == null || newEnd == null) return false;
+
+        if ((data.start == null) || (data.start.y != newStart.y) || (data.end.y != newEnd.y)) {
+
+            if (!data.dndStarted){
+                data.dndStarted = true;
+            }
+
+            data.start = newStart;
+            data.end = newEnd;
+
+            data.startDate = data.view._getDateFromXY(data.start.x, data.start.y, 30, false);
+            data.endDate = data.view._getDateFromXY(data.end.x, data.end.y, 30, false);
+        }
+
+        if (data.isAllDay) {
+		    data.newApptDivEl = document.getElementById(data.view._newAllDayApptDivId);
+        } else {
+            data.newApptDivEl = document.getElementById(data.view._newApptDivId);
+        }
+    }
 
 	if (data.dndStarted) {
 		data.gridEl.style.cursor = 'auto';

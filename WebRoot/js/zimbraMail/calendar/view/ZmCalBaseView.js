@@ -594,6 +594,22 @@ function() {
 ZmCalBaseView.prototype.handleActionPopdown = 
 function(ev) {
 	// clear out old right click selection
+    ZmCalViewController._contextMenuOpened = false;
+
+    if(ev && ev._ev && ev._ev.type === "mousedown"){//Only check for mouse events
+        var htmlEl = DwtUiEvent.getTarget(ev._ev),
+            element = document.getElementById(this._bodyDivId) || document.getElementById(this._daysId);
+
+        if(element){
+            while (htmlEl !== null) {
+                if(htmlEl === element){
+                    ZmCalViewController._contextMenuOpened = true;
+                    break;
+                }
+                htmlEl = htmlEl.parentNode;
+            }
+        }
+    }
 };
 
 // END LIST-RELATED

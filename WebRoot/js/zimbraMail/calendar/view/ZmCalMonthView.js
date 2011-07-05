@@ -922,7 +922,11 @@ function(ev, div, dblclick) {
             var now = new Date();
             date.setHours(now.getHours(), now.getMinutes());
 			if(ev.button == DwtMouseEvent.LEFT) {
-            	AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.expandDay, [this._days[loc]]), 200);
+                if(ZmCalViewController._contextMenuOpened){
+                    ZmCalViewController._contextMenuOpened = false;
+                    break;
+                }
+                AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.expandDay, [this._days[loc]]), 200);
 			}
             break;
         default:

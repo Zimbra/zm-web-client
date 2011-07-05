@@ -310,9 +310,9 @@ function(menu) {
 };
 
 ZmListController.prototype._menuPopdownActionListener =
-function() {
+function(ev) {
 	if (!this._pendingActionData) {
-		this.getCurrentView().handleActionPopdown();
+		this.getCurrentView().handleActionPopdown(ev);
 	}
 };
 

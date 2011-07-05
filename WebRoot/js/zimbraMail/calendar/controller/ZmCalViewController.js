@@ -3094,6 +3094,7 @@ function(ev) {
 				this._viewActionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
 			}
 		}
+        this._viewActionMenu.addPopdownListener(this._menuPopdownListener);
 	}
 
 	if (this._viewVisible && this._currentView == ZmId.VIEW_CAL_SCHEDULE) {
