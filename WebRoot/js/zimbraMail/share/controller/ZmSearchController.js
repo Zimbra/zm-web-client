@@ -345,6 +345,7 @@ function(menu) {
  * @param {AjxCallback}	params.callback		the async callback
  * @param {AjxCallback}	params.errorCallback	the async callback to run if there is an exception
  * @param	{Object}	params.response		the canned JSON response (no request will be made)
+ * @param {boolean} params.skipUpdateSearchToolbar     don't update the search toolbar (e.g. from the ZmDumpsterDialog where the search is called from its own search toolbar
  * 
  */
 ZmSearchController.prototype.search =
@@ -608,7 +609,8 @@ function(types) {
  * @param {Boolean}	noRender		if <code>true</code>, the search results will not be rendered
  * @param {AjxCallback}	callback		the callback
  * @param {AjxCallback}	errorCallback	the error callback
- * 
+ * @param {boolean} params.skipUpdateSearchToolbar     don't update the search toolbar (e.g. from the ZmDumpsterDialog where the search is called from its own search toolbar
+ *
  * @see	#search
  * 
  * @private
@@ -619,7 +621,7 @@ function(params, noRender, callback, errorCallback) {
 	var searchFor = this._searchFor = params.searchFor || this._searchFor;
 	appCtxt.notifyZimlets("onSearch", [params.query]);
 
-	if (this._searchToolBar) {
+	if (!this.skipUpdateSearchToolbar && this._searchToolBar) {
 		var value = (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText)
 			? params.query : null;
 		this._searchToolBar.setSearchFieldValue(value || "");

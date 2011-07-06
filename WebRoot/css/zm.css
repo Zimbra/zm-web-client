@@ -3308,6 +3308,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	height: 278px;
 }
 
+.ZmDumpsterDialog .DumpsterSearchInput input {
+	width:200px;
+}
+
 
 /*
  *	Share properties dialog

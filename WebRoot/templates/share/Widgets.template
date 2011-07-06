@@ -194,6 +194,12 @@
 </template>
 
 <template id='share.Widgets#ZmDumpsterDialog'>
+	<table>
+		<tr>
+			<td id='${id}_inputContainerId' class="DumpsterSearchInput"></td>
+			<td id='${id}_searchButtonContainerId'></td>
+		</tr>
+	</table>
 	<div id='${id}_toolbar'></div>
 	<div id='${id}_listview'></div>
 </template>
