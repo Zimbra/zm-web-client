@@ -44,6 +44,11 @@ function() {
 };
 ZmApptController.viewToTab = {};
 
+ZmApptController.prototype._createNewView =
+function(viewId) {
+    this._initializeListView(viewId);
+    return this._listView[viewId];
+};
 
 ZmApptController.prototype.show =
 function(appt, mode) {
