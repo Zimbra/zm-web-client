@@ -683,18 +683,28 @@ ZmMailList.prototype._getTcon =
 function(items, nId) {
 	var chars = [];
 	var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
-
+    var id;
     if(!nId){
         var searchFolder = this.search && appCtxt.getById(this.search.folderId);
         if(searchFolder){
             nId = searchFolder.isRemote() ? searchFolder.rid : searchFolder.nId;
+            id = searchFolder.id;
         }
     }
 
 	for (var i = 0; i < folders.length; i++) {
 		var folderId = folders[i];
-		var folder = appCtxt.getById(folderId);
-		var nFolder = appCtxt.getById(nId);
+        var folder;
+        // get folder object from qualified Ids for multi-account
+        if (appCtxt.multiAccounts) {
+            var acct  = items && items[0].getAccount();
+            var acctId = acct ? acct.id : appCtxt.getActiveAccount().id;
+            var fId = [acctId, ":", folderId].join("");
+            folder = appCtxt.getById(fId);
+        } else {
+            folder = appCtxt.getById(folderId);
+        }
+        var nFolder = (id) ? appCtxt.getById(id) : appCtxt.getById(nId);
 		if (nId != folderId && folder && nFolder && !nFolder.isChildOf(folder)) {
 			chars.push(ZmFolder.TCON_CODE[folderId]);
 		}
