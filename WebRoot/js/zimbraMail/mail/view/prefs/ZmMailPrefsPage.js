@@ -241,7 +241,7 @@ ZmMailPrefsPage.prototype._dateFieldListener =
 function(ev) {
 	var sd = this._fixAndGetValidDateFromField(this._startDateField);
 	var ed = this._fixAndGetValidDateFromField(this._endDateField);
-	this._fixDates(sd, ed, ev.target == this._endDateField);
+	this._fixDates(sd, ed, DwtUiEvent.getTarget(ev) == this._endDateField);
 };
 
 /* Fixes the field values so that end date always is later than or equal to start date
