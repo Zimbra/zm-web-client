@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -37,7 +37,6 @@
 ZmCalendar = function(params) {
 	params.type = ZmOrganizer.CALENDAR;
 	ZmOrganizer.call(this, params);
-	this.reminder = params.reminder;
 };
 
 ZmCalendar.prototype = new ZmOrganizer;
@@ -93,18 +92,16 @@ function() {
 /**
  * Sets the free/busy.
  * 
- * @param	{Boolean}	        exclude		    if <code>true</code>, exclude free busy
- * @param	{AjxCallback}	    callback		the callback
- * @param	{AjxCallback}	    errorCallback	the error callback
- * @param   {ZmBatchCommand}    batchCmd        optional batch command
+ * @param	{Boolean}	exclude		if <code>true</code>, exclude free busy
+ * @param	{AjxCallback}	callback		the callback
+ * @param	{AjxCallback}	errorCallback		the error callback
  */
 ZmCalendar.prototype.setFreeBusy = 
-function(exclude, callback, errorCallback, batchCmd) {
+function(exclude, callback, errorCallback) {
 	if (this.excludeFreeBusy == exclude) { return; }
 	// NOTE: Don't need to store the value since the response will
 	//       report that the object was modified.
-	this._organizerAction({action: "fb", attrs: {excludeFreeBusy: exclude ? "1" : "0"},
-                           callback: callback, errorCallback: errorCallback, batchCmd: batchCmd});
+	this._organizerAction({action: "fb", attrs: {excludeFreeBusy: exclude ? "1" : "0"}, callback: callback, errorCallback: errorCallback});
 };
 
 ZmCalendar.prototype.setChecked = 
@@ -211,11 +208,6 @@ function(obj) {
 		//       all the possible fields in sub-classes. So I'm just using the
 		//       modified property name as the key.
 		fields["excludeFreeBusy"] = true;
-		doNotify = true;
-	}
-	if (obj.reminder !== undefined && !obj._isRemote) {
-		this.reminder = obj.reminder;
-		fields["reminder"] = true;
 		doNotify = true;
 	}
 
@@ -336,27 +328,3 @@ function() {
 	return ZmOrganizer.prototype.isReadOnly.call(this);
 };
 
-
-/**
- * Sets the reminder flag
- *
- * @param	{Boolean}	        sharedReminder  if <code>true</code>, display reminders from shared calendars
- * @param	{AjxCallback}	    callback		the callback
- * @param	{AjxCallback}	    errorCallback	the error callback
- * @param   {ZmBatchCommand}    batchCmd        optional batch command
- */
-ZmCalendar.prototype.setSharedReminder =
-function(sharedReminder, callback, errorCallback, batchCmd) {
-	if (this.reminder == sharedReminder) { return; }
-
-    var soapDoc = AjxSoapDoc.create("EnableSharedReminderRequest", "urn:zimbraMail");
-
-    var linkNode = soapDoc.set("link");
-    linkNode.setAttribute("id", this.id);
-    linkNode.setAttribute("reminder", sharedReminder ? "1" : "0");
-
-    appCtxt.getAppController().sendRequest({soapDoc:soapDoc,
-                                            asyncMode:true,
-                                            callback:callback,
-                                            errorCallback:errorCallback});
-};

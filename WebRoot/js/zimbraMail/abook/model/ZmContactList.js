@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -53,8 +53,6 @@ ZmContactList = function(search, isGal, type) {
 	this._emailToContact = this._app._byEmail;
 	this._imAddressToContact = this._app._byIM;
 	this._phoneToContact = this._app._byPhone;
-
-	this._alwaysUpdateHashes = true; // Should we update the phone & IM fast-lookup hashes even when account features don't require it? (bug #60411)
 };
 
 ZmContactList.prototype = new ZmList;
@@ -242,7 +240,7 @@ function(contact, idx) {
 
 	if (this.isCanonical) {
 		var a = this.getArray();
-		idx = idx || this.getIndexById(contact.id);
+		idx = idx || this._getIndexById(contact.id);
 		a[idx] = realContact;
 		this._updateHashes(realContact, true);
 		this._idHash[contact.id] = realContact;
@@ -258,7 +256,7 @@ function(contact, idx) {
  * @return	{int}	the index
  * @private
  */
-ZmContactList.prototype.getIndexById =
+ZmContactList.prototype._getIndexById =
 function(id) {
 	var a = this.getArray();
 	for (var i = 0; i < a.length; i++) {
@@ -673,7 +671,7 @@ function(contact, doAdd) {
 	}
 
 	// Update phone hash.
-	if (appCtxt.get(ZmSetting.VOICE_ENABLED) || this._alwaysUpdateHashes) {
+	if (appCtxt.get(ZmSetting.VOICE_ENABLED)) {
 		for (var index = 0; index < ZmContact.PHONE_FIELDS.length; index++) {
 			var field = ZmContact.PHONE_FIELDS[index];
 			for (var i = 1; true; i++) {
@@ -693,7 +691,7 @@ function(contact, doAdd) {
 	}
 
 	// Update IM hash.
-	if (appCtxt.get(ZmSetting.IM_ENABLED) || this._alwaysUpdateHashes) {
+	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
 		for (var index = 0; index < ZmContact.IM_FIELDS.length; index++) {
 			var field = ZmContact.IM_FIELDS[index];
 			for (var i = 1; true; i++) {
@@ -735,15 +733,6 @@ function(contact) {
 	}
 	return a.length;
 };
-
-/**
- * Gets the list ID hash
- * @return idHash {Ojbect} list ID hash
- */
-ZmContactList.prototype.getIdHash =
-function() {
-	return this._idHash;
-}
 
 /**
  * @private
