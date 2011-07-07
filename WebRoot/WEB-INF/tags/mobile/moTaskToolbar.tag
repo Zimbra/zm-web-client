@@ -187,7 +187,7 @@
                         </c:if>
                         <c:if test="${btm_fldr_select ne '0'}">
 			<select class="_zo_select_button" name="sfi"
-                                onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');"><c:set var="count" value="${0}"/>
+                                onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}', GC());"><c:set var="count" value="${0}"/>
                             <zm:forEachFolder var="fldr" skiproot="true">
                                 <c:if test="${count lt sessionScope.F_LIMIT and fldr.isTaskView}">
                                     <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
