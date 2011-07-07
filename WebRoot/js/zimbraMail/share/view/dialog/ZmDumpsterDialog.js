@@ -662,6 +662,16 @@ function(dlg) {
 	params.showDrafts =	true;
 	var omit = {};
 	omit[ZmFolder.ID_SPAM] = true;
+	//bug:60237 remote folders should be excluded from the recovery folder selection
+    var folderTree = appCtxt.getFolderTree();
+	if (!folderTree) { return params; }
+	var folders = folderTree.getByType(ZmApp.ORGANIZER[this._appName]);
+	for (var i = 0; i < folders.length; i++) {
+		var folder = folders[i];
+        if(folder.link && folder.isRemote()) {
+          omit[folder.id] = true;
+        }
+	}
 	params.omit = omit;
 	return params;
 };
