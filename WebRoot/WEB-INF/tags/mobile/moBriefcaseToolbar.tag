@@ -34,7 +34,7 @@
                 <a accesskey="${requestScope.navlink_accesskey}" href="${urlTarget}?st=${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks':'briefcases'}"><fmt:message key="${context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki' ? 'notebooks':'briefcases'}"/></a> &laquo;
                 <c:if test="${top_fldr_select eq '0'}">${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}</c:if>
                 <c:if test="${top_fldr_select ne '0' && empty document}">
-			    <select class="_zo_select_button" name="sfi" onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');"><c:set var="count" value="0"/>
+			    <select class="_zo_select_button" name="sfi" onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}', GC());"><c:set var="count" value="0"/>
                     <zm:forEachFolder var="fldr" skiproot="true">
                     <c:if test="${count lt sessionScope.F_LIMIT and (context.isBriefcaseSearch && fldr.isDocumentView && !context.folder.isWikiView && context.folder.types ne 'wiki') || ((context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki') && fldr.isWikiView )}">
                         <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option><c:set var="count" value="${count+1}"/></c:if></zm:forEachFolder>
@@ -168,7 +168,7 @@
         <c:if test="${btm_fldr_select eq '0'}">
             ${fn:escapeXml(zm:truncateFixed(context.shortBackTo,12,true))}
         </c:if>
-        <c:if test="${btm_fldr_select ne '0' && empty document}"><select class="_zo_select_button" name="sfi" onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}');"><c:set var="count" value="${0}"/>
+        <c:if test="${btm_fldr_select ne '0' && empty document}"><select class="_zo_select_button" name="sfi" onchange="fetchIt('?sfi='+this.value+'&amp;st=${context.st}', GC());"><c:set var="count" value="${0}"/>
                 <zm:forEachFolder var="fldr" skiproot="true">
                     <c:if test="${count lt sessionScope.F_LIMIT and (context.isBriefcaseSearch && fldr.isDocumentView && !context.folder.isWikiView && context.folder.types ne 'wiki') || ((context.isWikiSearch || context.folder.isWikiView || context.folder.types eq 'wiki') && fldr.isWikiView )}">
                         <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}</option><c:set var="count" value="${count+1}"/>
