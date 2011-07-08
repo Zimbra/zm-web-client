@@ -949,10 +949,12 @@ function(ev) {
 
 
 ZmCalBaseView.prototype._apptMouseDownAction =
-function(ev, apptEl) {
+function(ev, apptEl, appt) {
 	if (ev.button != DwtMouseEvent.LEFT) { return false; }
 
-	var appt = this.getItemFromElement(apptEl);
+    if (!appt) {
+        appt = this.getItemFromElement(apptEl);
+    }
 	var calendar = appCtxt.getById(appt.folderId);
 	var isRemote = Boolean(calendar.url);
     if (appt.isReadOnly() || isRemote) return false;
@@ -1030,9 +1032,11 @@ function(data) {
 
 ZmCalBaseView._apptMouseMoveHdlr =
 function(ev) {
+    var data = DwtMouseEventCapture.getTargetObj();
+    if (!data) return false;
+
 	var mouseEv = DwtShell.mouseEvent;
 	mouseEv.setFromDhtmlEvent(ev, true);
-	var data = DwtMouseEventCapture.getTargetObj();
     var view = data.view;
 
 	var deltaX = mouseEv.docX - data.docX;

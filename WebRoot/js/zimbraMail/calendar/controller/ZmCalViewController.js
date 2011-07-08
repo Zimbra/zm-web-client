@@ -3636,13 +3636,14 @@ function(actionCode) {
 		case ZmKeyMap.CANCEL:
             var currentView = this._viewMgr.getCurrentView();
             if ((this._currentView == ZmId.VIEW_CAL_WORK_WEEK) ||
-                (this._currentView == ZmId.VIEW_CAL_WEEK)) {
+                (this._currentView == ZmId.VIEW_CAL_WEEK) ||
+                (this._currentView == ZmId.VIEW_CAL_MONTH)) {
                 // Abort - restore location and Mouse up
                 var data = DwtMouseEventCapture.getTargetObj();
                 if (data) {
-                    ZmCalColView._restoreApptLoc(data);
-                    data.startDate = data.appt.startDate;
-                    ZmCalColView._apptMouseUpHdlr(null);
+                    currentView._restoreApptLoc(data);
+                    data.startDate = data.appt._orig.startDate;
+                    ZmCalBaseView._apptMouseUpHdlr(null);
                 }
             }
 			break;

@@ -524,23 +524,7 @@ function(appt) {
 	return document.getElementById(appt.isAllDayEvent() ? this._allDayDivId : this._apptBodyDivId);
 };
 
-ZmCalColView._setApptOpacity =
-function(appt, div) {
-	switch (appt.ptst) {
-		case ZmCalBaseItem.PSTATUS_DECLINED:	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_DECLINED); break;
-		case ZmCalBaseItem.PSTATUS_TENTATIVE:	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_TENTATIVE); break;
-		default:								Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_NORMAL); break;
-	}
 
-	// obey free busy status for organizer's appts
-	if (appt.fba && appt.isOrganizer()) {
-		 switch (appt.fba) {
-			case "F":	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_FREE); break;
-			case "B":	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_BUSY); break;
-			case "T":	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_TENTATIVE); break;
-		 }
-	}
-};
 
 // for the new appt when drag selecting time grid
 ZmCalColView.prototype._populateNewApptHtml =
@@ -614,7 +598,7 @@ function(appt) {
         div.style.overflow = "hidden";
     }
 
-	ZmCalColView._setApptOpacity(appt, div);
+	ZmCalBaseView._setApptOpacity(appt, div);
 
 	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
 
@@ -1869,7 +1853,7 @@ function() {
 };
 
 ZmCalColView.prototype._handleApptScrollRegion =
-function(docX, docY, incr) {
+function(docX, docY, incr, data) {
 	var offset = 0;
 	var upper = docY < this._apptBodyDivOffset.y;
     // Trigger scroll when scroll is within 8 px of the bottom
@@ -1890,6 +1874,9 @@ function(docX, docY, incr) {
 			div.scrollTop += offset;
 			this._syncScroll();
 		}
+        if (data) {
+            data.docY -= offset;
+        }
 	}
 	return offset;
 };
@@ -2079,79 +2066,6 @@ function(ev, div) {
 
 // BEGIN APPT ACTION HANDLERS
 
-ZmCalColView.prototype._apptMouseDownAction =
-function(ev, apptEl) {
-	if (ev.button != DwtMouseEvent.LEFT) { return false; }
-
-	var appt = this.getItemFromElement(apptEl);
-	var calendar = appCtxt.getById(appt.folderId);
-	var isRemote = Boolean(calendar.url);
-	if (appt.isReadOnly() || (appt._fanoutNum > 0) || isRemote) return false;
-
-	var apptOffset = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, apptEl, true);
-
-	var data = {
-		dndStarted: false,
-		appt: appt,
-		view: this,
-		apptEl: apptEl,
-		apptOffset: apptOffset,
-		docX: ev.docX,
-		docY: ev.docY
-	};
-
-	var capture = new DwtMouseEventCapture({
-		targetObj:data,
-		mouseOverHdlr:ZmCalColView._emptyHdlr,
-		mouseDownHdlr:ZmCalColView._emptyHdlr, // mouse down (already handled by action)
-		mouseMoveHdlr:ZmCalColView._apptMouseMoveHdlr,
-		mouseUpHdlr:ZmCalColView._apptMouseUpHdlr,
-		mouseOutHdlr:ZmCalColView._emptyHdlr
-	});
-
-    this._controller.setCurrentListView(this);
-
- 	capture.capture();
-	return false;
-};
-
-ZmCalColView.prototype._getApptDragProxy =
-function(data) {
-	// set icon
-	var icon;
-	if (this._apptDragProxyDivId == null) {
-		icon = document.createElement("div");
-		icon.id = this._apptDragProxyDivId = Dwt.getNextId();
-		Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE);
-		this.shell.getHtmlElement().appendChild(icon);
-		Dwt.setZIndex(icon, Dwt.Z_DND);
-	} else {
-		icon = document.getElementById(this._apptDragProxyDivId);
-	}
-	icon.className = DwtCssStyle.NOT_DROPPABLE;
-
-	var appt = data.appt;
-	var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT);
-	var color = ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)];
-	if (appt.ptst != ZmCalBaseItem.PSTATUS_NEEDS_ACTION) {
-		color += "Bg";
-	}
-
-	var data = {
-		shortDate: formatter.format(appt.startDate),
-		dur: appt.getShortStartHour(),
-		color: color,
-		apptName: AjxStringUtil.htmlEncode(appt.getName())
-	};
-
-	icon.innerHTML = AjxTemplate.expand("calendar.Calendar#ApptDragProxy", data);
-
-	var imgHtml = AjxImg.getImageHtml("RoundPlus", "position:absolute; top:30; left:-11; visibility:hidden");
-	icon.appendChild(Dwt.parseHtmlFragment(imgHtml));
-
-	return icon;
-};
-
 
 // called when DND is confirmed after threshold
 ZmCalColView.prototype._apptDndBegin =
@@ -2164,14 +2078,15 @@ function(data) {
 	data.apptsDiv    = document.getElementById(this._apptBodyDivId);
 	data.bodyDivEl   = document.getElementById(this._bodyDivId);
 	data.apptBodyEl  = document.getElementById(data.apptEl.id + "_body");
-    Dwt.addClass(data.apptBodyEl, DwtCssStyle.DROPPABLE);
 
 	data.startDate   = new Date(data.appt.getStartTime());
 	data.startTimeEl = document.getElementById(data.apptEl.id +"_st");
 	data.endTimeEl   = document.getElementById(data.apptEl.id +"_et");
 
-    this._containerRect = null;
     if (data.appt.isAllDayEvent()) {
+        data.saveHTML  = data.apptEl.innerHTML;
+        data.saveLoc  = loc;
+
         // Adjust apptOffset.x to be the offset from the clicked on column.  Then create the
         // start snap using this offset (so that start column of a multi-day is tracked).
         var leftSnap = this._snapXY(data.apptX, data.apptY, 15);
@@ -2197,171 +2112,23 @@ function(data) {
 
         this._layoutAppt(data.appt, data.apptEl, bounds.x, bounds.y, bounds.width, bounds.height);
 
-        this._containerRect = new DwtRectangle(this._apptAllDayDivOffset.x,
-                this._apptAllDayDivOffset.y,
-                this._bodyDivWidth,
-                this._allDayDivHeight + this._bodyDivHeight + ZmCalColView._SCROLL_PRESSURE_FUDGE);
-    } else {
+        data.disableScroll = true;
+     } else {
         data.snap = this._snapXY(data.apptX + data.apptOffset.x, data.apptY, 15); 	// get orig grid snap
-        this._containerRect = new DwtRectangle(this._apptAllDayDivOffset.x,
-                this._apptBodyDivOffset.y - ZmCalColView._SCROLL_PRESSURE_FUDGE,
-                this._bodyDivWidth,
-                this._bodyDivHeight + ZmCalColView._SCROLL_PRESSURE_FUDGE);
     }
+
     if (data.snap == null) return false;
 
 	this.deselectAll();
 	this.setSelection(data.appt);
+    Dwt.addClass(data.apptBodyEl, DwtCssStyle.DROPPABLE);
 	Dwt.setOpacity(data.apptEl, ZmCalColView._OPACITY_APPT_DND);
 	data.dndStarted = true;
 	return true;
 };
 
-ZmCalColView._apptMouseMoveHdlr =
-function(ev) {
-	var mouseEv = DwtShell.mouseEvent;
-	mouseEv.setFromDhtmlEvent(ev, true);
-	var data = DwtMouseEventCapture.getTargetObj();
 
-	var deltaX = mouseEv.docX - data.docX;
-	var deltaY = mouseEv.docY - data.docY;
-
-	if (!data.dndStarted) {
-		var withinThreshold = (Math.abs(deltaX) < ZmCalColView.DRAG_THRESHOLD && Math.abs(deltaY) < ZmCalColView.DRAG_THRESHOLD);
-		if (withinThreshold || !data.view._apptDndBegin(data)) {
-			mouseEv._stopPropagation = true;
-			mouseEv._returnValue = false;
-			mouseEv.setToDhtmlEvent(ev);
-			return false;
-		}
-	}
-
-	var draggedOut = data.view._apptDraggedOut(mouseEv.docX, mouseEv.docY);
-	var obj = data.dndObj;
-
-	if (draggedOut) {
-		// simulate DND
-		if (!data._lastDraggedOut) {
-			data._lastDraggedOut = true;
-			data.snap.x = null;
-			data.snap.y = null;
-			data.startDate = new Date(data.appt.getStartTime());
-			ZmCalColView._restoreApptLoc(data);
-			if (!data.icon) {
-				data.icon = data.view._getApptDragProxy(data);
-			}
-			Dwt.setVisible(data.icon, true);
-            Dwt.delClass(data.apptBodyEl, DwtCssStyle.DROPPABLE);
-		}
-		Dwt.setLocation(data.icon, mouseEv.docX+5, mouseEv.docY+5);
-		var destDwtObj = mouseEv.dwtObj;
-		var obj = data.dndObj;
-
-		if (destDwtObj && destDwtObj._dropTarget)
-		{
-			if (destDwtObj != obj._lastDestDwtObj ||
-				destDwtObj._dropTarget.hasMultipleTargets())
-			{
-				//DBG.println("dwtObj = "+destDwtObj._dropTarget);
-				if (destDwtObj._dropTarget._dragEnter(Dwt.DND_DROP_MOVE, destDwtObj, {data: data.appt}, mouseEv, data.icon)) {
-					//obj._setDragProxyState(true);
-					data.icon.className = DwtCssStyle.DROPPABLE;
-					obj._dropAllowed = true;
-					destDwtObj._dragEnter(mouseEv);
-				} else {
-					//obj._setDragProxyState(false);
-					data.icon.className = DwtCssStyle.NOT_DROPPABLE;
-					obj._dropAllowed = false;
-				}
-			} else if (obj._dropAllowed) {
-				destDwtObj._dragOver(mouseEv);
-			}
-		} else {
-			data.icon.className = DwtCssStyle.NOT_DROPPABLE;
-			//obj._setDragProxyState(false);
-		}
-
-		if (obj._lastDestDwtObj &&
-			obj._lastDestDwtObj != destDwtObj &&
-			obj._lastDestDwtObj._dropTarget &&
-			obj._lastDestDwtObj != obj)
-		{
-			obj._lastDestDwtObj._dragLeave(mouseEv);
-			obj._lastDestDwtObj._dropTarget._dragLeave();
-		}
-		obj._lastDestDwtObj = destDwtObj;
-	}
-	else
-	{
-		if (data._lastDraggedOut) {
-			data._lastDraggedOut = false;
-			if (data.icon) {
-				Dwt.setVisible(data.icon, false);
-			}
-			Dwt.setOpacity(data.apptEl, ZmCalColView._OPACITY_APPT_DND);
-            Dwt.addClass(data.apptBodyEl, DwtCssStyle.DROPPABLE);
-		}
-		obj._lastDestDwtObj = null;
-        if (!data.appt.isAllDayEvent()) {
-            var scrollOffset = data.view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, ZmCalColView._HOUR_HEIGHT);
-            if (scrollOffset != 0) {
-                data.docY -= scrollOffset;
-                deltaY += scrollOffset;
-            }
-        }
-
-		// snap new location to grid
-		var newDate = null;
-		var snap = data.view._snapXY(data.apptX + data.apptOffset.x + deltaX, data.apptY + deltaY, 15);
-        if ((snap == null) && data.appt.isAllDayEvent()) {
-            // For a multi day appt , the start snap may have started or be pushed off the grid.
-            // Create a snap with a pseudo column.
-            snap = data.view._snapAllDayOutsideGrid(data.apptX + data.apptOffset.x + deltaX);
-            newDate = data.view._createAllDayDateFromIndex(snap.col.index);
-        } else {
-            newDate = data.view._getDateFromXY(snap.x, snap.y, 15);
-        }
-
-		//DBG.println("mouseMove new snap: "+snap.x+","+snap.y+ " data snap: "+data.snap.x+","+data.snap.y);
-		if (snap != null && ((snap.x != data.snap.x || snap.y != data.snap.y))) {
-			if (newDate != null &&
-				(!(data.view._scheduleMode && snap.col != data.snap.col)) && // don't allow col moves in sched view
-				(newDate.getTime() != data.startDate.getTime()))
-			{
-                var bounds = null;
-                if (data.appt.isAllDayEvent()) {
-                    // Not using snapXY and GeBoundsForAllDayDate - snap requires that a date
-                    // fall within one of its columns, which may not be so for a multi day appt.
-                    var bounds = new DwtRectangle(snap.x, data.apptY,
-                        data.apptWidth, ZmCalColView._ALL_DAY_APPT_HEIGHT);
-                } else {
-                    bounds = data.view._getBoundsForDate(newDate, data.appt._orig.getDuration(), snap.col);
-                }
-				data.view._layoutAppt(null, data.apptEl, bounds.x, bounds.y, bounds.width, bounds.height);
-				data.startDate = newDate;
-				data.snap = snap;
-				if (data.startTimeEl) data.startTimeEl.innerHTML = ZmCalBaseItem._getTTHour(data.startDate);
-				if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalBaseItem._getTTHour(new Date(data.startDate.getTime()+data.appt.getDuration()));
-			}
-		}
-	}
-	mouseEv._stopPropagation = true;
-	mouseEv._returnValue = false;
-	mouseEv.setToDhtmlEvent(ev);
-	return false;
-};
-
-ZmCalColView.prototype._apptDraggedOut =
-function(docX, docY) {
-    var draggedOut = this._containerRect ? true : false;
-    return draggedOut &&
-           ((docY < this._containerRect.y) ||
-            (docY > (this._containerRect.y + this._containerRect.height)) ||
-            (docX < this._containerRect.x) ||
-            (docX > (this._containerRect.x + this._containerRect.width)));
-};
-
-ZmCalColView._restoreApptLoc =
+ZmCalColView.prototype._restoreApptLoc =
 function(data) {
 	var lo = data.appt._layout;
 	data.view._layoutAppt(null, data.apptEl, lo.x, lo.y, lo.w, lo.h);
@@ -2371,119 +2138,95 @@ function(data) {
     if (data.endTimeEl) {
 		data.endTimeEl.innerHTML = ZmCalBaseItem._getTTHour(data.appt.endDate);
 	}
-	ZmCalColView._setApptOpacity(data.appt, data.apptEl);
+	ZmCalBaseView._setApptOpacity(data.appt, data.apptEl);
 };
 
-ZmCalColView._apptMouseUpHdlr =
-function(ev) {
-	//DBG.println("ZmCalColView._apptMouseUpHdlr: "+ev.shiftKey);
-	var data = DwtMouseEventCapture.getTargetObj();
 
-	var mouseEv = DwtShell.mouseEvent;
-    if (ev && mouseEv) {
-	    mouseEv.setFromDhtmlEvent(ev, true);
+ZmCalColView.prototype._restoreAppt =
+function(data) {
+   if (data.appt.isAllDayEvent()) {
+       Dwt.setLocation(data.apptEl, data.saveLoc.x, data.saveLoc.y);
+       data.apptEl.innerHTML = data.saveHTML;
+    }
+};
+
+
+ZmCalColView.prototype._createContainerRect =
+function(data) {
+     this._containerRect = null;
+    if (data.appt.isAllDayEvent()) {
+        this._containerRect = new DwtRectangle(this._apptAllDayDivOffset.x,
+                this._apptAllDayDivOffset.y,
+                this._bodyDivWidth,
+                this._allDayDivHeight + this._bodyDivHeight + ZmCalColView._SCROLL_PRESSURE_FUDGE);
+    } else {
+        this._containerRect = new DwtRectangle(this._apptAllDayDivOffset.x,
+                this._apptBodyDivOffset.y - ZmCalColView._SCROLL_PRESSURE_FUDGE,
+                this._bodyDivWidth,
+                this._bodyDivHeight + ZmCalColView._SCROLL_PRESSURE_FUDGE);
+    }
+}
+
+ZmCalColView.prototype._clearSnap =
+function(snap) {
+    snap.x = null;
+    snap.y = null;
+}
+
+
+ZmCalColView.prototype._restoreHighlight =
+function(data) {
+    Dwt.setOpacity(data.apptEl, ZmCalColView._OPACITY_APPT_DND);
+    Dwt.addClass(data.apptBodyEl, DwtCssStyle.DROPPABLE);
+}
+
+ZmCalColView.prototype._doApptMove =
+function(data, deltaX, deltaY) {
+    // snap new location to grid
+    var newDate = null;
+    var snap = data.view._snapXY(data.apptX + data.apptOffset.x + deltaX, data.apptY + deltaY, 15);
+    if (snap == null) {
+        if (data.appt.isAllDayEvent()) {
+            // For a multi day appt , the start snap may have started or be pushed off the grid.
+            // Create a snap with a pseudo column.
+            snap = data.view._snapAllDayOutsideGrid(data.apptX + data.apptOffset.x + deltaX);
+            newDate = data.view._createAllDayDateFromIndex(snap.col.index);
+        }
+    } else {
+        newDate = data.view._getDateFromXY(snap.x, snap.y, 15);
     }
 
-	DwtMouseEventCapture.getCaptureObj().release();
-
-	var draggedOut = data.view._apptDraggedOut(mouseEv.docX, mouseEv.docY);
-
-	if (data.dndStarted) {
-		//notify Zimlet when an appt is dragged.
-        Dwt.delClass(data.apptBodyEl, DwtCssStyle.DROPPABLE);
-		appCtxt.notifyZimlets("onApptDrag", [data]);
-		ZmCalColView._setApptOpacity(data.appt, data.apptEl);
-		if (data.startDate.getTime() != data.appt.getStartTime() && !draggedOut) {
-			if (data.icon) Dwt.setVisible(data.icon, false);
-			// save before we muck with start/end dates
-			var origDuration = data.appt._orig.getDuration();
-			data.view._autoScrollDisabled = true;
-			var cc = appCtxt.getCurrentController();
-			var endDate = new Date(data.startDate.getTime() + origDuration);
-			var errorCallback = new AjxCallback(null, ZmCalColView._handleError, data);
-			var sdOffset = data.startDate ? (data.startDate.getTime() - data.appt.getStartTime()) : null;
-			var edOffset = endDate ? (endDate.getTime() - data.appt._orig.getEndTime() ) : null;
-			cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback, mouseEv);
-			//cc.dndUpdateApptDate(data.appt._orig, data.startDate, endDate, null, errorCallback);
-		} else {
-//			ZmCalColView._restoreApptLoc(data);
+    //DBG.println("mouseMove new snap: "+snap.x+","+snap.y+ " data snap: "+data.snap.x+","+data.snap.y);
+    if (snap != null && ((snap.x != data.snap.x || snap.y != data.snap.y))) {
+        if (newDate != null &&
+            (!(data.view._scheduleMode && snap.col != data.snap.col)) && // don't allow col moves in sched view
+            (newDate.getTime() != data.startDate.getTime()))
+        {
+            var bounds = null;
             if (data.appt.isAllDayEvent()) {
-                // Re-layout the all day appts - may have lost the header of one offscreen
-                data.view._layoutAllDayAppts();
+                // Not using snapXY and GeBoundsForAllDayDate - snap requires that a date
+                // fall within one of its columns, which may not be so for a multi day appt.
+                var bounds = new DwtRectangle(snap.x, data.apptY,
+                    data.apptWidth, ZmCalColView._ALL_DAY_APPT_HEIGHT);
+            } else {
+                bounds = data.view._getBoundsForDate(newDate, data.appt._orig.getDuration(), snap.col);
             }
-		}
-
-		if (draggedOut) {
-			var obj = data.dndObj;
-			obj._lastDestDwtObj = null;
-			var destDwtObj = mouseEv.dwtObj;
-			if (destDwtObj != null &&
-				destDwtObj._dropTarget != null &&
-				obj._dropAllowed &&
-				destDwtObj != obj)
-			{
-				destDwtObj._drop(mouseEv);
-				var srcData = {
-					data: data.appt,
-					controller: data.view._controller
-				};
-				destDwtObj._dropTarget._drop(srcData, mouseEv);
-				//obj._dragSource._endDrag();
-				//obj._destroyDragProxy(obj._dndProxy);
-				obj._dragging = DwtControl._NO_DRAG;
-				if (data.icon) Dwt.setVisible(data.icon, false);
-			}
-			else {
-				// The following code sets up the drop effect for when an
-				// item is dropped onto an invalid target. Basically the
-				// drag icon will spring back to its starting location.
-				var bd = data.view._badDrop = { dragEndX: mouseEv.docX, dragEndY: mouseEv.docY, dragStartX: data.docX, dragStartY: data.docY };
-				bd.icon = data.icon;
-				if (data.view._badDropAction == null) {
-					data.view._badDropAction = new AjxTimedAction(data.view, data.view._apptBadDropEffect);
-				}
-
-				// Line equation is y = mx + c. Solve for c, and set up d (direction)
-				var m = (bd.dragEndY - bd.dragStartY) / (bd.dragEndX - bd.dragStartX);
-				data.view._badDropAction.args = [m, bd.dragStartY - (m * bd.dragStartX), (bd.dragStartX - bd.dragEndX < 0) ? -1 : 1];
-				AjxTimedAction.scheduleAction(data.view._badDropAction, 0);
-			}
-		}
-	}
-
-    if (mouseEv) {
-        mouseEv._stopPropagation = true;
-        mouseEv._returnValue = false;
-        if (ev) {
-            mouseEv.setToDhtmlEvent(ev);
+            data.view._layoutAppt(null, data.apptEl, bounds.x, bounds.y, bounds.width, bounds.height);
+            data.startDate = newDate;
+            data.snap = snap;
+            if (data.startTimeEl) data.startTimeEl.innerHTML = ZmCalBaseItem._getTTHour(data.startDate);
+            if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalBaseItem._getTTHour(new Date(data.startDate.getTime()+data.appt.getDuration()));
         }
     }
-	return false;
-};
+}
 
-ZmCalColView.prototype._apptBadDropEffect =
-function(m, c, d) {
-	var usingX = (Math.abs(m) <= 1);
-	// Use the bigger delta to control the snap effect
-	var bd = this._badDrop;
-	var delta = usingX ? bd.dragStartX - bd.dragEndX : bd.dragStartY - bd.dragEndY;
-	if (delta * d > 0) {
-		if (usingX) {
-			bd.dragEndX += (30 * d);
-			bd.icon.style.top = m * bd.dragEndX + c;
-			bd.icon.style.left = bd.dragEndX;
-		} else {
-			bd.dragEndY += (30 * d);
-			bd.icon.style.top = bd.dragEndY;
-			bd.icon.style.left = (bd.dragEndY - c) / m;
-		}
-		AjxTimedAction.scheduleAction(this._badDropAction, 0);
-	} else {
-		Dwt.setVisible(bd.icon, false);
-		bd.icon = null;
-	}
-};
 
+
+ZmCalColView.prototype._deselectDnDHighlight =
+function(data) {
+    Dwt.delClass(data.apptBodyEl, DwtCssStyle.DROPPABLE);
+    ZmCalBaseView._setApptOpacity(data.appt, data.apptEl);
+}
 
 // END APPT ACTION HANDLERS
 
@@ -2560,7 +2303,7 @@ function(ev) {
 	if (draggedOut) {
 		if (!data._lastDraggedOut) {
 			data._lastDraggedOut = true;
-			ZmCalColView._restoreApptLoc(data);
+			data.view._restoreApptLoc(data);
 		}
 	} else {
 		if (data._lastDraggedOut) {
@@ -2568,7 +2311,7 @@ function(ev) {
 			data.lastDelta = 0;
 			Dwt.setOpacity(data.apptEl, ZmCalColView._OPACITY_APPT_DND);
 		}
-		var scrollOffset = data.view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, ZmCalColView._HOUR_HEIGHT);
+		var scrollOffset = data.view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, ZmCalColView._HOUR_HEIGHT, null);
 		if (scrollOffset != 0) {
 			data.startY -= scrollOffset;
 		}
@@ -2614,7 +2357,7 @@ ZmCalColView._sashMouseUpHdlr =
 function(ev) {
 //	DBG.println("ZmCalColView._sashMouseUpHdlr");
 	var data = DwtMouseEventCapture.getTargetObj();
-	ZmCalColView._setApptOpacity(data.appt, data.apptEl);
+	ZmCalBaseView._setApptOpacity(data.appt, data.apptEl);
 	var mouseEv = DwtShell.mouseEvent;
 	mouseEv.setFromDhtmlEvent(ev);
 	if (mouseEv.button != DwtMouseEvent.LEFT) {
@@ -2630,7 +2373,7 @@ function(ev) {
 
 	var draggedOut = data.view._apptDraggedOut(mouseEv.docX, mouseEv.docY);
 	if (draggedOut) {
-		ZmCalColView._restoreApptLoc(data);
+		data.view._restoreApptLoc(data);
 		return false;
 	}
 
@@ -2778,7 +2521,7 @@ function(ev) {
 		}
 	}
 
-	var scrollOffset = data.view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, ZmCalColView._HOUR_HEIGHT);
+	var scrollOffset = data.view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, ZmCalColView._HOUR_HEIGHT, null);
 	if (scrollOffset != 0) {
 		data.docY -= scrollOffset;
 		deltaY += scrollOffset;

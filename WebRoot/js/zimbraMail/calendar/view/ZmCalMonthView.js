@@ -37,6 +37,8 @@ ZmCalMonthView.EXPANDED_WIDTH_PERCENT = 50;
 ZmCalMonthView.ANIMATE_NO_OF_FRAMES = 5;
 ZmCalMonthView.ANIMATE_DURATION = 300;
 
+ZmCalMonthView.OUT_OF_BOUNDS_SNAP = -1000;
+
 ZmCalMonthView.ALL_DAY_DIV_BODY = "_body";
 
 ZmCalMonthView.prototype.toString = 
@@ -1610,7 +1612,7 @@ function(x, y) {
 
 ZmCalMonthView.prototype._clearSnap =
 function(snap) {
-    snap.dayIndex = -10000;
+    snap.dayIndex = ZmCalMonthView.OUT_OF_BOUNDS_SNAP;
 }
 
 
@@ -1789,7 +1791,18 @@ function(data) {
             }
         }
     } else {
-        this._reattachApptDnDHtml(data, data.snap.dayIndex - data.offsetDayIndex, true);
+        if (data.snap.dayIndex == ZmCalMonthView.OUT_OF_BOUNDS_SNAP) {
+            for (var i = 0; i < data.trEl.length; i++) {
+                var day = this._days[data.startDayIndex + i];
+                if (day) {
+                    var td = data.trEl[i].firstChild;
+                    Dwt.delClass(td, DwtCssStyle.DROPPABLE);
+                    ZmCalBaseView._setApptOpacity(data.appt, td);
+                }
+            }
+        } else {
+            this._reattachApptDnDHtml(data, data.snap.dayIndex - data.offsetDayIndex, true);
+        }
     }
 };
 
