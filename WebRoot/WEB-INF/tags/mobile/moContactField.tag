@@ -25,6 +25,7 @@
 <%@ attribute name="postalcode" rtexprvalue="true" required="false" %>
 <%@ attribute name="country" rtexprvalue="true" required="false" %>
 <%@ attribute name="noborder" rtexprvalue="true" required="false" %>
+<%@ attribute name="contactId" rtexprvalue="true" required="false" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -70,6 +71,7 @@
                     <c:url value="${context_url}" var="url">
                         <c:param name="st" value="newmail"/>
                         <c:param name="to" value="${value}"/>
+                        <c:param name="contactId" value="${contactId}"/>
                     </c:url>
                     <a href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>
                 </c:when>

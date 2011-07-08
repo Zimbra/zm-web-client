@@ -22,9 +22,9 @@
     <%-- email --%>
     <c:if test="${zm:anySet(contact,'email email2 email3')}">
         <mo:contactSection>
-            <mo:contactField noborder="${contact.email2==null}" isemail="true" label="MO_AB_email" value="${contact.email}"/>
-            <mo:contactField noborder="${contact.email3==null}" isemail="true" label="MO_AB_email2" value="${contact.email2}"/>
-            <mo:contactField noborder="true" isemail="true" label="MO_AB_email3" value="${contact.email3}"/>
+            <mo:contactField noborder="${contact.email2==null}" isemail="true" label="MO_AB_email" value="${contact.email}" contactId="${contact.id}"/>
+            <mo:contactField noborder="${contact.email3==null}" isemail="true" label="MO_AB_email2" value="${contact.email2}" contactId="${contact.id}"/>
+            <mo:contactField noborder="true" isemail="true" label="MO_AB_email3" value="${contact.email3}" contactId="${contact.id}"/>
         </mo:contactSection>
     </c:if>
 
