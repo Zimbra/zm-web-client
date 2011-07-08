@@ -69,7 +69,7 @@
         <span>
             <select class="zo_select_button" name="${isTop ? 'anAction' : 'anActionBottom'}" onchange="submitForm(document.getElementById('zForm1'));">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
-        <optgroup label="Delete">
+        <optgroup label="<fmt:message key="delete"/>">
             <c:choose>
                 <c:when test="${context.folder.isInTrash}"><option value="actionHardDelete"><fmt:message key="delete"/></option></c:when>
                 <c:otherwise><option value="actionDelete"><fmt:message key="delete"/></option></c:otherwise>
@@ -283,7 +283,7 @@
 <span>
     <select class="zo_select_button" name="${isTop ? 'anAction' : 'anActionBottom'}" onchange="submitForm(document.getElementById('zForm'));">
         <option value="" selected="selected"><fmt:message key="moreActions"/></option>
-        <optgroup label="Delete">
+        <optgroup label="<fmt:message key="delete"/>">
             <c:choose>
                 <c:when test="${not context.folder.isInTrash}"><option value="actionHardDelete"><fmt:message key="delete"/></option></c:when>
                 <c:otherwise><option value="actionDelete"><fmt:message key="delete"/></option></c:otherwise>
