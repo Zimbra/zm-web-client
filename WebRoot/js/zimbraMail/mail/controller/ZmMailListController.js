@@ -1760,7 +1760,7 @@ function(parent, num) {
 		var editMenu = this._draftsActionMenu.getOp(ZmOperation.EDIT);
 		if (editMenu) {
 			// Enable|disable 'edit' context menu item based on selection count
-			editMenu.setEnabled(num == 1 && itemFolder && !itemFolder.isReadOnly());
+			editMenu.setEnabled(num == 1 && (this.isDraftsFolder() || (itemFolder && !itemFolder.isReadOnly())));
 		}
 	}
 
