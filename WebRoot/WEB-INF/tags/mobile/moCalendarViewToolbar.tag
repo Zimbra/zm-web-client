@@ -100,7 +100,7 @@
             ${not empty sessionScope.calendar ? zm:truncateFixed(sessionScope.calendar.name,12,true) : checkedInUI}
         </c:if>
         <c:if test="${btm_fldr_select eq '1'}">
-        <select name="sfi" onchange="fetchIt('?sfi='+this.value+'&st=cal');">
+        <select name="sfi" onchange="fetchIt('?sfi='+this.value+'&st=cal', GC());">
         <option value="null">${checkedInUI}</option><c:set var="count" value="${0}"/>
         <zm:forEachFolder var="fldr" skiproot="true">
             <c:if test="${count lt sessionScope.F_LIMIT and fldr.isCalendar || fldr.isAppointmentView}">
