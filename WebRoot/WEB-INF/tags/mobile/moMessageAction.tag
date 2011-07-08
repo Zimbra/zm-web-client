@@ -155,11 +155,10 @@
     </c:if>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionAttachToCompose') || (zm:actionSet(param,'moreActions') && fn:startsWith(anAction,'actionAttachToCompose'))}">
-    <c:forEach var="id" items="${ids}">
-        <zm:getMessage var="ma" id="${id}"/>
-        <c:set var="messageAttachments" value="${ma.id}:${fn:escapeXml(fn:replace(ma.subject,':','_$'))},${messageAttachments}"/>
-    </c:forEach>
-    <c:redirect url="/m/zmain?st=newmail&messageAttachments=${messageAttachments}&ajax=${param.ajax}"/>
+    <%--
+    Send the selected message ids as is in the url, fetch the message attachment and retrieve the subject in the compose window itself.
+    --%>
+    <c:redirect url="/m/zmain?st=newmail&messageAttachments=${ids}&ajax=${param.ajax}"/>    
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionMarkUnspam') || (zm:actionSet(param,'moreActions') && anAction eq 'actionMarkUnspam') }">
     <c:choose>

@@ -173,17 +173,20 @@
         </c:forEach>
 </div></div></c:if>
 <c:if test="${!empty param.messageAttachments}"><div class="View"><div class="tbl">
-    <c:forEach var="ma" items="${param.messageAttachments}" varStatus="status"><c:set var="ma" value="${fn:split(ma,':')}"/>
-    <div class="tr ${status.index gt 0 ? 'nr':''} cmp_msg_att_row">
-        <span class="td">${fn:length(ma)}:${status.index+1}<span class="SmlIcnHldr Attachment">&nbsp;</span>
-            <c:choose>
-                <c:when test="${empty ma[1]}"><fmt:message var="subj" key="noSubject"/></c:when>
-                <c:otherwise><c:set var="subj" value="${zm:truncate(fn:replace(ma[1],'_$',':'),100,true)}"/></c:otherwise>
-            </c:choose>
-            <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${fn:escapeXml(subj)}</span>
-            <input type="hidden" name="messageAttachment" value="${ma[0]}:${fn:escapeXml(subj)}"/>
-         </span>
-    </div></c:forEach>
+    <c:forEach var="id" items="${param.messageAttachments}" varStatus="status">
+        <%--Fetch the message, get the attachment subject --%>
+        <zm:getMessage var="ma" id="${id}"/>
+        <div class="tr ${status.index gt 0 ? 'nr':''} cmp_msg_att_row">
+            <span class="td"><span class="Img ImgEnvelope">&nbsp;</span>
+                <c:choose>
+                    <c:when test="${empty ma.subject}"><fmt:message var="subj" key="noSubject"/></c:when>
+                    <c:otherwise><c:set var="subj" value="${zm:truncate(fn:replace(ma.subject,'_$',':'),100,true)}"/></c:otherwise>
+                </c:choose>
+                <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${fn:escapeXml(subj)}</span>
+                <input type="hidden" name="messageAttachment" value="${ma.id}:${fn:escapeXml(subj)}"/>
+             </span>
+        </div>
+    </c:forEach>
 </div></div></c:if>
 <c:if test="${!empty compose.documentAttachments}"><div class="View"><div class="tbl">
             <c:forEach var="doc" items="${compose.documentAttachments}" varStatus="status">
