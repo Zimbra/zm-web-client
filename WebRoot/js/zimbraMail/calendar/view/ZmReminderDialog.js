@@ -123,6 +123,8 @@ function(list) {
 	var idx = 0;
 	var size = list.size();
 
+    AjxDebug.println(AjxDebug.REMINDER, "---Reminders [" + (new Date().getTime())+ "]---");
+
 	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
 	for (var i = 0; i < size; i++) {
 		var appt = list.get(i);
@@ -155,6 +157,11 @@ function(list) {
 		var appt = list.get(i);
 		var uid = appt.getUniqueId(true);
 		var data = this._apptData[uid];
+
+        var alarmData = appt.getAlarmData();
+        alarmData = (alarmData && alarmData.length > 0) ? alarmData[0] : {};
+        //bug: 60692 - Add troubleshooting code for late reminders
+        AjxDebug.println(AjxDebug.REMINDER, appt.getReminderName() + " : " + (alarmData.nextAlarm || " NA ") + " / " + (alarmData.alarmInstStart || " NA "));
 
 		// dismiss button
 		var dismissBtn = this._dismissButtons[data.dismissBtnId] = new DwtButton({parent:this, className:"DwtToolbarButton", parentElement:data.dismissBtnId});

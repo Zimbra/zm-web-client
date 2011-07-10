@@ -458,6 +458,16 @@ function() {
 };
 
 /**
+ * Gets alarm info
+ *
+ * @return	{Object}    the alarm information
+ */
+ZmCalBaseItem.prototype.getAlarmData =
+function() {
+	return this.alarmData;
+}
+
+/**
  * Checks if the alarm is old (based on current time).
  * 
  * @return	{Boolean}	<code>true</code> if the alarm is old
