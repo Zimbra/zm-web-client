@@ -381,6 +381,7 @@ function() {
 			dataClass: appCtxt.getAutocompleter(),
 			matchValue: ZmAutocomplete.AC_VALUE_NAME,
 			compCallback: acCallback,
+            keyUpCallback: new AjxCallback(this, this._handleLocationChange),
 			options: {type:ZmAutocomplete.AC_TYPE_LOCATION}
 		};
 		this._acLocationsList = new ZmAutocompleteListView(params);
@@ -404,6 +405,16 @@ function(text, el, match) {
 		for (var i = 0; i < attendee.length; i++) {
 			this._locations.push(attendee[i]);
 		}
+	}
+};
+
+//monitor location field change and reset location resources array
+ZmApptQuickAddDialog.prototype._handleLocationChange =
+function(event, aclv, result) {
+	var val = this._locationField.getValue();
+	if (val == "") {
+        this._locations = [];
+		this._isKnownLocation = false;
 	}
 };
 
