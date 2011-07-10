@@ -158,12 +158,16 @@ function(dialog, verb, args) {
 		if (tdata.endTime != null) tdata.endDate.setHours(tdata.endTime.hour, tdata.endTime.minute);
 		else if (tdata.startTime != null) tdata.endDate.setHours(tdata.startTime.hour, tdata.startTime.minute);
 	} else {
-		if (tdata.endTime) {
+        if (tdata.endTime) {
 			tdata.endDate = new Date(tdata.startDate.getTime());
 			if (tdata.endTime != null) tdata.endDate.setHours(tdata.endTime.hour, tdata.endTime.minute);
 		} else if (tdata.startTime) {
 			tdata.endDate = new Date(tdata.startDate.getTime() + 1000 * 60 * 60);
 		}
+        //task cannot get saved only with startDate
+        if(tdata.endDate == null && tdata.startDate != null) {
+            tdata.endDate = tdata.startDate;
+        }
 	}
 
 	if (tdata.subject == null) {

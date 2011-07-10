@@ -419,7 +419,7 @@ function(endDate, keepCache) {
  */
 ZmCalItem.prototype.setStartDate =
 function(startDate, keepCache) {
-	if (this._origStartDate == null && this.startDate != null) {
+	if (this._origStartDate == null && this.startDate != null && this.startDate != "") {
 		this._origStartDate = new Date(this.startDate.getTime());
 	}
 	this.startDate = new Date(startDate instanceof Date ? startDate.getTime() : startDate);
@@ -2322,7 +2322,7 @@ function(soapDoc, m, cancel) {
 
 			var content;
 			if (pct == ZmMimeTable.TEXT_HTML) {
-				content = "<html><body>" + (this._includeEditReply ? part.getContent() : AjxBuffer.concat(hprefix, part.getContent())) + "</body></html>";
+				content = "<html><body id='htmlmode'>" + (this._includeEditReply ? part.getContent() : AjxBuffer.concat(hprefix, part.getContent())) + "</body></html>";
 			} else {
 				content = this._includeEditReply ? part.getContent() : AjxBuffer.concat(tprefix, part.getContent());
 			}
