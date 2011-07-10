@@ -352,6 +352,11 @@ function(email) {
     this._schedTable[index] = null;
 };
 
+ZmFreeBusySchedulerView.prototype._hideRow =
+function(index) {
+    Dwt.setDisplay(this._attendeesTable.rows[index], 'none');
+};
+
 ZmFreeBusySchedulerView.prototype._deleteAttendeeRow =
 function(email) {
     this._deleteAttendeeEntry(email);
@@ -931,7 +936,8 @@ function(organizer, attendees) {
             if(this._organizerIndex == idx) continue;
             var sched = this._schedTable[idx];
             this._resetRow(sched, false, sched.attType, false, true);
-            this._deleteAttendeeEntry(id);
+            this._hideRow(idx);
+            this._schedTable[idx] = null;
         }
     }
 
