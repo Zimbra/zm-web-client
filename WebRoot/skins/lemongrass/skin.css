@@ -57,7 +57,7 @@
 	overflow:visible;
 	border: 1px solid; 
 	border-color: #9B3A19;
-	background: #996627 url("@SkinImgDir@/login_bg.png");
+	background: #996627 url("@SkinImgDir@/login_bg.png?v=@jsVersion@");
 }
 
 

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -150,7 +150,7 @@ ZmAttendeePicker.SORT_BY[ZmCalBaseItem.EQUIPMENT]			= ZmSearch.NAME_ASC;
 ZmAttendeePicker.TOP_LEGEND = {};
 ZmAttendeePicker.TOP_LEGEND[ZmCalBaseItem.PERSON]			= ZmMsg.findAttendees;
 ZmAttendeePicker.TOP_LEGEND[ZmCalBaseItem.LOCATION]			= ZmMsg.findLocations;
-ZmAttendeePicker.TOP_LEGEND[ZmCalBaseItem.EQUIPMENT]		= ZmMsg.findResources;
+ZmAttendeePicker.TOP_LEGEND[ZmCalBaseItem.EQUIPMENT]		= ZmMsg.findEquipment;
 
 ZmAttendeePicker.SUGGEST_LEGEND = {};
 ZmAttendeePicker.SUGGEST_LEGEND[ZmCalBaseItem.PERSON]			= ZmMsg.suggestedAttendees;
@@ -160,7 +160,7 @@ ZmAttendeePicker.SUGGEST_LEGEND[ZmCalBaseItem.EQUIPMENT]		= ZmMsg.suggestedResou
 ZmAttendeePicker.BOTTOM_LEGEND = {};
 ZmAttendeePicker.BOTTOM_LEGEND[ZmCalBaseItem.PERSON]		= ZmMsg.apptAttendees;
 ZmAttendeePicker.BOTTOM_LEGEND[ZmCalBaseItem.LOCATION]		= ZmMsg.apptLocations;
-ZmAttendeePicker.BOTTOM_LEGEND[ZmCalBaseItem.EQUIPMENT]		= ZmMsg.apptResources;
+ZmAttendeePicker.BOTTOM_LEGEND[ZmCalBaseItem.EQUIPMENT]		= ZmMsg.apptEquipment;
 
 // images for the bottom fieldset legend
 ZmAttendeePicker.ICON = {};

@@ -1665,8 +1665,10 @@ function(mode, callback, msg, batchCmd, result) {
 					for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
 						var type = ZmMailMsg.ADDRS[i];
 	
-						// if on-behalf-of, dont set the from address
-						if (accountName && type == AjxEmailAddress.FROM) { continue; }
+						// if on-behalf-of, dont set the from address and
+                        // don't set the reset-from (only valid when receiving a message)
+						if ((accountName && type == AjxEmailAddress.FROM) ||
+                            (type == AjxEmailAddress.RESENT_FROM)) { continue; }
 	
 						var vector = msg.getAddresses(type);
 						var count = vector.size();

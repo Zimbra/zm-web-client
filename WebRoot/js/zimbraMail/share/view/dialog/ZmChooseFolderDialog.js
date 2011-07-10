@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -209,6 +209,18 @@ function(params) {
 	this._focusElement = this._inputField;
 	this._inputField.setValue("");
 	ZmDialog.prototype.popup.call(this);
+};
+
+/**
+ * Clears selected items
+ */
+ZmChooseFolderDialog.prototype.popdown = 
+function() {
+	var ov = this._getOverview();
+	if (ov) {
+		ov.itemSelected(null);  //clear selected items
+	}
+	DwtDialog.prototype.popdown.call(this);
 };
 
 ZmChooseFolderDialog.prototype.getOverviewId =

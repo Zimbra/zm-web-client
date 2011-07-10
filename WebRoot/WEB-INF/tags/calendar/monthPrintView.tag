@@ -37,6 +37,7 @@
     <c:set var="prevDate" value="${zm:addMonth(date, -1)}"/>
     <c:set var="nextDate" value="${zm:addMonth(date,  1)}"/>
     <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
+    <c:set var="nextMonthDate" value="${zm:addMonth(date,  1)}"/>    
     <zm:getValidFolderIds var="validFolderIds" box="${mailbox}" folderid="${checkedCalendars}" varexception="exp"/>
     <c:if test="${not empty exp}">
         <zm:getException var="error" exception="${exp}"/>
@@ -54,6 +55,22 @@
         <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
 </app:handleError>
+<c:if test="${param.imc eq 'true'}">
+<table cellpadding="0" cellspacing="0" border="0" style="margin-left: 1%;">
+    <tr>
+        <td width="180">
+            <app:miniCal print="${true}" date="${not empty date ? date : zm:getToday(mailbox.prefs.timeZone)}" checkedCalendars="${checkedCalendars}"/>
+        </td>
+        <td width="10">
+             &nbsp;
+        </td>
+        <td width="180">
+            <app:miniCal print="${true}" date="${not empty nextMonthDate ? nextMonthDate : zm:getToday(mailbox.prefs.timeZone)}" rangeDate="${not empty date ? date : zm:getToday(mailbox.prefs.timeZone)}" checkedCalendars="${checkedCalendars}"/>
+        </td>
+    </tr>
+</table>
+</c:if>
+<br>
 <table width="100%"  cellpadding="0" cellspacing="0" border="0" class="zPrintMsgs">
     <tr>
         <td class='ZhAppContent'>
