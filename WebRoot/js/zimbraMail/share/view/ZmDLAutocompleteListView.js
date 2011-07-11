@@ -111,7 +111,7 @@ function(table, match, rowId) {
 
 ZmDLAutocompleteListView.prototype._update =
 function(context, match, ev) {
-
+	
 	if (this._selected == this._selectAllRowId) {
 		if (!this._matchHash[this._selectAllRowId]) {
 			var callback = this._handleResponseGetAllDLMembers.bind(this, ev);
@@ -137,10 +137,10 @@ function(ev, result) {
 			this._doUpdate();
 		}
 		else {
+			var match = new ZmAutocompleteMatch();
 			for (var i = 0, len = result.list.length; i < len; i++) {
-				var match = this._matchHash[this._selectAllRowId] = new ZmAutocompleteMatch();
 				match[field] = result.list[i];
-				this._doUpdate();
+				this._doUpdate(match);
 			}
 		}
 	}
@@ -148,10 +148,13 @@ function(ev, result) {
 };
 
 ZmDLAutocompleteListView.prototype._doUpdate =
-function() {
-	var sel = this._matchHash[this._selected];
-	if (sel) {
-		this._parentAclv._update(null, sel);
+function(match) {
+
+	// so that address will be taken from match
+	this._parentAclv._currentContext.address = null;
+	match = match || this._matchHash[this._selected];
+	if (match) {
+		this._parentAclv._update(null, match);
 	}
 };
 

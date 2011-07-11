@@ -349,7 +349,7 @@ function(ev) {
 	}
 
 	// if the input is empty, clear the list (if it's for this input)
-	if (!value && aclv._visibleContext && element == aclv._visibleContext.element) {
+	if (!value && aclv._currentContext && element == aclv._currentContext.element) {
 		aclv.reset(element);
 		return true;
 	}
@@ -602,7 +602,6 @@ ZmAutocompleteListView.prototype.reset =
 function(element) {
 
 	DBG.println("ac", "RESET");
-	this._visibleContext = null;
 	this._matches = null;
 	this._selected = null;
 
@@ -807,7 +806,7 @@ function(context, list) {
 		} else {
 			// pop up the list of matches
 			this._set(list, context);
-			this._visibleContext = context;
+			this._currentContext = context;
 			this.show(true);
 		}
 	} else if (!context.isComplete) {
@@ -838,7 +837,7 @@ function(match) {
 ZmAutocompleteListView.prototype._update =
 function(context, match) {
 
-	context = context || this._visibleContext;
+	context = context || this._currentContext;
 	if (!context) { return; }
 	match = match || this._matchHash[this._selected];
 	
@@ -1160,7 +1159,7 @@ function() {
 	this.setZIndex(Dwt.Z_HIDDEN);
 	this.setVisible(false);
 	this._removeAll();
-	this._selected = this._visibleContext = null;
+	this._selected = null;
 
 	var omem = appCtxt.getOutsideMouseEventMgr();
 	omem.stopListening({id:"ZmAutocompleteListView", obj:this});
