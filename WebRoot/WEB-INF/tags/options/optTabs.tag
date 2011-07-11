@@ -31,7 +31,7 @@
                 <span><fmt:message key="general"/></span>
             </a>
         </td>
-        <c:if test="${mailbox.features.mail}">
+        <c:if test="${zm:isMailEnabled(mailbox)}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
                 <a href="<c:url value="/h/options?selected=mail&prev=${prev}"/>">
@@ -72,14 +72,14 @@
                     <span><fmt:message key="calendar"/></span></a>
             </td>
         </c:if>
-        <c:if test="${mailbox.features.mail}">
+        <c:if test="${zm:isMailEnabled(mailbox)}">
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='accounts' ? 'TabSelected' :'TabNormal'}'>
             <a href="<c:url value="/h/options?selected=accounts&prev=${prev}"/>">
                 <span><fmt:message key="optionsAccounts"/></span></a>
         </td>
         </c:if>
-        <c:if test="${mailbox.features.filters and mailbox.features.mail}">
+        <c:if test="${mailbox.features.filters and zm:isMailEnabled(mailbox)}">                                                                                       
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='filter' ? 'TabSelected' :'TabNormal'}'>
                 <a href="<c:url value="/h/options?selected=filter&prev=${prev}"/>">

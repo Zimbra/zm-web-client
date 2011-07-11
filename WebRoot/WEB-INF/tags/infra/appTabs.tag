@@ -37,7 +37,7 @@
             </td>
             <td class='TabSpacerR'/>
         </c:if>
-        <c:if test="${mailbox.features.mail}">
+        <c:if test="${zm:isMailEnabled(mailbox)}">
         <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
             <a id='TAB_MAIL' href="<c:url value="/h/search"/>">
               <span id='tab_ikon_mail'><app:img src="startup/ImgMailApp.png" altkey='ALT_APP_MAIL'/>
@@ -109,7 +109,7 @@
 	        </td>
 	        <td class='TabSpacerR'/>
         </c:if>
-        <c:if test="${mailbox.features.mail}">
+        <c:if test="${zm:isMailEnabled(mailbox)}">
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='compose' ? 'TabSelected' :'TabNormal'}'>
             <c:choose>
