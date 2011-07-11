@@ -332,15 +332,15 @@ function(ev) {
 	if (ev.field == ZmItem.F_FLAG) {
 		this._doFlag([ev.item]);
 	} else {
-		var lv = this._view[this._currentView];
-
-		if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-			if (!ev.ctrlKey && lv.setSelectionHdrCbox) {
-				lv.setSelectionHdrCbox(false);
+		var lv = this._listView[this._currentView];
+		if (lv) {
+			if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+				if (!ev.ctrlKey && lv.setSelectionHdrCbox) {
+					lv.setSelectionHdrCbox(false);
+				}
 			}
+			this._resetOperations(this._getCurrentToolbar(), lv.getSelectionCount());
 		}
-
-		this._resetOperations(this._getCurrentToolbar(), lv.getSelectionCount());
 	}
 };
 
