@@ -469,7 +469,7 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 		this.email = match.getEmail();
 		this.item = match;
 		this.type = ZmContact.getAttr(match, ZmResource && ZmResource.F_type || "zimbraCalResType") || ZmAutocomplete.AC_TYPE_GAL;
-        this.fullAddress = match.getAttendeeText();
+        this.fullAddress = (new AjxEmailAddress(this.email, null, this.text)).toString(); //bug:60789 formated the email and name to get fullAddress
 	} else {
 		this.isGroup = Boolean(match.isGroup);
 		this.isDL = (this.isGroup && this.type == ZmAutocomplete.AC_TYPE_GAL);
