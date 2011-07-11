@@ -308,14 +308,21 @@ function(text, el, match) {
 			var members = match.item.getGroupMembers().good.getArray();
 			for (var i = 0; i < members.length; i++) {
 				el.value = members[i].address;
+
+                if(el._acHandlerInProgress) { return; }
+                el._acHandlerInProgress = true;
 				var index = this._handleAttendeeField(el);
+                el._acHandlerInProgress = false;
 
 				if (index && ((i+1) < members.length)) {
 					el = this._schedTable[index].inputObj.getInputElement();
 				}
 			}
 		} else {
+            if(el._acHandlerInProgress) { return; }
+            el._acHandlerInProgress = true;
 			this._handleAttendeeField(el, match.item);
+            el._acHandlerInProgress = false;
 		}
 	}
 };
@@ -327,7 +334,10 @@ function(ev, aclv, result) {
 	var key = DwtKeyEvent.getCharCode(ev);
 	if ((key == 3 || key == 13) && !aclv.getVisible()) {
 		var el = DwtUiEvent.getTargetWithProp(ev, "id");
+        if(el._acHandlerInProgress) { return; }
+        el._acHandlerInProgress = true;
         this._handleAttendeeField(el);
+        el._acHandlerInProgress = false;
 	}
 };
 
@@ -1941,10 +1951,12 @@ function(ev) {
 ZmFreeBusySchedulerView._onBlur =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
+    if(el._acHandlerInProgress) { return; }
 	var svp = AjxCore.objectWithId(el._schedViewPageId);
 	if (!svp) { return; }
-
+    el._acHandlerInProgress = true;
     svp._handleAttendeeField(el);
+    el._acHandlerInProgress = false;
 };
 
 ZmFreeBusySchedulerView._onPTSTMouseOver =
