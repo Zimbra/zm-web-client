@@ -138,7 +138,7 @@
     </tr>
 </table>
 <table cellpadding="3" width="100%" class="ZOptionsSectionMain">
-	<c:if test="${mailbox.features.mail}">
+	<c:if test="${zm:isMailEnabled(mailbox)}">
 	<tr>
         <td class='ZOptionsTableLabel'>
             <fmt:message key="optionsSearchFolders"/>

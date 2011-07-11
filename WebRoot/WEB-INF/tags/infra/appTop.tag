@@ -66,7 +66,7 @@
                 <c:if test="${web}">
                     <option value="web"/><fmt:message key="searchWeb"/>
                 </c:if>
-                <c:if test="${mailbox.features.mail}">
+                <c:if test="${zm:isMailEnabled(mailbox)}">
                     <option <c:if test="${isMail}">selected </c:if>value="${mailbox.features.conversations ? mailbox.prefs.groupMailBy : 'message'}"/><fmt:message key="searchMail"/>
                 </c:if>
                 <c:if test="${mailbox.features.contacts}">

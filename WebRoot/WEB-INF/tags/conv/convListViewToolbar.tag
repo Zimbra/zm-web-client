@@ -42,6 +42,7 @@
 					</c:choose>
 					<td><div class='vertSep'></div></td>
 					<c:if test="${skin ne 'velodrome2'}">
+                        <c:if test="${zm:isMailEnabled(mailbox)}">
 						<td nowrap>
 							<c:choose>
 								<c:when test="${not empty context}">
@@ -54,6 +55,7 @@
 							<a href="${fn:escapeXml(composeUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgNewMessage.png" altkey="compose"/><span>&nbsp;<fmt:message key="compose"/></span></a>
 						</td>
 						<td><div class='vertSep'></div></td>
+                        </c:if>
 					</c:if>
 					<td height="100%" nowrap valign="middle" style="padding: 0 1px 0 1px">
 						<input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="<app:imgurl value='startup/ImgPrint.png'/>" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />

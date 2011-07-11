@@ -30,10 +30,10 @@
 		  <c:when test="${param.app eq 'calendar' and (mailbox.features.calendar or mailbox.features.calendarUpsell)}">
 			<c:redirect url="/h/calendar" />
 		  </c:when>
-		  <c:when test="${param.app eq 'mail' and mailbox.features.mail and not empty param.id}">
+		  <c:when test="${param.app eq 'mail' and not empty param.id  and zm:isMailEnabled(mailbox)}">
 			<c:redirect url="/h/search?st=message&id=${param.id}&action=view" />
 		  </c:when>
-		  <c:when test="${param.app eq 'mail' and mailbox.features.mail}">
+		  <c:when test="${param.app eq 'mail' and zm:isMailEnabled(mailbox)}">
 			<c:redirect url="/h/search" />
 		  </c:when>
 		  <c:when test="${param.app eq 'voice' and mailbox.features.voice and not empty param.id}">
@@ -175,7 +175,7 @@
             <c:param name="sq" value="${param.sq}"/>
         </c:redirect>
     </c:if>
-    <c:if test="${not mailbox.features.mail}">
+    <c:if test="${not zm:isMailEnabled(mailbox)}">
         <c:if test="${param.st eq 'message' or param.st eq 'conversation' or empty param.st}">
             <c:redirect url="/h/calendar"/>
         </c:if>

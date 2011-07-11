@@ -27,7 +27,7 @@
     <table border="0" cellpadding="0" cellspacing="4" width="100%">
         <tbody>
             <app:optShortcutSection section="global" suffix="${suffix}" mailbox="${mailbox}"/>
-            <c:if test="${mailbox.features.mail}">
+            <c:if test="${zm:isMailEnabled(mailbox)}">
             <app:optShortcutSection section="mail" suffix="${suffix}" mailbox="${mailbox}"/>
             <app:optShortcutSection section="compose" suffix="${suffix}" mailbox="${mailbox}"/>
             <c:if test="${mailbox.features.conversations}">
