@@ -274,7 +274,7 @@ function(params, result) {
 
 	this._clearPendingRequest(params.reqId);
 
-	if (refreshBlock && !params.more) {
+	if (refreshBlock && (!appCtxt.isOffline || !appCtxt.multiAccounts) && !params.more) {
 		this._refreshHandler(refreshBlock);
 	}
 	
