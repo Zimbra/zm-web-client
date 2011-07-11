@@ -1467,7 +1467,10 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 			var docs = attachNode.doc = [];
 			for (var i = 0; i < this._docAtts.length; i++) {
                 var d = this._docAtts[i];
-                var props = {id: d.id};
+                // qualify doc id
+                var docId = (d.id.indexOf(":") == -1)
+                        ? ([mainAccount.id, d.id].join(":")) : d.id;
+                var props = {id: docId};
                 if(d.ver) props.ver = d.ver;
 				docs.push(props);
 			}
