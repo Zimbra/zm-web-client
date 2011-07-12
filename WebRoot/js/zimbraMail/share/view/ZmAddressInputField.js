@@ -1522,7 +1522,9 @@ function(params) {
 	//span is not selectable in this area for IE (so Dwt.selectText would not work, since the range.select() call would not work. See bug 56731)
 	//textarea is not so good for FF since the copy keeps the border. So keeping span for non IE.
 	var selectElement = AjxEnv.isIE ? "textarea" : "span";
-	html[idx++] = "<" + selectElement + " class='addrBubbleHide' id='" + selectId + "'>" + fullAddress + sep + " </" + selectElement + ">";
+    //Provide an in-line style for width to override the '.DwtDialog textarea' css,
+    //which bloats up the address width in IE (bug 59517)
+	html[idx++] = "<" + selectElement + " class='addrBubbleHide' style='width:1px;' id='" + selectId + "'>" + fullAddress + sep + " </" + selectElement + ">";
 	html[idx++] = "</span>";
 	var addrText = html.join("");
 
