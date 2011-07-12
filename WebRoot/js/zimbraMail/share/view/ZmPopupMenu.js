@@ -38,7 +38,6 @@ ZmPopupMenu = function(parent, className, id, controller) {
 	var params = Dwt.getParams(arguments, ZmPopupMenu.PARAMS);
 	params.className = params.className ? params.className : "ActionMenu";
 	params.style = params.style || DwtMenu.POPUP_STYLE;
-    params.id = params.id || "POPUP_" + Dwt.getNextId();
 	DwtMenu.call(this, params);
 
 	controller = controller || appCtxt.getCurrentController();
@@ -143,9 +142,9 @@ function(enabled) {
  * @see		DwtMenuItem
  */
 ZmPopupMenu.prototype.createMenuItem =
-function(id, params, htmlElId) {
+function(id, params) {
 	var mi = this._menuItems[id] = new DwtMenuItem({parent:this, style:params.style, radioGroupId:params.radioGroupId,
-													id: (htmlElId || params.id), index: params.index});
+													id:params.id, index:params.index});
 	if (params.image) {
 		mi.setImage(params.image);
 	}
@@ -180,21 +179,6 @@ function(id) {
 };
 
 /**
- * sets an item visibility. finds the menu item by id. 
- *
- * @param	{String}	id  the operation id
- * @param	{Boolean}	visible
- */
-ZmPopupMenu.prototype.setItemVisible =
-function(id, visible) {
-	var item = this.getMenuItem(id);
-	if (!item) {
-		return;
-	}
-	item.setVisible(visible);
-};
-
-/**
  * Gets the menu items.
  *
  * @return	{array}		an array of {@link DwtMenuItem} objects
@@ -203,28 +187,6 @@ ZmPopupMenu.prototype.getMenuItems =
 function() {
 	return this._menuItems;
 };
-
-/**
- * Gets the menu search sub-menu (if any).
- *
- * @return {DwtMenu}        the menu
- */
-ZmPopupMenu.prototype.getSearchMenu =
-function() {
-    var menuItem = this.getMenuItem(ZmOperation.SEARCH_MENU);
-    if (menuItem) {
-        return menuItem.getMenu();
-    }
-};
-
-ZmPopupMenu.prototype.getContactGroupMenu =
-function() {
-	var menuItem = this.getMenuItem(ZmOperation.CONTACTGROUP_MENU);
-	if (menuItem) {
-		return menuItem.getMenu();
-	}
-};
-
 
 /**
  * Creates a menu item separator.
