@@ -473,8 +473,16 @@ function(calItem, ex) {
         this.enableToolbar(true);
     }
     else if (ex.code == ZmCsfeException.MAIL_INVITE_OUT_OF_DATE) {
-        msg = ZmMsg.inviteOutOfDate;
-        this.enableToolbar(true);
+        if(!calItem.isVersionIgnored()){
+                calItem.setIgnoreVersion(true);
+                this.saveCalItemContinue(calItem);
+                return true;
+        }
+        else{
+            msg = ZmMsg.inviteOutOfDate;
+            this.enableToolbar(true);
+            calItem.setIgnoreVersion(false);
+        }
     }
     else if (ex.code == ZmCsfeException.MAIL_NO_SUCH_CALITEM) {
         msg = ex.getErrorMsg([ex.getData("itemId")]);
