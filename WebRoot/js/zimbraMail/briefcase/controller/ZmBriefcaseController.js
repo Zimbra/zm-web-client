@@ -579,7 +579,7 @@ function(ev) {
             return;
         }
 
-		var restUrl = item.getRestUrl();
+		var restUrl = item.getRestUrl(false, false, true); //get it with the version number even if clicked on the base item (see ZmBriefcaseBaseItem.prototype.getRestUrl in ZmBriefcaseItem.js)
         //added for bug: 45150
         restUrl = AjxStringUtil.fixCrossDomainReference(restUrl);
         if (item.isWebDoc()) {
@@ -840,7 +840,7 @@ function(items){
     items = AjxUtil.toArray(items);
     for (var i = 0; i < items.length; i++) {
         var item = items[i];
-        var restUrl = item.getRestUrl();
+        var restUrl = item.getRestUrl(false, false, true); //get the URL with version number so even on IE9 it would always be the latest.
         if (restUrl) {
 
             if (item.isWebDoc()) {
@@ -877,7 +877,7 @@ function(items){
     items = AjxUtil.toArray(items);
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-		var restUrl = item.getRestUrl();
+		var restUrl = item.getRestUrl(false, false, true);
 		if (!restUrl) {
 			continue;
 		}

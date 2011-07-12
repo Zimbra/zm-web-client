@@ -60,13 +60,17 @@ function(dontIncludeThisName) {
  * 
  * @param	{Boolean}	dontIncludeThisName		if <code>true</code>, do not include this item name in the path
  * @param	{Boolean}	ignoreCustomDocs		if <code>true</code>, ignore custom docs
+ * @param   {Boolean}   includeVersion			if <code>true</code> include the version if exists (it's latest for the base item)
  * @return	{String}	the REST URL
  */
 ZmBriefcaseBaseItem.prototype.getRestUrl =
-function(dontIncludeThisName, ignoreCustomDocs) {
+function(dontIncludeThisName, ignoreCustomDocs, includeVersion) {
 	var url = ZmItem.prototype.getRestUrl.call(this);
 	if (dontIncludeThisName) {
 		url = url.replace(/[^\/]+$/,"");
+	}
+	if (includeVersion && this.version){
+		url = url + (url.match(/\?/) ? '&' : '?' ) + "ver=" + this.version;
 	}
 
 	return url;
