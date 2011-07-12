@@ -406,7 +406,19 @@ for (var pkg in window.AjxTemplateMsg) {
 			"dummy":1
 			<c:if test="${not empty domainInfo}">
 			<c:forEach var="info" items="${domainInfo.attrs}">,
-			"${info.key}":"${zm:jsEncode(info.value)}"</c:forEach>
+			"${info.key}":
+                    <c:choose>
+                    <c:when test="${not zm:isCollection(info.value)}">
+                        <%--Single value domain attribute--%>
+                        "${zm:jsEncode(info.value)}"
+                    </c:when>
+                    <c:otherwise>
+                        <%--Multi value domain attribute--%>
+                        <c:set var="infoArray" value="${fn:join(info.value, '\", \"')}"/>
+                        ["${infoArray}"]
+                    </c:otherwise>
+                    </c:choose>
+            </c:forEach>
 			</c:if>
 		};
 
