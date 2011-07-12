@@ -44,3 +44,24 @@ ZmMailItemView.prototype.getMinWidth =
 function() {
 	return 20;
 };
+
+ZmMailItemView.prototype.getHtmlBodyElement =
+function() {
+};
+
+ZmMailItemView.prototype.hasHtmlBody =
+function() {
+	return false;
+};
+
+ZmMailItemView.prototype.getItem =
+function() {
+	return this._item;
+};
+
+ZmMailItemView.prototype.getTitle =
+function() {
+	return [ZmMsg.zimbraTitle, this._item.subject].join(": ");
+};
+
+

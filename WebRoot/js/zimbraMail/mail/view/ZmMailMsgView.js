@@ -119,7 +119,7 @@ function() {
 		AjxTimedAction.cancelAction(this._objectsAction);
 		this._objectsAction = null;
 	}
-	this._msg = null;
+	this._msg = this._item = null;
 	this._htmlBody = null;
 
 	// TODO: reuse all thses controls that are being disposed here.....
@@ -160,7 +160,7 @@ function(msg, force) {
 	var oldMsg = this._msg;
 	this.reset();
 	var contentDiv = this._getContainer();
-	this._msg = msg;
+	this._msg = this._item = msg;
 
 	if (!msg) {
 		if (this._inviteMsgView) {
@@ -297,11 +297,6 @@ function() {
 		this._headerHeight = headerObj ? Dwt.getSize(headerObj).y : 0;
 	}
 	return this._headerHeight;
-};
-
-ZmMailMsgView.prototype.getTitle =
-function() {
-	return [ZmMsg.zimbraTitle, this._msg.subject].join(": ");
 };
 
 // returns true if the current message was rendered in HTML
@@ -1542,7 +1537,16 @@ function(msg) {
 		tagLabelCell.style.verticalAlign = "middle";
 		tagCell = tagRow.insertCell(-1);
 	}
+	
+	this._renderTags(msg, tagCell);
+};
 
+ZmMailMsgView.prototype._renderTags =
+function(msg, container, tagCellId) {
+
+	var numTags = msg && msg.tags && msg.tags.length;
+	if (!numTags || !container) { return; }
+	
 	// get sorted list of tags for this msg
 	var ta = [];
 	for (var i = 0; i < numTags; i++) {
@@ -1555,45 +1559,51 @@ function(msg) {
 
 	html[i++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%><tr>";
 	html[i++] = "<td style='overflow:hidden; id='";
-	html[i++] = this._tagCellId;
+	html[i++] = tagCellId;
 	html[i++] = "'>";
 
 	for (var j = 0; j < ta.length; j++) {
 		var tag = ta[j];
-		if (!tag) continue;
-		var anchorId = [this._tagCellId, ZmMailMsgView._TAG_ANCHOR, tag.id].join("");
-		var imageId = [this._tagCellId, ZmMailMsgView._TAG_IMG, tag.id].join("");
-
-		var tagClick = ['ZmMailMsgView._tagClick("', this._htmlElId, '","', tag.id, '");'].join("");
-		var removeClick = ['ZmMailMsgView._removeTagClick("', this._htmlElId, '","', tag.id, '");'].join("");
-
-
-		html[i++] = "<span class='addrBubble TagBubble'";
-		html[i++] = " id='";
-		html[i++] = anchorId;
-		html[i++] = "'>";
-
-		html[i++] = "<span class='TagImage' onclick='";
-		html[i++] = tagClick;
-		html[i++] = "'>";
-		html[i++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, ["id='", imageId, "'"].join(""));
-		html[i++] = "</span>";
-
-		html[i++] = "<span class='TagName' onclick='";
-		html[i++] = tagClick;
-		html[i++] = "'>";
-		html[i++] = AjxStringUtil.htmlEncodeSpace(tag.name);
-		html[i++] = "&nbsp;</span>";
-
-		html[i++] = "<span class='ImgBubbleDelete' onclick='";
-		html[i++] = removeClick;
-		html[i++] = "'>";
-		html[i++] = "</span>";
-		html[i++] = "</span>";
-
+		if (!tag) { continue; }
+		i = this._getTagHtml(tag, tagCellId, html, i);
 	}
 	html[i++] = "</td></tr></table>";
-	tagCell.innerHTML = html.join("");
+	container.innerHTML = html.join("");
+};
+
+ZmMailMsgView.prototype._getTagHtml =
+function(tag, baseId, html, i) {
+
+	var anchorId = [baseId, ZmMailMsgView._TAG_ANCHOR, tag.id].join("");
+	var imageId = [baseId, ZmMailMsgView._TAG_IMG, tag.id].join("");
+
+	var tagClick = ['ZmMailMsgView._tagClick("', this._htmlElId, '","', tag.id, '");'].join("");
+	var removeClick = ['ZmMailMsgView._removeTagClick("', this._htmlElId, '","', tag.id, '");'].join("");
+
+	html[i++] = "<span class='addrBubble TagBubble'";
+	html[i++] = " id='";
+	html[i++] = anchorId;
+	html[i++] = "'>";
+
+	html[i++] = "<span class='TagImage' onclick='";
+	html[i++] = tagClick;
+	html[i++] = "'>";
+	html[i++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, ["id='", imageId, "'"].join(""));
+	html[i++] = "</span>";
+
+	html[i++] = "<span class='TagName' onclick='";
+	html[i++] = tagClick;
+	html[i++] = "'>";
+	html[i++] = AjxStringUtil.htmlEncodeSpace(tag.name);
+	html[i++] = "&nbsp;</span>";
+
+	html[i++] = "<span class='ImgBubbleDelete' onclick='";
+	html[i++] = removeClick;
+	html[i++] = "'>";
+	html[i++] = "</span>";
+	html[i++] = "</span>";
+	
+	return i;
 };
 
 ZmMailMsgView.prototype._setAttachmentLinks =
@@ -2267,7 +2277,7 @@ function(oldMsgId, result) {
 ZmMailMsgView.prototype.handleRemoveAttachment =
 function(oldMsgId, newMsg) {
 	if (!this._msg || this._msg.id == oldMsgId) {
-		this._msg = null;
+		this._msg = this._item = null;
 		this.set(newMsg);
 	}
 };

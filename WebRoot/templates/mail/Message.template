@@ -573,31 +573,20 @@
 </template>
 		
 <template id='mail.Message#Conv2View'>
-	<div>
-		<div id="${messagesDivId}" style='overflow:auto'></div>
+	<div class='Conv2View'>
+		<div id="${messagesDivId}" class='Conv2Messages'></div>
 		<div id="${replyDivId}">
-			<table>
-				<tr>
-					<td>
-						<input id="${replyInputId}" type="text" />
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<div id="${replyToolbarId}"></div>
-					</td>
-				</tr>
-			</table>
+			<input id="${replyInputId}" class="ReplyInput" type="text" placeholder="Type here to reply to all"/>
 		</div>
 	</div>
 </template>
-
+		
 <template id='mail.Message#Conv2MsgHeader'>
 	<div id='${headerId}' class='${parityClass}'>
 		<table class='MsgHeaderTable' cellspacing=0 cellpadding=0 border=0 width=100%>
-			<tr id='${tableRowId}' class='${unreadClass}'>
+			<tr id='${tableRowId}'>
 				<td>&nbsp;</td>
-				<td class='Expand' width=16>${expandIcon}</td>
+				<td class='Expand' width=16 id='${expandIconCellId}'></td>
 				<td class='LabelColValue' width=100%>
 					<$= data.from $>
 				</td>
@@ -612,7 +601,10 @@
 	<div id='${footerId}' class='${parityClass}'>
 		<table class='MsgHeaderTable' cellspacing=0 cellpadding=0 border=0 width=100%>
 			<tr>
-				<td width=100%>&nbsp;</td>
+				<td>&nbsp;</td>
+				<td id='${folderCellId}'>${folderName}</td>
+				<td id='${tagCellId}' width=100%></td>
+				<td>&nbsp;</td>
 				<td align=right>
 					<a class='Link' id='${replyLinkId}'><$= ZmMsg.reply $></a>
 				</td>

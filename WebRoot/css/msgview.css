@@ -30,11 +30,11 @@
 }
 
 .MsgBody.OddMsg {
-	background-color: #EEEEEE;
+	background-color: white;
 }
 
 .MsgBody.EvenMsg {
-	background-color: #CCCCCC;
+	background-color: #EEEEEE;
 }
 
 /* text message font (eg: not HTML) */

@@ -89,6 +89,10 @@ function(view, force) {
 			if (this._currentView == ZmId.VIEW_CONVLIST) {
 				this._mailListView.redoExpansion();
 			}
+			else if (this._currentView == ZmId.VIEW_CONVLIST2) {
+				var cv = this._doublePaneView._itemView;
+				cv.set(cv._conv, true);
+			}
 		}
 		if (this._toolbar && this._toolbar[this._currentView]) {
 			this._toolbar[this._currentView].adjustSize();

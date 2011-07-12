@@ -25,7 +25,7 @@
 ZmConvDoublePaneView2 = function(params) {
 
 	params.className = params.className || "ZmConvDoublePaneView2";
-	params.mode = ZmId.VIEW_CONVLIST;
+	params.mode = ZmId.VIEW_CONVLIST2;
 	ZmDoublePaneView.call(this, params);
 };
 

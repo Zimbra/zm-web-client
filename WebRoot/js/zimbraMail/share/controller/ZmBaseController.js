@@ -1057,14 +1057,16 @@ ZmBaseController.prototype._resetQuickCommandOperations = function(parent) {
         var quickCommandMenuItem = parent.getOp(ZmOperation.QUICK_COMMANDS);
         if (quickCommandMenuItem) {
             var quickCommands = ZmQuickCommands.getInstance().getQuickCommandsByItemType(quickCommandType, false);
-            var quickCommandSubMenu = quickCommandMenuItem.getMenu(true);
-            if (!quickCommandSubMenu) {
-                //add listener and quickCommandSubMenu one time only
-                quickCommandMenuItem.addListener(DwtEvent.ONMOUSEOVER, this._refreshQuickCommandsClosure);
-                quickCommandSubMenu = new ZmActionMenu({parent:parent, menuItems:ZmOperation.NONE});
-                quickCommandMenuItem.setMenu(quickCommandSubMenu);
-            }
-            parent.enable(ZmOperation.QUICK_COMMANDS, (quickCommands && quickCommands.length));
+			if (quickCommands) {
+				var quickCommandSubMenu = quickCommandMenuItem.getMenu(true);
+				if (!quickCommandSubMenu) {
+					//add listener and quickCommandSubMenu one time only
+					quickCommandMenuItem.addListener(DwtEvent.ONMOUSEOVER, this._refreshQuickCommandsClosure);
+					quickCommandSubMenu = new ZmActionMenu({parent:parent, menuItems:ZmOperation.NONE});
+					quickCommandMenuItem.setMenu(quickCommandSubMenu);
+				}
+				parent.enable(ZmOperation.QUICK_COMMANDS, (quickCommands && quickCommands.length));
+			}
         }
     }
 };

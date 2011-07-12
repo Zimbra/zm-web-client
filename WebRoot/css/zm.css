@@ -612,17 +612,25 @@ INPUT[type="text"].search_input {
 
 /* Styles for Conv2.0 */
 
+.Conv2View {
+	background-color: #CCCCCC;
+}
+
+.Conv2Messages {
+	overflow: auto;
+}
+
 .ZmMailMsgCapsuleView {
-	margin: 2px;
-	border: 1px black solid;
+	margin: 2px 5px;
+	border: 2px black solid;
 }
 
 .ZmMailMsgCapsuleView .OddMsg {
-	background-color: #EEEEEE;
+	background-color: white;
 }
 
 .ZmMailMsgCapsuleView .EvenMsg {
-	background-color: #CCCCCC;
+	background-color: #EEEEEE;
 }
 
 .ZmMailMsgCapsuleView .LabelColValue {
@@ -656,6 +664,19 @@ INPUT[type="text"].search_input {
 	color: blue;
 /*	text-decoration: underline;*/
 	margin-right: 10px;
+}
+
+.ZmConvView2 .ReplyInput {
+	width: 98%;
+	margin: 5px;
+}
+
+.ZmConvView2 input::-webkit-input-placeholder {
+    @InputField-hint@
+}
+
+.ZmConvView2 input:-moz-placeholder {
+    @InputField-hint@
 }
 
 /* the sash next to overview does not need borders or a background color */

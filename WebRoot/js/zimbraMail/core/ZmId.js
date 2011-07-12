@@ -172,6 +172,7 @@ ZmId.TB_INVITE	= "Inv";
 ZmId.TB_COUNTER	= "Cou";
 ZmId.TB_NAV		= "Nav";
 ZmId.TB_SHARE	= "Shr";
+ZmId.TB_REPLY	= "Rep";
 
 /**
  * Generates the ID for a button. Intended for use with the top toolbar, nav toolbar,

@@ -450,8 +450,8 @@ function(type, addrs) {
  * @param {AjxEmailAddress}	addr	an address
  */
 ZmMailMsg.prototype.addAddress =
-function(addr) {
-	var type = addr.type || AjxEmailAddress.TO;
+function(addr, type) {
+	type = type || addr.type || AjxEmailAddress.TO;
 	this._addrs[type].add(addr);
 };
 
