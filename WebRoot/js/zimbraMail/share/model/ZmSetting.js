@@ -85,6 +85,10 @@ ZmSetting.T_CONFIG		= "config";
  */
 ZmSetting.T_COS			= "cos";
 /**
+ * Defines the "domain" type.
+ */
+ZmSetting.T_DOMAIN		= "domain";
+/**
  * Defines the "meta-data" type.
  */
 ZmSetting.T_METADATA	= "meta";
