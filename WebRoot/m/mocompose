@@ -76,6 +76,22 @@
                                     newattachments="${uploader.compose.hasFileItems or !empty uploader.compose.uploadedAttachment}"/>
         </c:when>
     </c:choose>
+    <c:set var="subject" value="${compose.subject}"/>
+    <c:if test="${not empty param.messageAttachments}">
+        <%--
+            If there are more than one message attachments, default mail subject should be set to Fwd:
+        --%>
+        <c:set var="subject" value="Fwd: "/>
+        <%--
+            In case of a single message attachment, the mail subject should be Fwd:<previous subject>
+        --%>
+        <c:set var="msgAttach" value="${fn:split(param.messageAttachments, ',')}"/>
+        <c:if test="${fn:length(msgAttach) eq 1}">
+            <c:set var="msgAttachId" value="${msgAttach[0]}"/>
+            <zm:getMessage var="ma" id="${msgAttachId}"/>
+            <c:set var="subject" value="Fwd: ${ma.subject}"/>
+        </c:if>
+    </c:if>
 </mo:handleError>
 <c:set var="title" scope="request" value="${title}"/><c:set var="focusField" value="${param.op eq 'reply' or param.op eq 'replyAll' ? 'bodyField' : 'toField'}"/><c:set var="nmail" value="st=newmail"/>
 <form action="?${nmail}&bt=${bt}" method="post" enctype="multipart/form-data" accept-charset="utf-8" onsubmit="return submitForm(this,'aniframe');">
@@ -156,7 +172,7 @@
 </div></div></div>
 <div class="View"><div class="tbl"><div class="tr cmp_sub_row">
     <span class='label td nb'><label for="subjectField"><fmt:message key="subjectLabel"/> </label></span>
-    <span class="td nb value"><input class="Textarea" type="text" name="subject" id="subjectField" value="${fn:escapeXml(compose.subject)}"></span>
+    <span class="td nb value"><input class="Textarea" type="text" name="subject" id="subjectField" value="${fn:escapeXml(subject)}"></span>
 </div></div></div>
 <c:set var="firstAttachment" value="${true}"/>
 <c:if test="${!empty compose.messageAttachments}">
