@@ -376,7 +376,7 @@ function(params) {
 			var defaultFolder = organizerName && ZmOrganizer.DEFAULT_FOLDER[organizerName];
 			var folder = defaultFolder && appCtxt.getById(defaultFolder);
 			if (folder) {
-				params.query = "in:" + folder.name;
+				params.query = "in:" + folder._systemName;
 			}
 		}
 		if (params.query) {
