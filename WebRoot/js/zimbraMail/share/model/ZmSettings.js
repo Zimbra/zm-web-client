@@ -274,7 +274,8 @@ ZmSettings.prototype.setUserSettings = function(params) {
         ZmSetting.RECENT_MESSAGES,          info.recent,
         ZmSetting.REST_URL,                 info.rest,
         ZmSetting.TOKEN_LIFETIME,           info.lifetime,
-        ZmSetting.USERNAME,                 info.name
+        ZmSetting.USERNAME,                 info.name,
+		ZmSetting.EMAIL_VALIDATION_REGEX, 	info.domainSettings.zimbraMailAddressValidationRegex
     ];
     for (var i = 0; i < settings.length; i += 2) {
         var value = settings[i+1];
@@ -282,7 +283,6 @@ ZmSettings.prototype.setUserSettings = function(params) {
             this._settings[settings[i]].setValue(value, null, setDefault, skipNotify, skipImplicit);
         }
     }
-
     // features and other settings
     if (info.attrs && info.attrs._attrs) {
         this.createFromJs(info.attrs._attrs, setDefault, skipNotify, skipImplicit);
@@ -873,6 +873,9 @@ function() {
 	this.registerSetting("OFFLINE_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:appCtxt.isOffline});
 	this.registerSetting("SPELL_CHECK_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:!appCtxt.isOffline && (!AjxEnv.isSafari || AjxEnv.isSafari3up || AjxEnv.isChrome)});
 	this.registerSetting("SPELL_CHECK_ADD_WORD_ENABLED",	{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:!AjxEnv.isSafari || AjxEnv.isSafari3up || AjxEnv.isChrome});
+
+	//SETTINGS SET AT DOMAIN LEVEL
+	this.registerSetting("EMAIL_VALIDATION_REGEX",			{name:"zimbraMailAddressValidationRegex", type:ZmSetting.T_DOMAIN, dataType:ZmSetting.D_LIST});
 
 	// USER PREFERENCES (mutable)
 

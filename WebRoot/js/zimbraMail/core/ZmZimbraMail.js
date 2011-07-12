@@ -352,9 +352,15 @@ ZmZimbraMail.prototype._createSettings = function(params) {
         var batchResponse = params.batchInfoResponse.Body.BatchResponse;
 
         // always assume there's a get info response
+		var infoResponse = batchResponse.GetInfoResponse[0];
+		if(!infoResponse) {
+			infoResponse ={}
+		}
+		//store per-domain settings in infoResponse obj so we can access it like other settings
+		infoResponse.domainSettings = params.settings;
         params.getInfoResponse = {
             Header: params.batchInfoResponse.Header,
-            Body: { GetInfoResponse: batchResponse.GetInfoResponse[0] }
+            Body: { GetInfoResponse: infoResponse}
         };
         var session = AjxUtil.get(params.getInfoResponse, "Header", "context", "session");
         if (session) {
