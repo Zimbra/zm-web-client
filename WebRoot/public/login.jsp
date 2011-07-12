@@ -73,7 +73,7 @@
 	            <zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
 	                      varRedirectUrl="postLoginUrl" varAuthResult="authResult"
 	                      rememberme="${param.zrememberme == '1'}"
-						  requestedSkin="${param.skin}"/>
+						  requestedSkin="${param.skin}" adminPreAuth="${param.adminPreAuth == '1'}"/>
 	            <%-- continue on at not empty authResult test --%>
 	        </c:if>
 	    </c:otherwise>
