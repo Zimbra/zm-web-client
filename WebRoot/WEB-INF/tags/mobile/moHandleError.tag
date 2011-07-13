@@ -29,6 +29,7 @@
             <c:redirect url="${not empty requestScope.SERVIER_REDIRECT_URL ? requestScope.SERVIER_REDIRECT_URL : '/'}"/>
         </c:when>
         <c:when test="${error.code eq 'service.AUTH_EXPIRED' or error.code eq 'service.AUTH_REQUIRED'}">
+            <fmt:message key="${error.code}"/>
             <c:redirect url="/?loginOp=relogin&client=mobile&loginErrorCode=${error.code}"/>
         </c:when>
         <c:otherwise>
