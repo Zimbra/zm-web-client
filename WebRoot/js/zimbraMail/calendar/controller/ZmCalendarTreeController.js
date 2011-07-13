@@ -203,10 +203,13 @@ function(actionMenu, type, id) {
 		this._resetButtonPerSetting(actionMenu, ZmOperation.SHARE_CALENDAR, appCtxt.get(ZmSetting.SHARING_ENABLED));
 		this._resetButtonPerSetting(actionMenu, ZmOperation.FREE_BUSY_LINK, appCtxt.getActiveAccount().isZimbraAccount);
 
-        //setting up free busy link submenu
-        this._fbLinkSubMenu = (this._fbLinkSubMenu) ? this._fbLinkSubMenu : this._getFreeBusySubMenu(actionMenu);
+        var fbLinkMenuItem = actionMenu.getMenuItem(ZmOperation.FREE_BUSY_LINK);
+        if(fbLinkMenuItem){
+            //setting up free busy link submenu
+            this._fbLinkSubMenu = (this._fbLinkSubMenu) ? this._fbLinkSubMenu : this._getFreeBusySubMenu(actionMenu);
 
-        actionMenu.getMenuItem(ZmOperation.FREE_BUSY_LINK).setMenu(this._fbLinkSubMenu);
+            fbLinkMenuItem.setMenu(this._fbLinkSubMenu);
+        }
 
 	}
 };
