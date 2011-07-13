@@ -87,3 +87,14 @@ function(ev) {
 		ZmCalColView.prototype._controlListener.call(this, ev);
 	}
 };
+
+
+ZmCalDayView.prototype._apptMouseDownAction =
+function(ev, apptEl) {
+    appt = this.getItemFromElement(apptEl);
+    if (appt.isAllDayEvent()) {
+        return false;
+    } else {
+        return ZmCalBaseView.prototype._apptMouseDownAction.call(this, ev, apptEl, appt);
+    }
+}

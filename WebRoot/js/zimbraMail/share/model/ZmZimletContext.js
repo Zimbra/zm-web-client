@@ -334,8 +334,7 @@ function() {
  */
 ZmZimletContext.prototype.getVal =
 function(key) {
-	var zim = this.json.zimlet;
-	return eval("zim." + key);
+	return this.json.zimlet[key];
 };
 
 /**

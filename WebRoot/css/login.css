@@ -127,7 +127,7 @@ FORM {
 	margin:20px 0px 0px 20px;
 	width:71px;
 	height:11px;
-	background-image:url("@LogoImgDir@/AltBanner.png");		
+	background-image:url("@LogoImgDir@/AltBanner.png?v=@jsVersion@");		
 	background-repeat:no-repeat;
 }
 
@@ -138,7 +138,7 @@ FORM {
 	margin:20px 0px 0px 20px;
 	width:71px;
 	height:11px;
-	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='@LogoImgDir@/AltBanner.png');		
+	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='@LogoImgDir@/AltBanner.png?v=@jsVersion@');		
 	background-repeat:no-repeat;
 }
 #ENDIF
