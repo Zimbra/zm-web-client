@@ -371,6 +371,7 @@ var submitForm = function(fobj, target, val) {
     var params = getFormValues(fobj);
     var container = GC();
     url  = addParam(url,"_ajxnoca=1");    //form submission will not use cache
+    url  = addParam(url,"ajax=true");
     ajxReq(url, params, container, method);
     delete xhr;
     return false;
@@ -547,10 +548,6 @@ var parseResponse = function (request, container,url) {
             showLoadingMsg(null, false);
             var data = request.responseText;
             if (data) {
-                if (data.indexOf("${authExp}") != -1) {
-                     var logouturl = "<c:url value="/?loginOp=relogin&client=mobile&loginErrorCode=service.AUTH_EXPIRED"/>";
-                     window.location.href = logouturl;
-                }
                 <c:if test="${(ua.isiPhone or ua.isiPod) and param.anim}">if(url.match(/st=prefs|action=edit|st=newmail|st=newappt|st=newtask/) || $('card').className.match(/flipped/)){
                     slideElem(container,-1);
                 }else if(url.match(/_pv=1|_back|st=briefcases|st=notebooks|st=folders|st=tasks|st=ab|st=cals/)){
