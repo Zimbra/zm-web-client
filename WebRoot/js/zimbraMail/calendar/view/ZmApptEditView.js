@@ -1267,11 +1267,7 @@ function(addrInput, addrs, type, shortForm) {
 						email = addr.getEmail(true);
                         //bug: 57858 - give preference to lookup email address if its present
                         //bug:60427 to show display name format the lookupemail
-                        var formatedLookUpEmail;
-                        if(addr.getLookupEmail()) {
-                           formatedLookUpEmail =  (new AjxEmailAddress(addr.getLookupEmail(),null,addr.getFullNameForDisplay())).toString();
-                        }
-						addrStr = formatedLookUpEmail || ZmApptViewHelper.getAttendeesText(addr, type);
+                        addrStr = addr.getLookupEmail() ? (new AjxEmailAddress(addr.getLookupEmail(),null,addr.getFullNameForDisplay())).toString() : ZmApptViewHelper.getAttendeesText(addr, type);
                         match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
 					}
 					addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
