@@ -405,6 +405,7 @@ function(ev) {
 		return;
 	}
 
+	var conv = item;
 	var fields = ev.getDetail("fields");
 	var sortBy = this._sortByString || ZmSearch.DATE_DESC;
 	var handled = false;

@@ -150,24 +150,34 @@ function(conv, container) {
 		parent:			this,
 		parentElement:	container,
 		controller:		this._controller,
-		mode:			this._mode
+		mode:			this._mode,
+		actionsMenu:	this._actionsMenu
 	}
 	
 	var pref = appCtxt.get(ZmSetting.CONVERSATION_ORDER);
 	if (pref == ZmSearch.DATE_ASC) {
 		msgs = msgs.reverse();
 	}
-	var isOdd = true;
+	params.isOdd = true;
 	for (var i = 0, len = msgs.length; i < len; i++) {
-		var msg = msgs[i];
-		params.msgId = msg.id;
-		params.isOdd = isOdd;
-		params.actionsMenu = this._actionsMenu;
 		params.forceExpand = (msgs.length == 1) || (!conv.isUnread && i == 0);
-		var msgView = this._msgViews[msg.id] = new ZmMailMsgCapsuleView(params);
-		msgView.set(msg);
-		isOdd = !isOdd;
+		this._renderMessage(msgs[i], params);
+		params.isOdd = !params.isOdd;
 	}
+};
+
+ZmConvView2.prototype._renderMessage =
+function(msg, params) {
+	
+	params = params || {};
+	params.msgId = msg.id;
+	var msgView = this._msgViews[msg.id] = new ZmMailMsgCapsuleView(params);
+	msgView.set(msg);
+};
+
+ZmConvView2.prototype._setParity =
+function() {
+
 };
 
 ZmConvView2.prototype.setMsg =
@@ -298,11 +308,24 @@ function(ev) {
 	
 	if (ev.type != ZmEvent.S_MSG) {	return; }
 	
-	var msgId = ev.item && ev.item.id;
-	var msgView = this._msgViews[msgId];
-	if (msgView) {
-		msgView._msgChangeListener(ev);
-	}	
+	if (ev.event == ZmEvent.E_CREATE) {
+		var params = {
+			parent:			this,
+			parentElement:	document.getElementById(this._messagesDivId),
+			controller:		this._controller,
+			mode:			this._mode,
+			actionsMenu:	this._actionsMenu,
+			forceExpand:	false,
+			index:			ev.getDetail("sortIndex")
+		}
+		this._renderMessage(ev.item, params);
+	} else {
+		var msgId = ev.item && ev.item.id;
+		var msgView = this._msgViews[msgId];
+		if (msgView) {
+			msgView._msgChangeListener(ev);
+		}
+	}
 };
 
 ZmConvView2.prototype._tagChangeListener =
@@ -360,7 +383,7 @@ function() {
 
 ZmMailMsgCapsuleView.prototype.set =
 function(msg, force) {
-	this._expanded = this._forceExpand || msg.isUnread;
+	this._expanded = this._forceExpand || (msg.isUnread && this._forceExpand !== false);
 	ZmMailMsgView.prototype.set.apply(this, arguments);
 };
 
@@ -369,13 +392,12 @@ function(msg, container, callback) {
 	
 	if (this._expanded) {
 		this._renderMessageHeader(msg, container);
-		this._renderMessageBody(msg, container, callback);
-		this._renderMessageFooter(msg, container);
+		this._renderMessageBodyAndFooter(msg, container, callback);
 	}
 	else {
 		this._renderMessageHeader(msg, container);
-		msg.addChangeListener(this._changeListener);
 	}
+	msg.addChangeListener(this._changeListener);
 };
 
 ZmMailMsgCapsuleView.prototype._renderMessageHeader =
@@ -407,6 +429,45 @@ function(msg, container) {
 	this._setRowClass();
 };
 
+ZmMailMsgCapsuleView.prototype._renderMessageBodyAndFooter =
+function(msg, container, callback) {
+
+	if (!msg._loaded) {
+		var params = {
+			getHtml:		true,
+			callback:		this._handleResponseLoadMessage.bind(this, msg, container, callback),
+			needExp:		true
+		}
+		msg.load(params);
+	}
+	else {
+		this._handleResponseLoadMessage(msg, container, callback);
+	}
+	
+};
+
+ZmMailMsgCapsuleView.prototype._handleResponseLoadMessage =
+function(msg, container, callback) {
+	this._renderMessageBody(msg, container, callback);
+	this._renderMessageFooter(msg, container);
+};
+
+ZmMailMsgCapsuleView.prototype._renderMessageBody =
+function(msg, container) {
+
+	if (!msg._loaded) {
+		var params = {
+			getHtml:		true,
+			callback:		ZmMailMsgView.prototype._renderMessageBody.bind(this, msg, container, null),
+			needExp:		true
+		}
+		msg.load(params);
+	}
+	else {
+		ZmMailMsgView.prototype._renderMessageBody.call(this, msg, container, null);
+	}
+};
+
 ZmMailMsgCapsuleView.prototype._getBodyContent =
 function(bodyPart) {
 	var chunks =  AjxStringUtil.getTopLevel(bodyPart.content);
@@ -433,6 +494,8 @@ function(msg, container) {
 	this._footerId = ZmId.getViewId(this._viewId, ZmId.MV_MSG_FOOTER, this._mode);
 	var folder = appCtxt.getById(msg.folderId);
 	var folderName = folder ? folder.getName(false, null, true, true) : "";
+	var attachmentsCount = this._msg.getAttachmentLinks(true, !appCtxt.get(ZmSetting.VIEW_AS_HTML), true).length;
+	this._attLinksId = ZmId.getViewId(this._viewId, ZmId.MV_ATT_LINKS, this._mode);
 
 	var subs = {
 		footerId:		this._footerId,
@@ -441,7 +504,9 @@ function(msg, container) {
 		folderName:		folderName,
 		tagCellId:		this._tagContainerCellId,
 		replyLinkId:	replyLinkId,
-		buttonCellId:	this._buttonCellId
+		buttonCellId:	this._buttonCellId,
+		hasAttachments:	(attachmentsCount > 0),
+		attachId:		this._attLinksId
 	}
 	var html = AjxTemplate.expand("mail.Message#Conv2MsgFooter", subs);
 	this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
@@ -459,6 +524,8 @@ function(msg, container) {
 	ab.setMenu(this._actionsMenu);
 	ab.reparentHtmlElement(this._buttonCellId);
 	ab.addDropDownSelectionListener(this._setActionMenu.bind(this));
+
+	this._addAttachmentLinksToFooter();
 	
 	this._resetOperations();
 };
@@ -545,6 +612,9 @@ function(ev) {
 	else if (ev.event == ZmEvent.E_MOVE) {
 		this._changeFolderName(ev.getDetail("oldFolderId"));
 	}
+	else if (ev.event == ZmEvent.E_MODIFY) {
+		// eat MODIFY since parent class does a re-render
+	}
 	else {
 		ZmMailMsgView.prototype._msgChangeListener.apply(this, arguments);
 	}
@@ -574,8 +644,15 @@ function(ev) {
 	}
 };
 
+// override to do nothing since parent class adds them while rendering body, and we're
+// not ready for them until the footer has been rendered
 ZmMailMsgCapsuleView.prototype._setAttachmentLinks =
 function() {
+};
+
+ZmMailMsgCapsuleView.prototype._addAttachmentLinksToFooter =
+function() {
+	ZmMailMsgView.prototype._setAttachmentLinks.call(this);
 };
 
 // TODO: copied from ZmMailMsgListView - refactor?

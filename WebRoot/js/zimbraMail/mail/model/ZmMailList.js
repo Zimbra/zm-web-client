@@ -658,7 +658,7 @@ function(items, sortBy, event, details) {
 			if (this.type == ZmItem.CONV && itemType == ZmItem.MSG) {
 				var conv = this.getById(item.cid);
 				if (conv) {
-					sortIndex = conv.msgs._getSortIndex(item, conv._sortBy);
+					sortIndex = conv.msgs._getSortIndex(item, appCtxt.get(ZmSetting.CONVERSATION_ORDER));
 					if (event == ZmEvent.E_CREATE) {
 						conv.addMsg(item, sortIndex);
 					}

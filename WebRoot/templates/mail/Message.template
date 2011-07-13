@@ -598,19 +598,26 @@
 </template>
 
 <template id='mail.Message#Conv2MsgFooter'>
-	<div id='${footerId}' class='${parityClass}'>
-		<table class='MsgHeaderTable' cellspacing=0 cellpadding=0 border=0 width=100%>
-			<tr>
-				<td>&nbsp;</td>
-				<td id='${folderCellId}'>${folderName}</td>
-				<td id='${tagCellId}' width=100%></td>
-				<td>&nbsp;</td>
-				<td align=right>
-					<a class='Link' id='${replyLinkId}'><$= ZmMsg.reply $></a>
-				</td>
-				<td id='${buttonCellId}' align=right></td>
-				<td>&nbsp;</td>
-			</tr>
-		</table>
+	<div>
+		<$ if (data.hasAttachments) { $>
+			<div class="MessageHeaderAttachments ${parityClass}" id="${attachId}_container">
+				<div id="${attachId}" style='overflow:auto;'></div>
+			</div>
+		<$ } $>
+		<div id='${footerId}' class='${parityClass}'>
+			<table class='MsgHeaderTable' cellspacing=0 cellpadding=0 border=0 width=100%>
+				<tr>
+					<td>&nbsp;</td>
+					<td id='${folderCellId}'>${folderName}</td>
+					<td id='${tagCellId}' width=100%></td>
+					<td>&nbsp;</td>
+					<td align=right>
+						<a class='Link' id='${replyLinkId}'><$= ZmMsg.reply $></a>
+					</td>
+					<td id='${buttonCellId}' align=right></td>
+					<td>&nbsp;</td>
+				</tr>
+			</table>
+		</div>
 	</div>
 </template>
