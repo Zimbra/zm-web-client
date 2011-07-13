@@ -32,7 +32,6 @@
 </c:url>
 </c:if>
 <c:if test="${not empty param.contactId}">
-    <c:set var="base" value="${fn:substringBefore(prevUrl,'?')}" />
     <c:set var="caction" value="${'zmain?id='}${param.contactId}${'&action=view&st=contact'}" />
 </c:if>
 <mo:handleError>
@@ -278,6 +277,9 @@
 <input type="hidden" name="inviteReplyVerb" value="${fn:escapeXml(compose.inviteReplyVerb)}"/>
 <input type="hidden" name="inviteReplyInst" value="${fn:escapeXml(compose.inviteReplyInst)}"/>
 <input type="hidden" name="inviteReplyAllDay" value="${fn:escapeXml(compose.inviteReplyAllDay)}"/>
+<c:if test="${not empty param.contactId}">
+    <input type="hidden" name="contactId" value="${fn:escapeXml(param.contactId)}" />
+</c:if>
 <c:if test="${message.isDraft}"><input type="hidden" name="draftid" value="${message.id}"/></c:if>
 </form>
 <c:if test="${not empty requestScope.compAction and ua.isiPad eq true}">
