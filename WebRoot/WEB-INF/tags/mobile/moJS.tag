@@ -24,6 +24,7 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
+<fmt:message key="service.AUTH_EXPIRED" var="authExp"/> 
 <c:if test="${empty ua}">
 <zm:getUserAgent var="ua" session="false"/>
 </c:if>
@@ -545,7 +546,11 @@ var parseResponse = function (request, container,url) {
         if (request.status == 200) {
             showLoadingMsg(null, false);
             var data = request.responseText;
-            if (data) {                                                                                                 
+            if (data) {
+                if (data.indexOf("${authExp}") != -1) {
+                     var logouturl = "<c:url value="/?loginOp=relogin&client=mobile&loginErrorCode=service.AUTH_EXPIRED"/>";
+                     window.location.href = logouturl;
+                }
                 <c:if test="${(ua.isiPhone or ua.isiPod) and param.anim}">if(url.match(/st=prefs|action=edit|st=newmail|st=newappt|st=newtask/) || $('card').className.match(/flipped/)){
                     slideElem(container,-1);
                 }else if(url.match(/_pv=1|_back|st=briefcases|st=notebooks|st=folders|st=tasks|st=ab|st=cals/)){
@@ -561,7 +566,7 @@ var parseResponse = function (request, container,url) {
                         try{eval(scripts[i].innerHTML);}catch(e){if(window.console){console.log(e);}}
                     }
                 }
-            }
+            }          
         } else {
             showLoadingMsg('<fmt:message key="error"/> : ' + request.status, true, 'Critical');
         }
