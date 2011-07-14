@@ -66,6 +66,7 @@ ZmZimbraMail = function(params) {
     this._createSettings(params);
     this._createEnabledApps();
     this._initializeSettings(params);
+	this._postInitializeSettings();
 
     // set internal state
 	this._shell = appCtxt.getShell();
@@ -453,6 +454,35 @@ ZmZimbraMail.prototype._initializeSettings = function(params) {
     if (!appCtxt.get(ZmSetting.SPAM_ENABLED)) {
         ZmFolder.HIDE_ID[ZmFolder.ID_SPAM] = true;
     }
+};
+
+/**
+ * Perform any additional operation after initializing settings
+ * @private
+ */
+ZmZimbraMail.prototype._postInitializeSettings =
+function() {
+	this._setCustomInvalidEmailPats();
+};
+
+/**
+ * Set an array of invalid Email patterns(values of zimbraMailAddressValidationRegex in ldap) to
+ * AjxEmailAddress.customInvalidEmailPats
+ * @private
+ */
+ZmZimbraMail.prototype._setCustomInvalidEmailPats =
+function() {
+ 	var customPatSetting = appCtxt.getSettings().getSetting(ZmSetting.EMAIL_VALIDATION_REGEX);
+	var cPatList = [];
+	if(customPatSetting) {
+		cPatList = customPatSetting.value;
+	}
+	for(var i = 0; i< cPatList.length; i++) {
+		var pat = cPatList[i];
+		if(pat && pat != "") {
+			  AjxEmailAddress.customInvalidEmailPats.push(new RegExp(pat))
+		}
+	}
 };
 
 /**
