@@ -275,7 +275,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
         ZmSetting.REST_URL,                 info.rest,
         ZmSetting.TOKEN_LIFETIME,           info.lifetime,
         ZmSetting.USERNAME,                 info.name,
-		ZmSetting.EMAIL_VALIDATION_REGEX, 	info.domainSettings.zimbraMailAddressValidationRegex
+		ZmSetting.EMAIL_VALIDATION_REGEX, 	info.zimbraMailAddressValidationRegex
     ];
     for (var i = 0; i < settings.length; i += 2) {
         var value = settings[i+1];
