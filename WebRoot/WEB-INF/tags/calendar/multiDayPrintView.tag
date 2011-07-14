@@ -14,6 +14,7 @@
 --%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar" %>
+<%@ attribute name="endDate" rtexprvalue="true" required="false" type="java.util.Calendar" %>
 <%@ attribute name="numdays" rtexprvalue="true" required="true" %>
 <%@ attribute name="view" rtexprvalue="true" required="true" %>
 <%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
@@ -30,10 +31,11 @@
 
     <app:skin mailbox="${mailbox}" />
     <c:set var="multiDay">
-        <app:multiDay date="${date}" print="${true}" numdays="${numdays}" view="${view}" timezone="${timezone}" checkedCalendars="${checkedCalendars}" query="${requestScope.calendarQuery}"/>
+        <app:multiDay date="${date}" endDate="${not empty endDate ? endDate : ''}" print="${true}" numdays="${numdays}" view="${view}" timezone="${timezone}" checkedCalendars="${checkedCalendars}" query="${requestScope.calendarQuery}"/>
     </c:set>
-
+                                                                          
 </app:handleError>
+<c:if test="${param.imc eq 'true'}">
 <table cellpadding="0" cellspacing="0" border="0" style="margin-left: 1%;">
     <tr>
         <td width="180">
@@ -47,6 +49,7 @@
         </td>
     </tr>
 </table>
+</c:if>
 <br>
 <table width="98%" align="center" cellpadding="0" cellspacing="0" border="0" class="zPrintMsgs" >
     <tr>

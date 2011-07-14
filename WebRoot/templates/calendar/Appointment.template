@@ -56,14 +56,14 @@
                 <td class='ZmFieldLabelRight'><div id='${id}_loc_picker'><$= ZmMsg.locationLabel $></div></td>
                 <$ if (data.isGalEnabled && data.isGroupCalEnabled) { $>
                 <td colspan='3' id='${id}_location'></td>
-                <td id='${id}_show_resources' class='fakeAnchor'><$= ZmMsg.showResources $></td>
+                <td id='${id}_show_resources' class='fakeAnchor'><$= ZmMsg.showEquipment $></td>
                 <$ }else { $>
                 <td colspan='4' id='${id}_location'></td>
                 <$ } $>
             </tr>
             <$ if (data.isGalEnabled && data.isGroupCalEnabled) { $>
             <tr id='${id}_resourcesContainer'>
-                <td class='ZmFieldLabelRight'><div id='${id}_res_btn'><$= ZmMsg.resourcesLabel $></div></td>
+                <td class='ZmFieldLabelRight'><div id='${id}_res_btn'><$= ZmMsg.equipmentLabel $></div></td>
                 <td colspan='3' id='${id}_resourcesData'></td>
                 <td>&nbsp;</td>
             </tr>

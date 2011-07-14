@@ -28,6 +28,11 @@
 									<td>&nbsp;</td>
 								<$ } $>
                                 <td>&nbsp;</td>
+								<$ if (data.priorityImg) { $>
+									<td>
+										<div priority='<$=data.priority$>' id='<$=data.priorityDivId$>' class='<$=data.priorityImg$>'></div>
+									</td>
+								<$ } $>
 								<td class='LabelColValue SubjectCol' valign=top width=100%>
 									<$= data.subject $>
 								</td>
@@ -324,10 +329,52 @@
 	</table>
 </template>
 
+<template id="mail.Message#To_Recipient">
+    <tr id='${toRowId}'>
+        <td align=right valign=top style='${labelStyle}'>
+            <div id='${toPickerId}'><$=ZmMsg.toLabel$></div>
+        </td>
+        <td width='96%' colspan=2 id='${toCellId}'>
+            <$ if (!data.acAddrBubbles) { $>
+                <textarea id='${toInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
+            <$ } $>
+        </td>
+    </tr>
+</template>
+
+<template id="mail.Message#CC_Recipient">
+    <tr id='${ccRowId}' style='display:none;'>
+        <td align=right valign=top style='${labelStyle}'>
+            <div id='${ccPickerId}'><$=ZmMsg.ccLabel$></div>
+        </td>
+        <td id='${ccCellId}'>
+            <$ if (!data.acAddrBubbles) { $>
+                <textarea id='${ccInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
+            <$ } $>
+        </td>
+        <td width='5%'>
+            <nobr><a href='#' id='${bccToggleId}'><$=ZmMsg.showBCC$></a></nobr>
+        </td>
+    </tr>
+</template>
+
+<template id="mail.Message#BCC_Recipient">
+    <tr id='${bccRowId}' style='display:none;'>
+        <td align=right valign=top style='${labelStyle}'>
+            <div id='${bccPickerId}'><$=ZmMsg.bccLabel$></div>
+        </td>
+        <td colspan='2' id='${bccCellId}'>
+            <$ if (!data.acAddrBubbles) { $>
+                <textarea id='${bccInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
+            <$ } $>
+        </td>
+    </tr>
+</template>
+
 <!-- NOTE: The header container MUST have an id of ${id}_header -->
 <template id='mail.Message#Compose'>
-	<$ var labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap"; $>
-	<$ var inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
+	<$ var labelStyle = data.labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap"; $>
+	<$ var inputStyle = data.inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
 	<!-- header -->
 	<table id='${headerId}' border=0 cellpadding=2 cellspacing=2 width=100%>
 		<$ if (appCtxt.multiAccounts) { $>
@@ -349,42 +396,9 @@
 				</td>
 			</tr>
 		<$ } $>
-		<tr id='${toRowId}'>
-			<td align=right valign=top style='<$=labelStyle$>'>
-				<div id='${toPickerId}'><$=ZmMsg.toLabel$></div>
-			</td>
-			<td width='96%' colspan=2 id='${toCellId}'>
-				<$ if (!data.acAddrBubbles) { $>
-					<textarea id='${toInputId}' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
-				<$ } $>
-			</td>
-		</tr>
-
-		<tr id='${ccRowId}' style='display:none;'>
-			<td align=right valign=top style='<$=labelStyle$>'>
-				<div id='${ccPickerId}'><$=ZmMsg.ccLabel$></div>
-			</td>
-			<td id='${ccCellId}'>
-				<$ if (!data.acAddrBubbles) { $>
-					<textarea id='${ccInputId}' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
-				<$ } $>
-			</td>
-			<td width='5%'>
-				<nobr><a href='#' id='${bccToggleId}'><$=ZmMsg.showBCC$></a></nobr>
-			</td>
-		</tr>
-
-		<tr id='${bccRowId}' style='display:none;'>
-			<td align=right valign=top style='<$=labelStyle$>'>
-				<div id='${bccPickerId}'><$=ZmMsg.bccLabel$></div>
-			</td>
-			<td colspan='2' id='${bccCellId}'>
-				<$ if (!data.acAddrBubbles) { $>
-					<textarea id='${bccInputId}' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
-				<$ } $>
-			</td>
-		</tr>
-
+		<$= AjxTemplate.expand("#To_Recipient",  data) $>
+		<$= AjxTemplate.expand("#CC_Recipient",  data) $>
+		<$= AjxTemplate.expand("#BCC_Recipient", data) $>
 		<tr id='${subjectRowId}'>
 			<td align=right style='<$=labelStyle$>'><$=ZmMsg.subjectLabel$></td>
 			<td colspan='2'>
@@ -419,6 +433,14 @@
 		</tr>
 	</table>
 	<!-- compose editor is automatically appended below the header -->
+</template>
+
+<template id='mail.Message#RedirectDialog'>
+	<$ var labelStyle = data.labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap"; $>
+	<$ var inputStyle = data.inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
+	<table border=0 cellpadding=2 cellspacing=2 width=500px>
+		<$= AjxTemplate.expand("#To_Recipient",  data) $>
+	</table>
 </template>
 
 <template id='mail.Message#ForwardMessages'>
@@ -549,4 +571,53 @@
 		</tr>
 	</table>
 </template>
+		
+<template id='mail.Message#Conv2View'>
+	<div class='Conv2View'>
+		<div id="${messagesDivId}" class='Conv2Messages'></div>
+		<div id="${replyDivId}">
+			<input id="${replyInputId}" class="ReplyInput" type="text" placeholder="Type here to reply to all"/>
+		</div>
+	</div>
+</template>
+		
+<template id='mail.Message#Conv2MsgHeader'>
+	<div id='${headerId}' class='${parityClass}'>
+		<table class='MsgHeaderTable' cellspacing=0 cellpadding=0 border=0 width=100%>
+			<tr id='${tableRowId}'>
+				<td>&nbsp;</td>
+				<td class='Expand' width=16 id='${expandIconCellId}'></td>
+				<td class='LabelColValue' width=100%>
+					<$= data.from $>
+				</td>
+				<td class='LabelColValue DateCol' align=right>${date}</td>
+				<td>&nbsp;</td>
+			</tr>
+		</table>
+	</div>
+</template>
 
+<template id='mail.Message#Conv2MsgFooter'>
+	<div>
+		<$ if (data.hasAttachments) { $>
+			<div class="MessageHeaderAttachments ${parityClass}" id="${attachId}_container">
+				<div id="${attachId}" style='overflow:auto;'></div>
+			</div>
+		<$ } $>
+		<div id='${footerId}' class='${parityClass}'>
+			<table class='MsgHeaderTable' cellspacing=0 cellpadding=0 border=0 width=100%>
+				<tr>
+					<td>&nbsp;</td>
+					<td id='${folderCellId}'>${folderName}</td>
+					<td id='${tagCellId}' width=100%></td>
+					<td>&nbsp;</td>
+					<td align=right>
+						<a class='Link' id='${replyLinkId}'><$= ZmMsg.reply $></a>
+					</td>
+					<td id='${buttonCellId}' align=right></td>
+					<td>&nbsp;</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</template>
