@@ -55,7 +55,7 @@ ZmDumpsterDialog.prototype.popup =
 function(searchFor, types) {
 	this._searchTypes = types ? AjxUtil.toArray(types) : [ZmItem.MSG];
 	this._searchFor = searchFor || ZmId.SEARCH_ANY;
-	this.runSearchQuery();
+	this.runSearchQuery("");
 
 	ZmDialog.prototype.popup.call(this);
 };
@@ -66,7 +66,7 @@ function(query) {
 	var types = this._searchTypes;
 	var searchFor = this._searchFor;
 	var params = {
-		query: query,
+		query: "is:anywhere " + query,
 		searchFor: searchFor,
 		types: types,
 		sortBy: ZmSearch.DATE_DESC,

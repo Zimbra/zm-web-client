@@ -621,7 +621,7 @@ function(params, noRender, callback, errorCallback) {
 	var searchFor = this._searchFor = params.searchFor || this._searchFor;
 	appCtxt.notifyZimlets("onSearch", [params.query]);
 
-	if (!this.skipUpdateSearchToolbar && this._searchToolBar) {
+	if (!params.skipUpdateSearchToolbar && this._searchToolBar) {
 		var value = (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText)
 			? params.query : null;
 		this._searchToolBar.setSearchFieldValue(value || "");
