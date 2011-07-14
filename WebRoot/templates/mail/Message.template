@@ -572,12 +572,29 @@
 	</table>
 </template>
 		
-<template id='mail.Message#Conv2View'>
+<template id='mail.Message#Conv2View-right'>
 	<div class='Conv2View'>
 		<div id="${messagesDivId}" class='Conv2Messages'></div>
 		<div id="${replyDivId}">
-			<input id="${replyInputId}" class="ReplyInput" type="text" placeholder="Type here to reply to all"/>
+			<input id="${replyInputId}" class="ReplyInput" type="text" placeholder="<$= ZmMsg.replyHint $>"/>
 		</div>
+	</div>
+</template>
+
+<template id='mail.Message#Conv2View-bottom'>
+	<div class='Conv2View-bottom' id='${mainDivId}'>
+		<table cellspacing='0' cellpadding='0' class="Conv2ViewTable">
+			<tr>
+				<td valign="top" class="Conv2MessagesCell">
+					<div id="${messagesDivId}" class='Conv2Messages-bottom'></div>
+				</td>
+				<td valign="top" class="Conv2ReplyCell">
+					<div id="${replyDivId}">
+						<textarea id="${replyInputId}" class="ReplyTextarea" placeholder="<$= ZmMsg.replyHint $>"></textarea>
+					</div>
+				</td>
+			</tr>
+		</table>
 	</div>
 </template>
 		

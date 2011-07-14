@@ -91,15 +91,20 @@ function(conv, oldConv) {
 ZmConvView2.prototype._renderConv =
 function(conv, callback) {
 
+	this._mainDivId = Dwt.getNextId();
 	this._messagesDivId = Dwt.getNextId();
 	this._replyDivId = Dwt.getNextId();
 	this._replyInputId = Dwt.getNextId();
 	var subs = {
 		messagesDivId:	this._messagesDivId,
+		mainDivId:		this._mainDivId,
 		replyDivId:		this._replyDivId,
 		replyInputId:	this._replyInputId
 	}
-	var html = AjxTemplate.expand("mail.Message#Conv2View", subs);
+
+	this._rpLoc = this._controller._getReadingPanePref();
+	var template = ["mail.Message#Conv2View", this._rpLoc].join("-");
+	var html = AjxTemplate.expand(template, subs);
 	var el = this.getHtmlElement();
 	el.appendChild(Dwt.parseHtmlFragment(html));
 		
@@ -110,14 +115,13 @@ function(conv, callback) {
 	var overrides = {};
 	overrides[ZmOperation.DETACH] = {showImageInToolbar:true};
 	var tbParams = {
-		parent:			this,
-		buttons:		buttons,
-		posStyle:		DwtControl.STATIC_STYLE,
-//		className: "ZmShareToolBar",
-		buttonClassName: "DwtToolbarButton",
-		context:		ZmId.VIEW_CONV2,
-		toolbarType:	ZmId.TB_REPLY,
-		overrides:		overrides
+		parent:				this,
+		buttons:			buttons,
+		posStyle:			DwtControl.STATIC_STYLE,
+		buttonClassName:	"DwtToolbarButton",
+		context:			ZmId.VIEW_CONV2,
+		toolbarType:		ZmId.TB_REPLY,
+		overrides:			overrides
 	};
 	var tb = this._replyToolbar = new ZmButtonToolBar(tbParams);
 	tb.reparentHtmlElement(document.getElementById(this._replyDivId));
@@ -125,16 +129,8 @@ function(conv, callback) {
 	tb.addSelectionListener(ZmOperation.CANCEL, this._cancelListener.bind(this));
 	tb.addSelectionListener(ZmOperation.DETACH, this._detachListener.bind(this));
 	
-	// We want the messages container DIV to scroll independently of the header DIV above
-	// it and the reply DIV below it.
-	var replyDiv = document.getElementById(this._replyDivId);
-	var replySize = Dwt.getSize(replyDiv);
-	var myHeight = this.getSize().y;
-	Dwt.setSize(messagesDiv, Dwt.DEFAULT, myHeight - replySize.y);
-	
-	tb.setSize(replySize.x, Dwt.DEFAULT);
-	
 	this._replyInput = document.getElementById(this._replyInputId);
+	window.setTimeout(this._resize.bind(this), 100);
 	
 	if (callback) {
 		callback();
@@ -175,6 +171,31 @@ function(msg, params) {
 	msgView.set(msg);
 };
 
+ZmConvView2.prototype._resize =
+function() {
+
+	var messagesDiv = document.getElementById(this._messagesDivId);
+	var replyDiv = document.getElementById(this._replyDivId);
+	if (this._controller.isReadingPaneOnRight()) {
+		// We want the messages container DIV to scroll independently of the header DIV above
+		// it and the reply DIV below it.
+		var replySize = Dwt.getSize(replyDiv);
+		var myHeight = this.getSize().y;
+		Dwt.setSize(messagesDiv, Dwt.DEFAULT, myHeight - replySize.y);
+		this._replyToolbar.setSize(replySize.x, Dwt.DEFAULT);
+	}
+	else {
+		// Since we're using tables, we need to set height manually (tables tend to make stuff fit content)
+		var mainDiv = document.getElementById(this._mainDivId);
+		var mainSize = Dwt.getSize(mainDiv);
+		Dwt.setSize(messagesDiv, Dwt.DEFAULT, mainSize.y);
+		Dwt.setSize(replyDiv, Dwt.DEFAULT, mainSize.y);
+		var replyTextarea = document.getElementById(this._replyInputId);
+		var tbSize = this._replyToolbar.getSize();
+		Dwt.setSize(replyTextarea, Dwt.DEFAULT, mainSize.y - tbSize.y - 15);
+	}
+};
+
 ZmConvView2.prototype._setParity =
 function() {
 
@@ -183,12 +204,21 @@ function() {
 ZmConvView2.prototype.setMsg =
 function(msg) {
 	this._msg = msg;
-}
+};
 
 ZmConvView2.prototype.clearMsg =
 function(msg) {
 	this._msg = null;
-}
+};
+
+// re-render if reading pane moved between right and bottom
+ZmConvView2.prototype.setReadingPane =
+function() {
+	var rpLoc = this._controller._getReadingPanePref();
+	if (this._rpLoc != ZmSetting.RP_OFF && rpLoc != ZmSetting.RP_OFF && this._rpLoc != rpLoc) {
+		this.set(this._item, true);
+	}
+};
 
 ZmConvView2.prototype._listenerProxy =
 function(listener, item, ev) {

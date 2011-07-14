@@ -64,4 +64,7 @@ function() {
 	return [ZmMsg.zimbraTitle, this._item.subject].join(": ");
 };
 
+ZmMailItemView.prototype.setReadingPane =
+function() {
+};
 

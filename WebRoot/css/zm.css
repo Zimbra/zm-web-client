@@ -612,12 +612,33 @@ INPUT[type="text"].search_input {
 
 /* Styles for Conv2.0 */
 
-.Conv2View {
+.Conv2View, .Conv2View-bottom {
 	background-color: #CCCCCC;
 }
 
-.Conv2Messages {
+.Conv2View-bottom {
+	height: 100%;
+}
+
+.Conv2View-bottom .Conv2ViewTable {
+	width: 100%;
+	height: 100%;
+}
+
+.Conv2View-bottom .Conv2MessagesCell {
+	width: 70%;
+}
+
+.Conv2View-bottom .Conv2ReplyCell {
+	width: 30%;
+}
+
+.Conv2Messages, .Conv2Messages-bottom {
 	overflow: auto;
+}
+
+.Conv2Messages-bottom {
+	height: 100%;
 }
 
 .ZmMailMsgCapsuleView {
@@ -668,6 +689,11 @@ INPUT[type="text"].search_input {
 
 .ZmConvView2 .ReplyInput {
 	width: 98%;
+	margin: 5px;
+}
+
+.ZmConvView2 .ReplyTextarea {
+	width:  96%;
 	margin: 5px;
 }
 

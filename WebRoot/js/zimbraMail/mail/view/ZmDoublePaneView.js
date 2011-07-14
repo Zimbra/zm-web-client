@@ -102,6 +102,7 @@ function() {
 	}
 
 	mlv.reRenderListView();
+	mv.setReadingPane();
 
 	mv.noTab = !readingPaneEnabled || AjxEnv.isIE;
 	var sz = this.getSize();
