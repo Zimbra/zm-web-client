@@ -74,8 +74,14 @@ function(){
 };
 
 ZmZimletsPage.prototype.showMe =
-function(){
-	ZmPreferencesPage.prototype.showMe.call(this);
+function(deferred){
+	ZmPreferencesPage.prototype.showMe.call(this);	
+	if (!appCtxt.getZimletMgr().getZimlets().length) {
+		if (!deferred) {
+			appCtxt.getAppController().addListener(ZmAppEvent.POST_STARTUP, new AjxListener(this, this.showMe, [true]));
+		}
+		return;
+	}
 	if (this._listView) {
 		var s = this._listView.getSelection();
 		this._listView.set(this.getZimlets()._vector.clone());
