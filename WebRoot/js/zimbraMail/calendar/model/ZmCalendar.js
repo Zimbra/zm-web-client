@@ -135,16 +135,26 @@ function(checked, result) {
 /**
  * Checks if the given object(s) may be placed in this folder.
  *
+ * For calendars being dragged, the current target cannot:
+ *   - Be the parent of the dragged calendar
+ *   - Be the dragged calendar
+ *   - Be an ancestor of the dragged calendar
+ *   - Contain a calendar with the same name as the dragged calendar
+ *   - Be a shared calendar
+ *
  * @param {Object}	what		the object(s) to possibly move into this folder (item or organizer)
  * @return	{Boolean}	<code>true</code> if the object may be placed in this folder
  */
 ZmCalendar.prototype.mayContain =
 function(what) {
-	if (!what) { return true; }
+    if (!what) { return true; }
 
-	if (!(what instanceof ZmCalendar)) {
-		var invalid = false;
-
+    var invalid = false;
+    if (what instanceof ZmCalendar) {
+        // Calendar DnD, possibly nesting calendars
+        invalid = ((what.parent == this) ||  (what.id == this.id)  || this.isChildOf(what) ||
+                   (!this.isInTrash() && this.hasChild(what.name)) || this.link);
+    } else {
         //exclude the deleted folders
         if(this.noSuchFolder) return invalid;
 
@@ -180,11 +190,9 @@ function(what) {
 			}
 		}
 
-		return !invalid;
 	}
 
-	// sub-folders are not allowed in calendars
-	return false;
+	return !invalid;
 };
 
 

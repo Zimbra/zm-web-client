@@ -66,7 +66,8 @@ function(params, account) {
 			treeIds:		this._treeIds,
 			omit:			this._omit,
 			fieldId:		this._folderTreeCellId,
-			overviewTrees:	[this._organizerType]
+			overviewTrees:	[this._organizerType],
+            treeStyle:      this._treeStyle
 		};
 		this._setOverview(overviewParams);
 

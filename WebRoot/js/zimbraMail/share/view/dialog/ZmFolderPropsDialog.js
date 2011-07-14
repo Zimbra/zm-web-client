@@ -207,28 +207,35 @@ function(event) {
 
 	// New batch command, stop on error
 	var batchCommand = new ZmBatchCommand();
+    var commandCount = 0;
 
     if (!organizer.isSystem() && !organizer.isDataSource()) {
 		var name = this._nameInputEl.value;
 		if (organizer.name != name) {
-			organizer.rename(name, callback, this._handleRenameErrorCallback, batchCommand);
+			//organizer.rename(name, callback, this._handleRenameErrorCallback, batchCommand);
+            batchCommand.add(new AjxCallback(organizer, organizer.rename, [name, null, this._handleRenameErrorCallback]));
+            commandCount++;
 		}
 	}
 
 	var color = this._color.getValue() || ZmOrganizer.DEFAULT_COLOR[organizer.type];
 	if (organizer.color != color) {
 		if (String(color).match(/^#/)) {
-			organizer.setRGB(color, null, this._handleErrorCallback, batchCommand);
+			//organizer.setRGB(color, null, this._handleErrorCallback, batchCommand);
+            batchCommand.add(new AjxCallback(organizer, organizer.setRGB, [color, null, this._handleErrorCallback]));
 		}
 		else {
-			organizer.setColor(color, null, this._handleErrorCallback, batchCommand);
+			//organizer.setColor(color, null, this._handleErrorCallback, batchCommand);
+            batchCommand.add(new AjxCallback(organizer, organizer.setColor, [color, null, this._handleErrorCallback]));
 		}
+        commandCount++;
 	}
 
     if (Dwt.getVisible(this._excludeFbEl) && organizer.setFreeBusy) {
         var excludeFreeBusy = this._excludeFbCheckbox.checked;
 		if (organizer.excludeFreeBusy != excludeFreeBusy) {
-			organizer.setFreeBusy(excludeFreeBusy, null, this._handleErrorCallback, batchCommand);
+			//organizer.setFreeBusy(excludeFreeBusy, null, this._handleErrorCallback, batchCommand);
+            batchCommand.add(new AjxCallback(organizer, organizer.setFreeBusy, [excludeFreeBusy, null, this._handleErrorCallback]));
 		}
     }
 
@@ -236,7 +243,8 @@ function(event) {
     if (Dwt.getVisible(this._globalMarkReadEl) && organizer.globalMarkRead) {
         var globalMarkRead = this._globalMarkReadCheckbox.checked;
         if (organizer.globalMarkRead != globalMarkRead) {
-            organizer.setGlobalMarkRead(globalMarkRead, null, this._handleErrorCallback, batchCommand);
+            //organizer.setGlobalMarkRead(globalMarkRead, null, this._handleErrorCallback, batchCommand);
+            batchCommand.add(new AjxCallback(organizer, organizer.setGlobalMarkRead, [globalMarkRead, null, this._handleErrorCallback]));
         }
     }
 
@@ -245,11 +253,16 @@ function(event) {
         var reminder = this._calendarReminderCheckbox.checked;
         if (organizer.reminder != reminder) {
             organizer.setSharedReminder(reminder, null, this._handleErrorCallback, batchCommand);
+            batchCommand.add(new AjxCallback(organizer, organizer.setSharedReminder, [reminder, null, this._handleErrorCallback]));
         }
     }
 
-    var callback = new AjxCallback(this, this.popdown);
-	batchCommand.run(callback);
+    if (commandCount > 0) {
+        var callback = new AjxCallback(this, this.popdown);
+        batchCommand.run(callback);
+    } else {
+        this.popdown();
+    }
 };
 
 

@@ -141,7 +141,7 @@ function(settings) {
 	settings.registerSetting("CAL_FIRST_DAY_OF_WEEK",		{name: "zimbraPrefCalendarFirstDayOfWeek", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 0, isGlobal:true});
 	settings.registerSetting("CAL_FREE_BUSY_ACL",			{type: ZmSetting.T_PREF, defaultValue:ZmSetting.ACL_ALL});
 	settings.registerSetting("CAL_FREE_BUSY_ACL_USERS",		{type: ZmSetting.T_PREF});
-	settings.registerSetting("CAL_IMPORT",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
+    settings.registerSetting("CAL_IMPORT",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("CAL_INVITE_ACL",				{type: ZmSetting.T_PREF, defaultValue:ZmSetting.ACL_ALL});
 	settings.registerSetting("CAL_INVITE_ACL_USERS",		{type: ZmSetting.T_PREF});
 	settings.registerSetting("CAL_REMINDER_NOTIFY_SOUNDS",	{name: "zimbraPrefCalendarReminderSoundsEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
@@ -183,7 +183,7 @@ function() {
 				ZmSetting.CAL_APPT_VISIBILITY,
 				ZmSetting.CAL_EXPORT,
 				ZmSetting.CAL_FIRST_DAY_OF_WEEK,
-				ZmSetting.CAL_IMPORT,
+                ZmSetting.CAL_IMPORT,
 				ZmSetting.CAL_REMINDER_WARNING_TIME,
 				ZmSetting.CAL_REMINDER_NOTIFY_SOUNDS,
 				ZmSetting.CAL_REMINDER_NOTIFY_BROWSER,
@@ -551,6 +551,7 @@ function(result) {
 ZmCalendarApp.prototype.refresh =
 function(refresh) {
 	if (!appCtxt.inStartup) {
+        this.resetOverview(this.getOverviewId());
 		AjxDispatcher.run("GetCalController").refreshHandler(refresh);
 	}
 };

@@ -1069,7 +1069,7 @@ function(attrs) {
  * @param {String}	actionText		optional custom action text to display as summary
  */
 ZmOrganizer.prototype.move =
-function(newParent, noUndo, actionText, batchCmd) {
+function(newParent, noUndo, actionText, batchCmd, organizerName) {
 	var newId = (newParent.nId > 0)
 		? newParent.id
 		: ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
@@ -1081,14 +1081,15 @@ function(newParent, noUndo, actionText, batchCmd) {
 		return;
 	}
 	var params = {};
-    params.batchCmd = batchCmd;
+	params.batchCmd = batchCmd;
+	params.actionText = actionText || ZmMsg.actionMove;
 	if (newId == ZmOrganizer.ID_TRASH) {
+		params.actionArg = ZmMsg.trash;
 		params.action = "trash";
 		params.noUndo = noUndo;
 	}
 	else {
-		params.actionText = actionText || ZmMsg.actionMove;
-		params.actionArg = newParent.getName(false, false, true);
+		params.actionArg = organizerName || newParent.getName(false, false, true);
 		params.action = "move";
 		params.attrs = {l: newId};
 		params.noUndo = noUndo;
@@ -1815,8 +1816,8 @@ function(params) {
 	var actionLogItem = (!params.noUndo && actionController && actionController.actionPerformed({op: params.action, id: params.id || this.id, attrs: params.attrs})) || null;
 	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, [params, actionLogItem]);
 	if (params.batchCmd) {
-		params.batchCmd.addNewRequestParams(soapDoc, respCallback, params.errorCallback);
-	} else {
+        params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
+ 	} else {
 		var accountName;
 		if (appCtxt.multiAccounts) {
 			accountName = (this.account) 

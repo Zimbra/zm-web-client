@@ -592,14 +592,16 @@ function(what, folderType, ignoreExisting) {
 				   (appCtxt.multiAccounts && what.getAccount() != this.getAccount()) || // cannot move folders across accounts
                    (this.isRemote() && !this._remoteMoveOk(what)) ||
 				   (what.isRemote() && !this._remoteMoveOk(what)));				// a remote folder can be DnD but not its children
-	} else {
+    } else {
 		// An item or an array of items is being moved
 		var items = AjxUtil.toArray(what);
 		var item = items[0];
 
-		if (this.nId == ZmOrganizer.ID_ROOT ||									// container can only have folders/searches
-			this.nId == ZmOrganizer.ID_OUTBOX ||								// nothing can be moved to outbox/sync failures folders
-			this.nId == ZmOrganizer.ID_SYNC_FAILURES)
+            // container can only have folders/searches or calendars
+		if ((this.nId == ZmOrganizer.ID_ROOT && (what.type != ZmOrganizer.CALENDAR)) ||
+             // nothing can be moved to outbox/sync failures folders
+			 this.nId == ZmOrganizer.ID_OUTBOX ||
+			 this.nId == ZmOrganizer.ID_SYNC_FAILURES)
 		{
 			invalid = true;
 		} else if (thisType == ZmOrganizer.SEARCH) {

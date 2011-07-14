@@ -33,7 +33,7 @@ ZmCalendarTreeController = function() {
 	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
 	this._listeners[ZmOperation.DETACH_WIN] = new AjxListener(this, this._detachListener);
 	this._listeners[ZmOperation.SHARE_CALENDAR] = new AjxListener(this, this._shareCalListener);
-	this._listeners[ZmOperation.MOVE] = new AjxListener(this, this._moveListener);
+    this._listeners[ZmOperation.MOVE] = new AjxListener(this, this._moveListener);
 	this._listeners[ZmOperation.RECOVER_DELETED_ITEMS] = new AjxListener(this, this._recoverListener);
 
 	this._eventMgrs = {};
@@ -174,10 +174,7 @@ function(actionMenu, type, id) {
 		var hasContent = ((calendar.numTotal > 0) || (calendar.children && (calendar.children.size() > 0)));
 		actionMenu.enable(ZmOperation.EMPTY_FOLDER,hasContent);
 
-
         var moveItem = actionMenu.getItemById(ZmOperation.KEY_ID,ZmOperation.MOVE);
-        if(moveItem){moveItem.setVisible((calendar.parent && calendar.parent.nId == ZmOrganizer.ID_TRASH));}
-
 
 		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 		if (id == rootId) {
@@ -210,6 +207,7 @@ function(actionMenu, type, id) {
 
             fbLinkMenuItem.setMenu(this._fbLinkSubMenu);
         }
+
 
 	}
 };
@@ -374,7 +372,7 @@ function(ev) {
         var type = ev.targetControl.getData(ZmTreeView.KEY_TYPE);
 
         if(data instanceof ZmCalendar){
-             ev.doIt = (dropFolder.mayContain(data, type) || (dropFolder instanceof ZmCalendar)) && !data.isSystem();
+             ev.doIt = dropFolder.mayContain(data, type) && !data.isSystem();
         }
 		else if (!(appts[0] instanceof ZmAppt)) {
 			ev.doIt = false;
@@ -413,14 +411,11 @@ function(ev) {
 			dlg.popup();
 		} else {
             if(data instanceof ZmCalendar){
-                if(data.parent.nId==ZmFolder.ID_TRASH || dropFolder.nId!=ZmFolder.ID_TRASH){
-                    this._doMove(data, appCtxt.getById(ZmFolder.ID_ROOT));
-                }
-                else if(dropFolder.nId==ZmFolder.ID_TRASH){
-                    this._doMove(data, appCtxt.getById(ZmFolder.ID_TRASH));
-                }
-            }
-            else{
+                // Root node's type is folder, but it's labelled 'Calendars'.  Pass the proper
+                // name down to the status message.
+                var folderName = (dropFolder.nId == ZmFolder.ID_ROOT) ? ZmMsg.calendars : null;
+                this._doMove(data, dropFolder, folderName);
+            } else{
                 ctlr._doMove(appts, dropFolder, null, isShiftKey);
             }
 		}
@@ -478,10 +473,6 @@ function(ev, treeView, overviewId) {
 			controller._refreshAction(true);
 			ev.handled = true;
 		}
-	}
-    else if(ev.event === ZmEvent.E_MOVE){
-        var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
-        aCtxt.setStatusMsg(AjxMessageFormat.format(ZmMsg.actionTrash, [ZmMsg.calendar, this._actionedOrganizer.name]));
     }
 };
 
@@ -537,12 +528,6 @@ function(ev) {
         this._doMove(organizer, appCtxt.getById(ZmFolder.ID_TRASH));
     }
 };
-
-ZmCalendarTreeController.prototype._moveListener =
-function(ev) {
-    var organizer = this._getActionedOrganizer(ev);
-    this._doMove(organizer, appCtxt.getById(ZmFolder.ID_ROOT));
-}
 
 ZmCalendarTreeController.prototype._deleteListener2 =
 function(organizer) {

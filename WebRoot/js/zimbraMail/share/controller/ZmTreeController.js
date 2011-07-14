@@ -681,8 +681,8 @@ function(organizer, name) {
  * @private
  */
 ZmTreeController.prototype._doMove =
-function(organizer, folder) {
-	organizer.move(folder);
+function(organizer, folder, folderName) {
+	organizer.move(folder, false, null, null, folderName);
 };
 
 /**
