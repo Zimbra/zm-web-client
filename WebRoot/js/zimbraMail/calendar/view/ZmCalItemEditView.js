@@ -495,7 +495,7 @@ function(calItem) {
 
 		var htmlPart = new ZmMimePart();
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
-		htmlPart.setContent(this._notesHtmlEditor.getContent(true, true));
+        htmlPart.setContent(this._notesHtmlEditor.getContent(true, true));
 		top.children.add(htmlPart);
 	} else {
 		top.setContentType(ZmMimeTable.TEXT_PLAIN);
@@ -591,9 +591,10 @@ function(calItem) {
 
 ZmCalItemEditView.prototype._setContent =
 function(calItem, mode) {
-    
+
+    //TODO: remove the commented lines once the review is passed.
 	// set notes/content (based on compose mode per user prefs)
-	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML))
+	/*if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML))
 	{
 		this._controller.setFormatBtnItem(true, DwtHtmlEditor.HTML);
 		this.setComposeMode(DwtHtmlEditor.HTML);
@@ -619,7 +620,38 @@ function(calItem, mode) {
             notesPart = this.formatContent(notesPart, false);
         }
 		this._notesHtmlEditor.setContent(notesPart);
-	}
+	} */
+    //bug:60541 determining the notes format based on content
+    var notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN);
+
+    var notesHtmlPart = calItem.getNotesPart(ZmMimeTable.TEXT_HTML);
+    var pattern = /<div(.*?)>(.*?)<\/div>/;
+    var pMatch = notesHtmlPart.match(pattern);
+    var isSavedinHTML = false;
+
+    if(pMatch != null && pMatch[0] != null) {
+       isSavedinHTML = true;
+    }
+
+    this._controller.setFormatBtnItem(true, isSavedinHTML ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
+    this.setComposeMode(isSavedinHTML ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT);
+
+    if(this._isForward && !calItem.isOrganizer()) {
+        var preface = [ZmMsg.DASHES, " ", ZmMsg.originalAppointment, " ", ZmMsg.DASHES].join("");
+        if(isSavedinHTML) {
+            var crlf2 = "<br><br>";
+            var crlf = "<br>";
+            notesHtmlPart = crlf2 + preface + crlf + calItem.getInviteDescription(true);
+            notesHtmlPart = this.formatContent(notesHtmlPart, true);
+        } else {
+            var crlf2 = ZmMsg.CRLF2;
+            var crlf = ZmMsg.CRLF;
+            notesPart = crlf2 + preface + crlf + calItem.getInviteDescription(false);
+            notesPart = this.formatContent(notesPart, false);
+        }
+    }
+
+    this._notesHtmlEditor.setContent(isSavedinHTML ? notesHtmlPart : notesPart);
 };
 
 ZmCalItemEditView.prototype.formatContent =
