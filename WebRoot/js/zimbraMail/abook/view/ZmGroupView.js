@@ -47,6 +47,7 @@ ZmGroupView = function(parent, controller) {
 
 	this._changeListener = new AjxListener(this, this._groupChangeListener);
 	this._detailedSearch = appCtxt.get(ZmSetting.DETAILED_CONTACT_SEARCH_ENABLED);
+	this._groupMemberMods = {};
 };
 
 ZmGroupView.prototype = new DwtComposite;
@@ -142,7 +143,6 @@ function() {
 
 	// get field values
 	var groupName = AjxStringUtil.trim(document.getElementById(this._groupNameId).value);
-	var groupMembers = this._getGroupMembers();
 	var folderId = this._getFolderId();
 
 	// creating new contact (possibly some fields - but not ID - prepopulated)
@@ -150,10 +150,11 @@ function() {
 		mods[ZmContact.F_folderId] = folderId;
 		mods[ZmContact.F_fileAs] = ZmContact.computeCustomFileAs(groupName);
 		mods[ZmContact.F_nickname] = groupName;
-		mods[ZmContact.F_dlist] = groupMembers;
+		mods[ZmContact.F_groups] = this._getGroupMembers();
 		mods[ZmContact.F_type] = "group";
 		foundOne = true;
-	} else {
+	} 
+	else {
 		// modifying existing contact
 		if (this._contact.getFileAs() != groupName) {
 			mods[ZmContact.F_fileAs] = ZmContact.computeCustomFileAs(groupName);
@@ -161,11 +162,18 @@ function() {
 			foundOne = true;
 		}
 
-		if (this._contact.getAttr(ZmContact.F_dlist) != groupMembers) {
-			mods[ZmContact.F_dlist] = groupMembers;
+		if (this._groupMemberMods) {
+			var modifiedMembers = [];
+			for (var id in this._groupMemberMods) {
+				if (this._groupMemberMods[id].op) {
+					modifiedMembers.push(this._groupMemberMods[id]);
+				}
+			}
+			mods[ZmContact.F_groups] = modifiedMembers;
 			foundOne = true;
-		}
-
+			this._groupMemberMods = {}; //empty the mods
+		} 
+		
 		var oldFolderId = this._contact.addrbook ? this._contact.addrbook.id : ZmFolder.ID_CONTACTS;
 		if (folderId != oldFolderId) {
 			mods[ZmContact.F_folderId] = folderId;
@@ -557,33 +565,29 @@ function() {
 	return document.getElementById(this._groupNameId);
 };
 
-/*
- * @asArray	[Boolean]	true, if you want group members back in an Array
- *						otherwise, returns comma-separated String
-*/
 ZmGroupView.prototype._getGroupMembers =
-function(asArray) {
-	var addrs = this._groupListView.getList();
-	if (!addrs) { return null; }
-
-	addrs = addrs.getArray();
-
-	// if there are any empty values, remove them
-	var i = 0;
-	while (true) {
-		var email = AjxStringUtil.trim(addrs[i]);
-		if (email == "") {
-			addrs.splice(i,1);
-		} else {
-			i++;
+function() {
+	var addrs = [];
+	var data = this._groupListView._data;
+	if (data) {
+		for (var key in data) {
+			var contact = data[key];
+			if (contact && contact.type == DwtListView.TYPE_LIST_ITEM) {
+			  if (contact.item.__contact && contact.item .__contact.isGal) {
+			    addrs.push({type : ZmContact.GROUP_GAL_REF, value : contact.item.__contact.id});		  
+			  }
+			  else if (contact.item.__contact && contact.item.__contact.id) {
+				  addrs.push({type : ZmContact.GROUP_CONTACT_REF, value : contact.item.__contact.id});
+			  }
+			  else if (contact.item) {
+				  addrs.push({type : ZmContact.GROUP_INLINE_REF, value : contact.item});
+			  }
+			}
+			
 		}
-		if (i == addrs.length)
-			break;
 	}
-
-	return addrs.length > 0
-		? (asArray ? addrs : addrs.join(", "))
-		: null;
+	
+	return addrs.length > 0 ? addrs : null;
 };
 
 ZmGroupView.prototype._getFolderId =
@@ -595,12 +599,18 @@ function() {
 
 ZmGroupView.prototype._setGroupMembers =
 function() {
-	var members = this._contact.getGroupMembers().all.getArray();
-	var membersList = [];
-	for (var i = 0; i < members.length; i++) {
-		membersList[i] = members[i].toString(false, true);
+	var members = this._contact.getGroupMembersObj();
+	if (members) {
+		var membersList = [];
+		for (var i=0; i<members.length; i++) {
+			var arr = AjxEmailAddress.parseEmailString(members[i].emailAddr);
+			if (arr && arr.good.getArray()) {
+				membersList.push(members[i]);
+			}
+		}
+
+		this._setGroupMembersListView(membersList, false);
 	}
-	this._setGroupMembersListView(membersList, false);
 };
 
 ZmGroupView.prototype._setGroupName =
@@ -784,8 +794,38 @@ function(ev){
 
 		for (var i = 0;  i < items.length; i++) {
 			this._groupListView.getList().remove(items[i]);
+			var type = items[i].type;
+			if (type != ZmContact.GROUP_INLINE_REF && type != ZmContact.GROUP_CONTACT_REF && type != ZmContact.GROUP_GAL_REF) {
+				if (items[i].__contact) {
+					type = items[i].__contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;	
+				}
+				else {
+					type = Zmcontact.GROUP_INLINE_REF;
+				}	
+			} 
+			if (!this._groupMemberMods[items[i].value]) {
+				this._groupMemberMods[items[i].value] = {op : "-", value : items[i].value, type : type};
+			}
+			else {
+				this._groupMemberMods[items[i].value] = {};
+			}
+			
 		}
 	} else {
+		this._groupMemberMods = {}; //clear the mods since we are removing all and reload it
+		var list = this._groupListView.getList().getArray();
+		for (var i=0; i< list.length; i++) {
+			var type = list[i].type;
+			if (type != ZmContact.GROUP_INLINE_REF && type != ZmContact.GROUP_CONTACT_REF && type != ZmContact.GROUP_GAL_REF) {
+				if (list[i].__contact) {
+					type = list[i].__contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;	
+				}
+				else {
+					type = ZmContact.GROUP_INLINE_REF;
+				}
+			}
+			this._groupMemberMods[list[i].value] = {op : "-", value : list[i].value, type : type};		
+		}
 		this._groupListView.removeAll(true);
 		this._groupListView.getList().removeAll();
 	}
@@ -829,11 +869,26 @@ function(list) {
 	var items = [];
 	for (var i = 0; i < list.length; i++) {
 		if (list[i].isGroup) {
-			var emails = list[i].address.split(AjxEmailAddress.SEPARATOR);
-			for (var j = 0; j < emails.length; j++)
-				items.push(emails[j]);
+			if (list[i].__contact) {
+				var groups = list[i].__contact.attr[ZmContact.F_groups];
+				if (groups && groups.length > 0) {
+					for (var j=0; j < groups.length; j++) {
+						var id = groups[j].value;
+						var contact = appCtxt.cacheGet(id);
+						var obj = {__contact : contact};
+						items.push(obj);
+					}	
+				}
+				else {
+					var contact = list[i].__contact;
+					var obj = {};
+					obj.__contact = contact;
+					obj.address = list[i].address;
+					items.push(obj);
+				}
+			}	
 		} else {
-			items.push(list[i].toString());
+			items.push(list[i]);
 		}
 	}
 
@@ -846,6 +901,25 @@ function(list) {
 ZmGroupView.prototype._setGroupMembersListView =
 function(list, append){
 	if (append) {
+		for (var i=0; i<list.length; i++) {
+			if (list[i] && list[i].__contact) {
+				var type = list[i].__contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;   
+				if (!this._groupMemberMods[list[i].__contact.id]) {
+					this._groupMemberMods[list[i].__contact.id] = {op : "+", value : list[i].__contact.id, type : type};
+				}
+				else {
+					var obj = this._groupMemberMods[list[i].__contact.id];
+					if (obj.op == "-") {
+						//contact is already in the group, clear the value
+						this._groupMemberMods[list[i].__contact.id] = {};
+					}
+				}
+			}
+			else {
+				//inline member
+				this._groupMemberMods[list[i]] = {op : "+", value : list[i], type : ZmContact.GROUP_INLINE_REF};
+			}
+		}
 		var membersList = this._groupListView.getList();
 		list = list.concat( membersList ? membersList.getArray() : [] );
 	}
@@ -862,8 +936,12 @@ function(items) {
 		while (true) {
 			var found = false;
 			for (var j = 0; j < addrs.length; j++) {
-				if (items[i] == AjxStringUtil.trim(addrs[j])) {
-					items.splice(i,1);
+				var value = addrs[j].value;
+				if (addrs[j].__contact) {
+					value = addrs[j].__contact.id;
+				}
+				if (addrs[j].type != ZmContact.GROUP_INLINE_REF && value == items[i].__contact.id) {
+					items.splice(i, 1);
 					found = true;
 					break;
 				}
@@ -1103,7 +1181,12 @@ function() {
 ZmGroupMembersListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_EMAIL) {
-		html[idx++] = AjxStringUtil.htmlEncode(item, true);
+		var addr = item.address ? item.address : item;
+		if (item.__contact && item.__contact instanceof ZmContact) {
+			var ajxEmailAddress = new AjxEmailAddress(item.__contact.getEmail(), null, item.__contact.getFileAs(), item.__contact.getFullNameForDisplay(), false);		
+			addr = ajxEmailAddress.toString();
+		}
+		html[idx++] = AjxStringUtil.htmlEncode(addr, true);
 	}
 	return idx;
 };

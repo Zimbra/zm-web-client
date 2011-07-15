@@ -73,6 +73,7 @@ ZmContact.F_email3					= "email3";
 ZmContact.F_fileAs					= "fileAs";
 ZmContact.F_firstName				= "firstName";
 ZmContact.F_folderId				= "folderId";
+ZmContact.F_groups                  = "groups";         //group members
 ZmContact.F_homeCity				= "homeCity";
 ZmContact.F_homeCountry				= "homeCountry";
 ZmContact.F_homeFax					= "homeFax";
@@ -90,6 +91,9 @@ ZmContact.F_imAddress3				= "imAddress3";
 ZmContact.F_jobTitle				= "jobTitle";
 ZmContact.F_lastName				= "lastName";
 ZmContact.F_maidenName				= "maidenName";
+ZmContact.F_memberC                 = "memberC";
+ZmContact.F_memberG                 = "memberG";
+ZmContact.F_memberI                 = "memberI";
 ZmContact.F_middleName				= "middleName";
 ZmContact.F_mobilePhone				= "mobilePhone";
 ZmContact.F_namePrefix				= "namePrefix";
@@ -290,6 +294,9 @@ for (var i = 0; i < ZmContact.IGNORE_FIELDS.length; i++) {
 // number of distribution list members to fetch at a time
 ZmContact.DL_PAGE_SIZE = 100;
 
+ZmContact.GROUP_CONTACT_REF = "C";
+ZmContact.GROUP_GAL_REF = "G";
+ZmContact.GROUP_INLINE_REF = "I";	
 }; // updateFieldConstants()
 ZmContact.updateFieldConstants();
 
@@ -344,8 +351,14 @@ function(node, args) {
 	// make sure the revision hasnt changed, otherwise contact is out of date
 	if (contact == null || (contact && contact.rev != node.rev)) {
 		contact = new ZmContact(node.id, args.list);
+		if (args.isGal) {
+			contact.isGal = args.isGal;
+		}
 		contact._loadFromDom(node);
 	} else {
+		if (node.m) {
+			contact.attr[ZmContact.F_groups] = node.m;
+		}
 		AjxUtil.hashUpdate(contact.attr, node._attrs);	// merge new attrs just in case we don't have them
 		contact.list = args.list || new ZmContactList(null);
 	}
@@ -614,8 +627,11 @@ function(contact) {
  * @private
  */
 ZmContact.prototype.load =
-function(callback, errorCallback, batchCmd) {
+function(callback, errorCallback, batchCmd, deref) {
 	var jsonObj = {GetContactsRequest:{_jsns:"urn:zimbraMail"}};
+	if (deref) {
+		jsonObj.GetContactsRequest.derefGroupMember = "1";
+	}
 	var request = jsonObj.GetContactsRequest;
 	request.cn = [{id:this.id}];
 
@@ -623,6 +639,9 @@ function(callback, errorCallback, batchCmd) {
 
 	if (batchCmd) {
 		var jsonObj = {GetContactsRequest:{_jsns:"urn:zimbraMail"}};
+		if (deref) {
+			jsonObj.GetContactsRequest.derefGroupMember = "1";
+		}
 		jsonObj.GetContactsRequest.cn = {id:this.id};
 		batchCmd.addRequestParams(jsonObj, respCallback, errorCallback);
 	} else {
@@ -642,8 +661,24 @@ function(callback, result) {
 
 	// for now, we just assume only one contact was requested at a time
 	this.attr = resp.cn[0]._attrs;
+	if (resp.cn[0].m) {
+		for (var i=0; i<resp.cn[0].m.length; i++) {
+			//cache contacts from contact groups (e.g. GAL contacts, shared contacts have not already been cached)
+			var contact = resp.cn[0].m[i];
+			var isGal = false;
+			if (contact.type == ZmContact.GROUP_GAL_REF) { 
+				isGal = true;
+			}
+			if (contact.cn && contact.cn.length > 0) {
+				var loadContact = ZmContact.createFromDom(contact.cn[0], {list : this.list, isGal : isGal}); //pass GAL so fileAS gets set correctly
+				loadContact.isDL = isGal && loadContact.attr[ZmContact.F_type] == "group";
+				appCtxt.cacheSet(contact.cn[0].id, loadContact);
+			}
+			
+		}
+		this._loadFromDom(resp.cn[0], {list : this.list}); //load group
+	}
 	this.isLoaded = true;
-
 	if (callback)
 		callback.run(resp.cn[0], this);
 };
@@ -700,10 +735,10 @@ function() {
  */
 ZmContact.prototype.isGroup =
 function() {
-	return Boolean(this.getAttr(ZmContact.F_dlist) || this.type == ZmItem.GROUP);
+	return Boolean(this.getAttr(ZmContact.F_type) == "group" || this.type == ZmItem.GROUP);
 };
 
-// parses "dlist" attr into AjxEmailAddress objects stored in 3 vectors (all, good, and bad)
+// parses "groups" attr into AjxEmailAddress objects stored in 3 vectors (all, good, and bad)
 /**
  * Gets the group members.
  * 
@@ -711,9 +746,64 @@ function() {
  */
 ZmContact.prototype.getGroupMembers =
 function() {
-	return this.isGroup()
-		? AjxEmailAddress.parseEmailString(this.getAttr(ZmContact.F_dlist))
-		: null;
+	var addrs = [];
+	if(this.isGroup()) {
+		var groupMembers = this.attr[ZmContact.F_groups];
+		if (!groupMembers){
+			return AjxEmailAddress.parseEmailString(this.attr[ZmContact.F_email]);
+		}
+		for (var i=0; i<groupMembers.length; i++) {
+			var type = groupMembers[i].type;
+			var value = groupMembers[i].value;
+			if (type == ZmContact.GROUP_INLINE_REF) {
+				addrs.push(value);	
+			}
+			else if(type == ZmContact.GROUP_CONTACT_REF || type == ZmContact.GROUP_GAL_REF) {
+				var contact = appCtxt.cacheGet(value);  //TODO: handle contacts not cached?
+				var email = contact && contact.getEmail();
+				if (email && email != "") {
+					var ajxEmailAddress = new AjxEmailAddress(email, null, contact.getFileAs(), contact.getFullNameForDisplay(), false);
+					addrs.push(ajxEmailAddress.toString());
+				}
+			}
+		}
+		return AjxEmailAddress.parseEmailString(addrs.join(", "));
+	}
+	return null;
+};
+
+// parses "groups" attr into an object {type : "I"|"G"|"C", value : id or email address (inline type) address : email address }
+/**
+ * Gets the group members.
+ * 
+ * @return	{Array}		the group members or <code>null</code> if not group
+ */	
+ZmContact.prototype.getGroupMembersObj = 
+function() {
+	var members = [];
+	if (this.isGroup()) {
+		var groupMembers = this.attr[ZmContact.F_groups];
+		if (!groupMembers) { 
+			return null;
+		}
+		for (var i=0; i<groupMembers.length; i++) {
+			var type = groupMembers[i].type;
+			var value = groupMembers[i].value;
+			if (type == ZmContact.GROUP_INLINE_REF) {
+				members.push({type : type, value : value, address : value});	
+			}
+			else if(type == ZmContact.GROUP_CONTACT_REF || type == ZmContact.GROUP_GAL_REF) {
+				var contact = appCtxt.cacheGet(value); //TODO: Handle contacts not cached?
+				var email = contact && contact.getEmail();
+				if (email && email != "") {
+					var ajxEmailAddress = new AjxEmailAddress(email, null, contact.getFileAs(), contact.getFullNameForDisplay(), false);
+					members.push({type : type, value : value, address : ajxEmailAddress.toString()});
+				}
+			}
+		}
+		return members;
+	}
+	return null;
 };
 
 /**
@@ -876,6 +966,7 @@ function(attr, batchCmd) {
 	}
 	cn.l = folderId;
 	cn.a = [];
+	cn.m = [];
 
 	for (var name in attr) {
 		if (name == ZmContact.F_folderId ||
@@ -884,7 +975,12 @@ function(attr, batchCmd) {
 			name == "createTimeStamp" ||
 			name == "modifyTimeStamp") { continue; }
 
-		this._addRequestAttr(cn, name, attr[name]);
+		if (name == ZmContact.F_groups) {
+			this._addContactGroupAttr(cn, attr);
+		}
+		else {
+			this._addRequestAttr(cn, name, attr[name]);
+		}
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseCreate, [attr, batchCmd != null]);
@@ -917,6 +1013,11 @@ function(attr, isBatchMode, result) {
 		for (var a in attr) {
 			if (!(attr[a] == undefined || attr[a] == ''))
 				this.setAttr(a, attr[a]);
+		}
+		var groupMembers = cn ? cn.m : null;
+		if (groupMembers) {
+			this.attr[ZmContact.F_groups] = groupMembers;
+			cn._attrs[ZmContact.F_groups] = groupMembers;
 		}
 		var msg = this.isGroup() ? ZmMsg.groupCreated : ZmMsg.contactCreated;
 		appCtxt.getAppController().setStatusMsg(msg);
@@ -980,11 +1081,17 @@ function(attr, callback) {
 	var jsonObj = {ModifyContactRequest:{_jsns:"urn:zimbraMail", replace:"0", force:"1"}};
 	var cn = jsonObj.ModifyContactRequest.cn = {id:this.id};
 	cn.a = [];
+	cn.m = [];
 	var continueRequest = false;
-
+	
 	for (var name in attr) {
 		if (name == ZmContact.F_folderId) { continue; }
-		this._addRequestAttr(cn, name, (attr[name] && attr[name].value) || attr[name]);
+		if (name == ZmContact.F_groups) {
+			this._addContactGroupAttr(cn, attr);	
+		}
+		else {
+			this._addRequestAttr(cn, name, (attr[name] && attr[name].value) || attr[name]);
+		}
 		continueRequest = true;
 	}
 
@@ -1019,6 +1126,11 @@ function(attr, callback, result) {
 	var resp = result.getResponse().ModifyContactResponse;
 	var cn = resp ? resp.cn[0] : null;
 	var id = cn ? cn.id : null;
+	var groupMembers = cn ? cn.m : null;
+	if (groupMembers) {
+		this.attr[ZmContact.F_groups] = groupMembers;
+		cn._attrs[ZmContact.F_groups] = groupMembers;	
+	}
 
 	if (id && id == this.id) {
 		appCtxt.setStatusMsg(this.isGroup() ? ZmMsg.groupSaved : ZmMsg.contactSaved);
@@ -1105,6 +1217,9 @@ function(obj, batchMode) {
 		// set attrs returned by server
 		for (var a in obj._attrs) {
 			this.setAttr(a, obj._attrs[a]);
+		}
+		if (obj.m) {
+			this.setAttr(ZmContact.F_groups, obj.m);
 		}
 	}
 
@@ -1667,6 +1782,17 @@ function(cn, name, value) {
         cn.a.push(a);
     }
 };
+	
+ZmContact.prototype._addContactGroupAttr = 
+function(cn, group) {
+	var groups = group[ZmContact.F_groups];
+	for (var i=0; i<groups.length; i++) {
+		if (!cn.m) {
+			cn.m = [];
+		}
+		cn.m.push(groups[i]);
+	}
+};
 
 /**
  * Reset computed fields.
@@ -1693,13 +1819,16 @@ function(node) {
 	this.modified = node.md;
 
 	this.attr = node._attrs || {};
+	if (node.m) {
+		this.attr[ZmContact.F_groups] = node.m;
+	}
 
 	// for shared contacts, we get these fields outside of the attr part
 	if (node.email)		{ this.attr[ZmContact.F_email] = node.email; }
 	if (node.email2)	{ this.attr[ZmContact.F_email2] = node.email2; }
 	if (node.email3)	{ this.attr[ZmContact.F_email3] = node.email3; }
 
-	this.type = (this.attr[ZmContact.F_dlist] != null) ? ZmItem.GROUP : ZmItem.CONTACT;
+	this.type = (this.attr[ZmContact.F_groups] != null) ? ZmItem.GROUP : ZmItem.CONTACT;
 
 	// check if the folderId is found in our address book (otherwise, we assume
 	// this contact to be a shared contact)

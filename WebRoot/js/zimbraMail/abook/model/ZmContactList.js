@@ -140,23 +140,48 @@ function(callback, errorCallback, accountName) {
 ZmContactList.prototype._handleResponseLoad =
 function(callback, result) {
 	DBG.timePt("got contact list");
-
 	var text = result.getResponse();
+	var derefList = [];
 	if (text) {
 		var contacts = text.split(ZmContactList.CONTACT_SPLIT_CHAR);
+		var derefBatchCmd = new ZmBatchCommand(true, null, true);
 		for (var i = 0, len = contacts.length; i < len; i++) {
 			var fields = contacts[i].split(ZmContactList.FIELD_SPLIT_CHAR);
-			var contact = {}, attrs = {};;
+			var contact = {}, attrs = {};
+			var groupMembers = [];
+			var foundDeref = false;
 			for (var j = 0, len1 = fields.length; j < len1; j += 2) {
 				if (ZmContactList.IS_CONTACT_FIELD[fields[j]]) {
 					contact[fields[j]] = fields[j + 1];
 				} else {
-					attrs[fields[j]] = fields[j + 1];
+					var value = fields[j+1];
+					switch (fields[j]) {
+						case ZmContact.F_memberC:
+							groupMembers.push({type: ZmContact.GROUP_CONTACT_REF, value: value});
+							foundDeref = true; //load shared contacts
+							break;
+						case ZmContact.F_memberG:
+							groupMembers.push({type: ZmContact.GROUP_GAL_REF, value: value});
+							foundDeref = true;
+							break;
+						case ZmContact.F_memberI:
+							groupMembers.push({type: ZmContact.GROUP_INLINE_REF, value: value});
+							break;
+						default:
+							attrs[fields[j]] = value;
+					}
 				}
+			}
+			attrs[ZmContact.F_groups] = groupMembers;
+			if (foundDeref) {
+				//batch group members for deref loading
+				var dummy = new ZmContact(contact["id"], this);
+				derefBatchCmd.add(new AjxCallback(dummy, dummy.load, [null, null, derefBatchCmd, true]));
 			}
 			contact._attrs = attrs;
 			this._addContact(contact);
 		}
+		derefBatchCmd.run();
 	}
 	this._finishLoading();
 

@@ -1151,7 +1151,10 @@ function(ev, items) {
 			var group = appCtxt.getApp(ZmApp.CONTACTS).getContactList().getById(groupId);
 			if (group) {
 				group.addChangeListener(this._contactListChange.bind(this), 0);//update the group data
-				mods[ZmContact.F_dlist] = this._getGroupMembers(items, group);
+				var modifiedGroups = this._getGroupMembers(items, group);
+				if (modifiedGroups) {
+					mods[ZmContact.F_groups] = modifiedGroups;
+				}
 				this._doModify(group, mods);
 				this._menuPopdownActionListener();
 				var idx = this._list.getIndexById(group.id);
@@ -1178,7 +1181,7 @@ function(params) {
 	appCtxt.getNewContactGroupDialog().popdown();
 	var items = this.getItems();
 	var mods = {};
-	mods[ZmContact.F_dlist] = this._getGroupMembers(items);
+	mods[ZmContact.F_groups] = this._getGroupMembers(items);
 	mods[ZmContact.F_folderId] = this._folderId;
 	mods[ZmContact.F_fileAs] = ZmContact.computeCustomFileAs(groupName);
 	mods[ZmContact.F_nickname] = groupName;
@@ -1192,28 +1195,57 @@ function(params) {
 ZmContactListController.prototype._getGroupMembers =
 function(items, group) {
 	var mods = {};
-	var groupEmails = [];
+	var newMembers = [];
+	var groupId = [];
 	for (var i=0; i<items.length; i++) {
 		if (!items[i].isGroup()) {
-			var email = items[i].getEmail();
-			if (email != "") {
-				var ajxEmailAddress = new AjxEmailAddress(email, null, items[i].getFileAs(), items[i].getFullNameForDisplay(), false);
-				groupEmails.push(ajxEmailAddress.toString());
+			var memberType = items[i].isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
+			var id = items[i].id;
+			if (id) {
+				var obj = {value: id, type: memberType};
+				if (group) {
+					obj.op = "+"; //modifying group with new member	
+				}
+				newMembers.push(obj); 
 			}
 		}
 		else {
-			var arr = AjxEmailAddress.split(items[i].getAttr(ZmContact.F_dlist));
-			groupEmails = AjxUtil.mergeArrays(groupEmails, arr);
+			var groups = items[i].attr[ZmContact.F_groups];  //getAttr only returns first value in array
+			for (var j=0; j < groups.length; j++) {
+				var id = groups[j].value;
+				var contact = appCtxt.cacheGet(id);
+				if (contact) {
+					var memberType = contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
+					var obj = {value : id, type : memberType};
+					if (group) {
+						obj.op = "+";
+					} 
+					newMembers.push(obj);
+				}
+			}	
 		}
 	}
 	if (group) {
 		//handle potential duplicates
-		var groupArr = AjxEmailAddress.split(group.getAttr(ZmContact.F_dlist));
-		var listArr = AjxUtil.mergeArrays(groupArr, groupEmails);
-		return listArr.join(", ");
+		var groupArr = group.attr[ZmContact.F_groups];
+		var noDups = [];
+		var found = false;
+		for (var i=0; i<newMembers.length; i++) {
+			found = false;
+			for (var j=0; j<groupArr.length && !found; j++) {				
+				if (newMembers[i].value == groupArr[j].value) {
+					found = true;	
+				}
+			}
+			if (!found) {
+				noDups.push(newMembers[i]);
+			}
+		}
+		return noDups;
 	}
-
-	return groupEmails.join(", ");
+	else {
+		return newMembers;
+	}
 };
 
 ZmContactListController.prototype._getContactsFromCache =

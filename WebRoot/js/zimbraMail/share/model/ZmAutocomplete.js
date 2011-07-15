@@ -435,21 +435,24 @@ ZmAutocompleteMatch = function(match, options, isContact, str) {
 		this.isGroup = Boolean(match.isGroup);
 		this.isDL = (this.isGroup && this.type == ZmAutocomplete.AC_TYPE_GAL);
 		if (this.isGroup && !this.isDL) {
-			// Local contact group
-			this.name = match.display;
-			var emails = [], addrs = [];
-			var addresses = AjxEmailAddress.parseEmailString(match.email);
-			addresses = ((addresses.good.size()) && addresses.good.getArray()) || [];
-			for (var i = 0; i < addresses.length; i++) {
-				var addr = addresses[i];
-				emails.push(addr.getAddress());
-				addrs.push(addr.toString());
+			// Local contact group; emails need to be looked up by group member ids.  
+			var contactGroup = appCtxt.cacheGet(match.id);
+			if (contactGroup) {
+				var groups = contactGroup.getGroupMembers();
+				var addresses = ((groups.good.size()) && groups.good.getArray()) || [];
+				var emails = [], addrs = [];
+				for (var i = 0; i < addresses.length; i++) {
+					var addr = addresses[i];
+					emails.push(addr.getAddress());
+					addrs.push(addr.toString());
+				}				
+				this.name = match.display;
+				this.email = emails.join(AjxEmailAddress.SEPARATOR);
+				this.fullAddress = addrs.join(AjxEmailAddress.SEPARATOR);
+				this.text = match.display || this.email;
+				this.icon = "Group";
 			}
-			this.email = emails.join(AjxEmailAddress.SEPARATOR);
-			this.fullAddress = addrs.join(AjxEmailAddress.SEPARATOR);
-			this.text = match.display || this.email;
-			this.icon = "Group";
-		} else {
+		} else {   
 			// Local contact, GAL contact, or distribution list
 			var email = AjxEmailAddress.parse(match.email);
 			if (email) {
