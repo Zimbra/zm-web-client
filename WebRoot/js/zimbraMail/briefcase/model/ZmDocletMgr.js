@@ -192,7 +192,7 @@ function(item) {
     var restURL = item.rest;
     var urlParts = AjxStringUtil.parseURL(restURL);
     if(urlParts && urlParts.path) {
-        var result = AjxRpc.invoke("", urlParts.path + "?fmt=native", {}, null, true);
+        var result = AjxRpc.invoke("", urlParts.path + "?fmt=native&ver=" + item.version, {}, null, true);
         var docContent = "";
         if(result && result.success) {
             docContent = this._pendingContent = result.text;
