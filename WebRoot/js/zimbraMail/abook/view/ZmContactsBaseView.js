@@ -145,13 +145,17 @@ function(ev) {
 			// folder search and it belongs!
 			if (folderId && newFolder && folderId == newFolderId && visible) {
 				var index = ev.getDetail("sortIndex");
-				if (index != null) {
+				var alphaBar = this.parent ? this.parent.getAlphabetBar() : null;
+				var inAlphaBar = alphaBar ? alphaBar.isItemInAlphabetLetter(newContact) : true;
+				if (index != null && inAlphaBar) {
 					this.addItem(newContact, index);
 				}
 
 				// always select newly added contact if its been added to the
 				// current page of contacts
-				this.setSelection(newContact, false, true);
+				if (inAlphaBar) {
+					this.setSelection(newContact, false, true);
+				}
 			} else {
 				this.deselectAll();
 				this.setSelection(newContact, false, true);
@@ -321,7 +325,7 @@ function(useCell) {
 	if (cell != this._current) {
 		this.setSelected(this._current, false);
 		this._current = cell;
-		this._currentLetter = useCell ? useCell.innerHTML : null;
+		this._currentLetter = useCell && useCell != this._all ? useCell.innerHTML : null;
 		this.setSelected(cell, true);
 		return true;
 	}
@@ -397,6 +401,43 @@ function(cell, letter, endLetter) {
 };
 
 /**
+ * determine if contact belongs in the current alphabet bar.  Used when creating a new contact and not doing a reload --
+ * such as new contact group from action menu.
+ * @param item  {ZmContact}
+ * @return {boolean} true/false if item belongs in alphabet selection
+ */
+ZmContactAlphabetBar.prototype.isItemInAlphabetLetter =
+function(item) {
+    var inCurrentBar = false;
+	if (item) {
+	  if (ZmMsg.alphabet && ZmMsg.alphabet.length > 0) {
+		  var all = ZmMsg.alphabet.split(",")[0]; //get "All" for locale
+	  }
+	  var fileAs = item.getFileAs();
+	  var currentLetter = this.getCurrentLetter();
+	  if (!currentLetter || currentLetter.toLowerCase() == all) {
+		  inCurrentBar = true; //All is selected
+	  }
+	  else if (currentLetter && fileAs) {
+		var itemLetter = String(fileAs).substr(0,1).toLowerCase();
+		var cellLetter = currentLetter.substr(0,1).toLowerCase();
+		if (itemLetter == cellLetter) {
+			inCurrentBar = true;
+		}
+		else if(AjxStringUtil.isDigit(cellLetter) && AjxStringUtil.isDigit(itemLetter)) {
+			//handles "123" in alphabet bar
+			inCurrentBar = true;
+		}
+		else if (currentLetter.toLowerCase() == "a-z" && itemLetter.match("[a-z]")) {
+			//handle A-Z cases for certain locales
+			inCurrentBar = true;
+		}
+	  }
+  }
+  return inCurrentBar;
+};
+
+/**
  * @private
  */
 ZmContactAlphabetBar.prototype._createHtml =
@@ -436,3 +477,5 @@ function(cell) {
 		alphabetBar.setSelected(cell, cell == alphabetBar.getCurrent());
 	}
 };
+
+

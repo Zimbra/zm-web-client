@@ -76,7 +76,18 @@ function(params) {
 		accountName = appCtxt.accountList.mainAccount.name;
 	}
 
-	searchNode.setAttribute("l", params.parent.id);
+	searchNode.setAttribute("l", params.l);
+
+	if (params.rgb) {
+		searchNode.setAttribute("rgb", params.rgb);
+	}
+	else if (params.color) {
+		var color = ZmOrganizer.getColorValue(params.color, params.type);
+		if (color) {
+			searchNode.setAttribute("color", color);
+		}
+	}
+
 	appCtxt.getAppController().sendRequest({
 		soapDoc: soapDoc,
 		asyncMode: true,

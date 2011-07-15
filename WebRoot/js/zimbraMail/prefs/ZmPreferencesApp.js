@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -46,12 +46,13 @@ ZmEvent.S_PREF_BACKUP				= "PREF_BACKUP";
 /**
  * Defines the "preferences" application.
  */
-ZmApp.PREFERENCES					= ZmId.APP_PREFERENCES;
+ZmApp.PREFERENCES					= ZmId.APP_PREFERENCES; 
 ZmApp.CLASS[ZmApp.PREFERENCES]		= "ZmPreferencesApp";
 ZmApp.SETTING[ZmApp.PREFERENCES]	= ZmSetting.OPTIONS_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.PREFERENCES]	= 10;
 ZmApp.QS_ARG[ZmApp.PREFERENCES]		= "options";
 ZmOrganizer.PREF_PAGE				= "PREF_PAGE";
+ZmPreferencesApp.QS_ARG_SECTION		= "section";
 
 ZmPreferencesApp.prototype = new ZmApp;
 ZmPreferencesApp.prototype.constructor = ZmPreferencesApp;
@@ -84,6 +85,11 @@ function(params, callback) {
 	if (appCtxt.multiAccounts) {
 		appCtxt.accountList.setActiveAccount(appCtxt.accountList.mainAccount);
 	}
+
+	if (params.qsParams && params.qsParams[ZmPreferencesApp.QS_ARG_SECTION]) {
+		callback = new AjxCallback(this, this.gotoSection, [params.qsParams[ZmPreferencesApp.QS_ARG_SECTION], callback]);
+	}
+
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require(["PreferencesCore", "Preferences"], true, loadCallback, null, true);
 };
@@ -174,6 +180,21 @@ function(refresh, addr) {
 	}
 };
 
+ZmPreferencesApp.prototype.gotoSection =
+function(section, callback) {
+	if (section) {
+		var prefCtlr = this.getPrefController();
+		var prefsView = prefCtlr && prefCtlr.getPrefsView();
+		if (prefsView) {
+			prefsView.selectSection(section.toUpperCase());
+		}
+	}
+	if (callback instanceof AjxCallback) {
+		callback.run();
+	}
+};
+
+
 
 //
 // Protected methods
@@ -209,6 +230,10 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_MOBILE_SUSPEND_SYNC, {textKey:"mobileSuspendSync", image:"Offline"});
 	ZmOperation.registerOp(ZmId.OP_MOBILE_WIPE, {textKey:"mobileWipe", image:"MobileWipe"}, ZmSetting.MOBILE_POLICY_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOBILE_CANCEL_WIPE, {textKey:"mobileWipeCancel", image:"MobileWipeCancel"}, ZmSetting.MOBILE_POLICY_ENABLED);
+
+    ZmOperation.registerOp(ZmId.OP_ADD_QUICK_COMMAND, {textKey:"quickCommandAdd", image:"Plus"}, ZmSetting.FILTERS_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_EDIT_QUICK_COMMAND, {textKey:"quickCommandEdit", image:"Edit"}, ZmSetting.FILTERS_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_REMOVE_QUICK_COMMAND, {textKey:"quickCommandRemove", image:"Delete"}, ZmSetting.FILTERS_ENABLED);
 };
 
 ZmPreferencesApp.prototype._registerSettings =
@@ -221,6 +246,7 @@ function(settings) {
 	settings.registerSetting("PREF_SECTIONS",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_HASH, isGlobal:true});
 	settings.registerSetting("SIGNATURE_MAX_LENGTH",		{name:"zimbraMailSignatureMaxLength", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1024});
 	settings.registerSetting("DISCARD_IN_FILTER_ENABLED",	{name:"zimbraFeatureDiscardInFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+    settings.registerSetting("QUICK_COMMAND_LIST",			{name:"zimbraPrefQuickCommand", type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
 };
 
 ZmPreferencesApp.prototype._registerApp =
@@ -370,6 +396,20 @@ function() {
             createView: function(parent, section, controller) {
 				return new ZmZimletsPage(parent, section, controller);
 			}
+		},
+		QUICKCOMMANDS: {
+			icon: "QuickCommand",
+			title: ZmMsg.quickCommands,
+			templateId: "prefs.Pages#QuickCommandList",
+			priority: 130,
+			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.FILTERS_ENABLED)),
+			prefs: [
+				ZmSetting.QUICK_COMMAND_LIST
+			],
+			manageChanges: true,
+			createView: function(parent, section, controller) {
+				return new ZmQuickCommandPage(parent, section, controller, new ZmQuickCommandListViewController());
+			}
 		}
 	};
     if (appCtxt.isOffline) {
@@ -430,6 +470,10 @@ function() {
                              "Georgia", "Helvetica", "Impact", "Lucida Console", "Symbol", "Tahoma", "Terminal", "Times New Roman", "Trebuchet MS",
                              "Verdana","Webdings","Wingdings"],
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
+	});
+
+    ZmPref.registerPref("QUICK_COMMAND_LIST", {
+		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
 
 	// Yuck: Should add functionality in Pref. to add prefix/postfix to all options. Meanwhile...

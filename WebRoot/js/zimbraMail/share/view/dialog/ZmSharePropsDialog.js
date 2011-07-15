@@ -89,6 +89,15 @@ function(mode, object, share) {
 
 	this._nameEl.innerHTML = AjxStringUtil.htmlEncode(object.name);
 	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[this._object.type]] || ZmMsg.folder;
+	// TODO: False until server handling of the flag is added
+	//if (object.type == ZmOrganizer.FOLDER) {
+	if (false) {
+		this._markReadEl.innerHTML = object.globalMarkRead ? ZmMsg.sharingDialogGlobalMarkRead :
+                                                             ZmMsg.sharingDialogPerUserMarkRead;
+		this._props.setPropertyVisible(this._markReadId, true)
+	} else {
+		this._props.setPropertyVisible(this._markReadId, false)
+	}
 
 	var isNewShare = (this._shareMode == ZmSharePropsDialog.NEW);
 	var isUserShare = share ? share.isUser() || share.isGroup() : true;
@@ -417,8 +426,11 @@ function(shares, result) {
 					url = remoteUri + url.substring((url.indexOf("/",7)));
 				}
 
+                //bug:34647 added webcal url for subscribing to outlook/ical on a click
+                var webcalURL = "webcal:" + url.substring((url.indexOf("//")));
+
 				var password = this._passwordInput.getValue();
-				guestnotes = this._guestFormatter.format([url, email, password, notes]);
+				guestnotes = this._guestFormatter.format([url, webcalURL, email, password, notes]);
 			}
 			tmpShare.notes = guestnotes || notes;
 
@@ -596,6 +608,7 @@ function() {
 
 	// ids
 	var nameId = Dwt.getNextId();
+    var markReadValueId = Dwt.getNextId();
 	var typeId = Dwt.getNextId();
 	var granteeId = Dwt.getNextId();
 	var inheritId = Dwt.getNextId();
@@ -654,7 +667,8 @@ function() {
 
 	this._props = new DwtPropertySheet(view);
 	this._props.addProperty(ZmMsg.nameLabel, "<span id='"+nameId+"'></span>");
-	this._props.addProperty(ZmMsg.typeLabel, "<span id='"+typeId+"'></span>");
+    this._props.addProperty(ZmMsg.typeLabel, "<span id='"+typeId+"'></span>");
+    this._markReadId = this._props.addProperty(ZmMsg.sharingDialogMarkReadLabel, "<span id='"+markReadValueId+"'></span>");
 	this._props.addProperty(ZmMsg.shareWithLabel, shareWith);
 	var otherId = this._props.addProperty(ZmMsg.otherLabel, otherHtml);
 
@@ -722,7 +736,8 @@ function() {
 
 	// save information elements
 	this._nameEl = document.getElementById(nameId);
-	this._typeEl = document.getElementById(typeId);
+    this._typeEl = document.getElementById(typeId);
+    this._markReadEl = document.getElementById(markReadValueId);
 	this._urlEl = document.getElementById(urlId);
 
 	var inputEl = this._granteeInput.getInputElement();
