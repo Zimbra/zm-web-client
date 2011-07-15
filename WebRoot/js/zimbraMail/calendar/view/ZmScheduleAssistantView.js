@@ -405,6 +405,7 @@ function(params) {
 		if (email instanceof Array) {
 			email = email[0];
 		}
+		emails.push(email);
 
         params.items.push(email);
         params.itemIndex[email] = params.items.length-1;
