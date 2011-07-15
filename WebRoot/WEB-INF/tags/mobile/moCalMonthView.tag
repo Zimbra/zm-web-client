@@ -45,6 +45,19 @@
         <mo:status style="Critical">
             <fmt:message key="${error.code}"/>
         </mo:status>
+        <c:if test="${error.code eq 'service.AUTH_EXPIRED' or error.code eq 'service.AUTH_REQUIRED'}">
+            <c:choose>
+                <c:when test="${not empty (paramValues.ajax[0]||param.ajax)}">
+                    <script type="text/javascript">
+                        var logouturl = "<c:url value="/?loginOp=relogin&client=mobile&loginErrorCode=service.AUTH_EXPIRED"/>";
+                        window.location.href = logouturl;
+                    </script>
+                </c:when>
+                <c:otherwise>
+                    <c:redirect url="/?loginOp=relogin&client=mobile&loginErrorCode=${error.code}"/>
+                </c:otherwise>
+            </c:choose>
+        </c:if>
         <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
 </mo:handleError>
