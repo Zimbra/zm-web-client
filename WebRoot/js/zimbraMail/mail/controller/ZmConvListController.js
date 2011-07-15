@@ -102,25 +102,38 @@ function(view, force) {
 	}
 };
 
-
+// Internally we manage two maps, one for CLV and one for CV2 (if applicable)
 ZmConvListController.prototype.getKeyMapName =
 function() {
-	return "ZmConvListController";
+	return this._convViewHasFocus ? "ZmConvView2" : "ZmConvListController";
 };
 
 ZmConvListController.prototype.handleKeyAction =
 function(actionCode) {
+
 	DBG.println(AjxDebug.DBG3, "ZmConvListController.handleKeyAction");
 	
+	if (this._convViewHasFocus) {
+		// hand off to ZmConvView2
+		return this._doublePaneView._itemView.handleKeyAction(actionCode);
+	}
+
 	var mlv = this._mailListView;
+	
 	switch (actionCode) {
 
 		case ZmKeyMap.EXPAND:
+			if (this._currentView == ZmId.VIEW_CONVLIST2) {
+				this._doublePaneView._mailListView._blur();
+				this._doublePaneView._itemView._focus();
+				break;
+			}
+			// EXPAND continues below if we are using hybrid view
 		case ZmKeyMap.COLLAPSE:
 			if (mlv.getSelectionCount() != 1) { return false; }
 			var item = mlv.getItemFromElement(mlv._kbAnchor);
 			if (!item) { return false; }
-			if ((actionCode == ZmKeyMap.EXPAND) != mlv._expanded[item.id]) {
+			if ((actionCode == ZmKeyMap.EXPAND) != mlv.isExpanded(item)) {
 				mlv._expandItem(item);
 			}
 			break;
@@ -161,7 +174,7 @@ function(actionCode) {
 			var item = (selItem && selItem.type == ZmItem.MSG && noBump) ? selItem :
 					   this._getUnreadItem(ZmMailListController.ACTION_CODE_WHICH[actionCode], null, noBump);
 			if (!item) { return; }
-			if (!mlv._expanded[item.id] && mlv._isExpandable(item)) {
+			if (!mlv.isExpanded(item) && mlv._isExpandable(item)) {
 				var callback = new AjxCallback(this, this._handleResponseExpand, [actionCode]);
 				if (item.type == ZmItem.MSG) {
 					this._expand({conv:appCtxt.getById(item.cid), msg:item, offset:mlv._msgOffset[item.id], callback:callback});
@@ -413,7 +426,7 @@ function(msg) {
 
 ZmConvListController.prototype._toggle =
 function(item, getFirstMsg) {
-	if (this._mailListView._expanded[item.id]) {
+	if (this._mailListView.isExpanded(item.id)) {
 		this._collapse(item);
 	} else {
 		var conv = item, msg = null, offset = 0;

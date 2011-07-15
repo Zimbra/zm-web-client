@@ -61,6 +61,8 @@ function() {
 	if (this._replyToolbar) {
 		this._replyToolbar.dispose();
 	}
+	this._focusedMsgView = null;
+	this._controller._convViewHasFocus = false;
 
 	this.getHtmlElement().innerHTML = "";
 };
@@ -176,6 +178,8 @@ function() {
 
 	var messagesDiv = document.getElementById(this._messagesDivId);
 	var replyDiv = document.getElementById(this._replyDivId);
+	if (!messagesDiv || !replyDiv) { return; }
+	
 	if (this._controller.isReadingPaneOnRight()) {
 		// We want the messages container DIV to scroll independently of the header DIV above
 		// it and the reply DIV below it.
@@ -185,7 +189,7 @@ function() {
 		this._replyToolbar.setSize(replySize.x, Dwt.DEFAULT);
 	}
 	else {
-		// Since we're using tables, we need to set height manually (tables tend to make stuff fit content)
+		// Since we're using tables, we need to set height manually (tables tend to size to their content)
 		var mainDiv = document.getElementById(this._mainDivId);
 		var mainSize = Dwt.getSize(mainDiv);
 		Dwt.setSize(messagesDiv, Dwt.DEFAULT, mainSize.y);
@@ -196,6 +200,7 @@ function() {
 	}
 };
 
+// TODO
 ZmConvView2.prototype._setParity =
 function() {
 
@@ -218,6 +223,74 @@ function() {
 	if (this._rpLoc != ZmSetting.RP_OFF && rpLoc != ZmSetting.RP_OFF && this._rpLoc != rpLoc) {
 		this.set(this._item, true);
 	}
+};
+
+// Focus the last msg that was focused, or, if none, the first msg
+ZmConvView2.prototype._focus =
+function() {
+	var msgView = this._focusedMsgView || (this._children && this._children.get(0));
+	if (msgView) {
+		msgView.setFocused(true);
+		this._focusedMsgView = msgView;
+		this._controller._convViewHasFocus = true;
+	}
+};
+
+ZmConvView2.prototype._blur =
+function() {
+	if (this._focusedMsgView) {
+		this._focusedMsgView.setFocused(false);
+		this._controller._convViewHasFocus = false;
+	}
+};
+
+// Move focus to the given msg
+ZmConvView2.prototype.setFocusedMsgView =
+function(msgView) {
+
+	msgView = msgView || (this._children && this._children.get(0));
+	if (this._focusedMsgView) {
+		this._focusedMsgView.setFocused(false);
+	}
+	msgView.setFocused(true);
+	this._focusedMsgView = msgView;
+	this._controller._convViewHasFocus = true;
+};
+
+ZmConvView2.prototype.handleKeyAction =
+function(actionCode) {
+	
+	if (!this._focusedMsgView || !this._controller._convViewHasFocus) { return false; }
+	
+	switch (actionCode) {
+
+		case ZmKeyMap.NEXT_MSG:
+		case ZmKeyMap.PREV_MSG:
+			var el = this._focusedMsgView.getHtmlElement();
+			var newEl = (actionCode == ZmKeyMap.NEXT_MSG) ? el.nextSibling : el.previousSibling;
+			var msgId = newEl && newEl.id && newEl.id.substr(4);
+			var msgView = this._msgViews[msgId];
+			if (msgView) {
+				this.setFocusedMsgView(msgView);
+			}
+			break;
+		
+		case ZmKeyMap.TOGGLE:
+			this._focusedMsgView._toggleExpansion();
+			break;
+		
+		case ZmKeyMap.FOCUS_LIST:
+			this._blur();
+			this._controller._mailListView._focus();
+			break;
+		
+		default:
+			this._controller._mailListView._selectedMsg = this._focusedMsgView._msg;
+			var returnVal = ZmDoublePaneController.prototype.handleKeyAction.call(this._controller, actionCode);
+			this._controller._mailListView._selectedMsg = null;
+			return returnVal;
+	}
+	return true;
 };
 
 ZmConvView2.prototype._listenerProxy =
@@ -376,7 +449,7 @@ function(newMsg) {
  */
 ZmMailMsgCapsuleView = function(params) {
 
-	params.className = params.className || "ZmMailMsgCapsuleView";
+	params.className = this._normalClassName = params.className || "ZmMailMsgCapsuleView";
 	this._msgId = params.msgId;
 	params.id = this._getViewId();
 	ZmMailMsgView.call(this, params);
@@ -390,8 +463,8 @@ ZmMailMsgCapsuleView = function(params) {
 	this._container = params.container;
 	this._forceExpand = params.forceExpand;
 	this._actionsMenu = params.actionsMenu;
+	this._focusedClassName = [this._normalClassName, DwtCssStyle.FOCUSED].join(" ");
 
-	this.addListener(DwtEvent.ONMOUSEDOWN, this._mouseDownListener.bind(this));
 	this.addListener(ZmMailMsgView._TAG_CLICK, this._msgTagClicked.bind(this));
 };
 
@@ -413,7 +486,7 @@ function() {
 
 ZmMailMsgCapsuleView.prototype.set =
 function(msg, force) {
-	this._expanded = this._forceExpand || (msg.isUnread && this._forceExpand !== false);
+	this._expanded = this._forceExpand || msg.isUnread;
 	ZmMailMsgView.prototype.set.apply(this, arguments);
 };
 
@@ -661,8 +734,18 @@ function() {
 
 ZmMailMsgCapsuleView.prototype._mouseDownListener =
 function(ev) {
-	if (ev.button == DwtMouseEvent.RIGHT) {
+	
+	if (ev.button == DwtMouseEvent.LEFT) {
+		this.parent.setFocusedMsgView(this);
+	}
+	else if (ev.button == DwtMouseEvent.RIGHT) {
+		var target = DwtUiEvent.getTarget(ev);
+		if (this._objectManager && this._objectManager._findObjectSpan(target)) {
+			// let zimlet framework handle this; we don't want to popup our action menu
+			return;
+		}
 		this._resetOperations();
+		this._controller._setTagMenu(this._actionsMenu);
 		this._actionsMenu.popup(0, ev.docX, ev.docY);
 		this.parent.setMsg(this._msg);
 		// set up the event so that we don't also get a browser menu
@@ -672,6 +755,11 @@ function(ev) {
 		ev._authoritative = true;	// don't let subsequent listeners mess with us
 		return true;
 	}
+};
+
+ZmMailMsgCapsuleView.prototype.setFocused =
+function(focused) {
+	this.setClassName(focused ? this._focusedClassName : this._normalClassName);
 };
 
 // override to do nothing since parent class adds them while rendering body, and we're

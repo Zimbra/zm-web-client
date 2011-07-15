@@ -643,6 +643,11 @@ INPUT[type="text"].search_input {
 
 .ZmMailMsgCapsuleView {
 	margin: 2px 5px;
+	border: 1px black solid;
+}
+
+.ZmMailMsgCapsuleView.focused {
+	margin: 0 4px;
 	border: 2px black solid;
 }
 
@@ -656,7 +661,7 @@ INPUT[type="text"].search_input {
 
 .ZmMailMsgCapsuleView .LabelColValue {
 	@MailMsgHeaderText@
-	white-space: normal;
+	white-space: nowrap;
 	vertical-align: top;
 	padding: 3px;
 }

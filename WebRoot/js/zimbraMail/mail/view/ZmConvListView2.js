@@ -92,6 +92,11 @@ function() {
 // after widget shortcuts).
 ZmConvListView2.prototype.handleKeyAction =
 function(actionCode, ev) {
+	
+	if (this._controller._convViewHasFocus) {
+		return false;
+	}
+	
 	switch (actionCode) {
 		case DwtKeyMap.DBLCLICK:
 			return false;
@@ -99,6 +104,7 @@ function(actionCode, ev) {
 		default:
 			return ZmMailListView.prototype.handleKeyAction.call(this, actionCode, ev);
 	}
+	return true;
 };
 
 ZmConvListView2.prototype._initHeaders =
@@ -524,3 +530,38 @@ function(force) {
 	}
 	return menu;
 };
+
+ZmConvListView2.prototype._focus =
+function() {
+	ZmMailListView.prototype._focus.call(this);
+	if (this._controller._convViewHasFocus) {
+		this.parent._itemView._blur();
+	}
+	this._controller._convViewHasFocus = false;
+};
+
+ZmConvListView2.prototype._blur =
+function() {
+	ZmMailListView.prototype._blur.call(this);
+	if (this._controller._convViewHasFocus) {
+		this.parent._itemView._blur();
+	}
+	this._controller._convViewHasFocus = false;
+};
+
+
+// Functions and properties that support expansion in ZmConvListView. Stub them
+// out so we don't get JS errors when using CLV2.
+ZmConvListView2.prototype._expanded = {};
+ZmConvListView2.prototype._msgRowIdList = {};
+ZmConvListView2.prototype._msgOffset = {};
+ZmConvListView2.prototype._expandedItems = {};
+ZmConvListView2.prototype.isExpanded = function() {	return false; };
+ZmConvListView2.prototype._isExpandable = function() {	return false; };
+ZmConvListView2.prototype.redoExpansion = function() {};
+ZmConvListView2.prototype._isExpandable = function() {};
+ZmConvListView2.prototype._expand = function() {};
+ZmConvListView2.prototype._collapse = function() {};
+ZmConvListView2.prototype._rowsArePresent = function() {};
+ZmConvListView2.prototype._expandItem = function() {};
+ZmConvListView2.prototype._expandAll = function() {};

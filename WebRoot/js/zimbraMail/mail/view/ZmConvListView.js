@@ -708,6 +708,11 @@ function() {
 	this._expandedItems	= {};	// list of expanded items for a conv ID (inc conv)
 };
 
+ZmConvListView.prototype.isExpanded =
+function(item) {
+	return item && this._expanded[item.id];
+};
+
 ZmConvListView.prototype._expandItem =
 function(item) {
 	if (item && this._isExpandable(item)) {
