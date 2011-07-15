@@ -39,6 +39,7 @@ ZmTaskListController = function(container, app) {
 	this._listeners[ZmOperation.PRINT] = null; // override base class to do nothing
 	this._listeners[ZmOperation.PRINT_TASK] = new AjxListener(this, this._printTaskListener);
 	this._listeners[ZmOperation.PRINT_TASKFOLDER] = new AjxListener(this, this._printTaskFolderListener);
+	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._syncAllListener);
 	this._listeners[ZmOperation.SHOW_ORIG] = new AjxListener(this, this._showOrigListener);
 	this._listeners[ZmOperation.MARK_AS_COMPLETED] = new AjxListener(this, this._markAsCompletedListener);
     this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
@@ -148,8 +149,10 @@ function(results, folderId) {
 	var lv = this._listView[this._currentView];
 	if (lv) { lv.offset = 0; }
 
-	var elements = this.getViewElements(this._currentView, this._taskMultiView);
-	
+	var elements = {};
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._taskMultiView;
+
 	this._setView({view:this._currentView, elements:elements, isAppView:true});
 
 	this._setTabGroup(this._tabGroups[this._currentView]);
@@ -351,16 +354,21 @@ function() {
 
 ZmTaskListController.prototype._getToolBarOps =
 function() {
-	var toolbarOps =  [];
+	var toolbarOps =  [ZmOperation.NEW_MENU, ZmOperation.SEP];
+	if(appCtxt.isOffline) {
+		// Add a send/recieve button *only* for ZD
+		toolbarOps.push(ZmOperation.CHECK_MAIL, ZmOperation.SEP);
+	}
 	toolbarOps.push(ZmOperation.EDIT,
 			ZmOperation.SEP,
-			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.TAG_MENU,
+			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
 			ZmOperation.SEP,
-			ZmOperation.PRINT,
+			ZmOperation.TAG_MENU,
 			ZmOperation.SEP,
             ZmOperation.SORTBY_MENU,
             ZmOperation.SEP,
             ZmOperation.MARK_AS_COMPLETED,
+            ZmOperation.SEP,
             ZmOperation.VIEW_MENU
             );
 	
@@ -393,7 +401,13 @@ function(view) {
 
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
-	this._setNewButtonProps(view, ZmMsg.newTask, ZmMsg.createNewTask, "NewTask", "NewTaskDis", ZmOperation.NEW_TASK);
+	this._setNewButtonProps(view, ZmMsg.createNewTask, "NewTask", "NewTaskDis", ZmOperation.NEW_TASK);
+	if(appCtxt.isOffline) {
+		this._setupSendRecieveButton(view);
+		if (appCtxt.accountList.size() > 2) {
+			this._setupSendReceiveMenu(view);
+		}
+	}
 	this._setupPrintMenu(view);
     this._setupViewMenu(view);
 	this._setupSortByMenu(view);
@@ -405,21 +419,34 @@ function(view) {
 	this._initializeNavToolBar(view);
 };
 
+/**
+ * Create a Send/Recieve Button and add listeners
+ * @param view
+ */
+ZmTaskListController.prototype._setupSendRecieveButton =
+function(view) {
+	var checkMailBtn = this._toolbar[view].getButton(ZmOperation.CHECK_MAIL);
+	var checkMailMsg = appCtxt.isOffline ? ZmMsg.sendReceive : ZmMsg.checkMail;
+	checkMailBtn.setText(checkMailMsg);
+
+	var tooltip;
+	if (appCtxt.isOffline) {
+		tooltip = ZmMsg.sendReceive;
+	} else {
+		tooltip = (appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT)
+			? ZmMsg.checkMailPrefDefault : ZmMsg.checkMailPrefUpdate;
+	}
+	checkMailBtn.setToolTipContent(tooltip);
+};
+
 ZmTaskListController.prototype._handleSyncAll =
 function() {
-	//doesn't do anything now after I removed the appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT preference stuff
-};
-
-ZmTaskListController.prototype.runRefresh =
-function() {
-	if (!appCtxt.isOffline) {
-		return;
+	if (appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) &&
+		appCtxt.get(ZmSetting.GET_MAIL_ACTION) == ZmSetting.GETMAIL_ACTION_DEFAULT)
+	{
+		this._app.getOverviewContainer().highlightAllMboxes();
 	}
-	//should only happen in ZD
-
-	this._syncAllListener();
 };
-
 
 ZmTaskListController.prototype._syncAllListener =
 function(view) {
@@ -427,6 +454,38 @@ function(view) {
 	appCtxt.accountList.syncAll(callback);
 };
 
+/**
+ *  Create menu for Send/Recieve button and add listeners
+ *  *only* for ZD
+ *  @private
+ */
+
+ZmTaskListController.prototype._setupSendReceiveMenu =
+function(view) {
+	var btn = this._toolbar[view].getButton(ZmOperation.CHECK_MAIL);
+	if (!btn) { return; }
+	btn.setMenu(new AjxCallback(this, this._setupSendReceiveMenuItems, [this._toolbar, btn]));
+};
+
+ZmTaskListController.prototype._setupSendReceiveMenuItems =
+function(toolbar, btn) {
+	var menu = new ZmPopupMenu(btn, null, null, this);
+	btn.setMenu(menu);
+
+	var listener = new AjxListener(this, this._sendReceiveListener);
+	var list = appCtxt.accountList.visibleAccounts;
+	for (var i = 0; i < list.length; i++) {
+		var acct = list[i];
+		if (acct.isMain) { continue; }
+
+		var id = [ZmOperation.CHECK_MAIL, acct.id].join("-");
+		var mi = menu.createMenuItem(id, {image:acct.getIcon(), text:acct.getDisplayName()});
+		mi.setData(ZmOperation.MENUITEM_ID, acct.id);
+		mi.addSelectionListener(listener);
+	}
+
+	return menu;
+};
 
 ZmTaskListController.prototype._sendReceiveListener =
 function(ev) {
@@ -645,12 +704,11 @@ function(tasks, mode) {
     }
 };
 
-ZmTaskListController.prototype._handleDelete =
-function(tasks) {
+ZmTaskListController.prototype._handleDelete = function(tasks) {
     var params = {
-        items:			tasks,
-        hardDelete:		true,
-        finalCallback:	this._handleDeleteResponse.bind(this, tasks)
+        items: tasks,
+        hardDelete: true,
+        finalCallback: new AjxCallback(this, this._handleDeleteResponse, [tasks])
     };
     // NOTE: This makes the assumption that the task items to be deleted are
     // NOTE: always in a list (which knows how to hard delete items). But since
@@ -781,8 +839,9 @@ function(task) {
         calItemView.set(task, ZmId.VIEW_TASKLIST);
         this._resetOperations(this._toolbar[viewId], 1); // enable all buttons
 
-		var elements = this.getViewElements(viewId, this._listView[viewId]);
-		
+        var elements = {};
+        elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[viewId];
+        elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[viewId];
         this._setView({view:viewId, elements:elements, pushOnly:true});
     } else {
         var calItemView = this._taskMultiView._taskView;

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -989,7 +989,7 @@ function(forceShow) {
 
 ZmApptEditView.prototype.showResourceField =
 function(show){
-    this._showResources.innerHTML = show ? ZmMsg.hideEquipment : ZmMsg.showEquipment;
+    this._showResources.innerHTML = show ? ZmMsg.hideResources : ZmMsg.showResources;
     Dwt.setVisible(this._resourcesContainer, Boolean(show))
 };
 
@@ -1267,7 +1267,7 @@ function(addrInput, addrs, type, shortForm) {
 						email = addr.getEmail(true);
                         //bug: 57858 - give preference to lookup email address if its present
                         //bug:60427 to show display name format the lookupemail
-                        addrStr = addr.getLookupEmail() ? (new AjxEmailAddress(addr.getLookupEmail(),null,addr.getFullNameForDisplay())).toString() : ZmApptViewHelper.getAttendeesText(addr, type);
+						addrStr = addr.getLookupEmail() ? (new AjxEmailAddress(addr.getLookupEmail(),null,addr.getFullNameForDisplay())).toString() : ZmApptViewHelper.getAttendeesText(addr, type);
                         match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
 					}
 					addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
