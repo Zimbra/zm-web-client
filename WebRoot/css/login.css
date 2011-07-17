@@ -72,10 +72,17 @@ FORM {
 	height:100%;
 	font-size:11px;
 	background-color: @AltC@;
+	
+	#IFDEF GECKO
 	background-image: -moz-linear-gradient(top, @AltC@, @darken(AltC,19)@); /* FF3.6 */
+	#ENDIF
+	#IFDEF SAFARI
 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AltC@),color-stop(1, @darken(AltC,19)@)); /* Saf4+, Chrome */
+	#ENDIF
+	#IFDEF MSIE
  	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@darken(AltC,19)@'); /* IE6,IE7 */
 	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@darken(AltC,19)@')"; /* IE8 */
+	#ENDIF
 
 }
 .LoginScreen .center {
@@ -94,22 +101,31 @@ FORM {
 	
 	/*Linear gradient backgrounds*/
 	background-color: @darken(AppC,10)@;
+	#IFDEF GECKO
 	background-image: -moz-linear-gradient(top, @AppC@, @darken(AppC,10)@); /* FF3.6 */
+	#ENDIF
+	#IFDEF SAFARI
 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AppC@),color-stop(1, @darken(AppC,10)@)); /* Saf4+, Chrome */
+	#ENDIF
+
 /*	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@'); */ /* IE6,IE7 */
 /*	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@')";*/ /* IE8 */
 
 	/*Radial gradient backgrounds*/
+	#IFDEF GECKO
 	background-image: -moz-radial-gradient(50% 0, circle farthest-corner, @AppC@ 0%, @darken(AppC,10)@ 100%); /* FF3.6 */
-	background-image: -webkit-gradient( radial, 50% 0%, 0, 50% 0%, 390, from(@AppC@), to(@darken(AppC,10)@) ); /* Saf4+, Chrome */
-
 	-moz-border-radius: 15px; /* FF1+ */
-	-webkit-border-radius: 15px; /* Saf3-4 */
-	border-radius: 15px; /* Opera 10.5, IE 9, Saf5, Chrome */
-	
 	-moz-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* FF3.5+ */
+	#ENDIF
+	#IFDEF SAFARI
+	background-image: -webkit-gradient( radial, 50% 0%, 0, 50% 0%, 390, from(@AppC@), to(@darken(AppC,10)@) ); /* Saf4+, Chrome */
+	-webkit-border-radius: 15px; /* Saf3-4 */
 	-webkit-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* Saf3.0+, Chrome */
+	#ENDIF
+
+	border-radius: 15px; /* Opera 10.5, IE 9, Saf5, Chrome */
 	box-shadow: 0px 0px 10px #000000; /* Opera 10.5, IE 9.0 */
+
 	#IFDEF MSIE
 	border: 1px solid @darken(AltC,50)@; /* Plain border for IE */
 	#ENDIF
@@ -122,7 +138,7 @@ FORM {
 	background-repeat:no-repeat;
 }
 
-#IFNDEF MSIE_6
+#IFDEF MSIE_6
 .LoginScreen .ImgAltBanner {
 	margin:20px 0px 0px 20px;
 	width:71px;
@@ -180,12 +196,16 @@ FORM {
 	margin:10px 10%;
 	padding:5px;
 	background-color:#FF9;
-	-moz-border-radius:10px;
-	-webkit-border-radius:10px;
 	border-width:0px;
 	border-radius:10px;
+#IFDEF GECKO
+	-moz-border-radius:10px;
 	-moz-box-shadow:0px 0px 10px #FF9;
+#ENDIF
+#IFDEF SAFARI	
+	-webkit-border-radius:10px;
 	-webkit-box-shadow:0px 0px 10px #FF9;
+#ENDIF	
 	box-shadow:0px 0px 10px #FF9;
 	position:relative;
 	left:auto;
@@ -201,8 +221,12 @@ FORM {
 	color: @darken(AppC,50)@;
 	font-size:10px;
 	margin-left:5px;
+#IFDEF GECKO	
 	-moz-border-radius: 10px;
+#ENDIF
+#IFDEF SAFARI	
 	-webkit-border-radius: 10px;
+#ENDIF	
 	border-radius: 10px;
 }
 .LoginScreen #ZLoginWhatsThis {
@@ -284,20 +308,32 @@ FORM {
     text-align:center;
     cursor:pointer;
 	background-color: #dcf9fe;
+#IFDEF GECKO	
 	background-image: -moz-linear-gradient(top, #dcf9fe, #9ff0ff); /* FF3.6 */
-	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #dcf9fe),color-stop(1, #9ff0ff)); /* Saf4+, Chrome */
-	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#dcf9fe', EndColorStr='#9ff0ff');
 	-moz-box-shadow: 0px 0px 3px #000; /* FF3.5+ */
+#ENDIF
+#IFDEF SAFARI	
+	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #dcf9fe),color-stop(1, #9ff0ff)); /* Saf4+, Chrome */
 	-webkit-box-shadow: 0px 0px 3px #000; /* Saf3.0+, Chrome */
+#ENDIF
+#IFDEF MSIE	
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#dcf9fe', EndColorStr='#9ff0ff');
+#ENDIF	
 	box-shadow: 0px 0px 3px #000; /* Opera 10.5, IE 9.0 */
 
 }
 	.LaunchButton input:hover{
+#IFDEF GECKO
 		background-image: -moz-linear-gradient(top, #9ff0ff, #dcf9fe); /* FF3.6 */
-		background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #9ff0ff),color-stop(1, #dcf9fe)); /* Saf4+, Chrome */
-		filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#9ff0ff', EndColorStr='#dcf9fe');
 		-moz-box-shadow: 0px 0px 3px #000; /* FF3.5+ */
+#ENDIF
+#IFDEF SAFARI		
+		background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #9ff0ff),color-stop(1, #dcf9fe)); /* Saf4+, Chrome */
 		-webkit-box-shadow: 0px 0px 1px #000; /* Saf3.0+, Chrome */
+#ENDIF
+#IFDEF MSIE		
+		filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#9ff0ff', EndColorStr='#dcf9fe');
+#ENDIF		
 		box-shadow: 0px 0px 1px #000; /* Opera 10.5, IE 9.0 */
 	}
 
@@ -321,25 +357,32 @@ FORM {
 	
 	/*Linear gradient backgrounds*/
 	background-color: @darken(AppC,10)@;
+#IFDEF GECKO	
 	background-image: -moz-linear-gradient(top, @AppC@, @darken(AppC,10)@); /* FF3.6 */
+#ENDIF
+#IFDEF SAFARI	
 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AppC@),color-stop(1, @darken(AppC,10)@)); /* Saf4+, Chrome */
+#ENDIF
+	
 /*	filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@'); */ /* IE6,IE7 */
 /*	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@')";*/ /* IE8 */
 
 	/*Radial gradient backgrounds*/
+#IFDEF GECKO
 	background-image: -moz-radial-gradient(50% 0, circle farthest-corner, @AppC@ 0%, @darken(AppC,10)@ 100%); /* FF3.6 */
-	background-image: -webkit-gradient( radial, 50% 0%, 0, 50% 0%, 390, from(@AppC@), to(@darken(AppC,10)@) ); /* Saf4+, Chrome */
-
 	-moz-border-radius: 15px; /* FF1+ */
-	-webkit-border-radius: 15px; /* Saf3-4 */
-	border-radius: 15px; /* Opera 10.5, IE 9, Saf5, Chrome */
-	
 	-moz-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* FF3.5+ */
+#ENDIF
+#IFDEF SAFARI	
+	background-image: -webkit-gradient( radial, 50% 0%, 0, 50% 0%, 390, from(@AppC@), to(@darken(AppC,10)@) ); /* Saf4+, Chrome */
+	-webkit-border-radius: 15px; /* Saf3-4 */
 	-webkit-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* Saf3.0+, Chrome */
+#ENDIF
+	border-radius: 15px; /* Opera 10.5, IE 9, Saf5, Chrome */
 	box-shadow: 0px 0px 10px #000000; /* Opera 10.5, IE 9.0 */
-	#IFDEF MSIE
+#IFDEF MSIE
 	border: 1px solid @darken(AltC,50)@; /* Plain border for IE */
-	#ENDIF
+#ENDIF
 }
 .center-small H1 {
     margin-bottom:20px;

@@ -121,10 +121,16 @@ BODY						{	margin:0px; 				}
 #skin_spacing_filler				{	
 	height:12px; 
 	background-color: @AltC@;
+	#IFDEF GECKO
 	background-image: -moz-linear-gradient(top, @AltC@, @AppC@); /* FF3.6 */
+	#ENDIF
+	#IFDEF SAFARI
  	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AltC@),color-stop(1, @AppC@));                /* Saf4+, Chrome */
+ 	#ENDIF
+ 	#IFDEF MSIE
     filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@AppC@');                          /* IE6,IE7 */
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@AppC@')";                     /* IE8 */
+    #ENDIF
  }
 #skin_spacing_app_row					{ 
 /*	background-color:@AppC@; 
@@ -192,10 +198,16 @@ BODY						{	margin:0px; 				}
     font-family:@FontFamily-default@;
     font-size:11px;
     background-color: @AltC@;
+    #IFDEF GECKO
     background-image: -moz-linear-gradient(top, @AltC@, @darken(AltC,19)@); /* FF3.6 */
+    #IFDEF
+    #IFDEF SAFARI
     background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AltC@),color-stop(1, @darken(AltC,19)@)); /* Saf4+, Chrome */
+    #ENDIF
+    #IFDEF MSIE
     filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@darken(AltC,19)@'); /* IE6,IE7 */
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@darken(AltC,19)@')"; /* IE8 */
+    #ENDIF
 }
 .SplashScreen .center { 
     margin-top:-150px;
@@ -217,21 +229,30 @@ BODY						{	margin:0px; 				}
 
     /*Linear gradient backgrounds*/
     background-color: @darken(AppC,10)@;
+    #IFDEF GECKO
     background-image: -moz-linear-gradient(top, @AppC@, @darken(AppC,10)@); /* FF3.6 */
+    #ENDIF
+    #IFDEF SAFARI
     background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AppC@),color-stop(1, @darken(AppC,10)@)); /* Saf4+, Chrome */
+    #ENDIF
+    #IFDEF MSIE
     filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@'); /* IE6,IE7 */
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@')"; /* IE8 */
+    #ENDIF
 
     /*Radial gradient backgrounds*/
+    #IFDEF GECKO
     background-image: -moz-radial-gradient(50% 0, circle farthest-corner, @AppC@ 0%, @darken(AppC,10)@ 100%); /* FF3.6 */
-    background-image: -webkit-gradient( radial, 50% 0%, 0, 50% 0%, 390, from(@AppC@), to(@darken(AppC,10)@) ); /* Saf4+, Chrome */
-
     -moz-border-radius: 15px; /* FF1+ */
-    -webkit-border-radius: 15px; /* Saf3-4 */
-    border-radius: 15px; /* Opera 10.5, IE 9, Saf5, Chrome */
-    
     -moz-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* FF3.5+ */
+    #ENDIF
+    #IFDEF SAFARI
+    background-image: -webkit-gradient( radial, 50% 0%, 0, 50% 0%, 390, from(@AppC@), to(@darken(AppC,10)@) ); /* Saf4+, Chrome */
+    -webkit-border-radius: 15px; /* Saf3-4 */
     -webkit-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* Saf3.0+, Chrome */
+    #ENDIF
+    
+    border-radius: 15px; /* Opera 10.5, IE 9, Saf5, Chrome */
     box-shadow: 0px 0px 10px #000000; /* Opera 10.5, IE 9.0 */
     #IFDEF MSIE
     border: 1px solid @darken(AltC,50)@; /* Plain border for IE */
@@ -487,10 +508,12 @@ SELECT						{	@FieldBorder@	}
 /* Quick fix for selected Adv. Search button */
 
 .ZmSearchToolbarCell .ZSelected .ZToolbarButtonBorder{
+#IFDEF GECKO
  	-moz-border-top-colors:#77736A #BFB8A9;
  	-moz-border-right-colors:#A7A194 #F0E9D8;
  	-moz-border-left-colors:#77736A #BFB8A9;
  	-moz-border-bottom-colors:#A7A194 #F0E9D8;
+#ENDIF 	
  	background-color:#FBF9F4 !important;
  	border: 2px inset; 
 }
