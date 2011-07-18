@@ -34,6 +34,9 @@
  * @extends	ZmController
  */
 ZmZimbraMail = function(params) {
+
+    if (arguments.length == 0) { return; }
+
 	this._startTime = new Date().getTime(); //time we started up
 	ZmController.call(this, null);
 
