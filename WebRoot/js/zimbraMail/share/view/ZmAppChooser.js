@@ -234,7 +234,7 @@ function(id) {
  */
 ZmAppChooser.prototype._createButton =
 function(id) {
-	this.addButton(id, {text:ZmMsg[ZmApp.NAME[id]], image:ZmApp.ICON[id], tooltip:ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]],
+	this.addButton(id, {text:ZmMsg[ZmApp.NAME[id]] || ZmApp.NAME[id], image:ZmApp.ICON[id], tooltip:ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]],
 						textPrecedence:ZmApp.TEXT_PRECEDENCE[id], imagePrecedence:ZmApp.IMAGE_PRECEDENCE[id]});
 };
 

@@ -30,12 +30,12 @@ body {
 }
 
 #skin_container_tree_top {
-	background: #1d3460 url("@SkinImgDir@/sidebar_header_bg.png") top left repeat-x;
+	background: #1d3460 url("@SkinImgDir@/sidebar_header_bg.png?v=@jsVersion@") top left repeat-x;
 	text-align:center;
 }
 
 #skin_container_search {	
-	background: #2b6fa0 url("@SkinImgDir@/search_bg.png") top left repeat-x;
+	background: #2b6fa0 url("@SkinImgDir@/search_bg.png?v=@jsVersion@") top left repeat-x;
 	color: #79a9c9;	
 	border: 0;
 }
@@ -61,7 +61,7 @@ body {
 
 .ZmTaskbar{
 	height:30px; 
-	background: #2b6fa0 url("@SkinImgDir@/app_header_bg.png") repeat-x top left;
+	background: #2b6fa0 url("@SkinImgDir@/app_header_bg.png?v=@jsVersion@") repeat-x top left;
 	border: 0;
 	color: #fff;
 }

@@ -264,9 +264,8 @@ function() {
 		callbacks[ZmAppViewMgr.CB_PRE_SHOW] = new AjxCallback(this, this._preShowCallback);
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 		this._prefsView = new ZmPrefView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE, controller:this});
-		var elements = {};
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
+		var elements = this.getViewElements(null, this._prefsView, this._toolbar);
+
 		this._app.createView({viewId:this._currentView, elements:elements, callbacks:callbacks, isAppView:true});
 		this._initializeTabGroup();
 	}

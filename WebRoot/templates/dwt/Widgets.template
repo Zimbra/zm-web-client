@@ -208,6 +208,10 @@
 	</table>
 </template>
 
+<template id='dwt.Widgets#ZImageOnlyButton' class='ZWidget'>
+	<div id='${id}_left_icon'></div>
+</template>
+
 <template id='dwt.Widgets#ZToolbarButton' class='ZWidget'>
 	<$ data.buttonClass = data.buttonClass || "ToolbarButton" $>
 	<$= AjxTemplate.expand("#ZButton", data) $>
