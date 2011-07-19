@@ -376,7 +376,7 @@ function(recurInfo){
 
 ZmApptComposeController.prototype._dontSend =
 function(dialog){
-    this._revertWarningDialog();
+    this._revertWarningDialog(dialog);
 }
 
 ZmApptComposeController.prototype._dontSendAndClose =
@@ -395,7 +395,7 @@ function(dialog){
 
 ZmApptComposeController.prototype._sendContinue =
 function(dialog){
-    this.revertWarningDialog(dialog);
+    this._revertWarningDialog(dialog);
     this._action = ZmCalItemComposeController.SEND;
     this.enableToolbar(false);
 	if (this._doSave() === false) {
