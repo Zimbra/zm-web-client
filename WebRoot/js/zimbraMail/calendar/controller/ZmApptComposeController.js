@@ -373,12 +373,12 @@ function(recurInfo){
 
 ZmApptComposeController.prototype._dontSend =
 function(dialog){
-    this._reverWarningDialog();
+    this._revertWarningDialog();
 }
 
 ZmApptComposeController.prototype._dontSendAndClose =
 function(dialog){
-this.revertWarningDialog(dialog);
+this._revertWarningDialog(dialog);
 this.closeView();
 }
 
