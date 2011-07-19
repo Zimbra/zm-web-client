@@ -405,6 +405,10 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 
 ZmApptCache.prototype.processBatchResponse =
 function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
+
+    //loading the client with app=calendar will directly process the inline batch response
+    if(!this._accountsSearchList) this._initAccountLists();
+
     var accountList = this._accountsSearchList.clone();
 	var miniCalCache = this._calViewController.getMiniCalCache();
 	var miniCalResp = batchResp && batchResp.GetMiniCalResponse;
