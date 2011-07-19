@@ -291,11 +291,12 @@ function(date, attendees, forceRefresh) {
     this.resizeTimeSuggestions();
 
     if(!this._editView.isSuggestionsNeeded() || !this.isSuggestionsEnabled()) {
-        if(this._timeSuggestions) this._timeSuggestions.removeAll();
+        var isGalEnabled = appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) && appCtxt.get(ZmSetting.GAL_ENABLED);
+        if(this._timeSuggestions && !isGalEnabled) this._timeSuggestions.removeAll();
         this.clearMiniCal();
         if(!this.isSuggestionsEnabled()) {
             this._date = date || this._miniCalendar.getDate();
-            if(appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) && appCtxt.get(ZmSetting.GAL_ENABLED)) this._timeSuggestions.setShowSuggestionsHTML(this._date);
+            if(isGalEnabled) this._timeSuggestions.setShowSuggestionsHTML(this._date);
         }
         return;
     }
