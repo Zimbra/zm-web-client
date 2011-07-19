@@ -347,6 +347,10 @@ function() {
 
 ZmTimeSuggestionView.prototype.setShowSuggestionsHTML =
 function(date) {
+    if(this._date && this._date == date) {
+        return;
+    }
+    this._date = date;
     this.removeAll();
 	var	div = document.createElement("div");
     var params = [
