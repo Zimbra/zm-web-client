@@ -347,7 +347,7 @@ function(ev){
      var appt = this._composeView.getApptEditView()._calItem;
 
      if(!appt.inviteNeverSent){
-        this.getRecurInfo(appt,(new AjxCallback(this, this._sendAfterExceptionCheck)));
+        this._sendAfterExceptionCheck();
      }
      else{this._sendContinue();}
 
@@ -355,11 +355,10 @@ function(ev){
 };
 
 ZmApptComposeController.prototype._sendAfterExceptionCheck =
-function(recurInfo){
+function(){
      var appt = this._composeView.getApptEditView()._calItem;
      var isExceptionAllowed = appCtxt.get(ZmSetting.CAL_EXCEPTION_ON_SERIES_TIME_CHANGE);
-     var hasCancelledInstance = (recurInfo.cancel && (recurInfo.cancel.length>0));
-     var showWarning = appt.isRecurring() && appt.getAttendees(ZmCalBaseItem.PERSON) && !isExceptionAllowed && this._checkIsDirty(ZmApptEditView.CHANGES_SIGNIFICANT) && hasCancelledInstance;
+     var showWarning = appt.isRecurring() && appt.getAttendees(ZmCalBaseItem.PERSON) && !isExceptionAllowed && this._checkIsDirty(ZmApptEditView.CHANGES_SIGNIFICANT);
      if(showWarning){
           var dialog = appCtxt.getYesNoCancelMsgDialog();
 		  dialog.setMessage(ZmMsg.recurrenceUpdateWarning, DwtMessageDialog.WARNING_STYLE);
