@@ -343,13 +343,66 @@ function(mode) {
 
 ZmApptComposeController.prototype._sendListener =
 function(ev){
+
+     var appt = this._composeView.getApptEditView()._calItem;
+
+     if(!appt.inviteNeverSent){
+        this.getRecurInfo(appt,(new AjxCallback(this, this._sendAfterExceptionCheck)));
+     }
+     else{this._sendContinue();}
+
+     return true;
+};
+
+ZmApptComposeController.prototype._sendAfterExceptionCheck =
+function(recurInfo){
+     var appt = this._composeView.getApptEditView()._calItem;
+     var isExceptionAllowed = appCtxt.get(ZmSetting.CAL_EXCEPTION_ON_SERIES_TIME_CHANGE);
+     var hasCancelledInstance = (recurInfo.cancel && (recurInfo.cancel.length>0));
+     var showWarning = appt.isRecurring() && appt.getAttendees(ZmCalBaseItem.PERSON) && !isExceptionAllowed && this._checkIsDirty(ZmApptEditView.CHANGES_SIGNIFICANT) && hasCancelledInstance;
+     if(showWarning){
+          var dialog = appCtxt.getYesNoCancelMsgDialog();
+		  dialog.setMessage(ZmMsg.recurrenceUpdateWarning, DwtMessageDialog.WARNING_STYLE);
+          dialog.registerCallback(DwtDialog.YES_BUTTON, this._sendContinue, this,[dialog]);
+          dialog.registerCallback(DwtDialog.NO_BUTTON, this._dontSend,this,[dialog]);
+          dialog.getButton(DwtDialog.CANCEL_BUTTON).setText(ZmMsg.apptSaveDiscard);
+		  dialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._dontSendAndClose,this,[dialog]);
+		  dialog.popup();
+    }
+    else{
+            this._sendContinue();
+    }
+}
+
+ZmApptComposeController.prototype._dontSend =
+function(dialog){
+    this._reverWarningDialog();
+}
+
+ZmApptComposeController.prototype._dontSendAndClose =
+function(dialog){
+this.revertWarningDialog(dialog);
+this.closeView();
+}
+
+ZmApptComposeController.prototype._revertWarningDialog =
+function(dialog){
+    if(dialog){
+        dialog.popdown();
+        dialog.getButton(DwtDialog.CANCEL_BUTTON).setText(ZmMsg.cancel);
+    }
+}
+
+ZmApptComposeController.prototype._sendContinue =
+function(dialog){
+    this.revertWarningDialog(dialog);
     this._action = ZmCalItemComposeController.SEND;
     this.enableToolbar(false);
 	if (this._doSave() === false) {
 		return;
     }
 	this.closeView();
-};
+}
 
 ZmApptComposeController.prototype.isSave =
 function(){
