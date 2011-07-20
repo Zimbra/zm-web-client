@@ -165,7 +165,7 @@ function(settings) {
 	settings.registerSetting("CAL_SHOW_RESOURCE_TABS",	    {name: "zimbraCalendarShowResourceTabs", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue: true, isGlobal:true});
     settings.registerSetting("CAL_DEFAULT_APPT_DURATION",   {name: "zimbraPrefCalendarDefaultApptDuration", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LDAP_TIME, defaultValue:ZmCalendarApp.DEFAULT_APPT_DURATION, isGlobal:true});
     settings.registerSetting("CAL_EXCEPTION_ON_SERIES_TIME_CHANGE",	    {name: "zimbraCalendarKeepExceptionsOnSeriesTimeChange", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal:true});
-
+    settings.registerSetting("CAL_LOCATION_FIELDS_DISABLED",{name: "zimbraCalendarLocationDisabledFields", type: ZmSetting.T_COS, dataType: ZmSetting.D_STRING, defaultValue: false, isGlobal:true});
 };
 
 ZmCalendarApp.prototype._registerPrefs =
@@ -202,7 +202,8 @@ function() {
 				ZmSetting.CAL_INV_FORWARDING_ADDRESS,
 				ZmSetting.CAL_SHOW_PAST_DUE_REMINDERS,
 				ZmSetting.CAL_SHOW_CALENDAR_WEEK,
-                ZmSetting.CAL_DEFAULT_APPT_DURATION
+                ZmSetting.CAL_DEFAULT_APPT_DURATION,
+                ZmSetting.CAL_LOCATION_FIELDS_DISABLED
 			],
 			manageDirty: true,
 			createView: function(parent, section, controller) {
@@ -1365,4 +1366,4 @@ function(folderId,response) {
 ZmCalendarApp.prototype._handleImportApptError =
 function(ex) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.errorImportAppt, ZmStatusView.LEVEL_CRITICAL);
-}; 
+};
