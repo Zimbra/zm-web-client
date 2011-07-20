@@ -240,27 +240,25 @@ function() {
 
 ZmApptView.prototype.getTitle =
 function() {
-	var name = this._calItem.getName();
+	/*var name = this._calItem.getName();
 	var attendees = this._calItem.getAttendeesText(ZmCalBaseItem.PERSON);
 	var title = attendees ? ZmMsg.meeting : ZmMsg.appointment;
 	return [ZmMsg.zimbraTitle, title, name].join(": ");
+	*/
+    return [ZmMsg.zimbraTitle, ZmMsg.appointment].join(": ");
+};
+/*
+ZmApptView.prototype.set =
+function(calItem, mode, isDirty, prevView) {
+    ZmCalItemView.prototype.set.call(this, calItem, appCtxt.getAppViewMgr().getCurrentView(), mode);
+
+    var buttonText = calItem.getName().substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT);
+    appCtxt.getAppViewMgr().setTabTitle(this._controller.getCurrentView(), buttonText);
 };
 
 ZmApptView.prototype.close =
 function() {
-	if (this._prevView) {
-		var newView =
-		this._controller._viewMgr.setView(this._prevView);
-		this._controller._currentView = this._prevView;
-		this._controller._resetToolbarOperations();
-		// HACK: Since the appt read-only view is not a true view (in the
-		//       ZmAppViewMgr sense), we need to force a refresh, if needed.
-		if (this._controller._viewMgr.needsRefresh()) {
-			this._controller._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
-		}
-	}else {
-		this._controller.show(this._controller._defaultView());
-	}
+	appCtxt.getAppViewMgr().popView();
 };
 
 ZmApptView.prototype.move =
@@ -291,7 +289,7 @@ function(ev) {
 	var errorCallback = new AjxCallback(this, this._handleErrorSave);
 	item.save(null, callback, errorCallback);
 };
-
+*/
 ZmApptView.prototype.edit =
 function(ev) {
 	var item = this._calItem;
@@ -311,15 +309,11 @@ function(ev) {
 		mode = this._mode || ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
 	}
 	item.setViewMode(mode);
-	if(this._prevView) {
-        this._controller._viewMgr.setView(this._prevView);
-	    this._controller._currentView = this._prevView;
-    }
-	this._controller._resetToolbarOperations();
 	var app = this._controller._app;
 	app.getApptComposeController().show(item, mode);
 };
 
+/*
 ZmApptView.prototype._saveCallback =
 function() {
 	appCtxt.setStatusMsg(ZmMsg.savedAppointment);
@@ -347,11 +341,70 @@ function(ofolder, nfolder, resp) {
 	appCtxt.setStatusMsg(params);
 	return true;
 };
+*/
 
 ZmApptView.prototype.setBounds =
 function(x, y, width, height) {
 	// dont reset the width!
 	ZmMailMsgView.prototype.setBounds.call(this, x, y, Dwt.DEFAULT, height);
+};
+
+ZmApptView.prototype._renderCalItem =
+function(calItem) {
+	this._lazyCreateObjectManager();
+
+	var subs = this._getSubs(calItem);
+	this._hdrTableId = this._htmlElId + "_hdrTable";
+
+
+    var calendar = calItem.getFolder();
+    var isReadOnly = calendar.isReadOnly();
+    subs.allowEdit = !isReadOnly && (appCtxt.get(ZmSetting.CAL_APPT_ALLOW_ATTENDEE_EDIT) || calItem.isOrg);
+
+	var el = this.getHtmlElement();
+	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
+
+
+    var selParams = {parent: this};
+    var statusSelect = new DwtSelect(selParams);
+
+    var ptst = {};
+    ptst[ZmCalBaseItem.PSTATUS_NEEDS_ACTION] = ZmMsg.ptstMsgNeedsAction;
+    ptst[ZmCalBaseItem.PSTATUS_ACCEPT] = ZmMsg.ptstMsgAccepted;
+    ptst[ZmCalBaseItem.PSTATUS_TENTATIVE] = ZmMsg.ptstMsgTentative;
+    ptst[ZmCalBaseItem.PSTATUS_DECLINED] = ZmMsg.ptstMsgDeclined;
+
+    this._ptst = ptst;
+    //var statusMsgs = {};
+
+    var data = null;
+    for (var stat in ptst) {
+        //stat = ptst[index];
+        data = new DwtSelectOptionData(stat, ZmCalItem.getLabelForParticipationStatus(stat), false, null, ZmCalItem.getParticipationStatusIcon(stat));
+        statusSelect.addOption(data);
+        if (stat == calItem.ptst){
+            statusSelect.setSelectedValue(stat);
+        }
+    }
+
+    this._statusSelect = statusSelect;
+    this._origPtst = calItem.ptst;
+    statusSelect.reparentHtmlElement(this._htmlElId + "_responseActionSelectCell");
+    statusSelect.addChangeListener(new AjxListener(this, this._statusSelectListener));
+
+    this._statusMsgEl = document.getElementById(this._htmlElId + "_responseActionMsgCell");
+    this._statusMsgEl.innerHTML = ptst[calItem.ptst];
+
+	// content/body
+	var hasHtmlPart = (calItem.notesTopPart && calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
+	var mode = (hasHtmlPart && appCtxt.get(ZmSetting.VIEW_AS_HTML))
+		? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
+
+	var bodyPart = calItem.getNotesPart(mode);
+	if (bodyPart) {
+		this._msg = this._msg || this._calItem._currentlyLoaded;
+		this._makeIframeProxy(el, bodyPart, mode == ZmMimeTable.TEXT_PLAIN);
+	}
 };
 
 ZmApptView.prototype._getSubs =
@@ -408,7 +461,7 @@ function(calItem) {
 		recurStr: recurStr,
 		attachStr: attachStr,
 		folder: appCtxt.getTree(ZmOrganizer.CALENDAR).getById(calItem.folderId),
-		folders: String(calItem.id).match(/:/) ? [] : this._controller.getCalendars(),
+		//folders: String(calItem.id).match(/:/) ? [] : this._controller.getCalendars(),
 		folderLabel: ZmMsg.calendar,
 		reminderLabel: ZmMsg.reminder,
 		alarm: calItem.alarm,
@@ -458,4 +511,55 @@ function(appt, mode) {
 	this._calItem = appt;
 	this._mode = mode;
 	this._renderCalItem(appt, false);
+};
+
+ZmApptView.prototype.reEnableDesignMode =
+function() {
+
+};
+
+ZmApptView.prototype.isDirty =
+function() {
+    var retVal = false,
+        value = this._statusSelect.getValue();
+    if(this._origPtst != value) {
+        retVal = true;
+    }
+    return retVal;
+};
+
+ZmApptView.prototype.setOrigPtst =
+function(value) {
+    this._origPtst = value;
+    this._statusSelectListener();
+};
+
+ZmApptView.prototype.cleanup =
+function() {
+    return false;
+};
+
+ZmApptView.prototype.getOpValue =
+function() {
+    var value = this._statusSelect.getValue(),
+        statusToOp = {};
+    statusToOp[ZmCalBaseItem.PSTATUS_NEEDS_ACTION] = null;
+    statusToOp[ZmCalBaseItem.PSTATUS_ACCEPT] = ZmOperation.REPLY_ACCEPT;
+    statusToOp[ZmCalBaseItem.PSTATUS_TENTATIVE] = ZmOperation.REPLY_TENTATIVE;
+    statusToOp[ZmCalBaseItem.PSTATUS_DECLINED] = ZmOperation.REPLY_DECLINE;
+    return statusToOp[value];
+};
+
+ZmApptView.prototype._statusSelectListener =
+function() {
+    var saveButton = this.getController().getCurrentToolbar().getButton(ZmOperation.SAVE),
+        value = this._statusSelect.getValue();
+    saveButton.setEnabled(this._origPtst != value);
+    this._statusMsgEl.innerHTML = this._ptst[value];
+};
+
+ZmApptView.prototype._getDialogXY =
+function() {
+	var loc = Dwt.toWindow(this.getHtmlElement(), 0, 0);
+	return new DwtPoint(loc.x + ZmApptComposeView.DIALOG_X, loc.y + ZmApptComposeView.DIALOG_Y);
 };

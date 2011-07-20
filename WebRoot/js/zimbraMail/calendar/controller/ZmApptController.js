@@ -27,15 +27,13 @@
  * @extends		ZmListController
  */
 ZmApptController = function(container, app) {
-    ZmListController.call(this, container, app);
-    this._listeners[ZmOperation.EDIT]   = new AjxListener(this, this._editListener);
-    this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
+    ZmCalItemComposeController.call(this, container, app);
 };
 
 ZmApptController.DEFAULT_TAB_TEXT = ZmMsg.message;
 
 
-ZmApptController.prototype = new ZmListController();
+ZmApptController.prototype = new ZmCalItemComposeController;
 ZmApptController.prototype.constructor = ZmApptController;
 
 ZmApptController.prototype.toString =
@@ -44,252 +42,335 @@ function() {
 };
 ZmApptController.viewToTab = {};
 
-ZmApptController.prototype._createNewView =
-function(viewId) {
-    this._initializeListView(viewId);
-    return this._listView[viewId];
-};
-
-ZmApptController.prototype.show =
-function(appt, mode) {
-	AjxDispatcher.require(["CalendarCore", "Calendar"]);
-
-    this.setAppt(appt, mode);
-    this._currentView = this._getViewType();
-
-	var avm = appCtxt.getAppViewMgr();
-	this._setup(this._currentView);
-    this._setNewButtonProps(this._currentView, ZmMsg.newAppt, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
-	var elements = this.getViewElements(this._currentView, this._listView[this._currentView]);
-
-	var curView = avm.getCurrentViewId();
-	var tabId = (curView && curView.indexOf(ZmId.VIEW_APPOINTMENT_READONLY) == 0) ?
-                 ZmApptController.viewToTab[curView] : Dwt.getNextId();
-	ZmApptController.viewToTab[this.viewId] = tabId;
-	var viewParams = {view:this._currentView, elements:elements, clear:false,
-                      tabParams:this._getTabParams(tabId, new AjxCallback(this, this._tabCallback))};
-
-    var subject = this._appt.getName();
-	var buttonText = subject ?
-            AjxStringUtil.htmlEncode(subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT)) :
-            ZmApptController.DEFAULT_TAB_TEXT;
-	this._setView(viewParams);
-	avm.setTabTitle(this.viewId, buttonText);
-	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
-	this._resetNavToolBarButtons(this._currentView);
-	this._toolbar[this._currentView].adjustSize();
-
-}
-
-ZmApptController.prototype.setAppt =
-function (appt, mode) {
-	this._appt = appt;
-    this._mode = mode;
-};
-ZmApptController.prototype._getSelectedMsg =
+ZmApptController.prototype._createComposeView =
 function() {
-	// Currently bound appointment
-	return this._appt;
+	// override
+    return new ZmApptView(this._container,  DwtControl.ABSOLUTE_STYLE, this);
 };
 
-
-ZmApptController.prototype._getViewType =
+ZmApptController.prototype._createToolBar =
 function() {
-	return this.viewId;
-};
 
+	var buttons = [ ZmOperation.SEND_INVITE, ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP,
+                    ZmOperation.EDIT, ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD_APPT, ZmOperation.DELETE, ZmOperation.SEP,
+                    ZmOperation.PROPOSE_NEW_TIME, ZmOperation.TAG_MENU, ZmOperation.SEP
+                    ];
 
-ZmApptController.prototype._initializeListView =
-function(view) {
-	if (!this._listView[view]) {
-		this._listView[view] = new ZmApptView(this._container, DwtControl.ABSOLUTE_STYLE, this);
-	}
-};
-ZmApptController.prototype.getReferenceView =
-function () {
-	return this._listView[this._currentView];
-};
-ZmApptController.prototype._setViewContents =
-function(view) {
-	this._listView[view].set(this._appt, this._mode);
-};
-
-
-ZmApptController.prototype._getActionMenuOps =
-function() {
-    // No action menu
-	return null;
-};
-
-// Specify the toolbar operations.  Note that the ZmListControl resetOperations is used as-is.
-// ZmCalViewController did not disable any of the operations below for a read-only appointment
-ZmApptController.prototype._getToolBarOps =
-function() {
-    var ops = [ZmOperation.EDIT, ZmOperation.CANCEL];
-    // As with ZmCalItemComposeController
     if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
-        ops.push(ZmOperation.SEP);
-        ops.push(ZmOperation.PRINT);
-    }
-    ops.push(ZmOperation.SEP);
-    ops.push(ZmOperation.TAG_MENU);
-    return ops;
-};
-
-ZmApptController.prototype._getTabParams =
-function() {
-	return {id:this.tabId, image:"Appointment", text:ZmCalItemComposeController.DEFAULT_TAB_TEXT, textPrecedence:76,
-			tooltip:ZmCalItemComposeController.DEFAULT_TAB_TEXT};
-};
-
-ZmApptController.prototype._tabCallback =
-function(oldView, newView) {
-	return (oldView && oldView.indexOf(ZmId.VIEW_APPOINTMENT_READONLY) == 0);
-};
-
-ZmApptController.prototype._getTagMenuMsg =
-function() {
-	return ZmMsg.tagMessage;
-};
-
-ZmApptController.prototype._postShowCallback =
-function(view, force) {
-    // The ZmAppViewMgr will hide the previous view, which hides the calendar overview.  Since
-    // the App for the previous (Calendar) view and this view are the same, when this view is displayed
-    // zmZimbraMail.setActiveApp does not show the overview for the calendar app\.
-    // So do it here, undoing the previous hide.
-    overview =  this._app.getOverview();
-    overview.zShow(true);
-};
-
-/**
- * Handles the key action.
- *
- * @param	{constant}	actionCode		the action code
- * @return	{Boolean}	<code>true</code> if the action is handled
- */
-ZmApptController.prototype.handleKeyAction =
-function(actionCode) {
-	DBG.println(AjxDebug.DBG3, "ZmApptController.handleKeyAction");
-
-	switch (actionCode) {
-
-        case ZmKeyMap.CANCEL:
-            this._app.popView();
-            break;
-
-		case ZmKeyMap.PRINT:
-			if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
-				this._printListener();
-			}
-			break;
-
-		case ZmKeyMap.TAG:
-			var items = this.getSelection();
-			if (items && items.length && (appCtxt.getTagTree().size() > 0)) {
-				var dlg = appCtxt.getPickTagDialog();
-				ZmController.showDialog(dlg, new AjxCallback(this, this._tagSelectionCallback, [items, dlg]));
-			}
-			break;
-
-		case ZmKeyMap.UNTAG:
-			if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-				var items = this.getSelection();
-				if (items && items.length) {
-					this._doRemoveAllTags(items);
-				}
-			}
-			break;
-
-		default:
-            break;
+		buttons.push(ZmOperation.PRINT);
 	}
-	return true;
+
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this.viewId, controller:this});
+	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
+	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
+	this._toolbar.addSelectionListener(ZmOperation.REPLY, new AjxListener(this, this._replyListener));
+	this._toolbar.addSelectionListener(ZmOperation.REPLY_ALL, new AjxListener(this, this._replyAllListener));
+	this._toolbar.addSelectionListener(ZmOperation.FORWARD_APPT, new AjxListener(this, this._forwardListener));
+	this._toolbar.addSelectionListener(ZmOperation.EDIT, new AjxListener(this, this._editListener));
+	this._toolbar.addSelectionListener(ZmOperation.PROPOSE_NEW_TIME, new AjxListener(this, this._proposeTimeListener));
+	this._toolbar.addSelectionListener(ZmOperation.DELETE, new AjxListener(this, this._deleteListener));
+
+	if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
+		this._toolbar.addSelectionListener(ZmOperation.PRINT, new AjxListener(this, this._printListener));
+	}
+
+    var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
+    sendButton.setVisible(false);
+
+
+    var tagButton = this._toolbar.getButton(ZmOperation.TAG_MENU);
+	if (tagButton) {
+		tagButton.noMenuBar = true;
+		this._setupTagMenu(this._toolbar);
+	}
+	// change default button style to toggle for spell check button
+	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
+	if (spellCheckButton) {
+		spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
+	}
+
 };
 
+ZmApptController.prototype._initToolbar =
+function(mode) {
+    ZmCalItemComposeController.prototype._initToolbar.call(this, mode);
+    var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
+    saveButton.setEnabled(false);
+};
 
+ZmApptController.prototype._deleteListener =
+function(ev) {
+	var op = this.getMode();
+    var calItem = this.getCalItem();
+    if(!calItem) {
+        return;
+    }
 
+    if (calItem.isRecurring()) {
+        var mode = (op == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)
+            ? ZmCalItem.MODE_DELETE_INSTANCE
+            : ZmCalItem.MODE_DELETE_SERIES;
+        this._app.getCalController()._promptDeleteAppt(calItem, mode);
+    }
+    else {
+        this._app.getCalController()._deleteAppointment(calItem);
+    }
+};
 
-// --- Listeners --------------------------------------------------
-// Edit button was pressed
 ZmApptController.prototype._editListener =
 function(ev) {
-    if(!this._appt.isOrg && !(this._editWarningDialog && this._editWarningDialog.isPoppedUp())){
-        var msgDialog = this._editWarningDialog = appCtxt.getMsgDialog();
-        msgDialog.setMessage(ZmMsg.attendeeEditWarning, DwtMessageDialog.WARNING_STYLE);
-        msgDialog.popup();
-        msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._editListener, this);
+	var op = (ev && ev.item instanceof DwtMenuItem)
+		? ev.item.getData(ZmOperation.KEY_ID) : null;
+    var calItem = this.getCalItem();
+    if(!calItem) {
         return;
-    }else if(this._editWarningDialog){
-        this._editWarningDialog.popdown();
     }
-
-	var mode = ZmCalItem.MODE_EDIT;
-	if (this._appt.isRecurring()) {
-		mode = this._mode || ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
-	}
-	this._appt.setViewMode(mode);
-
-    // Close the current read-only view
-    this._app.popView();
-    // Re-open the appointment using the compose view
-	this._app.getApptComposeController().show(this._appt, mode);
+    this._composeView.edit(ev);
 };
 
-// Cancel button was pressed
-ZmApptController.prototype._cancelListener =
+ZmApptController.prototype._replyListener =
 function(ev) {
-	this._app.popView();
+	var op = (ev && ev.item instanceof DwtMenuItem)
+		? ev.item.getData(ZmOperation.KEY_ID) : null;
+    var calItem = this.getCalItem();
+    if(!calItem) {
+        return;
+    }
+    this._app.getCalController()._replyAppointment(calItem, false);
+};
+
+ZmApptController.prototype._replyAllListener =
+function(ev) {
+	var op = (ev && ev.item instanceof DwtMenuItem)
+		? ev.item.getData(ZmOperation.KEY_ID) : null;
+    var calItem = this.getCalItem();
+    if(!calItem) {
+        return;
+    }
+    this._app.getCalController()._replyAppointment(calItem, true);
+};
+
+ZmApptController.prototype._saveListener =
+function(ev) {
+    if(!this.isDirty() || !this.getOpValue()) {
+        return;
+    }
+	var op = (ev && ev.item instanceof DwtMenuItem)
+		? ev.item.getData(ZmOperation.KEY_ID) : null;
+    var calItem = this.getCalItem();
+    if(!calItem) {
+        return;
+    }
+    var saveCallback = new AjxCallback(this, this._handleSaveResponse);
+    var calViewCtrl = this._app.getCalController();
+    var respCallback = new AjxCallback(calViewCtrl, calViewCtrl._handleResponseHandleApptRespondAction, [calItem, this.getOpValue(), op, saveCallback]);
+	calItem.getDetails(null, respCallback, this._errorCallback);
+
+    //this._app.getCalController()._replyAppointment(calItem, true);
+};
+
+ZmApptController.prototype._handleSaveResponse =
+function(result, value) {
+    this.getCurrentView().setOrigPtst(value);
+};
+
+ZmApptController.prototype._forwardListener =
+function(ev) {
+	var op = this.getMode();
+    var calItem = this.getCalItem();
+    if(!calItem) {
+        return;
+    }
+
+    var mode = ZmCalItem.MODE_FORWARD;
+    if (calItem.isRecurring()) {
+		mode = (op == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)
+			? ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE
+			: ZmCalItem.MODE_FORWARD_SERIES;
+	}
+
+    this._app.getCalController()._forwardAppointment(calItem, mode);
 };
 
 ZmApptController.prototype._printListener =
-function(ev) {
-	var url;
-
-    url = ["/h/printappointments?id=", this._appt.invId, "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)];
-    if(appCtxt.isOffline) {
-        url.push("&acct=", this._appt.getFolder().getAccount().name);
-        url.push("&zd=", "true");
+function() {
+	var calItem = this.getCalItem();
+    if(!calItem) {
+        return;
     }
-    url = url.join("");
-
-	window.open(appContextPath+url, "_blank");
+	var url = ["/h/printappointments?id=", calItem.invId, "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)]; //bug:53493
+    if (appCtxt.isOffline) {
+        url.push("&zd=true", "&acct=", this._composeView.getApptEditView().getCalendarAccount().name);
+    }
+	window.open(appContextPath + url.join(""), "_blank");
 };
-// --- Listeners --------------------------------------------------
 
-
-// --- Stubbed Methods (Mostly ZMListControllers methods inappropriate for a single item)
-ZmApptController.prototype.getCalendars =
-function(params) {
-	// Don't do anything
-}
-
-ZmApptController.prototype._getSearchFolderId =
-function() {
-	return null;
-}
-
-ZmApptController.prototype._menuPopdownActionListener =
+ZmApptController.prototype._tagButtonListener =
 function(ev) {
-	// Don't do anything since msg view has no action menus
+	var toolbar = this.getCurrentToolbar();
+	if (ev.item.parent == toolbar) {
+		this._setTagMenu(toolbar);
+	}
 };
 
-ZmApptController.prototype._checkItemCount =
+ZmApptController.prototype._setupTagMenu =
+function(parent) {
+	if (!parent) return;
+	var tagMenu = parent.getTagMenu();
+	if (tagMenu) {
+		tagMenu.addSelectionListener(new AjxListener(this, this._tagListener));
+	}
+	if (parent instanceof ZmButtonToolBar) {
+		var tagButton = parent.getOp(ZmOperation.TAG_MENU);
+		if (tagButton) {
+			tagButton.addDropDownSelectionListener(new AjxListener(this, this._tagButtonListener));
+		}
+	}
+};
+
+ZmApptController.prototype._proposeTimeListener =
+function(ev) {
+	var op = this.getMode();
+
+	var calItem = this.getCalItem();
+    if(!calItem) {
+        return;
+    }
+
+	var mode = ZmCalItem.MODE_EDIT;
+	if (calItem.isRecurring()) {
+		mode = (op == ZmOperation.VIEW_APPT_INSTANCE)
+			? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE
+			: ZmCalItem.MODE_EDIT_SERIES;
+	}
+
+	var appt = calItem;
+	var clone = ZmAppt.quickClone(appt);
+	clone.setProposeTimeMode(true);
+	clone.getDetails(mode, new AjxCallback(this, this._proposeTimeContinue, [clone, mode]));
+};
+
+ZmApptController.prototype._proposeTimeContinue =
+function(appt, mode) {
+	appt.setViewMode(mode);
+	AjxDispatcher.run("GetApptComposeController").proposeNewTime(appt);
+};
+
+ZmApptController.prototype._doTag =
+function(items, tag, doTag) {
+
+	var list = this._getTaggableItems(items);
+
+	if (doTag) {
+		if (list.length > 0 && list.length == items.length) {
+			// there are items to tag, and all are taggable
+			ZmBaseController.prototype._doTag.call(this, list, tag, doTag);
+		} else {
+			var msg;
+			var dlg = appCtxt.getMsgDialog();
+			if (list.length > 0 && list.length < items.length) {
+				// there are taggable and nontaggable items
+				var listener = new AjxListener(this, this._handleDoTag, [dlg, list, tag, doTag]);
+				dlg.setButtonListener(DwtDialog.OK_BUTTON, listener);
+				msg = ZmMsg.tagReadonly;
+			} else if (list.length == 0) {
+				// no taggable items
+				msg = ZmMsg.nothingToTag;
+			}
+			dlg.setMessage(msg);
+			dlg.popup();
+		}
+	} else if (list.length > 0) {
+		ZmBaseController.prototype._doTag.call(this, list, tag, doTag);
+	}
+};
+
+ZmApptController.prototype._doRemoveAllTags =
+function(items) {
+	var list = this._getTaggableItems(items);
+	ZmBaseController.prototype._doRemoveAllTags.call(this, list);
+};
+
+ZmApptController.prototype._handleDoTag =
+function(dlg, list, tag, doTag) {
+	dlg.popdown();
+	ZmBaseController.prototype._doTag.call(this, list, tag, doTag);
+};
+
+ZmApptController.prototype._getTaggableItems =
+function(items) {
+	var calItem = this.getCalItem();
+    items = [];
+    items.push(calItem);
+	return items;
+};
+
+ZmApptController.prototype.getItems =
 function() {
-	// Don't do anything
+	return this._getTaggableItems([]);
 };
 
-ZmApptController.prototype._getDefaultFocusItem =
+ZmApptController.prototype._getViewType =
 function() {
-	return this._toolbar[this._currentView];
+	return appCtxt.getAppViewMgr().getCurrentViewId();
 };
 
-ZmApptController.prototype._checkReplenish =
-function(params) {
-	// Don't do anything
+ZmApptController.prototype.getCalItem =
+function() {
+    var ci = this._composeView ? this._composeView._calItem : null;
+    return ci;
+};
+
+ZmApptController.prototype.getOpValue =
+function() {
+    var s = this._composeView ? this._composeView.getOpValue() : null;
+    return s;
+};
+
+ZmApptController.prototype.isDirty =
+function() {
+    var dirty = this._composeView ? this._composeView.isDirty() : false;
+    return dirty;
+};
+
+ZmApptController.prototype.getMode =
+function() {
+    var m = this._composeView ? this._composeView._mode : null;
+    return m;
+};
+
+ZmApptController.prototype.getCurrentView =
+function() {
+	return this._composeView;
+};
+
+ZmApptController.prototype.getCurrentViewId =
+function() {
+	return this._viewId;
+};
+
+ZmApptController.prototype.getCurrentToolbar =
+function() {
+	return this._toolbar;
+};
+
+ZmApptController.prototype.getScheduleAssistant =
+function() {
+    return this._smartScheduler;
 };
 
 ZmApptController.prototype.setSchedulerPanelContent =
 function() {
-	// Don't do anything
+    var scheduler = this.getScheduleAssistant();
+    if(scheduler) {
+        var avm = appCtxt.getAppViewMgr();
+        avm.setComponent(ZmAppViewMgr.C_TREE, scheduler);
+        this._schedulerRendered = true;
+    }
+};
+
+ZmApptController.prototype._postShowCallback =
+function() {
+	ZmCalItemComposeController.prototype._postShowCallback.call(this);
+    this._app.setOverviewPanelContent();
 };

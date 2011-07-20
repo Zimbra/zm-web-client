@@ -28,10 +28,10 @@
  */
 ZmCalItemComposeController = function(container, app) {
 	if (arguments.length == 0) { return; }
-	ZmController.call(this, container, app);
+	ZmBaseController.call(this, container, app);
 };
 
-ZmCalItemComposeController.prototype = new ZmController;
+ZmCalItemComposeController.prototype = new ZmBaseController;
 ZmCalItemComposeController.prototype.constructor = ZmCalItemComposeController;
 
 ZmCalItemComposeController.prototype.toString =
@@ -52,7 +52,7 @@ ZmCalItemComposeController.prototype.show =
 function(calItem, mode, isDirty) {
 
     this._mode = mode;
-	if (!this._toolbar) {
+	if (this._toolbar.toString() != "ZmButtonToolBar") {
 		this._createToolBar();
 	}
 	var initial = this.initComposeView();
@@ -156,7 +156,7 @@ function(initHide) {
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 		callbacks[ZmAppViewMgr.CB_PRE_SHOW] = new AjxCallback(this, this._preShowCallback);
 		callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
-		if (!this._toolbar)
+		if (this._toolbar.toString() != "ZmButtonToolBar")
 			this._createToolBar();
 		var elements = this.getViewElements(null, this._composeView, this._toolbar);
 
@@ -288,7 +288,7 @@ function(skipNotify, composeMode) {
 
 ZmCalItemComposeController.prototype._initToolbar =
 function(mode) {
-	if (!this._toolbar) {
+	if (this._toolbar.toString() != "ZmButtonToolBar") {
 		this._createToolBar();
 	}
 

@@ -485,6 +485,42 @@ function(ev, list) {
 };
 
 /**
+ * From Search based on email address.
+ *
+ * @private
+ */
+ZmBaseController.prototype._participantSearchListener =
+function(ev) {
+};
+
+/**
+ * Browse based on email address.
+ *
+ * @private
+ */
+ZmBaseController.prototype._participantBrowseListener =
+function(ev) {
+};
+
+/**
+ * Compose message to participant.
+ *
+ * @private
+ */
+ZmBaseController.prototype._participantComposeListener =
+function(ev) {
+};
+
+/**
+ * If there's a contact for the participant, edit it, otherwise add it.
+ *
+ * @private
+ */
+ZmBaseController.prototype._participantContactListener =
+function(ev) {
+};
+
+/**
  * @protected
  */
 ZmBaseController.prototype._getMoveParams =
