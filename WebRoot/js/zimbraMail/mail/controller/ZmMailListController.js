@@ -530,8 +530,7 @@ function() {
 	}
 	list.push(ZmOperation.SEP, ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD);
 	list.push(ZmOperation.SEP, ZmOperation.SHOW_ORIG);
-    list.push(ZmOperation.SEP, ZmOperation.REDIRECT);
-    list.push(ZmOperation.SEP, ZmOperation.EDIT_AS_NEW);
+    list.push(ZmOperation.SEP, ZmOperation.REDIRECT, ZmOperation.EDIT_AS_NEW);
 
 	if (!appCtxt.isChildWindow) {
 		list.push(ZmOperation.SEP);
