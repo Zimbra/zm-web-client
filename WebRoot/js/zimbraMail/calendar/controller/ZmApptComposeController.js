@@ -355,7 +355,8 @@ ZmApptComposeController.prototype._sendAfterExceptionCheck =
 function(){
      var appt = this._composeView.getApptEditView()._calItem;
      var isExceptionAllowed = appCtxt.get(ZmSetting.CAL_EXCEPTION_ON_SERIES_TIME_CHANGE);
-     var showWarning = appt.isRecurring() && appt.getAttendees(ZmCalBaseItem.PERSON) && !isExceptionAllowed && this._checkIsDirty(ZmApptEditView.CHANGES_SIGNIFICANT);
+     var isEditingSeries = (this._mode == ZmCalItem.MODE_EDIT_SERIES);
+     var showWarning = appt.isRecurring() && isEditingSeries && appt.getAttendees(ZmCalBaseItem.PERSON) && !isExceptionAllowed && this._checkIsDirty(ZmApptEditView.CHANGES_SIGNIFICANT);
      if(showWarning){
           var dialog = appCtxt.getYesNoCancelMsgDialog();
 		  dialog.setMessage(ZmMsg.recurrenceUpdateWarning, DwtMessageDialog.WARNING_STYLE);
