@@ -2476,11 +2476,13 @@ function(list, skipMiniCalUpdate) {
 		var size = list.size();
 		DBG.println(AjxDebug.DBG2,"list.size:"+size);
 		if (size != 0) {
+			var showDeclined = appCtxt.get(ZmSetting.CAL_SHOW_DECLINED_MEETINGS);
 			this._computeApptLayout();
 			for (var i=0; i < size; i++) {
 				var ao = list.get(i);
-				if (ao && ao.isInRange(timeRange.start, timeRange.end)) {
-					this.addAppt(ao);
+				if (ao && ao.isInRange(timeRange.start, timeRange.end) &&
+					(showDeclined || (ao.ptst != ZmCalBaseItem.PSTATUS_DECLINED))) {
+                    this.addAppt(ao);
                     this._apptCount ++;
 				}
 			}

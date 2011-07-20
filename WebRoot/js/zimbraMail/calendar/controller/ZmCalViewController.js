@@ -3507,6 +3507,17 @@ function(work, view, list, skipMiniCalUpdate, query) {
 	}
 };
 
+
+ZmCalViewController.prototype.refreshCurrentView =
+ function() {
+    var currentView = this.getCurrentView();
+    if (currentView) {
+        currentView.setNeedsRefresh(true);
+        this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
+    }
+}
+
+
 ZmCalViewController.prototype._scheduleMaintenance =
 function(work, forceMaintenance) {
 

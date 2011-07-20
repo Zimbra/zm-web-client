@@ -776,12 +776,15 @@ function(list) {
 	}
 	this._resetList();
 	this._list = newList;	
-	if (list) {
+    var showDeclined = appCtxt.get(ZmSetting.CAL_SHOW_DECLINED_MEETINGS);
+    if (list) {
 		var size = list.size();
 		if (size != 0) {
 			for (var i=0; i < size; i++) {
 				var ao = list.get(i);
-				this.addAppt(ao);
+                if (showDeclined || (ao.ptst != ZmCalBaseItem.PSTATUS_DECLINED)) {
+				    this.addAppt(ao);
+                }
 			}
 		}
 	}
@@ -1155,6 +1158,7 @@ ZmCalBaseView._apptMouseUpHdlr =
 function(ev) {
 	//DBG.println("ZmCalBaseView._apptMouseUpHdlr: "+ev.shiftKey);
 	var data = DwtMouseEventCapture.getTargetObj();
+
 
 	var mouseEv = DwtShell.mouseEvent;
     if (ev && mouseEv) {
