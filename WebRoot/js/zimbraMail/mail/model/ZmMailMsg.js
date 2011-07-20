@@ -717,11 +717,13 @@ function(params, callback, result) {
 
 	// clear all attachments and body data
 	this.attachments.length = this._bodyParts.length = 0;
+	this.findAttsFoundInMsgBodyDone = false;
 
 	this._loadFromDom(response.m[0]);
 	if (!this.isReadOnly() && params.markRead) {
 		this._markReadLocal(true);
 	}
+	this.findAttsFoundInMsgBody();
 
 	// return result so callers can check for exceptions if they want
 	if (this._loadCallback) {
