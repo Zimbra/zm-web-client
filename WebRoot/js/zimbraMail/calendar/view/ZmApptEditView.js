@@ -366,6 +366,7 @@ function() {
     this._apptFormValue[ZmApptEditView.CHANGES_SIGNIFICANT]      = this._getFormValue(ZmApptEditView.CHANGES_SIGNIFICANT);
     this._apptFormValue[ZmApptEditView.CHANGES_INSIGNIFICANT]    = this._getFormValue(ZmApptEditView.CHANGES_INSIGNIFICANT);
     this._apptFormValue[ZmApptEditView.CHANGES_LOCAL]            = this._getFormValue(ZmApptEditView.CHANGES_LOCAL);
+    this._apptFormValue[ZmApptEditView.CHANGES_TIME_RECURRENCE]  = this._getFormValue(ZmApptEditView.CHANGES_TIME_RECURRENCE);
 
     var newMode = (this._mode == ZmCalItem.MODE_NEW);        
 
@@ -1727,6 +1728,7 @@ function(show) {
 ZmApptEditView.CHANGES_LOCAL            = 1;
 ZmApptEditView.CHANGES_SIGNIFICANT      = 2;
 ZmApptEditView.CHANGES_INSIGNIFICANT    = 3;
+ZmApptEditView.CHANGES_TIME_RECURRENCE  = 4;
 
 
 ZmApptEditView.prototype._getFormValue =
@@ -1748,19 +1750,9 @@ function(type, attribs){
             break;
 
        case ZmApptEditView.CHANGES_SIGNIFICANT:
-           var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-           var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
-           startDate = this._startTimeSelect.getValue(startDate);
-           endDate = this._endTimeSelect.getValue(endDate);
-           vals.push(
-                   AjxDateUtil.getServerDateTime(startDate),       // Start DateTime
-                   AjxDateUtil.getServerDateTime(endDate)          // End DateTime
-                   );
-           if (Dwt.getDisplay(this._tzoneSelectStart.getHtmlElement()) != Dwt.DISPLAY_NONE) {
-               vals.push(this._tzoneSelectStart.getValue());    // Start timezone
-               vals.push(this._tzoneSelectEnd.getValue());      // End timezone
-           }
-           vals.push("" + this._allDayCheckbox.checked);       // All Day Appt.
+
+           vals = this._getTimeAndRecurrenceChanges();
+
            if (!attribs.excludeAttendees) {                    //Attendees
                vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.PERSON].getArray(), ZmCalBaseItem.PERSON, false, true));
            }
@@ -1773,8 +1765,6 @@ function(type, attribs){
                vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.EQUIPMENT].getArray(), ZmCalBaseItem.EQUIPMENT, false, true));
            }
 
-           //TODO: Detailed Recurrence, Repeat support
-           vals.push(this._repeatSelect.getValue());        //Recurrence    
            if(this._isForward && !attribs.excludeAttendees) {
                vals.push(this._forwardToField.getValue()); //ForwardTo
            }
@@ -1789,12 +1779,37 @@ function(type, attribs){
            vals.push(this._privateCheckbox.checked ? ZmApptEditView.PRIVACY_OPTION_PRIVATE : ZmApptEditView.PRIVACY_OPTION_PUBLIC);
            //TODO: Attachments, Priority    
            break;
+
+       case ZmApptEditView.CHANGES_TIME_RECURRENCE:
+           vals = this._getTimeAndRecurrenceChanges();
+           break;
    }
 
    vals = vals.join("|").replace(/\|+/, "|");
 
    return vals;
 };
+
+ZmApptEditView.prototype._getTimeAndRecurrenceChanges = function(){
+           var vals = [];
+           var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+           var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+           startDate = this._startTimeSelect.getValue(startDate);
+           endDate = this._endTimeSelect.getValue(endDate);
+           vals.push(
+                   AjxDateUtil.getServerDateTime(startDate),       // Start DateTime
+                   AjxDateUtil.getServerDateTime(endDate)          // End DateTime
+                   );
+           if (Dwt.getDisplay(this._tzoneSelectStart.getHtmlElement()) != Dwt.DISPLAY_NONE) {
+               vals.push(this._tzoneSelectStart.getValue());    // Start timezone
+               vals.push(this._tzoneSelectEnd.getValue());      // End timezone
+           }
+           vals.push("" + this._allDayCheckbox.checked);       // All Day Appt.
+           //TODO: Detailed Recurrence, Repeat support
+           vals.push(this._repeatSelect.getValue());        //Recurrence
+
+           return vals;
+}
 
 // Returns a string representing the form content
 ZmApptEditView.prototype._formValue =
