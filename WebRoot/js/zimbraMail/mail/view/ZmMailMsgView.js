@@ -1146,6 +1146,10 @@ function(msg, container) {
 	var sentByIcon = cl	? (cl.getContactByEmail((sentBy && sentBy.address ) ? sentBy.address : sentByAddr ) ? "Contact" : "NewContact")	: null;
 	var obo = sender ? addr : null;
 	var oboAddr = obo && obo != ZmMsg.unknown ? obo.getAddress() : null;
+
+	var bwo = msg.getAddress(AjxEmailAddress.RESENT_FROM);
+	var bwoAddr = bwo ? bwo.getAddress() : null;
+
 	var additionalHdrs = [];
 	var invite = msg.invite;
 	var autoSendTime = AjxUtil.isDate(msg.autoSendTime) ? AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM).format(msg.autoSendTime) : null;
@@ -1198,12 +1202,18 @@ function(msg, container) {
 		sentBy		= this._objectManager.findObjects(sentBy, true, ZmObjectManager.EMAIL, false, options);
 		dateString	= this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE);
 		if (obo) {
-			obo		= this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL, false, options);
+		    obo		= this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL, false, options);
+		}
+		if (bwo) {
+		    bwo		= this._objectManager.findObjects(bwo, true, ZmObjectManager.EMAIL, false, options);
 		}
 	} else {
 		sentBy = AjxStringUtil.htmlEncode(sentBy.toString());
 		if (obo) {
-			obo = AjxStringUtil.htmlEncode(obo.toString());
+		    obo = AjxStringUtil.htmlEncode(obo.toString());
+		}
+		if (bwo) {
+		    bwo = AjxStringUtil.htmlEncode(bwo.toString());
 		}
 	}
 
@@ -1250,7 +1260,9 @@ function(msg, container) {
 		subject:			subject,
 		dateString:			dateString,
 		hasAttachments:		(attachmentsCount != 0),
-		attachmentsCount:	attachmentsCount
+		attachmentsCount:	attachmentsCount,
+		bwo:                bwo,
+		bwoAddr:            bwoAddr
 	};
 
 	if (msg.isHighPriority || msg.isLowPriority) {

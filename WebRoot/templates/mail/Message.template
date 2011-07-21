@@ -62,9 +62,26 @@
 												<td>&nbsp;</td>
 											<$ } $>
 											<td>${sentBy}&nbsp;&nbsp;</td>
-                                            <$ if (data.obo && (data.oboAddr != data.sentByAddr)) { // if Email zimlet is deployed. $>
+                                            <$ var useObo = data.obo && (data.oboAddr != data.sentByAddr); $>
+                                            <$ var useBwo = data.bwo && (data.bwoAddr != data.sentByAddr); $>
+                                             <$ if (useObo && useBwo) { $>
+                                                <td colspan=10>
+                                                    <table border=0 cellpadding=0 cellspacing=0>
+                                                        <tr>
+                                                            <td id='OBJ_PREFIX_obo_label' class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></td>
+                                                            <td id='OBJ_PREFIX_obo' class='LabelColValue'><$= data.obo $></td>
+                                                            <td class='ZSmallHorizonalSpacer'>&nbsp;</td>
+                                                            <td id='OBJ_PREFIX_bwo_label' class='LabelColName'><$= ZmMsg.byWayOfLabel $></td>
+                                                            <td id='OBJ_PREFIX_bwo' class='LabelColValue'><$= data.bwo $></td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            <$ } else if (useObo) { $>
                                                 <td id='OBJ_PREFIX_obo_label' class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></td>
                                                 <td id='OBJ_PREFIX_obo' class='LabelColValue' colspan=10><$= data.obo $></td>
+                                            <$ } else if (useBwo) { $>
+                                                <td id='OBJ_PREFIX_bwo_label' class='LabelColName'><$= ZmMsg.byWayOfLabel $></td>
+                                                <td id='OBJ_PREFIX_bwo' class='LabelColValue' colspan=10><$= data.bwo $></td>
                                             <$ } $>
 										</tr>
 									</table>
@@ -187,6 +204,12 @@
                                 <tr>
                                     <td class='LabelColName' width=75><$= ZmMsg.onBehalfOfLabel $> </td>
                                     <td class='LabelColValue'><$= data.obo $></td>
+                                </tr>
+                            <$ } $>
+                            <$ if (data.bwo) { $>
+                                <tr>
+                                    <td class='LabelColName' width=75><$= ZmMsg.byWayOfLabel $></td>
+                                    <td class='LabelColValue'><$= data.bwo $></td>
                                 </tr>
                             <$ } $>
 							<tr>
@@ -439,7 +462,11 @@
 	<$ var labelStyle = data.labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap"; $>
 	<$ var inputStyle = data.inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
 	<table border=0 cellpadding=2 cellspacing=2 width=500px>
-		<$= AjxTemplate.expand("#To_Recipient",  data) $>
+		 <$= AjxTemplate.expand("#To_Recipient",  data) $>
+         <tr>
+             <td align=right valign=top colspan=3><$= ZmMsg.redirectExplanation $></td>
+         </tr>
+
 	</table>
 </template>
 

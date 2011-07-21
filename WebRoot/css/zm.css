@@ -4014,6 +4014,9 @@ HTML>BODY .appt-selected .appt_allday_body
 	cursor:pointer;
 }
 
+.ZSmallHorizonalSpacer {
+    width: 10px;
+}
 
 .ZSpacer {
 	height:7px;
