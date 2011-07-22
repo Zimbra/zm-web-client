@@ -22,27 +22,12 @@ ZmNewCalendarDialog = function(parent, className) {
 ZmNewCalendarDialog.prototype = new ZmNewOrganizerDialog;
 ZmNewCalendarDialog.prototype.constructor = ZmNewCalendarDialog;
 
-
-// Overridden properties
-ZmNewCalendarDialog.prototype._folderLocationLabel = ZmMsg.newCalendarParent;
-ZmNewCalendarDialog.prototype._folderNameAlreadyExistsMsg = ZmMsg.errorCalendarAlreadyExists;
-
-
 ZmNewCalendarDialog.prototype.toString = 
 function() {
 	return "ZmNewCalendarDialog";
 };
 
 // Public methods
-
-
-ZmNewCalendarDialog.prototype.popup =
-function(params, account) {
-    // Suppress checkboxes
-    params = params || {};
-    this._treeStyle = params.treeStyle || DwtTree.SINGLE_STYLE;
-    ZmNewOrganizerDialog.prototype.popup.call(this, params, account);
-}
 
 ZmNewCalendarDialog.prototype.reset =
 function(account) {
@@ -70,21 +55,11 @@ function(html, idx) {
 	return idx;
 };
 
-ZmNewCalendarDialog.prototype._setupFolderControl =
-function() {
-    ZmNewOrganizerDialog.prototype._setupFolderControl.call(this);
-
-    var folderTree = appCtxt.getFolderTree();
-    if (!folderTree) return;
-
-    var folders = folderTree.getByType(ZmOrganizer.CALENDAR);
-    for (var i = 0; i < folders.length; i++) {
-        var folder = folders[i];
-        if (folder.link && folder.isReadOnly()) {
-            this._omit[folder.id] = true;
-        }
-    }
-}
+// NOTE: new calendar dialog doesn't show overview
+ZmNewCalendarDialog.prototype._createFolderContentHtml = 
+function(html, idx) {
+	return idx;
+};
 
 ZmNewCalendarDialog.prototype._setupExtraControls =
 function() {
