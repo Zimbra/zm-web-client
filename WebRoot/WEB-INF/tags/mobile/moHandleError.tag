@@ -32,7 +32,7 @@
             <c:choose>
                 <c:when test="${not empty (paramValues.ajax[0]||param.ajax)}">
                     <script type="text/javascript">
-                        var logouturl = "<c:url value="/?loginOp=relogin&client=mobile&loginErrorCode=service.AUTH_EXPIRED"/>";
+                        var logouturl = "<c:url value="/?loginOp=relogin&client=mobile&loginErrorCode=${error.code}"/>";
                         window.location.href = logouturl;
                     </script>
                 </c:when>
