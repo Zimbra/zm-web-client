@@ -242,8 +242,12 @@
         <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**,test/**,qunit/**'/>
     </target>
 
-    <target name='war'
-            depends='templates,timezones,images,styles,settings,jam-files,compress,help,webxml-package-replace'>
+    <target name="war"
+            depends="templates,timezones,images,styles,settings,jam-files,compress,help,assemble-war"
+            description="Builds all dependencies and assembles the war file.">
+    </target>
+
+    <target name="assemble-war" depends="webxml-package-replace" description="Assembles the war file.  Assumes that all dependencies have been built.  Octopus/ZimbraWebClient/build.xml calls the war target, modifies files in ZimbraWebClient/build, and then calls this target.">
         <mkdir dir='${build.war.dir}'/>
         <war warfile="${build.war.file}" webxml='${build.dir}/web.xml'
              compress='${war.compress}' duplicate="preserve">
