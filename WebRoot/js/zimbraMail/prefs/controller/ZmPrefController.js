@@ -290,6 +290,9 @@ function () {
 		}
 	}
 	this._toolbar.getButton(ZmOperation.SAVE).setToolTipContent(ZmMsg.savePrefs);
+
+	this._setNewButtonProps(this._prefsView, ZmMsg.newMessage, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
+
 };
 
 ZmPrefController.prototype._initializeTabGroup = 
