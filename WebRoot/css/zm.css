@@ -613,93 +613,103 @@ INPUT[type="text"].search_input {
 /* Styles for Conv2.0 */
 
 .Conv2View, .Conv2View-bottom {
-	background-color: #CCCCCC;
+	background-color:#CCCCCC;
 }
 
 .Conv2View-bottom {
-	height: 100%;
+	height:100%;
 }
 
 .Conv2View-bottom .Conv2ViewTable {
-	width: 100%;
-	height: 100%;
+	width:100%;
+	height:100%;
 }
 
 .Conv2View-bottom .Conv2MessagesCell {
-	width: 70%;
+	width:70%;
 }
 
 .Conv2View-bottom .Conv2ReplyCell {
-	width: 30%;
+	width:30%;
 }
 
 .Conv2Messages, .Conv2Messages-bottom {
-	overflow: auto;
+	overflow:auto;
 }
 
 .Conv2Messages-bottom {
-	height: 100%;
+	height:100%;
 }
 
 .ZmMailMsgCapsuleView {
-	margin: 2px 5px;
-	border: 1px black solid;
+	border:0px 1px 1px @AppC@ solid;
+	background-color:white;
+	background-image:-webkit-gradient(linear, left top, left bottom, from(#FFFFFF), to(@lighten(AppC,55)@)); /* Saf4+, Chrome */
+    background-image:-webkit-linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); /* Chrome 10+, Saf5.1+ */
+    background-image:   -moz-linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); /* FF3.6 */
+    background-image:    -ms-linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); /* IE10 */
+    background-image:        linear-gradient(top, #FFFFFF, @lighten(AppC,55)@);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,55)@'); /* IE6–IE9 */
 }
 
 .ZmMailMsgCapsuleView.focused {
-	margin: 0 4px;
-	border: 2px black solid;
+    border:0px 1px 1px @darken(SelC,20)@ solid;
+    background-color:white;
+    background-image:-webkit-gradient(linear, left top, left bottom, from(@lighten(SelC,66)@), to(@lighten(SelC,35)@)); /* Saf4+, Chrome */
+    background-image:-webkit-linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); /* Chrome 10+, Saf5.1+ */
+    background-image:   -moz-linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); /* FF3.6 */
+    background-image:    -ms-linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); /* IE10 */
+    background-image:        linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(SelC,66)@', EndColorStr='@lighten(SelC,35)@'); /* IE6–IE9 */
 }
 
 .ZmMailMsgCapsuleView .OddMsg {
-	background-color: white;
 }
 
 .ZmMailMsgCapsuleView .EvenMsg {
-	background-color: #EEEEEE;
 }
 
 .ZmMailMsgCapsuleView .LabelColValue {
 	@MailMsgHeaderText@
-	white-space: nowrap;
-	vertical-align: top;
-	padding: 3px;
+	white-space:nowrap;
+	vertical-align:top;
+	padding:3px;
 }
 
 .ZmMailMsgCapsuleView .SubjectCol {
+    @MailMsgHeaderText@
 	@FontSize-big@
-	font-weight: bold;
-	@MailMsgHeaderText@
+	font-weight:bold;
 }
 
 .ZmMailMsgCapsuleView .DateCol {
-	white-space: nowrap;
-    padding-right: 10px;
+	white-space:nowrap;
+    padding-right:10px;
 }
 
 .ZmMailMsgCapsuleView .MsgHeaderTable .Unread {
-	font-weight: bold;
+	font-weight:bold;
 }
 
 .ZmMailMsgCapsuleView .Expand {
-	cursor: pointer;
+	cursor:pointer;
 }
 
 .ZmMailMsgCapsuleView .Link {
-	cursor: pointer;
-	color: blue;
-/*	text-decoration: underline;*/
-	margin-right: 10px;
+	cursor:pointer;
+	color:@Text-link@;
+/*	text-decoration:underline;*/
+	margin-right:10px;
 }
 
 .ZmConvView2 .ReplyInput {
-	width: 98%;
-	margin: 5px;
+	width:98%;
+	margin:5px;
 }
 
 .ZmConvView2 .ReplyTextarea {
-	width:  96%;
-	margin: 5px;
+	width:96%;
+	margin:5px;
 }
 
 .ZmConvView2 input::-webkit-input-placeholder {
