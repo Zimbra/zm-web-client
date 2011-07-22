@@ -62,7 +62,7 @@ function(id, name, localName) {
 		ZmLocale.localeMap[id] = languageObj;
 	}
 	if (country) {
-		var localeObj = new ZmLocale(id, name, "Flag" + country, localName);
+		var localeObj = new ZmLocale(id, name, null, localName);
 		languageObj._add(localeObj);
 		ZmLocale.localeMap[id] = localeObj;
 		return localeObj;
