@@ -30,7 +30,7 @@
                                 <td>&nbsp;</td>
 								<$ if (data.priorityImg) { $>
 									<td>
-										<div priority='<$=data.priority$>' id='<$=data.priorityDivId$>' class='<$=data.priorityImg$>'></div>
+										<div priority='<$=data.priority$>' id='<$=data.priorityDivId$>' style='margin-left:4px;' class='<$=data.priorityImg$>'></div>
 									</td>
 								<$ } $>
 								<td class='LabelColValue SubjectCol' valign=top width=100%>
