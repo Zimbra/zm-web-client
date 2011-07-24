@@ -1,6 +1,6 @@
 <template id='mail.Message#MessageHeader'>
 	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
-		<table class='MsgHeaderTable' id='${id}_headerElement'cellspacing=0 cellpadding=0 border=0 width=100%>
+		<table class='MsgHeaderTable' id='${id}_headerElement' width=100%>
 			<tr>
 				<td>
 					<$ if (data.isOutDated) { $>
@@ -610,7 +610,7 @@
 
 <template id='mail.Message#Conv2View-bottom'>
 	<div class='Conv2View-bottom' id='${mainDivId}'>
-		<table cellspacing='0' cellpadding='0' class="Conv2ViewTable">
+		<table class="Conv2ViewTable">
 			<tr>
 				<td valign="top" class="Conv2MessagesCell">
 					<div id="${messagesDivId}" class='Conv2Messages-bottom'></div>
@@ -627,15 +627,13 @@
 		
 <template id='mail.Message#Conv2MsgHeader'>
 	<div id='${headerId}' class='${parityClass}'>
-		<table class='MsgHeaderTable' cellspacing=0 cellpadding=0 border=0 width=100%>
+		<table class='MsgHeaderTable' width=100%>
 			<tr id='${tableRowId}'>
-				<td>&nbsp;</td>
-				<td class='Expand' width=16 id='${expandIconCellId}'></td>
+				<td class='Expand' id='${expandIconCellId}'></td>
 				<td class='LabelColValue' width=100%>
 					<$= data.from $>
 				</td>
-				<td class='LabelColValue DateCol' align=right>${date}</td>
-				<td>&nbsp;</td>
+				<td class='LabelColValue DateCol'>${date}</td>
 			</tr>
 		</table>
 	</div>
@@ -649,17 +647,14 @@
 			</div>
 		<$ } $>
 		<div id='${footerId}' class='${parityClass}'>
-			<table class='MsgHeaderTable' cellspacing=0 cellpadding=0 border=0 width=100%>
+			<table class='MsgHeaderTable' width=100%>
 				<tr>
-					<td>&nbsp;</td>
-					<td id='${folderCellId}'>${folderName}</td>
+					<td id='${folderCellId}' class='MsgFolder'>${folderName}</td>
 					<td id='${tagCellId}' width=100%></td>
-					<td>&nbsp;</td>
-					<td align=right>
+					<td>
 						<a class='Link' id='${replyLinkId}'><$= ZmMsg.reply $></a>
 					</td>
-					<td id='${buttonCellId}' align=right></td>
-					<td>&nbsp;</td>
+					<td id='${buttonCellId}' class='MsgActions'></td>
 				</tr>
 			</table>
 		</div>
