@@ -416,11 +416,15 @@ function(params) {
 			folder[i] = value;
 		}
 	}
+	//adding support to asyncMode == false didn't eventually help me, but why not keep it?
+	var asyncMode = params.asyncMode === undefined ? true : params.asyncMode; //default is true
 
 	return appCtxt.getAppController().sendRequest({
 		jsonObj: jsonObj,
-		asyncMode: true,
+		asyncMode: asyncMode,
 		accountName: (params.account && params.account.name),
+		callback: params.callback,
+		callbackAfterNotifications: params.callbackAfterNotifications, 
 		errorCallback: errorCallback
 	});
 };

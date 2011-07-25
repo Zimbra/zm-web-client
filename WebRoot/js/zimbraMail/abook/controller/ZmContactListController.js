@@ -318,7 +318,7 @@ function() {
     toolbarOps.push(ZmOperation.EDIT,
             ZmOperation.SEP,
             ZmOperation.DELETE, ZmOperation.SEP,
-			ZmOperation.MOVE, ZmOperation.TAG_MENU, ZmOperation.SEP,
+			ZmOperation.MOVE_MENU, ZmOperation.TAG_MENU, ZmOperation.SEP,
 			ZmOperation.PRINT);
     return toolbarOps;
 };
@@ -668,7 +668,7 @@ function(parent, num) {
 
 			parent.enable([ZmOperation.CONTACTGROUP_MENU], (num > 0));
 			parent.enable([ZmOperation.TAG_MENU], (!isShare && num > 0));
-			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], canEdit && num > 0);
+			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU], canEdit && num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1 && !isInTrash);
 
 
@@ -680,7 +680,7 @@ function(parent, num) {
 			// otherwise, must be a search
 			var contact = this._listView[this._currentView].getSelection()[0];
 			var canEdit = (num == 1 && !contact.isReadOnly() && !ZmContact.isInTrash(contact));
-			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.TAG_MENU], num > 0);
+			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.TAG_MENU], num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit);
 			parent.enable([ZmOperation.CONTACTGROUP_MENU], (num > 0));
 		}

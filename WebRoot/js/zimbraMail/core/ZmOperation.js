@@ -138,7 +138,12 @@ function() {
 //	ZmOperation.registerOp(ZmId.OP_IMPORT_FOLDER, {textKey:"importFolder", image:"MailImport"});
 	ZmOperation.registerOp(ZmId.OP_MARK_ALL_READ, {textKey:"markAllRead", image:"ReadMessage"});
 //	ZmOperation.registerOp(ZmId.OP_MOUNT_FOLDER, {textKey:"mountFolder", image:"Folder"});
-	ZmOperation.registerOp(ZmId.OP_MOVE, {textKey:"move", tooltipKey:"moveTooltip", image:"MoveToFolder", textPrecedence:40, showImageInToolbar: true});
+	ZmOperation.registerOp(ZmId.OP_MOVE, {textKey:"move", tooltipKey:"moveTooltip", image:"MoveToFolder", textPrecedence:40, showImageInToolbar: true}); //todo - remove
+	ZmOperation.registerOp(ZmId.OP_MOVE_MENU, {tooltipKey:"moveTooltip", image:"MoveToFolder"}, null,
+		AjxCallback.simpleClosure(function(parent) {
+			ZmOperation.addDeferredMenu(ZmOperation.addMoveMenu, parent, true);
+		}));
+
 	ZmOperation.registerOp(ZmId.OP_NEW_FOLDER, {textKey:"newFolder", tooltipKey:"newFolderTooltip", image:"NewFolder", shortcut:ZmKeyMap.NEW_FOLDER}, ZmSetting.USER_FOLDERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_NEW_MENU, {textKey:"_new", shortcut:ZmKeyMap.NEW, textPrecedence:100}, null,
 		AjxCallback.simpleClosure(function(parent) {
@@ -525,6 +530,20 @@ function(parent) {
 	var tagMenu = new ZmTagMenu(parent);
 	parent.setMenu(tagMenu);
 	return tagMenu;
+};
+
+
+/**
+* Adds a "Move" submenu for tagging items.
+*
+* @param {DwtComposite}	parent		parent widget (a toolbar or action menu)
+* @return	{ZmTagMenu}	the menu
+*/
+ZmOperation.addMoveMenu =
+function(parent) {
+	var moveMenu = new DwtMenu(parent); //this is a dummy menu just so the drop-down would appear
+	parent.setMenu(moveMenu);
+	return moveMenu;
 };
 
 /**

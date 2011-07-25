@@ -171,7 +171,7 @@ function() {
 			ZmOperation.SEP,
 			ZmOperation.DELETE,
 			ZmOperation.SEP,
-			ZmOperation.MOVE,
+			ZmOperation.MOVE_MENU,
 			ZmOperation.TAG_MENU
 			];
 
@@ -284,7 +284,7 @@ function(parent, num) {
 	parent.enable(ZmOperation.TAG_MENU, (!isShared && isItemSelected && !isFolderSelected && !isRevision));
 	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
 	parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
-	parent.enable(ZmOperation.MOVE, ( isItemSelected &&  !isReadOnly && !isShared && !isRevision));
+	parent.enable([ZmOperation.MOVE, ZmOperation.MOVE_MENU], ( isItemSelected &&  !isReadOnly && !isShared && !isRevision));
     parent.enable(ZmOperation.NEW_FILE, !(isTrash || isReadOnly));
     parent.enable(ZmOperation.NEW_BRIEFCASE_WIN, (isItemSelected && !isFolderSelected));
 

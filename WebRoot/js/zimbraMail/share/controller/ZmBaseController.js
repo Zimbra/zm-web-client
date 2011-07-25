@@ -53,6 +53,7 @@ ZmBaseController = function(container, app) {
 	this._listeners = {};
 	this._listeners[ZmOperation.NEW_MENU]		= this._newListener.bind(this);
 	this._listeners[ZmOperation.TAG_MENU]		= this._tagButtonListener.bind(this);
+	this._listeners[ZmOperation.MOVE_MENU]		= this._moveButtonListener.bind(this);
 	this._listeners[ZmOperation.ACTIONS_MENU]	= this._actionsButtonListener.bind(this);
 	this._listeners[ZmOperation.TAG]			= this._tagListener.bind(this);
 	this._listeners[ZmOperation.PRINT]			= this._printListener.bind(this);
@@ -128,7 +129,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.MOVE:
-			this._moveListener();
+			this._moveButtonListener();
 			break;
 
 		case ZmKeyMap.PRINT:
@@ -218,7 +219,7 @@ function(view) {
  */
 ZmBaseController.prototype._standardToolBarOps =
 function() {
-	return [ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT];
+	return [ZmOperation.DELETE, ZmOperation.MOVE_MENU, ZmOperation.PRINT];
 };
 
 /**
@@ -259,6 +260,13 @@ function(view, className) {
 		button.noMenuBar = true;
 		this._setupTagMenu(tb);
 	}
+
+	button = tb.getButton(ZmOperation.MOVE_MENU);
+	if (button) {
+		button.noMenuBar = true;
+		this._setupMoveMenu(tb);
+	}
+
 
 	// add the selection listener for when user clicks on the little drop-down arrow (unfortunately we have to do that here separately) It is done for the main button area in a generic way to all toolbar buttons elsewhere
 	var actionsButton = tb.getActionsButton();
@@ -380,6 +388,35 @@ function(ev) {
 	if (ev.item.parent == toolbar) {
 		this._setTagMenu(toolbar);
 	}
+};
+
+/**
+ * Move button has been pressed. We don't move anything (since no folder has been selected),
+ * we just show the dynamic move menu.
+ *
+ * @private
+ */
+ZmBaseController.prototype._moveButtonListener =
+function(ev, list) {
+	this._pendingActionData = list || this.getItems();
+
+	var toolbar = this._toolbar[this._currentView];
+
+	var moveButton = toolbar.getOp(ZmOperation.MOVE_MENU);
+	if (!moveButton) {
+		return;
+	}
+	if (!this._moveButtonInitialized) {
+		this._moveButtonInitialized = true;
+		this._setMoveButton(moveButton);
+	}
+	else {
+		//need to update this._data so the chooser knows from which folder we are trying to move.
+		this._folderChooser.updateData(this._getMoveParams(this._folderChooser).data);
+	}
+	moveButton.popup();
+	moveButton.getMenu().getHtmlElement().style.width = "auto"; //reset the width so it's dynamic. without this it is set to 0, and in any case even if it was set to some other > 0 value, it needs to be dynamic due to collapse/expand (width changes)
+	this._folderChooser.focus();
 };
 
 /**
@@ -582,6 +619,18 @@ ZmBaseController.prototype._moveCallback =
 function(folder) {
 	this._doMove(this._pendingActionData, folder);
 	this._clearDialog(appCtxt.getChooseFolderDialog());
+	this._pendingActionData = null;
+};
+
+/**
+ * Move stuff to a new folder. 
+ *
+ * @private
+ */
+ZmBaseController.prototype._moveMenuCallback =
+function(moveButton, folder) {
+	this._doMove(this._pendingActionData, folder);
+	moveButton.getMenu().popdown();
 	this._pendingActionData = null;
 };
 
@@ -889,6 +938,26 @@ function(parent) {
 };
 
 /**
+ * setup the move menu
+ *
+ * @private
+ */
+ZmBaseController.prototype._setupMoveMenu =
+function(parent) {
+	if (!parent) {
+		return;
+	}
+	if (!parent instanceof ZmButtonToolBar) {
+		return;
+	}
+	var moveButton = parent.getOp(ZmOperation.MOVE_MENU);
+	if (moveButton) {
+		moveButton.addDropDownSelectionListener(this._listeners[ZmOperation.MOVE_MENU]);
+	}
+};
+
+
+/**
  * Dynamically build the tag menu based on selected items and their tags.
  * 
  * @private
@@ -927,6 +996,30 @@ function(parent) {
 	}
 };
 
+
+/**
+ * copied some from ZmCalendarApp.createMiniCalButton
+ * initializes the move button with {@link DwtFolderChooser} as the menu.
+ *
+ * @param	{DwtButton}	the button
+ */
+ZmBaseController.prototype._setMoveButton =
+function(moveButton) {
+
+	// create menu for button
+	var moveMenu = new DwtMenu({parent: moveButton, style:DwtMenu.CALENDAR_PICKER_STYLE});
+	moveMenu.getHtmlElement().style.width = "auto"; //make it dynamic  (so expanding long named sub-folders would expand width. (plus right now it sets it to 0 due to some styles)
+	moveButton.setMenu(moveMenu, true);
+
+	var chooser = this._folderChooser = new DwtFolderChooser({parent:moveMenu});
+	var moveParams = this._getMoveParams(chooser);
+	moveParams.overviewId += this._currentView; //so it works when switching views (cuz the tree has a listener and the tree is shared unless it's different ID). maybe there's a different way to solve this.
+	chooser.setupFolderChooser(moveParams, this._moveMenuCallback.bind(this, moveButton));
+	chooser.setSkipNotifyOnPage(true);
+
+	return moveButton;
+};
+
 /**
  * Resets the available options on a toolbar or action menu.
  * 
@@ -945,7 +1038,7 @@ function(parent, num) {
 	} else if (num > 1) {
 		// enable only the tag and delete operations
 		parent.enableAll(false);
-		parent.enable([ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.FORWARD, ZmOperation.ACTIONS_MENU], true);
+		parent.enable([ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.FORWARD, ZmOperation.ACTIONS_MENU], true);
     }
 
 	// bug: 41758 - don't allow shared items to be tagged

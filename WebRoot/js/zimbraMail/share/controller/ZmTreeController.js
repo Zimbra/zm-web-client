@@ -624,7 +624,7 @@ function(params) {
 	var funcName = ZmOrganizer.CREATE_FUNC[this.type];
 	if (funcName) {
 		var func = eval(funcName);
-		func(params);
+		return func(params);
 	}
 };
 

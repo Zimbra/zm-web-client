@@ -772,7 +772,7 @@ function(items) {
 ZmCalViewController.prototype._getToolBarOps =
 function() {
 	return [
-		ZmOperation.DELETE, ZmOperation.SEP, ZmOperation.MOVE,
+		ZmOperation.DELETE, ZmOperation.SEP, ZmOperation.MOVE_MENU,
 		ZmOperation.TAG_MENU,
 		ZmOperation.SEP,
 		ZmOperation.PRINT_CALENDAR,
@@ -2700,7 +2700,7 @@ function(parent, num) {
     parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()) && !isTrashMultiple);
     parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null && !isTrashMultiple);
 
-    parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], !disabled || isTrashMultiple);
+    parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU], !disabled || isTrashMultiple);
 
     parent.enable(ZmOperation.VIEW_APPT_INSTANCE,!isTrash);
 
