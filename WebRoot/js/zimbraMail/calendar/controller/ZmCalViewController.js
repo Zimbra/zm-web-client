@@ -2470,8 +2470,21 @@ function(appt, action, mode, startDateOffset, endDateOffset) {
 
 ZmCalViewController.prototype._handleResponseUpdateApptDateSave =
 function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback, result) {
-	try {
-		// NOTE: If the appt was already populated (perhaps by
+         var isExceptionAllowed = appCtxt.get(ZmSetting.CAL_EXCEPTION_ON_SERIES_TIME_CHANGE);
+         var showWarning = appt.isRecurring() && appt.getAttendees(ZmCalBaseItem.PERSON) && !isExceptionAllowed && viewMode==ZmCalItem.MODE_EDIT_SERIES;
+         if(showWarning){
+            var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSaveContinue, [appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback, result]);
+            this._showExceptionWarning(respCallback);
+         }
+         else{
+             this._handleResponseUpdateApptDateSaveContinue(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback, result);
+         }
+};
+
+ZmCalViewController.prototype._handleResponseUpdateApptDateSaveContinue =
+function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback, result) {
+    try {
+        // NOTE: If the appt was already populated (perhaps by
 		//       dragging it once, canceling the change, and then
 		//       dragging it again), then the result will be null.
 		if (result) {
@@ -2512,7 +2525,23 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 		if (errorCallback) errorCallback.run(ex);
 	}
 	if (callback) callback.run(result);
-};
+}
+
+ZmCalViewController.prototype._showExceptionWarning = function(yesCB,noCB) {
+          var dialog = appCtxt.getYesNoMsgDialog();
+		  dialog.setMessage(ZmMsg.recurrenceUpdateWarning, DwtMessageDialog.WARNING_STYLE);
+          dialog.registerCallback(DwtDialog.YES_BUTTON, this._handleExceptionWarningResponse, this,[dialog,yesCB]);
+          dialog.registerCallback(DwtDialog.NO_BUTTON, this._handleExceptionWarningResponse,this,[dialog,noCB]);
+		  dialog.popup();
+}
+
+ZmCalViewController.prototype._handleExceptionWarningResponse = function(dialog,respCallback) {
+          if(respCallback){respCallback.run();}
+          else{this._refreshAction(true);}
+          if(dialog){
+              dialog.popdown();
+          }
+}
 
 ZmCalViewController.prototype._handleResponseUpdateApptDateSave2 =
 function(callback) {
