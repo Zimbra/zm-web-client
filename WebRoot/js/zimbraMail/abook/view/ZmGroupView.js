@@ -131,6 +131,8 @@ function(contact, isDirty) {
 	this._offset = 0;
 	this._isDirty = isDirty;
 
+	document.getElementById(this._groupNameId).onblur = this._controller.updateTabTitle.bind(this._controller);
+
 	this.search();
 };
 
@@ -182,6 +184,11 @@ function() {
 	}
 
 	return foundOne ? mods : null;
+};
+
+ZmGroupView.prototype._getFullName =
+function() {
+	return document.getElementById(this._groupNameId).value;
 };
 
 ZmGroupView.prototype.isEmpty =

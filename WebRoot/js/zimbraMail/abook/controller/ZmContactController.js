@@ -75,6 +75,7 @@ function(contact, isDirty) {
 	this._setViewContents();
 	this._initializeTabGroup(this._currentView);
 	this._app.pushView(this.viewId);
+	this.updateTabTitle();
 
 };
 
@@ -102,16 +103,31 @@ function() {
 	ZmController.prototype._postShowCallback.call(this);
 };
 
+ZmContactController.prototype._getDefaultTabText=
+function() {
+	return this._isGroup() ? ZmMsg.group : ZmMsg.contact;
+};
+
 ZmContactController.prototype._getTabParams =
 function() {
-	var text = this._isGroup() ? ZmMsg.group : ZmMsg.contact;
-
 	return {id:this.tabId,
 			image: this._isGroup() ? "NewGroup" : "NewContact",
-			text: text,
+			text: null, //we update it using _updateTabTitle since before calling _setViewContents _getFullName does not return the name
 			textPrecedence:77,
 			tooltip: text};
 };
+
+ZmContactController.prototype.updateTabTitle =
+function() {
+	var	tabTitle = this._contactView._getFullName(true);
+	if (!tabTitle) {
+		tabTitle = his._getDefaultTabText();
+	}
+	tabTitle = 	tabTitle.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT)
+
+	appCtxt.getAppViewMgr().setTabTitle(this._currentView, tabTitle);
+};
+
 
 
 ZmContactController.prototype.getKeyMapName =

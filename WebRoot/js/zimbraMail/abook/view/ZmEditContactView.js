@@ -98,13 +98,13 @@ ZmEditContactView.prototype.getFormItems = function() {
 			// contact attribute fields
 			{ id: "IMAGE", type: "ZmEditContactViewImage" },
 			{ id: "PREFIX", type: "DwtInputField", width: 38,  hint: ZmMsg.AB_FIELD_prefix, visible: "get('SHOW_PREFIX')" },
-			{ id: "FIRST", type: "DwtInputField", width: 95, hint: ZmMsg.AB_FIELD_firstName, visible: "get('SHOW_FIRST')" },
+			{ id: "FIRST", type: "DwtInputField", width: 95, hint: ZmMsg.AB_FIELD_firstName, visible: "get('SHOW_FIRST')", onblur: "this._controller.updateTabTitle()" },
 			{ id: "MIDDLE", type: "DwtInputField", width: 95, hint: ZmMsg.AB_FIELD_middleName, visible: "get('SHOW_MIDDLE')" },
 			{ id: "MAIDEN", type: "DwtInputField", width: 95, hint: ZmMsg.AB_FIELD_maidenName, visible: "get('SHOW_MAIDEN')" },
-			{ id: "LAST", type: "DwtInputField", width: 95, hint: ZmMsg.AB_FIELD_lastName, visible: "get('SHOW_LAST')" },
+			{ id: "LAST", type: "DwtInputField", width: 95, hint: ZmMsg.AB_FIELD_lastName, visible: "get('SHOW_LAST')" , onblur: "this._controller.updateTabTitle()"},
 			{ id: "SUFFIX", type: "DwtInputField", width: 38, hint: ZmMsg.AB_FIELD_suffix, visible: "get('SHOW_SUFFIX')" },
 			{ id: "NICKNAME", type: "DwtInputField", width: 66, hint: ZmMsg.AB_FIELD_nickname, visible: "get('SHOW_NICKNAME')" },
-			{ id: "COMPANY", type: "DwtInputField", width: 209, hint: ZmMsg.AB_FIELD_company, visible: "get('SHOW_COMPANY')" },
+			{ id: "COMPANY", type: "DwtInputField", width: 209, hint: ZmMsg.AB_FIELD_company, visible: "get('SHOW_COMPANY')", onblur: "this._controller.updateTabTitle()" },
 			{ id: "TITLE", type: "DwtInputField", width: 209, hint: ZmMsg.AB_FIELD_jobTitle, visible: "get('SHOW_TITLE')" },
 			{ id: "DEPARTMENT", type: "DwtInputField", width: 209, hint: ZmMsg.AB_FIELD_department, visible: "get('SHOW_DEPARTMENT')" },
 			{ id: "NOTES", type: "DwtInputField", cols: (AjxEnv.isMozilla ? 60 : 65), rows:4 },
@@ -151,7 +151,8 @@ ZmEditContactView.prototype.getFormItems = function() {
 			// other controls
 			{ id: "DETAILS", type: "DwtButton", label: "\u00BB", ignore:true,  // &raquo;
 				className: "ZmEditContactViewDetailsButton",
-				template: "abook.Contacts#ZmEditContactViewDetailsButton"
+				template: "abook.Contacts#ZmEditContactViewDetailsButton",
+				onblur: "this._controller.updateTabTitle()"
 			},
 			{ id: "FILE_AS", type: "DwtSelect", onchange: this._handleFileAsChange, items: this.getFileAsOptions() },
 			{ id: "FOLDER", type: "DwtButton", image: "ContactsFolder",
@@ -691,6 +692,11 @@ function(tagIds) {
 	return html.join("");
 };
 
+ZmEditContactView._onBlur =
+function() {
+	this._controller._updateTabTitle();
+};
+
 ZmEditContactView._tagClicked =
 function() {
 	ZmContactSplitView._tagClicked.apply(this, arguments);
@@ -748,13 +754,13 @@ ZmEditContactView.prototype._handleResponseCheckReplenish = function() {};
 /**
  * @private
  */
-ZmEditContactView.prototype._getFullName = function() {
+ZmEditContactView.prototype._getFullName = function(defaultToNull) {
 	var contact = {
 		fileAs: this.getValue("FILE_AS"),
 		firstName: this.getValue("FIRST"), lastName: this.getValue("LAST"),
 		company: this.getValue("COMPANY")
 	};
-	return ZmContact.computeFileAs(contact) || ZmMsg.noName;
+	return ZmContact.computeFileAs(contact) || (defaultToNull ? null : ZmMsg.noName);
 };
 
 /**
