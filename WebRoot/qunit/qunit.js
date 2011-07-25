@@ -475,7 +475,7 @@ var config = {
 	var filters = urlParams.filter && urlParams.filter.split(",");
 	if (!filters) {
 		var ut = urlParams.unittest;
-		if (ut != "1" && ut != "all") {
+		if (ut && ut != "1" && ut != "all") {
 			filters = ut.split(",");
 		}
 	}
