@@ -309,6 +309,7 @@ function() {
 				ZmSetting.FORWARD_INCLUDE_HEADERS,
 				ZmSetting.NEW_WINDOW_COMPOSE,
 				ZmSetting.AUTO_SAVE_DRAFT_INTERVAL,
+                ZmSetting.AUTO_READ_RECEIPT_ENABLED,
 				ZmSetting.REPLY_INCLUDE_WHAT,
 				ZmSetting.REPLY_USE_PREFIX,
 				ZmSetting.REPLY_INCLUDE_HEADERS,

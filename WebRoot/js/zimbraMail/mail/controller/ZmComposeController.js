@@ -1197,7 +1197,8 @@ function(composeMode, incOptions) {
 				mi.setChecked(this._msg.readReceiptRequested);
 			} else {
 				// bug: 41329 - always re-init read-receipt option to be off
-				mi.setChecked(false, true);
+                //read receipt default state will be based on the preference configured
+				mi.setChecked(appCtxt.get(ZmSetting.AUTO_READ_RECEIPT_ENABLED), true);
 			}
 
 			if (ac.multiAccounts) {

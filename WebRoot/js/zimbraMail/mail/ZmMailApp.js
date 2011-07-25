@@ -241,6 +241,7 @@ function(settings) {
 	settings.registerSetting("VACATION_UNTIL",					{name:"zimbraPrefOutOfOfficeUntilDate", type:ZmSetting.T_PREF, defaultValue:""});
 	settings.registerSetting("COLLAPSE_IMAP_TREES",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("SAVE_TO_IMAP_SENT",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+    settings.registerSetting("AUTO_READ_RECEIPT_ENABLED",		{name:"zimbraPrefMailRequestReadReceipts", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 
 	ZmMailApp._setGroupByMaps();
 };
@@ -293,7 +294,8 @@ function() {
 				ZmSetting.END_DATE_ENABLED,
 				ZmSetting.VACATION_FROM,
 				ZmSetting.VACATION_UNTIL,
-				ZmSetting.VIEW_AS_HTML
+				ZmSetting.VIEW_AS_HTML,
+                ZmSetting.AUTO_READ_RECEIPT_ENABLED
 			],
 			manageDirty: true,
 			createView: function(parent, section, controller) {
@@ -377,6 +379,11 @@ function() {
 		displayName:		ZmMsg.autoSaveDrafts,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		options:			[0, ZmMailApp.DEFAULT_AUTO_SAVE_DRAFT_INTERVAL]
+	});
+
+    ZmPref.registerPref("AUTO_READ_RECEIPT_ENABLED", {
+		displayName:		ZmMsg.autoReadReceiptRequest,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
 	ZmPref.registerPref("DEDUPE_MSG_TO_SELF", {
