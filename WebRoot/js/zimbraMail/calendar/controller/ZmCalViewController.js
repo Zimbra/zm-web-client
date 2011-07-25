@@ -79,6 +79,7 @@ ZmCalViewController = function(container, calApp) {
 	this._listeners[ZmOperation.REPLY] = new AjxListener(this, this._replyListener);
 	this._listeners[ZmOperation.REPLY_ALL] = new AjxListener(this, this._replyAllListener);
 	this._listeners[ZmOperation.DUPLICATE_APPT] = new AjxListener(this, this._duplicateApptListener);
+    this._listeners[ZmOperation.PRINT_CALENDAR] = this._printCalendarListener.bind(this);
 
 	this._treeSelectionListener = new AjxListener(this, this._calTreeSelectionListener);
 	this._maintTimedAction = new AjxTimedAction(this, this._maintenanceAction);
@@ -774,7 +775,7 @@ function() {
 		ZmOperation.DELETE, ZmOperation.SEP, ZmOperation.MOVE,
 		ZmOperation.TAG_MENU,
 		ZmOperation.SEP,
-		ZmOperation.PRINT,			
+		ZmOperation.PRINT_CALENDAR,
 		ZmOperation.SEP,
 		ZmOperation.TODAY,
         ZmOperation.VIEW_MENU
@@ -810,7 +811,7 @@ function(viewId) {
 
 	this._setNewButtonProps(viewId, ZmMsg.newAppt, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
 
-	var printButton = toolbar.getButton(ZmOperation.PRINT);
+	var printButton = toolbar.getButton(ZmOperation.PRINT_CALENDAR);
 	if (printButton) {
 		printButton.setToolTipContent(ZmMsg.printCalendar);
 	}
@@ -1375,7 +1376,7 @@ function(ev) {
 	}
 };
 
-ZmCalViewController.prototype._printListener =
+ZmCalViewController.prototype._printCalendarListener =
 function(ev) {
 	var url,
 	    viewId = this._viewMgr.getCurrentViewName(),
@@ -1466,6 +1467,39 @@ function() {
     params.parent = this._shell;
     pd = new ZmCalPrintDialog(params);
     return pd;
+};
+
+ZmCalViewController.prototype._printListener =
+function(ev) {
+    var ids = [];
+    var list = this.getSelection();
+    if (list.length == 0) {
+        // Calendar list view is anomalous - on a right click (action menu) when resetOperations
+        // is called, getSelection returns 1 item, but the selection actually only occurs if it was a
+        // left click.  So we can get here with no selections.  Use the appt associated with the menu.
+        var actionMenu = this.getActionMenu();
+        var appt = actionMenu.__appt;
+        if (appt) {
+            ids.push(appt.invId);
+        }
+    }  else {
+        for (var i = 0; i < list.length; i++) {
+            ids.push(list[i].invId);
+        }
+    }
+    if (ids.length == 0) return;
+
+    var url = ["/h/printappointments?id=", ids.join(','), "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)];
+    if(appCtxt.isOffline) {
+        if (ids.length == 1) {
+            var appt = this.getSelection()[0];
+            url.push("&acct=", appt.getFolder().getAccount().name);
+        }
+        url.push("&zd=", "true");
+    }
+    url = url.join("");
+
+    window.open(appContextPath+url, "_blank");
 };
 
 ZmCalViewController.prototype._deleteListener =
@@ -2666,7 +2700,6 @@ function(parent, num) {
     parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()) && !isTrashMultiple);
     parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null && !isTrashMultiple);
 
-
     parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], !disabled || isTrashMultiple);
 
     parent.enable(ZmOperation.VIEW_APPT_INSTANCE,!isTrash);
@@ -2676,7 +2709,7 @@ function(parent, num) {
     parent.enable(ZmOperation.SHOW_ORIG,apptAccess && !isTrashMultiple);
 
 	/*if (currViewName == ZmId.VIEW_CAL_LIST) {
-		parent.enable(ZmOperation.PRINT, num > 0);
+		parent.enable(ZmOperation.PRINT_CALENDAR, num > 0);
 	} */
 
 	// disable button for current view
@@ -2966,6 +2999,7 @@ function(recurrenceMode) {
 	}
 	
 	var retVal = [viewOp,
+	      		ZmOperation.PRINT,
 	      		ZmOperation.SEP,
 	    		ZmOperation.REPLY_ACCEPT,
 	    		ZmOperation.REPLY_TENTATIVE,
