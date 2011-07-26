@@ -1,5 +1,5 @@
 <%@ page buffer="8kb" autoFlush="true" %>
-<%@ page import="java.util.*,javax.naming.*,com.zimbra.cs.zclient.ZAuthResult" %>
+<%@ page import="java.util.*,javax.naming.*,com.zimbra.client.ZAuthResult" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page session="false" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>

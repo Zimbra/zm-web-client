@@ -29,7 +29,11 @@
 
     <property name='soap.dir' location='${this.zwc.basedir}/../ZimbraSoap'/>
 	<property name='soap.build.dir' value='${soap.dir}/build'/>
-	
+
+    <property name="client.dir" location="${this.zwc.basedir}/../ZimbraClient"/>
+    <property name="client.build.classes.dir" location="${client.dir}/build/classes" />
+    <property name="client.jarfile" location="${client.dir}/build/zimbraclient.jar"/>
+
     <property name='taglib.dir' value='${this.zwc.basedir}/../ZimbraTagLib'/>
     <property name='taglib.build.dir' value='${taglib.dir}/build'/>
 	<property name='taglib.build.classes.dir' value='${taglib.build.dir}/classes'/>
@@ -118,8 +122,9 @@
         <fileset dir="${overlay.lib.dir}" includes="**/*.jar" erroronmissingdir="false" />
         <fileset dir="${common.lib.dir}" includes="**/*.jar"/>
         <pathelement location="${common.build.classes.dir}"/>
-		<pathelement location="${server.build.classes.dir}"/>
-		<pathelement location="${taglib.build.classes.dir}"/>
+        <pathelement location="${client.build.classes.dir}"/>
+	<pathelement location="${server.build.classes.dir}"/>
+	<pathelement location="${taglib.build.classes.dir}"/>
     </path>
 
     <!-- pseudo-fileset so that targets that rely on it don't fail -->
@@ -263,7 +268,8 @@
             <classes refid="messages.fileset" />
 
             <lib dir='${lib.dir}' includes='gifencoder.jar'/>
-        	<lib dir='${soap.build.dir}' includes='zimbrasoap.jar'/>
+            <lib dir='${soap.build.dir}' includes='zimbrasoap.jar'/>
+            <lib file="${client.jarfile}"/>
             <lib dir='${taglib.build.dir}' includes='zimbrataglib.jar'/>
             <lib dir='${server.build.dir}' includes='zimbrastore.jar'/>
 
@@ -311,7 +317,8 @@
 
         <copy todir="${webapp.dir}/WEB-INF/lib" verbose="${sync.verbose}">
             <fileset dir='${lib.dir}' includes='gifencoder.jar'/>
-        	<fileset dir='${soap.build.dir}' includes='zimbrasoap.jar'/>
+            <fileset dir='${soap.build.dir}' includes='zimbrasoap.jar'/>
+            <fileset file="${client.jarfile}" />
             <fileset dir='${taglib.build.dir}' includes='zimbrataglib.jar'/>
             <fileset dir='${server.build.dir}' includes='zimbrastore.jar'/>
         </copy>
