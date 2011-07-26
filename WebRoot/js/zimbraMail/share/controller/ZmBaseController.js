@@ -1006,6 +1006,8 @@ function(parent) {
 ZmBaseController.prototype._setMoveButton =
 function(moveButton) {
 
+	AjxDispatcher.require("Extras");
+
 	// create menu for button
 	var moveMenu = new DwtMenu({parent: moveButton, style:DwtMenu.CALENDAR_PICKER_STYLE});
 	moveMenu.getHtmlElement().style.width = "auto"; //make it dynamic  (so expanding long named sub-folders would expand width. (plus right now it sets it to 0 due to some styles)

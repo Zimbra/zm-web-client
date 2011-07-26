@@ -28,7 +28,6 @@ AjxPackage.require("ajax.dwt.widgets.DwtMessageDialog");
 AjxPackage.require("ajax.dwt.widgets.DwtHtmlEditor");
 AjxPackage.require("ajax.dwt.widgets.DwtPasswordField");
 AjxPackage.require("ajax.dwt.widgets.DwtCalendar");
-AjxPackage.require("ajax.dwt.widgets.DwtFolderChooser");
 AjxPackage.require("ajax.dwt.widgets.DwtPropertyPage");
 AjxPackage.require("ajax.dwt.widgets.DwtTabView");
 AjxPackage.require("ajax.dwt.widgets.DwtSelect");
