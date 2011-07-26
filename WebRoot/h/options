@@ -35,6 +35,16 @@
     
     <c:set var="selected" value="${empty param.selected ? 'general' : zm:cook(param.selected)}"/>
 
+    <c:choose>
+        <%-- cases not covered here are assumed to have the same name in both clients (bug 60599) --%>
+        <c:when test="${selected eq 'contacts'}">
+            <c:set var="selected" value="addressbook"/>
+        </c:when>
+        <c:when test="${selected eq 'filters'}">
+            <c:set var="selected" value="filter"/>
+        </c:when>
+    </c:choose>
+
     <c:set var="voiceStatus" value="false"/>
 	<c:if test="${selected eq 'voice' and mailbox.features.voice}">
 		<zm:checkVoiceStatus var="voiceStatus"/>

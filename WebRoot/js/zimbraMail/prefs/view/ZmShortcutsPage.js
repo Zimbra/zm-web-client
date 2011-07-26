@@ -51,7 +51,14 @@ function () {
 };
 
 ZmShortcutsPage.prototype._createControls =
-function() {
+function(deferred) {
+
+	if (!appCtxt.getKeyboardMgr().__keyMapMgr) {
+		if (!deferred) {
+			appCtxt.getAppController().addListener(ZmAppEvent.POST_STARTUP, new AjxListener(this, this._createControls, [true]));
+		}
+		return;
+	}
 
 	var button = new DwtButton({parent:this});
 	button.setText(ZmMsg.print);

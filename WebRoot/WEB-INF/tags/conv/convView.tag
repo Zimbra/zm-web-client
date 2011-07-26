@@ -208,8 +208,8 @@
                                             <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
                                                 <zm:currentResultUrl var="msgUrl" value="search" cid="${convSummary.id}" id="${hit.id}" action='${actionVar}' context="${context}"
                                                                      cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
-                                                <zm:currentResultUrl var="msgSepUrl" value="search" action="${actionVar}" context="${context}"
-                                                                         cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}" st="message" sc=""/>
+                                                <zm:currentResultUrl var="msgSepUrl" value="search" action="${message.isDraft ? 'compose' : actionVar}" context="${context}"
+                                                                         cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}" st="${message.isDraft ? '' : 'message'}" sc="" id="${message.id}"/>
                                                 <c:if test="${empty selectedRow and hit.id eq message.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
 
                                                 <c:set var="aid" value="A${hit.id}"/>

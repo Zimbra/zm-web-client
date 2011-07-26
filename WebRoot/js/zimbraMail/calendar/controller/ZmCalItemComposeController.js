@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -28,10 +28,10 @@
  */
 ZmCalItemComposeController = function(container, app) {
 	if (arguments.length == 0) { return; }
-	ZmController.call(this, container, app);
+	ZmBaseController.call(this, container, app);
 };
 
-ZmCalItemComposeController.prototype = new ZmController;
+ZmCalItemComposeController.prototype = new ZmBaseController;
 ZmCalItemComposeController.prototype.constructor = ZmCalItemComposeController;
 
 ZmCalItemComposeController.prototype.toString =
@@ -52,7 +52,7 @@ ZmCalItemComposeController.prototype.show =
 function(calItem, mode, isDirty) {
 
     this._mode = mode;
-	if (!this._toolbar) {
+	if (this._toolbar.toString() != "ZmButtonToolBar") {
 		this._createToolBar();
 	}
 	var initial = this.initComposeView();
@@ -156,11 +156,10 @@ function(initHide) {
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 		callbacks[ZmAppViewMgr.CB_PRE_SHOW] = new AjxCallback(this, this._preShowCallback);
 		callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
-		var elements = {};
-		if (!this._toolbar)
+		if (this._toolbar.toString() != "ZmButtonToolBar")
 			this._createToolBar();
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
+		var elements = this.getViewElements(null, this._composeView, this._toolbar);
+
 		this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, tabParams:this._getTabParams()});
 		if (initHide) {
 			this._composeView.preload();
@@ -216,7 +215,7 @@ function(actionCode) {
 				var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 				this._formatListener(null, newMode);
 				// reset the radio button for the format button menu
-				var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+				var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 				if (formatBtn) {
 					formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, newMode, true);
 				}
@@ -257,7 +256,7 @@ function(skipNotify, composeMode) {
 			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	}
 
-	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	if (formatBtn) {
         var menu = formatBtn.getMenu ? formatBtn.getMenu() : null;
         if(menu) {
@@ -278,7 +277,7 @@ function(skipNotify, composeMode) {
 			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	}
 
-	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	if (formatBtn) {
 		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, mode, skipNotify);
 	}
@@ -289,7 +288,7 @@ function(skipNotify, composeMode) {
 
 ZmCalItemComposeController.prototype._initToolbar =
 function(mode) {
-	if (!this._toolbar) {
+	if (this._toolbar.toString() != "ZmButtonToolBar") {
 		this._createToolBar();
 	}
 
@@ -300,17 +299,14 @@ function(mode) {
 	var cancelButton = this._toolbar.getButton(ZmOperation.CANCEL);
 	if (isNew) {
 		cancelButton.setText(ZmMsg.cancel);
-		cancelButton.setImage("Cancel");
 	} else {
 		cancelButton.setText(ZmMsg.close);
-		cancelButton.setImage("Close");
 	}
 
     var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
     //use send button for forward appt view
     if(ZmCalItem.FORWARD_MAPPING[mode]) {
         saveButton.setText(ZmMsg.send);
-        saveButton.setImage("Send");
     }
 
 	var printButton = this._toolbar.getButton(ZmOperation.PRINT);
@@ -325,6 +321,8 @@ function(mode) {
 ZmCalItemComposeController.prototype._createToolBar =
 function() {
 
+	this._setNewButtonProps(null, ZmMsg.newAppt, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
+
 	var buttons = [ZmOperation.SEND_INVITE, ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP];
 
 	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
@@ -338,7 +336,7 @@ function() {
 	if (!appCtxt.isOffline) {
 		buttons.push(ZmOperation.SPELL_CHECK);
 	}
-	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT);
+	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_OPTIONS);
 
 	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this.viewId, controller:this});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
@@ -361,20 +359,24 @@ function() {
 		spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
 	}
 
+	var optionsButton = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+	optionsButton.setVisible(false); //start it hidden, and show in case it's needed.
+
 	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		var formatButton = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-		var m = new DwtMenu({parent:formatButton});
-		formatButton.setMenu(m);
+		optionsButton.setVisible(true); 
+
+		var m = new DwtMenu({parent:optionsButton});
+		optionsButton.setMenu(m);
 
 		var mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE});
 		mi.setImage("HtmlDoc");
-		mi.setText(ZmMsg.htmlDocument);
+		mi.setText(ZmMsg.formatAsHtml);
 		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML);
 		mi.addSelectionListener(new AjxListener(this, this._formatListener));
 
 		mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE});
 		mi.setImage("GenericDoc");
-		mi.setText(ZmMsg.plainText);
+		mi.setText(ZmMsg.formatAsText);
 		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.TEXT);
 		mi.addSelectionListener(new AjxListener(this, this._formatListener));
 	}
@@ -649,7 +651,7 @@ ZmCalItemComposeController.prototype._textModeCancelCallback =
 function(ev) {
 	this._textModeOkCancel.popdown();
 	// reset the radio button for the format button menu
-	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	if (formatBtn) {
 		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML, true);
 	}
