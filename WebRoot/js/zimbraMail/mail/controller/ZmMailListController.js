@@ -511,9 +511,11 @@ function(noViewMenu) {
 	list = this._standardToolBarOps();
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._msgOps());
-	list.push(ZmOperation.SEP,
-			ZmOperation.MOVE_MENU,
-			ZmOperation.TAG_MENU);
+	list.push(ZmOperation.SEP);
+	if (!appCtxt.isChildWindow) {
+		list.push(ZmOperation.MOVE_MENU);
+	}
+	list.push(ZmOperation.TAG_MENU);
 
 	if (!noViewMenu) {
     	list.push(ZmOperation.VIEW_MENU);
