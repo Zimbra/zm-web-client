@@ -129,7 +129,9 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.MOVE:
-			this._moveButtonListener();
+			if (!appCtxt.isChildWindow) {
+				this._moveListener();
+			}
 			break;
 
 		case ZmKeyMap.PRINT:
