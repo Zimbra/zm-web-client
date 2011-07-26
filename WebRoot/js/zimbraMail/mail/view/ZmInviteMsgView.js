@@ -259,13 +259,14 @@ function() {
 		this._dayView.setDate(inviteDate, 0, false);
 		this.resize();
 
+        var acctFolderIds = [].concat(cc.getCheckedCalendarFolderIds()); // create a *copy*
 		var rt = this._dayView.getTimeRange();
 		var params = {
 			start: rt.start,
 			end: rt.end,
 			fanoutAllDay: this._dayView._fanoutAllDay(),
 			callback: (new AjxCallback(this, this._dayResultsCallback, [inviteDate.getHours()])),
-			accountFolderIds: ([].concat(cc.getCheckedCalendarFolderIds())) // pass in *copy*
+			accountFolderIds: [acctFolderIds] // pass in array of array
 		};
 		cc.apptCache.batchRequest(params);
 	}
@@ -673,8 +674,8 @@ function(ev) {
 
 ZmInviteMsgView.prototype._dayResultsCallback =
 function(invitedHour, list, skipMiniCalUpdate, query) {
-	this._dayView.set(list, true);
-	this._dayView._scrollToTime(invitedHour);
+    this._dayView.set(list, true);
+    this._dayView._scrollToTime(invitedHour);
 };
 
 ZmInviteMsgView.prototype._apptSelectionListener =
