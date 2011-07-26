@@ -23,12 +23,16 @@ ZmTradView = function(params) {
 ZmTradView.prototype = new ZmDoublePaneView;
 ZmTradView.prototype.constructor = ZmTradView;
 
-ZmTradView.prototype.toString = 
-function() {
-	return "ZmTradView";
-};
+ZmTradView.prototype.isZmTradView = true;
+ZmTradView.prototype.toString = function() { return "ZmTradView"; };
 
 ZmTradView.prototype._createMailListView =
 function(params) {
-	return ZmDoublePaneView.prototype._createMailListView.apply(this, arguments);
+	return new ZmMailMsgListView(params);
+};
+
+ZmTradView.prototype._createMailItemView =
+function(params) {
+	params.id = ZmId.getViewId(ZmId.VIEW_MSG, null, params.view);
+	return new ZmMailMsgView(params);
 };

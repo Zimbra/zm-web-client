@@ -40,6 +40,10 @@ ZmConvView = function(params) {
 ZmConvView.prototype = new ZmDoublePaneView;
 ZmConvView.prototype.constructor = ZmConvView;
 
+ZmConvView.prototype.isZmConvView = true;
+ZmConvView.prototype.toString = function() { return "ZmConvView"; };
+
+
 ZmConvView._TAG_CLICK = "ZmConvView._TAG_CLICK";
 ZmConvView._TAG_ANCHOR = "TA";
 ZmConvView._TAGLIST_HEIGHT = 18;
@@ -47,18 +51,14 @@ ZmConvView._TAGLIST_HEIGHT = 18;
 
 // Public methods
 
-ZmConvView.prototype.toString = 
-function() {
-	return "ZmConvView";
-};
-
 ZmConvView.prototype.addTagClickListener =
 function(listener) {
 	this.addListener(ZmConvView._TAG_CLICK, listener);
 };
 
-ZmConvView.prototype.setItem =
+ZmConvView.prototype.setConv =
 function(conv) {
+
 	if (!(conv instanceof ZmConv)) { return; }
 		
 	// Remove and re-add listeners for current conversation if it exists
@@ -106,7 +106,13 @@ function() {
 
 ZmConvView.prototype._createMailListView =
 function(params) {
-	return ZmDoublePaneView.prototype._createMailListView.apply(this, arguments);
+	return new ZmMailMsgListView(params);
+};
+
+ZmConvView.prototype._createMailItemView =
+function(params) {
+	params.id = ZmId.getViewId(ZmId.VIEW_MSG, null, params.view);
+	return new ZmMailMsgView(params);
 };
 
 // override since we need to take summary into consideration
@@ -119,7 +125,7 @@ function(newWidth, newHeight, force) {
 	var readingPaneOnRight = this._controller.isReadingPaneOnRight();
 
 	var summaryHeight = this._summary.getHtmlElement().offsetHeight;
-	if (this.isMsgViewVisible()) {
+	if (this.isReadingPaneVisible()) {
 		var sash = this.getSash();
 		var sashSize = sash.getSize();
 		var sashThickness = readingPaneOnRight ? sashSize.x : sashSize.y;
@@ -128,7 +134,7 @@ function(newWidth, newHeight, force) {
 			this._mailListView.setLocation(0, summaryHeight);
 			this._mailListView.resetSize(listViewWidth, newHeight - summaryHeight);
 			sash.setLocation(listViewWidth, 0);
-			this._msgView.setBounds(listViewWidth + sashThickness, 0,
+			this._itemView.setBounds(listViewWidth + sashThickness, 0,
 									newWidth - (listViewWidth + sashThickness), newHeight);
 		} else {
 			var listViewHeight = 0, upperHeight, rowsHeight = 0;
@@ -154,7 +160,7 @@ function(newWidth, newHeight, force) {
 				this._mailListView.resetSize(newWidth, listViewHeight);
 				sash.setLocation(0, upperHeight);
 				var mvHeight = Math.max((newHeight - (upperHeight + sashThickness)), 0);
-				this._msgView.setBounds(0, upperHeight + sashThickness, newWidth, mvHeight);
+				this._itemView.setBounds(0, upperHeight + sashThickness, newWidth, mvHeight);
 			}
 		}
 	} else {
@@ -178,17 +184,17 @@ function(delta) {
 			// moving sash right
 			this._summary.setSize(this._summary.getSize().x + delta, Dwt.DEFAULT);
 			this._mailListView.resetSize(this._mailListView.getSize().x + delta, Dwt.DEFAULT);
-			this._msgView.setBounds(this._msgView.getLocation().x + delta, Dwt.DEFAULT,
-									this._msgView.getSize().x - delta, Dwt.DEFAULT);
+			this._itemView.setBounds(this._itemView.getLocation().x + delta, Dwt.DEFAULT,
+									this._itemView.getSize().x - delta, Dwt.DEFAULT);
 		} else {
 			// moving sash down
-			var newMsgViewHeight = this._msgView.getSize().y - delta;
-			var minMsgViewHeight = this._msgView.getMinHeight();
+			var newMsgViewHeight = this._itemView.getSize().y - delta;
+			var minMsgViewHeight = this._itemView.getMinHeight();
 			// make sure msg header remains visible
 			if (newMsgViewHeight > minMsgViewHeight) {
 				this._mailListView.resetSize(Dwt.DEFAULT, this._mailListView.getSize().y + delta);
-				this._msgView.setSize(Dwt.DEFAULT, newMsgViewHeight);
-				this._msgView.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y + delta);
+				this._itemView.setSize(Dwt.DEFAULT, newMsgViewHeight);
+				this._itemView.setLocation(Dwt.DEFAULT, this._itemView.getLocation().y + delta);
 			} else {
 				delta = 0;
 			}
@@ -199,15 +205,15 @@ function(delta) {
 			// moving sash left
 			this._summary.setSize(this._summary.getSize().x - absDelta, Dwt.DEFAULT);
 			this._mailListView.resetSize(this._mailListView.getSize().x - absDelta, Dwt.DEFAULT);
-			this._msgView.setBounds(this._msgView.getLocation().x - absDelta, Dwt.DEFAULT,
-									this._msgView.getSize().x + absDelta, Dwt.DEFAULT);
+			this._itemView.setBounds(this._itemView.getLocation().x - absDelta, Dwt.DEFAULT,
+									this._itemView.getSize().x + absDelta, Dwt.DEFAULT);
 		} else {
 			// moving sash up
 			// make sure summary and MLV remain visible
 			if (this._horizSashY - absDelta > this._minUpperHeight) {
 				this._mailListView.resetSize(Dwt.DEFAULT, this._mailListView.getSize().y - absDelta);
-				this._msgView.setSize(Dwt.DEFAULT, this._msgView.getSize().y + absDelta);
-				this._msgView.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y - absDelta);
+				this._itemView.setSize(Dwt.DEFAULT, this._itemView.getSize().y + absDelta);
+				this._itemView.setLocation(Dwt.DEFAULT, this._itemView.getLocation().y - absDelta);
 			} else {
 				delta = 0;
 			}
