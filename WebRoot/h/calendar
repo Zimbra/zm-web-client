@@ -192,7 +192,7 @@
         <app:multiDayView timezone="${tz}" date="${dateContext}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>
     </c:when>
     <c:when test="${view eq 'workWeek'}">
-        <app:multiDayView timezone="${tz}" date="${dateContext}" view='${view}' numdays="5"/>
+        <app:multiDayView timezone="${tz}" date="${dateContext}" view='${view}' numdays="7"/>
     </c:when>
     <c:when test="${view eq 'week'}">
         <app:multiDayView timezone="${tz}" date="${dateContext}" view='${view}' numdays="7"/>
@@ -213,9 +213,9 @@
     var zprint = function(){
         try{ var idex = 0; var c =""; while (idex <= zrc ) { if(document.getElementById("C"+idex).checked) { cid = document.getElementById("C"+idex).value; c += cid + ","; } idex++ ; } }catch(ex){ }
         if (${view eq 'list'}) {
-            window.open("/h/printcalendar?view=${view}&l=${checkedCalendars}&date=${fmtStartDate}&endDate=${fmtEndDate}&action=print");
+            window.open("/h/printcalendar?view=${view}&l=${checkedCalendars}&date=${fmtStartDate}&endDate=${fmtEndDate}&action=print&imc=true");
         } else {
-            window.open("/h/printcalendar?view=${view}&l=${checkedCalendars}&date=${param.date}&action=print");
+            window.open("/h/printcalendar?view=${view}&l=${checkedCalendars}&date=${param.date}&action=print&imc=true");
         }
     };
         //-->
