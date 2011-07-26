@@ -80,18 +80,20 @@ function(msg, args) {
  * should be used when in a search context, for example when expanding a conv that is the result
  * of a search.
  *
- * @param {Hash}		params				a hash of parameters:
- * @param {String}		params.query		the query used to retrieve this conv
- * @param {constant}	params.sortBy		the sort constraint
- * @param {int}			params.offset		the position of first msg to return
- * @param {int}			params.limit		the number of msgs to return
- * @param {Boolean}		params.getHtml		if <code>true</code>, return HTML part for inlined msg
- * @param {Boolean}		params.getFirstMsg	if <code>true</code>, retrieve the content of the first matching msg in the conv
- * @param {Boolean}		params.getMatches	if <code>true</code>, retrieve the content of all matching msgs in the conv 
- * @param {Boolean}		params.getAllMsgs	if <code>true</code>, retrieve the content of all msgs in the conv 
- * @param {Boolean}		params.markRead		if <code>true</code>, mark that msg read
- * @param {boolean}		params.needExp		if not <code>false</code>, have server check if addresses are DLs
- * @param {AjxCallback}	callback			the callback to run with results
+ * @param {Hash}		params						a hash of parameters:
+ * @param {String}		params.query				the query used to retrieve this conv
+ * @param {constant}	params.sortBy				the sort constraint
+ * @param {int}			params.offset				the position of first msg to return
+ * @param {int}			params.limit				the number of msgs to return
+ * @param {Boolean}		params.getHtml				if <code>true</code>, return HTML part for inlined msg
+ * @param {Boolean}		params.getFirstMsg			if <code>true</code>, fetch the first matching msg in the conv
+ * @param {Boolean}		params.getMatches			if <code>true</code>, fetch all matching msgs in the conv 
+ * @param {Boolean}		params.getAllMsgs			if <code>true</code>, fetch all msgs in the conv 
+ * @param {Boolean}		params.getUnreadMsgs		if <code>true</code>, fetch all unread msgs in the conv
+ * @param {Boolean}		params.getUnreadOrFirstMsg	if <code>true</code>, fetch unread, or first if none are unread
+ * @param {Boolean}		params.markRead				if <code>true</code>, mark that msg read
+ * @param {boolean}		params.needExp				if not <code>false</code>, have server check if addresses are DLs
+ * @param {AjxCallback}	callback					the callback to run with results
  */
 ZmConv.prototype.load =
 function(params, callback) {
@@ -144,9 +146,10 @@ function(params, callback) {
 		};
 		var search = this.search = new ZmSearch(searchParams);
 
-		var fetchId = (params.getFirstMsg && "1") || (params.getMatches && "hits") || (params.getAllMsgs && "all");
+		var fetchId = (params.getFirstMsg && "1") || (params.getMatches && "hits") || (params.getAllMsgs && "all") ||
+					  (params.getUnreadMsgs && "u") || (params.getUnreadOrFirstMsg && "u1") || "0";
 		var convParams = {
-			cid: this.id,
+			cid:		this.id,
 			callback:	(new AjxCallback(this, this._handleResponseLoad, [params, callback])),
 			fetchId:	fetchId,
 			markRead:	params.markRead,

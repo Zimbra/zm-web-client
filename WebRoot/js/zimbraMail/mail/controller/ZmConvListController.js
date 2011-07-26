@@ -344,7 +344,7 @@ function() {
 			var conv = (sel && sel.length) ? sel[0] : null;
 			var respCallback = this._handleResponseSetSelectedItem.bind(this, conv);
 	//		var markRead = (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
-			conv.load({getAllMsgs:true}, respCallback);
+			conv.load({getUnreadOrFirstMsg:true}, respCallback);
 		}
 	} else {
 		ZmDoublePaneController.prototype._setSelectedItem.apply(this, arguments);
