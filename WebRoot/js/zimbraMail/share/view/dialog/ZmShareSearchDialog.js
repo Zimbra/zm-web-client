@@ -26,7 +26,6 @@ ZmShareSearchDialog = function(params) {
     var acparams = {
         dataClass: appCtxt.getAutocompleter(),
         matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
-        compCallback: (new AjxCallback(this, this._handleCompletionData)),
         keyUpCallback: (new AjxCallback(this, this._acKeyUpListener))
     };
     this._acAddrSelectList = new ZmAutocompleteListView(acparams);
@@ -442,24 +441,6 @@ ZmShareSearchDialog.__byFolderPath = AjxCallback.simpleClosure(AjxUtil.byStringP
 
 ZmShareSearchDialog.prototype._acKeyUpListener = function(event, aclv, result) {
 	// TODO: Does anything need to be done here?
-};
-
-ZmShareSearchDialog.prototype._handleCompletionData = function(text, element) {
-    element.value = text;
-//    this._form.update();
-    try {
-        if (element.fireEvent) {
-            element.fireEvent("onchange");
-        }
-        else if (document.createEvent) {
-            var ev = document.createEvent("UIEvents");
-            ev.initUIEvent("change", false, window, 1);
-            element.dispatchEvent(ev);
-        }
-    }
-    catch (ex) {
-        // ignore -- TODO: what to do with this error?
-    }
 };
 
 //

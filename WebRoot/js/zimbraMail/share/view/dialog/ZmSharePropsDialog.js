@@ -37,7 +37,6 @@ ZmSharePropsDialog = function(shell, className) {
 		var params = {
 			dataClass: appCtxt.getAutocompleter(),
 			matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
-			compCallback: (new AjxCallback(this, this._handleCompletionData, [this])),
 			keyUpCallback: (new AjxCallback(this, this._acKeyUpListener))
 		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
@@ -583,23 +582,6 @@ function() {
 		perm += ZmShare.PERM_PRIVATE;
 	}
 	return perm;
-};
-
-ZmSharePropsDialog.prototype._handleCompletionData = 
-function (control, text, element) {
-	element.value = text;
-	try {
-		if (element.fireEvent) {
-			element.fireEvent("onchange");
-		} else if (document.createEvent) {
-			var ev = document.createEvent("UIEvents");
-			ev.initUIEvent("change", false, window, 1);
-			element.dispatchEvent(ev);
-		}
-	}
-	catch (ex) {
-		// ignore -- TODO: what to do with this error?
-	}
 };
 
 ZmSharePropsDialog.prototype._createView =
