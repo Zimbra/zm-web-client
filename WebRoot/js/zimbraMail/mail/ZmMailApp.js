@@ -1899,7 +1899,9 @@ function(organizer) {
 		var icon = (organizer.numUnread > 0) ? "EnvelopeOpen" : "MailApp";
 		mb.setImage(icon);
 	}
-
+    if(organizer.id == ZmOrganizer.ID_INBOX) {
+        this._setFavIcon(organizer.numUnread);
+    }
 	this._setNewMailBadge();
 };
 
@@ -1924,6 +1926,19 @@ ZmMailApp.prototype.clearNewMailBadge =
 function() {
 	this.globalMailCount = 0;
 	this._setNewMailBadge();
+};
+
+ZmMailApp.prototype._setFavIcon =
+function(unread) {
+    var url;
+    if (unread == 0) {
+        url = [appContextPath, "/img/logo/favicon.ico"].join("");
+    } else if (unread > 9) {
+        url = [appContextPath,"/img/logo/favicon_plus.ico"].join("");
+    } else {
+        url = [appContextPath, "/img/logo/favicon_", unread, ".ico"].join("");
+    }
+    Dwt.setFavIcon(url);
 };
 
 /**
