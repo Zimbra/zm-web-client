@@ -129,7 +129,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 					htmlArr[idx++] = "<span style='white-space: nowrap' id='";
 					htmlArr[idx++] = [fieldId, parts[j].index].join(DwtId.SEP);
 					htmlArr[idx++] = "'>";
-					htmlArr[idx++] = parts[j].name;
+					htmlArr[idx++] = AjxStringUtil.htmlEncode(parts[j].name);
 					htmlArr[idx++] = "</span>";
 				}
 			} else {
