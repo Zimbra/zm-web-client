@@ -122,7 +122,17 @@ function(params) {
 	var asyncCallback = params.asyncMode ? new AjxCallback(this, this._handleResponseSendRequest, [params]) : null;
 
 	if (params.sensitive) {
-		return this._sensitiveRequest(params, reqId);
+		DBG.println(AjxDebug.DBG2, "request contains sensitive data");
+		// NOTE: If only http mode is available, there's nothing we can
+		//       do. And if we're already using https mode, then there's
+		//       nothing we need to do. We only attempt to send the
+		//       request securely if mixed mode is enabled and the app
+		//       was loaded using http.
+		var isHttp = document.location.protocol == ZmSetting.PROTO_HTTP;
+		var isMixedMode = appCtxt.get(ZmSetting.PROTOCOL_MODE) == ZmSetting.PROTO_MIXED;
+		if(isHttp && isMixedMode) {
+			return this._sensitiveRequest(params, reqId);
+		}
 	}
 
 	var command = new ZmCsfeCommand();
@@ -737,17 +747,6 @@ function(ev) {
 
 ZmRequestMgr.prototype._sensitiveRequest =
 function(params, reqId) {
-
-	DBG.println(AjxDebug.DBG2, "request contains sensitive data");
-	// NOTE: If only http mode is available, there's nothing we can
-	//       do. And if we're already using https mode, then there's
-	//       nothing we need to do. We only attempt to send the
-	//       request securely if mixed mode is enabled and the app
-	//       was loaded using http.
-	var isHttp = document.location.protocol == ZmSetting.PROTO_HTTP;
-	var isMixedMode = appCtxt.get(ZmSetting.PROTOCOL_MODE) == ZmSetting.PROTO_MIXED;
-	if (!isHttp || !isMixedMode) { return; }
-	
 	DBG.println(AjxDebug.DBG2, "sending request securely");
 	// adjust command parameters
 	// TODO: Because of timing issues, should we not use session info?
