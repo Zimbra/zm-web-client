@@ -415,7 +415,7 @@ function(shares, result) {
 
 			if (this._guestRadioEl.checked) {
 				if (!this._guestFormatter) {
-					this._guestFormatter = new AjxMessageFormat(ZmMsg.shareWithGuestNotes);
+					this._guestFormatter = new AjxMessageFormat(ZmMsg.shareCalWithGuestNotes);
 				}
 
 				var url = share.object.getRestUrl();
