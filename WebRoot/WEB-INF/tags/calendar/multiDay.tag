@@ -37,7 +37,7 @@
     <fmt:message var="yearTitleFormat" key="CAL_DAY_TITLE_YEAR_FORMAT"/>
     <c:set var="scheduleView" value="${view eq 'schedule' or param.origView eq 'schedule'}"/>
     <c:choose>
-    <c:when test="${print eq true or scheduleView or view eq 'day' or view eq 'list'}">
+    <c:when test="${scheduleView or view eq 'day' or view eq 'list'}">
         <c:set var="currentDay" value="${zm:getCurrentDay(date)}"/>
     </c:when>
     <c:otherwise>
