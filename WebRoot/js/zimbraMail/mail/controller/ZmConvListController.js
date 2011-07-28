@@ -426,7 +426,7 @@ function(msg) {
 
 ZmConvListController.prototype._toggle =
 function(item, getFirstMsg) {
-	if (this._mailListView.isExpanded(item.id)) {
+	if (this._mailListView.isExpanded(item)) {
 		this._collapse(item);
 	} else {
 		var conv = item, msg = null, offset = 0;
