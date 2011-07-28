@@ -537,7 +537,7 @@ function(msg, container, callback) {
 
 	if (!msg._loaded) {
 		var params = {
-			getHtml:		true,
+			getHtml:		appCtxt.get(ZmSetting.VIEW_AS_HTML),
 			callback:		this._handleResponseLoadMessage.bind(this, msg, container, callback),
 			needExp:		true
 		}
@@ -560,7 +560,7 @@ function(msg, container) {
 
 	if (!msg._loaded) {
 		var params = {
-			getHtml:		true,
+			getHtml:		appCtxt.get(ZmSetting.VIEW_AS_HTML),
 			callback:		ZmMailMsgView.prototype._renderMessageBody.bind(this, msg, container, null),
 			needExp:		true
 		}
@@ -573,8 +573,7 @@ function(msg, container) {
 
 ZmMailMsgCapsuleView.prototype._getBodyContent =
 function(bodyPart) {
-	var chunks =  AjxStringUtil.getTopLevel(bodyPart.content);
-	return chunks[0];
+	return AjxStringUtil.getOriginalContent(bodyPart.content, (bodyPart.ct == ZmMimeTable.TEXT_HTML));
 };
 
 ZmMailMsgCapsuleView.prototype._setExpandIcon =
@@ -604,7 +603,7 @@ function(msg, container) {
 		footerId:		this._footerId,
 		parityClass:	this._isOdd ? "OddMsg" : "EvenMsg",
 		folderCellId:	this._folderCellId,
-		folderName:		folderName,
+		folderName:		ZmMsg.folderLabel + "&nbsp;" + folderName,
 		tagCellId:		this._tagContainerCellId,
 		replyLinkId:	replyLinkId,
 		buttonCellId:	this._buttonCellId,
