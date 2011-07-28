@@ -602,7 +602,7 @@
 <template id='mail.Message#Conv2View-right'>
 	<div class='Conv2View'>
 		<div id="${messagesDivId}" class='Conv2Messages'></div>
-		<div id="${replyDivId}">
+		<div id="${replyDivId}" class='Conv2Reply'>
 			<input id="${replyInputId}" class="ReplyInput" type="text" placeholder="<$= ZmMsg.replyHint $>"/>
 		</div>
 	</div>

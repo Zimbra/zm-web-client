@@ -626,7 +626,7 @@ INPUT[type="text"].search_input {
 /* Styles for Conv2.0 */
 
 .Conv2View, .Conv2View-bottom {
-	background-color:#CCCCCC;
+	background-color:white;
 }
 
 .Conv2View-bottom {
@@ -645,7 +645,14 @@ INPUT[type="text"].search_input {
 }
 
 .Conv2View-bottom .Conv2ReplyCell {
+    background-color:@lighten(AppC,55)@;
+    border-left:1px solid @AppC@;
 	width:30%;
+}
+
+.Conv2View .Conv2Reply {
+    background-color:@lighten(AppC,55)@;
+    border-top:1px solid @AppC@;
 }
 
 .Conv2Messages, .Conv2Messages-bottom {
