@@ -32,8 +32,9 @@
     </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
-    
-    <c:set var="selected" value="${empty param.selected ? 'general' : zm:cook(param.selected)}"/>
+
+    <c:set var="selected" value="${empty param.section ? param.selected : param.section}"/>
+    <c:set var="selected" value="${empty selected ? 'general' : fn:toLowerCase(zm:cook(selected))}"/>
 
     <c:choose>
         <%-- cases not covered here are assumed to have the same name in both clients (bug 60599) --%>
