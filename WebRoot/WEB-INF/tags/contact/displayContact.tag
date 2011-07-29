@@ -29,8 +29,9 @@
         <table width="100%" cellspacing="0" cellpadding="0" style="padding:3px;">
         <tr>
         <td rowspan="2" width="20" align="center" valign="bottom" style="padding-right:3px;">
-            <c:set var="imageUrl" value="/service/home/~/?id=${contact.id}&amp;part=${contact.imagePart}&amp;auth=co"/>
-            <app:img clazz="contactImage" src="${contact.imagePart != null ? imageUrl : (contact.isGroup ? 'large/ImgGroup_48.png' : 'large/ImgPerson_48.png')}" altkey="${contact.imageAltKey}" />
+            <c:set var="contactImage" value="${contact.imagePart != null ? contact.imagePart : ''}"/>
+            <c:set var="imageUrl" value="/service/home/~/?id=${contact.id}&amp;part=${contactImage}&amp;auth=co"/>
+            <app:img clazz="contactImage" src="${not empty contactImage ? imageUrl : (contact.isGroup ? 'large/ImgGroup_48.png' : 'large/ImgPerson_48.png')}" altkey="${contact.imageAltKey}" />
         </td>
         <td>
             <c:choose>
