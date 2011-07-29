@@ -378,6 +378,13 @@ function() {
         if (appCtxt.getAppController().getInstantNotify())
             appCtxt.getAppController().setInstantNotify(false);
     }
+
+    if(appCtxt.get(ZmSetting.VACATION_MSG_ENABLED)){
+        var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
+        var node = soapDoc.set("pref", "TRUE");
+        node.setAttribute("name", "zimbraPrefOutOfOfficeStatusAlertOnLogin");
+        appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true});
+    }
 };
 
 // ??? SHOULD THIS BE IN A NEW FILE?       ???

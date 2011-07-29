@@ -43,6 +43,7 @@ ZmMailApp = function(container, parentController) {
 	this.globalMailCount		= 0; // offline, new mail count
 
 	this._addSettingsChangeListeners();
+    AjxCore.addOnloadListener(this._checkVacationReplyEnabled);
 };
 
 ZmMailApp.prototype = new ZmApp;
@@ -2174,3 +2175,56 @@ function() {
     this._trustedList = null;
 };
 
+ZmMailApp._handleOOORemindResponse = function(dialog,isTurnOff){
+   ZmMailApp._hideOOORemindDialog(dialog);
+   var dontRemind = document.getElementById(dialog._htmlElId + "_dontRemind");
+
+   if(isTurnOff || dontRemind.checked){
+        ZmMailApp._saveRemindStatus(isTurnOff,dontRemind.checked);
+   }
+
+};
+
+ZmMailApp._hideOOORemindDialog=function(dialog){
+    if(dialog){
+        dialog.popdown();
+    }
+};
+
+ZmMailApp._saveRemindStatus = function(turnOff,dontRemind) {
+    var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
+
+    if(turnOff){
+        var node = soapDoc.set("pref", "FALSE");
+        node.setAttribute("name", "zimbraPrefOutOfOfficeReplyEnabled");
+    }
+    else if(dontRemind){
+        var node = soapDoc.set("pref", "FALSE");
+        node.setAttribute("name", "zimbraPrefOutOfOfficeStatusAlertOnLogin");
+    }
+
+    var paramsObj = {soapDoc:soapDoc, asyncMode:true};
+    if(turnOff){paramsObj.callback=ZmMailApp._oooReplyCallback;}
+
+    appCtxt.getAppController().sendRequest(paramsObj);
+};
+
+ZmMailApp._oooReplyCallback = function(){
+    appCtxt.set(ZmSetting.VACATION_MSG_ENABLED,false);
+}
+
+ZmMailApp.prototype._checkVacationReplyEnabled = function(){
+    var isOOOEnabled = appCtxt.get(ZmSetting.VACATION_MSG_ENABLED);
+    var isRemindEnabled = appCtxt.get(ZmSetting.VACATION_MSG_REMIND_ON_LOGIN);
+    if(isOOOEnabled && isRemindEnabled){
+       var ynDialog = appCtxt.getYesNoMsgDialog();
+       var content = AjxTemplate.expand("mail.Message#VacationRemindDialog", {id:ynDialog._htmlElId});
+       ynDialog.setTitle(ZmMsg.OOORemindDialogTitle);
+	   ynDialog.setContent(content);
+       var dontRemind = document.getElementById(ynDialog._htmlElId + "_dontRemind");
+       dontRemind.checked = false;
+       ynDialog.registerCallback(DwtDialog.YES_BUTTON, ZmMailApp._handleOOORemindResponse, this,[ynDialog,true]);
+       ynDialog.registerCallback(DwtDialog.NO_BUTTON, ZmMailApp._handleOOORemindResponse,this,[ynDialog,false]);
+       ynDialog.popup();
+    }
+};
