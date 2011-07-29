@@ -2076,7 +2076,32 @@ HTML>BODY .appt-selected .appt_allday_body
   font-weight:bold;
 }
 
+.ZmCalDayTab{
+    height:21px;
+    @blRadius@:4px;
+    @brRadius@:4px;
+    max-width: 80px;
+    min-width: 80px;
+    width: 80px;
+    @Text@
+    @SeparatorBg@
+    padding-left: 6px;
+    top: 4px;
+}
 
+.ZmDayTabSeparator{
+    width: 1px;
+    height: 1px;
+    /*border: 0; */
+    /*border: 1px solid #B9B9B9;*/ /* color should slightly darker than the cal icon color*/
+    @SeparatorBg@
+}
+
+.ZmDayTabMarginDiv {
+    width: 2px;
+    border: 0; /* color should slightly darker than the cal icon color*/
+    background-color: #FFFFFF;
+}
 
 /* ??? USED? */
 /* filler for a blank all day item row in month view */
