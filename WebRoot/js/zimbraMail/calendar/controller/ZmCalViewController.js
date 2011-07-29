@@ -231,6 +231,7 @@ function(viewId, startDate, skipMaintenance) {
     if (viewId == ZmId.VIEW_CAL_LIST) {
 		this._navToolBar[ZmId.VIEW_CAL].setVisible(false);
 	} else {
+        if(viewId!=ZmId.VIEW_CAL_MONTH){this._viewMgr.getView(viewId).initializeTimeScroll();}
 		this._navToolBar[ZmId.VIEW_CAL].setVisible(true);
 		var cv = this._viewMgr.getCurrentView();
 		var navText = viewId == ZmId.VIEW_CAL_MONTH

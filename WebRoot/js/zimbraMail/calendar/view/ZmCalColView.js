@@ -2500,8 +2500,14 @@ function(list, skipMiniCalUpdate) {
     if(this._fbBarEnabled){
         this._layoutFBBar();
     }
-	this._scrollToTime(8);
 };
+
+/*
+*   Initializes the vertical scrollbar of the body element to 8AM.
+ */
+ZmCalColView.prototype.initializeTimeScroll = function(){
+    this._scrollToTime(8);
+}
 
 ZmCalColView._gridMouseMoveHdlr =
 function(ev) {
