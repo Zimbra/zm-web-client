@@ -593,6 +593,7 @@ function(data) {
 				if (!itemListData.address)  {
 					itemListData.address = {};
 				}
+				value = AjxStringUtil.htmlEncode(value);
 				itemListData.address[suffix] = value.replace(/\n/g,"<br/>");
 			}
 			if (!itemListData.address) { break; }

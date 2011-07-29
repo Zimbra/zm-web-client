@@ -945,7 +945,7 @@ function(ex) {
 		if (!this._unknownUserFormatter) {
 			this._unknownUserFormatter = new AjxMessageFormat(ZmMsg.unknownUser);
 		}
-		message = this._unknownUserFormatter.format(this.grantee.name);
+		message = this._unknownUserFormatter.format(AjxStringUtil.htmlEncode(this.grantee.name));
 		// NOTE: This prevents details from being shown
 		ex = null;
 	}
@@ -1071,11 +1071,13 @@ function(mode) {
 ZmShare.prototype._createContent =
 function(formatter) {
 	var role = ZmShare.getRoleFromPerm(this.link.perm);
+	var owner = this.object ? (this.object.owner || this.grantor.name) : this.grantor.name;
+	owner = AjxStringUtil.htmlEncode(owner);
 	var params = [
-		this.link.name, 
+		AjxStringUtil.htmlEncode(this.link.name), 
 		"(" + ZmShare._getFolderType(this.link.view) + ")",
-		(this.object ? (this.object.owner || this.grantor.name) : this.grantor.name),
-		this.grantee.name,
+		owner,
+		AjxStringUtil.htmlEncode(this.grantee.name),
 		ZmShare.getRoleName(role),
 		ZmShare.getRoleActions(role)
 	];
