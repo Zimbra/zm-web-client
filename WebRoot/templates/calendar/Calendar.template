@@ -8,28 +8,28 @@
 			<$ } $>
                 <td class="${showAsColor}" width=4 rowspan="<$= data.hideTime ? 2 : 3 $>"></td>
 				<td class='appt${newState}_time' id='${id}_st'>
-					<table cellspacing=0 cellpadding=0 style='background: none repeat scroll 0 0 transparent;border: 0 none;'>
+					<table style='background: none repeat scroll 0 0 transparent;border:0;border-collapse:collapse;border-spacing:0;width:100%'>
                         <tr>
-                            <td style='padding-right: 3px;'>
-                                <$ if (data.icon) { $>
-                                    <div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
-                                <$ } $>
-                                <$ if (data.tagIcon) { $>
-                                    <div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
-                                <$ } $>
-                                <$ if(data.isDraft) { $>
-                                    <div class='appt_icon'><$= AjxImg.getImageHtml("Edit", "width:16") $></div>
-                                <$ } $>
-                                ${starttime}
-                            </td>
-
-                            <$ if (data.otherAttendees) { $>
-                                <td style='padding-right: 3px;'><$= AjxImg.getImageHtml("ApptMeeting") $></td>
+                            <td style='padding-right:3px;white-space:nowrap;'>${starttime}</td>
+                            <$ if (data.icon) { $>
+                                <td style='padding-right:3px;'><$= AjxImg.getImageHtml(data.icon, "width:16") $></td>
                             <$ } $>
                             <$ if (data.isException) { $>
-                                <td style='padding-right: 3px;'><$= AjxImg.getImageHtml("ApptException") $></td>
+                                <td style='padding-right:3px;'><$= AjxImg.getImageHtml("ApptExceptionIndicator") $></td>
                             <$ } else if (data.isRecurring) { $>
-                                <td style='padding-right: 3px;'><$= AjxImg.getImageHtml("ApptRecur") $></td>
+                                <td style='padding-right:3px;'><$= AjxImg.getImageHtml("ApptRecurIndicator") $></td>
+                            <$ } $>
+                            <td style='width:100%'></td>
+                            <$ if (data.tagIcon) { $>
+                                <td style='padding-right:3px;'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></td>
+                            <$ } $>
+                            <$ if (data.otherAttendees) { $>
+                                <td style='padding-right:3px;'>
+                                    <$= AjxImg.getImageHtml("ApptMeetingIndicator") $>
+                                    <$ if(data.isDraft) { $>
+                                        <div style="position:absolute;top:5px;"><$= AjxImg.getImageHtml("Edit", "width:16") $></div>
+                                    <$ } $>
+                                </td>
                             <$ } $>
                         </tr>
                     </table>
