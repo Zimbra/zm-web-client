@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -22,22 +22,22 @@
  * are not added until the page becomes visible.
  *
  * @author Conrad Damon
- * 
+ *
  * @param {DwtControl}	parent			the containing widget
  * @param {object}	section			the page
  * @param {ZmPrefController}	controller		the prefs controller
- * 
+ *
  * @extends		DwtTabViewPage
  */
 ZmPreferencesPage = function(parent, section, controller) {
 	if (arguments.length == 0) return;
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
-	
+
 	this._section = section;
 	this._controller = controller;
 
 	this.setScrollStyle(DwtControl.SCROLL);
-	
+
 	this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), section.title].join(": ");
 
 	this._dwtObjects = {};
@@ -129,7 +129,7 @@ function(elemOrId) {
  * Fills the page with preferences that belong to this page, if that has not been done
  * already. Note this method is only called when the tab
  * is selected and the page becomes visible.
- * 
+ *
  */
 ZmPreferencesPage.prototype.showMe =
 function() {
@@ -246,6 +246,9 @@ function() {
 			else if (type == ZmPref.TYPE_LOCALES) {
 				control = this._setupLocales(id, setup, value);
 			}
+			else if (type == ZmPref.TYPE_FONT) {
+				control = this._setupFonts(id, setup, value);
+			}
 			else if (type == ZmPref.TYPE_PASSWORD) {
 				this._addButton(elem, setup.displayName, 50, new AjxListener(this, this._changePasswordListener));
 				continue;
@@ -340,7 +343,8 @@ function(id, setup, control) {
 	if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_COMBOBOX ||
 		type == ZmPref.TYPE_CHECKBOX ||
 		type == ZmPref.TYPE_RADIO_GROUP || type == ZmPref.TYPE_COLOR ||
-		type == ZmPref.TYPE_INPUT || type == ZmPref.TYPE_LOCALES) {
+		type == ZmPref.TYPE_INPUT || type == ZmPref.TYPE_LOCALES ||
+		type == ZmPref.TYPE_FONT) {
 		var object = control || this.getFormObject(id);
 		if (object) {
 			if (type == ZmPref.TYPE_COLOR) {
@@ -360,6 +364,9 @@ function(id, setup, control) {
 			}
 			else if (type == ZmPref.TYPE_LOCALES) {
 				value = object._localeId;
+			}
+			else if (type == ZmPref.TYPE_FONT) {
+				value = object._fontId;
 			}
 			else if (type == ZmPref.TYPE_COMBOBOX) {
 				value = object.getValue() || object.getText();
@@ -448,6 +455,10 @@ function(id, value, setup, control) {
 		var object = this._dwtObjects[ZmSetting.LOCALE_NAME];
 		if (!object) { return value; }
 		this._showLocale(value, object);
+	} else if (type == ZmPref.TYPE_FONT) {
+		var object = this._dwtObjects[ZmSetting.FONT_NAME];
+		if (!object) { return value; }
+		this._showFont(value, object);
 	} else {
 		var prefId = [this._htmlElId, id].join("_");
 		var element = control || document.getElementById(prefId);
@@ -460,7 +471,7 @@ function(id, value, setup, control) {
 
 /**
  * Gets the title.
- * 
+ *
  * @return	{String}	the title
  */
 ZmPreferencesPage.prototype.getTitle =
@@ -497,7 +508,7 @@ function() {
 
 /**
  * Checks if the data is dirty.
- * 
+ *
  * @return	{Boolean}	<code>true</code> if the data is dirty
  */
 ZmPreferencesPage.prototype.isDirty = function() { return false; };
@@ -505,7 +516,7 @@ ZmPreferencesPage.prototype.validate = function() {	return true; };
 
 /**
  * Adds the modify command to the given batch command.
- * 
+ *
  * @param	{ZmBatchCommand}		batchCmd		the batch command
  */
 ZmPreferencesPage.prototype.addCommand = function(batchCmd) {};
@@ -526,7 +537,7 @@ function(templateId, data) {
  *
  * @param id			[constant]		pref ID
  * @param useDefault	[boolean]		if true, use pref's default value
- * 
+ *
  * @private
  */
 ZmPreferencesPage.prototype._getPrefValue =
@@ -843,12 +854,40 @@ function(id, setup, value) {
 	return button;
 };
 
+
+ZmPreferencesPage.prototype._setupFonts =
+function(id, setup, value) {
+	var button = new DwtButton({parent:this});
+	button.setSize(60, Dwt.DEFAULT);
+	button.setMenu(new AjxListener(this, this._createFontsMenu, [setup]));
+	this._showFont(value, button);
+
+	this._dwtObjects[id] = button;
+
+	return button;
+};
+
 ZmPreferencesPage.prototype._showLocale =
 function(localeId, button) {
 	var locale = ZmLocale.localeMap[localeId];
 	button.setImage(locale ? locale.getImage() : null);
 	button.setText(locale ? locale.getNativeAndLocalName() : "");
 	button._localeId = localeId;
+};
+
+ZmPreferencesPage.prototype._createFontsMenu =
+function(setup) {
+
+	var button = this._dwtObjects[ZmSetting.FONT_NAME];
+	var menu = new DwtMenu({parent:button});
+
+	var listener = new AjxListener(this, this._fontSelectionListener);
+
+	for (var id in ZmFont.fontMap) {
+		var font = ZmFont.fontMap[id];
+		this._createFontItem(menu, font, listener);
+	}
+	return menu;
 };
 
 ZmPreferencesPage.prototype._createLocalesMenu =
@@ -878,6 +917,15 @@ function(setup) {
 	return result;
 };
 
+ZmPreferencesPage.prototype._createFontItem =
+function(parent, font, listener) {
+	var item = new DwtMenuItem({parent:parent});
+	item.setText(font.name);
+	item._fontId = font.id;
+	item.addSelectionListener(listener);
+	return item;
+};
+
 ZmPreferencesPage.prototype._createLocaleItem =
 function(parent, locale, listener) {
 	var result = new DwtMenuItem({parent:parent});
@@ -888,6 +936,21 @@ function(parent, locale, listener) {
 	result._localeId = locale.id;
 	result.addSelectionListener(listener);
 	return result;
+};
+
+ZmPreferencesPage.prototype._showFont =
+function(fontId, button) {
+	var font = ZmFont.fontMap[fontId];
+	button.setImage(font ? font.image : null);
+	button.setText(font ? font.name : "");
+	button._fontId = fontId;
+};
+
+ZmPreferencesPage.prototype._fontSelectionListener =
+function(ev) {
+	var item = ev.dwtObj;
+	var button = this._dwtObjects[ZmSetting.FONT_NAME];
+	this._showFont(item._fontId, button);
 };
 
 ZmPreferencesPage.prototype._localeSelectionListener =
@@ -1179,7 +1242,7 @@ function(data, prefId) {
  * Formats a label. If the label contains a replacement parameter (e.g. {0}),
  * then it is formatted using AjxMessageFormat with the current value for this
  * label.
- * 
+ *
  * @private
  */
 ZmPreferencesPage.__formatLabel =
@@ -1187,3 +1250,36 @@ function(prefLabel, prefValue) {
 	prefLabel = prefLabel || "";
 	return prefLabel.match(/\{/) ? AjxMessageFormat.format(prefLabel, prefValue) : prefLabel;
 };
+
+/**
+ * @class
+ * This class represents a Font (family).
+ *
+ * @param {String} id the id
+ * @param {String} name the name
+ * @param {String} image the image
+ *
+ */
+ZmFont = function(id, name, image) {
+	this.id = id;
+	this.name = name;
+	this.image = image;
+};
+
+ZmFont.fontMap = {};
+
+/**
+ * Creates the font.
+ *
+ * @param {String} id the locale id (for example, <code>en_US</code>)
+ * @param {String} name the locale name
+ */
+ZmFont.create =
+function(id, name) {
+	return ZmFont.fontMap[id] = new ZmFont(id, name);
+};
+
+ZmFont.create(ZmSetting.FONT_MODERN, ZmMsg.fontModern);
+ZmFont.create(ZmSetting.FONT_CLASSIC, ZmMsg.fontClassic);
+ZmFont.create(ZmSetting.FONT_WIDE, ZmMsg.fontWide);
+ZmFont.create(ZmSetting.FONT_SYSTEM, ZmMsg.fontSystem);

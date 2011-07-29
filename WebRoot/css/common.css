@@ -32,12 +32,10 @@
 
 /* TODO: Unify these two -- for font/size/style we shouldn't have to segregate password|text|etc */
 P, TH, TD, DIV, SELECT, INPUT[type=text], INPUT[type=password], INPUT[type=file], TEXTAREA, BUTTON {
-	@FontFamily-default@
 	@FontSize-normal@
 }
 #IFDEF MSIE
 P, TH, TD, DIV, SELECT, INPUT, TEXTAREA, BUTTON {
-	@FontFamily-default@
 	@FontSize-normal@
 }
 #ENDIF

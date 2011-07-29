@@ -335,7 +335,7 @@ BODY						{	margin:0px; 				}
     width:50px;
 }
 .SplashScreen { 
-    font-family:@FontFamily-default@;
+    @FontFamily-default@;
     font-size:11px;
     height:100%;
     left:0px;

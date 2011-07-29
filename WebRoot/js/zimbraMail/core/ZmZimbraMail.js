@@ -71,6 +71,9 @@ ZmZimbraMail = function(params) {
     this._initializeSettings(params);
 	this._postInitializeSettings();
 
+	//update body class to reflect user selected font
+	document.body.className = "user_font_" + appCtxt.get(ZmSetting.FONT_NAME);
+
     // set internal state
 	this._shell = appCtxt.getShell();
     this._userShell = params.userShell;

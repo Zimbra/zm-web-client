@@ -275,6 +275,7 @@ function() {
 			priority: 0,
 			prefs: [
 				ZmSetting.LOCALE_NAME,
+				ZmSetting.FONT_NAME,
 				ZmSetting.PASSWORD,
 				ZmSetting.SEARCH_INCLUDES_SPAM,
 				ZmSetting.SEARCH_INCLUDES_TRASH,
@@ -591,6 +592,11 @@ function() {
 		displayName:		ZmMsg.selectLanguage,
 		displayContainer:	ZmPref.TYPE_LOCALES,
 		precondition:		ZmSetting.LOCALE_CHANGE_ENABLED
+	});
+
+	ZmPref.registerPref("FONT_NAME", {
+		displayName:		ZmMsg.selectFong,
+		displayContainer:	ZmPref.TYPE_FONT
 	});
 
 	var markReadTime = AjxMessageFormat.format(ZmMsg.messageReadTime, DwtId._makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));

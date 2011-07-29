@@ -222,6 +222,7 @@ ZmSetting.LICENSE_MSG[ZmSetting.LICENSE_BAD]			= ZmMsg.licenseExpired;
 
 // we need these IDs available when the app classes are parsed
 ZmSetting.LOCALE_NAME			= "LOCALE_NAME";
+ZmSetting.FONT_NAME				= "FONT_NAME";
 ZmSetting.SKIN_NAME				= "SKIN_NAME";
 
 ZmSetting.BRIEFCASE_ENABLED		= "BRIEFCASE_ENABLED";
@@ -257,6 +258,13 @@ ZmSetting.APP_LETTER[ZmSetting.BRIEFCASE_ENABLED]	= "b";
 ZmSetting.APP_LETTER[ZmSetting.TASKS_ENABLED]		= "t";
 ZmSetting.APP_LETTER[ZmSetting.MIXED_VIEW_ENABLED]	= "x";
 ZmSetting.APP_LETTER[ZmSetting.VOICE_ENABLED]		= "v";
+
+//user selected font
+ZmSetting.FONT_CLASSIC = "classic";
+ZmSetting.FONT_MODERN = "modern";
+ZmSetting.FONT_WIDE = "wide";
+ZmSetting.FONT_SYSTEM = "system";
+
 
 // hash of global settings
 ZmSetting.IS_GLOBAL = {};

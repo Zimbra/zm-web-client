@@ -1090,7 +1090,6 @@
 	border-collapse: collapse;
 }
 .DwtPropertyEditor * {
-	@FontFamily-default@
 	@FontSize-normal@
 }
 .DwtPropertyEditor table td {
