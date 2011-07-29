@@ -396,7 +396,7 @@ function(ev) {
             showImages = true;
         }
     }
-    var url = "/h/printmessage?id=" + id;
+    var url = "/h/printmessage?id=" + id + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT);
     if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || showImages) {
         url += "&xim=1";
     }

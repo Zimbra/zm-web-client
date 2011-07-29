@@ -1580,7 +1580,7 @@ function(ev) {
 			}
 		}
 	}
-	var url = ("/h/printmessage?id=" + ids.join(","));
+	var url = ("/h/printmessage?id=" + ids.join(",")) + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 	if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || showImages) {
 		url = url+"&xim=1";
 	}
