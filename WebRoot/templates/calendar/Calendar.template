@@ -8,38 +8,23 @@
 			<$ } $>
                 <td class="${showAsColor}" width=4 rowspan="<$= data.hideTime ? 2 : 3 $>"></td>
 				<td class='appt${newState}_time' id='${id}_st'>
-					<table cellspacing=0 cellpadding=0 style='background: none repeat scroll 0 0 transparent;border: 0 none;'>
-                        <tr>
-                            <td style='padding-right: 3px;'>
-                                <$ if (data.icon) { $>
-                                    <div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
-                                <$ } $>
-                                <$ if (data.tagIcon) { $>
-                                    <div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
-                                <$ } $>
-                                <$ if(data.isDraft) { $>
-                                    <div class='appt_icon'><$= AjxImg.getImageHtml("Edit", "width:16") $></div>
-                                <$ } $>
-                                ${starttime}
-                            </td>
-
-                            <$ if (data.otherAttendees) { $>
-                                <td style='padding-right: 3px;'><$= AjxImg.getImageHtml("ApptMeeting") $></td>
-                            <$ } $>
-                            <$ if (data.isException) { $>
-                                <td style='padding-right: 3px;'><$= AjxImg.getImageHtml("ApptException") $></td>
-                            <$ } else if (data.isRecurring) { $>
-                                <td style='padding-right: 3px;'><$= AjxImg.getImageHtml("ApptRecur") $></td>
-                            <$ } $>
-                        </tr>
-                    </table>
+					<$ if (data.icon) { $>
+						<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
+					<$ } $>
+					<$ if (data.tagIcon) { $>
+						<div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
+					<$ } $>
+                    <$ if(data.isDraft) { $>
+                        <div class='appt_icon'><$= AjxImg.getImageHtml("Edit", "width:16") $></div>
+                    <$ } $>
+					${starttime}
 				</td>
 			</tr>
 			<tr valign=top>
 				<td class=appt${newState}_name style='height:100%'>
 					${name}
 					<$ if (data.location) { $>
-						${location}
+						<BR>${location}
 					<$ } $>
 				</td>
 			</tr>
@@ -74,11 +59,7 @@
 <template id='calendar.Calendar#calendar_appt_30' width='4' height='4'>
 	<div id='${id}_body' class='appt_30_body  ${headerColor} ${boxBorder}'>
 		<table width=100% cellspacing=0 cellpadding=0 style='width:100%;height:100%;${headerStyle}'>
-            <$ if(data.headerStyle) {$>
-            <tr style='${headerStyle}'>
-            <$ }else { $>
-            <tr class='${headerColor}'>         
-            <$ } $>
+			<tr>
 				<td width='4px' class='${showAsColor}' ></td>
 				<td class=appt_30${newState}_name>${name}</td>
 				<$ if (data.tagIcon) { $>
@@ -94,12 +75,8 @@
 
 <template id='calendar.Calendar#calendar_appt_allday' width='4' height='4'>
 	<div id='${id}_body' class='appt_allday_body ${headerColor} ${boxBorder}'>
-		<table width=100% cellspacing=0 cellpadding=0 style='width:100%;height:100%;${headerStyle}${borderLeft}${borderRight}'>
-            <$ if(data.headerStyle) {$>
-            <tr style='${headerStyle}'>
-            <$ }else { $>                                          z
-            <tr class='${headerColor}'>         
-            <$ } $>
+		<table width=100% cellspacing=0 cellpadding=0 style='width:100%;height:100%;${headerStyle}'>
+			<tr>
 				<td width='4px' class='${showAsColor}' ></td>
 				<td class=appt_allday${newState}_name>
 					<$ if (data.icon) { $>
@@ -156,82 +133,6 @@
 			<td style='white-space:nowrap' id='${id}_seriesMsg'></td>
 		</tr>
 	</table>
-</template>
-
-<template id='calendar.Calendar#PrintDialog'>
-	<div id='${id}_printDialogContainer'>
-	    <table align=center border=0 width=600>
-            <tr>
-                <td width=30% valign=top><div id='${id}_calTreeContainer'></div></td>
-                <td width=70% valign=top>
-                    <div id='${id}_printErrorMsgContainer'></div>
-                    <div id='${id}_printOptionsContainer'>
-                        <table>
-                            <tr>
-                                <td width=25><input checked value='sel_date' type='radio' id='${id}_selDateRadio' name='${id}_selDateRange'></td>
-                                <td width=80><$= ZmMsg.calPrintSelDate $></td>
-                                <td id='${id}_selDateContainer'></td>
-                                <td>&nbsp;</td>
-                                <td id='${id}_todayButtonContainer'></td>
-                            </tr>
-                            <tr>
-                                <td width=25><input value="date_range" type='radio' id='${id}_dateRangeRadio' name='${id}_selDateRange'></td>
-                                <td width=80><$= ZmMsg.calPrintDateRange $></td>
-                                <td id='${id}_dateRangeFromContainer'></td>
-                                <td><$= ZmMsg.to $></td>
-                                <td id='${id}_dateRangeToContainer'></td>
-                            </tr>
-                        </table>
-                        <div class="horizSep"></div>
-                        <table width=100%>
-                            <tr style='display:block;'>
-                                <td align=right width=111><$= ZmMsg.calPrintView $></td>
-                                <td colspan=4><div id='${id}_printViewContainer'></div></td>
-                            </tr>
-                            <tr id='${id}_fitToPageContainer' style='display:block;'>
-                                <td align=right width=111><$= ZmMsg.calPrintFitToPage $></td>
-                                <td colspan=4><div id='${id}_fitToPageSelectContainer'></div></td>
-                            </tr>
-                            <tr id='${id}_hoursContainer' style='display:block;'>
-                                <td align=right width=111><$= ZmMsg.calPrintHours $></td>
-                                <td id='${id}_fromHoursContainer'></td>
-                                <td><$= ZmMsg.to $></td>
-                                <td id='${id}_toHoursContainer'></td>
-                                <td></td>
-                            </tr>
-                            <tr style='display:block;'>
-                                <td align=right valign=top width=111><$= ZmMsg.calPrintOptions $></td>
-                                <td colspan=4>
-                                    <table width=100% cellspacing=0>
-                                        <tr id='${id}_workDaysOnlyContainer'>
-                                            <td><input value="1" type='checkbox' id='${id}_workDaysOnly' name='${id}_workDaysOnly'></td>
-                                            <td><$= ZmMsg.calPrintWorkDaysOnly $></td>
-                                        </tr>
-                                        <tr id='${id}_oneWeekPerPageContainer'>
-                                            <td><input value="1" type='checkbox' id='${id}_oneWeekPerPage' name='${id}_oneWeekPerPage'></td>
-                                            <td><$= ZmMsg.calPrintOneWeekPerPage $></td>
-                                        </tr>
-                                        <tr id='${id}_oneDayPerPageContainer'>
-                                            <td><input value="1" type='checkbox' id='${id}_oneDayPerPage' name='${id}_oneDayPerPage'></td>
-                                            <td><$= ZmMsg.calPrintOneDayPerPage $></td>
-                                        </tr>
-                                        <tr id='${id}_includeTasksContainer'>
-                                            <td><input value="1" type='checkbox' id='${id}_includeTasks' name='${id}_includeTasks'></td>
-                                            <td><$= ZmMsg.calPrintIncludeTasks $></td>
-                                        </tr>
-                                        <tr id='${id}_includeMiniCalContainer'>
-                                            <td><input value="1" type='checkbox' id='${id}_includeMiniCal' name='${id}_includeMiniCal'></td>
-                                            <td><$= ZmMsg.calPrintIncludeMiniCal $></td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </td>
-            </tr>
-        </table>
-    <div>
 </template>
 
 <template id='calendar.Calendar#ApptDragProxy'>
@@ -324,11 +225,4 @@
 			</table>
 		</td>
 	</tr>
-</template>
-
-
-<template id='calendar.Appointment#DnDProxy'>
-    <table class="dnd_calendar_month_day_table">
-        <tr></tr>
-    </table>
 </template>

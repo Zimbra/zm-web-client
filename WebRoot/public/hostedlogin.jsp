@@ -1,5 +1,5 @@
 <%@ page buffer="8kb" autoFlush="true" %>
-<%@ page import="java.util.*,javax.naming.*,com.zimbra.client.ZAuthResult" %>
+<%@ page import="java.util.*,javax.naming.*,com.zimbra.cs.zclient.ZAuthResult" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page session="false" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
@@ -201,7 +201,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                                     <table width="100%">
                                         <tr>
                                             <td valign="top" width="40">
-                                                <img alt='<fmt:message key="ALT_ERROR"/>' src="<app:imgurl value='dwt/ImgCritical_32.png?v=${version}'/>"/>
+                                                <img alt='<fmt:message key="ALT_ERROR"/>' src="<app:imgurl value='dwt/ImgCritical_32.png'/>"/>
                                             </td>
                                             <td class="errorText">
                                                 <c:out value="${errorMessage}"/>

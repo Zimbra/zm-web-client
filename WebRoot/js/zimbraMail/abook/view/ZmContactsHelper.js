@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -124,7 +124,7 @@ function(html, idx, item, field, colIdx) {
 		html[idx++] = AjxImg.getImageHtml(item.icon);
 	} else if (field == ZmItem.F_NAME) {
 		html[idx++] = "<nobr>";
-		html[idx++] = item.name;
+		html[idx++] = AjxStringUtil.htmlEncode(item.name);
 		html[idx++] = "</nobr>";
 	} else if (field == ZmItem.F_EMAIL) {
 		html[idx++] = AjxStringUtil.htmlEncode(item.address);

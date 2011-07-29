@@ -97,16 +97,16 @@ function(result) {
 ZmMailPrefsPage.prototype._setPopDownloadSinceControls =
 function() {
 	var popDownloadSinceValue = this.getFormObject(ZmSetting.POP_DOWNLOAD_SINCE_VALUE);
-    var value = appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE);
-	if (popDownloadSinceValue && value) {
-		var date = AjxDateFormat.parse("yyyyMMddHHmmss'Z'", value);
-		date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-
-		popDownloadSinceValue.setText(AjxMessageFormat.format(ZmMsg.externalAccessPopCurrentValue, date));
-        popDownloadSinceValue.setVisible(true);
-	}  else {
-        popDownloadSinceValue.setVisible(false);
-    }
+	if (popDownloadSinceValue) {
+		var value = appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE);
+		if (value) {
+			var date = AjxDateFormat.parse("yyyyMMddHHmmss'Z'", value);
+			date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+			value = date;
+		}
+		var pattern = value ? ZmMsg.externalAccessPopCurrentValue : ZmMsg.externalAccessPopNotSet;
+		popDownloadSinceValue.setText(AjxMessageFormat.format(pattern, value));
+	}
 
 	var popDownloadSince = this.getFormObject(ZmSetting.POP_DOWNLOAD_SINCE);
 	if (popDownloadSince) {
@@ -378,13 +378,6 @@ function() {
         if (appCtxt.getAppController().getInstantNotify())
             appCtxt.getAppController().setInstantNotify(false);
     }
-
-    if(appCtxt.get(ZmSetting.VACATION_MSG_ENABLED)){
-        var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
-        var node = soapDoc.set("pref", "TRUE");
-        node.setAttribute("name", "zimbraPrefOutOfOfficeStatusAlertOnLogin");
-        appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true});
-    }
 };
 
 // ??? SHOULD THIS BE IN A NEW FILE?       ???
@@ -574,7 +567,7 @@ function() {
         for(var i=0; i<items.length; i++) {
             val = items[i];
             if(val) {
-                this._addEmail(val);
+                this._addEmail(AjxStringUtil.htmlEncode(val));
                 if (!this._add[val]) {
                     this._add[val] = true;
                 }

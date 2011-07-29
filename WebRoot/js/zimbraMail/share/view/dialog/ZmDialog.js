@@ -193,7 +193,7 @@ function(params, forceSingle) {
 	if (!overview) {
 		var ovParams = {
 			overviewId:		overviewId,
-			overviewClass:	params.overviewClass || "dialogOverview",
+			overviewClass:	"dialogOverview",
 			headerClass:	"DwtTreeItem",
 			noTooltips:		true,
 			treeStyle:		params.treeStyle,
@@ -268,7 +268,7 @@ function(msg, loc) {
 	var msgDialog = appCtxt.getMsgDialog();
 
 	msgDialog.reset();
-    msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+    msgDialog.setMessage(AjxStringUtil.htmlEncode(msg), DwtMessageDialog.CRITICAL_STYLE);
 	msgDialog.popup(nLoc);
 };
 
