@@ -4893,3 +4893,23 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZmSnoozeButton {
     padding-left:5px;
 }
+
+.ZmPriorityFilterCriteria {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.ZmPriorityFilterSocialList {
+height: 100px;
+width: 200px;
+border: 1px solid #666;
+}
+
+.ZmPriorityFilterDivider {
+    border-left:1px solid #38546d;
+    height: 250px;
+}
+
+.ZmPriorityFilterAction {
+      
+}

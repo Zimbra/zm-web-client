@@ -106,6 +106,7 @@ ZmItem.F_TYPE			= ZmId.FLD_TYPE;
 ZmItem.F_VERSION        = ZmId.FLD_VERSION;
 ZmItem.F_WORK_PHONE		= ZmId.FLD_WORK_PHONE;
 ZmItem.F_LOCK           = ZmId.FLD_LOCK;
+ZmItem.F_MSG_PRIORITY   = ZmId.FLD_MSG_PRIORITY;
 
 // Action requests for different items
 ZmItem.SOAP_CMD = {};
@@ -125,6 +126,7 @@ ZmItem.FLAG_REPLIED				= "r";
 ZmItem.FLAG_UNREAD				= "u";
 ZmItem.FLAG_LOW_PRIORITY		= "?";
 ZmItem.FLAG_HIGH_PRIORITY		= "!";
+ZmItem.FLAG_PRIORITY            = "+"; //msg prioritization
 
 ZmItem.ALL_FLAGS = [
 	ZmItem.FLAG_FLAGGED,
@@ -137,7 +139,8 @@ ZmItem.ALL_FLAGS = [
 	ZmItem.FLAG_ISDRAFT,
 	ZmItem.FLAG_ISSCHEDULED,
 	ZmItem.FLAG_HIGH_PRIORITY,
-	ZmItem.FLAG_LOW_PRIORITY
+	ZmItem.FLAG_LOW_PRIORITY,
+	ZmItem.FLAG_PRIORITY
 ];
 
 // Map flag to item property
@@ -153,6 +156,7 @@ ZmItem.FLAG_PROP[ZmItem.FLAG_REPLIED]			= "isReplied";
 ZmItem.FLAG_PROP[ZmItem.FLAG_UNREAD]			= "isUnread";
 ZmItem.FLAG_PROP[ZmItem.FLAG_LOW_PRIORITY]		= "isLowPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_HIGH_PRIORITY]		= "isHighPriority";
+ZmItem.FLAG_PROP[ZmItem.FLAG_PRIORITY]          = "isPriority";
 
 // DnD actions this item is allowed
 

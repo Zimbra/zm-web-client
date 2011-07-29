@@ -430,7 +430,7 @@ function(flags) {
 	var msgsOn = {};
 	for (var i = 0; i < flags.length; i++) {
 		var flag = flags[i];
-		if (!(flag == ZmItem.FLAG_FLAGGED || flag == ZmItem.FLAG_UNREAD || flag == ZmItem.FLAG_ATTACH)) { continue; }
+		if (!(flag == ZmItem.FLAG_FLAGGED || flag == ZmItem.FLAG_UNREAD || flag == ZmItem.FLAG_ATTACH || flag == ZmItem.FLAG_PRIORITY)) { continue; }
 		convOn[flag] = this[ZmItem.FLAG_PROP[flag]];
 		msgsOn[flag] = this.hasFlag(flag, true);
 	}			

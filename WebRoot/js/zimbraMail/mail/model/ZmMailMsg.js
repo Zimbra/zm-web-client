@@ -1367,6 +1367,10 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 		msgNode.f = ZmItem.FLAG_LOW_PRIORITY;
 	}
 
+	if (this.isPriority) {
+	    msgNode.f = ZmItem.FLAG_PRIORITY;			
+	}
+	
 	if (ZmMailMsg.COMPOSE_ADDRS.length > 0) { // If no addrs, no element 'e'
 		var addrNodes = msgNode.e = [];
 		for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {

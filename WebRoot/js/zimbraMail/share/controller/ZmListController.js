@@ -331,7 +331,11 @@ function(ev) {
 
 	if (ev.field == ZmItem.F_FLAG) {
 		this._doFlag([ev.item]);
-	} else {
+	} 
+	else if (ev.field == ZmItem.F_MSG_PRIORITY) {
+		this._doMsgPriority([ev.item]);
+	}
+	else {
 		var lv = this._listView[this._currentView];
 		if (lv) {
 			if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {

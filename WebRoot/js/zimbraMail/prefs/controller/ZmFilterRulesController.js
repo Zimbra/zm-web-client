@@ -411,6 +411,19 @@ function(dialog, folderList) {
 };
 
 /**
+ * runs a specified list of filters
+ * 
+ * @param container     {DwtControl} container reference
+ * @param filterSel     {Array} array of ZmFilterRule
+ * @param isOutgoing    {Boolean} 
+ */
+ZmFilterRulesController.prototype.runFilter = 
+function(container, filterSel, isOutgoing) {
+	var work = new ZmFilterWork(filterSel, isOutgoing);
+	this._progressController.start(container, work);
+};
+
+/**
 * The user has agreed to delete a filter rule.
 *
 * @param rule	[ZmFilterRule]		rule to delete

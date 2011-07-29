@@ -710,6 +710,32 @@ function(items, on) {
 	list.flagItems(params);
 };
 
+ZmBaseController.prototype._doMsgPriority = 
+function(items, on) {
+	items = AjxUtil.toArray(items);
+	if (!items.length) { return; }
+
+	if (items[0] instanceof ZmItem) {
+		if (on !== true && on !== false) {
+			on = !items[0].isPriority;
+		}
+		var items1 = [];
+		for (var i = 0; i < items.length; i++) {
+			if (items[i].isPriority != on) {
+				items1.push(items[i]);
+			}
+		}
+	} else {
+		items1 = items;
+	}
+
+	var params = {items:items1, op:"priority", value:on};
+    params.actionText = on ? ZmMsg.actionMsgPriority : ZmMsg.actionUnMsgPriority; 
+	var list = params.list = this._getList(params.items);
+	this._setupContinuation(this._doMsgPriority, [on], params);
+	list.flagItems(params);	
+};
+
 /**
  * Tag/untag items
  * 

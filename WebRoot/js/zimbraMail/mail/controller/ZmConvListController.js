@@ -633,6 +633,12 @@ function(items) {
 	this._applyAction(items, "_doFlag", [on]);
 };
 
+ZmConvListController.prototype._doMsgPriority = 
+function(items) {
+	var on = !items[0].isPriority;
+	this._applyAction(items, "_doMsgPriority", [on]);
+};
+
 ZmConvListController.prototype._doTag =
 function(items, tag, doTag) {
 	this._applyAction(items, "_doTag", [tag, doTag]);

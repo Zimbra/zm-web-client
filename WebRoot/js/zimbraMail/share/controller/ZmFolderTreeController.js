@@ -37,6 +37,7 @@ ZmFolderTreeController = function(type, dropTgt) {
 	ZmTreeController.call(this, (type || ZmOrganizer.FOLDER));
 
 	this._listeners[ZmOperation.NEW_FOLDER] = new AjxListener(this, this._newListener);
+	this._listeners[ZmOperation.PRIORITY_FILTER] = new AjxListener(this, this._priorityFilterListener);
 	this._listeners[ZmOperation.RENAME_FOLDER] = new AjxListener(this, this._renameListener);
 	this._listeners[ZmOperation.SHARE_FOLDER] = new AjxListener(this, this._shareFolderListener);
 	this._listeners[ZmOperation.EMPTY_FOLDER] = new AjxListener(this, this._emptyListener);
@@ -228,7 +229,7 @@ function(parent, type, id) {
 		}
 	}
 	parent.enable(ZmOperation.BROWSE, true);
-
+	parent.enable(ZmOperation.PRIORITY_FILTER, true);
 	button = parent.getOp(ZmOperation.RECOVER_DELETED_ITEMS);
 	if (button) {
 		button.setVisible(isTrash);
@@ -251,8 +252,11 @@ ZmFolderTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	return [
 		ZmOperation.NEW_FOLDER,
+		ZmOperation.SEP,
+		ZmOperation.PRIORITY_FILTER,
 		ZmOperation.EXPAND_ALL,
 		ZmOperation.SYNC,
+		ZmOperation.SEP,
 		ZmOperation.BROWSE
 	];
 };
@@ -360,6 +364,17 @@ function(folder) {
 		if (!sortBy) {
 			sortBy = (sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC;
 		}
+		else {
+			//user may have saved folder with From search then switched views; don't allow From sort in conversation mode
+			var groupMode = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
+			if (groupMode == ZmItem.CONV && (sortBy == ZmSearch.NAME_ASC || sortBy == ZmSearch.NAME_DESC)) {
+				sortBy = appCtxt.get(ZmSetting.SORTING_PREF, appCtxt.getCurrentViewId());  //default to view preference
+				if (!sortBy) {
+					sortBy = ZmSearch.DATE_DESC; //default
+				}
+				appCtxt.set(ZmSetting.SORTING_PREF, sortBy, folder.nId);
+			}
+		}
 		var params = {
 			query: folder.createQuery(),
 			searchFor: searchFor,
@@ -368,12 +383,6 @@ function(folder) {
 			sortBy: sortBy,
 			accountName: (acct && acct.name)
 		};
-
-		//TODO: experiemental for now
-        if (folder.id == ZmFolder.ID_PRIORITYINBOX) {
-           params.query = "in:Inbox";
-           params.searchId = ZmFolder.ID_PRIORITYINBOX;
-        }
 
 		sc.resetSearchAllAccounts();
 
@@ -690,6 +699,13 @@ ZmFolderTreeController.prototype._continueMovingAcrossAccount =
 function(dialog, ctlr, items, dropFolder) {
 	dialog.popdown();
 	ctlr._doMove(items, dropFolder);
+};
+
+
+ZmTreeController.prototype._priorityFilterListener =
+function(ev) {
+	var priorityFilterDialog = appCtxt.getPriorityMessageFilterDialog();
+	ZmController.showDialog(priorityFilterDialog);
 };
 
 /**

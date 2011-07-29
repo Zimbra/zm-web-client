@@ -1890,12 +1890,18 @@ function(items, on) {
 	appCtxt.notifyZimlets("onMailFlagClick", [items, on]);
 };
 
+ZmMailListController.prototype._doMsgPriority = 
+function(items, on) {
+	ZmListController.prototype._doMsgPriority.call(this, items, on);	
+};
+
 // Tag/untag items(override ZmListController to add hook to zimletMgr
 ZmMailListController.prototype._doTag =
 function(items, tag, doTag) {
 	ZmListController.prototype._doTag.call(this, items, tag, doTag);
 	appCtxt.notifyZimlets("onTagAction", [items, tag, doTag]);
 };
+
 
 /**
  * Returns the next/previous/first/last unread item in the list, based on what's

@@ -746,6 +746,35 @@ function() {
 };
 
 /**
+ * Gets the priority message filter dialog.
+ * 
+ * @return {ZmPriorityMessageFilterDialog}  the priority message filter dialog
+ */
+ZmAppCtxt.prototype.getPriorityMessageFilterDialog = 
+function() {
+	if (!this._priorityMessageFilterDialog) {
+		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
+		this._priorityMessageFilterDialog = new ZmPriorityMessageFilterDialog();
+	}
+	return this._priorityMessageFilterDialog;
+};
+
+/**
+ * Gets the prompt dialog for running priority message filters
+ * 
+ * @return {ZmPriorityMesagePromptDialog} the priority message prompt dialog
+ */
+ZmAppCtxt.prototype.getPriorityMessagePromptDialog = 
+function() {
+	if (!this._priorityMessagePromptDialog) {
+		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
+		this._priorityMessagePromptDialog = new ZmPriorityMessagePromptDialog();		
+	}
+	return this._priorityMessagePromptDialog;
+};
+
+
+/**
  * Gets the confirm dialog.
  * 
  * @return	{DwtConfirmDialog}		the confirmation dialog

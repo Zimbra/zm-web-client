@@ -69,6 +69,7 @@ ZmListView = function(params) {
 	this._handleEventType[this.type] = true;
 	this._disallowSelection = {};
 	this._disallowSelection[ZmItem.F_FLAG] = true;
+	this._disallowSelection[ZmItem.F_MSG_PRIORITY] = true;
 	this._selectAllEnabled = false;
 
 	if (params.dropTgt) {
@@ -257,6 +258,8 @@ function(ev) {
 				this._setImage(item, ZmItem.F_FLAG, on ? "FlagRed" : "FlagDis");
 			} else if (flag == ZmItem.FLAG_ATTACH) {
 				this._setImage(item, ZmItem.F_ATTACHMENT, on ? "Attachment" : null);
+			} else if (flag == ZmItem.FLAG_PRIORITY) {
+				this._setImage(item, ZmItem.F_MSG_PRIORITY, on ? "Priority" : "PriorityDis");
 			}
 		}
 	}
@@ -456,6 +459,8 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		idx = this._getImageHtml(htmlArr, idx, item.hasAttach ? "Attachment" : null, this._getFieldId(item, field));
 	} else if (field == ZmItem.F_DATE) {
 		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now || new Date(), item.date);
+	} else if (field == ZmItem.F_MSG_PRIORITY) {
+		idx = this._getImageHtml(htmlArr, idx, this._getMsgPriorityIcon(item.isPriority), this._getFieldId(item, field));		
 	} else if (field == ZmItem.F_PRIORITY) {
         var priorityImage = null;
         if (item.isHighPriority) {
@@ -575,6 +580,12 @@ function(ev, div) {
 			AjxImg.setImage(ev.target, this._getFlagIcon(item.isFlagged, false), true);
 		}
 	}
+	else if (field == ZmItem.F_MSG_PRIORITY) {
+		var item = this.getItemFromElement(div);
+		if (!item.isPriority) {
+			AjxImg.setImage(ev.target, this._getMsgPriorityIcon(item.isPriority, false), true);
+		}
+	}
 	return true;
 };
 
@@ -592,6 +603,12 @@ function(ev, div) {
 		var item = this.getItemFromElement(div);
 		if (!item.isFlagged) {
 			AjxImg.setDisabledImage(ev.target, this._getFlagIcon(item.isFlagged, true), true);
+		}
+	}
+	else if (field == ZmItem.F_MSG_PRIORITY) {
+		var item = this.getItemFromElement(div);
+		if (!item.isPriority) {
+			AjxImg.setDisabledImage(ev.target, this._getMsgPriorityIcon(item.isPriority, true), true);
 		}
 	}
 	return true;
