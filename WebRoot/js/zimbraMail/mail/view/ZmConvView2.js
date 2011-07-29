@@ -464,6 +464,7 @@ ZmMailMsgCapsuleView = function(params) {
 	this._forceExpand = params.forceExpand;
 	this._actionsMenu = params.actionsMenu;
 	this._focusedClassName = [this._normalClassName, DwtCssStyle.FOCUSED].join(" ");
+	this._showingQuotedText = false;
 
 	this.addListener(ZmMailMsgView._TAG_CLICK, this._msgTagClicked.bind(this));
 };
@@ -505,7 +506,7 @@ function(msg, container, callback) {
 
 ZmMailMsgCapsuleView.prototype._renderMessageHeader =
 function(msg, container) {
-
+	
 	this._tableRowId = Dwt.getNextId();
 	DBG.println("c2", "Render: Msg ID: " + this._msg.id + ", table row ID: " + this._tableRowId);
 	this._expandIconCellId = Dwt.getNextId();
@@ -530,6 +531,11 @@ function(msg, container) {
 	
 	this._setExpandIcon();
 	this._setRowClass();
+	
+	var invite = msg.invite;
+	if (invite && !invite.isEmpty() && this._inviteMsgView) {
+		ZmMailMsgView.prototype._renderMessageHeader.apply(this, arguments);
+	}
 };
 
 ZmMailMsgCapsuleView.prototype._renderMessageBodyAndFooter =
@@ -556,24 +562,27 @@ function(msg, container, callback) {
 };
 
 ZmMailMsgCapsuleView.prototype._renderMessageBody =
-function(msg, container) {
+function(msg, container, callback, index) {
 
 	if (!msg._loaded) {
 		var params = {
 			getHtml:		appCtxt.get(ZmSetting.VIEW_AS_HTML),
-			callback:		ZmMailMsgView.prototype._renderMessageBody.bind(this, msg, container, null),
+			callback:		ZmMailMsgView.prototype._renderMessageBody.bind(this, msg, container, callback, index),
 			needExp:		true
 		}
 		msg.load(params);
 	}
 	else {
-		ZmMailMsgView.prototype._renderMessageBody.call(this, msg, container, null);
+		ZmMailMsgView.prototype._renderMessageBody.call(this, msg, container, callback, index);
 	}
+
+	if (callback) { callback.run(); }
 };
 
 ZmMailMsgCapsuleView.prototype._getBodyContent =
 function(bodyPart) {
-	return AjxStringUtil.getOriginalContent(bodyPart.content, (bodyPart.ct == ZmMimeTable.TEXT_HTML));
+	return this._showingQuotedText ? bodyPart.content :
+									 AjxStringUtil.getOriginalContent(bodyPart.content, (bodyPart.ct == ZmMimeTable.TEXT_HTML));
 };
 
 ZmMailMsgCapsuleView.prototype._setExpandIcon =
@@ -592,6 +601,7 @@ function(msg, container) {
 	this._buttonCellId = Dwt.getNextId();
 	this._folderCellId = Dwt.getNextId();
 	this._tagContainerCellId = Dwt.getNextId();
+	this._showTextLinkId = Dwt.getNextId();
 	var replyLinkId = Dwt.getNextId();
 	this._footerId = ZmId.getViewId(this._viewId, ZmId.MV_MSG_FOOTER, this._mode);
 	var folder = appCtxt.getById(msg.folderId);
@@ -605,6 +615,7 @@ function(msg, container) {
 		folderCellId:	this._folderCellId,
 		folderName:		ZmMsg.folderLabel + "&nbsp;" + folderName,
 		tagCellId:		this._tagContainerCellId,
+		showTextLinkId:	this._showTextLinkId,
 		replyLinkId:	replyLinkId,
 		buttonCellId:	this._buttonCellId,
 		hasAttachments:	(attachmentsCount > 0),
@@ -614,6 +625,11 @@ function(msg, container) {
 	this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
 	
 	this._setTags();
+	
+	var showTextLink = document.getElementById(this._showTextLinkId);
+	if (showTextLink) {
+		showTextLink.onclick = this._handleShowTextLink.bind(this);
+	}
 	
 	var replyLink = document.getElementById(replyLinkId);
 	if (replyLink) {
@@ -686,6 +702,23 @@ function() {
 	return "MsgBody " + (this._isOdd ? "OddMsg" : "EvenMsg");
 };
 
+ZmMailMsgCapsuleView.prototype._handleShowTextLink =
+function() {
+
+	this._showingQuotedText = !this._showingQuotedText;
+	this._ifw.dispose();
+	
+	this._renderMessageBody(this._msg, null, null, 1);	// index of 1 to put rerendered body below header
+	var showTextLink = document.getElementById(this._showTextLinkId);
+	if (showTextLink) {
+		showTextLink.innerHTML = this._showingQuotedText ? ZmMsg.hideQuotedText : ZmMsg.showQuotedText;
+	}
+	var iframe = document.getElementById(this._iframeId);
+	if (iframe) {
+		this._resetIframeHeightOnTimer(iframe);
+	}
+};
+
 ZmMailMsgCapsuleView.prototype._handleReplyLink =
 function(listener, item, ev) {
 	this._controller._mailListView._selectedMsg = this._msg;
@@ -739,7 +772,7 @@ function(ev) {
 	}
 	else if (ev.button == DwtMouseEvent.RIGHT) {
 		var target = DwtUiEvent.getTarget(ev);
-		if (this._objectManager && this._objectManager._findObjectSpan(target)) {
+		if (this._objectManager && !AjxUtil.isBoolean(this._objectManager) && this._objectManager._findObjectSpan(target)) {
 			// let zimlet framework handle this; we don't want to popup our action menu
 			return;
 		}

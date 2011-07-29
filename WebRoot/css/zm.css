@@ -735,6 +735,7 @@ INPUT[type="text"].search_input {
 	color:@Text-link@;
 /*	text-decoration:underline;*/
 	margin-right:10px;
+	white-space:nowrap;
 }
 
 .ZmConvView2 .ReplyInput {

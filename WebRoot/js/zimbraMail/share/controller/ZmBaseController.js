@@ -998,6 +998,7 @@ function(parent) {
 	var tagOp = parent.getOp(ZmOperation.TAG_MENU);
 	if (tagOp) {
 		var tagMenu = parent.getTagMenu();
+		if (!tagMenu) { return; }
 
 		// dynamically build tag menu add/remove lists
 		var items = this.getItems();

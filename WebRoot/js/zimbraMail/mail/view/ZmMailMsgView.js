@@ -829,7 +829,7 @@ function(html) {
 };
 
 ZmMailMsgView.prototype._makeIframeProxy =
-function(container, html, isTextMsg, isTruncated) {
+function(container, html, isTextMsg, isTruncated, index) {
 	// bug fix #4943
 	if (html == null) { html = ""; }
 
@@ -919,6 +919,7 @@ function(container, html, isTextMsg, isTruncated) {
 	var params = {
 		parent:					this,
 		parentElement:			container,
+		index:					index,
 		className:				this._getBodyClass(),
 		id:						this._msgBodyDivId,
 		hidden:					true,
@@ -1342,7 +1343,7 @@ function(msg, container) {
  * @param callback
  */
 ZmMailMsgView.prototype._renderMessageBody =
-function(msg, container, callback) {
+function(msg, container, callback, index) {
 
 	var el = container || this.getHtmlElement();
 	
@@ -1382,7 +1383,7 @@ function(msg, container, callback) {
 				}
 			}
 		}
-		this._makeIframeProxy(el, html.join(""), !hasHtmlPart);
+		this._makeIframeProxy(el, html.join(""), !hasHtmlPart, false, index);
 	} else {
 		var bodyPart = msg.getBodyPart();
 		if (bodyPart) {
@@ -1413,7 +1414,7 @@ function(msg, container, callback) {
                     c = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: true});
                 }
 
-				this._makeIframeProxy(el, content, false, bodyPart.truncated);
+				this._makeIframeProxy(el, content, false, bodyPart.truncated, index);
 			} else if (ZmMimeTable.isRenderableImage(bodyPart.ct)) {
 				var html = [
 					"<img zmforced='1' class='InlineImage' src='",
@@ -1421,7 +1422,7 @@ function(msg, container, callback) {
 					"&id=", msg.id,
 					"&part=", bodyPart.part, "'>"
 				].join("");
-				this._makeIframeProxy(el, html, false);
+				this._makeIframeProxy(el, html, false, false, index);
 			} else {
 				// otherwise, get the text part if necessary
 				if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
@@ -1434,7 +1435,7 @@ function(msg, container, callback) {
 					}
 					
 					if (content != null) {
-						this._makeIframeProxy(el, content, true);
+						this._makeIframeProxy(el, content, true, false, index);
 					}
 					if (callback) { callback.run(); }
 
@@ -1451,7 +1452,7 @@ function(msg, container, callback) {
                         isTextMsg = false; //To make sure we display html content properly
 
                     }
-					this._makeIframeProxy(el, content, isTextMsg, bodyPart.truncated);
+					this._makeIframeProxy(el, content, isTextMsg, bodyPart.truncated, index);
 				}
 			}
 		}
