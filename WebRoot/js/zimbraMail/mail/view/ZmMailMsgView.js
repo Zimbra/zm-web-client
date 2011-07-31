@@ -142,12 +142,6 @@ function() {
 	this.setScrollWithIframe(this._scrollWithIframe);
 };
 
-ZmMailMsgView.prototype.getInviteMsgView =
-function() {
-	return this._inviteMsgView;
-};
-
-
 ZmMailMsgView.prototype.preventSelection =
 function() {
 	return false;
@@ -171,39 +165,6 @@ function(msg, force) {
 		return;
 	}
 
-	this._dateObjectHandlerDate = new Date(msg.sentDate || msg.date);
-
-	var invite = msg.invite;
-	var ac = window.parentAppCtxt || window.appCtxt;
-
-	if ((ac.get(ZmSetting.CALENDAR_ENABLED) || ac.multiAccounts) &&
-		(invite && !invite.isEmpty() && invite.type != "task"))
-	{
-		if (!this._inviteMsgView) {
-			this._inviteMsgView = new ZmInviteMsgView({parent:this, mode:this._mode});
-		}
-		this._inviteMsgView.set(msg);
-	}
-	else if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
-			 msg.share && msg.folderId != ZmFolder.ID_TRASH &&
-			 appCtxt.getActiveAccount().id != msg.share.grantor.id)
-	{
-		AjxDispatcher.require("Share");
-		var action = msg.share.action;
-		var isNew = action == ZmShare.NEW;
-		var isEdit = action == ZmShare.EDIT;
-		var isDataSource = (appCtxt.getById(msg.folderId).isDataSource(null, true) && (msg.folderId != ZmFolder.ID_INBOX));
-
-		if (!isDataSource &&
-			(isNew || (isEdit && !this.__hasMountpoint(msg.share))) &&
-			msg.share.link.perm)
-		{
-			var topToolbar = this._getShareToolbar();
-			topToolbar.reparentHtmlElement(contentDiv);
-			topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
-			this._hasShareToolbar = true;
-		}
-	}
 	var respCallback = new AjxCallback(this, this._handleResponseSet, [msg, oldMsg]);
 	this._renderMessage(msg, contentDiv, respCallback);
 	this.noTab = AjxEnv.isIE;
@@ -1126,7 +1087,9 @@ function(msg, container, callback) {
 
 ZmMailMsgView.prototype._renderMessageHeader =
 function(msg, container) {
-
+	
+	this._renderInviteToolbar(msg, container);
+	
 	var acctId = appCtxt.getActiveAccount().id;
 	var cl;
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.getApp(ZmApp.CONTACTS).contactsLoaded[acctId]) {
@@ -1335,6 +1298,44 @@ function(msg, container) {
 	}
 };
 
+ZmMailMsgView.prototype._renderInviteToolbar =
+function(msg, container) {
+
+	this._dateObjectHandlerDate = new Date(msg.sentDate || msg.date);
+
+	var invite = msg.invite;
+	var ac = window.parentAppCtxt || window.appCtxt;
+
+	if ((ac.get(ZmSetting.CALENDAR_ENABLED) || ac.multiAccounts) && 
+		(invite && !invite.isEmpty() && invite.type != "task"))
+	{
+		if (!this._inviteMsgView) {
+			this._inviteMsgView = new ZmInviteMsgView({parent:this, mode:this._mode});
+		}
+		this._inviteMsgView.set(msg);
+	}
+	else if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
+			 msg.share && msg.folderId != ZmFolder.ID_TRASH &&
+			 appCtxt.getActiveAccount().id != msg.share.grantor.id)
+	{
+		AjxDispatcher.require("Share");
+		var action = msg.share.action;
+		var isNew = action == ZmShare.NEW;
+		var isEdit = action == ZmShare.EDIT;
+		var isDataSource = (appCtxt.getById(msg.folderId).isDataSource(null, true) && (msg.folderId != ZmFolder.ID_INBOX));
+
+		if (!isDataSource &&
+			(isNew || (isEdit && !this.__hasMountpoint(msg.share))) &&
+			msg.share.link.perm)
+		{
+			var topToolbar = this._getShareToolbar();
+			topToolbar.reparentHtmlElement(contentDiv);
+			topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
+			this._hasShareToolbar = true;
+		}
+	}
+};
+
 /**
  * Renders the message body. There is a chance a server call will be made to fetch the text part.
  * 
@@ -1391,8 +1392,8 @@ function(msg, container, callback, index) {
 			var invite = msg.invite;
 
 			if (bodyPart.ct == ZmMimeTable.TEXT_HTML && appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
-				if (invite && !invite.isEmpty() && this._inviteMsgView) {
-					content = this._inviteMsgView.truncateBodyContent(content, true);
+				if (invite && !invite.isEmpty()) {
+					content = ZmInviteMsgView.truncateBodyContent(content, true);
 				}
 
 				// fix broken inline images - take one like this: <img dfsrc="http:...part=1.2.2">
@@ -1442,8 +1443,8 @@ function(msg, container, callback, index) {
 					return;
 
 				} else {
-					if (invite && !invite.isEmpty() && this._inviteMsgView) {
-						content = this._inviteMsgView.truncateBodyContent(content);
+					if (invite && !invite.isEmpty()) {
+						content = ZmInviteMsgView.truncateBodyContent(content);
 					}
 
                     var isTextMsg = true;

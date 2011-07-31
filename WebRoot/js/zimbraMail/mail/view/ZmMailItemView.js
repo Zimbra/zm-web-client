@@ -68,3 +68,7 @@ ZmMailItemView.prototype.setReadingPane =
 function() {
 };
 
+ZmMailItemView.prototype.getInviteMsgView =
+function() {
+	return this._inviteMsgView;
+};

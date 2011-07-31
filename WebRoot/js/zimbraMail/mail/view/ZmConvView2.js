@@ -398,12 +398,12 @@ function() {
 
 ZmConvView2.prototype.addInviteReplyListener =
 function(listener) {
-//	this.addListener(ZmInviteMsgView.REPLY_INVITE_EVENT, listener);
+	this._inviteReplyListener = listener;
 };
 
 ZmConvView2.prototype.addShareListener =
 function(listener) {
-//	this.addListener(ZmMailMsgView.SHARE_EVENT, listener);
+	this._shareListener = listener;
 };
 
 ZmConvView2.prototype._msgListChangeListener =
@@ -467,6 +467,8 @@ ZmMailMsgCapsuleView = function(params) {
 	this._showingQuotedText = false;
 
 	this.addListener(ZmMailMsgView._TAG_CLICK, this._msgTagClicked.bind(this));
+	this.addListener(ZmInviteMsgView.REPLY_INVITE_EVENT, this.parent._inviteReplyListener);
+	this.addListener(ZmMailMsgView.SHARE_EVENT, this.parent._shareListener);
 };
 
 ZmMailMsgCapsuleView.prototype = new ZmMailMsgView;
@@ -531,11 +533,6 @@ function(msg, container) {
 	
 	this._setExpandIcon();
 	this._setRowClass();
-	
-	var invite = msg.invite;
-	if (invite && !invite.isEmpty() && this._inviteMsgView) {
-		ZmMailMsgView.prototype._renderMessageHeader.apply(this, arguments);
-	}
 };
 
 ZmMailMsgCapsuleView.prototype._renderMessageBodyAndFooter =
@@ -563,7 +560,9 @@ function(msg, container, callback) {
 
 ZmMailMsgCapsuleView.prototype._renderMessageBody =
 function(msg, container, callback, index) {
-
+	
+	var isInvite = appCtxt.get(ZmSetting.CALENDAR_ENABLED) && msg.invite && !msg.invite.isEmpty();
+	
 	if (!msg._loaded) {
 		var params = {
 			getHtml:		appCtxt.get(ZmSetting.VIEW_AS_HTML),
@@ -576,7 +575,34 @@ function(msg, container, callback, index) {
 		ZmMailMsgView.prototype._renderMessageBody.call(this, msg, container, callback, index);
 	}
 
-	if (callback) { callback.run(); }
+	// rearrange invite components to be part of the body
+	if (isInvite) {
+		ZmMailMsgView.prototype._renderMessageHeader.apply(this, arguments);
+		var bodyEl = this.getMsgBodyElement();
+		this.parent._inviteMsgView = this._inviteMsgView;
+		this._inviteMsgView._inviteToolbar.reparentHtmlElement(bodyEl, 0);
+	
+		// if cal invite, show F/B info
+		if (callback) {
+			callback.run();
+		}
+		
+		// invite header
+		bodyEl.insertBefore(this._headerElement.parentNode, bodyEl.childNodes[1]);
+
+		// resize and reposition F/B cal day view
+		var dayView = this._inviteMsgView._dayView;
+		if (dayView) {
+			// shove it in a container DIV so we can use absolute positioning
+			var div = document.createElement("div");
+			bodyEl.appendChild(div);
+			dayView.reparentHtmlElement(div);
+			var mySize = this.getSize();
+			dayView.setSize(mySize.x, 220);
+			var el = dayView.getHtmlElement();
+			el.style.left = el.style.top = "auto";
+		}
+	}
 };
 
 ZmMailMsgCapsuleView.prototype._getBodyContent =

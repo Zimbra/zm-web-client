@@ -290,9 +290,12 @@ function(reset) {
 	var grandParentSize = this.parent.parent.getSize();
 
 	if (reset) {
-		isRight
-			? this.parent.setSize(Dwt.DEFAULT, grandParentSize.y)
-			: this.parent.setSize(grandParentSize.x, Dwt.DEFAULT);
+		if (isRight) {
+			this.parent.setSize(Dwt.DEFAULT, grandParentSize.y);
+		}
+		else {
+			this.parent.setSize(grandParentSize.x, Dwt.DEFAULT);
+		}
 	} else if (this._dayView) {
 		// bug: 50412 - fix day view for stand-alone message view which is a parent
 		// of DwtShell and needs to be resized manually.
@@ -548,7 +551,7 @@ function(subs, sentBy, sentByAddr, obo) {
 	}
 };
 
-ZmInviteMsgView.prototype.truncateBodyContent =
+ZmInviteMsgView.truncateBodyContent =
 function(content, isHtml) {
 	var sepIdx = content.indexOf(ZmItem.NOTES_SEPARATOR);
 	if (sepIdx == -1) {
