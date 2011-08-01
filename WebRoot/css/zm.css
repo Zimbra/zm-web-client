@@ -2129,6 +2129,10 @@ HTML>BODY .appt-selected .appt_allday_body
     left: 42%;
 }
 
+.ZCalToggleBtn TABLE {
+    border-collapse: separate;
+}
+
 /* ??? USED? */
 /* filler for a blank all day item row in month view */
 .allday_item_filler {

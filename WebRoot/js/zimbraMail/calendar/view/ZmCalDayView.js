@@ -275,7 +275,7 @@ function(abook) {
 
     // all day headings
 	html.append("<div id='", this._tabsContainerDivId, "' name='_tabsContainerDivId' style='position:absolute;height:25px;bottom:0px;'>");
-    html.append("<div id='", this._toggleBtnContainerId, "' name='_toggleBtnContainerId' style='position:absolute;'></div>");
+    html.append("<div id='", this._toggleBtnContainerId, "' name='_toggleBtnContainerId' style='position:absolute;bottom:0px;'></div>");
 	html.append("<div id='", this._allDayHeadingDivId, "' name='_allDayHeadingDivId' style='", headerStyle,	"'>");
 
 	html.append("</div>");
@@ -336,10 +336,10 @@ function(refreshApptLayout) {
 	var scrollFudge = needHorzScroll ? 20 : 0; // need all day to be a little wider then grid
 
     if(!this._toggleBtn) {
-        this._toggleBtn = new DwtButton({parent:appCtxt.getShell(), parentElement: this._toggleBtnContainerId});
+        this._setBounds(this._toggleBtnContainerId, 0, Dwt.DEFAULT, hoursWidth+ZmCalDayTabView._UNION_DIV_WIDTH+this._daySepWidth, Dwt.DEFAULT);
+        this._toggleBtn = new DwtButton({parent:this, parentElement: this._toggleBtnContainerId, className: "ZButton ZPicker ZCalToggleBtn"});
         this._toggleBtn.setText(ZmMsg.calTabsMerge);
         this._toggleBtn.addListener(DwtEvent.ONCLICK, new AjxListener(this, this._toggleView));
-        this._setBounds(this._toggleBtnContainerId, 0, 0, hoursWidth+ZmCalDayTabView._UNION_DIV_WIDTH+2*this._daySepWidth, Dwt.DEFAULT);
     }
 
 	// column headings
