@@ -2937,7 +2937,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmAppChooser {
 	margin-left:@SmallBoxPaddingSize@;
-	margin-top:@BoxMarginSize@;
+	margin-top: 1px;
 	height: 100%;
 }
 
