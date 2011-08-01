@@ -1149,7 +1149,7 @@ function(dlg) {
 		treeIds:		[this.type],
 		overviewId:		dlg.getOverviewId(ZmOrganizer.APP[this.type]),
 		omit:			omit,
-		title:			this._getMoveDialogTitle(),
+		title:			AjxStringUtil.htmlEncode(this._getMoveDialogTitle()),
 		description:	ZmMsg.targetFolder,
 		appName:		ZmOrganizer.APP[this.type]
 	};

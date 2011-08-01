@@ -1631,7 +1631,11 @@ function(draftType, attId, docIds, callback, contactId) {
 		if (draftType == ZmComposeController.DRAFT_TYPE_MANUAL) {
 			var dlg = appCtxt.getMsgDialog();
 			dlg.reset();
-			dlg.setMessage(AjxMessageFormat.format(ZmMsg.errorSavingDraftInvalidEmails, [addrs._bad_addrs_.getArray().join("<br/>")]));
+			var badAddrs = [];	
+			for (var i=0; i<addrs._bad_addrs_.size(); i++) {
+				badAddrs.push(AjxStringUtil.htmlEncode(addrs._bad_addrs_.get(i)));		
+			}
+			dlg.setMessage(AjxMessageFormat.format(ZmMsg.errorSavingDraftInvalidEmails, [badAddrs.join("<br/>")]));
 			dlg.popup();
 		}
 		return;

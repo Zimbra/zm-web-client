@@ -104,7 +104,7 @@ function(testCallback, index, result) {
 
 			var detailsEl = document.getElementById(account.id+"_test_details");
 			var errorEl = document.getElementById(account.id+"_test_error");
-			errorEl.innerHTML = error;
+			errorEl.innerHTML = AjxStringUtil.htmlEncode(error);
 			Dwt.setVisible(detailsEl, true);
 		}
 

@@ -793,7 +793,7 @@ function(participants, item, availWidth) {
 	for (var i = 0; i < pLen; i++) {
 		var p = participants[i];
 		var field = p.name || p.address || p.company || "";
-		width += AjxStringUtil.getWidth(field, item.isUnread);
+		width += AjxStringUtil.getWidth(AjxStringUtil.htmlEncode(field), item.isUnread);
 		list.push({name:field, index:i});
 	}
 	width += (pLen - 1) * sepWidth;
@@ -812,7 +812,7 @@ function(participants, item, availWidth) {
 		var width = 0;
 		// total the width of the names
 		for (var i = 0; i < list.length; i++) {
-			width += AjxStringUtil.getWidth(list[i].name, item.isUnread);
+			width += AjxStringUtil.getWidth(AjxStringUtil.htmlEncode(list[i].name), item.isUnread);
 		}
 		// add the width of the separators
 		width += (list.length - 1) * sepWidth;

@@ -574,7 +574,7 @@ function() {
         for(var i=0; i<items.length; i++) {
             val = items[i];
             if(val) {
-                this._addEmail(val);
+                this._addEmail(AjxStringUtil.htmlEncode(val));
                 if (!this._add[val]) {
                     this._add[val] = true;
                 }

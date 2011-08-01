@@ -407,7 +407,10 @@ function(params) {
 	params.attrs = {tag:tagId};
 	params.action = doTag ? "tag" : "!tag";
     params.actionText = doTag ? ZmMsg.actionTag : ZmMsg.actionUntag;
-    params.actionArg = params.tag && params.tag.name;
+	if (params.tag && params.tag.name) {
+		params.actionArg = AjxStringUtil.htmlEncode(params.tag.name);
+	}
+    
 
 	this._itemAction(params);
 };

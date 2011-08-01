@@ -590,6 +590,7 @@ function(data) {
 				var name = [prefix, suffix, count > 1 ? count : ""].join("");
 				var value = data.attrs[name];
 				if (!value) { continue; }
+				value = AjxStringUtil.htmlEncode(value);
 				if (!itemListData.address)  {
 					itemListData.address = {};
 				}

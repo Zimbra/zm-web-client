@@ -339,7 +339,7 @@ function(ex) {
 		ex.code == ZmCsfeException.SVC_INVALID_REQUEST)
 	{
 		var msgDialog = appCtxt.getMsgDialog();
-		msgDialog.setMessage([ZmMsg.filterError, " ", ex.msg].join(""), DwtMessageDialog.CRITICAL_STYLE);
+		msgDialog.setMessage([ZmMsg.filterError, " ", AjxStringUtil.htmlEncode(ex.msg)].join(""), DwtMessageDialog.CRITICAL_STYLE);
 		msgDialog.popup();
         //only reload rules if the filter rule dialog is not popped up or if a new rule is being added
         //get index for refreshing list view

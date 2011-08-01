@@ -715,7 +715,7 @@ function(account) {
 	var options = pref.options;
 	var displayOptions = pref.displayOptions;
 	var pattern = displayOptions[options[0] == ZmAccountsPage.DOWNLOAD_TO_INBOX ? 1 : 0];
-	var name = this._getControlValue("NAME", section);
+	var name = AjxStringUtil.htmlEncode(this._getControlValue("NAME", section));
 	var text = AjxMessageFormat.format(pattern, name);
 
 	var radioButton = radioGroup.getRadioButtonByValue(ZmAccountsPage.DOWNLOAD_TO_FOLDER);
