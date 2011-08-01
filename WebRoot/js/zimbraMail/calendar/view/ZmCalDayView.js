@@ -363,7 +363,7 @@ function(refreshApptLayout) {
 
 	// div under year
 	this._setBounds(this._yearAllDayDivId, 0, ZmCalDayTabView._TAB_BORDER_MARGIN, hoursWidth + ZmCalDayTabView._UNION_DIV_WIDTH + this._daySepWidth, this._allDayDivHeight);
-    this._setBounds(this._yearHeadingDivId, 0, this._daySepWidth, hoursWidth + ZmCalDayTabView._UNION_DIV_WIDTH + this._daySepWidth, Dwt.DEFAULT);
+    this._setBounds(this._yearHeadingDivId, 0, this._daySepWidth, hoursWidth + ZmCalDayTabView._UNION_DIV_WIDTH + this._daySepWidth, ZmCalColView._ALL_DAY_APPT_HEIGHT+2);
 	// all day scroll
 	var allDayScrollHeight =  this._allDayDivHeight;
 	this._setBounds(this._allDayScrollDivId, bodyX, 0, this._bodyDivWidth, allDayScrollHeight);
@@ -388,13 +388,6 @@ function(refreshApptLayout) {
 	this._setBounds(this._bodyDivId, bodyX, bodyY, this._bodyDivWidth, this._bodyDivHeight);
 
 	this._setBounds(this._apptBodyDivId, 0, -1, this._apptBodyDivWidth, this._apptBodyDivHeight);
-
-
-    //heading
-    //this._setBounds(this._unionHeadingDivId, unionX, 0, ZmCalDayTabView._UNION_DIV_WIDTH, Dwt.DEFAULT);
-
-    //div under heading
-    //this._setBounds(this._unionAllDayDivId, 0, 0, ZmCalDayTabView._UNION_DIV_WIDTH, this._allDayDivHeight);
 
     // sep in all day area
     var unionSepX = unionX + ZmCalDayTabView._UNION_DIV_WIDTH;
@@ -433,13 +426,14 @@ function(workingHours){
 	var allDayHeadingDivHeight = Dwt.getSize(allDayHeadingDiv).y;
 
     var currentX = 0;
+    var topBorderYPos = AjxEnv.isIE ? ZmCalDayTabView._TAB_BORDER_WIDTH : ZmCalColView._ALL_DAY_SEP_HEIGHT-ZmCalDayTabView._TAB_BORDER_WIDTH;
 
 	for (var i = 0; i < numCols; i++) {
 		var col = this._columns[i];
 
 		// position day heading
 		var day = this._days[col.dayIndex];
-		this._setBounds(col.titleId, currentX+ZmCalDayTabView._TAB_BORDER_WIDTH+ZmCalDayTabView._TAB_SEP_WIDTH+2, Dwt.DEFAULT, dayWidth, ZmCalColView._DAY_HEADING_HEIGHT);
+		this._setBounds(col.titleId, currentX+ZmCalDayTabView._TAB_BORDER_WIDTH+ZmCalDayTabView._TAB_SEP_WIDTH+2, Dwt.DEFAULT, Dwt.CLEAR, ZmCalColView._DAY_HEADING_HEIGHT);
 		col.apptX = currentX + 2 ; //ZZZ
 		col.apptWidth = dayWidth - 3*this._daySepWidth - ZmCalDayTabView._TAB_SEP_WIDTH;  //ZZZZ
 		col.allDayX = col.apptX;
@@ -453,20 +447,6 @@ function(workingHours){
             topPosition = startWorkingHour*halfHourHeight,
             workingDivHeight = duration*halfHourHeight;
 
-        /*if(!this._scheduleMode && day.isWorkingDay) {
-            this._setBounds(col.workingHrsFirstDivId, currentX, topPosition, dayWidth, workingDivHeight);
-
-            if( workingHrs.startTime.length >= 2 &&
-                workingHrs.endTime.length >= 2) {
-
-                startWorkingHour = Math.round(2 * workingHrs.startTime[1]/100),
-                duration = Math.round(2*(workingHrs.endTime[1] - workingHrs.startTime[1])/100),
-                topPosition = startWorkingHour*halfHourHeight,
-                workingDivHeight = duration*halfHourHeight;
-
-                this._setBounds(col.workingHrsSecondDivId, currentX, topPosition, dayWidth, workingDivHeight);
-            }
-        }*/
         if(this._scheduleMode && day.isWorkingDay) {
             this._setBounds(col.workingHrsFirstDivId, currentX, topPosition, dayWidth-ZmCalDayTabView._TAB_BORDER_MARGIN, workingDivHeight);
 
@@ -481,7 +461,7 @@ function(workingHours){
             }
         }
         //set tab borders
-        this._setBounds(col.borderTopDivId, currentX+this._bodyX, ZmCalColView._ALL_DAY_SEP_HEIGHT-ZmCalDayTabView._TAB_BORDER_WIDTH, dayWidth-ZmCalDayTabView._TAB_BORDER_MARGIN, Dwt.CLEAR);
+        this._setBounds(col.borderTopDivId, currentX+this._bodyX, topBorderYPos, dayWidth-ZmCalDayTabView._TAB_BORDER_MARGIN, Dwt.CLEAR);
         this._setBounds(col.borderBottomDivId, currentX+ZmCalDayTabView._TAB_BORDER_WIDTH+ZmCalDayTabView._TAB_SEP_WIDTH+2, 0, dayWidth-ZmCalDayTabView._TAB_BORDER_MARGIN, Dwt.CLEAR);
         this._setBounds(col.borderLeftDivId, currentX, 0, ZmCalDayTabView._TAB_BORDER_WIDTH, this._apptBodyDivHeight);
         this._setBounds(col.borderRightDivId, currentX+dayWidth-ZmCalDayTabView._TAB_BORDER_WIDTH-ZmCalDayTabView._TAB_BORDER_MARGIN, 0, ZmCalDayTabView._TAB_BORDER_WIDTH, this._apptBodyDivHeight);
@@ -515,12 +495,25 @@ function() {
 ZmCalDayTabView.prototype._resetCalendarData =
 function() {
 	// TODO: optimize: if calendar list is same, skip!
-
+    var titleParentEl = document.getElementById(this._allDayHeadingDivId),
+        dayParentEl = document.getElementById(this._apptBodyDivId),
+        allDaySepEl = document.getElementById(this._allDaySepDivId),
+        allDayDivEl = document.getElementById(this._allDayDivId),
+        cal,
+        calName,
+        calColor,
+        mergedCal,
+        calMergerdTabColor,
+        col,
+        html,
+        div,
+        i,
+        k;
 	// remove existing
 	// TODO: optimize, add/remove depending on new calendar length
 	if (this._numCalendars > 0) {
-		for (var i = 0; i < this._numCalendars; i++) {
-			var col = this._columns[i];
+		for (i = 0; i < this._numCalendars; i++) {
+			col = this._columns[i];
 			this._removeNode(col.titleId);
 			//this._removeNode(col.headingDaySepDivId);
 			this._removeNode(col.daySepDivId);
@@ -546,15 +539,9 @@ function() {
 	this._unionBusyData = []; 			//  0-47, one slot per half hour, 48 all day
 	this._unionBusyDataToolTip = [];	// tool tips
 
-	var titleParentEl = document.getElementById(this._allDayHeadingDivId);
-	var headingParentEl = document.getElementById(this._allDayScrollDivId);
-	var dayParentEl = document.getElementById(this._apptBodyDivId);
-	var allDaySepEl = document.getElementById(this._allDaySepDivId);
-	var allDayDivEl = document.getElementById(this._allDayDivId);
-
-	for (var i = 0; i < this._numCalendars; i++) {
-        var cal = this._calendars[i];
-		var col = this._columns[i] = {
+	for (i = 0; i < this._numCalendars; i++) {
+        cal = this._calendars[i];
+		col = this._columns[i] = {
 			index: i,
 			dayIndex: 0,
 			cal: cal,
@@ -577,7 +564,7 @@ function() {
             workingHrsFirstDivId: Dwt.getNextId(),
             workingHrsSecondDivId: Dwt.getNextId()
 		};
-        var calColor = this._mergedView ? "" : cal.rgb;
+        calColor = this._mergedView ? "" : cal.rgb;
 		this._folderIdToColIndex[cal.id] = col;
 		if (cal.isRemote() && cal.rid && cal.zid) {
 			this._folderIdToColIndex[cal.zid + ":" + cal.rid] = col;
@@ -586,135 +573,36 @@ function() {
         this._createDivForColumn(col.workingHrsFirstDivId, dayParentEl, "ImgCalendarDayGrid", "#FFFFFF");
         this._createDivForColumn(col.workingHrsSecondDivId, dayParentEl, "ImgCalendarDayGrid", "#FFFFFF");
         this._createDivForColumn(col.borderBottomDivId, titleParentEl, "ZmDayTabSeparator", calColor, calColor);
-        /*var div = document.createElement("div");
-		div.className = "ZmDayTabSeparator";
-		div.style.position = 'absolute';
-		div.style.backgroundColor = calColor;
-		div.style.borderColor = calColor;
-		div.id = col.borderBottomDivId;
-        if(titleParentEl) {
-		    titleParentEl.appendChild(div);
-        }*/
 
-
-		/*var div = document.createElement("div");
-		div.style.position = 'absolute';
-
-        div.style.backgroundColor = calColor;
-		div.style.borderColor = calColor;
-		div.className = "ZmCalDayTab";
-		div.id = col.titleId;
-		*/
-		var calName = AjxStringUtil.htmlEncode(cal.getName());
-        var div = this._createDivForColumn(col.titleId, titleParentEl, this._mergedView ? "" : "ZmCalDayTab", calColor, calColor);
+		calName = AjxStringUtil.htmlEncode(cal.getName());
+        div = this._createDivForColumn(col.titleId, titleParentEl, this._mergedView ? "" : "ZmCalDayTab", calColor, calColor);
         div.style.top = ZmCalDayTabView._TAB_BORDER_WIDTH + 'px';
 		if (this._mergedView) {
             //var div = this._createDivForColumn(Dwt.getNextId(), titleParentEl, "ZmCalDayTab", calColor, calColor);
-            var html = ["<table border=0><tr>"];
-            for (var k=0; k<this._calendars.length; k++) {
-                var calName = AjxStringUtil.htmlEncode(this._calendars[k].getName());
-                html.push('<td class=ZmCalDayTab>');
-                //html.push('<div>');
+            html = ["<table border=0><tr>"];
+            for (k=0; k<this._calendars.length; k++) {
+                mergedCal = this._calendars[k];
+                calMergerdTabColor = mergedCal.rgb;
+                calName = AjxStringUtil.htmlEncode(mergedCal.getName());
+                html.push('<td class=ZmCalDayTab style="background-color: ', calMergerdTabColor, ';">');
                 html.push(calName);
-                //html.push('</div>');
                 html.push('</td>');
                 html.push('<td>&nbsp;</td>');
-                //var titleDiv = this._createDivForColumn(Dwt.getNextId(), titleParentEl, "ZmCalDayTab", calColor, calColor, "static", true);
-			    //titleDiv.innerHTML = calName;
-                //div.appendChild(titleDiv);
             }
             html.push('</tr</table>');
             div.innerHTML = html.join("");
-			/*var acct = cal.getAccount();
-			div.innerHTML = [
-				"<center><table border=0><tr><td>",
-				calName,
-				"</td><td>[",
-				"<td>",
-				AjxImg.getImageSpanHtml(acct.getIcon(), "width:18px"),
-				"</td><td>",
-				AjxStringUtil.htmlEncode(acct.getDisplayName()),
-				"]</td></tr></table></center>"
-			].join("");*/
 		} else {
-            //var div = this._createDivForColumn(col.titleId, titleParentEl, "ZmCalDayTab", calColor, calColor);
             div.style.top = ZmCalDayTabView._TAB_BORDER_WIDTH + 'px';
 			div.innerHTML = calName;
 		}
-        /*if(titleParentEl) {
-		    titleParentEl.appendChild(div);
-        }
-        */
+
         this._createDivForColumn(col.borderLeftAllDayDivId, allDayDivEl, "ZmDayTabSeparator", calColor, calColor);
-        /*div = document.createElement("div");
-		div.className = "ZmDayTabSeparator";
-		div.style.position = 'absolute';
-        div.style.backgroundColor = calColor;
-		div.style.borderColor = calColor;
-		div.id = col.borderLeftAllDayDivId;
-        if(allDayDivEl) {
-		    allDayDivEl.appendChild(div);
-        }*/
         this._createDivForColumn(col.borderTopAllDayDivId, allDayDivEl, "ZmDayTabSeparator", calColor, calColor);
-        /*div = document.createElement("div");
-		div.className = "ZmDayTabSeparator";
-		div.style.position = 'absolute';
-        div.style.backgroundColor = calColor;
-		div.style.borderColor = calColor;
-		div.id = col.borderTopAllDayDivId;
-        if(allDayDivEl) {
-		    allDayDivEl.appendChild(div);
-        }*/
         this._createDivForColumn(col.borderRightAllDayDivId, allDayDivEl, "ZmDayTabSeparator", calColor, calColor);
-        /*div = document.createElement("div");
-		div.className = "ZmDayTabSeparator";
-		div.style.position = 'absolute';
-        div.style.backgroundColor = calColor;
-		div.style.borderColor = calColor;
-		div.id = col.borderRightAllDayDivId;
-        if(allDayDivEl) {
-		    allDayDivEl.appendChild(div);
-        }*/
         this._createDivForColumn(col.daySepDivId, dayParentEl, "ZmDayTabMarginDiv");
-		/*div = document.createElement("div");
-		div.className = "ZmDayTabMarginDiv";
-		div.style.position = 'absolute';
-		div.id = col.daySepDivId;
-        if(dayParentEl) {
-		    dayParentEl.appendChild(div);
-        }*/
-        this._createDivForColumn(col.borderLeftDivId, dayParentEl, "ZmDayTabSeparator", calColor, calColor);
-        /*div = document.createElement("div");
-		div.className = "ZmDayTabSeparator";
-		div.style.position = 'absolute';
-        div.style.backgroundColor = calColor;
-		div.style.borderColor = calColor;
-		div.id = col.borderLeftDivId;
-        if(dayParentEl) {
-		    dayParentEl.appendChild(div);
-        }*/
+		this._createDivForColumn(col.borderLeftDivId, dayParentEl, "ZmDayTabSeparator", calColor, calColor);
         this._createDivForColumn(col.borderRightDivId, dayParentEl, "ZmDayTabSeparator", calColor, calColor);
-        /*div = document.createElement("div");
-		div.className = "ZmDayTabSeparator";
-		div.style.position = 'absolute';
-        div.style.backgroundColor = calColor;
-		div.style.borderColor = calColor;
-		div.id = col.borderRightDivId;
-        if(dayParentEl) {
-		    dayParentEl.appendChild(div);
-        }*/
         this._createDivForColumn(col.borderTopDivId, allDaySepEl, "ZmDayTabSeparator", calColor, calColor);
-
-        /*div = document.createElement("div");
-		div.className = "ZmDayTabSeparator";
-		div.style.position = 'absolute';
-        div.style.backgroundColor = calColor;
-		div.style.borderColor = calColor;
-		div.id = col.borderTopDivId;
-        if(allDaySepEl) {
-		    allDaySepEl.appendChild(div);
-        }*/
-
 
 	}
 };

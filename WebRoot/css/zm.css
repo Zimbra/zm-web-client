@@ -1595,6 +1595,7 @@ line-height:normal;
 /* Separator between individual days of the calendar */
 .calendar_day_separator {
 	@SeparatorBg@
+    font-size: 0;
 }
 
 /* Separator between details and notes section of the calendar compose view*/
@@ -2111,6 +2112,9 @@ HTML>BODY .appt-selected .appt_allday_body
     /*border: 0; */
     /*border: 1px solid #B9B9B9;*/ /* color should slightly darker than the cal icon color*/
     @SeparatorBg@
+    padding: 0;
+    line-height: 0;
+    font-size: 0;
 }
 
 .ZmDayTabMarginDiv {
