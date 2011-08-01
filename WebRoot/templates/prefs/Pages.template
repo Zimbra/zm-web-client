@@ -683,10 +683,6 @@ and the container element is replaced with that control.
 
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.composeReplyLabel$></td>
-						<td class='ZOptionsField'><$=ZmMsg.composeReplyEmail$></td>
-					</tr>
-					<tr>
-						<td>&nbsp;</td>
 						<td class='ZOptionsField'>
 							<table>
 								<tr>
@@ -708,10 +704,6 @@ and the container element is replaced with that control.
 
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.forwardingLabel$></td>
-						<td class='ZOptionsField'><$=ZmMsg.forwardingEmail$></td>
-					</tr>
-					<tr>
-						<td>&nbsp;</td>
 						<td class='ZOptionsField'>
 							<table>
 								<tr>
@@ -879,9 +871,13 @@ and the container element is replaced with that control.
 				<td class='ZOptionsSectionMain'>
 					<table width=100%>
 
+				    <$ var settingLabelled = false; $>
 					<$ if (!appCtxt.multiAccounts || data.activeAccount.isMain) { $>
 						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.settingsLabel$></td>
+                            <td class='ZOptionsLabel'>
+                                <$= settingLabelled ? "&nbsp;" : ZmMsg.settingsLabel; $>
+                                <$  settingLabelled = true; $>
+                            </td>
 							<td class='ZOptionsField'><input id='${id}_AUTO_ADD_ADDRESS' tabindex='40' type=checkbox></td>
 						</tr>
 					<$ } $>
@@ -889,57 +885,64 @@ and the container element is replaced with that control.
 					<$ if (!appCtxt.multiAccounts || (appCtxt.isFamilyMbox && data.activeAccount.isMain) || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
 						<$ if (data.isEnabled(ZmSetting.INITIALLY_SEARCH_GAL)) { $>
 							<tr>
-								<td class='ZOptionsLabel'>&nbsp;</td>
+                                <td class='ZOptionsLabel'>
+                                    <$= settingLabelled ? "&nbsp;" : ZmMsg.settingsLabel; $>
+                                    <$  settingLabelled = true; $>
+                                </td>
 								<td class='ZOptionsField'><input id='${id}_INITIALLY_SEARCH_GAL' tabindex='50' type=checkbox></td>
 							</tr>
 						<$ } $>
 					<$ } $>
-					</table>
-				</td>
-			</tr>
-		</table>
-	<$ } $>
 
-	<$ if (!appCtxt.multiAccounts || (appCtxt.isFamilyMbox && data.activeAccount.isMain) || !data.activeAccount.isMain) {$>
-		<table border=0 cellspacing=0 cellpadding=0 width=100%>
-			<tr class='ZOptionsHeaderRow'>
-				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.autocomplete$></td>
-				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-			</tr>
-		</table>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
-			<tr>
-				<td class='ZOptionsSectionMain'>
-					<table width=100%>
+					<$ if (settingLabelled) { $>
+					    <tr><td colspan=2><hr></td></tr>
+					<$ } $>
+
+				    <$ var autocompleteLabelled = false; $>
+				    <$ var autocompleteLabel = ZmMsg.autocomplete  + ":"; $>
+	                <$ if (!appCtxt.multiAccounts || (appCtxt.isFamilyMbox && data.activeAccount.isMain) || !data.activeAccount.isMain) {$>
 						<$ if (appCtxt.isOffline && !data.activeAccount.isMain) { $>
 							<tr>
-								<td class='ZOptionsLabel'>&nbsp;</td>
+                                <td class='ZOptionsLabel'>
+                                    <$= autocompleteLabelled ? "&nbsp;" : autocompleteLabel; $>
+                                    <$  autocompleteLabelled = true; $>
+                                </td>
+								<$ var autocompleteLabelled = true; $>
 								<td class='ZOptionsField'><input id='${id}_AUTOCOMPLETE_SHARE' tabindex='55' type=checkbox></td>
 							</tr>
 						<$ } $>
 						<$ if (data.activeAccount.isZimbraAccount) { $>
 							<$ if (data.isEnabled(ZmSetting.GAL_ENABLED) && data.isEnabled(ZmSetting.GAL_AUTOCOMPLETE_ENABLED)) { $>
 								<tr>
-									<td class='ZOptionsLabel'>&nbsp;</td>
+									<td class='ZOptionsLabel'>
+									    <$= autocompleteLabelled ? "&nbsp;" : autocompleteLabel; $>
+									    <$  autocompleteLabelled = true; $>
+									</td>
 									<td class='ZOptionsField'><input id='${id}_GAL_AUTOCOMPLETE' tabindex='60' type=checkbox></td>
 								</tr>
 							<$ } $>
 							<$ if (data.isEnabled(ZmSetting.SHARING_ENABLED)) { $>
 								<tr>
-									<td class='ZOptionsLabel'>&nbsp;</td>
+									<td class='ZOptionsLabel'>
+									    <$= autocompleteLabelled ? "&nbsp;" : autocompleteLabel; $>
+									    <$  autocompleteLabelled = true; $>
+									</td>
 									<td class='ZOptionsField'><div id='${id}_AUTOCOMPLETE_SHARED_ADDR_BOOKS' tabindex='70'></div></td>
 								</tr>
 							<$ } $>
 							<tr>
-								<td class='ZOptionsLabel'>&nbsp;</td>
+                                <td class='ZOptionsLabel'>
+                                    <$= autocompleteLabelled ? "&nbsp;" : autocompleteLabel; $>
+                                    <$  autocompleteLabelled = true; $>
+                                </td>
 								<td class='ZOptionsField'><div id='${id}_AUTOCOMPLETE_ON_COMMA' tabindex='80'></div></td>
 							</tr>
-						<tr>
-							<td class='ZOptionsLabel'>&nbsp;</td>
-							<td class='ZOptionsField'><div id='${id}_AUTOCOMPLETE_NO_GROUP_MATCH' tabindex='90'></div></td>
-						</tr>
+                            <tr>
+                                <td class='ZOptionsLabel'>&nbsp;</td>
+                                <td class='ZOptionsField'><div id='${id}_AUTOCOMPLETE_NO_GROUP_MATCH' tabindex='90'></div></td>
+                            </tr>
 						<$ } $>
+                    <$ } $>
 					</table>
 				</td>
 			</tr>
@@ -1086,7 +1089,7 @@ and the container element is replaced with that control.
 					</tr>
 					<tr valign=top>
 						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
-						<td class='ZOptionsField'><$=ZmMsg.manageSignatures$></td>
+						<td class='ZOptionsField' valign='middle'><$=ZmMsg.manageSignatures$></td>
 					</tr>
 				</table>
 			</td>
@@ -1250,7 +1253,7 @@ and the container element is replaced with that control.
 					</tr>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
-						<td class='ZOptionsField'><$=ZmMsg.manageSignatures$></td>
+						<td class='ZOptionsField' valign='middle'><$=ZmMsg.manageSignatures$></td>
 					</tr>
 				</table>
 			</td>
@@ -1330,7 +1333,7 @@ and the container element is replaced with that control.
 
 					<tr valign=top>
 						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
-						<td class='ZOptionsField'><$=ZmMsg.manageSignatures$></td>
+						<td class='ZOptionsField' valign='middle'><$=ZmMsg.manageSignatures$></td>
 					</tr>
 
 					<tr><td colspan=2><hr></td></tr>
