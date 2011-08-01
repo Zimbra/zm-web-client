@@ -496,6 +496,14 @@ function() {
 };
 
 /**
+ * Returns an object with layout coordinates for this appointment.
+ */
+ZmAppt.prototype.getLayoutInfo =
+function() {
+	return this._layout;
+};
+
+/**
  * Gets the appointment time summary.
  *
  * @param	{Array}	    buf		    buffer array to fill summary content

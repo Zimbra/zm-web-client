@@ -699,7 +699,7 @@ INPUT[type="text"].search_input {
     background-image:   -moz-linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); /* FF3.6 */
     background-image:    -ms-linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); /* IE10 */
     background-image:        linear-gradient(top, #FFFFFF, @lighten(AppC,55)@);
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,55)@'); /* IE6–IE9 */
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,55)@'); /* IE6ï¿½IE9 */
 }
 
 .ZmMailMsgCapsuleView.focused {
@@ -710,7 +710,7 @@ INPUT[type="text"].search_input {
     background-image:   -moz-linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); /* FF3.6 */
     background-image:    -ms-linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); /* IE10 */
     background-image:        linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@);
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(SelC,66)@', EndColorStr='@lighten(SelC,35)@'); /* IE6–IE9 */
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(SelC,66)@', EndColorStr='@lighten(SelC,35)@'); /* IE6ï¿½IE9 */
 }
 
 .ZmMailMsgCapsuleView .OddMsg {
@@ -1513,14 +1513,14 @@ line-height:normal;
     font-size:25px;
     right:0px;
 }
-.calendar_cur_time_indicator_arr,.calendar_cur_time_indicator_strip{
+.calendar_cur_time_indicator_arr,.calendar_cur_time_indicator_strip,.calendar_start_limit_indicator,.calendar_end_limit_indicator{
     margin: 0;
     padding: 0;
     z-index:1000000;
     position:absolute;
     width:100%;
 }
-.calendar_cur_time_indicator_arr{
+.calendar_cur_time_indicator_arr,.calendar_start_limit_indicator,.calendar_end_limit_indicator{
     height:10px;
     color:#C33C16;
     overflow:hidden;
@@ -1531,6 +1531,37 @@ line-height:normal;
     line-height:0;
     background-color:#C33C16;
     height:1px;
+}
+
+.calendar_start_limit_indicator,.calendar_end_limit_indicator{
+    padding:2px;
+    height:20px;
+    z-index:10000000;
+    color:#000;
+}
+
+.calendar_offscreen_indicator_box{
+    padding-left:4px;
+    border:1px solid #000;
+    position: absolute;
+    left: 18px;
+    top: 9px;
+    width: 35px;
+    height: 12px;
+    overflow: hidden;
+    background-color:#f2f2f2;
+}
+
+.calendar_offscreen_indicator_box_dot{
+    font-size:20px;
+    float: left;
+    margin-top: -12px;
+}
+
+.calendar_offscreen_indicator_box_arrow{
+    float: left;
+    margin-top:-5px;
+    font-size:15px;
 }
 
 /* cell in the calendar grid that is selected */

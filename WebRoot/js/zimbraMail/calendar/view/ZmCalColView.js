@@ -336,6 +336,8 @@ function(resetLeft) {
 		alldayElement.scrollLeft = bodyElement.scrollLeft;
 		alldayApptElement.scrollLeft = bodyElement.scrollLeft;
 		if (unionGridScrollElement) unionGridScrollElement.scrollTop = bodyElement.scrollTop;
+        this._checkForOffscreenAppt(bodyElement);
+
 	} finally {
 		 ZmCalColView._inSyncScroll = false;
 	}
@@ -721,6 +723,8 @@ function(html) {
 	}
 	html.append("</table>");
     html.append("<div id='"+this._curTimeIndicatorHourDivId+"' class='calendar_cur_time_indicator_arr'><div class='calendar_hour_arrow_indicator'>&rarr;</div></div>");
+    html.append("<div id='"+this._startLimitIndicatorDivId+"' class='calendar_start_limit_indicator'><div class='calendar_offscreen_indicator_box'><div class='calendar_offscreen_indicator_box_dot'>…</div><div class='calendar_offscreen_indicator_box_arrow'>&#9652;</div></div></div>");
+    html.append("<div id='"+this._endLimitIndicatorDivId+"' class='calendar_end_limit_indicator'><div class='calendar_offscreen_indicator_box'><div class='calendar_offscreen_indicator_box_dot'>…</div><div class='calendar_offscreen_indicator_box_arrow'>&#9662;</div></div></div>");
 
     html.append( "</div>");
 };
@@ -757,6 +761,8 @@ function(abook) {
     this._curTimeIndicatorHourDivId = Dwt.getNextId();
     this._curTimeIndicatorGridDivId = Dwt.getNextId();
     this._hourColDivId = Dwt.getNextId();
+    this._startLimitIndicatorDivId = Dwt.getNextId();
+    this._endLimitIndicatorDivId = Dwt.getNextId();
 
 
 	if (this._scheduleMode) {
@@ -934,6 +940,40 @@ ZmCalColView.prototype.startIndicatorTimer=function(){
     this._indicatorTimer = this.updateTimeIndicator();
    }
 }
+
+/*
+*   Checks whether any offscreen appointment exists, and indicates according to the direction it gets hidden.
+ */
+ZmCalColView.prototype._checkForOffscreenAppt=function(bodyElement){
+    var topExceeds = false;
+    var bottomExceeds = false;
+    if(!bodyElement){bodyElement = document.getElementById(this._bodyDivId);}
+    var height = bodyElement.offsetHeight;
+    var top = bodyElement.scrollTop;
+
+    if(this._list && this._list.size()>0){
+        var apptArray = this._list.getArray();
+        for(var i=0;i<apptArray.length;i++){
+            var layoutParams = apptArray[i].getLayoutInfo();
+            if(!topExceeds && layoutParams.y && layoutParams.y<(top)){topExceeds=true;}
+            if(!bottomExceeds && layoutParams.y && layoutParams.y>(height+top)){bottomExceeds=true;}
+            if(topExceeds && bottomExceeds){break;}
+        }
+    }
+
+    var topIndicator = document.getElementById(this._startLimitIndicatorDivId);
+    Dwt.setVisibility(topIndicator,topExceeds);
+    var bottomIndicator = document.getElementById(this._endLimitIndicatorDivId);
+    Dwt.setVisibility(bottomIndicator,bottomExceeds);
+
+    if(topExceeds){
+        topIndicator.style.top=bodyElement.scrollTop+"px";
+    }
+
+    if(bottomExceeds){
+        bottomIndicator.style.top = ((bodyElement.offsetHeight+bodyElement.scrollTop+8)-(bottomIndicator.offsetHeight))+"px";
+    }
+};
 
 ZmCalColView.__onScroll = function(myView) {
     myView._syncScroll();
@@ -2500,6 +2540,8 @@ function(list, skipMiniCalUpdate) {
     if(this._fbBarEnabled){
         this._layoutFBBar();
     }
+
+    this._checkForOffscreenAppt();
 };
 
 /*
