@@ -2123,6 +2123,12 @@ HTML>BODY .appt-selected .appt_allday_body
     background-color: #FFFFFF;
 }
 
+.ZmDayTabNavToolBar {
+    position: absolute;
+    top: 0;
+    left: 42%;
+}
+
 /* ??? USED? */
 /* filler for a blank all day item row in month view */
 .allday_item_filler {

@@ -805,7 +805,7 @@ function(viewId) {
 	toolbar.enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], true);
 	toolbar.enable([ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.DAY_VIEW], true);
 
-	toolbar.addFiller();
+	//toolbar.addFiller();
 
 	var tb = new ZmNavToolBar({parent:toolbar, className:"ZmNavToolbar ZmCalendarNavToolbar", context:ZmId.VIEW_CAL});
 	this._setNavToolBar(tb, ZmId.VIEW_CAL);
@@ -2700,6 +2700,23 @@ function(viewId) {
 	}
 };
 
+ZmCalViewController.prototype._setNavToolbarPosition =
+function(navToolbar, currentViewName) {
+    if(!navToolbar || !currentViewName) { return; }
+    var toolbarEl = navToolbar.getHtmlElement();
+    if(!toolbarEl) { return; }
+
+    if(currentViewName == ZmId.VIEW_CAL_DAY_TAB) {
+        Dwt.addClass(toolbarEl, ZmCalDayTabView.NAV_TOOLBAR_CLASSNAME);
+        Dwt.setPosition(toolbarEl, Dwt.ABSOLUTE_STYLE);
+    }
+    else {
+        Dwt.delClass(toolbarEl, ZmCalDayTabView.NAV_TOOLBAR_CLASSNAME);
+        Dwt.setPosition(toolbarEl, Dwt.STATIC_STYLE);
+    }
+    navToolbar.setVisible(currentViewName != ZmId.VIEW_CAL_LIST);
+};
+
 ZmCalViewController.prototype._resetOperations =
 function(parent, num) {
 	parent.enableAll(true);
@@ -2707,9 +2724,8 @@ function(parent, num) {
 
 	if (currViewName == ZmId.VIEW_CAL_LIST && num > 1) { return; }
 
-    if (this._navToolBar[ZmId.VIEW_CAL]) {
-        this._navToolBar[ZmId.VIEW_CAL].setVisible(currViewName != ZmId.VIEW_CAL_LIST);
-    }
+    this._setNavToolbarPosition(this._navToolBar[ZmId.VIEW_CAL], currViewName);
+
     var appt = this.getSelection()[0];
     var calendar = appt && appt.getFolder();
     var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;

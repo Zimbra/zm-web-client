@@ -109,8 +109,9 @@ ZmCalDayTabView.prototype = new ZmCalColView;
 ZmCalDayTabView.prototype.constructor = ZmCalDayTabView;
 
 ZmCalDayTabView._ALL_DAY_APPT_HEIGHT_PAD = 3;
-ZmCalDayTabView._UNION_DIV_WIDTH = 10;
+ZmCalDayTabView._UNION_DIV_WIDTH = 0;
 
+ZmCalDayTabView.NAV_TOOLBAR_CLASSNAME = "ZmDayTabNavToolBar";
 
 ZmCalDayTabView._TAB_BORDER_WIDTH = 1;
 ZmCalDayTabView._TAB_BORDER_MARGIN = 6;
@@ -119,6 +120,11 @@ ZmCalDayTabView._TAB_SEP_WIDTH = 8;
 ZmCalDayTabView.prototype.toString =
 function() {
 	return "ZmCalDayTabView";
+};
+
+ZmCalDayTabView.prototype.fbStatusBarEnabled =
+function(){
+    return true;
 };
 
 ZmCalDayTabView.prototype._createHtml =
@@ -239,11 +245,11 @@ function(abook) {
 
 	// union grid
 	if (this._scheduleMode) {
-		html.append("<div id='", this._unionGridScrollDivId, "' name='_unionGridScrollDivId' class=calendar_union_scroll style='position:absolute'>");
+		html.append("<div id='", this._unionGridScrollDivId, "' name='_unionGridScrollDivId' class=calendar_union_scroll style='position:absolute;display:none;'>");
 		html.append("<div id='", this._unionGridDivId, "' name='_unionGridDivId' class='ImgCalendarDayGrid' style='width:100%; height:1008px; position:absolute;'>");
 		html.append("</div></div>");
 		// sep between union grid and appt grid
-		html.append("<div id='", this._unionGridSepDivId, "' name='_unionGridSepDivId' class='calendar_day_separator' style='position:absolute'></div>");
+		html.append("<div id='", this._unionGridSepDivId, "' name='_unionGridSepDivId' class='calendar_day_separator' style='position:absolute;display:none;'></div>");
 	}
 
 	// grid body
@@ -309,7 +315,7 @@ function(refreshApptLayout) {
 	var hoursWidth = ZmCalColView._HOURS_DIV_WIDTH;
 
 	var bodyX = hoursWidth + this._daySepWidth;
-	var unionX = bodyX;
+	var unionX = hoursWidth;
 	if (this._scheduleMode) {
 		bodyX += ZmCalDayTabView._UNION_DIV_WIDTH + this._daySepWidth;
 	}
