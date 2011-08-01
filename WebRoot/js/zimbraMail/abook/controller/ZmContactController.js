@@ -121,7 +121,7 @@ ZmContactController.prototype.updateTabTitle =
 function() {
 	var	tabTitle = this._contactView._getFullName(true);
 	if (!tabTitle) {
-		tabTitle = his._getDefaultTabText();
+		tabTitle = this._getDefaultTabText();
 	}
 	tabTitle = 	tabTitle.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT)
 
