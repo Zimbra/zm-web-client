@@ -317,22 +317,37 @@ INPUT[type="text"].search_input {
 .ZmSearchToolbar {
 	@FullSize@
 }
-
+.ZmSearchToolbarTable {
+    border-collapse:collapse;
+    border-spacing:0;
+    height:100%;
+}
 /* cell surrounding a cell with contents in the search toolbar */
 .ZmSearchToolbarCell {
-	padding:0px 2px;
+    padding:0px;
+}
+.ZmSearchToolbarDiv {
+    background-color:white;
+    height:22px;
+    position:relative;
+    -moz-border-radius:0px 10px 10px 0px;
+    -webkit-border-radius:0px 10px 10px 0px;
+    border-radius:0px 10px 10px 0px;
+}
+.ZmSearchToolbarDiv INPUT {
+    border:none;
+    border-color:transparent;
 }
 
 .ZmPeopleSearchToolbarDiv {
-	height: 16px;
-	margin:0px 1px 3px 2px;
-	@FieldBorder@
+    height:16px;
+    margin:0px;
 }
 
 .ZmPeopleSearchToolbarTable {
-	width: 100%;
-	height: 100%;
-	background-color: #ffffff;
+    width:100%;
+    height:100%;
+    border-radius:0 5px 5px 0;
 }
 
 /* cell surrounding a separator in the search toolbar */

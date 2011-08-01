@@ -516,4 +516,5 @@ SELECT						{	@FieldBorder@	}
 #ENDIF 	
  	background-color:#FBF9F4 !important;
  	border: 2px inset; 
+    color:white;
 }
