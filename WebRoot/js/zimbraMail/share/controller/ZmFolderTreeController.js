@@ -230,11 +230,8 @@ function(parent, type, id) {
 	}
 	parent.enable(ZmOperation.BROWSE, true);
 	parent.enable(ZmOperation.PRIORITY_FILTER, true);
-	button = parent.getOp(ZmOperation.RECOVER_DELETED_ITEMS);
-	if (button) {
-		button.setVisible(isTrash);
-		button.setEnabled(isTrash);
-	}
+	this._enableRecoverDeleted(parent, isTrash);
+
 
 	// we always enable sharing in case we're in multi-mbox mode
 	this._resetButtonPerSetting(parent, ZmOperation.SHARE_FOLDER, appCtxt.get(ZmSetting.SHARING_ENABLED));

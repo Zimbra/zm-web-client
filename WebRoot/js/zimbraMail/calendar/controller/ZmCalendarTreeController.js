@@ -190,11 +190,7 @@ function(actionMenu, type, id) {
 			actionMenu.enable(ZmOperation.CLEAR_ALL, foundChecked);
 		}
 
-		var op = actionMenu.getOp(ZmOperation.RECOVER_DELETED_ITEMS);
-		if (op) {
-			op.setVisible(isTrash);
-			op.setEnabled(isTrash);
-		}
+		this._enableRecoverDeleted(actionMenu, isTrash);
 
 		// we always enable sharing in case we're in multi-mbox mode
 		this._resetButtonPerSetting(actionMenu, ZmOperation.SHARE_CALENDAR, appCtxt.get(ZmSetting.SHARING_ENABLED));

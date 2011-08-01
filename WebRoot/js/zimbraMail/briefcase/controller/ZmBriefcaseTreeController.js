@@ -109,11 +109,7 @@ function(actionMenu, type, id) {
         if (op) {
             op.setText(deleteText);
         }
-        op = actionMenu.getOp(ZmOperation.RECOVER_DELETED_ITEMS);
-        if (op) {
-            op.setVisible(isTrash);
-            op.setEnabled(isTrash);
-        }
+		this._enableRecoverDeleted(actionMenu, isTrash);
 
         // we always enable sharing in case we're in multi-mbox mode
         this._resetButtonPerSetting(actionMenu, ZmOperation.SHARE_BRIEFCASE, appCtxt.get(ZmSetting.SHARING_ENABLED));
@@ -166,7 +162,7 @@ function() {
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.SHARE_BRIEFCASE);
 	}
-	ops.push(ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.EMPTY_FOLDER, ZmOperation.RECOVER_DELETED_ITEMS);    
+	ops.push(ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.EMPTY_FOLDER, ZmOperation.RECOVER_DELETED_ITEMS);
 	return ops;
 };
 

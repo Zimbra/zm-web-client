@@ -147,11 +147,7 @@ function(parent, type, id) {
 	if (op) {
 		op.setText(deleteText);
 	}
-	op = parent.getOp(ZmOperation.RECOVER_DELETED_ITEMS);
-	if (op) {
-		op.setVisible(isTrash);
-		op.setEnabled(isTrash);
-	}
+	this._enableRecoverDeleted(parent, isTrash);
 
 	// we always enable sharing in case we're in multi-mbox mode
 	this._resetButtonPerSetting(parent, ZmOperation.SHARE_ADDRBOOK, appCtxt.get(ZmSetting.SHARING_ENABLED));
