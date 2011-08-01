@@ -1926,7 +1926,7 @@ function(appName, force, callback, errorCallback, params) {
 			params = params || {};
 			params.searchResponse = this._searchResponse;
 			this._apps[appName].launch(params, respCallback);
-			delete this.searchResponse;
+			delete this._searchResponse;
 		}
 	}
 };
