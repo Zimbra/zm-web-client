@@ -103,12 +103,7 @@ function(parent, type, id) {
 		emptyFolderOp.setText(ZmMsg.emptyTrash);
 	}
 
-	var recoverOp = parent.getOp(ZmOperation.RECOVER_DELETED_ITEMS);
-	if (recoverOp) {
-		recoverOp.setVisible(isTrash);
-		recoverOp.setEnabled(isTrash);
-	}
-
+	this._enableRecoverDeleted(parent, isTrash);
 
 	var op = parent.getOp(ZmOperation.DELETE);
 	if (op) {

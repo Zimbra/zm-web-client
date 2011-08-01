@@ -145,6 +145,20 @@ function(parent, op, isSupported) {
 	}
 };
 
+ZmTreeController.prototype._enableRecoverDeleted =
+function (parent, isTrash) {
+	op = parent.getOp(ZmOperation.RECOVER_DELETED_ITEMS);
+	if (!op) {
+		return;
+	}
+	var featureEnabled = appCtxt.get(ZmSetting.DUMPSTER_ENABLED);
+	op.setVisible(featureEnabled && isTrash);
+	op.setEnabled(isTrash);
+};
+
+
+
+
 // Public methods
 
 /**
