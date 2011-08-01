@@ -794,6 +794,12 @@ function(container, html, isTextMsg, isTruncated, index) {
 	// bug fix #4943
 	if (html == null) { html = ""; }
 
+	if (!isTextMsg) {
+		//Microsoft silly smilies
+		html = html.replace(/<span style="font-family:Wingdings">J<\/span>/g, "\u263a"); // :)
+		html = html.replace(/<span style="font-family:Wingdings">L<\/span>/g, "\u2639"); // :(
+	}
+
 	var displayImages;
 	if (!isTextMsg &&
 		(!appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || (this._msg && this._msg.folderId == ZmOrganizer.ID_SPAM)) &&
