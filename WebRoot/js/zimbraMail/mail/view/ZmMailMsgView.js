@@ -1978,11 +1978,19 @@ function() {
 	// remember that the user clicked this link
 	this._msg.viewEntireMessage = true;
 
-	var url = ("/h/message?id=" + this._msg.id);
+	var url = ("/h/imessage?id=" + this._msg.id);
     if (this._isTrustedSender(this._msg)) {
         url += '&xim=1';
     }
-	window.open(appContextPath+url, "_blank");
+	//bug:52081 modified iframe src to point imessage.
+    var iframe = document.getElementById(this._iframeId);
+    if(iframe) {
+        iframe.src = url;
+    }
+    this._resetIframeHeightOnTimer(iframe);
+    var msgTruncatedDiv = document.getElementById(this._msgTruncatedId);
+    if(msgTruncatedDiv){ msgTruncatedDiv.style.display = "none"; }
+
 };
 
 // Focus management - just pass through to native element's focus()
