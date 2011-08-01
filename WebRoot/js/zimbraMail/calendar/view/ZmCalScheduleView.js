@@ -25,15 +25,7 @@ function() {
 	return "ZmCalScheduleView";
 };
 
-ZmCalScheduleView.prototype._apptMouseDownAction =
-function(ev, apptEl) {
-    appt = this.getItemFromElement(apptEl);
-    if (appt.isAllDayEvent()) {
-        return false;
-    } else {
-        return ZmCalBaseView.prototype._apptMouseDownAction.call(this, ev, apptEl, appt);
-    }
-}
+
 
 
 
@@ -230,13 +222,11 @@ function(list) {
 		var size = list.size();
 		DBG.println(AjxDebug.DBG2,"list.size:"+size);
 		if (size != 0) {
-            var showDeclined = appCtxt.get(ZmSetting.CAL_SHOW_DECLINED_MEETINGS);
-            this._computeApptLayout();
+			this._computeApptLayout();
 			for (var i=0; i < size; i++) {
 				var ao = list.get(i);
-				if (ao && ao.isInRange(timeRange.start, timeRange.end) &&
-				    (showDeclined || (ao.ptst != ZmCalBaseItem.PSTATUS_DECLINED))) {
-                    this.addAppt(ao);
+				if (ao && ao.isInRange(timeRange.start, timeRange.end)) {
+					this.addAppt(ao);
 				}
 			}
 		}
