@@ -486,7 +486,7 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 				}
 			}
 			this.email = emails.join(";");
-			this.text = match.display || this.email;
+			this.text = AjxStringUtil.htmlEncode(match.display) || this.email;
 			this.icon = "Group";
 		} else {
 			// Local contact, GAL contact, or distribution list
