@@ -955,8 +955,8 @@ ZmCalColView.prototype._checkForOffscreenAppt=function(bodyElement){
         var apptArray = this._list.getArray();
         for(var i=0;i<apptArray.length;i++){
             var layoutParams = apptArray[i].getLayoutInfo();
-            if(!topExceeds && layoutParams.y && layoutParams.y<(top)){topExceeds=true;}
-            if(!bottomExceeds && layoutParams.y && layoutParams.y>(height+top)){bottomExceeds=true;}
+            if(!topExceeds){topExceeds=(layoutParams && layoutParams.y<(top));}
+            if(!bottomExceeds){bottomExceeds=(layoutParams && layoutParams.y>(height+top));}
             if(topExceeds && bottomExceeds){break;}
         }
     }
