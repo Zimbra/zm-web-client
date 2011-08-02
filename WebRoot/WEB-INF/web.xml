@@ -376,7 +376,6 @@
     <url-pattern>/css/*</url-pattern>
     <url-pattern>/html/*</url-pattern>
     <url-pattern>/js/skin.js</url-pattern>
-    <url-pattern>/skins/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
