@@ -382,7 +382,7 @@ ZmGroupView.prototype._setTitle =
 function(title) {
 	var div = document.getElementById(this._titleId);
 	var fileAs = title || this._contact.getFileAs();
-	div.innerHTML = fileAs || (this._contact.id ? "&nbsp;" : ZmMsg.newGroup);
+	div.innerHTML = AjxStringUtil.htmlEncode(fileAs) || (this._contact.id ? "&nbsp;" : ZmMsg.newGroup);
 };
 
 ZmGroupView.prototype._getTagCell =

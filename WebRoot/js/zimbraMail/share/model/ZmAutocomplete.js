@@ -449,7 +449,7 @@ ZmAutocompleteMatch = function(match, options, isContact, str) {
 				this.name = match.display;
 				this.email = emails.join(AjxEmailAddress.SEPARATOR);
 				this.fullAddress = addrs.join(AjxEmailAddress.SEPARATOR);
-				this.text = match.display || this.email;
+				this.text = AjxStringUtil.htmlEncode(match.display) || this.email;
 				this.icon = "Group";
 			}
 		} else {   
