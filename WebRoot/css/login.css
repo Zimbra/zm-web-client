@@ -12,7 +12,10 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
- 
+
+P, TH, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
+	@FontFamily-default@
+}
 
 HTML {
 	@FullSize@
