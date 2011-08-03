@@ -587,10 +587,20 @@ function(types) {
 		if (viewType) {
 			sortBy = appCtxt.get(ZmSetting.SORTING_PREF, viewType);
 		}
-        //bug:1108 & 43789#c19 since sort-by-rcpt gives exception with querystring, avoided rpct sorting with querysting instead used date sorting
+        //bug:1108 & 43789#c19 (changelist 290073) since sort-by-[RCPT|ATTACHMENT|FLAG|PRIORITY] gives exception with querystring.
+        // Avoided [RCPT|ATTACHMENT|FLAG|PRIORITY] sorting with querysting instead used date sorting
         var queryString = this._searchToolBar.getSearchFieldValue();
-        if((sortBy == ZmSearch.RCPT_ASC || sortBy == ZmSearch.RCPT_DESC) && queryString && queryString.length > 0) {
-           sortBy = (sortBy == ZmSearch.RCPT_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
+        if(queryString && queryString.length > 0)
+        {
+            if((sortBy == ZmSearch.RCPT_ASC || sortBy == ZmSearch.RCPT_DESC)) {
+               sortBy = (sortBy == ZmSearch.RCPT_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
+            } else if((sortBy == ZmSearch.FLAG_ASC || sortBy == ZmSearch.FLAG_DESC)) {
+               sortBy = (sortBy == ZmSearch.FLAG_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
+            } else if((sortBy == ZmSearch.ATTACH_ASC || sortBy == ZmSearch.ATTACH_DESC)) {
+               sortBy = (sortBy == ZmSearch.ATTACH_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
+            } else if((sortBy == ZmSearch.PRIORITY_ASC || sortBy == ZmSearch.PRIORITY_DESC)) {
+               sortBy = (sortBy == ZmSearch.PRIORITY_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
+            }
         }
 	}
 
