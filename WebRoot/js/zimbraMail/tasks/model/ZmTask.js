@@ -322,15 +322,15 @@ function(node, instNode) {
     this.allDayEvent	= (instNode ? instNode.allDay : null || node.allDay)  ? "1" : "0";
 
     var nodeInst = node.inst && node.inst.length > 0 ? node.inst[0] : null;
-    var tzo = this.tzo = nodeInst && nodeInst.tzo != null ? nodeInst.tzo : 0;
-    var tzoDue = this.tzoDue = nodeInst && nodeInst.tzoDue != null ? nodeInst.tzoDue : 0;
+    var tzo = this.tzo = nodeInst && nodeInst.tzo != null ? parseInt(nodeInst.tzo) : 0;
+    var tzoDue = this.tzoDue = nodeInst && nodeInst.tzoDue != null ? parseInt(nodeInst.tzoDue) : 0;
 
     if (nodeInst && nodeInst.s) {
-		var adjustMs = this.isAllDayEvent() ? (tzo + new Date(nodeInst.s).getTimezoneOffset()*60*1000) : 0;
-		var startTime = parseInt(nodeInst.s,10) + adjustMs;
-		this.startDate = new Date(startTime);
-		this.uniqStartTime = this.startDate.getTime();
-	} else {
+        var adjustMs = this.isAllDayEvent() ? (tzo + new Date(parseInt(nodeInst.s,10)).getTimezoneOffset()*60*1000) : 0;
+        var startTime = parseInt(nodeInst.s,10) + adjustMs;
+        this.startDate = new Date(startTime);
+        this.uniqStartTime = this.startDate.getTime();
+    } else {
         this.startDate = null;
         if(comp && comp.s && comp.s[0].d) {
             var start = comp.s[0].d;
@@ -342,10 +342,10 @@ function(node, instNode) {
     }
 
     if (nodeInst && nodeInst.dueDate) {
-        var adjustMs = this.isAllDayEvent() ? (tzoDue + new Date(nodeInst.dueDate).getTimezoneOffset()*60*1000) : 0;
-		var endTime = parseInt(nodeInst.dueDate,10) + adjustMs;
-		this.endDate = new Date(endTime);
-	} else {
+        var adjustMs = this.isAllDayEvent() ? (tzoDue + new Date(parseInt(nodeInst.s,10)).getTimezoneOffset()*60*1000) : 0;
+        var endTime = parseInt(nodeInst.dueDate,10) + adjustMs;
+        this.endDate = new Date(endTime);
+    } else {
         this.endDate = null;
         if(comp && comp.e && comp.e[0].d) {
             var end = comp.e[0].d;
@@ -356,6 +356,7 @@ function(node, instNode) {
         }
     }
 
+
     if(node.alarm) this.alarm = node.alarm;
     if(node.alarmData) this.alarmData = this._getAttr(node, comp, "alarmData");
 
@@ -365,7 +366,7 @@ function(node, instNode) {
 	if (node.priority || comp)			this.priority	= parseInt(this._getAttr(node, comp, "priority"));
 	if (node.percentComplete || comp)	this.pComplete	= parseInt(this._getAttr(node, comp, "percentComplete"));
 	if (node.status || comp)			this.status	= this._getAttr(node, comp, "status");
-	if (node.isOrg || comp)				this.isOrg		= this._getAttr(node, comp, "isOrg");
+	if (node.isOrg || comp)				this.isOrg		= new Boolean(this._getAttr(node, comp, "isOrg"));
 	if (node.or || comp)				this.organizer	= node.or ? node.or.a : (comp.or ? comp.or.a : null);
 	if (node.ptst || comp)				this.ptst		= this._getAttr(node, comp, "ptst");
 	if (node.compNum != null)			this.compNum	= (this._getAttr(node, comp, "compNum") || "0");
