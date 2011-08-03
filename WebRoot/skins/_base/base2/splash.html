@@ -17,7 +17,15 @@
         <div class="decor1"></div>
 	</div>
 	<div class="Footer">
-        <div class="copyright"><script>document.write(ZmMsg.splashScreenCopyright)</script></div>
+        <div class="copyright">
+          <script>
+            if (window.isOffline) {
+              document.write(ZmMsg.splashScreenCopyrightZD);
+            } else {
+              document.write(ZmMsg.splashScreenCopyright);
+            }
+          </script>
+        </div>
     </div>
 
 </div>
