@@ -1335,7 +1335,7 @@ function(msg, container) {
 			msg.share.link.perm)
 		{
 			var topToolbar = this._getShareToolbar();
-			topToolbar.reparentHtmlElement(contentDiv);
+			topToolbar.reparentHtmlElement(container);
 			topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 			this._hasShareToolbar = true;
 		}
