@@ -626,17 +626,15 @@
 </template>
 		
 <template id='mail.Message#Conv2MsgHeader'>
-	<div id='${headerId}' class='${parityClass}'>
-		<table class='MsgHeaderTable' width=100%>
-			<tr id='${tableRowId}'>
-				<td class='Expand' id='${expandIconCellId}'></td>
-				<td class='LabelColValue' width=100%>
-					<$= data.from $>
-				</td>
-				<td class='LabelColValue DateCol'>${date}</td>
-			</tr>
-		</table>
-	</div>
+	<table class='MsgHeaderTable' width=100%>
+		<tr id='${tableRowId}'>
+			<td class='Expand' id='${expandIconCellId}'></td>
+			<td class='LabelColValue' width=100%>
+				<$= data.from $>
+			</td>
+			<td class='LabelColValue DateCol'>${date}</td>
+		</tr>
+	</table>
 </template>
 
 <template id='mail.Message#Conv2MsgFooter'>

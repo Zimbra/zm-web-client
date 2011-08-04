@@ -139,6 +139,16 @@ function(conv, callback) {
 	}
 };
 
+/**
+ * Renders this conversation's messages. Each message may be expanded (shows header, body, and footer)
+ * or collapsed (shows just the header).
+ * 
+ * So far the messages are not contained within a ZmListView. Instead, they rely on the controller for
+ * the parent CLV to handle actions.
+ * 
+ * @param conv
+ * @param container
+ */
 ZmConvView2.prototype._renderMessages =
 function(conv, container) {
 
@@ -506,30 +516,47 @@ function(msg, container, callback) {
 	msg.addChangeListener(this._changeListener);
 };
 
+/**
+ * Renders the header bar for this message. It's a control so that we can drag it to move the message.
+ * 
+ * @param msg
+ * @param container
+ */
 ZmMailMsgCapsuleView.prototype._renderMessageHeader =
 function(msg, container) {
 	
+	this._headerId = ZmId.getViewId(this._viewId, ZmId.MV_MSG_HEADER, this._mode);
+	var params = {
+		parent:		this,
+		id:			this._headerId,
+		className:	this._isOdd ? "OddMsg" : "EvenMsg",
+		template:	"mail.Message#Conv2MsgHeader"
+	}
+	this._header = new DwtControl(params);
+
+	this._setEventHdlrs([DwtEvent.ONMOUSEDOWN, DwtEvent.ONMOUSEMOVE, DwtEvent.ONMOUSEUP]);
+	var dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+	dragSrc.addDragListener(new AjxListener(this, this._dragListener));
+	this._header.setDragSource(dragSrc);
+	this._header._getDragProxy = this._getDragProxy;
+	var dropTgt = this._dropTgt = new DwtDropTarget("ZmTag");
+	dropTgt.addDropListener(this._dropListener.bind(this));
+	this._header.setDropTarget(dropTgt);
+
 	this._tableRowId = Dwt.getNextId();
 	DBG.println("c2", "Render: Msg ID: " + this._msg.id + ", table row ID: " + this._tableRowId);
 	this._expandIconCellId = Dwt.getNextId();
 	this._expandIconId = Dwt.getNextId();
-
 	var expandIcon = AjxImg.getImageHtml(this._expanded ? "NodeExpanded" : "NodeCollapsed", null, ["id='", this._expandIconId, "'"].join(""));
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
 	var dateString = msg.sentDate ? dateFormatter.format(new Date(msg.sentDate)) : dateFormatter.format(new Date(msg.date));
-
-	this._headerId = ZmId.getViewId(this._viewId, ZmId.MV_MSG_HEADER, this._mode);
-	
 	var subs = {
-		headerId:			this._headerId,
-		parityClass:		this._isOdd ? "OddMsg" : "EvenMsg",
 		tableRowId:			this._tableRowId,
 		expandIconCellId:	this._expandIconCellId,
 		from:				msg.getAddress(AjxEmailAddress.FROM).toString(true),
 		date:				dateString
 	}
-	var html = AjxTemplate.expand("mail.Message#Conv2MsgHeader", subs);
-	this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
+	this._header._createHtmlFromTemplate("mail.Message#Conv2MsgHeader", subs);
 	
 	this._setExpandIcon();
 	this._setRowClass();
@@ -863,5 +890,48 @@ function(oldFolderId) {
 
 	if (folder && (folder.nId == ZmFolder.ID_TRASH || oldFolderId == ZmFolder.ID_TRASH)) {
 		this._setRowClass(msg);
+	}
+};
+
+ZmMailMsgCapsuleView.prototype._dragListener =
+function(ev) {
+	if (ev.action == DwtDragEvent.SET_DATA) {
+		ev.srcData = {data: this._msg, controller: this._controller};
+	}
+};
+
+// Note that 'this' is the header control.
+ZmMailMsgCapsuleView.prototype._getDragProxy =
+function(dragOp) {
+	
+	var view = this.parent;
+	var icon = ZmMailMsgListView.prototype._createItemHtml.call(view._controller._mailListView, view._msg, {now:new Date(), isDragProxy:true});
+	Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE);
+	appCtxt.getShell().getHtmlElement().appendChild(icon);
+	Dwt.setZIndex(icon, Dwt.Z_DND);
+	return icon;
+};
+
+// TODO: should we highlight msg header (dragSelect it)?
+ZmMailMsgCapsuleView.prototype._dropListener =
+function(ev) {
+
+	var item = this._msg;
+
+	// only tags can be dropped on us
+	var data = ev.srcData.data;
+	if (ev.action == DwtDropEvent.DRAG_ENTER) {
+		ev.doIt = (item && (item instanceof ZmItem) && !item.isShared() && this._dropTgt.isValidTarget(data));
+        // Bug: 44488 - Don't allow dropping tag of one account to other account's item
+        if (appCtxt.multiAccounts) {
+           var listAcctId = item ? item.getAccount().id : null;
+           var tagAcctId = (data.account && data.account.id) || data[0].account.id;
+           if (listAcctId != tagAcctId) {
+               ev.doIt = false;
+           }
+        }
+		DBG.println(AjxDebug.DBG3, "DRAG_ENTER: doIt = " + ev.doIt);
+	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
+		this._controller._doTag([item], data, true);
 	}
 };
