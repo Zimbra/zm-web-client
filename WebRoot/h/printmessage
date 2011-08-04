@@ -22,6 +22,15 @@ ${zm:refreshPrefs(mailbox)}
 <c:set var="messageIds" value="${fn:join(paramValues.id, ',')}"/>
 ${zm:clearMessageCache(mailbox)}
 
+<c:choose>
+    <c:when test="${not empty param.tz}">
+        <fmt:setTimeZone var="tz" value="${param.tz}" scope="request"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
+    </c:otherwise>
+</c:choose>
+
 </app:handleError>
 <html>
 <app:head mailbox="${mailbox}"/>
@@ -56,7 +65,7 @@ ${zm:clearMessageCache(mailbox)}
                         <c:param name="id" value="${param.id}"/>
                         <c:param name="xim" value="1"/>
                     </c:url>
-                    <app:messagePrintView mailbox="${mailbox}" externalImageUrl="${extImageUrl}" message="${message}" />
+                    <app:messagePrintView mailbox="${mailbox}" externalImageUrl="${extImageUrl}" message="${message}" timezone="${tz}"/>
                 </c:forEach>
             </td>
         </tr>
@@ -76,7 +85,7 @@ ${zm:clearMessageCache(mailbox)}
                 <c:param name="id" value="${param.id}"/>
                 <c:param name="xim" value="1"/>
             </c:url>
-			<app:messagePrintView mailbox="${mailbox}" externalImageUrl="${extImageUrl}" message="${message}" />
+			<app:messagePrintView mailbox="${mailbox}" externalImageUrl="${extImageUrl}" message="${message}" timezone="${tz}"/>
 		</td>
 	</tr>
     </table>    
