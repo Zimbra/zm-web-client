@@ -347,6 +347,10 @@ function(account, updateStatus, updateTooltip) {
 			if (hi._extraCell) {
 				hi._extraCell.innerHTML = (html || "");
 			}
+            if (appCtxt.isOffline && account.status == ZmZimbraAccount.STATUS_AUTHFAIL) {
+                var dialog = appCtxt.getPasswordChangeDialog();
+                dialog.popup(account);
+            }
 		}
 
 		if (updateTooltip || updateStatus) {
@@ -946,5 +950,11 @@ function(folderId, opId) {
 
 ZmAccountOverviewContainer.prototype._handleStatusClick =
 function(account, ev) {
-	account.showErrorMessage();
+	//account.showErrorMessage();
+    if(!account.isError()) {
+        return;
+    } else if (appCtxt.isOffline) {
+        var dialog = appCtxt.getPasswordChangeDialog();
+        dialog.popup(account);
+    }
 };
