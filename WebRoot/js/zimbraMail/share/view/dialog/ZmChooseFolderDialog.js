@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -73,9 +73,12 @@ function() {
  * @param	{Boolean}	params.hideNewButton 		if <code>true</code>, new button will not be shown
  * @param	{Boolean}	params.noRootSelect			if <code>true</code>, do not make root tree item(s) selectable
  * @params  {Boolean}   params.showDrafts			if <code>true</code>, drafts folder will not be omited
+
+ * @params  {Boolean}   fromFolderChooser			if <code>true</code>, this is delegated from DwtFolderChooser.setupFolderChooser
+
  */
 ZmChooseFolderDialog.prototype.popup =
-function(params) {
+function(params, fromFolderChooser) {
 
 	this._keyPressedInField = false; //see comment in _handleKeyUp
 
@@ -121,18 +124,19 @@ function(params) {
 		}
 	}
 
-	this.setTitle(params.title || ZmMsg.chooseFolder);
+	if (!fromFolderChooser) {
+		this.setTitle(params.title || ZmMsg.chooseFolder);
 
-	var descCell = document.getElementById(this._folderDescDivId);
-	descCell.innerHTML = params.description || "";
+		var descCell = document.getElementById(this._folderDescDivId);
+		descCell.innerHTML = params.description || "";
+	}
 
 	var treeIds = this._treeIds = (params.treeIds && params.treeIds.length)
 		? params.treeIds : [ZmOrganizer.FOLDER];
 
 	// New button doesn't make sense if we're only showing saved searches
 	var searchOnly = (treeIds.length == 1 && treeIds[0] == ZmOrganizer.SEARCH);
-	var newButton = this.getButton(ZmChooseFolderDialog.NEW_BUTTON);
-	newButton.setVisible(!searchOnly && !params.hideNewButton);
+	this._getNewButton().setVisible(!searchOnly && !params.hideNewButton);
 
 	this._data = params.data;
 
@@ -179,8 +183,13 @@ function(params) {
 	AjxDispatcher.require(pkg, true, new AjxCallback(this, this._doPopup, [popupParams]));
 };
 
+ZmChooseFolderDialog.prototype._getNewButton =
+function () {
+	return this.getButton(ZmChooseFolderDialog.NEW_BUTTON);
+};
+
 ZmChooseFolderDialog.prototype._doPopup =
-function(params) {
+function(params, fromFolderChooser) {
 	var ov = this._setOverview(params, params.forceSingle);
 
 	if (appCtxt.multiAccounts && !params.forceSingle) {
@@ -206,9 +215,23 @@ function(params) {
 		this._resetTree(params.treeIds, ov);
 	}
 
-	this._focusElement = this._inputField;
-	this._inputField.setValue("");
-	ZmDialog.prototype.popup.call(this);
+	if (!fromFolderChooser) {
+		this._focusElement = this._inputField;
+		this._inputField.setValue("");
+		ZmDialog.prototype.popup.call(this);
+	}
+};
+
+/**
+ * Clears selected items
+ */
+ZmChooseFolderDialog.prototype.popdown = 
+function() {
+	var ov = this._getOverview();
+	if (ov) {
+		ov.itemSelected(null);  //clear selected items
+	}
+	DwtDialog.prototype.popdown.call(this);
 };
 
 ZmChooseFolderDialog.prototype.getOverviewId =
