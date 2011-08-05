@@ -565,6 +565,26 @@
 	</table>
 </template>
 
+<!-- change password dialog template -->
+<template id="share.Dialogs#ZmPasswordUpdateDialog">
+    <table cellpadding='2' cellspacing='5' border='0'>
+        <tr>
+            <td colspan="2" id="${id}_desc">
+
+            </td>
+        </tr>
+        <tr>
+            <td class='Label' align="right" style='padding:0 px;'>${labelAcct}: </td>
+            <td id="${id}_acct"></td>
+        </tr>
+        <tr>
+            <td class='Label' align="right" style='padding: 0 px;'>${labelPasswd}: </td>
+            <td><input type='password' style='padding:0 px;' autocomplete='off' class='Field' id='${id}_name' /></td>
+        </tr>
+    </table>
+</template>
+
+
 <!-- time selection dialog template -->
 <template id='share.Dialogs#ZmTimeDialog'>
 	<table border=0 width=330>

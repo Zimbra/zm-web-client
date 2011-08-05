@@ -452,6 +452,20 @@ function() {
 };
 
 /**
+ * Gets the password update dialog.
+ *
+ * @return	{ZmPasswordUpdateDialog}		the rename tag dialog
+ */
+ZmAppCtxt.prototype.getPasswordChangeDialog =
+function() {
+	if (!this._passwordUpdateDialog) {
+		AjxDispatcher.require("Extras");
+		this._passwordUpdateDialog = new ZmPasswordUpdateDialog(this._shell);
+	}
+	return this._passwordUpdateDialog;
+};
+
+/**
  * Gets the new folder dialog.
  * 
  * @return	{ZmNewFolderDialog}		the new folder dialog
