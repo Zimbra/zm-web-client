@@ -389,20 +389,25 @@ function(parent, posStyle, content, mode, withAce) {
 	}
 
 	if (!window.tinyMCE) {
+        window.tinyMCEPreInit = {};
+        window.tinyMCEPreInit.suffix = '';
+        window.tinyMCEPreInit.base = ZmAdvancedHtmlEditor.TINY_MCE_PATH; // SET PATH TO TINYMCE HERE
+        // Tell TinyMCE that the page has already been loaded
+        window.tinyMCE_GZ = {};
+        window.tinyMCE_GZ.loaded = true;
+
 		var callback = new AjxCallback(this, this.initEditorManager, [id, mode, content]);
 		var data = {
 			name: "tiny_mce",
 			path: appContextPath + ZmAdvancedHtmlEditor.TINY_MCE_PATH + "/tiny_mce.js",
 			extension: ".js",
-			method: AjxPackage.METHOD_XHR_SYNC,
-			async: false,
-			callback: null,
+            method: AjxPackage.METHOD_XHR_ASYNC,
+			callback: callback,
 			scripts: [],
 			basePath: appContextPath + ZmAdvancedHtmlEditor.TINY_MCE_PATH
 		};
 
 		AjxPackage.require(data);
-		this.initEditorManager(id, mode, content);
 	} else {
 		this.initEditorManager(id, mode, content);
 	}
@@ -495,6 +500,12 @@ function(id, mode, content) {
 		return obj._handleEditorKeyEvent(e, ed);
 	};
 
+    function onGetContent(ed, o) {
+        // Replace <p tags with <span tags
+        // and </p with </span><br / tags
+        o.content = o.content.replace(/<p/g, '<span').replace(/<\/p/g, '</span><br /');
+    };
+
 	var urlParts = AjxStringUtil.parseURL(location.href);
 
 	//important: tinymce doesn't handle url parsing well when loaded from REST URL - override baseURL/baseURI to fix this
@@ -513,15 +524,16 @@ function(id, mode, content) {
 	}
 
 	var locale = appCtxt.get(ZmSetting.LOCALE_NAME);
+    var contentCSS = appContextPath + "/css/editor.css?v=" + window.cacheKillerVersion;
 	var editorCSS = appContextPath + "/css/editor_ui.css?v=" + window.cacheKillerVersion + "&skin=" + appCurrentSkin + "&locale=" + locale;
 
 	tinyMCE.init({
 		// General options
 		mode :  (mode == DwtHtmlEditor.HTML)? "exact" : "none",
 		elements:  id,
-		plugins : "table,ztable,inlinepopups,zcontextmenu,fullscreen,zbreakquote",
+		plugins : "table,ztable,inlinepopups,zcontextmenu,fullscreen,zbreakquote,emotions,directionality",
 		theme : "advanced",
-		theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,outdent,indent,separator,bold,italic,underline,separator,forecolor,backcolor,separator,link,ztablecontrols,fullscreen",
+		theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,outdent,indent,separator,bold,italic,underline,separator,forecolor,backcolor,separator,link,ztablecontrols,fullscreen,emotions,seperator,ltr,rtl",
 		theme_advanced_buttons2: "",
 		theme_advanced_buttons3: "",
 		theme_advanced_buttons4: "",
@@ -531,17 +543,15 @@ function(id, mode, content) {
 		convert_urls : false,
 		verify_html : false,
 		gecko_spellcheck : true,
-		force_br_newlines : true,
-		forced_root_block : '',
-		force_p_newlines : false,
-		content_css : false,
+        content_css : contentCSS,
 		editor_css: editorCSS,
+        theme_advanced_runtime_fontsize:true,
 		inline_styles: false,
 		setup : function(ed) {
 			ed.onLoadContent.add(handleContentLoad);
 			ed.onInit.add(onTinyMCEEditorInit);
 			ed.onKeyPress.add(onEditorKeyPress);
-
+            ed.onGetContent.add(onGetContent);
 		}
 	});
 

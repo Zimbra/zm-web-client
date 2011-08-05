@@ -2419,7 +2419,7 @@ function() {
     // Bug 54805
     // disable tinymce
     //return window.isTinyMCE;
-    return false;
+    return true;
 };
 
 /**
