@@ -1077,8 +1077,16 @@ function() {
  */
 ZmAddressInputField.prototype._handleKeyDown =
 function(ev) {
-	ev = DwtUiEvent.getEvent(ev);
-	ev.focusObj = this;
+
+	if (appCtxt.getCurrentView() != this.parent) {
+		appCtxt.getKeyboardMgr().removeListener(DwtEvent.ONKEYDOWN, this._keyDownListener);
+		DBG.println("aif", "REMOVE keydown listener - view is not current");
+	}
+	else {
+		ev = DwtUiEvent.getEvent(ev);
+		ev.focusObj = this;
+		DBG.println("aif", "SET focus obj in _handleKeyDown");
+	}
 };
 
 ZmAddressInputField.prototype.hasFocus =
