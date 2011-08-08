@@ -415,6 +415,7 @@ BODY						{	margin:0px; 				}
 .SplashScreen .ImgLoginBanner {
     cursor:pointer;
 }
+.LoginScreen .ImgAltBanner,
 .SplashScreen .ImgAltBanner {
     background-image:url("@LogoImgDir@/AltBanner.png?v=@jsVersion@");
     background-repeat:repeat-x;
