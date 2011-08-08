@@ -36,7 +36,7 @@
  */
 ZmContactPicker = function(buttonInfo) {
 
-	DwtDialog.call(this, {parent:appCtxt.getShell(), title:ZmMsg.selectAddresses});
+	DwtDialog.call(this, {parent:appCtxt.getShell(), title:ZmMsg.selectAddresses, id: "ZmContactPicker"});
 
 	this._buttonInfo = buttonInfo;
 	this._initialized = false;
@@ -788,7 +788,7 @@ function(item, list) {
  */
 ZmContactChooserSourceListView = function(parent) {
 	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE, view:ZmId.VIEW_CONTACT_SRC});
-	this.setScrollStyle(Dwt.CLIP);
+	this.setScrollStyle(Dwt.SCROLL_X);
 };
 
 ZmContactChooserSourceListView.prototype = new DwtChooserListView;
@@ -833,9 +833,10 @@ ZmContactChooserSourceListView.prototype._getHeaderList =
 function() {
 	var headerList = [];
 	headerList.push(new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"Folder", width:ZmMsg.COLUMN_WIDTH_FOLDER_CN}));
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, width:ZmMsg.COLUMN_WIDTH_NAME_CN}));
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email}));
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_DEPARTMENT, text:ZmMsg.department, width:ZmMsg.COLUMN_WIDTH_DEPARTMENT_CN}));
+	headerList.push(new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, width:ZmMsg.COLUMN_WIDTH_NAME_CN, resizeable: true}));
+	headerList.push(new DwtListHeaderItem({field:ZmItem.F_DEPARTMENT, text:ZmMsg.department, width:ZmMsg.COLUMN_WIDTH_DEPARTMENT_CN, resizeable: true}));
+	headerList.push(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email, resizeable: true}));
+
 
 	return headerList;
 };
@@ -860,6 +861,22 @@ function(html, idx, item, field, colIdx, params) {
 	return ZmContactsHelper._getEmailField(html, idx, item, field, colIdx, params);
 };
 
+/**
+ * Returns a string of any extra attributes to be used for the TD.
+ *
+ * @param item		[object]	item to render
+ * @param field		[constant]	column identifier
+ * @param params	[hash]*		hash of optional params
+ * 
+ * @private
+ */
+ZmContactChooserSourceListView.prototype._getCellAttrText =
+function(item, field, params) {
+	if (field == ZmItem.F_EMAIL) {
+		return "style='overflow: visible';";
+	}
+};
+
 /***********************************************************************************/
 
 /**
@@ -879,7 +896,7 @@ ZmContactChooserTargetListView = function(parent, showType) {
 	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.TARGET,
 								   view:ZmId.VIEW_CONTACT_TGT});
 
-	this.setScrollStyle(Dwt.CLIP);
+	this.setScrollStyle(Dwt.SCROLL_X);
 };
 
 ZmContactChooserTargetListView.prototype = new DwtChooserListView;
@@ -905,8 +922,8 @@ function() {
 	if (this._showType) {
 		headerList.push(new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"ContactsPicker", width:ZmMsg.COLUMN_WIDTH_TYPE_CN}));
 	}
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, width:ZmMsg.COLUMN_WIDTH_NAME_CN}));
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email}));
+	headerList.push(new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, width:ZmMsg.COLUMN_WIDTH_NAME_CN, resizeable: true}));
+	headerList.push(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email, resizeable: true}));
 
 	return headerList;
 };
@@ -929,4 +946,20 @@ function(html, idx, item, field, colIdx, params) {
 		idx = ZmContactsHelper._getEmailField(html, idx, item, field, colIdx);
 	}
 	return idx;
+};
+
+/**
+ * Returns a string of any extra attributes to be used for the TD.
+ *
+ * @param item		[object]	item to render
+ * @param field		[constant]	column identifier
+ * @param params	[hash]*		hash of optional params
+ * 
+ * @private
+ */
+ZmContactChooserTargetListView.prototype._getCellAttrText =
+function(item, field, params) {
+	if (field == ZmItem.F_EMAIL) {
+		return "style='overflow: visible';";
+	}
 };
