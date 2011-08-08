@@ -634,14 +634,16 @@ function(id, type) {
  */
 ZmOrganizer.parseId =
 function(id, result) {
+	var ac = window.parentAppCtxt || window.appCtxt;
+
 	result = result || {};
 	if (id == null) { return result; }
 	var idx = (typeof id == "string") ? id.indexOf(":") : -1;
 	if (idx == -1) {
-		result.account = appCtxt.accountList.mainAccount;
+		result.account = ac.accountList.mainAccount;
 		result.id = id;
 	} else {
-		result.account = appCtxt.accountList.getAccount(id.substring(0, idx));
+		result.account = ac.accountList.getAccount(id.substring(0, idx));
 		result.id = id.substr(idx + 1);
 	}
 	return result;
