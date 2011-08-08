@@ -827,8 +827,9 @@ function(sigId, account) {
 
 ZmComposeController.prototype._deleteDraft =
 function(delMsg) {
-    var ac = window.parentAppCtxt || window.appCtxt;
 
+	if (!delMsg) { return; }
+    var ac = window.parentAppCtxt || window.appCtxt;
     if (delMsg && delMsg.isSent) {
       var folder = delMsg.folderId ? ac.getById(delMsg.folderId) : null;
 	  if (folder && folder.isRemote() && !folder.isPermAllowed(ZmOrganizer.PERM_DELETE)) {
@@ -836,25 +837,7 @@ function(delMsg) {
 	  }
     }
 
-	var list = delMsg.list;
-	var mailItem, request;
-
-	if (list && list.type == ZmItem.CONV) {
-		mailItem = list.getById(delMsg.cid);
-		request = "ConvActionRequest";
-	} else {
-		mailItem = delMsg;
-		request = "MsgActionRequest";
-	}
-
-	// manually delete "virtual conv" or msg created but never added to internal list model
-	var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");
-	var actionNode = soapDoc.set("action");
-	actionNode.setAttribute("id", mailItem.id);
-	actionNode.setAttribute("op", "delete");
-
-	var async = window.parentController == null;
-	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:async});
+	delMsg.doDelete();
 };
 
 /**
