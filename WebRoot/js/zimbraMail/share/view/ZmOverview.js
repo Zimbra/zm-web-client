@@ -230,6 +230,17 @@ function(typeOnly) {
 	return null;
 };
 
+ZmOverview.prototype.deselectAllTreeViews =
+function() {
+	for (var i = 0; i < this._treeIds.length; i++) {
+		var treeView = this._treeHash[this._treeIds[i]];
+		if (treeView) {
+			treeView.deselectAll();
+		}
+	}
+};
+
+
 /**
  * Selects the item with the given ID within the given tree in this overview.
  *

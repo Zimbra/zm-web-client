@@ -462,6 +462,10 @@ function(ev) {
 
 	if (firstMatch) {
 		var tv = this._treeView[firstMatch.accountId][firstMatch.type];
+		var ov = this._getOverview();
+		if (ov) {
+			ov.deselectAllTreeViews();
+		}
 		tv.setSelected(appCtxt.getById(firstMatch.id), true, true);
         this._selected = firstMatch.id;
         if (appCtxt.multiAccounts) {
