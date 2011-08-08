@@ -973,12 +973,14 @@ function(params, msg) {
 		// bug 43428 - invitation should be forwarded using apt forward view
 		if (selCount == 1 && msg.forwardAsInvite()) {
 			var ac = window.parentAppCtxt || window.appCtxt;
-			var controller = ac.getApp(ZmApp.CALENDAR).getCalController();
-			controller.forwardInvite(msg);
-			if (appCtxt.isChildWindow) {
-				window.close();
+			if (ac.get(ZmSetting.CALENDAR_ENABLED)) {
+				var controller = ac.getApp(ZmApp.CALENDAR).getCalController();
+				controller.forwardInvite(msg);
+				if (appCtxt.isChildWindow) {
+					window.close();
+				}
+				return;
 			}
-			return;
 		}
 
 		// reset the action if user is forwarding multiple mail items inline
