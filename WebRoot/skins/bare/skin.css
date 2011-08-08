@@ -12,7 +12,19 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
  */
-
+#skin_spacing_top_row {
+    background-color: white;
+    #IFDEF GECKO
+    background-image: -moz-linear-gradient(top, @lighten(AppC,25)@, white); /* FF3.6 */
+    #ENDIF
+    #IFDEF SAFARI
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @lighten(AppC,25)@),color-stop(1, white)); /* Saf4+, Chrome */
+    #ENDIF
+    #IFDEF MSIE
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(AppC,25)@', EndColorStr='white'); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(AppC,25)@', EndColorStr='white')"; /* IE8 */
+    #ENDIF
+}
 #skin_td_tree	{	
 }
 
