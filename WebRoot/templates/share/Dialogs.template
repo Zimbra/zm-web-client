@@ -589,7 +589,7 @@
 <template id='share.Dialogs#ZmTimeDialog'>
 	<table border=0 width=330>
 		<tr>
-			<td colspan=2>${description}</td>
+			<td colspan=2 id='${id}_description'>${description}</td>
 		</tr>
 		<tr>
 			<td class='Label'>${label}:</td>

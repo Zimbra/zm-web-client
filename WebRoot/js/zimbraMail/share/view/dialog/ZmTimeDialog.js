@@ -21,6 +21,7 @@
  * 
  */
 ZmTimeDialog = function(params) {
+	params.id = "ZmTimeDialog";
 	ZmDialog.call(this, params);
 	var html = AjxTemplate.expand("share.Dialogs#ZmTimeDialog", {id: this._htmlElId, description: ZmMsg.sendLaterDescription, label: ZmMsg.time});
 	this.setContent(html);
@@ -111,12 +112,13 @@ function() {
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
 	
 	this._timeSelect = new ZmTimeInput(this, ZmTimeInput.START);
+	this._timeSelect.setHtmlElementId("ZmTimeInput");
 	this._timeSelect.addChangeListener(timeSelectListener);
 	this._timeSelect.reparentHtmlElement(this._htmlElId + "_time");
 
 	this._dateField = Dwt.byId(this._htmlElId + "_date");
 
-	this._tzoneSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzSelect"), layout:DwtMenu.LAYOUT_SCROLL, maxRows: 7});
+	this._tzoneSelect = new DwtSelect({parent:this, parentElement: (this._htmlElId + "_tzSelect"), layout:DwtMenu.LAYOUT_SCROLL, maxRows: 7, id: "TimeZoneSelect"});
 };
 
 ZmTimeDialog.prototype.showTimeFields = 
