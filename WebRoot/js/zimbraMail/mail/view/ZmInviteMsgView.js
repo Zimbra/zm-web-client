@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011 Zimbra, Inc.
- * 
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -290,9 +290,12 @@ function(reset) {
 	var grandParentSize = this.parent.parent.getSize();
 
 	if (reset) {
-		isRight
-			? this.parent.setSize(Dwt.DEFAULT, grandParentSize.y)
-			: this.parent.setSize(grandParentSize.x, Dwt.DEFAULT);
+		if (isRight) {
+			this.parent.setSize(Dwt.DEFAULT, grandParentSize.y);
+		}
+		else {
+			this.parent.setSize(grandParentSize.x, Dwt.DEFAULT);
+		}
 	} else if (this._dayView) {
 		// bug: 50412 - fix day view for stand-alone message view which is a parent
 		// of DwtShell and needs to be resized manually.
@@ -548,7 +551,7 @@ function(subs, sentBy, sentByAddr, obo) {
 	}
 };
 
-ZmInviteMsgView.prototype.truncateBodyContent =
+ZmInviteMsgView.truncateBodyContent =
 function(content, isHtml) {
 	var sepIdx = content.indexOf(ZmItem.NOTES_SEPARATOR);
 	if (sepIdx == -1) {
