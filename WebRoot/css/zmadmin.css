@@ -147,6 +147,24 @@
 	@ToolbarBg@
 }
 
+.ZaLeftBracket {
+	@LeftSeparator@
+    @TopSeparator@
+    @BottomSeparator@
+	margin-left:3px;
+	padding-right:4px;
+	height: 16px;
+}
+
+.ZaRightBracket {
+	@RightSeparator@
+    @TopSeparator@
+    @BottomSeparator@
+	margin-left:3px;
+	padding-right:4px;
+	height: 16px;
+}
+
 .ZaUpdatedLabel {
 	margin-left: 5px;
 }
