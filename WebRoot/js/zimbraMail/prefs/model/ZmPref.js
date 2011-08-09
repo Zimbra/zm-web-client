@@ -40,6 +40,7 @@ ZmPref.TYPE_EXPORT			= "EXPORT";
 ZmPref.TYPE_SHORTCUTS		= "SHORTCUTS";
 ZmPref.TYPE_CUSTOM			= "CUSTOM";
 ZmPref.TYPE_LOCALES			= "LOCALES";
+ZmPref.TYPE_FONT			= "FONT";
 
 ZmPref.ORIENT_VERTICAL		= "vertical";
 ZmPref.ORIENT_HORIZONTAL	= "horizontal";
@@ -122,8 +123,8 @@ function(emailStrArray) {
 ZmPref.downloadSinceDisplay =
 function(dateStr) {
 	if (dateStr == "") return 0;
-	if (dateStr == appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE)) return 1;
-	return 2;
+	if (dateStr == appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE)) return 2;
+	return 1;
 };
 ZmPref.downloadSinceValue =
 function(value) {

@@ -460,15 +460,29 @@ function() {
 	// make sure that the current object proxy is up-to-date
 	this._setAccountFields(this._currentAccount, this._currentSection, true);
 
+	var printAcct = function(acct) {
+		if (AjxUtil.isArray(acct)) {
+			return AjxUtil.map(acct, printAcct).join("\n");
+		}
+		return ["name: ",acct.name,", id: ",acct.id].join("");
+	}
+
 	var dirty = this._deletedAccounts.length > 0;
+	if (dirty) {
+		AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\n" + "Deleted accounts:\n" + printAcct(this._deletedAccounts));
+	}
 	if (!dirty) {
 		var accounts = this._accounts.getArray();
+		var dirtyAccounts = [];
 		for (var i = 0; i < accounts.length; i++) {
 			var account = accounts[i];
 			if (account._new || account._dirty || account._visibleDirty) {
 				dirty = true;
-				break;
+				dirtyAccounts.push(account);
 			}
+		}
+		if (dirty) {
+			AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\n" + "Dirty accounts:\n" + printAcct(dirtyAccounts));
 		}
 	}
 	return dirty;
