@@ -565,7 +565,7 @@
                         </fmt:message>
                     </app:status>
                 </c:when>
-                <c:when test="${not empty ids and empty msgids}">
+                <c:when test="${empty ids and not empty msgids}">
                     <zm:moveMessage folderid="${folderid}" var="msgresult" id="${msgids}"/>
                     <app:status>
                         <fmt:message key="actionMessageMoved">
