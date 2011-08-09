@@ -58,10 +58,8 @@ ZmNotebookController.prototype.switchView = function(view, force) {
 	this._resetOperations(this._toolbar[view], 1);
 
 	if (viewChanged) {
-		var elements = {};
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
-
+		var elements = this.getViewElements(this._currentView, this._listView[this._currentView]);
+		
         //bug: 30036 if the search result notebookpage view should not be set as app view
         this._setView({view:view, elements:elements, isAppView:!(this._fromSearch  && (view == ZmId.VIEW_NOTEBOOK_PAGE))});
 	}

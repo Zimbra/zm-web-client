@@ -37,6 +37,7 @@ ZmFolderTreeController = function(type, dropTgt) {
 	ZmTreeController.call(this, (type || ZmOrganizer.FOLDER));
 
 	this._listeners[ZmOperation.NEW_FOLDER] = new AjxListener(this, this._newListener);
+	this._listeners[ZmOperation.PRIORITY_FILTER] = new AjxListener(this, this._priorityFilterListener);
 	this._listeners[ZmOperation.RENAME_FOLDER] = new AjxListener(this, this._renameListener);
 	this._listeners[ZmOperation.SHARE_FOLDER] = new AjxListener(this, this._shareFolderListener);
 	this._listeners[ZmOperation.EMPTY_FOLDER] = new AjxListener(this, this._emptyListener);
@@ -130,7 +131,7 @@ function(parent, type, id) {
 			parent.enable(ZmOperation.NEW_FOLDER, true);
 		}
 		// "Empty" for Chats, Junk and Trash
-		if (nId == ZmFolder.ID_SPAM ||
+		if (nId == ZmFolder.ID_SPAM  ||
 			nId == ZmFolder.ID_TRASH ||
 			nId == ZmFolder.ID_CHATS)
 		{
@@ -217,7 +218,7 @@ function(parent, type, id) {
 
 	button = parent.getOp(ZmOperation.SYNC_OFFLINE_FOLDER);
 	if (button) {
-		if (!folder.isOfflineSyncable || isTrash) {
+		if (!folder.isOfflineSyncable) {
 			button.setVisible(false);
 		} else {
 			button.setVisible(true);
@@ -228,7 +229,7 @@ function(parent, type, id) {
 		}
 	}
 	parent.enable(ZmOperation.BROWSE, true);
-
+	parent.enable(ZmOperation.PRIORITY_FILTER, true);
 	this._enableRecoverDeleted(parent, isTrash);
 
 
@@ -248,8 +249,11 @@ ZmFolderTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	return [
 		ZmOperation.NEW_FOLDER,
+		ZmOperation.SEP,
+		ZmOperation.PRIORITY_FILTER,
 		ZmOperation.EXPAND_ALL,
 		ZmOperation.SYNC,
+		ZmOperation.SEP,
 		ZmOperation.BROWSE
 	];
 };
@@ -340,7 +344,8 @@ function(folder) {
 	} else if (folder.id == ZmFolder.ID_ATTACHMENTS) {
 		var attController = AjxDispatcher.run("GetAttachmentsController");
 		attController.show();
-	} else {
+	}
+    else {
 		var searchFor = ZmId.SEARCH_MAIL;
 		if (folder.isInTrash()) {
 			var app = appCtxt.getCurrentAppName();
@@ -352,12 +357,27 @@ function(folder) {
 		var sc = appCtxt.getSearchController();
 		var acct = folder.getAccount();
 
+		var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, folder.nId);
+		if (!sortBy) {
+			sortBy = (sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC;
+		}
+		else {
+			//user may have saved folder with From search then switched views; don't allow From sort in conversation mode
+			var groupMode = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
+			if (groupMode == ZmItem.CONV && (sortBy == ZmSearch.NAME_ASC || sortBy == ZmSearch.NAME_DESC)) {
+				sortBy = appCtxt.get(ZmSetting.SORTING_PREF, appCtxt.getCurrentViewId());  //default to view preference
+				if (!sortBy) {
+					sortBy = ZmSearch.DATE_DESC; //default
+				}
+				appCtxt.set(ZmSetting.SORTING_PREF, sortBy, folder.nId);
+			}
+		}
 		var params = {
 			query: folder.createQuery(),
 			searchFor: searchFor,
 			getHtml: (folder.nId == ZmFolder.ID_DRAFTS) || appCtxt.get(ZmSetting.VIEW_AS_HTML),
 			types: ((folder.nId == ZmOrganizer.ID_SYNC_FAILURES) ? [ZmItem.MSG] : null), // for Sync Failures folder, always show in traditional view
-			sortBy: ((sc.currentSearch && folder.nId == sc.currentSearch.folderId) ? null : ZmSearch.DATE_DESC),
+			sortBy: sortBy,
 			accountName: (acct && acct.name)
 		};
 
@@ -676,6 +696,13 @@ ZmFolderTreeController.prototype._continueMovingAcrossAccount =
 function(dialog, ctlr, items, dropFolder) {
 	dialog.popdown();
 	ctlr._doMove(items, dropFolder);
+};
+
+
+ZmTreeController.prototype._priorityFilterListener =
+function(ev) {
+	var priorityFilterDialog = appCtxt.getPriorityMessageFilterDialog();
+	ZmController.showDialog(priorityFilterDialog);
 };
 
 /**

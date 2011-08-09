@@ -87,7 +87,8 @@ function() {
 ZmBrowserAlert.prototype._update =
 function(status) {
 	// Update the favicon.
-	Dwt.setFavIcon(status ? this._blankIcon : this._favIcon);
+    // bug: 52080 - disable flashing of favicon
+	//Dwt.setFavIcon(status ? this._blankIcon : this._favIcon);
 
 	// Update the title.
 	var doc = document;

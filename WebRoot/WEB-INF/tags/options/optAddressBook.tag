@@ -79,12 +79,13 @@
                     </td>
                 </tr>
                 <app:optSeparator/>
-                <%--
+
                 <tr>
                     <td>
                         <table>
                             <tr>
                                 <td class='ZOptionsTableLabel'>
+                                    <fmt:message key="optionsAutoAdd"/> :
                                 </td>
                                 <td>
                                     <app:optCheckbox boxfirst="true" trailingcolon="false"  label="autoAddContacts" pref="zimbraPrefAutoAddAddressEnabled"
@@ -95,7 +96,7 @@
                         </td>
                 </tr>
                 <app:optSeparator/>
-                --%>
+                
                 <tr>
                     <td >
                         <table width="100%">
