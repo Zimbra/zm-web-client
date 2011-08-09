@@ -365,7 +365,7 @@ function(){
 		  dialog.setMessage(ZmMsg.recurrenceUpdateWarning, DwtMessageDialog.WARNING_STYLE);
           dialog.registerCallback(DwtDialog.YES_BUTTON, this._sendContinue, this,[dialog]);
           dialog.registerCallback(DwtDialog.NO_BUTTON, this._dontSend,this,[dialog]);
-          dialog.getButton(DwtDialog.CANCEL_BUTTON).setText(ZmMsg.apptSaveDiscard);
+          dialog.getButton(DwtDialog.CANCEL_BUTTON).setText(ZmMsg.discard);
 		  dialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._dontSendAndClose,this,[dialog]);
 		  dialog.popup();
     }
