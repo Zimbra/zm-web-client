@@ -828,7 +828,7 @@ function(item, list) {
  */
 ZmContactChooserSourceListView = function(parent) {
 	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE});
-	this.setScrollStyle(Dwt.SCROLL_X);
+	this.setScrollStyle(Dwt.CLIP);
 };
 
 ZmContactChooserSourceListView.prototype = new DwtChooserListView;
@@ -879,6 +879,29 @@ function() {
 
 
 	return headerList;
+};
+
+// Override of DwtListView.prototype._resetColWidth to set width; without overrriding causes vertical scrollbars to disapper
+// on header resize
+ZmContactChooserSourceListView.prototype._resetColWidth =
+function() {
+
+	if (!this.headerColCreated) { return; }
+
+	var lastColIdx = this._getLastColumnIndex();
+    if (lastColIdx) {
+        var lastCol = this._headerList[lastColIdx];
+        var lastCell = document.getElementById(lastCol._id);
+		if (lastCell) {
+			var div = lastCell.firstChild;
+			var scrollbarPad = 16;
+
+			var headerWidth = this._listColDiv.clientWidth;
+			var rowWidth = this._listDiv.clientWidth;
+
+			lastCell.style.width = div.style.width = (lastCol._width || ""); 
+		}
+    }
 };
 
 /**
@@ -935,7 +958,7 @@ ZmContactChooserTargetListView = function(parent, showType) {
 
 	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.TARGET});
 
-	this.setScrollStyle(Dwt.SCROLL_X);
+	this.setScrollStyle(Dwt.CLIP);
 };
 
 ZmContactChooserTargetListView.prototype = new DwtChooserListView;
@@ -985,6 +1008,29 @@ function(html, idx, item, field, colIdx, params) {
 		idx = ZmContactsHelper._getEmailField(html, idx, item, field, colIdx);
 	}
 	return idx;
+};
+
+// Override of DwtListView.prototype._resetColWidth to set width; without overrriding causes vertical scrollbars to disapper
+// on header resize
+ZmContactChooserTargetListView.prototype._resetColWidth =
+function() {
+
+	if (!this.headerColCreated) { return; }
+
+	var lastColIdx = this._getLastColumnIndex();
+    if (lastColIdx) {
+        var lastCol = this._headerList[lastColIdx];
+        var lastCell = document.getElementById(lastCol._id);
+		if (lastCell) {
+			var div = lastCell.firstChild;
+			var scrollbarPad = 16;
+
+			var headerWidth = this._listColDiv.clientWidth;
+			var rowWidth = this._listDiv.clientWidth;
+
+			lastCell.style.width = div.style.width = (lastCol._width || ""); 
+		}
+    }
 };
 
 /**
