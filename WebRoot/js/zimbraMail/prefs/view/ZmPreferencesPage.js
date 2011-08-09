@@ -250,7 +250,7 @@ function() {
 				control = this._setupFonts(id, setup, value);
 			}
 			else if (type == ZmPref.TYPE_PASSWORD) {
-				this._addButton(elem, setup.displayName, 50, new AjxListener(this, this._changePasswordListener));
+				this._addButton(elem, setup.displayName, 50, new AjxListener(this, this._changePasswordListener), "CHANGE_PASSWORD");
 				continue;
 			}
 			else if (type == ZmPref.TYPE_IMPORT) {
@@ -548,8 +548,12 @@ function(id, useDefault) {
 
 // Add a button to the preferences page
 ZmPreferencesPage.prototype._addButton =
-function(parentIdOrElem, text, width, listener) {
-	var button = new DwtButton({parent:this});
+function(parentIdOrElem, text, width, listener, id) {
+	var params = {parent: this};
+	if (id) {
+		params.id = id;
+	}
+	var button = new DwtButton(params);
 	button.setSize(width, Dwt.DEFAULT);
 	button.setText(text);
 	button.addSelectionListener(listener);
