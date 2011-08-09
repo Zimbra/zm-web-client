@@ -968,12 +968,9 @@ function(ev) {
 ZmObjectManager.prototype._mouseDownListener =
 function(ev) {
 
-	// "authoritative" means a previous listener doesn't want propagation to get reset
-	if (!ev._authoritative) {
-		ev._dontCallPreventDefault = true;
-		ev._returnValue = true;
-		ev._stopPropagation = false;
-	}
+	ev._dontCallPreventDefault = true;
+	ev._returnValue = true;
+	ev._stopPropagation = false;
 
 	var span = this._findObjectSpan(ev.target);
 	if (!span) {
