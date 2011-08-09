@@ -759,7 +759,7 @@ function() {
 				addrs.push(value);	
 			}
 			else if(type == ZmContact.GROUP_CONTACT_REF || type == ZmContact.GROUP_GAL_REF) {
-				var contact = appCtxt.cacheGet(value);  //TODO: handle contacts not cached?
+				var contact = this._getContactFromCache(value);	 //TODO: handle contacts not cached?
 				var email = contact && contact.getEmail();
 				if (email && email != "") {
 					var ajxEmailAddress = new AjxEmailAddress(email, null, contact.getFileAs(), contact.getFullNameForDisplay(), false);
@@ -793,7 +793,7 @@ function() {
 				members.push({type : type, value : value, address : value});	
 			}
 			else if(type == ZmContact.GROUP_CONTACT_REF || type == ZmContact.GROUP_GAL_REF) {
-				var contact = appCtxt.cacheGet(value); //TODO: Handle contacts not cached?
+				var contact = this._getContactFromCache(value);  //TODO: handle contacts not cached?
 				var email = contact && contact.getEmail();
 				if (email && email != "") {
 					var ajxEmailAddress = new AjxEmailAddress(email, null, contact.getFileAs(), contact.getFullNameForDisplay(), false);
@@ -2041,6 +2041,28 @@ function(callback, result) {
 		result.list = dl.list.slice();
 		callback.run(result);
 	}
+};
+
+/**
+ * Gets the contact from cache handling parsing of contactId
+ * 
+ * @param contactId {String} contact id
+ * @return contact {ZmContact} contact or null
+ * @private
+ */
+ZmContact.prototype._getContactFromCache =
+function(contactId) {
+	var userZid = appCtxt.accountList.mainAccount.id;
+	var contact = null;
+	if (contactId && contactId.indexOf(userZid + ":") !=-1) {
+		//strip off the usersZid to pull from cache
+		var arr = contactId.split(userZid + ":");
+		contact = arr && arr.length > 1 ? appCtxt.cacheGet(arr[1]) : appCtxt.cacheGet(contactId);
+	}
+	else {
+		contact = appCtxt.cacheGet(contactId);
+	}
+	return contact;
 };
 
 // these need to be kept in sync with ZmContact.F_*

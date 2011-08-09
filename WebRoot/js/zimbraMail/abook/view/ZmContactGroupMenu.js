@@ -143,14 +143,17 @@ function(groupNames, addRemove) {
 ZmContactGroupMenu.groupNameLength = 20;
 ZmContactGroupMenu.prototype._addNewGroup =
 function(menu, group, add, index, groupHash) {
-	var mi = new DwtMenuItem({parent:menu, index:index});
-    var groupName = AjxStringUtil.clipByLength(ZmContact.getAttr(group, "nickname"), ZmContactGroupMenu.groupNameLength);
-    mi.setText(groupName);
-	mi.setImage("Group");
-	mi.addSelectionListener(this._menuItemSelectionListener.bind(this), 0);
-	mi.setData(ZmContactGroupMenu.KEY_GROUP_EVENT, ZmEvent.E_MODIFY);
-	mi.setData(ZmContactGroupMenu.KEY_GROUP_ADDED, add);
-	mi.setData(Dwt.KEY_OBJECT, group);
+	var nickName = ZmContact.getAttr(group, "nickname") || group.fileAsStr;
+	if (nickName) {
+		var mi = new DwtMenuItem({parent:menu, index:index});
+		var groupName = AjxStringUtil.clipByLength(nickName, ZmContactGroupMenu.groupNameLength);
+		mi.setText(groupName);
+		mi.setImage("Group");
+		mi.addSelectionListener(this._menuItemSelectionListener.bind(this), 0);
+		mi.setData(ZmContactGroupMenu.KEY_GROUP_EVENT, ZmEvent.E_MODIFY);
+		mi.setData(ZmContactGroupMenu.KEY_GROUP_ADDED, add);
+		mi.setData(Dwt.KEY_OBJECT, group);
+	}
 };
 
 ZmContactGroupMenu.prototype._menuItemSelectionListener =

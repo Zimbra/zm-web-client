@@ -1222,6 +1222,11 @@ function(items, group) {
 					} 
 					newMembers.push(obj);
 				}
+				else if (groups[j].type == ZmContact.GROUP_INLINE_REF) {
+					var obj = {value: groups[j].value, type : ZmContact.GROUP_INLINE_REF};
+					obj.op = "+";
+					newMembers.push(obj);				
+				}
 			}	
 		}
 	}

@@ -671,7 +671,7 @@ function(id, setup, value) {
 		optLabel = ZmPreferencesPage.__formatLabel(optLabel, optValue);
 		var isSelected = value == optValue;
 
-		var radioBtn = new DwtRadioButton({parent:container, name:name, checked:isSelected});
+		var radioBtn = new DwtRadioButton({parent:container, name:name, checked:isSelected, id: id});
 		radioBtn.setText(optLabel);
 		radioBtn.setValue(optValue);
 
