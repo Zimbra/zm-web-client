@@ -500,7 +500,7 @@ function(identity, table, signatures, index) {
 	var cell = row.insertCell(-1);
 	cell.className = "ZOptionsLabel";
 	var id = identity.id + "_name";
-	cell.innerHTML = "<span id='" + id + "'>" + name + ":</span>";
+	cell.innerHTML = "<span id='" + id + "'>" + AjxStringUtil.htmlEncode(name) + ":</span>";
 
 	this._sigSelect[identity.id] = {};
 	for (var i = 0; i < ZmSignaturesPage.SIG_FIELDS.length; i++) {
