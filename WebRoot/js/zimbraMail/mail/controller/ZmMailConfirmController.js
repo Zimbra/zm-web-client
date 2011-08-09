@@ -98,10 +98,9 @@ function() {
 	tg.newParent(rootTg);
 	tg.addMember(this._view.getTabGroupMember());
 
-	var elements = {};
 	this._initializeToolBar();
-	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-	elements[ZmAppViewMgr.C_APP_CONTENT] = this._view;
+	var elements = this.getViewElements(null, this._view, this._toolbar);
+
 	var callbacks = {};
 	callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
 	callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);

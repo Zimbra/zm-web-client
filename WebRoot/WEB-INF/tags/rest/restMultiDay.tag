@@ -30,11 +30,19 @@
 
     <fmt:message var="yearTitleFormat" key="CAL_DAY_TITLE_YEAR_FORMAT"/>
 
-    <c:set var="currentDay" value="${zm:getFirstDayOfMultiDayView(date, firstDOW, view)}"/>
+    <c:set var="currentDay" value="${zm:getStartOfMultiDayView(date, firstDOW, view)}"/>
     <c:set var="scheduleView" value="${view eq 'schedule'}"/>
     <c:set var="today" value="${zm:getToday(timezone)}"/>
     <c:set var="rangeEnd" value="${zm:addDay(currentDay,numdays).timeInMillis}"/>
-
+        <c:choose>
+            <c:when test="${view eq 'workWeek'}">
+                <c:set var="wdays" value="1,2,3,4,5"/>
+            </c:when>
+            <c:otherwise>
+                <c:set var="wdays" value="0,1,2,3,4,5,6"/>
+            </c:otherwise>
+        </c:choose>
+    <c:set var="workDays" value="${zm:getWorkDays(wdays)}"/>
     <c:choose>
         <c:when test="${requestScope.zimbra_freebusy}">
             <zm:getFreeBusyAppointments box="${mailbox}"
@@ -59,8 +67,8 @@
     </c:if>
     <zm:apptMultiDayLayout timezone="${timezone}"
             schedule=""
-            var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
-            hourstart="${requestScope.zimbra_target_account_prefCalendarDayHourStart}" hourend="${requestScope.target_account_prefCalendarDayHourEnd}"/>
+            var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}" wdays="${wdays}"
+            hourstart="${requestScope.zimbra_target_account_prefCalendarDayHourStart}" hourend="${requestScope.zimbra_target_account_prefCalendarDayHourEnd}"/>
 </rest:handleError>
 
 <table class='ZhCalDayGrid' width="100%" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse; height:100%;'>
@@ -77,6 +85,7 @@
         </c:otherwise>
     </c:choose>
     <c:forEach var="day" items="${layout.days}">
+        <c:if test="${workDays[day.day % 7] eq true}">
         <td nowrap class='ZhCalDaySEP ZhCalDayHeader${(day.startTime eq today.timeInMillis and empty day.folderId) ? 'Today':''}' colspan="${day.maxColumns}" width="${day.width}%">
             <c:choose>
                 <c:when test="${not empty day.folderId}">
@@ -92,6 +101,7 @@
                 </c:otherwise>
             </c:choose>
         </td>
+        </c:if>
     </c:forEach>
 </tr>
 <c:forEach var="row" items="${layout.allDayRows}">
@@ -146,9 +156,11 @@
         </c:otherwise>
     </c:choose>
     <c:forEach var="day" items="${layout.days}">
+        <c:if test="${workDays[day.day % 7] eq true}">
         <td class='ZhCalDaySEP ZhCalDayADB' colspan="${day.maxColumns}" width="${day.width}%">
             &nbsp;
         </td>
+        </c:if>
     </c:forEach>
 </tr>
 <c:forEach var="row" items="${layout.rows}">
@@ -180,7 +192,6 @@
             </c:if>
             <c:choose>
                 <c:when test="${not empty cell.appt and cell.isFirst}">
-
                     <td <c:if test="${diffDay}">class='ZhCalDaySEP' </c:if> valign="top" height="100%" width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if><c:if test="${cell.rowSpan ne 1}"> rowspan='${cell.rowSpan}'</c:if>>
                         <c:set var="testId" value="${cell.appt.id}-${selectedId}"/>
                         <rest:dayAppt appt="${cell.appt}" selected="${testId eq cell.appt.inviteId}" start="${cell.day.startTime}" end="${cell.day.endTime}" timezone="${timezone}" color="${zm:getFolderStyleColor(not empty requestScope.itemColor ? requestScope.itemColor : 'blue', 'appointment')}"/>
