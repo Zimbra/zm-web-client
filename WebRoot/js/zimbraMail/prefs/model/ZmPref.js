@@ -565,6 +565,7 @@ function(prefsId, list) {
  * validationFunction	function to validate the value
  * errorMessage			message to show if validation fails
  * precondition			pref will not be displayed unless precondition is true
+ * inputId              array of unique ids to be applied to input
  */
 ZmPref.SETUP = {};
 

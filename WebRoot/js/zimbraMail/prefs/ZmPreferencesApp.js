@@ -454,7 +454,8 @@ function() {
 		orientation:		ZmPref.ORIENT_VERTICAL,
 		displayOptions: 	[ZmMsg.composeAsHTML, ZmMsg.composeAsText],
 		options: 			[ZmSetting.COMPOSE_HTML, ZmSetting.COMPOSE_TEXT],
-		precondition:		ZmSetting.HTML_COMPOSE_ENABLED
+		precondition:		ZmSetting.HTML_COMPOSE_ENABLED,
+		inputId:            ["COMPOSE_AS_HTML", "COMPOSE_AS_TEXT"]
 	});
 
 	ZmPref.registerPref("COMPOSE_INIT_FONT_COLOR", {

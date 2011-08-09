@@ -661,7 +661,8 @@ function(id, setup, value) {
 	var options = setup.options || setup.displayOptions || setup.choices;
 	var isChoices = setup.choices;
 	var isDisplayString = AjxUtil.isString(setup.displayOptions);
-
+	var inputId = setup.inputId;
+	
 	var radioIds = {};
 	var selectedId;
 	var name = Dwt.getNextId();
@@ -671,7 +672,8 @@ function(id, setup, value) {
 		optLabel = ZmPreferencesPage.__formatLabel(optLabel, optValue);
 		var isSelected = value == optValue;
 
-		var radioBtn = new DwtRadioButton({parent:container, name:name, checked:isSelected, id: id});
+		var automationId  = AjxUtil.isArray(inputId) && inputId[i] ? inputId[i] : Dwt.getNextId();
+		var radioBtn = new DwtRadioButton({parent:container, name:name, checked:isSelected, id: automationId});
 		radioBtn.setText(optLabel);
 		radioBtn.setValue(optValue);
 
