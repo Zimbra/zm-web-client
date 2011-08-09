@@ -2108,7 +2108,7 @@ function(buffer, i, item, field, col, params) {
 		return i;
 	}
 	if (field == ZmItem.F_EMAIL) {
-		buffer[i++] = "<div style='margin-left: 10px;'>"+ item.getEmail() +"</div>";
+		buffer[i++] = "<div style='margin-left: 10px;'>"+ AjxStringUtil.htmlEncode(item.getEmail()) +"</div>";
 		return i;
 	}
 	if (field == ZmItem.F_TYPE) {
