@@ -929,14 +929,16 @@ function(notify) {
 	var deletedIds = notify.deleted.id && notify.deleted.id.split(",");
 	var virtConv = {};
 	var newDeletedIds = [];
-	for (var i = 0; i < deletedIds.length; i++) {
-		var id = deletedIds[i];
-		var nId = ZmOrganizer.normalizeId(id);
-		if (nId < 0) {
-			virtConv[nId] = true;
-			virtConvDeleted = true;
-		} else {
-			newDeletedIds.push(id);
+	if (deletedIds && deletedIds.length) {
+		for (var i = 0; i < deletedIds.length; i++) {
+			var id = deletedIds[i];
+			var nId = ZmOrganizer.normalizeId(id);
+			if (nId < 0) {
+				virtConv[nId] = true;
+				virtConvDeleted = true;
+			} else {
+				newDeletedIds.push(id);
+			}
 		}
 	}
 	if (!virtConvDeleted) {
