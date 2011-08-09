@@ -181,6 +181,10 @@ function() {
 	} else if (this._radio[ZmAttachmentPicker.NONE].checked) {
 		this.setQuery("attachment:none");
 	} else if (this._radio[ZmAttachmentPicker.FILE].checked) {
+		if (this._fileNameInput.value.trim() == "") {
+			this.setQuery("");
+			return;
+		}
 		var query = "filename:(" + this._fileNameInput.value + ")";
 		this.setQuery(query);
 		return; // DONT execute right away
