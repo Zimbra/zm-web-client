@@ -18,7 +18,8 @@ ZmShareSearchDialog = function(params) {
     params.className = params.className || "ZmShareSearchDialog DwtDialog";
     params.title = ZmMsg.sharedFoldersAddTitle;
     params.standardButtons = [ ZmShareSearchDialog.ADD_BUTTON, DwtDialog.CANCEL_BUTTON ];
-
+	params.id = "ZmShareSearchDialog";
+	
     // setup auto-complete
     // NOTE: This needs to be done before default construction so
     // NOTE: that it is available when we initialize the email
@@ -504,7 +505,8 @@ ZmShareSearchDialog.prototype._createHtmlFromTemplate = function(templateId, dat
 
                 }
             ]
-        }
+        },
+	    id: "ZmShareSearchView"
     };
     this._form = new DwtForm(params);
     this.setView(this._form);
