@@ -179,9 +179,19 @@ function() {
 ZmComposeController.prototype.doAction =
 function(params) {
 
-
-	// is zdesktop, its possible there are no accounts that support smtp
 	var ac = window.parentAppCtxt || window.appCtxt;
+	if (params.action == ZmOperation.REPLY) {
+		AjxDebug.println(AjxDebug.REPLY, "------------------------------------------------");
+		AjxDebug.println(AjxDebug.REPLY, "ZmComposeController::doAction - REPLY");
+		var str = ["Browser: " + AjxEnv.browser,
+				   "Offline: " + Boolean(ac.isOffline),
+				   "Multi accts: " + ac.multiAccounts,
+				   "New Window: " + params.inNewWindow,
+				   "Reading pane location: " + ac.get(ZmSetting.READING_PANE_LOCATION)].join(" / ");
+		AjxDebug.println(AjxDebug.REPLY, str);
+	}
+	
+	// in zdesktop, it's possible there are no accounts that support smtp
 	if (ac.isOffline && !ac.get(ZmSetting.OFFLINE_COMPOSE_ENABLED)) {
 		var d = ac.getMsgDialog();
 		d.setMessage(ZmMsg.composeDisabled, DwtMessageDialog.CRITICAL_STYLE);
@@ -203,6 +213,10 @@ function(params) {
 	} else {
 		this._setView(params);
 		this._listController = params.listController;
+	}
+
+	if (params.action == ZmOperation.REPLY) {
+		AjxDebug.println(AjxDebug.REPLY, "+++++++++++++++++++++++++++++++++++++++++++++++++");
 	}
 };
 
@@ -878,6 +892,7 @@ function(params) {
 	params.identity = identity;
 
 	this._composeMode = params.composeMode || this._getComposeMode(msg, identity);
+	AjxDebug.println(AjxDebug.REPLY, "ZmComposeController::_setView - Compose mode: " + this._composeMode);
 	this._curIncOptions = null;
 
 	if (this._needComposeViewRefresh) {

@@ -160,7 +160,7 @@ function(params) {
 	// list of msg Id's to add as attachments
 	this._msgIds = params.msgIds;
 
-	AjxDebug.println(AjxDebug.REPLY, "Reset compose view: set compose view");
+	AjxDebug.println(AjxDebug.REPLY, "ZmComposeView::set - Reset compose view");
 	this.reset(true);
 
 	this._setFromSelect(msg);
@@ -879,7 +879,10 @@ function(msg, docIds) {
 // Sets the mode ZmHtmlEditor should be in.
 ZmComposeView.prototype.setComposeMode =
 function(composeMode, switchPreface) {
-	if (composeMode == this._composeMode) return;
+
+	if (composeMode == this._composeMode) { return; }
+	
+	AjxDebug.println(AjxDebug.REPLY, "ZmComposeView::setComposeMode (new mode) - " + composeMode);
 	var htmlMode = (composeMode == DwtHtmlEditor.HTML);
 	if (!htmlMode || appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 
@@ -1159,6 +1162,7 @@ function(msg, idoc, account) {
             }
 		}
 	}
+	AjxDebug.println(AjxDebug.REPLY, "ZmComposeView::_fixMultipartRelatedImages - num images: " + images.length);
 	return (num == images.length);
 };
 
@@ -2015,6 +2019,8 @@ function(action, msg, subjOverride) {
 
 ZmComposeView.prototype._setBody =
 function(action, msg, extraBodyText) {
+	
+	AjxDebug.println(AjxDebug.REPLY, "ZmComposeView::_setBody");
 	var htmlMode = (this._composeMode == DwtHtmlEditor.HTML);
 
 	var isDraft = (action == ZmOperation.DRAFT);
@@ -2050,7 +2056,8 @@ function(action, msg, extraBodyText) {
 	if (incOptions.what == ZmSetting.INC_ATTACH && !this._msg) {
 		incOptions.what = ZmSetting.INC_NONE;
 	}
-
+	AjxDebug.println(AjxDebug.REPLY, "Inc options: " + [incOptions.what, incOptions.prefix, incOptions.headers].join(" / ")); 
+	
 	var crlf = htmlMode ? "<br>" : ZmMsg.CRLF;
 	var crlf2 = htmlMode ? "<br><br>" : ZmMsg.CRLF2;
 
@@ -2061,6 +2068,7 @@ function(action, msg, extraBodyText) {
 	if (msg && (what == ZmSetting.INC_BODY || what == ZmSetting.INC_SMART)) {
 		bodyInfo = this._getBodyContent(msg, htmlMode);
 		body = bodyInfo.body;
+		AjxDebug.println(AjxDebug.REPLY, "Body length: " + body.length);
 		// Bug 7160: Strip off the ~*~*~*~ from invite replies.
 		if (this._isInviteReply(action)) {
 			body = body.replace(ZmItem.NOTES_SEPARATOR, "");
@@ -2082,6 +2090,7 @@ function(action, msg, extraBodyText) {
 					}
 				}
 			}
+			AjxDebug.println(AjxDebug.REPLY, "Body length in smart mode: " + body.length);
 		}
 	}
 
@@ -2090,6 +2099,7 @@ function(action, msg, extraBodyText) {
 	if (ac.get(ZmSetting.SIGNATURES_ENABLED, null, account)) {
 		sig = this.getSignatureContentSpan(null, null, account);
 		sigStyle = sig && ac.get(ZmSetting.SIGNATURE_STYLE, null, account);
+		AjxDebug.println(AjxDebug.REPLY, "Sig style: " + sigStyle);
 		sigId = this._controller.getSelectedSignature();
 		var signature = this.getSignatureById(sigId);
 		sigFormat = signature && signature.getContentType();
@@ -2124,6 +2134,7 @@ function(action, msg, extraBodyText) {
 	} else { // No signature, just take the extraBodyText
 		preText = extraBodyText;
 	}
+	AjxDebug.println(AjxDebug.REPLY, "preText: " + AjxStringUtil.htmlEncode(preText));
 
 	if (incOptions.headers && msg) {
 		for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
@@ -2146,6 +2157,7 @@ function(action, msg, extraBodyText) {
 	} else {
 		var preface = this._preface = this._getPreface();
 		var divider = !body ? "" : htmlMode ? preface : preface + crlf;
+		AjxDebug.println(AjxDebug.REPLY, "divider: " + AjxStringUtil.htmlEncode(divider));
 		var leadingSpace = preText ? "" : crlf2;
 		var wrapParams = ZmHtmlEditor.getWrapParams(htmlMode, incOptions);
 		wrapParams.preserveReturns = true;
@@ -2156,7 +2168,9 @@ function(action, msg, extraBodyText) {
 				var headerText = headers.length ? headers.join(crlf) + crlf2 : "";
 				wrapParams.text = isDraft ? body : headerText + body;
 				var bodyText = AjxStringUtil.wordWrap(wrapParams);
+				AjxDebug.println(AjxDebug.REPLY, "bodyText length: " + bodyText.length);
 				value = leadingSpace + preText + divider + bodyText;
+				AjxDebug.println(AjxDebug.REPLY, "value length A: " + value.length);
 			} else {
 				var headerText = "";
 				if (headers.length) {
@@ -2200,11 +2214,13 @@ function(action, msg, extraBodyText) {
 	}
 
 	var vLen = value ? value.length : 0;
-	AjxDebug.println(AjxDebug.REPLY, "Compose view, reply length: " + vLen);
+	AjxDebug.println(AjxDebug.REPLY, "value length B: " + vLen);
 	if (!isDraft && sigStyle == ZmSetting.SIG_INTERNET) {
+		AjxDebug.println(AjxDebug.REPLY, "internet style sig, call addSignature()");
 		this.addSignature(value);
 	} else {
 		value = value || (htmlMode ? "<br>" : "");
+		AjxDebug.println(AjxDebug.REPLY, "value snippet: " + AjxStringUtil.htmlEncode(value.substr(0, 200)));
 		this._htmlEditor.setContent(value);
 	}
 
@@ -2931,7 +2947,9 @@ function(incAddrs, incSubject) {
 	if (incSubject) {
 		vals.push(this._subjectField.value);
 	}
-	vals.push(this._htmlEditor.getContent());
+	var content = this._htmlEditor.getContent();
+	AjxDebug.println(AjxDebug.REPLY, "ZmComposeView::_formValue - content length: " + content.length);
+	vals.push(content);
 	var str = vals.join("|");
 	str = str.replace(/\|+/, "|");
 	return str;
