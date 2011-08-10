@@ -25,12 +25,13 @@
 ZmDebugLogDialog = function(parent) {
 
 	var title = ZmMsg.debugLog;
-	var buttons = [ DwtDialog.OK_BUTTON, DwtDialog.NO_BUTTON ];
 	var emailButton = new DwtDialog_ButtonDescriptor(ZmDebugLogDialog.EMAIL_BUTTON, ZmMsg.sendAsEmail, DwtDialog.ALIGN_LEFT);
+	var clearButton = new DwtDialog_ButtonDescriptor(ZmDebugLogDialog.CLEAR_BUTTON, ZmMsg.clear, DwtDialog.ALIGN_LEFT);
 	DwtDialog.call(this, {parent:parent, title:title, standardButtons:[DwtDialog.OK_BUTTON],
-						  extraButtons: [emailButton]});
+						  extraButtons: [emailButton, clearButton]});
 
 	this.setButtonListener(ZmDebugLogDialog.EMAIL_BUTTON, new AjxListener(this, this._handleEmailButton));
+	this.setButtonListener(ZmDebugLogDialog.CLEAR_BUTTON, new AjxListener(this, this._handleClearButton));
 
 	this._setAllowSelection();
 	this.setContent(this._contentHtml());
@@ -38,6 +39,9 @@ ZmDebugLogDialog = function(parent) {
 
 ZmDebugLogDialog.prototype = new DwtDialog;
 ZmDebugLogDialog.prototype.constructor = ZmDebugLogDialog;
+
+ZmDebugLogDialog.EMAIL_BUTTON = "EMAIL";
+ZmDebugLogDialog.CLEAR_BUTTON = "CLEAR";
 
 // Public methods
 
@@ -50,6 +54,7 @@ ZmDebugLogDialog.prototype.constructor = ZmDebugLogDialog;
 ZmDebugLogDialog.prototype.popup =
 function(content, type) {
 
+	this._logType = type;
 	this.setTitle(AjxMessageFormat.format(ZmMsg.debugLog, [type]));
 	var div = document.getElementById(this._descDivId);
 	if (div) {
@@ -80,6 +85,14 @@ function(event) {
 	this.popdown();
 	var div = document.getElementById(this._contentDivId);
 	var text = AjxStringUtil.convertHtml2Text(div);
-	var params = {action:ZmOperation.NEW_MESSAGE, subjOverride:ZmMsg.debugLogEmailSubject, extraBodyText:text};
+	var params = {action:ZmOperation.NEW_MESSAGE, subjOverride:ZmMsg.debugLogEmailSubject,
+				  composeMode: DwtHtmlEditor.TEXT, extraBodyText:text};
 	appCtxt.getApp(ZmApp.MAIL).compose(params);
+};
+
+ZmDebugLogDialog.prototype._handleClearButton =
+function(event) {
+	AjxDebug.BUFFER[this._logType] = [];
+	var div = document.getElementById(this._contentDivId);
+	div.innerHTML = "";
 };

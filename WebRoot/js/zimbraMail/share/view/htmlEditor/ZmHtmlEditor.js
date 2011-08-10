@@ -155,6 +155,7 @@ function() {
 		setTimeout(AjxCallback.simpleClosure(this._deserializeAceObjects, this), 100);
 	}
 	if (this._onContentInitializeCallback) {
+		AjxDebug.println(AjxDebug.REPLY, "ZmHtmlEditor::_onContentInitialized - run callback");
 		this._onContentInitializeCallback.run();
 	}
 };
@@ -177,7 +178,7 @@ function(insertFontStyle, onlyInnerContent ) {
 	// (which shouldnt be in base).
 	var content;
 	if (this._mode == DwtHtmlEditor.HTML) {
-		AjxDebug.println(AjxDebug.REPLY, "ZmHtmlEditor.prototype.getContent in HTML mode");
+		AjxDebug.println(AjxDebug.REPLY, "ZmHtmlEditor::getContent - in HTML mode");
 		var iframeDoc = this._getIframeDoc();
 
 		var html = (iframeDoc && iframeDoc.body && iframeDoc.body.innerHTML) || "";
@@ -187,7 +188,6 @@ function(insertFontStyle, onlyInnerContent ) {
 		if (this._pendingContent && (!html || html == this._blankDiv || html == this._blankHtml)) {
 			html = this._pendingContent;
 			AjxDebug.println(AjxDebug.REPLY, "using pending content: " + AjxStringUtil.htmlEncode(html.substr(0,200)));
-			AjxDebug.println(AjxDebug.REPLY, "HTML mode inited: " + this._htmlModeInited);
 		}
 		content = this._embedHtmlContent(html, insertFontStyle, onlyInnerContent);
 		if (this.ACE_ENABLED) {
@@ -247,6 +247,7 @@ function(callback) {
 
 ZmHtmlEditor.prototype.resetSpellCheck =
 function(){
+	if (!this._spellCheck) { return; }
 	this.discardMisspelledWords();
 	this._spellCheckHideModeDiv();
 };
