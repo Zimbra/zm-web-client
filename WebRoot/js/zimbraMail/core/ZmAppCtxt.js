@@ -340,7 +340,7 @@ function() {
 ZmAppCtxt.prototype.getMsgDialog =
 function() {
 	if (!this._msgDialog) {
-		this._msgDialog = new DwtMessageDialog({parent:this._shell});
+		this._msgDialog = new DwtMessageDialog({parent:this._shell, id: "ZmMsgDialog"});
 	}
 	return this._msgDialog;
 };
