@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -67,6 +67,15 @@ ZmTaskController.prototype.isCloseAction =
 function() {
     return this._action == ZmCalItemComposeController.SAVE;
 };
+
+ZmTaskController.prototype._createToolBar =
+function() {
+	ZmCalItemComposeController.prototype._createToolBar.call(this);
+
+	//override the new button properties, since we want it to default to task.
+	this._setNewButtonProps(null, ZmMsg.newTask, ZmMsg.createNewTask, "NewTask", "NewTaskDis", ZmOperation.NEW_TASK);
+};
+
 
 ZmTaskController.prototype._handleResponseSave =
 function(calItem, result) {

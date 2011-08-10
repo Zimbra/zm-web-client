@@ -58,9 +58,8 @@ ZmPortalController.prototype.show = function() {
 	ZmListController.prototype.show.call(this);
 	this._setup(this._currentView);
 
-	var elements = new Object();
-	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+	var elements = this.getViewElements(this._currentView, this._listView[this._currentView]);
+
 	this._setView({view:this._currentView, elements:elements, isAppView:true});
 };
 

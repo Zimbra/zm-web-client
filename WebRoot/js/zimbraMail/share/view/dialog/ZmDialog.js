@@ -193,7 +193,7 @@ function(params, forceSingle) {
 	if (!overview) {
 		var ovParams = {
 			overviewId:		overviewId,
-			overviewClass:	"dialogOverview",
+			overviewClass:	params.overviewClass || "dialogOverview",
 			headerClass:	"DwtTreeItem",
 			noTooltips:		true,
 			treeStyle:		params.treeStyle,

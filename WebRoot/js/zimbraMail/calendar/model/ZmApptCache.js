@@ -305,7 +305,6 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 
 ZmApptCache.prototype._doBatchRequest =
 function(searchParams, miniCalParams, reminderSearchParams) {
-
 	var caledarIds = searchParams.accountFolderIds.shift();
 	if (searchParams) {
 		searchParams.folderIds = caledarIds;
@@ -406,13 +405,11 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 ZmApptCache.prototype.processBatchResponse =
 function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 
-    //loading the client with app=calendar will directly process the inline batch response
-    if(!this._accountsSearchList) this._initAccountLists();
-
-    var accountList = this._accountsSearchList.clone();
 	var miniCalCache = this._calViewController.getMiniCalCache();
 	var miniCalResp = batchResp && batchResp.GetMiniCalResponse;
 	var searchResp = batchResp && batchResp.SearchResponse;
+
+    this._initAccountLists();
 
 	if (batchResp && batchResp.Fault) {
 		if (this._processErrorCode(batchResp)) {
@@ -443,7 +440,7 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 			if (searchParams.accountFolderIds && searchParams.accountFolderIds.length > 0) {
 				this._doBatchRequest(searchParams, miniCalParams);
 			} else if (searchParams.callback) {
-				searchParams.callback.run(accountList);
+				searchParams.callback.run(this._accountsSearchList);
 			}
 		}
 
@@ -464,21 +461,19 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 	}
 
 	var list = this.processSearchResponse(searchResp[0], searchParams);
-	accountList.addList(list);
+	this._accountsSearchList.addList(list);
 
 	if (searchParams.accountFolderIds && searchParams.accountFolderIds.length > 0) {
 		this._doBatchRequest(searchParams, miniCalParams);
-	}
-    else {
+	} else {
 		if (appCtxt.multiAccounts && miniCalParams) {
 			this._highliteMiniCal(miniCalCache, miniCalParams);
 		}
 
 		if (searchParams.callback) {
-			searchParams.callback.run(accountList, null, searchParams.query);
+			searchParams.callback.run(this._accountsSearchList, null, searchParams.query);
 		} else {
-			this._accountsSearchList = accountList.clone();
-            return accountList;
+			return this._accountsSearchList;
 		}
 	}
 };

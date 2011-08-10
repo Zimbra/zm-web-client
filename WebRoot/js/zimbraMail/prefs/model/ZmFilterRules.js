@@ -253,6 +253,20 @@ function(callback, result) {
 };
 
 /**
+ * Public method to save the rules to the server.
+ *
+ * @param {int}	index			the index of rule to select in list after save
+ * @param {Boolean}	notify			if <code>true</code>, notify listeners of change event
+ * @param {AjxCallback}	callback		the callback
+ * 
+ * @public
+ */
+ZmFilterRules.prototype.saveRules = 
+function(index, notify, callback) {
+	this._saveRules(index, notify, callback);	
+};
+
+/**
  * Saves the rules to the server.
  *
  * @param {int}	index			the index of rule to select in list after save
@@ -305,7 +319,7 @@ function(index, notify, callback, result) {
 	if (notify) {
 		this._notify(ZmEvent.E_MODIFY, {index: index});
 	}
-	AjxDebug.println(AjxDebug.FILTER, "_handleResponseSaveRules: notify == " + notify);
+
 	appCtxt.setStatusMsg(ZmMsg.filtersSaved);
 
 	if (callback) {
@@ -368,3 +382,15 @@ function(rule, index) {
 	this._ruleNameHash[rule.name] = rule;
 };
 
+/**
+ * Public method to insert rule into internval vectors.  Adds to the end if no index is given.
+ * 
+ * @param {ZmFilterRule}	rule		the rule to insert
+ * @param {int}	index		the index at which to insert
+ * 
+ * @public
+ */
+ZmFilterRules.prototype.insertRule =
+function(rule, index) {
+	this._insertRule(rule, index);	
+};
