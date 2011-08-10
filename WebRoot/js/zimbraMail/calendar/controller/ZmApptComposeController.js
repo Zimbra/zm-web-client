@@ -199,10 +199,10 @@ function(attId) {
 			dlg.registerCallback(DwtDialog.YES_BUTTON, this._clearInvalidAttendeesCallback, this, [appt, attId, dlg]);
 			var msg = "";
             if(this._action == ZmCalItemComposeController.SAVE){
-               msg = AjxMessageFormat.format(ZmMsg.compSaveBadAttendees, this._invalidAttendees.join(","));
+               msg = AjxMessageFormat.format(ZmMsg.compSaveBadAttendees, AjxStringUtil.htmlEncode(this._invalidAttendees.join(",")));
             }
             else{
-                msg = AjxMessageFormat.format(ZmMsg.compBadAttendees, this._invalidAttendees.join(","));
+                msg = AjxMessageFormat.format(ZmMsg.compBadAttendees, AjxStringUtil.htmlEncode(this._invalidAttendees.join(",")));
             }
 			dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 			dlg.popup();

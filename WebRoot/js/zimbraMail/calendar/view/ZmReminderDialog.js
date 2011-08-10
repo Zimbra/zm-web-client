@@ -318,7 +318,7 @@ function(html, idx, appt, data, needSep) {
 		rowId: data.rowId,
 		calName: calName,
 		accountName: (appCtxt.multiAccounts && calendar && calendar.getAccount().getDisplayName()),
-		location: appt.getReminderLocation(),
+		location: (AjxStringUtil.htmlEncode(appt.getReminderLocation())),
 		apptIconHtml: (AjxImg.getImageHtml(appt.otherAttendees ? "ApptMeeting" : "Appointment")),
 		organizer: appt.otherAtt ? appt.organizer : null,
 		reminderName: (AjxStringUtil.htmlEncode(appt.getReminderName())),
