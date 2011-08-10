@@ -32,7 +32,7 @@
  */
 ZmShareReply = function(parent, className, options) {
 	className = className || "ZmShareReply";
-	DwtComposite.call(this, {parent:parent, className:className});
+	DwtComposite.call(this, {parent:parent, className:className, id: "ZmShareReply"});
 	this._initControl(options);
 };
 
@@ -149,7 +149,7 @@ function(event) {
 
 ZmShareReply.prototype._initControl =
 function(options) {
-	this._replyType = new DwtSelect({parent:this});
+	this._replyType = new DwtSelect({parent:this, id: "ZmShareReplySelect"});
     options = options || ZmShareReply.DEFAULT_OPTIONS;
     this.setReplyOptions(options);
 	this._replyType.addChangeListener(new AjxListener(this, this._handleReplyType));
