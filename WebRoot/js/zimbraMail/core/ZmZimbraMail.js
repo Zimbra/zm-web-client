@@ -324,6 +324,9 @@ function(params) {
 				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, account)) {
 					this.handleCalendarComponents();
 				}
+                if (appCtxt.get(ZmSetting.TASKS_ENABLED, null, account)) {
+					this.handleTaskComponents();
+				}
 				var sc = appCtxt.getSearchController();
 				sc.getSearchToolbar().initAutocomplete();
 				if (!appCtxt.isChildWindow) {
@@ -659,6 +662,27 @@ function(params, result) {
 	{
 		this.handleCalendarComponents();
 	}
+    if (appCtxt.get(ZmSetting.TASKS_ENABLED, null, account) &&
+		!this._doingPostRenderStartup &&
+		(params.startApp != ZmApp.TASKS))
+	{
+		this.handleTaskComponents();
+	}
+};
+
+/**
+ * Creates & show Task Reminders on delay
+ *
+ * @private
+ */
+ZmZimbraMail.prototype.handleTaskComponents =
+function() {
+    // reminder controlled by calendar preferences setting
+	if (appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME) != 0) {
+		var reminderAction = new AjxTimedAction(this, this.showTaskReminder);
+		var delay = appCtxt.isOffline ? 0 : ZmTasksApp.REMINDER_START_DELAY;
+		AjxTimedAction.scheduleAction(reminderAction, delay);
+	}
 };
 
 /**
@@ -680,14 +704,7 @@ function() {
 		var delay = appCtxt.isOffline ? 0 : ZmCalendarApp.REMINDER_START_DELAY;
 		AjxTimedAction.scheduleAction(reminderAction, delay);
 	}
-	
-	// reminder controlled by calendar preferences setting
-	if (appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME) != 0) {
-		var reminderAction = new AjxTimedAction(this, this.showTaskReminder);
-		var delay = appCtxt.isOffline ? 0 : ZmTasksApp.REMINDER_START_DELAY;
-		AjxTimedAction.scheduleAction(reminderAction, delay);
-	}
-	
+
 };
 
 /**
