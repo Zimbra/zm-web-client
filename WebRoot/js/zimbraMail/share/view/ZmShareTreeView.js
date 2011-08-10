@@ -16,12 +16,15 @@
 ZmShareTreeView = function(params) {
     if (arguments.length == 0) return;
     params.className = params.className || "ZmShareTreeView OverviewTree";
+	params.id = "ZmShareTreeView";
     DwtTree.call(this, params);
     // TODO: Why is this tree being set to overflow: visible?!?!
     this.getHtmlElement().style.overflow = "auto";
 };
 ZmShareTreeView.prototype = new DwtTree;
 ZmShareTreeView.prototype.constructor = ZmShareTreeView;
+
+ZmShareTreeView.TREE_INDEX = 0;
 
 ZmShareTreeView.prototype.toString = function() {
     return "ZmShareTreeView";
@@ -102,7 +105,8 @@ ZmShareTreeView.prototype.removeNode = function(oldNode) {
 //
 
 ZmShareTreeView.prototype._createTreeItem = function(parent, organizer, index, tooltip) {
-    var treeItem = new DwtTreeItem({parent:parent});
+	var treeItemId = "ZmShareTreeItem_" + ZmShareTreeView.TREE_INDEX++;
+    var treeItem = new DwtTreeItem({parent:parent, id: treeItemId});
     treeItem.setText(organizer.name);
     treeItem.setImage(organizer.getIcon());
     treeItem.setToolTipContent(tooltip);
