@@ -192,7 +192,7 @@ ZmNotificationsPage.prototype._resetPageListener = function() {
 //
 
 ZmNotificationsPage.prototype._setupCustomForm = function() {
-	return new ZmNotificationsPageForm({parent:this,sectionTemplate:this._section.templateId});
+	return new ZmNotificationsPageForm({parent:this, sectionTemplate:this._section.templateId, id:"ZmNotificationsPage"});
 };
 
 ZmNotificationsPage.prototype._smsDataLoaded = function() {
