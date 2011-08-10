@@ -194,7 +194,7 @@
 							<$ if (data.invite.getLocation()) { $>
 								<tr>
 									<td class='LabelColName ${locChangeClass}'><$= ZmMsg.locationLabel $></td>
-									<td class='LabelColValue ${locChangeClass}'><$= data.invite.getLocation() $></td>
+									<td class='LabelColValue ${locChangeClass}'><$= AjxStringUtil.htmlEncode(data.invite.getLocation()) $></td>
 								</tr>
 							<$ } $>
 							<$ if (data.ptstId) { $>
