@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -176,11 +176,11 @@ ZmItemMoveAction.prototype.getToFolderId = function() {
 
 ZmItemMoveAction.prototype._doMove = function(callback, errorCallback, folderId) {
 	this._item.list.moveItems({
-		items:			[this._item],
-		folder:			appCtxt.getById(folderId),
-		noUndo:			true,
-		finalCallback:	this._handleDoMove.bind(this, this._item.folderId, folderId),
-		actionText:		ZmItemMoveAction.UNDO_MSG[this._op],
+		items: [this._item],
+		folder: appCtxt.getById(folderId),
+		noUndo: true,
+		finalCallback: new AjxCallback(this, this._handleDoMove, [this._item.folderId, folderId]),
+		actionText: ZmItemMoveAction.UNDO_MSG[this._op],
 
 		fromFolderId: this._toFolderId
 	});
@@ -199,8 +199,7 @@ ZmItemMoveAction.prototype._handleDoMove = function(oldFolderId, newFolderId, pa
 	for (var i=0; i<lists.length; i++) {
 		lists[i]._notify(ZmEvent.E_MOVE, {oldFolderId:oldFolderId});
 	}
-	ZmListController.handleProgress({state:ZmListController.PROGRESS_DIALOG_CLOSE});
-	ZmBaseController.showSummary(params.actionSummary);
+	ZmList.killProgressDialog(params.actionSummary);
 };
 
 ZmItemMoveAction.prototype.undo = function(callback, errorCallback) {

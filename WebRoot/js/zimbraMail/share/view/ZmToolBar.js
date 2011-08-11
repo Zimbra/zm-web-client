@@ -105,22 +105,6 @@ function(buttonId) {
 };
 
 /**
- * sets an item visibility. finds the button by id. 
- *
- * @param	{String}	buttonId	the button id
- * @param	{Boolean}	visible
- */
-ZmToolBar.prototype.setItemVisible =
-function(buttonId, visible) {
-	var button = this.getButton(buttonId);
-	if (!button) {
-		return;
-	}
-	button.setVisible(visible);
-};
-
-
-/**
  * Sets the data.
  * 
  * @param	{String}	buttonId	the button id
@@ -178,18 +162,14 @@ function(enabled) {
  * @param {constant}	params.shortcut		the shortcut id (from {@link ZmKeyMap}) for showing hint
  * @param {AjxCallback|DwtMenu}	params.menu				the menu creation callback (recommended) or menu
  * @param {Boolean}	params.menuAbove	if <code>true</code>, popup menu above the button.
- *
- * @param {Boolean}	showImage		if <code>true</code>, display image
- * @param {Boolean}	showText		if <code>true</code>, display text
- *
  */
 ZmToolBar.prototype.createButton =
-function(id, params, showImage, showText) {
+function(id, params) {
 	var b = this._buttons[id] = this._createButton(params);
-	if (params.image && showImage) {
+	if (params.image) {
 		b.setImage(params.image);
 	}
-	if (params.text && showText) {
+	if (params.text) {
 		b.setText(params.text);
 	}
 	if (params.tooltip) {
