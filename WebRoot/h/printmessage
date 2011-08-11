@@ -54,7 +54,7 @@ ${zm:clearMessageCache(mailbox)}
     <table cellpadding="0" cellspacing="5"  width="100%">
         <tr>
             <td>
-                <div class="ZhPrintSubject">${convSearchResult.hits[0].subject}</div><hr/>
+                <div class="ZhPrintSubject">${zm:cook(convSearchResult.hits[0].subject)}</div><hr/>
             </td>
         </tr>
         <tr>
