@@ -667,7 +667,8 @@ function(addrs) {
         // If there was only one button, the picker will just return the list of selections,
         // not a list per button type
         var typeAddrs = (this._fieldNames.length == 1) ? addrs :  addrs[type];
-		this.addAddresses(type, typeAddrs);
+		var addrVec = this._expandAddrs(typeAddrs);
+		this.addAddresses(type, addrVec);
 	}
 
 	//I still need this here since REMOVING stuff with the picker does not call removeBubble in the ZmAddresInputField.
@@ -677,6 +678,29 @@ function(addrs) {
 	this._contactPicker.removePopdownListener(this._contactPopdownListener);
 	this._contactPicker.popdown();
 	this._reenter();
+};
+
+// Expands any addresses that are groups
+ZmRecipients.prototype._expandAddrs =
+function(addrs) {
+	var addrsNew = [];
+	var addrsArray = (addrs instanceof AjxVector) ? addrs.getArray() : addrs;
+	if (addrsArray && addrsArray.length) {
+		for (var i = 0; i < addrsArray.length; i++) {
+			var addr = addrsArray[i];
+			if (addr) {
+				if (addr.isGroup) {
+					var members = addr.__contact ? addr.__contact.getGroupMembers().good.getArray() :
+												   AjxEmailAddress.split(addr.address);
+					addrsNew = addrsNew.concat(members);
+				}
+				else {
+					addrsNew.push(addr);
+				}
+			}
+		}
+	}
+	return AjxVector.fromArray(addrsNew);
 };
 
 ZmRecipients.prototype._contactPickerCancelCallback =
