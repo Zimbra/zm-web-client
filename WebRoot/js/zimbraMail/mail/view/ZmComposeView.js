@@ -3375,7 +3375,8 @@ function(addrs) {
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
 		this.setAddress(type, "");
-		this._addAddresses(type, addrs[type]);
+		var addrVec = this._expandAddrs(addrs[type]);
+		this._addAddresses(type, addrVec);
 	}
 
 	//I still need this here since REMOVING stuff with the picker does not call removeBubble in the ZmAddresInputField.
@@ -3385,6 +3386,28 @@ function(addrs) {
 	this._contactPicker.removePopdownListener(this._controller._dialogPopdownListener);
 	this._contactPicker.popdown();
 	this.reEnableDesignMode();
+};
+
+// Expands any addresses that are groups
+ZmComposeView.prototype._expandAddrs =
+function(addrs) {
+	var addrsNew = [];
+	var addrsArray = (addrs instanceof AjxVector) ? addrs.getArray() : addrs;
+	if (addrsArray && addrsArray.length) {
+		for (var i = 0; i < addrsArray.length; i++) {
+			var addr = addrsArray[i];
+			if (addr) {
+				if (addr.isGroup) {
+					var members = AjxEmailAddress.split(addr.address);
+					addrsNew = addrsNew.concat(members);
+				}
+				else {
+					addrsNew.push(addr);
+				}
+			}
+		}
+	}
+	return AjxVector.fromArray(addrsNew);
 };
 
 ZmComposeView.prototype._contactPickerCancelCallback =
