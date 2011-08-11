@@ -202,7 +202,7 @@ function(attId) {
                msg = AjxMessageFormat.format(ZmMsg.compSaveBadAttendees, AjxStringUtil.htmlEncode(this._invalidAttendees.join(",")));
             }
             else{
-               msg = AjxMessageFormat.format(ZmMsg.compBadAttendees, AjxStringUtil.htmlEncode(this._invalidAttendees.join(",")));
+                msg = AjxMessageFormat.format(ZmMsg.compBadAttendees, AjxStringUtil.htmlEncode(this._invalidAttendees.join(",")));
             }
 			dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 			dlg.popup();
@@ -288,7 +288,6 @@ function(mode, appt) {
 
     if(mode == ZmCalItemComposeController.APPT_MODE) {
         saveButton.setText(ZmMsg.saveClose);
-        saveButton.setImage("Save");
         saveButton.setVisible(true);
         sendButton.setVisible(false);
 
@@ -297,12 +296,10 @@ function(mode, appt) {
         sendButton.setVisible(true);
         saveButton.setVisible(true);
         saveButton.setText(ZmMsg.save);
-        saveButton.setImage("Save");
 
         //change cancel button's text/icon to close
         var cancelButton = this._toolbar.getButton(ZmOperation.CANCEL);
         cancelButton.setText(ZmMsg.close);
-		cancelButton.setImage("Close");
 
         this._requestResponses.setEnabled(true);
     }
@@ -468,13 +465,12 @@ function() {
 
     ZmCalItemComposeController.prototype._createToolBar.call(this);
 
-    var optionsButton = new DwtToolBarButton({id:ZmOperation.COMPOSE_OPTIONS, parent:this._toolbar});
-    optionsButton.setText(ZmMsg.options);
-    optionsButton.setImage("Preferences");
+	var optionsButton = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+	optionsButton.setVisible(true); //might be invisible if not ZmSetting.HTML_COMPOSE_ENABLED (see ZmCalItemComposeController._createToolBar)
 
-    var m = new DwtMenu({parent:optionsButton});
-    optionsButton.setMenu(m);
+	var m = optionsButton.getMenu();
 
+	var sepMi = new DwtMenuItem({parent:m, style:DwtMenuItem.SEPARATOR_STYLE});
     var mi = this._requestResponses = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
     mi.setText(ZmMsg.requestResponses);
     mi.setChecked(true, true);
@@ -1179,11 +1175,11 @@ function(initHide) {
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 		callbacks[ZmAppViewMgr.CB_PRE_SHOW] = new AjxCallback(this, this._preShowCallback);
 		callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
-		var elements = {};
 		if (!this._toolbar)
 			this._createToolBar();
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
+
+		var elements = this.getViewElements(null, this._composeView, this._toolbar);
+
 		this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, tabParams:this._getTabParams()});
 		if (initHide) {
 			this._composeView.preload();

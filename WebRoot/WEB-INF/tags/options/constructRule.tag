@@ -14,7 +14,7 @@
 --%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="var" rtexprvalue="false" required="true" type="java.lang.String" %>
-<%@ variable name-from-attribute="var" alias='ruleVar' scope="AT_BEGIN" variable-class="com.zimbra.cs.zclient.ZFilterRule" %>
+<%@ variable name-from-attribute="var" alias='ruleVar' scope="AT_BEGIN" variable-class="com.zimbra.client.ZFilterRule" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>

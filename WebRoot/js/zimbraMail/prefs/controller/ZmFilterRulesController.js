@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -98,9 +98,6 @@ function(toolbar, listView) {
 		listView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
 		listView.addActionListener(new AjxListener(this, this._listActionListener));
 		this.resetListView();
-	}
-	else {
-		AjxDebug.println(AjxDebug.FILTER, "FILTER RULES CONTROLLER: initialize has no listview");
 	}
 };
 
@@ -411,6 +408,19 @@ function(dialog, folderList) {
 
 	this._progressController.start(folderList, work);
 
+};
+
+/**
+ * runs a specified list of filters
+ * 
+ * @param container     {DwtControl} container reference
+ * @param filterSel     {Array} array of ZmFilterRule
+ * @param isOutgoing    {Boolean} 
+ */
+ZmFilterRulesController.prototype.runFilter = 
+function(container, filterSel, isOutgoing) {
+	var work = new ZmFilterWork(filterSel, isOutgoing);
+	this._progressController.start(container, work);
 };
 
 /**
