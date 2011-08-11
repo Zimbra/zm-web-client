@@ -405,12 +405,30 @@ function() {
 	var alphabet = ZmMsg.alphabet.split(",");
 
 	var subs = {
-		id: 		this._htmlElId,
-		alphabet: 	alphabet,
-		numLetters: alphabet.length
+		id: 			this._htmlElId,
+		alphabet: 		alphabet,
+		numLetters: 	alphabet.length,
+		sortVals:		ZmContactAlphabetBar._parseSortVal(ZmMsg.alphabetSortValue),
+		endSortVals:	ZmContactAlphabetBar._parseSortVal(ZmMsg.alphabetEndSortValue)
 	};
 
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#ZmAlphabetBar", subs);
+};
+
+ZmContactAlphabetBar._parseSortVal =
+function(sortVal) {
+	if (!sortVal) {
+		return {};
+	}
+	var sortMap = {};
+	var values = sortVal.split(",");
+	if (values && values.length) {
+		for (var i = 0; i < values.length; i++) {
+			var parts = values[i].split(":");
+			sortMap[parts[0]] = parts[1];
+		}
+	}
+	return sortMap;
 };
 
 /**
