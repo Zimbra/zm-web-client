@@ -65,7 +65,7 @@
 
     <c:set var="today" value="${zm:getToday(timezone)}"/>
 
-    <c:if test="${empty checkedCalendars}">
+    <c:if test="${empty checkedCalendars and not print}">
         <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
     </c:if>
     <c:if test="${empty param.wd or param.wd eq 'false'}">
