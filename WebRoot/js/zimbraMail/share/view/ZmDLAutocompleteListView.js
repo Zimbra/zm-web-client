@@ -151,7 +151,9 @@ ZmDLAutocompleteListView.prototype._doUpdate =
 function(match) {
 
 	// so that address will be taken from match
-	this._parentAclv._currentContext.address = null;
+	if (this._parentAclv && this._parentAclv._currentContext) {
+		this._parentAclv._currentContext.address = null;
+	}
 	match = match || this._matchHash[this._selected];
 	if (match) {
 		this._parentAclv._update(null, match);
