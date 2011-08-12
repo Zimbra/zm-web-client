@@ -62,60 +62,16 @@ function(params) {
 	// use reasonable defaults
 	params = params || {};
 
-	// create an omit list for each account
-	// XXX: does this need to happen more then once???
-	/*var omitPerAcct = {};
-	var accounts = appCtxt.accountList.visibleAccounts;
-	for (var i = 0; i < accounts.length; i++) {
-		var acct = accounts[i];
-
-		if (params.forceSingle && acct != appCtxt.getActiveAccount()) {
-			continue;
-		}
-
-		var omit = omitPerAcct[acct.id] = params.omit || {};
-
-		omit[ZmFolder.ID_DRAFTS] = !params.showDrafts;
-		omit[ZmFolder.ID_OUTBOX] = true;
-		omit[ZmFolder.ID_SYNC_FAILURES] = true;
-
-		var folderTree = appCtxt.getFolderTree(acct);
-
-		// omit any folders that are read only
-		if (params.skipReadOnly || params.skipRemote || appCtxt.isOffline) {
-			var folders = folderTree.asList({includeRemote : true});
-			for (var i = 0; i < folders.length; i++) {
-				var folder = folders[i];
-
-				// if skipping read-only,
-				if (params.skipReadOnly && folder.link && folder.isReadOnly()) {
-					omit[folder.id] = true;
-					continue;
-				}
-
-				// if skipping remote folders,
-				if (params.skipRemote && folder.isRemote()) {
-					omit[folders[i].id] = true;
-				}
-			}
-		}
-	}*/
-
 	var treeIds = this._treeIds = (params.treeIds && params.treeIds.length)
 		? params.treeIds : [ZmOrganizer.FOLDER];
-    /*
+
+    //Omit the trash form the tree view
 	var omitParam = {};
-	if (appCtxt.multiAccounts) {
-		omitParam[ZmOrganizer.ID_ZIMLET] = true;
-		omitParam[ZmOrganizer.ID_ALL_MAILBOXES] = true;
-	} else {
-		omitParam = omitPerAcct[appCtxt.accountList.mainAccount.id];
-	}
-    */
+    omitParam[ZmOrganizer.ID_TRASH] = true;
+
 	var popupParams = {
 		treeIds:		treeIds,
-		/*omit:			omitParam,
-		omitPerAcct:	omitPerAcct,*/
+		omit:			omitParam,
 		fieldId:		this._htmlElId + "_calTreeContainer",
 		overviewId:		params.overviewId,
 		noRootSelect:	params.noRootSelect,
@@ -131,26 +87,6 @@ function(params) {
 		treeIdMap[treeIds[i]] = true;
 	}
 	var ov = this._setOverview(popupParams, popupParams.forceSingle);
-	/*if (appCtxt.multiAccounts && !popupParams.forceSingle) {
-		// ov is an overview container, and overviewId is the containerId
-		this._multiAcctOverviews[popupParams.overviewId] = ov;
-		for (var i in this._multiAcctOverviews) {
-			this._multiAcctOverviews[i].setVisible(i == popupParams.overviewId);
-		}
-
-		var overviews = ov.getOverviews();
-		for (var i in overviews) {
-			var overview = overviews[i];
-            // zimlet overview resets folder list
-            // need to stop resetting folder list for each overview
-            if (overview._treeIds[0].toLowerCase() != "zimlet") {
-                //this._resetTree(popupParams.treeIds, overview);
-            }
-		}
-
-		ov.expandAccountOnly(appCtxt.getActiveAccount());
-
-	}  */
 	ZmDialog.prototype.popup.call(this);
 
     this.currentViewId = params.currentViewId;
