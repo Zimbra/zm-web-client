@@ -13,7 +13,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
-P, TH, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
+.LoginScreen P, .LoginScreen TH, .LoginScreen TD, 
+.LoginScreen DIV, .LoginScreen SPAN, .LoginScreen SELECT, 
+.LoginScreen INPUT, .LoginScreen TEXTAREA, .LoginScreen BUTTON, 
+.LoginScreen A {
 	@FontFamily-default@
 }
 
