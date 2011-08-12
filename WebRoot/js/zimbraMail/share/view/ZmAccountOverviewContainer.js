@@ -950,11 +950,13 @@ function(folderId, opId) {
 
 ZmAccountOverviewContainer.prototype._handleStatusClick =
 function(account, ev) {
-	//account.showErrorMessage();
+
     if(!account.isError()) {
         return;
-    } else if (appCtxt.isOffline) {
+    } else if (appCtxt.isOffline && (account.status == ZmZimbraAccount.STATUS_AUTHFAIL)) {
         var dialog = appCtxt.getPasswordChangeDialog();
         dialog.popup(account);
+    } else {
+        account.showErrorMessage();
     }
 };
