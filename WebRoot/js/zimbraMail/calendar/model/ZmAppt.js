@@ -387,7 +387,7 @@ function(isHtml) {
 		buf[i++] = "<p>\n<table border='0'>\n";
 	}
 	var modified = isEdit && (orig.getName() != this.getName());
-	var params = [ ZmMsg.subjectLabel, this.name, modified ? ZmMsg.apptModifiedStamp : "" ];
+	var params = [ ZmMsg.subjectLabel, AjxStringUtil.htmlEncode(this.name), modified ? ZmMsg.apptModifiedStamp : "" ];
 	buf[i++] = formatter.format(params);
 	buf[i++] = "\n";
 
