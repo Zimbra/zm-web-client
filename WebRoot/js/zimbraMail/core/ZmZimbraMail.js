@@ -339,6 +339,7 @@ function(params) {
 				if (!appCtxt.isChildWindow) {
 					sc.peopleSearchToolBar.initAutocomplete();
 				}
+				this._appViewMgr.loadingView.setVisible(false);
 			});
 		this.addPostRenderCallback(callback, 0, 0, true);
 	}

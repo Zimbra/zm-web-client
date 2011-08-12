@@ -298,6 +298,8 @@ function() {
 		var panel = appCtxt.getShortcutsPanel();
 		panel.popup(params.cols);
 	}
+	
+	this._appViewMgr.loadingView.setVisible(false);
 
 	var kbMgr = appCtxt.getKeyboardMgr();
 	kbMgr.setTabGroup(rootTg);

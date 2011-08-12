@@ -882,12 +882,12 @@ function() {
  */
 ZmAppViewMgr.prototype._createLoadingView =
 function() {
-	var loadingView = new DwtControl({parent:this._shell, className:"DwtListView",
-									  posStyle:Dwt.ABSOLUTE_STYLE, id:ZmId.LOADING_VIEW});
-	var el = loadingView.getHtmlElement();
+	this.loadingView = new DwtControl({parent:this._shell, className:"DwtListView",
+									   posStyle:Dwt.ABSOLUTE_STYLE, id:ZmId.LOADING_VIEW});
+	var el = this.loadingView.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("share.App#Loading", this._htmlElId);
 	var elements = {};
-	elements[ZmAppViewMgr.C_APP_CONTENT] = loadingView;
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this.loadingView;
 	this.createView({viewId:ZmId.VIEW_LOADING, elements:elements});
 };
 
