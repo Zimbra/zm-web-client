@@ -91,6 +91,9 @@ ZmComposeController.DRAFT_TYPE_DELAYSEND	= "delaysend";
 
 ZmComposeController.DEFAULT_TAB_TEXT = ZmMsg.compose;
 
+ZmComposeController.NEW_WINDOW_WIDTH = 975;
+ZmComposeController.NEW_WINDOW_HEIGHT = 475;
+
 ZmComposeController._setStatics =
 function() {
 
@@ -202,7 +205,7 @@ function(params) {
 	this._msgSent = false;
 	if (params.inNewWindow) {
         var msgId = params.msg ? params.msg.nId : (this._msg ? this._msg.nId : Dwt.getNextId());
-		var newWinObj = ac.getNewWindow(false, 975, 475, ZmId.VIEW_COMPOSE + "_" + msgId);
+		var newWinObj = ac.getNewWindow(false, ZmComposeController.NEW_WINDOW_WIDTH, ZmComposeController.NEW_WINDOW_HEIGHT, ZmId.VIEW_COMPOSE + "_" + msgId);
 
 		// this is how child window knows what to do once loading:
 		newWinObj.command = "compose";
@@ -265,7 +268,7 @@ function() {
 
 	// this is how child window knows what to do once loading:
     var msgId = (msg && msg.nId) || Dwt.getNextId();
-	var newWinObj = appCtxt.getNewWindow(false, null, null, ZmId.VIEW_COMPOSE + "_" + msgId);
+	var newWinObj = appCtxt.getNewWindow(false, ZmComposeController.NEW_WINDOW_WIDTH, ZmComposeController.NEW_WINDOW_HEIGHT, ZmId.VIEW_COMPOSE + "_" + msgId);
     if (newWinObj.win) {
         newWinObj.win.focus();
     }
