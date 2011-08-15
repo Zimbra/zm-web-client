@@ -218,6 +218,7 @@ function(params, fromFolderChooser) {
 	if (!fromFolderChooser) {
 		this._focusElement = this._inputField;
 		this._inputField.setValue("");
+		this._selected = null;
 		ZmDialog.prototype.popup.call(this);
 	}
 };
@@ -276,7 +277,7 @@ function(treeIds, overview) {
 	folderTree.addChangeListener(this._changeListener);
 
 	this._loadFolders();
-	this._resetTreeView(true);
+	this._resetTreeView(true,true);
 };
 
 ZmChooseFolderDialog.prototype.reset =
@@ -476,7 +477,8 @@ function(ev) {
 
 	// now that we know which folders match, hide all items and then show
 	// the matches, expanding their parent chains as needed
-	this._resetTreeView(false);
+	this._resetTreeView(false, true);
+
 	for (var i = 0, len = matches.length; i < len; i++) {
 		var ti = matches[i];
 		ti._tree._expandUp(ti);
@@ -490,19 +492,22 @@ function(ev) {
 			ov.deselectAllTreeViews();
 		}
 		tv.setSelected(appCtxt.getById(firstMatch.id), true, true);
-        this._selected = firstMatch.id;
-        if (appCtxt.multiAccounts) {
-            var ov = this._getOverview();
-            for (var h in ov._headerItems) {
-                ov._headerItems[h].setExpanded((h == firstMatch.accountId), false, false);
-            }
-        }
-    }
+		this._selected = firstMatch.id;
+		if (appCtxt.multiAccounts) {
+		    var ov = this._getOverview();
+		    for (var h in ov._headerItems) {
+			ov._headerItems[h].setExpanded((h == firstMatch.accountId), false, false);
+		    }
+		}
+	}
+	else{
+	    this._selected = null;
+	}
 	this._lastVal = value;
 };
 
 ZmChooseFolderDialog.prototype._resetTreeView =
-function(visible) {
+    function(visible, deselect) {
 	for (var i = 0, len = this._folders.length; i < len; i++) {
 		var folderInfo = this._folders[i];
 		var tv = this._treeView[folderInfo.accountId][folderInfo.type];
@@ -510,6 +515,9 @@ function(visible) {
 		if (ti) {
 			ti.setVisible(visible);
 			ti.setChecked(false, true);
+		}
+		if (deselect){
+		    tv.deselectAll();
 		}
 	}
 };
