@@ -104,7 +104,6 @@ ZmComposeView.MAX_ATTACHMENT_HEIGHT 	= (ZmComposeView.SHOW_MAX_ATTACHMENTS * 23)
 // Reply/forward stuff
 ZmComposeView.EMPTY_FORM_RE				= /^[\s\|]*$/;
 ZmComposeView.HTML_TAG_RE				= /(<[^>]+>)/g;
-ZmComposeView.SUBJ_PREFIX_RE			= new RegExp("^\\s*(Re|Fw|Fwd|" + ZmMsg.re + "|" + ZmMsg.fwd + "|" + ZmMsg.fw + "):" + "\\s*", "i");
 ZmComposeView.QUOTED_CONTENT_RE			= new RegExp("^----- ", "m");
 ZmComposeView.HTML_QUOTED_CONTENT_RE	= new RegExp("<br>----- ", "i");
 ZmComposeView.ADDR_SETTING				= {}; // XXX: may not be necessary anymore?
@@ -1996,9 +1995,7 @@ function(action, msg, subjOverride) {
 	}
 
 	if (action != ZmOperation.DRAFT && subj) {
-		var regex = ZmComposeView.SUBJ_PREFIX_RE;
-		while (regex.test(subj))
-			subj = subj.replace(regex, "");
+		subj = ZmMailMsg.stripSubjectPrefixes(subj);
 	}
 
 	var prefix = "";

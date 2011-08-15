@@ -39,6 +39,8 @@ ZmConvView2 = function(params) {
 	if (this._tagList) {
 		this._tagList.addChangeListener(this._tagChangeListener.bind(this));
 	}
+
+	this.addControlListener(this._resize.bind(this));
 };
 
 ZmConvView2.prototype = new ZmMailItemView;
@@ -131,7 +133,13 @@ function(conv, callback) {
 	tb.addSelectionListener(ZmOperation.CANCEL, this._cancelListener.bind(this));
 	tb.addSelectionListener(ZmOperation.DETACH, this._detachListener.bind(this));
 	
+	this._messagesDiv = document.getElementById(this._messagesDivId);
+	this._replyDiv = document.getElementById(this._replyDivId);
 	this._replyInput = document.getElementById(this._replyInputId);
+
+	Dwt.setHandler(this._replyInput, DwtEvent.ONFOCUS, this._onInputFocus.bind(this)); 
+	Dwt.setHandler(this._replyInput, DwtEvent.ONBLUR, this._onInputBlur.bind(this)); 
+
 	window.setTimeout(this._resize.bind(this), 100);
 	
 	if (callback) {
@@ -186,27 +194,26 @@ function(msg, params) {
 ZmConvView2.prototype._resize =
 function() {
 
-	var messagesDiv = document.getElementById(this._messagesDivId);
-	var replyDiv = document.getElementById(this._replyDivId);
-	if (!messagesDiv || !replyDiv) { return; }
+	if (!this._messagesDiv || !this._replyDiv) { return; }
 	
+	var tbSize = this._replyToolbar.getSize();
 	if (this._controller.isReadingPaneOnRight()) {
-		// We want the messages container DIV to scroll independently of the header DIV above
-		// it and the reply DIV below it.
-		var replySize = Dwt.getSize(replyDiv);
+		// textarea is bigger if focused
+		Dwt.setSize(this._replyInput, Dwt.DEFAULT, this._inputFocused ? 100 : 20);
+		// make messages container DIV scroll independently of header and reply DIVs
+		var replySize = Dwt.getSize(this._replyDiv);
 		var myHeight = this.getSize().y;
-		Dwt.setSize(messagesDiv, Dwt.DEFAULT, myHeight - replySize.y);
+		Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, myHeight - replySize.y);
+		// set width of reply toolbar
 		this._replyToolbar.setSize(replySize.x, Dwt.DEFAULT);
 	}
 	else {
-		// Since we're using tables, we need to set height manually (tables tend to size to their content)
+		// Since we're using tables, we need to set height manually (tables size vertically to their content)
 		var mainDiv = document.getElementById(this._mainDivId);
 		var mainSize = Dwt.getSize(mainDiv);
-		Dwt.setSize(messagesDiv, Dwt.DEFAULT, mainSize.y);
-		Dwt.setSize(replyDiv, Dwt.DEFAULT, mainSize.y);
-		var replyTextarea = document.getElementById(this._replyInputId);
-		var tbSize = this._replyToolbar.getSize();
-		Dwt.setSize(replyTextarea, Dwt.DEFAULT, mainSize.y - tbSize.y - 15);
+		Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, mainSize.y);
+		Dwt.setSize(this._replyDiv, Dwt.DEFAULT, mainSize.y);
+		Dwt.setSize(this._replyInput, Dwt.DEFAULT, mainSize.y - tbSize.y - 15);
 	}
 };
 
@@ -265,6 +272,18 @@ function(msgView) {
 	msgView.setFocused(true);
 	this._focusedMsgView = msgView;
 	this._controller._convViewHasFocus = true;
+};
+
+ZmConvView2.prototype._onInputFocus =
+function() {
+	this._inputFocused = true;
+	this._resize();
+};
+
+ZmConvView2.prototype._onInputBlur =
+function() {
+	this._inputFocused = false;
+	this._resize();
 };
 
 ZmConvView2.prototype.handleKeyAction =
@@ -534,7 +553,7 @@ function(msg, container) {
 	}
 	this._header = new DwtControl(params);
 
-	this._setEventHdlrs([DwtEvent.ONMOUSEDOWN, DwtEvent.ONMOUSEMOVE, DwtEvent.ONMOUSEUP]);
+	this._setEventHdlrs([DwtEvent.ONMOUSEDOWN, DwtEvent.ONMOUSEMOVE, DwtEvent.ONMOUSEUP, DwtEvent.ONDBLCLICK]);
 	var dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 	this._header.setDragSource(dragSrc);
@@ -542,6 +561,8 @@ function(msg, container) {
 	var dropTgt = this._dropTgt = new DwtDropTarget("ZmTag");
 	dropTgt.addDropListener(this._dropListener.bind(this));
 	this._header.setDropTarget(dropTgt);
+	
+	this._header.addListener(DwtEvent.ONDBLCLICK, this._dblClickListener);
 
 	this._tableRowId = Dwt.getNextId();
 	DBG.println("c2", "Render: Msg ID: " + this._msg.id + ", table row ID: " + this._tableRowId);
@@ -606,8 +627,10 @@ function(msg, container, callback, index) {
 	if (isInvite) {
 		ZmMailMsgView.prototype._renderMessageHeader.apply(this, arguments);
 		var bodyEl = this.getMsgBodyElement();
-		this.parent._inviteMsgView = this._inviteMsgView;
-		this._inviteMsgView._inviteToolbar.reparentHtmlElement(bodyEl, 0);
+		var imv = this.parent._inviteMsgView = this._inviteMsgView;
+		if (imv && imv._inviteToolbar) {
+			imv._inviteToolbar.reparentHtmlElement(bodyEl, 0);
+		}
 	
 		// if cal invite, show F/B info
 		if (callback) {
@@ -618,7 +641,7 @@ function(msg, container, callback, index) {
 		bodyEl.insertBefore(this._headerElement.parentNode, bodyEl.childNodes[1]);
 
 		// resize and reposition F/B cal day view
-		var dayView = this._inviteMsgView._dayView;
+		var dayView = imv && imv._dayView;
 		if (dayView) {
 			// shove it in a container DIV so we can use absolute positioning
 			var div = document.createElement("div");
@@ -690,7 +713,7 @@ function(msg, container) {
 	}
 	
 	var buttonId = ZmId.getButtonId(this._mode, this._msg.id, ZmId.OP_ACTIONS_MENU);
-	var ab = this._actionsButton = new DwtButton({parent:this, id:buttonId});
+	var ab = this._actionsButton = new DwtBorderlessButton({parent:this, id:buttonId});
 	ab.setImage("Preferences");
 	ab.setMenu(this._actionsMenu);
 	ab.reparentHtmlElement(this._buttonCellId);
@@ -933,5 +956,15 @@ function(ev) {
 		DBG.println(AjxDebug.DBG3, "DRAG_ENTER: doIt = " + ev.doIt);
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
 		this._controller._doTag([item], data, true);
+	}
+};
+
+// Open a msg into a tabbed view
+ZmMailMsgCapsuleView.prototype._dblClickListener =
+function(ev) {
+	var msg = ev.dwtObj && ev.dwtObj.parent && ev.dwtObj.parent._msg;
+	if (msg) {
+		var mode = ev.dwtObj.parent && ev.dwtObj.parent.parent && ev.dwtObj.parent.parent._mode;
+		AjxDispatcher.run("GetMsgController", msg && msg.nId).show(msg, mode, null, true);
 	}
 };

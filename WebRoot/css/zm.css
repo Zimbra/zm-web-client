@@ -694,6 +694,7 @@ INPUT[type="text"].search_input {
 
 .ZmMailMsgCapsuleView {
 	border:0px 1px 1px @AppC@ solid;
+	border-bottom:1px solid #C8C8C8;
 	background-color:white;
 	background-image:-webkit-gradient(linear, left top, left bottom, from(#FFFFFF), to(@lighten(AppC,55)@)); /* Saf4+, Chrome */
     background-image:-webkit-linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); /* Chrome 10+, Saf5.1+ */
@@ -705,6 +706,7 @@ INPUT[type="text"].search_input {
 
 .ZmMailMsgCapsuleView.focused {
     border:0px 1px 1px @darken(SelC,20)@ solid;
+	border-bottom:1px solid #C8C8C8;
     background-color:white;
     background-image:-webkit-gradient(linear, left top, left bottom, from(@lighten(SelC,66)@), to(@lighten(SelC,35)@)); /* Saf4+, Chrome */
     background-image:-webkit-linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); /* Chrome 10+, Saf5.1+ */
@@ -752,11 +754,6 @@ INPUT[type="text"].search_input {
 /*	text-decoration:underline;*/
 	margin-right:10px;
 	white-space:nowrap;
-}
-
-.ZmConvView2 .ReplyInput {
-	width:98%;
-	margin:5px;
 }
 
 .ZmConvView2 .ReplyTextarea {

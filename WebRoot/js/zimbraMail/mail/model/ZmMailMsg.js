@@ -51,6 +51,8 @@ ZmMailMsg = function(id, list, noCache) {
 ZmMailMsg.prototype = new ZmMailItem;
 ZmMailMsg.prototype.constructor = ZmMailMsg;
 
+ZmMailMsg.prototype.toString = function() {	return "ZmMailMsg"; };
+
 ZmMailMsg.ADDRS = [AjxEmailAddress.FROM, AjxEmailAddress.TO, AjxEmailAddress.CC,
 				   AjxEmailAddress.BCC, AjxEmailAddress.REPLY_TO, AjxEmailAddress.SENDER,
                    AjxEmailAddress.RESENT_FROM];
@@ -126,6 +128,8 @@ ZmMailMsg.TOOLTIP["CalInviteAccepted"]	= ZmMsg.ptstAccept;
 ZmMailMsg.TOOLTIP["CalInviteDeclined"]	= ZmMsg.ptstDeclined;
 ZmMailMsg.TOOLTIP["CalInviteTentative"]	= ZmMsg.ptstTentative;
 
+// We just hard-code "Re:" or "Fwd:", but other clients may use localized versions
+ZmMailMsg.SUBJ_PREFIX_RE = new RegExp("^\\s*(Re|Fw|Fwd|" + ZmMsg.re + "|" + ZmMsg.fwd + "|" + ZmMsg.fw + "):" + "\\s*", "i");
 
 ZmMailMsg.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/i;
 
@@ -207,12 +211,16 @@ function(callback, result) {
 	}
 };
 
-// Public methods
-
-ZmMailMsg.prototype.toString =
-function() {
-	return "ZmMailMsg";
+ZmMailMsg.stripSubjectPrefixes =
+function(subj) {
+	var regex = ZmMailMsg.SUBJ_PREFIX_RE;
+	while (regex.test(subj)) {
+		subj = subj.replace(regex, "");
+	}
+	return subj;
 };
+
+// Public methods
 
 // Getters
 

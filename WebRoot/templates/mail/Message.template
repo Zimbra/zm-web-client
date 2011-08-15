@@ -603,7 +603,7 @@
 	<div class='Conv2View'>
 		<div id="${messagesDivId}" class='Conv2Messages'></div>
 		<div id="${replyDivId}" class='Conv2Reply'>
-			<input id="${replyInputId}" class="ReplyInput" type="text" placeholder="<$= ZmMsg.replyHint $>"/>
+			<textarea id="${replyInputId}" class="ReplyTextarea" rows=1 placeholder="<$= ZmMsg.replyHint $>"></textarea>
 		</div>
 	</div>
 </template>
