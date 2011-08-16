@@ -887,9 +887,7 @@ function(ev) {
 	// when adding a conv (or changing its position within the list), we need to look at its sort order
 	// within the list of rows (which may include msg rows) rather than in the ZmList of convs, since
 	// those two don't necessarily map to each other
-	if (isConv && ((ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_INDEX]) ||
-				  ((ev.event == ZmEvent.E_CREATE) && (sortBy == ZmSearch.DATE_DESC)))) {
-
+	if (isConv && ((ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_INDEX]))) {
 		// INDEX change: a conv has gotten a new msg and may need to be moved within the list of convs
 		// if an expanded conv gets a new msg, don't move it to top
 		AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: handle conv create " + item.id);
