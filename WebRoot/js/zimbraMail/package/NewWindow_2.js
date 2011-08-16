@@ -113,7 +113,6 @@ AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmHtmlEditor");
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmAdvancedHtmlEditor");
 
 AjxPackage.require("zimbraMail.share.controller.ZmController");
-AjxPackage.require("zimbraMail.share.controller.ZmBaseController");
 AjxPackage.require("zimbraMail.share.controller.ZmListController");
 AjxPackage.require("zimbraMail.share.controller.ZmTreeController");
 AjxPackage.require("zimbraMail.share.controller.ZmFolderTreeController");
@@ -152,24 +151,16 @@ AjxPackage.require("zimbraMail.mail.model.ZmMailMsg");
 AjxPackage.require("zimbraMail.mail.model.ZmMimePart");
 AjxPackage.require("zimbraMail.mail.model.ZmMailList");
 AjxPackage.require("zimbraMail.mail.model.ZmIdentity");
-AjxPackage.require("zimbraMail.mail.view.ZmRecipients");
 AjxPackage.require("zimbraMail.mail.view.ZmComposeView");
 AjxPackage.require("zimbraMail.mail.view.ZmInviteMsgView");
-AjxPackage.require("zimbraMail.mail.view.ZmMailItemView");
 AjxPackage.require("zimbraMail.mail.view.ZmMailMsgView");
 AjxPackage.require("zimbraMail.mail.view.ZmMailConfirmView");
 AjxPackage.require("zimbraMail.mail.controller.ZmComposeController");
 AjxPackage.require("zimbraMail.mail.controller.ZmMailListController");
 AjxPackage.require("zimbraMail.mail.controller.ZmMsgController");
 AjxPackage.require("zimbraMail.mail.controller.ZmMailConfirmController");
-AjxPackage.require("zimbraMail.mail.view.ZmMailRedirectDialog");
-
 
 AjxPackage.require("zimbraMail.mail.view.object.ZmImageAttachmentObjectHandler");
 
 AjxPackage.require("zimbra.common.ZmErrorDialog");
-
-AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommandAction");
-AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommand");
-AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommands");
 
