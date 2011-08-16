@@ -1568,6 +1568,10 @@ function(appt, mode, params) {
           appt.replaceAttendee(myEmail,origOrganizer);
           appt.organizer=myEmail;
           appt.isOrg=true;
+          if(appt.isShared()) {
+            appt.isSharedCopy = true;
+            appt.setFolderId(ZmOrganizer.ID_CALENDAR);
+          }
           var dlg = appCtxt.getMsgDialog();
 		  var callback = new AjxCallback(this, this.newAppointment,[appt,mode,true]);
 		  var listener = new AjxListener(this, this._handleReadonlyOk, [callback, dlg]);
@@ -3699,8 +3703,13 @@ function(actionCode) {
 		case ZmKeyMap.CAL_MONTH_VIEW:
 		case ZmKeyMap.CAL_SCHEDULE_VIEW:
 		case ZmKeyMap.CAL_LIST_VIEW:
-		case ZmKeyMap.CAL_FB_VIEW:
 			this.show(ZmCalViewController.ACTION_CODE_TO_VIEW[actionCode]);
+			break;
+
+        case ZmKeyMap.CAL_FB_VIEW:
+            if(appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
+                this.show(ZmCalViewController.ACTION_CODE_TO_VIEW[actionCode]);
+            }
 			break;
 
 		case ZmKeyMap.TODAY:

@@ -2039,7 +2039,7 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 	m.setAttribute("l", (isOnBehalfOf ? this.getFolder().rid : this.folderId));
 
 	var inv = soapDoc.set("inv", null, m);
-	if (this.uid != null && this.uid != -1) {
+	if (this.uid != null && this.uid != -1 && !this.isSharedCopy) {
 		inv.setAttribute("uid", this.uid);
 	}
 
