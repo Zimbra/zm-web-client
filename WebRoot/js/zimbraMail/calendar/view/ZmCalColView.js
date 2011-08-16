@@ -892,7 +892,7 @@ function(abook) {
 
 	html.append("</div>");
     //Strip to indicate the current time
-    html.append("<div id='"+this._curTimeIndicatorGridDivId+"' class='calendar_cur_time_indicator_strip' style='position:absolute;background-color:#F16426; height: 1px;'></div>");
+    html.append("<div id='"+this._curTimeIndicatorGridDivId+"' class='calendar_cur_time_indicator_strip'></div>");
 	html.append("</div>");
 
 	this.getHtmlElement().innerHTML = html.toString();
