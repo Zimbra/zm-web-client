@@ -33,7 +33,7 @@ AjxPackage.require("zimbraMail.abook.view.ZmContactSplitView");
 AjxPackage.require("zimbraMail.abook.view.ZmNewAddrBookDialog");
 AjxPackage.require("zimbraMail.abook.view.ZmContactAssistant");
 AjxPackage.require("zimbraMail.abook.view.ZmNewContactGroupDialog");
-
+AjxPackage.require("zimbraMail.abook.view.ZmContactQuickAddDialog");
 
 AjxPackage.require("zimbraMail.abook.controller.ZmContactListController");
 AjxPackage.require("zimbraMail.abook.controller.ZmContactController");

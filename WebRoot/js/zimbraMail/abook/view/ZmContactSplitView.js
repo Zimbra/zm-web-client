@@ -438,7 +438,7 @@ function(contact, isGal, oldContact, expandDL) {
 
 		subs.folderIcon = contact.addrbook.getIcon();
 		subs.folderName = contact.addrbook.getName();
-		subs.groupMembers = contact.getGroupMembers().all.getArray();
+		subs.groupMembers = contact.getGroupMembersObj();
 		subs.findObjects = AjxCallback.simpleClosure(this.__findObjects, this, this._groupObjectManager);
 
 		this._resetVisibility(true);
@@ -726,22 +726,43 @@ function(data) {
 	return html.join("");
 };
 
+/**
+ * Displays contact group
+ * @param data  {object}
+ * @return html {String} html representation of group
+ */
 ZmContactSplitView.showContactGroup =
 function(data) {
-
-	var itemListData = ZmContactSplitView._getListData(data, ZmMsg.emailLabel, ZmObjectManager.EMAIL);
-	itemListData.attrs = {};
-	itemListData.name = "email";
-	itemListData.addone = false;
 	var html = [];
 	for (var i = 0; i < data.groupMembers.length; i++) {
-		var address = data.groupMembers[i];
-		itemListData.attrs.email = address.getAddress();
-		itemListData.type = address.getName() || address.getDispName();
-		html.push(ZmContactSplitView._showContactListItem(itemListData));
+		var itemListData = {};
+		var type = data.groupMembers[i].type;
+		if (type == ZmContact.GROUP_GAL_REF || type == ZmContact.GROUP_CONTACT_REF) {
+			var contact = ZmContact.getContactFromCache(data.groupMembers[i].value);
+			if (contact) {
+				itemListData.imageUrl = contact.getImageUrl();
+				itemListData.imgClassName = "Person_48";
+				itemListData.email = data.findObjects(contact.getEmail(), ZmObjectManager.EMAIL);
+				itemListData.title = data.findObjects(contact.getAttr(ZmContact.F_jobTitle), ZmObjectManager.TITLE);
+				itemListData.phone = data.findObjects(contact.getPhone(), ZmObjectManager.PHONE);
+				var isPhonetic  = appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS);
+                var fullnameHtml= contact.getFullNameForDisplay(isPhonetic);
+				if (!isPhonetic) {
+					fullnameHtml = AjxStringUtil.htmlEncode(fullnameHtml);
+				}
+				itemListData.fullName = fullnameHtml;
+			}
+			
+			html.push(AjxTemplate.expand("abook.Contacts#SplitView_group", itemListData));
+		}
+		else {
+			itemListData.imgClassName = "PersonInline_48";
+			itemListData.email = data.findObjects(data.groupMembers[i].value, ZmObjectManager.EMAIL);
+			html.push(AjxTemplate.expand("abook.Contacts#SplitView_group", itemListData));
+		}
 	}
-
 	return html.join("");
+	
 };
 
 ZmContactSplitView.prototype._showDL =

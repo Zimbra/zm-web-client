@@ -759,7 +759,7 @@ function() {
 				addrs.push(value);	
 			}
 			else if(type == ZmContact.GROUP_CONTACT_REF || type == ZmContact.GROUP_GAL_REF) {
-				var contact = this._getContactFromCache(value);	 //TODO: handle contacts not cached?
+				var contact = ZmContact.getContactFromCache(value);	 //TODO: handle contacts not cached?
 				var email = contact && contact.getEmail();
 				if (email && email != "") {
 					var ajxEmailAddress = new AjxEmailAddress(email, null, contact.getFileAs(), contact.getFullNameForDisplay(), false);
@@ -793,7 +793,7 @@ function() {
 				members.push({type : type, value : value, address : value});	
 			}
 			else if(type == ZmContact.GROUP_CONTACT_REF || type == ZmContact.GROUP_GAL_REF) {
-				var contact = this._getContactFromCache(value);  //TODO: handle contacts not cached?
+				var contact = ZmContact.getContactFromCache(value);  //TODO: handle contacts not cached?
 				var email = contact && contact.getEmail();
 				if (email && email != "") {
 					var ajxEmailAddress = new AjxEmailAddress(email, null, contact.getFileAs(), contact.getFullNameForDisplay(), false);
@@ -1305,6 +1305,20 @@ function(asObj) {
 	
 	return email;
 };
+
+/**
+ * Returns user's phone number
+ * @return {String} phone number
+ */
+ZmContact.prototype.getPhone = 
+function() {
+	var phone = (this.getAttr(ZmContact.F_mobilePhone) ||
+				this.getAttr(ZmContact.F_workPhone) || 
+				this.getAttr(ZmContact.F_homePhone) ||
+				this.getAttr(ZmContact.F_otherPhone));
+	return phone;
+};
+
     
 /**
  * Gets the lookup email address, when an contact object is located using email address we store
@@ -2050,7 +2064,7 @@ function(callback, result) {
  * @return contact {ZmContact} contact or null
  * @private
  */
-ZmContact.prototype._getContactFromCache =
+ZmContact.getContactFromCache =
 function(contactId) {
 	var userZid = appCtxt.accountList.mainAccount.id;
 	var contact = null;

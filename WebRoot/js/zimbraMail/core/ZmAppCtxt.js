@@ -787,6 +787,28 @@ function() {
 	return this._priorityMessagePromptDialog;
 };
 
+/**
+* Gets the activity stream prompt dialog for running activity stream filters
+*/
+/*
+ZmAppCtxt.prototype.getActivityStreamFilterDialog = 
+function() {
+	if (!this._activityStreamFilterDialog) {
+		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
+		this._activityStreamFilterDialog = new ZmActivityStreamPromptDialog();
+	}
+	return this._activityStreamFilterDialog;
+};
+*/
+
+ZmAppCtxt.prototype.getContactQuickAddDialog = 
+function() {
+	if (!this._contactQuickAddDialog) {
+		AjxDispatcher.require(["ContactsCore", "Contacts"]);
+		this._contactQuickAddDialog = new ZmContactQuickAddDialog();
+	}
+	return this._contactQuickAddDialog;
+};
 
 /**
  * Gets the confirm dialog.

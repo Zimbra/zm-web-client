@@ -124,7 +124,6 @@ ZmContactGroupMenu.prototype._render =
 function(groupNames, addRemove) {
 
 	for (var i = 0; i < this._contactGroupList.length; i++) {
-		var name = ZmContact.getAttr(this._contactGroupList[i], "nickname");
 		this._addNewGroup(this, this._contactGroupList[i], true, null, this._addHash);
 	}
 

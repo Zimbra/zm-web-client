@@ -1228,6 +1228,10 @@ line-height:normal;
 	font-weight: bold;
 }
 
+.ZmEditGroupContact .Row {
+    height: auto;
+}
+
 .ZmContactInfoView .contactHeader,
 .ZmContactView .contactHeader,
 .ZmTaskEditView .contactHeader,
