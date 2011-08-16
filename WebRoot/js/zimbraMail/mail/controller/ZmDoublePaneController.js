@@ -284,14 +284,20 @@ function(msg) {
 	}
 
 	this._doublePaneView.setItem(msg);
+	this._handleMarkRead(msg);
 	this._curMsg = msg;
+};
+
+ZmDoublePaneController.prototype._handleMarkRead =
+function(msg) {
+
 	if (msg.isUnread) {
 		var folder = appCtxt.getById(msg.folderId);
-		var readOnly = folder ? folder.isReadOnly() : false;
+		var readOnly = folder && folder.isReadOnly();
 		if (!readOnly) {
 			var markRead = appCtxt.get(ZmSetting.MARK_MSG_READ);
 			if (markRead == ZmSetting.MARK_READ_NOW) {
-				// msg was cached, then marked unread
+				// msg was cached as unread, mark it read now
 				this._doMarkRead([msg], true);
 			} else if (markRead > 0) {
 				if (!appCtxt.markReadAction) {

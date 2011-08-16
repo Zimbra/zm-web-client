@@ -343,8 +343,8 @@ function() {
 			var sel = this._listView[this._currentView].getSelection();
 			var conv = (sel && sel.length) ? sel[0] : null;
 			var respCallback = this._handleResponseSetSelectedItem.bind(this, conv);
-	//		var markRead = (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
-			conv.load({getUnreadOrFirstMsg:true}, respCallback);
+			var markRead = (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
+			conv.load({getUnreadOrFirstMsg:true, markRead:markRead}, respCallback);
 		}
 	} else {
 		ZmDoublePaneController.prototype._setSelectedItem.apply(this, arguments);
@@ -422,6 +422,18 @@ function(callback) {
 ZmConvListController.prototype._displayMsg =
 function(msg) {
 	this._doublePaneView.setItem(msg);
+	this._handleMarkRead(msg);
+};
+
+ZmConvListController.prototype._handleMarkRead =
+function(msg) {
+	
+	if (appCtxt.get(ZmSetting.CONV_MODE) == ZmId.VIEW_CONVLIST2) {
+		// not yet determined what to do here
+	}
+	else {
+		ZmDoublePaneController.prototype._handleMarkRead.apply(this, arguments);
+	}
 };
 
 ZmConvListController.prototype._toggle =
