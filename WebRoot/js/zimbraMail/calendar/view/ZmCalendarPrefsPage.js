@@ -392,13 +392,15 @@ function(batchCmd) {
 ZmCalendarPrefsPage.prototype._postSaveBatchCmd =
 function(value) {
     appCtxt.set(ZmSetting.CAL_WORKING_HOURS, value);
-    if(this._workHoursControl.getDaysChanged()) {
-        this._workHoursControl.setDaysChanged(false);
-        var cd = appCtxt.getYesNoMsgDialog();
-        cd.reset();
-        cd.registerCallback(DwtDialog.YES_BUTTON, this._newWorkHoursYesCallback, this, [skin, cd]);
-        cd.setMessage(ZmMsg.workingDaysRestart, DwtMessageDialog.WARNING_STYLE);
-        cd.popup();
+    if(this._workHoursControl) {
+        if(this._workHoursControl.getDaysChanged()) {
+            this._workHoursControl.setDaysChanged(false);
+            var cd = appCtxt.getYesNoMsgDialog();
+            cd.reset();
+            cd.registerCallback(DwtDialog.YES_BUTTON, this._newWorkHoursYesCallback, this, [skin, cd]);
+            cd.setMessage(ZmMsg.workingDaysRestart, DwtMessageDialog.WARNING_STYLE);
+            cd.popup();
+        }
     }
 };
 
@@ -550,12 +552,24 @@ function() {
 
 ZmWorkHours.prototype.setDaysChanged =
 function(value) {
-    this._daysChanged = value;
+    var isCustom = this._radioCustom.isSelected();
+    if(isCustom && this._customDlg) {
+        this._customDlg.setDaysChanged(value);
+    }
+    else {
+        this._daysChanged = value;
+    }
 };
 
 ZmWorkHours.prototype.getDaysChanged =
 function() {
-    return this._daysChanged;
+    var isCustom = this._radioCustom.isSelected();
+    if(isCustom && this._customDlg) {
+        return this._customDlg.getDaysChanged();
+    }
+    else {
+        return this._daysChanged;
+    }
 };
 
 ZmWorkHours.prototype.isValid =
@@ -624,8 +638,6 @@ function() {
     return wDaysStr.join(ZmWorkHours.STR_DAY_SEP);
 };
 
-
-
 ZmWorkHours.prototype._isCustomTimeSet =
 function() {
     var i,
@@ -636,9 +648,9 @@ function() {
         }
     }
     return false;
-}
+};
 
-ZmWorkHours.prototype._setCustom =
+ZmWorkHours.prototype._closeCustomDialog =
 function(value) {
     this._customDlg.popdown();
 };
@@ -648,8 +660,8 @@ function() {
     if(!this._customDlg) {
         this._customDlg = new ZmCustomWorkHoursDlg(appCtxt.getShell(), "CustomWorkHoursDlg", this._workHours);
         this._customDlg.initialize(this._workHours);
-        this._customDlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._setCustom, [true]));
-        this._customDlg.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._setCustom, [false]));
+        this._customDlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._closeCustomDialog, [true]));
+        this._customDlg.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._closeCustomDialog, [false]));
     }
     this._customDlg.popup();
 };
@@ -765,6 +777,7 @@ ZmCustomWorkHoursDlg = function (parent, templateId, workHours) {
     var contentHtml = AjxTemplate.expand("prefs.Pages#"+templateId, {id:this._htmlElId});
     this.setContent(contentHtml);
 	this.setTitle(ZmMsg.calendarCustomDlgTitle);
+    this._daysChanged = false;
 };
 
 ZmCustomWorkHoursDlg.prototype = new DwtDialog;
@@ -830,7 +843,7 @@ function() {
 
     for (i=0;i<AjxDateUtil.WEEKDAY_MEDIUM.length; i++) {
         if(this._workDaysCheckBox[i].isSelected() != workHours[i].isWorkingDay) {
-            this.parent.setDaysChanged(true);
+            this.setDaysChanged(true);
             return true;
         }
     }
@@ -900,6 +913,14 @@ function() {
     return wDaysStr.join(ZmWorkHours.STR_DAY_SEP);
 };
 
+ZmCustomWorkHoursDlg.prototype.setDaysChanged =
+function(value) {
+    this._daysChanged = value;
+};
 
+ZmCustomWorkHoursDlg.prototype.getDaysChanged =
+function() {
+    return this._daysChanged;
+};
 
 
