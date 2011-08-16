@@ -65,61 +65,19 @@ ZmId = function() {};
 //
 
 // widget types (used to prefix IDs)
-/**
- * Defines the "generic element" widget type prefix.
- */
 ZmId.WIDGET					= "z";			// generic element
-/**
- * Defines the "view within content area" widget type prefix.
- */
 ZmId.WIDGET_VIEW			= "zv";			// view within content area
-/**
- * Defines the "toolbar" widget type prefix.
- */
 ZmId.WIDGET_TOOLBAR			= "ztb";		// toolbar
-/**
- * Defines the "button" widget type prefix.
- */
 ZmId.WIDGET_BUTTON			= "zb";			// button
-/**
- * Defines the "text input or textarea" widget type prefix.
- */
 ZmId.WIDGET_INPUT			= "zi";			// text input or textarea
-/**
- * Defines the "menu" widget type prefix.
- */
 ZmId.WIDGET_MENU			= "zm";			// menu
-/**
- * Defines the "menu item" widget type prefix.
- */
 ZmId.WIDGET_MENU_ITEM		= "zmi";		// menu item
-/**
- * Defines the "dropdown select" widget type prefix.
- */
 ZmId.WIDGET_SELECT			= "zs";			// dropdown select
-/**
- * Defines the "collection of overview" widget type prefix.
- */
 ZmId.WIDGET_OVERVIEW_CNTR	= "zovc";		// collection of overviews
-/**
- * Defines the "collection of tree views" widget type prefix.
- */
 ZmId.WIDGET_OVERVIEW		= "zov";		// collection of tree views
-/**
- * Defines the "tree view" widget type prefix.
- */
 ZmId.WIDGET_TREE			= "zt";			// tree view
-/**
- * Defines the "root tree item" widget type prefix.
- */
 ZmId.WIDGET_TREE_ITEM_HDR	= "ztih";		// root tree item
-/**
- * Defines the "tree item (node)" widget type prefix.
- */
 ZmId.WIDGET_TREE_ITEM		= "zti";		// tree item (node)
-/**
- * Defines the "tab button" widget type prefix.
- */
 ZmId.WIDGET_TAB				= "ztab";		// tab button
 
 //
@@ -139,6 +97,7 @@ ZmId.SKIN_APP_MAIN					= "skin_container_app_main";
 ZmId.SKIN_APP_MAIN_ROW_FULL			= "skin_tr_main_full";
 ZmId.SKIN_APP_MAIN_ROW				= "skin_tr_main";
 ZmId.SKIN_APP_TOP_TOOLBAR			= "skin_container_app_top_toolbar";
+ZmId.SKIN_APP_NEW_BUTTON			= "skin_container_app_new_button"; 
 ZmId.SKIN_LINKS						= "skin_container_links";
 ZmId.SKIN_LOGO						= "skin_container_logo";
 ZmId.SKIN_QUOTA_INFO				= "skin_container_quota";
@@ -148,6 +107,7 @@ ZmId.SKIN_SEARCH_BUILDER_TOOLBAR	= "skin_container_search_builder_toolbar";
 ZmId.SKIN_SEARCH_BUILDER_TR			= "skin_tr_search_builder";
 ZmId.SKIN_SEARCH					= "skin_container_search";
 ZmId.SKIN_PEOPLE_SEARCH				= "skin_container_people_search";
+ZmId.SKIN_REFRESH					= "skin_container_refresh";
 ZmId.SKIN_SHELL						= "skin_outer";
 ZmId.SKIN_SPACING_SEARCH			= "skin_spacing_search";
 ZmId.SKIN_SPLASH_SCREEN				= "skin_container_splash_screen";
@@ -159,6 +119,7 @@ ZmId.SKIN_USER_INFO					= "skin_container_username";
 ZmId.SKIN_TASKBAR					= "skin_container_taskbar";
 ZmId.SKIN_FOOTER					= "skin_footer";
 ZmId.SKIN_AD						= "skin_adsrvc";
+ZmId.SKIN_UNITTEST					= "skin_unittest";
 
 //
 // Literal IDs
@@ -211,6 +172,7 @@ ZmId.TB_INVITE	= "Inv";
 ZmId.TB_COUNTER	= "Cou";
 ZmId.TB_NAV		= "Nav";
 ZmId.TB_SHARE	= "Shr";
+ZmId.TB_REPLY	= "Rep";
 
 /**
  * Generates the ID for a button. Intended for use with the top toolbar, nav toolbar,
@@ -349,7 +311,7 @@ function(overviewId, organizerId, type) {
  * </p>
  * 
  * @param {constant}	viewId		the view identifier (see <code>ZmId.VIEW_</code> constants)
- * @param {constant}	component		the component identifier (see <code>ZmId.MV_</code> constants)
+ * @param {constant}	component	the component identifier (see <code>ZmId.MV_</code> constants)
  * @param {constant}	context		the ID of owning view
  * @return	{String}	the id
  */
@@ -466,25 +428,10 @@ ZmId.SEARCH_ADVANCED		= "ADV";				// open/close the search builder
 ZmId.SEARCH_LOCAL			= "LOCAL";				// added by the "local" zimlet
 
 // menu item (also see ZmId.ITEM_*)
-/**
- * Defines the "all accounts" search type.
- */
 ZmId.SEARCH_ALL_ACCOUNTS	= "ALL_ACCOUNTS";		// all accounts
-/**
- * Defines the "any" search type.
- */
 ZmId.SEARCH_ANY				= "ANY";				// all item types
-/**
- * Defines the "GAL" search type.
- */
 ZmId.SEARCH_GAL				= "GAL";				// GAL contacts
-/**
- * Defines the "mail" search type.
- */
 ZmId.SEARCH_MAIL			= "MAIL";				// mail items
-/**
- * Defines the "shared" search type.
- */
 ZmId.SEARCH_SHARED			= "SHARED";				// include shared items
 
 /*
@@ -642,6 +589,11 @@ ZmId.MV_INFO_BAR			= "_infoBar";			// DIV that is placeholder for optional links
 ZmId.MV_TAG_ROW				= "_tagRow";			// TR for tags
 ZmId.MV_TAG_CELL			= "_tagCell";			// TD for tags
 ZmId.MV_MSG_BODY			= "_body";				// DIV that contains content iframe
+ZmId.MV_MSG_HEADER			= "_header";			// DIV that contains header (conv 2.0 msg capsule view)
+ZmId.MV_MSG_FOOTER			= "_footer";			// DIV that contains footer (conv 2.0 msg capsule view)
+
+ZmId.MV_PRIORITY			= "_msgPriority";
+
 
 /*
  * ------------
@@ -714,54 +666,22 @@ ZmId.CMP_BCC				= "BCC";
  */
 
 // apps
-/**
- * Defines the "briefcase" application.
- */
 ZmId.APP_BRIEFCASE		= "Briefcase";
-/**
- * Defines the "calendar" application.
- */
 ZmId.APP_CALENDAR		= "Calendar";
-/**
- * Defines the "contacts" application.
- */
 ZmId.APP_CONTACTS		= "Contacts";
-/**
- * Defines the "IM" application.
- */
 ZmId.APP_IM				= "IM";
-/**
- * Defines the "mail" application.
- */
 ZmId.APP_MAIL			= "Mail";
-/**
- * Defines the "mixed" application.
- */
 ZmId.APP_MIXED			= "Mixed";
-/**
- * Defines the "notebook" application.
- */
 ZmId.APP_NOTEBOOK		= "Notebook";
-/**
- * Defines the "portal" application.
- */
 ZmId.APP_PORTAL			= "Portal";
-/**
- * Defines the "preferences" application.
- */
 ZmId.APP_PREFERENCES	= "Options";
-/**
- * Defines the "tasks" application.
- */
 ZmId.APP_TASKS			= "Tasks";
-/**
- * Defines the "voice" application.
- */
 ZmId.APP_VOICE			= "Voice";
 
 // views - often used as context for ID
 ZmId.VIEW_ACCOUNT				= "ACCT";
 ZmId.VIEW_APPOINTMENT 			= "APPT";
+ZmId.VIEW_APPOINTMENT_READONLY  = "APPTRO";
 ZmId.VIEW_APPT_SCHEDULE			= "APPTS";
 ZmId.VIEW_BRIEFCASE			    = "BC";
 ZmId.VIEW_BRIEFCASE_DETAIL		= "BCD";
@@ -773,6 +693,7 @@ ZmId.VIEW_BRIEFCASE_DETAIL      = "BDLV";
 ZmId.VIEW_CAL					= "CAL";
 ZmId.VIEW_CAL_APPT				= "CLA";
 ZmId.VIEW_CAL_DAY				= "CLD";
+ZmId.VIEW_CAL_DAY_TAB           = "CLDT";
 ZmId.VIEW_CAL_LIST				= "CLL";
 ZmId.VIEW_CAL_MONTH				= "CLM";
 ZmId.VIEW_CAL_SCHEDULE			= "CLS";
@@ -782,43 +703,27 @@ ZmId.VIEW_CAL_FB			    = "CLFB";
 ZmId.VIEW_CAL_TRASH             = "CLT";
 ZmId.VIEW_SCHEDULE_PANE         = "CSP";
 ZmId.VIEW_CALL_LIST				= "CLIST";
-/**
- * Defines the "compose" view.
- * @type String
- */
 ZmId.VIEW_COMPOSE				= "COMPOSE";
-ZmId.VIEW_CONTACT_SIMPLE 		= "CNS";
-ZmId.VIEW_CONTACT_SRC			= "CNSRC";
-ZmId.VIEW_CONTACT_TGT			= "CNTGT";
-/**
- * Defines the "contact" view.
- * @type String
- */
+ZmId.VIEW_CONTACT_SIMPLE 		= "CNS";			// dual panes, list and contact
+ZmId.VIEW_CONTACT_SRC			= "CNSRC";			// contact picker
+ZmId.VIEW_CONTACT_TGT			= "CNTGT";			// contact picker
 ZmId.VIEW_CONTACT				= "CN";
-/**
- * Defines the "conversation list" mail view.
- * @type String
- */
-ZmId.VIEW_CONVLIST 				= "CLV";
-/**
- * Defines the "conversation" view.
- * @type String
- */
-ZmId.VIEW_CONV 					= "CV";
+ZmId.VIEW_CONV 					= "CV";				// dual-pane conv view
+ZmId.VIEW_CONV2 				= "CV2";			// conv shown in reading pane
+ZmId.VIEW_CONVLIST 				= "CLV";			// hybrid conv list view
+ZmId.VIEW_CONVLIST2 			= "CLV2";			// "conv 2.0" conv list view
 ZmId.VIEW_FILTER_RULES			= "FRV";
+ZmId.VIEW_QUICK_COMMAND			= "QCV";
 ZmId.VIEW_GROUP					= "GRP";
 ZmId.VIEW_IM_CHAT_MEMBER_LIST	= "IMCML";
 ZmId.VIEW_IM_CHAT_MULTI_WINDOW	= "IMCMW";
 ZmId.VIEW_IM_CHAT_TAB			= "IMCT";
-ZmId.VIEW_LOADING				= "LOADING";
+ZmId.VIEW_LOADING				= "LOADING";		// generic placeholder
 ZmId.VIEW_MAIL_CONFIRM			= "MAILCONFIRM";
-ZmId.VIEW_MIXED					= "MX";
+ZmId.VIEW_MIXED					= "MX";				// for viewing a heterogeneous list
 ZmId.VIEW_MOBILE_DEVICES		= "MD";
-/**
- * Defines the "message" view.
- * @type String
- */
 ZmId.VIEW_MSG 					= "MSG";
+ZmId.VIEW_MSG_CAPSULE			= "MSGC";
 ZmId.VIEW_NOTEBOOK_FILE			= "NBF";
 ZmId.VIEW_NOTEBOOK_PAGE_EDIT	= "NBPE";
 ZmId.VIEW_NOTEBOOK_PAGE			= "NBP";
@@ -840,10 +745,6 @@ ZmId.VIEW_TASK_ALL				= "TKVA";
 ZmId.VIEW_TASK_TODO				= "TKVT";
 ZmId.VIEW_TASKEDIT				= "TKE";
 ZmId.VIEW_TASKLIST				= "TKL";
-/**
- * Defines the "traditional" mail view.
- * @type String
- */
 ZmId.VIEW_TRAD 					= "TV";
 ZmId.VIEW_VOICEMAIL				= "VM";
 ZmId.VIEW_ATTACHMENTS           = "AV";
@@ -867,57 +768,21 @@ ZmId.ITEM_ROSTER		= "ROSTER_ITEM";
 ZmId.ITEM_TASK			= "TASK";
 ZmId.ITEM_VOICEMAIL		= "VOICEMAIL";
 
-// organizer types
-/**
- * Defines the "address book" organizer.
- */
+// organizer types - generally appear in overview
 ZmId.ORG_ADDRBOOK			= "ADDRBOOK";
-/**
- * Defines the "briefcase" organizer.
- */
 ZmId.ORG_BRIEFCASE			= "BRIEFCASE";
-/**
- * Defines the "calendar" organizer.
- */
 ZmId.ORG_CALENDAR			= "CALENDAR";
-/**
- * Defines the "folder" organizer.
- */
 ZmId.ORG_FOLDER				= "FOLDER";
-/**
- * Defines the "notebook" organizer.
- */
 ZmId.ORG_NOTEBOOK			= "NOTEBOOK";
-/**
- * Defines the "roster tree item" organizer.
- */
-ZmId.ORG_ROSTER_TREE_ITEM	= "ROSTER_TREE_ITEM";
-/**
- * Defines the "roster tree group" organizer.
- */
-ZmId.ORG_ROSTER_TREE_GROUP	= "ROSTER_TREE_GROUP";
-/**
- * Defines the "search" organizer.
- */
-ZmId.ORG_SEARCH				= "SEARCH";
-/**
- * Defines the "tag" organizer.
- */
-ZmId.ORG_TAG				= "TAG";
-/**
- * Defines the "tasks" organizer.
- */
-ZmId.ORG_TASKS				= "TASKS";
-/**
- * Defines the "zimlet" organizer.
- */
-ZmId.ORG_ZIMLET				= "ZIMLET";
-/**
- * Defines the "preferences page" organizer.
- */
 ZmId.ORG_PREF_PAGE			= "PREF_PAGE";
+ZmId.ORG_ROSTER_TREE_ITEM	= "ROSTER_TREE_ITEM";	// IM
+ZmId.ORG_ROSTER_TREE_GROUP	= "ROSTER_TREE_GROUP";	// IM
+ZmId.ORG_SEARCH				= "SEARCH";				// saved search
+ZmId.ORG_TAG				= "TAG";
+ZmId.ORG_TASKS				= "TASKS";
+ZmId.ORG_ZIMLET				= "ZIMLET";
 
-// fields of an item
+// fields of an item - generally equates to a column in a list view
 ZmId.FLD_ACCOUNT		= "ac";
 ZmId.FLD_ATTACHMENT		= "at";
 ZmId.FLD_CAPACITY		= "cp";
@@ -937,6 +802,8 @@ ZmId.FLD_INDEX			= "ix";
 ZmId.FLD_ITEM_ROW		= "rw";
 ZmId.FLD_ITEM_ROW_3PANE	= "r3";
 ZmId.FLD_LOCATION		= "lo";
+ZmId.FLD_LOCK           = "loid";
+ZmId.FLD_MSG_PRIORITY   = "mp"; //message prioritization
 ZmId.FLD_NAME			= "na";
 ZmId.FLD_NOTES			= "no";
 ZmId.FLD_PARTICIPANT	= "pa";
@@ -952,15 +819,18 @@ ZmId.FLD_SUBJECT		= "su";
 ZmId.FLD_TAG			= "tg";
 ZmId.FLD_TAG_CELL		= "tc";
 ZmId.FLD_TYPE			= "ty";
+ZmId.FLD_TO             = "to";
 ZmId.FLD_VERSION        = "ver";
 ZmId.FLD_WORK_PHONE		= "wp"; // Contacts
-ZmId.FLD_LOCK           = "loid";
 
-// operations
+// operations - things the user can do, usually via a button or menu item
 ZmId.OP_ACCEPT_PROPOSAL         = "ACCEPT_PROPOSAL";
+ZmId.OP_ADD       		     	= "ADD";
 ZmId.OP_ADD_FILTER_RULE			= "ADD_FILTER_RULE";
+ZmId.OP_ADD_QUICK_COMMAND		= "ADD_QUICK_COMMAND";
 ZmId.OP_ADD_SIGNATURE			= "ADD_SIGNATURE";
 ZmId.OP_ATTACHMENT				= "ATTACHMENT";
+ZmId.OP_ACTIONS_MENU			= "ACTIONS_MENU";
 ZmId.OP_BROWSE					= "BROWSE";
 ZmId.OP_BROWSE_FOLDER			= "BROWSE_FOLDER";
 ZmId.OP_CALL					= "CALL";
@@ -982,10 +852,13 @@ ZmId.OP_CLOSE					= "CLOSE";
 ZmId.OP_COMPOSE_FORMAT			= "COMPOSE_FORMAT";
 ZmId.OP_COMPOSE_OPTIONS			= "COMPOSE_OPTIONS";
 ZmId.OP_CONTACT					= "CONTACT";
+ZmId.OP_CONTACTGROUP_MENU       = "CONTACTGROUP_MENU";
+ZmId.OP_COPY_TEXT  				= "COPY_TEXT";
 ZmId.OP_CREATE_APPT     		= "CREATE_APPT";
 ZmId.OP_CREATE_TASK     		= "CREATE_TASK";
 ZmId.OP_CREATE_SLIDE_SHOW		= "CREATE_SLIDE_SHOW";
 ZmId.OP_DAY_VIEW				= "DAY_VIEW";
+ZmId.OP_DAY_TAB_VIEW			= "DAY_TAB_VIEW";
 ZmId.OP_DECLINE_PROPOSAL        = "DECLINE_PROPOSAL";
 ZmId.OP_DELETE					= "DELETE";
 ZmId.OP_DELETE_APPT_INSTANCE	= "DELETE_INSTANCE";
@@ -1002,6 +875,7 @@ ZmId.OP_DOWNLOAD_VOICEMAIL		= "DOWNLOAD_VOICEMAIL";
 ZmId.OP_DUPLICATE_APPT  		= "DUPLICATE_APPT";
 ZmId.OP_DRAFT					= "DRAFT";
 ZmId.OP_EDIT					= "EDIT";
+ZmId.OP_EDIT_AS_NEW				= "EDIT_AS_NEW";
 ZmId.OP_EDIT_CONTACT			= "EDIT_CONTACT";
 ZmId.OP_EDIT_FILE				= "EDIT_FILE";
 ZmId.OP_EDIT_FILTER_RULE		= "EDIT_FILTER_RULE";
@@ -1011,6 +885,7 @@ ZmId.OP_EDIT_NOTEBOOK_FOOTER	= "EDIT_NOTEBOOK_FOOTER";
 ZmId.OP_EDIT_NOTEBOOK_HEADER	= "EDIT_NOTEBOOK_HEADER";
 ZmId.OP_EDIT_NOTEBOOK_INDEX		= "EDIT_NOTEBOOK_INDEX";
 ZmId.OP_EDIT_NOTEBOOK_SIDE_BAR	= "EDIT_NOTEBOOK_SIDE_BAR";
+ZmId.OP_EDIT_QUICK_COMMAND		= "EDIT_QUICK_COMMAND";
 ZmId.OP_EDIT_PROPS				= "EDIT_PROPS";
 ZmId.OP_EDIT_REPLY_ACCEPT		= "EDIT_REPLY_ACCEPT";
 ZmId.OP_EDIT_REPLY_CANCEL		= "EDIT_REPLY_CANCEL";
@@ -1036,6 +911,13 @@ ZmId.OP_FORWARD_APPT			= "FORWARD_APPT";
 ZmId.OP_FORWARD_APPT_INSTANCE	= "FORWARD_APPT_INSTANCE";
 ZmId.OP_FORWARD_APPT_SERIES		= "FORWARD_APPT_SERIES";
 ZmId.OP_FREE_BUSY_LINK			= "FREE_BUSY_LINK";
+ZmId.OP_GROUPBY                 = "GROUPBY";
+ZmId.OP_GROUPBY_DATE            = "GROUPBY_DATE";
+ZmId.OP_GROUPBY_NONE            = "GROUPBY_NONE";
+ZmId.OP_GROUPBY_FROM            = "GROUPBY_FROM";
+ZmId.OP_GROUPBY_PRIORITY        = "GROUPBY_PRIORITY";
+ZmId.OP_GROUPBY_SIZE            = "GROUPBY_SIZE";
+ZmId.OP_GROUPBY_TAG             = "GROUPBY_TAG";
 ZmId.OP_GO_TO_URL				= "GO_TO_URL";
 ZmId.OP_IM						= "IM";
 ZmId.OP_IMPORT_FILE				= "IMPORT_FILE";
@@ -1099,6 +981,7 @@ ZmId.OP_MOUNT_FOLDER			= "MOUNT_FOLDER";
 ZmId.OP_MOUNT_NOTEBOOK			= "MOUNT_NOTEBOOK";
 ZmId.OP_MOUNT_TASK_FOLDER		= "MOUNT_TASK_FOLDER";
 ZmId.OP_MOVE					= "MOVE";
+ZmId.OP_MOVE_MENU				= "MOVE_MENU";
 ZmId.OP_MOVE_DOWN_FILTER_RULE	= "MOVE_DOWN_FILTER_RULE";
 ZmId.OP_MOVE_TO_BCC				= "MOVE_TO_BCC";
 ZmId.OP_MOVE_TO_CC				= "MOVE_TO_CC";
@@ -1136,11 +1019,16 @@ ZmId.OP_PAGE_FORWARD			= "PAGE_FORWARD";
 ZmId.OP_PAUSE_TOGGLE			= "PAUSE_TOGGLE";
 ZmId.OP_PRINT					= "PRINT";
 ZmId.OP_PRINT_ADDRBOOK			= "PRINT_ADDRBOOK";
+ZmId.OP_PRINT_CALENDAR			= "PRINT_CALENDAR";
 ZmId.OP_PRINT_CONTACT			= "PRINT_CONTACT";
+ZmId.OP_PRIORITY_FILTER         = "PRIORITY_FILTER";
 ZmId.OP_PROPOSE_NEW_TIME        = "PROPOSE_NEW_TIME";
+ZmId.OP_QUICK_COMMANDS  	    = "QUICK_COMMANDS";
 ZmId.OP_RECOVER_DELETED_ITEMS	= "RECOVER_DELETED_ITEMS";
+ZmId.OP_REDIRECT				= "REDIRECT";
 ZmId.OP_REFRESH					= "REFRESH";
 ZmId.OP_REMOVE_FILTER_RULE		= "REMOVE_FILTER_RULE";
+ZmId.OP_REMOVE_QUICK_COMMAND	= "REMOVE_QUICK_COMMAND";
 ZmId.OP_RENAME_FILE             = "RENAME_FILE";
 ZmId.OP_RENAME_FOLDER			= "RENAME_FOLDER";
 ZmId.OP_RENAME_SEARCH			= "RENAME_SEARCH";
@@ -1186,6 +1074,9 @@ ZmId.OP_SEND_MENU				= "SEND_MENU";
 ZmId.OP_SEND_LATER				= "SEND_LATER";
 ZmId.OP_SEND_PAGE				= "SEND_PAGE";
 ZmId.OP_SEND_INVITE				= "SEND_INVITE";
+ZmId.OP_SEND_FB_HTML			= "SEND_FB_HTML";
+ZmId.OP_SEND_FB_ICS			    = "SEND_FB_ICS";
+ZmId.OP_SEND_FB_ICS_EVENT	    = "SEND_FB_ICS_EVENT";
 ZmId.OP_SHARE					= "SHARE";
 ZmId.OP_SHARE_ACCEPT			= "SHARE_ACCEPT";
 ZmId.OP_SHARE_ADDRBOOK			= "SHARE_ADDRBOOK";
@@ -1200,9 +1091,12 @@ ZmId.OP_SHOW_BCC				= "SHOW_BCC";
 ZmId.OP_SHOW_ONLY_CONTACTS		= "SHOW_ONLY_CONTACTS";
 ZmId.OP_SHOW_ONLY_MAIL			= "SHOW_ONLY_MAIL";
 ZmId.OP_SHOW_ORIG				= "SHOW_ORIG";
+ZmId.OP_SORT_ASC                = "SORT_ASC";
+ZmId.OP_SORT_DESC               = "SORT_DESC";
 ZmId.OP_SPAM					= "SPAM";
 ZmId.OP_SPELL_CHECK				= "SPELL_CHECK";
 ZmId.OP_SYNC					= "SYNC";
+ZmId.OP_SYNC_ALL				= "SYNC_ALL";
 ZmId.OP_SYNC_OFFLINE_FOLDER		= "SYNC_OFFLINE_FOLDER";
 ZmId.OP_TAG						= "TAG";
 ZmId.OP_TAG_COLOR_MENU			= "TAG_COLOR_MENU";
@@ -1225,4 +1119,11 @@ ZmId.OP_SORTBY_MENU			    = "SORTBY_MENU";
 ZmId.OP_WEEK_VIEW				= "WEEK_VIEW";
 ZmId.OP_WORK_WEEK_VIEW			= "WORK_WEEK_VIEW";
 ZmId.OP_ZIMLET					= "ZIMLET";
-ZmId.OP_SYNC_ALL				= "SYNC_ALL";
+
+//Group By IDs
+ZmId.GROUPBY_DATE               = "GROUPBY_DATE";
+ZmId.GROUPBY_FROM               = "GROUPBY_FROM";
+ZmId.GROUPBY_NONE               = "GROUPBY_NONE";
+ZmId.GROUPBY_PRIORITY           = "GROUPBY_PRIORITY";
+ZmId.GROUPBY_SIZE               = "GROUPBY_SIZE";
+ZmId.GROUPBY_TAG                = "GROUPBY_TAG";

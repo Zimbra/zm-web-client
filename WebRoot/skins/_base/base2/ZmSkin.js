@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -182,6 +182,16 @@ ZmSkin.prototype = {
 	getSidebarAdContainer : function() {
 		return this._getEl("skin_container_sidebar_ad");
 	},
+
+	handleNotification : function(event, args) {
+		/*
+			Override me in individual skins
+			@param [String] event		The event type, e.g. "onAction", "onSelectApp", "initializeToolbar", ...
+										basically anything that would get passed into appCtxt.notifyZimlets()
+			@param [Array]	args		Array of the arguments that get passed to appCtxt.notifyZimlets()
+		*/
+	},
+
 	
 	//
 	// Protected methods

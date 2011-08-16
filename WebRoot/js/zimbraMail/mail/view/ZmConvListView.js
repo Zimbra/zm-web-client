@@ -41,16 +41,18 @@ ZmConvDoublePaneView = function(params) {
 ZmConvDoublePaneView.prototype = new ZmDoublePaneView;
 ZmConvDoublePaneView.prototype.constructor = ZmConvDoublePaneView;
 
-ZmConvDoublePaneView.prototype.toString = 
-function() {
-	return "ZmConvDoublePaneView";
-};
+ZmConvDoublePaneView.prototype.isZmConvDoublePaneView = true;
+ZmConvDoublePaneView.prototype.toString = function() { return "ZmConvDoublePaneView"; };
 
 ZmConvDoublePaneView.prototype._createMailListView =
 function(params) {
-	params.parent = this;
-	params.posStyle = Dwt.ABSOLUTE_STYLE;
 	return new ZmConvListView(params);
+};
+
+ZmConvDoublePaneView.prototype._createMailItemView =
+function(params) {
+	params.id = ZmId.getViewId(ZmId.VIEW_MSG, null, params.view);
+	return new ZmMailMsgView(params);
 };
 
 /**
@@ -193,7 +195,8 @@ function() {
 	if (!this._headerInit) {
 		ZmMailListView.prototype._initHeaders.call(this);
 		this._headerInit[ZmItem.F_EXPAND]	= {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand};
-		this._headerInit[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_CLV, resizeable:true};
+        //bug:45171 removed sorted from converstaion for FROM field
+        this._headerInit[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_CLV, resizeable:true};
 	}
 };
 
@@ -210,6 +213,7 @@ function(parent, controller) {
 			ZmItem.F_STATUS,
 			ZmItem.F_FROM,
 			ZmItem.F_ATTACHMENT,
+			ZmItem.F_MSG_PRIORITY,
 			ZmItem.F_SUBJECT,
 			ZmItem.F_FOLDER,
 			ZmItem.F_SIZE
@@ -332,7 +336,8 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		} else if (field == ZmItem.F_FROM) {
 			htmlArr[idx++] = this._getParticipantHtml(item, this._getFieldId(item, ZmItem.F_PARTICIPANT));
 		} else if (field == ZmItem.F_SUBJECT) {
-			htmlArr[idx++] = item.subject ? AjxStringUtil.htmlEncode(item.subject, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
+			var subj = ZmMailMsg.stripSubjectPrefixes(item.subject || ZmMsg.noSubject);
+			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj, true);
 			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(item);
 			}
@@ -394,11 +399,13 @@ function(item, colIdx) {
 	} else {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, width);
 	}
+		
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SUBJECT, colIdx);
 	if (item.hasAttach) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, width, "valign=top");
 	}
 	if (appCtxt.get("FLAGGING_ENABLED")) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_MSG_PRIORITY, colIdx, "16", "align=right");
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, width);
 	}
 	htmlArr[idx++] = "</tr></table>";
@@ -705,6 +712,11 @@ function() {
 	this._expandedItems	= {};	// list of expanded items for a conv ID (inc conv)
 };
 
+ZmConvListView.prototype.isExpanded =
+function(item) {
+	return item && this._expanded[item.id];
+};
+
 ZmConvListView.prototype._expandItem =
 function(item) {
 	if (item && this._isExpandable(item)) {
@@ -737,11 +749,8 @@ function(columnItem, bSortAsc, callback) {
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
 
 	var query;
-	if (this._columnHasCustomQuery(columnItem))
-	{
-		query = this._getSearchForSort(columnItem._sortable);
-	}
-	else if (this.getList().size() > 1 && this._sortByString) {
+	var list = this.getList();
+	if (list && list.size() > 1 && this._sortByString) {
 		query = this._controller.getSearchString();
 	}
 
@@ -758,11 +767,6 @@ function(columnItem, bSortAsc, callback) {
 		};
 		appCtxt.getSearchController().search(params);
 	}
-};
-
-ZmConvListView.prototype._columnHasCustomQuery =
-function(columnItem) {
-	return (columnItem._sortable == ZmItem.F_FLAG || columnItem._sortable == ZmItem.F_ATTACHMENT);
 };
 
 ZmConvListView.prototype._changeListener =

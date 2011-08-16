@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -481,8 +481,19 @@ function(itemArray) {
 		if (this._list.size() == 0) {
 			this._resetList();
 		}
-		this._renderList(AjxVector.fromArray(itemArray), this._list.size() != 0, true);
-		this._list.addList(itemArray);
+
+		// Prune the appts before passing to the underlying ListView
+		var showDeclined = appCtxt.get(ZmSetting.CAL_SHOW_DECLINED_MEETINGS);
+		var filterV = new AjxVector();
+		for (var i = 0; i < itemArray.length; i++) {
+            var appt = itemArray[i];
+            if (showDeclined || (appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED)) {
+                filterV.add(appt);
+            }
+		}
+
+		this._renderList(filterV, this._list.size() != 0, true);
+		this._list.addList(filterV.getArray());
         this._resetColWidth();
         if(AjxEnv.isIE) {
             //Does not make sense but required to make the scrollbar appear

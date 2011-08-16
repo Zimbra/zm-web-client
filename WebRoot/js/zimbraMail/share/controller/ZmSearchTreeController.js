@@ -156,6 +156,7 @@ ZmSearchTreeController.prototype._getActionMenuOps =
 function() {
 	return [ZmOperation.DELETE,
 			ZmOperation.RENAME_SEARCH,
+			ZmOperation.EDIT_PROPS,
 			ZmOperation.MOVE,
 			ZmOperation.EXPAND_ALL];
 };
