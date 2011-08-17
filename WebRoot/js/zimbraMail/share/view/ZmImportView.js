@@ -64,6 +64,7 @@ ZmImportView = function(params) {
 			}
 		]
 	};
+	params.id = "ZmImportView";
 	ZmImportExportBaseView.call(this, params);
 
 	// add change listener to file input

@@ -68,6 +68,7 @@ ZmExportView = function(params) {
 			}
 		]
 	};
+	params.id = "ZmExportView";
 	ZmImportExportBaseView.call(this, params);
 };
 ZmExportView.prototype = new ZmImportExportBaseView;
