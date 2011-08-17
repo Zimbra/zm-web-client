@@ -66,7 +66,13 @@ function(batchCmd) {
         var search = new ZmSearch(params);        
 	    search.execute({callback: new AjxCallback(this, this._handleResponseLoad), batchCmd: batchCmd});
     }else{
-        this.searchCalResources(params);
+        if (appCtxt.isOffline) {
+            if (appCtxt.isZDOnline()) {
+                this.searchCalResources(params);
+            }
+        } else {
+            this.searchCalResources(params);
+        }
     }
 };
 
