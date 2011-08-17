@@ -56,6 +56,7 @@ function() {
 
 	if (this._dayView) {
 		this._dayView.setDisplay(Dwt.DISPLAY_NONE);
+		Dwt.delClass(this.parent.getHtmlElement(), "RightBorderSeparator");
 	}
 
 	this._msg = null;
