@@ -152,9 +152,11 @@ function() {
 };
 
 ZmDoublePaneView.prototype.setMsg =
-function(msg) {
+function(msg, dontFocus) {
 	this._msgView.set(msg);
-	this._controller._restoreFocus();	// bug 47700
+	if (!dontFocus) {
+		this._controller._restoreFocus();	// bug 47700
+	}
 };
 
 ZmDoublePaneView.prototype.addInviteReplyListener =

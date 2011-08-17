@@ -748,7 +748,7 @@ function(msg, resp) {
 	var displayedMsg = this._doublePaneView.getMsg();
 	if (displayedMsg && displayedMsg.id == msg.id) {
 		this._doublePaneView.reset();
-		this._doublePaneView.setMsg(msg);
+		this._doublePaneView.setMsg(msg, true);
 	}
 };
 
