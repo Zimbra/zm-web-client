@@ -680,7 +680,7 @@ function(msg, resp) {
 	var displayedMsg = this._doublePaneView.getMsg();
 	if (displayedMsg && displayedMsg.id == msg.id) {
 		this._doublePaneView.reset();
-		this._doublePaneView.setItem(msg);
+		this._doublePaneView.setItem(msg, null, true);
 	}
 };
 

@@ -150,9 +150,11 @@ function() {
 };
 
 ZmDoublePaneView.prototype.setItem =
-function(item, force) {
+function(item, force, dontFocus) {
 	this._itemView.set(item, force);
-	this._controller._restoreFocus();	// bug 47700
+	if (!dontFocus) {
+		this._controller._restoreFocus();	// bug 47700
+	}
 };
 
 ZmDoublePaneView.prototype.clearItem =

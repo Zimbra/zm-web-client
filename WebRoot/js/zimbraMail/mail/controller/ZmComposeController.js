@@ -1423,6 +1423,8 @@ function(draftType, msg, resp) {
 				listController = window.parentAppCtxt.getApp(ZmApp.MAIL).getMailListController();
 			}
 		}
+
+		//listController is available only when editing an existing draft.
 		if (listController && listController._draftSaved) {
 			var savedMsg = appCtxt.isChildWindow ? null : msg;
 			var savedResp = appCtxt.isChildWindow ? resp.m[0] : null; //Pass the mail response to the parent window such that the ZmMailMsg obj is created in the parent window.
