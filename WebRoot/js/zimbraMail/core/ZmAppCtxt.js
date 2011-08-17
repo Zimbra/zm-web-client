@@ -1776,3 +1776,13 @@ function() {
 	}
 	return this._toolTipMgr;
 };
+
+/**
+ * Returns true if Prism and the user is online
+ *
+ */
+ZmAppCtxt.prototype.isZDOnline =
+function() {
+    var ac = window["appCtxt"].getAppController();
+    return ac._isPrismOnline && ac._isUserOnline;
+};

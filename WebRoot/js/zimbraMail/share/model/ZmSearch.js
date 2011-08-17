@@ -173,6 +173,9 @@ function(params) {
 
 	this.isGalSearch = (this.contactSource && (this.contactSource == ZmId.SEARCH_GAL));
 	this.isCalResSearch = (!this.contactSource && this.conds != null);
+    if (appCtxt.isOffline && this.isCalResSearch) {
+        this.isCalResSearch =  appCtxt.isZDOnline();
+    }
 	if (!this.query && !this.isCalResSearch) return;
 
 	var soapDoc;
@@ -308,6 +311,9 @@ function(params) {
 
 	this.isGalSearch = (this.contactSource && (this.contactSource == ZmId.SEARCH_GAL));
 	this.isCalResSearch = (!this.contactSource && this.conds != null);
+    if (appCtxt.isOffline && this.isCalResSearch) {
+        this.isCalResSearch = appCtxt.isZDOnline();
+    }
 	if (!this.query && !this.queryHint && !this.isCalResSearch) { return; }
 
 	var jsonObj, request, soapDoc;
