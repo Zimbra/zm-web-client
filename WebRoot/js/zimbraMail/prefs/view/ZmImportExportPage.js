@@ -62,7 +62,7 @@ ZmImportExportPage.prototype._setupCustom = function(id, setup, value) {
 		return view;
 	}
 	if (id == "EXPORT_BUTTON") {
-		var button = new DwtButton({parent:this});
+		var button = new DwtButton({parent:this, id: id});
 		button.setText(setup.displayName);
 		button.addSelectionListener(new AjxListener(this, this._handleExportButton));
 		this.setFormObject(id, button);
@@ -74,7 +74,7 @@ ZmImportExportPage.prototype._setupCustom = function(id, setup, value) {
 		return view;
 	}
 	if (id == "IMPORT_BUTTON") {
-		var button = new DwtButton({parent:this});
+		var button = new DwtButton({parent:this, id: id});
 		button.setText(setup.displayName);
 		button.addSelectionListener(new AjxListener(this, this._handleImportButton));
 		this.setFormObject(id, button);
