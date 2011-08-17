@@ -410,7 +410,9 @@ function(ev, list) {
 	}
 	if (!this._moveButtonInitialized) {
 		this._moveButtonInitialized = true;
+		appCtxt.getShell().setBusy(true);
 		this._setMoveButton(moveButton);
+		appCtxt.getShell().setBusy(false);
 	}
 	else {
 		//need to update this._data so the chooser knows from which folder we are trying to move.
