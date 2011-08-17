@@ -98,10 +98,8 @@ function(organizer) {
 
 	this._handleFolderChange();
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
-		var isShareable = ZmOrganizer.SHAREABLE[organizer.type];
-
 		var isVisible = (!organizer.link || organizer.isAdmin());
-		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, isVisible && isShareable);
+		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, isVisible);
 	}
 
 	DwtDialog.prototype.popup.call(this);
@@ -202,14 +200,10 @@ function(event) {
 		this._handleRenameErrorCallback = new AjxCallback(this, this._handleRenameError);
 	}
 
-	// rename folder followed by attribute processing
+	// rename folder
+	var callback = new AjxCallback(this, this._handleColor);
 	var organizer = this._organizer;
-
-	// New batch command, stop on error
-	var batchCommand = new ZmBatchCommand();
-    var commandCount = 0;
-
-    if (!organizer.isSystem() && !organizer.isDataSource()) {
+	if (!organizer.isSystem() && !organizer.isDataSource()) {
 		var name = this._nameInputEl.value;
 		if (organizer.name != name) {
 			var error = ZmOrganizer.checkName(name);
@@ -219,66 +213,55 @@ function(event) {
 				dialog.popup();
 				return;
 			}
-			//organizer.rename(name, callback, this._handleRenameErrorCallback, batchCommand);
-            batchCommand.add(new AjxCallback(organizer, organizer.rename, [name, null, this._handleRenameErrorCallback]));
-            commandCount++;
+			organizer.rename(name, callback, this._handleRenameErrorCallback);
+			return;
 		}
 	}
 
-	var color = this._color.getValue() || ZmOrganizer.DEFAULT_COLOR[organizer.type];
-	if (organizer.color != color) {
-		if (String(color).match(/^#/)) {
-			//organizer.setRGB(color, null, this._handleErrorCallback, batchCommand);
-            batchCommand.add(new AjxCallback(organizer, organizer.setRGB, [color, null, this._handleErrorCallback]));
-		}
-		else {
-			//organizer.setColor(color, null, this._handleErrorCallback, batchCommand);
-            batchCommand.add(new AjxCallback(organizer, organizer.setColor, [color, null, this._handleErrorCallback]));
-		}
-        commandCount++;
-	}
-
-    if (Dwt.getVisible(this._excludeFbEl) && organizer.setFreeBusy) {
-        var excludeFreeBusy = this._excludeFbCheckbox.checked;
-		if (organizer.excludeFreeBusy != excludeFreeBusy) {
-			//organizer.setFreeBusy(excludeFreeBusy, null, this._handleErrorCallback, batchCommand);
-            batchCommand.add(new AjxCallback(organizer, organizer.setFreeBusy, [excludeFreeBusy, null, this._handleErrorCallback]));
-		}
-    }
-
-    // Mail Folders only
-    if (Dwt.getVisible(this._globalMarkReadEl) && organizer.globalMarkRead) {
-        var globalMarkRead = this._globalMarkReadCheckbox.checked;
-        if (organizer.globalMarkRead != globalMarkRead) {
-            //organizer.setGlobalMarkRead(globalMarkRead, null, this._handleErrorCallback, batchCommand);
-            batchCommand.add(new AjxCallback(organizer, organizer.setGlobalMarkRead, [globalMarkRead, null, this._handleErrorCallback]));
-        }
-    }
-
-    // Shared Calendars only
-    if (Dwt.getVisible(this._calendarReminderEl)) {
-        var reminder = this._calendarReminderCheckbox.checked;
-        if (organizer.reminder != reminder) {
-            organizer.setSharedReminder(reminder, null, this._handleErrorCallback, batchCommand);
-            batchCommand.add(new AjxCallback(organizer, organizer.setSharedReminder, [reminder, null, this._handleErrorCallback]));
-        }
-    }
-
-    if (commandCount > 0) {
-        var callback = new AjxCallback(this, this.popdown);
-        batchCommand.run(callback);
-    } else {
-        this.popdown();
-    }
+	// else, start by changing color
+	callback.run(null);
 };
 
+ZmFolderPropsDialog.prototype._handleColor =
+function(response) {
+	// change color
+	var callback = new AjxCallback(this, this._handleFreeBusy);
+	var organizer = this._organizer;
+	var color = this._color.getValue() || ZmOrganizer.DEFAULT_COLOR[organizer.type];
+	if (organizer.color != color) {
+        if (String(color).match(/^#/)) {
+            organizer.setRGB(color, callback, this._handleErrorCallback);
+        }
+        else {
+            organizer.setColor(color, callback, this._handleErrorCallback);
+        }
+		return;
+	}
 
+	// else, change free/busy
+	callback.run(response);
+};
+
+ZmFolderPropsDialog.prototype._handleFreeBusy =
+function(response) {
+	// set free/busy
+	var callback = new AjxCallback(this, this.popdown);
+	var organizer = this._organizer;
+	if (Dwt.getVisible(this._excludeFbEl) && organizer.setFreeBusy) {
+		var excludeFreeBusy = this._excludeFbCheckbox.checked;
+		if (organizer.excludeFreeBusy != excludeFreeBusy) {
+			organizer.setFreeBusy(excludeFreeBusy, callback, this._handleErrorCallback);
+			return;
+		}
+	}
+
+	// else, popdown
+	callback.run(response);
+};
 
 ZmFolderPropsDialog.prototype._handleError =
 function(response) {
-	// Returned 'not handled' so that the batch command will preform the default
-	// ZmController._handleException
-	return false;
+	// TODO: Default handling?
 };
 
 ZmFolderPropsDialog.prototype._handleRenameError =
@@ -290,7 +273,7 @@ function(response) {
 		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [value]);
 	} else if (response.code == ZmCsfeException.MAIL_IMMUTABLE) {
 		msg = AjxMessageFormat.format(ZmMsg.errorCannotRename, [value]);
-	} else if (response.code == ZmCsfeException.SVC_INVALID_REQUEST) {
+	} else if (response.code == ZmCsfeException.SVC_INVALID_REQUEST) { 
 		msg = response.msg; // triggered on an empty name
 	} else if (response.code == ZmCsfeException.MAIL_INVALID_NAME) {
 		//I add this here despite checking upfront using ZmOrganizer.checkName, since there might be more restrictions for different types of organizers. so just in case the server still returns an error in the name.
@@ -335,8 +318,7 @@ function(event) {
 						 (organizer.type == ZmOrganizer.FOLDER && appCtxt.get(ZmSetting.MAIL_FOLDER_COLORS_ENABLED)));
 		this._props.setPropertyVisible(this._colorId, isVisible);
 	}
-    this._excludeFbCheckbox.checked = organizer.excludeFreeBusy;
-    this._calendarReminderCheckbox.checked = organizer.reminder;
+	this._excludeFbCheckbox.checked = organizer.excludeFreeBusy;
 
 	var showPerm = organizer.isMountpoint;
 	if (showPerm) {
@@ -368,12 +350,6 @@ function(event) {
 	this._props.setPropertyVisible(this._permId, showPerm);
 
 	Dwt.setVisible(this._excludeFbEl, !organizer.link && (organizer.type == ZmOrganizer.CALENDAR));
-	// TODO: False until server handling of the flag is added
-	//Dwt.setVisible(this._globalMarkReadEl, organizer.type == ZmOrganizer.FOLDER);
-    Dwt.setVisible(this._globalMarkReadEl, false);
-
-    Dwt.setVisible(this._calendarReminderEl, (organizer.type == ZmOrganizer.CALENDAR) && organizer.link);
-
 };
 
 ZmFolderPropsDialog.prototype._populateShares =
@@ -526,10 +502,14 @@ function() {
 	nameEl.appendChild(this._nameOutputEl);
 	nameEl.appendChild(nameElement);
 
-	var excludeFbEl      = this._createCheckboxItem("excludeFb",        ZmMsg.excludeFromFreeBusy);
-	var globalMarkReadEl = this._createCheckboxItem("globalMarkRead",   ZmMsg.globalMarkRead);
-	var calReminderEl    = this._createCheckboxItem("calendarReminder", ZmMsg.sharedCalendarReminder);
+	this._excludeFbCheckbox = document.createElement("INPUT");
+	this._excludeFbCheckbox.type = "checkbox";
+	this._excludeFbCheckbox._dialog = this;
 
+	this._excludeFbEl = document.createElement("DIV");
+	this._excludeFbEl.style.display = "none";
+	this._excludeFbEl.appendChild(this._excludeFbCheckbox);
+	this._excludeFbEl.appendChild(document.createTextNode(ZmMsg.excludeFromFreeBusy));
 
 	// setup properties group
 	var propsGroup = new DwtGrouper(view);
@@ -540,17 +520,15 @@ function() {
 
 	this._props.addProperty(ZmMsg.nameLabel, nameEl);
 	this._props.addProperty(ZmMsg.typeLabel, this._typeEl);
-	this._ownerId = this._props.addProperty(ZmMsg.ownerLabel,  this._ownerEl);
-	this._urlId   = this._props.addProperty(ZmMsg.urlLabel,    this._urlEl);
-	this._permId  = this._props.addProperty(ZmMsg.permissions, this._permEl);
-	this._colorId = this._props.addProperty(ZmMsg.colorLabel,  this._color);
+	this._ownerId = this._props.addProperty(ZmMsg.ownerLabel, this._ownerEl);
+	this._urlId = this._props.addProperty(ZmMsg.urlLabel, this._urlEl);
+	this._permId = this._props.addProperty(ZmMsg.permissions, this._permEl);
+	this._colorId = this._props.addProperty(ZmMsg.colorLabel, this._color);
 
 	var propsContainer = document.createElement("DIV");
 	propsContainer.appendChild(this._props.getHtmlElement());
-	propsContainer.appendChild(excludeFbEl);
-	propsContainer.appendChild(globalMarkReadEl);
-	propsContainer.appendChild(calReminderEl);
-
+	propsContainer.appendChild(this._excludeFbEl);
+	
 	propsGroup.setElement(propsContainer);
 
 	// setup shares group
@@ -570,21 +548,3 @@ function() {
 
 	return view;
 };
-
-
-ZmFolderPropsDialog.prototype._createCheckboxItem =
-function(name, label) {
-    var checkboxName  = "_" + name + "Checkbox"
-    var containerName = "_" + name + "El"
-
-    this[checkboxName] = document.createElement("INPUT");
-    this[checkboxName].type = "checkbox";
-    this[checkboxName]._dialog = this;
-
-    this[containerName] = document.createElement("DIV");
-    this[containerName].style.display = "none";
-    this[containerName].appendChild(this[checkboxName]);
-    this[containerName].appendChild(document.createTextNode(label));
-
-    return this[containerName];
-}
