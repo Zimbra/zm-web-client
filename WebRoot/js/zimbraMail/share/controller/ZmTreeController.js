@@ -804,7 +804,7 @@ function(ev, overview, treeItem, item) {
 	overview.itemSelected(treeItem);
 
 	if (ev.kbNavEvent) {
-		DwtControl._scrollIntoView(treeItem._itemDiv, overview.getHtmlElement());
+		Dwt.scrollIntoView(treeItem._itemDiv, overview.getHtmlElement());
 		ZmController.noFocus = true;
 	}
 

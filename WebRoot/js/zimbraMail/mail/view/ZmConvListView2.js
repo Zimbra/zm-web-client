@@ -47,15 +47,13 @@ function(params) {
 };
 
 /**
- * This class is a ZmMailListView which can display both convs and msgs.
- * It handles expanding convs as well as paging additional messages in. Message rows are
- * inserted after the row of the owning conv.
+ * This class is a ZmMailListView which displays convs.
  * 
  * @private
  */
 ZmConvListView2 = function(params) {
 
-	this.view = params.view = ZmId.VIEW_CONVLIST;
+	this.view = params.view = params.view || ZmId.VIEW_CONVLIST2;
 	params.type = ZmItem.CONV;
 	params.headerList = this._getHeaderList(parent, params.controller);
 	ZmMailListView.call(this, params);
@@ -64,7 +62,7 @@ ZmConvListView2 = function(params) {
 	this._handleEventType[ZmItem.CONV] = true;
 	this._handleEventType[ZmItem.MSG] = true;
 
-	this._mode = ZmId.VIEW_CONVLIST;
+	this._mode = ZmId.VIEW_CONVLIST2;
 	this._hasHiddenRows = true;	// so that up and down arrow keys work
 //	this._resetExpansion();
 };
@@ -87,9 +85,6 @@ function() {
 	return this._selectedMsg ? [this._selectedMsg] : ZmMailListView.prototype.getSelection.apply(this, arguments);
 };
 
-// Enter is normally a list view widget shortcut for DBLCLICK; we need to no-op
-// it here so that it gets handled as an app shortcut (app shortcuts happen
-// after widget shortcuts).
 ZmConvListView2.prototype.handleKeyAction =
 function(actionCode, ev) {
 	
@@ -98,8 +93,18 @@ function(actionCode, ev) {
 	}
 	
 	switch (actionCode) {
+		// Enter is normally a list view widget shortcut for DBLCLICK; we need to no-op
+		// it here so that it gets handled as an app shortcut (app shortcuts happen
+		// after widget shortcuts).
 		case DwtKeyMap.DBLCLICK:
 			return false;
+		
+		// Magic shortcut starts by moving focus to CV2 (like right-arrow / EXPAND), selecting first unread msg
+		case DwtKeyMap.SELECT_NEXT:
+			var key = DwtKeyEvent.getCharCode(ev || DwtShell.keyEvent);
+			if (key == 32 && (this.getSelectionCount() == 1)) {
+				return this._controller.handleKeyAction(ZmKeyMap.EXPAND);
+			}
 
 		default:
 			return ZmMailListView.prototype.handleKeyAction.call(this, actionCode, ev);

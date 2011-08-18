@@ -79,7 +79,7 @@ function(conv, force) {
 	this._item = conv;
 	
 	if (!conv) {
-		this.getHtmlElement().innerHTML = AjxTemplate.expand("mail.Message#viewMessage");
+		this.getHtmlElement().innerHTML = AjxTemplate.expand("mail.Message#viewMessage", {isConv:true});
 		this.noTab = true;
 		return;
 	}
@@ -161,6 +161,7 @@ ZmConvView2.prototype._renderMessages =
 function(conv, container) {
 
 	this._msgViews = {};
+	this._msgViewList = [];
 	var msgs = conv.getMsgList();
 	var params = {
 		parent:			this,
@@ -174,11 +175,9 @@ function(conv, container) {
 	if (pref == ZmSearch.DATE_ASC) {
 		msgs = msgs.reverse();
 	}
-	params.isOdd = true;
 	for (var i = 0, len = msgs.length; i < len; i++) {
 		params.forceExpand = (msgs.length == 1) || (!conv.isUnread && i == 0);
 		this._renderMessage(msgs[i], params);
-		params.isOdd = !params.isOdd;
 	}
 };
 
@@ -188,6 +187,7 @@ function(msg, params) {
 	params = params || {};
 	params.msgId = msg.id;
 	var msgView = this._msgViews[msg.id] = new ZmMailMsgCapsuleView(params);
+	this._msgViewList.push(msg.id);
 	msgView.set(msg);
 };
 
@@ -215,12 +215,6 @@ function() {
 		Dwt.setSize(this._replyDiv, Dwt.DEFAULT, mainSize.y);
 		Dwt.setSize(this._replyInput, Dwt.DEFAULT, mainSize.y - tbSize.y - 15);
 	}
-};
-
-// TODO
-ZmConvView2.prototype._setParity =
-function() {
-
 };
 
 ZmConvView2.prototype.setMsg =
@@ -289,23 +283,24 @@ function() {
 ZmConvView2.prototype.handleKeyAction =
 function(actionCode) {
 	
-	if (!this._focusedMsgView || !this._controller._convViewHasFocus) { return false; }
+	if (!this._controller._convViewHasFocus) { return false; }
 	
 	switch (actionCode) {
 
 		case ZmKeyMap.NEXT_MSG:
 		case ZmKeyMap.PREV_MSG:
-			var el = this._focusedMsgView.getHtmlElement();
-			var newEl = (actionCode == ZmKeyMap.NEXT_MSG) ? el.nextSibling : el.previousSibling;
-			var msgId = newEl && newEl.id && newEl.id.substr(4);
-			var msgView = this._msgViews[msgId];
-			if (msgView) {
-				this.setFocusedMsgView(msgView);
-			}
+			this._selectMsg((actionCode == ZmKeyMap.NEXT_MSG), false, actionCode);
+			break;
+
+		case ZmKeyMap.NEXT_UNREAD:
+		case ZmKeyMap.PREV_UNREAD:
+			this._selectMsg((actionCode == ZmKeyMap.NEXT_UNREAD), true, actionCode);
 			break;
 		
 		case ZmKeyMap.TOGGLE:
-			this._focusedMsgView._toggleExpansion();
+			if (this._focusedMsgView) {
+				this._focusedMsgView._toggleExpansion();
+			}
 			break;
 		
 		case ZmKeyMap.FOCUS_LIST:
@@ -314,12 +309,63 @@ function(actionCode) {
 			break;
 		
 		default:
-			this._controller._mailListView._selectedMsg = this._focusedMsgView._msg;
-			var returnVal = ZmDoublePaneController.prototype.handleKeyAction.call(this._controller, actionCode);
-			this._controller._mailListView._selectedMsg = null;
-			return returnVal;
+			if (this._focusedMsgView) {
+				this._controller._mailListView._selectedMsg = this._focusedMsgView._msg;
+				var returnVal = ZmDoublePaneController.prototype.handleKeyAction.call(this._controller, actionCode);
+				this._controller._mailListView._selectedMsg = null;
+				return returnVal;
+			}
 	}
 	return true;
+};
+
+// the "isUnread" arg means we're handling the magic spacebar shortcut
+ZmConvView2.prototype._selectMsg =
+function(next, isUnread, actionCode) {
+
+	var startMsgView = this._focusedMsgView || this._msgViews[this._msgViewList[0]];
+	var el = startMsgView.getHtmlElement();
+	var msgView, done = false;
+	
+	if (isUnread && next) {
+		// if bottom of current msg is not visible, scroll down a page
+		var elHeight = Dwt.getSize(el).y;
+		var cont = this._messagesDiv;
+		var contHeight = Dwt.getSize(cont).y;
+		if ((el.offsetTop + elHeight) > (cont.scrollTop + contHeight + 5)) {	// 5 is fudge factor
+			cont.scrollTop = cont.scrollTop + contHeight;
+			done = true;
+		}
+	}
+	
+	el = next ? el.nextSibling : el.previousSibling;
+	while (el && !done) {
+		var msgId = el && el.id && el.id.substr(ZmId.VIEW_MSG_CAPSULE.length);
+		msgView = this._msgViews[msgId];
+		if (msgView && (!isUnread || msgView._expanded)) {
+			done = true;
+		}
+		else {
+			el = next ? el.nextSibling : el.previousSibling;
+		}
+	}
+
+	if (done && msgView) {
+		this.setFocusedMsgView(msgView);
+		if (isUnread) {
+			this._messagesDiv.scrollTop = el.offsetTop;	// scroll current msg to top
+		}
+	}
+	else if (!done) {
+		this._controller._convViewHasFocus = false;
+		if (isUnread) {
+			this._controller.handleKeyAction(actionCode);
+			this._controller.handleKeyAction(ZmKeyMap.EXPAND);
+		}
+		else {
+			this._controller._mailListView.handleKeyAction(actionCode);
+		}
+	}
 };
 
 ZmConvView2.prototype._listenerProxy =
@@ -483,10 +529,6 @@ ZmMailMsgCapsuleView = function(params) {
 	params.id = this._getViewId();
 	ZmMailMsgView.call(this, params);
 
-	// Parity property used to set background color. Note that we set the color on each component
-	// since the msg body is in an iframe, and inherited selectors don't cross that boundary.
-	this._isOdd = params.isOdd;
-
 	this._mode = params.mode;
 	this._controller = params.controller;
 	this._container = params.container;
@@ -548,7 +590,6 @@ function(msg, container) {
 	var params = {
 		parent:		this,
 		id:			this._headerId,
-		className:	this._isOdd ? "OddMsg" : "EvenMsg",
 		template:	"mail.Message#Conv2MsgHeader"
 	}
 	this._header = new DwtControl(params);
@@ -687,7 +728,6 @@ function(msg, container) {
 
 	var subs = {
 		footerId:		this._footerId,
-		parityClass:	this._isOdd ? "OddMsg" : "EvenMsg",
 		folderCellId:	this._folderCellId,
 		folderName:		ZmMsg.folderLabel + "&nbsp;" + folderName,
 		tagCellId:		this._tagContainerCellId,
@@ -775,7 +815,7 @@ function() {
 
 ZmMailMsgCapsuleView.prototype._getBodyClass =
 function() {
-	return "MsgBody " + (this._isOdd ? "OddMsg" : "EvenMsg");
+	return "MsgBody";
 };
 
 ZmMailMsgCapsuleView.prototype._handleShowTextLink =

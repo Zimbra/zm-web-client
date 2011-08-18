@@ -1249,7 +1249,7 @@ function(rows, id, len) {
 	}
 	
 	if (newIdx >= 0 && newIdx < len) {
-		DwtControl._scrollIntoView(rows[newIdx], this.getHtmlElement());
+		Dwt.scrollIntoView(rows[newIdx], this.getHtmlElement());
 		return rows[newIdx].id;
 	}
 	return null;

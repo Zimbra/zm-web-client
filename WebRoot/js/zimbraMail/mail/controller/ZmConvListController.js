@@ -343,8 +343,7 @@ function() {
 			var sel = this._listView[this._currentView].getSelection();
 			var conv = (sel && sel.length) ? sel[0] : null;
 			var respCallback = this._handleResponseSetSelectedItem.bind(this, conv);
-			var markRead = (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
-			conv.load({getUnreadOrFirstMsg:true, markRead:markRead}, respCallback);
+			conv.load({getUnreadOrFirstMsg:true, markRead:false}, respCallback);
 		}
 	} else {
 		ZmDoublePaneController.prototype._setSelectedItem.apply(this, arguments);
@@ -358,7 +357,7 @@ function(item) {
 		// make sure list view has this msg
 		var lv = this._listView[this._currentView];
 		if (lv.hasItem(item.id)) {
-			this._doublePaneView.setItem(item);
+			this._displayMsg(item);
 	//		this._curMsg = msg;
 		}
 	}
@@ -429,7 +428,16 @@ ZmConvListController.prototype._handleMarkRead =
 function(msg) {
 	
 	if (appCtxt.get(ZmSetting.CONV_MODE) == ZmId.VIEW_CONVLIST2) {
-		// not yet determined what to do here
+		var markRead = appCtxt.get(ZmSetting.MARK_MSG_READ);
+		if (markRead == ZmSetting.MARK_READ_NOW) {
+			this._doMarkRead([msg], true);
+		} else if (markRead > 0) {
+			if (!appCtxt.markReadAction) {
+				appCtxt.markReadAction = new AjxTimedAction(this, this._markReadAction);
+			}
+			appCtxt.markReadAction.args = [ msg ];
+			appCtxt.markReadActionId = AjxTimedAction.scheduleAction(appCtxt.markReadAction, markRead * 1000);
+		}
 	}
 	else {
 		ZmDoublePaneController.prototype._handleMarkRead.apply(this, arguments);

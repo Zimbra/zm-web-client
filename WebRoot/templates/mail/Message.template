@@ -583,7 +583,7 @@
 <template id='mail.Message#viewMessage'>
 	<table width='100%' cellspacing='0' cellpadding='1'>
 		<tr>
-			<td class='NoResults'><br><$= ZmMsg.viewMessage $></td>
+			<td class='NoResults'><br><$= (data && data.isConv) ? ZmMsg.viewConversation : ZmMsg.viewMessage $></td>
 		</tr>
 	</table>
 </template>
@@ -640,14 +640,14 @@
 <template id='mail.Message#Conv2MsgFooter'>
 	<div>
 		<$ if (data.hasAttachments) { $>
-			<div class="MessageHeaderAttachments ${parityClass}" id="${attachId}_container">
+			<div class="MessageHeaderAttachments" id="${attachId}_container">
 				<div id="${attachId}" style='overflow:auto;'></div>
 			</div>
 		<$ } $>
-		<div id='${footerId}' class='${parityClass}'>
+		<div id='${footerId}'>
 			<table class='MsgHeaderTable' width=100%>
 				<tr>
-					<td id='${folderCellId}' class='MsgFolder'>${folderName}</td>
+					<!--<td id='${folderCellId}' class='MsgFolder'>${folderName}</td>-->
 					<td id='${tagCellId}' width=100%></td>
 					<td>
 						<a class='Link' id='${showTextLinkId}'><$= ZmMsg.showQuotedText $></a>

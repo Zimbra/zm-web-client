@@ -716,12 +716,6 @@ INPUT[type="text"].search_input {
     filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(SelC,66)@', EndColorStr='@lighten(SelC,35)@'); /* IE6�IE9 */
 }
 
-.ZmMailMsgCapsuleView .OddMsg {
-}
-
-.ZmMailMsgCapsuleView .EvenMsg {
-}
-
 .ZmMailMsgCapsuleView .LabelColValue {
 	@MailMsgHeaderText@
 	white-space:nowrap;
