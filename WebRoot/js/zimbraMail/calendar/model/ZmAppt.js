@@ -219,7 +219,7 @@ function(controller) {
 	var appt = this.apptClone || this._orig || this;
 	var needDetails = (!appt._toolTip || (appt.otherAttendees && !appt.ptstHashMap));
 	if (needDetails) {
-		return {callback:new AjxCallback(appt, appt._getToolTip, [controller]), loading:false};
+        return {callback:new AjxCallback(appt, appt._getToolTip, [controller]), loading:false};
 	} else {
 		return appt._toolTip || appt._getToolTip(controller);
 	}
@@ -236,7 +236,6 @@ function(controller, callback) {
 
 ZmAppt.prototype._handleResponseGetToolTip =
 function(controller, callback) {
-
 	var organizer = this.getOrganizer();
 	var sentBy = this.getSentBy();
 	var userName = appCtxt.get(ZmSetting.USERNAME);
@@ -1256,7 +1255,7 @@ function(callback, errorCallback) {
 	var inv = soapDoc.set("inv", null, m);
 	var comp = soapDoc.set("comp", null, inv);
 
-	if (this.ridZ && this.isRecurring() && (this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)) {
+	if (this.ridZ) {
 		var exceptId = soapDoc.set("exceptId", null, comp);
 		exceptId.setAttribute("d", this.ridZ);
 	}
