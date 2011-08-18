@@ -884,20 +884,20 @@
 <template id="abook.Contacts#QuickAddPrompt">
    <table> 
        <tr>
-            <td><$=ZmMsg.firstNameLabel$></td>
-            <td><div id='${id}_FIRST_NAME' tabindex='100'></div></td>
+            <td class='ZmFieldLabelRight'><$=ZmMsg.firstNameLabel$></td>
+            <td><div id='${id}_FIRST_NAME'></div></td>
         </tr>
 	<tr>
-	    <td><$=ZmMsg.lastNameLabel$> </td>
-	    <td><div id='${id}_LAST_NAME' tabindex='101'></div></td>
+	    <td class='ZmFieldLabelRight'><$=ZmMsg.lastNameLabel$> </td>
+	    <td><div id='${id}_LAST_NAME'></div></td>
 	</tr>
 	<tr>
-	   <td><$=ZmMsg.emailLabel$></td>
-	   <td><div id='${id}_EMAIL' tabindex='102'></div></td>
+	   <td class='ZmFieldLabelRight'><$=ZmMsg.emailLabel$></td>
+	   <td><div id='${id}_EMAIL'></div></td>
 	</tr>
 	<tr>
-	    <td><$=ZmMsg.addressBookLabel$> </td>
-	    <td><div id='${id}_ADDR_BOOK' tabindex='103'></div></td>
+	    <td class='ZmFieldLabelRight'><$=ZmMsg.addressBookLabel$> </td>
+	    <td><div id='${id}_ADDR_BOOK'></div></td>
 	</tr>
    </table>
 </template>   

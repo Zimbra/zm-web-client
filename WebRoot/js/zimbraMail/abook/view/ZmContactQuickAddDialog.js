@@ -14,7 +14,7 @@
  */
 
 ZmContactQuickAddDialog = function() {
-	ZmDialog.call(this, {parent:appCtxt.getShell(), className:"ZmContactQuickAddDialog", title:ZmMsg.quickAddDialog,
+	ZmDialog.call(this, {parent:appCtxt.getShell(), className:"ZmContactQuickAddDialog", title:ZmMsg.quickAddContact,
 						  standardButtons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
 
 	// set content
@@ -29,7 +29,7 @@ ZmContactQuickAddDialog.prototype.constructor = ZmContactQuickAddDialog;
 
 ZmContactQuickAddDialog.prototype._contentHtml = 
 function() {   
-	var html = "<div style='width: 400px' id='CONTACT_QUICKADD_FORM'></div>";	
+	var html = "<div style='width: 350px' id='CONTACT_QUICKADD_FORM'></div>";	
 	return html;			
 };
 
@@ -47,9 +47,9 @@ function() {
 	params.id = "ZmContactQuickAddDialog";
 	params.form = {
 		items: [
-			{ id: "FIRST_NAME", type: "DwtInputField", label: "First Name", value: "", cols: 30},
-			{ id: "LAST_NAME", type: "DwtInputField", label: "Last Name", value: "", cols: 30},
-			{ id: "EMAIL", type: "DwtInputField", label: "Email", value: "", cols: 30},
+			{ id: "FIRST_NAME", type: "DwtInputField", label: "First Name", value: "", cols: 35},
+			{ id: "LAST_NAME", type: "DwtInputField", label: "Last Name", value: "", cols: 35},
+			{ id: "EMAIL", type: "DwtInputField", label: "Email", value: "", cols: 35},
 			{ id: "ADDR_BOOK", type: "DwtSelect", items: options}
 		]
 	};
