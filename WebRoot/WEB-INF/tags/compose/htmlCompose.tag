@@ -23,7 +23,11 @@
 
 <!-- yui js-->
 <app:yuiInclude/>
-
+<style media="screen" type="text/css">
+    .yui-skin-sam .yui-toolbar-container .yui-toolbar-fontsize2 {
+        width: 50px;
+    }
+</style>
 <script type="text/javascript">
 <!--             
 var myEditor;
@@ -48,6 +52,20 @@ var myEditor;
         }
     }
 
+    //The sizes to map to the names
+    var sizes = {
+        '8pt' : 11,
+        '10pt': 13,
+        '12pt': 16,
+        '14pt': 19,
+        '18pt': 24,
+        '24pt': 32,
+        '36pt': 46
+    };
+
+    var Dom = YAHOO.util.Dom;
+
+
     myEditor = new YAHOO.widget.Editor('body', {
         height: '300px',
         width: '100%',
@@ -63,6 +81,52 @@ var myEditor;
         draggable: false,
         buttonType: 'advanced'
     });
+
+    //Change the default toolbar button for fontsize to a new one.
+    myEditor._defaultToolbar.buttons[0].buttons[1] = {
+        type: 'select', label: '<c:out value="${mailbox.prefs.htmlEditorDefaultFontSize}"/>', value: 'fontsize2', disabled: true,
+            menu: [
+                { text: ' 8pt' },
+                { text: '10pt' },
+                { text: '12pt' },
+                { text: '14pt' },
+                { text: '18pt' },
+                { text: '24pt' },
+                { text: '36pt' }
+            ]
+    };
+
+    //Override the _handleFontSize method with our own
+    myEditor._handleFontSize = function(o) {
+        var button = this.toolbar.getButtonById(o.button.id);
+        var value = o.button.value; //The selected value
+        var out = sizes[value]; //The pixel size
+        button.set('label', value);
+        this._updateMenuChecked('fontsize2', value);
+
+        if (!this._hasSelection()) {
+            var button = o.button;
+            this._createCurrentElement('span', {
+                fontSize: sizes[value] + 'px'
+            });
+            var el = this.currentElement[0];
+            if (this.browser.webkit) {
+                //Little Safari Hackery here..
+                el.innerHTML = '<span class="yui-non"> </span>';
+                el = el.firstChild;
+                this._getSelection().setBaseAndExtent(el, 1, el, el.innerText.length);
+            } else if (this.browser.ie || this.browser.opera) {
+                el.innerHTML = ' ';
+            }
+            this._focusWindow();
+            this._selectNode(el);
+            return false;
+        } else {
+            this.execCommand('fontsize', out + 'px');
+        }
+        this.STOP_EXEC_COMMAND = true;
+    };
+
     myEditor.on('editorContentLoaded', function() {
         var html = document.getElementById('body').innerHTML;;
         if(html==""){
@@ -82,6 +146,9 @@ var myEditor;
                 }
             }
         }
+        this.toolbar.on('fontsize2Click', function(o) {
+            this._handleFontSize(o);
+        }, this, true);
     }, myEditor, true);
 
     /*hide titlebar*/
@@ -110,31 +177,35 @@ var myEditor;
             }
         }, this, true);
 
-        this.toolbar.on('fontsizeClick', function(o) {
-            if (!this._hasSelection()) {
-                var button = o.button;
-                this._createCurrentElement('span', {
-                    fontSize: button.get('label') + 'px'
-                });
-                var el = this.currentElement[0];
-                if (this.browser.webkit) {
-                    //Little Safari Hackery here..
-                    el.innerHTML = '<span class="yui-non"> </span>';
-                    el = el.firstChild;
-                    this._getSelection().setBaseAndExtent(el, 1, el, el.innerText.length);
-                } else if (this.browser.ie || this.browser.opera) {
-                    el.innerHTML = ' ';
-                }
-                this._focusWindow();
-                this._selectNode(el);
-                return false;
-            }
-        }, this, true);
+        //to set fontsize from preferrence
+        var fsObj = this.toolbar.getButtonByValue('fontsize2');
+        fsObj.checkValue('<c:out value="${mailbox.prefs.htmlEditorDefaultFontSize}"/>');
+
     });
+
     /*enable buttons that are disabled by default */
     myEditor.on('afterNodeChange', function() {
+
+        var elm = this._getSelectedElement(),
+            button = this.toolbar.getButtonByValue('fontsize2'),
+            label = '<c:out value="${mailbox.prefs.htmlEditorDefaultFontSize}"/>';
+
+        if (!this._isElement(elm, 'body') && !this._isElement(elm, 'img')) {
+            this.toolbar.enableButton('fontsize2');
+            var fs = parseInt(Dom.getStyle(elm, 'fontSize'),10);
+            for (var i in sizes) {
+                if (fs == sizes[i]) {
+                    label = i;
+                    break;
+                }
+            }
+            button.set('label', label);
+        } else {
+            button.set('label', label);
+        }
+
         this.toolbar.enableButton('fontname');
-        this.toolbar.enableButton('fontsize');
+        this.toolbar.enableButton('fontsize2');
         this.toolbar.enableButton('subscript');
         this.toolbar.enableButton('superscript');
         this.toolbar.enableButton('forecolor');
@@ -147,7 +218,6 @@ var myEditor;
         //to set fontname from preferrence
         var fnObj = this.toolbar.getButtonByValue('fontname');
         fnObj.checkValue('<c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>');
-
     });
     enableSpellCheck(myEditor);
     myEditor.render();
