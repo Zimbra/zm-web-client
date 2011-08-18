@@ -13,7 +13,7 @@
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="empty" %>
-<%@ attribute name="rule" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZFilterRule" %>
+<%@ attribute name="rule" rtexprvalue="true" required="true" type="com.zimbra.client.ZFilterRule" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>

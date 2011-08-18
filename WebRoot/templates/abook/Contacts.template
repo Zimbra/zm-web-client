@@ -191,8 +191,8 @@
 <template id="abook.Contacts#ZmEditContactViewOther">
 	<table border=0 cellpadding=0 cellspacing=0>
 		<tr><td style='padding-right:3'><div id='${id}_input' tabindex="100"></div></td>
-			<td style='padding-right:3'><div id='${id}_picker' tabindex="200"></div></td>
-			<td style='padding-left:14px'><div id='${id}_select' tabindex="300"></div></td>
+			<td style='padding-right:3;width:47px'><div id='${id}_picker' tabindex="200"></div></td>
+			<td><div id='${id}_select' tabindex="300"></div></td>
 		</tr>
 	</table>
 </template>
@@ -268,6 +268,68 @@
 	<$= ZmContactSplitView.showContactNotes(data) $>
 	<$= ZmContactSplitView.showContactDLMembers(data) $>
 	</table>
+</template>
+
+<template id="abook.Contacts#SplitView_group">
+   <$
+     var imageUrl = data.imageUrl;
+     var email = data.email;
+     var title = data.title;
+     var fullName = data.fullName;
+     var phone = data.phone;
+     var location = data.location;
+     var imgClassName = data.imgClassName || "Person_48";
+     var quickAdd = "id='" + data.quickAddId + "'";
+     var isEdit = data.isEdit;
+     var delId = "id='" + data.delButtonId + "'";
+   $>
+    <table width='100%' class='contactHeaderTable'>
+    <tr>
+    <$ if (imageUrl) { $>
+        <td valign=top width=48 rowspan=2 align="center"><img src="<$= imageUrl $>" 
+        <$ if (AjxEnv.isIE) { $>
+            height=48
+        <$ } else { $>
+            style="max-width:48px;max-height:48px"
+        <$ } $>
+         border=0></td>
+        <$ } else { $>
+        <td valign=top width=48 rowspan=2 align="center"><$= AjxImg.getImageHtml(imgClassName) $></td>
+    <$ } $>
+    <td valign=top>
+    <table>
+     <$ if (fullName) {$>
+     <tr>
+        <td><b><$=fullName$></b></td>
+     </tr>
+     <$ } $>
+     <$ if (title) { $>
+     <tr>
+        <td><$=title$></td>
+     </tr>
+     <$}$>
+     <$ if (email) {$>
+     <tr>
+        <td><div style='float: left; padding-right: 5px;'><$=email$> </div><$ if (data.isInline) {$><$=AjxImg.getImageHtml("Plus", "float: left", quickAdd)$><$ }$></td>
+     </tr>
+     <$}$>
+     <$ if (phone) {$>
+     <tr>
+        <td><$=phone$></td>
+     </tr>
+     <$}$>
+     <$ if (location) {$>
+     <tr>
+        <td><$=location$></td>
+     </tr>
+     <$}$>
+    </table>
+    </td>
+    <$ if (isEdit) {$>
+    <td align='right' valign='top'><$=AjxImg.getImageHtml("Delete", "", delId)$></td>
+    <$}$>
+    </tr>
+    </table>
 </template>
 
 <template id="abook.Contacts#SplitView_header">
@@ -815,3 +877,27 @@
 	</table>
 	<div id='${id}_results' class='contactSearchResultsDiv'></div>
 </template>
+
+<!----------------------------------------------------------------------------->
+<!------------------------------ Quick Add Group ------------------------------>
+<!----------------------------------------------------------------------------->
+<template id="abook.Contacts#QuickAddPrompt">
+   <table> 
+       <tr>
+            <td><$=ZmMsg.firstNameLabel$></td>
+            <td><div id='${id}_FIRST_NAME' tabindex='100'></div></td>
+        </tr>
+	<tr>
+	    <td><$=ZmMsg.lastNameLabel$> </td>
+	    <td><div id='${id}_LAST_NAME' tabindex='101'></div></td>
+	</tr>
+	<tr>
+	   <td><$=ZmMsg.emailLabel$></td>
+	   <td><div id='${id}_EMAIL' tabindex='102'></div></td>
+	</tr>
+	<tr>
+	    <td><$=ZmMsg.addressBookLabel$> </td>
+	    <td><div id='${id}_ADDR_BOOK' tabindex='103'></div></td>
+	</tr>
+   </table>
+</template>   
