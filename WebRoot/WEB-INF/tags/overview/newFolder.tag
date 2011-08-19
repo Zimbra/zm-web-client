@@ -125,10 +125,11 @@
             <select name="newFolderParentId" id="parentFolder">
                 <option selected value="1"/>
                 <fmt:message key="rootFolder"/>
-                <zm:forEachFolder var="parent">
+                 <zm:forEachFolder var="parent">
                     <c:if test="${(parent.isMessageMoveTarget and !parent.isSpam) or parent.isTrash}">
                         <option value="${parent.id}"/>
-                        ${fn:escapeXml(parent.rootRelativePath)}
+                        <c:set var="label" value="${zm:getFolderPath(pageContext, parent.id)}"/>
+                        ${fn:escapeXml(label)}
                     </c:if>
                 </zm:forEachFolder>
             </select>
@@ -149,7 +150,8 @@
                 <zm:forEachFolder var="parent">
                     <c:if test="${parent.isDocumentMoveTarget and !parent.isTrash and !parent.isSpam}">
                         <option value="${parent.id}"/>
-                        ${fn:escapeXml(parent.rootRelativePath)}
+                        <c:set var="label" value="${zm:getFolderPath(pageContext, parent.id)}"/>
+                        ${fn:escapeXml(label)}
                     </c:if>
                 </zm:forEachFolder>
             </select>

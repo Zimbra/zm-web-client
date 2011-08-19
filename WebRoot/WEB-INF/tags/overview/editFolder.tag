@@ -22,6 +22,7 @@
 
 <zm:getMailbox var="mailbox"/>
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
+<c:set var="folderRelativePath" value="${zm:getFolderPath(pageContext, folder.id)}"/> 
 <c:choose>
     <c:when test="${folder.isAppointmentView or folder.isContactView or folder.isTaskView or folder.isDocumentView}">
         <c:set var="color" value="${zm:lightenColor((folder.rgb != 'null') ? folder.rgb : folder.rgbColor)}"/>
@@ -47,7 +48,7 @@
                     </span>
                     <c:if test="${folder.depth gt 0}">
                         <span class='ZhFolderType' style='vertical-align:middle;'>
-                            &nbsp;(${fn:escapeXml(folder.rootRelativePath)})
+                            &nbsp;(${fn:escapeXml(folderRelativePath)})
                         </span>
                     </c:if>
                 </td>
@@ -206,7 +207,8 @@
                         <c:if test="${parent.id ne folder.id}">
                             <option
                                     <c:if test="${parent.id eq folder.parentId}">selected</c:if> value="${parent.id}"/>
-                            ${fn:escapeXml(parent.rootRelativePath)}
+                            <c:set var="label" value="${zm:getFolderPath(pageContext, parent.id)}"/>
+                            ${fn:escapeXml(label)}
                         </c:if>
                     </c:if>
                 </zm:forEachFolder>
