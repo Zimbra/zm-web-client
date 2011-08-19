@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011 Zimbra, Inc.
- * 
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -48,6 +48,7 @@ function() {
 ZmDLAutocompleteListView.prototype._set =
 function(list, contact) {
 
+	this._removeAll();
 	this._matches = [];
 	this._addMembers(list);
 
@@ -109,21 +110,21 @@ function(table, match, rowId) {
 };
 
 ZmDLAutocompleteListView.prototype._update =
-function(hasDelim, match, ev) {
-
+function(context, match, ev) {
+	
 	if (this._selected == this._selectAllRowId) {
 		if (!this._matchHash[this._selectAllRowId]) {
-			var callback = new AjxCallback(this, this._handleResponseGetAllDLMembers, [hasDelim, ev]);
+			var callback = this._handleResponseGetAllDLMembers.bind(this, ev);
 			this._dlContact.getAllDLMembers(callback);
 		}
 	} else {
-		this._doUpdate(hasDelim, ev);
+		this._doUpdate();
 		this.reset(true);
 	}
 };
 
 ZmDLAutocompleteListView.prototype._handleResponseGetAllDLMembers =
-function(hasDelim, ev, result) {
+function(ev, result) {
 
 	var mv = this._parentAclv._matchValue;
 	var field = (mv instanceof Array) ? mv[0] : mv;
@@ -133,13 +134,13 @@ function(hasDelim, ev, result) {
 			var match = this._matchHash[this._selectAllRowId] = new ZmAutocompleteMatch();
 			match[field] = result.list.join(this._parentAclv._separator);
 			match.multipleAddresses = true;
-			this._doUpdate(hasDelim, ev);
+			this._doUpdate();
 		}
 		else {
+			var match = new ZmAutocompleteMatch();
 			for (var i = 0, len = result.list.length; i < len; i++) {
-				var match = this._matchHash[this._selectAllRowId] = new ZmAutocompleteMatch();
 				match[field] = result.list[i];
-				this._doUpdate(hasDelim, ev);
+				this._doUpdate(match);
 			}
 		}
 	}
@@ -147,9 +148,16 @@ function(hasDelim, ev, result) {
 };
 
 ZmDLAutocompleteListView.prototype._doUpdate =
-function(hasDelim, ev) {
-	var sel = this._matchHash[this._selected];
-	this._parentAclv._update(hasDelim, sel, ev);
+function(match) {
+
+	// so that address will be taken from match
+	if (this._parentAclv && this._parentAclv._currentContext) {
+		this._parentAclv._currentContext.address = null;
+	}
+	match = match || this._matchHash[this._selected];
+	if (match) {
+		this._parentAclv._update(null, match);
+	}
 };
 
 ZmDLAutocompleteListView.handleDLScroll =
@@ -171,7 +179,7 @@ function(ev) {
 		DBG.println("dl", "scroll, items needed: " + needed);
 		if (needed) {
 			DBG.println("dl", "new offset: " + listSize);
-			var respCallback = new AjxCallback(null, ZmDLAutocompleteListView._handleResponseDLScroll, [view]);
+			var respCallback = ZmDLAutocompleteListView._handleResponseDLScroll.bind(null, view);
 			view._parentAclv._dataAPI.expandDL(view._dlContact, listSize, respCallback);
 		}
 	}

@@ -443,7 +443,31 @@ function(type, origValue, value) {
  */
 ZmPrefView.prototype.isDirty =
 function() {
-	return this.getChangedPrefs(true, true);
+	try {
+		var printPref = function(pref) {
+			if (AjxUtil.isArray(pref)) {
+				return AjxUtil.map(pref, printPref).join("\n");
+			}
+			return [pref.name, " (from ", (pref.origValue!=="" ? pref.origValue : "[empty]"), " to ", (pref.value!=="" ? pref.value : "[empty]"), ")"].join("");
+		}
+
+		var changed = this.getChangedPrefs(false, true); // Will also update this._controller._dirty
+		if (changed && changed.length) {
+			AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\n" + printPref(changed));
+			return true;
+		}
+
+		var dirtyViews = AjxUtil.keys(this._controller._dirty, function(key,obj){return obj[key]});
+		if (dirtyViews.length) {
+			AjxDebug.println(AjxDebug.PREFS, "Dirty preference views:\n" + dirtyViews.join("\n"));
+			return true;
+		}
+
+		return false;
+	} catch (e) {
+		AjxDebug.println(AjxDebug.PREFS, "Exception in preferences: " + e.name + ": " + e.message);
+		return true;
+	}
 };
 
 /**

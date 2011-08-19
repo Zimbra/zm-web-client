@@ -1071,10 +1071,10 @@ function(mode) {
 ZmShare.prototype._createContent =
 function(formatter) {
 	var role = ZmShare.getRoleFromPerm(this.link.perm);
-	var owner = this.object ?  (this.object.owner || this.grantor.name) : this.grantor.name;
+	var owner = this.object ? (this.object.owner || this.grantor.name) : this.grantor.name;
 	owner = AjxStringUtil.htmlEncode(owner);
 	var params = [
-		AjxStringUtil.htmlEncode(this.link.name), 
+		AjxStringUtil.htmlEncode(this.link.name),
 		"(" + ZmShare._getFolderType(this.link.view) + ")",
 		owner,
 		AjxStringUtil.htmlEncode(this.grantee.name),
