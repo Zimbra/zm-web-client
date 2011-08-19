@@ -24,7 +24,13 @@
 
     <c:set var="rules" value="${empty param.ruleName ? mailbox.filterRulesReload : mailbox.filterRules}"/>
     <c:forEach items="${rules}" var="rule" varStatus="status">
-        <c:if test="${rule.name eq param.ruleName or status.first}">
+        <%--
+            If a filter has only "Discard" action and zimbraFeatureDiscardInFiltersEnabled is set to false,
+            do not list the filter at all.
+        --%>
+        <c:if test="${(empty param.ruleName or (rule.name eq param.ruleName)) and
+                                            (mailbox.features.discardFilterEnabled eq true or
+                                            (mailbox.features.discardFilterEnabled eq false and not zm:isDiscardActionFilter(rule)))}">
             <c:set var="selectedRule" value="${rule}"/>
         </c:if>
     </c:forEach>
@@ -87,6 +93,8 @@
                             <th nowrap><fmt:message key="filterName"/>
                         </tr>
                         <c:forEach items="${rules}" var="rule" varStatus="status">
+                            <c:if test="${mailbox.features.discardFilterEnabled eq true or
+                                                 (mailbox.features.discardFilterEnabled eq false and not zm:isDiscardActionFilter(rule))}">
                             <tr
                                     <c:if test="${selectedRule.name eq rule.name}">class='RowSelected'</c:if>
                                     >
@@ -112,6 +120,7 @@
                                     </a>
                                 </td>
                             </tr>
+                            </c:if>
                         </c:forEach>
                         <c:if test="${empty rules}">
                             <tr>
@@ -126,7 +135,7 @@
                 </td>
                 <td class='ZhDisplayRuleContent' valign='top'>
                     <c:if test="${not empty selectedRule}">
-                        <app:displayRule rule="${selectedRule}"/>
+                        <app:displayRule rule="${selectedRule}" mailbox="${mailbox}"/>
                     </c:if>
                 </td>
             </c:otherwise>
