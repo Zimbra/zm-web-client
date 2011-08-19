@@ -506,6 +506,10 @@ function(id, mode, content) {
         o.content = o.content.replace(/<p/g, '<span').replace(/<\/p/g, '</span><br /');
     };
 
+    function onPaste(ed, ev) {
+        return obj.onPaste(ev, ed);
+    };
+
 	var urlParts = AjxStringUtil.parseURL(location.href);
 
 	//important: tinymce doesn't handle url parsing well when loaded from REST URL - override baseURL/baseURI to fix this
@@ -552,11 +556,40 @@ function(id, mode, content) {
 			ed.onInit.add(onTinyMCEEditorInit);
 			ed.onKeyPress.add(onEditorKeyPress);
             ed.onGetContent.add(onGetContent);
+            ed.onPaste.add(onPaste);
 		}
 	});
 
 	this._editor = this.getEditor();
 	this._iFrameId = this._bodyTextAreaId + "_ifr";
+};
+
+ZmAdvancedHtmlEditor.prototype.onPaste = function(ev, ed) {
+    if (ev.clipboardData) {
+        var items = ev.clipboardData.items;
+        if( items ){
+            var blob = items[0].getAsFile();
+            if( blob ){
+                var req = new XMLHttpRequest();
+                req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
+                req.setRequestHeader("Cache-Control", "no-cache");
+                req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                req.setRequestHeader("Content-Type", blob.type);
+                req.setRequestHeader("Content-Disposition", 'attachment; filename="' + blob.fileName + '"');//For paste from clipboard filename is undefined
+                req.onreadystatechange = function(){
+                    if(req.readyState === 4 && req.status === 200) {
+                        var resp = eval("["+req.responseText+"]");
+                        if(resp.length === 3) {
+                            resp[2].clipboardPaste = true;
+                            var curView = appCtxt.getAppViewMgr().getCurrentView();
+                            curView.getController().saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, resp[2]);
+                        }
+                    }
+                }
+                req.send(blob);
+            }
+        }
+    }
 };
 
 ZmAdvancedHtmlEditor.prototype.setMode =

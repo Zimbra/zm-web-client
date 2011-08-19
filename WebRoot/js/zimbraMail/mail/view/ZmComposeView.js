@@ -526,7 +526,7 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 
 	var zeroSizedAttachments = false;
 	// handle Inline Attachments
-	if (this._attachDialog && this._attachDialog.isInline() && attId) {
+    if (attId && ( (this._attachDialog && this._attachDialog.isInline()) || attId.clipboardPaste ) ){
 		for (var i = 0; i < attId.length; i++) {
 			var att = attId[i];
 			if (att.s == 0) {
