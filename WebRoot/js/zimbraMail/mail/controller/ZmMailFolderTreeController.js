@@ -102,6 +102,7 @@ function(parent, type, id) {
 		var organizer = appCtxt.getById(id);
 		if (organizer.isDataSource()) {
 			parent.enable(ZmOperation.MOVE, false);
+			parent.enable(ZmOperation.MOVE_MENU, false)
 		}
 	}
 };

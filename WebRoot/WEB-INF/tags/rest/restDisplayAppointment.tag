@@ -14,7 +14,7 @@
 --%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="message" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMessageBean" %>
-<%@ attribute name="invite" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZInvite" %>
+<%@ attribute name="invite" rtexprvalue="true" required="true" type="com.zimbra.client.ZInvite" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ attribute name="hideops" rtexprvalue="true" required="false" %>
 <%@ attribute name="showInviteReply" rtexprvalue="true" required="false" %>

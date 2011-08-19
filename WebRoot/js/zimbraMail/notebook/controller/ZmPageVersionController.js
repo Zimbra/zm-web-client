@@ -36,9 +36,8 @@ function(page) {
 		this._currentView = this._defaultView();
 		this._setup(this._currentView);
 
-		elements = new Object();
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+		elements = this.getViewElements(this._currentView, this._listView[this._currentView]);
+
 	}
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
 	this._setView({view:this._currentView, elements:elements, isTransient:true});	
