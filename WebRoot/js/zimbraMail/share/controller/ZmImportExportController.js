@@ -300,7 +300,6 @@ function(params) {
 	if (folder && folder.nId == ZmOrganizer.ID_ROOT) folder = null;
 	var path = folder ? folder.getPath(null, null, null, true, true) : "";
 	var type = params.type || params.ext;
-
 	var url = [
 		"/home/",
 		encodeURIComponent(appCtxt.get(ZmSetting.USERNAME)),
@@ -310,7 +309,8 @@ function(params) {
 		type ? "fmt="+encodeURIComponent(type) : "",
 		params.views ? "&types="+encodeURIComponent(params.views) : "",
 		params.resolve ? "&resolve="+encodeURIComponent(params.resolve) : "",
-		"&callback="+funcName
+		"&callback="+funcName,
+		"&charset="+appCtxt.getCharset()
 	].join("");
 
 	// initialize form
