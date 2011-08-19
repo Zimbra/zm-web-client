@@ -184,8 +184,8 @@ ZmCalNewScheduleView.prototype.getDateInfo =
 function(date) {
     var dateInfo = {},
         d = date || new Date();
-	dateInfo.startDate = AjxDateFormat.format("M/d/yyyy", d);
-	dateInfo.endDate = AjxDateFormat.format("M/d/yyyy", d);
+	dateInfo.startDate = AjxDateUtil.simpleComputeDateStr(d);
+	dateInfo.endDate = AjxDateUtil.simpleComputeDateStr(d);
 	dateInfo.timezone = AjxDateFormat.format("z", d);
     return dateInfo;
 };
