@@ -1053,13 +1053,17 @@ function(mailItem, date, subject) {
 	var newAppt = this._newApptObject(date, null, null, mailItem);
 	newAppt.setFromMailMessage(mailItem, subject);
 	
-	var addAttendeeDlg = this._attAttendeeDlg = appCtxt.getYesNoMsgDialog();
-	addAttendeeDlg.reset();
-	addAttendeeDlg.setMessage(ZmMsg.addRecipientstoAppt, DwtMessageDialog.WARNING_STYLE, ZmMsg.addAttendees);
-	addAttendeeDlg.registerCallback(DwtDialog.YES_BUTTON, this._addAttendeeYesCallback, this, [newAppt]);
-	addAttendeeDlg.registerCallback(DwtDialog.NO_BUTTON, this._addAttendeeNoCallback, this, [newAppt]);
-	addAttendeeDlg.popup();
-	
+	 if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
+        var addAttendeeDlg = this._attAttendeeDlg = appCtxt.getYesNoMsgDialog();
+        addAttendeeDlg.reset();
+        addAttendeeDlg.setMessage(ZmMsg.addRecipientstoAppt, DwtMessageDialog.WARNING_STYLE, ZmMsg.addAttendees);
+        addAttendeeDlg.registerCallback(DwtDialog.YES_BUTTON, this._addAttendeeYesCallback, this, [newAppt]);
+        addAttendeeDlg.registerCallback(DwtDialog.NO_BUTTON, this._addAttendeeNoCallback, this, [newAppt]);
+        addAttendeeDlg.popup();
+    }
+    else {
+        this.newAppointment(newAppt, ZmCalItem.MODE_NEW, true);
+    }
 };
 
 ZmCalViewController.prototype._addAttendeeYesCallback =
