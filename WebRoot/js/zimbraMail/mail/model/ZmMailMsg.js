@@ -2419,7 +2419,7 @@ function(callback) {
 
 // Execute the mail redirect server side call
 ZmMailMsg.prototype.redirect =
-function(addrs) {
+function(addrs, callback) {
 
 	var jsonObj = {BounceMsgRequest:{_jsns:"urn:zimbraMail"}};
 	var request = jsonObj.BounceMsgRequest;
@@ -2441,7 +2441,8 @@ function(addrs) {
     appCtxt.getAppController().sendRequest({
         jsonObj:       jsonObj,
         asyncMode:     true,
-        accountName:   acct
+        accountName:   acct,
+        callback:      callback
     });
 };
 

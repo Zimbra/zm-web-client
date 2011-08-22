@@ -1052,7 +1052,7 @@ function(msg) {
             cd.popup();
         } else {
             redirectDialog.popdown();
-            msg.redirect(addrs);
+            msg.redirect(addrs, this._handleSendRedirect.bind(this));
          }
     } else {
         redirectDialog.popdown();
@@ -1064,7 +1064,7 @@ ZmMailListController.prototype._badRedirectAddrsOkCallback =
 function(addrs, dialog, msg) {
     dialog.popdown();
     appCtxt.getMailRedirectDialog().popdown();
-    msg.redirect(addrs);
+    msg.redirect(addrs, this._handleSendRedirect.bind(this));
 };
 
 
@@ -1091,6 +1091,11 @@ function(params, selection) {
 	params.msgIds = msgIds.getArray();
 
 	AjxDispatcher.run("Compose", params);
+};
+
+ZmMailListController.prototype._handleSendRedirect =
+function() {
+    appCtxt.setStatusMsg(ZmMsg.redirectSent, ZmStatusView.LEVEL_INFO, null);
 };
 
 ZmMailListController.prototype._doMarkRead =
