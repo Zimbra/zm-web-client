@@ -919,8 +919,8 @@ function(params) {
 	this._initializeToolBar();
 	this.resetToolbarOperations();
 	this._setOptionsMenu();
-
 	cv.set(params);
+	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this.viewId], {waitUntilLoaded:true});
 
 	this._setAddSignatureVisibility();
 
@@ -1050,8 +1050,6 @@ function() {
 		sendLaterItem.addSelectionListener(this._listeners[ZmOperation.SEND_LATER]);
 		button.setMenu(menu);
 	}
-
-	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, this.viewId], {waitUntilLoaded:true});
 };
 
 ZmComposeController.prototype._initAutoSave =

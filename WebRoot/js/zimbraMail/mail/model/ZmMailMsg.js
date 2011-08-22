@@ -1391,6 +1391,13 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 			this._addReadReceipt(addrNodes, accountName);
 		}
 	}
+	//Let Zimlets set custom mime headers. They need to push header-name and header-value like below:
+	//customMimeHeaders.push({name:"header1", _content:"headerValue"})
+	var customMimeHeaders = [];
+	appCtxt.notifyZimlets("addCustomMimeHeaders", [customMimeHeaders]);
+	if((customMimeHeaders instanceof Array) && customMimeHeaders.length > 0) {
+		 msgNode.header = customMimeHeaders;
+	}
 	msgNode.su = {_content:this.subject};
 
 	var topNode = {ct:this._topPart.getContentType()};
