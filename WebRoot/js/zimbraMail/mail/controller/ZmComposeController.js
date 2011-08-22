@@ -941,6 +941,7 @@ function(params) {
 
 	cv.set(params);
 	this._setOptionsMenu();
+	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this.viewId], {waitUntilLoaded:true});
 
     if (params.readReceipt) {
         var menu = this._optionsMenu[this._action];
@@ -1071,7 +1072,6 @@ function() {
 		button.setMenu(menu);
 	}
 
-	appCtxt.notifyZimlets("initializeToolbar", [this._app, tb, this, this.viewId], {waitUntilLoaded:true});
 };
 
 ZmComposeController.prototype._initAutoSave =

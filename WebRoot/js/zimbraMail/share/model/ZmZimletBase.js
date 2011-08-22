@@ -818,6 +818,24 @@ function() {
 };
 
 /**
+ * This Zimlet hook allows Zimlets to set custom headers to outgoing emails.
+ * To set a custom header, they need to push header name and header value to
+ * customMimeHeaders array.
+ *  Example:
+ *  customHeaders.push({name:"header1", _content:"headerValue"});
+ *
+ *  Note: Header name ("header1" in this case) MUST be one of the valid/allowed values of
+ *  zimbraCustomMimeHeaderNameAllowed global-config property (set by admin)
+ * @param {array} customMimeHeaders The array containing all custom headers
+ *
+ */
+ZmZimletBase.prototype.addCustomMimeHeaders =
+function(customMimeHeaders) {
+	//Example:
+	//customMimeHeaders.push({name:"header1", _content:"headerValue"});
+};
+
+/**
  * Sets the zimlet icon in the panel.
  * 
  * @param	{string}	icon		the icon (style class) for the zimlet
