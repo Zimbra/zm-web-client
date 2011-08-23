@@ -191,13 +191,13 @@ function() {
 			containerId: containerId,
 			posStyle: Dwt.ABSOLUTE_STYLE,
 			parent: appCtxt.getShell(),
-			controller: this._opc
+			controller: appCtxt.getOverviewController()
 		};
 
 		containerParams.id = ZmId.getOverviewContainerId(containerId);
 
 		// the overview container will create overviews for each account
-		this._overviewContainer = this._opc._overviewContainer[containerId] =
+		this._overviewContainer = appCtxt.getOverviewController()._overviewContainer[containerId] =
 			new ZmVoiceOverviewContainer(containerParams);
 	}
 
