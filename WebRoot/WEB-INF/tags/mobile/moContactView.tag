@@ -86,10 +86,25 @@
         </div>
 
         <div class="msgBody">
-
-                    <mo:displayContact contact="${contact}"/>
-                </div>    
-            </div>
+            <c:choose>
+            <c:when test="${contact.isGroup}">
+                <table border="0" cellspacing="3" cellpadding="1" width="100%">
+                <tbody>
+                <c:forEach var="member" items="${contact.groupMembers}">
+                <tr>
+                <td width='20px'><app:img altkey='ALT_CONTACT_GROUP_EMAIL' src="startup/ImgMessage.png"/></td>
+                <td><nobr>${fn:escapeXml(member)}</nobr></td>
+                </tr>
+                </c:forEach>
+                <tr><td><br></td></tr>
+                </tbody></table> 
+            </c:when>
+            <c:otherwise>
+                <mo:displayContact contact="${contact}"/>
+            </c:otherwise>
+            </c:choose>
+        </div>
+        </div>
         </div>    
     <c:if test="${ua.isiPad == false}">
         <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false" isTop="false" mailbox="${mailbox}"/>
