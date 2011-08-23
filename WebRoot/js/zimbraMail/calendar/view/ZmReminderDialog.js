@@ -34,7 +34,7 @@ ZmReminderDialog = function(parent, reminderController, calController) {
 	var dismissAllButton = new DwtDialog_ButtonDescriptor(ZmReminderDialog.DISMISS_ALL_BUTTON, ZmMsg.dismissAll, DwtDialog.ALIGN_RIGHT);
 
 	// call base class
-	DwtDialog.call(this, {parent:parent, standardButtons:DwtDialog.NO_BUTTONS, extraButtons:[snoozeButton, dismissAllButton]});
+	DwtDialog.call(this, {id:"ZmReminderDialog", parent:parent, standardButtons:DwtDialog.NO_BUTTONS, extraButtons:[snoozeButton, dismissAllButton]});
 
 	this._reminderController = reminderController;
 	this._calController = calController;
@@ -55,8 +55,8 @@ ZmReminderDialog.prototype.constructor = ZmReminderDialog;
 
 // Consts
 
-ZmReminderDialog.SNOOZE_BUTTON		= ++DwtDialog.LAST_BUTTON;
-ZmReminderDialog.DISMISS_ALL_BUTTON	= ++DwtDialog.LAST_BUTTON;
+ZmReminderDialog.SNOOZE_BUTTON		= "Snooze";//++DwtDialog.LAST_BUTTON;
+ZmReminderDialog.DISMISS_ALL_BUTTON	= "DismissAll";//++DwtDialog.LAST_BUTTON;
 ZmReminderDialog.SOON				= -AjxDateUtil.MSEC_PER_FIFTEEN_MINUTES;
 
 
@@ -150,6 +150,7 @@ function(list) {
 	for (var i = 0; i < size; i++) {
 		var appt = list.get(i);
 		var uid = appt.getUniqueId(true);
+		var id = appt.id;
 		var data = this._apptData[uid];
 
         var alarmData = appt.getAlarmData();
@@ -158,14 +159,14 @@ function(list) {
         AjxDebug.println(AjxDebug.REMINDER, appt.getReminderName() + " : " + (alarmData.nextAlarm || " NA ") + " / " + (alarmData.alarmInstStart || " NA "));
 
 		// dismiss button
-		var dismissBtn = this._dismissButtons[data.dismissBtnId] = new DwtButton({parent:this, className:"DwtToolbarButton", parentElement:data.dismissBtnId});
+		var dismissBtn = this._dismissButtons[data.dismissBtnId] = new DwtButton({id:"dismissBtn_" + id, parent:this, className:"DwtToolbarButton", parentElement:data.dismissBtnId});
 		dismissBtn.setImage("Cancel");
 		dismissBtn.setText(ZmMsg.dismiss);
 		dismissBtn.addSelectionListener(dismissListener);
 		dismissBtn.apptUid = uid;
 
 		// open button
-		var openBtn = this._openButtons[data.openBtnId] = new DwtButton({parent:this, className:"DwtToolbarButton", parentElement:data.openBtnId});
+		var openBtn = this._openButtons[data.openBtnId] = new DwtButton({id:"openBtn_" + id, parent:this, className:"DwtToolbarButton", parentElement:data.openBtnId});
 		openBtn.setImage(appt.otherAttendees ? "ApptMeeting" : (appt.type == ZmItem.TASK) ? "TasksApp" : "Appointment");
 		openBtn.setText(ZmMsg.viewAppointment);
 		openBtn.addSelectionListener(openListener);
@@ -177,10 +178,13 @@ function(list) {
 
 ZmReminderDialog.prototype._contentHtml =
 function(selectId) {
-	this._listId = Dwt.getNextId();
+	this._listId = "ZmReminderDialogContent";//Dwt.getNextId();
 
 	var snooze = [1, 5, 10, 15, 30, 45, 60];
-	this._select = new DwtSelect({parent:this});
+    if(this._select) {
+        this._select.dispose();
+    }
+	this._select = new DwtSelect({id:"ZmReminderDialog_reminderSelect", parent:this});
 	var snoozeFormatter = new AjxMessageFormat(ZmMsg.reminderSnoozeMinutes);
 	for (var i = 0; i < snooze.length; i++) {
 		var label = snoozeFormatter.format(snooze[i]);
@@ -208,10 +212,13 @@ function(data) {
 ZmReminderDialog.prototype._addAppt =
 function(html, idx, appt, data, needSep) {
 
-	data.dismissBtnId = Dwt.getNextId();
-	data.openBtnId = Dwt.getNextId();
-	data.deltaId = Dwt.getNextId();
-	data.rowId = Dwt.getNextId();
+    var uid = appt.id;
+	data.dismissBtnId = "dismissBtnContainer_" + uid;
+	data.openBtnId = "openBtnContainer_" + uid;
+	data.deltaId = "delta_" + uid;
+	data.rowId = "apptRow_" + uid;
+	data.reminderNameContainerId = "reminderNameContainerId_" + uid;
+	data.reminderDescContainerId = "reminderDescContainerId_" + uid;
 
 	var calName = (appt.folderId != ZmOrganizer.ID_CALENDAR && appt.folderId != ZmOrganizer.ID_TASKS && this._calController)
 		? this._calController.getCalendarName(appt.folderId) : null;
@@ -232,6 +239,8 @@ function(html, idx, appt, data, needSep) {
 		deltaId: data.deltaId,
 		openBtnId: data.openBtnId,
 		dismissBtnId: data.dismissBtnId,
+        reminderNameContainerId: data.reminderNameContainerId,
+        reminderDescContainerId: data.reminderDescContainerId,
         type: appt.type ? appt.type : ZmItem.APPT
 	};
 	html[idx++] = AjxTemplate.expand("calendar.Calendar#ReminderDialogRow", params);

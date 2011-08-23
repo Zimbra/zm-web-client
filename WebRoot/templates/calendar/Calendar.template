@@ -182,7 +182,8 @@
 	<$ } $>
 	<tr id='${rowId}'>
 		<td width=100% valign=top>
-			<b>${reminderName}</b><br>
+			<span id='${reminderNameContainerId}'><b>${reminderName}</b></span><br>
+			<span id='${reminderDescContainerId}'>
 			<$ if (data.durationText != "") { $>
 			    <$= ZmMsg.whenLabel $> ${durationText}<br>
             <$ } $>
@@ -206,6 +207,7 @@
 			<$ if (data.location) { $>
 				<$= ZmMsg.locationLabel $> ${location}<br>
 			<$ } $>
+			</span>
 		</td>
 		<td valign=top align=right>
 			<table border=0 cellpadding=1 cellspacing=1>
