@@ -938,8 +938,8 @@ function(items){
         for(var i=0; i< length; i++){
             item = items[i];
             var itemId;
-            if (appCtxt.isOffline) {
-                itemId = [organizer.getAccount().id, ":", item.getNormalizedItemId()].join('');
+            if (appCtxt.isOffline && organizer.isShared()) {
+                itemId = item.id;
             } else {
                 itemId = item.getNormalizedItemId();
             }
