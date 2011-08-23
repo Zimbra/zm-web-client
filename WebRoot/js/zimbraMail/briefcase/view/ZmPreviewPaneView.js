@@ -753,7 +753,7 @@ ZmPreviewView.prototype._setHeader =
 function(item){
 
     //Name
-    this._headerName.innerHTML = item.name;
+    this._headerName.innerHTML = AjxStringUtil.htmlEncode(item.name);
 
     //Image icon
     var contentType = item.contentType;
