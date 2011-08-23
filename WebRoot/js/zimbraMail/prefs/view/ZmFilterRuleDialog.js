@@ -31,7 +31,7 @@
  */
 ZmFilterRuleDialog = function() {
 
-	DwtDialog.call(this, {parent:appCtxt.getShell(), className:"ZmFilterRuleDialog", title:ZmMsg.selectAddresses});
+	DwtDialog.call(this, {parent:appCtxt.getShell(), className:"ZmFilterRuleDialog", title:ZmMsg.selectAddresses, id: "ZmFilterRuleDialog"});
 
 	// set content
 	this.setContent(this._contentHtml());
@@ -70,6 +70,7 @@ ZmFilterRuleDialog.INPUT_NUM_CHARS = 15;
 ZmFilterRuleDialog.CHOOSER_BUTTON_WIDTH		= 120;
 ZmFilterRuleDialog.PLUS_MINUS_BUTTON_WIDTH	= 20;
 
+ZmFilterRuleDialog.CONDITIONS_INDEX = 0;
 ZmFilterRuleDialog.prototype.toString =
 function() {
 	return "ZmFilterRuleDialog";
@@ -349,7 +350,7 @@ ZmFilterRuleDialog.prototype._getConditionFromTest =
 function(test, data) {
 	var condition;
 	switch (test) {
-		case ZmFilterRule.TEST_ADDRESS:			condition = ZmFilterRule.C_ADDRBOOK; break; 
+		case ZmFilterRule.TEST_ADDRESS:			condition = ZmFilterRule.C_ADDRESS; break; 
 		case ZmFilterRule.TEST_HEADER_EXISTS:	condition = ZmFilterRule.C_HEADER; break;
 		case ZmFilterRule.TEST_SIZE:			condition = ZmFilterRule.C_SIZE; break;
 		case ZmFilterRule.TEST_DATE:			condition = ZmFilterRule.C_DATE; break;
@@ -488,13 +489,16 @@ function(conf, field, options, rowData, testType, rowId) {
 
 	var id = Dwt.getNextId();
 	if (type == ZmFilterRule.TYPE_INPUT) {
-		var input = new DwtInputField({parent: this, type: DwtInputField.STRING, initialValue: dataValue, size: 20});
+		var inputFieldId = "FilterRuleDialog_INPUTFIELD_" + ZmFilterRuleDialog.CONDITIONS_INDEX++;
+		var inputId = "FilterRuleDialog_INPUT_" + ZmFilterRuleDialog.CONDITIONS_INDEX++;
+		var input = new DwtInputField({parent: this, type: DwtInputField.STRING, initialValue: dataValue, size: 20, id: inputFieldId, inputId: inputId});
 		input.setData(ZmFilterRuleDialog.ROW_ID, rowId);
 		this._inputs[rowId][field] = {id: id, dwtObj: input};
 		tabGroup.addMember(input.getTabGroupMember());
 	}
 	else if (type == ZmFilterRule.TYPE_SELECT) {
-		var select = new DwtSelect({parent:this});
+		var selectId = "FilterRuleDialog_SELECT_" + ZmFilterRuleDialog.CONDITIONS_INDEX++;
+		var select = new DwtSelect({parent:this, id: selectId});
 		select.setData(ZmFilterRuleDialog.ROW_ID, rowId);
 		this._inputs[rowId][field] = {id: id, dwtObj: select};
 		if (isMainSelect) {
@@ -505,7 +509,7 @@ function(conf, field, options, rowData, testType, rowId) {
 				select.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
 				select.addChangeListener(this._opsChangeLstnr);
 			}
-			else if (testType == ZmFilterRule.TEST_ADDRBOOK || testType == ZmFilterRule.TEST_ADDRESS) {
+			else if (testType == ZmFilterRule.TEST_ADDRBOOK) {
 				select.addChangeListener(this._addrBookChangeLstnr);
 			}
 		}
@@ -540,7 +544,8 @@ function(conf, field, options, rowData, testType, rowId) {
 	}
 	else if (type == ZmFilterRule.TYPE_CALENDAR) {
 		// create button with calendar that hangs off menu
-		var dateButton = new DwtButton({parent:this});
+		var dateId = "FilterRuleDialog_DATE_" + ZmFilterRule.CONDITIONS_INDEX++;
+		var dateButton = new DwtButton({parent:this, id: dateId});
 		dateButton.setSize(ZmFilterRuleDialog.CHOOSER_BUTTON_WIDTH, Dwt.DEFAULT);
 		var date, dateText;
 		if (dataValue) {
@@ -552,7 +557,8 @@ function(conf, field, options, rowData, testType, rowId) {
 		}
 		dateButton.setText(dateText);
 		dateButton.setData(ZmFilterRuleDialog.DATA, date);
-		var calMenu = new DwtMenu({parent:dateButton, style:DwtMenu.CALENDAR_PICKER_STYLE});
+		var calId = "FilterRuleDialog_CAL_" + ZmFilterRule.CONDITIONS_LIST++;
+		var calMenu = new DwtMenu({parent:dateButton, style:DwtMenu.CALENDAR_PICKER_STYLE, id: calId});
 		dateButton.setMenu(calMenu, true);
 		var cal = new DwtCalendar({parent:calMenu});
 		cal.setSkipNotifyOnPage(true);
@@ -563,7 +569,8 @@ function(conf, field, options, rowData, testType, rowId) {
 		tabGroup.addMember(dateButton.getTabGroupMember());
 	}
 	else if (type == ZmFilterRule.TYPE_FOLDER_PICKER || type == ZmFilterRule.TYPE_TAG_PICKER) {
-		var button = new DwtButton({parent:this});
+		var buttonId = "FilterRuleDialog_BUTTON_" + ZmFilterRule.CONDITIONS_INDEX++;
+		var button = new DwtButton({parent:this, id: buttonId});
 		var organizer;
 		if (dataValue) {
 			if (type == ZmFilterRule.TYPE_FOLDER_PICKER) {
@@ -616,7 +623,7 @@ function(isMainSelect, testType, field, rowData) {
 			case ZmFilterRule.TEST_SOCIALCAST:      dataValue = ZmFilterRule.C_SOCIAL; break;
 			case ZmFilterRule.TEST_TWITTER:         dataValue = ZmFilterRule.C_SOCIAL; break;
 			case ZmFilterRule.TEST_LINKEDIN:        dataValue = ZmFilterRule.C_SOCIAL; break;
-			case ZmFilterRule.TEST_ADDRESS:         dataValue = ZmFilterRule.C_ADDRBOOK; break;
+			case ZmFilterRule.TEST_ADDRESS:         dataValue = ZmFilterRule.C_ADDRESS; break;
 			case ZmFilterRule.TEST_LIST:            dataValue = ZmFilterRule.C_CONV; break;
 			case ZmFilterRule.TEST_BULK:            dataValue = ZmFilterRule.C_CONV; break;
 			case ZmFilterRule.TEST_ME:              dataValue = ZmFilterRule.C_ADDRBOOK; break;
@@ -786,13 +793,15 @@ function(isMainSelect, testType, field, rowData) {
 				dataValue = rowData.type;
 			}
 		}
-		else if (testType == ZmFilterRule.TEST_ADDRESS) {
+		else if (testType == ZmFilterRule.TEST_ADDRESS) {                             
 			if (field == "subjectMod") {
 				dataValue = rowData.header;
 			} else if (field == "ops") {
-				dataValue = (rowData.negative == "1")
-							? ZmFilterRule.OP_NOT_ME
-							: ZmFilterRule.OP_IS_ME;						
+				dataValue = ZmFilterRule.OP_VALUE_MAP[rowData.stringComparison] == ZmFilterRule.OP_IS_READRECEIPT ? ZmFilterRule.OP_CONTAINS : 
+                ZmFilterRule.OP_VALUE_MAP[rowData.stringComparison];
+				if (dataValue && rowData.negative == "1") {
+                    dataValue = ZmFilterRule.getNegativeComparator(dataValue);
+                }						
 			} else if (field == "value") {
 				dataValue = rowData.value;
 			} else if (field == "valueMod") {

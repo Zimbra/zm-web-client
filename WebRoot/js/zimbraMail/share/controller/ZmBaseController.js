@@ -875,7 +875,14 @@ function(items, folder, attrs, isShiftKey) {
 			} else {
 				list.moveItems(params);
 			}
-		} else {
+		}
+		else if (folder.getName() == ZmMsg.activityStreamsRule && items.length == 1) { //TODO: does this need to be a system folder for comaparison?
+			list.moveItems(params);
+			var activityStreamDialog = appCtxt.getActivityStreamFilterDialog();
+			activityStreamDialog.setFields(items[0]);
+			activityStreamDialog.popup();
+		}
+		else {
 			list.moveItems(params);
 		}
 	}

@@ -19,8 +19,7 @@ ZmPriorityMessageFilterDialog = function() {
 
 	// set content
 	this.setContent(this._contentHtml());
-	this._createControls();
-	
+	this._initialize();
 	var okButton = this.getButton(DwtDialog.OK_BUTTON);
 	okButton.setText(ZmMsg.save);
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
@@ -32,30 +31,81 @@ ZmPriorityMessageFilterDialog.prototype.constructor = ZmPriorityMessageFilterDia
 
 ZmPriorityMessageFilterDialog.prototype._contentHtml = 
 function() {   
-	//TODO: move to template?
-	var html = "<div style='width: 500px; height: 300px'>" + 
-			     "<div>" + ZmMsg.priorityFilterDescription + "</div>" +
-			     "<div class='horizSep'></div>" +
-			     "<div style='float: left'>" + 
-			        "<div id='MARK_AS_PRIORITY'></div>" + 
-					 "<div id='FREQUENTLY_EMAIL'></div>" + 
-					 "<div id='CONV_I_START'></div>" + 
-					 "<div id='MENTIONS_DIRECT_MESSAGES'></div>" + 
-					 "<div style='padding-left: 20px'>" + 
-						"<div id='SOCIAL_LIST'></div>" +
-					 "</div>" +
-				  "</div>" +
-				  "<div class='ZmPriorityFilterDivider' style='float: left;'></div>" +
-				  "<div id='MOVE_MSG_STREAM'></div>" + 
-				  "<div style='padding-left: 10px; float: left;'>" + 
-					  "<div id='NOT_TO_ME'></div>" + 
-					  "<div id='NOT_IN_ADDR'></div>" + 
-					  "<div id='DL_SUBSCRIBED'></div>" + 
-					  "<div id='MASS_MARKETING'></div>" +
-			      "</div>" +
-			  "</div>";
-	
+	var html = "<div style='width: 500px; height: 300px' id='PRIORITYMESSAGE_PROMPT_FORM'>";
 	return html;			
+};
+
+ZmPriorityMessageFilterDialog.prototype._initialize = 
+function() {
+	var priorityListener = this._onMarkAsPriority.bind(this);
+	var streamListener = this._onMoveMsgIntoStream.bind(this);
+	var socialListener = this._onMentions.bind(this);
+	var advancedListener = this._onAdvancedControls.bind(this);
+	var params = {};
+	params.parent = this;
+	params.template = "prefs.Pages#PriorityMessageFilterPrompt";
+	params.id = "PriorityInboxDialog";
+	params.form = {
+		items: [
+			{ id: "MARK_AS_PRIORITY", type: "DwtCheckbox", label: ZmMsg.markAsPriorityRule, checked: false, onclick: priorityListener},
+			{ id: "FREQUENTLY_EMAIL", type: "DwtCheckbox", label: ZmMsg.frequentEmail, checked: true},
+			{ id: "CONV_I_START", type: "DwtCheckbox", label: ZmMsg.convIStart, checked: true},
+			{ id: "MENTIONS_DIRECT_MESSAGES", type: "DwtCheckbox", label: ZmMsg.mentionsDirectMessages, checked: true, onclick: socialListener},
+			{ id: "SOCIAL_CAST", type: "DwtCheckbox", label: ZmMsg.socialcast, checked: true},
+			{ id: "FACEBOOK", type: "DwtCheckbox", label: ZmMsg.facebook, checked: true},
+			{ id: "TWITTER", type: "DwtCheckbox", label: ZmMsg.twitter, checked: true},
+			{ id: "LINKEDIN", type: "DwtCheckbox", label: ZmMsg.linkedin, checked: true},
+			{ id: "PRIORITY_ADVANCED", type: "DwtBorderlessButton", label: "<a href='javascript:void(0)'>" + ZmMsg.advancedControls + "</a>", onclick: advancedListener},
+			{ id: "MOVE_MSG_STREAM", type: "DwtCheckbox", label: ZmMsg.moveToActivityStream, checked: false, onclick: streamListener},
+			{ id: "NOT_TO_ME", type: "DwtCheckbox", label: ZmMsg.moveNotToMe, checked: true},
+			{ id: "NOT_IN_ADDR", type: "DwtCheckbox", label: ZmMsg.moveNotInAddrBook, checked: true},
+			{ id: "DL_SUBSCRIBED", type: "DwtCheckbox", label: ZmMsg.moveNotSubscribedTo, checked: true},
+			{ id: "MASS_MARKETING", type: "DwtCheckbox", label: ZmMsg.massMarketingMessages, checked: true},
+			{ id: "STREAM_ADVANCED", type: "DwtBorderlessButton", label: "<a href='javascript:void(0)'>" + ZmMsg.advancedControls + "</a>", onclick: advancedListener}
+		]
+	};
+	this._priorityMessageForm = new DwtForm(params);
+	var div = document.getElementById("PRIORITYMESSAGE_PROMPT_FORM");
+	this._priorityMessageForm.appendElement(div);
+	
+	this._markAsPriority = this._priorityMessageForm.getControl("MARK_AS_PRIORITY");
+	this._frequentEmail = this._priorityMessageForm.getControl("FREQUENTLY_EMAIL");
+	this._convIStart = this._priorityMessageForm.getControl("CONV_I_START");
+	this._mentions = this._priorityMessageForm.getControl("MENTIONS_DIRECT_MESSAGES");
+	this._socialCast = this._priorityMessageForm.getControl("SOCIAL_CAST");
+	this._facebook = this._priorityMessageForm.getControl("FACEBOOK");
+	this._twitter = this._priorityMessageForm.getControl("TWITTER");
+	this._linkedIn = this._priorityMessageForm.getControl("LINKEDIN");
+	this._moveMsgIntoStream = this._priorityMessageForm.getControl("MOVE_MSG_STREAM");
+	this._notToMe = this._priorityMessageForm.getControl("NOT_TO_ME");
+	this._notInMyAddrBk = this._priorityMessageForm.getControl("NOT_IN_ADDR");
+	this._dlSubscribedTo = this._priorityMessageForm.getControl("DL_SUBSCRIBED");
+	this._massMarketing = this._priorityMessageForm.getControl("MASS_MARKETING");
+	this._socialNetworks = [this._socialCast, this._facebook, this._twitter, this._linkedIn];
+	
+	this._frequentEmail.addClassName('ZmPriorityFilterCriteria');
+	this._convIStart.addClassName('ZmPriorityFilterCriteria');
+	this._mentions.addClassName('ZmPriorityFilterCriteria');
+	
+	this._streamAdvanced = this._priorityMessageForm.getControl("STREAM_ADVANCED");
+	this._streamAdvanced.addClassName("ZmPriorityFilterCriteria");
+	
+	this._priorityAdvanced = this._priorityMessageForm.getControl("PRIORITY_ADVANCED");
+	this._priorityAdvanced.addClassName("ZmPriorityFilterCriteria");
+
+	this._priorityHash = {};
+	this._priorityHash[ZmFilterRule.TEST_FACEBOOK] = {control: this._facebook, mentions: true, negative: false};
+	this._priorityHash[ZmFilterRule.TEST_SOCIALCAST] = {control: this._socialCast, mentions: true, negative: false};
+	this._priorityHash[ZmFilterRule.TEST_TWITTER] = {control: this._twitter, mentions: true, negative: false};
+	this._priorityHash[ZmFilterRule.TEST_LINKEDIN] = {control: this._linkedIn, mentions: true, negative: false};
+	this._priorityHash[ZmFilterRule.TEST_CONVERSATIONS] = {control: this._convIStart, mentions: false, negative: false, headerValue: "started"};
+	this._priorityHash[ZmFilterRule.TEST_RANKING] = {control: this._frequentEmail, mentions: false, negative: false, headerValue: "from"};
+	
+	this._streamHash = {};
+	this._streamHash[ZmFilterRule.TEST_BULK] = {control: this._massMarketing, negative: false};
+	this._streamHash[ZmFilterRule.TEST_LIST] = {control: this._dlSubscribedTo, negative: false};
+	this._streamHash[ZmFilterRule.TEST_ADDRBOOK] = {control: this._notInMyAddrBk, negative: true, headerValue: "from"};
+	this._streamHash[ZmFilterRule.TEST_ME] = {control: this._notToMe, negative: true, headerValue: "to"};
 };
 
 ZmPriorityMessageFilterDialog.prototype.popup =
@@ -70,14 +120,100 @@ ZmPriorityMessageFilterDialog.prototype._handleResponseLoadRules =
 function() {
 	this._priorityRule = this._rules.getRuleByName(ZmMsg.markAsPriorityRule);
 	this._activityStreamRule = this._rules.getRuleByName(ZmMsg.activityStreamsRule);
+	this._setPrioritySelections(); 
+	this._setStreamSelections();
+};
+
+ZmPriorityMessageFilterDialog.prototype._onMarkAsPriority = 
+function() {
+	var enabled = this._markAsPriority.isSelected();
+	this._frequentEmail.setEnabled(enabled);
+	this._convIStart.setEnabled(enabled);
+	this._mentions.setEnabled(enabled);
+	this._onMentions();
+};
+
+ZmPriorityMessageFilterDialog.prototype._onMentions = 
+function() {
+	var enabled = this._mentions.isSelected() && this._mentions.getEnabled();
+	for (var i=0; i < this._socialNetworks.length; i++) {
+		this._socialNetworks[i].setEnabled(enabled);
+	}
+};
+
+ZmPriorityMessageFilterDialog.prototype._onMoveMsgIntoStream = 
+function() {
+	var enabled = this._moveMsgIntoStream.isSelected();
+	this._notToMe.setEnabled(enabled);
+	this._notInMyAddrBk.setEnabled(enabled);
+	this._dlSubscribedTo.setEnabled(enabled);
+	this._massMarketing.setEnabled(enabled);
+};
+
+ZmPriorityMessageFilterDialog.prototype._onAdvancedControls = 
+function(controlId) {
+	this.popdown(); //popdown existing 
+	var filterRuleDialog = appCtxt.getFilterRuleDialog();
+	var isPriority = false;
+	var rule = null;
+	if (controlId == "PRIORITY_ADVANCED") {
+		rule = this._priorityRule;
+		isPriority = true;
+	}
+	else if (controlId == "STREAM_ADVANCED") {
+		rule = this._activityStreamRule;	
+	}
 	
-	if (this._priorityRule) {
-		if (this._priorityRule.active) {
-			this._markAsPriorityCbox.setEnabled(true);
-			this._markAsPriorityCbox.setSelected(true);
+	if (rule) {
+		filterRuleDialog.popup(rule, true);		
+	}
+	else {
+		//create rule with default conditions
+		var ruleName = isPriority ? ZmMsg.markAsPriorityRule : ZmMsg.activityStreamsRule;
+		var rule = new ZmFilterRule(ruleName, true, {}, {});
+		if (isPriority) {
+			rule.addAction(ZmFilterRule.A_FLAG, "priority");
+			rule.addAction(ZmFilterRule.A_STOP);
+			for (var id in this._priorityHash) {
+				if (id == ZmFilterRule.TEST_CONVERSATIONS) {
+					rule.addCondition(id, null, "started");	
+				}
+				else if (id == ZmFilterRule.TEST_RANKING) {
+					rule.addCondition(id, null , null, this._priorityHash[id].headerValue);
+				}
+				else {
+					rule.addCondition(id);
+				}
+			}
 		}
 		else {
-			this._markAsPriorityCbox.setSelected(false);
+			rule.addAction(ZmFilterRule.A_FOLDER, ZmMsg.activityStreamsRule);
+			for (var id in this._streamHash) {
+				if (id == ZmFilterRule.TEST_ME) {
+					rule.addCondition(id, ZmFilterRule.OP_NOT_IS, null, this._streamHash[id].headerValue);	
+				}
+				else if (id == ZmFilterRule.TEST_ADDRBOOK) {
+					rule.addCondition(id, ZmFilterRule.OP_NOT_IN ,"contacts", this._streamHash[id].headerValue); //Address in From not in Contacts	
+				}
+				else {
+					rule.addCondition(id);
+				}
+			}
+		}
+		rule.setGroupOp(ZmFilterRule.GROUP_ANY);		
+		filterRuleDialog.popup(rule, true);
+	}
+};
+
+ZmPriorityMessageFilterDialog.prototype._setPrioritySelections = 
+function() {
+	if (this._priorityRule) {
+		if (this._priorityRule.active) {
+			this._markAsPriority.setEnabled(true);
+			this._markAsPriority.setSelected(true);
+		}
+		else {
+			this._markAsPriority.setSelected(false);
 		}
 		var conditions = this._priorityRule.conditions;
 		//initialize checkboxes for conditions
@@ -85,67 +221,41 @@ function() {
 		this._socialCast.setSelected(false);
 		this._twitter.setSelected(false);
 		this._linkedIn.setSelected(false);
-		this._convIStartCbox.setSelected(false);
-		this._frequentEmailCbox.setSelected(false);
-
+		this._convIStart.setSelected(false);
+		this._frequentEmail.setSelected(false);
+	
 		for (var c in conditions) {
 			var isNegative = AjxUtil.isArray(conditions[c]) && conditions[c][0].negative ? (conditions[c][0].negative == "1") : false;
-			switch (c) {
-				case ZmFilterRule.TEST_FACEBOOK:
-					if (!isNegative) {
-						this._facebook.setSelected(true);
-						this._facebook.setEnabled(true);
-						this._mentionsCbox.setSelected(true);
-					}
-					break;
-				
-				case ZmFilterRule.TEST_SOCIALCAST:
-					if (!isNegative) {
-						this._socialCast.setSelected(true);
-						this._socialCast.setEnabled(true);
-						this._mentionsCbox.setSelected(true);
-					}
-					break;
-				
-				case ZmFilterRule.TEST_TWITTER:
-					if (!isNegative) {
-						this._twitter.setSelected(true);
-						this._twitter.setEnabled(true);
-						this._mentionsCbox.setEnabled(true);
-					}
-					break;
-				
-				case ZmFilterRule.TEST_LINKEDIN:
-					if (!isNegative) {
-						this._linkedIn.setSelected(true);
-						this._linkedIn.setEnabled(true);
-						this._mentionsCbox.setEnabled(true);
-					}
-					break;
-				
-				case ZmFilterRule.TEST_CONVERSATIONS:
-					var value = conditions[c][0].where;
-					if (!isNegative && value == "started") {
-						this._convIStartCbox.setSelected(true);
-						this._convIStartCbox.setEnabled(true);
-					}
-					break;
-				
-				case ZmFilterRule.TEST_RANKING:
-					var header = AjxUtil.isArray(conditions[c]) && conditions[c][0].header;
-					if (!isNegative && header && header.toLowerCase() == ZmFilterRule.C_FROM.toLowerCase()) {
-						this._frequentEmailCbox.setSelected(true);
-						this._frequentEmailCbox.setEnabled(true);
-					}
-					break;
+			var control = this._priorityHash[c] && this._priorityHash[c].control;
+			if (c == ZmFilterRule.TEST_CONVERSATIONS && !isNegative) {
+				var value = AjxUtil.isArray(conditions[c]) && conditions[c][0].where;
+				if (value == "started") {
+					control.setSelected(true);
+					control.setEnabled(true);
+				}	
 			}
-		}
-		this._onMarkAsPriority();
+			else if (c == ZmFilterRule.TEST_RANKING && !isNegative) {
+				var header = AjxUtil.isArray(conditions[c]) && conditions[c][0].header;
+				if (header && header.toLowerCase() == ZmFilterRule.C_FROM.toLowerCase()) {
+					control.setSelected(true);
+					control.setEnabled(true);
+				}	
+			}
+			else if (this._priorityHash[c] && !isNegative && this._priorityHash[c].mentions) {
+				control.setSelected(true);
+				control.setEnabled(true);
+				this._mentions.setSelected(true);
+			}
+		}	
 	}
 	else {
-		this._markAsPriorityCbox.setSelected(false);
+		this._markAsPriority.setSelected(false);
 	}
-	
+	this._onMarkAsPriority();	
+};
+
+ZmPriorityMessageFilterDialog.prototype._setStreamSelections = 
+function() {
 	if (this._activityStreamRule) {
 		if (this._activityStreamRule.active) {
 			this._moveMsgIntoStream.setEnabled(true);
@@ -156,150 +266,33 @@ function() {
 		}
 		var conditions = this._activityStreamRule.conditions;
 		//initialize checkboxes before loading them
-		this._massMarketingCbox.setSelected(false);
-		this._dlSubscribedToCbox.setSelected(false);
-		this._notInMyAddrBkCbox.setSelected(false);
-		this._notToMeCbox.setSelected(false);
+		this._massMarketing.setSelected(false);
+		this._dlSubscribedTo.setSelected(false);
+		this._notInMyAddrBk.setSelected(false);
+		this._notToMe.setSelected(false);
+
 		for (var c in conditions) {
 			var isNegative = AjxUtil.isArray(conditions[c]) && conditions[c][0].negative ? (conditions[c][0].negative == "1") : false;
-			switch (c) {
-				case ZmFilterRule.TEST_BULK:
-					if (!isNegative) {
-						this._massMarketingCbox.setSelected(true);
-						this._massMarketingCbox.setEnabled(true);
-					}
-					break;
-				
-				case ZmFilterRule.TEST_LIST:
-					if (!isNegative) {
-						this._dlSubscribedToCbox.setSelected(true);
-						this._dlSubscribedToCbox.setEnabled(true);
-					}
-					break;
-				
-				case ZmFilterRule.TEST_ADDRBOOK:
+			if (this._streamHash[c]) {
+				if (isNegative && (c == ZmFilterRule.TEST_ADDRBOOK || c == ZmFilterRule.TEST_ME)) {
 					var header = AjxUtil.isArray(conditions[c]) && conditions[c][0].header;
-					if (isNegative && header && header.toLowerCase() == ZmFilterRule.C_FROM.toLowerCase()) {
-						this._notInMyAddrBkCbox.setSelected(true);
-						this._notInMyAddrBkCbox.setEnabled(true);
+					var value = (c == ZmFilterRule.TEST_ADDRBOOK) ? ZmFilterRule.C_FROM : ZmFilterRule.C_TO;
+					if (header && header.toLowerCase() == value.toLowerCase()) {
+						this._streamHash[c].control.setSelected(true);
+						this._streamHash[c].control.setEnabled(true);
 					}
-					break;
-				
-				case ZmFilterRule.TEST_ME:
-					var header = AjxUtil.isArray(conditions[c]) && conditions[c][0].header;
-					if (isNegative && header && header.toLowerCase() == ZmFilterRule.C_TO.toLowerCase()) {
-						this._notToMeCbox.setSelected(true);
-						this._notToMeCbox.setEnabled(true);
-					}
-					break;
+				}
+				else if (!isNegative) {
+					this._streamHash[c].control.setSelected(true);
+					this._streamHash[c].control.setEnabled(true);
+				}
 			}
 		}
-		this._onMoveMsgIntoStream();
 	}
 	else {
 		this._moveMsgIntoStream.setSelected(false);
 	}
-};
-
-ZmPriorityMessageFilterDialog.prototype._createControls = 
-function() {
-	this._markAsPriorityCbox = new DwtCheckbox({parent: this, id: "MARK_AS_PRIORITY", checked: false});
-	this._markAsPriorityCbox.setText(ZmMsg.markAsPriorityRule);
-	this._markAsPriorityCbox.replaceElement(document.getElementById("MARK_AS_PRIORITY"));
-	var priorityListener = this._onMarkAsPriority.bind(this);
-    this._markAsPriorityCbox.addSelectionListener(priorityListener);
-	
-	this._frequentEmailCbox = new DwtCheckbox({parent: this, id: Dwt.getNextId("FREQUENT_EMAIL_"), checked : true, className: "ZmPriorityFilterCriteria"});
-	this._frequentEmailCbox.setText(ZmMsg.frequentEmail);
-	this._frequentEmailCbox.replaceElement(document.getElementById("FREQUENTLY_EMAIL"));
-	this._frequentEmailCbox.setEnabled(false);
-
-    this._convIStartCbox = new DwtCheckbox({parent: this, id: Dwt.getNextId("CONV_I_START_"), checked: true, className: "ZmPriorityFilterCriteria"});
-	this._convIStartCbox.setText(ZmMsg.convIStart);
-	this._convIStartCbox.replaceElement(document.getElementById("CONV_I_START"));
-	this._convIStartCbox.setEnabled(false);
-	
-	this._mentionsCbox = new DwtCheckbox({parent: this, id: Dwt.getNextId("MENTIONS_DIRECT_MESSAGES"), checked: true, className: "ZmPriorityFilterCriteria"});
-    this._mentionsCbox.setText(ZmMsg.mentionsDirectMessages);
-	this._mentionsCbox.replaceElement(document.getElementById("MENTIONS_DIRECT_MESSAGES"));
-	this._mentionsCbox.setEnabled(false);
-	var socialListener = this._onMentions.bind(this);
-	this._mentionsCbox.addSelectionListener(socialListener);
-	
-	var socialList = new DwtComposite({parent: this, id: Dwt.getNextId("SOCIAL_LIST_"), className: "ZmPriorityFilterSocialList"});
-	socialList.setScrollStyle(Dwt.SCROLL);
-	socialList.replaceElement(document.getElementById("SOCIAL_LIST"));
-	socialList.setEnabled(false);
-	
-	//TODO: Which of these social boxes should be configurable?
-	this._socialCast = new DwtCheckbox({parent: socialList, id: Dwt.getNextId("SOCIAL_CAST_"), checked: true, className: "ZmPriorityFilterCriteria"});
-	this._socialCast.setText(ZmMsg.socialcast);
-	this._socialCast.setEnabled(false);
-	
-	this._facebook = new DwtCheckbox({parent: socialList, id: Dwt.getNextId("FACEBOOK_"), checked: true, className: "ZmPriorityFilterCriteria"});
-	this._facebook.setText(ZmMsg.facebook);
-	this._facebook.setEnabled(false);
-	
-	this._twitter = new DwtCheckbox({parent: socialList, id: Dwt.getNextId("TWITTER_"), checked: true, className: "ZmPriorityFilterCriteria"});
-	this._twitter.setText(ZmMsg.twitter);
-	this._twitter.setEnabled(false);
-	
-	this._linkedIn = new DwtCheckbox({parent: socialList, id: Dwt.getNextId("LINKEDIN_"), checked: true, className: "ZmPriorityFilterCriteria"});
-	this._linkedIn.setText(ZmMsg.linkedin);
-	this._linkedIn.setEnabled(false);
-	this._socialNetworks = [this._socialCast, this._facebook, this._twitter, this._linkedIn];
-	
-	this._moveMsgIntoStream = new DwtCheckbox({parent: this, id: "MOVE_MSG_STREAM", checked: false});
-	this._moveMsgIntoStream.setText(ZmMsg.moveToActivityStream);
-	this._moveMsgIntoStream.replaceElement(document.getElementById("MOVE_MSG_STREAM"));
-	var streamListener = this._onMoveMsgIntoStream.bind(this);
-	this._moveMsgIntoStream.addSelectionListener(streamListener);
-	
-	this._notToMeCbox = new DwtCheckbox({parent: this, id: "NOT_TO_ME_", checked: true, className: "ZmPriorityFilterCriteria"});
-	this._notToMeCbox.setText(ZmMsg.moveNotToMe);
-	this._notToMeCbox.replaceElement(document.getElementById("NOT_TO_ME"));
-	this._notToMeCbox.setEnabled(false);
-	
-	this._notInMyAddrBkCbox = new DwtCheckbox({parent: this, id: "NOT_IN_ADDR_", checked: true, className: "ZmPriorityFilterCriteria"});
-	this._notInMyAddrBkCbox.setText(ZmMsg.moveNotInAddrBook);
-	this._notInMyAddrBkCbox.replaceElement(document.getElementById("NOT_IN_ADDR"));
-	this._notInMyAddrBkCbox.setEnabled(false);
-	
-	this._dlSubscribedToCbox = new DwtCheckbox({parent: this, id: "DL_SUBSCRIBED_", checked: true, className: "ZmPriorityFilterCriteria"});
-	this._dlSubscribedToCbox.setText(ZmMsg.moveNotSubscribedTo);
-	this._dlSubscribedToCbox.replaceElement(document.getElementById("DL_SUBSCRIBED"));
-	this._dlSubscribedToCbox.setEnabled(false);
-	
-	this._massMarketingCbox = new DwtCheckbox({parent: this, id: "MASS_MARKETING_", checked: true, className: "ZmPriorityFilterCriteria"});
-	this._massMarketingCbox.setText(ZmMsg.massMarketingMessages);
-	this._massMarketingCbox.replaceElement(document.getElementById("MASS_MARKETING"));
-	this._massMarketingCbox.setEnabled(false);
-};
-
-ZmPriorityMessageFilterDialog.prototype._onMarkAsPriority = 
-function() {
-	var enabled = this._markAsPriorityCbox.isSelected();
-	this._frequentEmailCbox.setEnabled(enabled);
-	this._convIStartCbox.setEnabled(enabled);
-	this._mentionsCbox.setEnabled(enabled);
-	this._onMentions();
-};
-
-ZmPriorityMessageFilterDialog.prototype._onMentions = 
-function() {
-	var enabled = this._mentionsCbox.isSelected() && this._mentionsCbox.getEnabled();
-	for (var i=0; i < this._socialNetworks.length; i++) {
-		this._socialNetworks[i].setEnabled(enabled);
-	}
-};
-
-ZmPriorityMessageFilterDialog.prototype._onMoveMsgIntoStream = 
-function() {
-	var enabled = this._moveMsgIntoStream.isSelected();
-	this._notToMeCbox.setEnabled(enabled);
-	this._notInMyAddrBkCbox.setEnabled(enabled);
-	this._dlSubscribedToCbox.setEnabled(enabled);
-	this._massMarketingCbox.setEnabled(enabled);
+	this._onMoveMsgIntoStream();	
 };
 
 ZmPriorityMessageFilterDialog.prototype._okButtonListener = 
@@ -308,127 +301,115 @@ function() {
 	var foundCondition = false;
 	var needSave = false; 
 	var runNowPrompt = false;
-	var prioritySelected = this._markAsPriorityCbox.isSelected();
-	if (prioritySelected) {
-		var isRankingTest = this._frequentEmailCbox.isSelected();
-		var isConversationTest = this._convIStartCbox.isSelected();
-		var isSocialTest = this._mentionsCbox.isSelected();
-		var isFacebookTest = isSocialTest && this._facebook.isSelected();
-		var isLinkedinTest = isSocialTest && this._linkedIn.isSelected();
-		var isSocialcastTest = isSocialTest && this._socialCast.isSelected();
-		var isTwitterTest = isSocialTest && this._twitter.isSelected();
+	var condition = {};
+	var priorityRule = this._rules.getRuleByName(ZmMsg.markAsPriorityRule);
+	var activityRule = this._rules.getRuleByName(ZmMsg.activityStreamsRule);
+	
+	if (this._markAsPriority.isSelected()) {		
 		var rule = new ZmFilterRule(ZmMsg.markAsPriorityRule, true, {}, {});
-		rule.setGroupOp(ZmFilterRule.GROUP_ANY);
-		if (isFacebookTest) {
-			rule.addCondition(ZmFilterRule.TEST_FACEBOOK);
-			foundCondition = true;
-		}
-		if (isTwitterTest) {
-			rule.addCondition(ZmFilterRule.TEST_TWITTER);
-			foundCondition = true;
-		}
+		rule.addAction(ZmFilterRule.A_FLAG, "priority");
+		rule.addAction(ZmFilterRule.A_STOP);
+		rule.setGroupOp(ZmFilterRule.GROUP_ANY);		
 		
-		if (isSocialcastTest) {
-			rule.addCondition(ZmFilterRule.TEST_SOCIALCAST);
-			foundCondition = true;
-		}
-		
-		if (isLinkedinTest) {
-			rule.addCondition(ZmFilterRule.TEST_LINKEDIN);
-			foundCondition = true;
-		}
-		
-		if (isConversationTest) {
-			rule.addCondition(ZmFilterRule.TEST_CONVERSATIONS, null, "started");
-			foundCondition = true;
-		}
-		
-		if (isRankingTest) {
-			rule.addCondition(ZmFilterRule.TEST_RANKING, null , null, ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM]);
-		}
-		
-		if (foundCondition) {
-			rule.addAction(ZmFilterRule.A_FLAG, "priority");
-			rule.addAction(ZmFilterRule.A_STOP);
-			var priorityRule = this._rules.getRuleByName(ZmMsg.markAsPriorityRule);
-			if (priorityRule) {
-				priorityRule.conditions = rule.conditions;
-				priorityRule.actions = rule.actions;
-				priorityRule.active = true;
-				needSave = true;
+		for (var id in this._priorityHash) {
+			var control = this._priorityHash[id].control;
+			var mentions = this._priorityHash[id].mentions ? this._mentions.isSelected() : true;
+			var negative = this._priorityHash[id].negative;
+			var headerValue = this._priorityHash[id].headerValue;
+			if (control.isSelected() && mentions) {
+				if (id == ZmFilterRule.TEST_CONVERSATIONS) {
+					rule.addCondition(id, null, "started");	
+				}
+				else if (id == ZmFilterRule.TEST_RANKING) {
+					rule.addCondition(id, null , null, headerValue);
+				}
+				else {
+					rule.addCondition(id);
+				}
+				foundCondition = true;
 			}
-			else {
+			else if (priorityRule) {
+				priorityRule = this._removeCondition(priorityRule, id, negative, headerValue);
+			}
+		}				
+		if (foundCondition && priorityRule) {			
+			for (var id in rule.conditions) {
+				priorityRule.conditions[id] = rule.conditions[id];
+			}				
+			for (var id in rule.actions) {
+				priorityRule.actions[id] = rule.actions[id];
+			}				
+			priorityRule.active = true;
+			needSave = true;
+		}
+		else if (foundCondition) {
 				this._rules.insertRule(rule, 0); //make it first in list
 				needSave = true;
-				runNowPrompt = true;
-			}
-			
+				runNowPrompt = true;		
+		}
+		else if (priorityRule) {
+			//no conditions selected
+			return this._handleConditionsError(ZmMsg.ruleNoConditionPriorityFilter);
 		}
 	}
-	else {
-		//User didn't check mark as priority; set existing filter rule to non-active
-		var priorityRule = this._rules.getRuleByName(ZmMsg.markAsPriorityRule);
-		if (priorityRule) {	
-			priorityRule.active = false;
-			needSave = true;
-		}
+	else if (priorityRule){
+		priorityRule.active = false;
+		needSave = true;
 	}
-	
+	//handle activity streams
 	foundCondition = false;
-	var moveMsgSelected = this._moveMsgIntoStream.isSelected();
-	if (moveMsgSelected) {
+	if (this._moveMsgIntoStream.isSelected()) {
 		var streamRule = new ZmFilterRule(ZmMsg.activityStreamsRule, true, {}, {});
+		streamRule.addAction(ZmFilterRule.A_FOLDER, ZmMsg.activityStreamsRule); 
 		streamRule.setGroupOp(ZmFilterRule.GROUP_ANY);
-		var isNotToMe = this._notToMeCbox.isSelected();
-		var isNotInAddrBk = this._notInMyAddrBkCbox.isSelected();
-		var isDLSubTo = this._dlSubscribedToCbox.isSelected();
-		var isMassMarketing = this._massMarketingCbox.isSelected();
 		
-		if (isNotToMe) {
-			streamRule.addCondition(ZmFilterRule.TEST_ME, ZmFilterRule.OP_NOT_IS, null, ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_TO]); 
-			foundCondition = true;
-		}
-		
-		if (isNotInAddrBk) {
-			streamRule.addCondition(ZmFilterRule.TEST_ADDRBOOK, ZmFilterRule.OP_NOT_IN ,"contacts", ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM]); //Address in From not in Contacts
-			foundCondition = true;
-		}
-		
-		if (isDLSubTo) {
-			streamRule.addCondition(ZmFilterRule.TEST_LIST); 
-			foundCondition = true;
-		}
-		
-		if (isMassMarketing) {
-			streamRule.addCondition(ZmFilterRule.TEST_BULK);
-			foundCondition = true;
-		}
-		
-		if (foundCondition) {
-			streamRule.addAction(ZmFilterRule.A_FOLDER, ZmMsg.activityStreamsRule); 
-			var activityRule = this._rules.getRuleByName(ZmMsg.activityStreamsRule);
-			if (activityRule) {
-				activityRule.conditions = streamRule.conditions;
-				activityRule.actions = streamRule.actions;
-				activityRule.active = true;
-				needSave = true;
-
+		for (var id in this._streamHash) {
+			var control = this._streamHash[id].control;
+			var negative = this._streamHash[id].negative;
+			var headerValue = this._streamHash[id].headerValue;
+			if (control.isSelected()) {
+				if (id == ZmFilterRule.TEST_ME) {
+					streamRule.addCondition(id, ZmFilterRule.OP_NOT_IS, null, headerValue);	
+				}
+				else if (id == ZmFilterRule.TEST_ADDRBOOK) {
+					streamRule.addCondition(id, ZmFilterRule.OP_NOT_IN ,"contacts", headerValue); //Address in From not in Contacts	
+				}
+				else {
+					streamRule.addCondition(id);
+				}
+				foundCondition = true;
 			}
-			else {
-				var index = this._rules.getIndexOfRule(ZmMsg.markAsPriorityRule);
-				this._rules.insertRule(streamRule, index); 
-				needSave = true;
-				runNowPrompt = true;
+			else if (activityRule) {
+				activityRule = this._removeCondition(activityRule, id, negative, headerValue);
 			}
 		}
-	}
-	else {
-		//set existing rule to be non-active
-		var activityRule = this._rules.getRuleByName(ZmMsg.activityStreamsRule);
-		if (activityRule) {
-			activityRule.active = false;
+		
+		if (foundCondition && activityRule) {
+			for (var id in streamRule.conditions) {
+				activityRule.conditions[id] = streamRule.conditions[id];
+			}
+	
+			for (var id in streamRule.actions) {
+				activityRule.actions[id] = streamRule.actions[id];
+			}
+	
+			activityRule.active = true;
 			needSave = true;
 		}
+		else if(foundCondition) {
+			var index = this._rules.getIndexOfRule(ZmMsg.markAsPriorityRule);
+			this._rules.insertRule(streamRule, index); 
+			needSave = true;
+			runNowPrompt = true;
+		}
+		else if (activityRule) {
+			return this._handleConditionsError(ZmMsg.ruleNoConditonActivityFilter);	
+		}
+	}
+	else if (activityRule) {
+		//set existing rule to be non-active
+		activityRule.active = false;
+		needSave = true;
 	}
 	
 	if (needSave) {
@@ -447,7 +428,7 @@ function() {
 
 ZmPriorityMessageFilterDialog.prototype._getButtonsContainerStartTemplate =
 function() {
-	var html = "<div style='width: 250px; float: left;'>" + ZmMsg.messagePrioritizationTips + "</div><div style='float:right;'>";
+	var html = "<div style='width: 250px; float: left;'>" + AjxMessageFormat.format(ZmMsg.messagePrioritizationTips, [appCtxt.get(ZmSetting.HELP_URI)]) + "</div><div style='float:right;'>";
 	html += DwtDialog.prototype._getButtonsContainerStartTemplate.call(this);
 	return html;
 };
@@ -457,4 +438,37 @@ function() {
 	var html = "</div>";
 	html += DwtDialog.prototype._getButtonsContainerEndTemplate.call(this);
 	return html;
+};
+
+/**
+ * checks condition and value to determine if it should be removed; comparators are not checked
+ * @param rule
+ * @param condition
+ * @param isNegative
+ * @param headerValue
+ */
+ZmPriorityMessageFilterDialog.prototype._removeCondition = 
+function(rule, condition, isNegative, headerValue) {
+	var c = rule.conditions[condition];
+	if (c) {
+		for (var i=0; i<c.length; i++) {
+			var negativeCheck = isNegative ? c[i].negative == "1" : !c[i].negative;
+			var headerCheck = headerValue ? c[i].header == headerValue : true;
+			if (condition == ZmFilterRule.TEST_CONVERSATIONS) {
+				headerCheck = headerValue ? c[i].where == headerValue : true;
+			}
+			if (negativeCheck && headerCheck) {				
+				c.splice(i, 1);
+				rule.conditions[condition] = c;
+			}
+		} 			
+	}
+	return rule;
+};
+
+ZmPriorityMessageFilterDialog.prototype._handleConditionsError =
+function(msg) {  
+	var msgDialog = appCtxt.getMsgDialog();
+	msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+	msgDialog.popup();
 };

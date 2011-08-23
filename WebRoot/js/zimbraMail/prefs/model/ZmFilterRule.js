@@ -142,6 +142,7 @@ ZmFilterRule.C_LABEL[ZmFilterRule.C_ADDRBOOK]	= ZmMsg.addressIn;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_INVITE]		= ZmMsg.calendarInvite;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_CONV]       = ZmMsg.message;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_SOCIAL]     = ZmMsg.socialLabel;
+ZmFilterRule.C_LABEL[ZmFilterRule.C_ADDRESS]    = ZmMsg.address;
 
 // Tests
 ZmFilterRule.TEST_ADDRESS						= "addressTest"; 
@@ -314,7 +315,7 @@ ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_FACEBOOK] = ZmMsg.facebook;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_TWITTER] = ZmMsg.twitter;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_LINKEDIN] = ZmMsg.linkedin;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_SOCIALCAST] = ZmMsg.socialcast;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IS_ME]        = ZmMsg.isMelabel;
+ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IS_ME]        = ZmMsg.isMeLabel;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_ME]       = ZmMsg.isNotMeLabel;
 
 
@@ -406,7 +407,8 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_MIME_HEADER] = {
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_ADDRBOOK] = {
 		subjectMod:	ZmFilterRule.TYPE_SELECT,
 		smOptions:	[{label: ZmMsg.from, value: "from"}, {label: ZmMsg.to, value: "to"},
-					 {label: ZmMsg.cc, value: "cc"}, {label: ZmMsg.bcc, value: "bcc"}],
+					 {label: ZmMsg.cc, value: "cc"}, {label: ZmMsg.toOrCc, value: "to,cc"},
+					 {label: ZmMsg.bcc, value: "bcc"}],
 		ops:		ZmFilterRule.TYPE_SELECT,
 		opsOptions:	[ZmFilterRule.OP_IN, ZmFilterRule.OP_NOT_IN, ZmFilterRule.OP_IS_ME, ZmFilterRule.OP_NOT_ME],
 		value:		ZmFilterRule.TYPE_SELECT,
@@ -465,7 +467,8 @@ ZmFilterRule.CONDITIONS_LIST = [
 	ZmFilterRule.C_ADDRBOOK,
 	ZmFilterRule.C_INVITE,
 	ZmFilterRule.C_SOCIAL,
-	ZmFilterRule.C_CONV
+	ZmFilterRule.C_CONV,
+	ZmFilterRule.C_ADDRESS
 ];
 
 // mark certain conditions as headers

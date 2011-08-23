@@ -788,9 +788,10 @@ function() {
 };
 
 /**
-* Gets the activity stream prompt dialog for running activity stream filters
+ * Gets the activity stream prompt dialog for running activity stream filters
+ * 
+ * @return {ZmActivityStreamPromptDialog}
 */
-/*
 ZmAppCtxt.prototype.getActivityStreamFilterDialog = 
 function() {
 	if (!this._activityStreamFilterDialog) {
@@ -799,8 +800,12 @@ function() {
 	}
 	return this._activityStreamFilterDialog;
 };
-*/
 
+/**
+ * Gets the quickadd dialog for creating a contact
+ * 
+ * @return {ZmContactQuickAddDialog}
+ */
 ZmAppCtxt.prototype.getContactQuickAddDialog = 
 function() {
 	if (!this._contactQuickAddDialog) {

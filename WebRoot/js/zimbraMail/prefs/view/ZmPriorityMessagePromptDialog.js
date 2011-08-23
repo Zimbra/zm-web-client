@@ -16,7 +16,7 @@
 ZmPriorityMessagePromptDialog = function() {
 
 	DwtDialog.call(this, {parent:appCtxt.getShell(), className:"ZmPriorityMessagePromptDialog", title:ZmMsg.applyPrioritizationTitle,
-						  standardButtons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]});
+						  standardButtons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON], id: "ZmPriorityMessagePromptDialog"});
 
 	// set content
 	this.setContent(this._contentHtml());
@@ -30,13 +30,8 @@ ZmPriorityMessagePromptDialog.prototype.constructor = ZmPriorityMessagePromptDia
 
 ZmPriorityMessagePromptDialog.prototype._contentHtml = 
 function() {   
-	//TODO: move to template?
-	var html = "<div style='width: 350;'>" + 
-			     "<div style='float: left; padding-right: 10px; height: 50px'>" + AjxImg.getImageHtml("Warning") + "</div>" +
-				 "<div>" + ZmMsg.runPriorityFilterPrompt + "</div>" +
-			  "</div>";
-	
-	return html;			
+	var id = "PriorityMessageRunNowPrompt";	
+	return AjxTemplate.expand("prefs.Pages#PriorityMessageRunNowPrompt", id);		
 };
 
 ZmPriorityMessagePromptDialog.prototype._handleYesButton =

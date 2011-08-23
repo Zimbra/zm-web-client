@@ -48,6 +48,7 @@ AjxPackage.require("zimbraMail.prefs.view.ZmPriorityMessagePromptDialog");
 AjxPackage.require("zimbraMail.prefs.view.ZmSharingPage");
 AjxPackage.require("zimbraMail.prefs.view.ZmFilterPage");
 AjxPackage.require("zimbraMail.prefs.view.ZmNotificationsPage");
+AjxPackage.require("zimbraMail.prefs.view.ZmActivityStreamPromptDialog");
 
 AjxPackage.require("zimbraMail.calendar.view.ZmCalendarPrefsPage");
 
