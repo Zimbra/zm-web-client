@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -100,17 +100,6 @@ ZmFilterRule.C_ATT			= "ATT";
 ZmFilterRule.C_MIME_HEADER	= "MIME_HEADER";
 ZmFilterRule.C_ADDRBOOK		= "ADDRBOOK";
 ZmFilterRule.C_INVITE		= "INVITE";
-ZmFilterRule.C_FACEBOOK     = "FACEBOOK";
-ZmFilterRule.C_LINKEDIN     = "LINKEDIN";
-ZmFilterRule.C_SOCIALCAST   = "SOCIALCAST";
-ZmFilterRule.C_TWITTER      = "TWITTER"
-ZmFilterRule.C_CONV         = "CONVERSATIONS";
-ZmFilterRule.C_BULK         = "BULK";
-ZmFilterRule.C_LIST         = "LIST";
-ZmFilterRule.C_SOCIAL       = "SOCIAL";
-ZmFilterRule.C_ADDRESS      = "ADDRESS";
-ZmFilterRule.C_RANKING      = "RANKING";
-ZmFilterRule.C_ME           = "ME";
 
 ZmFilterRule.C_HEADER_VALUE = {};
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM]	= "from";
@@ -140,12 +129,9 @@ ZmFilterRule.C_LABEL[ZmFilterRule.C_ATT]		= ZmMsg.attachment;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_MIME_HEADER]= ZmMsg.readReceiptFilter;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_ADDRBOOK]	= ZmMsg.addressIn;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_INVITE]		= ZmMsg.calendarInvite;
-ZmFilterRule.C_LABEL[ZmFilterRule.C_CONV]       = ZmMsg.message;
-ZmFilterRule.C_LABEL[ZmFilterRule.C_SOCIAL]     = ZmMsg.socialLabel;
-ZmFilterRule.C_LABEL[ZmFilterRule.C_ADDRESS]    = ZmMsg.address;
 
 // Tests
-ZmFilterRule.TEST_ADDRESS						= "addressTest"; 
+ZmFilterRule.TEST_ADDRESS						= "addressTest"; // not currently support
 ZmFilterRule.TEST_HEADER						= "headerTest";
 ZmFilterRule.TEST_HEADER_EXISTS					= "headerExistsTest";
 ZmFilterRule.TEST_SIZE							= "sizeTest";
@@ -155,17 +141,6 @@ ZmFilterRule.TEST_ATTACHMENT					= "attachmentTest";
 ZmFilterRule.TEST_MIME_HEADER					= "mimeHeaderTest";
 ZmFilterRule.TEST_ADDRBOOK						= "addressBookTest";
 ZmFilterRule.TEST_INVITE						= "inviteTest";
-ZmFilterRule.TEST_FACEBOOK                      = "facebookTest";
-ZmFilterRule.TEST_LINKEDIN                      = "linkedinTest";
-ZmFilterRule.TEST_TWITTER                       = "twitterTest";
-ZmFilterRule.TEST_SOCIALCAST                    = "socialcastTest";
-ZmFilterRule.TEST_CONVERSATIONS                 = "conversationTest";
-ZmFilterRule.TEST_BULK                          = "bulkTest";
-ZmFilterRule.TEST_LIST                          = "listTest";
-ZmFilterRule.TEST_SOCIAL                        = "socialTest"; //not a real test
-ZmFilterRule.TEST_ME                            = "meTest";
-ZmFilterRule.TEST_RANKING                       = "contactRankingTest";
-
 
 // Conditions map to Tests
 ZmFilterRule.C_TEST_MAP = {};
@@ -182,16 +157,6 @@ ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_ATT]			= ZmFilterRule.TEST_ATTACHMENT;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_MIME_HEADER]	= ZmFilterRule.TEST_MIME_HEADER;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_ADDRBOOK]	= ZmFilterRule.TEST_ADDRBOOK;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_INVITE]		= ZmFilterRule.TEST_INVITE;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_FACEBOOK]    = ZmFilterRule.TEST_FACEBOOK;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_LINKEDIN]    = ZmFilterRule.TEST_LINKEDIN;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_TWITTER]     = ZmFilterRule.TEST_TWITTER;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SOCIALCAST]  = ZmFilterRule.TEST_SOCIALCAST;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_CONV]        = ZmFilterRule.TEST_CONVERSATIONS;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_BULK]        = ZmFilterRule.TEST_BULK;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SOCIAL]      = ZmFilterRule.TEST_SOCIAL;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_ADDRESS]     = ZmFilterRule.TEST_ADDRESS;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_ME]          = ZmFilterRule.TEST_ME;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_RANKING]     = ZmFilterRule.TEST_RANKING;
 
 // Operations (verbs)
 ZmFilterRule.OP_IS				= "IS";
@@ -218,24 +183,12 @@ ZmFilterRule.OP_NOT_REPLIED     = "NOT_REPLIED"; //invites
 ZmFilterRule.OP_IS_REPLIED		= "IS_REPLIED"; // invites
 ZmFilterRule.OP_IS_READRECEIPT  = "IS_READRECEIPT";
 ZmFilterRule.OP_NOT_READRECEIPT = "NOT_READRECEIPT";
-ZmFilterRule.OP_WHERE_STARTED   = "STARTED"; //conversations
-ZmFilterRule.OP_WHERE_PARTICIPATED = "PARTICIPATED"; //conversations
-ZmFilterRule.OP_CONV_IS         = "CONV_IS";//not an operator
-ZmFilterRule.OP_NOT_CONV        = "CONV_NOT";
-ZmFilterRule.OP_SOCIAL_FROM     = "SOCIAL_FROM"; //not an operator
-ZmFilterRule.OP_SOCIAL_FACEBOOK = "SOCIAL_FACEBOOK";
-ZmFilterRule.OP_SOCIAL_TWITTER  = "SOCIAL_TWITTER";
-ZmFilterRule.OP_SOCIAL_LINKEDIN = "SOCIAL_LINKEDIN";
-ZmFilterRule.OP_SOCIAL_SOCIALCAST = "SOCIAL_SOCIALCAST";
-ZmFilterRule.OP_IS_ME           = "IS_ME";
-ZmFilterRule.OP_NOT_ME          = "IS_NOT_ME";
 
 
 // comparator types
 ZmFilterRule.COMP_STRING							= "stringComparison";
 ZmFilterRule.COMP_NUMBER							= "numberComparison";
 ZmFilterRule.COMP_DATE								= "dateComparison";
-
 // comparator map to test
 ZmFilterRule.COMP_TEST_MAP = {};
 ZmFilterRule.COMP_TEST_MAP[ZmFilterRule.TEST_ADDRESS]		= ZmFilterRule.COMP_STRING;
@@ -258,27 +211,11 @@ ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IN]			= "in";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_REQUESTED]	= "anyrequest";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_REPLIED]	= "anyreply";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_READRECEIPT] = "contains";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_WHERE_STARTED] = "started";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_WHERE_PARTICIPATED] = "participated";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_CONV_IS]      = "convIs";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_SOCIAL_FROM]  = "socialFrom";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_SOCIAL_FACEBOOK] = "socialFacebook";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_SOCIAL_TWITTER] = "socialTwitter";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_SOCIAL_LINKEDIN] = "socialLinkedIn";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_SOCIAL_SOCIALCAST] = "socialSocialCast";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_ME]        = "isMe";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_NOT_CONV]     = "convNot";
 
 ZmFilterRule.OP_VALUE_MAP = {};
 for (var i in ZmFilterRule.OP_VALUE) {
 	ZmFilterRule.OP_VALUE_MAP[ZmFilterRule.OP_VALUE[i]] = i;
 };
-
-ZmFilterRule.OP_SOCIAL_MAP = {};
-ZmFilterRule.OP_SOCIAL_MAP[ZmFilterRule.OP_SOCIAL_FACEBOOK] = ZmFilterRule.TEST_FACEBOOK;
-ZmFilterRule.OP_SOCIAL_MAP[ZmFilterRule.OP_SOCIAL_LINKEDIN] = ZmFilterRule.TEST_LINKEDIN;
-ZmFilterRule.OP_SOCIAL_MAP[ZmFilterRule.OP_SOCIAL_TWITTER] = ZmFilterRule.TEST_TWITTER;
-ZmFilterRule.OP_SOCIAL_MAP[ZmFilterRule.OP_SOCIAL_SOCIALCAST] = ZmFilterRule.TEST_SOCIALCAST;
 
 // operation labels
 ZmFilterRule.OP_LABEL = {};
@@ -306,17 +243,6 @@ ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IS_REPLIED]	= ZmMsg.isReplied;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_REPLIED]  = ZmMsg.notReplied;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IS_READRECEIPT] = ZmMsg.exists;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_READRECEIPT] = ZmMsg.notExist;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_WHERE_PARTICIPATED] = ZmMsg.participatedLabel;  
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_WHERE_STARTED] = ZmMsg.startedLabel;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_CONV_IS]      = ZmMsg.isLabel;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_CONV]     = ZmMsg.notIs;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_FROM]  = ZmMsg.from;;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_FACEBOOK] = ZmMsg.facebook;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_TWITTER] = ZmMsg.twitter;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_LINKEDIN] = ZmMsg.linkedin;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_SOCIALCAST] = ZmMsg.socialcast;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IS_ME]        = ZmMsg.isMeLabel;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_ME]       = ZmMsg.isNotMeLabel;
 
 
 // commonly used lists
@@ -410,45 +336,13 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_ADDRBOOK] = {
 					 {label: ZmMsg.cc, value: "cc"}, {label: ZmMsg.toOrCc, value: "to,cc"},
 					 {label: ZmMsg.bcc, value: "bcc"}],
 		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	[ZmFilterRule.OP_IN, ZmFilterRule.OP_NOT_IN, ZmFilterRule.OP_IS_ME, ZmFilterRule.OP_NOT_ME],
+		opsOptions:	[ZmFilterRule.OP_IN, ZmFilterRule.OP_NOT_IN],
 		value:		ZmFilterRule.TYPE_SELECT,
-		vOptions:	[{label: ZmMsg.myContactsLabel, value: "contacts"}, {label: ZmMsg.frequentEmailLabel, value: "ranking"}]
+		vOptions:	[{label: ZmMsg.myContacts, value: "contacts"}]
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_INVITE] = {
 		ops:		ZmFilterRule.TYPE_SELECT,
 		opsOptions:	[ZmFilterRule.OP_IS_REQUESTED, ZmFilterRule.OP_NOT_REQUESTED, ZmFilterRule.OP_IS_REPLIED, ZmFilterRule.OP_NOT_REPLIED]
-};
-ZmFilterRule.CONDITIONS[ZmFilterRule.C_CONV] = {
-		ops:        ZmFilterRule.TYPE_SELECT,
-	    opsOptions: [ZmFilterRule.OP_CONV_IS, ZmFilterRule.OP_NOT_CONV],
-		value:      ZmFilterRule.TYPE_SELECT,
-		vOptions:  [{label: ZmMsg.convIStartLabel, value: "started"}, {label: ZmMsg.convIParticipateLabel, value: "participated"},
-			        {label: ZmMsg.massMarketingLabel, value: ZmFilterRule.C_BULK}, {label: ZmMsg.distributionListLabel, value: ZmFilterRule.C_LIST}]
-};
-ZmFilterRule.CONDITIONS[ZmFilterRule.C_SOCIAL] = {
-		ops:        ZmFilterRule.TYPE_SELECT,
-		opsOptions: [ZmFilterRule.OP_SOCIAL_FACEBOOK, ZmFilterRule.OP_SOCIAL_TWITTER, ZmFilterRule.OP_SOCIAL_LINKEDIN, ZmFilterRule.OP_SOCIAL_SOCIALCAST],
-	    value:      ZmFilterRule.TYPE_SELECT,
-		vOptions:   [{label: ZmMsg.socialFilterOp, value: "social"}, 
-			         {label: ZmMsg.socialFilterOpNegative, value: "not_social"}]
-};
-ZmFilterRule.CONDITIONS[ZmFilterRule.C_ADDRESS] = {
-		subjectMod:	ZmFilterRule.TYPE_SELECT,
-		smOptions:	[{label: ZmMsg.from, value: "from"}, {label: ZmMsg.to, value: "to"},
-					 {label: ZmMsg.cc, value: "cc"}, {label: ZmMsg.bcc, value: "bcc"}],
-		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	ZmFilterRule.MATCHING_OPS,
-		value:		ZmFilterRule.TYPE_INPUT,
-		valueMod:   ZmFilterRule.TYPE_SELECT,    
-		vmOptions:	[{label: "all", value: "all"}, {label: "localpart", value: "localpart"}, {label:"domain", value: "domain"}]
-};
-ZmFilterRule.CONDITIONS[ZmFilterRule.C_LIST] = {
-		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	[ZmFilterRule.OP_EXISTS, ZmFilterRule.OP_NOT_EXISTS]
-};
-ZmFilterRule.CONDITIONS[ZmFilterRule.C_BULK] = {
-		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	[ZmFilterRule.OP_EXISTS, ZmFilterRule.OP_NOT_EXISTS]
 };
 
 // listed in order we want to display them in the SELECT
@@ -465,10 +359,7 @@ ZmFilterRule.CONDITIONS_LIST = [
 	ZmFilterRule.C_ATT,
 	ZmFilterRule.C_MIME_HEADER,
 	ZmFilterRule.C_ADDRBOOK,
-	ZmFilterRule.C_INVITE,
-	ZmFilterRule.C_SOCIAL,
-	ZmFilterRule.C_CONV,
-	ZmFilterRule.C_ADDRESS
+	ZmFilterRule.C_INVITE
 ];
 
 // mark certain conditions as headers
@@ -480,8 +371,6 @@ ZmFilterRule.IS_HEADER[ZmFilterRule.C_TO_CC]	= true;
 ZmFilterRule.IS_HEADER[ZmFilterRule.C_SUBJECT]	= true;
 ZmFilterRule.IS_HEADER[ZmFilterRule.C_HEADER]	= true;
 
-ZmFilterRule.IS_SOCIAL = "social";
-ZmFilterRule.IS_NOT_SOCIAL = "not_social";
 // Actions
 
 /**
@@ -579,10 +468,10 @@ delete i;
 ZmFilterRule.A_LABEL = {};
 ZmFilterRule.A_LABEL[ZmFilterRule.A_KEEP]		= ZmMsg.keepInInbox;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_KEEP_SENT]	= ZmMsg.keepInSent;
-ZmFilterRule.A_LABEL[ZmFilterRule.A_FOLDER]		= ZmMsg.moveIntoFolder;
-ZmFilterRule.A_LABEL[ZmFilterRule.A_DISCARD]	= ZmMsg.del;
+ZmFilterRule.A_LABEL[ZmFilterRule.A_FOLDER]		= ZmMsg.fileIntoFolder;
+ZmFilterRule.A_LABEL[ZmFilterRule.A_DISCARD]	= ZmMsg.discard;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_STOP]		= ZmMsg.stopEvaluation;
-ZmFilterRule.A_LABEL[ZmFilterRule.A_FLAG]		= ZmMsg.filterMarkAs;
+ZmFilterRule.A_LABEL[ZmFilterRule.A_FLAG]		= ZmMsg.mark;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_TAG]		= ZmMsg.tagWith;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_FORWARD]	= ZmMsg.forwardToAddress;
 
@@ -612,7 +501,7 @@ ZmFilterRule.ACTIONS[ZmFilterRule.A_FOLDER]	= {
 ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG] = {
 	param:				ZmFilterRule.TYPE_SELECT,
 	// NOTE: If you change the order of these options, also change _setPreconditions!!!
-	pOptions:			[{label: ZmMsg.read, value: "read"}, {label: ZmMsg.flagged, value: "flagged"}, {label: "Priority", value: "priority"}]
+	pOptions:			[{label: ZmMsg.asRead, value: "read"}, {label: ZmMsg.asFlagged, value: "flagged"}]
 };
 
 ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG] = {
@@ -680,32 +569,10 @@ function(groupOp) {
 
 ZmFilterRule.prototype.addCondition =
 function(testType, comparator, value, subjectMod, caseSensitive) {
-	//In dialog some tests are options under other tests
-	if (testType == ZmFilterRule.TEST_SOCIAL && comparator) {
-		testType = ZmFilterRule.OP_SOCIAL_MAP[comparator];
-	}
-	else if (testType == ZmFilterRule.TEST_ADDRBOOK && (comparator == ZmFilterRule.OP_IS_ME || comparator == ZmFilterRule.OP_NOT_ME)) {
-		testType = ZmFilterRule.TEST_ME;
-		value = null;
-		comparator = comparator == ZmFilterRule.OP_IS_ME ? ZmFilterRule.OP_IS : ZmFilterRule.OP_NOT_IS;
-	}
-	else if (testType == ZmFilterRule.TEST_ADDRBOOK && value == "ranking") {
-		testType = ZmFilterRule.TEST_RANKING;
-		value = null;
-	}
-	else if (testType == ZmFilterRule.TEST_CONVERSATIONS && value == ZmFilterRule.C_BULK) {
-		testType = ZmFilterRule.TEST_BULK;
-		value = null;
-	}
-	else if (testType == ZmFilterRule.TEST_CONVERSATIONS && value == ZmFilterRule.C_LIST) {
-		testType = ZmFilterRule.TEST_LIST;
-		value = null;
-	}
-	
 	if (!this.conditions[testType]) {
 		this.conditions[testType] = [];
 	}
-	
+
 	var cdata = ZmFilterRule.getConditionData(testType, comparator, value, subjectMod, caseSensitive);
 	this.conditions[testType].push(cdata);
 };
@@ -775,23 +642,11 @@ function(testType, comparator, value, subjectMod, caseSensitive) {
 		(testType == ZmFilterRule.TEST_HEADER ||
 		 testType == ZmFilterRule.TEST_HEADER_EXISTS ||
 		 testType == ZmFilterRule.TEST_ADDRBOOK ||
-		 testType == ZmFilterRule.TEST_MIME_HEADER ||
-		 testType == ZmFilterRule.TEST_ADDRESS ||
-		 testType == ZmFilterRule.TEST_ME ||
-		 testType == ZmFilterRule.TEST_RANKING))
+		 testType == ZmFilterRule.TEST_MIME_HEADER))
 	{
 		conditionData.header = subjectMod;
 	}
-	
-	var part = "all"; //default
-	if (testType == ZmFilterRule.TEST_ADDRESS && value && typeof value == "string") {
-		var valueArr = value.split(";"); 
-		if (valueArr && valueArr.length > 1) {
-			value = valueArr[0];
-			part = valueArr[1];
-		}
-	}
-	
+
 	// normalize negative operator and add comparator
 	var negativeOp;
 	switch (comparator) {
@@ -807,19 +662,9 @@ function(testType, comparator, value, subjectMod, caseSensitive) {
         case ZmFilterRule.OP_NOT_REPLIED:   negativeOp = ZmFilterRule.OP_IS_REPLIED; break;
         case ZmFilterRule.OP_NOT_REQUESTED: negativeOp = ZmFilterRule.OP_IS_REQUESTED; break;
         case ZmFilterRule.OP_NOT_READRECEIPT: negativeOp = ZmFilterRule.OP_CONTAINS; break;
-		case ZmFilterRule.OP_NOT_CONV:      negativeOp = true; break;
 	}
 	if (negativeOp) {
 		conditionData.negative = "1";
-	}
-	
-	if (value == ZmFilterRule.IS_NOT_SOCIAL && 
-		(testType == ZmFilterRule.TEST_FACEBOOK  ||
-		 testType == ZmFilterRule.TEST_SOCIALCAST || 
-		 testType == ZmFilterRule.TEST_TWITTER ||
-		 testType == ZmFilterRule.TEST_LINKEDIN)) {
-		conditionData.negative = "1";
-		value = null;
 	}
 
 	var compType = ZmFilterRule.COMP_TEST_MAP[testType];
@@ -830,13 +675,9 @@ function(testType, comparator, value, subjectMod, caseSensitive) {
 	// add data value
 	if (value) {
 		switch (testType) {
-			case ZmFilterRule.TEST_ADDRBOOK:	conditionData.type = value; break;
+			case ZmFilterRule.TEST_ADDRBOOK:	conditionData.folderPath = value; break;
 			case ZmFilterRule.TEST_SIZE:		conditionData.s = value; break;
 			case ZmFilterRule.TEST_DATE:		conditionData.d = value; break;
-			case ZmFilterRule.TEST_CONVERSATIONS: conditionData.where = value; break;
-			case ZmFilterRule.TEST_ADDRESS:     conditionData.part = part;
-												conditionData.value= value;
-												break;
 			default:							conditionData.value = value; break;
 		}
 	}
@@ -916,8 +757,6 @@ function(comparator) {
         case ZmFilterRule.OP_IS_REPLIED:   negativeOp = ZmFilterRule.OP_NOT_REPLIED; break;
         case ZmFilterRule.OP_IS_REQUESTED: negativeOp = ZmFilterRule.OP_NOT_REQUESTED; break;
         case ZmFilterRule.OP_IS_READRECEIPT: negativeOp = ZmFilterRule.OP_NOT_CONTAINS; break;
-	    case ZmFilterRule.OP_CONV_IS:  negativeOp = ZmFilterRule.OP_NOT_CONV; break;
-	    case ZmFilterRule.OP_IS_ME:     negativeOp = ZmFilterRule.OP_NOT_ME; break;
 	}
     return negativeOp;
 

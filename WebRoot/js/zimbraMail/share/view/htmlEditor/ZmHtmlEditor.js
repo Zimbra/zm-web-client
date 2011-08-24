@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- *
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -1514,8 +1514,39 @@ function(ev) {
 
 		}
 	}
+    else if (/paste/i.test(ev.type)) {
+        this._onPaste(ev);
+    }
 
 	return rv;
+};
+
+ZmHtmlEditor.prototype._onPaste = function(ev){
+    if (ev.clipboardData) {
+        var items = ev.clipboardData.items;
+        if( items ){
+            var blob = items[0].getAsFile();
+            if( blob ){
+                var req = new XMLHttpRequest();
+                req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
+                req.setRequestHeader("Cache-Control", "no-cache");
+                req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                req.setRequestHeader("Content-Type", blob.type);
+                req.setRequestHeader("Content-Disposition", 'attachment; filename="' + blob.fileName + '"');//For paste from clipboard filename is undefined
+                req.onreadystatechange = function(){
+                    if(req.readyState === 4 && req.status === 200) {
+                        var resp = eval("["+req.responseText+"]");
+                        if(resp.length === 3) {
+                            resp[2].clipboardPaste = true;
+                            var curView = appCtxt.getAppViewMgr().getCurrentView();
+                            curView.getController().saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, resp[2]);
+                        }
+                    }
+                }
+                req.send(blob);
+            }
+        }
+    }
 };
 
 ZmHtmlEditor.prototype._splitBlockquote =
