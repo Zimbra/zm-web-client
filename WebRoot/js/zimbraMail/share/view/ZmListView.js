@@ -1015,7 +1015,9 @@ function(field, itemIdx, isOutboundFolder) {
 		tooltip = ZmMsg.account;
     } else if (field == ZmItem.F_FOLDER) {
         tooltip = ZmMsg.folder;
-    }
+    } else if (field == ZmItem.F_MSG_PRIORITY) {
+		tooltip = ZmMsg.messagePriority
+	} 
     
     return tooltip;
 };
