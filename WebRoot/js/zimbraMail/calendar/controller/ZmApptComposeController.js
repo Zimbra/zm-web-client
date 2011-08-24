@@ -356,7 +356,7 @@ function(){
      var appt = this._composeView.getApptEditView()._calItem;
      var isExceptionAllowed = appCtxt.get(ZmSetting.CAL_EXCEPTION_ON_SERIES_TIME_CHANGE);
      var isEditingSeries = (this._mode == ZmCalItem.MODE_EDIT_SERIES);
-     var showWarning = appt.isRecurring() && isEditingSeries && appt.getAttendees(ZmCalBaseItem.PERSON) && !isExceptionAllowed && this._checkIsDirty(ZmApptEditView.CHANGES_TIME_RECURRENCE);
+     var showWarning = appt.isRecurring() && appt.hasEx && isEditingSeries && appt.getAttendees(ZmCalBaseItem.PERSON) && !isExceptionAllowed && this._checkIsDirty(ZmApptEditView.CHANGES_TIME_RECURRENCE);
      if(showWarning){
           var dialog = appCtxt.getYesNoCancelMsgDialog();
 		  dialog.setMessage(ZmMsg.recurrenceUpdateWarning, DwtMessageDialog.WARNING_STYLE);

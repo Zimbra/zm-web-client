@@ -2480,7 +2480,7 @@ function(appt, action, mode, startDateOffset, endDateOffset) {
 ZmCalViewController.prototype._handleResponseUpdateApptDateSave =
 function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback, result) {
          var isExceptionAllowed = appCtxt.get(ZmSetting.CAL_EXCEPTION_ON_SERIES_TIME_CHANGE);
-         var showWarning = appt.isRecurring() && appt.getAttendees(ZmCalBaseItem.PERSON) && !isExceptionAllowed && viewMode==ZmCalItem.MODE_EDIT_SERIES;
+         var showWarning = appt.isRecurring() && appt.hasEx && appt.getAttendees(ZmCalBaseItem.PERSON) && !isExceptionAllowed && viewMode==ZmCalItem.MODE_EDIT_SERIES;
          if(showWarning){
             var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSaveContinue, [appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback, result]);
             this._showExceptionWarning(respCallback);

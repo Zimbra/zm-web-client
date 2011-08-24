@@ -859,6 +859,7 @@ function(calItemNode, instNode) {
 	this.location = this._getAttr(calItemNode, instNode, "loc");
     this.isDraft = this._getAttr(calItemNode, instNode, "draft");
     this.inviteNeverSent = this._getAttr(calItemNode, instNode, "neverSent") || false;
+    this.hasEx = this._getAttr(calItemNode, instNode, "hasEx") || false;
 };
 
 ZmAppt.prototype._getSoapForMode =
