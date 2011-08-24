@@ -184,6 +184,8 @@ function() {
 ZmScheduleAssistantView.prototype.suggestAction =
 function(focusOnSuggestion, showAllSuggestions) {
 
+    if(appCtxt.isOffline && !appCtxt.isZDOnline()) { return; }
+
     var params = {
         items: [],        
         itemIndex: {},
