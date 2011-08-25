@@ -283,7 +283,7 @@
      var isEdit = data.isEdit;
      var delId = "id='" + data.delButtonId + "'";
    $>
-    <table width='100%' class='contactHeaderTable'>
+    <table width='100%' class='contactGroupTable'>
     <tr>
     <$ if (imageUrl) { $>
         <td valign=top width=48 rowspan=2 align="center"><img src="<$= imageUrl $>" 
@@ -337,7 +337,8 @@
 		var contact		= data.contact;
 		var imageUrl	= contact.getImageUrl();
 		var accountName = appCtxt.multiAccounts && contact.account && contact.account.getDisplayName();
-		var imgClassName = contact.isGroup() ? "GroupPerson_48" : "Person_48"; 
+		var imgClassName = contact.isGroup() ? "GroupPerson_48" : "Person_48";
+		var isEdit = data.isEdit;
 	$>
 	<table border=0 cellspacing=2 cellpadding=2 width=100% class='contactHeaderTable <$= data.contactHdrClass $>'>
 		<tr>
@@ -352,7 +353,9 @@
 			<$ } else { $>
 				<td valign=bottom width=48 rowspan=2><$= AjxImg.getImageHtml(imgClassName) $></td>
 			<$ } $>
-			<td id='${id}_tags' align='right' colspan=2></td>
+			<$ if (!isEdit) {$>
+			    <td id='${id}_tags' align='right' colspan=2></td>
+			<$ } $>
 		</tr>
 		<tr>
 			<td valign=bottom>
@@ -370,12 +373,16 @@
 				<$ } $>
 				<table border=0 cellpadding=0 cellspacing=0 width=1%>
 					<tr>
-						<td class='contactLocation' nowrap="nowrap"><$= ZmMsg.locationLabel $>&nbsp;</td>
-						<$ if (data.addrbook) { $>
+						<$ if (data.addrbook && !isEdit) { $>
+						    <td class='contactLocation' nowrap="nowrap"><$= ZmMsg.locationLabel $>&nbsp;</td>
 							<td width=20><$= AjxImg.getImageHtml(data.addrbook.getIcon()) $></td>
 							<td>&nbsp;</td>
 							<td class='companyFolder'><$= data.addrbook.getName() $></td>
+						<$ } else if (data.addrbook && isEdit) { $>
+						<td  nowrap="nowrap"><$= ZmMsg.locationLabel $>&nbsp;</td>
+						    <td id='${id}_LOCATION_FOLDER'></td						    
 						<$ } else if (data.isGal) { $>
+						    <td class='contactLocation' nowrap="nowrap"><$= ZmMsg.locationLabel $>&nbsp;</td>
 							<td width=20><$= AjxImg.getImageHtml("GAL") $></td>
 							<td>&nbsp;</td>
 							<td class='companyFolder'><$= ZmMsg.GAL $></td>
@@ -396,11 +403,17 @@
             fullnameHtml = AjxStringUtil.htmlEncode(fullnameHtml);
         }
         var nickname	= contact.getAttr(ZmContact.F_nickname);
+        var isEdit      = data.isEdit;
     $>
     <div class='contactHeader <$= data.isInTrash ? "Trash" : "" $>'><$= fullnameHtml $></div>
-    <$ if (nickname) { $>
+    <$ if (nickname && !isEdit) { $>
         <div class='companyName'>&ldquo;<$= AjxStringUtil.htmlEncode(nickname) $>&rdquo;</div>
     <$ } $>
+    <$ else if (nickname && isEdit) {$>
+       <div class='companyName'><input type='text' autocomplete='off' size=40 id='${id}_groupName' class="Text"></div>
+       <div id='${id}_tags' style='padding-top: 5px'></div>
+    <$ } $>
+
 </template>
 
 <template id="abook.Contacts#SplitView_headerJobInfo">
@@ -428,7 +441,7 @@
         var phoneticCompany = isPhonetic && contact.getAttr(ZmContact.F_phoneticCompany);
         var companyHtml = AjxStringUtil.htmlRubyEncode(company, phoneticCompany);
         $>
-        <div class='companyName'><$= companyHtml $></div>
+       <div class='companyName'><$= companyHtml$></div>
     <$ } $>
 </template>
 
@@ -518,49 +531,19 @@
 <!-------------------------------- ZmGroupView -------------------------------->
 <!----------------------------------------------------------------------------->
 <template id="abook.Contacts#GroupView">
-	<!-- title bar -->
-	<table cellspacing=0 cellpadding=0 width=100%>
-		<tr class='contactHeaderRow' id='${id}_headerRow'>
-			<td width=20><center><$= AjxImg.getImageHtml("Group") $></center></td>
-			<td><div id='${id}_title' class='contactHeader'></div></td>
-			<td align='right' id='${id}_tags'></td>
-		</tr>
-	</table>
-
+	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
 	<table border=0 cellpadding=5 cellspacing=5 width=100% height=100%>
 		<tr>
 			<!-- content: left pane -->
 			<td width=50% valign=top>
-				<table border=0 cellpadding=2 cellspacing=2 width=100%>
-					<tr>
-						<td nowrap>*&nbsp;<$= ZmMsg.groupNameLabel $>&nbsp;<input type='text' autocomplete='off' size=18 id='${id}_groupName'></td>
-						<td>
-							<table border=0 cellpadding=0 cellspacing=0>
-								<tr>
-									<td nowrap><$= ZmMsg.addressBookLabel $>&nbsp;</td>
-									<td id='${id}_folderSelect'></td>
-								</tr>
-							</table>
-						</td>
-					</tr>
-					<tr>
-						<td colspan='2' nowrap>*&nbsp;<$= ZmMsg.groupMembers $></td>
-					</tr>
-                </table>
-                <div class='groupMembers'  id='${id}_groupMembers'></div>
-                <table border=0 cellpadding=3 cellspacing=2 width=100%>
-                    <tr>
-                        <td id='${id}_delButton'></td>
-                        <td id='${id}_delAllButton'></td>
-                        <td width=100%></td>                        
-                    </tr>
-                </table>
-			</td>
-
+                <div class='groupMembers'  id='${id}_groupMembers'></div>         
+			</td>  		
 			<!-- content: right pane -->
 			<td width=50% valign=top>
-				<fieldset>
-					<legend class='groupFieldset'><$= ZmMsg.addMembers $></legend>
+			  <table>
+			    <tr>
+			      <td width=50>&nbsp;</td>
+                  <td>
 					<table border=0>
 						<$ if (data.detailed) { $>
 						<tr id='${id}_searchNameRow'>
@@ -597,28 +580,46 @@
 						</tr>
 						<$ } $>
 					</table>
+				   </td>
+				 </tr>
+				 <tr>
+			       <td width=50>
+                    <table border=0 cellpadding=3 cellspacing=2 width=100%>
+                        <tr><td id='${id}_addButton'></td></tr>
+                        <tr><td id='${id}_addAllButton'></td></tr>
+                    </table>   
+                   </td>
+                   <td>
 					<div class='groupMembers' id='${id}_listView'></div>
 					<table border=0 cellpadding=3 cellspacing=2 width=100%>
 						<tr>
-							<td id='${id}_addButton'></td>
-							<td id='${id}_addAllButton'></td>
 							<td width=100%></td>
 							<td id='${id}_prevButton'></td>
 							<td id='${id}_nextButton'></td>
 						</tr>
 					</table>
-                   <table border=0 cellpadding=3 cellspacing=2 width=100%>
-						<tr>
-                            <td><$=ZmMsg.enterAddrBelow$></td>
-                        </tr>
-                        <tr>
-                            <td>
-                              <textarea class='groupMembers' id='${id}_addNewField'></textarea>
-                            </td>
-                            <td id='${id}_addNewButton'></td>
-                        </tr>
-                    </table>
-                </fieldset>
+					</td>
+				   </tr>
+				   <tr>
+					<td width=50>
+					 <table border=0 cellpadding=3 cellspacing=2 width=100%>
+                        <tr><td id='${id}_addNewButton'></td></tr>
+                     </table>
+                    </td>
+                    <td>
+                       <table border=0 cellpadding=3 cellspacing=2 width=100%>
+                            <tr>
+                                <td><$=ZmMsg.enterAddrBelow$></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                  <textarea class='groupMembers' id='${id}_addNewField'></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                   </tr>
+                </table>
 			</td>
 		</tr>
 	</table>

@@ -807,6 +807,20 @@ function() {
 };
 
 /**
+ *  Returns the contact id.  If includeUserZid is true it will return the format zid:id
+ * @param includeUserZid {boolean} true to include the zid prefix for the contact id
+ * @return {String} contact id string
+ */
+ZmContact.prototype.getId = 
+function(includeUserZid) {
+
+	if (includeUserZid) {
+		return this.isShared() ? this.id : appCtxt.accountList.mainAccount.id + ":" + this.id; 
+	}
+	
+	return this.id;
+};
+/**
  * Gets the icon.
  * 
  * @return	{String}	the icon

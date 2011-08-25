@@ -1200,7 +1200,7 @@ function(items, group) {
 	for (var i=0; i<items.length; i++) {
 		if (!items[i].isGroup()) {
 			var memberType = items[i].isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
-			var id = items[i].id;
+			var id = memberType == ZmContact.GROUP_CONTACT_REF ? items[i].getId(true) : items[i].id;
 			if (id) {
 				var obj = {value: id, type: memberType};
 				if (group) {
@@ -1213,7 +1213,7 @@ function(items, group) {
 			var groups = items[i].attr[ZmContact.F_groups];  //getAttr only returns first value in array
 			for (var j=0; j < groups.length; j++) {
 				var id = groups[j].value;
-				var contact = appCtxt.cacheGet(id);
+				var contact = ZmContact.getContactFromCache(id);
 				if (contact) {
 					var memberType = contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
 					var obj = {value : id, type : memberType};

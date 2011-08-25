@@ -353,7 +353,7 @@ function(ev, bIsPopCallback) {
 		{
 			// update existing contact with new attrs
 			for (var a in mods) {
-				if (a != ZmContact.F_folderId) {
+				if (a != ZmContact.F_folderId && a != ZmContact.F_groups) {
 					contact.attr[a] = mods[a];
 				}
 			}

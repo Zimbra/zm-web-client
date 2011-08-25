@@ -115,18 +115,18 @@ ZmGroupView.prototype.set =
 function(contact, isDirty) {
 	this._attr = {};
 
-	if (!this._htmlInitialized) {
-		this._createHtml();
-		this._addWidgets();
-		this._installKeyHandlers();
-	}
-
 	if (this._contact) {
 		this._contact.removeChangeListener(this._changeListener);
 	}
 	contact.addChangeListener(this._changeListener);
 	this._contact = contact;
 
+	if (!this._htmlInitialized) {
+		this._createHtml();
+		this._addWidgets();
+		this._installKeyHandlers();
+	}
+	
 	this._setFields();
 	this._offset = 0;
 	this._isDirty = isDirty;
@@ -370,10 +370,7 @@ function() {
 	}
 
 	this._setGroupName();
-	this._setFolder();
 	this._setGroupMembers();
-	this._setHeaderInfo();
-	this._setTitle();
 	this._setTags();
 };
 
@@ -413,9 +410,12 @@ function() {
 	var params = {
 		id: this._htmlElId,
 		showSearchIn: showSearchIn,
-		detailed: this._detailedSearch
+		detailed: this._detailedSearch,
+		contact: this._contact,
+		isEdit: true,
+		addrbook: this._contact.getAddressBook()
 	};
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#GroupView", params);
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#GroupView", params);	
 	this._htmlInitialized = true;
 };
 
@@ -423,16 +423,6 @@ ZmGroupView.prototype._addWidgets =
 function() {
 	this._groupMembers = document.getElementById(this._htmlElId + "_groupMembers");
 	this._noManualEntry = this._groupMembers.disabled; // see bug 23858
-
-	// add folder DwtSelect
-	var folderCellId = this._htmlElId + "_folderSelect";
-	var folderCell = document.getElementById(folderCellId);
-	if (folderCell) {
-		// add select widget for user to choose folder
-		this._folderSelect = new DwtSelect({parent:this});
-		this._folderSelect.reparentHtmlElement(folderCellId);
-		this._folderSelect.addChangeListener(new AjxListener(this, this._selectChangeListener));
-	}
 
 	// add select menu
 	var selectId = this._htmlElId + "_listSelect";
@@ -469,12 +459,14 @@ function() {
 	this._addButton.setText(ZmMsg.add);
 	this._addButton.addSelectionListener(addListener);
 	this._addButton.setEnabled(false);
+	this._addButton.setImage("LeftArrow");
 
 	// add "Add All" button
 	this._addAllButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_addAllButton")});
 	this._addAllButton.setText(ZmMsg.addAll);
 	this._addAllButton.addSelectionListener(addListener);
 	this._addAllButton.setEnabled(false);
+	this._addAllButton.setImage("LeftArrow");
 
 	var pageListener = new AjxListener(this, this._pageListener);
 	// add paging buttons
@@ -488,12 +480,30 @@ function() {
 	this._nextButton.addSelectionListener(pageListener);
 	this._nextButton.setEnabled(false);
 
+	this._locationButton = new DwtButton({parent:this, parentElement: (this._htmlElId + "_LOCATION_FOLDER")});
+	this._locationButton.setImage("ContactsFolder");
+	this._locationButton.setEnabled(this._contact && !this._contact.isShared());
+	this._locationButton.addSelectionListener(new AjxListener(this, this._handleFolderButton));
+	var folderOrId = this._contact && this._contact.getAddressBook();
+	if (!folderOrId) {
+		var overview = appCtxt.getApp(ZmApp.CONTACTS).getOverview();
+		folderOrId = overview && overview.getSelected();
+		if (folderOrId && folderOrId.type != ZmOrganizer.ADDRBOOK) {
+			folderOrId = null;
+		}
+	}
+
+	//check introduced to avoid choosing a readonly/shared folder as default folder location 
+	this._setLocationFolder((folderOrId && !folderOrId.isReadOnly()) ? folderOrId : ZmOrganizer.ID_ADDRBOOK);
+	
+	
 	// add New Button
 	this._addNewField = document.getElementById(this._htmlElId + "_addNewField");
 	if (this._addNewField) {
 		this._addNewButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_addNewButton")});
 		this._addNewButton.setText(ZmMsg.add);
 		this._addNewButton.addSelectionListener(new AjxListener(this, this._addNewListener));
+		this._addNewButton.setImage("LeftArrow");
 	}
 
 	this._searchField = {};
@@ -586,9 +596,7 @@ function() {
 
 ZmGroupView.prototype._getFolderId =
 function() {
-	return (this._folderSelect != null)
-		? this._folderSelect.getValue()
-		: ZmFolder.ID_CONTACTS;
+	return this._folderId || ZmFolder.ID_CONTACTS;
 };
 
 ZmGroupView.prototype._setGroupMembers =
@@ -627,66 +635,37 @@ function() {
 	}
 };
 
-ZmGroupView.prototype._setFolder =
-function() {
-	if (this._folderSelect) {
-		var match;
-		if (this._contact.id == null) {
-			var clc = AjxDispatcher.run("GetContactListController");
-			match = clc._folderId;
-		}
-
-		if (this._contact.id != null || !match) {
-			match = this._contact.addrbook ? this._contact.addrbook.id : ZmFolder.ID_CONTACTS;
-		}
-
-		var folderTree = appCtxt.getFolderTree();
-		var folders = folderTree ? folderTree.getByType(ZmOrganizer.ADDRBOOK) : [];
-		folders.sort(ZmAddrBook.sortCompare);
-
-		// for now, always re-populate folders DwtSelect
-		this._folderSelect.clearOptions();
-
-		for (var i = 0; i < folders.length; i++) {
-			var folder = folders[i];
-			if (folder.nId == ZmFolder.ID_ROOT || folder.isInTrash() || folder.isReadOnly()) {
-				continue;
-			}
-
-			this._folderSelect.addOption(folder.name, folder.id == match, folder.id);
-		}
-	} else if (this._folderPickerButton) {
-		var folder = this._contact.getAddressBook();
-		if (folder) {
-			this._folderPickerButton.setText(folder.name);
-			this._folderPickedId = folder.id;
-		} else {
-			var name = ZmMsg[ZmFolder.MSG_KEY[ZmOrganizer.ID_ADDRBOOK]];
-			this._folderPickerButton.setText(name);
-			this._folderPickedId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ADDRBOOK, appCtxt.getActiveAccount());
-		}
-	}
+ZmGroupView.prototype._setLocationFolder = function(organizerOrId) {
+	var organizer = organizerOrId instanceof ZmOrganizer ? organizerOrId : appCtxt.getById(organizerOrId);
+	this._locationButton.setText(organizer.getName());
+	this._folderId = organizer.id;
 };
 
-ZmGroupView.prototype._setHeaderInfo =
-function() {
-	// set the appropriate header color
-	var folderId = this._contact.folderId;
-	var folder = folderId ? appCtxt.getById(folderId) : null;
-	var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
-	var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
+ZmGroupView.prototype._handleFolderButton = function(ev) {
+	var dialog = appCtxt.getChooseFolderDialog();
+	dialog.registerCallback(DwtDialog.OK_BUTTON, new AjxCallback(this, this._handleChooseFolder));
+	var params = {
+		overviewId:		dialog.getOverviewId(ZmApp.CONTACTS),
+		title:			ZmMsg.chooseAddrBook,
+		treeIds:		[ZmOrganizer.ADDRBOOK],
+		skipReadOnly:	true,
+		skipRemote:		false,
+		noRootSelect:	true,
+		appName:		ZmApp.CONTACTS
+	};
+	params.omit = {};
+	params.omit[ZmFolder.ID_TRASH] = true;
+	dialog.popup(params);
+};
 
-	// set the header color for all tabs
-	var contactHdrRow = document.getElementById(this._headerRowId);
-	if (contactHdrRow) {
-		contactHdrRow.className = "contactHeaderRow " + bkgdColor;
-	}
-
-	// set appropriate icon
-	var iconCell = document.getElementById(this._iconCellId);
-	if (iconCell) {
-		iconCell.innerHTML = AjxImg.getImageHtml(this._contact.getIcon());
-	}
+/**
+ * @private
+ */
+ZmGroupView.prototype._handleChooseFolder = function(organizer) {
+	var dialog = appCtxt.getChooseFolderDialog();
+	dialog.popdown();
+	this._isDirty = true;
+	this._setLocationFolder(organizer);
 };
 
 ZmGroupView.prototype._setTags =
@@ -858,6 +837,7 @@ function(ev){
 		for (var i = 0; i < goodArry.length; i++) {
 			goodAddr[i] = goodArry[i].toString();
 		}
+		this._dedupe(goodAddr);
 		this._setGroupMembersListView(goodAddr, true);
 	}
 
@@ -886,8 +866,13 @@ function(list) {
 				if (groups && groups.length > 0) {
 					for (var j=0; j < groups.length; j++) {
 						var id = groups[j].value;
-						var contact = appCtxt.cacheGet(id);
-						var obj = {__contact : contact};
+						var contact = ZmContact.getContactFromCache(id);
+						if (contact) {
+							var obj = {__contact : contact};							
+						}
+						else {
+							var obj = id;
+						}
 						items.push(obj);
 					}	
 				}
@@ -915,15 +900,16 @@ function(list, append){
 	if (append) {
 		for (var i=0; i<list.length; i++) {
 			if (list[i] && list[i].__contact) {
-				var type = list[i].__contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;   
-				if (!this._groupMemberMods[list[i].__contact.id]) {
-					this._groupMemberMods[list[i].__contact.id] = {op : "+", value : list[i].__contact.id, type : type};
+				var type = list[i].__contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
+				var id = list[i].__contact.getId(true);
+				if (!this._groupMemberMods[id]) {
+					this._groupMemberMods[id] = {op : "+", value : id, type : type};
 				}
 				else {
-					var obj = this._groupMemberMods[list[i].__contact.id];
+					var obj = this._groupMemberMods[id];
 					if (obj.op == "-") {
 						//contact is already in the group, clear the value
-						this._groupMemberMods[list[i].__contact.id] = {};
+						this._groupMemberMods[id] = {};
 					}
 				}
 			}
@@ -948,11 +934,17 @@ function(items) {
 		while (true) {
 			var found = false;
 			for (var j = 0; j < addrs.length; j++) {
-				var value = addrs[j].value;
+				var value = addrs[j].value || addrs[j];
+				var type = addrs[j].type || ZmContact.GROUP_INLINE_REF;
 				if (addrs[j].__contact) {
 					value = addrs[j].__contact.id;
 				}
-				if (addrs[j].type != ZmContact.GROUP_INLINE_REF && value == items[i].__contact.id) {
+				if (type != ZmContact.GROUP_INLINE_REF && value == (items[i].__contact && items[i].__contact.getId(true))) {
+					items.splice(i, 1);
+					found = true;
+					break;
+				}
+				else if (type == ZmContact.GROUP_INLINE_REF && value == items[i]) {
 					items.splice(i, 1);
 					found = true;
 					break;
@@ -1064,9 +1056,6 @@ function(ev) {
 	var view = e ? Dwt.getObjectFromElement(e) : null;
 	if (view) {
 		view._isDirty = true;
-		if (e.tagName.toLowerCase() == "input") {
-			view._setTitle(e.value);
-		}
 	}
 
 	return true;
@@ -1223,7 +1212,7 @@ ZmGroupMembersListView.prototype.constructor = ZmGroupMembersListView;
 
 ZmGroupMembersListView.prototype._getHeaderList =
 function() {
-	return [(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email, view:this._view}))];
+	return [(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.membersLabel, view:this._view}))];
 };
 
 ZmGroupMembersListView.prototype._getCellContents =

@@ -1203,11 +1203,16 @@ line-height:normal;
 	border-bottom: 2px solid #AAAAAA;
 }
 
+.ZmContactView .contactHeaderTable,
 .ZmContactInfoView .contactHeaderTable {
 	border-bottom: 1px solid #777777;
 	background-color: @lighten(AltC,40)@;
 }
 
+.ZmContactInfoView .contactGroupTable {
+    border-bottom: 1px solid black;
+    background-color: white;
+}
 
 .ZmContactInfoView .contactHeaderSection {
 	@WidgetHeaderContainer@
@@ -1236,10 +1241,17 @@ line-height:normal;
 	@OverflowEllipsis@
 }
 
+.ZmContactView .companyName,
 .ZmContactInfoView .companyName {
 	@FontSize-bigger@
 }
 
+.ZmContactView .companyName .Text {
+    height: 25px;
+    @FontSize-bigger@
+}
+
+.ZmContactView .companyFolder
 .ZmContactInfoView .companyFolder {
 	@FontSize-big@
 	@NoWrap@
@@ -1270,6 +1282,7 @@ line-height:normal;
 	vertical-align: top;
 }
 
+.ZmContactView .contactLocation,
 .ZmContactInfoView .contactLocation {
 	@Label-light@
 	text-align: right;

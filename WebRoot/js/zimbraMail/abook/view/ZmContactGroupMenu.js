@@ -106,7 +106,13 @@ function(x, y, kbGenerated) {
 		if (this._contactGroupList) {
 			var groupNames = [];
 			for (var i=0; i<this._contactGroupList.length; i++) {
-				groupNames.push(ZmContact.getAttr(this._contactGroupList[i], "nickname"));
+				var contact = ZmContact.getContactFromCache(this._contactGroupList[i].id);
+				if (contact && !ZmContact.isInTrash(contact)) {
+					groupNames.push(ZmContact.getAttr(this._contactGroupList[i], "nickname"));
+				}
+				else {
+					this._contactGroupList[i] = {id: false};
+				}
 			}
 			this._render(groupNames);
 		}
