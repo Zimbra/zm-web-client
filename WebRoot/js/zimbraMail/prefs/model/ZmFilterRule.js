@@ -435,7 +435,7 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_SOCIAL] = {
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_ADDRESS] = {
 		subjectMod:	ZmFilterRule.TYPE_SELECT,
 		smOptions:	[{label: ZmMsg.from, value: "from"}, {label: ZmMsg.to, value: "to"},
-					 {label: ZmMsg.cc, value: "cc"}, {label: ZmMsg.bcc, value: "bcc"}],
+					 {label: ZmMsg.cc, value: "cc"}, {label: ZmMsg.toOrCc, value: "to,cc"}, {label: ZmMsg.bcc, value: "bcc"}],
 		ops:		ZmFilterRule.TYPE_SELECT,
 		opsOptions:	ZmFilterRule.MATCHING_OPS,
 		value:		ZmFilterRule.TYPE_INPUT,
