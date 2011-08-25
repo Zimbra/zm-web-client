@@ -465,6 +465,7 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 
 	var list = this.processSearchResponse(searchResp[0], searchParams);
 	accountList.addList(list);
+    this._accountsSearchList = accountList.clone();
 
 	if (searchParams.accountFolderIds && searchParams.accountFolderIds.length > 0) {
 		this._doBatchRequest(searchParams, miniCalParams);
@@ -477,7 +478,6 @@ function(batchResp, searchParams, miniCalParams, reminderSearchParams) {
 		if (searchParams.callback) {
 			searchParams.callback.run(accountList, null, searchParams.query);
 		} else {
-			this._accountsSearchList = accountList.clone();
             return accountList;
 		}
 	}
