@@ -335,9 +335,31 @@ function(data, test, isCondition, rowId) {
 			return;
 		}
 		html[i++] = "<td><table><tr>";
-		var options = this._outgoing ? ZmFilterRule.ACTIONS_OUTGOING_LIST : ZmFilterRule.ACTIONS_LIST;
-		html[i++] = this._createRowComponent(false, "name", options, data, test, rowId);
-		html[i++] = this._createRowComponent(conf, "param", conf.pOptions, data, test, rowId);
+	    if (conf) {
+			var options = this._outgoing ? ZmFilterRule.ACTIONS_OUTGOING_LIST : ZmFilterRule.ACTIONS_LIST;
+			html[i++] = this._createRowComponent(false, "name", options, data, test, rowId);
+			html[i++] = this._createRowComponent(conf, "param", conf.pOptions, data, test, rowId);
+		}
+		else {
+		 //see if it's a actionReply or actionNotify filter and output readonly
+			if (actionId == ZmFilterRule.A_NOTIFY && data) {
+				var email = data.a;
+				var content = AjxUtil.isArray(data.content) ?  data.content[0]._content : "";
+				var maxBodySize = data.maxBodySize;
+				var subject = data.su;
+
+				html[i++] = "<td><table>";
+				html[i++] = "<tr><td>" + ZmMsg.actionNotifyReadOnlyMsg + "</td></tr>";
+				html[i++] = "<tr><td>" + ZmMsg.emailLabel + " " + email + " | " + subject + " | " + ZmMsg.maxBodySize + ": " + maxBodySize + "</td><tr>";
+				html[i++] = "<tr><td>" + ZmMsg.body + ": " + content + "</td></tr></table></td>";
+		    }
+			else if (actionId == ZmFilterRule.A_REPLY && data) {
+				var content = AjxUtil.isArray(data.content) ? data.content[0]._content : "";
+				html[i++] = "<td><table><tr><td>" + ZmMsg.actionReplyReadOnlyMsg + "</td></tr>";
+				html[i++] = "<tr><td>" + ZmMsg.body + ": " + content + "</td></tr></table></td>";
+			}
+			this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
+		}
 		html[i++] = "</tr></table></td>";
 	}
 	html[i++] = this._getPlusMinusHtml(rowId, isCondition);
