@@ -497,7 +497,14 @@ function(params) {
 		// OR,
 		// check if we're moving to or from a shared folder, in which case, always send
 		// request on-behalf-of the account the item originally belongs to.
-        var folderId = params.items[0].getFolderId();
+
+        var folderId = params.items[0].getFolderId && params.items[0].getFolderId();
+
+        // on bulk delete, when the second chunk loads try to get folderId from the item id.
+        if (!folderId) {
+            var itemId = params.items[0] && params.items[0].id;
+            folderId = itemId && appCtxt.getById(itemId).folderId;
+        }
         var fromFolder = appCtxt.getById(folderId);
 		if ((params.items[0].isDraft && params.folder.id == ZmFolder.ID_DRAFTS) ||
 			(params.folder.isRemote()) || (fromFolder.isRemote()))
