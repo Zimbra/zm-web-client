@@ -92,7 +92,13 @@ and the container element is replaced with that control.
 
 						<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_TRASH)) { $>
 							<tr>
-								<td class='ZOptionsLabel'>&nbsp;</td>
+								<td class='ZOptionsLabel'>
+									<$ if (!data.isEnabled(ZmSetting.SEARCH_INCLUDES_SPAM)) { $>
+										<$=ZmMsg.searchSettingsLabel$>
+									<$ } else { $>
+										&nbsp;
+									<$ } $>
+								</td>
 								<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_TRASH' tabindex='70'></div></td>
 							</tr>
 						<$ } $>
