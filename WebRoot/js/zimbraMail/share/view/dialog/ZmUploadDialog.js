@@ -381,12 +381,13 @@ function(files, status, guids, response) {
 	// check for conflicts
 	var conflicts = [];
 	if (resp && resp.Fault) {
-		var errors = [], mailboxQuotaExceeded=false;
+		var errors = [], mailboxQuotaExceeded=false, isItemLocked=false;
 		for (var i = 0; i < resp.Fault.length; i++) {
 			var fault = resp.Fault[i];
 			var error = fault.Detail.Error;
 			var code = error.Code;
 			var attrs = error.a;
+            isItemLocked = (code==ZmCsfeException.LOCKED);
 			if (code == ZmCsfeException.MAIL_ALREADY_EXISTS ||
 				code == ZmCsfeException.MODIFY_CONFLICT) {
 				var file = files[fault.requestId];
@@ -412,6 +413,15 @@ function(files, status, guids, response) {
 		// TODO: What to do about other errors?
         if(mailboxQuotaExceeded){
             this._popupErrorDialog(ZmMsg.errorQuotaExceeded);
+            return;
+        }
+        else if(isItemLocked){
+            this._popupErrorDialog(ZmMsg.errorItemLocked);
+            return;
+        }
+        else if(code==ZmCsfeException.SVC_PERM_DENIED){
+            this._popupErrorDialog(ZmMsg.errorPermissionDenied);
+            this.popdown();
             return;
         }
 	}
