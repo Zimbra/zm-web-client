@@ -131,7 +131,7 @@ function(attendeeList, attendeeLabel) {
 		html[j++] = "<td valign=top>&nbsp;&nbsp;<b>";
 		html[j++] = attendeeLabel;
 		html[j++] = "</b></td><td>";
-		html[j++] = attendeeList.join(", ");
+		html[j++] = AjxStringUtil.htmlEncode(attendeeList.join(", "));
 		html[j++] = "</td></tr></table>";
 	}
 	return html.join("");
