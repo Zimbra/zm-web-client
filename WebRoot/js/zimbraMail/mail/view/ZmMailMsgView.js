@@ -626,8 +626,8 @@ function(msg, node) {
 
 ZmMailMsgView.__unfangInternalImage =
 function(msg, elem, aname) {
-	var df_aname = "df"+aname;
-	var avalue = elem.getAttribute(df_aname);
+	//var df_aname = "df"+aname;
+	var avalue = elem.getAttribute(aname);
 	if (avalue) {
 		if (avalue.substr(0,4) == "cid:") {
 			var cid = "<" + AjxStringUtil.urlComponentDecode(avalue.substr(4)) + ">"; // Parse percent-escaping per bug #52085 (especially %40 to @)
