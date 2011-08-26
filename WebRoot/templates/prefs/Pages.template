@@ -28,7 +28,7 @@ and the container element is replaced with that control.
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
 				<$ if (!appCtxt.isOffline) { $>
-					<tr>
+					<tr id='prefs.Pages#General_PASSWORD_LABEL'>
 						<td class='ZOptionsLabel'><$=ZmMsg.password$>:</td>
 						<td class='ZOptionsField'><div id='${id}_PASSWORD' tabindex='50'></div></td>
 					</tr>
