@@ -135,34 +135,50 @@ function() {
 	return [ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE];
 };
 
+/**
+ * @private
+ */
+ZmBriefcaseController.prototype._getSecondaryToolBarOps =
+function() {
+	var list = [];
+
+	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+		list.push(ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT, ZmOperation.SEP);
+	}
+	if (appCtxt.get(ZmSetting.SPREADSHEET_ENABLED)) {
+		list.push(ZmOperation.NEW_SPREADSHEET,ZmOperation.SEP);
+	}
+	if (appCtxt.get(ZmSetting.SLIDES_ENABLED)) {
+		list.push(ZmOperation.NEW_PRESENTATION,ZmOperation.SEP);
+	}
+	list.push(ZmOperation.NEW_BRIEFCASE_WIN, ZmOperation.SEP);
+
+	list.push(ZmOperation.CHECKOUT, ZmOperation.CHECKIN, ZmOperation.DISCARD_CHECKOUT, ZmOperation.RESTORE_VERSION);
+
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.RENAME_FILE);
+
+	return list;
+};
+
+
 ZmBriefcaseController.prototype._getToolBarOps =
 function() {
-    var ops = [ZmOperation.NEW_MENU,
-			ZmOperation.SEP,
-			ZmOperation.NEW_FILE,
+    var ops = [ZmOperation.NEW_FILE,
             ZmOperation.SAVE_FILE,
+			ZmOperation.SEP,
             ZmOperation.EDIT_FILE,
 			ZmOperation.SEP,
-			ZmOperation.DELETE, ZmOperation.MOVE,
-            ZmOperation.NEW_BRIEFCASE_WIN,
+			ZmOperation.DELETE,
 			ZmOperation.SEP,
-			ZmOperation.TAG_MENU,
-			ZmOperation.SEP
+			ZmOperation.MOVE_MENU,
+			ZmOperation.TAG_MENU
 			];
 
 	/*if (appCtxt.get(ZmSetting.DOCS_ENABLED)) {
 		   ops.push(ZmOperation.NEW_DOC,ZmOperation.SEP);
 	}*/
-	if (appCtxt.get(ZmSetting.SPREADSHEET_ENABLED)) {
-		ops.push(ZmOperation.NEW_SPREADSHEET,ZmOperation.SEP);
-	}
-	if (appCtxt.get(ZmSetting.SLIDES_ENABLED)) {
-		ops.push(ZmOperation.NEW_PRESENTATION,ZmOperation.SEP);
-	}
 
-	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-		ops.push(ZmOperation.SEND_FILE_MENU,ZmOperation.SEP);
-	}
 
     ops.push(ZmOperation.VIEW_MENU);
 
@@ -180,8 +196,7 @@ function(view) {
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
 		this._setupViewMenu(view, true);
-		this._setNewButtonProps(view, ZmMsg.newDocument, "Doc", "DocDis", ZmOperation.NEW_DOC);
-		this._initSendMenu(view);
+		this._setNewButtonProps(view, ZmMsg.newDocument, ZmMsg.newDocument, "NewDoc", "NewDocDis", ZmOperation.NEW_DOC);
         var toolbar = this._toolbar[view];
 		toolbar.addFiller();
 		this._initializeNavToolBar(view);
@@ -265,11 +280,11 @@ function(parent, num) {
     var item = items[0];
     var isRevision = item && item.isRevision;
 	
-	parent.enable([ZmOperation.SEND_FILE_MENU, ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT], (isZimbraAccount && isMailEnabled && isItemSelected && !isMultiFolder && !isFolderSelected));
+	parent.enable([ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT], (isZimbraAccount && isMailEnabled && isItemSelected && !isMultiFolder && !isFolderSelected));
 	parent.enable(ZmOperation.TAG_MENU, (!isShared && isItemSelected && !isFolderSelected && !isRevision));
 	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
 	parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
-	parent.enable(ZmOperation.MOVE, ( isItemSelected &&  !isReadOnly && !isShared && !isRevision));
+	parent.enable([ZmOperation.MOVE, ZmOperation.MOVE_MENU], ( isItemSelected &&  !isReadOnly && !isShared && !isRevision));
     parent.enable(ZmOperation.NEW_FILE, !(isTrash || isReadOnly));
     parent.enable(ZmOperation.NEW_BRIEFCASE_WIN, (isItemSelected && !isFolderSelected));
 
@@ -297,32 +312,42 @@ function(parent, num) {
         //Open - webDocs
         parent.getOp(ZmOperation.OPEN_FILE) && parent.getOp(ZmOperation.OPEN_FILE).setVisible(isItemSelected && !isMultiFolder && isWebDoc);
 
-        //Case 1: Multiple Admins
-        //Case 2: Stale Lock ( Handle exception )
+	}
+	//Case 1: Multiple Admins
+	//Case 2: Stale Lock ( Handle exception )
 
-        //Checkin
-        var checkinEnabled = !isReadOnly && isLockOwner && !isWebDoc && !isRevision;
-        parent.getOp(ZmOperation.CHECKIN) && parent.getOp(ZmOperation.CHECKIN).setVisible(checkinEnabled);
-        parent.enable(ZmOperation.CHECKIN, checkinEnabled && num == 1 );
+	//Checkin
+	var op = parent.getOp(ZmOperation.CHECKIN);
+	if (op) {
+		var checkinEnabled = !isReadOnly && isLockOwner && !isWebDoc && !isRevision;
+		op.setVisible(checkinEnabled);
+		parent.enable(ZmOperation.CHECKIN, checkinEnabled && num == 1);
+	}
 
-        //Checkout
-        var checkoutEnabled = !isReadOnly && !hasLocked && !isRevisionSelected;
-        parent.getOp(ZmOperation.CHECKOUT) && parent.getOp(ZmOperation.CHECKOUT).setVisible(!isRevision && !isLocked);
-        parent.enable(ZmOperation.CHECKOUT, checkoutEnabled);
+	//Checkout
+	op = parent.getOp(ZmOperation.CHECKOUT);
+	if (op) {
+		var checkoutEnabled = !isReadOnly && !hasLocked && !isRevisionSelected;
+		op.setVisible(!isRevision && !isLocked);
+		parent.enable(ZmOperation.CHECKOUT, checkoutEnabled);
+	}
 
-        //Discard Checkout
-        var discardCheckoutEnabled = sameLockOwner && !isRevisionSelected;
-        parent.getOp(ZmOperation.DISCARD_CHECKOUT) && parent.getOp(ZmOperation.DISCARD_CHECKOUT).setVisible(discardCheckoutEnabled);
-        parent.enable(ZmOperation.DISCARD_CHECKOUT, discardCheckoutEnabled && (isAdmin || sameLockOwner || !isShared));
+	//Discard Checkout
+	op = parent.getOp(ZmOperation.DISCARD_CHECKOUT);
+	if (op) {
+		var discardCheckoutEnabled = sameLockOwner && !isRevisionSelected;
+		op.setVisible(discardCheckoutEnabled);
+		parent.enable(ZmOperation.DISCARD_CHECKOUT, discardCheckoutEnabled && (isAdmin || sameLockOwner || !isShared));
+	}
 
-        //Versioning
-        var versionEnabled = (!isReadOnly && num == 1 && isRevision);
-        var isHightestVersion = item && item.isRevision && ( item.parent.version == item.version );
-        parent.getOp(ZmOperation.RESTORE_VERSION) && parent.getOp(ZmOperation.RESTORE_VERSION).setVisible(isRevision);
-        parent.enable(ZmOperation.RESTORE_VERSION, versionEnabled && !isHightestVersion);
-
-
-    }
+	//Versioning
+	op = parent.getOp(ZmOperation.RESTORE_VERSION);
+	if (op) {
+		var versionEnabled = (!isReadOnly && num == 1 && isRevision);
+		var isHightestVersion = item && item.isRevision && ( item.parent.version == item.version );
+		op.setVisible(isRevision);
+		parent.enable(ZmOperation.RESTORE_VERSION, versionEnabled && !isHightestVersion);
+	}
 
     var isDocOpEnabled = !(isTrash || isReadOnly);
     if (appCtxt.get(ZmSetting.DOCS_ENABLED)) {
@@ -382,7 +407,7 @@ function(items) {
         }
         delBatchCmd.run();
     }else{
-        ZmListController.prototype._doDelete.call(this, items);
+        ZmListController.prototype._doDelete.call(this, items, null, null, true);
     }
 };
 
@@ -464,9 +489,7 @@ function(results) {
 	lv.offset = 0;
 	lv._folderId = this._folderId;
 
-	var elements = {};
-	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-	elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[this._currentView];//this.isMultiColView() ? this._multiColView : lv;
+	var elements = this.getViewElements(this._currentView, this._parentView[this._currentView]);
 
 	this._setView({view:this._currentView, elements:elements, isAppView:true});
 	this._resetNavToolBarButtons(this._currentView);
@@ -493,9 +516,8 @@ function(view, force) {
 	this._resetOperations(this._toolbar[view], 0);
 
 	if (viewChanged) {
-		var elements = {};
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
+		var elements = this.getViewElements(view, this._parentView[view]);
+		
 		this._setView({view:view, elements:elements, isAppView:true});
 		this._resetNavToolBarButtons(view);
 	}
@@ -1095,28 +1117,6 @@ function(num) {
 	this._resetOperations(this._toolbar[this._currentView], num || 0);
 };
 
-ZmBriefcaseController.prototype._initSendMenu =
-function(view) {
-
-	var sendBtn = this._toolbar[view].getButton(ZmOperation.SEND_FILE_MENU);
-	if (!sendBtn) { return; }
-
-	var menu = new ZmPopupMenu(sendBtn);
-	sendBtn.setMenu(menu);
-
-	var sendOps = [ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT];
-	for (var i = 0; i < sendOps.length; i++) {
-		var id = sendOps[i];
-		var params = {
-			image:ZmOperation.getProp(id, "image"),
-			text:ZmMsg[ZmOperation.getProp(id, "textKey")]
-		};
-		var mi = menu.createMenuItem(id, params);
-		mi.setData(ZmOperation.MENUITEM_ID, id);
-		mi.addSelectionListener(this._listeners[id]);
-	}
-	return menu;
-};
 
 ZmBriefcaseController.prototype._setupViewMenu =
 function(view, firstTime) {
@@ -1129,7 +1129,7 @@ function(view, firstTime) {
 			menu = new ZmPopupMenu(btn);
 			btn.setMenu(menu);
 
-            this._setupPreviewPaneMenu(menu);
+            this._setupPreviewPaneMenu(menu, btn);
 		}
 	}
 
@@ -1142,7 +1142,7 @@ function(view, firstTime) {
 };
 
 ZmBriefcaseController.prototype._setupPreviewPaneMenu =
-function(menu){
+function(menu, btn){
 
     if (menu.getItemCount() > 0) {
 		new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE, id:"PREVIEW_SEPERATOR"});
@@ -1161,6 +1161,7 @@ function(menu){
 			mi.addSelectionListener(new AjxListener(this, this._previewPaneListener, id));
 			if (id == pref) {
 				mi.setChecked(true, true);
+				btn.setImage(mi.getImage());
 			}
 		}
 	}
@@ -1216,6 +1217,12 @@ function(newPreviewStatus){
     appCtxt.set(ZmSetting.READING_PANE_LOCATION_BRIEFCASE, newPreviewStatus);
     var lv = this._parentView[this._currentView];
     lv.resetPreviewPane(newPreviewStatus, oldPreviewStatus);
+	//update view button icon to reflect current selection
+	var btn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
+	if (btn) {
+		btn.setImage(ZmBriefcaseController.PREVIEW_PANE_ICON[newPreviewStatus]);
+	}
+
 };
 
 ZmBriefcaseController.CONVERTABLE = {

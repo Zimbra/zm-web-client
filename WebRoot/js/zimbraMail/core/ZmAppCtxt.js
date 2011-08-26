@@ -425,6 +425,19 @@ function() {
 };
 
 /**
+ * Gets the new contact group dialog.
+ *
+ * @return	{ZmNewContactGroupDialog}	the new contact group dialog
+ */
+ZmAppCtxt.prototype.getNewContactGroupDialog =
+function() {
+	if (!this._newContactGroupDialog) {
+		this._newContactGroupDialog = new ZmNewContactGroupDialog(this._shell);
+	}
+	return this._newContactGroupDialog;
+};
+
+/**
  * Gets the rename tag dialog.
  * 
  * @return	{ZmRenameTagDialog}		the rename tag dialog
@@ -747,6 +760,62 @@ function() {
 };
 
 /**
+ * Gets the priority message filter dialog.
+ * 
+ * @return {ZmPriorityMessageFilterDialog}  the priority message filter dialog
+ */
+ZmAppCtxt.prototype.getPriorityMessageFilterDialog = 
+function() {
+	if (!this._priorityMessageFilterDialog) {
+		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
+		this._priorityMessageFilterDialog = new ZmPriorityMessageFilterDialog();
+	}
+	return this._priorityMessageFilterDialog;
+};
+
+/**
+ * Gets the prompt dialog for running priority message filters
+ * 
+ * @return {ZmPriorityMesagePromptDialog} the priority message prompt dialog
+ */
+ZmAppCtxt.prototype.getPriorityMessagePromptDialog = 
+function() {
+	if (!this._priorityMessagePromptDialog) {
+		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
+		this._priorityMessagePromptDialog = new ZmPriorityMessagePromptDialog();		
+	}
+	return this._priorityMessagePromptDialog;
+};
+
+/**
+ * Gets the activity stream prompt dialog for running activity stream filters
+ * 
+ * @return {ZmActivityStreamPromptDialog}
+*/
+ZmAppCtxt.prototype.getActivityStreamFilterDialog = 
+function() {
+	if (!this._activityStreamFilterDialog) {
+		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
+		this._activityStreamFilterDialog = new ZmActivityStreamPromptDialog();
+	}
+	return this._activityStreamFilterDialog;
+};
+
+/**
+ * Gets the quickadd dialog for creating a contact
+ * 
+ * @return {ZmContactQuickAddDialog}
+ */
+ZmAppCtxt.prototype.getContactQuickAddDialog = 
+function() {
+	if (!this._contactQuickAddDialog) {
+		AjxDispatcher.require(["ContactsCore", "Contacts"]);
+		this._contactQuickAddDialog = new ZmContactQuickAddDialog();
+	}
+	return this._contactQuickAddDialog;
+};
+
+/**
  * Gets the confirm dialog.
  * 
  * @return	{DwtConfirmDialog}		the confirmation dialog
@@ -810,6 +879,21 @@ function() {
 	}
 	return this._dumpsterDialog;
 };
+
+
+/**
+ * Gets the mail redirect dialog.
+ *
+ * @return	{ZmMailRedirectDialog}	the new mail redirect dialog
+ */
+ZmAppCtxt.prototype.getMailRedirectDialog =
+function() {
+	if (!this._mailRedirectDialog) {
+		this._mailRedirectDialog = new ZmMailRedirectDialog(this._shell);
+	}
+	return this._mailRedirectDialog;
+};
+
 
 /**
  * Runs the attach dialog callbacks.
@@ -1458,6 +1542,7 @@ function() {
  */
 ZmAppCtxt.prototype.notifyZimlets =
 function(event, args, options) {
+	this.notifySkin(event, args, options); // Also notify skin
 
 	var context = this.isChildWindow ? parentAppCtxt : this;
 
@@ -1470,8 +1555,18 @@ function(event, args, options) {
 		return;
 	}
 
-	return this.getZimletMgr().notifyZimlets(event, args);
+	this.getZimletMgr().notifyZimlets(event, args);
 };
+
+ZmAppCtxt.prototype.notifySkin =
+function(event, args, options) {
+	var context = this.isChildWindow ? parentAppCtxt : this;
+	if (options && options.noChildWindow && this.isChildWindow) { return; }
+	try {
+		return window.skin && AjxUtil.isFunction(window.skin.handleNotification) && window.skin.handleNotification(event, args);
+	} catch (e) {}
+};
+
 
 /**
  * Gets the calendar manager.
@@ -1699,30 +1794,6 @@ function(type, account) {
 			this._acCache[acct.id][ZmAutocomplete.AC_TYPE_EQUIPMENT]	=	{};
 		}
 	}
-};
-
-ZmAppCtxt.prototype.setNotifyDebug =
-function(notify) {
-
-    if (!window.isNotifyDebugOn) {
-        return;
-    }
-
-    if (this._notify) {
-        this._notify =  [this._notify, notify, "\n\n"].join("");
-    } else {
-        this._notify = ["\n\n", notify, "\n\n"].join("");
-    }
-};
-
-ZmAppCtxt.prototype.getNotifyDebug =
-function() {
-    return this._notify;
-};
-
-ZmAppCtxt.prototype.clearNotifyDebug =
-function() {
-    this._notify = "";
 };
 
 ZmAppCtxt.prototype.getOutsideMouseEventMgr =

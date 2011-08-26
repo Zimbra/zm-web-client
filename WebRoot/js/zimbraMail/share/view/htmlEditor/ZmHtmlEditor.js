@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -20,7 +20,7 @@
  * @class
  * @constructor
  */
-ZmHtmlEditor = function(parent, posStyle, content, mode, withAce, enablePaste) {
+ZmHtmlEditor = function(parent, posStyle, content, mode, withAce) {
 	if (arguments.length == 0) return;
 	this._toolbars = [];
 
@@ -31,10 +31,6 @@ ZmHtmlEditor = function(parent, posStyle, content, mode, withAce, enablePaste) {
 	if (this.ACE_ENABLED) {
 		this._ace_componentsLoading = 0;
 	}
-
-    if(enablePaste){
-        this._isPasteEnabled = enablePaste;
-    }
 
 	DwtHtmlEditor.call(this, {parent:parent, className:"ZmHtmlEditor", posStyle:posStyle,
 							  content:content, mode:mode, blankIframeSrc:appContextPath+"/public/blank.html"});
@@ -1518,6 +1514,7 @@ function(ev) {
 
 		}
 	}
+
 	return rv;
 };
 

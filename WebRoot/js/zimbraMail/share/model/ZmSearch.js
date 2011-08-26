@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -124,6 +124,14 @@ ZmSearch.NAME_DESC 		= "nameDesc";
 ZmSearch.NAME_ASC 		= "nameAsc";
 ZmSearch.SIZE_DESC 		= "sizeDesc";
 ZmSearch.SIZE_ASC 		= "sizeAsc";
+ZmSearch.RCPT_ASC       = "rcptAsc";
+ZmSearch.RCPT_DESC      = "rcptDesc";
+ZmSearch.ATTACH_ASC     = "attachAsc"
+ZmSearch.ATTACH_DESC    = "attachDesc"
+ZmSearch.FLAG_ASC       = "flagAsc";
+ZmSearch.FLAG_DESC      = "flagDesc";
+ZmSearch.PRIORITY_ASC   = "priorityAsc";
+ZmSearch.PRIORITY_DESC  = "priorityDesc";
 ZmSearch.SCORE_DESC 	= "scoreDesc";
 ZmSearch.DURATION_DESC	= "durDesc";
 ZmSearch.DURATION_ASC	= "durAsc";
@@ -150,9 +158,9 @@ function() {
 ZmSearch.prototype.execute =
 function(params) {
 	if (params.batchCmd || this.soapInfo) {
-		this._executeSoap(params);
+		return this._executeSoap(params);
 	} else {
-		this._executeJson(params);
+		return this._executeJson(params);
 	}
 };
 
