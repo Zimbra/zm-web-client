@@ -20,7 +20,7 @@
  * @class
  * @constructor
  */
-ZmHtmlEditor = function(parent, posStyle, content, mode, withAce) {
+ZmHtmlEditor = function(parent, posStyle, content, mode, withAce, enablePaste) {
 	if (arguments.length == 0) return;
 	this._toolbars = [];
 
@@ -31,6 +31,10 @@ ZmHtmlEditor = function(parent, posStyle, content, mode, withAce) {
 	if (this.ACE_ENABLED) {
 		this._ace_componentsLoading = 0;
 	}
+
+    if(enablePaste){
+        this._isPasteEnabled = enablePaste;
+    }
 
 	DwtHtmlEditor.call(this, {parent:parent, className:"ZmHtmlEditor", posStyle:posStyle,
 							  content:content, mode:mode, blankIframeSrc:appContextPath+"/public/blank.html"});
@@ -1514,39 +1518,7 @@ function(ev) {
 
 		}
 	}
-    else if (/paste/i.test(ev.type)) {
-        this._onPaste(ev);
-    }
-
 	return rv;
-};
-
-ZmHtmlEditor.prototype._onPaste = function(ev){
-    if (ev.clipboardData) {
-        var items = ev.clipboardData.items;
-        if( items ){
-            var blob = items[0].getAsFile();
-            if( blob ){
-                var req = new XMLHttpRequest();
-                req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
-                req.setRequestHeader("Cache-Control", "no-cache");
-                req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-                req.setRequestHeader("Content-Type", blob.type);
-                req.setRequestHeader("Content-Disposition", 'attachment; filename="' + blob.fileName + '"');//For paste from clipboard filename is undefined
-                req.onreadystatechange = function(){
-                    if(req.readyState === 4 && req.status === 200) {
-                        var resp = eval("["+req.responseText+"]");
-                        if(resp.length === 3) {
-                            resp[2].clipboardPaste = true;
-                            var curView = appCtxt.getAppViewMgr().getCurrentView();
-                            curView.getController().saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, resp[2]);
-                        }
-                    }
-                }
-                req.send(blob);
-            }
-        }
-    }
 };
 
 ZmHtmlEditor.prototype._splitBlockquote =
