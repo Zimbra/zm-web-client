@@ -93,6 +93,17 @@
                     <span><fmt:message key="shortcuts"/></span></a>
             </td>
         </c:if>
+        <c:if test="${mailbox.attrs.zimbraStandardClientCustomPrefTabsEnabled[0] eq 'TRUE'}">
+            <c:set var="customTabs" value="${mailbox.attrs.zimbraStandardClientCustomPrefTab}"/>
+            <c:forEach var="customTab" items="${customTabs}" varStatus="status">
+                <c:set var="tab" value="${fn:split(customTab,',')}"/>
+                <td class='TabSpacer'/>
+                <td class='Tab ${selected==fn:toLowerCase(tab[0]) ? 'TabSelected' :'TabNormal'}'>
+                    <a href="<c:url value="/h/options?selected=${tab[0]}&prev=${prev}&status=${status.index}"/>">
+                        <span>${tab[0]}</span></a>
+                </td>    
+            </c:forEach> 
+        </c:if>
         <td class='TabFiller'>
             &nbsp;
         </td>
