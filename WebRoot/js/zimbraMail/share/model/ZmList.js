@@ -503,7 +503,7 @@ function(params) {
         // on bulk delete, when the second chunk loads try to get folderId from the item id.
         if (!folderId) {
             var itemId = params.items[0] && params.items[0].id;
-            folderId = itemId && appCtxt.getById(itemId).folderId;
+            folderId = itemId && appCtxt.getById(itemId) && appCtxt.getById(itemId).folderId;
         }
         var fromFolder = appCtxt.getById(folderId);
 		if ((params.items[0].isDraft && params.folder.id == ZmFolder.ID_DRAFTS) ||
