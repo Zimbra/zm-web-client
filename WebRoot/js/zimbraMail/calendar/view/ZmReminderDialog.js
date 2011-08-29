@@ -178,7 +178,8 @@ function(list) {
 
 ZmReminderDialog.prototype._contentHtml =
 function(selectId) {
-	this._listId = "ZmReminderDialogContent";//Dwt.getNextId();
+
+    this._listId = Dwt.getNextId("ZmReminderDialogContent");//Dwt.getNextId();
 
 	var snooze = [1, 5, 10, 15, 30, 45, 60];
     if(this._select) {
