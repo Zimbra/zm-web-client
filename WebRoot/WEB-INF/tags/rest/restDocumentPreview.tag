@@ -163,11 +163,12 @@
     </table>
     <script type="text/javascript">
         window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
+        <fmt:message key="ZM_formatDocDate" var="fmtPatternDate"/>
         ZmDocsPreview.launch('zdocument', {
             version: '${zm:cook(version)}',
             versionCont: "version_cont",
             dateContainer: "date_container",
-            dateModified: '<fmt:formatDate value="${doc.modifiedDate}" pattern="M/d/yyyy h:mm a" timeZone="${timeZone}"/>'
+            dateModified: '<fmt:formatDate value="${doc.modifiedDate}" pattern="${fmtPatternDate}" timeZone="${timeZone}"/>'
         });
     </script>
     </body>
