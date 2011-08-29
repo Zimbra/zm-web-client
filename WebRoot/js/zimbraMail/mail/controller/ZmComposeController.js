@@ -2013,4 +2013,32 @@ function(){
     return this._msg;
 };
 
+ZmComposeController.prototype._pasteHandler = function( ev ){
+    var items,blob,controller,req;
+    if (ev.clipboardData){
+        items = ev.clipboardData.items;
+        if( items ){
+            blob = items[0].getAsFile();
+            if( blob ){
+                controller = this;
+                req = new XMLHttpRequest();
+                req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
+                req.setRequestHeader("Cache-Control", "no-cache");
+                req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                req.setRequestHeader("Content-Type", blob.type);
+                req.setRequestHeader("Content-Disposition", 'attachment; filename="' + ev.timeStamp + '"');//For paste from clipboard filename is undefined so we are using timestamp
+                req.onreadystatechange = function(){
+                    if(req.readyState === 4 && req.status === 200) {
+                        var resp = eval("["+req.responseText+"]");
+                        if(resp.length === 3) {
+                            resp[2].clipboardPaste = true;
+                            controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, resp[2]);
+                        }
+                    }
+                }
+                req.send(blob);
+            }
+        }
+    }
+};
 

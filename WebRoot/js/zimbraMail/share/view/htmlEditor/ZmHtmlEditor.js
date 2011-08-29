@@ -20,7 +20,7 @@
  * @class
  * @constructor
  */
-ZmHtmlEditor = function(parent, posStyle, content, mode, withAce) {
+ZmHtmlEditor = function(parent, posStyle, content, mode, withAce, enablePaste) {
 	if (arguments.length == 0) return;
 	this._toolbars = [];
 
@@ -31,6 +31,10 @@ ZmHtmlEditor = function(parent, posStyle, content, mode, withAce) {
 	if (this.ACE_ENABLED) {
 		this._ace_componentsLoading = 0;
 	}
+
+    if(enablePaste){
+        this._isPasteEnabled = enablePaste;
+    }
 
 	DwtHtmlEditor.call(this, {parent:parent, className:"ZmHtmlEditor", posStyle:posStyle,
 							  content:content, mode:mode, blankIframeSrc:appContextPath+"/public/blank.html"});
