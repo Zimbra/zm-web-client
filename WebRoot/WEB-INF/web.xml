@@ -476,6 +476,7 @@
       <url-pattern>/h/mtags</url-pattern>
       <url-pattern>/h/mtasks</url-pattern>
       <url-pattern>/h/options</url-pattern>
+      <url-pattern>/h/postLoginRedirect</url-pattern>                
       <url-pattern>/h/printcalls</url-pattern>
       <url-pattern>/h/printcalendar</url-pattern>
       <url-pattern>/h/printvoicemails</url-pattern>
