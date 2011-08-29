@@ -213,7 +213,7 @@ function(params) {
 	}
 
 	appCtxt.currentRequestParams = params;
-	DBG.println(AjxDebug.DBG2, "sendRequest(" + reqId + "): " + methodName);
+	DBG.println(AjxDebug.DBG1, "sendRequest(" + reqId + "): " + methodName);
 	var cancelParams = timeout ? [reqId, params.errorCallback, params.noBusyOverlay] : null;
 	if (!params.noBusyOverlay) {
 		var cancelCallback = null;
@@ -259,7 +259,7 @@ function(params, result) {
 			DBG.println(AjxDebug.DBG2, "ZmRequestMgr.handleResponseSendRequest state=CANCEL for " + params.reqId);
 			return;
 		}
-	
+		DBG.println(AjxDebug.DBG1, "ZmRequestMgr - handling resp for ("+params.reqId+")");
 		this._pendingRequests[params.reqId].state = ZmRequestMgr._RESPONSE;
 	
 		if (!params.noBusyOverlay) {
