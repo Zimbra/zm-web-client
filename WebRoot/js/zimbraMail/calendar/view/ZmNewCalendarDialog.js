@@ -97,6 +97,15 @@ function() {
 	this._excludeFbCheckbox = document.getElementById(this._excludeFbCheckboxId);
 };
 
+/*
+*   Overwritten the parent class method to include application specific params.
+*/
+ZmNewCalendarDialog.prototype._setupColorControl =
+function() {
+    var el = document.getElementById(this._colorSelectId);
+	this._colorSelect = new ZmColorButton({parent:this,parentElement:el,hideNone:true});
+};
+
 /** 
  * Checks the input for validity and returns the following array of values:
  * <ul>
