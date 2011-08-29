@@ -16,7 +16,7 @@
 ZmColorButton = function(params) {
     if (arguments.length == 0) return;
     DwtButton.call(this, params);
-    var menu = new ZmColorMenu({parent:this});
+    var menu = new ZmColorMenu({parent:this,hideNone:params.hideNone});
     menu.addSelectionListener(new AjxListener(this, this._handleSelection));
     this.setMenu(menu);
     this._colorMenu = menu;
