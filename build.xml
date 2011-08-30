@@ -113,7 +113,17 @@
             <fileset dir='${lib.dir}' includes='**/ant-contrib-*.jar'/>
         </classpath>
     </taskdef>
-
+	
+	<!-- customize admin skin -->
+	<if>
+		<isset property='adminSkin'/>
+		<then>
+			<property name="webxml.zimbraDefaultAdminSkin" value="${adminSkin}" />
+		</then>
+		<else>
+			<property name="webxml.zimbraDefaultAdminSkin" value="carbon" />
+		</else>
+	</if>
     <!-- Paths and Filesets -->
 
     <path id='class.path'>
@@ -1207,6 +1217,7 @@ if (ext == null) ext = "";
         <!-- replace @xyz@ tokens -->
         <replace file="${build.dir}/web.xml" token="@prodMode@" value="${build.prod.value}"/>
         <replace file="${build.dir}/web.xml" token="@jsVersion@" value="${build.simpleDate}"/>
+    	<replace file="${build.dir}/web.xml" token="%%zimbraDefaultAdminSkin%%" value="${webxml.zimbraDefaultAdminSkin}"/>
     </target>
 
     <target name='webxml-deploy-replace' depends='init'>
