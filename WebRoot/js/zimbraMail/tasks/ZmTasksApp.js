@@ -290,6 +290,9 @@ function(results, callback) {
 
 ZmTasksApp.prototype.runRefresh =
 function() {
+	if (window.ZmTaskListController === undefined) { //app not loaded yet - no need to update anything.
+		return;
+	}
 	this.getTaskListController().runRefresh();
 };
 
