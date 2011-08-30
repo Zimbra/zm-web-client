@@ -18,6 +18,9 @@
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
     
     <fmt:message var="title" key="attachFiles"/>
+
+    <c:set var="attachSize" value="${zm:displaySize(pageContext, mailbox.accountInfo.attachmentSizeLimit)}"/>
+    
     <zm:composeUploader var="uploader"/>
     <c:set var="compose" value="${uploader.compose}"/>
 </app:handleError>
@@ -60,6 +63,15 @@
                                     <td colspan=2><input type=file size="40" name="fileUpload"></td>
                                 </tr>
                             </c:forEach>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td colspan="2"><b>
+                                    <fmt:message key="attachmentLimitMsg">
+                                        <fmt:param value="${attachSize}"/>
+                                    </fmt:message>
+                                    </b>
+                                </td>
+                            </tr>
                         </table>
                 </td>
             </tr>

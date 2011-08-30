@@ -45,15 +45,21 @@
                     <zm:saveBriefcase var="result" folderId="${empty param.sfi ? mailbox.briefcase.id : param.sfi}" compose="${uploader.compose}"/>
                 </c:if>
             </c:when>
+            <c:when test="${uploader.isLimitExceeded}">
+                <c:set var="needUploadView" value="${false}"/>
+                <c:set var="needListView" value="${false}"/>
+                <fmt:message var="errorMsg" key="zclient.UPLOAD_SIZE_LIMIT_EXCEEDED"/>
+                <app:status style="Warning">${errorMsg}</app:status>
+            </c:when>
         </c:choose>
     </c:if>
 
     <c:if test="${needUploadView}">
-            <jsp:forward page="/h/briefcaseupload"/>
+        <jsp:forward page="/h/briefcaseupload"/>
     </c:if>
 
     <c:if test="${needListView}">
-            <c:redirect url="/h/search?st=briefcase&sfi=${empty param.sfi ? mailbox.briefcase.id : param.sfi}"/>
+        <c:redirect url="/h/search?st=briefcase&sfi=${empty param.sfi ? mailbox.briefcase.id : param.sfi}"/>
     </c:if>
 
 </app:handleError>
