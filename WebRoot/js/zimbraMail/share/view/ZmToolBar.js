@@ -348,7 +348,7 @@ ZmToolBar.prototype.setSize =
 function(width, height) {
 	DBG.println("tb", "------ setSize " + width + " x " + height);
 	var sz = this.getSize();
-	if (width != sz.x || height != sz.y) {
+	if (sz && (width != sz.x || height != sz.y)) {
 		DwtToolBar.prototype.setSize.apply(this, arguments);
 		this.adjustSize();
 	}

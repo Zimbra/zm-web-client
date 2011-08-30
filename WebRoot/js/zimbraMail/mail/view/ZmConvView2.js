@@ -81,6 +81,7 @@ function(conv, force) {
 	if (!conv) {
 		this.getHtmlElement().innerHTML = AjxTemplate.expand("mail.Message#viewMessage", {isConv:true});
 		this.noTab = true;
+		this._noResults = true;
 		return;
 	}
 	this._renderConv(conv, this._handleResponseSet.bind(this, conv, oldConv));
@@ -194,6 +195,7 @@ function(msg, params) {
 ZmConvView2.prototype._resize =
 function() {
 
+	if (this._noResults) { return; }
 	if (!this._messagesDiv || !this._replyDiv) { return; }
 	
 	var tbSize = this._replyToolbar.getSize();
