@@ -30,7 +30,7 @@
 <app:handleError>
 	<zm:getMailbox var="mailbox"/>
 	<app:searchTitle var="title" context="${context}"/>
-	<c:set var="cid" value="${(not empty param.cid && not zm:actionSet(param, 'actionHardDelete') && not zm:actionSet(param, 'actionDelete')) ? param.cid : context.currentItem.id}"/>
+	<c:set var="cid" value="${(not empty param.cid && not zm:actionSet(param, 'actionHardDelete') && not zm:actionSet(param, 'actionDelete')) ? param.cid : ''}"/>
 	<fmt:message var="unknownRecipient" key="unknownRecipient"/>
 	<fmt:message var="unknownSubject" key="noSubject"/>
 	<c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
