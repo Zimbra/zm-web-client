@@ -151,7 +151,7 @@ function(settings) {
 	settings.registerSetting("CONVERSATIONS_ENABLED",			{name:"zimbraFeatureConversationsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("CONVERSATION_ORDER",				{name:"zimbraPrefConversationOrder", type:ZmSetting.T_PREF, defaultValue:ZmSearch.DATE_DESC, isImplicit:true});
 	settings.registerSetting("CONVERSATION_PAGE_SIZE",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:250, isGlobal:true});
-	settings.registerSetting("CONV_MODE",						{type:ZmSetting.T_PREF, defaultValue:ZmId.VIEW_CONVLIST, canPreset:true});
+	settings.registerSetting("CONV_MODE",						{type:ZmSetting.T_PREF, defaultValue:ZmId.VIEW_CONVLIST2, canPreset:true});
 	settings.registerSetting("DEDUPE_MSG_TO_SELF",				{name:"zimbraPrefDedupeMessagesSentToSelf", type:ZmSetting.T_PREF, defaultValue:ZmSetting.DEDUPE_NONE});
     settings.registerSetting("DEDUPE_MSG_ENABLED",				{name:"zimbraPrefMessageIdDedupingEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
     settings.registerSetting("DEFAULT_DISPLAY_NAME",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
