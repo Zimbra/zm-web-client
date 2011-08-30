@@ -29,12 +29,11 @@ ZmAdvancedHtmlEditor = function(parent, posStyle, content, mode, withAce) {
     this._ignoreWords = {};
 };
 
-ZmAdvancedHtmlEditor.TINY_MCE_PATH = "/tiny_mce/3.2.6";
+ZmAdvancedHtmlEditor.prototype.isZmAdvancedHtmlEditor = true;
+ZmAdvancedHtmlEditor.prototype.isInputControl = true;
+ZmAdvancedHtmlEditor.prototype.toString = function() { return "ZmAdvancedHtmlEditor"; };
 
-ZmAdvancedHtmlEditor.prototype.toString =
-function() {
-	return "ZmAdvancedHtmlEditor";
-};
+ZmAdvancedHtmlEditor.TINY_MCE_PATH = "/tiny_mce/3.2.6";
 
 ZmAdvancedHtmlEditor.prototype.getEditor =
 function() {

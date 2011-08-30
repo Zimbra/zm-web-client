@@ -953,18 +953,6 @@ INPUT[type="text"].search_input {
 	margin-left: 3px;
 }
 
-.addrBubbleHide {
-	display:inline-block;
-	overflow:hidden;
-	width:1px;
-	height:1px;
-	visibility:hidden;
-	#IFDEF MSIE
-	border: 0px !important;
-	outline: none !important;
-	#ENDIF
-}
-
 /*
  *	ZmHtmlEditor -- HTML editor stuff
  */

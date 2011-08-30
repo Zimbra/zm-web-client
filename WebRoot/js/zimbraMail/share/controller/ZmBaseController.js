@@ -318,13 +318,6 @@ function(view) {
 	this._tabGroups[view].addMember(this._view[view].getTabGroupMember());
 };
 
-// Callbacks to run on changes in view state
-ZmBaseController.prototype._preHideCallback		= function() { return true; };
-ZmBaseController.prototype._preUnloadCallback	= function() { return true; };
-ZmBaseController.prototype._postHideCallback	= function() { return true; };
-ZmBaseController.prototype._preShowCallback		= function() { return true; };
-ZmBaseController.prototype._postShowCallback	= function() { return true; };
-
 /**
  * Creates the desired application view.
  *

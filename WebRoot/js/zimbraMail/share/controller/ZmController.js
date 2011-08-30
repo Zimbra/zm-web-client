@@ -553,9 +553,12 @@ function() {
 	return myTg ? myTg.getFirstMember(true) : null;
 };
 
-/**
- * @private
- */
+// Callbacks to run on changes in view state
+ZmController.prototype._preUnloadCallback	= function() { return true; };
+ZmController.prototype._postHideCallback	= function() { return true; };
+ZmController.prototype._preShowCallback		= function() { return true; };
+
+// preserve focus state
 ZmController.prototype._preHideCallback = 
 function() {
 	DBG.println(AjxDebug.DBG2, "ZmController.prototype._preHideCallback");
@@ -563,9 +566,7 @@ function() {
 	return true;
 };
 
-/**
- * @private
- */
+// restore focus state
 ZmController.prototype._postShowCallback = 
 function() {
 	DBG.println(AjxDebug.DBG2, "ZmController.prototype._postShowCallback");
