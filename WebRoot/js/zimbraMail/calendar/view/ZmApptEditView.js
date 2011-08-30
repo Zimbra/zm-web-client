@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -897,7 +897,7 @@ function(width) {
     if(this.GROUP_CALENDAR_ENABLED) {
         Dwt.setVisible(this._optionalAttendeesContainer, false);
         Dwt.setVisible(this._optAttendeesInputField.getInputElement(), false);
-        Dwt.setVisible(this._resourceInputField.getInputElement(), false);
+        if(this._resourceInputField) Dwt.setVisible(this._resourceInputField.getInputElement(), false);
     }
 
     this._inviteMsgContainer = document.getElementById(this._htmlElId + "_invitemsg_container");
@@ -990,7 +990,7 @@ function(forceShow) {
 
 ZmApptEditView.prototype.showResourceField =
 function(show){
-    this._showResources.innerHTML = show ? ZmMsg.hideEquipment : ZmMsg.showEquipment;
+    this._showResources.innerHTML = show ? ZmMsg.hideResources : ZmMsg.showResources;
     Dwt.setVisible(this._resourcesContainer, Boolean(show))
 };
 
@@ -1268,7 +1268,7 @@ function(addrInput, addrs, type, shortForm) {
 						email = addr.getEmail(true);
                         //bug: 57858 - give preference to lookup email address if its present
                         //bug:60427 to show display name format the lookupemail
-                        addrStr = addr.getLookupEmail() ? (new AjxEmailAddress(addr.getLookupEmail(),null,addr.getFullNameForDisplay())).toString() : ZmApptViewHelper.getAttendeesText(addr, type);
+						addrStr = addr.getLookupEmail() ? (new AjxEmailAddress(addr.getLookupEmail(),null,addr.getFullNameForDisplay())).toString() : ZmApptViewHelper.getAttendeesText(addr, type);
                         match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
 					}
 					addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
@@ -1926,15 +1926,17 @@ ZmApptEditView.prototype._setAttendees =
 function() {
 
     for (var t = 0; t < this._attTypes.length; t++) {
-		var type = this._attTypes[t];
+        var type = this._attTypes[t];
 		var attendees = this._attendees[type].getArray();
 		var numAttendees = attendees.length;
 		var addrInput = this._attInputField[type];
 		var curVal = AjxStringUtil.trim(this._attInputField[type].getValue());
 		if (type == ZmCalBaseItem.PERSON) {
 			var reqAttendees = ZmApptViewHelper.filterAttendeesByRole(attendees, ZmCalItem.ROLE_REQUIRED);
-			this._setAddresses(addrInput, reqAttendees, type);
 			var optAttendees = ZmApptViewHelper.filterAttendeesByRole(attendees, ZmCalItem.ROLE_OPTIONAL);
+            //bug: 62008 - always compute all the required/optional arrays before setting them to avoid race condition
+            //_setAddress is a costly operation which will trigger focus listeners and change the state of attendees
+            this._setAddresses(addrInput, reqAttendees, type);
 			this._setAddresses(this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON], optAttendees, type);
 		}
 		else if (type == ZmCalBaseItem.LOCATION) {
