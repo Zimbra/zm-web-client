@@ -46,6 +46,3 @@ AjxPackage.require("zimbraMail.share.view.dialog.ZmDebugLogDialog");
 
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmTableEditor");
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmSpellChecker");
-
-AjxPackage.require("ajax.dwt.widgets.DwtFolderChooser");
-

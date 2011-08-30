@@ -191,13 +191,13 @@ function() {
 			containerId: containerId,
 			posStyle: Dwt.ABSOLUTE_STYLE,
 			parent: appCtxt.getShell(),
-			controller: appCtxt.getOverviewController()
+			controller: this._opc
 		};
 
 		containerParams.id = ZmId.getOverviewContainerId(containerId);
 
 		// the overview container will create overviews for each account
-		this._overviewContainer = appCtxt.getOverviewController()._overviewContainer[containerId] =
+		this._overviewContainer = this._opc._overviewContainer[containerId] =
 			new ZmVoiceOverviewContainer(containerParams);
 	}
 
@@ -461,9 +461,7 @@ function(callback, ex) {
 	this._loadError = true;
 	switch (ex.code) {
 		case "voice.SECONDARY_NOT_ALLOWED":
-		case "voice.ACCOUNT_NOT_CPNI_COMPLIANT":
-		case "voice.ACCOUNT_CPNI_NOT_AVAILABLE":
-			this._showUpsellMessage(ex.code);
+			this._showUpsellMessage();
 			returnValue = true;
 			break;
 		case "voice.UNABLE_TO_RETRIEVE_PROFILE_SUMMARY":
@@ -482,17 +480,12 @@ function(callback, ex) {
 };
 
 ZmVoiceApp.prototype._showUpsellMessage =
-function(voice_code) {
+function() {
 	if (!this._showingSecondaryMessage) {
 		this._showingSecondaryMessage = true;
 		var view = new DwtControl({parent:appCtxt.getShell(), posStyle:Dwt.ABSOLUTE_STYLE});
 		view.setScrollStyle(DwtControl.SCROLL);
-		// voice.ACCOUNT_NOT_CPNI_COMPLIANT_PREFS or voice.ACCOUNT_CPNI_NOT_AVAILABLE_PREFS
-		var propval = null;
-		if (voice_code == "voice.ACCOUNT_NOT_CPNI_COMPLIANT" || voice_code == "voice.ACCOUNT_CPNI_NOT_AVAILABLE") {
-			propval = ZMsg[voice_code + "_PREFS"];
-		}
-		view.getHtmlElement().innerHTML =  propval || ZMsg["voice.SECONDARY_NOT_ALLOWED_VOICE"];
+		view.getHtmlElement().innerHTML = ZMsg["voice.SECONDARY_NOT_ALLOWED_VOICE"];
 		var elements = {};
 		elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = view;
 		var viewName = "VoiceMessage";
