@@ -182,10 +182,9 @@ function() {
 ZmComposeController.prototype.doAction =
 function(params) {
 
+	AjxDebug.println(AjxDebug.REPLY, "-------------- " + params.action + " ----------------------------------");
 	var ac = window.parentAppCtxt || window.appCtxt;
-	if (params.action == ZmOperation.REPLY) {
-		AjxDebug.println(AjxDebug.REPLY, "------------------------------------------------");
-		AjxDebug.println(AjxDebug.REPLY, "ZmComposeController::doAction - REPLY");
+	if (params.action == ZmOperation.REPLY || params.action == ZmOperation.REPLY_ALL) {
 		var str = ["Browser: " + AjxEnv.browser,
 				   "Offline: " + Boolean(ac.isOffline),
 				   "Multi accts: " + ac.multiAccounts,
@@ -216,10 +215,6 @@ function(params) {
 	} else {
 		this._setView(params);
 		this._listController = params.listController;
-	}
-
-	if (params.action == ZmOperation.REPLY) {
-		AjxDebug.println(AjxDebug.REPLY, "+++++++++++++++++++++++++++++++++++++++++++++++++");
 	}
 };
 
@@ -914,7 +909,6 @@ function(params) {
 
 	this._composeMode = params.composeMode || this._getComposeMode(msg, identity);
 	AjxDebug.println(AjxDebug.REPLY, "ZmComposeController::_setView - Compose mode: " + this._composeMode);
-	this._curIncOptions = null;
 
 	if (this._needComposeViewRefresh) {
 		this._composeView.dispose();
@@ -927,7 +921,7 @@ function(params) {
 		this.initComposeView(null, this._composeMode);
 		cv = this._composeView;
 	} else {
-		cv.setComposeMode(this._composeMode);
+		cv.setComposeMode(this._composeMode, false, true);
 	}
 
 	if (identity) {
@@ -939,6 +933,7 @@ function(params) {
 
 	this._setAddSignatureVisibility();
 
+	this._curIncOptions = null;
 	cv.set(params);
 	this._setOptionsMenu();
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this.viewId], {waitUntilLoaded:true});
@@ -1474,7 +1469,7 @@ function(ev) {
 // Cancel button was pressed
 ZmComposeController.prototype._cancelListener =
 function(ev) {
-	AjxDebug.println(AjxDebug.REPLY, "Reset compose view: _cancelListener");
+	AjxDebug.println(AjxDebug.REPLY, "ZmComposeController: _cancelListener");
 	this._cancelCompose();
 };
 
