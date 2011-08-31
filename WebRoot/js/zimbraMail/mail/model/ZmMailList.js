@@ -709,7 +709,8 @@ function(items, nId) {
             folder = appCtxt.getById(folderId);
         }
         var nFolder = (id) ? appCtxt.getById(id) : appCtxt.getById(nId);
-		if (nId != folderId && folder && nFolder && !nFolder.isChildOf(folder)) {
+        // if nId is undefined send the default tcon [-tjs].
+		if (!nId || (nId != folderId && folder && nFolder && !nFolder.isChildOf(folder))) {
 			chars.push(ZmFolder.TCON_CODE[folderId]);
 		}
 	}
