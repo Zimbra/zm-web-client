@@ -102,10 +102,18 @@ ZmDatePicker.prototype._updateQuery =
 function() {
 	var d = this._cal.getDate();
 	if (d) {
+      var query;
+      if(appCtxt.getAppController().getAppViewMgr().getCurrentViewId()==ZmId.VIEW_CAL && this._select.getValue()=="date"){
+        query = [this._select.getValue(),":",d.getTime()].join("");
+      }
+      else{
         var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT);
         var date = formatter.format(d);
-        var query = [this._select.getValue(),':"',date,'"'].join("");
-        this.setQuery(query);
+        query = [this._select.getValue(),':"',date,'"'].join("");
+      }
+
+      this.setQuery(query);
+
 	} else {
 		this.setQuery("");
 	}
