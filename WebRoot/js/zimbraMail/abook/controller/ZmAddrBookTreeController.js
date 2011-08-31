@@ -169,7 +169,7 @@ function() {
 
 ZmAddrBookTreeController.prototype._getSearchTypes =
 function(ev) {
-	return [ZmItem.CONTACT];
+	return [ZmItem.CONTACT, ZmItem.GROUP];
 };
 
 /**
