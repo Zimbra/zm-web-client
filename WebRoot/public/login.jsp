@@ -17,7 +17,7 @@
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
-<c:set var="ignoredQueryParams" value="loginOp,loginNewPassword,loginConfirmNewPassword,loginErrorCode,username,password,zrememberme,zlastserver,client"/>
+<c:set var="ignoredQueryParams" value="loginOp,loginNewPassword,loginConfirmNewPassword,loginErrorCode,username,password,zrememberme,zlastserver,client,isLowRes"/>
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
@@ -139,7 +139,15 @@
 
         		</c:when>
         		<c:when test="${client eq 'standard'}">
-		            <c:redirect url="/h/search?mesg=welcome&initial=true&app=${param.app}">
+		            <c:redirect url="/h/search">
+                        <c:param name="mesg" value='welcome'/>
+                        <c:param name="init" value='true'/>
+                        <c:if test="${not empty param.app}">
+                            <c:param name="app" value='${param.app}'/>
+                        </c:if>
+                        <c:if test="${not empty param.isLowRes}">
+                            <c:param name="isLowRes" value='${param.isLowRes}'/>
+                        </c:if>
                         <c:forEach var="p" items="${paramValues}">
                             <c:forEach var='value' items='${p.value}'>
                                 <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
@@ -370,6 +378,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 								<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
 							    <option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
 							</select>
+                            <input type="hidden" id="isLowRes" name="isLowRes" value="" />
 <script TYPE="text/javascript">
 	// show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
 	function clientChange(selectValue) {
@@ -393,6 +402,15 @@ if (application.getInitParameter("offlineMode") != null)  {
         clientChange("${zm:cook(client)}");
     }
 	document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");
+
+    function checkResolution(){
+        var isLowRes = false;
+        isLowRes = (document.body.clientWidth <= 1024);
+        if (isLowRes) {
+            document.getElementById("isLowRes").value = isLowRes;
+        }
+    }
+    checkResolution();
 </script>
 							<div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientWhatsThisMessage"/></div>
 							<div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientUnsupported"/></div>
