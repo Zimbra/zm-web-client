@@ -811,7 +811,7 @@ function() {
 		return;
 	}
 	var button = this._refreshButton = new DwtToolBarButton({parent:DwtShell.getShell(window), id: ZmId.OP_CHECK_MAIL}); //use ToolbarButton just for the style, for now it looks ok.
-	button.setImage("Refresh");
+	button.setImage("RefreshAll");
 	button.setToolTipContent(ZmMsg.checkMailPrefUpdate);
 
 	button.reparentHtmlElement(ZmId.SKIN_REFRESH);
