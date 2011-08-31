@@ -1668,7 +1668,7 @@ function() {
 		if (bodyPart.ct == ZmMimeTable.TEXT_HTML) {
 			content = bodyPart.content;
 			var msgRef = this;
-			content.replace(/dfsrc=([\x27\x22])cid:([^\x27\x22]+)\1/ig, function(s, q, cid) {
+			content.replace(/src=([\x27\x22])cid:([^\x27\x22]+)\1/ig, function(s, q, cid) {
 				var attach = msgRef.findInlineAtt("<" + AjxStringUtil.urlComponentDecode(cid)  + ">");
 				if (attach) {
 					attach.foundInMsgBody = true;
@@ -1684,7 +1684,7 @@ function() {
 	var body = this.getBodyPart(ZmMimeTable.TEXT_HTML);
 	if (body) {
 		body = AjxUtil.isString(body) ? body : body.content;
-		if (body && body.search(/dfsrc=([\x27\x22])cid:([^\x27\x22]+)\1/ig) != -1) {
+		if (body && body.search(/src=([\x27\x22])cid:([^\x27\x22]+)\1/ig) != -1) {
 			return true;
 		}
 	}
