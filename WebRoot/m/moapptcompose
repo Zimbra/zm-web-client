@@ -115,7 +115,7 @@
 <fmt:message var="title" key="ALT_MSG_STATUS_APPT"/>
 <fmt:message var="addedit" key="${empty message ? 'add' : 'edit'}"/>
 <c:set var="title" value="${title} : ${addedit}" scope="request"/>
-<form action="?st=${param.st}&more=true&bt=${bt}" method="post" enctype="multipart/form-data" accept-charset="utf-8" onsubmit="return submitForm(this,'aniframe1');">
+<form action="?st=${zm:cook(param.st)}&more=true&bt=${zm:cook(bt)}" method="post" enctype="multipart/form-data" accept-charset="utf-8" onsubmit="return submitForm(this,'aniframe1');">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <c:choose>
     <c:when test="${ua.isiPad eq true}">
@@ -126,7 +126,7 @@
     </c:when>
     <c:otherwise>
         <div class="tbl tb"><div class="tr"><div class="td">
-            <span class="zo_tb_submit"><a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a></span>
+            <span class="zo_tb_submit"><a href="${zm:cook(caction)}" class="zo_button"><fmt:message key="cancel"/></a></span>
             <span class='zo_tb_submit'><input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>"></span>
         </div>
         </div></div>
@@ -152,7 +152,7 @@
                 <span class="td ZhApptRecurrInfo"><app:img src="dwt/ImgInformation.png"/></span>
                 <span class="td">
                     <c:url value="${context_url}?st=newappt&bt=${bt}&useInstance=0&invId=${id}" var="apptUrl"/><fmt:message key="apptInstNote"/>
-                    <hr size="1"><a href="${apptUrl}"><fmt:message key="apptInstEditSeries"/></a>
+                    <hr size="1"><a href="${zm:cook(apptUrl)}"><fmt:message key="apptInstEditSeries"/></a>
                 </span>
 </div></div></div></c:if>
 <div class="View"><div class="tbl">
@@ -271,7 +271,7 @@
 <div class="View"><div class="tbl"><div class="tr">
     <span class="td left"><input id="allday" type=checkbox name="allDay" <c:if test="${compose.allDay}">checked="checked"</c:if> value="1"> <fmt:message key="allDayEvent"/></span>
     <span class="td right"><span style="display:none;" id="showHide">
-        <a id="showHideLink" href="?more=1&${pageContext.request.queryString}" onclick="return toggleElem('apt_dtls_div',this,'<fmt:message key="hide"/>','<fmt:message key="more"/>')"><fmt:message key="more"/> </a>
+        <a id="showHideLink" href="?more=1&${zm:cook(pageContext.request.queryString)}" onclick="return toggleElem('apt_dtls_div',this,'<fmt:message key="hide"/>','<fmt:message key="more"/>')"><fmt:message key="more"/> </a>
     </span></span>
 </div></div></div>
 </c:if><c:if test="${param.st eq 'newtask'}"><div class="View value cmp_body">
@@ -341,7 +341,7 @@
 <c:if test="${ua.isiPad eq false}">
 <div class="tbl tb"><div class="tr"><div class="td">
     <span class="zo_tb_submit">
-        <a href="${caction}" class="zo_button"><fmt:message key="cancel"/></a>
+        <a href="${zm:cook(caction)}" class="zo_button"><fmt:message key="cancel"/></a>
     </span>
     <span class='zo_tb_submit'>
         <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
