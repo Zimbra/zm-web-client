@@ -518,6 +518,11 @@ ZmPreviewView = function(params){
 ZmPreviewView.prototype = new DwtComposite;
 ZmPreviewView.prototype.constructor = ZmPreviewView;
 
+ZmPreviewView.prototype.toString = 
+function() {
+	return "ZmPreviewView";	
+};
+
 ZmPreviewView.prototype._initialize =
 function(){
 
@@ -623,7 +628,6 @@ function(url){
 
 ZmPreviewView.prototype.set =
 function(item){
-
     if(!item){
         this.enablePreview(false);
         return;
@@ -658,6 +662,7 @@ function(item){
     }
 
     this._iframePreview.setSrc(restUrl);
+	Dwt.setLoadedTime("ZmBriefcaseItem", new Date()); //iframe src set but item may not be downloaded by browser
 };
 
 ZmPreviewView.prototype._setupLoading =

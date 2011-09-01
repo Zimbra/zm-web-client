@@ -1533,7 +1533,7 @@ function() {
 
 ZmMailApp.prototype.launch =
 function(params, callback) {
-
+	this._setLaunchTime(this.toString(), new Date());
 	// set type for initial search
 	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 
@@ -1693,6 +1693,8 @@ ZmMailApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
 	var controller = (results.type == ZmItem.MSG) ? this.getTradController() : this.getConvListController();
 	controller.show(results);
+	this._setLoadedTime(this.toString(), new Date());
+	
 	if (this._forceMsgView) {
 		controller.selectFirstItem();
 		this._forceMsgView = false;

@@ -790,6 +790,7 @@ function(isToolbar, ev) {
  */
 ZmContactListController.prototype._listSelectionListener =
 function(ev) {
+	Dwt.setLoadingTime("ZmContactItem", new Date());
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 
 	if (ev.detail == DwtListView.ITEM_SELECTED)	{

@@ -1089,6 +1089,7 @@ function(msg, container, callback) {
 	this._renderMessageHeader(msg, container);
 	this._renderMessageBody(msg, container, callback);
 	this._renderMessageFooter(msg, container);
+	Dwt.setLoadedTime("ZmMailItem", new Date());
 };
 
 ZmMailMsgView.prototype._renderMessageHeader =

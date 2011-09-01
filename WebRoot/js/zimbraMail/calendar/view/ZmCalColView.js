@@ -2542,6 +2542,7 @@ function(list, skipMiniCalUpdate) {
     }
 
     this._checkForOffscreenAppt();
+	Dwt.setLoadedTime("ZmCalItemView", new Date());
 };
 
 /*

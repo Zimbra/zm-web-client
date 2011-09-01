@@ -568,7 +568,7 @@ function(folderId){
 
 ZmBriefcaseController.prototype._listSelectionListener =
 function(ev) {
-
+	Dwt.setLoadingTime("ZmBriefcaseItem", new Date());
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {

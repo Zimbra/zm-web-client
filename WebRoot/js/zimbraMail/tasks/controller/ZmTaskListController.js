@@ -834,7 +834,7 @@ function(ev, op, params) {
 
 ZmTaskListController.prototype._listSelectionListener =
 function(ev) {
-
+	Dwt.setLoadingTime("ZmTaskItem", new Date());
     ZmListController.prototype._listSelectionListener.call(this, ev);
 
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {

@@ -483,6 +483,7 @@ function(active) {
  */
 ZmContactsApp.prototype.launch =
 function(params, callback) {
+	this._setLaunchTime(this.toString(), new Date());
 	this._contactsSearch("in:contacts", callback);
 };
 
@@ -549,6 +550,7 @@ function(results, callback) {
 	var folderId = search && search.singleTerm && search.folderId;
 	var isInGal = search && (search.contactSource == ZmId.SEARCH_GAL);
 	this.getContactListController().show(results, isInGal, folderId);
+	this._setLoadedTime(this.toString(), new Date());
 	if (callback) {
 		callback.run();
 	}

@@ -142,7 +142,6 @@ function(offset) {
  */
 ZmContactSplitView.prototype.setContact =
 function(contact, isGal) {
-
 	if (!isGal) {
 		// Remove and re-add listeners for current contact if exists
 		if (this._contact) {
@@ -466,6 +465,7 @@ function(contact, isGal, oldContact, expandDL) {
 	}
 
 	this._setHeaderInfo();
+	Dwt.setLoadedTime("ZmContactItem", new Date());
 };
 
 ZmContactSplitView.prototype._showContact =

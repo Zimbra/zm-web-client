@@ -1055,3 +1055,51 @@ function() {
 	}
 	return defaultAcct;
 };
+
+/**
+ * Sets a hidden div for performance metrics.  Marks the time an app has been launched
+ * @param appName {String}
+ * @param date {Date}
+ * @private
+ */
+ZmApp.prototype._setLaunchTime = 
+function(appName, date) {
+	if (!window.isPerfMetric) {
+		return;
+	}
+	var id = appName + "_launched";
+	if (!date) {
+		date = new Date();
+	}
+	if (!document.getElementById(id)) {
+		var div = document.createElement("DIV");
+		div.id = id;
+		div.innerHTML = date.getTime();
+		div.style.display = "none";
+		document.body.appendChild(div);
+	}	
+};
+
+/**
+ * Sets a hidden div for performance metrics.  Marks the time an app has completed loading
+ * @param appName {String}
+ * @param date {Date}
+ * @private
+ */
+ZmApp.prototype._setLoadedTime = 
+function(appName, date) {
+	if (!window.isPerfMetric) {
+		return;
+	}
+	var id = appName + "_loaded";
+	if (!date) {
+		date = new Date();
+	}
+	if (!document.getElementById(id)) {
+		var div = document.createElement("DIV");
+		div.id = id;
+		div.innerHTML = date.getTime();
+		div.style.display = "none";
+		document.body.appendChild(div);
+	}
+};

@@ -667,6 +667,7 @@ function() {
 
 ZmCalendarApp.prototype.launch =
 function(params, callback) {
+	this._setLaunchTime(this.toString(), new Date());
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [params, callback]);
 	AjxDispatcher.require(["CalendarCore", "Calendar"], true, loadCallback, null, true);
 };
@@ -700,6 +701,7 @@ function(params, callback) {
 	}
 
 	cc.show(view, sd);
+	this._setLoadedTime(this.toString(), new Date());
 	if (callback) {
 		callback.run();
 	}

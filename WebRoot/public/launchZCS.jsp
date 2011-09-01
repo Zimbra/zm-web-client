@@ -108,6 +108,7 @@
 	String mode = getAttribute(request, "mode", null);
 	boolean isDevMode = mode != null && mode.equalsIgnoreCase("mjsf");
 	boolean isSkinDebugMode = mode != null && mode.equalsIgnoreCase("skindebug");
+    boolean isPerfMetric = getParameter(request, "perfMetric", "0").equals("1");
 
 	String vers = getAttribute(request, "version", "");
 
@@ -153,6 +154,7 @@
 	pageContext.setAttribute("preset", preset);
 	pageContext.setAttribute("editor", editor);
     pageContext.setAttribute("isCoverage", isCoverage);
+    pageContext.setAttribute("isPerfMetric", isPerfMetric);
 %>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <fmt:setLocale value='${locale}' scope='request' />
@@ -189,6 +191,7 @@
 	window.appDevMode     = ${isDevMode};
     window.appCoverageMode = ${isCoverage};
     window.isScriptErrorOn   = ${isScriptErrorOn};
+    window.isPerfMetric = ${isPerfMetric};
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >

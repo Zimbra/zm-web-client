@@ -257,6 +257,7 @@ function(creates, force) {
 
 ZmTasksApp.prototype.launch =
 function(params, callback) {
+	this._setLaunchTime(this.toString(), new Date());
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, callback);
 	AjxDispatcher.require(["TasksCore", "Tasks"], true, loadCallback, null, true);
 };
@@ -285,6 +286,7 @@ ZmTasksApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
 	var folderId = results && results.search && results.search.singleTerm && results.search.folderId;
 	this.getTaskListController().show(results, folderId);
+	this._setLoadedTime(this.toString(), new Date());
 	if (callback) callback.run();
 };
 

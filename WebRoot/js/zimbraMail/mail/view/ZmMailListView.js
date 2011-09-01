@@ -994,7 +994,7 @@ function(ev) {
  */
 ZmMailListView.prototype._itemClicked =
 function(clickedEl, ev) {
-
+	Dwt.setLoadingTime("ZmMailItem", new Date());
 	ZmListView.prototype._itemClicked.apply(this, arguments);
 	
 	var ctlr = this._controller;
