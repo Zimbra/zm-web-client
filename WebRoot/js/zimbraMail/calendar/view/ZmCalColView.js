@@ -2580,6 +2580,7 @@ function(list, skipMiniCalUpdate) {
         this._layoutFBBar();
     }
 	this._scrollToTime(8);
+	Dwt.setLoadedTime("ZmCalItemView", new Date());
 };
 
 ZmCalColView._gridMouseMoveHdlr =

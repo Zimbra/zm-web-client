@@ -1421,7 +1421,7 @@ function(msg, container, callback) {
 
 	this._setAttachmentLinks();
 	this._expandRows(this._expandHeader);
-
+	Dwt.setLoadedTime("ZmMailItem", new Date());
 	if (callback) { callback.run(); }
 };
 

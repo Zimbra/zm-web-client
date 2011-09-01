@@ -873,6 +873,7 @@ function(toolbar) {
 // Switch to selected view.
 ZmCalViewController.prototype._viewActionMenuItemListener =
 function(ev) {
+	Dwt.setLoadingTime("ZmCalItemView", new Date());
 	if (appCtxt.multiAccounts) {
 		this.apptCache.clearCache();
 	}
@@ -883,6 +884,7 @@ function(ev) {
 // Switch to selected view.
 ZmCalViewController.prototype._viewMenuItemListener =
 function(ev) {
+	Dwt.setLoadingTime("ZmCalViewItem", new Date())
 	if (ev.detail == DwtMenuItem.CHECKED ||
 		ev.detail == DwtMenuItem.UNCHECKED)
 	{

@@ -402,6 +402,7 @@ function() {
 
 ZmBriefcaseApp.prototype.launch =
 function(params, callback) {
+	this._setLaunchTime(this.toString(), new Date());
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require(["BriefcaseCore","Briefcase"], true, loadCallback, null, true);
 };
@@ -458,6 +459,7 @@ function(results, callback) {
 ZmBriefcaseApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
 	this.getBriefcaseController().show(results);
+	this._setLoadedTime(this.toString(), new Date());
 	if (callback) { callback.run(); }
 };
 
