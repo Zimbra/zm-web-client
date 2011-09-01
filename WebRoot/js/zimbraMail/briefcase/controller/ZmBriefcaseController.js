@@ -298,7 +298,7 @@ function(parent, num) {
     parent.enable(ZmOperation.RENAME_FILE, ( num ==1 && !isFolderSelected && !isReadOnly && !isRevision && (isLocked ? isLockOwner : true) ));
 
     //Download - Files
-    parent.enable(ZmOperation.SAVE_FILE, num >0 );
+    parent.enable(ZmOperation.SAVE_FILE, num >0 && (!isFolderSelected || isBriefcaseItemSelected));
 
     // Edit
     parent.enable(ZmOperation.OPEN_FILE, (num == 1 && isWebDoc));
@@ -937,13 +937,15 @@ function(items){
         var organizer = appCtxt.getById(items[0].folderId);
         for(var i=0; i< length; i++){
             item = items[i];
-            var itemId;
-            if (appCtxt.isOffline && organizer.isShared()) {
-                itemId = item.id;
-            } else {
-                itemId = item.getNormalizedItemId();
-            }
-            params.push((item.isRevision ? item.parent.id : itemId )+"."+item.version);
+	        if (!item.isFolder) {
+				var itemId;
+				if (appCtxt.isOffline && organizer.isShared()) {
+					itemId = item.id;
+				} else {
+					itemId = item.getNormalizedItemId();
+				}
+				params.push((item.isRevision ? item.parent.id : itemId )+"."+item.version);
+	        }
         }
         restUrl = [ ((organizer.isShared() && !appCtxt.isOffline ) ? organizer.getOwnerRestUrl() : organizer.getRestUrl()), "?fmt=zip&list=", params.join(',')].join('');
     }else{
