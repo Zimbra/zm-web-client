@@ -4735,6 +4735,8 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 .ZmEditContactView .rowValue, .ZmContactSplitView .rowValue {
 	width:150px;
+	max-width:800px;
+	word-wrap: break-word;
 }
 .ZmEditContactView .rowValue, .ZmContactSplitView .rowValue[colspan] {
 	width:auto;
