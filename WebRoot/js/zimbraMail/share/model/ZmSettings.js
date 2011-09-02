@@ -276,7 +276,8 @@ ZmSettings.prototype.setUserSettings = function(params) {
         ZmSetting.REST_URL,                 info.rest,
         ZmSetting.TOKEN_LIFETIME,           info.lifetime,
         ZmSetting.USERNAME,                 info.name,
-		ZmSetting.EMAIL_VALIDATION_REGEX, 	info.zimbraMailAddressValidationRegex
+		ZmSetting.EMAIL_VALIDATION_REGEX, 	info.zimbraMailAddressValidationRegex,
+		ZmSetting.DISABLE_SENSITIVE_ZIMLETS_IN_MIXED_MODE, 	info.domainSettings.zimbraZimletDataSensitiveInMixedModeDisabled
     ];
     for (var i = 0; i < settings.length; i += 2) {
         var value = settings[i+1];
@@ -769,6 +770,7 @@ function() {
 	// DOMAIN SETTINGS
 	this.registerSetting("CHANGE_PASSWORD_URL",				{type:ZmSetting.T_CONFIG});
 	this.registerSetting("PUBLIC_URL",						{type:ZmSetting.T_CONFIG});
+	this.registerSetting("DISABLE_SENSITIVE_ZIMLETS_IN_MIXED_MODE",		{type:ZmSetting.T_CONFIG});
 
 	// COS SETTINGS - APPS
 	this.registerSetting("ASSISTANT_ENABLED",				{name:"zimbraFeatureZimbraAssistantEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
