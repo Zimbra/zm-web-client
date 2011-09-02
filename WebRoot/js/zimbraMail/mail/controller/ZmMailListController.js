@@ -273,7 +273,7 @@ function(actionCode) {
 			break;
 	
 		case ZmKeyMap.SPAM:
-			if (num && !isDrafts && !isSyncFailures && appCtxt.get(ZmSetting.SPAM_ENABLED)) {
+			if (num && !isDrafts && !isSyncFailures && appCtxt.get(ZmSetting.SPAM_ENABLED) && (folder && !folder.isReadOnly())) {
 				this._spamListener();
 			}
 			break;
