@@ -93,7 +93,7 @@
     </c:if>
 </mo:handleError>
 <c:set var="title" scope="request" value="${title}"/><c:set var="focusField" value="${param.op eq 'reply' or param.op eq 'replyAll' ? 'bodyField' : 'toField'}"/><c:set var="nmail" value="st=newmail"/>
-<form action="?${nmail}&bt=${bt}" method="post" enctype="multipart/form-data" accept-charset="utf-8" onsubmit="return submitForm(this,'aniframe');">
+<form action="?${nmail}&bt=${zm:cook(bt)}" method="post" enctype="multipart/form-data" accept-charset="utf-8" onsubmit="return submitForm(this,'aniframe');">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/><%-- TOP TOOLBAR --%>
 <c:choose>
     <c:when test="${ua.isiPad == true}">
