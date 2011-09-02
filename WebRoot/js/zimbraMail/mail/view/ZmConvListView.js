@@ -362,13 +362,6 @@ function(htmlArr, idx, item, field, colIdx, params) {
 				htmlArr[idx++] = item.numMsgs;
 				htmlArr[idx++] = ")";
 			}
-		} else if (field == ZmItem.F_TYPE) {
-			// Type icon (mixed view only)
-			if (item.isDraft) {
-				htmlArr[idx++] = AjxImg.getImageHtml("MsgStatusDraft", null, ["id='", this._getFieldId(item, ZmItem.F_STATUS), "'"].join(""));
-			} else {
-				idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
-			}
 		} else if (field == ZmItem.F_SORTED_BY) {
 			htmlArr[idx++] = this._getAbridgedContent(item, colIdx);
 		} else {

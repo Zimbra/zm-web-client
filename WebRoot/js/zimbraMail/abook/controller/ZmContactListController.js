@@ -1142,7 +1142,7 @@ function(ev) {
 ZmContactListController.prototype._groupListener =
 function(ev, items) {
 	var curView = appCtxt.getAppViewMgr().getCurrentViewId();
-	if (curView == this._getViewType() || curView == ZmId.VIEW_MIXED) {
+	if (curView == this._getViewType()) {
 		var groupEvent = ev.getData(ZmContactGroupMenu.KEY_GROUP_EVENT);
 		var groupAdded = ev.getData(ZmContactGroupMenu.KEY_GROUP_ADDED);
 		items = items || this.getItems();

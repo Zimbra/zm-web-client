@@ -32,9 +32,6 @@ ZmSearchController = function(container) {
 	ZmController.call(this, container);
 
 	this._inited = false;
-
-	// default menu values
-	this._searchFor = appCtxt.get(ZmSetting.MAIL_ENABLED) ? ZmId.SEARCH_MAIL : ZmId.SEARCH_ANY;
 	this._contactSource = ZmItem.CONTACT;
 	this._results = null;
 
@@ -355,9 +352,6 @@ function(params) {
 			case ZmId.SEARCH_GAL:
 				// Do not search in GAL when query is empty
 				return;
-			case ZmId.SEARCH_ANY:
-				params.query = "is:anywhere";
-				break;
 			case ZmItem.APPT:
 				break;
 			default:
@@ -614,7 +608,7 @@ function(types) {
 ZmSearchController.prototype._doSearch =
 function(params, noRender, callback, errorCallback) {
 
-	var searchFor = this._searchFor = params.searchFor || this._searchFor;
+	var searchFor = this._searchFor = params.searchFor || this._searchFor || ZmSearchToolBar.MENU_ITEMS[0];
 	appCtxt.notifyZimlets("onSearch", [params.query]);
 
 	if (!params.skipUpdateSearchToolbar && this._searchToolBar) {

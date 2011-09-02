@@ -99,7 +99,6 @@ AjxPackage.require("zimbraMail.im.ZmImApp");
 AjxPackage.require("zimbraMail.notebook.ZmNotebookApp");
 AjxPackage.require("zimbraMail.briefcase.ZmBriefcaseApp");
 AjxPackage.require("zimbraMail.voicemail.ZmVoiceApp");
-AjxPackage.require("zimbraMail.mixed.ZmMixedApp");
 
 AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommandAction");
 AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommand");

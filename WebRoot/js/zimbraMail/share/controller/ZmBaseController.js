@@ -436,7 +436,7 @@ ZmBaseController.prototype._tagListener =
 function(ev, items) {
 
 	var curView = appCtxt.getAppViewMgr().getCurrentViewId();
-	if (curView == this._getViewType() || curView == ZmId.VIEW_MIXED) {
+	if (curView == this._getViewType()) {
 		var tagEvent = ev.getData(ZmTagMenu.KEY_TAG_EVENT);
 		var tagAdded = ev.getData(ZmTagMenu.KEY_TAG_ADDED);
 		items = items || this.getItems();
@@ -597,7 +597,7 @@ function(ev) {
 
 	// only process if current view is this view!
 	var curView = appCtxt.getAppViewMgr().getCurrentViewId();
-	if (curView == this._getViewType() || curView == ZmId.VIEW_MIXED) {
+	if (curView == this._getViewType()) {
 		if (ev.type == ZmEvent.S_TAG && ev.event == ZmEvent.E_CREATE && this._pendingActionData) {
 			var tag = ev.getDetail("organizers")[0];
 			this._doTag(this._pendingActionData, tag, true);
@@ -639,12 +639,7 @@ function(items) {
 
 	items = AjxUtil.toArray(items);
 	var item = items[0];
-	var list = item && item.list;
-	if (list && (list.type == ZmItem.MIXED) && item._mixedType) {
-		list.type = item._mixedType;
-	}
-
-	return list;
+	return item && item.list;
 };
 
 // callback (closure) to run when an action has completely finished

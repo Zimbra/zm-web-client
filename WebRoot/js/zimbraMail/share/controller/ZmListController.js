@@ -428,7 +428,7 @@ function(ev) {
 
 	// skip listener for non-current views
 	var curView = appCtxt.getAppViewMgr().getCurrentViewId();
-	if (curView != this._getViewType() && curView != ZmId.VIEW_MIXED) { return; }
+	if (curView != this._getViewType()) { return; }
 
 	var op = ev.item.getData(ZmOperation.KEY_ID);
 
@@ -685,9 +685,6 @@ function(items) {
 	var list = ZmBaseController.prototype._getList.apply(this, arguments);
 	if (!list) {
 		list = this._list;
-		if (list && (list.type == ZmItem.MIXED) && item._mixedType) {
-			list.type = item._mixedType;
-		}
 	}
 
 	return list;

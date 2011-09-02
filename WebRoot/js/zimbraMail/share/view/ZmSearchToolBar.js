@@ -358,11 +358,11 @@ function() {
 	var searchMenuBtnId = this._htmlElId + "_searchMenuButton";
 	var searchMenuBtn = document.getElementById(searchMenuBtnId);
 	if (searchMenuBtn) {
-		var mailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
+		var firstItem = ZmSearchToolBar.MENU_ITEMS[0];
 		this._searchMenuButton = this._addButton({ tdId:		"_searchMenuButton",
 												   buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_MENU),
-												   tooltip:				mailEnabled ? ZmMsg.searchMail : ZmMsg.searchAll,
-												   icon:		mailEnabled ? "Message" : "Globe" });
+												   tooltip:		ZmMsg[ZmSearchToolBar.TT_MSG_KEY[firstItem]],
+												   icon:		ZmSearchToolBar.ICON[firstItem] });
 		var menu = new AjxCallback(this, this._createSearchMenu);
 		this._searchMenuButton.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 		this._searchMenuButton.reparentHtmlElement(searchMenuBtnId);
@@ -373,8 +373,8 @@ function() {
 										   buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_SEARCH),
 										   lbl:			"",
 										   icon:		"Search2",
-											template: 	"dwt.Widgets#ZImageOnlyButton",
-											className: 	"ZImageOnlyButton",
+										   template: 	"dwt.Widgets#ZImageOnlyButton",
+										   className: 	"ZImageOnlyButton",
 										   tooltip:		ZmMsg.searchTooltip });
 
 	// add save search button if saved-searches enabled
@@ -385,8 +385,6 @@ function() {
 										 icon:		"Save",
 										 type:		"toolbar",
 										 tooltip:	ZmMsg.saveSearchTooltip });
-			
-
 
 	// add advanced search button
 	this._browseButton = this._addButton({ setting:		ZmSetting.BROWSE_ENABLED,
@@ -429,12 +427,6 @@ function() {
 		params.id = ZmSearchToolBar.ID[id];
 		mi = DwtMenuItem.create(params);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, id);
-
-		// add separator *after* "all" menu item
-		if (id == ZmId.SEARCH_ANY) {
-			if (ZmSearchToolBar.MENU_ITEMS.length <= 1) { continue; }
-			mi = new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
-		}
 	}
 
 	appCtxt.getSearchController()._addMenuListeners(menu);

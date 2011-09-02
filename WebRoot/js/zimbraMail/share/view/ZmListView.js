@@ -241,7 +241,7 @@ ZmListView.prototype._changeListener =
 function(ev) {
 
 	var item = this._getItemFromEvent(ev);
-	if (!item || ev.handled || !this._handleEventType[item.type] && (this.type != ZmItem.MIXED)) { return; }
+	if (!item || ev.handled || !this._handleEventType[item.type]) { return; }
 
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
 		DBG.println(AjxDebug.DBG2, "ZmListView: TAG");

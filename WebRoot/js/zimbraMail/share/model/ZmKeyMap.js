@@ -74,7 +74,6 @@ ZmKeyMap.MAP_NAME["editTask"]			= "ZmTaskController";
 ZmKeyMap.MAP_NAME["global"]				= "Global";
 ZmKeyMap.MAP_NAME["mail"]				= "ZmMailListController";
 ZmKeyMap.MAP_NAME["message"]			= "ZmMsgController";
-ZmKeyMap.MAP_NAME["mixed"]				= "ZmMixedController";
 ZmKeyMap.MAP_NAME["notebook"]			= "ZmNotebookPageController";
 ZmKeyMap.MAP_NAME["options"]			= "ZmPrefController";
 ZmKeyMap.MAP_NAME["tasks"]				= "ZmTaskListController";
@@ -243,7 +242,6 @@ function() {
 	ZmKeyMap.MAP_PRECONDITION["ZmContactController"]		= ZmSetting.CONTACTS_ENABLED;
 	ZmKeyMap.MAP_PRECONDITION["ZmCalViewController"]		= ZmSetting.CALENDAR_ENABLED;
 	ZmKeyMap.MAP_PRECONDITION["ZmApptComposeController"]	= ZmSetting.CALENDAR_ENABLED;
-	ZmKeyMap.MAP_PRECONDITION["ZmMixedController"]			= ZmSetting.MIXED_VIEW_ENABLED;
 	ZmKeyMap.MAP_PRECONDITION["ZmPrefController"]			= ZmSetting.OPTIONS_ENABLED;
 	ZmKeyMap.MAP_PRECONDITION["ZmNotebookPageController"]	= ZmSetting.NOTEBOOK_ENABLED;
 	ZmKeyMap.MAP_PRECONDITION["ZmBriefcaseController"]		= ZmSetting.BRIEFCASE_ENABLED;

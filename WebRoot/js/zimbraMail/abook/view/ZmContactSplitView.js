@@ -1080,8 +1080,7 @@ function() {
 
 /**
  * A contact is normally displayed in a list view with no headers, and shows
- * just an icon and name. The mixed list view has headers, and the row can
- * be built in the standard way.
+ * just an icon and name.
  *
  * @param {ZmContact}	contact	the contact to display
  * @param {Hash}	params	a hash of optional parameters
@@ -1092,9 +1091,6 @@ ZmContactSimpleView.prototype._createItemHtml =
 function(contact, params) {
 
 	params = params || {};
-	if (params.isMixedView) {
-		return ZmContactsBaseView.prototype._createItemHtml.apply(this, arguments);
-	}
 
 	var div = this._getDiv(contact, params);
 
@@ -1168,26 +1164,6 @@ function(contact, params) {
 	div.innerHTML = htmlArr.join("");
 
 	return div;
-};
-
-// mixed view
-/**
- * @private
- */
-ZmContactSimpleView.prototype._getCellContents =
-function(htmlArr, idx, contact, field, colIdx, params) {
-	if (field == ZmItem.F_FROM) {
-		// Name (fileAs)
-		htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
-	} else if (field == ZmItem.F_SUBJECT) {
-		// Company
-		htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getCompanyField());
-	} else if (field == ZmItem.F_DATE) {
-		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now, contact.modified);
-	} else {
-		idx = ZmContactsBaseView.prototype._getCellContents.apply(this, arguments);
-	}
-	return idx;
 };
 
 /**

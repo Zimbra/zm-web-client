@@ -185,17 +185,8 @@ ZmApptListView.prototype._getCellContents = function(htmlArr, idx, appt, field, 
 		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(appt, field));
 
 	}
-    else if (field == ZmItem.F_FROM) { // for mixed view
-		htmlArr[idx++] = appt.getOrganizer();
-
-	}
     else if (field == ZmItem.F_SUBJECT) {
-		if (params.isMixedView) {
-			htmlArr[idx++] = appt.name ? AjxStringUtil.htmlEncode(appt.name, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
-		}
-        else {
-			htmlArr[idx++] = AjxStringUtil.htmlEncode(appt.getName(), true);
-		}
+		htmlArr[idx++] = AjxStringUtil.htmlEncode(appt.getName(), true);
 		if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && appt.fragment) {
 			htmlArr[idx++] = this._getFragmentSpan(appt);
 		}
