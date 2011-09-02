@@ -44,7 +44,7 @@ function(qcAction) {
 
 ZmQuickCommand.prototype.removeAction =
 function(qcAction) {
-    AjxUtil().arrayRemove(this.actions, qcAction);
+    AjxUtil.arrayRemove(this.actions, qcAction);
 };
 
 ZmQuickCommand.prototype.actionsCount =
