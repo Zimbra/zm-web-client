@@ -18,9 +18,9 @@
  */
 
 /**
- * Creates a link folder dialog.
+ * Creates a link properties dialog.
  * @class
- * This class represents a link folder dialog.
+ * This class represents a dialog used to set the properties of an HTML link.
  * 
  * @param	{DwtControl}	shell		the parent
  * @param	{String}	className		the class name
@@ -32,7 +32,7 @@ ZmLinkPropsDialog = function(shell, className) {
 	DwtDialog.call(this, {parent:shell, className:className, title:ZmMsg.linkProperties});
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
 
-	this._cache = AjxDispatcher.run("GetNotebookCache");
+//	this._cache = AjxDispatcher.run("GetNotebookCache");
 
 	// set view
 	this.setView(this._createView());
@@ -98,6 +98,8 @@ function() {
 
 ZmLinkPropsDialog.prototype.autocompleteMatch =
 function(s) {
+	return [];
+	
 	var notebookId = this._notebookSelect.getValue();
 	var pages = this._cache.getPagesInFolder(notebookId);
 

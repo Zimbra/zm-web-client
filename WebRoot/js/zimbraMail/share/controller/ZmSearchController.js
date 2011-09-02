@@ -498,9 +498,6 @@ function(params) {
 		types.add(groupBy);
 	} else {
 		types.add(searchFor);
-		if (searchFor == ZmItem.PAGE) {
-			types.add(ZmItem.DOCUMENT);
-		}
 	}
 
 	return types;

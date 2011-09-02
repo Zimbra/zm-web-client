@@ -509,20 +509,6 @@ function() {
 };
 
 /**
- * Gets the new notebook dialog.
- * 
- * @return	{ZmNewNotebookDialog}		the new notebook dialog
- */
-ZmAppCtxt.prototype.getNewNotebookDialog =
-function() {
-	if (!this._newNotebookDialog) {
-		AjxDispatcher.require(["NotebookCore", "Notebook"]);
-		this._newNotebookDialog = new ZmNewNotebookDialog(this._shell);
-	}
-	return this._newNotebookDialog;
-};
-
-/**
  * Gets the new task folder dialog.
  * 
  * @return	{ZmNewTaskFolderDialog}		the new task folder dialog
@@ -534,20 +520,6 @@ function() {
 		this._newTaskFolderDialog = new ZmNewTaskFolderDialog(this._shell);
 	}
 	return this._newTaskFolderDialog;
-};
-
-/**
- * Gets the page conflict dialog.
- * 
- * @return	{ZmPageConflictDialog}		the page conflict dialog
- */
-ZmAppCtxt.prototype.getPageConflictDialog =
-function() {
-	if (!this._pageConflictDialog) {
-		AjxDispatcher.require(["NotebookCore", "Notebook"]);
-		this._pageConflictDialog = new ZmPageConflictDialog(this._shell);
-	}
-	return this._pageConflictDialog;
 };
 
 /**
@@ -661,7 +633,7 @@ function() {
 ZmAppCtxt.prototype.getLinkPropsDialog =
 function() {
 	if (!this._linkPropsDialog) {
-		AjxDispatcher.require("Share");
+		AjxDispatcher.require("Extras");
 		this._linkPropsDialog = new ZmLinkPropsDialog(this._shell);
 	}
 	return this._linkPropsDialog;
@@ -843,20 +815,6 @@ function() {
 };
 
 /**
- * Gets the import dialog.
- * 
- * @return	{ZmImportDialog}		the import dialog
- */
-ZmAppCtxt.prototype.getImportDialog =
-function() {
-	if (!this._importDialog) {
-		AjxDispatcher.require(["NotebookCore", "Notebook"]);
-		this._importDialog = new ZmImportDialog(this._shell);
-	}
-	return this._importDialog;
-};
-
-/**
  * Gets the attach dialog.
  * 
  * @return	{ZmAttachDialog}		the attach dialog
@@ -931,7 +889,7 @@ function(callback) {
 ZmAppCtxt.prototype.getUploadConflictDialog =
 function() {
 	if (!this._uploadConflictDialog) {
-		AjxDispatcher.require(["NotebookCore", "Notebook"]);
+		AjxDispatcher.require(["Extras"]);
 		this._uploadConflictDialog = new ZmUploadConflictDialog(this._shell);
 	}
 	return this._uploadConflictDialog;

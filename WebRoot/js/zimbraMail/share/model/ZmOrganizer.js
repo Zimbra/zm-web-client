@@ -119,7 +119,6 @@ ZmOrganizer.ID_TRASH			= 3;
 ZmOrganizer.ID_SPAM				= 4;
 ZmOrganizer.ID_ADDRBOOK			= 7;
 ZmOrganizer.ID_CALENDAR			= 10;
-ZmOrganizer.ID_NOTEBOOK			= 12;
 ZmOrganizer.ID_AUTO_ADDED 		= 13;
 ZmOrganizer.ID_CHATS			= 14;
 ZmOrganizer.ID_TASKS			= 15;

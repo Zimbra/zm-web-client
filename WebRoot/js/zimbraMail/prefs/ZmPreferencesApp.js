@@ -288,7 +288,6 @@ function() {
 				ZmSetting.DEFAULT_TIMEZONE,
                 ZmSetting.DEFAULT_PRINTFONTSIZE,
 				ZmSetting.OFFLINE_IS_MAILTO_HANDLER,
-				ZmSetting.OFFLINE_NOTEBOOK_SYNC_ENABLED, // offline
 				ZmSetting.SHORT_ADDRESS,
 				ZmSetting.USE_ADDR_BUBBLES
 			]
@@ -461,7 +460,7 @@ function() {
 	ZmPref.registerPref("COMPOSE_INIT_FONT_COLOR", {
 		displayOptions: 	["rgb(0, 0, 0)"],
 		displayContainer:	ZmPref.TYPE_COLOR,
-		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
+		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED]
 	});
 
 	ZmPref.registerPref("COMPOSE_INIT_FONT_FAMILY", {
@@ -473,7 +472,7 @@ function() {
 		options: 			["Andale Mono","Arial", "Arial Black","Book Antiqua","Bookman Old Style","Comic Sans MS","Courier New", "Garamond",
                              "Georgia", "Helvetica", "Impact", "Lucida Console", "Symbol", "Tahoma", "Terminal", "Times New Roman", "Trebuchet MS",
                              "Verdana","Webdings","Wingdings"],
-		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
+		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED]
 	});
 
     ZmPref.registerPref("QUICK_COMMAND_LIST", {
@@ -514,7 +513,7 @@ function() {
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions: 	fontSizeOptions,
         options:            fontSizeValueOptions,
-		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
+		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED]
 	});
 
 	ZmPref.registerPref("COMPOSE_SAME_FORMAT", {
@@ -652,15 +651,6 @@ function() {
 			displayName:		ZmMsg.offlineAllowMailTo,
 			displayContainer:	ZmPref.TYPE_CHECKBOX
 		});
-
-		// Do not show enable document preference.
-        //		if (appCtxt.accountList.accountTypeExists(ZmAccount.TYPE_ZIMBRA)) {
-        //			ZmPref.registerPref("OFFLINE_NOTEBOOK_SYNC_ENABLED", {
-        //				displayName:		ZmMsg.enableDocuments,
-        //				displayContainer:	ZmPref.TYPE_CHECKBOX,
-        //                preCondition:       ZmSetting.NOTEBOOK_ENABLED
-        //			});
-        //		}
 
         ZmPref.registerPref("OFFLINE_BACKUP_ACCOUNT_ID", {
             displayName:		ZmMsg.offlineBackUpAccounts,

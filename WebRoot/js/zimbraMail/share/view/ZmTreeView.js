@@ -631,7 +631,6 @@ function() {
 			 this.type == ZmOrganizer.ADDRBOOK ||
 			 this.type == ZmOrganizer.CALENDAR ||
 			 this.type == ZmOrganizer.TASKS ||
-			 this.type == ZmOrganizer.NOTEBOOK ||
 			 this.type == ZmOrganizer.BRIEFCASE ||
 			 this.type == ZmOrganizer.PREF_PAGE ||
 			 this.type == ZmOrganizer.ZIMLET));

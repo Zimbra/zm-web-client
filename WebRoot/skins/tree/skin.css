@@ -122,7 +122,6 @@ body, #skin_outer{ background: @lighten(AppC,40)@ !important;}
 .ZmCalViewMgr,
 .calendar_view,
 .ZmContactInfoView,
-.ZmNotebookPageView,
 .ZmEditContactView .contactHeaderTable,
 .DwtListView {
 	background-color: #ffffff;

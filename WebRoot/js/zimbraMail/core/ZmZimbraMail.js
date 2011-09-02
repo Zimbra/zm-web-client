@@ -2569,7 +2569,7 @@ function(ex, continuation) {
 	var handled = false;
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
 		// check for fault when getting folder perms
-		var organizerTypes = [ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK];
+		var organizerTypes = [ZmOrganizer.CALENDAR, ZmOrganizer.ADDRBOOK];
 		if (ex.data.itemId && ex.data.itemId.length) {
 			var itemId = ex.data.itemId[0];
 			var index = itemId.lastIndexOf(':');
