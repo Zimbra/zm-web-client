@@ -56,6 +56,12 @@ ZmZimletMgr._RE_REMOTE = /^((https?|ftps?):\x2f\x2f|\x2f)/;
 */
 ZmZimletMgr.CORE_ZIMLETS = /com_zimbra_apptsummary|com_zimbra_date|com_zimbra_dnd|com_zimbra_email|com_zimbra_linkedin|com_zimbra_phone|com_zimbra_webex|com_zimbra_social|com_zimbra_srchhighlighter|com_zimbra_url/;
 
+/**
+ * If the Zimlet's config_template has  hasSensitiveData = true, it will be considered as sensitive Zimlet
+ * and such zimlets are disabled (by-default) in mixed-mode.
+ * System admin can set: mcf zimbraZimletDataSensitiveInMixedModeDisabled FALSE (instead of TRUE), to enable
+ */
+ZmZimletMgr.HAS_SENSITIVE_DATA_CONFIG_NAME = "hasSensitiveData";
 
 //
 // Public methods
@@ -84,10 +90,18 @@ function() {
  */
 ZmZimletMgr.prototype.loadZimlets =
 function(zimletArray, userProps, target, callback, sync) {
-	if(window.location.href.toLowerCase().indexOf("zimlets=none") > 0) {
+	var href = window.location.href.toLowerCase();
+	if(href.indexOf("zimlets=none") > 0) {
 		return;
-	} else if(window.location.href.toLowerCase().indexOf("zimlets=core") > 0) {
+	} else if(href.indexOf("zimlets=core") > 0) {
 		zimletArray = this._getCoreZimlets(zimletArray);
+	}
+	var isHttp = document.location.protocol == ZmSetting.PROTO_HTTP;
+	var isMixedMode = appCtxt.get(ZmSetting.PROTOCOL_MODE) == ZmSetting.PROTO_MIXED;
+	var showAllZimlets = href.indexOf("zimlets=all") > 0;
+	if(isMixedMode && !appCtxt.isOffline && !showAllZimlets && isHttp
+			&& appCtxt.get(ZmSetting.DISABLE_SENSITIVE_ZIMLETS_IN_MIXED_MODE) == "TRUE") {
+		zimletArray = this._getNonSensitiveZimlets(zimletArray);
 	}
 	if (!zimletArray || !zimletArray.length) {
 		this.loaded = true;
@@ -99,6 +113,50 @@ function(zimletArray, userProps, target, callback, sync) {
 	if (!callback) {
 		this._loadZimlets(zimletArray, userProps, target, callback, sync);
 	}
+};
+
+
+/**
+ * Returns non-sensitive Zimlets whose config_template.xml file does not contain "hasSensitiveData=true"
+ * @param	{Array}	zimletArray	an array of {@link ZmZimlet} objects
+ *
+ * @private
+ */
+ZmZimletMgr.prototype._getNonSensitiveZimlets =
+function(zimletArray) {
+	if (!zimletArray || !zimletArray.length) {
+		return;
+	}
+	var nonSensitiveZimlets = [];
+	var len = zimletArray.length;
+	for(var i = 0; i < len; i++) {
+		var configProps = [];
+		var zimletObj = zimletArray[i];
+		var isSensitiveZimlet = false;
+		var zimletName = zimletObj.zimlet && zimletObj.zimlet[0] ? zimletObj.zimlet[0].name : "";
+		var zimletConfig = zimletObj.zimletConfig;
+
+		if(zimletConfig)  {
+			if(zimletConfig[0]
+					&& zimletConfig[0].global
+					&& zimletConfig[0].global[0]
+					&& zimletConfig[0].global[0].property) {
+
+				configProps = zimletConfig[0].global[0].property;
+				for(var j = 0; j < configProps.length; j++) {
+					var property = configProps[j];
+					if(property.name == ZmZimletMgr.HAS_SENSITIVE_DATA_CONFIG_NAME && property._content == "true") {
+						isSensitiveZimlet = true;
+						break;
+					}
+				}
+			}
+		}
+		if(!isSensitiveZimlet) {
+			nonSensitiveZimlets.push(zimletObj);
+		}
+	}
+	return nonSensitiveZimlets;
 };
 
 /**
