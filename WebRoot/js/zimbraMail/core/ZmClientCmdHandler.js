@@ -39,6 +39,7 @@
  * 		$set:ymid [id]						set Yahoo IM user to id
  * 		$set:log [type]						dump log contents for type
  * 		$set:log [type]	[size]				set number of msgs to keep for type
+ * 		$set:log [type]	clear				clear msgs for type
  * 		$set:compose						compose msg based on mailto: in query string
  * 		$set:error							show error dialog
  * 		$set:modify [setting] [value]		set setting to value, then optionally restart
@@ -411,10 +412,15 @@ function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */)
 
 	var type = cmdArg1;
 	if (cmdArg2 != null) {
-		var size = parseInt(cmdArg2);
-		if (!isNaN(size)) {
-			AjxDebug.BUFFER_MAX[type] = size;
-			this._alert("Debug log size for '" + type + "' set to " + size);
+		if (cmdArg2 == "clear") {
+			AjxDebug.BUFFER[type] = [];
+		}
+		else {
+			var size = parseInt(cmdArg2);
+			if (!isNaN(size)) {
+				AjxDebug.BUFFER_MAX[type] = size;
+				this._alert("Debug log size for '" + type + "' set to " + size);
+			}
 		}
 	}
 	else {

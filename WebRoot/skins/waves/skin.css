@@ -19,7 +19,7 @@ body, #skin_outer	{
 
 #skin_tr_top	{
 /*background-color: @ChromeBg@;
-background: url("@SkinImgDir@/header_bg_bones.png") repeat-x;*/
+background: url("@SkinImgDir@/header_bg_bones.png?v=@jsVersion@") repeat-x;*/
 }
 #skin_tr_search_builder	{
 /*background-color: @ChromeBg@;*/
@@ -77,7 +77,7 @@ background: url("@SkinImgDir@/header_bg_bones.png") repeat-x;*/
 	overflow:visible;
 	border: 1px solid; 
 	border-color: #9B3A19;
-	background: #225f99 url("@SkinImgDir@/login_bg.png");
+	background: #225f99 url("@SkinImgDir@/login_bg.png?v=@jsVersion@");
 }
 
 

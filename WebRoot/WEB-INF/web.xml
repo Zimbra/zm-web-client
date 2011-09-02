@@ -53,7 +53,7 @@
 
   <context-param>
     <param-name>zimbraDefaultAdminSkin</param-name>
-    <param-value>carbon</param-value>
+    <param-value>%%zimbraDefaultAdminSkin%%</param-value>
   </context-param>
 
   <context-param>
