@@ -61,7 +61,7 @@
 <c:set var="context_url" value="${requestScope.baseURL}"/>
 <c:if test="${param.loginOp=='logout'}"><c:remove var="mapp" scope="session"/><c:redirect url="/"><c:param name="loginOp" value="logout"/><c:param name="client" value="mobile"/></c:redirect></c:if>
 <%--<c:if test="${not empty param.ajax}">--%>
-    <c:url var="prevUrl" scope="session" value="${sessionScope.currentUrl}"/>
+    <c:url var="prevUrl" scope="session" value="${zm:cook(sessionScope.currentUrl)}"/>
     <c:url var="currentUrl" scope="session" value="zmain">
         <c:forEach items="${param}" var="p"><c:param name="${p.key}" value="${p.value}"/></c:forEach>
     </c:url>
@@ -161,7 +161,7 @@
 <title><fmt:message key="zimbraTitle"/></title>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;"/>
 <script type="text/javascript">window.onerror=function(m,u,l){if(window.console){window.console.log("An error occured in: "+u+"\n{\n\tmsg: "+m+",\n\tline: "+l+"\n}");}return false;};</script>
-<c:if test="${empty djs or not djs}"><script type="text/javascript">window.currentUrl='<c:url value="${currentUrl}"><c:param name="ajax" value="true"/></c:url>';
+<c:if test="${empty djs or not djs}"><script type="text/javascript">window.currentUrl='<c:url value="${zm:cook(currentUrl)}"><c:param name="ajax" value="true"/></c:url>';
 <mo:handleError><c:import url="/m/mojs${dbg ? '?dev=1':''}"/></mo:handleError></script></c:if>
 <c:set var="calcss" value=",${sessionScope.zms}-cal"/>
 <link href="<c:url value='/css/${sessionScope.zms}${calcss},images.css'/>" type="text/css" rel="stylesheet"/>
