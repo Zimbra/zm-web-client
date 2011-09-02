@@ -106,7 +106,6 @@ ZmId.SKIN_SEARCH_BUILDER			= "skin_container_search_builder";
 ZmId.SKIN_SEARCH_BUILDER_TOOLBAR	= "skin_container_search_builder_toolbar";
 ZmId.SKIN_SEARCH_BUILDER_TR			= "skin_tr_search_builder";
 ZmId.SKIN_SEARCH					= "skin_container_search";
-ZmId.SKIN_PEOPLE_SEARCH				= "skin_container_people_search";
 ZmId.SKIN_REFRESH					= "skin_container_refresh";
 ZmId.SKIN_SHELL						= "skin_outer";
 ZmId.SKIN_SPACING_SEARCH			= "skin_spacing_search";
@@ -133,7 +132,6 @@ ZmId.LOADING_VIEW			= "z_loading";			// "Loading..." view
 ZmId.MAIN_SASH				= "z_sash";				// sash between overview and content
 ZmId.BANNER					= "z_banner";			// logo (at upper left by default)
 ZmId.SEARCH_TOOLBAR			= "ztb_search";			// search toolbar
-ZmId.PEOPLE_SEARCH_TOOLBAR	= "ztb_people_search";	// people search toolbar
 ZmId.USER_NAME				= "z_userName";			// account name
 ZmId.USER_QUOTA				= "z_userQuota";		// quota
 ZmId.PRESENCE				= "z_presence";			// presence
@@ -406,13 +404,11 @@ ZmId.getPrefPageId = function(tabKey) {
  * Otherwise, pass one of the menu item constants below as the operation:
  * 
  * 		ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_CONTACT)
- * 		ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_ANY)
  * 		ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_SHARED)
  */
  
 ZmId.SEARCH_INPUT			= "zi_search";			// text input in search toolbar
 ZmId.SEARCH_INPUTFIELD      = ZmId.SEARCH_INPUT + "_inputfield";
-ZmId.PEOPLE_SEARCH_INPUTFIELD = "zi_peoplesearch_inputfield";
 
 // context
 ZmId.SEARCH					= "Search";				// element is within search panel
@@ -429,7 +425,6 @@ ZmId.SEARCH_LOCAL			= "LOCAL";				// added by the "local" zimlet
 
 // menu item (also see ZmId.ITEM_*)
 ZmId.SEARCH_ALL_ACCOUNTS	= "ALL_ACCOUNTS";		// all accounts
-ZmId.SEARCH_ANY				= "ANY";				// all item types
 ZmId.SEARCH_GAL				= "GAL";				// GAL contacts
 ZmId.SEARCH_MAIL			= "MAIL";				// mail items
 ZmId.SEARCH_SHARED			= "SHARED";				// include shared items

@@ -265,7 +265,7 @@ function(ev) {
 
 ZmCalendarTreeController.prototype._getSearchFor =
 function(ev) {
-	return ZmId.SEARCH_ANY;
+	return ZmItem.APPT;
 };
 
 ZmCalendarTreeController.prototype._getSearchTypes =

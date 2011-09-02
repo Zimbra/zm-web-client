@@ -342,9 +342,6 @@ function(params) {
 				}
 				var sc = appCtxt.getSearchController();
 				sc.getSearchToolbar().initAutocomplete();
-				if (!appCtxt.isChildWindow) {
-					sc.peopleSearchToolBar.initAutocomplete();
-				}
 				this._appViewMgr.loadingView.setVisible(false);
 			});
 		this.addPostRenderCallback(callback, 0, 0, true);
@@ -759,15 +756,11 @@ function(params) {
 	this.setUserInfo();
 	this._setRefresh();
 
-	if (appCtxt.get(ZmSetting.SEARCH_ENABLED) ||
-			(appCtxt.get(ZmSetting.PEOPLE_SEARCH_ENABLED) &&
-				(appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
-					appCtxt.get(ZmSetting.GAL_ENABLED) ||
-					appCtxt.isOffline))) {
+	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 		this._components[ZmAppViewMgr.C_SEARCH] = appCtxt.getSearchController().getSearchToolbar();
 	}
 	else {
-		Dwt.hide(ZmId.SKIN_PEOPLE_SEARCH);
+		Dwt.hide(ZmId.SKIN_SEARCH);
 	}
 	
 	if (params.unitTest) {

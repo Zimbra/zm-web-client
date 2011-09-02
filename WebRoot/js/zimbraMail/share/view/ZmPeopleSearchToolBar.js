@@ -17,6 +17,8 @@
  * @class
  * @constructor
  * @extends		DwtComposite
+ * 
+ * @deprecated	Deprecated as of 9/1/2011 - people search has been folded into main search
  */
 ZmPeopleSearchToolBar = function(parent, id) {
 	DwtComposite.call(this, {parent:parent, className:"ZmPeopleSearchToolbar", id:id, posStyle:Dwt.ABSOLUTE_STYLE});

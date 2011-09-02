@@ -734,9 +734,6 @@ SELECT						{	@FieldBorder@	}
  	border: 2px inset; 
 }
 
-/* People Search */
-.ZmPeopleSearchToolbarDiv	{	background-color: #FFF;	}
-
 /* Toast */
 .ZToastText a.undo          {   font-size: 11px;    }
 

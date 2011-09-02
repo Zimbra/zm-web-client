@@ -150,7 +150,6 @@ ZmAppViewMgr.C_BANNER					= "banner";
 ZmAppViewMgr.C_USER_INFO				= "userInfo";
 ZmAppViewMgr.C_QUOTA_INFO				= "quota";
 ZmAppViewMgr.C_SEARCH					= "search";
-ZmAppViewMgr.C_PEOPLE_SEARCH			= "peopleSearch";
 ZmAppViewMgr.C_SEARCH_BUILDER			= "searchBuilder";
 ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR	= "searchBuilderToolbar";
 ZmAppViewMgr.C_APP_CHOOSER				= "appChooser";
@@ -213,7 +212,7 @@ function() {
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_BANNER]					= ZmId.SKIN_LOGO;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_USER_INFO]				= ZmId.SKIN_USER_INFO;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_QUOTA_INFO]				= ZmId.SKIN_QUOTA_INFO;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH]					= ZmId.SKIN_PEOPLE_SEARCH;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH]					= ZmId.SKIN_SEARCH;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER]			= ZmId.SKIN_SEARCH_BUILDER;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR]	= ZmId.SKIN_SEARCH_BUILDER_TOOLBAR;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CHOOSER]			= ZmId.SKIN_APP_CHOOSER;

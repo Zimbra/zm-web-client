@@ -54,7 +54,7 @@ function() {
 ZmDumpsterDialog.prototype.popup =
 function(searchFor, types) {
 	this._searchTypes = types ? AjxUtil.toArray(types) : [ZmItem.MSG];
-	this._searchFor = searchFor || ZmId.SEARCH_ANY;
+	this._searchFor = searchFor;
 	this.runSearchQuery();
 
 	ZmDialog.prototype.popup.call(this);

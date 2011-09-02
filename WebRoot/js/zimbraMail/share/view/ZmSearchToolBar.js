@@ -22,33 +22,22 @@ ZmSearchToolBar = function(parent, id) {
 
 	DwtComposite.call(this, {parent:parent, className:"ZmSearchToolbar", id:id});
 
-	// setup "search all" menu item
-	var params = {
-		msgKey: "searchAll",
-		tooltipKey: "searchForAny",
-		icon: "Globe",
-		setting: ZmSetting.MIXED_VIEW_ENABLED,
-		index: 0,
-		id: ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_ANY)
-	};
-	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_ANY, params);
-
 	// setup "include shared" menu item
-	params = {
-		msgKey: "searchShared",
-		tooltipKey: "searchShared",
-		icon: "Group",
-		setting: ZmSetting.SHARING_ENABLED,
-		id: ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_SHARED)
+	var params = {
+		msgKey:		"searchShared",
+		tooltipKey:	"searchShared",
+		icon:		"Group",
+		setting:	ZmSetting.SHARING_ENABLED,
+		id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_SHARED)
 	};
 	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_SHARED, params);
 
 	// setup "all accounts" menu item for multi account
 	if (appCtxt.multiAccounts) {
-		params = {
-			msgKey: "searchAllAccounts",
-			icon: "Globe",
-			id: ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_ALL_ACCOUNTS)
+		var params = {
+			msgKey:	"searchAllAccounts",
+			icon:	"Globe",
+			id:		ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_ALL_ACCOUNTS)
 		};
 		ZmSearchToolBar.addMenuItem(ZmId.SEARCH_ALL_ACCOUNTS, params);
 	}

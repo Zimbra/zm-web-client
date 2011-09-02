@@ -554,7 +554,7 @@ function(ev) {
 
 ZmFolderTreeController.prototype._getSearchFor =
 function(ev) {
-	return ZmId.SEARCH_ANY; // Fallback value; subclasses should return differently
+	return ZmId.SEARCH_MAIL; // Fallback value; subclasses should return differently
 };
 
 ZmFolderTreeController.prototype._getSearchTypes =
