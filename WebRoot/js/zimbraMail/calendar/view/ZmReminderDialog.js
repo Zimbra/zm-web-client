@@ -184,7 +184,7 @@ function(list) {
 
 ZmReminderDialog.prototype._contentHtml =
 function(selectInputId, selectButtonId) {
-	this._listId = "ZmReminderDialogContent";//Dwt.getNextId();
+	this._listId = Dwt.getNextId("ZmReminderDialogContent");//Dwt.getNextId();
     var params = {
         parent: this,
         parentElement: selectInputId,
