@@ -1852,6 +1852,7 @@ function(params, actionLogItem, result) {
 	if (params.actionText) {
 		var actionController = appCtxt.getActionController();
 		var summary = ZmOrganizer.getActionSummary(params.actionText, params.numItems || 1, this.type, params.actionArg);
+		summary = AjxStringUtil.htmlEncode(summary); //encode html special chars such as < and > so won't be interpreted as html (both for security and for not losing visibility of characters)
 		var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
 		if (undoLink && actionController) {
 			actionController.onPopup();
