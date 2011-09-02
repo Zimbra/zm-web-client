@@ -1933,8 +1933,10 @@ function() {
 		var curVal = AjxStringUtil.trim(this._attInputField[type].getValue());
 		if (type == ZmCalBaseItem.PERSON) {
 			var reqAttendees = ZmApptViewHelper.filterAttendeesByRole(attendees, ZmCalItem.ROLE_REQUIRED);
-			this._setAddresses(addrInput, reqAttendees, type);
 			var optAttendees = ZmApptViewHelper.filterAttendeesByRole(attendees, ZmCalItem.ROLE_OPTIONAL);
+            //bug: 62008 - always compute all the required/optional arrays before setting them to avoid race condition
+            //_setAddress is a costly operation which will trigger focus listeners and change the state of attendees
+            this._setAddresses(addrInput, reqAttendees, type);
 			this._setAddresses(this._attInputField[ZmCalBaseItem.OPTIONAL_PERSON], optAttendees, type);
 		}
 		else if (type == ZmCalBaseItem.LOCATION) {
