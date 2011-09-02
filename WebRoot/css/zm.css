@@ -1741,7 +1741,7 @@ line-height:normal;
     box-shadow:1px 1px 3px #666666;
 #ENDIF
 #IFDEF MSIE
-    border-width:0px 3px 2px 0px;
+    border-width:0px 1px 1px 0px;
 #ENDIF
     margin:0 0 0 -1px;
 }
@@ -1773,7 +1773,7 @@ line-height:normal;
 .appt-selected .appt_allday_body {
     /*position:relative;
     overflow:hidden;*/
-    border-width:0 4px 4px 0;
+    border-width:0 2px 2px 0;
 #IFDEF SAFARI
     border-width:0;
     -webkit-box-shadow:2px 2px 4px #666666;
