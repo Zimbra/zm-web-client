@@ -176,7 +176,7 @@
         }
         var url = "/h/printcontacts?st=${zm:cook(param.st)}";
         if (${not empty param.sq}) {
-            url += "&sq=${param.sq}";
+            url += "&sq=${zm:cook(param.sq)}";
         }
         if (c.length==0) {
             url += "&sfi=${context.folder.id}";
