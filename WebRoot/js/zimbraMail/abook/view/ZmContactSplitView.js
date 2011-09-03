@@ -424,10 +424,11 @@ function(contact, isGal, oldContact, expandDL) {
 	var folder = folderId ? appCtxt.getById(folderId) : null;
 	var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
 
+	var addrBook = contact.getAddressBook(); 
 	var subs = {
 		id: this._htmlElId,
 		contact: contact,
-		addrbook: contact.getAddressBook(),
+		addrBook: addrBook,
 		contactHdrClass: (ZmOrganizer.COLOR_TEXT[color] + "Bg"),
 		isInTrash: (folder && folder.isInTrash())
 	};
@@ -435,8 +436,10 @@ function(contact, isGal, oldContact, expandDL) {
 	if (contact.isGroup()) {
 		this._groupObjectManager.reset();
 
-		subs.folderIcon = contact.addrbook.getIcon();
-		subs.folderName = contact.addrbook.getName();
+		if (addrBook) {
+			subs.folderIcon = addrBook.getIcon();
+			subs.folderName = addrBook.getName();
+		}
 		subs.groupMembers = contact.getGroupMembersObj();
 		subs.findObjects = AjxCallback.simpleClosure(this.__findObjects, this, this._groupObjectManager);
 

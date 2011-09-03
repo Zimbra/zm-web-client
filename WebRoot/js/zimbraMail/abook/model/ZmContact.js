@@ -735,8 +735,19 @@ function() {
  */
 ZmContact.prototype.isGroup =
 function() {
-	return Boolean(this.getAttr(ZmContact.F_type) == "group" || this.type == ZmItem.GROUP);
+	return this.getAttr(ZmContact.F_type) == "group" || this.type == ZmItem.GROUP;
 };
+
+/**
+ * Checks if the contact is a DL.
+ *
+ * @return	{Boolean}	<code>true</code> if a group
+ */
+ZmContact.prototype.isDistributionList =
+function() {
+	return this.isGal && this.isGroup();
+};
+
 
 // parses "groups" attr into AjxEmailAddress objects stored in 3 vectors (all, good, and bad)
 /**
@@ -780,30 +791,39 @@ function() {
  */	
 ZmContact.prototype.getGroupMembersObj = 
 function() {
+	if (!this.isGroup()) {
+		return null;
+	}
 	var members = [];
-	if (this.isGroup()) {
-		var groupMembers = this.attr[ZmContact.F_groups];
-		if (!groupMembers) { 
-			return null;
-		}
-		for (var i=0; i<groupMembers.length; i++) {
-			var type = groupMembers[i].type;
-			var value = groupMembers[i].value;
-			if (type == ZmContact.GROUP_INLINE_REF) {
-				members.push({type : type, value : value, address : value});	
-			}
-			else if(type == ZmContact.GROUP_CONTACT_REF || type == ZmContact.GROUP_GAL_REF) {
-				var contact = ZmContact.getContactFromCache(value);  //TODO: handle contacts not cached?
-				var email = contact && contact.getEmail();
-				if (email && email != "") {
-					var ajxEmailAddress = new AjxEmailAddress(email, null, contact.getFileAs(), contact.getFullNameForDisplay(), false);
-					members.push({type : type, value : value, address : ajxEmailAddress.toString()});
-				}
-			}
+	if (this.isDistributionList()) {
+		var mems = this.getDLMembers(0, 1000, null, true).list;
+		for (var i = 0; i < mems.length; i++) {
+			members.push({type: ZmContact.GROUP_INLINE_REF, //todo - server side has to change to return the TYPE of member (contact, DL, etc)
+							value: mems[i],
+							address: mems[i]});
 		}
 		return members;
 	}
-	return null;
+	var groupMembers = this.attr[ZmContact.F_groups];
+	if (!groupMembers) {
+		return null;
+	}
+	for (var i=0; i<groupMembers.length; i++) {
+		var type = groupMembers[i].type;
+		var value = groupMembers[i].value;
+		if (type == ZmContact.GROUP_INLINE_REF) {
+			members.push({type : type, value : value, address : value});
+		}
+		else if(type == ZmContact.GROUP_CONTACT_REF || type == ZmContact.GROUP_GAL_REF) {
+			var contact = ZmContact.getContactFromCache(value);  //TODO: handle contacts not cached?
+			var email = contact && contact.getEmail();
+			if (email && email != "") {
+				var ajxEmailAddress = new AjxEmailAddress(email, null, contact.getFileAs(), contact.getFullNameForDisplay(), false);
+				members.push({type : type, value : value, address : ajxEmailAddress.toString()});
+			}
+		}
+	}
+	return members;
 };
 
 /**
@@ -1878,7 +1898,7 @@ function(node) {
 	this._fileAs = ZmContact.computeFileAs(this);
 
 	// Is this a distribution list?
-	this.isDL = this.isGal && (this.attr[ZmContact.F_type] == "group");
+	this.isDL = this.isDistributionList();
 	if (this.isDL) {
 		this.canExpand = node.exp;
 		var emails = this.getEmails();
@@ -1966,9 +1986,10 @@ function(fields, sortByNameFunc) {
  * @param offset	{int}			offset into list to start at
  * @param limit		{int}			number of members to fetch and return
  * @param callback	{AjxCallback}	callback to run with results
+ * @param synchMode {Boolean}		if true - send the request synchronously and return the result
  */
 ZmContact.prototype.getDLMembers =
-function(offset, limit, callback) {
+function(offset, limit, callback, synchMode) {
 
 	var result = {list:[], more:false, isDL:{}};
 	if (!this.isDL) { return result; }
@@ -1991,6 +2012,9 @@ function(offset, limit, callback) {
 		var list = dl.list.slice(offset, end + 1);
 		result = {list:list, more:dl.more || (dl.list.length > end + 1), isDL:dl.isDL};
 		DBG.println("dl", "found cached DL members");
+		if (synchMode) {
+			return result;
+		}
 		this._handleResponseGetDLMembers(start, limit, callback, result);
 		return;
 	}
@@ -2000,20 +2024,27 @@ function(offset, limit, callback) {
 		var jsonObj = {GetDistributionListMembersRequest:{_jsns:"urn:zimbraAccount", offset:offset, limit:limit}};
 		var request = jsonObj.GetDistributionListMembersRequest;
 		request.dl = {_content: this.getEmail()};
+		if (synchMode) {
+			var response = appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:false});
+			return this._handleResponseGetDLMembers(start, limit, null, null, response);
+		}
 		var respCallback = new AjxCallback(this, this._handleResponseGetDLMembers, [offset, limit, callback]);
 		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 	} else {
+		if (synchMode) {
+			return result;
+		}
 		this._handleResponseGetDLMembers(start, limit, callback, result);
-		return;
 	}
 };
 
 ZmContact.prototype._handleResponseGetDLMembers =
-function(offset, limit, callback, result) {
+function(offset, limit, callback, result, resp) {
 
-	if (!result.list) {
+	if (resp || !result.list) {
 		var list = [];
-		var resp = result.getResponse().GetDistributionListMembersResponse;
+		resp = resp || result.getResponse();  //if response is passed, take it. Otherwise get it from result
+		resp = resp.GetDistributionListMembersResponse;
 		var dl = appCtxt.getApp(ZmApp.CONTACTS).getDL(this.getEmail());
 		var more = dl.more = resp.more;
 		var isDL = {};
@@ -2033,7 +2064,12 @@ function(offset, limit, callback, result) {
 		var result = {list:list, more:more, isDL:isDL};
 	}
 	DBG.println("dl", "returning list of " + result.list.length + ", more is " + result.more);
-	callback.run(result);
+	if (callback) {
+		callback.run(result);
+	}
+	else { //synchronized case - see ZmContact.prototype.getDLMembers above
+		return result;
+	}
 };
 
 /**
