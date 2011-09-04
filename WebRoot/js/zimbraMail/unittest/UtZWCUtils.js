@@ -42,7 +42,7 @@ UtZWCUtils.isCurrentViewByViewIds = function(viewIds) {
 };
 //---------------
 UtZWCUtils.isMailViewCurrent = function() {
-    return UtZWCUtils.isCurrentViewByViewIds([ZmId.VIEW_TRAD, ZmId.VIEW_CONVLIST]);
+    return UtZWCUtils.isCurrentViewByViewIds([ZmId.VIEW_TRAD, ZmId.VIEW_CONVLIST, ZmId.VIEW_CONVLIST2]);
 };
 
 UtZWCUtils.isAddressBookViewCurrent = function() {

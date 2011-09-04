@@ -1226,7 +1226,7 @@ function(ev) {
 			if (view && view.sortingEnabled) {
 				view.sortingEnabled = false;
 			}
-			if (viewId == ZmId.VIEW_CONVLIST) {
+			if (viewId == appCtxt.get(ZmSetting.CONV_MODE)) {
 				ctlr._currentSearch.query = "is:read is:unread";
 			}
 			ctlr._currentSearch.tagId = null;

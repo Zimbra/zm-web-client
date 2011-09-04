@@ -150,7 +150,7 @@ ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.PREV_UNREAD]	= DwtKeyMap.SELECT_
 ZmMailListController.prototype.switchView =
 function(view, force) {
 
-	if (view == ZmId.VIEW_TRAD || view == ZmId.VIEW_CONVLIST) {
+	if (view == ZmId.VIEW_TRAD || view == appCtxt.get(ZmSetting.CONV_MODE)) {
 		if (appCtxt.multiAccounts) {
 			delete this._showingAccountColumn;
 		}
@@ -292,7 +292,7 @@ function(actionCode) {
 
 		case ZmKeyMap.VIEW_BY_CONV:
 			if (!isSyncFailures) {
-				this.switchView(ZmId.VIEW_CONVLIST);
+				this.switchView(appCtxt.get(ZmSetting.CONV_MODE));
 			}
 			break;
 

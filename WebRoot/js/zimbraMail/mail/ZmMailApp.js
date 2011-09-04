@@ -1293,7 +1293,7 @@ ZmMailApp.prototype._getCurrentViewController =
 function() {
 	var controller;
 	var vid = appCtxt.getAppViewMgr().getCurrentViewId();
-	if (vid == ZmId.VIEW_CONVLIST) {
+	if (vid == appCtxt.get(ZmSetting.CONV_MODE)) {
 		controller = this.getConvListController();
 	} else if (vid == ZmId.VIEW_TRAD) {
 		controller = this.getTradController();
@@ -1450,7 +1450,7 @@ function(refresh) {
 		this.resetOverview(this.getOverviewId());
 
 		// mark all existing mail list views as stale
-		var viewIds = [ZmId.VIEW_TRAD, ZmId.VIEW_CONVLIST, ZmId.VIEW_CONV];
+		var viewIds = [ZmId.VIEW_TRAD, ZmId.VIEW_CONVLIST, ZmId.VIEW_CONVLIST2, ZmId.VIEW_CONV];
 		var views = appCtxt.getAppViewMgr()._views;
 		for (var i = 0; i < viewIds.length; i++) {
 			var view = views[viewIds[i]];
