@@ -316,7 +316,7 @@
                             <app:body message="${message}" body="${message.body}" theBody="${theBody}" mailbox="${mailbox}" isPrintView="${true}" counter="${status.index}"/>
                         </c:when>
                         <c:when test="${message.invite.component.isNoBlob}">
-                            <app:body message="${message}" body="${message.body}" theBody="${zm:cook(not empty compose.descriptionHtml ? compose.descriptionHtml : compose.description)}" mailbox="${mailbox}" isPrintView="${true}" counter="${status.index}"/>
+                            <app:body message="${message}" body="${message.body}" theBody="${not empty compose.descriptionHtml ? compose.descriptionHtml : zm:cook(compose.description)}" mailbox="${mailbox}" isPrintView="${true}" counter="${status.index}"/>
                         </c:when>
                         <c:otherwise>
                             ${theBody}
