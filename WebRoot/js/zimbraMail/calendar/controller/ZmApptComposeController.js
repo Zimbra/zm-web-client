@@ -134,6 +134,7 @@ function(id){
 
     var sendAppt = document.getElementById(id+"_send");
     var discardAppt = document.getElementById(id+"_discard");
+    this.clearInvalidAttendees();
     delete this._invalidAttendees;
     if (sendAppt.checked) {
         this._sendListener();
@@ -1124,6 +1125,7 @@ function(view) {
 ZmApptComposeController.prototype._clearInvalidAttendeesCallback =
 function(appt, attId, dlg) {
 	dlg.popdown();
+    this.clearInvalidAttendees();
 	delete this._invalidAttendees;
     if(this._action == ZmCalItemComposeController.SAVE){
 	    this._saveListener();
