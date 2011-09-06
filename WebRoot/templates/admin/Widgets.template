@@ -87,3 +87,34 @@
 		</table>
 	</div>
 </template>
+
+<template id='admin.Widgets#ZaBaseDialog' width='20' height='32'>
+	<div class='DwtDialog WindowOuterContainer'>
+		<table cellspacing=0 cellpadding=0>
+			<tr id='${dragId}'>
+				<td class='minWidth'>${icon}</td>
+				<td id='${id}_title' class='DwtDialogTitle'>${title}</td>
+				<td class='minWidth'><div class='${closeIcon2}'></div></td>
+				<td class='minWidth'><div class='${closeIcon1}'></div></td>
+				<td id='${id}_minimize' class='minWidth'></td>
+			</tr>
+			<tr>
+				<td class='WindowInnerContainer' colspan='4'>
+				    <table cellspacing=0 cellpadding=0>
+				        <tr>
+				            <td>
+                                <div id='${id}_content' class='DwtDialogBody'></div>
+                            </td>
+                        </tr>
+                        </tr>
+                             <td>
+                                <$ if (data.controlsTemplateId) { $>
+                                    <$= AjxTemplate.expand(data.controlsTemplateId, data) $>
+                                <$ } $>
+                             </td>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</div>
+</template>
