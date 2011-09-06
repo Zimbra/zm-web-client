@@ -423,10 +423,11 @@ function(isHtml) {
 	}
 
 	var locationLabel = this.getLocation();
+	var locationText = isHtml ? AjxStringUtil.htmlEncode(locationLabel) : locationLabel;
 	var origLocationLabel = orig ? orig.getLocation() : "";
 	var emptyLocation = (locationLabel == origLocationLabel && origLocationLabel == "");
 	if (!emptyLocation || this.isForwardMode) {
-		params = [ZmMsg.locationLabel, locationLabel, (isEdit && locationLabel != origLocationLabel && !this.isForwardMode ) ? ZmMsg.apptModifiedStamp : ""];
+		params = [ZmMsg.locationLabel, locationText, (isEdit && locationLabel != origLocationLabel && !this.isForwardMode ) ? ZmMsg.apptModifiedStamp : ""];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}
@@ -435,7 +436,8 @@ function(isHtml) {
 	if (location) {
 		var origLocationText = ZmApptViewHelper.getAttendeesString(this.origLocations, ZmCalBaseItem.LOCATION, true);
 		modified = (isEdit && (origLocationText != location));
-		params = [ZmMsg.resourcesLabel, location, modified ? ZmMsg.apptModifiedStamp : ""];
+		var resourcesText = isHtml ? AjxStringUtil.htmlEncode(location) : location;
+		params = [ZmMsg.resourcesLabel, resourcesText, modified ? ZmMsg.apptModifiedStamp : ""];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}
@@ -444,7 +446,8 @@ function(isHtml) {
 	if (equipment) {
 		var origEquipmentText = ZmApptViewHelper.getAttendeesString(this.origEquipment, ZmCalBaseItem.EQUIPMENT, true);
 		modified = (isEdit && (origEquipmentText != equipment));
-		params = [ZmMsg.resourcesLabel, equipment, modified ? ZmMsg.apptModifiedStamp : "" ];
+		var equipmentText = isHtml ? AjxStringUtil.htmlEncode(equipment) : equipment;
+		params = [ZmMsg.resourcesLabel, equipmentText, modified ? ZmMsg.apptModifiedStamp : "" ];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}
@@ -459,13 +462,15 @@ function(isHtml) {
 		buf[i++] = "\n";
 		var reqAttString = ZmApptViewHelper.getAttendeesByRole(this._attendees[ZmCalBaseItem.PERSON], ZmCalBaseItem.PERSON, ZmCalItem.ROLE_REQUIRED, 10);
 		var optAttString = ZmApptViewHelper.getAttendeesByRole(this._attendees[ZmCalBaseItem.PERSON], ZmCalBaseItem.PERSON, ZmCalItem.ROLE_OPTIONAL, 10);
+		var reqAttText = isHtml ? AjxStringUtil.htmlEncode(reqAttString) : reqAttString;
+		var optAttText = isHtml ? AjxStringUtil.htmlEncode(optAttString) : optAttString;
 
 		var attendeeTitle = (optAttString == "") ? ZmMsg.invitees : ZmMsg.requiredInvitees ;
-		params = [ attendeeTitle + ":", reqAttString, "" ];
+		params = [ attendeeTitle + ":", reqAttText, "" ];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 
-		params = [ ZmMsg.optionalInvitees + ":", optAttString, "" ];
+		params = [ ZmMsg.optionalInvitees + ":", optAttText, "" ];
 		if (optAttString != "") {
 			buf[i++] = formatter.format(params);
 		}
