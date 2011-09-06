@@ -22,7 +22,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
-<c:set var="color" value="${zm:lightenColor((folder.rgb != 'null') ? folder.rgb : folder.rgbColor)}"/>
+<c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : folder.rgbColor)}"/>
 <tr style="background-color:${color}">
     <td nowrap colspan="2" class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if><c:if test="${folder.id eq requestScope.context.selectedId}"> Selected</c:if>'
         style='padding-left: ${folder.depth*8}px'>

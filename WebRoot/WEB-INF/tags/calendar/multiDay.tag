@@ -128,8 +128,6 @@
                 <c:set var="aid" value="A${status.index}"/>
                 <c:set var="apptId" value="APPT${appt.id}${appt.startTime}"/>
                 <c:set var="folder" value="${zm:getFolder(pageContext, appt.folderId)}"/>
-                <c:set var="isRgb" value="${(folder.rgb ne 'null' and not empty folder.rgb)}"/>
-                <c:set var="isRgbColor" value="${(folder.rgbColor ne 'null' and not empty folder.rgbColor)}"/>
                 <fmt:message var="colorOrange" key="colorOrange"/>
 
                 <tr onclick='zSelectRow(event,"${aid}")' id="R${status.index}" class='${status.index mod 2 eq 1 ? 'ZhRowOdd' :'ZhRow'}${selectedRow eq status.index ? ' RowSelected' : ''}'>
@@ -164,7 +162,7 @@
                     </c:choose>
                 </td>
                 <td nowrap width="10%">
-                        <div style="background-color:${zm:lightenColor((isRgb) ? folder.rgb : ((isRgbColor) ? folder.rgbColor : colorOrange))};width:16px;height:16px;display:inline;margin-right:4px;">
+                        <div style="background-color:${zm:lightenColor(not empty folder.rgb ? folder.rgb : (not empty folder.rgbColor ? folder.rgbColor : colorOrange))};width:16px;height:16px;display:inline;margin-right:4px;">
                             &nbsp;
                         </div>
                         ${zm:getFolder(pageContext,appt.folderId).name}
