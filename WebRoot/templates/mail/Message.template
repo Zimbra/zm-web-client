@@ -61,7 +61,7 @@
 												</td>
 												<td>&nbsp;</td>
 											<$ } $>
-											<td>${sentBy}&nbsp;&nbsp;</td>
+											<td id="OBJ_PREFIX_<$=Dwt.getNextId()$>_from">${sentBy}&nbsp;&nbsp;</td>
                                             <$ var useObo = data.obo && (data.oboAddr != data.sentByAddr); $>
                                             <$ var useBwo = data.bwo && (data.bwoAddr != data.sentByAddr); $>
                                              <$ if (useObo && useBwo) { $>
