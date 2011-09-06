@@ -70,6 +70,7 @@ function(params) {
 	if (!this._treeView[id] || params.forceCreate) {
 		this._treeView[id] = this._setup(id);
 	}
+	// mixed app should be filtered based on the previous app!
     var dataTree = this.getDataTree(params.account);
     if (dataTree) {
 		params.dataTree = dataTree;
@@ -155,7 +156,6 @@ ZmSearchTreeController.prototype._getActionMenuOps =
 function() {
 	return [ZmOperation.DELETE,
 			ZmOperation.RENAME_SEARCH,
-			ZmOperation.EDIT_PROPS,
 			ZmOperation.MOVE,
 			ZmOperation.EXPAND_ALL];
 };
