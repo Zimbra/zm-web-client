@@ -769,7 +769,14 @@
 			<td><$= AjxMessageFormat.format(ZmMsg.makeLabel,
 											AjxStringUtil.htmlEncode(data.val.substring(0,data.truncate))) $></td>
 		<$ } else {
-	          var field = isPhonetic ? data.val : AjxStringUtil.htmlEncode(data.val); $>
+		      var field = "";
+		      if (data.field == "fullName" ) {
+		        field = isPhonetic ? data.val : AjxStringUtil.htmlEncode(data.val); 
+		      }
+		      else {
+		        field = AjxStringUtil.htmlEncode(data.val);
+		      }
+              $>
 			  <td style='white-space:nowrap;'><$= field $></td>
 		<$ } $>
 		</tr>
