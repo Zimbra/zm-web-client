@@ -25,7 +25,7 @@
 <c:set var="folderRelativePath" value="${zm:getFolderPath(pageContext, folder.id)}"/> 
 <c:choose>
     <c:when test="${folder.isAppointmentView or folder.isContactView or folder.isTaskView or folder.isDocumentView}">
-        <c:set var="color" value="${zm:lightenColor((folder.rgb != 'null') ? folder.rgb : folder.rgbColor)}"/>
+        <c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : folder.rgbColor)}"/>
     </c:when>
     <c:otherwise>
         <c:set var="colorGray"><fmt:message key="colorGray"/></c:set>

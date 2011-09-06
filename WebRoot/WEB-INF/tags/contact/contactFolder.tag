@@ -24,7 +24,8 @@
 
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
 <c:set var="padFudge" value="${folder.hasChildren ? 0 : 20}"/>
-<c:set var="color" value="${zm:lightenColor((folder.rgb != 'null') ? folder.rgb : folder.rgbColor)}"/>
+<fmt:message var="colorGray" key="colorGray"/>
+<c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : (not empty folder.rgbColor ? folder.rgbColor : colorGray))}"/>
 <tr>
     <td nowrap colspan="3" bgcolor="${color}" class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if>'
         style='padding-left: ${padFudge + folder.depth*8}px'>
