@@ -101,6 +101,11 @@ function(html, idx, item, field, colIdx, params) {
 	return idx;
 };
 
+ZmQuickCommandListView.prototype._getCellId =
+function(item, field, params) {
+		return Dwt.getNextId() + "_" + (field||"");
+};
+
 //static variables
 ZmQuickCommandListView.COL_ACTIVE	= "ac";
 ZmQuickCommandListView.COL_NAME	= "na";
