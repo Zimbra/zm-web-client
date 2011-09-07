@@ -159,7 +159,7 @@
         </c:choose>
     </c:if>
 
-    <c:set var="view" value="${not empty param.view ? param.view : mailbox.prefs.calendarInitialView}"/>
+    <c:set var="view" value="${not empty param.view ? zm:cook(param.view) : mailbox.prefs.calendarInitialView}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
     <c:if test="${view eq 'list'}">
         <fmt:message var="dateFormat" key="CAL_APPT_EDIT_DATE_FORMAT"/>
