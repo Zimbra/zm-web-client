@@ -23,7 +23,7 @@
 
 ZmQuickCommandDialog =
 function(parent, className, title) {
-    DwtDialog.call(this, {parent:parent, className:className, title:title});
+    DwtDialog.call(this, {parent:parent, className:className, title:title, id:Dwt.getNextId("ZmQuickCommandDialog") });
 
     this._addActionHandlerClosure	       = this._addActionHandler.bind(this);
     this._removeActionHandlerClosure       = this._removeActionHandler.bind(this);
