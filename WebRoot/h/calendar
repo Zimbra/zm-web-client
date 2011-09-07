@@ -213,9 +213,9 @@
     var zprint = function(){
         try{ var idex = 0; var c =""; while (idex <= zrc ) { if(document.getElementById("C"+idex).checked) { cid = document.getElementById("C"+idex).value; c += cid + ","; } idex++ ; } }catch(ex){ }
         if (${view eq 'list'}) {
-            window.open("/h/printcalendar?view=${view}&l=${checkedCalendars}&date=${fmtStartDate}&endDate=${fmtEndDate}&action=print&imc=true");
+            window.open("/h/printcalendar?view=${zm:cook(view)}&l=${checkedCalendars}&date=${fmtStartDate}&endDate=${fmtEndDate}&action=print&imc=true");
         } else {
-            window.open("/h/printcalendar?view=${view}&l=${checkedCalendars}&date=${param.date}&action=print&imc=true");
+            window.open("/h/printcalendar?view=${zm:cook(view)}&l=${checkedCalendars}&date=${param.date}&action=print&imc=true");
         }
     };
         //-->
