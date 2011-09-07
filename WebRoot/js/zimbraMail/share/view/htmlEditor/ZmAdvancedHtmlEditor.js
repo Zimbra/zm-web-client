@@ -543,6 +543,18 @@ function(id, mode, content) {
 		theme_advanced_toolbar_location : "top",
 		theme_advanced_toolbar_align : "left",
 		theme_advanced_resizing : true,
+        theme_advanced_fonts : "Sans Serif=Arial;"+
+                               "Serif=Times New RomanSerif;"+
+                               "Wide Block=Arial Black;"+
+                               "Monospaced=Courier New;"+
+                               "Comic=Comic Sans MS;"+
+                               "Console=Lucida Console;"+
+                               "Garamond=Garamond;"+
+                               "Elegant=Georgia;"+
+                               "Professional=Tahoma;"+
+                               "Terminal=Terminal;"+
+                               "Modern=Trebuchet MS;"+
+                               "Wide=Verdana;",
 		convert_urls : false,
 		verify_html : false,
 		gecko_spellcheck : true,
