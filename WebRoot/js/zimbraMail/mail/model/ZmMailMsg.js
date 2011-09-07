@@ -91,6 +91,10 @@ ZmMailMsg.HDR_DATE		= "DATE";
  * Defines the "subject" header.
  */
 ZmMailMsg.HDR_SUBJECT	= "SUBJECT";
+/**
+ * Defines the "List-ID" header.
+ */
+ZmMailMsg.HDR_LISTID    = "List-ID";
 
 ZmMailMsg.HDR_KEY = {};
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_FROM]		= ZmMsg.from;
@@ -137,7 +141,7 @@ ZmMailMsg.CONTENT_PART_ID = "ci";
 ZmMailMsg.CONTENT_PART_LOCATION = "cl";
 
 // Additional headers to request.  Also used by ZmConv and ZmSearch
-ZmMailMsg.requestHeaders = {};
+ZmMailMsg.requestHeaders = {listId: ZmMailMsg.HDR_LISTID};
 
 /**
  * Fetches a message from the server.
@@ -182,7 +186,7 @@ function(params) {
 
 	for (var hdr in ZmMailMsg.requestHeaders) {
 		if (!m.header) { m.header = []; }
-		m.header.push({n:hdr});
+		m.header.push({n:ZmMailMsg.requestHeaders[hdr]});
 	}
 
 	if (!params.noTruncate) {
@@ -2454,4 +2458,36 @@ function() {
 	request.action = {id:this.id, op:"delete"};
 	var ac = window.parentAppCtxt || window.appCtxt;
 	ac.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true});
+};
+
+/**
+ * If message is sent on behalf of returns sender address otherwise returns from address
+ * @return {String} email address
+ */
+ZmMailMsg.prototype.getMsgSender = 
+function() {
+	var from = this.getAddress(AjxEmailAddress.FROM);
+	var sender = this.getAddress(AjxEmailAddress.SENDER);
+	if (sender && sender.address != (from && from.address)) {
+		return sender.address;
+	}
+	return from && from.address;
+};
+
+/**
+ * Return list header id if it exists, otherwise returns null
+ * @return {String} list id
+ */
+ZmMailMsg.prototype.getListIdHeader = 
+function() {
+	var id = null;
+	if (this.attrs && this.attrs[ZmMailMsg.HDR_LISTID]) {
+		//extract <ID> from header
+		var listId = this.attrs[ZmMailMsg.HDR_LISTID];
+		id = listId.match(/<(.*)>/);
+		if (AjxUtil.isArray(id)) {
+			id = id[id.length-1]; //make it the last match
+		}
+	}
+	return id;
 };

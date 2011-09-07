@@ -54,6 +54,7 @@ function() {
 	this._activityStreamForm = new DwtForm(params);
 	var activityStreamForm = document.getElementById("ACTIVITYSTREAM_PROMPT_FORM");
 	this._activityStreamForm.appendElement(activityStreamForm);
+	this._activityStreamForm.getControl("SUBJECT").setSelected(false);
 };
 
 ZmActivityStreamPromptDialog.prototype._handleResponseLoadRules = 
@@ -82,7 +83,11 @@ function(skip) {
 ZmActivityStreamPromptDialog.prototype.setFields = 
 function(item) {
 	this._subject = item.subject;
-	if (item.participants) {
+	var msg = item.type == ZmId.ITEM_CONV ? item.getFirstHotMsg() : item;
+	if (msg) {
+		this._from = msg.getMsgSender();
+	}
+	else if (item.participants) {
 		var arr = item.participants.getArray();
 		for (var i=0; i<arr.length; i++) {
 			if (arr[i].getType() == "FROM") {

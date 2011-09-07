@@ -635,23 +635,29 @@ function(msg) {
 	AjxDispatcher.require(["PreferencesCore", "Preferences"]);
 	var rule = new ZmFilterRule();
 
-	var from = msg.getAddress(AjxEmailAddress.FROM);
-	if (from) {
-		var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM];
-		rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, from.address, subjMod);
+	var listId = msg.getListIdHeader();
+	if (listId) {
+		rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, listId, ZmMailMsg.HDR_LISTID);
 	}
-	var cc = msg.getAddress(AjxEmailAddress.CC);
-	if (cc)	{
-		var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_CC];
-		rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, cc.address, subjMod);
+	else { 
+		var from = msg.getAddress(AjxEmailAddress.FROM);
+		if (from) {
+			var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM];
+			rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, from.address, subjMod);
+		}	
+		var cc = msg.getAddress(AjxEmailAddress.CC);
+		if (cc)	{
+			var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_CC];
+			rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, cc.address, subjMod);
+		}
+		var subj = msg.subject;
+		if (subj) {
+			var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_SUBJECT];
+			rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_IS, subj, subjMod);
+		}
 	}
-	var subj = msg.subject;
-	if (subj) {
-		var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_SUBJECT];
-		rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_IS, subj, subjMod);
-	}
-	rule.setGroupOp(ZmFilterRule.GROUP_ALL);
 	rule.addAction(ZmFilterRule.A_KEEP);
+	rule.setGroupOp(ZmFilterRule.GROUP_ALL);
 
 	var accountName = appCtxt.multiAccounts && msg.getAccount().name;
 	var outgoing = AjxUtil.indexOf(ZmFolder.OUTBOUND, msg.getFolderId()) != -1;

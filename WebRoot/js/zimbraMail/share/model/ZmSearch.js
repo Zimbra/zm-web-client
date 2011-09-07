@@ -575,7 +575,7 @@ function(params) {
 		if (ZmMailMsg.requestHeaders) {
 			for (var hdr in ZmMailMsg.requestHeaders) {
 				if (!request.header) request.header = [];
-				request.header.push({n:hdr});
+				request.header.push({n:ZmMailMsg.requestHeaders[hdr]});
 			}
 		}
 	}
@@ -663,7 +663,7 @@ function(soapDoc) {
 		var headerNode;
 		for (var hdr in ZmMailMsg.requestHeaders) {
 			headerNode = soapDoc.set('header', null, null);
-			headerNode.setAttribute('n', hdr);
+			headerNode.setAttribute('n', ZmMailMsg.requestHeaders[hdr]);
 		}
 	}
 
@@ -717,7 +717,7 @@ function(req) {
 		if (hdrs && hdrs.length) {
 			req.header = [];
 			for (var hdr in hdrs) {
-				req.header.push({n:hdr});
+				req.header.push({n:hdrs[hdr]});
 			}
 		}
 	}

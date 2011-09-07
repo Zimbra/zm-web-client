@@ -31,5 +31,6 @@ AjxPackage.require({name:"zimbraMail.unittest.UtPreferences",		method:AjxPackage
 AjxPackage.require({name:"zimbraMail.unittest.UtCalendar",			method:AjxPackage.METHOD_SCRIPT_TAG});
 AjxPackage.require({name:"zimbraMail.unittest.UtContacts",			method:AjxPackage.METHOD_SCRIPT_TAG});
 AjxPackage.require({name:"zimbraMail.unittest.UtMail",				method:AjxPackage.METHOD_SCRIPT_TAG});
+AjxPackage.require({name:"zimbraMail.unittest.UtMailMsg",			method:AjxPackage.METHOD_SCRIPT_TAG});
 AjxPackage.require({name:"zimbraMail.unittest.UtShare",				method:AjxPackage.METHOD_SCRIPT_TAG});
 AjxPackage.require({name:"zimbraMail.unittest.UtPriorityInbox",     method:AjxPackage.METHOD_SCRIPT_TAG});
