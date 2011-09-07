@@ -32,6 +32,7 @@ AjxPackage.require("zimbraMail.share.view.ZmShareTreeView");
 
 AjxPackage.require("zimbraMail.share.view.dialog.ZmAcceptShareDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmDeclineShareDialog");
+AjxPackage.require("zimbraMail.share.view.dialog.ZmLinkPropsDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmSharePropsDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmShareSearchDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmRevokeShareDialog");

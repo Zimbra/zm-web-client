@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -46,13 +46,12 @@ ZmEvent.S_PREF_BACKUP				= "PREF_BACKUP";
 /**
  * Defines the "preferences" application.
  */
-ZmApp.PREFERENCES					= ZmId.APP_PREFERENCES; 
+ZmApp.PREFERENCES					= ZmId.APP_PREFERENCES;
 ZmApp.CLASS[ZmApp.PREFERENCES]		= "ZmPreferencesApp";
 ZmApp.SETTING[ZmApp.PREFERENCES]	= ZmSetting.OPTIONS_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.PREFERENCES]	= 10;
 ZmApp.QS_ARG[ZmApp.PREFERENCES]		= "options";
 ZmOrganizer.PREF_PAGE				= "PREF_PAGE";
-ZmPreferencesApp.QS_ARG_SECTION		= "section";
 
 ZmPreferencesApp.prototype = new ZmApp;
 ZmPreferencesApp.prototype.constructor = ZmPreferencesApp;
@@ -85,10 +84,6 @@ function(params, callback) {
 	if (appCtxt.multiAccounts) {
 		appCtxt.accountList.setActiveAccount(appCtxt.accountList.mainAccount);
 	}
-
-	var gotoSection = (params.qsParams && params.qsParams[ZmPreferencesApp.QS_ARG_SECTION]) || "GENERAL";
-	callback = new AjxCallback(this, this.gotoSection, [gotoSection, callback]);
-
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require(["PreferencesCore", "Preferences"], true, loadCallback, null, true);
 };
@@ -179,23 +174,6 @@ function(refresh, addr) {
 	}
 };
 
-ZmPreferencesApp.prototype.gotoSection =
-function(section, callback) {
-	if (section) {
-		var prefCtlr = this.getPrefController();
-		var prefsView = prefCtlr && prefCtlr.getPrefsView();
-		if (prefsView) {
-			section = section.toUpperCase();
-			this.getOverview().setSelected([ZmOrganizer.PREF_PAGE,section].join("_"));
-			prefsView.selectSection(section);
-		}
-	}
-	if (callback instanceof AjxCallback) {
-		callback.run();
-	}
-};
-
-
 
 //
 // Protected methods
@@ -231,10 +209,6 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_MOBILE_SUSPEND_SYNC, {textKey:"mobileSuspendSync", image:"Offline"});
 	ZmOperation.registerOp(ZmId.OP_MOBILE_WIPE, {textKey:"mobileWipe", image:"MobileWipe"}, ZmSetting.MOBILE_POLICY_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOBILE_CANCEL_WIPE, {textKey:"mobileWipeCancel", image:"MobileWipeCancel"}, ZmSetting.MOBILE_POLICY_ENABLED);
-
-    ZmOperation.registerOp(ZmId.OP_ADD_QUICK_COMMAND, {textKey:"quickCommandAdd", image:"Plus"}, ZmSetting.FILTERS_ENABLED);
-    ZmOperation.registerOp(ZmId.OP_EDIT_QUICK_COMMAND, {textKey:"quickCommandEdit", image:"Edit"}, ZmSetting.FILTERS_ENABLED);
-    ZmOperation.registerOp(ZmId.OP_REMOVE_QUICK_COMMAND, {textKey:"quickCommandRemove", image:"Delete"}, ZmSetting.FILTERS_ENABLED);
 };
 
 ZmPreferencesApp.prototype._registerSettings =
@@ -247,7 +221,6 @@ function(settings) {
 	settings.registerSetting("PREF_SECTIONS",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_HASH, isGlobal:true});
 	settings.registerSetting("SIGNATURE_MAX_LENGTH",		{name:"zimbraMailSignatureMaxLength", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1024});
 	settings.registerSetting("DISCARD_IN_FILTER_ENABLED",	{name:"zimbraFeatureDiscardInFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-    settings.registerSetting("QUICK_COMMAND_LIST",			{name:"zimbraPrefQuickCommand", type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
 };
 
 ZmPreferencesApp.prototype._registerApp =
@@ -275,7 +248,6 @@ function() {
 			priority: 0,
 			prefs: [
 				ZmSetting.LOCALE_NAME,
-				ZmSetting.FONT_NAME,
 				ZmSetting.PASSWORD,
 				ZmSetting.SEARCH_INCLUDES_SPAM,
 				ZmSetting.SEARCH_INCLUDES_TRASH,
@@ -288,6 +260,7 @@ function() {
 				ZmSetting.DEFAULT_TIMEZONE,
                 ZmSetting.DEFAULT_PRINTFONTSIZE,
 				ZmSetting.OFFLINE_IS_MAILTO_HANDLER,
+				ZmSetting.OFFLINE_NOTEBOOK_SYNC_ENABLED, // offline
 				ZmSetting.SHORT_ADDRESS,
 				ZmSetting.USE_ADDR_BUBBLES
 			]
@@ -309,7 +282,6 @@ function() {
 				ZmSetting.FORWARD_INCLUDE_HEADERS,
 				ZmSetting.NEW_WINDOW_COMPOSE,
 				ZmSetting.AUTO_SAVE_DRAFT_INTERVAL,
-                ZmSetting.AUTO_READ_RECEIPT_ENABLED,
 				ZmSetting.REPLY_INCLUDE_WHAT,
 				ZmSetting.REPLY_USE_PREFIX,
 				ZmSetting.REPLY_INCLUDE_HEADERS,
@@ -398,20 +370,6 @@ function() {
             createView: function(parent, section, controller) {
 				return new ZmZimletsPage(parent, section, controller);
 			}
-		},
-		QUICKCOMMANDS: {
-			icon: "QuickCommand",
-			title: ZmMsg.quickCommands,
-			templateId: "prefs.Pages#QuickCommandList",
-			priority: 130,
-			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.FILTERS_ENABLED)),
-			prefs: [
-				ZmSetting.QUICK_COMMAND_LIST
-			],
-			manageChanges: true,
-			createView: function(parent, section, controller) {
-				return new ZmQuickCommandPage(parent, section, controller, new ZmQuickCommandListViewController());
-			}
 		}
 	};
     if (appCtxt.isOffline) {
@@ -460,7 +418,7 @@ function() {
 	ZmPref.registerPref("COMPOSE_INIT_FONT_COLOR", {
 		displayOptions: 	["rgb(0, 0, 0)"],
 		displayContainer:	ZmPref.TYPE_COLOR,
-		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED]
+		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
 
 	ZmPref.registerPref("COMPOSE_INIT_FONT_FAMILY", {
@@ -472,11 +430,7 @@ function() {
 		options: 			["Andale Mono","Arial", "Arial Black","Book Antiqua","Bookman Old Style","Comic Sans MS","Courier New", "Garamond",
                              "Georgia", "Helvetica", "Impact", "Lucida Console", "Symbol", "Tahoma", "Terminal", "Times New Roman", "Trebuchet MS",
                              "Verdana","Webdings","Wingdings"],
-		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED]
-	});
-
-    ZmPref.registerPref("QUICK_COMMAND_LIST", {
-		displayContainer:	ZmPref.TYPE_CUSTOM
+		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
 
 	// Yuck: Should add functionality in Pref. to add prefix/postfix to all options. Meanwhile...
@@ -513,7 +467,7 @@ function() {
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions: 	fontSizeOptions,
         options:            fontSizeValueOptions,
-		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED]
+		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
 
 	ZmPref.registerPref("COMPOSE_SAME_FORMAT", {
@@ -594,11 +548,6 @@ function() {
 		precondition:		ZmSetting.LOCALE_CHANGE_ENABLED
 	});
 
-	ZmPref.registerPref("FONT_NAME", {
-		displayName:		ZmMsg.selectFong,
-		displayContainer:	ZmPref.TYPE_FONT
-	});
-
 	var markReadTime = AjxMessageFormat.format(ZmMsg.messageReadTime, DwtId._makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
 	ZmPref.registerPref("MARK_MSG_READ", {
 		displayName:		ZmMsg.messageReadLabel,
@@ -651,6 +600,15 @@ function() {
 			displayName:		ZmMsg.offlineAllowMailTo,
 			displayContainer:	ZmPref.TYPE_CHECKBOX
 		});
+
+		// Do not show enable document preference.
+        //		if (appCtxt.accountList.accountTypeExists(ZmAccount.TYPE_ZIMBRA)) {
+        //			ZmPref.registerPref("OFFLINE_NOTEBOOK_SYNC_ENABLED", {
+        //				displayName:		ZmMsg.enableDocuments,
+        //				displayContainer:	ZmPref.TYPE_CHECKBOX,
+        //                preCondition:       ZmSetting.NOTEBOOK_ENABLED
+        //			});
+        //		}
 
         ZmPref.registerPref("OFFLINE_BACKUP_ACCOUNT_ID", {
             displayName:		ZmMsg.offlineBackUpAccounts,
