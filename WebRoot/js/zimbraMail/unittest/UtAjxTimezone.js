@@ -54,7 +54,7 @@ UT.test("getOffset Test", {
 		
 	}},
 	function (){
-		UT.expect(16);
+		UT.expect(15);
 		
 		//Southern Hemisphere
 		var nz_standard_offset = AjxTimezone.getOffset(this._newZealandTz, this._nzst);
@@ -94,12 +94,6 @@ UT.test("getOffset Test", {
 		UT.equal(japan_offset, 540, "Offset = " + japan_offset);
 		var japan_st2 = AjxTimezone.getOffset(this._japanTz, this._jpst_end);
 		UT.equal(japan_st2, 540, "Offset = " + japan_st2);
-		
-		//Pass in rule instead of clientId
-		var rule = AjxTimezone.getRule("America/Los Angeles");
-		var la_offset = AjxTimezone.getOffset(this._laTz, this._last); //Los Angeles offset
-		var wrong_offset = AjxTimezone.getOffset(rule, this._last);
-		UT.notEqual(la_offset, wrong_offset, "Wrong Offset = " + wrong_offset + " Should = " + la_offset);
 	}
 );
 		
