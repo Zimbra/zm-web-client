@@ -367,24 +367,42 @@ function() {
 };
 
 ZmMailPrefsPage.prototype._postSave =
-function() {
+function(changed) {
     var form = this.getFormObject(ZmSetting.POLLING_INTERVAL);
     if (form && form.getSelectedOption() && form.getSelectedOption().getDisplayValue() == ZmMsg.pollInstant && appCtxt.get(ZmSetting.INSTANT_NOTIFY)
             && !appCtxt.getAppController().getInstantNotify()){
         //turn on instant notify if not already on
         appCtxt.getAppController().setInstantNotify(true);
-    } else{
+    } else {
         //turn instant notify off if it's on
-        if (appCtxt.getAppController().getInstantNotify())
+        if (appCtxt.getAppController().getInstantNotify()) {
             appCtxt.getAppController().setInstantNotify(false);
+		}
     }
 
-    if(appCtxt.get(ZmSetting.VACATION_MSG_ENABLED)){
+    if (appCtxt.get(ZmSetting.VACATION_MSG_ENABLED)) {
         var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
         var node = soapDoc.set("pref", "TRUE");
         node.setAttribute("name", "zimbraPrefOutOfOfficeStatusAlertOnLogin");
         appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true});
     }
+	
+	if (changed && changed[ZmSetting.CONV_MODE]) {
+		var cd = appCtxt.getYesNoMsgDialog();
+		cd.reset();
+		cd.registerCallback(DwtDialog.YES_BUTTON, this._convModeChangeYesCallback, this, [cd]);
+		cd.setMessage(ZmMsg.convModeConfirmChange, DwtMessageDialog.WARNING_STYLE);
+		cd.popup();
+	}
+};
+
+ZmMailPrefsPage.prototype._convModeChangeYesCallback =
+function(dialog) {
+	dialog.popdown();
+	window.onbeforeunload = null;
+	var url = AjxUtil.formatUrl();
+	DBG.println(AjxDebug.DBG1, "Conv mode change, redirect to: " + url);
+	ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
 };
 
 // ??? SHOULD THIS BE IN A NEW FILE?       ???

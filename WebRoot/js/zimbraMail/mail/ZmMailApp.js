@@ -151,7 +151,7 @@ function(settings) {
 	settings.registerSetting("CONVERSATIONS_ENABLED",			{name:"zimbraFeatureConversationsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("CONVERSATION_ORDER",				{name:"zimbraPrefConversationOrder", type:ZmSetting.T_PREF, defaultValue:ZmSearch.DATE_DESC, isImplicit:true});
 	settings.registerSetting("CONVERSATION_PAGE_SIZE",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:250, isGlobal:true});
-	settings.registerSetting("CONV_MODE",						{type:ZmSetting.T_PREF, defaultValue:ZmId.VIEW_CONVLIST2, canPreset:true});
+	settings.registerSetting("CONV_MODE",						{name:"zimbraPrefConversationMode", type:ZmSetting.T_PREF, defaultValue:ZmId.VIEW_CONVLIST2, canPreset:true});
 	settings.registerSetting("DEDUPE_MSG_TO_SELF",				{name:"zimbraPrefDedupeMessagesSentToSelf", type:ZmSetting.T_PREF, defaultValue:ZmSetting.DEDUPE_NONE});
     settings.registerSetting("DEDUPE_MSG_ENABLED",				{name:"zimbraPrefMessageIdDedupingEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
     settings.registerSetting("DEFAULT_DISPLAY_NAME",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -259,9 +259,12 @@ function() {
 			priority: 10,
 			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
 			prefs: [
+				ZmSetting.AUTO_READ_RECEIPT_ENABLED,
+				ZmSetting.CONV_MODE,
 				ZmSetting.DEDUPE_MSG_TO_SELF,
                 ZmSetting.DEDUPE_MSG_ENABLED,
 				ZmSetting.DISPLAY_EXTERNAL_IMAGES,
+				ZmSetting.END_DATE_ENABLED,
 				ZmSetting.GET_MAIL_ACTION,
 				ZmSetting.INITIAL_SEARCH,
 				ZmSetting.MAIL_BLACKLIST,
@@ -276,12 +279,12 @@ function() {
 				ZmSetting.MAIL_NOTIFY_APP,
 				ZmSetting.MAIL_NOTIFY_BROWSER,
 				ZmSetting.MAIL_NOTIFY_TOASTER,
-				ZmSetting.OFFLINE_NOTIFY_NEWMAIL_ON_INBOX,
 				ZmSetting.MAIL_WHITELIST,
 				ZmSetting.MAIL_SEND_READ_RECEIPTS,
 				ZmSetting.MARK_MSG_READ,
 				ZmSetting.NOTIF_ADDRESS,
 				ZmSetting.NOTIF_ENABLED,
+				ZmSetting.OFFLINE_NOTIFY_NEWMAIL_ON_INBOX,
 				ZmSetting.OPEN_MAIL_IN_NEW_WIN,
 				ZmSetting.PAGE_SIZE,
 				ZmSetting.POP_DOWNLOAD_SINCE_VALUE,
@@ -289,16 +292,14 @@ function() {
                 ZmSetting.POP_DELETE_OPTION,
                 ZmSetting.POP_INCLUDE_SPAM,
 				ZmSetting.POLLING_INTERVAL,
+				ZmSetting.SELECT_AFTER_DELETE,
 				ZmSetting.SHOW_FRAGMENTS,
+				ZmSetting.START_DATE_ENABLED,
+				ZmSetting.VACATION_FROM,
 				ZmSetting.VACATION_MSG_ENABLED,
 				ZmSetting.VACATION_MSG,
-				ZmSetting.SELECT_AFTER_DELETE,
-				ZmSetting.START_DATE_ENABLED,
-				ZmSetting.END_DATE_ENABLED,
-				ZmSetting.VACATION_FROM,
 				ZmSetting.VACATION_UNTIL,
-				ZmSetting.VIEW_AS_HTML,
-                ZmSetting.AUTO_READ_RECEIPT_ENABLED
+				ZmSetting.VIEW_AS_HTML
 			],
 			manageDirty: true,
 			createView: function(parent, section, controller) {
@@ -387,6 +388,13 @@ function() {
     ZmPref.registerPref("AUTO_READ_RECEIPT_ENABLED", {
 		displayName:		ZmMsg.autoReadReceiptRequest,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
+	ZmPref.registerPref("CONV_MODE", {
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		orientation:		ZmPref.ORIENT_VERTICAL,
+		displayOptions: 	[ZmMsg.convDisplayInline, ZmMsg.convDisplayNew],
+		options: 			[ZmId.VIEW_CONVLIST, ZmId.VIEW_CONVLIST2]
 	});
 
 	ZmPref.registerPref("DEDUPE_MSG_TO_SELF", {
@@ -605,7 +613,6 @@ function() {
 	});
 
 	ZmPref.registerPref("SELECT_AFTER_DELETE", {
-		displayName:		ZmMsg.clientType,
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
 		orientation:		ZmPref.ORIENT_VERTICAL,
 		displayOptions: 	[ZmMsg.selectNext, ZmMsg.selectPrevious, ZmMsg.selectAdapt],
@@ -1845,7 +1852,7 @@ function(sessionId) {
         }
     }
 
-    if (controller){
+    if (controller) {
         sessionId = controller.sessionId;
         this._curSessionId[ZmId.VIEW_MSG] = sessionId;
         controller.inactive = false;

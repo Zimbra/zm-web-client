@@ -370,12 +370,12 @@ function(callback, noPop) {
 
 	// save any extra commands that may have been added
 	if (batchCommand.size()) {
-		var respCallback = new AjxCallback(this, this._handleResponseSaveListener, [true, callback, noPop]);
-		var errorCallback = new AjxCallback(this, this._handleResponseSaveError);
+		var respCallback = this._handleResponseSaveListener.bind(this, true, callback, noPop, list);
+		var errorCallback = this._handleResponseSaveError.bind(this);
 		batchCommand.run(respCallback, errorCallback);
 	}
 	else {
-		this._handleResponseSaveListener(list.length > 0, callback, noPop);
+		this._handleResponseSaveListener(list.length > 0, callback, noPop, list);
 	}
 };
 
@@ -396,7 +396,7 @@ function(exception1/*, ..., exceptionN*/) {
 };
 
 ZmPrefController.prototype._handleResponseSaveListener =
-function(optionsSaved, callback, noPop, result) {
+function(optionsSaved, callback, noPop, list, result) {
 	if (optionsSaved) {
 		appCtxt.setStatusMsg(ZmMsg.optionsSaved);
 	}
@@ -417,10 +417,14 @@ function(optionsSaved, callback, noPop, result) {
 		callback.run(result);
 	}
 
+	var changed = {};
+	for (var i = 0; i < list.length; i++) {
+		changed[list[i].id] = true;
+	}
 	var postSaveCallbacks = this._prefsView.getPostSaveCallbacks();
 	if (postSaveCallbacks && postSaveCallbacks.length) {
 		for (var i = 0; i < postSaveCallbacks.length; i++) {
-			postSaveCallbacks[i].run();
+			postSaveCallbacks[i].run(changed);
 		}
 	}
 };
