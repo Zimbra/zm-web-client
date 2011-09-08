@@ -463,15 +463,25 @@ function() {
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED]
 	});
 
+	var keys = [ "fontFamilyIntl", "fontFamilyBase" ];
+	var i, j, key, value, name;
+	var names = [];
+	var styles = [];
+	for (j = 0; j < keys.length; j++) {
+		for (i = 1; value = AjxMsg[keys[j]+i+".css"]; i++) {
+			if (value.match(/^#+$/)) break;
+			value = value.replace(/,\s/g,",");
+			name = AjxMsg[keys[j]+i+".display"];
+			names.push(name);
+			styles.push(value);
+		}
+	}
+
 	ZmPref.registerPref("COMPOSE_INIT_FONT_FAMILY", {
 		displayName:		ZmMsg.defaultFontSettings,
 		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions: 	["Andale Mono","Arial", "Arial Black","Book Antiqua","Bookman Old Style","Comic Sans MS","Courier New", "Garamond",
-                             "Georgia", "Helvetica", "Impact", "Lucida Console", "Symbol", "Tahoma", "Terminal", "Times New Roman", "Trebuchet MS",
-                             "Verdana","Webdings","Wingdings"],
-		options: 			["Andale Mono","Arial", "Arial Black","Book Antiqua","Bookman Old Style","Comic Sans MS","Courier New", "Garamond",
-                             "Georgia", "Helvetica", "Impact", "Lucida Console", "Symbol", "Tahoma", "Terminal", "Times New Roman", "Trebuchet MS",
-                             "Verdana","Webdings","Wingdings"],
+		displayOptions: 	names,
+		options: 		styles,
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED]
 	});
 
