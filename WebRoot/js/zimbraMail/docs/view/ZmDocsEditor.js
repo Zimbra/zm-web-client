@@ -40,6 +40,10 @@ ZmDocsEditor.prototype.constructor = ZmDocsEditor;
 ZmDocsEditor._VALUE = "ZD";
 ZmDocsEditor.FONT_SIZE_VALUES = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
 
+ZmDocsEditor._normalizeFontId = function(id) {
+	return id.replace(/,\s/g,","); // Make sure all ids that are supposed to be found in ZmDocsEditor.FONT_FAMILY are actually found
+};
+
 ZmDocsEditor.FONT_FAMILY = {};
 (function() {
 	var KEYS = [ "fontFamilyIntl", "fontFamilyBase" ];
@@ -47,6 +51,7 @@ ZmDocsEditor.FONT_FAMILY = {};
 	for (j = 0; j < KEYS.length; j++) {
 		for (i = 1; value = AjxMsg[KEYS[j]+i+".css"]; i++) {
 			if (value.match(/^#+$/)) break;
+			value = ZmDocsEditor._normalizeFontId(value);
 			name = AjxMsg[KEYS[j]+i+".display"];
 			ZmDocsEditor.FONT_FAMILY[value] = {name:name, value:value};
 		}
@@ -87,7 +92,6 @@ function() {
 ZmDocsEditor.prototype._initIframe =
 function() {
     this._initHtmlMode(this._pendingContent);
-    //alert('here');
 };
 
 ZmDocsEditor.prototype._initHtmlMode =
@@ -126,17 +130,19 @@ function(tb) {
     var menu = new ZmPopupMenu(this._fontFamilyButton,"ActionMenu", null, this._controller);
     var listener = new AjxListener(this, this._fontFamilyListener);
 
-	var defaultText = "";
+    var defaultText = "";
 
     for (var id in ZmDocsEditor.FONT_FAMILY) {
-		var item = ZmDocsEditor.FONT_FAMILY[id];
-		var mi = menu.createMenuItem(item.name, {text:item.name});
-		mi.addSelectionListener(listener);
-		mi.setData(ZmDocsEditor._VALUE, item.value);
-	}
+        var item = ZmDocsEditor.FONT_FAMILY[id];
+        var mi = menu.createMenuItem(item.name, {text:item.name});
+        mi.addSelectionListener(listener);
+        mi.setData(ZmDocsEditor._VALUE, item.value);
+    }
 
     this._fontFamilyButton.setMenu(menu);
-    this._fontFamilyButton.setText(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
+    var aCtxt = window.opener && window.opener.appCtxt || appCtxt;
+    var fontId = ZmDocsEditor._normalizeFontId(aCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
+    this._fontFamilyButton.setText(ZmDocsEditor.FONT_FAMILY[fontId].name);
 };
 
 ZmDocsEditor.prototype._createFontSizeMenu =
@@ -259,7 +265,7 @@ function(ev) {
 
 ZmDocsEditor.prototype._fontFamilyListener =
 function(ev) {
-	var id = ev.item.getData(ZmDocsEditor._VALUE);
+	var id = ZmDocsEditor._normalizeFontId(ev.item.getData(ZmDocsEditor._VALUE));
 	this.setFont(ZmDocsEditor.FONT_FAMILY[id].value);
 	this._fontFamilyButton.setText(ZmDocsEditor.FONT_FAMILY[id].name);
 };
@@ -498,6 +504,25 @@ ZmDocsEditor.prototype._initToolBar = function() {
 
 };
 
+ZmDocsEditor.prototype._onContentInitialized =
+function() {
+	DwtHtmlEditor.prototype._onContentInitialized.call(this);
+	this._setFontStyles();
+};
+
+ZmDocsEditor.prototype._setFontStyles =
+function() {
+	var doc = this._getIframeDoc();
+	var style = doc.body && doc.body.style;
+	var aCtxt = window.opener && window.opener.appCtxt || appCtxt;
+
+	if (style) {
+		style.fontFamily = aCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+		style.fontSize = aCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+		style.color = aCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
+	}
+};
+
 // @param afterTarget	true: insert link after target, false: replace target with link
 ZmDocsEditor.prototype._insertLink = function(link, target, afterTarget) {
 	if (typeof link == "string") {
@@ -679,7 +704,7 @@ function(ev) {
 		// and an un-updated toolbar, rather than the other way around.
 
 		if (ev.fontFamily) {
-			var id = ev.fontFamily;
+			var id = ZmDocsEditor._normalizeFontId(ev.fontFamily);
 			var name = ZmDocsEditor.FONT_FAMILY[id] && ZmDocsEditor.FONT_FAMILY[id].name;
 			name = name || ZmDocsEditor.__makeFontName(id);
 			this._fontFamilyButton.setText(name);
