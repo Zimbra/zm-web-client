@@ -1349,7 +1349,7 @@ function(creates, type, items, currList, sortBy, convs, last) {
 	}
 
 	var INTERVAL_LENGTH = 10 * 1000; //10 seconds
-	var INTERVAL_THRESHOLD = 40; //throttle more than 40 messages.
+	var INTERVAL_THRESHOLD = 20; //throttle more than 20 messages.
 	for (var i = 0; i < list.length; i++) {
 		var create = list[i];
 
