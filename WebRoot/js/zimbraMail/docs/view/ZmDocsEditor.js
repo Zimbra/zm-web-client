@@ -133,16 +133,16 @@ function(tb) {
     var defaultText = "";
 
     for (var id in ZmDocsEditor.FONT_FAMILY) {
-        var item = ZmDocsEditor.FONT_FAMILY[id];
-        var mi = menu.createMenuItem(item.name, {text:item.name});
+        var name = ZmDocsEditor.FONT_FAMILY[id] && ZmDocsEditor.FONT_FAMILY[id].name || ZmDocsEditor.__makeFontName(id);
+        var mi = menu.createMenuItem(name, {text:name});
         mi.addSelectionListener(listener);
-        mi.setData(ZmDocsEditor._VALUE, item.value);
+        mi.setData(ZmDocsEditor._VALUE, ZmDocsEditor.FONT_FAMILY[id] && ZmDocsEditor.FONT_FAMILY[id].value || ZmDocsEditor.__makeFontName(id));
     }
 
     this._fontFamilyButton.setMenu(menu);
     var aCtxt = window.opener && window.opener.appCtxt || appCtxt;
     var fontId = ZmDocsEditor._normalizeFontId(aCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
-    this._fontFamilyButton.setText(ZmDocsEditor.FONT_FAMILY[fontId].name);
+    this._fontFamilyButton.setText(name);
 };
 
 ZmDocsEditor.prototype._createFontSizeMenu =
@@ -266,8 +266,8 @@ function(ev) {
 ZmDocsEditor.prototype._fontFamilyListener =
 function(ev) {
 	var id = ZmDocsEditor._normalizeFontId(ev.item.getData(ZmDocsEditor._VALUE));
-	this.setFont(ZmDocsEditor.FONT_FAMILY[id].value);
-	this._fontFamilyButton.setText(ZmDocsEditor.FONT_FAMILY[id].name);
+	this.setFont(ZmDocsEditor.FONT_FAMILY[id] && ZmDocsEditor.FONT_FAMILY[id].value || ZmDocsEditor.__makeFontName(id));
+	this._fontFamilyButton.setText(ZmDocsEditor.FONT_FAMILY[id] && ZmDocsEditor.FONT_FAMILY[id].name || ZmDocsEditor.__makeFontName(id));
 };
 
 ZmDocsEditor.prototype._fontSizeListener =
@@ -705,8 +705,7 @@ function(ev) {
 
 		if (ev.fontFamily) {
 			var id = ZmDocsEditor._normalizeFontId(ev.fontFamily);
-			var name = ZmDocsEditor.FONT_FAMILY[id] && ZmDocsEditor.FONT_FAMILY[id].name;
-			name = name || ZmDocsEditor.__makeFontName(id);
+			var name = ZmDocsEditor.FONT_FAMILY[id] && ZmDocsEditor.FONT_FAMILY[id].name || ZmDocsEditor.__makeFontName(id);
 			this._fontFamilyButton.setText(name);
 		}
 
