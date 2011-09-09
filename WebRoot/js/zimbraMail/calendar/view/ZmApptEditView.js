@@ -2100,7 +2100,8 @@ function(type, attendees) {
 
     attendees = (attendees instanceof AjxVector) ? attendees.getArray() :
                 (attendees instanceof Array) ? attendees : [attendees];
-    
+
+    if (appCtxt.isOffline && !appCtxt.isZDOnline()) { return; }
     //avoid duplicate freebusy request by updating the view in sequence
     if(type == ZmCalBaseItem.PERSON) {
         this._scheduleView.setUpdateCallback(new AjxCallback(this, this.updateScheduleAssistant, [attendees, type]))
