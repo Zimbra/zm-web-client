@@ -20,6 +20,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ attribute name="isHtmlCont" rtexprvalue="true" required="true" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
+<fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
 
 <!-- yui js-->
 <app:yuiInclude/>
@@ -63,8 +64,30 @@ var myEditor;
         '36pt': 46
     };
 
-    var Dom = YAHOO.util.Dom;
+    <%-- Get font definitions from AjxMsg --%>
+    var fonts = [];
+    var defaultFont;
+    <c:forEach var="KEY" items="fontFamilyIntl,fontFamilyBase">
+    <c:forEach var="i" begin="1" end="30">
+        <fmt:message var="style" bundle='${AjxMsg}' key="${KEY}${i}.css"/>
+        <c:choose>
+            <c:when test="${fn:startsWith(style, '#') or fn:startsWith(style, '?')}">
+                <%-- Do nothing --%>
+            </c:when>
+            <c:otherwise>
+                <c:set var="style" value="${fn:replace(style,', ',',')}"/>
+                <fmt:message var="name" bundle='${AjxMsg}' key="${KEY}${i}.display"/>
+                <c:set var="selected" value="${fn:replace(mailbox.prefs.htmlEditorDefaultFontFamily,', ',',') eq style}"/>
+                fonts.push({text:"${name}",value:"${style}"<c:if test="${selected}">,checked:true</c:if>});
+                <c:if test="${selected}">
+                defaultFont="${name}";
+                </c:if>
+            </c:otherwise>
+        </c:choose>
+    </c:forEach>
+    </c:forEach>
 
+    var Dom = YAHOO.util.Dom;
 
     myEditor = new YAHOO.widget.Editor('body', {
         height: '300px',
@@ -79,7 +102,9 @@ var myEditor;
         extracss: '.yui-spellcheck { background-color: yellow; }',
         collapse: true,
         draggable: false,
-        buttonType: 'advanced'
+        buttonType: 'advanced',
+        fonts: fonts,
+        defaultFont: defaultFont
     });
 
     //Change the default toolbar button for fontsize to a new one.
