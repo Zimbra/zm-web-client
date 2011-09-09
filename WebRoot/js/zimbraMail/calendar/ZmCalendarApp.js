@@ -388,7 +388,6 @@ function() {
 			ZmOperation.addDeferredMenu(ZmCalendarApp.addCalViewMenu, parent);
 	}));
 	ZmOperation.registerOp(ZmId.OP_DAY_VIEW, {textKey:"viewDay", tooltipKey:"viewDayTooltip", image:"DayView", shortcut:ZmKeyMap.CAL_DAY_VIEW});
-	ZmOperation.registerOp(ZmId.OP_DAY_TAB_VIEW, {textKey:"viewDayTab", tooltipKey:"viewDayTabTooltip", image:"DayView", shortcut:ZmKeyMap.CAL_DAY_TAB_VIEW});
 	ZmOperation.registerOp(ZmId.OP_EDIT_REPLY_ACCEPT, {textKey:"replyAccept", image:"Check"});
 	ZmOperation.registerOp(ZmId.OP_EDIT_REPLY_CANCEL);
 	ZmOperation.registerOp(ZmId.OP_EDIT_REPLY_TENTATIVE, {textKey:"replyTentative", image:"QuestionMark"});
@@ -1117,8 +1116,7 @@ ZmCalendarApp.addCalViewMenu =
 function(parent) {
 	var list = [
 		ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
-		ZmOperation.MONTH_VIEW, ZmOperation.CAL_LIST_VIEW, ZmOperation.SCHEDULE_VIEW,
-        ZmOperation.DAY_TAB_VIEW
+		ZmOperation.MONTH_VIEW, ZmOperation.CAL_LIST_VIEW, ZmOperation.SCHEDULE_VIEW
 	];
     if(appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
         list.push(ZmOperation.FB_VIEW);    

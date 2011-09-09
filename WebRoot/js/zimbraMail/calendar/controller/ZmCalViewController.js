@@ -41,7 +41,6 @@ ZmCalViewController = function(container, calApp) {
 	// get view based on op
 	ZmCalViewController.OP_TO_VIEW = {};
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.DAY_VIEW]		= ZmId.VIEW_CAL_DAY;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.DAY_TAB_VIEW]	= ZmId.VIEW_CAL_DAY_TAB;
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.WEEK_VIEW]		= ZmId.VIEW_CAL_WEEK;
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.WORK_WEEK_VIEW]	= ZmId.VIEW_CAL_WORK_WEEK;
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.MONTH_VIEW]		= ZmId.VIEW_CAL_MONTH;
@@ -88,7 +87,7 @@ ZmCalViewController = function(container, calApp) {
 
 	ZmCalViewController.OPS = [
 		ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
-		ZmOperation.MONTH_VIEW, ZmOperation.CAL_LIST_VIEW, ZmOperation.SCHEDULE_VIEW, ZmOperation.DAY_TAB_VIEW
+		ZmOperation.MONTH_VIEW, ZmOperation.CAL_LIST_VIEW, ZmOperation.SCHEDULE_VIEW
 	];
     if(appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
         ZmCalViewController.OPS.push(ZmOperation.FB_VIEW);    
@@ -123,7 +122,6 @@ ZmCalViewController.MAINT_REMINDER	= 0x4; // reminders need refresh
 // get view based on op
 ZmCalViewController.ACTION_CODE_TO_VIEW = {};
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_DAY_VIEW]			= ZmId.VIEW_CAL_DAY;
-ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_DAY_TAB_VIEW]		= ZmId.VIEW_CAL_DAY_TAB;
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_WEEK_VIEW]			= ZmId.VIEW_CAL_WEEK;
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_WORK_WEEK_VIEW]	= ZmId.VIEW_CAL_WORK_WEEK;
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_MONTH_VIEW]		= ZmId.VIEW_CAL_MONTH;
@@ -198,7 +196,6 @@ function(viewId, startDate, skipMaintenance) {
 
     switch(viewId) {
         case ZmId.VIEW_CAL_DAY:
-        case ZmId.VIEW_CAL_DAY_TAB:
             this._viewMgr.getView(viewId).startIndicatorTimer();
         case ZmId.VIEW_CAL_SCHEDULE:
             this._viewMgr.getView(viewId).startIndicatorTimer();
@@ -795,7 +792,7 @@ function(viewId) {
 
 	// Set the other view toolbar entries to point to the Day view entry. Hack
 	// to fool the ZmListController into thinking there are multiple toolbars
-	this._toolbar[ZmId.VIEW_CAL_DAY_TAB] = this._toolbar[ZmId.VIEW_CAL_FB] = this._toolbar[ZmId.VIEW_CAL_SCHEDULE] = this._toolbar[ZmId.VIEW_CAL_WEEK] =
+	this._toolbar[ZmId.VIEW_CAL_FB] = this._toolbar[ZmId.VIEW_CAL_SCHEDULE] = this._toolbar[ZmId.VIEW_CAL_WEEK] =
 	this._toolbar[ZmId.VIEW_CAL_WORK_WEEK] = this._toolbar[ZmId.VIEW_CAL_MONTH] =
 	this._toolbar[ZmId.VIEW_CAL_LIST] = this._toolbar[ZmId.VIEW_CAL_DAY];
 
@@ -2716,7 +2713,7 @@ function(navToolbar, currentViewName) {
     var toolbarEl = navToolbar.getHtmlElement();
     if(!toolbarEl) { return; }
 
-    if(currentViewName == ZmId.VIEW_CAL_DAY_TAB) {
+    if(currentViewName == ZmId.VIEW_CAL_DAY) {
         Dwt.addClass(toolbarEl, ZmCalDayTabView.NAV_TOOLBAR_CLASSNAME);
         Dwt.setPosition(toolbarEl, Dwt.ABSOLUTE_STYLE);
     }
@@ -3703,7 +3700,6 @@ function(actionCode) {
 	switch (actionCode) {
 
 		case ZmKeyMap.CAL_DAY_VIEW:
-		case ZmKeyMap.CAL_DAY_TAB_VIEW:
 		case ZmKeyMap.CAL_WEEK_VIEW:
 		case ZmKeyMap.CAL_WORK_WEEK_VIEW:
 		case ZmKeyMap.CAL_MONTH_VIEW:
