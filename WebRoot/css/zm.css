@@ -693,27 +693,44 @@ INPUT[type="text"].search_input {
 }
 
 .ZmMailMsgCapsuleView {
-	border:0px 1px 1px @AppC@ solid;
-	border-bottom:1px solid #C8C8C8;
+	border-color: @AppC@;
+	border-width:0px 1px 1px 1px;
+	border-style: solid;	
+	border-bottom-color: #C8C8C8;
 	background-color:white;
+	#IFDEF SAFARI
 	background-image:-webkit-gradient(linear, left top, left bottom, from(#FFFFFF), to(@lighten(AppC,55)@)); /* Saf4+, Chrome */
     background-image:-webkit-linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); /* Chrome 10+, Saf5.1+ */
+    #ENDIF 
+    #IFDEF GECKO
     background-image:   -moz-linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); /* FF3.6 */
+    #ENDIF
+    #IFDEF MSIE
     background-image:    -ms-linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); /* IE10 */
-    background-image:        linear-gradient(top, #FFFFFF, @lighten(AppC,55)@);
     filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,55)@'); /* IE6�IE9 */
+	#ENDIF
+    
+    /*background-image:        linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); */
 }
 
 .ZmMailMsgCapsuleView.focused {
-    border:0px 1px 1px @darken(SelC,20)@ solid;
-	border-bottom:1px solid #C8C8C8;
+    border-width:0px 1px 1px 1px;
+    border-style: solid;
+    border-color: @darken(SelC,20)@;
+	border-bottom-color: #C8C8C8;
     background-color:white;
+    #IFDEF SAFARI
     background-image:-webkit-gradient(linear, left top, left bottom, from(@lighten(SelC,66)@), to(@lighten(SelC,35)@)); /* Saf4+, Chrome */
     background-image:-webkit-linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); /* Chrome 10+, Saf5.1+ */
+    #ENDIF
+    #IFDEF GECKO
     background-image:   -moz-linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); /* FF3.6 */
+    #ENDIF
+    #IFDEF MSIE
     background-image:    -ms-linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); /* IE10 */
-    background-image:        linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@);
     filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(SelC,66)@', EndColorStr='@lighten(SelC,35)@'); /* IE6�IE9 */
+    #ENDIF
+    /*background-image:        linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); */
 }
 
 .ZmMailMsgCapsuleView .LabelColValue {
@@ -744,7 +761,7 @@ INPUT[type="text"].search_input {
 
 .ZmMailMsgCapsuleView .Link {
 	cursor:pointer;
-	color:@Text-link@;
+	@Text-link@
 /*	text-decoration:underline;*/
 	margin-right:10px;
 	white-space:nowrap;
@@ -755,13 +772,17 @@ INPUT[type="text"].search_input {
 	margin:5px;
 }
 
+#IFDEF SAFARI
 .ZmConvView2 input::-webkit-input-placeholder {
     @InputField-hint@
 }
+#ENDIF
 
+#IFDEF GECKO
 .ZmConvView2 input:-moz-placeholder {
     @InputField-hint@
 }
+#ENDIF
 
 /* the sash next to overview does not need borders or a background color */
 .console_inset_app_l .DwtHorizontalSash {
