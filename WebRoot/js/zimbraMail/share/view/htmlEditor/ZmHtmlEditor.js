@@ -341,7 +341,7 @@ function() {
 ZmHtmlEditor.prototype._resetFormatControlDefaults =
 function() {
 	var fontId = ZmHtmlEditor._normalizeFontId(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
-	this._fontFamilyButton.setText(ZmHtmlEditor.FONT_FAMILY[fontId].name);
+	this._fontFamilyButton.setText(ZmHtmlEditor.FONT_FAMILY[fontId] && ZmHtmlEditor.FONT_FAMILY[fontId].name || ZmHtmlEditor.__makeFontName(fontId));
 	this._fontSizeButton.setText(this._getFontSizeLabel(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE)));
 	this._fontColorButton.setColor(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR));
 	this._styleMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.PARAGRAPH, true);
@@ -673,8 +673,8 @@ function(ev) {
 ZmHtmlEditor.prototype._fontFamilyListener =
 function(ev) {
 	var id = ZmHtmlEditor._normalizeFontId(ev.item.getData(ZmHtmlEditor._VALUE));
-	this.setFont(ZmHtmlEditor.FONT_FAMILY[id].value);
-	this._fontFamilyButton.setText(ZmHtmlEditor.FONT_FAMILY[id].name);
+	this.setFont(ZmHtmlEditor.FONT_FAMILY[id] && ZmHtmlEditor.FONT_FAMILY[id].value || ZmHtmlEditor.__makeFontName(id));
+	this._fontFamilyButton.setText(ZmHtmlEditor.FONT_FAMILY[id] && ZmHtmlEditor.FONT_FAMILY[id].name || ZmHtmlEditor.__makeFontName(id));
 };
 
 ZmHtmlEditor.prototype._fontSizeListener =
@@ -1348,10 +1348,10 @@ function(tb) {
 	var listener = new AjxListener(this, this._fontFamilyListener);
 
 	for (var id in ZmHtmlEditor.FONT_FAMILY) {
-		var item = ZmHtmlEditor.FONT_FAMILY[id];
-		var mi = menu.createMenuItem(item.name, {text:item.name});
+		var name = ZmHtmlEditor.FONT_FAMILY[id] && ZmHtmlEditor.FONT_FAMILY[id].name || ZmHtmlEditor.__makeFontName(id);
+		var mi = menu.createMenuItem(name, {text:name});
 		mi.addSelectionListener(listener);
-		mi.setData(ZmHtmlEditor._VALUE, item.value);
+		mi.setData(ZmHtmlEditor._VALUE, ZmHtmlEditor.FONT_FAMILY[id] && ZmHtmlEditor.FONT_FAMILY[id].value || ZmHtmlEditor.__makeFontName(id));
 	}
 
 	this._fontFamilyButton.setMenu(menu);
@@ -1423,8 +1423,7 @@ function(ev) {
 
 		if (ev.fontFamily) {
 			var id = ZmHtmlEditor._normalizeFontId(ev.fontFamily);
-			var name = ZmHtmlEditor.FONT_FAMILY[id] && ZmHtmlEditor.FONT_FAMILY[id].name;
-			name = name || ZmHtmlEditor.__makeFontName(id);
+			var name = ZmHtmlEditor.FONT_FAMILY[id] && ZmHtmlEditor.FONT_FAMILY[id].name || ZmHtmlEditor.__makeFontName(id);
 			this._fontFamilyButton.setText(name);
 		}
 
