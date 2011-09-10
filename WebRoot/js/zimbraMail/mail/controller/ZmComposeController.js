@@ -435,7 +435,20 @@ function(params) {
  * @param	{AjxCallback}	callback		the callback
  */
 ZmComposeController.prototype.sendMsg =
-function(attId, draftType, callback, contactId) {
+function(attId, draftType, callback, contactId, processDataURIImages) {
+    var view = this._composeView;
+    if( view.getComposeMode() === DwtHtmlEditor.HTML ){//Need to process data uri images only for HTML mode
+        if(typeof processDataURIImages === "undefined"){
+            processDataURIImages = true;
+        }
+        if(processDataURIImages){
+            var processDataURIImagesCallback = new AjxCallback(this, this._sendMsg, [attId, null, draftType, callback, contactId]);
+            var result = this._processDataURIImages(view._getIframeDoc() ,processDataURIImagesCallback);
+            if(result){
+                return;
+            }
+        }
+    }
 	return this._sendMsg(attId, null, draftType, callback, contactId);
 };
 
@@ -2012,31 +2025,136 @@ function(){
 };
 
 ZmComposeController.prototype._pasteHandler = function( ev ){
-    var items,blob,controller,req;
+    var items,blob,controller,responseHandler;
     if (ev.clipboardData){
         items = ev.clipboardData.items;
         if( items ){
             blob = items[0].getAsFile();
             if( blob ){
                 controller = this;
-                req = new XMLHttpRequest();
-                req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
-                req.setRequestHeader("Cache-Control", "no-cache");
-                req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-                req.setRequestHeader("Content-Type", blob.type);
-                req.setRequestHeader("Content-Disposition", 'attachment; filename="' + ev.timeStamp + '"');//For paste from clipboard filename is undefined so we are using timestamp
-                req.onreadystatechange = function(){
-                    if(req.readyState === 4 && req.status === 200) {
-                        var resp = eval("["+req.responseText+"]");
-                        if(resp.length === 3) {
-                            resp[2].clipboardPaste = true;
-                            controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, resp[2]);
-                        }
-                    }
-                }
-                req.send(blob);
+                blob.name = ev.timeStamp;//For paste from clipboard filename is undefined so we are using timestamp
+                responseHandler = function( response ){
+                    response.clipboardPaste = true;
+                    controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, response);
+                };
+                controller._uploadImage(blob, new AjxCallback(this, responseHandler));
             }
         }
     }
 };
 
+ZmComposeController.prototype._processDataURIImages = function(idoc, callback){
+    var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder;
+    if(!BlobBuilder || !idoc){
+        return;
+    }
+    var imgArray = idoc.getElementsByTagName("img");
+    var length = imgArray.length;
+    if(length === 0){
+        return;
+    }
+
+    var dataURItoBlob = function(dataURI, id){
+        if(dataURI){
+            // convert base64 to raw binary data held in a string
+            // doesn't handle URLEncoded DataURIs
+            var byteString = window.atob(dataURI.split(",")[1]);
+            if(byteString){
+                // separate out the mime component
+                var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+                // write the bytes of the string to an ArrayBuffer
+                var ab = new ArrayBuffer(byteString.length);
+                var ia = new Uint8Array(ab);
+                for (var i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                // write the ArrayBuffer to a blob, and you're done
+                var blobbuilder = new BlobBuilder();
+                blobbuilder.append(ab);
+
+                var blob = blobbuilder.getBlob(mimeString);
+                blob.type = mimeString;
+                blob.name = new Date().getTime();
+                blob.id = id;
+                return blob;
+            }
+        }
+    };
+
+    var blobArray = [];
+    for(var i = 0; i < length; i++ ){
+        var imgSrc = imgArray[i].src;
+        if(imgSrc && imgSrc.indexOf("data:") !== -1){
+            var blob = dataURItoBlob(imgSrc, i);
+            if(blob){
+                imgArray[i].id = i;//setting id for image for replacement in callback
+                blobArray.push(blob);
+            }
+        }
+    }
+    length = blobArray.length;
+    if(length === 0){
+        return;
+    }
+
+    this._uploadedImageArray = [];
+    this._uploadedImageLength = 0;
+    var errorCallback = new AjxCallback(this, this._handleUploadImageError, [length, callback]);
+    for( i = 0; i < length ; i++ ){
+        var blob = blobArray[i];
+        var respCallback = new AjxCallback(this, this._handleUploadImage, [length, callback, blob.id]);
+        this._uploadImage( blob, respCallback, errorCallback);
+    }
+    return true;
+};
+
+ZmComposeController.prototype._uploadImage = function(blob, callback, errorCallback){
+    var req = new XMLHttpRequest();
+    req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
+    req.setRequestHeader("Cache-Control", "no-cache");
+    req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+    req.setRequestHeader("Content-Type", blob.type);
+    req.setRequestHeader("Content-Disposition", 'attachment; filename="' + blob.name + '"');
+    req.onreadystatechange = function(){
+        if(req.readyState === 4 && req.status === 200) {
+            var resp = eval("["+req.responseText+"]");
+            if(resp[0] !== 200){
+                if(errorCallback){
+                    errorCallback.run();
+                }
+            }
+            else if(resp.length === 3 && callback){
+                callback.run(resp[2]);
+            }
+        }
+    }
+    req.send(blob);
+};
+
+ZmComposeController.prototype._handleUploadImage = function(length, callback, id, response){
+    var uploadedImageArray = this._uploadedImageArray;
+    this._uploadedImageLength++;
+    response[0].id = id;
+    uploadedImageArray.push(response[0]);
+    if( this._uploadedImageLength === length && callback ){
+        uploadedImageArray.clipboardPaste = true;
+        if(callback.args[0]){
+            callback.args[0] = callback.args[0].concat(uploadedImageArray);
+        }
+        else{
+            callback.args[0] = uploadedImageArray;
+        }
+        callback.run();
+        delete this._uploadedImageArray;
+        delete this._uploadedImageLength;
+    }
+};
+
+ZmComposeController.prototype._handleUploadImageError = function(length, callback){
+    this._uploadedImageLength++;
+    if( this._uploadedImageLength === length && callback ){
+        callback.run();
+        delete this._uploadedImageArray;
+        delete this._uploadedImageLength;
+    }
+};

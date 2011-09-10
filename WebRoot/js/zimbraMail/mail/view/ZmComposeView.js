@@ -536,7 +536,12 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 			var contentType = att.ct;
 			if (contentType && contentType.indexOf("image") != -1) {
 				var cid = this._generateCid();
-				this._htmlEditor.insertImage("cid:" + cid, AjxEnv.isIE);
+                if( att.hasOwnProperty("id") ){
+                    this._htmlEditor.replaceImage(att.id, "cid:" + cid);
+                }
+                else{
+                    this._htmlEditor.insertImage("cid:" + cid, AjxEnv.isIE);
+                }
 				msg.addInlineAttachmentId(cid, att.aid);
 			} else {
 				msg.addAttachmentId(att.aid);
@@ -3260,4 +3265,11 @@ ZmComposeView.prototype._handleEditorEvent = function(ev){
         this._controller._pasteHandler(ev);
     }
     return true;
+};
+
+ZmComposeView.prototype._getIframeDoc = function(){
+    var editor = this._htmlEditor;
+    if( editor ){
+        return editor._getIframeDoc();
+    }
 };

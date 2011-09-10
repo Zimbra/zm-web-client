@@ -674,6 +674,18 @@ function(src, dontExecCommand, width, height) {
 	ed.execCommand('mceInsertContent', false, html.join(""), {skip_undo : 1});
 };
 
+ZmAdvancedHtmlEditor.prototype.replaceImage =
+function(id, src){
+    var doc = this.getEditor().getDoc();
+    if(doc){
+        var img = doc.getElementById(id);
+        if(img){
+            img.src = src;
+            img.removeAttribute("id");
+        }
+    }
+};
+
 ZmAdvancedHtmlEditor.prototype.initDefaultFontSize =
 function(editor) {
 	var doc = editor && editor.getDoc();
