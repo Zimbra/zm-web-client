@@ -881,6 +881,7 @@ function() {
 	return headerList;
 };
 
+ 
 // Override of DwtListView.prototype._resetColWidth to set width; without overrriding causes vertical scrollbars to disapper
 // on header resize
 ZmContactChooserSourceListView.prototype._resetColWidth =
@@ -894,14 +895,24 @@ function() {
         var lastCell = document.getElementById(lastCol._id);
 		if (lastCell) {
 			var div = lastCell.firstChild;
-			var scrollbarPad = 16;
-
-			var headerWidth = this._listColDiv.clientWidth;
-			var rowWidth = this._listDiv.clientWidth;
-
 			lastCell.style.width = div.style.width = (lastCol._width || ""); 
 		}
     }
+};
+
+/**
+ * override for scrollbars in IE
+ * @param headerIdx
+ */
+ZmContactChooserSourceListView.prototype._calcRelativeWidth =
+function(headerIdx) {
+	var column = this._headerList[headerIdx];
+	if (!column._width || (column._width && column._width == "auto")) {
+		var cell = document.getElementById(column._id);
+		// UGH: clientWidth is 5px more than HTML-width (20px for IE to deal with scrollbars)
+		return (cell) ? (cell.clientWidth - (AjxEnv.isIE ? Dwt.SCROLLBAR_WIDTH : 5)) : null;
+	}
+	return column._width;
 };
 
 /**
@@ -921,7 +932,16 @@ function(ev, div) {
  */
 ZmContactChooserSourceListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
-	return ZmContactsHelper._getEmailField(html, idx, item, field, colIdx, params);
+	if (field == ZmItem.F_EMAIL && AjxEnv.isIE) {
+		var maxWidth = AjxStringUtil.getWidth(item.address);
+		html[idx++] = "<div style='float; left; overflow: visible; width: " + maxWidth + ";'>";
+		idx = ZmContactsHelper._getEmailField(html, idx, item, field, colIdx, params);
+		html[idx++] = "</div>";		
+	}
+	else {
+		idx = ZmContactsHelper._getEmailField(html, idx, item, field, colIdx, params);
+	}
+	return idx;
 };
 
 /**
@@ -936,7 +956,7 @@ function(html, idx, item, field, colIdx, params) {
 ZmContactChooserSourceListView.prototype._getCellAttrText =
 function(item, field, params) {
 	if (field == ZmItem.F_EMAIL) {
-		return "style='overflow: visible';";
+		return "style='position: relative; overflow: visible;'";
 	}
 };
 
@@ -1004,11 +1024,19 @@ function(html, idx, item, field, colIdx, params) {
 		item.setType(item._buttonId);
 		html[idx++] = ZmMsg[item.getTypeAsString()];
 		html[idx++] = ":";
-	} else {
+	}
+	else if (field == ZmItem.F_EMAIL && AjxEnv.isIE) {
+		var maxWidth = AjxStringUtil.getWidth(item.address) + 10;
+		html[idx++] = "<div style='float; left;  width: " + maxWidth + ";'>";
+		idx = ZmContactsHelper._getEmailField(html, idx, item, field, colIdx, params);
+		html[idx++] = "</div>";
+	}
+	else {
 		idx = ZmContactsHelper._getEmailField(html, idx, item, field, colIdx);
 	}
 	return idx;
 };
+
 
 // Override of DwtListView.prototype._resetColWidth to set width; without overrriding causes vertical scrollbars to disapper
 // on header resize
@@ -1018,19 +1046,31 @@ function() {
 	if (!this.headerColCreated) { return; }
 
 	var lastColIdx = this._getLastColumnIndex();
+
+	
     if (lastColIdx) {
         var lastCol = this._headerList[lastColIdx];
         var lastCell = document.getElementById(lastCol._id);
 		if (lastCell) {
 			var div = lastCell.firstChild;
-			var scrollbarPad = 16;
-
-			var headerWidth = this._listColDiv.clientWidth;
-			var rowWidth = this._listDiv.clientWidth;
-
-			lastCell.style.width = div.style.width = (lastCol._width || ""); 
+			lastCell.style.width = div.style.width = (lastCol._width || "");
 		}
     }
+};
+
+/**
+ * override for scrollbars in IE
+ * @param headerIdx
+ */
+ZmContactChooserTargetListView.prototype._calcRelativeWidth =
+function(headerIdx) {
+	var column = this._headerList[headerIdx];
+	if (!column._width || (column._width && column._width == "auto")) {
+		var cell = document.getElementById(column._id);
+		// UGH: clientWidth is 5px more than HTML-width (20px for IE to deal with scrollbars)
+		return (cell) ? (cell.clientWidth - (AjxEnv.isIE ? Dwt.SCROLLBAR_WIDTH : 5)) : null;
+	}
+	return column._width;
 };
 
 /**
@@ -1045,6 +1085,6 @@ function() {
 ZmContactChooserTargetListView.prototype._getCellAttrText =
 function(item, field, params) {
 	if (field == ZmItem.F_EMAIL) {
-		return "style='overflow: visible';";
+		return "style='position: relative; overflow: visible;'";
 	}
 };
