@@ -103,7 +103,10 @@ function(item, field) {
 ZmMailMsgListView.prototype._getCellContents =
 function(htmlArr, idx, msg, field, colIdx, params) {
 
-	if (field == ZmItem.F_STATUS) {
+	if (field == ZmItem.F_READ) {
+		idx = this._getImageHtml(htmlArr, idx, msg.getReadIcon(), this._getFieldId(msg, field));
+	}
+	else if (field == ZmItem.F_STATUS) {
 		idx = this._getImageHtml(htmlArr, idx, msg.getStatusIcon(), this._getFieldId(msg, field));
 	} else if (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT) {
 		// setup participants list for Sent/Drafts/Outbox folders
@@ -231,6 +234,7 @@ function(item, colIdx) {
 	// second row
 	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr>";
 	htmlArr[idx++] = "<td width=16></td>";
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_READ, colIdx, width, "style='padding-left:0px'");
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, width, "style='padding-left:0px'");
 
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
@@ -339,6 +343,7 @@ function(parent, controller) {
 		headers.push(
 			ZmItem.F_PRIORITY,
 			ZmItem.F_TAG,
+			ZmItem.F_READ,
 			ZmItem.F_STATUS,
 			ZmItem.F_FROM,
 			ZmItem.F_ATTACHMENT,

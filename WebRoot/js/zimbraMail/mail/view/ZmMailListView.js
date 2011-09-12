@@ -62,6 +62,8 @@ ZmMailListView.SORTBY_HASH[ZmSearch.ATTACH_ASC] = {field:ZmItem.F_ATTACHMENT, ms
 ZmMailListView.SORTBY_HASH[ZmSearch.ATTACH_DESC] = {field:ZmItem.F_ATTACHMENT, msg:"attachment"};
 ZmMailListView.SORTBY_HASH[ZmSearch.FLAG_ASC] = {field:ZmItem.F_FLAG, msg:"flag"};
 ZmMailListView.SORTBY_HASH[ZmSearch.FLAG_DESC] = {field:ZmItem.F_FLAG, msg:"flag"};
+ZmMailListView.SORTBY_HASH[ZmSearch.READ_ASC] = {field:ZmItem.F_READ, msg:"read"};
+ZmMailListView.SORTBY_HASH[ZmSearch.READ_DESC] = {field:ZmItem.F_READ, msg:"read"};
 ZmMailListView.SORTBY_HASH[ZmSearch.PRIORITY_ASC] = {field:ZmItem.F_PRIORITY, msg:"priority"};
 ZmMailListView.SORTBY_HASH[ZmSearch.PRIORITY_DESC] = {field:ZmItem.F_PRIORITY, msg:"priority"};
 
@@ -76,6 +78,8 @@ function() {
 // Reset row style
 ZmMailListView.prototype.markUIAsRead = 
 function(item) {
+	this._setImage(item, ZmItem.F_READ, item.getReadIcon());
+
 	var rowClass = this._getRowClass(item);
 	if (this._isMultiColumn) {
 		var row = this._getElement(item, ZmItem.F_ITEM_ROW);
@@ -297,6 +301,7 @@ function() {
 		this._headerInit[ZmItem.F_TAG]			= {icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, precondition:ZmSetting.TAGGING_ENABLED};
 		this._headerInit[ZmItem.F_ACCOUNT]		= {icon:"AccountAll", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.account, noRemove:true, resizeable:true};
 		this._headerInit[ZmItem.F_STATUS]		= {icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status};
+		this._headerInit[ZmItem.F_READ]			= {icon:"MsgUnread", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.readUnread, sortable: false /*ZmItem.F_READ*/, noSortArrow:true}; //todo - once server supports readAsc/readDesc sort orders, uncomment the sortable
 		this._headerInit[ZmItem.F_FROM]			= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_MLV, resizeable:true, sortable:ZmItem.F_FROM};
 		this._headerInit[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment, sortable:ZmItem.F_ATTACHMENT, noSortArrow:true};
 		this._headerInit[ZmItem.F_SUBJECT]		= {text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true, resizeable:true};
@@ -638,11 +643,15 @@ function(field, itemIdx) {
 	var isOutboundFolder = this._isOutboundFolder();
 	if (field == ZmItem.F_FROM && isOutboundFolder) {
 	   return this._headerList[itemIdx]._sortable ? ZmMsg.to : ZmMsg.to;
-	} else if (field == ZmItem.F_STATUS) {
-		return ZmMsg.messageStatus;
-	} else {
-		return ZmListView.prototype._getHeaderToolTip.call(this, field, itemIdx, isOutboundFolder);
 	}
+	if (field == ZmItem.F_STATUS) {
+		return ZmMsg.messageStatus;
+	}
+	if (field == ZmItem.F_READ) {
+		return ZmMsg.readUnread;
+	}
+
+	return ZmListView.prototype._getHeaderToolTip.call(this, field, itemIdx, isOutboundFolder);
 };
 
 ZmMailListView.prototype._getToolTip =
@@ -653,6 +662,9 @@ function(params) {
 
 	if (field == ZmItem.F_STATUS) {
 		tooltip = item.getStatusTooltip();
+	}
+	else if (field == ZmItem.F_READ) {
+		tooltip = item.isUnread ? ZmMsg.unread : ZmMsg.read;
 	}
 	else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
 			(field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT))

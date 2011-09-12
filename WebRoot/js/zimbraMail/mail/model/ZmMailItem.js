@@ -61,6 +61,16 @@ function() {
 };
 
 /**
+ * Gets the read/unread icon.
+ *
+ * @return	{String}	the icon
+ */
+ZmMailItem.prototype.getReadIcon =
+function() {
+	return this.isUnread ? "MsgUnread" : "MsgRead";
+};
+
+/**
  * Clears this item.
  * 
  */

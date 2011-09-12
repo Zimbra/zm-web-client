@@ -98,6 +98,7 @@ ZmItem.F_SELECTION_CELL	= ZmId.FLD_SELECTION_CELL;
 ZmItem.F_SIZE			= ZmId.FLD_SIZE;
 ZmItem.F_SORTED_BY		= ZmId.FLD_SORTED_BY;	// placeholder for 3-pane view
 ZmItem.F_STATUS			= ZmId.FLD_STATUS;
+ZmItem.F_READ			= ZmId.FLD_READ;
 ZmItem.F_SUBJECT		= ZmId.FLD_SUBJECT;
 ZmItem.F_TAG			= ZmId.FLD_TAG;
 ZmItem.F_TAG_CELL		= ZmId.FLD_TAG_CELL;

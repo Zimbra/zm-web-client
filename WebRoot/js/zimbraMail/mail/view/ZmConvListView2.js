@@ -130,6 +130,7 @@ function(parent, controller) {
 			ZmItem.F_FLAG,
 			ZmItem.F_PRIORITY,
 			ZmItem.F_TAG,
+			ZmItem.F_READ,
 			ZmItem.F_STATUS,
 			ZmItem.F_FROM,
 			ZmItem.F_ATTACHMENT,
@@ -202,7 +203,10 @@ function(item, field, params) {
 ZmConvListView2.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
 
-	if (field == ZmItem.F_SELECTION) {
+	if (field == ZmItem.F_READ) {
+		idx = this._getImageHtml(htmlArr, idx, item.getReadIcon(), this._getFieldId(item, field));
+	}
+	else if (field == ZmItem.F_SELECTION) {
 		idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
 	} else {
 		if (field == ZmItem.F_STATUS) {
@@ -281,6 +285,7 @@ function(item, colIdx) {
 		htmlArr[idx++] = "<td width='" + (width + 15) + "'";
 		htmlArr[idx++] = this._getStyleViaZimlet(ZmItem.F_FROM, item);
 		htmlArr[idx++] = "></td>";
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_READ, colIdx, width, "style='padding-left:0px'");
 
 	// for multi-account, show the account icon for cross mbox search results
 	if (appCtxt.multiAccounts &&
