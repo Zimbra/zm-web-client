@@ -1454,20 +1454,20 @@ function() {
  * @param {Hash}	options			a hash of options
  * @param {Boolean}	options.noChildWindow		if <code>true</code>, skip notify if we are in a child window
  * @param	{Boolean}	options.waitUntilLoaded	if <code>true</code> and zimlets are not yet loaded, add a listener so that notify happens on load
- * 
+ * @return	{Boolean} Returns <code>true</code> if at least one Zimlet handles the notification
  */
 ZmAppCtxt.prototype.notifyZimlets =
 function(event, args, options) {
 
 	var context = this.isChildWindow ? parentAppCtxt : this;
 
-	if (options && options.noChildWindow && this.isChildWindow) { return; }
+	if (options && options.noChildWindow && this.isChildWindow) { return false; }
 
 	if (!context.areZimletsLoaded()) {
 		if (options && options.waitUntilLoaded) {
 			context.addZimletsLoadedListener(new AjxListener(this, this.notifyZimlets, [event, args]));
 		}
-		return;
+		return false;
 	}
 
 	return this.getZimletMgr().notifyZimlets(event, args);
