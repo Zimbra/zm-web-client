@@ -233,7 +233,7 @@ function(evt) {
             msg += (i == 0 ? "" : ", ");
             msg += quickCommand.name;
         }
-        var dialog = appCtxt.getConfirmationDialog();
+        var dialog = appCtxt.getConfirmationDialog(Dwt.getNextId("ZmQuickCommandConfirmation"));
         var msg = AjxMessageFormat.format(ZmMsg.askDeleteQuickCommand, msg);
 		dialog.popup(msg, postConfirmToRemoveQCClosure);
     }

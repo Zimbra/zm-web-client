@@ -351,9 +351,9 @@ function() {
  * @return	{DwtMessageDialog}	the message dialog
  */
 ZmAppCtxt.prototype.getYesNoMsgDialog =
-function() {
+function(id) {
 	if (!this._yesNoMsgDialog) {
-		this._yesNoMsgDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]});
+		this._yesNoMsgDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON], id: id});
 	}	
 	return this._yesNoMsgDialog;
 };
@@ -793,9 +793,9 @@ function() {
  * @return	{DwtConfirmDialog}		the confirmation dialog
  */
 ZmAppCtxt.prototype.getConfirmationDialog =
-function() {
+function(id) {
 	if (!this._confirmDialog) {
-		this._confirmDialog = new DwtConfirmDialog(this._shell);
+		this._confirmDialog = new DwtConfirmDialog(this._shell, null, id);
 	}
 	return this._confirmDialog;
 };
