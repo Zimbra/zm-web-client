@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004-2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -14,8 +14,9 @@
  */
 
 ZmMailMsgListView = function(params) {
+
 	this._mode = params.mode;
-	this.view = params.view = (params.view || params.mode);
+	this.view = params.view;
 	params.type = ZmItem.MSG;
 	params.headerList = this._getHeaderList(params.parent, params.controller);
 	ZmMailListView.call(this, params);
@@ -24,11 +25,14 @@ ZmMailMsgListView = function(params) {
 ZmMailMsgListView.prototype = new ZmMailListView;
 ZmMailMsgListView.prototype.constructor = ZmMailMsgListView;
 
+ZmMailMsgListView.prototype.isZmMailMsgListView = true;
+ZmMailMsgListView.prototype.toString = function() {	return "ZmMailMsgListView"; };
 
 // Consts
 
 ZmMailMsgListView.INDENT		= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
+// TODO: move to CV
 ZmMailMsgListView.SINGLE_COLUMN_SORT_CV = [
 	{field:ZmItem.F_FROM,	msg:"from"		},
 	{field:ZmItem.F_SIZE,	msg:"size"		},
@@ -37,10 +41,6 @@ ZmMailMsgListView.SINGLE_COLUMN_SORT_CV = [
 
 // Public methods
 
-ZmMailMsgListView.prototype.toString = 
-function() {
-	return "ZmMailMsgListView";
-};
 
 ZmMailMsgListView.prototype.markUIAsRead = 
 function(msg) {
@@ -54,6 +54,7 @@ function(msg) {
 // rows in ZmConvListView
 
 // support for showing which msgs in a conv matched the search
+// TODO: move to CV
 ZmMailMsgListView.prototype._addParams =
 function(msg, params) {
 	if (this._mode == ZmId.VIEW_TRAD) {
@@ -92,7 +93,7 @@ function(msg) {
 ZmMailMsgListView.prototype._getCellId =
 function(item, field) {
 	if (field == ZmItem.F_SUBJECT && (this._mode == ZmId.VIEW_CONV ||
-									  this._mode == ZmId.VIEW_CONVLIST)) {
+									  this._mode == appCtxt.get(ZmSetting.CONV_MODE))) {
 		return this._getFieldId(item, field);
 	} else {
 		return ZmMailListView.prototype._getCellId.apply(this, arguments);
@@ -138,7 +139,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		} else {
 			var fromAddr = msg.getAddress(AjxEmailAddress.FROM);
 			if (fromAddr) {
-				if (this._mode == ZmId.VIEW_CONVLIST && this._isMultiColumn) {
+				if ((this._mode == appCtxt.get(ZmSetting.CONV_MODE)) && this._isMultiColumn) {
 					htmlArr[idx++] = ZmMailMsgListView.INDENT;
 				}
 				htmlArr[idx++] = "<span style='white-space:nowrap' id='";
@@ -151,9 +152,9 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		}
 
 	} else if (field == ZmItem.F_SUBJECT) {
-		if (this._mode == ZmId.VIEW_CONV || this._mode == ZmId.VIEW_CONVLIST) {
+		if (this._mode == ZmId.VIEW_CONV || this._mode == appCtxt.get(ZmSetting.CONV_MODE)) {
 			// msg within a conv shows just the fragment
-			if (this._mode == ZmId.VIEW_CONVLIST && this._isMultiColumn) {
+			if ((this._mode == appCtxt.get(ZmSetting.CONV_MODE)) && this._isMultiColumn) {
 				htmlArr[idx++] = ZmMailMsgListView.INDENT;
 			}
 			if (!this._isMultiColumn) {
@@ -216,12 +217,15 @@ function(item, colIdx) {
 	if (item.isHighPriority || item.isLowPriority) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", "align=right");
 	}
+		
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SUBJECT, colIdx);
 	if (item.hasAttach) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, width);
 	}
-	if (appCtxt.get("FLAGGING_ENABLED"))
+	if (appCtxt.get("FLAGGING_ENABLED")) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_MSG_PRIORITY, colIdx, "16", "align=right");
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, width);
+	}
 	htmlArr[idx++] = "</tr></table>";
 
 	// second row
@@ -235,7 +239,6 @@ function(item, colIdx) {
 	htmlArr[idx++] = "</tr></table>";
 
 	return htmlArr.join("");
-
 };
 
 // Listeners
@@ -288,11 +291,10 @@ function(ev) {
 
 ZmMailMsgListView.prototype._changeFolderName = 
 function(msg, oldFolderId) {
+
 	var folder = appCtxt.getById(msg.folderId);
 
-	if (!this._controller.isReadingPaneOn() || 
-		!this._controller.isReadingPaneOnRight())
-	{
+	if (!this._controller.isReadingPaneOn() || !this._controller.isReadingPaneOnRight()) {
 		var folderCell = folder ? this._getElement(msg, ZmItem.F_FOLDER) : null;
 		if (folderCell) {
 			folderCell.innerHTML = folder.getName();
@@ -306,19 +308,18 @@ function(msg, oldFolderId) {
 
 ZmMailMsgListView.prototype._changeTrashStatus = 
 function(msg) {
+
 	var row = this._getElement(msg, ZmItem.F_ITEM_ROW);
 	if (row) {
 		if (msg.isUnread) {
 			Dwt.addClass(row, "Unread");
 		}
-
 		var folder = appCtxt.getById(msg.folderId);
 		if (folder && folder.isInTrash()) {
 			Dwt.addClass(row, "Trash");
 		} else {
 			Dwt.delClass(row, "Trash");
 		}
-
 		if (msg.isSent) {
 			Dwt.addClass(row, "Sent");
 		}
@@ -327,18 +328,21 @@ function(msg) {
 
 ZmMailMsgListView.prototype._getHeaderList =
 function(parent, controller) {
+
 	var headers;
 	if (this.isMultiColumn(controller)) {
 		headers = [];
 		headers.push(ZmItem.F_SELECTION);
-		if (appCtxt.get("FLAGGING_ENABLED"))
+		if (appCtxt.get("FLAGGING_ENABLED")) {
 			headers.push(ZmItem.F_FLAG);
+		}
 		headers.push(
 			ZmItem.F_PRIORITY,
 			ZmItem.F_TAG,
 			ZmItem.F_STATUS,
 			ZmItem.F_FROM,
 			ZmItem.F_ATTACHMENT,
+			ZmItem.F_MSG_PRIORITY,
 			ZmItem.F_SUBJECT,
 			ZmItem.F_FOLDER,
 			ZmItem.F_SIZE
@@ -389,12 +393,9 @@ function(columnItem, bSortAsc, callback) {
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
 
 	var query;
+	var list = this.getList();
 	var controller = AjxDispatcher.run((this._mode == ZmId.VIEW_CONV) ? "GetConvController" : "GetTradController");
-	if (this._columnHasCustomQuery(columnItem)) 
-	{
-		query = this._getSearchForSort(columnItem._sortable, controller);
-	}
-	else if (this.getList().size() > 1 && this._sortByString) {
+	if (list && list.size() > 1 && this._sortByString) {
 		query = controller.getSearchString();
 	}
 
@@ -425,11 +426,6 @@ function(columnItem, bSortAsc, callback) {
 			appCtxt.getSearchController().search(params);
 		}
 	}
-};
-
-ZmMailMsgListView.prototype._columnHasCustomQuery =
-function(columnItem) {
-	return (columnItem._sortable == ZmItem.F_FLAG || columnItem._sortable == ZmItem.F_ATTACHMENT);
 };
 
 ZmMailMsgListView.prototype._handleResponseSortColumn =

@@ -1,13 +1,19 @@
 <project name="ZimbraWebClient" default="war">
 
     <!-- Properties -->
+    <dirname property="this.zwc.basedir" file="${ant.file.ZimbraWebClient}" />
 
-    <property file='build-custom.properties'/>
+    <property file='${this.zwc.basedir}/build-custom.properties'/>
 
     <property environment="env"/>
 
-	<property file="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/build-custom.properties" />
+	<property file="${this.zwc.basedir}/../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/build-custom.properties" />
 
+    <property name="zwc.basedir" value="${this.zwc.basedir}" />
+    <property name="overlay.dir" value="${env.APP_OVERLAY}" />
+    <property name="overlay.lib.dir" value="${overlay.dir}/jars" />
+
+    <!-- default web.xml token replacements -->
     <property name="webxml.zimbraAdminURL" value="/zimbraAdmin" />
     <property name="webxml.zimbraMailURL" value="/zimbra" />
     <property name="webxml.zimbraAdminPort" value="7071" />
@@ -15,46 +21,51 @@
     <property name="webxml.zimbraMailSSLPort" value="7443" />
     <property name="webxml.zimbraMailTrustedIP" value="" />
 
-	<property name='common.dir' value='../ZimbraCommon'/>
+    <!-- NOTE: These dirs need to stay ABSOLUTE paths! -->
+	<property name='common.dir' value='${this.zwc.basedir}/../ZimbraCommon'/>
     <property name='common.lib.dir' value='${common.dir}/jars'/>
     <property name='common.build.dir' value='${common.dir}/build'/>
     <property name='common.build.classes.dir' value='${common.build.dir}/classes'/>
 
-    <property name='soap.dir' location='../ZimbraSoap'/>
+    <property name='soap.dir' location='${this.zwc.basedir}/../ZimbraSoap'/>
 	<property name='soap.build.dir' value='${soap.dir}/build'/>
-	
-    <property name='taglib.dir' value='../ZimbraTagLib'/>
+
+    <property name="client.dir" location="${this.zwc.basedir}/../ZimbraClient"/>
+    <property name="client.build.classes.dir" location="${client.dir}/build/classes" />
+    <property name="client.jarfile" location="${client.dir}/build/zimbraclient.jar"/>
+
+    <property name='taglib.dir' value='${this.zwc.basedir}/../ZimbraTagLib'/>
     <property name='taglib.build.dir' value='${taglib.dir}/build'/>
 	<property name='taglib.build.classes.dir' value='${taglib.build.dir}/classes'/>
 
-    <property name='server.dir' value='../ZimbraServer'/>
+    <property name='server.dir' value='${this.zwc.basedir}/../ZimbraServer'/>
     <property name='server.build.dir' value='${server.dir}/build'/>
 	<property name='server.build.classes.dir' value='${server.build.dir}/classes'/>
     <property name='server.dist.dir' value='${server.build.dir}/dist'/>
 
-	<property name='network.dir' value='../ZimbraNetwork' />
+	<property name='network.dir' value='${this.zwc.basedir}/../ZimbraNetwork' />
 	<property name='network.zwc.dir' value='${network.dir}/ZimbraWebClient' />
 	<property name='network.zwc.help.dir' value='${network.zwc.dir}/WebRoot/help' />
 
-	<property name='license.dir' value='../ZimbraLicenses'/>
+	<property name='license.dir' value='${this.zwc.basedir}/../ZimbraLicenses'/>
 
+    <property name='lib.dir' value='${this.zwc.basedir}/jars'/>
+    <property name="jsdoctoolkit.dir" location="${lib.dir}/jsdoc-toolkit-2.3.0" />
+
+    <!-- NOTE: These dirs need to stay RELATIVE paths for overlay purposes! -->
+    <property name="src.dir" value="src" />
     <property name='web.dir' value='WebRoot'/>
     <property name='js.dir' value='${web.dir}/js'/>
     <property name='jsp.dir' value='${web.dir}/public'/>
     <property name='template.dir' value='${web.dir}/templates'/>
-    <property name='java.dir' value='src'/>
-    <property name='lib.dir' value='jars'/>
-    <property name='docs.dir' value='docs'/>
+    <property name='docs.dir' value='${zwc.basedir}/docs'/>
     <property name='img.dir' value='${web.dir}/img'/>
-
-	<property name="jsdoctoolkit.dir" location="${lib.dir}/jsdoc-toolkit-2.3.0" />
 
     <property name='webinf.dir' value='${web.dir}/WEB-INF'/>
     <property name='webinf.lib.dir' value='${webinf.dir}/lib'/>
 
-    <property name='deploy.server' value='jetty'/>
-
-    <property name='build.dir' value='build'/>
+    <!-- output dirs relative to application being built -->
+    <property name='build.dir' value='${zwc.basedir}/build'/>
     <property name='build.classes.dir' value='${build.dir}/classes'/>
     <property name='build.web.dir' value='${build.dir}/WebRoot'/>
     <property name='build.css.dir' value='${build.web.dir}/css'/>
@@ -78,6 +89,7 @@
 	<property name="build.css.ext" value=".css"/>
     <property name="build.css.filename" value="${build.css.file}${build.css.ext}"/>
 
+    <!-- jamming properties -->
     <property name="depends.ext" value='.depends'/>
     <property name="license.ext" value='.license'/>
     <property name='nodebug.ext' value='.nodebug'/>
@@ -101,16 +113,28 @@
             <fileset dir='${lib.dir}' includes='**/ant-contrib-*.jar'/>
         </classpath>
     </taskdef>
-
+	
+	<!-- customize admin skin -->
+	<if>
+		<isset property='adminSkin'/>
+		<then>
+			<property name="webxml.zimbraDefaultAdminSkin" value="${adminSkin}" />
+		</then>
+		<else>
+			<property name="webxml.zimbraDefaultAdminSkin" value="carbon" />
+		</else>
+	</if>
     <!-- Paths and Filesets -->
 
     <path id='class.path'>
         <pathelement location="${build.classes.dir}"/>
         <fileset dir="${lib.dir}" includes="**/*.jar"/>
+        <fileset dir="${overlay.lib.dir}" includes="**/*.jar" erroronmissingdir="false" />
         <fileset dir="${common.lib.dir}" includes="**/*.jar"/>
         <pathelement location="${common.build.classes.dir}"/>
-		<pathelement location="${server.build.classes.dir}"/>
-		<pathelement location="${taglib.build.classes.dir}"/>
+        <pathelement location="${client.build.classes.dir}"/>
+	<pathelement location="${server.build.classes.dir}"/>
+	<pathelement location="${taglib.build.classes.dir}"/>
     </path>
 
     <!-- pseudo-fileset so that targets that rely on it don't fail -->
@@ -175,7 +199,7 @@
         <property name='skins.dir' value='${web.dir}/skins'/>
         <property name='help.dir' value='${web.dir}/help'/>
         <property name='build.help.dir' value='${build.web.dir}/help'/>
-        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/**,tiny_mce/**'/>
+        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/**,tiny_mce/**,qunit/**'/>
         <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp'/>
@@ -230,80 +254,123 @@
     <target name='prod'>
         <property name='build.prod' value='true'/>
         <property name='war.compress' value='true'/>
-        <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**,test/**'/>
+        <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**,test/**,qunit/**'/>
     </target>
 
-    <target name='war'
-            depends='templates,timezones,images,styles,settings,jam-files,compress,help,webxml-package-replace'>
+    <target name="war"
+            depends="templates,timezones,images,styles,settings,jam-files,compress,help,assemble-war"
+            description="Builds all dependencies and assembles the war file.">
+    </target>
+
+    <target name="assemble-war" depends="webxml-package-replace" description="Assembles the war file.  Assumes that all dependencies have been built.  Octopus/ZimbraWebClient/build.xml calls the war target, modifies files in ZimbraWebClient/build, and then calls this target.">
         <mkdir dir='${build.war.dir}'/>
-        <war warfile="${build.war.file}" webxml='${build.dir}/web.xml' compress='${war.compress}'>
-            <webinf dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes},${customer.webinf.files}' />
-			<webinf refid='customer.webinf.fileset' />
+        <war warfile="${build.war.file}" webxml='${build.dir}/web.xml'
+             compress='${war.compress}' duplicate="preserve">
+            <webinf refid='customer.webinf.fileset' />
+            <webinf refid="overlay.webinf.fileset" />
+            <webinf refid="webinf.fileset" />
+
             <classes dir='${build.classes.dir}' excludes='**/kabuki/tools/i18n/**,**/build/**'/>
 			<classes dir='${build.classes.dir}' includes='**/kabuki/util/**,**/kabuki/tools/**' />
-			<classes dir='${java.dir}' includes='**/*.properties' />
-            <classes dir='${web.dir}' includes='messages/**,keys/**'/>
+            <classes refid="overlay.src.props.fileset" />
+            <classes refid="src.props.fileset" />
+            <classes refid="overlay.messages.fileset" />
+            <classes refid="messages.fileset" />
+
             <lib dir='${lib.dir}' includes='gifencoder.jar'/>
-        	<lib dir='${soap.build.dir}' includes='zimbrasoap.jar'/>
+            <lib dir='${soap.build.dir}' includes='zimbrasoap.jar'/>
+            <lib file="${client.jarfile}"/>
             <lib dir='${taglib.build.dir}' includes='zimbrataglib.jar'/>
             <lib dir='${server.build.dir}' includes='zimbrastore.jar'/>
-            <zipfileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes},${customer.web.files}'/>
-            <!--tiny_mce-->
-            <zipfileset dir='${tinymce.zplugins.dir}' includes='**' prefix='tiny_mce/${tinymce.version}/plugins'/>
-			<zipfileset refid='customer.web.fileset'/>
-            <zipfileset dir='${jsp.dir}' includes='${jsp.includes}' excludes='${jsp.excludes}' prefix='public'/>
-            <!-- For customer jsp files
-            <zipfileset dir='${customer.jsp.dir}' includes='${customer.jsp.includes}' excludes='${customer.jsp.excludes}'  prefix='public'/>
-            -->
-            <zipfileset refid="customer.jsp.fileset" prefix="public"/>
 
+            <!-- files from build tree -->
             <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
 			<zipfileset dir='${build.web.dir}' includes='js/Boot_all.js${jsmin.ext}' />
-            <zipfileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}' prefix='img'/>
-            <zipfileset dir='${skins.dir}' prefix='skins' excludes='*/img/**/_*/**' />
+
+            <!-- primary files from source trees -->
+            <zipfileset refid='customer.web.fileset'/>
+            <zipfileset refid="overlay.web.fileset" />
+            <zipfileset refid="web.fileset" />
+
+            <zipfileset refid="customer.jsp.fileset" prefix="public"/>
+            <zipfileset refid="overlay.jsp.fileset" prefix='public'/>
+            <zipfileset refid="jsp.fileset" prefix='public'/>
+
+            <zipfileset refid="overlay.img.fileset" prefix='img'/>
+            <zipfileset refid="img.fileset" prefix='img'/>
+
+            <zipfileset refid='overlay.skins.fileset' prefix='skins' />
+            <zipfileset refid='skins.fileset' prefix='skins' />
+
             <zipfileset refid='help.fileset' prefix='help' />
 			<zipfileset refid='network.help.fileset' prefix='help' />
+
+            <zipfileset dir='${tinymce.zplugins.dir}' includes='**' prefix='tiny_mce/${tinymce.version}/plugins'/>
         </war>
     </target>
 
     <target name='sync' depends='templates'>
+        <!-- NOTE: Keep order in sync with list of war filesets. -->
+        <copy todir='${webapp.dir}/WEB-INF' verbose='${sync.verbose}'>
+            <fileset refid="webinf.fileset" />
+            <fileset refid="overlay.webinf.fileset" />
+            <fileset refid='customer.webinf.fileset' />
+        </copy>
+
+        <copy todir='${webapp.dir}/WEB-INF/classes' verbose='${sync.verbose}'>
+            <fileset refid="src.props.fileset" />
+            <fileset refid="overlay.src.props.fileset" />
+            <fileset refid="messages.fileset" />
+            <fileset refid="overlay.messages.fileset" />
+            <fileset dir='${build.classes.dir}'/>
+        </copy>
+
+        <copy todir="${webapp.dir}/WEB-INF/lib" verbose="${sync.verbose}">
+            <fileset dir='${lib.dir}' includes='gifencoder.jar'/>
+            <fileset dir='${soap.build.dir}' includes='zimbrasoap.jar'/>
+            <fileset file="${client.jarfile}" />
+            <fileset dir='${taglib.build.dir}' includes='zimbrataglib.jar'/>
+            <fileset dir='${server.build.dir}' includes='zimbrastore.jar'/>
+        </copy>
+
+        <!-- primary files from source trees -->
         <copy todir='${webapp.dir}' verbose='${sync.verbose}'>
-            <fileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes},${customer.web.files}' />
-            <fileset dir='${build.web.dir}' excludes='js/*${depends.ext}'/>
+            <fileset refid="web.fileset" />
+            <fileset refid="overlay.web.fileset" />
             <fileset refid='customer.web.fileset'/>
         </copy>
+
         <copy todir='${webapp.dir}/public' verbose='${sync.verbose}'>
-            <fileset dir='${jsp.dir}' includes='${jsp.includes}' excludes='${jsp.excludes}'/>
+            <fileset refid="jsp.fileset" />
+            <fileset refid="overlay.jsp.fileset" />
+            <fileset refid="customer.jsp.fileset" />
         </copy>
-        <!--tiny_mce-->
-        <copy todir='${webapp.dir}/tiny_mce/${tinymce.version}/plugins' verbose='${sync.verbose}'>
-            <fileset dir='${tinymce.zplugins.dir}' includes='**'/>
-        </copy>
+
         <copy todir='${webapp.dir}/img' verbose='${sync.verbose}'>
-            <fileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}'/>
+            <fileset refid="img.fileset" />
+            <fileset refid="overlay.img.fileset" />
         </copy>
+
         <copy todir='${webapp.dir}/skins' verbose='${sync.verbose}'>
-            <fileset dir='${skins.dir}' excludes='*/img/**/_*/**' />
+            <fileset refid="skins.fileset" />
+            <fileset refid="overlay.skins.fileset" />
         </copy>
+
 		<copy todir='${webapp.dir}/help'>
 			<fileset refid='help.fileset' />
 			<fileset refid='network.help.fileset' />
 		</copy>
-		<copy todir='${webapp.dir}/WEB-INF' verbose='${sync.verbose}'>
-			<fileset dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes},${customer.webinf.files}'/>
-			<fileset refid='customer.webinf.fileset' />
-        </copy>
-        <copy todir="${webapp.dir}/WEB-INF/lib" verbose="${sync.verbose}">
-            <fileset file="${taglib.build.dir}/zimbrataglib.jar" />
-        </copy>
-        <copy todir='${webapp.dir}/WEB-INF/classes' verbose='${sync.verbose}'>
-            <fileset dir='${build.classes.dir}'/>
+
+        <copy todir='${webapp.dir}/tiny_mce/${tinymce.version}/plugins' verbose='${sync.verbose}'>
+            <fileset dir='${tinymce.zplugins.dir}' includes='**'/>
         </copy>
 
-        <copy todir='${webapp.dir}/WEB-INF/classes' verbose='${sync.verbose}'>
-            <fileset dir='${web.dir}' includes='messages/**,keys/**'/>
+        <!-- files from build tree -->
+        <copy todir='${webapp.dir}' verbose='${sync.verbose}'>
+            <fileset dir='${build.web.dir}' excludes='js/*${depends.ext}'/>
         </copy>
 
+        <!-- replace web.xml tokens -->
 		<antcall target='webxml-package-replace' />
 		<copy tofile="${webapp.dir}/WEB-INF/web.xml" file='${build.dir}/web.xml' verbose='${sync.verbose}'/>
         <antcall target='webxml-deploy-replace'/>
@@ -311,6 +378,7 @@
 
     <target name='init' depends='client,dev,customer-init'>
         <!-- properties based on props set in client/admin/prod/dev targets -->
+        <property name='deploy.server' value='jetty'/>
         <property name='build.war.dir' value='${build.dist.dir}/${deploy.server}/webapps'/>
         <property name='build.war.file' value='${build.war.dir}/${deploy.app}.war'/>
         <property name='deploy.dir' value='/opt/zimbra/${deploy.server}/webapps'/>
@@ -351,6 +419,44 @@
             </not>
         </condition>
 
+        <!-- common filesets -->
+        <fileset id="src.props.fileset" dir='${src.dir}' includes='**/*.properties' />
+        <fileset id="overlay.src.props.fileset" erroronmissingdir="false"
+                 dir='${overlay.dir}/${src.dir}' includes='**/*.properties' />
+
+        <fileset id="web.fileset" dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes},${customer.web.files}' />
+        <fileset id="overlay.web.fileset" erroronmissingdir="false"
+                 dir='${overlay.dir}/${web.dir}' includes='${web.includes}' excludes='${web.excludes},${customer.web.files}' />
+
+        <fileset id="jsp.fileset" dir='${jsp.dir}' includes='${jsp.includes}' excludes='${jsp.excludes}' />
+        <fileset id="overlay.jsp.fileset" erroronmissingdir="false"
+                 dir='${overlay.dir}/${jsp.dir}' includes='${jsp.includes}' excludes='${jsp.excludes}' />
+
+        <fileset id="img.fileset" dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}' />
+        <fileset id="overlay.img.fileset" erroronmissingdir="false"
+                 dir='${overlay.dir}/${img.dir}' includes='${img.includes}' excludes='${img.excludes}' />
+
+        <fileset id="messages.fileset" dir='${web.dir}' includes='messages/**,keys/**' />
+        <fileset id="overlay.messages.fileset" erroronmissingdir="false"
+                 dir='${overlay.dir}/${web.dir}' includes='messages/**,keys/**' />
+
+        <fileset id="webinf.fileset" dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes},${customer.webinf.files}' />
+        <fileset id="overlay.webinf.fileset" erroronmissingdir="false"
+                 dir='${overlay.dir}/${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes},${customer.webinf.files}' />
+
+        <fileset id="skins.fileset" dir='${skins.dir}' excludes='*/img/**/_*/**' />
+        <fileset id="overlay.skins.fileset" erroronmissingdir="false"
+                 dir='${overlay.dir}/${skins.dir}' excludes='*/img/**/_*/**' />
+
+        <fileset id="template.fileset" dir='${template.dir}' includes='**/*.template' />
+        <fileset id="overlay.template.fileset" erroronmissingdir="false"
+                 dir='${overlay.dir}/${template.dir}' includes='**/*.template' />
+
+        <fileset id="package.fileset" dir='${js.dir}' includes='${jam.includes}' excludes='${jam.excludes}' />
+        <fileset id="overlay.package.fileset" erroronmissingdir="false"
+                 dir='${overlay.dir}/${js.dir}' includes='${jam.includes}' excludes='${jam.excludes}' />
+
+        <!-- build dir initialization -->
         <property name='properties.file' value='${build.dir}/build.properties'/>
 
         <mkdir dir='${build.dir}'/>
@@ -458,7 +564,7 @@
     <target name='compile' depends='init,external'>
         <mkdir dir='${build.classes.dir}'/>
         <javac destdir="${build.classes.dir}" classpathref="class.path" debug="true" target="1.6">
-            <src location='${java.dir}'/>
+            <src location='${src.dir}'/>
         </javac>
     </target>
 
@@ -471,7 +577,8 @@
         <property name='templates.done' value='${build.dir}/templates.done'/>
 
         <dependset>
-            <srcfileset dir='${template.dir}' includes='**/*.template'/>
+            <srcfileset refid="template.fileset" />
+            <srcfileset refid="overlay.template.fileset" />
             <srcfileset dir='${skins.dir}' includes='**/*.template'/>
             <targetfileset dir='${build.template.dir}' includes='**/*.template.js'/>
             <targetfileset dir='${build.classes.dir}/messages/AjxTemplateMsg*.properties' />
@@ -512,6 +619,12 @@
 		            <param name="destdir" value="${build.classes.dir}/messages" />
 		            <param name="authoritative" value="false" />
 	            </antcall>
+                <antcall target="templates-generate">
+                    <param name="srcdir" value="${overlay.dir}/${template.dir}" />
+                    <param name="gendir" value="${build.template.dir}" />
+                    <param name="destdir" value="${build.classes.dir}/messages" />
+                    <param name="authoritative" value="false" />
+                </antcall>
 	            <dirset id="skin.dirs" dir="${skins.dir}" includes="*" excludes="_*" />
 	            <pathconvert property="skin.names" refid="skin.dirs" pathsep=",">
 		            <flattenmapper />
@@ -536,13 +649,16 @@
 	<target name='templates-generate'>
 		<echo>srcdir: ${srcdir}, gendir: ${gendir}, destdir: ${destdir}, authoritative: ${authoritative}</echo>
 		<template destdir='${gendir}' authoritative="${authoritative}">
-		    <fileset dir='${srcdir}' includes='${template.includes}' excludes='**/*_*.template,${template.excludes}'/>
+		    <fileset dir='${srcdir}' erroronmissingdir="false"
+                     includes='${template.includes}' excludes='**/*_*.template,${template.excludes}' />
 		</template>
 		<template destdir='${gendir}' format="properties">
-		    <fileset dir='${srcdir}' includes='**/*_*.template' excludes='${template.excludes}'/>
+		    <fileset dir='${srcdir}' erroronmissingdir="false"
+                     includes='**/*_*.template' excludes='${template.excludes}' />
 		</template>
-		<fileset id='templates.fileset' dir='${srcdir}' includes='**/*_*.template' />
-		<pathconvert property='locids' refid='templates.fileset' pathsep=','>
+		<fileset id='templates-generate.fileset' erroronmissingdir="false"
+                 dir='${srcdir}' includes='**/*_*.template' />
+		<pathconvert property='locids' refid='templates-generate.fileset' pathsep=','>
 			<regexpmapper from="^.*/.*?_(.*).template" to="\1" />
 		</pathconvert>
 		<for list="${locids}" param="locid">
@@ -620,7 +736,7 @@
         <property name='i18n.msgs.file' value='${i18n.msgs.dir}/I18nMsg.properties'/>
 
         <dependset>
-            <srcfileset dir='${java.dir}' includes='**/i18n/GenerateData*.java'/>
+            <srcfileset dir='${src.dir}' includes='**/i18n/GenerateData*.java'/>
             <targetfilelist dir='.' files='${i18n.msgs.file}'/>
         </dependset>
 
@@ -702,7 +818,7 @@
 		<!-- delete output files if files changed -->
 		<dependset>
 			<srcfileset dir='${srcdir}' includes='*/**' />
-			<srcfileset dir='${java.dir}' includes='**/img/*.java' />
+			<srcfileset dir='${src.dir}' includes='**/img/*.java' />
 			<targetfileset dir='${destdir}' includes='${build.css.file}*.css,${build.css.file}*.js' />
 		</dependset>
 		<!-- merge images, if needed -->
@@ -715,7 +831,7 @@
 							jsfile='${build.css.filename}.js'>
 					<dirset dir='${srcdir}' includes='*' excludes='?*_??,?*_??_??' />
 				</imagemerge>
-				<replace token="@jsVersion@" value="${build.simpleDate}" file='${destdir}/${build.css.filename}'/>
+				<!-- <replace token="@jsVersion@" value="${build.simpleDate}" file='${destdir}/${build.css.filename}'/> Moved to SkinResources servlet -->
 
 				<!-- other locale images -->
 				<dirset id='this.images.l10n.dirset' dir='${srcdir}' includes='?*_??,?*_??_??' />
@@ -732,9 +848,9 @@
 											jsfile='${build.css.filename}.js'>
 									<dirset dir='${srcdir}' includes='?*_@{locale}' />
 								</imagemerge>
-								<replace token="@jsVersion@" value="${build.simpleDate}"
+								<!-- <replace token="@jsVersion@" value="${build.simpleDate}"
 										 file='${destdir}/${build.css.file}_@{locale}${build.css.ext}'
-								/>
+								/> Moved to SkinResources servlet -->
 							</then>
 						</if>
 					</sequential>
@@ -770,7 +886,7 @@
             <dirset dir='${skinbasedir}/skins/${skindir}' includes='img/**'/>
         </imagemerge>
 
-        <replace token="@jsVersion@" value="${build.simpleDate}" file='${build.this.skin.dir}/${build.css.filename}'/>
+        <!-- <replace token="@jsVersion@" value="${build.simpleDate}" file='${build.this.skin.dir}/${build.css.filename}'/>  Moved to SkinResources servlet -->
     </target>
 
     <target name='build-skin-images-init'>
@@ -849,7 +965,8 @@
         <mkdir dir='${jam.jsp.dir}'/>
 
         <copy todir='${build.js.dir}' flatten='true'>
-            <fileset dir='${js.dir}' includes='${jam.includes}' excludes='${jam.excludes}'/>
+            <fileset refid='package.fileset' />
+            <fileset refid='overlay.package.fileset' />
             <fileset refid='customer.package.fileset' />
         </copy>
 
@@ -873,7 +990,6 @@
         <!-- NOTE: This has to be done in a separate target call so that
                      the property values are isolated from each other. -->
         <foreach target='jam-file' list='${jam-files.list}' param='arg'/>
-        <!--<foreach target='jam-file' list='Zimbra' param='arg' />-->
     </target>
 
     <target name='jam-file'>
@@ -885,7 +1001,7 @@
 
         <packagedependset>
             <srcdependslist dir='.' files='${depends.file}'/>
-            <srcfileset dir='${java.dir}' includes='**/PackageJammerTask.java'/>
+            <srcfileset dir='${src.dir}' includes='**/PackageJammerTask.java'/>
             <targetfilelist dir='.' files='${jam.file}'/>
             <targetfilelist dir='.' files='${jsp.file}'/>
         </packagedependset>
@@ -900,89 +1016,47 @@
                 </condition>
 
                 <property name='jam.template.dir' value='${build.template.dir}'/>
-                <!-- assume no templates included -->
-                <patternset id='jam.template.fileset' excludes='**'/>
-                <!-- packages used by admin -->
-                <if>
-                    <equals arg1='${arg}' arg2='Admin'/>
+
+                <!-- package template includes -->
+                <property name="jam.template.Admin.includes"            value="admin/**" />
+                <property name="jam.template.Ajax.includes"             value="dwt/**" />
+                <property name="jam.template.CalendarCore.includes"     value="calendar/**" />
+                <property name="jam.template.ContactsCore.includes"     value="abook/**" />
+                <property name="jam.template.IM.includes"               value="im/**" />
+                <property name="jam.template.ImportExport.includes"     value="data/**" />
+                <property name="jam.template.MailCore.includes"         value="mail/**" />
+                <property name="jam.template.PreferencesCore.includes"  value="prefs/**" />
+                <property name="jam.template.Startup1_2.includes"       value="dwt/**,zimbra/**,share/**" />
+                <property name="jam.template.TasksCore.includes"        value="tasks/**" />
+                <property name="jam.template.Voicemail.includes"        value="voicemail/**" />
+                <property name="jam.template.Zimbra.includes"           value="zimbra/**" />
+
+                <!-- template fileset -->
+                <if><isset property="jam.template.${arg}.includes" />
                     <then>
-                        <patternset id='jam.template.fileset' includes='admin/**' excludes='**/*_*' />
+                        <propertycopy property="jam.template.includes" from="jam.template.${arg}.includes"
+                                      override="true" silent="true" />
+                        <var name="jam.templates.excludes" value="**/*_*" />
+                        <if><isset property="jam.template.${arg}.excludes" />
+                            <then>
+                                <propertycopy property="jam.template.excludes" from="jam.template.${arg}.excludes"
+                                              override="true" silent="true" />
+                            </then>
+                        </if>
+                        <patternset id='jam.template.fileset'
+                                    includes='${jam.template.includes}' excludes='${jam.template.excludes}' />
                     </then>
+                    <else>
+                        <patternset id='jam.template.fileset' excludes='**'/>
+                    </else>
                 </if>
-                <if>
-                    <equals arg1='${arg}' arg2='Ajax'/>
-                    <then>
-                        <patternset id='jam.template.fileset' includes='dwt/**' excludes='**/*_*' />
-                    </then>
-                </if>
-                <if>
-                    <equals arg1='${arg}' arg2='Zimbra'/>
-                    <then>
-                        <patternset id='jam.template.fileset' includes='zimbra/**' excludes='**/*_*' />
-                    </then>
-                </if>
-                <!-- templates used by mail client -->
-                <if>
-                    <equals arg1='${arg}' arg2='ContactsCore'/>
-                    <then>
-                        <patternset id='jam.template.fileset' includes='abook/**' excludes='**/*_*' />
-                    </then>
-                </if>
-                <if>
-                    <equals arg1='${arg}' arg2='CalendarCore'/>
-                    <then>
-                        <patternset id='jam.template.fileset' includes='calendar/**' excludes='**/*_*' />
-                    </then>
-                </if>
-                <if>
-                    <equals arg1='${arg}' arg2='IM'/>
-                    <then>
-                        <patternset id='jam.template.fileset' includes='im/**' excludes='**/*_*' />
-                    </then>
-                </if>
-                <if>
-                    <equals arg1='${arg}' arg2='MailCore'/>
-                    <then>
-                        <patternset id='jam.template.fileset' includes='mail/**' excludes='**/*_*' />
-                    </then>
-                </if>
-                <if>
-                    <equals arg1='${arg}' arg2='PreferencesCore'/>
-                    <then>
-                        <patternset id='jam.template.fileset' includes='prefs/**' excludes='**/*_*' />
-                    </then>
-                </if>
-                <if>
-                    <equals arg1='${arg}' arg2='Startup1_2'/>
-                    <then>
-                        <patternset id='jam.template.fileset' includes='dwt/**,zimbra/**,share/**' excludes='**/*_*' />
-                    </then>
-                </if>
-                <if>
-                    <equals arg1='${arg}' arg2='TasksCore'/>
-                    <then>
-                        <patternset id='jam.template.fileset' includes='tasks/**' excludes='**/*_*' />
-                    </then>
-                </if>
-                <if>
-                    <equals arg1='${arg}' arg2='Voicemail'/>
-                    <then>
-                        <patternset id='jam.template.fileset' includes='voicemail/**' excludes='**/*_*' />
-                    </then>
-                </if>
-				<if>
-					<equals arg1='${arg}' arg2='ImportExport'/>
-					<then>
-						<patternset id='jam.template.fileset' includes='data/**' excludes='**/*_*' />
-					</then>
-				</if>
 
                 <jammer jsDestFile='${jam.file}' htmlDestFile='${jsp.file}'
                         dependsFile='${depends.file}' output='all'
                         basepath='&lt;%=contextPath%>/js/'
                         extension='.js?v=&lt;%=vers%>'>
                     <prefix output='html'><![CDATA[<%
-String contextPath = request.getContextPath();
+String contextPath = request.getParameter("contextPath") == null ? request.getContextPath() : (String) request.getParameter("contextPath");
 if(contextPath.equals("/")) contextPath = "";
 String vers = (String) request.getAttribute("version");
 if (vers == null) vers = "";
@@ -993,6 +1067,7 @@ if (ext == null) ext = "";
                     <src dir='${customer.web.dir}/js'/>
                     <src dir='${build.js.dir}'/>
                     <src dir='${build.template.dir}'/>
+                    <src dir="${overlay.dir}/${js.dir}" />
                     <src dir='${js.dir}'/>
                     <filelist dir='${build.js.dir}' files='${arg}.js' wrap='${wrap}'/>
                     <!-- include templates, if found -->
@@ -1106,21 +1181,19 @@ if (ext == null) ext = "";
     <target name='help' depends='init' if='build.prod' unless='help.ignore'>
 		<if><isset property='build.network' />
 			<then>
-				<fileset id='network.help.fileset' dir='${network.zwc.help.dir}'
-						 includes='${help.includes}' excludes='${help.excludes}' 
-				/>
+				<fileset id='network.help.fileset' erroronmissingdir="false"
+                         dir='${network.zwc.help.dir}' includes='${help.includes}' excludes='${help.excludes}' />
 				<!-- NOTE:	This allows us to exclude help dirs from the base
 							help dir that are replaced by the network help. -->
-				<dirset id='network.help.dirset' dir='${network.zwc.help.dir}' includes='*/*' />
+				<dirset id='network.help.dirset' erroronmissingdir="false"
+                        dir='${network.zwc.help.dir}' includes='*/*' />
 				<pathconvert property='help.excludes2' pathsep=',' refid="network.help.dirset">
 					<regexpmapper from="^.*/WebRoot/help/(.*)$$" to="\1/**"/>
 				</pathconvert>
 			</then>
 		</if>
-		<fileset id='help.fileset' dir='${help.dir}'
-				 includes='${help.includes}'
-				 excludes='${help.excludes},${help.excludes2}' 
-		/>
+		<fileset id='help.fileset' erroronmissingdir="false"
+                 dir='${help.dir}' includes='${help.includes}' excludes='${help.excludes},${help.excludes2}' />
 	</target>
 
     <target name='deploy' depends='war'>
@@ -1144,6 +1217,7 @@ if (ext == null) ext = "";
         <!-- replace @xyz@ tokens -->
         <replace file="${build.dir}/web.xml" token="@prodMode@" value="${build.prod.value}"/>
         <replace file="${build.dir}/web.xml" token="@jsVersion@" value="${build.simpleDate}"/>
+    	<replace file="${build.dir}/web.xml" token="%%zimbraDefaultAdminSkin%%" value="${webxml.zimbraDefaultAdminSkin}"/>
     </target>
 
     <target name='webxml-deploy-replace' depends='init'>

@@ -152,7 +152,6 @@ function(tag) {
 	var searchFor;
 	switch (appCtxt.getCurrentAppName()) {
 		case ZmApp.CONTACTS:    searchFor = ZmItem.CONTACT; break;
-		case ZmApp.NOTEBOOK:    searchFor = ZmItem.PAGE; break;
 		case ZmApp.CALENDAR:    searchFor = ZmItem.APPT; break;
 		case ZmApp.BRIEFCASE:   searchFor = ZmItem.BRIEFCASE_ITEM; break;
 		case ZmApp.TASKS:       searchFor = ZmItem.TASK; break;

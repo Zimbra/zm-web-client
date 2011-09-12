@@ -64,36 +64,25 @@
 </template>
 
 <template id='share.Widgets#ZmSearchToolBar'>
-	<table border=0 cellpadding=0 cellspacing=0 height='100%'>
+	<table class='ZmSearchToolbarTable'>
 		<tr>
-			<td id='${id}_inputField' class='ZmSearchToolbarCell'></td>
 			<td id='${id}_searchMenuButton' class='ZmSearchToolbarCell'></td>
-			<td id='${id}_searchButton' hint='text' class='ZmSearchToolbarCell'></td>
+			<td>
+                <div class='ZmSearchToolbarDiv'>
+				    <div id='${id}_inputField' style='margin-right:20px'></div>
+				    <div id='${id}_searchButton' hint='icon' style='position:absolute;right:4px;top:2px;'></div>
+				</div>
+			</td>
 			<!-- UNCOMMENT THIS IF YOU WANT CUSTOM SEARCH TO APPEAR AS A SEPARATE BUTTON ON SEARCH TOOLBAR
 			<td class='ZmSearchToolbarSeparatorCell'><div id='${id}_customSearchButtonSep' class='vertSep' style='display:none'></div></td>
 			<td id='${id}_customSearchButton' class='ZmSearchToolbarCell'></td>
-			-->
 			<td class='ZmSearchToolbarSeparatorCell'><div class='vertSep'></div></td>
-			<td id='${id}_saveButton' hint='text' class='ZmSearchToolbarCell'></td>
+			-->
+			<td id='${id}_saveButton' hint='icon' class='ZmSearchToolbarCell'></td>
+            <!-- UNCOMMENT THIS FOR THE ADVANCED BUTTONS TO APPEAR
 			<td class='ZmSearchToolbarSeparatorCell'><div class='vertSep'></div></td>
 			<td id='${id}_advancedButton' hint='text' class='ZmSearchToolbarCell'></td>
-		</tr>
-	</table>
-</template>
-
-<template id='share.Widgets#ZmPeopleSearchToolBar'>
-	<table border=0 cellpadding=0 cellspacing=0 width='100%' height='100%'>
-		<tr>
-			<td>
-				<div width='100%' class='ZmPeopleSearchToolbarDiv'>
-					<table border=0 cellpadding=0 cellspacing=0 class='ZmPeopleSearchToolbarTable'>
-						<tr>
-							<td id='${id}_inputField' width='100%'></td>
-							<td><$= AjxImg.getImageHtml("Search2") $></td>
-						</tr>
-					</table>
-				</div>
-			</td>
+			-->
 		</tr>
 	</table>
 </template>
@@ -186,6 +175,12 @@
 </template>
 
 <template id='share.Widgets#ZmDumpsterDialog'>
+	<table>
+		<tr>
+			<td id='${id}_inputContainerId' class="DumpsterSearchInput"></td>
+			<td id='${id}_searchButtonContainerId'></td>
+		</tr>
+	</table>
 	<div id='${id}_toolbar'></div>
 	<div id='${id}_listview'></div>
 </template>

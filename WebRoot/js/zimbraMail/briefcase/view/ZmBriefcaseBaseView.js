@@ -71,7 +71,7 @@ function(list, item){
 ZmBriefcaseBaseView.prototype._changeListener =
 function(ev) {
 
-	if ((ev.type != this.type) && (ZmList.MIXED != this.type)) { return; }
+	if (ev.type != this.type) { return; }
 
 	var items = ev.getDetail("items");
 

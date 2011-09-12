@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -424,10 +424,11 @@ function(contact, isGal, oldContact, expandDL) {
 	var folder = folderId ? appCtxt.getById(folderId) : null;
 	var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
 
+	var addrBook = contact.getAddressBook(); 
 	var subs = {
 		id: this._htmlElId,
 		contact: contact,
-		addrbook: contact.getAddressBook(),
+		addrBook: addrBook,
 		contactHdrClass: (ZmOrganizer.COLOR_TEXT[color] + "Bg"),
 		isInTrash: (folder && folder.isInTrash())
 	};
@@ -435,9 +436,11 @@ function(contact, isGal, oldContact, expandDL) {
 	if (contact.isGroup()) {
 		this._groupObjectManager.reset();
 
-		subs.folderIcon = contact.addrbook.getIcon();
-		subs.folderName = contact.addrbook.getName();
-		subs.groupMembers = contact.getGroupMembers().all.getArray();
+		if (addrBook) {
+			subs.folderIcon = addrBook.getIcon();
+			subs.folderName = addrBook.getName();
+		}
+		subs.groupMembers = contact.getGroupMembersObj();
 		subs.findObjects = AjxCallback.simpleClosure(this.__findObjects, this, this._groupObjectManager);
 
 		this._resetVisibility(true);
@@ -592,7 +595,7 @@ function(data) {
 				var name = [prefix, suffix, count > 1 ? count : ""].join("");
 				var value = data.attrs[name];
 				if (!value) { continue; }
-				value = AjxStringUtil.htmlEncode(value); 
+				value = AjxStringUtil.htmlEncode(value);
 				if (!itemListData.address)  {
 					itemListData.address = {};
 				}
@@ -726,22 +729,43 @@ function(data) {
 	return html.join("");
 };
 
+/**
+ * Displays contact group
+ * @param data  {object}
+ * @return html {String} html representation of group
+ */
 ZmContactSplitView.showContactGroup =
 function(data) {
-
-	var itemListData = ZmContactSplitView._getListData(data, ZmMsg.emailLabel, ZmObjectManager.EMAIL);
-	itemListData.attrs = {};
-	itemListData.name = "email";
-	itemListData.addone = false;
 	var html = [];
 	for (var i = 0; i < data.groupMembers.length; i++) {
-		var address = data.groupMembers[i];
-		itemListData.attrs.email = address.getAddress();
-		itemListData.type = address.getName() || address.getDispName();
-		html.push(ZmContactSplitView._showContactListItem(itemListData));
+		var itemListData = {};
+		var type = data.groupMembers[i].type;
+		if (type == ZmContact.GROUP_GAL_REF || type == ZmContact.GROUP_CONTACT_REF) {
+			var contact = ZmContact.getContactFromCache(data.groupMembers[i].value);
+			if (contact) {
+				itemListData.imageUrl = contact.getImageUrl();
+				itemListData.imgClassName = "Person_48";
+				itemListData.email = data.findObjects(contact.getEmail(), ZmObjectManager.EMAIL);
+				itemListData.title = data.findObjects(contact.getAttr(ZmContact.F_jobTitle), ZmObjectManager.TITLE);
+				itemListData.phone = data.findObjects(contact.getPhone(), ZmObjectManager.PHONE);
+				var isPhonetic  = appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS);
+                var fullnameHtml= contact.getFullNameForDisplay(isPhonetic);
+				if (!isPhonetic) {
+					fullnameHtml = AjxStringUtil.htmlEncode(fullnameHtml);
+				}
+				itemListData.fullName = fullnameHtml;
+			}
+			
+			html.push(AjxTemplate.expand("abook.Contacts#SplitView_group", itemListData));
+		}
+		else {
+			itemListData.imgClassName = "PersonInline_48";
+			itemListData.email = data.findObjects(data.groupMembers[i].value, ZmObjectManager.EMAIL);
+			html.push(AjxTemplate.expand("abook.Contacts#SplitView_group", itemListData));
+		}
 	}
-
 	return html.join("");
+	
 };
 
 ZmContactSplitView.prototype._showDL =
@@ -1059,8 +1083,7 @@ function() {
 
 /**
  * A contact is normally displayed in a list view with no headers, and shows
- * just an icon and name. The mixed list view has headers, and the row can
- * be built in the standard way.
+ * just an icon and name.
  *
  * @param {ZmContact}	contact	the contact to display
  * @param {Hash}	params	a hash of optional parameters
@@ -1071,9 +1094,6 @@ ZmContactSimpleView.prototype._createItemHtml =
 function(contact, params) {
 
 	params = params || {};
-	if (params.isMixedView) {
-		return ZmContactsBaseView.prototype._createItemHtml.apply(this, arguments);
-	}
 
 	var div = this._getDiv(contact, params);
 
@@ -1147,26 +1167,6 @@ function(contact, params) {
 	div.innerHTML = htmlArr.join("");
 
 	return div;
-};
-
-// mixed view
-/**
- * @private
- */
-ZmContactSimpleView.prototype._getCellContents =
-function(htmlArr, idx, contact, field, colIdx, params) {
-	if (field == ZmItem.F_FROM) {
-		// Name (fileAs)
-		htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
-	} else if (field == ZmItem.F_SUBJECT) {
-		// Company
-		htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getCompanyField());
-	} else if (field == ZmItem.F_DATE) {
-		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now, contact.modified);
-	} else {
-		idx = ZmContactsBaseView.prototype._getCellContents.apply(this, arguments);
-	}
-	return idx;
 };
 
 /**

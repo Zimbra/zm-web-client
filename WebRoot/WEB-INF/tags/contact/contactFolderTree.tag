@@ -49,10 +49,24 @@
 			<c:set var="myCard" value="${mailbox.myCard}"/>
 			<c:set var="myCardSelected" value="${not empty myCard and myCard.id eq param.id and not empty param.actionEdit}" scope="request"/>
 
-            <app:doContactFolderTree skiproot="${false}" skipsystem="false" skiptrash="true"/>
+            <app:contactFolder folder="${mailbox.contacts}"/>
 			<c:if test="${not empty myCard}">
 				<app:myCardFolder myCard="${myCard}"/>
 			</c:if>
+            <%--
+                Display the children of Contact folder, if any. Folders with unknown view also get listed.
+            --%>
+            <app:doContactFolderTree skiproot="${true}" parentid="${mailbox.contacts.id}" skipsystem="false" skiptopsearch="true"/>
+
+            <%--
+                Rest of the address book folders, do not display folders with unknown view here.
+            --%>
+            <zm:forEachFolder var="folder" skiproot="${true}" skipsystem="${true}" expanded="${sessionScope.expanded}" skiptrash="${true}">
+                <c:if test="${not folder.isSearchFolder and folder.isContactView}">
+                    <app:contactFolder folder="${folder}"/>
+                </c:if>
+            </zm:forEachFolder>
+            
             <app:overviewFolder types="contact" folder="${mailbox.trash}"/>
             <app:doContactFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
         </c:if>

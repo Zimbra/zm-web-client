@@ -470,15 +470,8 @@ function(htmlArr, idx, task, field, colIdx, params) {
 		htmlArr[idx++] = ZmCalItem.getImageForPriority(task, params.fieldId);
 		htmlArr[idx++] = "</center>";
 
-	} else if (params.isMixedView && (field == ZmItem.F_FROM)) {
-		htmlArr[idx++] = task.organizer || "&nbsp";
-
 	} else if (field == ZmItem.F_SUBJECT) {
-		if (params.isMixedView) {
-			htmlArr[idx++] = task.name ? AjxStringUtil.htmlEncode(task.name, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
-		} else {
-			htmlArr[idx++] = AjxStringUtil.htmlEncode(task.getName(), true);
-		}
+		htmlArr[idx++] = AjxStringUtil.htmlEncode(task.getName(), true);
 
 	} else if (field == ZmItem.F_STATUS) {
 		htmlArr[idx++] = ZmCalItem.getLabelForStatus(task.status);
@@ -641,7 +634,7 @@ ZmTaskListView.prototype.checkTaskReplenishListView = function() {
 
 ZmTaskListView.prototype._changeListener =
 function(ev) {
-	if ((ev.type != this.type) && (ZmList.MIXED != this.type))
+	if (ev.type != this.type)
 		return;
 
     //TODO: Optimize ChangeListener logic

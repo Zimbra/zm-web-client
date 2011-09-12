@@ -68,20 +68,6 @@ function(type) {
 	if (!this._results) {
 		// probably got an exception - return an empty list
 		return ZmItem.RESULTS_LIST[type](this.search);
-	}
-	if (type == ZmItem.MIXED) {
-		// mail list - lazy way to make it easy to do mail ops on items
-		var list = new ZmMailList(ZmItem.MIXED, this.search);
-		for (var type in this._results) {
-			var results = this._results[type];
-			if (results && results.size()) {
-				var a = results.getArray();
-				for (var j = 0; j < a.length; j++) {
-					list.add(a[j]);
-				}
-			}
-		}
-		return list;
 	} else if (this.search.idsOnly) {
 		return this._results;
 	} else {
@@ -218,10 +204,6 @@ function(respEl) {
 	currentType = currentType || defaultType;
 	if (numTypes <= 1) {
 		this.type = currentType;
-	} else if (numTypes == 2 && (foundType[ZmItem.PAGE] || foundType[ZmItem.DOCUMENT])) {
-		this.type = ZmItem.PAGE;	// notebook search can return either/both
-	} else {
-		this.type = appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED) ? ZmItem.MIXED : currentType;
 	}
 
 	return this.type;

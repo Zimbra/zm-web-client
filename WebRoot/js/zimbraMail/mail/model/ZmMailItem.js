@@ -110,7 +110,7 @@ function() {
 ZmMailItem.prototype._getFlags =
 function() {
 	var list = ZmItem.prototype._getFlags.call(this);
-	list.push(ZmItem.FLAG_UNREAD, ZmItem.FLAG_REPLIED, ZmItem.FLAG_FORWARDED, ZmItem.FLAG_READ_RECEIPT_SENT);
+	list.push(ZmItem.FLAG_UNREAD, ZmItem.FLAG_REPLIED, ZmItem.FLAG_FORWARDED, ZmItem.FLAG_READ_RECEIPT_SENT, ZmItem.FLAG_PRIORITY);
 	return list;
 };
 

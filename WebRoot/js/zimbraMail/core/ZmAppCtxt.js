@@ -351,9 +351,9 @@ function() {
  * @return	{DwtMessageDialog}	the message dialog
  */
 ZmAppCtxt.prototype.getYesNoMsgDialog =
-function() {
+function(id) {
 	if (!this._yesNoMsgDialog) {
-		this._yesNoMsgDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]});
+		this._yesNoMsgDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON], id: "YesNoMsgDialog"});
 	}	
 	return this._yesNoMsgDialog;
 };
@@ -422,6 +422,19 @@ function() {
 		this._newTagDialog = new ZmNewTagDialog(this._shell);
 	}
 	return this._newTagDialog;
+};
+
+/**
+ * Gets the new contact group dialog.
+ *
+ * @return	{ZmNewContactGroupDialog}	the new contact group dialog
+ */
+ZmAppCtxt.prototype.getNewContactGroupDialog =
+function() {
+	if (!this._newContactGroupDialog) {
+		this._newContactGroupDialog = new ZmNewContactGroupDialog(this._shell);
+	}
+	return this._newContactGroupDialog;
 };
 
 /**
@@ -496,20 +509,6 @@ function() {
 };
 
 /**
- * Gets the new notebook dialog.
- * 
- * @return	{ZmNewNotebookDialog}		the new notebook dialog
- */
-ZmAppCtxt.prototype.getNewNotebookDialog =
-function() {
-	if (!this._newNotebookDialog) {
-		AjxDispatcher.require(["NotebookCore", "Notebook"]);
-		this._newNotebookDialog = new ZmNewNotebookDialog(this._shell);
-	}
-	return this._newNotebookDialog;
-};
-
-/**
  * Gets the new task folder dialog.
  * 
  * @return	{ZmNewTaskFolderDialog}		the new task folder dialog
@@ -521,20 +520,6 @@ function() {
 		this._newTaskFolderDialog = new ZmNewTaskFolderDialog(this._shell);
 	}
 	return this._newTaskFolderDialog;
-};
-
-/**
- * Gets the page conflict dialog.
- * 
- * @return	{ZmPageConflictDialog}		the page conflict dialog
- */
-ZmAppCtxt.prototype.getPageConflictDialog =
-function() {
-	if (!this._pageConflictDialog) {
-		AjxDispatcher.require(["NotebookCore", "Notebook"]);
-		this._pageConflictDialog = new ZmPageConflictDialog(this._shell);
-	}
-	return this._pageConflictDialog;
 };
 
 /**
@@ -648,7 +633,7 @@ function() {
 ZmAppCtxt.prototype.getLinkPropsDialog =
 function() {
 	if (!this._linkPropsDialog) {
-		AjxDispatcher.require("Share");
+		AjxDispatcher.require("Extras");
 		this._linkPropsDialog = new ZmLinkPropsDialog(this._shell);
 	}
 	return this._linkPropsDialog;
@@ -747,14 +732,70 @@ function() {
 };
 
 /**
+ * Gets the priority message filter dialog.
+ * 
+ * @return {ZmPriorityMessageFilterDialog}  the priority message filter dialog
+ */
+ZmAppCtxt.prototype.getPriorityMessageFilterDialog = 
+function() {
+	if (!this._priorityMessageFilterDialog) {
+		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
+		this._priorityMessageFilterDialog = new ZmPriorityMessageFilterDialog();
+	}
+	return this._priorityMessageFilterDialog;
+};
+
+/**
+ * Gets the prompt dialog for running priority message filters
+ * 
+ * @return {ZmPriorityMesagePromptDialog} the priority message prompt dialog
+ */
+ZmAppCtxt.prototype.getPriorityMessagePromptDialog = 
+function() {
+	if (!this._priorityMessagePromptDialog) {
+		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
+		this._priorityMessagePromptDialog = new ZmPriorityMessagePromptDialog();		
+	}
+	return this._priorityMessagePromptDialog;
+};
+
+/**
+ * Gets the activity stream prompt dialog for running activity stream filters
+ * 
+ * @return {ZmActivityStreamPromptDialog}
+*/
+ZmAppCtxt.prototype.getActivityStreamFilterDialog = 
+function() {
+	if (!this._activityStreamFilterDialog) {
+		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
+		this._activityStreamFilterDialog = new ZmActivityStreamPromptDialog();
+	}
+	return this._activityStreamFilterDialog;
+};
+
+/**
+ * Gets the quickadd dialog for creating a contact
+ * 
+ * @return {ZmContactQuickAddDialog}
+ */
+ZmAppCtxt.prototype.getContactQuickAddDialog = 
+function() {
+	if (!this._contactQuickAddDialog) {
+		AjxDispatcher.require(["ContactsCore", "Contacts"]);
+		this._contactQuickAddDialog = new ZmContactQuickAddDialog();
+	}
+	return this._contactQuickAddDialog;
+};
+
+/**
  * Gets the confirm dialog.
  * 
  * @return	{DwtConfirmDialog}		the confirmation dialog
  */
 ZmAppCtxt.prototype.getConfirmationDialog =
-function() {
+function(id) {
 	if (!this._confirmDialog) {
-		this._confirmDialog = new DwtConfirmDialog(this._shell);
+		this._confirmDialog = new DwtConfirmDialog(this._shell, null, id);
 	}
 	return this._confirmDialog;
 };
@@ -771,20 +812,6 @@ function() {
 		this._uploadDialog = new ZmUploadDialog(this._shell);
 	}
 	return this._uploadDialog;
-};
-
-/**
- * Gets the import dialog.
- * 
- * @return	{ZmImportDialog}		the import dialog
- */
-ZmAppCtxt.prototype.getImportDialog =
-function() {
-	if (!this._importDialog) {
-		AjxDispatcher.require(["NotebookCore", "Notebook"]);
-		this._importDialog = new ZmImportDialog(this._shell);
-	}
-	return this._importDialog;
 };
 
 /**
@@ -810,6 +837,21 @@ function() {
 	}
 	return this._dumpsterDialog;
 };
+
+
+/**
+ * Gets the mail redirect dialog.
+ *
+ * @return	{ZmMailRedirectDialog}	the new mail redirect dialog
+ */
+ZmAppCtxt.prototype.getMailRedirectDialog =
+function() {
+	if (!this._mailRedirectDialog) {
+		this._mailRedirectDialog = new ZmMailRedirectDialog(this._shell);
+	}
+	return this._mailRedirectDialog;
+};
+
 
 /**
  * Runs the attach dialog callbacks.
@@ -847,7 +889,7 @@ function(callback) {
 ZmAppCtxt.prototype.getUploadConflictDialog =
 function() {
 	if (!this._uploadConflictDialog) {
-		AjxDispatcher.require(["NotebookCore", "Notebook"]);
+		AjxDispatcher.require(["Extras"]);
 		this._uploadConflictDialog = new ZmUploadConflictDialog(this._shell);
 	}
 	return this._uploadConflictDialog;
@@ -1458,6 +1500,7 @@ function() {
  */
 ZmAppCtxt.prototype.notifyZimlets =
 function(event, args, options) {
+	this.notifySkin(event, args, options); // Also notify skin
 
 	var context = this.isChildWindow ? parentAppCtxt : this;
 
@@ -1472,6 +1515,16 @@ function(event, args, options) {
 
 	return this.getZimletMgr().notifyZimlets(event, args);
 };
+
+ZmAppCtxt.prototype.notifySkin =
+function(event, args, options) {
+	var context = this.isChildWindow ? parentAppCtxt : this;
+	if (options && options.noChildWindow && this.isChildWindow) { return; }
+	try {
+		return window.skin && AjxUtil.isFunction(window.skin.handleNotification) && window.skin.handleNotification(event, args);
+	} catch (e) {}
+};
+
 
 /**
  * Gets the calendar manager.
@@ -1699,30 +1752,6 @@ function(type, account) {
 			this._acCache[acct.id][ZmAutocomplete.AC_TYPE_EQUIPMENT]	=	{};
 		}
 	}
-};
-
-ZmAppCtxt.prototype.setNotifyDebug =
-function(notify) {
-
-    if (!window.isNotifyDebugOn) {
-        return;
-    }
-
-    if (this._notify) {
-        this._notify =  [this._notify, notify, "\n\n"].join("");
-    } else {
-        this._notify = ["\n\n", notify, "\n\n"].join("");
-    }
-};
-
-ZmAppCtxt.prototype.getNotifyDebug =
-function() {
-    return this._notify;
-};
-
-ZmAppCtxt.prototype.clearNotifyDebug =
-function() {
-    this._notify = "";
 };
 
 ZmAppCtxt.prototype.getOutsideMouseEventMgr =
