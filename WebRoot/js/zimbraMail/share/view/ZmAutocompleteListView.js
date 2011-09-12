@@ -135,7 +135,7 @@ ZmAutocompleteListView = function(params) {
 	if (arguments.length == 0) { return; }
 
 	var className = params.className ? params.className : "ZmAutocompleteListView";
-	DwtComposite.call(this, params.parent || appCtxt.getShell(), className, DwtControl.ABSOLUTE_STYLE);
+	DwtComposite.call(this, params.parent || appCtxt.getShell(), className, DwtControl.ABSOLUTE_STYLE, null, this._htmlElId || Dwt.getNextId("ZmAutocompleteListView_") );
 
 	this._dataClass = this._dataAPI = params.dataClass;
 	this._dataLoader = params.dataLoader;
