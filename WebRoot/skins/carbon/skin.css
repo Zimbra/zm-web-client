@@ -703,22 +703,6 @@ TEXTAREA
 }
 
 
-/* styles for the HTML client */
-INPUT[type="text"],
-INPUT[type="password"]		{	@FieldBorder@	}
-SELECT						{	@FieldBorder@	}
-.TabSpacer 					{	display:none;		}
-.Tab						{	white-space:nowrap;	height:30px; padding-right:5px !important;	}
-.TbTop						{	border-width:0 1 1 0 !important; padding-right:5px !important;	}
-.TbBottom					{	border-width:0 1 1 0 !important; padding-right:5px !important;	}
-.TabFiller					{	@AppTabSpacer@ width:100%;	}
-.List .Header TH			{	@RightSeparator@	}
-.ZhSubTabs					{	@TabBar@	}
-.ZhSubTabs					{	padding:5px !important;	}
-.ZhSubTabs .TabSelected		{	@TabBorder-selected@	}
-
-.ZhRow TD,
-.ZhRowOdd TD				{	border-width:0 0 1 0 !important; padding-left:3px !important;	}
 
 /* Quick fix for selected Adv. Search button */
 
@@ -737,11 +721,7 @@ SELECT						{	@FieldBorder@	}
 /* Toast */
 .ZToastText a.undo          {   font-size: 11px;    }
 
-/* HTML Client */
-.link a, .link a:visited{
-	color: white;
-	text-decoration: none;
-}
+
 
 /* Row Displays */
 .Row {
