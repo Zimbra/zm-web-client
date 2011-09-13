@@ -309,7 +309,7 @@ function() {
 		this._headerInit[ZmItem.F_SIZE]			= {text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, sortable:ZmItem.F_SIZE, resizeable:true};
 		this._headerInit[ZmItem.F_DATE]			= {text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE, resizeable:true};
 		this._headerInit[ZmItem.F_SORTED_BY]	= {text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.date), sortable:ZmItem.F_SORTED_BY, resizeable:false};
-		this._headerInit[ZmItem.F_MSG_PRIORITY] = {icon:"Priority", width:ZmListView.COL_WIDTH_ICON, resizable:false, name:ZmMsg.messagePriority};
+		this._headerInit[ZmItem.F_MSG_PRIORITY] = {icon:"Priority", width:ZmListView.COL_WIDTH_ICON, resizable:false, name:ZmMsg.messagePriority, precondition: ZmSetting.PRIORITY_INBOX_ENABLED};
 	}
 };
 

@@ -225,8 +225,10 @@ function(item, colIdx) {
 	if (item.hasAttach) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, width);
 	}
+	if (appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED)) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_MSG_PRIORITY, colIdx, "16", "align=right");	
+	}
 	if (appCtxt.get("FLAGGING_ENABLED")) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_MSG_PRIORITY, colIdx, "16", "align=right");
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, width);
 	}
 	htmlArr[idx++] = "</tr></table>";

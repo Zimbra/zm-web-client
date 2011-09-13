@@ -229,7 +229,10 @@ function(parent, type, id) {
 		}
 	}
 	parent.enable(ZmOperation.BROWSE, true);
-	parent.enable(ZmOperation.PRIORITY_FILTER, true);
+	var priorityInboxEnabled = appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED);
+	var priorityInboxOp = parent.getOp(ZmOperation.PRIORITY_FILTER);
+	priorityInboxOp.setVisible(priorityInboxEnabled);
+	priorityInboxOp.setEnabled(priorityInboxEnabled);	
 	this._enableRecoverDeleted(parent, isTrash);
 
 

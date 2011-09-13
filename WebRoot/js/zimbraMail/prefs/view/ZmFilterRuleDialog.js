@@ -189,7 +189,7 @@ function(parent, segment, i) {
 		var formats = format.getFormats();
 		var values = [ZmFilterRule.GROUP_ANY, ZmFilterRule.GROUP_ALL];
 
-		var select = this._conditionSelect = new DwtSelect({parent:parent});
+		var select = this._conditionSelect = new DwtSelect({parent:parent, id: "FilterRuleGroupCondition_" + ZmFilterRuleDialog.CONDITIONS_INDEX++});
 		for (var i = 0; i < values.length; i++) {
 			// TODO: guard against badly specified message
 			select.addOption(formats[i].toPattern(), i == 0, values[i]);
@@ -399,6 +399,12 @@ function(test, data) {
 			break;
 	}
 
+	//TODO: find a better way to do this.  Preconditions for opsOptions?
+	if (condition == ZmFilterRule.C_SOCIAL) {
+		condition = ZmFilterRule.CONDITIONS[condition];
+		condition.opsOptions = ZmFilterRule.getSocialFilters();
+		return condition;
+	}
 	return (condition ? ZmFilterRule.CONDITIONS[condition] : null);
 };
 
@@ -901,7 +907,7 @@ function(rowId, isCondition) {
 		button.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
 		button.setData(ZmFilterRuleDialog.DO_ADD, (b == "Plus"));
 		button.addSelectionListener(this._plusMinusLstnr);
-		var id = Dwt.getNextId();
+		var id = Dwt.getNextId("TEST_");
 		this._inputs[rowId][b] = {id: id, dwtObj: button};
 		html[j++] = "<td id='";
 		html[j++] = id;

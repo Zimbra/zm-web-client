@@ -37,6 +37,7 @@ function() {
 
 ZmPriorityMessageFilterDialog.prototype._initialize = 
 function() {
+	this._initSocialFilters();
 	var priorityListener = this._onMarkAsPriority.bind(this);
 	var streamListener = this._onMoveMsgIntoStream.bind(this);
 	var socialListener = this._onMentions.bind(this);
@@ -72,16 +73,16 @@ function() {
 	this._frequentEmail = this._priorityMessageForm.getControl("FREQUENTLY_EMAIL");
 	this._convIStart = this._priorityMessageForm.getControl("CONV_I_START");
 	this._mentions = this._priorityMessageForm.getControl("MENTIONS_DIRECT_MESSAGES");
-	this._socialCast = this._priorityMessageForm.getControl("SOCIAL_CAST");
-	this._facebook = this._priorityMessageForm.getControl("FACEBOOK");
-	this._twitter = this._priorityMessageForm.getControl("TWITTER");
-	this._linkedIn = this._priorityMessageForm.getControl("LINKEDIN");
 	this._moveMsgIntoStream = this._priorityMessageForm.getControl("MOVE_MSG_STREAM");
 	this._notToMe = this._priorityMessageForm.getControl("NOT_TO_ME");
 	this._notInMyAddrBk = this._priorityMessageForm.getControl("NOT_IN_ADDR");
 	this._dlSubscribedTo = this._priorityMessageForm.getControl("DL_SUBSCRIBED");
 	this._massMarketing = this._priorityMessageForm.getControl("MASS_MARKETING");
-	this._socialNetworks = [this._socialCast, this._facebook, this._twitter, this._linkedIn];
+	this._facebook = this._priorityMessageForm.getControl("FACEBOOK");
+	this._socialCast = this._priorityMessageForm.getControl("SOCIAL_CAST");
+	this._twitter = this._priorityMessageForm.getControl("TWITTER");
+	this._linkedIn = this._priorityMessageForm.getControl("LINKEDIN");
+	this._socialNetworks = [];
 	
 	this._frequentEmail.addClassName('ZmPriorityFilterCriteria');
 	this._convIStart.addClassName('ZmPriorityFilterCriteria');
@@ -94,10 +95,34 @@ function() {
 	this._priorityAdvanced.addClassName("ZmPriorityFilterCriteria");
 
 	this._priorityHash = {};
-	this._priorityHash[ZmFilterRule.TEST_FACEBOOK] = {control: this._facebook, mentions: true, negative: false};
-	this._priorityHash[ZmFilterRule.TEST_SOCIALCAST] = {control: this._socialCast, mentions: true, negative: false};
-	this._priorityHash[ZmFilterRule.TEST_TWITTER] = {control: this._twitter, mentions: true, negative: false};
-	this._priorityHash[ZmFilterRule.TEST_LINKEDIN] = {control: this._linkedIn, mentions: true, negative: false};
+	if (this._facebookEnabled) {
+		this._socialNetworks.push(this._facebook);
+		this._priorityHash[ZmFilterRule.TEST_FACEBOOK] = {control: this._facebook, mentions: true, negative: false};
+	}
+	else {
+		this._facebook.setVisible(false);
+	}
+	if (this._socialCastEnabled) {		
+		this._socialNetworks.push(this._socialCast);
+		this._priorityHash[ZmFilterRule.TEST_SOCIALCAST] = {control: this._socialCast, mentions: true, negative: false};
+	}
+	else {
+		this._socialCast.setVisible(false);
+	}
+	if (this._twitterEnabled) {		
+		this._socialNetworks.push(this._twitter);
+		this._priorityHash[ZmFilterRule.TEST_TWITTER] = {control: this._twitter, mentions: true, negative: false};
+	}
+	else {
+		this._twitter.setVisible(false);
+	}
+	if (this._linkedInEnabled) {		
+		this._socialNetworks.push(this._linkedIn);
+		this._priorityHash[ZmFilterRule.TEST_LINKEDIN] = {control: this._linkedIn, mentions: true, negative: false};
+	}
+	else {
+		this._linkedIn.setVisible(false);
+	}
 	this._priorityHash[ZmFilterRule.TEST_CONVERSATIONS] = {control: this._convIStart, mentions: false, negative: false, headerValue: "started"};
 	this._priorityHash[ZmFilterRule.TEST_RANKING] = {control: this._frequentEmail, mentions: false, negative: false, headerValue: "from"};
 	
@@ -217,10 +242,18 @@ function() {
 		}
 		var conditions = this._priorityRule.conditions;
 		//initialize checkboxes for conditions
-		this._facebook.setSelected(false);
-		this._socialCast.setSelected(false);
-		this._twitter.setSelected(false);
-		this._linkedIn.setSelected(false);
+		if (this._facebook) {
+			this._facebook.setSelected(false);
+		}
+		if (this._socialCast) {
+			this._socialCast.setSelected(false);
+		}
+		if (this._twitter) {
+			this._twitter.setSelected(false);
+		}
+		if (this._linkedIn) {
+			this._linkedIn.setSelected(false);
+		}
 		this._convIStart.setSelected(false);
 		this._frequentEmail.setSelected(false);
 	
@@ -471,4 +504,28 @@ function(msg) {
 	var msgDialog = appCtxt.getMsgDialog();
 	msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 	msgDialog.popup();
+};
+
+ZmPriorityMessageFilterDialog.prototype._initSocialFilters = 
+function() {	
+	this._facebookEnabled = false;
+	this._twitterEnabled = false;
+	this._linkedInEnabled = false;
+	this._socialCastEnabled = false;
+	this._socialFilters = appCtxt.get(ZmSetting.SOCIAL_FILTERS_ENABLED);
+	for (var i=0; i<this._socialFilters.length; i++) {
+		if (this._socialFilters[i].toLowerCase() == ZmFilterRule.C_FACEBOOK.toLowerCase()) {
+			this._facebookEnabled = true;	
+		}
+		else if (this._socialFilters[i].toLowerCase() == ZmFilterRule.C_TWITTER.toLowerCase()) {
+			this._twitterEnabled = true;	
+		}
+		else if (this._socialFilters[i].toLowerCase() == ZmFilterRule.C_LINKEDIN.toLowerCase()) {
+			this._linkedInEnabled = true;	
+		}
+		else if (this._socialFilters[i].toLowerCase() == ZmFilterRule.C_SOCIALCAST.toLowerCase()) {
+			this._socialCastEnabled = true;	
+		}
+		
+	}	
 };

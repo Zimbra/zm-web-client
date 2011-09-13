@@ -658,11 +658,38 @@ ZmFilterRule.ACTIONS_OUTGOING_LIST = [
 ZmFilterRule._setPreconditions =
 function() {
 	ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG].pOptions[1].precondition = ZmSetting.FLAGGING_ENABLED;
+	ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG].pOptions[2].precondition = ZmSetting.PRIORITY_INBOX_ENABLED;
 	ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG].precondition = ZmSetting.TAGGING_ENABLED;
 	ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD].precondition = [ZmSetting.FILTERS_MAIL_FORWARDING_ENABLED,
 																 ZmSetting.MAIL_FORWARDING_ENABLED];
 	ZmFilterRule.ACTIONS[ZmFilterRule.A_DISCARD].precondition = ZmSetting.DISCARD_IN_FILTER_ENABLED;
 };
+
+/**
+ * Returns array of social filter options based on COS settings
+ * @return {array} social filter options
+ */
+ZmFilterRule.getSocialFilters = 
+function() {
+	var ops = [];
+	var socialFilters = appCtxt.get(ZmSetting.SOCIAL_FILTERS_ENABLED);
+	for (var i=0; i<socialFilters.length; i++) {
+		if (socialFilters[i].toLowerCase() == ZmFilterRule.C_FACEBOOK.toLowerCase()) {
+			ops.push(ZmFilterRule.OP_SOCIAL_FACEBOOK)
+		}
+		else if (socialFilters[i].toLowerCase() == ZmFilterRule.C_TWITTER.toLowerCase() ) {
+			ops.push(ZmFilterRule.OP_SOCIAL_TWITTER);	
+		}
+		else if (socialFilters[i].toLowerCase() == ZmFilterRule.C_LINKEDIN.toLowerCase()) {
+			ops.push(ZmFilterRule.OP_SOCIAL_LINKEDIN);
+		}
+		else if (socialFilters[i].toLowerCase() == ZmFilterRule.C_SOCIALCAST.toLowerCase()) {
+			ops.push(ZmFilterRule.OP_SOCIAL_SOCIALCAST);
+		}
+	}
+	return ops;
+};
+
 
 ZmFilterRule.prototype.toString =
 function() {

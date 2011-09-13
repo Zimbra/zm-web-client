@@ -525,7 +525,12 @@ ZmFilterWork = function(filterSel, outgoing) {
  */
 ZmFilterWork.prototype.getFinishedMessage =
 function(messagesProcessed) {
-	return AjxMessageFormat.format(ZmMsg.filterRuleApplied, [messagesProcessed, this._totalNumMessagesAffected]);
+	if (messagesProcessed) {
+		return AjxMessageFormat.format(ZmMsg.filterRuleApplied, [messagesProcessed, this._totalNumMessagesAffected]);
+	}
+	else {
+		return AjxMessageFormat.format(ZmMsg.filterRuleAppliedBackground, [this._totalNumMessagesAffected]);
+	}
 };
 
 /**
@@ -554,12 +559,13 @@ function(messagesProcessed) {
 
 
 /**
- * do the work. (in this case apply filters).
- * @param msgIds - chunk of message ids to do the work on.
+ * do the work. (in this case apply filters). Either msgIds or query should be set but not both.
+ * @param msgIds {String} chunk of message ids to do the work on.
+ * @param query {String} query to run filter against
  * @param callback
  */
 ZmFilterWork.prototype.doWork =
-function(msgIds, callback) {
+function(msgIds, query, callback) {
 	var filterSel = this._filterSel;
 	var soapDoc = AjxSoapDoc.create(this._outgoing ? "ApplyOutgoingFilterRulesRequest" : "ApplyFilterRulesRequest", "urn:zimbraMail");
 	var filterRules = soapDoc.set("filterRules", null);
@@ -567,13 +573,20 @@ function(msgIds, callback) {
 		var rule = soapDoc.set("filterRule", null, filterRules);
 		rule.setAttribute("name", filterSel[i].name);
 	}
-
-	var m = soapDoc.set("m");
-	m.setAttribute("ids", msgIds.join(","));
+	var noBusyOverlay = false;
+	if (msgIds) {
+		var m = soapDoc.set("m");
+		m.setAttribute("ids", msgIds.join(","));
+	}
+	else {
+		soapDoc.set("query", query);
+		noBusyOverlay = true;
+	}
 
 	var params = {
 		soapDoc: soapDoc,
 		asyncMode: true,
+		noBusyOverlay: noBusyOverlay,
 		callback: (new AjxCallback(this, this._handleRunFilter, [callback]))
 	};
 	appCtxt.getAppController().sendRequest(params);
