@@ -1876,7 +1876,14 @@ function(node) {
 	if (node.email2)	{ this.attr[ZmContact.F_email2] = node.email2; }
 	if (node.email3)	{ this.attr[ZmContact.F_email3] = node.email3; }
 
-	this.type = (this.attr[ZmContact.F_groups] != null) ? ZmItem.GROUP : ZmItem.CONTACT;
+    //the attr groups is returned as [] so check both null and empty array to set the type
+    var groups = this.attr[ZmContact.F_groups];
+    if(!groups || (groups instanceof Array && groups.length == 0)) {
+        this.type = ZmItem.CONTACT;
+    }
+    else {
+        this.type = ZmItem.GROUP;
+    }
 
 	// check if the folderId is found in our address book (otherwise, we assume
 	// this contact to be a shared contact)
