@@ -24,7 +24,6 @@ AjxPackage.require("ajax.dwt.events.DwtDateRangeEvent");
 AjxPackage.require("ajax.dwt.widgets.DwtColorPicker");
 AjxPackage.require("ajax.dwt.widgets.DwtCheckbox");
 AjxPackage.require("ajax.dwt.widgets.DwtRadioButton");
-AjxPackage.require("ajax.dwt.widgets.DwtMessageDialog");
 AjxPackage.require("ajax.dwt.widgets.DwtHtmlEditor");
 AjxPackage.require("ajax.dwt.widgets.DwtPasswordField");
 AjxPackage.require("ajax.dwt.widgets.DwtCalendar");
