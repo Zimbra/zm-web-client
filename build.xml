@@ -32,6 +32,7 @@
 
     <property name="client.dir" location="${this.zwc.basedir}/../ZimbraClient"/>
     <property name="client.build.classes.dir" location="${client.dir}/build/classes" />
+    <property name="client.build.dir" location="${client.dir}/build" />    
     <property name="client.jarfile" location="${client.dir}/build/zimbraclient.jar"/>
 
     <property name='taglib.dir' value='${this.zwc.basedir}/../ZimbraTagLib'/>
@@ -1422,6 +1423,7 @@ if (ext == null) ext = "";
         <pathelement path="${server.dist.dir}/jetty/resources" />
         <fileset dir="${lib.dir}/jsp-2.1" includes="*.jar"/>
         <fileset dir="${taglib.build.dir}" includes="zimbrataglib.jar"/>
+        <fileset dir="${client.build.dir}" includes="zimbraclient.jar"/>
         <fileset dir="${server.dist.dir}/jetty/common/lib" includes="zimbracommon.jar"/>
         <fileset dir="${server.build.dir}" includes="zimbrastore.jar"/>
         <fileset dir="${lib.dir}" includes="standard.jar,servlet-api.jar"/>
