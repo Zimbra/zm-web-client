@@ -409,7 +409,7 @@
     <$ if (nickname && !isEdit) { $>
         <div class='companyName'>&ldquo;<$= AjxStringUtil.htmlEncode(nickname) $>&rdquo;</div>
     <$ } $>
-    <$ else if (nickname && isEdit) {$>
+    <$ else if (isEdit) {$>
        <div class='companyName'><input type='text' autocomplete='off' size=40 id='${id}_groupName' class="Text"></div>
        <div id='${id}_tags' style='padding-top: 5px'></div>
     <$ } $>
