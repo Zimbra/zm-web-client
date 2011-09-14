@@ -581,7 +581,7 @@ ZmTreeController.prototype._createActionMenu =
 function(parent, menuItems) {
 	if (!menuItems) return;
 
-	var actionMenu = new ZmActionMenu({parent:parent, menuItems:menuItems});
+	var actionMenu = new ZmActionMenu({parent:parent, menuItems:menuItems, id: Dwt.getNextId("ZmActionMenu_")});
 	menuItems = actionMenu.opList;
 	for (var i = 0; i < menuItems.length; i++) {
 		var menuItem = menuItems[i];
