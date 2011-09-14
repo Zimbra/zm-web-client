@@ -264,8 +264,9 @@ function() {
 		callbacks[ZmAppViewMgr.CB_PRE_SHOW] = new AjxCallback(this, this._preShowCallback);
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 		this._prefsView = new ZmPrefView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE, controller:this});
-		var elements = this.getViewElements(null, this._prefsView, this._toolbar);
-
+		var elements = {};
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
 		this._app.createView({viewId:this._currentView, elements:elements, callbacks:callbacks, isAppView:true});
 		this._initializeTabGroup();
 	}
@@ -290,9 +291,6 @@ function () {
 		}
 	}
 	this._toolbar.getButton(ZmOperation.SAVE).setToolTipContent(ZmMsg.savePrefs);
-
-	this._setNewButtonProps(this._prefsView, ZmMsg.newMessage, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
-
 };
 
 ZmPrefController.prototype._initializeTabGroup = 
@@ -370,12 +368,12 @@ function(callback, noPop) {
 
 	// save any extra commands that may have been added
 	if (batchCommand.size()) {
-		var respCallback = this._handleResponseSaveListener.bind(this, true, callback, noPop, list);
-		var errorCallback = this._handleResponseSaveError.bind(this);
+		var respCallback = new AjxCallback(this, this._handleResponseSaveListener, [true, callback, noPop]);
+		var errorCallback = new AjxCallback(this, this._handleResponseSaveError);
 		batchCommand.run(respCallback, errorCallback);
 	}
 	else {
-		this._handleResponseSaveListener(list.length > 0, callback, noPop, list);
+		this._handleResponseSaveListener(list.length > 0, callback, noPop);
 	}
 };
 
@@ -396,7 +394,7 @@ function(exception1/*, ..., exceptionN*/) {
 };
 
 ZmPrefController.prototype._handleResponseSaveListener =
-function(optionsSaved, callback, noPop, list, result) {
+function(optionsSaved, callback, noPop, result) {
 	if (optionsSaved) {
 		appCtxt.setStatusMsg(ZmMsg.optionsSaved);
 	}
@@ -417,14 +415,10 @@ function(optionsSaved, callback, noPop, list, result) {
 		callback.run(result);
 	}
 
-	var changed = {};
-	for (var i = 0; i < list.length; i++) {
-		changed[list[i].id] = true;
-	}
 	var postSaveCallbacks = this._prefsView.getPostSaveCallbacks();
 	if (postSaveCallbacks && postSaveCallbacks.length) {
 		for (var i = 0; i < postSaveCallbacks.length; i++) {
-			postSaveCallbacks[i].run(changed);
+			postSaveCallbacks[i].run();
 		}
 	}
 };

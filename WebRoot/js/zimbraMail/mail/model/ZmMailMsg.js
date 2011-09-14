@@ -2,7 +2,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -51,11 +51,8 @@ ZmMailMsg = function(id, list, noCache) {
 ZmMailMsg.prototype = new ZmMailItem;
 ZmMailMsg.prototype.constructor = ZmMailMsg;
 
-ZmMailMsg.prototype.toString = function() {	return "ZmMailMsg"; };
-
 ZmMailMsg.ADDRS = [AjxEmailAddress.FROM, AjxEmailAddress.TO, AjxEmailAddress.CC,
-				   AjxEmailAddress.BCC, AjxEmailAddress.REPLY_TO, AjxEmailAddress.SENDER,
-                   AjxEmailAddress.RESENT_FROM];
+				   AjxEmailAddress.BCC, AjxEmailAddress.REPLY_TO, AjxEmailAddress.SENDER];
 
 ZmMailMsg.COMPOSE_ADDRS = [AjxEmailAddress.TO, AjxEmailAddress.CC, AjxEmailAddress.BCC];
 
@@ -91,10 +88,6 @@ ZmMailMsg.HDR_DATE		= "DATE";
  * Defines the "subject" header.
  */
 ZmMailMsg.HDR_SUBJECT	= "SUBJECT";
-/**
- * Defines the "List-ID" header.
- */
-ZmMailMsg.HDR_LISTID    = "List-ID";
 
 ZmMailMsg.HDR_KEY = {};
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_FROM]		= ZmMsg.from;
@@ -132,8 +125,6 @@ ZmMailMsg.TOOLTIP["CalInviteAccepted"]	= ZmMsg.ptstAccept;
 ZmMailMsg.TOOLTIP["CalInviteDeclined"]	= ZmMsg.ptstDeclined;
 ZmMailMsg.TOOLTIP["CalInviteTentative"]	= ZmMsg.ptstTentative;
 
-// We just hard-code "Re:" or "Fwd:", but other clients may use localized versions
-ZmMailMsg.SUBJ_PREFIX_RE = new RegExp("^\\s*(Re|Fw|Fwd|" + ZmMsg.re + "|" + ZmMsg.fwd + "|" + ZmMsg.fw + "):" + "\\s*", "i");
 
 ZmMailMsg.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/i;
 
@@ -141,7 +132,7 @@ ZmMailMsg.CONTENT_PART_ID = "ci";
 ZmMailMsg.CONTENT_PART_LOCATION = "cl";
 
 // Additional headers to request.  Also used by ZmConv and ZmSearch
-ZmMailMsg.requestHeaders = {listId: ZmMailMsg.HDR_LISTID};
+ZmMailMsg.requestHeaders = {};
 
 /**
  * Fetches a message from the server.
@@ -186,7 +177,7 @@ function(params) {
 
 	for (var hdr in ZmMailMsg.requestHeaders) {
 		if (!m.header) { m.header = []; }
-		m.header.push({n:ZmMailMsg.requestHeaders[hdr]});
+		m.header.push({n:hdr});
 	}
 
 	if (!params.noTruncate) {
@@ -215,16 +206,12 @@ function(callback, result) {
 	}
 };
 
-ZmMailMsg.stripSubjectPrefixes =
-function(subj) {
-	var regex = ZmMailMsg.SUBJ_PREFIX_RE;
-	while (regex.test(subj)) {
-		subj = subj.replace(regex, "");
-	}
-	return subj;
-};
-
 // Public methods
+
+ZmMailMsg.prototype.toString =
+function() {
+	return "ZmMailMsg";
+};
 
 // Getters
 
@@ -462,8 +449,8 @@ function(type, addrs) {
  * @param {AjxEmailAddress}	addr	an address
  */
 ZmMailMsg.prototype.addAddress =
-function(addr, type) {
-	type = type || addr.type || AjxEmailAddress.TO;
+function(addr) {
+	var type = addr.type || AjxEmailAddress.TO;
 	this._addrs[type].add(addr);
 };
 
@@ -697,15 +684,12 @@ function(node, args) {
 ZmMailMsg.prototype.load =
 function(params) {
 	// If we are already loaded, then don't bother loading
-	if ((!this._loaded && !this._loading) || params.forceLoad) {
-		this._loading = true;
+	if (!this._loaded || params.forceLoad) {
 		var respCallback = new AjxCallback(this, this._handleResponseLoad, [params, params.callback]);
 		params.getHtml = params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		params.sender = appCtxt.getAppController();
 		params.msgId = this.id;
 		params.callback = respCallback;
-		var errorCallback = new AjxCallback(this, this._handleResponseLoadFail, [params, params.errorCallback]);
-		params.errorCallback = errorCallback;
 		ZmMailMsg.fetchMsg(params);
 	} else {
 		this._markReadLocal(true);
@@ -717,7 +701,6 @@ function(params) {
 
 ZmMailMsg.prototype._handleResponseLoad =
 function(params, callback, result) {
-	this._loading = false;
 	var response = result.getResponse().GetMsgResponse;
 
 	this.clearAddresses();
@@ -727,15 +710,13 @@ function(params, callback, result) {
 		this.participants.removeAll();
 	}
 
-	// clear all attachments and body data
-	this.attachments.length = this._bodyParts.length = 0;
-	this.findAttsFoundInMsgBodyDone = false;
+	// clear all attachments
+	this.attachments.length = 0;
 
 	this._loadFromDom(response.m[0]);
 	if (!this.isReadOnly() && params.markRead) {
 		this._markReadLocal(true);
 	}
-	this.findAttsFoundInMsgBody();
 
 	// return result so callers can check for exceptions if they want
 	if (this._loadCallback) {
@@ -743,14 +724,6 @@ function(params, callback, result) {
 		this._loadCallback.run(result);
 		this._loadCallback = null;
 	} else if (callback) {
-		callback.run(result);
-	}
-};
-
-ZmMailMsg.prototype._handleResponseLoadFail =
-function(params, callback, result) {
-	this._loading = false;
-	if (callback) {
 		callback.run(result);
 	}
 };
@@ -1242,10 +1215,9 @@ function(nfolder, resp) {
  * @param {Boolean}	requestReadReceipt	if set, a read receipt is sent to *all* recipients
  * @param {ZmBatchCommand} batchCmd		if set, request gets added to this batch command
  * @param {Date} sendTime				if set, tell server that this message should be sent at the specified time
- * @param {Boolean} isAutoSave          if <code>true</code>, this an auto-save draft
  */
 ZmMailMsg.prototype.send =
-function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd, sendTime, isAutoSave) {
+function(isDraft, callback, errorCallback, accountName, noSave, requestReadReceipt, batchCmd, sendTime) {
 
 	var aName = accountName;
 	if (!aName) {
@@ -1280,7 +1252,6 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 			jsonObj: jsonObj,
 			isInvite: false,
 			isDraft: isDraft,
-			isAutoSave: isAutoSave,
 			accountName: aName,
 			callback: (new AjxCallback(this, this._handleResponseSend, [isDraft, callback])),
 			errorCallback: errorCallback,
@@ -1379,10 +1350,6 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 		msgNode.f = ZmItem.FLAG_LOW_PRIORITY;
 	}
 
-	if (this.isPriority) {
-	    msgNode.f = ZmItem.FLAG_PRIORITY;			
-	}
-	
 	if (ZmMailMsg.COMPOSE_ADDRS.length > 0) { // If no addrs, no element 'e'
 		var addrNodes = msgNode.e = [];
 		for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
@@ -1610,7 +1577,7 @@ function(params) {
 	} else {
 		appCtxt.getAppController().sendRequest({jsonObj:params.jsonObj,
 												asyncMode:true,
-												noBusyOverlay:params.isDraft && params.isAutoSave,
+												noBusyOverlay:params.isDraft,
 												callback:respCallback,
 												errorCallback:params.errorCallback,
 												accountName:params.accountName,
@@ -1962,6 +1929,8 @@ function(msgNode) {
 		this._convCreateNode = msgNode._convCreateNode;
 	}
 
+	AjxDebug.println(AjxDebug.NOTIFY, "ZmMailMsg::_loadFromDom - msg ID: " + msgNode.id);
+	AjxDebug.println(AjxDebug.NOTIFY, "cid: " + msgNode.cid + ", folder: " + msgNode.l);
 	if (msgNode.cid && msgNode.l) {
 		var conv = appCtxt.getById(msgNode.cid);
 		if (conv) {
@@ -1973,6 +1942,9 @@ function(msgNode) {
 			if (!conv.msgIds) {
 				conv.msgIds = [this.id];
 			}
+		}
+		else {
+			AjxDebug.println(AjxDebug.NOTIFY, "could not find conv with ID: " + msgNode.cid);
 		}
 	}
 
@@ -2104,6 +2076,7 @@ function () {
 ZmMailMsg.prototype._addAddressNodes =
 function(addrNodes, type, isDraft) {
 
+	var doAdd = appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS);
 	var addrs = this._addrs[type];
 	var num = addrs.size();
 	if (num) {
@@ -2122,6 +2095,10 @@ function(addrNodes, type, isDraft) {
 			var addrNode = {t:AjxEmailAddress.toSoapType[type], a:email};
 			if (name) {
 				addrNode.p = name;
+			}
+			if (contactsApp) {
+				var contact = contactsApp.getContactByEmail(email);
+				addrNode.add = (doAdd && !contact) ? "1" : "0";
 			}
 			addrNodes.push(addrNode);
 		}
@@ -2403,91 +2380,4 @@ function(autoSendTime) {
 	if (Dwt.instanceOf(conv, "ZmConv")) {
 		conv.setAutoSendTime(autoSendTime);
 	}
-};
-
-/**
- * Sends a read receipt.
- * 
- * @param {closure}	callback	response callback
- */
-ZmMailMsg.prototype.sendReadReceipt =
-function(callback) {
-
-	var jsonObj = {SendDeliveryReportRequest:{_jsns:"urn:zimbraMail"}};
-	var request = jsonObj.SendDeliveryReportRequest;
-	request.mid = this.id;
-	var ac = window.parentAppCtxt || window.appCtxt;
-	ac.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:callback});
-};
-
-
-// Execute the mail redirect server side call
-ZmMailMsg.prototype.redirect =
-function(addrs, callback) {
-
-	var jsonObj = {BounceMsgRequest:{_jsns:"urn:zimbraMail"}};
-	var request = jsonObj.BounceMsgRequest;
-	request.m = {id:this.id};
-	var e = request.m.e = [];
-	for (var iType = 0; iType < ZmMailMsg.COMPOSE_ADDRS.length; iType++) {
-		if (addrs[ZmMailMsg.COMPOSE_ADDRS[iType]]) {
-			var all =  addrs[ZmMailMsg.COMPOSE_ADDRS[iType]].all;
-			for (var i = 0, len = all.size(); i < len; i++) {
-				var addr = all.get(i);
-				var rType = AjxEmailAddress.toSoapType[addr.type];
-				e.push({t:rType, a:addr.address});
-			}
-		}
-	}
-
-    // No Success callback, nothing of interest returned
-    var acct = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
-    appCtxt.getAppController().sendRequest({
-        jsonObj:       jsonObj,
-        asyncMode:     true,
-        accountName:   acct,
-        callback:      callback
-    });
-};
-
-ZmMailMsg.prototype.doDelete =
-function() {
-
-	var jsonObj = {MsgActionRequest:{_jsns:"urn:zimbraMail"}};
-	var request = jsonObj.MsgActionRequest;
-	request.action = {id:this.id, op:"delete"};
-	var ac = window.parentAppCtxt || window.appCtxt;
-	ac.getRequestMgr().sendRequest({jsonObj:jsonObj, asyncMode:true});
-};
-
-/**
- * If message is sent on behalf of returns sender address otherwise returns from address
- * @return {String} email address
- */
-ZmMailMsg.prototype.getMsgSender = 
-function() {
-	var from = this.getAddress(AjxEmailAddress.FROM);
-	var sender = this.getAddress(AjxEmailAddress.SENDER);
-	if (sender && sender.address != (from && from.address)) {
-		return sender.address;
-	}
-	return from && from.address;
-};
-
-/**
- * Return list header id if it exists, otherwise returns null
- * @return {String} list id
- */
-ZmMailMsg.prototype.getListIdHeader = 
-function() {
-	var id = null;
-	if (this.attrs && this.attrs[ZmMailMsg.HDR_LISTID]) {
-		//extract <ID> from header
-		var listId = this.attrs[ZmMailMsg.HDR_LISTID];
-		id = listId.match(/<(.*)>/);
-		if (AjxUtil.isArray(id)) {
-			id = id[id.length-1]; //make it the last match
-		}
-	}
-	return id;
 };

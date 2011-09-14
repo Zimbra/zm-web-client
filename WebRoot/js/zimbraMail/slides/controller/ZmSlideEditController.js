@@ -223,6 +223,7 @@ function() {
 
 ZmSlideEditController.prototype.__popupUploadDialog =
 function(callback) {
+    //AjxDispatcher.require(["NotebookCore", "Notebook"]);
     var restUrl = this.getRestUrl();
     var uploadFolder = {
         id: window.fileInfo.folderId,

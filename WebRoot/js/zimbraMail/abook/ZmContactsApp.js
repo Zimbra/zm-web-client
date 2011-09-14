@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -226,6 +226,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_PRINT_CONTACT, {textKey:"printContact", image:"Print", shortcut:ZmKeyMap.PRINT}, ZmSetting.PRINT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_PRINT_ADDRBOOK, {textKey:"printAddrBook", image:"Print"}, ZmSetting.PRINT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_ADDRBOOK, {textKey:"shareAddrBook", image:"SharedContactsFolder"});
+	ZmOperation.registerOp(ZmId.OP_SHOW_ONLY_CONTACTS, {textKey:"showOnlyContacts", image:"Contact"}, ZmSetting.MIXED_VIEW_ENABLED);
 };
 
 /**
@@ -351,8 +352,7 @@ function() {
 							  trashViewOp:			ZmOperation.SHOW_ONLY_CONTACTS,
 							  chooserSort:			20,
 							  defaultSort:			40,
-							  upsellUrl:			ZmSetting.CONTACTS_UPSELL_URL,
-							  quickCommandType:		ZmQuickCommand[ZmId.ITEM_CONTACT]
+							  upsellUrl:			ZmSetting.CONTACTS_UPSELL_URL
 							  });
 };
 
@@ -554,12 +554,6 @@ function(results, callback) {
 		callback.run();
 	}
 };
-
-ZmContactsApp.prototype.runRefresh =
-function() {
-	this.getContactListController().runRefresh();
-};
-
 
 /**
  * Sets the app as active.
@@ -985,7 +979,7 @@ function(callback, errorCallback, account) {
 			throw ex;
 		}
 	} else {
-		if (callback && callback.isAjxCallback) {
+		if (callback && callback.run) {
 			callback.run(this._contactList[acctId]);
 		}
 		return this._contactList[acctId];
@@ -1000,7 +994,7 @@ function(callback) {
 	var acctId = appCtxt.getActiveAccount().id;
 	this.contactsLoaded[acctId] = true;
 
-	if (callback && callback.isAjxCallback) {
+	if (callback && callback.run) {
 		callback.run(this._contactList[acctId]);
 	}
 };
@@ -1048,12 +1042,17 @@ function() {
 
 /**
  * Gets the contact controller.
- *
+ * 
  * @return	{ZmContactController}	the controller
  */
 ZmContactsApp.prototype.getContactController =
-function(sessionId) {
-	return this.getSessionController(ZmId.VIEW_CONTACT, "ZmContactController", sessionId);
+function() {
+	AjxDispatcher.require(["ContactsCore", "Contacts"]);
+
+	if (this._contactController == null) {
+		this._contactController = new ZmContactController(this._container, this);
+	}
+	return this._contactController;
 };
 
 /**
@@ -1078,21 +1077,4 @@ function(addr) {
 ZmContactsApp.prototype.cacheDL =
 function(addr, dl) {
 	this._dlCache[addr] = dl;
-};
-
-/**
- * Adds/remove contacts from the contact list hash
- * @param contact  {Object}     contact object
- * @param doDelete {boolean}    true to delete from hash
- */
-ZmContactsApp.prototype.updateIdHash =
-function(contact, doDelete) {
-	var id = contact.id;
-	var hash = this.getContactList().getIdHash();
-	if (!doDelete) {
-		hash[id] = contact;
-	}
-	else {
-		delete hash[id];
-	}
 };

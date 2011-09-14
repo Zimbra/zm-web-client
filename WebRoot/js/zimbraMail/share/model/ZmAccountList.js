@@ -389,6 +389,10 @@ function(settings, obj) {
 
 	if (appCtxt.isOffline) {
 		account.displayName = ZmMsg.localFolders;
+
+		if (appCtxt.get(ZmSetting.OFFLINE_NOTEBOOK_SYNC_ENABLED)) {
+			appCtxt.set(ZmSetting.NOTEBOOK_ENABLED, true, null, null, true);
+		}
 	}
 
 	// second, create all child accounts if applicable
