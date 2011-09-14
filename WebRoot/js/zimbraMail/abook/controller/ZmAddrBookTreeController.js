@@ -120,7 +120,7 @@ function(parent, type, id) {
 
 	if (isTrash) {
 		parent.enableAll(false);
-		parent.enable(ZmOperation.DELETE, false);
+		parent.enable(ZmOperation.DELETE_WITHOUT_SHORTCUT, false);
 		var hasContent = ((addrBook.numTotal > 0) || (addrBook.children && (addrBook.children.size() > 0)));
 		parent.enable(ZmOperation.EMPTY_FOLDER,hasContent);
 		parent.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);        
@@ -128,7 +128,7 @@ function(parent, type, id) {
 		parent.enableAll(true);        
 		if (addrBook) {
 			if (addrBook.isSystem()) {
-				parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
+				parent.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.RENAME_FOLDER], false);
 			} else if (addrBook.link) {
 				parent.enable([ZmOperation.SHARE_ADDRBOOK], !addrBook.link || addrBook.isAdmin());
 			}
@@ -143,7 +143,7 @@ function(parent, type, id) {
 		parent.enable(ZmOperation.EXPAND_ALL, (addrBook.size() > 0));
 	}
 
-	var op = parent.getOp(ZmOperation.DELETE);
+	var op = parent.getOp(ZmOperation.DELETE_WITHOUT_SHORTCUT);
 	if (op) {
 		op.setText(deleteText);
 	}
@@ -198,7 +198,7 @@ function() {
 		ops.push(ZmOperation.NEW_ADDRBOOK);
 	}
 	ops.push(ZmOperation.SHARE_ADDRBOOK,
-			ZmOperation.DELETE,
+			ZmOperation.DELETE_WITHOUT_SHORTCUT,
 			ZmOperation.RENAME_FOLDER,
 			ZmOperation.EDIT_PROPS,
 			ZmOperation.EXPAND_ALL,

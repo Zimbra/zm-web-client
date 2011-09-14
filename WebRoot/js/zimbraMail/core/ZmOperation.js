@@ -115,6 +115,7 @@ function() {
 			ZmOperation.addDeferredMenu(ZmOperation.addContactGroupMenu, parent, true);
 	}));
 	ZmOperation.registerOp(ZmId.OP_DELETE, {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete", shortcut:ZmKeyMap.DEL, textPrecedence:60});
+	ZmOperation.registerOp(ZmId.OP_DELETE_WITHOUT_SHORTCUT, {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete", textPrecedence:60});
 	ZmOperation.registerOp(ZmId.OP_DETACH, {textKey:"detachTT", tooltipKey:"detachTT", image:"OpenInNewWindow"});
     ZmOperation.registerOp(ZmId.OP_DETACH_WIN, {textKey:"detachTT", tooltipKey:"detachTT", image:"OpenInNewWindow"});
 	ZmOperation.registerOp(ZmId.OP_EDIT, {textKey:"edit", tooltipKey:"editTooltip", image:"Edit", shortcut:ZmKeyMap.EDIT});

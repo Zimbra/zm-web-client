@@ -83,7 +83,7 @@ function(actionMenu, type, id) {
             actionMenu.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);            
         } else {
             actionMenu.enableAll(true);
-            var menuItem = actionMenu.getMenuItem(ZmOperation.DELETE);
+            var menuItem = actionMenu.getMenuItem(ZmOperation.DELETE_WITHOUT_SHORTCUT);
             menuItem.setEnabled(!isBriefcase && (!isLinkOrRemote || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
 
             menuItem = actionMenu.getMenuItem(ZmOperation.NEW_BRIEFCASE);
@@ -104,7 +104,7 @@ function(actionMenu, type, id) {
                 menuItem.setEnabled(isShareVisible);
             }
         }
-        var op = actionMenu.getOp(ZmOperation.DELETE);
+        var op = actionMenu.getOp(ZmOperation.DELETE_WITHOUT_SHORTCUT);
         if (op) {
             op.setText(deleteText);
         }
@@ -161,7 +161,7 @@ function() {
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.SHARE_BRIEFCASE);
 	}
-	ops.push(ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.EMPTY_FOLDER, ZmOperation.RECOVER_DELETED_ITEMS);
+	ops.push(ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.EDIT_PROPS, ZmOperation.EMPTY_FOLDER, ZmOperation.RECOVER_DELETED_ITEMS);
 	return ops;
 };
 

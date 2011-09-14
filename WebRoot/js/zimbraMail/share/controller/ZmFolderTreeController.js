@@ -273,7 +273,7 @@ function() {
 	return [
 		ZmOperation.NEW_FOLDER,
 		ZmOperation.MARK_ALL_READ,
-		ZmOperation.DELETE,
+		ZmOperation.DELETE_WITHOUT_SHORTCUT,
 		ZmOperation.RENAME_FOLDER,
 		ZmOperation.MOVE,
 		ZmOperation.SHARE_FOLDER,

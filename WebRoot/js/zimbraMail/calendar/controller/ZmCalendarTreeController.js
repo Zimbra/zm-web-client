@@ -169,7 +169,7 @@ function(actionMenu, type, id) {
 			nId = ZmOrganizer.normalizeId(id);
 		}
 		var isTrash = (nId == ZmFolder.ID_TRASH);
-		actionMenu.enable(ZmOperation.DELETE, (nId != ZmOrganizer.ID_CALENDAR && nId != ZmOrganizer.ID_TRASH));        
+		actionMenu.enable(ZmOperation.DELETE_WITHOUT_SHORTCUT, (nId != ZmOrganizer.ID_CALENDAR && nId != ZmOrganizer.ID_TRASH));        
 		this.setVisibleIfExists(actionMenu, ZmOperation.EMPTY_FOLDER, nId == ZmFolder.ID_TRASH);
 		var hasContent = ((calendar.numTotal > 0) || (calendar.children && (calendar.children.size() > 0)));
 		actionMenu.enable(ZmOperation.EMPTY_FOLDER,hasContent);
@@ -291,7 +291,7 @@ ZmCalendarTreeController.prototype._getActionMenuOps =
 function() {
 	return [
         ZmOperation.SHARE_CALENDAR,
-        ZmOperation.DELETE,
+        ZmOperation.DELETE_WITHOUT_SHORTCUT,
         ZmOperation.MOVE,
         ZmOperation.EDIT_PROPS,
         ZmOperation.SYNC,

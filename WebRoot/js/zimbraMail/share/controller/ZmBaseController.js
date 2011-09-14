@@ -58,6 +58,7 @@ ZmBaseController = function(container, app) {
 	this._listeners[ZmOperation.TAG]			= this._tagListener.bind(this);
 	this._listeners[ZmOperation.PRINT]			= this._printListener.bind(this);
 	this._listeners[ZmOperation.DELETE]			= this._deleteListener.bind(this);
+	this._listeners[ZmOperation.DELETE_WITHOUT_SHORTCUT]			= this._deleteListener.bind(this);
 	this._listeners[ZmOperation.CLOSE]			= this._backListener.bind(this);
 	this._listeners[ZmOperation.MOVE]			= this._moveListener.bind(this);
 	this._listeners[ZmOperation.SEARCH]			= this._participantSearchListener.bind(this);

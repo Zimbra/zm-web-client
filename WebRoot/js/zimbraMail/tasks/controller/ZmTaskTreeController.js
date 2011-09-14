@@ -80,7 +80,7 @@ function(parent, type, id) {
 	parent.enableAll(true);
 	if (folder) {
         if (folder.isSystem()) {
-            parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
+            parent.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.RENAME_FOLDER], false);
         } else if (folder.link && !folder.isAdmin()) {
             isShareVisible = false;
         }
@@ -105,7 +105,7 @@ function(parent, type, id) {
 
 	this._enableRecoverDeleted(parent, isTrash);
 
-	var op = parent.getOp(ZmOperation.DELETE);
+	var op = parent.getOp(ZmOperation.DELETE_WITHOUT_SHORTCUT);
 	if (op) {
 		op.setText(deleteText);
 	}
@@ -146,7 +146,7 @@ ZmTaskTreeController.prototype._getActionMenuOps =
 function() {
 	return [
 		ZmOperation.SHARE_TASKFOLDER,
-		ZmOperation.DELETE,
+		ZmOperation.DELETE_WITHOUT_SHORTCUT,
 		ZmOperation.RENAME_FOLDER,
 		ZmOperation.EDIT_PROPS,
 		ZmOperation.SYNC,

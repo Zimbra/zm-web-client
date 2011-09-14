@@ -45,6 +45,7 @@ ZmTreeController = function(type) {
 	// common listeners
 	this._listeners = {};
 	this._listeners[ZmOperation.DELETE]			= new AjxListener(this, this._deleteListener);
+	this._listeners[ZmOperation.DELETE_WITHOUT_SHORTCUT]			= new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.MOVE]			= new AjxListener(this, this._moveListener);
 	this._listeners[ZmOperation.EXPAND_ALL]		= new AjxListener(this, this._expandAllListener);
 	this._listeners[ZmOperation.MARK_ALL_READ]	= new AjxListener(this, this._markAllReadListener);
