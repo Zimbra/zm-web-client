@@ -1190,7 +1190,7 @@ ZmBaseController.prototype._refreshQuickCommands = function(evt) {
             if (quickCommand.isActive) {
                 var mi = existingMenuItems[quickCommand.id];
                 if (!mi) {
-                    mi = quickCommandSubMenu.createMenuItem(quickCommand.id, {text:quickCommand.name});
+                    mi = quickCommandSubMenu.createMenuItem(quickCommand.id, {text:quickCommand.name, id: Dwt.getNextId("quickCommand_")});
                     mi.setData(Dwt.KEY_OBJECT, quickCommand);
                     mi.addSelectionListener(this._quickCommandMenuHandlerClosure);
                 } else {
@@ -1221,7 +1221,7 @@ ZmBaseController.prototype._resetQuickCommandOperations = function(parent) {
 				if (!quickCommandSubMenu) {
 					//add listener and quickCommandSubMenu one time only
 					quickCommandMenuItem.addListener(DwtEvent.ONMOUSEOVER, this._refreshQuickCommandsClosure);
-					quickCommandSubMenu = new ZmActionMenu({parent:parent, menuItems:ZmOperation.NONE});
+					quickCommandSubMenu = new ZmActionMenu({parent:parent, menuItems:ZmOperation.NONE, id: Dwt.getNextId("quickCommandSubMenu_")});
 					quickCommandMenuItem.setMenu(quickCommandSubMenu);
 				}
 				parent.enable(ZmOperation.QUICK_COMMANDS, (quickCommands && quickCommands.length));
