@@ -979,6 +979,8 @@ function() {
 
 	// reset the help URI to zimbra.com for offline
 	this.registerSetting("HELP_URI",						{type:ZmSetting.T_CONFIG, defaultValue:"http://www.zimbra.com/desktop7/"});
+//	// make default false for DUMPSTER_ENABLED. shouldn't be necessary since GetInfoResponse includes zimbraDumpsterEnabled:"FALSE", but can't find why settings is not read correctly
+	this.registerSetting("DUMPSTER_ENABLED",				{name:"zimbraDumpsterEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 };
 
 /**
