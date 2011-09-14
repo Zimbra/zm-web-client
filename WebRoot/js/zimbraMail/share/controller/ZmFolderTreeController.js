@@ -231,8 +231,10 @@ function(parent, type, id) {
 	parent.enable(ZmOperation.BROWSE, true);
 	var priorityInboxEnabled = appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED);
 	var priorityInboxOp = parent.getOp(ZmOperation.PRIORITY_FILTER);
-	priorityInboxOp.setVisible(priorityInboxEnabled);
-	priorityInboxOp.setEnabled(priorityInboxEnabled);	
+	if (priorityInboxOp) {
+		priorityInboxOp.setVisible(priorityInboxEnabled);
+		priorityInboxOp.setEnabled(priorityInboxEnabled);
+	}
 	this._enableRecoverDeleted(parent, isTrash);
 
 
