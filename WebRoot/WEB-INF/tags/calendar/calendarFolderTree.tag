@@ -43,28 +43,14 @@
 
         <c:if test="${expanded}">
 
-            <app:calendarFolder folder="${mailbox.calendar}"/>
-
-            <%--
-                Display the children of Calendar folder, if any. Folders with unknown view also get listed.
-            --%>
-            <zm:forEachFolder var="folder" skiproot="true" skipsystem="false" skiptopsearch="true" parentid="${mailbox.calendar.id}" >
-                <c:if test="${(!folder.isSystemFolder and !folder.isSearchFolder and !folder.isMountPoint and (folder.isNullView or folder.isUnknownView or folder.isAppointmentView))}">
-                    <app:calendarFolder folder="${folder}"/>
-                </c:if>
-            </zm:forEachFolder>
-
-            <%--
-                Rest of the calendar folders, do not display folders with unknown view here.
-            --%>
-            <zm:forEachFolder var="folder" skiproot="true" skipsystem="true" skiptopsearch="true">
-                <c:if test="${!folder.isSearchFolder and !folder.isMountPoint and folder.isAppointmentView}">
+            <zm:forEachFolder var="folder">
+                <c:if test="${folder.isAppointmentView and !folder.isSearchFolder and !folder.isMountPoint}">
                     <app:calendarFolder folder="${folder}"/>
                 </c:if>
             </zm:forEachFolder>
 
             <zm:forEachFolder var="folder">
-                <c:if test="${(!folder.isSystemFolder and !folder.isSearchFolder and folder.isMountPoint and folder.isAppointmentView)}">
+                <c:if test="${folder.isAppointmentView and !folder.isSearchFolder and folder.isMountPoint}">
                     <app:calendarFolder folder="${folder}"/>
                 </c:if>
             </zm:forEachFolder>

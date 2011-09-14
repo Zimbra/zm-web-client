@@ -90,6 +90,7 @@ ZmFolder.MSG_KEY[ZmFolder.ID_AUTO_ADDED]		= "emailedContacts";
 ZmFolder.MSG_KEY[ZmFolder.ID_TASKS]				= "tasks";
 ZmFolder.MSG_KEY[ZmFolder.ID_TAGS]				= "tags";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_CALENDAR]		= "calendar";
+ZmFolder.MSG_KEY[ZmOrganizer.ID_NOTEBOOK]		= "notebook";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_BRIEFCASE]		= "briefcase";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_CHATS]			= "chats";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_ALL_MAILBOXES]	= "allMailboxes";
@@ -121,6 +122,7 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]			= "drafts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]		= "contacts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_TASKS]			= "tasks";
 ZmFolder.QUERY_NAME[ZmFolder.ID_AUTO_ADDED]		= "Emailed Contacts";
+ZmFolder.QUERY_NAME[ZmOrganizer.ID_NOTEBOOK]	= "notebook";
 ZmFolder.QUERY_NAME[ZmOrganizer.ID_BRIEFCASE]	= "briefcase";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CHATS]			= "chats";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SYNC_FAILURES]	= "Error Reports";
@@ -590,16 +592,14 @@ function(what, folderType, ignoreExisting) {
 				   (appCtxt.multiAccounts && what.getAccount() != this.getAccount()) || // cannot move folders across accounts
                    (this.isRemote() && !this._remoteMoveOk(what)) ||
 				   (what.isRemote() && !this._remoteMoveOk(what)));				// a remote folder can be DnD but not its children
-    } else {
+	} else {
 		// An item or an array of items is being moved
 		var items = AjxUtil.toArray(what);
 		var item = items[0];
 
-            // container can only have folders/searches or calendars
-		if ((this.nId == ZmOrganizer.ID_ROOT && (what.type != ZmOrganizer.CALENDAR)) ||
-             // nothing can be moved to outbox/sync failures folders
-			 this.nId == ZmOrganizer.ID_OUTBOX ||
-			 this.nId == ZmOrganizer.ID_SYNC_FAILURES)
+		if (this.nId == ZmOrganizer.ID_ROOT ||									// container can only have folders/searches
+			this.nId == ZmOrganizer.ID_OUTBOX ||								// nothing can be moved to outbox/sync failures folders
+			this.nId == ZmOrganizer.ID_SYNC_FAILURES)
 		{
 			invalid = true;
 		} else if (thisType == ZmOrganizer.SEARCH) {
@@ -747,26 +747,4 @@ function() {
 		}
 	}
 	return false;
-};
-
-
-/**
- * Sets the Global Mark Read flag.  When the user sets this flag, read flags are global for all
- * shared instances of the folder. When not set, each user accessing the shared folder will maintain
- * their own read/unread flag.
- *
- * @param	{Object}	        globalMarkRead		the globalMarkRead boolean flag
- * @param	{AjxCallback}	    callback		    the callback
- * @param	{AjxCallback}	    errorCallback		the error callback
- * @param   {ZmBatchCommand}    batchCmd            optional batch command
- */
-ZmOrganizer.prototype.setGlobalMarkRead = function(globalMarkRead, callback, errorCallback, batchCmd) {
-	if (this.globalMarkRead == globalMarkRead) { return; }
-    // TODO: Bug 59559, awaiting server side implementation (Bug 24567)
-    // TODO: - For ZmFolderPropsDialog and ZmSharePropsDialog:
-    // TODO:     Make sure that the attrName is indeed globalMarkRead - used in the dialogs
-    // TODO:     Make the globalMarkRead labels and controls visible.
-    // TODO: - Uncomment this once the server call is ready, make sure action/attrs are correct
-	//this._organizerAction({action: "globalMarkRead", attrs: {globalMarkRead: globalMarkRead}, callback: callback,
-    //                       errorCallback: errorCallback, batchCmd: batchCmd});
 };

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -89,9 +89,10 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_SPREADSHEET, {textKey:"newSpreadSheetBeta", tooltipKey:"newSpreadSheet", image:"ZSpreadSheet", textPrecedence:11});
 	ZmOperation.registerOp(ZmId.OP_NEW_DOC, {textKey:"newDocument", tooltipKey:"newDocument", image:"NewDoc", shortcut:ZmKeyMap.NEW_DOC, textPrecedence:12});
 	ZmOperation.registerOp(ZmId.OP_SHARE_BRIEFCASE, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
+//	ZmOperation.registerOp(ZmId.OP_MOUNT_BRIEFCASE, {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewPage"});
 	ZmOperation.registerOp(ZmId.OP_SAVE_FILE, {textKey:"saveFile", tooltipKey:"saveFileTooltip", image:"DownArrow"});
-    ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASE_WIN, {textKey:"detachTT", tooltipKey:"detach", image:"OpenInNewWindow"});
+    ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASE_WIN, {tooltipKey:"detach", image:"OpenInNewWindow"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_FILE_AS_HTML, {textKey:"viewFileAsHtml", tooltipKey:"viewAsHtml", image:"HtmlDoc"});
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE, {textKey:"sendLink", tooltipKey:"sendLink", image:"Send"});
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE_AS_ATT, {textKey:"sendAsAttachment", tooltipKey:"sendAsAttachment", image:"Attachment"});
@@ -105,6 +106,7 @@ function() {
     ZmOperation.registerOp(ZmId.OP_VERSION_HISTORY, {textKey: "versionHistory", image:"VersionHistory"});
     ZmOperation.registerOp(ZmId.OP_RESTORE_VERSION, {textKey: "restoreCurrentVersion", image:"RestoreVersion"});
     ZmOperation.registerOp(ZmId.OP_DELETE_VERSION, {textKey: "deleteVersion", image:"Delete"});
+
 };
 
 ZmBriefcaseApp.prototype._registerSettings =
@@ -172,7 +174,7 @@ function() {
 								{msgKey:		"searchBriefcase",
 								 tooltipKey:	"searchForFiles",
 								 icon:			"Doc",
-								 shareIcon:		null, // the following doesn't work now, so keep the regular icon. doesn't really matter in my opinion --> "SharedBriefcase",
+								 shareIcon:		"SharedBriefcase",
 								 setting:		ZmSetting.BRIEFCASE_ENABLED,
 								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_BRIEFCASE)
 								});

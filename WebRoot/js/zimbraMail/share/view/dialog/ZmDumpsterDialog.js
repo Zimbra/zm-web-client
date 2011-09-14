@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2010 Zimbra, Inc.
- *
+ * Copyright (C) 2010 Zimbra, Inc.
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -53,47 +53,33 @@ function() {
 
 ZmDumpsterDialog.prototype.popup =
 function(searchFor, types) {
-	this._searchTypes = types ? AjxUtil.toArray(types) : [ZmItem.MSG];
-	this._searchFor = searchFor;
-	this.runSearchQuery();
-
-	ZmDialog.prototype.popup.call(this);
-};
-
-
-ZmDumpsterDialog.prototype.runSearchQuery =
-function(query) {
-	var types = this._searchTypes;
-	var searchFor = this._searchFor;
+	types = (types && AjxUtil.toArray(types)) || [ZmItem.MSG];
+	searchFor = searchFor || ZmId.SEARCH_ANY;
+	var type = types[0];
 	var params = {
-		query: query,
+		query: "is:anywhere",
 		searchFor: searchFor,
 		types: types,
 		sortBy: ZmSearch.DATE_DESC,
 		noRender: true,
 		inDumpster: true,
-		skipUpdateSearchToolbar: true, //don't update the main app search toolbar. Otherwise the main app is updated to weird stuff like the mixed view of everything.
-		callback: this._controller.show.bind(this._controller, [types])
+		callback: new AjxCallback(this._controller, this._controller.show, [types])
 	};
 	this._controller.show(types, null); // Clear the list & set headers
 	appCtxt.getSearchController().search(params);
 
+	ZmDialog.prototype.popup.call(this);
 };
 
 ZmDumpsterDialog.prototype.popdown =
 function() {
 	ZmDialog.prototype.popdown.call(this);
-	if (this._inputField) {
-		this._inputField.clear(); //clear for next time
-	}
 
 	this._controller.cleanup();
 };
 
 ZmDumpsterDialog.prototype._contentHtml =
 function() {
-	this._inputContainerId = this._htmlElId + "_inputContainerId";
-	this._searchButtonContainerId = this._htmlElId + "_searchButtonContainerId";
 	return AjxTemplate.expand("share.Widgets#ZmDumpsterDialog", {id:this._htmlElId});
 };
 
@@ -101,51 +87,6 @@ ZmDumpsterDialog.prototype._listSelectionListener =
 function(ev) {
 	var sel = this._listview.getSelection() || [];
 	this._toolbar.enableAll((sel.length > 0));
-};
-
-ZmDumpsterDialog.prototype._handleInputFieldKeyDown =
-function(ev) {
-	if (ev.keyCode == 13 || ev.keyCode == 3) {
-		this._controller._searchListener();
-	}
-};
-
-
-
-ZmDumpsterDialog.prototype._resetTabFocus =
-function(){
-	this._tabGroup.setFocusMember(this._inputField, true);
-};
-
-/**
- * adds non-standard elements to tab group.
- */
-ZmDumpsterDialog.prototype._updateTabGroup =
-function() {
-	this._tabGroup.addMember(this._inputField);
-	this._tabGroup.addMember(this._searchButton);
-};
-
-ZmDumpsterDialog.prototype._initializeSearchBar =
-function(listener) {
-
-	this._inputField = new DwtInputField({parent: this});
-	this._inputField.addListener(DwtEvent.ONKEYUP, this._handleInputFieldKeyDown.bind(this));//this._controller._searchListener.bind(this._controller));
-
-	document.getElementById(this._inputContainerId).appendChild(this._inputField.getHtmlElement());
-
-	var el = document.getElementById(this._searchButtonContainerId);
-	var params = {parent:this, parentElement:el, id: "searchDumpsterButton"};
-
-	var button = this._searchButton = new DwtButton(params);
-
-	button.setText(ZmMsg.search);
-	button.addSelectionListener(listener);
-};
-
-ZmDumpsterDialog.prototype.getSearchText =
-function() {
-	return this._inputField.getValue();
 };
 
 
@@ -522,7 +463,6 @@ function() {
 
 ZmDumpsterListController.prototype.show =
 function(types, results) {
-
 	this._appName = ZmItem.APP[types[0]]; // All types should be in the same app
 	var view = "dumpster" + this._appName;
 	for (var id in this._toolbar) {
@@ -538,15 +478,12 @@ function(types, results) {
 		ZmListController.prototype.show.call(this, searchResults, view);
 
 		this._setup(view);
-		this._initializeSearchBar();
-		this._container._updateTabGroup();
-		this._container._inputField.getInputElement().focus(); //this is the only focus way I could get it to focus on the input element.
 
 		var list = searchResults.getResults(searchResults.type);
 
 		this.setList(list);
 		this.setHasMore(searchResults.getAttribute("more"));
-		this.getCurrentView().set(list);                                                                                                               		
+		this.getCurrentView().set(list);
 	} else {
 		this.cleanup();
 	}
@@ -574,24 +511,6 @@ ZmDumpsterListController.prototype._setViewContents	=
 function(view) {
 	this._listView[view].set(this._list);
 };
-
-ZmDumpsterListController.prototype._searchListener =
-function() {
-	var dialog = this._container;
-	var keywords = dialog.getSearchText();
-	dialog.runSearchQuery(keywords);
-};
-
-ZmDumpsterListController.prototype._initializeSearchBar =
-function() {
-	if (this._searchBarInitialized) {
-		return;
-	}
-	this._searchBarInitialized = true;
-	var dialog = this._container;
-	dialog._initializeSearchBar(this._searchListener.bind(this));
-};
-
 
 ZmDumpsterListController.prototype._initializeToolBar =
 function(view) {
@@ -626,7 +545,7 @@ function(items, folder, attrs, isShiftKey) {
 	}
 	attrs.op = "recover";
 	attrs.l = folder.id;
-	                                                                                                                                              		
+
 	ZmListController.prototype._doMove.call(this, items, folder, attrs, isShiftKey);
 };
 
@@ -662,7 +581,7 @@ function(dlg) {
 	params.showDrafts =	true;
 	var omit = {};
 	omit[ZmFolder.ID_SPAM] = true;
-	//bug:60237 remote folders should be excluded from the recovery folder selection
+    //bug:60237 remote folders should be excluded from the recovery folder selection
     var folderTree = appCtxt.getFolderTree();
 	if (!folderTree) { return params; }
 	var folders = folderTree.getByType(ZmApp.ORGANIZER[this._appName]);
@@ -672,6 +591,7 @@ function(dlg) {
           omit[folder.id] = true;
         }
 	}
-	params.omit = omit;
+
+    params.omit = omit;
 	return params;
 };
