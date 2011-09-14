@@ -49,7 +49,7 @@ google_ad_type = "text_image";
 
 google_ad_channel ="";
 
-google_page_url = "${param.f}"
+google_page_url = "${zm:cook(param.f)}"
 
 //--></script>
 
