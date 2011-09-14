@@ -205,7 +205,7 @@
     <app:attachment firstAttachment="${firstAttachment}" url="${param.attachUrl}"
                     displayName="${param.attachName}"
                     checked="true"
-                    value="${param.attachId}" name="uploadedAttachment"/>
+                    value="${zm:cook(param.attachId)}" name="uploadedAttachment"/>
 </c:if>
 <tr>
     <td colspan="3"  width="100%" >
