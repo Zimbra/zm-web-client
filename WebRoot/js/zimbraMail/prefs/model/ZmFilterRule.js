@@ -673,18 +673,20 @@ ZmFilterRule.getSocialFilters =
 function() {
 	var ops = [];
 	var socialFilters = appCtxt.get(ZmSetting.SOCIAL_FILTERS_ENABLED);
-	for (var i=0; i<socialFilters.length; i++) {
-		if (socialFilters[i].toLowerCase() == ZmFilterRule.C_FACEBOOK.toLowerCase()) {
-			ops.push(ZmFilterRule.OP_SOCIAL_FACEBOOK)
-		}
-		else if (socialFilters[i].toLowerCase() == ZmFilterRule.C_TWITTER.toLowerCase() ) {
-			ops.push(ZmFilterRule.OP_SOCIAL_TWITTER);	
-		}
-		else if (socialFilters[i].toLowerCase() == ZmFilterRule.C_LINKEDIN.toLowerCase()) {
-			ops.push(ZmFilterRule.OP_SOCIAL_LINKEDIN);
-		}
-		else if (socialFilters[i].toLowerCase() == ZmFilterRule.C_SOCIALCAST.toLowerCase()) {
-			ops.push(ZmFilterRule.OP_SOCIAL_SOCIALCAST);
+	if (socialFilters && socialFilters.length) {
+		for (var i=0; i<socialFilters.length; i++) {
+			if (socialFilters[i].toLowerCase() == ZmFilterRule.C_FACEBOOK.toLowerCase()) {
+				ops.push(ZmFilterRule.OP_SOCIAL_FACEBOOK)
+			}
+			else if (socialFilters[i].toLowerCase() == ZmFilterRule.C_TWITTER.toLowerCase() ) {
+				ops.push(ZmFilterRule.OP_SOCIAL_TWITTER);	
+			}
+			else if (socialFilters[i].toLowerCase() == ZmFilterRule.C_LINKEDIN.toLowerCase()) {
+				ops.push(ZmFilterRule.OP_SOCIAL_LINKEDIN);
+			}
+			else if (socialFilters[i].toLowerCase() == ZmFilterRule.C_SOCIALCAST.toLowerCase()) {
+				ops.push(ZmFilterRule.OP_SOCIAL_SOCIALCAST);
+			}
 		}
 	}
 	return ops;

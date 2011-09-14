@@ -513,19 +513,21 @@ function() {
 	this._linkedInEnabled = false;
 	this._socialCastEnabled = false;
 	this._socialFilters = appCtxt.get(ZmSetting.SOCIAL_FILTERS_ENABLED);
-	for (var i=0; i<this._socialFilters.length; i++) {
-		if (this._socialFilters[i].toLowerCase() == ZmFilterRule.C_FACEBOOK.toLowerCase()) {
-			this._facebookEnabled = true;	
+	if (this._socialFilters && this._socialFilters.length) {
+		for (var i=0; i<this._socialFilters.length; i++) {
+			if (this._socialFilters[i].toLowerCase() == ZmFilterRule.C_FACEBOOK.toLowerCase()) {
+				this._facebookEnabled = true;	
+			}
+			else if (this._socialFilters[i].toLowerCase() == ZmFilterRule.C_TWITTER.toLowerCase()) {
+				this._twitterEnabled = true;	
+			}
+			else if (this._socialFilters[i].toLowerCase() == ZmFilterRule.C_LINKEDIN.toLowerCase()) {
+				this._linkedInEnabled = true;	
+			}
+			else if (this._socialFilters[i].toLowerCase() == ZmFilterRule.C_SOCIALCAST.toLowerCase()) {
+				this._socialCastEnabled = true;	
+			}
+			
 		}
-		else if (this._socialFilters[i].toLowerCase() == ZmFilterRule.C_TWITTER.toLowerCase()) {
-			this._twitterEnabled = true;	
-		}
-		else if (this._socialFilters[i].toLowerCase() == ZmFilterRule.C_LINKEDIN.toLowerCase()) {
-			this._linkedInEnabled = true;	
-		}
-		else if (this._socialFilters[i].toLowerCase() == ZmFilterRule.C_SOCIALCAST.toLowerCase()) {
-			this._socialCastEnabled = true;	
-		}
-		
-	}	
+	}
 };
