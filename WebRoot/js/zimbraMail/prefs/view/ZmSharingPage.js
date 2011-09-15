@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -443,7 +443,7 @@ function() {
 			dataClass:		appCtxt.getAutocompleter(),
 			matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
 			separator:		"",
-			keyUpCallback:	new AjxCallback(this, this._enterCallback)
+			enterCallback:	new AjxCallback(this, this._enterCallback)
 		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 		var inputCtrl = this._shareForm.getControl(ZmSharingView.ID_OWNER);
@@ -485,12 +485,8 @@ function(id) {
 
 ZmSharingView.prototype._enterCallback =
 function(ev) {
-	var key = DwtKeyEvent.getCharCode(ev);
-	if (key == 3 || key == 13) {
-		this._onClick.call(this._shareForm, ZmSharingView.ID_FIND_BUTTON);
-		return false;
-	}
-	return true;
+	this._onClick.call(this._shareForm, ZmSharingView.ID_FIND_BUTTON);
+	return false;
 };
 
 ZmSharingView.prototype._showChooser =

@@ -13,14 +13,13 @@
 			<file>../_base/base2/ZmSkin.js</file>     
 		</script>
 		<html>
-			<file>../_base/base2/skin.html</file>
+			<file>skin.html</file>
 			<file>../_base/base2/splash.html</file>
 		</html>
   </advanced>
   <standard>
 		<css>
 			<file>../../css/zhtml.css</file>
-			<file>zhtml.css</file>
 		</css>
-  </standard>	
+  </standard>
  </skin>

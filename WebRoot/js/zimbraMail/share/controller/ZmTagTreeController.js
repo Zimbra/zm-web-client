@@ -83,7 +83,7 @@ function(parent, type, id) {
 	parent.enableAll(true);
 	if (tag.isSystem()) {
 		parent.enable([ZmOperation.RENAME_TAG, 
-					   ZmOperation.TAG_COLOR_MENU, ZmOperation.DELETE_WITHOUT_SHORTCUT], false);
+					   ZmOperation.TAG_COLOR_MENU, ZmOperation.DELETE], false);
 	}
 	parent.enable(ZmOperation.MARK_ALL_READ, (tag && (tag.numUnread > 0)));
 //	this._resetOperation(parent, ZmOperation.EXPORT_FOLDER, ZmMsg.exportTag);
@@ -112,7 +112,7 @@ function() {
 		ZmOperation.NEW_TAG,
 		ZmOperation.MARK_ALL_READ,
 		ZmOperation.RENAME_TAG,
-		ZmOperation.DELETE_WITHOUT_SHORTCUT,
+		ZmOperation.DELETE,
 		ZmOperation.TAG_COLOR_MENU
 	];
 };
@@ -152,6 +152,7 @@ function(tag) {
 	var searchFor;
 	switch (appCtxt.getCurrentAppName()) {
 		case ZmApp.CONTACTS:    searchFor = ZmItem.CONTACT; break;
+		case ZmApp.NOTEBOOK:    searchFor = ZmItem.PAGE; break;
 		case ZmApp.CALENDAR:    searchFor = ZmItem.APPT; break;
 		case ZmApp.BRIEFCASE:   searchFor = ZmItem.BRIEFCASE_ITEM; break;
 		case ZmApp.TASKS:       searchFor = ZmItem.TASK; break;

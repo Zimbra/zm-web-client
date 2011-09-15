@@ -25,7 +25,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 
 <zm:forEachFolder var="folder" skiproot="${skiproot}" parentid="${parentid}" skipsystem="${skipsystem}" expanded="${sessionScope.expanded}" skiptopsearch="${skiptopsearch}" skiptrash="${skiptrash}">
-    <c:if test="${!folder.isSearchFolder and (folder.isContactView or folder.isUnknownView or folder.isNullView)}">
-        <app:contactFolder folder="${folder}"/>
+    <c:if test="${folder.isContactView}">
+            <app:contactFolder folder="${folder}"/>
     </c:if>
 </zm:forEachFolder>
