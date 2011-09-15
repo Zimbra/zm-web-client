@@ -39,6 +39,9 @@ ZmNewWindow = function() {
 
 	appCtxt.setAppController(this);
 
+	//update body class to reflect user selected font
+	document.body.className = "user_font_" + appCtxt.get(ZmSetting.FONT_NAME);
+
 	this._settings = appCtxt.getSettings();
 	this._settings.setReportScriptErrorsSettings(AjxException, ZmController.handleScriptError); //must set this for child window since AjxException is fresh for this window. Also must pass AjxException and the handler since we want it to update the one from this child window, and not the parent window
 
