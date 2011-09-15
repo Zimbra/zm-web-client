@@ -78,6 +78,7 @@
                             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                                 <c:set var="briefHit" value="${hit.briefcaseHit}"/>
                                 <zm:currentResultUrl var="docUrl" value="search" id="${briefHit.docId}" action="" index="${status.index}" context="${context}" usecache="true"/>
+                                <c:set var="folder" value="${zm:getFolder(pageContext, briefHit.document.folderId)}"/>
 
                                 <c:if test="${empty selectedRow and briefHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
                                 <c:set var="aid" value="A${status.index}"/>
@@ -92,7 +93,7 @@
                                         <app:img src="${mimeImg}"/>
                                     </td>
                                     <td><%-- allow this column to wrap --%>
-                                        <c:set var="briefUrl" value="/home/${mailbox.accountInfo.name}/${zm:getFolderPath(pageContext,briefHit.document.folderId)}/${briefHit.document.name}?auth=co"/>
+                                        <c:set var="briefUrl" value="/home/${mailbox.accountInfo.name}${folder.path}/${briefHit.document.name}?auth=co"/>
                                         <a href="${fn:escapeXml(briefUrl)}" id="${aid}" onclick="return false;">
                                             <c:set var='docName' value="${empty briefHit.document.name ? unknownSubject : zm:truncate(briefHit.document.name,100,true)}"/>
                                             <c:out value="${docName}"/>
