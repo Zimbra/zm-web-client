@@ -282,7 +282,7 @@
     	if (extraPackages.equals("dev")) {
             extraPackages = "Startup2,CalendarCore,Calendar,CalendarAppt,ContactsCore,Contacts,MailCore,Mail,Mixed,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Assistant,Browse,Extras,Share,Zimlet,ZimletApp,Alert,ImportExport,BrowserPlus";
     	}
-    	allPackages += "," + extraPackages;
+    	allPackages += "," + BeanUtils.cook(extraPackages);;
     }
 
     String pprefix = isDevMode  && !isCoverage ? "public/jsp" : "js";
