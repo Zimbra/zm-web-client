@@ -765,7 +765,7 @@ function(params) {
 	
 	if (params.unitTest) {
 		var utm = this._components[ZmAppViewMgr.C_UNITTEST] = window.unitTestManager;
-		appCtxt.addZimletsLoadedListener(utm.runTests.bind(utm));
+		appCtxt.addZimletsLoadedListener(utm.runTests.bind(utm), 0);
 	}
 
 	this.getKeyMapMgr();	// make sure keyboard handling is initialized

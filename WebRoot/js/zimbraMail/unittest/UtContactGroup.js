@@ -18,7 +18,7 @@ ZmMockContact = function(){
 
 };
 ZmMockContact.prototype.constructor = ZmMockContact;
-
+ZmMockContact.zId = "1";
 ZmMockContact.prototype.isGroup =
 function() {
 	return this.type == "group";
@@ -47,6 +47,13 @@ function(attr) {
 	return null;
 };
 
+ZmMockContact.prototype.getId = 
+function(useZid) {
+	if (useZid) {
+		return ZmMockContact.zId + ":" + this.id;	
+	}
+	return this.id;
+};
 
 UT.module("ContactGroup");
 
@@ -84,6 +91,8 @@ UT.test("Get Contacts From Cache", {
 	}
 );
 
+//TODO: Update DLIST is no longer applicable
+/*
 UT.test("Filter Groups", {
 	//Dummy data; this could be more interesting with a specific test account
 	teardown: function(){
@@ -126,6 +135,7 @@ UT.test("Filter Groups", {
 		}
 	}
 );
+*/
 
 UT.test("Sort Contact Groups", {
 	teardown: function() {
@@ -158,6 +168,8 @@ UT.test("Sort Contact Groups", {
 	}
 );
 
+//TODO: Update DLIST is no longer applicable
+/*
 UT.test("Items for New Group", {
 	teardown: function() {
 	 	this._items = null;
@@ -188,7 +200,9 @@ UT.test("Items for New Group", {
 		UT.equal(groupMembers, expected, "group members = " + groupMembers);
 	}
 );
-
+*/
+/*
+//TODO: DLIST is no longer applicable
 UT.test("Add Items and Groups to Group", {
 	teardown: function() {
 		this._items = null;
@@ -226,7 +240,9 @@ UT.test("Add Items and Groups to Group", {
 		DBG.println("mock*****", members);
 	}
 );
-
+*/
+/*
+//TODO: DLIST is no longer applicable
 UT.test("Handle Duplicates in adding to group", {
 	teardown: function() {
 		this._items = null;
@@ -256,7 +272,7 @@ UT.test("Handle Duplicates in adding to group", {
 		UT.equal(groupMembers, expected, "group members = " + groupMembers);
 	}
 );
-
+*/
 //TODO: Cleanup to not hijack the response callback
 UT.test("Group View: Verify contacts query uses is:local", {},
 	function() {
@@ -390,4 +406,58 @@ UT.test("Create Group: Verify group is in alphabet bar", {
 
 	}
 
+);
+
+UT.test("dedupe contact group", {
+	teardown: function() {
+		
+	},
+
+	setup: function() {
+
+	}},
+
+	function() {
+		ZmUnitTestUtil.goToContacts();
+		var contact = new ZmContact(null, null, "GROUP");
+		UT.expect(3);				
+		//Test Inline dedupe
+		var items = [ "test@zimbra.com", "test2@zimbra.com"];
+		var inlineAddr = {type: ZmContact.GROUP_INLINE_REF, value: "test@zimbra.com"};
+		var addrs = [ inlineAddr ];
+		ZmGroupView._dedupe(items, addrs);
+		UT.equal(1, items.length, "1 duplicate found in inline");
+		
+		//Test local contact dedupe
+		var contactA = new ZmMockContact();
+		contactA.id = "200";
+		contactA.isGal = false;
+		items.push({__contact: contactA});
+		var contactB = new ZmMockContact();
+		contactB.id = "201";
+		contactB.isGal = false;
+		items.push({__contact: contactB});
+		//contact already belongs to group
+		var listItemA = { address: "contacta@zimbra.com", type: ZmContact.GROUP_CONTACT_REF, value: "1:200"};
+		addrs.push(listItemA);
+		//contact moved to group but not yet saved
+		var listItemB = {__contact: contactB};
+		addrs.push(listItemB);
+		ZmGroupView._dedupe(items, addrs);
+		UT.equal(1, items.length, "2 duplicate found in contacts");
+		
+		//Test GAL contact dedupe
+		var galContact = new ZmMockContact();
+		galContact.id = "uid=user1,ou=people,dc=eng,dc=vmware,dc=com";
+		galContact.isGal = true;
+		var galContactB = new ZmMockContact();
+		galContactB.id = "uid=user2,ou=people,dc=eng,dc=vmware,dc=com";
+		galContactB.isGal = true;
+		items.push({__contact: galContact});
+		items.push({__contact: galContactB});
+		var listItemGal = { address: "user1@eng.vmware.com", type: ZmContact.GROUP_GAL_REF, value: "uid=user1,ou=people,dc=eng,dc=vmware,dc=com"};
+		addrs.push(listItemGal);
+		ZmGroupView._dedupe(items, addrs);
+		UT.equal(2, items.length, "1 duplicate found in gal");
+	}
 );

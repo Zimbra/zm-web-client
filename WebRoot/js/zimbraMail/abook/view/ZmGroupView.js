@@ -793,7 +793,7 @@ function(ev){
 			else {
 				//contact added but not yet saved
 				if (items[i].__contact) {
-					value = items[i].__contact.id;		
+					value = items[i].__contact.getId(!items[i].__contact.isGal);		
 				}
 				else {
 					value = items[i]; //inline added but then deleted
@@ -837,7 +837,7 @@ function(ev){
 		for (var i = 0; i < goodArry.length; i++) {
 			goodAddr[i] = goodArry[i].toString();
 		}
-		this._dedupe(goodAddr);
+		ZmGroupView._dedupe(goodAddr, this._groupListView.getList().getArray());
 		this._setGroupMembersListView(goodAddr, true);
 	}
 
@@ -889,7 +889,7 @@ function(list) {
 		}
 	}
 
-	this._dedupe(items);
+	ZmGroupView._dedupe(items, this._groupListView.getList().getArray());
 	if (items.length > 0) {
 		this._setGroupMembersListView(items, true);
 	}
@@ -901,7 +901,7 @@ function(list, append){
 		for (var i=0; i<list.length; i++) {
 			if (list[i] && list[i].__contact) {
 				var type = list[i].__contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
-				var id = list[i].__contact.getId(true);
+				var id = list[i].__contact.getId(type == ZmContact.GROUP_CONTACT_REF); 
 				if (!this._groupMemberMods[id]) {
 					this._groupMemberMods[id] = {op : "+", value : id, type : type};
 				}
@@ -925,11 +925,15 @@ function(list, append){
 	this._isDirty = true;
 };
 
-ZmGroupView.prototype._dedupe =
-function(items) {
-	var addrs = this._groupListView.getList();
+/**
+ * Removes members from items if the are found to be duplicate of addrs.  Dedupes inline, local and gal contacts
+ * @param items {Array} array of items to be added to the target list 
+ * @param addrs {Array} the target list as an array of items
+ * @private
+ */
+ZmGroupView._dedupe =
+function(items, addrs) {
 	if (addrs) {
-		addrs = addrs.getArray();
 		var i = 0;
 		while (true) {
 			var found = false;
@@ -937,9 +941,10 @@ function(items) {
 				var value = addrs[j].value || addrs[j];
 				var type = addrs[j].type || ZmContact.GROUP_INLINE_REF;
 				if (addrs[j].__contact) {
-					value = addrs[j].__contact.id;
+					type = addrs[j].__contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
+					value = addrs[j].__contact.getId(type == ZmContact.GROUP_CONTACT_REF);
 				}
-				if (type != ZmContact.GROUP_INLINE_REF && value == (items[i].__contact && items[i].__contact.getId(true))) {
+				if (type != ZmContact.GROUP_INLINE_REF && value == (items[i].__contact && items[i].__contact.getId(type == ZmContact.GROUP_CONTACT_REF))) {
 					items.splice(i, 1);
 					found = true;
 					break;
