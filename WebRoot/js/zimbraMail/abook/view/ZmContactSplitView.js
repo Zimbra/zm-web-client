@@ -428,7 +428,7 @@ function(contact, isGal, oldContact, expandDL) {
 	var subs = {
 		id: this._htmlElId,
 		contact: contact,
-		addrBook: addrBook,
+		addrbook: addrBook,
 		contactHdrClass: (ZmOrganizer.COLOR_TEXT[color] + "Bg"),
 		isInTrash: (folder && folder.isInTrash())
 	};
