@@ -300,7 +300,7 @@ function() {
 // Add the attendee, then create a new empty slot since we've now filled one.
 ZmFreeBusySchedulerView.prototype._autocompleteCallback =
 function(text, el, match) {
-    if(match.fullAddress) {
+    if(match && match.fullAddress) {
         el.value = match.fullAddress;
     }
 	if (match && match.item) {
