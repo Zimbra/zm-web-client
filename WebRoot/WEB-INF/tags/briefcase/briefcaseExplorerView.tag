@@ -52,6 +52,7 @@
                     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                         <c:set var="aid" value="A${status.index}"/>
                         <c:set var="briefHit" value="${hit.briefcaseHit}"/>
+                        <c:set var="folder" value="${zm:getFolder(pageContext, briefHit.document.folderId)}"/>
                         <div class="ZhThumbnailItem">
                             <div class="ZhThumbnailIcon">
                                 <c:choose>
@@ -74,7 +75,7 @@
                             </div>
                             <div class="ZhThumbnailName">
                             <span>
-                                <c:set var="briefUrl" value="/home/${mailbox.accountInfo.name}/Briefcase/${briefHit.document.name}?auth=co"/>                                
+                                <c:set var="briefUrl" value="/home/${mailbox.accountInfo.name}${folder.path}/${briefHit.document.name}?auth=co"/>
                                 <a target="_blank" href="${fn:escapeXml(briefUrl)}" id="${aid}">
                                     <c:set var='docName' value="${empty briefHit.document.name ? unknownSubject : zm:truncate(briefHit.document.name,16,true)}"/>
                                     <c:out value="${docName}"/>
