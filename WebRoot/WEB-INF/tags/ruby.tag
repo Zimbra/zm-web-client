@@ -24,7 +24,7 @@
     <%-- NOTE: Currently Japanese only for bug 52823 --%>
     <%-- TODO: Use for all languages? only asian languages? based on COS? pref? etc? --%>
     <c:when test="${locale.language eq 'ja' and not empty base and not empty text}">
-        <ruby><rb>${zm:cook(base)}</rb><rp>(</rp><rt>${zm:cook(base)}</rt><rp>)</rp></ruby>
+        <ruby><rb>${zm:cook(base)}</rb><rp>(</rp><rt>${zm:cook(text)}</rt><rp>)</rp></ruby>
     </c:when>
     <c:when test="${not empty base}">
        ${zm:cook(base)}
