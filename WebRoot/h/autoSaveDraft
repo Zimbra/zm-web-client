@@ -26,9 +26,10 @@ function init()
     composeForm.removeChild(elem);
 
     var statusDiv = window.parent.document.getElementById('app_status_container');
-    statusDiv.innerHTML = document.getElementById('appstatuscontainer').innerHTML;
-    
-    window.setTimeout(function() {statusDiv.innerHTML='';}, 4000);
+    if (statusDiv) {
+        statusDiv.innerHTML = document.getElementById('appstatuscontainer').innerHTML;
+        window.setTimeout(function() {statusDiv.innerHTML='';}, 4000);
+    }
 }
 </script>
 <head>
