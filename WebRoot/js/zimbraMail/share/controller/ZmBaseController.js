@@ -1225,8 +1225,9 @@ ZmBaseController.prototype._resetQuickCommandOperations = function(parent) {
 					quickCommandSubMenu = new ZmActionMenu({parent:parent, menuItems:ZmOperation.NONE, id: Dwt.getNextId("quickCommandSubMenu_")});
 					quickCommandMenuItem.setMenu(quickCommandSubMenu);
 				}
-				parent.enable(ZmOperation.QUICK_COMMANDS, (quickCommands && quickCommands.length));
 			}
+			parent._hasQuickCommands = (quickCommands && quickCommands.length);
+			parent.enable(ZmOperation.QUICK_COMMANDS, parent._hasQuickCommands);
         }
     }
 };

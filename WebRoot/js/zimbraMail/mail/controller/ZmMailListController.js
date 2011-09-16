@@ -1736,7 +1736,11 @@ function(parent, num) {
 	parent.setItemVisible(ZmOperation.MARK_UNREAD, !isDrafts);
 	parent.setItemVisible(ZmOperation.SPAM, !isDrafts);
 	parent.setItemVisible(ZmOperation.DETACH, !isDrafts);
-	parent.setItemVisible(ZmOperation.QUICK_COMMANDS, !isDrafts);
+	if (parent instanceof ZmActionMenu) {
+		parent.setItemVisible(ZmOperation.QUICK_COMMANDS, !isDrafts && parent._hasQuickCommands);
+	} else {
+		parent.setItemVisible(ZmOperation.QUICK_COMMANDS, !isDrafts);
+	}
 
 	parent.setItemVisible(ZmOperation.ADD_FILTER_RULE, !isDrafts);
 	parent.setItemVisible(ZmOperation.CREATE_APPT, !isDrafts);
