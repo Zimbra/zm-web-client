@@ -1,16 +1,16 @@
 <template id='calendar.Calendar#calendar_appt' width='10' height='7'>
 	<div id='${id}_body' class='appt_body ${bodyColor} ${boxBorder}'>
-		<table cellspacing=0 cellpadding=0 style='width:100%; height:100%;${bodyStyle}'>
+		<table id='${id}_tableBody' cellspacing=0 cellpadding=0 style="width:100%; height:100%;${bodyStyle}">
 		    <$ if(data.headerStyle) {$>
-			<tr style='${headerStyle}'>
+			<tr style="${headerStyle}">
 			<$ }else { $>
             <tr class='${headerColor}'>			
 			<$ } $>
-                <td class="${showAsColor}" width=4 rowspan="<$= data.hideTime ? 2 : 3 $>"></td>
-				<td class='appt${newState}_time' id='${id}_st'>
+                <td style="${showAsColor}" width=4 rowspan="<$= data.hideTime ? 2 : 3 $>"></td>
+				<td class='appt${newState}_time'>
 					<table style='background: none repeat scroll 0 0 transparent;border:0;border-collapse:collapse;border-spacing:0;width:100%'>
                         <tr>
-                            <td style='padding-right:3px;white-space:nowrap;'>${starttime}</td>
+                            <td id='${id}_st' style='padding-right:3px;white-space:nowrap;'>${starttime}</td>
                             <$ if (data.icon) { $>
                                 <td style='padding-right:3px;'><$= AjxImg.getImageHtml(data.icon, "width:16") $></td>
                             <$ } $>
@@ -20,9 +20,6 @@
                                 <td style='padding-right:3px;'><$= AjxImg.getImageHtml("ApptRecurIndicator") $></td>
                             <$ } $>
                             <td style='width:100%'></td>
-                            <$ if (data.tagIcon) { $>
-                                <td style='padding-right:3px;'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></td>
-                            <$ } $>
                             <$ if (data.otherAttendees) { $>
                                 <td style='padding-right:3px;'>
                                     <$= AjxImg.getImageHtml("ApptMeetingIndicator") $>
@@ -31,9 +28,10 @@
                                     <$ } $>
                                 </td>
                             <$ } $>
+		                    <$= AjxTemplate.expand("#calendar_tag_icon",  data) $>
                         </tr>
                     </table>
-				</td>
+                </td>
 			</tr>
 			<tr valign=top>
 				<td class=appt${newState}_name style='height:100%'>
@@ -52,11 +50,27 @@
 	</div>
 </template>
 
+<template id='calendar.Calendar#calendar_tag_icon'>
+    <$ if (data.tagIcon) { $>
+        <td id='${id}_tag' width=20px style='padding-right:3px;'>
+            <$= AjxImg.getImageHtml(data.tagIcon, "width:16") $>
+        </td>
+    <$ } $>
+    <$ if (data.peelIcon) { $>
+        <td id='${id}_peel' width=12 valign="top">
+            <$= AjxImg.getImageHtml('PeelSpacer', "width:12") $>
+            <div style='position:absolute;z-index:1;top:${peelTop};right:${peelRight};'>
+                <$= AjxImg.getImageHtml(data.peelIcon, "width:12") $>
+            </div>
+        </td>
+    <$ } $>
+</template>
+
 <template id='calendar.Calendar#calendar_appt_bottom_only' width='10' height='7'>
 	<div id='${id}_body' class='appt_body ${bodyColor} ${boxBorder}'>
-		<table cellspacing=0 cellpadding=0 style='width:100%;height:100%;${bodyStyle}'>
+		<table cellspacing=0 cellpadding=0 style="width:100%;height:100%;${bodyStyle}">
 			<tr valign=top>
-				<td width='4px' class='${showAsColor}' ></td>			
+				<td width='4px' style='${showAsColor}' ></td>
 				<td class=appt${newState}_name style='height:100%'>
 					${name}
 					<$ if (data.location) { $>
@@ -73,44 +87,54 @@
 
 <template id='calendar.Calendar#calendar_appt_30' width='4' height='4'>
 	<div id='${id}_body' class='appt_30_body  ${headerColor} ${boxBorder}'>
-		<table width=100% cellspacing=0 cellpadding=0 style='width:100%;height:100%;${headerStyle}'>
+		<table id='${id}_tableBody' width=100% cellspacing=0 cellpadding=0 style="width:100%;height:100%;${headerStyle}">
             <$ if(data.headerStyle) {$>
-            <tr style='${headerStyle}'>
+            <tr style="${headerStyle}">
             <$ }else { $>
             <tr class='${headerColor}'>         
             <$ } $>
-				<td width='4px' class='${showAsColor}' ></td>
-				<td class=appt_30${newState}_name>${name}</td>
-				<$ if (data.tagIcon) { $>
-					<td valign=top width=16><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></td>
-				<$ } $>
+				<td width='4px' style="${showAsColor}" ></td>
+				<td class=appt_30${newState}_name style="white-space:nowrap;">${name}</td>
 				<$ if (data.icon) { $>
 					<td valign=top width=16><$= AjxImg.getImageHtml(data.icon, "width:16") $></td>
 				<$ } $>
-			</tr>
+                <$ if (data.tagIcon) { $>
+					<td valign=top width=16  style='padding-right:3px;'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></td>
+				<$ } $>
+                <$ if (data.peelIcon) { $>
+                    <td width=12>
+                        <$= AjxImg.getImageHtml('PeelSpacer', "width:12") $>
+                    </td>
+                    <div style='position:absolute;top:1;right:1;'>
+                        <$= AjxImg.getImageHtml(data.peelIcon, "width:12") $>
+                    </div>
+                <$ } $>
+            </tr>
 		</table>
 	</div>
 </template>
 
 <template id='calendar.Calendar#calendar_appt_allday' width='4' height='4'>
 	<div id='${id}_body' class='appt_allday_body ${headerColor} ${boxBorder}'>
-		<table width=100% cellspacing=0 cellpadding=0 style='width:100%;height:100%;${headerStyle}${borderLeft}${borderRight}'>
+		<table id='${id}_tableBody' width=100% cellspacing=0 cellpadding=0 style="table-layout:fixed;width:100%;height:100%;${headerStyle}${borderLeft}${borderRight}">
             <$ if(data.headerStyle) {$>
-            <tr style='${headerStyle}'>
-            <$ }else { $>                                          z
+            <tr style="${headerStyle}">
+            <$ }else { $>
             <tr class='${headerColor}'>         
             <$ } $>
-				<td width='4px' class='${showAsColor}' ></td>
-				<td class=appt_allday${newState}_name>
-					<$ if (data.icon) { $>
-						<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
-					<$ } $>
-					<$ if (data.tagIcon) { $>
-						<div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
-					<$ } $>
-					${name}
+				<td width='4px' class='${showAsClass}' style="${showAsColor}" ></td>
+				<td width=100% class=appt_allday${newState}_name>
+					<div style="overflow: hidden; white-space: nowrap;">${name}</div>
 				</td>
-			</tr>
+                <$ if (data.icon) { $>
+                    <td width=16px style='padding-right:3px;'>
+                        <div class='appt_icon'>
+                            <$= AjxImg.getImageHtml(data.icon, "width:16") $>
+                        </div>
+                   </td>
+                <$ } $>
+		        <$= AjxTemplate.expand("#calendar_tag_icon",  data) $>
+            </tr>
 		</table>
 	</div>
 </template>
@@ -125,23 +149,26 @@
 	<$ var continues = data.multiday && !data.last; $>
 	<$ var continued = data.multiday && !data.first; $>
 	<$ var style = continues ? "padding-right:14px;" : ""; $>
-	<table border=0 width=100% cellspacing=0 cellpadding=2 style='${headerStyle}'>
-	<tr>
-		<td width='1px' class='${showAsColor}' ></td>
-		<td><div style='overflow:hidden; <$=style$>'>
-				<$ if (continues) { $>
-					<div class='calendar_month_day_item_continues'>&raquo;</div>
-				<$ } $>
-				<$ if (continued) { $>
-					&laquo;&nbsp;
-				<$ } else { $>
-					&nbsp;${duration}
-				<$ } $>
-				<$= AjxStringUtil.htmlEncode(data.appt.getName()) $>
-			</div>
-		</td>
-	</tr>
-	</table>
+	<div id='${id}_body' style='position:relative;'>
+        <table id='${id}_tableBody' border=0 width=100% cellspacing=0 cellpadding=0 style="table-layout:fixed; ${headerStyle}">
+        <tr>
+            <td width='4px' style="${showAsColor}" ></td>
+            <td width=100%><div style='overflow:hidden;white-space:nowrap; <$=style$>'>
+                    <$ if (continues) { $>
+                        <div class='calendar_month_day_item_continues'>&raquo;</div>
+                    <$ } $>
+                    <$ if (continued) { $>
+                        &laquo;&nbsp;
+                    <$ } else { $>
+                        &nbsp;${duration}
+                    <$ } $>
+                    <$= AjxStringUtil.htmlEncode(data.appt.getName()) $>
+                </div>
+            </td>
+            <$= AjxTemplate.expand("#calendar_tag_icon",  data) $>
+        </tr>
+        </table>
+	</div>
 </template>
 
 <template id='calendar.Calendar#TypeDialog'>

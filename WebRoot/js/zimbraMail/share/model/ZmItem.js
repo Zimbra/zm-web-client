@@ -387,25 +387,43 @@ function() {
 */
 ZmItem.prototype.getTagImageInfo =
 function() {
+	var tagIds = this.getVisibleTags();
+	return this.getTagImageFromIds(tagIds);
+};
+
+ZmItem.prototype.getTagImageFromIds =
+function(tagIds) {
 	var tagImageInfo;
 
-	var searchAll = appCtxt.getSearchController().searchAllAccounts;
-	if (!this.tags.length || (!searchAll && this.isShared())) {
+	if (!tagIds) {
 		tagImageInfo = "Blank_16";
-	}
-	else if (this.tags.length == 1) {
-		var tagId = (!this.getAccount().isMain)
-			? ([this.getAccount().id, this.tags[0]].join(":"))
-			: (ZmOrganizer.getSystemId(this.tags[0]));
-		var tag = appCtxt.getById(tagId);
-		tagImageInfo = tag ? tag.getIconWithColor() : "Blank_16";
-	}
-	else {
+	} else if (tagIds.length == 1) {
+        tagImageInfo = this.getTagImage(tagIds[0]);
+	} else {
 		tagImageInfo = "TagStack";
 	}
 
 	return tagImageInfo;
 };
+
+ZmItem.prototype.getVisibleTags =
+function() {
+    var searchAll = appCtxt.getSearchController().searchAllAccounts;
+    if (!this.tags.length || (!searchAll && this.isShared())) {
+        return null;
+    } else {
+        return this.tags;
+    }
+}
+
+ZmItem.prototype.getTagImage =
+function(tagId) {
+    var tagFullId = (!this.getAccount().isMain)
+        ? ([this.getAccount().id, tagId].join(":"))
+        : (ZmOrganizer.getSystemId(tagId));
+    var tag = appCtxt.getById(tagFullId);
+    return tag ? tag.getIconWithColor() : "Blank_16";
+}
 
 /**
 * Gets the default action to use when dragging this item. This method

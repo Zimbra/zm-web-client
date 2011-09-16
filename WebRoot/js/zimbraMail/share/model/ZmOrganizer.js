@@ -965,6 +965,17 @@ function() {
 ZmOrganizer.prototype.getIcon = function() {};
 
 /**
+ * Gets the color of the organizer
+ *
+ * @return	{String}	the color
+ */
+ZmOrganizer.prototype.getColor =
+function() {
+    return this.rgb || ZmOrganizer.COLOR_VALUES[this.color];
+}
+
+
+/**
  * Gets the icon with color
  * 
  * @return	{String}	the icon
@@ -972,7 +983,7 @@ ZmOrganizer.prototype.getIcon = function() {};
 ZmOrganizer.prototype.getIconWithColor =
 function() {
 	var icon = this.getIcon() || "";
-	var color = this.rgb || ZmOrganizer.COLOR_VALUES[this.color];
+	var color = this.getColor();
 	return color ? [icon,color].join(",color=") : icon;
 };
 

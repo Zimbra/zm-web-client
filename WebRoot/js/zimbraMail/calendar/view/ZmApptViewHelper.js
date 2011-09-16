@@ -605,10 +605,15 @@ function(appt, id, controller, first, last) {
 	var isAccepted = appt.ptst == ZmCalBaseItem.PSTATUS_ACCEPT;
 	var calendar = appt.getFolder();
     AjxDispatcher.require(["CalendarCore", "Calendar"]);
-	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
-	var headerStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.header : colors.standard.header);
+
+    var tagIds  = appt.getVisibleTags();
+    var tagIcon = last ? appt.getTagImageFromIds(tagIds) : null;
+
     var fba = isNew ? ZmCalBaseItem.PSTATUS_NEEDS_ACTION : appt.fba;
-	bodyStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.body : colors.standard.body);
+    var headerColors = ZmApptViewHelper.getApptColor(isNew, calendar, tagIds, "header");
+    var headerStyle  = ZmCalBaseView._toColorsCss(headerColors.appt);
+    var bodyColors   = ZmApptViewHelper.getApptColor(isNew, calendar, tagIds, "body");
+    var bodyStyle    = ZmCalBaseView._toColorsCss(bodyColors.appt);
 
     var borderLeft  = first ? "" : "border-left:0;";
     var borderRight = last  ? "" : "border-right:0;";
@@ -626,24 +631,32 @@ function(appt, id, controller, first, last) {
 		location:     AjxStringUtil.htmlEncode(appt.getLocation()),
 		status:       appt.isOrganizer() ? "" : appt.getParticipantStatusStr(),
 		icon:         first && appt.isPrivate() ? "ReadOnly" : null,
-		showAsColor:  first ? ZmApptViewHelper._getShowAsColorFromId(fba) : "appt_allday" + newState + "_name",
+        showAsColor:  first ? ZmApptViewHelper._getShowAsColorFromId(fba) : "",
+        showAsClass:  first ? "" : "appt_allday" + newState + "_name",
         boxBorder:    ZmApptViewHelper.getBoxBorderFromId(fba),
         borderLeft:   borderLeft,
-        borderRight:  borderRight
+        borderRight:  borderRight,
+        tagIcon:      tagIcon
 	};
+    ZmApptViewHelper.setupCalendarColor(last, headerColors, tagIds, subs, "headerStyle", null, 1, 1);
     return AjxTemplate.expand("calendar.Calendar#calendar_appt_allday", subs);
 };
 
 ZmApptViewHelper._getShowAsColorFromId =
 function(id) {
+    var color = "#4AA6F1";
 	switch(id) {
-        case ZmCalBaseItem.PSTATUS_NEEDS_ACTION: return "ZmAppt-no-response";
-		case "F": return "ZmAppt-free freeBusyBar_free";
-		case "B": return "ZmAppt-busy";
-		case "T": return "ZmAppt-tentative freeBusyBar_tentative";
-		case "O": return "ZmAppt-ooo freeBusyBar_ooo";
+        case ZmCalBaseItem.PSTATUS_NEEDS_ACTION: color = "#FF3300"; break;
+		case "F": color = "#FFFFFF"; break;
+		case "B": color = "#4AA6F1"; break;
+		case "T": color = "#BAE0E3"; break;
+		case "O": color = "#7B5BAC"; break;
 	}
-	return "ZmAppt-busy";
+    var colorCss = Dwt.createLinearGradientCss("#FFFFFF", color, "v");
+    if (!colorCss) {
+        colorCss = "background-color: " + color + ";";
+    }
+    return colorCss;
 };
 
 ZmApptViewHelper.getBoxBorderFromId =
@@ -678,4 +691,41 @@ function(list, role) {
 		}
 	}
 	return result;
+};
+
+ZmApptViewHelper.getApptColor =
+function(deeper, calendar, tagIds, segment) {
+    var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
+    var calColor = deeper ? colors.deeper[segment] : colors.standard[segment];
+    var apptColor = calColor;
+    if (tagIds && (tagIds.length == 1)) {
+        var tag = appCtxt.getById(tagIds[0]);
+        apptColor = { bgcolor: tag.getColor() };
+    }
+    return {calendar:calColor, appt:apptColor};
+};
+
+ZmApptViewHelper.setupCalendarColor =
+function(last, colors, tagIds, templateData, colorParam, clearParam, peelTopOffset, peelRightOffset, div) {
+    var colorCss = Dwt.createLinearGradientCss("#FFFFFF", colors.appt.bgcolor, "v");
+    if (colorCss) {
+        templateData[colorParam] = colorCss;
+        if (clearParam) {
+            templateData[clearParam] = null;
+        }
+    }
+    if (last && tagIds && (tagIds.length == 1)) {
+        if (!colorCss) {
+            // Can't use the gradient color.  IE masking doesn't work properly for tags on appts;
+            // Since the color is already set in the background, just print the overlay image
+            var match = templateData.tagIcon.match(AjxImg.RE_COLOR);
+            if (match) {
+                templateData.tagIcon = (match && match[1]) + "Overlay";
+            }
+        }
+        // Tag color has been applied to the appt.  Add the calendar peel image
+        templateData.peelIcon  = "Peel,color=" + colors.calendar.bgcolor;
+        templateData.peelTop   = peelTopOffset;
+        templateData.peelRight = peelRightOffset;
+    }
 };

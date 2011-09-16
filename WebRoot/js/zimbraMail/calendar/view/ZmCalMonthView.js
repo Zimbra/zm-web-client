@@ -39,7 +39,7 @@ ZmCalMonthView.ANIMATE_DURATION = 300;
 
 ZmCalMonthView.OUT_OF_BOUNDS_SNAP = -1000;
 
-ZmCalMonthView.ALL_DAY_DIV_BODY = "_body";
+ZmCalMonthView.ALL_DAY_DIV_BODY   = "_body";
 
 ZmCalMonthView.prototype.toString = 
 function() {
@@ -244,7 +244,7 @@ ZmCalMonthView.prototype.createApptItems =
 function() {
 	var allDayParent = document.getElementById( this._daysId);
     var day;
-    // Create th eall-day divs
+    // Create the all-day divs
     this._apptAllDayDiv = {};
     for (var uniqueId in this._apptSets) {
         var apptSet = this._apptSets[uniqueId];
@@ -360,16 +360,19 @@ function(appt, first, last) {
     div.tail = last;
 
 	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
-	div.innerHTML = ZmApptViewHelper._allDayItemHtml(appt, this._getItemId(appt),
-        this._controller, first, last);
+    var id = this._getItemId(appt);
+	div.innerHTML = ZmApptViewHelper._allDayItemHtml(appt, id, this._controller, first, last);
     var apptBodyDiv = div.firstChild;
+
     if (!first) {
         apptBodyDiv.style.cssText += "border-left: 0px none black !important;";
     }
     if (!last) {
         apptBodyDiv.style.cssText += "border-right: 0px none black !important;";
     }
-    ZmCalBaseView._setApptOpacity(appt, apptBodyDiv);
+    // Set opacity on the table that is colored with the gradient - needed by IE
+    var tableEl = Dwt.getDescendant(apptBodyDiv, id + "_tableBody");
+    ZmCalBaseView._setApptOpacity(appt, tableEl);
 
 	return div;
 };
@@ -402,7 +405,7 @@ function(appt, dayIndex, dayTable) {
         result.id = appt.invId + ":" + dayIndex;
     }
 	result.className = "allday";
-    this._createAllDayFillerContent(result);
+    this._createAllDayFillerContent(result, true);
     if (remove) {
         result.parentNode.removeChild(result);
     }
@@ -411,8 +414,13 @@ function(appt, dayIndex, dayTable) {
 
 
 ZmCalMonthView.prototype._createAllDayFillerContent =
-function(tr) {
-    var cell = tr.insertCell(-1);
+function(tr, createCell) {
+    var cell;
+    if (createCell) {
+        cell = tr.insertCell(-1);
+    } else {
+        cell = tr.firstChild;
+    }
     cell.innerHTML = "<table class=allday><tr><td><div class=allday_item_filler></div></td></tr></table>";
     cell.className = "calendar_month_day_item";
 }
@@ -436,12 +444,19 @@ ZmCalMonthView.prototype._createItemHtmlContents =
 function(appt, tr) {
     var needsAction = appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
     var calendar = appCtxt.getById(appt.folderId);
-    var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
-    var headerStyle = ZmCalBaseView._toColorsCss(needsAction ? colors.deeper.header : colors.standard.header);
-    var bodyStyle = ZmCalBaseView._toColorsCss(needsAction ? colors.deeper.body : colors.standard.body);
     var fba = needsAction ? ZmCalBaseItem.PSTATUS_NEEDS_ACTION : appt.fba;
 
+    var tagIds  = appt.getVisibleTags();
+    var tagIcon = appt.getTagImageFromIds(tagIds);
+
+    var headerColors = ZmApptViewHelper.getApptColor(needsAction, calendar, tagIds, "header");
+    var headerStyle  = ZmCalBaseView._toColorsCss(headerColors.appt);
+    var bodyColors   = ZmApptViewHelper.getApptColor(needsAction, calendar, tagIds, "body");
+    var bodyStyle    = ZmCalBaseView._toColorsCss(bodyColors.appt);
+
+
     var data = {
+        id: this._getItemId(appt),
         appt: appt,
         duration: appt.getShortStartHour(),
         headerStyle: headerStyle,
@@ -449,18 +464,23 @@ function(appt, tr) {
         multiday: appt._fanoutFirst != null,
         first: appt._fanoutFirst,
         last: appt._fanoutLast,
-        showAsColor : ZmApptViewHelper._getShowAsColorFromId(fba)
+        showAsColor : ZmApptViewHelper._getShowAsColorFromId(fba),
+        tagIcon: tagIcon
     };
+    ZmApptViewHelper.setupCalendarColor(true, bodyColors, tagIds, data, "headerStyle", null, 0, 0);
 
     var cell = tr.insertCell(-1);
     cell.className = "calendar_month_day_item";
     cell.innerHTML = AjxTemplate.expand("calendar.Calendar#month_appt", data);
+    // Hack for IE - it doesn't display the tag and peel unless you  alter a containing className.
+    // The month template div does not have any classNames, so this is safe.
+    cell.firstChild.className = "";
 }
 
 ZmCalMonthView.prototype._getStyle =
 function(type, selected, disabled, item) {
 	if (type == ZmCalBaseView.TYPE_APPT && item && !item.isAllDayEvent()) {
-		return selected ? this._monthItemSelectedClass : this._monthItemClass;
+        return this._monthItemClass;
 	} else {
 		return ZmCalBaseView.prototype._getStyle.apply(this, arguments);
 	}
@@ -1435,6 +1455,7 @@ function(data) {
         data.offsetY  = [];
         var allDayDiv = null;
         var blankHtml = null;
+
         // Offscreen divs are already setup, merely not positioned and made visible.
         // Alter the display html of onscreen divs from 2nd to last-1 to be blank (!head and !tail)
         for (var i = 0; i < data.numDays; i++) {
@@ -1444,21 +1465,28 @@ function(data) {
                 // Initially onscreen div
                 day = this._days[iDay];
                 this._calculateOffsetY(data, allDayDiv, day.week);
-                if ((data.numDays > 1) && (i > 0)) {
-                    if (allDayDiv.head || (allDayDiv.tail  && (i < (data.numDays - 1)))) {
+                if (data.numDays > 1) {
+                    if (i == 0) {
                         allDayDiv.saveHtml  = allDayDiv.innerHTML;
-                        if (!blankHtml) {
-                            var itemId = this._getItemId(data.appt);
-                            blankHtml = ZmApptViewHelper._allDayItemHtml(data.appt, itemId, this._controller, false, false);
-                        }
-                        allDayDiv.innerHTML = blankHtml;
-                        allDayDiv.firstChild.id = allDayDiv.id + ZmCalMonthView.ALL_DAY_DIV_BODY;
+                        this._clearIcon(allDayDiv.id, "tag");
+                        this._clearIcon(allDayDiv.id, "peel");
+                    } else {
+                        if (allDayDiv.head || (allDayDiv.tail  && (i < (data.numDays - 1)))) {
+                            allDayDiv.saveHtml  = allDayDiv.innerHTML;
+                            if (!blankHtml) {
+                                var itemId = this._getItemId(data.appt);
+                                blankHtml = ZmApptViewHelper._allDayItemHtml(data.appt, itemId, this._controller, false, false);
+                            }
+                            allDayDiv.innerHTML = blankHtml;
+                            allDayDiv.firstChild.id = allDayDiv.id + ZmCalMonthView.ALL_DAY_DIV_BODY;
 
-                        allDayDiv.firstChild.style.cssText += "border-left: 0px none black !important;";
-                        allDayDiv.firstChild.style.cssText += "border-right: 0px none black !important;";
-                        this._setAllDayDnDSize(allDayDiv, false, false);
-                     }
+                            allDayDiv.firstChild.style.cssText += "border-left: 0px none black !important;";
+                            allDayDiv.firstChild.style.cssText += "border-right: 0px none black !important;";
+                            this._setAllDayDnDSize(allDayDiv, false, false);
+                         }
+                    }
                 }
+
             }
             //this._setAllDayDnDSize(data, i, allDayDiv);
             this._highlightAllDayDiv(allDayDiv, data.appt, true);
@@ -1475,6 +1503,7 @@ function(data) {
             apptSet.appts.push(data.appt);
         }
         data.trEl = [];
+        data.tableEl = [];
         for (var iAppt = 0; iAppt < apptSet.appts.length; iAppt++) {
             var appt = apptSet.appts[iAppt];
             var trId = this._getItemId(appt);
@@ -1486,28 +1515,37 @@ function(data) {
                 this._createItemHtmlContents(appt, trEl);
                 this.associateItemWithElement(appt, trEl, ZmCalBaseView.TYPE_APPT);
             }
+            data.tableEl[iAppt] = Dwt.getDescendant(trEl, this._getItemId(appt) + "_tableBody");
             data.trEl.push(trEl);
             data.timeOffset.push(this._getTimeOffset(appt.getStartTime()));
         }
         this._calculateWeekY(data);
         data.apptDiv = {};
-        data.trContent = [];
     }
 
 	data.dndStarted = true;
 	return true;
 };
 
+ZmCalMonthView.prototype._clearIcon =
+function(allDayDivId, iconName) {
+    var td = document.getElementById(allDayDivId + "_" + iconName);
+    if (td) {
+        td.innerHTML = "";
+    }
+}
+
+
 ZmCalMonthView.prototype._highlightAllDayDiv =
 function(allDayDiv, appt, highlight) {
     var apptBodyDiv = document.getElementById(allDayDiv.id + ZmCalMonthView.ALL_DAY_DIV_BODY);
+    var tableEl = document.getElementById(this._getItemId(appt) + "_tableBody");
+    // Not altering opacity - it was setting it to 0.7 for DnD, but the base opacity for all day is 0.4
     if (highlight) {
-        Dwt.setOpacity(apptBodyDiv, ZmCalColView._OPACITY_APPT_DND);
         Dwt.addClass(apptBodyDiv, DwtCssStyle.DROPPABLE);
         Dwt.setZIndex(allDayDiv, "1000000000");
     } else {
         Dwt.delClass(apptBodyDiv, DwtCssStyle.DROPPABLE);
-        ZmCalBaseView._setApptOpacity(appt, apptBodyDiv);
         Dwt.setZIndex(allDayDiv, "");
     }
 }
@@ -1676,18 +1714,20 @@ function(data, newDayIndex) {
     var allDayParent = null;
     for (var i = 0; i < data.trEl.length; i++) {
         var day = this._days[newDayIndex + i];
-        var trSize;
         if (day) {
             if (!data.apptDiv[i]) {
-                trSize = Dwt.getSize(data.trEl[i]);
-                data.trContent[i] = data.trEl[i].firstChild;
+                // TR -> TD -> TemplateApptDiv.
+                var td =  data.trEl[i].firstChild;
+                var templateApptDiv = td.firstChild;
+                td.saveHTML = td.innerHTML;
+                // Replace the templateApptDiv with filler content
+                td.removeChild(templateApptDiv);
                 // Create a spacer row - changes in height invalidates the all day div positioning
-                data.trEl[i].removeChild(data.trContent[i]);
-                this._createAllDayFillerContent(data.trEl[i]);
+                this._createAllDayFillerContent(data.trEl[i], false);
                 if (!allDayParent) {
                     allDayParent = document.getElementById( this._daysId);
                 }
-                this._createDnDApptDiv(data, i,  trSize, allDayParent);
+                data.apptDiv[i] = this._createDnDApptDiv(data, i, allDayParent, templateApptDiv);
             }
             Dwt.setVisible(data.apptDiv[i], true);
             var apptTable = data.apptDiv[i].firstChild;
@@ -1702,22 +1742,24 @@ function(data, newDayIndex) {
     }
 }
 
-
 ZmCalMonthView.prototype._createDnDApptDiv =
-function(data, iAppt, trSize, allDayParent) {
+function(data, iAppt, allDayParent, templateApptDiv) {
     var div = document.createElement("div");
     var subs = { apptSlice:iAppt};
-    div.innerHTML = AjxTemplate.expand("calendar.Appointment#DnDProxy", subs);
     div.style.position = "absolute";
-    var trEls = div.getElementsByTagName("tr");
-    var trEl  = trEls[0];
-    trEl.appendChild(data.trContent[iAppt]);
-    Dwt.setOpacity(data.trContent[iAppt], ZmCalColView._OPACITY_APPT_DND);
-    Dwt.addClass(data.trContent[iAppt], DwtCssStyle.DROPPABLE);
-    Dwt.setSize(div, trSize.x, trSize.y);
+    // Attach month appt to DnD proxy div
+    div.appendChild(templateApptDiv);
+
+    var trSize  = Dwt.getSize(data.trEl[iAppt]);
+    Dwt.setSize(div, trSize.x, Dwt.CLEAR);
     Dwt.setZIndex(div, '100000000');
-    data.apptDiv[iAppt]  = div;
     allDayParent.appendChild(div);
+
+    // Set the opacity on the table that has the gradient coloring; Needed for IE
+    Dwt.setOpacity(data.tableEl[iAppt], ZmCalColView._OPACITY_APPT_DND);
+    Dwt.addClass(div, DwtCssStyle.DROPPABLE);
+
+    return div;
 }
 
 
@@ -1726,40 +1768,49 @@ function(data, startIndex, deselect) {
      for (var i = 0; i < data.trEl.length; i++) {
          var day = this._days[startIndex + i];
          if (data.apptDiv[i]) {
-             // Wipe out the ApptDnDDivs
+             // Detach the Appt DnD Proxy Div from the allDayParent
              data.apptDiv[i].parentNode.removeChild(data.apptDiv[i]);
          }
-         if (day && data.trContent[i]) {
-             var td = data.trContent[i];
-             if (startIndex == data.startDayIndex) {
-                 data.trEl[i].removeChild(data.trEl[i].firstChild);
-                 data.trEl[i].appendChild(td);
-             } else {
-                 // Find the correct position within the appts of the current day
-                 var tBody = document.getElementById(day.dayId);
-                 var insertIndex = 0;
-                 for (insertIndex = 0; insertIndex < tBody.children.length; insertIndex++) {
-                     var targetTR = tBody.children[insertIndex];
-                     if ((targetTR.apptStartTimeOffset !== undefined) && (targetTR.apptStartTimeOffset > data.timeOffset[i])) {
-                          break;
-                    }
+
+         if (day && data.trEl[i]) {
+             // TD that originally contained the appt
+             var td = data.trEl[i].firstChild;
+             if (td.saveHTML) {
+                 if (startIndex == data.startDayIndex) {
+                     // Remove the filler
+                     td.removeChild(td.firstChild);
+                 } else {
+                     // Dropped in a new cell - find the correct position within the appts of the current day
+                     var tBody = document.getElementById(day.dayId);
+                     var insertIndex = 0;
+                     for (insertIndex = 0; insertIndex < tBody.childNodes.length; insertIndex++) {
+                         var targetTR = tBody.childNodes[insertIndex];
+                         if ((targetTR.apptStartTimeOffset !== undefined) && (targetTR.apptStartTimeOffset > data.timeOffset[i])) {
+                              break;
+                        }
+                     }
+                     // Remove the original TR from its day div
+                     if (data.trEl[i].parentNode) {
+                         data.trEl[i].parentNode.removeChild(data.trEl[i]);
+                     }
+                     data.trEl[i].removeChild(td);
+
+                     // Create a new TR in the new day div
+                     var tr = tBody.insertRow(insertIndex);
+                     tr.appendChild(td);
+                     tr.id = data.trEl[i].id;
+                     tr.className = data.trEl[i].className;
                  }
-                 if (data.trEl[i].parentNode) {
-                     data.trEl[i].parentNode.removeChild(data.trEl[i]);
-                 }
-                 var tr = tBody.insertRow(insertIndex);
-                 tr.appendChild(td);
-                 tr.id = data.trEl[i].id;
-                 tr.className = data.trEl[i].className;
-             }
-             if (deselect) {
-                 Dwt.delClass(td, DwtCssStyle.DROPPABLE);
-                 ZmCalBaseView._setApptOpacity(data.appt, td);
+                 // Set the td with the original appt content.  Do via innerHTML since IE
+                 // does not handle the gradient coloring properly if the appt's div is simply moved
+                 td.innerHTML = td.saveHTML;
+                 // Hack for IE - it doesn't display the tag and peel unless you  alter a containing className.
+                 // The month template div does not have any classNames, so this is safe.
+                 td.firstChild.className = "";
              }
          }
      }
      data.apptDiv = {};
-     data.trContent = [];
 }
 
 ZmCalMonthView.prototype._removeDnDApptDiv =
@@ -1779,6 +1830,7 @@ function(data) {
     } else {
         this._reattachApptDnDHtml(data, data.startDayIndex, false);
     }
+    data.snap.dayIndex = data.startDayIndex;
 };
 
 ZmCalMonthView.prototype._deselectDnDHighlight =
@@ -1796,8 +1848,8 @@ function(data) {
                 var day = this._days[data.startDayIndex + i];
                 if (day) {
                     var td = data.trEl[i].firstChild;
-                    Dwt.delClass(td, DwtCssStyle.DROPPABLE);
-                    ZmCalBaseView._setApptOpacity(data.appt, td);
+                    // Set the opacity on the table containing the gradient coloring; needed for IE
+                    ZmCalBaseView._setApptOpacity(data.appt, data.tableEl[i]);
                 }
             }
         } else {
