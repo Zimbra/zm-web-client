@@ -243,7 +243,7 @@ ZmMailMsgView.prototype.getItem = ZmMailMsgView.prototype.getMsg;
 // Following two overrides are a hack to allow this view to pretend it's a list view
 ZmMailMsgView.prototype.getSelection =
 function() {
-	return this._msg;
+	return [this._msg];
 };
 
 ZmMailMsgView.prototype.getSelectionCount =
