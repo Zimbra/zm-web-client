@@ -1724,7 +1724,7 @@ function(parent, num) {
 		}
 	}
 	var itemFolder = item && item.folderId && appCtxt.getById(item.folderId); // We may be looking at a search result, so the items in the list may not all be in the same folder
-	var isDrafts = (item && item.isDraft) || this.isDraftsFolder();
+	var isDrafts = (item && item.isDraft && item.type != ZmId.ITEM_CONV) || this.isDraftsFolder();
 	var isFeed = (itemFolder && itemFolder.isFeed());
 
 	parent.setItemVisible(ZmOperation.EDIT, isDrafts && (!itemFolder || !itemFolder.isReadOnly()));

@@ -20,18 +20,7 @@ ZmConvView2 = function(params) {
 	this._mode = ZmId.VIEW_CONV2;
 	this._controller = params.controller;
 
-	// A single action menu is shared by the msgs in this conv. It appears when the msg body is
-	// right-clicked, or when the Actions button is clicked.
-	var opList = this._controller._getActionMenuOps();
-	var menu = this._actionsMenu = new ZmActionMenu({parent:appCtxt.getShell(), menuItems: opList, context: this._mode});
-	for (var i = 0; i < opList.length; i++) {
-		var menuItem = opList[i];
-		if (this._controller._listeners[menuItem]) {
-			var listener = this._listenerProxy.bind(this, this._controller._listeners[menuItem], menu.getOp(menuItem));
-			menu.addSelectionListener(menuItem, listener, 0);
-		}
-	}
-	
+
 	this._listChangeListener = this._msgListChangeListener.bind(this);
 
 	// Add change listener to taglist to track changes in tag color
@@ -74,6 +63,18 @@ function(conv, force) {
 
 	if (!force && this._item && conv && (this._item.id == conv.id)) { return; }
 
+	// A single action menu is shared by the msgs in this conv. It appears when the msg body is
+	// right-clicked, or when the Actions button is clicked.
+	var opList = this._controller._getActionMenuOps();
+	var menu = this._actionsMenu = new ZmActionMenu({parent:appCtxt.getShell(), menuItems: opList, context: this._mode});
+	for (var i = 0; i < opList.length; i++) {
+		var menuItem = opList[i];
+		if (this._controller._listeners[menuItem]) {
+			var listener = this._listenerProxy.bind(this, this._controller._listeners[menuItem], menu.getOp(menuItem));
+			menu.addSelectionListener(menuItem, listener, 0);
+		}
+	}
+	
 	var oldConv = this._item;
 	this.reset();
 	this._item = conv;
@@ -760,6 +761,7 @@ function(msg, container) {
 	ab.setMenu(this._actionsMenu);
 	ab.reparentHtmlElement(this._buttonCellId);
 	ab.addDropDownSelectionListener(this._setActionMenu.bind(this));
+	ab.addSelectionListener(this._setActionMenu.bind(this));
 
 	this._addAttachmentLinksToFooter();
 	
