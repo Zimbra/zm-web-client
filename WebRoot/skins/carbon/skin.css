@@ -13,13 +13,13 @@
  * ***** END LICENSE BLOCK *****
  *
 /*------------------------------------------------- Marge toolbar and button styling */
-.ZToolbarButtonBorder, .ZButtonBorder {
+.ZToolbarButtonBorder, .ZButtonBorder, .ZAppTabBorder {
     border:0 !important;
     background-color:transparent !important;
     font-weight:inherit;
 }
 /* Button in default, unselected, unpressed state. */
-.ZToolbarButton, .DwtToolbarButton {
+.ZToolbarButton, .DwtToolbarButton, .ZButton  {
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fefefe), to(#e6e6e6));
     background-image: -moz-linear-gradient(top, #fefefe, #e6e6e6);
     border:1px solid #949494;
@@ -32,7 +32,7 @@
 }
 
 /* mouse-over button */
-.ZToolbarButton.ZHover, .DwtToolbarButton.ZHover {
+.ZToolbarButton.ZHover, .DwtToolbarButton.ZHover, .ZButton.ZHover  {
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#c7e9ff), to(#90b6ff));
     background-image: -moz-linear-gradient(top, #c7e9ff, #90b6ff);
     border:1px solid #6767a3;
@@ -40,20 +40,39 @@
 
 
 /* Button is pressed. */
-.ZToolbarButton.ZActive, .DwtToolbarButton.ZActive {
+.ZToolbarButton.ZActive, .DwtToolbarButton.ZActive, .ZButton.ZActive {
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#90b6ff), to(#c7e9ff));
     background-image: -moz-linear-gradient(top, #90b6ff, #c7e9ff);
     border:1px solid #6767a3;
 }
 
 /* Button is disabled. */
-.ZToolbarButton.ZDisabled, .DwtToolbarButton.ZDisabled {
+.ZToolbarButton.ZDisabled, .DwtToolbarButton.ZDisabled, .ZButton.ZDisabled {
     opacity:.5;
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fefefe), to(#e6e6e6));
     background-image: -moz-linear-gradient(top, #fefefe, #e6e6e6);
     border:1px solid #949494;
 }
-
+.ZButton.ZAppTab {
+   border-radius: 3px 3px 0 0;
+    -moz-background-radius: 3px 3px 0 0;
+    -webkit-background-radius: 3px 3px 0 0;
+    border:1px solid #949494;
+    border-bottom:0;
+}
+.ZAppTabBorder {
+    color:#666666;
+    padding-top:1px;
+}
+.ZAppTab.ZSelected {
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e6e6e6), to(#fefefe));
+    background-image: -moz-linear-gradient(top, #e6e6e6, #fefefe);
+    border:1px solid #666666;
+    border-bottom:0;
+}
+.ZAppTab.ZSelected .ZAppTabBorder {
+    black;
+}
 /* Toolbars */
 .ZToolbarTable .vertSep {
     display:none;
@@ -68,6 +87,9 @@ td#ztb_search_searchMenuButton {
     border-radius: 11px 0 0 11px;
     -moz-background-radius: 11px 0 0 11px;
     -webkit-background-radius: 11px 0 0 11px;
+}
+td#ztb_search_searchMenuButton .ZButton {
+    border:0 !important;
 }
 #zb__Search__MENU_left_icon {
     display: inline;
