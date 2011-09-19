@@ -758,6 +758,7 @@ function(ao) {
 	var item = this._createItemHtml(ao);
 	var div = this._getDivForAppt(ao);
 	if (div) div.appendChild(item);
+
 	this._postApptCreate(ao,div);	
 };
 
@@ -924,20 +925,29 @@ function(date, duration, isDblClick, allDay, folderId, shiftKey) {
 
 ZmCalBaseView._setApptOpacity =
 function(appt, div) {
-	switch (appt.ptst) {
-		case ZmCalBaseItem.PSTATUS_DECLINED:	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_DECLINED); break;
-		case ZmCalBaseItem.PSTATUS_TENTATIVE:	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_TENTATIVE); break;
-		default:								Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_NORMAL); break;
+    var opacity = this.getApptOpacity(appt);
+	Dwt.setOpacity(div, opacity);
+};
+
+ZmCalBaseView.getApptOpacity =
+function(appt) {
+    var opacity = 100;
+
+    switch (appt.ptst) {
+		case ZmCalBaseItem.PSTATUS_DECLINED:	opacity = ZmCalColView._OPACITY_APPT_DECLINED;  break;
+		case ZmCalBaseItem.PSTATUS_TENTATIVE:	opacity = ZmCalColView._OPACITY_APPT_TENTATIVE; break;
+		default:								opacity = ZmCalColView._OPACITY_APPT_NORMAL;    break;
 	}
 
 	// obey free busy status for organizer's appts
 	if (appt.fba && appt.isOrganizer()) {
 		 switch (appt.fba) {
-			case "F":	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_FREE); break;
-			case "B":	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_BUSY); break;
-			case "T":	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_TENTATIVE); break;
+			case "F":	opacity = ZmCalColView._OPACITY_APPT_FREE; break;
+			case "B":	opacity = ZmCalColView._OPACITY_APPT_BUSY; break;
+			case "T":	opacity = ZmCalColView._OPACITY_APPT_TENTATIVE; break;
 		 }
 	}
+    return opacity;
 };
 
 ZmCalBaseView._emptyHdlr =
