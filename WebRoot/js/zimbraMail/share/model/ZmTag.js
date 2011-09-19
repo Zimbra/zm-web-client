@@ -144,7 +144,7 @@ function(color) {
 };
 
 ZmTag.getIcon = function(color) {
-    var object = { getIcon:ZmTag.prototype.getIcon, color:color };
+    var object = { getIcon:ZmTag.prototype.getIcon, getColor:ZmTag.prototype.getColor, color:color };
     if (String(color).match(/^#/)) {
         object.rgb = color;
         object.color = null;
