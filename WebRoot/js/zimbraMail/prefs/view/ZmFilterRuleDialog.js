@@ -572,7 +572,7 @@ function(conf, field, options, rowData, testType, rowId) {
 	}
 	else if (type == ZmFilterRule.TYPE_CALENDAR) {
 		// create button with calendar that hangs off menu
-		var dateId = "FilterRuleDialog_DATE_" + ZmFilterRule.CONDITIONS_INDEX++;
+		var dateId = "FilterRuleDialog_DATE_" + ZmFilterRuleDialog.CONDITIONS_INDEX++;
 		var dateButton = new DwtButton({parent:this, id: dateId});
 		dateButton.setSize(ZmFilterRuleDialog.CHOOSER_BUTTON_WIDTH, Dwt.DEFAULT);
 		var date, dateText;
@@ -585,7 +585,7 @@ function(conf, field, options, rowData, testType, rowId) {
 		}
 		dateButton.setText(dateText);
 		dateButton.setData(ZmFilterRuleDialog.DATA, date);
-		var calId = "FilterRuleDialog_CAL_" + ZmFilterRule.CONDITIONS_LIST++;
+		var calId = "FilterRuleDialog_CAL_" + ZmFilterRuleDialog.CONDITIONS_INDEX++;
 		var calMenu = new DwtMenu({parent:dateButton, style:DwtMenu.CALENDAR_PICKER_STYLE, id: calId});
 		dateButton.setMenu(calMenu, true);
 		var cal = new DwtCalendar({parent:calMenu});
@@ -597,7 +597,7 @@ function(conf, field, options, rowData, testType, rowId) {
 		tabGroup.addMember(dateButton.getTabGroupMember());
 	}
 	else if (type == ZmFilterRule.TYPE_FOLDER_PICKER || type == ZmFilterRule.TYPE_TAG_PICKER) {
-		var buttonId = "FilterRuleDialog_BUTTON_" + ZmFilterRule.CONDITIONS_INDEX++;
+		var buttonId = "FilterRuleDialog_BUTTON_" + ZmFilterRuleDialog.CONDITIONS_INDEX++;
 		var button = new DwtButton({parent:this, id: buttonId});
 		var organizer;
 		if (dataValue) {
