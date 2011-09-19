@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -49,19 +49,6 @@
 * Top-level (shell) stuff
 */
 
-.user_font_modern {
-	@FontFamily-modern@
-}
-.user_font_classic {
-	@FontFamily-classic@
-}
-.user_font_wide {
-	@FontFamily-wide@
-}
-.user_font_system {
-	@FontFamily-system@
-}
-
 .DwtShell, .MainShell {
 	position:absolute;
 	left:0px;
@@ -69,9 +56,8 @@
 	@FullSize@
 }
 
-.MainShell {
-    background-color:white;
-}
+.MainShell {}
+
 
 
 
@@ -305,11 +291,11 @@ td.DDSepInvisible div {
 }
 
 .search_input {
-	width:200px;
+	width:400px;
 }
 
 
-INPUT[type="text"].search_input {
+INPUT[type="text"].people_search_input {
 	border: 0px !important;
 	height: 100% !important;
 }
@@ -318,37 +304,22 @@ INPUT[type="text"].search_input {
 .ZmSearchToolbar {
 	@FullSize@
 }
-.ZmSearchToolbarTable {
-    border-collapse:collapse;
-    border-spacing:0;
-    height:100%;
-}
+
 /* cell surrounding a cell with contents in the search toolbar */
 .ZmSearchToolbarCell {
-    padding:0px;
-}
-.ZmSearchToolbarDiv {
-    background-color:white;
-    height:22px;
-    position:relative;
-    -moz-border-radius:0px 10px 10px 0px;
-    -webkit-border-radius:0px 10px 10px 0px;
-    border-radius:0px 10px 10px 0px;
-}
-.ZmSearchToolbarDiv INPUT {
-    border:none;
-    border-color:transparent;
+	padding:0px 2px;
 }
 
 .ZmPeopleSearchToolbarDiv {
-    height:16px;
-    margin:0px;
+	height: 16px;
+	margin:0px 1px 3px 2px;
+	@FieldBorder@
 }
 
 .ZmPeopleSearchToolbarTable {
-    width:100%;
-    height:100%;
-    border-radius:0 5px 5px 0;
+	width: 100%;
+	height: 100%;
+	background-color: #ffffff;
 }
 
 /* cell surrounding a separator in the search toolbar */
@@ -472,17 +443,9 @@ INPUT[type="text"].search_input {
 }
 
 .Expand {
-    padding-left:5px;
-    width:16px;
 #IFDEF MSIE
-	width:23px;
+	width: 23px;
 #ENDIF
-}
-.MsgFolder {
-    padding-left:10px;
-}
-.MsgActions {
-    padding-right:5px;
 }
 
 
@@ -517,18 +480,6 @@ INPUT[type="text"].search_input {
 }
 
 
-.TagBubble {
-	@NoWrap@ display:inline-block; vertical-align:middle; cursor:pointer;
-}
-
-.TagBubble .TagName,
-.TagBubble .ImgBubbleDelete {
-	display:inline-block; vertical-align:middle;
-}
-
-.TagImage {
-	display:inline-block; vertical-align:middle; padding-right:2px;
-}
 
 /* Container for the view of one particular message
 	-- there can be two instances, one for "conversation" view and one for "messages" view */
@@ -553,11 +504,6 @@ INPUT[type="text"].search_input {
 /* Container for the header of the message */
 .ZmMailMsgView .MsgHeaderTable {
 	@MailMsgHeaderLight@
-}
-
-.MsgHeaderTable {
-    border-collapse:collapse;
-    border-spacing:0;
 }
 
 /* Container for the header of the message */
@@ -651,138 +597,6 @@ INPUT[type="text"].search_input {
 	color: #eb7400;
 	font-style: italic;
 }
-
-/* Styles for Conv2.0 */
-
-.Conv2View, .Conv2View-bottom {
-	background-color:white;
-}
-
-.Conv2View-bottom {
-	height:100%;
-}
-
-.Conv2View-bottom .Conv2ViewTable {
-	width:100%;
-	height:100%;
-	border-collapse:collapse;
-	border-spacing:0;
-}
-
-.Conv2View-bottom .Conv2MessagesCell {
-	width:70%;
-}
-
-.Conv2View-bottom .Conv2ReplyCell {
-    background-color:@lighten(AppC,55)@;
-    border-left:1px solid @AppC@;
-	width:30%;
-}
-
-.Conv2View .Conv2Reply {
-    background-color:@lighten(AppC,55)@;
-    border-top:1px solid @AppC@;
-}
-
-.Conv2Messages, .Conv2Messages-bottom {
-	overflow:auto;
-}
-
-.Conv2Messages-bottom {
-	height:100%;
-}
-
-.ZmMailMsgCapsuleView {
-	border-color: @AppC@;
-	border-width:0px 1px 1px 1px;
-	border-style: solid;	
-	border-bottom-color: #C8C8C8;
-	background-color:white;
-	#IFDEF SAFARI
-	background-image:-webkit-gradient(linear, left top, left bottom, from(#FFFFFF), to(@lighten(AppC,55)@)); /* Saf4+, Chrome */
-    background-image:-webkit-linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); /* Chrome 10+, Saf5.1+ */
-    #ENDIF 
-    #IFDEF GECKO
-    background-image:   -moz-linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); /* FF3.6 */
-    #ENDIF
-    #IFDEF MSIE
-    background-image:    -ms-linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); /* IE10 */
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,55)@'); /* IE6�IE9 */
-	#ENDIF
-    
-    /*background-image:        linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); */
-}
-
-.ZmMailMsgCapsuleView.focused {
-    border-width:0px 1px 1px 1px;
-    border-style: solid;
-    border-color: @darken(SelC,20)@;
-	border-bottom-color: #C8C8C8;
-    background-color:white;
-    #IFDEF SAFARI
-    background-image:-webkit-gradient(linear, left top, left bottom, from(@lighten(SelC,66)@), to(@lighten(SelC,35)@)); /* Saf4+, Chrome */
-    background-image:-webkit-linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); /* Chrome 10+, Saf5.1+ */
-    #ENDIF
-    #IFDEF GECKO
-    background-image:   -moz-linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); /* FF3.6 */
-    #ENDIF
-    #IFDEF MSIE
-    background-image:    -ms-linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); /* IE10 */
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(SelC,66)@', EndColorStr='@lighten(SelC,35)@'); /* IE6�IE9 */
-    #ENDIF
-    /*background-image:        linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); */
-}
-
-.ZmMailMsgCapsuleView .LabelColValue {
-	@MailMsgHeaderText@
-	white-space:nowrap;
-	vertical-align:top;
-	padding:3px;
-}
-
-.ZmMailMsgCapsuleView .SubjectCol {
-    @MailMsgHeaderText@
-	@FontSize-big@
-	font-weight:bold;
-}
-
-.ZmMailMsgCapsuleView .DateCol {
-	white-space:nowrap;
-    padding-right:10px;
-}
-
-.ZmMailMsgCapsuleView .MsgHeaderTable .Unread {
-	font-weight:bold;
-}
-
-.ZmMailMsgCapsuleView .Expand {
-	cursor:pointer;
-}
-
-.ZmMailMsgCapsuleView .Link {
-	cursor:pointer;
-	@Text-link@
-/*	text-decoration:underline;*/
-	margin-right:10px;
-	white-space:nowrap;
-}
-
-.ZmConvView2 .ReplyTextarea {
-	width:96%;
-	margin:5px;
-}
-
-#IFDEF SAFARI
-.ZmConvView2 input::-webkit-input-placeholder {
-    @InputField-hint@
-}
-#ENDIF
-
-#IFDEF GECKO
-.ZmConvView2 input:-moz-placeholder {
-    @InputField-hint@
-}
-#ENDIF
 
 /* the sash next to overview does not need borders or a background color */
 .console_inset_app_l .DwtHorizontalSash {
@@ -972,6 +786,18 @@ INPUT[type="text"].search_input {
 	height: auto;
 	margin-bottom: 2px;
 	margin-left: 3px;
+}
+
+.addrBubbleHide {
+	display:inline-block;
+	overflow:hidden;
+	width:1px;
+	height:1px;
+	visibility:hidden;
+	#IFDEF MSIE
+	border: 0px !important;
+	outline: none !important;
+	#ENDIF
 }
 
 /*
@@ -1212,16 +1038,11 @@ line-height:normal;
 	border-bottom: 2px solid #AAAAAA;
 }
 
-.ZmContactView .contactHeaderTable,
 .ZmContactInfoView .contactHeaderTable {
 	border-bottom: 1px solid #777777;
 	background-color: @lighten(AltC,40)@;
 }
 
-.ZmContactInfoView .contactGroupTable {
-    border-bottom: 1px solid black;
-    background-color: white;
-}
 
 .ZmContactInfoView .contactHeaderSection {
 	@WidgetHeaderContainer@
@@ -1236,10 +1057,6 @@ line-height:normal;
 	font-weight: bold;
 }
 
-.ZmEditGroupContact .Row {
-    height: auto;
-}
-
 .ZmContactInfoView .contactHeader,
 .ZmContactView .contactHeader,
 .ZmTaskEditView .contactHeader,
@@ -1250,17 +1067,10 @@ line-height:normal;
 	@OverflowEllipsis@
 }
 
-.ZmContactView .companyName,
 .ZmContactInfoView .companyName {
 	@FontSize-bigger@
 }
 
-.ZmContactView .companyName .Text {
-    height: 25px;
-    @FontSize-bigger@
-}
-
-.ZmContactView .companyFolder
 .ZmContactInfoView .companyFolder {
 	@FontSize-big@
 	@NoWrap@
@@ -1291,7 +1101,6 @@ line-height:normal;
 	vertical-align: top;
 }
 
-.ZmContactView .contactLocation,
 .ZmContactInfoView .contactLocation {
 	@Label-light@
 	text-align: right;
@@ -1470,7 +1279,6 @@ line-height:normal;
     color: red;
 }
 
-
 /*
  *	Calendar application
  */
@@ -1522,64 +1330,6 @@ line-height:normal;
 
 .calendar_grid_day_table td {
 	padding:0px;
-}
-/*strip to indicate the current time*/
-.calendar_hour_arrow_indicator{
-    position:absolute;
-    top:-12px;
-    height:25px;
-    font-size:25px;
-    right:0px;
-}
-.calendar_cur_time_indicator_arr,.calendar_cur_time_indicator_strip,.calendar_start_limit_indicator,.calendar_end_limit_indicator{
-    margin: 0;
-    padding: 0;
-    z-index:1000000;
-    position:absolute;
-    width:100%;
-}
-.calendar_cur_time_indicator_arr,.calendar_start_limit_indicator,.calendar_end_limit_indicator{
-    height:10px;
-    color:#C33C16;
-    overflow:hidden;
-    right:1px;
-}
-.calendar_cur_time_indicator_strip{
-    font-size: 0;
-    line-height:0;
-    background-color:#C33C16;
-    height:1px;
-}
-
-.calendar_start_limit_indicator,.calendar_end_limit_indicator{
-    padding:2px;
-    height:20px;
-    z-index:10000000;
-    color:#000;
-}
-
-.calendar_offscreen_indicator_box{
-    padding-left:4px;
-    border:1px solid #000;
-    position: absolute;
-    left: 18px;
-    top: 9px;
-    width: 35px;
-    height: 12px;
-    overflow: hidden;
-    background-color:#f2f2f2;
-}
-
-.calendar_offscreen_indicator_box_dot{
-    font-size:20px;
-    float: left;
-    margin-top: -12px;
-}
-
-.calendar_offscreen_indicator_box_arrow{
-    float: left;
-    margin-top:-5px;
-    font-size:15px;
 }
 
 /* cell in the calendar grid that is selected */
@@ -1644,7 +1394,6 @@ line-height:normal;
 /* Separator between individual days of the calendar */
 .calendar_day_separator {
 	@SeparatorBg@
-    font-size: 0;
 }
 
 /* Separator between details and notes section of the calendar compose view*/
@@ -1808,13 +1557,6 @@ line-height:normal;
 /* table inside a particular day */
 .calendar_month_day_table {
 	@FullWidth@
-}
-/* Dnd based off of calendar_mont_day */
-.dnd_calendar_month_day_table {
-	@FullWidth@
-    border: 0 none black;
-    margin: 0;
-    padding:0;
 }
 
 /* label of a particular day in various states */
@@ -1989,14 +1731,14 @@ line-height:normal;
     border-color:#A3A3A3;
 #IFDEF SAFARI
     border-width:0;
-    -webkit-box-shadow:0px 1px 3px #666666;
-    box-shadow:0px 1px 3px #666666;
+    -webkit-box-shadow:1px 1px 3px #666666;
+    box-shadow:1px 1px 3px #666666;
 #ENDIF
 #IFDEF GECKO
     border-width:0;
     -moz-user-select:none;
-    -moz-box-shadow:0px 1px 3px #666666;
-    box-shadow:0px 1px 3px #666666;
+    -moz-box-shadow:1px 1px 3px #666666;
+    box-shadow:1px 1px 3px #666666;
 #ENDIF
 #IFDEF MSIE
     border-width:0px 1px 1px 0px;
@@ -2142,45 +1884,7 @@ HTML>BODY .appt-selected .appt_allday_body
   font-weight:bold;
 }
 
-.ZmCalDayTab{
-    height:21px;
-    @blRadius@:4px;
-    @brRadius@:4px;
-    max-width: 80px;
-    min-width: 80px;
-    width: 80px;
-    @Text@
-    @SeparatorBg@
-    padding-left: 6px;
-    top: 4px;
-}
 
-.ZmDayTabSeparator{
-    width: 1px;
-    height: 1px;
-    /*border: 0; */
-    /*border: 1px solid #B9B9B9;*/ /* color should slightly darker than the cal icon color*/
-    @SeparatorBg@
-    padding: 0;
-    line-height: 0;
-    font-size: 0;
-}
-
-.ZmDayTabMarginDiv {
-    width: 2px;
-    border: 0; /* color should slightly darker than the cal icon color*/
-    background-color: #FFFFFF;
-}
-
-.ZmDayTabNavToolBar {
-    position: absolute;
-    top: 0;
-    left: 42%;
-}
-
-.ZCalToggleBtn TABLE {
-    border-collapse: separate;
-}
 
 /* ??? USED? */
 /* filler for a blank all day item row in month view */
@@ -2854,10 +2558,10 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 /* FIXME: these are temporary until Owen adds them as proper icons */
-.ImgYahooBig { background-image: url("/zimbra/public/tmp/yahoo.png?v=@jsVersion@"); }
-.ImgMsnBig { background-image: url("/zimbra/public/tmp/msn.png?v=@jsVersion@"); }
-.ImgAolBig { background-image: url("/zimbra/public/tmp/aol.png?v=@jsVersion@"); }
-.ImgJiveBig { background-image: url("/zimbra/public/tmp/jive.png?v=@jsVersion@"); }
+.ImgYahooBig { background-image: url("/zimbra/public/tmp/yahoo.png"); }
+.ImgMsnBig { background-image: url("/zimbra/public/tmp/msn.png"); }
+.ImgAolBig { background-image: url("/zimbra/public/tmp/aol.png"); }
+.ImgJiveBig { background-image: url("/zimbra/public/tmp/jive.png"); }
 
 .ImAccountLabel {
 	width: 150px;
@@ -2955,7 +2659,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmAppChooser {
 	margin-left:@SmallBoxPaddingSize@;
-	margin-top: 1px;
+	margin-top:@BoxMarginSize@;
 	height: 100%;
 }
 
@@ -3507,10 +3211,6 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmDumpsterDialog .DwtListView-Rows {
 	height: 278px;
-}
-
-.ZmDumpsterDialog .DumpsterSearchInput input {
-	width:200px;
 }
 
 
@@ -4163,9 +3863,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	cursor:pointer;
 }
 
-.ZSmallHorizonalSpacer {
-    width: 10px;
-}
 
 .ZSpacer {
 	height:7px;
@@ -4727,7 +4424,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZmEditContactViewAddress .DwtInputField INPUT,
 .ZmEditContactViewAddress .DwtInputField-hint TEXTAREA,
 .ZmEditContactViewAddress .DwtInputField-hint INPUT{
-	border: none !important;
+	border:none !important;
 }
 .ZmEditContactViewAddress .DwtInputField-hint TEXTAREA,
 .ZmEditContactViewAddress .DwtInputField TEXTAREA {
@@ -4751,16 +4448,14 @@ If you feel compelled to have a background color, please do so on a per skin lev
     padding:.25em .5em;
 }
 .ZmEditContactView .rowLabel, .ZmContactSplitView .rowLabel {
-	text-align:right;
-	font-weight:bold;
+    text-align:right;
+    font-weight:bold;
 }
 .ZmEditContactView .rowValue, .ZmContactSplitView .rowValue {
-	width:150px;
-	max-width:800px;
-	word-wrap: break-word;
+    width:150px;
 }
 .ZmEditContactView .rowValue, .ZmContactSplitView .rowValue[colspan] {
-	width:auto;
+    width:auto;
 }
 
 .itemSortIcon {
@@ -4796,7 +4491,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 .PreviewFrame iframe {
     height:100%;
-    width:100%;
+    width: 100%;
 }
 
 .PreviewViewHeader .itemName{
@@ -4962,35 +4657,4 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 .Icon{
 	width: 25px;
-}
-
-.ZmUnitTestPanel {
-	width: 100%;
-	height: 300;
-	border-top: 2px solid black;
-	background-color: white;
-}
-
-.ZmSnoozeButton {
-    padding-left:5px;
-}
-
-.ZmPriorityFilterCriteria {
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-.ZmPriorityFilterSocialList {
-height: 100px;
-width: 200px;
-border: 1px solid #666;
-}
-
-.ZmPriorityFilterDivider {
-    border-left:1px solid #38546d;
-    height: 250px;
-}
-
-.ZmPriorityFilterAction {
-      
 }

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -67,6 +67,7 @@ function(actionMenu, type, id) {
         var nId = ZmOrganizer.normalizeId(id);
 		var isRoot = (nId == rootId);
 		var isBriefcase = (nId == ZmOrganizer.getSystemId(ZmOrganizer.ID_BRIEFCASE));
+        var isNotebook = ( nId == ZmOrganizer.getSystemId(ZmOrganizer.ID_NOTEBOOK));
 		var isTopLevel = (!isRoot && briefcase.parent.id == rootId);
 		var isLink = briefcase.link;
 		var isLinkOrRemote = isLink || briefcase.isRemote();
@@ -83,8 +84,8 @@ function(actionMenu, type, id) {
             actionMenu.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);            
         } else {
             actionMenu.enableAll(true);
-            var menuItem = actionMenu.getMenuItem(ZmOperation.DELETE_WITHOUT_SHORTCUT);
-            menuItem.setEnabled(!isBriefcase && (!isLinkOrRemote || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
+            var menuItem = actionMenu.getMenuItem(ZmOperation.DELETE);
+            menuItem.setEnabled(!isNotebook && !isBriefcase && (!isLinkOrRemote || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
 
             menuItem = actionMenu.getMenuItem(ZmOperation.NEW_BRIEFCASE);
             menuItem.setText(ZmMsg.newFolder);
@@ -104,7 +105,7 @@ function(actionMenu, type, id) {
                 menuItem.setEnabled(isShareVisible);
             }
         }
-        var op = actionMenu.getOp(ZmOperation.DELETE_WITHOUT_SHORTCUT);
+        var op = actionMenu.getOp(ZmOperation.DELETE);
         if (op) {
             op.setText(deleteText);
         }
@@ -161,7 +162,7 @@ function() {
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.SHARE_BRIEFCASE);
 	}
-	ops.push(ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.EDIT_PROPS, ZmOperation.EMPTY_FOLDER, ZmOperation.RECOVER_DELETED_ITEMS);
+	ops.push(ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.EMPTY_FOLDER, ZmOperation.RECOVER_DELETED_ITEMS);
 	return ops;
 };
 

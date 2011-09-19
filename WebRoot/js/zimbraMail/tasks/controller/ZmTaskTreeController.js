@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -80,7 +80,7 @@ function(parent, type, id) {
 	parent.enableAll(true);
 	if (folder) {
         if (folder.isSystem()) {
-            parent.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.RENAME_FOLDER], false);
+            parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
         } else if (folder.link && !folder.isAdmin()) {
             isShareVisible = false;
         }
@@ -105,7 +105,7 @@ function(parent, type, id) {
 
 	this._enableRecoverDeleted(parent, isTrash);
 
-	var op = parent.getOp(ZmOperation.DELETE_WITHOUT_SHORTCUT);
+	var op = parent.getOp(ZmOperation.DELETE);
 	if (op) {
 		op.setText(deleteText);
 	}
@@ -146,7 +146,7 @@ ZmTaskTreeController.prototype._getActionMenuOps =
 function() {
 	return [
 		ZmOperation.SHARE_TASKFOLDER,
-		ZmOperation.DELETE_WITHOUT_SHORTCUT,
+		ZmOperation.DELETE,
 		ZmOperation.RENAME_FOLDER,
 		ZmOperation.EDIT_PROPS,
 		ZmOperation.SYNC,

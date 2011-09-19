@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -38,9 +38,6 @@ ZmNewWindow = function() {
 	ZmController.call(this, null);
 
 	appCtxt.setAppController(this);
-
-	//update body class to reflect user selected font
-	document.body.className = "user_font_" + appCtxt.get(ZmSetting.FONT_NAME);
 
 	this._settings = appCtxt.getSettings();
 	this._settings.setReportScriptErrorsSettings(AjxException, ZmController.handleScriptError); //must set this for child window since AjxException is fresh for this window. Also must pass AjxException and the handler since we want it to update the one from this child window, and not the parent window
@@ -301,8 +298,6 @@ function() {
 		var panel = appCtxt.getShortcutsPanel();
 		panel.popup(params.cols);
 	}
-	
-	this._appViewMgr.loadingView.setVisible(false);
 
 	var kbMgr = appCtxt.getKeyboardMgr();
 	kbMgr.setTabGroup(rootTg);

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -105,22 +105,6 @@ function(buttonId) {
 };
 
 /**
- * sets an item visibility. finds the button by id. 
- *
- * @param	{String}	buttonId	the button id
- * @param	{Boolean}	visible
- */
-ZmToolBar.prototype.setItemVisible =
-function(buttonId, visible) {
-	var button = this.getButton(buttonId);
-	if (!button) {
-		return;
-	}
-	button.setVisible(visible);
-};
-
-
-/**
  * Sets the data.
  * 
  * @param	{String}	buttonId	the button id
@@ -178,18 +162,14 @@ function(enabled) {
  * @param {constant}	params.shortcut		the shortcut id (from {@link ZmKeyMap}) for showing hint
  * @param {AjxCallback|DwtMenu}	params.menu				the menu creation callback (recommended) or menu
  * @param {Boolean}	params.menuAbove	if <code>true</code>, popup menu above the button.
- *
- * @param {Boolean}	showImage		if <code>true</code>, display image
- * @param {Boolean}	showText		if <code>true</code>, display text
- *
  */
 ZmToolBar.prototype.createButton =
-function(id, params, showImage, showText) {
+function(id, params) {
 	var b = this._buttons[id] = this._createButton(params);
-	if (params.image && showImage) {
+	if (params.image) {
 		b.setImage(params.image);
 	}
-	if (params.text && showText) {
+	if (params.text) {
 		b.setText(params.text);
 	}
 	if (params.tooltip) {
@@ -348,7 +328,7 @@ ZmToolBar.prototype.setSize =
 function(width, height) {
 	DBG.println("tb", "------ setSize " + width + " x " + height);
 	var sz = this.getSize();
-	if (sz && (width != sz.x || height != sz.y)) {
+	if (width != sz.x || height != sz.y) {
 		DwtToolBar.prototype.setSize.apply(this, arguments);
 		this.adjustSize();
 	}

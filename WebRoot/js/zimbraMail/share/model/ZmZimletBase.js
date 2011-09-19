@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -176,7 +176,7 @@ function() {
  * in the panel. This method is only called for the valid types that the
  * Zimlet accepts as defined by the <code>&lt;dragSource&gt;</code> Zimlet Definition File XML.
  *
- * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmTask}	zmObject		the dragged object
+ * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmNotebook|ZmTask}	zmObject		the dragged object
  * @return	{boolean}	<code>true</code> if the drag should be allowed; otherwise, <code>false</code>
  */
 ZmZimletBase.prototype.doDrag =
@@ -187,7 +187,7 @@ function(zmObject) {
 /**
  * This method is called when an item is dropped on the Zimlet in the panel.
  * 
- * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmTask}	zmObject		the dropped object
+ * @param	{ZmAppt|ZmConv|ZmContact|ZmFolder|ZmMailMsg|ZmNotebook|ZmTask}	zmObject		the dropped object
  */
 ZmZimletBase.prototype.doDrop =
 function(zmObject) {};

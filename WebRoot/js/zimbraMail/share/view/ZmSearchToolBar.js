@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -22,22 +22,33 @@ ZmSearchToolBar = function(parent, id) {
 
 	DwtComposite.call(this, {parent:parent, className:"ZmSearchToolbar", id:id});
 
-	// setup "include shared" menu item
+	// setup "search all" menu item
 	var params = {
-		msgKey:		"searchShared",
-		tooltipKey:	"searchShared",
-		icon:		"Group",
-		setting:	ZmSetting.SHARING_ENABLED,
-		id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_SHARED)
+		msgKey: "searchAll",
+		tooltipKey: "searchForAny",
+		icon: "Globe",
+		setting: ZmSetting.MIXED_VIEW_ENABLED,
+		index: 0,
+		id: ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_ANY)
+	};
+	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_ANY, params);
+
+	// setup "include shared" menu item
+	params = {
+		msgKey: "searchShared",
+		tooltipKey: "searchShared",
+		icon: "Group",
+		setting: ZmSetting.SHARING_ENABLED,
+		id: ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_SHARED)
 	};
 	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_SHARED, params);
 
 	// setup "all accounts" menu item for multi account
 	if (appCtxt.multiAccounts) {
-		var params = {
-			msgKey:	"searchAllAccounts",
-			icon:	"Globe",
-			id:		ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_ALL_ACCOUNTS)
+		params = {
+			msgKey: "searchAllAccounts",
+			icon: "Globe",
+			id: ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_ALL_ACCOUNTS)
 		};
 		ZmSearchToolBar.addMenuItem(ZmId.SEARCH_ALL_ACCOUNTS, params);
 	}
@@ -358,11 +369,11 @@ function() {
 	var searchMenuBtnId = this._htmlElId + "_searchMenuButton";
 	var searchMenuBtn = document.getElementById(searchMenuBtnId);
 	if (searchMenuBtn) {
-		var firstItem = ZmSearchToolBar.MENU_ITEMS[0];
+		var mailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
 		this._searchMenuButton = this._addButton({ tdId:		"_searchMenuButton",
 												   buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_MENU),
-												   tooltip:		ZmMsg[ZmSearchToolBar.TT_MSG_KEY[firstItem]],
-												   icon:		ZmSearchToolBar.ICON[firstItem] });
+												   lbl:			mailEnabled ? ZmMsg.searchMail : ZmMsg.searchAll,
+												   icon:		mailEnabled ? "Message" : "Globe" });
 		var menu = new AjxCallback(this, this._createSearchMenu);
 		this._searchMenuButton.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 		this._searchMenuButton.reparentHtmlElement(searchMenuBtnId);
@@ -371,10 +382,8 @@ function() {
 	// add search button
 	this._searchButton = this._addButton({ tdId:		"_searchButton",
 										   buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_SEARCH),
-										   lbl:			"",
-										   icon:		"Search2",
-										   template: 	"dwt.Widgets#ZImageOnlyButton",
-										   className: 	"ZImageOnlyButton",
+										   lbl:			ZmMsg.search,
+										   icon:		"Search",
 										   tooltip:		ZmMsg.searchTooltip });
 
 	// add save search button if saved-searches enabled
@@ -385,6 +394,8 @@ function() {
 										 icon:		"Save",
 										 type:		"toolbar",
 										 tooltip:	ZmMsg.saveSearchTooltip });
+			
+
 
 	// add advanced search button
 	this._browseButton = this._addButton({ setting:		ZmSetting.BROWSE_ENABLED,
@@ -427,6 +438,12 @@ function() {
 		params.id = ZmSearchToolBar.ID[id];
 		mi = DwtMenuItem.create(params);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, id);
+
+		// add separator *after* "all" menu item
+		if (id == ZmId.SEARCH_ANY) {
+			if (ZmSearchToolBar.MENU_ITEMS.length <= 1) { continue; }
+			mi = new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
+		}
 	}
 
 	appCtxt.getSearchController()._addMenuListeners(menu);
@@ -456,7 +473,7 @@ function(params) {
 	var tdId = this._htmlElId + (params.tdId || params.buttonId);
 	var buttonEl = document.getElementById(tdId);
 	if (buttonEl) {
-		var btnParams = {parent:this, style:params.style, id:params.buttonId, template: params.template, className: params.className};
+		var btnParams = {parent:this, style:params.style, id:params.buttonId};
 		button = (params.type && params.type == "toolbar") ? (new DwtToolBarButton(btnParams)) : (new DwtButton(btnParams));
 		var hint = Dwt.getAttr(buttonEl, "hint");
 		this._setButtonStyle(button, hint, params.lbl, params.icon);
@@ -481,10 +498,10 @@ function(button, hint, text, image) {
 	}
 };
 
-ZmSearchToolBar.prototype._handleKeyDown =
+ZmSearchToolBar.prototype._handleKeyUp =
 function(ev) {
-	var key = DwtKeyEvent.getCharCode(ev);
-	if (key == 3 || key == 13) {
+	var code = DwtKeyEvent.getCharCode(ev);
+	if (code == 0x0D) {
 		return this._handleEnterKeyPress(ev);
 	}
 	return true;
@@ -509,40 +526,13 @@ function(ev) {
 ZmSearchToolBar.prototype.initAutocomplete =
 function(id) {
 
-	if (id == ZmId.SEARCH_SHARED) { //no change required when checking/unchecking the "include shared items" checkbox
-		return;
-	}
-
-	var firstTime = this._isPeopleAutoComplete == undefined; //first time this is called. no autocomplete is set up
-
-	var isPeople = this._isPeopleAutoComplete || false; //is the current autocomplete people search?
-	var needPeople = this._isPeopleAutoComplete = (id == ZmItem.CONTACT || id == ZmId.SEARCH_GAL); //do we want people search autocomplete now?
-
-	if (!firstTime && isPeople == needPeople) {
-		return;
-	}
-
-	if (needPeople) {
-		var params = {
-			parent: appCtxt.getShell(),
-			dataClass: (new ZmPeopleSearchAutocomplete()),
-			matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
-			options: {type:ZmAutocomplete.AC_TYPE_GAL},
-			separator: "",
-			compCallback: (new AjxCallback(this, this._acCompCallback))
-		};
-		this._autocomplete = new ZmPeopleAutocompleteListView(params);
-		this._autocomplete.handle(this._searchField.getInputElement());
-		return;
-	}
-
 	var params = {
 		dataClass:			new ZmSearchAutocomplete(),
 		matchValue:			"matchText",
 		delims:				[" ", "\t"],
 		delimCodes:			[3, 13, 32, 9],
 		separator:			" ",
-		keyDownCallback:	new AjxCallback(this, this._handleKeyDown)
+		enterCallback:		new AjxCallback(this, this._handleEnterKeyPress)
 	};
 	this._acList = new ZmAutocompleteListView(params);
 	this._acList.handle(this.getSearchField());

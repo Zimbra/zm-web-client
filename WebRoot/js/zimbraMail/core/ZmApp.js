@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -101,7 +101,6 @@ ZmApp.OPS_R					= {};	// map of operation ID to app
 ZmApp.QS_VIEWS				= {};	// list of views to handle in query string
 ZmApp.TRASH_VIEW_OP			= {};	// menu choice for "Show Only ..." in Trash view
 ZmApp.UPSELL_URL			= {};	// URL for content of upsell
-ZmApp.QUICK_COMMAND_TYPE	= {};	
 ZmApp.DROP_TARGETS			= {};	// drop targets (organizers) by item/organizer type
 
 // assistants for each app; each value is a hash where key is the name of the
@@ -190,7 +189,6 @@ function(app, params) {
 	if (params.defaultSort)			{ ZmApp.DEFAULT_SORT[app]		= params.defaultSort; }
 	if (params.trashViewOp)			{ ZmApp.TRASH_VIEW_OP[app]		= params.trashViewOp; }
 	if (params.upsellUrl)			{ ZmApp.UPSELL_URL[app]			= params.upsellUrl; }
-	if (params.quickCommandType)	{ ZmApp.QUICK_COMMAND_TYPE[app]	= params.quickCommandType; }
 
 	if (params.searchTypes) {
 		ZmApp.SEARCH_TYPES_R[app] = {};
@@ -234,37 +232,7 @@ function(app, params) {
 			ZmApp.QS_VIEWS[params.qsViews[i]] = app;
 		}
 	}
-
-    if (params.quickCommandType) {
-        ZmQuickCommand.itemTypes.push(params.quickCommandType);
-    }
 };
-
-
-/**
- * Runs the given function for all known (e.g. part of ZmApp.CLASS)
- * app classes, passing args.
- * NOTE: This runs class functions only, not instance (prototype) functions.
- * @static
- * @param funcName {String} The name of the function we will run on each
- * application.
- * @param mixed {mixed} 0 to n additional arguments are passed to funcName
- * via apply.
- */
-ZmApp.runAppFunction =
-function(funcName) {
-    var args;
-
-    for (var appName in ZmApp.CLASS) {
-        var app = window[ZmApp.CLASS[appName]];
-        var func = app && app[funcName];
-        if (func && (typeof(func) == "function")) {
-            args = args || Array.prototype.slice.call(arguments, 1);
-            func.apply(app, args);
-        }
-    }
-};
-
 
 // Public instance methods
 
@@ -315,7 +283,7 @@ function() {
  */
 ZmApp.prototype.getDisplayName =
 function() {
-	return ZmMsg[ZmApp.NAME[this._name]] || ZmApp.NAME[this._name];
+	return ZmMsg[ZmApp.NAME[this._name]];
 };
 
 /**
@@ -1030,7 +998,6 @@ function() {
 		appCtxt.getAppController().appRendered(this._name);
 		this._hasRendered = true;
 	}
-	this.stopAlert();
 };
 
 /**

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -470,8 +470,15 @@ function(htmlArr, idx, task, field, colIdx, params) {
 		htmlArr[idx++] = ZmCalItem.getImageForPriority(task, params.fieldId);
 		htmlArr[idx++] = "</center>";
 
+	} else if (params.isMixedView && (field == ZmItem.F_FROM)) {
+		htmlArr[idx++] = task.organizer || "&nbsp";
+
 	} else if (field == ZmItem.F_SUBJECT) {
-		htmlArr[idx++] = AjxStringUtil.htmlEncode(task.getName(), true);
+		if (params.isMixedView) {
+			htmlArr[idx++] = task.name ? AjxStringUtil.htmlEncode(task.name, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
+		} else {
+			htmlArr[idx++] = AjxStringUtil.htmlEncode(task.getName(), true);
+		}
 
 	} else if (field == ZmItem.F_STATUS) {
 		htmlArr[idx++] = ZmCalItem.getLabelForStatus(task.status);
@@ -634,7 +641,7 @@ ZmTaskListView.prototype.checkTaskReplenishListView = function() {
 
 ZmTaskListView.prototype._changeListener =
 function(ev) {
-	if (ev.type != this.type)
+	if ((ev.type != this.type) && (ZmList.MIXED != this.type))
 		return;
 
     //TODO: Optimize ChangeListener logic

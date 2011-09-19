@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010 Zimbra, Inc.
- *
+ * Copyright (C) 2009, 2010, 2011 VMware, Inc.
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -29,11 +29,12 @@ ZmAdvancedHtmlEditor = function(parent, posStyle, content, mode, withAce) {
     this._ignoreWords = {};
 };
 
-ZmAdvancedHtmlEditor.prototype.isZmAdvancedHtmlEditor = true;
-ZmAdvancedHtmlEditor.prototype.isInputControl = true;
-ZmAdvancedHtmlEditor.prototype.toString = function() { return "ZmAdvancedHtmlEditor"; };
-
 ZmAdvancedHtmlEditor.TINY_MCE_PATH = "/tiny_mce/3.2.6";
+
+ZmAdvancedHtmlEditor.prototype.toString =
+function() {
+	return "ZmAdvancedHtmlEditor";
+};
 
 ZmAdvancedHtmlEditor.prototype.getEditor =
 function() {
@@ -389,25 +390,20 @@ function(parent, posStyle, content, mode, withAce) {
 	}
 
 	if (!window.tinyMCE) {
-        window.tinyMCEPreInit = {};
-        window.tinyMCEPreInit.suffix = '';
-        window.tinyMCEPreInit.base = ZmAdvancedHtmlEditor.TINY_MCE_PATH; // SET PATH TO TINYMCE HERE
-        // Tell TinyMCE that the page has already been loaded
-        window.tinyMCE_GZ = {};
-        window.tinyMCE_GZ.loaded = true;
-
 		var callback = new AjxCallback(this, this.initEditorManager, [id, mode, content]);
 		var data = {
 			name: "tiny_mce",
 			path: appContextPath + ZmAdvancedHtmlEditor.TINY_MCE_PATH + "/tiny_mce.js",
 			extension: ".js",
-            method: AjxPackage.METHOD_XHR_ASYNC,
-			callback: callback,
+			method: AjxPackage.METHOD_XHR_SYNC,
+			async: false,
+			callback: null,
 			scripts: [],
 			basePath: appContextPath + ZmAdvancedHtmlEditor.TINY_MCE_PATH
 		};
 
 		AjxPackage.require(data);
+		this.initEditorManager(id, mode, content);
 	} else {
 		this.initEditorManager(id, mode, content);
 	}
@@ -500,16 +496,6 @@ function(id, mode, content) {
 		return obj._handleEditorKeyEvent(e, ed);
 	};
 
-    function onGetContent(ed, o) {
-        // Replace <p tags with <span tags
-        // and </p with </span><br / tags
-        o.content = o.content.replace(/<p/g, '<span').replace(/<\/p/g, '</span><br /');
-    };
-
-    function onPaste(ed, ev) {
-        return obj.onPaste(ev, ed);
-    };
-
 	var urlParts = AjxStringUtil.parseURL(location.href);
 
 	//important: tinymce doesn't handle url parsing well when loaded from REST URL - override baseURL/baseURI to fix this
@@ -528,7 +514,6 @@ function(id, mode, content) {
 	}
 
 	var locale = appCtxt.get(ZmSetting.LOCALE_NAME);
-    var contentCSS = appContextPath + "/css/editor.css?v=" + window.cacheKillerVersion;
 	var editorCSS = appContextPath + "/css/editor_ui.css?v=" + window.cacheKillerVersion + "&skin=" + appCurrentSkin + "&locale=" + locale;
 
     var fonts = [];
@@ -547,9 +532,9 @@ function(id, mode, content) {
 		// General options
 		mode :  (mode == DwtHtmlEditor.HTML)? "exact" : "none",
 		elements:  id,
-		plugins : "table,ztable,inlinepopups,zcontextmenu,fullscreen,zbreakquote,emotions,directionality",
+		plugins : "table,ztable,inlinepopups,zcontextmenu,fullscreen,zbreakquote",
 		theme : "advanced",
-		theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,outdent,indent,separator,bold,italic,underline,separator,forecolor,backcolor,separator,link,ztablecontrols,fullscreen,emotions,seperator,ltr,rtl",
+		theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,outdent,indent,separator,bold,italic,underline,separator,forecolor,backcolor,separator,link,ztablecontrols,fullscreen",
 		theme_advanced_buttons2: "",
 		theme_advanced_buttons3: "",
 		theme_advanced_buttons4: "",
@@ -560,49 +545,22 @@ function(id, mode, content) {
 		convert_urls : false,
 		verify_html : false,
 		gecko_spellcheck : true,
-        content_css : contentCSS,
+		force_br_newlines : true,
+		forced_root_block : '',
+		force_p_newlines : false,
+		content_css : false,
 		editor_css: editorCSS,
-        theme_advanced_runtime_fontsize:true,
 		inline_styles: false,
 		setup : function(ed) {
 			ed.onLoadContent.add(handleContentLoad);
 			ed.onInit.add(onTinyMCEEditorInit);
 			ed.onKeyPress.add(onEditorKeyPress);
-            ed.onGetContent.add(onGetContent);
-            ed.onPaste.add(onPaste);
+
 		}
 	});
 
 	this._editor = this.getEditor();
 	this._iFrameId = this._bodyTextAreaId + "_ifr";
-};
-
-ZmAdvancedHtmlEditor.prototype.onPaste = function(ev, ed) {
-    if (ev.clipboardData) {
-        var items = ev.clipboardData.items;
-        if( items ){
-            var blob = items[0].getAsFile();
-            if( blob ){
-                var req = new XMLHttpRequest();
-                req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
-                req.setRequestHeader("Cache-Control", "no-cache");
-                req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-                req.setRequestHeader("Content-Type", blob.type);
-                req.setRequestHeader("Content-Disposition", 'attachment; filename="' + blob.fileName + '"');//For paste from clipboard filename is undefined
-                req.onreadystatechange = function(){
-                    if(req.readyState === 4 && req.status === 200) {
-                        var resp = eval("["+req.responseText+"]");
-                        if(resp.length === 3) {
-                            resp[2].clipboardPaste = true;
-                            var curView = appCtxt.getAppViewMgr().getCurrentView();
-                            curView.getController().saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, resp[2]);
-                        }
-                    }
-                }
-                req.send(blob);
-            }
-        }
-    }
 };
 
 ZmAdvancedHtmlEditor.prototype.setMode =
@@ -672,18 +630,6 @@ function(src, dontExecCommand, width, height) {
 	}
 
 	ed.execCommand('mceInsertContent', false, html.join(""), {skip_undo : 1});
-};
-
-ZmAdvancedHtmlEditor.prototype.replaceImage =
-function(id, src){
-    var doc = this.getEditor().getDoc();
-    if(doc){
-        var img = doc.getElementById(id);
-        if(img){
-            img.src = src;
-            img.removeAttribute("id");
-        }
-    }
 };
 
 ZmAdvancedHtmlEditor.prototype.initDefaultFontSize =

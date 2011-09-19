@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -58,8 +58,9 @@ ZmPortalController.prototype.show = function() {
 	ZmListController.prototype.show.call(this);
 	this._setup(this._currentView);
 
-	var elements = this.getViewElements(this._currentView, this._listView[this._currentView]);
-
+	var elements = new Object();
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView({view:this._currentView, elements:elements, isAppView:true});
 };
 

@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -24,13 +24,7 @@
 
     <c:set var="rules" value="${empty param.ruleName ? mailbox.filterRulesReload : mailbox.filterRules}"/>
     <c:forEach items="${rules}" var="rule" varStatus="status">
-        <%--
-            If a filter has only "Discard" action and zimbraFeatureDiscardInFiltersEnabled is set to false,
-            do not list the filter at all.
-        --%>
-        <c:if test="${(empty param.ruleName or (rule.name eq param.ruleName)) and
-                                            (mailbox.features.discardFilterEnabled eq true or
-                                            (mailbox.features.discardFilterEnabled eq false and not zm:isDiscardActionFilter(rule)))}">
+        <c:if test="${rule.name eq param.ruleName or status.first}">
             <c:set var="selectedRule" value="${rule}"/>
         </c:if>
     </c:forEach>
@@ -93,8 +87,6 @@
                             <th nowrap><fmt:message key="filterName"/>
                         </tr>
                         <c:forEach items="${rules}" var="rule" varStatus="status">
-                            <c:if test="${mailbox.features.discardFilterEnabled eq true or
-                                                 (mailbox.features.discardFilterEnabled eq false and not zm:isDiscardActionFilter(rule))}">
                             <tr
                                     <c:if test="${selectedRule.name eq rule.name}">class='RowSelected'</c:if>
                                     >
@@ -120,7 +112,6 @@
                                     </a>
                                 </td>
                             </tr>
-                            </c:if>
                         </c:forEach>
                         <c:if test="${empty rules}">
                             <tr>
@@ -135,7 +126,7 @@
                 </td>
                 <td class='ZhDisplayRuleContent' valign='top'>
                     <c:if test="${not empty selectedRule}">
-                        <app:displayRule rule="${selectedRule}" mailbox="${mailbox}"/>
+                        <app:displayRule rule="${selectedRule}"/>
                     </c:if>
                 </td>
             </c:otherwise>
