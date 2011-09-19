@@ -276,7 +276,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
         ZmSetting.TOKEN_LIFETIME,           info.lifetime,
         ZmSetting.USERNAME,                 info.name,
 		ZmSetting.EMAIL_VALIDATION_REGEX, 	info.zimbraMailAddressValidationRegex,
-		ZmSetting.DISABLE_SENSITIVE_ZIMLETS_IN_MIXED_MODE, 	(info.domainSettings && info.domainSetting.zimbraZimletDataSensitiveInMixedModeDisabled ? info.domainSetting.zimbraZimletDataSensitiveInMixedModeDisabled : "FALSE")
+		ZmSetting.DISABLE_SENSITIVE_ZIMLETS_IN_MIXED_MODE, 	(info.domainSettings && info.domainSettings.zimbraZimletDataSensitiveInMixedModeDisabled ? info.domainSettings.zimbraZimletDataSensitiveInMixedModeDisabled : "FALSE")
     ];
     for (var i = 0; i < settings.length; i += 2) {
         var value = settings[i+1];
