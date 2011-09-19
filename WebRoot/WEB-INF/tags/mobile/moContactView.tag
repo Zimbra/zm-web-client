@@ -44,7 +44,7 @@
                     <div id="dcontent-view" style="padding-bottom:5px;">
         <div class="Stripes header">
             <div>
-                <div>
+                <div style="overflow: hidden;">
                     <span class="${contact.isGroup ? 'ImgGroupPerson_48' : 'ImgPerson_48'}" style="float:left;">&nbsp;</span>
                     <div class="td aleft">
                         <strong>
