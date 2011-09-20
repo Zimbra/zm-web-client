@@ -591,10 +591,10 @@ A:visited { color: blue; }
     border-left:3px solid darkred;
 }
 .ZmScheduler-F 		{	background-color: #FFFFFF;	}
-.ZmScheduler-B 		{	background-color: #990000;	}
-.ZmScheduler-T 	    {	background-color: #FF3300;	}
-.ZmScheduler-O      {	background-color: #FFCC00;	}
-.ZmScheduler-U 	    {	background-color: #FFF5CC;	}
+.ZmScheduler-B 		{	background-color: #4AA6F1;	}
+.ZmScheduler-T 		{	background-color: #B9EDED;	}
+.ZmScheduler-O 		{	background-color: #8854AB;	}
+.ZmScheduler-U 		{	background-color: #FFF5CC;	}
 .keyDiv{
     width:13px;
     height:13px;
@@ -954,7 +954,7 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 }
 
 .ZhCalDayAllDayAppt, .ZhCalDayAllDayApptNew {
-	padding: 1 @BoxPaddingSize@ 1 @BoxPaddingSize@;
+	/*padding: 1 @BoxPaddingSize@ 1 @BoxPaddingSize@;*/
     cursor: pointer;
 }
 

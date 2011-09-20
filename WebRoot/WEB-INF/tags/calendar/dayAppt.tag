@@ -88,9 +88,9 @@
     </table>
 </c:when>
 <c:when test="${appt.duration gt 1000*60*15}">
-    <table onclick='zSelectRow(event,"${apptId}")' class='ZhCalDayAppt${needsAction ? 'New' : ''}' width="100%" style="height:100%; opacity:${fbaOpacity};" border="0" cellspacing="0" cellpadding="2">
+    <table onclick='zSelectRow(event,"${apptId}")' class='ZhCalDayAppt${needsAction ? 'New' : ''}' width="100%" style="height:100%; opacity:${fbaOpacity};" border="0" cellspacing="0" cellpadding="1">
         <tr>
-            <td rowspan="2" class="${fbashowAsColor}" width="1px"></td>
+            <td rowspan="3" class="${fbashowAsColor}" width="1px"></td>
             <td colspan="${needImages ? 1 : 2}" nowrap style="background-color:${color}" valign=top>
                 <c:choose>
                     <c:when test="${appt.startTime lt start}">
