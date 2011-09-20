@@ -2634,3 +2634,18 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		<div><$=ZmMsg.runPriorityFilterPrompt$></div>
 	</div>
 </template>
+
+<template id='prefs.Pages#MailFilterListView'>
+ <table width='100%' cellspacing=0 cellpadding=0 border=0 align='center'>
+  <tr>
+   <td id='${targetDivId}'></td>
+   <td valign='top' id='${buttonsDivId}'>
+    <div style='padding: 30px 0px 5px 0px' id='${transferButtonId}'></div>
+    <div style='padding-bottom: 20px' id='${removeButtonId}'></div>
+    <div style='padding-bottom: 5px' id='${moveUpButtonId}'></div>
+    <div style='padding-bottom: 20px' id='${moveDownButtonId}'></div>
+   </td>
+   <td id='${sourceDivId}'></td>
+  </tr>
+ </table>
+</template>

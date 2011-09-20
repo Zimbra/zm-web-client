@@ -113,6 +113,27 @@ function(rule) {
 };
 
 /**
+ * Moves a rule to the bottom of the list.  If the rule is the last in the list, it isn't moved.
+ * @param rule  {ZmFilterRule}  rule    the rule to be moved
+ * @param skipSave  {boolean}   true to not save
+ */
+ZmFilterRules.prototype.moveToBottom = 
+function(rule, skipSave) {
+	if (!rule) { return; }
+	var index = this.getIndexOfRule(rule);
+	if (index >= (this._vector.size() - 1)) { return; }
+	
+	while (index < this._vector.size() -1) {
+		var nextRule = this._vector.removeAt(index+1);
+		this._insertRule(nextRule, index);
+		index++;
+	}
+	if (!skipSave) {
+		this._saveRules(index, true);
+	}
+};
+
+/**
  * Marks a rule as active/inactive.
  *
  * @param {ZmFilterRule}	rule			the rule to mark active/inactive

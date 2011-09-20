@@ -42,9 +42,6 @@ ZmFilterRulesController = function(container, prefsApp, prefsView, parent, outgo
 	this._buttonListeners[ZmOperation.EDIT_FILTER_RULE] = new AjxListener(this, this._editListener);
 	this._buttonListeners[ZmOperation.REMOVE_FILTER_RULE] = new AjxListener(this, this._removeListener);
 	this._buttonListeners[ZmOperation.RUN_FILTER_RULE] = new AjxListener(this, this._runListener);
-	this._buttonListeners[ZmOperation.MOVE_UP_FILTER_RULE] = new AjxListener(this, this._moveUpListener);
-	this._buttonListeners[ZmOperation.MOVE_DOWN_FILTER_RULE] = new AjxListener(this, this._moveDownListener);
-
 	this._progressController = new ZmProgressController(container, prefsApp);
 };
 
@@ -75,10 +72,11 @@ function() {
  * Initializes the controller.
  * 
  * @param	{ZmToolBar}	toolbar		the toolbar
- * @param	{ZmListView}	listView		the list view
+ * @param	{ZmListView}	listView		active list view
+ * @param   {ZmListView}    listView        not active list view
  */
 ZmFilterRulesController.prototype.initialize =
-function(toolbar, listView) {
+function(toolbar, listView, notActiveListView) {
 	// always reset the the rules to make sure we get the right one for the *active* account
 	this._rules = AjxDispatcher.run(this._outgoing ? "GetOutgoingFilterRules" : "GetFilterRules");
 
@@ -93,12 +91,20 @@ function(toolbar, listView) {
 		this._resetOperations(toolbar, 0);
 	}
 
+	if (notActiveListView) {
+		this._notActiveListView = notActiveListView;
+		notActiveListView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
+		notActiveListView.addActionListener(new AjxListener(this, this._listActionListener));
+		this.resetListView(0);
+	}
+	
 	if (listView) {
 		this._listView = listView;
 		listView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
 		listView.addActionListener(new AjxListener(this, this._listActionListener));
-		this.resetListView();
+		this.resetListView(0);
 	}
+	
 };
 
 ZmFilterRulesController.prototype.getRules =
@@ -123,12 +129,6 @@ function() {
 		ops.push(ZmOperation.SEP, ZmOperation.RUN_FILTER_RULE);
 	}
 
-	ops.push(ZmOperation.FILLER,
-			ZmOperation.MOVE_UP_FILTER_RULE,
-			ZmOperation.SEP,
-			ZmOperation.MOVE_DOWN_FILTER_RULE
-	);
-
 	return ops;
 };
 
@@ -143,10 +143,13 @@ function(selectedIndex) {
 ZmFilterRulesController.prototype._handleResponseSetListView =
 function(selectedIndex, result) {
 	this._listView.set(result.getResponse().clone());
-
+	this._notActiveListView.set(result.getResponse().clone());
 	var rule = this._rules.getRuleByIndex(selectedIndex || 0);
-	if (rule) {
+	if (rule && rule.active) {
 		this._listView.setSelection(rule);
+	}
+	else if (rule) {
+		this._notActiveListView.setSelection(rule);
 	}
 };
 
@@ -159,18 +162,20 @@ function(selectedIndex, result) {
  */
 ZmFilterRulesController.prototype._listSelectionListener =
 function(ev) {
+	var listView = this.getListView();
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		this._editListener(ev);
 	} else {
 		var tb = this._filterRulesView.getToolbar();
-		this._resetOperations(tb, this._listView.getSelectionCount(), this._listView.getSelection());
+		this._resetOperations(tb, listView.getSelectionCount(), listView.getSelection());
 	}
 };
 
 ZmFilterRulesController.prototype._listActionListener =
 function(ev) {
+	var listView = this.getListView();
 	var actionMenu = this.getActionMenu();
-	this._resetOperations(actionMenu, this._listView.getSelectionCount(), this._listView.getSelection());
+	this._resetOperations(actionMenu, listView.getSelectionCount(), listView.getSelection());
 	actionMenu.popup(0, ev.docX, ev.docY);
 };
 
@@ -183,7 +188,8 @@ ZmFilterRulesController.prototype.getActionMenu =
 function() {
 	if (!this._actionMenu) {
 		this._initializeActionMenu();
-		this._resetOperations(this._actionMenu, 0, this._listView.getSelection());
+		var listView = this.getListView();
+		this._resetOperations(this._actionMenu, 0, listView.getSelection());
 	}
 	return this._actionMenu;
 };
@@ -254,7 +260,8 @@ function(menu) {
 */
 ZmFilterRulesController.prototype._addListener =
 function(ev) {
-	if (!this._listView) { return; }
+	var listView = this.getListView();
+	if (!listView) { return; }
 	this.handleBeforeFilterChange(new AjxCallback(this, this._popUpAdd));
 };
 
@@ -305,7 +312,8 @@ function(callback) {
 
 ZmFilterRulesController.prototype._popUpAdd =
 function() {
-	var sel = this._listView.getSelection();
+	var listView = this.getListView();
+	var sel = listView.getSelection();
 	var refRule = sel.length ? sel[sel.length - 1] : null;
 	appCtxt.getFilterRuleDialog().popup(null, false, refRule, null, this._outgoing);
 };
@@ -317,9 +325,10 @@ function() {
 */
 ZmFilterRulesController.prototype._editListener =
 function(ev) {
-	if (!this._listView) { return; }
+	var listView = this.getListView();
+	if (!listView) { return; }
 
-	var sel = this._listView.getSelection();
+	var sel = listView.getSelection();
 	appCtxt.getFilterRuleDialog().popup(sel[0], true, null, null, this._outgoing);
 };
 
@@ -330,10 +339,9 @@ function(ev) {
 */
 ZmFilterRulesController.prototype._removeListener =
 function(ev) {
-	if (!this._listView) { return; }
-
-	var sel = this._listView.getSelection();
-
+	var listView = this.getListView();
+	if (!listView) { return; }
+	var sel = listView.getSelection();
 	var rule = sel[0];
 	//bug:16053 changed getYesNoCancelMsgDialog to getYesNoMsgDialog
 	var ds = this._deleteShield = appCtxt.getYesNoMsgDialog();
@@ -380,7 +388,8 @@ function(ev) {
 	this._chooseFolderDialog.popup(params);
 
 	var foundForwardAction;
-	var sel = this._listView && this._listView.getSelection();
+	var listView = this.getListView();
+	var sel = listView && listView.getSelection();
 	for (var i = 0; i < sel.length; i++) {
 		if (sel[i].actions[ZmFilterRule.A_NAME_FORWARD]) {
 			foundForwardAction = true;
@@ -398,8 +407,8 @@ function(ev) {
 ZmFilterRulesController.prototype._runFilterOkCallback =
 function(dialog, folderList) {
 	dialog.popdown();
-
-	var filterSel = this._listView && this._listView.getSelection();
+	var listView = this.getListView();
+	var filterSel = listView && listView.getSelection();
 	if (!(filterSel && filterSel.length)) {
 		return;
 	}
@@ -440,11 +449,12 @@ function(rule) {
 *
 * @param	ev		[DwtEvent]		the click event
 */
-ZmFilterRulesController.prototype._moveUpListener =
+ZmFilterRulesController.prototype.moveUpListener =
 function(ev) {
-	if (!this._listView) { return; }
+	var listView = this.getListView();
+	if (!listView) { return; }
 
-	var sel = this._listView.getSelection();
+	var sel = listView.getSelection();
 	this._rules.moveUp(sel[0]);
 };
 
@@ -453,11 +463,12 @@ function(ev) {
 *
 * @ev		[DwtEvent]		the click event
 */
-ZmFilterRulesController.prototype._moveDownListener =
+ZmFilterRulesController.prototype.moveDownListener =
 function(ev) {
-	if (!this._listView) { return; }
+	var listView = this.getListView();
+	if (!listView) { return; }
 
-	var sel = this._listView.getSelection();
+	var sel = listView.getSelection();
 	this._rules.moveDown(sel[0]);
 };
 
@@ -476,13 +487,6 @@ function(parent, numSel, sel) {
 	var numRules = this._rules.getNumberOfRules();
 	if (numSel == 1) {
 		parent.enableAll(true);
-		var index = this._rules.getIndexOfRule(sel[0]);
-		if (index == 0) {
-			parent.enable(ZmOperation.MOVE_UP_FILTER_RULE, false);
-		}
-		if (index == (numRules - 1)) {
-			parent.enable(ZmOperation.MOVE_DOWN_FILTER_RULE, false);
-		}
 	} else {
 		parent.enableAll(false);
 		parent.enable(ZmOperation.ADD_FILTER_RULE, true);
@@ -491,10 +495,7 @@ function(parent, numSel, sel) {
 		}
 	}
 
-	if (numRules <= 1) {
-		parent.enable(ZmOperation.MOVE_UP_FILTER_RULE, false);
-		parent.enable(ZmOperation.MOVE_DOWN_FILTER_RULE, false);
-	} else if (numRules == 0) {
+	if (numRules == 0) {
 		parent.enable(ZmOperation.EDIT_FILTER_RULE, false);
 		parent.enable(ZmOperation.REMOVE_FILTER_RULE, false);
 	}
@@ -502,6 +503,16 @@ function(parent, numSel, sel) {
 
 ZmFilterRulesController.prototype.getListView =
 function(){
+	if (this._listView && this._notActiveListView) {
+		var activeSel = this._listView.getSelection();
+		var notActiveSel = this._notActiveListView.getSelection();
+		if (!AjxUtil.isEmpty(activeSel)) {
+			return this._listView;
+		}
+		else if (!AjxUtil.isEmpty(notActiveSel)) {
+			return this._notActiveListView;
+		}
+	}
     return this._listView;
 };
 
