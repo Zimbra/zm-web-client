@@ -307,7 +307,7 @@ function(text, add, skipNotify) {
 		var part = AjxStringUtil.trim(parts[i]);
 		var addr = AjxEmailAddress.parse(part);
 		if (!this._strictMode || (addr && !this._addressHash[addr.address])) {
-			this.addBubble({address:addr.toString(), index:(index != null) ? index + i : null, skipNotify:skipNotify});
+			this.addBubble({address:addr ? addr.toString() : part, index:(index != null) ? index + i : null, skipNotify:skipNotify});
 		}
 		else {
 			newParts.push(part);
@@ -1132,7 +1132,6 @@ function(dragEv) {
 	var sel = dragEv.srcData && dragEv.srcData.selection;
 	if (!(sel && sel.length)) { return; }
 
-	DBG.println("aif", "target obj: " + dragEv.uiEvent.dwtObj.toString());
 	if (dragEv.action == DwtDropEvent.DRAG_ENTER) {
 		DBG.println("aif", "DRAG_ENTER");
 		var targetObj = dragEv.uiEvent.dwtObj;
@@ -1395,8 +1394,8 @@ function(params) {
 
 	var id = params.id;
 	var addrObj = params.addrObj || AjxEmailAddress.parse(params.address) || params.address || ZmMsg.unknown;
-	var fullAddress = AjxStringUtil.htmlEncode(addrObj.toString());
-	var text = AjxStringUtil.htmlEncode(addrObj.toString(appCtxt.get(ZmSetting.SHORT_ADDRESS)));
+	var fullAddress = AjxStringUtil.htmlEncode(addrObj ? addrObj.toString() : params.address);
+	var text = AjxStringUtil.htmlEncode(addrObj ? addrObj.toString(appCtxt.get(ZmSetting.SHORT_ADDRESS)) : params.address);
 	var selectId = id + "_select";
 	var sep = params.separator ? AjxStringUtil.trim(params.separator) : "";
 	
@@ -1460,7 +1459,7 @@ function(dragOp) {
 	var content;
 	if (count == 1) {
 		var addrObj = AjxEmailAddress.parse(this.address) || this.address || ZmMsg.unknown;
-		content = AjxStringUtil.htmlEncode(addrObj.toString(appCtxt.get(ZmSetting.SHORT_ADDRESS)));
+		content = AjxStringUtil.htmlEncode(addrObj ? addrObj.toString(appCtxt.get(ZmSetting.SHORT_ADDRESS)) : this.address);
 	}
 	else {
 		content = AjxMessageFormat.format(ZmMsg.numAddresses, count);
