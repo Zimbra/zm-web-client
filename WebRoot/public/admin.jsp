@@ -104,8 +104,11 @@
 	if (skin == null) {
 		skin = application.getInitParameter("zimbraDefaultAdminSkin");
 	}
-	Cookie skinCookie = new Cookie("ZA_SKIN",skin);
-	response.addCookie(skinCookie);
+
+    if (!isNewUI) { //only save old skin in cookie "ZA_SKIN"
+	    Cookie skinCookie = new Cookie("ZA_SKIN",skin);
+	    response.addCookie(skinCookie);
+    }
 		
     String contextPath = request.getContextPath();
     if(contextPath == null || contextPath.equals("/")) {
