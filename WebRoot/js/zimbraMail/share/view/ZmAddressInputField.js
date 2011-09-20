@@ -673,7 +673,7 @@ function(ev) {
 		// Double-clicking a bubble moves it into edit mode. It is replaced by the
 		// INPUT, which is moved to the bubble's position. The bubble's address fills
 		// the input and is selected.
-		this._setSelected(bubble, false);
+		this.setSelected(bubble, false);
 		this._checkInput();
 		this._enterEditMode(bubble);
 	}
