@@ -275,6 +275,8 @@ function() {
 			priority: 0,
 			prefs: [
 				ZmSetting.LOCALE_NAME,
+                ZmSetting.COMPOSE_INIT_DIRECTION,
+                ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS,
 				ZmSetting.FONT_NAME,
 				ZmSetting.PASSWORD,
 				ZmSetting.SEARCH_INCLUDES_SPAM,
@@ -603,6 +605,18 @@ function() {
 		displayContainer:	ZmPref.TYPE_LOCALES,
 		precondition:		ZmSetting.LOCALE_CHANGE_ENABLED
 	});
+
+    ZmPref.registerPref("COMPOSE_INIT_DIRECTION", {
+        displayName:		ZmMsg.composeDirectionLabel,
+        displayContainer:	ZmPref.TYPE_SELECT,
+        displayOptions:		[ZmMsg.directionLTR, ZmMsg.directionRTL],
+        options:			[ZmSetting.LTR, ZmSetting.RTL]
+    });
+
+    ZmPref.registerPref("SHOW_COMPOSE_DIRECTION_BUTTONS", {
+        displayName:		ZmMsg.showDirectionButtons,
+        displayContainer:	ZmPref.TYPE_CHECKBOX
+    });
 
 	ZmPref.registerPref("FONT_NAME", {
 		displayName:		ZmMsg.selectFong,

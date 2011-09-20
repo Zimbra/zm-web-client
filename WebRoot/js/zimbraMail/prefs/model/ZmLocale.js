@@ -32,6 +32,12 @@ ZmLocale = function(id, name, image, localName) {
 	this._image = image;
 };
 
+//List of RTL supporting languages
+ZmLocale.RTLLANGUAGES = {
+    ar:"Arabic",
+    iw:"Hebrew"
+};
+
 ZmLocale.localeMap = {};
 ZmLocale.languageMap = {};
 

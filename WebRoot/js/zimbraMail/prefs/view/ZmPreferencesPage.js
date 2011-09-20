@@ -964,6 +964,7 @@ function(ev) {
 	var item = ev.dwtObj;
 	var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
 	this._showLocale(item._localeId, button);
+    this._showComposeDirection(item._localeId);
 };
 
 ZmPreferencesPage.prototype._handleDontKeepCopyChange = function(ev) {
@@ -1240,6 +1241,19 @@ function(data, prefId) {
 	return AjxTemplate.expand(templateId, data);
 };
 
+ZmPreferencesPage.prototype._showComposeDirection =
+function(localeId) {
+    var button = this._dwtObjects[ZmSetting.COMPOSE_INIT_DIRECTION];
+    var checkbox = this._dwtObjects[ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS];
+    if ( ZmLocale.RTLLANGUAGES.hasOwnProperty(localeId) ){
+        button.setSelectedValue(ZmSetting.RTL);
+        checkbox.setSelected(true);
+    }
+    else {
+        button.setSelectedValue(ZmSetting.LTR);
+        checkbox.setSelected(false);
+    }
+};
 //
 // Private functions
 //

@@ -165,7 +165,12 @@ function(html, insertFontStyle, onlyInnerContent) {
 			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 			cont[idx++] = "; color: ";
 			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
-			cont[idx++] = ";'>";
+            cont[idx++] = ";' ";
+            var direction = appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION);
+            if(direction){
+                cont[idx++] = "dir='"+direction.toLowerCase()+"' ";
+            }
+            cont[idx++] = ">";
 			cont[idx++] = html;
 			cont[idx++] = "</div>";
 		} else {
@@ -198,7 +203,12 @@ function(html) {
 	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 	a[i++] = "; color: ";
 	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
-	a[i++] = "'>";
+	a[i++] = "' ";
+    var direction = appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION);
+    if(direction){
+        a[i++] = "dir='"+direction.toLowerCase()+"' ";
+    }
+    a[i++] = ">";
 	a[i++] = html;
 	a[i++] = "</div>";
 	return a.join("");
@@ -503,7 +513,8 @@ function(id, mode, content) {
     function onGetContent(ed, o) {
         // Replace <p tags with <span tags
         // and </p with </span><br / tags
-        o.content = o.content.replace(/<p/g, '<span').replace(/<\/p/g, '</span><br /');
+        //o.content = o.content.replace(/<p/g, '<span').replace(/<\/p/g, '</span><br /');
+        //causing issue in dir attribute as it is not valid for span tag
     };
 
     function onPaste(ed, ev) {
@@ -543,13 +554,13 @@ function(id, mode, content) {
 		}
 	}
 
-	tinyMCE.init({
-		// General options
+    var tinyMCEInitObj = {
+        // General options
 		mode :  (mode == DwtHtmlEditor.HTML)? "exact" : "none",
 		elements:  id,
-		plugins : "table,ztable,inlinepopups,zcontextmenu,fullscreen,zbreakquote,emotions,directionality",
+		plugins : "table,inlinepopups,contextmenu,fullscreen,zbreakquote,emotions",
 		theme : "advanced",
-		theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,outdent,indent,separator,bold,italic,underline,separator,forecolor,backcolor,separator,link,ztablecontrols,fullscreen,emotions,seperator,ltr,rtl",
+		theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,outdent,indent,separator,bold,italic,underline,separator,forecolor,backcolor,separator,link,table,fullscreen,emotions,seperator",
 		theme_advanced_buttons2: "",
 		theme_advanced_buttons3: "",
 		theme_advanced_buttons4: "",
@@ -564,6 +575,8 @@ function(id, mode, content) {
 		editor_css: editorCSS,
         theme_advanced_runtime_fontsize:true,
 		inline_styles: false,
+        dialog_type : "modal",
+        forced_root_block : 'div',
 		setup : function(ed) {
 			ed.onLoadContent.add(handleContentLoad);
 			ed.onInit.add(onTinyMCEEditorInit);
@@ -571,8 +584,14 @@ function(id, mode, content) {
             ed.onGetContent.add(onGetContent);
             ed.onPaste.add(onPaste);
 		}
-	});
+    }
 
+    if(appCtxt.get(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS)){
+        tinyMCEInitObj.plugins = tinyMCEInitObj.plugins+",directionality";
+        tinyMCEInitObj.theme_advanced_buttons1 = tinyMCEInitObj.theme_advanced_buttons1+",ltr,rtl";
+    }
+
+	tinyMCE.init(tinyMCEInitObj);
 	this._editor = this.getEditor();
 	this._iFrameId = this._bodyTextAreaId + "_ifr";
 };
@@ -693,6 +712,11 @@ function(editor) {
 		doc.body.style.fontFamily = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
 		doc.body.style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 		doc.body.style.color = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
+        //Dont use css for direction Refer : http://www.w3.org/International/questions/qa-bidi-css-markup
+        var direction = appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION);
+        if(direction){
+            doc.body.dir = direction.toLowerCase();
+        }
 	}
 };
 

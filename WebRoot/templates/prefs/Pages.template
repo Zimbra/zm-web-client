@@ -52,7 +52,25 @@ and the container element is replaced with that control.
 
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.languageLabel$></td>
-						<td class='ZOptionsField'><div id='${id}_LOCALE_NAME' tabindex='40'></div></td>
+						<td class='ZOptionsField'><div id='${id}_LOCALE_NAME' tabindex='35'></div></td>
+					</tr>
+
+                    <tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.composeDirectionLabel$></td>
+						<td class='ZOptionsField'>
+							<table>
+							    <tbody>
+								    <tr>
+									    <td>
+                                            <div id='${id}_COMPOSE_INIT_DIRECTION' tabindex='37'></div>
+									    </td>
+									    <td>
+										    <div id='${id}_SHOW_COMPOSE_DIRECTION_BUTTONS' tabindex='40'></div>
+									    </td>
+								    </tr>
+								</tbody>
+							</table>
+						</td>
 					</tr>
 
 					<tr>

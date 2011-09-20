@@ -161,6 +161,8 @@ ZmSetting.CLIENT_STANDARD		= "standard";
 ZmSetting.COMPOSE_FONT_COLOR	= "#000000";	 			// zimbraPrefHtmlEditorDefaultFontColor
 ZmSetting.COMPOSE_FONT_FAM 		= "Times New Roman";		// zimbraPrefHtmlEditorDefaultFontFamily
 ZmSetting.COMPOSE_FONT_SIZE 	= AjxMessageFormat.format(ZmMsg.pt,"12"); 			// zimbraPrefHtmlEditorDefaultFontSize
+ZmSetting.LTR                   = "LTR";
+ZmSetting.RTL                   = "RTL";
 ZmSetting.COMPOSE_TEXT 			= "text";					// zimbraPrefComposeFormat
 ZmSetting.COMPOSE_HTML 			= "html";
 ZmSetting.CV_CARDS				= "cards"; 					// zimbraPrefContactsInitialView
@@ -222,6 +224,8 @@ ZmSetting.LICENSE_MSG[ZmSetting.LICENSE_BAD]			= ZmMsg.licenseExpired;
 
 // we need these IDs available when the app classes are parsed
 ZmSetting.LOCALE_NAME			= "LOCALE_NAME";
+ZmSetting.COMPOSE_INIT_DIRECTION= "COMPOSE_INIT_DIRECTION";
+ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS = "SHOW_COMPOSE_DIRECTION_BUTTONS";
 ZmSetting.FONT_NAME				= "FONT_NAME";
 ZmSetting.SKIN_NAME				= "SKIN_NAME";
 
