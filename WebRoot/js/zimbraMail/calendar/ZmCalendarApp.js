@@ -733,9 +733,9 @@ function(active) {
 ZmCalendarApp.prototype.setOverviewPanelContent =
 function(reset) {
     var viewId = appCtxt.getCurrentViewId();
-    if(viewId.indexOf(ZmId.VIEW_APPOINTMENT) != 0) {
+    if (viewId.indexOf(ZmId.VIEW_APPOINTMENT) != 0) {
         ZmApp.prototype.setOverviewPanelContent.apply(this, arguments);
-    }else {
+    } else {
         ZmApp.prototype.setOverviewPanelContent.apply(this, arguments);
         var controller = appCtxt.getCurrentView().getController();
         controller.setSchedulerPanelContent();
@@ -756,7 +756,7 @@ function(show, delay) {
 	if (!this._active) {
 		mc.setSelectionMode(DwtCalendar.DAY);
 	}
-	appCtxt.getAppViewMgr().showTreeFooter(show);
+	appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE_FOOTER, show);
 };
 
 // common API shared by tasks app

@@ -76,7 +76,12 @@ function() {
 //		callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
 
 		// create app view
-	    this._app.createView({viewId:this._getViewType(), elements:elements, callbacks:callbacks, isAppView:true, isTransient:true});
+	    this._app.createView({	viewId:			this._getViewType(),
+								elements:		elements,
+								controller:		this,
+								callbacks:		callbacks,
+								isAppView:		true,
+								isTransient:	true});
 	}
 	return this._view;
 };

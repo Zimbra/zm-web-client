@@ -232,6 +232,7 @@ ZmSetting.IM_ENABLED			= "IM_ENABLED";
 ZmSetting.MAIL_ENABLED			= "MAIL_ENABLED";
 ZmSetting.OPTIONS_ENABLED		= "OPTIONS_ENABLED";
 ZmSetting.PORTAL_ENABLED		= "PORTAL_ENABLED";
+ZmSetting.SEARCH_ENABLED		= "SEARCH_ENABLED";
 ZmSetting.TASKS_ENABLED			= "TASKS_ENABLED";
 ZmSetting.VOICE_ENABLED			= "VOICE_ENABLED";
 
@@ -242,24 +243,11 @@ ZmSetting.VOICE_UPSELL_ENABLED		= "VOICE_UPSELL_ENABLED";
 
 ZmSetting.MAIL_SEND_LATER_ENABLED	= "MAIL_SEND_LATER_ENABLED";
 
-// remove this block when offline.jsp upgrades
-ZmSetting.APPS_COOKIE			= "ZM_APPS";
-ZmSetting.APP_LETTER = {};
-ZmSetting.APP_LETTER[ZmSetting.PORTAL_ENABLED]		= "p";
-ZmSetting.APP_LETTER[ZmSetting.MAIL_ENABLED]		= "m";
-ZmSetting.APP_LETTER[ZmSetting.CALENDAR_ENABLED]	= "c";
-ZmSetting.APP_LETTER[ZmSetting.CONTACTS_ENABLED]	= "a";
-ZmSetting.APP_LETTER[ZmSetting.OPTIONS_ENABLED]	    = "o";
-ZmSetting.APP_LETTER[ZmSetting.IM_ENABLED]			= "i";
-ZmSetting.APP_LETTER[ZmSetting.BRIEFCASE_ENABLED]	= "b";
-ZmSetting.APP_LETTER[ZmSetting.TASKS_ENABLED]		= "t";
-ZmSetting.APP_LETTER[ZmSetting.VOICE_ENABLED]		= "v";
-
 //user selected font
-ZmSetting.FONT_CLASSIC = "classic";
-ZmSetting.FONT_MODERN = "modern";
-ZmSetting.FONT_WIDE = "wide";
-ZmSetting.FONT_SYSTEM = "system";
+ZmSetting.FONT_CLASSIC	= "classic";
+ZmSetting.FONT_MODERN	= "modern";
+ZmSetting.FONT_WIDE		= "wide";
+ZmSetting.FONT_SYSTEM	= "system";
 
 
 // hash of global settings

@@ -494,9 +494,17 @@ function(voice_code) {
 		}
 		view.getHtmlElement().innerHTML =  propval || ZMsg["voice.SECONDARY_NOT_ALLOWED_VOICE"];
 		var elements = {};
-		elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = view;
+		elements[ZmAppViewMgr.C_APP_CONTENT] = view;
+		var hide = [ ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_TOOLBAR_TOP,
+					 ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_SASH ];
 		var viewName = "VoiceMessage";
-		this.createView({viewId: viewName, appName: this._name, elements: elements, isAppView: true});
+		this.createView({	viewId:			viewName,
+							appName:		this._name,
+							controller:		appCtxt.getAppController(),
+							elements:		elements,
+							hide:			hide,
+							isFullScreen:	true,
+							isAppView:		true});
 		this.pushView(viewName, true);
 	}
 }

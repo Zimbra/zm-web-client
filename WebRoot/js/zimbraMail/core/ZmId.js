@@ -106,6 +106,7 @@ ZmId.SKIN_SEARCH_BUILDER			= "skin_container_search_builder";
 ZmId.SKIN_SEARCH_BUILDER_TOOLBAR	= "skin_container_search_builder_toolbar";
 ZmId.SKIN_SEARCH_BUILDER_TR			= "skin_tr_search_builder";
 ZmId.SKIN_SEARCH					= "skin_container_search";
+ZmId.SKIN_SEARCH_RESULTS_TOOLBAR	= "skin_container_search_results_toolbar";
 ZmId.SKIN_REFRESH					= "skin_container_refresh";
 ZmId.SKIN_SHELL						= "skin_outer";
 ZmId.SKIN_SPACING_SEARCH			= "skin_spacing_search";
@@ -132,6 +133,7 @@ ZmId.LOADING_VIEW			= "z_loading";			// "Loading..." view
 ZmId.MAIN_SASH				= "z_sash";				// sash between overview and content
 ZmId.BANNER					= "z_banner";			// logo (at upper left by default)
 ZmId.SEARCH_TOOLBAR			= "ztb_search";			// search toolbar
+ZmId.SEARCHRESULTS_TOOLBAR	= "ztb_searchresults";	// search results toolbar
 ZmId.USER_NAME				= "z_userName";			// account name
 ZmId.USER_QUOTA				= "z_userQuota";		// quota
 ZmId.PRESENCE				= "z_presence";			// presence
@@ -430,6 +432,24 @@ ZmId.SEARCH_MAIL			= "MAIL";				// mail items
 ZmId.SEARCH_SHARED			= "SHARED";				// include shared items
 
 /*
+ * ----------------------
+ * Search Results Toolbar
+ * ----------------------
+ * 
+ * This toolbar appears at the top of the search results tab.
+ */
+
+ZmId.SEARCHRESULTS_INPUT		= "zi_searchresults";			// text input in search toolbar
+ZmId.SEARCHRESULTS_INPUTFIELD	= ZmId.SEARCHRESULTS_INPUT + "_inputfield";
+
+// context
+ZmId.SEARCHRESULTS				= "SearchResults";				// element is within search panel
+
+// button
+ZmId.SEARCHRESULTS_SEARCH		= "SEARCH";				// perform a search
+ZmId.SEARCHRESULTS_SAVE			= "SAVE";				// save a search
+
+/*
  * -----------
  * App toolbar
  * -----------
@@ -667,6 +687,7 @@ ZmId.APP_IM				= "IM";
 ZmId.APP_MAIL			= "Mail";
 ZmId.APP_PORTAL			= "Portal";
 ZmId.APP_PREFERENCES	= "Options";
+ZmId.APP_SEARCH			= "Search";
 ZmId.APP_TASKS			= "Tasks";
 ZmId.APP_VOICE			= "Voice";
 
@@ -704,7 +725,6 @@ ZmId.VIEW_CONV2 				= "CV2";			// conv shown in reading pane
 ZmId.VIEW_CONVLIST 				= "CLV";			// hybrid conv list view
 ZmId.VIEW_CONVLIST2 			= "CLV2";			// "conv 2.0" conv list view
 ZmId.VIEW_FILTER_RULES			= "FRV";
-ZmId.VIEW_QUICK_COMMAND			= "QCV";
 ZmId.VIEW_GROUP					= "GRP";
 ZmId.VIEW_IM_CHAT_MEMBER_LIST	= "IMCML";
 ZmId.VIEW_IM_CHAT_MULTI_WINDOW	= "IMCMW";
@@ -716,6 +736,8 @@ ZmId.VIEW_MSG 					= "MSG";
 ZmId.VIEW_MSG_CAPSULE			= "MSGC";
 ZmId.VIEW_PORTAL                = "PORTAL";
 ZmId.VIEW_PREF					= "PREF";
+ZmId.VIEW_QUICK_COMMAND			= "QCV";
+ZmId.VIEW_SEARCH_RESULTS		= "SR";
 ZmId.VIEW_SHARE_PENDING			= "SVP";
 ZmId.VIEW_SHARE_MOUNTED			= "SVM";
 ZmId.VIEW_SHARE_GRANTS			= "SVG";

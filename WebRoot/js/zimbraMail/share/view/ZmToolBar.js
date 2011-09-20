@@ -371,3 +371,51 @@ function(type, element, index) {
 	DwtToolBar.prototype._removeItem.apply(this, arguments);
 	this.adjustSize();
 };
+
+/**
+ * Adds a button to the element with the given ID. Designed to handle non-ZmToolBar toolbars.
+ * 
+ * @param params	[hash]			hash of params:
+ * 		  parent	[DwtControl]	parent control
+ *        setting	[const]			setting that must be true for this button to be added
+ *        tdId		[string]		ID of TD that is to contain this button
+ *        buttonId	[string]*		ID of the button
+ *        style		[const]*		button style
+ *        type		[string]*		used to differentiate between regular and toolbar buttons
+ *        lbl		[string]*		button text
+ *        icon		[string]*		button icon
+ *        tooltip	[string]*		button tooltip
+ */
+ZmToolBar.addButton =
+function(params) {
+
+	if (params.setting && !appCtxt.get(params.setting)) { return; }
+
+	var button;
+	var tdId = params.parent._htmlElId + (params.tdId || params.buttonId);
+	var buttonEl = document.getElementById(tdId);
+	if (buttonEl) {
+		var btnParams = {parent:params.parent, style:params.style, id:params.buttonId, template: params.template, className: params.className};
+		button = (params.type && params.type == "toolbar") ? (new DwtToolBarButton(btnParams)) : (new DwtButton(btnParams));
+		var hint = Dwt.getAttr(buttonEl, "hint");
+		ZmToolBar._setButtonStyle(button, hint, params.lbl, params.icon);
+		if (params.tooltip) {
+			button.setToolTipContent(params.tooltip);
+		}
+		button.reparentHtmlElement(tdId);
+	}
+
+	return button;
+};
+
+ZmToolBar._setButtonStyle =
+function(button, hint, text, image) {
+	if (hint == "text") {
+		button.setText(text);
+	} else if (hint == "icon") {
+		button.setImage(image);
+	} else { // add icon and text if no hint (or unsupported hint) provided
+		button.setText(text);
+		button.setImage(image);
+	}
+};

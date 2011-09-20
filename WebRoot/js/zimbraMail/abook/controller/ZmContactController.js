@@ -94,7 +94,11 @@ function(viewId) {
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 	var elements = this.getViewElements(null, view, this._toolbar[viewId]);
 
-	this._app.createView({viewId:viewId, elements:elements, callbacks:callbacks, tabParams:this._getTabParams()});
+	this._app.createView({	viewId:		viewId,
+							elements:	elements, 
+							controller:	this,
+							callbacks:	callbacks,
+							tabParams:	this._getTabParams()});
 };
 
 ZmContactController.prototype._postShowCallback =

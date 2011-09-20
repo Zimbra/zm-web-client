@@ -325,6 +325,7 @@ function(view) {
  * @param params		[hash]			hash of params:
  *        view			[constant]		view ID
  *        elements		[array]			array of view components
+ *        controller	[ZmController]	controller responsible for this view
  *        isAppView		[boolean]*		this view is a top-level app view
  *        clear			[boolean]*		if true, clear the hidden stack of views
  *        pushOnly		[boolean]*		don't reset the view's data, just swap the view in
@@ -338,7 +339,12 @@ ZmBaseController.prototype._setView =
 function(params) {
 
 	var view = params.view;
-
+	if (this.sessionId && this.sessionId.indexOf(ZmId.VIEW_SEARCH_RESULTS) == 0) {
+		// view is being embedded within search results, so don't push it
+		this._setViewContents(view);
+		return;
+	}
+	
 	// create the view (if we haven't yet)
 	if (!this._appViews[view]) {
 		// view management callbacks

@@ -166,6 +166,11 @@
 .DwtTreeItemLevel1ChildDiv {
 	padding-left:0px;
 	margin-bottom:5px;
+	@PanelBg@
+}
+
+.panelTopBorder {
+	border-top: solid 1px @darken(AppC,50)@;
 }
 
 .ZmOverviewContainer .DwtTreeItemLevel1ChildDiv {
@@ -300,16 +305,15 @@ td.DDSepInvisible div {
 
 
 /* Search input field */
-.people_search_input {
-	width:100%;
-}
-
 .search_input {
 	width:200px;
 }
+.search_input-expanded {
+	width:400px;
+}
 
 
-INPUT[type="text"].search_input {
+INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	border: 0px !important;
 	height: 100% !important;
 }
@@ -349,6 +353,12 @@ INPUT[type="text"].search_input {
     width:100%;
     height:100%;
     border-radius:0 5px 5px 0;
+}
+
+.FilterPanel {
+	width:100%;
+	height:100%;
+	background-color: pink;
 }
 
 /* cell surrounding a separator in the search toolbar */

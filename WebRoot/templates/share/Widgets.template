@@ -87,6 +87,19 @@
 	</table>
 </template>
 
+<template id='share.Widgets#ZmSearchResultsToolBar'>
+	<table class='ZmSearchToolbarTable'>
+		<tr>
+			<td class='ZmSearchToolbarCell'>Search results for:</td>
+			<td>
+			    <div id='${id}_inputField' style='margin-right:20px'></div>
+			</td>
+			<td id='${id}_searchButton' class='ZmSearchToolbarCell'></td>
+			<td id='${id}_saveButton' class='ZmSearchToolbarCell'></td>
+		</tr>
+	</table>
+</template>
+
 <template id='share.Widgets#ZmPeopleAutocompleteListView'>
 	<tr id='${rowId}'>
 		<td>

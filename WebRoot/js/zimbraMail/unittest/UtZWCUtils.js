@@ -79,7 +79,7 @@ UtZWCUtils.closeAllComposeViews = function() {
 
                 if (idx > -1) {
                     id = id.substring(idx);
-                    var composeController = appCtxt.getAppViewMgr()._getViewController(id);
+                    var composeController = appCtxt.getAppViewMgr()._viewController[id];
                     composeController._cancelListener();
                 }
             }

@@ -384,9 +384,10 @@ function() {
 ZmApptController.prototype.setSchedulerPanelContent =
 function() {
     var scheduler = this.getScheduleAssistant();
-    if(scheduler) {
-        var avm = appCtxt.getAppViewMgr();
-        avm.setComponent(ZmAppViewMgr.C_TREE, scheduler);
+    if (scheduler) {
+		var components = {};
+		components[ZmAppViewMgr.C_TREE] = scheduler;
+        appCtxt.getAppViewMgr().setViewComponents(this._viewId, components, true);
         this._schedulerRendered = true;
     }
 };

@@ -1182,7 +1182,11 @@ function(initHide) {
 
 		var elements = this.getViewElements(null, this._composeView, this._toolbar);
 
-		this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, tabParams:this._getTabParams()});
+		this._app.createView({	viewId:		this.viewId,
+								elements:	elements,
+								controller:	this,
+								callbacks:	callbacks,
+								tabParams:	this._getTabParams()});
 		if (initHide) {
 			this._composeView.preload();
 		}
@@ -1212,17 +1216,19 @@ function() {
 
 	ZmCalItemComposeController.prototype._postHideCallback(); 
 
-    if(appCtxt.getCurrentAppName() == ZmApp.CALENDAR || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
-        appCtxt.getAppViewMgr().showTreeFooter(true);
+    if (appCtxt.getCurrentAppName() == ZmApp.CALENDAR || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
+		appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE_FOOTER, true);
     }
-    if(this._schedulerRendered) this._smartScheduler.zShow(false);
+    if (this._schedulerRendered) {
+		this._smartScheduler.zShow(false);
+	}
 };
 
 ZmApptComposeController.prototype._postShowCallback =
 function(view, force) {    
 	var ta = new AjxTimedAction(this, this._setFocus);
 	AjxTimedAction.scheduleAction(ta, 10);
-    appCtxt.getAppViewMgr().showTreeFooter(false);
+	appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE_FOOTER, false);
     this.setSchedulerPanelContent();
 };
 
@@ -1234,9 +1240,10 @@ function() {
 ZmApptComposeController.prototype.setSchedulerPanelContent =
 function() {
     var scheduler = this.getScheduleAssistant();
-    if(scheduler) {
-        var avm = appCtxt.getAppViewMgr();
-        avm.setComponent(ZmAppViewMgr.C_TREE, scheduler);
+    if (scheduler) {
+		var components = {};
+		components[ZmAppViewMgr.C_TREE] = scheduler;
+        appCtxt.getAppViewMgr().setViewComponents(this._viewId, components, true);
         this._schedulerRendered = true;
     }
 };

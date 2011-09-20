@@ -99,6 +99,8 @@ ZmZimbraMail = function(params) {
 
     // create app view manager
     this._appViewMgr = new ZmAppViewMgr(this._shell, this, false, true);
+	var hidden = [ ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR, ZmAppViewMgr.C_TASKBAR ]; 
+	this._appViewMgr.setHiddenComponents(ZmAppViewMgr.GLOBAL, hidden, true);
 
     // register handlers
 	AjxDispatcher.setPackageLoadFunction("Zimlet", new AjxCallback(this, this._postLoadZimlet));
@@ -107,7 +109,9 @@ ZmZimbraMail = function(params) {
 		this._appViewMgr.pushView(ZmId.VIEW_LOADING);
 	}));
 	AjxDispatcher.setPostLoadFunction(new AjxCallback(this, function() {
-		this._appViewMgr._toRemove.push(ZmId.VIEW_LOADING);
+		if (!AjxUtil.arrayContains(this._appViewMgr._toRemove, ZmId.VIEW_LOADING)) {
+			this._appViewMgr._toRemove.push(ZmId.VIEW_LOADING);
+		}
 	}));
 
 	for (var i in ZmApp.QS_ARG) {
@@ -302,12 +306,14 @@ function(params) {
 			this._createUserInfo("BannerTextUser", ZmAppViewMgr.C_USER_INFO, ZmId.USER_NAME);
 		this._components[ZmAppViewMgr.C_QUOTA_INFO] = this._usedQuotaField =
 			this._createUserInfo("BannerTextQuota", ZmAppViewMgr.C_QUOTA_INFO, ZmId.USER_QUOTA);
-		this._components[ZmAppViewMgr.C_STATUS] = this.statusView =
-			new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
 
 		if (appCtxt.isOffline) {
 			this._initOfflineUserInfo();
 		}
+	}
+
+	if (!this.statusView) {
+		this.statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
 	}
 
 	this._registerOrganizers();
@@ -416,20 +422,6 @@ ZmZimbraMail.prototype._initializeSettings = function(params) {
         DBG.setTitle("Debug (" + branch + ")");
     }
 
-    // Note: removing cookie support will affect zdesktop when connecting 4.x remote server
-    if (params.offlineMode) {
-        var apps = AjxCookie.getCookie(document, ZmSetting.APPS_COOKIE);
-        DBG.println(AjxDebug.DBG1, "apps: " + apps);
-        if (apps) {
-            for (var appsetting in ZmSetting.APP_LETTER) {
-                var letter = ZmSetting.APP_LETTER[appsetting];
-                if (apps.indexOf(letter) != -1) {
-                    settings.getSetting(appsetting).setValue(true);
-                }
-            }
-        }
-    }
-
     // setting overrides
     if (params.settings) {
         for (var name in params.settings) {
@@ -514,7 +506,7 @@ ZmZimbraMail.prototype.showMiniCalendar =
 function() {
 	var calMgr = appCtxt.getCalManager();
 	calMgr.getMiniCalendar();
-	appCtxt.getAppViewMgr().showTreeFooter(true);
+	appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE_FOOTER, true);
     calMgr.highlightMiniCal();
     calMgr.startDayRollTimer();
 };
@@ -765,7 +757,7 @@ function(params) {
 	
 	if (params.unitTest) {
 		var utm = this._components[ZmAppViewMgr.C_UNITTEST] = window.unitTestManager;
-		appCtxt.addZimletsLoadedListener(utm.runTests.bind(utm), 0);
+		appCtxt.addZimletsLoadedListener(utm.runTests.bind(utm));
 	}
 
 	this.getKeyMapMgr();	// make sure keyboard handling is initialized
@@ -774,24 +766,17 @@ function(params) {
 	ZmZimbraMail.setAuthTokenEndTime(this._startTime);
 	ZmZimbraMail.killSplash();
 
-	// Give apps a chance to add their own ui components.
+	// Give apps a chance to add their own UI components.
 	this.runAppFunction("addComponents", false, this._components);
 
-	// next line makes the UI appear
-	var viewComponents = this._appViewMgr._components;
-	this._appViewMgr.addComponents(this._components, true);
-	if (viewComponents) {
-		// While adding the basic components we need to make sure the already
-		// set view components are again fitted to perfection.
-		this._appViewMgr.addComponents(viewComponents, true);
-	}
+	// make the UI appear
+	this._appViewMgr.setViewComponents(ZmAppViewMgr.GLOBAL, this._components, true);
 
 	this._checkLicense();
 
 	if (!this._doingPostRenderStartup) {
 		this._postRenderStartup();
 	}
-
 };
 
 /**
@@ -1017,41 +1002,6 @@ function(account) {
 			return app;
 		}
 	}
-}
-
-/**
- * Performs a 'running restart' of the app by clearing state and calling the startup method.
- * This method is run after a logoff, or a change in what's supported.
- * 
- * @private
- */
-ZmZimbraMail.prototype.restart =
-function(settings) {
-	// need to decide what to clean up, what to have startup load lazily
-	// could have each app do shutdown()
-	DBG.println(AjxDebug.DBG1, "RESTARTING APP");
-	this.reset();
-	this.startup({settingOverrides:settings});
-};
-
-/**
- * Resets the controller.
- * 
- */
-ZmZimbraMail.prototype.reset =
-function() {
-
-	ZmCsfeCommand.clearSessionId();	// so we get a refresh block
-	appCtxt.accountList.resetTrees();
-
-	if (!appCtxt.rememberMe()) {
-		appCtxt.getLoginDialog().clearAll();
-	}
-	for (var app in this._apps) {
-		this._apps[app] = null;
-	}
-	this._activeApp = null;
-	this._appViewMgr.reset();
 };
 
 /**
@@ -2012,7 +1962,7 @@ function(appName, view, isTabView) {
 		if (appEnabled) {
 			var app = this._apps[this._activeApp];
 
-			if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+			if (appCtxt.get(ZmSetting.SEARCH_ENABLED) && appName != ZmApp.SEARCH) {
 				var searchType = app ? app.getInitialSearchType() : null;
 				if (!searchType) {
 					searchType = ZmApp.DEFAULT_SEARCH[appName];
@@ -2773,6 +2723,8 @@ function(ev) {
 				this._appViewMgr.pushView(id);
 			}
 			if (ev.target && (ev.target.className == "ImgClose")) {
+				// tab may have just been pushed above (if it wasn't the active one)
+				// a bit inefficient, but the app view mgr won't pop non-current view
 				this._appViewMgr.popView();
 			}
 		}
@@ -3078,10 +3030,19 @@ function(appName) {
 		htmlArr[idx++] = "'>";
 		el.innerHTML = htmlArr.join("");
 		var elements = {};
-		elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = upsellView;
-		var callbacks = {}
-		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._displayUpsellView);
-		this._appViewMgr.createView({viewId:viewName, appName:appName, elements:elements, isTransient:true, callbacks:callbacks});
+		elements[ZmAppViewMgr.C_APP_CONTENT] = upsellView;
+		var callbacks = {};
+		callbacks[ZmAppViewMgr.CB_POST_SHOW] = this._displayUpsellView.bind(this);
+		var hide = [ ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_TOOLBAR_TOP,
+					 ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_SASH ];
+		this._appViewMgr.createView({	viewId:			viewName,
+										appName:		appName,
+										controller:		this,
+										elements:		elements,
+										hide:			hide,
+										isTransient:	true,
+										isFullScreen:	true,
+										callbacks:		callbacks});
 	}
 	this._appViewMgr.pushView(viewName);
 };

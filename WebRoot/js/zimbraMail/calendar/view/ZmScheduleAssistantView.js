@@ -57,10 +57,7 @@ ZmScheduleAssistantView.ATTRS[ZmCalBaseItem.LOCATION] =
 
 ZmScheduleAssistantView.prototype.initialize =
 function() {
-    var appViewMgr = appCtxt.getAppViewMgr();
-    if(appViewMgr.getCurrentViewComponent(ZmAppViewMgr.C_TREE_FOOTER)) {
-        appViewMgr.showTreeFooter(false);
-    }
+	appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE_FOOTER, false);
     this._createWidgets();
 };
 

@@ -1458,11 +1458,10 @@ function(refresh) {
 
 		// mark all existing mail list views as stale
 		var viewIds = [ZmId.VIEW_TRAD, ZmId.VIEW_CONVLIST, ZmId.VIEW_CONVLIST2, ZmId.VIEW_CONV];
-		var views = appCtxt.getAppViewMgr()._views;
+		var avm = appCtxt.getAppViewMgr();
 		for (var i = 0; i < viewIds.length; i++) {
-			var view = views[viewIds[i]];
-			var dpv = view && view[ZmAppViewMgr.C_APP_CONTENT];
-			if (dpv) {
+			var dpv = avm.getViewComponent(viewIds[i], ZmAppViewMgr.C_APP_CONTENT);
+			if (dpv && dpv.isZmDoublePaneView) {
 				dpv.isStale = true;
 			}
 		}
@@ -1685,18 +1684,19 @@ function(params) {
 /**
  * Shows the search results.
  * 
- * @param	{Object}	results		the results
- * @param	{AjxCallback}	callback		the callback
+ * @param	{Object}		results		the results
+ * @param	{AjxCallback}	callback	the callback
  */
 ZmMailApp.prototype.showSearchResults =
-function(results, callback) {
-	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
+function(results, callback, sessionId) {
+	var loadCallback = this._handleLoadShowSearchResults.bind(this, results, callback, sessionId);
 	AjxDispatcher.require("MailCore", false, loadCallback, null, true);
 };
 
 ZmMailApp.prototype._handleLoadShowSearchResults =
-function(results, callback) {
-	var controller = (results.type == ZmItem.MSG) ? this.getTradController() : this.getConvListController();
+function(results, callback, sessionId) {
+
+	var controller = (results.type == ZmItem.MSG) ? this.getTradController(sessionId) : this.getConvListController(sessionId);
 	controller.show(results);
 	this._setLoadedTime(this.toString(), new Date());
 	
@@ -1706,7 +1706,7 @@ function(results, callback) {
 	}
 
 	if (callback) {
-		callback.run();
+		callback.run(controller);
 	}
 	this._notifyRendered();
 };
@@ -1796,53 +1796,44 @@ function(callback, queryStr) {
 };
 
 /**
- * Gets the controller.
+ * Returns a conversation list controller.
  * 
- * @return	{ZmConvListController}	the controller
+ * @return	{ZmConvListController}	conversation list controller
  */
 ZmMailApp.prototype.getConvListController =
-function() {
-	if (!this._convListController) {
-		this._convListController = new ZmConvListController(this._container, this);
-	}
-	return this._convListController;
+function(sessionId) {
+	return this.getSessionController(ZmId.VIEW_CONVLIST, "ZmConvListController", sessionId || ZmApp.MAIN_SESSION);
 };
 
 /**
- * Gets the conversation controller.
+ * Returns a conversation controller.
  * 
- * @return	{ZmConvController}		the controller
+ * @return	{ZmConvController}		conversation controller
  */
 ZmMailApp.prototype.getConvController =
-function() {
-	if (!this._convController) {
-		this._convController = new ZmConvController(this._container, this);
-	}
-	return this._convController;
+function(sessionId) {
+	return this.getSessionController(ZmId.VIEW_CONV, "ZmConvController", sessionId || ZmApp.MAIN_SESSION);
 };
 
 /**
  * Gets the traditional (msg list) controller.
  * 
- * @return	{ZmTradController}	the controller
+ * @return	{ZmTradController}	traditional controller
  */
 ZmMailApp.prototype.getTradController =
-function() {
-	if (!this._tradController) {
-		this._tradController = new ZmTradController(this._container, this);
-	}
-	return this._tradController;
+function(sessionId) {
+	return this.getSessionController(ZmId.VIEW_TRAD, "ZmTradController", sessionId || ZmApp.MAIN_SESSION);
 };
 
 /**
  * Gets the message controller.
  * 
- * @return	{ZmMsgController}		the controller
+ * @return	{ZmMsgController}		message controller
  */
 ZmMailApp.prototype.getMsgController =
 function(sessionId) {
 
-    //if message is already open get that session controller
+    // if message is already open get that session controller
     var controllers = this._sessionController[ZmId.VIEW_MSG];
     var controller;
     for (var id in controllers) {
@@ -1863,18 +1854,13 @@ function(sessionId) {
 };
 
 /**
- * Gets the controller.
+ * Returns a compose controller.
  * 
- * @return	{ZmComposeController}	the controller
+ * @return	{ZmComposeController}	compose controller
  */
 ZmMailApp.prototype.getComposeController =
 function(sessionId) {
 	return this.getSessionController(ZmId.VIEW_COMPOSE, "ZmComposeController", sessionId);
-};
-
-ZmMailApp.prototype.getCurrentSessionId =
-function(type) {
-	return this._curSessionId[type];
 };
 
 ZmMailApp.prototype.getConfirmController =
@@ -1883,9 +1869,9 @@ function(sessionId) {
 };
 
 /**
- * Gets the mail list controller.
+ * Gets the current mail list controller, which may be conversation list or msg list (traditional).
  * 
- * @return	{ZmDoublePaneController}	the controller
+ * @return	{ZmTradController|ZmConvListController}	mail list controller
  */
 ZmMailApp.prototype.getMailListController =
 function() {
@@ -1893,7 +1879,6 @@ function() {
 	return (groupMailBy == ZmSetting.GROUP_BY_CONV) ? AjxDispatcher.run("GetConvListController") :
 													  AjxDispatcher.run("GetTradController");
 };
-
 
 ZmMailApp.prototype.runRefresh =
 function() {

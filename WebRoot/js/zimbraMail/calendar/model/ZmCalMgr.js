@@ -77,7 +77,7 @@ function(date) {
 	// add mini-calendar to skin
 	var components = {};
 	components[ZmAppViewMgr.C_TREE_FOOTER] = this._miniCalendar;
-	appCtxt.getAppViewMgr().addComponents(components, true);
+	appCtxt.getAppViewMgr().setViewComponents(ZmAppViewMgr.GLOBAL, components, true);
 	
 	var app = appCtxt.getApp(ZmApp.CALENDAR);
 	var show = app._active || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);

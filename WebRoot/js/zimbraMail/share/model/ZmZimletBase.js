@@ -854,7 +854,7 @@ function(icon) {
         var ov = container.getOverview(overviewId);
         treeItem = ov && ov.getTreeItemById(this.xmlObj().getOrganizer().id);
     } else {
-        var treeView = appCtxt.getAppViewMgr().getCurrentViewComponent(ZmAppViewMgr.C_TREE);
+        var treeView = appCtxt.getAppViewMgr().getViewComponent(ZmAppViewMgr.C_TREE);
         treeItem = treeView && treeView.getTreeItemById(this.xmlObj().getOrganizer().id);
     }
 

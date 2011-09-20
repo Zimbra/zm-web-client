@@ -47,7 +47,7 @@ ZmApp = function(name, container, parentController) {
 	this._deferredNotifications = [];
 
 	this._sessionController		= {};
-	this._sessionId				= {};
+	this._nextSessionId			= {};
 	this._curSessionId			= {};
 
 	ZmApp.DROP_TARGETS[name] = {};
@@ -121,6 +121,8 @@ ZmApp.DEFAULT_APPS			= [];	// ordered list
 ZmApp.OVERVIEW_ID			= "main";	// ID for main overview
 
 ZmApp.BATCH_NOTIF_LIMIT = 25;	// threshold for doing batched change notifications
+
+ZmApp.MAIN_SESSION			= "main";
 
 /**
  * Initializes the application.
@@ -515,7 +517,9 @@ function(reset) {
 		var ov = ((appCtxt.multiAccounts && appCtxt.accountList.size() > 1) || this.getName() == ZmApp.VOICE)
 			? this.getOverviewContainer()
 			: this.getOverviewPanelContent();
-		avm.setComponent(ZmAppViewMgr.C_TREE, ov);
+		var components = {};
+		components[ZmAppViewMgr.C_TREE] = ov;
+		avm.setViewComponents(ZmAppViewMgr.APP, components, true, this.getName());
 	}
 };
 
@@ -651,28 +655,43 @@ function(type) {
     return activeCount;
 };
 
+/**
+ * Returns a controller of the given type and class. If no sessionId is provided, then
+ * the controller's session ID will be an incremental number. If a sessionId is given,
+ * then a check is made for an existing controller with that session ID. If none is
+ * found, one is created and given that session ID.
+ * 
+ * @param	{constant}	type				type of controller (often a view type)				
+ * @param	{string}	controllerClass		string name of controller class
+ * @param	{string}	sessionId			unique identifier for this controller
+ */
 ZmApp.prototype.getSessionController =
 function(type, controllerClass, sessionId) {
 
+	// track controllers of this type
 	if (!this._sessionController[type]) {
 		this._sessionController[type] = {};
-		this._sessionId[type] = 1;
+		this._nextSessionId[type] = 1;
 	}
 
+	// check if we've already created a session controller with the given ID
 	if (sessionId && this._sessionController[type][sessionId]) {
 		return this._sessionController[type][sessionId];
 	}
 
-	var controllers = this._sessionController[type];
+	// re-use an inactive controller if possible
 	var controller;
-	for (var id in controllers) {
-		if (controllers[id].inactive) {
-			controller = controllers[id];
-			break;
+	if (!sessionId) {
+		var controllers = this._sessionController[type];
+		for (var id in controllers) {
+			if (controllers[id].inactive) {
+				controller = controllers[id];
+				break;
+			}
 		}
 	}
 
-	sessionId = controller ? controller.sessionId : this._sessionId[type]++;
+	sessionId = (controller && controller.sessionId) || sessionId || this._nextSessionId[type]++;
 
 	if (!controller) {
 		var ctlrClass = eval(controllerClass);
@@ -683,6 +702,12 @@ function(type, controllerClass, sessionId) {
 	controller.inactive = false;
 
 	return controller;
+};
+
+// returns the session ID of the most recently retrieved controller of the given type
+ZmApp.prototype.getCurrentSessionId =
+function(type) {
+	return this._curSessionId[type];
 };
 
 /**

@@ -667,7 +667,11 @@ function(initHide, composeMode) {
 	this._initializeToolBar();
 	var elements = this.getViewElements(null, this._composeView, this._toolbar);
 
-	this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, tabParams:this._getTabParams()});
+	this._app.createView({	viewId:		this.viewId,
+							elements:	elements, 
+							controller:	this,
+							callbacks:	callbacks,
+							tabParams:	this._getTabParams()});
 	if (initHide) {
 		this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 		this._composeView.enableInputs(false);
@@ -1348,7 +1352,7 @@ function(draftType, msg, resp) {
 		var popped = false;
 		if (appCtxt.get(ZmSetting.SHOW_MAIL_CONFIRM)) {
 			var confirmController = AjxDispatcher.run("GetMailConfirmController");
-			confirmController.showConfirmation(msg, this.viewId, this.tabId);
+			confirmController.showConfirmation(msg, this.viewId, this.tabId, this);
 			popped = true;	// don't pop confirm page
 		} else {
 			if (appCtxt.isChildWindow && window.parentController) {

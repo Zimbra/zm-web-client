@@ -217,7 +217,10 @@ ZmAttachmentsController.prototype.initAttachmentsView = function(){
 
 	var elements = this.getViewElements(null, this._attachmentsView, this._toolbar);
 
-    this._app.createView({viewId:ZmId.VIEW_ATTACHMENTS, elements:elements, isTransient:true});
+    this._app.createView({	viewId:			ZmId.VIEW_ATTACHMENTS,
+							controller:		this,
+							elements:		elements,
+							isTransient:	true});
 
 };
 

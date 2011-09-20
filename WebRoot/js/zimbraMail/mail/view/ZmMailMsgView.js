@@ -2293,8 +2293,7 @@ function(oldMsgId, result) {
 	msg._loadFromDom(msgNode);
 
 	for (var viewId in views) {
-		var viewObj = views[viewId];
-		var view = viewObj && (viewObj[ZmAppViewMgr.C_APP_CONTENT] || viewObj[ZmAppViewMgr.C_APP_CONTENT_FULL]);
+		var view = avm.getCurrentView(viewId);
 		if (view) {
 			if (AjxUtil.isFunction(view.handleRemoveAttachment)) {
 				view.handleRemoveAttachment(oldMsgId, msg);

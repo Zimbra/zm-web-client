@@ -160,7 +160,11 @@ function(initHide) {
 			this._createToolBar();
 		var elements = this.getViewElements(null, this._composeView, this._toolbar);
 
-		this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, tabParams:this._getTabParams()});
+		this._app.createView({	viewId:		this.viewId,
+								elements:	elements,
+								controller:	this,
+								callbacks:	callbacks,
+								tabParams:	this._getTabParams()});
 		if (initHide) {
 			this._composeView.preload();
 		}
