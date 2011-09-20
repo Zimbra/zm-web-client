@@ -446,7 +446,8 @@ function() {
 	}
 	
 	if (needSave) {
-		this._rules.saveRules(null, true); 
+		this._rules.saveRules(null, true);
+		this._createActivityStreamsFolder();
 	}
 	
 	this.popdown();
@@ -531,3 +532,14 @@ function() {
 		}
 	}
 };
+
+ZmPriorityMessageFilterDialog.prototype._createActivityStreamsFolder =
+function() {
+	var jsonObj = {CreateFolderRequest:{_jsns:"urn:zimbraMail"}};
+	var folder = jsonObj.CreateFolderRequest.folder = {l: ZmOrganizer.ID_ROOT, name: ZmMsg.activityStreamsRule, fie: 1};
+	return appCtxt.getAppController().sendRequest({
+		jsonObj: jsonObj,
+		asyncMode: true
+	});
+};
+
