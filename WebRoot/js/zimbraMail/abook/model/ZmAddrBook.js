@@ -122,6 +122,11 @@ ZmAddrBook.prototype.mayContain =
 function(what) {
 	if (!what) return true;
 
+	if (this.id == ZmOrganizer.ID_DLS) {
+		return false;
+	}
+
+
 	if (!(what instanceof ZmAddrBook)) {
 		var invalid = false;
 

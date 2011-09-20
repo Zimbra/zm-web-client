@@ -116,6 +116,8 @@ function(parent, type, id) {
 	var nId = addrBook ? addrBook.nId : ZmOrganizer.normalizeId(id);
 	var isTrash = (nId == ZmFolder.ID_TRASH);
 
+	var isDLs = (nId == ZmFolder.ID_DLS);
+
 	this.setVisibleIfExists(parent, ZmOperation.EMPTY_FOLDER, nId == ZmFolder.ID_TRASH);
 
 	if (isTrash) {
@@ -123,8 +125,12 @@ function(parent, type, id) {
 		parent.enable(ZmOperation.DELETE_WITHOUT_SHORTCUT, false);
 		var hasContent = ((addrBook.numTotal > 0) || (addrBook.children && (addrBook.children.size() > 0)));
 		parent.enable(ZmOperation.EMPTY_FOLDER,hasContent);
-		parent.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);        
-	} else {
+		parent.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);
+	}
+	else if (isDLs) {
+		parent.enableAll(false);
+	}
+	else {
 		parent.enableAll(true);        
 		if (addrBook) {
 			if (addrBook.isSystem()) {
@@ -251,12 +257,19 @@ function(ev) {
  */
 ZmAddrBookTreeController.prototype._itemClicked =
 function(folder) {
-	if (folder.type == ZmOrganizer.SEARCH) {
+	if (folder.id == ZmFolder.ID_DLS) {
+		var request = {_jsns: "urn:zimbraAccount", directOnly: 1};
+		var jsonObj = {GetAccountMembershipRequest: request};
+		var respCallback = new AjxCallback(this, this._handleMembershipResponse, [folder]);
+		appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
+	}
+	else if (folder.type == ZmOrganizer.SEARCH) {
 		// if the clicked item is a search (within the folder tree), hand
 		// it off to the search tree controller
 		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
 		stc._itemClicked(folder);
-	} else {
+	}
+	else {
 		var capp = appCtxt.getApp(ZmApp.CONTACTS);
 		capp.currentSearch = null;
 		var query = capp.currentQuery = folder.createQuery();
@@ -293,4 +306,22 @@ function(folder, result) {
 	if (folder.nId == ZmFolder.ID_TRASH) {
 		this._treeView[this._app.getOverviewId()].setSelected(ZmFolder.ID_TRASH, true);
 	}
+};
+
+/**
+ * @private
+ */
+ZmAddrBookTreeController.prototype._handleMembershipResponse =
+function(folder, result) {
+
+	var contactList = new ZmContactList(null, true, ZmItem.CONTACT);
+	var dls = result._data.GetAccountMembershipResponse.dl;
+	for (var i = 0; i < dls.length; i++) {
+		var dl = dls[i];
+		contactList.addFromDom({_attrs : {email: dl.name, type: "group", zimbraId: dl.id, firstName: dl.name, lastName: ""},
+								fileAsStr: dl.name,
+								id: dl.id});
+	}
+	var clc = AjxDispatcher.run("GetContactListController");
+	clc.show(contactList, true, ZmFolder.ID_DLS);
 };

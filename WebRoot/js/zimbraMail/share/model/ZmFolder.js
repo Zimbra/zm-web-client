@@ -77,6 +77,7 @@ ZmFolder.ID_SYNC_FAILURES						= ZmOrganizer.ID_SYNC_FAILURES;
 ZmFolder.ID_OUTBOX	 							= ZmOrganizer.ID_OUTBOX;
 ZmFolder.ID_CHATS	 							= ZmOrganizer.ID_CHATS;
 ZmFolder.ID_ATTACHMENTS                         = ZmOrganizer.ID_ATTACHMENTS;
+ZmFolder.ID_DLS									= ZmOrganizer.ID_DLS;
 
 // system folder names
 ZmFolder.MSG_KEY = {};

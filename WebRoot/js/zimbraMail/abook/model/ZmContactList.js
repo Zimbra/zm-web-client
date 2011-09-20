@@ -183,11 +183,35 @@ function(callback, result) {
 		}
 		derefBatchCmd.run();
 	}
+
+	this._addDlFolder();
+
 	this._finishLoading();
 
 	if (callback) {
 		callback.run();
 	}
+};
+
+ZmContactList.prototype._addDlFolder =
+function() {
+	if (this._dlFolder) {
+		return;
+	}
+	var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
+	var params = {
+		id: ZmOrganizer.ID_DLS,
+		name: ZmMsg.distributionLists, 
+		parent: root,
+		tree: root.tree,
+		type: ZmOrganizer.ADDRBOOK,
+		numTotal: 1 //todo - probably not 1. but we don't know how many
+	};
+	var addrBook = new ZmAddrBook(params);
+	root.children.add(addrBook);
+	addrBook._notify(ZmEvent.E_CREATE)
+	addrBook._isDL = true;
+	this._dlFolder = addrBook;
 };
 
 ZmContactList.prototype.add = 
