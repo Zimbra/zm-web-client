@@ -18,11 +18,12 @@
 * @param parent			the element that created this view
  * @private
 */
-ZmReminderDialog = function(parent, reminderController, calController) {
+ZmReminderDialog = function(parent, reminderController, calController, apptType) {
 
 	// init custom buttons
-    var selectInputId  = "ZmReminderDialog_reminderSelectInput";
-    var selectButtonId = "ZmReminderDialog_reminderSelectBtn";
+    this._apptType = apptType;
+    var selectInputId  = "ZmReminderDialog_reminderSelectInput_" + apptType;
+    var selectButtonId = "ZmReminderDialog_reminderSelectBtn_"   + apptType;
     var html = [];
     var i = 0;
     html[i++] = "<td valign='middle' class='ZmReminderField'>";
@@ -41,7 +42,7 @@ ZmReminderDialog = function(parent, reminderController, calController) {
 	var dismissAllButton = new DwtDialog_ButtonDescriptor(ZmReminderDialog.DISMISS_ALL_BUTTON, ZmMsg.dismissAll, DwtDialog.ALIGN_RIGHT);
 
 	// call base class
-	DwtDialog.call(this, {id:"ZmReminderDialog", parent:parent, standardButtons:DwtDialog.NO_BUTTONS, extraButtons:[snoozeButton, dismissAllButton]});
+	DwtDialog.call(this, {id:"ZmReminderDialog_" + apptType, parent:parent, standardButtons:DwtDialog.NO_BUTTONS, extraButtons:[snoozeButton, dismissAllButton]});
 
 	this._reminderController = reminderController;
 	this._calController = calController;

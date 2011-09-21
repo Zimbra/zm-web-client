@@ -492,7 +492,7 @@ function(apptList, responseAppts) {
 ZmReminderController.prototype.getReminderDialog =
 function() {
 	if (this._reminderDialog == null) {
-		this._reminderDialog = new ZmReminderDialog(appCtxt.getShell(), this, this._calController);
+		this._reminderDialog = new ZmReminderDialog(appCtxt.getShell(), this, this._calController, this._apptType);
 	}
 	return this._reminderDialog;
 };
