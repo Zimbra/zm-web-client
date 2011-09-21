@@ -14,6 +14,9 @@
  */
 
 ZmVoicemailListView = function(parent, controller, dropTgt) {
+	if(!parent) {
+		return;
+	}
 	var headerList = this._getHeaderList(parent);
 	ZmVoiceListView.call(this, {parent:parent, className:"DwtListView ZmVoicemailListView",
 								posStyle:Dwt.ABSOLUTE_STYLE, view:ZmId.VIEW_VOICEMAIL,
@@ -84,7 +87,6 @@ function(compact) {
 
 ZmVoicemailListView.prototype._getHeaderList =
 function(parent) {
-
 	var headerList = [];
 
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {

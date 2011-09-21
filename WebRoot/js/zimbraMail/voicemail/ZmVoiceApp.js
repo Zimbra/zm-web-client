@@ -48,6 +48,10 @@ ZmVoiceApp.overviewFallbackApp		= ZmApp.PORTAL;
 ZmVoiceApp.prototype = new ZmApp;
 ZmVoiceApp.prototype.constructor = ZmVoiceApp;
 
+//voice mail formats
+ZmVoiceApp.AUDIO_MP3_FORMAT = "audio/mp3";
+ZmVoiceApp.AUDIO_WAV_FORMAT = "audio/wav";
+
 ZmVoiceApp.prototype.toString = 
 function() {
 	return "ZmVoiceApp";
