@@ -696,7 +696,11 @@ function(appt) {
     // Set opacity on the table element that is colored with the gradient.  Needed for IE
     var tableEl = Dwt.getDescendant(div, id + "_tableBody");
     var opacity = ZmCalBaseView.getApptOpacity(appt);
-    Dwt.setOpacity(tableEl, opacity);
+    if (tableEl) {
+        Dwt.setOpacity(tableEl, opacity);
+    } else {
+        Dwt.setOpacity(div, opacity);
+    }
 
 	// if (we can edit this appt) then create sash....
 	if (!appt.isReadOnly() && !appt.isAllDayEvent() && !isRemote && this.view != ZmId.VIEW_CAL_FB) {
