@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -119,6 +119,7 @@ ZmOrganizer.ID_TRASH			= 3;
 ZmOrganizer.ID_SPAM				= 4;
 ZmOrganizer.ID_ADDRBOOK			= 7;
 ZmOrganizer.ID_CALENDAR			= 10;
+ZmOrganizer.ID_NOTEBOOK			= 12;
 ZmOrganizer.ID_AUTO_ADDED 		= 13;
 ZmOrganizer.ID_CHATS			= 14;
 ZmOrganizer.ID_TASKS			= 15;
@@ -131,7 +132,6 @@ ZmOrganizer.ID_ZIMLET			= -1000;	// zimlets need a range.  start from -1000 incr
 ZmOrganizer.ID_ROSTER_LIST		= -11;
 ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
 ZmOrganizer.ID_ATTACHMENTS		= -17;		// Attachments View
-ZmOrganizer.ID_DLS				= -18;
 
 // fields that can be part of a displayed organizer
 ZmOrganizer.F_NAME				= "name";
@@ -263,7 +263,6 @@ ZmOrganizer.OPEN_SETTING	= {};		// setting that controls whether the tree view i
 ZmOrganizer.NEW_OP			= {};		// name of operation for new button in tree header (optional)
 ZmOrganizer.DISPLAY_ORDER	= {};		// sort number to determine order of tree view (optional)
 ZmOrganizer.HIDE_EMPTY		= {};		// if true, hide tree header if tree is empty
-ZmOrganizer.SHAREABLE 		= {};		// allow share or not
 
 ZmOrganizer.APP2ORGANIZER	= {};		// organizer types, keyed by app name
 ZmOrganizer.APP2ORGANIZER_R = {};		// app names, keyed by app organizer type
@@ -339,7 +338,6 @@ function(org, params) {
 	if (params.newOp)			{ ZmOrganizer.NEW_OP[org]				= params.newOp; }
 	if (params.displayOrder)	{ ZmOrganizer.DISPLAY_ORDER[org]		= params.displayOrder; }
 	if (params.hideEmpty)		{ ZmOrganizer.HIDE_EMPTY[org]			= params.hideEmpty; }
-	ZmOrganizer.SHAREABLE[org]	= !params.disableShare; 
 
 	if (!appCtxt.isChildWindow || params.childWindow ) {
 		if (params.compareFunc)		{ ZmTreeView.COMPARE_FUNC[org]			= params.compareFunc; }
@@ -376,20 +374,6 @@ function(org, params) {
 ZmOrganizer.sortCompare = function(organizerA, organizerB) {};
 
 /**
- * nulls value that is the default color for the type.
- * @param value
- */
-ZmOrganizer.getColorValue =
-function(value, type) {
-	// no need to save color if missing or default
-	if (value == ZmOrganizer.DEFAULT_COLOR[type]) {
-		return null;
-	}
-
-	return value;
-};
-
-/**
  * Creates an organizer via <code>&lt;CreateFolderRequest&gt;</code>. Attribute pairs can
  * be passed in and will become attributes of the folder node in the request.
  * 
@@ -409,21 +393,20 @@ function(params) {
 
 		var value = params[i];
 		if (i == "color") {
-			value = ZmOrganizer.getColorValue(value, type);
+			// no need to save color if missing or default
+			if (!value || (value == ZmOrganizer.DEFAULT_COLOR[type])) {
+				value = null;
+			}
 		}
 		if (value) {
 			folder[i] = value;
 		}
 	}
-	//adding support to asyncMode == false didn't eventually help me, but why not keep it?
-	var asyncMode = params.asyncMode === undefined ? true : params.asyncMode; //default is true
 
 	return appCtxt.getAppController().sendRequest({
 		jsonObj: jsonObj,
-		asyncMode: asyncMode,
+		asyncMode: true,
 		accountName: (params.account && params.account.name),
-		callback: params.callback,
-		callbackAfterNotifications: params.callbackAfterNotifications, 
 		errorCallback: errorCallback
 	});
 };
@@ -966,17 +949,6 @@ function() {
 ZmOrganizer.prototype.getIcon = function() {};
 
 /**
- * Gets the color of the organizer
- *
- * @return	{String}	the color
- */
-ZmOrganizer.prototype.getColor =
-function() {
-    return this.rgb || ZmOrganizer.COLOR_VALUES[this.color];
-}
-
-
-/**
  * Gets the icon with color
  * 
  * @return	{String}	the icon
@@ -984,7 +956,7 @@ function() {
 ZmOrganizer.prototype.getIconWithColor =
 function() {
 	var icon = this.getIcon() || "";
-	var color = this.getColor();
+	var color = this.rgb || ZmOrganizer.COLOR_VALUES[this.color];
 	return color ? [icon,color].join(",color=") : icon;
 };
 
@@ -1014,32 +986,28 @@ function(name, callback, errorCallback, batchCmd) {
 /**
  * Sets the color.
  * 
- * @param	{String}	        color		    the color
- * @param	{AjxCallback}	    callback		the callback
- * @param	{AjxCallback}	    errorCallback   the error callback
- * @param   {ZmBatchCommand}    batchCmd        optional batch command
+ * @param	{String}	color		the color
+ * @param	{AjxCallback}	callback		the callback
+ * @param	{AjxCallback}	errorCallback		the error callback
  */
 ZmOrganizer.prototype.setColor =
-function(color, callback, errorCallback, batchCmd) {
+function(color, callback, errorCallback) {
 	var color = ZmOrganizer.checkColor(color);
 	if (this.color == color) { return; }
 
-	this._organizerAction({action: "color", attrs: {color: color}, callback: callback,
-                           errorCallback: errorCallback, batchCmd: batchCmd});
+	this._organizerAction({action: "color", attrs: {color: color}, callback: callback, errorCallback: errorCallback});
 };
 
 /**
  * Sets the RGB color.
  * 
- * @param	{Object}	        rgb		        the rgb
- * @param	{AjxCallback}	    callback		the callback
- * @param	{AjxCallback}	    errorCallback	the error callback
- * @param   {ZmBatchCommand}    batchCmd        optional batch command
+ * @param	{Object}	rgb		the rgb
+ * @param	{AjxCallback}	callback		the callback
+ * @param	{AjxCallback}	errorCallback		the error callback
  */
-ZmOrganizer.prototype.setRGB = function(rgb, callback, errorCallback, batchCmd) {
+ZmOrganizer.prototype.setRGB = function(rgb, callback, errorCallback) {
 	if (this.rgb == rgb) { return; }
-	this._organizerAction({action: "color", attrs: {rgb: rgb}, callback: callback,
-                           errorCallback: errorCallback, batchCmd: batchCmd});
+	this._organizerAction({action: "color", attrs: {rgb: rgb}, callback: callback, errorCallback: errorCallback});
 };
 
 /**
@@ -1064,7 +1032,6 @@ function(color) {
 	return -1;
 };
 
-
 /**
  * Updates the folder. Although it is possible to use this method to change just about any folder
  * attribute, it should only be used to set multiple attributes at once since it
@@ -1085,7 +1052,7 @@ function(attrs) {
  * @param {String}	actionText		optional custom action text to display as summary
  */
 ZmOrganizer.prototype.move =
-function(newParent, noUndo, actionText, batchCmd, organizerName) {
+function(newParent, noUndo, actionText, batchCmd) {
 	var newId = (newParent.nId > 0)
 		? newParent.id
 		: ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
@@ -1097,15 +1064,14 @@ function(newParent, noUndo, actionText, batchCmd, organizerName) {
 		return;
 	}
 	var params = {};
-	params.batchCmd = batchCmd;
-	params.actionText = actionText || ZmMsg.actionMove;
+    params.batchCmd = batchCmd;
 	if (newId == ZmOrganizer.ID_TRASH) {
-		params.actionArg = ZmMsg.trash;
 		params.action = "trash";
 		params.noUndo = noUndo;
 	}
 	else {
-		params.actionArg = organizerName || newParent.getName(false, false, true);
+		params.actionText = actionText || ZmMsg.actionMove;
+		params.actionArg = newParent.getName(false, false, true);
 		params.action = "move";
 		params.attrs = {l: newId};
 		params.noUndo = noUndo;
@@ -1200,7 +1166,7 @@ function() {
 	var organizers = treeView && treeView.getSelected();
 	if (organizers) {
 		if (!(organizers instanceof Array)) organizers = [organizers];
-		for (var i = 0; i <  organizers.length; i++) {
+		for (var i in organizers) {
 			var organizer = organizers[i];
 			if (organizer && (organizer == this || organizer.isChildOf(this))) {
 				var folderId = this.parent.id;
@@ -1832,8 +1798,8 @@ function(params) {
 	var actionLogItem = (!params.noUndo && actionController && actionController.actionPerformed({op: params.action, id: params.id || this.id, attrs: params.attrs})) || null;
 	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, [params, actionLogItem]);
 	if (params.batchCmd) {
-        params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
- 	} else {
+		params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
+	} else {
 		var accountName;
 		if (appCtxt.multiAccounts) {
 			accountName = (this.account) 
@@ -1981,7 +1947,7 @@ function(obj) {
  */
 ZmOrganizer.prototype._notify =
 function(event, details) {
-
+    appCtxt.setNotifyDebug("ZmOrganizer notify called. --- This should update the folder tree");
 	if (details) {
 		details.organizers = [this];
 	} else {

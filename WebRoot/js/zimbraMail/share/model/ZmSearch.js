@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -124,16 +124,6 @@ ZmSearch.NAME_DESC 		= "nameDesc";
 ZmSearch.NAME_ASC 		= "nameAsc";
 ZmSearch.SIZE_DESC 		= "sizeDesc";
 ZmSearch.SIZE_ASC 		= "sizeAsc";
-ZmSearch.RCPT_ASC       = "rcptAsc";
-ZmSearch.RCPT_DESC      = "rcptDesc";
-ZmSearch.ATTACH_ASC     = "attachAsc"
-ZmSearch.ATTACH_DESC    = "attachDesc"
-ZmSearch.FLAG_ASC       = "flagAsc";
-ZmSearch.FLAG_DESC      = "flagDesc";
-ZmSearch.READ_ASC       = "readAsc";
-ZmSearch.READ_DESC      = "readDesc";
-ZmSearch.PRIORITY_ASC   = "priorityAsc";
-ZmSearch.PRIORITY_DESC  = "priorityDesc";
 ZmSearch.SCORE_DESC 	= "scoreDesc";
 ZmSearch.DURATION_DESC	= "durDesc";
 ZmSearch.DURATION_ASC	= "durAsc";
@@ -160,9 +150,9 @@ function() {
 ZmSearch.prototype.execute =
 function(params) {
 	if (params.batchCmd || this.soapInfo) {
-		return this._executeSoap(params);
+		this._executeSoap(params);
 	} else {
-		return this._executeJson(params);
+		this._executeJson(params);
 	}
 };
 
@@ -577,7 +567,7 @@ function(params) {
 		if (ZmMailMsg.requestHeaders) {
 			for (var hdr in ZmMailMsg.requestHeaders) {
 				if (!request.header) request.header = [];
-				request.header.push({n:ZmMailMsg.requestHeaders[hdr]});
+				request.header.push({n:hdr});
 			}
 		}
 	}
@@ -665,7 +655,7 @@ function(soapDoc) {
 		var headerNode;
 		for (var hdr in ZmMailMsg.requestHeaders) {
 			headerNode = soapDoc.set('header', null, null);
-			headerNode.setAttribute('n', ZmMailMsg.requestHeaders[hdr]);
+			headerNode.setAttribute('n', hdr);
 		}
 	}
 
@@ -719,7 +709,7 @@ function(req) {
 		if (hdrs && hdrs.length) {
 			req.header = [];
 			for (var hdr in hdrs) {
-				req.header.push({n:hdrs[hdr]});
+				req.header.push({n:hdr});
 			}
 		}
 	}

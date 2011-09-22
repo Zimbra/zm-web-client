@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -65,8 +65,9 @@ function() {
 		this._toolbar = new ZmToolBar({parent:DwtShell.getShell(window)});
 
 		// setup app elements
-		var elements = this.getViewElements(null, this._view, this._toolbar);
-
+		var elements = {};
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._view;
 
 		// create callbacks
 		var callbacks = {};
@@ -76,12 +77,7 @@ function() {
 //		callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
 
 		// create app view
-	    this._app.createView({	viewId:			this._getViewType(),
-								elements:		elements,
-								controller:		this,
-								callbacks:		callbacks,
-								isAppView:		true,
-								isTransient:	true});
+	    this._app.createView({viewId:this._getViewType(), elements:elements, callbacks:callbacks, isAppView:true, isTransient:true});
 	}
 	return this._view;
 };

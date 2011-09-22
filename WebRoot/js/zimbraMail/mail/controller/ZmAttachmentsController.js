@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -215,12 +215,11 @@ ZmAttachmentsController.prototype.initAttachmentsView = function(){
     this._attachmentsView =  new ZmAttachmentsView(this._container, this);
 	this._initToolBar();
 
-	var elements = this.getViewElements(null, this._attachmentsView, this._toolbar);
+    var elements = {};
+    elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._attachmentsView;
 
-    this._app.createView({	viewId:			ZmId.VIEW_ATTACHMENTS,
-							controller:		this,
-							elements:		elements,
-							isTransient:	true});
+    this._app.createView({viewId:ZmId.VIEW_ATTACHMENTS, elements:elements, isTransient:true});
 
 };
 

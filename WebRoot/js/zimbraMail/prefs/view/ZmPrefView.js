@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -443,31 +443,7 @@ function(type, origValue, value) {
  */
 ZmPrefView.prototype.isDirty =
 function() {
-	try {
-		var printPref = function(pref) {
-			if (AjxUtil.isArray(pref)) {
-				return AjxUtil.map(pref, printPref).join("\n");
-			}
-			return [pref.name, " (from ", (pref.origValue!=="" ? pref.origValue : "[empty]"), " to ", (pref.value!=="" ? pref.value : "[empty]"), ")"].join("");
-		}
-
-		var changed = this.getChangedPrefs(false, true); // Will also update this._controller._dirty
-		if (changed && changed.length) {
-			AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\n" + printPref(changed));
-			return true;
-		}
-
-		var dirtyViews = AjxUtil.keys(this._controller._dirty, function(key,obj){return obj[key]});
-		if (dirtyViews.length) {
-			AjxDebug.println(AjxDebug.PREFS, "Dirty preference views:\n" + dirtyViews.join("\n"));
-			return true;
-		}
-
-		return false;
-	} catch (e) {
-		AjxDebug.println(AjxDebug.PREFS, "Exception in preferences: " + e.name + ": " + e.message);
-		return true;
-	}
+	return this.getChangedPrefs(true, true);
 };
 
 /**

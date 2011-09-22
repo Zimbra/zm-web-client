@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -259,22 +259,15 @@ function() {
 	if (!this._prefsView) {
 		this._initializeToolBar();
 		var callbacks = new Object();
-		callbacks[ZmAppViewMgr.CB_PRE_HIDE]		= this._preHideCallback.bind(this);
-		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD]	= this._preUnloadCallback.bind(this);
-		callbacks[ZmAppViewMgr.CB_PRE_SHOW]		= this._preShowCallback.bind(this);
-		callbacks[ZmAppViewMgr.CB_POST_SHOW]	= this._postShowCallback.bind(this);
-
+		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
+		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD] = new AjxCallback(this, this._preUnloadCallback);
+		callbacks[ZmAppViewMgr.CB_PRE_SHOW] = new AjxCallback(this, this._preShowCallback);
+		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 		this._prefsView = new ZmPrefView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE, controller:this});
 		var elements = {};
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
-
-		this._app.createView({	viewId:		this._currentView,
-								elements:	elements,
-								controller:	this,
-								hide:		[ ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_TREE_FOOTER ],
-								callbacks:	callbacks,
-								isAppView:	true});
+		this._app.createView({viewId:this._currentView, elements:elements, callbacks:callbacks, isAppView:true});
 		this._initializeTabGroup();
 	}
 };
@@ -298,9 +291,6 @@ function () {
 		}
 	}
 	this._toolbar.getButton(ZmOperation.SAVE).setToolTipContent(ZmMsg.savePrefs);
-
-	this._setNewButtonProps(this._prefsView, ZmMsg.newMessage, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
-
 };
 
 ZmPrefController.prototype._initializeTabGroup = 
@@ -378,12 +368,12 @@ function(callback, noPop) {
 
 	// save any extra commands that may have been added
 	if (batchCommand.size()) {
-		var respCallback = this._handleResponseSaveListener.bind(this, true, callback, noPop, list);
-		var errorCallback = this._handleResponseSaveError.bind(this);
+		var respCallback = new AjxCallback(this, this._handleResponseSaveListener, [true, callback, noPop]);
+		var errorCallback = new AjxCallback(this, this._handleResponseSaveError);
 		batchCommand.run(respCallback, errorCallback);
 	}
 	else {
-		this._handleResponseSaveListener(list.length > 0, callback, noPop, list);
+		this._handleResponseSaveListener(list.length > 0, callback, noPop);
 	}
 };
 
@@ -404,7 +394,7 @@ function(exception1/*, ..., exceptionN*/) {
 };
 
 ZmPrefController.prototype._handleResponseSaveListener =
-function(optionsSaved, callback, noPop, list, result) {
+function(optionsSaved, callback, noPop, result) {
 	if (optionsSaved) {
 		appCtxt.setStatusMsg(ZmMsg.optionsSaved);
 	}
@@ -425,14 +415,10 @@ function(optionsSaved, callback, noPop, list, result) {
 		callback.run(result);
 	}
 
-	var changed = {};
-	for (var i = 0; i < list.length; i++) {
-		changed[list[i].id] = true;
-	}
 	var postSaveCallbacks = this._prefsView.getPostSaveCallbacks();
 	if (postSaveCallbacks && postSaveCallbacks.length) {
 		for (var i = 0; i < postSaveCallbacks.length; i++) {
-			postSaveCallbacks[i].run(changed);
+			postSaveCallbacks[i].run();
 		}
 	}
 };

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -98,16 +98,13 @@ ZmItem.F_SELECTION_CELL	= ZmId.FLD_SELECTION_CELL;
 ZmItem.F_SIZE			= ZmId.FLD_SIZE;
 ZmItem.F_SORTED_BY		= ZmId.FLD_SORTED_BY;	// placeholder for 3-pane view
 ZmItem.F_STATUS			= ZmId.FLD_STATUS;
-ZmItem.F_READ			= ZmId.FLD_READ;
 ZmItem.F_SUBJECT		= ZmId.FLD_SUBJECT;
 ZmItem.F_TAG			= ZmId.FLD_TAG;
 ZmItem.F_TAG_CELL		= ZmId.FLD_TAG_CELL;
-ZmItem.F_TO             = ZmId.FLD_TO;
 ZmItem.F_TYPE			= ZmId.FLD_TYPE;
 ZmItem.F_VERSION        = ZmId.FLD_VERSION;
 ZmItem.F_WORK_PHONE		= ZmId.FLD_WORK_PHONE;
 ZmItem.F_LOCK           = ZmId.FLD_LOCK;
-ZmItem.F_MSG_PRIORITY   = ZmId.FLD_MSG_PRIORITY;
 
 // Action requests for different items
 ZmItem.SOAP_CMD = {};
@@ -127,7 +124,6 @@ ZmItem.FLAG_REPLIED				= "r";
 ZmItem.FLAG_UNREAD				= "u";
 ZmItem.FLAG_LOW_PRIORITY		= "?";
 ZmItem.FLAG_HIGH_PRIORITY		= "!";
-ZmItem.FLAG_PRIORITY            = "+"; //msg prioritization
 
 ZmItem.ALL_FLAGS = [
 	ZmItem.FLAG_FLAGGED,
@@ -140,8 +136,7 @@ ZmItem.ALL_FLAGS = [
 	ZmItem.FLAG_ISDRAFT,
 	ZmItem.FLAG_ISSCHEDULED,
 	ZmItem.FLAG_HIGH_PRIORITY,
-	ZmItem.FLAG_LOW_PRIORITY,
-	ZmItem.FLAG_PRIORITY
+	ZmItem.FLAG_LOW_PRIORITY
 ];
 
 // Map flag to item property
@@ -157,7 +152,6 @@ ZmItem.FLAG_PROP[ZmItem.FLAG_REPLIED]			= "isReplied";
 ZmItem.FLAG_PROP[ZmItem.FLAG_UNREAD]			= "isUnread";
 ZmItem.FLAG_PROP[ZmItem.FLAG_LOW_PRIORITY]		= "isLowPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_HIGH_PRIORITY]		= "isHighPriority";
-ZmItem.FLAG_PROP[ZmItem.FLAG_PRIORITY]          = "isPriority";
 
 // DnD actions this item is allowed
 
@@ -387,43 +381,25 @@ function() {
 */
 ZmItem.prototype.getTagImageInfo =
 function() {
-	var tagIds = this.getVisibleTags();
-	return this.getTagImageFromIds(tagIds);
-};
-
-ZmItem.prototype.getTagImageFromIds =
-function(tagIds) {
 	var tagImageInfo;
 
-	if (!tagIds) {
+	var searchAll = appCtxt.getSearchController().searchAllAccounts;
+	if (!this.tags.length || (!searchAll && this.isShared())) {
 		tagImageInfo = "Blank_16";
-	} else if (tagIds.length == 1) {
-        tagImageInfo = this.getTagImage(tagIds[0]);
-	} else {
+	}
+	else if (this.tags.length == 1) {
+		var tagId = (!this.getAccount().isMain)
+			? ([this.getAccount().id, this.tags[0]].join(":"))
+			: (ZmOrganizer.getSystemId(this.tags[0]));
+		var tag = appCtxt.getById(tagId);
+		tagImageInfo = tag ? tag.getIconWithColor() : "Blank_16";
+	}
+	else {
 		tagImageInfo = "TagStack";
 	}
 
 	return tagImageInfo;
 };
-
-ZmItem.prototype.getVisibleTags =
-function() {
-    var searchAll = appCtxt.getSearchController().searchAllAccounts;
-    if (!this.tags.length || (!searchAll && this.isShared())) {
-        return null;
-    } else {
-        return this.tags;
-    }
-}
-
-ZmItem.prototype.getTagImage =
-function(tagId) {
-    var tagFullId = (!this.getAccount().isMain)
-        ? ([this.getAccount().id, tagId].join(":"))
-        : (ZmOrganizer.getSystemId(tagId));
-    var tag = appCtxt.getById(tagFullId);
-    return tag ? tag.getIconWithColor() : "Blank_16";
-}
 
 /**
 * Gets the default action to use when dragging this item. This method

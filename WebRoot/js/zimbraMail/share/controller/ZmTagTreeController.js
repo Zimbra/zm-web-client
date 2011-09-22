@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -83,7 +83,7 @@ function(parent, type, id) {
 	parent.enableAll(true);
 	if (tag.isSystem()) {
 		parent.enable([ZmOperation.RENAME_TAG, 
-					   ZmOperation.TAG_COLOR_MENU, ZmOperation.DELETE_WITHOUT_SHORTCUT], false);
+					   ZmOperation.TAG_COLOR_MENU, ZmOperation.DELETE], false);
 	}
 	parent.enable(ZmOperation.MARK_ALL_READ, (tag && (tag.numUnread > 0)));
 //	this._resetOperation(parent, ZmOperation.EXPORT_FOLDER, ZmMsg.exportTag);
@@ -112,7 +112,7 @@ function() {
 		ZmOperation.NEW_TAG,
 		ZmOperation.MARK_ALL_READ,
 		ZmOperation.RENAME_TAG,
-		ZmOperation.DELETE_WITHOUT_SHORTCUT,
+		ZmOperation.DELETE,
 		ZmOperation.TAG_COLOR_MENU
 	];
 };
@@ -152,6 +152,7 @@ function(tag) {
 	var searchFor;
 	switch (appCtxt.getCurrentAppName()) {
 		case ZmApp.CONTACTS:    searchFor = ZmItem.CONTACT; break;
+		case ZmApp.NOTEBOOK:    searchFor = ZmItem.PAGE; break;
 		case ZmApp.CALENDAR:    searchFor = ZmItem.APPT; break;
 		case ZmApp.BRIEFCASE:   searchFor = ZmItem.BRIEFCASE_ITEM; break;
 		case ZmApp.TASKS:       searchFor = ZmItem.TASK; break;

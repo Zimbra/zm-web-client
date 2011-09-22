@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -69,7 +69,6 @@ ZmListView = function(params) {
 	this._handleEventType[this.type] = true;
 	this._disallowSelection = {};
 	this._disallowSelection[ZmItem.F_FLAG] = true;
-	this._disallowSelection[ZmItem.F_MSG_PRIORITY] = true;
 	this._selectAllEnabled = false;
 
 	if (params.dropTgt) {
@@ -241,7 +240,7 @@ ZmListView.prototype._changeListener =
 function(ev) {
 
 	var item = this._getItemFromEvent(ev);
-	if (!item || ev.handled || !this._handleEventType[item.type]) { return; }
+	if (!item || ev.handled || !this._handleEventType[item.type] && (this.type != ZmItem.MIXED)) { return; }
 
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
 		DBG.println(AjxDebug.DBG2, "ZmListView: TAG");
@@ -258,8 +257,6 @@ function(ev) {
 				this._setImage(item, ZmItem.F_FLAG, on ? "FlagRed" : "FlagDis");
 			} else if (flag == ZmItem.FLAG_ATTACH) {
 				this._setImage(item, ZmItem.F_ATTACHMENT, on ? "Attachment" : null);
-			} else if (flag == ZmItem.FLAG_PRIORITY) {
-				this._setImage(item, ZmItem.F_MSG_PRIORITY, on ? "Priority" : "PriorityDis");
 			}
 		}
 	}
@@ -459,8 +456,6 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		idx = this._getImageHtml(htmlArr, idx, item.hasAttach ? "Attachment" : null, this._getFieldId(item, field));
 	} else if (field == ZmItem.F_DATE) {
 		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now || new Date(), item.date);
-	} else if (field == ZmItem.F_MSG_PRIORITY) {
-		idx = this._getImageHtml(htmlArr, idx, this._getMsgPriorityIcon(item.isPriority), this._getFieldId(item, field));		
 	} else if (field == ZmItem.F_PRIORITY) {
         var priorityImage = null;
         if (item.isHighPriority) {
@@ -580,12 +575,6 @@ function(ev, div) {
 			AjxImg.setImage(ev.target, this._getFlagIcon(item.isFlagged, false), true);
 		}
 	}
-	else if (field == ZmItem.F_MSG_PRIORITY) {
-		var item = this.getItemFromElement(div);
-		if (!item.isPriority) {
-			AjxImg.setImage(ev.target, this._getMsgPriorityIcon(item.isPriority, false), true);
-		}
-	}
 	return true;
 };
 
@@ -603,12 +592,6 @@ function(ev, div) {
 		var item = this.getItemFromElement(div);
 		if (!item.isFlagged) {
 			AjxImg.setDisabledImage(ev.target, this._getFlagIcon(item.isFlagged, true), true);
-		}
-	}
-	else if (field == ZmItem.F_MSG_PRIORITY) {
-		var item = this.getItemFromElement(div);
-		if (!item.isPriority) {
-			AjxImg.setDisabledImage(ev.target, this._getMsgPriorityIcon(item.isPriority, true), true);
 		}
 	}
 	return true;
@@ -906,7 +889,7 @@ function(ev) {
 	}
 	column._sortable = ev.item.getData(ZmListView.KEY_ID);
 	this._sortColumn(column, this._bSortAsc);
-};
+}
 
 
 ZmListView.prototype._getActionMenuForColHeader =
@@ -990,7 +973,7 @@ function(field, itemIdx, isOutboundFolder) {
 	} else if (field == ZmItem.F_FLAG) {
         tooltip = ZmMsg.flagHeaderToolTip;
     } else if (field == ZmItem.F_PRIORITY){
-        tooltip = ZmMsg.priorityHeaderTooltip;
+        tooltip = ZmMsg.priority;
     } else if (field == ZmItem.F_TAG) {
         tooltip = ZmMsg.tag;
     } else if (field == ZmItem.F_ATTACHMENT) {
@@ -1015,9 +998,7 @@ function(field, itemIdx, isOutboundFolder) {
 		tooltip = ZmMsg.account;
     } else if (field == ZmItem.F_FOLDER) {
         tooltip = ZmMsg.folder;
-    } else if (field == ZmItem.F_MSG_PRIORITY) {
-		tooltip = ZmMsg.messagePriority
-	} 
+    }
     
     return tooltip;
 };
@@ -1166,25 +1147,17 @@ function(columnItem, bSortAsc, callback) {
 	// change the sort preference for this view in the settings
 	var sortBy;
 	switch (columnItem._sortable) {
-		case ZmItem.F_FROM:		    sortBy = bSortAsc ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC; break;
-        case ZmItem.F_TO:           sortBy = bSortAsc ? ZmSearch.RCPT_ASC : ZmSearch.RCPT_DESC; break;
-		case ZmItem.F_NAME:		    sortBy = bSortAsc ? ZmSearch.SUBJ_ASC : ZmSearch.SUBJ_DESC; break; //used for Briefcase only now. SUBJ is mappaed to the filename of the document on the server side
-		case ZmItem.F_SUBJECT:	    sortBy = bSortAsc ? ZmSearch.SUBJ_ASC : ZmSearch.SUBJ_DESC;	break;
-		case ZmItem.F_DATE:		    sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;	break;
-		case ZmItem.F_SIZE:		    sortBy = bSortAsc ? ZmSearch.SIZE_ASC : ZmSearch.SIZE_DESC;	break;
-        case ZmItem.F_FLAG:		    sortBy = bSortAsc ? ZmSearch.FLAG_ASC : ZmSearch.FLAG_DESC;	break;
-        case ZmItem.F_ATTACHMENT:   sortBy = bSortAsc ? ZmSearch.ATTACH_ASC : ZmSearch.ATTACH_DESC; break;
-		case ZmItem.F_READ:		    sortBy = bSortAsc ? ZmSearch.READ_ASC : ZmSearch.READ_DESC;	break;
-        case ZmItem.F_PRIORITY:     sortBy = bSortAsc ? ZmSearch.PRIORITY_ASC : ZmSearch.PRIORITY_DESC; break;
-		case ZmItem.F_SORTED_BY:    sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;	break;
+		case ZmItem.F_FROM:		sortBy = bSortAsc ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC; break;
+		case ZmItem.F_NAME:		sortBy = bSortAsc ? ZmSearch.SUBJ_ASC : ZmSearch.SUBJ_DESC; break; //used for Briefcase only now. SUBJ is mappaed to the filename of the document on the server side
+		case ZmItem.F_SUBJECT:	sortBy = bSortAsc ? ZmSearch.SUBJ_ASC : ZmSearch.SUBJ_DESC;	break;
+		case ZmItem.F_DATE:		sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;	break;
+		case ZmItem.F_SIZE:		sortBy = bSortAsc ? ZmSearch.SIZE_ASC : ZmSearch.SIZE_DESC;	break;
+		case ZmItem.F_SORTED_BY:sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;	break;
 	}
 
 	if (sortBy) {
 		this._sortByString = sortBy;
 		appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
-		if (this._folderId) {
-            appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this._folderId);
-		}
 	}
 	if (callback)
 		callback.run();
@@ -1411,64 +1384,4 @@ function() {
 		this._listDiv.scrollTop = s.scrollTop * (this._rowHeight / s.rowHeight);
 	}
 	this._state = {};
-};
-
-ZmListView.prototype._renderList =
-function(list, noResultsOk, doAdd) {
-    var group = this._group;
-    if (!group) {
-        return DwtListView.prototype._renderList.call(this, list, noResultsOk, doAdd);
-    }
-	if (list instanceof AjxVector && list.size()) {
-		var now = new Date();
-		var size = list.size();
-		var htmlArr = [];
-        var section;
-        var headerDiv;
-		for (var i = 0; i < size; i++) {
-			var item = list.get(i);
-			var div = this._createItemHtml(item, {now:now}, !doAdd, i);
-			if (div) {
-				if (div instanceof Array) {
-					for (var j = 0; j < div.length; j++){
-                        section = group.addMsgToSection(item, div[j]);
-                        if (group.getSectionSize(section) == 1){
-                            headerDiv = this._getSectionHeaderDiv(group, section);
-                            this._addRow(headerDiv);
-                        }
-						this._addRow(div[j]);
-					}
-				} else if (div.tagName || doAdd) {
-                    section = group.addMsgToSection(item, div);
-                    if (group.getSectionSize(section) == 1){
-                        headerDiv = this._getSectionHeaderDiv(group, section);
-                        this._addRow(headerDiv);
-                    }
-                    this._addRow(div);
-				} else {
-                    group.addMsgToSection(item, div);
-				}
-			}
-		}
-        if (group && !doAdd)
-            htmlArr.push(group.getAllSections(this._bSortAsc));
-
-		if (htmlArr.length && !doAdd) {
-			this._parentEl.innerHTML = htmlArr.join("");
-		}
-	} else if (!noResultsOk) {
-		this._setNoResultsHtml();
-	}
-
-};
-
-ZmListView.prototype._getSectionHeaderDiv =
-function(group, section) {
-    if (group && section) {
-        var headerDiv = document.createElement("div");
-        var sectionTitle = group.getSectionTitle(section);
-        var html = group.getSectionHeader(sectionTitle);
-        headerDiv.innerHTML = html;
-        return headerDiv.firstChild;
-    }
 };

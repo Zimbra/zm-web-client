@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004-2011 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -32,6 +32,9 @@ ZmSearchController = function(container) {
 	ZmController.call(this, container);
 
 	this._inited = false;
+
+	// default menu values
+	this._searchFor = appCtxt.get(ZmSetting.MAIL_ENABLED) ? ZmId.SEARCH_MAIL : ZmId.SEARCH_ANY;
 	this._contactSource = ZmItem.CONTACT;
 	this._results = null;
 
@@ -43,12 +46,18 @@ ZmSearchController = function(container) {
 ZmSearchController.prototype = new ZmController;
 ZmSearchController.prototype.constructor = ZmSearchController;
 
-ZmSearchController.prototype.isZmSearchController = true;
-ZmSearchController.prototype.toString = function() { return "ZmSearchController"; };
-
 // Consts
 ZmSearchController.QUERY_ISREMOTE = "is:remote OR is:local";
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmSearchController.prototype.toString =
+function() {
+	return "ZmSearchController";
+};
 
 /**
  * Gets the search tool bar.
@@ -273,23 +282,28 @@ function() {
 	this.searchPanel = new DwtComposite({parent:this._container, className:"SearchPanel", posStyle:Dwt.ABSOLUTE_STYLE});
 	this._searchToolBar = new ZmSearchToolBar(this.searchPanel, ZmId.SEARCH_TOOLBAR);
 
+	// create people search toolbar
+	if (!appCtxt.isChildWindow) {
+		this.peopleSearchToolBar = new ZmPeopleSearchToolBar(this._container, ZmId.PEOPLE_SEARCH_TOOLBAR);
+	}
+
 	this._createTabGroup();
 	this._tabGroup.addMember(this._searchToolBar.getSearchField());
 	var buttons = this._searchToolBar.getButtons();
 	for (var i = 0; i < buttons.length; i++) {
 		this._tabGroup.addMember(buttons[i]);
 	}
-	
+
 	// Register keyboard callback for search field
 	this._searchToolBar.registerCallback(this._searchFieldCallback, this);
 
 	// Button listeners
-	this._searchToolBar.addSelectionListener(ZmSearchToolBar.SEARCH_BUTTON, this._searchButtonListener.bind(this));
+	this._searchToolBar.addSelectionListener(ZmSearchToolBar.SEARCH_BUTTON, new AjxListener(this, this._searchButtonListener));
 	if (appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
 		this._searchToolBar.addSelectionListener(ZmSearchToolBar.BROWSE_BUTTON, new AjxListener(this, this._browseButtonListener));
 	}
 	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
-		this._searchToolBar.addSelectionListener(ZmSearchToolBar.SAVE_BUTTON, this._saveButtonListener.bind(this));
+		this._searchToolBar.addSelectionListener(ZmSearchToolBar.SAVE_BUTTON, new AjxListener(this, this._saveButtonListener));
 	}
 };
 
@@ -299,7 +313,7 @@ function() {
 ZmSearchController.prototype._addMenuListeners =
 function(menu) {
 	// Menu listeners
-	var searchMenuListener = this._searchMenuListener.bind(this);
+	var searchMenuListener = new AjxListener(this, this._searchMenuListener);
 	var items = menu.getItems();
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
@@ -331,7 +345,6 @@ function(menu) {
  * @param {AjxCallback}	params.callback		the async callback
  * @param {AjxCallback}	params.errorCallback	the async callback to run if there is an exception
  * @param	{Object}	params.response		the canned JSON response (no request will be made)
- * @param {boolean} params.skipUpdateSearchToolbar     don't update the search toolbar (e.g. from the ZmDumpsterDialog where the search is called from its own search toolbar
  * 
  */
 ZmSearchController.prototype.search =
@@ -346,6 +359,9 @@ function(params) {
 			case ZmId.SEARCH_GAL:
 				// Do not search in GAL when query is empty
 				return;
+			case ZmId.SEARCH_ANY:
+				params.query = "is:anywhere";
+				break;
 			case ZmItem.APPT:
 				break;
 			default:
@@ -376,7 +392,7 @@ function(params) {
 	}
 
 	params.searchAllAccounts = this.searchAllAccounts;
-	var respCallback = this._handleResponseSearch.bind(this, params.callback);
+	var respCallback = new AjxCallback(this, this._handleResponseSearch, [params.callback]);
 	this._doSearch(params, params.noRender, respCallback, params.errorCallback);
 };
 
@@ -484,14 +500,26 @@ function(params) {
 	var searchFor = params.searchFor || this._searchFor;
 
 	var groupBy;
-	if ((searchFor == ZmId.SEARCH_MAIL) && appCtxt.get(ZmSetting.MAIL_ENABLED))	{
+	if ((searchFor == ZmId.SEARCH_MAIL || searchFor == ZmId.SEARCH_ANY) &&
+		appCtxt.get(ZmSetting.MAIL_ENABLED))
+	{
 		groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 	}
 
 	if (searchFor == ZmId.SEARCH_MAIL) {
 		types.add(groupBy);
+	} else if (searchFor == ZmId.SEARCH_ANY) {
+		if (appCtxt.get(ZmSetting.MAIL_ENABLED) && groupBy)	{ types.add(groupBy); }
+		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED))		{ types.add(ZmItem.CONTACT); }
+		if (appCtxt.get(ZmSetting.CALENDAR_ENABLED))		{ types.add(ZmItem.APPT); }
+		if (appCtxt.get(ZmSetting.TASKS_ENABLED))			{ types.add(ZmItem.TASK); }
+		if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED))		{ types.add(ZmItem.PAGE); }
+		if (appCtxt.get(ZmSetting.BRIEFCASE_ENABLED))		{ types.add(ZmItem.BRIEFCASE_ITEM); }
 	} else {
 		types.add(searchFor);
+		if (searchFor == ZmItem.PAGE) {
+			types.add(ZmItem.DOCUMENT);
+		}
 	}
 
 	return types;
@@ -545,7 +573,7 @@ function(types) {
 		var type = types.get(0);
 		var viewType;
 		switch (type) {
-			case ZmItem.CONV:		viewType = appCtxt.get(ZmSetting.CONV_MODE); break;
+			case ZmItem.CONV:		viewType = ZmId.VIEW_CONVLIST; break;
 			case ZmItem.MSG:		viewType = ZmId.VIEW_TRAD; break;
 			case ZmItem.CONTACT:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
 			case ZmItem.APPT:		viewType = ZmId.VIEW_CAL; break;
@@ -558,21 +586,6 @@ function(types) {
 		if (viewType) {
 			sortBy = appCtxt.get(ZmSetting.SORTING_PREF, viewType);
 		}
-        //bug:1108 & 43789#c19 (changelist 290073) since sort-by-[RCPT|ATTACHMENT|FLAG|PRIORITY] gives exception with querystring.
-        // Avoided [RCPT|ATTACHMENT|FLAG|PRIORITY] sorting with querysting instead used date sorting
-        var queryString = this._searchToolBar.getSearchFieldValue();
-        if(queryString && queryString.length > 0)
-        {
-            if((sortBy == ZmSearch.RCPT_ASC || sortBy == ZmSearch.RCPT_DESC)) {
-               sortBy = (sortBy == ZmSearch.RCPT_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
-            } else if((sortBy == ZmSearch.FLAG_ASC || sortBy == ZmSearch.FLAG_DESC)) {
-               sortBy = (sortBy == ZmSearch.FLAG_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
-            } else if((sortBy == ZmSearch.ATTACH_ASC || sortBy == ZmSearch.ATTACH_DESC)) {
-               sortBy = (sortBy == ZmSearch.ATTACH_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
-            } else if((sortBy == ZmSearch.PRIORITY_ASC || sortBy == ZmSearch.PRIORITY_DESC)) {
-               sortBy = (sortBy == ZmSearch.PRIORITY_ASC) ?  ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;
-            }
-        }
 	}
 
 	return sortBy;
@@ -590,8 +603,7 @@ function(types) {
  * @param {Boolean}	noRender		if <code>true</code>, the search results will not be rendered
  * @param {AjxCallback}	callback		the callback
  * @param {AjxCallback}	errorCallback	the error callback
- * @param {boolean} params.skipUpdateSearchToolbar     don't update the search toolbar (e.g. from the ZmDumpsterDialog where the search is called from its own search toolbar
- *
+ * 
  * @see	#search
  * 
  * @private
@@ -599,10 +611,10 @@ function(types) {
 ZmSearchController.prototype._doSearch =
 function(params, noRender, callback, errorCallback) {
 
-	var searchFor = this._searchFor = params.searchFor || this._searchFor || ZmSearchToolBar.MENU_ITEMS[0];
+	var searchFor = this._searchFor = params.searchFor || this._searchFor;
 	appCtxt.notifyZimlets("onSearch", [params.query]);
 
-	if (!params.skipUpdateSearchToolbar && this._searchToolBar) {
+	if (this._searchToolBar) {
 		var value = (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText)
 			? params.query : null;
 		this._searchToolBar.setSearchFieldValue(value || "");
@@ -627,13 +639,18 @@ function(params, noRender, callback, errorCallback) {
 		params.allowableTaskStatus = (tlc) ? tlc.getAllowableTaskStatus() : null;
 	}
 
+	// if the user explicitly searched for all types, force mixed view
+	var isMixed = (searchFor == ZmId.SEARCH_ANY);
+
 	if (params.searchAllAccounts && !params.queryHint) {
 		params.queryHint = appCtxt.accountList.generateQuery(null, types);
 		params.accountName = appCtxt.accountList.mainAccount.name;
 	}
 	else if (this._inclSharedItems) {
 		// a query hint is part of the query that the user does not see
-		params.queryHint = ZmSearchController.generateQueryForShares(types.getArray());
+		params.queryHint = isMixed
+			? ZmSearchController.QUERY_ISREMOTE
+			: ZmSearchController.generateQueryForShares(types.getArray());
 	}
 
 	// only set contact source if we are searching for contacts
@@ -648,9 +665,10 @@ function(params, noRender, callback, errorCallback) {
 	params.types = types;
 	var search = new ZmSearch(params);
 
-	var respCallback = this._handleResponseDoSearch.bind(this, search, noRender, callback, params.noUpdateOverview, params.noClear);
+	var args = [search, noRender, isMixed, callback, params.noUpdateOverview, params.noClear];
+	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, args);
 	if (!errorCallback) {
-		errorCallback = this._handleErrorDoSearch.bind(this, search);
+		errorCallback = new AjxCallback(this, this._handleErrorDoSearch, [search, isMixed]);
 	}
 
 	// calendar searching is special so hand it off if necessary
@@ -671,15 +689,15 @@ function(params, noRender, callback, errorCallback) {
  *
  * @param {ZmSearch}	search			contains search info used to run search against server
  * @param {Boolean}		noRender		<code>true</code> to skip rendering results
+ * @param {Boolean}	isMixed				<code>true</code> if in mixed mode
  * @param {AjxCallback}	callback		the callback to run after processing search response
  * @param {Boolean}	noUpdateOverview	<code>true</code> to skip updating the overview
  * @param {Boolean}		noClear			if <code>true</code>, previous results will not be destructed
  * @param {ZmCsfeResult}	result			the search results
  */
 ZmSearchController.prototype._handleResponseDoSearch =
-function(search, noRender, callback, noUpdateOverview, noClear, result) {
+function(search, noRender, isMixed, callback, noUpdateOverview, noClear, result) {
 
-	DBG.println("s", "SEARCH was user initiated: " + Boolean(search.userInitiated));
 	var results = result && result.getResponse();
 	if (!results) { return; }
 
@@ -693,8 +711,9 @@ function(search, noRender, callback, noUpdateOverview, noClear, result) {
 		this.currentSearch = search;
 		DBG.timePt("execute search", true);
 
+		// bug fix #34776 - don't show search results if user is in the composer
 		if (!noRender) {
-			this._showResults(results, search, noUpdateOverview, noClear);
+			this._showResults(results, search, isMixed, noUpdateOverview, noClear);
 		}
 	}
 
@@ -707,7 +726,7 @@ function(search, noRender, callback, noUpdateOverview, noClear, result) {
  * @private
  */
 ZmSearchController.prototype._showResults =
-function(results, search, noUpdateOverview, noClear) {
+function(results, search, isMixed, noUpdateOverview, noClear) {
 	// allow old results to dtor itself
 	if (!noClear && this._results && (this._results.type == results.type) && this._results.dtor) {
 		this._results.dtor();
@@ -716,6 +735,7 @@ function(results, search, noUpdateOverview, noClear) {
 
 	DBG.timePt("handle search results");
 
+	// determine if we need to default to mixed view
 	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
 		var saveBtn = this._searchToolBar && this._searchToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON);
 		if (saveBtn) {
@@ -723,19 +743,13 @@ function(results, search, noUpdateOverview, noClear) {
 		}
 	}
 
-	if (false && search.userInitiated) {
-		var ctlr = appCtxt.getApp(ZmApp.SEARCH).getSearchResultsController();
-		ctlr.show(results);
-	}
-	else {
-		// show results based on type - may invoke package load
-		var resultsType = results.type;
-		var loadCallback = this._handleLoadShowResults.bind(this, results, search, noUpdateOverview);
-		var app = appCtxt.getApp(ZmItem.APP[resultsType]) || appCtxt.getCurrentApp();
-		app.currentSearch = search;
-		app.currentQuery = search.query;
-		app.showSearchResults(results, loadCallback);
-	}
+	// show results based on type - may invoke package load
+	var resultsType = isMixed ? ZmItem.MIXED : results.type;
+	var loadCallback = new AjxCallback(this, this._handleLoadShowResults, [results, search, noUpdateOverview]);
+	var app = appCtxt.getApp(ZmItem.APP[resultsType]) || appCtxt.getCurrentApp();
+	app.currentSearch = search;
+	app.currentQuery = search.query;
+	app.showSearchResults(results, loadCallback);
 };
 
 /**
@@ -760,7 +774,7 @@ function(results, search, noUpdateOverview) {
  * @private
  */
 ZmSearchController.prototype._handleErrorDoSearch =
-function(search, ex) {
+function(search, isMixed, ex) {
 	DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
 
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
@@ -772,7 +786,7 @@ function(search, ex) {
 		appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 		var results = new ZmSearchResult(search);
 		results.type = search.types ? search.types.get(0) : null;
-		this._showResults(results, search);
+		this._showResults(results, search, isMixed);
 		return true;
 	}
 	return false;
@@ -818,7 +832,7 @@ function(types, account) {
 ZmSearchController.prototype._searchFieldCallback =
 function(queryString, searchFor) {
 	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	this.search({query: queryString, userText: true, userInitiated: true, getHtml: getHtml, searchFor: searchFor});
+	this.search({query: queryString, userText: true, getHtml: getHtml, searchFor: searchFor});
 };
 
 /**
@@ -846,10 +860,7 @@ function(ev) {
 		}
 		appCtxt.notifyZimlets("onSearchButtonClick", [queryString]);
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-
-        var searchQuery = {query: queryString, userText: userText, getHtml: getHtml, searchFor: opId};
-
-		this.search({query: queryString, userText: userText, userInitiated: true, getHtml: getHtml, searchFor: opId});
+		this.search({query: queryString, userText: userText, getHtml: getHtml, searchFor: opId});
 	}
 };
 
@@ -868,7 +879,7 @@ ZmSearchController.prototype._saveButtonListener =
 function(ev) {
 	var stc = appCtxt.getOverviewController().getTreeController(ZmOrganizer.SEARCH);
 	if (!stc._newCb) {
-		stc._newCb = stc._newCallback.bind(stc);
+		stc._newCb = new AjxCallback(stc, stc._newCallback);
 	}
 
 	var params = {
@@ -894,8 +905,6 @@ function(ev, id) {
 
 	var selItem = menu.getSelectedItem();
 	var sharedMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_SHARED);
-
-	this._searchToolBar.initAutocomplete(id);
 
 	// enable shared menu item if not a gal search
 	if (id == ZmId.SEARCH_GAL) {
@@ -936,7 +945,10 @@ function(ev, id) {
 			? allAccountsMI.getImage() : selItem.getImage();
 
 		if (this._inclSharedItems) {
-			icon = this._getSharedImage(selItem);
+			var selItemId = selItem && selItem.getData(ZmSearchToolBar.MENUITEM_ID);
+			icon = selItemId
+				? ((ZmSearchToolBar.SHARE_ICON[selItemId]) || item.getImage())
+				: item.getImage();
 		}
 
 		btn.setImage(icon);
@@ -960,19 +972,16 @@ function(ev, id) {
 		}
 
 		btn.setImage(icon);
+		btn.setText(item.getText());
 	}
 
 	// set button tooltip
 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
-	//commented out the following since it doesn't currently work, and I don't see why we would want to have
-	// a tooltip that's conv/msg view specific. I think saying "mail" is enough.
-//	if (id == ZmId.SEARCH_MAIL) {
-//		var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
-//		tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
-//	}
-	if (id != ZmId.SEARCH_SHARED) { 
-		btn.setToolTipContent(tooltip);
+	if (id == ZmId.SEARCH_MAIL) {
+		var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
+		tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
 	}
+	btn.setToolTipContent(tooltip);
 };
 
 /**
@@ -983,7 +992,7 @@ function(selItem) {
 	var selItemId = selItem && selItem.getData(ZmSearchToolBar.MENUITEM_ID);
 	return (selItemId && ZmSearchToolBar.SHARE_ICON[selItemId])
 		? ZmSearchToolBar.SHARE_ICON[selItemId]
-		: ZmSearchToolBar.ICON[selItemId]; //use regular icon if no share icon
+		: ZmSearchToolBar.ICON[ZmId.SEARCH_SHARED];
 };
 
 /**

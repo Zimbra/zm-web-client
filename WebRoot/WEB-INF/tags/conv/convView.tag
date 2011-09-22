@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -208,8 +208,8 @@
                                             <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
                                                 <zm:currentResultUrl var="msgUrl" value="search" cid="${convSummary.id}" id="${hit.id}" action='${actionVar}' context="${context}"
                                                                      cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
-                                                <zm:currentResultUrl var="msgSepUrl" value="search" action="${message.isDraft ? 'compose' : actionVar}" context="${context}"
-                                                                         cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}" st="${message.isDraft ? '' : 'message'}" sc="" id="${message.id}"/>
+                                                <zm:currentResultUrl var="msgSepUrl" value="search" action="${actionVar}" context="${context}"
+                                                                         cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}" st="message" sc=""/>
                                                 <c:if test="${empty selectedRow and hit.id eq message.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
 
                                                 <c:set var="aid" value="A${hit.id}"/>

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -38,9 +38,6 @@ ZmTradController = function(container, mailApp) {
 ZmTradController.prototype = new ZmDoublePaneController;
 ZmTradController.prototype.constructor = ZmTradController;
 
-ZmTradController.prototype.isZmTradController = true;
-ZmTradController.prototype.toString = function() { return "ZmTradController"; };
-
 ZmMailListController.GROUP_BY_ITEM[ZmId.VIEW_TRAD]		= ZmItem.MSG;
 ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_TRAD]	= ZmSetting.GROUP_BY_MESSAGE;
 
@@ -51,6 +48,11 @@ ZmMailListController.GROUP_BY_SHORTCUT[ZmId.VIEW_TRAD]	= ZmKeyMap.VIEW_BY_MSG;
 ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_TRAD);
 
 // Public methods
+
+ZmTradController.prototype.toString = 
+function() {
+	return "ZmTradController";
+};
 
 ZmTradController.prototype.show =
 function(search) {

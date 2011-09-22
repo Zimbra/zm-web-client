@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -40,11 +40,6 @@ function() {
 
 ZmVoicemailListController.prototype.show =
 function(searchResult, folder) {
-	//todo remove this after we get server support
-	this._voicemailFormat =  ZmVoiceApp.AUDIO_MP3_FORMAT;
-	if(searchResult && searchResult.voicemailFormat) {
-		this._voicemailFormat =  searchResult.voicemailFormat;
-	}
 	if (this._folder && (folder != this._folder)) {
 		this._getView().stopPlaying(true);
 	}
@@ -64,12 +59,7 @@ function() {
 
 ZmVoicemailListController.prototype._createNewView = 
 function(view) {
-	var result;
-	if(this._voicemailFormat == ZmVoiceApp.AUDIO_MP3_FORMAT) {
-		result = new ZmMP3VoicemailListView(this._container, this, this._dropTgt);
-	} else {
-		result = new ZmVoicemailListView(this._container, this, this._dropTgt);
-	}
+	var result = new ZmVoicemailListView(this._container, this, this._dropTgt);
 	result.addSelectionListener(new AjxListener(this, this._selectListener));
 	result.setDragSource(this._dragSrc);
 	result.addSoundChangeListener(new AjxListener(this, this._soundChangeListener));
@@ -399,10 +389,6 @@ function(voicemail) {
 
 ZmVoicemailListController.prototype._selectListener = 
 function(ev) {
-	if(this._voicemailFormat == ZmVoiceApp.AUDIO_MP3_FORMAT) {
-		this._getView().displayPlayer(ev);
-		return;
-	}
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var selection = this._getView().getSelection();
 		if (selection.length == 1) {

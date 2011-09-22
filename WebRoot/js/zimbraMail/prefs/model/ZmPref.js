@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -40,7 +40,6 @@ ZmPref.TYPE_EXPORT			= "EXPORT";
 ZmPref.TYPE_SHORTCUTS		= "SHORTCUTS";
 ZmPref.TYPE_CUSTOM			= "CUSTOM";
 ZmPref.TYPE_LOCALES			= "LOCALES";
-ZmPref.TYPE_FONT			= "FONT";
 
 ZmPref.ORIENT_VERTICAL		= "vertical";
 ZmPref.ORIENT_HORIZONTAL	= "horizontal";
@@ -123,8 +122,8 @@ function(emailStrArray) {
 ZmPref.downloadSinceDisplay =
 function(dateStr) {
 	if (dateStr == "") return 0;
-	if (dateStr == appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE)) return 2;
-	return 1;
+	if (dateStr == appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE)) return 1;
+	return 2;
 };
 ZmPref.downloadSinceValue =
 function(value) {
