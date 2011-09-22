@@ -548,6 +548,7 @@ function(conf, field, options, rowData, testType, rowId) {
 			if (testType == ZmFilterRule.TEST_ADDRESS || testType == ZmFilterRule.TEST_ME)
 		    {
 				select.setVisibility(false); //Don't show value "me" for address test 
+		    }
 			else if (testType == ZmFilterRule.TEST_CONVERSATIONS || testType == ZmFilterRule.TEST_LIST 
 									 ||  testType == ZmFilterRule.TEST_BULK || testType == ZmFilterRule.TEST_IMPORTANCE) {
 				select.addChangeListener(this._importanceChangeLstnr);
