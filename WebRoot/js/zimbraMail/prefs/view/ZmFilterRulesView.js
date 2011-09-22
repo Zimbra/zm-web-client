@@ -239,6 +239,9 @@ function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY) {
 		this._controller.resetListView(ev.getDetail("index"));
 		AjxDebug.println(AjxDebug.FILTER, "FILTER RULES: MODIFY event, called resetListview");
+		if (ev.source && ev.source.getNumberOfRules() == 0) {
+			this._enableButtons(); //disable transfer buttons
+		}
 	}
 };
 
