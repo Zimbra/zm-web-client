@@ -629,9 +629,8 @@ function(msg, idoc) {
 		this.onload = null; // *this* is reference to <img> el.
 	};
 	for (var i = 0; i < images.length; i++) {
-		var external = ZmMailMsgView._isExternalImage(images[i]);
+		var external = ZmMailMsgView.__unfangInternalImage(msg, images[i], "src");
 		if(!external){ //Inline image
-			ZmMailMsgView.__unfangInternalImage(msg, images[i], "src");
 			images[i].onload = onload;
 		}
 		hasExternalImages = external || hasExternalImages;
@@ -651,46 +650,24 @@ function(msg, node) {
 		var child = node.firstChild;
 		while (child) {
 			if (child.nodeType == AjxUtil.ELEMENT_NODE) {
-				hasExternalImages = ZmMailMsgView.__unfangInternalImage(msg, child, "background", true) || hasExternalImages;
+				hasExternalImages = ZmMailMsgView.__unfangInternalImage(msg, child, "background") || hasExternalImages;
 				recurse(child);
 			}
 			child = child.nextSibling;
 		}
 	}
 
-	if(node.innerHTML.indexOf("dfbackground") != -1) {
+	if(node.innerHTML.indexOf("dfbackground") != -1){
 		recurse(node);
-	}
-	else if (node.attributes && node.getAttribute("dfbackground") != -1) {
-		hasExternalImages = ZmMailMsgView.__unfangInternalImage(msg, node, "background", true);	
 	}
 
 	return hasExternalImages;
 };
 
-/**
- * Determines if an img element references an external image
- * @param elem {HTMLelement}
- * @return {Boolean} true if image is external
- */
-ZmMailMsgView._isExternalImage = 
-function(elem) {
-	if (!elem) {
-		return false;
-	}
-	return Boolean(elem.getAttribute("dfsrc"));
-}
-
-/**
- * Unfangs images
- * @param msg {ZmMailMsg} mail message
- * @param elem  {HTMLElement} element to be checked
- * @param aname {String} attribute name
- * @param prependDF  {Boolean} true to prepend "df" to attribute name 
- */
 ZmMailMsgView.__unfangInternalImage =
-function(msg, elem, aname, prependDF) {
-	var avalue = elem.getAttribute(prependDF ? "df" + aname : aname);
+function(msg, elem, aname) {
+	//var df_aname = "df"+aname;
+	var avalue = elem.getAttribute(aname);
 	if (avalue) {
 		if (avalue.substr(0,4) == "cid:") {
 			var cid = "<" + AjxStringUtil.urlComponentDecode(avalue.substr(4)) + ">"; // Parse percent-escaping per bug #52085 (especially %40 to @)
@@ -716,14 +693,11 @@ function(msg, elem, aname, prependDF) {
 				//elem.setAttribute(df_aname, avalue)
 				return false;
 			}
-		} else if (avalue.substring(0,5) == "data:") {
-			return false;
 		}
 		return true;
 	}
 	return false;
 };
-
 
 ZmMailMsgView.prototype._createDisplayImageClickClosure =
 function(msg, idoc, id, iframe) {
