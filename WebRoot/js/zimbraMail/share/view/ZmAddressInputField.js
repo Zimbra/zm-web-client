@@ -282,7 +282,7 @@ function() {
 /**
  * Parses the given text into email addresses, and adds a bubble for each one
  * that we don't already have. Since text is passed in, we don't recognize expandable DLs.
- * A bubble will be added for a string even if it doesn't parse as an email address.
+ * A bubble may be added for a string even if it doesn't parse as an email address.
  *
  * @param {string}	text		email addresses
  * @param {boolean}	add			if true, control is not cleared first
@@ -301,20 +301,17 @@ function(text, add, skipNotify) {
 		index = this._getInsertionIndex(this._holder.childNodes[this._editModeIndex]);
 	}
 
-	var newParts = [];
-	var parts = text.split(";");
-	for (var i = 0; i < parts.length; i++) {
-		var part = AjxStringUtil.trim(parts[i]);
-		var addr = AjxEmailAddress.parse(part);
+	var addrs = AjxEmailAddress.parseEmailString(text);
+	var good = addrs.good && addrs.good.getArray();
+	for (var i = 0; i < good.length; i++) {
+		var addr = good[i];
 		if (!this._strictMode || (addr && !this._addressHash[addr.address])) {
-			this.addBubble({address:addr ? addr.toString() : part, index:(index != null) ? index + i : null, skipNotify:skipNotify});
-		}
-		else {
-			newParts.push(part);
+			this.addBubble({address:addr.toString(), addrObj:addr, index:(index != null) ? index + i : null, skipNotify:skipNotify});
 		}
 	}
 
-	this._setInputValue(newParts.join(";"));
+	var bad = addrs.bad && addrs.bad.getArray();
+	this._setInputValue(bad.length ? bad.join(this._separator) : "");
 };
 
 ZmAddressInputField.prototype.addValue =
