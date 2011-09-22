@@ -316,11 +316,13 @@ function(folder, result) {
 
 	var contactList = new ZmContactList(null, true, ZmItem.CONTACT);
 	var dls = result._data.GetAccountMembershipResponse.dl;
-	for (var i = 0; i < dls.length; i++) {
-		var dl = dls[i];
-		contactList.addFromDom({_attrs : {email: dl.name, type: "group", zimbraId: dl.id, firstName: dl.name, lastName: ""},
-								fileAsStr: dl.name,
-								id: dl.id});
+	if (dls) {
+		for (var i = 0; i < dls.length; i++) {
+			var dl = dls[i];
+			contactList.addFromDom({_attrs : {email: dl.name, type: "group", zimbraId: dl.id, firstName: dl.name, lastName: ""},
+									fileAsStr: dl.name,
+									id: dl.id});
+		}
 	}
 	var clc = AjxDispatcher.run("GetContactListController");
 	clc.show(contactList, true, ZmFolder.ID_DLS);

@@ -419,7 +419,16 @@ function(objectManager, data, type, encodeHTML) {
  * @private
  */
 ZmContactSplitView.prototype._setContact =
-function(contact, isGal, oldContact, expandDL) {
+function(contact, isGal, oldContact, expandDL, isBack) {
+
+	//first gather the dl info and dl members. Those are async requests so calling back here after
+	//it is done with isBack set to true.
+	if (contact.isDistributionList() && !isBack) {
+		var callbackHere = this._setContact.bind(this, contact, isGal, oldContact, expandDL, true);
+		this._controller.gatherContactExtraDlStuff(contact, callbackHere);
+		return;
+	}
+
 	var folderId = contact.folderId;
 	var folder = folderId ? appCtxt.getById(folderId) : null;
 	var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
@@ -440,7 +449,18 @@ function(contact, isGal, oldContact, expandDL) {
 			subs.folderIcon = addrBook.getIcon();
 			subs.folderName = addrBook.getName();
 		}
-		subs.groupMembers = contact.getGroupMembersObj();
+
+		if (contact.isDistributionList()) {
+			var dlInfo = subs.dlInfo = contact.dlInfo;
+			subs.dlInfoMsg = dlInfo.isOwner && dlInfo.isMember ? ZmMsg.youAreOwnerAndMember
+					: dlInfo.isOwner ? ZmMsg.youAreOwner
+					: dlInfo.isMember ? ZmMsg.youAreMember
+					: "";
+			subs.groupMembers = contact.dlMembers;
+		}
+		else {
+			subs.groupMembers = contact.getGroupMembersObj();
+		}
 		subs.findObjects = AjxCallback.simpleClosure(this.__findObjects, this, this._groupObjectManager);
 
 		this._resetVisibility(true);

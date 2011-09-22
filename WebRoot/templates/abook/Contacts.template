@@ -507,6 +507,13 @@
 <template id="abook.Contacts#SplitViewGroup">
 	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
 	<table>
+	<$ if (data.dlInfo) { $>
+		<tr>
+			<td>
+				<$= data.dlInfoMsg $>
+			</td>
+		</tr>
+	<$ } $>
 	<$= ZmContactSplitView.showContactGroup(data) $>
 	</table>
 </template>

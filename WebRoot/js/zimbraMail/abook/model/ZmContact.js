@@ -794,16 +794,10 @@ function() {
 	if (!this.isGroup()) {
 		return null;
 	}
-	var members = [];
 	if (this.isDistributionList()) {
-		var mems = this.getDLMembers(0, 1000, null, true).list;
-		for (var i = 0; i < mems.length; i++) {
-			members.push({type: ZmContact.GROUP_INLINE_REF, //todo - server side has to change to return the TYPE of member (contact, DL, etc)
-							value: mems[i],
-							address: mems[i]});
-		}
-		return members;
+		throw new Error("getGroupMembersObj should not be called for DLs");
 	}
+	var members = [];
 	var groupMembers = this.attr[ZmContact.F_groups];
 	if (!groupMembers) {
 		return null;
@@ -824,6 +818,23 @@ function() {
 		}
 	}
 	return members;
+};
+
+
+ZmContact.prototype.getDlInfo =
+function(callback) {
+	if (this.dlInfo) {
+		return this.dlInfo;
+	}
+	if (!callback) {
+		return null;
+	}
+
+	var soapDoc = AjxSoapDoc.create("GetDistributionListInfoRequest", "urn:zimbraAccount", null);
+	var elBy = soapDoc.set("dl", this.getEmail());
+	elBy.setAttribute("by", "name");
+
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback});
 };
 
 /**
@@ -1993,10 +2004,9 @@ function(fields, sortByNameFunc) {
  * @param offset	{int}			offset into list to start at
  * @param limit		{int}			number of members to fetch and return
  * @param callback	{AjxCallback}	callback to run with results
- * @param synchMode {Boolean}		if true - send the request synchronously and return the result
  */
 ZmContact.prototype.getDLMembers =
-function(offset, limit, callback, synchMode) {
+function(offset, limit, callback) {
 
 	var result = {list:[], more:false, isDL:{}};
 	if (!this.isDL) { return result; }
@@ -2031,16 +2041,9 @@ function(offset, limit, callback, synchMode) {
 		var jsonObj = {GetDistributionListMembersRequest:{_jsns:"urn:zimbraAccount", offset:offset, limit:limit}};
 		var request = jsonObj.GetDistributionListMembersRequest;
 		request.dl = {_content: this.getEmail()};
-		if (synchMode) {
-			var response = appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:false});
-			return this._handleResponseGetDLMembers(start, limit, null, null, response);
-		}
 		var respCallback = new AjxCallback(this, this._handleResponseGetDLMembers, [offset, limit, callback]);
 		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 	} else {
-		if (synchMode) {
-			return result;
-		}
 		this._handleResponseGetDLMembers(start, limit, callback, result);
 	}
 };

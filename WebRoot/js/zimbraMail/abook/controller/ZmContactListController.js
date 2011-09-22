@@ -210,6 +210,49 @@ function() {
 	return this._folderId;
 };
 
+
+
+
+ZmContactListController.prototype.gatherContactExtraDlStuff =
+function(contact, callback) {
+	if (contact.dlInfo && contact.dlMembers) {
+		callback();
+		return;
+	}
+	var callbackFromGettingInfo = this._handleGetDlInfoResponse.bind(this, contact, callback);
+	contact.getDlInfo(callbackFromGettingInfo);
+};
+
+ZmContactListController.prototype._handleGetDlInfoResponse =
+function(contact, callback, result) {
+	contact.dlInfo = result._data.GetDistributionListInfoResponse;
+	var callbackFromGettingMembers = this._handleGetDlMembersResponse.bind(this, contact, callback);
+	contact.getAllDLMembers(callbackFromGettingMembers);
+};
+
+
+ZmContactListController.prototype._handleGetDlMembersResponse =
+function(contact, callback, result) {
+	var list = result.list;
+	if (!list) {
+		contact.dlMembers = [];
+		callback();
+		return;
+	}
+	var members = [];
+	for (var i = 0; i < list.length; i++) {
+		members.push({type: ZmContact.GROUP_INLINE_REF,
+						value: list[i],
+						address: list[i]});
+	}
+
+	contact.dlMembers =	members;
+	callback();
+};
+
+
+
+
 /**
  * Checks if the search is a GAL search.
  * 
@@ -691,6 +734,11 @@ function(parent, num) {
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
 		parent.enable([ZmOperation.NEW_MESSAGE, printOp], num > 0);
 		parent.enable(ZmOperation.CONTACT, num == 1);
+		var contact = this._listView[this._currentView].getSelection()[0];
+		var isDL = contact && contact.isDistributionList();
+		var isOwner = isDL && contact.dlInfo && contact.dlInfo.isOwner;
+		isOwner = false; //todo - remove when we support editing by owner.
+		parent.enable([ZmOperation.EDIT], isOwner);
 	};
 
     this._resetQuickCommandOperations(parent);
