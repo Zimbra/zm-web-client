@@ -339,7 +339,7 @@ ZmBaseController.prototype._setView =
 function(params) {
 
 	var view = params.view;
-	if (this.sessionId && this.sessionId.indexOf(ZmId.VIEW_SEARCH_RESULTS) == 0) {
+	if (this.sessionId && this.sessionId.toString().indexOf(ZmId.VIEW_SEARCH_RESULTS) == 0) {
 		// view is being embedded within search results, so don't push it
 		this._setViewContents(view);
 		return;
