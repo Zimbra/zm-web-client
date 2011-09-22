@@ -112,6 +112,7 @@ ZmFilterRule.C_ADDRESS      = "ADDRESS";
 ZmFilterRule.C_RANKING      = "RANKING";
 ZmFilterRule.C_ME           = "ME";
 ZmFilterRule.C_OBO          = "OBO";
+ZmFilterRule.C_IMPORTANCE   = "IMPORTANCE";
 
 ZmFilterRule.C_HEADER_VALUE = {};
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM]	= "from";
@@ -168,6 +169,7 @@ ZmFilterRule.TEST_LIST                          = "listTest";
 ZmFilterRule.TEST_SOCIAL                        = "socialTest"; //not a real test
 ZmFilterRule.TEST_ME                            = "meTest";
 ZmFilterRule.TEST_RANKING                       = "contactRankingTest";
+ZmFilterRule.TEST_IMPORTANCE                    = "importanceTest";
 
 
 // Conditions map to Tests
@@ -196,6 +198,7 @@ ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SOCIAL]      = ZmFilterRule.TEST_SOCIAL;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_ADDRESS]     = ZmFilterRule.TEST_ADDRESS;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_ME]          = ZmFilterRule.TEST_ME;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_RANKING]     = ZmFilterRule.TEST_RANKING;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_IMPORTANCE]  = ZmFilterRule.TEST_IMPORTANCE;
 
 // Operations (verbs)
 ZmFilterRule.OP_IS				= "IS";
@@ -432,7 +435,10 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_CONV] = {
 	    opsOptions: [ZmFilterRule.OP_CONV_IS, ZmFilterRule.OP_NOT_CONV],
 		value:      ZmFilterRule.TYPE_SELECT,
 		vOptions:  [{label: ZmMsg.convIStartLabel, value: "started"}, {label: ZmMsg.convIParticipateLabel, value: "participated"},
-			        {label: ZmMsg.massMarketingLabel, value: ZmFilterRule.C_BULK}, {label: ZmMsg.distributionListLabel, value: ZmFilterRule.C_LIST}]
+			        {label: ZmMsg.massMarketingLabel, value: ZmFilterRule.C_BULK}, {label: ZmMsg.distributionListLabel, value: ZmFilterRule.C_LIST},
+					{label: ZmMsg.markedAsImportance, value: "importance"}],
+	    valueMod:  ZmFilterRule.TYPE_SELECT,
+	    vmOptions: [{label: ZmMsg.high, value: "high"}, {label: ZmMsg.normal, value: "normal"}, {label: ZmMsg.low, value: "low"}]
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_SOCIAL] = {
 		ops:        ZmFilterRule.TYPE_SELECT,
@@ -466,9 +472,9 @@ ZmFilterRule.CONDITIONS_LIST = [
 	ZmFilterRule.C_TO,
 	ZmFilterRule.C_CC,
 	ZmFilterRule.C_TO_CC,
+	ZmFilterRule.C_OBO,	
 	ZmFilterRule.C_SUBJECT,
-	ZmFilterRule.C_OBO,
-	ZmFilterRule.C_HEADER,
+	ZmFilterRule.C_CONV,	
 	ZmFilterRule.C_SIZE,
 	ZmFilterRule.C_DATE,
 	ZmFilterRule.C_BODY,
@@ -477,7 +483,7 @@ ZmFilterRule.CONDITIONS_LIST = [
 	ZmFilterRule.C_ADDRBOOK,
 	ZmFilterRule.C_INVITE,
 	ZmFilterRule.C_SOCIAL,
-	ZmFilterRule.C_CONV,
+	ZmFilterRule.C_HEADER,	
 	ZmFilterRule.C_ADDRESS
 ];
 
@@ -741,6 +747,9 @@ function(testType, comparator, value, subjectMod, caseSensitive) {
 		testType = ZmFilterRule.TEST_LIST;
 		value = null;
 	}
+	else if (testType == ZmFilterRule.TEST_CONVERSATIONS && (value == "high" || value == "normal" || value == "low"))  {
+		testType = ZmFilterRule.TEST_IMPORTANCE;
+	}
 	
 	if (!this.conditions[testType]) {
 		this.conditions[testType] = [];
@@ -874,6 +883,7 @@ function(testType, comparator, value, subjectMod, caseSensitive) {
 			case ZmFilterRule.TEST_SIZE:		conditionData.s = value; break;
 			case ZmFilterRule.TEST_DATE:		conditionData.d = value; break;
 			case ZmFilterRule.TEST_CONVERSATIONS: conditionData.where = value; break;
+			case ZmFilterRule.TEST_IMPORTANCE:  conditionData.imp = value; break;
 			case ZmFilterRule.TEST_ADDRESS:     conditionData.part = part;
 												conditionData.value= value;
 												break;

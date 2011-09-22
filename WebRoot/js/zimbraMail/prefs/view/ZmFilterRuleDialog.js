@@ -46,6 +46,7 @@ ZmFilterRuleDialog = function() {
 	this._plusMinusLstnr	= new AjxListener(this, this._plusMinusListener);
 	this._browseLstnr		= new AjxListener(this, this._browseListener);
 	this._addrBookChangeLstnr = new AjxListener(this, this._addrBookChangeListener);
+	this._importanceChangeLstnr = new AjxListener(this, this._importanceChangeListener);
 	
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
     this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
@@ -391,6 +392,7 @@ function(test, data) {
 		case ZmFilterRule.TEST_BULK:            condition = ZmFilterRule.C_CONV; break;
 		case ZmFilterRule.TEST_ME:              condition = ZmFilterRule.C_ADDRBOOK; break;
 		case ZmFilterRule.TEST_RANKING:         condition = ZmFilterRule.C_ADDRBOOK; break;
+		case ZmFilterRule.TEST_IMPORTANCE:      condition = ZmFilterRule.C_CONV; break;
 		case ZmFilterRule.TEST_HEADER:
 			condition = ZmFilterRule.C_HEADER_MAP[data.header];
 			if (!condition) { // means custom header
@@ -532,18 +534,30 @@ function(conf, field, options, rowData, testType, rowId) {
 		if (isMainSelect) {
 			select.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
 			select.addChangeListener(this._rowChangeLstnr);
-		} else if (field == "ops") {
+		} 
+		else if (field == "ops") {
 			if (testType == ZmFilterRule.TEST_HEADER) {
 				select.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
 				select.addChangeListener(this._opsChangeLstnr);
 			}
-			else if (testType == ZmFilterRule.TEST_ADDRBOOK) {
+			else if (testType == ZmFilterRule.TEST_ADDRBOOK || testType == ZmFilterRule.TEST_ME) {
 				select.addChangeListener(this._addrBookChangeLstnr);
 			}
 		}
-		else if (field == "value" && (testType == ZmFilterRule.TEST_ADDRESS || testType == ZmFilterRule.TEST_ME)) {
-			select.setVisibility(false); //Don't show value "me" for address test //TODO: handle filters created by zmprov
+		else if (field == "value") {
+			if (testType == ZmFilterRule.TEST_ADDRESS || testType == ZmFilterRule.TEST_ME)
+		    {
+				select.setVisibility(false); //Don't show value "me" for address test 
+			else if (testType == ZmFilterRule.TEST_CONVERSATIONS || testType == ZmFilterRule.TEST_LIST 
+									 ||  testType == ZmFilterRule.TEST_BULK || testType == ZmFilterRule.TEST_IMPORTANCE) {
+				select.addChangeListener(this._importanceChangeLstnr);
+			}
 		}
+		else if (field == "valueMod" && (testType == ZmFilterRule.TEST_CONVERSATIONS || testType == ZmFilterRule.TEST_LIST 
+									 ||  testType == ZmFilterRule.TEST_BULK)) {
+			select.setVisibility(false);
+		}
+		
 		for (var i = 0; i < options.length; i++) {
 			var o = options[i];
 			// skip if the action or this option is disabled
@@ -656,6 +670,7 @@ function(isMainSelect, testType, field, rowData) {
 			case ZmFilterRule.TEST_BULK:            dataValue = ZmFilterRule.C_CONV; break;
 			case ZmFilterRule.TEST_ME:              dataValue = ZmFilterRule.C_ADDRBOOK; break;
 			case ZmFilterRule.TEST_RANKING:         dataValue = ZmFilterRule.C_ADDRBOOK; break;
+			case ZmFilterRule.TEST_IMPORTANCE:      dataValue = ZmFilterRule.C_CONV; break;
 			// default returns action type
 			default:								return ZmFilterRule.A_VALUE_MAP[testType];
 		}
@@ -752,6 +767,19 @@ function(isMainSelect, testType, field, rowData) {
 			}
 			else if (field == "value") {
 				dataValue = rowData.where;
+			}
+		}
+		else if (testType == ZmFilterRule.TEST_IMPORTANCE) {
+			if (field == "ops") {
+				dataValue = (rowData.negative == "1")
+					? ZmFilterRule.OP_NOT_CONV
+					: ZmFilterRule.OP_CONV_IS;	
+			}
+			else if (field == "value") {
+				dataValue = "importance";
+			}
+			else if (field == "valueMod") {
+				dataValue = rowData.imp;
 			}
 		}
 		else if (testType == ZmFilterRule.TEST_SOCIALCAST) {
@@ -1037,6 +1065,22 @@ function(ev) {
 	else {
 		input["value"].dwtObj.setVisibility(true);
 	}
+};
+
+ZmFilterRuleDialog.prototype._importanceChangeListener = 
+function(ev) {
+	var rowId = ev._args.selectObj.getData(ZmFilterRuleDialog.ROW_ID);
+	var input = this._inputs[rowId];
+	if (!input && !input["value"] && !input["value"].dwtObj) {
+		return;
+	}
+	var value = input["value"].dwtObj.getValue();
+	if (value == "importance") {
+		input["valueMod"].dwtObj.setVisibility(true);
+	}
+	else {
+		input["valueMod"].dwtObj.setVisibility(false);
+	}		
 };
 
 /**
@@ -1362,6 +1406,9 @@ function(rowId) {
 	}
 	else if (testType == ZmFilterRule.TEST_ADDRESS) {
 		value += ";" + valueMod;   //addressTest has value=email part=all|domain|localpart
+	}
+	else if (testType == ZmFilterRule.TEST_CONVERSATIONS && value == "importance") {
+		value = valueMod;  //importanceTest
 	}
 	
 	if (testType == ZmFilterRule.TEST_HEADER || testType == ZmFilterRule.TEST_MIME_HEADER || testType == ZmFilterRule.TEST_ADDRESS) {
