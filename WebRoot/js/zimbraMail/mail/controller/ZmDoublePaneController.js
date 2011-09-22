@@ -218,6 +218,9 @@ function() {
 	list = list.concat(this._standardActionMenuOps());
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.SPAM);
+	if (!appCtxt.isChildWindow && appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
+		list.push(ZmOperation.SEP, ZmOperation.DETACH);
+	}
 	list.push(ZmOperation.SHOW_ORIG);
 	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
 		list.push(ZmOperation.ADD_FILTER_RULE);

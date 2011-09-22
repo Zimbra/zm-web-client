@@ -1736,6 +1736,8 @@ function(parent, num) {
 	parent.setItemVisible(ZmOperation.MARK_UNREAD, !isDrafts);
 	parent.setItemVisible(ZmOperation.SPAM, !isDrafts);
 	parent.setItemVisible(ZmOperation.DETACH, !isDrafts);
+	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !isDrafts && num == 1));
+
 	if (parent instanceof ZmActionMenu) {
 		parent.setItemVisible(ZmOperation.QUICK_COMMANDS, !isDrafts && parent._hasQuickCommands);
 	} else {
@@ -1754,7 +1756,6 @@ function(parent, num) {
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.SPAM, ZmOperation.TAG_MENU], false);
 		} else {
 			parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (!isDrafts && !isFeed && num == 1));
-			parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !isDrafts && num == 1));
 			parent.enable([ZmOperation.SPAM, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.FORWARD], (!isDrafts && num > 0));
 			parent.enable([ZmOperation.VIEW_MENU], true);
 		}
