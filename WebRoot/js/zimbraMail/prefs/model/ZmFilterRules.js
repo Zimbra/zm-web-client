@@ -75,7 +75,8 @@ function(rule) {
 	this._vector.removeAt(index);
 	delete this._ruleIdHash[rule.id];
 	delete this._ruleNameHash[rule.name];
-	this._saveRules(index, true);
+	this._deleteMode = true;
+    this._saveRules(index, true);
 };
 
 /**
@@ -341,7 +342,17 @@ function(index, notify, callback, result) {
 		this._notify(ZmEvent.E_MODIFY, {index: index});
 	}
 
-	appCtxt.setStatusMsg(ZmMsg.filtersSaved);
+    if(this._deleteMode){
+        appCtxt.setStatusMsg(ZmMsg.filtersDeleted);
+        this._deleteMode = false;
+    }
+
+    else if(appCtxt.getFilterRuleDialog().isEditMode()){
+	    appCtxt.setStatusMsg(ZmMsg.filtersEdited);
+    }
+    else{
+        appCtxt.setStatusMsg(ZmMsg.filtersSaved);
+    }
 
 	if (callback) {
 		callback.run(result);
