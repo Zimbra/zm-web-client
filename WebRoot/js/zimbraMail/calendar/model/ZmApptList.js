@@ -28,10 +28,8 @@ ZmApptList = function() {
 ZmApptList.prototype = new ZmList;
 ZmApptList.prototype.constructor = ZmApptList;
 
-ZmApptList.prototype.toString = 
-function() {
-	return "ZmApptList";
-};
+ZmApptList.prototype.isZmApptList = true;
+ZmApptList.prototype.toString = function() { return "ZmApptList"; };
 
 ZmApptList.prototype.loadFromSummaryJs =
 function(appts) {
@@ -221,7 +219,7 @@ function(params) {
 		params1.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.actionTrash) : null;
 		params1.action = "trash";
         //This code snippet differs from the ZmList.moveItems
-        var currentView = appCtxt.getAppViewMgr().getCurrentView();
+        var currentView = appCtxt.getCurrentView();
         if(currentView) {
             var viewController = currentView.getController();
             if(viewController) {

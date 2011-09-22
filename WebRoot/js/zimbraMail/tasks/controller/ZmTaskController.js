@@ -26,30 +26,26 @@
  *
  * @author Parag Shah
  *
- * @param {DwtComposite}	container	the containing element
- * @param {ZmApp}	app	a handle to the [{@link ZmCalendarApp}|{@link ZmTasksApp}] application
+ * @param {DwtShell}	container	the containing shell
+ * @param {ZmApp}		app			the containing app
+ * @param {constant}	type		controller type
+ * @param {string}		sessionId	the session id
  * 
  * @extends		ZmCalItemComposeController
  */
-ZmTaskController = function(container, app) {
+ZmTaskController = function(container, app, type, sessionId) {
 	if (arguments.length == 0) { return; }
-	ZmCalItemComposeController.call(this, container, app);
+	ZmCalItemComposeController.apply(this, arguments);
 };
 
 ZmTaskController.prototype = new ZmCalItemComposeController;
 ZmTaskController.prototype.constructor = ZmTaskController;
 
+ZmTaskController.prototype.isZmTaskController = true;
+ZmTaskController.prototype.toString = function() { return "ZmTaskController"; };
+
 ZmTaskController.DEFAULT_TAB_TEXT = ZmMsg.task;
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmTaskController.prototype.toString =
-function() {
-	return "ZmTaskController";
-};
 
 // Public methods
 

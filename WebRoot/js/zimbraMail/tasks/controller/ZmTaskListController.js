@@ -23,32 +23,40 @@
  * @class
  * This class represents the task list controller.
  * 
- * @param {DwtComposite}	container	the containing element
- * @param {ZmApp}	app	a handle to the [{@link ZmCalendarApp}|{@link ZmTasksApp}] application
+ * @param {DwtControl}					container					the containing shell
+ * @param {ZmApp}						app							the containing application
+ * @param {constant}					type						type of controller
+ * @param {string}						sessionId					the session id
+ * @param {ZmSearchResultsController}	searchResultsController		containing controller
  * 
  * @extends		ZmListController
  */
-ZmTaskListController = function(container, app) {
+ZmTaskListController = function(container, app, type, sessionId, searchResultsController) {
 
-	ZmListController.call(this, container, app);
+	ZmListController.apply(this, arguments);
 
-	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
+	if (this.supportsDnD()) {
+		this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+		this._dragSrc.addDragListener(this._dragListener.bind(this));
+	}
 
-	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
-	this._listeners[ZmOperation.PRINT] = null; // override base class to do nothing
-	this._listeners[ZmOperation.PRINT_TASK] = new AjxListener(this, this._printTaskListener);
-	this._listeners[ZmOperation.PRINT_TASKFOLDER] = new AjxListener(this, this._printTaskFolderListener);
-	this._listeners[ZmOperation.SHOW_ORIG] = new AjxListener(this, this._showOrigListener);
-	this._listeners[ZmOperation.MARK_AS_COMPLETED] = new AjxListener(this, this._markAsCompletedListener);
-    this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
+	this._listeners[ZmOperation.EDIT]				= this._editListener.bind(this);
+	this._listeners[ZmOperation.PRINT_TASK]			= this._printTaskListener.bind(this);
+	this._listeners[ZmOperation.PRINT_TASKFOLDER]	= this._printTaskFolderListener.bind(this);
+	this._listeners[ZmOperation.SHOW_ORIG]			= this._showOrigListener.bind(this);
+	this._listeners[ZmOperation.MARK_AS_COMPLETED]	= this._markAsCompletedListener.bind(this);
+    this._listeners[ZmOperation.DELETE]				= this._deleteListener.bind(this);
 
+	this._listeners[ZmOperation.PRINT]				= null; // override base class to do nothing
+	
 	this._currentTaskView = ZmId.VIEW_TASK_ALL;
 };
 
 ZmTaskListController.prototype = new ZmListController;
 ZmTaskListController.prototype.constructor = ZmTaskListController;
 
+ZmTaskListController.prototype.isZmTaskListController = true;
+ZmTaskListController.prototype.toString = function() { return "ZmTaskListController"; };
 
 // Consts
 ZmTaskListController.SORT_BY = [
@@ -109,17 +117,8 @@ ZmTaskListController.READING_PANE_ICON[ZmSetting.RP_BOTTOM]	= "SplitPane";
 ZmTaskListController.READING_PANE_ICON[ZmSetting.RP_RIGHT]	= "SplitPaneVertical";
 
 ZmTaskListController.RP_IDS = [ZmSetting.RP_BOTTOM, ZmSetting.RP_RIGHT, ZmSetting.RP_OFF];
-// Public methods
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmTaskListController.prototype.toString =
-function() {
-	return "ZmTaskListController";
-};
+// Public methods
 
 ZmTaskListController.prototype.show =
 function(results, folderId) {
@@ -153,7 +152,7 @@ function(results, folderId) {
 	this._setView({view:this._currentView, elements:elements, isAppView:true});
 
 	this._setTabGroup(this._tabGroups[this._currentView]);
-	this._resetNavToolBarButtons(this._currentView);
+	this._resetNavToolBarButtons();
 
     // do this last
 	if (!this._taskTreeController) {
@@ -161,7 +160,12 @@ function(results, folderId) {
 		DBG.timePt("getting tree controller", true);
 	}
 
-    this.getCurrentView().setTaskInputVisible(folderId != ZmOrganizer.ID_TRASH);
+    this.getListView().setTaskInputVisible(folderId != ZmOrganizer.ID_TRASH);
+};
+
+ZmTaskListController.prototype.getCurrentView = 
+function() {
+	return this._taskMultiView;
 };
 
 /**
@@ -326,27 +330,18 @@ function(name, callback, errCallback) {
 	task.save(null, callback, errCallback);
 };
 
-ZmTaskListController.prototype._defaultView =
+ZmTaskListController.prototype.getDefaultViewId =
 function() {
 	return ZmId.VIEW_TASKLIST;
-};
-
-ZmTaskListController.prototype._getViewType =
-function() {
-	return this._currentView;
 };
 
 ZmTaskListController.prototype._createNewView =
 function() {
 
-    if (this._taskListView) {
+    if (this._taskListView && this._dragSrc) {
 		this._taskListView.setDragSource(this._dragSrc);
 	}
 	return this._taskListView;
-
-    //this._listView[view] = this._taskMultiView = new ZmTaskMultiView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE, controller:this, dropTgt:this._dropTgt});
-	//this._listView[view].setDragSource(this._dragSrc);
-    //return this._listView[view];
 };
 
 ZmTaskListController.prototype._getToolBarOps =

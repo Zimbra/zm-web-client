@@ -26,8 +26,9 @@
  * This class represents a zimlet application controller.
  * 
  * @param	{String}	name		the application name
- * @param	{ZmComposite}	container	the container
+ * @param	{DwtShell}	container	the container
  * @param	{ZmApp}		app			the app
+ * 
  * @extends		ZmController
  */
 ZmZimletAppController = function(name, container, app) {
@@ -39,18 +40,17 @@ ZmZimletAppController = function(name, container, app) {
 ZmZimletAppController.prototype = new ZmController;
 ZmZimletAppController.prototype.constructor = ZmZimletAppController;
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmZimletAppController.prototype.toString = function() {
-	return "ZmZimletAppController";
-};
+ZmZimletAppController.prototype.isZmZimletAppController = true;
+ZmZimletAppController.prototype.toString = function() { return "ZmZimletAppController"; };
 
 //
 // Public methods
 //
+
+ZmZimletAppController.prototype.getDefaultViewId =
+function() {
+	return this.name;
+};
 
 /**
  * Gets the view.
@@ -76,7 +76,7 @@ function() {
 //		callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
 
 		// create app view
-	    this._app.createView({	viewId:			this._getViewType(),
+	    this._app.createView({	viewId:			this.getDefaultViewId(),
 								elements:		elements,
 								controller:		this,
 								callbacks:		callbacks,
@@ -103,16 +103,5 @@ ZmZimletAppController.prototype.getToolbar = function() {
  */
 ZmZimletAppController.prototype.show = function() {
 	this.getView();
-	return this._app.pushView(this._getViewType());
-};
-
-//
-// Protected methods
-//
-
-/**
- * @private
- */
-ZmZimletAppController.prototype._getViewType = function() {
-	return this._name;
+	return this._app.pushView(this.getDefaultViewId());
 };

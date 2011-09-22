@@ -23,16 +23,18 @@
  * @class
  * This class represents the portal controller.
  * 
- * @param {DwtComposite}	container	the containing element
+ * @param	{DwtComposite}	container	the containing element
  * @param	{ZmPortalApp}	app			the application
+ * @param	{constant}		type		controller type
+ * @param	{string}		sessionId	the session id
  * 
  * @extends		ZmListController
  */
-ZmPortalController = function(container, app) {
+ZmPortalController = function(container, app, type, sessionId) {
 	if (arguments.length == 0) { return; }
-	ZmListController.call(this, container, app);
+	ZmListController.apply(this, arguments);
 
-    // TODO: Where does this really belong?
+    // TODO: Where does this really belong? Answer: in ZmPortalApp
     ZmOperation.registerOp(ZmId.OP_PAUSE_TOGGLE, {textKey:"pause", image:"Pause", style: DwtButton.TOGGLE_STYLE});
 
     this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
@@ -41,14 +43,8 @@ ZmPortalController = function(container, app) {
 ZmPortalController.prototype = new ZmListController;
 ZmPortalController.prototype.constructor = ZmPortalController;
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmPortalController.prototype.toString = function() {
-	return "ZmPortalController";
-};
+ZmPortalController.prototype.isZmPortalController = true;
+ZmPortalController.prototype.toString = function() { return "ZmPortalController"; };
 
 //
 // Public methods
@@ -84,7 +80,7 @@ ZmPortalController.prototype.setPaused = function(paused) {
 // Protected methods
 //
 
-ZmPortalController.prototype._defaultView = function() {
+ZmPortalController.prototype.getDefaultViewId = function() {
 	return ZmId.VIEW_PORTAL;
 };
 

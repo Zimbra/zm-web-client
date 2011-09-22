@@ -360,7 +360,7 @@ function(skipSelection) {
 	if (this.size() == 0) {
 		this._controller._handleEmptyList(this);
 	} else {
-		this._controller._resetNavToolBarButtons(this._controller._getViewType());
+		this._controller._resetNavToolBarButtons();
 	}
 	if (!skipSelection) {
 		this._setNextSelection();
@@ -382,7 +382,7 @@ function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY) {
 		if (!fields) { return; }
 		if (fields[ZmOrganizer.F_TOTAL]) {
-			this._controller._resetNavToolBarButtons(this._controller._getViewType());
+			this._controller._resetNavToolBarButtons();
 		}
 	}
 };

@@ -23,14 +23,16 @@
  * @author Parag Shah
  * @author Conrad Damon
  * 
- * @param {ZmComposite}	container	the containing shell
- * @param {ZmMailApp}	mailApp			the containing app
+ * @param {DwtControl}	container		the containing shell
+ * @param {constant}	type			type of controller
+ * @param {ZmApp}		mailApp			the containing application
+ * @param {string}		sessionId		the session id
  * 
  * @extends		ZmMailListController
  */
-ZmMsgController = function(container, mailApp) {
+ZmMsgController = function(container, mailApp, type, sessionId) {
 
-	ZmMailListController.call(this, container, mailApp);
+	ZmMailListController.apply(this, arguments);
 };
 
 ZmMsgController.prototype = new ZmMailListController;
@@ -46,12 +48,10 @@ ZmMsgController.DEFAULT_TAB_TEXT = ZmMsg.message;
 
 ZmMsgController.viewToTab = {};
 
-// Public methods
+ZmMsgController.prototype.isZmMsgController = true;
+ZmMsgController.prototype.toString = function() { return "ZmMsgController"; };
 
-ZmMsgController.prototype.toString = 
-function() {
-	return "ZmMsgController";
-};
+// Public methods
 
 /**
  * Displays a message in the single-pane view.
@@ -66,7 +66,7 @@ ZmMsgController.prototype.show =
 function(msg, mode, callback, markRead, hidePagination) {
 	this.setMsg(msg);
 	this._mode = mode;
-	this._currentView = this._getViewType();
+	this._currentView = this.viewId;
 	this._list = msg.list;
 	if (!msg._loaded) {
 		var respCallback = new AjxCallback(this, this._handleResponseShow, [callback, hidePagination]);
@@ -120,7 +120,7 @@ function() {
 	this._setView(viewParams);
 	avm.setTabTitle(this.viewId, buttonText);
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
-	this._resetNavToolBarButtons(this._currentView);
+	this._resetNavToolBarButtons();
 	this._toolbar[this._currentView].adjustSize();
 };
 
@@ -198,11 +198,6 @@ function() {
 	return null;
 };
 
-ZmMsgController.prototype._getViewType =
-function() {
-	return this.viewId;
-};
-
 ZmMsgController.prototype._initializeView =
 function(view) {
 	if (!this._view[view]) {
@@ -247,6 +242,7 @@ function(view) {
 
 ZmMsgController.prototype._resetNavToolBarButtons =
 function(view) {
+	view = view || this.getCurrentViewId();
 	if (!this._navToolBar[view]) { return; }
 	// NOTE: we purposely do not call base class here!
 	if (!appCtxt.isChildWindow) {

@@ -390,7 +390,7 @@ ZmContactAlphabetBar.alphabetClicked =
 function(cell, letter, endLetter) {
 	// get reference to alphabet bar - ugh
 	var clc = AjxDispatcher.run("GetContactListController");
-	var alphabetBar = clc && clc.getParentView() && clc.getParentView().getAlphabetBar();
+	var alphabetBar = clc && clc.getCurrentView() && clc.getCurrentView().getAlphabetBar();
 	if (alphabetBar && alphabetBar.enabled()) {
 		if (alphabetBar.reset(cell)) {
             letter = letter && String(letter).substr(0,1);
@@ -478,7 +478,7 @@ function(sortVal) {
 ZmContactAlphabetBar._onMouseOver =
 function(cell) {
 	// get reference to alphabet bar - ugh
-	var alphabetBar = AjxDispatcher.run("GetContactListController").getParentView().getAlphabetBar();
+	var alphabetBar = AjxDispatcher.run("GetContactListController").getCurrentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
 		cell.className = "DwtButton-hover AlphabetBarCell";
 	}
@@ -490,7 +490,7 @@ function(cell) {
 ZmContactAlphabetBar._onMouseOut =
 function(cell) {
 	// get reference to alphabet bar - ugh
-	var alphabetBar = AjxDispatcher.run("GetContactListController").getParentView().getAlphabetBar();
+	var alphabetBar = AjxDispatcher.run("GetContactListController").getCurrentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
 		alphabetBar.setSelected(cell, cell == alphabetBar.getCurrent());
 	}

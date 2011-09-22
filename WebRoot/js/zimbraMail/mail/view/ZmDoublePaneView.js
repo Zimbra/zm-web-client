@@ -17,7 +17,7 @@ ZmDoublePaneView = function(params) {
 
 	if (arguments.length == 0) { return; }
 
-	var view = this._view = params.view = params.controller._getViewType();
+	var view = this._view = params.view = params.controller.getCurrentViewId();
 	params.id = ZmId.getViewId(view);
 	DwtComposite.call(this, params);
 

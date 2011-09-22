@@ -548,10 +548,11 @@ function(results, callback) {
 	var search = results && results.search;
 	var folderId = search && search.singleTerm && search.folderId;
 	var isInGal = search && (search.contactSource == ZmId.SEARCH_GAL);
-	this.getContactListController().show(results, isInGal, folderId);
+	var controller = this.getContactListController();
+	controller.show(results, isInGal, folderId);
 	this._setLoadedTime(this.toString(), new Date());
 	if (callback) {
-		callback.run();
+		callback.run(controller);
 	}
 };
 

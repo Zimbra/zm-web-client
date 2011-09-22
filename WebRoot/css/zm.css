@@ -344,29 +344,30 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
     border-color:transparent;
 }
 
-.ZmPeopleSearchToolbarDiv {
-    height:16px;
-    margin:0px;
+.ZmSearchResultsToolBar {
+	background-color: @AppC@;
 }
 
-.ZmPeopleSearchToolbarTable {
-    width:100%;
-    height:100%;
-    border-radius:0 5px 5px 0;
+.ZmSearchResultsToolBar .label {
+	text-align: right;
+	width: 200px;
+	margin-right:5px;
+}
+
+.ZmSearchResultsToolBar INPUT {
+	border: 1px solid black;
+	margin-right:3px;
+	width: 400px;
 }
 
 .FilterPanel {
 	width:100%;
 	height:100%;
-	background-color: pink;
+	background-color: @AppC@;
 }
 
 /* cell surrounding a separator in the search toolbar */
 .ZmSearchToolbarSeparatorCell {}
-
-.ZmPeopleSearchToolbar {
-	width: 250px;
-}
 
 .ZmPeopleSearch-fullname {
 	font-weight: bold;

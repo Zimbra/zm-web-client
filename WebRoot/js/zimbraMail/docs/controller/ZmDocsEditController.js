@@ -29,9 +29,8 @@ ZmDocsEditController.prototype = new ZmController();
 ZmDocsEditController.prototype.constructor = ZmDocsEditController;
 ZmDocsEditController.savedDoc = null;
 
-ZmDocsEditController.prototype.toString = function() {
-    return "ZmDocsEditController";
-};
+ZmDocsEditController.prototype.isZmDocsEditController = true;
+ZmDocsEditController.prototype.toString = function() { return "ZmDocsEditController"; };
 
 ZmDocsEditController.prototype._initDocsEdit = function(){
     if(this._docsEdit) return;
@@ -68,10 +67,6 @@ ZmDocsEditController.prototype.resize = function(ev){
     docsEdit.setDisplay("block");
     docsEdit.setBounds(0, 0, w, h);
 
-};
-
-ZmDocsEditController.prototype.setCurrentView = function(view) {
-    this._currentView = view;
 };
 
 ZmDocsEditController.prototype.loadData =

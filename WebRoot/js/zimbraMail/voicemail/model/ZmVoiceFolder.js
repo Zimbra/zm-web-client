@@ -214,6 +214,6 @@ function() {
 	// If this folder is visible, clear the contents of the view. 
 	var controller = AjxDispatcher.run("GetVoiceController");
 	if (controller.getFolder() == this) {
-		controller.getCurrentView().removeAll();
+		controller.getListView().removeAll();
 	}
 };

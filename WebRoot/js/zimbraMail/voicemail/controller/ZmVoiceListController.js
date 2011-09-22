@@ -13,20 +13,28 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmVoiceListController = function(container, app) {
+/**
+ * 
+ * @param {DwtControl}					container					the containing shell
+ * @param {ZmApp}						app							the containing application
+ * @param {constant}					type						type of controller
+ * @param {string}						sessionId					the session id
+ * @param {ZmSearchResultsController}	searchResultsController		containing controller
+ * 
+ * @extends		ZmListController
+ */
+ZmVoiceListController = function(container, app, type, sessionId, searchResultsController) {
 	if (arguments.length == 0) { return; }
-	ZmListController.call(this, container, app);
-    this._listeners[ZmOperation.CALL_MANAGER] = new AjxListener(this, this._callManagerListener);
+	ZmListController.apply(this, arguments);
+    this._listeners[ZmOperation.CALL_MANAGER] = this._callManagerListener.bind(this);
 
 	this._folder = null;
 }
 ZmVoiceListController.prototype = new ZmListController;
 ZmVoiceListController.prototype.constructor = ZmVoiceListController;
 
-ZmVoiceListController.prototype.toString =
-function() {
-	return "ZmVoiceListController";
-};
+ZmVoiceListController.prototype.isZmVoiceListController = true;
+ZmVoiceListController.prototype.toString = function() { return "ZmVoiceListController"; };
 
 /**
 * Displays the given search results.
@@ -50,7 +58,7 @@ function(searchResult, folder) {
 	var elements = this.getViewElements(this._currentView, lv);
 	
     this._setView({view:this._currentView, elements:elements, isAppView:true});
-    this._resetNavToolBarButtons(this._currentView);
+    this._resetNavToolBarButtons();
 };
 
 ZmVoiceListController.prototype.getFolder =

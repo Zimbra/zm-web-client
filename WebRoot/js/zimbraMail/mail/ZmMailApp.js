@@ -1299,14 +1299,14 @@ function(creates, list, controller, last) {
 ZmMailApp.prototype._getCurrentViewController =
 function() {
 	var controller;
-	var vid = appCtxt.getAppViewMgr().getCurrentViewId();
-	if (vid == appCtxt.get(ZmSetting.CONV_MODE)) {
+	var viewId = appCtxt.getCurrentViewId();
+	if (viewId == appCtxt.get(ZmSetting.CONV_MODE)) {
 		controller = this.getConvListController();
-	} else if (vid == ZmId.VIEW_TRAD) {
+	} else if (viewId == ZmId.VIEW_TRAD) {
 		controller = this.getTradController();
 	}
 	return controller;
-}
+};
 
 /**
  * Handles the creates for the given type of mail item.
@@ -1339,7 +1339,7 @@ function(creates, type, items, currList, sortBy, convs, last) {
 	}
 	if (throttle) {
 		if (!this._maxEntries) {
-			var mlv = this.getMailListController().getReferenceView().getMailListView();
+			var mlv = this.getMailListController().getCurrentView().getMailListView();
 			this._maxEntries = mlv && mlv.calculateMaxEntries();
 		}
 		if (this.numEntries > this._maxEntries) {
@@ -1684,19 +1684,22 @@ function(params) {
 /**
  * Shows the search results.
  * 
- * @param	{Object}		results		the results
- * @param	{AjxCallback}	callback	the callback
+ * @param	{Object}					results						the results
+ * @param	{AjxCallback}				callback					the callback
+ * @param 	{ZmSearchResultsController}	searchResultsController		owning controller
  */
 ZmMailApp.prototype.showSearchResults =
-function(results, callback, sessionId) {
-	var loadCallback = this._handleLoadShowSearchResults.bind(this, results, callback, sessionId);
+function(results, callback, searchResultsController) {
+	var loadCallback = this._handleLoadShowSearchResults.bind(this, results, callback, searchResultsController);
 	AjxDispatcher.require("MailCore", false, loadCallback, null, true);
 };
 
 ZmMailApp.prototype._handleLoadShowSearchResults =
-function(results, callback, sessionId) {
+function(results, callback, searchResultsController) {
 
-	var controller = (results.type == ZmItem.MSG) ? this.getTradController(sessionId) : this.getConvListController(sessionId);
+	var sessionId = searchResultsController ? searchResultsController.viewId : null;
+	var controller = (results.type == ZmItem.MSG) ? this.getTradController(sessionId, searchResultsController) :
+													this.getConvListController(sessionId, searchResultsController);
 	controller.show(results);
 	this._setLoadedTime(this.toString(), new Date());
 	
@@ -1801,8 +1804,8 @@ function(callback, queryStr) {
  * @return	{ZmConvListController}	conversation list controller
  */
 ZmMailApp.prototype.getConvListController =
-function(sessionId) {
-	return this.getSessionController(ZmId.VIEW_CONVLIST, "ZmConvListController", sessionId || ZmApp.MAIN_SESSION);
+function(sessionId, searchResultsController) {
+	return this.getSessionController(ZmId.VIEW_CONVLIST, "ZmConvListController", sessionId || ZmApp.MAIN_SESSION, searchResultsController);
 };
 
 /**
@@ -1821,8 +1824,8 @@ function(sessionId) {
  * @return	{ZmTradController}	traditional controller
  */
 ZmMailApp.prototype.getTradController =
-function(sessionId) {
-	return this.getSessionController(ZmId.VIEW_TRAD, "ZmTradController", sessionId || ZmApp.MAIN_SESSION);
+function(sessionId, searchResultsController) {
+	return this.getSessionController(ZmId.VIEW_TRAD, "ZmTradController", sessionId || ZmApp.MAIN_SESSION, searchResultsController);
 };
 
 /**

@@ -747,14 +747,14 @@ function(ev) {
 ZmTaskListView._handleOnClick =
 function(div) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getCurrentView();
+	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getListView();
 	tlv._handleNewTaskClick(div);
 };
 
 ZmTaskListView._handleOnBlur =
 function(ev) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getCurrentView();
+	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getListView();
 	tlv.saveNewTask();
 };
 
@@ -777,7 +777,7 @@ function(ev) {
 	var key = DwtKeyEvent.getCharCode(ev);
 
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getCurrentView();
+	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getListView();
 
 	if (key == DwtKeyEvent.KEY_ENTER) {
 		tlv.saveNewTask(true);

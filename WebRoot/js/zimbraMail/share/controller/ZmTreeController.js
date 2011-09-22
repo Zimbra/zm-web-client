@@ -664,10 +664,10 @@ function(organizer) {
     var recursive = false;
     organizer.empty(recursive);
 	var ctlr = appCtxt.getCurrentController();
-	if (ctlr && ctlr._getSearchFolderId) {
+	if (ctlr && ctlr._getSearchFolderId && ctlr.getListView) {
 		var folderId = ctlr._getSearchFolderId();
 		if (folderId && (folderId == organizer.id)) {
-			var view = ctlr.getCurrentView();
+			var view = ctlr.getListView();
 			view._resetList();
 			view._setNoResultsHtml();
 		}

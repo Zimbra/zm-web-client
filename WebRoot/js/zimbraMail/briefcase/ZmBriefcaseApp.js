@@ -456,9 +456,12 @@ function(results, callback) {
 
 ZmBriefcaseApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
-	this.getBriefcaseController().show(results);
+	var controller = this.getBriefcaseController();
+	controller.show(results);
 	this._setLoadedTime(this.toString(), new Date());
-	if (callback) { callback.run(); }
+	if (callback) {
+		callback.run(controller);
+	}
 };
 
 ZmBriefcaseApp.prototype.setActive =

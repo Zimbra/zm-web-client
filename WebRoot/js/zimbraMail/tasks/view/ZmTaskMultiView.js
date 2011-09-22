@@ -20,7 +20,7 @@ ZmTaskMultiView = function(params) {
     params.className = params.className || "ZmTaskMultiView";
     params.mode = ZmId.VIEW_TASKMULTI;
 
-	var view = params.controller._getViewType();
+	var view = params.controller.getCurrentViewId();
 	params.id = ZmId.getViewId(view);
 	DwtComposite.call(this, params);
 

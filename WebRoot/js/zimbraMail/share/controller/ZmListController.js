@@ -25,15 +25,18 @@
  *
  * @author Conrad Damon
  *
- * @param {DwtControl}	container	the containing shell
- * @param {ZmApp}		app			the containing application
+ * @param {DwtControl}					container					the containing shell
+ * @param {ZmApp}						app							the containing application
+ * @param {constant}					type						type of controller
+ * @param {string}						sessionId					the session id
+ * @param {ZmSearchResultsController}	searchResultsController		containing controller
  * 
  * @extends		ZmBaseController
  */
-ZmListController = function(container, app) {
+ZmListController = function(container, app, type, sessionId, searchResultsController) {
 
 	if (arguments.length == 0) { return; }
-	ZmBaseController.call(this, container, app);
+	ZmBaseController.apply(this, arguments);
 
 	// hashes keyed by view type
 	this._navToolBar = {};			// ZmNavToolBar
@@ -45,9 +48,11 @@ ZmListController = function(container, app) {
 	this._actionMenu = null;		// ZmActionMenu
 	this._actionEv = null;
 	
-	this._dropTgt = new DwtDropTarget("ZmTag");
-	this._dropTgt.markAsMultiple();
-	this._dropTgt.addDropListener(this._dropListener.bind(this));
+	if (this.supportsDnD()) {
+		this._dropTgt = new DwtDropTarget("ZmTag");
+		this._dropTgt.markAsMultiple();
+		this._dropTgt.addDropListener(this._dropListener.bind(this));
+	}
 
 	this._menuPopdownListener = this._menuPopdownActionListener.bind(this);
 	
@@ -77,11 +82,15 @@ ZmListController.PROGRESS_DIALOG_CLOSE	= "CLOSE";
  * to do the actual display work, typically by calling the list view's {@link #set} method.
  *
  * @param {ZmSearchResult}	searchResults		the search results
- * @param {DwtComposite}		view				the view type to use
+ * @param {string}			view				the view type to use (optional)
  */
 ZmListController.prototype.show	=
 function(searchResults, view) {
-	this._currentView = view || this._defaultView();
+	
+	if (!view) {
+		view = this.sessionId ? [this.getDefaultViewId(), this.sessionId].join("-") : this.getDefaultViewId();
+	}
+	this._currentView = view;
 	this._activeSearch = searchResults;
 	// save current search for use by replenishment
 	if (searchResults) {
@@ -89,6 +98,16 @@ function(searchResults, view) {
 	}
 	this.currentPage = 1;
 	this.maxPage = 1;
+};
+
+/**
+ * Returns the current list view.
+ * 
+ * @return {ZmListView}	the list view
+ */
+ZmListController.prototype.getListView =
+function() {
+	return this._view[this._currentView];
 };
 
 /**
@@ -113,13 +132,13 @@ function() {
 
 ZmListController.prototype.getSelection =
 function(view) {
-    view = view || this.getCurrentView();
+    view = view || this.getListView();
     return view ? view.getSelection() : [];
 };
 
 ZmListController.prototype.getSelectionCount =
 function(view) {
-    view = view || this.getCurrentView();
+    view = view || this.getListView();
     return view ? view.getSelectionCount() : 0;
 };
 
@@ -163,7 +182,7 @@ function(hasMore) {
 	if (hasMore) {
 		// bug: 30546
 		this._list.setHasMore(hasMore);
-		this._resetNavToolBarButtons(this._currentView);
+		this._resetNavToolBarButtons();
 	}
 };
 
@@ -312,7 +331,10 @@ function(menu) {
 ZmListController.prototype._menuPopdownActionListener =
 function(ev) {
 	if (!this._pendingActionData) {
-		this.getCurrentView().handleActionPopdown(ev);
+		var view = this.getCurrentView();
+		if (view && view.handleActionPopdown) {
+			view.handleActionPopdown(ev);
+		}
 	}
 };
 
@@ -427,8 +449,7 @@ ZmListController.prototype._navBarListener =
 function(ev) {
 
 	// skip listener for non-current views
-	var curView = appCtxt.getAppViewMgr().getCurrentViewId();
-	if (curView != this._getViewType()) { return; }
+	if (!this.isCurrent()) { return; }
 
 	var op = ev.item.getData(ZmOperation.KEY_ID);
 
@@ -933,7 +954,7 @@ function(params) {
 ZmListController.prototype._checkReplenish =
 function(callback) {
 
-	var view = this.getCurrentView();
+	var view = this.getListView();
 	var list = view.getList();
 	// don't bother if the view doesn't really have a list
 	var replenishmentDone = false;
@@ -961,7 +982,7 @@ function(listView) {
 	} else {
 		listView.removeAll(true);
 		listView._setNoResultsHtml();
-		this._resetNavToolBarButtons(this._currentView);
+		this._resetNavToolBarButtons();
 		listView._checkItemCount();
 	}
 };
@@ -997,7 +1018,7 @@ function(view, replCount, callback) {
  */
 ZmListController.prototype._resetSelection =
 function(idx) {
-	var list = this.getCurrentView().getList();
+	var list = this.getListView().getList();
 	if (list) {
 		var selIdx = idx >= 0 ? idx : 0;
 		var first = list.get(selIdx);
@@ -1081,6 +1102,7 @@ function(toolbar, view) {
 ZmListController.prototype._resetNavToolBarButtons =
 function(view) {
 
+	view = view || this.getCurrentViewId();
 	var lv = this._view[view];
 	if (!lv) { return; }
 
@@ -1219,7 +1241,7 @@ function() {
 
 ZmListController.prototype._getItemCount =
 function() {
-	var lv = this.getCurrentView();
+	var lv = this.getListView();
 	var list = lv && lv._list;
 	if (!list) { return null; }
 	return list.size();

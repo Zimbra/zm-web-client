@@ -33,9 +33,9 @@ ZmAddrBookTreeController = function() {
 
 	ZmFolderTreeController.call(this, ZmOrganizer.ADDRBOOK);
 
-	this._listeners[ZmOperation.NEW_ADDRBOOK] = new AjxListener(this, this._newListener);
-	this._listeners[ZmOperation.SHARE_ADDRBOOK] = new AjxListener(this, this._shareAddrBookListener);
-    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
+	this._listeners[ZmOperation.NEW_ADDRBOOK]	= this._newListener.bind(this);
+	this._listeners[ZmOperation.SHARE_ADDRBOOK]	= this._shareAddrBookListener.bind(this);
+    this._listeners[ZmOperation.BROWSE]			= new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
 
 	this._app = appCtxt.getApp(ZmApp.CONTACTS);
 };
@@ -43,18 +43,10 @@ ZmAddrBookTreeController = function() {
 ZmAddrBookTreeController.prototype = new ZmFolderTreeController;
 ZmAddrBookTreeController.prototype.constructor = ZmAddrBookTreeController;
 
+ZmAddrBookTreeController.prototype.isZmAddrBookTreeController = true;
+ZmAddrBookTreeController.prototype.toString = function() { return "ZmAddrBookTreeController"; };
 
 // Public methods
-
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmAddrBookTreeController.prototype.toString =
-function() {
-	return "ZmAddrBookTreeController";
-};
 
 /**
  * Shows the controller and returns the resulting tree view.
@@ -288,7 +280,7 @@ function(folder) {
 
 		if (folder.id != ZmFolder.ID_TRASH) {
 			var clc = AjxDispatcher.run("GetContactListController");
-			var view = clc.getParentView();
+			var view = clc.getCurrentView();
 			if (view) {
 				view.getAlphabetBar().reset();
 			}

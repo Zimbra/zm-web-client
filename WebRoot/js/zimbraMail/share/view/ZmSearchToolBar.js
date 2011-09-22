@@ -346,8 +346,6 @@ function() {
 		var menu = new AjxCallback(this, this._createSearchMenu);
 		this._searchMenuButton.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 		this._searchMenuButton.reparentHtmlElement(searchMenuBtnId);
-//		this._searchMenuButton.addSelectionListener(this._searchMenuButtonListener.bind(this));
-//		this._searchMenuButton.addDropDownSelectionListener(this._searchMenuButtonListener.bind(this));
 	}
 
 	// add search button
@@ -382,34 +380,24 @@ function() {
 											   tooltip:		ZmMsg.openSearchBuilder });
 };
 
+// Expand INPUT when it gets focus
 ZmSearchToolBar.prototype._onInputFocus =
 function(ev) {
-	var focusObj = appCtxt.getKeyboardMgr().getFocusObj();
-	DBG.println("s", "INPUT focus - focus obj: " + focusObj);
-	if (!this._ignoreInputFocusEvent) {
-		this._searchField.getInputElement().className = "search_input-expanded";
-		this._searchInputExpanded = true;
-	}
-	this._ignoreInputFocusEvent = false;
+	this._setInputExpanded(true);
 };
 
+// Collapse INPUT when it loses focus (unless that was due to a click on the menu button)
 ZmSearchToolBar.prototype._onInputBlur =
 function(ev) {
 	var focusObj = appCtxt.getKeyboardMgr().getFocusObj();
-	DBG.println("s", "INPUT blur - focus obj: " + focusObj);
-	if (!this._ignoreInputFocusEvent) {
-		this._searchField.getInputElement().className = "search_input";
-		this._searchInputExpanded = false;
+	if (focusObj != this._searchMenuButton && focusObj != this._searchButton) {
+		this._setInputExpanded(false);
 	}
-	this._ignoreInputFocusEvent = false;
 };
 
-ZmSearchToolBar.prototype._searchMenuButtonListener =
-function(ev) {
-//	this._searchMenuButton._toggleMenu();
-	this._ignoreInputFocusEvent = true;
-	this._searchField.focus();
-	return true;
+ZmSearchToolBar.prototype._setInputExpanded =
+function(expanded) {
+	this._searchField.getInputElement().className = expanded ? "search_input-expanded" : "search_input";
 };
 
 ZmSearchToolBar.prototype._createSearchMenu =

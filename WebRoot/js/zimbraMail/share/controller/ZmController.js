@@ -25,42 +25,42 @@
  * @class
  * This class represents an application controller.
  * 
- * @param	{ZmComposite}	container		the application container
- * @param	{ZmApp}		app				the application
+ * @param	{DwtShell}		container		the application container
+ * @param	{ZmApp}			app				the application
+ * @param	{constant}		type			type of controller (typically a view type)				
+ * @param	{string}		sessionId		the session id
  */
-ZmController = function(container, app) {
+ZmController = function(container, app, type, sessionId) {
 
 	if (arguments.length == 0) { return; }
 
+	this.setSessionId(sessionId, type);
+	
 	this._container = container;
 	this._app = app;
-	
+		
 	this._shell = appCtxt.getShell();
 	this._appViews = {};
-	this._currentView = null;
 	
 	this._authenticating = false;
 };
 
+ZmController.prototype.isZmController = true;
+ZmController.prototype.toString = function() { return "ZmController"; };
+
 // Abstract methods
 
-/**
- * @private
- */
-ZmController.prototype._setView =
-function() {
-};
+ZmController.prototype._setView = function() {};
 
 // Public methods
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmController.prototype.toString = 
-function() {
-	return "ZmController";
+ZmController.prototype.setSessionId =
+function(sessionId, type) {
+	this.sessionId = sessionId;
+	if (type) {
+		this.viewId = [type, this.sessionId].join("");
+		this.tabId = ["tab", this.viewId].join("_");
+	}
 };
 
 /**
@@ -257,26 +257,6 @@ function(ex) {
 };
 
 /**
- * Sets the current view.
- * 
- * @param	{DwtComposite}	view		the view
- */
-ZmController.prototype.setCurrentView =
-function(view) {
-	this._currentView = view;
-};
-
-/**
- * Gets the current view.
- * 
- * @return	{DwtComposite}	the view
- */
-ZmController.prototype.getCurrentView =
-function() {
-	return this._currentView;
-};
-
-/**
  * Gets the key map name.
  * 
  * @return	{String}	the key map name
@@ -418,10 +398,8 @@ function(ev, op) {
 	switch (op) {
 		// new organizers
 		case ZmOperation.NEW_FOLDER: {
-			var currentView = appCtxt.getCurrentView();
-			var mailListView = currentView.getMailListView ? currentView.getMailListView() : null;
-			var currentFolder = mailListView && mailListView.getFolder ? mailListView.getFolder() : null;
-
+			var tree = appCtxt.getAppViewMgr().getViewComponent(ZmAppViewMgr.C_TREE);
+			var currentFolder = tree && tree.getSelected();
 			ZmController.showDialog(appCtxt.getNewFolderDialog(), this.getNewFolderCallback(), currentFolder);
 			break;
 		}
@@ -893,21 +871,6 @@ function(dialog) {
  * @private
  */
 ZmController.prototype._menuPopdownActionListener = function() {};
-
-/**
- * Sets the session id, view id, and tab id (using the type and session id).
- * Controller for a view that shows up in a tab within the app chooser bar.
- * Currently only mail views exist: compose, send confirmation, and msg view.
- *
- * @param {String}		type		the type
- * @param {String}	sessionId		the sesion id
- */
-ZmController.prototype.setSessionId =
-function(type, sessionId) {
-	this.sessionId = sessionId;
-	this.viewId = [type, this.sessionId].join("");
-	this.tabId = ["tab", this.viewId].join("_");
-};
 
 /**
  * Checks if the view is transient.

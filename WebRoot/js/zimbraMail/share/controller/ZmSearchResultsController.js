@@ -27,14 +27,16 @@
  * the search, a filtering mechanism on the left that can be used to refine the search, and the
  * results themselves. The results may be of any type: messages, contacts, etc.
  * 
- * @param {DwtControl}	container	the top-level container
+ * @param	{DwtShell}		container		the application container
+ * @param	{ZmApp}			app				the application
+ * @param	{constant}		type			type of controller
+ * @param	{string}		sessionId		the session id
+ * 
  * @extends	ZmController
  */
-ZmSearchResultsController = function(container, app) {
+ZmSearchResultsController = function(container, app, type, sessionId) {
 
-	ZmController.call(this, container, app);
-
-	this.viewId = ZmId.VIEW_SEARCHRESULTS;
+	ZmController.apply(this, arguments);
 };
 
 ZmSearchResultsController.prototype = new ZmController;
@@ -45,6 +47,11 @@ ZmSearchResultsController.prototype.toString = function() { return "ZmSearchResu
 
 ZmSearchResultsController.DEFAULT_TAB_TEXT = ZmMsg.search;
 
+ZmSearchResultsController.prototype.getCurrentViewId =
+function() {
+	return this.viewId;
+};
+
 ZmSearchResultsController.prototype.show =
 function(results) {
 	
@@ -53,7 +60,7 @@ function(results) {
 	var app = this._resultsApp = appCtxt.getApp(ZmItem.APP[resultsType]) || appCtxt.getCurrentApp();
 //	app.currentSearch = search;
 //	app.currentQuery = search.query;
-	app.showSearchResults(results, this._setView.bind(this), this.viewId);
+	app.showSearchResults(results, this._setView.bind(this), this);
 };
 
 ZmSearchResultsController.prototype._setView =
@@ -61,6 +68,7 @@ function(resultsCtlr) {
 	
 	this._toolbar = new ZmSearchResultsToolBar(this._container, ZmId.SEARCHRESULTS_TOOLBAR);
 	this._filterPanel = new DwtComposite({parent:this._container, className:"FilterPanel", posStyle:Dwt.ABSOLUTE_STYLE});
+	this._filterPanel.getHtmlElement().innerHTML = "<div style='position:absolute;top:50%;margin-left:5px;'>Filter Panel not ready yet</div>";
 	
 	var callbacks = {};
 	callbacks[ZmAppViewMgr.CB_PRE_SHOW]		= this._preShowCallback.bind(this, true);
@@ -71,8 +79,7 @@ function(resultsCtlr) {
 	elements[ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR] = this._toolbar;
 	elements[ZmAppViewMgr.C_TREE] = this._filterPanel;
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = resultsCtlr.getCurrentToolbar();
-//	elements[ZmAppViewMgr.C_APP_CONTENT] = resultsCtlr.getCurrentView();
-	elements[ZmAppViewMgr.C_APP_CONTENT] = resultsCtlr._doublePaneView;
+	elements[ZmAppViewMgr.C_APP_CONTENT] = resultsCtlr.getCurrentView();
 	
 	this._app.createView({	viewId:		this.viewId,
 							elements:	elements,

@@ -23,15 +23,18 @@
  *
  * @author Conrad Damon
  *
- * @param {ZmComposite}	container	the containing shell
- * @param {ZmMailApp}	mailApp			the containing app
+ * @param {DwtControl}					container					the containing shell
+ * @param {ZmApp}						mailApp						the containing application
+ * @param {constant}					type						type of controller
+ * @param {string}						sessionId					the session id
+ * @param {ZmSearchResultsController}	searchResultsController		containing controller
  * 
  * @extends		ZmDoublePaneController
  */
-ZmConvListController = function(container, mailApp) {
-	ZmDoublePaneController.call(this, container, mailApp);
+ZmConvListController = function(container, mailApp, type, sessionId, searchResultsController) {
+	ZmDoublePaneController.apply(this, arguments);
 
-	this._msgControllerMode = this._getViewType();
+	this._msgControllerMode = this.getDefaultViewId();
 };
 
 ZmConvListController.prototype = new ZmDoublePaneController;
@@ -243,8 +246,7 @@ function(currentItem, forward) {
 
 ZmConvListController.prototype._createDoublePaneView = 
 function() {
-	var useConv2 = (appCtxt.get(ZmSetting.CONV_MODE) == ZmId.VIEW_CONVLIST2);
-	if (useConv2) {
+	if (appCtxt.get(ZmSetting.CONV_MODE) == ZmId.VIEW_CONVLIST2) {
 		return new ZmConvDoublePaneView2({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE,
 										  controller:this, dropTgt:this._dropTgt});
 	} else {
@@ -253,7 +255,7 @@ function() {
 	}
 };
 
-ZmConvListController.prototype._getViewType =
+ZmConvListController.prototype.getDefaultViewId =
 function() {
 	return appCtxt.get(ZmSetting.CONV_MODE);
 };
@@ -266,6 +268,7 @@ function(view, bPageForward, convIdx, limit) {
 
 ZmConvListController.prototype._resetNavToolBarButtons =
 function(view) {
+	view = view || this.getCurrentViewId();
 	ZmDoublePaneController.prototype._resetNavToolBarButtons.call(this, view);
 	if (!this._navToolBar[view]) { return; }
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousPage);

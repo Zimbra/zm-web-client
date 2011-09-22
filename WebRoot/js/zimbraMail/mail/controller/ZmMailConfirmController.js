@@ -19,22 +19,27 @@
  * @class
  * This class represents the mail confirmation controller.
  * 
- * @param {ZmComposite}		container		the containing shell
- * @param {ZmMailApp}		mailApp			the containing app
+ * @param {DwtShell}	container	the containing shell
+ * @param {ZmApp}		mailApp		the containing app
+ * @param {constant}	type		controller type
+ * @param {string}		sessionId	the session id
  * 
  * @extends		ZmController
  */
-ZmMailConfirmController = function(container, mailApp) {
+ZmMailConfirmController = function(container, mailApp, type, sessionId) {
 
-	ZmController.call(this, container, mailApp);
+	ZmController.apply(this, arguments);
 };
 
 ZmMailConfirmController.prototype = new ZmController();
 ZmMailConfirmController.prototype.constructor = ZmMailConfirmController;
 
-ZmMailConfirmController.prototype.toString =
+ZmMailConfirmController.prototype.isZmMailConfirmController = true;
+ZmMailConfirmController.prototype.toString = function() { return "ZmMailConfirmController"; };
+
+ZmMailConfirmController.prototype.getDefaultViewId =
 function() {
-	return "ZmMailConfirmController";
+	return ZmId.VIEW_MAIL_CONFIRM;
 };
 
 /**

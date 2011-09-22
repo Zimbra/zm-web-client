@@ -674,7 +674,7 @@ function(params, callback) {
 ZmCalendarApp.prototype._handleLoadLaunch =
 function(params, callback) {
 	var cc = AjxDispatcher.run("GetCalController");
-	var view = cc._defaultView();
+	var view = cc.getDefaultViewId();
 	var sd = null;
 
 	params = params || {};
@@ -710,7 +710,7 @@ ZmCalendarApp.prototype.showSearchResults =
 function(results, callback) {
 	// calls ZmSearchController's _handleLoadShowResults
 	if (callback) {
-		callback.run();
+		callback.run(this._calController);
 	}
 };
 

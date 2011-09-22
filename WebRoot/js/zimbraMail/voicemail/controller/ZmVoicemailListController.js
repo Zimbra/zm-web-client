@@ -17,26 +17,26 @@ ZmVoicemailListController = function(container, app) {
 	if (arguments.length == 0) { return; }
 	ZmVoiceListController.call(this, container, app);
 
-	this._listeners[ZmOperation.CHECK_VOICEMAIL] = new AjxListener(this, this._refreshListener);
-	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
-	this._listeners[ZmOperation.DOWNLOAD_VOICEMAIL] = new AjxListener(this, this._downloadListener);
-	this._listeners[ZmOperation.REPLY_BY_EMAIL] = new AjxListener(this, this._replyListener);
-	this._listeners[ZmOperation.FORWARD_BY_EMAIL] = new AjxListener(this, this._forwardListener);
-	this._listeners[ZmOperation.MARK_HEARD] = new AjxListener(this, this._markHeardListener);
-	this._listeners[ZmOperation.MARK_UNHEARD] = new AjxListener(this, this._markUnheardListener);
+	this._listeners[ZmOperation.CHECK_VOICEMAIL]	= this._refreshListener.bind(this);
+	this._listeners[ZmOperation.DELETE]				= this._deleteListener.bind(this);
+	this._listeners[ZmOperation.DOWNLOAD_VOICEMAIL]	= this._downloadListener.bind(this);
+	this._listeners[ZmOperation.REPLY_BY_EMAIL]		= this._replyListener.bind(this);
+	this._listeners[ZmOperation.FORWARD_BY_EMAIL]	= this._forwardListener.bind(this);
+	this._listeners[ZmOperation.MARK_HEARD]			= this._markHeardListener.bind(this);
+	this._listeners[ZmOperation.MARK_UNHEARD]		= this._markUnheardListener.bind(this);
 
-	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
+	if (this.supportsDnD()) {
+		this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+		this._dragSrc.addDragListener(this._dragListener.bind(this));
+	}
 
 	this._markingHeard = {}; // Prevents repeated markHeard requests during playback.
 }
 ZmVoicemailListController.prototype = new ZmVoiceListController;
 ZmVoicemailListController.prototype.constructor = ZmVoicemailListController;
 
-ZmVoicemailListController.prototype.toString =
-function() {
-	return "ZmVoicemailListController";
-};
+ZmVoicemailListController.prototype.isZmVoicemailListController = true;
+ZmVoicemailListController.prototype.toString = function() {	return "ZmVoicemailListController"; };
 
 ZmVoicemailListController.prototype.show =
 function(searchResult, folder) {
@@ -52,12 +52,7 @@ function(searchResult, folder) {
 	ZmVoiceListController.prototype.show.call(this, searchResult, folder)
 };
 
-ZmVoicemailListController.prototype._defaultView =
-function() {
-	return ZmId.VIEW_VOICEMAIL;
-};
-
-ZmVoicemailListController.prototype._getViewType = 
+ZmVoicemailListController.prototype.getDefaultViewId =
 function() {
 	return ZmId.VIEW_VOICEMAIL;
 };
@@ -65,14 +60,16 @@ function() {
 ZmVoicemailListController.prototype._createNewView = 
 function(view) {
 	var result;
-	if(this._voicemailFormat == ZmVoiceApp.AUDIO_MP3_FORMAT) {
+	if (this._voicemailFormat == ZmVoiceApp.AUDIO_MP3_FORMAT) {
 		result = new ZmMP3VoicemailListView(this._container, this, this._dropTgt);
 	} else {
 		result = new ZmVoicemailListView(this._container, this, this._dropTgt);
 	}
-	result.addSelectionListener(new AjxListener(this, this._selectListener));
-	result.setDragSource(this._dragSrc);
-	result.addSoundChangeListener(new AjxListener(this, this._soundChangeListener));
+	result.addSelectionListener(this._selectListener.bind(this));
+	if (this._dragSrc) {
+		result.setDragSource(this._dragSrc);
+	}
+	result.addSoundChangeListener(this._soundChangeListener.bind(this));
 	return result;
 };
 

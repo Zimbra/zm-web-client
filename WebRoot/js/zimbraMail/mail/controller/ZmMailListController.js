@@ -22,15 +22,18 @@
  *
  * @author Conrad Damon
  *
- * @param {ZmComposite}		container		the containing shell
- * @param {ZmMailApp}		mailApp			the containing app
+ * @param {DwtControl}					container					the containing shell
+ * @param {ZmApp}						mailApp						the containing application
+ * @param {constant}					type						type of controller
+ * @param {string}						sessionId					the session id
+ * @param {ZmSearchResultsController}	searchResultsController		containing controller
  * 
  * @extends		ZmListController
  */
-ZmMailListController = function(container, mailApp) {
+ZmMailListController = function(container, mailApp, type, sessionId, searchResultsController) {
 
 	if (arguments.length == 0) { return; }
-	ZmListController.call(this, container, mailApp);
+	ZmListController.apply(this, arguments);
 
 	ZmMailListController.INVITE_REPLY_MAP = {};
 	ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_ACCEPT]		= ZmOperation.REPLY_ACCEPT;
@@ -1175,7 +1178,7 @@ function(ev) {
 
 ZmMailListController.prototype._handleInviteReplySent =
 function(result, newPtst) {
-	var inviteMsgView = this.getReferenceView().getInviteMsgView();
+	var inviteMsgView = this.getCurrentView().getInviteMsgView();
 	if (!inviteMsgView || !newPtst) {
 		return;
 	}
@@ -1672,7 +1675,7 @@ function(view, menu) {
 										  style:	DwtMenuItem.RADIO_STYLE});
 		mi.setData(ZmOperation.MENUITEM_ID, id);
 		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
-		if (id == this._defaultView()) {
+		if (id == this.getDefaultViewId()) {
 			mi.setChecked(true, true);
 		}
 	}
@@ -1890,7 +1893,7 @@ function(view, saveSelection, loadIndex, offset, result) {
 
 ZmMailListController.prototype._getMenuContext =
 function() {
-	return this._getViewType();
+	return this.getCurrentViewId();
 };
 
 // Flag mail items(override ZmListController to add hook to zimletMgr

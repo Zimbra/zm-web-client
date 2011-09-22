@@ -26,42 +26,48 @@
  *
  * @author Parag Shah
  *
- * @param	{DwtControl}	container		the container
- * @param	{ZmBriefcaseApp}	abApp	the briefcase application
+ * @param {DwtControl}					container					the containing shell
+ * @param {ZmApp}						app							the containing application
+ * @param {constant}					type						type of controller
+ * @param {string}						sessionId					the session id
+ * @param {ZmSearchResultsController}	searchResultsController		containing controller
  * 
  * @extends		ZmListController
  */
-ZmBriefcaseController = function(container, app) {
+ZmBriefcaseController = function(container, app, type, sessionId, searchResultsController) {
 
  	if (arguments.length == 0) { return; }
 
-	ZmListController.call(this, container, app);
+	ZmListController.apply(this, arguments);
 
 	this._idMap = {};
 
-	this._listChangeListener = new AjxListener(this,this._fileListChangeListener);
-	this._listeners[ZmOperation.OPEN_FILE] = new AjxListener(this, this._openFileListener);
-	this._listeners[ZmOperation.SAVE_FILE] = new AjxListener(this, this._saveFileListener);
-	this._listeners[ZmOperation.SEND_FILE] = new AjxListener(this, this._sendFileListener);
-	this._listeners[ZmOperation.SEND_FILE_AS_ATT] = new AjxListener(this, this._sendFileAsAttachmentListener);
-	this._listeners[ZmOperation.NEW_FILE] = new AjxListener(this, this._uploadFileListener);
-	this._listeners[ZmOperation.VIEW_FILE_AS_HTML] = new AjxListener(this, this._viewAsHtmlListener);
-	this._listeners[ZmOperation.CREATE_SLIDE_SHOW] = new AjxListener(this, this._createSlideShow);
-    this._listeners[ZmOperation.EDIT_FILE] = new AjxListener(this, this._editFileListener);
-    this._listeners[ZmOperation.RENAME_FILE] = new AjxListener(this, this._renameFileListener);
-    this._listeners[ZmOperation.NEW_BRIEFCASE_WIN] = new AjxListener(this, this._newWinListener);
+	this._listChangeListener = this._fileListChangeListener.bind(this);
+	
+	this._listeners[ZmOperation.OPEN_FILE]			= this._openFileListener.bind(this);
+	this._listeners[ZmOperation.SAVE_FILE]			= this._saveFileListener.bind(this);
+	this._listeners[ZmOperation.SEND_FILE]			= this._sendFileListener.bind(this);
+	this._listeners[ZmOperation.SEND_FILE_AS_ATT]	= this._sendFileAsAttachmentListener.bind(this);
+	this._listeners[ZmOperation.NEW_FILE]			= this._uploadFileListener.bind(this);
+	this._listeners[ZmOperation.VIEW_FILE_AS_HTML]	= this._viewAsHtmlListener.bind(this);
+	this._listeners[ZmOperation.CREATE_SLIDE_SHOW]	= this._createSlideShow.bind(this);
+    this._listeners[ZmOperation.EDIT_FILE]			= this._editFileListener.bind(this);
+    this._listeners[ZmOperation.RENAME_FILE]		= this._renameFileListener.bind(this);
+    this._listeners[ZmOperation.NEW_BRIEFCASE_WIN]	= this._newWinListener.bind(this);
 
-	this._listeners[ZmOperation.NEW_SPREADSHEET] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_SPREADSHEET]);
-	this._listeners[ZmOperation.NEW_PRESENTATION] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_PRESENTATION]);
-	this._listeners[ZmOperation.NEW_DOC] = new AjxListener(this, this._handleDoc, [ZmOperation.NEW_DOC]);
+	this._listeners[ZmOperation.NEW_SPREADSHEET]	= this._handleDoc.bind(this, ZmOperation.NEW_SPREADSHEET);
+	this._listeners[ZmOperation.NEW_PRESENTATION]	= this._handleDoc.bind(this, ZmOperation.NEW_PRESENTATION);
+	this._listeners[ZmOperation.NEW_DOC]			= this._handleDoc.bind(this, ZmOperation.NEW_DOC);
 
-    this._listeners[ZmOperation.CHECKIN] = new AjxListener(this, this._handleCheckin);
-    this._listeners[ZmOperation.CHECKOUT] = new AjxListener(this, this._checkoutListener);
-    this._listeners[ZmOperation.DISCARD_CHECKOUT] = new AjxListener(this, this._handleDiscardCheckout);
-    this._listeners[ZmOperation.RESTORE_VERSION] = new AjxListener(this, this._restoreVerListener);
+    this._listeners[ZmOperation.CHECKIN]			= this._handleCheckin.bind(this);
+    this._listeners[ZmOperation.CHECKOUT]			= this._checkoutListener.bind(this);
+    this._listeners[ZmOperation.DISCARD_CHECKOUT]	= this._handleDiscardCheckout.bind(this);
+    this._listeners[ZmOperation.RESTORE_VERSION]	= this._restoreVerListener.bind(this);
 
-	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
+	if (this.supportsDnD()) {
+		this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+		this._dragSrc.addDragListener(this._dragListener.bind(this));
+	}
 
     this._parentView = {};
 };
@@ -69,15 +75,8 @@ ZmBriefcaseController = function(container, app) {
 ZmBriefcaseController.prototype = new ZmListController;
 ZmBriefcaseController.prototype.constructor = ZmBriefcaseController;
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmBriefcaseController.prototype.toString =
-function() {
-	return "ZmBriefcaseController";
-};
+ZmBriefcaseController.prototype.isZmBriefcaseController = true;
+ZmBriefcaseController.prototype.toString = function() { return "ZmBriefcaseController"; };
 
 // Constants
 ZmBriefcaseController._VIEWS = {};
@@ -413,12 +412,7 @@ function(items) {
 
 // view management
 
-ZmBriefcaseController.prototype._getViewType =
-function() {
-	return this._currentView;
-};
-
-ZmBriefcaseController.prototype._defaultView =
+ZmBriefcaseController.prototype.getDefaultViewId =
 function() {
 	return ZmId.VIEW_BRIEFCASE_DETAIL;
 };
@@ -429,7 +423,9 @@ function(view) {
     var viewCtor = eval(ZmBriefcaseController._VIEWS[view]);
 	this._parentView[view] = new viewCtor(this._container, this, this._dropTgt);
 	var listView = this._parentView[view].getListView();
-	listView.setDragSource(this._dragSrc);
+	if (this._dragSrc) {
+		listView.setDragSource(this._dragSrc);
+	}
 
 	return listView;
 };
@@ -492,7 +488,7 @@ function(results) {
 	var elements = this.getViewElements(this._currentView, this._parentView[this._currentView]);
 
 	this._setView({view:this._currentView, elements:elements, isAppView:true});
-	this._resetNavToolBarButtons(this._currentView);
+	this._resetNavToolBarButtons();
 };
 
 /**
@@ -508,7 +504,9 @@ function(view, force) {
 
 	if (viewChanged) {
         var lv = this._listView[this._currentView];
-        if(lv)  lv.cleanup();
+        if (lv) {
+			lv.cleanup();
+		}
         this._switchView = true;
 		this._currentView = view;
 		this._setup(view);
@@ -519,13 +517,13 @@ function(view, force) {
 		var elements = this.getViewElements(view, this._parentView[view]);
 		
 		this._setView({view:view, elements:elements, isAppView:true});
-		this._resetNavToolBarButtons(view);
+		this._resetNavToolBarButtons();
 	}
 	Dwt.setTitle(this.getCurrentView().getTitle());
 };
 
 ZmBriefcaseController.prototype._preHideCallback =
-function(){
+function() {
 
     var lv = this._listView[this._currentView];
     if(lv) lv.cleanup();
@@ -1268,10 +1266,11 @@ function(ev) {
 	this._list._notify(ev.event,{items:details.items});
 };
 
-ZmBriefcaseController.prototype.getParentView =
+ZmBriefcaseController.prototype.getCurrentView =
 function() {
 	return this._parentView[this._currentView];
 };
+ZmBriefcaseController.prototype.getParentView = ZmBriefcaseController.prototype.getCurrentView;
 
 ZmBriefcaseController.prototype._addListListeners =
 function(colView) {
@@ -1367,7 +1366,7 @@ function(create){
     if(this.isMultiColView()){
         var isTrash = (this._folderId == String(ZmOrganizer.ID_TRASH));
         if(!isTrash)
-            this.getParentView().handleNotifyCreate(create);
+            this.getCurrentView().handleNotifyCreate(create);
     }else{
         var list = this.getList();
         if (list) {

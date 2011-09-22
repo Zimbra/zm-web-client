@@ -18,7 +18,7 @@
  * @class
  * This class represents an attachments controller.
  * 
- * @param	{ZmComposite}	container		the container
+ * @param	{DwtComposite}	container		the container
  * @param	{ZmMailApp}		app				the application
  * 
  * @extends		ZmController

@@ -330,7 +330,7 @@ UT.test("Create Group: Verify group is in alphabet bar", {
 		ZmUnitTestUtil.goToContacts();
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		var controller = contactsApp.getContactListController();
-		var alphabetBar = controller.getParentView().getAlphabetBar();
+		var alphabetBar = controller.getCurrentView().getAlphabetBar();
 
 		alphabetBar._currentLetter = null; //"all"
 		var result = alphabetBar.isItemInAlphabetLetter(this._allContact);

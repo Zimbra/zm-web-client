@@ -1167,8 +1167,10 @@ function(ev) {
 		ev.source.id == ZmFolder.ID_TRASH)
 	{
 		// user emptied trash - reset a bunch of stuff w/o having to redo the search
-		var curView = ctlr.getCurrentView();
-		if (curView) { curView.offset = 0; }
+		var curView = ctlr.getListView && ctlr.getListView();
+		if (curView) {
+			curView.offset = 0;
+		}
 		ctlr._resetNavToolBarButtons(view);
 	}
 	else if (isCurrentList && ctlr && ctlr._currentSearch &&
@@ -1222,7 +1224,7 @@ function(ev) {
 		if (ctlr._currentSearch && ctlr._currentSearch.hasTagTerm(tag.getName())) {
 			var viewId = appCtxt.getCurrentViewId();
 			ctlr.enablePagination(false, viewId);
-			var view = ctlr.getCurrentView();
+			var view = ctlr.getListView && ctlr.getListView();
 			if (view && view.sortingEnabled) {
 				view.sortingEnabled = false;
 			}

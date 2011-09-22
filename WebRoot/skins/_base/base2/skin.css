@@ -32,7 +32,6 @@ BODY						{	margin:0px; 				}
 #skin_tr_search_results_toolbar		{	display:none;
 										height:40px;
 										width:100%;
-										background-color:yellow;
 									}
 
 /* hide all ads initially */

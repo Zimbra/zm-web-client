@@ -29,34 +29,43 @@
  * @author Roland Schemers
  * @author Conrad Damon
  * 
- * @param {DwtControl}		container	the containing shell
- * @param {ZmApp}		app		the containing application
+ * @param {DwtControl}					container					the containing shell
+ * @param {ZmApp}						app							the containing application
+ * @param {constant}					type						type of controller
+ * @param {string}						sessionId					the session id
+ * @param {ZmSearchResultsController}	searchResultsController		containing controller
  * 
  * @extends	ZmListController
  */
-ZmContactListController = function(container, contactsApp) {
+ZmContactListController = function(container, contactsApp, type, sessionId, searchResultsController) {
 
 	if (arguments.length == 0) { return; }
-	ZmListController.call(this, container, contactsApp);
+	ZmListController.apply(this, arguments);
 
 	this._viewFactory = {};
 	this._viewFactory[ZmId.VIEW_CONTACT_SIMPLE] = ZmContactSplitView;
 
-	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
+	if (this.supportsDnD()) {
+		this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+		this._dragSrc.addDragListener(this._dragListener.bind(this));
+	}
 
-	this._listChangeListener = new AjxListener(this, this._handleListChange);
+	this._listChangeListener = this._handleListChange.bind(this);
 
-	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
-	this._listeners[ZmOperation.PRINT] = null; // override base class to do nothing
-	this._listeners[ZmOperation.PRINT_CONTACT] = new AjxListener(this, this._printListener);
-	this._listeners[ZmOperation.PRINT_ADDRBOOK] = new AjxListener(this, this._printAddrBookListener);
-	this._listeners[ZmOperation.NEW_GROUP]	= this._groupListener.bind(this);
+	this._listeners[ZmOperation.EDIT]			= this._editListener.bind(this);
+	this._listeners[ZmOperation.PRINT]			= null; // override base class to do nothing
+	this._listeners[ZmOperation.PRINT_CONTACT]	= this._printListener.bind(this);
+	this._listeners[ZmOperation.PRINT_ADDRBOOK]	= this._printAddrBookListener.bind(this);
+	this._listeners[ZmOperation.NEW_GROUP]		= this._groupListener.bind(this);
+
 	this._parentView = {};
 };
 
 ZmContactListController.prototype = new ZmListController;
 ZmContactListController.prototype.constructor = ZmContactListController;
+
+ZmContactListController.prototype.isZmContactListController = true;
+ZmContactListController.prototype.toString = function() { return "ZmContactListController"; };
 
 ZmContactListController.ICON = {};
 ZmContactListController.ICON[ZmId.VIEW_CONTACT_SIMPLE]		= "ListView";
@@ -70,16 +79,6 @@ ZmContactListController.SEARCH_TYPE_NEW			= 1 << 2;
 ZmContactListController.SEARCH_TYPE_ANYWHERE	= 1 << 3;
 
 ZmContactListController.VIEWS = [ZmId.VIEW_CONTACT_SIMPLE];
-
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmContactListController.prototype.toString =
-function() {
-	return "ZmContactListController";
-};
 
 // Public methods
 
@@ -103,7 +102,7 @@ function(searchResult, isGalSearch, folderId) {
 		this._list = searchResult;			// set as canonical list of contacts
 		this._list._isShared = false;		// this list is not a search of shared items
 		if (!this._currentView) {
-			this._currentView = this._defaultView();
+			this._currentView = this.getDefaultViewId();
 		}
 		selectedContacts = this._listView[this._currentView] && this._listView[this._currentView].getSelection();
 		this._contactSearchResults = false;
@@ -116,8 +115,8 @@ function(searchResult, isGalSearch, folderId) {
 			this._searchType |= ZmContactListController.SEARCH_TYPE_ANYWHERE;
 		}
 
-		if (searchResult.search && searchResult.search.userText && this.getParentView()) {
-			this.getParentView().getAlphabetBar().reset();
+		if (searchResult.search && searchResult.search.userText && this.getCurrentView()) {
+			this.getCurrentView().getAlphabetBar().reset();
 		}
 
 		if (isGalSearch) {
@@ -177,7 +176,7 @@ function(view, force, initialized, stageView) {
 		}
 
 		this._setView({view:view, elements:elements, isAppView:true, stageView:stageView});
-		this._resetNavToolBarButtons(view);
+		this._resetNavToolBarButtons();
 
 		// HACK: reset search toolbar icon (its a hack we're willing to live with)
 		if (this.isGalSearch() && !this._list.isGalPagingSupported) {
@@ -264,14 +263,15 @@ function() {
 };
 
 /**
- * Gets the parent view.
+ * Returns the split view.
  * 
- * @return	{DwtComposite}	the view
+ * @return	{ZmContactSplitView}	the split view
  */
-ZmContactListController.prototype.getParentView =
+ZmContactListController.prototype.getCurrentView =
 function() {
 	return this._parentView[this._currentView];
 };
+ZmContactListController.prototype.getParentView = ZmContactListController.prototype.getCurrentView;
 
 /**
  * Search the alphabet.
@@ -407,15 +407,7 @@ function() {
 /**
  * @private
  */
-ZmContactListController.prototype._getViewType =
-function() {
-	return this._currentView;
-};
-
-/**
- * @private
- */
-ZmContactListController.prototype._defaultView =
+ZmContactListController.prototype.getDefaultViewId =
 function() {
 	return ZmId.VIEW_CONTACT_SIMPLE;
 };
@@ -429,7 +421,9 @@ function(view) {
 				  controller:this, dropTgt:this._dropTgt};
 	this._parentView[view] = new this._viewFactory[view](params);
 	var listView = this._parentView[view].getListView();
-	listView.setDragSource(this._dragSrc);
+	if (this._dragSrc) {
+		listView.setDragSource(this._dragSrc);
+	}
 
 	return listView;
 };
@@ -842,7 +836,7 @@ function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 
 	if (ev.detail == DwtListView.ITEM_SELECTED)	{
-		this._resetNavToolBarButtons(this._currentView);
+		this._resetNavToolBarButtons();
 		if (this._currentView == ZmId.VIEW_CONTACT_SIMPLE) {
 			this._parentView[this._currentView].setContact(ev.item, this.isGalSearch());
 		}
@@ -1189,8 +1183,8 @@ function(ev) {
 
 ZmContactListController.prototype._groupListener =
 function(ev, items) {
-	var curView = appCtxt.getAppViewMgr().getCurrentViewId();
-	if (curView == this._getViewType()) {
+
+	if (this.isCurrent()) {
 		var groupEvent = ev.getData(ZmContactGroupMenu.KEY_GROUP_EVENT);
 		var groupAdded = ev.getData(ZmContactGroupMenu.KEY_GROUP_ADDED);
 		items = items || this.getItems();

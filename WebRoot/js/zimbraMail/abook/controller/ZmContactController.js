@@ -24,17 +24,19 @@
  * @class
  * This class represents the contact controller.
  *
- * @param	{DwtControl}	container		the container
- * @param	{ZmContactsApp}	abApp	the contacts application
+ * @param {DwtShell}	container	the containing shell
+ * @param {ZmApp}		abApp		the containing app
+ * @param {constant}	type		controller type
+ * @param {string}		sessionId	the session id
  *
  * @extends		ZmListController
  */
-ZmContactController = function(container, abApp) {
+ZmContactController = function(container, abApp, type, sessionId) {
 
-	ZmListController.call(this, container, abApp);
+	ZmListController.apply(this, arguments);
 
-	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
-	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
+	this._listeners[ZmOperation.SAVE]	= this._saveListener.bind(this);
+	this._listeners[ZmOperation.CANCEL]	= this._cancelListener.bind(this);
 
 	this._tabGroupDone = {};
 };
@@ -42,14 +44,13 @@ ZmContactController = function(container, abApp) {
 ZmContactController.prototype = new ZmListController();
 ZmContactController.prototype.constructor = ZmContactController;
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmContactController.prototype.toString =
+ZmContactController.prototype.isZmContactController = true;
+ZmContactController.prototype.toString = function() { return "ZmContactController"; };
+
+
+ZmContactController.prototype.getDefaultViewId =
 function() {
-	return "ZmContactController";
+	return ZmId.VIEW_CONTACT;
 };
 
 /**
@@ -62,7 +63,9 @@ ZmContactController.prototype.show =
 function(contact, isDirty) {
 	this._contact = contact;
 	this._currentView = this.viewId; //note - _currentView is the viewID (tab specific). E.g. CN1, CN2, etc
-	if (isDirty) this._contactDirty = true;
+	if (isDirty) {
+		this._contactDirty = true;
+	}
 	this._list = contact.list;
 
 	if (!this._toolbar[this._currentView]) {
@@ -76,7 +79,6 @@ function(contact, isDirty) {
 	this._initializeTabGroup(this._currentView);
 	this._app.pushView(this.viewId);
 	this.updateTabTitle();
-
 };
 
 ZmContactController.prototype._createView =
@@ -190,16 +192,6 @@ ZmContactController.prototype._getActionMenuOps =
 function() {
 	return null;
 };
-
-/**
- * @private
- */
-ZmContactController.prototype._getViewType =
-function() {
-	//note - this is required to return the current view ID and not really type, by ZmBaseController.prototype._tagListener in order to actually tag.
-	return this.viewId;
-};
-
 
 /**
  * @private

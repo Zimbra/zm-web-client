@@ -21,34 +21,36 @@
  *
  * @author Conrad Damon
  * 
- * @param {ZmComposite}	container	the containing shell
- * @param {ZmMailApp}	mailApp			the containing app
+ * @param {DwtShell}	container	the containing shell
+ * @param {ZmApp}		mailApp		the containing app
+ * @param {constant}	type		controller type
+ * @param {string}		sessionId	the session id
  * 
  * @extends		ZmController
  */
-ZmComposeController = function(container, mailApp) {
+ZmComposeController = function(container, mailApp, type, sessionId) {
 
-	ZmController.call(this, container, mailApp);
+	ZmController.apply(this, arguments);
 
 	this._action = null;
 
 	ZmComposeController._setStatics();
 
 	this._listeners = {};
-	this._listeners[ZmOperation.SEND] = new AjxListener(this, this._sendListener);
-	this._listeners[ZmOperation.SEND_MENU] = new AjxListener(this, this._sendListener);
-	this._listeners[ZmOperation.SEND_LATER] = new AjxListener(this, this._sendLaterListener);
-	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
-	this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._attachmentListener);
-	this._listeners[ZmOperation.DETACH_COMPOSE] = new AjxListener(this, this._detachListener);
-	this._listeners[ZmOperation.SAVE_DRAFT] = new AjxListener(this, this._saveDraftListener);
-	this._listeners[ZmOperation.SPELL_CHECK] = new AjxListener(this, this._spellCheckListener);
-	this._listeners[ZmOperation.COMPOSE_OPTIONS] = new AjxListener(this, this._optionsListener);
+	this._listeners[ZmOperation.SEND]				= this._sendListener.bind(this);
+	this._listeners[ZmOperation.SEND_MENU]			= this._sendListener.bind(this);
+	this._listeners[ZmOperation.SEND_LATER]			= this._sendLaterListener.bind(this);
+	this._listeners[ZmOperation.CANCEL]				= this._cancelListener.bind(this);
+	this._listeners[ZmOperation.ATTACHMENT]			= this._attachmentListener.bind(this);
+	this._listeners[ZmOperation.DETACH_COMPOSE]		= this._detachListener.bind(this);
+	this._listeners[ZmOperation.SAVE_DRAFT]			= this._saveDraftListener.bind(this);
+	this._listeners[ZmOperation.SPELL_CHECK]		= this._spellCheckListener.bind(this);
+	this._listeners[ZmOperation.COMPOSE_OPTIONS]	= this._optionsListener.bind(this);
 
-	this._dialogPopdownListener = new AjxListener(this, this._dialogPopdownActionListener);
+	this._dialogPopdownListener = this._dialogPopdownActionListener.bind(this);
 
 	var settings = appCtxt.getSettings();
-	var scl = this._settingChangeListener = new AjxListener(this, this._handleSettingChange);
+	var scl = this._settingChangeListener = this._handleSettingChange.bind(this);
 	for (var i = 0; i < ZmComposeController.SETTINGS.length; i++) {
 		settings.getSetting(ZmComposeController.SETTINGS[i]).addChangeListener(scl);
 	}
@@ -60,10 +62,8 @@ ZmComposeController = function(container, mailApp) {
 ZmComposeController.prototype = new ZmController();
 ZmComposeController.prototype.constructor = ZmComposeController;
 
-ZmComposeController.prototype.toString =
-function() {
-	return "ZmComposeController";
-};
+ZmComposeController.prototype.isZmComposeController = true;
+ZmComposeController.prototype.toString = function() { return "ZmComposeController"; };
 
 //
 // Constants
@@ -130,8 +130,8 @@ function() {
 	ZmComposeController.OPTIONS_TT[ZmOperation.NEW_MESSAGE]		= "composeOptions";
 	ZmComposeController.OPTIONS_TT[ZmOperation.REPLY]			= "replyOptions";
 	ZmComposeController.OPTIONS_TT[ZmOperation.REPLY_ALL]		= "replyOptions";
-    ZmComposeController.OPTIONS_TT[ZmOperation.CAL_REPLY]			= "replyOptions";
-	ZmComposeController.OPTIONS_TT[ZmOperation.CAL_REPLY_ALL]		= "replyOptions";
+    ZmComposeController.OPTIONS_TT[ZmOperation.CAL_REPLY]		= "replyOptions";
+	ZmComposeController.OPTIONS_TT[ZmOperation.CAL_REPLY_ALL]	= "replyOptions";
 	ZmComposeController.OPTIONS_TT[ZmOperation.FORWARD_ATT]		= "forwardOptions";
 	ZmComposeController.OPTIONS_TT[ZmOperation.FORWARD_INLINE]	= "forwardOptions";
 
@@ -144,6 +144,11 @@ function() {
 //
 // Public methods
 //
+
+ZmComposeController.prototype.getDefaultViewId =
+function() {
+	return ZmId.VIEW_COMPOSE;
+};
 
 /**
 * Called by ZmNewWindow.unload to remove ZmSettings listeners (which reside in

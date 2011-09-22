@@ -24,8 +24,8 @@
  *
  * @author Conrad Damon
  * 
- * @param {ZmComposite}	container	the containing shell
- * @param {ZmMailApp}	mailApp		the containing app
+ * @param {DwtComposite}	container	the containing shell
+ * @param {ZmMailApp}		mailApp		the containing app
  */
 
 ZmToolTipMgr = function() {

@@ -22,19 +22,24 @@
  *
  * @author Parag Shah
  * 
- * @param {ZmComposite}	container	the containing shell
- * @param {ZmMailApp}	mailApp			the containing app
+ * @param {DwtControl}					container					the containing shell
+ * @param {ZmApp}						mailApp						the containing application
+ * @param {constant}					type						type of controller
+ * @param {string}						sessionId					the session id
+ * @param {ZmSearchResultsController}	searchResultsController		containing controller
  * 
  * @extends		ZmMailListController
  */
-ZmDoublePaneController = function(container, mailApp) {
+ZmDoublePaneController = function(container, mailApp, type, sessionId, searchResultsController) {
 
 	if (arguments.length == 0) { return; }
 
-	ZmMailListController.call(this, container, mailApp);
+	ZmMailListController.apply(this, arguments);
 
-	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-	this._dragSrc.addDragListener(this._dragListener.bind(this));	
+	if (this.supportsDnD()) {
+		this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+		this._dragSrc.addDragListener(this._dragListener.bind(this));
+	}
 	
 	this._listeners[ZmOperation.SHOW_ORIG]			= this._showOrigListener.bind(this);
 	this._listeners[ZmOperation.ADD_FILTER_RULE]	= this._filterListener.bind(this);
@@ -128,7 +133,7 @@ function(view, force) {
 	} else {
 		ZmMailListController.prototype.switchView.apply(this, arguments);
 	}
-	this._resetNavToolBarButtons(this._currentView);
+	this._resetNavToolBarButtons();
 };
 
 /**
@@ -238,16 +243,22 @@ function() {
 // Returns the already-created message list view.
 ZmDoublePaneController.prototype._createNewView = 
 function() {
-	if (this._mailListView) {
+	if (this._mailListView && this._dragSrc) {
 		this._mailListView.setDragSource(this._dragSrc);
 	}
 	return this._mailListView;
 };
 
-ZmDoublePaneController.prototype.getReferenceView = 
+/**
+ * Returns the double-pane view.
+ * 
+ * @return {ZmDoublePaneView}	double-pane view
+ */
+ZmDoublePaneController.prototype.getCurrentView = 
 function() {
 	return this._doublePaneView;
 };
+ZmDoublePaneController.prototype.getReferenceView = ZmDoublePaneController.prototype.getCurrentView;
 
 ZmDoublePaneController.prototype._getTagMenuMsg = 
 function(num) {
@@ -262,11 +273,11 @@ function(num) {
 // Add reading pane to focus ring
 ZmDoublePaneController.prototype._initializeTabGroup =
 function(view) {
-	if (this._tabGroups[view]) return;
+	if (this._tabGroups[view]) { return; }
 
 	ZmListController.prototype._initializeTabGroup.apply(this, arguments);
 	if (!AjxEnv.isIE) {
-		this._tabGroups[view].addMember(this.getReferenceView().getItemView());
+		this._tabGroups[view].addMember(this.getCurrentView().getItemView());
 	}
 };
 

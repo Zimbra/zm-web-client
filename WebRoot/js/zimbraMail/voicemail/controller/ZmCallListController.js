@@ -24,17 +24,10 @@ ZmCallListController = function(container, app) {
 ZmCallListController.prototype = new ZmVoiceListController;
 ZmCallListController.prototype.constructor = ZmCallListController;
 
-ZmCallListController.prototype.toString =
-function() {
-	return "ZmCallListController";
-};
+ZmCallListController.prototype.isZmCallListController = true;
+ZmCallListController.prototype.toString = function() { return "ZmCallListController"; };
 
-ZmCallListController.prototype._defaultView =
-function() {
-	return ZmId.VIEW_CALL_LIST;
-};
-
-ZmCallListController.prototype._getViewType = 
+ZmCallListController.prototype.getDefaultViewId =
 function() {
 	return ZmId.VIEW_CALL_LIST;
 };

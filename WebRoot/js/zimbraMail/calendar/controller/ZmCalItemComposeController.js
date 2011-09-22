@@ -21,30 +21,31 @@
  *
  * @author Parag Shah
  *
- * @param {DwtComposite}	container		the containing element
- * @param {ZmApp}	app		a handle to the [{@link ZmCalendarApp}|{@link ZmTaskApp}] application
+ * @param {DwtShell}	container	the containing shell
+ * @param {ZmApp}		app			the containing app
+ * @param {constant}	type		controller type
+ * @param {string}		sessionId	the session id
  * 
- * @extends		ZmController
+ * @extends		ZmBaseController
  */
-ZmCalItemComposeController = function(container, app) {
+ZmCalItemComposeController = function(container, app, type, sessionId) {
 	if (arguments.length == 0) { return; }
-	ZmBaseController.call(this, container, app);
+	ZmBaseController.apply(this, arguments);
 };
 
 ZmCalItemComposeController.prototype = new ZmBaseController;
 ZmCalItemComposeController.prototype.constructor = ZmCalItemComposeController;
 
-ZmCalItemComposeController.prototype.toString =
-function() {
-	return "ZmCalItemComposeController";
-};
+ZmCalItemComposeController.prototype.isZmCalItemComposeController = true;
+ZmCalItemComposeController.prototype.toString = function() { return "ZmCalItemComposeController"; };
 
 ZmCalItemComposeController.DEFAULT_TAB_TEXT = ZmMsg.appointment;
-ZmCalItemComposeController.SAVE_CLOSE = "SAVE_CLOSE";
-ZmCalItemComposeController.SEND = "SEND";
-ZmCalItemComposeController.SAVE  = "SAVE";
-ZmCalItemComposeController.APPT_MODE  = "APPT";
-ZmCalItemComposeController.MEETING_MODE  = "MEETING";
+
+ZmCalItemComposeController.SAVE_CLOSE 	= "SAVE_CLOSE";
+ZmCalItemComposeController.SEND 		= "SEND";
+ZmCalItemComposeController.SAVE  		= "SAVE";
+ZmCalItemComposeController.APPT_MODE  	= "APPT";
+ZmCalItemComposeController.MEETING_MODE	= "MEETING";
 
 // Public methods
 

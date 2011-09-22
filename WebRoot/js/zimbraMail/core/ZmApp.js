@@ -661,12 +661,13 @@ function(type) {
  * then a check is made for an existing controller with that session ID. If none is
  * found, one is created and given that session ID.
  * 
- * @param	{constant}	type				type of controller (often a view type)				
- * @param	{string}	controllerClass		string name of controller class
- * @param	{string}	sessionId			unique identifier for this controller
+ * @param	{constant}						type						type of controller (typically a view type)				
+ * @param	{string}						controllerClass				string name of controller class
+ * @param	{string}						sessionId					unique identifier for this controller
+ * @param 	{ZmSearchResultsController}		searchResultsController		containing controller
  */
 ZmApp.prototype.getSessionController =
-function(type, controllerClass, sessionId) {
+function(type, controllerClass, sessionId, searchResultsController) {
 
 	// track controllers of this type
 	if (!this._sessionController[type]) {
@@ -691,13 +692,13 @@ function(type, controllerClass, sessionId) {
 		}
 	}
 
-	sessionId = (controller && controller.sessionId) || sessionId || this._nextSessionId[type]++;
+	sessionId = (controller && controller.sessionId) || sessionId || String(this._nextSessionId[type]++);
 
 	if (!controller) {
 		var ctlrClass = eval(controllerClass);
-		controller = this._sessionController[type][sessionId] = new ctlrClass(this._container, this);
+		controller = this._sessionController[type][sessionId] =
+			new ctlrClass(this._container, this, type, sessionId, searchResultsController);
 	}
-	controller.setSessionId(type, sessionId);
 	this._curSessionId[type] = sessionId;
 	controller.inactive = false;
 

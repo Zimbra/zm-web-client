@@ -598,13 +598,16 @@ function(msg, container) {
 	this._header = new DwtControl(params);
 
 	this._setEventHdlrs([DwtEvent.ONMOUSEDOWN, DwtEvent.ONMOUSEMOVE, DwtEvent.ONMOUSEUP, DwtEvent.ONDBLCLICK]);
-	var dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-	dragSrc.addDragListener(new AjxListener(this, this._dragListener));
-	this._header.setDragSource(dragSrc);
-	this._header._getDragProxy = this._getDragProxy;
-	var dropTgt = this._dropTgt = new DwtDropTarget("ZmTag");
-	dropTgt.addDropListener(this._dropListener.bind(this));
-	this._header.setDropTarget(dropTgt);
+	
+	if (this._controller.supportsDnD()) {
+		var dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+		dragSrc.addDragListener(this._dragListener.bind(this));
+		this._header.setDragSource(dragSrc);
+		this._header._getDragProxy = this._getDragProxy;
+		var dropTgt = this._dropTgt = new DwtDropTarget("ZmTag");
+		dropTgt.addDropListener(this._dropListener.bind(this));
+		this._header.setDropTarget(dropTgt);
+	}
 	
 	this._header.addListener(DwtEvent.ONDBLCLICK, this._dblClickListener);
 

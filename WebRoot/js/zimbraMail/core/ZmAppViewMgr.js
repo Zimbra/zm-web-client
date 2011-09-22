@@ -108,51 +108,26 @@ ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 		this._historyMgr = appCtxt.getHistoryMgr();
 		this._historyMgr.addListener(this._historyChangeListener.bind(this));
 	}
-	this._hashView				= {};		// matches numeric hash to its view
+	this._hashViewId			= {};		// matches numeric hash to its view
 	this._nextHashIndex			= 0;		// index for adding to browser history stack
 	this._curHashIndex			= 0;		// index of current location in browser history stack
 	this._noHistory				= false;	// flag to prevent history ops as result of programmatic push/pop view
 	this._ignoreHistoryChange	= false;	// don't push/pop view as result of history.back() or history.forward()
 
-	this._lastView		= null;	// ID of previously visible view
-	this._currentView	= null;	// ID of currently visible view
+	this._lastViewId	= null;	// ID of previously visible view
+	this._currentViewId	= null;	// ID of currently visible view
 	this._hidden		= [];	// stack of views that aren't visible
 	this._toRemove		= [];	// views to remove from hidden on next view push
 
-	this._view = {};
-	this._component = {};
-	this._app = {};
+	this._view		= {};	// information about each view (components, controller, callbacks, app, etc)
+	this._component	= {};	// component data (container, bounds, current control)
+	this._app		= {};	// app info (current view)
 	
 	// reduce need for null checks
 	this._emptyView = {component:{}, callback:{}, hide:{}};
 	
-	// Hashes keyed by view ID
-	this._viewComponent		= {};	// maps component ID to component
-	this._viewHide			= {};	// which components should be hidden
-	this._viewController	= {};	// current controller for the view
-	this._callbacks			= {};	// callbacks for when state changes between hidden and shown
-	this._viewApp			= {};	// owning app
-	this._isAppView			= {};	// whether view is top-level
-	this._isTransient		= {};	// true if view doesn't go on hidden stack
-	this._isFullScreen		= {};	// true if view has one component that fills space below app chooser
-	this._isTabView			= {};	// view opens in a tab, rather than stacking
-	this._tabParams			= {};	// params for app tab button
-	this._needTreeHack		= {};	// for showing tree without new button
-	
-	// Hashes keyed by component ID
-	this._component			= {};	// global components
-	this._hide				= {};	// components to hide
-	this._curComponent		= {};	// currently displayed component
-	this._container			= {};	// containers within the skin
-	this._contBounds		= {};	// bounds for the containers
-
 	// Hashes keyed by tab ID
-	this._viewByTabId		= {};	// view for the given tab
-	
-	// Hashes keyed by app ID
-	this._appView			= {};	// current main view for the app
-	this._appComponent		= {};	// app component
-	this._appHide			= {};	// app components should be hidden
+	this._viewByTabId = {};	// view for the given tab
 	
 	// view pre-emption
 	this._pushCallback = this.pushView.bind(this);
@@ -253,7 +228,7 @@ function() {
  */
 ZmAppViewMgr.prototype.getViewComponent =
 function(cid, viewId) {
-	var view = this._view[viewId || this._currentView] || this._emptyView;
+	var view = this._view[viewId || this._currentViewId] || this._emptyView;
 	var app = view.app || appCtxt.getCurrentAppName();
 	var appView = this._view[app];
 	var globalView = this._view[ZmAppViewMgr.GLOBAL];
@@ -275,7 +250,7 @@ function(viewId, app) {
 		view = this._view[viewId] || this.createView({ viewId:viewId }); 
 	}
 	else {
-		view = this._view[viewId || this._currentView] || this.createView({ viewId:viewId }); 
+		view = this._view[viewId || this._currentViewId] || this.createView({ viewId:viewId }); 
 	}
 	return view;
 };
@@ -351,7 +326,7 @@ ZmAppViewMgr.prototype.addComponents = ZmAppViewMgr.prototype.setViewComponents;
 ZmAppViewMgr.prototype.isHidden =
 function(cid, viewId) {
 
-	var view = this._view[viewId || this._currentView] || this._emptyView;
+	var view = this._view[viewId || this._currentViewId] || this._emptyView;
 	var app = view.app || appCtxt.getCurrentAppName();
 	var appView = this._view[app];
 	var globalView = this._view[ZmAppViewMgr.GLOBAL];
@@ -488,7 +463,7 @@ function(cid, comp) {
  */
 ZmAppViewMgr.prototype.getCurrentViewId =
 function() {
-	return this._currentView;
+	return this._currentViewId;
 };
 
 /**
@@ -498,7 +473,7 @@ function() {
  */
 ZmAppViewMgr.prototype.getLastViewId =
 function() {
-	return this._lastView;
+	return this._lastViewId;
 };
 
 /**
@@ -508,7 +483,7 @@ function() {
  */
 ZmAppViewMgr.prototype.getCurrentView =
 function(view) {
-	return this.getViewComponent(ZmAppViewMgr.C_APP_CONTENT, view || this._currentView);
+	return this.getViewComponent(ZmAppViewMgr.C_APP_CONTENT, view || this._currentViewId);
 };
 
 /**
@@ -554,6 +529,7 @@ function(params) {
 
 	params = params || {};
 	var viewId = params.viewId;
+	if (!viewId) { return null; }
 	DBG.println(AjxDebug.DBG1, "createView: " + viewId);
 	
 	var view = this._view[viewId] = {
@@ -599,6 +575,7 @@ function(params) {
 ZmAppViewMgr.prototype.pushView =
 function(viewId, force) {
 
+	if (!viewId) { return false; }
 	DBG.println("avm", "-------------- PUSH view: " + viewId);
 	
 	viewId = this._viewByTabId[viewId] || viewId;
@@ -618,7 +595,7 @@ function(viewId, force) {
 	var viewController = view.controller;
 
 	// if same view, no need to hide previous view or check for callbacks
-	if (viewId == this._currentView) {
+	if (viewId == this._currentViewId) {
 		this._setViewVisible(viewId, true);
 		// make sure the new content has focus
 		if (viewController) {
@@ -631,7 +608,7 @@ function(viewId, force) {
 
 	if (view.isTabView) {
 		var tp = view.tabParams;
-		var handled = tp && tp.tabCallback && tp.tabCallback.run(this._currentView, viewId);
+		var handled = tp && tp.tabCallback && tp.tabCallback.run(this._currentViewId, viewId);
 		if (tp && !handled) {
 			var ac = appCtxt.getAppChooser();
 			var button = ac.getButton(tp.id);
@@ -647,8 +624,8 @@ function(viewId, force) {
 		force = true;
 	}
 
-	var curView = this._view[this._currentView] || this._emptyView;
-	if (!this._hideView(this._currentView, force || curView.isTabView)) {
+	var curView = this._view[this._currentViewId] || this._emptyView;
+	if (!this._hideView(this._currentViewId, force || curView.isTabView)) {
 		this._pendingAction = this._pushCallback;
 		this._pendingView = viewId;
 		return false;
@@ -656,20 +633,20 @@ function(viewId, force) {
 	this.setViewComponents(viewId, view.component);
 
 	var curViewController = curView.controller;
-	var isTransient = curView.isTransient || (curViewController && curViewController.isTransient(this._currentView, viewId));
-	if (this._currentView && (this._currentView != viewId) && !isTransient) {
-		this._hidden.push(this._currentView);
+	var isTransient = curView.isTransient || (curViewController && curViewController.isTransient(this._currentViewId, viewId));
+	if (this._currentViewId && (this._currentViewId != viewId) && !isTransient) {
+		this._hidden.push(this._currentViewId);
 	}
 
 	this._removeFromHidden(viewId);
-	var temp = this._lastView;
-	this._lastView = this._currentView;
-	this._currentView = viewId;
-	DBG.println(AjxDebug.DBG2, "app view mgr: current view is now " + this._currentView);
+	var temp = this._lastViewId;
+	this._lastViewId = this._currentViewId;
+	this._currentViewId = viewId;
+	DBG.println(AjxDebug.DBG2, "app view mgr: current view is now " + this._currentViewId);
 
-	if (!this._showView(viewId, force, (viewId != this._currentView))) {
-		this._currentView = this._lastView;
-		this._lastView = temp;
+	if (!this._showView(viewId, force, (viewId != this._currentViewId))) {
+		this._currentViewId = this._lastViewId;
+		this._lastViewId = temp;
 		this._pendingAction = this._pushCallback;
 		this._pendingView = viewId;
 		return false;
@@ -685,7 +662,7 @@ function(viewId, force) {
 		if (viewId != ZmId.VIEW_LOADING) {
 			this._nextHashIndex++;
 			this._curHashIndex = this._nextHashIndex;
-			this._hashView[this._curHashIndex] = viewId;
+			this._hashViewId[this._curHashIndex] = viewId;
 			DBG.println(AjxDebug.DBG2, "adding to browser history: " + this._curHashIndex + "(" + viewId + ")");
 			if (this._historyMgr) {
 				this._historyMgr.add(this._curHashIndex);
@@ -693,10 +670,10 @@ function(viewId, force) {
 		}
 	}
 
-	this._layout(this._currentView);
+	this._layout(this._currentViewId);
 
-	if (viewController && viewController.setCurrentView) {
-		viewController.setCurrentView(viewId);
+	if (viewController && viewController.setCurrentViewId) {
+		viewController.setCurrentViewId(viewId);
 	}
 	if (view.isAppView) {
 		this.setAppView(view.app, viewId);
@@ -727,7 +704,7 @@ function(force, viewId, skipHistory) {
 	viewId = this._viewByTabId[viewId] || viewId;
 	var view = this._view[viewId] || this._emptyView;
 
-	if (!this._currentView) {
+	if (!this._currentViewId) {
 		DBG.println(AjxDebug.DBG1, "ERROR: no view to pop");
 		return false;
 	}
@@ -739,12 +716,12 @@ function(force, viewId, skipHistory) {
 	}
 
 	// check if trying to pop non-current view
-	if (viewId && !isPendingView && (this.getCurrentViewId() != viewId)) { return false; }
+	if (viewId && !isPendingView && (this._currentViewId != viewId)) { return false; }
 
 	// handle cases where there are no views in the hidden stack (entry via deep link)
 	var noHide = false, noShow = false;
 	var goToApp = null;
-	var curView = this._view[this._currentView] || this._emptyView;
+	var curView = this._view[this._currentViewId] || this._emptyView;
 	if (!this._hidden.length && !this._isNewWindow) {
 		noHide = !curView.isTabView;
 		noShow = true;
@@ -755,15 +732,15 @@ function(force, viewId, skipHistory) {
 		}
 	}
 
-	DBG.println(AjxDebug.DBG1, "popView: " + this._currentView);
+	DBG.println(AjxDebug.DBG1, "popView: " + this._currentViewId);
 	DBG.println(AjxDebug.DBG2, "hidden (before): " + this._hidden);
-	if (!this._hideView(this._currentView, force, noHide)) {
+	if (!this._hideView(this._currentViewId, force, noHide)) {
 		this._pendingAction = this._popCallback;
 		this._pendingView = null;
 		return false;
 	}
 
-	this._deactivateView(this._currentView);
+	this._deactivateView(this._currentViewId);
 
 	if (curView.isTabView) {
 		appCtxt.getAppChooser().removeButton(curView.tabParams.id);
@@ -776,21 +753,21 @@ function(force, viewId, skipHistory) {
 		return !noHide;
 	}
 
-	this._lastView = this._currentView;
-	this._currentView = this._hidden.pop();
+	this._lastViewId = this._currentViewId;
+	this._currentViewId = this._hidden.pop();
 
 	// close this window if no more views exist and it's a child window
-	if (!this._currentView && this._isNewWindow) {
+	if (!this._currentViewId && this._isNewWindow) {
 		window.close();
 		return false;
 	}
 
-	DBG.println(AjxDebug.DBG2, "app view mgr: current view is now " + this._currentView);
-	if (!this._showView(this._currentView, this._popCallback, null, force, true)) {
+	DBG.println(AjxDebug.DBG2, "app view mgr: current view is now " + this._currentViewId);
+	if (!this._showView(this._currentViewId, this._popCallback, null, force, true)) {
 		DBG.println(AjxDebug.DBG1, "ERROR: pop with no view to show");
 		return false;
 	}
-	this._removeFromHidden(this._currentView);
+	this._removeFromHidden(this._currentViewId);
 	DBG.println(AjxDebug.DBG2, "hidden (after): " + this._hidden);
 	DBG.println(AjxDebug.DBG2, "hidden (" + this._hidden.length + " after pop): " + this._hidden);
 
@@ -806,8 +783,7 @@ function(force, viewId, skipHistory) {
 		}
 	}
 
-//	this.setViewComponents(this._viewComponent[this._currentView]);
-	this._layout(this._currentView);
+	this._layout(this._currentViewId);
 
 	return true;
 };
@@ -853,7 +829,7 @@ function(viewId) {
  */
 ZmAppViewMgr.prototype.isAppView =
 function(viewId) {
-	var view = this._view[viewId || this._currentView] || this._emptyView;
+	var view = this._view[viewId || this._currentViewId] || this._emptyView;
 	return view.isAppView;
 };
 
@@ -865,7 +841,7 @@ function(viewId) {
  */
 ZmAppViewMgr.prototype.isFullScreen =
 function(viewId) {
-	var view = this._view[viewId || this._currentView] || this._emptyView;
+	var view = this._view[viewId || this._currentViewId] || this._emptyView;
 	return view.isFullScreen;
 };
 
@@ -921,7 +897,7 @@ function() {
  */
 ZmAppViewMgr.prototype.updateTitle = 
 function() {
-	this._setTitle(this._currentView);
+	this._setTitle(this._currentViewId);
 };
 
 /**
@@ -932,7 +908,7 @@ function() {
  */
 ZmAppViewMgr.prototype.setTabTitle =
 function(viewId, text) {
-	var view = this._view[viewId || this._currentView] || this._emptyView;
+	var view = this._view[viewId || this._currentViewId] || this._emptyView;
 	var tp = view.tabParams;
 	var button = !appCtxt.isChildWindow && tp && appCtxt.getAppChooser().getButton(tp.id);
 	if (button) {
@@ -1173,11 +1149,11 @@ function(viewId, show) {
 	if (show) {
 
 		// first, handle the differences between what this view hides and what the last view hides
-		if (this._lastView) {
+		if (this._lastViewId) {
 			for (var i = 0; i < ZmAppViewMgr.ALL_COMPONENTS.length; i++) {
 				var cid = ZmAppViewMgr.ALL_COMPONENTS[i];
 				var hidden = this.isHidden(cid, viewId);
-				if (hidden != this.isHidden(cid, this._lastView)) {
+				if (hidden != this.isHidden(cid, this._lastViewId)) {
 					this.displayComponent(cid, !hidden);
 				}
 			}
@@ -1217,7 +1193,7 @@ function(viewId, show) {
 			this.showComponent(cid, false);
 		}
 		// hide the app components too - if we're not changing apps, they will reappear
-		// when the new view is shown. Done this way since this._lastView is not yet set.
+		// when the new view is shown. Done this way since this._lastViewId is not yet set.
 		var appView = this._view[view.app];
 		if (appView) {
 			for (var cid in appView.component) {
@@ -1244,7 +1220,7 @@ function(view) {
  */
 ZmAppViewMgr.prototype._deactivateView =
 function(viewId) {
-	viewId = viewId || this._currentView;
+	viewId = viewId || this._currentViewId;
 	var view = this._view[viewId] || this._emptyView;
 	for (var cid in view.component) {
 		var comp = this.getViewComponent(cid, viewId);
@@ -1284,7 +1260,7 @@ function(ev) {
 		var deltaHeight = ev.newHeight - ev.oldHeight;
 		DBG.println(AjxDebug.DBG1, "shell control event: dW = " + deltaWidth + ", dH = " + deltaHeight);
 		if (this._isNewWindow) {
-			var view = this._view[this._currentView] || this._emptyView
+			var view = this._view[this._currentViewId] || this._emptyView
 			if (view.component) {
 				// reset width of top toolbar
 				var topToolbar = view.component[ZmAppViewMgr.C_TOOLBAR_TOP]; //todo - something similar for new button here?
@@ -1343,7 +1319,7 @@ function(ev) {
 
 	var hashIndex = parseInt(ev.data);
 	this._noHistory = true;
-	var viewId = this._hashView[hashIndex];
+	var viewId = this._hashViewId[hashIndex];
 	if (hashIndex == (this._curHashIndex - 1)) {
 		// Back button has been pressed
 		this._browserAction = ZmAppViewMgr.BROWSER_BACK;
@@ -1421,7 +1397,7 @@ function(viewId) {
 		cont = this.getContainer(ZmAppViewMgr.C_TREE);
 		var treeSize = cont && Dwt.getSize(cont);
 		if (newButtonBds && treeSize && comp) {
-			comp.setBounds(newButtonBds.x, newButtonBds.y, newButtonBds.width - 2, newButtonBds.height + treeSize.y);
+			comp.setBounds(newButtonBds.x, newButtonBds.y, newButtonBds.width - 1, newButtonBds.height + treeSize.y - 2);
 			comp.addClassName("panelTopBorder");	// need a top border with new button gone
 			this._treeHackActive = true;
 		}

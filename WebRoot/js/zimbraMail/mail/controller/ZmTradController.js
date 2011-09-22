@@ -23,15 +23,18 @@
  *
  * @author Parag Shah
  * 
- * @param {ZmComposite}	container	the containing shell
- * @param {ZmMailApp}	mailApp			the containing app
+ * @param {DwtControl}					container					the containing shell
+ * @param {ZmApp}						mailApp						the containing application
+ * @param {constant}					type						type of controller
+ * @param {string}						sessionId					the session id
+ * @param {ZmSearchResultsController}	searchResultsController		containing controller
  * 
  * @extends		ZmDoublePaneController
  * 
  * @private
  */
-ZmTradController = function(container, mailApp) {
-	ZmDoublePaneController.call(this, container, mailApp);
+ZmTradController = function(container, mailApp, type, sessionId, searchResultsController) {
+	ZmDoublePaneController.apply(this, arguments);
 	this._msgControllerMode = ZmId.VIEW_TRAD;
 };
 
@@ -70,7 +73,7 @@ function() {
 							controller:this, dropTgt:this._dropTgt}));
 };
 
-ZmTradController.prototype._getViewType =
+ZmTradController.prototype.getDefaultViewId =
 function() {
 	return ZmId.VIEW_TRAD;
 };
@@ -84,6 +87,7 @@ function(view, bPageForward, convIdx, limit) {
 ZmTradController.prototype._resetNavToolBarButtons = 
 function(view) {
 
+	view = view || this.getCurrentViewId();
 	ZmDoublePaneController.prototype._resetNavToolBarButtons.call(this, view);
 	if (!this._navToolBar[view]) { return; }
 

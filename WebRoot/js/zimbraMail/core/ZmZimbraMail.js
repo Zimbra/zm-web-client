@@ -2987,7 +2987,7 @@ function() {
 	// list view in the content pane, nothing happens. The list view will be
 	// found in the root tab group hierarchy.
 	var ctlr = appCtxt.getCurrentController();
-	var content = ctlr ? ctlr.getCurrentView() : null;
+	var content = ctlr && ctlr._getDefaultFocusItem();
 	if (content) {
 		appCtxt.getKeyboardMgr().grabFocus(content);
 	}

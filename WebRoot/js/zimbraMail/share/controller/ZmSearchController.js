@@ -723,6 +723,7 @@ function(results, search, noUpdateOverview, noClear) {
 		}
 	}
 
+	// disable search results tab for now
 	if (false && search.userInitiated) {
 		var ctlr = appCtxt.getApp(ZmApp.SEARCH).getSearchResultsController();
 		ctlr.show(results);
@@ -851,6 +852,8 @@ function(ev) {
 
 		this.search({query: queryString, userText: userText, userInitiated: true, getHtml: getHtml, searchFor: opId});
 	}
+	// restore focus to INPUT
+	setTimeout(this._searchToolBar.focus.bind(this._searchToolBar), 10);
 };
 
 /**
@@ -964,15 +967,12 @@ function(ev, id) {
 
 	// set button tooltip
 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
-	//commented out the following since it doesn't currently work, and I don't see why we would want to have
-	// a tooltip that's conv/msg view specific. I think saying "mail" is enough.
-//	if (id == ZmId.SEARCH_MAIL) {
-//		var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
-//		tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
-//	}
 	if (id != ZmId.SEARCH_SHARED) { 
 		btn.setToolTipContent(tooltip);
 	}
+	
+	// restore focus to INPUT
+	setTimeout(this._searchToolBar.focus.bind(this._searchToolBar), 10);
 };
 
 /**

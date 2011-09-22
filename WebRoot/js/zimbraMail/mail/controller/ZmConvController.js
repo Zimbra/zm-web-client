@@ -23,16 +23,18 @@
  *
  * @author Conrad Damon
  * 
- * @param {ZmComposite}	container	the containing shell
- * @param {ZmMailApp}	mailApp			the containing app
+ * @param {DwtControl}		container			the containing shell
+ * @param {ZmApp}			mailApp				the containing application
+ * @param {constant}		type				type of controller
+ * @param {string}			sessionId			the session id
  * 
  * @extends		ZmDoublePaneController
  */
-ZmConvController = function(container, mailApp) {
+ZmConvController = function(container, mailApp, type, sessionId) {
 
-	ZmDoublePaneController.call(this, container, mailApp);
+	ZmDoublePaneController.apply(this, arguments);
 
-	this._convDeleteListener = new AjxListener(this, this._deleteListener);
+	this._convDeleteListener = this._deleteListener.bind(this);
 	this._listeners[ZmOperation.DELETE_MENU] = this._convDeleteListener;
 	this._msgControllerMode = ZmId.VIEW_CONV;
 };
@@ -208,7 +210,7 @@ function() {
 };
 
 
-ZmConvController.prototype._getViewType =
+ZmConvController.prototype.getDefaultViewId =
 function() {
 	return ZmId.VIEW_CONV;
 };
@@ -385,6 +387,7 @@ function(parent, num) {
 ZmConvController.prototype._resetNavToolBarButtons =
 function(view) {
 
+	view = view || this.getCurrentViewId();
 	ZmDoublePaneController.prototype._resetNavToolBarButtons.call(this, view);
 	if (!this._navToolBar[view]) { return; }
 

@@ -382,7 +382,7 @@ function(folder, callback, response) {
 		var voiceList = vc.getList();
 		var item = voiceList.getById(this._paramId);
 		if (item) {
-			var view = vc.getCurrentView();
+			var view = vc.getListView();
 			view.setSelection(item, true);
 			view.setPlaying(item);
 		}

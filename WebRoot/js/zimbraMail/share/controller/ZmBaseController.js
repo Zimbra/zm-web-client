@@ -26,16 +26,21 @@
  *
  * @author Conrad Damon
  *
- * @param {DwtControl}	container	the containing shell
- * @param {ZmApp}		app			the containing application
+ * @param {DwtControl}					container					the containing shell
+ * @param {ZmApp}						app							the containing application
+ * @param {constant}					type						type of controller (typically a view type)				
+ * @param {string}						sessionId					the session id
+ * @param {ZmSearchResultsController}	searchResultsController		containing controller
  * 
  * @extends		ZmController
  */
-ZmBaseController = function(container, app) {
+ZmBaseController = function(container, app, type, sessionId, searchResultsController) {
 
 	if (arguments.length == 0) { return; }
-	ZmController.call(this, container, app);
+	ZmController.apply(this, arguments);
 
+	this.setSessionId(sessionId, type || this.getDefaultViewId(), searchResultsController);
+	
     this._refreshQuickCommandsClosure = this._refreshQuickCommands.bind(this);
     this._quickCommandMenuHandlerClosure = this._quickCommandMenuHandler.bind(this);
 
@@ -44,6 +49,8 @@ ZmBaseController = function(container, app) {
 	this._toolbar	= {};	// ZmButtonToolbar
 	this._tabGroups = {};	// DwtTabGroup
 
+	this._currentView = null;
+	
 	this._tagList = appCtxt.getTagTree();
 	if (this._tagList) {
 		this._tagList.addChangeListener(this._tagChangeListener.bind(this));
@@ -80,7 +87,54 @@ ZmBaseController.prototype.isZmBaseController = true;
 ZmBaseController.prototype.toString = function() { return "ZmBaseController"; };
 
 
+// abstract public methods
+
+/**
+ * Returns the default view ID
+ */
+ZmBaseController.prototype.getDefaultViewId	= function() {};
+ZmBaseController.prototype._defaultView = ZmBaseController.prototype.getDefaultViewId;
+
 // public methods
+
+/**
+ * Sets the session id, view id, and tab id (using the type and session id).
+ * Controller for a view that shows up in a tab within the app chooser bar.
+ * Examples include compose, send confirmation, and msg view.
+ *
+ * @param {string}						sessionId					the session id
+ * @param {string}						type						the type
+ * @param {ZmSearchResultsController}	searchResultsController		owning controller
+ */
+ZmBaseController.prototype.setSessionId =
+function(sessionId, type, searchResultsController) {
+	this.sessionId = sessionId;
+	this.viewId = [type, this.sessionId].join("");
+	this.tabId = ["tab", this.viewId].join("_");
+	this.searchResultsController = searchResultsController;
+	this.isSearchResults = Boolean(searchResultsController);
+};
+
+/**
+ * Gets the current view ID.
+ * 
+ * @return	{DwtComposite}	the view Id
+ */
+ZmBaseController.prototype.getCurrentViewId =
+function() {
+	return this._currentViewOverride || this._currentView || this.viewId || this.getDefaultViewId();
+};
+ZmBaseController.prototype._getViewType = ZmBaseController.prototype.getCurrentViewId;
+
+/**
+ * Sets the current view ID.
+ * 
+ * @param	{DwtComposite}	viewId		the view ID
+ */
+ZmBaseController.prototype.setCurrentViewId =
+function(viewId) {
+	this._currentView = viewId;
+};
 
 /**
  * Gets the current view.
@@ -164,29 +218,39 @@ function(actionCode) {
 	return true;
 };
 
+/**
+ * Returns true if this controller's view is currently being displayed (possibly within a search results tab)
+ */
+ZmBaseController.prototype.isCurrent =
+function() {
+	var thisView = this.isSearchResults ? this.searchResultsController.getCurrentViewId() : this._currentView;
+	return (thisView == appCtxt.getCurrentViewId());
+};
+
+ZmBaseController.prototype.supportsDnD =
+function() {
+	return !this.isSearchResults;
+};
+
 // abstract protected methods
 
 // Creates the view element
-ZmBaseController.prototype._createNewView	 	= function() {};
-
-// Returns the view ID
-ZmBaseController.prototype._getViewType 		= function() {};
-ZmBaseController.prototype._defaultView 		= function() { return this._getViewType(); };
+ZmBaseController.prototype._createNewView	 		= function() {};
 
 // Populates the view with data
-ZmBaseController.prototype._setViewContents		= function(view) {};
+ZmBaseController.prototype._setViewContents			= function(view) {};
 
 // Returns text for the tag operation
-ZmBaseController.prototype._getTagMenuMsg 		= function(num) {};
+ZmBaseController.prototype._getTagMenuMsg 			= function(num) {};
 
 // Returns text for the move dialog
-ZmBaseController.prototype._getMoveDialogTitle	= function(num) {};
+ZmBaseController.prototype._getMoveDialogTitle		= function(num) {};
 
 // Returns a list of desired toolbar operations
-ZmBaseController.prototype._getToolBarOps 		= function() {};
+ZmBaseController.prototype._getToolBarOps 			= function() {};
 
 // Returns a list of secondary (non primary) toolbar operations
-ZmBaseController.prototype._getSecondaryToolBarOps 		= function() {};
+ZmBaseController.prototype._getSecondaryToolBarOps 	= function() {};
 
 
 // private and protected methods
@@ -339,7 +403,7 @@ ZmBaseController.prototype._setView =
 function(params) {
 
 	var view = params.view;
-	if (this.sessionId && this.sessionId.toString().indexOf(ZmId.VIEW_SEARCH_RESULTS) == 0) {
+	if (this.isSearchResults) {
 		// view is being embedded within search results, so don't push it
 		this._setViewContents(view);
 		return;
@@ -442,8 +506,7 @@ function(ev) {
 ZmBaseController.prototype._tagListener =
 function(ev, items) {
 
-	var curView = appCtxt.getAppViewMgr().getCurrentViewId();
-	if (curView == this._getViewType()) {
+	if (this.isCurrent()) {
 		var tagEvent = ev.getData(ZmTagMenu.KEY_TAG_EVENT);
 		var tagAdded = ev.getData(ZmTagMenu.KEY_TAG_ADDED);
 		items = items || this.getItems();
@@ -603,8 +666,7 @@ ZmBaseController.prototype._tagChangeListener =
 function(ev) {
 
 	// only process if current view is this view!
-	var curView = appCtxt.getAppViewMgr().getCurrentViewId();
-	if (curView == this._getViewType()) {
+	if (this.isCurrent()) {
 		if (ev.type == ZmEvent.S_TAG && ev.event == ZmEvent.E_CREATE && this._pendingActionData) {
 			var tag = ev.getDetail("organizers")[0];
 			this._doTag(this._pendingActionData, tag, true);

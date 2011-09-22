@@ -42,7 +42,7 @@ function() {
 	if (inputField) {
 		this._searchField = new DwtInputField({parent:this, inputId:ZmId.SEARCHRESULTS_INPUTFIELD});
 		var inputEl = this._searchField.getInputElement();
-		inputEl.className = "search_input";
+		inputEl.className = "search_results_input";
 		this._searchField.reparentHtmlElement(inputFieldId);
 	}
 

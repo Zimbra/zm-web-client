@@ -43,10 +43,8 @@ ZmCalItemView.prototype.constructor = ZmCalItemView;
 
 // Public methods
 
-ZmCalItemView.prototype.toString =
-function() {
-	return "ZmCalItemView";
-};
+ZmCalItemView.prototype.isZmCalItemView = true;
+ZmCalItemView.prototype.toString = function() { return "ZmCalItemView"; };
 
 ZmCalItemView.prototype.getController =
 function() {
@@ -231,65 +229,16 @@ ZmApptView = function(parent, posStyle, controller) {
 ZmApptView.prototype = new ZmCalItemView;
 ZmApptView.prototype.constructor = ZmApptView;
 
-// Public methods
+ZmApptView.prototype.isZmApptView = true;
+ZmApptView.prototype.toString = function() { return "ZmApptView"; };
 
-ZmApptView.prototype.toString =
-function() {
-	return "ZmApptView";
-};
+// Public methods
 
 ZmApptView.prototype.getTitle =
 function() {
-	/*var name = this._calItem.getName();
-	var attendees = this._calItem.getAttendeesText(ZmCalBaseItem.PERSON);
-	var title = attendees ? ZmMsg.meeting : ZmMsg.appointment;
-	return [ZmMsg.zimbraTitle, title, name].join(": ");
-	*/
     return [ZmMsg.zimbraTitle, ZmMsg.appointment].join(": ");
 };
-/*
-ZmApptView.prototype.set =
-function(calItem, mode, isDirty, prevView) {
-    ZmCalItemView.prototype.set.call(this, calItem, appCtxt.getAppViewMgr().getCurrentView(), mode);
 
-    var buttonText = calItem.getName().substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT);
-    appCtxt.getAppViewMgr().setTabTitle(this._controller.getCurrentView(), buttonText);
-};
-
-ZmApptView.prototype.close =
-function() {
-	appCtxt.getAppViewMgr().popView();
-};
-
-ZmApptView.prototype.move =
-function(ev) {
-	var item = this._calItem;
-	var ofolder = item.folderId;
-	var nfolder = ev.item.parent.parent.getValue();
-	if (ofolder == nfolder) { return; }
-
-	var args = [ofolder, nfolder];
-	var callback = new AjxCallback(this, this._handleMoveResponse, args);
-	var errorCallback = new AjxCallback(this, this._handleMoveError, args);
-	item.move(nfolder, callback, errorCallback);
-};
-
-ZmApptView.prototype.save =
-function(ev) {
-	var item = this._calItem;
-
-	var viewMode = ZmCalItem.MODE_EDIT;
-	if (item.isRecurring()) {
-		viewMode = item.isException
-			? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE
-			: ZmCalItem.MODE_EDIT_SERIES;
-	}
-	item.setViewMode(viewMode);
-	var callback = new AjxCallback(this, this._saveCallback);
-	var errorCallback = new AjxCallback(this, this._handleErrorSave);
-	item.save(null, callback, errorCallback);
-};
-*/
 ZmApptView.prototype.edit =
 function(ev) {
 	var item = this._calItem;
@@ -312,36 +261,6 @@ function(ev) {
 	var app = this._controller._app;
 	app.getApptComposeController().show(item, mode);
 };
-
-/*
-ZmApptView.prototype._saveCallback =
-function() {
-	appCtxt.setStatusMsg(ZmMsg.savedAppointment);
-};
-
-ZmApptView.prototype._handleErrorSave =
-function(ex) {
-	var msgDialog = appCtxt.getMsgDialog();
-	msgDialog.setMessage(ZmMsg.errorSavingAppt, DwtMessageDialog.CRITICAL_STYLE);
-	msgDialog.popup();
-	return true;
-};
-
-ZmApptView.prototype._handleMoveResponse =
-function(ofolder, nfolder, resp) {
-	// TODO: Should we display some confirmation?
-};
-
-ZmApptView.prototype._handleMoveError =
-function(ofolder, nfolder, resp) {
-	var params = {
-		msg: ZmMsg.errorMoveAppt,
-		level: ZmStatusView.LEVEL_CRITICAL
-	};
-	appCtxt.setStatusMsg(params);
-	return true;
-};
-*/
 
 ZmApptView.prototype.setBounds =
 function(x, y, width, height) {

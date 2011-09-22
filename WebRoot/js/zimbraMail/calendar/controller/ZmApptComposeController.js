@@ -21,14 +21,16 @@
  *
  * @author Parag Shah
  *
- * @param {DwtComposite}	container	the containing element
- * @param {ZmCalendarApp}	app		the handle to the calendar application
+ * @param {DwtShell}	container	the containing shell
+ * @param {ZmApp}		app			the containing app
+ * @param {constant}	type		controller type
+ * @param {string}		sessionId	the session id
  * 
  * @extends		ZmCalItemComposeController
  */
-ZmApptComposeController = function(container, app) {
+ZmApptComposeController = function(container, app, type, sessionId) {
 
-	ZmCalItemComposeController.call(this, container, app);
+	ZmCalItemComposeController.apply(this, arguments);
 
 	this._addedAttendees = [];
 	this._removedAttendees = [];
@@ -40,10 +42,8 @@ ZmApptComposeController = function(container, app) {
 ZmApptComposeController.prototype = new ZmCalItemComposeController;
 ZmApptComposeController.prototype.constructor = ZmApptComposeController;
 
-ZmApptComposeController.prototype.toString =
-function() {
-	return "ZmApptComposeController";
-};
+ZmApptComposeController.prototype.isZmApptComposeController = true;
+ZmApptComposeController.prototype.toString = function() { return "ZmApptComposeController"; };
 
 ZmApptComposeController._VALUE = "value";
 
@@ -1110,11 +1110,6 @@ function(calItem, result) {
     appCtxt.setStatusMsg(msg);
     
     appCtxt.notifyZimlets("onSaveApptSuccess", [this, calItem, result]);//notify Zimlets on success
-};
-
-ZmApptComposeController.prototype._getViewType =
-function() {
-	return ZmId.VIEW_APPOINTMENT;
 };
 
 ZmApptComposeController.prototype._resetNavToolBarButtons =

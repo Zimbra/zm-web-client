@@ -44,14 +44,16 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
     this._expanded = {};
     this._itemRowIdList = {};
 
-    this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
-	this.setDragSource(this._dragSrc);
-
-    this._dropTgt = new DwtDropTarget("ZmDetailListView");
-	this._dropTgt.markAsMultiple();
-	this._dropTgt.addDropListener(new AjxListener(this, this._dropListener));
-	this.setDropTarget(this._dropTgt);
+	if (controller.supportsDnD()) {
+		this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+		this._dragSrc.addDragListener(this._dragListener.bind(this));
+		this.setDragSource(this._dragSrc);
+	
+		this._dropTgt = new DwtDropTarget("ZmDetailListView");
+		this._dropTgt.markAsMultiple();
+		this._dropTgt.addDropListener(this._dropListener.bind(this));
+		this.setDropTarget(this._dropTgt);
+	}
 };
 
 ZmDetailListView.prototype = new ZmBriefcaseBaseView;

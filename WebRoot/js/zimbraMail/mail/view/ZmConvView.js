@@ -353,7 +353,7 @@ function(ev) {
 			}
 		}
 		
-		this._controller._resetNavToolBarButtons(this._controller._getViewType());
+		this._controller._resetNavToolBarButtons();
 		
 		if (len != this._conv.numMsgs) {
 			// allow CLV to update its msg count if its been changed

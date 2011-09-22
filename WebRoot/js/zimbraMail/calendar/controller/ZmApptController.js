@@ -21,25 +21,25 @@
  *
  * @author Vince Bellows
  *
- * @param {DwtComposite}	container	the containing element
- * @param {ZmCalendarApp}	app		    the handle to the calendar application
+ * @param {DwtShell}	container	the containing shell
+ * @param {ZmApp}		app			the containing app
+ * @param {constant}	type		controller type
+ * @param {string}		sessionId	the session id
  *
- * @extends		ZmListController
+ * @extends		ZmCalItemComposeController
  */
-ZmApptController = function(container, app) {
-    ZmCalItemComposeController.call(this, container, app);
+ZmApptController = function(container, app, type, sessionId) {
+    ZmCalItemComposeController.apply(this, arguments);
 };
-
-ZmApptController.DEFAULT_TAB_TEXT = ZmMsg.message;
-
 
 ZmApptController.prototype = new ZmCalItemComposeController;
 ZmApptController.prototype.constructor = ZmApptController;
 
-ZmApptController.prototype.toString =
-function() {
-	return "ZmApptController";
-};
+ZmApptController.prototype.isZmApptController = true;
+ZmApptController.prototype.toString = function() { return "ZmApptController"; };
+
+ZmApptController.DEFAULT_TAB_TEXT = ZmMsg.message;
+
 ZmApptController.viewToTab = {};
 
 ZmApptController.prototype._createComposeView =
@@ -330,11 +330,6 @@ function(items) {
 ZmApptController.prototype.getItems =
 function() {
 	return this._getTaggableItems([]);
-};
-
-ZmApptController.prototype._getViewType =
-function() {
-	return appCtxt.getAppViewMgr().getCurrentViewId();
 };
 
 ZmApptController.prototype.getCalItem =
