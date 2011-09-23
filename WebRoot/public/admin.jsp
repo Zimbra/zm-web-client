@@ -266,7 +266,7 @@ AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(pageContext.request.locale)}";
     </script>
   </head>
   <body>
-    <script type="text/javascript" src="<%=contextPath%>/js/skin.js?v=<%=vers %>"></script> 
+    <script type="text/javascript" src="<%=contextPath%>/js/skin.js?v=<%=vers %>&skin=<%=skin%>"></script>
     <%
 		// NOTE: This inserts raw HTML files from the user's skin
 		//       into the JSP output. It's done *this* way so that
