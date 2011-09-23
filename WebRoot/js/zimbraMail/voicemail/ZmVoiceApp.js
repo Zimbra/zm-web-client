@@ -52,6 +52,9 @@ ZmVoiceApp.prototype.constructor = ZmVoiceApp;
 ZmVoiceApp.AUDIO_MP3_FORMAT = "audio/mp3";
 ZmVoiceApp.AUDIO_WAV_FORMAT = "audio/wav";
 
+//Indicates if Voice items can be moved to Trash-folder
+ZmVoiceApp.hasTrashFolder = false;
+
 ZmVoiceApp.prototype.toString = 
 function() {
 	return "ZmVoiceApp";
@@ -258,6 +261,9 @@ function(response) {
 
 		if (obj.folder && obj.folder.length) {
 			phone.folderTree = new ZmVoiceFolderTree();
+			if(i == 0) {
+				this._setHasTrashFolder(obj.folder[0].folder);
+			}
 			phone.folderTree.loadFromJs(obj.folder[0], phone);
 		}
 	}
@@ -269,6 +275,19 @@ function(response) {
 	this._voiceInfoCallbacks = null;
 	this._voiceInfoErrorCallbacks = null;
 	this._gettingVoiceInfo = false;
+};
+
+ZmVoiceApp.prototype._setHasTrashFolder =
+function(folders) {
+	if (folders && folders.length)  {
+		var len = folders.length;
+		for(var i = 0; i < len; i++) {
+			if(folders[i].id.indexOf(ZmVoiceFolder.TRASH_ID) == 0) {
+				ZmVoiceApp.hasTrashFolder = true;
+				return;
+			}
+		}
+	}
 };
 
 ZmVoiceApp.prototype._handleErrorResponseVoiceInfo =

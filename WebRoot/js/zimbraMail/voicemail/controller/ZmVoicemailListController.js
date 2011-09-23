@@ -18,7 +18,9 @@ ZmVoicemailListController = function(container, app) {
 	ZmVoiceListController.call(this, container, app);
 
 	this._listeners[ZmOperation.CHECK_VOICEMAIL]	= this._refreshListener.bind(this);
-	this._listeners[ZmOperation.DELETE]				= this._deleteListener.bind(this);
+	if(ZmVoiceApp.hasTrashFolder) {
+		this._listeners[ZmOperation.DELETE]	= this._deleteListener.bind(this);
+	}
 	this._listeners[ZmOperation.DOWNLOAD_VOICEMAIL]	= this._downloadListener.bind(this);
 	this._listeners[ZmOperation.REPLY_BY_EMAIL]		= this._replyListener.bind(this);
 	this._listeners[ZmOperation.FORWARD_BY_EMAIL]	= this._forwardListener.bind(this);
@@ -78,8 +80,10 @@ function() {
 	var list = [];
 	list.push(ZmOperation.CHECK_VOICEMAIL);
 	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.DELETE);
-    list.push(ZmOperation.PRINT);
+	if(ZmVoiceApp.hasTrashFolder) {
+		list.push(ZmOperation.DELETE);
+	}
+	list.push(ZmOperation.PRINT);
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.REPLY_BY_EMAIL);
 	list.push(ZmOperation.FORWARD_BY_EMAIL);
@@ -102,7 +106,9 @@ function() {
 	list.push(ZmOperation.FORWARD_BY_EMAIL);
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.DOWNLOAD_VOICEMAIL);
-	list.push(ZmOperation.DELETE);
+	if(ZmVoiceApp.hasTrashFolder) {
+		list.push(ZmOperation.DELETE);
+	}
 	return list;
 };
 
@@ -123,7 +129,9 @@ function(parent, num) {
 			ZmOperation.setOperation(parent, ZmOperation.DELETE, ZmOperation.DELETE, ZmMsg.moveToVoiceMail, "UnDelete");
 			parent.enable(ZmOperation.DELETE, true);
 		} else {
-			parent.enable(ZmOperation.DELETE, false);
+			if(ZmVoiceApp.hasTrashFolder) {
+				parent.enable(ZmOperation.DELETE, false);
+			}
 		}
 	}
 
@@ -153,7 +161,9 @@ function(parent, num) {
 		}
 
 		if (parent instanceof DwtMenu) {
-			ZmOperation.setOperation(parent, ZmOperation.DELETE, ZmOperation.DELETE, ZmMsg.del, "Delete");
+			if(ZmVoiceApp.hasTrashFolder) {
+				ZmOperation.setOperation(parent, ZmOperation.DELETE, ZmOperation.DELETE, ZmMsg.del, "Delete");
+			}
 		}
 	}
 };
@@ -260,9 +270,6 @@ function(ev) {
 	var phone = this._folder.phone;
 	var folderId = folderType + "-" + phone.name;
 	var destination = phone.folderTree.getById(folderId);
-	if(!destination) {
-		destination = appCtxt.getById(ZmFolder.ID_TRASH);
-	}
 	var list = items[0].list;
 	list.moveItems({items:items, folder:destination});
 };
