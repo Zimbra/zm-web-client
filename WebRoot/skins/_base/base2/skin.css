@@ -206,7 +206,7 @@ BODY						{	margin:0px; 				}
     background-color: @AltC@;
     #IFDEF GECKO
     background-image: -moz-linear-gradient(top, @AltC@, @darken(AltC,19)@); /* FF3.6 */
-    #IFDEF
+    #ENDIF
     #IFDEF SAFARI
     background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AltC@),color-stop(1, @darken(AltC,19)@)); /* Saf4+, Chrome */
     #ENDIF
