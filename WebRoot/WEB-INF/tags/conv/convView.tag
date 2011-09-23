@@ -202,7 +202,7 @@
                                                 <th width="3%" nowrap><fmt:message key="folder"/>
                                                 <th width="3%" nowrap><fmt:message key="size"/>
                                                 <th width="2%" nowrap>
-                                                    <zm:currentResultUrl var="dateSortUrl" value="search" action="${actionVar}" context="${context}" csi="${param.csi}" css="${param.css eq 'dateDesc' ? 'dateAsc' : 'dateDesc'}"/>
+                                                <zm:currentResultUrl var="dateSortUrl" value="search" action="${actionVar}" context="${context}" csi="0" css="${param.css eq 'dateDesc' or empty param.css ? 'dateAsc' : 'dateDesc'}"/>
                                                 <a href="${fn:escapeXml(dateSortUrl)}"><fmt:message key="received"/></a>
                                             </tr>
                                             <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
