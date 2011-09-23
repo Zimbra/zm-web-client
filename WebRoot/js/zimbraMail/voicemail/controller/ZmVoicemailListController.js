@@ -85,9 +85,6 @@ function() {
 	list.push(ZmOperation.FORWARD_BY_EMAIL);
     list.push(ZmOperation.SEP);
     list.push(ZmOperation.DOWNLOAD_VOICEMAIL);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.CALL_MANAGER);
-	list.push(ZmOperation.SEP);
 	return list;
 };
 
@@ -131,7 +128,6 @@ function(parent, num) {
 	}
 
 	parent.enable(ZmOperation.CHECK_VOICEMAIL, true);
-	parent.enable(ZmOperation.CALL_MANAGER, true);
 
 	if (!isTrash) {
 		var list = this.getList();
@@ -196,9 +192,6 @@ function(actionCode) {
 			if (num == 1) {
 				view.setPlaying(view.getSelection()[0]);
 			}
-			break;
-		case ZmKeyMap.CALL_MANAGER:
-            this._callManagerListener();
 			break;
 		case ZmKeyMap.MARK_HEARD:
 			this._markHeardListener();
@@ -267,6 +260,9 @@ function(ev) {
 	var phone = this._folder.phone;
 	var folderId = folderType + "-" + phone.name;
 	var destination = phone.folderTree.getById(folderId);
+	if(!destination) {
+		destination = appCtxt.getById(ZmFolder.ID_TRASH);
+	}
 	var list = items[0].list;
 	list.moveItems({items:items, folder:destination});
 };

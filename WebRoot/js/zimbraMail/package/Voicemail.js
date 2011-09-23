@@ -47,7 +47,10 @@ AjxPackage.require("zimbraMail.voicemail.view.ZmFlashAudioPlayer");
 
 AjxPackage.require("zimbraMail.voicemail.view.ZmVoiceListView");
 AjxPackage.require("zimbraMail.voicemail.view.ZmCallListView");
+
 AjxPackage.require("zimbraMail.voicemail.view.ZmVoicemailListView");
+AjxPackage.require("zimbraMail.voicemail.view.ZmMP3VoicemailListView");
+
 AjxPackage.require("zimbraMail.voicemail.view.ZmVoiceOverviewContainer");
 AjxPackage.require("zimbraMail.voicemail.view.ZmVoiceTreeView");
 AjxPackage.require("zimbraMail.voicemail.view.ZmMP3VoicemailListView");

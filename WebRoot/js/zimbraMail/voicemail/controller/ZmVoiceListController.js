@@ -26,7 +26,6 @@
 ZmVoiceListController = function(container, app, type, sessionId, searchResultsController) {
 	if (arguments.length == 0) { return; }
 	ZmListController.apply(this, arguments);
-    this._listeners[ZmOperation.CALL_MANAGER] = this._callManagerListener.bind(this);
 
 	this._folder = null;
 }
@@ -161,12 +160,6 @@ function(ev) {
 	if (url) {
 		window.open(appContextPath+AjxStringUtil.urlEncode(url), "_blank");
 	}
-};
-
-ZmVoiceListController.prototype._callManagerListener =
-function() {
-	this._onPrefsActivedObj = this._onPrefsActivedObj || new AjxListener(this, this._handleResponseLaunchPrefs);
-	appCtxt.getAppController().activateApp(ZmApp.PREFERENCES, false, this._onPrefsActivedObj);
 };
 
 ZmVoiceListController.prototype._handleResponseLaunchPrefs =

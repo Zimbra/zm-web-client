@@ -25,7 +25,7 @@
 ZmVoiceItem = function(type, id, list) {
 
 	if (arguments.length == 0) { return; }
-	ZmItem.call(this, type, id, list);
+	ZmItem.call(this, type, id, list, true);
 
 	this.id = null;
 	this.date = 0;
