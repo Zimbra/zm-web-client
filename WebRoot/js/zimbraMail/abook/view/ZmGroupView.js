@@ -1207,6 +1207,7 @@ function() {
 ZmGroupMembersListView = function (parent) {
 	if (arguments.length == 0) { return; }
 	ZmGroupListView.call(this, parent);
+	this._list = new AjxVector();
 	// hash of delete icon IDs
 	this.delButtons = {};
 	this.quickAddButtons = {};
