@@ -877,6 +877,10 @@ function(container, html, isTextMsg, isTruncated, index) {
 		html = this._stripHtmlComments(html);
 		if (this._objectManager) {
 			// this callback will post-process the HTML after the IFRAME is created
+
+			var images = html.match(/<img[^>]+>/ig);
+			msgSize = (images) ? msgSize - (images.join().length/1024) : msgSize; // Excluding images in the message
+			
 			if (msgSize <= maxHighlightSize) {
 				callback = new AjxCallback(this, this._processHtmlDoc);
 			} else {
