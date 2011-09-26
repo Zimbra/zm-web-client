@@ -20,54 +20,51 @@
 }
 /* Button in default, unselected, unpressed state. */
 .ZToolbarButton, .DwtToolbarButton, .ZButton, .ZSelect  {
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fefefe), to(#e6e6e6));
-    background-image: -moz-linear-gradient(top, #fefefe, #e6e6e6);
-    border:1px solid #949494;
+    background-image:-webkit-gradient(linear,0 0,0 100%, from(@lighten(AppC,96)@),to(@lighten(AppC,50)@));
+    background-image:-moz-linear-gradient(top,@lighten(AppC,96)@,@lighten(AppC,50)@);
+    border:1px solid @darken(AppC,33)@;
     border-radius: 3px !important;
     padding:1px 2px;
     margin:0 2px;
     text-align:center;
 }
 
-/* mouse-over button */
+/* Button in hover state */
 .ZToolbarButton.ZHover, .DwtToolbarButton.ZHover, .ZButton.ZHover, .ZSelect.ZHover  {
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#c7e9ff), to(#90b6ff));
-    background-image: -moz-linear-gradient(top, #c7e9ff, #90b6ff);
+    background-image:-webkit-gradient(linear, 0 0, 0 100%, from(#C7E9FF), to(#90B6FF));
+    background-image:-moz-linear-gradient(top,#C7E9FF,#90B6FF);
     border:1px solid #6767a3;
 }
 
 
-/* Button is pressed. */
+/* Button in active (pressed) state. */
 .ZToolbarButton.ZActive, .DwtToolbarButton.ZActive, .ZButton.ZActive , .ZSelect.ZActive {
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#90b6ff), to(#c7e9ff));
-    background-image: -moz-linear-gradient(top, #90b6ff, #c7e9ff);
+    background-image:-webkit-gradient(linear,0 0,0 100%,from(#90B6FF),to(#C7E9FF));
+    background-image:-moz-linear-gradient(top,#90b6ff,#C7E9FF);
     border:1px solid #6767a3;
 }
 
-/* Button is disabled. */
+/* Button in disabled state. */
 .ZToolbarButton.ZDisabled, .DwtToolbarButton.ZDisabled, .ZButton.ZDisabled, .ZSelect.ZDisabled {
     opacity:.5;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fefefe), to(#e6e6e6));
-    background-image: -moz-linear-gradient(top, #fefefe, #e6e6e6);
-    border:1px solid #949494;
+    background-image:-webkit-gradient(linear,0 0,0 100%,from(@lighten(AppC,96)@),to(@lighten(AppC,50)@));
+    background-image:-moz-linear-gradient(top,@lighten(AppC,96)@,@lighten(AppC,50)@);
+    border:1px solid @darken(AppC,33)@;
 }
 .ZButton.ZAppTab {
-    border-radius: 3px 3px 0 0 !important;
-    border:1px solid #949494;
+    border-radius:3px 3px 0 0 !important;
+    border:1px solid @darken(AppC,33)@;
     border-bottom:0;
 }
 .ZAppTabBorder {
-    color:#666666;
+    color:@darkenen(AppC,50)@;
     padding-top:1px;
 }
 .ZAppTab.ZSelected {
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e6e6e6), to(#fefefe));
-    background-image: -moz-linear-gradient(top, #e6e6e6, #fefefe);
-    border:1px solid #666666;
+	background-color:@lighten(AppC,96)@;
+	background-image:none;
+    border:1px solid @darken(AppC,20)@;
     border-bottom:0;
-}
-.ZAppTab.ZSelected .ZAppTabBorder {
-    black;
 }
 /* Toolbars */
 .ZToolbarTable .vertSep {
