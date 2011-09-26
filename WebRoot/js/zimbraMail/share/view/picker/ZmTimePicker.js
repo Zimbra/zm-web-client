@@ -62,9 +62,9 @@ function(left, leftId, right, rightId) {
     var i = 0;
     html[i++] = "<tr valign='middle'>";
     html[i++] = "<td align='left' nowrap><input id='" + leftId + "' type='checkbox' value='" + left + "'></input></td>";
-    html[i++] = "<td align='left' nowrap>" + left + "</td>";
+    html[i++] = "<td align='left' nowrap>" + "<label for=" + leftId + "'>" + left + "</label>" + "</td>";
     html[i++] = "<td align='left' nowrap><input id='" + rightId + "' type='checkbox'></input></td>";
-    html[i++] = "<td align='left' nowrap>" + right + "</td>";
+    html[i++] = "<td align='left' nowrap>" + "<label for=" + rightId + "'>" + right + "</label>" + "</td>";
     html[i++] = "</tr>";
 	return html.join("");
 }

@@ -580,11 +580,15 @@ function(name, label) {
     this[checkboxName] = document.createElement("INPUT");
     this[checkboxName].type = "checkbox";
     this[checkboxName]._dialog = this;
+    this[checkboxName].id = checkboxName;
 
     this[containerName] = document.createElement("DIV");
     this[containerName].style.display = "none";
     this[containerName].appendChild(this[checkboxName]);
-    this[containerName].appendChild(document.createTextNode(label));
+    var lbl = document.createElement("label");
+    lbl.innerHTML = label;
+    lbl.htmlFor = checkboxName;
+    this[containerName].appendChild(lbl);
 
     return this[containerName];
 }

@@ -97,7 +97,11 @@ function(parent) {
 		html[i++] = inSpamId;
 		html[i++] = "' /></span>";
 		html[i++] = "<span>";
+		html[i++] = "<label for='";
+		html[i++] = inSpamId;
+		html[i++] = "'>";
 		html[i++] = ZmMsg.includeJunk;
+		html[i++] = "</label>";
 		html[i++] = "</span>";
 		html[i++] = "<br>";
 
@@ -109,7 +113,11 @@ function(parent) {
 	html[i++] = inTrashId;
 	html[i++] = "' /></span>";
 	html[i++] = "<span>";
+	html[i++] = "<label for='";
+	html[i++] = inTrashId;
+	html[i++] = "'>";
 	html[i++] = ZmMsg.includeTrash;
+	html[i++] = "</label>";
 	html[i++] = "</span>";
 	html[i++] = "</div>";
 	picker.getHtmlElement().innerHTML = html.join("");

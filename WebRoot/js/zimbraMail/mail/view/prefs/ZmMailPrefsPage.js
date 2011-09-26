@@ -173,13 +173,25 @@ function() {
 		}
 	}
 
-	// Break the link between the label and the radio button for MARK_READ_TIME, so that when the user clicks on the
-	// text input, focus doesn't immediately go to the radio button
+	// Following code makes child nodes as siblings to separate the event-handling 
+	// between labels and input
+
 	var input = Dwt.byId(DwtId._makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
-	var lbl = input && input.parentNode;
-	if (lbl) {
-		lbl.htmlFor = "";
+	var inputParent =  input && input.parentNode;
+	var newParent = inputParent && inputParent.parentNode;
+
+	if (newParent){
+		var txtNode = input.nextSibling;
+		inputParent.removeChild(input);
+		newParent.appendChild(input);
+
+		var lbl = inputParent.cloneNode(false);
+		lbl.innerHTML = txtNode.data;
+		lbl.id = lbl.id + "_end";
+		inputParent.removeChild(txtNode);
+		newParent.appendChild(lbl);
 	}
+
 	// If pref's value is number of seconds, populate the input
 	var value = appCtxt.get(ZmSetting.MARK_MSG_READ);
 	if (value > 0) {

@@ -118,12 +118,18 @@ function() {
 	html[i++] = "' name='";
 	html[i++] = this._notifyChoiceName;
 	html[i++] = "'></td><td style='white-space:nowrap'>";
+	html[i++] = "<label for='" + this._defaultRadioId + "'>";
 	html[i++] = this._choiceLabel1;
+	html[i++] = "</label>";
 	html[i++] = "</td></tr>";
-	html[i++] = "<tr><td width=1%><input value='2' type='radio' name='";
+	html[i++] = "<tr><td width=1%><input value='2' type='radio' id='";
+	html[i++] = this._defaultRadioId + this._notifyChoiceName;
+	html[i++] = "' name='";
 	html[i++] = this._notifyChoiceName;
 	html[i++] = "'></td><td style='white-space:nowrap'>";
+	html[i++] = "<label for='" + this._defaultRadioId + this._notifyChoiceName + "'>"
 	html[i++] = this._choiceLabel2;
+	html[i++] = "</label>";
 	html[i++] = "</td></tr>";
 	html[i++] = "</table>";
 

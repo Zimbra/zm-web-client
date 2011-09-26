@@ -1447,7 +1447,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			</td>
 			<td width='1%' style='text-align:right; white-space:nowrap;'>
 				<input id='${id}_active' type='checkbox' name='cbActive' checked tabindex='20'>
-				<$=ZmMsg.active$>
+				<label for='${id}_active'> <$=ZmMsg.active$> </label>
 			</td>
 		</tr>
 	</table>
@@ -2544,7 +2544,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                 </td>
                 <td width='1%' style='text-align:right; white-space:nowrap;'>
                     <input id='${id}_active' type='checkbox' name='cbActive' tabindex='20'>
-                    <$=ZmMsg.active$>
+                    <label for='${id}_active'><$=ZmMsg.active$></label>
                 </td>
             </tr>
             <tr>

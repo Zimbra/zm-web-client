@@ -603,13 +603,13 @@ function() {
 
 	var shareWith = new DwtPropertySheet(this, null, null, DwtPropertySheet.RIGHT);
 	var shareWithProperties = [
-		{ label: ZmMsg.shareWithUserOrGroup,
+		{ label: "<label for='ShareWith_user' >" +  ZmMsg.shareWithUserOrGroup + "</label>",
 		  field: ["<input type='radio' id='ShareWith_user' name='",shareWithRadioName,"' value='",ZmShare.TYPE_USER,"'>"].join("")
 		},
-		{ label: ZmMsg.shareWithGuest,
+		{ label: "<label for='ShareWith_external' >" + ZmMsg.shareWithGuest + "</label>",
 		  field: ["<input type='radio' id='ShareWith_external' name='",shareWithRadioName,"' value='",ZmShare.TYPE_GUEST,"'>"].join("")
 		},
-		{ label: ZmMsg.shareWithPublicLong,
+		{ label: "<label for='ShareWith_public' >" + ZmMsg.shareWithPublicLong + "</label>",
 		  field: ["<input type='radio' id='ShareWith_public' name='",shareWithRadioName,"' value='",ZmShare.TYPE_PUBLIC,"'>"].join("")
 		}
 	];
@@ -642,7 +642,7 @@ function() {
 				"<td>",
 					"<input type='checkbox' id='",inheritId,"' checked>",
 				"</td>",
-				"<td>", ZmMsg.inheritPerms, "</td>",
+				"<td>","<label for='", inheritId,  "'>" , ZmMsg.inheritPerms, "</label>", "</td>",
 			"</tr>",
 		"</table>"
 	].join("");
@@ -677,9 +677,17 @@ function() {
 		html[idx++] = "' id='ShareRole_";
         html[idx++] = role;
         html[idx++] = "'></td><td style='font-weight:bold; padding-right:0.25em'>";
+		html[idx++] = "<label for='ShareRole_";
+        	html[idx++] = role;
+        	html[idx++] = "'>";
 		html[idx++] = ZmShare.getRoleName(role);
+		html[idx++] = "</label>"
 		html[idx++] = "</td><td style='white-space:nowrap'>";
+		html[idx++] = "<label for='ShareRole_";
+        	html[idx++] = role;
+        	html[idx++] = "'>";
 		html[idx++] = ZmShare.getRoleActions(role);
+		html[idx++] = "</label>"
 		html[idx++] = "</td></tr>";
 	}
 
@@ -691,7 +699,7 @@ function() {
 
 	this._privatePermission = new DwtPropertySheet(view);
 	this._privatePermission._vAlign = "middle";
-	this._privatePermission.addProperty("<input type='checkbox' id='" + permissionId + "'/>",  ZmMsg.privatePermission);
+	this._privatePermission.addProperty("<input type='checkbox' id='" + permissionId + "'/>",  "<label for='" + permissionId + "' >" +  ZmMsg.privatePermission +  "</label>");
 	this._privateEl = document.getElementById(permissionId);
 	Dwt.setHandler(this._privateEl, DwtEvent.ONCLICK, ZmSharePropsDialog._handleEdit);
 	Dwt.associateElementWithObject(this._privateEl, this);

@@ -176,11 +176,11 @@
 	<table align=center border=0 width=1%>
 		<tr>
 			<td width=1%><input checked value='1' type='radio' id='${id}_defaultRadio' name='${id}_instSeriesName'></td>
-			<td style='white-space:nowrap' id='${id}_instanceMsg'></td>
+			<td style='white-space:nowrap'><label id='${id}_instanceMsg' for='${id}_defaultRadio'> </label></td>
 		</tr>
 		<tr>
-			<td width=1%><input value='2' type='radio' name='${id}_instSeriesName'></td>
-			<td style='white-space:nowrap' id='${id}_seriesMsg'></td>
+			<td width=1%><input value='2' type='radio' id='${id}_openSeries' name='${id}_instSeriesName'></td>
+			<td style='white-space:nowrap'><label id='${id}_seriesMsg' for='${id}_openSeries'> </label></td>
 		</tr>
 	</table>
 </template>
@@ -196,14 +196,14 @@
                         <table>
                             <tr>
                                 <td width=25><input checked value='sel_date' type='radio' id='${id}_selDateRadio' name='${id}_selDateRange'></td>
-                                <td width=80><$= ZmMsg.calPrintSelDate $></td>
+                                <td width=80><label for='${id}_selDateRadio'> <$= ZmMsg.calPrintSelDate $></label></td>
                                 <td id='${id}_selDateContainer'></td>
                                 <td>&nbsp;</td>
                                 <td id='${id}_todayButtonContainer'></td>
                             </tr>
                             <tr>
                                 <td width=25><input value="date_range" type='radio' id='${id}_dateRangeRadio' name='${id}_selDateRange'></td>
-                                <td width=80><$= ZmMsg.calPrintDateRange $></td>
+                                <td width=80><label for='${id}_dateRangeRadio'><$= ZmMsg.calPrintDateRange $></label></td>
                                 <td id='${id}_dateRangeFromContainer'></td>
                                 <td><$= ZmMsg.to $></td>
                                 <td id='${id}_dateRangeToContainer'></td>
@@ -232,23 +232,23 @@
                                     <table width=100% cellspacing=0>
                                         <tr id='${id}_workDaysOnlyContainer'>
                                             <td><input value="1" type='checkbox' id='${id}_workDaysOnly' name='${id}_workDaysOnly'></td>
-                                            <td><$= ZmMsg.calPrintWorkDaysOnly $></td>
+                                            <td><label for='${id}_workDaysOnly'><$= ZmMsg.calPrintWorkDaysOnly $></label></td>
                                         </tr>
                                         <tr id='${id}_oneWeekPerPageContainer'>
                                             <td><input value="1" type='checkbox' id='${id}_oneWeekPerPage' name='${id}_oneWeekPerPage'></td>
-                                            <td><$= ZmMsg.calPrintOneWeekPerPage $></td>
+                                            <td><label for='${id}_oneWeekPerPage'><$= ZmMsg.calPrintOneWeekPerPage $></label></td>
                                         </tr>
                                         <tr id='${id}_oneDayPerPageContainer'>
                                             <td><input value="1" type='checkbox' id='${id}_oneDayPerPage' name='${id}_oneDayPerPage'></td>
-                                            <td><$= ZmMsg.calPrintOneDayPerPage $></td>
+                                            <td><label for='${id}_oneDayPerPage'><$= ZmMsg.calPrintOneDayPerPage $></label></td>
                                         </tr>
                                         <tr id='${id}_includeTasksContainer'>
                                             <td><input value="1" type='checkbox' id='${id}_includeTasks' name='${id}_includeTasks'></td>
-                                            <td><$= ZmMsg.calPrintIncludeTasks $></td>
+                                            <td><label for='${id}_includeTasks'><$= ZmMsg.calPrintIncludeTasks $></label></td>
                                         </tr>
                                         <tr id='${id}_includeMiniCalContainer'>
                                             <td><input value="1" type='checkbox' id='${id}_includeMiniCal' name='${id}_includeMiniCal'></td>
-                                            <td><$= ZmMsg.calPrintIncludeMiniCal $></td>
+                                            <td><label for='${id}_includeMiniCal'><$= ZmMsg.calPrintIncludeMiniCal $></label></td>
                                         </tr>
                                     </table>
                                 </td>

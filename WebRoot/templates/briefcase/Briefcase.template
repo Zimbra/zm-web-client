@@ -102,9 +102,9 @@
 		</tr>
 		<tr>
 			<td style='padding: 20px 70px;'>
-                <input type='radio' name="checkout" id='${id}_checkout' checked/>&nbsp;<$=ZmMsg.checkoutFileForChanges$>
+                <input type='radio' name="checkout" id='${id}_checkout' checked/>&nbsp;<label for='${id}_checkout'> <$=ZmMsg.checkoutFileForChanges$> </label>
                 <br/>
-                <input type='radio' name="checkout" id='${id}_download'/>&nbsp;<$=ZmMsg.checkoutFileDownload$>                
+                <input type='radio' name="checkout" id='${id}_download'/>&nbsp;<label for='${id}_download'><$=ZmMsg.checkoutFileDownload$></label> 
             </td>
 		</tr>
 	</table>
@@ -227,9 +227,9 @@
 		</tr>
 		<tr>
 			<td style='padding: 20px 30px;white-space:nowrap;'>
-                <input type='radio' name="savefile" id='${id}_version' checked/>&nbsp;<$=ZmMsg.saveNameConflitVersion $>
+                <input type='radio' name="savefile" id='${id}_version' checked/>&nbsp;<label for='${id}_version'> <$=ZmMsg.saveNameConflitVersion $> </label>
                 <br/><br/>
-                <input type='radio' name="savefile" id='${id}_rename'/>&nbsp;<$=ZmMsg.saveNameConflictRename $> <input type='text' id="${id}_newname"/>
+                <input type='radio' name="savefile" id='${id}_rename'/>&nbsp;<label for='${id}_rename'><$=ZmMsg.saveNameConflictRename $> </label><input type='text' id="${id}_newname"/>
             </td>
 		</tr>
 	</table>

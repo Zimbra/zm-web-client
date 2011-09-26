@@ -675,7 +675,7 @@
 	<table align=center border=0 width=1%>
 		<tr>
 			<td width=1%><input checked value='0' type='checkbox' id='${id}_dontRemind' name='${id}_dontRemind'></td>
-			<td style='white-space:nowrap' id='${id}_dontRemindMsg'><$=ZmMsg.dontRemind$></td>
+			<td style='white-space:nowrap'><label id='${id}_dontRemindMsg' for='${id}_dontRemind'><$=ZmMsg.dontRemind$></label></td>
 		</tr>
 	</table>
 </template>

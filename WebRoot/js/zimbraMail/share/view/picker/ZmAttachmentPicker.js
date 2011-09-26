@@ -78,7 +78,11 @@ function(radioId) {
 	html[i++] = " id='";
 	html[i++] = id;
 	html[i++] = "'></td><td align='left'>";
+	html[i++] = "<label for='"
+	html[i++] = id;
+	html[i++] = "'>";
 	html[i++] = text;
+	html[i++] = "</label>";
 	html[i++] = "</td></tr>";
 
 	return html.join("");

@@ -489,7 +489,11 @@ function() {
 	html[i++] = "' id='";
 	html[i++] = this._noEndDateRadioId;
 	html[i++] = "'></td><td colspan=2>";
+	html[i++] = "<label for='";
+	html[i++] = this._noEndDateRadioId;
+	html[i++] = "'>"
 	html[i++] = ZmMsg.recurEndNone;
+	html[i++] = "</label>"
 	html[i++] = "</td></tr>";
 	// end after <num> occurrences
 	html[i++] = "<tr><td><input type='radio' value='A' name='";
@@ -603,7 +607,11 @@ function() {
 	html[i++] = this._dailyDefaultId;
 	html[i++] = "'></td>";
 	html[i++] = "<td>";
+	html[i++] = "<label for='";
+	html[i++] = this._dailyDefaultId;
+	html[i++] = "'>";
 	html[i++] = ZmMsg.recurDailyEveryDay;
+	html[i++] = "</label>"
 	html[i++] = "</td></tr>";
 	// every weekday
 	html[i++] = "<tr><td><input value='2' type='radio' name='";
@@ -612,7 +620,11 @@ function() {
 	html[i++] = this._dailyWeekdayId;
 	html[i++] = "'></td>";
 	html[i++] = "<td>";
+	html[i++] = "<label for='";
+	html[i++] = this._dailyWeekdayId;
+	html[i++] = "'>";
 	html[i++] = ZmMsg.recurDailyEveryWeekday;
+	html[i++] = "</label>";
 	html[i++] = "</td></tr>";
 	// every <num> days
 	html[i++] = "<tr><td><input value='3' type='radio' name='";
@@ -713,8 +725,14 @@ function() {
 				}
 				html[i++] = "<td><input type='checkbox' name='";
 				html[i++] = this._weeklyCheckboxName;
+				html[i++] = "' id='"
+				html[i++] = this._weeklyCheckboxName;
 				html[i++] = "'></td><td>";
+				html[i++] = "<label for='";
+				html[i++] = this._weeklyCheckboxName;
+				html[i++] = "'>";
 				html[i++] = AjxDateUtil.WEEKDAY_MEDIUM[j];
+				html[i++] = "</label>";
 				html[i++] = "</td>";
 			}
 			html[i++] = "</tr></table>";

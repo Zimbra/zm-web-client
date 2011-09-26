@@ -102,7 +102,11 @@ function(domain, html, idx) {
 	html[idx++] = "<td align='left'><input type='checkbox' id='";
 	html[idx++] = inputId;
 	html[idx++] = "'></input></td><td align='left' nowrap>";
+	html[idx++] = "<label for='";
+	html[idx++] = inputId;
+	html[idx++] = "'>";
 	html[idx++] = domain;
+	html[idx++] = "</label>";
 	html[idx++] = "</td></tr></table></div>";
 	return idx;
 };
@@ -133,8 +137,8 @@ function(parent) {
 	html[idx++] = "'/></td>";
 	html[idx++] = "</tr>";
 	html[idx++] = "<tr align='center' valign='middle'>";
-	html[idx++] = "<td align='left'><input type='checkbox' checked id='" + fromId + "'/> " + ZmMsg.from + "</td>";
-	html[idx++] = "<td align='left'><input type='checkbox' id='" + toId + "'/> " + ZmMsg.toCc + "</td>";
+	html[idx++] = "<td align='left'><input type='checkbox' checked id='" + fromId + "'/> " + "<label for='" + fromId + "'> " + ZmMsg.from + "</label>" +  "</td>";
+	html[idx++] = "<td align='left'><input type='checkbox' id='" + toId + "'/> " + "<label for='" + toId + "'> " + ZmMsg.toCc + "</label>" + "</td>";
 	html[idx++] = "</tr>";
 	html[idx++] = "<tr>";
 	html[idx++] = "<td nowrap align='left' colspan='2'><hr /></td>";

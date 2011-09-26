@@ -331,9 +331,9 @@
 								<td>
 									<table border=0 cellpadding=0 cellspacing=0><tr>
 										<td><input type='checkbox' id='${id}_requestResponses'></td>
-										<td class='ZmFieldLabelLeft'><nobr>&nbsp;<$= ZmMsg.requestResponses $></nobr></td>
+										<td class='ZmFieldLabelLeft'><nobr>&nbsp;<label for='${id}_requestResponses'><$= ZmMsg.requestResponses $></label></nobr></td>
 										<td><input type='checkbox' id='${id}_sendNotificationMail'></td>
-										<td class='ZmFieldLabelLeft'><nobr>&nbsp;<$= ZmMsg.sendNotificationMail $></nobr></td>
+										<td class='ZmFieldLabelLeft'><nobr>&nbsp;<label for='${id}_sendNotificationMail'><$= ZmMsg.sendNotificationMail $><label></nobr></td>
 									</tr></table>
 								</td>
 							</tr>
@@ -481,7 +481,7 @@
 			<td width=1%>
 				<table border=0 cellpadding=0 cellspacing=0><tr>
 					<td><input type='checkbox' id='${id}_allDayCheckbox'></td>
-					<td class='ZmFieldLabelLeft'><nobr>&nbsp;<$= ZmMsg.allDayEvent $></nobr></td>
+					<td class='ZmFieldLabelLeft'><nobr>&nbsp;<label for='${id}_allDayCheckbox'><$= ZmMsg.allDayEvent $></label></nobr></td>
 				</tr></table>
 			</td>
 			<td></td>
@@ -545,7 +545,7 @@
                 <td>
                     <table border=0 cellpadding=0 cellspacing=0><tr>
                         <td><input type='checkbox' id='${id}_allDayCheckbox'></td>
-                        <td class='ZmFieldLabelLeft'><nobr>&nbsp;<$= ZmMsg.allDayEvent $></nobr></td>
+                        <td class='ZmFieldLabelLeft'><nobr>&nbsp;<label for='${id}_allDayCheckbox'> <$= ZmMsg.allDayEvent $></label></nobr></td>
                     </tr></table>
                 </td>            
 
@@ -1050,7 +1050,7 @@
                 <td align="right"><$= ZmMsg.suggestionsLabel $>&nbsp;</td>
                 <td>
                     <input type='radio' name="suggestiontype" id='${id}_autosuggest' />&nbsp;<label for="${id}_autosuggest"><$=ZmMsg.suggestionsAutomatic $></label>
-                    <input type='radio' name="suggestiontype" id='${id}_manualsuggest' checked/>&nbsp;<label for="${id}_disablesuggestions"><$=ZmMsg.suggestionsManual $></label>
+                    <input type='radio' name="suggestiontype" id='${id}_manualsuggest' checked/>&nbsp;<label for="${id}_manualsuggest"><$=ZmMsg.suggestionsManual $></label>
                 </td>
             </tr>
         </tbody>
@@ -1062,7 +1062,7 @@
         </tr>
         <tr>
             <td align="right"><input type="checkbox" id="${id}_suggestrooms"></td>
-            <td><$= ZmMsg.suggestAvailableRooms $></td>
+            <td><label for="${id}_suggestrooms"><$= ZmMsg.suggestAvailableRooms $></label></td>
         </tr>        
         <tr>
             <td align="right"><$= ZmMsg._name $>&nbsp;</td>
@@ -1099,7 +1099,7 @@
         </tr>
         <tr>
             <td align="right"><input type="checkbox" id="${id}_green_suggestions"></td>
-            <td align="left"><$= ZmMsg.showOnlyGreenSuggestions $></td>
+            <td align="left"><label for="${id}_green_suggestions"><$= ZmMsg.showOnlyGreenSuggestions $></label></td>
         </tr>
         </tbody>
     </table>
@@ -1124,11 +1124,11 @@
 		</tr>
 		<tr>
 			<td style='padding: 20px 30px;'>
-                <input type='radio' name="saveappt" id='${id}_send' checked/>&nbsp;<$=ZmMsg.apptSaveChanges $>
+                <input type='radio' name="saveappt" id='${id}_send' checked/>&nbsp;<label for='${id}_send'><$=ZmMsg.apptSaveChanges $></label>
                 <br/>
-                <input type='radio' name="saveappt" id='${id}_cancel'/>&nbsp;<$=ZmMsg.apptSaveCancel $>
+                <input type='radio' name="saveappt" id='${id}_cancel'/>&nbsp;<label for='${id}_cancel'><$=ZmMsg.apptSaveCancel $></label>
                 <br/>
-                <input type='radio' name="saveappt" id='${id}_discard'/>&nbsp;<$=ZmMsg.apptSaveDiscard $>
+                <input type='radio' name="saveappt" id='${id}_discard'/>&nbsp;<label for='${id}_discard'><$=ZmMsg.apptSaveDiscard $></label>
             </td>
 		</tr>
 	</table>
