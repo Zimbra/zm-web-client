@@ -224,7 +224,13 @@ function(contact, callback) {
 
 ZmContactListController.prototype._handleGetDlInfoResponse =
 function(contact, callback, result) {
-	contact.dlInfo = result._data.GetDistributionListInfoResponse;
+	var response = result._data.GetDistributionListResponse;
+	var attrs = response.dl[0]._attrs;
+	contact.dlInfo = {	isMember: response.isMember, 
+						isOwner: response.isOwner,
+						subscriptionPolicy: attrs.zimbraDistributionListSubscriptionPolicy,
+						unsubscriptionPolicy: attrs.zimbraDistributionListUnsubscriptionPolicy};
+
 	var callbackFromGettingMembers = this._handleGetDlMembersResponse.bind(this, contact, callback);
 	contact.getAllDLMembers(callbackFromGettingMembers);
 };

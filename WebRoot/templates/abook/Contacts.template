@@ -509,9 +509,8 @@
 	<table>
 	<$ if (data.dlInfo) { $>
 		<tr>
-			<td>
-				<$= data.dlInfoMsg $>
-			</td>
+			<td width="100%" id='${id}_subscriptionMsg'></td>
+			<td id='${id}_subscriptionButton'></td>
 		</tr>
 	<$ } $>
 	<$= ZmContactSplitView.showContactGroup(data) $>

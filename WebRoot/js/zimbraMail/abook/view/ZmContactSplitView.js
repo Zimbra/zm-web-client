@@ -60,6 +60,12 @@ ZmContactSplitView.NUM_DL_MEMBERS = 10;	// number of distribution list members t
 
 ZmContactSplitView.LIST_MIN_WIDTH = 100;
 ZmContactSplitView.CONTENT_MIN_WIDTH = 200;
+
+ZmContactSplitView.SUBSCRIPTION_POLICY_ACCEPT = "ACCEPT";
+ZmContactSplitView.SUBSCRIPTION_POLICY_REJECT = "REJECT";
+ZmContactSplitView.SUBSCRIPTION_POLICY_APPROVAL = "APPROVAL";
+
+
 /**
  * Returns a string representation of the object.
  * 
@@ -452,10 +458,6 @@ function(contact, isGal, oldContact, expandDL, isBack) {
 
 		if (contact.isDistributionList()) {
 			var dlInfo = subs.dlInfo = contact.dlInfo;
-			subs.dlInfoMsg = dlInfo.isOwner && dlInfo.isMember ? ZmMsg.youAreOwnerAndMember
-					: dlInfo.isOwner ? ZmMsg.youAreOwner
-					: dlInfo.isMember ? ZmMsg.youAreMember
-					: "";
 			subs.groupMembers = contact.dlMembers;
 		}
 		else {
@@ -466,6 +468,19 @@ function(contact, isGal, oldContact, expandDL, isBack) {
 		this._resetVisibility(true);
 
 		this._contactGroupView.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#SplitViewGroup", subs);
+
+		if (contact.isDistributionList()) {
+			if (this._subscriptionButton) {
+				this._subscriptionButton.dispose();
+			}
+			this._subscriptionButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_subscriptionButton")});
+			this._subscriptionButton.setEnabled(true);
+			this._subscriptionMsg = document.getElementById(this._htmlElId + "_subscriptionMsg");
+			this._updateSubscriptionButtonAndMsg(contact);
+			var subListener = new AjxListener(this, this._subscriptionListener, contact);
+			this._subscriptionButton.addSelectionListener(subListener);
+		}
+
 		var size = this.getSize();
 		this._sizeChildren(size.x, size.y);
 	} else {
@@ -499,6 +514,66 @@ function(subs) {
 
 	// notify zimlets that a new contact is being shown.
 	appCtxt.notifyZimlets("onContactView", [subs.contact, this._htmlElId]);
+};
+
+ZmContactSplitView.prototype._subscriptionListener =
+function(contact, ev) {
+	var subscribe = !contact.dlInfo.isMember;
+	this._subscriptionButton.setEnabled(false);
+	var respHandler = this._handleSubscriptionResponse.bind(this, contact, subscribe);
+	contact.toggleSubscription(respHandler);
+};
+
+ZmContactSplitView.prototype._handleSubscriptionResponse =
+function(contact, subscribe, result) {
+	var status = result._data.SubscribeDistributionListResponse.status;
+	var subscribed = status == "subscribed";
+	var unsubscribed = status == "unsubscribed";
+	var awaitingApproval = status == "awaiting_approval";
+	this._subscriptionButton.setEnabled(!awaitingApproval);
+	contact.dlInfo.isMember = subscribed;
+	this._updateSubscriptionButtonAndMsg(contact);
+	var msg = subscribed ? ZmMsg.subscribed
+			: unsubscribed ? ZmMsg.unsubscribed
+			: awaitingApproval && subscribe ? ZmMsg.subscriptionRequested
+			: awaitingApproval && !subscribe ? ZmMsg.unsubscriptionRequested
+			: ""; //should not happen. Keep this as separate case for ease of debug when it does happen somehow.
+	var dlg = appCtxt.getMsgDialog();
+	var name = contact.getEmail();
+	dlg.setMessage(AjxMessageFormat.format(msg, name), DwtMessageDialog.INFO_STYLE);
+	dlg.popup();
+
+};
+
+ZmContactSplitView.prototype._updateSubscriptionButtonAndMsg =
+function(contact) {
+	var dlInfo = contact.dlInfo;
+	var policy = dlInfo.isMember ? dlInfo.unsubscriptionPolicy : dlInfo.subscriptionPolicy;
+	if (policy == ZmContactSplitView.SUBSCRIPTION_POLICY_REJECT) {
+		this._subscriptionButton.setVisible(false);
+	}
+	else {
+		this._subscriptionButton.setVisible(true);
+		this._subscriptionButton.setText(dlInfo.isMember ? ZmMsg.unsubscribe: ZmMsg.subscribe);
+	}
+	var statusMsg = dlInfo.isOwner && dlInfo.isMember ? ZmMsg.youAreOwnerAndMember
+			: dlInfo.isOwner ? ZmMsg.youAreOwner
+			: dlInfo.isMember ? ZmMsg.youAreMember
+			: "";
+	var actionMsg;
+	if (!dlInfo.isMember) {
+		actionMsg =	policy == ZmContactSplitView.SUBSCRIPTION_POLICY_APPROVAL ? ZmMsg.subscriptionRequiresApproval
+			: policy == ZmContactSplitView.SUBSCRIPTION_POLICY_REJECT ? ZmMsg.subscriptionNotAllowed
+			: "";
+	}
+	else {
+		actionMsg =	policy == ZmContactSplitView.SUBSCRIPTION_POLICY_APPROVAL ? ZmMsg.unsubscriptionRequiresApproval
+			: policy == ZmContactSplitView.SUBSCRIPTION_POLICY_REJECT ? ZmMsg.unsubscriptionNotAllowed
+			: "";
+
+	}
+	this._subscriptionMsg.innerHTML = statusMsg + (actionMsg != "" && statusMsg != "" ? "<br>" : "") + actionMsg;
+
 };
 
 // returns an object with common properties used for displaying a contact field

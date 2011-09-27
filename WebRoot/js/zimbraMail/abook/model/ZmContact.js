@@ -830,12 +830,23 @@ function(callback) {
 		return null;
 	}
 
-	var soapDoc = AjxSoapDoc.create("GetDistributionListInfoRequest", "urn:zimbraAccount", null);
+	var soapDoc = AjxSoapDoc.create("GetDistributionListRequest", "urn:zimbraAccount", null);
 	var elBy = soapDoc.set("dl", this.getEmail());
 	elBy.setAttribute("by", "name");
 
 	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback});
 };
+
+ZmContact.prototype.toggleSubscription =
+function(callback) {
+	var soapDoc = AjxSoapDoc.create("SubscribeDistributionListRequest", "urn:zimbraAccount", null);
+	soapDoc.setMethodAttribute("op", this.dlInfo.isMember ? "unsubscribe" : "subscribe");
+	var elBy = soapDoc.set("dl", this.getEmail());
+	elBy.setAttribute("by", "name");
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback});
+};
+
+
 
 /**
  *  Returns the contact id.  If includeUserZid is true it will return the format zid:id
