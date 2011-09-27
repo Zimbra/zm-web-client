@@ -229,7 +229,8 @@ function(contact, callback, result) {
 	contact.dlInfo = {	isMember: response.isMember, 
 						isOwner: response.isOwner,
 						subscriptionPolicy: attrs.zimbraDistributionListSubscriptionPolicy,
-						unsubscriptionPolicy: attrs.zimbraDistributionListUnsubscriptionPolicy};
+						unsubscriptionPolicy: attrs.zimbraDistributionListUnsubscriptionPolicy,
+						description: attrs.description};
 
 	var callbackFromGettingMembers = this._handleGetDlMembersResponse.bind(this, contact, callback);
 	contact.getAllDLMembers(callbackFromGettingMembers);

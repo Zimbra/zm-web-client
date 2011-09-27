@@ -506,15 +506,22 @@
 
 <template id="abook.Contacts#SplitViewGroup">
 	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
-	<table>
 	<$ if (data.dlInfo) { $>
+		<table class="contactHeaderTable NoneBg" width="100%">
 		<tr>
 			<td width="100%" id='${id}_subscriptionMsg'></td>
 			<td id='${id}_subscriptionButton'></td>
 		</tr>
+		</table>
+		<$ if (data.dlInfo.description) { $>
+			<table class="contactGroupTable" width="100%">
+			<tr>
+				<td width="100%"><$= data.dlInfo.description $></td>
+			</tr>
+			</table>
+		<$ } $>
 	<$ } $>
 	<$= ZmContactSplitView.showContactGroup(data) $>
-	</table>
 </template>
 
 
