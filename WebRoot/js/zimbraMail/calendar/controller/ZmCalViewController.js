@@ -1805,11 +1805,26 @@ function(appt, mode) {
 		}
 	}
 };
+ZmCalViewController.prototype._confirmDeleteApptDialog =
+function(){
+
+if (!this._confirmDialog) {
+        // setting up order of display of buttons
+        var buttons = [ DwtDialog.NO_BUTTON, DwtDialog.YES_BUTTON, DwtDialog.CANCEL_BUTTON ];
+		this._confirmDialog = new DwtConfirmDialog(this._shell, null, id, buttons);
+        var yesButton = this._confirmDialog.getButton(DwtDialog.YES_BUTTON);
+        var noButton = this._confirmDialog.getButton(DwtDialog.NO_BUTTON);
+
+        yesButton.setText(ZmMsg.editMessage);     // Changing the text for Yes button
+        noButton.setText(ZmMsg.sendCancellation); // Changing the text for No button
+	}
+	return this._confirmDialog;
+};
 
 ZmCalViewController.prototype._promptCancelReply =
 function(appt, mode) {
 	var cancelNoReplyCallback = new AjxCallback(this, this._continueDelete, [appt, mode]);
-	var confirmDialog = appCtxt.getConfirmationDialog();
+	var confirmDialog = this._confirmDeleteApptDialog();
     confirmDialog.setTitle(ZmMsg.confirmDeleteApptTitle);
 
     var calendar = appt && appt.getFolder();
