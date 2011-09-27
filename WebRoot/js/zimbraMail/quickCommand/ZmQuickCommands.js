@@ -125,11 +125,16 @@ ZmQuickCommands.prototype._saveQuickCommands = function(quickCommands, callback)
     var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
 
     var len = quickCommands.length;
-    for (var i = 0; i < len; i++) {
-        var quickCommand = quickCommands[i];
-        var quickCommandJSON = quickCommand.toJSON();
-        var node = soapDoc.set("pref", AjxStringUtil.trim(quickCommandJSON));
-        node.setAttribute("name", "zimbraPrefQuickCommand");
+    if (!len){
+		var node = soapDoc.set("pref", ""); // No quick commands
+		node.setAttribute("name", "zimbraPrefQuickCommand");
+    } else {
+	    for (var i = 0; i < len; i++) {
+		var quickCommand = quickCommands[i];
+		var quickCommandJSON = quickCommand.toJSON();
+		var node = soapDoc.set("pref", AjxStringUtil.trim(quickCommandJSON));
+		node.setAttribute("name", "zimbraPrefQuickCommand");
+	    }
     }
     var postSaveClosure = this._postSave.bind(this, quickCommands, callback);
     appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:postSaveClosure});
