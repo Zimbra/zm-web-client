@@ -885,6 +885,8 @@ function(ev) {
 			this._doCheckCompleted(items[i],fItem);
 		}	
 	}
+    var summary = ZmList.getActionSummary(ZmMsg.actionCompleted, items.length, ZmItem.TASK);
+    appCtxt.setStatusMsg(summary);
 };
 
 ZmTaskListController.prototype._printListener =
