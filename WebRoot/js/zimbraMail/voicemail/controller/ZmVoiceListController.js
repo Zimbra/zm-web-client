@@ -48,15 +48,18 @@ function(searchResult, folder) {
 	this._list = searchResult ? searchResult.getResults(folder.getSearchType()) : null;
 	if (this._list)
 		this._list.setHasMore(searchResult.getAttribute("more"));	
-	this._setup(this._currentView);
+	this._setup(this._currentViewId);
 
-	var lv = this._listView[this._currentView];
+	var lv = this._listView[this._currentViewId];
 	if (lv && this._activeSearch) {
 		lv.offset = parseInt(this._activeSearch.getAttribute("offset"));
     }
-	var elements = this.getViewElements(this._currentView, lv);
+	var elements = this.getViewElements(this._currentViewId, lv);
 	
-    this._setView({view:this._currentView, elements:elements, isAppView:true});
+    this._setView({	view:		this._currentViewId,
+					viewType:	this._currentViewType,
+					elements:	elements,
+					isAppView:	true});
     this._resetNavToolBarButtons();
 };
 
@@ -104,12 +107,12 @@ function(view) {
 
 ZmVoiceListController.prototype._getView = 
 function() {
-	return this._listView[this._currentView];
+	return this._listView[this._currentViewId];
 };
 
 ZmVoiceListController.prototype._getToolbar = 
 function() {
-	return this._toolbar[this._currentView]
+	return this._toolbar[this._currentViewId]
 };
 
 ZmVoiceListController.prototype._getMoreSearchParams =

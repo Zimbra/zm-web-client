@@ -39,7 +39,7 @@ ZmBaseController = function(container, app, type, sessionId, searchResultsContro
 	if (arguments.length == 0) { return; }
 	ZmController.apply(this, arguments);
 
-	this.setSessionId(sessionId, type || this.getDefaultViewId(), searchResultsController);
+	this.setSessionId(sessionId, type || this.getDefaultViewType(), searchResultsController);
 	
     this._refreshQuickCommandsClosure = this._refreshQuickCommands.bind(this);
     this._quickCommandMenuHandlerClosure = this._quickCommandMenuHandler.bind(this);
@@ -49,8 +49,6 @@ ZmBaseController = function(container, app, type, sessionId, searchResultsContro
 	this._toolbar	= {};	// ZmButtonToolbar
 	this._tabGroups = {};	// DwtTabGroup
 
-	this._currentView = null;
-	
 	this._tagList = appCtxt.getTagTree();
 	if (this._tagList) {
 		this._tagList.addChangeListener(this._tagChangeListener.bind(this));
@@ -87,20 +85,12 @@ ZmBaseController.prototype.isZmBaseController = true;
 ZmBaseController.prototype.toString = function() { return "ZmBaseController"; };
 
 
-// abstract public methods
-
-/**
- * Returns the default view ID
- */
-ZmBaseController.prototype.getDefaultViewId	= function() {};
-ZmBaseController.prototype._defaultView = ZmBaseController.prototype.getDefaultViewId;
 
 // public methods
 
 /**
- * Sets the session id, view id, and tab id (using the type and session id).
- * Controller for a view that shows up in a tab within the app chooser bar.
- * Examples include compose, send confirmation, and msg view.
+ * Sets the session id, view id, and tab id. Notes whether this controller is being
+ * used to display search results.
  *
  * @param {string}						sessionId					the session id
  * @param {string}						type						the type
@@ -108,42 +98,20 @@ ZmBaseController.prototype._defaultView = ZmBaseController.prototype.getDefaultV
  */
 ZmBaseController.prototype.setSessionId =
 function(sessionId, type, searchResultsController) {
-	this.sessionId = sessionId;
-	this.viewId = [type, this.sessionId].join("");
-	this.tabId = ["tab", this.viewId].join("_");
+
+	ZmController.prototype.setSessionId.apply(this, arguments);
 	this.searchResultsController = searchResultsController;
 	this.isSearchResults = Boolean(searchResultsController);
 };
 
 /**
- * Gets the current view ID.
+ * Gets the current view object.
  * 
- * @return	{DwtComposite}	the view Id
- */
-ZmBaseController.prototype.getCurrentViewId =
-function() {
-	return this._currentViewOverride || this._currentView || this.viewId || this.getDefaultViewId();
-};
-ZmBaseController.prototype._getViewType = ZmBaseController.prototype.getCurrentViewId;
-
-/**
- * Sets the current view ID.
- * 
- * @param	{DwtComposite}	viewId		the view ID
- */
-ZmBaseController.prototype.setCurrentViewId =
-function(viewId) {
-	this._currentView = viewId;
-};
-
-/**
- * Gets the current view.
- * 
- * @return	{ZmListView}	the view
+ * @return	{DwtComposite}	the view object
  */
 ZmBaseController.prototype.getCurrentView =
 function() {
-	return this._view[this._currentView];
+	return this._view[this._currentViewId];
 };
 
 /**
@@ -153,7 +121,7 @@ function() {
  */
 ZmBaseController.prototype.getCurrentToolbar =
 function() {
-	return this._toolbar[this._currentView];
+	return this._toolbar[this._currentViewId];
 };
 
 /**
@@ -223,7 +191,7 @@ function(actionCode) {
  */
 ZmBaseController.prototype.isCurrent =
 function() {
-	var thisView = this.isSearchResults ? this.searchResultsController.getCurrentViewId() : this._currentView;
+	var thisView = this.isSearchResults ? this.searchResultsController.getCurrentViewId() : this._currentViewId;
 	return (thisView == appCtxt.getCurrentViewId());
 };
 
@@ -421,6 +389,7 @@ function(params) {
 
 		params.callbacks = callbacks;
 		params.viewId = view;
+		params.controller = this;
 		this._app.createView(params);
 		this._appViews[view] = true;
 	}
@@ -450,7 +419,7 @@ function(params) {
  */
 ZmBaseController.prototype._tagButtonListener =
 function(ev) {
-	var toolbar = this._toolbar[this._currentView];
+	var toolbar = this._toolbar[this._currentViewId];
 	if (ev.item.parent == toolbar) {
 		this._setTagMenu(toolbar);
 	}
@@ -466,7 +435,7 @@ ZmBaseController.prototype._moveButtonListener =
 function(ev, list) {
 	this._pendingActionData = list || this.getItems();
 
-	var toolbar = this._toolbar[this._currentView];
+	var toolbar = this._toolbar[this._currentViewId];
 
 	var moveButton = toolbar.getOp(ZmOperation.MOVE_MENU);
 	if (!moveButton) {
@@ -493,7 +462,7 @@ function(ev, list) {
  */
 ZmBaseController.prototype._actionsButtonListener =
 function(ev) {
-	var menu = this._getCurrentToolbar().getActionsMenu();
+	var menu = this.getCurrentToolbar().getActionsMenu();
 	menu.parent.popup();	
 };
 
@@ -1112,7 +1081,7 @@ function(moveButton) {
 
 	var chooser = this._folderChooser = new DwtFolderChooser({parent:moveMenu});
 	var moveParams = this._getMoveParams(chooser);
-	moveParams.overviewId += this._currentView; //so it works when switching views (cuz the tree has a listener and the tree is shared unless it's different ID). maybe there's a different way to solve this.
+	moveParams.overviewId += this._currentViewId; //so it works when switching views (cuz the tree has a listener and the tree is shared unless it's different ID). maybe there's a different way to solve this.
 	chooser.setupFolderChooser(moveParams, this._moveMenuCallback.bind(this, moveButton));
 	chooser.setSkipNotifyOnPage(true);
 
@@ -1156,7 +1125,7 @@ function(parent, num) {
  */
 ZmBaseController.prototype._resetToolbarOperations =
 function() {
-	this._resetOperations(this._toolbar[this._currentView], this.getItemCount());
+	this._resetOperations(this._toolbar[this._currentViewId], this.getItemCount());
 };
 
 

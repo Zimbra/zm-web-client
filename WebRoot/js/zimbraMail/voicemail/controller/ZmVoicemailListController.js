@@ -40,6 +40,12 @@ ZmVoicemailListController.prototype.constructor = ZmVoicemailListController;
 ZmVoicemailListController.prototype.isZmVoicemailListController = true;
 ZmVoicemailListController.prototype.toString = function() {	return "ZmVoicemailListController"; };
 
+ZmVoicemailListController.getDefaultViewType =
+function() {
+	return ZmId.VIEW_VOICEMAIL;
+};
+ZmVoicemailListController.prototype.getDefaultViewType = ZmVoicemailListController.getDefaultViewType;
+
 ZmVoicemailListController.prototype.show =
 function(searchResult, folder) {
 	//todo remove this after we get server support
@@ -52,11 +58,6 @@ function(searchResult, folder) {
 	}
 	this._markingHeard = {};
 	ZmVoiceListController.prototype.show.call(this, searchResult, folder)
-};
-
-ZmVoicemailListController.prototype.getDefaultViewId =
-function() {
-	return ZmId.VIEW_VOICEMAIL;
 };
 
 ZmVoicemailListController.prototype._createNewView = 
@@ -143,7 +144,7 @@ function(parent, num) {
 
 		var hasHeard = false,
 			hasUnheard = false;
-		var items = this._listView[this._currentView].getSelection();
+		var items = this._listView[this._currentViewId].getSelection();
 		for (var i = 0; i < items.length; i++) {
 			(items[i].isUnheard) ? hasUnheard = true : hasHeard = true;
 			if (hasUnheard && hasHeard) {

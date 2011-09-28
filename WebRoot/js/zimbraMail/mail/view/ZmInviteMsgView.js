@@ -330,7 +330,7 @@ function(reset) {
 			this._dayView.setBounds(mvBounds.x, mvHeight, mvBounds.width, dvHeight);
             if (this.parent && this.parent instanceof ZmMailMsgView){
                 var el = this.parent.getHtmlElement();
-                if (this.mode && this.mode != "MSG") {
+                if (this.mode && this.mode != ZmId.VIEW_MSG) {
                     if (el){
                         el.style.height = mvHeight + "px";
                         Dwt.setScrollStyle(el, Dwt.SCROLL);

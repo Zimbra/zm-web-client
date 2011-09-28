@@ -34,7 +34,11 @@ ZmController = function(container, app, type, sessionId) {
 
 	if (arguments.length == 0) { return; }
 
-	this.setSessionId(sessionId, type);
+	this.setCurrentViewType(this.getDefaultViewType());
+	this.setCurrentViewId(this.getDefaultViewType());
+	if (sessionId) {
+		this.setSessionId(sessionId, type);
+	}
 	
 	this._container = container;
 	this._app = app;
@@ -48,19 +52,89 @@ ZmController = function(container, app, type, sessionId) {
 ZmController.prototype.isZmController = true;
 ZmController.prototype.toString = function() { return "ZmController"; };
 
+
+ZmController.SESSION_ID_SEP = "-";
+
 // Abstract methods
 
 ZmController.prototype._setView = function() {};
 
+/**
+ * Returns the default view type
+ */
+ZmController.getDefaultViewType	= function() {};	// needed by ZmApp::getSessionController
+ZmController.prototype.getDefaultViewType	= function() {};
+
 // Public methods
 
+/**
+ * Gets the session ID.
+ * 
+ * @return	{string}	the session ID
+ */
+ZmController.prototype.getSessionId =
+function() {
+	return this._sessionId;
+};
+
+/**
+ * Sets the session id, view id, and tab id (using the type and session id).
+ * Controller for a view that shows up in a tab within the app chooser bar.
+ * Examples include compose, send confirmation, and msg view.
+ *
+ * @param {string}						sessionId					the session id
+ * @param {string}						type						the type
+ * @param {ZmSearchResultsController}	searchResultsController		owning controller
+ */
 ZmController.prototype.setSessionId =
 function(sessionId, type) {
-	this.sessionId = sessionId;
+
+	this._sessionId = sessionId;
 	if (type) {
-		this.viewId = [type, this.sessionId].join("");
-		this.tabId = ["tab", this.viewId].join("_");
+		this.setCurrentViewType(type);
+		this.setCurrentViewId(sessionId ? [type, sessionId].join(ZmController.SESSION_ID_SEP) : type);
+		this.tabId = sessionId ? ["tab", this.getCurrentViewId()].join("_") : "";
 	}
+};
+
+/**
+ * Gets the current view type.
+ * 
+ * @return	{constant}			the view type
+ */
+ZmController.prototype.getCurrentViewType =
+function(viewType) {
+	return this._currentViewType;
+};
+
+/**
+ * Sets the current view type.
+ * 
+ * @param	{constant}	viewType		the view type
+ */
+ZmController.prototype.setCurrentViewType =
+function(viewType) {
+	this._currentViewType = viewType;
+};
+
+/**
+ * Gets the current view ID.
+ * 
+ * @return	{DwtComposite}	the view Id
+ */
+ZmController.prototype.getCurrentViewId =
+function() {
+	return this._currentViewIdOverride || this._currentViewId;
+};
+
+/**
+ * Sets the current view ID.
+ * 
+ * @param	{string}	viewId		the view ID
+ */
+ZmController.prototype.setCurrentViewId =
+function(viewId) {
+	this._currentViewId = viewId;
 };
 
 /**
@@ -72,14 +146,13 @@ ZmController.prototype.getApp = function() {
 	return this._app;
 };
 
-
 ZmController.prototype.getNewButton =
 function(view, overrides) {
 	if (this._newButton) {
 		return this._newButton;
 	}
 	overrides = overrides || {};
-	var buttonId = ZmId.getButtonId(view || this.viewId, ZmOperation.NEW_MENU); 
+	var buttonId = ZmId.getButtonId(view || this._currentViewId, ZmOperation.NEW_MENU); 
 	var newButton = this._newButton = new DwtToolBarButton({parent: this._container, id: buttonId, posStyle: DwtControl.ABSOLUTE_STYLE});
 	newButton.setText(ZmMsg._new);
 

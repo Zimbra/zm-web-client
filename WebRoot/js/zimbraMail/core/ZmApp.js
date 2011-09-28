@@ -661,14 +661,22 @@ function(type) {
  * then a check is made for an existing controller with that session ID. If none is
  * found, one is created and given that session ID.
  * 
- * @param	{constant}						type						type of controller (typically a view type)				
+ * @param	{hash}							params						hash of params:
  * @param	{string}						controllerClass				string name of controller class
  * @param	{string}						sessionId					unique identifier for this controller
  * @param 	{ZmSearchResultsController}		searchResultsController		containing controller
  */
 ZmApp.prototype.getSessionController =
-function(type, controllerClass, sessionId, searchResultsController) {
-
+function(params) {
+	
+	var type;
+	try {
+		type = eval(params.controllerClass + ".getDefaultViewType()");
+	}
+	catch (ex) {
+		throw new AjxException("Session controller " + params.controllerClass + " must implement getDefaultViewType()");
+	}
+	
 	// track controllers of this type
 	if (!this._sessionController[type]) {
 		this._sessionController[type] = {};
@@ -676,6 +684,7 @@ function(type, controllerClass, sessionId, searchResultsController) {
 	}
 
 	// check if we've already created a session controller with the given ID
+	var sessionId = params.sessionId;
 	if (sessionId && this._sessionController[type][sessionId]) {
 		return this._sessionController[type][sessionId];
 	}
@@ -692,12 +701,12 @@ function(type, controllerClass, sessionId, searchResultsController) {
 		}
 	}
 
-	sessionId = (controller && controller.sessionId) || sessionId || String(this._nextSessionId[type]++);
+	sessionId = (controller && controller.getSessionId()) || sessionId || String(this._nextSessionId[type]++);
 
 	if (!controller) {
-		var ctlrClass = eval(controllerClass);
+		var ctlrClass = eval(params.controllerClass);
 		controller = this._sessionController[type][sessionId] =
-			new ctlrClass(this._container, this, type, sessionId, searchResultsController);
+			new ctlrClass(this._container, this, type, sessionId, params.searchResultsController);
 	}
 	this._curSessionId[type] = sessionId;
 	controller.inactive = false;

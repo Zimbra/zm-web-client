@@ -174,7 +174,7 @@ function(section, index) {
 	this.prefView[section.id] = view;
 	
 	// add section as a tab
-	var tabButtonId = ZmId.getTabId(this._controller._currentView, ZmId.getPrefPageId(section.id));
+	var tabButtonId = ZmId.getTabId(this._controller.getCurrentViewId(), ZmId.getPrefPageId(section.id));
 	var tabId = this.addTab(section.title, view, tabButtonId, index);
 	this._tabId[section.id] = tabId;
 	this._sectionId[tabId] = section.id;

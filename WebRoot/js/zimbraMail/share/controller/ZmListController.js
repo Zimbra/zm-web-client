@@ -82,15 +82,10 @@ ZmListController.PROGRESS_DIALOG_CLOSE	= "CLOSE";
  * to do the actual display work, typically by calling the list view's {@link #set} method.
  *
  * @param {ZmSearchResult}	searchResults		the search results
- * @param {string}			view				the view type to use (optional)
  */
 ZmListController.prototype.show	=
-function(searchResults, view) {
+function(searchResults) {
 	
-	if (!view) {
-		view = this.sessionId ? [this.getDefaultViewId(), this.sessionId].join("-") : this.getDefaultViewId();
-	}
-	this._currentView = view;
 	this._activeSearch = searchResults;
 	// save current search for use by replenishment
 	if (searchResults) {
@@ -107,7 +102,7 @@ function(searchResults, view) {
  */
 ZmListController.prototype.getListView =
 function() {
-	return this._view[this._currentView];
+	return this._view[this._currentViewId];
 };
 
 /**
@@ -211,7 +206,7 @@ function() {
 ZmListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmListController.handleKeyAction");
-	var listView = this._view[this._currentView];
+	var listView = this._view[this._currentViewId];
 	var hardDelete = false;
 
 	switch (actionCode) {
@@ -225,7 +220,7 @@ function(actionCode) {
 			//Intentional fall-through to the next case. Watch out not to add something after this. 
 
 		case ZmKeyMap.DEL:
-			var tb = this._getCurrentToolbar();
+			var tb = this.getCurrentToolbar();
 			var button = tb && (tb.getButton(ZmOperation.DELETE) || tb.getButton(ZmOperation.DELETE_MENU));
 			if (button && button.getEnabled()) {
 				this._doDelete(this.getSelection(), hardDelete);
@@ -233,18 +228,18 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.NEXT_PAGE:
-			var ntb = this._navToolBar[this._currentView];
+			var ntb = this._navToolBar[this._currentViewId];
 			var button = ntb ? ntb.getButton(ZmOperation.PAGE_FORWARD) : null;
 			if (button && button.getEnabled()) {
-				this._paginate(this._currentView, true);
+				this._paginate(this._currentViewId, true);
 			}
 			break;
 
 		case ZmKeyMap.PREV_PAGE:
-			var ntb = this._navToolBar[this._currentView];
+			var ntb = this._navToolBar[this._currentViewId];
 			var button = ntb ? ntb.getButton(ZmOperation.PAGE_BACK) : null;
 			if (button && button.getEnabled()) {
-				this._paginate(this._currentView, false);
+				this._paginate(this._currentViewId, false);
 			}
 			break;
 
@@ -358,23 +353,17 @@ function(ev) {
 		this._doMsgPriority([ev.item]);
 	}
 	else {
-		var lv = this._listView[this._currentView];
+		var lv = this._listView[this._currentViewId];
 		if (lv) {
 			if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 				if (!ev.ctrlKey && lv.setSelectionHdrCbox) {
 					lv.setSelectionHdrCbox(false);
 				}
 			}
-			this._resetOperations(this._getCurrentToolbar(), lv.getSelectionCount());
+			this._resetOperations(this.getCurrentToolbar(), lv.getSelectionCount());
 		}
 	}
 };
-
-ZmListController.prototype._getCurrentToolbar =
-function() {
-	return this._toolbar[this._currentView];
-};
-
 
 /**
  * List action event - set the dynamic tag menu, and enable operations in the
@@ -454,7 +443,7 @@ function(ev) {
 	var op = ev.item.getData(ZmOperation.KEY_ID);
 
 	if (op == ZmOperation.PAGE_BACK || op == ZmOperation.PAGE_FORWARD) {
-		this._paginate(this._currentView, (op == ZmOperation.PAGE_FORWARD));
+		this._paginate(this._currentViewId, (op == ZmOperation.PAGE_FORWARD));
 	}
 };
 
@@ -603,7 +592,7 @@ function(ev) {
 ZmListController.prototype._dropListener =
 function(ev) {
 
-	var view = this._view[this._currentView];
+	var view = this._view[this._currentViewId];
 	var div = view.getTargetItemDiv(ev.uiEvent);
 	var item = view.getItemFromElement(div);
 
@@ -650,7 +639,7 @@ ZmListController.prototype._setContactText =
 function(isContact) {
 	var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
 	var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
-	ZmOperation.setOperation(this._getCurrentToolbar(), ZmOperation.CONTACT, newOp, ZmMsg.AB_ADD_CONTACT);
+	ZmOperation.setOperation(this.getCurrentToolbar(), ZmOperation.CONTACT, newOp, ZmMsg.AB_ADD_CONTACT);
 	ZmOperation.setOperation(this.getActionMenu(), ZmOperation.CONTACT, newOp, newText);
 };
 
@@ -897,7 +886,7 @@ function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 
 	this._cacheList(searchResult, offset);
 
-	var lv = this._view[this._currentView];
+	var lv = this._view[this._currentViewId];
 	var num = lv._isPageless ? this.getSelectionCount() : 0;
 	this._resetOperations(this._toolbar[view], num);
 
@@ -961,7 +950,7 @@ function(callback) {
 	if (list) {
 		var replCount = view.getLimit() - view.size();
 		if (replCount > view.getReplenishThreshold()) {
-			this._replenishList(this._currentView, replCount, callback);
+			this._replenishList(this._currentViewId, replCount, callback);
 			replenishmentDone = true;
 		}
 	}
@@ -978,7 +967,7 @@ function(callback) {
 ZmListController.prototype._handleEmptyList =
 function(listView) {
 	if (this.currentPage > 1) {
-		this._paginate(this._currentView, false, 0);
+		this._paginate(this._currentViewId, false, 0);
 	} else {
 		listView.removeAll(true);
 		listView._setNoResultsHtml();
@@ -1022,7 +1011,7 @@ function(idx) {
 	if (list) {
 		var selIdx = idx >= 0 ? idx : 0;
 		var first = list.get(selIdx);
-		this._view[this._currentView].setSelection(first, false);
+		this._view[this._currentViewId].setSelection(first, false);
 	}
 };
 
@@ -1225,7 +1214,7 @@ function() {
 
 	var size = this._getItemCount();
 	if (size == null) { return ""; }
-	var lv = this._view[this._currentView];
+	var lv = this._view[this._currentViewId];
 	var list = lv && lv._list;
 	var type = lv._getItemCountType();
 	var total = this._getNumTotal();
@@ -1256,7 +1245,7 @@ ZmListController.prototype._setItemCountText =
 function(text) {
 
 	text = text || this._getItemCountText();
-	var field = this._itemCountText[this._currentView];
+	var field = this._itemCountText[this._currentViewId];
 	if (field) {
 		field.setText(text);
 	}
@@ -1308,7 +1297,7 @@ function(actionMethod, args, params, allDoneCallback) {
 ZmListController.prototype._continueAction =
 function(params, actionParams) {
 
-	var lv = this._view[this._currentView];
+	var lv = this._view[this._currentViewId];
 	var cancelled = actionParams && actionParams.cancelled;
 	var contResult = this._continuation.result;
 	var hasMore = contResult ? contResult.getAttribute("more") : (this._list ? this._list.hasMore() : false);
@@ -1394,7 +1383,7 @@ function(actionCallback, result) {
  */
 ZmListController.prototype._checkItemCount =
 function() {
-	var lv = this._view[this._currentView];
+	var lv = this._view[this._currentViewId];
 	lv._checkItemCount();
 	lv._handleResponseCheckReplenish(true);
 };

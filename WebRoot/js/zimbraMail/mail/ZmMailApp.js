@@ -1260,7 +1260,7 @@ function(creates) {
 ZmMailApp.prototype._checkList =
 function(creates, list, controller, last) {
 
-	AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: handling mail creates for view " + controller._currentView);
+	AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: handling mail creates for view " + controller.getCurrentViewId());
 
 	if (!(list && list instanceof ZmMailList)) {
 		AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: list is not a ZmMailList: " + list);
@@ -1697,7 +1697,7 @@ function(results, callback, searchResultsController) {
 ZmMailApp.prototype._handleLoadShowSearchResults =
 function(results, callback, searchResultsController) {
 
-	var sessionId = searchResultsController ? searchResultsController.viewId : null;
+	var sessionId = searchResultsController ? searchResultsController.getCurrentViewId() : ZmApp.MAIN_SESSION;
 	var controller = (results.type == ZmItem.MSG) ? this.getTradController(sessionId, searchResultsController) :
 													this.getConvListController(sessionId, searchResultsController);
 	controller.show(results);
@@ -1805,7 +1805,9 @@ function(callback, queryStr) {
  */
 ZmMailApp.prototype.getConvListController =
 function(sessionId, searchResultsController) {
-	return this.getSessionController(ZmId.VIEW_CONVLIST, "ZmConvListController", sessionId || ZmApp.MAIN_SESSION, searchResultsController);
+	return this.getSessionController({controllerClass:			"ZmConvListController",
+									  sessionId:				sessionId || ZmApp.MAIN_SESSION,
+									  searchResultsController:	searchResultsController});
 };
 
 /**
@@ -1815,7 +1817,8 @@ function(sessionId, searchResultsController) {
  */
 ZmMailApp.prototype.getConvController =
 function(sessionId) {
-	return this.getSessionController(ZmId.VIEW_CONV, "ZmConvController", sessionId || ZmApp.MAIN_SESSION);
+	return this.getSessionController({controllerClass:	"ZmConvController",
+									  sessionId:		sessionId});
 };
 
 /**
@@ -1825,7 +1828,9 @@ function(sessionId) {
  */
 ZmMailApp.prototype.getTradController =
 function(sessionId, searchResultsController) {
-	return this.getSessionController(ZmId.VIEW_TRAD, "ZmTradController", sessionId || ZmApp.MAIN_SESSION, searchResultsController);
+	return this.getSessionController({controllerClass:			"ZmTradController",
+									  sessionId:				sessionId || ZmApp.MAIN_SESSION,
+									  searchResultsController:	searchResultsController});
 };
 
 /**
@@ -1847,13 +1852,14 @@ function(sessionId) {
     }
 
     if (controller) {
-        sessionId = controller.sessionId;
+        sessionId = controller.getSessionId();
         this._curSessionId[ZmId.VIEW_MSG] = sessionId;
         controller.inactive = false;
         return controller;
     }
         
-	return this.getSessionController(ZmId.VIEW_MSG, "ZmMsgController", sessionId);
+	return this.getSessionController({controllerClass:	"ZmMsgController",
+									  sessionId:		sessionId});
 };
 
 /**
@@ -1863,12 +1869,14 @@ function(sessionId) {
  */
 ZmMailApp.prototype.getComposeController =
 function(sessionId) {
-	return this.getSessionController(ZmId.VIEW_COMPOSE, "ZmComposeController", sessionId);
+	return this.getSessionController({controllerClass:	"ZmComposeController",
+									  sessionId:		sessionId});
 };
 
 ZmMailApp.prototype.getConfirmController =
 function(sessionId) {
-	return this.getSessionController(ZmId.VIEW_MAIL_CONFIRM, "ZmMailConfirmController", sessionId);
+	return this.getSessionController({controllerClass:	"ZmMailConfirmController",
+									  sessionId:		sessionId});
 };
 
 /**
@@ -1929,7 +1937,7 @@ function(params) {
 	    controller = AjxDispatcher.run("GetComposeController");
     }
 
-    appCtxt.composeCtlrSessionId = controller.sessionId; //this is used in ZmNewWindow.js. For disposing of the controller and its listeners, overview, and tree listeners.
+    appCtxt.composeCtlrSessionId = controller.getSessionId(); //this is used in ZmNewWindow.js. For disposing of the controller and its listeners, overview, and tree listeners.
 	controller.doAction(params);
 };
 
@@ -2161,7 +2169,7 @@ function(ev) {
 	var mlc = this.getMailListController();
 	if (!mlc) { return; }
 
-	var curView = mlc._currentView;
+	var curView = mlc.getCurrentViewType();
 	var newView, groupByView;
 
 	for (var i = 0; i < list.length; i++) {

@@ -64,45 +64,23 @@ UtZWCUtils.isBriefCaseViewCurrent = function() {
 UtZWCUtils.isPreferencesViewCurrent = function() {
     return UtZWCUtils.isCurrentViewByViewIds([ZmId.VIEW_PREF]);
 };
-//---------------
+
 UtZWCUtils.closeAllComposeViews = function() {
-    var appChooser = appCtxt.getAppChooser();
-    if (!appChooser) {return false;}
-
-    var buttons = appChooser._buttons;
-    for (var buttonId in buttons) {
-        if (buttonId && buttonId.indexOf("tab_COMPOSE") > -1) {
-            var appButton = appChooser.getButton(buttonId);
-            if (appButton) {
-                var id = appButton.getData(Dwt.KEY_ID);
-                var idx = id.indexOf("COMPOSE");
-
-                if (idx > -1) {
-                    id = id.substring(idx);
-                    var composeController = appCtxt.getAppViewMgr()._viewController[id];
-                    composeController._cancelListener();
-                }
-            }
-        }
-    }
+	
+	var avm = appCtxt.getAppViewMgr();
+	var views = avm.getViewsByType(ZmId.VIEW_COMPOSE);
+	if (views && views.length) {
+		for (var i = 0; i < views.length; i++) {
+			var ctlr = views[i].controller;
+			if (ctlr) {
+				ctlr._cancelListener();
+			}
+		}
+	}
 };
 
 UtZWCUtils.getComposeViewCount = function() {
-    var ret = 0;
-    var appChooser = appCtxt.getAppChooser();
-    if (!appChooser) {return false;}
-
-    var buttons = appChooser._buttons;
-    for (var buttonId in buttons) {
-        if (buttonId && buttonId.indexOf("tab_COMPOSE") > -1) {
-            var appButton = appChooser.getButton(buttonId);
-            if (appButton) {
-                ret++;
-            }
-        }
-    }
-
-    return ret;
+	return appCtxt.getAppViewMgr().getViewsByType(ZmId.VIEW_COMPOSE).length;
 };
 
 UtZWCUtils.getEmailAddressOfCurrentAccount = function() {

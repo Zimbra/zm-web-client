@@ -2224,7 +2224,7 @@ function(inputEl) {
 	var subject = AjxStringUtil.trim(this._subjectField.getValue());
     if(subject) {
         var buttonText = subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT);
-        appCtxt.getAppViewMgr().setTabTitle(this._controller.viewId, buttonText);
+        appCtxt.getAppViewMgr().setTabTitle(this._controller.getCurrentViewId(), buttonText);
     }
 };
 

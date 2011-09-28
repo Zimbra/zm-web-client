@@ -22,7 +22,7 @@
  *
  * @author Conrad Damon
  *
- * @param {DwtShell}		container		the shell
+ * @param {DwtShell}			container		the shell
  * @param {ZmPreferencesApp}	prefsApp		the preferences application
  * 
  * @extends		ZmController
@@ -33,11 +33,9 @@ ZmPrefController = function(container, prefsApp) {
 	
 	ZmController.call(this, container, prefsApp);
 
-	this._currentView = ZmId.VIEW_PREF;
-
 	this._listeners = {};
-	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
-	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._backListener);
+	this._listeners[ZmOperation.SAVE] = this._saveListener.bind(this);
+	this._listeners[ZmOperation.CANCEL] = this._backListener.bind(this);
 
 	this._filtersEnabled = appCtxt.get(ZmSetting.FILTERS_ENABLED);
 	this._dirty = {};
@@ -46,10 +44,15 @@ ZmPrefController = function(container, prefsApp) {
 ZmPrefController.prototype = new ZmController;
 ZmPrefController.prototype.constructor = ZmPrefController;
 
-ZmPrefController.prototype.toString = 
+ZmPrefController.prototype.isZmPrefController = true;
+ZmPrefController.prototype.toString = function() { return "ZmPrefController"; };
+
+
+ZmPrefController.getDefaultViewType =
 function() {
-	return "ZmPrefController";
+	return ZmId.VIEW_PREF;
 };
+ZmPrefController.prototype.getDefaultViewType = ZmPrefController.getDefaultViewType;
 
 /**
  * Shows the tab options pages.
@@ -58,7 +61,7 @@ ZmPrefController.prototype.show =
 function() {
 	this._setView();
 	this._prefsView.show();
-	this._app.pushView(this._currentView);
+	this._app.pushView(this._currentViewId);
 };
 
 /**
@@ -269,7 +272,7 @@ function() {
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
 
-		this._app.createView({	viewId:		this._currentView,
+		this._app.createView({	viewId:		this._currentViewId,
 								elements:	elements,
 								controller:	this,
 								hide:		[ ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_TREE_FOOTER ],
@@ -289,7 +292,7 @@ function () {
 	if (this._toolbar) return;
 	
 	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL];
-	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._currentView});
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._currentViewId});
 	buttons = this._toolbar.opList;
 	for (var i = 0; i < buttons.length; i++) {
 		var button = buttons[i];

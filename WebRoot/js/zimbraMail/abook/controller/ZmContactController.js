@@ -48,10 +48,11 @@ ZmContactController.prototype.isZmContactController = true;
 ZmContactController.prototype.toString = function() { return "ZmContactController"; };
 
 
-ZmContactController.prototype.getDefaultViewId =
+ZmContactController.getDefaultViewType =
 function() {
 	return ZmId.VIEW_CONTACT;
 };
+ZmContactController.prototype.getDefaultViewType = ZmContactController.getDefaultViewType;
 
 /**
  * Shows the contact.
@@ -62,22 +63,21 @@ function() {
 ZmContactController.prototype.show =
 function(contact, isDirty) {
 	this._contact = contact;
-	this._currentView = this.viewId; //note - _currentView is the viewID (tab specific). E.g. CN1, CN2, etc
 	if (isDirty) {
 		this._contactDirty = true;
 	}
 	this._list = contact.list;
 
-	if (!this._toolbar[this._currentView]) {
-		this._initializeToolBar(this._currentView);
+	if (!this._toolbar[this._currentViewId]) {
+		this._initializeToolBar(this._currentViewId);
 	}
-	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
+	this._resetOperations(this._toolbar[this._currentViewId], 1); // enable all buttons
 
-	this._createView(this._currentView);
+	this._createView(this._currentViewId);
 
 	this._setViewContents();
-	this._initializeTabGroup(this._currentView);
-	this._app.pushView(this.viewId);
+	this._initializeTabGroup(this._currentViewId);
+	this._app.pushView(this._currentViewId);
 	this.updateTabTitle();
 };
 
@@ -97,6 +97,7 @@ function(viewId) {
 	var elements = this.getViewElements(null, view, this._toolbar[viewId]);
 
 	this._app.createView({	viewId:		viewId,
+							viewType:	this._currentViewType,
 							elements:	elements, 
 							controller:	this,
 							callbacks:	callbacks,
@@ -131,7 +132,7 @@ function() {
 	}
 	tabTitle = 	tabTitle.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT)
 
-	appCtxt.getAppViewMgr().setTabTitle(this._currentView, tabTitle);
+	appCtxt.getAppViewMgr().setTabTitle(this._currentViewId, tabTitle);
 };
 
 
@@ -165,9 +166,9 @@ function(actionCode) {
 ZmContactController.prototype.enableToolbar =
 function(enable) {
 	if (enable) {
-		this._resetOperations(this._toolbar[this._currentView], 1);
+		this._resetOperations(this._toolbar[this._currentViewId], 1);
 	} else {
-		this._toolbar[this._currentView].enableAll(enable);
+		this._toolbar[this._currentViewId].enableAll(enable);
 	}
 };
 
@@ -261,7 +262,7 @@ function() {
  * @private
  */
 ZmContactController.prototype._createTabGroup = function() {
-	var viewId = this._currentView;
+	var viewId = this._currentViewId;
 	return this._tabGroups[viewId] = new DwtTabGroup(this.toString() + "_" + viewId);
 };
 

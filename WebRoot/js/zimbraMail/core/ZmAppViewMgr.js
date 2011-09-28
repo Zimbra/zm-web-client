@@ -457,13 +457,24 @@ function(cid, comp) {
 };
 
 /**
- * Gets the ID of the app view currently being displayed.
+ * Gets the ID of the view currently being displayed.
  * 
- * @return	{int}	the view id
+ * @return	{string}	the view id
  */
 ZmAppViewMgr.prototype.getCurrentViewId =
 function() {
 	return this._currentViewId;
+};
+
+/**
+ * Gets the type of the view currently being displayed.
+ * 
+ * @return	{string}	the view type
+ */
+ZmAppViewMgr.prototype.getCurrentViewType =
+function() {
+	var view = this._view[this._currentViewId];
+	return view ? view.type : "";
 };
 
 /**
@@ -511,6 +522,23 @@ function(app, viewId) {
 };
 
 /**
+ * Returns a list of views of the given type. The views are the anonymous view objects used by the app view mgr.
+ * 
+ * @param {string}	type	a view type
+ */
+ZmAppViewMgr.prototype.getViewsByType =
+function(type) {
+	var list = [];
+	for (var viewId in this._view) {
+		var view = this._view[id];
+		if (view.type == type) {
+			list.push(view);
+		}
+	}
+	return list;
+};
+
+/**
  * Registers a set of elements comprising an app view.
  *
  * @param	{Hash}			params				a hash of parameters
@@ -533,6 +561,8 @@ function(params) {
 	DBG.println(AjxDebug.DBG1, "createView: " + viewId);
 	
 	var view = this._view[viewId] = {
+		id:				viewId,
+		type:			params.viewType || viewId,
 		component:		params.elements || {},
 		controller:		params.controller,
 		callback:		params.callbacks || {},

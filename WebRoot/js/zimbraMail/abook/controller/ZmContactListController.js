@@ -91,6 +91,7 @@ ZmContactListController.VIEWS = [ZmId.VIEW_CONTACT_SIMPLE];
  */
 ZmContactListController.prototype.show =
 function(searchResult, isGalSearch, folderId) {
+
 	this._searchType = isGalSearch
 		? ZmContactListController.SEARCH_TYPE_GAL
 		: ZmContactListController.SEARCH_TYPE_CANONICAL;
@@ -101,10 +102,7 @@ function(searchResult, isGalSearch, folderId) {
 	if (searchResult instanceof ZmContactList) {
 		this._list = searchResult;			// set as canonical list of contacts
 		this._list._isShared = false;		// this list is not a search of shared items
-		if (!this._currentView) {
-			this._currentView = this.getDefaultViewId();
-		}
-		selectedContacts = this._listView[this._currentView] && this._listView[this._currentView].getSelection();
+		selectedContacts = this._listView[this._currentViewId] && this._listView[this._currentViewId].getSelection();
 		this._contactSearchResults = false;
     } else if (searchResult instanceof ZmSearchResult) {
 		this._searchType |= ZmContactListController.SEARCH_TYPE_NEW;
@@ -133,13 +131,13 @@ function(searchResult, isGalSearch, folderId) {
 
 		this._list.setHasMore(searchResult.getAttribute("more"));
 
-		selectedContacts = this._listView[this._currentView] && this._listView[this._currentView].getSelection();
-		ZmListController.prototype.show.apply(this, [searchResult, this._currentView]);
+		selectedContacts = this._listView[this._currentViewId] && this._listView[this._currentViewId].getSelection();
+		ZmListController.prototype.show.apply(this, [searchResult, this._currentViewId]);
 		this._contactSearchResults = true;
 	}
 
 	// reset offset if list view has been created
-	var view = this._currentView;
+	var view = this._currentViewId;
 	if (this._listView[view]) {
 		this._listView[view].offset = 0;
 	}
@@ -162,8 +160,8 @@ function(searchResult, isGalSearch, folderId) {
  */
 ZmContactListController.prototype.switchView =
 function(view, force, initialized, stageView) {
-	if (view && ((view != this._currentView) || force)) {
-		this._currentView = view;
+	if (view && ((view != this._currentViewId) || force)) {
+		this._currentViewId = view;
 		DBG.timePt("setting up view", true);
 		this._setup(view);
 		DBG.timePt("done setting up view");
@@ -175,7 +173,11 @@ function(view, force, initialized, stageView) {
 			this._initializeAlphabetBar(view);
 		}
 
-		this._setView({view:view, elements:elements, isAppView:true, stageView:stageView});
+		this._setView({ view:		view,
+						viewType:	this._currentViewType,
+						elements:	elements,
+						isAppView:	true,
+						stageView:	stageView});
 		this._resetNavToolBarButtons();
 
 		// HACK: reset search toolbar icon (its a hack we're willing to live with)
@@ -276,7 +278,7 @@ function() {
  */
 ZmContactListController.prototype.getCurrentView =
 function() {
-	return this._parentView[this._currentView];
+	return this._parentView[this._currentViewId];
 };
 ZmContactListController.prototype.getParentView = ZmContactListController.prototype.getCurrentView;
 
@@ -297,7 +299,7 @@ function(letter, endLetter) {
 			query: query,
 			types: [ZmItem.CONTACT],
 			offset: 0,
-			limit: (this._listView[this._currentView].getLimit()),
+			limit: (this._listView[this._currentViewId].getLimit()),
 			lastId: 0,
 			lastSortVal: letter,
 			endSortVal: endLetter
@@ -411,13 +413,11 @@ function() {
 	return list;
 };
 
-/**
- * @private
- */
-ZmContactListController.prototype.getDefaultViewId =
+ZmContactListController.getDefaultViewType =
 function() {
 	return ZmId.VIEW_CONTACT_SIMPLE;
 };
+ZmContactListController.prototype.getDefaultViewType = ZmContactListController.getDefaultViewType;
 
 /**
  * @private
@@ -426,7 +426,8 @@ ZmContactListController.prototype._createNewView =
 function(view) {
 	var params = {parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE,
 				  controller:this, dropTgt:this._dropTgt};
-	this._parentView[view] = new this._viewFactory[view](params);
+	var viewType = this.getCurrentViewType();
+	this._parentView[view] = new this._viewFactory[viewType](params);
 	var listView = this._parentView[view].getListView();
 	if (this._dragSrc) {
 		listView.setDragSource(this._dragSrc);
@@ -544,9 +545,9 @@ function() {
  */
 ZmContactListController.prototype._initializeAlphabetBar =
 function(view) {
-	if (view == this._currentView) { return; }
+	if (view == this._currentViewId) { return; }
 
-	var pv = this._parentView[this._currentView];
+	var pv = this._parentView[this._currentViewId];
 	var alphaBar = pv ? pv.getAlphabetBar() : null;
 	var current = alphaBar ? alphaBar.getCurrent() : null;
 	var idx = current ? current.getAttribute("_idx") : null;
@@ -606,11 +607,11 @@ ZmContactListController.prototype._handleListChange =
 function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY || ev.event == ZmEvent.E_CREATE) {
 		var item = ev && ev._details && ev._details.items && ev._details.items.length && ev._details.items[0];
-		if (item instanceof ZmContact && this._currentView == ZmId.VIEW_CONTACT_SIMPLE && item.folderId == this._folderId) {
-			var alphaBar = this._parentView[this._currentView].getAlphabetBar();
+		if (item instanceof ZmContact && this._currentViewType == ZmId.VIEW_CONTACT_SIMPLE && item.folderId == this._folderId) {
+			var alphaBar = this._parentView[this._currentViewId].getAlphabetBar();
 			//only set the view if the contact is in the list
 			if(!alphaBar || alphaBar.isItemInAlphabetLetter(item)) {
-				this._parentView[this._currentView].setContact(item, this.isGalSearch());
+				this._parentView[this._currentViewId].setContact(item, this.isGalSearch());
 			}
 		}
 	}
@@ -722,7 +723,7 @@ function(parent, num) {
 			}
 		} else {
 			// otherwise, must be a search
-			var contact = this._listView[this._currentView].getSelection()[0];
+			var contact = this._listView[this._currentViewId].getSelection()[0];
 			var canEdit = (num == 1 && !contact.isReadOnly() && !ZmContact.isInTrash(contact));
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.TAG_MENU], num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit);
@@ -735,7 +736,7 @@ function(parent, num) {
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
 		parent.enable([ZmOperation.NEW_MESSAGE, printOp], num > 0);
 		parent.enable(ZmOperation.CONTACT, num == 1);
-		var contact = this._listView[this._currentView].getSelection()[0];
+		var contact = this._listView[this._currentViewId].getSelection()[0];
 		var isDL = contact && contact.isDistributionList();
 		var isOwner = isDL && contact.dlInfo && contact.dlInfo.isOwner;
 		isOwner = false; //todo - remove when we support editing by owner.
@@ -744,7 +745,7 @@ function(parent, num) {
 
     this._resetQuickCommandOperations(parent);
 
-	var selection = this._listView[this._currentView].getSelection();
+	var selection = this._listView[this._currentViewId].getSelection();
 	var contact = (selection.length == 1) ? selection[0] : null;
 	parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE], num == 1);
 
@@ -788,7 +789,7 @@ ZmContactListController.prototype._getActionContact = function(isToolbar) {
 	This approach of specifically specifying if it's from the toolbar (isToolbar) is more explicit, less fragile and works.
 	 */
 	if (isToolbar) {
-		var selection = this._listView[this._currentView].getSelection();
+		var selection = this._listView[this._currentViewId].getSelection();
 		if (selection.length != 1) {
 			return null;
 		}
@@ -844,8 +845,8 @@ function(ev) {
 
 	if (ev.detail == DwtListView.ITEM_SELECTED)	{
 		this._resetNavToolBarButtons();
-		if (this._currentView == ZmId.VIEW_CONTACT_SIMPLE) {
-			this._parentView[this._currentView].setContact(ev.item, this.isGalSearch());
+		if (this._currentViewType == ZmId.VIEW_CONTACT_SIMPLE) {
+			this._parentView[this._currentViewId].setContact(ev.item, this.isGalSearch());
 		}
 	} else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var folder = appCtxt.getById(ev.item.folderId);
@@ -877,7 +878,7 @@ function(ev, op, params) {
 ZmContactListController.prototype._participantComposeListener =
 function(ev) {
 
-    var selection = this._listView[this._currentView].getSelection();
+    var selection = this._listView[this._currentViewId].getSelection();
     if (selection.length == 0 && this._actionEv) {
         selection.push(this._actionEv.contact);
     }
@@ -922,7 +923,7 @@ function(ev) {
  */
 ZmContactListController.prototype._dropListener =
 function(ev) {
-	var view = this._listView[this._currentView];
+	var view = this._listView[this._currentViewId];
 	var item = view.getTargetItem(ev);
 
 	// only tags can be dropped on us
@@ -941,7 +942,7 @@ function(ev) {
  */
 ZmContactListController.prototype._editListener =
 function(ev) {
-	var contact = this._listView[this._currentView].getSelection()[0];
+	var contact = this._listView[this._currentViewId].getSelection()[0];
 	AjxDispatcher.run("GetContactController").show(contact, false);
 };
 
@@ -950,7 +951,7 @@ function(ev) {
  */
 ZmContactListController.prototype._printListener =
 function(ev) {
-	var contacts = this._listView[this._currentView].getSelection();
+	var contacts = this._listView[this._currentViewId].getSelection();
 	var ids = [];
 	for (var i = 0; i < contacts.length; i++) {
 		ids.push(contacts[i].id);
@@ -1110,13 +1111,13 @@ function(items, hardDelete, attrs) {
 		appCtxt.getApp(ZmApp.CONTACTS).updateIdHash(items[i], true);
 	}
 	// if more contacts to show,
-	var size = this._listView[this._currentView].getSelectedItems().size();
+	var size = this._listView[this._currentViewId].getSelectedItems().size();
 	if (size == 0) {
 		// and if in split view allow split view to clear
-		if (this._currentView == ZmId.VIEW_CONTACT_SIMPLE)
-			this._listView[this._currentView].parent.clear();
+		if (this._currentViewType == ZmId.VIEW_CONTACT_SIMPLE)
+			this._listView[this._currentViewId].parent.clear();
 
-		this._resetOperations(this._toolbar[this._currentView], 0);
+		this._resetOperations(this._toolbar[this._currentViewId], 0);
 	}
 };
 
@@ -1134,7 +1135,7 @@ function(ev) {
 ZmContactListController.prototype._checkReplenish =
 function() {
 	// reset the listview
-	var lv = this._listView[this._currentView];
+	var lv = this._listView[this._currentViewId];
 	lv.set(this._list);
 	lv._setNextSelection();
 };
@@ -1180,8 +1181,8 @@ ZmContactListController.prototype._contactListChange =
 function(ev) {
 	if (ev && ev.source && ev.type == ZmId.ITEM_CONTACT) {
 			var item = ev.source;
-			var id = DwtId.WIDGET_ITEM + "__" + this._currentView + "__" + ev.source.id;
-			var view = this._listView[this._currentView];
+			var id = DwtId.WIDGET_ITEM + "__" + this._currentViewId + "__" + ev.source.id;
+			var view = this._listView[this._currentViewId];
 			view._setItemData(null, "item", item, id);
 	}
 

@@ -1205,6 +1205,28 @@ function() {
 };
 
 /**
+ * Gets the current view id.
+ * 
+ * @return	{String}		the current view type
+ */
+ZmAppCtxt.prototype.getCurrentViewType =
+function() {
+	return this.getAppViewMgr().getCurrentViewType();
+};
+
+/**
+ * Extracts the view type from a view ID.
+ * 
+ * @param	{string}	viewId		a view ID
+ * @return	{String}	the view type
+ */
+ZmAppCtxt.prototype.getViewTypeFromId =
+function(viewId) {
+	var array = viewId && viewId.split(ZmController.SESSION_ID_SEP);
+	return array ? array[0] : "";
+};
+
+/**
  * Gets the current view.
  * 
  * @return	{DwtComposite}		the current view

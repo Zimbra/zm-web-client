@@ -111,7 +111,7 @@ ZmTaskMultiView.prototype._createTaskListView =
 function(params) {
 	params.parent = this;
 	params.posStyle = Dwt.ABSOLUTE_STYLE;
-	params.id = DwtId.getListViewId(this._controller._getViewType());
+	params.id = DwtId.getListViewId(this._controller.getCurrentViewType());
 	return new ZmTaskListView(this, this._controller, this._controller._dropTgt );
 };
 

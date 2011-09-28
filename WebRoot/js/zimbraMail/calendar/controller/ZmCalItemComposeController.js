@@ -57,7 +57,7 @@ function(calItem, mode, isDirty) {
 		this._createToolBar();
 	}
 	var initial = this.initComposeView();
-	this._app.pushView(this.viewId);
+	this._app.pushView(this._currentViewId);
 	this._composeView.set(calItem, mode, isDirty);
 	this._composeView.reEnableDesignMode();
     this._initToolbar(mode);
@@ -161,7 +161,8 @@ function(initHide) {
 			this._createToolBar();
 		var elements = this.getViewElements(null, this._composeView, this._toolbar);
 
-		this._app.createView({	viewId:		this.viewId,
+		this._app.createView({	viewId:		this._currentViewId,
+								viewType:	this._currentViewType,
 								elements:	elements,
 								controller:	this,
 								callbacks:	callbacks,
@@ -319,7 +320,7 @@ function(mode) {
 		printButton.setEnabled(!isNew);
 	}
 
-	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this.viewId], {waitUntilLoaded:true});
+	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
 };
 
 
@@ -343,7 +344,7 @@ function() {
 	}
 	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_OPTIONS);
 
-	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this.viewId, controller:this});
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._currentViewId, controller:this});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
 
@@ -373,13 +374,13 @@ function() {
 		var m = new DwtMenu({parent:optionsButton});
 		optionsButton.setMenu(m);
 
-		var mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this.viewId,ZmOperation.FORMAT_HTML].join("_")});
+		var mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.FORMAT_HTML].join("_")});
 		mi.setImage("HtmlDoc");
 		mi.setText(ZmMsg.formatAsHtml);
 		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML);
         mi.addSelectionListener(new AjxListener(this, this._formatListener));
 
-		mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this.viewId,ZmOperation.FORMAT_TEXT].join("_")});
+		mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.FORMAT_TEXT].join("_")});
 		mi.setImage("GenericDoc");
 		mi.setText(ZmMsg.formatAsText);
 		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.TEXT);
@@ -642,7 +643,7 @@ function() {
 
 ZmCalItemComposeController.prototype._closeView =
 function() {
-	this._app.popView(true,this.viewId);
+	this._app.popView(true,this._currentViewId);
     this._composeView.cleanup();
 };
 

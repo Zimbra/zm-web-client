@@ -674,7 +674,7 @@ function(params, callback) {
 ZmCalendarApp.prototype._handleLoadLaunch =
 function(params, callback) {
 	var cc = AjxDispatcher.run("GetCalController");
-	var view = cc.getDefaultViewId();
+	var view = cc.getDefaultViewType();
 	var sd = null;
 
 	params = params || {};
@@ -732,8 +732,7 @@ function(active) {
  */
 ZmCalendarApp.prototype.setOverviewPanelContent =
 function(reset) {
-    var viewId = appCtxt.getCurrentViewId();
-    if (viewId.indexOf(ZmId.VIEW_APPOINTMENT) != 0) {
+    if (appCtxt.getCurrentViewType() != ZmId.VIEW_APPOINTMENT) {
         ZmApp.prototype.setOverviewPanelContent.apply(this, arguments);
     } else {
         ZmApp.prototype.setOverviewPanelContent.apply(this, arguments);
@@ -824,13 +823,15 @@ function() {
 ZmCalendarApp.prototype.getApptComposeController =
 function(sessionId) {
 	AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
-	return this.getSessionController(ZmId.VIEW_APPOINTMENT, "ZmApptComposeController", sessionId);
+	return this.getSessionController({controllerClass:	"ZmApptComposeController",
+									  sessionId:		sessionId});
 };
 
 ZmCalendarApp.prototype.getApptViewController =
 function(sessionId) {
 	AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
-	return this.getSessionController(ZmId.VIEW_APPOINTMENT_READONLY, "ZmApptController", sessionId);
+	return this.getSessionController({controllerClass:	"ZmApptController",
+									  sessionId:		sessionId});
 };
 
 ZmCalendarApp.prototype.initResources =

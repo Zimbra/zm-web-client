@@ -47,7 +47,14 @@ ZmZimletAppController.prototype.toString = function() { return "ZmZimletAppContr
 // Public methods
 //
 
-ZmZimletAppController.prototype.getDefaultViewId =
+// Note: If there's ever a need to make this a session controller (unlikely), we'll have to figure
+// out some way to return an appropriate view type in a static context.
+ZmZimletAppController.getDefaultViewType =
+function() {
+	return "zimlet";
+};
+
+ZmZimletAppController.prototype.getDefaultViewType =
 function() {
 	return this.name;
 };
@@ -76,7 +83,7 @@ function() {
 //		callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
 
 		// create app view
-	    this._app.createView({	viewId:			this.getDefaultViewId(),
+	    this._app.createView({	viewId:			this.getDefaultViewType(),
 								elements:		elements,
 								controller:		this,
 								callbacks:		callbacks,
@@ -103,5 +110,5 @@ ZmZimletAppController.prototype.getToolbar = function() {
  */
 ZmZimletAppController.prototype.show = function() {
 	this.getView();
-	return this._app.pushView(this.getDefaultViewId());
+	return this._app.pushView(this.getDefaultViewType());
 };

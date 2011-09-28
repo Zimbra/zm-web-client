@@ -50,13 +50,21 @@ ZmPortalController.prototype.toString = function() { return "ZmPortalController"
 // Public methods
 //
 
+ZmPortalController.prototype.getDefaultViewType = function() {
+	return ZmId.VIEW_PORTAL;
+};
+ZmPortalController.prototype.getDefaultViewType = ZmPortalController.getDefaultViewType;
+
 ZmPortalController.prototype.show = function() {
 	ZmListController.prototype.show.call(this);
-	this._setup(this._currentView);
+	this._setup(this._currentViewId);
 
-	var elements = this.getViewElements(this._currentView, this._listView[this._currentView]);
+	var elements = this.getViewElements(this._currentViewId, this._listView[this._currentViewId]);
 
-	this._setView({view:this._currentView, elements:elements, isAppView:true});
+	this._setView({ view:		this._currentViewId,
+					viewType:	this._currentViewType,
+					elements:	elements,
+					isAppView:	true});
 };
 
 /**
@@ -65,7 +73,7 @@ ZmPortalController.prototype.show = function() {
  * @param	{Boolean}	paused		if <code>true</code>, pause the portlets
  */
 ZmPortalController.prototype.setPaused = function(paused) {
-    var view = this._listView[this._currentView];
+    var view = this._listView[this._currentViewId];
     var portletIds = view && view.getPortletIds();
     if (portletIds && portletIds.length > 0) {
         var portletMgr = appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
@@ -79,10 +87,6 @@ ZmPortalController.prototype.setPaused = function(paused) {
 //
 // Protected methods
 //
-
-ZmPortalController.prototype.getDefaultViewId = function() {
-	return ZmId.VIEW_PORTAL;
-};
 
 ZmPortalController.prototype._getToolBarOps = function() {
 	return [ ZmOperation.REFRESH /*, ZmOperation.PAUSE_TOGGLE*/ ];
@@ -103,7 +107,7 @@ ZmPortalController.prototype._refreshListener = function() {
 };
 
 ZmPortalController.prototype._pauseListener = function(event) {
-    var toolbar = this._toolbar[this._currentView];
+    var toolbar = this._toolbar[this._currentViewId];
 
     // en/disable refresh button
     var button = toolbar && toolbar.getButton(ZmOperation.REFRESH);

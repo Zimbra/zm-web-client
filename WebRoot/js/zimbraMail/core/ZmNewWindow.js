@@ -249,7 +249,7 @@ function() {
 	// depending on the command, do the right thing
 	if (cmd == "compose" || cmd == "composeDetach") {
 		var cc = AjxDispatcher.run("GetComposeController");	// get a new compose ctlr
-		appCtxt.composeCtlrSessionId = cc.sessionId;
+		appCtxt.composeCtlrSessionId = cc.getSessionId();
 		if (params.action == ZmOperation.REPLY_ALL) {
 			params.msg = this._deepCopyMsg(params.msg);
 		}
@@ -291,7 +291,7 @@ function() {
 		params.msg = this._deepCopyMsg(params.msg);
 		
 		var msgController = AjxDispatcher.run("GetMsgController");
-		appCtxt.msgCtlrSessionId = msgController.sessionId;
+		appCtxt.msgCtlrSessionId = msgController.getSessionId();
 		msgController.show(params.msg, params.mode);
 		rootTg.addMember(msgController.getTabGroup());
 		startupFocusItem = msgController.getCurrentView();

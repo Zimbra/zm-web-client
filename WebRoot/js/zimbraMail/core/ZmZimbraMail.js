@@ -1446,7 +1446,7 @@ ZmZimbraMail.prototype._handleUploadResponse = function(req, controller) {
                     }
                     var callback = new AjxCallback (controller,controller._handleResponseSaveDraftListener);
         		    controller.sendMsg(attachment_list, ZmComposeController.DRAFT_TYPE_MANUAL,callback);
-                    this.getAppViewMgr().pushView(controller.viewId);
+                    this.getAppViewMgr().pushView(controller.getCurrentViewId());
                 }
             }
         }

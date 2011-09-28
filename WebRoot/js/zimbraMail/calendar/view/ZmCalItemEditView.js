@@ -541,7 +541,7 @@ function(calItem, mode) {
 	this._subjectField.setValue(subject);
     if(subject) {
         buttonText = subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT);
-        appCtxt.getAppViewMgr().setTabTitle(this._controller.viewId, buttonText);
+        appCtxt.getAppViewMgr().setTabTitle(this._controller.getCurrentViewId(), buttonText);
     }
     if (this._hasRepeatSupport) {
         this._repeatSelect.setSelectedValue(calItem.getRecurType());

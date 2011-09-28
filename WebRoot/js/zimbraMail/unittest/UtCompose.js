@@ -27,8 +27,7 @@ UT.test("Show compose page", {
 		UT.expect(1);
 		ZmUnitTestUtil.goToCompose();
 	
-		var viewId = appCtxt.getCurrentViewId();
-		UT.equal(viewId.indexOf("COMPOSE"), 0);
+		UT.equal(appCtxt.getCurrentViewType(), ZmId.VIEW_COMPOSE);
 	}
 );
 

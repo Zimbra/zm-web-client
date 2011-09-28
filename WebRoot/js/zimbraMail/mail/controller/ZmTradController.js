@@ -55,6 +55,12 @@ ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_TRAD);
 
 // Public methods
 
+ZmTradController.getDefaultViewType =
+function() {
+	return ZmId.VIEW_TRAD;
+};
+ZmTradController.prototype.getDefaultViewType = ZmTradController.getDefaultViewType;
+
 ZmTradController.prototype.show =
 function(search) {
 	this._list = search.getResults(ZmItem.MSG);
@@ -73,14 +79,9 @@ function() {
 							controller:this, dropTgt:this._dropTgt}));
 };
 
-ZmTradController.prototype.getDefaultViewId =
-function() {
-	return ZmId.VIEW_TRAD;
-};
-
 ZmTradController.prototype._paginate = 
 function(view, bPageForward, convIdx, limit) {
-	view = view ? view : this._currentView;
+	view = view || this._currentViewId;
 	return ZmDoublePaneController.prototype._paginate.call(this, view, bPageForward, convIdx, limit);
 };
 

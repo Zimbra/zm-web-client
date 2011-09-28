@@ -42,6 +42,12 @@ ZmApptController.DEFAULT_TAB_TEXT = ZmMsg.message;
 
 ZmApptController.viewToTab = {};
 
+ZmApptController.getDefaultViewType =
+function() {
+	return ZmId.VIEW_APPOINTMENT_READONLY;
+};
+ZmApptController.prototype.getDefaultViewType = ZmApptController.getDefaultViewType;
+
 ZmApptController.prototype._createComposeView =
 function() {
 	// override
@@ -62,20 +68,20 @@ function() {
 		buttons.push(ZmOperation.PRINT);
 	}
 
-	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this.viewId, controller:this, secondaryButtons:secondaryButtons});
-	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
-	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
-	this._toolbar.addSelectionListener(ZmOperation.REPLY, new AjxListener(this, this._replyListener));
-	this._toolbar.addSelectionListener(ZmOperation.REPLY_ALL, new AjxListener(this, this._replyAllListener));
-	this._toolbar.addSelectionListener(ZmOperation.FORWARD_APPT, new AjxListener(this, this._forwardListener));
-	this._toolbar.addSelectionListener(ZmOperation.EDIT, new AjxListener(this, this._editListener));
-	this._toolbar.addSelectionListener(ZmOperation.PROPOSE_NEW_TIME, new AjxListener(this, this._proposeTimeListener));
-	this._toolbar.addSelectionListener(ZmOperation.DELETE, new AjxListener(this, this._deleteListener));
-	this._toolbar.addSelectionListener(ZmOperation.DUPLICATE_APPT, new AjxListener(this, this._duplicateApptListener));
-	this._toolbar.addSelectionListener(ZmOperation.SHOW_ORIG, new AjxListener(this, this._showOrigListener));
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._currentViewId, controller:this, secondaryButtons:secondaryButtons});
+	this._toolbar.addSelectionListener(ZmOperation.SAVE, this._saveListener.bind(this));
+	this._toolbar.addSelectionListener(ZmOperation.CANCEL, this._cancelListener.bind(this));
+	this._toolbar.addSelectionListener(ZmOperation.REPLY, this._replyListener.bind(this));
+	this._toolbar.addSelectionListener(ZmOperation.REPLY_ALL, this._replyAllListener.bind(this));
+	this._toolbar.addSelectionListener(ZmOperation.FORWARD_APPT, this._forwardListener.bind(this));
+	this._toolbar.addSelectionListener(ZmOperation.EDIT, this._editListener.bind(this));
+	this._toolbar.addSelectionListener(ZmOperation.PROPOSE_NEW_TIME, this._proposeTimeListener.bind(this));
+	this._toolbar.addSelectionListener(ZmOperation.DELETE, this._deleteListener.bind(this));
+	this._toolbar.addSelectionListener(ZmOperation.DUPLICATE_APPT, this._duplicateApptListener.bind(this));
+	this._toolbar.addSelectionListener(ZmOperation.SHOW_ORIG, this._showOrigListener.bind(this));
 
 	if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
-		this._toolbar.addSelectionListener(ZmOperation.PRINT, new AjxListener(this, this._printListener));
+		this._toolbar.addSelectionListener(ZmOperation.PRINT, this._printListener.bind(this));
 	}
 
     var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);

@@ -22,7 +22,7 @@ ZmMailMsgView = function(params) {
 
 	this._mode = params.mode;
 	this._controller = params.controller;
-	this._viewId = this._getViewId();
+	this._viewId = this._controller.getCurrentViewId();
 
 	this._displayImagesId	= ZmId.getViewId(this._viewId, ZmId.MV_DISPLAY_IMAGES, this._mode);
 	this._msgTruncatedId	= ZmId.getViewId(this._viewId, ZmId.MV_MSG_TRUNC, this._mode);
@@ -168,11 +168,6 @@ function(msg, force) {
 	var respCallback = new AjxCallback(this, this._handleResponseSet, [msg, oldMsg]);
 	this._renderMessage(msg, contentDiv, respCallback);
 	this.noTab = AjxEnv.isIE;
-};
-
-ZmMailMsgView.prototype._getViewId =
-function() {
-	return (this._controller && this._controller.sessionId) ? ZmId.VIEW_MSG + this._controller.sessionId: ZmId.VIEW_MSG;
 };
 
 ZmMailMsgView.prototype._getContainer =

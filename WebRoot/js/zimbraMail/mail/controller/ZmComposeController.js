@@ -145,10 +145,11 @@ function() {
 // Public methods
 //
 
-ZmComposeController.prototype.getDefaultViewId =
+ZmComposeController.getDefaultViewType =
 function() {
 	return ZmId.VIEW_COMPOSE;
 };
+ZmComposeController.prototype.getDefaultViewType = ZmComposeController.getDefaultViewType;
 
 /**
 * Called by ZmNewWindow.unload to remove ZmSettings listeners (which reside in
@@ -289,7 +290,7 @@ function() {
 		sendUID: sendUID,
 		msgIds: this._msgIds,
 		forAttIds: this._forAttIds,
-		sessionId: this.sessionId,
+		sessionId: this.getSessionId(),
         readReceipt: requestReadReceipt
 	};
 };
@@ -672,7 +673,8 @@ function(initHide, composeMode) {
 	this._initializeToolBar();
 	var elements = this.getViewElements(null, this._composeView, this._toolbar);
 
-	this._app.createView({	viewId:		this.viewId,
+	this._app.createView({	viewId:		this._currentViewId,
+							viewType:	this._currentViewType,
 							elements:	elements, 
 							controller:	this,
 							callbacks:	callbacks,
@@ -936,14 +938,14 @@ function(params) {
 	this.resetToolbarOperations();
 	this._setOptionsMenu();
 	cv.set(params);
-	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this.viewId], {waitUntilLoaded:true});
+	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
 
 	this._setAddSignatureVisibility();
 
 	this._setOptionsMenu();
 	this._curIncOptions = null;
 	cv.set(params);
-	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this.viewId], {waitUntilLoaded:true});
+	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
 
     if (params.readReceipt) {
         var menu = this._optionsMenu[this._action];
@@ -954,7 +956,7 @@ function(params) {
     }
 
 	this._setComposeTabGroup();
-	this._app.pushView(this.viewId);
+	this._app.pushView(this._currentViewId);
 	if (!appCtxt.isChildWindow) {
 		cv.updateTabTitle();
 	}
@@ -1014,7 +1016,7 @@ function() {
 		parent: this._container,
 		buttons: buttons,
 		className: (appCtxt.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar") + " ImgSkin_Toolbar",
-		context: this.viewId
+		context: this._currentViewId
 	});
 
 	for (var i = 0; i < tb.opList.length; i++) {
@@ -1174,7 +1176,7 @@ function(action) {
 	}
 
 	var menu = new ZmActionMenu({parent:button, menuItems:list, overrides:overrides,
-								 context:[this.viewId, action].join("_")});
+								 context:[this._currentViewId, action].join("_")});
 
 	for (var i = 0; i < list.length; i++) {
 		var op = list[i];
@@ -1357,7 +1359,7 @@ function(draftType, msg, resp) {
 		var popped = false;
 		if (appCtxt.get(ZmSetting.SHOW_MAIL_CONFIRM)) {
 			var confirmController = AjxDispatcher.run("GetMailConfirmController");
-			confirmController.showConfirmation(msg, this.viewId, this.tabId, this);
+			confirmController.showConfirmation(msg, this._currentViewId, this.tabId, this);
 			popped = true;	// don't pop confirm page
 		} else {
 			if (appCtxt.isChildWindow && window.parentController) {
@@ -1375,7 +1377,7 @@ function(draftType, msg, resp) {
 					appCtxt.setStatusMsg(ZmMsg.messageSent);
 				}
 			}
-			popped = this._app.popView(true, this._currentView);
+			popped = this._app.popView(true, this._currentViewId);
 		}
 
 		if (resp || !appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
@@ -1423,7 +1425,7 @@ function(draftType, msg, resp) {
 			}
 
 			if (!popped) {
-				this._app.popView(true, this._currentView);
+				this._app.popView(true, this._currentViewId);
 			}
 		}
 	} else {

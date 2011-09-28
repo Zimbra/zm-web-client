@@ -141,17 +141,20 @@ function(results, folderId) {
 		tlv.reset();
 	}
 
-	this._setup(this._currentView);
+	this._setup(this._currentViewId);
 
 	// reset offset if list view has been created
-	var lv = this._listView[this._currentView];
+	var lv = this._listView[this._currentViewId];
 	if (lv) { lv.offset = 0; }
 
-	var elements = this.getViewElements(this._currentView, this._taskMultiView);
+	var elements = this.getViewElements(this._currentViewId, this._taskMultiView);
 	
-	this._setView({view:this._currentView, elements:elements, isAppView:true});
+	this._setView({ view:		this._currentViewId,
+					viewType:	this._currentViewType,
+					elements:	elements,
+					isAppView:	true});
 
-	this._setTabGroup(this._tabGroups[this._currentView]);
+	this._setTabGroup(this._tabGroups[this._currentViewId]);
 	this._resetNavToolBarButtons();
 
     // do this last
@@ -184,11 +187,11 @@ function(view) {
 			this._taskMultiView.setReadingPane();
 		}
         // always reset the view menu button icon to reflect the current view
-        var btn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
+        var btn = this._toolbar[this._currentViewId].getButton(ZmOperation.VIEW_MENU);
         btn.setImage(ZmTaskListController.READING_PANE_ICON[view]);
 	} else {
         // always reset the view menu button icon to reflect the current view
-        var btn = this._toolbar[this._currentView].getButton(ZmOperation.SORTBY_MENU);
+        var btn = this._toolbar[this._currentViewId].getButton(ZmOperation.SORTBY_MENU);
         btn.setImage(ZmTaskListController.ICON[view]);
 	}
 	var sc = appCtxt.getSearchController();
@@ -203,7 +206,7 @@ function(view) {
  */
 ZmTaskListController.prototype.getAllowableTaskStatus =
 function() {
-	var tb = this._toolbar && this._toolbar[this._currentView];
+	var tb = this._toolbar && this._toolbar[this._currentViewId];
 	var menu = tb ? tb.getButton(ZmOperation.SORTBY_MENU).getMenu() : null;
 	var mi = menu ? menu.getSelectedItem(DwtMenuItem.RADIO_STYLE) : null;
 	var id = mi ? mi.getData(ZmOperation.MENUITEM_ID) : ZmId.VIEW_TASK_ALL;
@@ -213,7 +216,7 @@ function() {
 
 ZmTaskListController.prototype._updateViewMenu =
 function(id) {
-	var viewBtn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
+	var viewBtn = this._toolbar[this._currentViewId].getButton(ZmOperation.VIEW_MENU);
 	var menu = viewBtn && viewBtn.getMenu();
 	if (menu) {
 		var mi = menu.getItemById(ZmOperation.MENUITEM_ID, id);
@@ -236,7 +239,7 @@ function(actionCode) {
 
         case ZmKeyMap.MARK_COMPLETE:
         case ZmKeyMap.MARK_UNCOMPLETE:
-            var task = this._listView[this._currentView].getSelection()[0];
+            var task = this._listView[this._currentViewId].getSelection()[0];
             if ((task.isComplete() && actionCode == ZmKeyMap.MARK_UNCOMPLETE) ||
                     (!task.isComplete() && actionCode == ZmKeyMap.MARK_COMPLETE))
             {
@@ -330,10 +333,11 @@ function(name, callback, errCallback) {
 	task.save(null, callback, errCallback);
 };
 
-ZmTaskListController.prototype.getDefaultViewId =
+ZmTaskListController.getDefaultViewType =
 function() {
 	return ZmId.VIEW_TASKLIST;
 };
+ZmTaskListController.prototype.getDefaultViewType = ZmTaskListController.getDefaultViewType;
 
 ZmTaskListController.prototype._createNewView =
 function() {
@@ -555,7 +559,7 @@ function(parent, num) {
 		parent.enable(ZmOperation.MARK_AS_COMPLETED, !isTrash && canEdit && num > 0);
 		parent.enable(ZmOperation.TAG_MENU, (!isShare && num > 0));
 	} else {
-      	var task = this._listView[this._currentView].getSelection()[0];
+      	var task = this._listView[this._currentViewId].getSelection()[0];
 		var canEdit = (num == 1 && !task.isReadOnly() && !ZmTask.isInTrash(task));
 		parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.TAG_MENU], num > 0);
 		parent.enable(ZmOperation.EDIT, canEdit);
@@ -584,7 +588,7 @@ function(parent, num) {
 ZmTaskListController.prototype._deleteListener =
 function(ev) {
 
-    var tasks = this._listView[this._currentView].getSelection();
+    var tasks = this._listView[this._currentViewId].getSelection();
 
     if (!tasks || tasks.length == 0) return;
 
@@ -605,7 +609,7 @@ function(ev) {
             dialog.popup();
         }
     } else {
-       this._doDelete(this._listView[this._currentView].getSelection());
+       this._doDelete(this._listView[this._currentViewId].getSelection());
     }
 };
 
@@ -613,7 +617,7 @@ ZmTaskListController.prototype._deleteCallback =
 function(dialog) {
 	dialog.popdown();
 	// hard delete
-	this._doDelete(this._listView[this._currentView].getSelection());
+	this._doDelete(this._listView[this._currentViewId].getSelection());
 };
 
 ZmTaskListController.prototype._doDelete =
@@ -756,9 +760,9 @@ function(listView) {
 
 ZmTaskListController.prototype._setSelectedItem =
 function() {
-	var selCnt = this._listView[this._currentView].getSelectionCount();
+	var selCnt = this._listView[this._currentViewId].getSelectionCount();
 	if (selCnt == 1) {
-		var task = this._listView[this._currentView].getSelection();
+		var task = this._listView[this._currentViewId].getSelection();
 	}
 };
 
@@ -778,7 +782,9 @@ function(task) {
 
 		var elements = this.getViewElements(viewId, this._listView[viewId]);
 		
-        this._setView({view:viewId, elements:elements, pushOnly:true});
+        this._setView({	view:		viewId,
+						elements:	elements,
+						pushOnly:	true});
     } else {
         var calItemView = this._taskMultiView._taskView;
         if(calItemView) {
@@ -851,13 +857,13 @@ function(ev) {
 
 ZmTaskListController.prototype._editListener =
 function(ev) {
-	var task = this._listView[this._currentView].getSelection()[0];
+	var task = this._listView[this._currentViewId].getSelection()[0];
 	this._editTask(task);
 };
 
 ZmTaskListController.prototype._printTaskListener =
 function(ev) {
-	var listView = this._listView[this._currentView];
+	var listView = this._listView[this._currentViewId];
 	var items = listView.getSelection();
 	var taskIds = [];
 	for (var i = 0; i < items.length; i++) {
@@ -875,7 +881,7 @@ function(ev) {
 
 ZmTaskListController.prototype._markAsCompletedListener = 
 function(ev) {
-	var listView = this._listView[this._currentView];
+	var listView = this._listView[this._currentViewId];
 	var items = listView.getSelection();
 	var fItem = null;
 	for (var i = 0; i < items.length; i++) {
@@ -946,7 +952,7 @@ function(folder) {
 
 ZmTaskListController.prototype._showOrigListener =
 function(ev) {
-	var tasks = this._listView[this._currentView].getSelection();
+	var tasks = this._listView[this._currentViewId].getSelection();
 	if (tasks && tasks.length > 0)
 		setTimeout(AjxCallback.simpleClosure(this._showTaskSource, this, tasks[0]), 1); // Other listeners are focusing the main window, so delay the window opening for just a bit
 };

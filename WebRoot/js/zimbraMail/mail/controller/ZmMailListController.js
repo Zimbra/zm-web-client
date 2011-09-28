@@ -172,7 +172,7 @@ function(view, force) {
 			//clear the groups to address "from" grouping for conversation
 			this._mailListView.setGroup(ZmId.GROUPBY_NONE);
 		}
-		var limit = this._listView[this._currentView].getLimit();
+		var limit = this._listView[this._currentViewId].getLimit();
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		var groupByItem = this._app.getGroupMailBy();
 		var params = {types:[groupByItem], offset:0, limit:limit, sortBy:sortBy, getHtml:getHtml};
@@ -227,7 +227,7 @@ function(actionCode) {
 	var folder = this._getSearchFolder();
 	var isSyncFailures = this.isSyncFailuresFolder();
 	var isDrafts = this.isDraftsFolder();
-	var lv = this._listView[this._currentView];
+	var lv = this._listView[this._currentViewId];
 	var num = lv.getSelectionCount();
 
 	switch (actionCode) {
@@ -421,7 +421,7 @@ function(msg, dlg) {
 
 ZmMailListController.prototype._updateViewMenu =
 function(id) {
-	var viewBtn = this._getCurrentToolbar().getButton(ZmOperation.VIEW_MENU);
+	var viewBtn = this.getCurrentToolbar().getButton(ZmOperation.VIEW_MENU);
 	var menu = viewBtn && viewBtn.getMenu();
 	if (menu) {
 		var mi = menu.getItemById(ZmOperation.MENUITEM_ID, id);
@@ -452,7 +452,7 @@ function() {
 		}
 
 		this._participantActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems, controller:this,
-														context:this._currentView, menuType:ZmId.MENU_PARTICIPANT});
+														context:this._currentViewId, menuType:ZmId.MENU_PARTICIPANT});
         if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
             this._setSearchMenu(this._participantActionMenu);
         }
@@ -477,7 +477,7 @@ function() {
 			ZmOperation.SHOW_ORIG
 		];
 		this._draftsActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems,
-												   context:this._currentView, menuType:ZmId.MENU_DRAFTS});
+												   context:this._currentViewId, menuType:ZmId.MENU_DRAFTS});
         if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
             this._setSearchMenu(this._draftsActionMenu);
         }
@@ -693,7 +693,7 @@ function() {
  */
 ZmMailListController.prototype._enableReadUnreadToolbarActions =
 function() {
-	var menu = this._getCurrentToolbar().getActionsMenu();
+	var menu = this.getCurrentToolbar().getActionsMenu();
 	this._enableFlags(menu);
 };
 
@@ -727,7 +727,7 @@ function(ev) {
 
 	ZmListController.prototype._listActionListener.call(this, ev);
 
-	var items = this._listView[this._currentView].getSelection();
+	var items = this._listView[this._currentViewId].getSelection();
 	var folder = this._getSearchFolder();
 
 	// bug fix #3602
@@ -835,7 +835,7 @@ function(imItem, address, ev, contact) {
 ZmMailListController.prototype._markReadListener =
 function(ev) {
 	var callback = this._getMarkReadCallback();
-	this._doMarkRead(this._listView[this._currentView].getSelection(), true, callback);
+	this._doMarkRead(this._listView[this._currentViewId].getSelection(), true, callback);
 };
 
 /**
@@ -854,7 +854,7 @@ function(ev) {
  */
 ZmMailListController.prototype._getMarkReadCallback =
 function() {
-	var view = this._listView[this._currentView];
+	var view = this._listView[this._currentViewId];
 	var items = view.getSelection();
 
 	if (this.isReadingPaneOn() && appCtxt.get(ZmSetting.MARK_MSG_READ) == -1) {
@@ -875,7 +875,7 @@ function() {
 
 ZmMailListController.prototype._markUnreadListener =
 function(ev) {
-	this._doMarkRead(this._listView[this._currentView].getSelection(), false);
+	this._doMarkRead(this._listView[this._currentViewId].getSelection(), false);
 };
 
 ZmMailListController.prototype._replyListener =
@@ -968,7 +968,7 @@ function(params, msg) {
 	// special handling for multiple forward action
 	var action = params.action;
 	if (action == ZmOperation.FORWARD_ATT || action == ZmOperation.FORWARD_INLINE) {
-		var cview = this._listView[this._currentView];
+		var cview = this._listView[this._currentViewId];
 		if (cview) {
 			var selection = cview.getSelection();
 			var selCount = selection.length;
@@ -1123,7 +1123,7 @@ function(items, on, callback) {
 ZmMailListController.prototype._doSpam =
 function(items, markAsSpam, folder) {
 
-	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
+	this._listView[this._currentViewId]._itemToSelect = this._getNextItemToSelect();
 	items = AjxUtil.toArray(items);
 
 	var params = {items:items,
@@ -1142,7 +1142,7 @@ ZmMailListController.prototype._inviteReplyHandler =
 function(ev) {
 	var ac = window.parentAppCtxt || window.appCtxt;
 
-	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
+	this._listView[this._currentViewId]._itemToSelect = this._getNextItemToSelect();
 	ac.getAppController().focusContentPane();
 
 	var type = ev._inviteReplyType;
@@ -1207,7 +1207,7 @@ function(ev) {
 	var msg = appCtxt.getById(ev._share._msgId);
 	var folder = appCtxt.getById(ZmFolder.ID_TRASH);
 
-	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
+	this._listView[this._currentViewId]._itemToSelect = this._getNextItemToSelect();
 	var list = msg.list || this.getList();
 	var callback = (appCtxt.isChildWindow)
 		? (new AjxCallback(this, this._handleAcceptShareInNewWindow)) : null;
@@ -1219,11 +1219,6 @@ ZmMailListController.prototype._declineShareHandler = ZmMailListController.proto
 ZmMailListController.prototype._handleAcceptShareInNewWindow =
 function() {
 	window.close();
-};
-
-ZmMailListController.prototype.getReferenceView =
-function() {
-	return null;
 };
 
 ZmMailListController.prototype._createViewMenu =
@@ -1337,7 +1332,7 @@ function(parent) {
  */
 ZmMailListController.prototype.getMsg =
 function(params) {
-	var sel = this._listView[this._currentView].getSelection();
+	var sel = this._listView[this._currentViewId].getSelection();
 	return (sel && sel.length) ? sel[0] : null;
 };
 
@@ -1524,7 +1519,7 @@ function(result) {
 
 ZmMailListController.prototype._spamListener =
 function(ev) {
-	var items = this._listView[this._currentView].getSelection();
+	var items = this._listView[this._currentViewId].getSelection();
 	var searchFolderId = this._getSearchFolderId();
 	if (appCtxt.multiAccounts) {
 		var item = items[0];
@@ -1556,7 +1551,7 @@ function(ev, callback) {
 
 ZmMailListController.prototype._printListener =
 function(ev) {
-	var listView = this._listView[this._currentView];
+	var listView = this._listView[this._currentViewId];
 	var items = listView.getSelection();
 	items = AjxUtil.toArray(items);
 	var ids = [];
@@ -1675,7 +1670,7 @@ function(view, menu) {
 										  style:	DwtMenuItem.RADIO_STYLE});
 		mi.setData(ZmOperation.MENUITEM_ID, id);
 		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
-		if (id == this.getDefaultViewId()) {
+		if (id == this.getDefaultViewType()) {
 			mi.setChecked(true, true);
 		}
 	}
@@ -1721,7 +1716,7 @@ function(parent, num) {
 
 	var item;
 	if (num == 1 && !this.isDraftsFolder()) {
-		var sel = this._listView[this._currentView].getSelection();
+		var sel = this._listView[this._currentViewId].getSelection();
 		if (sel && sel.length) {
 			item = sel[0];
 		}
@@ -1840,7 +1835,7 @@ function(currentItem, forward, msgController) {
 		if (msgController) {
 			msgController.inactive = true; //make it inactive so it can be reused instead of creating a new one for each item paged.
 		}
-		var lv = this._listView[this._currentView];
+		var lv = this._listView[this._currentViewId];
 		lv.emulateDblClick(newItem);
 	}
 };
@@ -1864,7 +1859,7 @@ function(currentItem, forward) {
 		if (!this._list.hasMore()) {
 			return;
 		}
-		this._paginate(this._currentView, true, itemIdx);
+		this._paginate(this._currentViewId, true, itemIdx);
 		return;
 	}
 	return list[itemIdx];
@@ -1887,7 +1882,7 @@ function(view, saveSelection, loadIndex, offset, result) {
 
 	var newItem = loadIndex ? this._list.getVector().get(loadIndex) : null;
 	if (newItem) {
-		this._listView[this._currentView].emulateDblClick(newItem);
+		this._listView[this._currentViewId].emulateDblClick(newItem);
 	}
 };
 
@@ -1929,7 +1924,7 @@ function(items, tag, doTag) {
 ZmMailListController.prototype._getUnreadItem =
 function(which, type, noBump) {
 
-	var lv = this._listView[this._currentView];
+	var lv = this._listView[this._currentViewId];
 	var list = lv.getList(true).getArray();
 	var size = list.length;
 	if (!size) { return; }

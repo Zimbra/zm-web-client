@@ -283,7 +283,7 @@ UT.test("Group View: Verify contacts query uses is:local", {},
 		setTimeout(function() {
 			controller.show(contact, false);
 			var ev = [];
-			var groupView = controller._view[controller._currentView];
+			var groupView = controller.getCurrentView();
 			var query = null;
 			var queryHint = null;
 

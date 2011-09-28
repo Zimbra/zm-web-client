@@ -49,6 +49,12 @@ ZmTaskController.DEFAULT_TAB_TEXT = ZmMsg.task;
 
 // Public methods
 
+ZmTaskController.getDefaultViewType =
+function() {
+	return ZmId.VIEW_TASKEDIT;
+};
+ZmTaskController.prototype.getDefaultViewType = ZmTaskController.getDefaultViewType;
+
 ZmTaskController.prototype.saveCalItem =
 function(attId) {
 	var calItem = this._composeView.getCalItem(attId);

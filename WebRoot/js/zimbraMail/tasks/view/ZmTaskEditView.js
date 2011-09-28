@@ -30,8 +30,8 @@
  */
 ZmTaskEditView = function(parent, controller) {
 
-    this._view = ZmId.VIEW_TASKEDIT + controller.sessionId;
-	this._sessionId = controller.sessionId;
+    this._view = controller.getCurrentViewId();
+	this._sessionId = controller.getSessionId();
 
     ZmCalItemEditView.call(this, parent, null, controller, null, DwtControl.ABSOLUTE_STYLE, "ZmTaskEditView", ZmId.getViewId(this._view));
 };

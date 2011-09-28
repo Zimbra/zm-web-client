@@ -80,9 +80,9 @@ function(search, mailList, callback, markRead) {
 		this._doublePaneView._mailListView.reset();
 	}
 	this._list = mailList;
-	this._setup(this._currentView);
+	this._setup(this._currentViewId);
 
-	this._displayResults(this._currentView);
+	this._displayResults(this._currentViewId);
 
 	var dpv = this._doublePaneView;
 	var readingPaneOn = this.isReadingPaneOn();
@@ -94,7 +94,7 @@ function(search, mailList, callback, markRead) {
 	if (!this._itemViewCurrent()) {
 		dpv.clearItem();
 	}
-	this._toolbar[this._currentView].adjustSize();
+	this._toolbar[this._currentViewId].adjustSize();
 
 	if (callback) {
 		callback.run();
@@ -144,7 +144,7 @@ function() {
 	if (this._doublePaneView) {
 		this._doublePaneView.reset();
 	}
-	var lv = this._listView[this._currentView];
+	var lv = this._listView[this._currentViewId];
 	if (lv) {
 		lv._itemToSelect = lv._selectedItem = null;
 	}
@@ -166,7 +166,7 @@ ZmDoublePaneController.prototype.handleKeyAction =
 function(actionCode) {
 
 	DBG.println(AjxDebug.DBG3, "ZmDoublePaneController.handleKeyAction");
-	var lv = this._listView[this._currentView];
+	var lv = this._listView[this._currentViewId];
 
 	switch (actionCode) {
 
@@ -370,7 +370,10 @@ function(view) {
 	var elements = this.getViewElements(view, this._doublePaneView);
 	
 	this._doublePaneView.setReadingPane();
-	this._setView({view:view, elements:elements, isAppView:this._isTopLevelView()});
+	this._setView({ view:		view,
+					viewType:	this._currentViewType,
+					elements:	elements,
+					isAppView:	this._isTopLevelView()});
 	this._resetNavToolBarButtons(view);
 				
 	// always allow derived classes to reset size after loading
@@ -435,7 +438,7 @@ function(parent, num) {
 // app icon in app toolbar - overload to not allow this.
 ZmDoublePaneController.prototype._isTopLevelView = 
 function() {
-	return (!this.sessionId || this.sessionId == ZmApp.MAIN_SESSION);
+	return (!this.getSessionId());
 };
 
 // All items in the list view are gone - show "No Results" and clear reading pane
@@ -452,7 +455,7 @@ ZmDoublePaneController.prototype._listSelectionListener =
 function(ev) {
 	ZmMailListController.prototype._listSelectionListener.call(this, ev);
 	
-	var currView = this._listView[this._currentView];
+	var currView = this._listView[this._currentViewId];
 
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var item = ev.item;
@@ -527,7 +530,7 @@ function() {
 
 ZmDoublePaneController.prototype._setSelectedItem =
 function() {
-	var selCnt = this._listView[this._currentView].getSelectionCount();
+	var selCnt = this._listView[this._currentViewId].getSelectionCount();
 	if (selCnt == 1) {
 		var respCallback = new AjxCallback(this, this._handleResponseSetSelectedItem);
 		var markRead = (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
@@ -565,7 +568,7 @@ function(msg) {
 		}
 
 		// make sure list view has this msg
-		var lv = this._listView[this._currentView];
+		var lv = this._listView[this._currentViewId];
 		var id = (lv.type == ZmItem.CONV && msg.type == ZmItem.MSG) ? msg.cid : msg.id;
 		if (lv.hasItem(id)) {
 			this._displayMsg(msg);
@@ -579,7 +582,7 @@ function(ev) {
 
 	if (!this.isReadingPaneOn()) {
 		// reset current message
-		var msg = this._listView[this._currentView].getSelection()[0];
+		var msg = this._listView[this._currentViewId].getSelection()[0];
 		if (msg) {
 			this._doublePaneView.resetMsg(msg);
 		}
@@ -588,13 +591,13 @@ function(ev) {
 
 ZmDoublePaneController.prototype._doDelete =
 function() {
-	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
+	this._listView[this._currentViewId]._itemToSelect = this._getNextItemToSelect();
 	ZmMailListController.prototype._doDelete.apply(this, arguments);
 };
 
 ZmDoublePaneController.prototype._doMove =
 function() {
-	this._listView[this._currentView]._itemToSelect = this._getNextItemToSelect();
+	this._listView[this._currentViewId]._itemToSelect = this._getNextItemToSelect();
 	ZmMailListController.prototype._doMove.apply(this, arguments);
 };
 
@@ -683,7 +686,7 @@ ZmDoublePaneController.prototype._dragListener =
 function(ev) {
 	ZmListController.prototype._dragListener.call(this, ev);
 	if (ev.action == DwtDragEvent.DRAG_END) {
-		this._resetOperations(this._toolbar[this._currentView], this._doublePaneView.getSelection().length);
+		this._resetOperations(this._toolbar[this._currentViewId], this._doublePaneView.getSelection().length);
 	}
 };
 
@@ -706,8 +709,8 @@ function(msg, resp) {
 
 ZmDoublePaneController.prototype._redrawDraftItemRows =
 function(msg) {
-	this._listView[this._currentView].redrawItem(msg);
-	this._listView[this._currentView].setSelection(msg, true);
+	this._listView[this._currentViewId].redrawItem(msg);
+	this._listView[this._currentViewId].setSelection(msg, true);
 };
 
 ZmDoublePaneController.prototype.selectFirstItem =
@@ -725,7 +728,7 @@ ZmDoublePaneController.prototype._getNextItemToSelect =
 function(omit) {
 
 	omit = omit || {};
-	var listView = this._listView[this._currentView];
+	var listView = this._listView[this._currentViewId];
 	var numSelected = listView.getSelectionCount();
 	if (numSelected) {
 		var selection = listView.getSelection();
@@ -773,7 +776,7 @@ function(text) {
 	if (this._itemCountText[ZmSetting.RP_BOTTOM]) {
 		this._itemCountText[ZmSetting.RP_BOTTOM].setText(rpr ? "" : text);
 	}
-	this._toolbar[this._currentView].adjustSize();
+	this._toolbar[this._currentViewId].adjustSize();
 };
 
 ZmDoublePaneController.prototype._postShowCallback =

@@ -49,6 +49,12 @@ ZmApptComposeController._VALUE = "value";
 
 // Public methods
 
+ZmApptComposeController.getDefaultViewType =
+function() {
+	return ZmId.VIEW_APPOINTMENT;
+};
+ZmApptComposeController.prototype.getDefaultViewType = ZmApptComposeController.getDefaultViewType;
+
 ZmApptComposeController.prototype.show =
 function(calItem, mode, isDirty) {
 	ZmCalItemComposeController.prototype.show.call(this, calItem, mode, isDirty);
@@ -1177,7 +1183,8 @@ function(initHide) {
 
 		var elements = this.getViewElements(null, this._composeView, this._toolbar);
 
-		this._app.createView({	viewId:		this.viewId,
+		this._app.createView({	viewId:		this._currentViewId,
+								viewType:	this._currentViewType,
 								elements:	elements,
 								controller:	this,
 								callbacks:	callbacks,

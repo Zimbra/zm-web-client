@@ -32,8 +32,8 @@
 ZmComposeView = function(parent, controller, composeMode) {
 
 	this.TEMPLATE = "mail.Message#Compose";
-	this._view = ZmId.VIEW_COMPOSE + controller.sessionId;
-	this._sessionId = controller.sessionId;
+	this._view = controller.getCurrentViewId();
+	this._sessionId = controller.getSessionId();
 
 	DwtComposite.call(this, {parent:parent, className:"ZmComposeView", posStyle:Dwt.ABSOLUTE_STYLE,
 							 id:ZmId.getViewId(this._view)});
@@ -1788,7 +1788,7 @@ function() {
 	var buttonText = this._subjectField.value
 		? this._subjectField.value.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT)
 		: ZmComposeController.DEFAULT_TAB_TEXT;
-	appCtxt.getAppViewMgr().setTabTitle(this._controller.viewId, buttonText);
+	appCtxt.getAppViewMgr().setTabTitle(this._controller.getCurrentViewId(), buttonText);
 };
 
 /**

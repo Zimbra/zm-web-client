@@ -59,13 +59,14 @@ function(sessionId) {
 	}
 
 	if (controller) {
-		sessionId = controller.sessionId;
+		sessionId = controller.getSessionId();
 		this._curSessionId[ZmId.VIEW_SEARCH_RESULTS] = sessionId;
 		controller.inactive = false;
 		return controller;
 	}
 
-	return this.getSessionController(ZmId.VIEW_SEARCH_RESULTS, "ZmSearchResultsController", sessionId);
+	return this.getSessionController({controllerClass:	"ZmSearchResultsController",
+									  sessionId:		sessionId});
 };
 
 // override so we don't try to set overview panel content

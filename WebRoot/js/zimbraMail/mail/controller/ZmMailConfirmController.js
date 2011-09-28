@@ -37,10 +37,11 @@ ZmMailConfirmController.prototype.constructor = ZmMailConfirmController;
 ZmMailConfirmController.prototype.isZmMailConfirmController = true;
 ZmMailConfirmController.prototype.toString = function() { return "ZmMailConfirmController"; };
 
-ZmMailConfirmController.prototype.getDefaultViewId =
+ZmMailConfirmController.getDefaultViewType =
 function() {
 	return ZmId.VIEW_MAIL_CONFIRM;
 };
+ZmMailConfirmController.prototype.getDefaultViewType = ZmMailConfirmController.getDefaultViewType;
 
 /**
  * Shows the confirmation that the message was sent.
@@ -71,7 +72,7 @@ function(msg, composeViewId, composeTabId, controller) {
 
 	var avm = appCtxt.getAppViewMgr();
 	avm.popView(this._composeViewId);
-	avm.pushView(this.viewId);
+	avm.pushView(this._currentViewId);
 };
 
 ZmMailConfirmController.prototype.resetToolbarOperations =
@@ -115,7 +116,8 @@ function() {
 	var callbacks = {};
 	callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
 	callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
-    this._app.createView({	viewId:		this.viewId,
+    this._app.createView({	viewId:		this._currentViewId,
+							viewType:	this._currentViewType,
 							elements:	elements,
 							controller:	this,
 							callbacks:	callbacks,

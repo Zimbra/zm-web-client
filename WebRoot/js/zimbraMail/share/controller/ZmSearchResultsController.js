@@ -47,10 +47,11 @@ ZmSearchResultsController.prototype.toString = function() { return "ZmSearchResu
 
 ZmSearchResultsController.DEFAULT_TAB_TEXT = ZmMsg.search;
 
-ZmSearchResultsController.prototype.getCurrentViewId =
+ZmSearchResultsController.getDefaultViewType =
 function() {
-	return this.viewId;
+	return ZmId.VIEW_SEARCH_RESULTS;
 };
+ZmSearchResultsController.prototype.getDefaultViewType = ZmSearchResultsController.getDefaultViewType;
 
 ZmSearchResultsController.prototype.show =
 function(results) {
@@ -81,14 +82,15 @@ function(resultsCtlr) {
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = resultsCtlr.getCurrentToolbar();
 	elements[ZmAppViewMgr.C_APP_CONTENT] = resultsCtlr.getCurrentView();
 	
-	this._app.createView({	viewId:		this.viewId,
+	this._app.createView({	viewId:		this._currentViewId,
+							viewType:	this._currentViewType,
 							elements:	elements,
 							controller:	this,
 //							show:		[ ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR ],
 							hide:		[ ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_TREE_FOOTER ],
 //							callbacks:	callbacks,
 							tabParams:	this._getTabParams()});
-	this._app.pushView(this.viewId);
+	this._app.pushView(this._currentViewId);
 };
 
 ZmSearchResultsController.prototype._getTabParams =

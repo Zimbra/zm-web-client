@@ -531,12 +531,13 @@ function() {
 /**
  * Shows the search results.
  * 
- * @param	{Object}	results	the results
- * @param	{AjxCallback}	callback		the callback
+ * @param	{Object}					results					the results
+ * @param	{AjxCallback}				callback				the callback
+ * @param 	{ZmSearchResultsController}	searchResultsController	owning controller
  */
 ZmContactsApp.prototype.showSearchResults =
-function(results, callback) {
-	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
+function(results, callback, searchResultsController) {
+	var loadCallback = this._handleLoadShowSearchResults.bind(this, results, callback, searchResultsController);
 	AjxDispatcher.require("Contacts", false, loadCallback, null, true);
 };
 
@@ -544,11 +545,12 @@ function(results, callback) {
  * @private
  */
 ZmContactsApp.prototype._handleLoadShowSearchResults =
-function(results, callback) {
+function(results, callback, searchResultsController) {
 	var search = results && results.search;
 	var folderId = search && search.singleTerm && search.folderId;
 	var isInGal = search && (search.contactSource == ZmId.SEARCH_GAL);
-	var controller = this.getContactListController();
+	var sessionId = searchResultsController ? searchResultsController.getCurrentViewId() : ZmApp.MAIN_SESSION;
+	var controller = this.getContactListController(sessionId, searchResultsController);
 	controller.show(results, isInGal, folderId);
 	this._setLoadedTime(this.toString(), new Date());
 	if (callback) {
@@ -1040,11 +1042,10 @@ function(msgId, vcardPartId) {
  * @return	{ZmContactListController}	the controller
  */
 ZmContactsApp.prototype.getContactListController =
-function() {
-	if (!this._contactListController) {
-		this._contactListController = new ZmContactListController(this._container, this);
-	}
-	return this._contactListController;
+function(sessionId, searchResultsController) {
+	return this.getSessionController({controllerClass:			"ZmContactListController",
+									  sessionId:				sessionId || ZmApp.MAIN_SESSION,
+									  searchResultsController:	searchResultsController});
 };
 
 /**
@@ -1054,7 +1055,8 @@ function() {
  */
 ZmContactsApp.prototype.getContactController =
 function(sessionId) {
-	return this.getSessionController(ZmId.VIEW_CONTACT, "ZmContactController", sessionId);
+	return this.getSessionController({controllerClass:	"ZmContactController",
+									  sessionId:		sessionId});
 };
 
 /**

@@ -63,7 +63,7 @@ function(activeSearch, conv, parentController, callback, markRead) {
 	this._conv = conv;
 
 	// always reset offset & sortby to asc.
-	var lv = this._listView[this._currentView];
+	var lv = this._listView[this._currentViewId];
 	if (lv) {
 		lv.offset = 0;
 		lv.setSortByAsc(ZmItem.F_DATE, false);
@@ -75,7 +75,7 @@ function(activeSearch, conv, parentController, callback, markRead) {
 	if (this._doublePaneView) {
 		this._doublePaneView._mailListView.reset();
 	}
-	this._setup(this._currentView);
+	this._setup(this._currentViewId);
 	
 	if (!conv._loaded) {
 		var respCallback = this._handleResponseLoadConv.bind(this, conv, callback);
@@ -97,7 +97,7 @@ function(conv, callback, result) {
 		this._activeSearch = searchResult;
 	}
 	
-	this._displayResults(this._currentView);
+	this._displayResults(this._currentViewId);
 	
 	if (callback) {
 		callback.run();
@@ -210,10 +210,11 @@ function() {
 };
 
 
-ZmConvController.prototype.getDefaultViewId =
+ZmConvController.getDefaultViewType =
 function() {
 	return ZmId.VIEW_CONV;
 };
+ZmConvController.prototype.getDefaultViewType = ZmConvController.getDefaultViewType;
 
 ZmConvController.prototype._setActiveSearch =
 function(view) {
@@ -232,7 +233,7 @@ function(ev) {
 		this._app.popView();
 	}
 	else if (ev.item.getMenu() == null) {
-		var items = this._listView[this._currentView].getSelection();
+		var items = this._listView[this._currentViewId].getSelection();
 		var delItems = [];
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
@@ -264,7 +265,7 @@ function(ev) {
 	ZmListController.prototype._dropListener.call(this, ev);
 	// need to check to make sure tagging actually happened
 	if (ev.action == DwtDropEvent.DRAG_DROP) {
-		var div = this._listView[this._currentView].getTargetItemDiv(ev.uiEvent);
+		var div = this._listView[this._currentViewId].getTargetItemDiv(ev.uiEvent);
 		if (div) {
 			var tag = ev.srcData;
 			if (!this._conv.hasTag(tag.id)) {
@@ -309,12 +310,12 @@ function() {
 		popAnyway = (msg.isInvite() && msg.folderId == ZmFolder.ID_TRASH);
 	}
 
-	popView = popView && ((currViewId == this._currentView) || popAnyway);
+	popView = popView && ((currViewId == this._currentViewId) || popAnyway);
 
 	if (popView) {
 		this._app.popView();
 	} else {
-		var delButton = this._toolbar[this._currentView].getButton(ZmOperation.DELETE_MENU);
+		var delButton = this._toolbar[this._currentViewId].getButton(ZmOperation.DELETE_MENU);
 		var delMenu = delButton ? delButton.getMenu() : null;
 		if (delMenu) {
 			delMenu.enable(ZmOperation.DELETE_MSG, false);
@@ -339,13 +340,13 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.NEXT_CONV:
-			if (this._navToolBar[this._currentView].getButton(ZmOperation.PAGE_FORWARD).getEnabled()) {
+			if (this._navToolBar[this._currentViewId].getButton(ZmOperation.PAGE_FORWARD).getEnabled()) {
 				this._goToConv(true);
 			}
 			break;
 
 		case ZmKeyMap.PREV_CONV:
-			if (this._navToolBar[this._currentView].getButton(ZmOperation.PAGE_BACK).getEnabled()) {
+			if (this._navToolBar[this._currentViewId].getButton(ZmOperation.PAGE_BACK).getEnabled()) {
 				this._goToConv(false);
 			}
 			break;
@@ -447,7 +448,7 @@ ZmConvController.prototype._selectNextItemInParentListView =
 function() {
 	var controller = this._parentController || AjxDispatcher.run("GetConvListController");
 	if (controller) {
-		controller._listView[controller._currentView]._itemToSelect = controller._getNextItemToSelect();
+		controller._listView[controller._currentViewId]._itemToSelect = controller._getNextItemToSelect();
 	}
 };
 
