@@ -14,6 +14,7 @@
  */
 
 ZmNewCalendarDialog = function(parent, className) {
+    if (arguments.length == 0) { return; }
 	var title = ZmMsg.createNewCalendar;
 	var type = ZmOrganizer.CALENDAR;
 	ZmNewOrganizerDialog.call(this, parent, className, title, type);
@@ -123,9 +124,26 @@ function() {
 	var data = ZmNewOrganizerDialog.prototype._getFolderData.call(this);
 	if (data) {
 		data.f = this._excludeFbCheckbox.checked ? "b#" : "#";
+        var url =  this._iCalData ? this._iCalData.url : "";
+        if(url) {
+            data.url = url;
+            this._iCalData = null;
+            delete this._iCalData;
+        }
 	}
 	return data;
 };
+
+ZmNewCalendarDialog.prototype._createRemoteContentHtml =
+function(html, idx) {
+	return idx;
+};
+
+ZmNewCalendarDialog.prototype.setICalData =
+function(iCalData) {
+	this._iCalData = iCalData;
+};
+
 
 /**
  * @Override Added for tabindexing checkboxes.

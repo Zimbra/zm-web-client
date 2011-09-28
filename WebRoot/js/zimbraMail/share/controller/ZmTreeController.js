@@ -990,6 +990,7 @@ function(ev, treeView, overviewId) {
 				} else {
 					node = this._addNew(treeView, parentNode, organizer, idx); // add to new parent
 				}
+                this.createDataSource(organizer);
 			} else if (ev.event == ZmEvent.E_MOVE) {
 				node.dispose();
 				if (parentNode) {
@@ -1097,6 +1098,11 @@ function(ev, account) {
 
 	ZmController.showDialog(newDialog, this._newCb, this._pendingActionData, account);
 	newDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newDialog);
+};
+
+ZmTreeController.prototype.createDataSource =
+function(organizer) {
+    //override
 };
 
 /**

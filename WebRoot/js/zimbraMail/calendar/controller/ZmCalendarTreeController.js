@@ -28,6 +28,7 @@ ZmCalendarTreeController = function() {
 	ZmTreeController.call(this, ZmOrganizer.CALENDAR);
 
 	this._listeners[ZmOperation.NEW_CALENDAR] = new AjxListener(this, this._newListener);
+	this._listeners[ZmOperation.ADD_EXTERNAL_CALENDAR] = new AjxListener(this, this._addExternalCalendarListener);
 	this._listeners[ZmOperation.CHECK_ALL] = new AjxListener(this, this._checkAllListener);
 	this._listeners[ZmOperation.CLEAR_ALL] = new AjxListener(this, this._clearAllListener);
 	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
@@ -277,7 +278,8 @@ function(ev) {
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = [ZmOperation.NEW_CALENDAR];
-	ops.push(ZmOperation.CHECK_ALL,
+	ops.push(ZmOperation.ADD_EXTERNAL_CALENDAR,
+            ZmOperation.CHECK_ALL,
 			ZmOperation.CLEAR_ALL,
 			ZmOperation.BROWSE,
 			ZmOperation.SEP,
@@ -442,10 +444,31 @@ function(controller, dialog, appts, dropFolder) {
 */
 ZmCalendarTreeController.prototype._getNewDialog =
 function() {
-	return appCtxt.getNewCalendarDialog();
+    return appCtxt.getNewCalendarDialog();
+};
+
+/*
+* Returns an "External Calendar" dialog.
+*/
+ZmCalendarTreeController.prototype.getExternalCalendarDialog =
+function() {
+    if(!this._externalCalendarDialog) {
+	    this._externalCalendarDialog = new ZmExternalCalendarDialog({parent: this._shell, controller: this});
+    }
+    return this._externalCalendarDialog;
 };
 
 // Listener callbacks
+
+/*
+* Listener to handle new external calendar.
+*/
+ZmCalendarTreeController.prototype._addExternalCalendarListener =
+function() {
+	var dialog = this.getExternalCalendarDialog();
+    dialog.popup();
+};
+
 
 ZmCalendarTreeController.prototype._changeListener =
 function(ev, treeView, overviewId) {
@@ -633,3 +656,107 @@ function(overviewId, account) {
 		treeItem.dispose();
 	}
 };
+
+/**
+ * Pops up the appropriate "New ..." dialog.
+ *
+ * @param {DwtUiEvent}	ev		the UI event
+ * @param {ZmZimbraAccount}	account	used by multi-account mailbox (optional)
+ *
+ * @private
+ */
+ZmCalendarTreeController.prototype._newListener =
+function(ev, account) {
+	this._pendingActionData = this._getActionedOrganizer(ev);
+	var newDialog = this._getNewDialog();
+    if(this._extCalData) {
+        var iCalData = this._extCalData ? this._extCalData.iCal : null;
+        newDialog.setICalData(iCalData);
+        newDialog.setTitle(ZmMsg.addExternalCalendar);
+    }
+    else {
+        newDialog.setTitle(ZmMsg.createNewCalendar);
+    }
+	if (!this._newCb) {
+		this._newCb = new AjxCallback(this, this._newCallback);
+	}
+	if (this._pendingActionData && !appCtxt.getById(this._pendingActionData.id)) {
+		this._pendingActionData = appCtxt.getFolderTree(account).root;
+	}
+
+	if (!account && appCtxt.multiAccounts) {
+		var ov = this._opc.getOverview(this._actionedOverviewId);
+		account = ov && ov.account;
+	}
+
+	ZmController.showDialog(newDialog, this._newCb, this._pendingActionData, account);
+	newDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newDialog);
+};
+
+ZmCalendarTreeController.prototype.setExternalCalendarData =
+function(extCalData) {
+    this._extCalData = extCalData;
+};
+
+ZmCalendarTreeController.prototype._clearDialog =
+function(dialog) {
+    ZmTreeController.prototype._clearDialog.apply(this, arguments);
+    if(this._externalCalendarDialog) {
+        this._externalCalendarDialog.popdown();
+    }
+};
+
+ZmCalendarTreeController.prototype.createDataSource =
+function(organizer, errorCallback) {
+    var calDav = this._extCalData && this._extCalData.calDav ? this._extCalData.calDav : null;
+    if(!calDav) { return; }
+    //var callback = new AjxCallback(this, this.createDataSourceCallback);
+    var soapDoc = AjxSoapDoc.create("CreateDataSourceRequest", "urn:zimbraMail");
+    var caldav = soapDoc.set("caldav");
+    caldav.setAttribute("name", organizer.name);
+    caldav.setAttribute("pollingInterval", "1m");
+    caldav.setAttribute("isEnabled", "1");
+    caldav.setAttribute("l", organizer.nId);
+    caldav.setAttribute("port", "443");
+    caldav.setAttribute("connectionType", "ssl");
+    caldav.setAttribute("host", calDav.hostUrl);
+    caldav.setAttribute("username", calDav.userName);
+    caldav.setAttribute("password", calDav.password);
+    var dsa;
+    if(calDav.hostUrl.indexOf("yahoo.com") !== -1) {
+        dsa = soapDoc.set("a", "p:/principals/users/_USERNAME_", caldav);
+    }
+    else {
+        dsa = soapDoc.set("a", "p:/calendar/dav/_USERNAME_/user", caldav);
+    }
+    dsa.setAttribute("n", "zimbraDataSourceAttribute");
+
+    this._extCalData = null;
+    delete this._extCalData;
+
+    var params = {
+        /*asyncMode: Boolean(callback),
+        callback: callback,
+        errorCallback: errorCallback,  */
+        soapDoc: soapDoc
+        };
+    var response = appCtxt.getAppController().sendRequest(params);
+    var dsResponse = response.CreateDataSourceResponse;
+    var sourceId =  dsResponse && dsResponse.caldav ? dsResponse.caldav[0].id : "";
+
+    if(sourceId) {
+        var soapDoc = AjxSoapDoc.create("ImportDataRequest", "urn:zimbraMail");
+        var a = soapDoc.set("caldav");
+        a.setAttribute("id", sourceId);
+        var params = {
+                  soapDoc: soapDoc,
+                  asyncMode: false
+                };
+        response = appCtxt.getAppController().sendRequest(params);
+    }
+
+    appCtxt.setStatusMsg(ZmMsg.addExternalCalendarSuccess);
+    return response;
+};
+
+

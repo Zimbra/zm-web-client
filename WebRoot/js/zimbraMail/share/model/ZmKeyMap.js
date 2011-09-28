@@ -88,6 +88,7 @@ ZmKeyMap.MAP_NAME_R = {};
 
 // Action codes
 ZmKeyMap.ADDRESS_PICKER			= "AddressPicker";
+ZmKeyMap.ADD_EXTERNAL_CALENDAR	= "AddExternalCalendar";
 ZmKeyMap.ASSISTANT				= "Assistant";
 ZmKeyMap.ATTACHMENT				= "Attachment";
 ZmKeyMap.CAL_DAY_VIEW			= "DayView";
@@ -148,6 +149,7 @@ ZmKeyMap.MOVE					= "Move";
 ZmKeyMap.MOVE_TO_INBOX			= "MoveToInbox";
 ZmKeyMap.MOVE_TO_JUNK			= "MoveToJunk";
 ZmKeyMap.MOVE_TO_TRASH			= "MoveToTrash";
+ZmKeyMap.MUTE_CONV			    = "MuteConv";
 ZmKeyMap.NEW					= "New";
 ZmKeyMap.NEW_APPT				= "NewAppointment";
 ZmKeyMap.NEW_BRIEFCASE			= "NewBriefcase";
@@ -199,6 +201,7 @@ ZmKeyMap.TAG					= "Tag";
 ZmKeyMap.TODAY					= "Today";
 ZmKeyMap.TOGGLE					= "Toggle";
 ZmKeyMap.UNDO					= "Undo";
+ZmKeyMap.UMMUTE_CONV			= "UnmuteConv";
 ZmKeyMap.UNTAG					= "Untag";
 ZmKeyMap.VIEW_BY_CONV			= "ViewByConversation";
 ZmKeyMap.VIEW_BY_MSG			= "ViewByMessage";
@@ -276,6 +279,8 @@ function() {
 	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.SAVE]				= ZmSetting.SAVE_DRAFT_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["ZmApptComposeController"] = {};
 	ZmKeyMap.ACTION_PRECONDITION["ZmApptComposeController"][ZmKeyMap.HTML_FORMAT]	= ZmSetting.HTML_COMPOSE_ENABLED;
+    ZmKeyMap.ACTION_PRECONDITION["ZmCalViewController"] = {};
+	ZmKeyMap.ACTION_PRECONDITION["ZmCalViewController"][ZmKeyMap.CAL_FB_VIEW]	= ZmSetting.FREE_BUSY_VIEW_ENABLED;
 };
 
 /**
