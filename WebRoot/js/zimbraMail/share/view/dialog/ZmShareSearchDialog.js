@@ -25,9 +25,10 @@ ZmShareSearchDialog = function(params) {
     // NOTE: that it is available when we initialize the email
     // NOTE: input field.
     var acparams = {
-        dataClass: appCtxt.getAutocompleter(),
-        matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
-        keyUpCallback: (new AjxCallback(this, this._acKeyUpListener))
+        dataClass:		appCtxt.getAutocompleter(),
+        matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
+        keyUpCallback:	this._acKeyUpListener.bind(this),
+		contextId:		this.toString()
     };
     this._acAddrSelectList = new ZmAutocompleteListView(acparams);
     
@@ -44,9 +45,8 @@ ZmShareSearchDialog = function(params) {
 ZmShareSearchDialog.prototype = new DwtDialog;
 ZmShareSearchDialog.prototype.constructor = ZmShareSearchDialog;
 
-ZmShareSearchDialog.prototype.toString = function() {
-    return "ZmShareSearchDialog";
-};
+ZmShareSearchDialog.prototype.isZmShareSearchDialog = true;
+ZmShareSearchDialog.prototype.toString = function() { return "ZmShareSearchDialog"; };
 
 //
 // Constants

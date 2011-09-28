@@ -126,6 +126,7 @@
  * @param	{AjxCallback}	keyDownCallback		the additional client ONKEYDOWN handler
  * @param	{AjxCallback}	keyPressCallback	the additional client ONKEYPRESS handler
  * @param	{AjxCallback}	keyUpCallback		the additional client ONKEYUP handler
+ * @param	{string}		contextId			ID from parent
  * @param	{Hash}			options				the additional options for the data class
  * 
  * @extends		DwtComposite
@@ -134,8 +135,13 @@ ZmAutocompleteListView = function(params) {
 
 	if (arguments.length == 0) { return; }
 
-	var className = params.className ? params.className : "ZmAutocompleteListView";
-	DwtComposite.call(this, params.parent || appCtxt.getShell(), className, DwtControl.ABSOLUTE_STYLE, null, this._htmlElId || Dwt.getNextId("ZmAutocompleteListView_") );
+	params.parent = params.parent || appCtxt.getShell();
+	params.className = params.className || "ZmAutocompleteListView";
+	params.posStyle = DwtControl.ABSOLUTE_STYLE;
+	params.id = params.contextId ? DwtId.makeId(ZmId.WIDGET_AUTOCOMPLETE, params.contextId) :
+								   this._htmlElId || Dwt.getNextId("ZmAutocompleteListView_");
+	DBG.println("acid", "ID: " + params.id);
+	DwtComposite.call(this, params);
 
 	this._dataClass = this._dataAPI = params.dataClass;
 	this._dataLoader = params.dataLoader;

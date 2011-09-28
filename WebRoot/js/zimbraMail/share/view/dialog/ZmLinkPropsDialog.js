@@ -41,6 +41,10 @@ ZmLinkPropsDialog = function(shell, className) {
 ZmLinkPropsDialog.prototype = new DwtDialog;
 ZmLinkPropsDialog.prototype.constructor = ZmLinkPropsDialog;
 
+ZmLinkPropsDialog.prototype.isZmLinkPropsDialog = true;
+ZmLinkPropsDialog.prototype.toString = function() { return "ZmLinkPropsDialog"; };
+		
+		
 // Public methods
 
 /**
@@ -372,12 +376,13 @@ function() {
 
 		// setup auto-completer
 		var params = {
-			dataClass: this,
-			dataLoader: this.getPageDataLoader,
-			matchValue: "name",
-			separator: "",
-			compCallback: new AjxCallback(this, this._setAcPageCompletion),
-			keyUpCallback: new AjxCallback(this, this._acKeyUpListener)
+			dataClass:		this,
+			dataLoader:		this.getPageDataLoader,
+			matchValue:		"name",
+			separator:		"",
+			compCallback:	this._setAcPageCompletion.bind(this),
+			keyUpCallback:	this._acKeyUpListener.bind(this),
+			contextId:		this.toString()
 		}
 		this._acPageList = new ZmAutocompleteListView(params);
 		this._acPageList.handle(pageInputEl);

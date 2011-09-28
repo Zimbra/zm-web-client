@@ -22,10 +22,8 @@ ZmMailPrefsPage = function(parent, section, controller) {
 ZmMailPrefsPage.prototype = new ZmPreferencesPage;
 ZmMailPrefsPage.prototype.constructor = ZmMailPrefsPage;
 
-ZmMailPrefsPage.prototype.toString =
-function() {
-	return "ZmMailPrefsPage";
-};
+ZmMailPrefsPage.prototype.isZmMailPrefsPage = true;
+ZmMailPrefsPage.prototype.toString = function() { return "ZmMailPrefsPage"; };
 
 //
 // ZmPreferencesPage methods
@@ -176,7 +174,7 @@ function() {
 	// Following code makes child nodes as siblings to separate the event-handling 
 	// between labels and input
 
-	var input = Dwt.byId(DwtId._makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
+	var input = Dwt.byId(DwtId.makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
 	var inputParent =  input && input.parentNode;
 	var newParent = inputParent && inputParent.parentNode;
 

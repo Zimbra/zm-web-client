@@ -22,10 +22,8 @@ ZmNewBuddyPopup = function(params) {
 ZmNewBuddyPopup.prototype = new ZmTaskbarPopup;
 ZmNewBuddyPopup.prototype.constructor = ZmNewBuddyPopup;
 
-ZmNewBuddyPopup.prototype.toString =
-function() {
-	return "ZmNewBuddyPopup";
-};
+ZmNewBuddyPopup.prototype.isZmNewBuddyPopup = true;
+ZmNewBuddyPopup.prototype.toString = function() { return "ZmNewBuddyPopup"; };
 
 ZmNewBuddyPopup.prototype.popup =
 function() {
@@ -304,8 +302,9 @@ ZmNewBuddyPopup.prototype._initAddressAutocomplete = function() {
 
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
-			dataClass: appCtxt.getAutocompleter(),
-			matchValue : ZmAutocomplete.AC_VALUE_EMAIL
+			dataClass:	appCtxt.getAutocompleter(),
+			matchValue:	ZmAutocomplete.AC_VALUE_EMAIL,
+			contextId:	[this.toString(), ZmAutocomplete.AC_TYPE_CONTACT].join("-")
 		};
 		this._addressAutocomplete = new ZmAutocompleteListView(params);
 		this._addressAutocomplete.handle(this._addrEntry.getInputElement());
@@ -321,7 +320,8 @@ ZmNewBuddyPopup.prototype._initGroupAutocomplete = function() {
 		       dataClass  : imApp,
 		       dataLoader : groupList,
 		       matchValue : "text",
-		       separator  : ','
+		       separator  : ',',
+			   contextId  :	[this.toString(), "ROSTER"].join("-")
 		     };
 	this._groupAutocomplete = new ZmAutocompleteListView(params);
 	this._groupAutocomplete.handle(this._groupsEntry.getInputElement());

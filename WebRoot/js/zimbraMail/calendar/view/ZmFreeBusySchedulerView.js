@@ -69,6 +69,9 @@ ZmFreeBusySchedulerView = function(parent, attendees, controller, dateInfo) {
 ZmFreeBusySchedulerView.prototype = new DwtComposite;
 ZmFreeBusySchedulerView.prototype.constructor = ZmFreeBusySchedulerView;
 
+ZmFreeBusySchedulerView.prototype.isZmFreeBusySchedulerView = true;
+ZmFreeBusySchedulerView.prototype.toString = function() { return "ZmFreeBusySchedulerView"; };
+
 
 // Consts
 
@@ -128,11 +131,6 @@ ZmFreeBusySchedulerView.BATCH_SIZE = 25;
 ZmFreeBusySchedulerView._VALUE = "value";
 
 // Public methods
-
-ZmFreeBusySchedulerView.prototype.toString =
-function() {
-	return "ZmFreeBusySchedulerView";
-};
 
 ZmFreeBusySchedulerView.prototype.setComposeMode =
 function(isComposeMode) {
@@ -267,30 +265,33 @@ function() {
 ZmFreeBusySchedulerView.prototype._initAutocomplete =
 function() {
 
-	var acCallback = new AjxCallback(this, this._autocompleteCallback);
-	var keyUpCallback = new AjxCallback(this, this._autocompleteKeyUpCallback);
+	var acCallback = this._autocompleteCallback.bind(this);
+	var keyUpCallback = this._autocompleteKeyUpCallback.bind(this);
 	this._acList = {};
 
 	// autocomplete for attendees
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
-			dataClass: appCtxt.getAutocompleter(),
-			separator: "",
-			options: {needItem: true},
-			matchValue: [ZmAutocomplete.AC_VALUE_NAME, ZmAutocomplete.AC_VALUE_EMAIL],
-			keyUpCallback: keyUpCallback,
-			compCallback: acCallback
+			dataClass:		appCtxt.getAutocompleter(),
+			separator:		"",
+			options:		{needItem: true},
+			matchValue:		[ZmAutocomplete.AC_VALUE_NAME, ZmAutocomplete.AC_VALUE_EMAIL],
+			keyUpCallback:	keyUpCallback,
+			compCallback:	acCallback
 		};
+		params.contextId = [this._controller.getCurrentViewId(), this.toString(), ZmCalBaseItem.PERSON].join("-");
 		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acList[ZmCalBaseItem.PERSON] = this._acContactsList;
 
 		// autocomplete for locations/equipment
 		if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 			params.options = {type:ZmAutocomplete.AC_TYPE_LOCATION};
+			params.contextId = [this._controller.getCurrentViewId(), this.toString(), ZmCalBaseItem.LOCATION].join("-");
 			this._acLocationsList = new ZmAutocompleteListView(params);
 			this._acList[ZmCalBaseItem.LOCATION] = this._acLocationsList;
 
 			params.options = {type:ZmAutocomplete.AC_TYPE_EQUIPMENT};
+			params.contextId = [this._controller.getCurrentViewId(), this.toString(), ZmCalBaseItem.EQUIPMENT].join("-");
 			this._acEquipmentList = new ZmAutocompleteListView(params);
 			this._acList[ZmCalBaseItem.EQUIPMENT] = this._acEquipmentList;
 		}

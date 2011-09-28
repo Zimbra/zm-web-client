@@ -1503,8 +1503,8 @@ function(folder) {
 ZmApptEditView.prototype._initAutocomplete =
 function() {
 
-	var acCallback = new AjxCallback(this, this._autocompleteCallback);
-	var keyPressCallback = new AjxCallback(this, this._onAttendeesChange);
+	var acCallback = this._autocompleteCallback.bind(this);
+	var keyPressCallback = this._onAttendeesChange.bind(this);
 	this._acList = {};
 
 	var params = {
@@ -1517,6 +1517,7 @@ function() {
 
 	// autocomplete for attendees (required and optional) and forward recipients
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this.GROUP_CALENDAR_ENABLED)	{
+		params.contextId = [this._controller.getCurrentViewId(), ZmCalBaseItem.PERSON].join("-");
 		var aclv = this._acContactsList = new ZmAutocompleteListView(params);
 		this._setAutocompleteHandler(aclv, ZmCalBaseItem.PERSON);
 		this._setAutocompleteHandler(aclv, ZmCalBaseItem.OPTIONAL_PERSON);
@@ -1527,13 +1528,14 @@ function() {
 
 	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		// autocomplete for locations		
-		params.keyUpCallback = new AjxCallback(this, this._handleLocationChange);
+		params.keyUpCallback = this._handleLocationChange.bind(this);
         //params.matchValue = ZmAutocomplete.AC_VALUE_NAME;
 		params.options = {addrBubbles:	this._useAcAddrBubbles,
 						  type:			ZmAutocomplete.AC_TYPE_LOCATION};
 		if (AjxEnv.isIE) {
-			params.keyDownCallback = new AjxCallback(this, this._resetKnownLocation);
+			params.keyDownCallback = this._resetKnownLocation.bind(this);
 		}
+		params.contextId = [this._controller.getCurrentViewId(), ZmCalBaseItem.LOCATION].join("-");
 		var aclv = this._acLocationsList = new ZmAutocompleteListView(params);
 		this._setAutocompleteHandler(aclv, ZmCalBaseItem.LOCATION);
 	}
@@ -1541,10 +1543,11 @@ function() {
     if (appCtxt.get(ZmSetting.GAL_ENABLED) && this.GROUP_CALENDAR_ENABLED) {
 		// autocomplete for locations
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
-        params.keyUpCallback = new AjxCallback(this, this._handleResourceChange);
+        params.keyUpCallback = this._handleResourceChange.bind(this);
         //params.matchValue = ZmAutocomplete.AC_VALUE_NAME;
         params.options = {addrBubbles:	this._useAcAddrBubbles,
                           type:ZmAutocomplete.AC_TYPE_EQUIPMENT};		
+		params.contextId = [this._controller.getCurrentViewId(), ZmCalBaseItem.EQUIPMENT].join("-");
 		var aclv = this._acResourcesList = new ZmAutocompleteListView(params);
         this._setAutocompleteHandler(aclv, ZmCalBaseItem.EQUIPMENT);
 	}

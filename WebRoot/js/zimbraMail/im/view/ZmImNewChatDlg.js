@@ -23,6 +23,9 @@ ZmImNewChatDlg = function() {
 ZmImNewChatDlg.prototype = new DwtDialog;
 ZmImNewChatDlg.prototype.constructor = ZmImNewChatDlg;
 
+ZmImNewChatDlg.prototype.isZmImNewChatDlg = true;
+ZmImNewChatDlg.prototype.toString = function() { return "ZmImNewChatDlg"; };
+
 ZmImNewChatDlg.prototype._init = function() {
 	var field = new DwtInputField({ parent : this,
 					size   : 25,
@@ -70,11 +73,12 @@ ZmImNewChatDlg.prototype.reset = function() {
 ZmImNewChatDlg.prototype._initAutocomplete =
 function() {
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		var acCallback = new AjxCallback(this, this._autocompleteCallback);
+		var acCallback = this._autocompleteCallback.bind(this);
 		var params = {
-			dataClass: appCtxt.getAutocompleter(),
-			matchValue: ZmAutocomplete.AC_VALUE_FULL,
-			compCallback : acCallback
+			dataClass:		appCtxt.getAutocompleter(),
+			matchValue:		ZmAutocomplete.AC_VALUE_FULL,
+			compCallback:	acCallback,
+			contextId:		this.toString()
 		};
 		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acContactsList.handle(this._contactField.getInputElement());

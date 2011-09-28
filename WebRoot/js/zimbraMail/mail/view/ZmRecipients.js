@@ -13,28 +13,37 @@
  * ***** END LICENSE BLOCK *****
  */
 
-
-ZmRecipients = function(resetContainerSizeMethod, enableContainerInputs, reenter,
-                        contactPopdownListener) {
-
-    //DwtComposite.call(this, {parent:parent, posStyle:posStyle, className:className, id:uid});
+/**
+ * @class
+ * This class provides a central area for managing email recipient fields. It is not a control,
+ * and does not exist within the widget hierarchy.
+ * 
+ * @param {hash}		params						a hash of params:
+ * @param {function}	resetContainerSizeMethod	callback for when size needs to be adjusted
+ * @param {function}	enableContainerInputs		callback for enabling/disabling input fields
+ * @param {function}	reenter						callback to enable design mode
+ * @param {AjxListener}	contactPopdownListener		listener called when contact picker pops down
+ * @param {string}		contextId					ID of owner (used for autocomplete list)
+ */
+ZmRecipients = function(params) {
 
     this._useAcAddrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
-	this._divId = {};
-	this._buttonTdId = {};
-	this._fieldId = {};
-	this._using = {};
-	this._button = {};
-	this._field = {};
-	this._divEl = {};
+	this._divId			= {};
+	this._buttonTdId	= {};
+	this._fieldId		= {};
+	this._using			= {};
+	this._button		= {};
+	this._field			= {};
+	this._divEl			= {};
     if (this._useAcAddrBubbles) {
         this._addrInputField = {};
     }
 
-    this._resetContainerSize = resetContainerSizeMethod;
-    this._enableContainerInputs = enableContainerInputs;
-    this._reenter = reenter;
-    this._contactPopdownListener = contactPopdownListener;
+    this._resetContainerSize = params.resetContainerSizeMethod;
+    this._enableContainerInputs = params.enableContainerInputs;
+    this._reenter = params.reenter;
+    this._contactPopdownListener = params.contactPopdownListener;
+	this._contextId = params.contextId;
 
     this._bubbleOps = {};
     this._bubbleOps[AjxEmailAddress.TO]  = ZmOperation.MOVE_TO_TO;
@@ -44,13 +53,11 @@ ZmRecipients = function(resetContainerSizeMethod, enableContainerInputs, reenter
     this._opToField[ZmOperation.MOVE_TO_TO]  = AjxEmailAddress.TO;
     this._opToField[ZmOperation.MOVE_TO_CC] = AjxEmailAddress.CC;
     this._opToField[ZmOperation.MOVE_TO_BCC] = AjxEmailAddress.BCC;
-
-
 };
 
 ZmRecipients.OP = {};
-ZmRecipients.OP[AjxEmailAddress.TO]	= ZmId.CMP_TO;
-ZmRecipients.OP[AjxEmailAddress.CC]	= ZmId.CMP_CC;
+ZmRecipients.OP[AjxEmailAddress.TO]		= ZmId.CMP_TO;
+ZmRecipients.OP[AjxEmailAddress.CC]		= ZmId.CMP_CC;
 ZmRecipients.OP[AjxEmailAddress.BCC]	= ZmId.CMP_BCC;
 
 ZmRecipients.ADDR_SETTING = {};
@@ -86,7 +93,8 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 			matchValue:		ZmAutocomplete.AC_VALUE_FULL,
 			compCallback:	(new AjxCallback(this, this._acCompHandler)),
 			keyUpCallback:	(new AjxCallback(this, this._acKeyupHandler)),
-			options:		{addrBubbles:this._useAcAddrBubbles}
+			options:		{addrBubbles:this._useAcAddrBubbles},
+			contextId:		this._contextId
 		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
@@ -417,7 +425,9 @@ function(bEnable) {
 ZmRecipients.prototype.addressButtonListener =
 function(ev, addrTypet) {
 	var obj = ev ? DwtControl.getTargetControl(ev) : null;
-	this._enableContainerInputs(false);
+	if (this._enableContainerInputs) {
+		this._enableContainerInputs(false);
+	}
 
 	if (!this._contactPicker) {
 		AjxDispatcher.require("ContactsCore");
@@ -439,7 +449,9 @@ function(ev, addrTypet) {
 		addrList[type] = this._useAcAddrBubbles ? this._addrInputField[type].getAddresses(true) :
 				   								  addrs[type] && addrs[type].good.getArray();
 	}
-	this._contactPicker.addPopdownListener(this._contactPopdownListener);
+	if (this._contactPopdownListener) {
+		this._contactPicker.addPopdownListener(this._contactPopdownListener);
+	}
 	var str = (this._field[curType].value && !(addrList[curType] && addrList[curType].length))
 		? this._field[curType].value : "";
 
@@ -470,7 +482,9 @@ function(type, show, skipNotify, skipFocus) {
 	if ((type == AjxEmailAddress.BCC) && this._toggleBccEl) {
 		Dwt.setInnerHtml(this._toggleBccEl, show ? ZmMsg.hideBCC : ZmMsg.showBCC );
 	}
-	this._resetContainerSize();
+	if (this._resetContainerSize) {
+		this._resetContainerSize();
+	}
 };
 
 
@@ -508,7 +522,7 @@ function(textarea, skipResetBodySize) {
 			textarea.style.overflow = "hidden";
 		}
 
-		if (!skipResetBodySize) {
+		if (!skipResetBodySize && this._resetContainerSize) {
 			this._resetContainerSize();
 		}
 
@@ -527,7 +541,9 @@ function(textarea, skipResetBodySize) {
 					textarea.style.overflow = "auto";
 			}
 			textarea.style.height = sh + 13;
-			this._resetContainerSize();
+			if (this._resetContainerSize) {
+				this._resetContainerSize();
+			}
 		} else {
 			if (AjxEnv.isIE) {
 				// for IE use overflow-y
@@ -550,7 +566,9 @@ function(textarea, skipResetBodySize) {
 ZmRecipients.prototype._bubblesChangedCallback =
 function() {
 	if (!this._useAcAddrBubbles) { return; }
-	this._resetContainerSize(); // body size might change due to change in size of address field (due to new bubbles).
+	if (this._resetContainerSize) {
+		this._resetContainerSize(); // body size might change due to change in size of address field (due to new bubbles).
+	}
 };
 
 ZmRecipients.prototype._bubbleMenuCreated =
@@ -660,7 +678,9 @@ function(ev) {
 ZmRecipients.prototype._contactPickerOkCallback =
 function(addrs) {
 
-	this._enableContainerInputs(true);
+	if (this._enableContainerInputs) {
+		this._enableContainerInputs(true);
+	}
 	for (var i = 0; i < this._fieldNames.length; i++) {
 		var type = this._fieldNames[i];
 		this.setAddress(type, "");
@@ -675,9 +695,13 @@ function(addrs) {
 	//Also - it's better to do it once than for every bubble in this case. user might add many addresses with the picker
 	this._bubblesChangedCallback();
 
-	this._contactPicker.removePopdownListener(this._contactPopdownListener);
+	if (this._contactPopdownListener) {
+		this._contactPicker.removePopdownListener(this._contactPopdownListener);
+	}
 	this._contactPicker.popdown();
-	this._reenter();
+	if (this._reenter) {
+		this._reenter();
+	}
 };
 
 // Expands any addresses that are groups
@@ -705,8 +729,12 @@ function(addrs) {
 
 ZmRecipients.prototype._contactPickerCancelCallback =
 function() {
-	this._enableContainerInputs(true);
-	this._reenter();
+	if (this._enableContainerInputs) {
+		this._enableContainerInputs(true);
+	}
+	if (this._reenter) {
+		this._reenter();
+	}
 };
 
 

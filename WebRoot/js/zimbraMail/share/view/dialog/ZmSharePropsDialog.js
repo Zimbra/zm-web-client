@@ -35,9 +35,10 @@ ZmSharePropsDialog = function(shell, className) {
 	// create auto-completer	
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
-			dataClass: appCtxt.getAutocompleter(),
-			matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
-			keyUpCallback: (new AjxCallback(this, this._acKeyUpListener))
+			dataClass:		appCtxt.getAutocompleter(),
+			matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
+			keyUpCallback:	this._acKeyUpListener.bind(this),
+			contextId:		this.toString()
 		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
@@ -50,6 +51,8 @@ ZmSharePropsDialog = function(shell, className) {
 ZmSharePropsDialog.prototype = new DwtDialog;
 ZmSharePropsDialog.prototype.constructor = ZmSharePropsDialog;
 
+ZmSharePropsDialog.prototype.isZmSharePropsDialog = true;
+ZmSharePropsDialog.prototype.toString = function() { return "ZmSharePropsDialog"; };
 
 // Constants
 /**
@@ -67,10 +70,6 @@ ZmSharePropsDialog.prototype._mode = ZmSharePropsDialog.NEW;
 
 // Public methods
 
-ZmSharePropsDialog.prototype.toString =
-function() {
-	return "ZmSharePropsDialog";
-};
 
 /**
  * Pops-up the dialog.

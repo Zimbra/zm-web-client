@@ -33,6 +33,9 @@ ZmMailListView = function(params) {
 ZmMailListView.prototype = new ZmListView;
 ZmMailListView.prototype.constructor = ZmMailListView;
 
+ZmMailListView.prototype.isZmMailListView = true;
+ZmMailListView.prototype.toString = function() { return "ZmMailListView"; };
+
 // Consts
 ZmMailListView.ROW_DOUBLE_CLASS	= "RowDouble";
 
@@ -70,10 +73,6 @@ ZmMailListView.SORTBY_HASH[ZmSearch.PRIORITY_DESC] = {field:ZmItem.F_PRIORITY, m
 
 // Public methods
 
-ZmMailListView.prototype.toString = 
-function() {
-	return "ZmMailListView";
-};
 
 // Reset row style
 ZmMailListView.prototype.markUIAsRead = 
@@ -151,7 +150,7 @@ function(actionCode, ev) {
 	} else if (actionCode == DwtKeyMap.SELECT_ALL) {
 		DwtListView.prototype.handleKeyAction.apply(this, arguments);
 		var ctlr = this._controller;
-		ctlr._resetOperations(ctlr._toolbar[ctlr._currentView], this.getSelectionCount());
+		ctlr._resetOperations(ctlr.getCurrentToolbar(), this.getSelectionCount());
 		return true;
 	}
 	return DwtListView.prototype.handleKeyAction.apply(this, arguments);
@@ -442,7 +441,7 @@ function(defaultColumnSort) {
 		if (rpLoc == ZmSetting.RP_RIGHT) {
 			var td = document.getElementById(this._itemCountTextTdId);
 			if (td) {
-				var textId = DwtId._makeId(this.view, rpLoc, "text");
+				var textId = DwtId.makeId(this.view, rpLoc, "text");
 				var textDiv = document.getElementById(textId);
 				if (!textDiv) {
 					var text = this._controller._itemCountText[rpLoc] =
@@ -506,7 +505,7 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 
 	if (headerCol._field == ZmItem.F_SORTED_BY) {
 		var field = headerCol._field;
-		var textTdId = this._itemCountTextTdId = DwtId._makeId(this.view, ZmSetting.RP_RIGHT, "td");
+		var textTdId = this._itemCountTextTdId = DwtId.makeId(this.view, ZmSetting.RP_RIGHT, "td");
 		htmlArr[idx++] = "<td id='";
 		htmlArr[idx++] = id;
 		htmlArr[idx++] = "' class='";

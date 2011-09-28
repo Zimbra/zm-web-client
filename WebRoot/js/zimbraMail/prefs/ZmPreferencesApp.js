@@ -36,6 +36,13 @@ ZmPreferencesApp = function(container, parentController) {
 	this._outgoingFilterRules = {};
 };
 
+ZmPreferencesApp.prototype = new ZmApp;
+ZmPreferencesApp.prototype.constructor = ZmPreferencesApp;
+
+ZmPreferencesApp.prototype.isZmPreferencesApp = true;
+ZmPreferencesApp.prototype.toString = function() { return "ZmPreferencesApp"; };
+
+
 // Organizer and item-related constants
 ZmEvent.S_FILTER					= "FILTER";
 ZmEvent.S_PREF_ZIMLET				= "PREF_ZIMLET";
@@ -53,14 +60,6 @@ ZmApp.LOAD_SORT[ZmApp.PREFERENCES]	= 10;
 ZmApp.QS_ARG[ZmApp.PREFERENCES]		= "options";
 ZmOrganizer.PREF_PAGE				= "PREF_PAGE";
 ZmPreferencesApp.QS_ARG_SECTION		= "section";
-
-ZmPreferencesApp.prototype = new ZmApp;
-ZmPreferencesApp.prototype.constructor = ZmPreferencesApp;
-
-ZmPreferencesApp.prototype.toString =
-function() {
-	return "ZmPreferencesApp";
-};
 
 // NOTE: This is registered staticly to guarantee that all of the
 //       enabled app's preferences will be registered by the time
@@ -623,7 +622,7 @@ function() {
 		displayContainer:	ZmPref.TYPE_FONT
 	});
 
-	var markReadTime = AjxMessageFormat.format(ZmMsg.messageReadTime, DwtId._makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
+	var markReadTime = AjxMessageFormat.format(ZmMsg.messageReadTime, DwtId.makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
 	ZmPref.registerPref("MARK_MSG_READ", {
 		displayName:		ZmMsg.messageReadLabel,
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,

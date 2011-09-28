@@ -32,14 +32,13 @@ ZmMailRedirectDialog = function(parent, className) {
 
     DwtDialog.call(this, {parent:parent, className:className, title:ZmMsg.mailRedirect});
 
-	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._handleCancelButton));
+	this.setButtonListener(DwtDialog.CANCEL_BUTTON, this._handleCancelButton.bind(this));
 
-    var emptyMethod = this._emptyMethod.bind(this);
-    var enableInputs  = this.enableInputs.bind(this);
-    var contactPopdownListener = this.contactPopdownListener.bind(this);
-
-    // ResizeBody, EnableInputs, ReEnter, ContactPopdownListener
-    this._recipients = new ZmRecipients(emptyMethod, enableInputs, emptyMethod, contactPopdownListener);
+	var recipParams = {};
+	recipParams.enableContainerInputs		= this.enableInputs.bind(this);
+	recipParams.contactPopdownListener		= this.contactPopdownListener.bind(this);
+	recipParams.contextId					= this.toString();
+    this._recipients = new ZmRecipients(recipParams);
 
     this._useAcAddrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
     this._fieldNames = [AjxEmailAddress.TO];
@@ -65,13 +64,8 @@ ZmMailRedirectDialog = function(parent, className) {
 ZmMailRedirectDialog.prototype = new DwtDialog;
 ZmMailRedirectDialog.prototype.constructor = ZmMailRedirectDialog;
 
-
-// Public methods
-
-ZmMailRedirectDialog.prototype.toString =
-function() {
-	return "ZmMailRedirectDialog";
-};
+ZmMailRedirectDialog.prototype.isZmMailRedirectDialog = true;
+ZmMailRedirectDialog.prototype.toString = function() { return "ZmMailRedirectDialog"; };
 
 
 
@@ -107,8 +101,6 @@ function() {
 
 
 // Miscellaneous methods
-ZmMailRedirectDialog.prototype._emptyMethod =
-function() { };
 
 ZmMailRedirectDialog.prototype.enableInputs =
 function(bEnable) {

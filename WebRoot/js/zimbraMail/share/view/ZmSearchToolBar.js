@@ -481,12 +481,11 @@ function(id) {
 
 	if (needPeople) {
 		var params = {
-			parent: appCtxt.getShell(),
-			dataClass: (new ZmPeopleSearchAutocomplete()),
-			matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
-			options: {type:ZmAutocomplete.AC_TYPE_GAL},
-			separator: "",
-			compCallback: (new AjxCallback(this, this._acCompCallback))
+			parent:			appCtxt.getShell(),
+			dataClass:		(new ZmPeopleSearchAutocomplete()),
+			matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
+			options:		{type:ZmAutocomplete.AC_TYPE_GAL},
+			separator:		""
 		};
 		this._autocomplete = new ZmPeopleAutocompleteListView(params);
 		this._autocomplete.handle(this._searchField.getInputElement());
@@ -499,7 +498,8 @@ function(id) {
 		delims:				[" ", "\t"],
 		delimCodes:			[3, 13, 32, 9],
 		separator:			" ",
-		keyDownCallback:	new AjxCallback(this, this._handleKeyDown)
+		keyDownCallback:	this._handleKeyDown.bind(this),
+		contextId:			this.toString()
 	};
 	this._acList = new ZmAutocompleteListView(params);
 	this._acList.handle(this.getSearchField());

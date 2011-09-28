@@ -378,11 +378,12 @@ function() {
 		// autocomplete for locations
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {
-			dataClass: appCtxt.getAutocompleter(),
-			matchValue: ZmAutocomplete.AC_VALUE_NAME,
-			compCallback: acCallback,
-            keyUpCallback: new AjxCallback(this, this._handleLocationChange),
-			options: {type:ZmAutocomplete.AC_TYPE_LOCATION}
+			dataClass:		appCtxt.getAutocompleter(),
+			matchValue:		ZmAutocomplete.AC_VALUE_NAME,
+			compCallback:	acCallback,
+            keyUpCallback:	this._handleLocationChange.bind(this),
+			options:		{type:ZmAutocomplete.AC_TYPE_LOCATION},
+			contextId:		[this.toString(), ZmCalBaseItem.LOCATION].join("-")
 		};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acLocationsList.handle(this._locationField.getInputElement());

@@ -79,6 +79,7 @@ ZmId.WIDGET_TREE			= "zt";			// tree view
 ZmId.WIDGET_TREE_ITEM_HDR	= "ztih";		// root tree item
 ZmId.WIDGET_TREE_ITEM		= "zti";		// tree item (node)
 ZmId.WIDGET_TAB				= "ztab";		// tab button
+ZmId.WIDGET_AUTOCOMPLETE	= "zac";		// autocomplete list
 
 //
 // Preset IDs
@@ -164,7 +165,7 @@ ZmId.APP_CHOOSER			= "ztb_appChooser";		// app chooser toolbar
  */
 ZmId.getToolbarId =
 function(context, tbType) {
-	return DwtId._makeId(ZmId.WIDGET_TOOLBAR, context, tbType);
+	return DwtId.makeId(ZmId.WIDGET_TOOLBAR, context, tbType);
 };
 
 // special toolbars
@@ -189,7 +190,7 @@ ZmId.TB_REPLY	= "Rep";
  */
 ZmId.getButtonId =
 function(context, op, tbType) {
-	return DwtId._makeId(ZmId.WIDGET_BUTTON, context, tbType, op);
+	return DwtId.makeId(ZmId.WIDGET_BUTTON, context, tbType, op);
 };
 
 /**
@@ -205,7 +206,7 @@ function(context, op, tbType) {
  */
 ZmId.getMenuId =
 function(context, menuType) {
-	return DwtId._makeId(ZmId.WIDGET_MENU, context, menuType);
+	return DwtId.makeId(ZmId.WIDGET_MENU, context, menuType);
 };
 
 // special menus
@@ -226,7 +227,7 @@ ZmId.MENU_DRAFTS		= "Dra";
  */
 ZmId.getMenuItemId =
 function(context, op, menuType) {
-	return DwtId._makeId(ZmId.WIDGET_MENU_ITEM, context, menuType, op);
+	return DwtId.makeId(ZmId.WIDGET_MENU_ITEM, context, menuType, op);
 };
 
 /**
@@ -237,7 +238,7 @@ function(context, op, menuType) {
  */
 ZmId.getOverviewContainerId =
 function(overviewContainerId) {
-	return DwtId._makeId(ZmId.WIDGET_OVERVIEW_CNTR, overviewContainerId);
+	return DwtId.makeId(ZmId.WIDGET_OVERVIEW_CNTR, overviewContainerId);
 };
 
 /**
@@ -252,7 +253,7 @@ function(overviewContainerId) {
  */
 ZmId.getOverviewId =
 function(overviewId) {
-	return DwtId._makeId(ZmId.WIDGET_OVERVIEW, overviewId);
+	return DwtId.makeId(ZmId.WIDGET_OVERVIEW, overviewId);
 };
 
 /**
@@ -268,7 +269,7 @@ function(overviewId) {
  */
 ZmId.getTreeId =
 function(overviewId, orgType) {
-	return DwtId._makeId(ZmId.WIDGET_TREE, overviewId, orgType);
+	return DwtId.makeId(ZmId.WIDGET_TREE, overviewId, orgType);
 };
 
 /**
@@ -294,9 +295,9 @@ ZmId.getTreeItemId =
 function(overviewId, organizerId, type) {
 	if (!organizerId && !type) { return; }
 	if (type) {
-		return DwtId._makeId(ZmId.WIDGET_TREE_ITEM_HDR, overviewId, type);
+		return DwtId.makeId(ZmId.WIDGET_TREE_ITEM_HDR, overviewId, type);
 	} else {
-		return DwtId._makeId(ZmId.WIDGET_TREE_ITEM, overviewId, organizerId);
+		return DwtId.makeId(ZmId.WIDGET_TREE_ITEM, overviewId, organizerId);
 	}
 };
 
@@ -317,7 +318,7 @@ function(overviewId, organizerId, type) {
  */
 ZmId.getViewId =
 function(viewId, component, context) {
-	var id = DwtId._makeId(ZmId.WIDGET_VIEW, context, viewId);
+	var id = DwtId.makeId(ZmId.WIDGET_VIEW, context, viewId);
 	return component ? [id, component].join("") : id;
 };
 
@@ -335,7 +336,7 @@ function(viewId, component, context) {
  */
 ZmId.getComposeViewId =
 function(component) {
-	var id = DwtId._makeId(ZmId.WIDGET, ZmId.COMPOSE_VIEW);
+	var id = DwtId.makeId(ZmId.WIDGET, ZmId.COMPOSE_VIEW);
 	return component ? [id, component].join("") : id;
 };
 
@@ -360,7 +361,7 @@ function(component) {
  */
 ZmId.getTabId =
 function(context, tabName) {
-	return DwtId._makeId(ZmId.WIDGET_TAB, context, tabName);
+	return DwtId.makeId(ZmId.WIDGET_TAB, context, tabName);
 };
 
 /**

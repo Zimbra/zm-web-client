@@ -45,6 +45,11 @@ ZmTaskListView = function(parent, controller, dropTgt) {
 ZmTaskListView.prototype = new ZmListView;
 ZmTaskListView.prototype.constructor = ZmTaskListView;
 
+ZmTaskListView.prototype.isZmTaskListView = true;
+ZmTaskListView.prototype.toString = function() { return "ZmTaskListView"; };
+
+
+
 ZmTaskListView.SASH_THRESHOLD = 5;
 
 // Consts
@@ -77,15 +82,6 @@ ZmTaskListView._NEW_TASK_ROW_ID = "_newTaskBannerId";
 
 // Public Methods
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmTaskListView.prototype.toString =
-function() {
-	return "ZmTaskListView";
-};
 
 ZmTaskListView.prototype.setSize =
 function(width, height) {
@@ -591,7 +587,7 @@ ZmTaskListView.prototype._createHeader =
 function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
     if (headerCol._field == ZmItem.F_SORTED_BY) {
 		var field = headerCol._field;
-		var textTdId = this._itemCountTextTdId = DwtId._makeId(this.view, ZmSetting.RP_RIGHT, "td");
+		var textTdId = this._itemCountTextTdId = DwtId.makeId(this.view, ZmSetting.RP_RIGHT, "td");
 		htmlArr[idx++] = "<td id='";
 		htmlArr[idx++] = id;
 		htmlArr[idx++] = "' class='";

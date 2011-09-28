@@ -42,17 +42,13 @@ ZmCalendarPrefsPage = function(parent, section, controller) {
 
 	this._currentSelection = {};
 	this._initAutocomplete();
-
-
 };
 
 ZmCalendarPrefsPage.prototype = new ZmPreferencesPage;
 ZmCalendarPrefsPage.prototype.constructor = ZmCalendarPrefsPage;
 
-ZmCalendarPrefsPage.prototype.toString =
-function() {
-	return "ZmCalendarPrefsPage";
-};
+ZmCalendarPrefsPage.prototype.isZmCalendarPrefsPage = true;
+ZmCalendarPrefsPage.prototype.toString = function() { return "ZmCalendarPrefsPage"; };
 
 ZmCalendarPrefsPage.prototype.reset =
 function(useDefaults) {
@@ -432,10 +428,11 @@ function() {
 		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
 		var contactsLoader = contactsClass.getContactList;
 		var params = {
-			dataClass:appCtxt.getAutocompleter(),
-			separator:"",
-			matchValue:ZmAutocomplete.AC_VALUE_EMAIL,
-			options:{galOnly:true}
+			dataClass:	appCtxt.getAutocompleter(),
+			separator:	"",
+			matchValue:	ZmAutocomplete.AC_VALUE_EMAIL,
+			options:	{galOnly:true},
+			contextId:	this.toString()
 		};
 		this._acList = new ZmAutocompleteListView(params);
 	}

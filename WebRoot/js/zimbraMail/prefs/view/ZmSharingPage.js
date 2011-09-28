@@ -36,10 +36,8 @@ ZmSharingPage = function(parent, section, controller) {
 ZmSharingPage.prototype = new ZmPreferencesPage;
 ZmSharingPage.prototype.constructor = ZmSharingPage;
 
-ZmSharingPage.prototype.toString =
-function () {
-    return "ZmSharingPage";
-};
+ZmSharingPage.prototype.isZmSharingPage = true;
+ZmSharingPage.prototype.toString = function () { return "ZmSharingPage"; };
 
 ZmSharingPage.prototype.getShares =
 function(type, owner, callback) {
@@ -443,7 +441,8 @@ function() {
 			dataClass:		appCtxt.getAutocompleter(),
 			matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
 			separator:		"",
-			keyUpCallback:	new AjxCallback(this, this._enterCallback)
+			keyUpCallback:	this._enterCallback.bind(this),
+			contextId:		this.toString()
 		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 		var inputCtrl = this._shareForm.getControl(ZmSharingView.ID_OWNER);

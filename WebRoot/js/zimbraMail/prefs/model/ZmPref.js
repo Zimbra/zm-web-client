@@ -24,6 +24,9 @@ ZmPref = function(id, name, dataType) {
 ZmPref.prototype = new ZmSetting;
 ZmPref.prototype.constructor = ZmPref;
 
+ZmPref.prototype.isZmPref = true;
+ZmPref.prototype.toString = function() { return "ZmPref"; };
+
 ZmPref.KEY_ID				= "prefId_";
 
 ZmPref.TYPE_STATIC			= "STATIC"; // static text
@@ -366,7 +369,7 @@ function(value) {
 ZmPref.markMsgReadValue =
 function(value) {
 	if (value == ZmSetting.MARK_READ_TIME) {
-		var input = Dwt.byId(DwtId._makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
+		var input = Dwt.byId(DwtId.makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
 		if (input) {
 			return input.value;
 		}

@@ -21,9 +21,9 @@
  *
  * @author Conrad Damon
  * 
- * @param {DwtControl}	parent		the element that created this view
- * @param {ZmController}	controller	the controller managing this view
- * @param {constant}	composeMode 	passed in so detached window knows which mode to be in on startup
+ * @param {DwtControl}		parent			the element that created this view
+ * @param {ZmController}	controller		the controller managing this view
+ * @param {constant}		composeMode 	passed in so detached window knows which mode to be in on startup
  * 
  * @extends		DwtComposite
  * 
@@ -54,11 +54,16 @@ ZmComposeView = function(parent, controller, composeMode) {
 	this._useAcAddrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 
 	this._controller = controller;
-    var resetBodySize = this._resetBodySize.bind(this);
-    var enableInputs  = this.enableInputs.bind(this);
-    var reenter       = this.reEnableDesignMode.bind(this);
-    this._recipients = new ZmRecipients(resetBodySize, enableInputs, reenter,
-                                        this._controller._dialogPopdownListener);
+
+	var recipParams = {};
+	recipParams.resetContainerSizeMethod	= this._resetBodySize.bind(this);
+	recipParams.enableContainerInputs		= this.enableInputs.bind(this);
+	recipParams.reenter						= this.reEnableDesignMode.bind(this);
+	recipParams.contactPopdownListener		= this._controller._dialogPopdownListener;
+	recipParams.contextId					= this._controller.getCurrentViewId();
+
+    this._recipients = new ZmRecipients(recipParams);
+
 	this._initialize(composeMode);
 
 	// make sure no unnecessary scrollbars show up
@@ -68,10 +73,8 @@ ZmComposeView = function(parent, controller, composeMode) {
 ZmComposeView.prototype = new DwtComposite;
 ZmComposeView.prototype.constructor = ZmComposeView;
 
-ZmComposeView.prototype.toString =
-function() {
-	return "ZmComposeView";
-};
+ZmComposeView.prototype.isZmComposeView = true;
+ZmComposeView.prototype.toString = function() {	return "ZmComposeView"; };
 
 //
 // Constants
