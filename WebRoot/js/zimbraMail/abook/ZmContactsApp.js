@@ -560,7 +560,8 @@ function(results, callback, searchResultsController) {
 
 ZmContactsApp.prototype.runRefresh =
 function() {
-	this.getContactListController().runRefresh();
+	var clc = AjxDispatcher.run("GetContactListController");
+	clc.getContactListController().runRefresh();
 };
 
 
