@@ -617,7 +617,10 @@ function(i) {
         var serverId = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
         var useISO8601WeekNo = (serverId && serverId.indexOf("Europe")==0 && serverId != "Europe/London");
 
-        var weekNumber = AjxDateUtil.getWeekNumber(day.date, this.firstDayOfWeek(), null, useISO8601WeekNo);
+        // AjxDateUtil alters the date.  Make a copy
+        var date = new Date(day.date.getTime());
+        var weekNumber = AjxDateUtil.getWeekNumber(date, this.firstDayOfWeek(), null, useISO8601WeekNo);
+
         var wkId = this._weekNumberIds[i];
         var wkCell = wkId ? document.getElementById(wkId) : null;
         if(wkCell) {
@@ -810,13 +813,13 @@ function() {
 	for (var i=0; i < 6; i++) {
 		var row = document.getElementById(this._rowIds[i]);
 		Dwt.setSize(row, Dwt.DEFAULT, Math.floor(100/6) + '%');
-        if(this._showWeekNumber) this.resizeWeekNumberCell(i, Math.floor(100/6) + '%');
 	}
 
 	this._layoutAllDay(h);
 	if(this._expandedDayInfo) {
         this.resizeCalendarGrid();
 	}
+    this.resizeAllWeekNumberCell();
 };
 
 ZmCalMonthView.getDayToolTipText =
@@ -1093,8 +1096,6 @@ function() {
         if(AjxEnv.isSafari) {
             Dwt.setSize(this.getCell(i, 0), Dwt.DEFAULT, avgHeight);            
         }
-
-        this.resizeWeekNumberCell(i, avgHeight);
     }
 
     for (var j=0; j < 7; j++) {
@@ -1110,6 +1111,23 @@ function() {
         }
     }
 };
+
+ZmCalMonthView.prototype.resizeAllWeekNumberCell =
+function() {
+    // Calculate the row heights and apply to the week number cells
+    var previousY = 0;
+    for (var iRow=0; iRow < 6; iRow++) {
+        var row = document.getElementById(this._rowIds[iRow]);
+        // Use location to calculate y size - getSize may get off by one
+        // due to rounding errors.
+        var location = Dwt.getLocation(row);
+        if (iRow > 0) {
+            var ySize = location.y - previousY;
+            this.resizeWeekNumberCell(iRow-1, ySize);
+        }
+        previousY = location.y;
+    }
+}
 
 ZmCalMonthView.prototype._closeDayView =
 function() {
@@ -1336,6 +1354,7 @@ function() {
     if(!this._expandedDayInfo) return;
     this.clearCellHeight(this._expandedDayInfo);
     this.resizeCalendarGrid();
+    this.resizeAllWeekNumberCell();
     this._expandedDayInfo = null;
 };
 
