@@ -1299,10 +1299,10 @@ function(creates, list, controller, last) {
 ZmMailApp.prototype._getCurrentViewController =
 function() {
 	var controller;
-	var viewId = appCtxt.getCurrentViewId();
-	if (viewId == appCtxt.get(ZmSetting.CONV_MODE)) {
+	var viewType = appCtxt.getCurrentViewType();
+	if (viewType == appCtxt.get(ZmSetting.CONV_MODE)) {
 		controller = this.getConvListController();
-	} else if (viewId == ZmId.VIEW_TRAD) {
+	} else if (viewType == ZmId.VIEW_TRAD) {
 		controller = this.getTradController();
 	}
 	return controller;
