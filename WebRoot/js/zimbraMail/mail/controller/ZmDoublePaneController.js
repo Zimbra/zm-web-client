@@ -438,7 +438,8 @@ function(parent, num) {
 // app icon in app toolbar - overload to not allow this.
 ZmDoublePaneController.prototype._isTopLevelView = 
 function() {
-	return (!this.getSessionId());
+	var sessionId = this.getSessionId();
+	return (!sessionId || (sessionId == ZmApp.MAIN_SESSION));
 };
 
 // All items in the list view are gone - show "No Results" and clear reading pane

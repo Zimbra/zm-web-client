@@ -501,24 +501,29 @@ function(view) {
  * Gets the current top-level view for the given app.
  *
  * @param {String}	app		the name of an app
- * @return	{Object}	the app view
+ * 
+ * @return	{string}	ID of the app's current view
  */
 ZmAppViewMgr.prototype.getAppView =
 function(app) {
-	return this._app[app] && this._app[app].view;
+	return this._app[app] && this._app[app].viewId;
 };
 
 /**
  * Sets the current top-level view for the given app. Should be called by an app (or controller) that
  * changes the top-level view of the app.
  *
- * @param {String}	app		the name of an app
- * @param {int}	viewId		the view ID
+ * @param {String}	app			the name of an app
+ * @param {string}	viewId		the view ID
  */
 ZmAppViewMgr.prototype.setAppView =
 function(app, viewId) {
-	var app = this._app[app] = this._app[app] || {};
-	app.view = viewId;
+	if (!app || !viewId) { return; }
+	var app = this._app[app];
+	if (!app) {
+		app = this._app[app] = {};
+	}
+	app.viewId = viewId;
 };
 
 /**
@@ -542,7 +547,8 @@ function(type) {
  * Registers a set of elements comprising an app view.
  *
  * @param	{Hash}			params				a hash of parameters
- * @param	{int}			params.viewId		the view ID
+ * @param	{string}		params.viewId		the view ID
+ * @param	{string}		params.viewType		the view type
  * @param	{String}		params.appName		the name of the owning app
  * @param	{Hash}			params.elements		a hash of elements
  * @param	{ZmController}	params.controller	controller responsible for this view
@@ -573,7 +579,7 @@ function(params) {
 		hide:			AjxUtil.arrayAsHash(params.hide || [])
 	}
 
-	if (params.appName) {
+	if (params.appName && !this._app[params.appName]) {
 		this._app[params.appName] = {};
 	}
 

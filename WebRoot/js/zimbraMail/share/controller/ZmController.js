@@ -65,6 +65,11 @@ ZmController.prototype._setView = function() {};
 ZmController.getDefaultViewType	= function() {};	// needed by ZmApp::getSessionController
 ZmController.prototype.getDefaultViewType	= function() {};
 
+// _defaultView is DEPRECATED in 8.0
+ZmController.prototype._defaultView = ZmController.prototype.getDefaultViewType;
+
+
+
 // Public methods
 
 /**
@@ -95,6 +100,11 @@ function(sessionId, type) {
 		this.setCurrentViewId(sessionId ? [type, sessionId].join(ZmController.SESSION_ID_SEP) : type);
 		this.tabId = sessionId ? ["tab", this.getCurrentViewId()].join("_") : "";
 	}
+	
+	// this.sessionId and this.viewId are DEPRECATED in 8.0;
+	// use getSessionId() and getCurrentViewId() instead
+	this.sessionId = this._sessionId;
+	this.viewId = this.getCurrentViewId();
 };
 
 /**
@@ -106,6 +116,8 @@ ZmController.prototype.getCurrentViewType =
 function(viewType) {
 	return this._currentViewType;
 };
+// _getViewType is DEPRECATED in 8.0
+ZmController.prototype._getViewType = ZmController.prototype.getCurrentViewType;
 
 /**
  * Sets the current view type.
@@ -135,6 +147,9 @@ function() {
 ZmController.prototype.setCurrentViewId =
 function(viewId) {
 	this._currentViewId = viewId;
+	
+	// this._currentView is DEPRECATED in 8.0; use getCurrentViewId() instead
+	this._currentView = this._currentViewId;
 };
 
 /**
