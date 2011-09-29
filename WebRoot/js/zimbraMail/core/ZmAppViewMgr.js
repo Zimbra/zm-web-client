@@ -530,7 +530,7 @@ ZmAppViewMgr.prototype.getViewsByType =
 function(type) {
 	var list = [];
 	for (var viewId in this._view) {
-		var view = this._view[id];
+		var view = this._view[viewId];
 		if (view.type == type) {
 			list.push(view);
 		}

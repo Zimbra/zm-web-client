@@ -48,7 +48,7 @@ UtBubbles.test = function() {
 	UT.expect(2);
 	ZmUnitTestUtil.log("starting bubbles test");
 	ZmUnitTestUtil.goToCompose();
-	var input = document.getElementById("zv__COMPOSE1_to_control");
+	var input = document.getElementById("zv__COMPOSE-1_to_control");
 	input.value = "";
 	appCtxt.getAppController().addListener(ZmAppEvent.RESPONSE, UtBubbles._handleResponse);
 	ZmUnitTestUtil.emulateKeyPress(input, 68, 100);

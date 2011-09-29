@@ -756,7 +756,7 @@ function(params) {
 	}
 	
 	if (params.unitTest) {
-		var utm = this._components[ZmAppViewMgr.C_UNITTEST] = window.unitTestManager;
+		var utm = window.unitTestManager;
 		appCtxt.addZimletsLoadedListener(utm.runTests.bind(utm), 0);
 	}
 
