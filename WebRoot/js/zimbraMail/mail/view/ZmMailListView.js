@@ -433,7 +433,7 @@ function(defaultColumnSort) {
 			this._controller._itemCountText[rpLoc].dispose();
 		}
 
-		if (activeSortBy) {
+		if (activeSortBy && ZmMailListView.SORTBY_HASH[activeSortBy]) {
 			defaultColumnSort = ZmMailListView.SORTBY_HASH[activeSortBy].field;
 		}
 		DwtListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
@@ -467,7 +467,7 @@ function(defaultColumnSort) {
 				colLabel = "&nbsp;" + (this._folderId == ZmFolder.ID_DRAFTS) ? ZmMsg.lastSaved : ZmMsg.sentAt;
 			}
 		}
-		else if (activeSortBy){
+		else if (activeSortBy && ZmMailListView.SORTBY_HASH[activeSortBy]){
 			var msg = ZmMailListView.SORTBY_HASH[activeSortBy].msg;
 			var field = ZmMailListView.SORTBY_HASH[activeSortBy].field;
 			if (msg) {
@@ -850,7 +850,8 @@ function(force) {
 	var activeSortBy = this.getActiveSearchSortBy();
 	if (!this.isMultiColumn()) {
 		if (!this._colHeaderActionMenu || force) {
-			var defaultSort = activeSortBy ? ZmMailListView.SORTBY_HASH[activeSortBy].field : ZmItem.F_DATE;
+			var defaultSort = activeSortBy && ZmMailListView.SORTBY_HASH[activeSortBy] ? 
+							  ZmMailListView.SORTBY_HASH[activeSortBy].field : ZmItem.F_DATE;
 			this._colHeaderActionMenu = this._getSortMenu(this._getSingleColumnSortFields(), defaultSort);
             this._getGroupByActionMenu(this._colHeaderActionMenu);
 		}
@@ -1136,7 +1137,7 @@ function(folderId) {
 	    }
 
 	    var activeSortBy = this.getActiveSearchSortBy();
-	    if (activeSortBy && group && group.field != ZmMailListView.SORTBY_HASH[activeSortBy].field) {
+	    if (activeSortBy && ZmMailListView.SORTBY_HASH[activeSortBy] && group && group.field != ZmMailListView.SORTBY_HASH[activeSortBy].field) {
 		    //switching views can cause problems; make sure the group and sortBy match
 		    group = null;
 		    appCtxt.set(ZmSetting.GROUPBY_HASH, group, folderId); //clear cache
