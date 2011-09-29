@@ -831,7 +831,10 @@ function(data) {
  */
 ZmContactSplitView.showContactGroup =
 function(data) {
-	var html = [];
+	var html = []; 
+	if (!AjxUtil.isArray(data.groupMembers)) {
+		return "";
+	}
 	for (var i = 0; i < data.groupMembers.length; i++) {
 		var itemListData = {};
 		var type = data.groupMembers[i].type;
