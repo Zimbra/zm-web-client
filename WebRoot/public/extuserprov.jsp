@@ -85,7 +85,7 @@
 				</c:when>
                 <c:otherwise>
                     <tr>
-                        <td><label for="displayname"><fmt:message key="username"/>:</label></td>
+                        <td><label for="displayname"><fmt:message key="displayName"/>:</label></td>
                         <td><input id="displayname" class="zLoginField" name="displayname" type="text" value="${fn:escapeXml(param.displayname)}" size="40"/></td>
                     </tr>
                     <tr>
