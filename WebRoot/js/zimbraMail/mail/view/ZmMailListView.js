@@ -689,7 +689,7 @@ function(params) {
 			});
 		tooltip = {callback:ttCallback};
 	}
-	else if (field == ZmItem.F_SUBJECT) {
+	else if (field == ZmItem.F_SUBJECT || field ==  ZmItem.F_FRAGMENT) {
 		if ((item.type == ZmItem.MSG) && item.isInvite() && item.needsRsvp()) {
 			tooltip = item.invite.getToolTip();
 		} else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
