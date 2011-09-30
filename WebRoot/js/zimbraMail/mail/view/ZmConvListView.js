@@ -380,7 +380,7 @@ function(item, colIdx) {
 
 	// first row
 	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%>";
-	htmlArr[idx++] = (item.isUnread) ? "<tr class='Unread' " : "<tr ";
+	htmlArr[idx++] = (item.isUnread && !item.isMuted()) ? "<tr class='Unread' " : "<tr ";
 	htmlArr[idx++] = "id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
@@ -775,6 +775,7 @@ function(ev) {
 
 	var fields = ev.getDetail("fields");
 	var isConv = (item.type == ZmItem.CONV);
+    var isMuted = item.isMuted ? item.isMuted() : false;
 	var sortBy = this._sortByString || ZmSearch.DATE_DESC;
 	var handled = false;
 	
@@ -886,12 +887,21 @@ function(ev) {
 		AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: handle conv create " + item.id);
 		var sortIndex = this._getSortIndex(item, sortBy);
 		var curIndex = this.getItemIndex(item, true);
+
 		if ((sortIndex != null) && (curIndex != null) && (sortIndex != curIndex) &&	!this._expanded[item.id]) {
-			AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: change position of conv " + item.id + " to " + sortIndex);
-			this._removeMsgRows(item.id);
-			this.removeItem(item);
-			this.addItem(item, sortIndex);
-			// TODO: mark create notif handled?
+            AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: change position of conv " + item.id + " to " + sortIndex);
+            this._removeMsgRows(item.id);
+            this.removeItem(item);
+            if(isMuted) {
+                AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: change position of conv " + item.id + " to " + curIndex);
+                this.addItem(item, curIndex);
+                this._controller._doMarkRead([item], true);
+                // TODO: mark create notif handled?
+            }
+            else {
+                this.addItem(item, sortIndex);
+                // TODO: mark create notif handled?
+            }
 		}
 	}
 
@@ -940,6 +950,25 @@ function(ev) {
 			ZmMailMsgListView.prototype._changeListener.apply(this, arguments);
 		}
 	}
+};
+
+ZmConvListView.prototype.handleUnmuteConv =
+function(items) {
+    for(var i=0; i<items.length; i++) {
+        var item = items[i];
+        var isConv = (item.type == ZmItem.CONV);
+        if (!isConv) { continue; }
+        var sortBy = this._sortByString || ZmSearch.DATE_DESC;
+        var sortIndex = this._getSortIndex(item, sortBy);
+        var curIndex = this.getItemIndex(item, true);
+
+        if ((sortIndex != null) && (curIndex != null) && (sortIndex != curIndex) &&	!this._expanded[item.id]) {
+            AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: change position of conv " + item.id + " to " + sortIndex);
+            this._removeMsgRows(item.id);
+            this.removeItem(item);
+            this.addItem(item, sortIndex);
+        }
+    }
 };
 
 ZmConvListView.prototype._getSortIndex =

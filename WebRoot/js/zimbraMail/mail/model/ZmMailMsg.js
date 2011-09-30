@@ -1973,6 +1973,12 @@ function(msgNode) {
 			if (!conv.msgIds) {
 				conv.msgIds = [this.id];
 			}
+
+            if(conv.isMuted()) {
+                this._muted = true;
+                this.isUnread = false;
+                this._markReadLocal(true);
+            }
 		}
 	}
 
@@ -2055,6 +2061,21 @@ function(atts) {
 			att.ci = '<' + att.ci + '>';
 		}
 	}
+};
+
+ZmMailMsg.prototype.isMuted =
+function () {
+	return this._muted ? this._muted : false;
+};
+
+ZmMailMsg.prototype.mute =
+function () {
+	this._muted = true;
+};
+
+ZmMailMsg.prototype.unmute =
+function () {
+	this._muted = false;
 };
 
 ZmMailMsg.prototype.isInvite =

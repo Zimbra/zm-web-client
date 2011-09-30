@@ -884,6 +884,8 @@ function() {
 	this._controller._resetOperations(this._actionsMenu, 1);
 	this._actionsMenu.enable(ZmOperation.MARK_READ, this._msg.isUnread);
 	this._actionsMenu.enable(ZmOperation.MARK_UNREAD, !this._msg.isUnread);
+	this._actionsMenu.enable(ZmOperation.MUTE_CONV, !this._msg.isMuted());
+	this._actionsMenu.enable(ZmOperation.UNMUTE_CONV, this._msg.isMuted());
 	this._controller._mailListView._selectedMsg = null;
 };
 
@@ -938,7 +940,7 @@ function() {
 	if (folder && folder.isInTrash()) {
 		classes.push("Trash");
 	}
-	if (msg.isUnread)	{ classes.push("Unread"); }
+	if (msg.isUnread && !msg.isMuted())	{ classes.push("Unread"); }
 	if (msg.isSent)		{ classes.push("Sent"); }
 
 	var row = document.getElementById(this._tableRowId);

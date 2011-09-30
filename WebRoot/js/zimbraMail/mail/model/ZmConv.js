@@ -27,6 +27,11 @@
  */
 ZmConv = function(id, list) {
 
+    var cacheItem = appCtxt.getById(id);
+    if(cacheItem && cacheItem.isMuted()) {
+        this._isMuted = true;
+    }
+
 	ZmMailItem.call(this, ZmItem.CONV, id, list);
 	
 	// conversations are always sorted by date desc initially
@@ -169,6 +174,7 @@ function(params, callback, result) {
 		this.msgs.addChangeListener(this._listChangeListener);
 		this.msgs.setHasMore(results.getAttribute("more"));
 		this._loaded = true;
+        this._isMuted = this.isMuted();
 	}
 	if (callback) {
 		callback.run(result);
@@ -271,6 +277,35 @@ function(msg) {
 	if (this.msgIds && this.msgIds.length) {
 		AjxUtil.arrayRemove(this.msgIds, msg.id);
 	}
+};
+
+ZmConv.prototype.isMuted =
+function() {
+    return this._isMuted ? this._isMuted : false;
+};
+
+ZmConv.prototype.mute =
+function() {
+    this._isMuted = true;
+    if(this.msgs) {
+        var msgs = this.msgs.getArray();
+		for (var i = 0; i < msgs.length; i++) {
+			var msg = msgs[i];
+			msg.mute();
+		}
+    }
+};
+
+ZmConv.prototype.unmute =
+function() {
+    this._isMuted = false;
+    if(this.msgs) {
+        var msgs = this.msgs.getArray();
+		for (var i = 0; i < msgs.length; i++) {
+			var msg = msgs[i];
+			msg.unmute();
+		}
+    }
 };
 
 ZmConv.prototype.clear =

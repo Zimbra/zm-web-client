@@ -84,7 +84,7 @@ function(msg) {
 			classes.push("Trash");
 		}
 	}
-	if (msg.isUnread)	{	classes.push("Unread"); }
+	if (msg.isUnread && !msg.isMuted())	{	classes.push("Unread"); }
 	if (msg.isSent)		{	classes.push("Sent"); }
 
 	return classes.length ? classes.join(" ") : null;
@@ -207,7 +207,7 @@ function(item, colIdx) {
 
 	// first row
 	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%>";
-	htmlArr[idx++] = (item.isUnread) ? "<tr class='Unread' " : "<tr ";
+	htmlArr[idx++] = (item.isUnread && !item.isMuted()) ? "<tr class='Unread' " : "<tr ";
 	htmlArr[idx++] = "id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
@@ -317,7 +317,7 @@ function(msg) {
 
 	var row = this._getElement(msg, ZmItem.F_ITEM_ROW);
 	if (row) {
-		if (msg.isUnread) {
+		if (msg.isUnread && !msg.isMuted()) {
 			Dwt.addClass(row, "Unread");
 		}
 		var folder = appCtxt.getById(msg.folderId);

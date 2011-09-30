@@ -351,6 +351,15 @@ function(params) {
 		}
 		this.flagItems(params);
 	}
+    else if(params.forceCallback) {
+        if (params.callback) {
+			params.callback.run(new ZmCsfeResult([]));
+		}
+		if (params.finalCallback) {
+			params.finalCallback(params);
+		}
+		return;
+    }
 };
 
 // set "force" flag to true on actual hard deletes, so that msgs

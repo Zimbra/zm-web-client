@@ -684,8 +684,8 @@ function(items, folder, attrs, isShiftKey) {
 };
 
 ZmConvListController.prototype._doMarkRead =
-function(items, on, callback) {
-	this._applyAction(items, "_doMarkRead", [on, callback]);
+function(items, on, callback, forceCallback) {
+	this._applyAction(items, "_doMarkRead", [on, callback, forceCallback]);
 };
 
 ZmConvListController.prototype._doSpam =

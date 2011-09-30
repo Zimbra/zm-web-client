@@ -69,6 +69,8 @@ ZmMailListController = function(container, mailApp, type, sessionId, searchResul
 	this._listeners[ZmOperation.REDIRECT] = new AjxListener(this, this._redirectListener);
 	this._listeners[ZmOperation.EDIT] = this._editListener.bind(this);
 	this._listeners[ZmOperation.EDIT_AS_NEW] = this._editListener.bind(this);
+	this._listeners[ZmOperation.MUTE_CONV] = this._muteConvListener.bind(this);
+	this._listeners[ZmOperation.UNMUTE_CONV] = this._unmuteConvListener.bind(this);
 
 	if (appCtxt.get(ZmSetting.SPAM_ENABLED)) {
 		this._listeners[ZmOperation.SPAM] = this._spamListener.bind(this);
@@ -529,6 +531,8 @@ function(noViewMenu) {
 ZmMailListController.prototype._getSecondaryToolBarOps =
 function() {
 	var list = [ZmOperation.PRINT,
+                ZmOperation.MUTE_CONV,
+                ZmOperation.UNMUTE_CONV,
 				ZmOperation.SPAM];
 	if (!appCtxt.isChildWindow && appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
 		list.push(ZmOperation.SEP, ZmOperation.DETACH);
@@ -686,6 +690,18 @@ function() {
 };
 
 
+ZmMailListController.prototype._getConvMuteStatus =
+function() {
+
+	var status = {hasRead : false, hasUnread : false}
+
+	var items = this.getItems();
+    if (items.length > 1) { return false; }
+
+    var item = items[0];
+	return item.isMuted();
+};
+
 /**
  * Dynamically enable/disable the mark read/unread menu items.
  *
@@ -697,9 +713,16 @@ function() {
 	this._enableFlags(menu);
 };
 
+ZmMailListController.prototype._enableMuteUnmuteToolbarActions =
+function() {
+	var menu = this._getCurrentToolbar().getActionsMenu();
+	this._enableMuteUnmute(menu);
+};
+
 ZmMailListController.prototype._actionsButtonListener =
 function(ev) {
 	this._enableReadUnreadToolbarActions();
+	this._enableMuteUnmuteToolbarActions();
 	ZmBaseController.prototype._actionsButtonListener.call(this, ev);
 };
 
@@ -756,6 +779,7 @@ function(ev) {
 		this._setupSpamButton(this._participantActionMenu);
 		this._resetOperations(this._participantActionMenu, items.length);
 		this._enableFlags(this._participantActionMenu);
+		this._enableMuteUnmute(this._participantActionMenu);
 		var imItem = this._participantActionMenu.getOp(ZmOperation.IM);
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		if (contactsApp) {
@@ -785,6 +809,7 @@ function(ev) {
 		var actionMenu = this.getActionMenu();
 		this._setupSpamButton(actionMenu);
 		this._enableFlags(actionMenu);
+		this._enableMuteUnmute(actionMenu);
 		actionMenu.popup(0, ev.docX, ev.docY);
 		if (ev.ersatz) {
 			// menu popped up via keyboard nav
@@ -1102,10 +1127,11 @@ function() {
 };
 
 ZmMailListController.prototype._doMarkRead =
-function(items, on, callback) {
+function(items, on, callback, forceCallback) {
 
 	var params = {items:items, value:on, callback:callback};
 	var list = params.list = this._getList(params.items);
+    params.forceCallback = forceCallback;
 	this._setupContinuation(this._doMarkRead, [on, callback], params);
 	list.markRead(params);
 };
@@ -1599,6 +1625,89 @@ function(ev) {
 	this._doAction({ev:ev, action:ZmOperation.DRAFT});
 };
 
+ZmMailListController.prototype._muteConvListener =
+function(ev) {
+	//this._doAction({ev:ev, action:ZmOperation.DRAFT});
+    var listView = this._listView[this._currentView];
+	var items = listView.getSelection();
+	items = AjxUtil.toArray(items);
+
+    var ids = [];
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+        item.mute();
+		// always extract out the msg ids from the conv
+		if (item.toString() == "ZmConv") {
+			// get msg ID in case of virtual conv.
+			// item.msgIds.length is inconsistent, so checking if conv id is negative.
+			if (appCtxt.isOffline && item.id.split(":")[1]<0) {
+				ids.push(item.msgIds[0]);
+			} else {
+				ids.push(item.id);
+			}
+		} else {
+			ids.push(item.id);
+		}
+	}
+    var markReadcallback = this._getMarkReadCallback();
+    var callback = new AjxCallback(this, this._handleMuteUnmuteConvResponse, [markReadcallback, ZmId.OP_MUTE_CONV]);
+    this._doMarkRead(items, true, callback, true);
+};
+
+ZmMailListController.prototype._unmuteConvListener =
+function(ev) {
+	//this._doAction({ev:ev, action:ZmOperation.DRAFT});
+    var listView = this._listView[this._currentView];
+	var items = listView.getSelection();
+	items = AjxUtil.toArray(items);
+
+    var ids = [];
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+        item.unmute();
+		// always extract out the msg ids from the conv
+		if (item.toString() == "ZmConv") {
+			// get msg ID in case of virtual conv.
+			// item.msgIds.length is inconsistent, so checking if conv id is negative.
+			if (appCtxt.isOffline && item.id.split(":")[1]<0) {
+				ids.push(item.msgIds[0]);
+			} else {
+				ids.push(item.id);
+			}
+		} else {
+			ids.push(item.id);
+		}
+	}
+    var convListView = this._mailListView;
+    var convListCallback = null;
+    if(convListView.toString() == "ZmConvListView") {
+        convListCallback = new AjxCallback(convListView, convListView.handleUnmuteConv, items);
+    }
+
+    var callback = new AjxCallback(this, this._handleMuteUnmuteConvResponse, [convListCallback, ZmId.OP_UNMUTE_CONV]);
+    this._doMarkRead(items, true, callback, true); //mark the conv as read if there are any conv not yet loaded
+};
+
+ZmMailListController.prototype._handleMuteUnmuteConvResponse =
+function(callback, actionId, result) {
+    var msg = ZmMsg.muteConvSuccess;
+    if(actionId == ZmId.OP_UNMUTE_CONV) {
+        //appCtxt.setStatusMsg(ZmMsg.unmuteConvSuccess);
+        msg = ZmMsg.unmuteConvSuccess;
+    }
+    //this._appendUndoLink(msg, actionId);
+    appCtxt.setStatusMsg(msg);
+    if(callback != null) {
+        callback.run();
+    }
+};
+
+ZmMailListController.prototype._appendUndoLink =
+function(msg, actionId) {
+    var html = new AjxBuffer();
+    html.append("<span class='fakeanchor' onclick=''>",ZmMsg.undo,"</span>")
+};
+
 ZmMailListController.prototype._checkMailListener =
 function() {
 	if (appCtxt.isOffline) {
@@ -1814,6 +1923,20 @@ function(menu) {
 	if (!status.hasRead) {
 		menu.enable(ZmOperation.MARK_UNREAD, false);
 	}
+};
+
+// Enable mark read/unread as appropriate.
+ZmMailListController.prototype._enableMuteUnmute =
+function(menu) {
+
+	var isMuted = this._getConvMuteStatus();
+    menu.enable([ZmOperation.UNMUTE_CONV, ZmOperation.MUTE_CONV], false);
+	if(isMuted) {
+         menu.enable(ZmOperation.UNMUTE_CONV, true);
+    }
+    else {
+         menu.enable(ZmOperation.MUTE_CONV, true);
+    }
 };
 
 /**

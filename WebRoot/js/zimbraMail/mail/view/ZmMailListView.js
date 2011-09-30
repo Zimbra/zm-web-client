@@ -626,7 +626,7 @@ function() {
 
 ZmMailListView.prototype._getRowClass =
 function(item) {
-	return item.isUnread ? "Unread" : null;
+	return item.isUnread && !item.isMuted() ? "Unread" : null;
 };
 
 ZmMailListView.prototype._getCellId =
@@ -933,6 +933,11 @@ function(folder) {
 
 
 // Listeners
+
+ZmMailListView.prototype.handleUnmuteConv =
+function(items) {
+    //overridden in ZmConvListView
+};
 
 ZmMailListView.prototype._changeListener =
 function(ev) {
