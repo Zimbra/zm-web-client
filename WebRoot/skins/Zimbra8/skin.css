@@ -60,6 +60,10 @@ BODY						{	margin:0px; 				}
 											height:24px;
 }
 
+.vmwarebg{
+ 	background:transparent url("@SkinImgDir@/vmware_bg.png") 0 0 repeat-x;
+}
+
 /** Logo displayed in the app **/
 #skin_spacing_logo						{}
 #skin_container_logo					{	width:auto;		}
