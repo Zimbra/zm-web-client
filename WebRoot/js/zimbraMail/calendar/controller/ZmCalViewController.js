@@ -2297,9 +2297,9 @@ function(appt) {
 		var calendar = appt.getFolder();
 		var isSynced = Boolean(calendar.url);
 		if (appt.isRecurring()) {
-			// prompt user to edit instance vs. series if recurring but not exception
-			if (appt.isException) {
-				var mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
+			// prompt user to edit instance vs. series if recurring but not for exception and from edit mode
+			if (appt.isException || appt.editViewMode) {
+				var mode = appt.editViewMode || ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
 				if (appt.isReadOnly() || calendar.isReadOnly() || isSynced) {
 					this.showApptReadOnlyView(appt, mode);
 				} else {
@@ -2488,6 +2488,10 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 ZmCalViewController.prototype._handleResponseUpdateApptDateEdit =
 function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback, result) {
 	var clone = ZmAppt.quickClone(appt);
+    clone.editViewMode = viewMode;
+    if(appt.isRecurring() && viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
+        clone.isException = true;
+    }
 	if (startDateOffset) clone.setStartDate(new Date(clone.getStartTime() + startDateOffset));
 	if (endDateOffset) clone.setEndDate(new Date(clone.getEndTime() + endDateOffset));
 	this._showAppointmentDetails(clone);
