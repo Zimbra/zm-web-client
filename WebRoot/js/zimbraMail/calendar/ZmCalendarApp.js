@@ -527,6 +527,7 @@ function() {
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_APPT]		= ZmOperation.NEW_APPT;
 	actionCodes[ZmKeyMap.NEW_CALENDAR]	= ZmOperation.NEW_CALENDAR;
+	actionCodes[ZmKeyMap.ADD_EXTERNAL_CALENDAR]	= ZmOperation.ADD_EXTERNAL_CALENDAR;
 
 	ZmApp.registerApp(ZmApp.CALENDAR,
 							 {mainPkg:				"Calendar",
@@ -645,6 +646,11 @@ function(op) {
 			AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
 			break;
 		}
+        case ZmOperation.ADD_EXTERNAL_CALENDAR: {
+			var loadCallback = new AjxCallback(this, this._handleLoadExternalCalendar);
+			AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
+			break;
+		}
 	}
 };
 
@@ -661,6 +667,16 @@ function() {
 		this._newCalendarCb = new AjxCallback(this, this._newCalendarCallback);
 	}
 	ZmController.showDialog(dialog, this._newCalendarCb);
+};
+
+ZmCalendarApp.prototype._handleLoadExternalCalendar =
+function() {
+    appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);
+	var oc = appCtxt.getOverviewController();
+    var tc = oc.getTreeController(ZmOrganizer.CALENDAR);
+    if(tc) {
+        tc._addExternalCalendarListener();
+    }
 };
 
 // Public methods
