@@ -402,7 +402,7 @@ function(msg, handleInlineDocs){
 	var handled = false, ci, cid, dfsrc, inlineAtt, attached = {};
 
 	var idoc = this._htmlEditor._getIframeDoc();
-	var images = idoc.getElementsByTagName("img");
+	var images = idoc ? idoc.getElementsByTagName("img"):[];
 	for (var i = 0; i < images.length; i++) {
 		dfsrc = images[i].getAttribute("dfsrc") || images[i].getAttribute("mce_src") || images[i].src;
 		if (dfsrc) {
