@@ -25,9 +25,6 @@ BODY						{	margin:0px; 				}
 /* hide the main screen initially - hide if html facade is not needed */
 #skin_outer					{	display:none;				}
 
-/* hide search builder initially */
-#skin_tr_search_builder		{	display:none;				}
-
 /* hide all ads initially */
 .skin_outer_ad				{	display:none;				}
 
@@ -56,13 +53,6 @@ BODY						{	margin:0px; 				}
 #skin_container_search           		{	width:700px; }
 
 
-
-
-/** Search Builder & its toolbar **/
-#skin_spacing_search_builder			{	padding-bottom:5px;	}
-#skin_container_search_builder			{	@SkinBorderSB@	}
-#skin_spacing_search_builder_toolbar	{}
-#skin_container_search_builder_toolbar	{	@SkinBorderSBToolbar@		}
 
 
 /** combined username/quota **/

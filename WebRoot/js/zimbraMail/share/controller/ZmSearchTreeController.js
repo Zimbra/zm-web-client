@@ -32,26 +32,18 @@ ZmSearchTreeController = function() {
 
 	ZmFolderTreeController.call(this, ZmOrganizer.SEARCH);
 
-	this._listeners[ZmOperation.RENAME_SEARCH] = new AjxListener(this, this._renameListener);
-    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
+	this._listeners[ZmOperation.RENAME_SEARCH] = this._renameListener.bind(this);
 };
 
 ZmSearchTreeController.prototype = new ZmFolderTreeController;
 ZmSearchTreeController.prototype.constructor = ZmSearchTreeController;
 
+ZmSearchTreeController.prototype.isZmSearchTreeController = true;
+ZmSearchTreeController.prototype.toString = function() { return "ZmSearchTreeController"; };
+
 ZmSearchTreeController.APP_JOIN_CHAR = "-";
 
 // Public methods
-
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmSearchTreeController.prototype.toString = 
-function() {
-	return "ZmSearchTreeController";
-};
 
 /**
  * Shows the tree of this type.
@@ -111,26 +103,6 @@ function(parent, type, id) {
 	parent.enable(ZmOperation.EXPAND_ALL, (search.size() > 0));
 };
 
-/**
- * @private
- */
-ZmSearchTreeController.prototype._newListener =
-function(ev){
-	AjxDispatcher.require("Browse");
-	appCtxt.getSearchController().showBrowseView();
-};
-
-/**
- * @private
- */
-ZmSearchTreeController.prototype._browseListener =
-function(ev){
-    var search = this._getActionedOrganizer(ev);
-    if (search) {
-        AjxDispatcher.require("Browse");
-        appCtxt.getSearchController().showBrowsePickers([ZmPicker.SEARCH]);
-    }
-};
 
 
 // Private methods
@@ -142,8 +114,7 @@ function(ev){
  */
 ZmSearchTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.EXPAND_ALL,
-            ZmOperation.BROWSE];
+	return [ZmOperation.EXPAND_ALL];
 };
 
 /**

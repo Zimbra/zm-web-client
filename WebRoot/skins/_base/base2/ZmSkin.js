@@ -32,7 +32,6 @@ ZmSkin.hints = {
 	presence:	  	{ width:"40px", height: "24px" },
 	appView:		{ position:"static" },
 
-	searchBuilder:  { containers: ["skin_tr_search_builder"] },
 	searchResultsToolbar:	{ containers: ["skin_tr_search_results_toolbar"] },
 	
 	newButton:		{ containers: ["skin_td_new_button"] },

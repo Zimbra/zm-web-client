@@ -28,7 +28,6 @@
 ZmZimletTreeController = function() {
 
 	ZmTreeController.call(this, ZmOrganizer.ZIMLET);
-    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
 
     this._eventMgrs = {};
 }
@@ -36,41 +35,10 @@ ZmZimletTreeController = function() {
 ZmZimletTreeController.prototype = new ZmTreeController;
 ZmZimletTreeController.prototype.constructor = ZmZimletTreeController;
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmZimletTreeController.prototype.toString = function() {
-	return "ZmZimletTreeController";
-};
-
-/**
- * @private
- */
-ZmZimletTreeController.prototype._browseListener =
-function(ev){
-    var folder = this._getActionedOrganizer(ev);
-    if (folder) {
-        AjxDispatcher.require("Browse");
-        appCtxt.getSearchController().showBrowsePickers([ZmPicker.ZIMLET]);
-        //appCtxt.getSearchController()._browseViewController.addPicker(ZmPicker.FOLDER);
-    }
-}
+ZmZimletTreeController.prototype.isZmZimletTreeController = true;
+ZmZimletTreeController.prototype.toString = function() { return "ZmZimletTreeController"; };
 
 // Public methods
-
-/**
- * Resets and enables/disables operations based on context.
- *
- * @param {Object}	parent		the widget that contains the operations
- * @param {constant}	type	the type
- * @param {Objct}	id			the currently selected/activated organizer
- */
-ZmZimletTreeController.prototype.resetOperations =
-function(parent, type, id) {
-	parent.enable(ZmOperation.BROWSE, true);
-};
 
 /**
  * Adds a selection listener.
@@ -166,7 +134,7 @@ function() {
  * @private
  */
 ZmZimletTreeController.prototype._getHeaderActionMenuOps = function() {
-	return [ZmOperation.BROWSE];
+	return null;
 };
 
 /**

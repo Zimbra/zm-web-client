@@ -31,7 +31,6 @@ ZmTaskTreeController = function() {
 
 	this._listeners[ZmOperation.NEW_TASK_FOLDER] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_TASKFOLDER] = new AjxListener(this, this._shareTaskFolderListener);
-	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
 
 	this._eventMgrs = {};
 };
@@ -135,10 +134,7 @@ function() {
 // Returns a list of desired header action menu operations
 ZmTaskTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [
-		ZmOperation.NEW_TASK_FOLDER,
-		ZmOperation.BROWSE
-	];
+	return [ZmOperation.NEW_TASK_FOLDER];
 };
 
 // Returns a list of desired action menu operations

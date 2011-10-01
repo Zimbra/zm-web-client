@@ -103,7 +103,6 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_ACTIONS_MENU, {textKey:"actions", tooltipKey:"", textPrecedence:40});
 	
 	ZmOperation.registerOp(ZmId.OP_ATTACHMENT, {textKey:"addAttachment", tooltipKey:"attachmentTooltip", image:"Attachment", shortcut:ZmKeyMap.ATTACHMENT, showImageInToolbar: true});
-	ZmOperation.registerOp(ZmId.OP_BROWSE, {textKey:"advancedSearch", image:"SearchBuilder", tooltipKey: "advancedSearchTooltip"}, ZmSetting.BROWSE_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_CALL, {image:"Telephone"});
 	ZmOperation.registerOp(ZmId.OP_CANCEL, {textKey:"cancel", tooltipKey:"cancelTooltip", image:"Cancel", shortcut:ZmKeyMap.CANCEL});
 	ZmOperation.registerOp(ZmId.OP_CHECK_ALL, {textKey:"checkAll", image:"Check"});

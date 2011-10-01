@@ -35,7 +35,6 @@ ZmAddrBookTreeController = function() {
 
 	this._listeners[ZmOperation.NEW_ADDRBOOK]	= this._newListener.bind(this);
 	this._listeners[ZmOperation.SHARE_ADDRBOOK]	= this._shareAddrBookListener.bind(this);
-    this._listeners[ZmOperation.BROWSE]			= new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
 
 	this._app = appCtxt.getApp(ZmApp.CONTACTS);
 };

@@ -329,12 +329,6 @@ ZmSettings.prototype.setUserSettings = function(params) {
 	if (setting) {
 		setting.defaultValue = this.get(ZmSetting.USERNAME);
 	}
-	if (!this.get(ZmSetting.SEARCH_ENABLED)) {
-		setting = this._settings[ZmSetting.BROWSE_ENABLED];
-		if (setting) {
-			setting.setValue(false, null, setDefault, skipNotify, skipImplicit);
-		}
-	}
 	if (this.get(ZmSetting.FORCE_CAL_OFF)) {
 		setting = this._settings[ZmSetting.CALENDAR_ENABLED];
 		if (setting) {
@@ -800,7 +794,6 @@ function() {
 	// COS SETTINGS
 	this.registerSetting("AVAILABLE_SKINS",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST, isGlobal:true});
 	this.registerSetting("AVAILABLE_CSVFORMATS",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST, isGlobal:true});
-	this.registerSetting("BROWSE_ENABLED",					{name:"zimbraFeatureAdvancedSearchEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("CHANGE_PASSWORD_ENABLED",			{name:"zimbraFeatureChangePasswordEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("DISPLAY_NAME",					{name:"displayName", type:ZmSetting.T_COS});
 	this.registerSetting("DUMPSTER_ENABLED",				{name:"zimbraDumpsterEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});

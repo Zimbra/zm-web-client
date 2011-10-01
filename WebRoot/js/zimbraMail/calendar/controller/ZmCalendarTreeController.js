@@ -27,15 +27,14 @@ ZmCalendarTreeController = function() {
 
 	ZmTreeController.call(this, ZmOrganizer.CALENDAR);
 
-	this._listeners[ZmOperation.NEW_CALENDAR] = new AjxListener(this, this._newListener);
-	this._listeners[ZmOperation.ADD_EXTERNAL_CALENDAR] = new AjxListener(this, this._addExternalCalendarListener);
-	this._listeners[ZmOperation.CHECK_ALL] = new AjxListener(this, this._checkAllListener);
-	this._listeners[ZmOperation.CLEAR_ALL] = new AjxListener(this, this._clearAllListener);
-	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
-	this._listeners[ZmOperation.DETACH_WIN] = new AjxListener(this, this._detachListener);
-	this._listeners[ZmOperation.SHARE_CALENDAR] = new AjxListener(this, this._shareCalListener);
-    this._listeners[ZmOperation.MOVE] = new AjxListener(this, this._moveListener);
-	this._listeners[ZmOperation.RECOVER_DELETED_ITEMS] = new AjxListener(this, this._recoverListener);
+	this._listeners[ZmOperation.NEW_CALENDAR]			= this._newListener.bind(this);
+	this._listeners[ZmOperation.ADD_EXTERNAL_CALENDAR]	= this._addExternalCalendarListener.bind(this);
+	this._listeners[ZmOperation.CHECK_ALL]				= this._checkAllListener.bind(this);
+	this._listeners[ZmOperation.CLEAR_ALL]				= this._clearAllListener.bind(this);
+	this._listeners[ZmOperation.DETACH_WIN]				= this._detachListener.bind(this);
+	this._listeners[ZmOperation.SHARE_CALENDAR]			= this._shareCalListener.bind(this);
+    this._listeners[ZmOperation.MOVE]					= this._moveListener.bind(this);
+	this._listeners[ZmOperation.RECOVER_DELETED_ITEMS]	= this._recoverListener.bind(this);
 
 	this._eventMgrs = {};
 };
@@ -43,10 +42,8 @@ ZmCalendarTreeController = function() {
 ZmCalendarTreeController.prototype = new ZmTreeController;
 ZmCalendarTreeController.prototype.constructor = ZmCalendarTreeController;
 
-ZmCalendarTreeController.prototype.toString =
-function() {
-	return "ZmCalendarTreeController";
-};
+ZmCalendarTreeController.prototype.isZmCalendarTreeController = true;
+ZmCalendarTreeController.prototype.toString = function() { return "ZmCalendarTreeController"; };
 
 
 ZmCalendarTreeController.prototype._treeListener =
@@ -220,15 +217,6 @@ function(actionMenu){
         return subMenu;
 }
 
-ZmCalendarTreeController.prototype._browseListener =
-function(ev){
-	var folder = this._getActionedOrganizer(ev);
-	if (folder) {
-		AjxDispatcher.require("Browse");
-		appCtxt.getSearchController().showBrowsePickers([ZmPicker.DATE,ZmPicker.TIME]);
-	}
-};
-
 ZmCalendarTreeController.prototype._detachListener =
 function(ev){
 	var folder = this._getActionedOrganizer(ev);
@@ -281,7 +269,6 @@ function() {
 	ops.push(ZmOperation.ADD_EXTERNAL_CALENDAR,
             ZmOperation.CHECK_ALL,
 			ZmOperation.CLEAR_ALL,
-			ZmOperation.BROWSE,
 			ZmOperation.SEP,
 			ZmOperation.FREE_BUSY_LINK);
 

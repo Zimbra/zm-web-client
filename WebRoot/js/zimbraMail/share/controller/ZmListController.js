@@ -265,7 +265,7 @@ function() {
  */
 ZmListController.prototype._participantOps =
 function() {
-	var ops = [ZmOperation.SEARCH_MENU, ZmOperation.BROWSE];
+	var ops = [ZmOperation.SEARCH_MENU];
 
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		ops.push(ZmOperation.NEW_MESSAGE);
@@ -493,17 +493,6 @@ function(ev) {
 	    var name = this._actionEv.address.getAddress();
         appCtxt.getSearchController().toSearch(name);
     }
-};
-
-/**
- * Browse based on email address.
- * 
- * @private
- */
-ZmListController.prototype._participantBrowseListener =
-function(ev) {
-	var name = this._actionEv.address.getAddress();
-	appCtxt.getSearchController().fromBrowse(name);
 };
 
 /**

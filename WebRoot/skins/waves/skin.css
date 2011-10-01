@@ -21,9 +21,6 @@ body, #skin_outer	{
 /*background-color: @ChromeBg@;
 background: url("@SkinImgDir@/header_bg_bones.png?v=@jsVersion@") repeat-x;*/
 }
-#skin_tr_search_builder	{
-/*background-color: @ChromeBg@;*/
-}
 
 #skin_spacing_top_row					{	height:36px; 
 											background-color: @AppC@;

@@ -15,26 +15,40 @@
 
 /**
  * @class
- * @constructor 
- * @extends		DwtComposite
+ * This class represents a search toolbar that shows up above search results. It can be
+ * used to refine the search results. Each search term is contained within a bubble that
+ * can easily be removed.
+ * 
+ * @param {hash}			params		a hash of parameters:
+ * @param {DwtComposite}	parent		the parent widget
+ * @param {string}			id			an explicit ID to use for the control's HTML element
+ * 
+ * @extends		ZmSearchToolBar
+ * 
+ * @author Conrad Damon
  */
-ZmSearchResultsToolBar = function(parent, id) {
+ZmSearchResultsToolBar = function(params) {
 
-	DwtComposite.call(this, {parent:parent, className:"ZmSearchResultsToolBar", id:id, posStyle:DwtControl.ABSOLUTE_STYLE});
-
-	this._createHtml();
+	params.posStyle = Dwt.ABSOLUTE_STYLE;
+	params.className = "ZmSearchResultsToolBar";
+	ZmSearchToolBar.apply(this, arguments);
+	
+	this.initAutocomplete();
 };
 
-ZmSearchResultsToolBar.prototype = new DwtComposite;
-ZmSearchResultsToolBar.prototype.constructor = ZmSearchToolBar;
+ZmSearchResultsToolBar.prototype = new ZmSearchToolBar;
+ZmSearchResultsToolBar.prototype.constructor = ZmSearchResultsToolBar;
 
 ZmSearchResultsToolBar.prototype.isZmSearchResultsToolBar = true;
 ZmSearchResultsToolBar.prototype.toString = function() { return "ZmSearchResultsToolBar"; };
 
+
+ZmSearchResultsToolBar.prototype.TEMPLATE = "share.Widgets#ZmSearchResultsToolBar";
+
 ZmSearchResultsToolBar.prototype._createHtml =
 function() {
 
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("share.Widgets#ZmSearchResultsToolBar", {id:this._htmlElId});
+	this.getHtmlElement().innerHTML = AjxTemplate.expand(this.TEMPLATE, {id:this._htmlElId});
 
 	// add search input field
 	var inputFieldId = this._htmlElId + "_inputField";
@@ -47,22 +61,31 @@ function() {
 	}
 
 	// add search button
-	this._searchButton = ZmToolBar.addButton({ parent:		this, 
-											   tdId:		"_searchButton",
-											   buttonId:	ZmId.getButtonId(ZmId.SEARCHRESULTS, ZmId.SEARCHRESULTS_SEARCH),
-											   lbl:			ZmMsg.search,
-//											   icon:		"Search",
-//											   template: 	"dwt.Widgets#ZImageOnlyButton",
-//											   className: 	"ZImageOnlyButton",
-											   tooltip:		ZmMsg.searchTooltip });
+	this._button[ZmSearchToolBar.SEARCH_BUTTON] = ZmToolBar.addButton({
+				parent:		this, 
+				tdId:		"_searchButton",
+				buttonId:	ZmId.getButtonId(ZmId.SEARCHRESULTS, ZmId.SEARCHRESULTS_SEARCH),
+				lbl:		ZmMsg.search,
+				tooltip:	ZmMsg.searchTooltip
+			});
 
 	// add save search button if saved-searches enabled
-	this._saveButton = ZmToolBar.addButton({ parent:	this, 
-											 setting:	ZmSetting.SAVED_SEARCHES_ENABLED,
-											 tdId:		"_saveButton",
-											 buttonId:	ZmId.getButtonId(ZmId.SEARCHRESULTS, ZmId.SEARCHRESULTS_SAVE),
-											 lbl:		ZmMsg.save,
-//											 icon:		"Save",
-//											 type:		"toolbar",
-											 tooltip:	ZmMsg.saveSearchTooltip });
+	this._button[ZmSearchToolBar.SAVE_BUTTON] = ZmToolBar.addButton({
+				parent:		this, 
+				setting:	ZmSetting.SAVED_SEARCHES_ENABLED,
+				tdId:		"_saveButton",
+				buttonId:	ZmId.getButtonId(ZmId.SEARCHRESULTS, ZmId.SEARCHRESULTS_SAVE),
+				lbl:		ZmMsg.save,
+				tooltip:	ZmMsg.saveSearchTooltip
+			});
+};
+
+// use the main search toolbar's autocomplete list
+ZmSearchResultsToolBar.prototype.initAutocomplete =
+function() {
+	var mainSearchToolbar = appCtxt.getSearchController().getSearchToolbar();
+	var aclv = mainSearchToolbar.getAutocompleteListView();
+	var input = this.getSearchField();
+	aclv.handle(input);
+	aclv.addCallback(ZmAutocompleteListView.CB_KEYDOWN, new AjxCallback(this, this._handleKeyDown), input.id);
 };

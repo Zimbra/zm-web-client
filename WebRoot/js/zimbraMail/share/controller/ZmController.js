@@ -984,11 +984,6 @@ function(visible) {
 		return;
 	}
 
-	//hide advanced search if open
-	if (!visible) {
-		appCtxt.getSearchController().showBrowseView(false, null, true);
-	}
-
 	//todo - returning now since we are moving the search toolbar to the header anyway, and it causes weird stuff with my new layout.
 	//todo - remove the rest later when moving the search toolbar up.
 	return;

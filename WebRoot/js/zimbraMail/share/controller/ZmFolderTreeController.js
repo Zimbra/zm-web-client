@@ -36,30 +36,22 @@ ZmFolderTreeController = function(type, dropTgt) {
 
 	ZmTreeController.call(this, (type || ZmOrganizer.FOLDER));
 
-	this._listeners[ZmOperation.NEW_FOLDER] = new AjxListener(this, this._newListener);
-	this._listeners[ZmOperation.PRIORITY_FILTER] = new AjxListener(this, this._priorityFilterListener);
-	this._listeners[ZmOperation.RENAME_FOLDER] = new AjxListener(this, this._renameListener);
-	this._listeners[ZmOperation.SHARE_FOLDER] = new AjxListener(this, this._shareFolderListener);
-	this._listeners[ZmOperation.EMPTY_FOLDER] = new AjxListener(this, this._emptyListener);
-	this._listeners[ZmOperation.RECOVER_DELETED_ITEMS] = new AjxListener(this, this._recoverListener);
-	this._listeners[ZmOperation.SYNC_OFFLINE_FOLDER] = new AjxListener(this, this._syncOfflineFolderListener);
-	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
+	this._listeners[ZmOperation.NEW_FOLDER]				= this._newListener.bind(this);
+	this._listeners[ZmOperation.PRIORITY_FILTER]		= this._priorityFilterListener.bind(this);
+	this._listeners[ZmOperation.RENAME_FOLDER]			= this._renameListener.bind(this);
+	this._listeners[ZmOperation.SHARE_FOLDER]			= this._shareFolderListener.bind(this);
+	this._listeners[ZmOperation.EMPTY_FOLDER]			= this._emptyListener.bind(this);
+	this._listeners[ZmOperation.RECOVER_DELETED_ITEMS]	= this._recoverListener.bind(this);
+	this._listeners[ZmOperation.SYNC_OFFLINE_FOLDER]	= this._syncOfflineFolderListener.bind(this);
 };
 
 ZmFolderTreeController.prototype = new ZmTreeController;
 ZmFolderTreeController.prototype.constructor = ZmFolderTreeController;
 
-// Public methods
+ZmFolderTreeController.prototype.isZmFolderTreeController = true;
+ZmFolderTreeController.prototype.toString = function() { return "ZmFolderTreeController"; };
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmFolderTreeController.prototype.toString =
-function() {
-	return "ZmFolderTreeController";
-};
+// Public methods
 
 /**
  * Shows the folder tree with certain folders hidden.
@@ -228,7 +220,6 @@ function(parent, type, id) {
 			button.setText(text);
 		}
 	}
-	parent.enable(ZmOperation.BROWSE, true);
 	var priorityInboxEnabled = appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED);
 	var priorityInboxOp = parent.getOp(ZmOperation.PRIORITY_FILTER);
 	if (priorityInboxOp) {
@@ -257,9 +248,7 @@ function() {
 		ZmOperation.SEP,
 		ZmOperation.PRIORITY_FILTER,
 		ZmOperation.EXPAND_ALL,
-		ZmOperation.SYNC,
-		ZmOperation.SEP,
-		ZmOperation.BROWSE
+		ZmOperation.SYNC
 	];
 };
 
@@ -579,18 +568,6 @@ function(ev) {
 	var folder = this._getActionedOrganizer(ev);
 	if (folder) {
 		folder.toggleSyncOffline();
-	}
-};
-
-/**
- * @private
- */
-ZmFolderTreeController.prototype._browseListener =
-function(ev){
-	var folder = this._getActionedOrganizer(ev);
-	if (folder) {
-		AjxDispatcher.require("Browse");
-		appCtxt.getSearchController().showBrowsePickers([ZmPicker.FOLDER]);
 	}
 };
 

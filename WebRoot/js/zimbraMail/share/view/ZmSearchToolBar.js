@@ -15,33 +15,23 @@
 
 /**
  * @class
- * @constructor 
+ * This class represent a search toolbar. The components are some set of: an input field,
+ * a search button, a save button, and a button to choose what type of item to search for.
+ * 
+ * @param {hash}			params		a hash of parameters:
+ * @param {DwtComposite}	parent		the parent widget
+ * @param {string}			id			an explicit ID to use for the control's HTML element
+ * 
  * @extends		DwtComposite
  */
-ZmSearchToolBar = function(parent, id) {
+ZmSearchToolBar = function(params) {
 
-	DwtComposite.call(this, {parent:parent, className:"ZmSearchToolbar", id:id});
+	if (arguments.length == 0) { return; }
 
-	// setup "include shared" menu item
-	var params = {
-		msgKey:		"searchShared",
-		tooltipKey:	"searchShared",
-		icon:		"Group",
-		setting:	ZmSetting.SHARING_ENABLED,
-		id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_SHARED)
-	};
-	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_SHARED, params);
-
-	// setup "all accounts" menu item for multi account
-	if (appCtxt.multiAccounts) {
-		var params = {
-			msgKey:	"searchAllAccounts",
-			icon:	"Globe",
-			id:		ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_ALL_ACCOUNTS)
-		};
-		ZmSearchToolBar.addMenuItem(ZmId.SEARCH_ALL_ACCOUNTS, params);
-	}
-
+	params.className = params.className || "ZmSearchToolbar";
+	DwtComposite.apply(this, arguments);
+	
+	this._button = {};
 	this._createHtml();
 };
 
@@ -53,23 +43,32 @@ ZmSearchToolBar.prototype.toString = function() { return "ZmSearchToolBar"; };
 
 // Consts
 
-ZmSearchToolBar.SEARCH_MENU_BUTTON		= 1;
-ZmSearchToolBar.SEARCH_BUTTON 			= 2;
-ZmSearchToolBar.SAVE_BUTTON 			= 3;
-ZmSearchToolBar.BROWSE_BUTTON 			= 4;
 
-ZmSearchToolBar.MENUITEM_ID 			= "_menuItemId";						// menu item key
-ZmSearchToolBar.SETTING 				= {};									// required setting for menu item to appear
-ZmSearchToolBar.MENU_ITEMS 				= [];									// list of menu items
-ZmSearchToolBar.MSG_KEY 				= {};									// text for menu item
-ZmSearchToolBar.TT_MSG_KEY 				= {};									// tooltip text for menu item
-ZmSearchToolBar.ICON 					= {};									// icon for menu item
-ZmSearchToolBar.SHARE_ICON				= {};									// icon for shared menu item
-ZmSearchToolBar.ID 						= {};									// ID for menu item
+ZmSearchToolBar.TYPES_BUTTON		= "TYPES";
+ZmSearchToolBar.SEARCH_BUTTON 		= "SEARCH";
+ZmSearchToolBar.SAVE_BUTTON 		= "SAVE";
+ZmSearchToolBar.SEARCH_MENU_BUTTON	= ZmSearchToolBar.TYPES_BUTTON;	// back-compatibility
+
+ZmSearchToolBar.MENUITEM_ID 		= "_menuItemId";		// menu item key
+
+ZmSearchToolBar.MENU_ITEMS 			= [];		// list of menu items
+ZmSearchToolBar.SETTING 			= {};		// required setting for menu item to appear
+ZmSearchToolBar.MSG_KEY 			= {};		// text for menu item
+ZmSearchToolBar.TT_MSG_KEY 			= {};		// tooltip text for menu item
+ZmSearchToolBar.ICON 				= {};		// icon for menu item
+ZmSearchToolBar.SHARE_ICON			= {};		// icon for shared menu item
+ZmSearchToolBar.ID 					= {};		// ID for menu item
 
 
 // Public static methods
 
+/**
+ * Defines a menu item to add when the types menu is created. Static so that it can be called before the
+ * toolbar has been created.
+ * 
+ * @param {string}	id			ID of menu item
+ * @param {hash}	params		menu item properties
+ */
 ZmSearchToolBar.addMenuItem =
 function(id, params) {
 
@@ -80,7 +79,6 @@ function(id, params) {
 	if (params.setting)		{ ZmSearchToolBar.SETTING[id]		= params.setting; }
 	if (params.id)			{ ZmSearchToolBar.ID[id]			= params.id; }
 
-	// test for null since index value can be zero :)
 	if (params.index == null || params.index < 0 || params.index >= ZmSearchToolBar.MENU_ITEMS.length) {
 		ZmSearchToolBar.MENU_ITEMS.push(id);
 	} else {
@@ -91,7 +89,11 @@ function(id, params) {
 
 // Public methods
 
-
+/**
+ * Removes a menu item from the types menu.
+ * 
+ * @param {string}	id			ID of menu item
+ */
 ZmSearchToolBar.prototype.removeMenuItem =
 function(id) {
 	
@@ -107,7 +109,9 @@ function(id) {
 ZmSearchToolBar.prototype._cleanupSeparators =
 function(menu) {
 
-	menu = menu || this._searchMenuButton.getMenu();
+	var button = this._button[ZmSearchToolBar.TYPES_BUTTON];
+	menu = menu || (button && button.getMenu());
+	if (!menu) { return; }
 
 	var items = menu.getItems();
 	var toRemove = [];
@@ -129,22 +133,15 @@ function() {
 	return this._searchField.getInputElement();
 };
 
-ZmSearchToolBar.prototype.registerCallback =
-function(func, obj) {
-	this._callback = new AjxCallback(obj, func);
+// sets up a function to call when Enter has been pressed
+ZmSearchToolBar.prototype.registerEnterCallback =
+function(callback) {
+	this._enterCallback = callback;
 };
 
 ZmSearchToolBar.prototype.addSelectionListener =
 function(buttonId, listener) {
-	var button;
-
-	switch (buttonId) {
-		case ZmSearchToolBar.SEARCH_MENU_BUTTON:button = this._searchMenuButton; break;
-		case ZmSearchToolBar.SEARCH_BUTTON:		button = this._searchButton; break;
-		case ZmSearchToolBar.SAVE_BUTTON:		button = this._saveButton; break;
-		case ZmSearchToolBar.BROWSE_BUTTON:		button = this._browseButton; break;
-	}
-
+	var button = this._button[buttonId];
 	if (button) {
 		button.addSelectionListener(listener);
 	}
@@ -152,25 +149,19 @@ function(buttonId, listener) {
 
 ZmSearchToolBar.prototype.getButton =
 function(buttonId) {
-	switch (buttonId) {
-		case ZmSearchToolBar.SEARCH_MENU_BUTTON:return this._searchMenuButton;
-		case ZmSearchToolBar.SEARCH_BUTTON: 	return this._searchButton;
-		case ZmSearchToolBar.SAVE_BUTTON:		return this._saveButton;
-		case ZmSearchToolBar.BROWSE_BUTTON:		return this._browseButton;
-	}
-
-	return null;
+	return this._button[buttonId];
 };
 
 ZmSearchToolBar.prototype.getButtons =
 function() {
-	return AjxUtil.collapseList([this._searchMenuButton, this._searchButton, this._saveButton, this._browseButton, this._customSearchBtn]);
+	return AjxUtil.values(this._button);
 };
 
 ZmSearchToolBar.prototype.focus =
 function() {
 	if (this._searchField) {
 		this._searchField.focus();
+		this._searchField.moveCursorToEnd();
 	}
 };
 
@@ -183,12 +174,12 @@ function() {
 
 ZmSearchToolBar.prototype.setEnabled =
 function(enable) {
-	if (this._searchField)		{ this._searchField.setEnabled(enable); }
-	if (this._searchMenuButton) { this._searchMenuButton.setEnabled(enable); }
-	if (this._searchButton)		{ this._searchButton.setEnabled(enable); }
-	if (this._saveButton)		{ this._saveButton.setEnabled(enable); }
-	if (this._browseButton)		{ this._browseButton.setEnabled(enable); }
-	if (this._customSearchBtn)	{ this._customSearchBtn.setEnabled(enable); }
+	if (this._searchField) {
+		this._searchField.setEnabled(enable);
+	}
+	for (var buttonId in this._button) {
+		this._button[buttonId].setEnabled(enable);
+	}
 };
 
 ZmSearchToolBar.prototype.setSearchFieldValue =
@@ -203,122 +194,105 @@ function() {
 	return this._searchField ? this._searchField.getValue() : null;
 };
 
-ZmSearchToolBar.prototype.createCustomSearchBtn =
-function(icon, text, listener, id) {
-	if (!this._customSearchListener) {
-		this._customSearchListener = new AjxListener(this, this._customSearchBtnListener);
-	}
-
-	// check if custom search should be a button by checking for the Id against the template
-	var customSearchBtn = document.getElementById(this._htmlElId + "_customSearchButton");
-	if (customSearchBtn) {
-		if (!this._customSearchBtn) {
-			this._customSearchBtn = ZmToolBar.addButton({ parent:	this,
-														  tdId:		"_customSearchButton",
-														  buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_CUSTOM),
-														  lbl:		text,
-														  icon:		icon });
-			this._customSearchBtn.setData("CustomSearchItem", [ icon, text, listener ]);
-			this._customSearchBtn.addSelectionListener(this._customSearchListener);
-
-			// show the separator now that we've added a custom search button
-			var sep = document.getElementById(this._htmlElId + "_customSearchButtonSep");
-			if (sep) {
-				Dwt.setVisible(sep, true);
-			}
-		} else {
-			var menu = this._customSearchBtn.getMenu();
-			var item;
-			var params = {parent:menu, enabled:true, style:DwtMenuItem.RADIO_STYLE, radioGroupId:0, id:id};
-			if (!menu) {
-				var data = this._customSearchBtn.getData("CustomSearchItem");
-				menu = new DwtMenu({parent:this._customSearchBtn, className:"ActionMenu", id:ZmId.getMenuId(ZmId.SEARCH, ZmId.SEARCH_CUSTOM)});
-				this._customSearchBtn.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
-				params.imageInfo = data[0];
-				params.text = data[1];
-				item = DwtMenuItem.create(params);
-				item.setData("CustomSearchItem", data);
-				item.setData(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_CUSTOM);
-				item.setChecked(true, true);
-				item.addSelectionListener(this._customSearchListener);
-			}
-			params.imageInfo = icon;
-			params.text = text;
-			item = DwtMenuItem.create(params);
-			item.setData("CustomSearchItem", [icon, text, listener] );
-			item.addSelectionListener(this._customSearchListener);
-		}
-	} else {
-		if (this._searchMenuCreated) {
-			var menu = this._searchMenuButton.getMenu();
-			this._createCustomSearchMenuItem(menu, icon, text, listener, id);
-		} else {
-			if (!this._customSearchMenuItems) {
-				this._customSearchMenuItems = [];
-			}
-			this._customSearchMenuItems.push({icon:icon, text:text, listener:listener, id:id});
-		}
-	}
-};
-
-ZmSearchToolBar.prototype._createCustomSearchMenuItem =
-function(menu, icon, text, listener, id) {
-	var mi = menu.getItem(0);
-	var params = {
-		parent: menu,
-		imageInfo: icon,
-		text: text,
-		enabled: true,
-		style: DwtMenuItem.RADIO_STYLE,
-		radioGroupId: 0,
-		index: 0,
-		id: id
-	};
-	mi = DwtMenuItem.create(params);
-	mi.setData("CustomSearchItem", [icon, text, listener]);
-	mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_CUSTOM);
-	mi.addSelectionListener(this._customSearchListener);
-
-	// only add separator if this is the first custom search menu item
-	if (!(mi && mi.getData("CustomSearchItem"))) {
-		mi = new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE, index:1});
-	}
-};
-
-ZmSearchToolBar.prototype._customSearchBtnListener = 
-function(ev) {
-	var item = ev.item;
-	if (!item) { return; }
-	var data = item.getData("CustomSearchItem");
-	if (this._customSearchBtn) {
-		if (item instanceof DwtMenuItem) {
-			if (ev.detail != DwtMenuItem.CHECKED) { return; }
-			this._customSearchBtn.setToolTipContent(data[1]);
-			this._customSearchBtn.setData("CustomSearchItem", data);
-		}
-		data[2].run(ev); // call original listener
-	} else {
-		this._searchMenuButton.setToolTipContent(data[1]);
-
-		var menu = item.parent;
-		var shareMenuItem = menu ? menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_SHARED) : null;
-		if (shareMenuItem) {
-			shareMenuItem.setChecked(false, true);
-			shareMenuItem.setEnabled(false);
-		}
-
-		this._searchMenuButton.setImage(data[0]);
-		this._searchMenuButton.setText(data[1]);
-	}
-};
 
 
 // Private methods
 
-ZmSearchToolBar.prototype._createHtml =
+ZmSearchToolBar.prototype._createHtml = function() {};
+
+
+ZmSearchToolBar.prototype._handleKeyDown =
+function(ev) {
+	var key = DwtKeyEvent.getCharCode(ev);
+	if (key == 3 || key == 13) {
+		return this._handleEnterKeyPress(ev);
+	}
+	return true;
+};
+
+ZmSearchToolBar.prototype._handleEnterKeyPress =
+function(ev) {
+	if (this._enterCallback) {
+		this._enterCallback.run({ev:ev, zimletEvent:"onKeyPressSearchField"});
+	}
+	return false;
+};
+
+/**
+ * Initializes search autocomplete.
+ */
+ZmSearchToolBar.prototype.initAutocomplete =
 function() {
 
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("share.Widgets#ZmSearchToolBar", {id:this._htmlElId});
+	if (!this._acList) {
+		var params = {
+			dataClass:			new ZmSearchAutocomplete(),
+			matchValue:			"matchText",
+			delims:				[" ", "\t"],
+			delimCodes:			[3, 13, 32, 9],
+			separator:			" ",
+			keyDownCallback:	new AjxCallback(this, this._handleKeyDown),
+			contextId:			this.toString()
+		};
+		this._acList = new ZmAutocompleteListView(params);
+		this._acList.handle(this.getSearchField());
+	}
+};
+
+ZmSearchToolBar.prototype.getAutocompleteListView =
+function() {
+	return this._acList;
+};
+
+
+/**
+ * Adds a types button and support for a custom search menu item to a search toolbar
+ * 
+ * @param params
+ */
+ZmMainSearchToolBar = function(params) {
+
+	if (arguments.length == 0) { return; }
+
+	ZmSearchToolBar.apply(this, arguments);
+
+	// setup "include shared" menu item
+	var miParams = {
+		msgKey:		"searchShared",
+		tooltipKey:	"searchShared",
+		icon:		"Group",
+		setting:	ZmSetting.SHARING_ENABLED,
+		id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_SHARED)
+	};
+	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_SHARED, miParams);
+
+	// setup "all accounts" menu item for multi account
+	if (appCtxt.multiAccounts) {
+		var miParams = {
+			msgKey:	"searchAllAccounts",
+			icon:	"Globe",
+			id:		ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_ALL_ACCOUNTS)
+		};
+		ZmSearchToolBar.addMenuItem(ZmId.SEARCH_ALL_ACCOUNTS, miParams);
+	}
+};
+
+ZmMainSearchToolBar.prototype = new ZmSearchToolBar;
+ZmMainSearchToolBar.prototype.constructor = ZmMainSearchToolBar;
+
+ZmMainSearchToolBar.prototype.isZmMainSearchToolBar = true;
+ZmMainSearchToolBar.prototype.toString = function() { return "ZmMainSearchToolBar"; };
+
+
+ZmMainSearchToolBar.prototype.TEMPLATE = "share.Widgets#ZmSearchToolBar";
+
+ZmMainSearchToolBar.CUSTOM_ITEM_ID		= "CustomSearchItem";	// custom search menu item key
+ZmMainSearchToolBar.CUSTOM_BUTTON 		= "CUSTOM";				// button ID
+
+ZmMainSearchToolBar.prototype._createHtml =
+function() {
+
+	this.getHtmlElement().innerHTML = AjxTemplate.expand(this.TEMPLATE, {id:this._htmlElId});
 
 	// add search input field
 	var inputFieldId = this._htmlElId + "_inputField";
@@ -338,71 +312,50 @@ function() {
 	var searchMenuBtn = document.getElementById(searchMenuBtnId);
 	if (searchMenuBtn) {
 		var firstItem = ZmSearchToolBar.MENU_ITEMS[0];
-		this._searchMenuButton = ZmToolBar.addButton({ parent:		this, 
-													   tdId:		"_searchMenuButton",
-													   buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_MENU),
-													   tooltip:		ZmMsg[ZmSearchToolBar.TT_MSG_KEY[firstItem]],
-													   icon:		ZmSearchToolBar.ICON[firstItem] });
+		var button = this._button[ZmSearchToolBar.TYPES_BUTTON] = ZmToolBar.addButton({
+					parent:		this, 
+					tdId:		"_searchMenuButton",
+					buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_MENU),
+					tooltip:	ZmMsg[ZmSearchToolBar.TT_MSG_KEY[firstItem]],
+					icon:		ZmSearchToolBar.ICON[firstItem]
+				});
 		var menu = new AjxCallback(this, this._createSearchMenu);
-		this._searchMenuButton.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
-		this._searchMenuButton.reparentHtmlElement(searchMenuBtnId);
+		button.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
+		button.reparentHtmlElement(searchMenuBtnId);
 	}
 
 	// add search button
-	this._searchButton = ZmToolBar.addButton({ parent:		this, 
-											   tdId:		"_searchButton",
-											   buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_SEARCH),
-											   lbl:			"",
-											   icon:		"Search2",
-											   template: 	"dwt.Widgets#ZImageOnlyButton",
-											   className: 	"ZImageOnlyButton",
-											   tooltip:		ZmMsg.searchTooltip });
+	this._button[ZmSearchToolBar.SEARCH_BUTTON] = ZmToolBar.addButton({
+				parent:		this, 
+				tdId:		"_searchButton",
+				buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_SEARCH),
+				lbl:		"",
+				icon:		"Search2",
+				template: 	"dwt.Widgets#ZImageOnlyButton",
+				className: 	"ZImageOnlyButton",
+				tooltip:	ZmMsg.searchTooltip
+			});
 
 	// add save search button if saved-searches enabled
-	this._saveButton = ZmToolBar.addButton({ parent:	this, 
-											 setting:	ZmSetting.SAVED_SEARCHES_ENABLED,
-											 tdId:		"_saveButton",
-											 buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_SAVE),
-											 lbl:		ZmMsg.save,
-											 icon:		"Save",
-											 type:		"toolbar",
-											 tooltip:	ZmMsg.saveSearchTooltip });
-
-	// add advanced search button
-	this._browseButton = ZmToolBar.addButton({ parent:		this, 
-											   setting:		ZmSetting.BROWSE_ENABLED,
-											   tdId:		"_advancedButton",
-											   buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_ADVANCED),
-											   style:		(DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_CENTER | DwtButton.TOGGLE_STYLE),
-											   lbl:			ZmMsg.searchBuilder,
-											   icon:		"SearchBuilder",
-											   type:		"toolbar",
-											   tooltip:		ZmMsg.openSearchBuilder });
+	this._button[ZmSearchToolBar.SAVE_BUTTON] = ZmToolBar.addButton({
+				parent:		this, 
+				setting:	ZmSetting.SAVED_SEARCHES_ENABLED,
+				tdId:		"_saveButton",
+				buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_SAVE),
+				lbl:		ZmMsg.save,
+				icon:		"Save",
+				type:		"toolbar",
+				tooltip:	ZmMsg.saveSearchTooltip });
 };
 
-// Expand INPUT when it gets focus
-ZmSearchToolBar.prototype._onInputFocus =
-function(ev) {
-	this._setInputExpanded(true);
-};
-
-// Collapse INPUT when it loses focus (unless that was due to a click on the menu button)
-ZmSearchToolBar.prototype._onInputBlur =
-function(ev) {
-	var focusObj = appCtxt.getKeyboardMgr().getFocusObj();
-	if (focusObj != this._searchMenuButton && focusObj != this._searchButton) {
-		this._setInputExpanded(false);
-	}
-};
-
-ZmSearchToolBar.prototype._setInputExpanded =
-function(expanded) {
-	this._searchField.getInputElement().className = expanded ? "search_input-expanded" : "search_input";
-};
-
-ZmSearchToolBar.prototype._createSearchMenu =
+ZmMainSearchToolBar.prototype._createSearchMenu =
 function() {
-	var menu = new DwtMenu({parent:this._searchMenuButton, className:"ActionMenu", id:ZmId.getMenuId(ZmId.SEARCH)});
+
+	var menu = new DwtMenu({
+				parent:		this._button[ZmSearchToolBar.SEARCH_BUTTON],
+				className:	"ActionMenu",
+				id:			ZmId.getMenuId(ZmId.SEARCH)
+			});
 	var mi;
 	if (this._customSearchMenuItems) {
 		for (var i = 0; i < this._customSearchMenuItems.length; i++) {
@@ -438,48 +391,175 @@ function() {
 	return menu;
 };
 
-ZmSearchToolBar.prototype._handleKeyDown =
-function(ev) {
-	var key = DwtKeyEvent.getCharCode(ev);
-	if (key == 3 || key == 13) {
-		return this._handleEnterKeyPress(ev);
-	}
-	return true;
+ZmMainSearchToolBar.prototype.getSearchType =
+function() {
+	
+	var button = this._button[ZmSearchToolBar.SEARCH_BUTTON];
+	var menu = button && button.getMenu();
+    var item = menu ? menu.getSelectedItem() || menu.getItems()[0] : null;
+	if (!item) { return null; }
+	return item.getData(ZmMainSearchToolBar.CUSTOM_ITEM_ID) || item.getData(ZmSearchToolBar.MENUITEM_ID);
 };
 
-ZmSearchToolBar.prototype._handleEnterKeyPress =
-function(ev) {
-	var menu = this._searchMenuButton && this._searchMenuButton.getMenu();
-    var item = menu ? menu.getSelectedItem() || menu.getItems()[0] : null
-	var data = item && item.getData("CustomSearchItem");
-	if (data) {
-		data[2].run(ev); // call original listener
+ZmMainSearchToolBar.prototype.createCustomSearchBtn =
+function(icon, text, listener, id) {
+
+	if (!this._customSearchListener) {
+		this._customSearchListener = this._customSearchBtnListener.bind(this);
+	}
+
+	// check if custom search should be a button by checking for the Id against the template
+	var customSearchBtn = document.getElementById(this._htmlElId + "_customSearchButton");
+	if (customSearchBtn) {
+		var data = { icon:icon, text:text, listener:listener };
+		var button = this._button[ZmSearchToolBar.CUSTOM_BUTTON]
+		if (!button) {
+			button = this._button[ZmSearchToolBar.CUSTOM_BUTTON] = ZmToolBar.addButton({
+						parent:		this,
+						tdId:		"_customSearchButton",
+						buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_CUSTOM),
+						lbl:		text,
+						icon:		icon
+					});
+			button.setData(ZmMainSearchToolBar.CUSTOM_ITEM_ID, data);
+			button.addSelectionListener(this._customSearchListener);
+
+			// show the separator now that we've added a custom search button
+			var sep = document.getElementById(this._htmlElId + "_customSearchButtonSep");
+			if (sep) {
+				Dwt.setVisible(sep, true);
+			}
+		} else {
+			var menu = button && button.getMenu();
+			var item;
+			var params = {
+				parent:			menu,
+				enabled:		true,
+				style:			DwtMenuItem.RADIO_STYLE,
+				radioGroupId:	0,
+				id:				id
+			};
+			if (!menu) {
+				var btnData = button.getData(ZmMainSearchToolBar.CUSTOM_ITEM_ID);
+				menu = new DwtMenu({
+							parent:		button,
+							className:	"ActionMenu",
+							id:			ZmId.getMenuId(ZmId.SEARCH, ZmId.SEARCH_CUSTOM)
+						});
+				button.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
+				params.imageInfo = btnData.icon;
+				params.text = btnData.text;
+				item = DwtMenuItem.create(params);
+				item.setData(ZmMainSearchToolBar.CUSTOM_ITEM_ID, btnData);
+				item.setData(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_CUSTOM);
+				item.setChecked(true, true);
+				item.addSelectionListener(this._customSearchListener);
+			}
+			params.imageInfo = icon;
+			params.text = text;
+			item = DwtMenuItem.create(params);
+			item.setData(ZmMainSearchToolBar.CUSTOM_ITEM_ID, data);
+			item.addSelectionListener(this._customSearchListener);
+		}
 	} else {
-		var searchFor = item.getData(ZmSearchToolBar.MENUITEM_ID);
-		var queryString = this.getSearchFieldValue();
-		appCtxt.notifyZimlets("onKeyPressSearchField", [queryString]);
-		this._callback.run(queryString, searchFor);
+		if (this._searchMenuCreated) {
+			var menu = this._button[ZmSearchToolBar.SEARCH_BUTTON].getMenu();
+			this._createCustomSearchMenuItem(menu, icon, text, listener, id);
+		} else {
+			if (!this._customSearchMenuItems) {
+				this._customSearchMenuItems = [];
+			}
+			this._customSearchMenuItems.push({icon:icon, text:text, listener:listener, id:id});
+		}
 	}
-	return false;
 };
 
-ZmSearchToolBar.prototype.initAutocomplete =
-function(id) {
+ZmMainSearchToolBar.prototype._createCustomSearchMenuItem =
+function(menu, icon, text, listener, id) {
+	var mi = menu.getItem(0);
+	var params = {
+		parent: menu,
+		imageInfo: icon,
+		text: text,
+		enabled: true,
+		style: DwtMenuItem.RADIO_STYLE,
+		radioGroupId: 0,
+		index: 0,
+		id: id
+	};
+	mi = DwtMenuItem.create(params);
+	var data = { icon:icon, text:text, listener:listener };
+	mi.setData(ZmMainSearchToolBar.CUSTOM_ITEM_ID, data);
+	mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_CUSTOM);
+	mi.addSelectionListener(this._customSearchListener);
 
-	if (id == ZmId.SEARCH_SHARED) { //no change required when checking/unchecking the "include shared items" checkbox
-		return;
+	// only add separator if this is the first custom search menu item
+	if (!(mi && mi.getData(ZmMainSearchToolBar.CUSTOM_ITEM_ID))) {
+		mi = new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE, index:1});
 	}
+};
 
-	var firstTime = this._isPeopleAutoComplete == undefined; //first time this is called. no autocomplete is set up
+ZmMainSearchToolBar.prototype._customSearchBtnListener = 
+function(ev) {
+	var item = ev.item;
+	if (!item) { return; }
+	var data = item.getData(ZmMainSearchToolBar.CUSTOM_ITEM_ID);
+	if (!data) { return; }
+	if (this._customSearchBtn) {
+		if (item.isDwtMenuItem) {
+			if (ev.detail != DwtMenuItem.CHECKED) { return; }
+			this._customSearchBtn.setToolTipContent(data[1]);
+			this._customSearchBtn.setData(ZmMainSearchToolBar.CUSTOM_ITEM_ID, data);
+		}
+		data.listener.run(ev); // call original listener
+	} else {
+		var button = this._button[ZmSearchToolBar.SEARCH_BUTTON];
+		button.setToolTipContent(data.text);
 
-	var isPeople = this._isPeopleAutoComplete || false; //is the current autocomplete people search?
-	var needPeople = this._isPeopleAutoComplete = (id == ZmItem.CONTACT || id == ZmId.SEARCH_GAL); //do we want people search autocomplete now?
+		var menu = item.parent;
+		var shareMenuItem = menu ? menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_SHARED) : null;
+		if (shareMenuItem) {
+			shareMenuItem.setChecked(false, true);
+			shareMenuItem.setEnabled(false);
+		}
 
-	if (!firstTime && isPeople == needPeople) {
-		return;
+		button.setImage(data.icon);
+		button.setText(data.text);
 	}
+};
 
-	if (needPeople) {
+// Expand INPUT when it gets focus
+ZmMainSearchToolBar.prototype._onInputFocus =
+function(ev) {
+	this._setInputExpanded(true);
+};
+
+// Collapse INPUT when it loses focus (unless that was due to a click on the menu button)
+ZmMainSearchToolBar.prototype._onInputBlur =
+function(ev) {
+	var focusObj = appCtxt.getKeyboardMgr().getFocusObj();
+	if (focusObj != this._button[ZmSearchToolBar.TYPES_BUTTON] && focusObj != this._button[ZmSearchToolBar.SEARCH_BUTTON]) {
+		this._setInputExpanded(false);
+	}
+};
+
+ZmMainSearchToolBar.prototype._setInputExpanded =
+function(expanded) {
+	this._searchField.getInputElement().className = expanded ? "search_input-expanded" : "search_input";
+};
+
+/**
+ * Initializes people autocomplete and search autocomplete.
+ */
+ZmMainSearchToolBar.prototype.initAutocomplete =
+function() {
+
+	ZmSearchToolBar.prototype.initAutocomplete.apply(this, arguments);
+	
+	var id = this.getSearchType();
+	var needPeople = (id == ZmItem.CONTACT || id == ZmId.SEARCH_GAL);
+
+	if (!this._peopleAutocomplete) {
 		var params = {
 			parent:			appCtxt.getShell(),
 			dataClass:		(new ZmPeopleSearchAutocomplete()),
@@ -487,20 +567,32 @@ function(id) {
 			options:		{type:ZmAutocomplete.AC_TYPE_GAL},
 			separator:		""
 		};
-		this._autocomplete = new ZmPeopleAutocompleteListView(params);
-		this._autocomplete.handle(this._searchField.getInputElement());
-		return;
+		this._peopleAutocomplete = new ZmPeopleAutocompleteListView(params);
+		if (needPeople) {
+			this._peopleAutocomplete.handle(this.getSearchField());
+		}
 	}
+};
 
-	var params = {
-		dataClass:			new ZmSearchAutocomplete(),
-		matchValue:			"matchText",
-		delims:				[" ", "\t"],
-		delimCodes:			[3, 13, 32, 9],
-		separator:			" ",
-		keyDownCallback:	this._handleKeyDown.bind(this),
-		contextId:			this.toString()
-	};
-	this._acList = new ZmAutocompleteListView(params);
-	this._acList.handle(this.getSearchField());
+/**
+ * Enables or disables people autocomplete depending on what user is searching for.
+ * 
+ * @param {string}	id		ID of menu item selected in "search for" menu
+ */
+ZmMainSearchToolBar.prototype.setPeopleAutocomplete =
+function(id) {
+
+	//no change required when checking/unchecking the "include shared items" checkbox
+	if (id == ZmId.SEARCH_SHARED || !this._peopleAutocomplete) { return; }
+	
+	var needPeople = (id == ZmItem.CONTACT || id == ZmId.SEARCH_GAL);
+	if (this._peopleAutocomplete.isActive != needPeople) {
+		var input = this.getSearchField();
+		if (needPeople) {
+			this._peopleAutocomplete.handle(input);
+		}
+		else {
+			this._peopleAutocomplete.unhandle(input);
+		}
+	}
 };

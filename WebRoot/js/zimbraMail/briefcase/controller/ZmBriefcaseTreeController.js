@@ -36,7 +36,6 @@ ZmBriefcaseTreeController = function(type) {
 
 	this._listeners[ZmOperation.NEW_BRIEFCASE] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_BRIEFCASE] = new AjxListener(this, this._shareBriefcaseListener);
-	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
 
 	this._eventMgrs = {};
     this._app = appCtxt.getApp(ZmApp.BRIEFCASE);
@@ -145,13 +144,7 @@ function(organizer, perm) {
 // Returns a list of desired header action menu operations
 ZmBriefcaseTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	var ops = [ZmOperation.NEW_BRIEFCASE];
-	ops.push(
-		ZmOperation.EXPAND_ALL,
-		ZmOperation.SEP,
-		ZmOperation.BROWSE
-	);
-	return ops;
+	return [ZmOperation.NEW_BRIEFCASE, ZmOperation.EXPAND_ALL];
 };
 
 // Returns a list of desired action menu operations

@@ -37,6 +37,8 @@
 ZmSearchResultsController = function(container, app, type, sessionId) {
 
 	ZmController.apply(this, arguments);
+	
+	this._initialize();
 };
 
 ZmSearchResultsController.prototype = new ZmController;
@@ -61,21 +63,41 @@ function(results) {
 	var app = this._resultsApp = appCtxt.getApp(ZmItem.APP[resultsType]) || appCtxt.getCurrentApp();
 //	app.currentSearch = search;
 //	app.currentQuery = search.query;
-	app.showSearchResults(results, this._setView.bind(this), this);
+	app.showSearchResults(results, this._displayResults.bind(this, results.search), this);
 };
 
-ZmSearchResultsController.prototype._setView =
-function(resultsCtlr) {
+ZmSearchResultsController.prototype._initialize =
+function() {
+
+	if (this._initialized) { return; }
 	
-	this._toolbar = new ZmSearchResultsToolBar(this._container, ZmId.SEARCHRESULTS_TOOLBAR);
+	this._toolbar = new ZmSearchResultsToolBar({
+				parent:			this._container,
+				id:				ZmId.SEARCHRESULTS_TOOLBAR,
+				noMenuButton:	true
+			});
+	
+	this._toolbar.getButton(ZmSearchToolBar.SEARCH_BUTTON).addSelectionListener(this._searchListener.bind(this));
+	this._toolbar.getButton(ZmSearchToolBar.SAVE_BUTTON).addSelectionListener(this._saveListener.bind(this));
+	this._toolbar.registerEnterCallback(this._searchListener.bind(this));
+
 	this._filterPanel = new DwtComposite({parent:this._container, className:"FilterPanel", posStyle:Dwt.ABSOLUTE_STYLE});
 	this._filterPanel.getHtmlElement().innerHTML = "<div style='position:absolute;top:50%;margin-left:5px;'>Filter Panel not ready yet</div>";
 	
-	var callbacks = {};
-	callbacks[ZmAppViewMgr.CB_PRE_SHOW]		= this._preShowCallback.bind(this, true);
-	callbacks[ZmAppViewMgr.CB_POST_SHOW]	= this._postShowCallback.bind(this, true);
-	callbacks[ZmAppViewMgr.CB_POST_HIDE]	= this._postHideCallback.bind(this, false);
+	this._initialized = true;
+};
 
+// TODO: handle reuse
+/**
+ * 
+ * @param search
+ * @param {ZmController}	resultsCtlr		passed back from app
+ */
+ZmSearchResultsController.prototype._displayResults =
+function(search, resultsCtlr) {
+	
+	this._toolbar.setSearchFieldValue(AjxStringUtil.trim(search.query) + " ");
+	
 	var elements = {};
 	elements[ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR] = this._toolbar;
 	elements[ZmAppViewMgr.C_TREE] = this._filterPanel;
@@ -86,18 +108,39 @@ function(resultsCtlr) {
 							viewType:	this._currentViewType,
 							elements:	elements,
 							controller:	this,
-//							show:		[ ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR ],
 							hide:		[ ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_TREE_FOOTER ],
-//							callbacks:	callbacks,
 							tabParams:	this._getTabParams()});
 	this._app.pushView(this._currentViewId);
+	
+	setTimeout(this._toolbar.focus.bind(this._toolbar), 100);
 };
 
 ZmSearchResultsController.prototype._getTabParams =
 function() {
-	return {	id:				this.tabId,
-				image:			"Search",
-				text:			ZmSearchResultsController.DEFAULT_TAB_TEXT,
-				textPrecedence:	90,
-				tooltip:		ZmSearchResultsController.DEFAULT_TAB_TEXT};
+	return {
+		id:				this.tabId,
+		image:			"Search",
+		text:			ZmSearchResultsController.DEFAULT_TAB_TEXT,
+		textPrecedence:	90,
+		tooltip:		ZmSearchResultsController.DEFAULT_TAB_TEXT
+	};
+};
+
+ZmSearchResultsController.prototype._searchListener =
+function(ev, zimletEvent) {
+	var query = this._toolbar.getSearchFieldValue();
+	if (query) {
+		var params = {
+			ev:							ev,
+			zimletEvent:				zimletEvent || "onSearchButtonClick",
+			query:						query,
+			skipUpdateSearchToolbar:	true
+		}
+		appCtxt.getSearchController()._toolbarSearch(params);
+	}
+};
+
+ZmSearchResultsController.prototype._saveListener =
+function(ev) {
+	appCtxt.getSearchController()._saveButtonListener(ev);
 };

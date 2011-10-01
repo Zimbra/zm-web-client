@@ -458,6 +458,15 @@ function(element, addrInputId) {
 	Dwt.setHandler(element, DwtEvent.ONKEYDOWN, ZmAutocompleteListView.onKeyDown);
 	Dwt.setHandler(element, DwtEvent.ONKEYPRESS, ZmAutocompleteListView.onKeyPress);
 	Dwt.setHandler(element, DwtEvent.ONKEYUP, ZmAutocompleteListView.onKeyUp);
+	this.isActive = true;
+};
+
+ZmAutocompleteListView.prototype.unhandle =
+function(element) {
+	Dwt.clearHandler(element, DwtEvent.ONKEYDOWN);
+	Dwt.clearHandler(element, DwtEvent.ONKEYPRESS);
+	Dwt.clearHandler(element, DwtEvent.ONKEYUP);
+	this.isActive = false;
 };
 
 // Kicks off an autocomplete cycle, which scans the content of the given input and then
@@ -1455,6 +1464,7 @@ function(type, callback, inputId) {
 	this._callbacks[type].push({callback:callback, inputId:inputId});
 };
 
+// TODO: callback must be AjxCallback do to marshalling of args - fix so bound func can be used
 ZmAutocompleteListView.prototype._runCallbacks =
 function(type, inputId, args) {
 

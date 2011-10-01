@@ -40,8 +40,6 @@ body	{	@ChromeBg@	}
 */
 #skin_tr_toolbar_full, 					/* main app (fullscreen) */
 #skin_tr_main_full,	
-#skin_container_search_builder_outer,	/* search builder */
-#skin_td_search_builder,
 #skin_tr_tree_footer					/* mini-calendar */
 	{
 	display:none;
@@ -161,33 +159,6 @@ body	{	@ChromeBg@	}
 #skin_container_logoff {
 	text-align:right;
 }
-
-
-/* search builder */
-
-#skin_container_search_builder_outer	{}
-
-#skin_container_search_builder_toolbar	{	
-	@SkinBorderSBToolbar@
-	height:32px;
-}	
-#IFDEF MSIE
-
-#skin_container_search_builder_toolbar	{	
-	@SkinBorderSBToolbar@
-	height:26px;
-}
-#ENDIF	
-
-#skin_tr_search_builder	{}
-#skin_td_search_builder	{	
-	padding:0 4 3 4;
-}
-#skin_container_search_builder	{	
-	@SkinBorderSB@
-	height:225;
-}
-
 
 
 /* current app, tree-app sash, top toolbar */

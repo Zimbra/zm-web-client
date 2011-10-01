@@ -37,7 +37,6 @@ function ZmSkin(hints) {
         // skin regions
         skin:           { containers: "skin_outer" },
         tree:			{ minWidth:150, maxWidth:300, containers: ["skin_td_outer_tree", "skin_outer_tree", "skin_col_tree_inner", "skin_col_tree"] },
-        searchBuilder:  { containers: [ "skin_container_search_builder_outer", "skin_td_search_builder" ] },
         topToolbar:     { containers: [ "skin_tr_top_toolbar", "!skin_tr_top_toolbar_shim" ] },
         bottomToolbar:  { containers: [ "skin_tr_bottom_toolbar", "!skin_tr_bottom_toolbar_shim" ] },
         treeFooter:     { containers: [ "skin_tr_tree_footer_sep", "skin_tr_tree_footer"] },

@@ -30,26 +30,18 @@ ZmTagTreeController = function() {
 
 	ZmTreeController.call(this, ZmOrganizer.TAG);
 
-	this._listeners[ZmOperation.NEW_TAG] = new AjxListener(this, this._newListener);
-	this._listeners[ZmOperation.RENAME_TAG] = new AjxListener(this, this._renameListener);
-	this._listeners[ZmOperation.TAG_COLOR_MENU] = new AjxListener(this, this._colorListener);
-	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
+	this._listeners[ZmOperation.NEW_TAG]		= this._newListener.bind(this);
+	this._listeners[ZmOperation.RENAME_TAG]		= this._renameListener.bind(this);
+	this._listeners[ZmOperation.TAG_COLOR_MENU]	= this._colorListener.bind(this);
 };
 
 ZmTagTreeController.prototype = new ZmTreeController;
 ZmTagTreeController.prototype.constructor = ZmTagTreeController;
 
-// Public methods
+ZmTagTreeController.prototype.isZmTagTreeController = true;
+ZmTagTreeController.prototype.toString = function() { return "ZmTagTreeController"; };
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmTagTreeController.prototype.toString = 
-function() {
-	return "ZmTagTreeController";
-};
+// Public methods
 
 /**
  * Adds listeners for the color change menu items.
@@ -98,7 +90,7 @@ function(parent, type, id) {
  */
 ZmTagTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.NEW_TAG, ZmOperation.BROWSE];
+	return [ZmOperation.NEW_TAG];
 };
 
 /**
@@ -210,18 +202,6 @@ function(ev) {
         else {
             tag.setColor(color);
         }
-	}
-};
-
-/**
- * @private
- */
-ZmTagTreeController.prototype._browseListener =
-function(ev){
-	var folder = this._getActionedOrganizer(ev);
-	if (folder) {
-		AjxDispatcher.require("Browse");
-		appCtxt.getSearchController().showBrowsePickers([ZmPicker.TAG]);
 	}
 };
 

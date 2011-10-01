@@ -51,3 +51,4 @@ AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmSpellChecker");
 
 AjxPackage.require("ajax.dwt.widgets.DwtFolderChooser");
 
+AjxPackage.require("zimbraMail.share.model.ZmAttachmentTypeList");

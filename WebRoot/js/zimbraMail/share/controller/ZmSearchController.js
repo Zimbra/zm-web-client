@@ -107,115 +107,12 @@ function(address) {
 	for (var i = 0; i < query.length; i++) {
 		query[i] = ["tocc:(", query[i], ")"].join("");
 	}
-    if (this.currentSearch && this.currentSearch.folderId == ZmFolder.ID_SENT)
+    if (this.currentSearch && this.currentSearch.folderId == ZmFolder.ID_SENT) {
         this.search({query:"in:sent AND (" + query.join(" OR ") + ")", types:[groupBy]});
-    else
+	}
+    else {
 	    this.search({query:query.join(" OR "), types:[groupBy]});
-};
-
-/**
- * Shows the browse view by from name.
- *
- * @param	{String}	name	the name
- */
-ZmSearchController.prototype.fromBrowse =
-function(name) {
-	// showBrowseView() may need load of Browse package
-	var loadCallback = new AjxCallback(this, this._handleLoadFromBrowse, [name]);
-	this.showBrowseView(true, loadCallback);
-};
-
-/**
- * Shows the browse picker.
- *
- * @param {Array}	pickers a array of pickers to show browser with
- * @param {Boolean}	showBasic		<code>true</code> to show basic picker
- */
-ZmSearchController.prototype.showBrowsePickers =
-function(pickers, showBasic) {
-	// WTF:
-	showBasic = (!showBasic || showBasic == null) ? true : showBasic;
-
-	// Pickers array
-	this.showBrowseView(true, null);
-
-	// now remove all pickers and add those from array
-	if (pickers instanceof Array) {
-		this._browseViewController.removeAllPickers();
-		if (showBasic) {
-			this._browseViewController.addPicker(ZmPicker.BASIC);
-		}
-	for (var i = 0; i < pickers.length; i++) {
-			this._browseViewController.addPicker(pickers[i]);
-		}
 	}
-};
-
-/**
- * @private
- */
-ZmSearchController.prototype._handleLoadFromBrowse =
-function(name, bv) {
-	this.setDefaultSearchType(ZmId.SEARCH_MAIL);
-	bv.removeAllPickers();
-	this._browseViewController.removeAllPickers();
-	var picker = this._browseViewController.addPicker(ZmPicker.BASIC);
-	picker.setFrom(name);
-	picker.execute();
-};
-
-/**
- * Shows or hides the Advanced Search panel, which contains various pickers.
- * Since it may require loading the "Browse" package, callers should use a 
- * callback to run subsequent code. By default, the display of the panel is
- * toggled.
- * 
- * @param {Boolean}	forceShow		if <code>true</code>, show panel
- * @param {Boolean}	forceHide		if <code>true</code>, hide panel (takes precenence over forceShow)
- * @param {AjxCallback}	callback		the callback to run after display is done
- */
-ZmSearchController.prototype.showBrowseView =
-function(forceShow, callback, forceHide) {
-	if (!this._browseViewController) {
-		if (forceHide) {
-			return; //it was never displayed yet anyway so no need to hide
-		}
-		var loadCallback = new AjxCallback(this, this._handleLoadShowBrowseView, [forceShow, forceHide, callback]);
-		AjxDispatcher.require("Browse", false, loadCallback, null, false);
-		return;
-	}
-	this._doShowBrowseView(forceShow, forceHide, callback);
-};
-
-/**
- * @private
- */
-ZmSearchController.prototype._handleLoadShowBrowseView =
-function(forceShow, forceHide, callback) {
-	this._browseViewController = new ZmBrowseController(this.searchPanel);
-	this._doShowBrowseView(forceShow, forceHide, callback);
-};
-
-/**
- * @private
- */
-ZmSearchController.prototype._doShowBrowseView =
-function(forceShow, forceHide, callback) {
-	var bvc = this._browseViewController;
-	bvc.setBrowseViewVisible(!forceHide && (forceShow || !bvc.getBrowseViewVisible()));
-	if (callback) {
-		callback.run(bvc.getBrowseView());
-	}
-};
-
-/**
- * Gets the browse view.
- * 
- * @return	{Object}	the browse view
- */
-ZmSearchController.prototype.getBrowseView =
-function() {
-	return (this._browseViewController && this._browseViewController.getBrowseView());
 };
 
 /**
@@ -257,7 +154,7 @@ function(enabled) {
 ZmSearchController.prototype.setDefaultSearchType =
 function(type) {
 	if (this._searchToolBar && !appCtxt.inStartup) {
-		var menu = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON).getMenu();
+		var menu = this._searchToolBar.getButton(ZmSearchToolBar.TYPES_BUTTON).getMenu();
 		menu.checkItem(ZmSearchToolBar.MENUITEM_ID, type);
 		this._searchMenuListener(null, type);
 	}
@@ -268,10 +165,19 @@ function(type) {
  */
 ZmSearchController.prototype._setView =
 function() {
+
 	// Create search panel - a composite is needed because the search builder
 	// element (ZmBrowseView) is added to it (can't add it to the toolbar)
-	this.searchPanel = new DwtComposite({parent:this._container, className:"SearchPanel", posStyle:Dwt.ABSOLUTE_STYLE});
-	this._searchToolBar = new ZmSearchToolBar(this.searchPanel, ZmId.SEARCH_TOOLBAR);
+	this.searchPanel = new DwtComposite({
+				parent:		this._container,
+				className:	"SearchPanel",
+				posStyle:	Dwt.ABSOLUTE_STYLE
+			});
+
+	this._searchToolBar = new ZmMainSearchToolBar({
+				parent:	this.searchPanel,
+				id:		ZmId.SEARCH_TOOLBAR
+			});
 
 	this._createTabGroup();
 	this._tabGroup.addMember(this._searchToolBar.getSearchField());
@@ -281,13 +187,10 @@ function() {
 	}
 	
 	// Register keyboard callback for search field
-	this._searchToolBar.registerCallback(this._searchFieldCallback, this);
+	this._searchToolBar.registerEnterCallback(this._toolbarSearch.bind(this));
 
 	// Button listeners
 	this._searchToolBar.addSelectionListener(ZmSearchToolBar.SEARCH_BUTTON, this._searchButtonListener.bind(this));
-	if (appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
-		this._searchToolBar.addSelectionListener(ZmSearchToolBar.BROWSE_BUTTON, new AjxListener(this, this._browseButtonListener));
-	}
 	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
 		this._searchToolBar.addSelectionListener(ZmSearchToolBar.SAVE_BUTTON, this._saveButtonListener.bind(this));
 	}
@@ -315,23 +218,24 @@ function(menu) {
 /**
  * Performs a search and displays the results.
  *
- * @param {Hash}	params		a hash of parameters
- * @param {String}	params.query	the search string
- * @param {constant}	params.searchFor	the semantic type to search for
- * @param {Array}	params.types		the item types to search for
- * @param {constant}	params.sortBy		the sort constraint
- * @param {int}	params.offset	the starting point in list of matching items
- * @param {int}	params.limit	the maximum number of items to return
- * @param {int}	params.searchId	the ID of owning search folder (if any)
- * @param {int}	params.prevId	the ID of last items displayed (for pagination)
- * @param {constant}	params.prevSortBy	previous sort order (for pagination)
- * @param {Boolean}	params.noRender	if <code>true</code>, results will not be passed to controller
- * @param {Boolean}	params.noClear	if <code>true</code>, previous results will not be destroyed
- * @param {Boolean}	params.userText	if <code>true</code>, text was typed by user into search box
- * @param {AjxCallback}	params.callback		the async callback
- * @param {AjxCallback}	params.errorCallback	the async callback to run if there is an exception
- * @param	{Object}	params.response		the canned JSON response (no request will be made)
- * @param {boolean} params.skipUpdateSearchToolbar     don't update the search toolbar (e.g. from the ZmDumpsterDialog where the search is called from its own search toolbar
+ * @param {Hash}	params		a hash of parameters:
+ * 
+ * @param {String}		query						the search string
+ * @param {constant}	searchFor					the semantic type to search for
+ * @param {Array}		types						the item types to search for
+ * @param {constant}	sortBy						the sort constraint
+ * @param {int}			offset						the starting point in list of matching items
+ * @param {int}			limit						the maximum number of items to return
+ * @param {int}			searchId					the ID of owning search folder (if any)
+ * @param {int}			prevId						the ID of last items displayed (for pagination)
+ * @param {constant}	prevSortBy					previous sort order (for pagination)
+ * @param {Boolean}		noRender					if <code>true</code>, results will not be passed to controller
+ * @param {Boolean}		noClear						if <code>true</code>, previous results will not be destroyed
+ * @param {Boolean}		userText					if <code>true</code>, text was typed by user into search box
+ * @param {AjxCallback}	callback					the async callback
+ * @param {AjxCallback}	errorCallback				the async callback to run if there is an exception
+ * @param {Object}		response					the canned JSON response (no request will be made)
+ * @param {boolean}		skipUpdateSearchToolbar     don't update the search toolbar (e.g. from the ZmDumpsterDialog where the search is called from its own search toolbar
  * 
  */
 ZmSearchController.prototype.search =
@@ -438,7 +342,7 @@ function(search, noRender, changes, callback, errorCallback) {
  */
 ZmSearchController.prototype.resetSearchAllAccounts =
 function() {
-	var button = this.searchAllAccounts && this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
+	var button = this.searchAllAccounts && this._searchToolBar.getButton(ZmSearchToolBar.TYPES_BUTTON);
 	var menu = button && button.getMenu();
 	var allAccountsMI = menu && menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_ALL_ACCOUNTS);
 
@@ -461,7 +365,7 @@ function() {
  */
 ZmSearchController.prototype.resetSearchToolbar =
 function() {
-	var smb = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
+	var smb = this._searchToolBar.getButton(ZmSearchToolBar.TYPES_BUTTON);
 	var mi = smb ? smb.getMenu().getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_GAL) : null;
 	if (mi) {
 		mi.setVisible(appCtxt.getActiveAccount().isZimbraAccount);
@@ -724,7 +628,7 @@ function(results, search, noUpdateOverview, noClear) {
 	}
 
 	// disable search results tab for now
-	if (false && search.userInitiated) {
+	if (search.userInitiated) {
 		var ctlr = appCtxt.getApp(ZmApp.SEARCH).getSearchResultsController();
 		ctlr.show(results);
 	}
@@ -811,57 +715,52 @@ function(types, account) {
 	return null;
 };
 
-/**
- * Search Field Callback
- *
- * @private
- */
-ZmSearchController.prototype._searchFieldCallback =
-function(queryString, searchFor) {
-	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	this.search({query: queryString, userText: true, userInitiated: true, getHtml: getHtml, searchFor: searchFor});
+// called when the search button has been pressed
+ZmSearchController.prototype._searchButtonListener =
+function(ev) {
+	this._toolbarSearch({ev:ev, zimletEvent:"onSearchButtonClick"});
 };
 
 /**
- * Search Bar Callbacks
+ * Runs a search based on the state of the toolbar.
+ * 
+ * @param {Hash}	params		a hash of parameters:
+ * 
+ * @param {Event}		ev							browser event	
+ * @param {string}		zimletEvent					type of notification to send zimlets
+ * @param {string}		query						search string (optional, overrides input field)
+ * @param {boolean}		skipUpdateSearchToolbar     don't update the search toolbar (e.g. from the ZmDumpsterDialog where the search is called from its own search toolbar
  * 
  * @private
  */
-ZmSearchController.prototype._searchButtonListener =
-function(ev) {
-	// find out if the custom search menu item is selected and pass it the query
-	var btn = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
-	var menu = btn && btn.getMenu();
-	var mi = menu && menu.getSelectedItem();
-	var data = mi && mi.getData("CustomSearchItem");
-    var opId = mi && mi.getData(ZmOperation.MENUITEM_ID);
-	if (data) {
-		data[2].run(ev);
+ZmSearchController.prototype._toolbarSearch =
+function(params) {
+
+	// find out if the custom search menu item is selected and pass it the event
+	var result = this._searchToolBar.getSearchType();
+	if (result && result.listener) {
+		result.listener.run(params.ev);
 	} else {
-		var queryString = this._searchToolBar.getSearchFieldValue();
+		var queryString = params.query || this._searchToolBar.getSearchFieldValue();
 		var userText = (queryString.length > 0);
 		if (queryString) {
 			this._currentQuery = null;
 		} else {
-			queryString = this._currentQuery ? this._currentQuery : "";
+			queryString = this._currentQuery || "";
 		}
-		appCtxt.notifyZimlets("onSearchButtonClick", [queryString]);
-		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-
-        var searchQuery = {query: queryString, userText: userText, getHtml: getHtml, searchFor: opId};
-
-		this.search({query: queryString, userText: userText, userInitiated: true, getHtml: getHtml, searchFor: opId});
+		appCtxt.notifyZimlets(params.zimletEvent, [queryString]);
+		var searchParams = {
+			query:						queryString,
+			userText:					userText,
+			userInitiated:				true,
+			getHtml:					appCtxt.get(ZmSetting.VIEW_AS_HTML),
+			searchFor:					result,
+			skipUpdateSearchToolbar:	params.skipUpdateSearchToolbar
+		};
+		this.search(searchParams);
 	}
-	// restore focus to INPUT
-	setTimeout(this._searchToolBar.focus.bind(this._searchToolBar), 10);
-};
-
-/**
- * @private
- */
-ZmSearchController.prototype._browseButtonListener =
-function(ev) {
-	this.showBrowseView();
+	
+	this._searchToolBar.setSearchFieldValue("");
 };
 
 /**
@@ -886,7 +785,7 @@ function(ev) {
  */
 ZmSearchController.prototype._searchMenuListener =
 function(ev, id) {
-	var btn = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
+	var btn = this._searchToolBar.getButton(ZmSearchToolBar.TYPES_BUTTON);
 	if (!btn) { return; }
 
 	var menu = btn.getMenu();
@@ -898,7 +797,7 @@ function(ev, id) {
 	var selItem = menu.getSelectedItem();
 	var sharedMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_SHARED);
 
-	this._searchToolBar.initAutocomplete(id);
+	this._searchToolBar.setPeopleAutocomplete(id);
 
 	// enable shared menu item if not a gal search
 	if (id == ZmId.SEARCH_GAL) {
