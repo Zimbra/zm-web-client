@@ -421,6 +421,7 @@ function(ev) {
  * @param {Boolean}	isContact	if <code>true</code>, provided match is a {@link ZmContact}
  */
 ZmAutocompleteMatch = function(match, options, isContact, str) {
+	// TODO: figure out how to minimize loading of calendar code
     AjxDispatcher.require("CalendarCore");
 	if (!match) { return; }
 	this.type = match.type;
@@ -770,7 +771,7 @@ function(listType, callback) {
 ZmSearchAutocomplete.prototype._loadTypes =
 function(listType, callback) {
 
-	AjxDispatcher.require("Browse");
+	AjxDispatcher.require("Extras");
 	var attachTypeList = new ZmAttachmentTypeList();
 	var respCallback = this._handleResponseLoadTypes.bind(this, attachTypeList, listType, callback);
 	attachTypeList.load(respCallback);
