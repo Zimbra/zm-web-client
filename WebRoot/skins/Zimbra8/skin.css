@@ -530,19 +530,7 @@ BODY						{	margin:0px; 				}
 	
 }
 
-.ZHover .ZAppTabBorder			{   
-	#IFDEF GECKO
-	background-image: -moz-linear-gradient(top, #FFFFFF, @lighten(AppC,50)@); /* FF3.6 */
-	#ENDIF
-	#IFDEF SAFARI
- 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #EFEFEF),color-stop(1, @AppC@)); /* Saf4+, Chrome */
- 	#ENDIF
- 	#IFDEF MSIE
-    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,50)@'); /* IE6,IE7 */
-    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,50)@')"; /* IE8 */
-    #ENDIF
-}
-
+ 
 .ZAlert .ZAppTabBorder {
     background-image: none;
     /* for IE background image is not enough, clear the filter*/
@@ -560,7 +548,6 @@ BODY						{	margin:0px; 				}
 .ZFirstItem .ZAppTabBorder 		{	@AppTabBorder-first@		}
 .ZAppTabSpacer 					{	@AppTab@ @AppTabSpacer@		}
 
-.ZSelected .ZAppTabBorder		{	border-bottom-color: #fff; background-color: #fff; background-image: none;	}
 
 
 
