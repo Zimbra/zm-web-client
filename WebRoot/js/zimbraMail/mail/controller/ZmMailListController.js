@@ -715,7 +715,7 @@ function() {
 
 ZmMailListController.prototype._enableMuteUnmuteToolbarActions =
 function() {
-	var menu = this._getCurrentToolbar().getActionsMenu();
+	var menu = this.getCurrentToolbar().getActionsMenu();
 	this._enableMuteUnmute(menu);
 };
 
