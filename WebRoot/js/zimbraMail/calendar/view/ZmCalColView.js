@@ -2507,7 +2507,6 @@ ZmCalColView.prototype._gridDndBegin =
 function(data) {
 	var col = data.view._getColFromX(data.gridX);
 	data.folderId = col ? (col.cal ? col.cal.id : null) : null;
-
 	if (data.isAllDay) {
 		data.gridEl.style.cursor = 'e-resize';
 		data.newApptDivEl = document.getElementById(data.view._newAllDayApptDivId);
@@ -2693,6 +2692,8 @@ function(ev) {
 
 	if (data.dndStarted) {
 		data.gridEl.style.cursor = 'auto';
+        var col = data.view._getColFromX(data.gridX);
+	    data.folderId = col ? (col.cal ? col.cal.id : null) : null;
 		Dwt.setVisible(data.newApptDivEl, false);
 		if (data.isAllDay) {
 			appCtxt.getCurrentController().newAllDayAppointmentHelper(data.startDate, data.endDate, data.folderId, mouseEv.shiftKey);
