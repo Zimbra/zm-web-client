@@ -693,57 +693,102 @@ function(dialog) {
     }
 };
 
-ZmCalendarTreeController.prototype.createDataSource =
-function(organizer, errorCallback) {
-    var calDav = this._extCalData && this._extCalData.calDav ? this._extCalData.calDav : null;
-    if(!calDav) { return; }
-    //var callback = new AjxCallback(this, this.createDataSourceCallback);
-    var soapDoc = AjxSoapDoc.create("CreateDataSourceRequest", "urn:zimbraMail");
-    var caldav = soapDoc.set("caldav");
-    caldav.setAttribute("name", organizer.name);
-    caldav.setAttribute("pollingInterval", "1m");
-    caldav.setAttribute("isEnabled", "1");
-    caldav.setAttribute("l", organizer.nId);
-    caldav.setAttribute("port", "443");
-    caldav.setAttribute("connectionType", "ssl");
-    caldav.setAttribute("host", calDav.hostUrl);
-    caldav.setAttribute("username", calDav.userName);
-    caldav.setAttribute("password", calDav.password);
-    var dsa;
-    if(calDav.hostUrl.indexOf("yahoo.com") !== -1) {
-        dsa = soapDoc.set("a", "p:/principals/users/_USERNAME_", caldav);
-    }
-    else {
-        dsa = soapDoc.set("a", "p:/calendar/dav/_USERNAME_/user", caldav);
-    }
-    dsa.setAttribute("n", "zimbraDataSourceAttribute");
+ZmCalendarTreeController.prototype.createDataSourceErrorCallback =
+function(response) {
+    appCtxt.setStatusMsg(ZmMsg.addExternalCalendarError);
+};
 
-    this._extCalData = null;
-    delete this._extCalData;
-
-    var params = {
-        /*asyncMode: Boolean(callback),
-        callback: callback,
-        errorCallback: errorCallback,  */
-        soapDoc: soapDoc
-        };
-    var response = appCtxt.getAppController().sendRequest(params);
-    var dsResponse = response.CreateDataSourceResponse;
-    var sourceId =  dsResponse && dsResponse.caldav ? dsResponse.caldav[0].id : "";
-
+ZmCalendarTreeController.prototype.createDataSourceCallback =
+function(response) {
+    var dsResponse = response.getResponse(),
+        sourceId =  dsResponse && dsResponse.caldav ? dsResponse.caldav[0].id : "",
+        jsonObj,
+        params;
     if(sourceId) {
-        var soapDoc = AjxSoapDoc.create("ImportDataRequest", "urn:zimbraMail");
-        var a = soapDoc.set("caldav");
-        a.setAttribute("id", sourceId);
-        var params = {
-                  soapDoc: soapDoc,
-                  asyncMode: false
-                };
-        response = appCtxt.getAppController().sendRequest(params);
+        jsonObj = {
+            ImportDataRequest : {
+                _jsns : "urn:zimbraMail",
+                caldav : {
+                    id : sourceId
+                }
+            }
+        };
+        params = {
+              soapDoc: jsonObj,
+              asyncMode: false
+            };
+        appCtxt.getAppController().sendRequest(params);
     }
 
     appCtxt.setStatusMsg(ZmMsg.addExternalCalendarSuccess);
     return response;
+};
+
+ZmCalendarTreeController.prototype.createDataSource =
+function(organizer, errorCallback) {
+    var calDav = this._extCalData && this._extCalData.calDav ? this._extCalData.calDav : null;
+    if(!calDav) { return; }
+
+    var url,
+        port,
+        urlPort,
+        hostUrl,
+        jsonObj,
+        connType = "cleartext",
+        dsa = "p:/calendar/dav/_USERNAME_/user";
+
+    hostUrl = calDav.hostUrl;
+    if(hostUrl.indexOf(":") === -1) {
+        url = hostUrl;
+        port = "443";
+    }
+    else {
+        urlPort = hostUrl.split(":");
+        url = urlPort[0];
+        port = urlPort[1];
+    }
+
+    if(port == "443") {
+        connType = "ssl";
+    }
+
+    if(calDav.hostUrl.indexOf("google.com") === -1) {
+        dsa = "p:/principals/users/_USERNAME_"
+    }
+
+    jsonObj = {
+        CreateDataSourceRequest : {
+            _jsns : "urn:zimbraMail",
+            caldav : {
+                name : organizer.name,
+                pollingInterval : "1m",
+                isEnabled : "1",
+                l : organizer.nId,
+                host : url,
+                port : port,
+                connectionType : connType,
+                username : calDav.userName,
+                password : calDav.password,
+                a : {
+                    n : "zimbraDataSourceAttribute",
+                    _content : dsa
+                }
+            }
+        }
+    };
+
+    this._extCalData = null;
+    delete this._extCalData;
+    var accountName = (appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null);
+
+    var params = {
+            jsonObj: jsonObj,
+            asyncMode: true,
+            callback: new AjxCallback(this, this.createDataSourceCallback),
+            errorCallback: new AjxCallback(this, this.createDataSourceErrorCallback),
+            accountName: accountName
+        };
+    appCtxt.getAppController().sendRequest(params);
 };
 
 

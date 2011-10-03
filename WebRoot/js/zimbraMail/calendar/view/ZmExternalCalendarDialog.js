@@ -182,9 +182,9 @@ function(syncType) {
         if(!msg && AjxStringUtil.trim(password) == "") {
             msg = ZmMsg.errorMissingPass;
         }
-        if(!msg) {
+        /*if(!msg) {
             msg = ZmOrganizer.checkUrl(hostUrl);
-        }
+        }*/
     }
     else {
         url = this._icsUrlInput.getValue();
