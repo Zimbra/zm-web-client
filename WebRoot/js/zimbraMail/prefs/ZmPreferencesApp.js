@@ -293,32 +293,83 @@ function() {
 				ZmSetting.USE_ADDR_BUBBLES
 			]
 		},
-		COMPOSING: {
-			parentId: "MAIL",
-			title: ZmMsg.composing,
-			icon: "Compose",
-			templateId: "prefs.Pages#Composing",
-			priority: 20,
-			precondition: [ ZmSetting.MAIL_ENABLED ],
+        ACCOUNTS: {
+			icon: "Accounts",
+			title: (appCtxt.isOffline ? ZmMsg.personas : ZmMsg.accounts),
+			templateId: "prefs.Pages#Accounts",
+			priority: 10,
+			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
 			prefs: [
-				ZmSetting.COMPOSE_AS_FORMAT,
-				ZmSetting.COMPOSE_INIT_FONT_COLOR,
-				ZmSetting.COMPOSE_INIT_FONT_FAMILY,
-				ZmSetting.COMPOSE_INIT_FONT_SIZE,
-				ZmSetting.FORWARD_INCLUDE_WHAT,
-				ZmSetting.FORWARD_USE_PREFIX,
-				ZmSetting.FORWARD_INCLUDE_HEADERS,
-				ZmSetting.NEW_WINDOW_COMPOSE,
-				ZmSetting.AUTO_SAVE_DRAFT_INTERVAL,
-                ZmSetting.AUTO_READ_RECEIPT_ENABLED,
-				ZmSetting.REPLY_INCLUDE_WHAT,
-				ZmSetting.REPLY_USE_PREFIX,
-				ZmSetting.REPLY_INCLUDE_HEADERS,
-				ZmSetting.REPLY_PREFIX,
-				ZmSetting.SAVE_TO_SENT,
-                ZmSetting.COMPOSE_SAME_FORMAT,
-                ZmSetting.MAIL_MANDATORY_SPELLCHECK
-            ]
+				ZmSetting.ACCOUNTS
+			],
+			manageDirty: true,
+			createView: function(parent, section, controller) {
+				return new ZmAccountsPage(parent, section, controller);
+			}
+		},
+        FILTERS: {
+			icon: "MailRule",
+			title: ZmMsg.filterRules,
+			templateId: "prefs.Pages#MailFilters",
+			priority: 50,
+			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.FILTERS_ENABLED)),
+			prefs: [
+				ZmSetting.FILTERS
+			],
+			manageChanges: true,
+			createView: function(parent, section, controller) {
+				return controller.getFilterController(section).getFilterView();
+			}
+		},
+        SIGNATURES: {
+			icon: "AddSignature",
+			title: ZmMsg.signatures,
+			templateId: "prefs.Pages#Signatures",
+			priority: 51,
+			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.SIGNATURES_ENABLED)),
+			prefs:[
+				ZmSetting.SIGNATURES,
+				ZmSetting.SIGNATURE_STYLE,
+				ZmSetting.SIGNATURE_ENABLED
+			],
+			manageDirty: true,
+			createView: function(parent, section, controller) {
+				return new ZmSignaturesPage(parent, section, controller);
+			}
+		},
+        OUTOFOFFICE: {
+            icon: "OutOfOffice",
+			title: ZmMsg.outOfOffice,
+            priority: 55,
+            templateId: "prefs.Pages#OutOfOffice",
+            precondition: appCtxt.get(ZmSetting.VACATION_MSG_FEATURE_ENABLED),
+            prefs: [
+                ZmSetting.START_DATE_ENABLED,
+                ZmSetting.END_DATE_ENABLED,
+                ZmSetting.VACATION_FROM,
+				ZmSetting.VACATION_MSG_ENABLED,
+				ZmSetting.VACATION_MSG,
+				ZmSetting.VACATION_UNTIL
+            ],
+            manageDirty: true,
+			createView: function(parent, section, controller) {
+				AjxDispatcher.require("Alert");
+				return new ZmMailPrefsPage(parent, section, controller);
+			}
+        },
+        TRUSTED_ADDR: {
+			title: ZmMsg.trustedAddrs,
+			icon: "TrustedAddresses",
+			templateId: "prefs.Pages#Trusted",
+			priority: 60,
+			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
+			createView: function(parent, section, controller) {
+				return new ZmTrustedPage(parent, section, controller);
+			},
+            manageDirty: true,
+            prefs: [
+				    ZmSetting.TRUSTED_ADDR_LIST
+                ]
 		},
 		SHARING: {
 			title: ZmMsg.sharing,

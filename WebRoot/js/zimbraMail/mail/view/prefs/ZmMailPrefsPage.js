@@ -102,7 +102,7 @@ function() {
 
 		popDownloadSinceValue.setText(AjxMessageFormat.format(ZmMsg.externalAccessPopCurrentValue, date));
         popDownloadSinceValue.setVisible(true);
-	}  else {
+	}  else if( popDownloadSinceValue ) {
         popDownloadSinceValue.setVisible(false);
     }
 
