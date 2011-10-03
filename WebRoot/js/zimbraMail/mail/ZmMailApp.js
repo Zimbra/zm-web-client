@@ -2200,7 +2200,11 @@ ZmMailApp._oooReplyCallback = function(){
 ZmMailApp.prototype._checkVacationReplyEnabled = function(){
     var isOOOEnabled = appCtxt.get(ZmSetting.VACATION_MSG_ENABLED);
     var isRemindEnabled = appCtxt.get(ZmSetting.VACATION_MSG_REMIND_ON_LOGIN);
-    if(isOOOEnabled && isRemindEnabled){
+    var today = new Date();
+    var vacationFrom = appCtxt.get(ZmSetting.VACATION_FROM);
+    var fromDate = vacationFrom.length>0 ? AjxDateUtil.parseServerDateTime(vacationFrom, true) : null;
+    var isInvalidDuration = !(appCtxt.get(ZmSetting.VACATION_UNTIL).length>0) && (fromDate==null || fromDate.getTime()<today.getTime());
+    if(isOOOEnabled && isRemindEnabled && isInvalidDuration){
        var ynDialog = appCtxt.getYesNoMsgDialog();
        var content = AjxTemplate.expand("mail.Message#VacationRemindDialog", {id:ynDialog._htmlElId});
        ynDialog.setTitle(ZmMsg.OOORemindDialogTitle);
