@@ -36,7 +36,10 @@ ZmFolderPropsDialog = function(parent, className) {
 		];
 	}
 
+
 	DwtDialog.call(this, {parent:parent, className:className, title:ZmMsg.folderProperties, extraButtons:extraButtons});
+
+    this._tabKeys = {};
 
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
 		this.registerCallback(ZmFolderPropsDialog.ADD_SHARE_BUTTON, this._handleAddShareButton, this);
@@ -46,8 +49,7 @@ ZmFolderPropsDialog = function(parent, className) {
 
 	this._folderChangeListener = new AjxListener(this, this._handleFolderChange);
 
-	var view = this._createView();
-	this.setView(view);
+	this._createView();
 };
 
 ZmFolderPropsDialog.prototype = new DwtDialog;
@@ -59,11 +61,21 @@ ZmFolderPropsDialog.ADD_SHARE_BUTTON = ++DwtDialog.LAST_BUTTON;
 
 ZmFolderPropsDialog.SHARES_HEIGHT = "9em";
 
+// Tab identifiers
+ZmFolderPropsDialog.TABKEY_PROPERTIES	= "PROPERTIES_TAB";
+ZmFolderPropsDialog.TABKEY_RETENTION 	= "RETENTION_TAB";
+
+
 // Public methods
 
 ZmFolderPropsDialog.prototype.toString =
 function() {
 	return "ZmFolderPropsDialog";
+};
+
+ZmFolderPropsDialog.prototype.getTabKey =
+function(id) {
+	return this._tabKeys[id];
 };
 
 /**
@@ -74,27 +86,14 @@ function() {
 ZmFolderPropsDialog.prototype.popup =
 function(organizer) {
 	this._organizer = organizer;
+    for (var i = 0; i < this._tabViews.length; i++) {
+        this._tabViews[i].setOrganizer(organizer);
+    }
+    // On popup, make the property view visible
+	var tabKey = this.getTabKey(ZmFolderPropsDialog.TABKEY_PROPERTIES);
+	this._tabContainer.switchToTab(tabKey, true);
+
 	organizer.addChangeListener(this._folderChangeListener);
-	var colorCode = 0;
-	if (this._color) {
-        var icon = organizer.getIcon(); 
-        this._color.setImage(icon);
-		if(ZmOrganizer.COLOR_VALUES[organizer.color] && (organizer.rgb != ZmOrganizer.COLOR_VALUES[organizer.color])) {
-			colorCode = organizer.rgb;
-		} else {
-			colorCode = organizer.color;
-		}
-        var defaultColorCode = ZmOrganizer.DEFAULT_COLOR[organizer.type],
-            defaultColor = ZmOrganizer.COLOR_VALUES[defaultColorCode],
-            colorMenu = this._color.getMenu(),
-            moreColorMenu;
-        if(colorMenu) {
-            moreColorMenu = (colorMenu.toString() == "ZmMoreColorMenu") ? colorMenu : colorMenu._getMoreColorMenu();
-            if(moreColorMenu) moreColorMenu.setDefaultColor(defaultColor);
-        }
-        this._color.setValue(colorCode);
-        this._color.setEnabled(organizer.id != ZmFolder.ID_DRAFTS);
-	}
 
 	this._handleFolderChange();
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
@@ -105,10 +104,6 @@ function(organizer) {
 	}
 
 	DwtDialog.prototype.popup.call(this);
-
-	if (this._nameInputEl.style.display != "none") {
-		this._nameInputEl.focus();
-	}
 };
 
 ZmFolderPropsDialog.prototype.popdown =
@@ -197,74 +192,24 @@ function(event) {
 
 ZmFolderPropsDialog.prototype._handleOkButton =
 function(event) {
-	if (!this._handleErrorCallback) {
-		this._handleErrorCallback = new AjxCallback(this, this._handleError);
-		this._handleRenameErrorCallback = new AjxCallback(this, this._handleRenameError);
-	}
-
-	// rename folder followed by attribute processing
-	var organizer = this._organizer;
 
 	// New batch command, stop on error
 	var batchCommand = new ZmBatchCommand();
-    var commandCount = 0;
-
-    if (!organizer.isSystem() && !organizer.isDataSource()) {
-		var name = this._nameInputEl.value;
-		if (organizer.name != name) {
-			var error = ZmOrganizer.checkName(name);
-			if (error) {
-				var dialog = appCtxt.getMsgDialog();
-				dialog.setMessage(error, DwtMessageDialog.WARNING_STYLE);
-				dialog.popup();
-				return;
-			}
-			//organizer.rename(name, callback, this._handleRenameErrorCallback, batchCommand);
-            batchCommand.add(new AjxCallback(organizer, organizer.rename, [name, null, this._handleRenameErrorCallback]));
-            commandCount++;
-		}
-	}
-
-	var color = this._color.getValue() || ZmOrganizer.DEFAULT_COLOR[organizer.type];
-	if (organizer.color != color) {
-		if (String(color).match(/^#/)) {
-			//organizer.setRGB(color, null, this._handleErrorCallback, batchCommand);
-            batchCommand.add(new AjxCallback(organizer, organizer.setRGB, [color, null, this._handleErrorCallback]));
-		}
-		else {
-			//organizer.setColor(color, null, this._handleErrorCallback, batchCommand);
-            batchCommand.add(new AjxCallback(organizer, organizer.setColor, [color, null, this._handleErrorCallback]));
-		}
-        commandCount++;
-	}
-
-    if (Dwt.getVisible(this._excludeFbEl) && organizer.setFreeBusy) {
-        var excludeFreeBusy = this._excludeFbCheckbox.checked;
-		if (organizer.excludeFreeBusy != excludeFreeBusy) {
-			//organizer.setFreeBusy(excludeFreeBusy, null, this._handleErrorCallback, batchCommand);
-            batchCommand.add(new AjxCallback(organizer, organizer.setFreeBusy, [excludeFreeBusy, null, this._handleErrorCallback]));
-		}
+    var saveState = {
+        commandCount: 0,
+        errorMessage: []
+    };
+    for (var i = 0; i < this._tabViews.length; i++) {
+        this._tabViews[i].doSave(batchCommand, saveState);
     }
 
-    // Mail Folders only
-    if (Dwt.getVisible(this._globalMarkReadEl) && organizer.globalMarkRead) {
-        var globalMarkRead = this._globalMarkReadCheckbox.checked;
-        if (organizer.globalMarkRead != globalMarkRead) {
-            //organizer.setGlobalMarkRead(globalMarkRead, null, this._handleErrorCallback, batchCommand);
-            batchCommand.add(new AjxCallback(organizer, organizer.setGlobalMarkRead, [globalMarkRead, null, this._handleErrorCallback]));
-        }
-    }
-
-    // Shared Calendars only
-    if (Dwt.getVisible(this._calendarReminderEl)) {
-        var reminder = this._calendarReminderCheckbox.checked;
-        if (organizer.reminder != reminder) {
-            organizer.setSharedReminder(reminder, null, this._handleErrorCallback, batchCommand);
-            batchCommand.add(new AjxCallback(organizer, organizer.setSharedReminder, [reminder, null, this._handleErrorCallback]));
-        }
-    }
-
-    if (commandCount > 0) {
+    if (saveState.errorMessage.length > 0) {
+        var msg = saveState.errorMessage.join("<br>");
+        var dialog = appCtxt.getMsgDialog();
+        dialog.reset();
+        dialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+        dialog.popup();
+    }  else if (saveState.commandCount > 0) {
         var callback = new AjxCallback(this, this.popdown);
         batchCommand.run(callback);
     } else {
@@ -281,25 +226,6 @@ function(response) {
 	return false;
 };
 
-ZmFolderPropsDialog.prototype._handleRenameError =
-function(response) {
-	var value = this._nameInputEl.value;
-	var msg;
-	var noDetails = false;
-	if (response.code == ZmCsfeException.MAIL_ALREADY_EXISTS) {
-		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [value]);
-	} else if (response.code == ZmCsfeException.MAIL_IMMUTABLE) {
-		msg = AjxMessageFormat.format(ZmMsg.errorCannotRename, [value]);
-	} else if (response.code == ZmCsfeException.SVC_INVALID_REQUEST) {
-		msg = response.msg; // triggered on an empty name
-	} else if (response.code == ZmCsfeException.MAIL_INVALID_NAME) {
-		//I add this here despite checking upfront using ZmOrganizer.checkName, since there might be more restrictions for different types of organizers. so just in case the server still returns an error in the name.
-		msg = AjxMessageFormat.format(ZmMsg.invalidName, [AjxStringUtil.htmlEncode(value)]);
-		noDetails = true;
-	}
-	appCtxt.getAppController().popupErrorDialog(msg, noDetails ? null : response.msg, null, true);
-	return true;
-};
 
 ZmFolderPropsDialog.prototype._handleCancelButton =
 function(event) {
@@ -309,70 +235,14 @@ function(event) {
 ZmFolderPropsDialog.prototype._handleFolderChange =
 function(event) {
 	var organizer = this._organizer;
-	
-	if (organizer.isSystem() || organizer.isDataSource()) {
-		this._nameOutputEl.innerHTML = AjxStringUtil.htmlEncode(organizer.name);
-		this._nameOutputEl.style.display = "block";
-		this._nameInputEl.style.display = "none";
-	}
-	else {
-		this._nameInputEl.value = organizer.name;
-		this._nameInputEl.style.display = "block";
-		this._nameOutputEl.style.display = "none";
-	}
-	this._ownerEl.innerHTML = AjxStringUtil.htmlEncode(organizer.owner);
-	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[organizer.type]] || ZmMsg.folder;
 
-	if (this._color) {
-		var colorCode = 0;
-		if(ZmOrganizer.COLOR_VALUES[organizer.color] && (organizer.rgb != ZmOrganizer.COLOR_VALUES[organizer.color])) {
-			colorCode = organizer.rgb;
-		} else {
-			colorCode = organizer.color;
-		}
-		this._color.setValue(colorCode);
-		var isVisible = (organizer.type != ZmOrganizer.FOLDER ||
-						 (organizer.type == ZmOrganizer.FOLDER && appCtxt.get(ZmSetting.MAIL_FOLDER_COLORS_ENABLED)));
-		this._props.setPropertyVisible(this._colorId, isVisible);
-	}
-    this._excludeFbCheckbox.checked = organizer.excludeFreeBusy;
-    this._calendarReminderCheckbox.checked = organizer.reminder;
-
-	var showPerm = organizer.isMountpoint;
-	if (showPerm) {
-		AjxDispatcher.require("Share");
-		var share = ZmShare.getShareFromLink(organizer);
-		var role = share && share.link && share.link.role;
-		this._permEl.innerHTML = ZmShare.getRoleActions(role);
-	}
+    for (var i = 0; i < this._tabViews.length; i++) {
+        this._tabViews[i]._handleFolderChange(event);
+    }
 
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
 		this._populateShares(organizer);
 	}
-
-    var url = organizer.url ? AjxStringUtil.htmlEncode(organizer.url).replace(/&amp;/g,'%26') : null;
-	var urlDisplayString = url;
-	if (urlDisplayString) {
-        urlDisplayString = AjxStringUtil.clipByLength(urlDisplayString,50);
-    }
-
-    if(urlDisplayString){
-        urlDisplayString = ['<a target=_new href="',url,'">',urlDisplayString,'</a>'].join("");
-    }
-
-    this._urlEl.innerHTML = urlDisplayString || "";
-
-	this._props.setPropertyVisible(this._ownerId, organizer.owner != null);
-
-	this._props.setPropertyVisible(this._urlId, organizer.url);
-	this._props.setPropertyVisible(this._permId, showPerm);
-
-	Dwt.setVisible(this._excludeFbEl, !organizer.link && (organizer.type == ZmOrganizer.CALENDAR));
-	// TODO: False until server handling of the flag is added
-	//Dwt.setVisible(this._globalMarkReadEl, organizer.type == ZmOrganizer.FOLDER);
-    Dwt.setVisible(this._globalMarkReadEl, false);
-
-    Dwt.setVisible(this._calendarReminderEl, (organizer.type == ZmOrganizer.CALENDAR) && organizer.link);
 
 };
 
@@ -506,52 +376,25 @@ function(row, share) {
 	}
 };
 
-ZmFolderPropsDialog.prototype._createView =
-function() {
-	var view = new DwtComposite(this);
+ZmFolderPropsDialog.prototype.addTab =
+function(id, tabViewPage) {
+	if (!this._tabContainer || !tabViewPage) { return null; }
 
-	// create html elements
-	this._nameOutputEl = document.createElement("SPAN");
-	this._nameInputEl = document.createElement("INPUT");
-	this._nameInputEl.style.width = "20em";
-	this._nameInputEl._dialog = this;
-	var nameElement = this._nameInputEl;
+	this._tabKeys[id] = this._tabContainer.addTab(tabViewPage.getTitle(), tabViewPage);
+	return this._tabKeys[id];
+};
 
-	this._ownerEl = document.createElement("DIV");
-	this._typeEl = document.createElement("DIV");
-	this._urlEl = document.createElement("DIV");
-	this._permEl = document.createElement("DIV");
+ZmFolderPropsDialog.prototype._initializeTabView =
+function(view) {
+    //this._tabView = new DwtTabView(view, null, Dwt.STATIC_STYLE);
+    this._tabContainer = new DwtTabView(view, null, Dwt.STATIC_STYLE);
 
-	var nameEl = document.createElement("DIV");
-	nameEl.appendChild(this._nameOutputEl);
-	nameEl.appendChild(nameElement);
+    this._tabViews = [];
+    this._tabViews[0] = new ZmFolderPropertyView(this._tabContainer);
+    this.addTab(ZmFolderPropsDialog.TABKEY_PROPERTIES, this._tabViews[0]);
+    this._tabViews[1] = new ZmFolderRetentionView(this._tabContainer);
+    this.addTab(ZmFolderPropsDialog.TABKEY_RETENTION, this._tabViews[1]);
 
-	var excludeFbEl      = this._createCheckboxItem("excludeFb",        ZmMsg.excludeFromFreeBusy);
-	var globalMarkReadEl = this._createCheckboxItem("globalMarkRead",   ZmMsg.globalMarkRead);
-	var calReminderEl    = this._createCheckboxItem("calendarReminder", ZmMsg.sharedCalendarReminder);
-
-
-	// setup properties group
-	var propsGroup = new DwtGrouper(view);
-	propsGroup.setLabel(ZmMsg.properties);
-
-	this._props = new DwtPropertySheet(propsGroup);
-	this._color = new ZmColorButton({parent:this});
-
-	this._props.addProperty(ZmMsg.nameLabel, nameEl);
-	this._props.addProperty(ZmMsg.typeLabel, this._typeEl);
-	this._ownerId = this._props.addProperty(ZmMsg.ownerLabel,  this._ownerEl);
-	this._urlId   = this._props.addProperty(ZmMsg.urlLabel,    this._urlEl);
-	this._permId  = this._props.addProperty(ZmMsg.permissions, this._permEl);
-	this._colorId = this._props.addProperty(ZmMsg.colorLabel,  this._color);
-
-	var propsContainer = document.createElement("DIV");
-	propsContainer.appendChild(this._props.getHtmlElement());
-	propsContainer.appendChild(excludeFbEl);
-	propsContainer.appendChild(globalMarkReadEl);
-	propsContainer.appendChild(calReminderEl);
-
-	propsGroup.setElement(propsContainer);
 
 	// setup shares group
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
@@ -559,36 +402,16 @@ function() {
 		this._sharesGroup.setLabel(ZmMsg.folderSharing);
 		this._sharesGroup.setVisible(false);
 		this._sharesGroup.setScrollStyle(Dwt.SCROLL);
+        view.getHtmlElement().appendChild(this._sharesGroup.getHtmlElement());
 	}
-
-	// add everything to view and return
-	var element = view.getHtmlElement();
-	element.appendChild(propsGroup.getHtmlElement());
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
-		element.appendChild(this._sharesGroup.getHtmlElement());
-	}
-
-	return view;
 };
 
+// This creates the tab views managed by this dialog, the tabToolbar, and
+// the share buttons and view components
+ZmFolderPropsDialog.prototype._createView =
+function() {
+    this._baseContainerView = new DwtComposite({parent:this, className:"ZmFolderPropertiesDialog-container "});
+    this._initializeTabView(this._baseContainerView);
+    this.setView(this._baseContainerView);
+};
 
-ZmFolderPropsDialog.prototype._createCheckboxItem =
-function(name, label) {
-    var checkboxName  = "_" + name + "Checkbox"
-    var containerName = "_" + name + "El"
-
-    this[checkboxName] = document.createElement("INPUT");
-    this[checkboxName].type = "checkbox";
-    this[checkboxName]._dialog = this;
-    this[checkboxName].id = checkboxName;
-
-    this[containerName] = document.createElement("DIV");
-    this[containerName].style.display = "none";
-    this[containerName].appendChild(this[checkboxName]);
-    var lbl = document.createElement("label");
-    lbl.innerHTML = label;
-    lbl.htmlFor = checkboxName;
-    this[containerName].appendChild(lbl);
-
-    return this[containerName];
-}

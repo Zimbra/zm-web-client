@@ -639,3 +639,53 @@
         </table>                
 	</div>	
 </template>
+
+<template id="share.Dialogs#ZmFolderRetentionView">
+     <table cellpadding='0' cellspacing='0' border='0'>
+        <tr><td colspan=3>&nbsp;</td></tr>
+        <tr>
+            <td><input id="${id}_keepCheckbox" type='checkbox'></td>
+            <td class='ZmFolderRetentionLabel' colspan=2>
+                <label for="${id}_keepCheckbox">
+                    <$=ZmMsg.messageRetentionEnable$>
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td align='left' colspan=2><$=ZmMsg.messageRetentionExplanation$></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td class='ZmFolderRetentionLabel'><$=ZmMsg.messageRetentionRange$></td>
+            <td  class='ZmFolderPolicySelection'>
+                <select id='${id}_keep'      class='ZmFolderPolicySelect'/>
+                <input id='${id}_keepValue' class='ZmFolderPolicyAmountInput' type='text' />
+                <select id='${id}_keepUnit'  class='ZmFolderPolicyUnitSelect' />
+            </td>
+        </tr>
+        <tr><td colspan=3>&nbsp;</td></tr>
+        <tr>
+            <td><input id="${id}_purgeCheckbox" type='checkbox'></td>
+            <td class='ZmFolderRetentionLabel' colspan=2>
+                <label for="${id}_purgeCheckbox">
+                    <$=ZmMsg.messageDisposalEnable$>
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td align='left' colspan=2><$=ZmMsg.messageDisposalExplanation$></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td class='ZmFolderRetentionLabel'><$=ZmMsg.messageDisposalThreshold$></td>
+            <td class='ZmFolderPolicySelection'>
+                <select id='${id}_purge'      class='ZmFolderPolicySelect'/>
+                <input id='${id}_purgeValue'  class='ZmFolderPolicyAmountInput' type='text' />
+                <select id='${id}_purgeUnit'  class='ZmFolderPolicyUnitSelect' />
+            </td>
+        </tr>
+        <tr><td colspan=3>&nbsp;</td></tr>
+    </table>
+</template>

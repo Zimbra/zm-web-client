@@ -75,6 +75,7 @@ ZmOrganizer = function(params) {
     this.perm = params.perm;
 	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
 	this._isAdmin = this._isReadOnly = this._hasPrivateAccess = null;
+    this.retentionPolicy = params.retentionPolicy;
 
 	this.color =
         params.color ||
@@ -1043,6 +1044,94 @@ ZmOrganizer.prototype.setRGB = function(rgb, callback, errorCallback, batchCmd) 
 };
 
 /**
+ * Sets the Retention Policy.
+ *
+ * @param	{Object}	        retentionPolicy     the new retention policy
+ * @param	{AjxCallback}	    callback		    the callback
+ * @param	{AjxCallback}	    errorCallback	    the error callback
+ * @param   {ZmBatchCommand}    batchCmd            optional batch command
+ */
+ZmOrganizer.prototype.setRetentionPolicy = function(retentionPolicy, callback, errorCallback, batchCmd) {
+    if (this.retentionPolicy) {
+        if (!retentionPolicy ||
+            (!this.policiesDiffer(this.retentionPolicy[0].keep[0].policy,  retentionPolicy.keep) &&
+             !this.policiesDiffer(this.retentionPolicy[0].purge[0].policy, retentionPolicy.purge))) {
+            // No updated policy specified or no changes.
+            return;
+        }
+    }
+
+	var cmd = ZmOrganizer.SOAP_CMD[this.type];
+	var soapDoc = AjxSoapDoc.create(cmd + "Request", "urn:zimbraMail");
+	var actionNode = soapDoc.set("action");
+
+	actionNode.setAttribute("op", "retentionpolicy");
+	actionNode.setAttribute("id", this.id);
+
+    var retentionNode = soapDoc.set("retentionPolicy", null, actionNode);
+
+    var keep  = soapDoc.set("keep", null, retentionNode);
+    if (retentionPolicy.keep) {
+        this._addPolicy(soapDoc, keep, retentionPolicy.keep);
+    }
+    var purge = soapDoc.set("purge", null, retentionNode);
+    if (retentionPolicy.purge) {
+        this._addPolicy(soapDoc, purge, retentionPolicy.purge);
+    }
+
+	if (batchCmd) {
+        batchCmd.addRequestParams(soapDoc, callback, errorCallback);
+ 	} else {
+		var accountName;
+		if (appCtxt.multiAccounts) {
+			accountName = (this.account)
+				? this.account.name : appCtxt.accountList.mainAccount.name;
+		}
+		appCtxt.getAppController().sendRequest({
+			soapDoc:       soapDoc,
+			asyncMode:     true,
+			accountName:   accountName,
+			callback:      callback,
+			errorCallback: errorCallback
+		});
+	}
+
+};
+
+ZmOrganizer.prototype.policiesDiffer =
+function(policyA, policyB) {
+    var differ = false;
+    if ((policyA && !policyB) || (!policyA && policyB)) {
+        differ = true;
+    } else if (policyA) {
+        // Old and new specified
+        policyA = policyA[0];
+        if (policyA.type != policyB.type) {
+            differ = true;
+        } else {
+            if (policyA.type == "user") {
+                differ = policyA.lifetime != policyB.lifetime;
+            } else {
+                // System policy
+                differ = policyA.id != policyB.id;
+            }
+        }
+    }
+    return differ;
+}
+
+ZmOrganizer.prototype._addPolicy =
+function(soapDoc, parentNode, policy) {
+    var policyNode = soapDoc.set("policy", null, parentNode);
+	for (var attr in policy) {
+		if (AjxEnv.isIE) {
+			policy[attr] += ""; //To string
+		}
+		policyNode.setAttribute(attr, policy[attr]);
+	}
+}
+
+/**
  * Returns color number b/w 0-9 for a given color code
  * 
  * @param	{String}	color	The color (usually in #43eded format
@@ -1312,6 +1401,14 @@ function(obj, details) {
 		// clear acl-related flags so they are recalculated
 		this._isAdmin = this._isReadOnly = this._hasPrivateAccess = null;
 	}
+    if (obj.retentionPolicy) {
+        // Only displayed in a modal dialog - no need to doNotify
+        if (obj.retentionPolicy[0].keep || obj.retentionPolicy[0].purge) {
+            this.retentionPolicy = obj.retentionPolicy;
+        } else {
+            this.retentionPolicy = null;
+        }
+    }
 
 	// Send out composite MODIFY change event
 	if (doNotify) {

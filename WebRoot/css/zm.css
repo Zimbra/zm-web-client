@@ -5005,3 +5005,42 @@ border: 1px solid #666;
 .ZmPriorityFilterAction {
       
 }
+
+.ZmFolderRetentionLabel {
+    font-weight: bold;
+    text-align:left;
+    white-space:nowrap;
+}
+
+.ZmFolderPolicyAmountInput {
+    margin-left:20px;
+    width:60px;
+}
+.ZmFolderPolicyUnitSelect {
+    margin-left:4px;
+}
+
+.ZmFolderPolicySelect {
+    margin-left:4px;
+}
+.ZmFolderPolicySelection {
+    width:100%;
+}
+
+.ZmDialogTabViewBusy {
+   opacity: 0.5;
+   background-color: #e0e0e0;
+#IFDEF MSIE
+   filter: alpha(opacity=50);
+#ENDIF
+}
+
+.ZmFolderPropertiesDialog-container {
+	overflow: hidden;
+	width: 500px;
+	height: 210px;
+}
+
+.ZmFolderPropertyView {
+	margin-top:10px;
+}
