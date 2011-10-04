@@ -223,11 +223,12 @@ function(params, result) {
 		
 		var item = movedItems[0];
 		var list = item.list;
-		list._evt.batchMode = true;
-		list._evt.item = item;	// placeholder
-		list._evt.items = movedItems;
-		list._notify(ZmEvent.E_MOVE, details);
-
+		if (list) {
+			list._evt.batchMode = true;
+			list._evt.item = item;	// placeholder
+			list._evt.items = movedItems;
+			list._notify(ZmEvent.E_MOVE, details);
+		}
 		if (params.actionText) {
 			summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
 		}

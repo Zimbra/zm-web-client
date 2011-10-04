@@ -2312,7 +2312,7 @@ function(oldMsgId, result) {
 	var list = mailListCtlr.getList();
 
 	var avm = appCtxt.getAppViewMgr();
-	var views = avm._views;
+	var views = avm._view;
 	var msg = new ZmMailMsg(msgNode.id, list, true);
 	msg._loadFromDom(msgNode);
 
