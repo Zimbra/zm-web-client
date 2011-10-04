@@ -1283,7 +1283,7 @@ function() {
 	// select next reasonable organizer if the currently selected organizer is
 	// the one being deleted or is a descendent of the one being deleted
 	var tc = appCtxt.getOverviewController().getTreeController(this.type);
-	var treeView = tc.getTreeView(appCtxt.getCurrentApp().getOverviewId());
+	var treeView = tc && tc.getTreeView(appCtxt.getCurrentApp().getOverviewId());
 
 	// treeview returns array of organizers for checkbox style trees
 	var organizers = treeView && treeView.getSelected();
