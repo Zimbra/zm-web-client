@@ -465,6 +465,17 @@ function(list) {
 };
 
 /**
+ * Method overridden to hnadle action popdown - left it blank coz DwtListView.prototype.handleActionPopdown is clearing
+ * the this._rightSelItem.
+ *
+ * @param	{array}		itemArray		an array of items
+ */
+ZmCalListView.prototype.handleActionPopdown =
+function(ev) {
+    //kept empty to avoid clearing of this._rightSelItem.
+};
+
+/**
  * Adds the items.
  * The function is overridden to not to show the "No results found" if anything is present in the list.
  *
