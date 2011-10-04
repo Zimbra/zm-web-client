@@ -30,7 +30,7 @@
 ZmMailRedirectDialog = function(parent, className) {
 	className = className || "ZmFolderPropsDialog";
 
-    DwtDialog.call(this, {parent:parent, className:className, title:ZmMsg.mailRedirect, id:"ReminderDialog"});
+    DwtDialog.call(this, {parent:parent, className:className, title:ZmMsg.mailRedirect, id:"RedirectDialog"});
 
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, this._handleCancelButton.bind(this));
 
