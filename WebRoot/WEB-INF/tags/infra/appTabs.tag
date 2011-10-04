@@ -103,7 +103,7 @@
         <c:if test="${mailbox.features.options}">
 	        <td class='TabSpacer'/>
 	        <td class='Tab ${selected=='options' ? 'TabSelected' :'TabNormal'}'>
-                <a id='TAB_OPTIONS' href="<c:url value="/h/options?prev=${selected}"/>">
+                <a id='TAB_OPTIONS' href="<c:url value="/h/options?prev=${zm:cook(selected)}"/>">
 	                <span id='tab_ikon_options'><app:img src="startup/ImgPreferences.gif" altkey='ALT_APP_OPTIONS'/></span><span><fmt:message
 	                    key="options"/></span></a>
 	        </td>
