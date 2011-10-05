@@ -1246,6 +1246,13 @@ function() {
     this._viewVisible = false;
 };
 
+ZmCalViewController.prototype.isCurrent =
+function() {
+    var thisView = this.isSearchResults ? this.searchResultsController.getCurrentViewId() : this._currentViewId;
+    var currentView = this._viewMgr.getCurrentViewName();
+    return (thisView == currentView);
+};
+
 ZmCalViewController.prototype._paginate =
 function(viewId, forward) {
     this.setCurrentListView(null);
