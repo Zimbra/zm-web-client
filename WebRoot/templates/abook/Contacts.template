@@ -584,19 +584,19 @@
 		<td id='${id}_<$=data.name$>' class=rowValue>
 			<$ var address = data.address;
 			if (address.Street) { $>
-				<div><$=address.Street$></div>
+				<div><$=AjxStringUtil.htmlEncode(address.Street)$></div>
 			<$ }
 			if (address.City || address.State || address.PostalCode) { $>
 				<div>
-					<span><$=address.City$></span>
+					<span><$=AjxStringUtil.htmlEncode(address.City)$></span>
 					<$ if (address.City && address.State) { $>, <$ } $>
-					<span><$=address.State$></span>
+					<span><$=AjxStringUtil.htmlEncode(address.State)$></span>
 					<$ if (address.City || address.State) { $>&nbsp;<$ } $>
-					<span><$=address.PostalCode$></span>
+					<span><$=AjxStringUtil.htmlEncode(address.PostalCode)$></span>
 				</div>
 			<$ }
 			if (address.Country) { $>
-				<div><$=address.Country$></div>
+				<div><$=AjxStringUtil.htmlEncode(address.Country)$></div>
 			<$ } $>
 		</td>
 		<td style='color:gray' class='rowType'>&nbsp;<$= data.type $></td>
@@ -704,6 +704,8 @@
 		var name = ++i > 1 || ZmContact.IS_ADDONE[data.name] ? data.name+i : data.name;
 		var value = data.attrs[name];
 		if (!value) break;
+		data.name1 = AjxStringUtil.htmlEncode(data.name1);
+		data.type = AjxStringUtil.htmlEncode(data.type);
 		if (!isEmail) {
 			value = AjxStringUtil.htmlEncode(value);
 		}
@@ -726,7 +728,7 @@
 
 		<tr valign=top>
 			<td class=rowLabel><$= data.seenone ? "" : data.label $></td>
-			<td id='${id}_<$=name$>' <$= data.type ? "" : "colspan=2" $> class=rowValue>
+			<td id='${id}_<$=Dwt.getNextId("custom")$>' <$= data.type ? "" : "colspan=2" $> class=rowValue>
 				<$= value $>
 			</td>
 			<$ if (data.type) { $>

@@ -697,7 +697,7 @@ function(contact, params) {
 				val = imAddr.screenName;
 			}
 		}
-		fileAs = [AjxStringUtil.htmlEncode(ZmMsg.noName), val].join(" ");
+		fileAs = [AjxStringUtil.htmlEncode(ZmMsg.noName), AjxStringUtil.htmlEncode(val)].join(" ");
 	}
 	htmlArr[idx++] = "<td style='vertical-align:middle;'>&nbsp;";
 	htmlArr[idx++] = fileAs;
