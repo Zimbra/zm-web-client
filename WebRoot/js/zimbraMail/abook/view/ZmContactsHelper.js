@@ -124,7 +124,7 @@ function(html, idx, item, field, colIdx) {
 		html[idx++] = AjxImg.getImageHtml(item.icon);
 	} else if (field == ZmItem.F_NAME) {
 		html[idx++] = "<nobr>";
-		html[idx++] = AjxStringUtil.htmlEncode(item.name);
+		html[idx++] = AjxStringUtil.htmlEncode(item.name || ZmMsg.noName);
 		html[idx++] = "</nobr>";
 	} else if (field == ZmItem.F_EMAIL) {
 		html[idx++] = AjxStringUtil.htmlEncode(item.address);
