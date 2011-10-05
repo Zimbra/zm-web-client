@@ -468,7 +468,7 @@ ZmAutocompleteMatch = function(match, options, isContact) {
 				}
 			}
 			this.email = emails.join(";");
-			this.text = match.display;
+			this.text = AjxStringUtil.htmlEncode(match.display);
 		} else {
 			var email = AjxEmailAddress.parse(match.email);
 			if (email) {
