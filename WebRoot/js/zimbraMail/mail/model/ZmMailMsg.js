@@ -53,6 +53,8 @@ ZmMailMsg.prototype.constructor = ZmMailMsg;
 
 ZmMailMsg.prototype.toString = function() {	return "ZmMailMsg"; };
 
+ZmMailMsg.DL_SUB_VERSION = "0.1";
+
 ZmMailMsg.ADDRS = [AjxEmailAddress.FROM, AjxEmailAddress.TO, AjxEmailAddress.CC,
 				   AjxEmailAddress.BCC, AjxEmailAddress.REPLY_TO, AjxEmailAddress.SENDER,
                    AjxEmailAddress.RESENT_FROM];
@@ -2003,6 +2005,18 @@ function(msgNode) {
 			// not a version we support, ignore
 		}
 	}
+	if (msgNode.dlSubs) {
+		var dlSubsXmlDoc = AjxXmlDoc.createFromXml(msgNode.dlSubs[0].content);
+		try {
+			this.subscribeReq = ZmMailMsg.createDlSubFromDom(dlSubsXmlDoc.getDoc());
+			this.subscribeReq._msgId = msgNode.id;
+		}
+		catch (ex) {
+			// not a version we support, or missing element, ignore  - Not sure I like this approach but copying Share - Eran
+			DBG.println(AjxDebug.DBG1, "createDlSubFromDom failed, content is:" + msgNode.dlSubs[0].content + " ex:" + ex);
+		}
+	}
+
 
 	if (msgNode.e && this.participants && this.participants.size() == 0) {
 		for (var i = 0; i < msgNode.e.length; i++) {
@@ -2049,6 +2063,39 @@ function(msgNode) {
 		}
 	}
 };
+
+ZmMailMsg.createDlSubFromDom =
+function(doc) {
+	// NOTE: This code initializes DL subscription info from the Zimbra dlSub format, v0.1
+	var sub = {};
+
+	var node = doc.documentElement;
+	sub.version = node.getAttribute("version");
+	sub.subscribe = node.getAttribute("action") == "subscribe";
+	if (sub.version != ZmMailMsg.DL_SUB_VERSION) {
+		throw "Zimbra dl sub version must be " + ZmMailMsg.DL_SUB_VERSION;
+	}
+
+	for (var child = node.firstChild; child != null; child = child.nextSibling) {
+		if (child.nodeName != "dl" && child.nodeName != "user") {
+			continue;
+		}
+		sub[child.nodeName] = {
+			id: child.getAttribute("id"),
+			email: child.getAttribute("email"),
+			name: child.getAttribute("name")
+		};
+	}
+	if (!sub.dl) {
+		throw "missing dl element";
+	}
+	if (!sub.user) {
+		throw "missing user element";
+	}
+
+	return sub;
+};
+
 
 ZmMailMsg.prototype._cleanupCIds =
 function(atts) {

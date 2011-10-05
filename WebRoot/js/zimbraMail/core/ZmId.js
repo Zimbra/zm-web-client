@@ -174,6 +174,7 @@ ZmId.TB_COUNTER	= "Cou";
 ZmId.TB_NAV		= "Nav";
 ZmId.TB_SHARE	= "Shr";
 ZmId.TB_REPLY	= "Rep";
+ZmId.TB_SUBSCRIBE = "Sub";
 
 /**
  * Generates the ID for a button. Intended for use with the top toolbar, nav toolbar,
@@ -1093,6 +1094,8 @@ ZmId.OP_SORT_ASC                = "SORT_ASC";
 ZmId.OP_SORT_DESC               = "SORT_DESC";
 ZmId.OP_SPAM					= "SPAM";
 ZmId.OP_SPELL_CHECK				= "SPELL_CHECK";
+ZmId.OP_SUBSCRIBE_APPROVE		= "SUBSCRIBE_APPROVE";
+ZmId.OP_SUBSCRIBE_REJECT		= "SUBSCRIBE_REJECT";
 ZmId.OP_SYNC					= "SYNC";
 ZmId.OP_SYNC_ALL				= "SYNC_ALL";
 ZmId.OP_SYNC_OFFLINE_FOLDER		= "SYNC_OFFLINE_FOLDER";

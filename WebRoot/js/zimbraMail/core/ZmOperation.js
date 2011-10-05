@@ -176,6 +176,8 @@ function() {
     ZmOperation.registerOp(ZmId.OP_SHARE, {textKey:"share", tooltipKey:"shareTooltip"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_ACCEPT, {textKey:"acceptShare", image:"Check"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_DECLINE, {textKey:"declineShare", image:"Cancel"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SUBSCRIBE_APPROVE, {textKey:"dlApprove", image:"Check"});
+	ZmOperation.registerOp(ZmId.OP_SUBSCRIBE_REJECT, {textKey:"dlReject", image:"Cancel"});
 	ZmOperation.registerOp(ZmId.OP_SHARE_FOLDER, {textKey:"shareFolder", image:"SharedMailFolder"});
 	ZmOperation.registerOp(ZmId.OP_SHOW_ALL_ITEM_TYPES, {textKey:"showAllItemTypes", image:"Globe"});
     ZmOperation.registerOp(ZmId.OP_SORT_ASC, {textKey:"sortAscending"});

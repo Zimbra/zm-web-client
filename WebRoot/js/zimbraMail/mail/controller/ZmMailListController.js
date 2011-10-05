@@ -79,6 +79,7 @@ ZmMailListController = function(container, mailApp, type, sessionId, searchResul
 	this._listeners[ZmOperation.DETACH] = this._detachListener.bind(this);
 	this._inviteReplyListener = this._inviteReplyHandler.bind(this);
 	this._shareListener = this._shareHandler.bind(this);
+	this._subscribeListener = this._subscribeHandler.bind(this);
 
 	this._acceptShareListener = this._acceptShareHandler.bind(this);
 	this._declineShareListener = this._declineShareHandler.bind(this);
@@ -1228,9 +1229,55 @@ function(ev) {
 	}
 };
 
+ZmMailListController.prototype._subscribeHandler =
+function(ev) {
+	var req = ev._subscribeReq;
+	var statusMsg;
+	var approve = false;
+	if (ev._buttonId == ZmOperation.SUBSCRIBE_APPROVE) {
+		statusMsg = req.subscribe ? ZmMsg.dlSubscribeRequestApproved : ZmMsg.dlUnsubscribeRequestApproved;
+		approve = true;
+	}
+	else if (ev._buttonId == ZmOperation.SUBSCRIBE_REJECT) {
+		statusMsg = req.subscribe ? ZmMsg.dlSubscribeRequestRejected : ZmMsg.dlUnsubscribeRequestRejected;
+	}
+
+	var jsonObj = {
+		DistributionListActionRequest: {
+			_jsns: "urn:zimbraAccount",
+			dl: {by: "name",
+				 _content: req.dl.email
+			},
+			action: {op: approve ? "acceptSubsReq" : "rejectSubsReq",
+					 subsReq: {op: req.subscribe ? "subscribe" : "unsubscribe",
+							   _content: req.user.email
+					 		  }
+					}
+		}
+	};
+	var respCallback = this._subscribeResponseHandler.bind(this, statusMsg);
+	appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
+
+	
+
+};
+
+ZmMailListController.prototype._subscribeResponseHandler =
+function(statusMsg, ev) {
+	var msg = this.getMsg();
+	this._removeActionMsg(msg);
+	appCtxt.setStatusMsg(statusMsg);
+};
+
+
 ZmMailListController.prototype._acceptShareHandler =
 function(ev) {
 	var msg = appCtxt.getById(ev._share._msgId);
+	this._removeActionMsg(msg);
+};
+
+ZmMailListController.prototype._removeActionMsg =
+function(msg) {
 	var folder = appCtxt.getById(ZmFolder.ID_TRASH);
 
 	this._listView[this._currentViewId]._itemToSelect = this._getNextItemToSelect();

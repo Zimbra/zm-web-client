@@ -484,6 +484,11 @@ function(listener) {
 	this._shareListener = listener;
 };
 
+ZmConvView2.prototype.addSubscribeListener =
+function(listener) {
+	this._subscribeListener = listener;
+};
+
 ZmConvView2.prototype._msgListChangeListener =
 function(ev) {
 	
@@ -543,6 +548,7 @@ ZmMailMsgCapsuleView = function(params) {
 	this.addListener(ZmMailMsgView._TAG_CLICK, this._msgTagClicked.bind(this));
 	this.addListener(ZmInviteMsgView.REPLY_INVITE_EVENT, this.parent._inviteReplyListener);
 	this.addListener(ZmMailMsgView.SHARE_EVENT, this.parent._shareListener);
+	this.addListener(ZmMailMsgView.SUBSCRIBE_EVENT, this.parent._subscribeListener);
 };
 
 ZmMailMsgCapsuleView.prototype = new ZmMailMsgView;

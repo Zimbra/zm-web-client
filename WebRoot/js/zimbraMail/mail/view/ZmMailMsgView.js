@@ -92,6 +92,7 @@ ZmMailMsgView._TAG_CLICK 			= "ZmMailMsgView._TAG_CLICK";
 ZmMailMsgView._TAG_ANCHOR 			= "TA";
 ZmMailMsgView._TAG_IMG 				= "TI";
 ZmMailMsgView.SHARE_EVENT 			= "share";
+ZmMailMsgView.SUBSCRIBE_EVENT 		= "subscribe";
 ZmMailMsgView.IMG_FIX_RE			= new RegExp("(<img\\s+.*dfsrc\\s*=\\s*)[\"']http[^'\"]+part=([\\d\\.]+)[\"']([^>]*>)", "gi");
 ZmMailMsgView.FILENAME_INV_CHARS_RE = /[\./?*:;{}'\\]/g; // Chars we do not allow in a filename
 ZmMailMsgView.SETHEIGHT_MAX_TRIES	= 3;
@@ -285,6 +286,11 @@ function(listener) {
 	this.addListener(ZmMailMsgView.SHARE_EVENT, listener);
 };
 
+ZmMailMsgView.prototype.addSubscribeListener =
+function(listener) {
+	this.addListener(ZmMailMsgView.SUBSCRIBE_EVENT, listener);
+};
+
 ZmMailMsgView.prototype.setVisible =
 function(visible) {
 	DwtComposite.prototype.setVisible.apply(this, arguments);
@@ -302,6 +308,28 @@ function(visible) {
 
 // Private / protected methods
 
+ZmMailMsgView.prototype._getSubscribeToolbar =
+function(req) {
+	if (this._subscribeToolbar) {
+		if (AjxEnv.isIE) {
+			//reparenting on IE does not work. So recreating in this case. (similar to bug 52412 for the invite toolbar)
+			this._subscribeToolbar.dispose();
+			this._subscribeToolbar = null;
+		}
+		else {
+			return this._subscribeToolbar;
+		}
+	}
+
+	this._subscribeToolbar = this._getButtonToolbar([ZmOperation.SUBSCRIBE_APPROVE, ZmOperation.SUBSCRIBE_REJECT],
+												ZmId.TB_SUBSCRIBE,
+												this._subscribeToolBarListener.bind(this, req));
+
+	return this._subscribeToolbar;
+};
+
+
+
 ZmMailMsgView.prototype._getShareToolbar =
 function() {
 	if (this._shareToolbar) {
@@ -315,7 +343,16 @@ function() {
 		}
 	}
 
-	var buttonIds = [ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE];
+	this._shareToolbar = this._getButtonToolbar([ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE],
+												ZmId.TB_SHARE,
+												this._shareToolBarListener.bind(this));
+
+	return this._shareToolbar;
+};
+
+ZmMailMsgView.prototype._getButtonToolbar =
+function(buttonIds, toolbarType, listener) {
+
 	var params = {
 		parent: this,
 		buttons: buttonIds,
@@ -323,23 +360,22 @@ function() {
 		className: "ZmShareToolBar",
 		buttonClassName: "DwtToolbarButton",
 		context: this._mode,
-		toolbarType: ZmId.TB_SHARE
+		toolbarType: toolbarType
 	};
-	this._shareToolbar = new ZmButtonToolBar(params);
+	var toolbar = new ZmButtonToolBar(params);
 
-	var listener = new AjxListener(this, this._shareToolBarListener);
 	for (var i = 0; i < buttonIds.length; i++) {
 		var id = buttonIds[i];
 
 		// HACK: IE doesn't support multiple class names.
-		var b = this._shareToolbar.getButton(id);
+		var b = toolbar.getButton(id);
 		b._hoverClassName = b._className + "-" + DwtCssStyle.HOVER;
 		b._activeClassName = b._className + "-" + DwtCssStyle.ACTIVE;
 
-		this._shareToolbar.addSelectionListener(id, listener);
+		toolbar.addSelectionListener(id, listener);
 	}
 
-	return this._shareToolbar;
+	return toolbar;
 };
 
 ZmMailMsgView.prototype._notifyZimletsNewMsg =
@@ -1365,6 +1401,12 @@ function(msg, container) {
 			this._hasShareToolbar = true;
 		}
 	}
+	else if (msg.subscribeReq && msg.folderId != ZmFolder.ID_TRASH) {
+		var topToolbar = this._getSubscribeToolbar(msg.subscribeReq);
+		topToolbar.reparentHtmlElement(container);
+		topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
+		this._hasSubToolbar = true;
+	}
 };
 
 /**
@@ -1871,6 +1913,14 @@ function(ev) {
 	ev._share = this._msg.share;
 	this.notifyListeners(ZmMailMsgView.SHARE_EVENT, ev);
 };
+
+ZmMailMsgView.prototype._subscribeToolBarListener =
+function(req, ev) {
+	ev._buttonId = ev.item.getData(ZmOperation.KEY_ID);
+	ev._subscribeReq = req;
+	this.notifyListeners(ZmMailMsgView.SUBSCRIBE_EVENT, ev);
+};
+
 
 ZmMailMsgView.prototype._msgChangeListener =
 function(ev) {

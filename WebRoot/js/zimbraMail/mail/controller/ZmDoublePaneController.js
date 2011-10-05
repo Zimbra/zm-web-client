@@ -200,6 +200,7 @@ function(view) {
 		this._mailListView = dpv.getMailListView();
 		dpv.addInviteReplyListener(this._inviteReplyListener);
 		dpv.addShareListener(this._shareListener);
+		dpv.addSubscribeListener(this._subscribeListener);
 	}
 
 	ZmMailListController.prototype._initialize.call(this, view);

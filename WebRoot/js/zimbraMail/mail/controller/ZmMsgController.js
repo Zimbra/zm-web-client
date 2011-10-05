@@ -228,6 +228,7 @@ function(view) {
 		this._view[view] = new ZmMailMsgView(params);
 		this._view[view].addInviteReplyListener(this._inviteReplyListener);
 		this._view[view].addShareListener(this._shareListener);
+		this._view[view].addSubscribeListener(this._subscribeListener);
 	}
 };
 

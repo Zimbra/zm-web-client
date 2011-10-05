@@ -184,6 +184,12 @@ function (listener){
 	this._itemView.addShareListener(listener);
 };
 
+ZmDoublePaneView.prototype.addSubscribeListener =
+function(listener) {
+	this._itemView.addSubscribeListener(listener);
+};
+
+
 ZmDoublePaneView.prototype.resetMsg = 
 function(newMsg) {
 	this._itemView.resetMsg(newMsg);

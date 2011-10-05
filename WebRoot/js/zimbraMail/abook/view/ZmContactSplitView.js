@@ -533,10 +533,10 @@ function(contact, subscribe, result) {
 	this._subscriptionButton.setEnabled(!awaitingApproval);
 	contact.dlInfo.isMember = subscribed;
 	this._updateSubscriptionButtonAndMsg(contact);
-	var msg = subscribed ? ZmMsg.subscribed
-			: unsubscribed ? ZmMsg.unsubscribed
-			: awaitingApproval && subscribe ? ZmMsg.subscriptionRequested
-			: awaitingApproval && !subscribe ? ZmMsg.unsubscriptionRequested
+	var msg = subscribed ? ZmMsg.dlSubscribed
+			: unsubscribed ? ZmMsg.dlUnsubscribed
+			: awaitingApproval && subscribe ? ZmMsg.dlSubscriptionRequested
+			: awaitingApproval && !subscribe ? ZmMsg.dlUnsubscriptionRequested
 			: ""; //should not happen. Keep this as separate case for ease of debug when it does happen somehow.
 	var dlg = appCtxt.getMsgDialog();
 	var name = contact.getEmail();
@@ -554,7 +554,7 @@ function(contact) {
 	}
 	else {
 		this._subscriptionButton.setVisible(true);
-		this._subscriptionButton.setText(dlInfo.isMember ? ZmMsg.unsubscribe: ZmMsg.subscribe);
+		this._subscriptionButton.setText(dlInfo.isMember ? ZmMsg.dlUnsubscribe: ZmMsg.dlSubscribe);
 	}
 	var statusMsg = dlInfo.isOwner && dlInfo.isMember ? ZmMsg.youAreOwnerAndMember
 			: dlInfo.isOwner ? ZmMsg.youAreOwner
@@ -562,13 +562,13 @@ function(contact) {
 			: "";
 	var actionMsg;
 	if (!dlInfo.isMember) {
-		actionMsg =	policy == ZmContactSplitView.SUBSCRIPTION_POLICY_APPROVAL ? ZmMsg.subscriptionRequiresApproval
-			: policy == ZmContactSplitView.SUBSCRIPTION_POLICY_REJECT ? ZmMsg.subscriptionNotAllowed
+		actionMsg =	policy == ZmContactSplitView.SUBSCRIPTION_POLICY_APPROVAL ? ZmMsg.dlSubscriptionRequiresApproval
+			: policy == ZmContactSplitView.SUBSCRIPTION_POLICY_REJECT ? ZmMsg.dlSubscriptionNotAllowed
 			: "";
 	}
 	else {
-		actionMsg =	policy == ZmContactSplitView.SUBSCRIPTION_POLICY_APPROVAL ? ZmMsg.unsubscriptionRequiresApproval
-			: policy == ZmContactSplitView.SUBSCRIPTION_POLICY_REJECT ? ZmMsg.unsubscriptionNotAllowed
+		actionMsg =	policy == ZmContactSplitView.SUBSCRIPTION_POLICY_APPROVAL ? ZmMsg.dlUnsubscriptionRequiresApproval
+			: policy == ZmContactSplitView.SUBSCRIPTION_POLICY_REJECT ? ZmMsg.dlUnsubscriptionNotAllowed
 			: "";
 
 	}
