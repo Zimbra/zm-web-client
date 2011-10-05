@@ -1194,7 +1194,7 @@ ZmBaseController.prototype._quickCommandMenuHandler = function(evt, batchCmd) {
             }
         } else if (action.type == ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FLAG]) {
             if (actionValue == "flagged" || actionValue == "unflagged") {
-                this._applyAction(selectedItems, "_doFlag", [actionValue == "flagged"]);
+                this._doFlag(selectedItems, actionValue == "flagged");
             }
 
         } else if (action.type == ZmQuickCommandAction[ZmQuickCommandAction.A_NAME_FOLDER]) {
