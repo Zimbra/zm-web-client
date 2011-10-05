@@ -109,7 +109,7 @@ function(searchResult, isGalSearch, folderId) {
 		this._list = searchResult.getResults(ZmItem.CONTACT);
 
 		// HACK - find out if user did a "is:anywhere" search (for printing)
-		if (searchResult.search && searchResult.search.isAnywhere) {
+		if (searchResult.search && searchResult.search.isAnywhere()) {
 			this._searchType |= ZmContactListController.SEARCH_TYPE_ANYWHERE;
 		}
 

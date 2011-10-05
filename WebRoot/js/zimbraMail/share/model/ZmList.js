@@ -1177,9 +1177,7 @@ function(ev) {
 			 (ev.event == ZmEvent.E_MOVE || (ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME]))
 	{
 		// on folder rename or move, update current query if folder is part of query
-		var oldPath = ev.getDetail("oldPath");
-		if (ctlr._currentSearch.hasFolderTerm(oldPath)) {
-			ctlr._currentSearch.replaceFolderTerm(oldPath, folder.getPath());
+		if (ctlr._currentSearch.replaceFolderTerm(ev.getDetail("oldPath"), folder.getPath())) {
 			appCtxt.getSearchController().setSearchField(ctlr._currentSearch.query);
 		}
 	}
@@ -1223,12 +1221,13 @@ function(ev) {
 		// on the current query.
 		if (ctlr._currentSearch && ctlr._currentSearch.hasTagTerm(tag.getName())) {
 			var viewId = appCtxt.getCurrentViewId();
+			var viewType = appCtxt.getCurrentViewType();
 			ctlr.enablePagination(false, viewId);
 			var view = ctlr.getListView && ctlr.getListView();
 			if (view && view.sortingEnabled) {
 				view.sortingEnabled = false;
 			}
-			if (viewId == appCtxt.get(ZmSetting.CONV_MODE)) {
+			if (viewType == appCtxt.get(ZmSetting.CONV_MODE)) {
 				ctlr._currentSearch.query = "is:read is:unread";
 			}
 			ctlr._currentSearch.tagId = null;

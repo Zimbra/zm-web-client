@@ -640,7 +640,7 @@ function(isContact) {
 ZmListController.prototype._getSearchFolderId =
 function() {
 	var s = this._activeSearch && this._activeSearch.search;
-	return s && s.singleTerm && s.folderId;
+	return s && s.isSimple() && s.folderId;
 };
 
 /**

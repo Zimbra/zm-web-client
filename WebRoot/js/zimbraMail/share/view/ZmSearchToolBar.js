@@ -393,12 +393,12 @@ function() {
 
 ZmMainSearchToolBar.prototype.getSearchType =
 function() {
-	
 	var button = this._button[ZmSearchToolBar.SEARCH_BUTTON];
 	var menu = button && button.getMenu();
     var item = menu ? menu.getSelectedItem() || menu.getItems()[0] : null;
-	if (!item) { return null; }
-	return item.getData(ZmMainSearchToolBar.CUSTOM_ITEM_ID) || item.getData(ZmSearchToolBar.MENUITEM_ID);
+	var data = item ? item.getData(ZmMainSearchToolBar.CUSTOM_ITEM_ID) || item.getData(ZmSearchToolBar.MENUITEM_ID) :
+					  ZmSearchToolBar.MENU_ITEMS[0];
+	return data;
 };
 
 ZmMainSearchToolBar.prototype.createCustomSearchBtn =

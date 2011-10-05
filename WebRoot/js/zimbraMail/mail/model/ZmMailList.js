@@ -44,10 +44,8 @@ ZmMailList = function(type, search) {
 ZmMailList.prototype = new ZmList;
 ZmMailList.prototype.constructor = ZmMailList;
 
-ZmMailList.prototype.toString = 
-function() {
-	return "ZmMailList";
-};
+ZmMailList.prototype.isZmMailList = true;
+ZmMailList.prototype.toString = function() { return "ZmMailList"; };
 
 /**
  * Override so that we can specify "tcon" attribute for conv move - we don't want
@@ -745,11 +743,11 @@ function(ev) {
 
 	if (ev.event == ZmEvent.E_FLAGS && (flag == ZmItem.FLAG_UNREAD)) {
 		if (this.type == ZmItem.CONV) {
-			if ((view == appCtxt.get(ZmSetting.CONV_MODE)) && ctlr._currentSearch.hasUnreadTerm) {
+			if ((view == appCtxt.get(ZmSetting.CONV_MODE)) && ctlr._currentSearch.hasUnreadTerm()) {
 				this._redoSearch(ctlr);
 			}
 		} else if (this.type == ZmItem.MSG) {
-			if (view == ZmId.VIEW_TRAD && ctlr._currentSearch.hasUnreadTerm) {
+			if (view == ZmId.VIEW_TRAD && ctlr._currentSearch.hasUnreadTerm()) {
 				this._redoSearch(ctlr);
 			} else {
 				var on = ev.getDetail("state");

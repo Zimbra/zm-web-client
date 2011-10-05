@@ -547,7 +547,7 @@ function(results, callback, searchResultsController) {
 ZmContactsApp.prototype._handleLoadShowSearchResults =
 function(results, callback, searchResultsController) {
 	var search = results && results.search;
-	var folderId = search && search.singleTerm && search.folderId;
+	var folderId = search && search.isSimple() && search.folderId;
 	var isInGal = search && (search.contactSource == ZmId.SEARCH_GAL);
 	var sessionId = searchResultsController ? searchResultsController.getCurrentViewId() : ZmApp.MAIN_SESSION;
 	var controller = this.getContactListController(sessionId, searchResultsController);

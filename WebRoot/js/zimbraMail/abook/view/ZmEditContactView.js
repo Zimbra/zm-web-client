@@ -2321,11 +2321,14 @@ ZmEditContactViewOther.__DwtButton_popup = function() {
     var menu = button.getMenu();
     var menuSize = menu.getSize();
     var windowSize = DwtShell.getShell(window).getSize();
-    button._popupAbove = (location.y + size.y) + menuSize.y > windowSize.y;
+	var params = {menu: menu};
+	if ((location.y + size.y) + menuSize.y > windowSize.y) {
+		params.menuPopupStyle = DwtButton.MENU_POPUP_STYLE_ABOVE;
+	}
     if (AjxEnv.isIE) {
         menu.getHtmlElement().style.width = "150px";
     }
-    DwtButton.prototype.popup.apply(button, arguments);
+    DwtButton.prototype.popup.call(button, params);
 };
 
 ZmEditContactViewOther.prototype._createSelect = function() {

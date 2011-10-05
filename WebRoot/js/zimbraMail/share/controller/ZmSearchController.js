@@ -414,7 +414,7 @@ function(searchObj) {
 	var search = searchObj || appCtxt.getCurrentSearch();
 
 	var id, type;
-	if (search && (search.singleTerm || search.searchId)) {
+	if (search && (search.isSimple() || search.searchId)) {
 		if (search.searchId) {
 			id = this._getNormalizedId(search.searchId);
 			type = ZmOrganizer.SEARCH;
@@ -628,7 +628,7 @@ function(results, search, noUpdateOverview, noClear) {
 	}
 
 	// disable search results tab for now
-	if (search.userInitiated) {
+	if (false && search.userInitiated) {
 		var ctlr = appCtxt.getApp(ZmApp.SEARCH).getSearchResultsController();
 		ctlr.show(results);
 	}

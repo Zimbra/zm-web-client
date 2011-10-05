@@ -56,6 +56,7 @@ AjxPackage.require("zimbraMail.share.view.ZmButtonToolBar");
 AjxPackage.require("zimbraMail.share.view.ZmNavToolBar");
 AjxPackage.require("zimbraMail.share.view.ZmSearchToolBar");
 AjxPackage.require("zimbraMail.share.view.ZmSearchResultsToolBar");
+AjxPackage.require("zimbraMail.share.view.ZmSearchResultsFilterPanel");
 AjxPackage.require("zimbraMail.share.view.ZmTreeView");
 AjxPackage.require("zimbraMail.share.view.ZmTagMenu");
 AjxPackage.require("zimbraMail.share.view.ZmListView");

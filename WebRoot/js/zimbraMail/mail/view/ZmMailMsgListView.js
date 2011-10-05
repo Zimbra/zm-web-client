@@ -62,7 +62,7 @@ function(msg, params) {
 	} else {
 		var conv = appCtxt.getById(msg.cid);
 		var s = this._controller._activeSearch && this._controller._activeSearch.search;
-		params.isMatched = (s && s.hasTextTerm && msg.inHitList);
+		params.isMatched = (s && s.hasContentTerm() && msg.inHitList);
 	}
 };
 

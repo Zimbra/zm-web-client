@@ -284,7 +284,7 @@ function(results, callback) {
 
 ZmTasksApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
-	var folderId = results && results.search && results.search.singleTerm && results.search.folderId;
+	var folderId = results && results.search && results.search.isSimple() && results.search.folderId;
 	var controller = this.getTaskListController();
 	controller.show(results, folderId);
 	this._setLoadedTime(this.toString(), new Date());

@@ -81,8 +81,7 @@ function() {
 	this._toolbar.getButton(ZmSearchToolBar.SAVE_BUTTON).addSelectionListener(this._saveListener.bind(this));
 	this._toolbar.registerEnterCallback(this._searchListener.bind(this));
 
-	this._filterPanel = new DwtComposite({parent:this._container, className:"FilterPanel", posStyle:Dwt.ABSOLUTE_STYLE});
-	this._filterPanel.getHtmlElement().innerHTML = "<div style='position:absolute;top:50%;margin-left:5px;'>Filter Panel not ready yet</div>";
+	this._filterPanel = new ZmSearchResultsFilterPanel({parent:this._container});
 	
 	this._initialized = true;
 };

@@ -63,13 +63,18 @@ ZmSearch = function(params) {
 		this.join						= this.join || ZmSearch.JOIN_AND;
 
 		if (this.query || this.queryHint) {
+			// only parse regular searches
 			if (!this.isGalSearch && !this.isAutocompleteSearch &&
 				!this.isGalAutocompleteSearch && !this.isCalResSearch) {
-
-				this._parseQuery();	// only parse regular searches
-			}
-			if (this.querySortOrder) {
-				this.sortBy = this.querySortOrder;
+				
+				var pq = this.parsedQuery = new ZmParsedQuery(this.query || this.queryHint);
+				this.matches = pq.getMatchFunction();
+				this.folderId = pq.folderId;
+				this.tagId = pq.tagId;
+				var sortTerm = pq.getTerm("sort");
+				if (sortTerm) {
+					this.sortBy = sortTerm.arg;
+				}
 			}
 		}
 	}
@@ -144,8 +149,6 @@ ZmSearch.PCOMPLETE_ASC	= "taskPercCompletedAsc";
 ZmSearch.DUE_DATE_DESC	= "taskDueDesc";
 ZmSearch.DUE_DATE_ASC	= "taskDueAsc";
 
-ZmSearch.UNREAD_QUERY_RE = new RegExp('\\bis:\\s*(un)?read\\b', "i");
-ZmSearch.IS_ANYWHERE_QUERY_RE = new RegExp('\\bis:\\s*anywhere\\b', "i");
 
 /**
  * Returns a string representation of the object.
@@ -787,56 +790,153 @@ function() {
 	return limit;
 };
 
-ZmSearch.IS_OP	= {"in":true, "inid":true, "is":true, "tag":true, "sort":true};
-ZmSearch.COND	= {"and":" && ", "or":" || ", "not":" !"};
-ZmSearch.EOW	= {" ":true, ":":true, "(":true, ")":true};
-ZmSearch.FLAG = {};
-ZmSearch.FLAG["unread"]			= "item.isUnread";
-ZmSearch.FLAG["read"]			= "!item.isUnread";
-ZmSearch.FLAG["flagged"]		= "item.isFlagged";
-ZmSearch.FLAG["unflagged"]		= "!item.isFlagged";
-ZmSearch.FLAG["forwarded"]		= "item.isForwarded";
-ZmSearch.FLAG["unforwarded"]	= "!item.isForwarded";
-ZmSearch.FLAG["sent"]			= "item.isSent";
-ZmSearch.FLAG["replied"]		= "item.isReplied";
-ZmSearch.FLAG["unreplied"]		= "!item.isReplied";
+/**
+ * Returns true if the query has a folder-related term with the given value.
+ * 
+ * @param 	{string}	path		a folder path (optional)
+ */
+ZmSearch.prototype.hasFolderTerm =
+function(path) {
+	return this.parsedQuery && this.parsedQuery.hasTerm(["in", "under"], path);
+};
 
 /**
- * Parse simple queries so we can do basic matching on new items (determine whether
- * they match this search query). The following types of query terms are handled:
- *
- *    in:[folder]
- *    tag:[tag]
- *    is:[flag]
- *
- * Those may be joined by conditionals: "and", "or", "not", "-", and the implied "and"
- * that appears between consecutive terms. The result of the parsing is the creation
- * of a function that takes an item as its argument and returns true if that item
- * matches this search. If the parsing fails for any reason, the function is not
- * created.
- *
- * If the query contains a term of "in:" or "tag:" and has no OR conditionals, then
- * this.folderId or this.tagId will be set.
- *
- * Compound terms such as "in:(inbox or sent)" will not result in the creation of
- * a match function, nor will anything that invokes a text search
- * (such as "in:inbox xml").
+ * Replaces the old folder path with the new folder path in the query string, if found.
  * 
- * @private
+ * @param	{string}	oldPath		the old folder path
+ * @param	{string}	newPath		the new folder path
+ * 
+ * @return	{boolean}	true if replacement was performed
  */
-ZmSearch.prototype._parseQuery =
-function() {
-
-	var query = this.query || this.queryHint; 
-	this.hasUnreadTerm = ZmSearch.UNREAD_QUERY_RE.test(query);
-	this.isAnywhere = ZmSearch.IS_ANYWHERE_QUERY_RE.test(query);
-
-	function skipSpace(str, pos) {
-		while (pos < str.length && str.charAt(pos) == " ") {
-			pos++;
-		}
-		return pos;
+ZmSearch.prototype.replaceFolderTerm =
+function(oldPath, newPath) {
+	if (!this.parsedQuery) {
+		return this.query;
 	}
+	var newQuery = this.parsedQuery.replaceTerm(["in", "under"], oldPath, newPath);
+	if (newQuery) {
+		this.query = newQuery;
+	}
+	return Boolean(newQuery);
+};
+
+/**
+ * Returns true if the query has a tag term with the given value.
+ * 
+ * @param 	{string}	tagName		a tag name (optional)
+ */
+ZmSearch.prototype.hasTagTerm =
+function(tagName) {
+	return this.parsedQuery && this.parsedQuery.hasTerm("tag", tagName);
+};
+
+/**
+ * Replaces the old tag name with the new tag name in the query string, if found.
+ * 
+ * @param	{string}	oldName		the old tag name
+ * @param	{string}	newName		the new tag name
+ * 
+ * @return	{boolean}	true if replacement was performed
+ */
+ZmSearch.prototype.replaceTagTerm =
+function(oldName, newName) {
+	if (!this.parsedQuery) {
+		return this.query;
+	}
+	var newQuery = this.parsedQuery.replaceTerm("tag", oldName, newName);
+	if (newQuery) {
+		this.query = newQuery;
+	}
+	return Boolean(newQuery);
+};
+
+/**
+ * Returns true if the query has a term related to unread status.
+ */
+ZmSearch.prototype.hasUnreadTerm =
+function() {
+	return (this.parsedQuery && (this.parsedQuery.hasTerm("is", "read") ||
+								 this.parsedQuery.hasTerm("is", "unread")));
+};
+
+/**
+ * Returns true if the query has the term "is:anywhere".
+ */
+ZmSearch.prototype.isAnywhere =
+function() {
+	return (this.parsedQuery && this.parsedQuery.hasTerm("is", "anywhere"));
+};
+
+/**
+ * Returns true if the query has a "content" term.
+ */
+ZmSearch.prototype.hasContentTerm =
+function() {
+	return (this.parsedQuery && this.parsedQuery.hasTerm("content"));
+};
+
+/**
+ * Returns true if the query has just one term, and it's a folder or tag term.
+ */
+ZmSearch.prototype.isSimple =
+function() {
+	var pq = this.parsedQuery;
+	if (pq && pq.numTerms == 1) {
+		return pq.hasTerm(["in", "inid", "tag"]);
+	}
+	return false;
+};
+
+
+
+
+/**
+ * This class is a parsed representation of a query string. It parses the string into tokens.
+ * A token is a paren, a conditional operator, or a search term (which has an operator and an
+ * argument). The query string is assumed to be valid.
+ * 
+ * Compound terms such as "in:(inbox or sent)" will be exploded into multiple terms.
+ * 
+ * @param	{string}	query		a query string
+ * 
+ * TODO: handle "field[lastName]" and "#lastName"
+ */
+ZmParsedQuery = function(query) {
+	this._parse(AjxStringUtil.trim(query, true));
+};
+
+ZmParsedQuery.TERM	= "TERM";	// search operator such as "in"
+ZmParsedQuery.COND	= "COND";	// AND OR NOT
+ZmParsedQuery.GROUP	= "GROUP";	// ( or )
+
+ZmParsedQuery.OP_LIST = [
+	"content", "subject", "msgid", "envto", "envfrom", "contact", "to", "from", "cc", "tofrom", 
+	"tocc", "fromcc", "tofromcc", "in", "under", "inid", "underid", "has", "filename", "type", 
+	"attachment", "is", "date", "mdate", "day", "week", "month", "year", "after", "before", 
+	"size", "bigger", "larger", "smaller", "tag", "priority", "message", "my", "modseq", "conv", 
+	"conv-count", "conv-minm", "conv-maxm", "conv-start", "conv-end", "appt-start", "appt-end", "author", "title", "keywords", 
+	"company", "metadata", "item", "sort"
+];
+ZmParsedQuery.IS_OP		= AjxUtil.arrayAsHash(ZmParsedQuery.OP_LIST);
+
+ZmParsedQuery.COND_OP	= {"and": " && ", "or": " || ", "not": " !"};
+
+ZmParsedQuery.EOW_LIST	= [" ", ":", "(", ")"];
+ZmParsedQuery.IS_EOW	= AjxUtil.arrayAsHash(ZmParsedQuery.EOW_LIST);
+
+ZmParsedQuery.FLAG = {};
+ZmParsedQuery.FLAG["unread"]		= "item.isUnread";
+ZmParsedQuery.FLAG["read"]			= "!item.isUnread";
+ZmParsedQuery.FLAG["flagged"]		= "item.isFlagged";
+ZmParsedQuery.FLAG["unflagged"]		= "!item.isFlagged";
+ZmParsedQuery.FLAG["forwarded"]		= "item.isForwarded";
+ZmParsedQuery.FLAG["unforwarded"]	= "!item.isForwarded";
+ZmParsedQuery.FLAG["sent"]			= "item.isSent";
+ZmParsedQuery.FLAG["replied"]		= "item.isReplied";
+ZmParsedQuery.FLAG["unreplied"]		= "!item.isReplied";
+
+ZmParsedQuery.prototype._parse =
+function(query) {
 
 	function getQuotedStr(str, pos) {
 		var q = str.charAt(pos);
@@ -854,20 +954,35 @@ function() {
 
 		return done ? {str:quoted, pos:pos + 1} : null;
 	}
+	
+	function skipSpace(str, pos) {
+		while (pos < str.length && str.charAt(pos) == " ") {
+			pos++;
+		}
+		return pos;
+	}
+	
+	function fail(reason, query) {
+		DBG.println(AjxDebug.DBG1, "ZmParsedQuery failure: " + reason + "; query: [" + query + "]");
+		this.parseFailed = reason;
+		return null;		
+	}
 
-
+	this.numTerms = 0;
+	
 	var len = query.length;
-	var tokens = [], ch, op, word = "", fail = false, eow = false, endOk = true, hasOrTerm = false, bareWord = false;
+	var tokens = [], ch, lastCh, op, word = "", fail = false, eow = false, endOk = true, compound = 0;
 	var pos = skipSpace(query, 0);
 	while (pos < len) {
+		lastCh = (ch != " ") ? ch : lastCh;
 		ch = query.charAt(pos);
-		eow = ZmSearch.EOW[ch];
+		eow = ZmParsedQuery.IS_EOW[ch];
 
 		if (ch == ":") {
-			if (ZmSearch.IS_OP[word]) {
+			if (ZmParsedQuery.IS_OP[word]) {
 				op = word;
 			} else {
-				fail = true;
+				return fail("unrecognized op '" + word + "'", query);
 			}
 			word = "";
 			pos = skipSpace(query, pos + 1);
@@ -875,40 +990,57 @@ function() {
 		}
 
 		if (eow) {
-			if (op && word) {
-				tokens.push({isTerm:true, op:op, arg:word});
-				op = word = "";
+			var condOp = ZmParsedQuery.COND_OP[word.toLowerCase()];
+			if (op && word && !(condOp && compound > 0)) {
+				tokens.push({type: ZmParsedQuery.TERM, op: op, arg: word});
+				this.numTerms++;
+				if (compound == 0) {
+					op = "";
+				}
+				word = "";
 				endOk = true;
-			} else if (!op) {
-				if (ZmSearch.COND[word.toLowerCase()]) {
+			} else if (!op || (op && compound > 0)) {
+				if (condOp) {
 					var cond = word.toLowerCase();
-					tokens.push(ZmSearch.COND[cond]);
+					tokens.push({type: ZmParsedQuery.COND, op: condOp, arg: cond});
 					endOk = false;
 					if (cond == "or") {
-						hasOrTerm = true;
+						this.hasOrTerm = true;
 					}
 				} else if (word) {
-					fail = bareWord = true;
+					tokens.push({type: ZmParsedQuery.TERM, op: "content", arg: word, bareWord: true});
+					this.numTerms++;
 				}
 				word = "";
 			}
 		}
 
-		if (ch == "'" || ch == '"') {
+		if (ch == '"') {
 			var results = getQuotedStr(query, pos);
 			if (results) {
 				word = results.str;
 				pos = results.pos;
 			} else {
-				fail = true;
-				word = "";
-                pos = skipSpace(query, pos + 1);
+				return fail("improper use of quotes", query);
 			}
-		} else if (ch == "(" || ch == ")") {
-			tokens.push(ch);
+		} else if (ch == "(") {
+			if (compound > 0) {
+				compound++
+			}
+			else if (lastCh == ":") {
+				compound = 1;
+			}
+			tokens.push({type: ZmParsedQuery.GROUP, op: ch});
+			pos = skipSpace(query, pos + 1);
+		} else if (ch == ")") {
+			if (compound > 0) {
+				compound--;
+			}
+			tokens.push({type: ZmParsedQuery.GROUP, op: ch});
 			pos = skipSpace(query, pos + 1);
 		} else if (ch == "-" && !word) {
-			tokens.push("not");
+			var realOp = "not";
+			tokens.push({type: ZmParsedQuery.COND, op: ZmParsedQuery.COND_OP[realOp], arg: realOp});
 			pos = skipSpace(query, pos + 1);
 			endOk = false;
 		} else {
@@ -920,20 +1052,47 @@ function() {
 	}
 
 	// check for term at end
-	if (!fail && (pos == query.length) && op && word) {
-		tokens.push({isTerm:true, op:op, arg:word});
+	if ((pos == query.length) && op && word) {
+		tokens.push({type: ZmParsedQuery.TERM, op: op, arg: word});
+		this.numTerms++;
 		endOk = true;
 	} else if (!op && word) {
-		fail = bareWord = true;
+		tokens.push({type: ZmParsedQuery.TERM, op: "content", arg: word, bareWord: true});
+		this.numTerms++;
 	}
 
-	fail = fail || !endOk;
+	if (!endOk) {
+		return fail("unexpected end of query", query);
+	}
+	
+	this._tokens = tokens;
+};
 
+ZmParsedQuery.prototype.getTokens =
+function() {
+	return this._tokens;
+};
+
+/**
+ * Returns a function based on the parsed query. The function is passed an item (msg or conv) and returns
+ * true if the item matches the search.
+ * 
+ * @return {Function}	the match function
+ * 
+ * TODO: handle more ops
+ */
+ZmParsedQuery.prototype.getMatchFunction =
+function() {
+	
+	if (this.parseFailed || this.hasTerm("content")) {
+		return null;
+	}
+	
 	var folderId, tagId;
 	var func = ["return Boolean("];
-	for (var i = 0, len = tokens.length; i < len; i++) {
-		var t = tokens[i];
-		if (t.isTerm) {
+	for (var i = 0, len = this._tokens.length; i < len; i++) {
+		var t = this._tokens[i];
+		if (t.type == ZmParsedQuery.TERM) {
 			if (t.op == "in" || t.op == "inid") {
 				folderId = (t.op == "in") ? this._getFolderId(t.arg) : t.arg;
 				if (folderId) {
@@ -945,16 +1104,18 @@ function() {
 					func.push("item.hasTag('" + tagId + "')");
 				}
 			} else if (t.op == "is") {
-				var test = ZmSearch.FLAG[t.arg];
+				var test = ZmParsedQuery.FLAG[t.arg];
 				if (test) {
 					func.push(test);
 				}
-			} else if (t.op == "sort") {
-				this.querySortOrder = t.arg;
 			}
-			var next = tokens[i + 1];
-			if (next && (next.isTerm || next == ZmSearch.COND["not"] || next == "(")) {
-				func.push(ZmSearch.COND["and"]);
+			else {
+				// search had a term we don't know how to match
+				return null;
+			}
+			var next = this._tokens[i + 1];
+			if (next && (next.type == ZmParsedQuery.TERM || next == ZmParsedQuery.COND["not"] || next == "(")) {
+				func.push(ZmParsedQuery.COND_OP["and"]);
 			}
 		} else {
 			func.push(t);
@@ -962,35 +1123,43 @@ function() {
 	}
 	func.push(")");
 
-	if (!fail) {
-		try {
-			this.matches = new Function("item", func.join(""));
-		} catch(ex) {}
-	}
-
-	// this way we know if a search was simply "in:foo" or "tag:foo", and nothing else
-	this.singleTerm = (folderId || tagId) && (tokens.length == 1) && !fail;
-
-	// has a text term (word by itself with no operator)
-	this.hasTextTerm = bareWord;
-
 	// the way multi-account searches are done, we set the queryHint *only* so
 	// set the folderId if it exists for simple multi-account searches
 	var isMultiAccountSearch = (appCtxt.multiAccounts && this.isMultiAccount() && !this.query && this.queryHint);
-	if (!hasOrTerm || isMultiAccountSearch) {
+	if (!this.hasOrTerm || isMultiAccountSearch) {
 		this.folderId = folderId;
 		this.tagId = tagId;
 	}
+	
+	try {
+		return new Function("item", func.join(""));
+	} catch(ex) {}
 };
 
 /**
- * Returns the fully-qualified ID for the given folder path.
- *
- * @param {String}	path	the path
- * 
- * @private
+ * Returns a query string from the token list that should be logically equivalent to the original query.
  */
-ZmSearch.prototype._getFolderId =
+ZmParsedQuery.prototype.createQuery =
+function() {
+	
+	var query = "";
+	for (var i = 0, len = this._tokens.length; i < len; i++) {
+		var t = this._tokens[i];
+		if (t.type == ZmParsedQuery.GROUP) {
+			query += t.op;
+		}
+		else if (t.type == ZmParsedQuery.COND) {
+			query += " " + t.arg + " ";
+		}
+		else if (t.type == ZmParsedQuery.TERM) {
+			query += t.op + ":" + t.arg;
+		}
+	}
+	return query;
+};
+
+// Returns the fully-qualified ID for the given folder path.
+ZmParsedQuery.prototype._getFolderId =
 function(path) {
 	// first check if it's a system folder (name in query string may not match actual name)
 	var folderId = ZmFolder.QUERY_ID[path];
@@ -1018,10 +1187,8 @@ function(path) {
 	return folderId;
 };
 
-/**
- * @private
- */
-ZmSearch.prototype._getTagId =
+// Returns the ID for the given tag name.
+ZmParsedQuery.prototype._getTagId =
 function(name) {
 	var tagTree = appCtxt.getTagTree();
 	if (tagTree) {
@@ -1030,56 +1197,67 @@ function(name) {
 			return tag.id;
 		}
 	}
+	return null;
 };
 
 /**
- * Checks if the search has a folder term.
+ * Gets the given term with the given argument. Case-insensitive. Returns the first term found.
  * 
- * @return	{Boolean}	<code>true</code> if the search has a folder term
+ * @param	{array}		opList		list of ops 
+ * @param	{string}	value		argument value (optional)
+ * 
+ * @return	{object}	a token object, or null
  */
-ZmSearch.prototype.hasFolderTerm =
-function(path) {
-	if (!path) { return false; }
-	var regEx = new RegExp('\\s*in:\\s*"?(' + AjxStringUtil.regExEscape(path) + ')"?\\s*', "i");
-	var regExNot = new RegExp('(-|not)\\s*in:\\s*"?(' + AjxStringUtil.regExEscape(path) + ')"?\\s*', "i");
-	return (regEx.test(this.query) && !regExNot.test(this.query));
+ZmParsedQuery.prototype.getTerm =
+function(opList, value) {
+	var opHash = AjxUtil.arrayAsHash(opList);
+	var lcValue = value && value.toLowerCase();
+	for (var i = 0, len = this._tokens.length; i < len; i++) {
+		var t = this._tokens[i];
+		var lcArg = t.arg && t.arg.toLowerCase();
+		if (t.type == ZmParsedQuery.TERM && opHash[t.op] && (!value || lcArg == lcValue)) {
+			return t;
+		}
+	}
+	return null;
 };
 
 /**
- * Replaces the folder term.
+ * Returns true if the query contains the given term with the given argument. Case-insensitive.
  * 
- * @param	{String}	oldPath		the old path
- * @param	{String}	newPath		the new path
+ * @param	{array}		opList		list of ops 
+ * @param	{string}	value		argument value (optional)
+ * 
+ * @return	{boolean}	true if the query contains the given term with the given argument
  */
-ZmSearch.prototype.replaceFolderTerm =
-function(oldPath, newPath) {
-	if (!(oldPath && newPath)) { return; }
-	var regEx = new RegExp('(\\s*in:\\s*"?)(' + AjxStringUtil.regExEscape(oldPath) + ')("?\\s*)', "gi");
-	this.query = this.query.replace(regEx, "$1" + newPath + "$3");
+ZmParsedQuery.prototype.hasTerm =
+function(opList, value) {
+	return Boolean(this.getTerm(opList, value));
 };
 
 /**
- * Checks if the search has a tag term.
+ * Replaces the argument within the query for the given ops, if found. Case-insensitive. Replaces
+ * only the first match.
  * 
- * @return	{Boolean}	<code>true</code> if the search has a tag term
- */
-ZmSearch.prototype.hasTagTerm =
-function(name) {
-	if (!name) { return false; }
-	var regEx = new RegExp('\\s*tag:\\s*"?(' + AjxStringUtil.regExEscape(name) + ')"?\\s*', "i");
-	var regExNot = new RegExp('(-|not)\\s*tag:\\s*"?(' + AjxStringUtil.regExEscape(name) + ')"?\\s*', "i");
-	return (regEx.test(this.query) && !regExNot.test(this.query));
-};
-
-/**
- * Replaces the tag term.
+ * @param	{array}		opList		list of ops 
+ * @param	{string}	oldValue	the old argument
+ * @param	{string}	newValue	the new argument
  * 
- * @param	{String}	oldName		the old name
- * @param	{String}	newName		the new name
+ * @return	{string}	a new query string (if the old argument was found and replaced), or the empty string
  */
-ZmSearch.prototype.replaceTagTerm =
-function(oldName, newName) {
-	if (!(oldName && newName)) { return; }
-	var regEx = new RegExp('(\\s*tag:\\s*"?)(' + AjxStringUtil.regExEscape(oldName) + ')("?\\s*)', "gi");
-	this.query = this.query.replace(regEx, "$1" + newName + "$3");
+ZmParsedQuery.prototype.replaceTerm =
+function(opList, oldValue, newValue) {
+	var lcValue = oldValue && oldValue.toLowerCase();
+	var opHash = AjxUtil.arrayAsHash(opList);
+	if (oldValue && newValue) {
+		for (var i = 0, len = this._tokens.length; i < len; i++) {
+			var t = this._tokens[i];
+			var lcArg = t.arg && t.arg.toLowerCase();
+			if (t.type == ZmParsedQuery.TERM && opHash[t.op] && (lcArg == lcValue)) {
+				t.arg = newValue;
+				return this.createQuery();
+			}
+		}
+	}
+	return "";
 };
