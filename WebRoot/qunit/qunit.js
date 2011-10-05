@@ -93,7 +93,7 @@ Test.prototype = {
 		if ( this.async ) {
 			QUnit.stop();
 		}
-
+        DBG.println("ut", "UT.run(" + this.module + "/" + this.testName + ")");
 		if ( config.notrycatch ) {
 			this.callback.call(this.testEnvironment);
 			return;
@@ -391,6 +391,7 @@ var QUnit = {
 
 	start: function() {
 		config.semaphore--;
+        DBG.println("ut", "UT.start() semaphore=" + config.semaphore);
 		if (config.semaphore > 0) {
 			// don't start until equal number of stop-calls
 			return;
@@ -417,6 +418,7 @@ var QUnit = {
 	
 	stop: function(timeout) {
 		config.semaphore++;
+        DBG.println("ut", "UT.stop(" + timeout + ") semaphore=" + config.semaphore);
 		config.blocking = true;
 
 		if ( timeout && defined.setTimeout ) {
