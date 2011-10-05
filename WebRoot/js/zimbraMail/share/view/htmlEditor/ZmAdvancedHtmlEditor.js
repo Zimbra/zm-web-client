@@ -166,9 +166,8 @@ function(html, insertFontStyle, onlyInnerContent) {
 			cont[idx++] = "; color: ";
 			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
             cont[idx++] = ";' ";
-            var direction = appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION);
-            if(direction){
-                cont[idx++] = "dir='"+direction.toLowerCase()+"' ";
+            if ( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){ //Default compose direction is ltr no need to specify direction as ltr
+                cont[idx++] = "dir='"+ZmSetting.RTL+"' ";
             }
             cont[idx++] = ">";
 			cont[idx++] = html;
@@ -204,9 +203,8 @@ function(html) {
 	a[i++] = "; color: ";
 	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
 	a[i++] = "' ";
-    var direction = appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION);
-    if(direction){
-        a[i++] = "dir='"+direction.toLowerCase()+"' ";
+    if( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){
+        a[i++] = "dir='"+ZmSetting.RTL+"' ";
     }
     a[i++] = ">";
 	a[i++] = html;
@@ -713,9 +711,11 @@ function(editor) {
 		doc.body.style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 		doc.body.style.color = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
         //Dont use css for direction Refer : http://www.w3.org/International/questions/qa-bidi-css-markup
-        var direction = appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION);
-        if(direction){
-            doc.body.dir = direction.toLowerCase();
+        if( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){
+            doc.body.dir = ZmSetting.RTL;
+        }
+        else{
+            doc.body.removeAttribute("dir");
         }
 	}
 };
