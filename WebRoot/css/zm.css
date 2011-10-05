@@ -1564,7 +1564,7 @@ line-height:normal;
     position:absolute;
     width:100%;
 }
-.calendar_cur_time_indicator_arr,.calendar_start_limit_indicator,.calendar_end_limit_indicator{
+.calendar_cur_time_indicator_arr{
     height:10px;
     color:#C33C16;
     overflow:hidden;
@@ -1578,35 +1578,18 @@ line-height:normal;
 }
 
 .calendar_start_limit_indicator,.calendar_end_limit_indicator{
-    padding:2px;
+    padding:0px;
     height:20px;
     z-index:10000000;
     color:#000;
+    width:100%;
+    margin: 0 49%;
 }
 
-.calendar_offscreen_indicator_box{
-    padding-left:4px;
-    border:1px solid #000;
-    position: absolute;
-    left: 18px;
-    top: 9px;
-    width: 35px;
-    height: 12px;
-    overflow: hidden;
-    background-color:#f2f2f2;
-}
-
-.calendar_offscreen_indicator_box_dot{
-    font-size:20px;
-    float: left;
-    margin-top: -12px;
-}
-
-.calendar_offscreen_indicator_box_arrow{
-    float: left;
+.calendar_start_limit_indicator{
     margin-top:-5px;
-    font-size:15px;
 }
+
 
 /* cell in the calendar grid that is selected */
 .calendar_time_selection {

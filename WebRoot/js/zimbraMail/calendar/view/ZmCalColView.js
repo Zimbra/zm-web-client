@@ -750,9 +750,6 @@ function(html) {
 	}
 	html.append("</table>");
     html.append("<div id='"+this._curTimeIndicatorHourDivId+"' class='calendar_cur_time_indicator_arr'><div class='calendar_hour_arrow_indicator'>&rarr;</div></div>");
-    html.append("<div id='"+this._startLimitIndicatorDivId+"' class='calendar_start_limit_indicator'><div class='calendar_offscreen_indicator_box'><div class='calendar_offscreen_indicator_box_dot'>…</div><div class='calendar_offscreen_indicator_box_arrow'>&#9652;</div></div></div>");
-    html.append("<div id='"+this._endLimitIndicatorDivId+"' class='calendar_end_limit_indicator'><div class='calendar_offscreen_indicator_box'><div class='calendar_offscreen_indicator_box_dot'>…</div><div class='calendar_offscreen_indicator_box_arrow'>&#9662;</div></div></div>");
-
     html.append( "</div>");
 };
 
@@ -920,6 +917,8 @@ function(abook) {
 	html.append("</div>");
     //Strip to indicate the current time
     html.append("<div id='"+this._curTimeIndicatorGridDivId+"' class='calendar_cur_time_indicator_strip'></div>");
+    html.append("<div id='"+this._startLimitIndicatorDivId+"' class='calendar_start_limit_indicator'><div class='ImgArrowMoreUp'></div></div>");
+    html.append("<div id='"+this._endLimitIndicatorDivId+"' class='calendar_end_limit_indicator'><div class='ImgArrowMoreDown'></div></div>");
 	html.append("</div>");
 
 	this.getHtmlElement().innerHTML = html.toString();
