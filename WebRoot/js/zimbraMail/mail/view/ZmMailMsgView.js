@@ -2176,7 +2176,7 @@ function(self, iframe, attempt) {
 		}
 
 		var doc = iframe.contentWindow.document;
-		var origHeight = AjxEnv.isIE ? doc.body.scrollHeight : 0;
+		var origHeight = doc && doc.body && doc.body.scrollHeight || 0;
 
 		// first off, make it wide enough to fill ZmMailMsgView.
 		iframe.style.width = "100%"; // *** changes height!
