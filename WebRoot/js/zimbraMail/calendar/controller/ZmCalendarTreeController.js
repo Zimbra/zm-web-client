@@ -784,6 +784,7 @@ function(organizer, errorCallback) {
     var params = {
             jsonObj: jsonObj,
             asyncMode: true,
+            sensitive: true,
             callback: new AjxCallback(this, this.createDataSourceCallback),
             errorCallback: new AjxCallback(this, this.createDataSourceErrorCallback),
             accountName: accountName
