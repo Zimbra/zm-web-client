@@ -56,7 +56,7 @@ function() {
 
 ZmZimletAppController.prototype.getDefaultViewType =
 function() {
-	return this.name;
+	return this._name;
 };
 
 /**
