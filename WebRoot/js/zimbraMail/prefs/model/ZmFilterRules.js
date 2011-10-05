@@ -308,7 +308,7 @@ function(ex) {
 		ex.code == ZmCsfeException.SVC_INVALID_REQUEST)
 	{
 		var msgDialog = appCtxt.getMsgDialog();
-		msgDialog.setMessage([ZmMsg.filterError, " ", ex.msg].join(""), DwtMessageDialog.CRITICAL_STYLE);
+		msgDialog.setMessage([ZmMsg.filterError, " ", AjxStringUtil.htmlEncode(ex.msg)].join(""), DwtMessageDialog.CRITICAL_STYLE);
 		msgDialog.popup();
 		var respCallback = new AjxCallback(this, this._handleResponseHandleErrorSaveRules);
 		this.loadRules(true, respCallback);

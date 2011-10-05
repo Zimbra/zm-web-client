@@ -268,7 +268,7 @@ function(msg, loc) {
 	var msgDialog = appCtxt.getMsgDialog();
 
 	msgDialog.reset();
-    msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+    msgDialog.setMessage(AjxStringUtil.htmlEncode(msg), DwtMessageDialog.CRITICAL_STYLE);
 	msgDialog.popup(nLoc);
 };
 

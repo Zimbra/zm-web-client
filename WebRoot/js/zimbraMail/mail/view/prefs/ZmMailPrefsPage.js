@@ -501,7 +501,7 @@ function() {
 
 	var val = AjxStringUtil.trim(this._inputEl.getValue());
 	if (val.length) {
-		this._addEmail(val);
+		this._addEmail(AjxStringUtil.htmlEncode(val));
 		if (!this._add[val]) {
 			this._add[val] = true;
 		}

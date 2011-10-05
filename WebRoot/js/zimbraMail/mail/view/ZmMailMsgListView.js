@@ -123,7 +123,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 					// bug fix #3001 - always add one to index value (to take FROM: address into account)
 					htmlArr[idx++] = [fieldId, parts[j].index + 1].join(DwtId.SEP);
 					htmlArr[idx++] = "'>";
-					htmlArr[idx++] = parts[j].name;
+					htmlArr[idx++] = AjxStringUtil.htmlEncode(parts[j].name);
 					htmlArr[idx++] = "</span>";
 					if (parts.length == 1 && parts.length < origLen) {
 						htmlArr[idx++] = AjxStringUtil.ELLIPSIS;

@@ -447,7 +447,7 @@ function(conv, fieldId) {
 			html[idx++] = "<span style='white-space: nowrap' id='";
 			html[idx++] = spanId;
 			html[idx++] = "'>";
-			html[idx++] = (part2 && part2[j]) ? part2[j].name : "";
+			html[idx++] = (part2 && part2[j]) ? AjxStringUtil.htmlEncode(part2[j].name) : "";
 			html[idx++] = "</span>";
 		}
 

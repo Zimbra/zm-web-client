@@ -731,7 +731,7 @@ function(dlg) {
 		overviewId:		dlg.getOverviewId(this._app._name),
 		data:			this._pendingActionData,
 		treeIds:		[org],
-		title:			this._getMoveDialogTitle(this._pendingActionData.length),
+		title:			AjxStringUtil.htmlEncode(this._getMoveDialogTitle(this._pendingActionData.length)),
 		description:	ZmMsg.targetFolder,
 		treeStyle:		DwtTree.SINGLE_STYLE,
 		appName:		this._app._name

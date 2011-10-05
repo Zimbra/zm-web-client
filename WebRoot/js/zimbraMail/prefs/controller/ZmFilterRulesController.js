@@ -275,7 +275,7 @@ function(ev) {
 	ds.reset();
 	ds.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
 	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, rule);
-	var msg = AjxMessageFormat.format(ZmMsg.askDeleteFilter, rule.name);
+	var msg = AjxMessageFormat.format(ZmMsg.askDeleteFilter, AjxStringUtil.htmlEncode(rule.name));
 	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 	ds.popup();
 };
