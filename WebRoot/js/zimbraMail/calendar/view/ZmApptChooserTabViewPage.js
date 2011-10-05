@@ -880,6 +880,9 @@ function(itemsById, result) {
 		} else if (el.t) {
 			status = "<b style='color: orange'>" + ZmMsg.tentative + "</b>";
 			item.__fbStatus.status = 3;
+		} else if (el.n) {
+			status = "<b style='color: red'>" + ZmMsg.unknown + "</b>";
+			item.__fbStatus.status = 4;
 		}
 		item.__fbStatus.txt = status;
 		this._updateStatus(item, this._chooser.sourceListView);
