@@ -28,14 +28,6 @@ ZmFolderRetentionView = function(parent) {
 ZmFolderRetentionView.prototype = new ZmFolderDialogTabView;
 ZmFolderRetentionView.prototype.constructor = ZmFolderRetentionView;
 
-// Policy Types - Keep or Purge
-ZmFolderRetentionView.KEEP  = "keep";
-ZmFolderRetentionView.PURGE = "purge";
-
-ZmFolderRetentionView.MINUTES_PER_DAY = 60 * 24;
-ZmFolderRetentionView.SECONDS_PER_DAY = 60 * 60 * 24;
-ZmFolderRetentionView.MSEC_PER_DAY    = 60 * 60 * 24 * 1000;
-
 // Data to populate and process the custom units and values
 ZmFolderRetentionView._CustomUnitsToDays = { year: 366, month:31, week:7, day:1};
 ZmFolderRetentionView._CustomUnits = [
@@ -68,8 +60,8 @@ ZmFolderRetentionView.prototype._handleFolderChange =
 function() {
     // Read the policies from the server, and add 'Custom'
     if (this._initialized) {
-        this._dataBindComponents(this._organizer, ZmFolderRetentionView.KEEP);
-        this._dataBindComponents(this._organizer, ZmFolderRetentionView.PURGE);
+        this._dataBindComponents(this._organizer, ZmOrganizer.RETENTION_KEEP);
+        this._dataBindComponents(this._organizer, ZmOrganizer.RETENTION_PURGE);
     } else {
         var systemPolicies = new ZmSystemRetentionPolicy();
         systemPolicies.getPolicies(this._processSystemPolicies.bind(this));
@@ -80,11 +72,11 @@ function() {
 ZmFolderRetentionView.prototype._processSystemPolicies =
 function(systemKeepPolicies, systemPurgePolicies) {
 
-    this._populatePolicySelect(ZmFolderRetentionView.KEEP,  systemKeepPolicies);
-    this._populatePolicySelect(ZmFolderRetentionView.PURGE, systemPurgePolicies);
+    this._populatePolicySelect(ZmOrganizer.RETENTION_KEEP,  systemKeepPolicies);
+    this._populatePolicySelect(ZmOrganizer.RETENTION_PURGE, systemPurgePolicies);
 
-    this._dataBindComponents(this._organizer, ZmFolderRetentionView.KEEP);
-    this._dataBindComponents(this._organizer, ZmFolderRetentionView.PURGE);
+    this._dataBindComponents(this._organizer, ZmOrganizer.RETENTION_KEEP);
+    this._dataBindComponents(this._organizer, ZmOrganizer.RETENTION_PURGE);
 
     this._initialized = true;
     this._setBusy(false);
@@ -96,59 +88,54 @@ function(organizer, policyElement) {
     var components = this._components[policyElement];
     components.policyEnable.checked = false;
 
-    if (organizer.retentionPolicy && organizer.retentionPolicy[0]) {
-       if (organizer.retentionPolicy[0][policyElement] && organizer.retentionPolicy[0][policyElement][0]) {
-           // The organizer has a retention policy
-           var element = organizer.retentionPolicy[0][policyElement][0];
-           if (element.policy && element.policy[0]) {
-                components.policyEnable.checked = true;
-                var policy = element.policy[0];
+    var policy = organizer.getRetentionPolicy(policyElement);
+    if (policy) {
+        // The organizer has a retention policy
+        components.policyEnable.checked = true;
 
-                if (policy.type == "user") {
-                    // Custom policy defined.
-                    components.policySelect.selectedIndex = components.policySelect.options.length-1;
-                    // parseInt will discard the unit
-                    var lifetime = parseInt(policy.lifetime);
-                    // In case someone used SOAP to specify a custom policy, convert it
-                    // to days (which is the smallest unit we can handle via the UI).
-                    var conversionFactor = 1;
-                    // Intervals taken from DateUtil.java
-                    var interval = policy.lifetime.slice(policy.lifetime.length-1);
-                    switch (interval) {
-                        case  "d": conversionFactor =  1; break;
-                        case  "h": conversionFactor = 24; break;
-                        case  "m": conversionFactor = ZmFolderRetentionView.MINUTES_PER_DAY; break;
-                        case  "s": conversionFactor = ZmFolderRetentionView.SECONDS_PER_DAY; break;
-                        case "ms": conversionFactor = ZmFolderRetentionView.MSEC_PER_DAY;    break;
-                        default  : conversionFactor = ZmFolderRetentionView.SECONDS_PER_DAY; break;
-                    }
-                    var days = Math.floor((lifetime-1)/conversionFactor) + 1;
+        if (policy.type == "user") {
+            // Custom policy defined.
+            components.policySelect.selectedIndex = components.policySelect.options.length-1;
+            // parseInt will discard the unit
+            var lifetime = parseInt(policy.lifetime);
+            // In case someone used SOAP to specify a custom policy, convert it
+            // to days (which is the smallest unit we can handle via the UI).
+            var conversionFactor = 1;
+            // Intervals taken from DateUtil.java
+            var interval = policy.lifetime.slice(policy.lifetime.length-1);
+            switch (interval) {
+                case  "d": conversionFactor =  1; break;
+                case  "h": conversionFactor = 24; break;
+                case  "m": conversionFactor = AjxDateUtil.MINUTES_PER_DAY; break;
+                case  "s": conversionFactor = AjxDateUtil.SECONDS_PER_DAY; break;
+                case "ms": conversionFactor = AjxDateUtil.MSEC_PER_DAY;    break;
+                default  : conversionFactor = AjxDateUtil.SECONDS_PER_DAY; break;
+            }
+            var days = Math.floor((lifetime-1)/conversionFactor) + 1;
 
-                    // Convert lifetime to the best fit for unit and amount.  Start with year,
-                    // proceed to smaller units.  If the amount in days is evenly divisible by the
-                    // days for a unit, use that unit
-                    for (var i = ZmFolderRetentionView._CustomUnits.length-1; i >= 0; i--) {
-                        if ((days >= ZmFolderRetentionView._CustomUnits[i].days) &&
-                            ((days % ZmFolderRetentionView._CustomUnits[i].days) == 0)) {
-                            components.customUnit.selectedIndex = i;
-                            components.customValue.value = days/ZmFolderRetentionView._CustomUnits[i].days;
-                            break;
-                        }
-                    }
-                } else {
-                    // System policy, find the match in the policy selection pull down
-                    for (var i = 0; i < components.policySelect.options.length; i++) {
-                        if (components.policySelect.options[i].value == policy.id) {
-                            components.policySelect.selectedIndex = i;
-                            break;
-                        }
-                    }
-                    // Reset custom fields to their defaults
-                    components.customUnit.selectedIndex   = 0;
-                    components.customValue.value          = "";
+            // Convert lifetime to the best fit for unit and amount.  Start with year,
+            // proceed to smaller units.  If the amount in days is evenly divisible by the
+            // days for a unit, use that unit
+            for (var i = ZmFolderRetentionView._CustomUnits.length-1; i >= 0; i--) {
+                if ((days >= ZmFolderRetentionView._CustomUnits[i].days) &&
+                    ((days % ZmFolderRetentionView._CustomUnits[i].days) == 0)) {
+                    components.customUnit.selectedIndex = i;
+                    components.customValue.value = days/ZmFolderRetentionView._CustomUnits[i].days;
+                    break;
                 }
             }
-       }
+        } else {
+            // System policy, find the match in the policy selection pull down
+            for (var i = 0; i < components.policySelect.options.length; i++) {
+                if (components.policySelect.options[i].value == policy.id) {
+                    components.policySelect.selectedIndex = i;
+                    break;
+                }
+            }
+            // Reset custom fields to their defaults
+            components.customUnit.selectedIndex   = 0;
+            components.customValue.value          = "";
+        }
     }
     if (!components.policyEnable.checked) {
         // No policy of this type (keep/purge) reset the selects and input fields
@@ -175,20 +162,19 @@ function(batchCommand, saveState) {
     var organizer = this._organizer;
 
     var initialErrorCount = saveState.errorMessage.length;
-    var retentionPolicy = { };
-    // Create policy objects from the UI fields, attach to the retentionPolicy variable
-    this._createPolicy(retentionPolicy, ZmFolderRetentionView.KEEP,  saveState);
-    this._createPolicy(retentionPolicy, ZmFolderRetentionView.PURGE, saveState);
+    var newRetentionPolicy = { };
+    // Create policy objects from the UI fields, attach to the newRetentionPolicy variable
+    this._createPolicy(newRetentionPolicy, ZmOrganizer.RETENTION_KEEP,  saveState);
+    this._createPolicy(newRetentionPolicy, ZmOrganizer.RETENTION_PURGE, saveState);
 
     if (initialErrorCount == saveState.errorMessage.length) {
-
-        if ((!organizer.retentionPolicy && (retentionPolicy.keep || retentionPolicy.purge)) ||
-            ( organizer.retentionPolicy &&
-             (organizer.policiesDiffer(organizer.retentionPolicy[0].keep[0].policy,  retentionPolicy.keep) ||
-              organizer.policiesDiffer(organizer.retentionPolicy[0].purge[0].policy, retentionPolicy.purge)))) {
+        var keepPolicy  = organizer.getRetentionPolicy(ZmOrganizer.RETENTION_KEEP);
+        var purgePolicy = organizer.getRetentionPolicy(ZmOrganizer.RETENTION_PURGE);
+        if (organizer.policiesDiffer(keepPolicy,  newRetentionPolicy.keep) ||
+            organizer.policiesDiffer(purgePolicy, newRetentionPolicy.purge)) {
             // Retention policy has changed
             batchCommand.add(new AjxCallback(organizer, organizer.setRetentionPolicy,
-                             [retentionPolicy, null, this._handleErrorCallback]));
+                             [newRetentionPolicy, null, this._handleErrorCallback]));
             saveState.commandCount++;
         }
     }
@@ -219,7 +205,7 @@ function(retentionPolicy, policyElement, saveState) {
             }
 
             if (amount <= 0) {
-                var  errorMessage = (policyElement == ZmFolderRetentionView.KEEP) ?
+                var  errorMessage = (policyElement == ZmOrganizer.RETENTION_KEEP) ?
                                      ZmMsg.retentionKeepLifetimeAmount : ZmMsg.retentionPurgeLifetimeAmount;
                 saveState.errorMessage.push(errorMessage);
             } else {
@@ -283,8 +269,8 @@ function() {
     container.innerHTML = AjxTemplate.expand("share.Dialogs#ZmFolderRetentionView", params);
 
     this._components = {};
-    this._setupComponents(ZmFolderRetentionView.KEEP,  this._components);
-    this._setupComponents(ZmFolderRetentionView.PURGE, this._components);
+    this._setupComponents(ZmOrganizer.RETENTION_KEEP,  this._components);
+    this._setupComponents(ZmOrganizer.RETENTION_PURGE, this._components);
 
     this._createBusyOverlay(container);
     this._contentEl = container;

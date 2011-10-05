@@ -852,6 +852,19 @@ function() {
 	return this._mailRedirectDialog;
 };
 
+/**
+ * Gets the mail retention warning dialog.
+ *
+ * @return	{ZmRetetionWarningDialog}	the new mail retention warning dialog
+ */
+ZmAppCtxt.prototype.getRetentionWarningDialog =
+function() {
+	if (!this._retentionWarningDialog) {
+		this._retentionWarningDialog = new ZmRetentionWarningDialog(this._shell);
+	}
+	return this._retentionWarningDialog;
+};
+
 
 /**
  * Runs the attach dialog callbacks.

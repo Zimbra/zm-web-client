@@ -278,6 +278,10 @@ ZmOrganizer.PERM_ADMIN		= "a";
 ZmOrganizer.PERM_WORKFLOW	= "x";
 ZmOrganizer.PERM_PRIVATE	= "p";
 
+// Retention Policy Elements - Keep or Purge
+ZmOrganizer.RETENTION_KEEP  = "keep";
+ZmOrganizer.RETENTION_PURGE = "purge";
+
 // Abstract methods
 
 /**
@@ -1043,6 +1047,39 @@ ZmOrganizer.prototype.setRGB = function(rgb, callback, errorCallback, batchCmd) 
                            errorCallback: errorCallback, batchCmd: batchCmd});
 };
 
+
+ZmOrganizer.prototype.getRetentionPolicy =
+function(policyElement) {
+    var policy = null;
+    if (this.retentionPolicy && this.retentionPolicy[0] && this.retentionPolicy[0][policyElement] &&
+        this.retentionPolicy[0][policyElement][0]       && this.retentionPolicy[0][policyElement][0].policy &&
+        this.retentionPolicy[0][policyElement][0].policy[0]) {
+        policy = this.retentionPolicy[0][policyElement][0].policy[0];
+    }
+    return policy;
+}
+
+ZmOrganizer.prototype.getRetentionPolicyLifetimeMsec =
+function(policy) {
+    if (policy) {
+        // Apply the keep (retention) period
+        var lifetime = policy.lifetime;
+        var amount = parseInt(lifetime);
+        // Intervals taken from DateUtil.java.
+        var interval = lifetime.slice(lifetime.length-1);
+        var lifetimeMsec = 0;
+        switch (interval) {
+            case  "d": lifetimeMsec = amount * AjxDateUtil.MSEC_PER_DAY;    break;
+            case  "h": lifetimeMsec = amount * AjxDateUtil.MSEC_PER_HOUR;   break;
+            case  "m": lifetimeMsec = amount * AjxDateUtil.MSEC_PER_MINUTE; break;
+            case  "s": lifetimeMsec = amount * 1000; break;
+            case "ms": lifetimeMsec = amount;  break;
+            default  : lifetimeMsec = amount * 1000; break;
+        }
+    }
+    return lifetimeMsec;
+}
+
 /**
  * Sets the Retention Policy.
  *
@@ -1051,14 +1088,13 @@ ZmOrganizer.prototype.setRGB = function(rgb, callback, errorCallback, batchCmd) 
  * @param	{AjxCallback}	    errorCallback	    the error callback
  * @param   {ZmBatchCommand}    batchCmd            optional batch command
  */
-ZmOrganizer.prototype.setRetentionPolicy = function(retentionPolicy, callback, errorCallback, batchCmd) {
-    if (this.retentionPolicy) {
-        if (!retentionPolicy ||
-            (!this.policiesDiffer(this.retentionPolicy[0].keep[0].policy,  retentionPolicy.keep) &&
-             !this.policiesDiffer(this.retentionPolicy[0].purge[0].policy, retentionPolicy.purge))) {
-            // No updated policy specified or no changes.
-            return;
-        }
+ZmOrganizer.prototype.setRetentionPolicy = function(newRetentionPolicy, callback, errorCallback, batchCmd) {
+    var keepPolicy  = this.getRetentionPolicy(ZmOrganizer.RETENTION_KEEP);
+    var purgePolicy = this.getRetentionPolicy(ZmOrganizer.RETENTION_PURGE);
+    if (!this.policiesDiffer(keepPolicy,  newRetentionPolicy.keep) &&
+        !this.policiesDiffer(purgePolicy, newRetentionPolicy.purge)) {
+        // No updated policy specified or no changes.
+        return;
     }
 
 	var cmd = ZmOrganizer.SOAP_CMD[this.type];
@@ -1071,12 +1107,12 @@ ZmOrganizer.prototype.setRetentionPolicy = function(retentionPolicy, callback, e
     var retentionNode = soapDoc.set("retentionPolicy", null, actionNode);
 
     var keep  = soapDoc.set("keep", null, retentionNode);
-    if (retentionPolicy.keep) {
-        this._addPolicy(soapDoc, keep, retentionPolicy.keep);
+    if (newRetentionPolicy.keep) {
+        this._addPolicy(soapDoc, keep, newRetentionPolicy.keep);
     }
     var purge = soapDoc.set("purge", null, retentionNode);
-    if (retentionPolicy.purge) {
-        this._addPolicy(soapDoc, purge, retentionPolicy.purge);
+    if (newRetentionPolicy.purge) {
+        this._addPolicy(soapDoc, purge, newRetentionPolicy.purge);
     }
 
 	if (batchCmd) {
@@ -1105,7 +1141,6 @@ function(policyA, policyB) {
         differ = true;
     } else if (policyA) {
         // Old and new specified
-        policyA = policyA[0];
         if (policyA.type != policyB.type) {
             differ = true;
         } else {

@@ -2198,3 +2198,111 @@ ZmMailListController.prototype._quickCommandMenuHandler = function(evt, batchCmd
         }
     }
 };
+
+
+/**
+* Deletes one or more items from the list.
+*
+* @param items			[Array]			list of items to delete
+* @param hardDelete		[boolean]*		if true, physically delete items
+* @param attrs			[Object]*		additional attrs for SOAP command
+* @param confirmDelete  [Boolean]       user already confirmed hard delete (see ZmBriefcaseController.prototype._doDelete and ZmBriefcaseController.prototype._doDelete2)
+*
+* @private
+*/
+ZmMailListController.prototype._doDelete =
+function(items, hardDelete, attrs, confirmDelete) {
+
+    var messages = AjxUtil.toArray(items);
+    if (!messages.length) { return; }
+
+    // Check if need to warn the user about violating the keep retention policy.  If a warning
+    // dialog is displayed, the callback from that dialog allows the user to delete messages
+    var warningIssued = this._doRetentionPolicyWarning(messages, hardDelete, attrs);
+    if (!warningIssued) {
+        // No retention policy, or all the chosen messages fall outside the retention period.
+        ZmListController.prototype._doDelete.call(this, messages, hardDelete, attrs, confirmDelete);
+    }
+};
+
+ZmMailListController.prototype._doRetentionPolicyWarning =
+function(messages, hardDelete, attrs) {
+    var folder = this._getSearchFolder();
+    var numWithinRetention = 0;
+    var keepPolicy  = folder.getRetentionPolicy(ZmOrganizer.RETENTION_KEEP);
+
+    if (keepPolicy) {
+        // Apply the keep (retention) period
+        var now = new Date();
+        var keepLifetimeMsec   = folder.getRetentionPolicyLifetimeMsec(keepPolicy);
+        var retentionStartMsec = now.getTime() - keepLifetimeMsec;
+
+        // Determine which messages are not affected by the retention policy (i.e.
+        // their age exceeds that mandated by the policy)
+        var oldMessages = [];
+        for (var i = 0; i < messages.length; i++) {
+            if (messages[i].date < retentionStartMsec) {
+                oldMessages.push(messages[i]);
+            }
+        }
+
+        numWithinRetention = messages.length - oldMessages.length;
+        if (numWithinRetention > 0) {
+            // Create the base warning text
+            var retentionPeriodText = AjxDateUtil.computeDuration(keepLifetimeMsec);
+            var retentionStartText = AjxDateUtil.computeWordyDateStr(now,retentionStartMsec);
+            var warningMsg = AjxMessageFormat.format(ZmMsg.retentionKeepWarning,
+                                [retentionPeriodText, retentionStartText])
+            warningMsg += "<BR><BR>";
+
+            if (oldMessages.length == 0) {
+                // All the chosen messages fall within the retention period
+                this._showSimpleRetentionWarning(warningMsg, messages, hardDelete, attrs);
+            } else {
+                // A mix of messages - some outside the retention period, some within.
+                warningMsg += ZmMsg.retentionDeleteAllExplanation + "<BR><BR>" +
+                              AjxMessageFormat.format(ZmMsg.retentionDeleteOldExplanation,
+                                  [retentionStartText]);
+                this._showRetentionWarningDialog(warningMsg, messages, oldMessages, hardDelete, attrs);
+            }
+        }
+    }
+    return numWithinRetention != 0;
+}
+
+ZmMailListController.prototype._showSimpleRetentionWarning =
+function(warningMsg, messages, hardDelete, attrs) {
+    warningMsg += (messages.length == 1) ? ZmMsg.retentionDeleteOne :
+                                           ZmMsg.retentionDeleteMultiple;
+    var okCancelDialog = appCtxt.getOkCancelMsgDialog();
+    okCancelDialog.registerCallback(DwtDialog.OK_BUTTON,
+        this._handleRetentionWarningOK, this, [okCancelDialog, messages, hardDelete, attrs]);
+    okCancelDialog.setMessage(warningMsg, DwtMessageDialog.WARNING_STYLE);
+    okCancelDialog.setVisible(true);
+    okCancelDialog.popup();
+}
+
+
+ZmMailListController.prototype._showRetentionWarningDialog =
+function(warningMsg, messages, oldMessages, hardDelete, attrs) {
+    var retentionDialog = appCtxt.getRetentionWarningDialog();
+	retentionDialog.reset();
+
+    retentionDialog.registerCallback(ZmRetentionWarningDialog.DELETE_ALL_BUTTON,
+        this._handleRetentionWarningOK, this, [retentionDialog, messages, hardDelete, attrs]);
+
+    retentionDialog.registerCallback(ZmRetentionWarningDialog.DELETE_OLD_BUTTON,
+        this._handleRetentionWarningOK, this, [retentionDialog, oldMessages, hardDelete, attrs]);
+
+    retentionDialog.setMessage(warningMsg, DwtMessageDialog.WARNING_STYLE);
+    retentionDialog.setVisible(true);
+    retentionDialog.popup();
+};
+
+ZmMailListController.prototype._handleRetentionWarningOK =
+function(dialog, items, hardDelete, attrs) {
+    dialog.popdown();
+    ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
+}
+
+

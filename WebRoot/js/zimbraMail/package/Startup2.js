@@ -86,3 +86,6 @@ AjxPackage.require("zimbraMail.calendar.model.ZmMiniCalCache");
 AjxPackage.require("zimbraMail.calendar.controller.ZmReminderController");
 AjxPackage.require("zimbraMail.calendar.view.ZmReminderDialog");
 AjxPackage.require("zimbraMail.calendar.view.ZmQuickReminderDialog");
+
+AjxPackage.require("zimbraMail.mail.view.ZmRetentionWarningDialog");
+
