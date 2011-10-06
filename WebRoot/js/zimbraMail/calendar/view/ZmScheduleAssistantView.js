@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- *
+ * Copyright (C) 2010, 2011 VMware, Inc.
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -57,7 +57,10 @@ ZmScheduleAssistantView.ATTRS[ZmCalBaseItem.LOCATION] =
 
 ZmScheduleAssistantView.prototype.initialize =
 function() {
-	appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE_FOOTER, false);
+    var appViewMgr = appCtxt.getAppViewMgr();
+    if(appViewMgr.getCurrentViewComponent(ZmAppViewMgr.C_TREE_FOOTER)) {
+        appViewMgr.showTreeFooter(false);
+    }
     this._createWidgets();
 };
 
@@ -316,7 +319,7 @@ function(date, attendees, forceRefresh) {
 ZmScheduleAssistantView.prototype._miniCalDateRangeListener =
 function(ev) {
     //clear current mini calendar suggestions
-    this._miniCalendar.setColor({}, true, {});
+    this._miniCalendar.setColor([], true, []);
     if(!this._editView.isSuggestionsNeeded()) return;
     this.highlightMiniCal();
 };
@@ -406,7 +409,7 @@ function(params) {
 			email = email[0];
 		}
 		emails.push(email);
-
+		
         params.items.push(email);
         params.itemIndex[email] = params.items.length-1;
 	}
@@ -832,7 +835,7 @@ function() {
 
 ZmScheduleAssistantView.prototype.clearMiniCal =
 function() {
-    this._miniCalendar.setColor({}, true, {});
+    this._miniCalendar.setColor([], true, []);
 };
 
 ZmScheduleAssistantView.prototype.getLocationByEmail =
@@ -1015,8 +1018,8 @@ function(params) {
     this._totalUsers = this._attendees.length;
     this._totalLocations =  this._resources.length;
 
-    params.dates = {};
-    params.colors = {};
+    params.dates = [];
+    params.colors = [];
 
     var key, fbStat, freeSlotFound = false, dayStartTime, dayEndTime;
 

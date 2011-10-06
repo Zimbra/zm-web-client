@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -1681,10 +1681,8 @@ function(mode, callback, msg, batchCmd, result) {
 					for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
 						var type = ZmMailMsg.ADDRS[i];
 	
-						// if on-behalf-of, dont set the from address and
-                        // don't set the reset-from (only valid when receiving a message)
-						if ((accountName && type == AjxEmailAddress.FROM) ||
-                            (type == AjxEmailAddress.RESENT_FROM)) { continue; }
+						// if on-behalf-of, dont set the from address
+						if (accountName && type == AjxEmailAddress.FROM) { continue; }
 	
 						var vector = msg.getAddresses(type);
 						var count = vector.size();

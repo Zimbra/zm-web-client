@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -14,7 +14,6 @@
  */
 
 ZmNewCalendarDialog = function(parent, className) {
-    if (arguments.length == 0) { return; }
 	var title = ZmMsg.createNewCalendar;
 	var type = ZmOrganizer.CALENDAR;
 	ZmNewOrganizerDialog.call(this, parent, className, title, type);
@@ -23,27 +22,12 @@ ZmNewCalendarDialog = function(parent, className) {
 ZmNewCalendarDialog.prototype = new ZmNewOrganizerDialog;
 ZmNewCalendarDialog.prototype.constructor = ZmNewCalendarDialog;
 
-
-// Overridden properties
-ZmNewCalendarDialog.prototype._folderLocationLabel = ZmMsg.newCalendarParent;
-ZmNewCalendarDialog.prototype._folderNameAlreadyExistsMsg = ZmMsg.errorCalendarAlreadyExists;
-
-
 ZmNewCalendarDialog.prototype.toString = 
 function() {
 	return "ZmNewCalendarDialog";
 };
 
 // Public methods
-
-
-ZmNewCalendarDialog.prototype.popup =
-function(params, account) {
-    // Suppress checkboxes
-    params = params || {};
-    this._treeStyle = params.treeStyle || DwtTree.SINGLE_STYLE;
-    ZmNewOrganizerDialog.prototype.popup.call(this, params, account);
-}
 
 ZmNewCalendarDialog.prototype.reset =
 function(account) {
@@ -71,21 +55,11 @@ function(html, idx) {
 	return idx;
 };
 
-ZmNewCalendarDialog.prototype._setupFolderControl =
-function() {
-    ZmNewOrganizerDialog.prototype._setupFolderControl.call(this);
-
-    var folderTree = appCtxt.getFolderTree();
-    if (!folderTree) return;
-
-    var folders = folderTree.getByType(ZmOrganizer.CALENDAR);
-    for (var i = 0; i < folders.length; i++) {
-        var folder = folders[i];
-        if (folder.link && folder.isReadOnly()) {
-            this._omit[folder.id] = true;
-        }
-    }
-}
+// NOTE: new calendar dialog doesn't show overview
+ZmNewCalendarDialog.prototype._createFolderContentHtml = 
+function(html, idx) {
+	return idx;
+};
 
 ZmNewCalendarDialog.prototype._setupExtraControls =
 function() {
@@ -124,26 +98,9 @@ function() {
 	var data = ZmNewOrganizerDialog.prototype._getFolderData.call(this);
 	if (data) {
 		data.f = this._excludeFbCheckbox.checked ? "b#" : "#";
-        var url =  this._iCalData ? this._iCalData.url : "";
-        if(url) {
-            data.url = url;
-            this._iCalData = null;
-            delete this._iCalData;
-        }
 	}
 	return data;
 };
-
-ZmNewCalendarDialog.prototype._createRemoteContentHtml =
-function(html, idx) {
-	return idx;
-};
-
-ZmNewCalendarDialog.prototype.setICalData =
-function(iCalData) {
-	this._iCalData = iCalData;
-};
-
 
 /**
  * @Override Added for tabindexing checkboxes.

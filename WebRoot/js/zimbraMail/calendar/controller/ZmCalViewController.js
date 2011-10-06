@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -33,11 +33,10 @@
  * @see	ZmListControl.initializeToolBar
  */
 ZmCalViewController = function(container, calApp) {
-
 	ZmListController.call(this, container, calApp);
-    
-	var apptListener = this._handleApptRespondAction.bind(this);
-	var apptEditListener = this._handleApptEditRespondAction.bind(this);
+
+	var apptListener = new AjxListener(this, this._handleApptRespondAction);
+	var apptEditListener = new AjxListener(this, this._handleApptEditRespondAction);
 
 	// get view based on op
 	ZmCalViewController.OP_TO_VIEW = {};
@@ -47,7 +46,7 @@ ZmCalViewController = function(container, calApp) {
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.MONTH_VIEW]		= ZmId.VIEW_CAL_MONTH;
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.CAL_LIST_VIEW]	= ZmId.VIEW_CAL_LIST;
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.SCHEDULE_VIEW]	= ZmId.VIEW_CAL_SCHEDULE;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.FB_VIEW]			= ZmId.VIEW_CAL_FB;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.FB_VIEW]	= ZmId.VIEW_CAL_FB;
 
 	// get op based on view
 	ZmCalViewController.VIEW_TO_OP = {};
@@ -55,44 +54,42 @@ ZmCalViewController = function(container, calApp) {
 		ZmCalViewController.VIEW_TO_OP[ZmCalViewController.OP_TO_VIEW[op]] = op;
 	}
 
-	this._listeners[ZmOperation.REPLY_ACCEPT]			= apptListener;
-	this._listeners[ZmOperation.REPLY_DECLINE]			= apptListener;
-	this._listeners[ZmOperation.REPLY_TENTATIVE]		= apptListener;
-	this._listeners[ZmOperation.EDIT_REPLY_ACCEPT]		= apptEditListener;
-	this._listeners[ZmOperation.EDIT_REPLY_DECLINE]		= apptEditListener;
-	this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE]	= apptEditListener;
+	this._listeners[ZmOperation.REPLY_ACCEPT] = apptListener;
+	this._listeners[ZmOperation.REPLY_DECLINE] = apptListener;
+	this._listeners[ZmOperation.REPLY_TENTATIVE] = apptListener;
+	this._listeners[ZmOperation.EDIT_REPLY_ACCEPT] = apptEditListener;
+	this._listeners[ZmOperation.EDIT_REPLY_DECLINE] = apptEditListener;
+	this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE] = apptEditListener;
+	this._listeners[ZmOperation.SHOW_ORIG] = new AjxListener(this, this._showOrigListener);
+	this._listeners[ZmOperation.VIEW_APPOINTMENT] = new AjxListener(this, this._handleMenuViewAction);
+	this._listeners[ZmOperation.OPEN_APPT_INSTANCE] = new AjxListener(this, this._handleMenuViewAction);
+	this._listeners[ZmOperation.OPEN_APPT_SERIES] = new AjxListener(this, this._handleMenuViewAction);
+	this._listeners[ZmOperation.TODAY] = new AjxListener(this, this._todayButtonListener);
+	this._listeners[ZmOperation.NEW_APPT] = new AjxListener(this, this._newApptAction);
+	this._listeners[ZmOperation.NEW_ALLDAY_APPT] = new AjxListener(this, this._newAllDayApptAction);
+	this._listeners[ZmOperation.SEARCH_MAIL] = new AjxListener(this, this._searchMailAction);
+	this._listeners[ZmOperation.CAL_REFRESH] = new AjxListener(this, this._refreshButtonListener);
+	this._listeners[ZmOperation.MOVE] = new AjxListener(this, this._apptMoveListener);
+	this._listeners[ZmOperation.DELETE_INSTANCE] = new AjxListener(this, this._deleteListener);
+	this._listeners[ZmOperation.DELETE_SERIES] = new AjxListener(this, this._deleteListener);
+	this._listeners[ZmOperation.FORWARD_APPT] = new AjxListener(this, this._forwardListener);
+	this._listeners[ZmOperation.PROPOSE_NEW_TIME] = new AjxListener(this, this._proposeTimeListener);
+	this._listeners[ZmOperation.FORWARD_APPT_INSTANCE] = new AjxListener(this, this._forwardListener);
+	this._listeners[ZmOperation.FORWARD_APPT_SERIES] = new AjxListener(this, this._forwardListener);
+	this._listeners[ZmOperation.REPLY] = new AjxListener(this, this._replyListener);
+	this._listeners[ZmOperation.REPLY_ALL] = new AjxListener(this, this._replyAllListener);
+	this._listeners[ZmOperation.DUPLICATE_APPT] = new AjxListener(this, this._duplicateApptListener);
 
-	this._listeners[ZmOperation.SHOW_ORIG]				= this._showOrigListener.bind(this);
-	this._listeners[ZmOperation.VIEW_APPOINTMENT]		= this._handleMenuViewAction.bind(this);
-	this._listeners[ZmOperation.OPEN_APPT_INSTANCE]		= this._handleMenuViewAction.bind(this);
-	this._listeners[ZmOperation.OPEN_APPT_SERIES]		= this._handleMenuViewAction.bind(this);
-	this._listeners[ZmOperation.TODAY]					= this._todayButtonListener.bind(this);
-	this._listeners[ZmOperation.NEW_APPT]				= this._newApptAction.bind(this);
-	this._listeners[ZmOperation.NEW_ALLDAY_APPT]		= this._newAllDayApptAction.bind(this);
-	this._listeners[ZmOperation.SEARCH_MAIL]			= this._searchMailAction.bind(this);
-	this._listeners[ZmOperation.MOVE]					= this._apptMoveListener.bind(this);
-	this._listeners[ZmOperation.DELETE_INSTANCE]		= this._deleteListener.bind(this);
-	this._listeners[ZmOperation.DELETE_SERIES]			= this._deleteListener.bind(this);
-	this._listeners[ZmOperation.FORWARD_APPT]			= this._forwardListener.bind(this);
-	this._listeners[ZmOperation.PROPOSE_NEW_TIME]		= this._proposeTimeListener.bind(this);
-	this._listeners[ZmOperation.FORWARD_APPT_INSTANCE]	= this._forwardListener.bind(this);
-	this._listeners[ZmOperation.FORWARD_APPT_SERIES]	= this._forwardListener.bind(this);
-	this._listeners[ZmOperation.REPLY]					= this._replyListener.bind(this);
-	this._listeners[ZmOperation.REPLY_ALL]				= this._replyAllListener.bind(this);
-	this._listeners[ZmOperation.DUPLICATE_APPT]			= this._duplicateApptListener.bind(this);
-    this._listeners[ZmOperation.PRINT_CALENDAR]			= this._printCalendarListener.bind(this);
-
-	this._treeSelectionListener = this._calTreeSelectionListener.bind(this);
+	this._treeSelectionListener = new AjxListener(this, this._calTreeSelectionListener);
 	this._maintTimedAction = new AjxTimedAction(this, this._maintenanceAction);
 	this._pendingWork = ZmCalViewController.MAINT_NONE;
 	this.apptCache = new ZmApptCache(this);
-	this._currentViewIdOverride = ZmId.VIEW_CAL;	// public view ID
-	
+
 	ZmCalViewController.OPS = [
 		ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
 		ZmOperation.MONTH_VIEW, ZmOperation.CAL_LIST_VIEW, ZmOperation.SCHEDULE_VIEW
 	];
-    if (appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
+    if(appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
         ZmCalViewController.OPS.push(ZmOperation.FB_VIEW);    
     }
 	var viewOpsListener = new AjxListener(this, this._viewActionMenuItemListener);
@@ -101,16 +98,12 @@ ZmCalViewController = function(container, calApp) {
 		this._listeners[op] = viewOpsListener;
 	}
 	
-	this._errorCallback = this._handleError.bind(this);
+	this._errorCallback = new AjxCallback(this, this._handleError);
 
 	// needed by ZmCalListView:
-	if (this.supportsDnD()) {
-		this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-		this._dragSrc.addDragListener(this._dragListener.bind(this));
-	}
-	
-	this._clearCacheFolderMap = {};
-	this._apptSessionId = {};
+	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
+	this._clearCacheFolderMap = {};	
 };
 
 ZmCalViewController.prototype = new ZmListController();
@@ -153,12 +146,11 @@ function () {
 	}
 };
 
-ZmCalViewController.getDefaultViewType =
+ZmCalViewController.prototype._defaultView =
 function() {
-	var setting = appCtxt.get(ZmSetting.CALENDAR_INITIAL_VIEW);
-	return ZmCalendarApp.VIEW_FOR_SETTING[setting] || ZmId.VIEW_CAL_WORK_WEEK;
+	var view = appCtxt.get(ZmSetting.CALENDAR_INITIAL_VIEW);
+	return ZmCalendarApp.VIEW_FOR_SETTING[view] || ZmId.VIEW_CAL_WORK_WEEK;
 };
-ZmCalViewController.prototype.getDefaultViewType = ZmCalViewController.getDefaultViewType;
 
 /**
  * Gets the first day of week setting.
@@ -174,7 +166,7 @@ ZmCalViewController.prototype.show =
 function(viewId, startDate, skipMaintenance) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	if (!viewId || viewId == ZmId.VIEW_CAL) {
-		viewId = this._currentViewId || this.getDefaultViewType();
+		viewId = this._currentView ? this._currentView : this._defaultView();
 	}
 
 	if (!this._viewMgr) {
@@ -189,55 +181,47 @@ function(viewId, startDate, skipMaintenance) {
 	this._viewMgr.setView(viewId);
 	DBG.timePt("setup and set view");
 
-	var elements = this.getViewElements(ZmId.VIEW_CAL, this._viewMgr);
-
-	this._setView({ view:		ZmId.VIEW_CAL,
-					viewType:	this._currentViewType,
-					elements:	elements,
-					isAppView:	true});
-	this._currentViewId = this._currentViewType = this._viewMgr.getCurrentViewName();
+	var elements = {};
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[ZmId.VIEW_CAL];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._viewMgr;
+	this._setView({view:ZmId.VIEW_CAL, elements:elements, isAppView:true});
+	this._currentView = this._viewMgr.getCurrentViewName();
     this.setCurrentListView(null);
-	this._listView[this._currentViewId] = this._viewMgr.getCurrentView();
+	this._listView[this._currentView] = this._viewMgr.getCurrentView();
 	this._resetToolbarOperations(viewId);
 
-
+	switch(viewId) {
+		case ZmId.VIEW_CAL_DAY:
+		case ZmId.VIEW_CAL_SCHEDULE:
+			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousDay);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextDay);
+			break;
+		case ZmId.VIEW_CAL_WORK_WEEK:
+			this._miniCalendar.setSelectionMode(DwtCalendar.WORK_WEEK);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWorkWeek);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWorkWeek);
+			break;
+		case ZmId.VIEW_CAL_WEEK:
+			this._miniCalendar.setSelectionMode(DwtCalendar.WEEK);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWeek);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWeek);
+			break;
+		case ZmId.VIEW_CAL_MONTH:
+			// use day until month does something
+			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousMonth);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextMonth);
+			break;
+		case ZmId.VIEW_CAL_LIST:
+			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
+			break;
+	}
 	DBG.timePt("switching selection mode and tooltips");
 
-    switch(viewId) {
-        case ZmId.VIEW_CAL_DAY:
-            this._viewMgr.getView(viewId).startIndicatorTimer();
-        case ZmId.VIEW_CAL_SCHEDULE:
-            this._viewMgr.getView(viewId).startIndicatorTimer();
-            this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
-            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousDay);
-            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextDay);
-            break;
-        case ZmId.VIEW_CAL_WORK_WEEK:
-            this._viewMgr.getView(viewId).startIndicatorTimer();
-            this._miniCalendar.setSelectionMode(DwtCalendar.WORK_WEEK);
-            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWorkWeek);
-            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWorkWeek);
-            break;
-        case ZmId.VIEW_CAL_WEEK:
-            this._viewMgr.getView(viewId).startIndicatorTimer();
-            this._miniCalendar.setSelectionMode(DwtCalendar.WEEK);
-            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWeek);
-            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWeek);
-            break;
-        case ZmId.VIEW_CAL_MONTH:
-            // use day until month does something
-            this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
-            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousMonth);
-            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextMonth);
-            break;
-        case ZmId.VIEW_CAL_LIST:
-            this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
-            break;
-    }
-    if (viewId == ZmId.VIEW_CAL_LIST) {
+	if (viewId == ZmId.VIEW_CAL_APPT || viewId == ZmId.VIEW_CAL_LIST) {
 		this._navToolBar[ZmId.VIEW_CAL].setVisible(false);
 	} else {
-        if(viewId!=ZmId.VIEW_CAL_MONTH){this._viewMgr.getView(viewId).initializeTimeScroll();}
 		this._navToolBar[ZmId.VIEW_CAL].setVisible(true);
 		var cv = this._viewMgr.getCurrentView();
 		var navText = viewId == ZmId.VIEW_CAL_MONTH
@@ -438,7 +422,7 @@ function() {
 		checkedAccountCalendarIds[acctId].push(cal.id);
 
 		this._checkedCalendarIds.push(cal.id);
-		if ((cal.isRemote && !cal.isRemote()) || cal.reminder) {
+		if (cal.isRemote && !cal.isRemote()) {
 			this._checkedLocalCalendarIds.push(cal.id);
 		}
 	}
@@ -779,12 +763,14 @@ function(items) {
 ZmCalViewController.prototype._getToolBarOps =
 function() {
 	return [
-		ZmOperation.DELETE, ZmOperation.SEP, ZmOperation.MOVE_MENU,
+		ZmOperation.NEW_MENU, ZmOperation.CAL_REFRESH,
+		ZmOperation.SEP,
+		ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
+		ZmOperation.SEP,
 		ZmOperation.TAG_MENU,
 		ZmOperation.SEP,
-		ZmOperation.PRINT_CALENDAR,
-		ZmOperation.SEP,
 		ZmOperation.TODAY,
+        ZmOperation.SEP,
         ZmOperation.VIEW_MENU
 	];
 };
@@ -803,22 +789,24 @@ function(viewId) {
 	// to fool the ZmListController into thinking there are multiple toolbars
 	this._toolbar[ZmId.VIEW_CAL_FB] = this._toolbar[ZmId.VIEW_CAL_SCHEDULE] = this._toolbar[ZmId.VIEW_CAL_WEEK] =
 	this._toolbar[ZmId.VIEW_CAL_WORK_WEEK] = this._toolbar[ZmId.VIEW_CAL_MONTH] =
-	this._toolbar[ZmId.VIEW_CAL_LIST] = this._toolbar[ZmId.VIEW_CAL_DAY];
+	this._toolbar[ZmId.VIEW_CAL_APPT] = this._toolbar[ZmId.VIEW_CAL_LIST] =
+	this._toolbar[ZmId.VIEW_CAL_DAY];
 
 	this._toolbar[ZmId.VIEW_CAL] = toolbar;
 
 	// Setup the toolbar stuff
+	toolbar.enable([ZmOperation.CAL_REFRESH], true);
 	toolbar.enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], true);
 	toolbar.enable([ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.DAY_VIEW], true);
 
-	//toolbar.addFiller();
+	toolbar.addFiller();
 
 	var tb = new ZmNavToolBar({parent:toolbar, className:"ZmNavToolbar ZmCalendarNavToolbar", context:ZmId.VIEW_CAL});
 	this._setNavToolBar(tb, ZmId.VIEW_CAL);
 
-	this._setNewButtonProps(viewId, ZmMsg.newAppt, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
+	this._setNewButtonProps(viewId, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
 
-	var printButton = toolbar.getButton(ZmOperation.PRINT_CALENDAR);
+	var printButton = toolbar.getButton(ZmOperation.PRINT);
 	if (printButton) {
 		printButton.setToolTipContent(ZmMsg.printCalendar);
 	}
@@ -829,18 +817,12 @@ function(viewId) {
 	if (viewButton) {
 		viewButton.setMenu(new AjxCallback(this, this._setupViewMenuItems, [toolbar]));
 
-		var op = ZmCalViewController.VIEW_TO_OP[this.getDefaultViewType()];
+		var op = ZmCalViewController.VIEW_TO_OP[this._defaultView()];
 		var icon = ZmOperation.getProp(op, "image");
 		viewButton.setImage(icon);
 	}
 
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, toolbar, this, viewId], {waitUntilLoaded:true});
-};
-
-
-ZmCalViewController.prototype.runRefresh =
-function() {
-	this._refreshButtonListener();
 };
 
 ZmCalViewController.prototype._setViewContents =
@@ -865,7 +847,7 @@ function(toolbar) {
 	var menu = new ZmPopupMenu(viewBtn);
 	viewBtn.setMenu(menu);
 
-	var defaultViewId = this.getDefaultViewType();
+	var defaultViewId = this._defaultView();
 	var calViews = ZmCalViewController.OPS;
 	for (var i = 0; i < calViews.length; i++) {
 		var id = calViews[i];
@@ -1060,8 +1042,8 @@ ZmCalViewController.prototype._msgLoadedCallback =
 function(mailItem, date, subject) {
 	var newAppt = this._newApptObject(date, null, null, mailItem);
 	newAppt.setFromMailMessage(mailItem, subject);
-	
-	 if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
+
+    if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
         var addAttendeeDlg = this._attAttendeeDlg = appCtxt.getYesNoMsgDialog();
         addAttendeeDlg.reset();
         addAttendeeDlg.setMessage(ZmMsg.addRecipientstoAppt, DwtMessageDialog.WARNING_STYLE, ZmMsg.addAttendees);
@@ -1073,6 +1055,7 @@ function(mailItem, date, subject) {
         this.newAppointment(newAppt, ZmCalItem.MODE_NEW, true);
     }
 };
+
 
 ZmCalViewController.prototype._addAttendeeYesCallback =
 function(newAppt) {
@@ -1086,7 +1069,6 @@ function(newAppt) {
     newAppt.setAttendees(null,ZmCalBaseItem.PERSON);
     this.newAppointment(newAppt, ZmCalItem.MODE_NEW, true);
 };
-
 
 /**
  * This method will create a new appointment from a contact.
@@ -1246,13 +1228,6 @@ function() {
     this._viewVisible = false;
 };
 
-ZmCalViewController.prototype.isCurrent =
-function() {
-    var thisView = this.isSearchResults ? this.searchResultsController.getCurrentViewId() : this._currentViewId;
-    var currentView = this._viewMgr.getCurrentViewName();
-    return (thisView == currentView);
-};
-
 ZmCalViewController.prototype._paginate =
 function(viewId, forward) {
     this.setCurrentListView(null);
@@ -1282,20 +1257,23 @@ function(date, duration, roll) {
 	if (this._viewMgr != null) {
 		this._viewMgr.setDate(date, duration, roll);
 		var viewId = this._viewMgr.getCurrentViewName();
-		var currentView = this._viewMgr.getCurrentView();
+		if (viewId == ZmId.VIEW_CAL_APPT) {
+			this._viewMgr.getCurrentView().close();
+		}
+		var currentView = this._viewMgr.getCurrentView(); 
 		var title = currentView.getCalTitle();
 		Dwt.setTitle([ZmMsg.zimbraTitle, ": ", title].join(""));
 		if (!roll &&
-			this._currentViewType == ZmId.VIEW_CAL_WORK_WEEK &&
+			this._currentView == ZmId.VIEW_CAL_WORK_WEEK &&
 			!currentView.workingHours[date.getDay()].isWorkingDay &&
 			(date.getDay() == 0 || date.getDay() == 6))
 		{
 			this.show(ZmId.VIEW_CAL_WEEK);
 		}
-		if (ZmId.VIEW_CAL_MONTH == this._currentViewType) {
+		if (ZmId.VIEW_CAL_MONTH == this._currentView) {
 			title = this._viewMgr.getCurrentView().getShortCalTitle();
 		}
-        if (ZmId.VIEW_CAL_FB == this._currentViewType && roll && appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
+        if (ZmId.VIEW_CAL_FB == this._currentView && roll && appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
             currentView._navDateChangeListener(date);
 		}
 		this._navToolBar[ZmId.VIEW_CAL].setText(title);
@@ -1396,35 +1374,13 @@ function(ev) {
 	}
 };
 
-ZmCalViewController.prototype._printCalendarListener =
+ZmCalViewController.prototype._printListener =
 function(ev) {
-	var url,
-	    viewId = this._viewMgr.getCurrentViewName(),
-        printDialog = this._printDialog,
-        wHrs = ZmCalBaseView.parseWorkingHours(ZmCalBaseView.getWorkingHours()),
-        curDate = this._viewMgr.getDate() || new Date();
+	var url;
+	var viewId = this._viewMgr.getCurrentViewName();
 
-    if(!printDialog) {
-        printDialog = this.createPrintDialog();
-    }
-
-    var org = ZmApp.ORGANIZER[this._app._name] || ZmOrganizer.FOLDER;
-    var params = {
-                overviewId: appCtxt.getOverviewId(["ZmCalPrintDialog", this._app._name], null),
-                treeIds: [org],
-                treeStyle: DwtTree.CHECKEDITEM_STYLE,
-                appName: this._app._name,
-                currentViewId: viewId,
-                workHours: wHrs[curDate.getDay()],
-                currentDate: curDate,
-                timeRange: this.getViewMgr().getView(viewId).getTimeRange()
-            };
-
-    printDialog.popup(params);
-
-    this._printDialog = printDialog;
-    /*
-	if (viewId == ZmId.VIEW_CAL_LIST)
+	if (viewId == ZmId.VIEW_CAL_APPT ||
+		viewId == ZmId.VIEW_CAL_LIST)
 	{
 		var ids = [];
 		var list = this.getSelection();
@@ -1440,7 +1396,8 @@ function(ev) {
             url.push("&zd=", "true");
         }
         url = url.join("");
-    } else {
+
+	} else {
 		var date = this._viewMgr
 			? this._viewMgr.getDate()
 			: (new Date());
@@ -1470,56 +1427,11 @@ function(ev) {
 			"/h/printcalendar?view=", view,
 			"&l=", l,
 			"&date=", date.getFullYear(), month, day,
-			"&tz=",AjxTimezone.getServerId(AjxTimezone.DEFAULT)
+            "&tz=",AjxTimezone.getServerId(AjxTimezone.DEFAULT)                 //bug:53493
 		].join("");
-	} */
+	}
 
-	//window.open(appContextPath+url, "_blank");
-};
-
-ZmCalViewController.prototype.createPrintDialog =
-function() {
-    var pd,
-        params = {},
-        curDate = this._viewMgr.getDate() || new Date();
-
-    //params.calendars = this.getCalTreeController().getOwnedCalendars(this._app.getOverviewId(), appCtxt.getActiveAccount().getEmail());
-    params.parent = this._shell;
-    pd = new ZmCalPrintDialog(params);
-    return pd;
-};
-
-ZmCalViewController.prototype._printListener =
-function(ev) {
-    var ids = [];
-    var list = this.getSelection();
-    if (list.length == 0) {
-        // Calendar list view is anomalous - on a right click (action menu) when resetOperations
-        // is called, getSelection returns 1 item, but the selection actually only occurs if it was a
-        // left click.  So we can get here with no selections.  Use the appt associated with the menu.
-        var actionMenu = this.getActionMenu();
-        var appt = actionMenu.__appt;
-        if (appt) {
-            ids.push(appt.invId);
-        }
-    }  else {
-        for (var i = 0; i < list.length; i++) {
-            ids.push(list[i].invId);
-        }
-    }
-    if (ids.length == 0) return;
-
-    var url = ["/h/printappointments?id=", ids.join(','), "&tz=", AjxTimezone.getServerId(AjxTimezone.DEFAULT)];
-    if(appCtxt.isOffline) {
-        if (ids.length == 1) {
-            var appt = this.getSelection()[0];
-            url.push("&acct=", appt.getFolder().getAccount().name);
-        }
-        url.push("&zd=", "true");
-    }
-    url = url.join("");
-
-    window.open(appContextPath+url, "_blank");
+	window.open(appContextPath+url, "_blank");
 };
 
 ZmCalViewController.prototype._deleteListener =
@@ -1816,26 +1728,11 @@ function(appt, mode) {
 		}
 	}
 };
-ZmCalViewController.prototype._confirmDeleteApptDialog =
-function(){
-
-if (!this._confirmDialog) {
-        // setting up order of display of buttons
-        var buttons = [ DwtDialog.NO_BUTTON, DwtDialog.YES_BUTTON, DwtDialog.CANCEL_BUTTON ];
-		this._confirmDialog = new DwtConfirmDialog(this._shell, null, id, buttons);
-        var yesButton = this._confirmDialog.getButton(DwtDialog.YES_BUTTON);
-        var noButton = this._confirmDialog.getButton(DwtDialog.NO_BUTTON);
-
-        yesButton.setText(ZmMsg.editMessage);     // Changing the text for Yes button
-        noButton.setText(ZmMsg.sendCancellation); // Changing the text for No button
-	}
-	return this._confirmDialog;
-};
 
 ZmCalViewController.prototype._promptCancelReply =
 function(appt, mode) {
 	var cancelNoReplyCallback = new AjxCallback(this, this._continueDelete, [appt, mode]);
-	var confirmDialog = this._confirmDeleteApptDialog();
+	var confirmDialog = appCtxt.getConfirmationDialog();
     confirmDialog.setTitle(ZmMsg.confirmDeleteApptTitle);
 
     var calendar = appt && appt.getFolder();
@@ -1849,7 +1746,7 @@ function(appt, mode) {
 		var msg = isTrash ? ZmMsg.confirmPermanentCancelAppt : ZmMsg.confirmCancelAppt;
 
 		if (appt.isRecurring() && !isTrash) {
-	    	msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, AjxStringUtil.htmlEncode(appt.name)) :  ZmMsg.confirmCancelApptSeries; 
+			msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, AjxStringUtil.htmlEncode(appt.name)) :  ZmMsg.confirmCancelApptSeries;
 		}
 		confirmDialog.popup(msg, cancelNoReplyCallback);
 	}
@@ -1902,7 +1799,7 @@ function(appt, mode) {
 		var msg = ZmMsg.confirmCancelAppt;
 		if (appt.isRecurring()) {
 			msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE)
-				? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, appt.name)
+				? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, AjxStringUtil.htmlEncode(appt.name))
 				: ZmMsg.confirmCancelApptSeries;
 		}
 		this._deleteNotifyDialog = new ZmApptDeleteNotifyDialog({
@@ -1996,12 +1893,9 @@ function(appt, mode) {
 
 ZmCalViewController.prototype._handleResponseContinueDelete =
 function(appt) {
-
-    var currentView = appCtxt.getCurrentView();
-    if (currentView && currentView.isZmApptView) {
-        currentView.close();
-    }
-
+	if (this._viewMgr.getCurrentViewName() == ZmId.VIEW_CAL_APPT) {
+		this._viewMgr.getCurrentView().close();
+	}
 	var summary = ZmList.getActionSummary(ZmMsg.actionDelete, 1, ZmItem.APPT);
 	appCtxt.setStatusMsg(summary);
 	appCtxt.notifyZimlets("onAppointmentDelete", [appt]);//notify Zimlets on delete 
@@ -2083,9 +1977,18 @@ function(appt, mode) {
 
 ZmCalViewController.prototype._showApptReadOnlyView =
 function(appt, mode) {
-	var controller = this._app.getApptViewController(this._apptSessionId[appt.invId]);
-	this._apptSessionId[appt.invId] = controller.getSessionId();
-	controller.show(appt, mode);
+	var viewId = ZmId.VIEW_CAL_APPT;
+	if (!this._viewMgr) {
+		this.createViewMgr();
+	}
+	var apptView = this._viewMgr.getView(viewId);
+	if (!apptView) {
+		this._setup(viewId);
+		apptView = this._viewMgr.getView(viewId);
+	}
+	apptView.set(appt, null, mode);
+	this.show(viewId);
+	this._resetToolbarOperations();
 };
 
 ZmCalViewController.prototype._showQuickAddDialog =
@@ -2139,7 +2042,7 @@ ZmCalViewController.prototype.newAppointment =
 function(newAppt, mode, isDirty, startDate) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	var sd = startDate || (this._viewVisible ? this._viewMgr.getDate() : new Date());
-	var appt = newAppt || this._newApptObject(sd, (appCtxt.get(ZmSetting.CAL_DEFAULT_APPT_DURATION) * 1000));  //bug:50121 added appt duration as configurable from preference
+	var appt = newAppt || this._newApptObject(sd, AjxDateUtil.MSEC_PER_HALF_HOUR);
 
     //certain views can set attendees before creating appointment
     if(this._viewVisible && this._viewMgr.getCurrentView().getAtttendees) {
@@ -2304,9 +2207,9 @@ function(appt) {
 		var calendar = appt.getFolder();
 		var isSynced = Boolean(calendar.url);
 		if (appt.isRecurring()) {
-			// prompt user to edit instance vs. series if recurring but not for exception and from edit mode
-			if (appt.isException || appt.editViewMode) {
-				var mode = appt.editViewMode || ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
+			// prompt user to edit instance vs. series if recurring but not exception
+			if (appt.isException) {
+				var mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
 				if (appt.isReadOnly() || calendar.isReadOnly() || isSynced) {
 					this.showApptReadOnlyView(appt, mode);
 				} else {
@@ -2495,10 +2398,6 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 ZmCalViewController.prototype._handleResponseUpdateApptDateEdit =
 function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback, result) {
 	var clone = ZmAppt.quickClone(appt);
-    clone.editViewMode = viewMode;
-    if(appt.isRecurring() && viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
-        clone.isException = true;
-    }
 	if (startDateOffset) clone.setStartDate(new Date(clone.getStartTime() + startDateOffset));
 	if (endDateOffset) clone.setEndDate(new Date(clone.getEndTime() + endDateOffset));
 	this._showAppointmentDetails(clone);
@@ -2700,7 +2599,7 @@ function() {
 		params = params[0];
 	}
 
-	var viewId = this._currentViewId || this.getDefaultViewType();
+	var viewId = this._currentView ? this._currentView : this._defaultView();
 	var fanoutAllDay = (viewId == ZmId.VIEW_CAL_MONTH);
 	var searchParams = {start: params.s, end: params.e, fanoutAllDay: fanoutAllDay, callback: null};
 	searchParams.folderIds = params.l ? params.l.split(",") : []; 
@@ -2711,6 +2610,11 @@ function() {
 
 	this.apptCache.setSearchParams(searchParams);
 	this.apptCache.processBatchResponse(response.BatchResponse, searchParams, miniCalParams);
+};
+
+ZmCalViewController.prototype._getViewType =
+function() {
+	return ZmId.VIEW_CAL;
 };
 
 ZmCalViewController.prototype.setCurrentView =
@@ -2736,23 +2640,6 @@ function(viewId) {
 	}
 };
 
-ZmCalViewController.prototype._setNavToolbarPosition =
-function(navToolbar, currentViewName) {
-    if(!navToolbar || !currentViewName) { return; }
-    var toolbarEl = navToolbar.getHtmlElement();
-    if(!toolbarEl) { return; }
-
-    if(currentViewName == ZmId.VIEW_CAL_DAY) {
-        Dwt.addClass(toolbarEl, ZmCalDayTabView.NAV_TOOLBAR_CLASSNAME);
-        Dwt.setPosition(toolbarEl, Dwt.ABSOLUTE_STYLE);
-    }
-    else {
-        Dwt.delClass(toolbarEl, ZmCalDayTabView.NAV_TOOLBAR_CLASSNAME);
-        Dwt.setPosition(toolbarEl, Dwt.STATIC_STYLE);
-    }
-    navToolbar.setVisible(currentViewName != ZmId.VIEW_CAL_LIST);
-};
-
 ZmCalViewController.prototype._resetOperations =
 function(parent, num) {
 	parent.enableAll(true);
@@ -2760,55 +2647,60 @@ function(parent, num) {
 
 	if (currViewName == ZmId.VIEW_CAL_LIST && num > 1) { return; }
 
-    this._setNavToolbarPosition(this._navToolBar[ZmId.VIEW_CAL], currViewName);
+	if (currViewName == ZmId.VIEW_CAL_APPT) {
+		// disable DELETE since CAL_APPT_VIEW is a read-only view
+		parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.CAL_REFRESH, ZmOperation.TODAY], false);
+	}
+	else {
+		if (this._navToolBar[ZmId.VIEW_CAL]) {
+			this._navToolBar[ZmId.VIEW_CAL].setVisible(currViewName != ZmId.VIEW_CAL_LIST);
+		}
+		var appt = this.getSelection()[0];
+		var calendar = appt && appt.getFolder();
+        var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;
+		var isReadOnly = calendar ? calendar.isReadOnly() : false;
+		var isSynced = Boolean(calendar && calendar.url);
+		var isShared = calendar ? calendar.isRemote() : false;
+		var disabled = isSynced || isReadOnly || (num == 0);
+		var isPrivate = appt && appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
+		var isForwardable = !isTrash && calendar && !calendar.isReadOnly();
+		var isReplyable = !isTrash && appt && (num == 1);
+        var isTrashMultiple = isTrash && (num && num>1);
 
-    var appt = this.getSelection()[0];
-    var calendar = appt && appt.getFolder();
-    var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;
-    num = ( isTrash && this.getCurrentListView() ) ? this.getCurrentListView().getSelectionCount() : num ;
-    var isReadOnly = calendar ? calendar.isReadOnly() : false;
-    var isSynced = Boolean(calendar && calendar.url);
-    var isShared = calendar ? calendar.isRemote() : false;
-    var disabled = isSynced || isReadOnly || (num == 0);
-    var isPrivate = appt && appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
-    var isForwardable = !isTrash && calendar && !calendar.isReadOnly();
-    var isReplyable = !isTrash && appt && (num == 1);
-    var isTrashMultiple = isTrash && (num && num>1);
+		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (isReplyable && !isTrashMultiple));
+        parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
+        parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate && !isTrashMultiple);
+        parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable && !isTrashMultiple);
+        parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()) && !isTrashMultiple);
+        parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null && !isTrashMultiple);
 
-    parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (isReplyable && !isTrashMultiple));
-    parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0) || isTrashMultiple);
-    parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate && !isTrashMultiple);
-    parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable && !isTrashMultiple);
-    parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()) && !isTrashMultiple);
-    parent.enable(ZmOperation.SHOW_ORIG, num == 1 && appt && appt.getRestUrl() != null && !isTrashMultiple);
 
-    parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU], !disabled || isTrashMultiple);
+        parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], !disabled);
 
-    parent.enable(ZmOperation.VIEW_APPT_INSTANCE,!isTrash);
+        parent.enable(ZmOperation.VIEW_APPT_INSTANCE,!isTrash);
 
-    var apptAccess = ((appt && appt.isPrivate() && calendar.isRemote()) ? calendar.hasPrivateAccess() : true );
-    parent.enable(ZmOperation.DUPLICATE_APPT,apptAccess && !isTrashMultiple);
-    parent.enable(ZmOperation.SHOW_ORIG,apptAccess && !isTrashMultiple);
+        var apptAccess = ((appt && appt.isPrivate() && calendar.isRemote()) ? calendar.hasPrivateAccess() : true );
+        parent.enable(ZmOperation.DUPLICATE_APPT,apptAccess && !isTrashMultiple);
+        parent.enable(ZmOperation.SHOW_ORIG,apptAccess && !isTrashMultiple);
 
-	/*if (currViewName == ZmId.VIEW_CAL_LIST) {
-		parent.enable(ZmOperation.PRINT_CALENDAR, num > 0);
-	} */
+	}
+
+	if (currViewName == ZmId.VIEW_CAL_LIST) {
+		parent.enable(ZmOperation.PRINT, num > 0);
+	}
 
 	// disable button for current view
 	var op = ZmCalViewController.VIEW_TO_OP[currViewName];
 	if (op) {
 		parent.enable(op, false);
-	};
-
-    this._resetQuickCommandOperations(parent);
+	}
 };
 
 ZmCalViewController.prototype._listSelectionListener =
 function(ev) {
-
 	ZmListController.prototype._listSelectionListener.call(this, ev);
     // to avoid conflicts on opening a readonly appointment in readonly view
-	if (ev.detail == DwtListView.ITEM_SELECTED) {
+	if (ev.detail == DwtListView.ITEM_SELECTED && this.getViewMgr().getCurrentViewName()!=ZmId.VIEW_CAL_APPT) {
 		this._viewMgr.getCurrentView()._apptSelected();
 	} else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var appt = ev.item;
@@ -3076,7 +2968,6 @@ function(recurrenceMode) {
 	}
 	
 	var retVal = [viewOp,
-	      		ZmOperation.PRINT,
 	      		ZmOperation.SEP,
 	    		ZmOperation.REPLY_ACCEPT,
 	    		ZmOperation.REPLY_TENTATIVE,
@@ -3095,7 +2986,6 @@ function(recurrenceMode) {
 	}
 	retVal.push(ZmOperation.TAG_MENU);
 	retVal.push(ZmOperation.SHOW_ORIG);
-    retVal.push(ZmOperation.QUICK_COMMANDS);
 	return retVal;
 };
 
@@ -3208,11 +3098,10 @@ function(ev) {
 				this._viewActionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
 			}
 		}
-        this._viewActionMenu.addPopdownListener(this._menuPopdownListener);
 	}
 
-	if (this._viewVisible && this._currentViewType == ZmId.VIEW_CAL_SCHEDULE) {
-		var view = this._viewMgr.getView(this._currentViewId);
+	if (this._viewVisible && this._currentView == ZmId.VIEW_CAL_SCHEDULE) {
+		var view = this._viewMgr.getView(this._currentView);
 		var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, ev.target, true);
 		var col = view._getColFromX(gridLoc.x);
 		this._viewActionMenu._calendarId = (col && col.cal) ? col.cal.id : null;
@@ -3226,7 +3115,7 @@ function(ev) {
 
 ZmCalViewController.prototype._dropListener =
 function(ev) {
-	var view = this._listView[this._currentViewId];
+	var view = this._listView[this._currentView];
 	var div = view.getTargetItemDiv(ev.uiEvent);
 	var item = div ? view.getItemFromElement(div) : null;
 
@@ -3291,7 +3180,12 @@ function(params, callback) {
 	this._userQuery = params.query;
 
 	// set start/end date boundaries
-	var view = this._listView[this._currentViewId];
+	var view = this._listView[this._currentView];
+
+	if (view && this._currentView == ZmId.VIEW_CAL_APPT) {
+		view.close();
+        view = this._listView[this._currentView];
+	}
 
 	if (view) {
 		var rt = view.getTimeRange();
@@ -3317,7 +3211,7 @@ function(callback, list, userQuery, result) {
 	this.show(null, null, true);	// always make sure a calendar view is being shown
 	this._userQuery = userQuery;	// cache the user-entered search query
 
-	this._maintGetApptCallback(ZmCalViewController.MAINT_VIEW, this._listView[this._currentViewId], list, true, userQuery);
+	this._maintGetApptCallback(ZmCalViewController.MAINT_VIEW, this._listView[this._currentView], list, true, userQuery);
 
 	if (callback) {
 		callback.run(result);
@@ -3358,8 +3252,8 @@ function(ids) {
 ZmCalViewController.prototype.handleEditConflict =
 function(ids) {
 	//handling a case where appt is edited and related calendar is deleted
-	if (appCtxt.getCurrentViewId() == ZmId.VIEW_APPOINTMENT) {
-		var view = appCtxt.getCurrentView();
+	if(appCtxt.getAppViewMgr().getCurrentViewId() == ZmId.VIEW_APPOINTMENT) {
+		var view = appCtxt.getAppViewMgr().getCurrentView();
 		var appt = view.getAppt(true);
 		var calendar = appt && appt.getFolder();
 		var idStr = ","+ ids+",";
@@ -3618,17 +3512,6 @@ function(work, view, list, skipMiniCalUpdate, query) {
 	}
 };
 
-
-ZmCalViewController.prototype.refreshCurrentView =
- function() {
-    var currentView = this.getCurrentView();
-    if (currentView) {
-        currentView.setNeedsRefresh(true);
-        this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
-    }
-}
-
-
 ZmCalViewController.prototype._scheduleMaintenance =
 function(work, forceMaintenance) {
 
@@ -3680,10 +3563,10 @@ function() {
 	}
 	else if (maintainMiniCal || maintainView || maintainRemainder) {
         // NOTE: It's important that we go straight to the view!
-		var view = this._viewMgr ? this._viewMgr.getView(this._currentViewId) : null;
+		var view = this._viewMgr ? this._viewMgr.getView(this._currentView) : null;
 		if (view && view.needsRefresh()) {
             var rt = view.getTimeRange();
-            if (this._currentViewType == ZmId.VIEW_CAL_LIST) {
+            if(this._currentView == ZmId.VIEW_CAL_LIST) {
                 view.searchRefresh(rt);
                 this.searchInProgress = false;
             }
@@ -3764,20 +3647,10 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.CANCEL:
-            var currentView = this._viewMgr.getCurrentView();
-            if ((this._currentViewType == ZmId.VIEW_CAL_WORK_WEEK) ||
-                (this._currentViewType == ZmId.VIEW_CAL_WEEK) ||
-                (this._currentViewType == ZmId.VIEW_CAL_MONTH)) {
-                // Abort - restore location and Mouse up
-                var data = DwtMouseEventCapture.getTargetObj();
-                if (data) {
-                    currentView._restoreApptLoc(data);
-                    data.startDate = data.appt._orig.startDate;
-                    ZmCalBaseView._apptMouseUpHdlr(null);
-                }
-            }
+			if (this._currentView == ZmId.VIEW_CAL_APPT) {
+				this._listView[this._currentView].close();
+			}
 			break;
-
 		case ZmKeyMap.COPY:
 			this.clipboardCopy();
 			break;

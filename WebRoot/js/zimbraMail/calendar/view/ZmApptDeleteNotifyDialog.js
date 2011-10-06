@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -118,18 +118,12 @@ function() {
 	html[i++] = "' name='";
 	html[i++] = this._notifyChoiceName;
 	html[i++] = "'></td><td style='white-space:nowrap'>";
-	html[i++] = "<label for='" + this._defaultRadioId + "'>";
 	html[i++] = this._choiceLabel1;
-	html[i++] = "</label>";
 	html[i++] = "</td></tr>";
-	html[i++] = "<tr><td width=1%><input value='2' type='radio' id='";
-	html[i++] = this._defaultRadioId + this._notifyChoiceName;
-	html[i++] = "' name='";
+	html[i++] = "<tr><td width=1%><input value='2' type='radio' name='";
 	html[i++] = this._notifyChoiceName;
 	html[i++] = "'></td><td style='white-space:nowrap'>";
-	html[i++] = "<label for='" + this._defaultRadioId + this._notifyChoiceName + "'>"
 	html[i++] = this._choiceLabel2;
-	html[i++] = "</label>";
 	html[i++] = "</td></tr>";
 	html[i++] = "</table>";
 

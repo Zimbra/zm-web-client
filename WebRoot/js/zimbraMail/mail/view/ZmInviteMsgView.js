@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- *
+ * Copyright (C) 2010, 2011 VMware, Inc.
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -56,7 +56,6 @@ function() {
 
 	if (this._dayView) {
 		this._dayView.setDisplay(Dwt.DISPLAY_NONE);
-		Dwt.delClass(this.parent.getHtmlElement(), "RightBorderSeparator");
 	}
 
 	this._msg = null;
@@ -291,12 +290,9 @@ function(reset) {
 	var grandParentSize = this.parent.parent.getSize();
 
 	if (reset) {
-		if (isRight) {
-			this.parent.setSize(Dwt.DEFAULT, grandParentSize.y);
-		}
-		else {
-			this.parent.setSize(grandParentSize.x, Dwt.DEFAULT);
-		}
+		isRight
+			? this.parent.setSize(Dwt.DEFAULT, grandParentSize.y)
+			: this.parent.setSize(grandParentSize.x, Dwt.DEFAULT);
 	} else if (this._dayView) {
 		// bug: 50412 - fix day view for stand-alone message view which is a parent
 		// of DwtShell and needs to be resized manually.
@@ -330,7 +326,7 @@ function(reset) {
 			this._dayView.setBounds(mvBounds.x, mvHeight, mvBounds.width, dvHeight);
             if (this.parent && this.parent instanceof ZmMailMsgView){
                 var el = this.parent.getHtmlElement();
-                if (this.mode && this.mode != ZmId.VIEW_MSG) {
+                if (this.mode && this.mode != "MSG") {
                     if (el){
                         el.style.height = mvHeight + "px";
                         Dwt.setScrollStyle(el, Dwt.SCROLL);
@@ -552,7 +548,7 @@ function(subs, sentBy, sentByAddr, obo) {
 	}
 };
 
-ZmInviteMsgView.truncateBodyContent =
+ZmInviteMsgView.prototype.truncateBodyContent =
 function(content, isHtml) {
 	var sepIdx = content.indexOf(ZmItem.NOTES_SEPARATOR);
 	if (sepIdx == -1) {

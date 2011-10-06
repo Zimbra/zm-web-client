@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -21,31 +21,30 @@
  *
  * @author Parag Shah
  *
- * @param {DwtShell}	container	the containing shell
- * @param {ZmApp}		app			the containing app
- * @param {constant}	type		controller type
- * @param {string}		sessionId	the session id
+ * @param {DwtComposite}	container		the containing element
+ * @param {ZmApp}	app		a handle to the [{@link ZmCalendarApp}|{@link ZmTaskApp}] application
  * 
- * @extends		ZmBaseController
+ * @extends		ZmController
  */
-ZmCalItemComposeController = function(container, app, type, sessionId) {
+ZmCalItemComposeController = function(container, app) {
 	if (arguments.length == 0) { return; }
-	ZmBaseController.apply(this, arguments);
+	ZmController.call(this, container, app);
 };
 
-ZmCalItemComposeController.prototype = new ZmBaseController;
+ZmCalItemComposeController.prototype = new ZmController;
 ZmCalItemComposeController.prototype.constructor = ZmCalItemComposeController;
 
-ZmCalItemComposeController.prototype.isZmCalItemComposeController = true;
-ZmCalItemComposeController.prototype.toString = function() { return "ZmCalItemComposeController"; };
+ZmCalItemComposeController.prototype.toString =
+function() {
+	return "ZmCalItemComposeController";
+};
 
 ZmCalItemComposeController.DEFAULT_TAB_TEXT = ZmMsg.appointment;
-
-ZmCalItemComposeController.SAVE_CLOSE 	= "SAVE_CLOSE";
-ZmCalItemComposeController.SEND 		= "SEND";
-ZmCalItemComposeController.SAVE  		= "SAVE";
-ZmCalItemComposeController.APPT_MODE  	= "APPT";
-ZmCalItemComposeController.MEETING_MODE	= "MEETING";
+ZmCalItemComposeController.SAVE_CLOSE = "SAVE_CLOSE";
+ZmCalItemComposeController.SEND = "SEND";
+ZmCalItemComposeController.SAVE  = "SAVE";
+ZmCalItemComposeController.APPT_MODE  = "APPT";
+ZmCalItemComposeController.MEETING_MODE  = "MEETING";
 
 // Public methods
 
@@ -53,11 +52,11 @@ ZmCalItemComposeController.prototype.show =
 function(calItem, mode, isDirty) {
 
     this._mode = mode;
-	if (this._toolbar.toString() != "ZmButtonToolBar") {
+	if (!this._toolbar) {
 		this._createToolBar();
 	}
 	var initial = this.initComposeView();
-	this._app.pushView(this._currentViewId);
+	this._app.pushView(this.viewId);
 	this._composeView.set(calItem, mode, isDirty);
 	this._composeView.reEnableDesignMode();
     this._initToolbar(mode);
@@ -157,16 +156,12 @@ function(initHide) {
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 		callbacks[ZmAppViewMgr.CB_PRE_SHOW] = new AjxCallback(this, this._preShowCallback);
 		callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
-		if (this._toolbar.toString() != "ZmButtonToolBar")
+		var elements = {};
+		if (!this._toolbar)
 			this._createToolBar();
-		var elements = this.getViewElements(null, this._composeView, this._toolbar);
-
-		this._app.createView({	viewId:		this._currentViewId,
-								viewType:	this._currentViewType,
-								elements:	elements,
-								controller:	this,
-								callbacks:	callbacks,
-								tabParams:	this._getTabParams()});
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
+		this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, tabParams:this._getTabParams()});
 		if (initHide) {
 			this._composeView.preload();
 		}
@@ -221,7 +216,7 @@ function(actionCode) {
 				var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 				this._formatListener(null, newMode);
 				// reset the radio button for the format button menu
-				var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+				var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 				if (formatBtn) {
 					formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, newMode, true);
 				}
@@ -262,7 +257,7 @@ function(skipNotify, composeMode) {
 			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	}
 
-	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 	if (formatBtn) {
         var menu = formatBtn.getMenu ? formatBtn.getMenu() : null;
         if(menu) {
@@ -283,7 +278,7 @@ function(skipNotify, composeMode) {
 			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	}
 
-	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 	if (formatBtn) {
 		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, mode, skipNotify);
 	}
@@ -294,7 +289,7 @@ function(skipNotify, composeMode) {
 
 ZmCalItemComposeController.prototype._initToolbar =
 function(mode) {
-	if (this._toolbar.toString() != "ZmButtonToolBar") {
+	if (!this._toolbar) {
 		this._createToolBar();
 	}
 
@@ -305,14 +300,17 @@ function(mode) {
 	var cancelButton = this._toolbar.getButton(ZmOperation.CANCEL);
 	if (isNew) {
 		cancelButton.setText(ZmMsg.cancel);
+		cancelButton.setImage("Cancel");
 	} else {
 		cancelButton.setText(ZmMsg.close);
+		cancelButton.setImage("Close");
 	}
 
     var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
     //use send button for forward appt view
     if(ZmCalItem.FORWARD_MAPPING[mode]) {
         saveButton.setText(ZmMsg.send);
+        saveButton.setImage("Send");
     }
 
 	var printButton = this._toolbar.getButton(ZmOperation.PRINT);
@@ -320,14 +318,12 @@ function(mode) {
 		printButton.setEnabled(!isNew);
 	}
 
-	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
+	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this.viewId], {waitUntilLoaded:true});
 };
 
 
 ZmCalItemComposeController.prototype._createToolBar =
 function() {
-
-	this._setNewButtonProps(null, ZmMsg.newAppt, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
 
 	var buttons = [ZmOperation.SEND_INVITE, ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP];
 
@@ -342,9 +338,9 @@ function() {
 	if (!appCtxt.isOffline) {
 		buttons.push(ZmOperation.SPELL_CHECK);
 	}
-	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_OPTIONS);
+	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT);
 
-	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._currentViewId, controller:this});
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this.viewId, controller:this});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
 
@@ -365,24 +361,20 @@ function() {
 		spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
 	}
 
-	var optionsButton = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
-	optionsButton.setVisible(false); //start it hidden, and show in case it's needed.
-
 	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		optionsButton.setVisible(true); 
+		var formatButton = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+		var m = new DwtMenu({parent:formatButton});
+		formatButton.setMenu(m);
 
-		var m = new DwtMenu({parent:optionsButton});
-		optionsButton.setMenu(m);
-
-		var mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.FORMAT_HTML].join("_")});
+		var mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this.viewId,ZmOperation.FORMAT_HTML].join("_")});
 		mi.setImage("HtmlDoc");
-		mi.setText(ZmMsg.formatAsHtml);
+		mi.setText(ZmMsg.htmlDocument);
 		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML);
         mi.addSelectionListener(new AjxListener(this, this._formatListener));
 
-		mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this._currentViewId,ZmOperation.FORMAT_TEXT].join("_")});
+		mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE, id:[ZmId.WIDGET_MENU_ITEM,this.viewId,ZmOperation.FORMAT_TEXT].join("_")});
 		mi.setImage("GenericDoc");
-		mi.setText(ZmMsg.formatAsText);
+		mi.setText(ZmMsg.plainText);
 		mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.TEXT);
         mi.addSelectionListener(new AjxListener(this, this._formatListener));
 	}
@@ -643,7 +635,7 @@ function() {
 
 ZmCalItemComposeController.prototype._closeView =
 function() {
-	this._app.popView(true,this._currentViewId);
+	this._app.popView(true,this.viewId);
     this._composeView.cleanup();
 };
 
@@ -657,7 +649,7 @@ ZmCalItemComposeController.prototype._textModeCancelCallback =
 function(ev) {
 	this._textModeOkCancel.popdown();
 	// reset the radio button for the format button menu
-	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 	if (formatBtn) {
 		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML, true);
 	}

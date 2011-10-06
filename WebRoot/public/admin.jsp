@@ -78,13 +78,6 @@
 		}
 		request.setAttribute("packages", "dev");
 	}
-
-    Boolean isNewUI = getParameter(request, "new", "0").equals("1");
-    if (isNewUI) {
-		request.setAttribute("skin", "lake");
-	    request.setAttribute("debug", "1");
-        isDev = true;
-    }
 	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
 	
     String mode = (String)request.getAttribute("mode");
@@ -104,11 +97,8 @@
 	if (skin == null) {
 		skin = application.getInitParameter("zimbraDefaultAdminSkin");
 	}
-
-    if (!isNewUI) { //only save old skin in cookie "ZA_SKIN"
-	    Cookie skinCookie = new Cookie("ZA_SKIN",skin);
-	    response.addCookie(skinCookie);
-    }
+	Cookie skinCookie = new Cookie("ZA_SKIN",skin);
+	response.addCookie(skinCookie);
 		
     String contextPath = request.getContextPath();
     if(contextPath == null || contextPath.equals("/")) {
@@ -121,7 +111,6 @@
 	pageContext.setAttribute("ext", ext);
 	pageContext.setAttribute("vers", vers);
 	pageContext.setAttribute("isDevMode", isDevMode);
-	pageContext.setAttribute("isNewUI", isNewUI);
 %>
 <%
 	Cookie testCookie = new Cookie("ZA_TEST", "true");
@@ -134,7 +123,7 @@
 <!--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -159,7 +148,6 @@
 		appCurrentSkin = "${zm:jsEncode(skin)}";
 		appVers   = "${zm:jsEncode(vers)}";
 		appDevMode     = ${isDevMode};
-        appNewUI     = ${isNewUI};
 	</script>
 <jsp:include page="Resources.jsp">
 	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZaMsg,AjxKeys" />
@@ -266,7 +254,7 @@ AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(pageContext.request.locale)}";
     </script>
   </head>
   <body>
-    <script type="text/javascript" src="<%=contextPath%>/js/skin.js?v=<%=vers %>&skin=<%=skin%>"></script>
+    <script type="text/javascript" src="<%=contextPath%>/js/skin.js?v=<%=vers %>"></script> 
     <%
 		// NOTE: This inserts raw HTML files from the user's skin
 		//       into the JSP output. It's done *this* way so that

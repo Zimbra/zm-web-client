@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -47,13 +47,6 @@ ZmVoiceApp.overviewFallbackApp		= ZmApp.PORTAL;
 
 ZmVoiceApp.prototype = new ZmApp;
 ZmVoiceApp.prototype.constructor = ZmVoiceApp;
-
-//voice mail formats
-ZmVoiceApp.AUDIO_MP3_FORMAT = "audio/mp3";
-ZmVoiceApp.AUDIO_WAV_FORMAT = "audio/wav";
-
-//Indicates if Voice items can be moved to Trash-folder
-ZmVoiceApp.hasTrashFolder = false;
 
 ZmVoiceApp.prototype.toString = 
 function() {
@@ -109,6 +102,7 @@ ZmVoiceApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_CHECK_VOICEMAIL, {textKey:"checkVoicemail", tooltipKey:"checkVoicemailTooltip"});
 	ZmOperation.registerOp(ZmId.OP_CHECK_CALLS, {textKey:"checkCalls", tooltipKey:"checkCallsTooltip"});
+	ZmOperation.registerOp(ZmId.OP_CALL_MANAGER, {textKey:"callManager", tooltipKey:"callManagerTooltip", image:"CallManager", shortcut:ZmKeyMap.CALL_MANAGER});
 	ZmOperation.registerOp(ZmId.OP_MARK_HEARD, {textKey:"markAsHeard", image:"MarkAsHeard", shortcut:ZmKeyMap.MARK_HEARD});
 	ZmOperation.registerOp(ZmId.OP_MARK_UNHEARD, {textKey:"markAsUnheard", image:"MarkAsUnheard", shortcut:ZmKeyMap.MARK_UNHEARD});
 	ZmOperation.registerOp(ZmId.OP_VIEW_BY_DATE, {textKey:"viewByDate"});
@@ -197,13 +191,13 @@ function() {
 			containerId: containerId,
 			posStyle: Dwt.ABSOLUTE_STYLE,
 			parent: appCtxt.getShell(),
-			controller: appCtxt.getOverviewController()
+			controller: this._opc
 		};
 
 		containerParams.id = ZmId.getOverviewContainerId(containerId);
 
 		// the overview container will create overviews for each account
-		this._overviewContainer = appCtxt.getOverviewController()._overviewContainer[containerId] =
+		this._overviewContainer = this._opc._overviewContainer[containerId] =
 			new ZmVoiceOverviewContainer(containerParams);
 	}
 
@@ -261,9 +255,6 @@ function(response) {
 
 		if (obj.folder && obj.folder.length) {
 			phone.folderTree = new ZmVoiceFolderTree();
-			if(i == 0) {
-				this._setHasTrashFolder(obj.folder[0].folder);
-			}
 			phone.folderTree.loadFromJs(obj.folder[0], phone);
 		}
 	}
@@ -275,19 +266,6 @@ function(response) {
 	this._voiceInfoCallbacks = null;
 	this._voiceInfoErrorCallbacks = null;
 	this._gettingVoiceInfo = false;
-};
-
-ZmVoiceApp.prototype._setHasTrashFolder =
-function(folders) {
-	if (folders && folders.length)  {
-		var len = folders.length;
-		for(var i = 0; i < len; i++) {
-			if(folders[i].id.indexOf(ZmVoiceFolder.TRASH_ID) == 0) {
-				ZmVoiceApp.hasTrashFolder = true;
-				return;
-			}
-		}
-	}
 };
 
 ZmVoiceApp.prototype._handleErrorResponseVoiceInfo =
@@ -400,7 +378,7 @@ function(folder, callback, response) {
 		var voiceList = vc.getList();
 		var item = voiceList.getById(this._paramId);
 		if (item) {
-			var view = vc.getListView();
+			var view = vc.getCurrentView();
 			view.setSelection(item, true);
 			view.setPlaying(item);
 		}
@@ -483,9 +461,7 @@ function(callback, ex) {
 	this._loadError = true;
 	switch (ex.code) {
 		case "voice.SECONDARY_NOT_ALLOWED":
-		case "voice.ACCOUNT_NOT_CPNI_COMPLIANT":
-		case "voice.ACCOUNT_CPNI_NOT_AVAILABLE":
-			this._showUpsellMessage(ex.code);
+			this._showUpsellMessage();
 			returnValue = true;
 			break;
 		case "voice.UNABLE_TO_RETRIEVE_PROFILE_SUMMARY":
@@ -504,29 +480,16 @@ function(callback, ex) {
 };
 
 ZmVoiceApp.prototype._showUpsellMessage =
-function(voice_code) {
+function() {
 	if (!this._showingSecondaryMessage) {
 		this._showingSecondaryMessage = true;
 		var view = new DwtControl({parent:appCtxt.getShell(), posStyle:Dwt.ABSOLUTE_STYLE});
 		view.setScrollStyle(DwtControl.SCROLL);
-		// voice.ACCOUNT_NOT_CPNI_COMPLIANT_PREFS or voice.ACCOUNT_CPNI_NOT_AVAILABLE_PREFS
-		var propval = null;
-		if (voice_code == "voice.ACCOUNT_NOT_CPNI_COMPLIANT" || voice_code == "voice.ACCOUNT_CPNI_NOT_AVAILABLE") {
-			propval = ZMsg[voice_code + "_PREFS"];
-		}
-		view.getHtmlElement().innerHTML =  propval || ZMsg["voice.SECONDARY_NOT_ALLOWED_VOICE"];
+		view.getHtmlElement().innerHTML = ZMsg["voice.SECONDARY_NOT_ALLOWED_VOICE"];
 		var elements = {};
-		elements[ZmAppViewMgr.C_APP_CONTENT] = view;
-		var hide = [ ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_TOOLBAR_TOP,
-					 ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_SASH ];
+		elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = view;
 		var viewName = "VoiceMessage";
-		this.createView({	viewId:			viewName,
-							appName:		this._name,
-							controller:		appCtxt.getAppController(),
-							elements:		elements,
-							hide:			hide,
-							isFullScreen:	true,
-							isAppView:		true});
+		this.createView({viewId: viewName, appName: this._name, elements: elements, isAppView: true});
 		this.pushView(viewName, true);
 	}
 }

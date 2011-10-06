@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -22,8 +22,10 @@ ZmMailPrefsPage = function(parent, section, controller) {
 ZmMailPrefsPage.prototype = new ZmPreferencesPage;
 ZmMailPrefsPage.prototype.constructor = ZmMailPrefsPage;
 
-ZmMailPrefsPage.prototype.isZmMailPrefsPage = true;
-ZmMailPrefsPage.prototype.toString = function() { return "ZmMailPrefsPage"; };
+ZmMailPrefsPage.prototype.toString =
+function() {
+	return "ZmMailPrefsPage";
+};
 
 //
 // ZmPreferencesPage methods
@@ -95,16 +97,16 @@ function(result) {
 ZmMailPrefsPage.prototype._setPopDownloadSinceControls =
 function() {
 	var popDownloadSinceValue = this.getFormObject(ZmSetting.POP_DOWNLOAD_SINCE_VALUE);
-    var value = appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE);
-	if (popDownloadSinceValue && value) {
-		var date = AjxDateFormat.parse("yyyyMMddHHmmss'Z'", value);
-		date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-
-		popDownloadSinceValue.setText(AjxMessageFormat.format(ZmMsg.externalAccessPopCurrentValue, date));
-        popDownloadSinceValue.setVisible(true);
-	}  else if( popDownloadSinceValue ) {
-        popDownloadSinceValue.setVisible(false);
-    }
+	if (popDownloadSinceValue) {
+		var value = appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE);
+		if (value) {
+			var date = AjxDateFormat.parse("yyyyMMddHHmmss'Z'", value);
+			date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+			value = date;
+		}
+		var pattern = value ? ZmMsg.externalAccessPopCurrentValue : ZmMsg.externalAccessPopNotSet;
+		popDownloadSinceValue.setText(AjxMessageFormat.format(pattern, value));
+	}
 
 	var popDownloadSince = this.getFormObject(ZmSetting.POP_DOWNLOAD_SINCE);
 	if (popDownloadSince) {
@@ -171,25 +173,13 @@ function() {
 		}
 	}
 
-	// Following code makes child nodes as siblings to separate the event-handling 
-	// between labels and input
-
-	var input = Dwt.byId(DwtId.makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
-	var inputParent =  input && input.parentNode;
-	var newParent = inputParent && inputParent.parentNode;
-
-	if (newParent){
-		var txtNode = input.nextSibling;
-		inputParent.removeChild(input);
-		newParent.appendChild(input);
-
-		var lbl = inputParent.cloneNode(false);
-		lbl.innerHTML = txtNode.data;
-		lbl.id = lbl.id + "_end";
-		inputParent.removeChild(txtNode);
-		newParent.appendChild(lbl);
+	// Break the link between the label and the radio button for MARK_READ_TIME, so that when the user clicks on the
+	// text input, focus doesn't immediately go to the radio button
+	var input = Dwt.byId(DwtId._makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
+	var lbl = input && input.parentNode;
+	if (lbl) {
+		lbl.htmlFor = "";
 	}
-
 	// If pref's value is number of seconds, populate the input
 	var value = appCtxt.get(ZmSetting.MARK_MSG_READ);
 	if (value > 0) {
@@ -377,42 +367,17 @@ function() {
 };
 
 ZmMailPrefsPage.prototype._postSave =
-function(changed) {
+function() {
     var form = this.getFormObject(ZmSetting.POLLING_INTERVAL);
     if (form && form.getSelectedOption() && form.getSelectedOption().getDisplayValue() == ZmMsg.pollInstant && appCtxt.get(ZmSetting.INSTANT_NOTIFY)
             && !appCtxt.getAppController().getInstantNotify()){
         //turn on instant notify if not already on
         appCtxt.getAppController().setInstantNotify(true);
-    } else {
+    } else{
         //turn instant notify off if it's on
-        if (appCtxt.getAppController().getInstantNotify()) {
+        if (appCtxt.getAppController().getInstantNotify())
             appCtxt.getAppController().setInstantNotify(false);
-		}
     }
-
-    if (appCtxt.get(ZmSetting.VACATION_MSG_ENABLED)) {
-        var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
-        var node = soapDoc.set("pref", "TRUE");
-        node.setAttribute("name", "zimbraPrefOutOfOfficeStatusAlertOnLogin");
-        appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true});
-    }
-	
-	if (changed && changed[ZmSetting.CONV_MODE]) {
-		var cd = appCtxt.getYesNoMsgDialog();
-		cd.reset();
-		cd.registerCallback(DwtDialog.YES_BUTTON, this._convModeChangeYesCallback, this, [cd]);
-		cd.setMessage(ZmMsg.convModeConfirmChange, DwtMessageDialog.WARNING_STYLE);
-		cd.popup();
-	}
-};
-
-ZmMailPrefsPage.prototype._convModeChangeYesCallback =
-function(dialog) {
-	dialog.popdown();
-	window.onbeforeunload = null;
-	var url = AjxUtil.formatUrl();
-	DBG.println(AjxDebug.DBG1, "Conv mode change, redirect to: " + url);
-	ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
 };
 
 // ??? SHOULD THIS BE IN A NEW FILE?       ???

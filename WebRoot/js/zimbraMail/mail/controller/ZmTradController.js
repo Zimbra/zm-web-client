@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -23,26 +23,20 @@
  *
  * @author Parag Shah
  * 
- * @param {DwtControl}					container					the containing shell
- * @param {ZmApp}						mailApp						the containing application
- * @param {constant}					type						type of controller
- * @param {string}						sessionId					the session id
- * @param {ZmSearchResultsController}	searchResultsController		containing controller
+ * @param {ZmComposite}	container	the containing shell
+ * @param {ZmMailApp}	mailApp			the containing app
  * 
  * @extends		ZmDoublePaneController
  * 
  * @private
  */
-ZmTradController = function(container, mailApp, type, sessionId, searchResultsController) {
-	ZmDoublePaneController.apply(this, arguments);
+ZmTradController = function(container, mailApp) {
+	ZmDoublePaneController.call(this, container, mailApp);
 	this._msgControllerMode = ZmId.VIEW_TRAD;
 };
 
 ZmTradController.prototype = new ZmDoublePaneController;
 ZmTradController.prototype.constructor = ZmTradController;
-
-ZmTradController.prototype.isZmTradController = true;
-ZmTradController.prototype.toString = function() { return "ZmTradController"; };
 
 ZmMailListController.GROUP_BY_ITEM[ZmId.VIEW_TRAD]		= ZmItem.MSG;
 ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_TRAD]	= ZmSetting.GROUP_BY_MESSAGE;
@@ -55,11 +49,10 @@ ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_TRAD);
 
 // Public methods
 
-ZmTradController.getDefaultViewType =
+ZmTradController.prototype.toString = 
 function() {
-	return ZmId.VIEW_TRAD;
+	return "ZmTradController";
 };
-ZmTradController.prototype.getDefaultViewType = ZmTradController.getDefaultViewType;
 
 ZmTradController.prototype.show =
 function(search) {
@@ -79,16 +72,20 @@ function() {
 							controller:this, dropTgt:this._dropTgt}));
 };
 
+ZmTradController.prototype._getViewType =
+function() {
+	return ZmId.VIEW_TRAD;
+};
+
 ZmTradController.prototype._paginate = 
 function(view, bPageForward, convIdx, limit) {
-	view = view || this._currentViewId;
+	view = view ? view : this._currentView;
 	return ZmDoublePaneController.prototype._paginate.call(this, view, bPageForward, convIdx, limit);
 };
 
 ZmTradController.prototype._resetNavToolBarButtons = 
 function(view) {
 
-	view = view || this.getCurrentViewId();
 	ZmDoublePaneController.prototype._resetNavToolBarButtons.call(this, view);
 	if (!this._navToolBar[view]) { return; }
 

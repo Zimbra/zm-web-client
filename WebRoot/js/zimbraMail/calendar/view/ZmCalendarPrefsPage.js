@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -42,13 +42,17 @@ ZmCalendarPrefsPage = function(parent, section, controller) {
 
 	this._currentSelection = {};
 	this._initAutocomplete();
+
+
 };
 
 ZmCalendarPrefsPage.prototype = new ZmPreferencesPage;
 ZmCalendarPrefsPage.prototype.constructor = ZmCalendarPrefsPage;
 
-ZmCalendarPrefsPage.prototype.isZmCalendarPrefsPage = true;
-ZmCalendarPrefsPage.prototype.toString = function() { return "ZmCalendarPrefsPage"; };
+ZmCalendarPrefsPage.prototype.toString =
+function() {
+	return "ZmCalendarPrefsPage";
+};
 
 ZmCalendarPrefsPage.prototype.reset =
 function(useDefaults) {
@@ -428,11 +432,10 @@ function() {
 		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
 		var contactsLoader = contactsClass.getContactList;
 		var params = {
-			dataClass:	appCtxt.getAutocompleter(),
-			separator:	"",
-			matchValue:	ZmAutocomplete.AC_VALUE_EMAIL,
-			options:	{galOnly:true},
-			contextId:	this.toString()
+			dataClass:appCtxt.getAutocompleter(),
+			separator:"",
+			matchValue:ZmAutocomplete.AC_VALUE_EMAIL,
+			options:{galOnly:true}
 		};
 		this._acList = new ZmAutocompleteListView(params);
 	}

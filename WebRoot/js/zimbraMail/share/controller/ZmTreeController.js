@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -45,7 +45,6 @@ ZmTreeController = function(type) {
 	// common listeners
 	this._listeners = {};
 	this._listeners[ZmOperation.DELETE]			= new AjxListener(this, this._deleteListener);
-	this._listeners[ZmOperation.DELETE_WITHOUT_SHORTCUT]			= new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.MOVE]			= new AjxListener(this, this._moveListener);
 	this._listeners[ZmOperation.EXPAND_ALL]		= new AjxListener(this, this._expandAllListener);
 	this._listeners[ZmOperation.MARK_ALL_READ]	= new AjxListener(this, this._markAllReadListener);
@@ -582,10 +581,7 @@ ZmTreeController.prototype._createActionMenu =
 function(parent, menuItems) {
 	if (!menuItems) return;
 
-	var app = appCtxt.getCurrentController() && appCtxt.getCurrentController().getKeyMapName();
-	var id = app ? ("ZmActionMenu_" + ZmKeyMap.MAP_NAME_R[app]):Dwt.getNextId("ZmActionMenu_")
-	var actionMenu = new ZmActionMenu({parent:parent, menuItems:menuItems, id: id});
-
+	var actionMenu = new ZmActionMenu({parent:parent, menuItems:menuItems});
 	menuItems = actionMenu.opList;
 	for (var i = 0; i < menuItems.length; i++) {
 		var menuItem = menuItems[i];
@@ -642,7 +638,7 @@ function(params) {
 	var funcName = ZmOrganizer.CREATE_FUNC[this.type];
 	if (funcName) {
 		var func = eval(funcName);
-		return func(params);
+		func(params);
 	}
 };
 
@@ -667,10 +663,10 @@ function(organizer) {
     var recursive = false;
     organizer.empty(recursive);
 	var ctlr = appCtxt.getCurrentController();
-	if (ctlr && ctlr._getSearchFolderId && ctlr.getListView) {
+	if (ctlr && ctlr._getSearchFolderId) {
 		var folderId = ctlr._getSearchFolderId();
 		if (folderId && (folderId == organizer.id)) {
-			var view = ctlr.getListView();
+			var view = ctlr.getCurrentView();
 			view._resetList();
 			view._setNoResultsHtml();
 		}
@@ -699,8 +695,8 @@ function(organizer, name) {
  * @private
  */
 ZmTreeController.prototype._doMove =
-function(organizer, folder, folderName) {
-	organizer.move(folder, false, null, null, folderName);
+function(organizer, folder) {
+	organizer.move(folder);
 };
 
 /**
@@ -808,7 +804,7 @@ function(ev, overview, treeItem, item) {
 	overview.itemSelected(treeItem);
 
 	if (ev.kbNavEvent) {
-		Dwt.scrollIntoView(treeItem._itemDiv, overview.getHtmlElement());
+		DwtControl._scrollIntoView(treeItem._itemDiv, overview.getHtmlElement());
 		ZmController.noFocus = true;
 	}
 
@@ -990,7 +986,6 @@ function(ev, treeView, overviewId) {
 				} else {
 					node = this._addNew(treeView, parentNode, organizer, idx); // add to new parent
 				}
-                this.createDataSource(organizer);
 			} else if (ev.event == ZmEvent.E_MOVE) {
 				node.dispose();
 				if (parentNode) {
@@ -1098,11 +1093,6 @@ function(ev, account) {
 
 	ZmController.showDialog(newDialog, this._newCb, this._pendingActionData, account);
 	newDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newDialog);
-};
-
-ZmTreeController.prototype.createDataSource =
-function(organizer) {
-    //override
 };
 
 /**

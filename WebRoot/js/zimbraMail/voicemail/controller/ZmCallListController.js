@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -24,14 +24,20 @@ ZmCallListController = function(container, app) {
 ZmCallListController.prototype = new ZmVoiceListController;
 ZmCallListController.prototype.constructor = ZmCallListController;
 
-ZmCallListController.prototype.isZmCallListController = true;
-ZmCallListController.prototype.toString = function() { return "ZmCallListController"; };
+ZmCallListController.prototype.toString =
+function() {
+	return "ZmCallListController";
+};
 
-ZmCallListController.getDefaultViewType =
+ZmCallListController.prototype._defaultView =
 function() {
 	return ZmId.VIEW_CALL_LIST;
 };
-ZmCallListController.prototype.getDefaultViewType = ZmCallListController.getDefaultViewType;
+
+ZmCallListController.prototype._getViewType = 
+function() {
+	return ZmId.VIEW_CALL_LIST;
+};
 
 ZmCallListController.prototype._createNewView = 
 function(view) {
@@ -44,6 +50,8 @@ function() {
     list.push(ZmOperation.CHECK_CALLS);
     list.push(ZmOperation.SEP);
 	list.push(ZmOperation.PRINT);
+    list.push(ZmOperation.SEP);
+    list.push(ZmOperation.CALL_MANAGER);
 	return list;
 };
 
@@ -82,6 +90,9 @@ function() {
 ZmCallListController.prototype.handleKeyAction =
 function(actionCode) {
 	switch (actionCode) {
+        case ZmKeyMap.CALL_MANAGER:
+            this._callManagerListener();
+            break;
 		case ZmKeyMap.PRINT:
 			this._printListener();
 			break;

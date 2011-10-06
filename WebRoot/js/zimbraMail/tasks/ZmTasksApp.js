@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -284,23 +284,11 @@ function(results, callback) {
 
 ZmTasksApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
-	var folderId = results && results.search && results.search.isSimple() && results.search.folderId;
-	var controller = this.getTaskListController();
-	controller.show(results, folderId);
+	var folderId = results && results.search && results.search.singleTerm && results.search.folderId;
+	this.getTaskListController().show(results, folderId);
 	this._setLoadedTime(this.toString(), new Date());
-	if (callback) {
-		callback.run(controller);
-	}
+	if (callback) callback.run();
 };
-
-ZmTasksApp.prototype.runRefresh =
-function() {
-	if (window.ZmTaskListController === undefined) { //app not loaded yet - no need to update anything.
-		return;
-	}
-	this.getTaskListController().runRefresh();
-};
-
 
 // common API shared by calendar app
 
@@ -334,8 +322,7 @@ function() {
  */
 ZmTasksApp.prototype.getTaskController =
 function(sessionId) {
-	return this.getSessionController({controllerClass:	"ZmTaskController",
-									  sessionId:		sessionId});
+	return this.getSessionController(ZmId.VIEW_TASKEDIT, "ZmTaskController", sessionId);
 };
 
 /**
