@@ -49,16 +49,24 @@ ZmSearchResultsToolBar.prototype._createHtml =
 function() {
 
 	this.getHtmlElement().innerHTML = AjxTemplate.expand(this.TEMPLATE, {id:this._htmlElId});
-
+	
 	// add search input field
-	var inputFieldId = this._htmlElId + "_inputField";
-	var inputField = document.getElementById(inputFieldId);
-	if (inputField) {
-		this._searchField = new DwtInputField({parent:this, inputId:ZmId.SEARCHRESULTS_INPUTFIELD});
+	var inputFieldCellId = this._htmlElId + "_inputFieldCell";
+	var inputFieldCell = document.getElementById(inputFieldCellId);
+	if (inputFieldCell) {
+		var aifParams = {
+			parent:					this,
+			strictMode:				false,
+			bubbleAddedCallback:	this._bubbleChange.bind(this),
+			bubbleRemovedCallback:	this._bubbleChange.bind(this)
+		}
+		var aif = this._searchField = new ZmAddressInputField(aifParams);
+		aif.reparentHtmlElement(inputFieldCell);
+		
 		var inputEl = this._searchField.getInputElement();
 		inputEl.className = "search_results_input";
-		this._searchField.reparentHtmlElement(inputFieldId);
 	}
+	
 
 	// add search button
 	this._button[ZmSearchToolBar.SEARCH_BUTTON] = ZmToolBar.addButton({
@@ -80,12 +88,67 @@ function() {
 			});
 };
 
-// use the main search toolbar's autocomplete list
+// TODO: use the main search toolbar's autocomplete list - need to manage location callback
 ZmSearchResultsToolBar.prototype.initAutocomplete =
 function() {
-	var mainSearchToolbar = appCtxt.getSearchController().getSearchToolbar();
-	var aclv = mainSearchToolbar.getAutocompleteListView();
-	var input = this.getSearchField();
-	aclv.handle(input);
-	aclv.addCallback(ZmAutocompleteListView.CB_KEYDOWN, new AjxCallback(this, this._handleKeyDown), input.id);
+	if (!this._acList) {
+		this._acList = new ZmAutocompleteListView(this._getAutocompleteParams());
+		this._acList.handle(this.getSearchField(), this._searchField._htmlElId);
+	}
+	this._searchField.setAutocompleteListView(this._acList);
+	
+//	var mainSearchToolbar = appCtxt.getSearchController().getSearchToolbar();
+//	var aclv = this._acList = mainSearchToolbar.getAutocompleteListView();
+//	var input = this.getSearchField();
+//	aclv.handle(input);
+//	aclv.addCallback(ZmAutocompleteListView.CB_KEYDOWN, new AjxCallback(this, this._handleKeyDown), input.id);
+};
+
+ZmSearchResultsToolBar.prototype._getAutocompleteParams =
+function() {
+	var params = ZmSearchToolBar.prototype._getAutocompleteParams.apply(this, arguments);
+	params.options = { addrBubbles: true };
+	return params;
+};
+
+ZmSearchResultsToolBar.prototype.setSearch =
+function(search) {
+	var tokens = search.getTokens();
+	var terms = [];
+	var noBubbles = false;
+	for (var i = 0, len = tokens.length; i < len; i++) {
+		var t = tokens[i];
+		if (t.type == ZmParsedQuery.TERM) {
+			terms.push((t.op == ZmParsedQuery.OP_CONTENT) ? t.arg : t.op + ":" + t.arg);
+		}
+		else if (t.type == ZmParsedQuery.GROUP) {
+			noBubbles = true;
+			break;
+		}
+		else if (t.type == ZmParsedQuery.COND) {
+			if (t.op != ZmParsedQuery.COND_AND) {
+				noBubbles = true;
+				break;
+			}
+		}
+	}
+	if (noBubbles) {
+		this._searchField.setInputValue(search.query + " ");
+	}
+	else {
+		this._settingSearch = true;
+		this._searchField.clear(true);
+		for (var i = 0, len = terms.length; i < len; i++) {
+			this._searchField.addBubble({address:terms[i]});
+		}
+		this._settingSearch = false;
+	}
+};
+
+// Don't let the removal or addition of a bubble when we're setting up trigger another search.
+ZmSearchResultsToolBar.prototype._bubbleChange =
+function() {
+	if (!this._settingSearch) {
+		this._handleEnterKeyPress();
+	}
 };

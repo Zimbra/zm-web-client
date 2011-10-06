@@ -28,11 +28,15 @@
  * @author Conrad Damon
  *
  * @param {hash}					params						hash of params:
- * @param {ZmAutocompleteListView}	params.autocompleteListView	associated autocomplete control
- * @param {string}      			params.inputId				an explicit ID to use for the control's INPUT element
- * @param {string}					params.templateId			custom template to use
- * @param {string}					params.type					arbitrary type to uniquely identify this among others
- * @param {boolean}					params.strictMode			if true (default), bubbles must contain valid addresses
+ * @param {ZmAutocompleteListView}	autocompleteListView		associated autocomplete control
+ * @param {string}      			inputId						an explicit ID to use for the control's INPUT element
+ * @param {string}					templateId					custom template to use
+ * @param {string}					type						arbitrary type to uniquely identify this among others
+ * @param {boolean}					strictMode					if true (default), bubbles must contain valid addresses
+ * @param {AjxCallback|function}	bubbleAddedCallback			called when a bubble is added
+ * @param {AjxCallback|function}	bubbleRemovedCallback		called when a bubble is removed
+ * @param {AjxCallback|function}	bubbleMenuCreatedCallback	called when the action menu has been created
+ * @param {AjxCallback|function}	bubbleMenuResetOperationsCallback	called when the action menu has reset its operations
  */
 ZmAddressInputField = function(params) {
 
@@ -220,8 +224,11 @@ function(bubble, index, noFocus) {
 
 ZmAddressInputField.prototype._hasValidAddress =
 function(params) {
+	if (!this._strictMode) {
+		return true;
+	}
 	var addr = (params.addrObj && params.addrObj.getAddress()) || params.address || (params.match && params.match.email);
-	return (!this._strictMode || Boolean(AjxEmailAddress.parse(addr)));
+	return (Boolean(AjxEmailAddress.parse(addr)));
 };
 
 /**
@@ -260,9 +267,9 @@ function(bubbleId, skipNotify) {
  * Removes all bubbles from the holding area.
  */
 ZmAddressInputField.prototype.clear =
-function() {
+function(skipNotify) {
 	for (var id in this._bubble) {
-		this.removeBubble(id);
+		this.removeBubble(id, skipNotify);
 	}
 	this._reset();
 };
@@ -314,6 +321,23 @@ function(text, add, skipNotify) {
 	this._setInputValue(bad.length ? bad.join(this._separator) : "");
 };
 
+/**
+ * Sets the value of the input without looking for email addresses. No bubbles will be added.
+ * 
+ * @param {string}	text		new input content
+ */
+ZmAddressInputField.prototype.setInputValue =
+function(text) {
+	this._input.value = text;
+	this._resizeInput();
+};
+
+/**
+ * Adds address(es) to the input.
+ * 
+ * @param {string}	text		email addresses
+ * @param {boolean}	skipNotify	if true, don't call bubbleAddedCallback
+ */
 ZmAddressInputField.prototype.addValue =
 function(text, skipNotify) {
 	this.setValue(text, true, skipNotify);
@@ -559,7 +583,6 @@ function(params) {
     var args = {container:this._holder, threshold:10, amount:15, interval:5, id:this._holderId};
     this._dndScrollCallback = DwtControl._dndScrollCallback.bind(null, [args]);
     this._dndScrollId = this._holderId;
-
 };
 
 ZmAddressInputField.prototype._reset =
@@ -597,6 +620,11 @@ function() {
 ZmAddressInputField.prototype.blur =
 function() {
 	this._input.blur();
+};
+
+ZmAddressInputField.prototype.moveCursorToEnd =
+function() {
+	Dwt.moveCursorToEnd(this._input);
 };
 
 ZmAddressInputField.prototype._setInputValue =

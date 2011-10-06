@@ -594,6 +594,9 @@ ZmSearchAutocomplete = function() {
     }
 };
 
+ZmSearchAutocomplete.prototype.isZmSearchAutocomplete = true;
+ZmSearchAutocomplete.prototype.toString = function() { return "ZmSearchAutocomplete"; };
+		
 ZmSearchAutocomplete.ICON = {};
 ZmSearchAutocomplete.ICON["attachment"]	= "Attachment";
 ZmSearchAutocomplete.ICON["phone"]		= "Telephone";
@@ -627,6 +630,10 @@ function(str, callback, aclv, options) {
 
 	str = str.toLowerCase().replace(/"/g, '');
 
+	var idx = str.lastIndexOf(" ");
+	if (idx != -1 && idx <= str.length) {
+		str = str.substr(idx + 1);
+	}
 	var m = str.match(/\b-?([a-z]+):/);
 	if (!(m && m.length)) {
 		callback();
@@ -647,6 +654,13 @@ function(str, callback, aclv, options) {
 		this._list[opHash.listType] = [];
 		opHash.loader(opHash.listType, respCallback);
 	}
+};
+
+ZmSearchAutocomplete.prototype.isComplete =
+function(str) {
+	var pq = new ZmParsedQuery(str);
+	var tokens = pq.getTokens();
+	return (!pq.parseFailed && pq.numTerms == 1 && (tokens[0].type == ZmParsedQuery.TERM));
 };
 
 /**

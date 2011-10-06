@@ -887,6 +887,10 @@ function() {
 	return false;
 };
 
+ZmSearch.prototype.getTokens =
+function() {
+	return this.parsedQuery && this.parsedQuery.getTokens();
+};
 
 
 
@@ -909,6 +913,8 @@ ZmParsedQuery.TERM	= "TERM";	// search operator such as "in"
 ZmParsedQuery.COND	= "COND";	// AND OR NOT
 ZmParsedQuery.GROUP	= "GROUP";	// ( or )
 
+ZmParsedQuery.OP_CONTENT	= "content";
+
 ZmParsedQuery.OP_LIST = [
 	"content", "subject", "msgid", "envto", "envfrom", "contact", "to", "from", "cc", "tofrom", 
 	"tocc", "fromcc", "tofromcc", "in", "under", "inid", "underid", "has", "filename", "type", 
@@ -919,7 +925,14 @@ ZmParsedQuery.OP_LIST = [
 ];
 ZmParsedQuery.IS_OP		= AjxUtil.arrayAsHash(ZmParsedQuery.OP_LIST);
 
-ZmParsedQuery.COND_OP	= {"and": " && ", "or": " || ", "not": " !"};
+ZmParsedQuery.COND_AND	= "and"
+ZmParsedQuery.COND_OR	= "or";
+ZmParsedQuery.COND_NOT	= "not";
+
+ZmParsedQuery.COND_OP = {};
+ZmParsedQuery.COND_OP[ZmParsedQuery.COND_AND]	= " && ";
+ZmParsedQuery.COND_OP[ZmParsedQuery.COND_OR]	= " || ";
+ZmParsedQuery.COND_OP[ZmParsedQuery.COND_NOT]	= " !";
 
 ZmParsedQuery.EOW_LIST	= [" ", ":", "(", ")"];
 ZmParsedQuery.IS_EOW	= AjxUtil.arrayAsHash(ZmParsedQuery.EOW_LIST);
@@ -971,12 +984,12 @@ function(query) {
 	this.numTerms = 0;
 	
 	var len = query.length;
-	var tokens = [], ch, lastCh, op, word = "", fail = false, eow = false, endOk = true, compound = 0;
+	var tokens = [], ch, lastCh, op, word = "", isEow = false, endOk = true, compound = 0;
 	var pos = skipSpace(query, 0);
 	while (pos < len) {
 		lastCh = (ch != " ") ? ch : lastCh;
 		ch = query.charAt(pos);
-		eow = ZmParsedQuery.IS_EOW[ch];
+		isEow = ZmParsedQuery.IS_EOW[ch];
 
 		if (ch == ":") {
 			if (ZmParsedQuery.IS_OP[word]) {
@@ -989,10 +1002,11 @@ function(query) {
 			continue;
 		}
 
-		if (eow) {
-			var condOp = ZmParsedQuery.COND_OP[word.toLowerCase()];
-			if (op && word && !(condOp && compound > 0)) {
-				tokens.push({type: ZmParsedQuery.TERM, op: op, arg: word});
+		if (isEow) {
+			var lcWord = word.toLowerCase();
+			var isCondOp = ZmParsedQuery.COND_OP[lcWord];
+			if (op && word && !(isCondOp && compound > 0)) {
+				tokens.push({type: ZmParsedQuery.TERM, op: op, arg: lcWord});
 				this.numTerms++;
 				if (compound == 0) {
 					op = "";
@@ -1000,15 +1014,14 @@ function(query) {
 				word = "";
 				endOk = true;
 			} else if (!op || (op && compound > 0)) {
-				if (condOp) {
-					var cond = word.toLowerCase();
-					tokens.push({type: ZmParsedQuery.COND, op: condOp, arg: cond});
+				if (isCondOp) {
+					tokens.push({type: ZmParsedQuery.COND, op: lcWord});
 					endOk = false;
-					if (cond == "or") {
+					if (lcWord == ZmParsedQuery.COND_OR) {
 						this.hasOrTerm = true;
 					}
 				} else if (word) {
-					tokens.push({type: ZmParsedQuery.TERM, op: "content", arg: word, bareWord: true});
+					tokens.push({type: ZmParsedQuery.TERM, op: ZmParsedQuery.OP_CONTENT, arg: word, bareWord: true});
 					this.numTerms++;
 				}
 				word = "";
@@ -1039,8 +1052,7 @@ function(query) {
 			tokens.push({type: ZmParsedQuery.GROUP, op: ch});
 			pos = skipSpace(query, pos + 1);
 		} else if (ch == "-" && !word) {
-			var realOp = "not";
-			tokens.push({type: ZmParsedQuery.COND, op: ZmParsedQuery.COND_OP[realOp], arg: realOp});
+			tokens.push({type: ZmParsedQuery.COND, op: ZmParsedQuery.COND_NOT});
 			pos = skipSpace(query, pos + 1);
 			endOk = false;
 		} else {
@@ -1057,7 +1069,7 @@ function(query) {
 		this.numTerms++;
 		endOk = true;
 	} else if (!op && word) {
-		tokens.push({type: ZmParsedQuery.TERM, op: "content", arg: word, bareWord: true});
+		tokens.push({type: ZmParsedQuery.TERM, op: ZmParsedQuery.OP_CONTENT, arg: word, bareWord: true});
 		this.numTerms++;
 	}
 
@@ -1084,7 +1096,7 @@ function() {
 ZmParsedQuery.prototype.getMatchFunction =
 function() {
 	
-	if (this.parseFailed || this.hasTerm("content")) {
+	if (this.parseFailed || this.hasTerm(ZmParsedQuery.OP_CONTENT)) {
 		return null;
 	}
 	
@@ -1114,11 +1126,15 @@ function() {
 				return null;
 			}
 			var next = this._tokens[i + 1];
-			if (next && (next.type == ZmParsedQuery.TERM || next == ZmParsedQuery.COND["not"] || next == "(")) {
-				func.push(ZmParsedQuery.COND_OP["and"]);
+			if (next && (next.type == ZmParsedQuery.TERM || next == ZmParsedQuery.COND[ZmParsedQuery.COND_NOT] || next == "(")) {
+				func.push(ZmParsedQuery.COND_OP[ZmParsedQuery.COND_AND]);
 			}
-		} else {
-			func.push(t);
+		}
+		else if (t.type == ZmParsedQuery.COND) {
+			func.push(ZmParsedQuery.COND_OP[t.op]);
+		}
+		else if (t.type == ZmParsedQuery.GROUP) {
+			func.push(t.op);
 		}
 	}
 	func.push(")");
@@ -1149,7 +1165,7 @@ function() {
 			query += t.op;
 		}
 		else if (t.type == ZmParsedQuery.COND) {
-			query += " " + t.arg + " ";
+			query += t.op;
 		}
 		else if (t.type == ZmParsedQuery.TERM) {
 			query += t.op + ":" + t.arg;

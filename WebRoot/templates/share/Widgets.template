@@ -91,9 +91,7 @@
 	<table class='ZmSearchToolbarTable'>
 		<tr>
 			<td class='label'><$= ZmMsg.searchResultsLabel $></td>
-			<td>
-			    <div id='${id}_inputField'></div>
-			</td>
+			<td id='${id}_inputFieldCell' width='70%'></td>
 			<td id='${id}_searchButton'></td>
 			<td id='${id}_saveButton'></td>
 		</tr>

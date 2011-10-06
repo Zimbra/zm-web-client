@@ -69,8 +69,6 @@ function(results) {
 ZmSearchResultsController.prototype._initialize =
 function() {
 
-	if (this._initialized) { return; }
-	
 	this._toolbar = new ZmSearchResultsToolBar({
 				parent:			this._container,
 				id:				ZmId.SEARCHRESULTS_TOOLBAR,
@@ -82,8 +80,6 @@ function() {
 	this._toolbar.registerEnterCallback(this._searchListener.bind(this));
 
 	this._filterPanel = new ZmSearchResultsFilterPanel({parent:this._container});
-	
-	this._initialized = true;
 };
 
 // TODO: handle reuse
@@ -95,22 +91,32 @@ function() {
 ZmSearchResultsController.prototype._displayResults =
 function(search, resultsCtlr) {
 	
-	this._toolbar.setSearchFieldValue(AjxStringUtil.trim(search.query) + " ");
-	
-	var elements = {};
-	elements[ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR] = this._toolbar;
-	elements[ZmAppViewMgr.C_TREE] = this._filterPanel;
-	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = resultsCtlr.getCurrentToolbar();
-	elements[ZmAppViewMgr.C_APP_CONTENT] = resultsCtlr.getCurrentView();
-	
-	this._app.createView({	viewId:		this._currentViewId,
-							viewType:	this._currentViewType,
-							elements:	elements,
-							controller:	this,
-							hide:		[ ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_TREE_FOOTER ],
-							tabParams:	this._getTabParams()});
-	this._app.pushView(this._currentViewId);
-	
+	if (appCtxt.getCurrentViewId() == this._currentViewId) {
+		var elements = {};
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = resultsCtlr.getCurrentToolbar();
+		elements[ZmAppViewMgr.C_APP_CONTENT] = resultsCtlr.getCurrentView();
+		appCtxt.getAppViewMgr().setViewComponents(this._currentViewId, elements, true);
+	}
+	else {
+		this._toolbar.setSearch(search);
+		
+		var elements = {};
+		elements[ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR] = this._toolbar;
+		elements[ZmAppViewMgr.C_TREE] = this._filterPanel;
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = resultsCtlr.getCurrentToolbar();
+		elements[ZmAppViewMgr.C_APP_CONTENT] = resultsCtlr.getCurrentView();
+		
+		this._app.createView({	viewId:		this._currentViewId,
+								viewType:	this._currentViewType,
+								elements:	elements,
+								controller:	this,
+								hide:		[ ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_TREE_FOOTER ],
+								tabParams:	this._getTabParams()});
+		this._app.pushView(this._currentViewId);
+		
+//		var button = appCtxt.getAppChooser().getButton(this.tabId);
+//		var menu = new DwtMenu({parent: button});
+	}
 	setTimeout(this._toolbar.focus.bind(this._toolbar), 100);
 };
 

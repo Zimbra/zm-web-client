@@ -312,6 +312,7 @@ function(viewId, components, show, app) {
 	if (show) {
 		this._fitToContainer(list);
 	}
+	this._checkTree(viewId);
 };
 ZmAppViewMgr.prototype.addComponents = ZmAppViewMgr.prototype.setViewComponents;
 

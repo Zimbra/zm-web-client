@@ -1249,7 +1249,7 @@ function() {
 ZmCalViewController.prototype.isCurrent =
 function() {
     var thisView = this.isSearchResults ? this.searchResultsController.getCurrentViewId() : this._currentViewId;
-    var currentView = this._viewMgr.getCurrentViewName();
+    var currentView = this._viewMgr && this._viewMgr.getCurrentViewName();
     return (thisView == currentView);
 };
 

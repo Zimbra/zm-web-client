@@ -128,6 +128,7 @@
  * @param	{AjxCallback}	keyUpCallback		the additional client ONKEYUP handler
  * @param	{string}		contextId			ID from parent
  * @param	{Hash}			options				the additional options for the data class
+ * @param	{function}		locationCallback	used to customize list location (optional)
  * 
  * @extends		DwtComposite
  */
@@ -149,6 +150,7 @@ ZmAutocompleteListView = function(params) {
 	this._matchValue = params.matchValue;
 	this._separator = (params.separator != null) ? params.separator : AjxEmailAddress.SEPARATOR;
     this._options = params.options || {};
+	this._locationCallback = params.locationCallback;
 
 	this._callbacks = {};
 	for (var i = 0; i < ZmAutocompleteListView.CALLBACKS.length; i++) {
@@ -448,6 +450,7 @@ ZmAutocompleteListView.prototype.handle =
 function(element, addrInputId) {
 	
 	var elId = element.id = element.id || Dwt.getNextId();
+	DBG.println("ac", "HANDLE " + elId);
 	// TODO: use el id instead of expando
 	element._aclvId = this._htmlElId;
 	if (addrInputId) {
@@ -463,6 +466,7 @@ function(element, addrInputId) {
 
 ZmAutocompleteListView.prototype.unhandle =
 function(element) {
+	DBG.println("ac", "UNHANDLE " + element.id);
 	Dwt.clearHandler(element, DwtEvent.ONKEYDOWN);
 	Dwt.clearHandler(element, DwtEvent.ONKEYPRESS);
 	Dwt.clearHandler(element, DwtEvent.ONKEYUP);
@@ -1146,6 +1150,10 @@ function(loc) {
 ZmAutocompleteListView.prototype._getDefaultLoc = 
 function() {
 
+	if (this._locationCallback) {
+		return this._locationCallback();
+	}
+	
 	var el = this._currentContext && this._currentContext.element;
 	if (!el) { return {}; }
 	

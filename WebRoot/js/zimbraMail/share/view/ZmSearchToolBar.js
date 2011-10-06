@@ -223,26 +223,51 @@ function(ev) {
  */
 ZmSearchToolBar.prototype.initAutocomplete =
 function() {
-
 	if (!this._acList) {
-		var params = {
-			dataClass:			new ZmSearchAutocomplete(),
-			matchValue:			"matchText",
-			delims:				[" ", "\t"],
-			delimCodes:			[3, 13, 32, 9],
-			separator:			" ",
-			keyDownCallback:	new AjxCallback(this, this._handleKeyDown),
-			contextId:			this.toString()
-		};
-		this._acList = new ZmAutocompleteListView(params);
+		this._acList = new ZmAutocompleteListView(this._getAutocompleteParams());
 		this._acList.handle(this.getSearchField());
 	}
+};
+
+ZmSearchToolBar.prototype._getAutocompleteParams =
+function() {
+	var params = {
+		dataClass:			new ZmSearchAutocomplete(),
+		matchValue:			"matchText",
+		delims:				[" ", "\t"],
+		delimCodes:			[3, 13, 32, 9],
+		separator:			" ",
+		keyDownCallback:	new AjxCallback(this, this._handleKeyDown),
+		contextId:			this.toString(),
+		locationCallback:	this._getAcLocation.bind(this)
+	};
+	return params;
 };
 
 ZmSearchToolBar.prototype.getAutocompleteListView =
 function() {
 	return this._acList;
 };
+
+ZmSearchToolBar.prototype._getAcLocation =
+function() {
+	var el = this._searchField.getInputElement();
+	if (!el) { return {}; }
+	
+	var elLoc = Dwt.getLocation(el);
+	var elSize = Dwt.getSize(el);
+	var strWidth = AjxStringUtil.getWidth(el.value);
+	if (AjxEnv.isWindows && (AjxEnv.isFirefox || AjxEnv.isSafari || AjxEnv.isChrome) ){
+		// FF/Win: fudge factor since string is longer in INPUT than when measured in SPAN
+		strWidth = strWidth * 1.2;
+	}
+	var x = elLoc.x + strWidth;
+	var y = elLoc.y + elSize.y;
+	DwtPoint.tmp.set(x, y);
+	return DwtPoint.tmp;
+};
+
+
 
 
 /**
@@ -559,7 +584,7 @@ function() {
 	var id = this.getSearchType();
 	var needPeople = (id == ZmItem.CONTACT || id == ZmId.SEARCH_GAL);
 
-	if (!this._peopleAutocomplete) {
+	if (false && !this._peopleAutocomplete) {
 		var params = {
 			parent:			appCtxt.getShell(),
 			dataClass:		(new ZmPeopleSearchAutocomplete()),
@@ -581,6 +606,8 @@ function() {
  */
 ZmMainSearchToolBar.prototype.setPeopleAutocomplete =
 function(id) {
+	
+	return;
 
 	//no change required when checking/unchecking the "include shared items" checkbox
 	if (id == ZmId.SEARCH_SHARED || !this._peopleAutocomplete) { return; }
