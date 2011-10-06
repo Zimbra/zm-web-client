@@ -55,7 +55,7 @@ ZmDumpsterDialog.prototype.popup =
 function(searchFor, types) {
 	this._searchTypes = types ? AjxUtil.toArray(types) : [ZmItem.MSG];
 	this._searchFor = searchFor;
-	this.runSearchQuery();
+	this.runSearchQuery("");
 
 	ZmDialog.prototype.popup.call(this);
 };
@@ -66,7 +66,7 @@ function(query) {
 	var types = this._searchTypes;
 	var searchFor = this._searchFor;
 	var params = {
-		query: query,
+		query: "is:anywhere " + query, //returned the is:anywhere since an empty query causes a server side "mail.QUERY_PARSE_ERROR to be returned
 		searchFor: searchFor,
 		types: types,
 		sortBy: ZmSearch.DATE_DESC,
@@ -525,6 +525,7 @@ function(types, results) {
 
 	this._appName = ZmItem.APP[types[0]]; // All types should be in the same app
 	var view = "dumpster" + this._appName;
+	this.setCurrentViewId(view);
 	for (var id in this._toolbar) {
 		this._toolbar[id].setVisible(id == view);
 	}
@@ -546,7 +547,7 @@ function(types, results) {
 
 		this.setList(list);
 		this.setHasMore(searchResults.getAttribute("more"));
-		this.getCurrentView().set(list);                                                                                                               		
+		this.getCurrentView().set(list);
 	} else {
 		this.cleanup();
 	}
