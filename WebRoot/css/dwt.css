@@ -191,8 +191,8 @@
 
 /* text style for name of a selected tree item */
 .DwtTreeItem-selected {
-    @TreeItemHeight@
-    @TreeItemSelectedBg@
+	@TreeItemHeight@
+	@TreeItemSelectedBg@
 	@Text@
 	@TreeItemSpacing@
 	@ActiveCursor@
@@ -200,10 +200,10 @@
 
 /* text style for name of a selected and focused tree item */
 .DwtTreeItem-selected-focused {
-	@SelectedBg@
+	@TreeItemHeight@
+	@TreeItemFocusedBg@
 	@Text@
 	@TreeItemSpacing@
-    @TreeItemHeight@
 	@ActiveCursor@
 }
 
