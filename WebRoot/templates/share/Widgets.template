@@ -77,8 +77,8 @@
 			<td class='ZmSearchToolbarSeparatorCell'><div id='${id}_customSearchButtonSep' class='vertSep' style='display:none'></div></td>
 			<td id='${id}_customSearchButton' class='ZmSearchToolbarCell'></td>
 			<td class='ZmSearchToolbarSeparatorCell'><div class='vertSep'></div></td>
-			-->
 			<td id='${id}_saveButton' hint='icon' class='ZmSearchToolbarCell'></td>
+			-->
             <!-- UNCOMMENT THIS FOR THE ADVANCED BUTTONS TO APPEAR
 			<td class='ZmSearchToolbarSeparatorCell'><div class='vertSep'></div></td>
 			<td id='${id}_advancedButton' hint='text' class='ZmSearchToolbarCell'></td>

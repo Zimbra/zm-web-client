@@ -135,7 +135,7 @@
 .BannerTextQuota {
 	@SkinTextQuota@
 	white-space:nowrap;
-	text-align: center;
+	text-align:center;
 	@FontSize-small@
 }
 
@@ -143,8 +143,7 @@
 .BannerTextUser {
 	@SkinTextUsername@
 	white-space:nowrap;
-	text-align: center;
-	font-weight: bold;
+	text-align:center;
 }
 
 
@@ -326,6 +325,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
     border-collapse:collapse;
     border-spacing:0;
     height:100%;
+	width:100%;
 }
 /* cell surrounding a cell with contents in the search toolbar */
 .ZmSearchToolbarCell {
@@ -1566,14 +1566,14 @@ line-height:normal;
 }
 .calendar_cur_time_indicator_arr{
     height:10px;
-    color:#C33C16;
+    color:@CalendarNowColor@;
     overflow:hidden;
     right:1px;
 }
 .calendar_cur_time_indicator_strip{
     font-size: 0;
     line-height:0;
-    background-color:#C33C16;
+    background-color:@CalendarNowColor@;
     height:1px;
 }
 
@@ -4270,9 +4270,9 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin:0px 0px 10px 0px;
 	background-color:#FFF6BF;
 	border:1px solid #FFDD00;
-#IFDEF GECKO
+	#IFDEF GECKO
     -moz-border-radius:10px;
-#ENDIF
+	#ENDIF
     padding:10px;
     #IFDEF MSIE
     width: 100%;
@@ -4459,7 +4459,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZAppTab 									{	@AppTab@	@AppTabSpacing@				}
 
-.ZAppTabBorder								{	@AppTabBorder@	@AppTabBorder-normal@	@AppTabRoundCorners@  }
+.ZAppTabBorder								{	@AppTabBorder@	@AppTabBorder-normal@   }
 .ZHover		.ZAppTabBorder					{					@AppTabBorder-hover@	}
 .ZDisabled	.ZAppTabBorder					{					@AppTabBorder-disabled@	}
 .ZFocused	.ZAppTabBorder					{					@AppTabBorder-focused@	}
@@ -4473,6 +4473,23 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZFocused	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-focused@	}
 .ZActive	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-active@		}
 .ZSelected	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-selected@	}
+
+.ZSelected .ZAppTabBorder	{
+	#IFDEF SAFARI
+	background-image: -webkit-gradient(linear, left top, left bottom, to(@AppTabColor@), from(@AppC@));
+	background-image: -webkit-linear-gradient(top, @AppTabColor@, @AppC@);
+	#ENDIF
+	#IFDEF GECKO
+	background-image: -moz-linear-gradient(top, @AppTabColor@, @AppC@);
+	#ENDIF
+	#IFDEF MSIE
+	background-image: -ms-linear-gradient(top, @AppTabColor@, @AppC@);
+	#ENDIF
+	background-image: linear-gradient(top, @AppTabColor@, @AppC@);
+	#IFDEF MSIE
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppTabColor@', EndColorStr='@AppC@');
+	#ENDIF
+}
 
 
 
