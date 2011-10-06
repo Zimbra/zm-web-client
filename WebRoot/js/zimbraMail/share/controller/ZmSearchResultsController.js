@@ -74,12 +74,13 @@ function() {
 				id:				ZmId.SEARCHRESULTS_TOOLBAR,
 				noMenuButton:	true
 			});
-	
 	this._toolbar.getButton(ZmSearchToolBar.SEARCH_BUTTON).addSelectionListener(this._searchListener.bind(this));
 	this._toolbar.getButton(ZmSearchToolBar.SAVE_BUTTON).addSelectionListener(this._saveListener.bind(this));
 	this._toolbar.registerEnterCallback(this._searchListener.bind(this));
 
 	this._filterPanel = new ZmSearchResultsFilterPanel({parent:this._container});
+	
+	this.isPinned = false;
 };
 
 // TODO: handle reuse
@@ -114,8 +115,21 @@ function(search, resultsCtlr) {
 								tabParams:	this._getTabParams()});
 		this._app.pushView(this._currentViewId);
 		
-//		var button = appCtxt.getAppChooser().getButton(this.tabId);
-//		var menu = new DwtMenu({parent: button});
+		// search tab button menu
+		var button = appCtxt.getAppChooser().getButton(this.tabId);
+		var menu = new DwtMenu({ parent: button	});
+		button.setMenu(menu);
+		var menuItem;
+		menuItem = new DwtMenuItem({ parent:menu });
+		menuItem.setText(ZmMsg.saveCurrentSearch);
+		menuItem.addSelectionListener(this._saveListener.bind(this));
+		menuItem = new DwtMenuItem({ parent:menu });
+		menuItem.setText(ZmMsg.close);
+		menuItem.addSelectionListener(this._closeListener.bind(this));
+		menuItem = new DwtMenuItem({ parent:menu, style: DwtMenuItem.SEPARATOR_STYLE });
+		menuItem = new DwtMenuItem({ parent:menu, style:DwtMenuItem.CHECK_STYLE });
+		menuItem.setText(ZmMsg.pinned);
+		menuItem.addSelectionListener(this._pinnedListener.bind(this));
 	}
 	setTimeout(this._toolbar.focus.bind(this._toolbar), 100);
 };
@@ -148,4 +162,14 @@ function(ev, zimletEvent) {
 ZmSearchResultsController.prototype._saveListener =
 function(ev) {
 	appCtxt.getSearchController()._saveButtonListener(ev);
+};
+
+ZmSearchResultsController.prototype._pinnedListener =
+function(ev) {
+	this.isPinned = !this.isPinned;
+};
+
+ZmSearchResultsController.prototype._closeListener =
+function(ev) {
+	appCtxt.getAppViewMgr().popView();
 };

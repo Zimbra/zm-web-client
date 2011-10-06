@@ -32,21 +32,10 @@
 			<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
 			<td id='${id}_title'		class='ZWidgetTitle'></td>
 			<td id='${id}_right_icon' 	class='ZRightIcon ZWidgetIcon'></td>
+			<td id='${id}_dropdown' 	class='ZDropDown'></td>
 		</tr>
 	</table>
 </template>
-
-<template id='share.Widgets#ZmAppChooserButton' class='ZAppTab'>
-	<$ var buttonClass = data.buttonClass || "AppTab"; $>
-	<table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' cellspacing=0 cellpadding=0 style='table-layout:auto;'>
-		<tr>
-			<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
-			<td id='${id}_title'		class='ZWidgetTitle'></td>
-			<td id='${id}_right_icon' 	class='ZRightIcon ZWidgetIcon'></td>
-		</tr>
-	</table>
-</template>
-
 
 <template id='share.Widgets#ZmAppChooserSpacer'>
 	<$ var buttonClass = data.buttonClass || "AppTab"; $>

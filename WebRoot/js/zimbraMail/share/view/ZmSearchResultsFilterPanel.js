@@ -105,11 +105,16 @@ function(id, text) {
 	var button = new DwtButton({
 				parent:			this,
 				parentElement:	this._advancedContainer,
-//				posStyle:		DwtControl.STATIC_STYLE,
-//				className:		"filterButton",
 				id:				ZmId.getMenuId(ZmId.SEARCHRESULTS, id)
 			});
 	button.setText(text);
+	
+	// we want a wide button with dropdown on far right
+	var buttonEl = button.getHtmlElement();
+	var table = buttonEl && buttonEl.firstChild;
+	if (table && table.tagName && (table.tagName.toLowerCase() == "table")) {
+		table.style.width = "100%";
+	}
 
 	var menu = new DwtMenu({
 				parent:	button,
@@ -117,19 +122,12 @@ function(id, text) {
 			});
 	button.setMenu({menu: menu, menuPopupStyle: DwtButton.MENU_POPUP_STYLE_CASCADE});
 	
-//	var menuItem;
-//	var menuItem = new DwtMenuItem({
-//				parent:	menu,
-//				id:		ZmId.getMenuItemId(ZmId.SEARCHRESULTS, id)
-//			});
-//	menuItem.setText(text);
-	
 	switch (id) {
 		case ZmSearchResultsFilterPanel.ID_TO:			this._addToFilter(menu); break;
-		case ZmSearchResultsFilterPanel.ID_FROM:			this._addFromFilter(menu); break;
-		case ZmSearchResultsFilterPanel.ID_DATE:			this._addDateFilter(menu); break;
+		case ZmSearchResultsFilterPanel.ID_FROM:		this._addFromFilter(menu); break;
+		case ZmSearchResultsFilterPanel.ID_DATE:		this._addDateFilter(menu); break;
 		case ZmSearchResultsFilterPanel.ID_ATTACHMENT:	this._addAttachmentFilter(menu); break;
-		case ZmSearchResultsFilterPanel.ID_SIZE:			this._addSizeFilter(menu); break;
+		case ZmSearchResultsFilterPanel.ID_SIZE:		this._addSizeFilter(menu); break;
 		case ZmSearchResultsFilterPanel.ID_STATUS:		this._addStatusFilter(menu); break;
 		case ZmSearchResultsFilterPanel.ID_TAG:			this._addTagFilter(menu); break;
 		case ZmSearchResultsFilterPanel.ID_FOLDER:		this._addFolderFilter(menu); break;
@@ -140,7 +138,7 @@ ZmSearchResultsFilterPanel.prototype._addToFilter =
 function(menu) {
 	
 	var menuItem, subMenu, comboBox;
-	menuItem = new DwtMenuItem({ parent:menu }); 
+	menuItem = new DwtMenuItem({ parent:menu });
 	menuItem.setText(ZmMsg.address);
 	subMenu = new DwtMenu({
 				parent:	menuItem,
