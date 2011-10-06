@@ -1380,6 +1380,7 @@ function(parent) {
 			var tooltip = inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip;
 			item.setToolTipContent(ZmOperation.getToolTip(ZmOperation.SPAM, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip));
 		}
+		item.isMarkAsSpam = !inSpamFolder;
 	}
 };
 
@@ -1593,16 +1594,7 @@ function(result) {
 ZmMailListController.prototype._spamListener =
 function(ev) {
 	var items = this._listView[this._currentViewId].getSelection();
-	var searchFolderId = this._getSearchFolderId();
-	if (appCtxt.multiAccounts) {
-		var item = items[0];
-		if (item) {
-			searchFolderId = ZmOrganizer.getSystemId(searchFolderId, item.getAccount());
-		}
-	}
-	var folder = appCtxt.getById(searchFolderId);
-	var markAsSpam = !(folder && folder.nId == ZmFolder.ID_SPAM);
-	this._doSpam(items, markAsSpam);
+	this._doSpam(items, ev.item.isMarkAsSpam);
 };
 
 ZmMailListController.prototype._detachListener =
