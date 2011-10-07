@@ -407,6 +407,7 @@ function(params) {
 					ti.showCheckBox(false);
 				}
 				params.startPos = i;
+				params.showRemainingFoldersNode = ti;
 				child._showFoldersCallback = new AjxCallback(this, this._showRemainingFolders, [params]);
 				return;
 			}
@@ -602,10 +603,11 @@ function(treeItem, treeItems, i) {
  */
 ZmTreeView.prototype._showRemainingFolders =
 function(params) {
-	var ti = this.getTreeItemById(ZmFolder.ID_LOAD_FOLDERS);
-	if (ti) {
-		ti.dispose();
+
+	if (params.showRemainingFoldersNode){
+		params.showRemainingFoldersNode.dispose();
 	}
+
 	DBG.println(AjxDebug.DBG1, "load remaining folders: " + params.startPos);
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
 		function() {
