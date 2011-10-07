@@ -574,9 +574,11 @@ function(img) {
 
 	var attachments = this._msg.attachments;
 	var csfeMsgFetch = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
-	var src = img.getAttribute("src") || img.getAttribute("dfsrc");
-	if (!src) {
-		return;
+	try {
+		var src = img.getAttribute("src") || img.getAttribute("dfsrc");
+	}
+	catch(e) {
+		AjxDebug.println(AjxDebug.DATA_URI, "_checkImgInAttachments: couldn't access attribute src or dfsrc");
 	}
 	var cid;
 	if (/^cid:(.*)/.test(src)) {
@@ -681,7 +683,12 @@ function(elem) {
  */
 ZmMailMsgView.__unfangInternalImage =
 function(msg, elem, aname, prependDF) {
-	var avalue = elem.getAttribute(prependDF ? "df" + aname : aname);
+	try {
+	  var avalue = elem.getAttribute(prependDF ? "df" + aname : aname);
+	}
+	catch(e) {
+		AjxDebug.println(AjxDebug.DATA_URI, "__unfangInternalImage: couldn't access attribute " + aname);
+	}
 	if (avalue) {
 		if (avalue.substr(0,4) == "cid:") {
 			var cid = "<" + AjxStringUtil.urlComponentDecode(avalue.substr(4)) + ">"; // Parse percent-escaping per bug #52085 (especially %40 to @)
