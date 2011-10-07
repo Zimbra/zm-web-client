@@ -107,8 +107,8 @@ ZmAddressInputField.prototype.setAutocompleteListView =
 function(aclv) {
 	this._aclv = aclv;
 	this._separator = (aclv._separator) || AjxEmailAddress.SEPARATOR;
-	aclv.addCallback(ZmAutocompleteListView.CB_KEYDOWN, new AjxCallback(this, this._keyDownCallback), this._inputId);
-	aclv.addCallback(ZmAutocompleteListView.CB_KEYUP, new AjxCallback(this, this._keyUpCallback), this._inputId);
+	aclv.addCallback(ZmAutocompleteListView.CB_KEYDOWN, this._keyDownCallback.bind(this), this._inputId);
+	aclv.addCallback(ZmAutocompleteListView.CB_KEYUP, this._keyUpCallback.bind(this), this._inputId);
 };
 
 // Override since we normally want to add bubble before the INPUT, and not at the end. If we're
@@ -166,7 +166,7 @@ function(params) {
 		params.index = this._getInsertionIndex(this._holder.childNodes[this._editModeIndex]);
 	}
 	
-	var bubbleAdded = false;
+	var bubble, bubbleAdded = false;
 	
 	// if it's a local group, expand it and add each address separately
 	var match = params.match;
@@ -184,7 +184,8 @@ function(params) {
 	}
 	else {
 		if (this._hasValidAddress(params)) {
-			this._addBubble(new ZmAddressBubble(params), params.index, params.noFocus);
+			bubble = new ZmAddressBubble(params);
+			this._addBubble(bubble, params.index, params.noFocus);
 			bubbleAdded = true;
 		}
 		else {
@@ -200,6 +201,7 @@ function(params) {
 		if (this._bubbleAddedCallback && !params.skipNotify) {
 			this._bubbleAddedCallback.run();
 		}
+		return bubble;
 	}
 };
 

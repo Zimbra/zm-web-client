@@ -1463,16 +1463,15 @@ function(type, params) {
  * Adds a callback of the given type. In an input ID is provided, then the callback
  * will only be run if the event happened in that input.
  *
- * @param {constant}	type		autocomplete callback type (ZmAutocompleteListView.CB_*)
- * @param {AjxCallback}	callback	callback to add - must be an AjxCallback
- * @param {string}		inputId		DOM ID of an input element (optional)
+ * @param {constant}				type		autocomplete callback type (ZmAutocompleteListView.CB_*)
+ * @param {AjxCallback|function}	callback	callback to add
+ * @param {string}					inputId		DOM ID of an input element (optional)
  */
 ZmAutocompleteListView.prototype.addCallback =
 function(type, callback, inputId) {
 	this._callbacks[type].push({callback:callback, inputId:inputId});
 };
 
-// TODO: callback must be AjxCallback do to marshalling of args - fix so bound func can be used
 ZmAutocompleteListView.prototype._runCallbacks =
 function(type, inputId, args) {
 
@@ -1482,7 +1481,14 @@ function(type, inputId, args) {
 		for (var i = 0; i < list.length; i++) {
 			var cbObj = list[i];
 			if (inputId && cbObj.inputId && (inputId != cbObj.inputId)) { continue; }
-			var r = AjxCallback.prototype.run.apply(cbObj.callback, args);
+			var callback = cbObj.callback;
+			var r;
+			if (typeof(callback) == "function") {
+				r = callback.apply(callback, args);
+			}
+			else if (callback && callback.isAjxCallback) {
+				r = AjxCallback.prototype.run.apply(cbObj.callback, args);
+			}
 			if (r === true || r === false) {
 				result = (result == null) ? r : result && r;
 			}

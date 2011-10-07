@@ -91,8 +91,8 @@ function(parent, viewId, htmlElId, fieldNames, bccToggleId) {
 		var params = {
 			dataClass:		appCtxt.getAutocompleter(),
 			matchValue:		ZmAutocomplete.AC_VALUE_FULL,
-			compCallback:	(new AjxCallback(this, this._acCompHandler)),
-			keyUpCallback:	(new AjxCallback(this, this._acKeyupHandler)),
+			compCallback:	this._acCompHandler.bind(this),
+			keyUpCallback:	this._acKeyupHandler.bind(this),
 			options:		{addrBubbles:this._useAcAddrBubbles},
 			contextId:		this._contextId
 		};
