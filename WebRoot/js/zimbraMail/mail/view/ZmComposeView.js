@@ -501,7 +501,7 @@ function(attId, isDraft, dummyMsg) {
 
 	var zeroSizedAttachments = false;
 	// handle Inline Attachments
-	if (this._attachDialog && this._attachDialog.isInline() && attId) {
+    if (attId && ( (this._attachDialog && this._attachDialog.isInline()) || attId.clipboardPaste ) ){
 		for (var i = 0; i < attId.length; i++) {
 			var att = attId[i];
 			if (att.s == 0) {
@@ -2247,9 +2247,15 @@ function(composeMode) {
 		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 		this._bodyField = document.getElementById(this._bodyFieldId);
 	} else {
-		this._htmlEditor = new ZmHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode);
-		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
+         if( AjxEnv.isChrome ){
+            this._isPasteEnabled = true;
+        }
+		this._htmlEditor = new ZmHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode, null, this._isPasteEnabled);
+        this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 		this._bodyField = document.getElementById(this._bodyFieldId);
+        if( this._isPasteEnabled ){
+            this._htmlEditor.addEventCallback( new AjxListener(this, this._handleEditorEvent) );
+        }
 	}
 	this._includedPreface = "";
 
@@ -3206,4 +3212,18 @@ function() {
 ZmComposeView.prototype.deactivate =
 function() {
 	this._controller.inactive = true;
+};
+
+ZmComposeView.prototype._handleEditorEvent = function(ev){
+    if( ev.type === "paste" ){
+        this._controller._pasteHandler(ev);
+    }
+    return true;
+};
+
+ZmComposeView.prototype._handleEditorEvent = function(ev){
+    if( ev.type === "paste" ){
+        this._controller._pasteHandler(ev);
+    }
+    return true;
 };
