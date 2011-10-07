@@ -160,7 +160,7 @@
         if (c.length==0) {
             window.open("/h/printcontacts?st=${zm:cook(param.st)}&sfi=${context.folder.id}");
         } else {
-            window.open("/h/printcontacts?st=${zm:cook(param.st)}&sq=${param.sq}&id="+c.join("&id="));
+            window.open("/h/printcontacts?st=${zm:cook(param.st)}&sq=${zm:cook(param.sq)}&id="+c.join("&id="));
         }
     }
     var zcheck = function() {var e = document.getElementById("CURRCHECK"); if (e) e.checked = !e.checked;}
