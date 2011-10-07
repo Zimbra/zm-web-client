@@ -66,7 +66,7 @@ function(share, fromAddr) {
 
 	this._share = share;
 	this._fromAddr = fromAddr;
-	this._headerEl.innerHTML = this._headerFormatter.format([share.grantor.name || share.grantor.email, share.link.name]);
+	this._headerEl.innerHTML = this._headerFormatter.format([share.grantor.name || share.grantor.email, AjxStringUtil.htmlEncode(share.link.name)]);
 
 	var role = ZmShare._getRoleFromPerm(share.link.perm);
 	var params = [
