@@ -1015,6 +1015,7 @@ function(summary) {
 		ZmList.progressDialog = null;
 	}
 	if (summary) {
+		summary = AjxStringUtil.htmlEncode(summary); //encode html special chars such as < and > so won't be interpreted as html (both for security and for not losing visibility of characters)
 		appCtxt.setStatusMsg(summary);
 	}
 };
