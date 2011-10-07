@@ -127,7 +127,7 @@ function() {
 		clear:		appCtxt.isChildWindow,
 		tabParams:	this._getTabParams(tabId, this._tabCallback.bind(this))
 	};
-	var buttonText = (this._msg && this._msg.subject) ? AjxStringUtil.htmlEncode(this._msg.subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT)) : ZmMsgController.DEFAULT_TAB_TEXT;
+	var buttonText = (this._msg && this._msg.subject) ? this._msg.subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT) : ZmMsgController.DEFAULT_TAB_TEXT;
 	this._setView(viewParams);
 	avm.setTabTitle(this._currentViewId, buttonText);
 	this._resetOperations(this._toolbar[this._currentViewId], 1); // enable all buttons
