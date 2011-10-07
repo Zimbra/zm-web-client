@@ -563,7 +563,7 @@
 						<b><$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(i)) $></b>
 					</td>
 					<td nowrap>
-						<$= ptstStatus[i] $>
+						<$= AjxStringUtil.htmlEncode(ptstStatus[i]) $>
 					</td>
 				</tr>
 		<$
