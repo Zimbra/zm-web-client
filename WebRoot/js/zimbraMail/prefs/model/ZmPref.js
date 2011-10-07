@@ -231,7 +231,7 @@ function(value) {
             if(email) {
                 addr = email.getAddress();
             }
-            if(addr) emailList.push(addr);
+            if(addr) emailList.push(AjxStringUtil.htmlEncode(addr));
         }
     }
 	return emailList;
