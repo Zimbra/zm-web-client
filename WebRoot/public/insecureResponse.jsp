@@ -33,8 +33,7 @@
 %>
 <script>
 var reqId = "${zm:jsEncode(param.reqId)}";
-var data = ${ (not empty data and data ne "") ? zm:cook(data) : "{}"};
 </script>
 <script>
-parent.parent.parent.appCtxt.getRequestMgr().sendRequest({reqId:reqId,response:data});
+parent.parent.parent.appCtxt.getRequestMgr().sendRequest({reqId:reqId,response:${(not empty data and data ne "") ? zm:cook(data) : "{}"}});
 </script>
