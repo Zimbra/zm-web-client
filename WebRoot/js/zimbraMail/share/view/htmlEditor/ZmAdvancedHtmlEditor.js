@@ -102,7 +102,7 @@ function() {
 ZmAdvancedHtmlEditor.prototype.focus =
 function() {
 	var editor = this.getEditor();
-	if (editor) {
+	if (this._editorInitialized && editor) {
 		editor.focus();
 		this.setFocusStatus(true);
 	} else {
@@ -111,6 +111,7 @@ function() {
 			bodyField.focus();
 		}
 		this.setFocusStatus(true, true);
+        this._onTinyMCEEditorInitcallback = new AjxCallback(this, this.focus);
 	}
 };
 
@@ -502,6 +503,10 @@ function(id, mode, content) {
 		ec.setFocusMember(ed.getWin());
 
 		obj._editorInitialized = true;
+
+        if (obj._onTinyMCEEditorInitcallback) {
+		    obj._onTinyMCEEditorInitcallback.run();
+        }
 	};
 
 	function onEditorKeyPress(ed, e) {

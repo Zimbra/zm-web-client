@@ -381,14 +381,20 @@ function() {
 		// no need to "restore" focus between windows
 		ZmController.prototype._postShowCallback.call(this);
 	}
-	var composeMode = this._composeView.getComposeMode();
+    var view = this._composeView;
+	var composeMode = view.getComposeMode();
 	if (this._action != ZmOperation.NEW_MESSAGE &&
 		this._action != ZmOperation.FORWARD_INLINE &&
 		this._action != ZmOperation.FORWARD_ATT)
 	{
 		if (composeMode == DwtHtmlEditor.HTML) {
-			var ta = new AjxTimedAction(this._composeView, this._composeView._focusHtmlEditor);
-			AjxTimedAction.scheduleAction(ta, 10);
+            if(view.isTinyMCEEnabled()) {
+                view._focusHtmlEditor();
+            }
+            else{
+                var ta = new AjxTimedAction(view, view._focusHtmlEditor);
+                AjxTimedAction.scheduleAction(ta, 10);
+            }
 		}
 		this._composeView._setBodyFieldCursor();
 	}
