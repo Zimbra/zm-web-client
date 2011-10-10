@@ -45,7 +45,7 @@ BODY						{	margin:0px; 	}
 
 /** set the height for the top row -- must be set to a fixed number! **/
 #skin_spacing_top_row					{	@SkinTopRow@ 	}
-#skin_spacing_top_row .divider			{	border-left:1px solid @darken(AppC,50)@;
+#skin_spacing_top_row .divider			{	border-left:1px solid @SkinTopRowDividerColor@;
 											height:60%;
 											margin:0px 10px;
 										}
@@ -59,26 +59,30 @@ BODY						{	margin:0px; 	}
 	
 /** Search box **/	
 #skin_spacing_search,
-#skin_spacing_people_search 			{	width:100%; padding:0px 10px 4px @cssValue(HSashContainer,width)@; 	}
+#skin_spacing_people_search 			{	padding:6px 0; width:100%; @cssValue(HSashContainer,width)@; 	}
 
-#skin_container_search					{	margin-top:3px; 	}
-
+#skin_container_search					{	}
+#skin_container_search .ZButtonBorder	{	@tlRadius@:10px; @blRadius@:10px; border:0; height:22px; margin:1px; 	}
+#skin_container_search .ZLeftIcon DIV 	{	margin:0 0 0 10px; 	}
+#skin_container_search .ZWidgetTitle 	{	display:none; 	}
 
 /** combined username/quota **/
 #skin_spacing_tree_top					{	text-align:center;		}
 #skin_container_tree_top				{	@SkinBorderUsername@	}
 
-#skin_container_links					{	}
+#skin_container_links					{}
 
 /** User Name section **/
-#skin_container_username				{	height:auto; padding-bottom:2px; padding-top:4px; @SkinTextUsername@	}
-#skin_container_username *				{		}
+#skin_container_username				{	height:auto; padding-bottom:2px; @SkinTextUsername@	}
+#skin_container_username *				{}
 
 /** Quota section **/	
 #skin_container_quota					{	@SkinBorderQuota@	}
 
 /** Drop Menu section **/
-#skin_dropMenu							{	font-size:14px; padding:0 10px; text-align:center; vertical-align:middle; @Text-contrast@ 	}
+#skin_dropMenu							{	font-size:14px; padding:0 10px; text-align:center; vertical-align:middle; @Text-contrast@ @ActiveCursor@ 	}
+
+#skin_container_global_buttons>DIV		{	display:table-cell; 	}
 
 /** Tree Toolbar a.k.a.  "current app" **/
 #skin_spacing_current_app				{}
@@ -117,7 +121,7 @@ BODY						{	margin:0px; 	}
 }
 
 /** App Toolbar **/
-#skin_spacing_app_top_toolbar			{	}
+#skin_spacing_app_top_toolbar			{	height:30px; 	}
 #skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@ width:auto;	}
 #skin_container_app_new_button			{	@SkinBorderAppToolbar@ width:auto; padding-left:5px; padding-right:5px; padding-bottom:2px;}			
 
@@ -334,8 +338,8 @@ BODY						{	margin:0px; 	}
 .ZmAppChooser					{	margin:0px !important; 		}
 
 .ZAppTabBorder                  {   @AppTabRoundCorners@        }
-.ZAppTabBorder .ZLeftIcon 		{	@AppTabLeftIcon@			}
-.ZAppTabBorder .ZWidgetTitle 	{	@AppTabText@ 				}
+.ZAppTabBorder .ZLeftIcon 		{	padding-bottom:4px; @AppTabLeftIcon@			}
+.ZAppTabBorder .ZWidgetTitle 	{	padding-bottom:4px; @AppTabText@ 				}
 
 .ZSelectedPrev .ZAppTabBorder 	{	@AppTabBorder-selectedPrev@	}
 .ZSelectedNext .ZAppTabBorder	{	@AppTabBorder-selectedNext@	}
