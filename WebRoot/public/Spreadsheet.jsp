@@ -54,14 +54,10 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 <html>
   <head>
     <title>Zimbra Spreadsheet Prototype</title>
-	<style type="text/css">
-	<!--
-    @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,images,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=${zm:cook(skin)});
-	-->
-	</style>
+	<link rel="stylesheet" href="<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,images,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=${zm:cook(skin)}" />
 	<jsp:include page="Resources.jsp">
 		<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys" />
-		<jsp:param name="skin" value="${skin}" />
+		<jsp:param name="skin" value="${zm:cook(skin)}" />
 	</jsp:include>
 	<jsp:include page="Boot.jsp"/>
 	<script type="text/javascript" language="JavaScript">
