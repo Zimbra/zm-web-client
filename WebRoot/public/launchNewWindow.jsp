@@ -129,7 +129,7 @@
 	String packages = "NewWindow_1,NewWindow_2";
 
     String extraPackages = request.getParameter("packages");
-    if (extraPackages != null) packages += ","+extraPackages;
+    if (extraPackages != null) packages += ","+BeanUtils.cook(extraPackages);
 
     String pprefix = isDevMode ? "public/jsp" : "js";
     String psuffix = isDevMode ? ".jsp" : "_all.js";

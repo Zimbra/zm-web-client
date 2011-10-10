@@ -236,7 +236,7 @@ document.write("</DIV>");
     	if (extraPackages.equals("dev")) {
     		extraPackages = "Leaks,Startup2,CalendarCore,Calendar,CalendarAppt,ContactsCore,Contacts,IMCore,IM,MailCore,Mail,Mixed,NotebookCore,Notebook,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,ZimletApp,Portal,Alert,ImportExport,BrowserPlus";
     	}
-    	allPackages += "," + extraPackages;
+    	allPackages += "," + BeanUtils.cook(extraPackages);
     }
 
     String pprefix = isDevMode ? "public/jsp" : "js";
