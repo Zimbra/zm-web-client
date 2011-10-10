@@ -21,7 +21,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
-<fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
+<fmt:setBundle basename="/messages/ZoMsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZhMsg" var="zhmsg" scope="request"/>
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
 <html>
