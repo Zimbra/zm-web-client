@@ -259,6 +259,39 @@ action_stop                         stop checkbox (true)
     <td colspan='3'>&nbsp;
     </td>
 </c:when>
+<c:when test="${zm:isAddressCondition(condition)}">
+    <c:set var="ab" value="${zm:getAddress(condition)}"/>
+    <td>
+        <input type="hidden" name="${condi}" value="address"/>
+        <c:set var="selected" value="${ab.headerName}"/>
+        <select name="${condi}_header" style='width:100%'>
+            <option <c:if test="${selected eq 'from'}">selected</c:if> value="from">
+                    <fmt:message key="EFILT_COND_addressIn"><fmt:param><fmt:message key="from"/></fmt:param></fmt:message>
+            <option <c:if test="${selected eq 'to'}">selected</c:if> value="to">
+                    <fmt:message key="EFILT_COND_addressIn"><fmt:param><fmt:message key="to"/></fmt:param></fmt:message>
+            <option <c:if test="${selected eq 'cc'}">selected</c:if> value="cc">
+                    <fmt:message key="EFILT_COND_addressIn"><fmt:param><fmt:message key="cc"/></fmt:param></fmt:message>
+            <option <c:if test="${selected eq 'to,cc'}">selected</c:if> value="to,cc">
+                    <fmt:message key="EFILT_COND_addressIn"><fmt:param><fmt:message key="tocc"/></fmt:param></fmt:message>
+            <option <c:if test="${selected eq 'bcc'}">selected</c:if> value="bcc">
+                    <fmt:message key="EFILT_COND_addressIn"><fmt:param><fmt:message key="bcc"/></fmt:param></fmt:message>
+        </select>
+    </td>
+    <td colspan='3'>
+        <select name="${condi}_op">
+            <option  value="IS"><fmt:message key="EFILT_COND_HEADER_IS"/>
+            <option  value="NOT_Is"><fmt:message key="EFILT_COND_HEADER_NOT_IS"/>
+            <option  value="CONTAINS"><fmt:message key="EFILT_COND_HEADER_CONTAINS"/>
+            <option  value="NOT_CONTAINS"><fmt:message key="EFILT_COND_HEADER_NOT_CONTAINS"/>
+            <option  value="MATCHES"><fmt:message key="EFILT_COND_HEADER_MATCHES"/>
+            <option  value="NOT_MATCHES"><fmt:message key="EFILT_COND_HEADER_NOT_MATCHES"/>
+        </select>
+    </td>
+    <td colspan=2>
+        <input name='${condi}_value' type='text' autocomplete='off' size='20' value="${fn:escapeXml(ab.headerValue)}">
+        <input type="hidden" name="${condi}" value="header"/>
+    </td>
+</c:when>
 </c:choose>
 <td align='right'>
     <c:if test="${condStatus.last}">
@@ -290,6 +323,7 @@ action_stop                         stop checkbox (true)
             <c:if test="${mailbox.features.contacts}">
             <option value="addressbook"><fmt:message key="EFILT_NEW_COND_ADDRESS_IN"/>
             </c:if>
+            <option value="address"><fmt:message key="EFILT_NEW_COND_ADDRESS"/></option>
         </select>
         <input class='tbButton' type="submit"
                name="actionNewCond" value="<fmt:message key="EFILT_add"/>">

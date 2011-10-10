@@ -66,6 +66,9 @@
                 <c:when test="${cond eq 'attachment'}">
                     <zm:attachmentExistsCondition  op="${cond_op}"/>
                 </c:when>
+                <c:when test="${cond eq 'address'}">
+                    <zm:addressCondition name="${cond_header}" part="all" value="${cond_value}" op="${cond_op}"/>
+                </c:when>
             </c:choose>
         </c:if>
     </c:forEach>
@@ -107,6 +110,9 @@
             </c:when>
             <c:when test="${param.cond_add eq 'attachment'}">
                 <zm:attachmentExistsCondition op="EXISTS"/>
+            </c:when>
+            <c:when test="${param.cond_add eq 'address'}">
+                <zm:addressCondition name="from" part="all" value="" op="IS"/>
             </c:when>
         </c:choose>
     </c:if>
