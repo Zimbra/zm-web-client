@@ -118,7 +118,7 @@ BODY						{	margin:0px; 	}
 	width:auto;
 	/*z-index:1;*/
 	@AppTab@
-}
+}#skin_container_refresh .ZToolbarButtonBorder, #ztb_search_saveButton  .ZToolbarButtonBorder{ background-image: none;  border: none; }
 
 /** App Toolbar **/
 #skin_spacing_app_top_toolbar			{	height:30px; 	}
@@ -294,7 +294,7 @@ BODY						{	margin:0px; 	}
 }
 
 /** Logo Images **/
-.ImgAppBanner			{	background-position:center center; background-repeat:no-repeat; @AppBanner@    }
+.ImgAppBanner			{	background-position:; background-repeat:no-repeat; @AppBanner@    }
 .ImgLoginBanner			{	background-repeat:no-repeat; @LoginBanner@   }
 
 #IFDEF MSIE
