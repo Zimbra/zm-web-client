@@ -15,7 +15,7 @@
 
 //ZmContact mock object
 ZmMockContact = function(){
-
+   this.attr = [];
 };
 ZmMockContact.prototype.constructor = ZmMockContact;
 ZmMockContact.zId = "1";
@@ -54,6 +54,7 @@ function(useZid) {
 	}
 	return this.id;
 };
+
 
 UT.module("ContactGroup");
 
@@ -460,4 +461,76 @@ UT.test("dedupe contact group", {
 		ZmGroupView._dedupe(items, addrs);
 		UT.equal(2, items.length, "1 duplicate found in gal");
 	}
+);
+
+UT.test("ZmContactListController getGroupMembers",
+	function() {
+		/*
+		Test 4 cases
+		case 1) Create group with individual contacts
+		case 2) Create group with contacts & groups
+		case 3) Modify group with individual contacts
+		case 4) Modify group with contacts & groups
+		 */
+		UT.expect(19);
+		ZmUnitTestUtil.goToContacts();
+		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
+		var clc = contactsApp.getContactListController();
+		//add members to a group
+		var contactA = new ZmMockContact();
+		contactA.id = "200";
+		contactA.isGal = false;
+		
+		var contactB = new ZmMockContact();
+		contactB.id = "uid=user1,ou=zimbra,ou=com";
+		contactB.isGal = true;
+		
+		var contactC = new ZmMockContact();
+		contactC.value = "test@example.zimbra.com";
+		contactC.type = "I";
+			
+		var group = new ZmMockContact();
+		group.id = "201";
+		group.isGal = false;
+		group.type = "group";
+		group.attr["groups"] = [contactA];
+		
+		var groupB = new ZmMockContact();
+		groupB.id = "301";
+		groupB.isGal = false;
+		groupB.type = "group";
+		groupB.attr["groups"] = [contactC];
+		
+		//case 1
+		var returnArr = clc._getGroupMembers([contactA]);
+		UT.equal(returnArr[0].value, "1:200", "Group members should have value 1:200");
+		UT.equal(returnArr[0].type, "C", "Group members should have type C");
+		UT.notEqual(returnArr[0].op, "+", "Group member should not have an op");
+		
+		//case 2
+		returnArr = clc._getGroupMembers([contactA, groupB]);
+		UT.equal(returnArr[0].value, "1:200", "Group members should have value 1:200");
+		UT.equal(returnArr[0].type, "C", "Group members should have type C");
+		UT.notEqual(returnArr[0].op, "+", "Group member should not have an op");
+		UT.equal(returnArr[1].value, "test@example.zimbra.com", "Group member should have value test@example.zimbra.com");
+		UT.equal(returnArr[1].type, "I", "Group member should be type I");
+		UT.notEqual(returnArr[1].op, "+", "Group member should not have an op");
+		
+		//case 3
+		returnArr = clc._getGroupMembers([contactB], group);
+		UT.equal(returnArr[0].value, "uid=user1,ou=zimbra,ou=com", "Group member should add contactB");
+		UT.equal(returnArr[0].type, "G", "Group member contactB should be type G");
+		UT.equal(returnArr[0].op , "+", "Group memeber contactB should have op +");
+		
+		//case 4
+		returnArr = clc._getGroupMembers([contactA, groupB], group);
+		UT.equal(returnArr.length, 2, "group should only have 2 members");
+		UT.equal(returnArr[0].value, "1:200", "Group members should have value 1:200");
+		UT.equal(returnArr[0].type, "C", "Group members should have type C");
+		UT.equal(returnArr[0].op, "+", "Group member should have an op +");
+		UT.equal(returnArr[1].value, "test@example.zimbra.com", "Group member should have value test@example.zimbra.com");
+		UT.equal(returnArr[1].type, "I", "Group member should be type I");
+		UT.equal(returnArr[1].op, "+", "Group member should have an op +");
+		
+	}		
 );

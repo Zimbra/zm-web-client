@@ -1246,7 +1246,7 @@ function(params) {
 ZmContactListController.prototype._getGroupMembers =
 function(items, group) {
 	var mods = {};
-	var newMembers = [];
+	var newMembers = {};
 	var groupId = [];
 	for (var i=0; i<items.length; i++) {
 		if (!items[i].isGroup()) {
@@ -1257,7 +1257,7 @@ function(items, group) {
 				if (group) {
 					obj.op = "+"; //modifying group with new member	
 				}
-				newMembers.push(obj); 
+				newMembers[id] = obj; 
 			}
 		}
 		else {
@@ -1271,36 +1271,42 @@ function(items, group) {
 					if (group) {
 						obj.op = "+";
 					} 
-					newMembers.push(obj);
+					newMembers[id] = obj;
 				}
 				else if (groups[j].type == ZmContact.GROUP_INLINE_REF) {
 					var obj = {value: groups[j].value, type : ZmContact.GROUP_INLINE_REF};
-					obj.op = "+";
-					newMembers.push(obj);				
+					if (group) {
+						obj.op = "+";
+					}
+					newMembers[id] = obj;				
 				}
 			}	
 		}
+	}
+	var newMembersArr = [];
+	for (var id in newMembers) {
+		newMembersArr.push(newMembers[id]);
 	}
 	if (group) {
 		//handle potential duplicates
 		var groupArr = group.attr[ZmContact.F_groups];
 		var noDups = [];
 		var found = false;
-		for (var i=0; i<newMembers.length; i++) {
+		for (var i=0; i<newMembersArr.length; i++) {
 			found = false;
 			for (var j=0; j<groupArr.length && !found; j++) {				
-				if (newMembers[i].value == groupArr[j].value) {
+				if (newMembersArr[i].value == groupArr[j].value) {
 					found = true;	
 				}
 			}
 			if (!found) {
-				noDups.push(newMembers[i]);
+				noDups.push(newMembersArr[i]);
 			}
 		}
 		return noDups;
 	}
 	else {
-		return newMembers;
+		return newMembersArr;
 	}
 };
 
