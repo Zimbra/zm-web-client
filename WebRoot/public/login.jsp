@@ -44,7 +44,7 @@
             	<c:redirect url="${logoutRedirectUrl}"/>
             </c:if>
         </c:when>
-        <c:when test="${(param.loginOp eq 'login') && !(empty trimmedUserName) && !(empty param.password)}">
+        <c:when test="${(param.loginOp eq 'login') && !(empty trimmedUserName) && !(empty param.password) && (pageContext.request.method eq 'POST')}">
         	<c:choose>
 	        	<c:when test="${(fn:indexOf(trimmedUserName,'@') == -1) and !(empty param.customerDomain)}">
 	        		<c:set var="fullUserName" value="${trimmedUserName}@${param.customerDomain}"/>
