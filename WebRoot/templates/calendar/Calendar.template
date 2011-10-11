@@ -270,15 +270,15 @@
                 <table width=100%>
                     <tr>
                         <td width="5"><input type="radio" name="extCalType" id="${id}_shareRadioGoogle" checked></td>
-                        <td align=left><$= ZmMsg.sharedCalTitleGoogle $></td>
+                        <td align=left><label for="${id}_shareRadioGoogle"><$= ZmMsg.sharedCalTitleGoogle $></label></td>
                     </tr>
                     <tr>
                         <td width="5"><input type="radio" name="extCalType" id="${id}_shareRadioYahoo"></td>
-                        <td align=left><$= ZmMsg.sharedCalTitleYahoo $></td>
+                        <td align=left><label for="${id}_shareRadioYahoo"><$= ZmMsg.sharedCalTitleYahoo $></label></td>
                     </tr>
                     <tr>
                         <td width="5"><input type="radio" name="extCalType" id="${id}_shareRadioOther"></td>
-                        <td align=left><$= ZmMsg.sharedCalTitleOther $></td>
+                        <td align=left><label for="${id}_shareRadioOther"><$= ZmMsg.sharedCalTitleOther $></label></td>
                     </tr>
                 </table>
             </td>
@@ -308,7 +308,7 @@
                         <td id="${id}_syncUrl"></td>
                     </tr>
                     <tr id="${id}_syncIcsUrlContainer">
-                        <td align=right width=80><$= ZmMsg.sharedCalCalIcsUrlLabel $></td>
+                        <td align=right width=80><$= ZmMsg.sharedCalIcsUrlLabel $></td>
                         <td id="${id}_syncIcsUrl"></td>
                     </tr>
                     <tr id="${id}_syncMsgContainer" style="display:none;">

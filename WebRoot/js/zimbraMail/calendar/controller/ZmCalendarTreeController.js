@@ -660,9 +660,11 @@ function(ev, account) {
         var iCalData = this._extCalData ? this._extCalData.iCal : null;
         newDialog.setICalData(iCalData);
         newDialog.setTitle(ZmMsg.addExternalCalendar);
+        newDialog.getButton(ZmNewCalendarDialog.BACK_BUTTON).setVisibility(true);
     }
     else {
         newDialog.setTitle(ZmMsg.createNewCalendar);
+        newDialog.getButton(ZmNewCalendarDialog.BACK_BUTTON).setVisibility(false);
     }
 	if (!this._newCb) {
 		this._newCb = new AjxCallback(this, this._newCallback);
@@ -724,6 +726,13 @@ function(response) {
     return response;
 };
 
+ZmCalendarTreeController.POLLING_INTERVAL = "1m";
+ZmCalendarTreeController.CONN_TYPE_CLEARTEXT = "cleartext";
+ZmCalendarTreeController.CONN_TYPE_SSL = "ssl";
+ZmCalendarTreeController.SSL_PORT = "443";
+ZmCalendarTreeController.DATA_SOURCE_ATTR_GOOGLE = "p:/principals/users/_USERNAME_";
+ZmCalendarTreeController.DATA_SOURCE_ATTR = "p:/calendar/dav/_USERNAME_/user";
+
 ZmCalendarTreeController.prototype.createDataSource =
 function(organizer, errorCallback) {
     var calDav = this._extCalData && this._extCalData.calDav ? this._extCalData.calDav : null;
@@ -734,13 +743,13 @@ function(organizer, errorCallback) {
         urlPort,
         hostUrl,
         jsonObj,
-        connType = "cleartext",
-        dsa = "p:/calendar/dav/_USERNAME_/user";
+        connType = ZmCalendarTreeController.CONN_TYPE_CLEARTEXT,
+        dsa = ZmCalendarTreeController.DATA_SOURCE_ATTR;
 
     hostUrl = calDav.hostUrl;
     if(hostUrl.indexOf(":") === -1) {
         url = hostUrl;
-        port = "443";
+        port = ZmCalendarTreeController.SSL_PORT;
     }
     else {
         urlPort = hostUrl.split(":");
@@ -748,12 +757,12 @@ function(organizer, errorCallback) {
         port = urlPort[1];
     }
 
-    if(port == "443") {
-        connType = "ssl";
+    if(port == ZmCalendarTreeController.SSL_PORT) {
+        connType = ZmCalendarTreeController.CONN_TYPE_SSL;
     }
 
-    if(calDav.hostUrl.indexOf("google.com") === -1) {
-        dsa = "p:/principals/users/_USERNAME_"
+    if(calDav.hostUrl.indexOf(ZmMsg.sharedCalCalDAVServerGoogle) === -1) {
+        dsa = ZmCalendarTreeController.DATA_SOURCE_ATTR_GOOGLE;
     }
 
     jsonObj = {
@@ -761,7 +770,7 @@ function(organizer, errorCallback) {
             _jsns : "urn:zimbraMail",
             caldav : {
                 name : organizer.name,
-                pollingInterval : "1m",
+                pollingInterval : ZmCalendarTreeController.POLLING_INTERVAL,
                 isEnabled : "1",
                 l : organizer.nId,
                 host : url,

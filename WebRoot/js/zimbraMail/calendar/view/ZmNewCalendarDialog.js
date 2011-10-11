@@ -17,7 +17,10 @@ ZmNewCalendarDialog = function(parent, className) {
     if (arguments.length == 0) { return; }
 	var title = ZmMsg.createNewCalendar;
 	var type = ZmOrganizer.CALENDAR;
-	ZmNewOrganizerDialog.call(this, parent, className, title, type);
+    var back = new DwtDialog_ButtonDescriptor(ZmNewCalendarDialog.BACK_BUTTON, ZmMsg.back , DwtDialog.ALIGN_LEFT);
+	ZmNewOrganizerDialog.call(this, parent, className, title, type, [back]);
+    this.setButtonListener(ZmNewCalendarDialog.BACK_BUTTON, this._backButtonListener.bind(this));
+    this.getButton(ZmNewCalendarDialog.BACK_BUTTON).setVisibility(false);
 };
 
 ZmNewCalendarDialog.prototype = new ZmNewOrganizerDialog;
@@ -28,6 +31,7 @@ ZmNewCalendarDialog.prototype.constructor = ZmNewCalendarDialog;
 ZmNewCalendarDialog.prototype._folderLocationLabel = ZmMsg.newCalendarParent;
 ZmNewCalendarDialog.prototype._folderNameAlreadyExistsMsg = ZmMsg.errorCalendarAlreadyExists;
 
+ZmNewCalendarDialog.BACK_BUTTON = ++DwtDialog.LAST_BUTTON;
 
 ZmNewCalendarDialog.prototype.toString = 
 function() {
@@ -161,4 +165,9 @@ function() {
 		list.push(this._remoteCheckboxField);
 	}
     return list;
+};
+
+ZmNewCalendarDialog.prototype._backButtonListener =
+function() {
+    this.popdown();
 };

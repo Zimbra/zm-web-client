@@ -29,10 +29,10 @@
  * 
  * @extends		ZmDialog
  */
-ZmNewOrganizerDialog = function(parent, className, title, type) {
+ZmNewOrganizerDialog = function(parent, className, title, type, extraButtons) {
 	if (arguments.length == 0) return;
 	
-	ZmDialog.call(this, {parent:parent, className:className, title:title, id:"CreateNewFolderDialog"});
+	ZmDialog.call(this, {parent:parent, className:className, title:title, id:"CreateNewFolderDialog", extraButtons: extraButtons});
 	this._organizerType = type;
 	this._setupControls();
 };

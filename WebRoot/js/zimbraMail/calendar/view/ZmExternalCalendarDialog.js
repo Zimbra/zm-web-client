@@ -14,7 +14,7 @@
  */
 
 ZmExternalCalendarDialog = function(params) {
-    var back = new DwtDialog_ButtonDescriptor(ZmExternalCalendarDialog.BACK_BUTTON, ZmMsg.back , DwtDialog.ALIGN_RIGHT);
+    var back = new DwtDialog_ButtonDescriptor(ZmExternalCalendarDialog.BACK_BUTTON, ZmMsg.back , DwtDialog.ALIGN_LEFT);
     var next = new DwtDialog_ButtonDescriptor(ZmExternalCalendarDialog.NEXT_BUTTON, ZmMsg.next, DwtDialog.ALIGN_RIGHT);
     var cancel = new DwtDialog_ButtonDescriptor(ZmExternalCalendarDialog.SHARE_CANCEL_BUTTON, ZmMsg.cancel, DwtDialog.ALIGN_RIGHT);
     var parent = params.parent || appCtxt.getShell();
@@ -50,9 +50,6 @@ ZmExternalCalendarDialog.THIRD_VIEW_ID = "_shareCalendarView3";
 ZmExternalCalendarDialog.SYNC_TYPE_ICAL = "ical";
 ZmExternalCalendarDialog.SYNC_TYPE_CALDAV = "caldav";
 
-ZmExternalCalendarDialog.URL_GOOGLE = "www.google.com";
-ZmExternalCalendarDialog.URL_YAHOO = "caldav.calendar.yahoo.com";
-
 ZmExternalCalendarDialog.TYPE_GOOGLE = "Google";
 ZmExternalCalendarDialog.TYPE_YAHOO = "Yahoo";
 ZmExternalCalendarDialog.TYPE_OTHER = "Other";
@@ -76,7 +73,7 @@ function() {
 
 ZmExternalCalendarDialog.prototype.popup =
 function() {
-    this.showView();
+    this.showView(ZmExternalCalendarDialog.FIRST_VIEW, ZmExternalCalendarDialog.TYPE_GOOGLE);
     ZmDialog.prototype.popup.call(this);
 };
 
@@ -84,11 +81,6 @@ ZmExternalCalendarDialog.prototype.popdown =
 function() {
     this.clearControls();
     ZmDialog.prototype.popdown.call(this);
-};
-
-ZmExternalCalendarDialog.prototype._setupControls =
-function() {
-    //blank
 };
 
 ZmExternalCalendarDialog.prototype._nextButtonListener =
@@ -173,18 +165,27 @@ function(syncType) {
     if(syncType == ZmExternalCalendarDialog.SYNC_TYPE_CALDAV) {
         var userName = this._userNameInput.getValue(),
             password = this._passwordInput.getValue(),
-            hostUrl = this._urlInput.getValue(),
+            hostUrl = AjxStringUtil.trim(this._urlInput.getValue()),
             url;
-
+        if(userName.indexOf('@') === -1) {
+            if (hostUrl.indexOf(ZmMsg.sharedCalCalDAVServerGoogle) !== -1) {
+                //google selected
+                userName += "@gmail.com";
+            }
+            else if (hostUrl.indexOf(ZmMsg.sharedCalCalDAVServerYahoo) !== -1){
+                //yahoo selected
+                userName += "@yahoo.com";
+            }
+        }
         if(!AjxEmailAddress.isValid(userName)) {
-            msg = ZmMsg.errorInvalidUserName;
+            msg = ZmMsg.errorInvalidEmail2;
         }
         if(!msg && AjxStringUtil.trim(password) == "") {
             msg = ZmMsg.errorMissingPass;
         }
-        /*if(!msg) {
-            msg = ZmOrganizer.checkUrl(hostUrl);
-        }*/
+        if(!msg && !hostUrl) {
+            msg = ZmMsg.errorMissingUrl;
+        }
     }
     else {
         url = this._icsUrlInput.getValue();
@@ -234,6 +235,7 @@ function() {
 ZmExternalCalendarDialog.prototype.showIcalView =
 function(isIcal) {
     var id = this._htmlElId,
+        el,
         syncUserNameContainer = document.getElementById(id + "_syncUserNameContainer"),
         syncPasswordContainer = document.getElementById(id + "_syncPasswordContainer"),
         syncUrlContainer = document.getElementById(id + "_syncUrlContainer"),
@@ -245,6 +247,10 @@ function(isIcal) {
     Dwt.setVisible(syncUrlContainer, !isIcal);
     //Dwt.setVisible(syncMsgContainer, !isIcal);
     Dwt.setVisible(syncIcsUrlContainer, isIcal);
+    /*el = isIcal ? this._icsUrlInput.getInputElement() : this._userNameInput.getInputElement();
+    if(el) {
+        el.focus();
+    }*/
 };
 
 ZmExternalCalendarDialog.prototype.showView =
@@ -259,6 +265,10 @@ function(viewId, type) {
 
     switch(viewId) {
         case ZmExternalCalendarDialog.FIRST_VIEW :
+            if(type && type == ZmExternalCalendarDialog.TYPE_GOOGLE) {
+                var shareRadioGoogle = document.getElementById(this._htmlElId + '_shareRadioGoogle');
+                shareRadioGoogle.checked = true;
+            }
             this.getButton(ZmExternalCalendarDialog.BACK_BUTTON).setVisibility(false);
             this.setTitle(ZmMsg.addExternalCalendar);
         break;
@@ -266,20 +276,24 @@ function(viewId, type) {
         case ZmExternalCalendarDialog.SECOND_VIEW :
             this.getButton(ZmExternalCalendarDialog.BACK_BUTTON).setVisibility(true);
             if(type == ZmExternalCalendarDialog.TYPE_GOOGLE) {
-                this._urlInput.setValue(ZmExternalCalendarDialog.URL_GOOGLE);
+                this._userNameInput.setHint(ZmMsg.sharedCalUserNameGoogleHint);
+                this._urlInput._hideHint(ZmMsg.sharedCalCalDAVServerGoogle);
                 this._urlInput.setEnabled(false);
                 this._syncMsg.innerHTML = ZmMsg.sharedCalSyncMsgGoogle;
                 this.setTitle(ZmMsg.sharedCalTitleGoogle);
             }
             else if(type == ZmExternalCalendarDialog.TYPE_YAHOO) {
-                this._urlInput.setValue(ZmExternalCalendarDialog.URL_YAHOO);
+                this._userNameInput.setHint(ZmMsg.sharedCalUserNameYahooHint);
+                this._urlInput._hideHint(ZmMsg.sharedCalCalDAVServerYahoo);
                 this._urlInput.setEnabled(false);
                 this._syncMsg.innerHTML = ZmMsg.sharedCalSyncMsgYahoo;
                 this.setTitle(ZmMsg.sharedCalTitleYahoo);
             }
             else {
+                this._userNameInput.setHint(ZmMsg.sharedCalUserNameHint);
                 this._urlInput.setEnabled(true);
                 this._urlInput.setValue("");
+                this._urlInput._showHint();
                 this._syncMsg.innerHTML = "";
                 this.setTitle(ZmMsg.sharedCalTitleOther);
             }
@@ -291,6 +305,7 @@ function(viewId, type) {
 
     }
     Dwt.setDisplay(this._views[viewId], Dwt.DISPLAY_BLOCK);
+    this._setSecondViewTabGroup();
 };
 
 ZmExternalCalendarDialog.prototype.loadView =
@@ -309,12 +324,15 @@ function(viewId) {
             syncTypeSelect.addChangeListener(new AjxListener(this, this._changeCalType));
             this._syncTypeSelect = syncTypeSelect;
 
-            this._userNameInput = new DwtInputField({parent:this, parentElement: id + '_syncUserName'});
+            this._userNameInput = new DwtInputField({parent:this, parentElement: id + '_syncUserName', hint: ZmMsg.sharedCalUserNameHint});
             this._passwordInput = new DwtInputField({parent:this, parentElement: id + '_syncPassword', type: DwtInputField.PASSWORD});
-            this._urlInput = new DwtInputField({parent:this, parentElement: id + '_syncUrl'});
-            this._icsUrlInput = new DwtInputField({parent:this, parentElement: id + '_syncIcsUrl'});
+            this._urlInput = new DwtInputField({parent:this, parentElement: id + '_syncUrl', hint: ZmMsg.sharedCalCalDAVServerHint});
+            this._icsUrlInput = new DwtInputField({parent:this, parentElement: id + '_syncIcsUrl', hint: ZmMsg.sharedCalIcsUrlHint});
             this._syncMsg = document.getElementById(id + '_syncMsg');
             this._viewsLoaded[ZmExternalCalendarDialog.SECOND_VIEW] = true;
+
+            this._userNameInput._showHint();
+            this._icsUrlInput._showHint();
         break;
 
         case ZmExternalCalendarDialog.THIRD_VIEW :
@@ -323,6 +341,18 @@ function(viewId) {
         break;
 
     }
+};
+
+ZmExternalCalendarDialog.prototype._setSecondViewTabGroup =
+function() {
+    if(!this.isViewLoaded(ZmExternalCalendarDialog.SECOND_VIEW)) {
+        return false;
+    }
+    var members = [this._syncTypeSelect, this._userNameInput, this._passwordInput, this._urlInput, this._icsUrlInput];
+    for (var i = 0; i < members.length; i++) {
+        this._tabGroup.addMember(members[i], i);
+    }
+	this._tabGroup.setFocusMember(this._syncTypeSelect);
 };
 
 ZmExternalCalendarDialog.prototype.isViewLoaded =
