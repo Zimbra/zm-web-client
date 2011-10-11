@@ -66,7 +66,7 @@ function(query) {
 	var types = this._searchTypes;
 	var searchFor = this._searchFor;
 	var params = {
-		query: "is:anywhere " + query, //returned the is:anywhere since an empty query causes a server side "mail.QUERY_PARSE_ERROR to be returned
+		query: "-in:/Junk " + query, // Users don't want/need to recover deleted spam.
 		searchFor: searchFor,
 		types: types,
 		sortBy: ZmSearch.DATE_DESC,
