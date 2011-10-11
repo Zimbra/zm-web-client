@@ -313,7 +313,6 @@ if (application.getInitParameter("offlineMode") != null)  {
             </c:choose>
 
 				<c:if test="${errorCode != null}">
-				    <!-- ${fn:escapeXml(error.stackStrace)} -->
 				    <div id="ZLoginErrorPanel">
 				        <table><tr>
 				            <td><app:img id="ZLoginErrorIcon" altkey='ALT_ERROR' src="dwt/ImgCritical_32.png" /></td>
