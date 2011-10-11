@@ -167,7 +167,7 @@ var sAC = function(inp,id,v,c,si){ //select Auto complete contact, when we press
   var e = $(id);
   if(trim(e.value) != ''){
     var iv = trim(e.value).substring(0,si);
-    e.value = iv+trim(e.value).substring(si).replace(inp,unescape(v).replace(/&lt;/g, "<").replace(/&gt;/g, ">")+",").replace(/,+/ig,",");
+    e.value = iv+trim(e.value).substring(si).replace(unescape(inp),unescape(v).replace(/&lt;/g, "<").replace(/&gt;/g, ">")+",").replace(/,+/ig,",");
   }
   $(c).style.display = 'none';
   e.focus();  
@@ -232,9 +232,10 @@ var kU = function(e,f,c){ // On key up, do this operations
                             var htm = "";
                             for(var i=0, len = (acR !== undefined) ? acR.length : 0; i < len; i++){
                                 var t = acR[i].type;
-                                var e = acR[i].email.replace(/[']/g,"\"").replace(/&/g, "&amp;").replace(/[<]/g, "&lt;").replace(/>/g, "&gt;");
+                                var e = acR[i].email;
+                                var eHTML = e.replace(/[']/g,"\"").replace(/&/g, "&amp;").replace(/[<]/g, "&lt;").replace(/>/g, "&gt;");
                                 var imgsrc = t == 'gal' ? "<app:imgurl value='startup/ImgGALContact.gif' />" : t == 'group' ? "<app:imgurl value='contacts/ImgGroup.gif' />" : "<app:imgurl value='contacts/ImgContact.gif' />";
-                                htm = htm+"<li id='cn_"+i+"' onclick=\"return sAC(\'"+val+"\',\'"+f.id+"\',\'"+escape(e)+"\',\'"+c.id+"\',\'"+si+"\');\" class='"+((i==0)?'yui-ac-highlight':'')+"'><div class='tbl'><div class='tr'><span class='td left'><img src='"+imgsrc+"'></span><span class='td left'><span class='ZhACB' id='em_"+i+"'>"+e+"</span></span></div></div></li>";
+                                htm = htm+"<li id='cn_"+i+"' onclick=\"return sAC(\'"+escape(val)+"\',\'"+f.id+"\',\'"+escape(e)+"\',\'"+c.id+"\',\'"+si+"\');\" class='"+((i==0)?'yui-ac-highlight':'')+"'><div class='tbl'><div class='tr'><span class='td left'><img src='"+imgsrc+"'></span><span class='td left'><span class='ZhACB' id='em_"+i+"'>"+eHTML+"</span></span></div></div></li>";
                             }
                             if(htm.length > 0 && acR.length > 0){
                                 c.innerHTML = "<div class='yui-ac-content'><div class='yui-ac-bcd'><ul>"+htm+"<ul></div></div>";
