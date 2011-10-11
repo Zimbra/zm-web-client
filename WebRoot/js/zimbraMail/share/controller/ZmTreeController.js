@@ -207,10 +207,11 @@ function(params) {
 		params.dataTree = dataTree;
 		var setting = ZmOrganizer.OPEN_SETTING[this.type];
 		params.collapsed = (!isMultiAccountZimlet && (!(!setting || (appCtxt.get(setting, null, account) !== false)))); // yikes!
-		var overview = this._opc.getOverview(id);
-		if (overview.showNewButtons) {
-			this._setupNewOp(params);
+
+		if (this.type != ZmOrganizer.ZIMLET && this.type != ZmId.ORG_PREF_PAGE){
+			this._setupOptButton(params);
 		}
+
 		this._treeView[id].set(params);
 		this._checkTreeView(id);
 	}
@@ -319,19 +320,35 @@ function(parent, opId, visible) {
  * 
  * @private
  */
-ZmTreeController.prototype._setupNewOp =
+ZmTreeController.prototype._setupOptButton =
 function(params) {
-	var newOp = ZmOrganizer.NEW_OP[this.type];
-	if (newOp) {
-		var newSetting = ZmOperation.SETTING[newOp];
-		if (!newSetting || appCtxt.get(newSetting)) {
-			var tooltipKey = ZmOperation.getProp(newOp, "tooltipKey");
-			params.newButton = {
-				image: ZmOperation.getProp(newOp, "image"),
-				tooltip: tooltipKey ? ZmMsg[tooltipKey] : null,
-				callback: new AjxCallback(this, this._newListener)
-			};
-		}
+	var tooltipKey = ZmOperation.getProp(ZmOperation.OPTIONS, "tooltipKey");
+	params.optButton = {
+		image: ZmOperation.getProp(ZmOperation.OPTIONS, "image"),
+		tooltip: tooltipKey ? ZmMsg[tooltipKey] : null,
+		callback: new AjxCallback(this, this._dispOpts)
+	};
+};
+
+/**
+ * Shows options for header item
+ *
+ * @param {Hash}	params		a hash of parameters
+ * 
+ * @private
+ */
+
+ZmTreeController.prototype._dispOpts =
+function(ev){
+
+	var treeItem = ev.dwtObj;
+
+       var type = treeItem && treeItem.getData(ZmTreeView.KEY_TYPE);
+       if (!type) { return; }
+
+       var actionMenu = this._getHeaderActionMenu(ev);
+       if (actionMenu) {
+		actionMenu.popup(0, ev.docX, ev.docY);
 	}
 };
 

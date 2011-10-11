@@ -71,7 +71,7 @@ function(params) {
 		params.omitParents = true;
         var setting = ZmOrganizer.OPEN_SETTING[this.type];
         params.collapsed = !(!setting || (appCtxt.get(setting, null, params.account) !== false));
-		this._setupNewOp(params);
+		this._setupOptButton(params);
 		this._treeView[id].set(params);
 		this._checkTreeView(id);
 	}
