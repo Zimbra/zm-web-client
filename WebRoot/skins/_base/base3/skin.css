@@ -341,7 +341,7 @@ BODY						{	margin:0px; 	}
 
 .ZAppTabBorder                  {   @AppTabRoundCorners@        }
 .ZAppTabBorder .ZLeftIcon 		{	padding-bottom:4px; @AppTabLeftIcon@			}
-.ZAppTabBorder .ZWidgetTitle 	{	padding-bottom:4px; @AppTabText@ 				}
+.ZAppTabBorder .ZWidgetTitle 	{	padding:0 5px 3px 0; }
 
 .ZSelectedPrev .ZAppTabBorder 	{	@AppTabBorder-selectedPrev@	}
 .ZSelectedNext .ZAppTabBorder	{	@AppTabBorder-selectedNext@	}
@@ -506,4 +506,4 @@ SELECT						{	@FieldBorder@	}
  	background-color:#FBF9F4 !important;
  	border: 2px inset; 
     color:white;
-}
+}.ZAppTabBorder .ZLeftIcon div{ display :none; }.ZmContactView .contactHeaderTable,.ZmContactInfoView .contactHeaderTable {	background-color: @lighten(AppC,40)@;}
