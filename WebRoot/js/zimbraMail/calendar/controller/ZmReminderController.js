@@ -498,36 +498,43 @@ function() {
 };
 
 
-
 ZmReminderController.prototype._snoozeApptAction =
 function(apptList, snoozeMinutes, beforeAppt) {
-    var snoozeMilliseconds = snoozeMinutes*60*1000;
-    var untilTime =  0;
-    if (!beforeAppt) {
-        untilTime =  (new Date()).getTime() + snoozeMilliseconds;
-    }
-	var soapDoc = AjxSoapDoc.create("SnoozeCalendarItemAlarmRequest", "urn:zimbraMail");
-    for (var i = 0; i < apptList.size(); i++) {
-        var appt = apptList.get(i);
+    var chosenSnoozeMilliseconds = snoozeMinutes*60*1000;
+    var added = false;
 
-        var actionNode = soapDoc.set(this._apptType);
-        actionNode.setAttribute("id", appt.id);
-        if (beforeAppt) {
-            untilTime = appt.getAlarmInstStart() - snoozeMilliseconds;
+    var soapDoc = AjxSoapDoc.create("SnoozeCalendarItemAlarmRequest", "urn:zimbraMail");
+    if (beforeAppt) {
+        // Using a before time, relative to the start of each appointment
+        if (!this._beforeProcessor) {
+            this._beforeProcessor = new ZmSnoozeBeforeProcessor(this._apptType);
         }
-        actionNode.setAttribute("until", untilTime)
+        added = this._beforeProcessor.execute(apptList, chosenSnoozeMilliseconds, soapDoc);
+    } else {
+        // using a fixed untilTime for all appts
+        added = apptList.size() > 0;
+        var untilTime = (new Date()).getTime() + chosenSnoozeMilliseconds;
+        for (var i = 0; i < apptList.size(); i++) {
+            var appt = apptList.get(i);
+            var actionNode = soapDoc.set(this._apptType);
+            actionNode.setAttribute("id", appt.id);
+            actionNode.setAttribute("until", untilTime);
+        }
     }
 
-    var respCallback = this._handleResponseSnoozeAction.bind(this, apptList, snoozeMinutes);
-    var errorCallback = this._handleErrorResponseSnoozeAction.bind(this);
-    var acct = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
-    appCtxt.getAppController().sendRequest({
-        soapDoc:       soapDoc,
-        asyncMode:     true,
-        accountName:   acct,
-        callback:      respCallback,
-        errorCallback: errorCallback
-    });
+
+    if (added) {
+        var respCallback = this._handleResponseSnoozeAction.bind(this, apptList, snoozeMinutes);
+        var errorCallback = this._handleErrorResponseSnoozeAction.bind(this);
+        var acct = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
+        appCtxt.getAppController().sendRequest({
+            soapDoc:       soapDoc,
+            asyncMode:     true,
+            accountName:   acct,
+            callback:      respCallback,
+            errorCallback: errorCallback
+        });
+    }
 };
 
 

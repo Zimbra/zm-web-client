@@ -83,6 +83,7 @@ AjxPackage.require("zimbraMail.core.ZmToolTipMgr");
 AjxPackage.require("zimbraMail.calendar.model.ZmCalMgr");
 AjxPackage.require("zimbraMail.tasks.model.ZmTaskMgr");
 AjxPackage.require("zimbraMail.calendar.model.ZmMiniCalCache");
+AjxPackage.require("zimbraMail.calendar.controller.ZmSnoozeBeforeProcessor");
 AjxPackage.require("zimbraMail.calendar.controller.ZmReminderController");
 AjxPackage.require("zimbraMail.calendar.view.ZmReminderDialog");
 AjxPackage.require("zimbraMail.calendar.view.ZmQuickReminderDialog");
