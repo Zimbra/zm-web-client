@@ -660,6 +660,14 @@ function(msg) {
 			var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_CC];
 			rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, cc.address, subjMod);
 		}
+		var xZimbraDL = msg.getXZimbraDLHeader();
+		if (xZimbraDL && xZimbraDL.good) {
+			var arr = xZimbraDL.good.getArray();
+			var max = arr.length < 5 ? arr.length : 5; //limit number of X-Zimbra-DL ids
+			for (var i=0; i < max; i++) { 
+				rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, arr[i].address, ZmMailMsg.HDR_XZIMBRADL);
+			}
+		}
 		var subj = msg.subject;
 		if (subj) {
 			var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_SUBJECT];

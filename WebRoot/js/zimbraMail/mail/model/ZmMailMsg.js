@@ -97,6 +97,10 @@ ZmMailMsg.HDR_SUBJECT	= "SUBJECT";
  * Defines the "List-ID" header.
  */
 ZmMailMsg.HDR_LISTID    = "List-ID";
+/**
+ * Defines the "X-ZIMBRA-DL" header.
+ */
+ZmMailMsg.HDR_XZIMBRADL = "X-Zimbra-DL";
 
 ZmMailMsg.HDR_KEY = {};
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_FROM]		= ZmMsg.from;
@@ -143,7 +147,7 @@ ZmMailMsg.CONTENT_PART_ID = "ci";
 ZmMailMsg.CONTENT_PART_LOCATION = "cl";
 
 // Additional headers to request.  Also used by ZmConv and ZmSearch
-ZmMailMsg.requestHeaders = {listId: ZmMailMsg.HDR_LISTID};
+ZmMailMsg.requestHeaders = {listId: ZmMailMsg.HDR_LISTID, xZimbraDL: ZmMailMsg.HDR_XZIMBRADL};
 
 /**
  * Fetches a message from the server.
@@ -2558,4 +2562,16 @@ function() {
 		}
 	}
 	return id;
+};
+
+/**
+ * Return the zimbra DL header if it exists, otherwise return null
+ * @return {AjxEmailAddress} AjxEmailAddress object if header exists
+**/
+ZmMailMsg.prototype.getXZimbraDLHeader = 
+function() {
+	if (this.attrs && this.attrs[ZmMailMsg.HDR_XZIMBRADL]) {
+		return AjxEmailAddress.parseEmailString(this.attrs[ZmMailMsg.HDR_XZIMBRADL]);
+	}
+	return null;
 };

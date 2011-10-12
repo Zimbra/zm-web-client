@@ -42,6 +42,39 @@ UT.test("Get List-ID header", {
 	}
 );
 
+//X-Zimbra-DL header
+UT.test("Get X-Zimbra-DL header",
+	function() {
+		UT.expect(7);
+		var mailMsg = new ZmMailMsg();
+		var xId = mailMsg.getXZimbraDLHeader();
+		UT.equal(xId, null, "no X-Zimbra-DL header");
+		
+		mailMsg.attrs = {};
+		mailMsg.attrs["X-Zimbra-DL"] = "Server Team <server-team@example.zimbra.com>";
+		xId = mailMsg.getXZimbraDLHeader();
+		var good = xId.good.getArray();
+		UT.equal(good.length, 1, "Mail message should have 1 X-Zimbra-DL value");
+		UT.equal(good[0].address, "server-team@example.zimbra.com", "mail message X-Zimbra-DL header should be server-team@example.zimbra.com");
+		
+		mailMsg = new ZmMailMsg();
+		mailMsg.attrs = {};
+		mailMsg.attrs["X-Zimbra-DL"] = "Server Team <server-team@example.zimbra.com>, ui-team@example.zimbra.com";
+		xId = mailMsg.getXZimbraDLHeader();
+		good = xId.good.getArray();
+		UT.equal(good.length, 2, "Mail message should have 2 X-Zimbra-DL values");
+		UT.equal(good[0].address, "server-team@example.zimbra.com", "mail mesage X-Zimbra-DL header should have have server-team@example.zimbra.com");
+		UT.equal(good[1].address, "ui-team@example.zimbra.com", "mail message X-Zimbra-DL header should have ui-team@example.zimbrea.com");
+		
+		mailMsg = new ZmMailMsg();
+		mailMsg.attrs = {};
+		mailMsg.attrs["X-Zimbra-DL"] = "badaddress";
+		xId = mailMsg.getXZimbraDLHeader();
+		good = xId.good.getArray();
+		UT.equal(good.length, 0, "Mail message should not have any good X-Zimbra-DL values");
+	}		
+);
+
 UT.test("Unfang Internal Test: Copy/Paste Inline Image", {
 	
 	teardown: function() {
@@ -277,11 +310,10 @@ UT.test("Unfang Internal Test: Inline Attachment", {
 	   var images = div.getElementsByTagName("img");
        for(var i=0; i<images.length; i++) {
 	     var isExternal = ZmMailMsgView._isExternalImage(images[i]);
-	     UT.equal(isExternal, false, "src=data: is not external");
+	     UT.equal(isExternal, false, "Image is inline and should not be external");
          var unfang = ZmMailMsgView.__unfangInternalImage(mailMsg, images[i], "src");
 	     var src = images[i].getAttribute("src");
-	     var hasCid = src.match("cid:");
-	     UT.equal(hasCid && hasCid.length, 1, "src=" + src);
+	     UT.equal(src, "http://localhost:7070/service/home/~/?auth=co&id=564&part=2.2", "src value should be converted from cid to server path reference");
        }
 	}	
 );
