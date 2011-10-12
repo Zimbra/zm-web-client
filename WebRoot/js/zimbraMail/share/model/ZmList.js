@@ -519,13 +519,11 @@ function(params) {
 		var toCopy = [];
 		for (var i=0; i<params.items.length; i++) {
 			var item = params.items[i];
-			if (item.isShared()) {
-				var index = item.id.indexOf(":");
-				if (index != -1) {
-					var acctId = item.id.substring(0, index);
-					if (!appCtxt.accountList.getAccount(acctId)) {
-						toCopy.push(item);
-					}
+			var index = item.id.indexOf(":");
+			if (index != -1) { //might be shared
+				var acctId = item.id.substring(0, index);
+				if (!appCtxt.accountList.getAccount(acctId)) {
+					toCopy.push(item);
 				}
 			}
 		}
