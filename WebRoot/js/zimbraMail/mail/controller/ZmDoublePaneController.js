@@ -41,7 +41,6 @@ ZmDoublePaneController = function(container, mailApp, type, sessionId, searchRes
 		this._dragSrc.addDragListener(this._dragListener.bind(this));
 	}
 	
-	this._listeners[ZmOperation.SHOW_ORIG]			= this._showOrigListener.bind(this);
 	this._listeners[ZmOperation.ADD_FILTER_RULE]	= this._filterListener.bind(this);
 	this._listeners[ZmOperation.CREATE_APPT]		= this._createApptListener.bind(this);
 	this._listeners[ZmOperation.CREATE_TASK]		= this._createTaskListener.bind(this);
@@ -603,16 +602,6 @@ ZmDoublePaneController.prototype._doMove =
 function() {
 	this._listView[this._currentViewId]._itemToSelect = this._getNextItemToSelect();
 	ZmMailListController.prototype._doMove.apply(this, arguments);
-};
-
-ZmDoublePaneController.prototype._showOrigListener =
-function() {
-	var msg = this.getMsg();
-	if (!msg) { return; }
-
-	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + msg.id;
-	// create a new window w/ generated msg based on msg id
-	window.open(msgFetchUrl, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
 };
 
 ZmDoublePaneController.prototype._filterListener = 

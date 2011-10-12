@@ -55,6 +55,8 @@ ZmMailListController = function(container, mailApp, type, sessionId, searchResul
 	ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.FORWARD_INLINE]	= ZmOperation.FORWARD_INLINE;
 	ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.FORWARD_ATT]	= ZmOperation.FORWARD_ATT;
 
+	this._listeners[ZmOperation.SHOW_ORIG] = this._showOrigListener.bind(this);
+
 	this._listeners[ZmOperation.MARK_READ] = this._markReadListener.bind(this);
 	this._listeners[ZmOperation.MARK_UNREAD] = this._markUnreadListener.bind(this);
 	//fixed bug:15460 removed reply and forward menu.
@@ -863,6 +865,17 @@ function(ev) {
 	var callback = this._getMarkReadCallback();
 	this._doMarkRead(this._listView[this._currentViewId].getSelection(), true, callback);
 };
+
+ZmMailListController.prototype._showOrigListener =
+function() {
+	var msg = this.getMsg();
+	if (!msg) { return; }
+
+	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + msg.id;
+	// create a new window w/ generated msg based on msg id
+	window.open(msgFetchUrl, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
+};
+
 
 /**
  * Per bug #7257, read receipt must be sent if user explicitly marks a message
