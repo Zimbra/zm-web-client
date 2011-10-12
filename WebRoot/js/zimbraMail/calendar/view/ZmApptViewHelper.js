@@ -213,12 +213,19 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
 	html.append("<table cellpadding='0' cellspacing='0' border='0'>");
 	if (!noheader) html.append("<tr><td><div class='calendar_tooltip_month_day_label'>", title, "</div></td></tr>");
 	html.append("<tr><td>");
-	html.append("<table cellpadding='1' cellspacing='0' border='0' width=100%>");
+	html.append("<table cellpadding='1' cellspacing='0' border='0'>");
 	
 	var size = list ? list.size() : 0;
 
+	var dateTime = date.getTime();
 	for (var i = 0; i < size; i++) {
 		var ao = list.get(i);
+		// Multi-day all day appts will be broken up into one sub-appt per day, so only show
+		// the one that matches the selected date
+		var apptDate = new Date(ao.startDate.getTime());
+		apptDate.setHours(0,0,0,0);
+		if (apptDate.getTime() != dateTime) continue;
+
 		if (ao.isAllDayEvent()) {
             if(!isMinical && ao.toString() == "ZmAppt") {
                 html.append("<tr><td><div class=appt>");
@@ -227,7 +234,8 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
             }
             else {
                 //DBG.println("AO    "+ao);
-                html.append("<tr><td><div class=appt>");
+                var widthField = AjxEnv.isIE ? "width:500px;" : "min-width:300px;";
+                html.append("<tr><td><div style='" + widthField + "' class=appt>");
                 html.append(ZmApptViewHelper._allDayItemHtml(ao, Dwt.getNextId(), controller, true, true));
                 html.append("</div></td></tr>");
             }
