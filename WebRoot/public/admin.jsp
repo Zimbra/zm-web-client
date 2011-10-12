@@ -146,7 +146,7 @@
  * ***** END LICENSE BLOCK *****
 -->
 	<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
-	<fmt:setBundle basename="/messages/ZaMsg" scope='request' />
+	<fmt:setBundle basename="/messages/ZabMsg" scope='request' />
     <title><fmt:message key="zimbraAdminTitle"/></title>
 	<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
 	<c:if test="${empty favIconUrl}">
@@ -162,7 +162,7 @@
         appNewUI     = ${isNewUI};
 	</script>
 <jsp:include page="Resources.jsp">
-	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZaMsg,AjxKeys" />
+	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZaMsg,ZabMsg,AjxKeys" />
 	<jsp:param name="skin" value="${skin}" />
 </jsp:include>
 <style type="text/css">
@@ -207,10 +207,7 @@
     <% }
 %>
 <script type="text/javascript">
-AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(pageContext.request.locale)}";
-/*if(!AjxEnv.isFirefox1up && !AjxEnv.isFirefox3up && !AjxEnv.isFirefox2_0up && !AjxEnv.isNav7 && !AjxEnv.isIE6up && !AjxEnv.isIE7up)
-	alert(ZaMsg.ERROR_BROWSER_UNSUPORTED_TXT);
-*/	
+AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(pageContext.request.locale)}";	
 </script>
     <script type="text/javascript" language="JavaScript">
 	   function launch() {
