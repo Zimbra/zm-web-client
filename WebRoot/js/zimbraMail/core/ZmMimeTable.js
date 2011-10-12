@@ -85,16 +85,16 @@ ZmMimeTable.XML_ZIMBRA_SHARE		= "xml/x-zimbra-share";
 ZmMimeTable._table = new Object();
 
 // only add types which are NOT ignored by the client	
-ZmMimeTable._table[ZmMimeTable.APP]					= {desc: ZmMsg.unknownBinaryType, image: "ExeDoc", imageLarge: "ExeDoc_48"};
+ZmMimeTable._table[ZmMimeTable.APP]					= {desc: ZmMsg.unknownBinaryType, image: "ExeDoc", imageLarge: "ExeDoc_48", query: "application/*"};
 ZmMimeTable._table[ZmMimeTable.APP_ADOBE_PDF]		= {desc: ZmMsg.adobePdfDocument, image: "PDFDoc", imageLarge: "PDFDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_ADOBE_PS]		= {desc: ZmMsg.adobePsDocument, image: "GenericDoc", imageLarge: "GenericDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_EXE]				= {desc: ZmMsg.application, image: "ExeDoc", imageLarge: "ExeDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_MS_DOWNLOAD]		= {desc: ZmMsg.msDownload, image: "ExeDoc", imageLarge: "ExeDoc_48"};
-ZmMimeTable._table[ZmMimeTable.APP_MS_EXCEL]		= {desc: ZmMsg.msExcelDocument, image: "MSExcelDoc", imageLarge: "MSExcelDoc_48"};
+ZmMimeTable._table[ZmMimeTable.APP_MS_EXCEL]		= {desc: ZmMsg.msExcelDocument, image: "MSExcelDoc", imageLarge: "MSExcelDoc_48", query: "excel"};
 ZmMimeTable._table[ZmMimeTable.APP_MS_PPT]			= {desc: ZmMsg.msPPTDocument, image: "MSPowerpointDoc", imageLarge: "MSPowerpointDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_MS_PROJECT]		= {desc: ZmMsg.msProjectDocument, image: "MSProjectDoc", imageLarge: "MSProjectDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_MS_VISIO]		= {desc: ZmMsg.msVisioDocument, image: "MSVisioDoc", imageLarge: "MSVisioDoc_48"};
-ZmMimeTable._table[ZmMimeTable.APP_MS_WORD]			= {desc: ZmMsg.msWordDocument, image: "MSWordDoc", imageLarge: "MSWordDoc_48"};
+ZmMimeTable._table[ZmMimeTable.APP_MS_WORD]			= {desc: ZmMsg.msWordDocument, image: "MSWordDoc", imageLarge: "MSWordDoc_48", query: "word"};
 ZmMimeTable._table[ZmMimeTable.APP_OCTET_STREAM]	= {desc: ZmMsg.unknownBinaryType, image: "UnknownDoc", imageLarge: "UnknownDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_OPENXML_DOC]		= {desc: ZmMsg.msWordDocument, image: "MSWordDoc", imageLarge: "MSWordDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_OPENXML_EXCEL]	= {desc: ZmMsg.msExcelDocument, image: "MSExcelDoc", imageLarge: "MSExcelDoc_48"};
@@ -110,17 +110,18 @@ ZmMimeTable._table[ZmMimeTable.AUDIO_WAV]			= {desc: ZmMsg.waveAudio, image: "Au
 ZmMimeTable._table[ZmMimeTable.AUDIO_MP3]			= {desc: ZmMsg.mp3Audio, image: "AudioDoc", imageLarge: "AudioDoc_48"};
 ZmMimeTable._table[ZmMimeTable.VIDEO]				= {desc: ZmMsg.video, image: "VideoDoc", imageLarge: "VideoDoc_48"};
 ZmMimeTable._table[ZmMimeTable.VIDEO_WMV]			= {desc: ZmMsg.msWMV, image: "VideoDoc", imageLarge: "VideoDoc_48"};
-ZmMimeTable._table[ZmMimeTable.IMG]					= {desc: ZmMsg.image, image: "ImageDoc", imageLarge: "ImageDoc_48"};
-ZmMimeTable._table[ZmMimeTable.IMG_GIF]				= {desc: ZmMsg.gifImage, image: "ImageDoc", imageLarge: "ImageDoc_48"};
-ZmMimeTable._table[ZmMimeTable.IMG_JPEG]			= {desc: ZmMsg.jpegImage, image: "ImageDoc", imageLarge: "ImageDoc_48"};
-ZmMimeTable._table[ZmMimeTable.IMG_PNG]				= {desc: ZmMsg.pngImage, image: "ImageDoc", imageLarge: "ImageDoc_48"};
+ZmMimeTable._table[ZmMimeTable.IMG]					= {desc: ZmMsg.image, image: "ImageDoc", imageLarge: "ImageDoc_48", query: "image/*"};
+ZmMimeTable._table[ZmMimeTable.IMG_BMP]				= {desc: ZmMsg.bmpImage, image: "ImageDoc", imageLarge: "ImageDoc_48", query: "bmp"};
+ZmMimeTable._table[ZmMimeTable.IMG_GIF]				= {desc: ZmMsg.gifImage, image: "ImageDoc", imageLarge: "ImageDoc_48", query: "gif"};
+ZmMimeTable._table[ZmMimeTable.IMG_JPEG]			= {desc: ZmMsg.jpegImage, image: "ImageDoc", imageLarge: "ImageDoc_48", query: "jpeg"};
+ZmMimeTable._table[ZmMimeTable.IMG_PNG]				= {desc: ZmMsg.pngImage, image: "ImageDoc", imageLarge: "ImageDoc_48", query: "png"};
 ZmMimeTable._table[ZmMimeTable.IMG_TIFF]			= {desc: ZmMsg.tiffImage, image: "ImageDoc", imageLarge: "ImageDoc_48"};
 ZmMimeTable._table[ZmMimeTable.MSG_RFC822]			= {desc: ZmMsg.mailMessage, image: "MessageDoc", imageLarge: "MessageDoc_48"};
 ZmMimeTable._table[ZmMimeTable.TEXT]				= {desc: ZmMsg.textDocuments, image: "GenericDoc", imageLarge: "GenericDoc_48"};
 ZmMimeTable._table[ZmMimeTable.TEXT_RTF]			= {desc: ZmMsg.enrichedText, image: "GenericDoc", imageLarge: "GenericDoc_48"};
 ZmMimeTable._table[ZmMimeTable.TEXT_HTML]			= {desc: ZmMsg.htmlDocument, image: "HtmlDoc", imageLarge: "HtmlDoc_48"};
 ZmMimeTable._table[ZmMimeTable.TEXT_JAVA]			= {desc: ZmMsg.javaSource, image: "GenericDoc", imageLarge: "GenericDoc_48"};
-ZmMimeTable._table[ZmMimeTable.TEXT_PLAIN]			= {desc: ZmMsg.textFile, image: "GenericDoc", imageLarge: "GenericDoc_48"};
+ZmMimeTable._table[ZmMimeTable.TEXT_PLAIN]			= {desc: ZmMsg.textFile, image: "GenericDoc", imageLarge: "GenericDoc_48", query: "text"};
 ZmMimeTable._table[ZmMimeTable.TEXT_XML]			= {desc: ZmMsg.xmlDocument, image: "GenericDoc", imageLarge: "GenericDoc_48"};
 
 ZmMimeTable.getInfo =
@@ -130,13 +131,15 @@ function(type, createIfUndefined) {
 		entry = ZmMimeTable._table[type] = {desc: type, image: "UnknownDoc", imageLarge: "UnknownDoc_48"};
 	}
 	if (entry) {
-		if (!entry.type)
+		if (!entry.type) {
 			entry.type = type;
+		}
 	} else {
 		// otherwise, check if main category is in table
 		var baseType = type.split("/")[0];
-		if (baseType)
+		if (baseType) {
 			entry = ZmMimeTable._table[baseType];
+		}
 	}
 	return entry;
 };

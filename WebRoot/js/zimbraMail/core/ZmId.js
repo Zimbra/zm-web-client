@@ -65,6 +65,7 @@ ZmId = function() {};
 //
 
 // widget types (used to prefix IDs)
+// TODO: move most of these to DwtId
 ZmId.WIDGET					= "z";			// generic element
 ZmId.WIDGET_VIEW			= "zv";			// view within content area
 ZmId.WIDGET_TOOLBAR			= "ztb";		// toolbar
@@ -80,6 +81,10 @@ ZmId.WIDGET_TREE_ITEM_HDR	= "ztih";		// root tree item
 ZmId.WIDGET_TREE_ITEM		= "zti";		// tree item (node)
 ZmId.WIDGET_TAB				= "ztab";		// tab button
 ZmId.WIDGET_AUTOCOMPLETE	= "zac";		// autocomplete list
+ZmId.WIDGET_CHECKBOX		= "zcb";		// checkbox
+ZmId.WIDGET_COMBOBOX		= "zcombo";		// combo box
+ZmId.WIDGET_CHOOSER			= "zchooser";	// folder chooser
+ZmId.WIDGET_CALENDAR		= "zcal";		// popup calendar
 
 //
 // Preset IDs
@@ -135,6 +140,7 @@ ZmId.MAIN_SASH				= "z_sash";				// sash between overview and content
 ZmId.BANNER					= "z_banner";			// logo (at upper left by default)
 ZmId.SEARCH_TOOLBAR			= "ztb_search";			// search toolbar
 ZmId.SEARCHRESULTS_TOOLBAR	= "ztb_searchresults";	// search results toolbar
+ZmId.SEARCHRESULTS_PANEL	= "z_filterPanel";		// search results filter panel
 ZmId.USER_NAME				= "z_userName";			// account name
 ZmId.USER_QUOTA				= "z_userQuota";		// quota
 ZmId.PRESENCE				= "z_presence";			// presence

@@ -45,6 +45,8 @@ AjxPackage.require("zimbraMail.share.model.ZmZimbraAccount");
 AjxPackage.require("zimbraMail.share.model.ZmInvite");
 AjxPackage.require("zimbraMail.share.model.ZmImAddress");
 AjxPackage.require("zimbraMail.share.model.ZmAccessControlList");
+AjxPackage.require("zimbraMail.share.model.ZmDomainList");
+AjxPackage.require("zimbraMail.share.model.ZmAttachmentTypeList");
 
 AjxPackage.require("zimbraMail.core.ZmApp");
 AjxPackage.require("zimbraMail.share.ZmSearchApp");

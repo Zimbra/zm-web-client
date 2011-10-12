@@ -31,7 +31,12 @@ ZmSearchResultsToolBar = function(params) {
 
 	params.posStyle = Dwt.ABSOLUTE_STYLE;
 	params.className = "ZmSearchResultsToolBar";
+	this._controller = params.controller;
+
 	ZmSearchToolBar.apply(this, arguments);
+	
+	this._bubbleId = {};
+	this._origin = ZmId.SEARCHRESULTS;
 	
 	this.initAutocomplete();
 };
@@ -49,6 +54,8 @@ ZmSearchResultsToolBar.prototype._createHtml =
 function() {
 
 	this.getHtmlElement().innerHTML = AjxTemplate.expand(this.TEMPLATE, {id:this._htmlElId});
+
+	var idContext = this._controller.getCurrentViewId();
 	
 	// add search input field
 	var inputFieldCellId = this._htmlElId + "_inputFieldCell";
@@ -57,6 +64,7 @@ function() {
 		var aifParams = {
 			parent:					this,
 			strictMode:				false,
+			id:						DwtId.makeId(ZmId.WIDGET_INPUT, idContext),
 			bubbleAddedCallback:	this._bubbleChange.bind(this),
 			bubbleRemovedCallback:	this._bubbleChange.bind(this)
 		}
@@ -67,12 +75,11 @@ function() {
 		inputEl.className = "search_results_input";
 	}
 	
-
 	// add search button
 	this._button[ZmSearchToolBar.SEARCH_BUTTON] = ZmToolBar.addButton({
 				parent:		this, 
 				tdId:		"_searchButton",
-				buttonId:	ZmId.getButtonId(ZmId.SEARCHRESULTS, ZmId.SEARCHRESULTS_SEARCH),
+				buttonId:	ZmId.getButtonId(idContext, ZmId.SEARCHRESULTS_SEARCH),
 				lbl:		ZmMsg.search,
 				tooltip:	ZmMsg.searchTooltip
 			});
@@ -82,7 +89,7 @@ function() {
 				parent:		this, 
 				setting:	ZmSetting.SAVED_SEARCHES_ENABLED,
 				tdId:		"_saveButton",
-				buttonId:	ZmId.getButtonId(ZmId.SEARCHRESULTS, ZmId.SEARCHRESULTS_SAVE),
+				buttonId:	ZmId.getButtonId(idContext, ZmId.SEARCHRESULTS_SAVE),
 				lbl:		ZmMsg.save,
 				tooltip:	ZmMsg.saveSearchTooltip
 			});
@@ -96,12 +103,6 @@ function() {
 		this._acList.handle(this.getSearchField(), this._searchField._htmlElId);
 	}
 	this._searchField.setAutocompleteListView(this._acList);
-	
-//	var mainSearchToolbar = appCtxt.getSearchController().getSearchToolbar();
-//	var aclv = this._acList = mainSearchToolbar.getAutocompleteListView();
-//	var input = this.getSearchField();
-//	aclv.handle(input);
-//	aclv.addCallback(ZmAutocompleteListView.CB_KEYDOWN, new AjxCallback(this, this._handleKeyDown), input.id);
 };
 
 ZmSearchResultsToolBar.prototype._getAutocompleteParams =
@@ -113,42 +114,56 @@ function() {
 
 ZmSearchResultsToolBar.prototype.setSearch =
 function(search) {
+	this._settingSearch = true;
+	this._searchField.clear(true);
 	var tokens = search.getTokens();
-	var terms = [];
-	var noBubbles = false;
 	for (var i = 0, len = tokens.length; i < len; i++) {
-		var t = tokens[i];
-		if (t.type == ZmParsedQuery.TERM) {
-			terms.push((t.op == ZmParsedQuery.OP_CONTENT) ? t.arg : t.op + ":" + t.arg);
-		}
-		else if (t.type == ZmParsedQuery.GROUP) {
-			noBubbles = true;
-			break;
-		}
-		else if (t.type == ZmParsedQuery.COND) {
-			if (t.op != ZmParsedQuery.COND_AND) {
-				noBubbles = true;
-				break;
-			}
+		var text = tokens[i].toString();
+		if (text) {
+			var bubble = this._searchField.addBubble({address:text});
+			this._bubbleId[text] = bubble.id;
 		}
 	}
-	if (noBubbles) {
-		this._searchField.setInputValue(search.query + " ");
-	}
-	else {
-		this._settingSearch = true;
-		this._searchField.clear(true);
-		for (var i = 0, len = terms.length; i < len; i++) {
-			this._searchField.addBubble({address:terms[i]});
-		}
-		this._settingSearch = false;
-	}
+	this._settingSearch = false;
 };
 
-// Don't let the removal or addition of a bubble when we're setting up trigger another search.
+// Don't let the removal or addition of a bubble when we're setting up trigger a search loop.
 ZmSearchResultsToolBar.prototype._bubbleChange =
 function() {
 	if (!this._settingSearch) {
-		this._handleEnterKeyPress();
+		// use timer to let content of search bar get set - if a search term is autocomplete,
+		// the bubble is added before the text it replaces is removed 
+		setTimeout(this._handleEnterKeyPress.bind(this), 10);
+	}
+};
+
+/**
+ * Adds a bubble for the given search term.
+ * 
+ * @param {ZmSearchToken}	term		search term
+ * @param {boolean}			skipNotify	if true, don't trigger a search
+ */
+ZmSearchResultsToolBar.prototype.addSearchTerm =
+function(term, skipNotify) {
+	var text = term.toString();
+	var bubble = this._searchField.addBubble({address:text, skipNotify:skipNotify});
+	this._bubbleId[text] = bubble.id;
+	return bubble.id;
+};
+
+/**
+ * Removes the bubble with the given search term.
+ * 
+ * @param {ZmSearchToken|string}	term		search term or bubble ID
+ * @param {boolean}					skipNotify	if true, don't trigger a search
+ */
+ZmSearchResultsToolBar.prototype.removeSearchTerm =
+function(term, skipNotify) {
+	if (!term) { return; }
+	var text = term.toString();
+	var id = term.isZmSearchToken ? this._bubbleId[text] : term;
+	if (id) {
+		this._searchField.removeBubble(id, skipNotify);
+		delete this._bubbleId[text];
 	}
 };

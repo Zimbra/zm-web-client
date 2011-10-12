@@ -577,7 +577,7 @@ ZmSearchAutocomplete = function() {
 	params = {listType:		ZmId.ITEM_ATT,
 			  text:			function(o) { return o.desc; },
 			  icon:			function(o) { return o.image; },
-			  matchText:	function(o) { return o.type; },
+			  matchText:	function(o) { return "type:" + (o.query || o.type); },
 			  quoteMatch:	true
 			 };
 	this._loadFunc[ZmId.ITEM_ATT] = this._loadTypes;
@@ -656,11 +656,12 @@ function(str, callback, aclv, options) {
 	}
 };
 
+// TODO - some validation of search ops and args
 ZmSearchAutocomplete.prototype.isComplete =
 function(str) {
 	var pq = new ZmParsedQuery(str);
 	var tokens = pq.getTokens();
-	return (!pq.parseFailed && pq.numTerms == 1 && (tokens[0].type == ZmParsedQuery.TERM));
+	return (!pq.parseFailed && pq.numTerms == 1);
 };
 
 /**
@@ -751,13 +752,7 @@ function(listType, callback) {
 ZmSearchAutocomplete.prototype._loadFlags =
 function(listType, callback) {
 
-	this._list[listType] = ["anywhere",
-							"unread", "read", "flagged", "unflagged",
-							"sent", "received", "replied", "unreplied", "forwarded", "unforwarded",
-							"invite",
-							"solo",
-							"tome", "fromme", "ccme", "tofromme", "fromccme", "tofromccme",
-							"local", "remote"].sort();
+	this._list[listType] = ZmParsedQuery.IS_VALUES.sort();
 	if (callback) { callback(); }
 };
 

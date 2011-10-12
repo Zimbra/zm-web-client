@@ -32,6 +32,8 @@ ZmSearchToolBar = function(params) {
 	DwtComposite.apply(this, arguments);
 	
 	this._button = {};
+	this._origin = ZmId.SEARCH;
+	
 	this._createHtml();
 };
 
@@ -213,7 +215,11 @@ function(ev) {
 ZmSearchToolBar.prototype._handleEnterKeyPress =
 function(ev) {
 	if (this._enterCallback) {
-		this._enterCallback.run({ev:ev, zimletEvent:"onKeyPressSearchField"});
+		this._enterCallback.run({
+					ev:				ev,
+					zimletEvent:	"onKeyPressSearchField",
+					origin:			this._origin
+				});
 	}
 	return false;
 };
@@ -237,7 +243,7 @@ function() {
 		delims:				[" ", "\t"],
 		delimCodes:			[3, 13, 32, 9],
 		separator:			" ",
-		keyDownCallback:	new AjxCallback(this, this._handleKeyDown),
+		keyDownCallback:	this._handleKeyDown.bind(this),
 		contextId:			this.toString(),
 		locationCallback:	this._getAcLocation.bind(this)
 	};

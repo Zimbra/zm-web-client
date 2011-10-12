@@ -528,7 +528,7 @@ function(params, noRender, callback, errorCallback) {
 
 	if (searchFor == ZmItem.TASK) {
 		var tlc = AjxDispatcher.run("GetTaskListController");
-		params.allowableTaskStatus = (tlc) ? tlc.getAllowableTaskStatus() : null;
+		params.allowableTaskStatus = tlc && tlc.getAllowableTaskStatus();
 	}
 
 	if (params.searchAllAccounts && !params.queryHint) {
@@ -628,7 +628,7 @@ function(results, search, noUpdateOverview, noClear) {
 	}
 
 	// disable search results tab for now
-	if (false && search.userInitiated) {
+	if (search.userInitiated) {
 		var ctlr = appCtxt.getApp(ZmApp.SEARCH).getSearchResultsController();
 		ctlr.show(results);
 	}
@@ -718,7 +718,11 @@ function(types, account) {
 // called when the search button has been pressed
 ZmSearchController.prototype._searchButtonListener =
 function(ev) {
-	this._toolbarSearch({ev:ev, zimletEvent:"onSearchButtonClick"});
+	this._toolbarSearch({
+				ev:				ev,
+				zimletEvent:	"onSearchButtonClick",
+				origin:			ZmId.SEARCH
+			});
 };
 
 /**
@@ -755,7 +759,8 @@ function(params) {
 			userInitiated:				true,
 			getHtml:					appCtxt.get(ZmSetting.VIEW_AS_HTML),
 			searchFor:					result,
-			skipUpdateSearchToolbar:	params.skipUpdateSearchToolbar
+			skipUpdateSearchToolbar:	params.skipUpdateSearchToolbar,
+			origin:						params.origin
 		};
 		this.search(searchParams);
 	}

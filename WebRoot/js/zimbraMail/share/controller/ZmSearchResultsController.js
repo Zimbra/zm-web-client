@@ -55,39 +55,49 @@ function() {
 };
 ZmSearchResultsController.prototype.getDefaultViewType = ZmSearchResultsController.getDefaultViewType;
 
+/**
+ * Displays the given results in a search tab managed by this controller.
+ * 
+ * @param {ZmSearchResults}		results		search results
+ */
 ZmSearchResultsController.prototype.show =
 function(results) {
-	
 	var resultsType = results.type;
-//	var loadCallback = this._handleLoadShowResults.bind(this, results, search, noUpdateOverview);
 	var app = this._resultsApp = appCtxt.getApp(ZmItem.APP[resultsType]) || appCtxt.getCurrentApp();
-//	app.currentSearch = search;
-//	app.currentQuery = search.query;
 	app.showSearchResults(results, this._displayResults.bind(this, results.search), this);
 };
 
+// creates the toolbar and filter panel
 ZmSearchResultsController.prototype._initialize =
 function() {
 
 	this._toolbar = new ZmSearchResultsToolBar({
 				parent:			this._container,
-				id:				ZmId.SEARCHRESULTS_TOOLBAR,
+				controller:		this,
+				id:				DwtId.makeId(ZmId.SEARCHRESULTS_TOOLBAR, this._currentViewId),
 				noMenuButton:	true
 			});
 	this._toolbar.getButton(ZmSearchToolBar.SEARCH_BUTTON).addSelectionListener(this._searchListener.bind(this));
 	this._toolbar.getButton(ZmSearchToolBar.SAVE_BUTTON).addSelectionListener(this._saveListener.bind(this));
 	this._toolbar.registerEnterCallback(this._searchListener.bind(this));
 
-	this._filterPanel = new ZmSearchResultsFilterPanel({parent:this._container});
+	this._filterPanel = new ZmSearchResultsFilterPanel({
+				parent:		this._container,
+				controller:	this,
+				id:			DwtId.makeId(ZmId.SEARCHRESULTS_PANEL, this._currentViewId)
+			});
 	
 	this.isPinned = false;
 };
 
-// TODO: handle reuse
 /**
+ * Shows the results of the given search in this controller's search tab. The toolbar and filter panel
+ * were created earlier, and the content area (top toolbar and list view) is taken from the controller
+ * that generated the results.
  * 
- * @param search
+ * @param {ZmSearch}		search			search object
  * @param {ZmController}	resultsCtlr		passed back from app
+ * @private
  */
 ZmSearchResultsController.prototype._displayResults =
 function(search, resultsCtlr) {
@@ -99,7 +109,6 @@ function(search, resultsCtlr) {
 		appCtxt.getAppViewMgr().setViewComponents(this._currentViewId, elements, true);
 	}
 	else {
-		this._toolbar.setSearch(search);
 		
 		var elements = {};
 		elements[ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR] = this._toolbar;
@@ -131,9 +140,15 @@ function(search, resultsCtlr) {
 		menuItem.setText(ZmMsg.pinned);
 		menuItem.addSelectionListener(this._pinnedListener.bind(this));
 	}
+	
+	if (search && search.origin == ZmId.SEARCH) {
+		this._toolbar.setSearch(search);
+	}
+
 	setTimeout(this._toolbar.focus.bind(this._toolbar), 100);
 };
 
+// returns params for the search tab button
 ZmSearchResultsController.prototype._getTabParams =
 function() {
 	return {
@@ -145,6 +160,7 @@ function() {
 	};
 };
 
+// runs a search based on the contents of the input
 ZmSearchResultsController.prototype._searchListener =
 function(ev, zimletEvent) {
 	var query = this._toolbar.getSearchFieldValue();
@@ -153,17 +169,20 @@ function(ev, zimletEvent) {
 			ev:							ev,
 			zimletEvent:				zimletEvent || "onSearchButtonClick",
 			query:						query,
-			skipUpdateSearchToolbar:	true
+			skipUpdateSearchToolbar:	true,
+			origin:						ZmId.SEARCHRESULTS
 		}
 		appCtxt.getSearchController()._toolbarSearch(params);
 	}
 };
 
+// pops up a dialog to save the search
 ZmSearchResultsController.prototype._saveListener =
 function(ev) {
 	appCtxt.getSearchController()._saveButtonListener(ev);
 };
 
+// toggles the pinned state of this tab
 ZmSearchResultsController.prototype._pinnedListener =
 function(ev) {
 	this.isPinned = !this.isPinned;
@@ -172,4 +191,26 @@ function(ev) {
 ZmSearchResultsController.prototype._closeListener =
 function(ev) {
 	appCtxt.getAppViewMgr().popView();
+};
+
+// adds the given term to the search as a bubble
+ZmSearchResultsController.prototype.addSearchTerm =
+function(term, skipNotify) {
+	return this._toolbar.addSearchTerm(term, skipNotify);
+};
+
+// removes the bubble with the given term
+ZmSearchResultsController.prototype.removeSearchTerm =
+function(term, skipNotify) {
+	this._toolbar.removeSearchTerm(term, skipNotify);
+};
+
+// returns a list of current search terms
+ZmSearchResultsController.prototype.getSearchTerms =
+function(term, skipNotify) {
+	var values = this._toolbar._searchField.getAddresses();
+	var terms = AjxUtil.map(values, function(member, i) {
+		return new ZmSearchToken(member);
+	});
+	return terms;
 };

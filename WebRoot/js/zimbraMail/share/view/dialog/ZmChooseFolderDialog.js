@@ -136,7 +136,10 @@ function(params, fromFolderChooser) {
 
 	// New button doesn't make sense if we're only showing saved searches
 	var searchOnly = (treeIds.length == 1 && treeIds[0] == ZmOrganizer.SEARCH);
-	this._getNewButton().setVisible(!searchOnly && !params.hideNewButton);
+	var newButton = this._getNewButton();
+	if (newButton) {
+		newButton.setVisible(!searchOnly && !params.hideNewButton);
+	}
 
 	this._data = params.data;
 

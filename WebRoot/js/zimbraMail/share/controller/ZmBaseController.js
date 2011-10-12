@@ -1083,7 +1083,6 @@ function(moveButton) {
 	var moveParams = this._getMoveParams(chooser);
 	moveParams.overviewId += this._currentViewId; //so it works when switching views (cuz the tree has a listener and the tree is shared unless it's different ID). maybe there's a different way to solve this.
 	chooser.setupFolderChooser(moveParams, this._moveMenuCallback.bind(this, moveButton));
-	chooser.setSkipNotifyOnPage(true);
 
 	return moveButton;
 };

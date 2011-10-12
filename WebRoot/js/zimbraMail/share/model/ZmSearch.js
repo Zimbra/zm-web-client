@@ -52,6 +52,7 @@
  * @param	{Boolean}	params.idsOnly					if <code>true</code>, response returns item IDs only
  * @param   {Boolean}   params.inDumpster               if <code>true</code>, search in the dumpster
  * @param	{boolean}	params.expandDL					if <code>true</code>, set flag to have server indicate expandability for DLs
+ * @param	{string}	params.origin					indicates what initiated the search
  */
 ZmSearch = function(params) {
 
@@ -906,7 +907,7 @@ function() {
  * TODO: handle "field[lastName]" and "#lastName"
  */
 ZmParsedQuery = function(query) {
-	this._parse(AjxStringUtil.trim(query, true));
+	this._tokens = this._parse(AjxStringUtil.trim(query, true));
 };
 
 ZmParsedQuery.TERM	= "TERM";	// search operator such as "in"
@@ -925,18 +926,118 @@ ZmParsedQuery.OP_LIST = [
 ];
 ZmParsedQuery.IS_OP		= AjxUtil.arrayAsHash(ZmParsedQuery.OP_LIST);
 
+// valid arguments for the search term "is:"
+ZmParsedQuery.IS_VALUES = [	"unread", "read", "flagged", "unflagged",
+							"sent", "received", "replied", "unreplied", "forwarded", "unforwarded",
+							"invite",
+							"solo",
+							"tome", "fromme", "ccme", "tofromme", "toccme", "fromccme", "tofromccme",
+							"local", "remote", "anywhere" ];
+
+// ops that can appear more than once in a query
+ZmParsedQuery.MULTIPLE = {};
+ZmParsedQuery.MULTIPLE["to"]	= true;
+ZmParsedQuery.MULTIPLE["is"]	= true;
+ZmParsedQuery.MULTIPLE["has"]	= true;
+ZmParsedQuery.MULTIPLE["tag"]	= true;
+
+ZmParsedQuery.isMultiple =
+function(term) {
+	return Boolean(term && ZmParsedQuery.MULTIPLE[term.op]);
+};
+
+// ops that are mutually exclusive
+ZmParsedQuery.EXCLUDE = {};
+ZmParsedQuery.EXCLUDE["before"]	= ["date"];
+ZmParsedQuery.EXCLUDE["after"]	= ["date"];
+
+// values that mutually exclusive - list value implies full multi-way exclusivity
+ZmParsedQuery.EXCLUDE["is"]					= {};
+ZmParsedQuery.EXCLUDE["is"]["read"]			= ["unread"];
+ZmParsedQuery.EXCLUDE["is"]["flagged"]		= ["unflagged"];
+ZmParsedQuery.EXCLUDE["is"]["sent"]			= ["received"];
+ZmParsedQuery.EXCLUDE["is"]["replied"]		= ["unreplied"];
+ZmParsedQuery.EXCLUDE["is"]["forwarded"]	= ["unforwarded"];
+ZmParsedQuery.EXCLUDE["is"]["local"]		= ["remote", "anywhere"];
+ZmParsedQuery.EXCLUDE["is"]["tome"]			= ["tofromme", "toccme", "tofromccme"];
+ZmParsedQuery.EXCLUDE["is"]["fromme"]		= ["tofromme", "fromccme", "tofromccme"];
+ZmParsedQuery.EXCLUDE["is"]["ccme"]			= ["toccme", "fromccme", "tofromccme"];
+
+ZmParsedQuery._createExcludeMap =
+function(excludes) {
+
+	var excludeMap = {};
+	for (var key in excludes) {
+		var value = excludes[key];
+		if (AjxUtil.isArray1(value)) {
+			value.push(key);
+			ZmParsedQuery._permuteExcludeMap(excludeMap, value);
+		}
+		else {
+			for (var key1 in value) {
+				var value1 = excludes[key][key1];
+				value1.push(key1);
+				ZmParsedQuery._permuteExcludeMap(excludeMap, AjxUtil.map(value1,
+						function(val) {
+							return new ZmSearchToken(key, val).toString();
+						}));
+			}
+		}
+	}
+	return excludeMap;
+};
+
+// makes each possible pair in the list exclusive
+ZmParsedQuery._permuteExcludeMap =
+function(excludeMap, list) {
+	if (list.length < 2) { return; }
+	for (var i = 0; i < list.length - 1; i++) {
+		var a = list[i];
+		for (var j = i + 1; j < list.length; j++) {
+			var b = list[j];
+			excludeMap[a] = excludeMap[a] || {};
+			excludeMap[b] = excludeMap[b] || {};
+			excludeMap[a][b] = true;
+			excludeMap[b][a] = true;
+		}
+	}
+};
+
+/**
+ * Returns true if the given search terms should not appear in the same query.
+ * 
+ * @param {ZmSearchToken}	termA	search term
+ * @param {ZmSearchToken}	termB	search term
+ */
+ZmParsedQuery.areExclusive =
+function(termA, termB) {
+	if (!termA || !termB) { return false; }
+	var map = ZmParsedQuery.EXCLUDE_MAP;
+	if (!map) {
+		map = ZmParsedQuery.EXCLUDE_MAP = ZmParsedQuery._createExcludeMap(ZmParsedQuery.EXCLUDE);
+	}
+	var opA = termA.op, opB = termB.op;
+	var strA = termA.toString(), strB = termB.toString();
+	return Boolean((map[opA] && map[opA][opB]) || (map[opB] && map[opB][opA]) ||
+				   (map[strA] && map[strA][strB]) || (map[strB] && map[strB][strA]));
+};
+
+// conditional ops
 ZmParsedQuery.COND_AND	= "and"
 ZmParsedQuery.COND_OR	= "or";
 ZmParsedQuery.COND_NOT	= "not";
 
+// JS version of conditional
 ZmParsedQuery.COND_OP = {};
 ZmParsedQuery.COND_OP[ZmParsedQuery.COND_AND]	= " && ";
 ZmParsedQuery.COND_OP[ZmParsedQuery.COND_OR]	= " || ";
 ZmParsedQuery.COND_OP[ZmParsedQuery.COND_NOT]	= " !";
 
+// word separators
 ZmParsedQuery.EOW_LIST	= [" ", ":", "(", ")"];
 ZmParsedQuery.IS_EOW	= AjxUtil.arrayAsHash(ZmParsedQuery.EOW_LIST);
 
+// map is:xxx to item properties
 ZmParsedQuery.FLAG = {};
 ZmParsedQuery.FLAG["unread"]		= "item.isUnread";
 ZmParsedQuery.FLAG["read"]			= "!item.isUnread";
@@ -978,7 +1079,7 @@ function(query) {
 	function fail(reason, query) {
 		DBG.println(AjxDebug.DBG1, "ZmParsedQuery failure: " + reason + "; query: [" + query + "]");
 		this.parseFailed = reason;
-		return null;		
+		return tokens;		
 	}
 
 	this.numTerms = 0;
@@ -1006,7 +1107,7 @@ function(query) {
 			var lcWord = word.toLowerCase();
 			var isCondOp = ZmParsedQuery.COND_OP[lcWord];
 			if (op && word && !(isCondOp && compound > 0)) {
-				tokens.push({type: ZmParsedQuery.TERM, op: op, arg: lcWord});
+				tokens.push(new ZmSearchToken(op, lcWord));
 				this.numTerms++;
 				if (compound == 0) {
 					op = "";
@@ -1015,13 +1116,13 @@ function(query) {
 				endOk = true;
 			} else if (!op || (op && compound > 0)) {
 				if (isCondOp) {
-					tokens.push({type: ZmParsedQuery.COND, op: lcWord});
+					tokens.push(new ZmSearchToken(lcWord));
 					endOk = false;
 					if (lcWord == ZmParsedQuery.COND_OR) {
 						this.hasOrTerm = true;
 					}
 				} else if (word) {
-					tokens.push({type: ZmParsedQuery.TERM, op: ZmParsedQuery.OP_CONTENT, arg: word, bareWord: true});
+					tokens.push(new ZmSearchToken(ZmParsedQuery.OP_CONTENT, word));
 					this.numTerms++;
 				}
 				word = "";
@@ -1043,16 +1144,16 @@ function(query) {
 			else if (lastCh == ":") {
 				compound = 1;
 			}
-			tokens.push({type: ZmParsedQuery.GROUP, op: ch});
+			tokens.push(new ZmSearchToken(ch));
 			pos = skipSpace(query, pos + 1);
 		} else if (ch == ")") {
 			if (compound > 0) {
 				compound--;
 			}
-			tokens.push({type: ZmParsedQuery.GROUP, op: ch});
+			tokens.push(new ZmSearchToken(ch));
 			pos = skipSpace(query, pos + 1);
 		} else if (ch == "-" && !word) {
-			tokens.push({type: ZmParsedQuery.COND, op: ZmParsedQuery.COND_NOT});
+			tokens.push(new ZmSearchToken(ZmParsedQuery.COND_NOT));
 			pos = skipSpace(query, pos + 1);
 			endOk = false;
 		} else {
@@ -1065,11 +1166,11 @@ function(query) {
 
 	// check for term at end
 	if ((pos == query.length) && op && word) {
-		tokens.push({type: ZmParsedQuery.TERM, op: op, arg: word});
+		tokens.push(new ZmSearchToken(op, word));
 		this.numTerms++;
 		endOk = true;
 	} else if (!op && word) {
-		tokens.push({type: ZmParsedQuery.TERM, op: ZmParsedQuery.OP_CONTENT, arg: word, bareWord: true});
+		tokens.push(new ZmSearchToken(word));
 		this.numTerms++;
 	}
 
@@ -1077,7 +1178,7 @@ function(query) {
 		return fail("unexpected end of query", query);
 	}
 	
-	this._tokens = tokens;
+	return tokens;
 };
 
 ZmParsedQuery.prototype.getTokens =
@@ -1153,25 +1254,15 @@ function() {
 };
 
 /**
- * Returns a query string from the token list that should be logically equivalent to the original query.
+ * Returns a query string that should be logically equivalent to the original query.
  */
 ZmParsedQuery.prototype.createQuery =
 function() {
-	
-	var query = "";
+	var terms = [];
 	for (var i = 0, len = this._tokens.length; i < len; i++) {
-		var t = this._tokens[i];
-		if (t.type == ZmParsedQuery.GROUP) {
-			query += t.op;
-		}
-		else if (t.type == ZmParsedQuery.COND) {
-			query += t.op;
-		}
-		else if (t.type == ZmParsedQuery.TERM) {
-			query += t.op + ":" + t.arg;
-		}
+		terms.push(this._tokens[i].toString());
 	}
-	return query;
+	return terms.join(" ");
 };
 
 // Returns the fully-qualified ID for the given folder path.
@@ -1276,4 +1367,49 @@ function(opList, oldValue, newValue) {
 		}
 	}
 	return "";
+};
+
+/**
+ * This class represents one unit of a search query. That may be a search term ("is:unread"),
+ * and conditional operator (AND, OR, NOT), or a grouping operator (left or right paren).
+ * 
+ * @param {string}	op		operator
+ * @param {string}	arg		argument part of search term
+ */
+ZmSearchToken = function(op, arg) {
+	
+	if (op && arguments.length == 1) {
+		var parts = op.split(":");
+		op = parts[0];
+		arg = parts[1];
+	}
+	
+	this.op = op;
+	this.arg = arg;
+	if (ZmParsedQuery.IS_OP[op] && arg) {
+		this.type = ZmParsedQuery.TERM;
+	}
+	else if (op && ZmParsedQuery.COND_OP[op.toLowerCase()]) {
+		this.type = ZmParsedQuery.COND;
+		this.op = op.toLowerCase();
+	}
+	else if (op == "(" || op == ")") {
+		this.type = ZmParsedQuery.GROUP;
+	} else if (op) {
+		this.type = ZmParsedQuery.TERM;
+		this.op = ZmParsedQuery.OP_CONTENT;
+		this.arg = op;
+	}
+};
+
+ZmSearchToken.prototype.isZmSearchToken = true;
+
+ZmSearchToken.prototype.toString =
+function() {
+	if (this.type == ZmParsedQuery.TERM) {
+		return (this.op == ZmParsedQuery.OP_CONTENT) ? this.arg : [this.op, this.arg].join(":");
+	}
+	else {
+		return (this.type == ZmParsedQuery.COND && this.op == ZmParsedQuery.COND_AND) ? "" : this.op;
+	}
 };
