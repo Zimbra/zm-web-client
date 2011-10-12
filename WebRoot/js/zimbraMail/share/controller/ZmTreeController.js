@@ -208,7 +208,9 @@ function(params) {
 		var setting = ZmOrganizer.OPEN_SETTING[this.type];
 		params.collapsed = (!isMultiAccountZimlet && (!(!setting || (appCtxt.get(setting, null, account) !== false)))); // yikes!
 
-		if (this.type != ZmOrganizer.ZIMLET && this.type != ZmId.ORG_PREF_PAGE){
+		var overview = this._opc.getOverview(id);
+
+		if (overview && overview.showNewButtons && this.type != ZmOrganizer.ZIMLET && this.type != ZmId.ORG_PREF_PAGE ) { 
 			this._setupOptButton(params);
 		}
 
