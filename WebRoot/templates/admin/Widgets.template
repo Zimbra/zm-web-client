@@ -118,3 +118,28 @@
 		</table>
 	</div>
 </template>
+
+
+<template id='admin.Widgets#ZaSeachOptionDialog' width='20' height='32'>
+	<div class='DwtDialog'>
+		<table cellspacing=0 cellpadding=0>
+			<tr>
+				<td class='WindowInnerContainer' colspan='4'>
+				    <table cellspacing=0 cellpadding=0>
+				        <tr>
+				            <td>
+                                <div id='${id}_content' class='DwtDialogBody'></div>
+                            </td>
+                        </tr>
+                        </tr>
+                             <td>
+                                <$ if (data.controlsTemplateId) { $>
+                                    <$= AjxTemplate.expand(data.controlsTemplateId, data) $>
+                                <$ } $>
+                             </td>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</div>
+</template>
