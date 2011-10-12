@@ -311,7 +311,7 @@ function(item) {
             restURL += "&editor=tinymce";
         restURL += "&preview=1&localeId="+AjxEnv.DEFAULT_LOCALE;
     }
-    var fileLink = [ '<a href="', restURL, '"',  (item.isWebDoc() ? ' target="_blank"' : (item.isDownloadable() ? ' onclick="ZmZimbraMail.unloadHackCallback();"' : ' target="_blank"')),'>', name, '</a>' ].join("");
+    var fileLink = [ '<a href="', restURL, '"',  (item.isWebDoc() ? ' target="_blank"' : (item.isDownloadable() ? ' onclick="ZmZimbraMail.unloadHackCallback();"' : ' target="_blank"')),'>', AjxStringUtil.htmlEncode(name), '</a>' ].join("");
     prop.push({name:ZmMsg.name, value:fileLink});
 
     //Action: actionLink
