@@ -32,7 +32,7 @@
  *
  * @private
  */
-ZmTrustedPage = function(parent, section, controller) {
+ZmTrustedPage = function(parent, section, controller, id) {
 	ZmPreferencesPage.apply(this, arguments);
 };
 

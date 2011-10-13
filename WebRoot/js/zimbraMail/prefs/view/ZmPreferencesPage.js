@@ -29,9 +29,9 @@
  *
  * @extends		DwtTabViewPage
  */
-ZmPreferencesPage = function(parent, section, controller) {
+ZmPreferencesPage = function(parent, section, controller, id) {
 	if (arguments.length == 0) return;
-	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
+	DwtTabViewPage.call(this, parent, "ZmPreferencesPage", null, id);
 
 	this._section = section;
 	this._controller = controller;

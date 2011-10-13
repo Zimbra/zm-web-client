@@ -364,7 +364,7 @@ function() {
 			priority: 60,
 			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
 			createView: function(parent, section, controller) {
-				return new ZmTrustedPage(parent, section, controller);
+				return new ZmTrustedPage(parent, section, controller, "Prefs_Pages_TrustedAddresses");
 			},
             manageDirty: true,
             prefs: [
