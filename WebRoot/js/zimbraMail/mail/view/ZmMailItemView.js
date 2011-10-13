@@ -40,6 +40,11 @@ ZmMailItemView.prototype.reset =
 function() {
 };
 
+ZmMailItemView.prototype.getMinHeight =
+function() {
+	return 20;
+};
+
 ZmMailItemView.prototype.getMinWidth =
 function() {
 	return 20;
