@@ -28,8 +28,8 @@ BODY						{	margin:0px; 	}
 /* hide the main screen initially - hide if html facade is not needed */
 #skin_outer					{	display:none; 	}
 
-/* hide search builder initially */
-#skin_tr_search_builder		{	display:none; 	}
+/* hide search results toolbar initially */
+#skin_tr_search_results_toolbar			{	display:none; height:40px; width:100%; 	}
 
 /* hide all ads initially */
 .skin_outer_ad				{	display:none; 	}
@@ -340,8 +340,8 @@ BODY						{	margin:0px; 	}
 .ZmAppChooser					{	margin:0px !important; 		}
 
 .ZAppTabBorder                  {   @AppTabRoundCorners@        }
-.ZAppTabBorder .ZLeftIcon 		{	padding-bottom:4px; @AppTabLeftIcon@			}
-.ZAppTabBorder .ZWidgetTitle 	{	padding:0 5px 3px 0; }
+.ZAppTabBorder .ZLeftIcon 		{	@AppTabLeftIcon@			}
+.ZAppTabBorder .ZWidgetTitle 	{	@AppTabWidgetTitle@ }
 
 .ZSelectedPrev .ZAppTabBorder 	{	@AppTabBorder-selectedPrev@	}
 .ZSelectedNext .ZAppTabBorder	{	@AppTabBorder-selectedNext@	}
@@ -506,4 +506,13 @@ SELECT						{	@FieldBorder@	}
  	background-color:#FBF9F4 !important;
  	border: 2px inset; 
     color:white;
-}.ZAppTabBorder .ZLeftIcon div{ display :none; }.ZmContactView .contactHeaderTable,.ZmContactInfoView .contactHeaderTable {	background-color: @lighten(AppC,40)@;}
+}
+
+
+.ZAppTabBorder .ZLeftIcon div{ display :none; }
+
+.ZmContactView .contactHeaderTable,
+
+.ZmContactInfoView .contactHeaderTable {
+	background-color: @lighten(AppC,40)@;
+}

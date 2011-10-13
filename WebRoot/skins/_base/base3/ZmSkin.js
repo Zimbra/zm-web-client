@@ -32,6 +32,8 @@ ZmSkin.hints = {
 	presence:	  	{ width:"40px", height: "24px" },
 	appView:		{ position:"static" },
 
+	searchResultsToolbar:	{ containers: ["skin_tr_search_results_toolbar"] },
+
 	tree:			{ minWidth:parseInt("@TreeMinWidth@"), maxWidth:parseInt("@TreeMaxWidth@"), 
 					  containers: ["skin_td_tree","skin_td_tree_app_sash"],
 					  resizeContainers : ["skin_td_tree"]
