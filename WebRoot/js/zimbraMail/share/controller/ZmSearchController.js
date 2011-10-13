@@ -156,7 +156,7 @@ function(type) {
 	if (this._searchToolBar && !appCtxt.inStartup) {
 		var menu = this._searchToolBar.getButton(ZmSearchToolBar.TYPES_BUTTON).getMenu();
 		menu.checkItem(ZmSearchToolBar.MENUITEM_ID, type);
-		this._searchMenuListener(null, type);
+		this._searchMenuListener(null, type, true);
 	}
 };
 
@@ -790,7 +790,7 @@ function(ev) {
  * @private
  */
 ZmSearchController.prototype._searchMenuListener =
-function(ev, id) {
+function(ev, id, noFocus) {
 	var btn = this._searchToolBar.getButton(ZmSearchToolBar.TYPES_BUTTON);
 	if (!btn) { return; }
 
@@ -876,8 +876,10 @@ function(ev, id) {
 		btn.setToolTipContent(tooltip);
 	}
 	
-	// restore focus to INPUT
-	setTimeout(this._searchToolBar.focus.bind(this._searchToolBar), 10);
+	if (!noFocus) {
+		// restore focus to INPUT if user changed type
+		setTimeout(this._searchToolBar.focus.bind(this._searchToolBar), 10);
+	}
 };
 
 /**
