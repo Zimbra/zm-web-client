@@ -920,7 +920,8 @@ function(context, match, noFocus) {
 			addrInput.addValue(context.address);
 		}
 		else {
-			addrInput.addBubble({address:context.address, match:match, noFocus:noFocus});
+			var addedClass = this._dataAPI && this._dataAPI.getAddedBubbleClass && this._dataAPI.getAddedBubbleClass(context.str);
+			addrInput.addBubble({address:context.address, match:match, noFocus:noFocus, addClass:addedClass});
 		}
 		el = addrInput._input;
 		// Input field loses focus along the way. Restore it when the stack is finished

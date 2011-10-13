@@ -661,7 +661,14 @@ ZmSearchAutocomplete.prototype.isComplete =
 function(str) {
 	var pq = new ZmParsedQuery(str);
 	var tokens = pq.getTokens();
-	return (!pq.parseFailed && pq.numTerms == 1);
+	return (!pq.parseFailed && (pq.getNumTokens() == 1));
+};
+
+ZmSearchAutocomplete.prototype.getAddedBubbleClass =
+function(str) {
+	var pq = new ZmParsedQuery(str);
+	var tokens = pq.getTokens();
+	return (!pq.parseFailed && (pq.getNumTokens() == 1) && tokens[0].type);
 };
 
 /**

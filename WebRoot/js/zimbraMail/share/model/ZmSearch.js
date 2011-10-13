@@ -296,7 +296,7 @@ function(params) {
 		}
 	}
 
-	var respCallback = new AjxCallback(this, this._handleResponseExecute, [params.callback]);
+	var respCallback = this._handleResponseExecute.bind(this, params.callback);
 
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback);
@@ -457,7 +457,7 @@ function(params) {
         }
     }
 
-	var respCallback = new AjxCallback(this, this._handleResponseExecute, [params.callback]);
+	var respCallback = this._handleResponseExecute.bind(this, params.callback);
 
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback);
@@ -591,10 +591,10 @@ function(params) {
 	}
 
 	var searchParams = {
-		jsonObj: jsonObj,
-		asyncMode: true,
-		callback: (new AjxCallback(this, this._handleResponseGetConv, params.callback)),
-		accountName:this.accountName
+		jsonObj:		jsonObj,
+		asyncMode:		true,
+		callback:		this._handleResponseGetConv.bind(this, params.callback),
+		accountName:	this.accountName
 	};
 	appCtxt.getAppController().sendRequest(searchParams);
 };
@@ -882,7 +882,7 @@ function() {
 ZmSearch.prototype.isSimple =
 function() {
 	var pq = this.parsedQuery;
-	if (pq && pq.numTerms == 1) {
+	if (pq && (pq.getNumTokens() == 1)) {
 		return pq.hasTerm(["in", "inid", "tag"]);
 	}
 	return false;
@@ -909,6 +909,9 @@ function() {
 ZmParsedQuery = function(query) {
 	this._tokens = this._parse(AjxStringUtil.trim(query, true));
 };
+
+ZmParsedQuery.prototype.isZmParsedQuery = true;
+ZmParsedQuery.prototype.toString = function() { return "ZmParsedQuery"; };
 
 ZmParsedQuery.TERM	= "TERM";	// search operator such as "in"
 ZmParsedQuery.COND	= "COND";	// AND OR NOT
@@ -1023,9 +1026,11 @@ function(termA, termB) {
 };
 
 // conditional ops
-ZmParsedQuery.COND_AND	= "and"
-ZmParsedQuery.COND_OR	= "or";
-ZmParsedQuery.COND_NOT	= "not";
+ZmParsedQuery.COND_AND		= "and"
+ZmParsedQuery.COND_OR		= "or";
+ZmParsedQuery.COND_NOT		= "not";
+ZmParsedQuery.GROUP_OPEN	= "(";
+ZmParsedQuery.GROUP_CLOSE	= ")";
 
 // JS version of conditional
 ZmParsedQuery.COND_OP = {};
@@ -1034,7 +1039,7 @@ ZmParsedQuery.COND_OP[ZmParsedQuery.COND_OR]	= " || ";
 ZmParsedQuery.COND_OP[ZmParsedQuery.COND_NOT]	= " !";
 
 // word separators
-ZmParsedQuery.EOW_LIST	= [" ", ":", "(", ")"];
+ZmParsedQuery.EOW_LIST	= [" ", ":", ZmParsedQuery.GROUP_OPEN, ZmParsedQuery.GROUP_CLOSE];
 ZmParsedQuery.IS_EOW	= AjxUtil.arrayAsHash(ZmParsedQuery.EOW_LIST);
 
 // map is:xxx to item properties
@@ -1082,8 +1087,6 @@ function(query) {
 		return tokens;		
 	}
 
-	this.numTerms = 0;
-	
 	var len = query.length;
 	var tokens = [], ch, lastCh, op, word = "", isEow = false, endOk = true, compound = 0;
 	var pos = skipSpace(query, 0);
@@ -1108,7 +1111,6 @@ function(query) {
 			var isCondOp = ZmParsedQuery.COND_OP[lcWord];
 			if (op && word && !(isCondOp && compound > 0)) {
 				tokens.push(new ZmSearchToken(op, lcWord));
-				this.numTerms++;
 				if (compound == 0) {
 					op = "";
 				}
@@ -1123,7 +1125,6 @@ function(query) {
 					}
 				} else if (word) {
 					tokens.push(new ZmSearchToken(ZmParsedQuery.OP_CONTENT, word));
-					this.numTerms++;
 				}
 				word = "";
 			}
@@ -1137,7 +1138,7 @@ function(query) {
 			} else {
 				return fail("improper use of quotes", query);
 			}
-		} else if (ch == "(") {
+		} else if (ch == ZmParsedQuery.GROUP_OPEN) {
 			if (compound > 0) {
 				compound++
 			}
@@ -1146,7 +1147,7 @@ function(query) {
 			}
 			tokens.push(new ZmSearchToken(ch));
 			pos = skipSpace(query, pos + 1);
-		} else if (ch == ")") {
+		} else if (ch == ZmParsedQuery.GROUP_CLOSE) {
 			if (compound > 0) {
 				compound--;
 			}
@@ -1167,11 +1168,9 @@ function(query) {
 	// check for term at end
 	if ((pos == query.length) && op && word) {
 		tokens.push(new ZmSearchToken(op, word));
-		this.numTerms++;
 		endOk = true;
 	} else if (!op && word) {
 		tokens.push(new ZmSearchToken(word));
-		this.numTerms++;
 	}
 
 	if (!endOk) {
@@ -1184,6 +1183,11 @@ function(query) {
 ZmParsedQuery.prototype.getTokens =
 function() {
 	return this._tokens;
+};
+
+ZmParsedQuery.prototype.getNumTokens =
+function() {
+	return this._tokens ? this._tokens.length : 0;
 };
 
 /**
@@ -1227,7 +1231,7 @@ function() {
 				return null;
 			}
 			var next = this._tokens[i + 1];
-			if (next && (next.type == ZmParsedQuery.TERM || next == ZmParsedQuery.COND[ZmParsedQuery.COND_NOT] || next == "(")) {
+			if (next && (next.type == ZmParsedQuery.TERM || next == ZmParsedQuery.COND[ZmParsedQuery.COND_NOT] || next == ZmParsedQuery.GROUP_CLOSE)) {
 				func.push(ZmParsedQuery.COND_OP[ZmParsedQuery.COND_AND]);
 			}
 		}
@@ -1393,7 +1397,7 @@ ZmSearchToken = function(op, arg) {
 		this.type = ZmParsedQuery.COND;
 		this.op = op.toLowerCase();
 	}
-	else if (op == "(" || op == ")") {
+	else if (op == ZmParsedQuery.GROUP_OPEN || op == ZmParsedQuery.GROUP_CLOSE) {
 		this.type = ZmParsedQuery.GROUP;
 	} else if (op) {
 		this.type = ZmParsedQuery.TERM;
@@ -1404,12 +1408,17 @@ ZmSearchToken = function(op, arg) {
 
 ZmSearchToken.prototype.isZmSearchToken = true;
 
+/**
+ * Returns the string version of this token.
+ * 
+ * @param {boolean}		force		if true, return "and" instead of an empty string ("and" is implied)
+ */
 ZmSearchToken.prototype.toString =
-function() {
+function(force) {
 	if (this.type == ZmParsedQuery.TERM) {
 		return (this.op == ZmParsedQuery.OP_CONTENT) ? this.arg : [this.op, this.arg].join(":");
 	}
 	else {
-		return (this.type == ZmParsedQuery.COND && this.op == ZmParsedQuery.COND_AND) ? "" : this.op;
+		return (!force && this.op == ZmParsedQuery.COND_AND) ? "" : this.op;
 	}
 };

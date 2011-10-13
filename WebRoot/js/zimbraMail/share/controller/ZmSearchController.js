@@ -760,7 +760,8 @@ function(params) {
 			getHtml:					appCtxt.get(ZmSetting.VIEW_AS_HTML),
 			searchFor:					result,
 			skipUpdateSearchToolbar:	params.skipUpdateSearchToolbar,
-			origin:						params.origin
+			origin:						params.origin,
+			errorCallback:				params.errorCallback
 		};
 		this.search(searchParams);
 	}

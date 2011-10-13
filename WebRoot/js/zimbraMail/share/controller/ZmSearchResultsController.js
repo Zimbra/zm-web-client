@@ -144,6 +144,13 @@ function(search, resultsCtlr) {
 	if (search && search.origin == ZmId.SEARCH) {
 		this._toolbar.setSearch(search);
 	}
+	// Tell the user how many results were found
+	var searchResult = resultsCtlr.getCurrentSearchResults && resultsCtlr.getCurrentSearchResults();
+	var results = searchResult && searchResult.getResults();
+	var size = results && results.size && results.size();
+	var more = results && results.hasMore && results.hasMore();
+	var num = (size == null) ? "" : more ? size + "+" : size;
+	this._toolbar.setLabel(AjxMessageFormat.format(ZmMsg.searchResultsLabel, [num]), false);
 
 	setTimeout(this._toolbar.focus.bind(this._toolbar), 100);
 };
@@ -170,10 +177,18 @@ function(ev, zimletEvent) {
 			zimletEvent:				zimletEvent || "onSearchButtonClick",
 			query:						query,
 			skipUpdateSearchToolbar:	true,
-			origin:						ZmId.SEARCHRESULTS
+			origin:						ZmId.SEARCHRESULTS,
+			errorCallback:				this._errorCallback.bind(this)
 		}
 		appCtxt.getSearchController()._toolbarSearch(params);
 	}
+};
+
+// Note the error and then eat it - we don't want to show toast or clear out results
+ZmSearchResultsController.prototype._errorCallback =
+function(ev) {
+	this._toolbar.setLabel(ZmMsg.invalidSearch, true);
+	return true;
 };
 
 // pops up a dialog to save the search
@@ -195,8 +210,8 @@ function(ev) {
 
 // adds the given term to the search as a bubble
 ZmSearchResultsController.prototype.addSearchTerm =
-function(term, skipNotify) {
-	return this._toolbar.addSearchTerm(term, skipNotify);
+function(term, skipNotify, addingCond) {
+	return this._toolbar.addSearchTerm(term, skipNotify, addingCond);
 };
 
 // removes the bubble with the given term

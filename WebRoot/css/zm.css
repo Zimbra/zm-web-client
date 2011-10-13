@@ -1000,6 +1000,19 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	margin-left: 3px;
 }
 
+.addrBubble.COND {
+	text-transform: uppercase;
+	font-style: italic;
+	cursor: pointer;
+}
+
+.addrBubble.GROUP {
+	font-weight: bold;
+	cursor: pointer;
+}
+
+
+
 /*
  *	ZmHtmlEditor -- HTML editor stuff
  */

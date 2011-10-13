@@ -106,6 +106,16 @@ function() {
 };
 
 /**
+ * Gets the current search results.
+ * 
+ * @return	{ZmSearchResults}	current search results
+ */
+ZmListController.prototype.getCurrentSearchResults =
+function() {
+	return this._activeSearch;
+};
+
+/**
  * Gets the search string.
  * 
  * @return	{String}	the search string

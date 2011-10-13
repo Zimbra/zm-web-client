@@ -37,6 +37,7 @@
  * @param {AjxCallback|function}	bubbleRemovedCallback		called when a bubble is removed
  * @param {AjxCallback|function}	bubbleMenuCreatedCallback	called when the action menu has been created
  * @param {AjxCallback|function}	bubbleMenuResetOperationsCallback	called when the action menu has reset its operations
+ * @param {boolean}					noOutsideListening			don't worry about outside mouse clicks
  */
 ZmAddressInputField = function(params) {
 
@@ -52,6 +53,7 @@ ZmAddressInputField = function(params) {
 
 	this.type = params.type;
 	this._strictMode = (params.strictMode !== false);
+	this._noOutsideListening = params.noOutsideListening;
 
     this._bubbleAddedCallback = params.bubbleAddedCallback;
     this._bubbleRemovedCallback = params.bubbleRemovedCallback;
@@ -136,12 +138,13 @@ function(child, index) {
  * is a local group, it is expanded and the members are added individually.
  *
  * @param {hash}				params				hash of params:
- * @param {string}				params.address		address text to go in the bubble
- * @param {ZmAutocompleteMatch}	params.match		match object
- * @param {ZmAddressBubble}		params.bubble		bubble to clone
- * @param {int}					params.index		position (relative to bubbles, not elements) at which to add bubble
- * @param {boolean}				params.skipNotify	if true, don't call bubbleAddedCallback
- * @param {boolean}				params.noFocus		if true, don't focus input after bubble is added
+ * @param {string}				address		address text to go in the bubble
+ * @param {ZmAutocompleteMatch}	match		match object
+ * @param {ZmAddressBubble}		bubble		bubble to clone
+ * @param {int}					index		position (relative to bubbles, not elements) at which to add bubble
+ * @param {boolean}				skipNotify	if true, don't call bubbleAddedCallback
+ * @param {boolean}				noFocus		if true, don't focus input after bubble is added
+ * @param {string}				addClass	additional class name for bubble
  */
 ZmAddressInputField.prototype.addBubble =
 function(params) {
@@ -157,11 +160,11 @@ function(params) {
 	params.parent		= this;
 	params.addrInput	= this;
 	params.parentId		= this._htmlElId;
-	params.className	= this._bubbleClassName;
+	params.className	= this._bubbleClassName ;
 	params.canRemove	= true;
 	params.separator	= this._separator;
 	params.type			= this.type;
-
+	
 	if (params.index == null && this._editModeIndex != null) {
 		params.index = this._getInsertionIndex(this._holder.childNodes[this._editModeIndex]);
 	}
@@ -742,16 +745,21 @@ function(ev) {
 	// if we are listening for outside mouse clicks, add the action menu to the elements
 	// defined as "inside" so that clicking a menu item doesn't call our outside listener
 	// and deselectAll before the menu listener does its thing
-	if (this.getSelectionCount() > 0) {
+	if (!this._noOutsideListening && (this.getSelectionCount() > 0)) {
 		var omem = appCtxt.getOutsideMouseEventMgr();
 		var omemParams = {
 			id:					"ZmAddressBubbleList",
 			obj:				menu,
-			outsideListener:	this._outsideListener
+			outsideListener:	this.getOutsideListener()
 		}
 		DBG.println("aif", "ADD menu to outside listening " + this._input.id);
 		omem.startListening(omemParams);
 	}
+};
+
+ZmAddressInputField.prototype.getOutsideListener =
+function() {
+	return this._bubbleList ? this._bubbleList._outsideMouseListener.bind(this._bubbleList) : null;
 };
 
 ZmAddressInputField.prototype.getActionMenu =
@@ -913,7 +921,7 @@ function() {
 		bubble.setClassName(this._bubbleClassName);
 	}
 
-	if (this.getSelectionCount() > 0) {
+	if (!this._noOutsideListening && (this.getSelectionCount() > 0)) {
 		DBG.println("aif", "REMOVE menu from outside listening " + this._input.id);
 		var omem = appCtxt.getOutsideMouseEventMgr();
 		omem.stopListening({id:"ZmAddressInputField", obj:this.getActionMenu()});
@@ -1352,6 +1360,9 @@ ZmAddressBubble = function(params) {
 	params = params || {};
 	params.id = this.id = params.id || Dwt.getNextId();
 	params.className = params.className || "addrBubble";
+	if (params.addClass) {
+		params.className = [params.className, params.addClass].join(" ");
+	}
 	DwtControl.call(this, params);
 
 	this.type = params.type;
@@ -1379,6 +1390,9 @@ ZmAddressBubble = function(params) {
 		dragSrc.addDragListener(this._dragListener.bind(this));
 		this.setDragSource(dragSrc);
 	}
+
+	this._evtMgr = new AjxEventMgr();
+	this._selEv = new DwtSelectionEvent(true);
 };
 
 ZmAddressBubble.prototype = new DwtControl;
@@ -1454,11 +1468,36 @@ function(params) {
 	return expandLinkText + addrText + removeLinkText;
 };
 
+/**
+ * Adds a selection listener.
+ * 
+ * @param	{AjxListener}	listener		the listener
+ */
+ZmAddressBubble.prototype.addSelectionListener =
+function(listener) {
+	this._evtMgr.addListener(DwtEvent.SELECTION, listener);
+};
+
+/**
+ * Removes a selection listener.
+ * 
+ * @param	{AjxListener}	listener		the listener
+ */
+ZmAddressBubble.prototype.removeSelectionListener =
+function(listener) {
+	this._evtMgr.removeListener(DwtEvent.SELECTION, listener);
+};
+
 ZmAddressBubble.prototype._clickListener =
 function(ev) {
-	if (!this.list) { return; }
-	if (this._dragging == DwtControl._NO_DRAG) {
+	if (this.list && this._dragging == DwtControl._NO_DRAG) {
 		this.list._itemClicked(ev, this);
+	}
+	else if (this._evtMgr.isListenerRegistered(DwtEvent.SELECTION)) {
+		DwtUiEvent.copy(this._selEv, ev);
+		this._selEv.item = this;
+		this._selEv.detail = DwtEvent.ONCLICK;
+		this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
 	}
 };
 
@@ -1832,7 +1871,7 @@ ZmAddressBubbleList.prototype._checkSelection =
 function() {
 
 	// don't mess with outside listening if we're selecting via rubber-banding
-	if (this.parent && this.parent._dragging == DwtControl._DRAGGING) { return; }
+	if (this.parent && (this.parent._noOutsideListening || this.parent._dragging == DwtControl._DRAGGING)) { return; }
 
 	if (!this._listening && this._numSelected == 1) {
 		var omem = appCtxt.getOutsideMouseEventMgr();

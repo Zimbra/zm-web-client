@@ -38,6 +38,7 @@ ZmSearchResultsFilterPanel = function(params) {
 	
 	this._createHtml();
 	this._addFilters();
+	this._addConditionals();
 };
 
 ZmSearchResultsFilterPanel.prototype = new DwtComposite;
@@ -135,11 +136,23 @@ ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_FOLDER]
 	noMenu:		true						// has own menu to add to button
 };
 
+ZmSearchResultsFilterPanel.CONDITIONALS = [
+	ZmParsedQuery.COND_AND,
+	ZmParsedQuery.COND_OR,
+	ZmParsedQuery.COND_NOT,
+	ZmParsedQuery.GROUP_OPEN,
+	ZmParsedQuery.GROUP_CLOSE
+];
+
+
+
+
 ZmSearchResultsFilterPanel.prototype._createHtml =
 function() {
 	this.getHtmlElement().innerHTML = AjxTemplate.expand(this.TEMPLATE, {id:this._htmlElId});
 	this._basicContainer = document.getElementById(this._htmlElId + "_basic");
 	this._advancedContainer = document.getElementById(this._htmlElId + "_advanced");
+	this._conditionalsContainer = document.getElementById(this._htmlElId + "_conditionals");
 };
 
 ZmSearchResultsFilterPanel.prototype._addFilters =
@@ -285,7 +298,27 @@ function(id, term) {
 	}
 };
 
+ZmSearchResultsFilterPanel.prototype._addConditionals =
+function() {
+	var conds = ZmSearchResultsFilterPanel.CONDITIONALS;
+	for (var i = 0; i < conds.length; i++) {
+		var cond = conds[i];
+		var bubbleParams = {
+			parent:			appCtxt.getShell(),
+			parentElement:	this._conditionalsContainer,
+			address:		cond,
+			addClass:		ZmParsedQuery.COND_OP[cond] ? ZmParsedQuery.COND : ZmParsedQuery.GROUP
+		};
+		var bubble = new ZmAddressBubble(bubbleParams);
+		bubble.addSelectionListener(this._conditionalSelectionListener.bind(this));
+	}
+};
 
+ZmSearchResultsFilterPanel.prototype._conditionalSelectionListener =
+function(ev) {
+	var bubble = ev.item;
+	this._controller.addSearchTerm(new ZmSearchToken(bubble.address), false, true);
+};
 
 /**
  * Base class for widget that adds a term to the current search.

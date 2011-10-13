@@ -79,7 +79,7 @@
 <template id='share.Widgets#ZmSearchResultsToolBar'>
 	<table class='ZmSearchToolbarTable'>
 		<tr>
-			<td class='label'><$= ZmMsg.searchResultsLabel $></td>
+			<td class='label'><div id='${id}_icon' class='ImgWarning_12' style='display:none; margin-right:5px;'></div><span id='${id}_label'></span></td>
 			<td id='${id}_inputFieldCell' width='70%'></td>
 			<td id='${id}_searchButton'></td>
 			<td id='${id}_saveButton'></td>
@@ -95,6 +95,11 @@
 	<div>
 		<div class='header'><$= ZmMsg.advancedFilters $></div>
 		<div id='${id}_advanced'></div>
+	</div>
+	<div>
+		<div class='header'><$= ZmMsg.conditionals $></div>
+		<div style='margin:5px;'><$= ZmMsg.conditionalsDesc $></div>
+		<div id='${id}_conditionals'></div>
 	</div>
 </template>
 

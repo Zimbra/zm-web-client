@@ -57,6 +57,9 @@ function() {
 
 	var idContext = this._controller.getCurrentViewId();
 	
+	this._label = document.getElementById(this._htmlElId + "_label");
+	this._iconDiv = document.getElementById(this._htmlElId + "_icon");
+	
 	// add search input field
 	var inputFieldCellId = this._htmlElId + "_inputFieldCell";
 	var inputFieldCell = document.getElementById(inputFieldCellId);
@@ -66,7 +69,8 @@ function() {
 			strictMode:				false,
 			id:						DwtId.makeId(ZmId.WIDGET_INPUT, idContext),
 			bubbleAddedCallback:	this._bubbleChange.bind(this),
-			bubbleRemovedCallback:	this._bubbleChange.bind(this)
+			bubbleRemovedCallback:	this._bubbleChange.bind(this),
+			noOutsideListening:		true
 		}
 		var aif = this._searchField = new ZmAddressInputField(aifParams);
 		aif.reparentHtmlElement(inputFieldCell);
@@ -127,11 +131,17 @@ function(search) {
 	this._settingSearch = false;
 };
 
+ZmSearchResultsToolBar.prototype.setLabel =
+function(text, showError) {
+	this._label.innerHTML = text;
+	this._iconDiv.style.display = showError ? "inline-block" : "none";
+};
+
 // Don't let the removal or addition of a bubble when we're setting up trigger a search loop.
 ZmSearchResultsToolBar.prototype._bubbleChange =
 function() {
 	if (!this._settingSearch) {
-		// use timer to let content of search bar get set - if a search term is autocomplete,
+		// use timer to let content of search bar get set - if a search term is autocompleted,
 		// the bubble is added before the text it replaces is removed 
 		setTimeout(this._handleEnterKeyPress.bind(this), 10);
 	}
@@ -142,13 +152,34 @@ function() {
  * 
  * @param {ZmSearchToken}	term		search term
  * @param {boolean}			skipNotify	if true, don't trigger a search
+ * @param {boolean}			addingCond	if true, user clicked to add a conditional term
  */
 ZmSearchResultsToolBar.prototype.addSearchTerm =
-function(term, skipNotify) {
-	var text = term.toString();
-	var bubble = this._searchField.addBubble({address:text, skipNotify:skipNotify});
-	this._bubbleId[text] = bubble.id;
-	return bubble.id;
+function(term, skipNotify, addingCond) {
+
+	var text = term.toString(addingCond);
+	var index;
+	if (addingCond) {
+		var bubbleList = this._searchField._getBubbleList();
+		var bubbles = bubbleList.getArray();
+		for (var i = 0; i < bubbles.length; i++) {
+			if (bubbleList.isSelected(bubbles[i])) {
+				index = i;
+				break;
+			}
+		}
+	}
+
+	var bubble = this._searchField.addBubble({
+				address:	text,
+				addClass:	term.type,
+				skipNotify:	skipNotify,
+				index:		index
+			});
+	if (bubble) {
+		this._bubbleId[text] = bubble.id;
+		return bubble.id;
+	}
 };
 
 /**
