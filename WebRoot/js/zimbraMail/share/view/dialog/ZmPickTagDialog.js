@@ -31,7 +31,7 @@
 ZmPickTagDialog = function(parent, className) {
 
 	var newButton = new DwtDialog_ButtonDescriptor(ZmPickTagDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
-	var params = {parent:parent, className:className, title:ZmMsg.pickATag, extraButtons:[newButton]};
+	var params = {parent:parent, className:className, title:ZmMsg.pickATag, extraButtons:[newButton], id: "ZmPickTagDialog"};
 	ZmDialog.call(this, params);
 
 	this._createControls();
