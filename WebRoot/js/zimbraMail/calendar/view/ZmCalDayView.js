@@ -177,6 +177,8 @@ function(abook) {
     this._borderRightDivId = Dwt.getNextId();
     this._borderTopDivId = Dwt.getNextId();
     this._borderBottomDivId = Dwt.getNextId();
+    this._startLimitIndicatorDivId = Dwt.getNextId();
+    this._endLimitIndicatorDivId = Dwt.getNextId();
 
     var html = new AjxBuffer(),
         // year heading
@@ -265,6 +267,9 @@ function(abook) {
 
     //Strip to indicate the current time
     html.append("<div id='"+this._curTimeIndicatorGridDivId+"' name='_curTimeIndicatorGridDivId' class='calendar_cur_time_indicator_strip' style='position:absolute;background-color:#F16426; height: 1px;'></div>");
+    //arrow to indicate the off-screen appointments
+    html.append("<div id='"+this._startLimitIndicatorDivId+"' class='calendar_start_limit_indicator'><div class='ImgArrowMoreUp'></div></div>");
+    html.append("<div id='"+this._endLimitIndicatorDivId+"' class='calendar_end_limit_indicator'><div class='ImgArrowMoreDown'></div></div>");
 
     //html.append("<div id='"+this._curTimeIndicatorGridDivId+"' name='_curTimeIndicatorGridDivId' class='calendar_cur_time_indicator_strip' style='position:absolute;background-color:#F16426; height: 1px;'></div>");
 	html.append("</div>");
