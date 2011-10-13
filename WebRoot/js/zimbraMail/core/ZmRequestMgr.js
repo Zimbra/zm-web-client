@@ -204,6 +204,7 @@ function(params) {
 
 /**
  * @private
+ * @param {Array}	params.ignoreErrs	list of error codes that can be ignored, when params.errorCallback does not exists.
  */
 ZmRequestMgr.prototype._handleResponseSendRequest =
 function(params, result) {
@@ -251,7 +252,20 @@ function(params, result) {
 				this._handleException(ex, params);
 			}
 		} else {
-			this._handleException(ex, params);
+			var ignore = function(ignoreErrs, errCode){
+			/*
+				Checks errCode exits in ignoreErrs
+			*/
+				if (ignoreErrs && (ignoreErrs.length > 0)){
+					for (var val in ignoreErrs)
+						if (ignoreErrs[val] == errCode) 
+							return true;
+				}
+				return false;
+			}(params.ignoreErrs, ex.code)
+			
+			if (!ignore)
+				this._handleException(ex, params);
 		}
 		var hdr = result.getHeader();
 		if (hdr) {

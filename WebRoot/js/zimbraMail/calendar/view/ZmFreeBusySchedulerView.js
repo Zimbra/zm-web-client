@@ -1863,7 +1863,7 @@ function(email) {
 	var result = appCtxt.getAppController().sendRequest({jsonObj:	jsonObj});
 
     //parse the response
-    var resp = result.GetShareInfoResponse;
+    var resp = result && result.GetShareInfoResponse;
     var share = (resp && resp.share) ? resp.share : null;
     var ids = [];
     if(share) {

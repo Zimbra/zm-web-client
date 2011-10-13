@@ -279,7 +279,7 @@ function(params) {
 		});
 	}
 	else {
-		var response = appCtxt.getAppController().sendRequest({jsonObj: jsonObj, accountName: accountName});
+		var response = appCtxt.getAppController().sendRequest({jsonObj: jsonObj, accountName: accountName, ignoreErrs: ["mail.NO_SUCH_MOUNTPOINT"]});
 		var result = new ZmCsfeResult(response, false);
 		return this._getApptSummariesResponse(params, result);
 	}
