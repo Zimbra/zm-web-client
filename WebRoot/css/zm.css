@@ -5066,9 +5066,13 @@ border: 1px solid #666;
 .ZmFolderPropertiesDialog-container {
 	overflow: hidden;
 	width: 500px;
-	height: 210px;
 }
 
 .ZmFolderPropertyView {
 	margin-top:10px;
+}
+
+.ZmFolderPropSharing {
+    position: relative;
+    bottom: 10px;
 }

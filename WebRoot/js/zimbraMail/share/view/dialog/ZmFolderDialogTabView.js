@@ -30,7 +30,7 @@
 ZmFolderDialogTabView = function(parent, className) {
     if (arguments.length == 0) return;
 
-    DwtTabViewPage.call(this, parent, className);
+    DwtTabViewPage.call(this, parent, className, Dwt.RELATIVE_STYLE);
 
     this._createView();
 };

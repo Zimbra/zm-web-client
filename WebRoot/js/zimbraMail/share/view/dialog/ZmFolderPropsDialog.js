@@ -431,7 +431,7 @@ function(view) {
 
 	// setup shares group
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
-		this._sharesGroup = new DwtGrouper(view);
+        this._sharesGroup = new DwtGrouper(view, "DwtGrouper ZmFolderPropSharing");
 		this._sharesGroup.setLabel(ZmMsg.folderSharing);
 		this._sharesGroup.setVisible(false);
 		this._sharesGroup.setScrollStyle(Dwt.SCROLL);
