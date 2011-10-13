@@ -2225,15 +2225,35 @@ function(items, hardDelete, attrs, confirmDelete) {
 
     // Check if need to warn the user about violating the keep retention policy.  If a warning
     // dialog is displayed, the callback from that dialog allows the user to delete messages
-    var warningIssued = this._doRetentionPolicyWarning(messages, hardDelete, attrs);
+    var warningIssued = this._doRetentionPolicyWarning(messages,
+        ZmListController.prototype._doDelete, [hardDelete, attrs, false]);
     if (!warningIssued) {
         // No retention policy, or all the chosen messages fall outside the retention period.
         ZmListController.prototype._doDelete.call(this, messages, hardDelete, attrs, confirmDelete);
     }
 };
 
+ZmMailListController.prototype._doMove =
+function(items, destinationFolder, attrs, isShiftKey) {
+    var messages = AjxUtil.toArray(items);
+    if (!messages.length) { return; }
+
+    var warningIssued = false;
+
+    if (destinationFolder && (destinationFolder.nId == ZmFolder.ID_TRASH)) {
+        // Check if need to warn the user about violating the keep retention policy.  If a warning
+        // dialog is displayed, the callback from that dialog allows the user to trash messages
+        warningIssued = this._doRetentionPolicyWarning(messages,
+            ZmBaseController.prototype._doMove, [destinationFolder, attrs, isShiftKey]);
+    }
+    if (!warningIssued) {
+        // No retention policy, or all the chosen messages fall outside the retention period.
+        ZmBaseController.prototype._doMove(items, destinationFolder, attrs, isShiftKey);
+    }
+}
+
 ZmMailListController.prototype._doRetentionPolicyWarning =
-function(messages, hardDelete, attrs) {
+function(messages, callbackFunc, args) {
     var folder = this._getSearchFolder();
     var numWithinRetention = 0;
     var keepPolicy  = folder.getRetentionPolicy(ZmOrganizer.RETENTION_KEEP);
@@ -2264,13 +2284,13 @@ function(messages, hardDelete, attrs) {
 
             if (oldMessages.length == 0) {
                 // All the chosen messages fall within the retention period
-                this._showSimpleRetentionWarning(warningMsg, messages, hardDelete, attrs);
+                this._showSimpleRetentionWarning(warningMsg, messages, callbackFunc, args);
             } else {
                 // A mix of messages - some outside the retention period, some within.
                 warningMsg += ZmMsg.retentionDeleteAllExplanation + "<BR><BR>" +
                               AjxMessageFormat.format(ZmMsg.retentionDeleteOldExplanation,
                                   [retentionStartText]);
-                this._showRetentionWarningDialog(warningMsg, messages, oldMessages, hardDelete, attrs);
+                this._showRetentionWarningDialog(warningMsg, messages, oldMessages, callbackFunc, args);
             }
         }
     }
@@ -2278,12 +2298,17 @@ function(messages, hardDelete, attrs) {
 }
 
 ZmMailListController.prototype._showSimpleRetentionWarning =
-function(warningMsg, messages, hardDelete, attrs) {
+function(warningMsg, messages, callbackFunc, args) {
     warningMsg += (messages.length == 1) ? ZmMsg.retentionDeleteOne :
                                            ZmMsg.retentionDeleteMultiple;
+    // This assumes that the first parameter of the OK function is the messages
+    // to be processed, followed by other arbitrary parameters
+    var okArgs = [messages].concat(args);
+    var callback = new AjxCallback(this, callbackFunc,okArgs);
+
     var okCancelDialog = appCtxt.getOkCancelMsgDialog();
     okCancelDialog.registerCallback(DwtDialog.OK_BUTTON,
-        this._handleRetentionWarningOK, this, [okCancelDialog, messages, hardDelete, attrs]);
+        this._handleRetentionWarningOK, this, [okCancelDialog, callback]);
     okCancelDialog.setMessage(warningMsg, DwtMessageDialog.WARNING_STYLE);
     okCancelDialog.setVisible(true);
     okCancelDialog.popup();
@@ -2291,15 +2316,22 @@ function(warningMsg, messages, hardDelete, attrs) {
 
 
 ZmMailListController.prototype._showRetentionWarningDialog =
-function(warningMsg, messages, oldMessages, hardDelete, attrs) {
+function(warningMsg, messages, oldMessages, callbackFunc, args) {
     var retentionDialog = appCtxt.getRetentionWarningDialog();
 	retentionDialog.reset();
 
+    var callback;
+    // This assumes that the first parameter of the OK function is the messages
+    // to be processed, followed by other arbitrary parameters
+    var allArgs = [messages].concat(args);
+    callback = new AjxCallback(this, callbackFunc, allArgs);
     retentionDialog.registerCallback(ZmRetentionWarningDialog.DELETE_ALL_BUTTON,
-        this._handleRetentionWarningOK, this, [retentionDialog, messages, hardDelete, attrs]);
+        this._handleRetentionWarningOK, this, [retentionDialog, callback]);
 
+    var oldArgs = [oldMessages].concat(args);
+    callback = new AjxCallback(this, callbackFunc, oldArgs);
     retentionDialog.registerCallback(ZmRetentionWarningDialog.DELETE_OLD_BUTTON,
-        this._handleRetentionWarningOK, this, [retentionDialog, oldMessages, hardDelete, attrs]);
+        this._handleRetentionWarningOK, this, [retentionDialog, callback]);
 
     retentionDialog.setMessage(warningMsg, DwtMessageDialog.WARNING_STYLE);
     retentionDialog.setVisible(true);
@@ -2307,9 +2339,9 @@ function(warningMsg, messages, oldMessages, hardDelete, attrs) {
 };
 
 ZmMailListController.prototype._handleRetentionWarningOK =
-function(dialog, items, hardDelete, attrs) {
+function(dialog, callback) {
     dialog.popdown();
-    ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
+    callback.run();
 }
 
 
