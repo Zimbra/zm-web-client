@@ -197,21 +197,29 @@ function(retentionPolicy, policyElement, saveState) {
             policyType = "user";
             var unit   = components.customUnit.options[components.customUnit.selectedIndex].value;
             // Parse the custom value field to get the number of units
+            var invalidCustomValue = false;
             var amountText = AjxStringUtil.trim(components.customValue.value);
-            var amount = 0;
-            var nonNumericIndex = amountText.search(/\D/);
-            if (nonNumericIndex == -1) {
-                amount = parseInt(amountText);
-            }
+            if (!amountText) {
+                invalidCustomValue = true;
+            } else {
+                var amount = 0;
+                var nonNumericIndex = amountText.search(/\D/);
+                if (nonNumericIndex == -1) {
+                    amount = parseInt(amountText);
+                }
 
-            if (amount <= 0) {
+                if (amount <= 0) {
+                    invalidCustomValue = true;
+                } else {
+                    var daysPerUnit = ZmFolderRetentionView._CustomUnitsToDays[unit];
+                    var lifetime = (amount * daysPerUnit).toString() + "d";
+                    policy = {type:"user", lifetime:lifetime};
+                }
+            }
+            if (invalidCustomValue) {
                 var  errorMessage = (policyElement == ZmOrganizer.RETENTION_KEEP) ?
                                      ZmMsg.retentionKeepLifetimeAmount : ZmMsg.retentionPurgeLifetimeAmount;
                 saveState.errorMessage.push(errorMessage);
-            } else {
-                var daysPerUnit = ZmFolderRetentionView._CustomUnitsToDays[unit];
-                var lifetime = (amount * daysPerUnit).toString() + "d";
-                policy = {type:"user", lifetime:lifetime};
             }
         } else {
             policy = {type:"system", id:policySelection};
