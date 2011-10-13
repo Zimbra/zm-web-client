@@ -201,7 +201,10 @@ function(ev) {
 	// if fileAs changed, resort the internal list
 	// XXX: this is somewhat inefficient. We should just remove this contact and reinsert
 	if (ev.getDetail("fileAsChanged")) {
-		this.getList().sort(ZmContact.compareByFileAs);
+		var list = this.getList();
+		if (list) {
+			list.sort(ZmContact.compareByFileAs);
+		}
 	}
 };
 

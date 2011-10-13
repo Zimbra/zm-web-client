@@ -408,7 +408,7 @@ function(convs, msgs) {
 			}
 			newConvId[id] = convs[id];
 			var conv = convs[id];
-			if (this.search && this.search.matches && this.search.matches(conv) && !conv.ignoreJunkTrash()) {
+			if (this.search && this.search.matches(conv) && !conv.ignoreJunkTrash()) {
 				if (!appCtxt.multiAccounts ||
 					(appCtxt.multiAccounts && (this.search.isMultiAccount() || conv.getAccount() == appCtxt.getActiveAccount()))) 
 				{

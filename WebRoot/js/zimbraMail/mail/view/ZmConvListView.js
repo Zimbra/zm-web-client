@@ -137,8 +137,8 @@ function() {
 		}
 	}
 
-
-	return convsSelected == this.getList().size();
+	var list = this.getList();
+	return (list && convsSelected == list.size());
 };
 
 
@@ -975,17 +975,23 @@ ZmConvListView.prototype._getSortIndex =
 function(conv, sortBy) {
 
 	var itemDate = parseInt(conv.date);
-	var a = this.getList(true).getArray();
-	for (var i = 0; i < a.length; i++) {
-		var item = a[i];
-		if (!item || (item && item.type == ZmItem.MSG)) { continue; }
-		var date = parseInt(item.date);
-		if ((sortBy == ZmSearch.DATE_DESC && (itemDate >= date)) ||
-			(sortBy == ZmSearch.DATE_ASC && (itemDate <= date))) {
-			return i;
+	var list = this.getList(true);
+	var a = list && list.getArray();
+	if (a && a.length) {
+		for (var i = 0; i < a.length; i++) {
+			var item = a[i];
+			if (!item || (item && item.type == ZmItem.MSG)) { continue; }
+			var date = parseInt(item.date);
+			if ((sortBy == ZmSearch.DATE_DESC && (itemDate >= date)) ||
+				(sortBy == ZmSearch.DATE_ASC && (itemDate <= date))) {
+				return i;
+			}
 		}
+		return i;
 	}
-	return i;
+	else {
+		return null;
+	}
 };
 
 ZmConvListView.prototype._removeMsgRows =
@@ -1046,7 +1052,8 @@ function() {
 
 ZmConvListView.prototype._getLastItem =
 function() {
-	var a = this.getList(true).getArray();
+	var list = this.getList();
+	var a = list && list.getArray();
 	if (a && a.length > 1) {
 		return a[a.length - 1];
 	}

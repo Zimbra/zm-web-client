@@ -69,7 +69,6 @@ ZmSearch = function(params) {
 				!this.isGalAutocompleteSearch && !this.isCalResSearch) {
 				
 				var pq = this.parsedQuery = new ZmParsedQuery(this.query || this.queryHint);
-				this.matches = pq.getMatchFunction();
 				this.folderId = pq.folderId;
 				this.tagId = pq.tagId;
 				var sortTerm = pq.getTerm("sort");
@@ -791,6 +790,12 @@ function() {
 	return limit;
 };
 
+ZmSearch.prototype.matches =
+function(item) {
+	var matchFunc = this.parsedQuery && this.parsedQuery.getMatchFunction();
+	return Boolean(matchFunc && matchFunc(item));
+};
+
 /**
  * Returns true if the query has a folder-related term with the given value.
  * 
@@ -1201,6 +1206,9 @@ function() {
 ZmParsedQuery.prototype.getMatchFunction =
 function() {
 	
+	if (this._matchFunction) {
+		return this._matchFunction;
+	}
 	if (this.parseFailed || this.hasTerm(ZmParsedQuery.OP_CONTENT)) {
 		return null;
 	}
@@ -1253,8 +1261,10 @@ function() {
 	}
 	
 	try {
-		return new Function("item", func.join(""));
+		this._matchFunction = new Function("item", func.join(""));
 	} catch(ex) {}
+	
+	return this._matchFunction;
 };
 
 /**

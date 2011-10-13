@@ -458,7 +458,7 @@ function(ev) {
 		// INDEX change: a conv has gotten a new msg and may need to be moved within the list of convs
 		// if an expanded conv gets a new msg, don't move it to top
 		AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView2: handle conv create " + item.id);
-		var sortIndex = this._getSortIndex(item, sortBy);
+		var sortIndex = ev.getDetail("sortIndex");
 		var curIndex = this.getItemIndex(item);
 		if ((sortIndex != null) && (curIndex != null) && (sortIndex != curIndex)) {
 			AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView2: change position of conv " + item.id + " to " + sortIndex);
@@ -506,24 +506,6 @@ function(ev) {
 	if (!handled) {
 		ZmMailListView.prototype._changeListener.apply(this, arguments);
 	}
-};
-
-// TODO: can maybe remove this and just use ev.getDetail("sortIndex") in chg listener
-ZmConvListView2.prototype._getSortIndex =
-function(conv, sortBy) {
-
-	var itemDate = parseInt(conv.date);
-	var a = this.getList(true).getArray();
-	for (var i = 0; i < a.length; i++) {
-		var item = a[i];
-		if (!item) { continue; }
-		var date = parseInt(item.date);
-		if ((sortBy == ZmSearch.DATE_DESC && (itemDate >= date)) ||
-			(sortBy == ZmSearch.DATE_ASC && (itemDate <= date))) {
-			return i;
-		}
-	}
-	return i;
 };
 
 ZmConvListView2.prototype._getActionMenuForColHeader =

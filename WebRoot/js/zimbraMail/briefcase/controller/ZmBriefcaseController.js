@@ -1378,7 +1378,7 @@ function(create){
         var list = this.getList();
         if (list) {
             var item = ZmBriefcaseItem.createFromDom(create, {list:list});
-            if (list.search && list.search.matches && list.search.matches(item)) {
+            if (list.search && list.search.matches(item)) {
                 list.notifyCreate(create);
             }
         }
@@ -1388,8 +1388,9 @@ function(create){
 ZmBriefcaseController.prototype.handleModifyNotify =
 function(modifies){
     var view = this._listView[this._currentViewId];
-    if (view)
+    if (view) {
         view.deselectAll();
+	}
     this._resetToolbarOperations();
 };
 

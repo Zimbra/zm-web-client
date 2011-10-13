@@ -95,9 +95,12 @@ ZmApptListView.prototype._sortList = function(list, column) {
 ZmApptListView.prototype._sortColumn = function(columnItem, bSortAsc) {
 	this._defaultSortField = columnItem._field;
 
-	var list = this.getList().clone();
-	this._sortList(list, columnItem._field);
-	this.set(list, null, true);
+	var list = this.getList();
+	list = list && list.clone();
+	if (list) {
+		this._sortList(list, columnItem._field);
+		this.set(list, null, true);
+	}
 };
 
 ZmApptListView.prototype._getHeaderToolTip = function(field, itemIdx) {

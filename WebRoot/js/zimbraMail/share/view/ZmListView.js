@@ -745,7 +745,8 @@ function(clickedEl, bContained, ev) {
  */
 ZmListView.prototype._isAllChecked = 
 function() {
-	return this.getSelection().length == this.getList().size();
+	var list = this.getList();
+	return (list && (this.getSelection().length == list.size()));
 };
 
 
@@ -814,7 +815,8 @@ function(allResults) {
 	if (this._selectAllEnabled) {
 		var curResult = this._controller._activeSearch;
 		if (curResult && curResult.getAttribute("more")) {
-			var toastMsg = AjxMessageFormat.format(ZmMsg.allPageSelected, this.getList().size());
+			var list = this.getList();
+			var toastMsg = AjxMessageFormat.format(ZmMsg.allPageSelected, list ? list.size() : ZmMsg.all);
 			if (allResults) {
 				this.allSelected = true;
 				toastMsg = ZmMsg.allSearchSelected;

@@ -517,7 +517,9 @@ function(columnItem, bSortAsc) {
 		appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
 	}
 
-	if (this.getList().size() > 0 && this._sortByString) {
+	var list = this.getList();
+	var size = list ? list.size() : 0;
+	if (size > 0 && this._sortByString) {
 		var params = {
 			query: this._controller.getSearchString(),
 			queryHint: this._controller.getSearchStringHint(),

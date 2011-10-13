@@ -1057,11 +1057,12 @@ function() {
 ZmMailListView.prototype._getItemToSelect =
 function() {
 	var item = this._itemToSelect || (this._list && this._list.get(0));
+	var list = this.getList(true);
 	if (item == ZmMailListView.FIRST_ITEM) {
-		var list = this.getList(true).getArray();
+		list = list && list.getArray();
 		item = list && list[0];
 	} else if (item == ZmMailListView.LAST_ITEM) {
-		var list = this.getList(true).getArray();
+		list = list && list.getArray();
 		item = list && list[list.length - 1];
 	}
 	return item;
