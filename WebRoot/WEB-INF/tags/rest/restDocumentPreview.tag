@@ -130,7 +130,7 @@
                     <table width="100%" height="100%" cellpadding="0" cellspacing="5">
                     <tr>
                         <td>
-                            <span style="font-size:18px;"><b>${doc.name}</b></span>
+                            <span style="font-size:18px;"><b>${zm:cook(doc.name)}</b></span>
                         </td>
                         <td>
                             &nbsp;
