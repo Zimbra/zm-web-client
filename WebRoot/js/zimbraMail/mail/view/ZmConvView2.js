@@ -244,7 +244,9 @@ ZmConvView2.prototype._focus =
 function() {
 	var msgView = this._focusedMsgView || (this._children && this._children.get(0));
 	if (msgView) {
-		msgView.setFocused(true);
+		if (msgView.setFocused) {
+			msgView.setFocused(true);
+		}
 		this._focusedMsgView = msgView;
 		this._controller._convViewHasFocus = true;
 	}
@@ -253,7 +255,9 @@ function() {
 ZmConvView2.prototype._blur =
 function() {
 	if (this._focusedMsgView) {
-		this._focusedMsgView.setFocused(false);
+		if (this._focusedMsgView.setFocused) {
+			this._focusedMsgView.setFocused(false);
+		}
 		this._controller._convViewHasFocus = false;
 	}
 };
@@ -263,12 +267,16 @@ ZmConvView2.prototype.setFocusedMsgView =
 function(msgView) {
 
 	msgView = msgView || (this._children && this._children.get(0));
-	if (this._focusedMsgView) {
+	if (this._focusedMsgView && this._focusedMsgView.setFocused) {
 		this._focusedMsgView.setFocused(false);
 	}
-	msgView.setFocused(true);
-	this._focusedMsgView = msgView;
-	this._controller._convViewHasFocus = true;
+	if (msgView) {
+		if (msgView.setFocused) {
+			msgView.setFocused(true);
+		}
+		this._focusedMsgView = msgView;
+		this._controller._convViewHasFocus = true;
+	}
 };
 
 ZmConvView2.prototype._onInputFocus =
