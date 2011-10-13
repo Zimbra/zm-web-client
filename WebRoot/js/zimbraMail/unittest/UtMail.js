@@ -69,7 +69,7 @@ UtMail = {
                 var randomString = UtZWCUtils.getRandomString(10);
                 var toEmail = UtZWCUtils.getEmailAddressOfCurrentAccount();
                 composeView._subjectField.value = "Unit testing mail: " + randomString;
-                composeView._field[AjxEmailAddress.TO].value = toEmail;
+				composeView.getRecipientField(AjxEmailAddress.TO).value = toEmail;
                 composeView._bodyField.value = "Unit test mail: " + randomString;
 
                 var composeViewController = composeView._controller;

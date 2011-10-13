@@ -39,8 +39,11 @@ UtBubbles.teardown = function() {
 	appCtxt.getAppController().removeListener(ZmAppEvent.RESPONSE, UtBubbles._handleResponse);
 	UtBubbles._origAcTimeout = appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
 	appCtxt.set(ZmSetting.AC_TIMER_INTERVAL, UtBubbles._origAcTimeout);	// restore orig value
-	var ctlr = appCtxt.getCurrentController();
-	ctlr._cancelListener();	
+	var cv = UtZWCUtils.getLastView(ZmId.VIEW_COMPOSE)
+	var ctlr = cv && cv._controller;
+	if (ctlr) {
+		ctlr._cancelListener();
+	}
 };
 
 UtBubbles.test = function() {
@@ -61,11 +64,12 @@ UtBubbles._handleResponse = function(evt) {
 
 	// selection of the first autocomplete match runs on a 100ms timer
 	setTimeout(function() {
-		var cv = appCtxt.getCurrentView();
+		var cv = UtZWCUtils.getLastView(ZmId.VIEW_COMPOSE);
+		UT.ok(cv, "Could not get last compose view");
 		var aclv = cv._acAddrSelectList;
-		UT.ok(aclv._selected, "No autocomplete row is selected");
+		UT.ok(aclv && aclv._selected, "No autocomplete row is selected");
 		aclv._listSelectionListener();
-		var toField = cv._addrInputField[AjxEmailAddress.TO];
+		var toField = cv.getAddrInputField(AjxEmailAddress.TO);
 		var bubbleList = toField._getBubbleList();
 		UT.equals(bubbleList.size(), 1, "No bubbles");
 		UT.start();

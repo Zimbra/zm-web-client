@@ -79,6 +79,13 @@ UtZWCUtils.closeAllComposeViews = function() {
 	}
 };
 
+UtZWCUtils.getLastView = function(viewType) {
+	var avm = appCtxt.getAppViewMgr();
+	var list = avm.getViewsByType(viewType);
+	var view = list && list[list.length - 1];
+	return view ? avm.getCurrentView(view.id) : null;
+};
+
 UtZWCUtils.getComposeViewCount = function() {
 	return appCtxt.getAppViewMgr().getViewsByType(ZmId.VIEW_COMPOSE).length;
 };
