@@ -383,7 +383,7 @@ ZmMainSearchToolBar.prototype._createSearchMenu =
 function() {
 
 	var menu = new DwtMenu({
-				parent:		this._button[ZmSearchToolBar.SEARCH_BUTTON],
+				parent:		this._button[ZmSearchToolBar.TYPES_BUTTON],
 				className:	"ActionMenu",
 				id:			ZmId.getMenuId(ZmId.SEARCH)
 			});
@@ -494,7 +494,7 @@ function(icon, text, listener, id) {
 		}
 	} else {
 		if (this._searchMenuCreated) {
-			var menu = this._button[ZmSearchToolBar.SEARCH_BUTTON].getMenu();
+			var menu = this._button[ZmSearchToolBar.TYPES_BUTTON].getMenu();
 			this._createCustomSearchMenuItem(menu, icon, text, listener, id);
 		} else {
 			if (!this._customSearchMenuItems) {
@@ -544,7 +544,7 @@ function(ev) {
 		}
 		data.listener.run(ev); // call original listener
 	} else {
-		var button = this._button[ZmSearchToolBar.SEARCH_BUTTON];
+		var button = this._button[ZmSearchToolBar.TYPES_BUTTON];
 		button.setToolTipContent(data.text);
 
 		var menu = item.parent;
