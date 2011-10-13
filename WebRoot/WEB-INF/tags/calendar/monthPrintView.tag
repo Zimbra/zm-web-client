@@ -86,8 +86,8 @@
         </td>
     </tr>
 </table>
+<br>        
 </c:if>
-<br>
 <table width="100%"  cellpadding="0" cellspacing="0" border="0" class="zPrintMsgs">
     <c:forEach begin="1" end="${noOfMonths}" varStatus="stat">
         <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}"/>
@@ -140,15 +140,15 @@
                                             <c:set var="dayStart" value="${currentDay.timeInMillis}"/>
                                             <c:set var="dayEnd" value="${zm:addDay(currentDay, 1).timeInMillis}"/>
                                             <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}">
-                                                <tr><td><app:monthAppt appt="${appt}" start="${dayStart}" end="${dayEnd}" timezone="${timezone}"/></td></tr>
+                                                <tr><td height="15px"><app:monthAppt appt="${appt}" start="${dayStart}" end="${dayEnd}" timezone="${timezone}"/></td></tr>
                                                 <c:set var="count" value="${count+1}"/>
                                             </zm:forEachAppoinment>
                                             <c:if test="${count lt 4}">
-                                                <c:forEach begin="1" end="${4-count}"><tr><td>&nbsp;</td></tr></c:forEach>
+                                                <c:forEach begin="1" end="${4-count}"><tr><td height="15px"></td></tr></c:forEach>
                                             </c:if>
                                         </c:when>
                                         <c:otherwise>
-                                             <c:forEach begin="1" end="5"><tr><td>&nbsp;</td></tr></c:forEach>
+                                             <c:forEach begin="1" end="5"><tr><td height="15px"></td></tr></c:forEach>
                                         </c:otherwise>
                                         </c:choose>
                                     </table>
