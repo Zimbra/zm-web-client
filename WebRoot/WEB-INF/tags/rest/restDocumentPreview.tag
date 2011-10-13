@@ -2,12 +2,12 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2010, 2011 VMware, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -23,7 +23,7 @@
     <fmt:getLocale var="locale"/>
     <fmt:setLocale value="${not empty param.localeId ? param.localeId : (not empty requestScope.zimbra_target_account_prefLocale ? requestScope.zimbra_target_account_prefLocale : locale)}"/>
     <zm:getDocument var="doc" box="${mailbox}" id="${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}"/>
-    <fmt:setBundle basename="/messages/ZhMsg" scope='request'/> 
+    <fmt:setBundle basename="/messages/ZhMsg" scope='request'/>
 </rest:handleError>
 <c:set var="isViewOnly" value="${not empty param.viewonly}" scope="request"/>
 <html>
@@ -130,7 +130,7 @@
                     <table width="100%" height="100%" cellpadding="0" cellspacing="5">
                     <tr>
                         <td>
-                            <span style="font-size:18px;"><b>${doc.name}</b></span>
+                            <span style="font-size:18px;"><b>${zm:cook(doc.name)}</b></span>
                         </td>
                         <td>
                             &nbsp;
