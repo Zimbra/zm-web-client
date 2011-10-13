@@ -39,7 +39,10 @@ ZmFolderPropsDialog = function(parent, className) {
 
 	DwtDialog.call(this, {parent:parent, className:className, title:ZmMsg.folderProperties, extraButtons:extraButtons});
 
-    this._tabKeys = {};
+	this._tabViews  = [];
+	this._tabKeys   = [];
+	this._tabInUse  = [];
+	this._tabKeyMap = {};
 
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
 		this.registerCallback(ZmFolderPropsDialog.ADD_SHARE_BUTTON, this._handleAddShareButton, this);
@@ -75,7 +78,8 @@ function() {
 
 ZmFolderPropsDialog.prototype.getTabKey =
 function(id) {
-	return this._tabKeys[id];
+	var index = this._tabKeyMap[id];
+	return this._tabKeys[index];
 };
 
 /**
@@ -200,7 +204,10 @@ function(event) {
         errorMessage: []
     };
     for (var i = 0; i < this._tabViews.length; i++) {
-        this._tabViews[i].doSave(batchCommand, saveState);
+        if (this._tabInUse[i]) {
+            // Save all in use tabs
+            this._tabViews[i].doSave(batchCommand, saveState);
+        }
     }
 
     if (saveState.errorMessage.length > 0) {
@@ -236,8 +243,36 @@ ZmFolderPropsDialog.prototype._handleFolderChange =
 function(event) {
 	var organizer = this._organizer;
 
+    // Get the components that will be hidden or displayed
+    var tabBar = this._tabContainer.getTabBar();
+    var tabKey = this.getTabKey(ZmFolderPropsDialog.TABKEY_RETENTION);
+    var retentionTabButton = this._tabContainer.getTabButton(tabKey);
+    var retentionIndex = this._tabKeyMap[ZmFolderPropsDialog.TABKEY_RETENTION];
+
+    if ((organizer.type != ZmOrganizer.FOLDER) || organizer.link) {
+        // Not a folder, or shared - hide the retention view (and possibly the toolbar)
+        this._tabInUse[retentionIndex] = false;
+        if (this._tabViews.length > 2) {
+            // More than two tabs, hide the retention tab, leave the toolbar intact
+            tabBar.setVisible(true);
+            retentionTabButton.setVisible(false);
+        } else {
+            // Two or fewer tabs.  Hide the toolbar, just let the properties view display standalone
+            // (On popup, the display defaults to the property view)
+            tabBar.setVisible(false);
+        }
+    } else {
+        // Using the retention tab view - show the toolbar and all tabs
+        this._tabInUse[retentionIndex] = true;
+        retentionTabButton.setVisible(true);
+        tabBar.setVisible(true);
+    }
+
     for (var i = 0; i < this._tabViews.length; i++) {
-        this._tabViews[i]._handleFolderChange(event);
+        if (this._tabInUse[i]) {
+            // Update all in use tabs to use the specified folder
+            this._tabViews[i]._handleFolderChange(event);
+        }
     }
 
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
@@ -377,24 +412,22 @@ function(row, share) {
 };
 
 ZmFolderPropsDialog.prototype.addTab =
-function(id, tabViewPage) {
+function(index, id, tabViewPage) {
 	if (!this._tabContainer || !tabViewPage) { return null; }
 
-	this._tabKeys[id] = this._tabContainer.addTab(tabViewPage.getTitle(), tabViewPage);
-	return this._tabKeys[id];
+	this._tabViews[index] = tabViewPage;
+	this._tabKeys[index]  = this._tabContainer.addTab(tabViewPage.getTitle(), tabViewPage);
+	this._tabInUse[index] = true;
+	this._tabKeyMap[id] = index;
+	return this._tabKeys[index];
 };
 
 ZmFolderPropsDialog.prototype._initializeTabView =
 function(view) {
-    //this._tabView = new DwtTabView(view, null, Dwt.STATIC_STYLE);
     this._tabContainer = new DwtTabView(view, null, Dwt.STATIC_STYLE);
 
-    this._tabViews = [];
-    this._tabViews[0] = new ZmFolderPropertyView(this._tabContainer);
-    this.addTab(ZmFolderPropsDialog.TABKEY_PROPERTIES, this._tabViews[0]);
-    this._tabViews[1] = new ZmFolderRetentionView(this._tabContainer);
-    this.addTab(ZmFolderPropsDialog.TABKEY_RETENTION, this._tabViews[1]);
-
+    this.addTab(0, ZmFolderPropsDialog.TABKEY_PROPERTIES, new ZmFolderPropertyView(this._tabContainer));
+    this.addTab(1, ZmFolderPropsDialog.TABKEY_RETENTION,  new ZmFolderRetentionView(this._tabContainer));
 
 	// setup shares group
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{
