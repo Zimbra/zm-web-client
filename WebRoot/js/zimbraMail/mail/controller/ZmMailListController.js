@@ -522,8 +522,8 @@ function(noViewMenu) {
 	list.push(ZmOperation.SEP);
 	if (!appCtxt.isChildWindow) {
 		list.push(ZmOperation.MOVE_MENU);
+		list.push(ZmOperation.TAG_MENU);
 	}
-	list.push(ZmOperation.TAG_MENU);
 
 	if (!noViewMenu) {
     	list.push(ZmOperation.VIEW_MENU);
