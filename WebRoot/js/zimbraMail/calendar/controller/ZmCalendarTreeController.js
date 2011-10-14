@@ -730,7 +730,7 @@ ZmCalendarTreeController.POLLING_INTERVAL = "1m";
 ZmCalendarTreeController.CONN_TYPE_CLEARTEXT = "cleartext";
 ZmCalendarTreeController.CONN_TYPE_SSL = "ssl";
 ZmCalendarTreeController.SSL_PORT = "443";
-ZmCalendarTreeController.DATA_SOURCE_ATTR_GOOGLE = "p:/principals/users/_USERNAME_";
+ZmCalendarTreeController.DATA_SOURCE_ATTR_YAHOO = "p:/principals/users/_USERNAME_";
 ZmCalendarTreeController.DATA_SOURCE_ATTR = "p:/calendar/dav/_USERNAME_/user";
 
 ZmCalendarTreeController.prototype.createDataSource =
@@ -761,8 +761,8 @@ function(organizer, errorCallback) {
         connType = ZmCalendarTreeController.CONN_TYPE_SSL;
     }
 
-    if(calDav.hostUrl.indexOf(ZmMsg.sharedCalCalDAVServerGoogle) === -1) {
-        dsa = ZmCalendarTreeController.DATA_SOURCE_ATTR_GOOGLE;
+    if(calDav.hostUrl.indexOf(ZmMsg.sharedCalCalDAVServerGoogle) === -1) { // Not google url
+        dsa = ZmCalendarTreeController.DATA_SOURCE_ATTR_YAHOO;
     }
 
     jsonObj = {
