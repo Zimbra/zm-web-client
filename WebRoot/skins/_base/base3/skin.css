@@ -288,9 +288,8 @@ BODY						{	margin:0px; 	}
 .ZmAppChooser					{	margin:0px !important; 		}
 .ZAppTabBorder                  {   @AppTabRoundCorners@         }
 .ZAppTabBorder .ZLeftIcon 		{	@AppTabLeftIcon@			}
-.ZAppTabBorder .ZWidgetTitle 	{	@AppTabWidgetTitle@ }
-
-.ZAppTabBorder .ZWidgetTitle 	{	padding:0 5px 3px 0; font-weight: bold; }
+.ZAppTabBorder .ZWidgetTitle 	{	@AppTabWidgetTitle@ 		}
+.ZAppTabBorder .ZDropDown 		{	@AppTabDropDown@ 			}
 
 .ZSelectedPrev .ZAppTabBorder 	{	@AppTabBorder-selectedPrev@	}
 .ZSelectedNext .ZAppTabBorder	{	@AppTabBorder-selectedNext@	}
