@@ -86,6 +86,16 @@ ZmFilterRule.TYPE_FOLDER_PICKER	= "FOLDER_PICKER";
  */
 ZmFilterRule.TYPE_TAG_PICKER	= "TAG_PICKER";
 
+ZmFilterRule.IMPORTANCE         = "importance";
+ZmFilterRule.IMPORTANCE_HIGH    = "high";
+ZmFilterRule.IMPORTANCE_LOW     = "low";
+ZmFilterRule.IMPORTANCE_NORMAL  = "normal";
+ZmFilterRule.FLAGGED            = "flagged";
+ZmFilterRule.READ               = "read";
+ZmFilterRule.PRIORITY           = "priority";
+ZmFilterRule.RANKING            = "ranking";
+
+
 // Conditions (subjects)
 ZmFilterRule.C_FROM			= "FROM";
 ZmFilterRule.C_TO			= "TO";
@@ -170,6 +180,7 @@ ZmFilterRule.TEST_SOCIAL                        = "socialTest"; //not a real tes
 ZmFilterRule.TEST_ME                            = "meTest";
 ZmFilterRule.TEST_RANKING                       = "contactRankingTest";
 ZmFilterRule.TEST_IMPORTANCE                    = "importanceTest";
+ZmFilterRule.TEST_FLAGGED                       = "flaggedTest";
 
 
 // Conditions map to Tests
@@ -436,9 +447,11 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_CONV] = {
 		value:      ZmFilterRule.TYPE_SELECT,
 		vOptions:  [{label: ZmMsg.convIStartLabel, value: "started"}, {label: ZmMsg.convIParticipateLabel, value: "participated"},
 			        {label: ZmMsg.massMarketingLabel, value: ZmFilterRule.C_BULK}, {label: ZmMsg.distributionListLabel, value: ZmFilterRule.C_LIST},
-					{label: ZmMsg.markedAsImportance, value: "importance"}],
+					{label: ZmMsg.markedAsLabel, value: ZmFilterRule.IMPORTANCE}, {label: ZmMsg.flagged.toLowerCase(), value: ZmFilterRule.FLAGGED}],
 	    valueMod:  ZmFilterRule.TYPE_SELECT,
-	    vmOptions: [{label: ZmMsg.high, value: "high"}, {label: ZmMsg.normal, value: "normal"}, {label: ZmMsg.low, value: "low"}]
+	    vmOptions: [{label: ZmMsg.read.toLowerCase(), value: ZmFilterRule.READ}, {label: ZmMsg.priority.toLowerCase(), value: ZmFilterRule.PRIORITY},
+		            {label: ZmMsg.importanceHigh, value: ZmFilterRule.IMPORTANCE_HIGH}, {label: ZmMsg.importanceNormal, value: ZmFilterRule.IMPORTANCE_NORMAL},
+		            {label: ZmMsg.importanceLow, value: ZmFilterRule.IMPORTANCE_LOW}]
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_SOCIAL] = {
 		ops:        ZmFilterRule.TYPE_SELECT,
@@ -629,7 +642,7 @@ ZmFilterRule.ACTIONS[ZmFilterRule.A_FOLDER]	= {
 ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG] = {
 	param:				ZmFilterRule.TYPE_SELECT,
 	// NOTE: If you change the order of these options, also change _setPreconditions!!!
-	pOptions:			[{label: ZmMsg.read, value: "read"}, {label: ZmMsg.flagged, value: "flagged"}, {label: "Priority", value: "priority"}]
+	pOptions:			[{label: ZmMsg.read, value: ZmFilterRule.READ}, {label: ZmMsg.flagged, value: ZmFilterRule.FLAGGED}, {label: ZmMsg.priority, value: ZmFilterRule.PRIORITY}]
 };
 
 ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG] = {
@@ -747,8 +760,11 @@ function(testType, comparator, value, subjectMod, caseSensitive) {
 		testType = ZmFilterRule.TEST_LIST;
 		value = null;
 	}
-	else if (testType == ZmFilterRule.TEST_CONVERSATIONS && (value == "high" || value == "normal" || value == "low"))  {
+	else if (testType == ZmFilterRule.TEST_CONVERSATIONS && (value == ZmFilterRule.IMPORTANCE_HIGH || value == ZmFilterRule.IMPORTANCE_NORMAL || value == ZmFilterRule.IMPORTANCE_LOW))  {
 		testType = ZmFilterRule.TEST_IMPORTANCE;
+	}
+	else if (testType == ZmFilterRule.TEST_CONVERSATIONS && (value == ZmFilterRule.READ || value == ZmFilterRule.PRIORITY || value == ZmFilterRule.FLAGGED)) {
+		testType = ZmFilterRule.TEST_FLAGGED;
 	}
 	
 	if (!this.conditions[testType]) {
@@ -757,6 +773,7 @@ function(testType, comparator, value, subjectMod, caseSensitive) {
 	
 	var cdata = ZmFilterRule.getConditionData(testType, comparator, value, subjectMod, caseSensitive);
 	this.conditions[testType].push(cdata);
+	return cdata;
 };
 
 /**
@@ -887,6 +904,7 @@ function(testType, comparator, value, subjectMod, caseSensitive) {
 			case ZmFilterRule.TEST_ADDRESS:     conditionData.part = part;
 												conditionData.value= value;
 												break;
+			case ZmFilterRule.TEST_FLAGGED:     conditionData.flagName = value; break;
 			default:							conditionData.value = value; break;
 		}
 	}

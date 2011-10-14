@@ -393,6 +393,7 @@ function(test, data) {
 		case ZmFilterRule.TEST_ME:              condition = ZmFilterRule.C_ADDRBOOK; break;
 		case ZmFilterRule.TEST_RANKING:         condition = ZmFilterRule.C_ADDRBOOK; break;
 		case ZmFilterRule.TEST_IMPORTANCE:      condition = ZmFilterRule.C_CONV; break;
+		case ZmFilterRule.TEST_FLAGGED:         condition = ZmFilterRule.C_CONV; break;
 		case ZmFilterRule.TEST_HEADER:
 			condition = ZmFilterRule.C_HEADER_MAP[data.header];
 			if (!condition) { // means custom header
@@ -549,14 +550,19 @@ function(conf, field, options, rowData, testType, rowId) {
 		    {
 				select.setVisibility(false); //Don't show value "me" for address test 
 		    }
-			else if (testType == ZmFilterRule.TEST_CONVERSATIONS || testType == ZmFilterRule.TEST_LIST 
-									 ||  testType == ZmFilterRule.TEST_BULK || testType == ZmFilterRule.TEST_IMPORTANCE) {
+			else if (testType == ZmFilterRule.TEST_CONVERSATIONS || testType == ZmFilterRule.TEST_LIST  ||  testType == ZmFilterRule.TEST_BULK || testType == ZmFilterRule.TEST_IMPORTANCE || testType == ZmFilterRule.TEST_FLAGGED) {
 				select.addChangeListener(this._importanceChangeLstnr);
 			}
 		}
-		else if (field == "valueMod" && (testType == ZmFilterRule.TEST_CONVERSATIONS || testType == ZmFilterRule.TEST_LIST 
-									 ||  testType == ZmFilterRule.TEST_BULK)) {
-			select.setVisibility(false);
+		else if (field == "valueMod"){
+			if (testType == ZmFilterRule.TEST_FLAGGED && (rowData.flagName == ZmFilterRule.READ || rowData.flagName == ZmFilterRule.PRIORITY)) {
+				var valueSelect = this._inputs[rowId]["value"].dwtObj;
+				var index = valueSelect.getIndexForValue(ZmFilterRule.IMPORTANCE);
+				valueSelect.setSelected(index);
+			}
+			else if (testType == ZmFilterRule.TEST_CONVERSATIONS || testType == ZmFilterRule.TEST_LIST ||  testType == ZmFilterRule.TEST_BULK || testType == ZmFilterRule.TEST_FLAGGED) {
+				select.setVisibility(false);
+			}
 		}
 		
 		for (var i = 0; i < options.length; i++) {
@@ -672,6 +678,7 @@ function(isMainSelect, testType, field, rowData) {
 			case ZmFilterRule.TEST_ME:              dataValue = ZmFilterRule.C_ADDRBOOK; break;
 			case ZmFilterRule.TEST_RANKING:         dataValue = ZmFilterRule.C_ADDRBOOK; break;
 			case ZmFilterRule.TEST_IMPORTANCE:      dataValue = ZmFilterRule.C_CONV; break;
+			case ZmFilterRule.TEST_FLAGGED:         dataValue = ZmFilterRule.C_CONV; break;
 			// default returns action type
 			default:								return ZmFilterRule.A_VALUE_MAP[testType];
 		}
@@ -777,10 +784,23 @@ function(isMainSelect, testType, field, rowData) {
 					: ZmFilterRule.OP_CONV_IS;	
 			}
 			else if (field == "value") {
-				dataValue = "importance";
+				dataValue = ZmFilterRule.IMPORTANCE;
 			}
 			else if (field == "valueMod") {
 				dataValue = rowData.imp;
+			}
+		}
+		else if (testType == ZmFilterRule.TEST_FLAGGED) {
+			if (field == "ops") {
+				dataValue = (rowData.negative == "1")
+					? ZmFilterRule.OP_NOT_CONV
+					: ZmFilterRule.OP_CONV_IS;	
+			}
+			else if (field == "value") {
+				dataValue = ZmFilterRule.FLAGGED;	
+			}
+			else if (field == "valueMod") {
+				dataValue = rowData.flagName;
 			}
 		}
 		else if (testType == ZmFilterRule.TEST_SOCIALCAST) {
@@ -884,7 +904,7 @@ function(isMainSelect, testType, field, rowData) {
 					? ZmFilterRule.OP_NOT_IN
 					: ZmFilterRule.OP_IN;
 			} else if (field == "value") {
-				dataValue = "ranking";
+				dataValue = ZmFilterRule.RANKING;
 			}
 		}
         else if (testType == ZmFilterRule.TEST_MIME_HEADER) {
@@ -1076,7 +1096,7 @@ function(ev) {
 		return;
 	}
 	var value = input["value"].dwtObj.getValue();
-	if (value == "importance") {
+	if (value == ZmFilterRule.IMPORTANCE) {
 		input["valueMod"].dwtObj.setVisibility(true);
 	}
 	else {
@@ -1408,7 +1428,7 @@ function(rowId) {
 	else if (testType == ZmFilterRule.TEST_ADDRESS) {
 		value += ";" + valueMod;   //addressTest has value=email part=all|domain|localpart
 	}
-	else if (testType == ZmFilterRule.TEST_CONVERSATIONS && value == "importance") {
+	else if (testType == ZmFilterRule.TEST_CONVERSATIONS && value == ZmFilterRule.IMPORTANCE) {
 		value = valueMod;  //importanceTest
 	}
 	

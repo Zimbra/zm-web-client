@@ -197,7 +197,7 @@ function(controlId) {
 		var ruleName = isPriority ? ZmMsg.markAsPriorityRule : ZmMsg.activityStreamsRule;
 		var rule = new ZmFilterRule(ruleName, true, {}, {});
 		if (isPriority) {
-			rule.addAction(ZmFilterRule.A_FLAG, "priority");
+			rule.addAction(ZmFilterRule.A_FLAG, ZmFilterRule.PRIORITY);
 			rule.addAction(ZmFilterRule.A_STOP);
 			for (var id in this._priorityHash) {
 				if (id == ZmFilterRule.TEST_CONVERSATIONS) {
@@ -341,7 +341,6 @@ function() {
 	if (this._markAsPriority.isSelected()) {		
 		var rule = new ZmFilterRule(ZmMsg.markAsPriorityRule, true, {}, {});
 		rule.addAction(ZmFilterRule.A_FLAG, "priority");
-		rule.addAction(ZmFilterRule.A_STOP);
 		rule.setGroupOp(ZmFilterRule.GROUP_ANY);		
 		
 		for (var id in this._priorityHash) {
@@ -376,7 +375,7 @@ function() {
 			needSave = true;
 		}
 		else if (foundCondition) {
-				this._rules.insertRule(rule, 0); //make it first in list
+				this._rules.insertRule(rule, 0); //make it first
 				needSave = true;
 				runNowPrompt = true;		
 		}
@@ -395,6 +394,10 @@ function() {
 		var streamRule = new ZmFilterRule(ZmMsg.activityStreamsRule, true, {}, {});
 		streamRule.addAction(ZmFilterRule.A_FOLDER, ZmMsg.activityStreamsRule); 
 		streamRule.setGroupOp(ZmFilterRule.GROUP_ANY);
+		var flagRule = new ZmFilterRule(ZmMsg.priorityFlagRule, true, {}, {});
+		flagRule.addCondition(ZmFilterRule.TEST_FLAGGED, null, ZmFilterRule.PRIORITY);
+		flagRule.addAction(ZmFilterRule.A_KEEP);
+		flagRule.addAction(ZmFilterRule.A_STOP);
 		
 		for (var id in this._streamHash) {
 			var control = this._streamHash[id].control;
@@ -430,8 +433,8 @@ function() {
 			needSave = true;
 		}
 		else if(foundCondition) {
-			var index = this._rules.getIndexOfRule(ZmMsg.markAsPriorityRule);
-			this._rules.insertRule(streamRule, index); 
+			this._rules.insertRule(flagRule);
+			this._rules.insertRule(streamRule); //insert last
 			needSave = true;
 			runNowPrompt = true;
 		}
