@@ -42,7 +42,7 @@
         </div>
     </div>
 </div>
-<mo:folderForm type="folder" id="${param.id}" hide="${empty param.showCalCreate}" url="${currentUrl}" st="${param.st}"/>
+<mo:folderForm type="folder" id="${param.id}" hide="${empty param.showCalCreate}" url="${currentUrl}" st="${zm:cook(param.st)}"/>
 <div onclick='return zClickLink("FLDRCHECKED")' class='list-row-unread Folders list-row' style='padding: 5px;'>
     <span>
      <a id="FLDRCHECKED" href="${context_url}?st=cal&sfi=null">
