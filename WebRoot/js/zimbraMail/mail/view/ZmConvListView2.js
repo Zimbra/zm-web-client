@@ -422,6 +422,7 @@ function(ev) {
 	var conv = item;
 	var fields = ev.getDetail("fields");
 	var sortBy = this._sortByString || ZmSearch.DATE_DESC;
+    var isMuted = item.isMuted ? item.isMuted() : false;
 	var handled = false;
 	
 	// conv moved or deleted	
@@ -463,8 +464,15 @@ function(ev) {
 		if ((sortIndex != null) && (curIndex != null) && (sortIndex != curIndex)) {
 			AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView2: change position of conv " + item.id + " to " + sortIndex);
 			this.removeItem(item);
-			this.addItem(item, sortIndex);
 			// TODO: mark create notif handled?
+            if(isMuted) {
+                AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: change position of conv " + item.id + " to " + curIndex);
+                this.addItem(item, curIndex);
+                this._controller._doMarkRead([item], true);
+            }
+            else {
+                this.addItem(item, sortIndex);
+            }
 		}
 	}
 
