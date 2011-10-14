@@ -19,7 +19,7 @@
     <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request'/>
 </mo:handleError>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
-<c:if test="${not empty param.emsg}"><div class="StatusWarning"><fmt:message key="${param.emsg}"/></div></c:if>
+<c:if test="${not empty param.emsg}"><div class="StatusWarning"><fmt:message key="${zm:cook(param.emsg)}"/></div></c:if>
 <form action="" method="post" name="optionsForm" onsubmit="return submitForm(this);" accept-charset="UTF-8">
     <div class="tb tbl">
             <div class="tr">
