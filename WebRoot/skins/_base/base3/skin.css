@@ -96,6 +96,7 @@ BODY						{	margin:0px; 	}
 	@AppTab@
 }
 #skin_container_refresh .ZToolbarButtonBorder { background-image:none;  border:none; 	}
+
 /** App Toolbar **/
 #skin_spacing_app_top_toolbar			{	height:30px; 	}
 #skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@ width:auto;	}
@@ -442,3 +443,5 @@ SELECT						{	@FieldBorder@	}
 .ZmContactInfoView .contactHeaderTable {
 	background-color: @lighten(AppC,40)@;
 }
+
+.itemcounttext	{ visibility: hidden; width: 10px; padding-right: 0;}
