@@ -79,6 +79,7 @@ function(conv, force) {
 	this.reset();
 	this._item = conv;
 	
+	this._noResults = false;
 	if (!conv) {
 		this.getHtmlElement().innerHTML = AjxTemplate.expand("mail.Message#viewMessage", {isConv:true});
 		this.noTab = true;
