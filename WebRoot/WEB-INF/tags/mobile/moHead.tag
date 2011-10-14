@@ -40,7 +40,7 @@
             <meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
         </c:otherwise>
     </c:choose>
-    <link href="<c:url value='/css/zmobile${uiv!="0"?uiv:""}${param.st!=null && param.st=="cal"?",zmobilecal":""}.css?v=${version}'/>"  type="text/css" rel="stylesheet" /> 
+    <link href="<c:url value='/css/zmobile${uiv!="0"?zm:cook(uiv):""}${param.st!=null && param.st=="cal"?",zmobilecal":""}.css?v=${version}'/>"  type="text/css" rel="stylesheet" /> 
     <style type="text/css" media="screen">
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
        #action{padding:0px;margin:0px;border:0px;}
