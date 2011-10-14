@@ -14,7 +14,7 @@
     <c:url var="caction" value='${prevUrl}'/>
 </c:when>
 <c:when test="${not empty param.bt}">
-    <c:set var="bt" value="${param.bt}"/>
+    <c:set var="bt" value="${zm:cook(param.bt)}"/>
     <c:url var="caction" value='${context_url}?${fn:replace(param.bt,"|","&")}'/>
 </c:when>
 <c:when test="${empty prevUrl  && empty param.bt && not empty header['referer']}">
