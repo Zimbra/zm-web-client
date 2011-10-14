@@ -24,7 +24,7 @@
 <c:url var="caction" value="${context_url}">
     <c:param name="st" value="${mailbox.prefs.groupMailBy}"/>
 </c:url>
-<c:if test="${not empty param.emsg}"><div class="StatusWarning"><fmt:message key="${param.emsg}"/></div></c:if>
+<c:if test="${not empty param.emsg}"><div class="StatusWarning"><fmt:message key="${zm:cook(param.emsg)}"/></div></c:if>
 
 
 <form action="${currentUrl}" method="post" name="optionsForm" onsubmit="return submitForm(this);" accept-charset="UTF-8">
