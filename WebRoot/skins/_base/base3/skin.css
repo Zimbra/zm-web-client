@@ -14,34 +14,25 @@
  */
 BODY						{	margin:0px; 	}
 
-
 #skin_outer *				{	@FixBoxModel@	}
-
 /** generics **/
 .skin_table					{	width:100%; height:100%; border-collapse:collapse; border-width:0; 	}
 .skin_table>TBODY>TR>TD		{	padding:0; 															}
 .skin_container				{	width:100%; height:100%; position:relative; 						}
 .skin_container_ad			{	width:100%; height:100%; position:relative; 						}
-
 .skin_td_flex				{	width:100%; 	}
-
 /* hide the main screen initially - hide if html facade is not needed */
 #skin_outer					{	display:none; 	}
-
 /* hide search results toolbar initially */
 #skin_tr_search_results_toolbar			{	display:none; height:40px; width:100%; 	}
 
 /* hide all ads initially */
 .skin_outer_ad				{	display:none; 	}
 
-
-
 /** Outer container of the entire skin **/
 #skin_outer 							{	@SkinOuter@		}
 #skin_table_outer						{	padding:0;		}
-
 #skin_outer_td_main						{	height:100%; 	}
-
 
 /** set the height for the top row -- must be set to a fixed number! **/
 #skin_spacing_top_row					{	@SkinTopRow@ 	}
@@ -49,7 +40,6 @@ BODY						{	margin:0px; 	}
 											height:60%;
 											margin:0px 10px;
 										}
-
 /** Logo displayed in the app **/
 #skin_spacing_logo						{}
 #skin_container_logo					{	width:@LogoWidth@; 	}
@@ -60,73 +50,56 @@ BODY						{	margin:0px; 	}
 /** Search box **/	
 #skin_spacing_search,
 #skin_spacing_people_search 			{	padding:6px 0; width:100%; @cssValue(HSashContainer,width)@; 	}
-
 #skin_container_search					{	}
 #skin_container_search .ZButtonBorder	{	@tlRadius@:10px; @blRadius@:10px; border:0; height:22px; margin:1px; 	}
 #skin_container_search .ZLeftIcon DIV 	{	margin:0 0 0 10px; 	}
 #skin_container_search .ZWidgetTitle 	{	display:none; 	}
-
 /** combined username/quota **/
 #skin_spacing_tree_top					{	text-align:center;		}
 #skin_container_tree_top				{	@SkinBorderUsername@	}
-
 #skin_container_links					{}
-
 /** User Name section **/
 #skin_container_username				{	height:auto; padding-bottom:2px; @SkinTextUsername@	}
 #skin_container_username *				{}
-
 /** Quota section **/	
 #skin_container_quota					{	@SkinBorderQuota@	}
-
 /** Drop Menu section **/
 #skin_dropMenu							{	font-size:14px; padding:0 10px; text-align:center; vertical-align:middle; @Text-contrast@ @ActiveCursor@ 	}
-
 #skin_container_global_buttons>DIV		{	display:table-cell; 	}
-
 /** Tree Toolbar a.k.a.  "current app" **/
 #skin_spacing_current_app				{}
 #skin_container_current_app				{	@SkinBorderCurrentApp@		}
-
 #skin_td_switch_offline,
 #skin_container_help,
 #skin_container_logoff,
 #skin_container_adminlink				{	white-space:nowrap; text-align:center; padding:0px 10px; 	}
 
-
 /** Tree Toolbar **/
 #skin_spacing_tree						{	height:100%; padding-bottom:5px; 	}
 #skin_container_tree					{	@SkinBorderTree@ 					}
-
 
 /** Tree Footer (mini-calendar) **/
 #skin_tr_tree_footer					{	display: none; 			}
 #skin_spacing_tree_footer				{}
 #skin_container_tree_footer				{	@SkinBorderMiniCal@ 	}
 
-
 /** Tree/App Sash **/
 #skin_spacing_tree_app_sash				{}
 #skin_container_tree_app_sash			{	@SkinBorderTreeSash@		}
-
 /** App Chooser **/
 #skin_spacing_app_chooser				{}
 #skin_border_app_chooser				{	@SkinBorderAppChooser@ 		}
-
 #skin_container_app_chooser				{
 	/*position:absolute;*/
 	width:auto;
 	/*z-index:1;*/
 	@AppTab@
 }
-
 #skin_container_refresh .ZToolbarButtonBorder { background-image:none;  border:none; 	}
-
 /** App Toolbar **/
 #skin_spacing_app_top_toolbar			{	height:30px; 	}
 #skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@ width:auto;	}
 #skin_container_app_new_button			{	@SkinBorderAppToolbar@ width:auto; padding-left:5px; padding-right:5px; padding-bottom:2px;}			
-
 #skin_spacing_app_row					{	background-color:transparent; border-top:1px solid @darken(AltC,50)@; border-spacing:0; padding:0px 7px; @AppTab@ 	}
 #skin_spacing_app_row					{	
 	background-color:rgba(0,0,0,.3); 
@@ -138,49 +111,35 @@ BODY						{	margin:0px; 	}
 #skin_spacing_app_main					{	height:100%;		}
 #skin_container_app_main				{	@SkinBorderApp@		}
 
-
-
 /** Top ad **/
 #skin_spacing_top_ad					{}
 #skin_container_top_ad					{	@AdStyle@ height:@TopAdHeight@;		}
-
 /** Sidebar ad **/
 #skin_spacing_sidebar_ad				{	padding:10px 0px 0px 5px;			}
 #skin_container_sidebar_ad				{	width:@SidebarAdWidth@; @AdStyle@ 	}
-
-
 
 /** Tree Top Ad **/
 #skin_spacing_tree_top_ad				{}
 #skin_container_tree_top_ad				{	@AdStyle@ height:@TreeTopAdHeight@; 	}
 
-
 /** Tree Bottom Ad **/
 #skin_spacing_tree_bottom_ad			{}
 #skin_container_tree_bottom_ad			{	@AdStyle@ height:@TreeBottomAdHeight@;	}
-
 /** Bottom ad **/
 #skin_spacing_bottom_ad					{}
 #skin_container_bottom_ad				{	@AdStyle@ height:@BottomAdHeight@;		}
-
-
 
 /*** HACKS: this makes the tables work properly -- rationalize this!  **/
 #skin_td_tree				{	width:@TreeStartWidth@;		}
 #skin_td_tree_app_sash 		{	width:@SashSize@;			}
 #skin_td_main				{	width:auto;	height:100%; 	}
 #skin_td_sidebar_ad			{	width:@SidebarAdWidth@;		}
-
 #skin_td_new_button			{	padding:2px; 	}
-
 /** LoginPanel and Splash screen **/
 #skin_container_splash_screen			{	@SkinOuter@	@FullWindow@ z-index:90000000;		}
-
 #ZLoginBodyContainer	{	@LoginPanelInnerBorder@	}
-
 #ZSplashPanel			{	@SplashOuterBorder@		}
 #ZSplashBodyContainer	{	@SplashInnerBorder@		}
-
 .SplashScreen { position:absolute;
     left:0px;
     top:0px;
@@ -217,7 +176,6 @@ BODY						{	margin:0px; 	}
     overflow:visible;
     position:absolute;
     top:50%;
-
     /*Linear gradient backgrounds*/
     background-color: @darken(AppC,10)@;
     #IFDEF GECKO
@@ -230,7 +188,6 @@ BODY						{	margin:0px; 	}
     filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@'); /* IE6,IE7 */
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@')"; /* IE8 */
     #ENDIF
-
     /*Radial gradient backgrounds*/
     #IFDEF GECKO
     background-image: -moz-radial-gradient(50% 0, circle farthest-corner, @AppC@ 0%, @darken(AppC,10)@ 100%); /* FF3.6 */
@@ -294,16 +251,13 @@ BODY						{	margin:0px; 	}
     font-size:11px;
     margin-bottom:5px;
 }
-
 /** Logo Images **/
 .ImgAppBanner			{	background-repeat:no-repeat; @AppBanner@   }
 .ImgLoginBanner			{	background-repeat:no-repeat; @LoginBanner@   }
-
 #IFDEF MSIE
 #skin_container_logo A, #skin_container_logo A:hover, #skin_container_logo A:link {
     background-color: transparent;}
 #ENDIF
-
 /* TO INTEGRATE */
 .DwtVerticalSash div {
 	position:relative;
@@ -311,47 +265,38 @@ BODY						{	margin:0px; 	}
 	margin-top:0px;
 }
 
-
 .UserInfoLink {
 	width:100%;
 	text-align:left;
 	white-space:nowrap;
 }
-
 .ZmPicker .ZToolbar {
 	@WidgetHeaderContainer@
 	@WidgetHeaderContainer-normal@
 }
 
-
 .BannerTextUser {
 	overflow: hidden !important;
 }
-
 .BannerTextUserOffline {
 	text-align: left !important;
 	padding: 0px 3px;
 }
 
-
-
 /* App Chooser and App Tab Overrides -- TODO: Merge into main */
-
 .ZmAppChooser					{	margin:0px !important; 		}
-
-.ZAppTabBorder                  {   @AppTabRoundCorners@        }
+.ZAppTabBorder                  {   @AppTabRoundCorners@         }
 .ZAppTabBorder .ZLeftIcon 		{	@AppTabLeftIcon@			}
 .ZAppTabBorder .ZWidgetTitle 	{	@AppTabWidgetTitle@ }
+
+.ZAppTabBorder .ZWidgetTitle 	{	padding:0 5px 3px 0; font-weight: bold; }
 
 .ZSelectedPrev .ZAppTabBorder 	{	@AppTabBorder-selectedPrev@	}
 .ZSelectedNext .ZAppTabBorder	{	@AppTabBorder-selectedNext@	}
 .ZFirstItem .ZAppTabBorder 		{	@AppTabBorder-first@		}
 .ZAppTabSpacer 					{	@AppTab@ @AppTabSpacer@		}
 
-
-
 /* Normal Tab Overrides  -- TODO: Merge into main */
-
 .ZSelectedPrev .ZTabBorder 		{	@TabBorder-selectedPrev@	}
 .ZSelectedNext .ZTabBorder		{	@TabBorder-selectedNext@	}
 .ZFirstItem .ZTabBorder 		{	@TabBorder-first@			}
@@ -359,28 +304,21 @@ BODY						{	margin:0px; 	}
 .ZTabBarPrefix 					{	@TabBarPrefix@				}
 .ZTabBarSuffix 					{	@TabBarSuffix@				}
 
-
-
 /* Quota */
 .quotaBar 						{	height:8px;			}
-
 /* USED? */
 .quotaLabel {		
 	@FontSize-smaller@
 	text-align:right;
 }
 
-
-
 .ZmInviteToolBar .ZToolbarTable, .ZmShareToolBar .ZToolbarTable {
 	height:100%;
 }
 
-
 /* offline */
 .ZmNetworkStatus 		{ font-weight: bold; }
 .ZmNetworkStatusIcon 	{ cursor: pointer; }
-
 /* Input stuff -- adding classes properly -- TODO: put this back into dwt.css  */
 .DwtInputField INPUT[type="text"], 
 .DwtInputField INPUT[type="password"],
@@ -392,7 +330,6 @@ BODY						{	margin:0px; 	}
 	@TextArea@
 	@TextArea-normal@
 }
-
 .DwtInputField-error INPUT[type="text"],
 .DwtInputField-error INPUT[type="password"],
 .DwtSimpleInput-error {
@@ -403,7 +340,6 @@ BODY						{	margin:0px; 	}
 	@TextArea@
 	@TextArea-error@
 }
-
 .DwtInputField-focused INPUT[type="text"],
 .DwtInputField-focused INPUT[type="password"],
 .DwtSimpleInput-focused {
@@ -414,7 +350,6 @@ BODY						{	margin:0px; 	}
 	@TextArea@
 	@TextArea-focused@
 }
-
 .DwtInputField-disabled INPUT[type="text"],
 .DwtInputField-disabled INPUT[type="password"],
 .DwtSimpleInput-disabled {
@@ -425,7 +360,6 @@ BODY						{	margin:0px; 	}
 	@TextArea@
 	@TextArea-disabled@
 }
-
 .DwtInputField-hint INPUT[type="text"],
 .DwtInputField-hint INPUT[type="password"],
 .DwtInputField-hint INPUT,
@@ -437,9 +371,7 @@ BODY						{	margin:0px; 	}
 .DwtInputField-hint TEXTAREA {
 	@TextArea@
 	@InputField-hint@
-
 }
-
 .DwtInputField-errorhint INPUT[type="text"],
 .DwtInputField-errorhint INPUT[type="password"],
 .DwtSimpleInput-errorhint {
@@ -455,7 +387,6 @@ TEXTAREA
 .BannerBar * {
 	@FontSize-smaller@
 }
-
 .BannerBar {
 	padding-top:1px;
     height: 1px;
@@ -471,11 +402,9 @@ TEXTAREA
 .BannerTextQuota {
 	cursor:default;
 }
-
 .BannerTextQuota-MultiAccount {
 	padding-top:5px;
 }
-
 
 /* styles for the HTML client */
 INPUT[type="text"],
@@ -490,12 +419,9 @@ SELECT						{	@FieldBorder@	}
 .ZhSubTabs					{	@TabBar@	}
 .ZhSubTabs					{	padding:5px !important;	}
 .ZhSubTabs .TabSelected		{	@TabBorder-selected@	}
-
 .ZhRow TD,
 .ZhRowOdd TD				{	border-width:0 0 1 0 !important; padding-left:3px !important;	}
-
 /* Quick fix for selected Adv. Search button */
-
 .ZmSearchToolbarCell .ZSelected .ZToolbarButtonBorder{
 #IFDEF GECKO
  	-moz-border-top-colors:#77736A #BFB8A9;
