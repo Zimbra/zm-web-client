@@ -514,7 +514,11 @@ function() {
 			html[i++] = "'></span>";
 		}
 		else {
+			html[i++] = "<label for='";
+			html[i++] = this._endAfterRadioId;
+			html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
+			html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}
@@ -541,7 +545,11 @@ function() {
 		}
 		else {
 			html[i++] = "<td style='padding-left:2px;padding-right:2px'>";
+			html[i++] = "<label for='";
+                        html[i++] = this._endByRadioId;
+                        html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
+                        html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}
@@ -645,7 +653,11 @@ function() {
 			html[i++] = "'></span>";
 		}
 		else {
+			html[i++] = "<label for='";
+                        html[i++] = this._dailyFieldRadioId;
+                        html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
+                        html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}
