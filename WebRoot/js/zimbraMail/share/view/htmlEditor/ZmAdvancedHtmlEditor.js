@@ -385,6 +385,9 @@ function(parent, posStyle, content, mode, withAce) {
 	var textEl = document.createElement("textarea");
 	textEl.setAttribute("id", id);
 	textEl.setAttribute("name", id);
+    if( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){
+        textEl.setAttribute("dir", ZmSetting.RTL);
+    }
 	textEl.className = "DwtHtmlEditorTextArea";
 	htmlEl.appendChild(textEl);
 	this._textAreaId = id;
@@ -488,10 +491,12 @@ function(id, mode, content) {
 	function handleContentLoad(ed) {
 		obj.onLoadContent(ed);
 		obj.initDefaultFontSize(ed);
+        obj.initDefaultDirection();
 	};
 
 	function onTinyMCEEditorInit(ed) {
 		obj.initDefaultFontSize(ed);
+        obj.initDefaultDirection();
 		tinymce.dom.Event.add(ed.getWin(), 'focus', function(e) {
 			obj.setFocusStatus(true);
 		});
@@ -660,6 +665,7 @@ function(mode, convert, convertor) {
 		textArea.value = textContent;
 		this._editorContainer.setFocusMember(textArea);
 	}
+    this.initDefaultDirection();
 };
 
 ZmAdvancedHtmlEditor.prototype.getContentField =
@@ -715,14 +721,36 @@ function(editor) {
 		doc.body.style.fontFamily = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
 		doc.body.style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 		doc.body.style.color = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
-        //Dont use css for direction Refer : http://www.w3.org/International/questions/qa-bidi-css-markup
+	}
+};
+
+ZmAdvancedHtmlEditor.prototype.initDefaultDirection =
+function() {
+    if( this._mode === DwtHtmlEditor.HTML ){
+        var doc = this._getIframeDoc();
+        if (doc){
+            //Dont use css for direction Refer : http://www.w3.org/International/questions/qa-bidi-css-markup
+            if( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){
+                if(doc.body.dir !== ZmSetting.RTL){
+                    doc.body.dir = ZmSetting.RTL;
+                }
+            }
+            else{
+                doc.body.removeAttribute("dir");
+            }
+        }
+    }
+    else{
+        var textArea = this.getContentField();
         if( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){
-            doc.body.dir = ZmSetting.RTL;
+            if(textArea.getAttribute("dir") !== ZmSetting.RTL){
+                textArea.setAttribute("dir", ZmSetting.RTL);
+            }
         }
         else{
-            doc.body.removeAttribute("dir");
+            textArea.removeAttribute("dir");
         }
-	}
+    }
 };
 
 ZmAdvancedHtmlEditor.prototype.addCSSForDefaultFontSize =
