@@ -55,7 +55,7 @@ var myEditor;
 
     //The sizes to map to the names
     var sizes = {
-        '8pt' : 11,
+        ' 8pt' : 11,
         '10pt': 13,
         '12pt': 16,
         '14pt': 19,
@@ -130,28 +130,16 @@ var myEditor;
         this._updateMenuChecked('fontsize2', value);
 
         if (!this._hasSelection()) {
-            var button = o.button;
-            this._createCurrentElement('span', {
-                fontSize: sizes[value] + 'px'
-            });
-            var el = this.currentElement[0];
-            if (this.browser.webkit) {
-                //Little Safari Hackery here..
-                el.innerHTML = '<span class="yui-non"> </span>';
-                el = el.firstChild;
-                this._getSelection().setBaseAndExtent(el, 1, el, el.innerText.length);
-            } else if (this.browser.ie || this.browser.opera) {
-                el.innerHTML = ' ';
-            }
-            this._focusWindow();
-            this._selectNode(el);
+            el = this._createInsertElement({ fontSize: value });
+            this.currentElement[0] = el;
+            this._selectNode(this.currentElement[0]);
             return false;
         } else {
             this.execCommand('fontsize', out + 'px');
         }
         this.STOP_EXEC_COMMAND = true;
     };
-
+    
     myEditor.on('editorContentLoaded', function() {
         var html = document.getElementById('body').innerHTML;;
         if(html==""){
@@ -225,8 +213,10 @@ var myEditor;
                 }
             }
             button.set('label', label);
+            button.checkValue(label);
         } else {
             button.set('label', label);
+            button.checkValue(label);
         }
 
         this.toolbar.enableButton('fontname');
