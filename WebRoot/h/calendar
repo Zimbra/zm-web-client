@@ -152,7 +152,7 @@
         </c:choose>
     </c:if>
 
-    <c:set var="view" value="${not empty param.view ? param.view : mailbox.prefs.calendarInitialView}"/>
+    <c:set var="view" value="${not empty param.view ? zm:cook(param.view) : mailbox.prefs.calendarInitialView}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
 </app:handleError>
 
