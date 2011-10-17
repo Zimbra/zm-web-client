@@ -3791,7 +3791,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .shortcutListHeaderTd-prefs {
-	border: 1px solid #999999;
+	border: 1px solid @darken(AppC,20)@;
 }
 
 .shortcutListHeader {
@@ -3802,7 +3802,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .shortcutListHeader-prefs {
 	font-size: 12px;
 	padding: 3 10 5 7;
-	background-color: #bab09a;
+	background-color: @darken(AppC,20)@;
 }
 
 .shortcutListHeader-panel, .shortcutListHeader-print {
@@ -3811,7 +3811,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .shortcutListHeader-panel {
 	font-size: 12px;
-	color: #DDDD00;
+	color: yellow;
 }
 
 .shortcutListHeader-print {
@@ -3831,7 +3831,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	@Text-disabled@;
 	padding: 6px;
 	width: 250px;
-    background-color: #FFFFFF;
+    background-color: white;
 }
 
 .shortcutKeys-panel {
@@ -3853,7 +3853,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding: 5px;
 	@SeparatorBorder@
 	color: black;
-    background-color: #FFFFFF;
+    background-color: white;
 }
 
 .shortcutDescription-panel, .shortcutDescription-print {
@@ -3885,11 +3885,12 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .shortcutKey-prefs {
-	margin: 1px;
-	@SeparatorBorder@
-	@Text@
+	background-color: lightGray;
+	border: solid darkGray;
+	border-width: 1px 2px 3px 1px;
 	line-height: 22px;
-    background-color: @AppC@;
+	margin: 1px;
+	@Text@
 }
 
 .shortcutKey-panel, .shortcutKey-print {
@@ -3897,7 +3898,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .shortcutKey-panel {
-	color: #DDDD00;
+	color: yellow;
 	line-height: 22px;
 }
 
@@ -3912,7 +3913,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	table-layout: fixed;
 	border-collapse: collapse;
 	margin-bottom: 10px;
-	border: 1px solid #999999;
+	border: 1px solid @darken(AppC,50)@;
 }
 
 .shortcutTable TH {
@@ -3920,15 +3921,15 @@ HTML>BODY .appt-selected .appt_allday_body
 	text-align: left;
 	font-weight: bold;
 	padding-left: 5px;
-	color: #666666;
-	border-bottom: 1px solid #999999;
+	color: @darken(AppC,75)@;
+	border-bottom: 1px solid @darken(AppC,50)@;
 }
 
 /*
  * Styles for popup shortcut info panel
  */
 .ZmShortcutsPanel {
-	background-color: #000000;
+	background-color: black;
 	width: 800px;
 	height: 600px;
 	color: white;
@@ -3944,7 +3945,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmShortcutsWindow {
 	width: 100%;
 	height: 100%;
-	background-color: #000000;
+	background-color: black;
 	color: white;
 }
 
