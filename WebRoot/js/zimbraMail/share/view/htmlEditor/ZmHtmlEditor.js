@@ -1707,7 +1707,7 @@ ZmHtmlEditor.prototype._nextElement = function(el) {
 
 ZmHtmlEditor.prototype._elementIsIEFiller =
 function(el) {
-	if (el.attributes) {
+	if (el && el.attributes) {
 		for (var i=0; i<el.attributes.length; i++) {
 			if (el.attributes[i].name=="_ieFiller") {
 				return true;
