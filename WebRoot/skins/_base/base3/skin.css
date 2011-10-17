@@ -49,7 +49,7 @@ BODY						{	margin:0px; 	}
 	
 /** Search box **/	
 #skin_spacing_search,
-#skin_spacing_people_search 			{	padding:6px 0; width:100%; @cssValue(HSashContainer,width)@; 	}
+#skin_spacing_people_search 			{	padding:6px 0;f @cssValue(HSashContainer,width)@; 	}
 #skin_container_search					{	}
 #skin_container_search .ZButtonBorder	{	@tlRadius@:10px; @blRadius@:10px; border:0; height:22px; margin:1px; 	}
 #skin_container_search .ZLeftIcon DIV 	{	margin:0 0 0 10px; 	}
@@ -97,6 +97,7 @@ BODY						{	margin:0px; 	}
 }
 #skin_container_refresh .ZToolbarButtonBorder { background-image:none;  border:none; 	}
 
+
 /** App Toolbar **/
 #skin_spacing_app_top_toolbar			{	height:30px; 	}
 #skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@ width:auto;	}
@@ -135,7 +136,7 @@ BODY						{	margin:0px; 	}
 #skin_td_tree_app_sash 		{	width:@SashSize@;			}
 #skin_td_main				{	width:auto;	height:100%; 	}
 #skin_td_sidebar_ad			{	width:@SidebarAdWidth@;		}
-#skin_td_new_button			{	padding:2px; 	}
+/*#skin_td_new_button			{	padding:2px; 	}*/
 /** LoginPanel and Splash screen **/
 #skin_container_splash_screen			{	@SkinOuter@	@FullWindow@ z-index:90000000;		}
 #ZLoginBodyContainer	{	@LoginPanelInnerBorder@	}
