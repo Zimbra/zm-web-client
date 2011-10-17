@@ -342,7 +342,7 @@ function() {
 	}
 
     if (this._contactSource == ZmItem.CONTACT) {
-        query = query.replace(/\"/g, '\\"');
+        query = query.replace(/\"/g, '\\"') || "*";
         query = "\"" + query + "\"";
     }
 
