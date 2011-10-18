@@ -2254,46 +2254,57 @@ function(items, destinationFolder, attrs, isShiftKey) {
 
 ZmMailListController.prototype._doRetentionPolicyWarning =
 function(messages, callbackFunc, args) {
-    var folder = this._getSearchFolder();
     var numWithinRetention = 0;
-    var keepPolicy  = folder.getRetentionPolicy(ZmOrganizer.RETENTION_KEEP);
-
-    if (keepPolicy) {
-        // Apply the keep (retention) period
-        var now = new Date();
-        var keepLifetimeMsec   = folder.getRetentionPolicyLifetimeMsec(keepPolicy);
-        var retentionStartMsec = now.getTime() - keepLifetimeMsec;
-
-        // Determine which messages are not affected by the retention policy (i.e.
-        // their age exceeds that mandated by the policy)
-        var oldMessages = [];
-        for (var i = 0; i < messages.length; i++) {
-            if (messages[i].date < retentionStartMsec) {
-                oldMessages.push(messages[i]);
+    var folder;
+    var keepPolicy;
+    var now = new Date();
+    var validMessages = [];
+    var policyStartMsec = {};
+    for (var i = 0; i < messages.length; i++) {
+        var folderId = messages[i].folderId;
+        if (!policyStartMsec[folderId]) {
+            policyStartMsec[folderId] = -1;
+            folder = appCtxt.getById(folderId);
+            keepPolicy = (folder ? folder.getRetentionPolicy(ZmOrganizer.RETENTION_KEEP) : null);
+            if (keepPolicy) {
+                // Calculate the current start of this folder's keep (retention) period
+                var keepLifetimeMsec = folder.getRetentionPolicyLifetimeMsec(keepPolicy);
+                policyStartMsec[folderId] = now.getTime() - keepLifetimeMsec;
             }
         }
-
-        numWithinRetention = messages.length - oldMessages.length;
-        if (numWithinRetention > 0) {
-            // Create the base warning text
-            var retentionPeriodText = AjxDateUtil.computeDuration(keepLifetimeMsec);
-            var retentionStartText = AjxDateUtil.computeWordyDateStr(now,retentionStartMsec);
-            var warningMsg = AjxMessageFormat.format(ZmMsg.retentionKeepWarning,
-                                [retentionPeriodText, retentionStartText])
-            warningMsg += "<BR><BR>";
-
-            if (oldMessages.length == 0) {
-                // All the chosen messages fall within the retention period
-                this._showSimpleRetentionWarning(warningMsg, messages, callbackFunc, args);
-            } else {
-                // A mix of messages - some outside the retention period, some within.
-                warningMsg += ZmMsg.retentionDeleteAllExplanation + "<BR><BR>" +
-                              AjxMessageFormat.format(ZmMsg.retentionDeleteOldExplanation,
-                                  [retentionStartText]);
-                this._showRetentionWarningDialog(warningMsg, messages, oldMessages, callbackFunc, args);
+        if (policyStartMsec[folderId] > 0) {
+            // Determine which messages are not affected by the retention policy (i.e.
+            // their age exceeds that mandated by the policy)
+            if (messages[i].date < policyStartMsec[folderId]) {
+                validMessages.push(messages[i]);
             }
+        } else {
+            // The message's folder does not have a retention policy
+            validMessages.push(messages[i]);
         }
     }
+
+    numWithinRetention = messages.length - validMessages.length;
+    if (numWithinRetention > 0) {
+        // Create the base warning text
+        var warningMsg = ((numWithinRetention == 1) ?
+                            ZmMsg.retentionKeepWarning :
+                            AjxMessageFormat.format(ZmMsg.retentionKeepWarnings,[numWithinRetention.toString()])) +
+                         "<BR><BR>";
+
+        if (validMessages.length == 0) {
+            // All the chosen messages fall within the retention period
+            this._showSimpleRetentionWarning(warningMsg, messages, callbackFunc, args);
+        } else {
+            // A mix of messages - some outside the retention period, some within.
+            warningMsg += ZmMsg.retentionDeleteAllExplanation + "<BR><BR>" +
+                          ((validMessages.length == 1) ?
+                              ZmMsg.retentionDeleteValidExplanation :
+                              AjxMessageFormat.format(ZmMsg.retentionDeleteValidExplanations,[validMessages.length.toString()]));
+            this._showRetentionWarningDialog(warningMsg, messages, validMessages, callbackFunc, args);
+        }
+    }
+
     return numWithinRetention != 0;
 }
 
@@ -2316,7 +2327,7 @@ function(warningMsg, messages, callbackFunc, args) {
 
 
 ZmMailListController.prototype._showRetentionWarningDialog =
-function(warningMsg, messages, oldMessages, callbackFunc, args) {
+function(warningMsg, messages, validMessages, callbackFunc, args) {
     var retentionDialog = appCtxt.getRetentionWarningDialog();
 	retentionDialog.reset();
 
@@ -2328,9 +2339,9 @@ function(warningMsg, messages, oldMessages, callbackFunc, args) {
     retentionDialog.registerCallback(ZmRetentionWarningDialog.DELETE_ALL_BUTTON,
         this._handleRetentionWarningOK, this, [retentionDialog, callback]);
 
-    var oldArgs = [oldMessages].concat(args);
+    var oldArgs = [validMessages].concat(args);
     callback = new AjxCallback(this, callbackFunc, oldArgs);
-    retentionDialog.registerCallback(ZmRetentionWarningDialog.DELETE_OLD_BUTTON,
+    retentionDialog.registerCallback(ZmRetentionWarningDialog.DELETE_VALID_BUTTON,
         this._handleRetentionWarningOK, this, [retentionDialog, callback]);
 
     retentionDialog.setMessage(warningMsg, DwtMessageDialog.WARNING_STYLE);

@@ -23,24 +23,23 @@
 /**
  * Creates a retention warning dialog.
  * @class
- * Creates an retention warning can have a "Delete All", "Delete Old" or Cancel buttons
- * "Delete All" will delete all the messages that the user chose for deletion.
- * "Delete Old" will delete those messages of the ones chosen that are unaffectted by the
- * retention policy (i.e. they are older than now - retention_policy_keep_period).
+ * Creates an retention warning can have a "Delete All", "Delete Valid" or Cancel buttons
+ * "Delete All"   will delete all the messages that the user chose for deletion.
+ * "Delete Valid" will delete those messages of the ones chosen that are unaffected by the
+ *                retention policy (i.e. they are older than now - retention_policy_keep_period, or
+ *                are in a folder that does not have a retention policy).
  *
  * @param	{Object}	parent		the parent
- * @param	{Function}	deleteAllCallback   callback to execute for Delete All button
- * @param	{Function}	deleteOlfCallback   callback to execute for Delete Old button
  *
  * @extends DwtMessageDialog
  */
 
 ZmRetentionWarningDialog = function(parent) {
 
-	var deleteAllButton = new DwtDialog_ButtonDescriptor(ZmRetentionWarningDialog.DELETE_ALL_BUTTON, ZmMsg.retentionDeleteAll, DwtDialog.ALIGN_LEFT);
-    var deleteOldButton = new DwtDialog_ButtonDescriptor(ZmRetentionWarningDialog.DELETE_OLD_BUTTON, ZmMsg.retentionDeleteOld, DwtDialog.ALIGN_LEFT);
+	var deleteAllButton   = new DwtDialog_ButtonDescriptor(ZmRetentionWarningDialog.DELETE_ALL_BUTTON,   ZmMsg.retentionDeleteAll,   DwtDialog.ALIGN_LEFT);
+    var deleteValidButton = new DwtDialog_ButtonDescriptor(ZmRetentionWarningDialog.DELETE_VALID_BUTTON, ZmMsg.retentionDeleteValid, DwtDialog.ALIGN_LEFT);
 	DwtMessageDialog.call(this, {parent:parent, buttons:[DwtDialog.CANCEL_BUTTON],
-                          extraButtons:[deleteAllButton, deleteOldButton], id:"RetentionWarningDialog"});
+                          extraButtons:[deleteAllButton, deleteValidButton], id:"RetentionWarningDialog"});
 };
 
 ZmRetentionWarningDialog.prototype = new DwtMessageDialog;
@@ -55,6 +54,6 @@ function() {
 // Consts
 //
 
-ZmRetentionWarningDialog.DELETE_ALL_BUTTON = "RetentionDeleteAll";
-ZmRetentionWarningDialog.DELETE_OLD_BUTTON = "RetentionDeleteOld";
+ZmRetentionWarningDialog.DELETE_ALL_BUTTON   = "RetentionDeleteAll";
+ZmRetentionWarningDialog.DELETE_VALID_BUTTON = "RetentionDeleteValid";
 
