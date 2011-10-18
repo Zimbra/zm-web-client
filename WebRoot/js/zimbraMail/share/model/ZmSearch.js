@@ -69,8 +69,7 @@ ZmSearch = function(params) {
 				!this.isGalAutocompleteSearch && !this.isCalResSearch) {
 				
 				var pq = this.parsedQuery = new ZmParsedQuery(this.query || this.queryHint);
-				this.folderId = pq.folderId;
-				this.tagId = pq.tagId;
+				this._setProperties();
 				var sortTerm = pq.getTerm("sort");
 				if (sortTerm) {
 					this.sortBy = sortTerm.arg;
@@ -898,6 +897,16 @@ function() {
 	return this.parsedQuery && this.parsedQuery.getTokens();
 };
 
+ZmSearch.prototype._setProperties =
+function() {
+	var props = this.parsedQuery && this.parsedQuery.getProperties();
+	for (var key in props) {
+		this[key] = props[key];
+	}
+};
+
+
+
 
 
 /**
@@ -1195,12 +1204,31 @@ function() {
 	return this._tokens ? this._tokens.length : 0;
 };
 
+ZmParsedQuery.prototype.getProperties =
+function() {
+	
+	var props = {};
+	for (var i = 0, len = this._tokens.length; i < len; i++) {
+		var t = this._tokens[i];
+		if (t.type == ZmParsedQuery.TERM) {
+			if (t.op == "in" || t.op == "inid") {
+				this.folderId = props.folderId = (t.op == "in") ? this._getFolderId(t.arg) : t.arg;
+			}
+		} else if (t.op == "tag") {
+			// TODO: make sure there's only one tag term?
+			this.tagId = props.tagId = this._getTagId(t.arg);
+		}
+	}
+	return props;
+};
+
 /**
  * Returns a function based on the parsed query. The function is passed an item (msg or conv) and returns
  * true if the item matches the search.
  * 
  * @return {Function}	the match function
  * 
+ * TODO: refactor so that items generate their code
  * TODO: handle more ops
  */
 ZmParsedQuery.prototype.getMatchFunction =
@@ -1219,14 +1247,12 @@ function() {
 		var t = this._tokens[i];
 		if (t.type == ZmParsedQuery.TERM) {
 			if (t.op == "in" || t.op == "inid") {
-				folderId = (t.op == "in") ? this._getFolderId(t.arg) : t.arg;
-				if (folderId) {
-					func.push("((item.type == ZmItem.CONV) ? item.folders && item.folders['" + folderId +"'] : item.folderId == '" + folderId + "')");
+				if (this.folderId) {
+					func.push("((item.type == ZmItem.CONV) ? item.folders && item.folders['" + this.folderId +"'] : item.folderId == '" + this.folderId + "')");
 				}
 			} else if (t.op == "tag") {
-				tagId = this._getTagId(t.arg);
-				if (tagId) {
-					func.push("item.hasTag('" + tagId + "')");
+				if (this.tagId) {
+					func.push("item.hasTag('" + this.tagId + "')");
 				}
 			} else if (t.op == "is") {
 				var test = ZmParsedQuery.FLAG[t.arg];
