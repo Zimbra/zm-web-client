@@ -94,7 +94,7 @@ var myEditor;
         width: '100%',
         dompath: false, //Turns on the bar at the bottom
         animate: true, //Animates the opening, closing and moving of Editor windows
-        plainText: false,
+        plainText: true, // Treats the contents of the textarea as plaintext
         <c:if test="${param.op eq 'reply' or param.op eq 'replyAll'}" >
         focusAtStart: true,
         </c:if>
