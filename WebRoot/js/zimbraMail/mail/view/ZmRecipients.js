@@ -503,6 +503,7 @@ function(ev, acListView, result, element) {
 		(key == 3 || key == 13 || key == 8 || key == 46 ||
 		(AjxEnv.isMac && key == 224)))) // bug fix #24670
 	{
+		element.value = element.value && element.value.replace(/;([^\s])/g, function(all, group){return "; "+group}) || ""; // Change ";" to "; " if it is not succeeded by a whitespace
 		this._adjustAddrHeight(element);
 	}
 };
