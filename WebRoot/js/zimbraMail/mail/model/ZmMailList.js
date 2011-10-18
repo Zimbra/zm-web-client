@@ -408,7 +408,8 @@ function(convs, msgs) {
 			}
 			newConvId[id] = convs[id];
 			var conv = convs[id];
-			if (this.search && this.search.matches(conv) && !conv.ignoreJunkTrash()) {
+			var convMatches =  this.search && this.search.matches(conv) && !conv.ignoreJunkTrash();
+			if (convMatches) {
 				if (!appCtxt.multiAccounts ||
 					(appCtxt.multiAccounts && (this.search.isMultiAccount() || conv.getAccount() == appCtxt.getActiveAccount()))) 
 				{
@@ -426,8 +427,6 @@ function(convs, msgs) {
 				var query = this.search ? this.search.query : "";
 				var ignore = conv.ignoreJunkTrash();
 				AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: conv does not match search '" + query + "' or was ignored (" + ignore + "); match function:");
-				var matchFunc = (this.search && this.search.matches) || "";
-				AjxDebug.println(AjxDebug.NOTIFY, matchFunc.toString());
 				if (!conv) {
 					AjxDebug.println(AjxDebug.NOTIFY, "conv is null!");
 				}
@@ -443,8 +442,7 @@ function(convs, msgs) {
 			var msg = msgs[id];
 			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: CLV handling msg create " + id);
 			var cid = msg.cid;
-			var matchFunc = this.search && this.search.matches;
-			var msgMatches =  matchFunc && matchFunc(msg) && !msg.ignoreJunkTrash();
+			var msgMatches =  this.search && this.search.matches(msg) && !msg.ignoreJunkTrash();
 			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: CLV msg matches: " + msgMatches);
 			var isActiveAccount = (!appCtxt.multiAccounts || (appCtxt.multiAccounts && msg.getAccount() == appCtxt.getActiveAccount()));
 			var conv = newConvId[cid] || this.getById(cid);
@@ -506,9 +504,10 @@ function(convs, msgs) {
 		// add new msg to list
 		for (var id in msgs) {
 			var msg = msgs[id];
+			var msgMatches =  this.search && this.search.matches(msg) && !msg.ignoreJunkTrash();
 			AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: handling msg create " + id);
 			if (this.getById(id)) {
-				if (this.search.matches && this.search.matches && this.search.matches(msg) && !msg.ignoreJunkTrash()) {
+				if (msgMatches) {
 					var query = this.search ? this.search.query : "";
 					var ignore = msg.ignoreJunkTrash();
 					AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: msg does not match search '" + query + "' or was ignored (" + ignore + ")");
@@ -523,7 +522,7 @@ function(convs, msgs) {
 					newMsgs.push(msg);
 				}
 			} else { // MLV (traditional)
-				if (this.search.matches && this.search.matches && this.search.matches(msg) && !msg.ignoreJunkTrash()) {
+				if (msgMatches) {
 					msg.list = this;
 					AjxDebug.println(AjxDebug.NOTIFY, "ZmMailList: msg list (TV) accepted msg " + id);
 					newMsgs.push(msg);

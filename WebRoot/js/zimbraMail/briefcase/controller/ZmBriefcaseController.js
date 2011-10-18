@@ -474,7 +474,7 @@ ZmBriefcaseController.prototype.show =
 function(results) {
 
 	this._folderId = results && results.search && results.search.folderId;
-	this._list = results.getResults(ZmItem.BRIEFCASE_ITEM);
+	this.setList(results.getResults(ZmItem.BRIEFCASE_ITEM));
 	this._list.setHasMore(results.getAttribute("more"));
 
 	ZmListController.prototype.show.call(this, results, this._currentViewId);
@@ -580,7 +580,7 @@ function(ev) {
 		var item = ev.item;
 
         if(item.isFolder){
-            this._app.search({folderId:item.id, noClear:true});
+            this._app.search({folderId:item.id});
             return;
         }
 
@@ -1251,18 +1251,6 @@ function(item) {
 		}
 	}
 	return false;
-};
-
-ZmBriefcaseController.prototype.addChangeListeners =
-function() {
-	var items = this._list.getArray();
-	if (items) {
-		var list = ((items instanceof Array) && items.length>0)
-			? items[0].list : items.list;
-		if (list) {
-			list.addChangeListener(this._listChangeListener);
-		}
-	}
 };
 
 ZmBriefcaseController.prototype._fileListChangeListener =

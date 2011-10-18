@@ -99,14 +99,15 @@ function(searchResult, isGalSearch, folderId) {
 	this._folderId = folderId;
 	var selectedContacts;
 	
-	if (searchResult instanceof ZmContactList) {
-		this._list = searchResult;			// set as canonical list of contacts
+	if (searchResult.isZmContactList) {
+		this.setList(searchResult);			// set as canonical list of contacts
 		this._list._isShared = false;		// this list is not a search of shared items
 		selectedContacts = this._listView[this._currentViewId] && this._listView[this._currentViewId].getSelection();
 		this._contactSearchResults = false;
-    } else if (searchResult instanceof ZmSearchResult) {
+    }
+	else if (searchResult.isZmSearchResult) {
 		this._searchType |= ZmContactListController.SEARCH_TYPE_NEW;
-		this._list = searchResult.getResults(ZmItem.CONTACT);
+		this.setList(searchResult.getResults(ZmItem.CONTACT));
 
 		// HACK - find out if user did a "is:anywhere" search (for printing)
 		if (searchResult.search && searchResult.search.isAnywhere()) {
@@ -118,9 +119,7 @@ function(searchResult, isGalSearch, folderId) {
 		}
 
 		if (isGalSearch) {
-			if (this._list == null) {
-				this._list = new ZmContactList(searchResult.search, true);
-			}
+			this._list = this._list || new ZmContactList(searchResult.search, true);
 			this._list._isShared = false;
 			this._list.isGalPagingSupported = AjxUtil.isSpecified(searchResult.getAttribute("offset"));
 		} else {

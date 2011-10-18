@@ -48,25 +48,10 @@ ZmApp.SETTING[ZmApp.SEARCH]		= ZmSetting.SEARCH_ENABLED;
 
 ZmSearchApp.prototype.getSearchResultsController =
 function(sessionId) {
-
-	var controllers = this._sessionController[ZmId.VIEW_SEARCH_RESULTS];
-	var controller;
-	for (var id in controllers) {
-		if (!controllers[id].isPinned) {
-			controller = controllers[id];
-			break;
-		}
-	}
-
-	if (controller) {
-		sessionId = controller.getSessionId();
-		this._curSessionId[ZmId.VIEW_SEARCH_RESULTS] = sessionId;
-		controller.inactive = false;
-		return controller;
-	}
-
-	return this.getSessionController({controllerClass:	"ZmSearchResultsController",
-									  sessionId:		sessionId});
+	return this.getSessionController({
+				controllerClass:	"ZmSearchResultsController",
+				sessionId:			sessionId
+			});
 };
 
 // override so we don't try to set overview panel content

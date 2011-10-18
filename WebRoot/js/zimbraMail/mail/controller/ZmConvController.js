@@ -92,8 +92,8 @@ function(conv, callback, result) {
 
 	var searchResult = result.getResponse();
 	var list = searchResult.getResults(ZmItem.MSG);
-	if (list instanceof ZmList) {
-		this._list = list;
+	if (list && list.isZmList) {
+		this.setList(list);
 		this._activeSearch = searchResult;
 	}
 	

@@ -390,7 +390,7 @@ function() {
 	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING); // pop "Loading..." page
 
 	if (!this._newBriefcaseCb) {
-		this._newBriefcaseCb = new AjxCallback(this, this._newBriefcaseCallback);
+		this._newBriefcaseCb = this._newBriefcaseCallback.bind(this);
 	}
 	ZmController.showDialog(appCtxt.getNewBriefcaseDialog(), this._newBriefcaseCb);
 };
@@ -401,7 +401,7 @@ function() {
 ZmBriefcaseApp.prototype.launch =
 function(params, callback) {
 	this._setLaunchTime(this.toString(), new Date());
-	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
+	var loadCallback = this._handleLoadLaunch.bind(this, callback);
 	AjxDispatcher.require(["BriefcaseCore","Briefcase"], true, loadCallback, null, true);
 };
 
@@ -420,7 +420,6 @@ function(callback) {
  * @param {AjxCallback}	[params.callback]			the callback
  * @param {String}	[params.accountName]		the account name
  * @param {Boolean}	[params.noRender]			if <code>true</code>, do not display results
- * @param {Boolean}	[params.noClear]			if <code>true</code>, do not destroy previous search results
  */
 ZmBriefcaseApp.prototype.search =
 function(params) {
@@ -434,8 +433,7 @@ function(params) {
 		searchFor:		ZmId.ITEM_BRIEFCASE,
 		callback:		params.callback,
 		accountName:	params.accountName,
-		noRender:		params.noRender,
-		noClear:		params.noClear
+		noRender:		params.noRender
 	};
 	var sc = appCtxt.getSearchController();
 	sc.searchAllAccounts = false;
@@ -450,7 +448,7 @@ function(params) {
  */
 ZmBriefcaseApp.prototype.showSearchResults =
 function(results, callback) {
-	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
+	var loadCallback = this._handleLoadShowSearchResults.bind(this, results, callback);
 	AjxDispatcher.require(["BriefcaseCore", "Briefcase"], false, loadCallback, null, true);
 };
 

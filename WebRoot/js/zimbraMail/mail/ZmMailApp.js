@@ -867,28 +867,29 @@ function() {
 	actionCodes[ZmKeyMap.NEW_MESSAGE]		= ZmOperation.NEW_MESSAGE;
 	actionCodes[ZmKeyMap.NEW_MESSAGE_WIN]	= ZmOperation.NEW_MESSAGE_WIN;
 
-	ZmApp.registerApp(ZmApp.MAIL,
-							 {mainPkg:				"MailCore",
-							  nameKey:				"mail",
-							  icon:					"MailApp",
-							  textPrecedence:		70,
-							  chooserTooltipKey:	"goToMail",
-							  viewTooltipKey:		"displayMailToolTip",
-							  defaultSearch:		appCtxt.isChildWindow ? null : ZmId.SEARCH_MAIL,
-							  organizer:			ZmOrganizer.FOLDER,
-							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
-							  assistants:			{"ZmMailAssistant":"Mail"},
-							  searchTypes:			[ZmItem.MSG, ZmItem.CONV],
-							  newItemOps:			newItemOps,
-							  actionCodes:			actionCodes,
-							  gotoActionCode:		ZmKeyMap.GOTO_MAIL,
-							  newActionCode:		ZmKeyMap.NEW_MESSAGE,
-							  qsViews:				["compose", "msg"],
-							  chooserSort:			10,
-							  defaultSort:			10,
-							  upsellUrl:			ZmSetting.MAIL_UPSELL_URL,
-                              quickCommandType:		ZmQuickCommand[ZmId.ITEM_MSG]
-							  });
+	ZmApp.registerApp(ZmApp.MAIL, {
+				mainPkg:			"MailCore",
+				nameKey:			"mail",
+				icon:				"MailApp",
+				textPrecedence:		70,
+				chooserTooltipKey:	"goToMail",
+				viewTooltipKey:		"displayMailToolTip",
+				defaultSearch:		appCtxt.isChildWindow ? null : ZmId.SEARCH_MAIL,
+				organizer:			ZmOrganizer.FOLDER,
+				overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+				assistants:			{"ZmMailAssistant":"Mail"},
+				searchTypes:		[ZmItem.MSG, ZmItem.CONV],
+				newItemOps:			newItemOps,
+				actionCodes:		actionCodes,
+				gotoActionCode:		ZmKeyMap.GOTO_MAIL,
+				newActionCode:		ZmKeyMap.NEW_MESSAGE,
+				qsViews:			["compose", "msg"],
+				chooserSort:		10,
+				defaultSort:		10,
+				upsellUrl:			ZmSetting.MAIL_UPSELL_URL,
+                quickCommandType:	ZmQuickCommand[ZmId.ITEM_MSG],
+				searchResultsTab:	true
+			});
 };
 
 // App API
@@ -1224,7 +1225,7 @@ function(creates, list, controller, last) {
 	var msgs = {};
 
 	// make sure current search is matchable (conv can just match on cid)
-	if (!(list.search && list.search.matches) && (controller == this._tradController)) {
+	if (!(list.search && list.search.isMatchable()) && (controller == this._tradController)) {
 		var query = list.search ? list.search.query : "";
 		AjxDebug.println(AjxDebug.NOTIFY, "ZmMailApp: search not matchable: " + query);
 		return;

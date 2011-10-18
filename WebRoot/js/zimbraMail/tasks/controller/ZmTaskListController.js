@@ -125,7 +125,7 @@ function(results, folderId) {
 
 	this._folderId = folderId;
 
-	this._list = results.getResults(ZmItem.TASK);
+	this.setList(results.getResults(ZmItem.TASK));
 
 	// XXX: WHY?
 	// find out if we just searched for a shared tasks folder

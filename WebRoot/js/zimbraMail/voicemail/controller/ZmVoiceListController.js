@@ -45,9 +45,13 @@ ZmVoiceListController.prototype.show =
 function(searchResult, folder) {
 	this._folder = folder;
 	ZmListController.prototype.show.call(this, searchResult);
-	this._list = searchResult ? searchResult.getResults(folder.getSearchType()) : null;
-	if (this._list)
-		this._list.setHasMore(searchResult.getAttribute("more"));	
+	if (searchResult) {
+		this.setList(searchResult.getResults(folder.getSearchType()));
+		this._list.setHasMore(searchResult.getAttribute("more"));
+	}
+	else {
+		this._list = null;
+	}
 	this._setup(this._currentViewId);
 
 	var lv = this._listView[this._currentViewId];

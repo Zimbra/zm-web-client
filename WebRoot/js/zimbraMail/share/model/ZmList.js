@@ -51,17 +51,26 @@ ZmList = function(type, search) {
 	
 	this._vector = new AjxVector();
 	this._hasMore = false;
-	this._idHash = new Object();
+	this._idHash = {};
 
 	var tagList = appCtxt.getTagTree();
 	if (tagList) {
 		this._tagChangeListener = new AjxListener(this, this._tagTreeChangeListener);
 		tagList.addChangeListener(this._tagChangeListener);
 	}
+	
+	this.id = "LIST" + ZmList.NEXT++;
+	appCtxt.cacheSet(this.id, this);
 };
 
 ZmList.prototype = new ZmModel;
 ZmList.prototype.constructor = ZmList;
+
+ZmList.prototype.isZmList = true;
+ZmList.prototype.toString = function() { return "ZmList"; };
+
+
+ZmList.NEXT = 1;
 
 // for item creation
 ZmList.ITEM_CLASS = {};
@@ -75,15 +84,6 @@ ZmList.ITEM_TYPE = {};
 ZmList.CHUNK_SIZE	= 100;	// how many items to act on at a time via a server request
 ZmList.CHUNK_PAUSE	= 500;	// how long to pause to allow UI to catch up
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmList.prototype.toString = 
-function() {
-	return "ZmList";
-};
 
 /**
  * Gets the item.
@@ -239,7 +239,7 @@ function() {
 	for (var id in this._idHash) {
 		this._idHash[id] = null;
 	}
-	this._idHash = new Object();
+	this._idHash = {};
 };
 
 /**
@@ -275,9 +275,7 @@ function(respNode) {
  */
 ZmList.prototype.addFromDom = 
 function(node, args) {
-	if (!args) {
-		args = {};
-	}
+	args = args || {};
 	args.list = this;
 	var obj = eval(ZmList.ITEM_CLASS[this.type]);
 	if (obj) {

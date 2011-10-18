@@ -47,11 +47,22 @@ ZmItem = function(type, id, list, noCache) {
 	this.type = type;
 	this.id = id;
 	this.list = list;
+	this._list = {};
 
 	this.tags = [];
 	this.tagHash = {};
 	this.folderId = 0;
 
+	// make sure the cached item knows which lists it is in, even if those other lists
+	// have separate instances of this item - propagate view IDs from currently cached item
+	var curItem = appCtxt.getById(id);
+	if (curItem) {
+		this._list = AjxUtil.hashCopy(curItem._list);
+	}
+	if (list) {
+		this._list[list.id] = true;
+	}
+	
 	if (id && !noCache) {
 		appCtxt.cacheSet(id, this);
 	}
@@ -59,6 +70,9 @@ ZmItem = function(type, id, list, noCache) {
 
 ZmItem.prototype = new ZmModel;
 ZmItem.prototype.constructor = ZmItem;
+
+ZmItem.prototype.isZmItem = true;
+ZmItem.prototype.toString = function() { return "ZmItem"; };
 
 
 ZmItem.APP 				= {};	// App responsible for item
@@ -268,8 +282,9 @@ ZmItem.prototype.modify = function(mods) {};
  */
 ZmItem.prototype.getById =
 function(id) {
-	if (id == this.id)
+	if (id == this.id) {
 		return this;
+	}
 };
 
 ZmItem.prototype.getAccount =
@@ -300,12 +315,14 @@ ZmItem.prototype.clear =
 function() {
 	this._evtMgr.removeAll(ZmEvent.L_MODIFY);
 	if (this.tags.length) {
-		for (var i = 0; i < this.tags.length; i++)
+		for (var i = 0; i < this.tags.length; i++) {
 			this.tags[i] = null;
+		}
 		this.tags = [];
 	}
-	for (var i in this.tagHash)
+	for (var i in this.tagHash) {
 		this.tagHash[i] = null;
+	}
 	this.tagHash = {};
 };
 
@@ -316,7 +333,7 @@ function() {
  */
 ZmItem.prototype.cache =
 function(){
-  if(this.id){
+  if (this.id) {
       appCtxt.cacheSet(this.id, this);
       return true;
   }
@@ -471,11 +488,26 @@ function() {
 
 // Notification handling
 
-/**
- * Handles a delete notification.
- * 
- */
+// For delete and modify notifications, we first apply the notification to this item. Then we
+// see if the item is a member of any other lists. If so, we have those other copies of this
+// item handle the notification as well. Each will notify through the list that created it.
+
 ZmItem.prototype.notifyDelete =
+function() {
+	this._notifyDelete();
+	for (var listId in this._list) {
+		var list = appCtxt.getById(listId);
+		if (!list || (listId == this.list.id)) { continue; }
+		var ctlr = list.controller;
+		if (!ctlr || ctlr.inactive || (ctlr.getList().id != listId)) { continue; }
+		var doppleganger = list.getById(this.id);
+		if (doppleganger) {
+			doppleganger._notifyDelete();
+		}
+	}
+};
+
+ZmItem.prototype._notifyDelete =
 function() {
 	this.deleteLocal();
 	if (this.list) {
@@ -484,13 +516,28 @@ function() {
 	this._notify(ZmEvent.E_DELETE);
 };
 
+ZmItem.prototype.notifyModify =
+function(obj, batchMode) {
+	this._notifyModify(obj, batchMode);
+	for (var listId in this._list) {
+		var list = listId ? appCtxt.getById(listId) : null;
+		if (!list || (listId == this.list.id)) { continue; }
+		var ctlr = list.controller;
+		if (!ctlr || ctlr.inactive || (ctlr.getList().id != listId)) { continue; }
+		var doppleganger = list.getById(this.id);
+		if (doppleganger) {
+			doppleganger._notifyModify(obj, batchMode);
+		}
+	}
+};
+
 /**
  * Handles a modification notification.
  *
  * @param {Object}	obj			the item with the changed attributes/content
  * @param {boolean}	batchMode	if true, return event type and don't notify
  */
-ZmItem.prototype.notifyModify =
+ZmItem.prototype._notifyModify =
 function(obj, batchMode) {
 	// empty string is meaningful here, it means no tags
 	if (obj.t != null) {
@@ -708,6 +755,7 @@ function(str) {
  */
 ZmItem.prototype._notify =
 function(event, details) {
+	this._evt.item = this;
 	ZmModel.prototype._notify.call(this, event, details);
 	if (this.list) {
 		if (details) {

@@ -66,7 +66,7 @@ function(contact, isDirty) {
 	if (isDirty) {
 		this._contactDirty = true;
 	}
-	this._list = contact.list;
+	this.setList(contact.list);
 
 	if (!this._toolbar[this._currentViewId]) {
 		this._initializeToolBar(this._currentViewId);

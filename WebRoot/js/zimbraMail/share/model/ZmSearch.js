@@ -789,10 +789,22 @@ function() {
 	return limit;
 };
 
+/**
+ * Tests the given item against a matching function generated from the query.
+ * 
+ * @param {ZmItem}	item		an item
+ * @return	true if the item matches, false if it doesn't, and null if a matching function could not be generated
+ */
 ZmSearch.prototype.matches =
 function(item) {
 	var matchFunc = this.parsedQuery && this.parsedQuery.getMatchFunction();
-	return Boolean(matchFunc && matchFunc(item));
+	return matchFunc ? matchFunc(item) : null;
+};
+
+ZmSearch.prototype.isMatchable =
+function(item) {
+	var matchFunc = this.parsedQuery && this.parsedQuery.getMatchFunction();
+	return (matchFunc != null);
 };
 
 /**

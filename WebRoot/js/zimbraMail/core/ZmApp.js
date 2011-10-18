@@ -103,6 +103,7 @@ ZmApp.TRASH_VIEW_OP			= {};	// menu choice for "Show Only ..." in Trash view
 ZmApp.UPSELL_URL			= {};	// URL for content of upsell
 ZmApp.QUICK_COMMAND_TYPE	= {};	
 ZmApp.DROP_TARGETS			= {};	// drop targets (organizers) by item/organizer type
+ZmApp.SEARCH_RESULTS_TAB	= {};	// whether to show search results in a tab
 
 // assistants for each app; each value is a hash where key is the name of the
 // assistant class and value is the required package
@@ -146,32 +147,34 @@ function() {
  * @param params.mainPkg			[string]	main package that contains the app
  * @param params.nameKey			[string]	msg key for app name
  * @param params.icon				[string]	name of app icon class
- * @param params.textPrecedence	[int]		order for removing button text
+ * @param params.textPrecedence		[int]		order for removing button text
  * @param params.imagePrecedence	[int]		order for removing button image
  * @param params.chooserTooltipKey	[string]	msg key for app tooltip
- * @param params.viewTooltipKey	[string]	msg key for app view menu tooltip
+ * @param params.viewTooltipKey		[string]	msg key for app view menu tooltip
  * @param params.defaultSearch		[constant]	type of item to search for in the app
  * @param params.organizer			[constant]	main organizer for this app
  * @param params.overviewTrees		[array]		list of tree IDs to show in overview
  * @param params.hideZimlets		[boolean]	if true, hide Zimlet tree in overview
- * @param params.assistants		[hash]		hash of assistant class names and required packages
+ * @param params.assistants			[hash]		hash of assistant class names and required packages
  * @param params.searchTypes		[array]		list of types of saved searches to show in overview
- * @param params.gotoActionCode	[constant]	key action for jumping to this app
+ * @param params.gotoActionCode		[constant]	key action for jumping to this app
  * @param params.newActionCode		[constant]	default "new" action code
  * @param params.actionCodes		[hash]		keyboard actions mapped to operations
- * @param params.newItemOps		[hash]		IDs of operations that create a new item, and their text keys
+ * @param params.newItemOps			[hash]		IDs of operations that create a new item, and their text keys
  * @param params.newOrgOps			[hash]		IDs of operations that create a new organizer, and their text keys
  * @param params.qsViews			[array]		list of views to handle in query string
  * @param params.chooserSort		[int]		controls order of apps in app chooser toolbar
  * @param params.defaultSort		[int]		controls order in which app is chosen as default start app
  * @param params.trashViewOp		[constant]	menu choice for "Show Only ..." in Trash view
  * @param params.upsellUrl			[string]	URL for content of upsell
+ * @param params.searchResultsTab	[string]	if true, show search results in a tab
  *
  * @private
  */
 ZmApp.registerApp =
 function(app, params) {
 
+	// TODO: why the ifs? this should only be called once per app
 	if (params.mainPkg)				{ ZmApp.MAIN_PKG[app]			= params.mainPkg; }
 	if (params.nameKey)				{ ZmApp.NAME[app]				= params.nameKey; }
 	if (params.icon)				{ ZmApp.ICON[app]				= params.icon; }
@@ -193,6 +196,7 @@ function(app, params) {
 	if (params.trashViewOp)			{ ZmApp.TRASH_VIEW_OP[app]		= params.trashViewOp; }
 	if (params.upsellUrl)			{ ZmApp.UPSELL_URL[app]			= params.upsellUrl; }
 	if (params.quickCommandType)	{ ZmApp.QUICK_COMMAND_TYPE[app]	= params.quickCommandType; }
+	if (params.searchResultsTab)	{ ZmApp.SEARCH_RESULTS_TAB[app]	= params.searchResultsTab; }
 
 	if (params.searchTypes) {
 		ZmApp.SEARCH_TYPES_R[app] = {};
@@ -694,7 +698,7 @@ function(params) {
 	if (!sessionId) {
 		var controllers = this._sessionController[type];
 		for (var id in controllers) {
-			if (controllers[id].inactive) {
+			if (controllers[id].inactive && !controllers[id].isPinned) {
 				controller = controllers[id];
 				break;
 			}

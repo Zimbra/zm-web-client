@@ -72,7 +72,7 @@ ZmMsgController.prototype.show =
 function(msg, mode, callback, markRead, hidePagination) {
 	this.setMsg(msg);
 	this._mode = mode;
-	this._list = msg.list;
+	this.setList(msg.list);
 	if (!msg._loaded) {
 		var respCallback = new AjxCallback(this, this._handleResponseShow, [callback, hidePagination]);
 		if (msg._loadPending) {

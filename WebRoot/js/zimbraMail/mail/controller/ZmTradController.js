@@ -63,10 +63,7 @@ ZmTradController.prototype.getDefaultViewType = ZmTradController.getDefaultViewT
 
 ZmTradController.prototype.show =
 function(search) {
-	this._list = search.getResults(ZmItem.MSG);
-
-	// call base class
-	ZmDoublePaneController.prototype.show.call(this, search, this._list);
+	ZmDoublePaneController.prototype.show.call(this, search, search.getResults(ZmItem.MSG));
 	appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_MESSAGE);
 	this._resetNavToolBarButtons(ZmId.VIEW_TRAD);
 };

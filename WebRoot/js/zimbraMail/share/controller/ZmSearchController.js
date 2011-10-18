@@ -230,12 +230,13 @@ function(menu) {
  * @param {int}			prevId						the ID of last items displayed (for pagination)
  * @param {constant}	prevSortBy					previous sort order (for pagination)
  * @param {Boolean}		noRender					if <code>true</code>, results will not be passed to controller
- * @param {Boolean}		noClear						if <code>true</code>, previous results will not be destroyed
  * @param {Boolean}		userText					if <code>true</code>, text was typed by user into search box
  * @param {AjxCallback}	callback					the async callback
  * @param {AjxCallback}	errorCallback				the async callback to run if there is an exception
  * @param {Object}		response					the canned JSON response (no request will be made)
  * @param {boolean}		skipUpdateSearchToolbar     don't update the search toolbar (e.g. from the ZmDumpsterDialog where the search is called from its own search toolbar
+ * @param {string}		origin						indicates what initiated the search
+ * @param {string}		sessionId					session ID of search results tab (if search came from one)
  * 
  */
 ZmSearchController.prototype.search =
@@ -552,7 +553,7 @@ function(params, noRender, callback, errorCallback) {
 	params.types = types;
 	var search = new ZmSearch(params);
 
-	var respCallback = this._handleResponseDoSearch.bind(this, search, noRender, callback, params.noUpdateOverview, params.noClear);
+	var respCallback = this._handleResponseDoSearch.bind(this, search, noRender, callback, params.noUpdateOverview);
 	if (!errorCallback) {
 		errorCallback = this._handleErrorDoSearch.bind(this, search);
 	}
@@ -577,11 +578,10 @@ function(params, noRender, callback, errorCallback) {
  * @param {Boolean}		noRender		<code>true</code> to skip rendering results
  * @param {AjxCallback}	callback		the callback to run after processing search response
  * @param {Boolean}	noUpdateOverview	<code>true</code> to skip updating the overview
- * @param {Boolean}		noClear			if <code>true</code>, previous results will not be destructed
  * @param {ZmCsfeResult}	result			the search results
  */
 ZmSearchController.prototype._handleResponseDoSearch =
-function(search, noRender, callback, noUpdateOverview, noClear, result) {
+function(search, noRender, callback, noUpdateOverview, result) {
 
 	DBG.println("s", "SEARCH was user initiated: " + Boolean(search.userInitiated));
 	var results = result && result.getResponse();
@@ -598,7 +598,7 @@ function(search, noRender, callback, noUpdateOverview, noClear, result) {
 		DBG.timePt("execute search", true);
 
 		if (!noRender) {
-			this._showResults(results, search, noUpdateOverview, noClear);
+			this._showResults(results, search, noUpdateOverview);
 		}
 	}
 
@@ -611,11 +611,8 @@ function(search, noRender, callback, noUpdateOverview, noClear, result) {
  * @private
  */
 ZmSearchController.prototype._showResults =
-function(results, search, noUpdateOverview, noClear) {
-	// allow old results to dtor itself
-	if (!noClear && this._results && (this._results.type == results.type) && this._results.dtor) {
-		this._results.dtor();
-	}
+function(results, search, noUpdateOverview) {
+
 	this._results = results;
 
 	DBG.timePt("handle search results");
@@ -627,16 +624,14 @@ function(results, search, noUpdateOverview, noClear) {
 		}
 	}
 
-	// disable search results tab for now
-	if (search.userInitiated) {
-		var ctlr = appCtxt.getApp(ZmApp.SEARCH).getSearchResultsController();
+	var app = appCtxt.getApp(ZmItem.APP[results.type]) || appCtxt.getCurrentApp();
+	if (search.userInitiated && ZmApp.SEARCH_RESULTS_TAB[app.getName()]) {
+		var ctlr = appCtxt.getApp(ZmApp.SEARCH).getSearchResultsController(search.sessionId);
 		ctlr.show(results);
 	}
 	else {
 		// show results based on type - may invoke package load
-		var resultsType = results.type;
 		var loadCallback = this._handleLoadShowResults.bind(this, results, search, noUpdateOverview);
-		var app = appCtxt.getApp(ZmItem.APP[resultsType]) || appCtxt.getCurrentApp();
 		app.currentSearch = search;
 		app.currentQuery = search.query;
 		app.showSearchResults(results, loadCallback);
@@ -733,6 +728,8 @@ function(ev) {
  * @param {Event}		ev							browser event	
  * @param {string}		zimletEvent					type of notification to send zimlets
  * @param {string}		query						search string (optional, overrides input field)
+ * @param {string}		origin						indicates what initiated the search
+ * @param {string}		sessionId					session ID of search results tab (if search came from one)
  * @param {boolean}		skipUpdateSearchToolbar     don't update the search toolbar (e.g. from the ZmDumpsterDialog where the search is called from its own search toolbar
  * 
  * @private
@@ -761,6 +758,7 @@ function(params) {
 			searchFor:					result,
 			skipUpdateSearchToolbar:	params.skipUpdateSearchToolbar,
 			origin:						params.origin,
+			sessionId:					params.sessionId,
 			errorCallback:				params.errorCallback
 		};
 		this.search(searchParams);

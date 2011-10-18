@@ -90,6 +90,7 @@ function(searchResults) {
 	// save current search for use by replenishment
 	if (searchResults) {
 		this._currentSearch = searchResults.search;
+		this._activeSearch.viewId = this._currentSearch.viewId = this._currentViewId;
 	}
 	this.currentPage = 1;
 	this.maxPage = 1;
@@ -164,12 +165,12 @@ function() {
  */
 ZmListController.prototype.setList =
 function(newList) {
-	if (newList != this._list && (newList instanceof ZmList)) {
-		// dtor current list if necessary
+	if (newList != this._list && newList.isZmList) {
 		if (this._list) {
-			this._list.clear();
+			this._list.clear();	// also removes change listeners
 		}
 		this._list = newList;
+		this._list.controller = this;
 	}
 };
 

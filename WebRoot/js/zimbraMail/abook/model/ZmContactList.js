@@ -60,6 +60,11 @@ ZmContactList = function(search, isGal, type) {
 ZmContactList.prototype = new ZmList;
 ZmContactList.prototype.constructor = ZmContactList;
 
+ZmContactList.prototype.isZmContactList = true;
+ZmContactList.prototype.toString = function() { return "ZmContactList"; };
+
+
+
 
 // Constants
 
@@ -72,15 +77,6 @@ ZmContactList.FIELD_SPLIT_CHAR		= '\u001D';	// char for splitting contact into f
 ZmContactList.IS_CONTACT_FIELD = {"id":true, "l":true, "d":true, "fileAsStr":true, "rev":true};
 
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmContactList.prototype.toString =
-function() {
-	return "ZmContactList";
-};
 
 /**
  * @private

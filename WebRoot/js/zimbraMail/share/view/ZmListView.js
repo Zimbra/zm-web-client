@@ -157,7 +157,7 @@ function(list, sortField) {
 			}
 		} else {
 			var lvList = list;
-			if (list instanceof ZmList) {
+			if (list && list.isZmList) {
 				list.addChangeListener(this._listChangeListener);
 				lvList = list.getSubList(0, list.size());
 			}
@@ -166,7 +166,7 @@ function(list, sortField) {
 		this._setRowHeight();
 	} else {
 		var subList;
-		if (list instanceof ZmList) {
+		if (list && list.isZmList) {
 			list.addChangeListener(this._listChangeListener);
 			subList = list.getSubList(this.offset, this.getLimit());
 		} else {
@@ -275,16 +275,23 @@ function(ev) {
 				// We've moved the item into this folder
 				if (this._getRowIndex(item) === null) { // Not already here
 					this.addItem(item);
+					// TODO: couldn't we just find the sort index and insert it?
 					needsSort = true;
 				}
 			} else {
-				this.removeItem(item, true, ev.batchMode);
-				// if we've removed it from the view, we should remove it from the reference
-				// list as well so it doesn't get resurrected via replenishment *unless*
-				// we're dealing with a canonical list (i.e. contacts)
-				var itemList = this.getItemList();
-				if (ev.event != ZmEvent.E_MOVE || !itemList.isCanonical) {
-					itemList.remove(item);
+				// remove the item if the user is working in this view, 
+				// if we know the item no longer matches the search, or if the item was hard-deleted
+				if ((ev.event == ZmEvent.E_DELETE) || (this.view == appCtxt.getCurrentViewId()) ||
+						(this._controller._currentSearch.matches(item) === false)) {
+
+					this.removeItem(item, true, ev.batchMode);
+					// if we've removed it from the view, we should remove it from the reference
+					// list as well so it doesn't get resurrected via replenishment *unless*
+					// we're dealing with a canonical list (i.e. contacts)
+					var itemList = this.getItemList();
+					if (ev.event != ZmEvent.E_MOVE || !itemList.isCanonical) {
+						itemList.remove(item);
+					}
 				}
 			}
 		}
@@ -1473,4 +1480,9 @@ function(group, section) {
         headerDiv.innerHTML = html;
         return headerDiv.firstChild;
     }
+};
+
+ZmListView.prototype.deactivate =
+function() {
+	this._controller.inactive = true;
 };

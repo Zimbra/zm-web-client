@@ -346,7 +346,7 @@ function() {
  */
 ZmConv.prototype.hasMatchingMsg =
 function(search, defaultValue) {
-	if (search && search.matches && this.msgs) {
+	if (search && this.msgs) {
 		var msgs = this.msgs.getArray();
 		for (var i = 0; i < msgs.length; i++) {
 			var msg = msgs[i];

@@ -31,29 +31,8 @@ ZmSearchResult = function(search) {
 	this.search = search;
 };
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmSearchResult.prototype.toString = 
-function() {
-	return "ZmSearchResult";
-};
-
-/**
- * @private
- */
-ZmSearchResult.prototype.dtor = 
-function() {
-	for (var type in this._results) {
-		if (this._results[type].clear) {
-			this._results[type].clear();
-			this._results[type] = null;
-		}
-	}
-	this._results = null;
-};
+ZmSearchResult.prototype.isZmSearchResult = true;
+ZmSearchResult.prototype.toString = function() { return "ZmSearchResult"; };
 
 /**
  * Gets the results.

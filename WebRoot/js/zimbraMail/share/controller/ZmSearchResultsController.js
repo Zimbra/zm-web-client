@@ -176,6 +176,7 @@ function(ev, zimletEvent) {
 			ev:							ev,
 			zimletEvent:				zimletEvent || "onSearchButtonClick",
 			query:						query,
+			sessionId:					this.sessionId,
 			skipUpdateSearchToolbar:	true,
 			origin:						ZmId.SEARCHRESULTS,
 			errorCallback:				this._errorCallback.bind(this)
