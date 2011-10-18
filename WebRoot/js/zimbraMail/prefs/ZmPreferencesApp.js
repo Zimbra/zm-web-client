@@ -380,7 +380,7 @@ function() {
 			manageChanges: true,
 			createView: function(parent, section, controller) {
 				AjxDispatcher.require("Share");
-				return new ZmSharingPage(parent, section, controller);
+				return new ZmSharingPage(parent, section, controller, "Prefs_Pages_Sharing");
 			}
 		},
 		NOTIFICATIONS: {

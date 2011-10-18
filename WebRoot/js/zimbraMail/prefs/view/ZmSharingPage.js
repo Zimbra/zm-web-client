@@ -745,13 +745,8 @@ function(item) {
 
 ZmSharingListView.prototype._getCellId =
 function(item, field, params) {
-
-	if (field == ZmSharingView.F_ROLE || field == ZmSharingView.F_ITEM || field == ZmSharingView.F_FOLDER) {
-		var rowId = this._getItemId(item);
-		return [this._getItemId(item), field].join("_");
-	} else {
-		return null;
-	}
+    var rowId = this._getItemId(item);
+    return [rowId, field].join("_");
 };
 
 ZmSharingListView.prototype._getCellContents =
@@ -783,7 +778,8 @@ function(html, idx, item, field, colIdx, params) {
 	} else if (field == ZmSharingView.F_ACTIONS) {
 		if (this.type == ZmShare.SHARE) {
 			var id = this._getItemId(item);
-			html[idx++] = "<a href='javascript:;' onclick='ZmSharingView._handleAcceptLink(" + '"' + id + '"' + ");'>" + ZmMsg.accept + "</a>";
+            var linkId = [id, ZmShare.ACCEPT].join("_");
+			html[idx++] = "<a href='javascript:;' id='" + linkId + "' onclick='ZmSharingView._handleAcceptLink(" + '"' + id + '"' + ");'>" + ZmMsg.accept + "</a>";
 		} else {
 			idx = this._addActionLinks(item, html, idx);
 		}
@@ -874,11 +870,11 @@ function(share, html, idx) {
 	for (var i = 0; i < actions.length; i++) {
 
 		var action = actions[i];
-
+        var linkId = [share.domId, action].join("_");
 		// public shares have no editable fields, and sent no mail
 		if ((share.isPublic() || share.invalid) && (action == "edit" || action == "resend")) { continue; }
 
-		html[idx++] = "<a href='javascript:;' onclick='ZmSharingView._handleShareAction(" + '"' + share.domId + '", "' + handlers[i] + '"' + ");'>" + ZmMsg[action] + "</a> ";
+		html[idx++] = "<a href='javascript:;' id='" + linkId + "' onclick='ZmSharingView._handleShareAction(" + '"' + share.domId + '", "' + handlers[i] + '"' + ");'>" + ZmMsg[action] + "</a> ";
 	}
 
 	return idx;
