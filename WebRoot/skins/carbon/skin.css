@@ -782,6 +782,7 @@ TEXTAREA
 	text-align:center;
 	vertical-align:top;
 }
+
 .BannerTextUser,
 .BannerTextQuota {
 	cursor:default;
@@ -836,3 +837,13 @@ TEXTAREA
 .center-small .ImgAltBanner{
 	background-image: none;
 }
+
+
+/* QUICK FIX for Quotabar in IE */
+
+#IFDEF MSIE
+.BannerTextQuota {
+	height: 3px;
+}
+#skin_container_username{ padding-top: 6px;}
+#ENDIF
