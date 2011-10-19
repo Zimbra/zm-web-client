@@ -943,15 +943,11 @@ function(params) {
 	this._initializeToolBar();
 	this.resetToolbarOperations();
 	this._setOptionsMenu();
+	this._curIncOptions = null;
 	cv.set(params);
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
 
 	this._setAddSignatureVisibility();
-
-	this._setOptionsMenu();
-	this._curIncOptions = null;
-	cv.set(params);
-	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
 
     if (params.readReceipt) {
         var menu = this._optionsMenu[this._action];

@@ -782,9 +782,6 @@ function(force, viewId, skipHistory) {
 	if (curView.isTabView) {
 		appCtxt.getAppChooser().removeButton(curView.tabParams.id);
 	}
-	if (curView.isTabView || curView.isTransient) {
-		delete this._view[this._currentViewId];
-	}
 	
 	if (noShow) {
 		if (goToApp) {
