@@ -645,7 +645,10 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
         var imgContent = content.split(/<img/i);
         for(var i=0; i<imgContent.length; i++){
             var externalImage = false;
-            var dfsrc = imgContent[i].match(/cid:[^\"\']+/); //look for CID assignment in image
+            var dfsrc = imgContent[i].match(/dfsrc=[\"|\'](cid:[^\"\']+)/); //look for CID assignment in image
+			if (dfsrc && dfsrc.length > 1) {
+				dfsrc = [dfsrc[1]]; //the cid is the 2nd element, but next lines expect it as first 
+			}
             if (!dfsrc){
                 dfsrc = imgContent[i].match(/\s+dfsrc=[\"\'][^\"\']+[\"\']+/); //look for dfsrc="" in image
                 externalImage = dfsrc ? true : false;
