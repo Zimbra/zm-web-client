@@ -847,3 +847,5 @@ TEXTAREA
 }
 #skin_container_username{ padding-top: 6px;}
 #ENDIF
+
+.MsgHeaderTable .ztoolbarbutton, .MsgHeaderTable .ztoolbarbutton.zhover{ border: none; background-image: none;}
