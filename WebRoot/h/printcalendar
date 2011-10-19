@@ -71,6 +71,8 @@
         font-family:Tahoma,Arial,Helvetica,sans-serif;
         font-size:${mailbox.prefs.defaultPrintFontSize} !important;
     }
+     .zhcalmonthheadermonth, .zhcalmonthheadercellstext, .zhappcontent, .zhcalmonthtable, .zhcaldaygrid, .zhcalmonthheaderrow, .zhcaldayhour, .zhcaldayheader, .zhcaldayheadertoday{ background-color: white;}
+    .ZhCalDayHeader{font-weight: bold; }
 </style>
 <table width="90%" align="center" class="zPrintMsgs">
     <tr>
