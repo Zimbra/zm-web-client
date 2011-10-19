@@ -103,7 +103,9 @@ function(abook) {
     this._attendees[ZmCalBaseItem.EQUIPMENT] = {};
 
     var html = new AjxBuffer();
+    html.append("<div id='", this._bodyDivId, "' class=calendar_body style='position:absolute'>");
     html.append("<div id='", this._apptBodyDivId, "' style='width:100%;position:absolute;'>","</div>");
+    html.append("</div>");
     this.getHtmlElement().innerHTML = html.toString();
     
 };
@@ -111,7 +113,14 @@ function(abook) {
 
 ZmCalNewScheduleView.prototype._layout =
 function(refreshApptLayout) {
-	DBG.println(AjxDebug.DBG2, "ZmCalColView in layout!");
+	DBG.println(AjxDebug.DBG2, "ZmCalNewScheduleView in layout!");
+
+    var sz = this.getSize();
+	var width = sz.x;
+	var height = sz.y;
+    if (width == 0 || height == 0) { return; }
+    this._setBounds(this._bodyDivId, 0, 0, width, height);
+    this._setBounds(this._apptBodyDivId, 0, 0, width-Dwt.SCROLLBAR_WIDTH, height);
     //this._layoutAllDayAppts();
 	
 };
