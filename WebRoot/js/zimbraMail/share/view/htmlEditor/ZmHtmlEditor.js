@@ -1861,6 +1861,11 @@ ZmHtmlEditor._spellCheckResumeEditing =
 function() {
 	var editor = Dwt.getObjectFromElement(this);
 	editor.discardMisspelledWords();
+
+
+    if (AjxEnv.isIE && editor._currInsPt && editor._getRange().type=="None") {
+        editor._currInsPt.collapse(false);
+    }
 };
 
 ZmHtmlEditor._spellCheckAgain =
