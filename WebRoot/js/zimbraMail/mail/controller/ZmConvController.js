@@ -119,12 +119,17 @@ function() {
 
 ZmConvController.prototype._getReadingPanePref =
 function() {
-	return appCtxt.get(ZmSetting.READING_PANE_LOCATION_CV);
+	return (this._readingPaneLoc || appCtxt.get(ZmSetting.READING_PANE_LOCATION_CV));
 };
 
 ZmConvController.prototype._setReadingPanePref =
 function(value) {
-	appCtxt.set(ZmSetting.READING_PANE_LOCATION_CV, value);
+	if (this.isSearchResults) {
+		this._readingPaneLoc = value;
+	}
+	else {
+		appCtxt.set(ZmSetting.READING_PANE_LOCATION_CV, value);
+	}
 };
 
 ZmConvController.prototype._createDoublePaneView =

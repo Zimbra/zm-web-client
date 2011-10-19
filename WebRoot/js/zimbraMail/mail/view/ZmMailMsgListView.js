@@ -18,7 +18,8 @@ ZmMailMsgListView = function(params) {
 	this._mode = params.mode;
 	this.view = params.view;
 	params.type = ZmItem.MSG;
-	params.headerList = this._getHeaderList(params.parent, params.controller);
+	this._controller = params.controller;
+	params.headerList = this._getHeaderList();
 	ZmMailListView.call(this, params);
 };
 
@@ -333,10 +334,10 @@ function(msg) {
 };
 
 ZmMailMsgListView.prototype._getHeaderList =
-function(parent, controller) {
+function() {
 
 	var headers;
-	if (this.isMultiColumn(controller)) {
+	if (this.isMultiColumn()) {
 		headers = [];
 		headers.push(ZmItem.F_SELECTION);
 		if (appCtxt.get("FLAGGING_ENABLED")) {

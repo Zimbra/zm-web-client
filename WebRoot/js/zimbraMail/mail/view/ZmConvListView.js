@@ -66,7 +66,8 @@ ZmConvListView = function(params) {
 
 	this.view = params.view = ZmId.VIEW_CONVLIST;
 	params.type = ZmItem.CONV;
-	params.headerList = this._getHeaderList(parent, params.controller);
+	this._controller = params.controller;
+	params.headerList = this._getHeaderList();
 	ZmMailListView.call(this, params);
 
 	// change listener needs to handle both types of events
@@ -201,9 +202,9 @@ function() {
 };
 
 ZmConvListView.prototype._getHeaderList =
-function(parent, controller) {
+function() {
 	var headers;
-	if (this.isMultiColumn(controller)) {
+	if (this.isMultiColumn()) {
 		headers = [
 			ZmItem.F_SELECTION,
 			ZmItem.F_EXPAND,

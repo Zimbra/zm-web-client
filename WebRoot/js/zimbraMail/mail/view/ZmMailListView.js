@@ -186,9 +186,8 @@ function() {
  * or a single column (for right-pane).
  */
 ZmMailListView.prototype.isMultiColumn =
-function(controller) {
-	var ctlr = controller || this._controller;
-	return !ctlr.isReadingPaneOnRight();
+function() {
+	return !this._controller.isReadingPaneOnRight();
 };
 
 ZmMailListView.prototype._getAbridgedContent =
@@ -319,7 +318,7 @@ function(viewId, headerList) {
 	var hList = [];
 
 	this._defaultCols = headerList.join(ZmListView.COL_JOIN);
-	var isMultiColumn = appCtxt.get(ZmSetting.READING_PANE_LOCATION) != ZmSetting.RP_RIGHT;
+	var isMultiColumn = !this._controller.isReadingPaneOnRight();
 	var userHeaders = isMultiColumn && appCtxt.get(ZmSetting.LIST_VIEW_COLUMNS, viewId);
 	var headers = headerList;
 	if (userHeaders && isMultiColumn) {
@@ -428,7 +427,7 @@ function(defaultColumnSort) {
 	}
 
 	if (this._headerList && !this.headerColCreated) {
-		var rpLoc = appCtxt.get(ZmSetting.READING_PANE_LOCATION);
+		var rpLoc = this._controller._getReadingPanePref();
 		if (rpLoc == ZmSetting.RP_RIGHT && this._controller._itemCountText[rpLoc]) {
 			this._controller._itemCountText[rpLoc].dispose();
 		}

@@ -388,12 +388,14 @@ function(oldMsgId, newMsg) {
 ZmDoublePaneView.prototype.getReadingSashPosition =
 function(readingPaneOnRight) {
 	if (readingPaneOnRight) {
-		var percentWidth = appCtxt.get(ZmSetting.READING_PANE_SASH_VERTICAL)/100;
+		var value = this._readingPaneSashVertPos || appCtxt.get(ZmSetting.READING_PANE_SASH_VERTICAL);
+		var percentWidth = value / 100;
 		var screenWidth = Dwt.getWindowSize().x;
 		return Math.round(percentWidth * screenWidth);
 	}
 	else {
-		var percentHeight = appCtxt.get(ZmSetting.READING_PANE_SASH_HORIZONTAL)/100;
+		var value = this._readingPaneSashHorizPos || appCtxt.get(ZmSetting.READING_PANE_SASH_HORIZONTAL);
+		var percentHeight = value / 100;
 		var screenHeight = Dwt.getWindowSize().y;
 		return Math.round(percentHeight * screenHeight);
 	}
@@ -409,12 +411,22 @@ function(readingPaneOnRight, value) {
 	if (readingPaneOnRight) {
 		var screenWidth = Dwt.getWindowSize().x;
 		var sashWidthPercent = Math.round((value/screenWidth) * 100);
-		appCtxt.set(ZmSetting.READING_PANE_SASH_VERTICAL, sashWidthPercent);
+		if (this._controller.isSearchResults) {
+			this._readingPaneSashVertPos = sashWidthPercent;
+		}
+		else {
+			appCtxt.set(ZmSetting.READING_PANE_SASH_VERTICAL, sashWidthPercent);
+		}
 	}
 	else {
 		var screenHeight = Dwt.getWindowSize().y;
 		var sashHeightPercent = Math.round((value/screenHeight) * 100);
-		appCtxt.set(ZmSetting.READING_PANE_SASH_HORIZONTAL, sashHeightPercent);
+		if (this._controller.isSearchResults) {
+			this._readingPaneSashHorizPos = sashHeightPercent;
+		}
+		else {
+			appCtxt.set(ZmSetting.READING_PANE_SASH_HORIZONTAL, sashHeightPercent);
+		}
 	}
 };
 

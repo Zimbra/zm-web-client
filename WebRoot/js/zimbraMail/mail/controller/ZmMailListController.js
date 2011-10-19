@@ -211,12 +211,17 @@ function() {
 
 ZmMailListController.prototype._getReadingPanePref =
 function() {
-	return appCtxt.get(ZmSetting.READING_PANE_LOCATION);
+	return (this._readingPaneLoc || appCtxt.get(ZmSetting.READING_PANE_LOCATION));
 };
 
 ZmMailListController.prototype._setReadingPanePref =
 function(value) {
-	appCtxt.set(ZmSetting.READING_PANE_LOCATION, value);
+	if (this.isSearchResults) {
+		this._readingPaneLoc = value;
+	}
+	else {
+		appCtxt.set(ZmSetting.READING_PANE_LOCATION, value);
+	}
 };
 
 ZmMailListController.prototype.getKeyMapName =
