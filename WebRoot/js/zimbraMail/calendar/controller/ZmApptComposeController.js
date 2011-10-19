@@ -125,14 +125,30 @@ function(type, attribs){
 
 ZmApptComposeController.prototype._getChangesDialog =
 function(){
-    if(!this._changesDialog){
-       var dlg = this._changesDialog = new DwtDialog({parent:appCtxt.getShell()});
-       var id = this._changesDialogId = Dwt.getNextId();
-       dlg.setContent(AjxTemplate.expand("calendar.Appointment#ChangesDialog", {id: id}));
-       dlg.setTitle(ZmMsg.apptSave); 
-       dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._changesDialogListener, id));
+    var id,
+        dlg,
+        isOrganizer = this._composeView.isOrganizer();
+    if(isOrganizer) {
+        dlg = this._changesDialog;
+        if (!dlg) {
+           dlg = this._changesDialog = new DwtDialog({parent:appCtxt.getShell()});
+           id = this._changesDialogId = Dwt.getNextId();
+           dlg.setContent(AjxTemplate.expand("calendar.Appointment#ChangesDialogOrganizer", {id: id}));
+           dlg.setTitle(ZmMsg.apptSave);
+           dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._changesDialogListener, id));
+        }
     }
-    return this._changesDialog;
+    else {
+        dlg = this._attendeeChangesDialog;
+        if (!dlg) {
+            dlg = this._attendeeChangesDialog = new DwtDialog({parent:appCtxt.getShell()});
+            id = this._attendeeChangesDialogId = Dwt.getNextId();
+            dlg.setContent(AjxTemplate.expand("calendar.Appointment#ChangesDialogAttendee", {id: id}));
+            dlg.setTitle(ZmMsg.apptSave);
+            dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._attendeeChangesDialogListener, id));
+        }
+    }
+    return dlg;
 };
 
 ZmApptComposeController.prototype._changesDialogListener =
@@ -148,6 +164,14 @@ function(id){
         this.closeView();
     }
     this._changesDialog.popdown();
+};
+
+ZmApptComposeController.prototype._attendeeChangesDialogListener =
+function(id){
+    this.clearInvalidAttendees();
+    delete this._invalidAttendees;
+    this.closeView();
+    this._attendeeChangesDialog.popdown();
 };
 
 ZmApptComposeController.prototype.saveCalItem =

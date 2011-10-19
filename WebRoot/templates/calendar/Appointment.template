@@ -650,7 +650,7 @@
 </template>
 
 <template id='calendar.Appointment#InlineScheduleView'>
-	<div style='clear:both; margin-right:7px;<$= AjxEnv.isIE ? "width:99%" : "" $>'>
+	<div style='clear:both; margin-right:7px;'>
 		<!-- free/busy section -->
 		<table style='padding-left:3px;' border=0 cellpadding=0 cellspacing=0 width=100% id='${id}_attendeesTable'>
 			<colgroup>
@@ -660,7 +660,7 @@
 			<tr>
 				<td align='center' id='${id}_navToolbar'>&nbsp;</td>
 				<td valign=bottom>
-					<table width=100% border=0 cellpadding=0 cellspacing=0 class='ZmSchedulerGridHeaderTable'>
+					<table width=100% border=0 cellpadding=0 cellspacing=0 class='ZmSchedulerGridHeaderTable' style='<$= AjxEnv.isIE ? "width:101%" : "" $>'>
 						<tr>
 						<$
 							for (var j = 0; j <= 24; j++) {
@@ -1117,7 +1117,7 @@
 </template>
 
 
-<template id="calendar.Appointment#ChangesDialog">
+<template id="calendar.Appointment#ChangesDialogOrganizer">
 	<table cellpadding='0' cellspacing='0' border='0' width='300'>
 		<tr>
 			<td><$=ZmMsg.apptSignificantChanges $></td>
@@ -1130,6 +1130,14 @@
                 <br/>
                 <input type='radio' name="saveappt" id='${id}_discard'/>&nbsp;<label for='${id}_discard'><$=ZmMsg.apptSaveDiscard $></label>
             </td>
+		</tr>
+	</table>
+</template>
+
+<template id="calendar.Appointment#ChangesDialogAttendee">
+	<table cellpadding='0' cellspacing='0' border='0' width='300'>
+		<tr>
+			<td><$=ZmMsg.apptSignificantChangesAttendee $></td>
 		</tr>
 	</table>
 </template>
