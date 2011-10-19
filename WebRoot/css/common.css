@@ -79,20 +79,19 @@ TEXTAREA[readonly] {
 	@TextArea-disabled@
 }
 
-input[type="checkbox"] {
+INPUT[type="checkbox"] {
 		@ActiveCursor@
 }
+
 #IFDEF MSIE
-input{
-cursor: expression(this.type=="checkbox"?'pointer':'');
-}
+	INPUT {cursor: expression(this.type=="checkbox"?'pointer':''); }
 #ENDIF
 
-/* TODO: figure out what we need to do for IE/etc to set the same input styles */
+/* TODO: figure out what we need to do for IE/etc to set the same INPUT styles */
 #IFDEF GECKO
 	/* set for 'text' and 'password' fields explicitly so checkboxes and radio buttons don't get borders */
-	input[type="text"],
-	input[type="password"] {
+	INPUT[type="text"],
+	INPUT[type="password"] {
 		@InputField@
 		@InputField-normal@
 	}
@@ -103,8 +102,6 @@ cursor: expression(this.type=="checkbox"?'pointer':'');
 		@TextArea@
 		@TextArea-normal@
 	}
-
-
 #ENDIF
 
 
@@ -345,29 +342,29 @@ DIV.vSpace {
 
 
 /* ??? WHY ARE SOME VEILS WHITE AND SOME TRANSPARENT? */
-.BusyOverlay table, .VeilOverlay table {
+.BusyOverlay TABLE, .VeilOverlay TABLE {
 	@VeilOpacity@
 	@BusyCursor@
 	background-color: transparent;	/* ??? */
 }
 /* As of 07/22/05 Linux (or rather X) has a nasty issue that causes a huge perf problem with opacity.*/
 
-.BusyOverlay-linux table, .VeilOverlay-linux table {
+.BusyOverlay-linux TABLE, .VeilOverlay-linux TABLE {
 	@BusyCursor@
 	background-color: transparent;
 }
 
 
-.VeilOverlay table {
+.VeilOverlay TABLE {
 	@DisabledCursor@
 	@VeilColor@
 }
 
-.VeilOverlay-linux table {
+.VeilOverlay-linux TABLE {
 	@DisabledCursor@
 }
 
-.CurtainOverlay table {
+.CurtainOverlay TABLE {
 	@VeilColor@
 }
 
@@ -395,7 +392,7 @@ DIV.vSpace {
 	border: 1px solid #999999;
 	padding: @BoxPaddingSize@ 0 0 @BoxPaddingSize@;
 }
-.FolderTree td {padding: 0;}
+.FolderTree TD {padding: 0;}
  */
 
 
@@ -420,12 +417,12 @@ DIV.vSpace {
 	@ListItemContainer@
 	@DisableSelection@
 	@ListItemHeightDouble@
-	border-bottom-color: #CCCCCC;
-	padding-top: 3px;
+	border-bottom-color:#CCCCCC;  /* TODO: Color should be a property reference */
+	padding-top:3px;
 }
 
 .Row TABLE, .RowDouble TABLE {
-	table-layout: fixed;
+	table-layout:fixed;
 }
 
 .Row TD, .RowDouble TD {
@@ -442,12 +439,8 @@ DIV.vSpace {
 
 #IFDEF MACINTOSH
 #IFDEF WEBKIT
-.RowDouble TD.SubjectDoubleRow {
-    padding-top:1px;
-} 
-.RowDouble .Unread TD.SubjectDoubleRow {
-    padding-top:0px;
-}
+	.RowDouble TD.SubjectDoubleRow 			{	padding-top:1px; 		} 
+	.RowDouble .Unread TD.SubjectDoubleRow 	{	padding-top:0px; 		}
 #ENDIF
 #ENDIF
 
@@ -455,7 +448,7 @@ DIV.vSpace {
 
 .Row						{	@ListItemContainer-normal@			}
 
-.RowOdd						{	@ListItemContainer-alt@				}
+.RowOdd						{	@ListItemContainer-alt@			}
 
 .selected, 	/* TODO: used? */
 .Row-selected,
@@ -463,83 +456,70 @@ DIV.vSpace {
 .Row-selected-disabled 		{	@ListItemContainer-selected@		}
 
 /* .Row-matched, */
-.Row-matched-dragProxy 		{ 	@ListItemContainer-matched@			}
+.Row-matched-dragProxy 		{ 	@ListItemContainer-matched@		}
 
-.Row-matched table, .Row-matched-drag table {
-	table-layout: fixed;
-}
+.Row-matched TABLE, 
+.Row-matched-drag TABLE 		{	table-layout:fixed;					}
 
-.Row-focused 				{	@ListItemContainer-focused@			}
+.Row-focused 				{	@ListItemContainer-focused@		}
 
-.Row-selected-actioned 		{	@ListItemContainer-actioned@	}
+.Row-selected-actioned 		{	@ListItemContainer-actioned@		}
 
 .Row-dragProxy,
-.Row-matched-dragProxy 		{	@ListItemContainer-dragProxy@	}
+.Row-matched-dragProxy 		{	@ListItemContainer-dragProxy@		}
 
 
-/* list row td's (eg: text) */
+/* list row TD's (eg: text) */
 
-.Row td						{	@ListItemText-normal@				}
+.Row TD						{	@ListItemText-normal@				}
 
-.RowOdd td					{	@ListItemText-alt@					}
+.RowOdd TD					{	@ListItemText-alt@					}
 
-.selected td,	/* TODO: used? */
+.selected TD,	/* TODO: used? */
 
-.Row-selected td,
-.Row-selected-dragProxy td,
-.Row-selected-disabled td	{	@ListItemText-selected@				}
+.Row-selected TD,
+.Row-selected-dragProxy TD,
+.Row-selected-disabled TD 	{	@ListItemText-selected@				}
 
-/* .Row-matched td			 	{ 	@ListItemText-matched@				} */
+/* .Row-matched TD			 	{ 	@ListItemText-matched@				} */
 
-.Row-focused td 			{	@ListItemText-focused@				}
+.Row-focused TD 				{	@ListItemText-focused@			}
 
-.Row-selected-right td	 	{	@ListItemText-actioned@				}
+.Row-selected-right TD	 		{	@ListItemText-actioned@			}
 
-.Row-dragProxy td,
-.Row-matched-dragProxy td	{	@ListItemText-dragProxy@			}
-
+.Row-dragProxy TD,
+.Row-matched-dragProxy TD	{	@ListItemText-dragProxy@			}
 
 
 /*** TODO:  clean this the hell up ***/
 
-.Row td.Flag, .Row td.Attach, .Row td.Tag, .Row td.Icon, .Row td.Count,
-.Row-selected td.Flag, .Row-selected td.Attach, .Row-selected td.Tag, .Row-selected td.Icon, .Row-selected td.Count,
-.Row-dragProxy td.Flag, .Row-dragProxy td.Attach, .Row-dragProxy td.Tag, .Row-dragProxy td.Icon, .Row-dragProxy td.Count,
-.Row-selected-dragProxy td.Flag, .Row-selected-dragProxy td.Attach, .Row-selected-dragProxy td.Tag, .Row-selected-dragProxy td.Icon, .Row-selected-dragProxy td.Count,
-.Row-matched-dragProxy td.Flag, .Row-matched-dragProxy td.Attach, .Row-matched-dragProxy td.Tag, .Row-matched-dragProxy td.Icon, .Row-matched-dragProxy td.Count,
-.Row-dragProxy td.Flag, .Row-dragProxy td.Attach,.Row-dragProxy td.Tag, .Row-dragProxy td.Icon, .Row-dragProxy td.Count {
+.Row TD.Flag, .Row TD.Attach, .Row TD.Tag, .Row TD.Icon, .Row TD.Count,
+.Row-selected TD.Flag, .Row-selected TD.Attach, .Row-selected TD.Tag, .Row-selected TD.Icon, .Row-selected TD.Count,
+.Row-dragProxy TD.Flag, .Row-dragProxy TD.Attach, .Row-dragProxy TD.Tag, .Row-dragProxy TD.Icon, .Row-dragProxy TD.Count,
+.Row-selected-dragProxy TD.Flag, .Row-selected-dragProxy TD.Attach, .Row-selected-dragProxy TD.Tag, .Row-selected-dragProxy TD.Icon, .Row-selected-dragProxy TD.Count,
+.Row-matched-dragProxy TD.Flag, .Row-matched-dragProxy TD.Attach, .Row-matched-dragProxy TD.Tag, .Row-matched-dragProxy TD.Icon, .Row-matched-dragProxy TD.Count,
+.Row-dragProxy TD.Flag, .Row-dragProxy TD.Attach,.Row-dragProxy TD.Tag, .Row-dragProxy TD.Icon, .Row-dragProxy TD.Count {
 	text-align: center;
 }
 
-.RowDouble td.Count, .RowDouble-selected td.Count {
+.RowDouble TD.Count, .RowDouble-selected TD.Count {
 	text-align: right;
 }
-
 
 
 /*
  * Flags
  */
-.Unread {
-	@Text-unread@
-}
-.Trash {
-	@Text-deleted@
-}
-
-
+.Unread 					{	@Text-unread@ 		}
+.Trash 					{	@Text-deleted@ 		}
 
 
 /* Overview */
 
-.ZmOverview {
-	@FullSize@
-}
+.ZmOverview 				{	@FullSize@ 			}
 
 
-.ZmOverviewContainer {
-	@TreeContainer@
-}
+.ZmOverviewContainer 		{	@TreeContainer@ 	}
 
 .ZmVoiceOverviewContainer .ZmOverview,
 .ZmOverviewContainer .ZmOverview,
@@ -548,30 +528,21 @@ DIV.vSpace {
 	padding-left: @SmallIconWidth@;
 }
 
-.OverviewTree {
-	@FullWidth@
-}
+.OverviewTree 				{	@FullWidth@ 		}
 
 
-.dialogOverview {
+.dialogOverview				{
 	@TreeContainer@
 	@NormalInsetBorder@
 	@BoxPadding@
 	height: 200px;		/* ??? SIZE */
 }
 
-.dialogOverviewContainer {
-	@PanelBg@
-}
+.dialogOverviewContainer 		{	@PanelBg@ 			}
 
-.dialogOverview td {
-	@Text@
-}
+.dialogOverview TD 			{	@Text@ 				}
 
-.pickerOverview {
-	@TreeContainer@
-	@FullHeight@
-}
+.pickerOverview 				{	@TreeContainer@ @FullHeight@ 	}
 
 /* ??? MARGINS */
 .overviewHeader,.overviewHeader-actioned {

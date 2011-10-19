@@ -113,48 +113,36 @@
  */
 
 /* Outer container of the entire tool tip.  Class "LightOuterBorder" is also applied to this. */
-.DwtToolTip {
-	@TooltipContainer@
-}
+.DwtToolTip 						{	@TooltipContainer@ 					}
 
 
 /* Body container (div) for the tooltip. */
-.DwtToolTipBody {
-	padding:2px;
-}
+.DwtToolTipBody 					{	padding:2px; 						}
 
 /* Containers (divs) for the top and bottom pointers of the tooltips.
 	The pointers can be composed of images or HTML.	*/
-.DwtToolTipTopPointer	 {		position:absolute;	width:30px; }
-.DwtToolTipBottomPointer {		position:absolute;	width:30px;	}
+.DwtToolTipTopPointer 				{	position:absolute;	width:30px; 	}
+.DwtToolTipBottomPointer 			{	position:absolute;	width:30px; 	}
 
 /* drop-down arrow for DwtLinkButton */
-.DwtLinkButtonDropDownArrow {		width:16px; 	}
-.DwtLinkButtonDropDownArrowTd	{padding-left:1px;}
+.DwtLinkButtonDropDownArrow 		{	width:16px; 			}
+.DwtLinkButtonDropDownArrowTd 		{	padding-left:1px; 		}
 .DwtLinkButtonTable:hover .DwtLinkButtonDropDownArrowTd, /* this selector doesn't work on IE and FF (works on Chrome). I prefer this so I keep it, since it would work for any instance of a LinkButton (if we have more than just the help one in the future) and the border stays when the user clicks on the drow-down arrow */
 .ZHover .DwtLinkButtonDropDownArrowTd /* this works for all browsers but the border disappears when the arrow is clicked since ZHover class is removed */
-{ padding-left:0; border-left:solid 1px @LinkButtonArrowColor@	}
+								{	padding-left:0; border-left:solid 1px @LinkButtonArrowColor@; 	}
 
 /* One row of the tooltip pointer -- used to do arrows without images */
-.DwtToolTipPointerRow {
-	position:relative; overflow:hidden;
-	font-size:1px; height:2px;
-	@TooltipArrowContainer@
-}
+.DwtToolTipPointerRow 				{	font-size:1px; height:2px; overflow:hidden; position:relative; 
+										@TooltipArrowContainer@ 	}
 
 /* One row of the DwtLinkButton drop-down arrow -- used to do arrows without images */
-.DwtLinkButtonDropDownArrowRow {
-	position:relative; overflow:hidden;
-	font-size:1px; height:1px;
-	@LinkButtonArrowContainer@
-}
-
+.DwtLinkButtonDropDownArrowRow 	{	font-size:1px; height:1px; overflow:hidden; position:relative; 
+										@LinkButtonArrowContainer@ 	}
 
 
 /*
 * Sashes
 */
-
 
 /* Vertical sash -- splits a pane vertically (into two tall panes) */
 .AppSash-vert 						{	@VSashSize@			}		/* outer class for sash */
@@ -166,7 +154,7 @@
 .DwtHorizontalSash					{	@HSashContainer@	}
 .DwtHorizontalSash DIV				{	@HSashThumb@		}
 
-.RightBorderSeparator           {   border-right:5px solid @SeparatorColor@}
+.RightBorderSeparator           		{   border-right:5px solid @SeparatorColor@; 	}
 
 
 
@@ -193,7 +181,7 @@
 .DwtTreeItem-selected {
 	@TreeItemHeight@
 	@TreeItemSelectedBg@
-	@Text@
+	@Text-selected@
 	@TreeItemSpacing@
 	@ActiveCursor@
 }
@@ -202,7 +190,7 @@
 .DwtTreeItem-selected-focused {
 	@TreeItemHeight@
 	@TreeItemFocusedBg@
-	@Text@
+	@Text-selected@
 	@TreeItemSpacing@
 	@ActiveCursor@
 }
@@ -210,7 +198,7 @@
 /* text style for a right-clicked tree item */
 .DwtTreeItem-actioned {
 	@RightClickBg@
-	@Text@
+	@Text-active@
 	@TreeItemSpacing@
 	@TreeItemHeight@
 	@ActiveCursor@
@@ -235,7 +223,7 @@
 .DwtTreeItem-selected-focused .imageCell,
 .DwtTreeItem-actioned .imageCell {
 	@ImagePadding@
-	white-space: nowrap;	/* ??? */
+	white-space:nowrap;	/* ??? */
 }
 
 .DwtTreeItemChildDiv {
@@ -311,17 +299,17 @@
 
 /* MOW NOTE: THIS DOESN'T SEEM TO BE USED!
 
-.DwtSelect 								{	@Select@							}
-.DwtSelect-hover 						{	@Select-hover@		padding:0px;	}
-.DwtSelect-active						{	@Select-active@						}
-.DwtSelect-selected						{	@Select-active@						}
-.DwtSelect-disabled						{	@Select-disabled@				}
+.DwtSelect 							{	@Select@						}
+.DwtSelect-hover 						{	@Select-hover@ padding:0px;	}
+.DwtSelect-active						{	@Select-active@				}
+.DwtSelect-selected					{	@Select-active@				}
+.DwtSelect-disabled					{	@Select-disabled@				}
 .DwtSelect-focused						{	@Select-focused@				}
 
 .DwtSelect .Text 						{	@SelectText@					}
-.DwtSelect-hover .Text					{	@SelectText-hover@				}
-.DwtSelect-active .Text					{	@SelectText-active@				}
-.DwtSelect-selected .Text				{	@SelectText-active@				}
+.DwtSelect-hover .Text					{	@SelectText-hover@			}
+.DwtSelect-active .Text					{	@SelectText-active@			}
+.DwtSelect-selected .Text				{	@SelectText-active@			}
 .DwtSelect-disabled .Text				{	@SelectText-disabled@			}
 .DwtSelect-focused .Text				{	@SelectText-focused@			}
 
@@ -381,25 +369,25 @@
 }
 
 
-.DwtMenuItem 							{	@MenuItem@	}
+.DwtMenuItem 						{	@MenuItem@	}
 
 .DwtMenuItem-selected,
 .DwtMenuItem-IconArea-selected,
-.DwtMenuItem-CheckedArea-selected 		{	@MenuItem-hover@	}
+.DwtMenuItem-CheckedArea-selected 	{	@MenuItem-hover@	}
 
 .DwtMenuItem-active,
 .DwtMenuItem-IconArea-active,
 .DwtMenuItem-CheckedArea-active 		{	@MenuItem-active@	}
 
-.DwtMenuItem .Text 						{	@MenuItemText@			@MenuItemTextPadding@	}
+.DwtMenuItem .Text 					{	@MenuItemText@			@MenuItemTextPadding@	}
 .DwtMenuItem-selected .Text 			{	@MenuItemText-hover@	@MenuItemTextPadding@	}
 .DwtMenuItem-active .Text 				{	@MenuItemText-active@	@MenuItemTextPadding@	}
-.DwtMenuItem .DisabledText 				{	@MenuItemText-disabled@	@MenuItemTextPadding@	}
+.DwtMenuItem .DisabledText 			{	@MenuItemText-disabled@	@MenuItemTextPadding@	}
 
 .DwtMenuItem-IconArea,
-.DwtMenuItem-CheckedArea 				{}
+.DwtMenuItem-CheckedArea 			{}
 
-.DwtMenuItem-Separator 					{	@MenuItemSeparator@	}
+.DwtMenuItem-Separator 				{	@MenuItemSeparator@	}
 
 .DwtMenuCascadeCell 					{	@LeftSeparator@		}
 
@@ -421,8 +409,8 @@
 .DwtMenuScrollTop div,
 .DwtMenuScrollBottom div				{	margin:@MenuScrollArrowMargin@ auto;	}
 
-.DwtMenu-congruentLeft					{	@MenuCongruentLeft@	}
-.DwtMenu-congruentRight					{	@MenuCongruentRight@ 	}
+.DwtMenu-congruentLeft				{	@MenuCongruentLeft@	}
+.DwtMenu-congruentRight				{	@MenuCongruentRight@ 	}
 
 /* ??? */
 .DwtSelectMenu table{
@@ -434,7 +422,7 @@
 /* ??? USE */
 .DwtSelectMenu .DwtMenuItem 			{	@MenuItem@		}
 .DwtSelectMenu .DwtMenuItem-text 		{	padding-left:@BoxPaddingSize@;	text-align:left;	}
-.DwtSelectMenu .DwtMenuItem-leftFill 	{	width:19px;		/* ??? SIZE? */	}
+.DwtSelectMenu .DwtMenuItem-leftFill 		{	width:19px;		/* ??? SIZE? */	}
 
 .DwtSelectMenu .DwtMenuItem-selected .DwtMenuItem-text{
 	@ActiveCursor@
@@ -530,7 +518,7 @@
 
 
 /***
- *		Rows (a.k.a. items) -- also look for 'rows' in 		common.css
+ *		Rows (a.k.a. items) -- also look for 'rows' in common.css
  ***/
 
 /* Data rows container, not including header */
@@ -547,11 +535,9 @@
 
 /* ??? SHOTGUN */
 .DwtListView-Rows td {
-	@Text@
 	padding-left:@TextPaddingSize@;
 	padding-right:2px;
 	overflow: hidden;
-
 }
 
 .DwtListHeaderItem-label {
