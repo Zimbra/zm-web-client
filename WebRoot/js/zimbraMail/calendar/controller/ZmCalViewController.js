@@ -3211,11 +3211,16 @@ function(ev) {
         this._viewActionMenu.addPopdownListener(this._menuPopdownListener);
 	}
 
-	if (this._viewVisible && this._currentViewType == ZmId.VIEW_CAL_SCHEDULE) {
-		var view = this._viewMgr.getView(this._currentViewId);
-		var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, ev.target, true);
-		var col = view._getColFromX(gridLoc.x);
-		this._viewActionMenu._calendarId = (col && col.cal) ? col.cal.id : null;
+	if ( this._viewVisible &&
+        (this._currentViewType == ZmId.VIEW_CAL_SCHEDULE || this._currentViewType == ZmId.VIEW_CAL_DAY)) {
+        var calId = ev.target.getAttribute(ZmCalDayTabView.ATTR_CAL_ID);
+        if(!calId) {
+            var view = this._viewMgr.getView(this._currentViewId);
+            var gridLoc = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, ev.target, true);
+            var col = view._getColFromX(gridLoc.x);
+            calId = (col && col.cal) ? col.cal.id : null;
+        }
+        this._viewActionMenu._calendarId = calId;
 	} else {
 		this._viewActionMenu._calendarId = null;
 	}

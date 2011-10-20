@@ -48,6 +48,8 @@ ZmCalColView.MIN_COLUMN_WIDTH = 120;
 // max number of all day appts before we turn on vertical scrollbars
 ZmCalColView.MAX_ALLDAY_APPTS = 4;
 
+ZmCalColView.HALF_HOUR_HEIGHT = 21;
+
 ZmCalColView._OPACITY_APPT_NORMAL = 100;
 ZmCalColView._OPACITY_APPT_DECLINED = 20;
 ZmCalColView._OPACITY_APPT_TENTATIVE = 60;
@@ -797,7 +799,9 @@ function(abook) {
 		this._unionGridDivId = Dwt.getNextId();
 		this._unionGridSepDivId = Dwt.getNextId();
         this._workingHrsFirstDivId = Dwt.getNextId();
+        this._workingHrsFirstChildDivId = Dwt.getNextId();
         this._workingHrsSecondDivId = Dwt.getNextId();
+        this._workingHrsSecondChildDivId = Dwt.getNextId();
 	}
 
 	this._allDayRows = [];
@@ -811,7 +815,9 @@ function(abook) {
 				headingDaySepDivId: Dwt.getNextId(),
 				daySepDivId: Dwt.getNextId(),
                 workingHrsFirstDivId: Dwt.getNextId(),
+                workingHrsFirstChildDivId: Dwt.getNextId(),
                 workingHrsSecondDivId: Dwt.getNextId(),
+                workingHrsSecondChildDivId: Dwt.getNextId(),
 				apptX: 0, // computed in layout
 				apptWidth: 0,// computed in layout
 				allDayX: 0, // computed in layout
@@ -904,13 +910,13 @@ function(abook) {
 	if (!this._scheduleMode) {
 		for (var i =0; i < this.numDays; i++) {
 		  html.append("<div id='", this._columns[i].daySepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");
-		  html.append("<div id='", this._columns[i].workingHrsFirstDivId, "' class='ImgCalendarDayGrid' style='background-color:#FFFFFF;position:absolute;'></div>");
-		  html.append("<div id='", this._columns[i].workingHrsSecondDivId, "' class='ImgCalendarDayGrid' style='background-color:#FFFFFF;position:absolute;'></div>");
+		  html.append("<div id='", this._columns[i].workingHrsFirstDivId, "' style='position:absolute;background-color:#FFFFFF;'><div id='", this._columns[i].workingHrsFirstChildDivId, "' class='ImgCalendarDayGrid' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
+		  html.append("<div id='", this._columns[i].workingHrsSecondDivId, "' style='position:absolute;background-color:#FFFFFF;'><div id='", this._columns[i].workingHrsSecondChildDivId, "' class='ImgCalendarDayGrid' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
 		}
 	}
     else {
-        html.append("<div id='", this._workingHrsFirstDivId, "' class='ImgCalendarDayGrid' style='background-color:#FFFFFF;position:absolute;'></div>");
-        html.append("<div id='", this._workingHrsSecondDivId, "' class='ImgCalendarDayGrid' style='background-color:#FFFFFF;position:absolute;'></div>");
+        html.append("<div id='", this._workingHrsFirstDivId, "' style='position:absolute;background-color:#FFFFFF;'><div class='ImgCalendarDayGrid' id='", this._workingHrsFirstChildDivId, "' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
+        html.append("<div id='", this._workingHrsSecondDivId, "' style='position:absolute;background-color:#FFFFFF;'><div class='ImgCalendarDayGrid' id='", this._workingHrsSecondChildDivId, "' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
     }
 
 
@@ -1464,7 +1470,7 @@ function(x, y) {
 // helper function to minimize code and catch errors
 ZmCalColView.prototype._setBounds =
 function(id, x, y, w, h) {
-	var el = document.getElementById(id);
+	var el = typeof id === 'string' ? document.getElementById(id) : id;
 	if (el == null) {
 		DBG.println("ZmCalColView._setBounds null element for id: "+id);
 	} else {
@@ -1613,6 +1619,35 @@ function(refreshApptLayout) {
 	}
 };
 
+ZmCalColView.prototype.getPostionForWorkingHourDiv =
+function(dayIndex, workingHourIndex){
+    dayIndex = dayIndex || 0;
+    workingHourIndex = workingHourIndex || 0;
+    var workingHrs = this.workingHours[dayIndex],
+        startTime = workingHrs.startTime[workingHourIndex],
+        endTime = workingHrs.endTime[workingHourIndex],
+        startMin = (startTime%100)/15,
+        endMin = (endTime%100)/15,
+        startWorkingHour = 2 * Math.floor(startTime/100),
+        endWorkingHour = 2 * Math.floor(endTime/100),
+        fifteenMinHeight = ZmCalColView.HALF_HOUR_HEIGHT/2,
+        topPosition = startWorkingHour*ZmCalColView.HALF_HOUR_HEIGHT,
+        bottomPosition = endWorkingHour*ZmCalColView.HALF_HOUR_HEIGHT,
+        workingDivHeight = bottomPosition - topPosition;//duration*halfHourHeight;
+    return {
+        topPosition : topPosition,
+        workingDivHeight: workingDivHeight,
+        startMinAdjust : startMin * fifteenMinHeight,
+        endMinAdjust : endMin * fifteenMinHeight
+    };
+};
+
+ZmCalColView.prototype.layoutWorkingHoursDiv =
+function(divId, pos, currentX, dayWidth){
+    this._setBounds(divId, currentX, pos.topPosition+pos.startMinAdjust, dayWidth, pos.workingDivHeight+pos.endMinAdjust-pos.startMinAdjust);
+    this._setBounds(document.getElementById(divId).firstChild, 0, -pos.startMinAdjust, dayWidth, pos.workingDivHeight+pos.endMinAdjust);
+};
+
 ZmCalColView.prototype.layoutWorkingHours =
 function(workingHours){
     if(!workingHours) {
@@ -1639,38 +1674,31 @@ function(workingHours){
 		col.allDayWidth = dayWidth; // doesn't include sep
 
         //split into half hrs sections
-        var workingHrs = this.workingHours[day.date.getDay()],
-            startWorkingHour = Math.round(2 * workingHrs.startTime[0]/100),
-            duration = Math.round(2*(workingHrs.endTime[0] - workingHrs.startTime[0])/100),
-            halfHourHeight = 21,
-            topPosition = startWorkingHour*halfHourHeight,
-            workingDivHeight = duration*halfHourHeight;
+        var dayIndex = day.date.getDay(),
+            workingHrs = this.workingHours[dayIndex],
+            pos = this.getPostionForWorkingHourDiv(dayIndex, 0);
 
-        if(!this._scheduleMode && day.isWorkingDay) {
-            this._setBounds(col.workingHrsFirstDivId, currentX, topPosition, dayWidth, workingDivHeight);
+        if(day.isWorkingDay) {
+            if(!this._scheduleMode) {
+                this.layoutWorkingHoursDiv(col.workingHrsFirstDivId, pos, currentX, dayWidth);
 
-            if( workingHrs.startTime.length >= 2 &&
-                workingHrs.endTime.length >= 2) {
+                if( workingHrs.startTime.length >= 2 &&
+                    workingHrs.endTime.length >= 2) {
 
-                startWorkingHour = Math.round(2 * workingHrs.startTime[1]/100),
-                duration = Math.round(2*(workingHrs.endTime[1] - workingHrs.startTime[1])/100),
-                topPosition = startWorkingHour*halfHourHeight,
-                workingDivHeight = duration*halfHourHeight;
-
-                this._setBounds(col.workingHrsSecondDivId, currentX, topPosition, dayWidth, workingDivHeight);
+                    pos = this.getPostionForWorkingHourDiv(dayIndex, 1);
+                    this.layoutWorkingHoursDiv(col.workingHrsSecondDivId, pos, currentX, dayWidth);
+                }
             }
-        }
-        if(this._scheduleMode && day.isWorkingDay) {
-            this._setBounds(this._workingHrsFirstDivId, 0, topPosition, dayWidth, workingDivHeight);
+            if(this._scheduleMode) {
+                this.layoutWorkingHoursDiv(this._workingHrsFirstDivId, pos, 0, dayWidth);
 
-            if( workingHrs.startTime.length >= 2 &&
-                workingHrs.endTime.length >= 2) {
+                if( workingHrs.startTime.length >= 2 &&
+                    workingHrs.endTime.length >= 2) {
 
-                startWorkingHour = Math.round(2 * workingHrs.startTime[1]/100),
-                duration = Math.round(2*(workingHrs.endTime[1] - workingHrs.startTime[1])/100),
-                topPosition = startWorkingHour*halfHourHeight,
-                workingDivHeight = duration*halfHourHeight;
-                this._setBounds(this._workingHrsSecondDivId, 0, topPosition, dayWidth, workingDivHeight);
+                    pos = this.getPostionForWorkingHourDiv(dayIndex, 1);
+                    this.layoutWorkingHoursDiv(this._workingHrsSecondDivId, pos, 0, dayWidth);
+
+                }
             }
         }
         currentX += dayWidth;

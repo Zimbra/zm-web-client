@@ -190,7 +190,7 @@ function(callback) {
 	if (this._workHoursControl) {
 		this._workHoursControl.reloadWorkHours(this._workHoursControl.getValue());
 	}
-    if (callback) {
+    if (callback instanceof AjxCallback) {
 		callback.run();
 	}
 };
