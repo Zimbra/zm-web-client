@@ -480,7 +480,7 @@ function(convs, msgs) {
 				if (msgMatches) {
 					msg.inHitList = true;
 				}
-				if (msgMatches || (!matchFunc && !msg.isSent)) {
+				if (msgMatches || ((msgMatches === null) && !msg.isSent)) {
 					if (conv.fragment != msg.fragment) {
 						conv.fragment = msg.fragment;
 						fields[ZmItem.F_FRAGMENT] = true;
