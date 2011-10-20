@@ -703,7 +703,11 @@ function() {
 		}
 		else {
 			html[i++] = "<td>";
+			html[i++] = "<label for='";
+			html[i++] = this._weeklyDefaultId;
+			html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
+			html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}
@@ -732,16 +736,17 @@ function() {
 			html[i++] = "<td>";
 			html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
 			for (var j = 0; j < AjxDateUtil.WEEKDAY_MEDIUM.length; j++) {
+				var checkBoxId = Dwt.getNextId(this._weeklyCheckboxName + "_");
 				if (j > 0) {
 					html[i++] = "<td>&nbsp;&nbsp;</td>";
 				}
 				html[i++] = "<td><input type='checkbox' name='";
 				html[i++] = this._weeklyCheckboxName;
 				html[i++] = "' id='"
-				html[i++] = this._weeklyCheckboxName;
+				html[i++] = checkBoxId;
 				html[i++] = "'></td><td>";
 				html[i++] = "<label for='";
-				html[i++] = this._weeklyCheckboxName;
+				html[i++] = checkBoxId;
 				html[i++] = "'>";
 				html[i++] = AjxDateUtil.WEEKDAY_MEDIUM[j];
 				html[i++] = "</label>";
@@ -756,7 +761,11 @@ function() {
 		}
 		else {
 			html[i++] = "<td>";
+			html[i++] = "<label for='";
+			html[i++] = this._weeklyFieldRadioId;
+			html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
+			html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}
@@ -810,7 +819,11 @@ function() {
 			html[i++] = "'></span>";
 		}
 		else {
+			html[i++] = "<label for='";
+			html[i++] = this._monthlyDefaultId;
+			html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
+			html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}
@@ -847,7 +860,11 @@ function() {
 		}
 		else {
 			html[i++] = "<td>";
+			html[i++] = "<label for='";
+			html[i++] = this._monthlyFieldRadioId;
+			html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
+			html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}
@@ -900,7 +917,11 @@ function() {
 		}
 		else {
 			html[i++] = "<td>";
+			html[i++] = "<label for='";
+			html[i++] = this._yearlyDefaultId;
+			html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
+			html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}
@@ -936,7 +957,11 @@ function() {
 		}
 		else {
 			html[i++] = "<td>";
+			html[i++] = "<label for='";
+			html[i++] = this._yearlyFieldRadioId;
+			html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
+			html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}
