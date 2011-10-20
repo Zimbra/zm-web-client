@@ -952,6 +952,7 @@ function() {
 	this._actionsMenu.enable(ZmOperation.UNMUTE_CONV, this._msg.isMuted());
 	this._controller._setupTagMenu(this._actionsMenu);
 	this._controller._setTagMenu(this._actionsMenu);
+	this._controller._setupSpamButton(this._actionsMenu);
 	this._controller._mailListView._selectedMsg = null;
 };
 
