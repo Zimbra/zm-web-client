@@ -897,7 +897,7 @@ function(width) {
     if(this.GROUP_CALENDAR_ENABLED) {
         Dwt.setVisible(this._optionalAttendeesContainer, false);
         Dwt.setVisible(this._optAttendeesInputField.getInputElement(), false);
-        Dwt.setVisible(this._resourceInputField.getInputElement(), false);
+        if(this._resourceInputField) { Dwt.setVisible(this._resourceInputField.getInputElement(), false); }
     }
 
     this._inviteMsgContainer = document.getElementById(this._htmlElId + "_invitemsg_container");
