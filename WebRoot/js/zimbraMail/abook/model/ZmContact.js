@@ -2040,9 +2040,6 @@ function(offset, limit, callback) {
 		var list = dl.list.slice(offset, end + 1);
 		result = {list:list, more:dl.more || (dl.list.length > end + 1), isDL:dl.isDL};
 		DBG.println("dl", "found cached DL members");
-		if (synchMode) {
-			return result;
-		}
 		this._handleResponseGetDLMembers(start, limit, callback, result);
 		return;
 	}
