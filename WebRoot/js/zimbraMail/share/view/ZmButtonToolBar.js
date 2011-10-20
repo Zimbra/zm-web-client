@@ -163,7 +163,8 @@ function(id, params) {
 		var showText = !showImage || params.showTextInToolbar;
 		showImage = showImage || !params.text; //no text? gotta show image
 		showText = showText || !params.image; //no image? gotta show text
-		b = this.createButton(id, params, showImage, showText);
+		params.image = showImage && params.image; 
+		b = this.createButton(id, params, {showImage: showImage, showText: showText});
 	}
 	b.setData(ZmOperation.KEY_ID, id);
 
