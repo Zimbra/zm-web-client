@@ -582,10 +582,12 @@ function(what, folderType, ignoreExisting) {
 	var thisType = folderType || this.type;
 	var invalid = false;
 	if (what instanceof ZmFolder) {
-		invalid = ((what.parent == this && !ignoreExisting) || this.isChildOf(what) || this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_SPAM ||
+        invalid = ((what.parent == this && !ignoreExisting) || this.isChildOf(what) || this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_SPAM ||
 				   (!this.isInTrash() && this.hasChild(what.name) && !ignoreExisting) ||
 				   (what.type == ZmOrganizer.FOLDER && thisType == ZmOrganizer.SEARCH) ||
 				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.nId == ZmOrganizer.ID_ROOT) ||
+                   (what.type == ZmOrganizer.TASKS && thisType == ZmOrganizer.SEARCH) ||
+                   (what.type == ZmOrganizer.ADDRBOOK && thisType == ZmOrganizer.SEARCH) ||
 				   (what.id == this.id) ||
 				   (what.disallowSubFolder) ||
 				   (appCtxt.multiAccounts && what.getAccount() != this.getAccount()) || // cannot move folders across accounts
