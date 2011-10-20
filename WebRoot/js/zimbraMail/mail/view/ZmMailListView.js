@@ -969,8 +969,7 @@ function(ev) {
 
 		if (this._controller.actionedMsgId) {
 			var newMsg = appCtxt.getById(this._controller.actionedMsgId);
-			this._itemToSelect = (this._controller._app.getGroupMailBy() == ZmId.ITEM_CONV)
-				? appCtxt.getById(newMsg.cid) : newMsg;
+			this._itemToSelect = this._controller.isZmConvListController ? appCtxt.getById(newMsg.cid) : newMsg;
 			this._controller.actionedMsgId = null;
 		}
 

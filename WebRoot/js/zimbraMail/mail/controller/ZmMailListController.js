@@ -163,14 +163,9 @@ function(view, force) {
 			delete this._showingAccountColumn;
 		}
 
-		var localGroupBy = ZmMailListController.GROUP_BY_SETTING[view];
-		var appGroupBy = this._app._groupBy[appCtxt.getActiveAccount().name];
-		if (localGroupBy && (localGroupBy != appGroupBy)) {
-			this._app.setGroupMailBy(localGroupBy);
-		} else if (!force) {
-			return;
+		if (!this.isSearchResults) {
+			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[view]);
 		}
-
 
 		var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, view);
 		if (this._mailListView) {
@@ -179,7 +174,7 @@ function(view, force) {
 		}
 		var limit = this._listView[this._currentViewId].getLimit();
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-		var groupByItem = this._app.getGroupMailBy();
+		var groupByItem = (view == ZmId.VIEW_TRAD) ? ZmItem.MSG : ZmItem.CONV;
 		var params = {types:[groupByItem], offset:0, limit:limit, sortBy:sortBy, getHtml:getHtml};
 		appCtxt.getSearchController().redoSearch(this._app.currentSearch, null, params);
 	}
@@ -1325,14 +1320,15 @@ function(view) {
 ZmMailListController.prototype._setupViewMenu =
 function(view) {
 
-	this._updateViewMenu(view);
+	var viewType = appCtxt.getViewTypeFromId(view);
+	this._updateViewMenu(viewType);
 	this._updateViewMenu(this._getReadingPanePref());
 	this._updateViewMenu(appCtxt.get(ZmSetting.CONVERSATION_ORDER));
 
 	// always reset the view menu button icon to reflect the current view
 	var btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
 	if (btn) {
-		btn.setImage(ZmMailListController.GROUP_BY_ICON[view]);
+		btn.setImage(ZmMailListController.GROUP_BY_ICON[viewType]);
 	}
 };
 
