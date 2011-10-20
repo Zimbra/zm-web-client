@@ -562,7 +562,8 @@ function(ev, mode) {
 	if (mode == DwtHtmlEditor.TEXT) {
 		// if formatting from html to text, confirm w/ user!
 		if (!this._textModeOkCancel) {
-			this._textModeOkCancel = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
+			var dlgId = this._composeView.getHTMLElId() + "_formatWarning";
+			this._textModeOkCancel = new DwtMessageDialog({id: dlgId, parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
 			this._textModeOkCancel.setMessage(ZmMsg.switchToText, DwtMessageDialog.WARNING_STYLE);
 			this._textModeOkCancel.registerCallback(DwtDialog.OK_BUTTON, this._textModeOkCallback, this);
 			this._textModeOkCancel.registerCallback(DwtDialog.CANCEL_BUTTON, this._textModeCancelCallback, this);
