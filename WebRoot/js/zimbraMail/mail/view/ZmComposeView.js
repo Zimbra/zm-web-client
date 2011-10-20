@@ -2145,7 +2145,7 @@ function(action, msg, extraBodyText) {
 			preText = sigPre;
 		}
 	} else { // No signature, just take the extraBodyText
-		preText = extraBodyText;
+		preText = extraBodyText + crlf;
 	}
 	AjxDebug.println(AjxDebug.REPLY, "preText: " + AjxStringUtil.htmlEncode(preText));
 

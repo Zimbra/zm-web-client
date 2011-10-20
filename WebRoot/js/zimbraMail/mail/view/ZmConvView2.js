@@ -19,8 +19,6 @@ ZmConvView2 = function(params) {
 
 	this._mode = ZmId.VIEW_CONV2;
 	this._controller = params.controller;
-
-
 	this._listChangeListener = this._msgListChangeListener.bind(this);
 
 	// Add change listener to taglist to track changes in tag color
@@ -66,7 +64,11 @@ function(conv, force) {
 	// A single action menu is shared by the msgs in this conv. It appears when the msg body is
 	// right-clicked, or when the Actions button is clicked.
 	var opList = this._controller._getActionMenuOps();
-	var menu = this._actionsMenu = new ZmActionMenu({parent:appCtxt.getShell(), menuItems: opList, context: this._mode});
+	var menu = this._actionsMenu = new ZmActionMenu({
+				parent:		appCtxt.getShell(),
+				menuItems:	opList,
+				context:	this._controller.getCurrentViewId()
+			});
 	for (var i = 0; i < opList.length; i++) {
 		var menuItem = opList[i];
 		if (this._controller._listeners[menuItem]) {
@@ -142,6 +144,7 @@ function(conv, callback) {
 
 	Dwt.setHandler(this._replyInput, DwtEvent.ONFOCUS, this._onInputFocus.bind(this)); 
 	Dwt.setHandler(this._replyInput, DwtEvent.ONBLUR, this._onInputBlur.bind(this)); 
+	this._replyInput.placeholder = this._getRecipientText();
 
 	window.setTimeout(this._resize.bind(this), 100);
 	
@@ -416,8 +419,24 @@ function() {
 	body.setContent(bodyText);
 	msg.setTopPart(body);
 	msg.setSubject(origMsg.subject);
+		
+	var addresses = this._getReplyAddresses(origMsg);
+	for (var type in addresses) {
+		for (var i = 0; i < addresses[type].length; i++) {
+			msg.addAddress(addresses[type][i], type);
+		}
+	}
 	
-	// TODO: look at refactoring out of ZmComposeView
+	msg.send(false, this._handleResponseSendMsg.bind(this));
+};
+
+// TODO: look at refactoring out of ZmComposeView
+ZmConvView2.prototype._getReplyAddresses =
+function(origMsg) {
+
+	var addresses = {};
+	addresses[AjxEmailAddress.TO] = [];
+	addresses[AjxEmailAddress.CC] = [];
 	
 	// Prevent user's login name and aliases from going into To: or Cc:
 	var used = {};
@@ -434,33 +453,60 @@ function() {
 
 	if (!origMsg.isSent) {
 		var addrVec = origMsg.getReplyAddresses(ZmOperation.REPLY_ALL);
-		this._addAddresses(msg, AjxEmailAddress.TO, addrVec, used);
+		this._addAddresses(addresses, AjxEmailAddress.TO, addrVec, used);
 	}
 	var ccAddrs = new AjxVector();
 	ccAddrs.addList(origMsg.getAddresses(AjxEmailAddress.CC));
 	var toAddrs = origMsg.getAddresses(AjxEmailAddress.TO);
 	if (origMsg.isSent) {
 		// sent msg replicates To: and Cc: (minus duplicates)
-		this._addAddresses(msg, AjxEmailAddress.TO, toAddrs, used);
+		this._addAddresses(addresses, AjxEmailAddress.TO, toAddrs, used);
 	} else {
 		ccAddrs.addList(toAddrs);
 	}
-	this._addAddresses(msg, AjxEmailAddress.CC, ccAddrs, used);
+	this._addAddresses(addresses, AjxEmailAddress.CC, ccAddrs, used);
 	
-	msg.send(false, this._handleResponseSendMsg.bind(this));
+	return addresses;
 };
 
 ZmConvView2.prototype._addAddresses =
-function(msg, type, addrs, used) {
-
+function(addresses, type, addrs, used) {
 	var a = addrs.getArray();
 	for (var i = 0; i < a.length; i++) {
 		var addr = a[i];
 		if (!used || !used[addr.address]) {
-			msg.addAddress(addr, type);
+			addresses[type].push(addr);
 		}
 		used[addr.address] = true;
 	}
+};
+
+ZmConvView2.prototype._getRecipientText =
+function() {
+	
+	var sub = ZmMsg.all;
+	var origMsg = this._item.getFirstHotMsg();
+	if (origMsg) {
+		var list = [];
+		var addresses = this._getReplyAddresses(origMsg);
+		list = list.concat(this._getRecipientNames(addresses[AjxEmailAddress.TO]));
+		list = list.concat(this._getRecipientNames(addresses[AjxEmailAddress.CC]));
+		if (list.length) {
+			sub = new AjxListFormat().format(AjxUtil.uniq(list));
+		}
+	}
+	
+	return AjxMessageFormat.format(ZmMsg.replyHint, sub);
+};
+
+ZmConvView2.prototype._getRecipientNames =
+function(addresses) {
+	var list = [];
+	for (var i = 0; i < addresses.length; i++) {
+		var addr = addresses[i];
+		list.push(addr.dispName || addr.name || addr.address || "");
+	}
+	return list;
 };
 
 ZmConvView2.prototype._handleResponseSendMsg =
@@ -479,7 +525,10 @@ function() {
 ZmConvView2.prototype._detachListener =
 function() {
 	this._controller._mailListView._selectedMsg = this._item.getFirstHotMsg();
-	this._controller._doAction({action:ZmOperation.REPLY_ALL});
+	this._controller._doAction({
+				action:			ZmOperation.REPLY_ALL,
+				extraBodyText:	this._replyInput.value
+			});
 	this._controller._mailListView._selectedMsg = null;
 };
 
