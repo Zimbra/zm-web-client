@@ -71,18 +71,17 @@
     <c:if test="${empty param.wd or param.wd eq 'false'}">
         <c:choose>
             <c:when test="${view eq 'workWeek'}">
-                <c:set var="wdays" value="1,2,3,4,5"/>
+                <c:set var="wdays" value="${zm:convertCalWorkHours(mailbox.prefs.calendarWorkingHours)}"/>
             </c:when>
             <c:otherwise>
                 <c:set var="wdays" value="0,1,2,3,4,5,6"/>
             </c:otherwise>
-        </c:choose>
+         </c:choose>
     </c:if>
+
     <c:set var="workDays" value="${zm:getWorkDays(wdays)}"/>
-    <c:set var="firstDayOfWeek" value="0"/>
-    <c:if test="${print eq true and view eq 'week'}">
-        <c:set var="firstDayOfWeek" value="${mailbox.prefs.calendarFirstDayOfWeek}"/>
-    </c:if>
+    <c:set var="firstDayOfWeek" value="${mailbox.prefs.calendarFirstDayOfWeek}"/>
+ 
     <zm:getValidFolderIds var="validFolderIds" box="${mailbox}" folderid="${checkedCalendars}" varexception="exp"/>
     <c:if test="${not empty exp}">
         <zm:getException var="error" exception="${exp}"/>

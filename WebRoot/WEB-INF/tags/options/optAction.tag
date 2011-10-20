@@ -148,6 +148,15 @@
             <zm:pref name="zimbraPrefCalendarDayHourStart" value="${param.zimbraPrefCalendarDayHourStart}"/>
             <zm:pref name="zimbraPrefCalendarDayHourEnd" value="${param.zimbraPrefCalendarDayHourEnd}"/>
             <zm:pref name="zimbraPrefAppleIcalDelegationEnabled" value="${param.zimbraPrefAppleIcalDelegationEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
+
+            <c:set var="selectedDays" scope="request">${param.sun eq 'TRUE' ? 'Y' : 'N'},${param.mon eq 'TRUE' ? 'Y' : 'N'},${param.tue eq 'TRUE' ? 'Y' : 'N'},${param.wed eq 'TRUE' ? 'Y' : 'N'},${param.thu eq 'TRUE' ? 'Y' : 'N'},${param.fri eq 'TRUE' ? 'Y' : 'N'},${param.sat eq 'TRUE' ? 'Y' : 'N'}</c:set>
+            <c:set var="workWeekPref" value="${mailbox.prefs.calendarWorkingHours}"/>
+            <%--
+                Override the days in the calendar working hours preference to the work days that has been selected by the user.
+                Keep the working hours intact.
+            --%>
+            <c:set var="adjustedWorkWeekPref" value="${zm:generateWorkWeek(workWeekPref, selectedDays)}"/>
+            <zm:pref name="zimbraPrefCalendarWorkingHours" value="${adjustedWorkWeekPref}"/>
         </c:when>
     </c:choose>
 </zm:modifyPrefs>

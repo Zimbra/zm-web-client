@@ -23,6 +23,8 @@
 <fmt:getLocale var="userLocale"/>
 <c:set var="dateSymbols" value="${zm:getDateFormatSymbols(userLocale,pageContext)}"/>
 <c:set var="weekDays" value="${dateSymbols.weekdays}"/>
+<c:set var="workWeek" value="${mailbox.prefs.calendarWorkingHours}"/>
+<c:set var="workDays" value="${fn:split(workWeek, ',')}"/>
                                                    
 <table border="0" cellpadding="0" cellspacing="10" width="100%">
      <tr>
@@ -132,6 +134,67 @@
                          </c:forEach>
                      </select>
                  </td>
+             </tr>
+             <tr>
+                 <td colspan="2">
+                     &nbsp;
+                 </td>
+             </tr>
+         </table>
+         <br/>
+         <table  class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+             <tr class="ZOptionsHeaderRow">
+                 <td class="ImgPrefsHeader_L">
+                     &nbsp;
+                 </td>
+                 <td class='ZOptionsHeader ImgPrefsHeader' >
+                     <fmt:message key="calendarWorkHoursHeader"/>
+                 </td>
+                 <td class="ImgPrefsHeader_R">
+                     &nbsp;
+                 </td>
+             </tr>
+         </table>
+         <table width="100%" cellpadding="3" class="ZOptionsSectionMain">
+             <tr>
+                 <td class='ZOptionsTableLabel'>
+                     <label for="dayStart"><fmt:message key="calendarWorkWeek"/>
+                         :</label>
+                 </td>
+                 <td class='ZOptionsTableField' name="zimbraPrefCalendarWorkingDays">
+                 <table>
+                     <tr>
+                        <td>
+                            <app:optCheckbox boxfirst="true" trailingcolon="false" label="weekdaySunMedium" bundle="true" pref="sun"
+                                      checked="${fn:split(workDays[0], ':')[1] eq 'Y' ? 'true' : 'false'}"/>
+                        </td>
+                        <td>
+                            <app:optCheckbox boxfirst="true" trailingcolon="false" label="weekdayMonMedium" bundle="true" pref="mon"
+                                      checked="${fn:split(workDays[1], ':')[1] eq 'Y' ? 'true' : 'false'}"/>
+                        </td>
+                        <td>
+                            <app:optCheckbox boxfirst="true" trailingcolon="false" label="weekdayTueMedium" bundle="true" pref="tue"
+                                      checked="${fn:split(workDays[2], ':')[1] eq 'Y' ? 'true' : 'false'}"/>
+                        </td>
+                        <td>
+                            <app:optCheckbox boxfirst="true" trailingcolon="false" label="weekdayWedMedium" bundle="true" pref="wed"
+                                      checked="${fn:split(workDays[3], ':')[1] eq 'Y' ? 'true' : 'false'}"/>
+                        </td>
+                        <td>
+                            <app:optCheckbox boxfirst="true" trailingcolon="false" label="weekdayThuMedium" bundle="true" pref="thu"
+                                      checked="${fn:split(workDays[4], ':')[1] eq 'Y' ? 'true' : 'false'}"/>
+                        </td>
+                        <td>
+                            <app:optCheckbox boxfirst="true" trailingcolon="false" label="weekdayFriMedium" bundle="true" pref="fri"
+                                      checked="${fn:split(workDays[5], ':')[1] eq 'Y' ? 'true' : 'false'}"/>
+                        </td>
+                        <td>
+                            <app:optCheckbox boxfirst="true" trailingcolon="false" label="weekdaySatMedium" bundle="true" pref="sat"
+                                      checked="${fn:split(workDays[6], ':')[1] eq 'Y' ? 'true' : 'false'}"/>
+                        </td>
+                     </tr>
+                     </table>
+                     </td>
              </tr>
              <tr>
                  <td colspan="2">
