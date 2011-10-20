@@ -342,7 +342,7 @@ function(node, instNode) {
     }
 
     if (nodeInst && nodeInst.dueDate) {
-        var adjustMs = this.isAllDayEvent() ? (tzoDue + new Date(parseInt(nodeInst.s,10)).getTimezoneOffset()*60*1000) : 0;
+        var adjustMs = this.isAllDayEvent() ? (tzoDue + new Date(parseInt(nodeInst.dueDate,10)).getTimezoneOffset()*60*1000) : 0;
         var endTime = parseInt(nodeInst.dueDate,10) + adjustMs;
         this.endDate = new Date(endTime);
     } else {
