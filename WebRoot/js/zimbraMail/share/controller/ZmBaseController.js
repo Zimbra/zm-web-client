@@ -76,6 +76,26 @@ ZmBaseController = function(container, app, type, sessionId, searchResultsContro
 	if (window.ZmImApp) {
 		this._listeners[ZmOperation.IM] = ZmImApp.getImMenuItemListener();
 	}
+
+	/**
+	 * List of toolbar operations to enable on Zero/no selection
+	 * - Default is only enable ZmOperation.NEW_MENU
+	 */
+	this.operationsToEnableOnZeroSelection = [ZmOperation.NEW_MENU];
+
+	/**
+	 * List of toolbar operations to enable when multiple items are selected
+	 * - Default is to enable: ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE,
+	 * 						ZmOperation.MOVE_MENU, ZmOperation.FORWARD & ZmOperation.ACTIONS_MENU
+	 */
+	this.operationsToEnableOnMultiSelection = [ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.DELETE,
+												ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.FORWARD,
+												ZmOperation.ACTIONS_MENU];
+	/**
+	 * List of toolbar operations to *disable*
+	 * Default is to enable-all
+	 */
+	this.operationsToDisableOnSingleSelection = [];
 };
 
 ZmBaseController.prototype = new ZmController;
@@ -1099,21 +1119,20 @@ function(parent, num) {
 
 	if (num == 0) {
 		parent.enableAll(false);
-		parent.enable(ZmOperation.NEW_MENU, true);
+		parent.enable(this.operationsToEnableOnZeroSelection, true);
 	} else if (num == 1) {
 		parent.enableAll(true);
+		parent.enable(this.operationsToDisableOnSingleSelection, false);
 	} else if (num > 1) {
-		// enable only the tag and delete operations
 		parent.enableAll(false);
-		parent.enable([ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.FORWARD, ZmOperation.ACTIONS_MENU], true);
+		parent.enable(this.operationsToEnableOnMultiSelection, true);
     }
 
 	// bug: 41758 - don't allow shared items to be tagged
 	var folder = (num > 0) && this._getSearchFolder();
 	if (folder && folder.isRemote()) {
 		parent.enable(ZmOperation.TAG_MENU, false);
-	};
-
+	}
     this._resetQuickCommandOperations(parent);
 };
 
