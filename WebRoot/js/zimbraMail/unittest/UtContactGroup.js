@@ -291,7 +291,7 @@ UT.test("Group View: Verify contacts query uses is:local", {},
 			var _handleResponseSearch = function(result) {
 				query = result._data.search.query;
 				queryHint = result._data.search.queryHint;
-				UT.equal(query, '\"\"', "query = " + query);
+				UT.equal(query, '', "query = " + query);
 				UT.equal(queryHint, "is:local", "queryHint = " + queryHint);
 				UT.start();
 
