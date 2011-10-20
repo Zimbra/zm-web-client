@@ -697,10 +697,17 @@ function(parent, num) {
 
 	var printOp = (parent instanceof ZmActionMenu) ? ZmOperation.PRINT_CONTACT : ZmOperation.PRINT;
 
-    
+
+	var printEnabled = true;
+	if (this._folderId  == ZmFolder.ID_DLS ||
+			num == 1 && this._listView[this._currentViewId].getSelection()[0].isDistributionList()) {
+		printEnabled = false;
+	}
+	
+	parent.enable(printOp, printEnabled);
+
 	if (!this.isGalSearch()) {
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
-		parent.enable(printOp, num > 0);
         appCtxt.notifyZimlets("resetToolbarOperations",[parent, num]);
 
 		// a valid folderId means user clicked on an addrbook
@@ -733,7 +740,7 @@ function(parent, num) {
 		parent.enableAll(false);
 		parent.enable([ZmOperation.CONTACTGROUP_MENU], (num > 0));
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
-		parent.enable([ZmOperation.NEW_MESSAGE, printOp], num > 0);
+		parent.enable(ZmOperation.NEW_MESSAGE, num > 0);
 		parent.enable(ZmOperation.CONTACT, num == 1);
 		var contact = this._listView[this._currentViewId].getSelection()[0];
 		var isDL = contact && contact.isDistributionList();
