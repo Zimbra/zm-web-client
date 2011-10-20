@@ -49,8 +49,11 @@ ZmVoiceApp.prototype = new ZmApp;
 ZmVoiceApp.prototype.constructor = ZmVoiceApp;
 
 //voice mail formats
-ZmVoiceApp.AUDIO_MP3_FORMAT = "audio/mp3";
+ZmVoiceApp.AUDIO_MP3_FORMAT = "audio/mpeg";
 ZmVoiceApp.AUDIO_WAV_FORMAT = "audio/wav";
+
+//default
+ZmVoiceApp.audioType =  ZmVoiceApp.AUDIO_MP3_FORMAT;
 
 //Indicates if Voice items can be moved to Trash-folder
 ZmVoiceApp.hasTrashFolder = false;
@@ -115,6 +118,8 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_REPLY_BY_EMAIL, {textKey:"replyByEmail", tooltipKey:"replyByEmailTooltip", image:"Reply"});
 	ZmOperation.registerOp(ZmId.OP_FORWARD_BY_EMAIL, {textKey:"forwardByEmail", tooltipKey:"forwardByEmailTooltip", image:"Forward"});
 	ZmOperation.registerOp(ZmId.OP_DOWNLOAD_VOICEMAIL, {textKey: "downloadVoicemail", tooltipKey:"downloadVoicemailTooltip", image:"Save"});
+	ZmOperation.registerOp(ZmId.OP_NEW_CALL, {textKey: "newCall", tooltipKey:"newCallTooltip",  shortcut:ZmKeyMap.NEW_CALL, image: "PlacedCalls"});
+
 };
 
 ZmVoiceApp.prototype._registerOrganizers =
@@ -139,6 +144,8 @@ function() {
 
 ZmVoiceApp.prototype._registerApp =
 function() {
+	var newItemOps = {};
+	newItemOps[ZmOperation.NEW_CALL] = "newCall";
 	ZmApp.registerApp(ZmApp.VOICE,
 							 {mainPkg:				"Voicemail",
 							  nameKey:				"voice",
@@ -151,6 +158,7 @@ function() {
 							  gotoActionCode:		ZmKeyMap.GOTO_VOICE,
 							  chooserSort:			15,
 							  defaultSort:			15,
+							  newItemOps: 			newItemOps,
 							  upsellUrl:			ZmSetting.VOICE_UPSELL_URL
 							  });
 };
@@ -163,6 +171,19 @@ function(settings) {
 	settings = settings || appCtxt.getSettings();
 	settings.registerSetting("VOICE_PAGE_SIZE", {name:"zimbraPrefVoiceItemsPerPage", type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:25});
 	settings.registerSetting("VOICE_PAGE_SIZE_MAX", {name:"zimbraMaxVoiceItemsPerPage", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:100});
+};
+
+
+ZmVoiceApp.prototype.handleOp =
+function(op) {
+	switch (op) {
+		case ZmOperation.NEW_CALL: {
+			this._displayClickToCallDlg();
+			break;
+		} default: {
+			//do nothing
+		}
+	}
 };
 
 // Public methods
@@ -250,6 +271,7 @@ ZmVoiceApp.prototype._handleResponseVoiceInfo2 =
 function(response) {
 	var voiceInfo = response._data.GetVoiceInfoResponse;
 	this._storeprincipal = voiceInfo.storeprincipal[0];
+	this._setAudioType(voiceInfo);
 	this.soapInfo.additional = { storeprincipal: this._storeprincipal };
 	var phones = voiceInfo.phone;
 	for (var i = 0, count = phones.length; i < count; i++) {
@@ -275,6 +297,13 @@ function(response) {
 	this._voiceInfoCallbacks = null;
 	this._voiceInfoErrorCallbacks = null;
 	this._gettingVoiceInfo = false;
+};
+
+ZmVoiceApp.prototype._setAudioType =
+function(voiceInfo) {
+	if(voiceInfo.audioType && voiceInfo.audioType[0] && voiceInfo.audioType[0]._content) {
+		ZmVoiceApp.audioType = voiceInfo.audioType[0]._content;
+	}
 };
 
 ZmVoiceApp.prototype._setHasTrashFolder =
@@ -518,7 +547,7 @@ function(voice_code) {
 		var elements = {};
 		elements[ZmAppViewMgr.C_APP_CONTENT] = view;
 		var hide = [ ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_TOOLBAR_TOP,
-					 ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_SASH ];
+					  ZmAppViewMgr.C_SASH];
 		var viewName = "VoiceMessage";
 		this.createView({	viewId:			viewName,
 							appName:		this._name,
@@ -650,4 +679,20 @@ function(list) {
 ZmVoiceApp.prototype._getOverviewTrees =
 function() {
 	return [ZmOrganizer.VOICE];
+};
+
+ZmVoiceApp.prototype._displayClickToCallDlg =
+function() {
+	if(!this._click2CallZimlet) {
+		var zimletContext = appCtxt.getZimletMgr().getZimletByName("com_zimbra_click2call");
+		if(zimletContext && zimletContext.handlerObject) {
+			this._click2CallZimlet = zimletContext.handlerObject;
+		} else {
+			var dialog = appCtxt.getErrorDialog();
+			dialog.setMessage(ZmMsg.click2callZimletNotFound, null, DwtMessageDialog.CRITICAL_STYLE);
+			dialog.popup();
+			return;
+		}
+	}
+	this._click2CallZimlet.display();
 };

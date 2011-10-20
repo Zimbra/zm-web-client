@@ -48,11 +48,6 @@ ZmVoicemailListController.prototype.getDefaultViewType = ZmVoicemailListControll
 
 ZmVoicemailListController.prototype.show =
 function(searchResult, folder) {
-	//todo remove this after we get server support
-	this._voicemailFormat =  ZmVoiceApp.AUDIO_MP3_FORMAT;
-	if(searchResult && searchResult.voicemailFormat) {
-		this._voicemailFormat =  searchResult.voicemailFormat;
-	}
 	if (this._folder && (folder != this._folder)) {
 		this._getView().stopPlaying(true);
 	}
@@ -63,7 +58,7 @@ function(searchResult, folder) {
 ZmVoicemailListController.prototype._createNewView = 
 function(view) {
 	var result;
-	if (this._voicemailFormat == ZmVoiceApp.AUDIO_MP3_FORMAT) {
+	if (ZmVoiceApp.audioType == ZmVoiceApp.AUDIO_MP3_FORMAT) {
 		result = new ZmMP3VoicemailListView(this._container, this, this._dropTgt);
 	} else {
 		result = new ZmVoicemailListView(this._container, this, this._dropTgt);
@@ -116,6 +111,8 @@ function() {
 ZmVoicemailListController.prototype._initializeToolBar =
 function(view) {
 	ZmVoiceListController.prototype._initializeToolBar.call(this, view);
+	this._setNewButtonProps(null, ZmMsg.newCall, ZmMsg.newCallTooltip, "PlacedCalls", "PlacedCalls", ZmOperation.NEW_CALL);
+
 	this._toolbar[view].getButton(ZmOperation.PRINT).setToolTipContent(ZmMsg.printVoicemailTooltip)
 };
 
@@ -400,7 +397,7 @@ function(voicemail) {
 
 ZmVoicemailListController.prototype._selectListener = 
 function(ev) {
-	if(this._voicemailFormat == ZmVoiceApp.AUDIO_MP3_FORMAT) {
+	if(ZmVoiceApp.audioType == ZmVoiceApp.AUDIO_MP3_FORMAT) {
 		this._getView().displayPlayer(ev);
 		return;
 	}

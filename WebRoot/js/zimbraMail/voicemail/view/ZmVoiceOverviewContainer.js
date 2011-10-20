@@ -49,7 +49,9 @@ function(params) {
 	var phones = params.phones;
 	for (var i = 0; i < phones.length; i++) {
 		var phone = phones[i];
-
+		if(!phone.hasVoiceMail) {
+			continue;
+		}
 		// create a top-level section header
 		var headerLabel = phone.getDisplay();
 		var headerParams = {
