@@ -253,6 +253,14 @@ ZmSetting.FONT_MODERN	= "modern";
 ZmSetting.FONT_WIDE		= "wide";
 ZmSetting.FONT_SYSTEM	= "system";
 
+//task filterby setting
+ZmSetting.TASK_FILTER_ALL = "";
+ZmSetting.TASK_FILTER_TODO = "TODO";
+ZmSetting.TASK_FILTER_COMPLETED = "COMPLETED";
+ZmSetting.TASK_FILTER_WAITING = "WAITING";
+ZmSetting.TASK_FILTER_DEFERRED = "DEFERRED";
+ZmSetting.TASK_FILTER_INPROGRESS = "INPROGRESS";
+ZmSetting.TASK_FILTER_NOTSTARTED = "NOTSTARTED";
 
 // hash of global settings
 ZmSetting.IS_GLOBAL = {};

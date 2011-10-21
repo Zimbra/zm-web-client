@@ -84,6 +84,7 @@ ZmTasksApp.prototype._registerSettings =
 function(settings) {
 	settings = settings || appCtxt.getSettings();
 	settings.registerSetting("READING_PANE_LOCATION_TASKS",		{name:"zimbraPrefTasksReadingPaneLocation", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.RP_BOTTOM, isImplicit:true});
+    settings.registerSetting("TASKS_FILTERBY",		{name:"zimbraPrefTasksFilterBy", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:ZmSetting.TASK_FILTER_ALL, isImplicit:true});
 };
 
 ZmTasksApp.prototype._registerItems =
