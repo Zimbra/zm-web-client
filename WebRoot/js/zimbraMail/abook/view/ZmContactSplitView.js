@@ -148,7 +148,7 @@ function(offset) {
  */
 ZmContactSplitView.prototype.setContact =
 function(contact, isGal) {
-	if (!isGal) {
+	if (contact.isDistributionList() || !isGal) {
 		// Remove and re-add listeners for current contact if exists
 		if (this._contact) {
 			this._contact.removeChangeListener(this._changeListener);
@@ -458,11 +458,8 @@ function(contact, isGal, oldContact, expandDL, isBack) {
 
 		if (contact.isDistributionList()) {
 			var dlInfo = subs.dlInfo = contact.dlInfo;
-			subs.groupMembers = contact.dlMembers;
 		}
-		else {
-			subs.groupMembers = contact.getGroupMembersObj();
-		}
+		subs.groupMembers = contact.getGroupMembersObj();
 		subs.findObjects = AjxCallback.simpleClosure(this.__findObjects, this, this._groupObjectManager);
 
 		this._resetVisibility(true);

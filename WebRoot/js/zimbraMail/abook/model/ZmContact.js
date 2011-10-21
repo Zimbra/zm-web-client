@@ -795,7 +795,7 @@ function() {
 		return null;
 	}
 	if (this.isDistributionList()) {
-		throw new Error("getGroupMembersObj should not be called for DLs");
+		return this.dlMembers;
 	}
 	var members = [];
 	var groupMembers = this.attr[ZmContact.F_groups];
@@ -824,7 +824,9 @@ function() {
 ZmContact.prototype.getDlInfo =
 function(callback) {
 	if (this.dlInfo) {
-		return this.dlInfo;
+		if (callback) {
+			callback();
+		}
 	}
 	if (!callback) {
 		return null;
@@ -1131,6 +1133,10 @@ function(ex) {
  */
 ZmContact.prototype.modify =
 function(attr, callback) {
+	if (this.isDistributionList()) {
+		this._modifyDl(attr);
+		return;
+	}
 	if (this.list.isGal) { return; }
 
 	// change force to 0 and put up dialog if we get a MODIFY_CONFLICT fault?
@@ -1173,6 +1179,96 @@ function(attr, callback) {
 		}
 	}
 };
+
+ZmContact.prototype._modifyDl =
+function(attr) {
+	var memberModifications = attr[ZmContact.F_groups];
+	var adds = [];
+	var removes = [];
+	if (memberModifications) {
+		for (var i = 0; i < memberModifications.length; i++) {
+			var mod = memberModifications[i];
+			var col = (mod.op == "+" ? adds : removes);
+			col.push(mod);
+		}
+	}
+
+	var reqs = [];
+	if (adds.length > 0) {
+		reqs.push(this._getAddOrRemoveReq(adds, true));
+	}
+	if (removes.length > 0) {
+		reqs.push(this._getAddOrRemoveReq(removes, false));
+	}
+
+	var newName = attr[ZmContact.F_nickname];
+
+	if (newName !== undefined) {
+		reqs.push(this._getRenameDlReq(newName));
+	}
+
+	if (reqs.length == 0) {
+		return;
+	}
+	var jsonObj = {
+		BatchRequest: {
+			_jsns: "urn:zimbra",
+			DistributionListActionRequest: reqs
+		}
+	};
+	var respCallback = this._modifyDlResponseHandler.bind(this);
+	appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
+
+};
+
+ZmContact.prototype._getAddOrRemoveReq =
+function(members, add) {
+	var req = {
+		_jsns: "urn:zimbraAccount",
+		dl: {by: "name",
+			 _content: this.getEmail()
+		},
+		action: {
+			op: add ? "addMembers" : "removeMembers",
+			dlm: []
+		}
+	};
+	for (var i = 0; i < members.length; i++) {
+		var member = members[i];
+		req.action.dlm.push({_content: member.email});
+	}
+	return req;
+
+};
+
+
+ZmContact.prototype._getRenameDlReq =
+function(name) {
+	return {
+		_jsns: "urn:zimbraAccount",
+		dl: {by: "name",
+			 _content: this.getEmail()
+		},
+		action: {
+			op: "rename",
+			newName: {_content: name}
+		}
+	};
+};
+
+ZmContact.prototype._modifyDlResponseHandler =
+function(ev) {
+	appCtxt.setStatusMsg(ZmMsg.dlSaved);
+
+	//for DLs we reload from the server since the server does not send notifications.
+	this.dlMembers = null;
+	this.dlInfo = null;
+	var app = appCtxt.getApp(ZmApp.CONTACTS);
+	app.cacheDL(this.getEmail(), null); //clear the cache for this DL.
+	this._notify(ZmEvent.E_MODIFY);
+
+};
+
 
 /**
  * @private

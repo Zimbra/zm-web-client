@@ -233,6 +233,7 @@ function(contact, callback, result) {
 						unsubscriptionPolicy: attrs.zimbraDistributionListUnsubscriptionPolicy,
 						description: attrs.description};
 
+	this._resetOperations(this._toolbar[this._currentViewId], 0); // now that we got the dlInfo we can know better how to set the "edit" button.
 	var callbackFromGettingMembers = this._handleGetDlMembersResponse.bind(this, contact, callback);
 	contact.getAllDLMembers(callbackFromGettingMembers);
 };
@@ -745,7 +746,6 @@ function(parent, num) {
 		var contact = this._listView[this._currentViewId].getSelection()[0];
 		var isDL = contact && contact.isDistributionList();
 		var isOwner = isDL && contact.dlInfo && contact.dlInfo.isOwner;
-		isOwner = false; //todo - remove when we support editing by owner.
 		parent.enable([ZmOperation.EDIT], isOwner);
 	};
 

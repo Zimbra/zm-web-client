@@ -144,11 +144,11 @@ function() {
 	var foundOne = false;
 
 	// get field values
-	var groupName = AjxStringUtil.trim(document.getElementById(this._groupNameId).value);
+	var groupName = this._getGroupName();
 	var folderId = this._getFolderId();
 
 	// creating new contact (possibly some fields - but not ID - prepopulated)
-	if (this._contact.id == null || this._contact.isGal) {
+	if (this._contact.id == null || (this._contact.isGal && !this._contact.isDistributionList())) {
 		mods[ZmContact.F_folderId] = folderId;
 		mods[ZmContact.F_fileAs] = ZmContact.computeCustomFileAs(groupName);
 		mods[ZmContact.F_nickname] = groupName;
@@ -188,17 +188,32 @@ function() {
 
 ZmGroupView.prototype._getFullName =
 function() {
-	return document.getElementById(this._groupNameId).value;
+	return this._getGroupName();
+};
+
+ZmGroupView.prototype._getGroupName =
+function() {
+	return AjxStringUtil.trim(document.getElementById(this._groupNameId).value);
 };
 
 ZmGroupView.prototype.isEmpty =
 function(checkEither) {
-	var groupName = AjxStringUtil.trim(document.getElementById(this._groupNameId).value);
+	var groupName = this._getGroupName();
 	var members = ( this._groupListView.getList() && this._groupListView.getList().size() > 0 );
 
 	return checkEither
 		? (groupName == "" || !members )
 		: (groupName == "" && !members );
+};
+
+
+ZmGroupView.prototype.isValidDlName =
+function() {
+	if (!this._contact.isDistributionList()) {
+		return true;
+	}
+	var groupName = this._getGroupName();
+	return AjxEmailAddress.isValid(groupName);
 };
 
 ZmGroupView.prototype.isValid =
@@ -207,21 +222,38 @@ function() {
 	if (this.isDirty() && this.isEmpty(true)) {
 		return false;
 	}
+	if (!this.isValidDlName()) {
+		return false;
+	}
 	return true;
 };
 
 ZmGroupView.prototype.getInvalidItems =
 function() {
-	if (!this.isValid()) {
-		return ["members"];
+	if (this.isValid()) {
+		return [];
 	}
-	return [];
+	var items = [];
+	if (this.isEmpty(true)) {
+		items.push("members");
+	}
+	if (!this.isValidDlName()) {
+		items.push("dlName");
+	}
+	return items;
 };
 
 ZmGroupView.prototype.getErrorMessage = function(id) {
-	if (!this.isValid() && id=="members") {
+	if (this.isValid()) {
+		return null;
+	}
+	if (id == "members") {
 		return ZmMsg.errorMissingGroup;
 	}
+	if (id == "dlName") { 
+		return ZmMsg.dlInvalidName; 
+	}
+
 };
 
 ZmGroupView.prototype.enableInputs =
@@ -788,7 +820,7 @@ function(ev){
 			} 
 			
 			if (items[i].value && !this._groupMemberMods[items[i].value]) {
-				this._groupMemberMods[items[i].value] = {op : "-", value : items[i].value, type : type};
+				this._groupMemberMods[items[i].value] = {op : "-", value : items[i].value, email: items[i].address, type : type};
 			}
 			else {
 				//contact added but not yet saved
@@ -901,9 +933,10 @@ function(list, append){
 		for (var i=0; i<list.length; i++) {
 			if (list[i] && list[i].__contact) {
 				var type = list[i].__contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
-				var id = list[i].__contact.getId(type == ZmContact.GROUP_CONTACT_REF); 
+				var id = list[i].__contact.getId(type == ZmContact.GROUP_CONTACT_REF);
+				var email = list[i].address;
 				if (!this._groupMemberMods[id]) {
-					this._groupMemberMods[id] = {op : "+", value : id, type : type};
+					this._groupMemberMods[id] = {op : "+", value : id, type : type, email: email};
 				}
 				else {
 					var obj = this._groupMemberMods[id];
@@ -915,7 +948,7 @@ function(list, append){
 			}
 			else {
 				//inline member
-				this._groupMemberMods[list[i]] = {op : "+", value : list[i], type : ZmContact.GROUP_INLINE_REF};
+				this._groupMemberMods[list[i]] = {op : "+", value : list[i], email: list[i], type : ZmContact.GROUP_INLINE_REF};
 			}
 		}
 		var membersList = this._groupListView.getList();

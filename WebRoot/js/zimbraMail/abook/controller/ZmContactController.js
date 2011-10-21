@@ -359,7 +359,7 @@ function(ev, bIsPopCallback) {
 		}
 		else
 		{
-			if (contact.id && !contact.isGal) {
+			if (contact.id && (!contact.isGal || contact.isDistributionList())) {
 				if (view.isEmpty()) { //If contact empty, alert the user
 					var ed = appCtxt.getMsgDialog();
 					ed.setMessage(ZmMsg.emptyContactSave, DwtMessageDialog.CRITICAL_STYLE);
