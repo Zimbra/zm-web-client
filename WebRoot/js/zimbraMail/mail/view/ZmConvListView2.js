@@ -263,32 +263,26 @@ function(item, colIdx) {
 	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? 22 : 16;
 
 	// first row
-	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%>";
+	htmlArr[idx++] = "<table cellpadding='0' style='width:100%;border-collapse:collapse;'>";
 	htmlArr[idx++] = (item.isUnread && !item.isMuted()) ? "<tr class='Unread' " : "<tr ";
 	htmlArr[idx++] = "id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
-	if (item.isHighPriority || item.isLowPriority) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", "align=right");
-	}
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SUBJECT, colIdx);
-	if (item.hasAttach) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, width, "valign=top");
-	}
-	if (appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED)) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_MSG_PRIORITY, colIdx, "16", "align=right");	
-	}
-	if (appCtxt.get("FLAGGING_ENABLED")) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, width);
-	}
+	
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_READ, colIdx, width);
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
+	//idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SIZE, colIdx, ZmMsg.COLUMN_WIDTH_SIZE);
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right");
+	
 	htmlArr[idx++] = "</tr></table>";
 
+
 	// second row
-	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr>";
-		htmlArr[idx++] = "<td width='" + (width + 15) + "'";
-		htmlArr[idx++] = this._getStyleViaZimlet(ZmItem.F_FROM, item);
-		htmlArr[idx++] = "></td>";
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_READ, colIdx, width, "style='padding-left:0px'");
+	htmlArr[idx++] = "<table cellpadding='0' style='width:100%;border-collapse:collapse;'><tr>";
+	htmlArr[idx++] = "<td width='16'></td>";
+		//htmlArr[idx++] = "<td width='" + (width + 15) + "'";
+		//htmlArr[idx++] = this._getStyleViaZimlet(ZmItem.F_FROM, item);
+		//htmlArr[idx++] = "></td>";
 
 	// for multi-account, show the account icon for cross mbox search results
 	if (appCtxt.multiAccounts &&
@@ -297,12 +291,24 @@ function(item, colIdx) {
 	{
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ACCOUNT, colIdx, "16", "align=right");
 	}
-
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SIZE, colIdx, ZmMsg.COLUMN_WIDTH_SIZE);
-
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right");
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, width);
+	if (item.isHighPriority || item.isLowPriority) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", "align=right");
+	}
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SUBJECT, colIdx);
+	if (item.hasAttach) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, width, "valign=top");
+	}
+	
+	var tags = item.getVisibleTags();
+	if (tags && tags.length) {
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, width);	
+	}
+	if (appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED)) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_MSG_PRIORITY, colIdx, "16", "align=right");	
+	}
+	if (appCtxt.get("FLAGGING_ENABLED")) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, width);
+	}
 	htmlArr[idx++] = "</tr></table>";
 
 	return htmlArr.join("");
