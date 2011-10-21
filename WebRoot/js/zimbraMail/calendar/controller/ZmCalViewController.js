@@ -1835,22 +1835,28 @@ if (!this._confirmDialog) {
 ZmCalViewController.prototype._promptCancelReply =
 function(appt, mode) {
 	var cancelNoReplyCallback = new AjxCallback(this, this._continueDelete, [appt, mode]);
-	var confirmDialog = this._confirmDeleteApptDialog();
-    confirmDialog.setTitle(ZmMsg.confirmDeleteApptTitle);
-
+    var confirmDialog;
     var calendar = appt && appt.getFolder();
     var isTrash = calendar && calendar.nId==ZmOrganizer.ID_TRASH;
 
+    // Display traditional Yes/No Dialog if
+    // - If appt has no attendees
+    // - appt is from trash
+    // - appt is saved but not sent
 	if (!isTrash && appt.otherAttendees && !appt.inviteNeverSent && appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-		var cancelReplyCallback = new AjxCallback(this, this._continueDeleteReply, [appt, mode]);
+        confirmDialog = this._confirmDeleteApptDialog();
+        var cancelReplyCallback = new AjxCallback(this, this._continueDeleteReply, [appt, mode]);
+
+        confirmDialog.setTitle(ZmMsg.confirmDeleteApptTitle);
 		confirmDialog.popup(ZmMsg.confirmCancelApptReply, cancelReplyCallback, cancelNoReplyCallback);
 	} else {
-
+        confirmDialog = appCtxt.getConfirmationDialog();
 		var msg = isTrash ? ZmMsg.confirmPermanentCancelAppt : ZmMsg.confirmCancelAppt;
 
 		if (appt.isRecurring() && !isTrash) {
 	    	msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, AjxStringUtil.htmlEncode(appt.name)) :  ZmMsg.confirmCancelApptSeries; 
 		}
+        confirmDialog.setTitle(ZmMsg.confirmDeleteApptTitle);
 		confirmDialog.popup(msg, cancelNoReplyCallback);
 	}
 };
