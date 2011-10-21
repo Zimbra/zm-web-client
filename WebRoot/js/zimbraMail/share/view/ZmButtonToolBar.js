@@ -191,6 +191,9 @@ function(id, params) {
  */
 ZmButtonToolBar.prototype.addOp =
 function(id, index) {
+	if(this.getOp(id)) {
+		return;
+	}
 	ZmOperation.addOperation(this, id, this._buttons, index);
 	AjxUtil.arrayAdd(this.opList, id, index);
 };
