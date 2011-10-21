@@ -563,7 +563,7 @@ function() {
 
 ZmDumpsterListController.prototype._getToolBarOps =
 function() {
-	return [ZmOperation.MOVE, ZmOperation.DELETE];
+	return [ZmOperation.MOVE];
 };
 
 ZmDumpsterListController.prototype._createNewView =
@@ -609,15 +609,11 @@ function(view) {
 	};
 	var tb = this._toolbar[view] = new ZmButtonToolBar(tbParams);
 	tb.addSelectionListener(ZmOperation.MOVE, new AjxListener(this, this._moveListener));
-	tb.addSelectionListener(ZmOperation.DELETE, new AjxListener(this, this._deleteListener));
 
 	// change text of move button
 	var button = tb.getButton(ZmOperation.MOVE);
 	button.setText(ZmMsg.recoverTo);
 
-	// change tooltip for delete button
-	var button = tb.getButton(ZmOperation.DELETE);
-	button.setToolTipContent(ZmMsg.permanentlyDelete);
 };
 
 ZmDumpsterListController.prototype._doMove =
@@ -629,23 +625,6 @@ function(items, folder, attrs, isShiftKey) {
 	attrs.l = folder.id;
 	                                                                                                                                              		
 	ZmListController.prototype._doMove.call(this, items, folder, attrs, isShiftKey);
-};
-
-ZmDumpsterListController.prototype._deleteListener =
-function(ev) {
-	var dialog = appCtxt.getOkCancelMsgDialog();
-	dialog.reset();
-	dialog.setMessage(ZmMsg.confirmItemDelete, DwtMessageDialog.WARNING_STYLE);
-	dialog.registerCallback(DwtDialog.OK_BUTTON, this._deleteCallback, this, [dialog]);
-	dialog.popup();
-};
-
-ZmDumpsterListController.prototype._deleteCallback =
-function(dialog) {
-	dialog.popdown();
-
-	// hard delete
-	this._doDelete(this._listView[this._currentView].getSelection(), true, {op:"dumpsterdelete"});
 };
 
 ZmDumpsterListController.prototype._getMoreSearchParams =
