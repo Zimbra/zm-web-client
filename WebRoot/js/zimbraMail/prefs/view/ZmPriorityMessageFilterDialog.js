@@ -15,7 +15,7 @@
 
 ZmPriorityMessageFilterDialog = function() {
 
-	DwtDialog.call(this, {parent:appCtxt.getShell(), className:"ZmPriorityMessageFilterDialog", title:ZmMsg.priorityMessageFilter});
+	DwtDialog.call(this, {parent:appCtxt.getShell(), className:"ZmPriorityMessageFilterDialog", title:ZmMsg.messagePriority});
 
 	// set content
 	this.setContent(this._contentHtml());
