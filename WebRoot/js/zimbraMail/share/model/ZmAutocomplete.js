@@ -34,8 +34,7 @@ ZmAutocomplete = function(params) {
 
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		var listener = this._settingChangeListener.bind(this);
-		var settings = [ZmSetting.GAL_AUTOCOMPLETE, ZmSetting.AUTOCOMPLETE_SHARE,
-						ZmSetting.AUTOCOMPLETE_SHARED_ADDR_BOOKS, ZmSetting.AUTOCOMPLETE_NO_GROUP_MATCH];
+		var settings = [ZmSetting.GAL_AUTOCOMPLETE, ZmSetting.AUTOCOMPLETE_SHARE, ZmSetting.AUTOCOMPLETE_SHARED_ADDR_BOOKS];
 		for (var i = 0; i < settings.length; i++) {
 			appCtxt.getSettings().getSetting(settings[i]).addChangeListener(listener);
 		}
