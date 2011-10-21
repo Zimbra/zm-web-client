@@ -56,7 +56,7 @@
 		    <c:choose>
 	        	<c:when test="${!empty cookie.ZM_TEST}">
 		            <zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl"
-                              varAuthResult="authResult" varNeedRefer="needRefer"
+                              varAuthResult="authResult"
 		                      newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
 							  requestedSkin="${param.skin}"/>
 		            <%-- continue on at not empty authResult test --%>
@@ -72,7 +72,7 @@
 	        <c:set var="authtoken" value="${not empty param.zauthtoken ? param.zauthtoken : cookie.ZM_AUTH_TOKEN.value}"/>
 	        <c:if test="${not empty authtoken}">
 	            <zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
-	                      varRedirectUrl="postLoginUrl" varAuthResult="authResult" varNeedRefer="needRefer"
+	                      varRedirectUrl="postLoginUrl" varAuthResult="authResult"
 	                      rememberme="${param.zrememberme == '1'}"
 						  requestedSkin="${param.skin}" adminPreAuth="${param.adminPreAuth == '1'}"/>
 	            <%-- continue on at not empty authResult test --%>
@@ -82,10 +82,12 @@
 </c:catch>
 
 <c:if test="${not empty authResult}">
+    <c:set var="refer" value="${authResult.refer}"/>
+    <c:set var="serverName" value="${pageContext.request.serverName}"/>
     <c:choose>
         <c:when test="${not empty postLoginUrl}">
             <c:choose>
-                <c:when test="${needRefer}">
+                <c:when test="${not empty refer and not zm:equalsIgnoreCase(refer, serverName)}">
                     <%--
                     bug 63258: Need to redirect to a different server, avoid browser redirect to the post login URL.
                     Do a JSP redirect which will do a onload form submit with ZAuthToken as a hidden param.
@@ -113,7 +115,7 @@
         </c:when>
         <c:otherwise>
             <c:set var="client" value="${param.client}"/>
-            <c:if test="${empty client and useMobile}"><c:set var="client" value="mobile"/></c:if> 
+            <c:if test="${empty client and useMobile}"><c:set var="client" value="mobile"/></c:if>
             <c:if test="${empty client or client eq 'preferred'}">
                 <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
             </c:if>
@@ -138,7 +140,6 @@
                             <jsp:forward page="/public/launchZCS.jsp"/>
                         </c:otherwise>
                     </c:choose>
-
         		</c:when>
         		<c:when test="${client eq 'standard'}">
 		            <c:redirect url="/h/search">

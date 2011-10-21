@@ -58,7 +58,7 @@
         <%--External User Login - domain name will be passed as an URL param--%>
         <% String acctName = request.getParameter("email").replace("@", ".") + "@" + request.getParameter("domain"); %>
         <zm:login username="<%=acctName%>" password="${param.password}" varRedirectUrl="postLoginUrl"
-                  varAuthResult="authResult" varNeedRefer="needRefer" rememberme="${param.zrememberme == '1'}"/>
+                  varAuthResult="authResult" rememberme="${param.zrememberme == '1'}"/>
         <c:choose>
             <c:when test="${not empty authResult}">
                 <c:redirect url="/"/>
