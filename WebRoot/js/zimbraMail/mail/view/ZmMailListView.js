@@ -1024,7 +1024,7 @@ function(clickedEl, ev) {
 					if (this.getSelectionCount() == 1) {
 						var item = this.getSelection()[0];
 						var msg = (item instanceof ZmConv) ? item.getFirstHotMsg() : item;
-						if (msg && ctlr._curMsg && (msg.id != ctlr._curMsg.id)) {
+						if (msg && ctlr._curItem && (msg.id != ctlr._curItem.id)) {
 							ctlr.reset();
 						}
 					}

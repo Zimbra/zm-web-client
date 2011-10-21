@@ -116,7 +116,7 @@ function(conv, callback) {
 	var html = AjxTemplate.expand(template, subs);
 	var el = this.getHtmlElement();
 	el.appendChild(Dwt.parseHtmlFragment(html));
-		
+	
 	var messagesDiv = document.getElementById(this._messagesDivId);
 	this._renderMessages(conv, messagesDiv);
 	
@@ -146,7 +146,7 @@ function(conv, callback) {
 	Dwt.setHandler(this._replyInput, DwtEvent.ONBLUR, this._onInputBlur.bind(this)); 
 	this._replyInput.placeholder = this._getRecipientText();
 
-	window.setTimeout(this._resize.bind(this), 100);
+	window.setTimeout(this._resize.bind(this), 300);
 	
 	if (callback) {
 		callback();
@@ -200,13 +200,19 @@ function(msg, params) {
 ZmConvView2.prototype._resize =
 function() {
 
+	DBG.println("cv2", "ZmConvView2::_resize");
 	if (this._noResults) { return; }
 	if (!this._messagesDiv || !this._replyDiv) { return; }
 	
 	var tbSize = this._replyToolbar.getSize();
 	if (this._controller.isReadingPaneOnRight()) {
 		// textarea is bigger if focused
-		Dwt.setSize(this._replyInput, Dwt.DEFAULT, this._inputFocused ? 100 : 20);
+		if (AjxEnv.isIE) {
+			
+		}
+		else {
+			Dwt.setSize(this._replyInput, Dwt.DEFAULT, this._inputFocused ? 100 : 20);
+		}
 		// make messages container DIV scroll independently of header and reply DIVs
 		var replySize = Dwt.getSize(this._replyDiv);
 		var myHeight = this.getSize().y;
@@ -593,6 +599,7 @@ ZmMailMsgCapsuleView = function(params) {
 	params.className = this._normalClassName = params.className || "ZmMailMsgCapsuleView";
 	this._msgId = params.msgId;
 	params.id = this._getViewId();
+	params.scrollWithIframe = true;
 	ZmMailMsgView.call(this, params);
 
 	this._mode = params.mode;
@@ -653,7 +660,9 @@ function(msg, container, callback) {
 ZmMailMsgCapsuleView.prototype._renderMessageHeader =
 function(msg, container) {
 	
-	this._headerId = ZmId.getViewId(this._viewId, ZmId.MV_MSG_HEADER, this._mode);
+	if (this._header) { return; }
+	
+	this._headerId = [this._htmlElId, ZmId.MV_MSG_HEADER].join("_");
 	var params = {
 		parent:		this,
 		id:			this._headerId,
@@ -708,7 +717,6 @@ function(msg, container, callback) {
 	else {
 		this._handleResponseLoadMessage(msg, container, callback);
 	}
-	
 };
 
 ZmMailMsgCapsuleView.prototype._handleResponseLoadMessage =
@@ -764,12 +772,16 @@ function(msg, container, callback, index) {
 			el.style.left = el.style.top = "auto";
 		}
 	}
+
+	window.setTimeout(this._resize.bind(this), 250);
 };
 
 ZmMailMsgCapsuleView.prototype._getBodyContent =
 function(bodyPart) {
-	return this._showingQuotedText ? bodyPart.content :
-									 AjxStringUtil.getOriginalContent(bodyPart.content, (bodyPart.ct == ZmMimeTable.TEXT_HTML));
+	var content = this._showingQuotedText ? bodyPart.content :
+		AjxStringUtil.getOriginalContent(bodyPart.content, (bodyPart.ct == ZmMimeTable.TEXT_HTML));
+	this._noQuotedText = (!this._showingQuotedText && (content == bodyPart.content));
+	return content;
 };
 
 ZmMailMsgCapsuleView.prototype._setExpandIcon =
@@ -790,11 +802,12 @@ function(msg, container) {
 	this._tagContainerCellId = Dwt.getNextId();
 	this._showTextLinkId = Dwt.getNextId();
 	var replyLinkId = Dwt.getNextId();
-	this._footerId = ZmId.getViewId(this._viewId, ZmId.MV_MSG_FOOTER, this._mode);
+	this._footerId = [this._htmlElId, ZmId.MV_MSG_FOOTER].join("_");
 	var folder = appCtxt.getById(msg.folderId);
 	var folderName = folder ? folder.getName(false, null, true, true) : "";
 	var attachmentsCount = this._msg.getAttachmentLinks(true, !appCtxt.get(ZmSetting.VIEW_AS_HTML), true).length;
-	this._attLinksId = ZmId.getViewId(this._viewId, ZmId.MV_ATT_LINKS, this._mode);
+	this._attLinksId = [this._htmlElId, ZmId.MV_ATT_LINKS].join("_");
+	this._attLinksContainerId = this._attLinksId + "_container";
 
 	var subs = {
 		footerId:		this._footerId,
@@ -805,7 +818,8 @@ function(msg, container) {
 		replyLinkId:	replyLinkId,
 		buttonCellId:	this._buttonCellId,
 		hasAttachments:	(attachmentsCount > 0),
-		attachId:		this._attLinksId
+		attachId:		this._attLinksId,
+		noQuotedText:	this._noQuotedText
 	}
 	var html = AjxTemplate.expand("mail.Message#Conv2MsgFooter", subs);
 	this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
@@ -835,6 +849,19 @@ function(msg, container) {
 	this._resetOperations();
 };
 
+// IFRAME defaults to height of 150. If content is smaller, resize to its height.
+ZmMailMsgCapsuleView.prototype._resize =
+function() {
+	if (!this._expanded) { return; }
+	DBG.println("cv2", "ZmMailMsgCapsuleView::_resize");
+	var htmlEl = this.getIframeHtmlElement();
+	var htmlElHeight = htmlEl && Dwt.getSize(htmlEl).y;
+	if (htmlElHeight && htmlElHeight < 150) {
+		var iframe = document.getElementById(this._iframeId);
+		Dwt.setSize(iframe, Dwt.DEFAULT, htmlElHeight);
+	}
+};
+
 ZmMailMsgCapsuleView.prototype._setActionMenu =
 function(ev) {
 
@@ -854,21 +881,15 @@ function() {
 	this._expanded = !this._expanded;
 	var body = this.getMsgBodyElement();
 	var footer = document.getElementById(this._footerId);
-	if (!this._expanded) {
-		if (body && footer) {
-			Dwt.setVisible(body, false);
-			Dwt.setVisible(footer, false);
-		}
+	var attLinks = document.getElementById(this._attLinksContainerId);
+	
+	if (this._expanded && !body) {
+		this._renderMessage(this._msg);
 	}
 	else {
-		if (body && footer) {
-			Dwt.setVisible(body, true);
-			Dwt.setVisible(footer, true);
-		}
-		else {
-			this.getHtmlElement().innerHTML = "";
-			this._renderMessage(this._msg);
-		}
+		if (body)		{ Dwt.setVisible(body, this._expanded); }
+		if (footer)		{ Dwt.setVisible(footer, this._expanded); }
+		if (attLinks)	{ Dwt.setVisible(attLinks, this._expanded); }
 	}
 	this._setExpandIcon();
 };
@@ -878,7 +899,6 @@ function() {
 	
 	var msg = this._msg;
 	if (!appCtxt.get(ZmSetting.TAGGING_ENABLED) || !msg || !this.parent._tagList) { return; }
-	if (!(msg.tags && msg.tags.length)) { return; }
 	
 	this._tagCellId = Dwt.getNextId();
 	this._renderTags(msg, document.getElementById(this._tagContainerCellId), this._tagCellId);

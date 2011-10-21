@@ -649,10 +649,12 @@
 				<tr>
 					<!--<td id='${folderCellId}' class='MsgFolder'>${folderName}</td>-->
 					<td id='${tagCellId}' width=100%></td>
+					<$ if (!data.noQuotedText) { $>
 					<td>
 						<a class='Link' id='${showTextLinkId}'><$= ZmMsg.showQuotedText $></a>
 					</td>
 					<td>&nbsp;|&nbsp;</td>
+					<$ } $>
 					<td>
 						<a class='Link' id='${replyLinkId}'><$= ZmMsg.reply $></a>
 					</td>

@@ -359,8 +359,7 @@ function(item) {
 		// make sure list view has this msg
 		var lv = this._listView[this._currentViewId];
 		if (lv.hasItem(item.id)) {
-			this._displayMsg(item);
-	//		this._curMsg = msg;
+			this._displayItem(item);
 		}
 	}
 	else {
@@ -420,10 +419,10 @@ function(callback) {
 	return (item.type == ZmItem.CONV) ? item.getFirstHotMsg(null, callback) : item;
 };
 
-ZmConvListController.prototype._displayMsg =
-function(msg) {
-	this._doublePaneView.setItem(msg);
-	this._handleMarkRead(msg);
+ZmConvListController.prototype._displayItem =
+function(item) {
+	this._doublePaneView.setItem(item);
+	this._handleMarkRead(item);
 };
 
 ZmConvListController.prototype._handleMarkRead =

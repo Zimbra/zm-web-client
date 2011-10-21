@@ -288,10 +288,10 @@ function(view) {
 	this._doublePaneView.setList(this._list);
 };
 
-ZmDoublePaneController.prototype._displayMsg =
-function(msg) {
+ZmDoublePaneController.prototype._displayItem =
+function(item) {
 
-	if (!msg._loaded) { return; }
+	if (!item._loaded) { return; }
 
 	// cancel timed mark read action on previous msg
 	if (appCtxt.markReadActionId > 0) {
@@ -299,10 +299,12 @@ function(msg) {
 		appCtxt.markReadActionId = -1;
 	}
 
-	this._doublePaneView.setItem(msg);
-	this._handleMarkRead(msg);
-	this._curMsg = msg;
+	this._doublePaneView.setItem(item);
+	this._handleMarkRead(item);
+	this._curItem = item;
 };
+ZmDoublePaneController.prototype._displayMsg = ZmDoublePaneController.prototype._displayItem;
+
 
 ZmDoublePaneController.prototype._handleMarkRead =
 function(msg) {

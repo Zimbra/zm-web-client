@@ -35,7 +35,7 @@ ZmMailMsgView = function(params) {
 	this._expandHeader = true;
 	this._expandDivId = ZmId.getViewId(this._viewId, ZmId.MV_EXPAND_DIV, this._mode);
 
-	this._scrollWithIframe = false;
+	this._scrollWithIframe = params.scrollWithIframe;
 	this._limitAttachments = this._scrollWithIframe ? 3 : 0; //making it local
 	this._attcMaxSize = this._limitAttachments * 16 + 8;
 	this.setScrollStyle(this._scrollWithIframe ? DwtControl.CLIP : DwtControl.SCROLL);
@@ -274,6 +274,13 @@ function() {
 	}
 
 	return htmlBodyEl;
+};
+
+ZmMailMsgView.prototype.getIframeHtmlElement =
+function() {
+	var iframe = document.getElementById(this._iframeId);
+	var idoc = iframe && Dwt.getIframeDoc(iframe);
+	return idoc ? idoc.firstChild : null;
 };
 
 ZmMailMsgView.prototype.addInviteReplyListener =
@@ -947,7 +954,7 @@ function(container, html, isTextMsg, isTruncated, index) {
 		}
 	}
 
-	this._msgBodyDivId = ZmId.getViewId(this._viewId, ZmId.MV_MSG_BODY, this._mode);
+	this._msgBodyDivId = [this._htmlElId, ZmId.MV_MSG_BODY].join("_");
 	// bug fix #9475 - IE isnt resolving MsgBody class in iframe so set styles explicitly
 	var inner_styles = AjxEnv.isIE ? ".MsgBody-text, .MsgBody-text * { font: 10pt monospace; }" : "";
 	var params = {
@@ -1638,8 +1645,12 @@ function(msg) {
 ZmMailMsgView.prototype._renderTags =
 function(msg, container, tagCellId) {
 
+	if (!container) { return; }
 	var numTags = msg && msg.tags && msg.tags.length;
-	if (!numTags || !container) { return; }
+	if (!numTags) {
+		container.innerHTML = "";
+		return;
+	}
 	
 	// get sorted list of tags for this msg
 	var ta = [];
@@ -2130,6 +2141,7 @@ function(dwtIframe) {
 
 ZmMailMsgView._resetIframeHeight =
 function(self, iframe, attempt) {
+	DBG.println("cv2", "ZmMailMsgView::_resetIframeHeight " + (attempt || "0"));
 	var h;
 	if (self._scrollWithIframe) {
 		h = self.getH();
@@ -2446,5 +2458,5 @@ function(msgId, partId, name) {
 
 ZmMailMsgView.prototype.getMsgBodyElement =
 function(){
-    return document.getElementById(ZmId.getViewId(this._viewId, ZmId.MV_MSG_BODY, this._mode));
+    return document.getElementById(this._msgBodyDivId);
 };
