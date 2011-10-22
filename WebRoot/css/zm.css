@@ -795,18 +795,30 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .ZmConvView2 .ReplyTextarea {
 	width:96%;
+	#IFDEF MSIE
+	height:100%;
+	#ENDIF
 	margin:5px;
 }
 
 #IFDEF SAFARI
-.ZmConvView2 input::-webkit-input-placeholder {
+.ZmConvView2 textarea::-webkit-input-placeholder {
     @InputField-hint@
 }
 #ENDIF
 
 #IFDEF GECKO
-.ZmConvView2 input:-moz-placeholder {
+.ZmConvView2 textarea:-moz-placeholder {
     @InputField-hint@
+}
+#ENDIF
+
+#IFDEF MSIE
+.Conv2ReplyContainer {
+	height: 20px;
+}
+.ZmConvView2 .ReplyTextarea.hint {
+	@InputField-hint@
 }
 #ENDIF
 

@@ -603,7 +603,9 @@
 	<div class='Conv2View'>
 		<div id="${messagesDivId}" class='Conv2Messages'></div>
 		<div id="${replyDivId}" class='Conv2Reply'>
-			<textarea id="${replyInputId}" class="ReplyTextarea" rows=1 placeholder="<$= ZmMsg.replyHint $>"></textarea>
+			<div id="${replyContainerId}" class='Conv2ReplyContainer'>
+				<textarea id="${replyInputId}" class="ReplyTextarea"></textarea>
+			</div>
 		</div>
 	</div>
 </template>
@@ -617,7 +619,7 @@
 				</td>
 				<td valign="top" class="Conv2ReplyCell">
 					<div id="${replyDivId}">
-						<textarea id="${replyInputId}" class="ReplyTextarea" placeholder="<$= ZmMsg.replyHint $>"></textarea>
+						<textarea id="${replyInputId}" class="ReplyTextarea"></textarea>
 					</div>
 				</td>
 			</tr>

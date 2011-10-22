@@ -36,6 +36,11 @@ ZmConvView2.prototype.constructor = ZmConvView2;
 ZmConvView2.prototype.isZmConvView2 = true;
 ZmConvView2.prototype.toString = function() { return "ZmConvView2"; };
 
+
+
+ZmConvView2.HINT_CLASS = "hint";	// since IE doesn't support input placeholder text
+
+
 ZmConvView2.prototype.reset =
 function() {
 	
@@ -103,12 +108,14 @@ function(conv, callback) {
 	this._mainDivId = Dwt.getNextId();
 	this._messagesDivId = Dwt.getNextId();
 	this._replyDivId = Dwt.getNextId();
+	this._replyContainerId = Dwt.getNextId();
 	this._replyInputId = Dwt.getNextId();
 	var subs = {
-		messagesDivId:	this._messagesDivId,
-		mainDivId:		this._mainDivId,
-		replyDivId:		this._replyDivId,
-		replyInputId:	this._replyInputId
+		messagesDivId:		this._messagesDivId,
+		mainDivId:			this._mainDivId,
+		replyDivId:			this._replyDivId,
+		replyContainerId:	this._replyContainerId,
+		replyInputId:		this._replyInputId
 	}
 
 	this._rpLoc = this._controller._getReadingPanePref();
@@ -140,11 +147,18 @@ function(conv, callback) {
 	
 	this._messagesDiv = document.getElementById(this._messagesDivId);
 	this._replyDiv = document.getElementById(this._replyDivId);
+	this._replyContainer = document.getElementById(this._replyContainerId);
 	this._replyInput = document.getElementById(this._replyInputId);
 
 	Dwt.setHandler(this._replyInput, DwtEvent.ONFOCUS, this._onInputFocus.bind(this)); 
-	Dwt.setHandler(this._replyInput, DwtEvent.ONBLUR, this._onInputBlur.bind(this)); 
-	this._replyInput.placeholder = this._getRecipientText();
+	Dwt.setHandler(this._replyInput, DwtEvent.ONBLUR, this._onInputBlur.bind(this));
+	this._recipientText = this._getRecipientText();
+	if (AjxEnv.isIE) {
+		this._showHint(true);
+	}
+	else {
+		this._replyInput.placeholder = this._recipientText;
+	}
 
 	window.setTimeout(this._resize.bind(this), 300);
 	
@@ -207,15 +221,10 @@ function() {
 	var tbSize = this._replyToolbar.getSize();
 	if (this._controller.isReadingPaneOnRight()) {
 		// textarea is bigger if focused
-		if (AjxEnv.isIE) {
-			
-		}
-		else {
-			Dwt.setSize(this._replyInput, Dwt.DEFAULT, this._inputFocused ? 100 : 20);
-		}
+		var myHeight = this.getSize().y;
+		Dwt.setSize(AjxEnv.isIE ? this._replyContainer : this._replyInput, Dwt.DEFAULT, this._inputFocused ? 100 : 30);
 		// make messages container DIV scroll independently of header and reply DIVs
 		var replySize = Dwt.getSize(this._replyDiv);
-		var myHeight = this.getSize().y;
 		Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, myHeight - replySize.y);
 		// set width of reply toolbar
 		this._replyToolbar.setSize(replySize.x, Dwt.DEFAULT);
@@ -292,13 +301,27 @@ function(msgView) {
 ZmConvView2.prototype._onInputFocus =
 function() {
 	this._inputFocused = true;
+	this._showHint(false);
 	this._resize();
 };
 
 ZmConvView2.prototype._onInputBlur =
 function() {
 	this._inputFocused = false;
+	if (!this._replyInput.value) {
+		this._showHint(true);
+	}
 	this._resize();
+};
+
+ZmConvView2.prototype._showHint =
+function(show) {
+	if (!AjxEnv.isIE) { return; }
+	if (this._showingHint != show) {
+		this._replyInput.value = show ? this._recipientText : "";
+		Dwt.delClass(this._replyInput, ZmConvView2.HINT_CLASS, show ? ZmConvView2.HINT_CLASS : null);
+		this._showingHint = show;
+	}
 };
 
 ZmConvView2.prototype.handleKeyAction =
