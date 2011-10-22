@@ -102,6 +102,7 @@ function() {
 ZmSearchResultsController.prototype._displayResults =
 function(search, resultsCtlr) {
 	
+	this._resultsController = resultsCtlr;
 	if (appCtxt.getCurrentViewId() == this._currentViewId) {
 		var elements = {};
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = resultsCtlr.getCurrentToolbar();
@@ -182,6 +183,13 @@ function(ev, zimletEvent) {
 			errorCallback:				this._errorCallback.bind(this)
 		}
 		appCtxt.getSearchController()._toolbarSearch(params);
+	}
+	else {
+		var listView = this._resultsController.getListView();
+		if (listView) {
+			listView.removeAll(true);
+			listView._setNoResultsHtml();
+		}
 	}
 };
 
