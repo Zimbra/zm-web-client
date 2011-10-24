@@ -125,7 +125,7 @@
 			<property name="webxml.zimbraDefaultAdminSkin" value="${adminSkin}" />
 		</then>
 		<else>
-			<property name="webxml.zimbraDefaultAdminSkin" value="carbon" />
+			<property name="webxml.zimbraDefaultAdminSkin" value="serenity" />
 		</else>
 	</if>
     <!-- Paths and Filesets -->
