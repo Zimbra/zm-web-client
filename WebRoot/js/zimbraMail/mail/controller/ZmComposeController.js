@@ -1553,7 +1553,8 @@ function(ev) {
 		if (this._setFormat(ev.item.getData(ZmHtmlEditor._VALUE))) {
 			this._switchInclude(op);
 		}
-	} else {
+	} else if (op != ZmOperation.ADD_SIGNATURE) {
+		// at this point we assume the op is related to include options
 		if (this._setInclude(op)) {
 			this._switchInclude(op);
 			this._setDependentOptions();
