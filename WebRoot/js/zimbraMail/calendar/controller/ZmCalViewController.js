@@ -1261,6 +1261,7 @@ function(viewId, forward) {
 	var d = new Date(this._viewMgr.getDate());
 	d = AjxDateUtil.roll(d, field, forward ? 1 : -1);
 	this.setDate(d, 0, true);
+    this._viewMgr.getView(viewId).checkIndicatorNeed(viewId,d);
 };
 
 /**

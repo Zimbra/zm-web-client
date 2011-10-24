@@ -36,6 +36,7 @@ ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, sc
 	this.setScrollStyle(DwtControl.CLIP);
 	this._needFirstLayout = true;
     this.workingHours = ZmCalBaseView.parseWorkingHours(ZmCalBaseView.getWorkingHours());
+    this._isValidIndicatorDuration = true;
 };
 
 ZmCalColView.prototype = new ZmCalBaseView;
@@ -958,7 +959,7 @@ ZmCalColView.prototype.updateTimeIndicator=function(){
     var calendarStrip = document.getElementById(this._curTimeIndicatorGridDivId);
     Dwt.setVisibility(calendarStrip,true);
     var todayColDiv = document.getElementById(this._calendarTodayHeaderDivId);
-    if(todayColDiv){
+    if(todayColDiv && this._isValidIndicatorDuration){
      calendarStrip.style.left=todayColDiv.offsetLeft;
      calendarStrip.style.top=currentTopPosition+"px";
      calendarStrip.style.width=todayColDiv.offsetWidth;
@@ -970,6 +971,29 @@ ZmCalColView.prototype.updateTimeIndicator=function(){
 ZmCalColView.prototype.startIndicatorTimer=function(){
    if(!this._indicatorTimer){
     this._indicatorTimer = this.updateTimeIndicator();
+   }
+}
+
+ZmCalColView.prototype.checkIndicatorNeed=function(viewId,startDate){
+   var isValidView = (viewId == ZmId.VIEW_CAL_WORK_WEEK || viewId == ZmId.VIEW_CAL_WEEK || viewId == ZmId.VIEW_CAL_DAY);
+   if(startDate!=null && isValidView){
+        var today = new Date();
+        var todayTime = today.getTime();
+        startDate.setHours(0,0,0,0);
+        var sTime = startDate.getTime();
+        var endDate = AjxDateUtil.roll(startDate,AjxDateUtil.DAY,this.numDays);
+        endDate.setHours(23,59,59,999);
+        var endTime = endDate.getTime();
+        if(!(todayTime>=sTime && todayTime<=endTime)){
+            this._isValidIndicatorDuration = false;
+            var calendarStrip = document.getElementById(this._curTimeIndicatorGridDivId);
+            Dwt.setVisibility(calendarStrip,false);
+        }else{
+            this._isValidIndicatorDuration = true;
+            this.updateTimeIndicator();
+        }
+   }else{
+       this._isValidIndicatorDuration = true;
    }
 }
 
