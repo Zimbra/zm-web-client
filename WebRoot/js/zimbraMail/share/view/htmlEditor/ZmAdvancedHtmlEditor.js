@@ -33,7 +33,7 @@ ZmAdvancedHtmlEditor.prototype.isZmAdvancedHtmlEditor = true;
 ZmAdvancedHtmlEditor.prototype.isInputControl = true;
 ZmAdvancedHtmlEditor.prototype.toString = function() { return "ZmAdvancedHtmlEditor"; };
 
-ZmAdvancedHtmlEditor.TINY_MCE_PATH = "/tiny_mce/3.2.6";
+ZmAdvancedHtmlEditor.TINY_MCE_PATH = appContextPath + "/js/ajax/3rdparty/tinymce";
 
 ZmAdvancedHtmlEditor.prototype.getEditor =
 function() {
@@ -409,16 +409,19 @@ function(parent, posStyle, content, mode, withAce) {
         window.tinyMCE_GZ.loaded = true;
 
 		var callback = new AjxCallback(this, this.initEditorManager, [id, mode, content]);
-		var data = {
-			name: "tiny_mce",
-			path: appContextPath + ZmAdvancedHtmlEditor.TINY_MCE_PATH + "/tiny_mce.js",
-			extension: ".js",
-            method: AjxPackage.METHOD_XHR_ASYNC,
-			callback: callback,
-			scripts: [],
-			basePath: appContextPath + ZmAdvancedHtmlEditor.TINY_MCE_PATH
-		};
-
+        var data = {
+                method: AjxPackage.METHOD_SCRIPT_TAG,
+                callback: callback,
+                basePath: ZmAdvancedHtmlEditor.TINY_MCE_PATH
+            };
+            if(window.appDevMode){
+                data.name = "tiny_mce_src";
+                data.extension = ".js";
+            }
+            else{
+                data.name = "TinyMCE_all";
+                data.extension = ".js.min";
+            }
 		AjxPackage.require(data);
 	} else {
 		this.initEditorManager(id, mode, content);
@@ -532,7 +535,7 @@ function(id, mode, content) {
 	var urlParts = AjxStringUtil.parseURL(location.href);
 
 	//important: tinymce doesn't handle url parsing well when loaded from REST URL - override baseURL/baseURI to fix this
-	tinymce.baseURL = appContextPath + ZmAdvancedHtmlEditor.TINY_MCE_PATH + "/";
+	tinymce.baseURL = ZmAdvancedHtmlEditor.TINY_MCE_PATH + "/";
 
 	if (tinymce.EditorManager) {
 		tinymce.EditorManager.baseURI = new tinymce.util.URI(urlParts.protocol + "://" + urlParts.authority + tinymce.baseURL);
@@ -591,6 +594,19 @@ function(id, mode, content) {
 			ed.onKeyPress.add(onEditorKeyPress);
             ed.onGetContent.add(onGetContent);
             ed.onPaste.add(onPaste);
+            //For dev mode we are loading this js file which overrides some methods of tinymce
+            //for normal mode this file will be compressed along with other files in TinyMCE_all.js.min
+            if(window.appDevMode){
+               ed.onBeforeRenderUI.add(function(ed) {
+                   var data = {
+                       name: "themes/advanced/Zmeditor_template",
+                       extension: ".js",
+                       method: AjxPackage.METHOD_SCRIPT_TAG,
+                       basePath: ZmAdvancedHtmlEditor.TINY_MCE_PATH
+                   };
+                   AjxPackage.require(data);
+               })
+           }
 		}
     }
 

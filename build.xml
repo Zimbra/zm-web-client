@@ -107,7 +107,9 @@
     <property name="ffext.src.dir" value="ffext/src/zimbradnd"/>
 
     <!-- TINY_MCE INTEGRATION -->
-    <property name="tinymce.version" value="3.2.6"/>
+    <property name="tinymce.version" value="3.4.3.2"/>
+    <property name='tinymce.dir' value='${js.dir}/ajax/3rdparty/tinymce'/>
+    <property name="tinymce.files" value="TinyMCE**"/>
     <property name="tinymce.zplugins.dir" value="${web.dir}/tiny_mce_plugins"/>
         
     <!-- Tasks -->
@@ -158,7 +160,7 @@
 			<equals arg1="${zimbra.buildinfo.type}" arg2="NETWORK" />
 		</condition>
         <property name='common.web.includes' value='${custom.web.includes},js/**,css/**'/>
-        <property name='common.web.excludes' value='${custom.web.excludes},js/*/package/**,**/AjxTimezoneData.js,tiny_mce_plugins/**'/>
+        <property name='common.web.excludes' value='${custom.web.excludes},js/*/package/**,**/AjxTimezoneData.js,tiny_mce*/**'/>
         <property name='common.jsp.includes' value='${custom.jsp.includes},**'/>
         <property name='common.jsp.excludes' value='${custom.jsp.excludes}'/>
         <property name='common.img.includes' value='${custom.img.includes},**'/>
@@ -171,7 +173,7 @@
         <property name='common.help.excludes' value='${custom.help.excludes}'/>
         <property name='common.build.web.includes' value='${custom.build.web.includes},**'/>
         <property name='common.build.web.excludes'
-                  value='${custom.build.web.excludes},js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext}'/>
+                  value='${custom.build.web.excludes},js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext},js/${tinymce.files}'/>
         <property name='common.webinf.includes' value='${custom.webinf.includes},**'/>
         <property name='common.webinf.excludes' value='${custom.webinf.excludes},web.*,lib/**'/>
     </target>
@@ -290,6 +292,7 @@
             <!-- files from build tree -->
             <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
 			<zipfileset dir='${build.web.dir}' includes='js/Boot_all.js${jsmin.ext}' />
+            <zipfileset file='${build.js.dir}/${tinymce.files}' prefix='js/ajax/3rdparty/tinymce' />
 
             <!-- primary files from source trees -->
             <zipfileset refid='customer.web.fileset'/>
@@ -308,12 +311,10 @@
 
             <zipfileset refid='help.fileset' prefix='help' />
 			<zipfileset refid='network.help.fileset' prefix='help' />
-
-            <zipfileset dir='${tinymce.zplugins.dir}' includes='**' prefix='tiny_mce/${tinymce.version}/plugins'/>
         </war>
     </target>
 
-    <target name='sync' depends='templates'>
+    <target name='sync' depends='tinymce,templates'>
         <!-- NOTE: Keep order in sync with list of war filesets. -->
         <copy todir='${webapp.dir}/WEB-INF' verbose='${sync.verbose}'>
             <fileset refid="webinf.fileset" />
@@ -364,10 +365,6 @@
 			<fileset refid='help.fileset' />
 			<fileset refid='network.help.fileset' />
 		</copy>
-
-        <copy todir='${webapp.dir}/tiny_mce/${tinymce.version}/plugins' verbose='${sync.verbose}'>
-            <fileset dir='${tinymce.zplugins.dir}' includes='**'/>
-        </copy>
 
         <!-- files from build tree -->
         <copy todir='${webapp.dir}' verbose='${sync.verbose}'>
@@ -962,7 +959,7 @@
         </if>
     </target>
 
-    <target name='jam-files' depends='templates,timezones'>
+    <target name='jam-files' depends='tinymce,templates,timezones'>
         <property name='jam.jsp.dir' value='${build.web.dir}/public/jsp'/>
 
         <mkdir dir='${build.js.dir}'/>
@@ -1494,4 +1491,13 @@ if (ext == null) ext = "";
         </delete>
     </target>
 
+    <target name="tinymce">
+        <copy todir='${tinymce.dir}' verbose='${sync.verbose}' >
+            <fileset dir='${web.dir}/tiny_mce/${tinymce.version}' />
+        </copy>
+        <copy todir='${tinymce.dir}/plugins' verbose='${sync.verbose}'>
+            <fileset dir='${tinymce.zplugins.dir}' includes='**' excludes="*.*"/>
+        </copy>
+        <copy todir='${tinymce.dir}/themes/advanced' verbose='${sync.verbose}' file='${tinymce.zplugins.dir}/Zmeditor_template.js'/>
+    </target>
 </project>
