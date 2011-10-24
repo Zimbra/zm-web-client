@@ -17,7 +17,7 @@ ZmVoicemailListController = function(container, app) {
 	if (arguments.length == 0) { return; }
 	ZmVoiceListController.call(this, container, app);
 
-	this._listeners[ZmOperation.CHECK_VOICEMAIL]	= this._refreshListener.bind(this);
+	this._listeners[ZmOperation.CALL_BACK]	= this._callbackListener.bind(this);
 	if(ZmVoiceApp.hasTrashFolder) {
 		this._listeners[ZmOperation.DELETE]	= this._deleteListener.bind(this);
 	}
@@ -74,7 +74,7 @@ function(view) {
 ZmVoicemailListController.prototype._getToolBarOps =
 function() {
 	var list = [];
-	list.push(ZmOperation.CHECK_VOICEMAIL);
+	list.push(ZmOperation.CALL_BACK);
 	list.push(ZmOperation.SEP);
 	if(ZmVoiceApp.hasTrashFolder) {
 		list.push(ZmOperation.DELETE);
@@ -91,6 +91,7 @@ function() {
 ZmVoicemailListController.prototype._getActionMenuOps =
 function() {
 	var list = []
+	list.push(ZmOperation.CALL_BACK);
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		list.push(ZmOperation.CONTACT);
 	}

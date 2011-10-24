@@ -110,8 +110,7 @@ function() {
 
 ZmVoiceApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp(ZmId.OP_CHECK_VOICEMAIL, {textKey:"checkVoicemail", tooltipKey:"checkVoicemailTooltip"});
-	ZmOperation.registerOp(ZmId.OP_CHECK_CALLS, {textKey:"checkCalls", tooltipKey:"checkCallsTooltip"});
+	ZmOperation.registerOp(ZmId.OP_CALL_BACK, {textKey:"callBack", tooltipKey:"callBackTooltip"});
 	ZmOperation.registerOp(ZmId.OP_MARK_HEARD, {textKey:"markAsHeard", image:"MarkAsHeard", shortcut:ZmKeyMap.MARK_HEARD});
 	ZmOperation.registerOp(ZmId.OP_MARK_UNHEARD, {textKey:"markAsUnheard", image:"MarkAsUnheard", shortcut:ZmKeyMap.MARK_UNHEARD});
 	ZmOperation.registerOp(ZmId.OP_VIEW_BY_DATE, {textKey:"viewByDate"});
@@ -178,7 +177,7 @@ ZmVoiceApp.prototype.handleOp =
 function(op) {
 	switch (op) {
 		case ZmOperation.NEW_CALL: {
-			this._displayClickToCallDlg();
+			this.displayClickToCallDlg();
 			break;
 		} default: {
 			//do nothing
@@ -681,18 +680,18 @@ function() {
 	return [ZmOrganizer.VOICE];
 };
 
-ZmVoiceApp.prototype._displayClickToCallDlg =
-function() {
+ZmVoiceApp.prototype.displayClickToCallDlg =
+function(toPhoneNumber) {
 	if(!this._click2CallZimlet) {
 		var zimletContext = appCtxt.getZimletMgr().getZimletByName("com_zimbra_click2call");
 		if(zimletContext && zimletContext.handlerObject) {
 			this._click2CallZimlet = zimletContext.handlerObject;
 		} else {
 			var dialog = appCtxt.getErrorDialog();
-			dialog.setMessage(ZmMsg.click2callZimletNotFound, null, DwtMessageDialog.CRITICAL_STYLE);
+			dialog.setMessage(ZmMsg.click2callZimletNotFound, ZmMsg.click2callZimletNotFound, DwtMessageDialog.CRITICAL_STYLE);
 			dialog.popup();
 			return;
 		}
 	}
-	this._click2CallZimlet.display();
+	this._click2CallZimlet.display(toPhoneNumber);
 };

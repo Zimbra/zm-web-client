@@ -133,11 +133,13 @@ function(ev) {
 	return contact;
 };
 
-ZmVoiceListController.prototype._refreshListener =
-function(ev) {
-	if (this._folder) {
-		var app = appCtxt.getApp(ZmApp.VOICE);
-		app.search(this._folder);
+ZmVoiceListController.prototype._callbackListener =
+function() {
+	var view = this._getView();
+	var sel = view.getSelection();
+	if((sel instanceof Array) && sel.length >= 1) {
+		var partyType = view._getCallType() == ZmVoiceFolder.PLACED_CALL ? ZmVoiceItem.TO : ZmVoiceItem.FROM;
+		this._app.displayClickToCallDlg(sel[0].getCallingParty(partyType).name);
 	}
 };
 
