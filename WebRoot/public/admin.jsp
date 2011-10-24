@@ -79,11 +79,9 @@
 		request.setAttribute("packages", "dev");
 	}
 
-    Boolean isNewUI = getParameter(request, "new", "0").equals("1");
-    if (isNewUI) {
-		request.setAttribute("skin", "lake");
-	    request.setAttribute("debug", "1");
-        isDev = true;
+    Boolean isNewUI = !getParameter(request, "old", "0").equals("1");
+    if (!isNewUI) {
+		request.setAttribute("skin", "carbon");
     }
 	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
 	
@@ -105,7 +103,7 @@
 		skin = application.getInitParameter("zimbraDefaultAdminSkin");
 	}
 
-    if (!isNewUI) { //only save old skin in cookie "ZA_SKIN"
+    if (isNewUI) { //only save new skin in cookie "ZA_SKIN"
 	    Cookie skinCookie = new Cookie("ZA_SKIN",skin);
 	    response.addCookie(skinCookie);
     }
