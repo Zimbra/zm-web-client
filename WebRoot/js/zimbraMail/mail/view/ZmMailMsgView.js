@@ -22,7 +22,7 @@ ZmMailMsgView = function(params) {
 
 	this._mode = params.mode;
 	this._controller = params.controller;
-	this._viewId = this._controller.getCurrentViewId();
+	this._viewId = this._getViewId();
 
 	this._displayImagesId	= ZmId.getViewId(this._viewId, ZmId.MV_DISPLAY_IMAGES, this._mode);
 	this._msgTruncatedId	= ZmId.getViewId(this._viewId, ZmId.MV_MSG_TRUNC, this._mode);
@@ -870,31 +870,19 @@ function(container, html, isTextMsg, isTruncated, index) {
 		html = html.replace(/<span style="font-family:Wingdings">L<\/span>/g, "\u2639"); // :(
 	}
 
+	// The info bar allows the user to load external images. We show it if:
+	// - msg is HTML
+	// - user pref says not to show images up front, or this is Spam folder
+	// - we're not already showing images
+	// - there are <img> tags
+	var isSpam = (this._msg && this._msg.folderId == ZmOrganizer.ID_SPAM);
+	var imagesNotShown = (!this._msg || !this._msg.showImages);
+	this._needToShowInfoBar = (!isTextMsg &&
+		(!appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || isSpam) &&
+		imagesNotShown && /<img/i.test(html));
 	var displayImages;
-	if (!isTextMsg &&
-		(!appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || (this._msg && this._msg.folderId == ZmOrganizer.ID_SPAM)) &&
-		(this._msg == null || (this._msg && !this._msg.showImages)) &&
-		/<img/i.test(html))
-	{
-		// prevent appending the "Display Images" info bar more than once
-		var dispImagesDiv = document.getElementById(this._displayImagesId);
-		if (!dispImagesDiv) {
-			var infoBarDiv = document.getElementById(this._infoBarId);
-			if (infoBarDiv) {
-				var subs = {
-					id: this._displayImagesId,
-					text: ZmMsg.externalImages,
-					link: ZmMsg.displayExternalImages,
-					alwaysText: ZmMsg.alwaysDisplayExternalImages,
-                    domain: this._msg.sentByDomain,
-                    email: this._msg.sentByAddr,
-                    or: ZmMsg.or
-				};
-				var extImagesHtml = AjxTemplate.expand("mail.Message#ExtImageInformationBar", subs);
-				displayImages = Dwt.parseHtmlFragment(extImagesHtml);
-				infoBarDiv.appendChild(displayImages);
-			}
-		}
+	if (this._needToShowInfoBar) {
+		displayImages = this._showInfoBar(this._infoBarId);
 	}
 
 	var callback;
@@ -1019,15 +1007,7 @@ function(container, html, isTextMsg, isTruncated, index) {
 				displayImages.style.display = "none";
 			}
 		} else {
-			var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
-			if (displayImages) {
-				Dwt.setHandler(displayImages, DwtEvent.ONCLICK, func);
-			}
-			else if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) ||
-					 (this._msg && this._msg.showImages))
-			{
-				func.call();
-			}
+			this._setupInfoBarClicks(displayImages);
 		}
 	}
 
@@ -1037,6 +1017,49 @@ function(container, html, isTextMsg, isTruncated, index) {
 
 	// set height of view according to height of iframe on timer
 	this._resetIframeHeightOnTimer(ifw.getIframe());
+};
+
+ZmMailMsgView.prototype._showInfoBar =
+function(parentEl, html, isTextMsg) {
+
+	parentEl = (typeof(parentEl) == "string") ? document.getElementById(parentEl) : parentEl;
+	if (!parentEl) { return; }
+	
+	// prevent appending the "Display Images" info bar more than once
+	var displayImages;
+	var dispImagesDiv = document.getElementById(this._displayImagesId);
+	if (!dispImagesDiv) {
+		if (parentEl) {
+			var subs = {
+				id:			this._displayImagesId,
+				text:		ZmMsg.externalImages,
+				link:		ZmMsg.displayExternalImages,
+				alwaysText:	ZmMsg.alwaysDisplayExternalImages,
+				domain:		this._msg.sentByDomain,
+				email:		this._msg.sentByAddr,
+				or:			ZmMsg.or
+			};
+			var extImagesHtml = AjxTemplate.expand("mail.Message#ExtImageInformationBar", subs);
+			displayImages = Dwt.parseHtmlFragment(extImagesHtml);
+			parentEl.appendChild(displayImages);
+		}
+	}
+	return displayImages;
+};
+
+ZmMailMsgView.prototype._setupInfoBarClicks =
+function(displayImages) {
+
+	var idoc = this._ifw.getDocument();
+	var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, this._ifw.getIframe());
+	if (displayImages) {
+		Dwt.setHandler(displayImages, DwtEvent.ONCLICK, func);
+	}
+	else if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) ||
+			 (this._msg && this._msg.showImages))
+	{
+		func.call();
+	}
 };
 
 ZmMailMsgView.prototype._getBodyClass =
@@ -2459,4 +2482,9 @@ function(msgId, partId, name) {
 ZmMailMsgView.prototype.getMsgBodyElement =
 function(){
     return document.getElementById(this._msgBodyDivId);
+};
+
+ZmMailMsgView.prototype._getViewId =
+function() {
+	return this._controller.getCurrentViewId();
 };

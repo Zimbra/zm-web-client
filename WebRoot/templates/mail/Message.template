@@ -641,10 +641,13 @@
 
 <template id='mail.Message#Conv2MsgFooter'>
 	<div>
+		<$ if (data.showInfoBar) { $>
+		<div id='${infoBarId}'></div>
+		<$ } $>
 		<$ if (data.hasAttachments) { $>
-			<div class="MessageHeaderAttachments" id="${attachId}_container">
-				<div id="${attachId}" style='overflow:auto;'></div>
-			</div>
+		<div class="MessageHeaderAttachments" id="${attachId}_container">
+			<div id="${attachId}" style='overflow:auto;'></div>
+		</div>
 		<$ } $>
 		<div id='${footerId}'>
 			<table class='MsgHeaderTable' width=100%>

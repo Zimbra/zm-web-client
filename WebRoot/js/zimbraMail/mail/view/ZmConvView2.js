@@ -105,11 +105,11 @@ function(conv, oldConv) {
 ZmConvView2.prototype._renderConv =
 function(conv, callback) {
 
-	this._mainDivId = Dwt.getNextId();
-	this._messagesDivId = Dwt.getNextId();
-	this._replyDivId = Dwt.getNextId();
-	this._replyContainerId = Dwt.getNextId();
-	this._replyInputId = Dwt.getNextId();
+	this._mainDivId			= this._htmlElId + "_main";
+	this._messagesDivId		= this._htmlElId + "_messages";
+	this._replyDivId		= this._htmlElId + "_reply";
+	this._replyContainerId	= this._htmlElId + "_replyContainer";
+	this._replyInputId		= this._htmlElId + "_replyInput";
 	var subs = {
 		messagesDivId:		this._messagesDivId,
 		mainDivId:			this._mainDivId,
@@ -586,7 +586,7 @@ function(ev) {
 			parent:			this,
 			parentElement:	document.getElementById(this._messagesDivId),
 			controller:		this._controller,
-			mode:			this._mode,
+//			mode:			this._mode,
 			actionsMenu:	this._actionsMenu,
 			forceExpand:	false,
 			index:			ev.getDetail("sortIndex")
@@ -625,7 +625,7 @@ ZmMailMsgCapsuleView = function(params) {
 	params.scrollWithIframe = true;
 	ZmMailMsgView.call(this, params);
 
-	this._mode = params.mode;
+//	this._mode = params.mode;
 	this._controller = params.controller;
 	this._container = params.container;
 	this._forceExpand = params.forceExpand;
@@ -685,11 +685,11 @@ function(msg, container) {
 	
 	if (this._header) { return; }
 	
-	this._headerId = [this._htmlElId, ZmId.MV_MSG_HEADER].join("_");
+	this._headerId = [this._viewId, ZmId.MV_MSG_HEADER].join("_");
 	var params = {
 		parent:		this,
-		id:			this._headerId,
-		template:	"mail.Message#Conv2MsgHeader"
+		id:			this._headerId
+//		template:	"mail.Message#Conv2MsgHeader"
 	}
 	this._header = new DwtControl(params);
 
@@ -705,12 +705,21 @@ function(msg, container) {
 		this._header.setDropTarget(dropTgt);
 	}
 	
+	var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
+	var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
+	var sentBy = (sender && sender.address) ? sender : addr;
+	var sentByAddr = sentBy && sentBy != ZmMsg.unknown ? sentBy.getAddress() : null;
+    if (sentByAddr) {
+        msg.sentByAddr = sentByAddr;
+        msg.sentByDomain = sentByAddr.substr(sentByAddr.indexOf("@") + 1);
+        msg.showImages = this._isTrustedSender(msg);
+    }
+
 	this._header.addListener(DwtEvent.ONDBLCLICK, this._dblClickListener);
 
-	this._tableRowId = Dwt.getNextId();
-	DBG.println("c2", "Render: Msg ID: " + this._msg.id + ", table row ID: " + this._tableRowId);
-	this._expandIconCellId = Dwt.getNextId();
-	this._expandIconId = Dwt.getNextId();
+	this._tableRowId		= this._headerId + "_tableRow";
+	this._expandIconCellId	= this._headerId + "_expandCell";
+	this._expandIconId		= this._headerId + "_expand";
 	var expandIcon = AjxImg.getImageHtml(this._expanded ? "NodeExpanded" : "NodeCollapsed", null, ["id='", this._expandIconId, "'"].join(""));
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
 	var dateString = msg.sentDate ? dateFormatter.format(new Date(msg.sentDate)) : dateFormatter.format(new Date(msg.date));
@@ -750,9 +759,7 @@ function(msg, container, callback) {
 
 ZmMailMsgCapsuleView.prototype._renderMessageBody =
 function(msg, container, callback, index) {
-	
-	var isInvite = appCtxt.get(ZmSetting.CALENDAR_ENABLED) && msg.invite && !msg.invite.isEmpty();
-	
+		
 	if (!msg._loaded) {
 		var params = {
 			getHtml:		appCtxt.get(ZmSetting.VIEW_AS_HTML),
@@ -765,20 +772,17 @@ function(msg, container, callback, index) {
 		ZmMailMsgView.prototype._renderMessageBody.call(this, msg, container, callback, index);
 	}
 
-	// rearrange invite components to be part of the body
-	if (isInvite) {
+	var isCalendarInvite = appCtxt.get(ZmSetting.CALENDAR_ENABLED) && msg.invite && !msg.invite.isEmpty();
+	if (isCalendarInvite) {
 		ZmMailMsgView.prototype._renderMessageHeader.apply(this, arguments);
+	
+		// rearrange invite components to be part of the body
 		var bodyEl = this.getMsgBodyElement();
 		var imv = this.parent._inviteMsgView = this._inviteMsgView;
 		if (imv && imv._inviteToolbar) {
 			imv._inviteToolbar.reparentHtmlElement(bodyEl, 0);
 		}
-	
-		// if cal invite, show F/B info
-		if (callback) {
-			callback.run();
-		}
-		
+			
 		// invite header
 		bodyEl.insertBefore(this._headerElement.parentNode, bodyEl.childNodes[1]);
 
@@ -795,7 +799,24 @@ function(msg, container, callback, index) {
 			el.style.left = el.style.top = "auto";
 		}
 	}
+	
+	var isShareInvite = (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
+					msg.share && msg.folderId != ZmFolder.ID_TRASH &&
+					appCtxt.getActiveAccount().id != msg.share.grantor.id);
+	if (isShareInvite) {
+		ZmMailMsgView.prototype._renderMessageHeader.apply(this, arguments);
+		var bodyEl = this.getMsgBodyElement();
+		if (this._shareToolbar) {
+			this._shareToolbar.reparentHtmlElement(bodyEl, 0);
+		}
+		// invite header
+		bodyEl.insertBefore(this._headerElement.parentNode, bodyEl.childNodes[1]);
+	}
 
+	if (callback) {
+		callback.run();
+	}
+	
 	window.setTimeout(this._resize.bind(this), 250);
 };
 
@@ -819,27 +840,30 @@ function() {
 ZmMailMsgCapsuleView.prototype._renderMessageFooter =
 function(msg, container) {
 	
-	// TODO: use suffixes for these IDs
-	this._buttonCellId = Dwt.getNextId();
-	this._folderCellId = Dwt.getNextId();
-	this._tagContainerCellId = Dwt.getNextId();
-	this._showTextLinkId = Dwt.getNextId();
-	var replyLinkId = Dwt.getNextId();
-	this._footerId = [this._htmlElId, ZmId.MV_MSG_FOOTER].join("_");
-	var folder = appCtxt.getById(msg.folderId);
-	var folderName = folder ? folder.getName(false, null, true, true) : "";
+	this._footerId				= [this._viewId, ZmId.MV_MSG_FOOTER].join("_");
+	this._attLinksId			= [this._footerId, ZmId.MV_ATT_LINKS].join("_");
+	this._attLinksContainerId	= this._attLinksId + "_container";
+//	this._folderCellId			= this._footerId + "_";
+	this._tagContainerCellId	= this._footerId + "_tagContainerCell";
+	this._showTextLinkId		= this._footerId + "_showText";
+	var replyLinkId				= this._footerId + "_reply";
+	this._buttonCellId			= this._footerId + "_actionsCell";
+	
+//	var folder = appCtxt.getById(msg.folderId);
+//	var folderName = folder ? folder.getName(false, null, true, true) : "";
+
 	var attachmentsCount = this._msg.getAttachmentLinks(true, !appCtxt.get(ZmSetting.VIEW_AS_HTML), true).length;
-	this._attLinksId = [this._htmlElId, ZmId.MV_ATT_LINKS].join("_");
-	this._attLinksContainerId = this._attLinksId + "_container";
 
 	var subs = {
 		footerId:		this._footerId,
-		folderCellId:	this._folderCellId,
-		folderName:		ZmMsg.folderLabel + "&nbsp;" + folderName,
+//		folderCellId:	this._folderCellId,
+//		folderName:		ZmMsg.folderLabel + "&nbsp;" + folderName,
 		tagCellId:		this._tagContainerCellId,
 		showTextLinkId:	this._showTextLinkId,
 		replyLinkId:	replyLinkId,
 		buttonCellId:	this._buttonCellId,
+		showInfoBar:	this._needToShowInfoBar,
+		infoBarId:		this._infoBarId,
 		hasAttachments:	(attachmentsCount > 0),
 		attachId:		this._attLinksId,
 		noQuotedText:	this._noQuotedText
@@ -859,7 +883,7 @@ function(msg, container) {
 		replyLink.onclick = this._handleReplyLink.bind(this);
 	}
 	
-	var buttonId = ZmId.getButtonId(this._mode, this._msg.id, ZmId.OP_ACTIONS_MENU);
+	var buttonId = ZmId.getButtonId(this._viewId, ZmId.OP_ACTIONS_MENU);
 	var ab = this._actionsButton = new DwtBorderlessButton({parent:this, id:buttonId});
 	ab.setImage("Preferences");
 	ab.setMenu(this._actionsMenu);
@@ -867,6 +891,10 @@ function(msg, container) {
 	ab.addDropDownSelectionListener(this._setActionMenu.bind(this));
 	ab.addSelectionListener(this._setActionMenu.bind(this));
 
+	if (this._needToShowInfoBar) {
+		var displayImages = this._showInfoBar(this._infoBarId);
+		this._setupInfoBarClicks(displayImages);
+	}
 	this._addAttachmentLinksToFooter();
 	
 	this._resetOperations();
@@ -923,7 +951,7 @@ function() {
 	var msg = this._msg;
 	if (!appCtxt.get(ZmSetting.TAGGING_ENABLED) || !msg || !this.parent._tagList) { return; }
 	
-	this._tagCellId = Dwt.getNextId();
+	this._tagCellId = this._footerId + "_tagCell";
 	this._renderTags(msg, document.getElementById(this._tagContainerCellId), this._tagCellId);
 };
 
