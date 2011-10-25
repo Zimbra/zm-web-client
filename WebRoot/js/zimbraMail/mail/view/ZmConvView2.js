@@ -234,9 +234,11 @@ function() {
 		// Since we're using tables, we need to set height manually (tables size vertically to their content)
 		var mainDiv = document.getElementById(this._mainDivId);
 		var mainSize = Dwt.getSize(mainDiv);
-		Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, mainSize.y);
-		Dwt.setSize(this._replyDiv, Dwt.DEFAULT, mainSize.y);
-		Dwt.setSize(this._replyInput, Dwt.DEFAULT, mainSize.y - tbSize.y - 15);
+		if (mainSize && tbSize) {
+			Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, mainSize.y);
+			Dwt.setSize(this._replyDiv, Dwt.DEFAULT, mainSize.y);
+			Dwt.setSize(this._replyInput, Dwt.DEFAULT, mainSize.y - tbSize.y - 15);
+		}
 	}
 };
 
