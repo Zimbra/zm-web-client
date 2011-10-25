@@ -201,7 +201,9 @@ function() {
 		parent: root,
 		tree: root.tree,
 		type: ZmOrganizer.ADDRBOOK,
-		numTotal: 1 //todo - probably not 1. but we don't know how many
+		numTotal: null, //we don't know how many
+		noTooltip: true //so don't show tooltip
+
 	};
 	var addrBook = new ZmAddrBook(params);
 	root.children.add(addrBook);

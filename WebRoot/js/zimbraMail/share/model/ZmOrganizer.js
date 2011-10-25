@@ -39,6 +39,7 @@
 * @param {Boolean}	params.link		<code>true</code> if this organizer is shared
 * @param {int}	params.numUnread	the number of unread items for this organizer
 * @param {int}	params.numTotal	the number of items for this organizer
+* @param {Boolean}	params.noTooltip	do not show tooltip 
 * @param {int}	params.sizeTotal	the total size of organizer's items
 * @param {String}	params.url		the URL for this organizer's feed
 * @param {String}	params.owner		the owner for this organizer
@@ -62,6 +63,7 @@ ZmOrganizer = function(params) {
 	this.tree = params.tree;
 	this.numUnread = params.numUnread || 0;
 	this.numTotal = params.numTotal || 0;
+	this.noTooltip = params.noTooltip;
 	this.sizeTotal = params.sizeTotal || 0;
 	this.url = params.url;
 	this.owner = params.owner;
@@ -720,6 +722,9 @@ function(includeRoot, showUnread, maxLength, noMarkup, useSystemName, useOwnerNa
  */
 ZmOrganizer.prototype.getToolTip =
 function(force) {
+	if (this.noTooltip) {
+		return null;
+	}
 	if (!this._tooltip || force) {
 		var itemText = this._getItemsText();
 		var subs = {itemText:itemText, numTotal:this.numTotal, sizeTotal:this.sizeTotal};

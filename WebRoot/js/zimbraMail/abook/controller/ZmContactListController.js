@@ -147,6 +147,15 @@ function(searchResult, isGalSearch, folderId) {
 	}
 };
 
+ZmContactListController.prototype._dragListener =
+function(ev) {
+	ZmListController.prototype._dragListener.call(this, ev);
+	if (ev.srcControl && ev.srcControl && ev.srcControl._folderId && ev.srcControl._folderId == ZmFolder.ID_DLS) {
+		return;
+	}
+};
+
+
 /**
  * Change how contacts are displayed. There are two views: the "simple" view
  * shows a list of contacts on the left and the selected contact on the right;
@@ -686,6 +695,9 @@ function(view) {
  */
 ZmContactListController.prototype._resetOperations =
 function(parent, num) {
+
+	ZmBaseController.prototype._resetOperations.call(this, parent, num);
+
 	var printMenuItem;
 	if (parent instanceof ZmButtonToolBar) {
 		var printButton = parent.getButton(ZmOperation.PRINT);
