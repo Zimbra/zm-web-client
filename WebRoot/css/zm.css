@@ -475,6 +475,13 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	text-decoration: line-through;
 }
 
+.SubjectDoubleRow .ZmConvListNumMsgs {
+	background-color:@darken(AppC,30)@; 
+	color:white; 
+	padding:0 4px; 
+	@borderRadius@:6px;
+}
+
 .SubjectDoubleRow .ZmConvListFragment {
 	@Text-disabled@
 }

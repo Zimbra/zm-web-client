@@ -221,6 +221,11 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		} else if (field == ZmItem.F_SUBJECT) {
 			var subj = ZmMailMsg.stripSubjectPrefixes(item.subject || ZmMsg.noSubject);
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj, true);
+			if (item.numMsgs > 1) {
+				htmlArr[idx++] = " <span class='ZmConvListNumMsgs'>";
+				htmlArr[idx++] = item.numMsgs;
+				htmlArr[idx++] = "</span>";
+			}
 			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(item);
 			}
@@ -263,7 +268,7 @@ function(item, colIdx) {
 	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? 22 : 16;
 
 	// first row
-	htmlArr[idx++] = "<table cellpadding='0' style='width:100%;border-collapse:collapse;'>";
+	htmlArr[idx++] = "<table class='topRow' cellpadding='0' style='width:100%;border-collapse:collapse;'>";
 	htmlArr[idx++] = (item.isUnread && !item.isMuted()) ? "<tr class='Unread' " : "<tr ";
 	htmlArr[idx++] = "id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
@@ -278,7 +283,7 @@ function(item, colIdx) {
 
 
 	// second row
-	htmlArr[idx++] = "<table cellpadding='0' style='width:100%;border-collapse:collapse;'><tr>";
+	htmlArr[idx++] = "<table class='bottomRow' cellpadding='0' style='width:100%;border-collapse:collapse;'><tr>";
 	htmlArr[idx++] = "<td width='16'></td>";
 		//htmlArr[idx++] = "<td width='" + (width + 15) + "'";
 		//htmlArr[idx++] = this._getStyleViaZimlet(ZmItem.F_FROM, item);
