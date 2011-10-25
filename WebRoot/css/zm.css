@@ -594,7 +594,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 /* Container for the header of the message */
-.ZmMailMsgView .InvHeaderTable {
+.InvHeaderTable {
 	@MailInvHeaderLight@
 	border-bottom: 1px solid #999999;
 }
@@ -798,6 +798,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /*	text-decoration:underline;*/
 	margin-right:10px;
 	white-space:nowrap;
+}
+
+.ZmMailMsgCapsuleView .attachments {
+	border:		1px solid @AppC@;
+	margin:		5px;
+	padding:	2px;
 }
 
 .ZmConvView2 .ReplyTextarea {

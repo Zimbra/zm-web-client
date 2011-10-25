@@ -276,6 +276,11 @@ function() {
 	return htmlBodyEl;
 };
 
+ZmMailMsgView.prototype.getIframeElement =
+function() {
+	return document.getElementById(this._iframeId);
+};
+
 ZmMailMsgView.prototype.getIframeHtmlElement =
 function() {
 	var iframe = document.getElementById(this._iframeId);
@@ -2199,10 +2204,7 @@ function(self, iframe, attempt) {
 	} else {
 		if (attempt == null) { attempt = 0; }
 		try {
-			if (!iframe.contentWindow ||
-				!iframe.contentWindow.document ||
-				(AjxEnv.isFirefox3up && attempt == 0))
-			{
+			if (!iframe.contentWindow || !iframe.contentWindow.document) {
 				if (attempt < ZmMailMsgView.SETHEIGHT_MAX_TRIES) {
 					attempt++;
 					self._resetIframeHeightOnTimer(iframe, attempt);
@@ -2222,13 +2224,6 @@ function(self, iframe, attempt) {
 
 		// first off, make it wide enough to fill ZmMailMsgView.
 		iframe.style.width = "100%"; // *** changes height!
-
-		// wait, are we too high? (bug 21037)
-		if (AjxEnv.isGeckoBased &&
-			Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight) > 30000) {
-			self.setScrollWithIframe(true);
-			return;
-		}
 
 		// remember the current width
 		var view_width = iframe.offsetWidth;

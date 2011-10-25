@@ -93,13 +93,8 @@ function(conv, force) {
 		this._noResults = true;
 		return;
 	}
-	this._renderConv(conv, this._handleResponseSet.bind(this, conv, oldConv));
+	this._renderConv(conv);
 	conv.msgs.addChangeListener(this._listChangeListener);
-};
-
-ZmConvView2.prototype._handleResponseSet =
-function(conv, oldConv) {
-
 };
 
 ZmConvView2.prototype._renderConv =
@@ -187,7 +182,6 @@ function(conv, container) {
 		parent:			this,
 		parentElement:	container,
 		controller:		this._controller,
-		mode:			this._mode,
 		actionsMenu:	this._actionsMenu
 	}
 	
@@ -225,9 +219,16 @@ function() {
 		Dwt.setSize(AjxEnv.isIE ? this._replyContainer : this._replyInput, Dwt.DEFAULT, this._inputFocused ? 100 : 30);
 		// make messages container DIV scroll independently of header and reply DIVs
 		var replySize = Dwt.getSize(this._replyDiv);
-		Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, myHeight - replySize.y);
+		var messagesHeight = myHeight - replySize.y;
+		Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, messagesHeight);
 		// set width of reply toolbar
 		this._replyToolbar.setSize(replySize.x, Dwt.DEFAULT);
+		
+		for (var i = 0; i < this._msgViewList.length; i++) {
+			var id = this._msgViewList[i];
+			var msgView = this._msgViews[id];
+			this._msgViews[this._msgViewList[i]].resize();
+		}
 	}
 	else {
 		// Since we're using tables, we need to set height manually (tables size vertically to their content)
@@ -586,7 +587,6 @@ function(ev) {
 			parent:			this,
 			parentElement:	document.getElementById(this._messagesDivId),
 			controller:		this._controller,
-//			mode:			this._mode,
 			actionsMenu:	this._actionsMenu,
 			forceExpand:	false,
 			index:			ev.getDetail("sortIndex")
@@ -622,16 +622,15 @@ ZmMailMsgCapsuleView = function(params) {
 	params.className = this._normalClassName = params.className || "ZmMailMsgCapsuleView";
 	this._msgId = params.msgId;
 	params.id = this._getViewId();
-	params.scrollWithIframe = true;
 	ZmMailMsgView.call(this, params);
 
-//	this._mode = params.mode;
 	this._controller = params.controller;
 	this._container = params.container;
 	this._forceExpand = params.forceExpand;
 	this._actionsMenu = params.actionsMenu;
 	this._focusedClassName = [this._normalClassName, DwtCssStyle.FOCUSED].join(" ");
 	this._showingQuotedText = false;
+	this._infoBarId = this._htmlElId;
 
 	this.addListener(ZmMailMsgView._TAG_CLICK, this._msgTagClicked.bind(this));
 	this.addListener(ZmInviteMsgView.REPLY_INVITE_EVENT, this.parent._inviteReplyListener);
@@ -688,8 +687,8 @@ function(msg, container) {
 	this._headerId = [this._viewId, ZmId.MV_MSG_HEADER].join("_");
 	var params = {
 		parent:		this,
-		id:			this._headerId
-//		template:	"mail.Message#Conv2MsgHeader"
+		id:			this._headerId,
+		className:	"header"
 	}
 	this._header = new DwtControl(params);
 
@@ -759,7 +758,23 @@ function(msg, container, callback) {
 
 ZmMailMsgCapsuleView.prototype._renderMessageBody =
 function(msg, container, callback, index) {
-		
+
+	var attachmentsCount = this._msg.getAttachmentLinks(true, !appCtxt.get(ZmSetting.VIEW_AS_HTML), true).length;
+	if (attachmentsCount > 0) {
+		var div = document.createElement("DIV");
+		div.id = this._attLinksId;
+		div.className = "attachments";
+		this.getHtmlElement().appendChild(div);
+	}
+	
+	var isCalendarInvite = this._isCalendarInvite = appCtxt.get(ZmSetting.CALENDAR_ENABLED) && msg.invite && !msg.invite.isEmpty();
+	var isShareInvite = this._isShareInvite = (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
+												msg.share && msg.folderId != ZmFolder.ID_TRASH &&
+												appCtxt.getActiveAccount().id != msg.share.grantor.id);
+	if (isCalendarInvite || isShareInvite) {
+		ZmMailMsgView.prototype._renderMessageHeader.apply(this, arguments);
+	}
+	
 	if (!msg._loaded) {
 		var params = {
 			getHtml:		appCtxt.get(ZmSetting.VIEW_AS_HTML),
@@ -772,13 +787,10 @@ function(msg, container, callback, index) {
 		ZmMailMsgView.prototype._renderMessageBody.call(this, msg, container, callback, index);
 	}
 
-	var isCalendarInvite = appCtxt.get(ZmSetting.CALENDAR_ENABLED) && msg.invite && !msg.invite.isEmpty();
 	if (isCalendarInvite) {
-		ZmMailMsgView.prototype._renderMessageHeader.apply(this, arguments);
-	
 		// rearrange invite components to be part of the body
 		var bodyEl = this.getMsgBodyElement();
-		var imv = this.parent._inviteMsgView = this._inviteMsgView;
+		var imv = this._inviteMsgView;
 		if (imv && imv._inviteToolbar) {
 			imv._inviteToolbar.reparentHtmlElement(bodyEl, 0);
 		}
@@ -789,8 +801,10 @@ function(msg, container, callback, index) {
 		// resize and reposition F/B cal day view
 		var dayView = imv && imv._dayView;
 		if (dayView) {
-			// shove it in a container DIV so we can use absolute positioning
+			// shove it in a relative-positioned container DIV so it can use absolute positioning
 			var div = document.createElement("div");
+			Dwt.setSize(div, Dwt.DEFAULT, 220);
+			Dwt.setPosition(div, Dwt.RELATIVE_STYLE);
 			bodyEl.appendChild(div);
 			dayView.reparentHtmlElement(div);
 			var mySize = this.getSize();
@@ -800,11 +814,7 @@ function(msg, container, callback, index) {
 		}
 	}
 	
-	var isShareInvite = (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
-					msg.share && msg.folderId != ZmFolder.ID_TRASH &&
-					appCtxt.getActiveAccount().id != msg.share.grantor.id);
 	if (isShareInvite) {
-		ZmMailMsgView.prototype._renderMessageHeader.apply(this, arguments);
 		var bodyEl = this.getMsgBodyElement();
 		if (this._shareToolbar) {
 			this._shareToolbar.reparentHtmlElement(bodyEl, 0);
@@ -812,12 +822,6 @@ function(msg, container, callback, index) {
 		// invite header
 		bodyEl.insertBefore(this._headerElement.parentNode, bodyEl.childNodes[1]);
 	}
-
-	if (callback) {
-		callback.run();
-	}
-	
-	window.setTimeout(this._resize.bind(this), 250);
 };
 
 ZmMailMsgCapsuleView.prototype._getBodyContent =
@@ -841,31 +845,17 @@ ZmMailMsgCapsuleView.prototype._renderMessageFooter =
 function(msg, container) {
 	
 	this._footerId				= [this._viewId, ZmId.MV_MSG_FOOTER].join("_");
-	this._attLinksId			= [this._footerId, ZmId.MV_ATT_LINKS].join("_");
-	this._attLinksContainerId	= this._attLinksId + "_container";
-//	this._folderCellId			= this._footerId + "_";
 	this._tagContainerCellId	= this._footerId + "_tagContainerCell";
 	this._showTextLinkId		= this._footerId + "_showText";
 	var replyLinkId				= this._footerId + "_reply";
 	this._buttonCellId			= this._footerId + "_actionsCell";
 	
-//	var folder = appCtxt.getById(msg.folderId);
-//	var folderName = folder ? folder.getName(false, null, true, true) : "";
-
-	var attachmentsCount = this._msg.getAttachmentLinks(true, !appCtxt.get(ZmSetting.VIEW_AS_HTML), true).length;
-
 	var subs = {
 		footerId:		this._footerId,
-//		folderCellId:	this._folderCellId,
-//		folderName:		ZmMsg.folderLabel + "&nbsp;" + folderName,
 		tagCellId:		this._tagContainerCellId,
 		showTextLinkId:	this._showTextLinkId,
 		replyLinkId:	replyLinkId,
 		buttonCellId:	this._buttonCellId,
-		showInfoBar:	this._needToShowInfoBar,
-		infoBarId:		this._infoBarId,
-		hasAttachments:	(attachmentsCount > 0),
-		attachId:		this._attLinksId,
 		noQuotedText:	this._noQuotedText
 	}
 	var html = AjxTemplate.expand("mail.Message#Conv2MsgFooter", subs);
@@ -891,25 +881,18 @@ function(msg, container) {
 	ab.addDropDownSelectionListener(this._setActionMenu.bind(this));
 	ab.addSelectionListener(this._setActionMenu.bind(this));
 
-	if (this._needToShowInfoBar) {
-		var displayImages = this._showInfoBar(this._infoBarId);
-		this._setupInfoBarClicks(displayImages);
-	}
-	this._addAttachmentLinksToFooter();
-	
 	this._resetOperations();
 };
 
-// IFRAME defaults to height of 150. If content is smaller, resize to its height.
-ZmMailMsgCapsuleView.prototype._resize =
+// Resize IFRAME to match its content. IFRAMEs have a default height of 150, so we need to
+// explicitly set the correct height.
+ZmMailMsgCapsuleView.prototype.resize =
 function() {
 	if (!this._expanded) { return; }
-	DBG.println("cv2", "ZmMailMsgCapsuleView::_resize");
 	var htmlEl = this.getIframeHtmlElement();
 	var htmlElHeight = htmlEl && Dwt.getSize(htmlEl).y;
-	if (htmlElHeight && htmlElHeight < 150) {
-		var iframe = document.getElementById(this._iframeId);
-		Dwt.setSize(iframe, Dwt.DEFAULT, htmlElHeight);
+	if (htmlElHeight) {
+		Dwt.setSize(this.getIframeElement(), Dwt.DEFAULT, htmlElHeight);
 	}
 };
 
@@ -932,17 +915,20 @@ function() {
 	this._expanded = !this._expanded;
 	var body = this.getMsgBodyElement();
 	var footer = document.getElementById(this._footerId);
-	var attLinks = document.getElementById(this._attLinksContainerId);
+	var attLinks = document.getElementById(this._attLinksId);
+	var infoBar = document.getElementById(this._displayImagesId);
 	
 	if (this._expanded && !body) {
 		this._renderMessage(this._msg);
 	}
 	else {
-		if (body)		{ Dwt.setVisible(body, this._expanded); }
-		if (footer)		{ Dwt.setVisible(footer, this._expanded); }
-		if (attLinks)	{ Dwt.setVisible(attLinks, this._expanded); }
+		Dwt.setVisible(this._attLinksId, this._expanded);
+		Dwt.setVisible(this._displayImagesId, this._expanded);
+		Dwt.setVisible(this._msgBodyDivId, this._expanded);
+		Dwt.setVisible(this._footerId, this._expanded);
 	}
 	this._setExpandIcon();
+	window.setTimeout(this.resize.bind(this), 250);
 };
 
 ZmMailMsgCapsuleView.prototype._setTags =
@@ -1055,17 +1041,6 @@ function(ev) {
 ZmMailMsgCapsuleView.prototype.setFocused =
 function(focused) {
 	this.setClassName(focused ? this._focusedClassName : this._normalClassName);
-};
-
-// override to do nothing since parent class adds them while rendering body, and we're
-// not ready for them until the footer has been rendered
-ZmMailMsgCapsuleView.prototype._setAttachmentLinks =
-function() {
-};
-
-ZmMailMsgCapsuleView.prototype._addAttachmentLinksToFooter =
-function() {
-	ZmMailMsgView.prototype._setAttachmentLinks.call(this);
 };
 
 // TODO: copied from ZmMailMsgListView - refactor?
