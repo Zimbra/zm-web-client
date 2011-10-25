@@ -168,7 +168,7 @@ function(view, overrides) {
 	}
 	overrides = overrides || {};
 	var buttonId = ZmId.getButtonId(view || this._currentViewId, ZmOperation.NEW_MENU); 
-	var newButton = this._newButton = new DwtToolBarButton({parent: this._container, id: buttonId, posStyle: DwtControl.ABSOLUTE_STYLE});
+	var newButton = this._newButton = new DwtToolBarButton({parent: this._container, id: buttonId, posStyle: DwtControl.ABSOLUTE_STYLE, className: "ZToolbarButton ZNewButton"});
 	newButton.setText(ZmMsg._new);
 
 	ZmOperation.addNewMenu(newButton);
