@@ -600,7 +600,7 @@ function(img) {
 		if (cid && att.ci == cid) {
 			att.foundInMsgBody = true;
 			break;
-		} else if (src.indexOf(csfeMsgFetch) == 0) {
+		} else if (src && src.indexOf(csfeMsgFetch) == 0) {
 			var mpId = src.substring(src.lastIndexOf("=") + 1);
 			if (mpId == att.part) {
 				att.foundInMsgBody = true;
