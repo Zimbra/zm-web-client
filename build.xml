@@ -1,7 +1,4 @@
 <project name="ZimbraWebClient" default="war">
-	
-	<import file="../ant-global.xml"/>    
-
 
     <!-- Properties -->
     <dirname property="this.zwc.basedir" file="${ant.file.ZimbraWebClient}" />
