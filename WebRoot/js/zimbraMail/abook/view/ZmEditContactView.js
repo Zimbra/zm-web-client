@@ -418,6 +418,9 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 			if (folderOrId && folderOrId.type != ZmOrganizer.ADDRBOOK) {
 				folderOrId = null;
 			}
+			if (folderOrId && folderOrId.id && folderOrId.id == ZmFolder.ID_DLS) { //can't create under Distribution Lists virtual folder
+				folderOrId = null;
+			}
 		}
 
         //check introduced to avoid choosing a readonly/shared folder as default folder location 
