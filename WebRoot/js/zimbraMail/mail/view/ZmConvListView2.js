@@ -268,7 +268,7 @@ function(item, colIdx) {
 	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? 22 : 16;
 
 	// first row
-	htmlArr[idx++] = "<table class='topRow' cellpadding='0' style='width:100%;border-collapse:collapse;'>";
+	htmlArr[idx++] = "<table class='TopRow' style='width:100%;border-collapse:collapse;border-spacing:0;'>";
 	htmlArr[idx++] = (item.isUnread && !item.isMuted()) ? "<tr class='Unread' " : "<tr ";
 	htmlArr[idx++] = "id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
@@ -283,8 +283,10 @@ function(item, colIdx) {
 
 
 	// second row
-	htmlArr[idx++] = "<table class='bottomRow' cellpadding='0' style='width:100%;border-collapse:collapse;'><tr>";
-	htmlArr[idx++] = "<td width='16'></td>";
+	htmlArr[idx++] = "<table class='BottomRow' style='width:100%;border-collapse:collapse;border-spacing:0;'><tr>";
+	htmlArr[idx++] = "<td width=";
+	htmlArr[idx++] = width;
+	htmlArr[idx++] = "></td>";
 		//htmlArr[idx++] = "<td width='" + (width + 15) + "'";
 		//htmlArr[idx++] = this._getStyleViaZimlet(ZmItem.F_FROM, item);
 		//htmlArr[idx++] = "></td>";
