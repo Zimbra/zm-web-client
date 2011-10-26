@@ -335,9 +335,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
     background-color:white;
     height:22px;
     position:relative;
-    -moz-border-radius:0px 10px 10px 0px;
-    -webkit-border-radius:0px 10px 10px 0px;
-    border-radius:0px 10px 10px 0px;
 }
 .ZmSearchToolbarDiv INPUT {
     border:none;

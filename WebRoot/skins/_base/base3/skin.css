@@ -36,9 +36,17 @@ BODY						{	margin:0px; 	}
 
 /** set the height for the top row -- must be set to a fixed number! **/
 #skin_spacing_top_row					{	@SkinTopRow@ 	}
+#skin_spacing_top_row					{
+	background-image:-webkit-gradient(linear,left top,left bottom,from(@AltC@),to(@darken(AltC,21)@));
+	background-image:-webkit-linear-gradient(top,@AltC@,@darken(AltC,21)@);
+	background-image:-moz-linear-gradient(top,@AltC@,@darken(AltC,21)@);
+	background-image:-ms-linear-gradient(top,@AltC@,@darken(AltC,21)@);
+	background-image:linear-gradient(top,@AltC@,@darken(AltC,21)@);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@',EndColorStr='@darken(AltC,21)@');
+}
 #skin_spacing_top_row .divider			{	border-left:1px solid @SkinTopRowDividerColor@;
 											height:60%;
-											margin:0px 10px;
+											margin:auto 10px;  /*auto to appease IE*/
 										}
 /** Logo displayed in the app **/
 #skin_spacing_logo						{}
@@ -49,11 +57,12 @@ BODY						{	margin:0px; 	}
 	
 /** Search box **/	
 #skin_spacing_search,
-#skin_spacing_people_search 			{	padding:6px 0;f @cssValue(HSashContainer,width)@; 	}
-#skin_container_search					{	}
-#skin_container_search .ZButtonBorder	{	@tlRadius@:10px; @blRadius@:10px; border:0; height:22px; margin:1px; 	}
-#skin_container_search .ZLeftIcon DIV 	{	margin:0 0 0 10px; 	}
-#skin_container_search .ZWidgetTitle 	{	display:none; 	}
+#skin_spacing_people_search 				{	padding:6px 0;f @cssValue(HSashContainer,width)@; 	}
+#skin_container_search						{	}
+#skin_container_search .ZmSearchToolbarDiv 	{	@trRadius@:@SkinSearchRadius@; @brRadius@:@SkinSearchRadius@; 	}
+#skin_container_search .ZButtonBorder		{	@tlRadius@:@SkinSearchRadius@; @blRadius@:@SkinSearchRadius@; border:0; height:22px; margin:1px; 	}
+#skin_container_search .ZLeftIcon DIV 		{	margin:0 0 0 10px; 	}
+#skin_container_search .ZWidgetTitle 		{	display:none; 	}
 /** combined username/quota **/
 #skin_spacing_tree_top					{	text-align:center;		}
 #skin_container_tree_top				{	@SkinBorderUsername@	}
@@ -102,11 +111,16 @@ BODY						{	margin:0px; 	}
 #skin_spacing_app_top_toolbar			{	height:30px; 	}
 #skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@ width:auto;	}
 #skin_container_app_new_button			{	@SkinBorderAppToolbar@ width:auto; padding-left:5px; padding-right:5px; padding-bottom:2px;}			
-#skin_spacing_app_row					{	background-color:transparent; border-top:1px solid @darken(AltC,50)@; border-spacing:0; padding:0px 7px; @AppTab@ 	}
+#skin_spacing_app_row					{	border-top:1px solid @darken(AltC,40)@; border-spacing:0; padding:0px 7px; @AppTab@ 	}
 #skin_spacing_app_row					{	
-	background-color:rgba(0,0,0,.3); 
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#66000000,endColorstr=#66000000); 
+	background-color:transparent; 
+	background-color:rgba(0,0,0,.1);
+/*#IFDEF MSIE
+	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#19000000, endColorstr=#19000000);  IE8
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#19000000,endColorstr=#19000000); 
 	zoom:1;
+
+#ENDIF*/
 }
 #skin_spacing_app_row table				{	border-spacing:0; 	}
 /** App  **/
@@ -395,6 +409,9 @@ TEXTAREA
 .BannerBar TD {
 	padding-right:0px;
 }
+.BannerBar .quotabar {
+	background-color:white;
+}
 .BannerTextQuota {
 	text-align:center;
 	vertical-align:top;
@@ -445,3 +462,18 @@ SELECT						{	@FieldBorder@	}
 }
 
 .itemcounttext	{ visibility: hidden; width: 10px; padding-right: 0;}
+
+
+/*Temporary overrides that need to move to skin properties*/
+/*.DwtListView-ColHeader 		{ height:19px; 						}*/
+.DwtListView-Column 		{ background-color:#F3F3F3; 		}
+.DwtListView-Column td 		{ color:#666666; 					}
+.overviewHeader,
+.overviewHeader-actioned 	{ background-color:#CCCCCC; border:0; padding:1px 0; 	}
+.overviewHeader>TABLE 		{ background-color:#F3F3F3; border:1px solid white; 	}
+.RowDouble 					{ height:auto; padding-top:0; 		}
+.RowDouble>TABLE 			{ border:1px solid white; 			}
+.RowDouble .TopRow,
+.RowDouble .ImgCheckboxChecked,
+.RowDouble .ImgCheckboxUnchecked 	{ margin:5px 0 2px; 	}
+.RowDouble .BottomRow 			{ margin:2px 0 5px; 	}
