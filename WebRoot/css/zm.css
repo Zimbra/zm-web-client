@@ -1601,7 +1601,7 @@ line-height:normal;
 }
 .calendar_cur_time_indicator_arr{
     height:10px;
-    color:@CalendarNowColor@;
+    color:@darken(CalendarNowColor,25)@;
     overflow:hidden;
     right:1px;
 }
