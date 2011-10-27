@@ -4510,23 +4510,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZActive	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-active@		}
 .ZSelected	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-selected@	}
 
-.ZSelected .ZAppTabBorder	{
-	#IFDEF SAFARI
-	background-image: -webkit-gradient(linear, left top, left bottom, to(@AppTabColor@), from(@AppC@));
-	background-image: -webkit-linear-gradient(top, @AppTabColor@, @AppC@);
-	#ENDIF
-	#IFDEF GECKO
-	background-image: -moz-linear-gradient(top, @AppTabColor@, @AppC@);
-	#ENDIF
-	#IFDEF MSIE
-	background-image: -ms-linear-gradient(top, @AppTabColor@, @AppC@);
-	#ENDIF
-	background-image: linear-gradient(top, @AppTabColor@, @AppC@);
-	#IFDEF MSIE
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppTabColor@', EndColorStr='@AppC@');
-	#ENDIF
-}
-
+.ZSelected .ZAppTabBorder					{	@grad(AppTabColor,AppC,linear-vertical)@ 	}
 
 
 

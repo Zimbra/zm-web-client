@@ -34,16 +34,8 @@ BODY						{	margin:0px; 	}
 #skin_table_outer						{	padding:0;		}
 #skin_outer_td_main						{	height:100%; 	}
 
-/** set the height for the top row -- must be set to a fixed number! **/
+/** Top row contains header and app tabs **/
 #skin_spacing_top_row					{	@SkinTopRow@ 	}
-#skin_spacing_top_row					{
-	background-image:-webkit-gradient(linear,left top,left bottom,from(@AltC@),to(@darken(AltC,21)@));
-	background-image:-webkit-linear-gradient(top,@AltC@,@darken(AltC,21)@);
-	background-image:-moz-linear-gradient(top,@AltC@,@darken(AltC,21)@);
-	background-image:-ms-linear-gradient(top,@AltC@,@darken(AltC,21)@);
-	background-image:linear-gradient(top,@AltC@,@darken(AltC,21)@);
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@',EndColorStr='@darken(AltC,21)@');
-}
 #skin_spacing_top_row .divider			{	border-left:1px solid @SkinTopRowDividerColor@;
 											height:60%;
 											margin:auto 10px;  /*auto to appease IE*/
@@ -111,10 +103,11 @@ BODY						{	margin:0px; 	}
 #skin_spacing_app_top_toolbar			{	height:30px; 	}
 #skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@ width:auto;	}
 #skin_container_app_new_button			{	@SkinBorderAppToolbar@ width:auto; padding-left:5px; padding-right:5px; padding-bottom:2px;}			
-#skin_spacing_app_row					{	border-top:1px solid @darken(AltC,40)@; border-spacing:0; padding:0px 7px; @AppTab@ 	}
+#skin_spacing_app_row					{	border-top:1px solid; border-spacing:0; padding:0px 7px; @AppTab@ 	}
 #skin_spacing_app_row					{	
 	background-color:transparent; 
 	background-color:rgba(0,0,0,.1);
+	border-color:rgba(0,0,0,.3);
 /*#IFDEF MSIE
 	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#19000000, endColorstr=#19000000);  IE8
 	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#19000000,endColorstr=#19000000); 
