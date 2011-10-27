@@ -105,7 +105,11 @@ function(conv, callback) {
 	this._replyDivId		= this._htmlElId + "_reply";
 	this._replyContainerId	= this._htmlElId + "_replyContainer";
 	this._replyInputId		= this._htmlElId + "_replyInput";
+
+	var subj = ZmMailMsg.stripSubjectPrefixes(conv.subject || ZmMsg.noSubject);
+
 	var subs = {
+		subject:			subj,
 		messagesDivId:		this._messagesDivId,
 		mainDivId:			this._mainDivId,
 		replyDivId:			this._replyDivId,
@@ -122,9 +126,9 @@ function(conv, callback) {
 	var messagesDiv = document.getElementById(this._messagesDivId);
 	this._renderMessages(conv, messagesDiv);
 	
-	var buttons = [ZmOperation.SEND, ZmOperation.CANCEL, ZmOperation.FILLER, ZmOperation.DETACH];
+	var buttons = [ZmOperation.SEND, ZmOperation.CANCEL, ZmOperation.FILLER, ZmOperation.REPLY_ALL];
 	var overrides = {};
-	overrides[ZmOperation.DETACH] = {showImageInToolbar:true};
+	overrides[ZmOperation.REPLY_ALL] = {showImageInToolbar:true};
 	var tbParams = {
 		parent:				this,
 		buttons:			buttons,
@@ -138,7 +142,7 @@ function(conv, callback) {
 	tb.reparentHtmlElement(document.getElementById(this._replyDivId));
 	tb.addSelectionListener(ZmOperation.SEND, this._sendListener.bind(this));
 	tb.addSelectionListener(ZmOperation.CANCEL, this._cancelListener.bind(this));
-	tb.addSelectionListener(ZmOperation.DETACH, this._detachListener.bind(this));
+	tb.addSelectionListener(ZmOperation.REPLY_ALL, this._detachListener.bind(this));
 	
 	this._messagesDiv = document.getElementById(this._messagesDivId);
 	this._replyDiv = document.getElementById(this._replyDivId);
@@ -626,6 +630,7 @@ ZmMailMsgCapsuleView = function(params) {
 	params.id = this._getViewId();
 	ZmMailMsgView.call(this, params);
 
+	this._convView = this.parent;
 	this._controller = params.controller;
 	this._container = params.container;
 	this._forceExpand = params.forceExpand;
@@ -634,16 +639,18 @@ ZmMailMsgCapsuleView = function(params) {
 	this._showingQuotedText = false;
 	this._infoBarId = this._htmlElId;
 
+	this.addListener(DwtEvent.ONMOUSEDOWN, this._mouseDownListener.bind(this));
+	
 	this.addListener(ZmMailMsgView._TAG_CLICK, this._msgTagClicked.bind(this));
-	this.addListener(ZmInviteMsgView.REPLY_INVITE_EVENT, this.parent._inviteReplyListener);
-	this.addListener(ZmMailMsgView.SHARE_EVENT, this.parent._shareListener);
-	this.addListener(ZmMailMsgView.SUBSCRIBE_EVENT, this.parent._subscribeListener);
+	this.addListener(ZmInviteMsgView.REPLY_INVITE_EVENT, this._convView._inviteReplyListener);
+	this.addListener(ZmMailMsgView.SHARE_EVENT, this._convView._shareListener);
+	this.addListener(ZmMailMsgView.SUBSCRIBE_EVENT, this._convView._subscribeListener);
 };
 
 ZmMailMsgCapsuleView.prototype = new ZmMailMsgView;
 ZmMailMsgCapsuleView.prototype.constructor = ZmMailMsgCapsuleView;
 
-ZmMailMsgCapsuleView.prototype.ZmMailMsgCapsuleView = true;
+ZmMailMsgCapsuleView.prototype.isZmMailMsgCapsuleView = true;
 ZmMailMsgCapsuleView.prototype.toString = function() { return "ZmMailMsgCapsuleView"; };
 
 ZmMailMsgCapsuleView.prototype._getViewId =
@@ -685,55 +692,11 @@ ZmMailMsgCapsuleView.prototype._renderMessageHeader =
 function(msg, container) {
 	
 	if (this._header) { return; }
-	
-	this._headerId = [this._viewId, ZmId.MV_MSG_HEADER].join("_");
-	var params = {
-		parent:		this,
-		id:			this._headerId,
-		className:	"header"
-	}
-	this._header = new DwtControl(params);
 
-	this._setEventHdlrs([DwtEvent.ONMOUSEDOWN, DwtEvent.ONMOUSEMOVE, DwtEvent.ONMOUSEUP, DwtEvent.ONDBLCLICK]);
-	
-	if (this._controller.supportsDnD()) {
-		var dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-		dragSrc.addDragListener(this._dragListener.bind(this));
-		this._header.setDragSource(dragSrc);
-		this._header._getDragProxy = this._getDragProxy;
-		var dropTgt = this._dropTgt = new DwtDropTarget("ZmTag");
-		dropTgt.addDropListener(this._dropListener.bind(this));
-		this._header.setDropTarget(dropTgt);
-	}
-	
-	var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
-	var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
-	var sentBy = (sender && sender.address) ? sender : addr;
-	var sentByAddr = sentBy && sentBy != ZmMsg.unknown ? sentBy.getAddress() : null;
-    if (sentByAddr) {
-        msg.sentByAddr = sentByAddr;
-        msg.sentByDomain = sentByAddr.substr(sentByAddr.indexOf("@") + 1);
-        msg.showImages = this._isTrustedSender(msg);
-    }
-
-	this._header.addListener(DwtEvent.ONDBLCLICK, this._dblClickListener);
-
-	this._tableRowId		= this._headerId + "_tableRow";
-	this._expandIconCellId	= this._headerId + "_expandCell";
-	this._expandIconId		= this._headerId + "_expand";
-	var expandIcon = AjxImg.getImageHtml(this._expanded ? "NodeExpanded" : "NodeCollapsed", null, ["id='", this._expandIconId, "'"].join(""));
-	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
-	var dateString = msg.sentDate ? dateFormatter.format(new Date(msg.sentDate)) : dateFormatter.format(new Date(msg.date));
-	var subs = {
-		tableRowId:			this._tableRowId,
-		expandIconCellId:	this._expandIconCellId,
-		from:				msg.getAddress(AjxEmailAddress.FROM).toString(true),
-		date:				dateString
-	}
-	this._header._createHtmlFromTemplate("mail.Message#Conv2MsgHeader", subs);
-	
-	this._setExpandIcon();
-	this._setRowClass();
+	this._header = new ZmMailMsgCapsuleViewHeader({
+		parent: this,
+		id:		[this._viewId, ZmId.MV_MSG_HEADER].join("_")
+	});
 };
 
 ZmMailMsgCapsuleView.prototype._renderMessageBodyAndFooter =
@@ -834,35 +797,31 @@ function(bodyPart) {
 	return content;
 };
 
-ZmMailMsgCapsuleView.prototype._setExpandIcon =
-function() {
-	var td = document.getElementById(this._expandIconCellId);
-	if (td) {
-		td.innerHTML = AjxImg.getImageHtml(this._expanded ? "NodeExpanded" : "NodeCollapsed", null, ["id='", this._expandIconId, "'"].join(""));
-		td.onclick = this._toggleExpansion.bind(this);
-	}
-};
-
 ZmMailMsgCapsuleView.prototype._renderMessageFooter =
 function(msg, container) {
 	
 	this._footerId				= [this._viewId, ZmId.MV_MSG_FOOTER].join("_");
+	this._folderContainerCellId	= this._footerId + "_folderContainerCell";
 	this._tagContainerCellId	= this._footerId + "_tagContainerCell";
 	this._showTextLinkId		= this._footerId + "_showText";
 	var replyLinkId				= this._footerId + "_reply";
+	var replyAllLinkId			= this._footerId + "_replyAll";
 	this._buttonCellId			= this._footerId + "_actionsCell";
 	
 	var subs = {
 		footerId:		this._footerId,
+		folderCellId:	this._folderContainerCellId,
 		tagCellId:		this._tagContainerCellId,
 		showTextLinkId:	this._showTextLinkId,
 		replyLinkId:	replyLinkId,
+		replyAllLinkId:	replyAllLinkId,
 		buttonCellId:	this._buttonCellId,
 		noQuotedText:	this._noQuotedText
 	}
 	var html = AjxTemplate.expand("mail.Message#Conv2MsgFooter", subs);
 	this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
 	
+	this._setFolderIcon();
 	this._setTags();
 	
 	var showTextLink = document.getElementById(this._showTextLinkId);
@@ -872,7 +831,11 @@ function(msg, container) {
 	
 	var replyLink = document.getElementById(replyLinkId);
 	if (replyLink) {
-		replyLink.onclick = this._handleReplyLink.bind(this);
+		replyLink.onclick = this._handleReplyLink.bind(this, ZmOperation.REPLY);
+	}
+	var replyAllLink = document.getElementById(replyAllLinkId);
+	if (replyAllLink) {
+		replyAllLink.onclick = this._handleReplyLink.bind(this, ZmOperation.REPLY_ALL);
 	}
 	
 	var buttonId = ZmId.getButtonId(this._viewId, ZmId.OP_ACTIONS_MENU);
@@ -901,7 +864,7 @@ function() {
 ZmMailMsgCapsuleView.prototype._setActionMenu =
 function(ev) {
 
-	this.parent.setMsg(this._msg);
+	this._convView.setMsg(this._msg);
 	this._actionsMenu.parent = this._actionsButton;
 	this._resetOperations();
 	this._actionsButton._toggleMenu();
@@ -929,15 +892,31 @@ function() {
 		Dwt.setVisible(this._msgBodyDivId, this._expanded);
 		Dwt.setVisible(this._footerId, this._expanded);
 	}
-	this._setExpandIcon();
+	this._header._setExpandIcon();
 	window.setTimeout(this.resize.bind(this), 250);
+};
+
+ZmMailMsgCapsuleView.prototype._setFolderIcon =
+function() {
+	var cell = document.getElementById(this._folderContainerCellId);
+	AjxImg.setImage(cell, "Folder");
+};
+
+// show name of folder as tooltip
+ZmMailMsgCapsuleView.prototype.getToolTipContent =
+function(event) {
+	var id = event && event.target && event.target.parentNode && event.target.parentNode.id;
+	if (id && id == this._folderContainerCellId) {
+		var folder = this._msg.folderId && appCtxt.getById(this._msg.folderId);
+		return folder && folder.getName();
+	}
 };
 
 ZmMailMsgCapsuleView.prototype._setTags =
 function() {
 	
 	var msg = this._msg;
-	if (!appCtxt.get(ZmSetting.TAGGING_ENABLED) || !msg || !this.parent._tagList) { return; }
+	if (!appCtxt.get(ZmSetting.TAGGING_ENABLED) || !msg || !this._convView._tagList) { return; }
 	
 	this._tagCellId = this._footerId + "_tagCell";
 	this._renderTags(msg, document.getElementById(this._tagContainerCellId), this._tagCellId);
@@ -959,16 +938,14 @@ function() {
 	if (showTextLink) {
 		showTextLink.innerHTML = this._showingQuotedText ? ZmMsg.hideQuotedText : ZmMsg.showQuotedText;
 	}
-	var iframe = document.getElementById(this._iframeId);
-	if (iframe) {
-		this._resetIframeHeightOnTimer(iframe);
-	}
+	
+	window.setTimeout(this.resize.bind(this), 250);
 };
 
 ZmMailMsgCapsuleView.prototype._handleReplyLink =
-function(listener, item, ev) {
+function(op, ev) {
 	this._controller._mailListView._selectedMsg = this._msg;
-	this._controller._doAction({action:ZmOperation.REPLY});
+	this._controller._doAction({action:op});
 	this._controller._mailListView._selectedMsg = null;
 };
 
@@ -982,8 +959,7 @@ function(ev) {
 		for (var j = 0; j < flags.length; j++) {
 			var flag = flags[j];
 			if (flag == ZmItem.FLAG_UNREAD) {
-				DBG.println("c2", "Change listener: Msg ID: " + this._msg.id + ", table row ID: " + this._tableRowId);
-				this._setRowClass();
+				this._header._setRowClass();
 			}
 		}
 	}
@@ -1019,7 +995,7 @@ ZmMailMsgCapsuleView.prototype._mouseDownListener =
 function(ev) {
 	
 	if (ev.button == DwtMouseEvent.LEFT) {
-		this.parent.setFocusedMsgView(this);
+		this._convView.setFocusedMsgView(this);
 	}
 	else if (ev.button == DwtMouseEvent.RIGHT) {
 		var target = DwtUiEvent.getTarget(ev);
@@ -1030,7 +1006,7 @@ function(ev) {
 		this._resetOperations();
 		this._controller._setTagMenu(this._actionsMenu);
 		this._actionsMenu.popup(0, ev.docX, ev.docY);
-		this.parent.setMsg(this._msg);
+		this._convView.setMsg(this._msg);
 		// set up the event so that we don't also get a browser menu
 		ev._dontCallPreventDefault = false;
 		ev._returnValue = false;
@@ -1046,25 +1022,6 @@ function(focused) {
 };
 
 // TODO: copied from ZmMailMsgListView - refactor?
-ZmMailMsgCapsuleView.prototype._setRowClass =
-function() {
-
-	var msg = this._msg;
-	var classes = [];
-	var folder = appCtxt.getById(msg.folderId);
-	if (folder && folder.isInTrash()) {
-		classes.push("Trash");
-	}
-	if (msg.isUnread && !msg.isMuted())	{ classes.push("Unread"); }
-	if (msg.isSent)		{ classes.push("Sent"); }
-
-	var row = document.getElementById(this._tableRowId);
-	if (row) {
-		row.className = classes.join(" ");
-	}
-};
-
-// TODO: copied from ZmMailMsgListView - refactor?
 ZmMailMsgCapsuleView.prototype._changeFolderName = 
 function(oldFolderId) {
 
@@ -1076,22 +1033,118 @@ function(oldFolderId) {
 	}
 
 	if (folder && (folder.nId == ZmFolder.ID_TRASH || oldFolderId == ZmFolder.ID_TRASH)) {
-		this._setRowClass(msg);
+		this._header._setRowClass(msg);
 	}
 };
 
-ZmMailMsgCapsuleView.prototype._dragListener =
+
+
+
+
+ZmMailMsgCapsuleViewHeader = function(params) {
+
+	params.className = params.className || "header";
+	DwtControl.call(this, params);
+
+	this._setEventHdlrs([DwtEvent.ONMOUSEDOWN, DwtEvent.ONMOUSEMOVE, DwtEvent.ONMOUSEUP, DwtEvent.ONDBLCLICK]);
+	
+	this._msgView = this.parent;
+	this._convView = this.parent._convView;
+	this._msg = this.parent._msg;
+	this._controller = this.parent._controller;
+	
+	if (this._msgView._controller.supportsDnD()) {
+		var dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+		dragSrc.addDragListener(this._dragListener.bind(this));
+		this.setDragSource(dragSrc);
+		var dropTgt = this._dropTgt = new DwtDropTarget("ZmTag");
+		dropTgt.addDropListener(this._dropListener.bind(this));
+		this.setDropTarget(dropTgt);
+	}
+	
+	var msg = this._msg;
+	var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
+	var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
+	var sentBy = (sender && sender.address) ? sender : addr;
+	var sentByAddr = sentBy && sentBy != ZmMsg.unknown ? sentBy.getAddress() : null;
+    if (sentByAddr) {
+        msg.sentByAddr = sentByAddr;
+        msg.sentByDomain = sentByAddr.substr(sentByAddr.indexOf("@") + 1);
+        msg.showImages = this._msgView._isTrustedSender(msg);
+    }
+
+	this.addListener(DwtEvent.ONDBLCLICK, this._dblClickListener);
+
+	var id = this._htmlElId;
+	this._tableRowId		= id + "_tableRow";
+	this._expandIconCellId	= id + "_expandCell";
+	this._expandIconId		= id + "_expand";
+	var expandIcon = AjxImg.getImageHtml(this._expanded ? "NodeExpanded" : "NodeCollapsed", null, ["id='", this._expandIconId, "'"].join(""));
+	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
+	var dateString = msg.sentDate ? dateFormatter.format(new Date(msg.sentDate)) : dateFormatter.format(new Date(msg.date));
+	var subs = {
+		tableRowId:			this._tableRowId,
+		expandIconCellId:	this._expandIconCellId,
+		from:				msg.getAddress(AjxEmailAddress.FROM).toString(true),
+		date:				dateString
+	}
+	this._createHtmlFromTemplate("mail.Message#Conv2MsgHeader", subs);
+
+	this.addListener(DwtEvent.ONMOUSEDOWN, this._mouseDownListener.bind(this));
+	
+	this._setExpandIcon();
+	this._setRowClass();
+};
+
+ZmMailMsgCapsuleViewHeader.prototype = new DwtControl;
+ZmMailMsgCapsuleViewHeader.prototype.constructor = ZmMailMsgCapsuleViewHeader;
+
+ZmMailMsgCapsuleViewHeader.prototype.isZmMailMsgCapsuleViewHeader = true;
+ZmMailMsgCapsuleViewHeader.prototype.toString = function() { return "ZmMailMsgCapsuleViewHeader"; };
+
+// TODO: copied from ZmMailMsgListView - refactor?
+ZmMailMsgCapsuleViewHeader.prototype._setRowClass =
+function() {
+
+	var msg = this._msg;
+	var classes = [];
+	var folder = appCtxt.getById(msg.folderId);
+	if (folder && folder.isInTrash()) {
+		classes.push("Trash");
+	}
+	if (msg.isUnread && !msg.isMuted())	{ classes.push("Unread"); }
+	if (msg.isSent)						{ classes.push("Sent"); }
+
+	var row = document.getElementById(this._tableRowId);
+	if (row) {
+		row.className = classes.join(" ");
+	}
+};
+
+ZmMailMsgCapsuleViewHeader.prototype._setExpandIcon =
+function() {
+	var td = document.getElementById(this._expandIconCellId);
+	if (td) {
+		td.innerHTML = AjxImg.getImageHtml(this._expanded ? "NodeExpanded" : "NodeCollapsed", null, ["id='", this._expandIconId, "'"].join(""));
+		td.onclick = this._msgView._toggleExpansion.bind(this._msgView);
+	}
+};
+
+ZmMailMsgCapsuleViewHeader.prototype._mouseDownListener =
+function(ev) {
+	return ZmMailMsgCapsuleView.prototype._mouseDownListener.apply(this._msgView, arguments);
+};
+	
+ZmMailMsgCapsuleViewHeader.prototype._dragListener =
 function(ev) {
 	if (ev.action == DwtDragEvent.SET_DATA) {
 		ev.srcData = {data: this._msg, controller: this._controller};
 	}
 };
 
-// Note that 'this' is the header control.
-ZmMailMsgCapsuleView.prototype._getDragProxy =
+ZmMailMsgCapsuleViewHeader.prototype._getDragProxy =
 function(dragOp) {
-	
-	var view = this.parent;
+	var view = this._msgView;
 	var icon = ZmMailMsgListView.prototype._createItemHtml.call(view._controller._mailListView, view._msg, {now:new Date(), isDragProxy:true});
 	Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE);
 	appCtxt.getShell().getHtmlElement().appendChild(icon);
@@ -1100,7 +1153,7 @@ function(dragOp) {
 };
 
 // TODO: should we highlight msg header (dragSelect it)?
-ZmMailMsgCapsuleView.prototype._dropListener =
+ZmMailMsgCapsuleViewHeader.prototype._dropListener =
 function(ev) {
 
 	var item = this._msg;
@@ -1108,7 +1161,7 @@ function(ev) {
 	// only tags can be dropped on us
 	var data = ev.srcData.data;
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		ev.doIt = (item && (item instanceof ZmItem) && !item.isShared() && this._dropTgt.isValidTarget(data));
+		ev.doIt = (item && item.isZmItem && !item.isShared() && this._dropTgt.isValidTarget(data));
         // Bug: 44488 - Don't allow dropping tag of one account to other account's item
         if (appCtxt.multiAccounts) {
            var listAcctId = item ? item.getAccount().id : null;
@@ -1124,7 +1177,7 @@ function(ev) {
 };
 
 // Open a msg into a tabbed view
-ZmMailMsgCapsuleView.prototype._dblClickListener =
+ZmMailMsgCapsuleViewHeader.prototype._dblClickListener =
 function(ev) {
 	var msg = ev.dwtObj && ev.dwtObj.parent && ev.dwtObj.parent._msg;
 	if (msg) {

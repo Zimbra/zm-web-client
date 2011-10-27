@@ -781,8 +781,16 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
     padding-right:10px;
 }
 
-.ZmMailMsgCapsuleView .MsgHeaderTable .Unread {
+.ConvHeader {
+	margin-left:5px;
+}
+
+.ConvHeader, .ZmMailMsgCapsuleView .MsgHeaderTable .Unread {
 	font-weight:bold;
+}
+
+.ZmMailMsgCapsuleView .MsgHeaderTable .ImgFolder {
+	margin-left:3px;
 }
 
 .ZmMailMsgCapsuleView .Expand {
@@ -792,9 +800,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .ZmMailMsgCapsuleView .Link {
 	cursor:pointer;
 	@Text-link@
-/*	text-decoration:underline;*/
-	margin-right:10px;
 	white-space:nowrap;
+	margin: 0px 3px;
 }
 
 .ZmMailMsgCapsuleView .attachments {

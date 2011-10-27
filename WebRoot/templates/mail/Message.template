@@ -598,9 +598,18 @@
 		</tr>
 	</table>
 </template>
-		
+
 <template id='mail.Message#Conv2View-right'>
 	<div class='Conv2View'>
+		<div class='ConvHeader'>
+			<table width=100%>
+				<tr id='${tableRowId}'>
+					<td class='LabelColValue' width=100%>
+						<$= data.subject $>
+					</td>
+				</tr>
+			</table>
+		</div>
 		<div id="${messagesDivId}" class='Conv2Messages'></div>
 		<div id="${replyDivId}" class='Conv2Reply'>
 			<div id="${replyContainerId}" class='Conv2ReplyContainer'>
@@ -644,15 +653,20 @@
 		<div id='${footerId}'>
 			<table class='MsgHeaderTable' width=100%>
 				<tr>
+					<td id='${folderCellId}'></td>
 					<td id='${tagCellId}' width=100%></td>
 					<$ if (!data.noQuotedText) { $>
 					<td>
 						<a class='Link' id='${showTextLinkId}'><$= ZmMsg.showQuotedText $></a>
 					</td>
-					<td>&nbsp;|&nbsp;</td>
+					<td>|</td>
 					<$ } $>
 					<td>
 						<a class='Link' id='${replyLinkId}'><$= ZmMsg.reply $></a>
+					</td>
+					<td>|</td>
+					<td>
+						<a class='Link' id='${replyAllLinkId}'><$= ZmMsg.replyAll $></a>
 					</td>
 					<td id='${buttonCellId}' class='MsgActions'></td>
 				</tr>
