@@ -119,6 +119,21 @@ function() {
 };
 
 /**
+ * overriding in order to prevent distribution lists from being draggable.
+ */
+ZmContactsBaseView.prototype._getDragProxy =
+function(dragOp) {
+	var dndSelection = this.getDnDSelection();
+	dndSelection = AjxUtil.toArray(dndSelection); // it might be array or just a scalar ZmContact. So this will always get array.
+	for (var i = 0; i < dndSelection.length; i++) { //if any is a DL - don't allow the drag. There could be a mix in search results.
+		if (dndSelection[i].isDistributionList()) { //don't allow dragging a DL
+			return null;
+		}
+	}
+	return ZmListView.prototype._getDragProxy.call(this, dragOp);
+};
+
+/**
  * @private
  */
 ZmContactsBaseView.prototype._changeListener =
