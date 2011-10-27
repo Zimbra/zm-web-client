@@ -140,7 +140,8 @@ function(organizer, policyElement) {
     if (!components.policyEnable.checked) {
         // No policy of this type (keep/purge) reset the selects and input fields
         components.policySelect.selectedIndex = 0;
-        components.customUnit.selectedIndex   = 0;
+        // Default to the largest unit to reduce the chance of an inadvertent tiny deletion period
+        components.customUnit.selectedIndex   =  components.customUnit.options.length-1;
         components.customValue.value          = "";
     }
     this._handleSelectionChange(policyElement);
