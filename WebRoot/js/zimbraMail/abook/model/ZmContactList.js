@@ -162,6 +162,7 @@ function(callback, result) {
 							break;
 						case ZmContact.F_memberI:
 							groupMembers.push({type: ZmContact.GROUP_INLINE_REF, value: value});
+							foundDeref = true;
 							break;
 						default:
 							attrs[fields[j]] = value;
