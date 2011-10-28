@@ -120,7 +120,6 @@ function(batchCommand, saveState) {
     if (Dwt.getVisible(this._calendarReminderEl)) {
         var reminder = this._calendarReminderCheckbox.checked;
         if (organizer.reminder != reminder) {
-            organizer.setSharedReminder(reminder, null, this._handleErrorCallback, batchCommand);
             batchCommand.add(new AjxCallback(organizer, organizer.setSharedReminder, [reminder, null, this._handleErrorCallback]));
             saveState.commandCount++;
         }

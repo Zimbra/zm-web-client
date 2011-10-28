@@ -363,8 +363,12 @@ function(sharedReminder, callback, errorCallback, batchCmd) {
     linkNode.setAttribute("id", this.id);
     linkNode.setAttribute("reminder", sharedReminder ? "1" : "0");
 
-    appCtxt.getAppController().sendRequest({soapDoc:soapDoc,
-                                            asyncMode:true,
-                                            callback:callback,
-                                            errorCallback:errorCallback});
+    if (batchCmd) {
+        batchCmd.addRequestParams(soapDoc, callback, errorCallback);
+    } else {
+        appCtxt.getAppController().sendRequest({soapDoc:soapDoc,
+                                                asyncMode:true,
+                                                callback:callback,
+                                                errorCallback:errorCallback});
+    }
 };
