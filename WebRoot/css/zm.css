@@ -739,12 +739,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
     background-image:    -ms-linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); /* IE10 */
     filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,55)@'); /* IE6�IE9 */
 	#ENDIF
-    
-    /*background-image:        linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); */
 }
 
 .ZmMailMsgCapsuleView.focused {
-	border: 1px solid black;
+	border-color: black;
 }
 
 .ZmMailMsgCapsuleView .LabelColValue {
@@ -776,6 +774,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .Conv2Header .subject {
 	@FontSize-bigger@
+}
+
+.Conv2Header .info {
+	font-weight: normal;
 }
 
 .ZmMailMsgCapsuleView .MsgHeaderTable .ImgFolder {

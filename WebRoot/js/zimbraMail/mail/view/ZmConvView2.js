@@ -108,8 +108,19 @@ function(conv, callback) {
 
 	var subj = ZmMailMsg.stripSubjectPrefixes(conv.subject || ZmMsg.noSubject);
 
+	var numUnread = 0;
+	var msgs = conv.getMsgList();
+	for (var i = 0, len = msgs.length; i < len; i++) {
+		if (msgs[i].isUnread) {
+			numUnread++;
+		}
+	}
+	var info = numUnread ? AjxMessageFormat.format(ZmMsg.unreadCount, numUnread).toLowerCase() :
+						   AjxMessageFormat.format(ZmMsg.messageCount, conv.numMsgs);
+	var subject = AjxMessageFormat.format(ZmMsg.convSubject, [subj, info]);
+	
 	var subs = {
-		subject:			subj,
+		subject:			subject,
 		messagesDivId:		this._messagesDivId,
 		mainDivId:			this._mainDivId,
 		replyDivId:			this._replyDivId,
@@ -391,7 +402,8 @@ function(actionCode) {
 	return true;
 };
 
-// the "isUnread" arg means we're handling the magic spacebar shortcut
+// the "isUnread" arg means we're handling the magic spacebar shortcut - it will select next expanded
+// msg, which was presumably unread when conv was displayed
 ZmConvView2.prototype._selectMsg =
 function(next, isUnread, actionCode) {
 
@@ -423,9 +435,7 @@ function(next, isUnread, actionCode) {
 
 	if (done && msgView) {
 		this.setFocusedMsgView(msgView);
-		if (isUnread) {
-			this._messagesDiv.scrollTop = el.offsetTop;	// scroll current msg to top
-		}
+		Dwt.scrollIntoView(el, this._messagesDiv);
 	}
 	else if (!done) {
 		this._controller._convViewHasFocus = false;
