@@ -451,6 +451,7 @@ function() {
 	if (needSave) {
 		this._rules.saveRules(null, true);
 		this._createActivityStreamsFolder();
+		this._createPriorityMailSearch();
 	}
 	
 	this.popdown();
@@ -544,5 +545,32 @@ function() {
 		jsonObj: jsonObj,
 		asyncMode: true
 	});
+};
+
+ZmPriorityMessageFilterDialog.prototype._createPriorityMailSearch = 
+function() {
+	var saveSearch = true;
+	var folderTree = appCtxt.getFolderTree();
+	if (folderTree) {
+		var folders = folderTree.getByType(ZmOrganizer.SEARCH);
+		var length = folders ? folders.length : 0;
+		for (var i=0; i<length && saveSearch; i++) {
+			if (folders[i].name == ZmMsg.priorityMailSavedSearch) {
+				saveSearch = false;
+			}	
+		}
+	}
+	if (saveSearch) {
+		var vector = new AjxVector();
+		vector.addList([ZmItem.MSG, ZmItem.CONV]);
+		var params = {
+			name: ZmMsg.priorityMailSavedSearch,
+			search: {query: "tag:\\Priority",
+					 types: vector},
+			l: ZmOrganizer.ID_ROOT
+		};
+		
+		ZmSearchFolder.create(params);
+	}
 };
 
