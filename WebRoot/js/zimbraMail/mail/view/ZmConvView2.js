@@ -100,13 +100,14 @@ function(conv, force) {
 ZmConvView2.prototype._renderConv =
 function(conv, callback) {
 
-	this._mainDivId			= this._htmlElId + "_main";
+	this._mainDivId			= this._htmlElId + "_main";	// reading pane at bottom only
+	this._convHeaderId		= this._htmlElId + "_header";
 	this._messagesDivId		= this._htmlElId + "_messages";
 	this._replyDivId		= this._htmlElId + "_reply";
 	this._replyContainerId	= this._htmlElId + "_replyContainer";
 	this._replyInputId		= this._htmlElId + "_replyInput";
 
-	var subj = ZmMailMsg.stripSubjectPrefixes(conv.subject || ZmMsg.noSubject);
+	var subj = AjxStringUtil.htmlEncode(ZmMailMsg.stripSubjectPrefixes(conv.subject || ZmMsg.noSubject));
 
 	var numUnread = 0;
 	var msgs = conv.getMsgList();
@@ -120,9 +121,10 @@ function(conv, callback) {
 	var subject = AjxMessageFormat.format(ZmMsg.convSubject, [subj, info]);
 	
 	var subs = {
+		mainDivId:			this._mainDivId,
+		convHeaderId:		this._convHeaderId,
 		subject:			subject,
 		messagesDivId:		this._messagesDivId,
-		mainDivId:			this._mainDivId,
 		replyDivId:			this._replyDivId,
 		replyContainerId:	this._replyContainerId,
 		replyInputId:		this._replyInputId
@@ -234,8 +236,9 @@ function() {
 		var myHeight = this.getSize().y;
 		Dwt.setSize(AjxEnv.isIE ? this._replyContainer : this._replyInput, Dwt.DEFAULT, this._inputFocused ? 100 : 30);
 		// make messages container DIV scroll independently of header and reply DIVs
+		var headerSize = Dwt.getSize(document.getElementById(this._convHeaderId));
 		var replySize = Dwt.getSize(this._replyDiv);
-		var messagesHeight = myHeight - replySize.y;
+		var messagesHeight = myHeight - headerSize.y - replySize.y - 6;
 		Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, messagesHeight);
 		// set width of reply toolbar
 		this._replyToolbar.setSize(replySize.x, Dwt.DEFAULT);
