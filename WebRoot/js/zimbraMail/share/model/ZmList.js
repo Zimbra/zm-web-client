@@ -529,7 +529,7 @@ function(params) {
 			var params2 = {
 				items:			toCopy,
 				folder:			params.folder, // Should refer to our own trash folder
-				finalCallback:	this._itemAction.bind(this, params1),
+				finalCallback:	this._itemAction.bind(this, params1, null),
 				actionText:		null
 			};
 			this.copyItems(params2);
