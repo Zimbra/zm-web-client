@@ -204,6 +204,7 @@ function(msg, params) {
 	
 	params = params || {};
 	params.msgId = msg.id;
+	params.sessionId = this._controller.getSessionId();
 	var msgView = this._msgViews[msg.id] = new ZmMailMsgCapsuleView(params);
 	this._msgViewList.push(msg.id);
 	msgView.set(msg);
@@ -354,9 +355,29 @@ function(actionCode) {
 			}
 			break;
 		
-		case ZmKeyMap.FOCUS_LIST:
-			this._blur();
-			this._controller._mailListView._focus();
+		case ZmKeyMap.EXPAND:
+		case ZmKeyMap.COLLAPSE:
+			var expand = (actionCode == ZmKeyMap.EXPAND);
+			if (this._focusedMsgView && (this._focusedMsgView._expanded != expand)) {
+				this._focusedMsgView._toggleExpansion();
+			}
+			else if (!expand) {
+				// left arrow on collapsed msg moves focus to CLV
+				this._blur();
+				this._controller._mailListView._focus();
+			}
+			break;
+
+		case ZmKeyMap.EXPAND_ALL:
+		case ZmKeyMap.COLLAPSE_ALL:
+			var expand = (actionCode == ZmKeyMap.EXPAND_ALL);
+			for (var i = 0; i < this._msgViewList.length; i++) {
+				var id = this._msgViewList[i];
+				var msgView = this._msgViews[id];
+				if (msgView && (msgView._expanded != expand)) {
+					msgView._toggleExpansion();
+				}
+			}			
 			break;
 		
 		default:
@@ -391,8 +412,7 @@ function(next, isUnread, actionCode) {
 	
 	el = next ? el.nextSibling : el.previousSibling;
 	while (el && !done) {
-		var msgId = el && el.id && el.id.substr(ZmId.VIEW_MSG_CAPSULE.length);
-		msgView = this._msgViews[msgId];
+		msgView = DwtControl.findControl(el);
 		if (msgView && (!isUnread || msgView._expanded)) {
 			done = true;
 		}
@@ -625,9 +645,9 @@ function(newMsg) {
  */
 ZmMailMsgCapsuleView = function(params) {
 
-	params.className = this._normalClassName = params.className || "ZmMailMsgCapsuleView";
+	params.className = params.className || "ZmMailMsgCapsuleView";
 	this._msgId = params.msgId;
-	params.id = this._getViewId();
+	params.id = this._getViewId(params.sessionId);
 	ZmMailMsgView.call(this, params);
 
 	this._convView = this.parent;
@@ -635,7 +655,6 @@ ZmMailMsgCapsuleView = function(params) {
 	this._container = params.container;
 	this._forceExpand = params.forceExpand;
 	this._actionsMenu = params.actionsMenu;
-	this._focusedClassName = [this._normalClassName, DwtCssStyle.FOCUSED].join(" ");
 	this._showingQuotedText = false;
 	this._infoBarId = this._htmlElId;
 
@@ -654,8 +673,9 @@ ZmMailMsgCapsuleView.prototype.isZmMailMsgCapsuleView = true;
 ZmMailMsgCapsuleView.prototype.toString = function() { return "ZmMailMsgCapsuleView"; };
 
 ZmMailMsgCapsuleView.prototype._getViewId =
-function() {
-	return ZmId.VIEW_MSG_CAPSULE + this._msgId;
+function(sessionId) {
+	var prefix = sessionId ? sessionId + "_" : "";
+	return prefix + ZmId.VIEW_MSG_CAPSULE + this._msgId;
 };
 
 ZmMailMsgCapsuleView.prototype._getContainer =
@@ -879,9 +899,6 @@ function() {
 	
 	this._expanded = !this._expanded;
 	var body = this.getMsgBodyElement();
-	var footer = document.getElementById(this._footerId);
-	var attLinks = document.getElementById(this._attLinksId);
-	var infoBar = document.getElementById(this._displayImagesId);
 	
 	if (this._expanded && !body) {
 		this._renderMessage(this._msg);
@@ -1018,7 +1035,8 @@ function(ev) {
 
 ZmMailMsgCapsuleView.prototype.setFocused =
 function(focused) {
-	this.setClassName(focused ? this._focusedClassName : this._normalClassName);
+	this.condClassName(focused, DwtCssStyle.FOCUSED);
+	this._header.setFocused(focused);
 };
 
 // TODO: copied from ZmMailMsgListView - refactor?
@@ -1041,9 +1059,19 @@ function(oldFolderId) {
 
 
 
+/**
+ * The header bar of a capsule message view:
+ * 	- shows minimal header info (from, date)
+ * 	- has an expansion icon
+ * 	- is used to drag the message
+ * 	- is the drop target for tags
+ * 	- shows focus
+ * 	
+ * @param params
+ */
 ZmMailMsgCapsuleViewHeader = function(params) {
 
-	params.className = params.className || "header";
+	params.className = params.className || "ZmMailMsgCapsuleViewHeader";
 	DwtControl.call(this, params);
 
 	this._setEventHdlrs([DwtEvent.ONMOUSEDOWN, DwtEvent.ONMOUSEMOVE, DwtEvent.ONMOUSEUP, DwtEvent.ONDBLCLICK]);
@@ -1073,8 +1101,6 @@ ZmMailMsgCapsuleViewHeader = function(params) {
         msg.showImages = this._msgView._isTrustedSender(msg);
     }
 
-	this.addListener(DwtEvent.ONDBLCLICK, this._dblClickListener);
-
 	var id = this._htmlElId;
 	this._tableRowId		= id + "_tableRow";
 	this._expandIconCellId	= id + "_expandCell";
@@ -1090,6 +1116,7 @@ ZmMailMsgCapsuleViewHeader = function(params) {
 	}
 	this._createHtmlFromTemplate("mail.Message#Conv2MsgHeader", subs);
 
+	this.addListener(DwtEvent.ONDBLCLICK, this._dblClickListener);
 	this.addListener(DwtEvent.ONMOUSEDOWN, this._mouseDownListener.bind(this));
 	
 	this._setExpandIcon();
@@ -1101,6 +1128,11 @@ ZmMailMsgCapsuleViewHeader.prototype.constructor = ZmMailMsgCapsuleViewHeader;
 
 ZmMailMsgCapsuleViewHeader.prototype.isZmMailMsgCapsuleViewHeader = true;
 ZmMailMsgCapsuleViewHeader.prototype.toString = function() { return "ZmMailMsgCapsuleViewHeader"; };
+
+ZmMailMsgCapsuleViewHeader.prototype.setFocused =
+function(focused) {
+	this.condClassName(focused, DwtCssStyle.FOCUSED);
+};
 
 // TODO: copied from ZmMailMsgListView - refactor?
 ZmMailMsgCapsuleViewHeader.prototype._setRowClass =

@@ -601,10 +601,10 @@
 
 <template id='mail.Message#Conv2View-right'>
 	<div class='Conv2View'>
-		<div class='ConvHeader'>
+		<div class='Conv2Header'>
 			<table width=100%>
 				<tr id='${tableRowId}'>
-					<td class='LabelColValue' width=100%>
+					<td class='subject' width=100%>
 						<$= data.subject $>
 					</td>
 				</tr>

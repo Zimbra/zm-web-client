@@ -118,7 +118,6 @@ ZmKeyMap.FIRST_UNREAD			= "FirstUnread";
 ZmKeyMap.FIRST_UNREAD_MSG		= "FirstUnreadMsg";
 ZmKeyMap.FLAG					= "Flag";
 ZmKeyMap.FOCUS_CONTENT_PANE		= "FocusContentPane";
-ZmKeyMap.FOCUS_LIST				= "FocusList";
 ZmKeyMap.FOCUS_SEARCH_BOX		= "FocusSearchBox";
 ZmKeyMap.FOCUS_TOOLBAR			= "FocusToolbar";
 ZmKeyMap.FORWARD				= "Forward";

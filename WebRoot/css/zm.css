@@ -744,23 +744,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmMailMsgCapsuleView.focused {
-    border-width:0px 1px 1px 1px;
-    border-style: solid;
-    border-color: @darken(SelC,20)@;
-	border-bottom-color: #C8C8C8;
-    background-color:white;
-    #IFDEF SAFARI
-    background-image:-webkit-gradient(linear, left top, left bottom, from(@lighten(SelC,66)@), to(@lighten(SelC,35)@)); /* Saf4+, Chrome */
-    background-image:-webkit-linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); /* Chrome 10+, Saf5.1+ */
-    #ENDIF
-    #IFDEF GECKO
-    background-image:   -moz-linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); /* FF3.6 */
-    #ENDIF
-    #IFDEF MSIE
-    background-image:    -ms-linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); /* IE10 */
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(SelC,66)@', EndColorStr='@lighten(SelC,35)@'); /* IE6�IE9 */
-    #ENDIF
-    /*background-image:        linear-gradient(top, @lighten(SelC,66)@, @lighten(SelC,35)@); */
+	border: 1px solid black;
 }
 
 .ZmMailMsgCapsuleView .LabelColValue {
@@ -781,12 +765,17 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
     padding-right:10px;
 }
 
-.ConvHeader {
+.Conv2Header {
 	margin-left:5px;
+	border-bottom: 1px solid @AppC@;
 }
 
-.ConvHeader, .ZmMailMsgCapsuleView .MsgHeaderTable .Unread {
+.ZmMailMsgCapsuleView .MsgHeaderTable .Unread {
 	font-weight:bold;
+}
+
+.Conv2Header .subject {
+	@FontSize-bigger@
 }
 
 .ZmMailMsgCapsuleView .MsgHeaderTable .ImgFolder {
@@ -808,6 +797,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	border:		1px solid @AppC@;
 	margin:		5px;
 	padding:	2px;
+}
+
+.ZmMailMsgCapsuleViewHeader.focused {
+	background-color: @SelC@;
 }
 
 .ZmConvView2 .ReplyTextarea {
