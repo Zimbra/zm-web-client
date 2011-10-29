@@ -938,7 +938,7 @@ ZmMailListController.prototype._doAction =
 function(params) {
 
 	// get msg w/ addrs to select identity from - don't load it yet (no callback)
-	var msg = this.getMsg(params);
+	var msg = params.msg || this.getMsg(params);
 	if (!msg) { return; }
 
 	// use resolved msg to figure out identity/persona to use for compose
@@ -968,9 +968,7 @@ function(params) {
 
 	// bug: 38928 - if user viewed entire truncated message, fetch the whole
 	// thing when replying/forwarding
-	if (action != ZmOperation.NEW_MESSAGE ||
-		action != ZmOperation.DRAFT)
-	{
+	if (action != ZmOperation.NEW_MESSAGE || action != ZmOperation.DRAFT) {
 		if (msg.viewEntireMessage) {
 			params.noTruncate = true;
 			params.forceLoad = true;
@@ -986,9 +984,14 @@ function(params) {
 		}
 	}
 
-	var respCallback = new AjxCallback(this, this._handleResponseDoAction, params);
-	// TODO: pointless to load msg when forwarding as att
-	this._getLoadedMsg(params, respCallback);
+	if (params.msg) {
+		this._handleResponseDoAction(params, params.msg);
+	}
+	else {
+		var respCallback = this._handleResponseDoAction.bind(this, params);
+		// TODO: pointless to load msg when forwarding as att
+		this._getLoadedMsg(params, respCallback);
+	}
 };
 
 ZmMailListController.prototype._handleResponseDoAction =

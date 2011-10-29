@@ -155,7 +155,7 @@ function(conv, callback) {
 	tb.reparentHtmlElement(document.getElementById(this._replyDivId));
 	tb.addSelectionListener(ZmOperation.SEND, this._sendListener.bind(this));
 	tb.addSelectionListener(ZmOperation.CANCEL, this._cancelListener.bind(this));
-	tb.addSelectionListener(ZmOperation.REPLY_ALL, this._detachListener.bind(this));
+	tb.addSelectionListener(ZmOperation.REPLY_ALL, this._compose.bind(this));
 	
 	this._messagesDiv = document.getElementById(this._messagesDivId);
 	this._replyDiv = document.getElementById(this._replyDivId);
@@ -469,34 +469,13 @@ function(listener, item, ev) {
 ZmConvView2.prototype._sendListener =
 function() {
 	
-	var origMsg = this._item.getFirstHotMsg();
-	if (!origMsg) { return; }
-
-	var msg = new ZmMailMsg();
-	var body = new ZmMimePart();
-	body.setContentType(ZmMimeTable.TEXT_PLAIN);
-	var bodyText = this._replyInput.value;
-	var identity = appCtxt.getIdentityCollection().defaultIdentity;
-	if (identity.signature) {
-		var sig = identity.signature;
-		if (sig) {
-			bodyText = bodyText + "\n" + 
-				((identity.signatureStyle == ZmSetting.SIG_INTERNET) ? "--\n" : "") +
-				sig + "\n";
-		}
-	}
-	body.setContent(bodyText);
-	msg.setTopPart(body);
-	msg.setSubject(origMsg.subject);
-		
-	var addresses = this._getReplyAddresses(origMsg);
-	for (var type in addresses) {
-		for (var i = 0; i < addresses[type].length; i++) {
-			msg.addAddress(addresses[type][i], type);
-		}
-	}
-	
-	msg.send(false, this._handleResponseSendMsg.bind(this));
+	var params = {
+		sendNow:		true,
+		inNewWindow:	false,
+		sessionId:		ZmApp.HIDDEN_SESSION,
+		composeMode:	DwtHtmlEditor.TEXT
+	};
+	this._compose(params);
 };
 
 // TODO: look at refactoring out of ZmComposeView
@@ -591,14 +570,17 @@ function() {
 	this._replyInput.value = "";
 };
 
-ZmConvView2.prototype._detachListener =
-function() {
-	this._controller._mailListView._selectedMsg = this._item.getFirstHotMsg();
-	this._controller._doAction({
-				action:			ZmOperation.REPLY_ALL,
-				extraBodyText:	this._replyInput.value
-			});
-	this._controller._mailListView._selectedMsg = null;
+ZmConvView2.prototype._compose =
+function(params) {
+	params.action = params.action || ZmOperation.REPLY_ALL;
+	params.msg = params.msg || this._item.getFirstHotMsg();
+	params.extraBodyText = this._replyInput.value;
+	params.hideView = params.sendNow;
+	this._controller._doAction(params);
+	if (params.sendNow) {
+		var composeCtlr = appCtxt.getApp(ZmApp.MAIL).getComposeController(ZmApp.HIDDEN_SESSION);
+		composeCtlr.sendMsg();
+	}
 };
 
 ZmConvView2.prototype.addInviteReplyListener =

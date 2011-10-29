@@ -1878,20 +1878,26 @@ function() {
  */
 ZmMailApp.prototype.compose =
 function(params) {
-    var controllers = this._sessionController[ZmId.VIEW_COMPOSE];
-    var controller;
-    var msgId = params.msg && params.msg.nId;
-    for (var id in controllers) {
-          if (controllers[id].getMsg() && controllers[id].getMsg().nId == msgId){
-             controller = controllers[id];
-             break;
-          }
-    }
+	
+	params = params || {};
+	if (!params.sessionId) {
+		// see if we already have a compose session for this message
+		var controllers = this._sessionController[ZmId.VIEW_COMPOSE];
+		var controller;
+		var msgId = params.msg && params.msg.nId;
+		for (var id in controllers) {
+			  if (controllers[id].getMsg() && controllers[id].getMsg().nId == msgId){
+				 controller = controllers[id];
+				 break;
+			  }
+		}
+	}
+	
     if (!controller) {
-	    controller = AjxDispatcher.run("GetComposeController");
+	    controller = AjxDispatcher.run("GetComposeController", params.sessionId);
     }
 
-    appCtxt.composeCtlrSessionId = controller.getSessionId(); //this is used in ZmNewWindow.js. For disposing of the controller and its listeners, overview, and tree listeners.
+    appCtxt.composeCtlrSessionId = controller.getSessionId();	// help new window dispose components
 	controller.doAction(params);
 };
 

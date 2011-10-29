@@ -930,7 +930,7 @@ function(params) {
 
 	var cv = this._composeView;
 	if (!cv) {
-		this.initComposeView(null, this._composeMode);
+		this.initComposeView(params.hideView, this._composeMode);
 		cv = this._composeView;
 	} else {
 		cv.setComposeMode(this._composeMode, false, true);
@@ -958,7 +958,9 @@ function(params) {
     }
 
 	this._setComposeTabGroup();
-	this._app.pushView(this._currentViewId);
+	if (!params.hideView) {
+		this._app.pushView(this._currentViewId);
+	}
 	if (!appCtxt.isChildWindow) {
 		cv.updateTabTitle();
 	}

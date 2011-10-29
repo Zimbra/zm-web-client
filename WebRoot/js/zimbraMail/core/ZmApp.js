@@ -124,6 +124,7 @@ ZmApp.OVERVIEW_ID			= "main";	// ID for main overview
 ZmApp.BATCH_NOTIF_LIMIT = 25;	// threshold for doing batched change notifications
 
 ZmApp.MAIN_SESSION			= "main";
+ZmApp.HIDDEN_SESSION		= "hidden";
 
 /**
  * Initializes the application.
