@@ -601,9 +601,9 @@
 
 <template id='mail.Message#Conv2View-right'>
 	<div class='Conv2View'>
-		<div class='Conv2Header'>
+		<div class='Conv2Header' id='${convHeaderId}'>
 			<table width=100%>
-				<tr id='${tableRowId}'>
+				<tr>
 					<td class='subject' width=100%>
 						<$= data.subject $>
 					</td>
