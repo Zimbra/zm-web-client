@@ -74,7 +74,7 @@ BODY						{	margin:0px; 	}
 #skin_container_help,
 #skin_container_logoff,
 #skin_container_adminlink				{	white-space:nowrap; text-align:center; padding:0px 10px; 	}
-
+#skin_container_help a, #skin_container_logoff a { @Text-contrast@ }
 /** Tree Toolbar **/
 #skin_spacing_tree						{	height:100%; padding-bottom:5px; 	}
 #skin_container_tree					{	@SkinBorderTree@ 					}
