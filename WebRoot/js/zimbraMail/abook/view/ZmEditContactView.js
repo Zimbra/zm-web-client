@@ -2324,14 +2324,13 @@ ZmEditContactViewOther.__DwtButton_popup = function() {
     var menu = button.getMenu();
     var menuSize = menu.getSize();
     var windowSize = DwtShell.getShell(window).getSize();
-	var params = {menu: menu};
 	if ((location.y + size.y) + menuSize.y > windowSize.y) {
-		params.menuPopupStyle = DwtButton.MENU_POPUP_STYLE_ABOVE;
+		button._menuPopupStyle = DwtButton.MENU_POPUP_STYLE_ABOVE;
 	}
     if (AjxEnv.isIE) {
         menu.getHtmlElement().style.width = "150px";
     }
-    DwtButton.prototype.popup.call(button, params);
+    DwtButton.prototype.popup.call(button, menu);
 };
 
 ZmEditContactViewOther.prototype._createSelect = function() {
