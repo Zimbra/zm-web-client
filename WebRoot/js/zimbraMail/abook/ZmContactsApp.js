@@ -378,6 +378,12 @@ function(creates, force) {
 					this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
 				} else if (name == "cn") {
 					var clc = AjxDispatcher.run("GetContactListController");
+					if (clc._folderId == ZmFolder.ID_DLS) {
+						//the simplest solution I could think of to the messy problem that the clcList in this case is GAL and thus
+						//the contact becomes GAL (in memory) even though it's not on the server. Then it's cached and when going to the contacts it would get an exeption when clicked
+						//if the user is viewing the DLs folder, they will see the new contact they created anyway when clicking on the "contacts" folder (or whatever other folder they created it in)
+						continue;
+					}
 					var clcList = (clc && clc.getFolderId()) ? clc.getList() : new ZmContactList(null);
 					if (appCtxt.multiAccounts && clcList.search && clcList.search.folderId != create.l) {
 						continue;

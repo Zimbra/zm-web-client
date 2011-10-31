@@ -525,8 +525,7 @@ function() {
 		}
 	}
 
-	//check introduced to avoid choosing a readonly/shared folder as default folder location 
-	this._setLocationFolder((folderOrId && !folderOrId.isReadOnly()) ? folderOrId : ZmOrganizer.ID_ADDRBOOK);
+	this._setLocationFolder(folderOrId);
 	
 	
 	// add New Button
@@ -668,7 +667,14 @@ function() {
 };
 
 ZmGroupView.prototype._setLocationFolder = function(organizerOrId) {
-	var organizer = organizerOrId instanceof ZmOrganizer ? organizerOrId : appCtxt.getById(organizerOrId);
+	if (organizerOrId) {
+		var organizer = organizerOrId instanceof ZmOrganizer ? organizerOrId : appCtxt.getById(organizerOrId);
+	}
+	if (!organizer || organizer.isReadOnly() || organizer.id == ZmFolder.ID_DLS) {
+		//default to the main contacts folder
+		organizer = appCtxt.getById(ZmOrganizer.ID_ADDRBOOK);
+	}
+
 	this._locationButton.setText(organizer.getName());
 	this._folderId = organizer.id;
 };
