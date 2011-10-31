@@ -165,7 +165,7 @@ function(conv, callback) {
 	Dwt.setHandler(this._replyInput, DwtEvent.ONFOCUS, this._onInputFocus.bind(this)); 
 	Dwt.setHandler(this._replyInput, DwtEvent.ONBLUR, this._onInputBlur.bind(this));
 	this._recipientText = this._getRecipientText();
-	if (AjxEnv.isIE) {
+	if (AjxEnv.isIE || (AjxEnv.isFirefox && !AjxEnv.isFirefox4up)) {
 		this._showHint(true);
 	}
 	else {
@@ -338,7 +338,6 @@ function() {
 
 ZmConvView2.prototype._showHint =
 function(show) {
-	if (!AjxEnv.isIE) { return; }
 	if (this._showingHint != show) {
 		this._replyInput.value = show ? this._recipientText : "";
 		Dwt.delClass(this._replyInput, ZmConvView2.HINT_CLASS, show ? ZmConvView2.HINT_CLASS : null);

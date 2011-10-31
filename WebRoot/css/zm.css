@@ -830,10 +830,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .Conv2ReplyContainer {
 	height: 20px;
 }
+#ENDIF
+
+/* for browsers that don't support placeholder text */
 .ZmConvView2 .ReplyTextarea.hint {
 	@InputField-hint@
 }
-#ENDIF
 
 /* the sash next to overview does not need borders or a background color */
 .console_inset_app_l .DwtHorizontalSash {
