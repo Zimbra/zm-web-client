@@ -471,8 +471,9 @@ UT.test("ZmContactListController getGroupMembers",
 		case 2) Create group with contacts & groups
 		case 3) Modify group with individual contacts
 		case 4) Modify group with contacts & groups
+		case 5) Modify GAL DL -- distribution list as type group, but no group contacts
 		 */
-		UT.expect(19);
+		UT.expect(22);
 		ZmUnitTestUtil.goToContacts();
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		var clc = contactsApp.getContactListController();
@@ -482,7 +483,8 @@ UT.test("ZmContactListController getGroupMembers",
 		contactA.isGal = false;
 		
 		var contactB = new ZmMockContact();
-		contactB.id = "uid=user1,ou=zimbra,ou=com";
+		contactB.id = "302";
+		contactB.ref = "uid=user1,ou=zimbra,ou=com";
 		contactB.isGal = true;
 		
 		var contactC = new ZmMockContact();
@@ -500,6 +502,12 @@ UT.test("ZmContactListController getGroupMembers",
 		groupB.isGal = false;
 		groupB.type = "group";
 		groupB.attr["groups"] = [contactC];
+		
+		var groupC = new ZmMockContact();
+		groupC.id = "303";
+		groupC.isGal = "true";
+		groupC.type = "group";
+		groupC.ref = "uid=server-team,ou=zimbra,ou=com";
 		
 		//case 1
 		var returnArr = clc._getGroupMembers([contactA]);
@@ -531,6 +539,13 @@ UT.test("ZmContactListController getGroupMembers",
 		UT.equal(returnArr[1].value, "test@example.zimbra.com", "Group member should have value test@example.zimbra.com");
 		UT.equal(returnArr[1].type, "I", "Group member should be type I");
 		UT.equal(returnArr[1].op, "+", "Group member should have an op +");
+		
+		//case 5
+		returnArr = clc._getGroupMembers([groupC]);
+		UT.equal(returnArr[0].value, "uid=server-team,ou=zimbra,ou=com", "Group member should add groupC");
+		UT.equal(returnArr[0].type, "G", "Group members should have type G");
+		UT.notEqual(returnArr[0].op, "+", "Group member should not have an op");
+		
 		
 	}		
 );

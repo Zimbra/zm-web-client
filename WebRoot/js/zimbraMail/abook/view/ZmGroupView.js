@@ -609,7 +609,7 @@ function() {
 			var contact = data[key];
 			if (contact && contact.type == DwtListView.TYPE_LIST_ITEM) {
 			  if (contact.item.__contact && contact.item .__contact.isGal) {
-			    addrs.push({type : ZmContact.GROUP_GAL_REF, value : contact.item.__contact.id});		  
+			    addrs.push({type : ZmContact.GROUP_GAL_REF, value : contact.item.__contact.ref});		  
 			  }
 			  else if (contact.item.__contact && contact.item.__contact.id) {
 				  addrs.push({type : ZmContact.GROUP_CONTACT_REF, value : contact.item.__contact.id});
@@ -939,7 +939,7 @@ function(list, append){
 		for (var i=0; i<list.length; i++) {
 			if (list[i] && list[i].__contact) {
 				var type = list[i].__contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
-				var id = list[i].__contact.getId(type == ZmContact.GROUP_CONTACT_REF);
+				var id = type == ZmContact.Group_CONTACT_REF ? list[i].__contact.getId(true) : list[i].__contact.ref;
 				var email = list[i].address;
 				if (!this._groupMemberMods[id]) {
 					this._groupMemberMods[id] = {op : "+", value : id, type : type, email: email};

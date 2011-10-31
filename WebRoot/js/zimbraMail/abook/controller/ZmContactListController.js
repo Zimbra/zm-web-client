@@ -1266,39 +1266,46 @@ function(items, group) {
 	var mods = {};
 	var newMembers = {};
 	var groupId = [];
+	var memberType;
+	var obj = {};
+	var id, contact;
+	
 	for (var i=0; i<items.length; i++) {
 		if (!items[i].isGroup()) {
-			var memberType = items[i].isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
-			var id = memberType == ZmContact.GROUP_CONTACT_REF ? items[i].getId(true) : items[i].id;
-			if (id) {
-				var obj = {value: id, type: memberType};
-				if (group) {
-					obj.op = "+"; //modifying group with new member	
-				}
-				newMembers[id] = obj; 
-			}
+			obj = this._createContactRefObj(items[i], group);
+			if (obj.value) {
+				newMembers[obj.value] = obj;
+			}		
 		}
 		else {
 			var groups = items[i].attr[ZmContact.F_groups];  //getAttr only returns first value in array
-			for (var j=0; j < groups.length; j++) {
-				var id = groups[j].value;
-				var contact = ZmContact.getContactFromCache(id);
-				if (contact) {
-					var memberType = contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
-					var obj = {value : id, type : memberType};
-					if (group) {
-						obj.op = "+";
-					} 
-					newMembers[id] = obj;
+			if (!groups) {
+				obj = this._createContactRefObj(items[i], group);
+				if (obj.value) {
+					newMembers[obj.value] = obj;
 				}
-				else if (groups[j].type == ZmContact.GROUP_INLINE_REF) {
-					var obj = {value: groups[j].value, type : ZmContact.GROUP_INLINE_REF};
-					if (group) {
-						obj.op = "+";
+			}
+			else {
+				for (var j=0; j <groups.length; j++) {
+					id = groups[j].value;
+					contact = ZmContact.getContactFromCache(id);
+					if (contact) {
+						memberType = contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
+						obj = {value : contact.isGal ? contact.ref : id, type : memberType};
+						if (group) {
+							obj.op = "+";
+						} 
+						newMembers[id] = obj;
 					}
-					newMembers[id] = obj;				
+					else if (groups[j].type == ZmContact.GROUP_INLINE_REF) {
+						obj = {value: groups[j].value, type : ZmContact.GROUP_INLINE_REF};
+						if (group) {
+							obj.op = "+";
+						}
+						newMembers[id] = obj;				
+					}
 				}
-			}	
+			}
 		}
 	}
 	var newMembersArr = [];
@@ -1326,6 +1333,21 @@ function(items, group) {
 	else {
 		return newMembersArr;
 	}
+};
+
+ZmContactListController.prototype._createContactRefObj = 
+function(contactToAdd, group) {
+	var obj = {};
+	var memberType = contactToAdd.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
+	var id = memberType == ZmContact.GROUP_CONTACT_REF ? contactToAdd.getId(true) : contactToAdd.ref;
+	if (id) {
+		var obj = {value: id, type: memberType};
+		if (group) {
+			obj.op = "+"; //modifying group with new member	
+		}
+	}
+	return obj;
+	
 };
 
 ZmContactListController.prototype._getContactsFromCache =

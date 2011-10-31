@@ -359,6 +359,9 @@ function(node, args) {
 		if (node.m) {
 			contact.attr[ZmContact.F_groups] = node.m;
 		}
+		if (node.ref) {
+			contact.ref = node.ref;
+		}
 		AjxUtil.hashUpdate(contact.attr, node._attrs);	// merge new attrs just in case we don't have them
 		contact.list = args.list || new ZmContactList(null);
 	}
@@ -1983,6 +1986,7 @@ function(node) {
 	this.folderId = node.l;
 	this.created = node.cd;
 	this.modified = node.md;
+	this.ref = node.ref;
 
 	this.attr = node._attrs || {};
 	if (node.m) {
