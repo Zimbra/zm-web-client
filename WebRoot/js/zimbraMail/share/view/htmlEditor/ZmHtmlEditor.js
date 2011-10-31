@@ -1862,9 +1862,10 @@ function() {
 	var editor = Dwt.getObjectFromElement(this);
 	editor.discardMisspelledWords();
 
-
-    if (AjxEnv.isIE && editor._currInsPt && editor._getRange().type=="None") {
-        editor._currInsPt.collapse(false);
+    if (AjxEnv.isIE && editor._currInsPtBm && editor._getRange().type=="None") {
+        var range = editor._getRange().createRange();
+        range.moveToBookmark(editor._currInsPtBm);
+        range.collapse(false);
     }
 };
 
