@@ -174,7 +174,7 @@ ZmCalViewController.prototype.show =
 function(viewId, startDate, skipMaintenance) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	if (!viewId || viewId == ZmId.VIEW_CAL) {
-		viewId = this._currentViewId || this.getDefaultViewType();
+		viewId = this.getCurrentViewType() || this.getDefaultViewType();
 	}
 
 	if (!this._viewMgr) {
