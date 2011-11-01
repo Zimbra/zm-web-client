@@ -329,10 +329,18 @@ function(ev) {
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
 
-	if ((key == 13 || key == 3) && aclv._enterCallback) {
-		aclv.reset();
-		var result = aclv._enterCallback.run(ev);
-		return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
+	if (key == 13 || key == 3) {
+	    // Treat as regular selection
+	    var selEv = DwtShell.selectionEvent;
+	    DwtUiEvent.copy(selEv, ev);
+	    selEv.detail = 0;
+	    aclv.notifyListeners(DwtEvent.SELECTION, selEv);
+	    aclv.reset();
+	    var result = null;
+	    if (aclv._enterCallback) {
+		result = aclv._enterCallback.run(ev);
+	    }
+	    return (result != null) ? result : ZmAutocompleteListView._echoKey(true, ev);
 	}
 
 	// regular input, schedule autocomplete
