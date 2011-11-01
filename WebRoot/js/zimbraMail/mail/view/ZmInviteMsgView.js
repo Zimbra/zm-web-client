@@ -286,6 +286,7 @@ function() {
 ZmInviteMsgView.prototype.resize =
 function(reset) {
 	if (appCtxt.isChildWindow) { return; }
+	if (this.parent.isZmMailMsgCapsuleView) { return; }
 
 	var isRight = this.isRight();
 	var grandParentSize = this.parent.parent.getSize();

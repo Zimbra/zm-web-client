@@ -242,13 +242,7 @@ function() {
 		Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, messagesHeight);
 		// set width of reply toolbar
 		this._replyToolbar.setSize(replySize.x, Dwt.DEFAULT);
-		
-		for (var i = 0; i < this._msgViewList.length; i++) {
-			var id = this._msgViewList[i];
-			var msgView = this._msgViews[id];
-			this._msgViews[this._msgViewList[i]].resize();
-		}
-	}
+			}
 	else {
 		// Since we're using tables, we need to set height manually (tables size vertically to their content)
 		var mainDiv = document.getElementById(this._mainDivId);
@@ -258,6 +252,12 @@ function() {
 			Dwt.setSize(this._replyDiv, Dwt.DEFAULT, mainSize.y);
 			Dwt.setSize(this._replyInput, Dwt.DEFAULT, mainSize.y - tbSize.y - 15);
 		}
+	}
+
+	for (var i = 0; i < this._msgViewList.length; i++) {
+		var id = this._msgViewList[i];
+		var msgView = this._msgViews[id];
+		this._msgViews[this._msgViewList[i]].resize();
 	}
 };
 
@@ -787,7 +787,7 @@ function(msg, container, callback, index) {
 			bodyEl.appendChild(div);
 			dayView.reparentHtmlElement(div);
 			var mySize = this.getSize();
-			dayView.setSize(mySize.x, 220);
+			dayView.setSize(mySize.x - 2, 220);
 			var el = dayView.getHtmlElement();
 			el.style.left = el.style.top = "auto";
 		}
@@ -903,7 +903,7 @@ function() {
 		Dwt.setVisible(this._msgBodyDivId, this._expanded);
 		Dwt.setVisible(this._footerId, this._expanded);
 	}
-	this._header._setExpandIcon();
+	this._header._setExpandIcon(this._expanded);
 	window.setTimeout(this.resize.bind(this), 250);
 };
 
@@ -1099,7 +1099,6 @@ ZmMailMsgCapsuleViewHeader = function(params) {
 	this._tableRowId		= id + "_tableRow";
 	this._expandIconCellId	= id + "_expandCell";
 	this._expandIconId		= id + "_expand";
-	var expandIcon = AjxImg.getImageHtml(this._expanded ? "NodeExpanded" : "NodeCollapsed", null, ["id='", this._expandIconId, "'"].join(""));
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
 	var dateString = msg.sentDate ? dateFormatter.format(new Date(msg.sentDate)) : dateFormatter.format(new Date(msg.date));
 	var subs = {
@@ -1113,7 +1112,7 @@ ZmMailMsgCapsuleViewHeader = function(params) {
 	this.addListener(DwtEvent.ONDBLCLICK, this._dblClickListener);
 	this.addListener(DwtEvent.ONMOUSEDOWN, this._mouseDownListener.bind(this));
 	
-	this._setExpandIcon();
+	this._setExpandIcon(false);
 	this._setRowClass();
 };
 
@@ -1148,10 +1147,10 @@ function() {
 };
 
 ZmMailMsgCapsuleViewHeader.prototype._setExpandIcon =
-function() {
+function(expanded) {
 	var td = document.getElementById(this._expandIconCellId);
 	if (td) {
-		td.innerHTML = AjxImg.getImageHtml(this._expanded ? "NodeExpanded" : "NodeCollapsed", null, ["id='", this._expandIconId, "'"].join(""));
+		td.innerHTML = AjxImg.getImageHtml(expanded ? "NodeExpanded" : "NodeCollapsed", null, ["id='", this._expandIconId, "'"].join(""));
 		td.onclick = this._msgView._toggleExpansion.bind(this._msgView);
 	}
 };
