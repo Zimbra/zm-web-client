@@ -1206,8 +1206,13 @@ function(attr) {
 
 	var newName = attr[ZmContact.F_nickname];
 
+	var fileAsChanged = false;
 	if (newName !== undefined) {
+		fileAsChanged = true;
 		reqs.push(this._getRenameDlReq(newName));
+		this.setAttr(ZmContact.F_email, newName); //todo - we need to separate the email from the nickname or display name. For now I don't have that.
+		this.setAttr(ZmContact.F_firstName, newName);
+		this._fileAs = newName;
 	}
 
 	if (reqs.length == 0) {
@@ -1219,7 +1224,7 @@ function(attr) {
 			DistributionListActionRequest: reqs
 		}
 	};
-	var respCallback = this._modifyDlResponseHandler.bind(this);
+	var respCallback = this._modifyDlResponseHandler.bind(this, fileAsChanged);
 	appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
 
 };
@@ -1260,7 +1265,7 @@ function(name) {
 };
 
 ZmContact.prototype._modifyDlResponseHandler =
-function(ev) {
+function(ev, fileAsChanged) {
 	appCtxt.setStatusMsg(ZmMsg.dlSaved);
 
 	//for DLs we reload from the server since the server does not send notifications.
@@ -1268,10 +1273,14 @@ function(ev) {
 	this.dlInfo = null;
 	var app = appCtxt.getApp(ZmApp.CONTACTS);
 	app.cacheDL(this.getEmail(), null); //clear the cache for this DL.
-	this._notify(ZmEvent.E_MODIFY);
+	appCtxt.cacheRemove(this.getId()); //also some other cache.
 
+	var details = {
+		fileAsChanged: fileAsChanged
+	};
+
+	this._notify(ZmEvent.E_MODIFY, details);
 };
-
 
 /**
  * @private
