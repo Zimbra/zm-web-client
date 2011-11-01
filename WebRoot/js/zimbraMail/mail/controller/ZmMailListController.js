@@ -176,7 +176,7 @@ function(view, force) {
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		var groupByItem = (view == ZmId.VIEW_TRAD) ? ZmItem.MSG : ZmItem.CONV;
 		var params = {types:[groupByItem], offset:0, limit:limit, sortBy:sortBy, getHtml:getHtml};
-		appCtxt.getSearchController().redoSearch(this._app.currentSearch, null, params);
+		appCtxt.getSearchController().redoSearch(this._currentSearch, null, params);
 	}
 };
 

@@ -327,6 +327,8 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.searchFor	= this._searchFor;
 	params.idsOnly		= search.idsOnly;
 	params.inDumpster   = search.inDumpster;
+	params.userInitiated = search.userInitiated;
+	params.sessionId	= search.sessionId;
 
 	if (changes) {
 		for (var key in changes) {

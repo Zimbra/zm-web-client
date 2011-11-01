@@ -63,6 +63,7 @@ ZmSearchResultsController.prototype.getDefaultViewType = ZmSearchResultsControll
 ZmSearchResultsController.prototype.show =
 function(results) {
 	var resultsType = results.type;
+	results.search.sessionId = this.sessionId;	// in case we reuse this search (eg view switch)
 	var app = this._resultsApp = appCtxt.getApp(ZmItem.APP[resultsType]) || appCtxt.getCurrentApp();
 	app.showSearchResults(results, this._displayResults.bind(this, results.search), this);
 };
