@@ -946,6 +946,7 @@ function(organizer, attendees) {
             var idx = this._emailToIdx[id];
             if(this._organizerIndex == idx) continue;
             var sched = this._schedTable[idx];
+            if(!sched) continue;
             this._resetRow(sched, false, sched.attType, false, true);
             this._hideRow(idx);
             this._schedTable[idx] = null;
