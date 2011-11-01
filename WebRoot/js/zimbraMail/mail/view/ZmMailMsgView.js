@@ -1575,6 +1575,7 @@ function(msg, container, callback, index) {
 	}
 
 	this._setAttachmentLinks();
+	this._setRows();
 	this._expandRows(this._expandHeader);
 
 	if (callback) { callback.run(); }
@@ -1630,6 +1631,7 @@ function(el, bodyPart, callback, result, isTruncated) {
 	this._makeIframeProxy(el, (content || ""), true, isTruncated);
 
 	this._setAttachmentLinks();
+	this._setRows();
 	this._expandRows(this._expandHeader);
 
 	if (callback) { callback.run(); }
@@ -2009,6 +2011,19 @@ function(ev) {
 	}
 };
 
+ZmMailMsgView.prototype._setRows =
+function() {
+        var expandRow = document.getElementById(this._expandRowId);
+	var table = expandRow && expandRow.parentNode;
+        if (!table) { return; } 
+	if (this._addressRows) {
+		for (var i = 0; i < this._addressRows.length; i++) {
+			var addressRow = this._addressRows[i];
+			table.appendChild(addressRow);
+		}
+	}
+};
+
 ZmMailMsgView.prototype._expandButtonListener =
 function(ev) {
 	this._expandRows(!this._expandHeader);
@@ -2017,29 +2032,18 @@ function(ev) {
 ZmMailMsgView.prototype._expandRows =
 function(expand) {
 	var expandRow = document.getElementById(this._expandRowId);
-	if (!expandRow) { return; }
-
+	if (!expandRow) { return; } 
 	this._expandHeader = expand;
 	if (this._expandButton) {
 		this._expandButton.setImage(expand ? "HeaderExpanded" : "HeaderCollapsed");
 	}
 
 	var table = expandRow.parentNode;
-	if (!expand) {
-		this._addressRows = [];
-		while (expandRow.nextSibling) {
-			var addressRow = expandRow.nextSibling;
-			this._addressRows.push(addressRow);
-			table.removeChild(addressRow);
-		}
+
+	for (var i = 1; i < table.rows.length; i++) { // row[0] is From address
+		table.rows[i].style.display = (expand)?"":"none";
 	}
-	else if (this._addressRows) {
-		for (var i = 0; i < this._addressRows.length; i++) {
-			var addressRow = this._addressRows[i];
-			table.appendChild(addressRow);
-		}
-		this._addressRows = null;
-	}
+
 	var attContainer = document.getElementById(this._attLinksId + "_container");
 	if (attContainer) {
 		Dwt.setVisible(attContainer, expand);
