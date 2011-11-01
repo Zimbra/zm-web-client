@@ -116,6 +116,10 @@ function(params) {
 		}
 	}
 
+	if (this._handleDeleteFromSharedFolder(params, params1)) {
+		return;
+	}
+	
 	this._itemAction(params1);
 };
 

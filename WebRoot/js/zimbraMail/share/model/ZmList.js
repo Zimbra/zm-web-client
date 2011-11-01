@@ -513,9 +513,20 @@ function(params) {
 	//Error Callback
 	params1.errorCallback = params.errorCallback;
 
-	if (params.folder.id == ZmFolder.ID_TRASH) { // Bug 26103: when deleting an item in a folder shared to us, save a copy in our own trash
+	if (this._handleDeleteFromSharedFolder(params, params1)) {
+		return;
+	}
+    
+	this._itemAction(params1);
+};
+
+ZmList.prototype._handleDeleteFromSharedFolder =
+function(params, params1) {
+
+	// Bug 26103: when deleting an item in a folder shared to us, save a copy in our own trash
+	if (params.folder && params.folder.id == ZmFolder.ID_TRASH) {
 		var toCopy = [];
-		for (var i=0; i<params.items.length; i++) {
+		for (var i = 0; i < params.items.length; i++) {
 			var item = params.items[i];
 			var index = item.id.indexOf(":");
 			if (index != -1) { //might be shared
@@ -533,11 +544,9 @@ function(params) {
 				actionText:		null
 			};
 			this.copyItems(params2);
-			return;
+			return true;
 		}
 	}
-    
-	this._itemAction(params1);
 };
 
 /**
