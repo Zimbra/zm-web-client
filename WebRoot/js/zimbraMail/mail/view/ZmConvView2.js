@@ -737,6 +737,30 @@ function(msg, container, callback) {
 
 ZmMailMsgCapsuleView.prototype._renderMessageBody =
 function(msg, container, callback, index) {
+	
+	this._msgBodyDivId = [this._htmlElId, ZmId.MV_MSG_BODY].join("_");
+	var autoSendTime = AjxUtil.isDate(msg.autoSendTime) ? AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM).format(msg.autoSendTime) : null;
+	if (autoSendTime) {
+		var div = document.createElement("DIV");
+		div.id = this._autoSendHeaderId = this._msgBodyDivId + "_autoSend";
+		div.innerHTML = AjxTemplate.expand("mail.Message#AutoSend", {autoSendTime: autoSendTime});
+		this.getHtmlElement().appendChild(div);
+	}
+
+	if (msg.attrs) {
+		var additionalHdrs = [];
+		for (var hdrName in ZmMailMsgView.displayAdditionalHdrsInMsgView) {
+			if (msg.attrs[hdrName]) {
+				additionalHdrs.push({hdrName: ZmMailMsgView.displayAdditionalHdrsInMsgView[hdrName], hdrVal: msg.attrs[hdrName]});
+			}
+		}
+		if (additionalHdrs.length) {
+			var div = document.createElement("DIV");
+			div.id = this._addedHeadersId = this._msgBodyDivId + "_addedHeaders";
+			div.innerHTML = AjxTemplate.expand("mail.Message#AddedHeaders", {additionalHdrs: additionalHdrs});
+			this.getHtmlElement().appendChild(div);
+		}
+	}
 
 	var attachmentsCount = this._msg.getAttachmentLinks(true, !appCtxt.get(ZmSetting.VIEW_AS_HTML), true).length;
 	if (attachmentsCount > 0) {
@@ -898,6 +922,8 @@ function() {
 		this._renderMessage(this._msg);
 	}
 	else {
+		Dwt.setVisible(this._autoSendHeaderId, this._expanded);
+		Dwt.setVisible(this._addedHeadersId, this._expanded);
 		Dwt.setVisible(this._attLinksId, this._expanded);
 		Dwt.setVisible(this._displayImagesId, this._expanded);
 		Dwt.setVisible(this._msgBodyDivId, this._expanded);
@@ -931,11 +957,6 @@ function() {
 	
 	this._tagCellId = this._footerId + "_tagCell";
 	this._renderTags(msg, document.getElementById(this._tagContainerCellId), this._tagCellId);
-};
-
-ZmMailMsgCapsuleView.prototype._getBodyClass =
-function() {
-	return "MsgBody";
 };
 
 ZmMailMsgCapsuleView.prototype._handleShowTextLink =

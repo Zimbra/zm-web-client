@@ -98,23 +98,9 @@
 								</tr>
 							<$ } $>
 
-							<$ if (data.autoSendTime) { $>
-								<tr id='OBJ_PREFIX_<$=Dwt.getNextId()$>_scheduled'>
-									<td valign='top' class='LabelColName'><$= ZmMsg.messageScheduledSendLabel $></td>
-									<td class='LabelColValue' colspan=10><$= data.autoSendTime $></td>
-								</tr>
-							<$ } $>
+							<$= AjxTemplate.expand("#AutoSend", data) $>
+							<$= AjxTemplate.expand("#AddedHeaders", data) $>
 
-							<$ for (var i = 0; i < data.additionalHdrs.length; i++) {  $>
-								<tr>
-									<td valign='top' class='LabelColName'>
-										<$= data.additionalHdrs[i].hdrName $>
-									</td>
-									<td class='LabelColValue' colspan='10'>
-										<$=  data.additionalHdrs[i].hdrVal $>
-									</td>
-								</tr>
-							<$ } $>
 						</table>
 
 						<$ if (data.hasAttachments) { $>
@@ -133,6 +119,28 @@
 	</div>
 </template>
 
+<template id='mail.Message#AutoSend'>
+	<$ if (data.autoSendTime) { $>
+		<tr id='OBJ_PREFIX_<$=Dwt.getNextId()$>_scheduled'>
+			<td valign='top' class='LabelColName'><$= ZmMsg.messageScheduledSendLabel $></td>
+			<td class='LabelColValue' colspan=10><$= data.autoSendTime $></td>
+		</tr>
+	<$ } $>
+</template>
+
+<template id='mail.Message#AddedHeaders'>
+	<$ for (var i = 0; i < data.additionalHdrs.length; i++) {  $>
+		<tr>
+			<td valign='top' class='LabelColName'>
+				<$= data.additionalHdrs[i].hdrName $>
+			</td>
+			<td class='LabelColValue' colspan='10'>
+				<$=  data.additionalHdrs[i].hdrVal $>
+			</td>
+		</tr>
+	<$ } $>
+</template>
+		
 <template id='mail.Message#InviteHeader'>
 	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
 		<table class='InvHeaderTable' id='${id}_headerElement'cellspacing=0 cellpadding=0 border=0 width=100%>
