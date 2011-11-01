@@ -447,7 +447,7 @@ function(conv, fieldId) {
 
 		// bug 23832 - create notif for conv in sent gives us sender as participant, we want recip
 		var folder = appCtxt.getById(this._folderId);
-		if ((origLen == 1) && (part1[0].type == AjxEmailAddress.FROM) && folder &&
+		if ((origLen == 1) && (part1[0].type == AjxEmailAddress.FROM) && folder && conv.isZmConv &&
 			(folder.isUnder(ZmFolder.ID_SENT) || folder.isUnder(ZmFolder.ID_DRAFTS) ||
 			folder.isUnder(ZmFolder.ID_OUTBOX))) {
 

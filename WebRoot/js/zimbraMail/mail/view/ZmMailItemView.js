@@ -25,7 +25,7 @@ ZmMailItemView = function(params) {
 ZmMailItemView.prototype = new DwtComposite;
 ZmMailItemView.prototype.constructor = ZmMailItemView;
 
-ZmMailItemView.prototype.ZmMailItemView = true;
+ZmMailItemView.prototype.isZmMailItemView = true;
 ZmMailItemView.prototype.toString = function() { return "ZmMailItemView"; };
 
 ZmMailItemView.prototype.set =

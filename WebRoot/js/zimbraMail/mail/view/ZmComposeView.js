@@ -1411,7 +1411,7 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 	if (oldSignatureId) {
 		if (isHtml) {
 			var idoc = this.getHtmlEditor()._getIframeDoc();
-			var sigEl = idoc.getElementById(oldSignatureId);
+			var sigEl = idoc && idoc.getElementById(oldSignatureId);
 			if (sigEl) {
 				var newSigContent = this._replaceSignature(sigEl.innerHTML, newSig || "");
 				if (newSigContent) {

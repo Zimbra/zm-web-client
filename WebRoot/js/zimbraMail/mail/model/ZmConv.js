@@ -43,10 +43,8 @@ ZmConv = function(id, list) {
 ZmConv.prototype = new ZmMailItem;
 ZmConv.prototype.constructor = ZmConv;
 
-ZmConv.prototype.toString = 
-function() {
-	return "ZmConv";
-};
+ZmConv.prototype.isZmConv = true;
+ZmConv.prototype.toString = function() { return "ZmConv"; };
 
 // Public methods
 
