@@ -420,7 +420,7 @@ function(parent, posStyle, content, mode, withAce) {
             }
             else{
                 data.name = "TinyMCE_all";
-                data.extension = ".js.min";
+                data.extension = ".js";
             }
 		AjxPackage.require(data);
 	} else {
