@@ -231,7 +231,7 @@ ZmQuickCommandDialog.prototype._removeActionFromUI = function(rowId) {
 };
 
 ZmQuickCommandDialog.prototype._addActionToUI = function(quickCommandAction) {
-    var rowId = Dwt.getNextId();
+    var rowId = Dwt.getNextId("ZmQuickCommandRow_");
     var rowDetails = {data:quickCommandAction};
     this._rowIdToRowDetailsMap[rowId] = rowDetails;
 
@@ -253,7 +253,7 @@ ZmQuickCommandDialog.prototype._addActionToUI = function(quickCommandAction) {
 
 
     //create the action type dropDown
-    var actionTypeSelect = new DwtSelect({parent:this, parentElement:idTypeContainer});
+    var actionTypeSelect = new DwtSelect({parent:this, parentElement:idTypeContainer, id: idTypeContainer});
     var availableActionTypes = this.quickCommand.itemType.actions;
     if (availableActionTypes) {
         for (var i = 0; i < availableActionTypes.length; i++) {
@@ -312,8 +312,9 @@ ZmQuickCommandDialog.prototype._createValueTypeControl = function(actionType, ac
             }
             var tagValue = organizer ? AjxStringUtil.htmlEncode(organizer.getName(false, null, true)) : "";
             var tagText = tagValue ? tagValue : ZmMsg.browse;
+            var id = rowId + "_" + ZmQuickCommandAction.TYPE_TAG_PICKER;
 
-            var valueControlTagPicker = new DwtButton({parent:this, parentElement:rowDetails.idValueContainer});
+            var valueControlTagPicker = new DwtButton({parent:this, parentElement:rowDetails.idValueContainer, id: id});
             valueControlTagPicker.addSelectionListener(this._browseTagHandlerClosure);
             valueControlTagPicker.setText(tagText);
             valueControlTagPicker.setData(ZmFilterRuleDialog.DATA, actionValue);
@@ -321,7 +322,9 @@ ZmQuickCommandDialog.prototype._createValueTypeControl = function(actionType, ac
             valueControlTagPicker.setData(ZmQuickCommandDialog.ROW_ID, rowId);
 
         } else if (controlType == ZmQuickCommandAction.TYPE_SELECT) {
-            var valueControlSelect = new DwtSelect({parent:this, parentElement:rowDetails.idValueContainer});
+            var id = rowId + "_" + actionType.label + "_" +  ZmQuickCommandAction.TYPE_SELECT;
+            var valueControlSelect = new DwtSelect({parent:this, parentElement:rowDetails.idValueContainer, id: id});
+
             var options = valueType.pOptions;
             for (var i = 0; i < options.length; i++) {
                 var o = options[i];
