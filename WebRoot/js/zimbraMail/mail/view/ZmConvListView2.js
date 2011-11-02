@@ -221,7 +221,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		} else if (field == ZmItem.F_SUBJECT) {
 			var subj = ZmMailMsg.stripSubjectPrefixes(item.subject || ZmMsg.noSubject);
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj, true);
-			if (item.numMsgs > 1) {
+			if (item.numMsgs > 1 && !this.isMultiColumn()) {
 				htmlArr[idx++] = " <span class='ZmConvListNumMsgs'>";
 				htmlArr[idx++] = item.numMsgs;
 				htmlArr[idx++] = "</span>";
@@ -508,9 +508,13 @@ function(ev) {
 
 	// msg count in a conv changed - see if we need to add or remove an expand icon
 	if ((ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_SIZE])) {
-		var countField = this._getElement(item, ZmItem.F_SIZE);
-		if (countField) {
-			countField.innerHTML = item.numMsgs > 1 ? ["(", item.numMsgs, ")"].join("") : "";
+		var fieldId = this._getFieldId(item, ZmItem.F_SUBJECT);
+		var subjectField = document.getElementById(fieldId);
+		if (subjectField) {
+			var html = [];
+			var colIdx = this._headerHash[ZmItem.F_SUBJECT] && this._headerHash[ZmItem.F_SUBJECT]._index;
+			this._getCellContents(html, 0, item, ZmItem.F_SUBJECT, colIdx);
+			subjectField.innerHTML = html.join("");
 		}
 	}
 
