@@ -602,19 +602,20 @@ function(ev) {
 	
 	if (ev.type != ZmEvent.S_MSG) {	return; }
 	
-	if (ev.event == ZmEvent.E_CREATE) {
+	var msg = ev.item;
+	if (!msg) { return; }
+	if (ev.event == ZmEvent.E_CREATE && (msg.cid == this._item.id)) {
 		var params = {
 			parent:			this,
 			parentElement:	document.getElementById(this._messagesDivId),
 			controller:		this._controller,
 			actionsMenu:	this._actionsMenu,
-			forceExpand:	false,
+			forceCollapse:	true,
 			index:			ev.getDetail("sortIndex")
 		}
-		this._renderMessage(ev.item, params);
+		this._renderMessage(msg, params);
 	} else {
-		var msgId = ev.item && ev.item.id;
-		var msgView = this._msgViews[msgId];
+		var msgView = this._msgViews[msg.id];
 		if (msgView) {
 			msgView._msgChangeListener(ev);
 		}
@@ -635,7 +636,15 @@ function(newMsg) {
  * The capsule view of a message is intended to be brief so that all the messages in a conv
  * can be shown together in a natural way. Quoted content is stripped.
  * 
- * @param params
+ * @param {hash}			params			hash of params:
+ * @param {string}			className		(optional) defaults to "ZmMailMsgCapsuleView"
+ * @param {ZmConvView2}		parent			parent conv view
+ * @param {string}			msgId			ID of msg
+ * @param {string}			sessionId		ID of containing session (used with above param to create DOM IDs)
+ * @param {ZmController}	controller		owning conv list controller
+ * @param {ZmActionMenu}	actionsMenu		shared action menu
+ * @param {boolean}			forceExpand		if true, show header, body, and footer
+ * @param {boolean}			forceCollapse	if true, just show header
  */
 ZmMailMsgCapsuleView = function(params) {
 
@@ -646,8 +655,8 @@ ZmMailMsgCapsuleView = function(params) {
 
 	this._convView = this.parent;
 	this._controller = params.controller;
-	this._container = params.container;
 	this._forceExpand = params.forceExpand;
+	this._forceCollapse = params.forceCollapse;
 	this._actionsMenu = params.actionsMenu;
 	this._showingQuotedText = false;
 	this._infoBarId = this._htmlElId;
@@ -679,7 +688,7 @@ function() {
 
 ZmMailMsgCapsuleView.prototype.set =
 function(msg, force) {
-	this._expanded = this._forceExpand || msg.isUnread;
+	this._expanded = this._forceExpand || (!this._forceCollapse && msg.isUnread);
 	ZmMailMsgView.prototype.set.apply(this, arguments);
 };
 
@@ -689,6 +698,7 @@ function(msg, container, callback) {
 	if (this._expanded) {
 		this._renderMessageHeader(msg, container);
 		this._renderMessageBodyAndFooter(msg, container, callback);
+		this._controller._handleMarkRead(msg);
 	}
 	else {
 		this._renderMessageHeader(msg, container);
