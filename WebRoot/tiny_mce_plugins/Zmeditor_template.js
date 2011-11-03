@@ -218,7 +218,10 @@ Zmeditor_template.FONT_SIZE_MAPPING = {
 
                 // Use computed style
                 if (s.theme_advanced_runtime_fontsize && !fn) {
-                    fn = ed.dom.getStyle(n, 'fontFamily', true).replace(/[\"\']+/g, '').replace(/^([^,]+).*/, '$1').toLowerCase();
+                    fn = ed.dom.getStyle(n, 'fontFamily', true);
+                    if(fn){
+                        fn = fn.replace(/[\"\']+/g, '').replace(/^([^,]+).*/, '$1').toLowerCase();
+                    }
                 }
 
                 c.select(function(v) {
