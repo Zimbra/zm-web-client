@@ -1228,7 +1228,7 @@ function() {
 			}
 		} else if (t.op == "tag") {
 			// TODO: make sure there's only one tag term?
-			this.tagId = props.tagId = this._getTagId(t.arg);
+			this.tagId = props.tagId = this._getTagId(t.arg, true);
 		}
 	}
 	return props;
@@ -1348,12 +1348,12 @@ function(path) {
 
 // Returns the ID for the given tag name.
 ZmParsedQuery.prototype._getTagId =
-function(name) {
+function(name, normalized) {
 	var tagTree = appCtxt.getTagTree();
 	if (tagTree) {
 		var tag = tagTree.getByName(name.toLowerCase());
 		if (tag) {
-			return tag.id;
+			return normalized ? tag.nId : tag.id;
 		}
 	}
 	return null;
