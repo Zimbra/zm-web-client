@@ -204,6 +204,7 @@ function(params) {
 		if (this._bubbleAddedCallback && !params.skipNotify) {
 			this._bubbleAddedCallback.run();
 		}
+		this._leaveEditMode();
 		return bubble;
 	}
 };
