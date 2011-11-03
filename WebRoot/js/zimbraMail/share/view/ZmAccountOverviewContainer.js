@@ -144,7 +144,7 @@ function(params) {
 			params.selectable = false;
 		}
 
-		this._addAccount(params, acct, showBackgroundColor);
+		this._addAccount(params, acct, showBackgroundColor, null, "account" + i);
 
 		header = this.getHeaderItem(acct);
 		if (header) {
@@ -238,7 +238,7 @@ function(params) {
 		params2.selectable = false;
 
 		if (this._appName != ZmApp.PREFERENCES) {
-			this._addAccount(params2, mainAcct, showBackgroundColor, "ZmOverviewLocalHeader");
+			this._addAccount(params2, mainAcct, showBackgroundColor, "ZmOverviewLocalHeader", "LocalFolders");
 
 			header = this.getHeaderItem(mainAcct);
 			header.setExpanded(appCtxt.get(ZmSetting.ACCOUNT_TREE_OPEN, null, mainAcct));
@@ -472,7 +472,7 @@ function() {
 };
 
 ZmAccountOverviewContainer.prototype._addAccount =
-function(params, account, showBackgroundColor, headerClassName) {
+function(params, account, showBackgroundColor, headerClassName, predictableId) {
 	params.overviewId = appCtxt.getOverviewId(this.containerId, account);
 	params.account = account;	// tree controller might need reference to account
 
@@ -499,7 +499,8 @@ function(params, account, showBackgroundColor, headerClassName) {
 			label: headerLabel,
 			icon: headerIcon,
 			dataId: account.id,
-			className: headerClassName
+			className: headerClassName,
+			predictableId: predictableId
 		};
 
 		this._addSection(headerParams, omit, params, showBackgroundColor);
@@ -517,7 +518,8 @@ function(headerParams, omit, overviewParams, showBackgroundColor) {
 		text:			headerParams.label,
 		imageInfo:		headerParams.icon,
 		selectable:		overviewParams.selectable,
-		className:		headerParams.className
+		className:		headerParams.className,
+		id:				this.getHTMLElId() + "__" + (headerParams.predictableId || headerParams.dataId) + "__SECTION"
 	};
 	var header = this._headerItems[headerParams.dataId] = new DwtTreeItem(params);
 	header.setData(Dwt.KEY_ID, headerParams.dataId);
