@@ -630,6 +630,7 @@ function(results, search, noUpdateOverview) {
 	if (search.userInitiated && ZmApp.SEARCH_RESULTS_TAB[app.getName()]) {
 		var ctlr = appCtxt.getApp(ZmApp.SEARCH).getSearchResultsController(search.sessionId);
 		ctlr.show(results);
+		this._searchToolBar.setSearchFieldValue("");
 	}
 	else {
 		// show results based on type - may invoke package load
@@ -765,8 +766,6 @@ function(params) {
 		};
 		this.search(searchParams);
 	}
-	
-	this._searchToolBar.setSearchFieldValue("");
 };
 
 /**
