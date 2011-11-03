@@ -771,12 +771,14 @@ function(item){
 
     //Modified & Created
     var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
-    if(this._headerModified)
+    if (this._headerModified && item.modifyDate) {
         this._headerModified.innerHTML = dateFormatter.format(item.modifyDate);
+	}
     if(this._headerModifier)
         this._headerModifier.innerHTML = item.modifier;
-    if(this._headerCreated)
+    if (this._headerCreated && item.createDate) {
         this._headerCreated.innerHTML = dateFormatter.format(item.createDate);
+	}
     if(this._headerCreator)
         this._headerCreator.innerHTML = item.creator;
 
