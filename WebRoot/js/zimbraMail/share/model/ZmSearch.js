@@ -930,7 +930,7 @@ function() {
 					func.push("((item.type == ZmItem.CONV) ? item.folders && item.folders['" + folderId +"'] : item.folderId == '" + folderId + "')");
 				}
 			} else if (t.op == "tag") {
-				tagId = this._getTagId(t.arg);
+				tagId = this._getTagId(t.arg, true);
 				if (tagId) {
 					func.push("item.hasTag('" + tagId + "')");
 				}
@@ -1012,12 +1012,12 @@ function(path) {
  * @private
  */
 ZmSearch.prototype._getTagId =
-function(name) {
+function(name, normalized) {
 	var tagTree = appCtxt.getTagTree();
 	if (tagTree) {
 		var tag = tagTree.getByName(name.toLowerCase());
 		if (tag) {
-			return tag.id;
+			return normalized ? tag.nId : tag.id;
 		}
 	}
 };
