@@ -190,6 +190,11 @@ function() {
 	return this._taskMultiView;
 };
 
+ZmTaskListController.prototype._getDefaultFocusItem =
+function() {
+	return this.getListView();
+};
+
 /**
  * Switches the view.
  * 

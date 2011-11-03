@@ -721,6 +721,11 @@ function() {
 	this._doublePaneView._selectFirstItem();
 };
 
+ZmDoublePaneController.prototype._getDefaultFocusItem =
+function() {
+	return this.getListView();
+};
+
 /**
  * Returns the item that should be selected after a move/delete. Finds
  * the first non-selected item after the first selected item.
