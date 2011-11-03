@@ -659,7 +659,7 @@
 <template id='mail.Message#Conv2MsgFooter'>
 	<div>
 		<div id='${footerId}'>
-			<table class='MsgHeaderTable' width=100%>
+			<table class='MsgFooterTable' width=100%>
 				<tr>
 					<td id='${folderCellId}'></td>
 					<td id='${tagCellId}' width=100%></td>

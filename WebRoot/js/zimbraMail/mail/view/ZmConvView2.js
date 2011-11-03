@@ -614,7 +614,14 @@ function(ev) {
 			index:			ev.getDetail("sortIndex")
 		}
 		this._renderMessage(msg, params);
-	} else {
+	}
+	else if (ev.event == ZmEvent.E_MOVE) {
+		var msgView = this._msgViews[msg.id];
+		if (msgView) {
+			msgView._setFolderIcon();
+		}
+	}
+	else {
 		var msgView = this._msgViews[msg.id];
 		if (msgView) {
 			msgView._msgChangeListener(ev);
@@ -624,7 +631,7 @@ function(ev) {
 
 ZmConvView2.prototype._tagChangeListener =
 function(ev) {
-
+	// TODO: handle tag change
 };
 
 ZmConvView2.prototype.resetMsg =
@@ -946,7 +953,10 @@ function() {
 ZmMailMsgCapsuleView.prototype._setFolderIcon =
 function() {
 	var cell = document.getElementById(this._folderContainerCellId);
-	AjxImg.setImage(cell, "Folder");
+	var folder = this._msg.folderId && appCtxt.getById(this._msg.folderId);
+	if (cell && folder) {
+		AjxImg.setImage(cell, folder.getIconWithColor());
+	}
 };
 
 // show name of folder as tooltip

@@ -781,8 +781,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	font-weight: normal;
 }
 
-.ZmMailMsgCapsuleView .MsgHeaderTable .ImgFolder {
-	margin-left: 3px;
+.MsgFooterTable td:first-child {
+	padding-left: 5px;
+}
+
+.MsgFooterTable td:last-child {
+	padding-right: 5px;
 }
 
 .ZmMailMsgCapsuleView .Expand {
