@@ -1276,7 +1276,7 @@ ZmBaseController.prototype._resetQuickCommandOperations = function(parent) {
 				var quickCommandSubMenu = quickCommandMenuItem.getMenu(true);
 				if (!quickCommandSubMenu) {
 					//add listener and quickCommandSubMenu one time only
-					quickCommandMenuItem.addListener(DwtEvent.ONMOUSEOVER, this._refreshQuickCommandsClosure);
+					quickCommandMenuItem.addListener(AjxEnv.isIE ? DwtEvent.ONMOUSEENTER : DwtEvent.ONMOUSEOVER, this._refreshQuickCommandsClosure);
 					quickCommandSubMenu = new ZmActionMenu({parent:parent, menuItems:ZmOperation.NONE, id: Dwt.getNextId("quickCommandSubMenu_")});
 					quickCommandMenuItem.setMenu(quickCommandSubMenu);
 				}
