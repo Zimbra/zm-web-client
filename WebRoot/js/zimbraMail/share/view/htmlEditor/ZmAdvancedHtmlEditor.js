@@ -410,7 +410,6 @@ function(parent, posStyle, content, mode, withAce) {
 
 		var callback = new AjxCallback(this, this.initEditorManager, [id, mode, content]);
         var data = {
-                method: AjxPackage.METHOD_SCRIPT_TAG,
                 callback: callback,
                 basePath: ZmAdvancedHtmlEditor.TINY_MCE_PATH
             };
