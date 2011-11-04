@@ -752,12 +752,14 @@ function(columnItem, bSortAsc, callback) {
 
 	if (query || queryHint) {
 		var params = {
-			query: query,
-			queryHint: queryHint,
-			types: [ZmItem.CONV],
-			sortBy: this._sortByString,
-			limit:this.getLimit(),
-			callback: callback
+			query:			query,
+			queryHint:		queryHint,
+			types:			[ZmItem.CONV],
+			sortBy:			this._sortByString,
+			limit:			this.getLimit(),
+			callback:		callback,
+			userInitiated:	this._controller._currentSearch.userInitiated,
+			sessionId:		this._controller._currentSearch.sessionId
 		};
 		appCtxt.getSearchController().search(params);
 	}

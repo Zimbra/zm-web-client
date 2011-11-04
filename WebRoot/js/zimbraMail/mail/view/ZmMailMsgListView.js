@@ -415,27 +415,24 @@ function(columnItem, bSortAsc, callback) {
 	var queryHint = this._controller.getSearchStringHint();
 
 	if (query || queryHint) {
+		var params = {
+			query:			query,
+			queryHint:		queryHint,
+			sortBy:			this._sortByString,
+			userInitiated:	this._controller._currentSearch.userInitiated,
+			sessionId:		this._controller._currentSearch.sessionId
+		}
 		if (this._mode == ZmId.VIEW_CONV) {
 			var conv = controller.getConv();
 			if (conv) {
 				var respCallback = new AjxCallback(this, this._handleResponseSortColumn, [conv, columnItem, controller, callback]);
-				var params = {
-					query: query,
-					queryHint: queryHint,
-					sortBy: this._sortByString,
-					getFirstMsg: controller.isReadingPaneOn()
-				};
+				params.getFirstMsg = controller.isReadingPaneOn();
 				conv.load(params, respCallback);
 			}
 		} else {
-			var params = {
-				query: query,
-				queryHint: queryHint,
-				types: [ZmItem.MSG],
-				sortBy: this._sortByString,
-				limit: this.getLimit(),
-				callback: callback
-			};
+			params.types = [ZmItem.MSG];
+			params.limit = this.getLimit();
+			params.callback = callback;
 			appCtxt.getSearchController().search(params);
 		}
 	}
