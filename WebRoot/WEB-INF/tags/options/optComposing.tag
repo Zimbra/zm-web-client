@@ -54,11 +54,20 @@
                             <label for="composeFont"><fmt:message key="optionsComposeFont"/>:</label>
                         </td>
                         <td>
+                            <c:set var="fontStyle" value="${fn:replace(mailbox.prefs.htmlEditorDefaultFontFamily,', ',',')}"/>
                             <select name="zimbraPrefHtmlEditorDefaultFontFamily" id="composeFont">
-                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Arial'}"> selected</c:if> value="Arial">Arial</option>
-                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Times New Roman'}"> selected</c:if> value="Times New Roman">Times New Roman</option>
-                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Courier'}"> selected</c:if> value="Courier">Courier</option>
-                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Verdana'}"> selected</c:if> value="Verdana">Verdana</option>
+                                <option<c:if test="${fontStyle eq 'arial,helvetica,sans-serif'}"> selected</c:if> value="arial,helvetica,sans-serif">Sans Serif</option>
+                                <option<c:if test="${fontStyle eq 'times new roman,new york,times,serif'}"> selected</c:if> value="times new roman,new york,times,serif">Serif</option>
+                                <option<c:if test="${fontStyle eq 'arial black,avant garde'}"> selected</c:if> value="arial black,avant garde">Wide Block</option>
+                                <option<c:if test="${fontStyle eq 'courier new,courier,monaco,monospace,sans-serif'}"> selected</c:if> value="courier new,courier,monaco,monospace,sans-serif">Monospaced</option>                                
+                                <option<c:if test="${fontStyle eq 'comic sans ms,comic sans,sans-serif'}"> selected</c:if> value="comic sans ms,comic sans,sans-serif">Comic</option>
+                                <option<c:if test="${fontStyle eq 'lucida console,sans-serif'}"> selected</c:if> value="lucida console,sans-serif">Console</option>
+                                <option<c:if test="${fontStyle eq 'garamond,new york,times,serif'}"> selected</c:if> value="garamond,new york,times,serif">Garamond</option>
+                                <option<c:if test="${fontStyle eq 'georgia,serif'}"> selected</c:if> value="georgia,serif">Elegant</option>
+                                <option<c:if test="${fontStyle eq 'tahoma,new york,times,serif'}"> selected</c:if> value="tahoma,new york,times,serif">Professional</option>
+                                <option<c:if test="${fontStyle eq 'terminal,monaco'}"> selected</c:if> value="terminal,monaco">Terminal</option>
+                                <option<c:if test="${fontStyle eq 'trebuchet ms,sans-serif'}"> selected</c:if> value="trebuchet ms,sans-serif">Modern</option>
+                                <option<c:if test="${fontStyle eq 'verdana,helvetica,sans-serif'}"> selected</c:if> value="verdana,helvetica,sans-serif">Wide</option>
                             </select>
                         </td>
                         <td class='ZOptionsTableLabel' style='width:50px;'>

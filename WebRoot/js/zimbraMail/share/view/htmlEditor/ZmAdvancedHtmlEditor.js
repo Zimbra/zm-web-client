@@ -336,6 +336,7 @@ function() {
 	var editor = this.getEditor();
 	if (editor) {
 		editor.setContent("", {format: "raw"});
+        this.initDefaultFontSize(editor);
 	}
     var field = this.getContentField();
     if(field) field.value = "";
@@ -514,6 +515,18 @@ function(id, mode, content) {
 	var locale = appCtxt.get(ZmSetting.LOCALE_NAME);
 	var editorCSS = appContextPath + "/css/editor_ui.css?v=" + window.cacheKillerVersion + "&skin=" + appCurrentSkin + "&locale=" + locale;
 
+    var fonts = [];
+	var KEYS = [ "fontFamilyIntl", "fontFamilyBase" ];
+	var i, j, key, value, name;
+	for (j = 0; j < KEYS.length; j++) {
+		for (i = 1; value = AjxMsg[KEYS[j]+i+".css"]; i++) {
+			if (value.match(/^#+$/)) break;
+			value = value.replace(/,\s/g,",");
+			name = AjxMsg[KEYS[j]+i+".display"];
+			fonts.push(name+"="+value);
+		}
+	}
+
 	tinyMCE.init({
 		// General options
 		mode :  (mode == DwtHtmlEditor.HTML)? "exact" : "none",
@@ -527,6 +540,7 @@ function(id, mode, content) {
 		theme_advanced_toolbar_location : "top",
 		theme_advanced_toolbar_align : "left",
 		theme_advanced_resizing : true,
+        theme_advanced_fonts : fonts.join(";"),
 		convert_urls : false,
 		verify_html : false,
 		gecko_spellcheck : true,

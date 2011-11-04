@@ -357,11 +357,25 @@ function() {
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
 
+	var keys = [ "fontFamilyIntl", "fontFamilyBase" ];
+	var i, j, key, value, name;
+	var names = [];
+	var styles = [];
+	for (j = 0; j < keys.length; j++) {
+		for (i = 1; value = AjxMsg[keys[j]+i+".css"]; i++) {
+			if (value.match(/^#+$/)) break;
+			value = value.replace(/,\s/g,",");
+			name = AjxMsg[keys[j]+i+".display"];
+			names.push(name);
+			styles.push(value);
+		}
+	}
+
 	ZmPref.registerPref("COMPOSE_INIT_FONT_FAMILY", {
 		displayName:		ZmMsg.defaultFontSettings,
 		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions: 	["Arial", "Times New Roman", "Courier", "Verdana"],
-		options: 			["Arial", "Times New Roman", "Courier", "Verdana"],
+		displayOptions: 	names,
+		options: 		styles,
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
 

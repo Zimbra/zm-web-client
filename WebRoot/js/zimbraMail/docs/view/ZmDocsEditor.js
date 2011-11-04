@@ -39,12 +39,24 @@ ZmDocsEditor.prototype.constructor = ZmDocsEditor;
 
 ZmDocsEditor._VALUE = "ZD";
 ZmDocsEditor.FONT_SIZE_VALUES = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
-ZmDocsEditor.FONT_FAMILY = [
-    {name:"Times New Roman",	value:"Times New Roman, Times, serif" },
-    {name:"Arial", 				value:"Arial, Helvetica, sans-serif" },
-    {name:"Courier", 			value:"Courier, Courier New, mono" },
-    {name:"Verdana",			value:"Verdana, Arial, Helvetica, sans-serif" }
-];
+
+ZmDocsEditor._normalizeFontId = function(id) {
+	return id.replace(/,\s/g,","); // Make sure all ids that are supposed to be found in ZmDocsEditor.FONT_FAMILY are actually found
+};
+
+ZmDocsEditor.FONT_FAMILY = {};
+(function() {
+	var KEYS = [ "fontFamilyIntl", "fontFamilyBase" ];
+	var i, j, key, value, name;
+	for (j = 0; j < KEYS.length; j++) {
+		for (i = 1; value = AjxMsg[KEYS[j]+i+".css"]; i++) {
+			if (value.match(/^#+$/)) break;
+			value = ZmDocsEditor._normalizeFontId(value);
+			name = AjxMsg[KEYS[j]+i+".display"];
+			ZmDocsEditor.FONT_FAMILY[value] = {name:name, value:value};
+		}
+	}
+})();
 
 ZmDocsEditor.__makeFontName = function(value) {
 	return value.replace(/,.*/,"").replace(/\b[a-z]/g, ZmDocsEditor.__toUpperCase);
@@ -80,7 +92,6 @@ function() {
 ZmDocsEditor.prototype._initIframe =
 function() {
     this._initHtmlMode(this._pendingContent);
-    //alert('here');
 };
 
 ZmDocsEditor.prototype._initHtmlMode =
@@ -119,20 +130,19 @@ function(tb) {
     var menu = new ZmPopupMenu(this._fontFamilyButton,"ActionMenu", null, this._controller);
     var listener = new AjxListener(this, this._fontFamilyListener);
 
-	var defaultText = "";
+    var defaultText = "";
 
-    for (var i = 0; i < ZmDocsEditor.FONT_FAMILY.length; i++) {
-        var item = ZmDocsEditor.FONT_FAMILY[i];
-        var mi = menu.createMenuItem(item.name, {text:item.name});
+    for (var id in ZmDocsEditor.FONT_FAMILY) {
+        var name = ZmDocsEditor.FONT_FAMILY[id] && ZmDocsEditor.FONT_FAMILY[id].name || ZmDocsEditor.__makeFontName(id);
+        var mi = menu.createMenuItem(name, {text:name});
         mi.addSelectionListener(listener);
-        mi.setData(ZmDocsEditor._VALUE, i);
-		if(i==0) {
-			defaultText = item.name;
-		}
+        mi.setData(ZmDocsEditor._VALUE, ZmDocsEditor.FONT_FAMILY[id] && ZmDocsEditor.FONT_FAMILY[id].value || ZmDocsEditor.__makeFontName(id));
     }
 
     this._fontFamilyButton.setMenu(menu);
-    this._fontFamilyButton.setText(defaultText);
+    var aCtxt = window.opener && window.opener.appCtxt || appCtxt;
+    var fontId = ZmDocsEditor._normalizeFontId(aCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
+    this._fontFamilyButton.setText(name);
 };
 
 ZmDocsEditor.prototype._createFontSizeMenu =
@@ -255,9 +265,9 @@ function(ev) {
 
 ZmDocsEditor.prototype._fontFamilyListener =
 function(ev) {
-	var id = ev.item.getData(ZmDocsEditor._VALUE);
-	this.setFont(ZmDocsEditor.FONT_FAMILY[id].value);
-	this._fontFamilyButton.setText(ZmDocsEditor.FONT_FAMILY[id].name);
+	var id = ZmDocsEditor._normalizeFontId(ev.item.getData(ZmDocsEditor._VALUE));
+	this.setFont(ZmDocsEditor.FONT_FAMILY[id] && ZmDocsEditor.FONT_FAMILY[id].value || ZmDocsEditor.__makeFontName(id));
+	this._fontFamilyButton.setText(ZmDocsEditor.FONT_FAMILY[id] && ZmDocsEditor.FONT_FAMILY[id].name || ZmDocsEditor.__makeFontName(id));
 };
 
 ZmDocsEditor.prototype._fontSizeListener =
@@ -494,6 +504,25 @@ ZmDocsEditor.prototype._initToolBar = function() {
 
 };
 
+ZmDocsEditor.prototype._onContentInitialized =
+function() {
+	DwtHtmlEditor.prototype._onContentInitialized.call(this);
+	this._setFontStyles();
+};
+
+ZmDocsEditor.prototype._setFontStyles =
+function() {
+	var doc = this._getIframeDoc();
+	var style = doc.body && doc.body.style;
+	var aCtxt = window.opener && window.opener.appCtxt || appCtxt;
+
+	if (style) {
+		style.fontFamily = aCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+		style.fontSize = aCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+		style.color = aCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
+	}
+};
+
 // @param afterTarget	true: insert link after target, false: replace target with link
 ZmDocsEditor.prototype._insertLink = function(link, target, afterTarget) {
 	if (typeof link == "string") {
@@ -670,9 +699,8 @@ function(ev) {
 		// and an un-updated toolbar, rather than the other way around.
 
 		if (ev.fontFamily) {
-			var id = ev.fontFamily;
-			var name = ZmDocsEditor.FONT_FAMILY[id] && ZmDocsEditor.FONT_FAMILY[id].name;
-			name = name || ZmDocsEditor.__makeFontName(id);
+			var id = ZmDocsEditor._normalizeFontId(ev.fontFamily);
+			var name = ZmDocsEditor.FONT_FAMILY[id] && ZmDocsEditor.FONT_FAMILY[id].name || ZmDocsEditor.__makeFontName(id);
 			this._fontFamilyButton.setText(name);
 		}
 
