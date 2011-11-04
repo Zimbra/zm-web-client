@@ -74,7 +74,8 @@ BODY						{	margin:0px; 	}
 #skin_container_help,
 #skin_container_logoff,
 #skin_container_adminlink				{	white-space:nowrap; text-align:center; padding:0px 10px; 	}
-#skin_container_help a, #skin_container_logoff a { @Text-contrast@ }
+#skin_container_help a, #skin_container_logoff a { @Text-contrast@ }
+
 /** Tree Toolbar **/
 #skin_spacing_tree						{	height:100%; padding-bottom:5px; 	}
 #skin_container_tree					{	@SkinBorderTree@ 					}
@@ -100,7 +101,7 @@ BODY						{	margin:0px; 	}
 
 
 /** App Toolbar **/
-#skin_spacing_app_top_toolbar			{	height:30px; 	}
+#skin_spacing_app_top_toolbar			{	height:40px; 	}
 #skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@ width:auto;	}
 #skin_container_app_new_button			{	@SkinBorderAppToolbar@ width:auto; padding-left:5px; padding-right:5px; padding-bottom:2px;}			
 #skin_spacing_app_row					{	border-top:1px solid; border-spacing:0; padding:0px 7px; @AppTab@ 	}
@@ -324,6 +325,10 @@ BODY						{	margin:0px; 	}
 	height:100%;
 }
 
+.ZNewButton .ZToolbarButtonBorder 			{	@ToolbarNewButtonBorder@ 			}
+.ZNewButton.ZHover .ZToolbarButtonBorder 	{	@ToolbarNewButtonBorder-hover@ 		}
+.ZNewButton.ZActive .ZToolbarButtonBorder 	{	@ToolbarNewButtonBorder-active@ 	}
+
 /* offline */
 .ZmNetworkStatus 		{ font-weight: bold; }
 .ZmNetworkStatusIcon 	{ cursor: pointer; }
@@ -459,11 +464,11 @@ SELECT						{	@FieldBorder@	}
 
 /*Temporary overrides that need to move to skin properties*/
 /*.DwtListView-ColHeader 		{ height:19px; 						}*/
-.DwtListView-Column 		{ background-color:#F3F3F3; 		}
-.DwtListView-Column td 		{ color:#666666; 					}
+.DwtListView-Column 		{ background-color:@lighten(AppC,33)@; 		}
+.DwtListView-Column td 		{ color:@darken(AppC,55)@; 					}
 .overviewHeader,
-.overviewHeader-actioned 	{ background-color:#CCCCCC; border:0; padding:1px 0; 	}
-.overviewHeader>TABLE 		{ background-color:#F3F3F3; border:1px solid white; 	}
+.overviewHeader-actioned 	{ background-color:@darken(AppC,20)@; border:0; padding:1px 0; 	}
+.overviewHeader>TABLE 		{ background-color:@lighten(AppC,33)@; border:1px solid white; 	}
 .RowDouble 					{ height:auto; padding-top:0; 		}
 .RowDouble>TABLE 			{ border:1px solid white; 			}
 .RowDouble .TopRow,
