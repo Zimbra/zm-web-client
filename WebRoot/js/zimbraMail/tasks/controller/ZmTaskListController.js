@@ -262,6 +262,9 @@ ZmTaskListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmTaskListController.handleKeyAction");
 
+    var lv = this._listView[this._currentViewId];
+    var num = lv.getSelectionCount();
+
     switch(actionCode) {
 
         case ZmKeyMap.MARK_COMPLETE:
@@ -281,6 +284,16 @@ function(actionCode) {
 			this._updateViewMenu(menuId);
             this.switchView(menuId);
 			break;
+        case ZmKeyMap.MOVE_TO_TRASH:
+            if(num) {
+                var tasks = lv.getSelection();
+                var nId = ZmOrganizer.normalizeId(tasks[0].folderId);
+                var isTrash = nId == ZmOrganizer.ID_TRASH;
+                if(!isTrash){
+                    this._handleCancel(tasks);
+                }
+            }
+            break;
 
         default:
             return ZmListController.prototype.handleKeyAction.call(this, actionCode);
