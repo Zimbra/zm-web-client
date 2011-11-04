@@ -180,9 +180,22 @@ action_stop                         stop checkbox (true)
     </td>
 </c:when>
 <c:when test="${zm:isDateCondition(condition)}">
+
+    <c:set var="split" value="${fn:split(requestScope.badDate,',')}"/>
+    <c:set var="thisBadDate" value="${split[condStatus.index]}"/>
     <c:set var="date" value="${zm:getDate(condition)}"/>
-    <fmt:message var="dateFmt" key="FILT_COND_DATE_FORMAT"/>
-    <fmt:formatDate pattern="${dateFmt}" value="${date.date}" var="fdate"/>
+
+    <c:choose>
+        <c:when test="${!empty thisBadDate}">
+            <c:set var="fdate" value="${thisBadDate}"/>
+            <c:set var="dateError" value="${true}"/>
+        </c:when>
+        <c:otherwise>
+            <fmt:message var="dateFmt" key="FILT_COND_DATE_FORMAT"/>
+            <fmt:formatDate pattern="${dateFmt}" value="${date.date}" var="fdate"/>
+        </c:otherwise>
+    </c:choose>
+
     <td>
         <input type="hidden" name="${condi}" value="date"/>
         <select name="${condi}_op">
@@ -193,7 +206,7 @@ action_stop                         stop checkbox (true)
         </select>
     </td>
     <td colspan='3'>
-        <input name='${condi}_value' type='text' autocomplete='off' size='20' value="${fn:escapeXml(fdate)}"> 
+        <input name='${condi}_value' type='text' autocomplete='off' size='20' value="${fn:escapeXml(fdate)}"<c:if test="${dateError}">style="border-color:#f00"</c:if> /> 
     </td>
 </c:when>
 <c:when test="${zm:isHeaderCondition(condition)}">

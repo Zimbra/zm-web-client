@@ -22,7 +22,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
 <zm:filterRule var="ruleVar" name="${param.rulename}" active="${param.ruleactive}" allconditions="${param.allof eq 'all'}">
-
+    <c:set var="badDate" value=""/>
     <c:forEach var="i" begin="0" end="${empty param.cond_count ? 0 : param.cond_count - 1}">
         <c:set var="key_condi" value="cond${i}"/>
         <c:set var="key_condop" value="cond${i}_op"/>
@@ -51,10 +51,21 @@
                         <fmt:message var="parseFormat" key="FILT_COND_DATE_FORMAT"/>
                         <fmt:parseDate var="parsedDate" pattern="${parseFormat}" value="${cond_value}"/>
                         <fmt:formatDate var="fmtDate" value="${parsedDate}" pattern="yyyyMMdd"/>
+
+                        <fmt:formatDate var="testDate" value="${parsedDate}" pattern="${parseFormat}"/>
+                        <c:set var="inputParts" value="${fn:split(cond_value, '/.-')}"/>
+                        <c:set var="parsedParts" value="${fn:split(testDate, '/.-')}"/>
+                        <c:forEach items="${inputParts}" var="item" varStatus="status">
+                            <c:if test="${zm:cookInt(item,0) != zm:cookInt(parsedParts[status.index],0)}">
+                                <c:set var="fmtDate" value=""/>
+                            </c:if>
+                        </c:forEach>
+
                     </c:catch>
                     <c:if test="${not empty parseError}">
                         <c:set var="fmtDate" value=""/>
                     </c:if>
+                    <c:set var="badDate" scope="request" value="${badDate}${empty fmtDate ? cond_value : ''},"/>
                     <zm:dateCondition value="${fmtDate}" op="${cond_op}"/>
                 </c:when>
                 <c:when test="${cond eq 'header'}">
