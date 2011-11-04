@@ -677,16 +677,18 @@ ZmSearchAutocomplete.prototype._getMatches =
 function(op, str) {
 
 	var opHash = this._op[op];
-	var results = [];
+	var results = [], app;
 	var list = this._list[opHash.listType];
 	var rest = str.substr(str.indexOf(":") + 1);
 	if (opHash.listType == ZmId.ORG_FOLDER) {
 		rest = rest.replace(/^\//, "");	// remove leading slash in folder path
+		app = appCtxt.getCurrentAppName();
 	}
 	for (var i = 0, len = list.length; i < len; i++) {
 		var o = list[i];
 		var text = opHash.text ? opHash.text(o) : o;
 		var test = text.toLowerCase();
+		if (app && ZmOrganizer.APP[o.type] != app) { continue; }
 		if (!rest || (test.indexOf(rest) == 0)) {
 			var matchText = opHash.matchText ? opHash.matchText(o) :
 								opHash.quoteMatch ? [op, ":", '"', text, '"'].join("") :
@@ -744,7 +746,7 @@ function(listType, callback) {
 	var folders = folderTree ? folderTree.asList({includeRemote:true}) : [];
 	for (var i = 0, len = folders.length; i < len; i++) {
 		var folder = folders[i];
-		if (folder.id != ZmOrganizer.ID_ROOT && folder.type == ZmOrganizer.FOLDER && !ZmFolder.HIDE_ID[folder.id]) {
+		if (folder.id != ZmOrganizer.ID_ROOT && (folder.type != ZmOrganizer.CALENDAR) && !ZmFolder.HIDE_ID[folder.id]) {
 			list.push(folder);
 		}
 	}
