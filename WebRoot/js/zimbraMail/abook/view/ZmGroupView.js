@@ -939,7 +939,7 @@ function(list, append){
 		for (var i=0; i<list.length; i++) {
 			if (list[i] && list[i].__contact) {
 				var type = list[i].__contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
-				var id = type == ZmContact.Group_CONTACT_REF ? list[i].__contact.getId(true) : list[i].__contact.ref;
+				var id = type == ZmContact.GROUP_CONTACT_REF ? list[i].__contact.getId(true) : list[i].__contact.ref;
 				var email = list[i].address;
 				if (!this._groupMemberMods[id]) {
 					this._groupMemberMods[id] = {op : "+", value : id, type : type, email: email};
