@@ -338,11 +338,8 @@ function() {
 
 ZmConvView2.prototype._showHint =
 function(show) {
-	if (this._showingHint != show) {
-		this._replyInput.value = show ? this._recipientText : "";
-		Dwt.delClass(this._replyInput, ZmConvView2.HINT_CLASS, show ? ZmConvView2.HINT_CLASS : null);
-		this._showingHint = show;
-	}
+	this._replyInput.value = show ? this._recipientText : "";
+	Dwt.delClass(this._replyInput, ZmConvView2.HINT_CLASS, show ? ZmConvView2.HINT_CLASS : null);
 };
 
 ZmConvView2.prototype.handleKeyAction =
