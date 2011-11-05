@@ -1210,6 +1210,7 @@ ZmTreeController.prototype._expandAllListener =
 function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
 	var treeView = this.getTreeView(this._actionedOverviewId);
+	if (!treeView) return;
 	var ti = treeView.getTreeItemById(organizer.id);
 	ti.setExpanded(true, true);
 };
