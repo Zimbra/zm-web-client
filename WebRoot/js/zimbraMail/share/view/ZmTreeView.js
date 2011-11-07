@@ -407,6 +407,7 @@ function(params) {
 					ti.showCheckBox(false);
 				}
 				params.startPos = i;
+				params.showRemainingFoldersNode = ti;
 				child._showFoldersCallback = new AjxCallback(this, this._showRemainingFolders, [params]);
 				return;
 			}
@@ -477,7 +478,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 		}
 		if (this._addShareLink && this._addShareLink.parent == parentNode) {
 			var addShareIndex = parentNode.getChildIndex(this._addShareLink);
-			if (addShareIndex >= 0 && index > addShareIndex)
+			if (addShareIndex >= 0 && (!index || index > addShareIndex))
 				index = addShareIndex; // Bug 52053: We must make sure nothing has a higher index than that of this._addShareLink
 		}
 		var params = {
@@ -602,9 +603,8 @@ function(treeItem, treeItems, i) {
  */
 ZmTreeView.prototype._showRemainingFolders =
 function(params) {
-	var ti = this.getTreeItemById(ZmFolder.ID_LOAD_FOLDERS);
-	if (ti) {
-		ti.dispose();
+	if (params.showRemainingFoldersNode) {
+		params.showRemainingFoldersNode.dispose();
 	}
 	DBG.println(AjxDebug.DBG1, "load remaining folders: " + params.startPos);
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
