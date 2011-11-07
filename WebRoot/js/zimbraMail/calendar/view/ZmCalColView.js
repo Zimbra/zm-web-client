@@ -617,7 +617,7 @@ function(appt) {
 		newState: isNew ? "_new" : "",
 		headerStyle: headerStyle,
 		bodyStyle: bodyStyle,
-		name: apptName,
+		name: AjxStringUtil.htmlEncode(apptName),
 		starttime: appt.getDurationText(true, true),
 		endtime: ((!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalBaseItem._getTTHour(appt.endDate)),
 		location: location,
