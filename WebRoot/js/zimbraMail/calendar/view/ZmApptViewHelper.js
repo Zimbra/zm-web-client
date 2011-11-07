@@ -318,7 +318,7 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
 		var cal = data[i];
 		var acct = cal.getAccount();
 
-		if (cal.noSuchFolder || cal.isFeed() || (cal.link && cal.isReadOnly())) { continue; }
+		if (cal.noSuchFolder || cal.isFeed() || (cal.link && cal.isReadOnly()) || cal.isInTrash()) { continue; }
 
 		if (appCtxt.multiAccounts &&
 			cal.nId == ZmOrganizer.ID_CALENDAR &&
@@ -327,7 +327,7 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
 			continue;
 		}
 
-		var id = cal.link ? cal.getRemoteId() : cal.id;
+        var id = cal.link ? cal.getRemoteId() : cal.id;
 		calendarOrgs[id] = cal.owner;
 
 		// bug: 28363 - owner attribute is not available for shared sub folders
