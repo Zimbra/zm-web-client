@@ -1,5 +1,4 @@
 <project name="ZimbraWebClient" default="war">
-
     <!-- Properties -->
     <dirname property="this.zwc.basedir" file="${ant.file.ZimbraWebClient}" />
 
@@ -1220,12 +1219,12 @@ if (ext == null) ext = "";
 
     <target name='webxml-deploy-replace' depends='init'>
         <!-- replace %%xyz%% tokens -->
-        <replace file="${webapp.dir}/WEB-INF/jetty-env.xml" token="%%zimbraAdminURL%%" value="${webxml.zimbraAdminURL}"/>
-        <replace file="${webapp.dir}/WEB-INF/jetty-env.xml" token="%%zimbraMailURL%%" value="${webxml.zimbraMailURL}"/>
+        <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraAdminURL%%" value="${webxml.zimbraAdminURL}"/>
+        <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailURL%%" value="${webxml.zimbraMailURL}"/>
         <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraAdminPort%%" value="${webxml.zimbraAdminPort}"/>
-        <replace file="${webapp.dir}/WEB-INF/jetty-env.xml" token="%%zimbraMailPort%%" value="${webxml.zimbraMailPort}"/>
-        <replace file="${webapp.dir}/WEB-INF/jetty-env.xml" token="%%zimbraMailSSLPort%%" value="${webxml.zimbraMailSSLPort}"/>
-    	<replace file="${webapp.dir}/WEB-INF/jetty-env.xml" token="%%zimbraMailTrustedIP%%" value="${webxml.zimbraMailTrustedIP}"/>
+        <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailPort%%" value="${webxml.zimbraMailPort}"/>
+        <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailSSLPort%%" value="${webxml.zimbraMailSSLPort}"/>
+    	<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailTrustedIP%%" value="${webxml.zimbraMailTrustedIP}"/>
     </target>
 
     <target name='clean' depends='customer-init'>

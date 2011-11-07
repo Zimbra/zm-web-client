@@ -401,6 +401,51 @@
     <welcome-file>public/admin.jsp</welcome-file>
   </welcome-file-list>
   
+    <env-entry>
+    <description>
+      The protocol mode can be one of three modes - mixed, http,
+      or https.
+    </description>
+    <env-entry-name>protocolMode</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>%%zimbraMailMode%%</env-entry-value><!-- PROTOCOL MODE -->
+  </env-entry>
+
+  <env-entry>
+    <description>
+      The http and httpsPort need to be in sync with the webserver
+      or the proxy - these are the ports that will be used in
+      redirects.
+    </description>
+    <env-entry-name>httpsPort</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>%%zimbraMailSSLPort%%</env-entry-value>
+  </env-entry>
+
+  <env-entry>
+    <env-entry-name>httpPort</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>%%zimbraMailPort%%</env-entry-value>
+  </env-entry>
+
+  <env-entry>
+    <env-entry-name>mailUrl</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>%%zimbraMailURL%%</env-entry-value>
+  </env-entry>
+
+  <env-entry>
+    <env-entry-name>adminUrl</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>%%zimbraAdminURL%%</env-entry-value>
+  </env-entry>
+
+  <env-entry>
+    <env-entry-name>trustedIPs</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>%%zimbraMailTrustedIP%%</env-entry-value>
+  </env-entry>
+  
   <jsp-config>
     <jsp-property-group>
       <url-pattern>/h/ac</url-pattern>

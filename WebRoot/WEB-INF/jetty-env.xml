@@ -1,54 +1,5 @@
 <?xml version="1.0"?>
 <!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd"> 
 <Configure class="org.eclipse.jetty.webapp.WebAppContext">
- 
 
-<!--  Description :
-      The protocol mode can be one of three modes - mixed, http,
-      or https.
- -->
-    <New id="protocolMode"  class="org.eclipse.jetty.plus.jndi.EnvEntry">
-    <Arg>protocolMode</Arg>
-    <Arg type="java.lang.String">%%zimbraMailMode%%</Arg><!-- PROTOCOL MODE -->
-    </New>
-
-<!--  Description :
-      The http and httpsPort need to be in sync with the webserver
-      or the proxy - these are the ports that will be used in
-      redirects.
- -->
-    <New id="httpsPort"  class="org.eclipse.jetty.plus.jndi.EnvEntry">
-    <Arg></Arg>
-    <Arg>httpsPort</Arg>
-    <Arg type="java.lang.String">%%zimbraMailSSLPort%%</Arg>
-    <Arg type="boolean">true</Arg>
-    </New>
- 
-    <New id="httpPort"  class="org.eclipse.jetty.plus.jndi.EnvEntry">
-    <Arg></Arg>
-    <Arg>httpPort</Arg>
-    <Arg type="java.lang.String">%%zimbraMailPort%%</Arg>
-    <Arg type="boolean">true</Arg>
-    </New>
-    
-    <New id="mailUrl"  class="org.eclipse.jetty.plus.jndi.EnvEntry">
-    <Arg></Arg>
-    <Arg>mailUrl</Arg>
-    <Arg type="java.lang.String">%%zimbraMailURL%%</Arg>
-    <Arg type="boolean">true</Arg>
-    </New> 
-      
-    <New id="adminUrl"  class="org.eclipse.jetty.plus.jndi.EnvEntry">
-    <Arg></Arg>
-    <Arg>adminUrl</Arg>
-    <Arg type="java.lang.String">%%zimbraAdminURL%%</Arg>
-    <Arg type="boolean">true</Arg>
-    </New> 
-    
-    <New id="trustedIPs"  class="org.eclipse.jetty.plus.jndi.EnvEntry">
-    <Arg></Arg>
-    <Arg>trustedIPs</Arg>
-    <Arg type="java.lang.String">%%zimbraMailTrustedIP%%</Arg>
-    <Arg type="boolean">true</Arg>
-    </New>  
 </Configure>
