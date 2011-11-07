@@ -162,16 +162,21 @@ function(ev) {
 
 ZmTaskTreeController.prototype._deleteListener =
 function(ev) {
-	var organizer = this._getActionedOrganizer(ev);
-	var callback = new AjxCallback(this, this._deleteListener2, [organizer]);
-	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteTaskFolder, organizer.name);
+    var organizer = this._getActionedOrganizer(ev);
+    if (organizer.isInTrash()) {
+        var callback = new AjxCallback(this, this._deleteListener2, [organizer]);
+        var message = AjxMessageFormat.format(ZmMsg.confirmDeleteTaskFolder, AjxStringUtil.htmlEncode(organizer.name));
 
-	appCtxt.getConfirmationDialog().popup(message, callback);
+        appCtxt.getConfirmationDialog().popup(message, callback);
+    }
+    else {
+        this._doMove(organizer, appCtxt.getById(ZmOrganizer.ID_TRASH));
+    }
 };
 
 ZmTaskTreeController.prototype._deleteListener2 =
 function(organizer) {
-	this._doDelete(organizer);
+    this._doDelete(organizer);
 };
 
 /**
