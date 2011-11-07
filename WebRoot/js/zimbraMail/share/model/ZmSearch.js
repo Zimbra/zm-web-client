@@ -440,7 +440,7 @@ function(params) {
                     if (this.headers) {
                         for (var hdr in this.headers) {
                             if (!request.header) { request.header = []; }
-                            request.header.push({n:hdr});
+                            request.header.push({n: this.headers[hdr]});
                         }
                     }
 
