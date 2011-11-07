@@ -171,7 +171,7 @@ ZmApptListView.prototype._getFieldId = function(item, field) {
 };
 
 ZmApptListView.prototype._getCellId = function(item, field) {
-	if (field == ZmItem.F_SUBJECT || field == ZmItem.F_DATE) {
+	if (field == ZmItem.F_SUBJECT || field == ZmItem.F_DATE || field == ZmItem.F_LOCATION || field == ZmItem.F_STATUS) {
 		return this._getFieldId(item, field);
 	}
 };
