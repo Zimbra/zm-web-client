@@ -16,7 +16,7 @@
 ZmCalBaseView = function(parent, className, posStyle, controller, view, readonly) {
 	if (arguments.length == 0) { return; }
 
-	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
+	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle, id:ZmId.getViewId(view)});
 
 	this._isReadOnly = readonly;
 
@@ -631,7 +631,7 @@ function(refresh) {
 
 ZmCalBaseView.prototype._getItemId =
 function(item) {
-	return item ? (this._htmlElId + DwtId.SEP + DwtId.getListViewItemId(DwtId.WIDGET_ITEM, this.view, item.getUniqueId())) : null;
+	return item ? (DwtId.getListViewItemId(DwtId.WIDGET_ITEM, this.view, item.getUniqueId())) : null;
 };
 
 ZmCalBaseView.prototype.addTimeSelectionListener = 
