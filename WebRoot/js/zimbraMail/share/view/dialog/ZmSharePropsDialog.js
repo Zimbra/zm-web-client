@@ -219,6 +219,14 @@ function() {
 		text = text.substr(0, index) + "..." + text.substr(index + length);
 	}
 
+    var webcalURL = "webcal:" + url.substring((url.indexOf("//")));
+    var webcalText = webcalURL;
+    if (webcalText.length > 50) {
+		var length = webcalText.length - 50;
+		var index = (webcalText.length - length) / 2;
+		webcalText = webcalText.substr(0, index) + "..." + webcalText.substr(index + length);
+	}
+
 	var isRestFolder = this._object.type != ZmOrganizer.FOLDER;
 	this._urlGroup.setVisible(isRestFolder);
 	if (isRestFolder) {
@@ -229,6 +237,9 @@ function() {
 				"</div>",
 				"<div>", ZmMsg.view, ":&nbsp;&nbsp;",
 					'<a target=_new href="',url,'.html">',text,".html</a>",
+				"</div>",
+                "<div>", ZmMsg.outlookURL, ":&nbsp;&nbsp;",
+					'<a target=_new href="',webcalURL,'">',webcalText,"</a>",
 				"</div>"
 			].join("");
 		} else {
