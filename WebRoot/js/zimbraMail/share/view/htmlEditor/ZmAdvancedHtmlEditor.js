@@ -505,6 +505,18 @@ function(id, mode, content) {
 		tinymce.dom.Event.add(ed.getWin(), 'blur', function(e) {
 			obj.setFocusStatus(false);
 		});
+	    // Set's up the a range for the current ins point or selection. This is IE only because the iFrame can
+	    // easily lose focus (e.g. by clicking on a button in the toolbar) and we need to be able to get back
+	    // to the correct insertion point/selection.
+        // DwtHtmlEditor is using _currInsPtBm property to store the cursor position in editor event handler function which is heavy.
+	    // Here we are registering this dedicated event to store the bookmark which will fire when focus moves outside the editor
+        if(AjxEnv.isIE){
+            tinymce.dom.Event.add(ed.getDoc(), 'beforedeactivate', function(e) {
+                if(ed.windowManager){
+                    ed.windowManager.bookmark = ed.selection.getBookmark(1);
+                }
+            });
+        }
 
 		var ec = obj.getEditorContainer();
 		ec.setFocusMember(ed.getWin());
@@ -709,12 +721,17 @@ function(src, dontExecCommand, width, height) {
 
 	var ed = this.getEditor();
 
+    if(ed.windowManager && ed.windowManager.bookmark){
+        ed.selection.moveToBookmark(ed.windowManager.bookmark);
+    }
 	// Fixes crash in Safari
 	if (tinymce.isWebKit) {
 		ed.getWin().focus();
 	}
 
-	ed.execCommand('mceInsertContent', false, html.join(""), {skip_undo : 1});
+	//tinymce modifies the source when using mceInsertContent
+    //ed.execCommand('mceInsertContent', false, html.join(""), {skip_undo : 1});
+    ed.execCommand('mceInsertRawHTML', false, html.join(""), {skip_undo : 1});
 };
 
 ZmAdvancedHtmlEditor.prototype.replaceImage =
