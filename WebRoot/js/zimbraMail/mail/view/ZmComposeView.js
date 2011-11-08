@@ -2564,14 +2564,14 @@ function(templateId, data) {
 
 	if (appCtxt.multiAccounts) {
 		if (!this._fromSelect) {
-			this._fromSelect = new DwtSelect({parent:this, parentElement:data.fromSelectId});
+			this._fromSelect = new DwtSelect({parent:this, id:this.getHTMLElId() + "_fromSelect", parentElement:data.fromSelectId});
 			this._fromSelect.addChangeListener(new AjxListener(this, this._handleFromListener));
             this._recipients.attachFromSelect(this._fromSelect);
 		}
 	} else {
 		// initialize identity select
 		var identityOptions = this._getIdentityOptions();
-		this.identitySelect = new DwtSelect({parent:this, options:identityOptions});
+		this.identitySelect = new DwtSelect({parent:this, id:this.getHTMLElId() + "_identitySelect", options:identityOptions});
 		this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
 
 		if (!this._identityChangeListenerObj) {
