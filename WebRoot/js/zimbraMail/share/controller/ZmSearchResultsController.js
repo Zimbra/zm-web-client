@@ -150,9 +150,10 @@ function(search, resultsCtlr) {
 	var searchResult = resultsCtlr.getCurrentSearchResults && resultsCtlr.getCurrentSearchResults();
 	var results = searchResult && searchResult.getResults();
 	var size = results && results.size && results.size();
-	var more = results && results.hasMore && results.hasMore();
-	var num = (size == null) ? "" : more ? size + "+" : size;
-	this._toolbar.setLabel(AjxMessageFormat.format(ZmMsg.searchResultsLabel, [num]), false);
+	var plus = (results && results.hasMore && results.hasMore()) ? "+" : "";
+	var label = size ? AjxMessageFormat.format(ZmMsg.searchResultsLabel, [size, plus]) :
+					   ZmMsg.searchResultsLabelNone;
+	this._toolbar.setLabel(label, false);
 
 	setTimeout(this._toolbar.focus.bind(this._toolbar), 100);
 };
