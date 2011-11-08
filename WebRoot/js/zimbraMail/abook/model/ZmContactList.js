@@ -50,7 +50,10 @@ ZmContactList = function(search, isGal, type) {
 	this.isLoaded = false;
 
 	this._app = appCtxt.getApp(ZmApp.CONTACTS);
-	if (!this._app) { return; }
+	if (!this._app) { 
+		this._emailToContact = this._imAddressToContact = this._phoneToContact = {};
+		return;
+	}
 	this._emailToContact = this._app._byEmail;
 	this._imAddressToContact = this._app._byIM;
 	this._phoneToContact = this._app._byPhone;
