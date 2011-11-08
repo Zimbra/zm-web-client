@@ -2056,20 +2056,19 @@ function(appName) {
  */
 ZmZimbraMail.prototype._setExternalLinks =
 function() {
+    // bug: 41313 - admin console link
+    var adminUrl;
+    if (!appCtxt.isOffline &&
+        (appCtxt.get(ZmSetting.IS_ADMIN) ||
+         appCtxt.get(ZmSetting.IS_DELEGATED_ADMIN))) {
+
+        adminUrl = appCtxt.get(ZmSetting.ADMIN_REFERENCE);
+        if (!adminUrl) {
+            adminUrl = ["https://", location.hostname, ":7071"].join("");
+        }
+    }
 	var el = document.getElementById("skin_container_links");
 	if (el) {
-		// bug: 41313 - admin console link
-		var adminUrl;
-		if (!appCtxt.isOffline &&
-			(appCtxt.get(ZmSetting.IS_ADMIN) ||
-			 appCtxt.get(ZmSetting.IS_DELEGATED_ADMIN)))
-		{
-			adminUrl = appCtxt.get(ZmSetting.ADMIN_REFERENCE);
-			if (!adminUrl) {
-				adminUrl = ["https://", location.hostname, ":7071"].join("");
-			}
-		}
-
 		var data = {
 			showOfflineLink: (!appCtxt.isOffline && appCtxt.get(ZmSetting.SHOW_OFFLINE_LINK)),
 			helpIcon: (appCtxt.getSkinHint("helpButton", "hideIcon") ? null : "Help"),
@@ -2085,11 +2084,67 @@ function() {
 		this._helpButton = this.getHelpButton(DwtShell.getShell(window));
 		this._helpButton.reparentHtmlElement("skin_container_help_button");
 	}
+
+    el = document.getElementById("skin_dropMenu");
+    if (el) {
+		this._helpButton = this.getDropMenuOptions(DwtShell.getShell(window), el, adminUrl);
+		//this._helpButton.reparentHtmlElement("skin_dropMenu");
+	}
 };
 
 
 ZmZimbraMail.ONLINE_HELP_URL = "http://help.zimbra.com/?";
 ZmZimbraMail.NEW_FEATURES_URL = "http://www.zimbra.com/docs/whats-new/?";
+
+/**
+* Adds a "help" submenu.
+*
+* @param {DwtComposite}		parent		the parent widget
+* @return {ZmActionMenu}	the menu
+*/
+ZmZimbraMail.prototype.getDropMenuOptions =
+function(parent, parentElement, adminUrl) {
+
+	var button = new DwtLinkButton({parent: parent, className: DwtButton.LINK_BUTTON_CLASS, parentElement: parentElement});
+	button.dontStealFocus();
+	button.setSize(Dwt.DEFAULT);
+	button.setAlign(DwtLabel.ALIGN_LEFT);
+	button.setText("");
+	var menu = new ZmPopupMenu(button);
+
+	var helpListener = new AjxListener(this, this._helpListener);
+	button.addSelectionListener(helpListener);
+
+    var mi;
+    if(adminUrl) {
+	    mi = menu.createMenuItem("adminLink", {text: ZmMsg.adminLinkLabel});
+	    mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.adminLinkCallback, adminUrl));
+
+        menu.createSeparator();
+    }
+
+    mi = menu.createMenuItem("documentation", {text: ZmMsg.productHelp});
+	mi.addSelectionListener(helpListener);
+
+	var mi = menu.createMenuItem("onlinehelp", {text: ZmMsg.onlineHelp});
+	mi.addSelectionListener(new AjxListener(this, this._onlineHelpListener));
+
+
+	mi = menu.createMenuItem("newFeatures", {text: ZmMsg.newFeatures});
+	mi.addSelectionListener(new AjxListener(this, this._newFeaturesListener));
+
+	menu.createSeparator();
+
+	mi = menu.createMenuItem("about", {text: ZmMsg.about});
+	mi.addSelectionListener(new AjxListener(this, this._aboutListener));
+
+    menu.createSeparator();
+    mi = menu.createMenuItem("logOff", {text: ZmMsg.logOff});
+	mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.logOff));
+
+	button.setMenu(menu);
+	return button;
+};
 
 /**
 * Adds a "help" submenu.
@@ -2338,6 +2393,16 @@ function() {
 		ev.returnValue = false;
 	}
 	ZmZimbraMail.logOff();
+};
+
+/**
+ * @private
+ */
+ZmZimbraMail.adminLinkCallback =
+function(url) {
+	ZmZimbraMail.unloadHackCallback();
+	var ac = window.parentAppCtxt || window.appCtxt;
+	window.open(url);
 };
 
 /**
