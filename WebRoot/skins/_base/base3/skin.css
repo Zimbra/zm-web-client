@@ -109,12 +109,12 @@ BODY						{	margin:0px; 	}
 	background-color:transparent; 
 	background-color:rgba(0,0,0,.1);
 	border-color:rgba(0,0,0,.3);
-/*#IFDEF MSIE
-	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#19000000, endColorstr=#19000000);  IE8
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#19000000,endColorstr=#19000000); 
+#IFDEF MSIE
 	zoom:1;
-
-#ENDIF*/
+	border-color:@darken(AltC,33)@;
+	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#19000000, endColorstr=#19000000);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#19000000,endColorstr=#19000000); 
+#ENDIF
 }
 #skin_spacing_app_row table				{	border-spacing:0; 	}
 /** App  **/
@@ -140,114 +140,76 @@ BODY						{	margin:0px; 	}
 #skin_container_bottom_ad				{	@AdStyle@ height:@BottomAdHeight@;		}
 
 /*** HACKS: this makes the tables work properly -- rationalize this!  **/
-#skin_td_tree				{	width:@TreeStartWidth@;		}
-#skin_td_tree_app_sash 		{	width:@SashSize@;			}
-#skin_td_main				{	width:auto;	height:100%; 	}
-#skin_td_sidebar_ad			{	width:@SidebarAdWidth@;		}
-/*#skin_td_new_button			{	padding:2px; 	}*/
+#skin_td_tree							{	width:@TreeStartWidth@;		}
+#skin_td_tree_app_sash 					{	width:@SashSize@;			}
+#skin_td_main							{	width:auto;	height:100%; 	}
+#skin_td_sidebar_ad						{	width:@SidebarAdWidth@;		}
+/*#skin_td_new_button					{	padding:2px; 	}*/
+
 /** LoginPanel and Splash screen **/
 #skin_container_splash_screen			{	@SkinOuter@	@FullWindow@ z-index:90000000;		}
-#ZLoginBodyContainer	{	@LoginPanelInnerBorder@	}
-#ZSplashPanel			{	@SplashOuterBorder@		}
-#ZSplashBodyContainer	{	@SplashInnerBorder@		}
-.SplashScreen { position:absolute;
+
+#ZLoginBodyContainer					{	@LoginPanelInnerBorder@	}
+#ZSplashPanel							{	@SplashOuterBorder@		}
+#ZSplashBodyContainer					{	@SplashInnerBorder@		}
+
+.LoginScreen,
+.SplashScreen {
+    position:absolute;
     left:0px;
     top:0px;
     width:100%;
     height:100%;
+    background-color:@LoginBkgdTop@;
     font-family:@FontFamily-default@;
-    font-size:11px;
-    background-color:@AltC@;
-    #IFDEF GECKO
-    background-image:-moz-linear-gradient(top, @AltC@, @darken(AltC,19)@); /* FF3.6 */
-    #ENDIF
-    #IFDEF SAFARI
-    background-image:-webkit-gradient(linear,left top,left bottom,color-stop(0, @AltC@),color-stop(1, @darken(AltC,19)@)); /* Saf4+, Chrome */
-    #ENDIF
-    #IFDEF MSIE
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@darken(AltC,19)@'); /* IE6,IE7 */
-    -ms-filter:"progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@darken(AltC,19)@')"; /* IE8 */
-    #ENDIF
+    @FontSize-normal@
+    @grad(LoginBkgdTop,LoginBkgdBottom,linear-vertical)@
 }
+.LoginScreen .center,
 .SplashScreen .center { 
-    margin-top:-150px;
+    margin-top:-160px;
     margin-left:-250px;
-    min-height:300px;
+    min-height:320px;
     width:500px;
+#IFDEF MSIE
+	height:330px;
+#ENDIF
 }   
+.LoginScreen .center-small,
 .SplashScreen .center-small {
     height:270px;
     margin-top:-135px;
     margin-left:-175px;
     width:350px;
 }
+.LoginScreen .center, .LoginScreen .center-small,
 .SplashScreen .center, .SplashScreen .center-small {
     left:50%;
     overflow:visible;
     position:absolute;
-    top:50%;
-    /*Linear gradient backgrounds*/
-    background-color: @darken(AppC,10)@;
-    #IFDEF GECKO
-    background-image: -moz-linear-gradient(top, @AppC@, @darken(AppC,10)@); /* FF3.6 */
-    #ENDIF
-    #IFDEF SAFARI
-    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AppC@),color-stop(1, @darken(AppC,10)@)); /* Saf4+, Chrome */
-    #ENDIF
-    #IFDEF MSIE
-    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@'); /* IE6,IE7 */
-    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@')"; /* IE8 */
-    #ENDIF
-    /*Radial gradient backgrounds*/
-    #IFDEF GECKO
-    background-image: -moz-radial-gradient(50% 0, circle farthest-corner, @AppC@ 0%, @darken(AppC,10)@ 100%); /* FF3.6 */
-    -moz-border-radius: 15px; /* FF1+ */
-    -moz-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* FF3.5+ */
-    #ENDIF
-    #IFDEF SAFARI
-    background-image: -webkit-gradient( radial, 50% 0%, 0, 50% 0%, 390, from(@AppC@), to(@darken(AppC,10)@) ); /* Saf4+, Chrome */
-    -webkit-border-radius: 15px; /* Saf3-4 */
-    -webkit-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* Saf3.0+, Chrome */
-    #ENDIF
-    
-    border-radius: 15px; /* Opera 10.5, IE 9, Saf5, Chrome */
-    box-shadow: 0px 0px 10px #000000; /* Opera 10.5, IE 9.0 */
-    #IFDEF MSIE
-    border: 1px solid @darken(AltC,50)@; /* Plain border for IE */
-    #ENDIF
+    top:40%;
+    z-index:11;
+    background-color:@LoginCenterBottom@;
+    @grad(LoginCenterTop,LoginCenterBottom,linear-vertical)@
 }
-.SplashScreen h1 {
-    margin:22px 100px 0px 20px;
-}
-.SplashScreen h2 {
-    cursor:default;
-    margin:0px 0px 32px 100px;
-}
+.LoginScreen H1,
+.SplashScreen H1 	{	@LoginH1@ 		}
+#ZLoginAppName 		{	@LoginAppName@ 	}
+.LoginScreen .ImgLoginBanner, 
+.LoginScreen .ImgAppBanner, 
 .SplashScreen .ImgLoginBanner {
     cursor:pointer;
+	display:block;
 }
+.LoginScreen .ImgAltBanner,
 .SplashScreen .ImgAltBanner {
-    background-image:url("@LogoImgDir@/AltBanner.png?v=@jsVersion@");
-    background-repeat:repeat-x;
-    height:11px;
-    margin:20px 0px 0px 20px;
-    width:71px;
+    @ImgAltBanner@
 }
-.SplashScreen .content {
-    color: @darken(AppC,50)@;
-    font-size:10px;
-    text-align:center;
+.LoginScreen .decor1,
+.SplashScreen .decor1 { 
+    @Decor1@ 
 }
-.SplashScreen .message {
-    color:#000000;
-    cursor:default;
-    font-size:14px;
-    font-weight:bold;
-    padding-top:20px;
-}
-.SplashScreen .switch{
-    margin:30px 100px 60px;
-}
+.LoginScreen .Footer,
 .SplashScreen .Footer {
     bottom:0;
     position:absolute;
@@ -255,11 +217,36 @@ BODY						{	margin:0px; 	}
     width:100%;
     z-index:10;
 }
+.LoginScreen .copyright,
+.LoginScreen #ZLoginNotice,
 .SplashScreen .copyright {
-    color: @darken(AppC,50)@;
+    color:@darken(AppC,55)@;
     cursor:default;
-    font-size:11px;
+    @FontSize-normal@
     margin-bottom:5px;
+}
+.LoginScreen #ZLoginNotice A {
+    color:@darken(AppC,55)@;
+}
+
+/*Splash Screen Only Items*/
+.SplashScreen .content {
+    color:@LoginLabelColor@;
+    text-align:center;
+}
+.SplashScreen .message {
+    color:@LoginLabelColor@;
+    cursor:default;
+    padding-top:40px;
+    @FontSize-bigger@    
+}
+.SplashScreen .switch{
+    margin:100px 100px 0;
+}
+.SplashScreen .switch A {
+    color:@LoginLabelColor@;
+    text-decoration:underline;
+    @FontSize-normal@
 }
 /** Logo Images **/
 .ImgAppBanner			{	background-repeat:no-repeat; @AppBanner@   }

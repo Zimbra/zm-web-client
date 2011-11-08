@@ -185,6 +185,7 @@ BODY						{	margin:0px; 				}
 #ZSplashPanel			{	@SplashOuterBorder@		}
 #ZSplashBodyContainer	{	@SplashInnerBorder@		}
 
+.LoginScreen,
 .SplashScreen { position:absolute;
     left:0px;
     top:0px;
@@ -204,19 +205,24 @@ BODY						{	margin:0px; 				}
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@darken(AltC,19)@')"; /* IE8 */
     #ENDIF
 }
+.LoginScreen .center,
 .SplashScreen .center { 
     margin-top:-150px;
     margin-left:-250px;
     min-height:300px;
     width:500px;
 }   
+.LoginScreen .center-small,
 .SplashScreen .center-small {
     height:270px;
     margin-top:-135px;
     margin-left:-175px;
     width:350px;
 }
-.SplashScreen .center, .SplashScreen .center-small {
+.LoginScreen .center,
+.LoginScreen .center-small,
+.SplashScreen .center, 
+.SplashScreen .center-small {
     left:50%;
     overflow:visible;
     position:absolute;
@@ -253,16 +259,22 @@ BODY						{	margin:0px; 				}
     border: 1px solid @darken(AltC,50)@; /* Plain border for IE */
     #ENDIF
 }
-.SplashScreen h1 {
+.LoginScreen H1,
+.SplashScreen H1 {
     margin:22px 100px 0px 20px;
 }
-.SplashScreen h2 {
+.LoginScreen H2,
+.SplashScreen H2 {
     cursor:default;
     margin:0px 0px 32px 100px;
 }
+.LoginScreen .ImgLoginBanner,
+.LoginScreen .ImgAppBanner,
 .SplashScreen .ImgLoginBanner {
     cursor:pointer;
+	display:block;
 }
+.LoginScreen .ImgAltBanner,
 .SplashScreen .ImgAltBanner {
     background-image:url("@LogoImgDir@/AltBanner.png?v=@jsVersion@");
     background-repeat:repeat-x;
@@ -270,21 +282,23 @@ BODY						{	margin:0px; 				}
     margin:20px 0px 0px 20px;
     width:71px;
 }
+
 .SplashScreen .content {
     color: @darken(AppC,50)@;
-    font-size:10px;
     text-align:center;
+	@FontSize-small@
 }
 .SplashScreen .message {
     color:#000000;
     cursor:default;
-    font-size:14px;
-    font-weight:bold;
     padding-top:20px;
+	@FontSize-big@
 }
 .SplashScreen .switch{
     margin:30px 100px 60px;
 }
+
+.LoginScreen .Footer,
 .SplashScreen .Footer {
     bottom:0;
     position:absolute;
@@ -292,11 +306,12 @@ BODY						{	margin:0px; 				}
     width:100%;
     z-index:10;
 }
+.LoginScreen .copyright,
 .SplashScreen .copyright {
     color: @darken(AppC,50)@;
     cursor:default;
-    font-size:11px;
     margin-bottom:5px;
+	@FontSize-normal@
 }
 
 /** Logo Images **/

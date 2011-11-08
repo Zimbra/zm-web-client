@@ -341,7 +341,6 @@ BODY						{	margin:0px; 				}
 	@tlRadius@: 8px;
 	@trRadius@: 8px;
 }
-
 .LoginScreen {
     background-color: @LoginColor@;
     #IFDEF GECKO
@@ -355,7 +354,8 @@ BODY						{	margin:0px; 				}
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@LoginColor@', EndColorStr='@darken(LoginColor,50)@')"; /* IE8 */
     #ENDIF
 }
-.LoginScreen .center, .LoginScreen .center-small {
+.LoginScreen .center, 
+.LoginScreen .center-small {
     
     /*Linear gradient backgrounds*/
     background-color: @darken(LoginColor,30)@;
@@ -423,6 +423,7 @@ BODY						{	margin:0px; 				}
     height:50px;
     width:50px;
 }
+.LoginScreen, 
 .SplashScreen { 
     @FontFamily-default@;
     font-size:11px;
@@ -444,19 +445,24 @@ BODY						{	margin:0px; 				}
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@SplashColor@', EndColorStr='@darken(LoginColor,50)@')"; /* IE8 */
     #ENDIF
 }
-.SplashScreen #ZSplashPanel.center { 
+.LoginScreen .center, 
+.SplashScreen .center { 
     margin-top:-150px;
     margin-left:-250px;
     min-height:300px;
     width:500px;
 }   
+.LoginScreen .center-small, 
 .SplashScreen .center-small {
     height:270px;
     margin-top:-135px;
     margin-left:-175px;
     width:350px;
 }
-.SplashScreen #ZSplashPanel.center, .SplashScreen .center-small {
+.LoginScreen .center, 
+.LoginScreen .center-small, 
+.SplashScreen .center, 
+.SplashScreen .center-small {
     left:50%;
     overflow:visible;
     position:absolute;
@@ -478,31 +484,37 @@ BODY						{	margin:0px; 				}
 #IFDEF GECKO
     background-image: -moz-radial-gradient(50% 0, circle farthest-corner, @LoginColor@ 0%, @darken(LoginColor,50)@ 100%); /* FF3.6 */
    -moz-border-radius: 15px; /* FF1+ */
-    -moz-box-shadow: 0px 0px 10px #000000; /* FF3.5+ */
+    -moz-box-shadow: 0px 0px 10px black; /* FF3.5+ */
 
 #ENDIF
 #IFDEF SAFARI    
     background-image: -webkit-gradient( radial, 50% 0%, 0, 50% 0%, 390, from(@LoginColor@), to(@darken(LoginColor,50)@) ); /* Saf4+, Chrome */
 	-webkit-border-radius: 15px; /* Saf3-4 */
-    -webkit-box-shadow: 0px 0px 10px #000000; /* Saf3.0+, Chrome */
+    -webkit-box-shadow: 0px 0px 10px black; /* Saf3.0+, Chrome */
 
 #ENDIF
     border-radius: 15px; /* Opera 10.5, IE 9, Saf5, Chrome */    
-    box-shadow: 0px 0px 10px #000000; /* Opera 10.5, IE 9.0 */
+    box-shadow: 0px 0px 10px black; /* Opera 10.5, IE 9.0 */
     
     #IFDEF MSIE
-    border: 1px solid #000; /* Plain border for IE */
+    border: 1px solid black; /* Plain border for IE */
     #ENDIF
 }
-.LoginScreen H1, .SplashScreen H1 {
+.LoginScreen H1, 
+.SplashScreen H1 {
     margin:22px 100px 32px 20px;
 }
-.LoginScreen H2, .SplashScreen H2 {
+.LoginScreen #ZLoginAppName,
+.LoginScreen H2, 
+.SplashScreen #ZLoginAppName,
+.SplashScreen H2 {
     display:none;
 }
 .LoginScreen .ImgLoginBanner,
+.LoginScreen .ImgAppBanner,
 .SplashScreen .ImgLoginBanner {
     cursor:pointer;
+	display:block;
 }
 .LoginScreen .ImgAltBanner,
 .SplashScreen .ImgAltBanner {
@@ -518,7 +530,7 @@ BODY						{	margin:0px; 				}
     text-align:center;
 }
 .SplashScreen .message {
-    color:#FFFFFF;
+    color:white;
     font-size:14px;
     font-weight:bold;
     padding-top:20px;
@@ -542,6 +554,7 @@ BODY						{	margin:0px; 				}
     background-color:transparent;
     border-bottom:1px solid white;
 }
+.LoginScreen .Footer, 
 .SplashScreen .Footer {
     bottom:0;
     position:absolute;
@@ -549,6 +562,7 @@ BODY						{	margin:0px; 				}
     width:100%;
     z-index:10;
 }
+.LoginScreen .copyright, 
 .SplashScreen .copyright {
     margin-bottom:5px;
 }
@@ -618,28 +632,28 @@ BODY						{	margin:0px; 				}
 .ZAppTab						{	height:23px;					}
 .ZAppTabBorder                  {   
 	@AppTabRoundCorners@;  
-	background-color: #FFFFFF;
+	background-color: white;
 	#IFDEF GECKO
-	background-image: -moz-linear-gradient(top, #FFFFFF, @lighten(AppC,23)@); /* FF3.6 */
+	background-image: -moz-linear-gradient(top, white, @lighten(AppC,23)@); /* FF3.6 */
 	#ENDIF
 	#IFDEF SAFARI
- 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #FFFFFF),color-stop(1, @lighten(AppC,23)@)); /* Saf4+, Chrome */
+ 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, white),color-stop(1, @lighten(AppC,23)@)); /* Saf4+, Chrome */
  	#ENDIF
  	#IFDEF MSIE
-    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,23)@'); /* IE6,IE7 */
-    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,23)@')"; /* IE8 */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='white', EndColorStr='@lighten(AppC,23)@'); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='white', EndColorStr='@lighten(AppC,23)@')"; /* IE8 */
     #ENDIF
 }
 .ZHover .ZAppTabBorder			{   
 	#IFDEF GECKO
-	background-image: -moz-linear-gradient(top, #FFFFFF, @lighten(AppC,50)@); /* FF3.6 */
+	background-image: -moz-linear-gradient(top, white, @lighten(AppC,50)@); /* FF3.6 */
 	#ENDIF
 	#IFDEF SAFARI
- 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #FFFFFF),color-stop(1, @lighten(AppC,50)@)); /* Saf4+, Chrome */
+ 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, white),color-stop(1, @lighten(AppC,50)@)); /* Saf4+, Chrome */
  	#ENDIF
  	#IFDEF MSIE
-    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,50)@'); /* IE6,IE7 */
-    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,50)@')"; /* IE8 */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='white', EndColorStr='@lighten(AppC,50)@'); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='white', EndColorStr='@lighten(AppC,50)@')"; /* IE8 */
     #ENDIF
 }
 
@@ -660,7 +674,7 @@ BODY						{	margin:0px; 				}
 .ZFirstItem .ZAppTabBorder 		{	@AppTabBorder-first@		}
 .ZAppTabSpacer 					{	@AppTab@ @AppTabSpacer@		}
 
-.ZSelected .ZAppTabBorder		{	border-bottom-color: #fff; background-color: #fff; background-image: none;	}
+.ZSelected .ZAppTabBorder		{	border-bottom-color:white; background-color:white; background-image:none;	}
 
 
 
@@ -674,7 +688,7 @@ BODY						{	margin:0px; 				}
 .ZTabBarSuffix 					{	@TabBarSuffix@				}
 
 
-.ZOptionsHeader					{	color:#000;	}
+.ZOptionsHeader					{	color:black;	}
 
 /* Quota */
 .quotaBar 						{	height:8px;			}
@@ -693,8 +707,8 @@ BODY						{	margin:0px; 				}
 
 
 /* offline */
-.ZmNetworkStatus 		{ font-weight: bold; }
-.ZmNetworkStatusIcon 	{ cursor: pointer; }
+.ZmNetworkStatus 		{ font-weight:bold; }
+.ZmNetworkStatusIcon 	{ cursor:pointer; }
 
 /* Input stuff -- adding classes properly -- TODO: put this back into dwt.css  */
 .DwtInputField INPUT[type="text"], 
@@ -805,17 +819,17 @@ TEXTAREA
  	#ENDIF
  	
  	background-color:#FBF9F4 !important;
- 	border: 2px inset; 
+ 	border:2px inset; 
 }
 
 /* Toast */
-.ZToastText a.undo          {   font-size: 11px;    }
+.ZToastText a.undo {   @FontSize-normal@    }
 
 
 
 /* Row Displays */
 .Row {
-    border-color:#ccc;
+    border-color:#CCC;
 }
 .Row, .RowDouble, .Row-focused {
     border-width:0 0 1px;
@@ -826,7 +840,7 @@ TEXTAREA
     border-top-color:transparent;
 }
 .ZmConvExpanded, .BriefcaseItemExpanded {
-    background-color:#ededed;
+    background-color:#EDEDED;
 }
 .Row-matched, .RowDouble-matched {
     background-color:@SearchResultColor@;
@@ -835,7 +849,7 @@ TEXTAREA
 /* Mobile Client*/
 
 .center-small .ImgAltBanner{
-	background-image: none;
+	background-image:none;
 }
 
 
@@ -843,9 +857,9 @@ TEXTAREA
 
 #IFDEF MSIE
 .BannerTextQuota {
-	height: 3px;
+	height:3px;
 }
-#skin_container_username{ padding-top: 6px;}
+#skin_container_username{ padding-top:6px;}
 #ENDIF
 
-.MsgHeaderTable .ztoolbarbutton, .MsgHeaderTable .ztoolbarbutton.zhover{ border: none; background-image: none;}
+.MsgHeaderTable .ztoolbarbutton, .MsgHeaderTable .ztoolbarbutton.zhover{ border:none; background-image:none;}

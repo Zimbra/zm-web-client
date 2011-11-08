@@ -9,10 +9,16 @@
 	<div id="ZSplashPanel" class="center">
 	    <div class="ImgAltBanner"></div>
 		<h1><div id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()'></div></h1>
-		<h2><script>if(!window.isOffline) { document.write(ZmMsg.splashScreenAppName) }</script></h2>
+		<div id="ZLoginAppName">
+			<script>if(!window.isOffline) { document.write(ZmMsg.splashScreenAppName) }</script>
+		</div>
 		<div id="#ZSplashBodyContainer" class="content">
-			<div class="message"><script>document.write(ZmMsg.splashScreenLoading)</script></div>
-			<div class="switch"><script>if(!window.isOffline) { document.write(ZmMsg.splashScreenSwitch) }</script></div>
+			<div class="message">
+				<script>document.write(ZmMsg.splashScreenLoading)</script>
+			</div>
+			<div class="switch">
+				<script>if(!window.isOffline) { document.write(ZmMsg.splashScreenSwitch) }</script>
+			</div>
 		</div> 
         <div class="decor1"></div>
 	</div>
@@ -27,6 +33,5 @@
           </script>
         </div>
     </div>
-
 </div>
 <!-- END SPLASH SCREEN -->

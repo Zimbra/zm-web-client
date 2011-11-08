@@ -302,7 +302,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 			<h1><a href="http://www.zimbra.com/" id="bannerLink" target="_new">
 				<span class="Img${smallScreen?'App':'Login'}Banner"></span>
 			</a></h1>
-			<!--div id="ZLoginAppName"><fmt:message key="splashScreenAppName"/></div-->
+			<div id="ZLoginAppName"><fmt:message key="splashScreenAppName"/></div>
             <c:choose>
                 <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
                     <form method="post" name="loginForm" action="${domainLoginRedirectUrl}" accept-charset="UTF-8">
@@ -353,8 +353,8 @@ if (application.getInitParameter("offlineMode") != null)  {
                     </c:if>
                     <tr>
                         <td>&nbsp;</td>
-                        <td style="text-align:right">
-                            <input type="submit" class="zLoginButton" value="<fmt:message key="login"/>" style="float:left;"/>
+                        <td class="submitTD">
+                            <input type="submit" class="zLoginButton" value="<fmt:message key="login"/>" />
                             <input id="remember" value="1" type="checkbox" name="zrememberme" />
                             <label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label></td>
                     </tr>
