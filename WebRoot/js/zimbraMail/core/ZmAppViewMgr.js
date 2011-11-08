@@ -836,7 +836,7 @@ function(viewId, text) {
 	var tp = this._tabParams[viewId];
 	var button = !appCtxt.isChildWindow && tp && appCtxt.getAppChooser().getButton(tp.id);
 	if (button) {
-		button.setText(text);
+		button.setText(AjxStringUtil.htmlEncode(text));
 	}
 };
 
