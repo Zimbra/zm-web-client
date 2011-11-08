@@ -188,7 +188,8 @@ function(attId) {
 	if (appt) {
 
         if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
-            appt.setRsvp(this._requestResponses.getChecked());
+            if (this._requestResponses)
+            	appt.setRsvp(this._requestResponses.getChecked());
             appt.setMailNotificationOption(true);
         }
 
@@ -313,6 +314,8 @@ function(attId) {
 
 ZmApptComposeController.prototype.updateToolbarOps =
 function(mode, appt) {
+
+    if (!this._requestResponses) return;
 
     var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
     var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
@@ -497,6 +500,7 @@ function() {
     ZmCalItemComposeController.prototype._createToolBar.call(this);
 
 	var optionsButton = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+	if (optionsButton){
 	optionsButton.setVisible(true); //might be invisible if not ZmSetting.HTML_COMPOSE_ENABLED (see ZmCalItemComposeController._createToolBar)
 
 	var m = optionsButton.getMenu();
@@ -505,17 +509,20 @@ function() {
     var mi = this._requestResponses = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
     mi.setText(ZmMsg.requestResponses);
     mi.setChecked(true, true);
+    }
 
 	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
 };
 
 ZmApptComposeController.prototype.setRequestResponses =
 function(requestResponses) {
+   if (this._requestResponses)
    this._requestResponses.setChecked(requestResponses);
 };
 
 ZmApptComposeController.prototype.getRequestResponses =
 function() {
+   if (this._requestResponses)
    return this._requestResponses.getEnabled() ? this._requestResponses.getChecked() : true;
 };
 

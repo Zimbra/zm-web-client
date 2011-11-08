@@ -373,7 +373,8 @@ ZmScheduleAssistantView.prototype._handleResponseSearchCalendarResources =
 function(callback, result) {
 	var resp = result.getResponse();
 	var items = resp.getResults(ZmItem.RESOURCE).getVector();
-    this._resources = (items instanceof AjxVector) ? items.getArray() : (items instanceof Array) ? items : [items];
+    	if (items)
+    		this._resources = (items instanceof AjxVector) ? items.getArray() : (items instanceof Array) ? items : [items];
     if(callback) callback.run();
 };
 

@@ -366,9 +366,11 @@ function() {
 	}
 
 	var optionsButton = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
-	optionsButton.setVisible(false); //start it hidden, and show in case it's needed.
+	if (optionsButton) {
+		optionsButton.setVisible(false); //start it hidden, and show in case it's needed.
+	}
 
-	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+	if (optionsButton && appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		optionsButton.setVisible(true); 
 
 		var m = new DwtMenu({parent:optionsButton});
