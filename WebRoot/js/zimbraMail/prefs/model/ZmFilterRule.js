@@ -121,7 +121,6 @@ ZmFilterRule.C_SOCIAL       = "SOCIAL";
 ZmFilterRule.C_ADDRESS      = "ADDRESS";
 ZmFilterRule.C_RANKING      = "RANKING";
 ZmFilterRule.C_ME           = "ME";
-ZmFilterRule.C_OBO          = "OBO";
 ZmFilterRule.C_IMPORTANCE   = "IMPORTANCE";
 
 ZmFilterRule.C_HEADER_VALUE = {};
@@ -131,7 +130,6 @@ ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_CC]		= "cc";
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_TO_CC]	= "to,cc";
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_SUBJECT]	= "subject";
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_HEADER]	= "header";
-ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_OBO]     = "sender";
 
 ZmFilterRule.C_HEADER_MAP = {};
 for (var i in ZmFilterRule.C_HEADER_VALUE) {
@@ -156,7 +154,6 @@ ZmFilterRule.C_LABEL[ZmFilterRule.C_INVITE]		= ZmMsg.calendarInvite;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_CONV]       = ZmMsg.message;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_SOCIAL]     = ZmMsg.socialLabel;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_ADDRESS]    = ZmMsg.address;
-ZmFilterRule.C_LABEL[ZmFilterRule.C_OBO]        = ZmMsg.onBehalfOf; 
 
 // Tests
 ZmFilterRule.TEST_ADDRESS						= "addressTest"; 
@@ -191,7 +188,6 @@ ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_CC]			= ZmFilterRule.TEST_HEADER;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_TO_CC]		= ZmFilterRule.TEST_HEADER;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SUBJECT]		= ZmFilterRule.TEST_HEADER;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_HEADER]		= ZmFilterRule.TEST_HEADER;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_OBO]         = ZmFilterRule.TEST_HEADER;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SIZE]		= ZmFilterRule.TEST_SIZE;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_DATE]		= ZmFilterRule.TEST_DATE;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_BODY]		= ZmFilterRule.TEST_BODY;
@@ -390,11 +386,6 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_SUBJECT] = {
 		opsOptions:	ZmFilterRule.MATCHING_OPS,
 		value:		ZmFilterRule.TYPE_INPUT
 };
-ZmFilterRule.CONDITIONS[ZmFilterRule.C_OBO] = {
-		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	ZmFilterRule.MATCHING_OPS,
-		value:		ZmFilterRule.TYPE_INPUT
-};
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_HEADER] = {
 		subjectMod:	ZmFilterRule.TYPE_INPUT,
 		ops:		ZmFilterRule.TYPE_SELECT,
@@ -484,8 +475,7 @@ ZmFilterRule.CONDITIONS_LIST = [
 	ZmFilterRule.C_FROM,
 	ZmFilterRule.C_TO,
 	ZmFilterRule.C_CC,
-	ZmFilterRule.C_TO_CC,
-	ZmFilterRule.C_OBO,	
+	ZmFilterRule.C_TO_CC,	
 	ZmFilterRule.C_SUBJECT,
 	ZmFilterRule.C_CONV,	
 	ZmFilterRule.C_SIZE,
@@ -508,7 +498,6 @@ ZmFilterRule.IS_HEADER[ZmFilterRule.C_CC]		= true;
 ZmFilterRule.IS_HEADER[ZmFilterRule.C_TO_CC]	= true;
 ZmFilterRule.IS_HEADER[ZmFilterRule.C_SUBJECT]	= true;
 ZmFilterRule.IS_HEADER[ZmFilterRule.C_HEADER]	= true;
-ZmFilterRule.IS_HEADER[ZmFilterRule.C_OBO]      = true;
 
 ZmFilterRule.IS_SOCIAL = "social";
 ZmFilterRule.IS_NOT_SOCIAL = "not_social";
