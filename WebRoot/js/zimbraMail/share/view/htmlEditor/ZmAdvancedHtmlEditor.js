@@ -343,7 +343,7 @@ ZmAdvancedHtmlEditor.prototype.clear =
 function() {
 	this.setPendingContent(null);
 	var editor = this.getEditor();
-	if (editor) {
+    if (editor && this._editorInitialized) {
 		editor.setContent("", {format: "raw"});
         this.initDefaultFontSize(editor);
 	}
