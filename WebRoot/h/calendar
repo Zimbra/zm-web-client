@@ -215,7 +215,7 @@
         if (${view eq 'list'}) {
             window.open("/h/printcalendar?view=${view}&l=${checkedCalendars}&date=${fmtStartDate}&endDate=${fmtEndDate}&action=print&imc=true");
         } else {
-            window.open("/h/printcalendar?view=${view}&l=${checkedCalendars}&date=${param.date}&action=print&imc=true");
+            window.open("/h/printcalendar?view=${view}&l=${checkedCalendars}&date=${zm:cook(param.date)}&action=print&imc=true");
         }
     };
         //-->
