@@ -137,7 +137,7 @@
         <td colspan="4" class="sectionLabel" valign="top"><fmt:message key="AB_FIELD_birthDay"/></td>
     </tr>
     <tr>
-        <td colspan="4" class="contactOutput">${contact.birthday}</td>
+        <td colspan="4" class="contactOutput">${zm:cook(contact.birthday)}</td>
     </tr>
     <tr><td><br></td></tr>
 </c:if>
@@ -146,7 +146,7 @@
         <td colspan="4" class="sectionLabel" valign="top"><fmt:message key="AB_FIELD_otherAnniversary"/></td>
     </tr>
     <tr>
-        <td colspan="4" class="contactOutput">${contact.otherAnniversary}</td>
+        <td colspan="4" class="contactOutput">${zm:cook(contact.otherAnniversary)}</td>
     </tr>
     <tr><td><br></td></tr>
 </c:if>
@@ -155,7 +155,7 @@
         <td colspan="4" class="sectionLabel" valign="top"><fmt:message key="AB_FIELD_otherCustom1"/></td>
     </tr>
     <tr>
-        <td colspan="4" class="contactOutput">${contact.otherCustom1}</td> 
+        <td colspan="4" class="contactOutput">${zm:cook(contact.otherCustom1)}</td> 
     </tr>
     <tr><td><br></td></tr>
 </c:if>
