@@ -791,3 +791,21 @@ function() {
 	if (this.isScheduled)	{ status.push(ZmMsg.scheduled); }
 	return status.join(", ");
 };
+
+/**
+ * Returns the number of unread messages in this conversation.
+ */
+ZmConv.prototype.getNumUnreadMsgs =
+function() {
+	var numUnread = 0;
+	var msgs = this.getMsgList();
+	if (msgs) {
+		for (var i = 0, len = msgs.length; i < len; i++) {
+			if (msgs[i].isUnread) {
+				numUnread++;
+			}
+		}
+		return numUnread;
+	}
+	return null;
+};

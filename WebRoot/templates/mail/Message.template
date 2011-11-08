@@ -609,15 +609,7 @@
 
 <template id='mail.Message#Conv2View-right'>
 	<div class='Conv2View'>
-		<div class='Conv2Header' id='${convHeaderId}'>
-			<table width=100%>
-				<tr>
-					<td class='subject' width=100%>
-						<$= data.subject $>
-					</td>
-				</tr>
-			</table>
-		</div>
+		<$= AjxTemplate.expand("#Conv2Header", data) $>
 		<div id="${messagesDivId}" class='Conv2Messages'></div>
 		<div id="${replyDivId}" class='Conv2Reply'>
 			<div id="${replyContainerId}" class='Conv2ReplyContainer'>
@@ -632,15 +624,7 @@
 		<table class="Conv2ViewTable">
 			<tr>
 				<td valign="top" class="Conv2MessagesCell">
-					<div class='Conv2Header' id='${convHeaderId}'>
-						<table width=100%>
-							<tr>
-								<td class='subject' width=100%>
-									<$= data.subject $>
-								</td>
-							</tr>
-						</table>
-					</div>
+					<$= AjxTemplate.expand("#Conv2Header", data) $>
 					<div id="${messagesDivId}" class='Conv2Messages-bottom'></div>
 				</td>
 				<td valign="top" class="Conv2ReplyCell">
@@ -652,7 +636,22 @@
 		</table>
 	</div>
 </template>
-		
+
+<template id='mail.Message#Conv2Header'>
+	<div class='Conv2Header' id='${convHeaderId}'>
+		<table width=100%>
+			<tr>
+				<td class='subject'>
+					<$= data.subject $>
+				</td>
+				<td class='info' id='${convInfoCellId}'>
+					<$= data.info $>
+				</td>
+			</tr>
+		</table>
+	</div>
+</template>
+	
 <template id='mail.Message#Conv2MsgHeader'>
 	<table class='Conv2MsgHeaderTable' width=100%>
 		<tr id='${tableRowId}'>

@@ -784,10 +784,14 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .Conv2Header .subject {
 	@FontSize-bigger@
+	overflow:		hidden;
+	padding-right:	10px;
 }
 
 .Conv2Header .info {
-	font-weight: normal;
+	font-weight:	normal;
+	text-align:		right;
+	padding-right:	5px;
 }
 
 .MsgFooterTable td:first-child {

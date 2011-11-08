@@ -64,6 +64,7 @@ function() {
 ZmConvView2.prototype.set =
 function(conv, force) {
 
+	if (!conv) { return; }
 	if (!force && this._item && conv && (this._item.id == conv.id)) { return; }
 
 	// A single action menu is shared by the msgs in this conv. It appears when the msg body is
@@ -85,6 +86,7 @@ function(conv, force) {
 	var oldConv = this._item;
 	this.reset();
 	this._item = conv;
+	conv.addChangeListener(this._convChangeListener.bind(this));
 	
 	this._noResults = false;
 	if (!conv) {
@@ -102,27 +104,17 @@ function(conv, callback) {
 
 	this._mainDivId			= this._htmlElId + "_main";	// reading pane at bottom only
 	this._convHeaderId		= this._htmlElId + "_header";
+	this._convInfoCellId	= this._htmlElId + "_info";
 	this._messagesDivId		= this._htmlElId + "_messages";
 	this._replyDivId		= this._htmlElId + "_reply";
 	this._replyContainerId	= this._htmlElId + "_replyContainer";
 	this._replyInputId		= this._htmlElId + "_replyInput";
-
-	var subj = AjxStringUtil.htmlEncode(ZmMailMsg.stripSubjectPrefixes(conv.subject || ZmMsg.noSubject));
-
-	var numUnread = 0;
-	var msgs = conv.getMsgList();
-	for (var i = 0, len = msgs.length; i < len; i++) {
-		if (msgs[i].isUnread) {
-			numUnread++;
-		}
-	}
-	var info = numUnread ? AjxMessageFormat.format(ZmMsg.unreadCount, numUnread).toLowerCase() :
-						   AjxMessageFormat.format(ZmMsg.messageCount, conv.numMsgs);
-	var subject = AjxMessageFormat.format(ZmMsg.convSubject, [subj, info]);
 	
+	var subject = AjxStringUtil.htmlEncode(ZmMailMsg.stripSubjectPrefixes(conv.subject || ZmMsg.noSubject));
 	var subs = {
 		mainDivId:			this._mainDivId,
 		convHeaderId:		this._convHeaderId,
+		convInfoCellId:		this._convInfoCellId,
 		subject:			subject,
 		messagesDivId:		this._messagesDivId,
 		replyDivId:			this._replyDivId,
@@ -136,6 +128,8 @@ function(conv, callback) {
 	var el = this.getHtmlElement();
 	el.appendChild(Dwt.parseHtmlFragment(html));
 	
+	this._setConvInfo();
+
 	var messagesDiv = document.getElementById(this._messagesDivId);
 	this._renderMessages(conv, messagesDiv);
 	
@@ -221,6 +215,20 @@ function(msg, params) {
 	var msgView = this._msgViews[msg.id] = new ZmMailMsgCapsuleView(params);
 	this._msgViewList.push(msg.id);
 	msgView.set(msg);
+};
+
+ZmConvView2.prototype._setConvInfo =
+function() {
+	var cell = document.getElementById(this._convInfoCellId);
+	if (cell) {
+		var conv = this._item;
+		var info = AjxMessageFormat.format(ZmMsg.messageCount, conv.numMsgs);
+		var numUnread = conv.getNumUnreadMsgs();
+		if (numUnread) {
+			info = info + ", " + AjxMessageFormat.format(ZmMsg.unreadCount, numUnread).toLowerCase();
+		}
+		cell.innerHTML = info;
+	}
 };
 
 ZmConvView2.prototype._resize =
@@ -576,7 +584,7 @@ function(params) {
 	this._controller._doAction(params);
 	if (params.sendNow) {
 		var composeCtlr = appCtxt.getApp(ZmApp.MAIL).getComposeController(ZmApp.HIDDEN_SESSION);
-		composeCtlr.sendMsg();
+		composeCtlr.sendMsg(null, null, this._handleResponseSendMsg.bind(this));
 	}
 };
 
@@ -595,13 +603,24 @@ function(listener) {
 	this._subscribeListener = listener;
 };
 
+ZmConvView2.prototype._convChangeListener =
+function(ev) {
+
+	if (ev.type != ZmEvent.S_CONV) { return; }
+	var fields = ev.getDetail("fields");
+	if ((ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_SIZE])) {
+		this._setConvInfo();
+	}
+};
+
 ZmConvView2.prototype._msgListChangeListener =
 function(ev) {
 	
-	if (ev.type != ZmEvent.S_MSG) {	return; }
+	if (ev.type != ZmEvent.S_MSG) { return; }
 	
 	var msg = ev.item;
 	if (!msg) { return; }
+
 	if (ev.event == ZmEvent.E_CREATE && (msg.cid == this._item.id)) {
 		var params = {
 			parent:			this,
@@ -1007,11 +1026,13 @@ function(ev) {
 			var flag = flags[j];
 			if (flag == ZmItem.FLAG_UNREAD) {
 				this._header._setRowClass();
+				this._convView._setConvInfo();
 			}
 		}
 	}
 	else if (ev.event == ZmEvent.E_DELETE) {
 		this.dispose();
+		this._convView._setConvInfo();
 	}
 	else if (ev.event == ZmEvent.E_MOVE) {
 		this._changeFolderName(ev.getDetail("oldFolderId"));
