@@ -96,7 +96,7 @@ function(msg, ex, noExecReset, hideReportButton) {
 		html[i++] = "<table>";
 		for (var j = 0; j < fields.length; j++) {
 			var fld = fields[j];
-			var value = ex[fld];
+			var value = AjxStringUtil.htmlEncode(ex[fld]);
 			if (value) {
 				if (fld == "request") {
 					value = ["<pre>", value, "</pre>"].join("");
@@ -112,7 +112,7 @@ function(msg, ex, noExecReset, hideReportButton) {
 		detailStr = html.join("");
 	}
 	errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
-	errorDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
+	errorDialog.setMessage(AjxStringUtil.htmlEncode(msg), detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
 	errorDialog.popup(null, hideReportButton);
 };
 
