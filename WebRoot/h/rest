@@ -35,21 +35,6 @@
     <c:otherwise>
         <rest:view title="">
             <fmt:message key="unsupportedRestView"/>
-        <!--
-            zimbra_internal_dispatch: (${requestScope.zimbra_internal_dispatch})
-            zimbra_authToken: (${requestScope.zimbra_authToken})
-            zimbra_target_account_name: (${requestScope.zimbra_target_account_name})
-            zimbra_target_account_id: (${requestScope.zimbra_target_account_id})
-            zimbra_target_item_id: (${requestScope.zimbra_target_item_id})
-            zimbra_target_item_type: (${requestScope.zimbra_target_item_type})
-            zimbra_target_item_color: (${requestScope.zimbra_target_item_color})
-            zimbra_target_item_view: (${requestScope.zimbra_target_item_view})
-            zimbra_target_account_prefTimeZoneId: (${requestScope.zimbra_target_account_prefTimeZoneId})
-            zimbra_target_account_prefSkin: (${requestScope.zimbra_target_account_prefSkin})
-            zimbra_target_account_prefLocale: (${requestScope.zimbra_target_account_prefLocale})
-            zimbra_freebusy: (${requestScope.zimbra_freebusy})
-        </pre>
-        -->
-        </rest:view>         
+        </rest:view>
     </c:otherwise>
 </c:choose>
