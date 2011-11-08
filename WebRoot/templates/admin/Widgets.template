@@ -99,8 +99,13 @@
 				<td class='minWidth'><div class='${closeIcon1}'></div></td>
 				<td id='${id}_minimize' class='minWidth'></td>
 			</tr>
+            <tr>
+                <td colspan='5'>
+                    <div class='horizSep'></div>
+                </td>
+            </tr>
 			<tr>
-				<td class='WindowInnerContainer' colspan='4'>
+				<td class='WindowInnerContainer' colspan='5'>
 				    <table cellspacing=0 cellpadding=0>
 				        <tr>
 				            <td>
