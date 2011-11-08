@@ -632,6 +632,15 @@
 		<table class="Conv2ViewTable">
 			<tr>
 				<td valign="top" class="Conv2MessagesCell">
+					<div class='Conv2Header' id='${convHeaderId}'>
+						<table width=100%>
+							<tr>
+								<td class='subject' width=100%>
+									<$= data.subject $>
+								</td>
+							</tr>
+						</table>
+					</div>
 					<div id="${messagesDivId}" class='Conv2Messages-bottom'></div>
 				</td>
 				<td valign="top" class="Conv2ReplyCell">
@@ -645,13 +654,16 @@
 </template>
 		
 <template id='mail.Message#Conv2MsgHeader'>
-	<table class='MsgHeaderTable' width=100%>
+	<table class='Conv2MsgHeaderTable' width=100%>
 		<tr id='${tableRowId}'>
-			<td class='Expand' id='${expandIconCellId}'></td>
-			<td class='LabelColValue' width=100%>
+			<td class='Expand' width=19 id='${expandIconCellId}'></td>
+			<td class='Text' width=<$= ZmMsg.COLUMN_WIDTH_FROM_CV2 $>>
 				<$= data.from $>
 			</td>
-			<td class='LabelColValue DateCol'>${date}</td>
+			<td class='Text ZmConvListFragment' style='width:auto;overflow:hidden;'>
+				<$= data.fragment $>
+			</td>
+			<td class='Text DateCol' width=<$= ZmMsg.COLUMN_WIDTH_DATE_CV2 $>>${date}</td>
 		</tr>
 	</table>
 </template>

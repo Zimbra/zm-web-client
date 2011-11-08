@@ -461,7 +461,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 /* message fragment text */
 .Row .ZmConvListFragment,
-.DwtListView-Rows .Row .ZmConvListFragment,
+.ZmMailMsgCapsuleViewHeader .ZmConvListFragment,
 .Row .Row-Selected .ZmConvListFragment {
 	@Text-disabled@
 	font-weight: normal;
@@ -605,7 +605,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@MailMsgAttachments@
 }
 
-.ZmMailMsgView .LabelColName {
+.ZmMailMsgView .LabelColName, .ZmMailMsgCapsuleView .LabelColName {
 	@MailMsgHeaderLabel@
 	vertical-align: top;
 	text-align: right;
@@ -613,7 +613,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	white-space: nowrap;
 }
 
-.ZmMailMsgView .LabelColValue {
+.ZmMailMsgView .LabelColValue, .ZmMailMsgCapsuleView .LabelColValue {
 	@MailMsgHeaderText@
 	white-space: normal;
 	vertical-align: top;
@@ -686,10 +686,11 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .Conv2View, .Conv2View-bottom {
 	background-color: white;
+	height: 100%;
 }
 
 .Conv2View-bottom {
-	height: 100%;
+	/*height: 100%;*/
 }
 
 .Conv2View-bottom .Conv2ViewTable {
@@ -699,14 +700,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	border-spacing:		0;
 }
 
-.Conv2View-bottom .Conv2MessagesCell {
-	width: 70%;
-}
-
 .Conv2View-bottom .Conv2ReplyCell {
     background-color:	@lighten(AppC,55)@;
     border-left:		1px solid @AppC@;
-	width:				30%;
+	width:				300px;
 }
 
 .Conv2View .Conv2Reply {
@@ -746,11 +743,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	border-color: black;
 }
 
-.ZmMailMsgCapsuleView .LabelColValue {
-	@MailMsgHeaderText@
+.Conv2MsgHeaderTable .Text {
 	white-space:	nowrap;
 	vertical-align:	top;
-	padding:		3px;
+	padding:		0 3px;
 }
 
 .ZmMailMsgCapsuleView .SubjectCol {
@@ -759,7 +755,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	font-weight: bold;
 }
 
-.ZmMailMsgCapsuleView .DateCol {
+.Conv2MsgHeaderTable .DateCol {
 	white-space:	nowrap;
     padding-right:	10px;
 }
@@ -769,7 +765,20 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	border-bottom:	1px solid @AppC@;
 }
 
-.ZmMailMsgCapsuleView .MsgHeaderTable .Unread {
+.Conv2MsgHeaderTable {
+	table-layout: fixed;
+}
+
+.Conv2MsgHeaderTable td {
+	padding:		0 2px 0 @TextPaddingSize@;
+	overflow:		hidden;
+}
+
+.Conv2MsgHeaderTable .LabelColValue {
+	
+}
+
+.Conv2MsgHeaderTable .Unread {
 	font-weight: bold;
 }
 
@@ -808,6 +817,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .ZmMailMsgCapsuleViewHeader.focused {
 	background-color: @SelC@;
+}
+
+.ZmMailMsgCapsuleViewHeader .ZmConvListFragment {
+	white-space:	nowrap;
 }
 
 .ZmConvView2 .ReplyTextarea {

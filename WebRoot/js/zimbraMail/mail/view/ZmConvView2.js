@@ -242,13 +242,14 @@ function() {
 		Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, messagesHeight);
 		// set width of reply toolbar
 		this._replyToolbar.setSize(replySize.x, Dwt.DEFAULT);
-			}
+	}
 	else {
 		// Since we're using tables, we need to set height manually (tables size vertically to their content)
 		var mainDiv = document.getElementById(this._mainDivId);
 		var mainSize = Dwt.getSize(mainDiv);
 		if (mainSize && tbSize) {
-			Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, mainSize.y);
+			var replySize = Dwt.getSize(this._replyDiv);
+			Dwt.setSize(this._messagesDiv, mainSize.x - replySize.x, mainSize.y);
 			Dwt.setSize(this._replyDiv, Dwt.DEFAULT, mainSize.y);
 			Dwt.setSize(this._replyInput, Dwt.DEFAULT, mainSize.y - tbSize.y - 15);
 		}
@@ -893,16 +894,15 @@ function(msg, container) {
 	var buttonId = ZmId.getButtonId(this._viewId, ZmId.OP_ACTIONS_MENU);
 	var ab = this._actionsButton = new DwtBorderlessButton({parent:this, id:buttonId});
 	ab.setImage("Preferences");
-	ab.setMenu(this._actionsMenu);
 	ab.reparentHtmlElement(this._buttonCellId);
-	ab.addDropDownSelectionListener(this._setActionMenu.bind(this));
-	ab.addSelectionListener(this._setActionMenu.bind(this));
+	ab.addSelectionListener(this._actionsButtonListener.bind(this));
 
 	this._resetOperations();
 };
 
 // Resize IFRAME to match its content. IFRAMEs have a default height of 150, so we need to
-// explicitly set the correct height.
+// explicitly set the correct height if the content is smaller. Doesn't work for IE, which
+// reports the height of the HTML element as at least 150.
 ZmMailMsgCapsuleView.prototype.resize =
 function() {
 	if (!this._expanded) { return; }
@@ -913,13 +913,11 @@ function() {
 	}
 };
 
-ZmMailMsgCapsuleView.prototype._setActionMenu =
+ZmMailMsgCapsuleView.prototype._actionsButtonListener =
 function(ev) {
-
 	this._convView.setMsg(this._msg);
-	this._actionsMenu.parent = this._actionsButton;
 	this._resetOperations();
-	this._actionsButton._toggleMenu();
+	this._actionsMenu.popup(null, ev.docX, ev.docY);
 };
 
 /**
@@ -1137,12 +1135,13 @@ ZmMailMsgCapsuleViewHeader = function(params) {
 	this._tableRowId		= id + "_tableRow";
 	this._expandIconCellId	= id + "_expandCell";
 	this._expandIconId		= id + "_expand";
-	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
-	var dateString = msg.sentDate ? dateFormatter.format(new Date(msg.sentDate)) : dateFormatter.format(new Date(msg.date));
+	var fragment = (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && !this.parent._expanded) ? msg.fragment : "";
+	var dateString = new AjxDateFormat("EEEE h:mm a").format(new Date(msg.sentDate || msg.date));
 	var subs = {
 		tableRowId:			this._tableRowId,
 		expandIconCellId:	this._expandIconCellId,
 		from:				msg.getAddress(AjxEmailAddress.FROM).toString(true),
+		fragment:			fragment || "",
 		date:				dateString
 	}
 	this._createHtmlFromTemplate("mail.Message#Conv2MsgHeader", subs);
