@@ -646,7 +646,7 @@ function(ev, aclv) {
 
 	ev = DwtUiEvent.getEvent(ev);
 	var key = DwtKeyEvent.getCharCode(ev);
-	var propagate;
+	var propagate = true;
 	var clearInput = false;
 	
 	if (DwtKeyMapMgr.hasModifier(ev) || ev.shiftKey) {
@@ -668,8 +668,9 @@ function(ev, aclv) {
 	// Left arrow selects last bubble if there is no input
 	else if (key == 37) {
 		DBG.println("aif", "_keyDownCallback found left arrow");
-		this._selectBubbleBeforeInput();
-		propagate = false;
+		if (this._selectBubbleBeforeInput()) {
+			propagate = false;
+		}
 	}
 	// Handle case where user is leaving edit while we're not in strict mode
 	// (in strict mode, aclv will call addrFoundCallback if it gets a Return)
