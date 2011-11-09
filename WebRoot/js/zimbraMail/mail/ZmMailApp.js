@@ -1689,11 +1689,11 @@ function(urlQueryStr){
 	var body = match ? (AjxStringUtil.urlComponentDecode(match[1]).replace(/\+/g, " ")) : null;
 
 	return {
-		to: to,
-		subject: subject,
-		cc: cc,
-		bcc: bcc,
-		body: body
+		to: AjxStringUtil.htmlEncode(to),
+		subject: AjxStringUtil.htmlEncode(subject),
+		cc: AjxStringUtil.htmlEncode(cc),
+		bcc: AjxStringUtil.htmlEncode(bcc),
+		body: AjxStringUtil.htmlEncode(body)
 	};
 };
 
