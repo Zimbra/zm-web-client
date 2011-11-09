@@ -505,7 +505,7 @@
 				<div class='ImgAttachment'></div>
 			</td>
 			<td>
-				<b><$= (message ? message.subject : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></b>
+				<b><$= (message ? AjxStringUtil.htmlEncode(message.subject) : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></b>
 			</td>
 		</tr>
 	</table>
