@@ -347,10 +347,18 @@ function() {
             prefs: [
                 ZmSetting.START_DATE_ENABLED,
                 ZmSetting.END_DATE_ENABLED,
+                ZmSetting.VACATION_DURATION_ENABLED,
+                ZmSetting.VACATION_CALENDAR_ENABLED,
                 ZmSetting.VACATION_FROM,
+                ZmSetting.VACATION_FROM_TIME,
 				ZmSetting.VACATION_MSG_ENABLED,
 				ZmSetting.VACATION_MSG,
-				ZmSetting.VACATION_UNTIL
+                ZmSetting.VACATION_EXTERNAL_MSG_ENABLED,
+				ZmSetting.VACATION_EXTERNAL_MSG,
+                ZmSetting.VACATION_EXTERNAL_TYPE,
+                ZmSetting.VACATION_CALENDAR_TYPE,
+				ZmSetting.VACATION_UNTIL,
+                ZmSetting.VACATION_UNTIL_TIME
             ],
             manageDirty: true,
 			createView: function(parent, section, controller) {

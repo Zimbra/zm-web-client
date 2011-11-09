@@ -4087,3 +4087,18 @@ ZmCalViewController.prototype.setCurrentListView = function(view) {
 ZmCalViewController.prototype.getCurrentListView = function() {
     return this._currentListView || this.getCurrentView();
 };
+
+/**
+ * Creates appointment as configured in the out-of-office preference
+ */
+ZmCalViewController.prototype.createAppointmentFromOOOPref=
+function(stDate,endDate,respCallback){
+       var newAppt = new ZmAppt();
+	   newAppt.setStartDate(stDate);
+	   newAppt.setEndDate(endDate);
+       newAppt.name = ZmMsg.outOfOffice;
+       newAppt.freeBusy = (appCtxt.get(ZmSetting.VACATION_CALENDAR_TYPE)=="BUSY")?"B":"O";
+       newAppt.message = appCtxt.get(ZmSetting.VACATION_MSG);
+       newAppt.convertToLocalTimezone();
+       newAppt.save(null, respCallback);
+}

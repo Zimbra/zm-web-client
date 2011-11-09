@@ -235,13 +235,21 @@ function(settings) {
 	settings.registerSetting("SIGNATURE_ENABLED",				{name:"zimbraPrefMailSignatureEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("SIGNATURE_STYLE",					{name:"zimbraPrefMailSignatureStyle", type:ZmSetting.T_PREF, defaultValue:ZmSetting.SIG_OUTLOOK});
 	settings.registerSetting("START_DATE_ENABLED",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+    settings.registerSetting("VACATION_DURATION_ENABLED",		{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("USER_FOLDERS_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("VACATION_FROM",					{name:"zimbraPrefOutOfOfficeFromDate", type:ZmSetting.T_PREF, defaultValue:""});
+    settings.registerSetting("VACATION_FROM_TIME",				{type:ZmSetting.T_PREF, defaultValue:""});
 	settings.registerSetting("VACATION_MSG",					{name:"zimbraPrefOutOfOfficeReply", type:ZmSetting.T_PREF, defaultValue:""});
+    settings.registerSetting("VACATION_EXTERNAL_TYPE",			{name:"zimbraPrefExternalSendersType", type:ZmSetting.T_PREF, defaultValue:"ALL"});
+    settings.registerSetting("VACATION_CALENDAR_TYPE",			{name:"zimbraPrefOutOfOfficeFreeBusyStatus", type:ZmSetting.T_PREF, defaultValue:""});
+    settings.registerSetting("VACATION_CALENDAR_ENABLED",		{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+    settings.registerSetting("VACATION_EXTERNAL_MSG",			{name:"zimbraPrefOutOfOfficeExternalReply", type:ZmSetting.T_PREF, defaultValue:""});
 	settings.registerSetting("VACATION_MSG_ENABLED",			{name:"zimbraPrefOutOfOfficeReplyEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+    settings.registerSetting("VACATION_EXTERNAL_MSG_ENABLED",	{name:"zimbraPrefOutOfOfficeExternalReplyEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
     settings.registerSetting("VACATION_MSG_REMIND_ON_LOGIN",	{name:"zimbraPrefOutOfOfficeStatusAlertOnLogin", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("VACATION_MSG_FEATURE_ENABLED",	{name:"zimbraFeatureOutOfOfficeReplyEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("VACATION_UNTIL",					{name:"zimbraPrefOutOfOfficeUntilDate", type:ZmSetting.T_PREF, defaultValue:""});
+    settings.registerSetting("VACATION_UNTIL_TIME",				{type:ZmSetting.T_PREF, defaultValue:""});
 	settings.registerSetting("COLLAPSE_IMAP_TREES",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("SAVE_TO_IMAP_SENT",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
     settings.registerSetting("AUTO_READ_RECEIPT_ENABLED",		{name:"zimbraPrefMailRequestReadReceipts", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
@@ -294,10 +302,18 @@ function() {
 				ZmSetting.SELECT_AFTER_DELETE,
 				ZmSetting.SHOW_FRAGMENTS,
 				ZmSetting.START_DATE_ENABLED,
+                ZmSetting.VACATION_DURATION_ENABLED,
 				ZmSetting.VACATION_FROM,
+                ZmSetting.VACATION_FROM_TIME,
+                ZmSetting.VACATION_CALENDAR_ENABLED,
 				ZmSetting.VACATION_MSG_ENABLED,
 				ZmSetting.VACATION_MSG,
+                ZmSetting.VACATION_EXTERNAL_MSG_ENABLED,
+				ZmSetting.VACATION_EXTERNAL_MSG,
+                ZmSetting.VACATION_EXTERNAL_TYPE,
+                ZmSetting.VACATION_CALENDAR_TYPE,
 				ZmSetting.VACATION_UNTIL,
+                ZmSetting.VACATION_UNTIL_TIME,
 				ZmSetting.VIEW_AS_HTML,
                 ZmSetting.COMPOSE_AS_FORMAT,
 				ZmSetting.COMPOSE_INIT_FONT_COLOR,
@@ -602,6 +618,18 @@ function() {
 		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
 	});
 
+    ZmPref.registerPref("VACATION_DURATION_ENABLED", {
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		displayName:		ZmMsg.oooDurationLabel,
+		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
+	});
+
+    ZmPref.registerPref("VACATION_CALENDAR_ENABLED", {
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		displayName:		ZmMsg.vacationCalLabel,
+		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
+	});
+
 	ZmPref.registerPref("VACATION_FROM", {
 		displayName:		ZmMsg.startDate,
 		displayContainer:	ZmPref.TYPE_INPUT,
@@ -628,12 +656,45 @@ function() {
 	});
 
 	ZmPref.registerPref("VACATION_MSG_ENABLED", {
-		displayName:		ZmMsg.awayMessageEnabled,
+		displayName:		ZmMsg.outOfOffice,
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+        orientation:		ZmPref.ORIENT_VERTICAL,
+		errorMessage:		ZmMsg.missingAwayMessage,
+		displayOptions:		[ZmMsg.noAutoReplyMessage, ZmMsg.autoReplyMessage],
+		options:			[false, true]
+	});
+
+    ZmPref.registerPref("VACATION_EXTERNAL_TYPE", {
+		displayName:		ZmMsg.vacationExternalType,
+		displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		[ZmMsg.vacationExteralAll,ZmMsg.vacationExternalAllExceptAB],
+		options:			 ["ALL","ALLNOTINAB"]
+	});
+
+    ZmPref.registerPref("VACATION_CALENDAR_TYPE", {
+		displayName:		ZmMsg.vacationExternalType,
+		displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		[ZmMsg.outOfOffice,ZmMsg.busy],
+		options:			 ["OUTOFOFFICE","BUSY"]
+	});
+
+    ZmPref.registerPref("VACATION_EXTERNAL_MSG", {
+		displayName:		ZmMsg.externalAwayMessage,
+		displayContainer:	ZmPref.TYPE_TEXTAREA,
+		maxLength:			ZmPref.MAX_LENGTH[ZmSetting.AWAY_MESSAGE],
+		errorMessage:       AjxMessageFormat.format(ZmMsg.invalidAwayMessage, ZmPref.MAX_LENGTH[ZmSetting.AWAY_MESSAGE]),
+		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
+		validationFunction:	ZmMailApp.validateExternalVacationMsg
+	});
+
+	ZmPref.registerPref("VACATION_EXTERNAL_MSG_ENABLED", {
+		displayName:		ZmMsg.externalAwayMessageEnabled,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
-		validationFunction:	ZmMailApp.validateVacationMsgEnabled,
+		validationFunction:	ZmMailApp.validateExternalVacationMsgEnabled,
 		errorMessage:		ZmMsg.missingAwayMessage
 	});
+
 
 	ZmPref.registerPref("MAIL_NOTIFY_TOASTER", {
 		displayFunc:		function() { AjxDispatcher.require("Alert"); return ZmDesktopAlert.getInstance().getDisplayText(); },
@@ -720,6 +781,39 @@ function(checked) {
 	if (!section) { return false; }
 	var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
 	var input = view.getView(section.id).getFormObject(ZmSetting.VACATION_MSG);
+	if (!input) { return false; }
+	var awayMsg = input.getValue();
+	return (awayMsg && (awayMsg.length > 0));
+};
+
+/**
+ * Make sure the server won't be sending out a blank away msg for the external user. Check for a
+ * combination of an empty away msg and a checked box for "send away message". Since a
+ * pref is validated only if it changes, we have to have validation functions for both
+ * prefs.
+ *
+ * @private
+ */
+ZmMailApp.validateExternalVacationMsg =
+function(awayMsg) {
+	if (awayMsg && (awayMsg.length > 0)) { return true; }
+	var section = ZmPref.getPrefSectionWithPref(ZmSetting.VACATION_EXTERNAL_MSG_ENABLED);
+	if (!section) { return false; }
+	var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
+	var input = view.getView(section.id).getFormObject(ZmSetting.VACATION_EXTERNAL_MSG_ENABLED);
+	return (input && !input.isSelected());
+};
+
+/**
+ * @private
+ */
+ZmMailApp.validateExternalVacationMsgEnabled =
+function(checked) {
+	if (!checked) { return true; }
+	var section = ZmPref.getPrefSectionWithPref(ZmSetting.VACATION_EXTERNAL_MSG);
+	if (!section) { return false; }
+	var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
+	var input = view.getView(section.id).getFormObject(ZmSetting.VACATION_EXTERNAL_MSG);
 	if (!input) { return false; }
 	var awayMsg = input.getValue();
 	return (awayMsg && (awayMsg.length > 0));
