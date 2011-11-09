@@ -97,7 +97,7 @@
 				<td id='${id}_title' class='DwtDialogTitle'>${title}</td>
 				<td class='minWidth'><div class='${closeIcon2}'></div></td>
 				<td class='minWidth'><div class='${closeIcon1}'></div></td>
-				<td id='${id}_minimize' class='minWidth'></td>
+				<td width=24 id='${id}_minimize' class='DwtDialogMinIcon'></td>
 			</tr>
             <tr>
                 <td colspan='5'>
