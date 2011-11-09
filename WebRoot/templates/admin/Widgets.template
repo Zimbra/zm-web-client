@@ -92,7 +92,7 @@
 <template id='admin.Widgets#ZaBaseDialog' width='20' height='32'>
 	<div class='DwtDialog WindowOuterContainer'>
 		<table cellspacing=0 cellpadding=0>
-			<tr id='${dragId}'>
+			<tr class='DwtDialogHeader' id='${dragId}'>
 				<td class='minWidth'>${icon}</td>
 				<td id='${id}_title' class='DwtDialogTitle'>${title}</td>
 				<td class='minWidth'><div class='${closeIcon2}'></div></td>
