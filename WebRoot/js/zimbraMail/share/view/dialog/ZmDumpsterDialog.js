@@ -272,7 +272,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 
 ZmDumpsterMailListView.prototype._getToolTip =
 function(params) {
-	return params.item.getFragment();
+	return AjxStringUtil.htmlEncode(params.item.getFragment());
 };
 
 
