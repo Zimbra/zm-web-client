@@ -685,8 +685,9 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* Styles for Conv2.0 */
 
 .Conv2View, .Conv2View-bottom {
-	background-color: white;
-	height: 100%;
+	background-color:@AppC@;
+	height:100%;
+	@grad(AppC,#CCC)@
 }
 
 .Conv2View-bottom {
@@ -694,84 +695,75 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .Conv2View-bottom .Conv2ViewTable {
-	width:				100%;
-	height:				100%;
-	border-collapse:	collapse;
-	border-spacing:		0;
+	width:100%;
+	height:100%;
+	border-collapse:collapse;
+	border-spacing:0;
 }
 
 .Conv2View-bottom .Conv2ReplyCell {
-    background-color:	@lighten(AppC,55)@;
-    border-left:		1px solid @AppC@;
-	width:				300px;
+	background-color:@lighten(AppC,55)@;
+	border-left:1px solid @darken(AppC,33)@;
+	width:300px;
 }
 
 .Conv2View .Conv2Reply {
-    background-color:	@lighten(AppC,55)@;
-    border-top:			1px solid @AppC@;
-	margin:				3px;
+	background-color:@lighten(AppC,55)@;
+	border-top:1px solid @darken(AppC,33)@;
+	padding:3px;
 }
 
 .Conv2Messages, .Conv2Messages-bottom {
-	overflow: auto;
+	overflow:auto;
 }
 
 .Conv2Messages-bottom {
-	height: 100%;
+	height:100%;
 }
 
 .ZmMailMsgCapsuleView {
-	border-color:			@AppC@;
-	border-width:			0px 1px 1px 1px;
-	border-style:			solid;	
-	border-bottom-color:	#C8C8C8;
-	background-color:		white;
-	#IFDEF SAFARI
-	background-image:-webkit-gradient(linear, left top, left bottom, from(#FFFFFF), to(@lighten(AppC,55)@)); /* Saf4+, Chrome */
-    background-image:-webkit-linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); /* Chrome 10+, Saf5.1+ */
-    #ENDIF 
-    #IFDEF GECKO
-    background-image:   -moz-linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); /* FF3.6 */
-    #ENDIF
-    #IFDEF MSIE
-    background-image:    -ms-linear-gradient(top, #FFFFFF, @lighten(AppC,55)@); /* IE10 */
-    filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='@lighten(AppC,55)@'); /* IE6�IE9 */
-	#ENDIF
+	background-color:white;
+	border:1px solid @darken(AppC,10)@;
+	margin:10px;
+	@cssShadow@:1px 2px @darken(AppC,25)@;
 }
 
 .ZmMailMsgCapsuleView.focused {
-	border-color: black;
+	border-color:@darken(SelC,10)@;
 }
 
 .Conv2MsgHeaderTable .Text {
-	white-space:	nowrap;
-	vertical-align:	top;
-	padding:		0 3px;
+	white-space:nowrap;
+	vertical-align:top;
+	padding:0 3px;
 }
 
 .ZmMailMsgCapsuleView .SubjectCol {
-    @MailMsgHeaderText@
+	@MailMsgHeaderText@
 	@FontSize-big@
-	font-weight: bold;
+	/*font-weight: bold;*/
 }
 
 .Conv2MsgHeaderTable .DateCol {
-	white-space:	nowrap;
-    padding-right:	10px;
+	white-space:nowrap;
+	padding-right:5px;
+    text-align:right;
 }
 
 .Conv2Header {
-	margin-left:	5px;
-	border-bottom:	1px solid @AppC@;
+	background-color:@lighten(AppC,25)@;
+	border-bottom:1px solid @darken(AppC,33)@;
+	padding:2px 5px;
+	@cssShadow@:0 3px @darken(AppC,10)@;
 }
 
 .Conv2MsgHeaderTable {
-	table-layout: fixed;
+	table-layout:fixed;
 }
 
 .Conv2MsgHeaderTable td {
-	padding:		0 2px 0 @TextPaddingSize@;
-	overflow:		hidden;
+	padding:0 2px 0 @TextPaddingSize@;
+	overflow:hidden;
 }
 
 .Conv2MsgHeaderTable .LabelColValue {
@@ -779,60 +771,56 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .Conv2MsgHeaderTable .Unread {
-	font-weight: bold;
+	font-weight:bold;
 }
 
 .Conv2Header .subject {
 	@FontSize-bigger@
-	overflow:		hidden;
-	padding-right:	10px;
 }
 
 .Conv2Header .info {
-	font-weight:	normal;
-	text-align:		right;
-	padding-right:	5px;
+	font-weight:normal;
 }
 
 .MsgFooterTable td:first-child {
-	padding-left: 5px;
+	padding-left:5px;
 }
 
 .MsgFooterTable td:last-child {
-	padding-right: 5px;
+	padding-right:5px;
 }
 
 .ZmMailMsgCapsuleView .Expand {
-	cursor: pointer;
+	cursor:pointer;
 }
 
 .ZmMailMsgCapsuleView .Link {
-	cursor:			pointer;
-	white-space:	nowrap;
-	margin:			0px 3px;
+	cursor:pointer;
+	white-space:nowrap;
+	margin:0px 3px;
 	@Text-link@
 }
 
 .ZmMailMsgCapsuleView .attachments {
-	border:		1px solid @AppC@;
-	margin:		5px;
-	padding:	2px;
+	border:1px solid @AppC@;
+	margin:5px;
+	padding:2px;
 }
 
 .ZmMailMsgCapsuleViewHeader.focused {
-	background-color: @SelC@;
+	background-color:@SelC@;
 }
 
 .ZmMailMsgCapsuleViewHeader .ZmConvListFragment {
-	white-space:	nowrap;
+	white-space:nowrap;
 }
 
 .ZmConvView2 .ReplyTextarea {
-	width:	96%;
-	margin:	5px;
-	#IFDEF MSIE
-	height:	100%;
-	#ENDIF
+	width:96%;
+	margin:5px;
+#IFDEF MSIE
+	height:100%;
+#ENDIF
 }
 
 #IFDEF SAFARI
@@ -849,7 +837,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 #IFDEF MSIE
 .Conv2ReplyContainer {
-	height: 20px;
+	height:20px;
 }
 #ENDIF
 
