@@ -262,7 +262,8 @@ function() {
 				ZmSetting.OFFLINE_IS_MAILTO_HANDLER,
 				ZmSetting.OFFLINE_NOTEBOOK_SYNC_ENABLED, // offline
 				ZmSetting.SHORT_ADDRESS,
-				ZmSetting.USE_ADDR_BUBBLES
+				ZmSetting.USE_ADDR_BUBBLES,
+                ZmSetting.OFFLINE_UPDATE_NOTIFY //offline
 			]
 		},
 		COMPOSING: {
@@ -654,6 +655,13 @@ function() {
             displayName:		ZmMsg.offlineBackUpKeep,
             displayContainer:	ZmPref.TYPE_SELECT,
             displayOptions:		["1", "2", "3", "4", "5"]
+        });
+
+        ZmPref.registerPref("OFFLINE_UPDATE_NOTIFY", {
+            displayName:		ZmMsg.offlineUpdateNotify,
+		    displayContainer:	ZmPref.TYPE_SELECT,
+            displayOptions:		["Release", "Beta"],
+            options:    		["release", "beta"]
         });
 
 	}
