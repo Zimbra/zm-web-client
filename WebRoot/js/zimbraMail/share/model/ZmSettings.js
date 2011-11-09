@@ -113,6 +113,7 @@ function() {
         this.getSetting(ZmSetting.OFFLINE_BACKUP_INTERVAL).addChangeListener(listener);
         this.getSetting(ZmSetting.OFFLINE_BACKUP_PATH).addChangeListener(listener);
         this.getSetting(ZmSetting.OFFLINE_BACKUP_KEEP).addChangeListener(listener);
+        this.getSetting(ZmSetting.OFFLINE_UPDATE_NOTIFY).addChangeListener(listener);
 	}
 };
 
@@ -976,6 +977,7 @@ function() {
 	this.registerSetting("HELP_URI",						{type:ZmSetting.T_CONFIG, defaultValue:"http://www.zimbra.com/desktop7/"});
 //	// make default false for DUMPSTER_ENABLED. shouldn't be necessary since GetInfoResponse includes zimbraDumpsterEnabled:"FALSE", but can't find why settings is not read correctly
 	this.registerSetting("DUMPSTER_ENABLED",				{name:"zimbraDumpsterEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+    this.registerSetting("OFFLINE_UPDATE_NOTIFY",			{name:"zimbraPrefOfflineUpdateChannel", type: ZmSetting.T_PREF, dataType: ZmSetting.D_STRING, isGlobal:true});
 };
 
 /**
@@ -1032,7 +1034,10 @@ function(ev) {
 		cd.popup();
 	} else if (appCtxt.isOffline && id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
 		appCtxt.getAppController().registerMailtoHandler(true, ev.source.getValue());
+	} else if (appCtxt.isOffline && id == ZmSetting.OFFLINE_UPDATE_NOTIFY) {
+		appCtxt.getAppController()._offlineUpdateChannelPref(ev.source.getValue());
 	}
+
 };
 
 ZmSettings.prototype._implicitChangeListener =

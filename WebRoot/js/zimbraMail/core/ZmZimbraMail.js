@@ -362,6 +362,11 @@ function(params) {
 	// fetch meta data for the main account
 	var respCallback = new AjxCallback(this, this._handleResponseGetMetaData, params);
 	appCtxt.accountList.mainAccount.loadMetaData(respCallback);
+
+    if(appCtxt.isOffline) {
+        var updatePref = appCtxt.get(ZmSetting.OFFLINE_UPDATE_NOTIFY);
+        this._offlineUpdateChannelPref(updatePref)
+    }
 };
 
 ZmZimbraMail.prototype._createSettings = function(params) {
@@ -2254,6 +2259,20 @@ function() {
 	if (topTreeEl) {
 		Dwt.setSize(topTreeEl, Dwt.DEFAULT, "20");
 	}
+};
+
+ZmZimbraMail.prototype._offlineUpdateChannelPref =
+function(val) {
+    try {
+        netscape.security.PrivilegeManager.enablePrivilege('UniversalXPConnect');
+        var prefs =
+            Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+        if (prefs) {
+            prefs.setCharPref("app.update.channel", val);
+        }
+    } catch (ex) {
+        DBG.println(AjxDebug.DBG1, "-----------Exception while setting update channel preference " + ex);
+    }
 };
 
 /**
