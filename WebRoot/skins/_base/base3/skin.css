@@ -462,3 +462,5 @@ SELECT						{	@FieldBorder@	}
 .RowDouble .ImgCheckboxChecked,
 .RowDouble .ImgCheckboxUnchecked 	{ margin:5px 0 2px; 	}
 .RowDouble .BottomRow 			{ margin:2px 0 5px; 	}
+
+.ZToolbarTable .vertSep 	{ border-color:@ToolbarSeparatorColor@;     }
