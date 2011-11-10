@@ -241,12 +241,16 @@ function() {
 	var tbSize = this._replyToolbar.getSize();
 	if (this._controller.isReadingPaneOnRight()) {
 		// textarea is bigger if focused
-		var myHeight = this.getSize().y;
+		var myHeight = this._controller.getListView().getSize().y;
+		DBG.println("cv2", "cv2 height = " + myHeight);
 		Dwt.setSize(AjxEnv.isIE ? this._replyContainer : this._replyInput, Dwt.DEFAULT, this._inputFocused ? 100 : 30);
 		// make messages container DIV scroll independently of header and reply DIVs
 		var headerSize = Dwt.getSize(document.getElementById(this._convHeaderId));
+		DBG.println("cv2", "header height = " + headerSize.y);
 		var replySize = Dwt.getSize(this._replyDiv);
+		DBG.println("cv2", "reply div height = " + replySize.y);
 		var messagesHeight = myHeight - headerSize.y - replySize.y - 6;
+		DBG.println("cv2", "set message area height to " + messagesHeight);
 		Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, messagesHeight);
 		// set width of reply toolbar
 		this._replyToolbar.setSize(replySize.x, Dwt.DEFAULT);
