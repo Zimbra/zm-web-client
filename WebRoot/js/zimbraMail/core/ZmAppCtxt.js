@@ -190,10 +190,14 @@ function(settings, account) {
  */
 ZmAppCtxt.prototype.get =
 function(id, key, account) {
+
+    //use parentAppCtxt in case of new window
+    var context = this.isChildWindow ? parentAppCtxt : this;
+
 	// for offline, global settings always come from the "local" parent account
-	var acct = (appCtxt.multiAccounts && ZmSetting.IS_GLOBAL[id])
-		? this.accountList.mainAccount : account;
-	return this.getSettings(acct).get(id, key);
+	var acct = (context.multiAccounts && ZmSetting.IS_GLOBAL[id])
+		? context.accountList.mainAccount : account;
+	return context.getSettings(acct).get(id, key);
 };
 
 /**
