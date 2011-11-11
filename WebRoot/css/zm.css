@@ -472,11 +472,16 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	text-decoration: line-through;
 }
 
-.SubjectDoubleRow .ZmConvListNumMsgs {
+.ZmConvListNumMsgs {
 	background-color:@darken(AppC,30)@; 
 	color:white; 
 	padding:0 4px; 
 	@borderRadius@:6px;
+	@FontSize-normal@
+}
+
+.Unread .ZmConvListNumMsgs {
+	background-color:@darken(AppC,40)@;
 }
 
 .SubjectDoubleRow .ZmConvListFragment {
@@ -725,7 +730,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	background-color:white;
 	border:1px solid @darken(AppC,10)@;
 	margin:10px;
-	@cssShadow@:1px 2px @darken(AppC,25)@
+	@cssShadow@:0 4px 4px @darken(AppC,25)@
 }
 
 .ZmMailMsgCapsuleView.focused {
@@ -753,8 +758,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .Conv2Header {
 	background-color:@lighten(AppC,25)@
 	border-bottom:	1px solid @darken(AppC,33)@;
-	padding:2px 5px;
-	@cssShadow@:0 3px @darken(AppC,10)@;
+	padding:1px 5px 2px;
+	@cssShadow@:0 3px 3px @darken(AppC,15)@;
 }
 
 .Conv2MsgHeaderTable {
@@ -775,8 +780,9 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .Conv2Header .subject {
+	font-weight:bold;
 	overflow:hidden;
-	@FontSize-bigger@
+	@FontSize-normal@
 }
 
 .Conv2Header .info {

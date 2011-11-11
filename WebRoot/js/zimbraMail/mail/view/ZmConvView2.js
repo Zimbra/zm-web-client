@@ -249,7 +249,7 @@ function() {
 		DBG.println("cv2", "header height = " + headerSize.y);
 		var replySize = Dwt.getSize(this._replyDiv);
 		DBG.println("cv2", "reply div height = " + replySize.y);
-		var messagesHeight = myHeight - headerSize.y - replySize.y - 6;
+		var messagesHeight = myHeight - headerSize.y - replySize.y - 1;
 		DBG.println("cv2", "set message area height to " + messagesHeight);
 		Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, messagesHeight);
 		// set width of reply toolbar

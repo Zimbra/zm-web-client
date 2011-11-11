@@ -218,14 +218,14 @@ function(htmlArr, idx, item, field, colIdx, params) {
 			}
 		} else if (field == ZmItem.F_FROM) {
 			htmlArr[idx++] = this._getParticipantHtml(item, this._getFieldId(item, ZmItem.F_PARTICIPANT));
-		} else if (field == ZmItem.F_SUBJECT) {
-			var subj = ZmMailMsg.stripSubjectPrefixes(item.subject || ZmMsg.noSubject);
-			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj, true);
 			if (item.numMsgs > 1 && !this.isMultiColumn()) {
-				htmlArr[idx++] = " <span class='ZmConvListNumMsgs'>";
+				htmlArr[idx++] = " - <span class='ZmConvListNumMsgs'>";
 				htmlArr[idx++] = item.numMsgs;
 				htmlArr[idx++] = "</span>";
 			}
+		} else if (field == ZmItem.F_SUBJECT) {
+			var subj = ZmMailMsg.stripSubjectPrefixes(item.subject || ZmMsg.noSubject);
+			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj, true);
 			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(item);
 			}
