@@ -1767,19 +1767,19 @@ function(urlQueryStr){
 
 	urlQueryStr = urlQueryStr || '';
 
-	var match = urlQueryStr.match(/\bto=([^&]+)/);
+	var match = urlQueryStr.match(/\bto=([^&]+)/i);
 	var to = match ? AjxStringUtil.urlComponentDecode(match[1]) : null;
 
-	match = urlQueryStr.match(/\bsubject=([^&]+)/);
+	match = urlQueryStr.match(/\bsubject=([^&]+)/i);
 	var subject = match ? (AjxStringUtil.urlComponentDecode(match[1]).replace(/\+/g, " ")) : null;
 
-	match = urlQueryStr.match(/\bcc=([^&]+)/);
+	match = urlQueryStr.match(/\bcc=([^&]+)/i);
 	var cc = match ? AjxStringUtil.urlComponentDecode(match[1]) : null;
 
-	match = urlQueryStr.match(/\bbcc=([^&]+)/);
+	match = urlQueryStr.match(/\bbcc=([^&]+)/i);
 	var bcc = match ? AjxStringUtil.urlComponentDecode(match[1]) : null;
 
-	match = urlQueryStr.match(/\bbody=([^&]+)/);
+	match = urlQueryStr.match(/\bbody=([^&]+)/i);
 	var body = match ? (AjxStringUtil.urlComponentDecode(match[1]).replace(/\+/g, " ")) : null;
 
 	return {
