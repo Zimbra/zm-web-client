@@ -915,11 +915,6 @@ function() {
 	return (new ZmApptComposeView(this._container, null, this._app, this));
 };
 
-ZmApptComposeController.prototype._createScheduler =
-function(apptEditView) {
-	return (new ZmScheduleAssistantView(this._container, this, apptEditView));
-};
-
 ZmApptComposeController.prototype._setComposeTabGroup =
 function(setFocus) {
 	DBG.println(AjxDebug.DBG2, "_setComposeTabGroup");
@@ -1199,8 +1194,6 @@ function(initHide) {
 	if (!this._composeView || this._needComposeViewRefresh) {
 		this._composeView = this._createComposeView();
         var appEditView = this._composeView.getApptEditView();
-        this._smartScheduler = this._createScheduler(appEditView);
-        appEditView.setScheduleAssistant(this._smartScheduler);
         this._savedFocusMember = appEditView._getDefaultFocusItem();
 
 		var callbacks = {};
@@ -1252,9 +1245,6 @@ function() {
     if (appCtxt.getCurrentAppName() == ZmApp.CALENDAR || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
 		appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE_FOOTER, true);
     }
-    if (this._schedulerRendered) {
-		this._smartScheduler.zShow(false);
-	}
 };
 
 ZmApptComposeController.prototype._postShowCallback =
@@ -1262,23 +1252,8 @@ function(view, force) {
 	var ta = new AjxTimedAction(this, this._setFocus);
 	AjxTimedAction.scheduleAction(ta, 10);
 	appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE_FOOTER, false);
-    this.setSchedulerPanelContent();
-};
-
-ZmApptComposeController.prototype.getScheduleAssistant =
-function() {
-    return this._smartScheduler;
-};
-
-ZmApptComposeController.prototype.setSchedulerPanelContent =
-function() {
-    var scheduler = this.getScheduleAssistant();
-    if (scheduler) {
-		var components = {};
-		components[ZmAppViewMgr.C_TREE] = scheduler;
-        appCtxt.getAppViewMgr().setViewComponents(this._viewId, components, true);
-        this._schedulerRendered = true;
-    }
+    appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE,        false);
+    appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_NEW_BUTTON,  false);
 };
 
 ZmApptComposeController.prototype.getWorkingInfo =

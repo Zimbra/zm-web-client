@@ -377,22 +377,6 @@ function() {
 	return this._toolbar;
 };
 
-ZmApptController.prototype.getScheduleAssistant =
-function() {
-    return this._smartScheduler;
-};
-
-ZmApptController.prototype.setSchedulerPanelContent =
-function() {
-    var scheduler = this.getScheduleAssistant();
-    if (scheduler) {
-		var components = {};
-		components[ZmAppViewMgr.C_TREE] = scheduler;
-        appCtxt.getAppViewMgr().setViewComponents(this._viewId, components, true);
-        this._schedulerRendered = true;
-    }
-};
-
 ZmApptController.prototype._postShowCallback =
 function() {
 	ZmCalItemComposeController.prototype._postShowCallback.call(this);

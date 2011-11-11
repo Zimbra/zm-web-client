@@ -743,23 +743,6 @@ function(active) {
 };
 
 /**
- * Sets the overview tree to display overview content for this application.
- *
- * @param {Boolean}	reset		if <code>true</code>, clear the content first
- */
-ZmCalendarApp.prototype.setOverviewPanelContent =
-function(reset) {
-    if (appCtxt.getCurrentViewType() != ZmId.VIEW_APPOINTMENT) {
-        ZmApp.prototype.setOverviewPanelContent.apply(this, arguments);
-    } else {
-        ZmApp.prototype.setOverviewPanelContent.apply(this, arguments);
-        var controller = appCtxt.getCurrentView().getController();
-        controller.setSchedulerPanelContent();
-    }
-};
-
-
-/**
  * Shows the mini-calendar.
  *
  * @param	{Boolean}	show		if <code>true</code>, show the mini-calendar

@@ -395,6 +395,21 @@ function() {
 	return ZmAppt.quickClone(this._calItem);
 };
 
+ZmApptEditView.prototype.getDurationInfo =
+function() {
+    var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	var endDate   = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+	if (!this._allDayCheckbox.checked) {
+		startDate = this._startTimeSelect.getValue(startDate);
+		endDate   = this._endTimeSelect.getValue(endDate);
+	}
+    var durationInfo = {};
+    durationInfo.startTime = startDate.getTime();
+    durationInfo.endTime   = endDate.getTime();
+    durationInfo.duration  = durationInfo.endTime - durationInfo.startTime;
+    return durationInfo;
+};
+
 ZmApptEditView.prototype.getDuration =
 function() {
     var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
@@ -403,7 +418,7 @@ function() {
 	if (!this._allDayCheckbox.checked) {
 		startDate = this._startTimeSelect.getValue(startDate);
 		endDate = this._endTimeSelect.getValue(endDate);
-        duration = endDate.getTime() - startDate.getTime();        
+        duration = endDate.getTime() - startDate.getTime();
 	}
     return duration;
 };
@@ -678,11 +693,6 @@ function(calItem, mode) {
         }
     }
 
-    if(this._scheduleAssistant) {
-        this._scheduleAssistant.updateTime(true);
-        if(this.isSuggestionsNeeded()) this._scheduleAssistant.showSuggestActionLinks();
-    }
-    
     this.setApptMessage(this._getMeetingStatusMsg(calItem));
 
     this.updateToolbarOps();
@@ -794,6 +804,9 @@ function(width) {
     // add location input field
 	this._locationInputField = this._createInputField("_location", ZmCalBaseItem.LOCATION, {strictMode:false});
 
+    this._mainTableId = this._htmlElId + "_table";
+    this._mainTable   = document.getElementById(this._mainTableId);
+
     var edvId = AjxCore.assignId(this);
     this._schButtonId = this._htmlElId + "_scheduleButton";
     this._showOptionalId = this._htmlElId + "_show_optional";
@@ -812,7 +825,18 @@ function(width) {
 	this._resourcesContainer = document.getElementById(this._htmlElId + "_resourcesContainer");
 
 	this._resourcesData = document.getElementById(this._htmlElId + "_resourcesData");
-	this._schedulerContainer = document.getElementById(this._htmlElId + "_scheduler");
+    this._schedulerContainer = document.getElementById(this._htmlElId + "_scheduler");
+    this._suggestions = document.getElementById(this._htmlElId + "_suggestions");
+    Dwt.setVisible(this._suggestions, false);
+
+    this._suggestTimeId = this._htmlElId + "_suggest_time";
+    this._suggestTime = document.getElementById(this._suggestTimeId);
+    this._suggestLocationId = this._htmlElId + "_suggest_location";
+    this._suggestLocation   = document.getElementById(this._suggestLocationId);
+
+    this._notesContainerId = this._htmlElId + "_notes_container";
+    this._notesContainer = document.getElementById(this._notesContainerId);
+
 	this._schedulerOptions = document.getElementById(this._htmlElId + "_scheduler_option");
 
 	// show-as DwtSelect
@@ -969,6 +993,39 @@ function(pickerId, listener, addrType, isForwardPicker) {
     }
 };
 
+
+ZmApptEditView.prototype._onSuggestionClose =
+function() {
+    // Make the trigger links visible and resize now that the suggestion panel is hidden
+    Dwt.setVisible(this._suggestTime, true);
+    Dwt.setVisible(this._suggestLocation, true);
+    this.resize();
+}
+
+ZmApptEditView.prototype._showTimeSuggestions =
+function() {
+    // Display the time suggestion panel.
+    Dwt.setVisible(this._suggestions, true);
+    Dwt.setVisible(this._suggestTime, false);
+    Dwt.setVisible(this._suggestLocation, true);
+    this._scheduleAssistant.show(true);
+    // Resize horizontally
+    this._resizeNotes();
+    this._scheduleAssistant.suggestAction(true, false, false);
+};
+
+ZmApptEditView.prototype._showLocationSuggestions =
+function() {
+    // Display the location suggestion panel
+    Dwt.setVisible(this._suggestions, true);
+    Dwt.setVisible(this._suggestLocation, false);
+    Dwt.setVisible(this._suggestTime, true);
+    this._scheduleAssistant.show(false);
+    // Resize horizontally
+    this._resizeNotes();
+    this._scheduleAssistant.suggestAction(true, false, true);
+};
+
 ZmApptEditView.prototype._toggleOptionalAttendees =
 function(forceShow) {
     this._optionalAttendeesShown = ! this._optionalAttendeesShown || forceShow;
@@ -1006,7 +1063,7 @@ function() {
     this._schImage.className = "ImgSelectPullDownArrow";
     if(this._scheduleView) {
         this._scheduleView.setVisible(false);
-        this.autoSize();        
+        this.autoSize();
     }
 };
 
@@ -1030,6 +1087,7 @@ function(forceShow) {
     scheduleView.setVisible(true);
     scheduleView.resetPagelessMode(false);
     scheduleView.showMe();
+
     this.autoSize();
 };
 
@@ -1038,6 +1096,11 @@ function() {
     if(!this._scheduleView) {
         this._scheduleView = new ZmFreeBusySchedulerView(this, this._attendees, this._controller, this._dateInfo);
         this._scheduleView.reparentHtmlElement(this._schedulerContainer);
+
+        var closeCallback = this._onSuggestionClose.bind(this);
+        this._scheduleAssistant = new ZmScheduleAssistantView(this, this._controller, this, closeCallback);
+        this._scheduleAssistant.reparentHtmlElement(this._suggestions);
+        AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.loadPreference), 300);
     }
     return this._scheduleView;    
 };
@@ -1666,11 +1729,15 @@ function() {
 	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
 	Dwt.setHandler(this._startDateField, DwtEvent.ONFOCUS, ZmCalItemEditView._onFocus);
 	Dwt.setHandler(this._endDateField, DwtEvent.ONFOCUS, ZmCalItemEditView._onFocus);
+    Dwt.setHandler(this._suggestTime, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+    Dwt.setHandler(this._suggestLocation, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 
 	this._allDayCheckbox._editViewId = this._repeatDescField._editViewId = edvId;
 	this._startDateField._editViewId = this._endDateField._editViewId = edvId;
     if(this._showOptional) this._showOptional._editViewId = edvId;
     if(this._showResources) this._showResources._editViewId = edvId;
+    this._suggestTime._editViewId = edvId;
+    this._suggestLocation._editViewId = edvId;
 
 	var inputFields = [this._attendeesInputField, this._optAttendeesInputField,
 					   this._locationInputField, this._forwardToField, this._resourceInputField];
@@ -1859,11 +1926,6 @@ function(ev, id) {
     }
 
     if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true, true);
-};
-
-ZmApptEditView.prototype.setScheduleAssistant =
-function(scheduleAssistant) {
-    this._scheduleAssistant = scheduleAssistant;        
 };
 
 ZmApptEditView.prototype._dateCalSelectionListener =
@@ -2194,6 +2256,10 @@ function(el) {
         this._toggleOptionalAttendees();
     }else if(el.id == this._showResourcesId){
         this._toggleResourcesField();
+    }else if(el.id == this._suggestTimeId){
+        this._showTimeSuggestions();
+    }else if(el.id == this._suggestLocationId){
+        this._showLocationSuggestions();
     }else{
 		ZmCalItemEditView.prototype._handleOnClick.call(this, el);
 	}
@@ -2270,14 +2336,16 @@ function() {
 		this._bodyField = document.getElementById(this._bodyFieldId);
 	}
 
-	var size = this.getSize();
-	if (size.x <= 0 || size.y <= 0) { return; }
+    var size = this.getSize();
+    // Size x by the containing table (excluding the suggestion panel)
+    var mainTableSize = Dwt.getSize(this._mainTable);
+    if (mainTableSize.x <= 0 || size.y <= 0) { return; }
 
-	var topDiv = document.getElementById(this._htmlElId + "_top");
+    var topDiv = document.getElementById(this._htmlElId + "_top");
+    var topDivSize = Dwt.getSize(topDiv);
     var topSizeHeight = this._getComponentsHeight(true);
-	//var topHeight = topSize.y;
 	var rowHeight = size.y - topSizeHeight;
-    var rowWidth = size.x;
+    var rowWidth = mainTableSize.x;
     if(AjxEnv.isIE)
         rowHeight = rowHeight - 10;
 
@@ -2311,31 +2379,30 @@ function(excludeNotes) {
 ZmApptEditView.prototype.autoSize =
 function() {
     var size = Dwt.getSize(this.getHtmlElement());
-    this.resize(size.x, size.y);
+    mainTableSize = Dwt.getSize(this._mainTable);
+    this.resize(mainTableSize.x, size.y);
 };
 
 ZmApptEditView.prototype.resize =
 function(newWidth, newHeight) {
 	if (!this._rendered) { return; }
 
-	if (newWidth) {
-		this.setSize(newWidth);
-		Dwt.setSize(this.getHtmlElement().firstChild, newWidth);
-	}
-
 	if (newHeight) {
 		this.setSize(Dwt.DEFAULT, newHeight);
 	}
 
     this._resizeNotes();
+    //this._scheduleAssistant.resizeTimeSuggestions();
 
     //If scrollbar handle it
+    // Sizing based on the internal table now.  Scrolling bar will be external and accounted for already
     var size = Dwt.getSize(this.getHtmlElement());
+    var mainTableSize = Dwt.getSize(this._mainTable);
     var compHeight= this._getComponentsHeight();
     if(compHeight > ( size.y + 5 )) {
-        newWidth = size.x  - 15;
-        Dwt.setSize(this.getHtmlElement().firstChild, newWidth);
-        this._notesHtmlEditor.setSize(newWidth - 10);
+        Dwt.setSize(this.getHtmlElement().firstChild, size.x-15);
+
+        this._notesHtmlEditor.setSize(mainTableSize.x - 10);
         if(!this._scrollHandled){
             Dwt.setScrollStyle(this.getHtmlElement(), Dwt.SCROLL_Y);
             this._scrollHandled = true;
@@ -2343,9 +2410,8 @@ function(newWidth, newHeight) {
     }else{
         if(this._scrollHandled){
             Dwt.setScrollStyle(this.getHtmlElement(), Dwt.CLIP);
-            newWidth = size.x;
-            Dwt.setSize(this.getHtmlElement().firstChild, newWidth);
-            this._notesHtmlEditor.setSize(newWidth - 10);
+            Dwt.setSize(this.getHtmlElement().firstChild, size.x);
+            this._notesHtmlEditor.setSize(mainTableSize.x - 10);
         }
         this._scrollHandled = false;
     }
@@ -2442,4 +2508,33 @@ function(textarea) {
 			textarea.scrollTop = sh;
 		}
 	}
+};
+
+
+ZmApptEditView.prototype._prefListener =
+function(ev) {
+    var dialog = this.getPrefDialog();
+    dialog.popup(this.getCalendarAccount());
+};
+
+ZmApptEditView.prototype.getPrefDialog =
+function() {
+    if(!this._prefDialog) {
+        this._prefDialog = new ZmTimeSuggestionPrefDialog(appCtxt.getShell());
+    }
+    return this._prefDialog;
+};
+
+ZmApptEditView.prototype.loadPreference =
+function() {
+    var prefDlg = this.getPrefDialog();
+    prefDlg.setCallback(new AjxCallback(this, this._prefChangeListener));
+    prefDlg.getSearchPreference(appCtxt.getActiveAccount());
+};
+
+ZmApptEditView.prototype._prefChangeListener =
+function() {
+    // Preference Dialog is only displayed when the suggestions panel is visible - so update suggestions
+    this._scheduleAssistant.clearResources();
+    this._scheduleAssistant.suggestAction(true);
 };
