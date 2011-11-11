@@ -102,6 +102,9 @@ function() {
 	ZmCalItemEditView.prototype.show.call(this);
 	this._setAttendees();
 
+    Dwt.setVisible(this._suggestTime, !this._isForward);
+    Dwt.setVisible(this._suggestLocation, !this._isForward && !this._isProposeTime);
+
     if(!this.GROUP_CALENDAR_ENABLED) {
         this.setSchedulerVisibility(false);
     }
@@ -831,8 +834,10 @@ function(width) {
 
     this._suggestTimeId = this._htmlElId + "_suggest_time";
     this._suggestTime = document.getElementById(this._suggestTimeId);
+    Dwt.setVisible(this._suggestTime, !this._isForward);
     this._suggestLocationId = this._htmlElId + "_suggest_location";
     this._suggestLocation   = document.getElementById(this._suggestLocationId);
+    Dwt.setVisible(this._suggestLocation, !this._isForward && !this._isProposeTime);
 
     this._notesContainerId = this._htmlElId + "_notes_container";
     this._notesContainer = document.getElementById(this._notesContainerId);
@@ -997,8 +1002,8 @@ function(pickerId, listener, addrType, isForwardPicker) {
 ZmApptEditView.prototype._onSuggestionClose =
 function() {
     // Make the trigger links visible and resize now that the suggestion panel is hidden
-    Dwt.setVisible(this._suggestTime, true);
-    Dwt.setVisible(this._suggestLocation, true);
+    Dwt.setVisible(this._suggestTime, !this._isForward);
+    Dwt.setVisible(this._suggestLocation, !this._isForward && !this._isProposeTime);
     this.resize();
 }
 
@@ -1007,7 +1012,7 @@ function() {
     // Display the time suggestion panel.
     Dwt.setVisible(this._suggestions, true);
     Dwt.setVisible(this._suggestTime, false);
-    Dwt.setVisible(this._suggestLocation, true);
+    Dwt.setVisible(this._suggestLocation, !this._isProposeTime);
     this._scheduleAssistant.show(true);
     // Resize horizontally
     this._resizeNotes();
