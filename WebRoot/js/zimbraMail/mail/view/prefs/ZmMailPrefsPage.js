@@ -120,7 +120,9 @@ function() {
 
 	this._sId = this._htmlElId + "_startMiniCal";
 	this._eId = this._htmlElId + "_endMiniCal";
-	this._startDateField = Dwt.byId(this._htmlElId + "_VACATION_FROM1");
+
+
+    this._startDateField = Dwt.byId(this._htmlElId + "_VACATION_FROM1");
 	this._endDateField = Dwt.byId(this._htmlElId + "_VACATION_UNTIL1");
 
 	if (this._startDateField && this._endDateField) {
@@ -133,27 +135,6 @@ function() {
             this._endDateVal.value = appCtxt.get(ZmSetting.VACATION_UNTIL);            
         }
 		this._formatter = new AjxDateFormat("yyyyMMddHHmmss'Z'");
-
-		this._startDateField.value = (this._startDateVal.value != null && this._startDateVal.value != "")
-			? (AjxDateUtil.simpleComputeDateStr(this._formatter.parse(this._startDateVal.value)))
-			: (AjxDateUtil.simpleComputeDateStr(new Date()));
-
-		this._endDateField.value = (this._endDateVal.value != null && this._endDateVal.value != "")
-			? (AjxDateUtil.simpleComputeDateStr(this._formatter.parse(this._endDateVal.value)))
-			: (AjxDateUtil.simpleComputeDateStr(AjxDateUtil.getDateForNextDay(new Date(),AjxDateUtil.FRIDAY)));
-
-		var dateButtonListener = new AjxListener(this, this._dateButtonListener);
-		var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
-		var dateFieldListener = AjxCallback.simpleClosure(this._dateFieldListener, this);
-
-		this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._sId, dateButtonListener, dateCalSelectionListener);
-		this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._eId, dateButtonListener, dateCalSelectionListener);
-
-		Dwt.setHandler(this._startDateField, DwtEvent.ONBLUR, dateFieldListener);
-		Dwt.setHandler(this._endDateField, DwtEvent.ONBLUR, dateFieldListener);
-
-		this._durationCheckbox = this.getFormObject(ZmSetting.VACATION_DURATION_ENABLED);
-        this._extMsgCheckbox = this.getFormObject(ZmSetting.VACATION_EXTERNAL_MSG_ENABLED);
 
         var now = AjxDateUtil.roundTimeMins(new Date(), 30);
 	    var timeSelectListener = new AjxListener(this, this._timeChangeListener);
@@ -168,12 +149,40 @@ function() {
 	    this._endTimeSelect.reparentHtmlElement(this._htmlElId + "_VACATION_UNTIL_TIME");
 	    this._endTimeSelect.addChangeListener(timeSelectListener);
 
-
-		now.setTime(now.getTime() + ZmCalViewController.DEFAULT_APPOINTMENT_DURATION);
-		this._endTimeSelect.set((this._endDateVal.value != null && this._endDateVal.value != "")
+        now.setTime(now.getTime() + ZmCalViewController.DEFAULT_APPOINTMENT_DURATION);
+	    this._endTimeSelect.set((this._endDateVal.value != null && this._endDateVal.value != "")
 			? (this._formatter.parse(this._endDateVal.value))
 			: now);
 
+        var stDateValue = (this._startDateVal.value != null && this._startDateVal.value != "")
+			? (this._formatter.parse(this._startDateVal.value))
+			: (new Date());
+        var endDateValue = (this._endDateVal.value != null && this._endDateVal.value != "")
+			? (this._formatter.parse(this._endDateVal.value))
+			: (AjxDateUtil.getDateForNextDay(new Date(),AjxDateUtil.FRIDAY));
+
+        stDateValue = this._startTimeSelect.getValue(stDateValue);
+        endDateValue = this._endTimeSelect.getValue(endDateValue);
+
+        this._startDateVal.value = this._formatter.format(stDateValue);
+        this._endDateVal.value = this._formatter.format(endDateValue);
+
+		this._startDateField.value = AjxDateUtil.simpleComputeDateStr(stDateValue);
+
+		this._endDateField.value = AjxDateUtil.simpleComputeDateStr(endDateValue);
+
+		var dateButtonListener = new AjxListener(this, this._dateButtonListener);
+		var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
+		var dateFieldListener = AjxCallback.simpleClosure(this._dateFieldListener, this);
+
+		this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._sId, dateButtonListener, dateCalSelectionListener);
+		this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._eId, dateButtonListener, dateCalSelectionListener);
+
+		Dwt.setHandler(this._startDateField, DwtEvent.ONBLUR, dateFieldListener);
+		Dwt.setHandler(this._endDateField, DwtEvent.ONBLUR, dateFieldListener);
+
+		this._durationCheckbox = this.getFormObject(ZmSetting.VACATION_DURATION_ENABLED);
+        this._extMsgCheckbox = this.getFormObject(ZmSetting.VACATION_EXTERNAL_MSG_ENABLED);
 	}
 
 
@@ -392,13 +401,14 @@ function(cbox, id, evt) {
             calCheckBox.setEnabled(cbox.isSelected());
             var calendarType = this.getFormObject(ZmSetting.VACATION_CALENDAR_TYPE);
             calendarType.setEnabled(calCheckBox.isSelected() && cbox.isSelected());
+            this._isCalDurationChanged = calCheckBox.isSelected();
 		}else if(id == ZmSetting.VACATION_EXTERNAL_MSG_ENABLED){
             externalTypeSelect.setEnabled(cbox.isSelected());
             extTextarea.setEnabled(cbox.isSelected());
         }else if(id == ZmSetting.VACATION_CALENDAR_ENABLED){
             var calendarType = this.getFormObject(ZmSetting.VACATION_CALENDAR_TYPE);
             calendarType.setEnabled(cbox.isSelected());
-            if(appCtxt.get(ZmSetting.VACATION_CALENDAR_ENABLED)){this._isCalDurationChanged = true;}
+            this._isCalDurationChanged = cbox.isSelected();
         }else {
 
 			var enabled = cbox.getSelectedValue()=="true";
@@ -435,8 +445,10 @@ function(val) {
 	var condition = val && this._durationCheckbox.isSelected();
 	this._startDateField.disabled = !condition;
 	this._startDateButton.setEnabled(condition);
+    var stDateVal = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+    if(this._startTimeSelect){stDateVal = this._startTimeSelect.getValue(stDateVal);}
 	this._startDateVal.value = (!condition)
-		? "" : (this._formatter.format(AjxDateUtil.simpleParseDateStr(this._startDateField.value)));
+		? "" : (this._formatter.format(stDateVal));
 };
 
 ZmMailPrefsPage.prototype._setEnabledEndDate =
@@ -445,8 +457,10 @@ function(val) {
 	var condition = val && this._durationCheckbox.isSelected();
 	this._endDateField.disabled = !condition;
 	this._endDateButton.setEnabled(condition);
+    var endDateVal = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+    if(this._endTimeSelect){endDateVal = this._endTimeSelect.getValue(endDateVal);}
 	this._endDateVal.value = (!condition)
-		? "" : (this._formatter.format(AjxDateUtil.simpleParseDateStr(this._endDateField.value)));
+		? "" : (this._formatter.format(endDateVal));
 };
 
 ZmMailPrefsPage.prototype.getPostSaveCallback =
