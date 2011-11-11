@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -43,7 +43,7 @@
     font-weight:bold;
 }
 .zo_cal_listh td{
-    background: #c0c0c0 url("@AppContextPath@/img/mobile/CalDatebar.gif?v=@jsVersion@") top left repeat-x; /*background: #A6A6A6;  #D0D0F0;*/
+    background: #c0c0c0 url("@AppContextPath@/img/mobile/CalDatebar.gif") top left repeat-x; /*background: #A6A6A6;  #D0D0F0;*/
     color: white;
     font-weight:bold;
     text-align: center;
@@ -258,7 +258,7 @@
 .zo_obj_body {
     /*background: lightgray;*/
     box-sizing: border-box;
-    background: #c8c8c8 url(@AppContextPath@/img/mobile/pinstripes.png?v=@jsVersion@);
+    background: #c8c8c8 url(@AppContextPath@/img/mobile/pinstripes.png);
 }
 
 .zo_appt_view {
@@ -292,7 +292,7 @@
 
 
 .zo_ab_list_arrow {
-  background: url(@AppContextPath@/img/mobile/iPhoneArrow.png?v=@jsVersion@) no-repeat right center;
+  background: url(@AppContextPath@/img/mobile/iPhoneArrow.png) no-repeat right center;
   width:15px;
 }
 .zo_ab_list_arrow A {

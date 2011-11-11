@@ -1,5 +1,5 @@
-<%@ page buffer="8kb" session="true" autoFlush="true" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ page import="java.util.*,javax.naming.*,com.zimbra.client.ZAuthResult" %>
+<%@ page buffer="8kb" session="false" autoFlush="true" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ page import="java.util.*,javax.naming.*,com.zimbra.cs.zclient.ZAuthResult" %>
 <%@ page import="com.zimbra.cs.taglib.bean.BeanUtils" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
@@ -61,7 +61,7 @@
  launchZCS.jsp
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -98,6 +98,7 @@
     }
 
     boolean isScriptErrorOn = getParameter(request, "scripterrors", "0").equals("1");
+    boolean isNotifyDebugOn = getParameter(request, "notifydebug", "0").equals("1");
 	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
 	String debugLogTarget = getParameter(request, "log", getAttribute(request, "log", null));
 	String extraPackages = getParameter(request, "packages", getAttribute(request, "packages", null));
@@ -109,8 +110,8 @@
 	boolean isDevMode = mode != null && mode.equalsIgnoreCase("mjsf");
 	boolean isSkinDebugMode = mode != null && mode.equalsIgnoreCase("skindebug");
     boolean isPerfMetric = getParameter(request, "perfMetric", "0").equals("1");
-
-	String vers = getAttribute(request, "version", "");
+	
+    String vers = getAttribute(request, "version", "");
 
 	String prodMode = getAttribute(request, "prodMode", "");
 	String editor = getParameter(request, "editor", "");
@@ -134,9 +135,6 @@
 		}
     }
 
-	String unitTest = getParameter(request, "unittest", "");
-	String preset = getParameter(request, "preset", "");
-
 	// make variables available in page context (e.g. ${foo})
 	pageContext.setAttribute("contextPath", contextPath);
 	pageContext.setAttribute("skin", skin);
@@ -146,12 +144,11 @@
 	pageContext.setAttribute("locale", locale);
 	pageContext.setAttribute("isDevMode", isDev);
 	pageContext.setAttribute("isScriptErrorOn", isScriptErrorOn);
+    pageContext.setAttribute("isNotifyDebugOn", isNotifyDebugOn);
 	pageContext.setAttribute("isOfflineMode", offlineMode != null && offlineMode.equals("true"));
 	pageContext.setAttribute("isProdMode", !prodMode.equals(""));
 	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
 	pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
-	pageContext.setAttribute("unitTest", unitTest);
-	pageContext.setAttribute("preset", preset);
 	pageContext.setAttribute("editor", editor);
     pageContext.setAttribute("isCoverage", isCoverage);
     pageContext.setAttribute("isPerfMetric", isPerfMetric);
@@ -169,15 +166,6 @@
 		<c:param name="customerDomain"	value="${param.customerDomain}" />
 	</c:if>		
 </c:url>" rel="stylesheet" type="text/css" />
-<c:if test="${not empty unitTest}">
-	<script>
-		window.exports = window.UT = {};
-		window.require = true;
-	</script>
-	<link rel="stylesheet" href="/zimbra/qunit/qunit.css" />
-	<script src="/zimbra/qunit/qunit.js"></script>
-	<script src="/js/zimbraMail/unittest/ZmUnitTestManager.js"></script>
-</c:if>
 <zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
 <c:if test="${empty favIconUrl}">
 	<fmt:message key="favIconUrl" var="favIconUrl"/>
@@ -191,6 +179,7 @@
 	window.appDevMode     = ${isDevMode};
     window.appCoverageMode = ${isCoverage};
     window.isScriptErrorOn   = ${isScriptErrorOn};
+    window.isNotifyDebugOn   = ${isNotifyDebugOn};
     window.isPerfMetric = ${isPerfMetric};
 </script>
 <noscript>
@@ -214,19 +203,19 @@
     %>
     <%--preloading the splash screen images to avoid latency --%>
     <div style="display:none;">
-      <img src="<%=contextPath%>/skins/<%=splashLocation%>/logos/LoginBanner.png?v=${vers}" alt=""/>
+      <img src="<%=contextPath%>/skins/<%=splashLocation%>/logos/LoginBanner.png" alt=""/>
       <%if(splashLocation.equals("carbon")){%>
-        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/vmwarePeel.png?v=${vers}" alt=""/>
-        <img src="<%=contextPath%>/skins/<%=splashLocation%>/logos/AltBanner.png?v=${vers}" alt=""/>
+        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/vmwarePeel.png" alt=""/>
+        <img src="<%=contextPath%>/skins/<%=splashLocation%>/logos/AltBanner.png" alt=""/>
       <%}%>
       <%if(splashLocation.equals("lemongrass")){%>
-        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/bg_lemongrass.png?v=${vers}" alt=""/>
+        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/bg_lemongrass.png" alt=""/>
       <%}%>
-      <%if(splashLocation.equals("twilight")||splashLocation.equals("waves")){%><img src="<%=contextPath%>/skins/<%=splashLocation%>/img/skins/login_bg.png?v=${vers}" alt=""/><%}%>
-      <%if(splashLocation.equals("steel")){%><img src="<%=contextPath%>/skins/<%=splashLocation%>/img/SkinOuter.repeat.gif?v=${vers}" alt=""/><%}%>
+      <%if(splashLocation.equals("twilight")||splashLocation.equals("waves")){%><img src="<%=contextPath%>/skins/<%=splashLocation%>/img/skins/login_bg.png" alt=""/><%}%>
+      <%if(splashLocation.equals("steel")){%><img src="<%=contextPath%>/skins/<%=splashLocation%>/img/SkinOuter.repeat.gif" alt=""/><%}%>
       <%if(splashLocation.equals("waves")){%>
-        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/login_bg.png?v=${vers}" alt=""/>
-        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/login_page_bg.png?v=${vers}" alt=""/>
+        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/login_bg.png" alt=""/>
+        <img src="<%=contextPath%>/skins/<%=splashLocation%>/img/login_page_bg.png" alt=""/>
       <%}%>
     </div>
     <%--preloading the splash screen images to avoid latency ends --%>
@@ -291,7 +280,7 @@
 	String allPackages = "Startup1_1,Startup1_2";
     if (extraPackages != null) {
     	if (extraPackages.equals("dev")) {
-            extraPackages = "Startup2,CalendarCore,Calendar,CalendarAppt,ContactsCore,Contacts,MailCore,Mail,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Assistant,Extras,Share,Zimlet,ZimletApp,Alert,ImportExport,BrowserPlus,Voicemail";
+            extraPackages = "Startup2,CalendarCore,Calendar,CalendarAppt,ContactsCore,Contacts,MailCore,Mail,Mixed,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Assistant,Browse,Extras,Share,Zimlet,ZimletApp,Alert,ImportExport,BrowserPlus";
     	}
     	allPackages += "," + BeanUtils.cook(extraPackages);;
     }
@@ -377,16 +366,9 @@ for (var pkg in window.AjxTemplateMsg) {
 		var noSplashScreen = "<%= (noSplashScreen != null) ? noSplashScreen : "" %>";
 		var protocolMode = "<%=protocolMode%>";
 
-        <c:set var="initialMailSearch" value="${requestScope.authResult.prefs.zimbraPrefMailInitialSearch[0]}"/>
-        <c:if test="${fn:startsWith(initialMailSearch, 'in:')}">
-            <c:set var="path" value="${fn:substring(initialMailSearch, 3, -1)}"/>
-            <c:set var="sortOrder" value="${requestScope.authResult.prefs.zimbraPrefSortOrder[0]}"/>
-        </c:if>
-
         <c:set var="types" value="${requestScope.authResult.attrs.zimbraFeatureConversationsEnabled[0] eq 'FALSE' ? 'message' : requestScope.authResult.prefs.zimbraPrefGroupMailBy[0]}"/>
 		<c:set var="numItems" value="${requestScope.authResult.prefs.zimbraPrefItemsPerVirtualPage[0]}"/>
-
-        <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="${not empty app and app ne 'mail' or isOfflineMode ? false : true}" itemsperpage="${numItems * 2}" types="${types}" folderpath="${path}" sortby="${sortOrder}"/>
+        <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="${not empty app and app ne 'mail' or isOfflineMode ? false : true}" itemsperpage="${numItems * 2}" types="${types}"/>
         var batchInfoResponse = ${getInfoJSON};
 
         <c:if test="${not empty app and app eq 'calendar'}">
@@ -430,7 +412,7 @@ for (var pkg in window.AjxTemplateMsg) {
 			settings:settings, batchInfoResponse:batchInfoResponse,
 			offlineMode:${isOfflineMode}, devMode:${isDevMode},
 			protocolMode:protocolMode, httpPort:"<%=httpPort%>", httpsPort:"<%=httpsPort%>",
-			noSplashScreen:noSplashScreen, unitTest:"${unitTest}", preset:"${preset}"
+			noSplashScreen:noSplashScreen
 		};
 		ZmZimbraMail.run(params);
 	}

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -489,11 +489,7 @@ function() {
 	html[i++] = "' id='";
 	html[i++] = this._noEndDateRadioId;
 	html[i++] = "'></td><td colspan=2>";
-	html[i++] = "<label for='";
-	html[i++] = this._noEndDateRadioId;
-	html[i++] = "'>"
 	html[i++] = ZmMsg.recurEndNone;
-	html[i++] = "</label>"
 	html[i++] = "</td></tr>";
 	// end after <num> occurrences
 	html[i++] = "<tr><td><input type='radio' value='A' name='";
@@ -514,11 +510,7 @@ function() {
 			html[i++] = "'></span>";
 		}
 		else {
-			html[i++] = "<label for='";
-			html[i++] = this._endAfterRadioId;
-			html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
-			html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}
@@ -545,11 +537,7 @@ function() {
 		}
 		else {
 			html[i++] = "<td style='padding-left:2px;padding-right:2px'>";
-			html[i++] = "<label for='";
-                        html[i++] = this._endByRadioId;
-                        html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
-                        html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}
@@ -615,11 +603,7 @@ function() {
 	html[i++] = this._dailyDefaultId;
 	html[i++] = "'></td>";
 	html[i++] = "<td>";
-	html[i++] = "<label for='";
-	html[i++] = this._dailyDefaultId;
-	html[i++] = "'>";
 	html[i++] = ZmMsg.recurDailyEveryDay;
-	html[i++] = "</label>"
 	html[i++] = "</td></tr>";
 	// every weekday
 	html[i++] = "<tr><td><input value='2' type='radio' name='";
@@ -628,11 +612,7 @@ function() {
 	html[i++] = this._dailyWeekdayId;
 	html[i++] = "'></td>";
 	html[i++] = "<td>";
-	html[i++] = "<label for='";
-	html[i++] = this._dailyWeekdayId;
-	html[i++] = "'>";
 	html[i++] = ZmMsg.recurDailyEveryWeekday;
-	html[i++] = "</label>";
 	html[i++] = "</td></tr>";
 	// every <num> days
 	html[i++] = "<tr><td><input value='3' type='radio' name='";
@@ -653,11 +633,7 @@ function() {
 			html[i++] = "'></span>";
 		}
 		else {
-			html[i++] = "<label for='";
-                        html[i++] = this._dailyFieldRadioId;
-                        html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
-                        html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}
@@ -703,11 +679,7 @@ function() {
 		}
 		else {
 			html[i++] = "<td>";
-			html[i++] = "<label for='";
-			html[i++] = this._weeklyDefaultId;
-			html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
-			html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}
@@ -736,20 +708,13 @@ function() {
 			html[i++] = "<td>";
 			html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
 			for (var j = 0; j < AjxDateUtil.WEEKDAY_MEDIUM.length; j++) {
-				var checkBoxId = Dwt.getNextId(this._weeklyCheckboxName + "_");
 				if (j > 0) {
 					html[i++] = "<td>&nbsp;&nbsp;</td>";
 				}
 				html[i++] = "<td><input type='checkbox' name='";
 				html[i++] = this._weeklyCheckboxName;
-				html[i++] = "' id='"
-				html[i++] = checkBoxId;
 				html[i++] = "'></td><td>";
-				html[i++] = "<label for='";
-				html[i++] = checkBoxId;
-				html[i++] = "'>";
 				html[i++] = AjxDateUtil.WEEKDAY_MEDIUM[j];
-				html[i++] = "</label>";
 				html[i++] = "</td>";
 			}
 			html[i++] = "</tr></table>";
@@ -761,11 +726,7 @@ function() {
 		}
 		else {
 			html[i++] = "<td>";
-			html[i++] = "<label for='";
-			html[i++] = this._weeklyFieldRadioId;
-			html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
-			html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}
@@ -819,11 +780,7 @@ function() {
 			html[i++] = "'></span>";
 		}
 		else {
-			html[i++] = "<label for='";
-			html[i++] = this._monthlyDefaultId;
-			html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
-			html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}
@@ -860,11 +817,7 @@ function() {
 		}
 		else {
 			html[i++] = "<td>";
-			html[i++] = "<label for='";
-			html[i++] = this._monthlyFieldRadioId;
-			html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
-			html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}
@@ -917,11 +870,7 @@ function() {
 		}
 		else {
 			html[i++] = "<td>";
-			html[i++] = "<label for='";
-			html[i++] = this._yearlyDefaultId;
-			html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
-			html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}
@@ -957,11 +906,7 @@ function() {
 		}
 		else {
 			html[i++] = "<td>";
-			html[i++] = "<label for='";
-			html[i++] = this._yearlyFieldRadioId;
-			html[i++] = "'>";
 			html[i++] = segment.toSubPattern();
-			html[i++] = "</label>";
 		}
 		html[i++] = "</td>";
 	}

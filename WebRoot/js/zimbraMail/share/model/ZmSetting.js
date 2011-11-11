@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -49,7 +49,6 @@ ZmSetting = function(id, params) {
 	this.type = params.type;
 	this.dataType = params.dataType || ZmSetting.D_STRING;
 	this.defaultValue = params.defaultValue;
-	this.canPreset = params.canPreset;
 	if (this.type == ZmSetting.T_METADATA) {
 		this.section = params.section;
 	}
@@ -161,8 +160,6 @@ ZmSetting.CLIENT_STANDARD		= "standard";
 ZmSetting.COMPOSE_FONT_COLOR	= "#000000";	 			// zimbraPrefHtmlEditorDefaultFontColor
 ZmSetting.COMPOSE_FONT_FAM 		= "Times New Roman";		// zimbraPrefHtmlEditorDefaultFontFamily
 ZmSetting.COMPOSE_FONT_SIZE 	= AjxMessageFormat.format(ZmMsg.pt,"12"); 			// zimbraPrefHtmlEditorDefaultFontSize
-ZmSetting.LTR                   = "LTR";
-ZmSetting.RTL                   = "RTL";
 ZmSetting.COMPOSE_TEXT 			= "text";					// zimbraPrefComposeFormat
 ZmSetting.COMPOSE_HTML 			= "html";
 ZmSetting.CV_CARDS				= "cards"; 					// zimbraPrefContactsInitialView
@@ -174,6 +171,8 @@ ZmSetting.DEDUPE_ALL			= "dedupeAll";
 ZmSetting.DELETE_SELECT_NEXT	= "next";					// zimbraPrefMailSelectAfterDelete
 ZmSetting.DELETE_SELECT_PREV	= "previous";
 ZmSetting.DELETE_SELECT_ADAPT	= "adaptive";
+ZmSetting.GETMAIL_ACTION_DEFAULT= "default";				// zimbraPrefGetMailAction
+ZmSetting.GETMAIL_ACTION_UPDATE = "update";
 ZmSetting.GROUP_BY_CONV			= "conversation";			// zimbraPrefGroupMailBy
 ZmSetting.GROUP_BY_MESSAGE		= "message";
 ZmSetting.HTTP_DEFAULT_PORT		= 80;
@@ -224,9 +223,6 @@ ZmSetting.LICENSE_MSG[ZmSetting.LICENSE_BAD]			= ZmMsg.licenseExpired;
 
 // we need these IDs available when the app classes are parsed
 ZmSetting.LOCALE_NAME			= "LOCALE_NAME";
-ZmSetting.COMPOSE_INIT_DIRECTION= "COMPOSE_INIT_DIRECTION";
-ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS = "SHOW_COMPOSE_DIRECTION_BUTTONS";
-ZmSetting.FONT_NAME				= "FONT_NAME";
 ZmSetting.SKIN_NAME				= "SKIN_NAME";
 
 ZmSetting.BRIEFCASE_ENABLED		= "BRIEFCASE_ENABLED";
@@ -234,9 +230,10 @@ ZmSetting.CALENDAR_ENABLED		= "CALENDAR_ENABLED";
 ZmSetting.CONTACTS_ENABLED		= "CONTACTS_ENABLED";
 ZmSetting.IM_ENABLED			= "IM_ENABLED";
 ZmSetting.MAIL_ENABLED			= "MAIL_ENABLED";
+ZmSetting.MIXED_VIEW_ENABLED	= "MIXED_VIEW_ENABLED";
+ZmSetting.NOTEBOOK_ENABLED		= "NOTEBOOK_ENABLED";
 ZmSetting.OPTIONS_ENABLED		= "OPTIONS_ENABLED";
 ZmSetting.PORTAL_ENABLED		= "PORTAL_ENABLED";
-ZmSetting.SEARCH_ENABLED		= "SEARCH_ENABLED";
 ZmSetting.TASKS_ENABLED			= "TASKS_ENABLED";
 ZmSetting.VOICE_ENABLED			= "VOICE_ENABLED";
 
@@ -247,20 +244,20 @@ ZmSetting.VOICE_UPSELL_ENABLED		= "VOICE_UPSELL_ENABLED";
 
 ZmSetting.MAIL_SEND_LATER_ENABLED	= "MAIL_SEND_LATER_ENABLED";
 
-//user selected font
-ZmSetting.FONT_CLASSIC	= "classic";
-ZmSetting.FONT_MODERN	= "modern";
-ZmSetting.FONT_WIDE		= "wide";
-ZmSetting.FONT_SYSTEM	= "system";
-
-//task filterby setting
-ZmSetting.TASK_FILTER_ALL = "";
-ZmSetting.TASK_FILTER_TODO = "TODO";
-ZmSetting.TASK_FILTER_COMPLETED = "COMPLETED";
-ZmSetting.TASK_FILTER_WAITING = "WAITING";
-ZmSetting.TASK_FILTER_DEFERRED = "DEFERRED";
-ZmSetting.TASK_FILTER_INPROGRESS = "INPROGRESS";
-ZmSetting.TASK_FILTER_NOTSTARTED = "NOTSTARTED";
+// remove this block when offline.jsp upgrades
+ZmSetting.APPS_COOKIE			= "ZM_APPS";
+ZmSetting.APP_LETTER = {};
+ZmSetting.APP_LETTER[ZmSetting.PORTAL_ENABLED]		= "p";
+ZmSetting.APP_LETTER[ZmSetting.MAIL_ENABLED]		= "m";
+ZmSetting.APP_LETTER[ZmSetting.CALENDAR_ENABLED]	= "c";
+ZmSetting.APP_LETTER[ZmSetting.CONTACTS_ENABLED]	= "a";
+ZmSetting.APP_LETTER[ZmSetting.OPTIONS_ENABLED]	    = "o";
+ZmSetting.APP_LETTER[ZmSetting.IM_ENABLED]			= "i";
+ZmSetting.APP_LETTER[ZmSetting.NOTEBOOK_ENABLED]	= "n";
+ZmSetting.APP_LETTER[ZmSetting.BRIEFCASE_ENABLED]	= "b";
+ZmSetting.APP_LETTER[ZmSetting.TASKS_ENABLED]		= "t";
+ZmSetting.APP_LETTER[ZmSetting.MIXED_VIEW_ENABLED]	= "x";
+ZmSetting.APP_LETTER[ZmSetting.VOICE_ENABLED]		= "v";
 
 // hash of global settings
 ZmSetting.IS_GLOBAL = {};

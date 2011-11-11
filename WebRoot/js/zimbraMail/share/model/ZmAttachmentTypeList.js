@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -34,8 +34,15 @@ ZmAttachmentTypeList = function() {
 ZmAttachmentTypeList.prototype = new ZmModel;
 ZmAttachmentTypeList.prototype.constructor = ZmAttachmentTypeList;
 
-ZmAttachmentTypeList.prototype.isZmAttachmentTypeList = true;
-ZmAttachmentTypeList.prototype.toString = function() { return "ZmAttachmentTypeList"; };
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmAttachmentTypeList.prototype.toString = 
+function() {
+	return "ZmAttachmentTypeList";
+};
 
 /**
  * Gets the attachments.
@@ -56,9 +63,12 @@ function() {
  */
 ZmAttachmentTypeList.compareEntry = 
 function(a,b) {
-	if (a.desc.toLowerCase() < b.desc.toLowerCase())	{ return -1; }
-	if (a.desc.toLowerCase() > b.desc.toLowerCase())	{ return 1; }
-	return 0;
+	if (a.desc.toLowerCase() < b.desc.toLowerCase())
+		return -1;
+	if (a.desc.toLowerCase() > b.desc.toLowerCase())
+		return 1;
+	else
+		return 0;
 };
 
 /**
@@ -68,15 +78,13 @@ function(a,b) {
  */
 ZmAttachmentTypeList.prototype.load =
 function(callback) {
+	this._attachments = new Array();
 
-	this._attachments = [];
+	var soapDoc = AjxSoapDoc.create("BrowseRequest", "urn:zimbraMail");
+	soapDoc.getMethod().setAttribute("browseBy", "attachments");
 
-	var jsonObj = {BrowseRequest:{_jsns:"urn:zimbraMail"}};
-	var request = jsonObj.BrowseRequest;
-	request.browseBy = "attachments";
-
-	var respCallback = this._handleResponseLoad.bind(this, callback);
-	appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
+	var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 };
 
 /**
@@ -88,14 +96,11 @@ function(callback, result) {
 	if (att) {
 		for (var i = 0; i < att.length; i++) {
 			var type = att[i]._content;
-			if (!ZmMimeTable.isIgnored(type) && (type.indexOf("/") != -1 || type == "image")) {
+			if (!ZmMimeTable.isIgnored(type) && (type.indexOf("/") != -1 || type == "image"))
 				this._attachments.push(ZmMimeTable.getInfo(type, true));
-			}
 		}
 		this._attachments.sort(ZmAttachmentTypeList.compareEntry);
 	}
 	
-	if (callback) {
-		callback.run(this._attachments);
-	}
+	if (callback) callback.run(result);
 };

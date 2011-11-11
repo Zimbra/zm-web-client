@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -460,29 +460,15 @@ function() {
 	// make sure that the current object proxy is up-to-date
 	this._setAccountFields(this._currentAccount, this._currentSection, true);
 
-	var printAcct = function(acct) {
-		if (AjxUtil.isArray(acct)) {
-			return AjxUtil.map(acct, printAcct).join("\n");
-		}
-		return ["name: ",acct.name,", id: ",acct.id].join("");
-	}
-
 	var dirty = this._deletedAccounts.length > 0;
-	if (dirty) {
-		AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\n" + "Deleted accounts:\n" + printAcct(this._deletedAccounts));
-	}
 	if (!dirty) {
 		var accounts = this._accounts.getArray();
-		var dirtyAccounts = [];
 		for (var i = 0; i < accounts.length; i++) {
 			var account = accounts[i];
 			if (account._new || account._dirty || account._visibleDirty) {
 				dirty = true;
-				dirtyAccounts.push(account);
+				break;
 			}
-		}
-		if (dirty) {
-			AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\n" + "Dirty accounts:\n" + printAcct(dirtyAccounts));
 		}
 	}
 	return dirty;
