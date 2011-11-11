@@ -708,7 +708,7 @@ function(deeper, calendar, tagIds, segment) {
     var apptColor = calColor;
     if (tagIds && (tagIds.length == 1)) {
         var tag = appCtxt.getById(tagIds[0]);
-        apptColor = { bgcolor: tag.getColor() };
+        if(tag){apptColor = { bgcolor: tag.getColor() };}
     }
     return {calendar:calColor, appt:apptColor};
 };
