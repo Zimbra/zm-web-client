@@ -218,7 +218,6 @@ function(parent, buttonId, buttonListener) {
     var snoozeSelectButton = new DwtButton({parent:parent});
     snoozeSelectButton.addDropDownSelectionListener(buttonListener);
     snoozeSelectButton.setData(Dwt.KEY_ID, buttonId);
-    snoozeSelectButton.setSize(AjxEnv.isIE ? "30" : "20");
 
     snoozeSelectButton.reparentHtmlElement(buttonId);
 
@@ -344,12 +343,19 @@ function(snoozeSelectButton, menuSelectionListener, apptList) {
         this._snoozeSelectInput.setValue("");
         this._snoozeSelectInput.setEnabled(false, true);
         snoozeMenu.setEnabled(false, true);
-        snoozeSelectButton.setEnabled(false, true);
+        snoozeSelectButton.setEnabled(false);
+        this.setButtonEnabled(ZmReminderDialog.SNOOZE_BUTTON, false);
+        if (this._openButtons) {
+            for (var id in this._openButtons) {
+                this._openButtons[id].setEnabled(false);
+            }
+        }
         this.unregisterCallback(ZmReminderDialog.SNOOZE_BUTTON);
     } else {
         this._snoozeSelectInput.setEnabled(true, true);
         snoozeMenu.setEnabled(true, true);
         snoozeSelectButton.setEnabled(true, true);
+        this.setButtonEnabled(ZmReminderDialog.SNOOZE_BUTTON, true);
         this.registerCallback(ZmReminderDialog.SNOOZE_BUTTON, this._handleSnoozeButton, this);
     }
 
