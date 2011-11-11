@@ -911,7 +911,13 @@ function(ev) {
 		? treeItem.getData(Dwt.KEY_ID) : null;
 
 	if (folderId && !treeItem._isHeader) {
-		appCtxt.set(ZmSetting.FOLDERS_EXPANDED, isExpand, folderId);
+		var setExpanded = appCtxt.get(ZmSetting.FOLDERS_EXPANDED, folderId) || false; //I think it's set as undefined if "false" in ZmSetting.prototype.setValue)
+		if (typeof(setExpanded) == "string") {//I can't figure out why it becomes a string sometimes. That's nasty.
+			setExpanded = (setExpanded === "true");
+		}
+		if (setExpanded != isExpand) { //set only if changed (ZmSetting.prototype.setValue is supposed to not send a request if no change, but it might have bugs)
+			appCtxt.set(ZmSetting.FOLDERS_EXPANDED, isExpand, folderId);
+		}
 
 		// check if any of this treeItem's children need to be expanded as well
 		if (isExpand) {
