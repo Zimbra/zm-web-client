@@ -916,7 +916,7 @@ function(msg, container) {
 	
 	var buttonId = ZmId.getButtonId(this._viewId, ZmId.OP_ACTIONS_MENU);
 	var ab = this._actionsButton = new DwtBorderlessButton({parent:this, id:buttonId});
-	ab.setImage("Preferences");
+	ab.setImage("ContextMenu");
 	ab.reparentHtmlElement(this._buttonCellId);
 	ab.addSelectionListener(this._actionsButtonListener.bind(this));
 
