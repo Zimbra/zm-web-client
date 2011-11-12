@@ -1045,6 +1045,12 @@ function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) { return; }
 	var id = ev.source.id;
 	var setting = this.getSetting(id);
+	if (id == ZmSetting.FOLDERS_EXPANDED && window.duringExpandAll) {
+		if (!window.afterExpandAllCallback) {
+			window.afterExpandAllCallback = this.save.bind(this, [setting], null, null, appCtxt.getActiveAccount(), true);
+		}
+		return;
+	}
 	if (ZmSetting.IS_IMPLICIT[id] && setting) {
 		this.save([setting], null, null, appCtxt.getActiveAccount(), true);
 	}
