@@ -684,7 +684,14 @@
 /* MERGE WITH ZmFieldLabelRight ? */
 .DwtPropertySheet .Label {
 	@Label@
-	text-align: right;
+	text-align:right;
+}
+.DwtPropertySheet>TABLE {
+	border-collapse:collapse;
+	border-width:0;
+}
+.DwtPropertySheet>TABLE>TBODY>TR>TD {
+	padding:5px;
 }
 
 

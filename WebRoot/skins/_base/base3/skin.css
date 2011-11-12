@@ -446,21 +446,22 @@ SELECT						{	@FieldBorder@	}
 	background-color: @lighten(AppC,40)@;
 }
 
-.itemcounttext	{ visibility: hidden; width: 10px; padding-right: 0;}
+.itemcounttext	{ visibility:hidden; width:10px; padding-right:0;}
 
 
 /*Temporary overrides that need to move to skin properties*/
-/*.DwtListView-ColHeader 		{ height:19px; 						}*/
-.DwtListView-Column 		{ background-color:@lighten(AppC,33)@; 		}
-.DwtListView-Column td 		{ color:@darken(AppC,55)@; 					}
+/*.DwtListView-ColHeader			{ height:19px; 						}*/
+.DwtListView-Column					{ background-color:@lighten(AppC,33)@; 		}
+.DwtListView-Column td				{ color:@darken(AppC,55)@; 					}
 .overviewHeader,
-.overviewHeader-actioned 	{ background-color:@darken(AppC,20)@; border:0; padding:1px 0; 	}
-.overviewHeader>TABLE 		{ background-color:@lighten(AppC,33)@; border:1px solid white; 	}
-.RowDouble 					{ height:auto; padding-top:0; 		}
-.RowDouble>TABLE 			{ border:1px solid white; 			}
+.overviewHeader-actioned			{ background-color:@darken(AppC,20)@; border:0; padding:1px 0; 	}
+.overviewHeader>TABLE,
+.overviewHeader-actioned>TABLE 		{ background-color:@lighten(AppC,33)@; border:1px solid white; 	}
+.RowDouble							{ height:auto; padding-top:0; 		}
+.RowDouble>TABLE					{ border:1px solid white; 			}
 .RowDouble .TopRow,
 .RowDouble .ImgCheckboxChecked,
 .RowDouble .ImgCheckboxUnchecked 	{ margin:5px 0 2px; 	}
-.RowDouble .BottomRow 			{ margin:2px 0 5px; 	}
+.RowDouble .BottomRow				{ margin:2px 0 5px; 	}
 
-.ZToolbarTable .vertSep 	{ border-color:@ToolbarSeparatorColor@;     }
+.ZToolbarTable .vertSep				{ border-color:@ToolbarSeparatorColor@;     }
