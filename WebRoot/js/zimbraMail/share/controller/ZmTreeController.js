@@ -1187,7 +1187,13 @@ function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
 	var treeView = this.getTreeView(this._actionedOverviewId);
 	var ti = treeView.getTreeItemById(organizer.id);
+	window.duringExpandAll = true;
 	ti.setExpanded(true, true);
+	window.duringExpandAll = false;
+	if (window.afterExpandAllCallback) {
+		window.afterExpandAllCallback(); //save the explicit setting now after all was expanded - so only one request instead of many
+		window.afterExpandAllCallback  = null;
+	}
 };
 
 /**
