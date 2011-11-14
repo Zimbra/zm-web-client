@@ -339,7 +339,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                     </tr>
                     <tr>
                         <td><label for="password"><fmt:message key="password"/>:</label></td>
-                        <td><input id="password" class="zLoginField" name="password" type="password" value="${fn:escapeXml(param.password)}" size="40"/></td>
+                        <td><input id="password" class="zLoginField" name="password" type="password" value="" size="40"/></td>
                     </tr>
                     <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword }">
                     <tr>
