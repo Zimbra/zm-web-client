@@ -605,9 +605,12 @@ function(inputEl, attendee, useException) {
 	if (value) {
 		if (curAttendee) {
 			// user edited slot with an attendee in it
-            var lookupEmailObj = curAttendee.getLookupEmail(true);
-            var lookupEmail = lookupEmailObj ? lookupEmailObj.toString(type && type != ZmCalBaseItem.PERSON) : null;
-			if (value == lookupEmail || value == ZmApptViewHelper.getAttendeesText(curAttendee, type, true)) {
+            var lookupEmail = this.getEmail(curAttendee);
+            var emailTextShortForm = ZmApptViewHelper.getAttendeesText(curAttendee, type, true);
+            //parse the email id to separate the name and email address
+            var emailAddrObj = AjxEmailAddress.parse(value);
+            var emailAddr = emailAddrObj ? emailAddrObj.getAddress() : "";
+			if (emailAddr == lookupEmail || emailAddr == emailTextShortForm) {
 				return;
 			} else {
 				this._resetRow(sched, false, type, true);
