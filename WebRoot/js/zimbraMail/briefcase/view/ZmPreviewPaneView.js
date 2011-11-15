@@ -704,7 +704,7 @@ function(item){
 
     this._cleanup();
     //Name
-    this._headerName.innerHTML = item.name;
+    this._headerName.innerHTML = AjxStringUtil.htmlEncode(item.name);
     //Briefcase icon
     this._headerImage.className = "ImgBriefcase_48";
     if(this._headerModifier)
