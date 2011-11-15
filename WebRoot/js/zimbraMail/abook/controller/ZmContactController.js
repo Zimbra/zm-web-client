@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- *
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -23,20 +23,18 @@
  * Creates the contact controller.
  * @class
  * This class represents the contact controller.
- *
- * @param {DwtShell}	container	the containing shell
- * @param {ZmApp}		abApp		the containing app
- * @param {constant}	type		controller type
- * @param {string}		sessionId	the session id
- *
+ * 
+ * @param	{DwtControl}	container		the container
+ * @param	{ZmContactsApp}	abApp	the contacts application
+ * 
  * @extends		ZmListController
  */
-ZmContactController = function(container, abApp, type, sessionId) {
+ZmContactController = function(container, abApp) {
 
-	ZmListController.apply(this, arguments);
+	ZmListController.call(this, container, abApp);
 
-	this._listeners[ZmOperation.SAVE]	= this._saveListener.bind(this);
-	this._listeners[ZmOperation.CANCEL]	= this._cancelListener.bind(this);
+	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
+	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
 
 	this._tabGroupDone = {};
 };
@@ -44,98 +42,45 @@ ZmContactController = function(container, abApp, type, sessionId) {
 ZmContactController.prototype = new ZmListController();
 ZmContactController.prototype.constructor = ZmContactController;
 
-ZmContactController.prototype.isZmContactController = true;
-ZmContactController.prototype.toString = function() { return "ZmContactController"; };
-
-
-ZmContactController.getDefaultViewType =
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmContactController.prototype.toString =
 function() {
-	return ZmId.VIEW_CONTACT;
+	return "ZmContactController";
 };
-ZmContactController.prototype.getDefaultViewType = ZmContactController.getDefaultViewType;
 
 /**
  * Shows the contact.
- *
+ * 
  * @param	{ZmContact}	contact		the contact
- * @param	{Boolean}	isDirty		<code>true</code> to mark the contact as dirty
+ * @param	{Boolean}	isDirty		<code>true</code> to mark the contact as dirty	
  */
 ZmContactController.prototype.show =
 function(contact, isDirty) {
+	if (!this._editPageLoaded) {
+		this._app.pushView(ZmId.VIEW_LOADING, true); // push "Loading..." page
+	}
 	this._contact = contact;
-	if (isDirty) {
-		this._contactDirty = true;
+	this._currentView = this._getViewType();
+	if (isDirty) this._contactDirty = true;
+	this._list = contact.list;
+	// re-enable input fields if list view exists
+	if (this._listView[this._currentView])
+		this._listView[this._currentView].enableInputs(true);
+	this._setup(this._currentView);
+	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
+	var elements = {};
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+	this._setView({view:this._currentView, elements:elements, isTransient:true, stageView:!this._editPageLoaded});
+	if (!this._editPageLoaded) {
+		this._app.popView(true, ZmId.VIEW_LOADING, true); // pop "Loading..." page
 	}
-	this.setList(contact.list);
-
-	if (!this._toolbar[this._currentViewId]) {
-		this._initializeToolBar(this._currentViewId);
-	}
-	this._resetOperations(this._toolbar[this._currentViewId], 1); // enable all buttons
-
-	this._createView(this._currentViewId);
-
-	this._setViewContents();
-	this._initializeTabGroup(this._currentViewId);
-	this._app.pushView(this._currentViewId);
-	this.updateTabTitle();
+	this._editPageLoaded = true;
 };
-
-ZmContactController.prototype._createView =
-function(viewId) {
-	if (this._contactView) {
-		return;
-	}
-	var view = this._contactView = this._createContactView();
-	//Note - I store this in this._view just to be consistent with certain calls such as for ZmBaseController.prototype._initializeTabGroup. Even though there's no real reason to keep an array of views per type since each controller would only have one view and therefor one type
-	this._view[viewId] = view;
-
-	var callbacks = {};
-		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
-		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD] = new AjxCallback(this, this._preUnloadCallback);
-		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
-	var elements = this.getViewElements(null, view, this._toolbar[viewId]);
-
-	this._app.createView({	viewId:		viewId,
-							viewType:	this._currentViewType,
-							elements:	elements, 
-							controller:	this,
-							callbacks:	callbacks,
-							tabParams:	this._getTabParams()});
-};
-
-ZmContactController.prototype._postShowCallback =
-function() {
-	//have to call it since it's overriden in ZmBaseController to do nothing.
-	ZmController.prototype._postShowCallback.call(this);
-};
-
-ZmContactController.prototype._getDefaultTabText=
-function() {
-	return this._isGroup() ? ZmMsg.group : ZmMsg.contact;
-};
-
-ZmContactController.prototype._getTabParams =
-function() {
-	return {id:this.tabId,
-			image: this._isGroup() ? "NewGroup" : "NewContact",
-			text: null, //we update it using _updateTabTitle since before calling _setViewContents _getFullName does not return the name
-			textPrecedence:77,
-			tooltip: text};
-};
-
-ZmContactController.prototype.updateTabTitle =
-function() {
-	var	tabTitle = this._contactView._getFullName(true);
-	if (!tabTitle) {
-		tabTitle = this._getDefaultTabText();
-	}
-	tabTitle = 	tabTitle.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT)
-
-	appCtxt.getAppViewMgr().setTabTitle(this._currentViewId, tabTitle);
-};
-
-
 
 ZmContactController.prototype.getKeyMapName =
 function() {
@@ -160,15 +105,15 @@ function(actionCode) {
 
 /**
  * Enables the toolbar.
- *
+ * 
  * @param	{Boolean}	enable	<code>true</code> to enable
  */
 ZmContactController.prototype.enableToolbar =
 function(enable) {
 	if (enable) {
-		this._resetOperations(this._toolbar[this._currentViewId], 1);
+		this._resetOperations(this._toolbar[this._currentView], 1);
 	} else {
-		this._toolbar[this._currentViewId].enableAll(enable);
+		this._toolbar[this._currentView].enableAll(enable);
 	}
 };
 
@@ -197,17 +142,30 @@ function() {
 /**
  * @private
  */
-ZmContactController.prototype._isGroup =
+ZmContactController.prototype._getViewType =
 function() {
-	return this._contact.isGroup();
+	if (this._contact.isGroup()) {
+		return ZmId.VIEW_GROUP; 
+	} else {
+		return ZmId.VIEW_CONTACT;
+	}
 };
 
-
-ZmContactController.prototype._createContactView =
-function() {
-	return this._isGroup()
-			? new ZmGroupView(this._container, this)
-			: new ZmEditContactView(this._container, this);
+/**
+ * @private
+ */
+ZmContactController.prototype._initializeListView =
+function(view) {
+	if (!this._listView[view]) {
+		switch (view) {
+			case ZmId.VIEW_CONTACT:
+				this._listView[view] = new ZmEditContactView(this._container, this);
+				break;
+			case ZmId.VIEW_GROUP:
+				this._listView[view] = new ZmGroupView(this._container, this);
+				break;
+		}
+	}
 };
 
 /**
@@ -217,16 +175,21 @@ ZmContactController.prototype._initializeToolBar =
 function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
-	this._setNewButtonProps(view, ZmMsg.newContact, ZmMsg.createNewContact, "NewContact", "NewContactDis", ZmOperation.NEW_CONTACT);
-
 	var tb = this._toolbar[view];
 
 	// change the cancel button to "close" if editing existing contact
 	var cancelButton = tb.getButton(ZmOperation.CANCEL);
 	if (this._contact.id == undefined || this._contact.isGal) {
 		cancelButton.setText(ZmMsg.cancel);
+		cancelButton.setImage("Cancel");
 	} else {
 		cancelButton.setText(ZmMsg.close);
+		cancelButton.setImage("Close");
+	}
+
+	var printButton = tb.getButton(ZmOperation.PRINT);
+	if (printButton) {
+		printButton.setText(ZmMsg.print);
 	}
 
 	var saveButton = tb.getButton(ZmOperation.SAVE);
@@ -249,20 +212,21 @@ function() {
  * @private
  */
 ZmContactController.prototype._setViewContents =
-function() {
-	var cv = this._contactView;
+function(view) {
+	var cv = this._listView[view];
 	cv.set(this._contact, this._contactDirty);
 	if (this._contactDirty) {
 		delete this._contactDirty;
 	}
 
+	this._tabGroup = this._tabGroups[view];
 };
 
 /**
  * @private
  */
 ZmContactController.prototype._createTabGroup = function() {
-	var viewId = this._currentViewId;
+	var viewId = this._currentView;
 	return this._tabGroups[viewId] = new DwtTabGroup(this.toString() + "_" + viewId);
 };
 
@@ -277,7 +241,6 @@ function(viewId) {
 	if (toolbar) {
 		this._tabGroups[viewId].addMember(toolbar, 0);
 	}
-	this._tabGroup = this._tabGroups[viewId];
 };
 
 /**
@@ -312,7 +275,7 @@ function(parent, num) {
 ZmContactController.prototype._saveListener =
 function(ev, bIsPopCallback) {
 	var fileAsChanged = false;
-	var view = this._contactView;
+	var view = this._listView[this._currentView];
 	if (view instanceof DwtForm)
 		view.validate();
 	if (!view.isValid()) {
@@ -350,7 +313,7 @@ function(ev, bIsPopCallback) {
 		{
 			// update existing contact with new attrs
 			for (var a in mods) {
-				if (a != ZmContact.F_folderId && a != ZmContact.F_groups) {
+				if (a != ZmContact.F_folderId) {
 					contact.attr[a] = mods[a];
 				}
 			}
@@ -359,7 +322,7 @@ function(ev, bIsPopCallback) {
 		}
 		else
 		{
-			if (contact.id && (!contact.isGal || contact.isDistributionList())) {
+			if (contact.id && !contact.isGal) {
 				if (view.isEmpty()) { //If contact empty, alert the user
 					var ed = appCtxt.getMsgDialog();
 					ed.setMessage(ZmMsg.emptyContactSave, DwtMessageDialog.CRITICAL_STYLE);
@@ -382,7 +345,7 @@ function(ev, bIsPopCallback) {
 					}
 				}
 				if (isEmpty) {
-					var msg = this._isGroup()
+					var msg = this._currentView == ZmId.VIEW_GROUP
 						? ZmMsg.emptyGroup
 						: ZmMsg.emptyContact;
 					appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
@@ -399,12 +362,12 @@ function(ev, bIsPopCallback) {
 		// bug fix #5829 - differentiate betw. an empty contact and saving
 		//                 an existing contact w/o editing
 		if (view.isEmpty()) {
-			var msg = this._isGroup()
+			var msg = this._currentView == ZmId.VIEW_GROUP
 				? ZmMsg.emptyGroup
 				: ZmMsg.emptyContact;
 			appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 		} else {
-			var msg = this._isGroup()
+			var msg = this._currentView == ZmId.VIEW_GROUP
 				? ZmMsg.groupSaved
 				: ZmMsg.contactSaved;
 			appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_INFO);
@@ -424,7 +387,7 @@ function(ev, bIsPopCallback) {
 /**
  * @private
  */
-ZmContactController.prototype._cancelListener =
+ZmContactController.prototype._cancelListener = 
 function(ev) {
 	this._app.popView();
 };
@@ -445,14 +408,13 @@ function(ev) {
 /**
  * @private
  */
-ZmContactController.prototype._doDelete =
+ZmContactController.prototype._doDelete = 
 function(items, hardDelete, attrs, skipPostProcessing) {
 	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
-	appCtxt.getApp(ZmApp.CONTACTS).updateIdHash(items, true);
 
 	if (!skipPostProcessing) {
 		// disable input fields (to prevent blinking cursor from bleeding through)
-		this._contactView.enableInputs(false);
+		this._listView[this._currentView].enableInputs(false);
 		this._app.popView(true);
 	}
 };
@@ -462,13 +424,11 @@ function(items, hardDelete, attrs, skipPostProcessing) {
  */
 ZmContactController.prototype._preHideCallback =
 function(view, force) {
-	ZmController.prototype._preHideCallback.call(this);
-
 	if (force) return true;
-
-	var view = this._contactView;
+	
+	var view = this._listView[this._currentView];
 	if (!view.isDirty()) {
-		view.cleanup();
+		this._listView[this._currentView].cleanup();
 		return true;
 	}
 
@@ -478,7 +438,7 @@ function(view, force) {
 	ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
 	ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 	ps.popup(view._getDialogXY());
-
+	
 	return false;
 };
 
@@ -487,7 +447,7 @@ function(view, force) {
  */
 ZmContactController.prototype._preUnloadCallback =
 function(view) {
-	return !this._contactView.isDirty();
+	return !this._listView[this._currentView].isDirty();
 };
 
 /**
@@ -515,13 +475,13 @@ function() {
  */
 ZmContactController.prototype._popShieldCallback = function() {
     appCtxt.getAppViewMgr().showPendingView(true);
-    this._contactView.cleanup();
+    this._listView[this._currentView].cleanup();
 };
 
 /**
  * @private
  */
-ZmContactController.prototype._menuPopdownActionListener =
+ZmContactController.prototype._menuPopdownActionListener = 
 function(ev) {
 	// bug fix #3719 - do nothing
 };
@@ -529,7 +489,7 @@ function(ev) {
 /**
  * @private
  */
-ZmContactController.prototype._getDefaultFocusItem =
+ZmContactController.prototype._getDefaultFocusItem = 
 function() {
-	return this._contactView._getDefaultFocusItem();
+	return this._listView[this._currentView]._getDefaultFocusItem();
 };
