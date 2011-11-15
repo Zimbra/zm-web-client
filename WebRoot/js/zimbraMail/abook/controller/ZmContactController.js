@@ -346,7 +346,7 @@ function(ev, bIsPopCallback) {
 		var newFolderId = mods[ZmContact.F_folderId];
 		var newFolder = newFolderId ? appCtxt.getById(newFolderId) : null;
 		if (contact.id != null && newFolderId &&
-			(contact.isShared() || (newFolder && newFolder.link)))
+			(contact.isShared() || (newFolder && newFolder.link)) && !contact.isGal)
 		{
 			// update existing contact with new attrs
 			for (var a in mods) {
