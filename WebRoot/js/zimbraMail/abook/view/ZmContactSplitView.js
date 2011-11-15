@@ -929,7 +929,7 @@ function() {
 		html[idx++] = tag.id;
 		html[idx++] = '"';
 		html[idx++] = "); return false;'>";
-		html[idx++] = AjxImg.getImageSpanHtml(icon, null, attr, tag.name);
+		html[idx++] = AjxImg.getImageSpanHtml(icon, null, attr, AjxStringUtil.htmlEncode(tag.name));
 		html[idx++] = "</a>&nbsp;";
 	}
 	return html.join("");
