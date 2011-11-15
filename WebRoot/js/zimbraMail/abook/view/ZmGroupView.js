@@ -608,7 +608,7 @@ function() {
 		var tag = ta[j];
 		if (!tag) continue;
 		var icon = ZmTag.COLOR_ICON[tag.color];
-		html[i++] = AjxImg.getImageSpanHtml(icon, null, null, tag.name);
+		html[i++] = AjxImg.getImageSpanHtml(icon, null, null, AjxStringUtil.htmlEncode(tag.name));
 		html[i++] = "&nbsp;";
 	}
 
