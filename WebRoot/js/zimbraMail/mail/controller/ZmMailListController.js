@@ -2248,11 +2248,11 @@ function(items, destinationFolder, attrs, isShiftKey) {
         // Check if need to warn the user about violating the keep retention policy.  If a warning
         // dialog is displayed, the callback from that dialog allows the user to trash messages
         warningIssued = this._doRetentionPolicyWarning(messages,
-            ZmBaseController.prototype._doMove, [destinationFolder, attrs, isShiftKey]);
+            ZmListController.prototype._doMove, [destinationFolder, attrs, isShiftKey]);
     }
     if (!warningIssued) {
         // No retention policy, or all the chosen messages fall outside the retention period.
-        ZmBaseController.prototype._doMove(items, destinationFolder, attrs, isShiftKey);
+        ZmListController.prototype._doMove.call(this, items, destinationFolder, attrs, isShiftKey);
     }
 }
 
