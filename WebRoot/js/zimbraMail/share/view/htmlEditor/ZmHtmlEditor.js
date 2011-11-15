@@ -341,11 +341,11 @@ function() {
 ZmHtmlEditor.prototype._resetFormatControlDefaults =
 function() {
 	var fontId = ZmHtmlEditor._normalizeFontId(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
-	this._fontFamilyButton.setText(ZmHtmlEditor.FONT_FAMILY[fontId] && ZmHtmlEditor.FONT_FAMILY[fontId].name || ZmHtmlEditor.__makeFontName(fontId));
-	this._fontSizeButton.setText(this._getFontSizeLabel(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE)));
-	this._fontColorButton.setColor(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR));
-	this._styleMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.PARAGRAPH, true);
-	this._justifyMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_LEFT, true);
+	this._fontFamilyButton && this._fontFamilyButton.setText(ZmHtmlEditor.FONT_FAMILY[fontId] && ZmHtmlEditor.FONT_FAMILY[fontId].name || ZmHtmlEditor.__makeFontName(fontId));
+	this._fontSizeButton && this._fontSizeButton.setText(this._getFontSizeLabel(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE)));
+	this._fontColorButton && this._fontColorButton.setColor(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR));
+	this._styleMenu && this._styleMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.PARAGRAPH, true);
+	this._justifyMenu && this._justifyMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_LEFT, true);
 };
 
 ZmHtmlEditor.prototype._loadExternalStyle =
