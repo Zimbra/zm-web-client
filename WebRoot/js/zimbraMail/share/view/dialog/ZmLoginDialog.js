@@ -205,5 +205,6 @@ function(target) {
 
 ZmLoginDialog._loginDiffListener =
 function(ev) {
+	DBG.println(AjxDebug.DBG1, "ZmLoginDialog._loginDiffListener : invoking logout");
 	ZmZimbraMail.logOff();
 };

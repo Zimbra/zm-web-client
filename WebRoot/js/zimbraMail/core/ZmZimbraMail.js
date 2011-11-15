@@ -2355,6 +2355,7 @@ function() {
 		var ev = DwtUiEvent.getEvent();
 		ev.returnValue = false;
 	}
+	DBG.println(AjxDebug.DBG1, "ZmZimbraMail._onClickLogOff : invoking logout");
 	ZmZimbraMail.logOff();
 };
 
@@ -2730,6 +2731,7 @@ function(ev) {
 		if (id == ZmAppChooser.B_HELP) {
 			window.open(appCtxt.get(ZmSetting.HELP_URI));
 		} else if (id == ZmAppChooser.B_LOGOUT) {
+			DBG.println(AjxDebug.DBG1, "ZmZimbraMail : invoking logout.")
 			ZmZimbraMail.logOff();
 		} else if (id && ZmApp.ENABLED_APPS[id] && (id != this._activeTabId)) {
 			this.activateApp(id);
@@ -2888,6 +2890,7 @@ function(actionCode, ev) {
 		}
 
 		case ZmKeyMap.LOGOFF: {
+			DBG.println(AjxDebug.DBG1, "ZmZimbraMail.prototype.handleKeyAction:matched ZmKeyMap.LOGOFF, invoking logout");
 			ZmZimbraMail.logOff();
 			break;
 		}

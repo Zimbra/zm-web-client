@@ -499,6 +499,7 @@ function(ex, continuation) {
 			reloginMode = true;
 		} else if (ex.code == ZmCsfeException.SVC_AUTH_REQUIRED) {
 			// bug fix #413 - always logoff if we get auth required
+			DBG.println(AjxDebug.DBG1, "ZmController.prototype._handleException ex.code : ZmCsfeException.SVC_AUTH_REQUIRED. Invoking logout.");
 			ZmZimbraMail.logOff();
 			return;
 		} else {
@@ -584,6 +585,7 @@ function(reloginMode, continuation) {
 	
 	var username = appCtxt.getUsername();
 	if (!username || appCtxt.isOffline) {
+		DBG.println(AjxDebug.DBG1, "ZmController.prototype._handleLogin " + (!username) ? "username is null" : "appCtxt.isOffline is " + appCtxt.isOffline + ". Invoking logout.");
 		ZmZimbraMail.logOff();
 		return;
 	}
