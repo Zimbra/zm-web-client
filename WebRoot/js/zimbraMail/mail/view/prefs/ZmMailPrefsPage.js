@@ -242,6 +242,8 @@ function(ev) {
 	var sd = this._fixAndGetValidDateFromField(this._startDateField);
 	var ed = this._fixAndGetValidDateFromField(this._endDateField);
 	this._fixDates(sd, ed, DwtUiEvent.getTarget(ev) == this._endDateField);
+	this._startDateVal.value = this._formatter.format(AjxDateUtil.simpleParseDateStr(this._startDateField.value));
+	this._endDateVal.value = this._formatter.format(AjxDateUtil.simpleParseDateStr(this._endDateField.value));
 };
 
 /* Fixes the field values so that end date always is later than or equal to start date
