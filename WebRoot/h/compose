@@ -211,7 +211,7 @@
     <td colspan="3"  width="100%" >
         <c:set var="isHTMLContType" value="${compose.contentType eq 'text/html'}" />
         <c:set var="isHtmlCont" value="${not empty compose.htmlContent}" />
-        <c:set var="theBody" value="${fn:escapeXml(isHtml ? (empty compose.htmlContent ? (isHTMLContType ? compose.content : zm:cook(compose.content)) : compose.htmlContent) : compose.content)}"/>
+        <c:set var="theBody" value="${fn:escapeXml(isHtml ? (empty compose.htmlContent ? (isHTMLContType or isHtml ? compose.content : zm:cook(compose.content)) : compose.htmlContent) : compose.content)}"/>
         <c:if test="${not empty message}">
             <c:forEach var="part" items="${message.attachments}">
                <c:if test="${part.isImage}"> <%-- SWAP the inline images dfsrc and src from the attached parts to display the images. --%>
