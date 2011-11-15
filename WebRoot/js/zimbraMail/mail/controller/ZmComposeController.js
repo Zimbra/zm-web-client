@@ -433,9 +433,20 @@ function(params) {
  * @param	{String}	attId		the id
  * @param	{constant}	draftType		the draft type (see <code>ZmComposeController.DRAFT_TYPE_</code> constants)
  * @param	{AjxCallback}	callback		the callback
+ * @param	{Boolean}	processDataURIImages
  */
 ZmComposeController.prototype.sendMsg =
-function(attId, draftType, callback, contactId) {
+function(attId, draftType, callback, contactId, processDataURIImages) {
+    if(typeof processDataURIImages === "undefined"){
+        processDataURIImages = true;
+    }
+    if(processDataURIImages){
+        var processDataURIImagesCallback = new AjxCallback(this, this._sendMsg, [attId, null, draftType, callback, contactId]);
+        var result = this._processDataURIImages(this._composeView._getIframeDoc() ,processDataURIImagesCallback);
+        if(result){
+            return;
+        }
+    }
 	return this._sendMsg(attId, null, draftType, callback, contactId);
 };
 
@@ -2011,31 +2022,140 @@ function(){
 };
 
 ZmComposeController.prototype._pasteHandler = function( ev ){
-    var items,blob,controller,req;
+    var items,blob,controller,responseHandler;
     if (ev.clipboardData){
         items = ev.clipboardData.items;
         if( items ){
             blob = items[0].getAsFile();
             if( blob ){
                 controller = this;
-                req = new XMLHttpRequest();
-                req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
-                req.setRequestHeader("Cache-Control", "no-cache");
-                req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-                req.setRequestHeader("Content-Type", blob.type);
-                req.setRequestHeader("Content-Disposition", 'attachment; filename="' + ev.timeStamp + '"');//For paste from clipboard filename is undefined so we are using timestamp
-                req.onreadystatechange = function(){
-                    if(req.readyState === 4 && req.status === 200) {
-                        var resp = eval("["+req.responseText+"]");
-                        if(resp.length === 3) {
-                            resp[2].clipboardPaste = true;
-                            controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, resp[2]);
-                        }
+                blob.name = blob.name || ev.timeStamp;//For paste from clipboard filename is undefined so we are using timestamp
+                responseHandler = function( response ){
+                    if( response ){
+                        response.clipboardPaste = true;
+                        controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, response);
                     }
-                }
-                req.send(blob);
+                };
+                controller._uploadImage(blob, new AjxCallback(this, responseHandler));
             }
         }
     }
 };
 
+ZmComposeController.prototype._processDataURIImages = function(idoc, callback){
+    var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder;
+    if(!BlobBuilder || !idoc || !window.atob){
+        return;
+    }
+    var imgArray = idoc.getElementsByTagName("img");
+    var length = imgArray.length;
+    if(length === 0){//No image elements in the editor document
+        return;
+    }
+    //converts datauri string to blob object used for uploading the image
+    //dataURI format  data:image/png;base64,iVBORw0
+    var dataURItoBlob = function( dataURI ){
+        if( dataURI ){
+            var dataURIArray = dataURI.split(",");
+            if( dataURIArray.length === 2 ){
+                // convert base64 to raw binary data held in a string
+                // doesn't handle URLEncoded DataURIs
+                var byteString = window.atob( dataURIArray[1] );
+                if( !byteString ){
+                    return;
+                }
+                // separate out the mime component
+                var mimeString = dataURIArray[0].split(':');
+                if( !mimeString[1] ){
+                    return;
+                }
+                mimeString = mimeString[1].split(';')[0];
+                if(mimeString){
+                    // write the bytes of the string to an ArrayBuffer
+                    var byteStringLength = byteString.length;
+                    var ab = new ArrayBuffer( byteStringLength );
+                    var ia = new Uint8Array(ab);
+                    for (var i = 0; i < byteStringLength; i++) {
+                        ia[i] = byteString.charCodeAt(i);
+                    }
+                    // write the ArrayBuffer to a blob, and you're done
+                    var blobbuilder = new BlobBuilder();
+                    blobbuilder.append(ab);
+
+                    var blob = blobbuilder.getBlob(mimeString);
+                    blob.type = mimeString;
+                    blob.name = blob.name || new Date().getTime();
+                    return blob;
+                }
+            }
+        }
+    };
+
+    var blobArray = [];//Array containing blob objects used for uploading images
+    for(var i = 0; i < length; i++ ){
+        var imgSrc = imgArray[i].src;
+        if(imgSrc && imgSrc.indexOf("data:") !== -1){
+            var blob = dataURItoBlob(imgSrc);
+            if(blob){
+                //setting data-zim-uri attribute for image replacement in callback
+                var id = Dwt.getNextId();
+                imgArray[i].setAttribute("id", id);
+                imgArray[i].setAttribute("data-zim-uri", id);
+                blob.id = id;
+                blobArray.push(blob);
+            }
+        }
+    }
+    length = blobArray.length;
+    if(length === 0){
+        return;
+    }
+
+    this._uploadedImageArray = [];
+    this._dataURIImagesLength = length;
+    for( i = 0; i < length ; i++ ){
+        var blob = blobArray[i];
+        var uploadImageCallback = new AjxCallback(this, this._handleUploadImage, [callback, blob.id]);
+        this._uploadImage( blob, uploadImageCallback);
+    }
+    return true;
+};
+
+ZmComposeController.prototype._uploadImage = function(blob, callback){
+    var req = new XMLHttpRequest();
+    req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
+    req.setRequestHeader("Cache-Control", "no-cache");
+    req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+    req.setRequestHeader("Content-Type", blob.type);
+    req.setRequestHeader("Content-Disposition", 'attachment; filename="' + blob.name + '"');
+    req.onreadystatechange = function(){
+        if(req.readyState === 4 && req.status === 200) {
+            var resp = eval("["+req.responseText+"]");
+            callback.run(resp[2]);
+        }
+    }
+    req.send(blob);
+};
+
+ZmComposeController.prototype._handleUploadImage = function(callback, id, response){
+    this._dataURIImagesLength--;
+    var uploadedImageArray = this._uploadedImageArray;
+    if( response && id ){
+        response[0]["id"] = id;
+        uploadedImageArray.push(response[0]);
+    }
+    if( this._dataURIImagesLength === 0 && callback ){
+        if( uploadedImageArray.length > 0 ){
+            uploadedImageArray.clipboardPaste = true;
+            if(callback.args[0]){  //attid argument of _sendMsg method
+                callback.args[0] = callback.args[0].concat(uploadedImageArray);
+            }
+            else{
+                callback.args[0] = uploadedImageArray;
+            }
+        }
+        callback.run();
+        delete this._uploadedImageArray;
+        delete this._dataURIImagesLength;
+    }
+};
