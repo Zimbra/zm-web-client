@@ -1025,7 +1025,7 @@ ZmContactSimpleView = function(params) {
 
 	if (arguments.length == 0) { return; }
 
-	params.view = ZmId.VIEW_CONTACT_SIMPLE;
+	this._view = params.view = params.controller.getCurrentViewId();
 	params.className = "ZmContactSimpleView";
 	ZmContactsBaseView.call(this, params);
 
@@ -1036,15 +1036,8 @@ ZmContactSimpleView = function(params) {
 ZmContactSimpleView.prototype = new ZmContactsBaseView;
 ZmContactSimpleView.prototype.constructor = ZmContactSimpleView;
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmContactSimpleView.prototype.toString =
-function() {
-	return "ZmContactSimpleView";
-};
+ZmContactSimpleView.prototype.isZmContactSimpleView = true;
+ZmContactSimpleView.prototype.toString = function() { return "ZmContactSimpleView"; };
 
 /**
  * Sets the list.
