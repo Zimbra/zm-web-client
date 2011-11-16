@@ -157,6 +157,8 @@
     pageContext.setAttribute("isPerfMetric", isPerfMetric);
 %>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<meta http-equiv="cache-control" content="no-cache"/>
+<meta http-equiv="Pragma" content="no-cache"/>
 <fmt:setLocale value='${locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request" force="true" />
 <title><fmt:message key="zimbraTitle"/></title>

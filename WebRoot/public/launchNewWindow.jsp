@@ -35,6 +35,8 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<meta http-equiv="cache-control" content="no-cache"/>
+<meta http-equiv="Pragma" content="no-cache"/>
 <%!
 	static String getParameter(HttpServletRequest request, String pname, String defValue) {
 		String value = request.getParameter(pname);

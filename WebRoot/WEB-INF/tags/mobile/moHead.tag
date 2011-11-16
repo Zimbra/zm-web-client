@@ -28,6 +28,8 @@
        value="${sessionScope.uiv != null || not empty sessionScope.uiv  ? sessionScope.uiv : '0'}"/>
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="cache-control" content="no-cache"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
     <title>
         <c:if test="${empty title}"><fmt:message key="zimbraTitle"/></c:if>
         <c:if test="${!empty title}"><fmt:message key="zimbraTitleLabel"/> ${fn:escapeXml(title)}</c:if>
