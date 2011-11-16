@@ -60,7 +60,7 @@
 				            <tbody>
                             <tr>
 					            <td valign="top" class="zmwiki-pageIcon"><!--wiklet class='ICON' /--></td>
-					            <td><span class="zmwiki-pageName">${requestScope.zimbra_target_item_name}</span><br>
+					            <td><span class="zmwiki-pageName">${zm:cook(requestScope.zimbra_target_item_name)}</span><br>
 					            <span class="zmwiki-author zmwiki-smallGrayLinks"><fmt:message key="by"/>&nbsp;${requestScope.zimbra_target_account_name}</span><br>
             					</td>
 
