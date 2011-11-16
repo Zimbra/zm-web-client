@@ -83,28 +83,29 @@ ZmCalendarTreeController.prototype.show = function(params) {
 };
 
 /**
- * Gets the checked calendars.
+ * Gets all calendars.
  * 
  * @param	{String}	overviewId		the overview id
  * @param   {boolean}   includeTrash    True to include trash, if checked.
  * @return	{Array}		an array of {@link ZmCalendar} objects
  */
-ZmCalendarTreeController.prototype.getCheckedCalendars =
+ZmCalendarTreeController.prototype.getCalendars =
 function(overviewId, includeTrash) {
 	var calendars = [];
 	var items = this._getItems(overviewId);
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		if (item._isSeparator) { continue; }
-		if (item.getChecked()) {
-			var calendar = item.getData(Dwt.KEY_OBJECT);
+	    var calendar = item.getData(Dwt.KEY_OBJECT);
+        if (calendar) {
             if (calendar.id == ZmOrganizer.ID_TRASH && !includeTrash) continue;
 			calendars.push(calendar);
-		}
+        }
 	}
 
 	return calendars;
 };
+
 /**
  * Gets the owned calendars.
  * 

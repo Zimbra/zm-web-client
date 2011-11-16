@@ -145,7 +145,7 @@ function() {
 		start: timeRange.start,
 		end: timeRange.end,
 		fanoutAllDay: false,
-		folderIds: this._calController.getCheckedCalendarFolderIds(true),
+		folderIds: this._calController.getReminderCalendarFolderIds(),
 		callback: (new AjxCallback(this, this._refreshCallback)),
 		includeReminders: true
 	};

@@ -888,6 +888,32 @@ function() {
 };
 
 /**
+ * Gets the list of calendar ids for reminders. If calendar packages are not loaded,
+ * gets the list from deferred folder ids.
+ *
+ * @return	{Array}	an array of ids
+ */
+ZmCalendarApp.prototype.getReminderCalendarFolderIds =
+function() {
+	var folderIds = [];
+	if (AjxDispatcher.loaded("CalendarCore")) {
+		folderIds = this.getCalController().getReminderCalendarFolderIds();
+	} else {
+		// will be used in reminder dialog
+		this._folderNames = {};
+		for (var i = 0; i < this._deferredFolders.length; i++) {
+			var params = this._deferredFolders[i];
+			folderIds.push(params.obj.id);
+			// _folderNames are used when deferred folders are not created
+			// and calendar name is required. example: calendar name
+			// requirement in reminder module
+			this._folderNames[params.obj.id] = params.obj.name;
+		}
+	}
+	return folderIds;
+};
+
+/**
  * Gets the list of checked calendar ids. If calendar packages are not loaded,
  * gets the list from deferred folder ids.
  *

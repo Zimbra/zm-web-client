@@ -390,6 +390,24 @@ function(email, includeTrash) {
 };
 
 /**
+ * Gets the calendar folder ids used to create reminders.
+ * All local calendars and shared calendars with the reminder flag set, checked or unchecked.
+ * Does not include the trash folder.
+ *
+ * @return	{Array}		an array of folder ids
+ */
+ZmCalViewController.prototype.getReminderCalendarFolderIds =
+function() {
+	if (!this._reminderCalendarIds) {
+		this._updateCheckedCalendars();
+		if (!this._reminderCalendarIds) {
+			return [ZmOrganizer.ID_CALENDAR];
+		}
+	}
+	return this._reminderCalendarIds;
+};
+
+/**
  * Gets the checked organizers.
  *
  * @return {Array} array of {ZmOrganizer}
@@ -425,19 +443,19 @@ ZmCalViewController.__map_id = function(item) {
 
 ZmCalViewController.prototype._updateCheckedCalendars =
 function() {
-	var cc = [];
+    var allCalendars = [];
 	if (this._calTreeController) {
 		if (appCtxt.multiAccounts) {
 			var overviews = this._app.getOverviewContainer().getOverviews();
 			for (var i in overviews) {
-				cc = cc.concat(this._calTreeController.getCheckedCalendars(i, true));
+				allCalendars = allCalendars.concat(this._calTreeController.getCalendars(i));
 			}
 		} else {
 			// bug fix #25512 - avoid race condition
 			if (!this._app._overviewPanelContent) {
 				this._app.setOverviewPanelContent(true);
 			}
-			cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId(), true);
+			allCalendars = this._calTreeController.getCalendars(this._app.getOverviewId());
 		}
 	} else {
 		this._app._createDeferredFolders(ZmApp.CALENDAR);
@@ -453,55 +471,53 @@ function() {
 				if (acct.isCalDavBased() && calendars[j].nId == ZmOrganizer.ID_CALENDAR) {
 					continue;
 				}
-				if (calendars[j].isChecked) {
-					cc.push(calendars[j]);
-				}
+				allCalendars.push(calendars[j]);
 			}
 		}
 	}
 
-    // see if trash is checked
+    this._checkedCalendars = [];
+    this._checkedCalendarIds = [];
+    this._checkedLocalCalendarIds = [];
+    this._checkedAccountCalendarIds = [];
+    this._reminderCalendarIds = [];
+    var checkedAccountCalendarIds = {};
     var trashFolder = null;
-    for (var i = 0; i < cc.length; i++) {
-        if (cc[i].id == ZmOrganizer.ID_TRASH) {
-            trashFolder = cc[i];
-            cc.splice(i, 1);
-            break;
+    for (var i = 0; i < allCalendars.length; i++) {
+        var cal = allCalendars[i];
+        if (!cal.noSuchFolder && (cal.id != ZmOrganizer.ID_TRASH) &&
+            ((cal.isRemote && !cal.isRemote()) || cal.reminder)) {
+            this._reminderCalendarIds.push(cal.id);
+        }
+        if (cal.isChecked) {
+            if (cal.id == ZmOrganizer.ID_TRASH) {
+                trashFolder = cal;
+            } else {
+                this._checkedCalendars.push(cal);
+            }
+            if (!cal.noSuchFolder) {
+                this._checkedCalendarIds.push(cal.id);
+                if (cal.isRemote && !cal.isRemote()) {
+                    this._checkedLocalCalendarIds.push(cal.id);
+                }
+                var acctId = (appCtxt.multiAccounts) ? cal.getAccount().id : appCtxt.accountList.mainAccount.id;
+                if (!checkedAccountCalendarIds[acctId]) {
+                    checkedAccountCalendarIds[acctId] = [];
+                }
+                checkedAccountCalendarIds[acctId].push(cal.id);
+            }
         }
     }
 
-	this._checkedCalendars = cc;
-    this._checkedCalendarsAll = trashFolder ? cc.concat(trashFolder) : cc;
-	this._checkedCalendarIds = [];
-	this._checkedLocalCalendarIds = [];
-	this._checkedAccountCalendarIds = [];
-	var checkedAccountCalendarIds = {};
+    this._checkedCalendarsAll = trashFolder ? this._checkedCalendars.concat(trashFolder) : this._checkedCalendars;
 
-	for (var i = 0; i < cc.length; i++) {
-		var cal = cc[i];
-		if (cal.noSuchFolder) { continue; }
+    // convert hash to local array
+    for (var i in checkedAccountCalendarIds) {
+        this._checkedAccountCalendarIds.push(checkedAccountCalendarIds[i]);
+    }
 
-		var acctId = (appCtxt.multiAccounts)
-			? cal.getAccount().id : appCtxt.accountList.mainAccount.id;
-
-		if (!checkedAccountCalendarIds[acctId]) {
-			checkedAccountCalendarIds[acctId] = [];
-		}
-		checkedAccountCalendarIds[acctId].push(cal.id);
-
-		this._checkedCalendarIds.push(cal.id);
-		if ((cal.isRemote && !cal.isRemote()) || cal.reminder) {
-			this._checkedLocalCalendarIds.push(cal.id);
-		}
-	}
-
-	// convert hash to local array
-	for (var i in checkedAccountCalendarIds) {
-		this._checkedAccountCalendarIds.push(checkedAccountCalendarIds[i]);
-	}
-
-	// return list of checked calendars
-	return cc;
+    // return list of checked calendars
+    return this._checkedCalendars;
 };
 
 ZmCalViewController.prototype._calTreeSelectionListener =

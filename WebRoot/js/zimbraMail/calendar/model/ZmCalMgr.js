@@ -465,6 +465,12 @@ function(localOnly) {
 	return app.getCheckedCalendarFolderIds(localOnly);
 };
 
+ZmCalMgr.prototype.getReminderCalendarFolderIds =
+function() {
+	var app = appCtxt.getApp(ZmApp.CALENDAR);
+	return app.getReminderCalendarFolderIds();
+};
+
 ZmCalMgr.prototype._handleError =
 function(ex) {
 	if (ex.code == 'mail.INVITE_OUT_OF_DATE' ||	ex.code == 'mail.NO_SUCH_APPT') {
