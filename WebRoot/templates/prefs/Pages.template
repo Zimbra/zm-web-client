@@ -219,11 +219,6 @@ and the container element is replaced with that control.
 							<td class='ZOptionsField'><div id='${id}_VIEW_AS_HTML' tabindex='50'></div></td>
 						</tr>
 
-						<tr>
-							<td class='ZOptionsLabelTop'><$=ZmMsg.conversations$></td>
-							<td class='ZOptionsField'><div id='${id}_CONV_MODE' tabindex='50'></div></td>
-						</tr>
-
 						<tr><td colspan=2><hr></td></tr>
 
 						<tr>

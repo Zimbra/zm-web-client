@@ -711,7 +711,7 @@ function(ex, continuation) {
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_MSG) {
 		var vid = appCtxt.getCurrentViewId();
 		// only process if we're in one of these views otherwise, do the default
-		if (vid == appCtxt.get(ZmSetting.CONV_MODE) || vid == ZmId.VIEW_TRAD) {
+		if (vid == ZmId.VIEW_CONVLIST || vid == ZmId.VIEW_TRAD) {
 			var mailApp = appCtxt.getApp(ZmApp.MAIL);
 			var callback = appCtxt.isOffline ? new AjxCallback(this, this._handleMailSearch, mailApp) : null;
 			mailApp.mailSearch(null, callback);

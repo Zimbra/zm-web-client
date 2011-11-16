@@ -496,14 +496,6 @@ function(changed) {
        calController.createAppointmentFromOOOPref(stDate,endDate,new AjxCallback(this, this._oooApptCallback));
        this._isCalDurationChanged = false;
     }
-	
-	if (changed && changed[ZmSetting.CONV_MODE]) {
-		var cd = appCtxt.getYesNoMsgDialog();
-		cd.reset();
-		cd.registerCallback(DwtDialog.YES_BUTTON, this._convModeChangeYesCallback, this, [cd]);
-		cd.setMessage(ZmMsg.convModeConfirmChange, DwtMessageDialog.WARNING_STYLE);
-		cd.popup();
-	}
 };
 
 ZmMailPrefsPage.prototype._oooApptCallback = function(){

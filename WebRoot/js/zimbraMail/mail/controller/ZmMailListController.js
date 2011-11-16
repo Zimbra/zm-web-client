@@ -158,7 +158,7 @@ ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.PREV_UNREAD]	= DwtKeyMap.SELECT_
 ZmMailListController.prototype.switchView =
 function(view, force) {
 
-	if (view == ZmId.VIEW_TRAD || view == appCtxt.get(ZmSetting.CONV_MODE)) {
+	if (view == ZmId.VIEW_TRAD || view == ZmId.VIEW_CONVLIST) {
 		if (appCtxt.multiAccounts) {
 			delete this._showingAccountColumn;
 		}
@@ -300,7 +300,7 @@ function(actionCode) {
 
 		case ZmKeyMap.VIEW_BY_CONV:
 			if (!isSyncFailures) {
-				this.switchView(appCtxt.get(ZmSetting.CONV_MODE));
+				this.switchView(ZmId.VIEW_CONVLIST);
 			}
 			break;
 
@@ -1828,9 +1828,6 @@ function(view, menu) {
 
 	for (var i = 0; i < ZmMailListController.GROUP_BY_VIEWS.length; i++) {
 		var id = ZmMailListController.GROUP_BY_VIEWS[i];
-		if ((id == ZmId.VIEW_CONVLIST || id == ZmId.VIEW_CONVLIST2) && (id != appCtxt.get(ZmSetting.CONV_MODE))) {
-			continue;
-		}
 		var mi = menu.createMenuItem(id, {image:	ZmMailListController.GROUP_BY_ICON[id],
 										  text:		ZmMsg[ZmMailListController.GROUP_BY_MSG_KEY[id]],
 										  shortcut:	ZmMailListController.GROUP_BY_SHORTCUT[id],

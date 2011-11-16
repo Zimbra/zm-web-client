@@ -376,7 +376,6 @@ ZmSettings.prototype.setUserSettings = function(params) {
     //Populate Sort Order Defaults
     var sortPref =  ZmSettings.DEFAULT_SORT_PREF;
     sortPref[ZmId.VIEW_CONVLIST]			= ZmSearch.DATE_DESC;
-    sortPref[ZmId.VIEW_CONVLIST2]			= ZmSearch.DATE_DESC;
     sortPref[ZmId.VIEW_CONV]				= ZmSearch.DATE_DESC;
     sortPref[ZmId.VIEW_TRAD]				= ZmSearch.DATE_DESC;
     sortPref[ZmId.VIEW_CONTACT_SRC]			= ZmSearch.NAME_ASC;

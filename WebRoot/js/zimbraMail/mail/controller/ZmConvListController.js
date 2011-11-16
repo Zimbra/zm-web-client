@@ -49,24 +49,19 @@ ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.NEXT_UNREAD_MSG]	= DwtKeyMap.SEL
 ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.PREV_UNREAD_MSG]	= DwtKeyMap.SELECT_PREV;
 
 ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_CONVLIST]	= ZmSetting.GROUP_BY_CONV;
-ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_CONVLIST2]	= ZmSetting.GROUP_BY_CONV;
 
 // view menu
 ZmMailListController.GROUP_BY_ICON[ZmId.VIEW_CONVLIST]		= "ConversationView";
-ZmMailListController.GROUP_BY_ICON[ZmId.VIEW_CONVLIST2]		= "ConversationView";
 ZmMailListController.GROUP_BY_MSG_KEY[ZmId.VIEW_CONVLIST]	= "byConversation";
-ZmMailListController.GROUP_BY_MSG_KEY[ZmId.VIEW_CONVLIST2]	= "byConversation";
 ZmMailListController.GROUP_BY_SHORTCUT[ZmId.VIEW_CONVLIST]	= ZmKeyMap.VIEW_BY_CONV;
-ZmMailListController.GROUP_BY_SHORTCUT[ZmId.VIEW_CONVLIST2]	= ZmKeyMap.VIEW_BY_CONV;
 ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_CONVLIST);
-ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_CONVLIST2);
 
 
 // Public methods
 
 ZmConvListController.getDefaultViewType =
 function() {
-	return appCtxt.get(ZmSetting.CONV_MODE);
+	return ZmId.VIEW_CONVLIST;
 };
 ZmConvListController.prototype.getDefaultViewType = ZmConvListController.getDefaultViewType;
 
@@ -250,13 +245,12 @@ function(currentItem, forward) {
 
 ZmConvListController.prototype._createDoublePaneView = 
 function() {
-	if (appCtxt.get(ZmSetting.CONV_MODE) == ZmId.VIEW_CONVLIST2) {
-		return new ZmConvDoublePaneView2({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE,
-										  controller:this, dropTgt:this._dropTgt});
-	} else {
-		return new ZmConvDoublePaneView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE,
-										 controller:this, dropTgt:this._dropTgt});
-	}
+	return new ZmConvDoublePaneView({
+		parent:		this._container,
+		posStyle:	Dwt.ABSOLUTE_STYLE,
+		controller:	this,
+		dropTgt:	this._dropTgt
+	});
 };
 
 ZmConvListController.prototype._paginate = 
@@ -339,24 +333,24 @@ function(item) {
 ZmConvListController.prototype._setSelectedItem =
 function() {
 	
-	if (this._currentViewType == ZmId.VIEW_CONVLIST2) {
-		var selCnt = this._listView[this._currentViewId].getSelectionCount();
-		if (selCnt == 1) {
-			var sel = this._listView[this._currentViewId].getSelection();
-			var conv = (sel && sel.length) ? sel[0] : null;
-			var respCallback = this._handleResponseSetSelectedItem.bind(this, conv);
-			conv.load({getUnreadOrFirstMsg:true, markRead:false}, respCallback);
+	var selCnt = this._listView[this._currentViewId].getSelectionCount();
+	if (selCnt == 1) {
+		var sel = this._listView[this._currentViewId].getSelection();
+		var item = (sel && sel.length) ? sel[0] : null;
+		if (item.type == ZmItem.CONV) {
+			var respCallback = this._handleResponseSetSelectedItem.bind(this, item);
+			item.load({getUnreadOrFirstMsg:true, markRead:false}, respCallback);
+		} else {
+			ZmDoublePaneController.prototype._setSelectedItem.apply(this, arguments);
 		}
-	} else {
-		ZmDoublePaneController.prototype._setSelectedItem.apply(this, arguments);
 	}
 };
 
 ZmConvListController.prototype._handleResponseSetSelectedItem =
 function(item) {
 
-	if (this._currentViewType == ZmId.VIEW_CONVLIST2) {
-		// make sure list view has this msg
+	if (item.type == ZmItem.CONV) {
+		// make sure list view has this item
 		var lv = this._listView[this._currentViewId];
 		if (lv.hasItem(item.id)) {
 			this._displayItem(item);
@@ -428,20 +422,15 @@ function(item) {
 ZmConvListController.prototype._handleMarkRead =
 function(msg) {
 	
-	if (appCtxt.get(ZmSetting.CONV_MODE) == ZmId.VIEW_CONVLIST2) {
-		var markRead = appCtxt.get(ZmSetting.MARK_MSG_READ);
-		if (markRead == ZmSetting.MARK_READ_NOW) {
-			this._doMarkRead([msg], true);
-		} else if (markRead > 0) {
-			if (!appCtxt.markReadAction) {
-				appCtxt.markReadAction = new AjxTimedAction(this, this._markReadAction);
-			}
-			appCtxt.markReadAction.args = [ msg ];
-			appCtxt.markReadActionId = AjxTimedAction.scheduleAction(appCtxt.markReadAction, markRead * 1000);
+	var markRead = appCtxt.get(ZmSetting.MARK_MSG_READ);
+	if (markRead == ZmSetting.MARK_READ_NOW) {
+		this._doMarkRead([msg], true);
+	} else if (markRead > 0) {
+		if (!appCtxt.markReadAction) {
+			appCtxt.markReadAction = new AjxTimedAction(this, this._markReadAction);
 		}
-	}
-	else {
-		ZmDoublePaneController.prototype._handleMarkRead.apply(this, arguments);
+		appCtxt.markReadAction.args = [ msg ];
+		appCtxt.markReadActionId = AjxTimedAction.scheduleAction(appCtxt.markReadAction, markRead * 1000);
 	}
 };
 

@@ -746,7 +746,7 @@ function(ev) {
 
 	if (ev.event == ZmEvent.E_FLAGS && (flag == ZmItem.FLAG_UNREAD)) {
 		if (this.type == ZmItem.CONV) {
-			if ((view == appCtxt.get(ZmSetting.CONV_MODE)) && ctlr._currentSearch.hasUnreadTerm()) {
+			if ((view == ZmId.VIEW_CONVLIST) && ctlr._currentSearch.hasUnreadTerm()) {
 				this._redoSearch(ctlr);
 			}
 		} else if (this.type == ZmItem.MSG) {

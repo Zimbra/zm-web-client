@@ -151,7 +151,6 @@ function(settings) {
 	settings.registerSetting("CONVERSATIONS_ENABLED",			{name:"zimbraFeatureConversationsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("CONVERSATION_ORDER",				{name:"zimbraPrefConversationOrder", type:ZmSetting.T_PREF, defaultValue:ZmSearch.DATE_DESC, isImplicit:true});
 	settings.registerSetting("CONVERSATION_PAGE_SIZE",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:250, isGlobal:true});
-	settings.registerSetting("CONV_MODE",						{name:"zimbraPrefConversationMode", type:ZmSetting.T_PREF, defaultValue:ZmId.VIEW_CONVLIST2, canPreset:true});
 	settings.registerSetting("DEDUPE_MSG_TO_SELF",				{name:"zimbraPrefDedupeMessagesSentToSelf", type:ZmSetting.T_PREF, defaultValue:ZmSetting.DEDUPE_NONE});
     settings.registerSetting("DEDUPE_MSG_ENABLED",				{name:"zimbraPrefMessageIdDedupingEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
     settings.registerSetting("DEFAULT_DISPLAY_NAME",			{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -268,7 +267,6 @@ function() {
 			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
 			prefs: [
 				ZmSetting.AUTO_READ_RECEIPT_ENABLED,
-				ZmSetting.CONV_MODE,
 				ZmSetting.DEDUPE_MSG_TO_SELF,
                 ZmSetting.DEDUPE_MSG_ENABLED,
 				ZmSetting.DISPLAY_EXTERNAL_IMAGES,
@@ -357,13 +355,6 @@ function() {
     ZmPref.registerPref("AUTO_READ_RECEIPT_ENABLED", {
 		displayName:		ZmMsg.autoReadReceiptRequest,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
-
-	ZmPref.registerPref("CONV_MODE", {
-		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-		orientation:		ZmPref.ORIENT_VERTICAL,
-		displayOptions: 	[ZmMsg.convDisplayInline, ZmMsg.convDisplayNew],
-		options: 			[ZmId.VIEW_CONVLIST, ZmId.VIEW_CONVLIST2]
 	});
 
 	ZmPref.registerPref("DEDUPE_MSG_TO_SELF", {
@@ -1348,7 +1339,7 @@ ZmMailApp.prototype._getCurrentViewController =
 function() {
 	var controller;
 	var viewType = appCtxt.getCurrentViewType();
-	if (viewType == appCtxt.get(ZmSetting.CONV_MODE)) {
+	if (viewType == ZmId.VIEW_CONVLIST) {
 		controller = this.getConvListController();
 	} else if (viewType == ZmId.VIEW_TRAD) {
 		controller = this.getTradController();

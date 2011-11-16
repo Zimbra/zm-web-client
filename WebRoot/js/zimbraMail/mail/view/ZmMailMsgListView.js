@@ -94,7 +94,7 @@ function(msg) {
 ZmMailMsgListView.prototype._getCellId =
 function(item, field) {
 	if (field == ZmItem.F_SUBJECT && (this._mode == ZmId.VIEW_CONV ||
-									  this._mode == appCtxt.get(ZmSetting.CONV_MODE))) {
+									  this._mode == ZmId.VIEW_CONVLIST)) {
 		return this._getFieldId(item, field);
 	} else {
 		return ZmMailListView.prototype._getCellId.apply(this, arguments);
@@ -143,7 +143,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		} else {
 			var fromAddr = msg.getAddress(AjxEmailAddress.FROM);
 			if (fromAddr) {
-				if ((this._mode == appCtxt.get(ZmSetting.CONV_MODE)) && this._isMultiColumn) {
+				if ((this._mode == ZmId.VIEW_CONVLIST) && this._isMultiColumn) {
 					htmlArr[idx++] = ZmMailMsgListView.INDENT;
 				}
 				htmlArr[idx++] = "<span style='white-space:nowrap' id='";
@@ -156,9 +156,9 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		}
 
 	} else if (field == ZmItem.F_SUBJECT) {
-		if (this._mode == ZmId.VIEW_CONV || this._mode == appCtxt.get(ZmSetting.CONV_MODE)) {
+		if (this._mode == ZmId.VIEW_CONV || this._mode == ZmId.VIEW_CONVLIST) {
 			// msg within a conv shows just the fragment
-			if ((this._mode == appCtxt.get(ZmSetting.CONV_MODE)) && this._isMultiColumn) {
+			if ((this._mode == ZmId.VIEW_CONVLIST) && this._isMultiColumn) {
 				htmlArr[idx++] = ZmMailMsgListView.INDENT;
 			}
 			if (!this._isMultiColumn) {

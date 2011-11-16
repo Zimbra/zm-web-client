@@ -341,6 +341,19 @@ function(ev) {
 	return items;
 };
 
+// refreshes the content of the given field for the given item
+ZmListView.prototype._updateField =
+function(item, field) {
+	var fieldId = this._getFieldId(item, field);
+	var el = document.getElementById(fieldId);
+	if (el) {
+		var html = [];
+		var colIdx = this._headerHash[field] && this._headerHash[field]._index;
+		this._getCellContents(html, 0, item, field, colIdx, new Date());
+		el.innerHTML = html.join("");
+	}
+};
+
 ZmListView.prototype._checkReplenishOnTimer =
 function(ev) {
 	if (!this.allSelected) {

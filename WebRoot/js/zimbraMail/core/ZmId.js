@@ -732,7 +732,6 @@ ZmId.VIEW_CONTACT				= "CN";
 ZmId.VIEW_CONV 					= "CV";				// dual-pane conv view
 ZmId.VIEW_CONV2 				= "CV2";			// conv shown in reading pane
 ZmId.VIEW_CONVLIST 				= "CLV";			// hybrid conv list view
-ZmId.VIEW_CONVLIST2 			= "CLV2";			// "conv 2.0" conv list view
 ZmId.VIEW_FILTER_RULES			= "FRV";
 ZmId.VIEW_GROUP					= "GRP";
 ZmId.VIEW_IM_CHAT_MEMBER_LIST	= "IMCML";

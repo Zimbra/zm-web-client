@@ -42,7 +42,6 @@ ZmMsgController.MODE_TO_CONTROLLER = {};
 ZmMsgController.MODE_TO_CONTROLLER[ZmId.VIEW_TRAD]		= "GetTradController";
 ZmMsgController.MODE_TO_CONTROLLER[ZmId.VIEW_CONV]		= "GetConvController";
 ZmMsgController.MODE_TO_CONTROLLER[ZmId.VIEW_CONVLIST]	= "GetConvListController";
-ZmMsgController.MODE_TO_CONTROLLER[ZmId.VIEW_CONVLIST2]	= "GetConvListController";
 
 ZmMsgController.DEFAULT_TAB_TEXT = ZmMsg.message;
 
@@ -430,7 +429,7 @@ function() {
 		return mailApp.getTradController();
 	} else if (this._mode == ZmId.VIEW_CONV) {
 		return mailApp.getConvController();
-	} else if (this._mode == appCtxt.get(ZmSetting.CONV_MODE)) {
+	} else if (this._mode == ZmId.VIEW_CONVLIST) {
 		return mailApp.getConvListController();
 	}
 };

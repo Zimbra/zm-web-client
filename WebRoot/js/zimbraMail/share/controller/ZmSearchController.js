@@ -452,7 +452,7 @@ function(types) {
 		var type = types.get(0);
 		var viewType;
 		switch (type) {
-			case ZmItem.CONV:		viewType = appCtxt.get(ZmSetting.CONV_MODE); break;
+			case ZmItem.CONV:		viewType = ZmId.VIEW_CONVLIST; break;
 			case ZmItem.MSG:		viewType = ZmId.VIEW_TRAD; break;
 			case ZmItem.CONTACT:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
 			case ZmItem.APPT:		viewType = ZmId.VIEW_CAL; break;

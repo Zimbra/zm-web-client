@@ -587,7 +587,7 @@ function() {
 		var colLabel = this._isOutboundFolder() ? ZmMsg.to : ZmMsg.from;
         //bug:1108 & 43789#c19 since sort-by-rcpt affects server performance avoid using in convList instead used in outbound folder
         headerCol._sortable = this._isOutboundFolder() ? ZmItem.F_TO :
-				((this._mode == appCtxt.get(ZmSetting.CONV_MODE)) ? null : ZmItem.F_FROM);
+				((this._mode == ZmId.VIEW_CONVLIST) ? null : ZmItem.F_FROM);
 
         var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
 		if (fromColSpan) {
@@ -1159,7 +1159,7 @@ function(folderId) {
 ZmMailListView.prototype._getGroupByActionMenu =
 function(parent) {
     var list = [ZmOperation.GROUPBY_NONE, ZmOperation.GROUPBY_DATE, ZmOperation.GROUPBY_FROM, ZmOperation.GROUPBY_SIZE];
-    if (this._mode == appCtxt.get(ZmSetting.CONV_MODE) || this._isOutboundFolder()) {
+    if (this._mode == ZmId.VIEW_CONVLIST || this._isOutboundFolder()) {
         AjxUtil.arrayRemove(list, ZmOperation.GROUPBY_FROM);
     }
 
