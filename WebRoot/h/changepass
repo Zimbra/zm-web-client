@@ -60,7 +60,9 @@
 <html>
 
 <head>
-    <title><fmt:message key="changePassword"/></title>                         
+    <meta http-equiv="cache-control" content="no-cache"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <title><fmt:message key="changePassword"/></title>
 	<c:url var='cssurl' value='/css/common,login,zhtml,${skin},skin.css'>
 		<c:param name="skin" value="${skin}" />
 	</c:url>
