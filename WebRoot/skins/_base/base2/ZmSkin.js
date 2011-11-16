@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -32,15 +32,14 @@ ZmSkin.hints = {
 	presence:	  	{ width:"40px", height: "24px" },
 	appView:		{ position:"static" },
 
-	searchResultsToolbar:	{ containers: ["skin_tr_search_results_toolbar"] },
+	searchBuilder:  { containers: ["skin_tr_search_builder"] },
 	
-	newButton:		{ containers: ["skin_td_new_button"] },
 	tree:			{ minWidth:parseInt("@TreeMinWidth@"), maxWidth:parseInt("@TreeMaxWidth@"), 
 					  containers: ["skin_td_tree","skin_td_tree_app_sash"],
 					  resizeContainers : ["skin_td_tree"]
 					},
 	
-	topToolbar:	 	{ containers: "skin_spacing_app_top_toolbar" },
+	topToolbar:	 	{ containers: "skin_tr_top_toolbar" },
 
 	treeFooter:	 	{ containers: "skin_tr_tree_footer" },
 
@@ -50,6 +49,9 @@ ZmSkin.hints = {
 	treeTopAd:		{ containers: "skin_tr_tree_top_ad" },
 	treeBottomAd:	{ containers: "skin_tr_tree_bottom_ad" },
 	
+
+	
+
 	// specific components
 	helpButton:		{ style: "link", container: "quota", url: "@HelpAdvancedURL@" },		/*** TODO: this 'container' should be removed ??? ***/
 	logoutButton: 	{ style: "link", container: "quota" },		/*** TODO: this 'container' should be removed ??? ***/
@@ -61,6 +63,7 @@ ZmSkin.hints = {
               				{ type: "fade-out", step: -10, duration: 500 }
 						] 
 					},
+	fullScreen:     { containers : ["!skin_td_tree", "!skin_td_tree_app_sash"] },
 	
 	allAds :		{ containers: ["skin_tr_top_ad", "skin_td_sidebar_ad", "skin_tr_bottom_ad", "skin_tr_tree_top_ad", "skin_tr_tree_bottom_ad"] },
 
@@ -81,7 +84,7 @@ ZmSkin.prototype = {
 	//
 	// Public methods
 	//
-	show : function(name, state, noReflow) {
+	show : function(name, state) {
 		var containers = this.hints[name] && this.hints[name].containers;
 		if (containers) {
 			if (typeof containers == "function") {
@@ -98,14 +101,12 @@ ZmSkin.prototype = {
 				var inverse = ocontainer != ncontainer;
 				this._showEl(ncontainer, inverse ? !state : state);
 			}
-			if (!noReflow) {
-				skin._reflowApp();
-			}
+			skin._reflowApp();
 		}
 	},
 
-	hide : function(name, noReflow) {
-	    this.show(name, false, noReflow);
+	hide : function(name) {
+	    this.show(name, false);
 	},
 
 	gotoApp : function(appId, callback) {
@@ -181,16 +182,6 @@ ZmSkin.prototype = {
 	getSidebarAdContainer : function() {
 		return this._getEl("skin_container_sidebar_ad");
 	},
-
-	handleNotification : function(event, args) {
-		/*
-			Override me in individual skins
-			@param [String] event		The event type, e.g. "onAction", "onSelectApp", "initializeToolbar", ...
-										basically anything that would get passed into appCtxt.notifyZimlets()
-			@param [Array]	args		Array of the arguments that get passed to appCtxt.notifyZimlets()
-		*/
-	},
-
 	
 	//
 	// Protected methods

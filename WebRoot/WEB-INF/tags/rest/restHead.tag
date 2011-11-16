@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -22,8 +22,6 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <meta http-equiv="cache-control" content="no-cache"/>
-    <meta http-equiv="Pragma" content="no-cache"/>
     <title>
         <c:if test="${empty title}"><fmt:message key="zimbraTitle"/></c:if>
         <c:if test="${!empty title}">${fn:escapeXml(title)}</c:if>

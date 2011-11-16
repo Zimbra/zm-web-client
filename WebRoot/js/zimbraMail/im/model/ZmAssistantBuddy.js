@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -47,7 +47,7 @@ ZmAssistantBuddy.prototype.handleInput = function(args) {
 		    stop : true };
 
 	// disallow leading space.
-	if (/^[\p{Z}\z\s]+$/.test(args.str)) {
+	if (/^\s+$/.test(args.str)) {
 		ret.str = "";
 		return ret;
 	}

@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- *
+ * Copyright (C) 2010, 2011 VMware, Inc.
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -69,9 +69,6 @@ ZmFreeBusySchedulerView = function(parent, attendees, controller, dateInfo) {
 ZmFreeBusySchedulerView.prototype = new DwtComposite;
 ZmFreeBusySchedulerView.prototype.constructor = ZmFreeBusySchedulerView;
 
-ZmFreeBusySchedulerView.prototype.isZmFreeBusySchedulerView = true;
-ZmFreeBusySchedulerView.prototype.toString = function() { return "ZmFreeBusySchedulerView"; };
-
 
 // Consts
 
@@ -120,7 +117,7 @@ ZmFreeBusySchedulerView.ROLE_OPTIONS = {};
 ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalBaseItem.PERSON]          = { label: ZmMsg.requiredAttendee, 			value: ZmCalBaseItem.PERSON, 	        image: "AttendeesRequired" };
 ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalItem.ROLE_OPTIONAL]       = { label: ZmMsg.optionalAttendee, 			value: ZmCalItem.ROLE_OPTIONAL, 	image: "AttendeesOptional" };
 ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalBaseItem.LOCATION]        = { label: ZmMsg.location, 			        value: ZmCalBaseItem.LOCATION, 	        image: "Location" };
-ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalBaseItem.EQUIPMENT]       = { label: ZmMsg.equipmentAttendee, 			value: ZmCalBaseItem.EQUIPMENT, 	    image: "Resource" };
+ZmFreeBusySchedulerView.ROLE_OPTIONS[ZmCalBaseItem.EQUIPMENT]       = { label: ZmMsg.resourceAttendee, 			value: ZmCalBaseItem.EQUIPMENT, 	    image: "Resource" };
 
 // Hold on to this one separately because we use it often
 ZmFreeBusySchedulerView.FREE_CLASS = ZmFreeBusySchedulerView.STATUS_CLASSES[ZmFreeBusySchedulerView.STATUS_FREE];
@@ -131,6 +128,11 @@ ZmFreeBusySchedulerView.BATCH_SIZE = 25;
 ZmFreeBusySchedulerView._VALUE = "value";
 
 // Public methods
+
+ZmFreeBusySchedulerView.prototype.toString =
+function() {
+	return "ZmFreeBusySchedulerView";
+};
 
 ZmFreeBusySchedulerView.prototype.setComposeMode =
 function(isComposeMode) {
@@ -265,33 +267,30 @@ function() {
 ZmFreeBusySchedulerView.prototype._initAutocomplete =
 function() {
 
-	var acCallback = this._autocompleteCallback.bind(this);
-	var keyUpCallback = this._autocompleteKeyUpCallback.bind(this);
+	var acCallback = new AjxCallback(this, this._autocompleteCallback);
+	var keyUpCallback = new AjxCallback(this, this._autocompleteKeyUpCallback);
 	this._acList = {};
 
 	// autocomplete for attendees
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
-			dataClass:		appCtxt.getAutocompleter(),
-			separator:		"",
-			options:		{needItem: true},
-			matchValue:		[ZmAutocomplete.AC_VALUE_NAME, ZmAutocomplete.AC_VALUE_EMAIL],
-			keyUpCallback:	keyUpCallback,
-			compCallback:	acCallback
+			dataClass: appCtxt.getAutocompleter(),
+			separator: "",
+			options: {needItem: true},
+			matchValue: [ZmAutocomplete.AC_VALUE_NAME, ZmAutocomplete.AC_VALUE_EMAIL],
+			keyUpCallback: keyUpCallback,
+			compCallback: acCallback
 		};
-		params.contextId = [this._controller.getCurrentViewId(), this.toString(), ZmCalBaseItem.PERSON].join("-");
 		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acList[ZmCalBaseItem.PERSON] = this._acContactsList;
 
 		// autocomplete for locations/equipment
 		if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 			params.options = {type:ZmAutocomplete.AC_TYPE_LOCATION};
-			params.contextId = [this._controller.getCurrentViewId(), this.toString(), ZmCalBaseItem.LOCATION].join("-");
 			this._acLocationsList = new ZmAutocompleteListView(params);
 			this._acList[ZmCalBaseItem.LOCATION] = this._acLocationsList;
 
 			params.options = {type:ZmAutocomplete.AC_TYPE_EQUIPMENT};
-			params.contextId = [this._controller.getCurrentViewId(), this.toString(), ZmCalBaseItem.EQUIPMENT].join("-");
 			this._acEquipmentList = new ZmAutocompleteListView(params);
 			this._acList[ZmCalBaseItem.EQUIPMENT] = this._acEquipmentList;
 		}
@@ -301,7 +300,7 @@ function() {
 // Add the attendee, then create a new empty slot since we've now filled one.
 ZmFreeBusySchedulerView.prototype._autocompleteCallback =
 function(text, el, match) {
-    if(match && match.fullAddress) {
+    if(match.fullAddress) {
         el.value = match.fullAddress;
     }
 	if (match && match.item) {
@@ -949,7 +948,6 @@ function(organizer, attendees) {
             var idx = this._emailToIdx[id];
             if(this._organizerIndex == idx) continue;
             var sched = this._schedTable[idx];
-            if(!sched) continue;
             this._resetRow(sched, false, sched.attType, false, true);
             this._hideRow(idx);
             this._schedTable[idx] = null;
@@ -1867,7 +1865,7 @@ function(email) {
 	var result = appCtxt.getAppController().sendRequest({jsonObj:	jsonObj});
 
     //parse the response
-    var resp = result && result.GetShareInfoResponse;
+    var resp = result.GetShareInfoResponse;
     var share = (resp && resp.share) ? resp.share : null;
     var ids = [];
     if(share) {
