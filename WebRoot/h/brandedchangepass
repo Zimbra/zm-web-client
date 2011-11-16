@@ -28,7 +28,7 @@
             <fmt:message var="errorMessage" key="passwordFieldMissing"/>
             <c:set var="messageImage" value="dwt/ImgCritical_32.gif"/>
         </c:when>
-        <c:when test="${(not empty param.username) && (not empty param.loginNewPassword) && (not empty param.password)}">
+        <c:when test="${(not empty param.username) && (not empty param.loginNewPassword) && (not empty param.password) && (pageContext.request.method eq 'POST')}">
             <c:catch var="loginException">
                 <zm:changePassword username="${param.username}" password="${param.password}"
                                    newpassword="${param.loginNewPassword}"
