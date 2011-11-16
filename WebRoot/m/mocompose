@@ -249,10 +249,10 @@
             index="${status.index}"
             displayName="${param.attachName}"
             checked="true"
-            value="${param.attachId}" name="uploadedAttachment"/>
+            value="${zm:cook(param.attachId)}" name="uploadedAttachment"/>
 </div></c:if>
 <div class="View cmp_body value">
-    <textarea class="Textarea" id="bodyField" <c:if test="$(ua.isiPad == false)">"rows="20"</c:if> name="body">${fn:escapeXml(compose.content)}</textarea>
+    <textarea class="Textarea" id="bodyField" <c:if test="$(ua.isiPad == false)"> rows="20"</c:if> name="body">${fn:escapeXml(compose.content)}</textarea>
     <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" />
  </div>
 </div>
