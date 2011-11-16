@@ -683,6 +683,9 @@ function(op, str) {
 	if (opHash.listType == ZmId.ORG_FOLDER) {
 		rest = rest.replace(/^\//, "");	// remove leading slash in folder path
 		app = appCtxt.getCurrentAppName();
+		if (!ZmApp.ORGANIZER[app]) {
+			app = null;
+		}
 	}
 	for (var i = 0, len = list.length; i < len; i++) {
 		var o = list[i];
@@ -746,7 +749,7 @@ function(listType, callback) {
 	var folders = folderTree ? folderTree.asList({includeRemote:true}) : [];
 	for (var i = 0, len = folders.length; i < len; i++) {
 		var folder = folders[i];
-		if (folder.id != ZmOrganizer.ID_ROOT && (folder.type != ZmOrganizer.CALENDAR) && !ZmFolder.HIDE_ID[folder.id]) {
+		if (folder.id != ZmOrganizer.ID_ROOT && !ZmFolder.HIDE_ID[folder.id]) {
 			list.push(folder);
 		}
 	}

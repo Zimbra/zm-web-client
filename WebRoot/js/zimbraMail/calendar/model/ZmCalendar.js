@@ -20,40 +20,37 @@
  *
  * @author Andy Clark
  *
- * @param	{Hash}	params		a hash of parameters
- * @param {int}	params.id			the numeric ID
- * @param {String}	params.name		the name
- * @param {ZmOrganizer}	params.parent		the parent organizer
- * @param {ZmTree}	params.tree		the tree model that contains this organizer
- * @param {constant}	params.color		the color for this calendar
- * @param {String}	params.url		the URL for this organizer's feed
- * @param {String}	params.owner		the owner of this calendar
- * @param {String}	params.zid		the Zimbra id of owner, if remote share
- * @param {String}	params.rid		the remote id of organizer, if remote share
- * @param {String}	params.restUrl	the REST URL of this organizer
+ * @param {Hash}		params			a hash of parameters:
+ * @param {int}			params.id		the numeric ID
+ * @param {String}		params.name		the name
+ * @param {ZmOrganizer}	params.parent	the parent organizer
+ * @param {ZmTree}		params.tree		the tree model that contains this organizer
+ * @param {constant}	params.color	the color for this calendar
+ * @param {String}		params.url		the URL for this organizer's feed
+ * @param {String}		params.owner	the owner of this calendar
+ * @param {String}		params.zid		the Zimbra id of owner, if remote share
+ * @param {String}		params.rid		the remote id of organizer, if remote share
+ * @param {String}		params.restUrl	the REST URL of this organizer
  * 
- * @extends		ZmOrganizer
+ * @extends		ZmFolder
  */
 ZmCalendar = function(params) {
 	params.type = ZmOrganizer.CALENDAR;
-	ZmOrganizer.call(this, params);
+	ZmFolder.call(this, params);
 	this.reminder = params.reminder;
 };
 
-ZmCalendar.prototype = new ZmOrganizer;
+ZmCalendar.prototype = new ZmFolder;
 ZmCalendar.prototype.constructor = ZmCalendar;
 
+ZmCalendar.prototype.isZmCalendar = true;
+ZmCalendar.prototype.toString = function() { return "ZmCalendar"; };
 
 // Consts
 
 ZmCalendar.ID_CALENDAR = ZmOrganizer.ID_CALENDAR;
 
 // Public methods
-
-ZmCalendar.prototype.toString = 
-function() {
-	return "ZmCalendar";
-};
 
 /**
  * Creates a new calendar. The color and flags will be set later in response
@@ -208,7 +205,7 @@ function(obj) {
 
 ZmCalendar.prototype.notifyModify =
 function(obj) {
-	ZmOrganizer.prototype.notifyModify.call(this, obj);
+	ZmFolder.prototype.notifyModify.call(this, obj);
 
 	var doNotify = false;
 	var fields = {};
@@ -244,13 +241,13 @@ function(obj) {
         this.noSuchFolder = true;
         node.setText(this.getName(true));
     }else{
-        ZmOrganizer.prototype.notifyDelete.call(this, obj);
+        ZmFolder.prototype.notifyDelete.call(this, obj);
     }
 };
 
 ZmCalendar.prototype._delete = function(){
     this._deleteAction = true;
-    ZmOrganizer.prototype._delete.call(this);
+    ZmFolder.prototype._delete.call(this);
 };
 
 // Static methods
@@ -293,7 +290,7 @@ ZmCalendar.prototype.getRestUrl =
 function(acct) {
 
     if(!appCtxt.multiAccounts){
-        return ZmOrganizer.prototype.getRestUrl.call(this);
+        return ZmFolder.prototype.getRestUrl.call(this);
     }
 
 	// return REST URL as seen by server
@@ -341,7 +338,7 @@ function() {
 	if (this.isFeed()) {
 		return true; //feed calendar is read-only
 	}
-	return ZmOrganizer.prototype.isReadOnly.call(this);
+	return ZmFolder.prototype.isReadOnly.call(this);
 };
 
 
