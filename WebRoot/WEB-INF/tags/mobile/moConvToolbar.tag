@@ -78,10 +78,12 @@
         <optgroup label="<fmt:message key="markAs"/>">
             <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
             <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
-            <c:choose>
-                <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
-                <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
-            </c:choose>
+            <c:if test="${mailbox.features.spam}">
+                <c:choose>
+                    <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
+                    <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
+                </c:choose>
+            </c:if>
         </optgroup>
         <optgroup label="<fmt:message key="MO_flag"/>">
             <option value="actionFlag"><fmt:message key="add"/></option>
@@ -200,10 +202,12 @@
         <optgroup label="<fmt:message key="markAs"/>">
             <c:if test="${message.isUnread}"><option value="actionMarkRead"><fmt:message key="MO_read"/></option></c:if>
             <c:if test="${not message.isUnread}"><option value="actionMarkUnread"><fmt:message key="MO_unread"/></option></c:if>
-            <c:choose>
-                <c:when test="${myFolder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
-                <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
-            </c:choose>
+            <c:if test="${mailbox.features.spam}">
+                <c:choose>
+                    <c:when test="${myFolder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
+                    <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
+                </c:choose>
+            </c:if>
         </optgroup>
         <optgroup label="<fmt:message key="MO_flag"/>">
             <c:if test="${not message.isFlagged}"><option value="actionFlag"><fmt:message key="add"/></option></c:if>
@@ -240,10 +244,12 @@
         <optgroup label="<fmt:message key="markAs"/>">
             <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
             <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
-            <c:choose>
-                <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
-                <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
-            </c:choose>
+            <c:if test="${mailbox.features.spam}">
+                <c:choose>
+                    <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
+                    <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
+                </c:choose>
+            </c:if>
         </optgroup>
         <optgroup label="<fmt:message key="MO_flag"/>">
             <option value="actionFlag"><fmt:message key="add"/></option>
@@ -276,7 +282,9 @@
 <div id="fbbar" class="tb tbl" style="display:none;">
 <div class="tr"><span class="td" id="fbtd"><span id="sc"></span>
 <span class="zo_button_group delete_button">
+<c:if test="${mailbox.features.spam}">
 <input type='button' class='zo_button prev_button' name='actionJunk' value='<fmt:message key="${context.folder.isSpam ? 'actionNotSpam' : 'actionSpam'}"/>' onclick="$('zForm').anAction[0].value='actionMark${context.folder.isSpam ? 'Unspam' : 'Spam' }';submitForm($('zForm'));">
+</c:if>
 <input type='submit' class='zo_button next_button' name='action${context.folder.isInTrash ? 'Hard' : ''}Delete' value='<fmt:message key="delete"/>'>
 </span>
 <c:if test="${context.searchResult.size gt 0}">
@@ -293,10 +301,12 @@
         <optgroup label="<fmt:message key="markAs"/>">
             <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
             <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
-            <c:choose>
-                <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
-                <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
-            </c:choose>
+            <c:if test="${mailbox.features.spam}">
+                <c:choose>
+                    <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
+                    <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
+                </c:choose>
+            </c:if>
         </optgroup>
         <optgroup label="<fmt:message key="MO_flag"/>">
             <option value="actionFlag"><fmt:message key="add"/></option>

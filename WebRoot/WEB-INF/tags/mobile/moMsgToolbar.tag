@@ -86,10 +86,12 @@
                 <optgroup label="<fmt:message key="markAs"/>">
                     <c:if test="${msg.isUnread}"><option value="actionMarkRead"><fmt:message key="MO_read"/></option></c:if>
                     <c:if test="${not msg.isUnread}"><option value="actionMarkUnread"><fmt:message key="MO_unread"/></option></c:if>
-                    <c:choose>
-                        <c:when test="${myFolder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
-                        <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
-                    </c:choose>
+                    <c:if test="${mailbox.features.spam}">
+                        <c:choose>
+                            <c:when test="${myFolder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
+                            <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
+                        </c:choose>
+                    </c:if>
                 </optgroup>
                 <optgroup label="<fmt:message key="MO_flag"/>">
                     <c:if test="${not msg.isFlagged}"><option value="actionFlag"><fmt:message key="add"/></option></c:if>

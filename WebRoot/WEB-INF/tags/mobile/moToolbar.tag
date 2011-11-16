@@ -71,9 +71,13 @@
         <c:if test="${context.isMessageSearch}"><option value="actionAttachToCompose"><fmt:message key="sendAsAttachments"/></option></c:if>
         <optgroup label="<fmt:message key="markAs"/>">
             <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
-            <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option><c:choose>
+            <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
+            <c:if test="${mailbox.features.spam}">
+            <c:choose>
             <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
-            <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise></c:choose>
+            <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
+            </c:choose>
+            </c:if>
         </optgroup></c:when><c:when test="${context.isContactSearch}">
         <optgroup label="<fmt:message key="compose"/>">
             <option value="composeTo"><fmt:message key="to"/></option>
@@ -161,9 +165,13 @@
         <c:if test="${context.isMessageSearch}"><option value="actionAttachToCompose"><fmt:message key="sendAsAttachments"/></option></c:if>
         <optgroup label="<fmt:message key="markAs"/>">
             <option value="actionMarkRead"><fmt:message key="MO_read"/></option>
-            <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option><c:choose>
+            <option value="actionMarkUnread"><fmt:message key="MO_unread"/></option>
+            <c:if test="${mailbox.features.spam}">
+            <c:choose>
             <c:when test="${context.folder.isSpam}"><option value="actionMarkUnspam"><fmt:message key="actionNotSpam"/></option></c:when>
-            <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise></c:choose>
+            <c:otherwise><option value="actionMarkSpam"><fmt:message key="actionSpam"/></option></c:otherwise>
+            </c:choose>
+            </c:if>
         </optgroup></c:when><c:when test="${context.isContactSearch}">
         <optgroup label="<fmt:message key="compose"/>">
             <option value="composeTo"><fmt:message key="to"/></option>

@@ -68,7 +68,7 @@
         <mo:overviewFolder base="${context_url}" folder="${mailbox.drafts}" types="${mailbox.prefs.groupMailBy}"/>
         <mo:doFolderTree skiproot="${true}" parentid="${mailbox.drafts.id}" skipsystem="false"/>
     </c:if>
-    <c:if test="${empty query ||fn:containsIgnoreCase(mailbox.spam.name,query)}">
+    <c:if test="${mailbox.features.spam and (empty query ||fn:containsIgnoreCase(mailbox.spam.name,query))}">
         <mo:overviewFolder base="${context_url}" folder="${mailbox.spam}" types="${mailbox.prefs.groupMailBy}"/>
         <mo:doFolderTree skiproot="${true}" parentid="${mailbox.spam.id}" skipsystem="false"/>
     </c:if>
