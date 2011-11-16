@@ -318,6 +318,30 @@ function(includeTrash) {
 };
 
 /**
+ * Gets the unchecked calendar folder ids for a owner email
+ *
+ * @param	{String}	ownerEmailId		email id of the owner account
+ * @return	{Array}		an array of folder ids
+ */
+ZmCalViewController.prototype.getUncheckedCalendarIdsByOwner =
+function(ownerEmailId) {
+	var dataTree = appCtxt.getTree(ZmId.ORG_CALENDAR, appCtxt.getActiveAccount()),
+        calendars = dataTree.getByType(ZmId.ORG_CALENDAR),
+        len = calendars.length,
+        calIds = [],
+        calendar,
+        i;
+
+    for (i=0; i<len; i++) {
+        calendar = calendars[i];
+        if(!calendar.isChecked && calendar.owner && calendar.owner == ownerEmailId) {
+            calIds.push(calendar.id);
+        }
+    }
+    return calIds;
+};
+
+/**
  * Gets the checked calendar folder ids.
  * 
  * @param	{Boolean}	localOnly		if <code>true</code>, include local calendars only
@@ -335,6 +359,34 @@ function(localOnly, includeTrash) {
 	return localOnly
 		? this._checkedLocalCalendarIds
 		: this._checkedCalendarIds;
+};
+
+/**
+ * Gets the checked calendar folder ids.
+ *
+ * @param	{Boolean}	localOnly		if <code>true</code>, include local calendars only
+ * @return	{Array}		an array of folder ids
+ */
+ZmCalViewController.prototype.getOwnedCalendarIds =
+function(email, includeTrash) {
+    var i,
+        cal,
+        calendars,
+        calIds = [];
+    if(!this._calTreeController) {
+        this._calTreeController = appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);
+    }
+
+    calendars = this._calTreeController.getOwnedCalendars(this._app.getOverviewId(), email);
+    for (i = 0; i < calendars.length; i++) {
+        cal = calendars[i];
+        if (cal) {
+            if(!includeTrash && (cal.nId == ZmFolder.ID_TRASH)) { continue; }
+            calIds.push(appCtxt.multiAccounts ? cal.id : cal.nId);
+        }
+    }
+
+	return calIds;
 };
 
 /**
@@ -1854,7 +1906,7 @@ function(appt, mode) {
         confirmDialog = appCtxt.getConfirmationDialog();
 		var msg = isTrash ? ZmMsg.confirmPermanentCancelAppt : ZmMsg.confirmCancelAppt;
 
-		if (appt.isRecurring() && !isTrash) {
+		if (appt.isRecurring() && !appt.isException && !isTrash) {
 	    	msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE) ? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, AjxStringUtil.htmlEncode(appt.name)) :  ZmMsg.confirmCancelApptSeries; 
 		}
         confirmDialog.setTitle(ZmMsg.confirmDeleteApptTitle);
@@ -3179,13 +3231,13 @@ function(ev) {
 	var actionMenu = this.getActionMenu();
     var calendar = appt && appt.getFolder();
     var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;
-	var menu = (appt.isRecurring() && !isTrash) ? this._recurringActionMenu : actionMenu;
+	var menu = (appt.isRecurring() && !appt.isException && !isTrash) ? this._recurringActionMenu : actionMenu;
 	this._enableActionMenuReplyOptions(appt, menu);
 	var op = (menu == actionMenu) && appt.exception ? ZmOperation.VIEW_APPT_INSTANCE : null;
 	actionMenu.__appt = appt;
 	menu.setData(ZmOperation.KEY_ID, op);
 
-	if (appt.isRecurring() && !isTrash) {
+	if (appt.isRecurring() && !appt.isException && !isTrash) {
 		var menuItem = menu.getMenuItem(ZmOperation.VIEW_APPT_INSTANCE);
 		this._setTagMenu(menuItem.getMenu());
 		this._enableActionMenuReplyOptions(appt, menuItem.getMenu());

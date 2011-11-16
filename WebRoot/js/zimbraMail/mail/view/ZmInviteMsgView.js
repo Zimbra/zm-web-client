@@ -261,6 +261,9 @@ function() {
 		this.resize();
 
         var acctFolderIds = [].concat(cc.getCheckedCalendarFolderIds()); // create a *copy*
+        if(this._msg.cif) {
+            acctFolderIds = acctFolderIds.concat(cc.getUncheckedCalendarIdsByOwner(this._msg.cif));
+        }
 		var rt = this._dayView.getTimeRange();
 		var params = {
 			start: rt.start,
@@ -275,8 +278,8 @@ function() {
 
 ZmInviteMsgView.prototype.isRight =
 function() {
-	return this.parent._controller.isReadingPaneOnRight(); 
-}
+	return this.parent._controller.isReadingPaneOnRight();
+};
 
 /**
  * Resizes the view depending on whether f/b is being shown or not.
