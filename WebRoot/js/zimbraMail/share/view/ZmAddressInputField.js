@@ -735,7 +735,7 @@ function(ev) {
 			this._handleResponseGetContact(ev, contact);
 		} else {
 			menu.getOp(ZmOperation.CONTACT).setText(ZmMsg.loading);
-			var respCallback = this._handleResponseGetContact.bind(this, [ev]);
+			var respCallback = this._handleResponseGetContact.bind(this, ev);
 			contactsApp.getContactByEmail(email, respCallback);
 		}
 	}
