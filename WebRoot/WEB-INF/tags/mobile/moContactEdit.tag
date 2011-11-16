@@ -154,8 +154,8 @@
         <div class="tr nr">
             <span class="td label"><label for="fileAs"><fmt:message key="fileAs"/></label></span>
             <span class="td value">
-                <input type="hidden" name="origFileAs" value="${empty contact ? '': contact.fileAs}" />
-                <c:set var="selected" value="${empty contact? '1' : contact.fileAs}"/>
+                <input type="hidden" name="origFileAs" value="${zm:cook(empty contact ? '': contact.fileAs)}" />
+                <c:set var="selected" value="${zm:cook(empty contact? '1' : contact.fileAs)}"/>
                 <select name="fileAs" id="fileAs">
                     <option <c:if test="${selected eq '1'}">selected</c:if> value="1"><fmt:message key="AB_FILE_AS_lastFirst"/></option>
                     <option <c:if test="${selected eq '2'}">selected</c:if> value="2"><fmt:message key="AB_FILE_AS_firstLast"/></option>
