@@ -35,7 +35,6 @@
  */
 ZmTradController = function(container, mailApp, type, sessionId, searchResultsController) {
 	ZmDoublePaneController.apply(this, arguments);
-	this._msgControllerMode = ZmId.VIEW_TRAD;
 };
 
 ZmTradController.prototype = new ZmDoublePaneController;
@@ -108,7 +107,7 @@ function(ev) {
 	if (!handled && ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
 		var ctlr = AjxDispatcher.run("GetMsgController", item.nId);
-		ctlr.show(item, this._msgControllerMode, respCallback, true);
+		ctlr.show(item, this, respCallback, true);
 	}
 };
 

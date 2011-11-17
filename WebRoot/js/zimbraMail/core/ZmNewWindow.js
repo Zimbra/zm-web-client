@@ -292,7 +292,7 @@ function() {
 		
 		var msgController = AjxDispatcher.run("GetMsgController");
 		appCtxt.msgCtlrSessionId = msgController.getSessionId();
-		msgController.show(params.msg, params.mode);
+		msgController.show(params.msg, params.parentController);
 		rootTg.addMember(msgController.getTabGroup());
 		startupFocusItem = msgController.getCurrentView();
 

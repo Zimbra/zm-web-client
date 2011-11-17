@@ -1272,7 +1272,6 @@ ZmMailMsgCapsuleViewHeader.prototype._dblClickListener =
 function(ev) {
 	var msg = ev.dwtObj && ev.dwtObj.parent && ev.dwtObj.parent._msg;
 	if (msg) {
-		var mode = ev.dwtObj.parent && ev.dwtObj.parent.parent && ev.dwtObj.parent.parent._mode;
-		AjxDispatcher.run("GetMsgController", msg && msg.nId).show(msg, mode, null, true);
+		AjxDispatcher.run("GetMsgController", msg && msg.nId).show(msg, this._controller, null, true);
 	}
 };

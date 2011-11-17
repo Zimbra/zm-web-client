@@ -1621,13 +1621,13 @@ function(ev, callback) {
 	var msg = this.getMsg();
 	if (msg) {
 		if (msg._loaded) {
-			ZmMailMsgView.detachMsgInNewWindow(msg, false, this._msgControllerMode);
+			ZmMailMsgView.detachMsgInNewWindow(msg, false, this);
 			// always mark a msg read if it is displayed in its own window
 			if (msg.isUnread && !appCtxt.getById(msg.folderId).isReadOnly()) {
 				msg.list.markRead({items:[msg], value:true});
 			}
 		} else {
-			ZmMailMsgView.rfc822Callback(msg.id, null, this._msgControllerMode);
+			ZmMailMsgView.rfc822Callback(msg.id, null, this);
 		}
 	}
 	if (callback) { callback.run(); }

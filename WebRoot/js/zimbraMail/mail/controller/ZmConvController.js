@@ -36,7 +36,6 @@ ZmConvController = function(container, mailApp, type, sessionId) {
 
 	this._convDeleteListener = this._deleteListener.bind(this);
 	this._listeners[ZmOperation.DELETE_MENU] = this._convDeleteListener;
-	this._msgControllerMode = ZmId.VIEW_CONV;
 };
 
 ZmConvController.prototype = new ZmDoublePaneController;
@@ -45,7 +44,7 @@ ZmConvController.prototype.constructor = ZmConvController;
 ZmConvController.prototype.isZmConvController = true;
 ZmConvController.prototype.toString = function() { return "ZmConvController"; };
 
-ZmMailListController.GROUP_BY_ICON[ZmId.VIEW_CONV]			= "ConversationView";
+ZmMailListController.GROUP_BY_ICON[ZmId.VIEW_CONV] = "ConversationView";
 
 
 /**
@@ -53,7 +52,7 @@ ZmMailListController.GROUP_BY_ICON[ZmId.VIEW_CONV]			= "ConversationView";
  *
  * @param {ZmSearch}			activeSearch		the current search results
  * @param {ZmConv}				conv				a conversation
- * @param {ZmMailController}	parentController	the controller that called this method
+ * @param {ZmListController}	parentController	the controller that called this method
  * @param {AjxCallback}			callback			the client callback
  * @param {Boolean}				markRead		if <code>true</code>, mark msg read
  */
@@ -288,7 +287,7 @@ function(ev) {
 	var handled = ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
 	if (!handled && ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
-		AjxDispatcher.run("GetMsgController", item && item.nId).show(item, this._msgControllerMode, respCallback, true);
+		AjxDispatcher.run("GetMsgController", item && item.nId).show(item, this, respCallback, true);
 	}
 };
 

@@ -61,16 +61,16 @@ ZmMsgController.prototype.getDefaultViewType = ZmMsgController.getDefaultViewTyp
 /**
  * Displays a message in the single-pane view.
  *
- * @param {ZmMailMsg}	msg		the message to display
- * @param {constant}	mode		the owning view ID
- * @param {AjxCallback}	callback	the client callback
- * @param {Boolean}	markRead	if <code>true</code>, mark msg read
- * @param {Boolean}	hidePagination	if <code>true</code>, hide the pagination buttons
+ * @param {ZmMailMsg}			msg					the message to display
+ * @param {ZmListController}	parentController	the controller that called this method
+ * @param {AjxCallback}			callback			the client callback
+ * @param {Boolean}				markRead			if <code>true</code>, mark msg read
+ * @param {Boolean}				hidePagination		if <code>true</code>, hide the pagination buttons
  */
 ZmMsgController.prototype.show = 
-function(msg, mode, callback, markRead, hidePagination) {
+function(msg, parentController, callback, markRead, hidePagination) {
 	this.setMsg(msg);
-	this._mode = mode;
+	this._parentController = parentController;
 	this.setList(msg.list);
 	if (!msg._loaded) {
 		var respCallback = new AjxCallback(this, this._handleResponseShow, [callback, hidePagination]);
@@ -282,16 +282,16 @@ function(view, show) {
 
 ZmMsgController.prototype._goToMsg =
 function(view, next) {
-	var controller = this._getParentListController();
-	if (controller) {
+	var controller = this._parentController;
+	if (controller && controller.pageItemSilently) {
 		controller.pageItemSilently(this._msg, next, this);
 	}
 };
 
 ZmMsgController.prototype._selectNextItemInParentListView =
 function() {
-	var controller = this._getParentListController();
-	if (controller) {
+	var controller = this._parentController;
+	if (controller && controller._getNextItemToSelect) {
 		controller._view[controller._currentViewId]._itemToSelect = controller._getNextItemToSelect();
 	}
 };
@@ -414,24 +414,6 @@ function(ev) {
         url+="&acct=" + acctName ;
     }
     window.open(appContextPath+url, "_blank");
-};
-
-/**
- * Returns the parent list controller (TV, CLV, or CV)
- *
- * @private
- */
-ZmMsgController.prototype._getParentListController =
-function() {
-	var ac = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
-	var mailApp = ac.getApp(ZmApp.MAIL);
-	if (this._mode == ZmId.VIEW_TRAD) {
-		return mailApp.getTradController();
-	} else if (this._mode == ZmId.VIEW_CONV) {
-		return mailApp.getConvController();
-	} else if (this._mode == ZmId.VIEW_CONVLIST) {
-		return mailApp.getConvListController();
-	}
 };
 
 ZmMsgController.prototype._acceptShareHandler =
