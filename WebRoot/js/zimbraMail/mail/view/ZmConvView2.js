@@ -722,6 +722,7 @@ ZmMailMsgCapsuleView.prototype.set =
 function(msg, force) {
 	this._expanded = this._forceExpand || (!this._forceCollapse && msg.isUnread);
 	ZmMailMsgView.prototype.set.apply(this, arguments);
+	this._header._setExpandIcon(this._expanded);
 };
 
 ZmMailMsgCapsuleView.prototype._renderMessage =
