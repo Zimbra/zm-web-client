@@ -100,7 +100,7 @@
                                  </div>
                                  <div class="ZhThumbnailName">
                                     <span>
-                                        <a href="${fn:escapeXml(url)}" id="${aid}">${empty subFolder.name ? unknownSubject : zm:truncate(subFolder.name,16,true)}</a>
+                                        <a href="${fn:escapeXml(url)}" id="${aid}">${empty subFolder.name ? unknownSubject : zm:truncate(zm:cook(subFolder.name),16,true)}</a>
                                     </span>
                                  </div>
                              </div>
