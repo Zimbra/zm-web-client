@@ -109,6 +109,10 @@ function() {
         this.setSchedulerVisibility(false);
     }
 
+    if(!appCtxt.get(ZmSetting.GAL_ENABLED) && this._useAcAddrBubbles){
+        Dwt.setSize(this._attInputField[ZmCalBaseItem.LOCATION]._input, "100%");
+    }
+
     //bug:48189 Hide schedule tab for non-ZCS acct
     if (appCtxt.isOffline) {
         var currAcct = appCtxt.getActiveAccount();
