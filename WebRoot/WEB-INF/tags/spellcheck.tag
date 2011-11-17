@@ -143,7 +143,32 @@ function enableSpellCheck(myEditor) {
       label: 'Check Spelling',
       value: 'spellcheck'
     };*/
-    
+
+  /*
+	This function traverses each node recursively and includes incorrect words in the textNodes as shown below 
+	<span> <span class="yui-spellcheck"> word </span> .... </span>
+  */
+
+    myEditor._processSpellCheck = function(n, data) {
+	if (n.nodeType == 3) { // Text Node
+		var p = n.parentNode;
+		var ele = document.createElement("span");
+		for (var i = 0; i< data.length; i++){
+			n.nodeValue  = n.nodeValue && n.nodeValue.replace(data[i].word,
+				 '<span class="yui-spellcheck">' + data[i].word + '</span>');
+		}
+		ele.innerHTML = n.nodeValue;
+		p.replaceChild(ele, n);
+		ele.processed = true;
+	} else {
+		var childs = n.childNodes;
+		for(var i = 0; i < childs.length; i++){
+			if (!childs[i].parentNode.processed)
+				this._processSpellCheck(childs[i], data);
+		}
+	}
+    };
+
     myEditor._checkSpelling = function(o) {
         //Change this code to suit your backend checker
 		var data = eval('(' + o.responseText + ')');
@@ -154,11 +179,7 @@ function enableSpellCheck(myEditor) {
 			alert("<fmt:message key="spellcheckNoMistakesFound"/>");
 			this.endSpellCheck();
 		} else {
-                var html = this._getDoc().body.innerHTML;
-                for (var i = 0; i < data.data.length; i++) {
-                    html = html.replace(data.data[i].word, '<span class="yui-spellcheck">' + data.data[i].word + '</span>');
-                }
-                this.setEditorHTML(html);
+			this._processSpellCheck(this._getDoc().body, data.data);
 			this._spellData = data.data;
 		}
 	};
@@ -206,9 +227,14 @@ function enableSpellCheck(myEditor) {
 		if (this.checking) {
 			this.checking = false;
 			var el = Dom.getElementsByClassName('yui-spellcheck', 'span', this._getDoc().body);
-			//More work needed here for cleanup..
-			Dom.removeClass(el, 'yui-spellcheck');
-			Dom.addClass(el, 'yui-none');
+			var length = el ? el.length:0;
+ 			// reverting the styles added by _processSpellCheck function
+			for (var i=0; i < length; i++){
+				if (el[i].parentNode){
+					el[i].parentNode.processed = false;
+					el[i].parentNode.replaceChild(document.createTextNode(el[i].innerHTML), el[i]);
+				}
+			}
 			this.toolbar.set('disabled', false);
 			try{ this.nodeChange(); } catch(ex) {;}
 		}
