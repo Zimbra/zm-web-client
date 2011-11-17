@@ -168,7 +168,7 @@ ZmTaskTreeController.prototype._deleteListener =
 function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
 	var callback = new AjxCallback(this, this._deleteListener2, [organizer]);
-	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteTaskFolder, organizer.name);
+	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteTaskFolder, AjxStringUtil.htmlEncode(organizer.name));
 
 	appCtxt.getConfirmationDialog().popup(message, callback);
 };
