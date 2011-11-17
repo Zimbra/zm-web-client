@@ -1168,11 +1168,12 @@ ZmMailMsgCapsuleViewHeader = function(params) {
 	this._expandIconCellId	= id + "_expandCell";
 	this._expandIconId		= id + "_expand";
 	this._fragmentCellId	= id + "_fragment";
+	var fromAddr = msg.getAddress(AjxEmailAddress.FROM);
 	var dateString = new AjxDateFormat("EEEE h:mm a").format(new Date(msg.sentDate || msg.date));
 	var subs = {
 		tableRowId:			this._tableRowId,
 		expandIconCellId:	this._expandIconCellId,
-		from:				msg.getAddress(AjxEmailAddress.FROM).toString(true),
+		from:				fromAddr ? AjxStringUtil.htmlEncode(fromAddr.toString(true)) : "",
 		fragmentCellId:		this._fragmentCellId,
 		fragment:			this._getFragment(),
 		date:				dateString
@@ -1232,7 +1233,7 @@ function(expanded) {
 ZmMailMsgCapsuleViewHeader.prototype._getFragment =
 function() {
 	var fragment = (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && !this.parent._expanded) ? this._msg.fragment : "";
-	return fragment || "";
+	return fragment ? AjxStringUtil.htmlEncode(fragment) : "";
 };
 
 ZmMailMsgCapsuleViewHeader.prototype._mouseDownListener =
