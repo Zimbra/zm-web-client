@@ -82,7 +82,7 @@
             <c:if test="${param.showSearch != '1'}">
                 <c:set var="surl" value="${surl}showSearch=1"/>
             </c:if>
-            <a onclick="return toggleSearch();" href="${surl}"><img id="search_img" alt="<fmt:message key="search"/>" src="<app:imgurl value='mobile/Search${param.showSearch!="1"?"":"-sel"}.gif' />"
+            <a onclick="return toggleSearch();" href="${zm:cook(surl)}"><img id="search_img" alt="<fmt:message key="search"/>" src="<app:imgurl value='mobile/Search${param.showSearch!="1"?"":"-sel"}.gif' />"
                  border="0" width="55" height="48"></a>
         </td>
     </tr>
