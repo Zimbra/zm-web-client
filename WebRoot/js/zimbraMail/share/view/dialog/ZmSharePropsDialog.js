@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -35,10 +35,10 @@ ZmSharePropsDialog = function(shell, className) {
 	// create auto-completer	
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
-			dataClass: appCtxt.getAutocompleter(),
-			matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
-			compCallback: (new AjxCallback(this, this._handleCompletionData, [this])),
-			keyUpCallback: (new AjxCallback(this, this._acKeyUpListener))
+			dataClass:		appCtxt.getAutocompleter(),
+			matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
+			keyUpCallback:	this._acKeyUpListener.bind(this),
+			contextId:		this.toString()
 		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
@@ -51,6 +51,8 @@ ZmSharePropsDialog = function(shell, className) {
 ZmSharePropsDialog.prototype = new DwtDialog;
 ZmSharePropsDialog.prototype.constructor = ZmSharePropsDialog;
 
+ZmSharePropsDialog.prototype.isZmSharePropsDialog = true;
+ZmSharePropsDialog.prototype.toString = function() { return "ZmSharePropsDialog"; };
 
 // Constants
 /**
@@ -68,10 +70,6 @@ ZmSharePropsDialog.prototype._mode = ZmSharePropsDialog.NEW;
 
 // Public methods
 
-ZmSharePropsDialog.prototype.toString =
-function() {
-	return "ZmSharePropsDialog";
-};
 
 /**
  * Pops-up the dialog.
@@ -89,6 +87,15 @@ function(mode, object, share) {
 
 	this._nameEl.innerHTML = AjxStringUtil.htmlEncode(object.name);
 	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[this._object.type]] || ZmMsg.folder;
+	// TODO: False until server handling of the flag is added
+	//if (object.type == ZmOrganizer.FOLDER) {
+	if (false) {
+		this._markReadEl.innerHTML = object.globalMarkRead ? ZmMsg.sharingDialogGlobalMarkRead :
+                                                             ZmMsg.sharingDialogPerUserMarkRead;
+		this._props.setPropertyVisible(this._markReadId, true)
+	} else {
+		this._props.setPropertyVisible(this._markReadId, false)
+	}
 
 	var isNewShare = (this._shareMode == ZmSharePropsDialog.NEW);
 	var isUserShare = share ? share.isUser() || share.isGroup() : true;
@@ -212,6 +219,14 @@ function() {
 		text = text.substr(0, index) + "..." + text.substr(index + length);
 	}
 
+    var webcalURL = "webcal:" + url.substring((url.indexOf("//")));
+    var webcalText = webcalURL;
+    if (webcalText.length > 50) {
+		var length = webcalText.length - 50;
+		var index = (webcalText.length - length) / 2;
+		webcalText = webcalText.substr(0, index) + "..." + webcalText.substr(index + length);
+	}
+
 	var isRestFolder = this._object.type != ZmOrganizer.FOLDER;
 	this._urlGroup.setVisible(isRestFolder);
 	if (isRestFolder) {
@@ -222,6 +237,9 @@ function() {
 				"</div>",
 				"<div>", ZmMsg.view, ":&nbsp;&nbsp;",
 					'<a target=_new href="',url,'.html">',text,".html</a>",
+				"</div>",
+                "<div>", ZmMsg.outlookURL, ":&nbsp;&nbsp;",
+					'<a target=_new href="',webcalURL,'">',webcalText,"</a>",
 				"</div>"
 			].join("");
 		} else {
@@ -407,7 +425,7 @@ function(shares, result) {
 
 			if (this._guestRadioEl.checked) {
 				if (!this._guestFormatter) {
-					this._guestFormatter = new AjxMessageFormat(ZmMsg.shareWithGuestNotes);
+					this._guestFormatter = new AjxMessageFormat(ZmMsg.shareCalWithGuestNotes);
 				}
 
 				var url = share.object.getRestUrl();
@@ -417,8 +435,11 @@ function(shares, result) {
 					url = remoteUri + url.substring((url.indexOf("/",7)));
 				}
 
+                //bug:34647 added webcal url for subscribing to outlook/ical on a click
+                var webcalURL = "webcal:" + url.substring((url.indexOf("//")));
+
 				var password = this._passwordInput.getValue();
-				guestnotes = this._guestFormatter.format([url, email, password, notes]);
+				guestnotes = this._guestFormatter.format([url, webcalURL, email, password, notes]);
 			}
 			tmpShare.notes = guestnotes || notes;
 
@@ -573,29 +594,13 @@ function() {
 	return perm;
 };
 
-ZmSharePropsDialog.prototype._handleCompletionData = 
-function (control, text, element) {
-	element.value = text;
-	try {
-		if (element.fireEvent) {
-			element.fireEvent("onchange");
-		} else if (document.createEvent) {
-			var ev = document.createEvent("UIEvents");
-			ev.initUIEvent("change", false, window, 1);
-			element.dispatchEvent(ev);
-		}
-	}
-	catch (ex) {
-		// ignore -- TODO: what to do with this error?
-	}
-};
-
 ZmSharePropsDialog.prototype._createView =
 function() {
 	var view = new DwtComposite(this);
 
 	// ids
 	var nameId = Dwt.getNextId();
+    var markReadValueId = Dwt.getNextId();
 	var typeId = Dwt.getNextId();
 	var granteeId = Dwt.getNextId();
 	var inheritId = Dwt.getNextId();
@@ -608,13 +613,13 @@ function() {
 
 	var shareWith = new DwtPropertySheet(this, null, null, DwtPropertySheet.RIGHT);
 	var shareWithProperties = [
-		{ label: ZmMsg.shareWithUserOrGroup,
+		{ label: "<label for='ShareWith_user' >" +  ZmMsg.shareWithUserOrGroup + "</label>",
 		  field: ["<input type='radio' id='ShareWith_user' name='",shareWithRadioName,"' value='",ZmShare.TYPE_USER,"'>"].join("")
 		},
-		{ label: ZmMsg.shareWithGuest,
+		{ label: "<label for='ShareWith_external' >" + ZmMsg.shareWithGuest + "</label>",
 		  field: ["<input type='radio' id='ShareWith_external' name='",shareWithRadioName,"' value='",ZmShare.TYPE_GUEST,"'>"].join("")
 		},
-		{ label: ZmMsg.shareWithPublicLong,
+		{ label: "<label for='ShareWith_public' >" + ZmMsg.shareWithPublicLong + "</label>",
 		  field: ["<input type='radio' id='ShareWith_public' name='",shareWithRadioName,"' value='",ZmShare.TYPE_PUBLIC,"'>"].join("")
 		}
 	];
@@ -647,14 +652,15 @@ function() {
 				"<td>",
 					"<input type='checkbox' id='",inheritId,"' checked>",
 				"</td>",
-				"<td>", ZmMsg.inheritPerms, "</td>",
+				"<td>","<label for='", inheritId,  "'>" , ZmMsg.inheritPerms, "</label>", "</td>",
 			"</tr>",
 		"</table>"
 	].join("");
 
 	this._props = new DwtPropertySheet(view);
 	this._props.addProperty(ZmMsg.nameLabel, "<span id='"+nameId+"'></span>");
-	this._props.addProperty(ZmMsg.typeLabel, "<span id='"+typeId+"'></span>");
+    this._props.addProperty(ZmMsg.typeLabel, "<span id='"+typeId+"'></span>");
+    this._markReadId = this._props.addProperty(ZmMsg.sharingDialogMarkReadLabel, "<span id='"+markReadValueId+"'></span>");
 	this._props.addProperty(ZmMsg.shareWithLabel, shareWith);
 	var otherId = this._props.addProperty(ZmMsg.otherLabel, otherHtml);
 
@@ -681,9 +687,17 @@ function() {
 		html[idx++] = "' id='ShareRole_";
         html[idx++] = role;
         html[idx++] = "'></td><td style='font-weight:bold; padding-right:0.25em'>";
+		html[idx++] = "<label for='ShareRole_";
+        	html[idx++] = role;
+        	html[idx++] = "'>";
 		html[idx++] = ZmShare.getRoleName(role);
+		html[idx++] = "</label>"
 		html[idx++] = "</td><td style='white-space:nowrap'>";
+		html[idx++] = "<label for='ShareRole_";
+        	html[idx++] = role;
+        	html[idx++] = "'>";
 		html[idx++] = ZmShare.getRoleActions(role);
+		html[idx++] = "</label>"
 		html[idx++] = "</td></tr>";
 	}
 
@@ -695,7 +709,7 @@ function() {
 
 	this._privatePermission = new DwtPropertySheet(view);
 	this._privatePermission._vAlign = "middle";
-	this._privatePermission.addProperty("<input type='checkbox' id='" + permissionId + "'/>",  ZmMsg.privatePermission);
+	this._privatePermission.addProperty("<input type='checkbox' id='" + permissionId + "'/>",  "<label for='" + permissionId + "' >" +  ZmMsg.privatePermission +  "</label>");
 	this._privateEl = document.getElementById(permissionId);
 	Dwt.setHandler(this._privateEl, DwtEvent.ONCLICK, ZmSharePropsDialog._handleEdit);
 	Dwt.associateElementWithObject(this._privateEl, this);
@@ -722,7 +736,8 @@ function() {
 
 	// save information elements
 	this._nameEl = document.getElementById(nameId);
-	this._typeEl = document.getElementById(typeId);
+    this._typeEl = document.getElementById(typeId);
+    this._markReadEl = document.getElementById(markReadValueId);
 	this._urlEl = document.getElementById(urlId);
 
 	var inputEl = this._granteeInput.getInputElement();

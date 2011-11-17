@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -38,6 +38,7 @@ ZmPopupMenu = function(parent, className, id, controller) {
 	var params = Dwt.getParams(arguments, ZmPopupMenu.PARAMS);
 	params.className = params.className ? params.className : "ActionMenu";
 	params.style = params.style || DwtMenu.POPUP_STYLE;
+    params.id = params.id || "POPUP_" + Dwt.getNextId();
 	DwtMenu.call(this, params);
 
 	controller = controller || appCtxt.getCurrentController();
@@ -142,9 +143,9 @@ function(enabled) {
  * @see		DwtMenuItem
  */
 ZmPopupMenu.prototype.createMenuItem =
-function(id, params) {
+function(id, params, htmlElId) {
 	var mi = this._menuItems[id] = new DwtMenuItem({parent:this, style:params.style, radioGroupId:params.radioGroupId,
-													id:params.id, index:params.index});
+													id: (htmlElId || params.id), index: params.index});
 	if (params.image) {
 		mi.setImage(params.image);
 	}
@@ -179,6 +180,21 @@ function(id) {
 };
 
 /**
+ * sets an item visibility. finds the menu item by id. 
+ *
+ * @param	{String}	id  the operation id
+ * @param	{Boolean}	visible
+ */
+ZmPopupMenu.prototype.setItemVisible =
+function(id, visible) {
+	var item = this.getMenuItem(id);
+	if (!item) {
+		return;
+	}
+	item.setVisible(visible);
+};
+
+/**
  * Gets the menu items.
  *
  * @return	{array}		an array of {@link DwtMenuItem} objects
@@ -187,6 +203,28 @@ ZmPopupMenu.prototype.getMenuItems =
 function() {
 	return this._menuItems;
 };
+
+/**
+ * Gets the menu search sub-menu (if any).
+ *
+ * @return {DwtMenu}        the menu
+ */
+ZmPopupMenu.prototype.getSearchMenu =
+function() {
+    var menuItem = this.getMenuItem(ZmOperation.SEARCH_MENU);
+    if (menuItem) {
+        return menuItem.getMenu();
+    }
+};
+
+ZmPopupMenu.prototype.getContactGroupMenu =
+function() {
+	var menuItem = this.getMenuItem(ZmOperation.CONTACTGROUP_MENU);
+	if (menuItem) {
+		return menuItem.getMenu();
+	}
+};
+
 
 /**
  * Creates a menu item separator.

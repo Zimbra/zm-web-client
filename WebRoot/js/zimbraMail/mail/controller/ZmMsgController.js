@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -23,14 +23,16 @@
  * @author Parag Shah
  * @author Conrad Damon
  * 
- * @param {ZmComposite}	container	the containing shell
- * @param {ZmMailApp}	mailApp			the containing app
+ * @param {DwtControl}	container		the containing shell
+ * @param {constant}	type			type of controller
+ * @param {ZmApp}		mailApp			the containing application
+ * @param {string}		sessionId		the session id
  * 
  * @extends		ZmMailListController
  */
-ZmMsgController = function(container, mailApp) {
+ZmMsgController = function(container, mailApp, type, sessionId) {
 
-	ZmMailListController.call(this, container, mailApp);
+	ZmMailListController.apply(this, arguments);
 };
 
 ZmMsgController.prototype = new ZmMailListController;
@@ -45,29 +47,33 @@ ZmMsgController.DEFAULT_TAB_TEXT = ZmMsg.message;
 
 ZmMsgController.viewToTab = {};
 
+ZmMsgController.prototype.isZmMsgController = true;
+ZmMsgController.prototype.toString = function() { return "ZmMsgController"; };
+
 // Public methods
 
-ZmMsgController.prototype.toString = 
+ZmMsgController.getDefaultViewType =
 function() {
-	return "ZmMsgController";
+	return ZmId.VIEW_MSG;
 };
+ZmMsgController.prototype.getDefaultViewType = ZmMsgController.getDefaultViewType;
 
 /**
  * Displays a message in the single-pane view.
  *
- * @param {ZmMailMsg}	msg		the message to display
- * @param {constant}	mode		the owning view ID
- * @param {AjxCallback}	callback	the client callback
- * @param {Boolean}	markRead	if <code>true</code>, mark msg read
+ * @param {ZmMailMsg}			msg					the message to display
+ * @param {ZmListController}	parentController	the controller that called this method
+ * @param {AjxCallback}			callback			the client callback
+ * @param {Boolean}				markRead			if <code>true</code>, mark msg read
+ * @param {Boolean}				hidePagination		if <code>true</code>, hide the pagination buttons
  */
 ZmMsgController.prototype.show = 
-function(msg, mode, callback, markRead) {
+function(msg, parentController, callback, markRead, hidePagination) {
 	this.setMsg(msg);
-	this._mode = mode;
-	this._currentView = this._getViewType();
-	this._list = msg.list;
+	this._parentController = parentController;
+	this.setList(msg.list);
 	if (!msg._loaded) {
-		var respCallback = new AjxCallback(this, this._handleResponseShow, [callback]);
+		var respCallback = new AjxCallback(this, this._handleResponseShow, [callback, hidePagination]);
 		if (msg._loadPending) {
 			// override any local callback if we're being launched by double-pane view,
 			// so that multiple GetMsgRequest's aren't made
@@ -77,13 +83,14 @@ function(msg, mode, callback, markRead) {
 			msg.load({callback:respCallback, markRead:markRead});
 		}
 	} else {
-		this._handleResponseShow(callback);
+		this._handleResponseShow(callback, hidePagination);
 	}
 };
 
 ZmMsgController.prototype._handleResponseShow = 
-function(callback, result) {
+function(callback, hidePagination, result) {
 	this._showMsg();
+	this._showNavToolBarButtons(this._currentViewId, !hidePagination);
 	if (callback instanceof AjxCallback) {
 		callback.run();
 	}
@@ -106,25 +113,36 @@ function() {
 ZmMsgController.prototype._showMsg = 
 function() {
 	var avm = appCtxt.getAppViewMgr();
-	this._setup(this._currentView);
-	var elements = {};
-	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+	this._setup(this._currentViewId);
+	var elements = this.getViewElements(this._currentViewId, this._view[this._currentViewId]);
+
 	var curView = avm.getCurrentViewId();
-	var tabId = (curView && curView.indexOf(ZmId.VIEW_MSG) == 0) ? ZmMsgController.viewToTab[curView] : Dwt.getNextId();
-	ZmMsgController.viewToTab[this.viewId] = tabId;
-	var viewParams = {view:this._currentView, elements:elements, clear:appCtxt.isChildWindow, tabParams:this._getTabParams(tabId, new AjxCallback(this, this._tabCallback))};
-	var buttonText = (this._msg && this._msg.subject) ? AjxStringUtil.htmlEncode(this._msg.subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT)) : ZmMsgController.DEFAULT_TAB_TEXT;
+	var tabId = ZmMsgController.viewToTab[curView] || Dwt.getNextId();
+	ZmMsgController.viewToTab[this._currentViewId] = tabId;
+	var viewParams = {
+		view:		this._currentViewId,
+		viewType:	this._currentViewType,
+		elements:	elements,
+		clear:		appCtxt.isChildWindow,
+		tabParams:	this._getTabParams(tabId, this._tabCallback.bind(this))
+	};
+	var buttonText = (this._msg && this._msg.subject) ? this._msg.subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT) : ZmMsgController.DEFAULT_TAB_TEXT;
 	this._setView(viewParams);
-	avm.setTabTitle(this.viewId, buttonText);
-	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
-	this._resetNavToolBarButtons(this._currentView);
-	this._toolbar[this._currentView].adjustSize();
+	avm.setTabTitle(this._currentViewId, buttonText);
+	this._resetOperations(this._toolbar[this._currentViewId], 1); // enable all buttons
+	this._resetNavToolBarButtons();
+	this._toolbar[this._currentViewId].adjustSize();
 };
 
 ZmMsgController.prototype._getTabParams =
 function(tabId, tabCallback) {
-	return {id:tabId, image:"MessageView", textPrecedence:85, tooltip:ZmMsgController.DEFAULT_TAB_TEXT, tabCallback: tabCallback};
+	return {
+		id:				tabId,
+		image:			"MessageView",
+		textPrecedence:	85,
+		tooltip:		ZmMsgController.DEFAULT_TAB_TEXT,
+		tabCallback:	tabCallback
+	};
 };
 
 ZmMsgController.prototype.getKeyMapName =
@@ -142,11 +160,11 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.NEXT_PAGE:
-			this._goToMsg(this._currentView, true);
+			this._goToMsg(this._currentViewId, true);
 			break;
 
 		case ZmKeyMap.PREV_PAGE:
-			this._goToMsg(this._currentView, false);
+			this._goToMsg(this._currentViewId, false);
 			break;
 
 		default:
@@ -165,67 +183,26 @@ function(map) {
 
 ZmMsgController.prototype._getToolBarOps = 
 function() {
-	var list;
+	var list = [];
 	if (appCtxt.isChildWindow) {
-		list = [ZmOperation.CLOSE, ZmOperation.SEP, ZmOperation.PRINT, ZmOperation.DELETE];
-		list.push(ZmOperation.SEP);
-		list = list.concat(this._msgOps());
-		list.push(ZmOperation.SEP, ZmOperation.SPAM, ZmOperation.SEP, ZmOperation.TAG_MENU);
+		list = [ZmOperation.CLOSE, ZmOperation.SEP];
 	}
-	else {
-		list = this._standardToolBarOps();
-		list.push(ZmOperation.SEP);
-		list = list.concat(this._msgOps());
-		list.push(ZmOperation.SEP,
-					ZmOperation.SPAM,
-					ZmOperation.SEP,
-					ZmOperation.TAG_MENU,
-					ZmOperation.SEP);
-		if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
-			list.push(ZmOperation.DETACH);
-		}
-	}
+	list = list.concat(ZmMailListController.prototype._getToolBarOps(true));
 	return list;
 };
 
 ZmMsgController.prototype._initializeToolBar =
 function(view) {
-	if (!appCtxt.isChildWindow) {
-		ZmMailListController.prototype._initializeToolBar.call(this, view);
-	} else {
-		var buttons = this._getToolBarOps();
-		if (!buttons) return;
-		var params = {
-			parent:this._container,
-			buttons:buttons,
-			className:"ZmMsgViewToolBar_cw",
-			context:this._getViewType(),
-			controller:this
-		};
-		var tb = this._toolbar[view] = new ZmButtonToolBar(params);
+	var className = appCtxt.isChildWindow ? "ZmMsgViewToolBar_cw" : null;
 
-		buttons = tb.opList;
-		for (var i = 0; i < buttons.length; i++) {
-			var button = buttons[i];
-			if (this._listeners[button]) {
-				tb.addSelectionListener(button, this._listeners[button]);
-			}
-		}
-
-		this._setupSpamButton(tb);
-		button = tb.getButton(ZmOperation.TAG_MENU);
-		if (button) {
-			button.noMenuBar = true;
-			this._setupTagMenu(tb);
-		}
-	}
+	ZmMailListController.prototype._initializeToolBar.call(this, view, className);
 };
 
 ZmMsgController.prototype._navBarListener =
 function(ev) {
 	var op = ev.item.getData(ZmOperation.KEY_ID);
 	if (op == ZmOperation.PAGE_BACK || op == ZmOperation.PAGE_FORWARD) {
-		this._goToMsg(this._currentView, (op == ZmOperation.PAGE_FORWARD));
+		this._goToMsg(this._currentViewId, (op == ZmOperation.PAGE_FORWARD));
 	}
 };
 
@@ -237,14 +214,9 @@ function() {
 	return null;
 };
 
-ZmMsgController.prototype._getViewType =
-function() {
-	return this.viewId;
-};
-
-ZmMsgController.prototype._initializeListView =
+ZmMsgController.prototype._initializeView =
 function(view) {
-	if (!this._listView[view]) {
+	if (!this._view[view]) {
 		var params = {
 			parent:		this._container,
 			id:			ZmId.getViewId(ZmId.VIEW_MSG, null, view),
@@ -252,15 +224,11 @@ function(view) {
 			mode:		ZmId.VIEW_MSG,
 			controller:	this
 		};
-		this._listView[view] = new ZmMailMsgView(params);
-		this._listView[view].addInviteReplyListener(this._inviteReplyListener);
-		this._listView[view].addShareListener(this._shareListener);
+		this._view[view] = new ZmMailMsgView(params);
+		this._view[view].addInviteReplyListener(this._inviteReplyListener);
+		this._view[view].addShareListener(this._shareListener);
+		this._view[view].addSubscribeListener(this._subscribeListener);
 	}
-};
-
-ZmMsgController.prototype.getReferenceView =
-function () {
-	return this._listView[this._currentView];
 };
 
 ZmMsgController.prototype._getSearchFolderId =
@@ -281,11 +249,12 @@ function() {
 
 ZmMsgController.prototype._setViewContents =
 function(view) {
-	this._listView[view].set(this._msg);
+	this._view[view].set(this._msg);
 };
 
 ZmMsgController.prototype._resetNavToolBarButtons =
 function(view) {
+	view = view || this.getCurrentViewId();
 	if (!this._navToolBar[view]) { return; }
 	// NOTE: we purposely do not call base class here!
 	if (!appCtxt.isChildWindow) {
@@ -301,19 +270,29 @@ function(view) {
 	}
 };
 
+ZmMsgController.prototype._showNavToolBarButtons =
+function(view, show) {
+	var toolbar = this._navToolBar[view];
+	if (!toolbar) { return; }
+	if (!appCtxt.isChildWindow) {
+		toolbar.getButton(ZmOperation.PAGE_BACK).setVisible(show);
+		toolbar.getButton(ZmOperation.PAGE_FORWARD).setVisible(show);
+	}
+};
+
 ZmMsgController.prototype._goToMsg =
 function(view, next) {
-	var controller = this._getParentListController();
-	if (controller) {
+	var controller = this._parentController;
+	if (controller && controller.pageItemSilently) {
 		controller.pageItemSilently(this._msg, next, this);
 	}
 };
 
 ZmMsgController.prototype._selectNextItemInParentListView =
 function() {
-	var controller = this._getParentListController();
-	if (controller) {
-		controller._listView[controller._currentView]._itemToSelect = controller._getNextItemToSelect();
+	var controller = this._parentController;
+	if (controller && controller._getNextItemToSelect) {
+		controller._view[controller._currentViewId]._itemToSelect = controller._getNextItemToSelect();
 	}
 };
 
@@ -376,7 +355,7 @@ function() {
 
 ZmMsgController.prototype._getDefaultFocusItem = 
 function() {
-	return this._toolbar[this._currentView];
+	return this._toolbar[this._currentViewId];
 };
 
 ZmMsgController.prototype._backListener =
@@ -389,12 +368,12 @@ function(ev) {
 
 ZmMsgController.prototype.isTransient =
 function(oldView, newView) {
-	return (newView && newView.indexOf(ZmId.VIEW_COMPOSE) != 0);
+	return (appCtxt.getViewTypeFromId(newView) != ZmId.VIEW_COMPOSE);
 };
 
 ZmMsgController.prototype._tabCallback =
 function(oldView, newView) {
-	return (oldView && oldView.indexOf(ZmId.VIEW_MSG) == 0);
+	return (appCtxt.getViewTypeFromId(oldView) == ZmId.VIEW_MSG);
 };
 
 ZmMsgController.prototype._printListener =
@@ -426,7 +405,7 @@ function(ev) {
             showImages = true;
         }
     }
-    var url = "/h/printmessage?id=" + id;
+    var url = "/h/printmessage?id=" + id + "&tz=" + AjxTimezone.getServerId(AjxTimezone.DEFAULT);
     if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || showImages) {
         url += "&xim=1";
     }
@@ -435,24 +414,6 @@ function(ev) {
         url+="&acct=" + acctName ;
     }
     window.open(appContextPath+url, "_blank");
-};
-
-/**
- * Returns the parent list controller (TV, CLV, or CV)
- *
- * @private
- */
-ZmMsgController.prototype._getParentListController =
-function() {
-	var ac = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
-	var mailApp = ac.getApp(ZmApp.MAIL);
-	if (this._mode == ZmId.VIEW_TRAD) {
-		return mailApp.getTradController();
-	} else if (this._mode == ZmId.VIEW_CONV) {
-		return mailApp.getConvController();
-	} else if (this._mode == ZmId.VIEW_CONVLIST) {
-		return mailApp.getConvListController();
-	}
 };
 
 ZmMsgController.prototype._acceptShareHandler =

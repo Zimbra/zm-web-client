@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -31,7 +31,6 @@ ZmTaskTreeController = function() {
 
 	this._listeners[ZmOperation.NEW_TASK_FOLDER] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_TASKFOLDER] = new AjxListener(this, this._shareTaskFolderListener);
-	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
 
 	this._eventMgrs = {};
 };
@@ -80,7 +79,7 @@ function(parent, type, id) {
 	parent.enableAll(true);
 	if (folder) {
         if (folder.isSystem()) {
-            parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
+            parent.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.RENAME_FOLDER], false);
         } else if (folder.link && !folder.isAdmin()) {
             isShareVisible = false;
         }
@@ -105,7 +104,7 @@ function(parent, type, id) {
 
 	this._enableRecoverDeleted(parent, isTrash);
 
-	var op = parent.getOp(ZmOperation.DELETE);
+	var op = parent.getOp(ZmOperation.DELETE_WITHOUT_SHORTCUT);
 	if (op) {
 		op.setText(deleteText);
 	}
@@ -135,10 +134,7 @@ function() {
 // Returns a list of desired header action menu operations
 ZmTaskTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [
-		ZmOperation.NEW_TASK_FOLDER,
-		ZmOperation.BROWSE
-	];
+	return [ZmOperation.NEW_TASK_FOLDER];
 };
 
 // Returns a list of desired action menu operations
@@ -146,7 +142,7 @@ ZmTaskTreeController.prototype._getActionMenuOps =
 function() {
 	return [
 		ZmOperation.SHARE_TASKFOLDER,
-		ZmOperation.DELETE,
+		ZmOperation.DELETE_WITHOUT_SHORTCUT,
 		ZmOperation.RENAME_FOLDER,
 		ZmOperation.EDIT_PROPS,
 		ZmOperation.SYNC,
@@ -166,16 +162,21 @@ function(ev) {
 
 ZmTaskTreeController.prototype._deleteListener =
 function(ev) {
-	var organizer = this._getActionedOrganizer(ev);
-	var callback = new AjxCallback(this, this._deleteListener2, [organizer]);
-	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteTaskFolder, organizer.name);
+    var organizer = this._getActionedOrganizer(ev);
+    if (organizer.isInTrash()) {
+        var callback = new AjxCallback(this, this._deleteListener2, [organizer]);
+        var message = AjxMessageFormat.format(ZmMsg.confirmDeleteTaskFolder, AjxStringUtil.htmlEncode(organizer.name));
 
-	appCtxt.getConfirmationDialog().popup(message, callback);
+        appCtxt.getConfirmationDialog().popup(message, callback);
+    }
+    else {
+        this._doMove(organizer, appCtxt.getById(ZmOrganizer.ID_TRASH));
+    }
 };
 
 ZmTaskTreeController.prototype._deleteListener2 =
 function(organizer) {
-	this._doDelete(organizer);
+    this._doDelete(organizer);
 };
 
 /**

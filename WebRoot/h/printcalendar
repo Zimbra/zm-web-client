@@ -20,6 +20,7 @@
         </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
+    <fmt:message var="dateFormat" key="CAL_APPT_EDIT_DATE_FORMAT"/>
 
     <c:choose>
         <c:when test="${not empty param.tz}">
@@ -41,7 +42,18 @@
     </c:choose>
 
     <c:set var="checkedCalendars" value="${param.l}"/>
-    
+    <c:set var="view" value="${param.view}"/>
+    <c:if test="${param.view eq 'list'}">
+        <c:if test="${not empty param.startDate}">
+            <fmt:parseDate value="${param.startDate}" pattern="yyyyMMdd'T'HHmmss" var="start" timeZone="${tz}" />
+            <c:set scope="request" var="startDateContext" value="${zm:getCalendar(start.time, tz)}"/>
+        </c:if>
+    </c:if>
+    <c:if test="${not empty param.endDate}">
+        <fmt:parseDate value="${param.endDate}" pattern="yyyyMMdd'T'HHmmss" var="end" timeZone="${tz}"/>
+        <c:set scope="request" var="endDateContext" value="${zm:getCalendar(end.time, tz)}"/>
+    </c:if>
+
 </app:handleError>
 
 <html>
@@ -60,6 +72,8 @@
         font-family:Tahoma,Arial,Helvetica,sans-serif;
         font-size:${mailbox.prefs.defaultPrintFontSize} !important;
     }
+     .zhcalmonthheadermonth, .zhcalmonthheadercellstext, .zhappcontent, .zhcalmonthtable, .zhcaldaygrid, .zhcalmonthheaderrow, .zhcaldayhour, .zhcaldayheader, .zhcaldayheadertoday{ background-color: white;}
+    .ZhCalDayHeader{font-weight: bold; }
 </style>
 <table width="90%" align="center" class="zPrintMsgs">
     <tr>
@@ -89,22 +103,24 @@
 </table>
 <hr/>
 <app:handleError>
-    <c:set var="view" value="${param.view}"  />
     <c:choose>
         <c:when test="${view eq 'day'}">
-            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" view='${view}' checkedCalendars="${checkedCalendars}" numdays="${not empty param.numdays ? param.numdays : 1}"/>
+            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" endDate="${not empty param.endDate ? endDateContext : ''}" view='${view}' ft='${param.ft}' tt='${param.tt}' checkedCalendars="${checkedCalendars}" numdays="${not empty param.numdays ? param.numdays : 1}"/>
         </c:when>
         <c:when test="${view eq 'workWeek'}">
-            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" view='${view}' checkedCalendars="${checkedCalendars}" numdays="5"/>
+            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" endDate="${not empty param.endDate ? endDateContext : ''}" view='${view}' ft='${param.ft}' tt='${param.tt}' checkedCalendars="${checkedCalendars}" numdays="7"/>
         </c:when>
         <c:when test="${view eq 'week'}">
-            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" view='${view}' checkedCalendars="${checkedCalendars}" numdays="7"/>
+            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" endDate="${not empty param.endDate ? endDateContext : ''}" view='${view}' ft='${param.ft}' tt='${param.tt}' checkedCalendars="${checkedCalendars}" numdays="7" wdays="${not empty param.wdays ? param.wdays : ''}"/>
         </c:when>
         <c:when test="${view eq 'schedule'}">
-            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" numdays="1" checkedCalendars="${checkedCalendars}" view="${view}"/>
+            <app:multiDayPrintView timezone="${tz}" date="${dateContext}" endDate="${not empty param.endDate ? endDateContext : ''}" ft='${param.ft}' tt='${param.tt}' checkedCalendars="${checkedCalendars}" view="${view}" numdays="1"/>
         </c:when>
+        <c:when test="${view eq 'list'}">
+            <app:multiDayPrintView timezone="${tz}" date="${not empty param.startDate ? startDateContext : dateContext}" endDate="${not empty param.endDate ? endDateContext : ''}" checkedCalendars="${checkedCalendars}" view="${view}" numdays="7"/>
+        </c:when> 
         <c:otherwise>
-            <app:monthPrintView timezone="${tz}" checkedCalendars="${checkedCalendars}" date="${dateContext}"/>
+            <app:monthPrintView timezone="${tz}" checkedCalendars="${checkedCalendars}" date="${dateContext}" endDate="${not empty param.endDate ? endDateContext : ''}" wdays="${not empty param.wdays ? param.wdays : ''}"/>
         </c:otherwise>
     </c:choose>
 </app:handleError>

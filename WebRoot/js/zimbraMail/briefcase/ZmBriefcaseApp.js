@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -89,10 +89,9 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_SPREADSHEET, {textKey:"newSpreadSheetBeta", tooltipKey:"newSpreadSheet", image:"ZSpreadSheet", textPrecedence:11});
 	ZmOperation.registerOp(ZmId.OP_NEW_DOC, {textKey:"newDocument", tooltipKey:"newDocument", image:"NewDoc", shortcut:ZmKeyMap.NEW_DOC, textPrecedence:12});
 	ZmOperation.registerOp(ZmId.OP_SHARE_BRIEFCASE, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
-//	ZmOperation.registerOp(ZmId.OP_MOUNT_BRIEFCASE, {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewPage"});
 	ZmOperation.registerOp(ZmId.OP_SAVE_FILE, {textKey:"saveFile", tooltipKey:"saveFileTooltip", image:"DownArrow"});
-    ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASE_WIN, {tooltipKey:"detach", image:"OpenInNewWindow"});
+    ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASE_WIN, {textKey:"detachTT", tooltipKey:"detach", image:"OpenInNewWindow"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_FILE_AS_HTML, {textKey:"viewFileAsHtml", tooltipKey:"viewAsHtml", image:"HtmlDoc"});
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE, {textKey:"sendLink", tooltipKey:"sendLink", image:"Send"});
 	ZmOperation.registerOp(ZmId.OP_SEND_FILE_AS_ATT, {textKey:"sendAsAttachment", tooltipKey:"sendAsAttachment", image:"Attachment"});
@@ -106,7 +105,6 @@ function() {
     ZmOperation.registerOp(ZmId.OP_VERSION_HISTORY, {textKey: "versionHistory", image:"VersionHistory"});
     ZmOperation.registerOp(ZmId.OP_RESTORE_VERSION, {textKey: "restoreCurrentVersion", image:"RestoreVersion"});
     ZmOperation.registerOp(ZmId.OP_DELETE_VERSION, {textKey: "deleteVersion", image:"Delete"});
-
 };
 
 ZmBriefcaseApp.prototype._registerSettings =
@@ -174,7 +172,7 @@ function() {
 								{msgKey:		"searchBriefcase",
 								 tooltipKey:	"searchForFiles",
 								 icon:			"Doc",
-								 shareIcon:		"SharedBriefcase",
+								 shareIcon:		null, // the following doesn't work now, so keep the regular icon. doesn't really matter in my opinion --> "SharedBriefcase",
 								 setting:		ZmSetting.BRIEFCASE_ENABLED,
 								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_BRIEFCASE)
 								});
@@ -392,7 +390,7 @@ function() {
 	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING); // pop "Loading..." page
 
 	if (!this._newBriefcaseCb) {
-		this._newBriefcaseCb = new AjxCallback(this, this._newBriefcaseCallback);
+		this._newBriefcaseCb = this._newBriefcaseCallback.bind(this);
 	}
 	ZmController.showDialog(appCtxt.getNewBriefcaseDialog(), this._newBriefcaseCb);
 };
@@ -403,7 +401,7 @@ function() {
 ZmBriefcaseApp.prototype.launch =
 function(params, callback) {
 	this._setLaunchTime(this.toString(), new Date());
-	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
+	var loadCallback = this._handleLoadLaunch.bind(this, callback);
 	AjxDispatcher.require(["BriefcaseCore","Briefcase"], true, loadCallback, null, true);
 };
 
@@ -422,7 +420,6 @@ function(callback) {
  * @param {AjxCallback}	[params.callback]			the callback
  * @param {String}	[params.accountName]		the account name
  * @param {Boolean}	[params.noRender]			if <code>true</code>, do not display results
- * @param {Boolean}	[params.noClear]			if <code>true</code>, do not destroy previous search results
  */
 ZmBriefcaseApp.prototype.search =
 function(params) {
@@ -436,8 +433,7 @@ function(params) {
 		searchFor:		ZmId.ITEM_BRIEFCASE,
 		callback:		params.callback,
 		accountName:	params.accountName,
-		noRender:		params.noRender,
-		noClear:		params.noClear
+		noRender:		params.noRender
 	};
 	var sc = appCtxt.getSearchController();
 	sc.searchAllAccounts = false;
@@ -452,15 +448,18 @@ function(params) {
  */
 ZmBriefcaseApp.prototype.showSearchResults =
 function(results, callback) {
-	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
+	var loadCallback = this._handleLoadShowSearchResults.bind(this, results, callback);
 	AjxDispatcher.require(["BriefcaseCore", "Briefcase"], false, loadCallback, null, true);
 };
 
 ZmBriefcaseApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
-	this.getBriefcaseController().show(results);
+	var controller = this.getBriefcaseController();
+	controller.show(results);
 	this._setLoadedTime(this.toString(), new Date());
-	if (callback) { callback.run(); }
+	if (callback) {
+		callback.run(controller);
+	}
 };
 
 ZmBriefcaseApp.prototype.setActive =

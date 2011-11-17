@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -308,24 +308,64 @@ function(account) {
  */
 ZmContactPicker.prototype._resetSelectDiv =
 function() {
-	this._selectDiv.clearOptions();
+    this._selectDiv.clearOptions();
 
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, this._account)) {
-		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
+    if (appCtxt.multiAccounts) {
+        var accts = appCtxt.accountList.visibleAccounts;
+        var org = ZmOrganizer.ITEM_ORGANIZER;
+        org = ZmOrganizer.ITEM_ORGANIZER[ZmItem.CONTACT];
 
-		if (appCtxt.get(ZmSetting.SHARING_ENABLED, null, this._account))
-			this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
-	}
+        for (var i = 0; i < accts.length; i++) {
+            this._selectDiv.addOption(accts[i].displayName, false, accts[i].id);
+            var folderTree = appCtxt.getFolderTree(accts[i]);
+            var data = [];
+            data = data.concat(folderTree.getByType(org));
+            for (var j = 0; j < data.length; j++) {
+                var addrsbk = data[j];
+                if(addrsbk.noSuchFolder) { continue; }
+                this._selectDiv.addOption(addrsbk.getName(), false, addrsbk.id, "ImgContact");
+            }
+            if(accts[i].isZimbraAccount && !accts[i].isMain) {
+                if (appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, this._account)) {
+                    if (appCtxt.get(ZmSetting.SHARING_ENABLED, null, this._account))
+                        this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS, "ImgContact");
+                }
 
-	if (appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account)) {
-		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
-	}
+                if (appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account)) {
+                    this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL, "ImgContact");
+                }
 
-	if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL, null, this._account) ||
-		!appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account))
-	{
-		this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
-	}
+                if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL, null, this._account) ||
+                        !appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account))
+                {
+                    this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
+                }
+            }
+        }
+
+        for (var k = 0; k < accts.length; k++) {
+            this._selectDiv.enableOption(accts[k].id, false);
+        }
+    } else {
+
+        if (appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, this._account)) {
+            this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
+
+            if (appCtxt.get(ZmSetting.SHARING_ENABLED, null, this._account))
+                this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
+        }
+
+        if (appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account)) {
+            this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
+        }
+
+        if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL, null, this._account) ||
+                !appCtxt.get(ZmSetting.GAL_ENABLED, null, this._account))
+        {
+            this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
+        }
+
+    }
 };
 
 ZmContactPicker.prototype.clearSearch =
@@ -787,7 +827,7 @@ function(item, list) {
  * @private
  */
 ZmContactChooserSourceListView = function(parent) {
-	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE, view:ZmId.VIEW_CONTACT_SRC});
+	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE});
 	this.setScrollStyle(Dwt.CLIP);
 };
 
@@ -936,8 +976,7 @@ function(item, field, params) {
 ZmContactChooserTargetListView = function(parent, showType) {
 	this._showType = showType; // call before base class since base calls getHeaderList
 
-	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.TARGET,
-								   view:ZmId.VIEW_CONTACT_TGT});
+	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.TARGET});
 
 	this.setScrollStyle(Dwt.CLIP);
 };

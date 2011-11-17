@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -44,7 +44,7 @@
                     <div id="dcontent-view" style="padding-bottom:5px;">
         <div class="Stripes header">
             <div>
-                <div>
+                <div style="overflow: hidden;">
                     <span class="${contact.isGroup ? 'ImgGroupPerson_48' : 'ImgPerson_48'}" style="float:left;">&nbsp;</span>
                     <div class="td aleft">
                         <strong>
@@ -86,10 +86,25 @@
         </div>
 
         <div class="msgBody">
-
-                    <mo:displayContact contact="${contact}"/>
-                </div>    
-            </div>
+            <c:choose>
+            <c:when test="${contact.isGroup}">
+                <table border="0" cellspacing="3" cellpadding="1" width="100%">
+                <tbody>
+                <c:forEach var="member" items="${contact.groupMembers}">
+                <tr>
+                <td width='20px'><app:img altkey='ALT_CONTACT_GROUP_EMAIL' src="startup/ImgMessage.png"/></td>
+                <td><nobr>${fn:escapeXml(member)}</nobr></td>
+                </tr>
+                </c:forEach>
+                <tr><td><br></td></tr>
+                </tbody></table> 
+            </c:when>
+            <c:otherwise>
+                <mo:displayContact contact="${contact}"/>
+            </c:otherwise>
+            </c:choose>
+        </div>
+        </div>
         </div>    
     <c:if test="${ua.isiPad == false}">
         <mo:contactToolbar contact="${contact}" urlTarget="${context_url}" context="${context}" keys="false" isTop="false" mailbox="${mailbox}"/>

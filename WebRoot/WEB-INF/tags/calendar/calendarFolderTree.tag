@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -43,14 +43,28 @@
 
         <c:if test="${expanded}">
 
-            <zm:forEachFolder var="folder">
-                <c:if test="${folder.isAppointmentView and !folder.isSearchFolder and !folder.isMountPoint}">
+            <app:calendarFolder folder="${mailbox.calendar}"/>
+
+            <%--
+                Display the children of Calendar folder, if any. Folders with unknown view also get listed.
+            --%>
+            <zm:forEachFolder var="folder" skiproot="true" skipsystem="false" skiptopsearch="true" parentid="${mailbox.calendar.id}" >
+                <c:if test="${(!folder.isSystemFolder and !folder.isSearchFolder and !folder.isMountPoint and (folder.isNullView or folder.isUnknownView or folder.isAppointmentView))}">
+                    <app:calendarFolder folder="${folder}"/>
+                </c:if>
+            </zm:forEachFolder>
+
+            <%--
+                Rest of the calendar folders, do not display folders with unknown view here.
+            --%>
+            <zm:forEachFolder var="folder" skiproot="true" skipsystem="true" skiptopsearch="true">
+                <c:if test="${!folder.isSearchFolder and !folder.isMountPoint and folder.isAppointmentView}">
                     <app:calendarFolder folder="${folder}"/>
                 </c:if>
             </zm:forEachFolder>
 
             <zm:forEachFolder var="folder">
-                <c:if test="${folder.isAppointmentView and !folder.isSearchFolder and folder.isMountPoint}">
+                <c:if test="${(!folder.isSystemFolder and !folder.isSearchFolder and folder.isMountPoint and folder.isAppointmentView)}">
                     <app:calendarFolder folder="${folder}"/>
                 </c:if>
             </zm:forEachFolder>

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -17,27 +17,20 @@ ZmCallListController = function(container, app) {
 	if (arguments.length == 0) { return; }
 	
 	ZmVoiceListController.call(this, container, app);
-    this._listeners[ZmOperation.CHECK_CALLS] = new AjxListener(this, this._refreshListener);
-
+	this._listeners[ZmOperation.CALL_BACK]	= this._callbackListener.bind(this);
 }
 
 ZmCallListController.prototype = new ZmVoiceListController;
 ZmCallListController.prototype.constructor = ZmCallListController;
 
-ZmCallListController.prototype.toString =
-function() {
-	return "ZmCallListController";
-};
+ZmCallListController.prototype.isZmCallListController = true;
+ZmCallListController.prototype.toString = function() { return "ZmCallListController"; };
 
-ZmCallListController.prototype._defaultView =
+ZmCallListController.getDefaultViewType =
 function() {
 	return ZmId.VIEW_CALL_LIST;
 };
-
-ZmCallListController.prototype._getViewType = 
-function() {
-	return ZmId.VIEW_CALL_LIST;
-};
+ZmCallListController.prototype.getDefaultViewType = ZmCallListController.getDefaultViewType;
 
 ZmCallListController.prototype._createNewView = 
 function(view) {
@@ -47,20 +40,22 @@ function(view) {
 ZmCallListController.prototype._getToolBarOps =
 function() {
 	var list = [];
-    list.push(ZmOperation.CHECK_CALLS);
+    list.push(ZmOperation.CALL_BACK);
     list.push(ZmOperation.SEP);
 	list.push(ZmOperation.PRINT);
-    list.push(ZmOperation.SEP);
-    list.push(ZmOperation.CALL_MANAGER);
 	return list;
 };
 
 ZmCallListController.prototype._getActionMenuOps =
 function() {
+	var list = [];
+    list.push(ZmOperation.CALL_BACK);
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		return [ZmOperation.CONTACT];
+		list.push(ZmOperation.CONTACT);
 	}
-	return null;
+    list.push(ZmOperation.SEP);
+	list.push(ZmOperation.PRINT);
+	return list;
 };
 
 ZmCallListController.prototype._initializeToolBar =
@@ -90,9 +85,6 @@ function() {
 ZmCallListController.prototype.handleKeyAction =
 function(actionCode) {
 	switch (actionCode) {
-        case ZmKeyMap.CALL_MANAGER:
-            this._callManagerListener();
-            break;
 		case ZmKeyMap.PRINT:
 			this._printListener();
 			break;

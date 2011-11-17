@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -61,14 +61,14 @@ ZmFindnReplaceDialog = function(shell, className) {
          "<tr><td class='Label' align='left'>",ZmMsg.directionLabel,"</td>",
          "<td colspan=2 id='",this._dirId ,"' align='left'>",
          	"<table cellpadding='3'><tr>",
-         	"<td><input type='radio' id='",this._dirIdUp,"' name='",this._dirId,"' value='up'></td>","<td class='Label'>",ZmMsg.upLabel,"</td>",
-         	"<td><input type='radio' id='",this._dirIdDown,"' name='",this._dirId,"' value='down' checked></td>","<td class='Label'>",ZmMsg.downLabel,"</td>",
+         	"<td><input type='radio' id='",this._dirIdUp,"' name='",this._dirId,"' value='up'></td>","<td class='Label'>", "<label for='",this._dirIdUp,"'>", ZmMsg.upLabel, "</label>", "</td>",
+         	"<td><input type='radio' id='",this._dirIdDown,"' name='",this._dirId,"' value='down' checked></td>","<td class='Label'>", "<label for='",this._dirIdDown,"'>", ZmMsg.downLabel, "</label>", "</td>",
          	"</tr></table>",
          "</td></tr>",        
          "<tr><td colspan='3'>",
 		   	"<table cellpadding='3'><tr>",
 		   	"<td class='Label' align='right'><input type='checkbox' id='",this._caseId,"'>",
-		   	"<td class='Label' align='left'>",ZmMsg.caseSensitive,"</td>",
+		   	"<td class='Label' align='left'>", "<label for='", this._caseId,"'>", ZmMsg.caseSensitive, "</label>", "</td>",
          	"</tr></table>",
 		 "</td></tr>",		         
          "</table>",          

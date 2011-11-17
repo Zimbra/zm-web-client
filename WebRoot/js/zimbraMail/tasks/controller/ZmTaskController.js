@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -26,32 +26,34 @@
  *
  * @author Parag Shah
  *
- * @param {DwtComposite}	container	the containing element
- * @param {ZmApp}	app	a handle to the [{@link ZmCalendarApp}|{@link ZmTasksApp}] application
+ * @param {DwtShell}	container	the containing shell
+ * @param {ZmApp}		app			the containing app
+ * @param {constant}	type		controller type
+ * @param {string}		sessionId	the session id
  * 
  * @extends		ZmCalItemComposeController
  */
-ZmTaskController = function(container, app) {
+ZmTaskController = function(container, app, type, sessionId) {
 	if (arguments.length == 0) { return; }
-	ZmCalItemComposeController.call(this, container, app);
+	ZmCalItemComposeController.apply(this, arguments);
 };
 
 ZmTaskController.prototype = new ZmCalItemComposeController;
 ZmTaskController.prototype.constructor = ZmTaskController;
 
+ZmTaskController.prototype.isZmTaskController = true;
+ZmTaskController.prototype.toString = function() { return "ZmTaskController"; };
+
 ZmTaskController.DEFAULT_TAB_TEXT = ZmMsg.task;
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmTaskController.prototype.toString =
-function() {
-	return "ZmTaskController";
-};
 
 // Public methods
+
+ZmTaskController.getDefaultViewType =
+function() {
+	return ZmId.VIEW_TASKEDIT;
+};
+ZmTaskController.prototype.getDefaultViewType = ZmTaskController.getDefaultViewType;
 
 ZmTaskController.prototype.saveCalItem =
 function(attId) {
@@ -67,6 +69,15 @@ ZmTaskController.prototype.isCloseAction =
 function() {
     return this._action == ZmCalItemComposeController.SAVE;
 };
+
+ZmTaskController.prototype._createToolBar =
+function() {
+	ZmCalItemComposeController.prototype._createToolBar.call(this);
+
+	//override the new button properties, since we want it to default to task.
+	this._setNewButtonProps(null, ZmMsg.newTask, ZmMsg.createNewTask, "NewTask", "NewTaskDis", ZmOperation.NEW_TASK);
+};
+
 
 ZmTaskController.prototype._handleResponseSave =
 function(calItem, result) {

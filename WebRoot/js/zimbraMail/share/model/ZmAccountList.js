@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -389,10 +389,6 @@ function(settings, obj) {
 
 	if (appCtxt.isOffline) {
 		account.displayName = ZmMsg.localFolders;
-
-		if (appCtxt.get(ZmSetting.OFFLINE_NOTEBOOK_SYNC_ENABLED)) {
-			appCtxt.set(ZmSetting.NOTEBOOK_ENABLED, true, null, null, true);
-		}
 	}
 
 	// second, create all child accounts if applicable

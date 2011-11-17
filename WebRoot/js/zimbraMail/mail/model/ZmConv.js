@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -27,6 +27,11 @@
  */
 ZmConv = function(id, list) {
 
+    var cacheItem = appCtxt.getById(id);
+    if(cacheItem && cacheItem.isMuted()) {
+        this._isMuted = true;
+    }
+
 	ZmMailItem.call(this, ZmItem.CONV, id, list);
 	
 	// conversations are always sorted by date desc initially
@@ -38,10 +43,8 @@ ZmConv = function(id, list) {
 ZmConv.prototype = new ZmMailItem;
 ZmConv.prototype.constructor = ZmConv;
 
-ZmConv.prototype.toString = 
-function() {
-	return "ZmConv";
-};
+ZmConv.prototype.isZmConv = true;
+ZmConv.prototype.toString = function() { return "ZmConv"; };
 
 // Public methods
 
@@ -80,16 +83,20 @@ function(msg, args) {
  * should be used when in a search context, for example when expanding a conv that is the result
  * of a search.
  *
- * @param {Hash}		params				a hash of parameters:
- * @param {String}		params.query		the query used to retrieve this conv
- * @param {constant}	params.sortBy		the sort constraint
- * @param {int}			params.offset		the position of first msg to return
- * @param {int}			params.limit		the number of msgs to return
- * @param {Boolean}		params.getHtml		if <code>true</code>, return HTML part for inlined msg
- * @param {Boolean}		params.getFirstMsg	if <code>true</code>, retrieve the content of the first matching msg in the conv as a side effect of the search
- * @param {Boolean}		params.markRead		if <code>true</code>, mark that msg read
- * @param {boolean}		params.needExp		if not <code>false</code>, have server check if addresses are DLs
- * @param {AjxCallback}	callback			the callback to run with results
+ * @param {Hash}		params						a hash of parameters:
+ * @param {String}		params.query				the query used to retrieve this conv
+ * @param {constant}	params.sortBy				the sort constraint
+ * @param {int}			params.offset				the position of first msg to return
+ * @param {int}			params.limit				the number of msgs to return
+ * @param {Boolean}		params.getHtml				if <code>true</code>, return HTML part for inlined msg
+ * @param {Boolean}		params.getFirstMsg			if <code>true</code>, fetch the first matching msg in the conv
+ * @param {Boolean}		params.getMatches			if <code>true</code>, fetch all matching msgs in the conv 
+ * @param {Boolean}		params.getAllMsgs			if <code>true</code>, fetch all msgs in the conv 
+ * @param {Boolean}		params.getUnreadMsgs		if <code>true</code>, fetch all unread msgs in the conv
+ * @param {Boolean}		params.getUnreadOrFirstMsg	if <code>true</code>, fetch unread, or first if none are unread
+ * @param {Boolean}		params.markRead				if <code>true</code>, mark that msg read
+ * @param {boolean}		params.needExp				if not <code>false</code>, have server check if addresses are DLs
+ * @param {AjxCallback}	callback					the callback to run with results
  */
 ZmConv.prototype.load =
 function(params, callback) {
@@ -142,9 +149,10 @@ function(params, callback) {
 		};
 		var search = this.search = new ZmSearch(searchParams);
 
-		var fetchId = ((params.getFirstMsg && this.msgIds && this.msgIds.length) ? this.msgIds[0] : null);
+		var fetchId = (params.getFirstMsg && "1") || (params.getMatches && "hits") || (params.getAllMsgs && "all") ||
+					  (params.getUnreadMsgs && "u") || (params.getUnreadOrFirstMsg && "u1") || "0";
 		var convParams = {
-			cid: this.id,
+			cid:		this.id,
 			callback:	(new AjxCallback(this, this._handleResponseLoad, [params, callback])),
 			fetchId:	fetchId,
 			markRead:	params.markRead,
@@ -164,6 +172,7 @@ function(params, callback, result) {
 		this.msgs.addChangeListener(this._listChangeListener);
 		this.msgs.setHasMore(results.getAttribute("more"));
 		this._loaded = true;
+        this._isMuted = this.isMuted();
 	}
 	if (callback) {
 		callback.run(result);
@@ -193,7 +202,7 @@ function(params, callback, batchCmd) {
 	// Request additional headers
 	for (var hdr in ZmMailMsg.requestHeaders) {
 		var headerNode = soapDoc.set('header', null, convNode);
-		headerNode.setAttribute('n', hdr);
+		headerNode.setAttribute('n', ZmMailMsg.requestHeaders[hdr]);
 	}
 
 	// never pass "undefined" as arg to a callback!
@@ -268,6 +277,35 @@ function(msg) {
 	}
 };
 
+ZmConv.prototype.isMuted =
+function() {
+    return this._isMuted ? this._isMuted : false;
+};
+
+ZmConv.prototype.mute =
+function() {
+    this._isMuted = true;
+    if(this.msgs) {
+        var msgs = this.msgs.getArray();
+		for (var i = 0; i < msgs.length; i++) {
+			var msg = msgs[i];
+			msg.mute();
+		}
+    }
+};
+
+ZmConv.prototype.unmute =
+function() {
+    this._isMuted = false;
+    if(this.msgs) {
+        var msgs = this.msgs.getArray();
+		for (var i = 0; i < msgs.length; i++) {
+			var msg = msgs[i];
+			msg.unmute();
+		}
+    }
+};
+
 ZmConv.prototype.clear =
 function() {
 	if (this.msgs) {
@@ -306,7 +344,7 @@ function() {
  */
 ZmConv.prototype.hasMatchingMsg =
 function(search, defaultValue) {
-	if (search && search.matches && this.msgs) {
+	if (search && this.msgs) {
 		var msgs = this.msgs.getArray();
 		for (var i = 0; i < msgs.length; i++) {
 			var msg = msgs[i];
@@ -379,9 +417,6 @@ function(obj, batchMode) {
 			}
 		}
 		conv.folders = AjxUtil.hashCopy(this.folders);
-		AjxDebug.println(AjxDebug.NOTIFY, "ZmConv::notifyModify - conv changed ID from " + conv._oldId + " to " + conv.id);
-		var folders = AjxUtil.keys(conv.folders);
-		AjxDebug.println(AjxDebug.NOTIFY, "copied " + folders.length + " folders: " + folders.join(" "));
 		if (conv.list && conv._oldId && conv.list._idHash[conv._oldId]) {
 			delete conv.list._idHash[conv._oldId];
 			conv.list._idHash[conv.id] = conv;
@@ -428,7 +463,7 @@ function(flags) {
 	var msgsOn = {};
 	for (var i = 0; i < flags.length; i++) {
 		var flag = flags[i];
-		if (!(flag == ZmItem.FLAG_FLAGGED || flag == ZmItem.FLAG_UNREAD || flag == ZmItem.FLAG_ATTACH)) { continue; }
+		if (!(flag == ZmItem.FLAG_FLAGGED || flag == ZmItem.FLAG_UNREAD || flag == ZmItem.FLAG_ATTACH || flag == ZmItem.FLAG_PRIORITY)) { continue; }
 		convOn[flag] = this[ZmItem.FLAG_PROP[flag]];
 		msgsOn[flag] = this.hasFlag(flag, true);
 	}			
@@ -586,7 +621,6 @@ function(msg, callback) {
 
 ZmConv.prototype._loadFromDom =
 function(convNode) {
-	AjxDebug.println(AjxDebug.NOTIFY, "ZmConv::_loadFromDom - conv ID: " + convNode.id);
 	this.numMsgs = convNode.n;
 	this.date = convNode.d;
 	this._parseFlags(convNode.f);
@@ -608,7 +642,6 @@ function(convNode) {
 			this.msgIds.push(convNode.m[i].id);
 		}
 		if (count == 1) {
-			AjxDebug.println(AjxDebug.NOTIFY, "single msg conv");
 			var msgNode = convNode.m[0];
 
 			// bug 49067 - SearchConvResponse does not return the folder ID w/in
@@ -618,11 +651,9 @@ function(convNode) {
 			if (searchFolderId) {
 				this.folderId = searchFolderId;
 				this.folders[searchFolderId] = true;
-				AjxDebug.println(AjxDebug.NOTIFY, "added folder (from search): " + searchFolderId);
 			} else if (msgNode.l) {
 				this.folderId = msgNode.l;
 				this.folders[msgNode.l] = true;
-				AjxDebug.println(AjxDebug.NOTIFY, "added folder (from msg): " + msgNode.l);
 			}
 			else {
 				AjxDebug.println(AjxDebug.NOTIFY, "no folder added for conv");
@@ -652,8 +683,6 @@ function(convNode) {
 			}
 		}
 	}
-	var folders = AjxUtil.keys(this.folders);
-	AjxDebug.println(AjxDebug.NOTIFY, "ZmConv::_loadFromDom - conv spans " + folders.length + " folder(s): " + folders.join(" "));
 };
 
 ZmConv.prototype._loadFromMsg =
@@ -761,4 +790,22 @@ function() {
 	var status = [];
 	if (this.isScheduled)	{ status.push(ZmMsg.scheduled); }
 	return status.join(", ");
+};
+
+/**
+ * Returns the number of unread messages in this conversation.
+ */
+ZmConv.prototype.getNumUnreadMsgs =
+function() {
+	var numUnread = 0;
+	var msgs = this.getMsgList();
+	if (msgs) {
+		for (var i = 0, len = msgs.length; i < len; i++) {
+			if (msgs[i].isUnread) {
+				numUnread++;
+			}
+		}
+		return numUnread;
+	}
+	return null;
 };
