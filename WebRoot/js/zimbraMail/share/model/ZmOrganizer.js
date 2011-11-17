@@ -465,7 +465,7 @@ ZmOrganizer._showErrorMsg =
 function(msg) {
 	var msgDialog = appCtxt.getMsgDialog();
 	msgDialog.reset();
-	msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+	msgDialog.setMessage(AjxStringUtil.htmlEncode(msg), DwtMessageDialog.CRITICAL_STYLE);
 	msgDialog.popup();
 };
 
