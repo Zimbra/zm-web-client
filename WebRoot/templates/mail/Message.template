@@ -659,7 +659,7 @@
 			<td class='Text' width=<$= ZmMsg.COLUMN_WIDTH_FROM_CV2 $>>
 				<$= data.from $>
 			</td>
-			<td class='Text ZmConvListFragment' style='width:auto;overflow:hidden;'>
+			<td class='Text ZmConvListFragment' id='${fragmentCellId}' style='width:auto;overflow:hidden;'>
 				<$= data.fragment $>
 			</td>
 			<td class='Text DateCol' width=<$= ZmMsg.COLUMN_WIDTH_DATE_CV2 $>>${date}</td>

@@ -1167,13 +1167,14 @@ ZmMailMsgCapsuleViewHeader = function(params) {
 	this._tableRowId		= id + "_tableRow";
 	this._expandIconCellId	= id + "_expandCell";
 	this._expandIconId		= id + "_expand";
-	var fragment = (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && !this.parent._expanded) ? msg.fragment : "";
+	this._fragmentCellId	= id + "_fragment";
 	var dateString = new AjxDateFormat("EEEE h:mm a").format(new Date(msg.sentDate || msg.date));
 	var subs = {
 		tableRowId:			this._tableRowId,
 		expandIconCellId:	this._expandIconCellId,
 		from:				msg.getAddress(AjxEmailAddress.FROM).toString(true),
-		fragment:			fragment || "",
+		fragmentCellId:		this._fragmentCellId,
+		fragment:			this._getFragment(),
 		date:				dateString
 	}
 	this._createHtmlFromTemplate("mail.Message#Conv2MsgHeader", subs);
@@ -1222,6 +1223,16 @@ function(expanded) {
 		td.innerHTML = AjxImg.getImageHtml(expanded ? "NodeExpanded" : "NodeCollapsed", null, ["id='", this._expandIconId, "'"].join(""));
 		td.onclick = this._msgView._toggleExpansion.bind(this._msgView);
 	}
+	td = document.getElementById(this._fragmentCellId);
+	if (td) {
+		td.innerHTML = this._getFragment();
+	}
+};
+
+ZmMailMsgCapsuleViewHeader.prototype._getFragment =
+function() {
+	var fragment = (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && !this.parent._expanded) ? this._msg.fragment : "";
+	return fragment || "";
 };
 
 ZmMailMsgCapsuleViewHeader.prototype._mouseDownListener =
