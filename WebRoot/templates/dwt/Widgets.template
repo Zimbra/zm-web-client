@@ -448,7 +448,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 				<$ } $>
 				<td nowrap class='imageCell' id='${id}_imageCell'></td>
 				<td nowrap class='${textClassName}' id='${id}_textCell' width="100%"></td>
-				<td class='${textClassName} FakeAnchor' id='${id}_optCell' style="padding-right:4px"><div id='${id}_optButton'/></td>
+				<td class='${textClassName} FakeAnchor' id='${id}_optCell'><div id='${id}_optButton'/></td>
 			</tr>
 		</table>
 	</div>
