@@ -47,7 +47,7 @@
         </a>
     </span>
         <span class="td right editFix" width="5%"> <a class="ImgEdit"
-                        href="?st=${param.st}&_ajxnoca=1&showTagCreate=1&tid=${tag.id}">&nbsp;</a></span>            
+                        href="?st=${zm:cook(param.st)}&_ajxnoca=1&showTagCreate=1&tid=${tag.id}">&nbsp;</a></span>
     </div>
     </div>        
 </div>
