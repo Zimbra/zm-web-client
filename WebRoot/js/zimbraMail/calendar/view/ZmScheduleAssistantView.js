@@ -217,17 +217,8 @@ function(focusOnSuggestion, showAllSuggestions) {
     };
 
     this._currentSuggestions.setLoadingHtml();
-    if(this._resources.length == 0 || !this._suggestTime) {
-        if(this._resources.length == 0) {
-            if (this._suggestTime) {
-                this.searchCalendarResources(new AjxCallback(this, this._findFreeBusyInfo, [params]));
-            } else {
-                this.searchCalendarResources(new AjxCallback(this, this.suggestLocations, [params]));
-            }
-        } else {
-            this.suggestLocations(params);
-        }
-
+    if(this._resources.length == 0) {
+        this.searchCalendarResources(new AjxCallback(this, this._findFreeBusyInfo, [params]));
     } else {
         this._findFreeBusyInfo(params);
     }    
@@ -239,7 +230,10 @@ ZmScheduleAssistantView.prototype._getTimeFrame =
 function() {
 	var di = {};
 	ZmApptViewHelper.getDateInfo(this._editView, di);
-	var startDate = this._date || AjxDateUtil.simpleParseDateStr(di.startDate);
+    var startDate = this._date;
+    if (!this._date || !this._suggestTime) {
+        startDate = AjxDateUtil.simpleParseDateStr(di.startDate);
+    }
     var endDate = new Date(startDate);
     startDate.setHours(0, 0, 0, 0);
     endDate.setTime(startDate.getTime() + AjxDateUtil.MSEC_PER_DAY);
@@ -453,7 +447,7 @@ function(params) {
 
     this._key = this.getFormKey(tf.start, this._attendees);
 
-    if(this._attendees.length == 0) {
+    if((this._attendees.length == 0) && this._suggestTime) {
         this._timeSuggestions.setNoAttendeesHtml();
         return;
     }
@@ -462,10 +456,14 @@ function(params) {
 		appCtxt.getRequestMgr().cancelRequest(this._freeBusyRequest, null, true);
 	}
 
-    var callback = new AjxCallback(this, this.getWorkingHours, [params]);
-    var acct = (appCtxt.multiAccounts)
-        ? this._editView.getCalendarAccount() : null;
+    var callback;
+    if (this._suggestTime) {
+        callback = new AjxCallback(this, this.getWorkingHours, [params]);
+    } else {
+        callback = new AjxCallback(this, this.suggestLocations, [params]);
+    }
 
+    var acct = (appCtxt.multiAccounts) ? this._editView.getCalendarAccount() : null;
     var fbParams = {
                     startTime: tf.start.getTime(),
                     endTime: tf.end.getTime(),
