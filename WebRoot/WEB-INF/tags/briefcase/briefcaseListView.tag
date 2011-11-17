@@ -121,7 +121,7 @@
                                         <td class='CB' nowrap><input  id="C${status.index}" type=checkbox name="id" value="${subFolder.id}"></td>
                                         <td>&nbsp;</td>
                                         <td class='Img'><app:img src="${folders.image}" alt='${fn:escapeXml(subFolder.name)}'/></td>
-                                        <td><a href="${fn:escapeXml(url)}" id="${aid}">${subFolder.name}</a></td>
+                                        <td><a href="${fn:escapeXml(url)}" id="${aid}">${zm:cook(subFolder.name)}</a></td>
                                         <td>&nbsp;</td>
                                         <td>&nbsp;</td>
                                         <td>&nbsp;</td>
