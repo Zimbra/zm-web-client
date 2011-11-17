@@ -1502,3 +1502,16 @@ ZmAppt.__loadResponse = function(callback, resp) {
     }
     return appt;
 };
+
+/*
+ * Checks whether there is any Daylight Savings change happens on appointment end date.
+ */
+ZmAppt.prototype.checkDSTChangeOnEndDate = function(){
+    var endDate = this.endDate;
+    var eOffset = endDate.getTimezoneOffset();
+    var prevDay = new Date(endDate);
+    prevDay.setTime(endDate.getTime() - AjxDateUtil.MSEC_PER_DAY);
+    var prevDayOffset = prevDay.getTimezoneOffset();
+    var diffOffset = prevDayOffset - eOffset;
+    return diffOffset;
+}

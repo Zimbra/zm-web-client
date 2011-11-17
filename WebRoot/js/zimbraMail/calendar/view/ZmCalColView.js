@@ -1238,7 +1238,15 @@ function(appt) {
 	var sd = appt.startDate;
 	var endOfDay = new Date(sd);
 	endOfDay.setHours(23,59,59,999);
-	var et = Math.min(appt.getEndTime(), endOfDay.getTime());
+    var endDate = new Date(appt.endDate);
+    endDate.setHours(0,0,0,0);
+    var endTime = appt.getEndTime();
+    if(appt.startDate.getTime()==endDate.getTime()){
+        var diffOffset = appt.checkDSTChangeOnEndDate();
+        endTime = endTime + (diffOffset*60*1000);
+    }
+	var et = Math.min(endTime, endOfDay.getTime());
+
 	if (this._scheduleMode)
 		return this._getBoundsForCalendar(sd, et - sd.getTime(), appt.folderId);
 	else
