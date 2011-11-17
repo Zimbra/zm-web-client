@@ -65,7 +65,7 @@ ZmHtmlEditor.__toUpperCase = function(s) {
 };
 
 ZmHtmlEditor._normalizeFontId = function(id) {
-	return id.replace(/,\s/g,","); // Make sure all ids that are supposed to be found in ZmHtmlEditor.FONT_FAMILY are actually found
+	return id.replace(/,\s/g,",").replace(/'/g,""); // Make sure all ids that are supposed to be found in ZmHtmlEditor.FONT_FAMILY are actually found
 };
 
 ZmHtmlEditor.FONT_FAMILY = {};
