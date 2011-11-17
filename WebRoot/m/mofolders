@@ -24,7 +24,7 @@
     <c:set var="query" value="${param.sq}"/>
 </c:if>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
-<c:url var="currentUrl" value="${context_url}"><c:param name="st" value="${param.st}"/></c:url>
+<c:url var="currentUrl" value="${context_url}"><c:param name="st" value="${zm:cook(param.st)}"/></c:url>
 <c:set value="${title}" var="title" scope="request"/>
 <%--<c:import url="mobriefcases"/>--%>
 <c:choose>
@@ -53,7 +53,7 @@
 </c:if>
 
 <c:if test="${(empty param.showTagCreate and empty param.showSearchCreate and not empty param.showFolderCreate) or ua.isiPad eq false}">
-    <mo:folderForm type="folder" id="${param.id}" hide="${empty param.showFolderCreate}" url="${currentUrl}" st="${param.st}"/>
+    <mo:folderForm type="folder" id="${param.id}" hide="${empty param.showFolderCreate}" url="${currentUrl}" st="${zm:cook(param.st)}"/>
 </c:if>
 <c:if test="${(empty param.showTagCreate and empty param.showSearchCreate and empty param.showFolderCreate) or ua.isiPad eq false}">    
     <c:if test="${empty query || fn:containsIgnoreCase(mailbox.inbox.name,query)}">
@@ -101,7 +101,7 @@
 </c:choose>
 
 <c:if test="${(empty param.showTagCreate and not empty param.showSearchCreate and empty param.showFolderCreate) or ua.isiPad eq false}">
-	<mo:folderForm type="search" id="${param.sid}" hide="${empty param.showSearchCreate}" url="${currentUrl}" st="${param.st}"/>
+	<mo:folderForm type="search" id="${param.sid}" hide="${empty param.showSearchCreate}" url="${currentUrl}" st="${zm:cook(param.st)}"/>
 </c:if>
 
 <c:if test="${(empty param.showTagCreate and empty param.showSearchCreate and empty param.showFolderCreate) or ua.isiPad eq false}">
@@ -139,7 +139,7 @@
 </c:choose>
 
 <c:if test="${(not empty param.showTagCreate and empty param.showSearchCreate and empty param.showFolderCreate and mailbox.features.tagging) or ua.isiPad eq false}">
-   <mo:folderForm type="tag" id="${param.tid}" hide="${empty param.showTagCreate}" url="${currentUrl}" st="${param.st}"/>
+   <mo:folderForm type="tag" id="${param.tid}" hide="${empty param.showTagCreate}" url="${currentUrl}" st="${zm:cook(param.st)}"/>
 </c:if>
 
 <c:if test="${(empty param.showTagCreate and empty param.showSearchCreate and empty param.showFolderCreate) or ua.isiPad eq false}">    
