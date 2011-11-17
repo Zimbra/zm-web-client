@@ -121,11 +121,13 @@ function(search) {
 	this._settingSearch = true;
 	this._searchField.clear(true);
 	var tokens = search.getTokens();
-	for (var i = 0, len = tokens.length; i < len; i++) {
-		var text = tokens[i].toString();
-		if (text) {
-			var bubble = this._searchField.addBubble({address:text});
-			this._bubbleId[text] = bubble.id;
+	if (tokens && tokens.length) {
+		for (var i = 0, len = tokens.length; i < len; i++) {
+			var text = tokens[i].toString();
+			if (text) {
+				var bubble = this._searchField.addBubble({address:text});
+				this._bubbleId[text] = bubble.id;
+			}
 		}
 	}
 	this._settingSearch = false;

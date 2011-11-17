@@ -96,7 +96,9 @@ function(conv, force) {
 		return;
 	}
 	this._renderConv(conv);
-	conv.msgs.addChangeListener(this._listChangeListener);
+	if (conv.msgs) {
+		conv.msgs.addChangeListener(this._listChangeListener);
+	}
 };
 
 ZmConvView2.prototype._renderConv =

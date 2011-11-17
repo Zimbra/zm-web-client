@@ -174,25 +174,17 @@ function() {
 ZmSearchResultsController.prototype._searchListener =
 function(ev, zimletEvent) {
 	var query = this._toolbar.getSearchFieldValue();
-	if (query) {
-		var params = {
-			ev:							ev,
-			zimletEvent:				zimletEvent || "onSearchButtonClick",
-			query:						query,
-			sessionId:					this.sessionId,
-			skipUpdateSearchToolbar:	true,
-			origin:						ZmId.SEARCHRESULTS,
-			errorCallback:				this._errorCallback.bind(this)
-		}
-		appCtxt.getSearchController()._toolbarSearch(params);
+	var params = {
+		ev:							ev,
+		zimletEvent:				zimletEvent || "onSearchButtonClick",
+		query:						query,
+		isEmpty:					!query,
+		sessionId:					this.sessionId,
+		skipUpdateSearchToolbar:	true,
+		origin:						ZmId.SEARCHRESULTS,
+		errorCallback:				this._errorCallback.bind(this)
 	}
-	else {
-		var listView = this._resultsController.getListView();
-		if (listView) {
-			listView.removeAll(true);
-			listView._setNoResultsHtml();
-		}
-	}
+	appCtxt.getSearchController()._toolbarSearch(params);
 };
 
 // Note the error and then eat it - we don't want to show toast or clear out results

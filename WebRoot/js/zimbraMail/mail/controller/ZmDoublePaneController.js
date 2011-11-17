@@ -77,6 +77,7 @@ function(search, mailList, callback, markRead) {
 
 	if (this._doublePaneView) {
 		this._doublePaneView._mailListView.reset();
+		this._doublePaneView._itemView.reset();
 	}
 	this.setList(mailList);
 	this._setup(this._currentViewId);

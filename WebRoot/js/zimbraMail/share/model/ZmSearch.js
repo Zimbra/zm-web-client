@@ -53,30 +53,31 @@
  * @param   {Boolean}   params.inDumpster               if <code>true</code>, search in the dumpster
  * @param	{boolean}	params.expandDL					if <code>true</code>, set flag to have server indicate expandability for DLs
  * @param	{string}	params.origin					indicates what initiated the search
+ * @param	{boolean}	params.isEmpty					if true, return empty response without sending a request
  */
 ZmSearch = function(params) {
 
-	if (params) {
-		for (var p in params) {
-			this[p] = params[p];
-		}
-		this.galType					= this.galType || ZmSearch.GAL_ACCOUNT;
-		this.join						= this.join || ZmSearch.JOIN_AND;
+	params = params || {};
+	for (var p in params) {
+		this[p] = params[p];
+	}
+	this.galType					= this.galType || ZmSearch.GAL_ACCOUNT;
+	this.join						= this.join || ZmSearch.JOIN_AND;
 
-		if (this.query || this.queryHint) {
-			// only parse regular searches
-			if (!this.isGalSearch && !this.isAutocompleteSearch &&
-				!this.isGalAutocompleteSearch && !this.isCalResSearch) {
-				
-				var pq = this.parsedQuery = new ZmParsedQuery(this.query || this.queryHint);
-				this._setProperties();
-				var sortTerm = pq.getTerm("sort");
-				if (sortTerm) {
-					this.sortBy = sortTerm.arg;
-				}
+	if (this.query || this.queryHint) {
+		// only parse regular searches
+		if (!this.isGalSearch && !this.isAutocompleteSearch &&
+			!this.isGalAutocompleteSearch && !this.isCalResSearch) {
+			
+			var pq = this.parsedQuery = new ZmParsedQuery(this.query || this.queryHint);
+			this._setProperties();
+			var sortTerm = pq.getTerm("sort");
+			if (sortTerm) {
+				this.sortBy = sortTerm.arg;
 			}
 		}
 	}
+
 	this.isGalSearch = false;
 	this.isCalResSearch = false;
 
@@ -103,6 +104,9 @@ ZmSearch = function(params) {
         this.types = AjxVector.fromArray(AjxUtil.keys(ZmSearch.TYPE));
     }
 };
+
+ZmSearch.prototype.isZmSearch = true;
+ZmSearch.prototype.toString = function() { return "ZmSearch"; };
 
 // Search types
 ZmSearch.TYPE = {};
@@ -149,15 +153,6 @@ ZmSearch.DUE_DATE_DESC	= "taskDueDesc";
 ZmSearch.DUE_DATE_ASC	= "taskDueAsc";
 
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmSearch.prototype.toString =
-function() {
-	return "ZmSearch";
-};
 
 ZmSearch.prototype.execute =
 function(params) {
@@ -188,7 +183,10 @@ function(params) {
     if (appCtxt.isOffline && this.isCalResSearch) {
         this.isCalResSearch =  appCtxt.isZDOnline();
     }
-	if (!this.query && !this.isCalResSearch) return;
+	if (this.isEmpty) {
+		this._handleResponseExecute(params.callback);
+		return null;
+	}
 
 	var soapDoc;
 	if (!this.response) {
@@ -326,7 +324,10 @@ function(params) {
     if (appCtxt.isOffline && this.isCalResSearch) {
         this.isCalResSearch = appCtxt.isZDOnline();
     }
-	if (!this.query && !this.queryHint && !this.isCalResSearch) { return; }
+	if (this.isEmpty) {
+		this._handleResponseExecute(params.callback);
+		return null;
+	}
 
 	var jsonObj, request, soapDoc;
 	if (!this.response) {
@@ -527,17 +528,23 @@ function(inConds, request, or) {
  */
 ZmSearch.prototype._handleResponseExecute =
 function(callback, result) {
-	var response = result.getResponse();
-
-	if      (this.isGalSearch)				{ response = response.SearchGalResponse; }
-	else if (this.isCalResSearch)			{ response = response.SearchCalendarResourcesResponse; }
-	else if (this.isAutocompleteSearch)		{ response = response.AutoCompleteResponse; }
-	else if (this.isGalAutocompleteSearch)	{ response = response.AutoCompleteGalResponse; }
-	else if (this.soapInfo)					{ response = response[this.soapInfo.response]; }
-	else									{ response = response.SearchResponse; }
-
+	
+	if (result) {
+		var response = result.getResponse();
+	
+		if      (this.isGalSearch)				{ response = response.SearchGalResponse; }
+		else if (this.isCalResSearch)			{ response = response.SearchCalendarResourcesResponse; }
+		else if (this.isAutocompleteSearch)		{ response = response.AutoCompleteResponse; }
+		else if (this.isGalAutocompleteSearch)	{ response = response.AutoCompleteGalResponse; }
+		else if (this.soapInfo)					{ response = response[this.soapInfo.response]; }
+		else									{ response = response.SearchResponse; }
+	}
+	else {
+		response = { _jsns: "urn:zimbraMail", more: false };
+	}
 	var searchResult = new ZmSearchResult(this);
 	searchResult.set(response);
+	result = result || new ZmCsfeResult();
 	result.set(searchResult);
 
 	if (callback) {

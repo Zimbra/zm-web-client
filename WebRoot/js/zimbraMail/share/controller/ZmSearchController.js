@@ -242,38 +242,6 @@ function(menu) {
 ZmSearchController.prototype.search =
 function(params) {
 
-	if (!params.query && !params.queryHint) { // What to do when the search field is empty?
-		var appName;
-		switch (params.searchFor) {
-			case ZmId.SEARCH_MAIL:
-				appName = ZmApp.MAIL;
-				break;
-			case ZmId.SEARCH_GAL:
-				// Do not search in GAL when query is empty
-				return;
-			case ZmItem.APPT:
-				break;
-			default:
-				// Get the app of the item type being searched
-				appName = ZmItem.APP[params.searchFor];
-				break;
-		}
-		if (appName) {
-			// Get the "main" folder of the app related to the searched item type
-			var organizerName = ZmOrganizer.APP2ORGANIZER[appName];
-			var defaultFolder = organizerName && ZmOrganizer.DEFAULT_FOLDER[organizerName];
-			var folder = defaultFolder && appCtxt.getById(defaultFolder);
-			if (folder) {
-				params.query = "in:" + folder._systemName;
-			}
-		}
-		if (params.query) {
-			params.userText = false;
-		} else if (params.searchFor != ZmItem.APPT) { // Appointment searches without query are ok, all others should fail
-			return;
-		}
-	}
-
 	// if the search string starts with "$set:" then it is a command to the client
 	if (params.query && (params.query.indexOf("$set:") == 0 || params.query.indexOf("$cmd:") == 0)) {
 		appCtxt.getClientCmdHandler().execute((params.query.substr(5)), this);
@@ -752,6 +720,7 @@ function(params) {
 		} else {
 			queryString = this._currentQuery || "";
 		}
+
 		appCtxt.notifyZimlets(params.zimletEvent, [queryString]);
 		var searchParams = {
 			query:						queryString,
@@ -762,7 +731,8 @@ function(params) {
 			skipUpdateSearchToolbar:	params.skipUpdateSearchToolbar,
 			origin:						params.origin,
 			sessionId:					params.sessionId,
-			errorCallback:				params.errorCallback
+			errorCallback:				params.errorCallback,
+			isEmpty:					params.isEmpty || !queryString
 		};
 		this.search(searchParams);
 	}
