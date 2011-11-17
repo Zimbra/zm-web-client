@@ -66,6 +66,7 @@ function(results) {
 	results.search.sessionId = this.sessionId;	// in case we reuse this search (eg view switch)
 	var app = this._resultsApp = appCtxt.getApp(ZmItem.APP[resultsType]) || appCtxt.getCurrentApp();
 	app.showSearchResults(results, this._displayResults.bind(this, results.search), this);
+	this.inactive = true;	// search tabs can always be reused (unless pinned)
 };
 
 // creates the toolbar and filter panel
