@@ -164,7 +164,7 @@
                         <div style="background-color:${zm:lightenColor(not empty folder.rgb ? folder.rgb : (not empty folder.rgbColor ? folder.rgbColor : colorOrange))};width:16px;height:16px;display:inline;margin-right:4px;">
                             &nbsp;
                         </div>
-                        ${zm:getFolder(pageContext,appt.folderId).name}
+                        ${zm:getFolderName(pageContext,folder.id)}
                 </td>
                 <td nowrap class='Img'>
                     <c:choose>

@@ -88,7 +88,7 @@
                             &nbsp;
                         </td>
                         <td>
-                         ${zm:getFolder(pageContext,checkedcal).name}
+                        ${zm:getFolderName(pageContext,folder.id)}
                         </td>
                         <td>
                             &nbsp;&nbsp;
