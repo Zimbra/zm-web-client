@@ -419,7 +419,7 @@
 	<td><div class ="ImgBlank_16"></div></td>
 	<$ } $>
 	<td class='rowLabel'><$= data.seenone ? "" : data.label $></td>
-	<td id='${id}_<$=data.name1$>' <$= data.type ? "" : "colspan=2" $> class='rowValue'>
+	<td id='${id}_<$=data.name1.replace(/['"]/g,'')$>' <$= data.type ? "" : "colspan=2" $> class='rowValue'>
 		<$= data.value $>
 	</td>
 	<$ if (data.type) { $>
