@@ -82,6 +82,7 @@ function(sortAsc) {
     var htmlArr = [];
 	var dayOfWeek = this._getToday().getDay();
     var keys = sortAsc ? this._sortKeys(dayOfWeek, sortAsc) : this._keys; //keys have already been sorted desc
+    this.resetSectionHeaders();
     for (var i=0; i<keys.length; i++) {
         if (this._section[keys[i]].length > 0) {
             htmlArr.push(this.getSectionHeader(ZmMailListDateGroup.SECTION_TITLE[keys[i]]));

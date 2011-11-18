@@ -79,6 +79,11 @@ function(headerTitle) {
     return header.getHeaderHtml();
 };
 
+ZmMailListGroup.prototype.resetSectionHeaders =
+function() {
+    this._sectionHeaders = [];
+};
+
 /**
  * Returns the sort by for the Group. For example size would be ZmSearch.SIZE_ASC or ZmSearch.SIZE_DESC
  * Groups should overload
