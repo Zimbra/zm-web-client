@@ -100,30 +100,36 @@ and the container element is replaced with that control.
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
-					<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDES_TRASH)) { $>
+					<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDES_TRASH, ZmSetting.SHARING_ENABLED)) {
+						var labelShown = false;
+					$>
 						<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_SPAM)) { $>
 							<tr>
-								<td class='ZOptionsLabel'><$=ZmMsg.searchSettingsLabel$></td>
+								<$ var settingsLabel = labelShown ? "&nbsp;" : ZmMsg.searchSettingsLabel; labelShown = true; $>
+								<td class='ZOptionsLabel'><$=settingsLabel$></td>
 								<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_SPAM' tabindex='60'></div></td>
 							</tr>
 						<$ } $>
 
 						<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_TRASH)) { $>
 							<tr>
-								<td class='ZOptionsLabel'>
-									<$ if (!data.isEnabled(ZmSetting.SEARCH_INCLUDES_SPAM)) { $>
-										<$=ZmMsg.searchSettingsLabel$>
-									<$ } else { $>
-										&nbsp;
-									<$ } $>
-								</td>
+								<$ var settingsLabel = labelShown ? "&nbsp;" : ZmMsg.searchSettingsLabel; labelShown = true; $>
+								<td class='ZOptionsLabel'><$=settingsLabel$></td>
 								<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_TRASH' tabindex='70'></div></td>
 							</tr>
 						<$ } $>
 
+						<$ if (data.isEnabled(ZmSetting.SHARING_ENABLED)) { $>
+							<tr>
+								<$ var settingsLabel = labelShown ? "&nbsp;" : ZmMsg.searchSettingsLabel; labelShown = true; $>
+								<td class='ZOptionsLabel'><$=settingsLabel$></td>
+								<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_SHARED' tabindex='70'></div></td>
+							</tr>
+						<$ } $>
+					
 						<tr><td colspan=2><hr></td></tr>
 					<$ } $>
-
+					
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.searchLanguageLabel$></td>
 						<td class='ZOptionsField'><div id='${id}_SHOW_SEARCH_STRING' tabindex='80'></div></td>

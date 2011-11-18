@@ -278,6 +278,7 @@ function() {
                 ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS,
 				ZmSetting.FONT_NAME,
 				ZmSetting.PASSWORD,
+				ZmSetting.SEARCH_INCLUDES_SHARED,
 				ZmSetting.SEARCH_INCLUDES_SPAM,
 				ZmSetting.SEARCH_INCLUDES_TRASH,
 				ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES,
@@ -878,6 +879,12 @@ function() {
 		changeFunction:		AjxCallback.simpleClosure(ZmPref.onChangeConfirm, null, ZmMsg.saveToSentWarning, ZmPref.getSendToFiltersActive, true, new AjxCallback(null, ZmPref.setFormValue, ["SAVE_TO_SENT", true]))
 	});
 
+	ZmPref.registerPref("SEARCH_INCLUDES_SHARED", {
+		displayName:		ZmMsg.includeSharedItems,
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		precondition:		ZmSetting.SHARING_ENABLED
+	});
+	
 	ZmPref.registerPref("SEARCH_INCLUDES_SPAM", {
 		displayName:		ZmMsg.includeJunkFolder,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,

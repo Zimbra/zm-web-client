@@ -33,6 +33,7 @@ ZmSearchToolBar = function(params) {
 	
 	this._button = {};
 	this._origin = ZmId.SEARCH;
+	this._searchMenu = null;
 	
 	this._createHtml();
 };
@@ -99,12 +100,15 @@ function(id, params) {
 ZmSearchToolBar.prototype.removeMenuItem =
 function(id) {
 	
-	var mi = menu.getItemById("_menuItemId", id);
-	if (mi) {
-		menu.removeChild(mi);
-		mi.dispose();
+	var menu = this._searchMenu;
+	if (menu) {
+		var mi = menu.getItemById("_menuItemId", id);
+		if (mi) {
+			menu.removeChild(mi);
+			mi.dispose();
+		}
+		this._cleanupSeparators(menu);
 	}
-	this._cleanupSeparators(menu);
 };
 
 // Remove unneeded separators
@@ -382,7 +386,7 @@ function() {
 ZmMainSearchToolBar.prototype._createSearchMenu =
 function() {
 
-	var menu = new DwtMenu({
+	var menu = this._searchMenu = new DwtMenu({
 				parent:		this._button[ZmSearchToolBar.TYPES_BUTTON],
 				className:	"ActionMenu",
 				id:			ZmId.getMenuId(ZmId.SEARCH)
@@ -415,6 +419,9 @@ function() {
 		mi = DwtMenuItem.create(params);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, id);
 	}
+	
+	this._checkSharedMenuItem();
+	appCtxt.getSettings().getSetting(ZmSetting.SEARCH_INCLUDES_SHARED).addChangeListener(this._checkSharedMenuItem.bind(this));
 
 	appCtxt.getSearchController()._addMenuListeners(menu);
 	this._searchMenuCreated = true;
@@ -627,5 +634,13 @@ function(id) {
 		else {
 			this._peopleAutocomplete.unhandle(input);
 		}
+	}
+};
+
+ZmMainSearchToolBar.prototype._checkSharedMenuItem =
+function() {
+	var mi = this._searchMenu && this._searchMenu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_SHARED);
+	if (mi) {
+		mi.setChecked(appCtxt.get(ZmSetting.SEARCH_INCLUDES_SHARED));
 	}
 };
