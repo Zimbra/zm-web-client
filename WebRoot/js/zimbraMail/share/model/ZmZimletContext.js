@@ -909,11 +909,17 @@ function(xslt, canvas, result) {
  */
 ZmZimletContext._getMsgBody =
 function(o) {
-	var body = o.getOrFetchTextPart();
-	if (!body && o.getBodyPart(ZmMimeTable.TEXT_HTML)) {
+	//load if the msg is not loaded
+	if(!o._loaded) {
+		o.load({});
+	}
+	var body = o.getBodyPart(ZmMimeTable.TEXT_PLAIN);
+	if (!body || !body.content) {
 		var div = document.createElement("div");
 		div.innerHTML = o.getBodyPart(ZmMimeTable.TEXT_HTML).content;
 		body = AjxStringUtil.convertHtml2Text(div);
+	} else {
+		body = body.content;
 	}
 	return body;
 };

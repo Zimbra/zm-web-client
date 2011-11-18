@@ -234,34 +234,12 @@ ZmZimletTreeController.prototype._dropListener = function(ev) {
 		return;
 	}
 	var dragSrc = z.zimletPanelItem.dragSource;
- 	if (!dragSrc) {
- 		ev.doIt = false;
- 	} else {
-		var doIt = false;
-		for (var i = dragSrc.length; --i >= 0;) {
-			// XXX Assumes all srcData are of the same Type
-			var type = srcData[0] ? srcData[0].toString() : srcData.toString();
-			if (type == dragSrc[i].type) {
-				doIt = true;
-				dragSrc = dragSrc[i];
-				break;
-			}
-		}
-		if (ev.action == DwtDropEvent.DRAG_ENTER) {
-			if (doIt) {
-				doIt = z.callHandler("_dispatch",
-						     [ "doDrag",
-						       ZmZimletContext._translateZMObject(srcData),
-						       dragSrc ]);
-			}
-			ev.doIt = doIt;
-		} else if (ev.action == DwtDropEvent.DRAG_DROP) {
-			z.callHandler("_dispatch",
-				      [ "doDrop",
-					ZmZimletContext._translateZMObject(srcData),
-					dragSrc ]);
-		}
- 	}
+ 	if (dragSrc && ev.action == DwtDropEvent.DRAG_DROP) {
+		z.callHandler("_dispatch",
+			[ "doDrop",
+				ZmZimletContext._translateZMObject(srcData),
+			dragSrc ]);
+	}
 };
 
 /**
