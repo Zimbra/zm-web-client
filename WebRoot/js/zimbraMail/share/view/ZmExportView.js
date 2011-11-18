@@ -171,7 +171,10 @@ function(isStart, ev) {
 		calDate = cal.getDate() || new Date();
 		this.setValue(field, AjxDateUtil.simpleComputeDateStr(calDate));
 	} else {
-		cal.setDate(calDate);
+                if (calDate)
+                        cal.setDate(calDate);
+                else
+                        this.setValue(field, null);
 	}
 };
 
@@ -182,12 +185,12 @@ function(isStart, ev) {
 	var newDate = AjxDateUtil.simpleComputeDateStr(ev.detail);
 	// change the start/end date if they mismatch
 	if (isStart) {
-		if (!ed || ed.valueOf() < ev.detail.valueOf()) {
+		if (ed && (ed.valueOf() < ev.detail.valueOf())) {
 			this.setValue("endDateField", newDate);
 		}
 		this.setValue("startDateField", newDate);
 	} else {
-		if (!sd || sd.valueOf() > ev.detail.valueOf()) {
+		if (sd && (sd.valueOf() > ev.detail.valueOf())) {
 			this.setValue("startDateField", newDate);
 		}
 		this.setValue("endDateField", newDate);

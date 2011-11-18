@@ -436,9 +436,14 @@ function(params) {
 	var formParams = { "fmt" : type };
 	if (isCSV) { formParams[type+"fmt"] = subType; }
 	if (isTGZ && params.views) { formParams["types"] = params.views; }
+        if (params.views == "appointment"){
+                if (params.start) { formParams["start"] = params.start; }
+                if (params.end) { formParams["end"] = params.end; }
+        } else {
+                if (isTGZ && params.start){ params.searchFilter = (params.searchFilter) ? params.searchFilter + " AND " : "" + "after:" + params.start; }
+                if (isTGZ && params.end){ params.searchFilter = ((params.searchFilter) ? params.searchFilter + " AND " : "") + "before:" + params.end; }
+        }
 	if (isTGZ && params.searchFilter) { formParams["query"] = params.searchFilter; }
-	if (params.start) { formParams["start"] = params.start; }
-	if (params.end) { formParams["end"] = params.end; }
 	if (params.skipMeta) { formParams["meta"] = "0"; }
 	if (params.filename) { formParams["filename"] = params.filename; }
 	formParams.emptyname = ZmMsg.exportEmptyName;
