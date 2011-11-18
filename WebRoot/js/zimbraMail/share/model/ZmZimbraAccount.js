@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -627,7 +627,6 @@ function(appName) {
 		case ZmApp.CONTACTS:	return appCtxt.get(ZmSetting.CONTACTS_ENABLED, 	null, this);
 		case ZmApp.IM:			return appCtxt.get(ZmSetting.IM_ENABLED, 		null, this);
 		case ZmApp.MAIL:		return appCtxt.get(ZmSetting.MAIL_ENABLED, 		null, this);
-		case ZmApp.NOTEBOOK:	return appCtxt.get(ZmSetting.NOTEBOOK_ENABLED, 	null, this);
 		case ZmApp.PREFERENCES:	return appCtxt.get(ZmSetting.OPTIONS_ENABLED, 	null, this);
 		case ZmApp.TASKS:		return appCtxt.get(ZmSetting.TASKS_ENABLED, 	null, this);
 	}

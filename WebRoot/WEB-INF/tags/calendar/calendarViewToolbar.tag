@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -15,12 +15,12 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
-<%@ attribute name="title" rtexprvalue="true" required="true" %>
+<%@ attribute name="title" rtexprvalue="true" required="false" %>
 <%@ attribute name="today" rtexprvalue="true" required="true" type="java.util.Calendar"%>
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar"%>
 <%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
-<%@ attribute name="nextDate" rtexprvalue="true" required="true" type="java.util.Calendar"%>
-<%@ attribute name="prevDate" rtexprvalue="true" required="true" type="java.util.Calendar"%>
+<%@ attribute name="nextDate" rtexprvalue="true" required="false" type="java.util.Calendar"%>
+<%@ attribute name="prevDate" rtexprvalue="true" required="false" type="java.util.Calendar"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -47,6 +47,7 @@
                     <app:calendarUrl var="weekViewUrl" date="${dateDf}" view="week"/>
                     <app:calendarUrl var="workWeekViewUrl" date="${dateDf}" view="workWeek"/>
                     <app:calendarUrl var="monthViewUrl" date="${dateDf}" view="month"/>
+                    <app:calendarUrl var="listViewUrl" date="${dateDf}" view="list"/>
                     <app:calendarUrl var="scheduleViewUrl" date="${dateDf}" view="schedule"/>
                     <td height="100%">
                         <a id="CAL_NEWAPPT" href="${fn:escapeXml(newApptUrl)}"><app:img altkey="ALT_CAL_NEW_APPT" src="calendar/ImgNewAppointment.png"/><span style='padding-left:5px'><fmt:message key="new"/></span></a>
@@ -63,6 +64,9 @@
                     </td>
                     <td height="100%">
                         <a id="CAL_MONTH" href="${fn:escapeXml(monthViewUrl)}"><app:img altkey="ALT_CAL_MONTH_VIEW" src="calendar/ImgMonthView.png"/><span style='padding-left:5px'><fmt:message key="month"/></span></a>
+                    </td>
+                    <td height="100%">
+                        <a id="CAL_LIST" href="${fn:escapeXml(listViewUrl)}"><app:img altkey="ALT_CAL_LIST_VIEW" src="deprecated/ImgListView.gif"/><span style='padding-left:5px'><fmt:message key="list"/></span></a>
                     </td>
                     <td height="100%">
                         <a id="CAL_SCHED" href="${fn:escapeXml(scheduleViewUrl)}"><app:img altkey="ALT_CAL_SCHEDULE_VIEW" src="calendar/ImgGroupSchedule.png"/><span style='padding-left:5px'><fmt:message key="schedule"/></span></a>
@@ -83,6 +87,7 @@
                 </tr>
             </table>
         </td>
+        <c:if test="${not empty prevDate and not empty nextDate and not empty title}">
         <td align=right>
             <app:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
             <app:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
@@ -100,5 +105,6 @@
                 </tr>
             </table>
         </td>
+        </c:if>
     </tr>
 </table>

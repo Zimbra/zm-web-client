@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -94,7 +94,7 @@ var myEditor;
         width: '100%',
         dompath: false, //Turns on the bar at the bottom
         animate: true, //Animates the opening, closing and moving of Editor windows
-        plainText: false,
+        plainText: true, // Treats the contents of the textarea as plaintext
         <c:if test="${param.op eq 'reply' or param.op eq 'replyAll'}" >
         focusAtStart: true,
         </c:if>
@@ -218,7 +218,7 @@ var myEditor;
             button.set('label', label);
             button.checkValue(label);
         }
-        
+
         this.toolbar.enableButton('fontname');
         this.toolbar.enableButton('fontsize2');
         this.toolbar.enableButton('subscript');

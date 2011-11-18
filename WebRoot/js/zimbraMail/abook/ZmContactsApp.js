@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -113,7 +113,6 @@ function(settings) {
 	var settings = settings || appCtxt.getSettings();
 	settings.registerSetting("AUTO_ADD_ADDRESS",				{name: "zimbraPrefAutoAddAddressEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false, isGlobal: true});
 	settings.registerSetting("AUTOCOMPLETE_LIMIT",				{name: "zimbraContactAutoCompleteMaxResults", type:ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 20});
-	settings.registerSetting("AUTOCOMPLETE_NO_GROUP_MATCH",		{name: "zimbraPrefContactsDisableAutocompleteOnContactGroupMembers", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("AUTOCOMPLETE_ON_COMMA",			{name: "zimbraPrefAutoCompleteQuickCompletionOnComma", type: ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue: true});
 	settings.registerSetting("AUTOCOMPLETE_SHARE",				{name: "zimbraPrefShareContactsInAutoComplete", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("AUTOCOMPLETE_SHARED_ADDR_BOOKS",	{name: "zimbraPrefSharedAddrBookAutoCompleteEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
@@ -141,7 +140,6 @@ function() {
 			precondition: ZmSetting.CONTACTS_ENABLED,
 			prefs: [
 				ZmSetting.AUTO_ADD_ADDRESS,
-				ZmSetting.AUTOCOMPLETE_NO_GROUP_MATCH,
 				ZmSetting.AUTOCOMPLETE_ON_COMMA,
 				ZmSetting.AUTOCOMPLETE_SHARE,
 				ZmSetting.AUTOCOMPLETE_SHARED_ADDR_BOOKS,
@@ -158,11 +156,6 @@ function() {
 
 	ZmPref.registerPref("AUTO_ADD_ADDRESS", {
 		displayName:		ZmMsg.autoAddContacts,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
-
-	ZmPref.registerPref("AUTOCOMPLETE_NO_GROUP_MATCH", {
-		displayName:		ZmMsg.autocompleteNoGroupMatch,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
@@ -226,7 +219,6 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_PRINT_CONTACT, {textKey:"printContact", image:"Print", shortcut:ZmKeyMap.PRINT}, ZmSetting.PRINT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_PRINT_ADDRBOOK, {textKey:"printAddrBook", image:"Print"}, ZmSetting.PRINT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_ADDRBOOK, {textKey:"shareAddrBook", image:"SharedContactsFolder"});
-	ZmOperation.registerOp(ZmId.OP_SHOW_ONLY_CONTACTS, {textKey:"showOnlyContacts", image:"Contact"}, ZmSetting.MIXED_VIEW_ENABLED);
 };
 
 /**
@@ -352,7 +344,8 @@ function() {
 							  trashViewOp:			ZmOperation.SHOW_ONLY_CONTACTS,
 							  chooserSort:			20,
 							  defaultSort:			40,
-							  upsellUrl:			ZmSetting.CONTACTS_UPSELL_URL
+							  upsellUrl:			ZmSetting.CONTACTS_UPSELL_URL,
+							  quickCommandType:		ZmQuickCommand[ZmId.ITEM_CONTACT]
 							  });
 };
 
@@ -385,6 +378,12 @@ function(creates, force) {
 					this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
 				} else if (name == "cn") {
 					var clc = AjxDispatcher.run("GetContactListController");
+					if (clc._folderId == ZmFolder.ID_DLS) {
+						//the simplest solution I could think of to the messy problem that the clcList in this case is GAL and thus
+						//the contact becomes GAL (in memory) even though it's not on the server. Then it's cached and when going to the contacts it would get an exeption when clicked
+						//if the user is viewing the DLs folder, they will see the new contact they created anyway when clicking on the "contacts" folder (or whatever other folder they created it in)
+						continue;
+					}
 					var clcList = (clc && clc.getFolderId()) ? clc.getList() : new ZmContactList(null);
 					if (appCtxt.multiAccounts && clcList.search && clcList.search.folderId != create.l) {
 						continue;
@@ -531,12 +530,13 @@ function() {
 /**
  * Shows the search results.
  * 
- * @param	{Object}	results	the results
- * @param	{AjxCallback}	callback		the callback
+ * @param	{Object}					results					the results
+ * @param	{AjxCallback}				callback				the callback
+ * @param 	{ZmSearchResultsController}	searchResultsController	owning controller
  */
 ZmContactsApp.prototype.showSearchResults =
-function(results, callback) {
-	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
+function(results, callback, searchResultsController) {
+	var loadCallback = this._handleLoadShowSearchResults.bind(this, results, callback, searchResultsController);
 	AjxDispatcher.require("Contacts", false, loadCallback, null, true);
 };
 
@@ -544,16 +544,25 @@ function(results, callback) {
  * @private
  */
 ZmContactsApp.prototype._handleLoadShowSearchResults =
-function(results, callback) {
+function(results, callback, searchResultsController) {
 	var search = results && results.search;
-	var folderId = search && search.singleTerm && search.folderId;
+	var folderId = search && search.isSimple() && search.folderId;
 	var isInGal = search && (search.contactSource == ZmId.SEARCH_GAL);
-	this.getContactListController().show(results, isInGal, folderId);
+	var sessionId = searchResultsController ? searchResultsController.getCurrentViewId() : ZmApp.MAIN_SESSION;
+	var controller = this.getContactListController(sessionId, searchResultsController);
+	controller.show(results, isInGal, folderId);
 	this._setLoadedTime(this.toString(), new Date());
 	if (callback) {
-		callback.run();
+		callback.run(controller);
 	}
 };
+
+ZmContactsApp.prototype.runRefresh =
+function() {
+	var clc = AjxDispatcher.run("GetContactListController");
+	clc.runRefresh();
+};
+
 
 /**
  * Sets the app as active.
@@ -979,7 +988,7 @@ function(callback, errorCallback, account) {
 			throw ex;
 		}
 	} else {
-		if (callback && callback.run) {
+		if (callback && callback.isAjxCallback) {
 			callback.run(this._contactList[acctId]);
 		}
 		return this._contactList[acctId];
@@ -994,7 +1003,7 @@ function(callback) {
 	var acctId = appCtxt.getActiveAccount().id;
 	this.contactsLoaded[acctId] = true;
 
-	if (callback && callback.run) {
+	if (callback && callback.isAjxCallback) {
 		callback.run(this._contactList[acctId]);
 	}
 };
@@ -1033,26 +1042,21 @@ function(msgId, vcardPartId) {
  * @return	{ZmContactListController}	the controller
  */
 ZmContactsApp.prototype.getContactListController =
-function() {
-	if (!this._contactListController) {
-		this._contactListController = new ZmContactListController(this._container, this);
-	}
-	return this._contactListController;
+function(sessionId, searchResultsController) {
+	return this.getSessionController({controllerClass:			"ZmContactListController",
+									  sessionId:				sessionId || ZmApp.MAIN_SESSION,
+									  searchResultsController:	searchResultsController});
 };
 
 /**
  * Gets the contact controller.
- * 
+ *
  * @return	{ZmContactController}	the controller
  */
 ZmContactsApp.prototype.getContactController =
-function() {
-	AjxDispatcher.require(["ContactsCore", "Contacts"]);
-
-	if (this._contactController == null) {
-		this._contactController = new ZmContactController(this._container, this);
-	}
-	return this._contactController;
+function(sessionId) {
+	return this.getSessionController({controllerClass:	"ZmContactController",
+									  sessionId:		sessionId});
 };
 
 /**
@@ -1077,4 +1081,21 @@ function(addr) {
 ZmContactsApp.prototype.cacheDL =
 function(addr, dl) {
 	this._dlCache[addr] = dl;
+};
+
+/**
+ * Adds/remove contacts from the contact list hash
+ * @param contact  {Object}     contact object
+ * @param doDelete {boolean}    true to delete from hash
+ */
+ZmContactsApp.prototype.updateIdHash =
+function(contact, doDelete) {
+	var id = contact.id;
+	var hash = this.getContactList().getIdHash();
+	if (!doDelete) {
+		hash[id] = contact;
+	}
+	else {
+		delete hash[id];
+	}
 };

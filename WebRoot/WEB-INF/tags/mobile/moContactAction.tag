@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -152,26 +152,61 @@
             </fmt:message>
         </mo:status>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'composeTo') || (zm:actionSet(param,'moreActions') && anAction == 'composeTo')}">
+    <c:when test="${zm:actionSet(param, 'composeTo') || zm:actionSet(param, 'composeCC') || zm:actionSet(param, 'composeBCC')
+                            || (zm:actionSet(param,'moreActions') && (anAction == 'composeTo' || anAction == 'composeCC' || anAction == 'composeBCC'))}">
         <c:forEach var="id" items="${ids}">
-            <zm:getContact var="c" id="${id}"/>
-            <c:set var="toaddrs" value="${c.email},${toaddrs}"/>
+            <zm:getContact var="contact" id="${id}"/>
+            <c:choose>
+                <c:when test="${contact.isGroup}">
+                    <c:set var="emailIds" value="" />
+                    <c:forEach var="member" items="${contact.groupMembers}">
+                        <c:if test="${not empty emailIds}"><c:set var="grpsep" value=", " /></c:if>
+                        <c:set var="emailIds" value="${emailIds}${grpsep}${member}" />
+                    </c:forEach>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="toEmail" value=""/>
+                    <c:set var="homeEmail" value=""/>
+                    <c:set var="workEmail" value=""/>
+                    <c:if test="${not empty contact.email}">
+                        <c:set var="homeEmail" value="${contact.email}"/>
+                    </c:if>
+                    <c:if test="${not empty contact.workEmail1}">
+                        <c:set var="workEmail" value="${contact.workEmail1}"/>
+                    </c:if>
+                    <c:if test="${not empty contact.email2 and empty homeEmail and empty workEmail}">
+                        <c:set var="homeEmail" value="${contact.email2}"/>
+                    </c:if>
+                    <c:if test="${not empty contact.workEmail2 and empty homeEmail and empty workEmail}">
+                        <c:set var="workEmail" value="${contact.workEmail2}"/>
+                    </c:if>
+                    <c:if test="${not empty contact.email3 and empty homeEmail and empty workEmail}">
+                        <c:set var="homeEmail" value="${contact.email3}"/>
+                    </c:if>
+                    <c:if test="${not empty contact.workEmail3 and empty homeEmail and empty workEmail}">
+                        <c:set var="workEmail" value="${contact.workEmail3}"/>
+                    </c:if>
+                    <c:if test="${not empty homeEmail}">
+                         <c:set var="toEmail" value="${homeEmail}${not empty toEmail ? ',' : ''}${not empty toEmail ? toEmail : ''}"/>
+                    </c:if>
+                    <c:if test="${empty homeEmail and not empty workEmail}">
+                         <c:set var="toEmail" value="${workEmail}${not empty toEmail ? ',' : ''}${not empty toEmail ? toEmail : ''}"/>
+                    </c:if>
+                    <c:set var="emailIds" value="${toEmail}" />
+                </c:otherwise>
+            </c:choose>
         </c:forEach>
-        <c:redirect url="/m/zmain?st=newmail&to=${toaddrs}&ajax=${param.ajax}"/>
-    </c:when>
-    <c:when test="${zm:actionSet(param, 'composeCC') || (zm:actionSet(param,'moreActions') && anAction == 'composeCC')}">
-        <c:forEach var="id" items="${ids}">
-            <zm:getContact var="c" id="${id}"/>
-            <c:set var="toaddrs" value="${c.email},${toaddrs}"/>
-        </c:forEach>
-        <c:redirect url="/m/zmain?st=newmail&cc=${toaddrs}&ajax=${param.ajax}"/>
-    </c:when>
-    <c:when test="${zm:actionSet(param, 'composeBCC') || (zm:actionSet(param,'moreActions') && anAction == 'composeBCC')}">
-        <c:forEach var="id" items="${ids}">
-            <zm:getContact var="c" id="${id}"/>
-            <c:set var="toaddrs" value="${c.email},${toaddrs}"/>
-        </c:forEach>
-        <c:redirect url="/m/zmain?st=newmail&bcc=${toaddrs}&ajax=${param.ajax}"/>
+        <c:choose>
+            <c:when test="${zm:actionSet(param, 'composeTo') || (zm:actionSet(param,'moreActions') && anAction == 'composeTo')}">
+                <c:redirect url="/m/zmain?st=newmail&to=${emailIds}&ajax=${param.ajax}"/>
+            </c:when>
+            <c:when test="${zm:actionSet(param, 'composeCC') || (zm:actionSet(param,'moreActions') && anAction == 'composeCC')}">
+                <c:redirect url="/m/zmain?st=newmail&cc=${emailIds}&ajax=${param.ajax}"/>
+            </c:when>
+            <c:when test="${zm:actionSet(param, 'composeBCC') || (zm:actionSet(param,'moreActions') && anAction == 'composeBCC')}">
+                <c:redirect url="/m/zmain?st=newmail&bcc=${emailIds}&ajax=${param.ajax}"/>
+            </c:when>
+        </c:choose>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionFlag') || (zm:actionSet(param,'moreActions') && anAction == 'actionFlag')}">
         <zm:flagContact var="result" id="${ids}" flag="${true}"/>

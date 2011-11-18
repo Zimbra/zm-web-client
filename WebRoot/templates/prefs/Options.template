@@ -192,7 +192,7 @@
 		</tr>
 
 		<tr><td class='ZCheckboxCell'><input id='${id}_setReplyToCheckbox' type='checkbox'></td>
-			<td class='ZCheckboxLabelCell'><nobr><$= ZmMsg.setReplyTo $></nobr></td>
+			<td class='ZCheckboxLabelCell'><nobr><label for='${id}_setReplyToCheckbox'><$= ZmMsg.setReplyTo $></label></nobr></td>
 			<td><input id='${id}_setReplyToName' style='width:100%'></td>
 			<td><select id='${id}_setReplyToAddress' style='width:90%'><option>bob@zimbra.com</option></select></td>
 		</tr>
@@ -207,7 +207,7 @@
 		<colgroup><col width=20><col width='100%'><col width=40></colgroup>
 
 		<tr><td class='ZCheckboxCell'><input id='${id}_whenSentToCheckbox' type='checkbox'></td>
-			<td class='ZCheckboxLabelCell'><$= ZmMsg.whenSentTo $></td>
+			<td class='ZCheckboxLabelCell'><label for='${id}_whenSentToCheckbox'><$= ZmMsg.whenSentTo $></label></td>
 		</tr>
 
 		<tr><td></td>
@@ -215,12 +215,12 @@
 		</tr>
 
 		<tr><td></td>
-			<td class='ZHelpLabel'><$= ZmMsg.whenSentToHint $></td>
+			<td class='ZHelpLabel'><label for='${id}_whenSentToInput'><$= ZmMsg.whenSentToHint $></label></td>
 		</tr>
 		<tr><td><div class='ZSmallSpacer'></div></td></tr>
 
 		<tr><td class='ZCheckboxCell'><input id='${id}_whenInFolderCheckbox' type='checkbox'></td>
-			<td class='ZCheckboxLabelCell'><$= ZmMsg.whenInFolder $></td>
+			<td class='ZCheckboxLabelCell'><label for=${id}_whenInFolderCheckbox'><$= ZmMsg.whenInFolder $></label></td>
 		</tr>
 
 		<tr><td></td>

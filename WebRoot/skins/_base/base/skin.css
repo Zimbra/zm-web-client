@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -40,8 +40,6 @@ body	{	@ChromeBg@	}
 */
 #skin_tr_toolbar_full, 					/* main app (fullscreen) */
 #skin_tr_main_full,	
-#skin_container_search_builder_outer,	/* search builder */
-#skin_td_search_builder,
 #skin_tr_tree_footer					/* mini-calendar */
 	{
 	display:none;
@@ -161,33 +159,6 @@ body	{	@ChromeBg@	}
 #skin_container_logoff {
 	text-align:right;
 }
-
-
-/* search builder */
-
-#skin_container_search_builder_outer	{}
-
-#skin_container_search_builder_toolbar	{	
-	@SkinBorderSBToolbar@
-	height:32px;
-}	
-#IFDEF MSIE
-
-#skin_container_search_builder_toolbar	{	
-	@SkinBorderSBToolbar@
-	height:26px;
-}
-#ENDIF	
-
-#skin_tr_search_builder	{}
-#skin_td_search_builder	{	
-	padding:0 4 3 4;
-}
-#skin_container_search_builder	{	
-	@SkinBorderSB@
-	height:225;
-}
-
 
 
 /* current app, tree-app sash, top toolbar */

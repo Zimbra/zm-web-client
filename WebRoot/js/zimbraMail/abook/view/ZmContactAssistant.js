@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -222,7 +222,7 @@ function(dialog, verb, args) {
 		while (match = this._matchTypedObject(args, objType, obj)) {
 			var field = this._lookupField(match.type);
 			var type = field ? field.key : match.type;
-			this._contactFields[type] = field.capitalize ? this._capitalize(match.data) : match.data;
+			this._contactFields[type] = field && field.capitalize ? this._capitalize(match.data) : match.data;
 			args = match.args;
 		}
 	}

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -23,12 +23,16 @@ ZmTradView = function(params) {
 ZmTradView.prototype = new ZmDoublePaneView;
 ZmTradView.prototype.constructor = ZmTradView;
 
-ZmTradView.prototype.toString = 
-function() {
-	return "ZmTradView";
-};
+ZmTradView.prototype.isZmTradView = true;
+ZmTradView.prototype.toString = function() { return "ZmTradView"; };
 
 ZmTradView.prototype._createMailListView =
 function(params) {
-	return ZmDoublePaneView.prototype._createMailListView.apply(this, arguments);
+	return new ZmMailMsgListView(params);
+};
+
+ZmTradView.prototype._createMailItemView =
+function(params) {
+	params.id = ZmId.getViewId(ZmId.VIEW_MSG, null, params.view);
+	return new ZmMailMsgView(params);
 };

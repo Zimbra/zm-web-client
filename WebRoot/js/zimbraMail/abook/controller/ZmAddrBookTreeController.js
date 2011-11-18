@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -33,9 +33,8 @@ ZmAddrBookTreeController = function() {
 
 	ZmFolderTreeController.call(this, ZmOrganizer.ADDRBOOK);
 
-	this._listeners[ZmOperation.NEW_ADDRBOOK] = new AjxListener(this, this._newListener);
-	this._listeners[ZmOperation.SHARE_ADDRBOOK] = new AjxListener(this, this._shareAddrBookListener);
-    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
+	this._listeners[ZmOperation.NEW_ADDRBOOK]	= this._newListener.bind(this);
+	this._listeners[ZmOperation.SHARE_ADDRBOOK]	= this._shareAddrBookListener.bind(this);
 
 	this._app = appCtxt.getApp(ZmApp.CONTACTS);
 };
@@ -43,18 +42,10 @@ ZmAddrBookTreeController = function() {
 ZmAddrBookTreeController.prototype = new ZmFolderTreeController;
 ZmAddrBookTreeController.prototype.constructor = ZmAddrBookTreeController;
 
+ZmAddrBookTreeController.prototype.isZmAddrBookTreeController = true;
+ZmAddrBookTreeController.prototype.toString = function() { return "ZmAddrBookTreeController"; };
 
 // Public methods
-
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmAddrBookTreeController.prototype.toString =
-function() {
-	return "ZmAddrBookTreeController";
-};
 
 /**
  * Shows the controller and returns the resulting tree view.
@@ -116,19 +107,25 @@ function(parent, type, id) {
 	var nId = addrBook ? addrBook.nId : ZmOrganizer.normalizeId(id);
 	var isTrash = (nId == ZmFolder.ID_TRASH);
 
+	var isDLs = (nId == ZmFolder.ID_DLS);
+
 	this.setVisibleIfExists(parent, ZmOperation.EMPTY_FOLDER, nId == ZmFolder.ID_TRASH);
 
 	if (isTrash) {
 		parent.enableAll(false);
-		parent.enable(ZmOperation.DELETE, false);
+		parent.enable(ZmOperation.DELETE_WITHOUT_SHORTCUT, false);
 		var hasContent = ((addrBook.numTotal > 0) || (addrBook.children && (addrBook.children.size() > 0)));
 		parent.enable(ZmOperation.EMPTY_FOLDER,hasContent);
-		parent.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);        
-	} else {
+		parent.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);
+	}
+	else if (isDLs) {
+		parent.enableAll(false);
+	}
+	else {
 		parent.enableAll(true);        
 		if (addrBook) {
 			if (addrBook.isSystem()) {
-				parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
+				parent.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.RENAME_FOLDER], false);
 			} else if (addrBook.link) {
 				parent.enable([ZmOperation.SHARE_ADDRBOOK], !addrBook.link || addrBook.isAdmin());
 			}
@@ -143,7 +140,7 @@ function(parent, type, id) {
 		parent.enable(ZmOperation.EXPAND_ALL, (addrBook.size() > 0));
 	}
 
-	var op = parent.getOp(ZmOperation.DELETE);
+	var op = parent.getOp(ZmOperation.DELETE_WITHOUT_SHORTCUT);
 	if (op) {
 		op.setText(deleteText);
 	}
@@ -169,7 +166,7 @@ function() {
 
 ZmAddrBookTreeController.prototype._getSearchTypes =
 function(ev) {
-	return [ZmItem.CONTACT, ZmItem.GROUP];
+	return [ZmItem.CONTACT];
 };
 
 /**
@@ -198,7 +195,7 @@ function() {
 		ops.push(ZmOperation.NEW_ADDRBOOK);
 	}
 	ops.push(ZmOperation.SHARE_ADDRBOOK,
-			ZmOperation.DELETE,
+			ZmOperation.DELETE_WITHOUT_SHORTCUT,
 			ZmOperation.RENAME_FOLDER,
 			ZmOperation.EDIT_PROPS,
 			ZmOperation.EXPAND_ALL,
@@ -251,12 +248,19 @@ function(ev) {
  */
 ZmAddrBookTreeController.prototype._itemClicked =
 function(folder) {
-	if (folder.type == ZmOrganizer.SEARCH) {
+	if (folder.id == ZmFolder.ID_DLS) {
+		var request = {_jsns: "urn:zimbraAccount", directOnly: 1};
+		var jsonObj = {GetAccountMembershipRequest: request};
+		var respCallback = new AjxCallback(this, this._handleMembershipResponse, [folder]);
+		appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
+	}
+	else if (folder.type == ZmOrganizer.SEARCH) {
 		// if the clicked item is a search (within the folder tree), hand
 		// it off to the search tree controller
 		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
 		stc._itemClicked(folder);
-	} else {
+	}
+	else {
 		var capp = appCtxt.getApp(ZmApp.CONTACTS);
 		capp.currentSearch = null;
 		var query = capp.currentQuery = folder.createQuery();
@@ -275,7 +279,7 @@ function(folder) {
 
 		if (folder.id != ZmFolder.ID_TRASH) {
 			var clc = AjxDispatcher.run("GetContactListController");
-			var view = clc.getParentView();
+			var view = clc.getCurrentView();
 			if (view) {
 				view.getAlphabetBar().reset();
 			}
@@ -293,4 +297,24 @@ function(folder, result) {
 	if (folder.nId == ZmFolder.ID_TRASH) {
 		this._treeView[this._app.getOverviewId()].setSelected(ZmFolder.ID_TRASH, true);
 	}
+};
+
+/**
+ * @private
+ */
+ZmAddrBookTreeController.prototype._handleMembershipResponse =
+function(folder, result) {
+
+	var contactList = new ZmContactList(null, true, ZmItem.CONTACT);
+	var dls = result._data.GetAccountMembershipResponse.dl;
+	if (dls) {
+		for (var i = 0; i < dls.length; i++) {
+			var dl = dls[i];
+			contactList.addFromDom({_attrs : {email: dl.name, type: "group", zimbraId: dl.id, firstName: dl.name, lastName: ""},
+									fileAsStr: dl.name,
+									id: dl.id});
+		}
+	}
+	var clc = AjxDispatcher.run("GetContactListController");
+	clc.show(contactList, true, ZmFolder.ID_DLS);
 };

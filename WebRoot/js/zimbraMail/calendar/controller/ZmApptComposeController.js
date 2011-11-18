@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -21,14 +21,16 @@
  *
  * @author Parag Shah
  *
- * @param {DwtComposite}	container	the containing element
- * @param {ZmCalendarApp}	app		the handle to the calendar application
+ * @param {DwtShell}	container	the containing shell
+ * @param {ZmApp}		app			the containing app
+ * @param {constant}	type		controller type
+ * @param {string}		sessionId	the session id
  * 
  * @extends		ZmCalItemComposeController
  */
-ZmApptComposeController = function(container, app) {
+ZmApptComposeController = function(container, app, type, sessionId) {
 
-	ZmCalItemComposeController.call(this, container, app);
+	ZmCalItemComposeController.apply(this, arguments);
 
 	this._addedAttendees = [];
 	this._removedAttendees = [];
@@ -40,14 +42,18 @@ ZmApptComposeController = function(container, app) {
 ZmApptComposeController.prototype = new ZmCalItemComposeController;
 ZmApptComposeController.prototype.constructor = ZmApptComposeController;
 
-ZmApptComposeController.prototype.toString =
-function() {
-	return "ZmApptComposeController";
-};
+ZmApptComposeController.prototype.isZmApptComposeController = true;
+ZmApptComposeController.prototype.toString = function() { return "ZmApptComposeController"; };
 
 ZmApptComposeController._VALUE = "value";
 
 // Public methods
+
+ZmApptComposeController.getDefaultViewType =
+function() {
+	return ZmId.VIEW_APPOINTMENT;
+};
+ZmApptComposeController.prototype.getDefaultViewType = ZmApptComposeController.getDefaultViewType;
 
 ZmApptComposeController.prototype.show =
 function(calItem, mode, isDirty) {
@@ -119,14 +125,30 @@ function(type, attribs){
 
 ZmApptComposeController.prototype._getChangesDialog =
 function(){
-    if(!this._changesDialog){
-       var dlg = this._changesDialog = new DwtDialog({parent:appCtxt.getShell()});
-       var id = this._changesDialogId = Dwt.getNextId();
-       dlg.setContent(AjxTemplate.expand("calendar.Appointment#ChangesDialog", {id: id}));
-       dlg.setTitle(ZmMsg.apptSave); 
-       dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._changesDialogListener, id));
+    var id,
+        dlg,
+        isOrganizer = this._composeView.isOrganizer();
+    if(isOrganizer) {
+        dlg = this._changesDialog;
+        if (!dlg) {
+           dlg = this._changesDialog = new DwtDialog({parent:appCtxt.getShell()});
+           id = this._changesDialogId = Dwt.getNextId();
+           dlg.setContent(AjxTemplate.expand("calendar.Appointment#ChangesDialogOrganizer", {id: id}));
+           dlg.setTitle(ZmMsg.apptSave);
+           dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._changesDialogListener, id));
+        }
     }
-    return this._changesDialog;
+    else {
+        dlg = this._attendeeChangesDialog;
+        if (!dlg) {
+            dlg = this._attendeeChangesDialog = new DwtDialog({parent:appCtxt.getShell()});
+            id = this._attendeeChangesDialogId = Dwt.getNextId();
+            dlg.setContent(AjxTemplate.expand("calendar.Appointment#ChangesDialogAttendee", {id: id}));
+            dlg.setTitle(ZmMsg.apptSave);
+            dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._attendeeChangesDialogListener, id));
+        }
+    }
+    return dlg;
 };
 
 ZmApptComposeController.prototype._changesDialogListener =
@@ -144,6 +166,14 @@ function(id){
     this._changesDialog.popdown();
 };
 
+ZmApptComposeController.prototype._attendeeChangesDialogListener =
+function(id){
+    this.clearInvalidAttendees();
+    delete this._invalidAttendees;
+    this.closeView();
+    this._attendeeChangesDialog.popdown();
+};
+
 ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
 	var appt = this._composeView.getAppt(attId);
@@ -158,7 +188,8 @@ function(attId) {
 	if (appt) {
 
         if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
-            appt.setRsvp(this._requestResponses.getChecked());
+            if (this._requestResponses)
+            	appt.setRsvp(this._requestResponses.getChecked());
             appt.setMailNotificationOption(true);
         }
 
@@ -203,7 +234,7 @@ function(attId) {
                msg = AjxMessageFormat.format(ZmMsg.compSaveBadAttendees, AjxStringUtil.htmlEncode(this._invalidAttendees.join(",")));
             }
             else{
-               msg = AjxMessageFormat.format(ZmMsg.compBadAttendees, AjxStringUtil.htmlEncode(this._invalidAttendees.join(",")));
+                msg = AjxMessageFormat.format(ZmMsg.compBadAttendees, AjxStringUtil.htmlEncode(this._invalidAttendees.join(",")));
             }
 			dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 			dlg.popup();
@@ -284,12 +315,13 @@ function(attId) {
 ZmApptComposeController.prototype.updateToolbarOps =
 function(mode, appt) {
 
+    if (!this._requestResponses) return;
+
     var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
     var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
 
     if(mode == ZmCalItemComposeController.APPT_MODE) {
         saveButton.setText(ZmMsg.saveClose);
-        saveButton.setImage("Save");
         saveButton.setVisible(true);
         sendButton.setVisible(false);
 
@@ -298,12 +330,10 @@ function(mode, appt) {
         sendButton.setVisible(true);
         saveButton.setVisible(true);
         saveButton.setText(ZmMsg.save);
-        saveButton.setImage("Save");
 
         //change cancel button's text/icon to close
         var cancelButton = this._toolbar.getButton(ZmOperation.CANCEL);
         cancelButton.setText(ZmMsg.close);
-		cancelButton.setImage("Close");
 
         this._requestResponses.setEnabled(true);
     }
@@ -469,27 +499,30 @@ function() {
 
     ZmCalItemComposeController.prototype._createToolBar.call(this);
 
-    var optionsButton = new DwtToolBarButton({id:ZmOperation.COMPOSE_OPTIONS, parent:this._toolbar});
-    optionsButton.setText(ZmMsg.options);
-    optionsButton.setImage("Preferences");
+	var optionsButton = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
+	if (optionsButton){
+	optionsButton.setVisible(true); //might be invisible if not ZmSetting.HTML_COMPOSE_ENABLED (see ZmCalItemComposeController._createToolBar)
 
-    var m = new DwtMenu({parent:optionsButton});
-    optionsButton.setMenu(m);
+	var m = optionsButton.getMenu();
 
+	var sepMi = new DwtMenuItem({parent:m, style:DwtMenuItem.SEPARATOR_STYLE});
     var mi = this._requestResponses = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
     mi.setText(ZmMsg.requestResponses);
     mi.setChecked(true, true);
+    }
 
 	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
 };
 
 ZmApptComposeController.prototype.setRequestResponses =
 function(requestResponses) {
+   if (this._requestResponses)
    this._requestResponses.setChecked(requestResponses);
 };
 
 ZmApptComposeController.prototype.getRequestResponses =
 function() {
+   if (this._requestResponses)
    return this._requestResponses.getEnabled() ? this._requestResponses.getChecked() : true;
 };
 
@@ -882,11 +915,6 @@ function() {
 	return (new ZmApptComposeView(this._container, null, this._app, this));
 };
 
-ZmApptComposeController.prototype._createScheduler =
-function(apptEditView) {
-	return (new ZmScheduleAssistantView(this._container, this, apptEditView));
-};
-
 ZmApptComposeController.prototype._setComposeTabGroup =
 function(setFocus) {
 	DBG.println(AjxDebug.DBG2, "_setComposeTabGroup");
@@ -1116,11 +1144,6 @@ function(calItem, result) {
     appCtxt.notifyZimlets("onSaveApptSuccess", [this, calItem, result]);//notify Zimlets on success
 };
 
-ZmApptComposeController.prototype._getViewType =
-function() {
-	return ZmId.VIEW_APPOINTMENT;
-};
-
 ZmApptComposeController.prototype._resetNavToolBarButtons =
 function(view) {
 	//do nothing
@@ -1171,8 +1194,6 @@ function(initHide) {
 	if (!this._composeView || this._needComposeViewRefresh) {
 		this._composeView = this._createComposeView();
         var appEditView = this._composeView.getApptEditView();
-        this._smartScheduler = this._createScheduler(appEditView);
-        appEditView.setScheduleAssistant(this._smartScheduler);
         this._savedFocusMember = appEditView._getDefaultFocusItem();
 
 		var callbacks = {};
@@ -1181,12 +1202,17 @@ function(initHide) {
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 		callbacks[ZmAppViewMgr.CB_PRE_SHOW] = new AjxCallback(this, this._preShowCallback);
 		callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
-		var elements = {};
 		if (!this._toolbar)
 			this._createToolBar();
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
-		this._app.createView({viewId:this.viewId, elements:elements, callbacks:callbacks, tabParams:this._getTabParams()});
+
+		var elements = this.getViewElements(null, this._composeView, this._toolbar);
+
+		this._app.createView({	viewId:		this._currentViewId,
+								viewType:	this._currentViewType,
+								elements:	elements,
+								controller:	this,
+								callbacks:	callbacks,
+								tabParams:	this._getTabParams()});
 		if (initHide) {
 			this._composeView.preload();
 		}
@@ -1216,33 +1242,18 @@ function() {
 
 	ZmCalItemComposeController.prototype._postHideCallback(); 
 
-    if(appCtxt.getCurrentAppName() == ZmApp.CALENDAR || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
-        appCtxt.getAppViewMgr().showTreeFooter(true);
+    if (appCtxt.getCurrentAppName() == ZmApp.CALENDAR || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
+		appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE_FOOTER, true);
     }
-    if(this._schedulerRendered) this._smartScheduler.zShow(false);
 };
 
 ZmApptComposeController.prototype._postShowCallback =
 function(view, force) {    
 	var ta = new AjxTimedAction(this, this._setFocus);
 	AjxTimedAction.scheduleAction(ta, 10);
-    appCtxt.getAppViewMgr().showTreeFooter(false);
-    this.setSchedulerPanelContent();
-};
-
-ZmApptComposeController.prototype.getScheduleAssistant =
-function() {
-    return this._smartScheduler;
-};
-
-ZmApptComposeController.prototype.setSchedulerPanelContent =
-function() {
-    var scheduler = this.getScheduleAssistant();
-    if(scheduler) {
-        var avm = appCtxt.getAppViewMgr();
-        avm.setComponent(ZmAppViewMgr.C_TREE, scheduler);
-        this._schedulerRendered = true;
-    }
+	appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE_FOOTER, false);
+    appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE,        false);
+    appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_NEW_BUTTON,  false);
 };
 
 ZmApptComposeController.prototype.getWorkingInfo =

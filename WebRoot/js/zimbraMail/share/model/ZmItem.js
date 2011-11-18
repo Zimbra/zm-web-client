@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -47,11 +47,22 @@ ZmItem = function(type, id, list, noCache) {
 	this.type = type;
 	this.id = id;
 	this.list = list;
+	this._list = {};
 
 	this.tags = [];
 	this.tagHash = {};
 	this.folderId = 0;
 
+	// make sure the cached item knows which lists it is in, even if those other lists
+	// have separate instances of this item - propagate view IDs from currently cached item
+	var curItem = appCtxt.getById(id);
+	if (curItem) {
+		this._list = AjxUtil.hashCopy(curItem._list);
+	}
+	if (list) {
+		this._list[list.id] = true;
+	}
+	
 	if (id && !noCache) {
 		appCtxt.cacheSet(id, this);
 	}
@@ -59,6 +70,9 @@ ZmItem = function(type, id, list, noCache) {
 
 ZmItem.prototype = new ZmModel;
 ZmItem.prototype.constructor = ZmItem;
+
+ZmItem.prototype.isZmItem = true;
+ZmItem.prototype.toString = function() { return "ZmItem"; };
 
 
 ZmItem.APP 				= {};	// App responsible for item
@@ -98,13 +112,16 @@ ZmItem.F_SELECTION_CELL	= ZmId.FLD_SELECTION_CELL;
 ZmItem.F_SIZE			= ZmId.FLD_SIZE;
 ZmItem.F_SORTED_BY		= ZmId.FLD_SORTED_BY;	// placeholder for 3-pane view
 ZmItem.F_STATUS			= ZmId.FLD_STATUS;
+ZmItem.F_READ			= ZmId.FLD_READ;
 ZmItem.F_SUBJECT		= ZmId.FLD_SUBJECT;
 ZmItem.F_TAG			= ZmId.FLD_TAG;
 ZmItem.F_TAG_CELL		= ZmId.FLD_TAG_CELL;
+ZmItem.F_TO             = ZmId.FLD_TO;
 ZmItem.F_TYPE			= ZmId.FLD_TYPE;
 ZmItem.F_VERSION        = ZmId.FLD_VERSION;
 ZmItem.F_WORK_PHONE		= ZmId.FLD_WORK_PHONE;
 ZmItem.F_LOCK           = ZmId.FLD_LOCK;
+ZmItem.F_MSG_PRIORITY   = ZmId.FLD_MSG_PRIORITY;
 
 // Action requests for different items
 ZmItem.SOAP_CMD = {};
@@ -124,6 +141,7 @@ ZmItem.FLAG_REPLIED				= "r";
 ZmItem.FLAG_UNREAD				= "u";
 ZmItem.FLAG_LOW_PRIORITY		= "?";
 ZmItem.FLAG_HIGH_PRIORITY		= "!";
+ZmItem.FLAG_PRIORITY            = "+"; //msg prioritization
 
 ZmItem.ALL_FLAGS = [
 	ZmItem.FLAG_FLAGGED,
@@ -136,7 +154,8 @@ ZmItem.ALL_FLAGS = [
 	ZmItem.FLAG_ISDRAFT,
 	ZmItem.FLAG_ISSCHEDULED,
 	ZmItem.FLAG_HIGH_PRIORITY,
-	ZmItem.FLAG_LOW_PRIORITY
+	ZmItem.FLAG_LOW_PRIORITY,
+	ZmItem.FLAG_PRIORITY
 ];
 
 // Map flag to item property
@@ -152,6 +171,7 @@ ZmItem.FLAG_PROP[ZmItem.FLAG_REPLIED]			= "isReplied";
 ZmItem.FLAG_PROP[ZmItem.FLAG_UNREAD]			= "isUnread";
 ZmItem.FLAG_PROP[ZmItem.FLAG_LOW_PRIORITY]		= "isLowPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_HIGH_PRIORITY]		= "isHighPriority";
+ZmItem.FLAG_PROP[ZmItem.FLAG_PRIORITY]          = "isPriority";
 
 // DnD actions this item is allowed
 
@@ -262,8 +282,9 @@ ZmItem.prototype.modify = function(mods) {};
  */
 ZmItem.prototype.getById =
 function(id) {
-	if (id == this.id)
+	if (id == this.id) {
 		return this;
+	}
 };
 
 ZmItem.prototype.getAccount =
@@ -294,12 +315,14 @@ ZmItem.prototype.clear =
 function() {
 	this._evtMgr.removeAll(ZmEvent.L_MODIFY);
 	if (this.tags.length) {
-		for (var i = 0; i < this.tags.length; i++)
+		for (var i = 0; i < this.tags.length; i++) {
 			this.tags[i] = null;
+		}
 		this.tags = [];
 	}
-	for (var i in this.tagHash)
+	for (var i in this.tagHash) {
 		this.tagHash[i] = null;
+	}
 	this.tagHash = {};
 };
 
@@ -310,7 +333,7 @@ function() {
  */
 ZmItem.prototype.cache =
 function(){
-  if(this.id){
+  if (this.id) {
       appCtxt.cacheSet(this.id, this);
       return true;
   }
@@ -381,25 +404,43 @@ function() {
 */
 ZmItem.prototype.getTagImageInfo =
 function() {
+	var tagIds = this.getVisibleTags();
+	return this.getTagImageFromIds(tagIds);
+};
+
+ZmItem.prototype.getTagImageFromIds =
+function(tagIds) {
 	var tagImageInfo;
 
-	var searchAll = appCtxt.getSearchController().searchAllAccounts;
-	if (!this.tags.length || (!searchAll && this.isShared())) {
+	if (!tagIds) {
 		tagImageInfo = "Blank_16";
-	}
-	else if (this.tags.length == 1) {
-		var tagId = (!this.getAccount().isMain)
-			? ([this.getAccount().id, this.tags[0]].join(":"))
-			: (ZmOrganizer.getSystemId(this.tags[0]));
-		var tag = appCtxt.getById(tagId);
-		tagImageInfo = tag ? tag.getIconWithColor() : "Blank_16";
-	}
-	else {
+	} else if (tagIds.length == 1) {
+        tagImageInfo = this.getTagImage(tagIds[0]);
+	} else {
 		tagImageInfo = "TagStack";
 	}
 
 	return tagImageInfo;
 };
+
+ZmItem.prototype.getVisibleTags =
+function() {
+    var searchAll = appCtxt.getSearchController().searchAllAccounts;
+    if (!this.tags.length || (!searchAll && this.isShared())) {
+        return null;
+    } else {
+        return this.tags;
+    }
+}
+
+ZmItem.prototype.getTagImage =
+function(tagId) {
+    var tagFullId = (!this.getAccount().isMain)
+        ? ([this.getAccount().id, tagId].join(":"))
+        : (ZmOrganizer.getSystemId(tagId));
+    var tag = appCtxt.getById(tagFullId);
+    return tag ? tag.getIconWithColor() : "Blank_16";
+}
 
 /**
 * Gets the default action to use when dragging this item. This method
@@ -447,11 +488,26 @@ function() {
 
 // Notification handling
 
-/**
- * Handles a delete notification.
- * 
- */
+// For delete and modify notifications, we first apply the notification to this item. Then we
+// see if the item is a member of any other lists. If so, we have those other copies of this
+// item handle the notification as well. Each will notify through the list that created it.
+
 ZmItem.prototype.notifyDelete =
+function() {
+	this._notifyDelete();
+	for (var listId in this._list) {
+		var list = appCtxt.getById(listId);
+		if (!list || (listId == this.list.id)) { continue; }
+		var ctlr = list.controller;
+		if (!ctlr || ctlr.inactive || (ctlr.getList().id != listId)) { continue; }
+		var doppleganger = list.getById(this.id);
+		if (doppleganger) {
+			doppleganger._notifyDelete();
+		}
+	}
+};
+
+ZmItem.prototype._notifyDelete =
 function() {
 	this.deleteLocal();
 	if (this.list) {
@@ -460,13 +516,28 @@ function() {
 	this._notify(ZmEvent.E_DELETE);
 };
 
+ZmItem.prototype.notifyModify =
+function(obj, batchMode) {
+	this._notifyModify(obj, batchMode);
+	for (var listId in this._list) {
+		var list = listId ? appCtxt.getById(listId) : null;
+		if (!list || (listId == this.list.id)) { continue; }
+		var ctlr = list.controller;
+		if (!ctlr || ctlr.inactive || (ctlr.getList().id != listId)) { continue; }
+		var doppleganger = list.getById(this.id);
+		if (doppleganger) {
+			doppleganger._notifyModify(obj, batchMode);
+		}
+	}
+};
+
 /**
  * Handles a modification notification.
  *
  * @param {Object}	obj			the item with the changed attributes/content
  * @param {boolean}	batchMode	if true, return event type and don't notify
  */
-ZmItem.prototype.notifyModify =
+ZmItem.prototype._notifyModify =
 function(obj, batchMode) {
 	// empty string is meaningful here, it means no tags
 	if (obj.t != null) {
@@ -684,6 +755,7 @@ function(str) {
  */
 ZmItem.prototype._notify =
 function(event, details) {
+	this._evt.item = this;
 	ZmModel.prototype._notify.call(this, event, details);
 	if (this.list) {
 		if (details) {

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -45,6 +45,11 @@ ZmTaskListView = function(parent, controller, dropTgt) {
 ZmTaskListView.prototype = new ZmListView;
 ZmTaskListView.prototype.constructor = ZmTaskListView;
 
+ZmTaskListView.prototype.isZmTaskListView = true;
+ZmTaskListView.prototype.toString = function() { return "ZmTaskListView"; };
+
+
+
 ZmTaskListView.SASH_THRESHOLD = 5;
 
 // Consts
@@ -77,15 +82,6 @@ ZmTaskListView._NEW_TASK_ROW_ID = "_newTaskBannerId";
 
 // Public Methods
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmTaskListView.prototype.toString =
-function() {
-	return "ZmTaskListView";
-};
 
 ZmTaskListView.prototype.setSize =
 function(width, height) {
@@ -470,15 +466,8 @@ function(htmlArr, idx, task, field, colIdx, params) {
 		htmlArr[idx++] = ZmCalItem.getImageForPriority(task, params.fieldId);
 		htmlArr[idx++] = "</center>";
 
-	} else if (params.isMixedView && (field == ZmItem.F_FROM)) {
-		htmlArr[idx++] = task.organizer || "&nbsp";
-
 	} else if (field == ZmItem.F_SUBJECT) {
-		if (params.isMixedView) {
-			htmlArr[idx++] = task.name ? AjxStringUtil.htmlEncode(task.name, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
-		} else {
-			htmlArr[idx++] = AjxStringUtil.htmlEncode(task.getName(), true);
-		}
+		htmlArr[idx++] = AjxStringUtil.htmlEncode(task.getName(), true);
 
 	} else if (field == ZmItem.F_STATUS) {
 		htmlArr[idx++] = ZmCalItem.getLabelForStatus(task.status);
@@ -528,7 +517,9 @@ function(columnItem, bSortAsc) {
 		appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
 	}
 
-	if (this.getList().size() > 0 && this._sortByString) {
+	var list = this.getList();
+	var size = list ? list.size() : 0;
+	if (size > 0 && this._sortByString) {
 		var params = {
 			query: this._controller.getSearchString(),
 			queryHint: this._controller.getSearchStringHint(),
@@ -598,7 +589,7 @@ ZmTaskListView.prototype._createHeader =
 function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
     if (headerCol._field == ZmItem.F_SORTED_BY) {
 		var field = headerCol._field;
-		var textTdId = this._itemCountTextTdId = DwtId._makeId(this.view, ZmSetting.RP_RIGHT, "td");
+		var textTdId = this._itemCountTextTdId = DwtId.makeId(this.view, ZmSetting.RP_RIGHT, "td");
 		htmlArr[idx++] = "<td id='";
 		htmlArr[idx++] = id;
 		htmlArr[idx++] = "' class='";
@@ -641,7 +632,7 @@ ZmTaskListView.prototype.checkTaskReplenishListView = function() {
 
 ZmTaskListView.prototype._changeListener =
 function(ev) {
-	if ((ev.type != this.type) && (ZmList.MIXED != this.type))
+	if (ev.type != this.type)
 		return;
 
     //TODO: Optimize ChangeListener logic
@@ -754,14 +745,14 @@ function(ev) {
 ZmTaskListView._handleOnClick =
 function(div) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getCurrentView();
+	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getListView();
 	tlv._handleNewTaskClick(div);
 };
 
 ZmTaskListView._handleOnBlur =
 function(ev) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getCurrentView();
+	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getListView();
 	tlv.saveNewTask();
 };
 
@@ -784,7 +775,7 @@ function(ev) {
 	var key = DwtKeyEvent.getCharCode(ev);
 
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getCurrentView();
+	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getListView();
 
 	if (key == DwtKeyEvent.KEY_ENTER) {
 		tlv.saveNewTask(true);

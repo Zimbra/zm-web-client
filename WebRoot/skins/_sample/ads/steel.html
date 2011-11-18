@@ -20,18 +20,6 @@ skin.hideQuota = function () {
 	this.showQuota(false);
 }
 
-skin.showSearchBuilder = function (state) {
-	var container = navigator.userAgent.indexOf("Safari/") != -1
-		? "skin_div_search_builder"
-		: "skin_tr_search_builder";
-
-	skin._showEl(container, state);
-	skin._showEl("skin_container_search_builder", state);	//HACK: necessary for IE?
-}
-skin.hideSearchBuilder = function () {
-	this.showSearchBuilder(false);
-}
-
 skin.showTopToolbar = function (state) {
 	skin._showEl("skin_tr_top_toolbar", state);
 	skin._showEl("skin_tr_top_toolbar_shim", (state == false));
@@ -162,11 +150,7 @@ skin._reflowApp = function () {
 							<tr><td class="ConsoleVertical"  ><div class="ImgConsoleInset_L__V" style='height:100%'></div></td>
 								<td>
 									<div id="skin_container_search" class="skin_container">
-	<!--
-	<A HREF='javascript:skin.showSearchBuilder()'>
-	SEARCH CONTROLS
-	</A>
-	-->								</div>
+									</div>
 								</td>
 								<td><div class="ImgConsoleInset_R__V" style='height:100%'></div></td>
 							</tr>
@@ -189,48 +173,8 @@ QUOTA
 
 <!-- END SEARCH CONTROLS -->
 
-
-<!-- BEGIN SEARCH BUILDER -->
-			<tr id="skin_tr_search_builder">
-				<td colspan=2 id="skin_td_search_builder">
-					<div id="skin_div_search_builder" class="ConsoleInset">
-						<table class="ConsoleInsetTable" cellpadding=0>
-						<tr class='ToolbarBg'>
-							<td class="ConsoleToolbarCorner_L" align=right><div class="ImgConsoleSearchBuilderToolbar_L"></div></td>
-							<td class="ConsoleHorizontal"><div class="ImgConsoleTopToolbar__H" style='width:100%;'>
-									<div id="skin_container_search_builder_toolbar" class="skin_container">
-<!--
-SEARCH BUILDER TOOLBAR
--->
-									</div>
-								
-							</div></td>
-							<td class="ConsoleToolbarCorner_R"><div class="ImgConsoleSearchBuilderToolbar_R"></div></td>
-						</tr>
-						<tr><td class="ConsoleVertical"  ><div class="ImgConsoleInset_L__V" style='height:100%'></div></td>
-							<td>
-								<div id="skin_container_search_builder" class="skin_container">
-<!--
-<A HREF='javascript:skin.hideSearchBuilder()'>
-SEARCH BUILDER
-</A>
--->
-								</div>
-							</td>
-							<td><div class="ImgConsoleInset_R__V" style='height:100%'></div></td>
-						</tr>
-						<tr>
-							<td class="ImgConsoleInsetApp_B__H"><div class="ImgConsoleInsetApp_BL_2"></div></td>
-							<td class="ConsoleHorizontal" ><div class="ImgConsoleInsetApp_B__H" style='width:100%'></div></td>
-							<td class="ImgConsoleInsetApp_B__H" align=right><div class="ImgConsoleInsetApp_BL_2"></div></td>
-						</tr>
-						</table>
-					</div xid="search_control_inset">
-				</td>
-			</tr>
-<!-- END SEARCH BUILDER -->
-
 <!-- END TOP SECTION -->
+
 <!-- BEGIN MAIN SECTION -->
 			<tr id="skin_tr_outer_main">
 				<td id="skin_td_left_chrome">

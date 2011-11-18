@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -21,13 +21,21 @@
  * @param	{String}	id		the id
  * @param	{String}	name	the name
  * @param	{String}	image	the image
- * 
+ * @param	{String}	localName	the name in user's locale
+ *
  * @see		ZmLocale.create
  */
-ZmLocale = function(id, name, image) {
+ZmLocale = function(id, name, image, localName) {
 	this.id = id;
 	this.name = name;
+	this.localName = localName;
 	this._image = image;
+};
+
+//List of RTL supporting languages
+ZmLocale.RTLLANGUAGES = {
+    ar:"Arabic",
+    iw:"Hebrew"
 };
 
 ZmLocale.localeMap = {};
@@ -38,29 +46,34 @@ ZmLocale.languageMap = {};
  * 
  * @param	{String}	id		the locale id (for example, <code>en_US</code>)
  * @param	{String}	name	the locale name
+ * @param	{String}	localName	the name in user's locale
  */
 ZmLocale.create =
-function(id, name) {
+function(id, name, localName) {
 	var index = id.indexOf("_");
 	var languageId;
+	var country = null;
 	if (index == -1) {
 		languageId = id;
-	} else {
-		languageId = id.substr(0, index);
 	}
+	else {
+		languageId = id.substr(0, index);
+		country = id.substring(id.length - 2);
+	}
+
 	var languageObj = ZmLocale.languageMap[languageId];
 	if (!languageObj) {
-		languageObj = new ZmLocale(languageId, name, null);
+		languageObj = new ZmLocale(languageId, name, null, localName);
 		ZmLocale.languageMap[languageId] = languageObj;
 		ZmLocale.localeMap[id] = languageObj;
 	}
-	if (index != -1) {
-		var country = id.substring(id.length - 2);
-		var localeObj = new ZmLocale(id, name, "Flag" + country); 
+	if (country) {
+		var localeObj = new ZmLocale(id, name, null, localName);
 		languageObj._add(localeObj);
 		ZmLocale.localeMap[id] = localeObj;
 		return localeObj;
-	} else {
+	}
+	else {
 		languageObj.name = name;
 		return languageObj;
 	}
@@ -93,7 +106,21 @@ function() {
  */
 ZmLocale.prototype.getImage =
 function() {
-	return this._image || this._getLanguageImage();
+	return this._image;
+};
+
+/**
+ * Gets the name in both the locale itself, and in the local (user) locale. 
+ *
+ * @return	{String}	the name
+ */
+ZmLocale.prototype.getNativeAndLocalName =
+function() {
+	if (this.name == this.localName) {
+		/* don't show both if they are the same - it looks extremely funny */
+		return this.name;
+	}
+	return [this.localName, " - ", this.name].join("");
 };
 
 ZmLocale.prototype._add =

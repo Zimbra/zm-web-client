@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -378,11 +378,12 @@ function() {
 		// autocomplete for locations
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {
-			dataClass: appCtxt.getAutocompleter(),
-			matchValue: ZmAutocomplete.AC_VALUE_NAME,
-			compCallback: acCallback,
-            keyUpCallback: new AjxCallback(this, this._handleLocationChange),
-			options: {type:ZmAutocomplete.AC_TYPE_LOCATION}
+			dataClass:		appCtxt.getAutocompleter(),
+			matchValue:		ZmAutocomplete.AC_VALUE_NAME,
+			compCallback:	acCallback,
+            keyUpCallback:	this._handleLocationChange.bind(this),
+			options:		{type:ZmAutocomplete.AC_TYPE_LOCATION},
+			contextId:		[this.toString(), ZmCalBaseItem.LOCATION].join("-")
 		};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acLocationsList.handle(this._locationField.getInputElement());

@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -17,6 +17,7 @@
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ attribute name="counter" rtexprvalue="true" required="false" %>
 <%@ attribute name="externalImageUrl" rtexprvalue="true" required="false" type="java.lang.String" %>
+<%@ attribute name="timezone" rtexprvalue="true" required="false" type="java.util.TimeZone"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -80,67 +81,7 @@
 			}
 			return out;
 		}
-
-		function formatDate(UTCTimeString, format) {
-			if (UTCTimeString && format) {
-				var dateStr = UTCTimeString.replace(/[^\d]/g,"");
-				if (dateStr && dateStr.length == 16) {
-					var date = new Date();
-					date.setUTCFullYear(dateStr.substr(0,4));
-					date.setUTCMonth(parseInt(dateStr.substr(4,2), 10)-1);
-					date.setUTCDate(parseInt(dateStr.substr(6,2), 10));
-					date.setUTCHours(parseInt(dateStr.substr(9,2), 10));
-					date.setUTCMinutes(parseInt(dateStr.substr(11,2), 10));
-					date.setUTCSeconds(parseInt(dateStr.substr(13,2), 10));
-			
-					var d = {
-						yyyy: date.getFullYear(),
-						yy: (""+date.getFullYear()).substr(2,2),
-						EEE: days[date.getDay()],
-						MMM: months[date.getMonth()],
-						M: date.getMonth()+1,
-						d: date.getDate(),
-						K: date.getHours() % 12,
-						H: date.getHours(),
-						a: (date.getHours() < 12) ? "AM" : "PM",
-						m: date.getMinutes(),
-						s: date.getSeconds(),
-						S: date.getMilliseconds()
-					};
-					d.h = d.K==0?12:d.K;
-					d.k = d.H==0?24:d.H;
-
-					var out = ""+format;
-						out = insert(out, "EEE", d.EEE);
-						out = insert(out, "MMM", d.MMM);
-						out = insert(out, "MM", pad(d.M),2);
-						out = insert(out, "M", d.M);
-						out = insert(out, "dd", pad(d.d,2));
-						out = insert(out, "d", d.d);
-						out = insert(out, "yyyy", d.yyyy);
-						out = insert(out, "yy", d.yy);
-						out = insert(out, "hh", pad(d.h,2));
-						out = insert(out, "h", d.h);
-						out = insert(out, "kk", pad(d.k,2));
-						out = insert(out, "k", d.k);
-						out = insert(out, "HH", pad(d.H,2));
-						out = insert(out, "H", d.H);
-						out = insert(out, "KK", pad(d.K,2));
-						out = insert(out, "K", d.K);
-						out = insert(out, "mm", pad(d.m,2));pageScope
-						out = insert(out, "m", d.m,2);
-						out = insert(out, "ss", pad(d.s,2));
-						out = insert(out, "s", d.s);
-						out = insert(out, "SSS", pad(d.S,3));
-						out = insert(out, "SS", pad(d.S,2));
-						out = insert(out, "S", d.S);
-						out = insert(out, "a", d.a);
-						out = out.replace(/'/g, '');
-					return out;
-				}
-			}
-		}
-	//-->
+    //-->
 	</script>
 </c:if>
 
@@ -243,7 +184,7 @@
                             <tr>
                                 <td nowrap align='right' class='MsgHdrSent'>
                                     <fmt:message var="dateFmt" key="formatDateSent"/>
-									<span id="messageDisplayTime_${message.id}"><fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/></span>
+									<span id="messageDisplayTime_${message.id}"><fmt:formatDate timeZone="${not empty timezone ? timezone : mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/></span>
                                 </td>
                             </tr>
                             <c:if test="${message.hasTags or message.isFlagged}">
@@ -310,12 +251,4 @@
         </td>
     </tr>
 </table>
-<script type="text/javascript">
-<!--
-	var displayContainer = document.getElementById("messageDisplayTime_${message.id}");
-	if (displayContainer) {
-		var newContent = formatDate('<fmt:formatDate timeZone="GMT" pattern="yyyyMMdd'T'HHmmss'Z'" value="${message.sentDate}"/>', "${dateFmt}");
-		if (newContent) displayContainer.innerHTML = newContent;
-	}
-//-->
-</script>
+

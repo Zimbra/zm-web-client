@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -41,16 +41,55 @@ ZmConvDoublePaneView = function(params) {
 ZmConvDoublePaneView.prototype = new ZmDoublePaneView;
 ZmConvDoublePaneView.prototype.constructor = ZmConvDoublePaneView;
 
-ZmConvDoublePaneView.prototype.toString = 
-function() {
-	return "ZmConvDoublePaneView";
-};
+ZmConvDoublePaneView.prototype.isZmConvDoublePaneView = true;
+ZmConvDoublePaneView.prototype.toString = function() { return "ZmConvDoublePaneView"; };
 
 ZmConvDoublePaneView.prototype._createMailListView =
 function(params) {
-	params.parent = this;
-	params.posStyle = Dwt.ABSOLUTE_STYLE;
 	return new ZmConvListView(params);
+};
+
+// default to conv item view
+ZmConvDoublePaneView.prototype._createMailItemView =
+function(params) {
+	this._itemViewParams = params;
+	return this._getItemView(ZmItem.CONV);
+};
+
+// get the item view based on the given type
+ZmConvDoublePaneView.prototype._getItemView =
+function(type) {
+	
+	this._itemViewParams.className = null;
+	if (type == ZmItem.CONV) {
+		if (!this._convView) {
+			this._itemViewParams.id = ZmId.getViewId(ZmId.VIEW_CONV, null, this._itemViewParams.view);
+			this._convView = new ZmConvView2(this._itemViewParams);
+		}
+	}
+	else if (type == ZmItem.MSG) {
+		if (!this._mailMsgView) {
+			this._itemViewParams.id = ZmId.getViewId(ZmId.VIEW_MSG, null, this._itemViewParams.view);
+			this._mailMsgView = new ZmMailMsgView(this._itemViewParams);
+		}
+	}
+	return (type == ZmItem.CONV) ? this._convView : this._mailMsgView;
+};
+
+// set up to display either a conv or a msg in the item view
+ZmConvDoublePaneView.prototype.setItem =
+function(item, force, dontFocus) {
+	var changed = ((item.type == ZmItem.CONV) != (this._itemView && this._itemView == this._convView));
+	this._itemView = this._getItemView(item.type);
+	var otherView = (item.type == ZmItem.CONV) ? this._mailMsgView : this._convView;
+	if (otherView) {
+		otherView.setVisible(false);
+	}
+	this._itemView.setVisible(true);
+	if (changed) {
+		this.setReadingPane();	// so that second view gets positioned
+	}
+	ZmDoublePaneView.prototype.setItem.apply(this, arguments);
 };
 
 /**
@@ -64,7 +103,8 @@ ZmConvListView = function(params) {
 
 	this.view = params.view = ZmId.VIEW_CONVLIST;
 	params.type = ZmItem.CONV;
-	params.headerList = this._getHeaderList(parent, params.controller);
+	this._controller = params.controller;
+	params.headerList = this._getHeaderList();
 	ZmMailListView.call(this, params);
 
 	// change listener needs to handle both types of events
@@ -79,6 +119,9 @@ ZmConvListView = function(params) {
 ZmConvListView.prototype = new ZmMailListView;
 ZmConvListView.prototype.constructor = ZmConvListView;
 
+ZmConvListView.prototype.isZmConvListView = true;
+ZmConvListView.prototype.toString = function() { return "ZmConvListView"; };
+
 // Constants
 
 ZmListView.FIELD_CLASS[ZmItem.F_EXPAND] = "Expand";
@@ -89,10 +132,6 @@ ZmConvListView.MSG_STYLE = "ZmConvExpanded";	// for differentiating msg rows
 ZmConvListView.prototype._changeFolderName = ZmMailMsgListView.prototype._changeFolderName;
 ZmConvListView.prototype._changeTrashStatus = ZmMailMsgListView.prototype._changeTrashStatus;
 
-ZmConvListView.prototype.toString = 
-function() {
-	return "ZmConvListView";
-};
 
 ZmConvListView.prototype.set =
 function(list, sortField) {
@@ -102,11 +141,11 @@ function(list, sortField) {
 	ZmMailListView.prototype.set.apply(this, arguments);
 };
 
-// Enter is normally a list view widget shortcut for DBLCLICK; we need to no-op
-// it here so that it gets handled as an app shortcut (app shortcuts happen
-// after widget shortcuts).
 ZmConvListView.prototype.handleKeyAction =
 function(actionCode, ev) {
+	// Enter is normally a list view widget shortcut for DBLCLICK; we need to no-op
+	// it here so that it gets handled as an app shortcut (app shortcuts happen
+	// after widget shortcuts).
 	switch (actionCode) {
 		case DwtKeyMap.DBLCLICK:
 			return false;
@@ -135,8 +174,8 @@ function() {
 		}
 	}
 
-
-	return convsSelected == this.getList().size();
+	var list = this.getList();
+	return (list && convsSelected == list.size());
 };
 
 
@@ -173,6 +212,12 @@ function(allItems) {
 	}
 };
 
+// See if we've been rigged to return a particular msg
+ZmConvListView.prototype.getSelection =
+function() {
+	return this._selectedMsg ? [this._selectedMsg] : ZmMailListView.prototype.getSelection.apply(this, arguments);
+};
+
 ZmConvListView.prototype.getItemIndex =
 function(item, allItems) {
 	var list = this.getList(allItems);
@@ -193,14 +238,15 @@ function() {
 	if (!this._headerInit) {
 		ZmMailListView.prototype._initHeaders.call(this);
 		this._headerInit[ZmItem.F_EXPAND]	= {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand};
-		this._headerInit[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_CLV, resizeable:true};
+        //bug:45171 removed sorted from converstaion for FROM field
+        this._headerInit[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_CLV, resizeable:true};
 	}
 };
 
 ZmConvListView.prototype._getHeaderList =
-function(parent, controller) {
+function() {
 	var headers;
-	if (this.isMultiColumn(controller)) {
+	if (this.isMultiColumn()) {
 		headers = [
 			ZmItem.F_SELECTION,
 			ZmItem.F_EXPAND,
@@ -210,6 +256,7 @@ function(parent, controller) {
 			ZmItem.F_STATUS,
 			ZmItem.F_FROM,
 			ZmItem.F_ATTACHMENT,
+			ZmItem.F_MSG_PRIORITY,
 			ZmItem.F_SUBJECT,
 			ZmItem.F_FOLDER,
 			ZmItem.F_SIZE
@@ -270,16 +317,18 @@ function(item, params) {
 //apply colors to from and subject cells via zimlet
 ZmConvListView.prototype._getStyleViaZimlet =
 function(field, item) {
-	if (field != "fr" && field != "su" && field != "st")
+
+	if (field != "fr" && field != "su" && field != "st") {
 		return "";
+	}
 
 	if (appCtxt.zimletsPresent() && this._ignoreProcessingGetMailCellStyle == undefined) {
 		if (!this._zimletMgr) {
-			this._zimletMgr = appCtxt.getZimletMgr();//cache zimletMgr
+			this._zimletMgr = appCtxt.getZimletMgr();	//cache zimletMgr
 		}
 		var style = this._zimletMgr.processARequest("getMailCellStyle", item, field);
 		if (style != undefined && style != null) {
-			return style;//set style
+			return style;	//set style
 		} else if (style == null && this._zimletMgr.isLoaded()) {
 			//zimlet not available or disabled, set _ignoreProcessingGetMailCellStyle to true
 			//to ignore this entire section for this session
@@ -318,25 +367,40 @@ function(htmlArr, idx, item, field, colIdx, params) {
 
 	if (field == ZmItem.F_SELECTION) {
 		idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
-	} else if (field == ZmItem.F_EXPAND) {
+	}
+	else if (field == ZmItem.F_EXPAND) {
 		idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, field));
-	} else if (item.type == ZmItem.MSG) {
+	}
+	else if (field == ZmItem.F_READ) {
+		idx = this._getImageHtml(htmlArr, idx, item.getReadIcon(), this._getFieldId(item, field));
+	}
+	else if (item.type == ZmItem.MSG) {
 		idx = ZmMailMsgListView.prototype._getCellContents.apply(this, arguments);
-	} else {
+	}
+	else {
 		if (field == ZmItem.F_STATUS) {
 			if (item.type == ZmItem.CONV && item.numMsgs == 1 && item.isScheduled) {
 				idx = this._getImageHtml(htmlArr, idx, "SendLater", this._getFieldId(item, field));
 			} else {
 				htmlArr[idx++] = "&nbsp;";
 			}
-		} else if (field == ZmItem.F_FROM) {
+		}
+		else if (field == ZmItem.F_FROM) {
 			htmlArr[idx++] = this._getParticipantHtml(item, this._getFieldId(item, ZmItem.F_PARTICIPANT));
-		} else if (field == ZmItem.F_SUBJECT) {
-			htmlArr[idx++] = item.subject ? AjxStringUtil.htmlEncode(item.subject, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
+			if (item.type == ZmItem.CONV && (item.numMsgs > 1) && !this.isMultiColumn()) {
+				htmlArr[idx++] = " - <span class='ZmConvListNumMsgs'>";
+				htmlArr[idx++] = item.numMsgs;
+				htmlArr[idx++] = "</span>";
+			}
+		}
+		else if (field == ZmItem.F_SUBJECT) {
+			var subj = ZmMailMsg.stripSubjectPrefixes(item.subject || ZmMsg.noSubject);
+			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj, true);
 			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(item);
 			}
-		} else if (field == ZmItem.F_FOLDER) {
+		}
+		else if (field == ZmItem.F_FOLDER) {
 			if (item.folderId) {
 				htmlArr[idx++] = "<nobr id='";
 				htmlArr[idx++] = this._getFieldId(item, field);
@@ -347,7 +411,8 @@ function(htmlArr, idx, item, field, colIdx, params) {
 				}
 				htmlArr[idx++] = "</nobr>";
 			}
-		} else if (field == ZmItem.F_SIZE) {
+		}
+		else if (field == ZmItem.F_SIZE) {
 			if (item.size) {
 				htmlArr[idx++] = "<nobr>";
 				htmlArr[idx++] = AjxUtil.formatSize(item.size);
@@ -357,16 +422,11 @@ function(htmlArr, idx, item, field, colIdx, params) {
 				htmlArr[idx++] = item.numMsgs;
 				htmlArr[idx++] = ")";
 			}
-		} else if (field == ZmItem.F_TYPE) {
-			// Type icon (mixed view only)
-			if (item.isDraft) {
-				htmlArr[idx++] = AjxImg.getImageHtml("MsgStatusDraft", null, ["id='", this._getFieldId(item, ZmItem.F_STATUS), "'"].join(""));
-			} else {
-				idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
-			}
-		} else if (field == ZmItem.F_SORTED_BY) {
+		}
+		else if (field == ZmItem.F_SORTED_BY) {
 			htmlArr[idx++] = this._getAbridgedContent(item, colIdx);
-		} else {
+		}
+		else {
 			idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
 		}
 	}
@@ -376,61 +436,59 @@ function(htmlArr, idx, item, field, colIdx, params) {
 
 ZmConvListView.prototype._getAbridgedContent =
 function(item, colIdx) {
+
 	var htmlArr = [];
 	var idx = 0;
 	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? 22 : 16;
 
+	var isMsg = (item.type == ZmItem.MSG);
+	
 	// first row
-	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%>";
-	htmlArr[idx++] = (item.isUnread) ? "<tr class='Unread' " : "<tr ";
+	htmlArr[idx++] = "<table class='TopRow' style='width:100%;border-collapse:collapse;border-spacing:0;'>";
+	htmlArr[idx++] = (item.isUnread && !item.isMuted()) ? "<tr class='Unread' " : "<tr ";
 	htmlArr[idx++] = "id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
-	if (item.type != ZmItem.MSG) {
+
+	if (!isMsg) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx, "16", "style='padding:0px'");
-		if (item.isHighPriority || item.isLowPriority) {
-			idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", "align=right");
-		}
-	} else {
+	}
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_READ, colIdx, width);
+	if (isMsg) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, width);
+	}
+	
+	// for multi-account, show the account icon for cross mbox search results
+	if (appCtxt.multiAccounts && !isMsg && appCtxt.getSearchController().searchAllAccounts) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ACCOUNT, colIdx, "16", "align=right");
+	}
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right");
+	htmlArr[idx++] = "</tr></table>";
+
+	// second row
+	htmlArr[idx++] = "<table class='BottomRow' style='width:100%;border-collapse:collapse;border-spacing:0;'><tr>";
+	htmlArr[idx++] = "<td width=";
+	htmlArr[idx++] = width;
+	htmlArr[idx++] = "></td>";
+	
+	if (item.isHighPriority || item.isLowPriority) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", "align=right");
 	}
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SUBJECT, colIdx);
 	if (item.hasAttach) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, width, "valign=top");
 	}
-	if (appCtxt.get("FLAGGING_ENABLED")) {
+	
+	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, width);	
+	if (appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED)) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_MSG_PRIORITY, colIdx, "16", "align=right");	
+	}
+	if (appCtxt.get(ZmSetting.FLAGGING_ENABLED)) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, width);
 	}
 	htmlArr[idx++] = "</tr></table>";
-
-	// second row
-	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr>";
-	if (item.type == ZmItem.MSG && (item.isHighPriority || item.isLowPriority)) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, width, "align=right");
-	} else {
-		var exWidth = (item.type == ZmItem.MSG) ? width : (width+15);
-		htmlArr[idx++] = "<td width='" + exWidth + "'";
-		htmlArr[idx++] = this._getStyleViaZimlet(ZmItem.F_FROM, item);
-		htmlArr[idx++] = "></td>";
-	}
-
-	// for multi-account, show the account icon for cross mbox search results
-	if (appCtxt.multiAccounts &&
-		item.type == ZmItem.CONV &&
-		appCtxt.getSearchController().searchAllAccounts)
-	{
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ACCOUNT, colIdx, "16", "align=right");
-	}
-
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FROM, colIdx);
-	if (item.type != ZmItem.MSG) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_SIZE, colIdx, ZmMsg.COLUMN_WIDTH_SIZE);
-	}
-
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_DATE, colIdx, ZmMsg.COLUMN_WIDTH_DATE, "align=right");
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, width);
-	htmlArr[idx++] = "</tr></table>";
-
+	
 	return htmlArr.join("");
 };
 
@@ -446,7 +504,7 @@ function(conv, fieldId) {
 
 		// bug 23832 - create notif for conv in sent gives us sender as participant, we want recip
 		var folder = appCtxt.getById(this._folderId);
-		if ((origLen == 1) && (part1[0].type == AjxEmailAddress.FROM) && folder &&
+		if ((origLen == 1) && (part1[0].type == AjxEmailAddress.FROM) && folder && conv.isZmConv &&
 			(folder.isUnder(ZmFolder.ID_SENT) || folder.isUnder(ZmFolder.ID_DRAFTS) ||
 			folder.isUnder(ZmFolder.ID_OUTBOX))) {
 
@@ -705,6 +763,11 @@ function() {
 	this._expandedItems	= {};	// list of expanded items for a conv ID (inc conv)
 };
 
+ZmConvListView.prototype.isExpanded =
+function(item) {
+	return item && this._expanded[item.id];
+};
+
 ZmConvListView.prototype._expandItem =
 function(item) {
 	if (item && this._isExpandable(item)) {
@@ -737,11 +800,8 @@ function(columnItem, bSortAsc, callback) {
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
 
 	var query;
-	if (this._columnHasCustomQuery(columnItem))
-	{
-		query = this._getSearchForSort(columnItem._sortable);
-	}
-	else if (this.getList().size() > 1 && this._sortByString) {
+	var list = this.getList();
+	if (list && list.size() > 1 && this._sortByString) {
 		query = this._controller.getSearchString();
 	}
 
@@ -749,20 +809,17 @@ function(columnItem, bSortAsc, callback) {
 
 	if (query || queryHint) {
 		var params = {
-			query: query,
-			queryHint: queryHint,
-			types: [ZmItem.CONV],
-			sortBy: this._sortByString,
-			limit:this.getLimit(),
-			callback: callback
+			query:			query,
+			queryHint:		queryHint,
+			types:			[ZmItem.CONV],
+			sortBy:			this._sortByString,
+			limit:			this.getLimit(),
+			callback:		callback,
+			userInitiated:	this._controller._currentSearch.userInitiated,
+			sessionId:		this._controller._currentSearch.sessionId
 		};
 		appCtxt.getSearchController().search(params);
 	}
-};
-
-ZmConvListView.prototype._columnHasCustomQuery =
-function(columnItem) {
-	return (columnItem._sortable == ZmItem.F_FLAG || columnItem._sortable == ZmItem.F_ATTACHMENT);
 };
 
 ZmConvListView.prototype._changeListener =
@@ -778,6 +835,7 @@ function(ev) {
 
 	var fields = ev.getDetail("fields");
 	var isConv = (item.type == ZmItem.CONV);
+    var isMuted = item.isMuted ? item.isMuted() : false;
 	var sortBy = this._sortByString || ZmSearch.DATE_DESC;
 	var handled = false;
 	
@@ -889,51 +947,44 @@ function(ev) {
 		AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: handle conv create " + item.id);
 		var sortIndex = this._getSortIndex(item, sortBy);
 		var curIndex = this.getItemIndex(item, true);
+
 		if ((sortIndex != null) && (curIndex != null) && (sortIndex != curIndex) &&	!this._expanded[item.id]) {
-			AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: change position of conv " + item.id + " to " + sortIndex);
-			this._removeMsgRows(item.id);
-			this.removeItem(item);
-			this.addItem(item, sortIndex);
-			// TODO: mark create notif handled?
+            AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: change position of conv " + item.id + " to " + sortIndex);
+            this._removeMsgRows(item.id);
+            this.removeItem(item);
+            if(isMuted) {
+                AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: change position of conv " + item.id + " to " + curIndex);
+                this.addItem(item, curIndex);
+                this._controller._doMarkRead([item], true);
+                // TODO: mark create notif handled?
+            }
+            else {
+                this.addItem(item, sortIndex);
+                // TODO: mark create notif handled?
+            }
 		}
 	}
 
 	// only a conv can change its fragment
 	if ((ev.event == ZmEvent.E_MODIFY || ev.event == ZmEvent.E_MOVE) && (fields && fields[ZmItem.F_FRAGMENT])) {
-		var conv = isConv ? item : appCtxt.getById(item.cid);
-		var fragmentField = this._getElement(conv, ZmItem.F_FRAGMENT);
-		if (fragmentField) {
-			fragmentField.innerHTML = this._getFragmentHtml(conv);
-		}
+		this._updateField(isConv ? item : appCtxt.getById(item.cid), ZmItem.F_SUBJECT);
 	}
 
-	if (ev.event == ZmEvent.E_MODIFY && (fields && (fields[ZmItem.F_PARTICIPANT] || fields[ZmItem.F_FROM]))) {
-		var fieldId = this._getFieldId(item, ZmItem.F_FROM);
-		var fromField = document.getElementById(fieldId);
-		if (fromField) {
-			fromField.innerHTML = this._getParticipantHtml(item, fieldId);
-		}
+	if (ev.event == ZmEvent.E_MODIFY && (fields && (fields[ZmItem.F_PARTICIPANT] || fields[ZmItem.F_FROM] ||
+													(fields[ZmItem.F_SIZE] && !this.isMultiColumn())))) {
+		this._updateField(item, ZmItem.F_FROM);
 	}
 
 	// msg count in a conv changed - see if we need to add or remove an expand icon
 	if (isConv && (ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_SIZE])) {
-		var countField = this._getElement(item, ZmItem.F_SIZE);
-		if (countField) {
-			countField.innerHTML = item.numMsgs > 1 ? ["(", item.numMsgs, ")"].join("") : "";
+		this._updateField(item, ZmItem.F_EXPAND);
+		if (this.isMultiColumn()) {
+			this._updateField(item, ZmItem.F_SIZE);
 		}
-		var imageInfo = !this._isExpandable(item) ? null : this._expanded[item.id] ? "NodeExpanded" : "NodeCollapsed";
-		this._setImage(item, ZmItem.F_EXPAND, imageInfo);
 	}
 
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_DATE])) {
-		var fieldId = this._getFieldId(item, ZmItem.F_DATE);
-		var dateField = document.getElementById(fieldId);
-		if (dateField) {
-			var html = [];
-			var colIdx = this._headerHash[ZmItem.F_DATE] && this._headerHash[ZmItem.F_DATE]._index;
-			this._getCellContents(html, 0, item, ZmItem.F_DATE, colIdx, new Date());
-			dateField.innerHTML = html.join("");
-		}
+		this._updateField(item, ZmItem.F_DATE);
 	}
 
 	if (!handled) {
@@ -945,21 +996,46 @@ function(ev) {
 	}
 };
 
+ZmConvListView.prototype.handleUnmuteConv =
+function(items) {
+    for(var i=0; i<items.length; i++) {
+        var item = items[i];
+        var isConv = (item.type == ZmItem.CONV);
+        if (!isConv) { continue; }
+        var sortBy = this._sortByString || ZmSearch.DATE_DESC;
+        var sortIndex = this._getSortIndex(item, sortBy);
+        var curIndex = this.getItemIndex(item, true);
+
+        if ((sortIndex != null) && (curIndex != null) && (sortIndex != curIndex) &&	!this._expanded[item.id]) {
+            AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: change position of conv " + item.id + " to " + sortIndex);
+            this._removeMsgRows(item.id);
+            this.removeItem(item);
+            this.addItem(item, sortIndex);
+        }
+    }
+};
+
 ZmConvListView.prototype._getSortIndex =
 function(conv, sortBy) {
 
 	var itemDate = parseInt(conv.date);
-	var a = this.getList(true).getArray();
-	for (var i = 0; i < a.length; i++) {
-		var item = a[i];
-		if (!item || (item && item.type == ZmItem.MSG)) { continue; }
-		var date = parseInt(item.date);
-		if ((sortBy == ZmSearch.DATE_DESC && (itemDate >= date)) ||
-			(sortBy == ZmSearch.DATE_ASC && (itemDate <= date))) {
-			return i;
+	var list = this.getList(true);
+	var a = list && list.getArray();
+	if (a && a.length) {
+		for (var i = 0; i < a.length; i++) {
+			var item = a[i];
+			if (!item || (item && item.type == ZmItem.MSG)) { continue; }
+			var date = parseInt(item.date);
+			if ((sortBy == ZmSearch.DATE_DESC && (itemDate >= date)) ||
+				(sortBy == ZmSearch.DATE_ASC && (itemDate <= date))) {
+				return i;
+			}
 		}
+		return i;
 	}
-	return i;
+	else {
+		return null;
+	}
 };
 
 ZmConvListView.prototype._removeMsgRows =
@@ -1020,7 +1096,8 @@ function() {
 
 ZmConvListView.prototype._getLastItem =
 function() {
-	var a = this.getList(true).getArray();
+	var list = this.getList();
+	var a = list && list.getArray();
 	if (a && a.length > 1) {
 		return a[a.length - 1];
 	}

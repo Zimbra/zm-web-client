@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -44,14 +44,16 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
     this._expanded = {};
     this._itemRowIdList = {};
 
-    this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
-	this.setDragSource(this._dragSrc);
-
-    this._dropTgt = new DwtDropTarget("ZmDetailListView");
-	this._dropTgt.markAsMultiple();
-	this._dropTgt.addDropListener(new AjxListener(this, this._dropListener));
-	this.setDropTarget(this._dropTgt);
+	if (controller.supportsDnD()) {
+		this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+		this._dragSrc.addDragListener(this._dragListener.bind(this));
+		this.setDragSource(this._dragSrc);
+	
+		this._dropTgt = new DwtDropTarget("ZmDetailListView");
+		this._dropTgt.markAsMultiple();
+		this._dropTgt.addDropListener(this._dropListener.bind(this));
+		this.setDropTarget(this._dropTgt);
+	}
 };
 
 ZmDetailListView.prototype = new ZmBriefcaseBaseView;
@@ -604,7 +606,7 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 
 	if (headerCol._field == ZmItem.F_SORTED_BY) {
 		var field = headerCol._field;
-		var textTdId = this._itemCountTextTdId = DwtId._makeId(this.view, ZmSetting.RP_RIGHT, "td");
+		var textTdId = this._itemCountTextTdId = DwtId.makeId(this.view, ZmSetting.RP_RIGHT, "td");
 		htmlArr[idx++] = "<td id='";
 		htmlArr[idx++] = id;
 		htmlArr[idx++] = "' class='";
