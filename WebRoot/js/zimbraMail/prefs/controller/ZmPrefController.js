@@ -291,6 +291,7 @@ function () {
 		}
 	}
 	this._toolbar.getButton(ZmOperation.SAVE).setToolTipContent(ZmMsg.savePrefs);
+	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentView], {waitUntilLoaded:true});
 };
 
 ZmPrefController.prototype._initializeTabGroup = 
