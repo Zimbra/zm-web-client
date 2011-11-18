@@ -71,7 +71,7 @@
             </c:if>
         </c:if>
         </td>
-        <td class="companyFolder">${not empty folder ? zm:getFolderName(pageContext, folder.id) : ''}</td>
+        <td class="companyFolder">${not empty folder ? zm:cook(zm:getFolderName(pageContext, folder.id)) : ''}</td>
         </tr>
         </table>
     </td>
