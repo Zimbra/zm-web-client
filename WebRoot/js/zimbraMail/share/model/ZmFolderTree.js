@@ -352,7 +352,7 @@ function(organizer) {
 	ds.reset();
 	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteOrganizerYesCallback, this, [organizer, ds]);
 	ds.registerCallback(DwtDialog.NO_BUTTON, appCtxt.getAppController()._clearDialog, this, ds);
-	var msg = AjxMessageFormat.format(ZmMsg.confirmDeleteMissingFolder, organizer.getName(false, 0, true));
+	var msg = AjxMessageFormat.format(ZmMsg.confirmDeleteMissingFolder, AjxStringUtil.htmlEncode(organizer.getName(false, 0, true)));
 	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 	ds.popup();
 };
