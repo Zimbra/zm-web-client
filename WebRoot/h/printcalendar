@@ -64,7 +64,7 @@
                             &nbsp;
                         </td>
                         <td>
-                          <b> ${zm:getFolder(pageContext,checkedcal).name}</b>
+                          <b> ${zm:cook(zm:getFolder(pageContext,checkedcal).name)}</b>
                         </td>
                         <td>
                             &nbsp;&nbsp;
