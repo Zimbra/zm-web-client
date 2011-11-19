@@ -341,7 +341,7 @@ function(field, item) {
 ZmConvListView.prototype._getCell =
 function(htmlArr, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_SORTED_BY && item.type == ZmItem.MSG) {
-		htmlArr[idx++] = "<td width=28>";
+		htmlArr[idx++] = "<td width=16>";
 		idx = this._getCellContents(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx, params);
 		htmlArr[idx++] = "</td>";
 	}
@@ -442,6 +442,7 @@ function(item, colIdx) {
 	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? 22 : 16;
 
 	var isMsg = (item.type == ZmItem.MSG);
+	var isConv = (item.type == ZmItem.CONV && item.numMsgs > 1);
 	
 	// first row
 	htmlArr[idx++] = "<table class='TopRow' style='width:100%;border-collapse:collapse;border-spacing:0;'>";
@@ -449,13 +450,10 @@ function(item, colIdx) {
 	htmlArr[idx++] = "id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
-
-	if (!isMsg) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx, "16", "style='padding:0px'");
-	}
+	
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_READ, colIdx, width);
-	if (isMsg) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, width);
+	if (isConv) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx, "16", "style='padding:0'");
 	}
 	
 	// for multi-account, show the account icon for cross mbox search results
@@ -472,6 +470,9 @@ function(item, colIdx) {
 	htmlArr[idx++] = width;
 	htmlArr[idx++] = "></td>";
 	
+	if (isMsg) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_STATUS, colIdx, width);
+	}
 	if (item.isHighPriority || item.isLowPriority) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_PRIORITY, colIdx, "10", "align=right");
 	}
@@ -479,7 +480,6 @@ function(item, colIdx) {
 	if (item.hasAttach) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, width, "valign=top");
 	}
-	
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, width);	
 	if (appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED)) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_MSG_PRIORITY, colIdx, "16", "align=right");	

@@ -493,7 +493,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmConvExpanded {
-	background-color:#eeeeff;
+	@MailConvExpanded@
 }
 
 /* Conversation view outer container (header, list and reading pane) */
