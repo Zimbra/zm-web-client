@@ -1746,6 +1746,8 @@ function(incAddrs, incSubject) {
 		(this._composeMode == DwtHtmlEditor.HTML &&
 		 (curFormValue == "<html><body></body></html>" ||
 		  curFormValue == "<html><body><br></body></html>" ||
+          curFormValue == '<html><body><div><br data-mce-bogus="1"></div></body></html>' ||
+          curFormValue == '<html><body><div><br></div></body></html>' ||
 		  curFormValue == '<html><body><br mce_bogus="1"></body></html>')))
 	{
 		return false;
