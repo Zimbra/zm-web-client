@@ -787,7 +787,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .Conv2Header .info {
 	font-weight:normal;
-	text-align:right;
+	white-space:nowrap;
 }
 
 .MsgFooterTable>TBODY>TR>TD:first-child {

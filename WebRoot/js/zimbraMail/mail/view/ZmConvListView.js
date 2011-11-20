@@ -101,7 +101,6 @@ function(item, force, dontFocus) {
  */
 ZmConvListView = function(params) {
 
-	this.view = params.view = ZmId.VIEW_CONVLIST;
 	params.type = ZmItem.CONV;
 	this._controller = params.controller;
 	params.headerList = this._getHeaderList();

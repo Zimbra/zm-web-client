@@ -810,6 +810,7 @@ function(view, forward, loadIndex, limit) {
 
 	var needMore = false;
 	var lv = this._view[view];
+	if (!lv) { return; }
 	var offset, max;
 
     limit = limit || lv.getLimit(offset);

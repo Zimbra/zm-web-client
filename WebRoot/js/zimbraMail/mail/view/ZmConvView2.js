@@ -868,7 +868,7 @@ function(msg, container, callback, index) {
 			this._shareToolbar.reparentHtmlElement(bodyEl, 0);
 		}
 		// invite header
-		bodyEl.insertBefore(this._headerElement.parentNode, bodyEl.childNodes[1]);
+		bodyEl.insertBefore(this._headerElement.parentNode, bodyEl.firstChild);
 	}
 };
 
