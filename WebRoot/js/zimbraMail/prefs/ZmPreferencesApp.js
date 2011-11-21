@@ -771,7 +771,7 @@ function() {
         ZmPref.registerPref("OFFLINE_UPDATE_NOTIFY", {
             displayName:		ZmMsg.offlineUpdateNotify,
 		    displayContainer:	ZmPref.TYPE_SELECT,
-            displayOptions:		["Release", "Beta"],
+            displayOptions:		[ZmMsg.offlineUpdateRelease, ZmMsg.offlineUpdateBeta],
             options:    		["release", "beta"]
         });
 
