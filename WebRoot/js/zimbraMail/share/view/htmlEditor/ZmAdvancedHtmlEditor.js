@@ -580,7 +580,7 @@ function(id, mode, content) {
         // General options
 		mode :  (mode == DwtHtmlEditor.HTML)? "exact" : "none",
 		elements:  id,
-		plugins : "table,ztable,inlinepopups,fullscreen,zbreakquote,emotions",
+		plugins : "table,ztable,inlinepopups,fullscreen,zbreakquote,emotions,autolink",
 		theme : "advanced",
         theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,outdent,indent,separator,bold,italic,underline,separator,forecolor,backcolor,separator,link,ztablecontrols,fullscreen,emotions,seperator",
         theme_advanced_buttons2 : "",
