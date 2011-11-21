@@ -69,9 +69,11 @@ function(params) {
 		params.omit = params.omit || {};
 		params.omit[ZmFolder.ID_TRASH] = true;
 		params.omitParents = true;
-        var setting = ZmOrganizer.OPEN_SETTING[this.type];
-        params.collapsed = !(!setting || (appCtxt.get(setting, null, params.account) !== false));
-		this._setupOptButton(params);
+		var setting = ZmOrganizer.OPEN_SETTING[this.type];
+		params.collapsed = !(!setting || (appCtxt.get(setting, null, params.account) !== false));
+		var overview = this._opc.getOverview(id);
+		if (overview && overview.showNewButtons)
+			this._setupOptButton(params);
 		this._treeView[id].set(params);
 		this._checkTreeView(id);
 	}
