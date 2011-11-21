@@ -234,7 +234,7 @@
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes'
                   value='${common.jsp.excludes},launchNewWindow.jsp,login.jsp,*Mail.jsp,*ZCS.jsp,Spreadsheet*'/>
-        <property name='img.includes' value='admin/**,animated/**,dwt/**'/>
+        <property name='img.includes' value='admin/**,animated/**,dwt/**,logo/favicon.ico'/>
         <property name='img.excludes' value='${common.img.excludes}'/>
         <property name='template.includes' value='admin/**,dwt/**,zimbra/**'/>
         <property name='template.excludes' value='${common.template.excludes}'/>
