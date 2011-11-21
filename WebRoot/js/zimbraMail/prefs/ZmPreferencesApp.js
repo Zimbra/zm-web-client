@@ -525,26 +525,26 @@ function() {
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED]
 	});
 
-	var keys = [ "fontFamilyIntl", "fontFamilyBase" ];
-	var i, j, key, value, name;
-	var names = [];
-	var styles = [];
-	for (j = 0; j < keys.length; j++) {
-		for (i = 1; value = AjxMsg[keys[j]+i+".css"]; i++) {
-			if (value.match(/^#+$/)) break;
-			value = value.replace(/,\s/g,",");
-			name = AjxMsg[keys[j]+i+".display"];
-			names.push(name);
-			styles.push(value);
-		}
+	var styles=[],names=[];
+	for (var key in DwtHtmlEditor.FONT_FAMILY) {
+		var obj = DwtHtmlEditor.FONT_FAMILY[key];
+		styles.push(obj.value);
+		names.push(obj.name);
 	}
 
 	ZmPref.registerPref("COMPOSE_INIT_FONT_FAMILY", {
 		displayName:		ZmMsg.defaultFontSettings,
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions: 	names,
-		options: 		styles,
-		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED]
+		options: 			styles,
+		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED],
+		approximateFunction: function(id) {
+			// Choose the style that comes closest, or the first if none is found
+			if (AjxUtil.indexOf(styles, id) != -1) {
+				return id;
+			}
+			return DwtHtmlEditor._normalizeFontId(id);
+		}
 	});
 
     ZmPref.registerPref("QUICK_COMMAND_LIST", {
