@@ -1,6 +1,6 @@
 <template id='mail.Message#MessageHeader'>
 	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
-		<table class='MsgHeaderTable' id='${id}_headerElement' width=100%>
+		<table class='MsgHeaderTable' id='${id}_headerElement'cellspacing=0 cellpadding=0 border=0 width=100%>
 			<tr>
 				<td>
 					<$ if (data.isOutDated) { $>
@@ -28,11 +28,6 @@
 									<td>&nbsp;</td>
 								<$ } $>
                                 <td>&nbsp;</td>
-								<$ if (data.priorityImg) { $>
-									<td>
-										<div priority='<$=data.priority$>' id='<$=data.priorityDivId$>' style='margin-left:4px;' class='<$=data.priorityImg$>'></div>
-									</td>
-								<$ } $>
 								<td class='LabelColValue SubjectCol' valign=top width=100%>
 									<$= data.subject $>
 								</td>
@@ -61,27 +56,10 @@
 												</td>
 												<td>&nbsp;</td>
 											<$ } $>
-											<td id="OBJ_PREFIX_<$=Dwt.getNextId()$>_from">${sentBy}&nbsp;&nbsp;</td>
-                                            <$ var useObo = data.obo && (data.oboAddr != data.sentByAddr); $>
-                                            <$ var useBwo = data.bwo && (data.bwoAddr != data.sentByAddr); $>
-                                             <$ if (useObo && useBwo) { $>
-                                                <td colspan=10>
-                                                    <table border=0 cellpadding=0 cellspacing=0>
-                                                        <tr>
-                                                            <td id='OBJ_PREFIX_obo_label' class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></td>
-                                                            <td id='OBJ_PREFIX_obo' class='LabelColValue'><$= data.obo $></td>
-                                                            <td class='ZSmallHorizonalSpacer'>&nbsp;</td>
-                                                            <td id='OBJ_PREFIX_bwo_label' class='LabelColName'><$= ZmMsg.byWayOfLabel $></td>
-                                                            <td id='OBJ_PREFIX_bwo' class='LabelColValue'><$= data.bwo $></td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                            <$ } else if (useObo) { $>
+											<td>${sentBy}&nbsp;&nbsp;</td>
+                                            <$ if (data.obo && (data.oboAddr != data.sentByAddr)) { // if Email zimlet is deployed. $>
                                                 <td id='OBJ_PREFIX_obo_label' class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></td>
                                                 <td id='OBJ_PREFIX_obo' class='LabelColValue' colspan=10><$= data.obo $></td>
-                                            <$ } else if (useBwo) { $>
-                                                <td id='OBJ_PREFIX_bwo_label' class='LabelColName'><$= ZmMsg.byWayOfLabel $></td>
-                                                <td id='OBJ_PREFIX_bwo' class='LabelColValue' colspan=10><$= data.bwo $></td>
                                             <$ } $>
 										</tr>
 									</table>
@@ -98,9 +76,23 @@
 								</tr>
 							<$ } $>
 
-							<$= AjxTemplate.expand("#AutoSend", data) $>
-							<$= AjxTemplate.expand("#AddedHeaders", data) $>
+							<$ if (data.autoSendTime) { $>
+								<tr id='OBJ_PREFIX_<$=Dwt.getNextId()$>_scheduled'>
+									<td valign='top' class='LabelColName'><$= ZmMsg.messageScheduledSendLabel $></td>
+									<td class='LabelColValue' colspan=10><$= data.autoSendTime $></td>
+								</tr>
+							<$ } $>
 
+							<$ for (var i = 0; i < data.additionalHdrs.length; i++) {  $>
+								<tr>
+									<td valign='top' class='LabelColName'>
+										<$= data.additionalHdrs[i].hdrName $>
+									</td>
+									<td class='LabelColValue' colspan='10'>
+										<$=  data.additionalHdrs[i].hdrVal $>
+									</td>
+								</tr>
+							<$ } $>
 						</table>
 
 						<$ if (data.hasAttachments) { $>
@@ -119,28 +111,6 @@
 	</div>
 </template>
 
-<template id='mail.Message#AutoSend'>
-	<$ if (data.autoSendTime) { $>
-		<tr id='OBJ_PREFIX_<$=Dwt.getNextId()$>_scheduled'>
-			<td valign='top' class='LabelColName'><$= ZmMsg.messageScheduledSendLabel $></td>
-			<td class='LabelColValue' colspan=10><$= data.autoSendTime $></td>
-		</tr>
-	<$ } $>
-</template>
-
-<template id='mail.Message#AddedHeaders'>
-	<$ for (var i = 0; i < data.additionalHdrs.length; i++) {  $>
-		<tr>
-			<td valign='top' class='LabelColName'>
-				<$= data.additionalHdrs[i].hdrName $>
-			</td>
-			<td class='LabelColValue' colspan='10'>
-				<$=  data.additionalHdrs[i].hdrVal $>
-			</td>
-		</tr>
-	<$ } $>
-</template>
-		
 <template id='mail.Message#InviteHeader'>
 	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
 		<table class='InvHeaderTable' id='${id}_headerElement'cellspacing=0 cellpadding=0 border=0 width=100%>
@@ -212,12 +182,6 @@
                                 <tr>
                                     <td class='LabelColName' width=75><$= ZmMsg.onBehalfOfLabel $> </td>
                                     <td class='LabelColValue'><$= data.obo $></td>
-                                </tr>
-                            <$ } $>
-                            <$ if (data.bwo) { $>
-                                <tr>
-                                    <td class='LabelColName' width=75><$= ZmMsg.byWayOfLabel $></td>
-                                    <td class='LabelColValue'><$= data.bwo $></td>
                                 </tr>
                             <$ } $>
 							<tr>
@@ -360,52 +324,10 @@
 	</table>
 </template>
 
-<template id="mail.Message#To_Recipient">
-    <tr id='${toRowId}'>
-        <td align=right valign=top style='${labelStyle}'>
-            <div id='${toPickerId}'><$=ZmMsg.toLabel$></div>
-        </td>
-        <td width='96%' colspan=2 id='${toCellId}'>
-            <$ if (!data.acAddrBubbles) { $>
-                <textarea id='${toInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
-            <$ } $>
-        </td>
-    </tr>
-</template>
-
-<template id="mail.Message#CC_Recipient">
-    <tr id='${ccRowId}' style='display:none;'>
-        <td align=right valign=top style='${labelStyle}'>
-            <div id='${ccPickerId}'><$=ZmMsg.ccLabel$></div>
-        </td>
-        <td id='${ccCellId}'>
-            <$ if (!data.acAddrBubbles) { $>
-                <textarea id='${ccInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
-            <$ } $>
-        </td>
-        <td width='5%'>
-            <nobr><a href='#' id='${bccToggleId}'><$=ZmMsg.showBCC$></a></nobr>
-        </td>
-    </tr>
-</template>
-
-<template id="mail.Message#BCC_Recipient">
-    <tr id='${bccRowId}' style='display:none;'>
-        <td align=right valign=top style='${labelStyle}'>
-            <div id='${bccPickerId}'><$=ZmMsg.bccLabel$></div>
-        </td>
-        <td colspan='2' id='${bccCellId}'>
-            <$ if (!data.acAddrBubbles) { $>
-                <textarea id='${bccInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
-            <$ } $>
-        </td>
-    </tr>
-</template>
-
 <!-- NOTE: The header container MUST have an id of ${id}_header -->
 <template id='mail.Message#Compose'>
-	<$ var labelStyle = data.labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap"; $>
-	<$ var inputStyle = data.inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
+	<$ var labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap"; $>
+	<$ var inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
 	<!-- header -->
 	<table id='${headerId}' border=0 cellpadding=2 cellspacing=2 width=100%>
 		<$ if (appCtxt.multiAccounts) { $>
@@ -427,9 +349,42 @@
 				</td>
 			</tr>
 		<$ } $>
-		<$= AjxTemplate.expand("#To_Recipient",  data) $>
-		<$= AjxTemplate.expand("#CC_Recipient",  data) $>
-		<$= AjxTemplate.expand("#BCC_Recipient", data) $>
+		<tr id='${toRowId}'>
+			<td align=right valign=top style='<$=labelStyle$>'>
+				<div id='${toPickerId}'><$=ZmMsg.toLabel$></div>
+			</td>
+			<td width='96%' colspan=2 id='${toCellId}'>
+				<$ if (!data.acAddrBubbles) { $>
+					<textarea id='${toInputId}' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
+				<$ } $>
+			</td>
+		</tr>
+
+		<tr id='${ccRowId}' style='display:none;'>
+			<td align=right valign=top style='<$=labelStyle$>'>
+				<div id='${ccPickerId}'><$=ZmMsg.ccLabel$></div>
+			</td>
+			<td id='${ccCellId}'>
+				<$ if (!data.acAddrBubbles) { $>
+					<textarea id='${ccInputId}' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
+				<$ } $>
+			</td>
+			<td width='5%'>
+				<nobr><a href='#' id='${bccToggleId}'><$=ZmMsg.showBCC$></a></nobr>
+			</td>
+		</tr>
+
+		<tr id='${bccRowId}' style='display:none;'>
+			<td align=right valign=top style='<$=labelStyle$>'>
+				<div id='${bccPickerId}'><$=ZmMsg.bccLabel$></div>
+			</td>
+			<td colspan='2' id='${bccCellId}'>
+				<$ if (!data.acAddrBubbles) { $>
+					<textarea id='${bccInputId}' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
+				<$ } $>
+			</td>
+		</tr>
+
 		<tr id='${subjectRowId}'>
 			<td align=right style='<$=labelStyle$>'><$=ZmMsg.subjectLabel$></td>
 			<td colspan='2'>
@@ -464,18 +419,6 @@
 		</tr>
 	</table>
 	<!-- compose editor is automatically appended below the header -->
-</template>
-
-<template id='mail.Message#RedirectDialog'>
-	<$ var labelStyle = data.labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap"; $>
-	<$ var inputStyle = data.inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
-	<table border=0 cellpadding=2 cellspacing=2 width=500px>
-		 <$= AjxTemplate.expand("#To_Recipient",  data) $>
-         <tr>
-             <td align=right valign=top colspan=3><$= ZmMsg.redirectExplanation $></td>
-         </tr>
-
-	</table>
 </template>
 
 <template id='mail.Message#ForwardMessages'>
@@ -591,7 +534,7 @@
 <template id='mail.Message#viewMessage'>
 	<table width='100%' cellspacing='0' cellpadding='1'>
 		<tr>
-			<td class='NoResults'><br><$= (data && data.isConv) ? ZmMsg.viewConversation : ZmMsg.viewMessage $></td>
+			<td class='NoResults'><br><$= ZmMsg.viewMessage $></td>
 		</tr>
 	</table>
 </template>
@@ -607,106 +550,3 @@
 	</table>
 </template>
 
-<template id='mail.Message#Conv2View-right'>
-	<div class='Conv2View'>
-		<$= AjxTemplate.expand("#Conv2Header", data) $>
-		<div id="${messagesDivId}" class='Conv2Messages'></div>
-		<div id="${replyDivId}" class='Conv2Reply'>
-			<div id="${replyContainerId}" class='Conv2ReplyContainer'>
-				<textarea id="${replyInputId}" class="ReplyTextarea"></textarea>
-			</div>
-		</div>
-	</div>
-</template>
-
-<template id='mail.Message#Conv2View-bottom'>
-	<div class='Conv2View-bottom' id='${mainDivId}'>
-		<table class="Conv2ViewTable">
-			<tr>
-				<td valign="top" class="Conv2MessagesCell">
-					<$= AjxTemplate.expand("#Conv2Header", data) $>
-					<div id="${messagesDivId}" class='Conv2Messages-bottom'></div>
-				</td>
-				<td valign="top" class="Conv2ReplyCell">
-					<div id="${replyDivId}">
-						<textarea id="${replyInputId}" class="ReplyTextarea"></textarea>
-					</div>
-				</td>
-			</tr>
-		</table>
-	</div>
-</template>
-
-<template id='mail.Message#Conv2Header'>
-	<div class='Conv2Header' id='${convHeaderId}'>
-		<table>
-			<tr>
-				<td class='subject' width=100%>
-					<$= data.subject $>
-				</td>
-				<td class='info' id='${convInfoCellId}'>
-					<$= data.info $>
-				</td>
-			</tr>
-		</table>
-	</div>
-</template>
-	
-<template id='mail.Message#Conv2MsgHeader'>
-	<table class='Conv2MsgHeaderTable' width=100%>
-		<tr id='${tableRowId}'>
-			<td class='Expand' width=19 id='${expandIconCellId}'></td>
-			<td class='Text' width=<$= ZmMsg.COLUMN_WIDTH_FROM_CV2 $>>
-				<$= data.from $>
-			</td>
-			<td class='Text ZmConvListFragment' id='${fragmentCellId}' style='width:auto;overflow:hidden;'>
-				<$= data.fragment $>
-			</td>
-			<td class='Text DateCol' width=<$= ZmMsg.COLUMN_WIDTH_DATE_CV2 $>>${date}</td>
-		</tr>
-	</table>
-</template>
-
-<template id='mail.Message#Conv2MsgFooter'>
-	<div>
-		<div id='${footerId}'>
-			<table class='MsgFooterTable' width=100%>
-				<tr>
-					<td id='${folderCellId}'></td>
-					<td id='${tagCellId}' width=100%></td>
-					<$ if (!data.noQuotedText) { $>
-					<td>
-						<a class='Link' id='${showTextLinkId}'><$= ZmMsg.showQuotedText $></a>
-					</td>
-					<td>|</td>
-					<$ } $>
-					<td>
-						<a class='Link' id='${replyLinkId}'><$= ZmMsg.reply $></a>
-					</td>
-					<td>|</td>
-					<td>
-						<a class='Link' id='${replyAllLinkId}'><$= ZmMsg.replyAll $></a>
-					</td>
-					<td id='${buttonCellId}' class='MsgActions'></td>
-				</tr>
-			</table>
-		</div>
-	</div>
-</template>
-
-<template id='mail.Message#VacationRemindDialog'>
-	<div style='width:350px' id='${id}_question'>
-	    <table align=center border=0 width=1%>
-		    <tr>
-			    <td><$= AjxImg.getImageHtml(DwtMessageDialog.ICON[DwtMessageDialog.INFO_STYLE]) $></td>
-			    <td style='white-space:nowrap' id='${id}_dontRemindMsg'><$=ZmMsg.outOfOfficeRemindQuestion$></td>
-		    </tr>
-	    </table>
-	</div>
-	<table align=center border=0 width=1%>
-		<tr>
-			<td width=1%><input checked value='0' type='checkbox' id='${id}_dontRemind' name='${id}_dontRemind'></td>
-			<td style='white-space:nowrap'><label id='${id}_dontRemindMsg' for='${id}_dontRemind'><$=ZmMsg.dontRemind$></label></td>
-		</tr>
-	</table>
-</template>

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -105,22 +105,6 @@ function(buttonId) {
 };
 
 /**
- * sets an item visibility. finds the button by id. 
- *
- * @param	{String}	buttonId	the button id
- * @param	{Boolean}	visible
- */
-ZmToolBar.prototype.setItemVisible =
-function(buttonId, visible) {
-	var button = this.getButton(buttonId);
-	if (!button) {
-		return;
-	}
-	button.setVisible(visible);
-};
-
-
-/**
  * Sets the data.
  * 
  * @param	{String}	buttonId	the button id
@@ -178,18 +162,14 @@ function(enabled) {
  * @param {constant}	params.shortcut		the shortcut id (from {@link ZmKeyMap}) for showing hint
  * @param {AjxCallback|DwtMenu}	params.menu				the menu creation callback (recommended) or menu
  * @param {Boolean}	params.menuAbove	if <code>true</code>, popup menu above the button.
- *
- * @param {Boolean}	whatToShow.showImage		if <code>true</code>, display image
- * @param {Boolean}	whatToShow.showText		if <code>true</code>, display text
- *
  */
 ZmToolBar.prototype.createButton =
-function(id, params, whatToShow) {
+function(id, params) {
 	var b = this._buttons[id] = this._createButton(params);
-	if (params.image && (!whatToShow || whatToShow.showImage)) {
+	if (params.image) {
 		b.setImage(params.image);
 	}
-	if (params.text && (!whatToShow || whatToShow.showText)) {
+	if (params.text) {
 		b.setText(params.text);
 	}
 	if (params.tooltip) {
@@ -348,7 +328,7 @@ ZmToolBar.prototype.setSize =
 function(width, height) {
 	DBG.println("tb", "------ setSize " + width + " x " + height);
 	var sz = this.getSize();
-	if (sz && (width != sz.x || height != sz.y)) {
+	if (width != sz.x || height != sz.y) {
 		DwtToolBar.prototype.setSize.apply(this, arguments);
 		this.adjustSize();
 	}
@@ -370,52 +350,4 @@ ZmToolBar.prototype._removeItem =
 function(type, element, index) {
 	DwtToolBar.prototype._removeItem.apply(this, arguments);
 	this.adjustSize();
-};
-
-/**
- * Adds a button to the element with the given ID. Designed to handle non-ZmToolBar toolbars.
- * 
- * @param params	[hash]			hash of params:
- * 		  parent	[DwtControl]	parent control
- *        setting	[const]			setting that must be true for this button to be added
- *        tdId		[string]		ID of TD that is to contain this button
- *        buttonId	[string]*		ID of the button
- *        style		[const]*		button style
- *        type		[string]*		used to differentiate between regular and toolbar buttons
- *        lbl		[string]*		button text
- *        icon		[string]*		button icon
- *        tooltip	[string]*		button tooltip
- */
-ZmToolBar.addButton =
-function(params) {
-
-	if (params.setting && !appCtxt.get(params.setting)) { return; }
-
-	var button;
-	var tdId = params.parent._htmlElId + (params.tdId || params.buttonId);
-	var buttonEl = document.getElementById(tdId);
-	if (buttonEl) {
-		var btnParams = {parent:params.parent, style:params.style, id:params.buttonId, template: params.template, className: params.className};
-		button = (params.type && params.type == "toolbar") ? (new DwtToolBarButton(btnParams)) : (new DwtButton(btnParams));
-		var hint = Dwt.getAttr(buttonEl, "hint");
-		ZmToolBar._setButtonStyle(button, hint, params.lbl, params.icon);
-		if (params.tooltip) {
-			button.setToolTipContent(params.tooltip);
-		}
-		button.reparentHtmlElement(tdId);
-	}
-
-	return button;
-};
-
-ZmToolBar._setButtonStyle =
-function(button, hint, text, image) {
-	if (hint == "text") {
-		button.setText(text);
-	} else if (hint == "icon") {
-		button.setImage(image);
-	} else { // add icon and text if no hint (or unsupported hint) provided
-		button.setText(text);
-		button.setImage(image);
-	}
 };

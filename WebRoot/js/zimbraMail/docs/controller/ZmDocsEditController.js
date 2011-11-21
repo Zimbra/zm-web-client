@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -29,8 +29,9 @@ ZmDocsEditController.prototype = new ZmController();
 ZmDocsEditController.prototype.constructor = ZmDocsEditController;
 ZmDocsEditController.savedDoc = null;
 
-ZmDocsEditController.prototype.isZmDocsEditController = true;
-ZmDocsEditController.prototype.toString = function() { return "ZmDocsEditController"; };
+ZmDocsEditController.prototype.toString = function() {
+    return "ZmDocsEditController";
+};
 
 ZmDocsEditController.prototype._initDocsEdit = function(){
     if(this._docsEdit) return;
@@ -67,6 +68,10 @@ ZmDocsEditController.prototype.resize = function(ev){
     docsEdit.setDisplay("block");
     docsEdit.setBounds(0, 0, w, h);
 
+};
+
+ZmDocsEditController.prototype.setCurrentView = function(view) {
+    this._currentView = view;
 };
 
 ZmDocsEditController.prototype.loadData =

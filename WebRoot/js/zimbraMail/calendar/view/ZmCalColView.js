@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
- *
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -27,7 +27,7 @@ ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, sc
     this._fbBarEnabled = this.fbStatusBarEnabled();
 
 	//we need special alignment for this case.
-	this._isInviteMessage = isInviteMessage;
+	this._isInviteMessage = isInviteMessage; 
 	this._isRight = isRight;
 
 	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, controller, view, readonly);
@@ -36,7 +36,6 @@ ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, sc
 	this.setScrollStyle(DwtControl.CLIP);
 	this._needFirstLayout = true;
     this.workingHours = ZmCalBaseView.parseWorkingHours(ZmCalBaseView.getWorkingHours());
-    this._isValidIndicatorDuration = true;
 };
 
 ZmCalColView.prototype = new ZmCalBaseView;
@@ -48,8 +47,6 @@ ZmCalColView.DRAG_THRESHOLD = 4;
 ZmCalColView.MIN_COLUMN_WIDTH = 120;
 // max number of all day appts before we turn on vertical scrollbars
 ZmCalColView.MAX_ALLDAY_APPTS = 4;
-
-ZmCalColView.HALF_HOUR_HEIGHT = 21;
 
 ZmCalColView._OPACITY_APPT_NORMAL = 100;
 ZmCalColView._OPACITY_APPT_DECLINED = 20;
@@ -339,8 +336,6 @@ function(resetLeft) {
 		alldayElement.scrollLeft = bodyElement.scrollLeft;
 		alldayApptElement.scrollLeft = bodyElement.scrollLeft;
 		if (unionGridScrollElement) unionGridScrollElement.scrollTop = bodyElement.scrollTop;
-        this._checkForOffscreenAppt(bodyElement);
-
 	} finally {
 		 ZmCalColView._inSyncScroll = false;
 	}
@@ -454,7 +449,7 @@ function() {
         AjxDateUtil.rollToNextDay(d);
         daylightAdjustment = true;
     }
-
+    
 	this._dateToDayIndex = new Object();
 
 	var today = new Date();
@@ -465,7 +460,7 @@ function() {
 	for (var i=0; i < 7; i++) {
         var wHrs = this.workingHours[d.getDay()];
         var isWorkingDay = wHrs && wHrs.isWorkingDay ? wHrs.isWorkingDay : false;
-        if (this.view === ZmId.VIEW_CAL_WEEK    ||
+        if (this.view === ZmId.VIEW_CAL_WEEK    || 
             this.view === ZmId.VIEW_CAL_DAY     ||
             this._scheduleMode === true         ||
             isWorkingDay === true ) {
@@ -480,7 +475,6 @@ function() {
             this._dateToDayIndex[this._dayKey(day.date)] = day;
             if (!this._scheduleMode && this._columns[j]) {
                 var id = this._columns[j].titleId;
-                this._calendarTodayHeaderDivId=day.isToday?id:this._calendarTodayHeaderDivId;
                 var te = document.getElementById(id);
                 te.innerHTML = this._dayTitle(d);
                 this.associateItemWithElement(null, te, ZmCalBaseView.TYPE_DAY_HEADER, id, {dayIndex:j});
@@ -529,7 +523,23 @@ function(appt) {
 	return document.getElementById(appt.isAllDayEvent() ? this._allDayDivId : this._apptBodyDivId);
 };
 
+ZmCalColView._setApptOpacity =
+function(appt, div) {
+	switch (appt.ptst) {
+		case ZmCalBaseItem.PSTATUS_DECLINED:	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_DECLINED); break;
+		case ZmCalBaseItem.PSTATUS_TENTATIVE:	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_TENTATIVE); break;
+		default:								Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_NORMAL); break;
+	}
 
+	// obey free busy status for organizer's appts
+	if (appt.fba && appt.isOrganizer()) {
+		 switch (appt.fba) {
+			case "F":	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_FREE); break;
+			case "B":	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_BUSY); break;
+			case "T":	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_TENTATIVE); break;
+		 }
+	}
+};
 
 // for the new appt when drag selecting time grid
 ZmCalColView.prototype._populateNewApptHtml =
@@ -563,20 +573,8 @@ function(div, allDay, folderId) {
 		location: "",
 		status: ""
 	};
-    var template;
-    var gradient = Dwt.createLinearGradientCss("#FFFFFF", bodyColor, "v");
-    if (allDay) {
-        template = "calendar_appt_allday";
-        if (gradient) {
-            subs.headerStyle = gradient;
-        }
-    } else {
-        template = "calendar_appt";
-        if (gradient) {
-            subs.bodyStyle   = gradient;
-            subs.headerStyle = null;
-        }
-    }
+
+	var template = allDay ? "calendar_appt_allday" : "calendar_appt";
 	div.innerHTML = AjxTemplate.expand("calendar.Calendar#"+template, subs);
 	return div;
 };
@@ -615,6 +613,8 @@ function(appt) {
         div.style.overflow = "hidden";
     }
 
+	ZmCalColView._setApptOpacity(appt, div);
+
 	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
 
 	var isNew = appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
@@ -626,6 +626,8 @@ function(appt) {
 	var is30 = (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
 	var is60 = (appt._orig.getDuration() <= 2*AjxDateUtil.MSEC_PER_HALF_HOUR);
 	var apptName = appt.getName();
+	var tagIcon = (!appt.getFolder().link && appt.tags.length > 0)
+		? appt.getTagImageInfo() : null;
 	// normalize location
 	var location = appt.getLocation();
 	location = (location && location.length && !is60)
@@ -642,11 +644,10 @@ function(appt) {
 		apptName = appt.getDurationText(true, true) + " - " + apptName;
 	}
 
-    var tagIds  = appt.getVisibleTags();
-    var tagIcon = appt.getTagImageFromIds(tagIds);
-
-    var colors = ZmApptViewHelper.getApptColor(isNew, calendar, tagIds, "body");
-	var bodyStyle = ZmCalBaseView._toColorsCss(colors.appt);
+	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
+    //bodyStyle is now new headerStyle
+	//var headerStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.header : colors.standard.header);
+	var bodyStyle = ZmCalBaseView._toColorsCss(isNew ? colors.deeper.body : colors.standard.body);
     var fba = isNew ? ZmCalBaseItem.PSTATUS_NEEDS_ACTION : appt.fba;
 	var subs = {
 		id: id,
@@ -662,48 +663,27 @@ function(appt) {
 		hideTime: is60,
 		showAsColor : ZmApptViewHelper._getShowAsColorFromId(fba),
         boxBorder: ZmApptViewHelper.getBoxBorderFromId(fba),
-        isDraft: appt.isDraft,
-        otherAttendees: appt.otherAttendees,
-        isException: appt.isException,
-        isRecurring: appt.isRecurring()
+        isDraft: appt.isDraft
 	};
 
 	var template;
-    var colorParam;
-    var clearParam;
 	if (appt.isAllDayEvent()) {
-        colorParam = "headerStyle";
 		template = "calendar_appt_allday";
- 		var bs = "";
+		var bs = "";
 		if (!this.isStartInView(appt._orig)) bs = "border-left:none;";
 		if (!this.isEndInView(appt._orig)) bs += "border-right:none;";
 		if (bs != "") subs.bodyStyle = bs;
 	} else if (this.view == ZmId.VIEW_CAL_FB) {
         template = "calendar_fb_appt";
     } else if (is30) {
-        colorParam = "headerStyle";
 		template = "calendar_appt_30";
 	} else if (appt._fanoutNum > 0) {
-        colorParam = "bodyStyle";
-		template   = "calendar_appt_bottom_only";
+		template = "calendar_appt_bottom_only";
 	} else {
-        colorParam = "bodyStyle";
-        clearParam = "headerStyle";
-		template   = "calendar_appt";
+		template = "calendar_appt";
 	}
-    // Currently header/bodyStyles are only used for coloring.  Replace with a gradient
-    // if supported by the browser
-    ZmApptViewHelper.setupCalendarColor(true, colors, tagIds, subs, colorParam, clearParam, 1, 1);
 
 	div.innerHTML = AjxTemplate.expand("calendar.Calendar#"+template, subs);
-    // Set opacity on the table element that is colored with the gradient.  Needed for IE
-    var tableEl = Dwt.getDescendant(div, id + "_tableBody");
-    var opacity = ZmCalBaseView.getApptOpacity(appt);
-    if (tableEl) {
-        Dwt.setOpacity(tableEl, opacity);
-    } else {
-        Dwt.setOpacity(div, opacity);
-    }
 
 	// if (we can edit this appt) then create sash....
 	if (!appt.isReadOnly() && !appt.isAllDayEvent() && !isRemote && this.view != ZmId.VIEW_CAL_FB) {
@@ -730,32 +710,25 @@ function(appt) {
 // TODO: i18n
 ZmCalColView.prototype._createHoursHtml =
 function(html) {
-
 	html.append("<div style='position:absolute; top:-8; width:", ZmCalColView._HOURS_DIV_WIDTH, "px;' id='", this._bodyHourDivId, "'>");
-
+	html.append("<table class=calendar_grid_day_table>");
 	var formatter = DwtCalendar.getHourFormatter();
-    var curDate = new Date();
 	var date = new Date();
 	date.setHours(0, 0, 0, 0);
     var timeTDWidth = ZmCalColView._HOURS_DIV_WIDTH - (this._fbBarEnabled ? ZmCalColView._FBBAR_DIV_WIDTH : 0 );
-    html.append("<table class=calendar_grid_day_table>");
 	for (var h=0; h < 25; h++) {
 		html.append("<tr><td class=calendar_grid_body_time_td style='height:",
-		ZmCalColView._HOUR_HEIGHT ,"px; width:", timeTDWidth, "px'><div id='"+this._hourColDivId+"_"+h+"' class=calendar_grid_body_time_text>");
+		ZmCalColView._HOUR_HEIGHT ,"px; width:", timeTDWidth, "px'><div class=calendar_grid_body_time_text>");
 		date.setHours(h);
 		html.append(h > 0 && h < 24 ? AjxStringUtil.htmlEncode(formatter.format([h, date])) : "&nbsp;");
-		html.append("</div>");
-        html.append("</td>");
+		html.append("</div></td>");
         if(this._fbBarEnabled){
             html.append("<td class=calendar_grid_body_fbbar_td style='height:",ZmCalColView._HOUR_HEIGHT ,"px; width:", ZmCalColView._FBBAR_DIV_WIDTH,"px; border-left:1px solid #A7A194;'>&nbsp;</td>");
         }
         html.append("</tr>");
 	}
-	html.append("</table>");
-    html.append("<div id='"+this._curTimeIndicatorHourDivId+"' class='calendar_cur_time_indicator_arr'><div class='calendar_hour_arrow_indicator'>&rarr;</div></div>");
-    html.append( "</div>");
+	html.append("</table>", "</div>");
 };
-
 
 ZmCalColView.prototype._createHtml =
 function(abook) {
@@ -784,13 +757,7 @@ function(abook) {
 	this._apptBodyDivId = Dwt.getNextId();
 	this._newApptDivId = Dwt.getNextId();
 	this._newAllDayApptDivId = Dwt.getNextId();
-	this._timeSelectionDivId = Dwt.getNextId();
-    this._curTimeIndicatorHourDivId = Dwt.getNextId();
-    this._curTimeIndicatorGridDivId = Dwt.getNextId();
-    this._hourColDivId = Dwt.getNextId();
-    this._startLimitIndicatorDivId = Dwt.getNextId();
-    this._endLimitIndicatorDivId = Dwt.getNextId();
-
+	this._timeSelectionDivId = Dwt.getNextId();    
 
 	if (this._scheduleMode) {
 		this._unionHeadingDivId = Dwt.getNextId();
@@ -800,9 +767,7 @@ function(abook) {
 		this._unionGridDivId = Dwt.getNextId();
 		this._unionGridSepDivId = Dwt.getNextId();
         this._workingHrsFirstDivId = Dwt.getNextId();
-        this._workingHrsFirstChildDivId = Dwt.getNextId();
         this._workingHrsSecondDivId = Dwt.getNextId();
-        this._workingHrsSecondChildDivId = Dwt.getNextId();
 	}
 
 	this._allDayRows = [];
@@ -816,9 +781,7 @@ function(abook) {
 				headingDaySepDivId: Dwt.getNextId(),
 				daySepDivId: Dwt.getNextId(),
                 workingHrsFirstDivId: Dwt.getNextId(),
-                workingHrsFirstChildDivId: Dwt.getNextId(),
                 workingHrsSecondDivId: Dwt.getNextId(),
-                workingHrsSecondChildDivId: Dwt.getNextId(),
 				apptX: 0, // computed in layout
 				apptWidth: 0,// computed in layout
 				allDayX: 0, // computed in layout
@@ -911,21 +874,15 @@ function(abook) {
 	if (!this._scheduleMode) {
 		for (var i =0; i < this.numDays; i++) {
 		  html.append("<div id='", this._columns[i].daySepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");
-		  html.append("<div id='", this._columns[i].workingHrsFirstDivId, "' style='position:absolute;background-color:#FFFFFF;'><div id='", this._columns[i].workingHrsFirstChildDivId, "' class='ImgCalendarDayGrid' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
-		  html.append("<div id='", this._columns[i].workingHrsSecondDivId, "' style='position:absolute;background-color:#FFFFFF;'><div id='", this._columns[i].workingHrsSecondChildDivId, "' class='ImgCalendarDayGrid' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
+		  html.append("<div id='", this._columns[i].workingHrsFirstDivId, "' class='ImgCalendarDayGrid' style='background-color:#FFFFFF;position:absolute;'></div>");
+		  html.append("<div id='", this._columns[i].workingHrsSecondDivId, "' class='ImgCalendarDayGrid' style='background-color:#FFFFFF;position:absolute;'></div>");
 		}
 	}
     else {
-        html.append("<div id='", this._workingHrsFirstDivId, "' style='position:absolute;background-color:#FFFFFF;'><div class='ImgCalendarDayGrid' id='", this._workingHrsFirstChildDivId, "' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
-        html.append("<div id='", this._workingHrsSecondDivId, "' style='position:absolute;background-color:#FFFFFF;'><div class='ImgCalendarDayGrid' id='", this._workingHrsSecondChildDivId, "' style='position:absolute;top:0px;left:0px;overflow:hidden;'></div></div>");
+        html.append("<div id='", this._workingHrsFirstDivId, "' class='ImgCalendarDayGrid' style='background-color:#FFFFFF;position:absolute;'></div>");
+        html.append("<div id='", this._workingHrsSecondDivId, "' class='ImgCalendarDayGrid' style='background-color:#FFFFFF;position:absolute;'></div>");
     }
-
-
 	html.append("</div>");
-    //Strip to indicate the current time
-    html.append("<div id='"+this._curTimeIndicatorGridDivId+"' class='calendar_cur_time_indicator_strip'></div>");
-    html.append("<div id='"+this._startLimitIndicatorDivId+"' class='calendar_start_limit_indicator'><div class='ImgArrowMoreUp'></div></div>");
-    html.append("<div id='"+this._endLimitIndicatorDivId+"' class='calendar_end_limit_indicator'><div class='ImgArrowMoreDown'></div></div>");
 	html.append("</div>");
 
 	this.getHtmlElement().innerHTML = html.toString();
@@ -940,95 +897,7 @@ function(abook) {
 		this.associateItemWithElement(null, document.getElementById(ids[i]), types[i], ids[i]);
 	}
 	this._scrollToTime(8);
-};
 
-ZmCalColView.prototype.setTimer=function(min){
-    var period = min*60*1000;
-    return AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.updateTimeIndicator), period);
-}
-
-ZmCalColView.prototype.updateTimeIndicator=function(){
-    var curDate = new Date();
-    var  hr = curDate.getHours();
-    var min = curDate.getMinutes();
-    var curHourDiv = document.getElementById(this._hourColDivId+"_"+hr);
-    curTimeHourIndicator = document.getElementById(this._curTimeIndicatorHourDivId);
-    curTimeHourIndicator.style.left=curHourDiv.offsetParent.offsetLeft;
-    var currentTopPosition = Math.round((ZmCalColView._HOUR_HEIGHT/60)*min)+parseInt(curHourDiv.offsetParent.offsetTop);
-    curTimeHourIndicator.style.top=(currentTopPosition+3)+"px";
-    var calendarStrip = document.getElementById(this._curTimeIndicatorGridDivId);
-    Dwt.setVisibility(calendarStrip,true);
-    var todayColDiv = document.getElementById(this._calendarTodayHeaderDivId);
-    if(todayColDiv && this._isValidIndicatorDuration){
-     calendarStrip.style.left=todayColDiv.offsetLeft;
-     calendarStrip.style.top=currentTopPosition+"px";
-     calendarStrip.style.width=todayColDiv.offsetWidth;
-    }
-    else{Dwt.setVisibility(calendarStrip,false);}
-    return this.setTimer(1);
-}
-
-ZmCalColView.prototype.startIndicatorTimer=function(){
-   if(!this._indicatorTimer){
-    this._indicatorTimer = this.updateTimeIndicator();
-   }
-}
-
-ZmCalColView.prototype.checkIndicatorNeed=function(viewId,startDate){
-   var isValidView = (viewId == ZmId.VIEW_CAL_WORK_WEEK || viewId == ZmId.VIEW_CAL_WEEK || viewId == ZmId.VIEW_CAL_DAY);
-   if(startDate!=null && isValidView){
-        var today = new Date();
-        var todayTime = today.getTime();
-        startDate.setHours(0,0,0,0);
-        var sTime = startDate.getTime();
-        var endDate = AjxDateUtil.roll(startDate,AjxDateUtil.DAY,this.numDays);
-        endDate.setHours(23,59,59,999);
-        var endTime = endDate.getTime();
-        if(!(todayTime>=sTime && todayTime<=endTime)){
-            this._isValidIndicatorDuration = false;
-            var calendarStrip = document.getElementById(this._curTimeIndicatorGridDivId);
-            Dwt.setVisibility(calendarStrip,false);
-        }else{
-            this._isValidIndicatorDuration = true;
-            this.updateTimeIndicator();
-        }
-   }else{
-       this._isValidIndicatorDuration = true;
-   }
-}
-
-/*
-*   Checks whether any offscreen appointment exists, and indicates according to the direction it gets hidden.
- */
-ZmCalColView.prototype._checkForOffscreenAppt=function(bodyElement){
-    var topExceeds = false;
-    var bottomExceeds = false;
-    if(!bodyElement){bodyElement = document.getElementById(this._bodyDivId);}
-    var height = bodyElement.offsetHeight;
-    var top = bodyElement.scrollTop;
-
-    if(this._list && this._list.size()>0){
-        var apptArray = this._list.getArray();
-        for(var i=0;i<apptArray.length;i++){
-            var layoutParams = apptArray[i].getLayoutInfo();
-            if(!topExceeds){topExceeds=(layoutParams && layoutParams.y<(top));}
-            if(!bottomExceeds){bottomExceeds=(layoutParams && layoutParams.y>(height+top));}
-            if(topExceeds && bottomExceeds){break;}
-        }
-    }
-
-    var topIndicator = document.getElementById(this._startLimitIndicatorDivId);
-    Dwt.setVisibility(topIndicator,topExceeds);
-    var bottomIndicator = document.getElementById(this._endLimitIndicatorDivId);
-    Dwt.setVisibility(bottomIndicator,bottomExceeds);
-
-    if(topExceeds){
-        topIndicator.style.top=bodyElement.scrollTop+"px";
-    }
-
-    if(bottomExceeds){
-        bottomIndicator.style.top = ((bodyElement.offsetHeight+bodyElement.scrollTop+8)-(bottomIndicator.offsetHeight))+"px";
-    }
 };
 
 ZmCalColView.__onScroll = function(myView) {
@@ -1198,10 +1067,10 @@ function(colIndex, data) {
 		data.numDays = 1;
 		if (this.view != ZmId.VIEW_CAL_SCHEDULE) {
 			if (startTime != endTime) {
-				data.numDays = this._calcNumDays(startTime, endTime);
+				data.numDays = Math.round((endTime-startTime) / AjxDateUtil.MSEC_PER_DAY);
 			}
 			if (startTime < data.startTime) {
-				data.numDays -= this._calcNumDays(startTime, data.startTime);
+				data.numDays -= Math.round(data.startTime - startTime) / AjxDateUtil.MSEC_PER_DAY;
 			}
 		}
 	}
@@ -1225,19 +1094,6 @@ function(colIndex, data) {
 
 	this._fillAllDaySlot(row, colIndex, data);
 };
-
-ZmCalColView.prototype._calcNumDays =
-function(startTime, endTime) {
-    return Math.round((endTime-startTime) / AjxDateUtil.MSEC_PER_DAY);
-}
-// Calculate the offset in days from the 0th column date.  Used for
-// multi-day appt dragging.
-ZmCalColView.prototype._calcOffsetFromZeroColumn =
-function(time) {
-    var dayIndex = this._columns[0].dayIndex;
-    var day = this._days[dayIndex];
-    return Math.round((time-day.date.getTime()) / AjxDateUtil.MSEC_PER_DAY);
-}
 
 /*
  * compute layout info for all day appts
@@ -1270,16 +1126,16 @@ function() {
 			var slot = row[j];
 			if (slot.data) {
 				var appt = slot.data.appt;
-                var div = document.getElementById(this._getItemId(appt));
+				var div = document.getElementById(this._getItemId(appt));
                 if(div) {
                     if (this._scheduleMode) {
                         var cal = this._getColForFolderId(appt.folderId);
                         this._positionAppt(div, cal.allDayX+0, rowY);
-                        this._sizeAppt(div, ((cal.allDayWidth + this._daySepWidth) * slot.data.numDays) - this._daySepWidth - 1,
+                        this._sizeAppt(div, cal.allDayWidth * slot.data.numDays - this._daySepWidth - 1,
                                      ZmCalColView._ALL_DAY_APPT_HEIGHT);
                     } else {
                         this._positionAppt(div, this._columns[j].allDayX+0, rowY);
-                        this._sizeAppt(div, ((this._columns[j].allDayWidth + this._daySepWidth) * slot.data.numDays) - this._daySepWidth - 1,
+                        this._sizeAppt(div, this._columns[j].allDayWidth * slot.data.numDays - this._daySepWidth - 1,
                                      ZmCalColView._ALL_DAY_APPT_HEIGHT);
                     }
                 }
@@ -1288,7 +1144,6 @@ function() {
 		rowY += ZmCalColView._ALL_DAY_APPT_HEIGHT + ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD;
 	}
 };
-
 
 ZmCalColView._getApptWidthPercent =
 function(numCols) {
@@ -1426,10 +1281,9 @@ function(d, duration, folderId) {
 };
 
 ZmCalColView.prototype._getBoundsForAllDayDate =
-function(startSnap, endSnap, useYPadding) {
+function(startSnap, endSnap) {
 	if (startSnap == null || endSnap == null) return null;
-    var yOffset = useYPadding ? ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD + 2 : 0;
-	return new DwtRectangle(startSnap.col.allDayX, yOffset,
+	return new DwtRectangle(startSnap.col.allDayX, 0,
 			(endSnap.col.allDayX + endSnap.col.allDayWidth) - startSnap.col.allDayX - this._daySepWidth-1,
 			ZmCalColView._ALL_DAY_APPT_HEIGHT);
 };
@@ -1459,23 +1313,6 @@ function(x, y) {
 	return {x:x, y:0, col:col};
 };
 
-ZmCalColView.prototype._snapAllDayOutsideGrid =
-function(x) {
-    var colWidth = this._columns[0].allDayWidth + this._daySepWidth;
-    var colIndex = Math.floor(x/colWidth);
-    var colX = (colIndex * colWidth) + 2;
-    return {x:colX, y:0, col:{index:colIndex}};
-}
-
-// Generate a date (time hour/min/sec == 0) from an arbitrary index
-// i.e. an index that may not have a col object
-ZmCalColView.prototype._createAllDayDateFromIndex =
-function(colIndex) {
-    var dayIndex =  this._columns[0].dayIndex;
-    var day = this._days[dayIndex];
-    return new Date(day.date.getTime() + (AjxDateUtil.MSEC_PER_DAY * colIndex));
-}
-
 ZmCalColView.prototype._getDateFromXY =
 function(x, y, snapMinutes, roundUp) {
 	var col = this._getColFromX(x);
@@ -1502,7 +1339,7 @@ function(x, y) {
 // helper function to minimize code and catch errors
 ZmCalColView.prototype._setBounds =
 function(id, x, y, w, h) {
-	var el = typeof id === 'string' ? document.getElementById(id) : id;
+	var el = document.getElementById(id);
 	if (el == null) {
 		DBG.println("ZmCalColView._setBounds null element for id: "+id);
 	} else {
@@ -1640,8 +1477,7 @@ function(refreshApptLayout) {
     this.layoutWorkingHours(this.workingHours);
 	this._layoutAllDayAppts();
 
-    this._apptBodyDivOffset   = Dwt.toWindow(document.getElementById(this._apptBodyDivId), 0, 0, null, true);
-    this._apptAllDayDivOffset = Dwt.toWindow(document.getElementById(this._allDayDivId), 0, 0, null, true);
+	this._apptBodyDivOffset = Dwt.toWindow(document.getElementById(this._apptBodyDivId), 0, 0, null, true);
 
 	if (this._scheduleMode || refreshApptLayout) {
 		this._layoutAppts();
@@ -1649,35 +1485,6 @@ function(refreshApptLayout) {
 			this._layoutUnionData();
 		}
 	}
-};
-
-ZmCalColView.prototype.getPostionForWorkingHourDiv =
-function(dayIndex, workingHourIndex){
-    dayIndex = dayIndex || 0;
-    workingHourIndex = workingHourIndex || 0;
-    var workingHrs = this.workingHours[dayIndex],
-        startTime = workingHrs.startTime[workingHourIndex],
-        endTime = workingHrs.endTime[workingHourIndex],
-        startMin = (startTime%100)/15,
-        endMin = (endTime%100)/15,
-        startWorkingHour = 2 * Math.floor(startTime/100),
-        endWorkingHour = 2 * Math.floor(endTime/100),
-        fifteenMinHeight = ZmCalColView.HALF_HOUR_HEIGHT/2,
-        topPosition = startWorkingHour*ZmCalColView.HALF_HOUR_HEIGHT,
-        bottomPosition = endWorkingHour*ZmCalColView.HALF_HOUR_HEIGHT,
-        workingDivHeight = bottomPosition - topPosition;//duration*halfHourHeight;
-    return {
-        topPosition : topPosition,
-        workingDivHeight: workingDivHeight,
-        startMinAdjust : startMin * fifteenMinHeight,
-        endMinAdjust : endMin * fifteenMinHeight
-    };
-};
-
-ZmCalColView.prototype.layoutWorkingHoursDiv =
-function(divId, pos, currentX, dayWidth){
-    this._setBounds(divId, currentX, pos.topPosition+pos.startMinAdjust, dayWidth, pos.workingDivHeight+pos.endMinAdjust-pos.startMinAdjust);
-    this._setBounds(document.getElementById(divId).firstChild, 0, -pos.startMinAdjust, dayWidth, pos.workingDivHeight+pos.endMinAdjust);
 };
 
 ZmCalColView.prototype.layoutWorkingHours =
@@ -1706,31 +1513,38 @@ function(workingHours){
 		col.allDayWidth = dayWidth; // doesn't include sep
 
         //split into half hrs sections
-        var dayIndex = day.date.getDay(),
-            workingHrs = this.workingHours[dayIndex],
-            pos = this.getPostionForWorkingHourDiv(dayIndex, 0);
+        var workingHrs = this.workingHours[day.date.getDay()],
+            startWorkingHour = Math.round(2 * workingHrs.startTime[0]/100),
+            duration = Math.round(2*(workingHrs.endTime[0] - workingHrs.startTime[0])/100),
+            halfHourHeight = 21,
+            topPosition = startWorkingHour*halfHourHeight,
+            workingDivHeight = duration*halfHourHeight;
 
-        if(day.isWorkingDay) {
-            if(!this._scheduleMode) {
-                this.layoutWorkingHoursDiv(col.workingHrsFirstDivId, pos, currentX, dayWidth);
+        if(!this._scheduleMode && day.isWorkingDay) {
+            this._setBounds(col.workingHrsFirstDivId, currentX, topPosition, dayWidth, workingDivHeight);
 
-                if( workingHrs.startTime.length >= 2 &&
-                    workingHrs.endTime.length >= 2) {
+            if( workingHrs.startTime.length >= 2 &&
+                workingHrs.endTime.length >= 2) {
 
-                    pos = this.getPostionForWorkingHourDiv(dayIndex, 1);
-                    this.layoutWorkingHoursDiv(col.workingHrsSecondDivId, pos, currentX, dayWidth);
-                }
+                startWorkingHour = Math.round(2 * workingHrs.startTime[1]/100),
+                duration = Math.round(2*(workingHrs.endTime[1] - workingHrs.startTime[1])/100),
+                topPosition = startWorkingHour*halfHourHeight,
+                workingDivHeight = duration*halfHourHeight;
+
+                this._setBounds(col.workingHrsSecondDivId, currentX, topPosition, dayWidth, workingDivHeight);
             }
-            if(this._scheduleMode) {
-                this.layoutWorkingHoursDiv(this._workingHrsFirstDivId, pos, 0, dayWidth);
+        }
+        if(this._scheduleMode && day.isWorkingDay) {
+            this._setBounds(this._workingHrsFirstDivId, 0, topPosition, dayWidth, workingDivHeight);
 
-                if( workingHrs.startTime.length >= 2 &&
-                    workingHrs.endTime.length >= 2) {
+            if( workingHrs.startTime.length >= 2 &&
+                workingHrs.endTime.length >= 2) {
 
-                    pos = this.getPostionForWorkingHourDiv(dayIndex, 1);
-                    this.layoutWorkingHoursDiv(this._workingHrsSecondDivId, pos, 0, dayWidth);
-
-                }
+                startWorkingHour = Math.round(2 * workingHrs.startTime[1]/100),
+                duration = Math.round(2*(workingHrs.endTime[1] - workingHrs.startTime[1])/100),
+                topPosition = startWorkingHour*halfHourHeight,
+                workingDivHeight = duration*halfHourHeight;
+                this._setBounds(this._workingHrsSecondDivId, 0, topPosition, dayWidth, workingDivHeight);
             }
         }
         currentX += dayWidth;
@@ -1740,18 +1554,6 @@ function(workingHours){
 		currentX += this._daySepWidth;
 	}
 };
-
-// Must remain in sync with layoutWorkingHours
-ZmCalColView.prototype._calculateColumnApptLeft =
-function(index, dayWidth, numDays) {
-    if (index < 0) {
-        numDays = 0;
-    }  else {
-        numDays -= 1;
-    }
-    return (dayWidth * index) + (this._daySepWidth * numDays) + 2;
-}
-
 
 //Free Busy Bar
 
@@ -1979,11 +1781,11 @@ function() {
 };
 
 ZmCalColView.prototype._handleApptScrollRegion =
-function(docX, docY, incr, data) {
+function(docX, docY, incr) {
 	var offset = 0;
 	var upper = docY < this._apptBodyDivOffset.y;
-    // Trigger scroll when scroll is within 8 px of the bottom
-	var lower = docY > this._apptBodyDivOffset.y+this._bodyDivHeight - 8;
+	var lower = docY > this._apptBodyDivOffset.y+this._bodyDivHeight;
+
 	if (upper || lower) {
 		var div = document.getElementById(this._bodyDivId);
 		var sTop = div.scrollTop;
@@ -2000,9 +1802,6 @@ function(docX, docY, incr, data) {
 			div.scrollTop += offset;
 			this._syncScroll();
 		}
-        if (data) {
-            data.docY -= offset;
-        }
 	}
 	return offset;
 };
@@ -2192,6 +1991,78 @@ function(ev, div) {
 
 // BEGIN APPT ACTION HANDLERS
 
+ZmCalColView.prototype._apptMouseDownAction =
+function(ev, apptEl) {
+	if (ev.button != DwtMouseEvent.LEFT) { return false; }
+
+	var appt = this.getItemFromElement(apptEl);
+	var calendar = appCtxt.getById(appt.folderId);
+	var isRemote = Boolean(calendar.url);
+	if (appt.isReadOnly() || appt.isAllDayEvent() || (appt._fanoutNum > 0) || isRemote) return false;
+
+	var apptOffset = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, apptEl, true);
+
+	var data = {
+		dndStarted: false,
+		appt: appt,
+		view: this,
+		apptEl: apptEl,
+		apptOffset: apptOffset,
+		docX: ev.docX,
+		docY: ev.docY
+	};
+
+	var capture = new DwtMouseEventCapture({
+		targetObj:data,
+		mouseOverHdlr:ZmCalColView._emptyHdlr,
+		mouseDownHdlr:ZmCalColView._emptyHdlr, // mouse down (already handled by action)
+		mouseMoveHdlr:ZmCalColView._apptMouseMoveHdlr,
+		mouseUpHdlr:ZmCalColView._apptMouseUpHdlr,
+		mouseOutHdlr:ZmCalColView._emptyHdlr
+	});
+
+    this._controller.setCurrentListView(this);
+
+	capture.capture();
+	return false;
+};
+
+ZmCalColView.prototype._getApptDragProxy =
+function(data) {
+	// set icon
+	var icon;
+	if (this._apptDragProxyDivId == null) {
+		icon = document.createElement("div");
+		icon.id = this._apptDragProxyDivId = Dwt.getNextId();
+		Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE);
+		this.shell.getHtmlElement().appendChild(icon);
+		Dwt.setZIndex(icon, Dwt.Z_DND);
+	} else {
+		icon = document.getElementById(this._apptDragProxyDivId);
+	}
+	icon.className = DwtCssStyle.NOT_DROPPABLE;
+
+	var appt = data.appt;
+	var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT);
+	var color = ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)];
+	if (appt.ptst != ZmCalBaseItem.PSTATUS_NEEDS_ACTION) {
+		color += "Bg";
+	}
+
+	var data = {
+		shortDate: formatter.format(appt.startDate),
+		dur: appt.getShortStartHour(),
+		color: color,
+		apptName: AjxStringUtil.htmlEncode(appt.getName())
+	};
+
+	icon.innerHTML = AjxTemplate.expand("calendar.Calendar#ApptDragProxy", data);
+
+	var imgHtml = AjxImg.getImageHtml("RoundPlus", "position:absolute; top:30; left:-11; visibility:hidden");
+	icon.appendChild(Dwt.parseHtmlFragment(imgHtml));
+
+	return icon;
+};
 
 // called when DND is confirmed after threshold
 ZmCalColView.prototype._apptDndBegin =
@@ -2200,61 +2071,145 @@ function(data) {
 	data.dndObj = {};
 	data.apptX = loc.x;
 	data.apptY = loc.y;
-
-	data.apptsDiv    = document.getElementById(this._apptBodyDivId);
-	data.bodyDivEl   = document.getElementById(this._bodyDivId);
-	data.apptBodyEl  = document.getElementById(data.apptEl.id + "_body");
-
-	data.startDate   = new Date(data.appt.getStartTime());
+	data.apptsDiv = document.getElementById(this._apptBodyDivId);
+	data.bodyDivEl = document.getElementById(this._bodyDivId);
+	data.apptBodyEl = document.getElementById(data.apptEl.id + "_body");
+	data.snap = this._snapXY(data.apptX + data.apptOffset.x, data.apptY, 15); 	// get orig grid snap
+	if (data.snap == null) return false;
+	data.startDate = new Date(data.appt.getStartTime());
 	data.startTimeEl = document.getElementById(data.apptEl.id +"_st");
-	data.endTimeEl   = document.getElementById(data.apptEl.id +"_et");
-
-    if (data.appt.isAllDayEvent()) {
-        data.saveHTML  = data.apptEl.innerHTML;
-        data.saveLoc  = loc;
-
-        // Adjust apptOffset.x to be the offset from the clicked on column.  Then create the
-        // start snap using this offset (so that start column of a multi-day is tracked).
-        var leftSnap = this._snapXY(data.apptX, data.apptY, 15);
-        var colSnap  = this._snapXY(data.apptX + data.apptOffset.x, data.apptY, 15);
-        data.apptOffset.x = data.apptOffset.x - colSnap.x + leftSnap.x;
-
-        // Multi day appt may have its start off the grid.  It's will be truncated
-        // by the layout code, so calculate the true start
-        var dayOffset = this._calcOffsetFromZeroColumn(data.appt.getStartTime());
-        // All columns should be the same width. Choose the 0th
-        var colWidth = this._columns[0].allDayWidth + this._daySepWidth;
-
-        var endTime = data.appt.getEndTime();
-        var numDays = this._calcNumDays(data.startDate, endTime);
-        data.apptX = this._calculateColumnApptLeft(dayOffset, colWidth, numDays);
-        data.snap = this._snapAllDayOutsideGrid(data.apptX + data.apptOffset.x);
-        data.apptWidth = (colWidth * numDays) - this._daySepWidth - 1;
-
-        // Offset the y fudge that is applied in _layout, _positionAppt
-        data.apptY -= ZmCalColView._APPT_Y_FUDGE;
-        var bounds = new DwtRectangle(data.apptX, data.apptY,
-            data.apptWidth, ZmCalColView._ALL_DAY_APPT_HEIGHT);
-
-        this._layoutAppt(data.appt, data.apptEl, bounds.x, bounds.y, bounds.width, bounds.height);
-
-        data.disableScroll = true;
-     } else {
-        data.snap = this._snapXY(data.apptX + data.apptOffset.x, data.apptY, 15); 	// get orig grid snap
-    }
-
-    if (data.snap == null) return false;
+	data.endTimeEl = document.getElementById(data.apptEl.id +"_et");
 
 	this.deselectAll();
 	this.setSelection(data.appt);
-    Dwt.addClass(data.apptBodyEl, DwtCssStyle.DROPPABLE);
 	Dwt.setOpacity(data.apptEl, ZmCalColView._OPACITY_APPT_DND);
 	data.dndStarted = true;
 	return true;
 };
 
+ZmCalColView._apptMouseMoveHdlr =
+function(ev) {
+	var mouseEv = DwtShell.mouseEvent;
+	mouseEv.setFromDhtmlEvent(ev, true);
+	var data = DwtMouseEventCapture.getTargetObj();
 
-ZmCalColView.prototype._restoreApptLoc =
+	var deltaX = mouseEv.docX - data.docX;
+	var deltaY = mouseEv.docY - data.docY;
+
+	if (!data.dndStarted) {
+		var withinThreshold = (Math.abs(deltaX) < ZmCalColView.DRAG_THRESHOLD && Math.abs(deltaY) < ZmCalColView.DRAG_THRESHOLD);
+		if (withinThreshold || !data.view._apptDndBegin(data)) {
+			mouseEv._stopPropagation = true;
+			mouseEv._returnValue = false;
+			mouseEv.setToDhtmlEvent(ev);
+			return false;
+		}
+	}
+
+	var draggedOut = data.view._apptDraggedOut(mouseEv.docX, mouseEv.docY);
+	var obj = data.dndObj;
+
+	if (draggedOut) {
+		// simulate DND
+		if (!data._lastDraggedOut) {
+			data._lastDraggedOut = true;
+			data.snap.x = null;
+			data.snap.y = null;
+			data.startDate = new Date(data.appt.getStartTime());
+			ZmCalColView._restoreApptLoc(data);
+			if (!data.icon) {
+				data.icon = data.view._getApptDragProxy(data);
+			}
+			Dwt.setVisible(data.icon, true);
+		}
+		Dwt.setLocation(data.icon, mouseEv.docX+5, mouseEv.docY+5);
+		var destDwtObj = mouseEv.dwtObj;
+		var obj = data.dndObj;
+
+		if (destDwtObj && destDwtObj._dropTarget)
+		{
+			if (destDwtObj != obj._lastDestDwtObj ||
+				destDwtObj._dropTarget.hasMultipleTargets())
+			{
+				//DBG.println("dwtObj = "+destDwtObj._dropTarget);
+				if (destDwtObj._dropTarget._dragEnter(Dwt.DND_DROP_MOVE, destDwtObj, {data: data.appt}, mouseEv, data.icon)) {
+					//obj._setDragProxyState(true);
+					data.icon.className = DwtCssStyle.DROPPABLE;
+					obj._dropAllowed = true;
+					destDwtObj._dragEnter(mouseEv);
+				} else {
+					//obj._setDragProxyState(false);
+					data.icon.className = DwtCssStyle.NOT_DROPPABLE;
+					obj._dropAllowed = false;
+				}
+			} else if (obj._dropAllowed) {
+				destDwtObj._dragOver(mouseEv);
+			}
+		} else {
+			data.icon.className = DwtCssStyle.NOT_DROPPABLE;
+			//obj._setDragProxyState(false);
+		}
+
+		if (obj._lastDestDwtObj &&
+			obj._lastDestDwtObj != destDwtObj &&
+			obj._lastDestDwtObj._dropTarget &&
+			obj._lastDestDwtObj != obj)
+		{
+			obj._lastDestDwtObj._dragLeave(mouseEv);
+			obj._lastDestDwtObj._dropTarget._dragLeave();
+		}
+		obj._lastDestDwtObj = destDwtObj;
+	}
+	else
+	{
+		if (data._lastDraggedOut) {
+			data._lastDraggedOut = false;
+			if (data.icon) {
+				Dwt.setVisible(data.icon, false);
+			}
+			Dwt.setOpacity(data.apptEl, ZmCalColView._OPACITY_APPT_DND);
+		}
+		obj._lastDestDwtObj = null;
+		var scrollOffset = data.view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, ZmCalColView._HOUR_HEIGHT);
+		if (scrollOffset != 0) {
+			data.docY -= scrollOffset;
+			deltaY += scrollOffset;
+		}
+
+		// snap new location to grid
+		var snap = data.view._snapXY(data.apptX + data.apptOffset.x + deltaX, data.apptY + deltaY, 15);
+		//DBG.println("mouseMove new snap: "+snap.x+","+snap.y+ " data snap: "+data.snap.x+","+data.snap.y);
+		if (snap != null && ((snap.x != data.snap.x || snap.y != data.snap.y))) {
+			var newDate = data.view._getDateFromXY(snap.x, snap.y, 15);
+			if (newDate != null &&
+				(!(data.view._scheduleMode && snap.col != data.snap.col)) && // don't allow col moves in sched view
+				(newDate.getTime() != data.startDate.getTime()))
+			{
+				var bounds = data.view._getBoundsForDate(newDate, data.appt._orig.getDuration(), snap.col);
+				data.view._layoutAppt(null, data.apptEl, bounds.x, bounds.y, bounds.width, bounds.height);
+				data.startDate = newDate;
+				data.snap = snap;
+				if (data.startTimeEl) data.startTimeEl.innerHTML = ZmCalBaseItem._getTTHour(data.startDate);
+				if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalBaseItem._getTTHour(new Date(data.startDate.getTime()+data.appt.getDuration()));
+			}
+		}
+	}
+	mouseEv._stopPropagation = true;
+	mouseEv._returnValue = false;
+	mouseEv.setToDhtmlEvent(ev);
+	return false;
+};
+
+ZmCalColView.prototype._apptDraggedOut =
+function(docX, docY) {
+//DBG.println(" docX,Y = ("+docX+", "+docY+") abdoX,Y = ("+this._apptBodyDivOffset.x+","+this._apptBodyDivOffset.y+")");
+	return (docY < (this._apptBodyDivOffset.y - ZmCalColView._SCROLL_PRESSURE_FUDGE)) ||
+			(docY > (this._apptBodyDivOffset.y + this._bodyDivHeight + ZmCalColView._SCROLL_PRESSURE_FUDGE)) ||
+			(docX < this._apptBodyDivOffset.x) ||
+			(docX > this._apptBodyDivOffset.x + this._bodyDivWidth);
+};
+
+ZmCalColView._restoreApptLoc =
 function(data) {
 	var lo = data.appt._layout;
 	data.view._layoutAppt(null, data.apptEl, lo.x, lo.y, lo.w, lo.h);
@@ -2264,95 +2219,108 @@ function(data) {
     if (data.endTimeEl) {
 		data.endTimeEl.innerHTML = ZmCalBaseItem._getTTHour(data.appt.endDate);
 	}
-	ZmCalBaseView._setApptOpacity(data.appt, data.apptEl);
+	ZmCalColView._setApptOpacity(data.appt, data.apptEl);
 };
 
+ZmCalColView._apptMouseUpHdlr =
+function(ev) {
+	//DBG.println("ZmCalColView._apptMouseUpHdlr: "+ev.shiftKey);
+	var data = DwtMouseEventCapture.getTargetObj();
 
-ZmCalColView.prototype._restoreAppt =
-function(data) {
-   if (data.appt.isAllDayEvent()) {
-       Dwt.setLocation(data.apptEl, data.saveLoc.x, data.saveLoc.y);
-       data.apptEl.innerHTML = data.saveHTML;
-    }
+	var mouseEv = DwtShell.mouseEvent;
+	mouseEv.setFromDhtmlEvent(ev, true);
+
+	DwtMouseEventCapture.getCaptureObj().release();
+
+	var draggedOut = data.view._apptDraggedOut(mouseEv.docX, mouseEv.docY);
+
+	if (data.dndStarted) {
+		//notify Zimlet when an appt is dragged.
+		appCtxt.notifyZimlets("onApptDrag", [data]);	
+		ZmCalColView._setApptOpacity(data.appt, data.apptEl);
+		if (data.startDate.getTime() != data.appt.getStartTime() && !draggedOut) {
+			if (data.icon) Dwt.setVisible(data.icon, false);
+			// save before we muck with start/end dates
+			var origDuration = data.appt._orig.getDuration();
+			data.view._autoScrollDisabled = true;
+			var cc = appCtxt.getCurrentController();
+			var endDate = new Date(data.startDate.getTime() + origDuration);
+			var errorCallback = new AjxCallback(null, ZmCalColView._handleError, data);
+			var sdOffset = data.startDate ? (data.startDate.getTime() - data.appt.getStartTime()) : null;
+			var edOffset = endDate ? (endDate.getTime() - data.appt._orig.getEndTime() ) : null;
+			cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback, mouseEv);
+			//cc.dndUpdateApptDate(data.appt._orig, data.startDate, endDate, null, errorCallback);
+		} else {
+//			ZmCalColView._restoreApptLoc(data);
+		}
+
+		if (draggedOut) {
+			var obj = data.dndObj;
+			obj._lastDestDwtObj = null;
+			var destDwtObj = mouseEv.dwtObj;
+			if (destDwtObj != null &&
+				destDwtObj._dropTarget != null &&
+				obj._dropAllowed &&
+				destDwtObj != obj)
+			{
+				destDwtObj._drop(mouseEv);
+				var srcData = {
+					data: data.appt,
+					controller: data.view._controller
+				};
+				destDwtObj._dropTarget._drop(srcData, mouseEv);
+				//obj._dragSource._endDrag();
+				//obj._destroyDragProxy(obj._dndProxy);
+				obj._dragging = DwtControl._NO_DRAG;
+				if (data.icon) Dwt.setVisible(data.icon, false);
+			}
+			else {
+				// The following code sets up the drop effect for when an
+				// item is dropped onto an invalid target. Basically the
+				// drag icon will spring back to its starting location.
+				var bd = data.view._badDrop = { dragEndX: mouseEv.docX, dragEndY: mouseEv.docY, dragStartX: data.docX, dragStartY: data.docY };
+				bd.icon = data.icon;
+				if (data.view._badDropAction == null) {
+					data.view._badDropAction = new AjxTimedAction(data.view, data.view._apptBadDropEffect);
+				}
+
+				// Line equation is y = mx + c. Solve for c, and set up d (direction)
+				var m = (bd.dragEndY - bd.dragStartY) / (bd.dragEndX - bd.dragStartX);
+				data.view._badDropAction.args = [m, bd.dragStartY - (m * bd.dragStartX), (bd.dragStartX - bd.dragEndX < 0) ? -1 : 1];
+				AjxTimedAction.scheduleAction(data.view._badDropAction, 0);
+			}
+		}
+	}
+
+	mouseEv._stopPropagation = true;
+	mouseEv._returnValue = false;
+	mouseEv.setToDhtmlEvent(ev);
+
+	return false;
 };
 
-
-ZmCalColView.prototype._createContainerRect =
-function(data) {
-     this._containerRect = null;
-    if (data.appt.isAllDayEvent()) {
-        this._containerRect = new DwtRectangle(this._apptAllDayDivOffset.x,
-                this._apptAllDayDivOffset.y,
-                this._bodyDivWidth,
-                this._allDayDivHeight + this._bodyDivHeight + ZmCalColView._SCROLL_PRESSURE_FUDGE);
-    } else {
-        this._containerRect = new DwtRectangle(this._apptAllDayDivOffset.x,
-                this._apptBodyDivOffset.y - ZmCalColView._SCROLL_PRESSURE_FUDGE,
-                this._bodyDivWidth,
-                this._bodyDivHeight + ZmCalColView._SCROLL_PRESSURE_FUDGE);
-    }
-}
-
-ZmCalColView.prototype._clearSnap =
-function(snap) {
-    snap.x = null;
-    snap.y = null;
-}
-
-
-ZmCalColView.prototype._restoreHighlight =
-function(data) {
-    Dwt.setOpacity(data.apptEl, ZmCalColView._OPACITY_APPT_DND);
-    Dwt.addClass(data.apptBodyEl, DwtCssStyle.DROPPABLE);
-}
-
-ZmCalColView.prototype._doApptMove =
-function(data, deltaX, deltaY) {
-    // snap new location to grid
-    var newDate = null;
-    var snap = data.view._snapXY(data.apptX + data.apptOffset.x + deltaX, data.apptY + deltaY, 15);
-    if (snap == null) {
-        if (data.appt.isAllDayEvent()) {
-            // For a multi day appt , the start snap may have started or be pushed off the grid.
-            // Create a snap with a pseudo column.
-            snap = data.view._snapAllDayOutsideGrid(data.apptX + data.apptOffset.x + deltaX);
-            newDate = data.view._createAllDayDateFromIndex(snap.col.index);
-        }
-    } else {
-        newDate = data.view._getDateFromXY(snap.x, snap.y, 15);
-    }
-
-    //DBG.println("mouseMove new snap: "+snap.x+","+snap.y+ " data snap: "+data.snap.x+","+data.snap.y);
-    if (snap != null && ((snap.x != data.snap.x || snap.y != data.snap.y))) {
-        if (newDate != null &&
-            (!(data.view._scheduleMode && snap.col != data.snap.col)) && // don't allow col moves in sched view
-            (newDate.getTime() != data.startDate.getTime()))
-        {
-            var bounds = null;
-            if (data.appt.isAllDayEvent()) {
-                // Not using snapXY and GeBoundsForAllDayDate - snap requires that a date
-                // fall within one of its columns, which may not be so for a multi day appt.
-                var bounds = new DwtRectangle(snap.x, data.apptY,
-                    data.apptWidth, ZmCalColView._ALL_DAY_APPT_HEIGHT);
-            } else {
-                bounds = data.view._getBoundsForDate(newDate, data.appt._orig.getDuration(), snap.col);
-            }
-            data.view._layoutAppt(null, data.apptEl, bounds.x, bounds.y, bounds.width, bounds.height);
-            data.startDate = newDate;
-            data.snap = snap;
-            if (data.startTimeEl) data.startTimeEl.innerHTML = ZmCalBaseItem._getTTHour(data.startDate);
-            if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalBaseItem._getTTHour(new Date(data.startDate.getTime()+data.appt.getDuration()));
-        }
-    }
-}
-
-
-
-ZmCalColView.prototype._deselectDnDHighlight =
-function(data) {
-    Dwt.delClass(data.apptBodyEl, DwtCssStyle.DROPPABLE);
-    ZmCalBaseView._setApptOpacity(data.appt, data.apptEl);
-}
+ZmCalColView.prototype._apptBadDropEffect =
+function(m, c, d) {
+	var usingX = (Math.abs(m) <= 1);
+	// Use the bigger delta to control the snap effect
+	var bd = this._badDrop;
+	var delta = usingX ? bd.dragStartX - bd.dragEndX : bd.dragStartY - bd.dragEndY;
+	if (delta * d > 0) {
+		if (usingX) {
+			bd.dragEndX += (30 * d);
+			bd.icon.style.top = m * bd.dragEndX + c;
+			bd.icon.style.left = bd.dragEndX;
+		} else {
+			bd.dragEndY += (30 * d);
+			bd.icon.style.top = bd.dragEndY;
+			bd.icon.style.left = (bd.dragEndY - c) / m;
+		}
+		AjxTimedAction.scheduleAction(this._badDropAction, 0);
+	} else {
+		Dwt.setVisible(bd.icon, false);
+		bd.icon = null;
+	}
+};
 
 // END APPT ACTION HANDLERS
 
@@ -2429,7 +2397,7 @@ function(ev) {
 	if (draggedOut) {
 		if (!data._lastDraggedOut) {
 			data._lastDraggedOut = true;
-			data.view._restoreApptLoc(data);
+			ZmCalColView._restoreApptLoc(data);
 		}
 	} else {
 		if (data._lastDraggedOut) {
@@ -2437,7 +2405,7 @@ function(ev) {
 			data.lastDelta = 0;
 			Dwt.setOpacity(data.apptEl, ZmCalColView._OPACITY_APPT_DND);
 		}
-		var scrollOffset = data.view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, ZmCalColView._HOUR_HEIGHT, null);
+		var scrollOffset = data.view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, ZmCalColView._HOUR_HEIGHT);
 		if (scrollOffset != 0) {
 			data.startY -= scrollOffset;
 		}
@@ -2483,7 +2451,7 @@ ZmCalColView._sashMouseUpHdlr =
 function(ev) {
 //	DBG.println("ZmCalColView._sashMouseUpHdlr");
 	var data = DwtMouseEventCapture.getTargetObj();
-	ZmCalBaseView._setApptOpacity(data.appt, data.apptEl);
+	ZmCalColView._setApptOpacity(data.appt, data.apptEl);
 	var mouseEv = DwtShell.mouseEvent;
 	mouseEv.setFromDhtmlEvent(ev);
 	if (mouseEv.button != DwtMouseEvent.LEFT) {
@@ -2499,7 +2467,7 @@ function(ev) {
 
 	var draggedOut = data.view._apptDraggedOut(mouseEv.docX, mouseEv.docY);
 	if (draggedOut) {
-		data.view._restoreApptLoc(data);
+		ZmCalColView._restoreApptLoc(data);
 		return false;
 	}
 
@@ -2533,11 +2501,6 @@ ZmCalColView.prototype._gridMouseDownAction =
 function(ev, gridEl, gridLoc, isAllDay) {
 	if (ev.button != DwtMouseEvent.LEFT) { return false; }
 
-    if(ZmCalViewController._contextMenuOpened){
-        ZmCalViewController._contextMenuOpened = false;
-        return false;
-    }
-
 	var data = {
 		dndStarted: false,
 		view: this,
@@ -2566,6 +2529,7 @@ ZmCalColView.prototype._gridDndBegin =
 function(data) {
 	var col = data.view._getColFromX(data.gridX);
 	data.folderId = col ? (col.cal ? col.cal.id : null) : null;
+
 	if (data.isAllDay) {
 		data.gridEl.style.cursor = 'e-resize';
 		data.newApptDivEl = document.getElementById(data.view._newAllDayApptDivId);
@@ -2601,13 +2565,11 @@ function(list, skipMiniCalUpdate) {
 		var size = list.size();
 		DBG.println(AjxDebug.DBG2,"list.size:"+size);
 		if (size != 0) {
-			var showDeclined = appCtxt.get(ZmSetting.CAL_SHOW_DECLINED_MEETINGS);
 			this._computeApptLayout();
 			for (var i=0; i < size; i++) {
 				var ao = list.get(i);
-				if (ao && ao.isInRange(timeRange.start, timeRange.end) &&
-					(showDeclined || (ao.ptst != ZmCalBaseItem.PSTATUS_DECLINED))) {
-                    this.addAppt(ao);
+				if (ao && ao.isInRange(timeRange.start, timeRange.end)) {
+					this.addAppt(ao);
                     this._apptCount ++;
 				}
 			}
@@ -2625,17 +2587,9 @@ function(list, skipMiniCalUpdate) {
     if(this._fbBarEnabled){
         this._layoutFBBar();
     }
-
-    this._checkForOffscreenAppt();
+	this._scrollToTime(8);
 	Dwt.setLoadedTime("ZmCalItemView", new Date());
 };
-
-/*
-*   Initializes the vertical scrollbar of the body element to 8AM.
- */
-ZmCalColView.prototype.initializeTimeScroll = function(){
-    this._scrollToTime(8);
-}
 
 ZmCalColView._gridMouseMoveHdlr =
 function(ev) {
@@ -2657,7 +2611,7 @@ function(ev) {
 		}
 	}
 
-	var scrollOffset = data.view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, ZmCalColView._HOUR_HEIGHT, null);
+	var scrollOffset = data.view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, ZmCalColView._HOUR_HEIGHT);
 	if (scrollOffset != 0) {
 		data.docY -= scrollOffset;
 		deltaY += scrollOffset;
@@ -2715,44 +2669,8 @@ function(ev) {
 
 	DwtMouseEventCapture.getCaptureObj().release();
 
-    if (!data.dndStarted && appCtxt.get(ZmSetting.CAL_USE_QUICK_ADD)) {
-        var newStart, newEnd;
-        var deltaY = mouseEv.docY - data.docY;
-
-        if (deltaY >= 0) { // dragging down
-            newStart = data.view._snapXY(data.gridX, data.gridY, 30);
-            newEnd = data.view._snapXY(data.gridX, data.gridY + deltaY, 30, true);
-        } else { // dragging up
-            newEnd = data.view._snapXY(data.gridX, data.gridY, 30);
-            newStart = data.view._snapXY(data.gridX, data.gridY + deltaY, 30);
-        }
-
-        if (newStart == null || newEnd == null) return false;
-
-        if ((data.start == null) || (data.start.y != newStart.y) || (data.end.y != newEnd.y)) {
-
-            if (!data.dndStarted){
-                data.dndStarted = true;
-            }
-
-            data.start = newStart;
-            data.end = newEnd;
-
-            data.startDate = data.view._getDateFromXY(data.start.x, data.start.y, 30, false);
-            data.endDate = data.view._getDateFromXY(data.end.x, data.end.y, 30, false);
-        }
-
-        if (data.isAllDay) {
-		    data.newApptDivEl = document.getElementById(data.view._newAllDayApptDivId);
-        } else {
-            data.newApptDivEl = document.getElementById(data.view._newApptDivId);
-        }
-    }
-
 	if (data.dndStarted) {
 		data.gridEl.style.cursor = 'auto';
-        var col = data.view._getColFromX(data.gridX);
-	    data.folderId = col ? (col.cal ? col.cal.id : null) : null;
 		Dwt.setVisible(data.newApptDivEl, false);
 		if (data.isAllDay) {
 			appCtxt.getCurrentController().newAllDayAppointmentHelper(data.startDate, data.endDate, data.folderId, mouseEv.shiftKey);

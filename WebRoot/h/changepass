@@ -104,19 +104,19 @@
                             <tr>
                                 <td class='zLoginLabelContainer'><label for="oldPassword"><fmt:message key="oldPassword"/>:</label></td>
                                 <td class='zLoginFieldContainer'>
-                                    <input id="oldPassword" autocomplete="off" class='zLoginField' name='password' type='password' value=""/>
+                                    <input id="oldPassword" autocomplete="off" class='zLoginField' name='password' type='password' value="${fn:escapeXml(param.password)}"/>
                                 </td>
                             </tr>
                             <tr>
                                 <td class='zLoginLabelContainer'><label for="newPassword"><fmt:message key="newPassword"/>:</label></td>
                                 <td class='zLoginFieldContainer'>
-                                    <input id="newPassword" autocomplete="off" class='zLoginField' name='loginNewPassword' type='password' value=""/>
+                                    <input id="newPassword" autocomplete="off" class='zLoginField' name='loginNewPassword' type='password' value="${fn:escapeXml(param.loginNewPassword)}"/>
                                 </td>
                             </tr>
                             <tr>
                                 <td class='zLoginLabelContainer'><label for="confirm"><fmt:message key="confirm"/>:</label></td>
                                 <td class='zLoginFieldContainer'>
-                                    <input id="confirm" autocomplete="off" class='zLoginField' name='loginConfirmNewPassword' type='password' value=""/>
+                                    <input id="confirm" autocomplete="off" class='zLoginField' name='loginConfirmNewPassword' type='password' value="${fn:escapeXml(param.loginConfirmNewPassword)}"/>
                                 </td>
                             </tr>
                             <tr>

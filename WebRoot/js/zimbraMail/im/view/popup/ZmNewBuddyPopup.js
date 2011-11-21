@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -22,8 +22,10 @@ ZmNewBuddyPopup = function(params) {
 ZmNewBuddyPopup.prototype = new ZmTaskbarPopup;
 ZmNewBuddyPopup.prototype.constructor = ZmNewBuddyPopup;
 
-ZmNewBuddyPopup.prototype.isZmNewBuddyPopup = true;
-ZmNewBuddyPopup.prototype.toString = function() { return "ZmNewBuddyPopup"; };
+ZmNewBuddyPopup.prototype.toString =
+function() {
+	return "ZmNewBuddyPopup";
+};
 
 ZmNewBuddyPopup.prototype.popup =
 function() {
@@ -302,9 +304,8 @@ ZmNewBuddyPopup.prototype._initAddressAutocomplete = function() {
 
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
-			dataClass:	appCtxt.getAutocompleter(),
-			matchValue:	ZmAutocomplete.AC_VALUE_EMAIL,
-			contextId:	[this.toString(), ZmAutocomplete.AC_TYPE_CONTACT].join("-")
+			dataClass: appCtxt.getAutocompleter(),
+			matchValue : ZmAutocomplete.AC_VALUE_EMAIL
 		};
 		this._addressAutocomplete = new ZmAutocompleteListView(params);
 		this._addressAutocomplete.handle(this._addrEntry.getInputElement());
@@ -320,8 +321,7 @@ ZmNewBuddyPopup.prototype._initGroupAutocomplete = function() {
 		       dataClass  : imApp,
 		       dataLoader : groupList,
 		       matchValue : "text",
-		       separator  : ',',
-			   contextId  :	[this.toString(), "ROSTER"].join("-")
+		       separator  : ','
 		     };
 	this._groupAutocomplete = new ZmAutocompleteListView(params);
 	this._groupAutocomplete.handle(this._groupsEntry.getInputElement());
