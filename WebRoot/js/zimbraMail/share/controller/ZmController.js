@@ -167,8 +167,14 @@ function(view, overrides) {
 		return this._newButton;
 	}
 	overrides = overrides || {};
-	var buttonId = ZmId.getButtonId(view || this._currentViewId, ZmOperation.NEW_MENU); 
-	var newButton = this._newButton = new DwtToolBarButton({parent: this._container, id: buttonId, posStyle: DwtControl.ABSOLUTE_STYLE, className: "ZToolbarButton ZNewButton"});
+	var buttonId = ZmId.getButtonId(view || this._currentViewId, ZmOperation.NEW_MENU);
+	var buttonParams = {
+		parent:		this._container,
+		id:			buttonId,
+		posStyle:	DwtControl.ABSOLUTE_STYLE,
+		className:	"ZToolbarButton ZNewButton"
+	}
+	var newButton = this._newButton = new DwtToolBarButton(buttonParams);
 	newButton.setText(ZmMsg._new);
 
 	ZmOperation.addNewMenu(newButton);
@@ -265,8 +271,16 @@ function(view, appContentView, toolbar) {
 	toolbar = toolbar || this._toolbar[view];
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = toolbar;
 
-	if (this._newButton && !appCtxt.isChildWindow) {
-		elements[ZmAppViewMgr.C_NEW_BUTTON] = this._newButton;
+	if (this._newButton && !appCtxt.isChildWindow && !this._newToolbar) {
+		var tbParams = {
+			parent:				this._shell,
+			buttons:			ZmOperation.NONE,
+			controller:			this,
+			refElementId:		ZmId.SKIN_APP_NEW_BUTTON
+		};
+		var tb = this._newToolbar = new ZmButtonToolBar(tbParams);
+		this._newButton.reparent(tb);
+		elements[ZmAppViewMgr.C_NEW_BUTTON] = tb;
 	}
 
 	elements[ZmAppViewMgr.C_APP_CONTENT] = appContentView;
