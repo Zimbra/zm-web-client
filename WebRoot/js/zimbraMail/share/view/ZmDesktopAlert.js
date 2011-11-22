@@ -106,7 +106,9 @@ ZmDesktopAlert.prototype._showWebkitNotification =
 function(title, message) {
     // Icon: I chose to use the favIcon because it's already overridable by skins.
     // It's a little ugly though.
-    var icon = window.favIconUrl;
+    // change for bug#67359: Broken notification image in chrome browser
+    // //var icon = window.favIconUrl;
+    var icon = [appContextPath, "/img/logo/ImgZimbraLogo_48.gif"].join("");
     var popup = window.webkitNotifications.createNotification(icon, title, message);
     popup.show();
 
