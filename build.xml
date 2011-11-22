@@ -1422,7 +1422,7 @@ if (ext == null) ext = "";
         <fileset dir="${client.build.dir}" includes="zimbraclient.jar"/>
         <fileset dir="${server.dist.dir}/jetty/common/lib" includes="zimbracommon.jar"/>
         <fileset dir="${server.build.dir}" includes="zimbrastore.jar"/>
-        <fileset dir="${lib.dir}" includes="standard.jar,servlet-api.jar"/>
+        <fileset dir="${lib.dir}" includes="standard.jar,servlet-api-2.5.jar"/>
         <fileset dir="${common.lib.dir}" includes="*.jar"/>
         <fileset dir="${jspc.src.dir}/WEB-INF/lib" includes="*.jar"/>
     </path>
