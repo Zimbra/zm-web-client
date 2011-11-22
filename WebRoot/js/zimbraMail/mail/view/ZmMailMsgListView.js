@@ -301,43 +301,6 @@ function(ev) {
 	}
 };
 
-ZmMailMsgListView.prototype._changeFolderName = 
-function(msg, oldFolderId) {
-
-	var folder = appCtxt.getById(msg.folderId);
-
-	if (!this._controller.isReadingPaneOn() || !this._controller.isReadingPaneOnRight()) {
-		var folderCell = folder ? this._getElement(msg, ZmItem.F_FOLDER) : null;
-		if (folderCell) {
-			folderCell.innerHTML = folder.getName();
-		}
-	}
-
-	if (folder && (folder.nId == ZmFolder.ID_TRASH || oldFolderId == ZmFolder.ID_TRASH)) {
-		this._changeTrashStatus(msg);
-	}
-};
-
-ZmMailMsgListView.prototype._changeTrashStatus = 
-function(msg) {
-
-	var row = this._getElement(msg, ZmItem.F_ITEM_ROW);
-	if (row) {
-		if (msg.isUnread && !msg.isMuted()) {
-			Dwt.addClass(row, "Unread");
-		}
-		var folder = appCtxt.getById(msg.folderId);
-		if (folder && folder.isInTrash()) {
-			Dwt.addClass(row, "Trash");
-		} else {
-			Dwt.delClass(row, "Trash");
-		}
-		if (msg.isSent) {
-			Dwt.addClass(row, "Sent");
-		}
-	}
-};
-
 ZmMailMsgListView.prototype._getHeaderList =
 function() {
 

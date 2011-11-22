@@ -653,14 +653,11 @@
 </template>
 	
 <template id='mail.Message#Conv2MsgHeader'>
-	<table class='Conv2MsgHeaderTable' width=100%>
+	<table class='Conv2MsgHeaderTable'>
 		<tr id='${tableRowId}'>
 			<td class='Expand' width=19 id='${expandIconCellId}'></td>
-			<td class='Text' width=<$= ZmMsg.COLUMN_WIDTH_FROM_CV2 $>>
-				<$= data.from $>
-			</td>
-			<td class='Text ZmConvListFragment' id='${fragmentCellId}' style='width:auto;overflow:hidden;'>
-				<$= data.fragment $>
+			<td class='Text' width='auto'>
+				<$= data.from $>&nbsp;<span class='ZmConvListFragment' id='${fragmentCellId}'><$= data.fragment $></span>
 			</td>
 			<td class='Text DateCol' width=<$= ZmMsg.COLUMN_WIDTH_DATE_CV2 $>>${date}</td>
 		</tr>
@@ -670,24 +667,19 @@
 <template id='mail.Message#Conv2MsgFooter'>
 	<div>
 		<div id='${footerId}'>
-			<table class='MsgFooterTable' width=100%>
+			<table class='MsgFooterTable'>
 				<tr>
-					<td id='${folderCellId}'></td>
-					<td id='${tagCellId}' width=100%></td>
-					<$ if (!data.noQuotedText) { $>
-					<td>
-						<a class='Link' id='${showTextLinkId}'><$= ZmMsg.showQuotedText $></a>
+					<td id='${folderCellId}' width=19></td>
+					<td width='auto'>
+						<table width="100%">
+							<tr>
+								<td id='${tagCellId}'>
+								<td width='auto'>&nbsp;</td>
+								<td style='text-align:right;'><$= data.links $></td>
+							</tr>
+						</table>
 					</td>
-					<td>|</td>
-					<$ } $>
-					<td>
-						<a class='Link' id='${replyLinkId}'><$= ZmMsg.reply $></a>
-					</td>
-					<td>|</td>
-					<td>
-						<a class='Link' id='${replyAllLinkId}'><$= ZmMsg.replyAll $></a>
-					</td>
-					<td id='${buttonCellId}' class='MsgActions'></td>
+					<td id='${buttonCellId}' class='MsgActions' width=36></td>
 				</tr>
 			</table>
 		</div>

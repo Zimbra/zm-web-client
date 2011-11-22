@@ -691,94 +691,22 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 /* Styles for Conv2.0 */
 
+/* Conv2View is for reading pane on right. Conv2View-bottom is for reading pane at bottom.
+   The view has a conv header, a messages area, and a reply area. */
+
 .Conv2View, .Conv2View-bottom {
 	background-color:@AppC@;
 	height:100%;
 	@grad(AppC,#CCC)@
 }
 
-.Conv2View-bottom {
-	/*height:100%;*/
-}
-
-.Conv2View-bottom .Conv2ViewTable {
-	width:100%;
-	height:100%;
-	border-collapse:collapse;
-	border-spacing:0;
-}
-
-.Conv2View-bottom .Conv2ReplyCell {
-    background-color:@lighten(AppC,55)@;
-    border-left:1px solid @darken(AppC,33)@;
-	width:300px;
-}
-
-.Conv2View .Conv2Reply {
-    background-color:@lighten(AppC,55)@;
-    border-top:1px solid @darken(AppC,33)@;
-	padding:3px;
-}
-
-.Conv2Messages, .Conv2Messages-bottom {
-	overflow:auto;
-}
-
-.Conv2Messages-bottom {
-	height:100%;
-}
-
-.ZmMailMsgCapsuleView {
-	background-color:@MailMsgBkgdColor@;
-	border:1px solid @darken(AppC,10)@;
-	margin:10px;
-	@cssShadow@:0 4px 4px @darken(AppC,25)@
-}
-
-.ZmMailMsgCapsuleView.focused {
-	border-color:@darken(SelC,10)@;
-}
-
-.Conv2MsgHeaderTable .Text {
-	white-space:nowrap;
-	vertical-align:top;
-	padding:0 3px;
-}
-
-.ZmMailMsgCapsuleView .SubjectCol {
-    @MailMsgHeaderText@
-	@FontSize-normal@
-	font-weight:bold;
-}
-
-.Conv2MsgHeaderTable .DateCol {
-	white-space:nowrap;
-    padding-right:5px;
-    text-align:right;
-}
+/* The conv header contains the subject and a summary of number of messages / unread */
 
 .Conv2Header {
 	background-color:@lighten(AppC,25)@
 	border-bottom:	1px solid @darken(AppC,33)@;
 	padding:1px 5px 2px;
 	@cssShadow@:0 3px 3px @darken(AppC,15)@;
-}
-
-.Conv2MsgHeaderTable {
-	table-layout:fixed;
-}
-
-.Conv2MsgHeaderTable td {
-	padding:0 2px 0 @TextPaddingSize@;
-	overflow:hidden;
-}
-
-.Conv2MsgHeaderTable .LabelColValue {
-	
-}
-
-.Conv2MsgHeaderTable .Unread {
-	font-weight:bold;
 }
 
 .Conv2Header .subject {
@@ -792,12 +720,83 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	white-space:nowrap;
 }
 
-.MsgFooterTable>TBODY>TR>TD:first-child {
-	padding-left:5px;
+/* The messages area contains collapsed and expanded messages */
+
+.Conv2Messages, .Conv2Messages-bottom {
+	overflow:auto;
 }
 
-.MsgFooterTable>TBODY>TR>TD:last-child {
-	padding-right:5px;
+.Conv2View-bottom .Conv2ViewTable {
+	width:100%;
+	height:100%;
+	border-collapse:collapse;
+	border-spacing:0;
+}
+
+.Conv2Messages-bottom {
+	height:100%;
+}
+
+.Conv2View .Conv2Reply {
+    background-color:@lighten(AppC,55)@;
+    border-top:1px solid @darken(AppC,33)@;
+	padding:3px;
+}
+
+.Conv2View-bottom .Conv2ReplyCell {
+    background-color:@lighten(AppC,55)@;
+    border-left:1px solid @darken(AppC,33)@;
+	width:300px;
+}
+
+/* Each msg capsule view has a header bar, a body, and a footer bar. */
+
+.ZmMailMsgCapsuleView {
+	background-color:@MailMsgBkgdColor@;
+	border:1px solid @darken(AppC,10)@;
+	margin:10px;
+	@cssShadow@:0 4px 4px @darken(AppC,25)@
+}
+
+.ZmMailMsgCapsuleView.focused {
+	border-color:@darken(SelC,10)@;
+}
+
+.ZmMailMsgCapsuleView .SubjectCol {
+    @MailMsgHeaderText@
+	@FontSize-normal@
+	font-weight:bold;
+}
+
+.ZmMailMsgCapsuleViewHeader.focused {
+	background-color:@SelC@;
+}
+
+.Conv2MsgHeaderTable, .MsgFooterTable {
+	table-layout:fixed;
+	#IFNDEF MSIE
+	width:100%;
+	#ENDIF
+}
+
+.Conv2MsgHeaderTable td {
+	padding:0 2px 0 @TextPaddingSize@;
+	overflow:hidden;
+}
+
+.Conv2MsgHeaderTable .Unread {
+	font-weight:bold;
+}
+
+.Conv2MsgHeaderTable .Text {
+	white-space:nowrap;
+	vertical-align:top;
+	padding:0 3px;
+}
+
+.Conv2MsgHeaderTable .DateCol {
+    padding-right:5px;
+    text-align:right;
 }
 
 .ZmMailMsgCapsuleView .Expand {
@@ -818,12 +817,18 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	padding:2px;
 }
 
-.ZmMailMsgCapsuleViewHeader.focused {
-	background-color:@SelC@;
+.MsgFooterTable TABLE {
+	#IFNDEF MSIE
+	width:100%;
+	#ENDIF
 }
 
-.ZmMailMsgCapsuleViewHeader .ZmConvListFragment {
-	white-space:nowrap;
+.MsgFooterTable>TBODY>TR>TD:first-child {
+	padding-left:5px;
+}
+
+.MsgFooterTable>TBODY>TR>TD:last-child {
+	padding-right:5px;
 }
 
 .ZmConvView2 .ReplyTextarea {

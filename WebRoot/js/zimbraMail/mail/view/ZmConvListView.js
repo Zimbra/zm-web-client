@@ -127,10 +127,6 @@ ZmListView.FIELD_CLASS[ZmItem.F_EXPAND] = "Expand";
 
 ZmConvListView.MSG_STYLE = "ZmConvExpanded";	// for differentiating msg rows
 
-// Copy some functions from ZmMailMsgListView, for handling message rows
-ZmConvListView.prototype._changeFolderName = ZmMailMsgListView.prototype._changeFolderName;
-ZmConvListView.prototype._changeTrashStatus = ZmMailMsgListView.prototype._changeTrashStatus;
-
 
 ZmConvListView.prototype.set =
 function(list, sortField) {

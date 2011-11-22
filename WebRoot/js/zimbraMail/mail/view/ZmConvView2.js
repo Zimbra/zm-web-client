@@ -39,7 +39,7 @@ ZmConvView2.prototype.toString = function() { return "ZmConvView2"; };
 
 
 ZmConvView2.HINT_CLASS = "hint";	// since IE doesn't support input placeholder text
-
+ZmConvView2.MAX_RECIPS = 10;		// number of recipients to show in hint text
 
 ZmConvView2.prototype.reset =
 function() {
@@ -548,18 +548,26 @@ ZmConvView2.prototype._getRecipientText =
 function() {
 	
 	var sub = ZmMsg.all;
+	var extra = 0;
 	var origMsg = this._item.getFirstHotMsg();
 	if (origMsg) {
 		var list = [];
 		var addresses = this._getReplyAddresses(origMsg);
 		list = list.concat(this._getRecipientNames(addresses[AjxEmailAddress.TO]));
 		list = list.concat(this._getRecipientNames(addresses[AjxEmailAddress.CC]));
+		extra = list.length - ZmConvView2.MAX_RECIPS;
 		if (list.length) {
-			sub = new AjxListFormat().format(AjxUtil.uniq(list));
+			list = AjxUtil.uniq(list.slice(0, ZmConvView2.MAX_RECIPS))
+			if (extra > 0) {
+				sub = list.join(", ");
+			}
+			else {
+				sub = new AjxListFormat().format(list);
+			}
 		}
 	}
 	
-	return AjxMessageFormat.format(ZmMsg.replyHint, sub);
+	return AjxMessageFormat.format(ZmMsg.replyHint, [sub, extra > 0 ? 1 : 0]);
 };
 
 ZmConvView2.prototype._getRecipientNames =
@@ -641,12 +649,6 @@ function(ev) {
 			index:			ev.getDetail("sortIndex")
 		}
 		this._renderMessage(msg, params);
-	}
-	else if (ev.event == ZmEvent.E_MOVE) {
-		var msgView = this._msgViews[msg.id];
-		if (msgView) {
-			msgView._setFolderIcon();
-		}
 	}
 	else {
 		var msgView = this._msgViews[msg.id];
@@ -891,15 +893,17 @@ function(msg, container) {
 	var replyAllLinkId			= this._footerId + "_replyAll";
 	this._buttonCellId			= this._footerId + "_actionsCell";
 	
+	var links = this._noQuotedText ? [] : [this._makeLink(ZmMsg.showQuotedText, this._showTextLinkId)];
+	links.push(this._makeLink(ZmMsg.reply, replyLinkId));
+	links.push(this._makeLink(ZmMsg.replyAll, replyAllLinkId));
+	
 	var subs = {
 		footerId:		this._footerId,
 		folderCellId:	this._folderContainerCellId,
 		tagCellId:		this._tagContainerCellId,
-		showTextLinkId:	this._showTextLinkId,
-		replyLinkId:	replyLinkId,
-		replyAllLinkId:	replyAllLinkId,
 		buttonCellId:	this._buttonCellId,
-		noQuotedText:	this._noQuotedText
+		noQuotedText:	this._noQuotedText,
+		links:			links.join(" | ")
 	}
 	var html = AjxTemplate.expand("mail.Message#Conv2MsgFooter", subs);
 	this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
@@ -928,6 +932,11 @@ function(msg, container) {
 	ab.addSelectionListener(this._actionsButtonListener.bind(this));
 
 	this._resetOperations();
+};
+
+ZmMailMsgCapsuleView.prototype._makeLink =
+function(text, id) {
+	return "<a class='Link' id='" + id + "'>" + text + "</a>";
 };
 
 // Resize IFRAME to match its content. IFRAMEs have a default height of 150, so we need to
@@ -987,10 +996,18 @@ function() {
 // show name of folder as tooltip
 ZmMailMsgCapsuleView.prototype.getToolTipContent =
 function(event) {
-	var id = event && event.target && event.target.parentNode && event.target.parentNode.id;
-	if (id && id == this._folderContainerCellId) {
+	var target = DwtUiEvent.getTargetWithProp(event, "id");
+	var id = target.id;
+	if (!id) { return; }
+	if (id == this._folderContainerCellId) {
 		var folder = this._msg.folderId && appCtxt.getById(this._msg.folderId);
 		return folder && folder.getName();
+	}
+	else {
+		var idx = id.indexOf("tag");
+		var tagId = idx && id.substr(idx + 3);
+		var tag = tagId && this._tagList.getById(tagId);
+		return tag && tag.getName();
 	}
 };
 
@@ -1002,6 +1019,37 @@ function() {
 	
 	this._tagCellId = this._footerId + "_tagCell";
 	this._renderTags(msg, document.getElementById(this._tagContainerCellId), this._tagCellId);
+};
+
+ZmMailMsgCapsuleView.prototype._renderTags =
+function(msg, container, tagCellId) {
+
+	if (!container) { return; }
+	var numTags = msg && msg.tags && msg.tags.length;
+	if (!numTags) {
+		container.innerHTML = "";
+		return;
+	}
+	
+	// get sorted list of tags for this msg
+	var ta = [];
+	for (var i = 0; i < numTags; i++) {
+		var tag = this._tagList.getById(msg.tags[i]);
+		if (tag) {
+			ta.push(tag);
+		}
+	}
+	ta.sort(ZmTag.sortCompare);
+
+	var html = [];
+	var idx = 0;
+	
+	for (var i = 0; i < ta.length; i++) {
+		var tag = ta[i];
+		var id = this._htmlElId + "_tag" + tag.id;
+		html[idx++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, "id='" + id + "'");
+	}
+	container.innerHTML = html.join("");
 };
 
 ZmMailMsgCapsuleView.prototype._handleShowTextLink =
@@ -1101,17 +1149,12 @@ function(focused) {
 	this._header.setFocused(focused);
 };
 
-// TODO: copied from ZmMailMsgListView - refactor?
 ZmMailMsgCapsuleView.prototype._changeFolderName = 
 function(oldFolderId) {
 
+	this._setFolderIcon();
 	var msg = this._msg;
 	var folder = appCtxt.getById(msg.folderId);
-	var folderCell = document.getElementById(this._folderCellId);
-	if (folder && folderCell) {
-		folderCell.innerHTML = folder.getName();
-	}
-
 	if (folder && (folder.nId == ZmFolder.ID_TRASH || oldFolderId == ZmFolder.ID_TRASH)) {
 		this._header._setRowClass(msg);
 	}
