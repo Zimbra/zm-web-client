@@ -729,7 +729,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmMailMsgCapsuleView {
-	background-color:white;
+	background-color:@MailMsgBkgdColor@;
 	border:1px solid @darken(AppC,10)@;
 	margin:10px;
 	@cssShadow@:0 4px 4px @darken(AppC,25)@
@@ -812,7 +812,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmMailMsgCapsuleView .attachments {
-	border:1px solid @AppC@;
+	background-color:@darken(MailMsgBkgdColor,2)@;
+	border:1px solid @darken(MailMsgBkgdColor,12)@;
 	margin:5px;
 	padding:2px;
 }
