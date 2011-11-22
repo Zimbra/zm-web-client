@@ -515,6 +515,10 @@ function(overviewId) {
 		allowedSubTypes: this._getAllowedSubTypes()
 	};
 	params.id = ZmId.getTreeId(overviewId, params.type);
+	if (params.type && params.type.match(/TASK|ADDRBOOK|FOLDER|BRIEFCASE|CALENDAR/) && 
+			(!params.headerClass || params.headerClass == "overviewHeader")){
+		params.headerClass = "FirstOverviewHeader overviewHeader";
+	}
 	var treeView = this._createTreeView(params);
 	treeView.addSelectionListener(new AjxListener(this, this._treeViewListener));
 	treeView.addTreeListener(new AjxListener(this, this._treeListener));
