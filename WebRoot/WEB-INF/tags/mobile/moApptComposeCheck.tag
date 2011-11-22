@@ -122,28 +122,16 @@
                     </c:if>
                     <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
                     <app:status><fmt:message key="${empty message ? 'actionApptCreated' : 'actionApptSaved'}"/></app:status>
-		    		
-		    		<c:choose>
-		    		<c:when test="${ua.isiPad eq true}">
-		    			<c:if test="${param.st eq 'newtask'}">
-		                        
-		                </c:if>
-		                <c:if test="${param.st ne 'newtask'}">
-		                        
-		                </c:if> 
-		    		</c:when>
-		    		<c:otherwise>
-	                    <c:redirect url="${caction}">
-		                    <c:if test="${param.st eq 'newtask'}">
-		                        <c:param name="appmsg" value="${empty message ? 'actionTaskCreated' : 'actionTaskSaved'}"/>
-		                    </c:if>
-		                    <c:if test="${param.st ne 'newtask'}">
-		                        <c:param name="appmsg" value="${empty message ? 'actionApptCreated' : 'actionApptSaved'}"/>
-		                    </c:if> 
-							<c:param name="bt" value="${bt}"/>
-	                    </c:redirect>
-                    </c:otherwise>
-                    </c:choose>
+                    <c:redirect url="${caction}">
+                        <c:if test="${param.st eq 'newtask'}">
+                            <c:param name="appmsg" value="${empty message ? 'actionTaskCreated' : 'actionTaskSaved'}"/>
+                        </c:if>
+                        <c:if test="${param.st ne 'newtask'}">
+                            <c:param name="appmsg" value="${empty message ? 'actionApptCreated' : 'actionApptSaved'}"/>
+                        </c:if>
+                        <c:param name="st" value="cal"/>
+                        <c:param name="bt" value="${bt}"/>
+	                </c:redirect>
 		    <c:set var="needEditView" value="${false}"/>
                 </mo:handleError>
             </c:when>
