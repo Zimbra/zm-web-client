@@ -62,7 +62,7 @@ function() {
 ZmScheduleAssistantView.ATTRS = {};
 ZmScheduleAssistantView.ATTRS[ZmCalBaseItem.LOCATION] =
 	["fullName", "email", "zimbraCalResLocationDisplayName",
-	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "notes", "zimbraCalResType"];
+	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description", "zimbraCalResType"];
 
 ZmScheduleAssistantView.prototype.initialize =
 function() {

@@ -111,7 +111,7 @@ ZmAttendeePicker.SF_LABEL[ZmAttendeePicker.SF_FLOOR]	= "floor";
 ZmAttendeePicker.SF_ATTR = {};
 ZmAttendeePicker.SF_ATTR[ZmAttendeePicker.SF_NAME]		  = "fullName";
 ZmAttendeePicker.SF_ATTR[ZmAttendeePicker.SF_CAPACITY]	  = "zimbraCalResCapacity";
-ZmAttendeePicker.SF_ATTR[ZmAttendeePicker.SF_DESCRIPTION] = "notes";
+ZmAttendeePicker.SF_ATTR[ZmAttendeePicker.SF_DESCRIPTION] = "description";
 ZmAttendeePicker.SF_ATTR[ZmAttendeePicker.SF_CONTACT]	  = "zimbraCalResContactName";
 ZmAttendeePicker.SF_ATTR[ZmAttendeePicker.SF_SITE]		  = "zimbraCalResSite";
 ZmAttendeePicker.SF_ATTR[ZmAttendeePicker.SF_BUILDING]	  = "zimbraCalResBuilding";
@@ -125,10 +125,10 @@ ZmAttendeePicker.SF_OP[ZmAttendeePicker.SF_FLOOR]		= "eq";
 ZmAttendeePicker.ATTRS = {};
 ZmAttendeePicker.ATTRS[ZmCalBaseItem.LOCATION] =
 	["fullName", "email", "zimbraCalResLocationDisplayName",
-	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "notes", "zimbraCalResType"];
+	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description", "zimbraCalResType"];
 ZmAttendeePicker.ATTRS[ZmCalBaseItem.EQUIPMENT] =
 	["fullName", "email", "zimbraCalResLocationDisplayName",
-	 "zimbraCalResContactEmail", "notes", "zimbraCalResType"];
+	 "zimbraCalResContactEmail", "description", "zimbraCalResType"];
 
 ZmAttendeePicker.SEARCH_FIELDS = {};
 ZmAttendeePicker.SEARCH_FIELDS[ZmCalBaseItem.PERSON] =
