@@ -657,8 +657,6 @@ function(ev) {
 			if (folderId && folderId != item.folderId) { continue; }			// does not belong to this folder
 			if (this._list && this._list.contains(item)) { continue; }			// skip if we already have it
 
-			// add new item at the beg. of list view's internal list
-			var idx = this._list && this._list.size() > 0 ? 1 : null;
 
 			if (!this._list) {
 				this._list = new AjxVector();
@@ -668,7 +666,8 @@ function(ev) {
 				this._resetList();
 			}
 
-			this._list.add(item, idx);
+			// add new item at the beg. of list view's internal list
+			this._list.add(item, 0);
             this._renderList(this.getList(),true,false);
             if(this._list && this._list.size() == 1) { this.setSelection(this._list.get(0)); }
 		}
