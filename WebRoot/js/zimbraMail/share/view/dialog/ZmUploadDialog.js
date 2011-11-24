@@ -501,8 +501,9 @@ ZmUploadDialog.prototype._addFileInputRow = function(oneInputOnly) {
     cellLabel.innerHTML = ZmMsg.fileLabel;
 
 	var cell = row.insertCell(-1);
+	// bug:53841 allow only one file upload when oneInputOnly is set
 	cell.innerHTML = [
-		"<input id='",inputId,"' type='file' name='",ZmUploadDialog.UPLOAD_FIELD_NAME,"' size=30 ",(this._supportsHTML5 ? "multiple" : ""),">"
+		"<input id='",inputId,"' type='file' name='",ZmUploadDialog.UPLOAD_FIELD_NAME,"' size=30 ",(this._supportsHTML5 ? (oneInputOnly ? "" : "multiple") : ""),">"
 	].join("");
 
 	var cell = row.insertCell(-1);
