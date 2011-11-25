@@ -14,7 +14,7 @@
 
     <!-- default web.xml token replacements -->
     <property name="webxml.zimbraAdminURL" value="/zimbraAdmin" />
-    <property name="webxml.zimbraMailURL" value="/zimbra" />
+    <property name="webxml.zimbraMailURL" value="/" />
     <property name="webxml.zimbraAdminPort" value="7071" />
     <property name="webxml.zimbraMailPort" value="7070" />
     <property name="webxml.zimbraMailSSLPort" value="7443" />
