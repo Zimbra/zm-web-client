@@ -60,17 +60,12 @@ ZmActionMenu = function(params) {
 ZmActionMenu.prototype = new ZmPopupMenu;
 ZmActionMenu.prototype.constructor = ZmActionMenu;
 
+ZmActionMenu.prototype.isZmActionMenu = true;
+ZmActionMenu.prototype.toString = function() { return "ZmActionMenu"; };
+
+
 // Public methods
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{string}		a string representation of the object
- */
-ZmActionMenu.prototype.toString = 
-function() {
-	return "ZmActionMenu";
-};
 
 /**
  * Creates a menu item and adds its operation ID as data.

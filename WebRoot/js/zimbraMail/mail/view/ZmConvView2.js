@@ -73,12 +73,12 @@ function(conv, force) {
 	var menu = this._actionsMenu = new ZmActionMenu({
 				parent:		appCtxt.getShell(),
 				menuItems:	opList,
-				context:	this._controller.getCurrentViewId()
+				context:	[this._controller.getCurrentViewId(), ZmId.VIEW_CONV2].join("_")
 			});
 	for (var i = 0; i < opList.length; i++) {
 		var menuItem = opList[i];
 		if (this._controller._listeners[menuItem]) {
-			var listener = this._listenerProxy.bind(this, this._controller._listeners[menuItem], menu.getOp(menuItem));
+			var listener = this._listenerProxy.bind(this, this._controller._listeners[menuItem]);
 			menu.addSelectionListener(menuItem, listener, 0);
 		}
 	}
@@ -467,8 +467,10 @@ function(next, isUnread, actionCode) {
 	}
 };
 
+// Bridge to real listeners in the conv list controller that rigs the selection to be a msg from this conv view
+// instead of the selected conv.
 ZmConvView2.prototype._listenerProxy =
-function(listener, item, ev) {
+function(listener, ev) {
 	
 	if (!this._msg) {
 		return false;
@@ -1025,27 +1027,15 @@ ZmMailMsgCapsuleView.prototype._renderTags =
 function(msg, container, tagCellId) {
 
 	if (!container) { return; }
-	var numTags = msg && msg.tags && msg.tags.length;
-	if (!numTags) {
+	var tags = msg && msg.getSortedTags();
+	if (!(tags && tags.length)) {
 		container.innerHTML = "";
 		return;
 	}
-	
-	// get sorted list of tags for this msg
-	var ta = [];
-	for (var i = 0; i < numTags; i++) {
-		var tag = this._tagList.getById(msg.tags[i]);
-		if (tag) {
-			ta.push(tag);
-		}
-	}
-	ta.sort(ZmTag.sortCompare);
 
-	var html = [];
-	var idx = 0;
-	
-	for (var i = 0; i < ta.length; i++) {
-		var tag = ta[i];
+	var html = [], idx = 0;
+	for (var i = 0; i < tags.length; i++) {
+		var tag = tags[i];
 		var id = this._htmlElId + "_tag" + tag.id;
 		html[idx++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, "id='" + id + "'");
 	}
@@ -1106,16 +1096,19 @@ function(ev) {
 
 ZmMailMsgCapsuleView.prototype._resetOperations =
 function() {
-	this._controller._mailListView._selectedMsg = this._msg;
-	this._controller._resetOperations(this._actionsMenu, 1);
-	this._actionsMenu.enable(ZmOperation.MARK_READ, this._msg.isUnread);
-	this._actionsMenu.enable(ZmOperation.MARK_UNREAD, !this._msg.isUnread);
-	this._actionsMenu.enable(ZmOperation.MUTE_CONV, !this._msg.isMuted());
-	this._actionsMenu.enable(ZmOperation.UNMUTE_CONV, this._msg.isMuted());
-	this._controller._setupTagMenu(this._actionsMenu);
-	this._controller._setTagMenu(this._actionsMenu);
-	this._controller._setupSpamButton(this._actionsMenu);
-	this._controller._mailListView._selectedMsg = null;
+	var ctlr = this._controller, menu = this._actionsMenu;
+	ctlr._mailListView._selectedMsg = this._msg;
+	ctlr._resetOperations(menu, 1);
+	menu.enable(ZmOperation.MARK_READ, this._msg.isUnread);
+	menu.enable(ZmOperation.MARK_UNREAD, !this._msg.isUnread);
+	menu.enable(ZmOperation.MUTE_CONV, !this._msg.isMuted());
+	menu.enable(ZmOperation.UNMUTE_CONV, this._msg.isMuted());
+	var cv = this._convView, op = ZmOperation.TAG;
+	var listener = cv._listenerProxy.bind(cv, ctlr._listeners[op]);
+	ctlr._setupTagMenu(menu, listener);
+	ctlr._setTagMenu(menu, [this._msg]);
+	ctlr._setupSpamButton(menu);
+	ctlr._mailListView._selectedMsg = null;
 };
 
 ZmMailMsgCapsuleView.prototype._mouseDownListener =
@@ -1131,7 +1124,7 @@ function(ev) {
 			return;
 		}
 		this._resetOperations();
-		this._controller._setTagMenu(this._actionsMenu);
+		this._controller._setTagMenu(this._actionsMenu, [this._msg]);
 		this._actionsMenu.popup(0, ev.docX, ev.docY);
 		this._convView.setMsg(this._msg);
 		// set up the event so that we don't also get a browser menu

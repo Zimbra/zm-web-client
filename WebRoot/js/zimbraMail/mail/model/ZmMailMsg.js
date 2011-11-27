@@ -2575,3 +2575,18 @@ function() {
 	}
 	return null;
 };
+
+ZmMailMsg.prototype.getSortedTags = 
+function() {
+	var numTags = this.tags && this.tags.length;
+	if (numTags) {
+		var tagList = appCtxt.getTagTree()
+		var ta = [];
+		for (var i = 0; i < numTags; i++) {
+			ta[i] = tagList.getById(this.tags[i]);
+		}
+		ta.sort(ZmTag.sortCompare);
+		return ta;
+	}
+	return null;
+};

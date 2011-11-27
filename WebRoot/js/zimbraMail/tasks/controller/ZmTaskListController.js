@@ -593,7 +593,7 @@ function() {
 
 ZmTaskListController.prototype._getTagMenuMsg =
 function(num) {
-	return (num == 1) ? ZmMsg.tagTask : ZmMsg.tagTasks;
+	return AjxMessageFormat.format(ZmMsg.tagTasks, num);
 };
 
 ZmTaskListController.prototype._resetOperations =
@@ -993,7 +993,7 @@ function(view) {
 
 ZmTaskListController.prototype._getMoveDialogTitle =
 function(num) {
-	return (num == 1) ? ZmMsg.moveTask : ZmMsg.moveTasks;
+	return AjxMessageFormat.format(ZmMsg.moveTasks, num);
 };
 
 // Move stuff to a new folder.

@@ -359,6 +359,29 @@ function(item) {
 	}
 };
 
+ZmConvListController.prototype._getTagMenuMsg = 
+function(num, items) {
+	var type = this._getLabelType(items);
+	return AjxMessageFormat.format((type == ZmItem.MSG) ? ZmMsg.tagMessages : ZmMsg.tagConversations, num);
+};
+
+ZmConvListController.prototype._getMoveDialogTitle = 
+function(num, items) {
+	var type = this._getLabelType(items);
+	return AjxMessageFormat.format((type == ZmItem.MSG) ? ZmMsg.moveMessages : ZmMsg.moveConversations, num);
+};
+
+ZmConvListController.prototype._getLabelType = 
+function(items) {
+	if (!(items && items.length)) { return ZmItem.MSG; }
+	for (var i = 0; i < items.length; i++) {
+		if (items[i].type == ZmItem.MSG) {
+			return ZmItem.MSG;
+		}
+	}
+	return ZmItem.CONV;
+};
+
 /**
  * Returns the first matching msg in the conv, if available. No request will
  * be made to the server if the conv has not been loaded.

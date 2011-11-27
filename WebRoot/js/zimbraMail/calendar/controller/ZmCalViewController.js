@@ -919,7 +919,7 @@ function(viewId) {
 
 ZmCalViewController.prototype._getTagMenuMsg =
 function(num) {
-	return (num == 1) ? ZmMsg.tagAppt : ZmMsg.tagAppts;
+	return AjxMessageFormat.format(ZmMsg.tagAppts, num);
 };
 
 ZmCalViewController.prototype._createNewView =
@@ -2126,7 +2126,7 @@ function(dlg) {
 
 ZmCalViewController.prototype._getMoveDialogTitle =
 function(num) {
-	return (num == 1) ? ZmMsg.moveAppt : ZmMsg.moveAppts;
+	return AjxMessageFormat.format(ZmMsg.moveAppts, num);
 };
 
 /**

@@ -450,7 +450,7 @@ function(view) {
  */
 ZmContactListController.prototype._getTagMenuMsg =
 function(num) {
-	return (num == 1) ? ZmMsg.AB_TAG_CONTACT : ZmMsg.AB_TAG_CONTACTS;
+	return AjxMessageFormat.format(ZmMsg.AB_TAG_CONTACTS, num);
 };
 
 /**
@@ -458,7 +458,7 @@ function(num) {
  */
 ZmContactListController.prototype._getMoveDialogTitle =
 function(num) {
-	return (num == 1) ? ZmMsg.AB_MOVE_CONTACT : ZmMsg.AB_MOVE_CONTACTS;
+	return AjxMessageFormat.format(ZmMsg.AB_MOVE_CONTACTS, num);
 };
 
 /**

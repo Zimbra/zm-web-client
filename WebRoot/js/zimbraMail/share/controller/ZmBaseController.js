@@ -496,11 +496,12 @@ ZmBaseController.prototype._tagListener =
 function(ev, items) {
 
 	if (this.isCurrent()) {
-		var tagEvent = ev.getData(ZmTagMenu.KEY_TAG_EVENT);
-		var tagAdded = ev.getData(ZmTagMenu.KEY_TAG_ADDED);
+		var menuItem = ev.item;
+		var tagEvent = menuItem.getData(ZmTagMenu.KEY_TAG_EVENT);
+		var tagAdded = menuItem.getData(ZmTagMenu.KEY_TAG_ADDED);
 		items = items || this.getItems();
 		if (tagEvent == ZmEvent.E_TAGS && tagAdded) {
-			this._doTag(items, ev.getData(Dwt.KEY_OBJECT), true);
+			this._doTag(items, menuItem.getData(Dwt.KEY_OBJECT), true);
 		} else if (tagEvent == ZmEvent.E_CREATE) {
 			this._pendingActionData = items;
 			var newTagDialog = appCtxt.getNewTagDialog();
@@ -511,7 +512,7 @@ function(ev, items) {
 			newTagDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, newTagDialog);
 		} else if (tagEvent == ZmEvent.E_TAGS && !tagAdded) {
 			//remove tag
-			this._doTag(items, ev.getData(Dwt.KEY_OBJECT), false);
+			this._doTag(items, menuItem.getData(Dwt.KEY_OBJECT), false);
 		} else if (tagEvent == ZmEvent.E_REMOVE_ALL) {
 			// bug fix #607
 			this._doRemoveAllTags(items);
@@ -624,7 +625,7 @@ function(dlg) {
 		overviewId:		dlg.getOverviewId(this._app._name),
 		data:			this._pendingActionData,
 		treeIds:		[org],
-		title:			this._getMoveDialogTitle(this._pendingActionData.length),
+		title:			this._getMoveDialogTitle(this._pendingActionData.length, this._pendingActionData),
 		description:	ZmMsg.targetFolder,
 		treeStyle:		DwtTree.SINGLE_STYLE,
 		appName:		this._app._name
@@ -739,7 +740,7 @@ function(items, on) {
 	items = AjxUtil.toArray(items);
 	if (!items.length) { return; }
 
-	if (items[0] instanceof ZmItem) {
+	if (items[0].isZmItem) {
 		if (on !== true && on !== false) {
 			on = !items[0].isFlagged;
 		}
@@ -765,7 +766,7 @@ function(items, on) {
 	items = AjxUtil.toArray(items);
 	if (!items.length) { return; }
 
-	if (items[0] instanceof ZmItem) {
+	if (items[0].isZmItem) {
 		if (on !== true && on !== false) {
 			on = !items[0].isPriority;
 		}
@@ -884,7 +885,7 @@ function(items, folder, attrs, isShiftKey) {
 
 	var move = [];
 	var copy = [];
-	if (items[0] instanceof ZmItem) {
+	if (items[0].isZmItem) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			if (!item.folderId || (item.folderId != folder.id || (attrs && attrs.op == "recover"))) {
@@ -1008,16 +1009,17 @@ function(list, args) {
  * @private
  */
 ZmBaseController.prototype._setupTagMenu =
-function(parent) {
+function(parent, listener) {
 	if (!parent) return;
 	var tagMenu = parent.getTagMenu();
+	listener = listener || this._listeners[ZmOperation.TAG];
 	if (tagMenu) {
-		tagMenu.addSelectionListener(this._listeners[ZmOperation.TAG]);
+		tagMenu.addSelectionListener(listener);
 	}
-	if (parent instanceof ZmButtonToolBar) {
+	if (parent.isZmButtonToolBar) {
 		var tagButton = parent.getOp(ZmOperation.TAG_MENU);
 		if (tagButton) {
-			tagButton.addDropDownSelectionListener(this._listeners[ZmOperation.TAG_MENU]);
+			tagButton.addDropDownSelectionListener(listener);
 		}
 	}
 };
@@ -1032,7 +1034,7 @@ function(parent) {
 	if (!parent) {
 		return;
 	}
-	if (!parent instanceof ZmButtonToolBar) {
+	if (!parent.isZmButtonToolBar) {
 		return;
 	}
 	var moveButton = parent.getOp(ZmOperation.MOVE_MENU);
@@ -1048,7 +1050,7 @@ function(parent) {
  * @private
  */
 ZmBaseController.prototype._setTagMenu =
-function(parent) {
+function(parent, items) {
 
 	if (!parent) { return; }
 
@@ -1058,15 +1060,14 @@ function(parent) {
 		if (!tagMenu) { return; }
 
 		// dynamically build tag menu add/remove lists
-		var items = this.getItems();
-		items = AjxUtil.toArray(items);
+		items = items || AjxUtil.toArray(this.getItems());
 
 		var account = (appCtxt.multiAccounts && items.length == 1) ? items[0].getAccount() : null;
 
 		// fetch tag tree from appctxt (not cache) for multi-account case
 		tagMenu.set(items, appCtxt.getTagTree(account));
-		if (parent instanceof ZmActionMenu) {
-			tagOp.setText(this._getTagMenuMsg(items.length));
+		if (parent.isZmActionMenu) {
+			tagOp.setText(this._getTagMenuMsg(items.length, items));
 		}
 		else {
 			tagMenu.parent.popup();

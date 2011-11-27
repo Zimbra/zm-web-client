@@ -1676,29 +1676,20 @@ ZmMailMsgView.prototype._renderTags =
 function(msg, container, tagCellId) {
 
 	if (!container) { return; }
-	var numTags = msg && msg.tags && msg.tags.length;
-	if (!numTags) {
+	var tags = msg && msg.getSortedTags();
+	if (!(tags && tags.length)) {
 		container.innerHTML = "";
 		return;
 	}
-	
-	// get sorted list of tags for this msg
-	var ta = [];
-	for (var i = 0; i < numTags; i++) {
-		ta[i] = this._tagList.getById(msg.tags[i]);
-	}
-	ta.sort(ZmTag.sortCompare);
 
-	var html = [];
-	var i = 0;
-
+	var html = [], i = 0;
 	html[i++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%><tr>";
 	html[i++] = "<td style='overflow:hidden; id='";
 	html[i++] = tagCellId;
 	html[i++] = "'>";
 
-	for (var j = 0; j < ta.length; j++) {
-		var tag = ta[j];
+	for (var j = 0; j < tags.length; j++) {
+		var tag = tags[j];
 		if (!tag) { continue; }
 		i = this._getTagHtml(tag, tagCellId, html, i);
 	}

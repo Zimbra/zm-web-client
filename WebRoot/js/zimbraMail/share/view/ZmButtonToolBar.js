@@ -120,12 +120,12 @@ ZmButtonToolBar = function(params) {
 ZmButtonToolBar.prototype = new ZmToolBar;
 ZmButtonToolBar.prototype.constructor = ZmButtonToolBar;
 
+ZmButtonToolBar.prototype.isZmButtonToolBar = true;
+ZmButtonToolBar.prototype.toString = function() { return "ZmButtonToolBar"; };
+
+
 // Public methods
 
-ZmButtonToolBar.prototype.toString = 
-function() {
-	return "ZmButtonToolBar";
-};
 
 /**
  * Creates a button and adds its operation ID as data.

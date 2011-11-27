@@ -254,7 +254,7 @@ ZmTagMenu.prototype._menuItemSelectionListener =
 function(ev) {
 	// Only notify if the node is one of our nodes
 	if (ev.item.getData(ZmTagMenu.KEY_TAG_EVENT)) {
-		this._evtMgr.notifyListeners(DwtEvent.SELECTION, ev.item);
+		this._evtMgr.notifyListeners(DwtEvent.SELECTION, ev);
 	}
 };
 

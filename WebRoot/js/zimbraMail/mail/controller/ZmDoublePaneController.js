@@ -265,12 +265,12 @@ ZmDoublePaneController.prototype.getReferenceView = ZmDoublePaneController.proto
 
 ZmDoublePaneController.prototype._getTagMenuMsg = 
 function(num) {
-	return (num == 1) ? ZmMsg.tagMessage : ZmMsg.tagMessages;
+	return AjxMessageFormat.format(ZmMsg.tagMessages, num);
 };
 
 ZmDoublePaneController.prototype._getMoveDialogTitle = 
 function(num) {
-	return (num == 1) ? ZmMsg.moveMessage : ZmMsg.moveMessages;
+	return AjxMessageFormat.format(ZmMsg.moveMessages, num);
 };
 
 // Add reading pane to focus ring
