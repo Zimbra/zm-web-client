@@ -318,7 +318,7 @@ function(text, add, skipNotify) {
 	var good = addrs.good && addrs.good.getArray();
 	for (var i = 0; i < good.length; i++) {
 		var addr = good[i];
-		if (!this._strictMode || (addr && !this._addressHash[addr.address])) {
+		if ((addr && !this._addressHash[addr.address])) {
 			this.addBubble({address:addr.toString(), addrObj:addr, index:(index != null) ? index + i : null, skipNotify:skipNotify});
 		}
 	}
