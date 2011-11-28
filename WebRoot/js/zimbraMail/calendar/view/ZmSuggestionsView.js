@@ -24,10 +24,13 @@
  * @param controller		[ZmApptComposeController]	the appt compose controller
  * @param apptEditView		[ZmApptEditView]	        the appt edit view
  */
-ZmSuggestionsView = function(parent, controller, apptEditView, id, showHeaders) {
+ZmSuggestionsView = function(parent, controller, apptEditView, id, showHeaders, className) {
     if (arguments.length == 0) { return; }
 
     var params = {parent: parent, posStyle: DwtControl.RELATIVE_STYLE, view: id};
+    if (className) {
+        params.className = className;
+    }
 	ZmListView.call(this, params);
 
 	this._controller = controller;

@@ -24,8 +24,8 @@
  * @param controller		[ZmApptComposeController]	the appt compose controller
  * @param apptEditView		[ZmApptEditView]	        the appt edit view
  */
-ZmLocationSuggestionView = function(parent, controller, apptEditView) {
-    ZmSuggestionsView.call(this, parent, controller, apptEditView, ZmId.VIEW_SUGGEST_LOCATION_PANE, false);
+ZmLocationSuggestionView = function(parent, controller, apptEditView, className) {
+    ZmSuggestionsView.call(this, parent, controller, apptEditView, ZmId.VIEW_SUGGEST_LOCATION_PANE, false, className);
 };
 
 ZmLocationSuggestionView.prototype = new ZmSuggestionsView;

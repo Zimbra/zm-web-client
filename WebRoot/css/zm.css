@@ -5148,6 +5148,9 @@ border:1px solid #666;
 /* Blank for now, included in the Appointment Suggestion template for ease of modification */
 .ZmSuggestView {
 }
+.ZmSuggestLocationList {
+    height: 100%;
+}
 
 .ZmSuggestPref {
     position:relative;
@@ -5161,6 +5164,7 @@ border:1px solid #666;
     text-align:left;
     padding-left:2px;
     padding-top:2px;
+    width: 130px;
 }
 .ZmSuggestLabelImage {
     position:absolute;
@@ -5172,7 +5176,7 @@ border:1px solid #666;
     border:1px solid gray;
     background-color:#E0E0E0;
     width:90%;
-    margin-top:4px;
+    margin:4px auto;
     padding-left:4px;
     margin-bottom:4px;
 }
