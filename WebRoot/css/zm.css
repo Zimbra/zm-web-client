@@ -478,8 +478,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	background-color:@darken(AppC,30)@; 
 	color:white; 
 	padding:0 4px; 
-	@borderRadius@:6px;
 	@FontSize-normal@
+	@roundCorners(6px)@
 }
 
 .Unread .ZmConvListNumMsgs {

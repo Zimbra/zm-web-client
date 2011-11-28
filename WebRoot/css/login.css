@@ -90,18 +90,17 @@ FORM {
 .form INPUT[type='password']:focus 	{ border:1px solid @SelC@; 					}
 .form SELECT 						{ width:165px; 								}
 .form .submitTD 					{ text-align:left; 							}
-.form .ZLoginButton 				{ float:right; 								}
+.form .zLoginButton					{ float:right; 								}
 .form HR { 
 	border-color:transparent transparent @LoginLabelColor@; 
 	height:0;
 }
 .LoginScreen #ZLoginErrorPanel {
-	margin:10px 10%;
-	padding:5px;
-	background-color:#FF9;
-	border-width:0px;
-	position:relative;
+	border:0px;
 	left:auto;
+	margin:10px 10%;
+	position:relative;
+	@LoginErrorPanel@
 }
 .LoginScreen #ZLoginErrorIcon {
 	margin:auto 10px auto auto;
