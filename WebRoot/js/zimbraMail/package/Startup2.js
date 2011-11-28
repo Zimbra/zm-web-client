@@ -61,6 +61,7 @@ AjxPackage.require("zimbraMail.share.view.assistant.ZmAssistant");
 
 AjxPackage.require("zimbraMail.share.view.ZmColorMenu");
 AjxPackage.require("zimbraMail.share.view.ZmColorButton");
+AjxPackage.require("zimbraMail.share.view.ZmFolderChooser");
 
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmHtmlEditor");
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmAdvancedHtmlEditor");

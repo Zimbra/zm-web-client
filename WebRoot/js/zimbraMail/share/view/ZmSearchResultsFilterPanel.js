@@ -791,8 +791,6 @@ ZmFolderSearchFilter.prototype.toString = function() { return "ZmFolderSearchFil
 ZmFolderSearchFilter.prototype._setUi =
 function(button) {
 
-	AjxDispatcher.require("Extras");
-
 	// create menu for button
 	var moveMenu = this._moveMenu = new DwtMenu({
 				parent: button,
@@ -801,10 +799,10 @@ function(button) {
 	moveMenu.getHtmlElement().style.width = "auto";
 	button.setMenu({menu: moveMenu, menuPopupStyle: DwtButton.MENU_POPUP_STYLE_CASCADE});
 
-	var chooser = this._folderChooser = new DwtFolderChooser({
-				parent:		moveMenu,
-				id:			DwtId.makeId(ZmId.WIDGET_CHOOSER, this._viewId, this.id),
-				noNewItem:	true
+	var chooser = this._folderChooser = new ZmFolderChooser({
+				parent:			moveMenu,
+				id:				DwtId.makeId(ZmId.WIDGET_CHOOSER, this._viewId, this.id),
+				hideNewButton:	true
 			});
 	var moveParams = this._getMoveParams(chooser);
 	chooser.setupFolderChooser(moveParams, this._selectionListener.bind(this));

@@ -3604,6 +3604,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	color:#666;
 }
 
+.DwtMenu .ZmFolderChooser .OverviewTree {
+	width: auto; /*no limit and not too much*/
+}
+
 /* ZmChooseFolderDialog and ZmPickTagDialog */
 .ChooserDialog {
 	width:320px;

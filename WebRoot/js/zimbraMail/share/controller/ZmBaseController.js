@@ -1043,7 +1043,6 @@ function(parent) {
 	}
 };
 
-
 /**
  * Dynamically build the tag menu based on selected items and their tags.
  * 
@@ -1083,24 +1082,21 @@ function(parent, items) {
 	}
 };
 
-
 /**
  * copied some from ZmCalendarApp.createMiniCalButton
- * initializes the move button with {@link DwtFolderChooser} as the menu.
+ * initializes the move button with {@link ZmFolderChooser} as the menu.
  *
  * @param	{DwtButton}	the button
  */
 ZmBaseController.prototype._setMoveButton =
 function(moveButton) {
 
-	AjxDispatcher.require("Extras");
-
 	// create menu for button
 	var moveMenu = new DwtMenu({parent: moveButton, style:DwtMenu.CALENDAR_PICKER_STYLE});
 	moveMenu.getHtmlElement().style.width = "auto"; //make it dynamic  (so expanding long named sub-folders would expand width. (plus right now it sets it to 0 due to some styles)
 	moveButton.setMenu(moveMenu, true);
 
-	var chooser = this._folderChooser = new DwtFolderChooser({parent:moveMenu});
+	var chooser = this._folderChooser = new ZmFolderChooser({parent:moveMenu});
 	var moveParams = this._getMoveParams(chooser);
 	moveParams.overviewId += this._currentViewId; //so it works when switching views (cuz the tree has a listener and the tree is shared unless it's different ID). maybe there's a different way to solve this.
 	chooser.setupFolderChooser(moveParams, this._moveMenuCallback.bind(this, moveButton));

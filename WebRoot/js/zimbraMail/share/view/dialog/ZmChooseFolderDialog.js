@@ -49,12 +49,11 @@ ZmChooseFolderDialog = function(parent, className) {
 ZmChooseFolderDialog.prototype = new ZmDialog;
 ZmChooseFolderDialog.prototype.constructor = ZmChooseFolderDialog;
 
+ZmChooseFolderDialog.prototype.isZmChooseFolderDialog = true;
+ZmChooseFolderDialog.prototype.toString = function() { return "ZmChooseFolderDialog"; };
+
 ZmChooseFolderDialog.NEW_BUTTON = ++DwtDialog.LAST_BUTTON;
 
-ZmChooseFolderDialog.prototype.toString =
-function() {
-	return "ZmChooseFolderDialog";
-};
 
 /**
  * Since this dialog is intended for use in a variety of situations, we need to be
@@ -73,12 +72,9 @@ function() {
  * @param	{Boolean}	params.hideNewButton 		if <code>true</code>, new button will not be shown
  * @param	{Boolean}	params.noRootSelect			if <code>true</code>, do not make root tree item(s) selectable
  * @params  {Boolean}   params.showDrafts			if <code>true</code>, drafts folder will not be omited
-
- * @params  {Boolean}   fromFolderChooser			if <code>true</code>, this is delegated from DwtFolderChooser.setupFolderChooser
-
  */
 ZmChooseFolderDialog.prototype.popup =
-function(params, fromFolderChooser) {
+function(params) {
 
 	this._keyPressedInField = false; //see comment in _handleKeyUp
 
@@ -124,10 +120,11 @@ function(params, fromFolderChooser) {
 		}
 	}
 
-	if (!fromFolderChooser) {
+	if (this.setTitle) {
 		this.setTitle(params.title || ZmMsg.chooseFolder);
-
-		var descCell = document.getElementById(this._folderDescDivId);
+	}
+	var descCell = document.getElementById(this._folderDescDivId);
+	if (descCell) {
 		descCell.innerHTML = params.description || "";
 	}
 
@@ -191,7 +188,7 @@ function () {
 };
 
 ZmChooseFolderDialog.prototype._doPopup =
-function(params, fromFolderChooser) {
+function(params) {
 	var ov = this._setOverview(params, params.forceSingle);
 
 	if (appCtxt.multiAccounts && !params.forceSingle) {
@@ -217,7 +214,7 @@ function(params, fromFolderChooser) {
 		this._resetTree(params.treeIds, ov);
 	}
 
-	if (!fromFolderChooser) {
+	if (this.isZmDialog) {
 		this._focusElement = this._inputField;
 		this._inputField.setValue("");
 		this._selected = null;
@@ -328,13 +325,19 @@ function(ftc, dialog, params) {
 	this._creatingFolder = true;
 };
 
+// After the user creates a folder, select it and optionally move items to it.
 ZmChooseFolderDialog.prototype._folderTreeChangeListener =
 function(ev) {
 	if (ev.event == ZmEvent.E_CREATE && this._creatingFolder) {
 		var organizers = ev.getDetail("organizers") || (ev.source && [ev.source]);
 		var org = organizers[0];
-		var tv = this._treeView[org.getAccount().id][org.type];
-		tv.setSelected(organizers[0], true);
+		if (org) {
+			var tv = this._treeView[org.getAccount().id][org.type];
+			tv.setSelected(org, true);
+			if (this._moveOnFolderCreate && !ev.shiftKey && !ev.ctrlKey) {
+				tv._itemClicked(tv.getTreeItemById(org.id), ev);
+			}
+		}
 		this._creatingFolder = false;
 	}
 	this._loadFolders();
@@ -357,7 +360,7 @@ function(ev) {
 		for (var i = 0; i < folderList.length; i++) {
 			var folder = folderList[i];
 			if (folder.mayContain && !folder.mayContain(this._data, null, this._acceptFolderMatch)) {
-				if(this._data instanceof ZmFolder) {
+				if (this._data.isZmFolder) {
 					msg = ZmMsg.badTargetFolder; 
 				} else {
 					var items = AjxUtil.toArray(this._data);
@@ -443,7 +446,6 @@ function(ev) {
 	if (!this._keyPressedInField) {
 		return;
 	}
-
 
 	var key = DwtKeyEvent.getCharCode(ev);
 	if (key == 9) {

@@ -974,15 +974,10 @@
 
 .menuOverview {
 	max-height:200px;
-	/*note I also added overflow-x:hidden via code at DwtFolderChooser.prototype._setOverview
-	since it's set inline by ZmDialog.prototype._setOverview*/
 	#IFDEF MSIE
 		height: expression(this.scrollHeight > 199 ? "200px" : "auto");
 	#ENDIF
 
-}
-.DwtMenu .DwtFolderChooser .OverviewTree {
-	width: auto; /*no limit and not too much*/
 }
 
 /*

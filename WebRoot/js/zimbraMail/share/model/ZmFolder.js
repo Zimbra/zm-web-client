@@ -54,6 +54,10 @@ ZmFolder = function(params) {
 ZmFolder.prototype = new ZmOrganizer;
 ZmFolder.prototype.constructor = ZmFolder;
 
+ZmFolder.prototype.isZmFolder = true;
+ZmFolder.prototype.toString = function() { return "ZmFolder"; };
+
+
 // needed to construct USER_ROOT if mail disabled
 ZmOrganizer.ORG_CLASS[ZmId.ORG_FOLDER] = "ZmFolder";
 
@@ -287,16 +291,6 @@ function(folderName) {
 		}
 	}
 	return null;
-};
-
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmFolder.prototype.toString =
-function() {
-	return "ZmFolder";
 };
 
 /**

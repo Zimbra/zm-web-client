@@ -296,16 +296,6 @@ function(params, result) {
 	DBG.println(AjxDebug.DBG1, "------------------------- Processing notifications for " + methodName);
 	this._handleNotifications(response.Header);
 
-	//no idea why callback is called before _handleNotifications but there might be notifications that rely on the callback
-	//being called before, so I don't want to mess with it, so I added this other callback.
-	// see DwtFolderChooser.prototype._newCallback for explanation why I need this.
-	if (params.asyncMode && params.callbackAfterNotifications) {
-		DBG.println(AjxDebug.DBG1, "------------------------- Running response callback (after notifications) for " + methodName);
-		var cb = params.callbackAfterNotifications;
-		cb.isAjxCallback ? cb.run(result) : cb(result);
-	}
-
-
 	this._clearPendingRequest(params.reqId);
 
 	if (refreshBlock && (!appCtxt.isOffline || !appCtxt.multiAccounts) && !params.more) {

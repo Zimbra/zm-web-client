@@ -60,6 +60,9 @@ ZmDialog = function(params) {
 ZmDialog.prototype = new DwtDialog;
 ZmDialog.prototype.constructor = ZmDialog;
 
+ZmDialog.prototype.isZmDialog = true;
+ZmDialog.prototype.toString = function() { return "ZmDialog"; };
+
 /**
  * @private
  */
