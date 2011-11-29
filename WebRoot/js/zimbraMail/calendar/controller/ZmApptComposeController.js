@@ -782,37 +782,33 @@ function(appt, callback, result) {
 
 ZmApptComposeController.prototype.checkPermissionRequest =
 function(names, appt, attId, notifyList) {
-	var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}};
-	var request = jsonObj.BatchRequest;
+    // CheckPermissions to be retired after IronMaiden.  Replaced with CheckRights
+    var jsonObj = {CheckRightsRequest:{_jsns:"urn:zimbraAccount"}};
+    var request = jsonObj.CheckRightsRequest;
 
-	var chkPermRequest = request.CheckPermissionRequest = [];
+    request.target = [];
+    for (var i in names) {
+        var targetInstance = {
+            type: "account",
+            by:   "name",
+            key:   names[i]
+        };
+        targetInstance.right = [{_content: "invite"}];
+        request.target.push(targetInstance);
+    }
 
-	for (var i in names) {
-		var permRequest = {_jsns:"urn:zimbraMail"};
-		permRequest.target = {
-			type: "account",
-			by: "name",
-			_content: names[i]
-		};
-
-		    permRequest.right = {_content: "invite"};
-
-		chkPermRequest.push(permRequest);
-	}
-
-	var respCallback = new AjxCallback(this, this.handleCheckPermissionResponse, [appt, attId, names, notifyList]);
-	var errorCallback = new AjxCallback(this, this.handleCheckPermissionResponseError, [appt, attId, names, notifyList]);
-	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback: errorCallback, noBusyOverlay:true});
+    var respCallback  = new AjxCallback(this, this.handleCheckRightsResponse, [appt, attId, names, notifyList]);
+    var errorCallback = new AjxCallback(this, this.handleCheckRightsResponse, [appt, attId, names, notifyList]);
+    appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback: errorCallback, noBusyOverlay:true});
 };
 
-ZmApptComposeController.prototype.handleCheckPermissionResponse =
+ZmApptComposeController.prototype.handleCheckRightsResponse =
 function(appt, attId, names, notifyList, response) {
-	var batchResp = response && response._data && response._data.BatchResponse;
-	var checkPermissionResp = (batchResp && batchResp.CheckPermissionResponse) ? batchResp.CheckPermissionResponse  : null;
-	if (checkPermissionResp) {
+	var checkRightsResponse = response && response._data && response._data.CheckRightsResponse;
+	if (checkRightsResponse && checkRightsResponse.target) {
 		var deniedAttendees = [];
-		for (var i in checkPermissionResp) {
-			if (checkPermissionResp && !checkPermissionResp[i].allow) {
+		for (var i in checkRightsResponse.target) {
+			if (!checkRightsResponse.target[i].allow) {
 				deniedAttendees.push(names[i]);
 			}
 		}
