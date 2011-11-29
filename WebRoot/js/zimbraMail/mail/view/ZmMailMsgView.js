@@ -953,15 +953,9 @@ function(container, html, isTextMsg, isTruncated) {
 			if (msgSize <= ZmMailMsgView.OBJ_SIZE_TEXT) {
 				//Using callback to lazily find objects instead of doing it on a run.
 				callback = new AjxCallback(this, this.lazyFindMailMsgObjects, [500]);
-				html = AjxStringUtil.convertToHtml(html);
 			} else {
 				this._makeHighlightObjectsDiv(html);
-				html = AjxStringUtil.convertToHtml(html);
 			}
-		} else {
-			// we get here when viewing text attachments and we need to HTMLize
-			// the text message in order to be displayed correctly (bug 8714).
-			html = AjxStringUtil.convertToHtml(html);
 		}
 		if (AjxEnv.isSafari) {
 			html = "<html><head></head><body>" + html + "</body></html>";
@@ -1283,23 +1277,24 @@ function(msg, container, callback) {
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
 			if (ZmMimeTable.isRenderableImage(bp.ct)) {
-				// Hack: (Bug:27320) Done specifically for sMime implementationu are.
+				// Hack: (Bug:27320) Done specifically for sMime
 				var imgHtml = (bp.content)
 					? ["<img zmforced='1' class='InlineImage' src='", bp.content, "'>"].join("")
 					: ["<img zmforced='1' class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
 				html.push(imgHtml);
 			} else {
+				var content = (bp.ct != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(bp.content) : bp.content;
 				if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
 					html.push(hasHtmlPart ? "<pre>" : "");
-					html.push(bp.content);
+					html.push(content);
 					html.push(hasHtmlPart ? "</pre>" : "");
 				} else {
 					if (appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
-						html.push(bp.content);
+						html.push(content);
 					} else {
 						// bug fix #31840 - convert HTML to text
 						var div = document.createElement("div");
-						div.innerHTML = bp.content;
+						div.innerHTML = content;
 						var convert = AjxStringUtil.convertHtml2Text(div);
 
 						html.push(hasHtmlPart ? "<pre>" : "");
@@ -1339,11 +1334,13 @@ function(msg, container, callback) {
 					// try to go retrieve the text part
 					var respCallback = new AjxCallback(this, this._handleResponseRenderMessage, [el, bodyPart, callback]);
 					var content = msg.getTextPart(respCallback);
-					if (content != null)
+					content = (bodyPart.ct != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
+					if (content != null) {
 						this._makeIframeProxy(el, content, true);
+					}
 					return;
 				} else {
-					this._makeIframeProxy(el, bodyPart.content, true, bodyPart.truncated);
+					this._makeIframeProxy(el, AjxStringUtil.convertToHtml(bodyPart.content), true, bodyPart.truncated);
 				}
 			}
 		}
@@ -1397,6 +1394,7 @@ function(el, bodyPart, callback, result, isTruncated) {
 		}
 	}
 
+	content = (bodyPart.ct != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
 	this._makeIframeProxy(el, (content || ""), true, isTruncated);
 
 	this._setAttachmentLinks();
