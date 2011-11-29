@@ -949,6 +949,12 @@ function(ev) {
 		return;
 	}
 
+	if (!this.isMultiColumn() && (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL)) {
+		DBG.println(AjxDebug.DBG2, "ZmMailListView: TAG");
+		this.redrawItem(item);
+		ev.handled = true;
+	}
+
 	if (ev.event == ZmEvent.E_FLAGS) { // handle "unread" and "isScheduled" flag
 		DBG.println(AjxDebug.DBG2, "ZmMailListView: FLAGS");
 		var flags = ev.getDetail("flags");

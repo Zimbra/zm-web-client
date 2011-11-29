@@ -475,7 +475,10 @@ function(item, colIdx) {
 	if (item.hasAttach) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_ATTACHMENT, colIdx, width, "valign=top");
 	}
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, width);	
+	var tags = item.getVisibleTags();
+	if (tags && tags.length) {
+		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, width);
+	}
 	if (appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED)) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_MSG_PRIORITY, colIdx, "16", "align=right");	
 	}
