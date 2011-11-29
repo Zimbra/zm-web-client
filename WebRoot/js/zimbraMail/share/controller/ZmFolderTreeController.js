@@ -92,6 +92,13 @@ function(parent, type, id) {
 	var folder = appCtxt.getById(id);
 	var hasContent = ((folder.numTotal > 0) || (folder.children && (folder.children.size() > 0)));
 
+    // disable empty folder option for inbox, sent and drafts: bug 66656
+    var isEmptyFolderAllowed = true;
+    var y = folder.rid;
+    if(y == ZmFolder.ID_INBOX || y == ZmFolder.ID_SENT || y == ZmFolder.ID_DRAFTS){
+        isEmptyFolderAllowed = false;
+    }
+
 	// user folder or Folders header
 	var nId = ZmOrganizer.normalizeId(id, this.type);
 	if (nId == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder())) {
@@ -103,7 +110,7 @@ function(parent, type, id) {
 		parent.enable(ZmOperation.SYNC, folder.isFeed()/* || folder.hasFeeds()*/);
 		parent.enable(ZmOperation.SYNC_ALL, folder.isFeed() || folder.hasFeeds());
 		parent.enable(ZmOperation.SHARE_FOLDER, isShareVisible);
-		parent.enable(ZmOperation.EMPTY_FOLDER, (hasContent || folder.link));	// numTotal is not set for shared folders
+		parent.enable(ZmOperation.EMPTY_FOLDER, ((hasContent || folder.link) && isEmptyFolderAllowed));	// numTotal is not set for shared folders
 		parent.enable(ZmOperation.RENAME_FOLDER, !folder.isDataSource());		// dont allow datasource'd folder to be renamed via overview
 		parent.enable(ZmOperation.NEW_FOLDER, !folder.disallowSubFolder);
 
