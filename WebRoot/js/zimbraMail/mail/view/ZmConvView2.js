@@ -157,16 +157,18 @@ function(conv, callback) {
 	this._replyDiv = document.getElementById(this._replyDivId);
 	this._replyContainer = document.getElementById(this._replyContainerId);
 	this._replyInput = document.getElementById(this._replyInputId);
-
-	Dwt.setHandler(this._replyInput, DwtEvent.ONFOCUS, this._onInputFocus.bind(this)); 
-	Dwt.setHandler(this._replyInput, DwtEvent.ONBLUR, this._onInputBlur.bind(this));
 	this._recipientText = this._getRecipientText();
-	if (AjxEnv.isIE || (AjxEnv.isFirefox && !AjxEnv.isFirefox4up)) {
-		this._showHint(true);
-	}
-	else {
+	
+	// browsers that support placeholder will manage display of the hint; otherwise, we handle it manually
+	if (AjxEnv.supportsPlaceholder) {
 		this._replyInput.placeholder = this._recipientText;
 	}
+	else {
+		this._showHint(true, true, true);
+	}
+	// focus handlers manage hint if placeholder is not supported, and resize the input
+	Dwt.setHandler(this._replyInput, DwtEvent.ONFOCUS, this._onInputFocusChange.bind(this, true)); 
+	Dwt.setHandler(this._replyInput, DwtEvent.ONBLUR, this._onInputFocusChange.bind(this, false));
 
 	window.setTimeout(this._resize.bind(this), 300);
 	
@@ -254,8 +256,6 @@ function() {
 		var messagesHeight = myHeight - headerSize.y - replySize.y - 1;
 		DBG.println("cv2", "set message area height to " + messagesHeight);
 		Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, messagesHeight);
-		// set width of reply toolbar
-		this._replyToolbar.setSize(replySize.x, Dwt.DEFAULT);
 	}
 	else {
 		// Since we're using tables, we need to set height manually (tables size vertically to their content)
@@ -335,30 +335,28 @@ function(msgView) {
 	}
 };
 
-ZmConvView2.prototype._onInputFocus =
-function() {
-	this._inputFocused = true;
-	this._showHint(false);
-	this._resize();
+ZmConvView2.prototype._onInputFocusChange =
+function(focused) {
+	this._inputFocused = focused;
+	this._showHint(!focused);
 };
 
-ZmConvView2.prototype._onInputBlur =
-function() {
-	this._inputFocused = false;
-	if (!this._replyInput.value) {
-		this._showHint(true);
-	}
-	this._resize();
-};
-
+// Used to manage the hint text if the browser doesn't support input placeholders. If the browser
+// does support them, we still need to resize the input if hint text is hidden/shown.
 ZmConvView2.prototype._showHint =
-function(show) {
+function(show, force, noResize) {
+	
 	var val = this._replyInput.value;
 	var hasUserText = (val && (val != this._recipientText));
-	if (!hasUserText) {
-		this._replyInput.value = show ? this._recipientText : "";
+	if (!hasUserText || force) {
+		if (!AjxEnv.supportsPlaceholder) {
+			this._replyInput.value = show ? this._recipientText : "";
+		}
+		if (!noResize) {
+			this._resize();
+		}
+		Dwt.delClass(this._replyInput, ZmConvView2.HINT_CLASS, show ? ZmConvView2.HINT_CLASS : null);
 	}
-	Dwt.delClass(this._replyInput, ZmConvView2.HINT_CLASS, show ? ZmConvView2.HINT_CLASS : null);
 };
 
 ZmConvView2.prototype.handleKeyAction =
@@ -588,11 +586,13 @@ function() {
 		appCtxt.setStatusMsg(ZmMsg.messageSent);
 	}
 	this._replyInput.value = "";
+	this._showHint(true);
 };
 
 ZmConvView2.prototype._cancelListener =
 function() {
 	this._replyInput.value = "";
+	this._showHint(true);
 };
 
 ZmConvView2.prototype._compose =

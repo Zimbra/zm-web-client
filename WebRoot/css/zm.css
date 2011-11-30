@@ -832,9 +832,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmConvView2 .ReplyTextarea {
-	width:96%;
+	width:98%;
 	margin:5px;
 #IFDEF MSIE
+	width:100%;
 	height:100%;
 #ENDIF
 }
