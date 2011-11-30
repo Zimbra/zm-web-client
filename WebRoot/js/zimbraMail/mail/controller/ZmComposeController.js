@@ -560,8 +560,15 @@ function(attId, docIds, draftType, callback, contactId) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg, msg);
-	msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt, null, this._sendTime);
+	var resp = msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt, null, this._sendTime);
 	this._resetDelayTime();
+	
+	// XXX: temp bug fix #4325 - if resp returned, we're processing sync
+	//      request REVERT this bug fix once mozilla fixes bug #295422!
+	if (resp) {
+		this._processSendMsg(draftType, msg, resp);
+		if (callback) callback.run(resp);
+	}
 };
 
 ZmComposeController.prototype._handleResponseSendMsg =
@@ -870,7 +877,8 @@ function(delMsg) {
 	actionNode.setAttribute("id", mailItem.id);
 	actionNode.setAttribute("op", "delete");
 
-    appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true});
+	var async = window.parentController == null;
+	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:async});
 };
 
 /**
