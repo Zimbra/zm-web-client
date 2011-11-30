@@ -898,15 +898,9 @@ function(container, html, isTextMsg, isTruncated, index) {
 			if (msgSize <= maxHighlightSize) {
 				//Using callback to lazily find objects instead of doing it on a run.
 				callback = new AjxCallback(this, this.lazyFindMailMsgObjects, [500]);
-				html = AjxStringUtil.convertToHtml(html);
 			} else {
 				this._makeHighlightObjectsDiv(html);
-				html = AjxStringUtil.convertToHtml(html);
 			}
-		} else {
-			// we get here when viewing text attachments and we need to HTMLize
-			// the text message in order to be displayed correctly (bug 8714).
-			html = AjxStringUtil.convertToHtml(html);
 		}
 		if (AjxEnv.isSafari) {
 			html = "<html><head></head><body>" + html + "</body></html>";
@@ -1473,12 +1467,13 @@ function(msg, container, callback, index) {
 			var bp = bodyParts[i];
 			var content = this._getBodyContent(bp);
 			if (ZmMimeTable.isRenderableImage(bp.ct)) {
-				// Hack: (Bug:27320) Done specifically for sMime implementationu are.
+				// Hack: (Bug:27320) Done specifically for sMime
 				var imgHtml = content
 					? ["<img zmforced='1' class='InlineImage' src='", bp.content, "'>"].join("")
 					: ["<img zmforced='1' class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
 				html.push(imgHtml);
 			} else {
+				content = (bp.ct != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
 				if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
 					html.push(hasHtmlPart ? "<pre>" : "");
 					html.push(content);
@@ -1551,6 +1546,7 @@ function(msg, container, callback, index) {
 					}
 					
 					if (content != null) {
+						content = (bodyPart.ct != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
 						this._makeIframeProxy(el, content, true, false, index);
 					}
 					if (callback) { callback.run(); }
@@ -1568,7 +1564,7 @@ function(msg, container, callback, index) {
                         isTextMsg = false; //To make sure we display html content properly
 
                     }
-					this._makeIframeProxy(el, content, isTextMsg, bodyPart.truncated, index);
+					this._makeIframeProxy(el, AjxStringUtil.convertToHtml(content), isTextMsg, bodyPart.truncated, index);
 				}
 			}
 		}
@@ -1628,6 +1624,7 @@ function(el, bodyPart, callback, result, isTruncated) {
 		}
 	}
 
+	content = (bodyPart.ct != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
 	this._makeIframeProxy(el, (content || ""), true, isTruncated);
 
 	this._setAttachmentLinks();
