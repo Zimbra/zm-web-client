@@ -263,6 +263,7 @@ BODY						{	margin:0px; 				}
 .SplashScreen H1 {
     margin:22px 100px 0px 20px;
 }
+#ZLoginAppName 		{	@LoginAppName@ 	}
 .LoginScreen H2,
 .SplashScreen H2 {
     cursor:default;
