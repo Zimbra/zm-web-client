@@ -1211,10 +1211,7 @@ function(ev) {
 	else {
 		var callback = new AjxCallback(this, this._handleInviteReplySent);
 		var accountName = ac.multiAccounts && ac.accountList.mainAccount.name;
-		var resp = this._sendInviteReply(type, ev._inviteComponentId, null, accountName, null, ev._msg, ev._inviteReplyFolderId, callback);
-		if (resp && appCtxt.isChildWindow) {
-			window.close();
-		}
+		this._sendInviteReply(type, ev._inviteComponentId, null, accountName, null, ev._msg, ev._inviteReplyFolderId, callback);
 	}
 	return false;
 };
@@ -1595,7 +1592,7 @@ function(type, componentId, instanceDate, accountName, ignoreNotify, origMsg, ac
 		msg.setSubject(subject);
 	}
 	var errorCallback = new AjxCallback(this, this._handleErrorInviteReply);
-	return msg.sendInviteReply(true, componentId, callback, errorCallback, instanceDate, accountName, ignoreNotify);
+	msg.sendInviteReply(true, componentId, callback, errorCallback, instanceDate, accountName, ignoreNotify);
 };
 
 ZmMailListController.prototype._handleErrorInviteReply =

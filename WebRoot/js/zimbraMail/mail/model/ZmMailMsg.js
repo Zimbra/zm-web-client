@@ -1010,7 +1010,7 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 	if (componentId == 0){ // editing reply, custom message
 		this._origMsg._customMsg = true;
 	}
-	return this._sendInviteReply(edited, componentId || 0, callback, errorCallback, instanceDate, accountName, ignoreNotify);
+	this._sendInviteReply(edited, componentId || 0, callback, errorCallback, instanceDate, accountName, ignoreNotify);
 };
 
 ZmMailMsg.prototype._sendInviteReply =
@@ -1107,7 +1107,7 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 		needsRsvp = this._origMsg.needsRsvp();
 	}
     if(ignoreNotify) needsRsvp = false;
-	return this._sendInviteReplyContinue(jsonObj, needsRsvp ? "TRUE" : "FALSE", edited, callback, errorCallback, instanceDate, accountName, toastMessage);
+	this._sendInviteReplyContinue(jsonObj, needsRsvp ? "TRUE" : "FALSE", edited, callback, errorCallback, instanceDate, accountName, toastMessage);
 };
 
 ZmMailMsg.prototype._sendInviteReplyContinue =
@@ -1129,18 +1129,13 @@ function(jsonObj, updateOrganizer, edited, callback, errorCallback, instanceDate
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendInviteReply, [callback, toastMessage]);
-	var resp = this._sendMessage({ jsonObj:jsonObj,
+    this._sendMessage({ jsonObj:jsonObj,
 								isInvite:true,
 								isDraft:false,
 								callback:respCallback,
 								errorCallback:errorCallback,
-								accountName:accountName,
-								toastMessage: toastMessage}); //send it since in the child window, syncronious case, we dont' call the respCallback. Don't want to call it since I'm not sure of implications.
-
-	if (window.parentController) {
-		window.close();
-	}
-	return resp;
+								accountName:accountName
+                       });
 };
 
 ZmMailMsg.prototype._handleResponseSendInviteReply =
@@ -1167,6 +1162,10 @@ function(callback, toastMessage, result) {
 
 	if (this.acceptFolderId && allowMove && resp.apptId != null) {
 		this.moveApptItem(resp.apptId, this.acceptFolderId);
+	}
+
+    if (window.parentController) {
+		window.close();
 	}
 
 	if (toastMessage) {
@@ -1292,7 +1291,7 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 			errorCallback: errorCallback,
 			batchCmd: batchCmd
 		};
-		return this._sendMessage(params);
+        this._sendMessage(params);
 	}
 };
 
@@ -1588,7 +1587,7 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 ZmMailMsg.prototype._sendMessage =
 function(params) {
 	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [params]);
-
+    /* bug fix 63798 removing sync request and making it async
 	// bug fix #4325 - its safer to make sync request when dealing w/ new window
 	if (window.parentController) {
 		var newParams = {
@@ -1611,7 +1610,8 @@ function(params) {
 		} else if (resp.SendMsgResponse) {
 			return resp.SendMsgResponse;
 		}
-	} else if (params.batchCmd) {
+	} else if (params.batchCmd) {*/
+    if  (params.batchCmd) {
 		params.batchCmd.addNewRequestParams(params.jsonObj, respCallback, params.errorCallback);
 	} else {
 		appCtxt.getAppController().sendRequest({jsonObj:params.jsonObj,
