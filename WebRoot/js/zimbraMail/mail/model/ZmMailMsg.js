@@ -913,7 +913,7 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 	if (componentId == 0){ // editing reply, custom message
 		this._origMsg._customMsg = true;
 	}
-	return this._sendInviteReply(edited, componentId || 0, callback, errorCallback, instanceDate, accountName, ignoreNotifyDlg);
+	this._sendInviteReply(edited, componentId || 0, callback, errorCallback, instanceDate, accountName, ignoreNotifyDlg);
 };
 
 ZmMailMsg.prototype._sendInviteReply =
@@ -981,7 +981,7 @@ function(edited, componentId, callback, errorCallback, instanceDate, accountName
 	if (!replyActionMap[this.inviteMode]) {
 		needsRsvp = this._origMsg.needsRsvp();
 	}
-	return this._sendInviteReplyContinue(jsonObj, needsRsvp ? "TRUE" : "FALSE", edited, callback, errorCallback, instanceDate, accountName);
+	this._sendInviteReplyContinue(jsonObj, needsRsvp ? "TRUE" : "FALSE", edited, callback, errorCallback, instanceDate, accountName);
 };
 
 ZmMailMsg.prototype._sendInviteReplyContinue =
@@ -1003,17 +1003,13 @@ function(jsonObj, updateOrganizer, edited, callback, errorCallback, instanceDate
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendInviteReply, [callback]);
-	var resp = this._sendMessage({ jsonObj:jsonObj,
+	this._sendMessage({ jsonObj:jsonObj,
 								isInvite:true,
 								isDraft:false,
 								callback:respCallback,
 								errorCallback:errorCallback,
 								accountName:accountName });
 
-	if (window.parentController) {
-		window.close();
-	}
-	return resp;
 };
 
 ZmMailMsg.prototype._handleResponseSendInviteReply =
@@ -1041,6 +1037,10 @@ function(callback, result) {
 	if (this.acceptFolderId && allowMove && resp.apptId != null) {
 		this.moveApptItem(resp.apptId, this.acceptFolderId);
 	}
+
+    if (window.parentController) {
+        window.close();
+    }
 
 	if (callback) {
 		callback.run(result);
@@ -1137,7 +1137,7 @@ function(isDraft, callback, errorCallback, accountName, noSave, requestReadRecei
 			errorCallback: errorCallback,
 			batchCmd: batchCmd
 		};
-		return this._sendMessage(params);
+		this._sendMessage(params);
 	}
 };
 
@@ -1386,6 +1386,7 @@ ZmMailMsg.prototype._sendMessage =
 function(params) {
 	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [params]);
 
+    /* bug fix 63798 removing sync request and making it async
 	// bug fix #4325 - its safer to make sync request when dealing w/ new window
 	if (window.parentController) {
 		var newParams = {
@@ -1405,7 +1406,8 @@ function(params) {
 		} else if (resp.SendMsgResponse) {
 			return resp.SendMsgResponse;
 		}
-	} else if (params.batchCmd) {
+	} else if (params.batchCmd) {*/
+    if (params.batchCmd) {
 		params.batchCmd.addNewRequestParams(params.jsonObj, respCallback, params.errorCallback);
 	} else {
 		appCtxt.getAppController().sendRequest({jsonObj:params.jsonObj,

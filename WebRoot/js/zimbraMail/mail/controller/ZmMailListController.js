@@ -953,10 +953,7 @@ function(ev) {
 		this._editInviteReply(ZmMailListController.INVITE_REPLY_MAP[type], compId, null, null, folderId);
 	}else {
 		var accountName = ac.multiAccounts && ac.accountList.mainAccount.name;
-		var resp = this._sendInviteReply(type, compId, null, accountName, null, ev._msg, folderId);
-		if (resp && appCtxt.isChildWindow) {
-			window.close();
-		}
+		this._sendInviteReply(type, compId, null, accountName, null, ev._msg, folderId);
 	}
 	return false;
 };
@@ -1334,7 +1331,7 @@ function(type, componentId, instanceDate, accountName, ignoreNotifyDlg, origMsg,
 		msg.setSubject(subject);
 	}
 	var errorCallback = new AjxCallback(this, this._handleErrorInviteReply);
-	return msg.sendInviteReply(true, componentId, callback, errorCallback, instanceDate, accountName, ignoreNotifyDlg);
+	msg.sendInviteReply(true, componentId, callback, errorCallback, instanceDate, accountName, ignoreNotifyDlg);
 };
 
 ZmMailListController.prototype._handleErrorInviteReply =
