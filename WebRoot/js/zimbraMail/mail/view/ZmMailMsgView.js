@@ -1522,7 +1522,7 @@ function(msg, container, callback, index) {
 				}
 
                 if (!content) {
-                    c = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: true});
+                    content = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: true});
                 }
 
 				this._makeIframeProxy(el, content, false, bodyPart.truncated, index);
@@ -1562,9 +1562,9 @@ function(msg, container, callback, index) {
                     if (!content) {
                         content = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: false});
                         isTextMsg = false; //To make sure we display html content properly
-
                     }
-					this._makeIframeProxy(el, AjxStringUtil.convertToHtml(content), isTextMsg, bodyPart.truncated, index);
+					content = isTextMsg ? AjxStringUtil.convertToHtml(content) : content;
+					this._makeIframeProxy(el, content, isTextMsg, bodyPart.truncated, index);
 				}
 			}
 		}

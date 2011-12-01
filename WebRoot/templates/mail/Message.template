@@ -601,7 +601,7 @@
 		<tr>
             <td class='NoResults' style="text-align:center;">
                 <br>
-                <$= data.isHtml ? ZmMsg.messageEmptyTextContent : ZmMsg.messageEmptyTextContent $>
+                <$= ZmMsg.messageEmptyTextContent $>
             </td>
 		</tr>
 	</table>
