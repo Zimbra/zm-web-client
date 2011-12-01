@@ -1400,7 +1400,7 @@ function(msg, container, callback) {
 				}
 
                 if(!c){
-                    c = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: true});
+                    c = AjxTemplate.expand("mail.Message#EmptyMessage");
                 }
 
 				this._makeIframeProxy(el, c, false, bodyPart.truncated);
@@ -1438,11 +1438,11 @@ function(msg, container, callback) {
 
                     var isTextMsg = true;
                     if(!c){
-                        c = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: false});
+                        c = AjxTemplate.expand("mail.Message#EmptyMessage");
                         isTextMsg = false; //To make sure we display html content properly
-
                     }
-					this._makeIframeProxy(el, AjxStringUtil.convertToHtml(c), isTextMsg, bodyPart.truncated);
+					c = isTextMsg ? AjxStringUtil.convertToHtml(c) : c;
+					this._makeIframeProxy(el, c, isTextMsg, bodyPart.truncated);
 				}
 			}
 		}
