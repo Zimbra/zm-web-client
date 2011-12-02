@@ -91,8 +91,8 @@ ZmMsgController.prototype._handleResponseShow =
 function(callback, hidePagination, result) {
 	this._showMsg();
 	this._showNavToolBarButtons(this._currentViewId, !hidePagination);
-	if (callback instanceof AjxCallback) {
-		callback.run();
+	if (callback && callback.run) {
+		callback.run(this, this._view[this._currentViewId]);
 	}
 };
 
