@@ -457,7 +457,6 @@
       <url-pattern>/h/attachments</url-pattern>
       <url-pattern>/h/calendar</url-pattern>
       <url-pattern>/h/changepass</url-pattern>
-      <url-pattern>/h/brandedchangepass</url-pattern>
       <url-pattern>/h/checkspelling</url-pattern>
       <url-pattern>/h/compose</url-pattern>
       <url-pattern>/h/eappt</url-pattern>
