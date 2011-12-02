@@ -328,6 +328,23 @@ function(viewId, headerList) {
 			headers = this._normalizeHeaders(headers, headerList);
 		}
 	}
+    // adding account header in _normalizeHeader method
+    // sometimes doesn't work since we check for array length which is bad.
+
+    // in ZD in case of All-Mailbox search always make sure account header is added to header array
+    if(appCtxt.isOffline && appCtxt.getSearchController().searchAllAccounts && isMultiColumn) {
+        var isAccHdrEnabled = false;
+        for (var k=0; k< headers.length; k++) {
+            if(headers[k] == ZmItem.F_ACCOUNT) {
+                isAccHdrEnabled = true;
+            }
+        }
+        if(!isAccHdrEnabled) {
+            headers.splice(headers.length - 1, 0, ZmId.FLD_ACCOUNT);
+        }
+
+    }
+
 	for (var i = 0, len = headers.length; i < len; i++) {
 		var header = headers[i];
 		var field = header.substr(0, 2);
@@ -339,7 +356,6 @@ function(viewId, headerList) {
 			// multi-account, account header is always initially invisible
 			// unless user is showing global inbox. Ugh.
 			if (appCtxt.multiAccounts &&
-				appCtxt.inStartup &&
 				appCtxt.accountList.size() > 2 &&
 				appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES) &&
 				header.indexOf(ZmItem.F_ACCOUNT) != -1)
