@@ -34,9 +34,17 @@ UtMailMsgView._showMsg = function (index) {
 };
 
 UtMailMsgView._showCallback = function(index, controller, view) {
-    var viewBody = AjxStringUtil.trim(view.getIframeElement().contentWindow.document.body.innerText);
-    var expectedBody = AjxStringUtil.trim(UtMailMsgView_data[index].expectedBody);
-    UT.equal(viewBody, expectedBody, "UtMailMsgView[" + index + "]");
+    var data = UtMailMsgView_data[index];
+    if (data.validate) {
+        // Call the data's function to do the validation.
+        data.validate.call(data, controller, view);
+    } else {
+        // If this piece of test data does not have a validate method, just compare the
+        // view's body text with the data's expected value.
+        var viewBody = AjxStringUtil.trim(view.getIframeElement().contentWindow.document.body.innerText);
+        var expectedBody = AjxStringUtil.trim(data.expectedBody);
+        UT.equal(viewBody, expectedBody, "UtMailMsgView[" + index + "]");
+    }
 
     index++;
     if (index < UtMailMsgView_data.length) {
@@ -46,3 +54,4 @@ UtMailMsgView._showCallback = function(index, controller, view) {
     }
 };
 
+UT.test("MailMsgView Tests", UtMailMsgView.test);

@@ -200,5 +200,67 @@ UtMailMsgView_data = [
             su: "Hello"
        }
     }
+    
+    //
+    // Bug #64777 - Link to show external images not shown when dfsrc is present.
+    //
+    ,{
+        validate: function(controller, view) {
+            var displayImagesBar = document.getElementById(view._displayImagesId);
+            UT.notEqual(displayImagesBar && displayImagesBar.style.display, "none");
+        },
+        json:       {
+        cid: "-623",
+        cm: true,
+        d: 1322866294000,
+        e: [
+          // [0]:
+          {
+            a: "user1@dcomfort.com",
+            d: "Demo",
+            p: "Demo User One",
+            t: "f"
+           },
+          // [1]:
+          {
+            a: "list@dcomfort.com",
+            d: "list",
+            t: "t"
+           }
+         ],
+        fr: "Google",
+        id: "623",
+        l: "2",
+        mid: "<670fbd72-6dc1-4218-a47d-e0608088d50a@prome-2n-dhcp175.eng.vmware.com>",
+        mp: [
+          // [0]:
+          {
+            ct: "multipart/alternative",
+            mp: [
+              // [0]:
+              {
+                ct: "text/plain",
+                part: "1",
+                s: 20
+               },
+              // [1]:
+              {
+                body: true,
+                content: "<html><head><style>p { margin: 0; }</style></head><body><div style=\"font-family: Times New Roman; font-size: 12pt; color: #000000\"><br><span id=\"body\"><center><div id=\"lga\"><img alt=\"Google\" id=\"hplogo\" style=\"padding-top:28px\" height=\"95\" width=\"275\" dfsrc=\"http://www.google.com/intl/en_com/images/srpr/logo3w.png\"></div><form action=\"/search\" name=\"f\"><table class=\"jhp\" cellpadding=\"0\" cellspacing=\"0\"><tbody><tr valign=\"top\"><td align=\"center\" nowrap=\"nowrap\"><div class=\"ds\" style=\"height:32px;margin:4px 0\"><input dir=\"ltr\" maxlength=\"2048\" name=\"q\" id=\"lst-ib\" class=\"lst\" title=\"Google Search\" value=\"\" size=\"57\" style=\"background: none repeat scroll 0% 0% rgb(255, 255, 255); border-width: 1px; border-style: solid; border-right: 1px solid rgb(217, 217, 217); border-color: silver rgb(217, 217, 217) rgb(217, 217, 217); -moz-border-top-colors: none; -moz-border-right-colors: none; -moz-border-bottom-colors: none; -moz-border-left-colors: none; -moz-border-image: none; color: rgb(0, 0, 0); margin: 0pt; padding: 5px 8px 0pt 6px; vertical-align: top; outline: medium none;\"></div><br style=\"line-height:0\"></td></tr></tbody></table></form><div style=\"font-size:83%;min-height:3.5em\"><br></div></center></span> <br></div></body></html>",
+                ct: "text/html",
+                part: "2",
+                s: 1417
+               }
+             ],
+            part: "TEXT"
+           }
+         ],
+        rev: 550,
+        s: 2594,
+        sd: 1316540964000,
+        sf: "",
+        su: "External image"
+       }
+    }
 ];
 
