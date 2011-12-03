@@ -265,7 +265,7 @@ function(calItem, attach) {
     var sizeContId = "_att_" + Dwt.getNextId();
 
 	if (attach) {
-		div.innerHTML = calItem.getAttachListHtml(attach, true);
+		div.innerHTML = ZmApptViewHelper.getAttachListHtml(calItem, attach, true);
 	} else {
 		var subs = {
 			id: this._htmlElId,

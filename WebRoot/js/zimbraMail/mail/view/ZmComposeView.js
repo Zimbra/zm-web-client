@@ -2831,23 +2831,32 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 	}
 	else if (msg && (msg.hasAttach || includeInlineImages || includeInlineAtts))
 	{
-		var attLinks = msg.getAttachmentLinks(false, includeInlineImages, includeInlineAtts);
-		if (attLinks.length > 0) {
+		var attInfo = msg.getAttachmentInfo(false, includeInlineImages, includeInlineAtts);
+		if (attInfo.length > 0) {
+			for (var i = 0; i < attInfo.length; i++) {
+				var att = attInfo[i];
+				var params = {
+					att:	att,
+					id:		[this._view, att.part, ZmMailMsgView.ATT_LINK_MAIN].join("_"),
+					text:	AjxStringUtil.clipFile(att.label, 30)
+				};
+				att.link = ZmMailMsgView.getMainAttachmentLinkHtml(params);
+			}
 			var data = {
-				attachments: attLinks,
-				isNew: action == ZmOperation.NEW_MESSAGE,
-				isForward: action == ZmOperation.FORWARD,
-				isForwardInline: action == ZmOperation.FORWARD_INLINE,
-				isDraft: action == ZmOperation.DRAFT,
-				fwdFieldName:(ZmComposeView.FORWARD_ATT_NAME + this._sessionId)
+				attachments:		attInfo,
+				isNew:				(action == ZmOperation.NEW_MESSAGE),
+				isForward:			(action == ZmOperation.FORWARD),
+				isForwardInline:	(action == ZmOperation.FORWARD_INLINE),
+				isDraft: 			(action == ZmOperation.DRAFT),
+				fwdFieldName:		(ZmComposeView.FORWARD_ATT_NAME + this._sessionId)
 			};
 			html = AjxTemplate.expand("mail.Message#ForwardAttachments", data);
 
-			if (attLinks.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
+			if (attInfo.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
 				this._attcDiv.style.height = ZmComposeView.MAX_ATTACHMENT_HEIGHT;
 				this._attcDiv.style.overflow = "auto";
 			}
-			this._attachCount = attLinks.length;
+			this._attachCount = attInfo.length;
 		}
 	} else if (this._msgIds && this._msgIds.length) {
 		// use main window's appCtxt

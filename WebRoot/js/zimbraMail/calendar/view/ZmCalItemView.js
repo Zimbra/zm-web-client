@@ -189,8 +189,9 @@ function(calItem) {
 
 	var attachList = calItem.getAttachments();
 	if (attachList) {
-		for (var i = 0; i < attachList.length; i++)
-			str[j++] = calItem.getAttachListHtml(attachList[i]);
+		for (var i = 0; i < attachList.length; i++) {
+			str[j++] = ZmApptViewHelper.getAttachListHtml(calItem, attachList[i]);
+		}
 	}
 
 	return str.join("");

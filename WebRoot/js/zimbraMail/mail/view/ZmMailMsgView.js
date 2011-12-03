@@ -125,7 +125,7 @@ function() {
 
 	// TODO: reuse all thses controls that are being disposed here.....
 	if (this._expandButton) {
-		this._expandButton.setVisible(Dwt.DISPLAY_NONE);
+		this._expandButton.setVisible(false);
 		this._expandButton.reparentHtmlElement(this.getHtmlElement());
 	}
 	if (this._ifw) {
@@ -1298,7 +1298,7 @@ function(msg, container) {
 	}
 
 	var isTextView = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	var attachmentsCount = msg.getAttachmentLinks(true, isTextView, true).length;
+	var attachmentsCount = msg.getAttachmentCount(true);
 
 	// do we add a close button in the header section?
 	var hasHeaderCloseBtn = (this._mode == ZmId.VIEW_MSG && !appCtxt.isChildWindow);
@@ -1729,16 +1729,24 @@ function(tag, baseId, html, i) {
 	return i;
 };
 
+// Types of links for eacha attachment
+ZmMailMsgView.ATT_LINK_MAIN			= "main";
+ZmMailMsgView.ATT_LINK_CALENDAR		= "calendar";
+ZmMailMsgView.ATT_LINK_DOWNLOAD		= "download";
+ZmMailMsgView.ATT_LINK_BRIEFCASE	= "briefcase";
+ZmMailMsgView.ATT_LINK_VCARD		= "vcard";
+ZmMailMsgView.ATT_LINK_HTML			= "html";
+ZmMailMsgView.ATT_LINK_REMOVE		= "remove";
+
 ZmMailMsgView.prototype._setAttachmentLinks =
 function() {
     this._attachmentLinkIdToFileNameMap = null;
-	var isTextView = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	var attLinks = this._msg.getAttachmentLinks(true, isTextView, true);
+	var attInfo = this._msg.getAttachmentInfo(true, !appCtxt.get(ZmSetting.VIEW_AS_HTML), true);
 	var el = document.getElementById(this._attLinksId + "_container");
 	if (el) {
-		el.style.display = attLinks.length == 0 ? "none" : "";
+		el.style.display = (attInfo.length == 0) ? "none" : "";
 	}
-	if (attLinks.length == 0) { return; }
+	if (attInfo.length == 0) { return; }
 
 	// prevent appending attachment links more than once
 	var attLinksTable = document.getElementById(this._attLinksId + "_table");
@@ -1748,15 +1756,14 @@ function() {
 	var idx = 0;
 	var imageAttsFound = 0;
 
-	var attColumns = (this._controller.isReadingPaneOn() && this._controller.isReadingPaneOnRight())
-		? 1 : ZmMailMsgView.ATTC_COLUMNS;
+	var attColumns = (this._controller.isReadingPaneOn() && this._controller.isReadingPaneOnRight()) ? 1 : ZmMailMsgView.ATTC_COLUMNS;
 	var dividx = idx;	// we might get back here
 	htmlArr[idx++] = "<table id='" + this._attLinksId + "_table' border=0 cellpadding=0 cellspacing=0>";
 
 	var rows = 0;
-	for (var i = 0; i < attLinks.length; i++) {
-		var att = attLinks[i];
-
+	for (var i = 0; i < attInfo.length; i++) {
+		var att = attInfo[i];
+		
 		if ((i % attColumns) == 0) {
 			if (i != 0) {
 				htmlArr[idx++] = "</tr>";
@@ -1772,24 +1779,27 @@ function() {
 		htmlArr[idx++] = "</td><td style='white-space:nowrap'>";
 
 		if (appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
-			// if attchments are blocked, just show the label
+			// if attachments are blocked, just show the label
 			htmlArr[idx++] = att.label;
 		} else {
+			// main link for the att name
 			var linkArr = [];
 			var j = 0;
-            var lnk = att.link;
             var displayFileName = AjxStringUtil.clipFile(att.label, 30);
+			// if name got clipped, set up to show full name in tooltip
             if (displayFileName != att.label) {
-                if (!this._attachmentLinkIdToFileNameMap) {this._attachmentLinkIdToFileNameMap = {}};
+                if (!this._attachmentLinkIdToFileNameMap) {
+					this._attachmentLinkIdToFileNameMap = {};
+				}
                 this._attachmentLinkIdToFileNameMap[att.attachmentLinkId] = att.label;
             }
-
-            linkArr[j++] = att.isHit ? "<span class='AttName-matched'>" : "";
-            linkArr[j++] = lnk;
-            linkArr[j++] = AjxStringUtil.htmlEncode(displayFileName);
-            linkArr[j++] = att.isHit ? "</a></span>" : "</a>";
-
-			var link = linkArr.join("");
+			var params = {
+				att:	att,
+				id:		this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_MAIN),
+				text:	AjxStringUtil.htmlEncode(displayFileName)
+			}; 
+			var link = ZmMailMsgView.getMainAttachmentLinkHtml(params);
+			link = att.isHit ? "<span class='AttName-matched'>" + link + "</span>" : link;
 			// objectify if this attachment is an image
 			if (att.objectify && this._objectManager) {
 				this._lazyCreateObjectManager();
@@ -1799,66 +1809,91 @@ function() {
 				htmlArr[idx++] = link;
 			}
 		}
-		if (att.size || att.htmlLink || att.vcardLink || att.download || att.briefcaseLink || att.importICSLink) {
+		
+		// add any discretionary links depending on the attachment and what's enabled
+		var linkCount = 0;
+		if (att.size || att.links.html || att.links.vcard || att.links.download || att.links.briefcase || att.links.importICS) {
+			// size
 			htmlArr[idx++] = "&nbsp;(";
 			if (att.size) {
 				htmlArr[idx++] = att.size;
 				htmlArr[idx++] = ") ";
 			}
-			if (att.htmlLink && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
-				htmlArr[idx++] = att.htmlLink;
-				htmlArr[idx++] = ZmMsg.preview;
-				htmlArr[idx++] = "</a>";
-			} else if (att.vcardLink) {
-				htmlArr[idx++] = att.vcardLink;
-				htmlArr[idx++] = ZmMsg.addressBook;
-				htmlArr[idx++] = "</a>";
+			// convert to HTML
+			if (att.links.html && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
+				var params = {
+					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_HTML),
+					blankTarget:	true,
+					href:			att.url + "&view=html",
+					text:			ZmMsg.preview
+				};
+				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
+				linkCount++;
 			}
-			if (att.download && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
-				if (att.htmlLink || att.vcardLink) {
-					htmlArr[idx++] = " | ";
-				}
-				htmlArr[idx++] = att.download;
-				htmlArr[idx++] = ZmMsg.download;
-				htmlArr[idx++] = "</a>";
+			// save as vCard
+			else if (att.links.vcard) {
+				var params = {
+					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_VCARD),
+					jsHref:			true,
+					text:			ZmMsg.addressBook
+				};
+				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
+				linkCount++;
 			}
-			if (att.briefcaseLink && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
-				if (att.htmlLink || att.vcardLink || att.download) {
-					htmlArr[idx++] = " | ";
-				}
-				htmlArr[idx++] = att.briefcaseLink;
-				htmlArr[idx++] = ZmMsg.addToBriefcase;
-				htmlArr[idx++] = "</a>";
+			// save locally
+			if (att.links.download && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
+				htmlArr[idx++] = linkCount ? " | " : "";
+				var params = {
+					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_DOWNLOAD),
+					href:			att.url + "&disp=a",
+					text:			ZmMsg.download
+				};
+				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
+				linkCount++;
+			}
+			// add as Briefcase file
+			if (att.links.briefcase && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) {
+				htmlArr[idx++] = linkCount ? " | " : "";
+				var params = {
+					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_BRIEFCASE),
+					jsHref:			true,
+					text:			ZmMsg.addToBriefcase
+				};
+				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
+				linkCount++;
+			}
+			// add ICS as calendar event
+			if (att.links.importICS) {
+				htmlArr[idx++] = linkCount ? " | " : "";
+				var params = {
+					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_CALENDAR),
+					jsHref:			true,
+					text:			ZmMsg.addToCalendar
+				};
+				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
+				linkCount++;
+			}
+			// remove attachment from msg
+			if (att.links.remove) {
+				htmlArr[idx++] = linkCount ? " | " : "";
+				var params = {
+					id:				this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_REMOVE),
+					jsHref:			true,
+					text:			ZmMsg.remove
+				};
+				htmlArr[idx++] = ZmMailMsgView.getAttachmentLinkHtml(params);
+				linkCount++;
 			}
 
-			if (att.importICSLink) {
-				if (att.briefcaseLink || att.htmlLink || att.vcardLink || att.download) {
-					htmlArr[idx++] = " | ";
-				}
-				htmlArr[idx++] = att.importICSLink;
-				htmlArr[idx++] = ZmMsg.addToCalendar;
-				htmlArr[idx++] = "</a>";
-			}
-
-			// bug: 233 - remove attachment support
-			if (att.removeLink) {
-				if (att.briefcaseLink || att.htmlLink || att.vcardLink || att.download || att.importICSLink) {
-					htmlArr[idx++] = " | ";
-				}
-				htmlArr[idx++] = att.removeLink;
-				htmlArr[idx++] = ZmMsg.remove;
-				htmlArr[idx++] = "</a>";
-			}
-
-			// Attachment Link Handlers
+			// Attachment Link Handlers (optional)
 			if (ZmMailMsgView._attachmentHandlers) {
 				var contentHandlers = ZmMailMsgView._attachmentHandlers[att.ct];
 				var handlerFunc;
 				if (contentHandlers) {
-					for (handlerId in contentHandlers) {
+					for (var handlerId in contentHandlers) {
 						handlerFunc = contentHandlers[handlerId];
 						if (handlerFunc) {
-							htmlArr[idx++] = " | " + handlerFunc.call(this,att);
+							htmlArr[idx++] = " | " + handlerFunc.call(this, att);
 						}
 					}
 				}
@@ -1882,13 +1917,147 @@ function() {
 	}
 	htmlArr[idx++] = "</tr></table>";
 
-	if (attLinks.length > 1) {
-		imageAttsFound = imageAttsFound > 1;
-		htmlArr[idx++] = ZmMailMsgView._buildZipUrl(this._msg.id, attLinks, imageAttsFound, this._msg.subject);
+	var allAttParams;
+	if (attInfo.length > 1) {
+		allAttParams = this._addAllAttachmentsLinks(attInfo, (imageAttsFound > 1), this._msg.subject);
+		htmlArr[idx++] = allAttParams.html;
 	}
 
+	// Push all that HTML to the DOM
 	var attLinksDiv = document.getElementById(this._attLinksId);
 	attLinksDiv.innerHTML = htmlArr.join("");
+
+	// add handlers for individual attachment links
+	for (var i = 0; i < attInfo.length; i++) {
+		var att = attInfo[i];
+		if (att.ct == ZmMimeTable.MSG_RFC822) {
+			this._addClickHandler(att.part, ZmMailMsgView.ATT_LINK_MAIN, ZmMailMsgView.rfc822Callback, null, this._msg.id, att.part);
+		}
+		if (att.links.importICS) {
+			this._addClickHandler(att.part, ZmMailMsgView.ATT_LINK_CALENDAR, ZmMailMsgView.addToCalendarCallback, null, this._msg.id, att.part);
+		}
+		if (att.links.briefcase) {
+			this._addClickHandler(att.part, ZmMailMsgView.ATT_LINK_BRIEFCASE, ZmMailMsgView.briefcaseCallback, null, this._msg.id, att.part, att.label.replace(/\x27/g, "&apos;"));
+		}
+		if (att.links.vcard) {
+			this._addClickHandler(att.part, ZmMailMsgView.ATT_LINK_VCARD, ZmMailMsgView.vcardCallback, null, this._msg.id, att.part);
+		}
+		if (att.links.remove) {
+			this._addClickHandler(att.part, ZmMailMsgView.ATT_LINK_REMOVE, this.removeAttachmentCallback, this, att.part);
+		}
+	}
+	
+	// add handlers for "all attachments" links
+	if (allAttParams) {
+		var downloadAllLink = document.getElementById(allAttParams.downloadAllLinkId);
+		if (downloadAllLink) {
+			downloadAllLink.onclick = allAttParams.downloadAllCallback;
+		}
+		var removeAllLink = document.getElementById(allAttParams.removeAllLinkId);
+		if (removeAllLink) {
+			removeAllLink.onclick = allAttParams.removeAllCallback;
+		}
+	}
+};
+
+/**
+ * Returns the HTML for an attachment-related link (an <a> tag). The link will have an HREF
+ * or an ID (so an onclick handler can be added after the element has been created).
+ * 
+ * @param {hash}	params		a hash of params:
+ * @param {string}	id			ID for the link
+ * @param {string}	href		link target
+ * @param {boolean}	noUnderline	if true, do not include an underline style
+ * @param {boolean} blankTarget	if true, set target to _blank
+ * @param {boolean}	jsHref		empty link target so browser styles it as a link
+ * @param {string}	text		visible link text
+ * 
+ * @private
+ */
+ZmMailMsgView.getAttachmentLinkHtml =
+function(params) {
+	var html = [], i = 0;
+	html[i++] = "<a class='AttLink' ";
+	html[i++] = params.id ? "id='" + params.id + "' " : "";
+	html[i++] = !params.noUnderline ? "style='text-decoration:underline' " : "";
+	html[i++] = params.blankTarget ? "target='_blank' " : "";
+	var href = params.href || (params.jsHref && "javascript:;");
+	html[i++] = href ? "href='" + href + "' " : "";
+	html[i++] = ">" + params.text + "</a>";
+
+	return html.join("");
+};
+
+/**
+ * Returns the HTML for the link for the attachment name (which usually opens the
+ * content in a new browser tab).
+ * 
+ * @param id
+ */
+ZmMailMsgView.getMainAttachmentLinkHtml =
+function(params) {
+	var params1 = {
+		id:				params.id,
+		noUnderline:	true,
+		text:			params.text
+	}; 
+	// handle rfc/822 attachments differently
+	if (params.att.ct == ZmMimeTable.MSG_RFC822) {
+		params1.jsHref = true;
+	}
+	else {
+		params1.blankTarget = true;
+		params1.href = params.att.url;
+	}
+	return ZmMailMsgView.getAttachmentLinkHtml(params1);
+};
+
+ZmMailMsgView.prototype._getAttachmentLinkId =
+function(part, type) {
+	return [this._viewId, part, type].join("_");
+};
+
+// Adds an onclick handler to the link with the given part and type. I couldn't find an easy
+// way to pass and bind a variable number of arguments, so went with three, which is the most
+// any of the handlers takes.
+ZmMailMsgView.prototype._addClickHandler =
+function (part, type, func, obj, arg1, arg2, arg3) {
+	var id = this._getAttachmentLinkId(part, type);
+	var link = document.getElementById(id);
+	if (link) {
+		link.onclick = func.bind(obj, arg1, arg2, arg3);
+	}
+};
+
+ZmMailMsgView.prototype._addAllAttachmentsLinks =
+function(attachments, viewAllImages, filename) {
+
+	var itemId = this._msg.id;
+	if (AjxUtil.isString(filename)) {
+		filename = filename.replace(ZmMailMsgView.FILENAME_INV_CHARS_RE, "");
+	} else {
+		filename = null;
+	}
+	filename = AjxStringUtil.urlComponentEncode(filename || ZmMsg.downloadAllDefaultFileName);
+	var url = [appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", itemId, "&filename=", filename,"&charset=", appCtxt.getCharset(), "&part="].join("");
+	var parts = [];
+	for (var j = 0; j < attachments.length; j++) {
+		parts.push(attachments[j].part);
+	}
+	var partsStr = parts.join(",");
+	var params = {
+		url:				(url + partsStr),
+		downloadAllLinkId:	this._viewId + "_downloadAll",
+		removeAllLinkId:	this._viewId + "_removeAll"
+	}
+	if (viewAllImages) {
+		params.viewAllUrl = "/h/viewimages?id=" + itemId;
+	}
+	params.html = AjxTemplate.expand("mail.Message#AllAttachments", params);
+	
+	params.downloadAllCallback = ZmZimbraMail.unloadHackCallback.bind();
+	params.removeAllCallback = this.removeAttachmentCallback.bind(this, partsStr);
+	return params;
 };
 
 ZmMailMsgView.prototype.getToolTipContent =
@@ -2307,6 +2476,7 @@ function(msg, isRfc822, parentController) {
 	}
 };
 
+// loads a msg and displays it in a new window
 ZmMailMsgView.rfc822Callback =
 function(msgId, msgPartId, parentController) {
 	var isRfc822 = Boolean((msgPartId != null));
@@ -2347,8 +2517,8 @@ function(msgId, partId) {
 	ac.getApp(ZmApp.CONTACTS).createFromVCard(msgId, partId);
 };
 
-ZmMailMsgView.removeAttachmentCallback =
-function(msgId, partIds) {
+ZmMailMsgView.prototype.removeAttachmentCallback =
+function(partIds) {
 	ZmZimbraMail.unloadHackCallback();
 
 	if (!(partIds instanceof Array)) { partIds = partIds.split(","); }
@@ -2358,81 +2528,31 @@ function(msgId, partIds) {
 		: ZmMsg.attachmentConfirmRemove;
 
 	var dlg = appCtxt.getYesNoMsgDialog();
-	dlg.registerCallback(DwtDialog.YES_BUTTON, ZmMailMsgView._removeAttachmentCallback, null, [msgId, partIds]);
+	dlg.registerCallback(DwtDialog.YES_BUTTON, this._removeAttachmentCallback, this, [partIds]);
 	dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 	dlg.popup();
 };
 
-ZmMailMsgView._removeAttachmentCallback =
-function(msgId, partIds) {
+ZmMailMsgView.prototype._removeAttachmentCallback =
+function(partIds) {
 	appCtxt.getYesNoMsgDialog().popdown();
-
-	var jsonObj = {RemoveAttachmentsRequest: {_jsns:"urn:zimbraMail"}};
-	var request = jsonObj.RemoveAttachmentsRequest;
-	request.m = { id: msgId, part: partIds.join(",") };
-
-	var searchParams = {
-		jsonObj: jsonObj,
-		asyncMode: true,
-		callback: (new AjxCallback(null, ZmMailMsgView._handleRemoveAttachment, [msgId])),
-		noBusyOverlay: true
-	};
-	return appCtxt.getAppController().sendRequest(searchParams);
+	this._msg.removeAttachments(partIds, this._handleRemoveAttachment.bind(this));
 };
 
-ZmMailMsgView._handleRemoveAttachment =
-function(oldMsgId, result) {
-	var ac = window.parentAppCtxt || window.appCtxt;
+ZmMailMsgView.prototype._handleRemoveAttachment =
+function(result) {
 	// cache this actioned ID so we can reset selection to it once the CREATE
 	// notifications have been processed.
+	var ac = window.parentAppCtxt || window.appCtxt;
 	var msgNode = result.getResponse().RemoveAttachmentsResponse.m[0];
 	var mailListCtlr = ac.getApp(ZmApp.MAIL).getMailListController();
 	mailListCtlr.actionedMsgId = msgNode.id;
 	var list = mailListCtlr.getList();
-
-	var avm = appCtxt.getAppViewMgr();
-	var views = avm._view;
 	var msg = new ZmMailMsg(msgNode.id, list, true);
 	msg._loadFromDom(msgNode);
 
-	for (var viewId in views) {
-		var view = avm.getCurrentView(viewId);
-		if (view) {
-			if (AjxUtil.isFunction(view.handleRemoveAttachment)) {
-				view.handleRemoveAttachment(oldMsgId, msg);
-			}
-		}
-	}
-};
-
-ZmMailMsgView.prototype.handleRemoveAttachment =
-function(oldMsgId, newMsg) {
-	if (!this._msg || this._msg.id == oldMsgId) {
-		this._msg = this._item = null;
-		this.set(newMsg);
-	}
-};
-
-ZmMailMsgView._buildZipUrl =
-function(itemId, attachments, viewAllImages, filename) {
-	if (AjxUtil.isString(filename)) {
-		filename = filename.replace(ZmMailMsgView.FILENAME_INV_CHARS_RE, "");
-	} else {
-		filename = null;
-	}
-	filename = AjxStringUtil.urlComponentEncode(filename || ZmMsg.downloadAllDefaultFileName);
-	var url = [appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", itemId, "&filename=", filename,"&charset=", appCtxt.getCharset(), "&part="].join("");
-	var parts = [];
-	for (var j = 0; j < attachments.length; j++) {
-		parts.push(attachments[j].part);
-	}
-	var partsStr = parts.join(",");
-	var params = { url:(url+partsStr), partIds:partsStr, itemId:itemId };
-	if (viewAllImages) {
-		params.viewAllUrl = "/h/viewimages?id="+itemId;
-	}
-
-	return AjxTemplate.expand("mail.Message#AllAttachments", params);
+	this._msg = this._item = null;
+	this.set(msg);
 };
 
 ZmMailMsgView.briefcaseCallback =

@@ -731,6 +731,12 @@ function(msg, force) {
 	this._header._setExpandIcon(this._expanded);
 };
 
+ZmMailMsgCapsuleView.prototype.reset =
+function() {
+	ZmMailMsgView.prototype.reset.call(this);
+	this._header = null;
+};
+
 ZmMailMsgCapsuleView.prototype._renderMessage =
 function(msg, container, callback) {
 	

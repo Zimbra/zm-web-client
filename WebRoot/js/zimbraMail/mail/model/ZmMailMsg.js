@@ -1731,31 +1731,41 @@ function() {
 };
 
 /**
- * Returns an array of objects containing meta info about attachments to be used
- * to build href's by the caller
+ * Returns the number of attachments in this msg.
  * 
- * @private
+ * @param {boolean}		includeInlineAtts
  */
-ZmMailMsg.prototype.getAttachmentLinks =
-function(findHits, includeInlineImages, includeInlineAtts) {
-	this._attLinks = [];
+ZmMailMsg.prototype.getAttachmentCount =
+function(includeInlineAtts) {
+	var attachments = includeInlineAtts ? [].concat(this.attachments, this._getInlineAttachments()) : this.attachments;
+	return attachments ? attachments.length : 0;
+};
 
-	var attachments = this.attachments;
-
-	if (includeInlineAtts) {
-		var parts = this.getBodyParts();
-		if (parts && parts.length > 1) {
-			var iAtts = [], part;
-			for (var k = 0; k < parts.length; k++) {
-				part = parts[k];
-				if (part.filename && part.cd == "inline") {
-					iAtts.push(part);
-				}
+ZmMailMsg.prototype._getInlineAttachments =
+function() {
+	var atts = [];
+	var parts = this.getBodyParts();
+	if (parts && parts.length > 1) {
+		var part;
+		for (var k = 0; k < parts.length; k++) {
+			part = parts[k];
+			if (part.filename && part.cd == "inline") {
+				atts.push(part);
 			}
-			attachments = [].concat(attachments, iAtts);
 		}
 	}
+	return atts;
+};
 
+/**
+ * Returns an array of objects containing meta info about attachments
+ */
+ZmMailMsg.prototype.getAttachmentInfo =
+function(findHits, includeInlineImages, includeInlineAtts) {
+
+	this._attInfo = [];
+
+	var attachments = includeInlineAtts ? [].concat(this.attachments, this._getInlineAttachments()) : this.attachments;
 	if (attachments && attachments.length > 0) {
 		var hrefRoot = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=";
 		this.findAttsFoundInMsgBody();
@@ -1763,46 +1773,42 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 		for (var i = 0; i < attachments.length; i++) {
 			var attach = attachments[i];
 
-			if (!this.isRealAttachment(attach) || (attach.ct.match(/^image/) && attach.ci && attach.foundInMsgBody && !includeInlineImages) || (attach.cd == "inline" && attach.filename && ZmMimeTable.isRenderable(attach.ct) && !includeInlineAtts)) {
+			if (!this.isRealAttachment(attach) ||
+					(attach.ct.match(/^image/) && attach.ci && attach.foundInMsgBody && !includeInlineImages) ||
+					(attach.cd == "inline" && attach.filename && ZmMimeTable.isRenderable(attach.ct) && !includeInlineAtts)) {
 				continue;
 			}
 
 			var props = {};
+			props.links = {};	// flags that indicate whether to include a certain type of link
 
 			// set a viable label for this attachment
 			props.label = attach.name || attach.filename || (ZmMsg.unknown + " <" + attach.ct + ">");
 
 			// use content location instead of built href flag
 			var useCL = false;
-			// set size info in any
-            var numFormater = AjxNumberFormat.getInstance();  
+			// set size info if any
 			if (attach.s != null && attach.s >= 0) {
-				if (attach.s < 1024)		props.size = numFormater.format(attach.s) + " "+ZmMsg.b;//" B";
-				else if (attach.s < (1024*1024) )	props.size = numFormater.format(Math.round((attach.s / 1024) * 10) / 10) + " "+ZmMsg.kb;//" KB";
-				else						props.size = numFormater.format(Math.round((attach.s / (1024*1024)) * 10) / 10) + " "+ZmMsg.mb;//" MB";
+				var numFormatter = AjxNumberFormat.getInstance();  
+				if (attach.s < 1024) {
+					props.size = numFormatter.format(attach.s) + " " + ZmMsg.b;
+				}
+				else if (attach.s < (1024 * 1024)) {
+					props.size = numFormatter.format(Math.round((attach.s / 1024) * 10) / 10) + " " + ZmMsg.kb;
+				}
+				else {
+					props.size = numFormatter.format(Math.round((attach.s / (1024 * 1024)) * 10) / 10) + " " + ZmMsg.mb;
+				}
 			} else {
 				useCL = attach.cl && (attach.relativeCl || ZmMailMsg.URL_RE.test(attach.cl));
 			}
 
-			// handle rfc/822 attachments differently
+			// see if rfc822 is an invite
 			if (attach.ct == ZmMimeTable.MSG_RFC822) {
-				var html = [];
-				var j = 0;
-				html[j++] = "<a href='javascript:;' onclick='ZmMailMsgView.rfc822Callback(";
-				html[j++] = '"';
-				html[j++] = this.id;
-				html[j++] = '"';
-				html[j++] = ",\"";
-				html[j++] = attach.part;
-				html[j++] = "\"); return false;' class='AttLink'>";
-				props.link = html.join("");
-
-
-				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) &&
-					attach.mp && attach.mp.length==1 && attach.mp[0].ct == ZmMimeTable.TEXT_CAL)
-				{
-					var onclickStr1 = "ZmMailMsgView.addToCalendarCallback(\"" + this.id + "\",\"" + attach.mp[0].part + "\");";
-					props.importICSLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
+				var calPart = attach.mp && (attach.mp.length == 1) && (attach.mp[0].ct == ZmMimeTable.TEXT_CAL) && attach.mp[0]; 
+				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) && calPart) {
+					props.links.importICS = true;
+					props.rfc822CalPart = calPart.part;
 				}
 			} else {
 				// set the anchor html for the link to this attachment on the server
@@ -1815,57 +1821,30 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 					fn = fn.replace(/\x27/g, "%27");
 					url = url.substring(0,insertIdx) + fn + url.substring(insertIdx);
 				}
-
-                props.attachmentLinkId = Dwt.getNextId();
-				props.link = "<a target='_blank' class='AttLink'" +
-                        AjxStringUtil.buildAttribute("href", url) +
-                        AjxStringUtil.buildAttribute("id", props.attachmentLinkId) + ">";
 				if (!useCL) {
-					props.download = [
-						"<a style='text-decoration:underline' class='AttLink' href='",
-						url,
-						appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)
-							? "' target='_blank'>"
-							: "&disp=a' onclick='ZmZimbraMail.unloadHackCallback();'>"
-					].join("");
+					props.links.download = true;
 				}
 
 				var folder = appCtxt.getById(this.folderId);
-				if ((attach.name || attach.filename) &&
-					appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) &&
-					(folder && !folder.isRemote()))
-				{
-					var partLabel = props.label;
-					partLabel = partLabel.replace(/\x27/g,"&apos;");
-					var onclickStr1 = "ZmMailMsgView.briefcaseCallback(\"" + this.id + "\",\"" + attach.part + "\",\""+partLabel+"\");";
-					props.briefcaseLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
+				if ((attach.name || attach.filename) && appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) && (folder && !folder.isRemote())) {
+					props.links.briefcase = true;
 				}
 
-				var isICSAttachment = (attach.filename && attach.filename.match(/\./) && attach.filename.replace(/^.*\./,"").toLowerCase() == "ics");
+				var isICSAttachment = (attach.filename && attach.filename.match(/\./) && attach.filename.replace(/^.*\./, "").toLowerCase() == "ics");
 
-				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) &&
-					((attach.ct == ZmMimeTable.TEXT_CAL) || isICSAttachment))
-				{
-					var onclickStr1 = "ZmMailMsgView.addToCalendarCallback(\"" + this.id + "\",\"" + attach.part + "\");";
-					props.importICSLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
+				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) && ((attach.ct == ZmMimeTable.TEXT_CAL) || isICSAttachment)) {
+					props.links.importICS = true;
 				}
 
 				if (!useCL) {
 					// check for vcard *first* since we dont care to view it in HTML
-					if (attach.ct == ZmMimeTable.TEXT_VCARD ||
-						attach.ct == ZmMimeTable.TEXT_DIRECTORY)
-					{
-						var onclickStr = "ZmMailMsgView.vcardCallback(" + "\"" + this.id + "\"" +  ",\"" + attach.part + "\");";
-						props.vcardLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
+					if (attach.ct == ZmMimeTable.TEXT_VCARD || attach.ct == ZmMimeTable.TEXT_DIRECTORY) {
+						props.links.vcard = true;
 					}
-					else if (ZmMimeTable.hasHtmlVersion(attach.ct) &&
-							 appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML))
-					{
-						// set the anchor html for the HTML version of this attachment on the server
-						props.htmlLink = "<a style='text-decoration:underline' target='_blank' class='AttLink' href='" + url + "&view=html" + "'>";
+					else if (ZmMimeTable.hasHtmlVersion(attach.ct) && appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
+						props.links.html = true;
 					}
-					else
-					{
+					else {
 						// set the objectify flag
 						props.objectify = attach.ct && attach.ct.match(/^image/);
 					}
@@ -1874,8 +1853,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 				}
 
 				// bug: 233 - remove attachment
-				var onclickStr = "ZmMailMsgView.removeAttachmentCallback(" + "\"" + this.id + "\"" +  ",\"" + attach.part + "\");";
-				props.removeLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
+				props.links.remove = true;
 			}
 
 			// set the link icon
@@ -1901,11 +1879,30 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 			props.foundInMsgBody = attach.foundInMsgBody;
 
 			// and finally, add to attLink array
-			this._attLinks.push(props);
+			this._attInfo.push(props);
 		}
 	}
 
-	return this._attLinks;
+	return this._attInfo;
+};
+ZmMailMsg.prototype.getAttachmentLinks = ZmMailMsg.prototype.getAttachmentInfo;
+
+ZmMailMsg.prototype.removeAttachments =
+function(partIds, callback) {
+	var jsonObj = {RemoveAttachmentsRequest: {_jsns:"urn:zimbraMail"}};
+	var request = jsonObj.RemoveAttachmentsRequest;
+	request.m = {
+		id:		this.id,
+		part:	partIds.join(",")
+	};
+
+	var params = {
+		jsonObj:		jsonObj,
+		asyncMode:		true,
+		callback:		callback,
+		noBusyOverlay:	true
+	};
+	return appCtxt.getAppController().sendRequest(params);
 };
 
 
