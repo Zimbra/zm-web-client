@@ -262,9 +262,9 @@ function() {
 		var mainDiv = document.getElementById(this._mainDivId);
 		var mainSize = Dwt.getSize(mainDiv);
 		if (mainSize && tbSize) {
+			Dwt.setSize(this._replyDiv, Dwt.DEFAULT, mainSize.y - 10);
 			var replySize = Dwt.getSize(this._replyDiv);
-			Dwt.setSize(this._messagesDiv, mainSize.x - replySize.x, mainSize.y);
-			Dwt.setSize(this._replyDiv, Dwt.DEFAULT, mainSize.y);
+			Dwt.setSize(this._messagesDiv, mainSize.x - replySize.x - 5, mainSize.y - 10);
 			Dwt.setSize(this._replyInput, Dwt.DEFAULT, mainSize.y - tbSize.y - 15);
 		}
 	}
@@ -352,7 +352,7 @@ function(show, force, noResize) {
 		if (!AjxEnv.supportsPlaceholder) {
 			this._replyInput.value = show ? this._recipientText : "";
 		}
-		if (!noResize) {
+		if (!noResize && this._controller.isReadingPaneOnRight()) {
 			this._resize();
 		}
 		Dwt.delClass(this._replyInput, ZmConvView2.HINT_CLASS, show ? ZmConvView2.HINT_CLASS : null);
