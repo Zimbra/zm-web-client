@@ -527,6 +527,20 @@ function() {
 };
 
 /**
+ * Gets the new suggestion Preferences dialog
+ *
+ * @return	{ZmTimeSuggestionPrefDialog}
+ */
+ZmAppCtxt.prototype.getSuggestionPreferenceDialog =
+function() {
+	if (!this._suggestionPrefDialog) {
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
+        this._suggestionPrefDialog = new ZmTimeSuggestionPrefDialog(this._shell);
+    }
+    return this._suggestionPrefDialog;
+};
+
+/**
  * Gets the dialog.
  * 
  * @return	{DwtDialog}		the dialog

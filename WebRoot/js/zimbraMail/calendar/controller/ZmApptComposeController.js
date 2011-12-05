@@ -501,17 +501,28 @@ function() {
 
 	var optionsButton = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	if (optionsButton){
-	optionsButton.setVisible(true); //might be invisible if not ZmSetting.HTML_COMPOSE_ENABLED (see ZmCalItemComposeController._createToolBar)
+        optionsButton.setVisible(true); //might be invisible if not ZmSetting.HTML_COMPOSE_ENABLED (see ZmCalItemComposeController._createToolBar)
 
-	var m = optionsButton.getMenu();
+        var m = optionsButton.getMenu();
 
-	var sepMi = new DwtMenuItem({parent:m, style:DwtMenuItem.SEPARATOR_STYLE});
-    var mi = this._requestResponses = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
-    mi.setText(ZmMsg.requestResponses);
-    mi.setChecked(true, true);
+        var sepMi = new DwtMenuItem({parent:m, style:DwtMenuItem.SEPARATOR_STYLE});
+        var mi = this._requestResponses = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
+        mi.setText(ZmMsg.requestResponses);
+        mi.setChecked(true, true);
+
+        sepMi = new DwtMenuItem({parent:m, style:DwtMenuItem.SEPARATOR_STYLE});
+        mi = new DwtMenuItem({parent:m, style:DwtMenuItem.NO_STYLE});
+        mi.setText(ZmMsg.suggestionPreferences);
+        mi.addSelectionListener(this._prefListener.bind(this));
     }
 
 	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
+};
+
+ZmApptComposeController.prototype._prefListener =
+function(ev) {
+    this._prefDialog = appCtxt.getSuggestionPreferenceDialog();
+    this._prefDialog.popup(this.getCalendarAccount());
 };
 
 ZmApptComposeController.prototype.setRequestResponses =

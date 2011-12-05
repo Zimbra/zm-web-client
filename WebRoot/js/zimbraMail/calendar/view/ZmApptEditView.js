@@ -2519,24 +2519,9 @@ function(textarea) {
 	}
 };
 
-
-ZmApptEditView.prototype._prefListener =
-function(ev) {
-    var dialog = this.getPrefDialog();
-    dialog.popup(this.getCalendarAccount());
-};
-
-ZmApptEditView.prototype.getPrefDialog =
-function() {
-    if(!this._prefDialog) {
-        this._prefDialog = new ZmTimeSuggestionPrefDialog(appCtxt.getShell());
-    }
-    return this._prefDialog;
-};
-
 ZmApptEditView.prototype.loadPreference =
 function() {
-    var prefDlg = this.getPrefDialog();
+    var prefDlg = appCtxt.getSuggestionPreferenceDialog();
     prefDlg.setCallback(new AjxCallback(this, this._prefChangeListener));
     prefDlg.getSearchPreference(appCtxt.getActiveAccount());
 };

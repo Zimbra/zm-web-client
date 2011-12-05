@@ -65,8 +65,7 @@ function(containerSize) {
         this._containerHeight = containerSize.y;
 
         var nameSize        = Dwt.getSize(this._suggestionName);
-        var optionsSize     = Dwt.getSize(this._options);
-        this._yAdjustment   = nameSize.y + optionsSize.y + 20;
+        this._yAdjustment   = nameSize.y + 20;
     }
 };
 

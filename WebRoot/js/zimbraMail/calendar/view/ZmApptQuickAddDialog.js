@@ -367,17 +367,9 @@ function() {
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.loadPreference), 300);
 };
 
-ZmApptQuickAddDialog.prototype.getPrefDialog =
-function() {
-    if(!this._prefDialog) {
-        this._prefDialog = new ZmTimeSuggestionPrefDialog(appCtxt.getShell());
-    }
-    return this._prefDialog;
-};
-
 ZmApptQuickAddDialog.prototype.loadPreference =
 function() {
-    var prefDlg = this.getPrefDialog();
+    var prefDlg = appCtxt.getSuggestionPreferenceDialog();
     prefDlg.setCallback(new AjxCallback(this, this._prefChangeListener));
     prefDlg.getSearchPreference(appCtxt.getActiveAccount());
 };

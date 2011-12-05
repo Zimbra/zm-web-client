@@ -5139,6 +5139,7 @@ border:1px solid #666;
 }
 
 .ZmSuggestBody {
+    clear:both;
     border:1px solid black;
     position:relative;
     width:100%;
@@ -5166,15 +5167,17 @@ border:1px solid #666;
 }
 
 .ZmSuggestLabelText {
+    float:left;
     text-align:left;
     padding-left:2px;
     padding-top:2px;
     width: 130px;
 }
 .ZmSuggestLabelImage {
-    position:absolute;
-    right:2px;
-    top:2px;
+    float: right;
+    padding-top:2px;
+    padding-right: 4px;
+    padding-bottom:2px;
 }
 
 .ZmLocationSuggestion {

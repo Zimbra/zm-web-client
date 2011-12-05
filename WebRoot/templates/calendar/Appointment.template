@@ -194,16 +194,13 @@
 <template id='calendar.Appointment#SuggestionsView'>
     <div id='${id}_suggest_container' class='ZmSuggestContainer'>
         <div class='ZmSuggestClose'>
-            <div id='${id}_suggestion_name' class='ZmSuggestLabelText'>&nbsp;</div>
-            <div id='${id}_suggest_close'   class='ZmSuggestLabelImage'><$=AjxImg.getImageHtml("CloseGray")$></div>
+            <div id='${id}_suggestion_name'       class='ZmSuggestLabelText'>&nbsp;</div>
+            <div id='${id}_suggest_close'         class='ZmSuggestLabelImage'><$=AjxImg.getImageHtml("CloseGray")$></div>
+            <div id='${id}_suggest_options_image' class='ZmSuggestLabelImage'><$=AjxImg.getImageHtml("Preferences")$></div>
         </div>
         <div class='ZmSuggestBody'>
             <div id='${id}_suggest_minical' class='ZmSuggestMiniCal'></div>
             <div id='${id}_suggest_view' class='ZmSuggestView' ></div>
-        </div>
-        <div id='${id}_suggest_options' class='ZmSuggestPref'>
-            <div class='ZmSuggestLabelText'><$= ZmMsg.options $></div>
-            <div id='${id}_suggest_options_image' class='ZmSuggestLabelImage'><$=AjxImg.getImageHtml("Preferences")$></div>
         </div>
     </div>
 </template>

@@ -34,7 +34,7 @@ ZmApptAssistantView = function(parent, controller, apptView, closeCallback) {
 
 	this._controller    = controller;
 	this._apptView      = apptView;
-    this._prefDialog    = apptView.getPrefDialog();
+    this._prefDialog    = appCtxt.getSuggestionPreferenceDialog();
     this._closeCallback = closeCallback;
 
     this._fbCache       = controller.getApp().getFreeBusyCache();
@@ -100,8 +100,6 @@ function() {
     this._suggestMinicalElId = this._htmlElId + "_suggest_minical";
     this._suggestMinical = document.getElementById(this._suggestMinicalElId);
 
-    this._optionsId = this._htmlElId + "_suggest_options";
-    this._options  = document.getElementById(this._optionsId);
     this._optionsBtnId = this._htmlElId + "_suggest_options_image";
     this._optionsBtn = document.getElementById(this._optionsBtnId);
     Dwt.setHandler(this._optionsBtn, DwtEvent.ONCLICK, this._prefListener.bind(this));
