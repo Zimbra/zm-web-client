@@ -148,6 +148,7 @@
 
 .ZNewButton {
 	width: 100%;
+	@NewButton@
 }
 
 
@@ -335,7 +336,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 .ZmSearchToolbarDiv {
     background-color:white;
-    height:22px;
+    height:20px;
     position:relative;
 }
 .ZmSearchToolbarDiv INPUT {
@@ -499,14 +500,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 /* Conversation view outer container (header, list and reading pane) */
-.ZmConvView {}
-
-/* Remove the border around the email conversation/message panes */
-#ZmConvListView,
-.ZmConvView .DwtListView,
-.ZmTradView .DwtListView {
-	border:0px;
-}
+.ZmConvView, 
+.ZmConvView2 { @ConvView@	}
 
 .Expand {
     padding-left:5px;
@@ -571,7 +566,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	-- there can be two instances, one for "conversation" view and one for "messages" view */
 .ZmMailMsgView {
 	@FullWidth@
-	@MailMsgBody@
+	@PanelBg@
+	@PanelBorder@
     overflow:auto;
 }
 
@@ -695,18 +691,22 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
    The view has a conv header, a messages area, and a reply area. */
 
 .Conv2View, .Conv2View-bottom {
-	background-color:@AppC@;
 	height:100%;
-	@grad(AppC,#CCC)@
+	@Conv2Bg@
 }
 
 /* The conv header contains the subject and a summary of number of messages / unread */
 
 .Conv2Header {
-	background-color:@lighten(AppC,25)@
-	border-bottom:	1px solid @darken(AppC,33)@;
-	padding:1px 5px 2px;
-	@cssShadow@:0 3px 3px @darken(AppC,15)@;
+	background-color:@lighten(AppC,25)@;
+	padding:3px 5px 4px;
+	@BottomSeparator@
+	/*@cssShadow@:0 3px 3px @darken(AppC,15)@;*/
+}
+
+.Conv2Header TABLE {
+	border-collapse:collapse;
+	border-spacing:0;
 }
 
 .Conv2Header .subject {
@@ -744,7 +744,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .Conv2View .Conv2Reply {
     background-color:@lighten(AppC,55)@;
     border-top:1px solid @darken(AppC,33)@;
-	padding:3px;
+	padding:5px;
 }
 
 .Conv2View-bottom .Conv2ReplyCell {
@@ -758,8 +758,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .ZmMailMsgCapsuleView {
 	background-color:@MailMsgBkgdColor@;
 	border:1px solid @darken(AppC,10)@;
-	margin:10px;
-	@cssShadow@:0 4px 4px @darken(AppC,25)@
+	margin:7px;
+	@cssShadow@:1px 2px 3px @darken(AppC,25)@
 }
 
 .ZmMailMsgCapsuleView.focused {
@@ -837,7 +837,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .ZmConvView2 .ReplyTextarea {
 	width:98%;
-	margin:5px;
+	margin:2px;
 #IFDEF MSIE
 	width:100%;
 	height:100%;
@@ -4549,6 +4549,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZActive	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-active@		}
 .ZSelected	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-selected@	}
 
+.ZSelected.ZAppTab							{	@AppTabSelected@						}
 .ZSelected .ZAppTabBorder					{	@grad(AppTabColor,AppC,linear-vertical)@ 	}
 
 
@@ -4855,7 +4856,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .itemCountText {
-	padding-right:2px;
+	padding-right:5px;
 	white-space:nowrap;
 	cursor:default;
 }
