@@ -143,7 +143,7 @@
 		
 <template id='mail.Message#InviteHeader'>
 	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
-		<table class='InvHeaderTable' id='${id}_headerElement'cellspacing=0 cellpadding=0 border=0 width=100%>
+		<table class='InvHeaderTable' id='${id}_headerElement' cellspacing=0 cellpadding=0 border=0 width=100%>
 			<tr>
                 <td>&nbsp;</td>
 				<td>
@@ -168,6 +168,7 @@
 						</div>
 					<$ } $>
 					<div class='InvHeaderDiv'>
+						<$ if (!data.noTopHeader) { $>
 						<table cellspacing=0 cellpadding=0 border=0 width=100%>
 							<tr id='${hdrTableTopRowId}'>
 								<$ if (data.closeBtnCellId) { $>
@@ -182,6 +183,7 @@
 								<td>&nbsp;</td>
 							</tr>
 						</table>
+						<$ } $>
 
 						<table id='${hdrTableId}' cellspacing=0 cellpadding=1 border=0 width=100%>
 							<$ if (data.counterInvMsg) { $>
@@ -254,6 +256,12 @@
 								<tr>
 									<td class='LabelColName'><$= ZmMsg.repeats $>:</td>
 									<td class='LabelColValue'><$= data.recur $></td>
+								</tr>
+							<$ } $>
+							<$ if (data.toolbarCellId) { $>
+								<tr>
+									<td class='LabelColName'><$= ZmMsg.respondLabel $></td>
+									<td class='LabelColValue' id='${toolbarCellId}'></td>
 								</tr>
 							<$ } $>
 						</table>

@@ -1339,7 +1339,7 @@ function(msg, container) {
 	}
 
 	if (invite && !invite.isEmpty() && this._inviteMsgView) {
-		this._inviteMsgView.addSubs(subs, sentBy, sentByAddr, sender ? addr : null);
+		this._getInviteSubs(subs, sentBy, sentByAddr, sender ? addr : null);
 	}
 	else {
 		subs.sentBy = sentBy;
@@ -1399,6 +1399,11 @@ function(msg, container) {
 		reportBtn.setText(ZmMsg.reportSyncFailure);
 		reportBtn.addSelectionListener(new AjxListener(this, this._reportButtonListener, msg));
 	}
+};
+
+ZmMailMsgView.prototype._getInviteSubs =
+function(subs, sentBy, sentByAddr, sender, addr) {
+	this._inviteMsgView.addSubs(subs, sentBy, sentByAddr, sender ? addr : null);
 };
 
 ZmMailMsgView.prototype._renderInviteToolbar =

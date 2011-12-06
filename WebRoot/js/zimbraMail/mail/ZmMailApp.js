@@ -1496,7 +1496,7 @@ function(refresh) {
 		this.resetOverview(this.getOverviewId());
 
 		// mark all existing mail list views as stale
-		var viewIds = [ZmId.VIEW_TRAD, ZmId.VIEW_CONVLIST, ZmId.VIEW_CONVLIST2, ZmId.VIEW_CONV];
+		var viewIds = [ZmId.VIEW_TRAD, ZmId.VIEW_CONVLIST, ZmId.VIEW_CONV];
 		var avm = appCtxt.getAppViewMgr();
 		for (var i = 0; i < viewIds.length; i++) {
 			var dpv = avm.getViewComponent(viewIds[i], ZmAppViewMgr.C_APP_CONTENT);

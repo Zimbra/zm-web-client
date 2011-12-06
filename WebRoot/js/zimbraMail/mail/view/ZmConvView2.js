@@ -697,6 +697,7 @@ ZmMailMsgCapsuleView = function(params) {
 	this._forceCollapse = params.forceCollapse;
 	this._actionsMenu = params.actionsMenu;
 	this._showingQuotedText = false;
+	this._showingCalendar = false;
 	this._infoBarId = this._htmlElId;
 
 	this.addListener(DwtEvent.ONMOUSEDOWN, this._mouseDownListener.bind(this));
@@ -850,25 +851,10 @@ function(msg, container, callback, index) {
 		var bodyEl = this.getMsgBodyElement();
 		var imv = this._inviteMsgView;
 		if (imv && imv._inviteToolbar) {
-			imv._inviteToolbar.reparentHtmlElement(bodyEl, 0);
-		}
-			
-		// invite header
-		bodyEl.insertBefore(this._headerElement.parentNode, bodyEl.childNodes[1]);
-
-		// resize and reposition F/B cal day view
-		var dayView = imv && imv._dayView;
-		if (dayView) {
-			// shove it in a relative-positioned container DIV so it can use absolute positioning
-			var div = document.createElement("div");
-			Dwt.setSize(div, Dwt.DEFAULT, 220);
-			Dwt.setPosition(div, Dwt.RELATIVE_STYLE);
-			bodyEl.appendChild(div);
-			dayView.reparentHtmlElement(div);
-			var mySize = this.getSize();
-			dayView.setSize(mySize.x - 2, 220);
-			var el = dayView.getHtmlElement();
-			el.style.left = el.style.top = "auto";
+			var cell = document.getElementById(this._inviteToolbarCellId);
+			if (cell) {
+				imv._inviteToolbar.reparentHtmlElement(cell, 0);
+			}
 		}
 	}
 	
@@ -880,6 +866,13 @@ function(msg, container, callback, index) {
 		// invite header
 		bodyEl.insertBefore(this._headerElement.parentNode, bodyEl.firstChild);
 	}
+};
+
+ZmMailMsgCapsuleView.prototype._getInviteSubs =
+function(subs, sentBy, sentByAddr, sender, addr) {
+	ZmMailMsgView.prototype._getInviteSubs.apply(this, arguments);
+	subs.noTopHeader = true;
+	subs.toolbarCellId = this._inviteToolbarCellId = [this._viewId, "inviteToolbarCell"].join("_");
 };
 
 ZmMailMsgCapsuleView.prototype._getBodyContent =
@@ -897,20 +890,28 @@ function(msg, container) {
 	this._folderContainerCellId	= this._footerId + "_folderContainerCell";
 	this._tagContainerCellId	= this._footerId + "_tagContainerCell";
 	this._showTextLinkId		= this._footerId + "_showText";
+	this._showCalendarLinkId	= this._footerId + "_showCalendar";
 	var replyLinkId				= this._footerId + "_reply";
 	var replyAllLinkId			= this._footerId + "_replyAll";
 	this._buttonCellId			= this._footerId + "_actionsCell";
 	
-	var links = this._noQuotedText ? [] : [this._makeLink(ZmMsg.showQuotedText, this._showTextLinkId)];
-	links.push(this._makeLink(ZmMsg.reply, replyLinkId));
-	links.push(this._makeLink(ZmMsg.replyAll, replyAllLinkId));
+	var links = [];
+	if (this._isCalendarInvite) {
+		if (this._inviteMsgView && this._inviteMsgView._dayView) {
+			links.push(this._makeLink(ZmMsg.showCalendar, this._showCalendarLinkId));
+		}
+	}
+	else if (!this._noQuotedText) {
+		links.push(this._makeLink(ZmMsg.showQuotedText, this._showTextLinkId));
+		links.push(this._makeLink(ZmMsg.reply, replyLinkId));
+		links.push(this._makeLink(ZmMsg.replyAll, replyAllLinkId));
+	}
 	
 	var subs = {
 		footerId:		this._footerId,
 		folderCellId:	this._folderContainerCellId,
 		tagCellId:		this._tagContainerCellId,
 		buttonCellId:	this._buttonCellId,
-		noQuotedText:	this._noQuotedText,
 		links:			links.join(" | ")
 	}
 	var html = AjxTemplate.expand("mail.Message#Conv2MsgFooter", subs);
@@ -922,6 +923,11 @@ function(msg, container) {
 	var showTextLink = document.getElementById(this._showTextLinkId);
 	if (showTextLink) {
 		showTextLink.onclick = this._handleShowTextLink.bind(this);
+	}
+
+	var showCalendarLink = document.getElementById(this._showCalendarLinkId);
+	if (showCalendarLink) {
+		showCalendarLink.onclick = this._handleShowCalendarLink.bind(this);
 	}
 	
 	var replyLink = document.getElementById(replyLinkId);
@@ -987,6 +993,10 @@ function() {
 		Dwt.setVisible(this._displayImagesId, this._expanded);
 		Dwt.setVisible(this._msgBodyDivId, this._expanded);
 		Dwt.setVisible(this._footerId, this._expanded);
+		if (this._isCalendarInvite) {
+			Dwt.setVisible(this._headerElement, this._expanded);
+			Dwt.setVisible(this._inviteCalendarContainer, this._showingCalendar && this._expanded);
+		}
 	}
 	this._header._setExpandIcon(this._expanded);
 	window.setTimeout(this.resize.bind(this), 250);
@@ -1058,6 +1068,39 @@ function() {
 	var showTextLink = document.getElementById(this._showTextLinkId);
 	if (showTextLink) {
 		showTextLink.innerHTML = this._showingQuotedText ? ZmMsg.hideQuotedText : ZmMsg.showQuotedText;
+	}
+	
+	window.setTimeout(this.resize.bind(this), 250);
+};
+
+ZmMailMsgCapsuleView.prototype._handleShowCalendarLink =
+function() {
+	
+	this._showingCalendar = !this._showingCalendar;
+	
+	if (this._inviteCalendarContainer) {
+		Dwt.setVisible(this._inviteCalendarContainer, this._showingCalendar);
+	}
+	else if (this._showingCalendar) {
+		var imv = this._inviteMsgView;
+		var dayView = imv && imv._dayView;
+		if (dayView) {
+			// shove it in a relative-positioned container DIV so it can use absolute positioning
+			var div = this._inviteCalendarContainer = document.createElement("div");
+			Dwt.setSize(div, Dwt.DEFAULT, 220);
+			Dwt.setPosition(div, Dwt.RELATIVE_STYLE);
+			this.getHtmlElement().appendChild(div);
+			dayView.reparentHtmlElement(div);
+			var mySize = this.getSize();
+			dayView.setSize(mySize.x - 5, 218);
+			var el = dayView.getHtmlElement();
+			el.style.left = el.style.top = "auto";
+		}
+	}
+	
+	var showCalendarLink = document.getElementById(this._showCalendarLinkId);
+	if (showCalendarLink) {
+		showCalendarLink.innerHTML = this._showingCalendar ? ZmMsg.hideCalendar : ZmMsg.showCalendar;
 	}
 	
 	window.setTimeout(this.resize.bind(this), 250);

@@ -89,10 +89,6 @@ function(view, force) {
 			if (this._currentViewType == ZmId.VIEW_CONVLIST) {
 				this._mailListView.redoExpansion();
 			}
-			else if (this._currentViewType == ZmId.VIEW_CONVLIST2) {
-				var cv = this._doublePaneView._itemView;
-				cv.set(cv._conv, true);
-			}
 		}
 		if (this._toolbar && this._toolbar[this._currentViewId]) {
 			this._toolbar[this._currentViewId].adjustSize();
@@ -123,12 +119,6 @@ function(actionCode) {
 	switch (actionCode) {
 
 		case ZmKeyMap.EXPAND:
-			if (this._currentViewType == ZmId.VIEW_CONVLIST2) {
-				this._doublePaneView._mailListView._blur();
-				this._doublePaneView._itemView._focus();
-				break;
-			}
-			// EXPAND continues below if we are using hybrid view
 		case ZmKeyMap.COLLAPSE:
 			if (mlv.getSelectionCount() != 1) { return false; }
 			var item = mlv.getItemFromElement(mlv._kbAnchor);
