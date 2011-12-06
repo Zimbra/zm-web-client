@@ -43,8 +43,6 @@ ZmDoublePaneView = function(params) {
 								   threshold:ZmDoublePaneView.SASH_THRESHOLD, posStyle:Dwt.ABSOLUTE_STYLE});
 	this._horizSash.registerCallback(this._sashCallback, this);
 	this._horizSash.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._sashHorizRelease));
-	this._vertSashX = this.getReadingSashPosition(true);
-	this._horizSashY = this.getReadingSashPosition(false);
 
 	this.setReadingPane();
 };
@@ -58,6 +56,8 @@ ZmDoublePaneView.prototype.toString = function() { return "ZmDoublePaneView"; };
 // consts
 
 ZmDoublePaneView.SASH_THRESHOLD = 5;
+ZmDoublePaneView.MIN_LISTVIEW_WIDTH = 20;
+
 ZmDoublePaneView._TAG_IMG = "TI";
 
 
@@ -221,7 +221,7 @@ ZmDoublePaneView.prototype._createMailItemView = function(params) {};
 ZmDoublePaneView.prototype._resetSize = 
 function(newWidth, newHeight, force) {
 
-	if ((!this._vertSashX && !this._horizSashY) && (newWidth <= 0 || newHeight <= 0)) { return; }
+	if (newWidth <= 0 || newHeight <= 0) { return; }
 	if (!force && newWidth == this._lastResetWidth && newHeight == this._lastResetHeight) { return; }
 
 	var readingPaneOnRight = this._controller.isReadingPaneOnRight();
@@ -231,13 +231,13 @@ function(newWidth, newHeight, force) {
 		var sashSize = sash.getSize();
 		var sashThickness = readingPaneOnRight ? sashSize.x : sashSize.y;
 		if (readingPaneOnRight) {
-			var listViewWidth = this._vertSashX || (Number(ZmMsg.LISTVIEW_WIDTH)) || Math.floor(newWidth / 2.5);
+			var listViewWidth = this.getReadingSashPosition(true) || (Number(ZmMsg.LISTVIEW_WIDTH)) || Math.floor(newWidth / 2.5);
 			this._mailListView.resetSize(listViewWidth, newHeight);
 			sash.setLocation(listViewWidth, 0);
 			this._itemView.setBounds(listViewWidth + sashThickness, 0,
 									newWidth - (listViewWidth + sashThickness), newHeight);
 		} else {
-			var listViewHeight = this._horizSashY || (Math.floor(newHeight / 2) - DwtListView.HEADERITEM_HEIGHT);
+			var listViewHeight = this.getReadingSashPosition(false) || (Math.floor(newHeight / 2) - DwtListView.HEADERITEM_HEIGHT);
 			this._mailListView.resetSize(newWidth, listViewHeight);
 			sash.setLocation(0, listViewHeight);
 			this._itemView.setBounds(0, listViewHeight + sashThickness, newWidth,
@@ -289,18 +289,8 @@ function(delta) {
 
 		if (readingPaneOnRight) {
 			// moving sash left
-			if (!this._minMLVWidth) {
-				var firstHdr = this._mailListView._headerList[0];
-				var hdrWidth = firstHdr._width;
-				if (hdrWidth == "auto") {
-					var header = Dwt.byId(firstHdr._id);
-					hdrWidth = header && Dwt.getSize(header).x;
-				}
-				this._minMLVWidth = hdrWidth;
-			}
-
 			var currentWidth = ((AjxEnv.isIE) ? this._vertSash.getLocation().x : this._mailListView.getSize().x);
-			absDelta = Math.max(0, Math.min(absDelta, currentWidth - this._minMLVWidth));
+			absDelta = Math.max(0, Math.min(absDelta, currentWidth - ZmDoublePaneView.MIN_LISTVIEW_WIDTH));
 
 			if (absDelta > 0) {
 				delta = -absDelta;
@@ -382,35 +372,43 @@ function(oldMsgId, newMsg) {
 };
 
 /**
- * return the sash location based on reading pane preference
- * @param readingPaneOnRight {boolean}  true if reading pane is on the right
+ * Returns the sash location (in pixels) based on reading pane preference.
+ * 
+ * @param {boolean}		readingPaneOnRight   true if reading pane is on the right
  */
 ZmDoublePaneView.prototype.getReadingSashPosition =
 function(readingPaneOnRight) {
 	if (readingPaneOnRight) {
-		var value = this._readingPaneSashVertPos || appCtxt.get(ZmSetting.READING_PANE_SASH_VERTICAL);
-		var percentWidth = value / 100;
-		var screenWidth = Dwt.getWindowSize().x;
-		return Math.round(percentWidth * screenWidth);
+		if (!this._vertSashX) {
+			var value = this._readingPaneSashVertPos || appCtxt.get(ZmSetting.READING_PANE_SASH_VERTICAL);
+			var percentWidth = value / 100;
+			var screenWidth = this.getSize().x;
+			this._vertSashX = Math.round(percentWidth * screenWidth);
+		}
+		return this._vertSashX;
 	}
 	else {
-		var value = this._readingPaneSashHorizPos || appCtxt.get(ZmSetting.READING_PANE_SASH_HORIZONTAL);
-		var percentHeight = value / 100;
-		var screenHeight = Dwt.getWindowSize().y;
-		return Math.round(percentHeight * screenHeight);
+		if (!this._horizSashY) {
+			var value = this._readingPaneSashHorizPos || appCtxt.get(ZmSetting.READING_PANE_SASH_HORIZONTAL);
+			var percentHeight = value / 100;
+			var screenHeight = this.getSize().y;
+			this._horizSashY = Math.round(percentHeight * screenHeight);
+		}
+		return this._horizSashY;
 	}
 };
 
 /**
- * Set the location of sash depending upon reading pane preference
- * @param readingPaneOnRight   {boolean} true if reading pane is on the right
- * @param value  {int} location of sash
+ * Sets the location of sash (in percentage) depending upon reading pane preference.
+ * 
+ * @param {boolean}		readingPaneOnRight	true if reading pane is on the right
+ * @param {int}			value   			location of sash (in pixels)
  */
 ZmDoublePaneView.prototype.setReadingSashPosition =
 function(readingPaneOnRight, value) {
 	if (readingPaneOnRight) {
-		var screenWidth = Dwt.getWindowSize().x;
-		var sashWidthPercent = Math.round((value/screenWidth) * 100);
+		var screenWidth = this.getSize().x;
+		var sashWidthPercent = Math.round((value / screenWidth) * 100);
 		if (this._controller.isSearchResults) {
 			this._readingPaneSashVertPos = sashWidthPercent;
 		}
@@ -419,7 +417,7 @@ function(readingPaneOnRight, value) {
 		}
 	}
 	else {
-		var screenHeight = Dwt.getWindowSize().y;
+		var screenHeight = this.getSize().y;
 		var sashHeightPercent = Math.round((value/screenHeight) * 100);
 		if (this._controller.isSearchResults) {
 			this._readingPaneSashHorizPos = sashHeightPercent;
