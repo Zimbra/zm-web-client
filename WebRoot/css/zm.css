@@ -733,6 +733,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	border-spacing:0;
 }
 
+.Conv2Messages {
+	width:100%;
+}
+
 .Conv2Messages-bottom {
 	height:100%;
 }
