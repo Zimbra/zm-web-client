@@ -1160,28 +1160,35 @@ function() {
 	ctlr._mailListView._selectedMsg = null;
 };
 
+// Left-click anywhere selects this msg view. Right-click on header shows action menu.
 ZmMailMsgCapsuleView.prototype._mouseDownListener =
 function(ev) {
 	
 	if (ev.button == DwtMouseEvent.LEFT) {
-		this._convView.setFocusedMsgView(this);
+		var el = DwtUiEvent.getTargetWithProp(ev, "id", false, this._header._expandIconCellId);
+		if (!el) {
+			this._convView.setFocusedMsgView(this);
+		}
 	}
 	else if (ev.button == DwtMouseEvent.RIGHT) {
-		var target = DwtUiEvent.getTarget(ev);
-		if (this._objectManager && !AjxUtil.isBoolean(this._objectManager) && this._objectManager._findObjectSpan(target)) {
-			// let zimlet framework handle this; we don't want to popup our action menu
-			return;
+		var el = DwtUiEvent.getTargetWithProp(ev, "id", false, this._header._htmlElId);
+		if (el == this._header.getHtmlElement()) {
+			var target = DwtUiEvent.getTarget(ev);
+			if (this._objectManager && !AjxUtil.isBoolean(this._objectManager) && this._objectManager._findObjectSpan(target)) {
+				// let zimlet framework handle this; we don't want to popup our action menu
+				return;
+			}
+			this._resetOperations();
+			this._controller._setTagMenu(this._actionsMenu, [this._msg]);
+			this._actionsMenu.popup(0, ev.docX, ev.docY);
+			this._convView.setMsg(this._msg);
+			// set up the event so that we don't also get a browser menu
+			ev._dontCallPreventDefault = false;
+			ev._returnValue = false;
+			ev._stopPropagation = true;
+			ev._authoritative = true;	// don't let subsequent listeners mess with us
+			return true;
 		}
-		this._resetOperations();
-		this._controller._setTagMenu(this._actionsMenu, [this._msg]);
-		this._actionsMenu.popup(0, ev.docX, ev.docY);
-		this._convView.setMsg(this._msg);
-		// set up the event so that we don't also get a browser menu
-		ev._dontCallPreventDefault = false;
-		ev._returnValue = false;
-		ev._stopPropagation = true;
-		ev._authoritative = true;	// don't let subsequent listeners mess with us
-		return true;
 	}
 };
 
