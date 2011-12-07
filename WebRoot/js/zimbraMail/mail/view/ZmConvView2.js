@@ -484,13 +484,16 @@ function(listener, ev) {
 ZmConvView2.prototype._sendListener =
 function() {
 	
-	var params = {
-		sendNow:		true,
-		inNewWindow:	false,
-		sessionId:		ZmApp.HIDDEN_SESSION,
-		composeMode:	DwtHtmlEditor.TEXT
-	};
-	this._compose(params);
+	var val = this._replyInput.value;
+	if (val && (val != this._recipientText)) {
+		var params = {
+			sendNow:		true,
+			inNewWindow:	false,
+			sessionId:		ZmApp.HIDDEN_SESSION,
+			composeMode:	DwtHtmlEditor.TEXT
+		};
+		this._compose(params);
+	}
 };
 
 // TODO: look at refactoring out of ZmComposeView
