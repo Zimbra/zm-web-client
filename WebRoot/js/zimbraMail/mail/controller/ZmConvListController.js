@@ -299,7 +299,11 @@ function(ev) {
 		var handled = ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
 		if (!handled) {
 			if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
-				var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
+				if (item.type == ZmItem.CONV && item.numMsgs == 1) {
+					var msg = item.getFirstHotMsg();
+					item = msg || item;
+				}
+				var respCallback = this._handleResponseListSelectionListener.bind(this, item);
 				if (item.type == ZmItem.MSG) {
 					AjxDispatcher.run("GetMsgController", item && item.nId).show(item, this, respCallback, true);
 				} else {
