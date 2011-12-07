@@ -476,6 +476,7 @@ SELECT						{	@FieldBorder@	}
 .overviewHeader-actioned TD 		{ background-color:@lighten(AppC,33)@;	}
 .overviewHeader .ZButton,
 .overviewHeader-actioned .ZButton	{ height:auto;	}
+.FirstOverviewHeader.overviewHeader { padding-top:0;	}
 .RowDouble							{ height:auto; padding-top:0; 		}
 .RowDouble>TABLE					{ border:1px solid white; 			}
 .RowDouble .TopRow,

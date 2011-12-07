@@ -1231,6 +1231,10 @@ line-height:normal;
 /*
  * ZmContactSplitView -- list of contacts w/display of one contact to the right
  */
+.ZmContactSplitView {
+	@PanelBg@
+	@PanelBorder@
+}
 
 .AlphabetBarTable {
 	background-color:@WidgetBgColor@;
@@ -1580,7 +1584,8 @@ line-height:normal;
 /* Outer container for all calendar display views */
 .calendar_view {
 	@FullSize@
-	@AppBg@
+	@PanelBg@
+	@PanelBorder@
 }
 
 /* ??? SHOTGUN   NECESSARY?  calendar_body? */
@@ -3422,7 +3427,8 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* Container for the set of preference pages (including tabs) */
 .ZmPrefView {
-	@AppBg@
+	@PanelBg@
+	@PanelBorder@
 	@FullSize@
 }
 
@@ -4601,6 +4607,12 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 .ZmBriefcaseView {
 	background-color:white;
+}
+
+.ZmBriefcaseDetailListView,
+.ZmPreviewView {
+	@PanelBg@
+	@PanelBorder@
 }
 
 .ZmBriefcaseItem,.ZmBriefcaseItemSelected {
