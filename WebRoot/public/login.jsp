@@ -170,8 +170,8 @@
                     </c:redirect>
                 </c:when>
                 <c:otherwise>
-		            <jsp:forward page="/public/launchZCS.jsp"/>
-		        </c:otherwise>
+                   <jsp:forward page="/public/launchZCS.jsp"/>
+                </c:otherwise>
 		    </c:choose>
         </c:otherwise>
     </c:choose>
@@ -239,6 +239,11 @@ if (application.getInitParameter("offlineMode") != null)  {
 	Cookie testCookie = new Cookie("ZM_TEST", "true");
 	testCookie.setSecure(com.zimbra.cs.taglib.ZJspSession.secureAuthTokenCookie(request));
 	response.addCookie(testCookie);
+    //Add the no-cache headers to ensure that the login page is never served from cache
+    response.addHeader("Vary", "User-Agent");
+    response.setHeader("Expires", "-1");
+    response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+    response.setHeader("Pragma", "no-cache");
 %>
 
 
