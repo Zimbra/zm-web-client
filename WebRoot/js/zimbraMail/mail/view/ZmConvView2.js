@@ -859,6 +859,13 @@ function(msg, container, callback, index) {
 				imv._inviteToolbar.reparentHtmlElement(cell, 0);
 			}
 		}
+		if (imv._dayView) {
+			imv._dayView.setVisible(false);
+		}
+		if (AjxEnv.isIE) {
+			// for some reason width=100% on inv header table makes it too wide (bug 65696)
+			Dwt.setSize(this._headerElement, this._header.getSize().x, Dwt.DEFAULT);
+		}
 	}
 	
 	if (isShareInvite) {
@@ -900,9 +907,7 @@ function(msg, container) {
 	
 	var links = [];
 	if (this._isCalendarInvite) {
-		if (this._inviteMsgView && this._inviteMsgView._dayView) {
-			links.push(this._makeLink(ZmMsg.showCalendar, this._showCalendarLinkId));
-		}
+		links.push(this._makeLink(ZmMsg.showCalendar, this._showCalendarLinkId));
 	}
 	else if (!this._noQuotedText) {
 		links.push(this._makeLink(ZmMsg.showQuotedText, this._showTextLinkId));
@@ -1098,6 +1103,7 @@ function() {
 			dayView.setSize(mySize.x - 5, 218);
 			var el = dayView.getHtmlElement();
 			el.style.left = el.style.top = "auto";
+			dayView.setVisible(true);
 		}
 	}
 	
