@@ -141,17 +141,20 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 				htmlArr[idx++] = "&nbsp;"
 			}
 		} else {
+			if ((this._mode == ZmId.VIEW_CONVLIST) && this._isMultiColumn) {
+				htmlArr[idx++] = ZmMailMsgListView.INDENT;
+			}
 			var fromAddr = msg.getAddress(AjxEmailAddress.FROM);
-			if (fromAddr) {
-				if ((this._mode == ZmId.VIEW_CONVLIST) && this._isMultiColumn) {
-					htmlArr[idx++] = ZmMailMsgListView.INDENT;
-				}
+			var fromText = fromAddr && (fromAddr.getName() || fromAddr.getDispName() || fromAddr.getAddress());
+			if (fromText) {
 				htmlArr[idx++] = "<span style='white-space:nowrap' id='";
 				htmlArr[idx++] = this._getFieldId(msg, ZmItem.F_FROM);
 				htmlArr[idx++] = "'>";
-				var name = fromAddr.getName() || fromAddr.getDispName() || fromAddr.getAddress();
-				htmlArr[idx++] = AjxStringUtil.htmlEncode(name);
+				htmlArr[idx++] = AjxStringUtil.htmlEncode(fromText);
 				htmlArr[idx++] = "</span>";
+			}
+			else {
+				htmlArr[idx++] = "<span style='white-space:nowrap'>" + ZmMsg.unknown + "</span>";
 			}
 		}
 

@@ -497,7 +497,6 @@ function(conv, fieldId) {
 
 	var part1 = conv.participants ? conv.participants.getArray() : null;
 	var origLen = part1 ? part1.length : 0;
-	// might get a weird case where there are no participants in message
 	if (origLen > 0) {
 
 		// bug 23832 - create notif for conv in sent gives us sender as participant, we want recip
@@ -535,8 +534,7 @@ function(conv, fieldId) {
 			html[idx++] = "</span>";
 		}
 	} else {
-		// XXX: possible import bug but we must take into account
-		html[idx++] = ZmMsg.noWhere;
+		html[idx++] = ZmMsg.unknown;
 	}
 
 	return html.join("");

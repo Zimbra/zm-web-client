@@ -1274,7 +1274,7 @@ ZmMailMsgCapsuleViewHeader = function(params) {
 	var subs = {
 		tableRowId:			this._tableRowId,
 		expandIconCellId:	this._expandIconCellId,
-		from:				fromAddr ? AjxStringUtil.htmlEncode(fromAddr.toString(true)) : "",
+		from:				fromAddr ? AjxStringUtil.htmlEncode(fromAddr.toString(true)) : ZmMsg.unknown,
 		fragmentCellId:		this._fragmentCellId,
 		fragment:			this._getFragment(),
 		date:				dateString

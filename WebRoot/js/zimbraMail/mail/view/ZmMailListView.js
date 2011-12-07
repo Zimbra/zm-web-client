@@ -229,9 +229,12 @@ function(htmlArr, idx, item, field, colIdx, width, attr) {
 		htmlArr[idx++] = width;
 		htmlArr[idx++] = "'";
 	}
-	htmlArr[idx++] = " id='";
-	htmlArr[idx++] = this._getCellId(item, field, params);
-	htmlArr[idx++] = "'";
+	var cellId = this._getCellId(item, field, params);
+	if (cellId) {
+		htmlArr[idx++] = " id='";
+		htmlArr[idx++] = cellId;
+		htmlArr[idx++] = "'";
+	}
 	var className = this._getCellClass(item, field, params);
 	if (className) {
 		htmlArr[idx++] = " class='";
