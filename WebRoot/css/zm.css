@@ -336,7 +336,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 .ZmSearchToolbarDiv {
     background-color:white;
-    height:20px;
     position:relative;
 }
 .ZmSearchToolbarDiv INPUT {

@@ -85,7 +85,7 @@ ZmSkin.prototype = {
 	//
 	// Public methods
 	//
-	show : function(name, state) {
+	show : function(name, state, noReflow) {
 		var containers = this.hints[name] && this.hints[name].containers;
 		if (containers) {
 			if (typeof containers == "function") {
@@ -96,18 +96,23 @@ ZmSkin.prototype = {
 			if (typeof containers == "string") {
 				containers = [ containers ];
 			}
+			var changed = false;
 			for (var i = 0; i < containers.length; i++) {
 				var ocontainer = containers[i];
 				var ncontainer = ocontainer.replace(/^!/,"");
 				var inverse = ocontainer != ncontainer;
-				this._showEl(ncontainer, inverse ? !state : state);
+				if (this._showEl(ncontainer, inverse ? !state : state)) {
+					changed = true;
+				}
 			}
-			skin._reflowApp();
+			if (changed && !noReflow) {
+				skin._reflowApp();
+			}
 		}
 	},
 
-	hide : function(name) {
-	    this.show(name, false);
+	hide : function(name, noReflow) {
+	    this.show(name, false, noReflow);
 	},
 
 	gotoApp : function(appId, callback) {
@@ -159,8 +164,9 @@ ZmSkin.prototype = {
 	
 	
 	showTopAd : function(state) {
-		skin._showEl("skin_tr_top_ad", state);
-		skin._reflowApp();
+		if (skin._showEl("skin_tr_top_ad", state)) {
+			skin._reflowApp();
+		}
 	},
 	hideTopAd : function() {	
 		skin.showTopAd(false);	
@@ -172,13 +178,15 @@ ZmSkin.prototype = {
 	showSidebarAd : function(width) {
 		var id = "skin_td_sidebar_ad";
 		if (width != null) skin._setSize(id, width);
-		skin._showEl(id);
-		skin._reflowApp();
+		if (skin._showEl(id)) {
+			skin._reflowApp();
+		}
 	},
 	hideSidebarAd : function() {
 		var id = "skin_td_sidebar_ad";
-		skin._hideEl(id);
-		skin._reflowApp();
+		if (skin._hideEl(id)) {
+			skin._reflowApp();
+		}
 	},
 	getSidebarAdContainer : function() {
 		return this._getEl("skin_container_sidebar_ad");
@@ -216,11 +224,17 @@ ZmSkin.prototype = {
 			else if (tagName == "TR" && !document.all) 	value = "table-row";
 			else value = "block";
 		}
-		el.style.display = value;
+		if (value != el.style.display) {
+			el.style.display = value;
+			return true;
+		}
+		else {
+			return false;
+		}
 	},
 	
 	_hideEl : function(id) {
-		this._showEl(id, false);
+		return this._showEl(id, false);
 	},
 	
 	_reparentEl : function(id, containerId) {

@@ -51,11 +51,11 @@ BODY						{	margin:0px; 	}
 	
 /** Search box **/	
 #skin_spacing_search,
-#skin_spacing_people_search 				{	padding:10px 0;f @cssValue(HSashContainer,width)@; 	}
-#skin_container_search						{	}
+#skin_spacing_people_search 				{	height:42px; @cssValue(HSashContainer,width)@; 	}
+#skin_container_search						{	height:20px; }
 #skin_container_search .ZmSearchToolbarDiv 	{	@trRadius@:@SkinSearchRadius@; @brRadius@:@SkinSearchRadius@; 	}
 #skin_container_search .ZButton				{	height:auto;	}
-#skin_container_search .ZButtonBorder		{	@tlRadius@:@SkinSearchRadius@; @blRadius@:@SkinSearchRadius@; border:0; height:20px; margin:1px; 	}
+#skin_container_search .ZButtonBorder		{	@tlRadius@:@SkinSearchRadius@; @blRadius@:@SkinSearchRadius@; border:0; 	}
 #skin_container_search .ZLeftIcon DIV 		{	margin:0 0 0 10px; 	}
 #skin_container_search .ZWidgetTitle 		{	display:none; 	}
 /** combined username/quota **/
