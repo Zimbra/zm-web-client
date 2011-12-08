@@ -82,6 +82,7 @@ function(conv, force) {
 			menu.addSelectionListener(menuItem, listener, 0);
 		}
 	}
+	menu.addPopdownListener(this._actionsMenuPopdownListener.bind(this));
 	
 	var oldConv = this._item;
 	this.reset();
@@ -98,6 +99,14 @@ function(conv, force) {
 	this._renderConv(conv);
 	if (conv.msgs) {
 		conv.msgs.addChangeListener(this._listChangeListener);
+	}
+};
+
+ZmConvView2.prototype._actionsMenuPopdownListener =
+function() {
+	if (this.actionedMsgView) {
+		this.actionedMsgView.setFocused(false);
+		this.actionedMsgView = null;
 	}
 };
 
@@ -1182,6 +1191,8 @@ function(ev) {
 	else if (ev.button == DwtMouseEvent.RIGHT) {
 		var el = DwtUiEvent.getTargetWithProp(ev, "id", false, this._header._htmlElId);
 		if (el == this._header.getHtmlElement()) {
+			this._header.setFocused(true);
+			this._convView.actionedMsgView = this;
 			var target = DwtUiEvent.getTarget(ev);
 			if (this._objectManager && !AjxUtil.isBoolean(this._objectManager) && this._objectManager._findObjectSpan(target)) {
 				// let zimlet framework handle this; we don't want to popup our action menu

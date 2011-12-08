@@ -337,7 +337,7 @@ function(menu) {
 ZmListController.prototype._menuPopdownActionListener =
 function(ev) {
 	if (!this._pendingActionData) {
-		var view = this.getCurrentView();
+		var view = this.getListView();
 		if (view && view.handleActionPopdown) {
 			view.handleActionPopdown(ev);
 		}
