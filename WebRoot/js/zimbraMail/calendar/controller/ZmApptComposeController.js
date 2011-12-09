@@ -176,10 +176,10 @@ function(id){
 
 ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
+
 	var appt = this._composeView.getAppt(attId);
 
-
-    if(!appt.isValidDuration()){
+    if (appt && !appt.isValidDuration()) {
         this._composeView.showInvalidDurationMsg();
         this.enableToolbar(true);
         return false;
