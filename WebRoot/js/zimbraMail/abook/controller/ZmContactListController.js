@@ -229,7 +229,7 @@ function(contact, callback) {
 		return;
 	}
 	var callbackFromGettingInfo = this._handleGetDlInfoResponse.bind(this, contact, callback);
-	contact.getDlInfo(callbackFromGettingInfo);
+	contact.loadDlInfo(callbackFromGettingInfo);
 };
 
 ZmContactListController.prototype._handleGetDlInfoResponse =
@@ -240,7 +240,8 @@ function(contact, callback, result) {
 						isOwner: response.isOwner,
 						subscriptionPolicy: attrs.zimbraDistributionListSubscriptionPolicy,
 						unsubscriptionPolicy: attrs.zimbraDistributionListUnsubscriptionPolicy,
-						description: attrs.description};
+						description: attrs.description,
+						displayName: attrs.displayName};
 
 	this._resetOperations(this._toolbar[this._currentViewId], 0); // now that we got the dlInfo we can know better how to set the "edit" button.
 	var callbackFromGettingMembers = this._handleGetDlMembersResponse.bind(this, contact, callback);

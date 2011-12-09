@@ -147,6 +147,16 @@ function() {
 	var groupName = this._getGroupName();
 	var folderId = this._getFolderId();
 
+	if (this._contact.isDistributionList()) {
+		var dlInfo = this._contact.dlInfo;
+		if (dlInfo.displayName != this._getDlDisplayName()) {
+			mods[ZmContact.F_dlDisplayName] = this._getDlDisplayName();
+		}
+		if (dlInfo.description != this._getDlDesc()) {
+			mods[ZmContact.F_dlDesc] = this._getDlDesc();
+		}
+	}
+
 	// creating new contact (possibly some fields - but not ID - prepopulated)
 	if (this._contact.id == null || (this._contact.isGal && !this._contact.isDistributionList())) {
 		mods[ZmContact.F_folderId] = folderId;
@@ -195,6 +205,17 @@ ZmGroupView.prototype._getGroupName =
 function() {
 	return AjxStringUtil.trim(document.getElementById(this._groupNameId).value);
 };
+
+ZmGroupView.prototype._getDlDisplayName =
+function() {
+	return AjxStringUtil.trim(document.getElementById(this._dlDisplayNameId).value);
+};
+
+ZmGroupView.prototype._getDlDesc =
+function() {
+	return AjxStringUtil.trim(document.getElementById(this._dlDescId).value);
+};
+
 
 ZmGroupView.prototype.isEmpty =
 function(checkEither) {
@@ -259,6 +280,10 @@ ZmGroupView.prototype.getErrorMessage = function(id) {
 ZmGroupView.prototype.enableInputs =
 function(bEnable) {
 	document.getElementById(this._groupNameId).disabled = !bEnable;
+	if (this._contact.isDistributionList()) {
+		document.getElementById(this._dlDisplayNameId).disabled = !bEnable;
+		document.getElementById(this._dlDescId).disabled = !bEnable;
+	}
 	if (!this._noManualEntry) {
 		this._groupMembers.disabled = !bEnable;
 	}
@@ -402,6 +427,9 @@ function() {
 	}
 
 	this._setGroupName();
+	if (this._contact.isDistributionList()) {
+		this._setDlFields();
+	}
 	this._setGroupMembers();
 	this._setTags();
 };
@@ -432,6 +460,10 @@ function() {
 	this._titleId = 			this._htmlElId + "_title";
 	this._tagsId = 				this._htmlElId + "_tags";
 	this._groupNameId = 		this._htmlElId + "_groupName";
+	if (this._contact.isDistributionList()) {
+		this._dlDisplayNameId = 	this._htmlElId + "_dlDisplayName";
+		this._dlDescId = 			this._htmlElId + "_dlDesc";
+	}
 	this._searchFieldId = 		this._htmlElId + "_searchField";
 
 	var showSearchIn = false;
@@ -570,6 +602,16 @@ function() {
 	Dwt.setHandler(groupName, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
 	Dwt.associateElementWithObject(groupName, this);
 
+	if (this._contact.isDistributionList()) {
+		var dlDisplayName = document.getElementById(this._dlDisplayNameId);
+		Dwt.setHandler(dlDisplayName, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
+		Dwt.associateElementWithObject(dlDisplayName, this);
+
+		var dlDesc = document.getElementById(this._dlDescId);
+		Dwt.setHandler(dlDesc, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
+		Dwt.associateElementWithObject(dlDesc, this);
+	}
+
 	if (!this._noManualEntry) {
 		Dwt.setHandler(this._groupMembers, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
 		Dwt.associateElementWithObject(this._groupMembers, this);
@@ -586,6 +628,10 @@ ZmGroupView.prototype._getTabGroupMembers =
 function() {
 	var fields = [];
 	fields.push(document.getElementById(this._groupNameId));
+	if (this._contact.isDistributionList()) {
+		fields.push(document.getElementById(this._dlDisplayNameId));
+		fields.push(document.getElementById(this._dlDescId));
+	}
 	if (!this._noManualEntry) {
 		fields.push(this._groupMembers);
 	}
@@ -650,6 +696,14 @@ ZmGroupView.prototype._setGroupName =
 function() {
 	var groupName = document.getElementById(this._groupNameId);
 	if (groupName) groupName.value = this._contact.getFileAs() || "";
+};
+
+ZmGroupView.prototype._setDlFields =
+function() {
+	var displayName = document.getElementById(this._dlDisplayNameId);
+	if (displayName) displayName.value = this._contact.dlInfo.displayName || "";
+	var desc = document.getElementById(this._dlDescId);
+	if (desc) desc.value = this._contact.dlInfo.description || "";
 };
 
 ZmGroupView.prototype._resetSearchInSelect =

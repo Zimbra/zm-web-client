@@ -545,6 +545,19 @@
 <!----------------------------------------------------------------------------->
 <template id="abook.Contacts#GroupView">
 	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
+	<$ if (data.contact.isDistributionList()) { $>
+		<table valign="top" width="100%" cellspacing="0" class="ZmEditContactView">
+			<tr valign="top">
+				<td class='rowLabel'>Display Name:</td>
+				<td class='rowValue'><input type='text' autocomplete='off' size=40 id='${id}_dlDisplayName' class="Text"></td>
+			</tr>
+			<tr valign="top">
+				<td class='rowLabel'>Description:</td>
+				<td class='rowValue'><textarea rows='4' cols='65' id='${id}_dlDesc'></textarea></td>
+			</tr>
+		</table>
+	<$ } $>
+
 	<table border=0 cellpadding=5 cellspacing=5 width=100% height=100%>
 		<tr>
 			<!-- content: left pane -->

@@ -67,6 +67,8 @@ ZmContact.F_custom					= "custom";
 ZmContact.F_description				= "description";
 ZmContact.F_department				= "department";
 ZmContact.F_dlist					= "dlist";				// Group fields
+ZmContact.F_dlDisplayName			= "dldisplayname"; //DL
+ZmContact.F_dlDesc					= "dldesc";  //DL
 ZmContact.F_email					= "email";
 ZmContact.F_email2					= "email2";
 ZmContact.F_email3					= "email3";
@@ -824,7 +826,7 @@ function() {
 };
 
 
-ZmContact.prototype.getDlInfo =
+ZmContact.prototype.loadDlInfo =
 function(callback) {
 	if (this.dlInfo) {
 		if (callback) {
@@ -1215,6 +1217,15 @@ function(attr) {
 		this._fileAs = newName;
 	}
 
+	var displayName = attr[ZmContact.F_dlDisplayName];
+	if (displayName) {
+		reqs.push(this._getModifyDlReq("displayName", displayName));
+	}
+	var desc = attr[ZmContact.F_dlDesc];
+	if (displayName) {
+		reqs.push(this._getModifyDlReq("description", desc));
+	}
+
 	if (reqs.length == 0) {
 		return;
 	}
@@ -1260,6 +1271,21 @@ function(name) {
 		action: {
 			op: "rename",
 			newName: {_content: name}
+		}
+	};
+};
+
+
+ZmContact.prototype._getModifyDlReq =
+function(name, value) {
+	return {
+		_jsns: "urn:zimbraAccount",
+		dl: {by: "name",
+			 _content: this.getEmail()
+		},
+		action: {
+			op: "modify",
+			a: {n: name, _content: value}
 		}
 	};
 };
