@@ -147,7 +147,7 @@
 }
 
 .ZNewButton {
-	width: 100%;
+	width:100%;
 	@NewButton@
 }
 
@@ -762,7 +762,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmMailMsgCapsuleView.focused {
-	border-color:@darken(SelC,50)@;
+	border-color:@darken(SelC,33)@;
 }
 
 .ZmMailMsgCapsuleView .SubjectCol {
@@ -1230,7 +1230,9 @@ line-height:normal;
 /*
  * ZmContactSplitView -- list of contacts w/display of one contact to the right
  */
-.ZmContactSplitView {
+.ZmContactSplitView, 
+.ZmContactView,
+.ZmEditContactView {
 	@PanelBg@
 	@PanelBorder@
 }
@@ -1314,7 +1316,7 @@ line-height:normal;
 .ZmContactView .contactHeaderTable,
 .ZmContactInfoView .contactHeaderTable {
 	border-bottom:1px solid #777777;
-	background-color:@lighten(AltC,40)@;
+	background-color:@darken(AppC,20)@;
 }
 
 .ZmContactInfoView .contactGroupTable {
@@ -1410,10 +1412,6 @@ line-height:normal;
 
 /* Container for the edit screen */
 /* ??? RENAME -> ZmContactEditView */
-.ZmContactView {
-	@PageBg@
-}
-
 .ZmContactView .groupMembers {
 	width:100%;
 }
@@ -3615,7 +3613,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .DwtMenu .ZmFolderChooser .OverviewTree {
-	width: auto; /*no limit and not too much*/
+	width:auto; /*no limit and not too much*/
 }
 
 /* ZmChooseFolderDialog and ZmPickTagDialog */
@@ -5171,7 +5169,7 @@ border:1px solid #666;
 .ZmSuggestView {
 }
 .ZmSuggestLocationList {
-    height: 100%;
+    height:100%;
 }
 
 .ZmSuggestPref {
@@ -5187,12 +5185,12 @@ border:1px solid #666;
     text-align:left;
     padding-left:2px;
     padding-top:2px;
-    width: 130px;
+    width:130px;
 }
 .ZmSuggestLabelImage {
-    float: right;
+    float:right;
     padding-top:2px;
-    padding-right: 4px;
+    padding-right:4px;
     padding-bottom:2px;
 }
 

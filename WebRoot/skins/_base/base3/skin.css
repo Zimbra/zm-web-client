@@ -53,9 +53,10 @@ BODY						{	margin:0px; 	}
 #skin_spacing_search,
 #skin_spacing_people_search 				{	height:42px; @cssValue(HSashContainer,width)@; 	}
 #skin_container_search						{	height:20px; }
-#skin_container_search .ZmSearchToolbarDiv 	{	@trRadius@:@SkinSearchRadius@; @brRadius@:@SkinSearchRadius@; 	}
+
+#skin_container_search .ZmSearchToolbar 	{	background-color:white; @borderRadius@:@SkinSearchRadius@; 	}
 #skin_container_search .ZButton				{	height:auto;	}
-#skin_container_search .ZButtonBorder		{	@tlRadius@:@SkinSearchRadius@; @blRadius@:@SkinSearchRadius@; border:0; 	}
+#skin_container_search .ZButtonBorder		{	border:0; background-color:transparent; 	}
 #skin_container_search .ZLeftIcon DIV 		{	margin:0 0 0 10px; 	}
 #skin_container_search .ZWidgetTitle 		{	display:none; 	}
 /** combined username/quota **/
@@ -84,7 +85,7 @@ BODY						{	margin:0px; 	}
 #skin_container_tree					{	@SkinBorderTree@ 					}
 
 /** Tree Footer (mini-calendar) **/
-#skin_tr_tree_footer					{	display: none; 			}
+#skin_tr_tree_footer					{	display:none; 			}
 #skin_spacing_tree_footer				{}
 #skin_container_tree_footer				{	@SkinBorderMiniCal@ 	}
 
@@ -101,8 +102,16 @@ BODY						{	margin:0px; 	}
 	z-index:1;
 	@AppTab@
 }
-#skin_container_refresh .ZToolbarButtonBorder { background-image:none;  border:none; 	}
-
+/** reset styles on app row toolbar buttons **/
+#skin_container_global_buttons .ZToolbarButton,
+#skin_container_global_buttons .ZToolbarButtonTable { 
+	background-color:transparent;
+	background-image:none;  
+	border:0;
+	@cssShadow@:0px 0px 0px transparent;
+	-ms-filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+	filter:progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
 
 /** App Toolbar **/
 #skin_tr_toolbar>TD						{	border-top:1px solid #999; 	}
@@ -114,6 +123,9 @@ BODY						{	margin:0px; 	}
 	background-color:transparent; 
 	background-color:rgba(0,0,0,.1);
 	border-color:rgba(0,0,0,.3);
+#IFDEF WEBKIT
+	border-color:rgba(0,0,0,.1);
+#ENDIF
 #IFDEF MSIE
 	zoom:1;
 	border-color:@darken(AltC,33)@;
@@ -256,6 +268,9 @@ BODY						{	margin:0px; 	}
 }
 .SplashScreen .switch{
     margin:100px 100px 30px;
+#IFDEF WEBKIT
+	margin-bottom:0;
+#ENDIF
 }
 .SplashScreen .switch A {
     color:@LoginLabelColor@;
@@ -267,7 +282,7 @@ BODY						{	margin:0px; 	}
 .ImgLoginBanner			{	background-repeat:no-repeat; @LoginBanner@   }
 #IFDEF MSIE
 #skin_container_logo A, #skin_container_logo A:hover, #skin_container_logo A:link {
-    background-color: transparent;}
+    background-color:transparent;}
 #ENDIF
 /* TO INTEGRATE */
 .DwtVerticalSash div {
@@ -287,11 +302,11 @@ BODY						{	margin:0px; 	}
 }
 
 .BannerTextUser {
-	overflow: hidden !important;
+	overflow:hidden !important;
 }
 .BannerTextUserOffline {
-	text-align: left !important;
-	padding: 0px 3px;
+	text-align:left !important;
+	padding:0px 3px;
 }
 
 /* App Chooser and App Tab Overrides -- TODO: Merge into main */
@@ -317,22 +332,21 @@ BODY						{	margin:0px; 	}
 /* Quota */
 .quotaBar 						{	height:8px;			}
 /* USED? */
-.quotaLabel {		
-	@FontSize-smaller@
-	text-align:right;
-}
+.quotaLabel						{	text-align:right; @FontSize-smaller@	}
 
-.ZmInviteToolBar .ZToolbarTable, .ZmShareToolBar .ZToolbarTable {
-	height:100%;
-}
+.ZmInviteToolBar .ZToolbarTable, 
+.ZmShareToolBar .ZToolbarTable	{	height:100%;	}
 
-.ZNewButton .ZToolbarButtonBorder 			{	@ToolbarNewButtonBorder@ 			}
-.ZNewButton.ZHover .ZToolbarButtonBorder 	{	@ToolbarNewButtonBorder-hover@ 		}
-.ZNewButton.ZActive .ZToolbarButtonBorder 	{	@ToolbarNewButtonBorder-active@ 	}
+.ZNewButton .ZToolbarButtonBorder 			{	@ToolbarNewButtonBorder@				}
+.ZNewButton.ZHover .ZToolbarButtonBorder	{	@ToolbarButtonBorder-hover@				}
+.ZNewButton.ZActive .ZToolbarButtonBorder 	{	@ToolbarButtonBorder-active@			}
+
+.ZToolbarButtonTable TD:first-child 	{	padding-left:@ToolbarButtonPaddingSize@;	}
+.ZToolbarButtonTable TD:last-child		{	padding-right:@ToolbarButtonPaddingSize@;	}
 
 /* offline */
-.ZmNetworkStatus 		{ font-weight: bold; }
-.ZmNetworkStatusIcon 	{ cursor: pointer; }
+.ZmNetworkStatus 		{ font-weight:bold; }
+.ZmNetworkStatusIcon 	{ cursor:pointer; }
 /* Input stuff -- adding classes properly -- TODO: put this back into dwt.css  */
 .DwtInputField INPUT[type="text"], 
 .DwtInputField INPUT[type="password"],
@@ -403,7 +417,7 @@ TEXTAREA
 }
 .BannerBar {
 	padding-top:1px;
-    height: 1px;
+    height:1px;
 }
 .BannerBar TD {
 	padding-right:0px;
@@ -447,18 +461,12 @@ SELECT						{	@FieldBorder@	}
  	-moz-border-bottom-colors:#A7A194 #F0E9D8;
 #ENDIF 	
  	background-color:#FBF9F4 !important;
- 	border: 2px inset; 
+ 	border:2px inset; 
     color:white;
 }
 
 
 .ZAppTabBorder .ZLeftIcon div{ display :none; }
-
-.ZmContactView .contactHeaderTable,
-
-.ZmContactInfoView .contactHeaderTable {
-	background-color: @lighten(AppC,40)@;
-}
 
 .itemCountText	{ visibility:hidden; width:0;}
 
@@ -476,7 +484,8 @@ SELECT						{	@FieldBorder@	}
 .overviewHeader-actioned TD 		{ background-color:@lighten(AppC,33)@;	}
 .overviewHeader .ZButton,
 .overviewHeader-actioned .ZButton	{ height:auto;	}
-.FirstOverviewHeader.overviewHeader { padding-top:0;	}
+.FirstOverviewHeader.overviewHeader,
+.FirstOverviewHeader.overviewHeader-actioned { padding-top:0;	}
 .RowDouble							{ height:auto; padding-top:0; 		}
 .RowDouble>TABLE					{ border:1px solid white; 			}
 .RowDouble .TopRow,
@@ -485,3 +494,6 @@ SELECT						{	@FieldBorder@	}
 .RowDouble .BottomRow				{ margin:2px 0 5px; 	}
 
 .ZToolbarTable .vertSep				{ border-color:@ToolbarSeparatorColor@;     }
+#IFDEF MSIE
+.ZmSearchToolbar .DwtInputField-hint INPUT { border-width:0; padding:0; margin:3px 0 -3px; 	}
+#ENDIF
