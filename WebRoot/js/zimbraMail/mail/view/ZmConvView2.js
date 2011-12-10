@@ -737,6 +737,17 @@ function() {
 	return this._container;
 };
 
+/**
+ * We override this function to ignore notifying Zimlets as onMsgView is
+ * not supported in this view @see http://bugzilla.zimbra.com/show_bug.cgi?id=68170
+ * @param msg
+ * @param oldMsg
+ */
+ZmMailMsgCapsuleView.prototype._notifyZimletsNewMsg =
+function(msg, oldMsg) {
+  //override and ignore notification
+};
+
 ZmMailMsgCapsuleView.prototype.set =
 function(msg, force) {
 	this._expanded = this._forceExpand || (!this._forceCollapse && msg.isUnread);
