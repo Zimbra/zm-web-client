@@ -19,14 +19,24 @@
  * 
  * @param {hash}			params		a hash of parameters:
  * @param {DwtComposite}	parent		parent widget
+ * @param {ZmController}	controller	search results controller
+ * @param {constant}		resultsApp	name of app corresponding to type of results
+ * 
+ * TODO: Add change listeners to update filters as necessary, eg folders and tags.
  */
 ZmSearchResultsFilterPanel = function(params) {
 
 	params.className = params.className || "ZmSearchResultsFilterPanel";
 	params.posStyle = Dwt.ABSOLUTE_STYLE;
 	DwtComposite.apply(this, arguments);
+	
+	// Need to wait for ZmApp.* constants to have been defined
+	if (!ZmSearchResultsFilterPanel.BASIC_FILTER) {
+		ZmSearchResultsFilterPanel._initConstants();
+	}
 
 	this._controller = params.controller;
+	this._resultsApp = params.resultsApp;
 	this._viewId = this._controller.getCurrentViewId();
 	
 	// basic filters
@@ -60,10 +70,14 @@ ZmSearchResultsFilterPanel.ID_UNREAD		= "UNREAD";
 ZmSearchResultsFilterPanel.ID_TO			= "TO";
 ZmSearchResultsFilterPanel.ID_FROM			= "FROM";
 ZmSearchResultsFilterPanel.ID_DATE			= "DATE";
+ZmSearchResultsFilterPanel.ID_DATE_SENT		= "DATE_SENT";
 ZmSearchResultsFilterPanel.ID_SIZE			= "SIZE";
 ZmSearchResultsFilterPanel.ID_STATUS		= "STATUS";
 ZmSearchResultsFilterPanel.ID_TAG			= "TAG";
 ZmSearchResultsFilterPanel.ID_FOLDER		= "FOLDER";
+
+// filter can be used within any app
+ZmSearchResultsFilterPanel.ALL_APPS = "ALL";
 
 // ordered list of basic filters
 ZmSearchResultsFilterPanel.BASIC_FILTER_LIST = [
@@ -71,69 +85,89 @@ ZmSearchResultsFilterPanel.BASIC_FILTER_LIST = [
 	ZmSearchResultsFilterPanel.ID_FLAGGED,
 	ZmSearchResultsFilterPanel.ID_UNREAD
 ];
-// basic filters
-ZmSearchResultsFilterPanel.BASIC_FILTER = {};
-ZmSearchResultsFilterPanel.BASIC_FILTER[ZmSearchResultsFilterPanel.ID_ATTACHMENT] = {
-	text: ZmMsg.filterHasAttachment, term: new ZmSearchToken("has", "attachment")
-};
-ZmSearchResultsFilterPanel.BASIC_FILTER[ZmSearchResultsFilterPanel.ID_FLAGGED] = {
-	text: ZmMsg.filterIsFlagged, term: new ZmSearchToken("is", "flagged")
-};
-ZmSearchResultsFilterPanel.BASIC_FILTER[ZmSearchResultsFilterPanel.ID_UNREAD] = {
-	text: ZmMsg.filterisUnread, term: new ZmSearchToken("is", "unread")
-}
 
 // ordered list of advanced filters
 ZmSearchResultsFilterPanel.ADVANCED_FILTER_LIST = [
 	ZmSearchResultsFilterPanel.ID_FROM,
 	ZmSearchResultsFilterPanel.ID_TO,
 	ZmSearchResultsFilterPanel.ID_DATE,
+	ZmSearchResultsFilterPanel.ID_DATE_SENT,
 	ZmSearchResultsFilterPanel.ID_ATTACHMENT,
 	ZmSearchResultsFilterPanel.ID_SIZE,
 	ZmSearchResultsFilterPanel.ID_STATUS,
 	ZmSearchResultsFilterPanel.ID_TAG,
 	ZmSearchResultsFilterPanel.ID_FOLDER
 ];
-// advanced filters
-ZmSearchResultsFilterPanel.ADVANCED_FILTER = {};
-ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_FROM] = {
-	text: 		ZmMsg.filterReceivedFrom,
-	handler:	"ZmAddressSearchFilter",
-	searchOp:	"from"
-};
-ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_TO] = {
-	text: 		ZmMsg.filterSentTo,
-	handler:	"ZmAddressSearchFilter",
-	searchOp:	"to"
-};
-ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_DATE] = {
-	text: 		ZmMsg.filterDateSent,
-	handler:	"ZmDateSearchFilter"
-};
-ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_ATTACHMENT] = {
-	text: 		ZmMsg.filterAttachments,
-	handler:	"ZmAttachmentSearchFilter",
-	searchOp:	"type"
-};
-ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_SIZE] = {
-	text: 		ZmMsg.filterSize,
-	handler:	"ZmSizeSearchFilter"
-};
-ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_STATUS] = {
-	text: 		ZmMsg.filterStatus,
-	handler:	"ZmStatusSearchFilter",
-	searchOp:	"is"
-};
-ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_TAG] = {
-	text: 		ZmMsg.filterTag,
-	handler:	"ZmTagSearchFilter",
-	searchOp:	"tag"
-};
-ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_FOLDER] = {
-	text: 		ZmMsg.filterFolder,
-	handler:	"ZmFolderSearchFilter",
-	searchOp:	"in",
-	noMenu:		true						// has own menu to add to button
+
+ZmSearchResultsFilterPanel._initConstants =
+function() {
+
+	// basic filters
+	ZmSearchResultsFilterPanel.BASIC_FILTER = {};
+	ZmSearchResultsFilterPanel.BASIC_FILTER[ZmSearchResultsFilterPanel.ID_ATTACHMENT] = {
+		text:	ZmMsg.filterHasAttachment,
+		term:	new ZmSearchToken("has", "attachment"),
+		apps:	[ZmApp.MAIL, ZmApp.CALENDAR, ZmApp.TASKS]
+	};
+	ZmSearchResultsFilterPanel.BASIC_FILTER[ZmSearchResultsFilterPanel.ID_FLAGGED] = {
+		text:	ZmMsg.filterIsFlagged,
+		term:	new ZmSearchToken("is", "flagged")
+	};
+	ZmSearchResultsFilterPanel.BASIC_FILTER[ZmSearchResultsFilterPanel.ID_UNREAD] = {
+		text:	ZmMsg.filterisUnread,
+		term:	new ZmSearchToken("is", "unread")
+	};
+	
+	// advanced filters
+	ZmSearchResultsFilterPanel.ADVANCED_FILTER = {};
+	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_FROM] = {
+		text: 		ZmMsg.filterReceivedFrom,
+		handler:	"ZmAddressSearchFilter",
+		searchOp:	"from"
+	};
+	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_TO] = {
+		text: 		ZmMsg.filterSentTo,
+		handler:	"ZmAddressSearchFilter",
+		searchOp:	"to"
+	};
+	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_DATE] = {
+		text: 		ZmMsg.filterDate,
+		handler:	"ZmApptDateSearchFilter",
+		apps:		[ZmApp.CALENDAR, ZmApp.TASKS]
+	};
+	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_DATE_SENT] = {
+		text: 		ZmMsg.filterDateSent,
+		handler:	"ZmDateSearchFilter"
+	};
+	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_ATTACHMENT] = {
+		text: 		ZmMsg.filterAttachments,
+		handler:	"ZmAttachmentSearchFilter",
+		searchOp:	"type",
+		apps:		[ZmApp.MAIL, ZmApp.CALENDAR, ZmApp.TASKS]
+	};
+	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_SIZE] = {
+		text: 		ZmMsg.filterSize,
+		handler:	"ZmSizeSearchFilter"
+	};
+	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_STATUS] = {
+		text: 		ZmMsg.filterStatus,
+		handler:	"ZmStatusSearchFilter",
+		searchOp:	"is"
+	};
+	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_TAG] = {
+		text: 			ZmMsg.filterTag,
+		handler:		"ZmTagSearchFilter",
+		searchOp:		"tag",
+		apps:			ZmSearchResultsFilterPanel.ALL_APPS,
+		precondition:	(appCtxt.getTagTree() && appCtxt.getTagTree().size() > 0)
+	};
+	ZmSearchResultsFilterPanel.ADVANCED_FILTER[ZmSearchResultsFilterPanel.ID_FOLDER] = {
+		text: 		ZmMsg.filterFolder,
+		handler:	"ZmFolderSearchFilter",
+		searchOp:	"in",
+		noMenu:		true,						// has own menu to add to button
+		apps:		ZmSearchResultsFilterPanel.ALL_APPS
+	};
 };
 
 ZmSearchResultsFilterPanel.CONDITIONALS = [
@@ -150,20 +184,51 @@ ZmSearchResultsFilterPanel.CONDITIONALS = [
 ZmSearchResultsFilterPanel.prototype._createHtml =
 function() {
 	this.getHtmlElement().innerHTML = AjxTemplate.expand(this.TEMPLATE, {id:this._htmlElId});
+	this._basicPanel = document.getElementById(this._htmlElId + "_basicPanel");
 	this._basicContainer = document.getElementById(this._htmlElId + "_basic");
+	this._advancedPanel = document.getElementById(this._htmlElId + "_advancedPanel");
 	this._advancedContainer = document.getElementById(this._htmlElId + "_advanced");
 	this._conditionalsContainer = document.getElementById(this._htmlElId + "_conditionals");
 };
 
+// returns a list of filters that apply for the results' app
+ZmSearchResultsFilterPanel.prototype._getApplicableFilters =
+function(filterIds, filterHash) {
+	
+	var filters = [];
+	for (var i = 0; i < filterIds.length; i++) {
+		var id = filterIds[i];
+		var filter = filterHash[id];
+		filter.index = i;
+		if (filter.precondition != null) {
+			var pre = filter.precondition;
+			var result = (pre === true || pre === false) ? pre : (typeof(pre) == "function") ? pre() : appCtxt.get(pre);
+			if (!result) {
+				continue;
+			}
+		}
+		var apps = filter.apps || [ZmApp.MAIL];
+		if (apps == ZmSearchResultsFilterPanel.ALL_APPS) {
+			filters.push({id:id, filter:filter});
+		}
+		else {
+			var hash = AjxUtil.arrayAsHash(apps);
+			if (hash[this._resultsApp]) {
+				filters.push({id:id, filter:filter});
+			}
+		}
+	}
+	return filters;
+};
+
 ZmSearchResultsFilterPanel.prototype._addFilters =
 function() {
-	var filters = ZmSearchResultsFilterPanel.BASIC_FILTER_LIST;
-	for (var i = 0; i < filters.length; i++) {
-		var id = filters[i];
-		var filter = ZmSearchResultsFilterPanel.BASIC_FILTER[id];
-		this._addBasicFilter(id, filter.text);
+	var results = this._getApplicableFilters(ZmSearchResultsFilterPanel.BASIC_FILTER_LIST, ZmSearchResultsFilterPanel.BASIC_FILTER);
+	Dwt.setVisible(this._basicPanel, (results.length > 0));
+	for (var i = 0; i < results.length; i++) {
+		var result = results[i];
+		this._addBasicFilter(result.id, result.filter.text);
 	}
-	
 	this._getDomains();
 };
 
@@ -184,11 +249,11 @@ function(domains) {
 ZmSearchResultsFilterPanel.prototype._addAdvancedFilters =
 function(attTypes) {
 	ZmSearchResultsFilterPanel.attTypes = attTypes;
-	var filters = ZmSearchResultsFilterPanel.ADVANCED_FILTER_LIST;
-	for (var i = 0; i < filters.length; i++) {
-		var id = filters[i];
-		var filter = ZmSearchResultsFilterPanel.ADVANCED_FILTER[id];
-		this._addAdvancedFilter(id, filter.text);
+	var results = this._getApplicableFilters(ZmSearchResultsFilterPanel.ADVANCED_FILTER_LIST, ZmSearchResultsFilterPanel.ADVANCED_FILTER);
+	Dwt.setVisible(this._advancedPanel, (results.length > 0));
+	for (var i = 0; i < results.length; i++) {
+		var result = results[i];
+		this._addAdvancedFilter(result.id, result.filter.text);
 	}
 };
 
@@ -259,7 +324,8 @@ function(id, text) {
 		id:				id,
 		viewId:			this._viewId,
 		searchOp:		filter.searchOp,
-		updateCallback:	updateCallback
+		updateCallback:	updateCallback,
+		resultsApp:		this._resultsApp
 	}
 	var filterClass = eval(handler);
 	filterObject = new filterClass(params);
@@ -273,29 +339,54 @@ function(id, text) {
  * search terms should be removed first. Some search operators should only appear once in a query (eg "in"),
  * and some conflict with others (eg "is:read" and "is:unread").
  * 
- * @param {string}			id		filter ID
- * @param {ZmSearchToken}	term	search term
+ * @param {string}			id			filter ID
+ * @param {ZmSearchToken}	newTerms	search term(s)
  */
 ZmSearchResultsFilterPanel.prototype.update =
-function(id, term) {
+function(id, newTerms) {
 	
-	if (!id || !term) { return; }
+	if (!id || !newTerms) { return; }
 	
-	var terms = this._controller.getSearchTerms();
-	if (terms && terms.length) {
-		for (var i = 0; i < terms.length; i++) {
-			var curTerm = terms[i];
-			if (ZmParsedQuery.areExclusive(curTerm, term) || ((curTerm.op == term.op) && !ZmParsedQuery.isMultiple(term))) {
-				this._controller.removeSearchTerm(curTerm, true);
+	newTerms = AjxUtil.toArray(newTerms);
+	
+	var curTerms = this._controller.getSearchTerms();
+	if (curTerms && curTerms.length) {
+		for (var i = 0; i < curTerms.length; i++) {
+			var curTerm = curTerms[i];
+			for (var j = 0; j < newTerms.length; j++) {
+				var newTerm = newTerms[j];
+				if (this._areExclusiveTerms(curTerm, newTerm)) {
+					this._controller.removeSearchTerm(curTerm, true);
+				}
 			}
 		}
 	}
 	
-	this._controller.addSearchTerm(term);
+	for (var i = 0; i < newTerms.length; i++) {
+		this._controller.addSearchTerm(newTerms[i]);
+	}
 	
 	if (this._menu[id]) {
 		this._menu[id].popdown();
 	}
+};
+
+ZmSearchResultsFilterPanel.prototype._areExclusiveTerms =
+function(termA, termB) {
+	termA = this._translateTerm(termA);
+	termB = this._translateTerm(termB);
+	return (ZmParsedQuery.areExclusive(termA, termB) || ((termA.op == termB.op) && !ZmParsedQuery.isMultiple(termA)));
+};
+
+// Treat "appt-start" like "before", "after", or "date" depending on its argument.
+ZmSearchResultsFilterPanel.prototype._translateTerm =
+function(term) {
+	var newOp;
+	if (term.op == "appt-start") {
+		var first = term.arg.substr(0, 1);
+		newOp = (first == "<") ? "before" : (first == ">") ? "after" : "date";
+	}
+	return newOp ? new ZmSearchToken(newOp, term.arg) : term;
 };
 
 ZmSearchResultsFilterPanel.prototype._addConditionals =
@@ -328,6 +419,7 @@ function(ev) {
  * @param {string}		id				ID of filter
  * @param {string}		searchOp		search operator for this filter (optional)
  * @param {function}	updateCallback	called when value of filter (as a search term) has changed
+ * @param {constant}	resultsApp		name of app corresponding to type of results
  */
 ZmSearchFilter = function(params) {
 	
@@ -338,6 +430,7 @@ ZmSearchFilter = function(params) {
 	this._viewId = params.viewId;
 	this._searchOp = params.searchOp;
 	this._updateCallback = params.updateCallback;
+	this._resultsApp = params.resultsApp;
 	
 	this._setUi(params.parent);
 };
@@ -546,12 +639,6 @@ ZmDateSearchFilter.BEFORE	= "BEFORE";
 ZmDateSearchFilter.AFTER	= "AFTER";
 ZmDateSearchFilter.ON		= "ON";
 
-ZmDateSearchFilter.TYPES = [
-		ZmDateSearchFilter.BEFORE,
-		ZmDateSearchFilter.AFTER,
-		ZmDateSearchFilter.ON
-];
-
 ZmDateSearchFilter.TEXT_KEY = {};
 ZmDateSearchFilter.TEXT_KEY[ZmDateSearchFilter.BEFORE]	= "filterBefore";
 ZmDateSearchFilter.TEXT_KEY[ZmDateSearchFilter.AFTER]	= "filterAfter";
@@ -587,19 +674,63 @@ ZmDateSearchFilter.prototype._doUpdate =
 function(type) {
 	var cal = this._calendar[type];
 	var date = this._formatter.format(cal.getDate());
-	var term = new ZmSearchToken(ZmDateSearchFilter.OP[type], date);
+	var term = this._getSearchTerm(type, date);
 	this._updateCallback(term);
+};
+
+ZmDateSearchFilter.prototype._getTypes =
+function() {
+	return [
+		ZmDateSearchFilter.BEFORE,
+		ZmDateSearchFilter.AFTER,
+		ZmDateSearchFilter.ON
+	];
+};
+
+ZmDateSearchFilter.prototype._getSearchTerm =
+function(type, date) {
+	return new ZmSearchToken(ZmDateSearchFilter.OP[type], date);
 };
 
 ZmDateSearchFilter.prototype._setUi =
 function(menu) {
-	var calTypes = ZmDateSearchFilter.TYPES;
+	var calTypes = this._getTypes();
 	for (var i = 0; i < calTypes.length; i++) {
 		var calType = calTypes[i];
 		this._calendar[calType] = this._createCalendar(menu, calType);
 	}
 };
 
+
+
+/**
+ * Allows the user to search for appts by date (before, after, or on a particular date).
+ * 
+ * @param params
+ */
+ZmApptDateSearchFilter = function(params) {
+	ZmDateSearchFilter.apply(this, arguments);
+};
+
+ZmApptDateSearchFilter.prototype = new ZmDateSearchFilter;
+ZmApptDateSearchFilter.prototype.constructor = ZmApptDateSearchFilter;
+
+ZmApptDateSearchFilter.prototype.isZmApptDateSearchFilter = true;
+ZmApptDateSearchFilter.prototype.toString = function() { return "ZmApptDateSearchFilter"; };
+
+ZmApptDateSearchFilter.prototype._getSearchTerm =
+function(type, date) {
+	if (type == ZmDateSearchFilter.BEFORE) {
+		return new ZmSearchToken("appt-start", "<" + date);
+	}
+	else if (type == ZmDateSearchFilter.AFTER) {
+		return new ZmSearchToken("appt-end", ">" + date);
+	}
+	else if (type == ZmDateSearchFilter.ON) {
+		return [new ZmSearchToken("appt-start", "<=" + date),
+				new ZmSearchToken("appt-end", ">=" + date)];
+	}
+};
 
 
 /**
@@ -812,7 +943,7 @@ ZmFolderSearchFilter.prototype._getMoveParams =
 function(dlg) {
 	return {
 		overviewId:		dlg.getOverviewId(this.toString()),
-		treeIds:		[ZmOrganizer.FOLDER],
+		treeIds:		[ZmApp.ORGANIZER[this._resultsApp]],
 		treeStyle:		DwtTree.SINGLE_STYLE
 	};
 };

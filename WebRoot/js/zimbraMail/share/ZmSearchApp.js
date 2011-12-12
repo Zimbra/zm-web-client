@@ -47,10 +47,11 @@ ZmApp.CLASS[ZmApp.SEARCH]		= "ZmSearchApp";
 ZmApp.SETTING[ZmApp.SEARCH]		= ZmSetting.SEARCH_ENABLED;
 
 ZmSearchApp.prototype.getSearchResultsController =
-function(sessionId) {
+function(sessionId, appName) {
 	return this.getSessionController({
 				controllerClass:	"ZmSearchResultsController",
-				sessionId:			sessionId
+				sessionId:			sessionId,
+				appName:			appName
 			});
 };
 

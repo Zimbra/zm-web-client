@@ -25,16 +25,18 @@
  * directly manipulate this._toolbar elements to point to a single instance of the toolbar. We also
  * directly override the {@link ZmListControl.initializeToolBar} method.
  *
- * @param {DwtComposite}	container	the containing element
- * @param {ZmCalendarApp}	calApp		the handle to the calendar application
+ * @param {DwtComposite}				container					the containing element
+ * @param {ZmCalendarApp}				calApp						the handle to the calendar application
+ * @param {string}						sessionId					the session id
+ * @param {ZmSearchResultsController}	searchResultsController		containing controller
  * 
  * @extends		ZmListController
  *
  * @see	ZmListControl.initializeToolBar
  */
-ZmCalViewController = function(container, calApp) {
+ZmCalViewController = function(container, calApp, sessionId, searchResultsController) {
 
-	ZmListController.call(this, container, calApp);
+	ZmListController.apply(this, arguments);
     
 	var apptListener = this._handleApptRespondAction.bind(this);
 	var apptEditListener = this._handleApptEditRespondAction.bind(this);
@@ -3385,8 +3387,8 @@ function(params, callback) {
 		// TODO - generate start/end based on current month?
 	}
 
-	params.fanoutAllDay = view ? view._fanoutAllDay() : false;
-	params.callback = new AjxCallback(this, this._searchResponseCallback, callback);
+	params.fanoutAllDay = view && view._fanoutAllDay();
+	params.callback = this._searchResponseCallback.bind(this, callback);
 
 	this.getApptSummaries(params);
 };

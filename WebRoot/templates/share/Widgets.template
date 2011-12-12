@@ -88,11 +88,11 @@
 </template>
 
 <template id='share.Widgets#ZmSearchResultsFilterPanel'>
-	<div>
+	<div id='${id}_basicPanel'>
 		<div class='header'><$= ZmMsg.basicFilters $></div>
 		<div id='${id}_basic'></div>
 	</div>
-	<div>
+	<div id='${id}_advancedPanel'>
 		<div class='header'><$= ZmMsg.advancedFilters $></div>
 		<div id='${id}_advanced'></div>
 	</div>

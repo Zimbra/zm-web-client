@@ -209,7 +209,8 @@ function() {
 					  gotoActionCode:		ZmKeyMap.GOTO_BRIEFCASE,
 					  newActionCode:		ZmKeyMap.NEW_DOC,
 					  chooserSort:			70,
-					  defaultSort:			60
+					  defaultSort:			60,
+					  searchResultsTab:		true
 					  });
 };
 
@@ -305,7 +306,7 @@ function(contentType, name, winName) {
 		folderId = briefcase ? briefcase.id : ZmOrganizer.ID_BRIEFCASE;
 	}
 
-    if(this.getBriefcaseController().chkFolderPermission(folderId)) {
+    if (AjxDispatcher.run("GetBriefcaseController").chkFolderPermission(folderId)) {
         var url = this.getEditURLForContentType(contentType) + "?" + (name ?"name=" + name + "&" : "") + "l="+folderId + "&skin=" + appCurrentSkin + "&localeId=" + AjxEnv.DEFAULT_LOCALE;
         if (window.appCoverageMode)
             url = url + "&coverage=1";
@@ -382,7 +383,7 @@ function(item) {
 ZmBriefcaseApp.prototype._handleNewItem =
 function() {
 	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
-	this.getBriefcaseController().__popupUploadDialog(ZmMsg.uploadFileToBriefcase);
+	AjxDispatcher.run("GetBriefcaseController").__popupUploadDialog(ZmMsg.uploadFileToBriefcase);
 };
 
 ZmBriefcaseApp.prototype._handleLoadNewBriefcase =
@@ -447,14 +448,15 @@ function(params) {
  * @param	{AjxCallback}	callback		the callback
  */
 ZmBriefcaseApp.prototype.showSearchResults =
-function(results, callback) {
-	var loadCallback = this._handleLoadShowSearchResults.bind(this, results, callback);
+function(results, callback, searchResultsController) {
+	var loadCallback = this._handleLoadShowSearchResults.bind(this, results, callback, searchResultsController);
 	AjxDispatcher.require(["BriefcaseCore", "Briefcase"], false, loadCallback, null, true);
 };
 
 ZmBriefcaseApp.prototype._handleLoadShowSearchResults =
-function(results, callback) {
-	var controller = this.getBriefcaseController();
+function(results, callback, searchResultsController) {
+	var sessionId = searchResultsController ? searchResultsController.getCurrentViewId() : ZmApp.MAIN_SESSION;
+	var controller = AjxDispatcher.run("GetBriefcaseController", sessionId, searchResultsController);
 	controller.show(results);
 	this._setLoadedTime(this.toString(), new Date());
 	if (callback) {
@@ -488,10 +490,9 @@ function(parent, name, color) {
 
 ZmBriefcaseApp.prototype.getBriefcaseController =
 function() {
-	if (!this._briefcaseController) {
-		this._briefcaseController = new ZmBriefcaseController(this._container, this);
-	}
-	return this._briefcaseController;
+	return this.getSessionController({controllerClass:			"ZmBriefcaseController",
+									  sessionId:				sessionId || ZmApp.MAIN_SESSION,
+									  searchResultsController:	searchResultsController});
 };
 
 ZmBriefcaseApp.prototype.createFromAttachment =
@@ -505,7 +506,7 @@ function(msgId, partId, name) {
 	if (this._deferredFolders.length != 0) {
 		this._createDeferredFolders(ZmApp.BRIEFCASE);
 	}
-    this.getBriefcaseController().createFromAttachment(msgId, partId, name);
+    AjxDispatcher.run("GetBriefcaseController").createFromAttachment(msgId, partId, name);
 };
 
 

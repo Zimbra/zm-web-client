@@ -529,9 +529,16 @@ function(params, noRender, callback, errorCallback) {
 	}
 
 	// calendar searching is special so hand it off if necessary
+	search.calController = null;
 	if (searchFor == ZmItem.APPT && !params.forceSearch) {
-		var controller = AjxDispatcher.run("GetCalController");
+		var searchResultsController, sessionId;
+		if (search.userInitiated) {
+			searchResultsController = appCtxt.getApp(ZmApp.SEARCH).getSearchResultsController(search.sessionId, ZmApp.CALENDAR);
+			sessionId = searchResultsController.getCurrentViewId();
+		}
+		var controller = AjxDispatcher.run("GetCalController", sessionId, searchResultsController);
 		if (controller && types.contains(ZmItem.APPT)) {
+			search.calController = controller;
 			controller.handleUserSearch(params, respCallback);
 		} else {
             search.execute({callback:respCallback, errorCallback:errorCallback});            
@@ -561,15 +568,11 @@ function(search, noRender, callback, noUpdateOverview, result) {
 		results.type = search.types.get(0);
 	}
 
-	if (results.type == ZmItem.APPT) {
-		this._results = new ZmSearchResult(search);
-	} else {
-		this.currentSearch = search;
-		DBG.timePt("execute search", true);
+	this.currentSearch = search;
+	DBG.timePt("execute search", true);
 
-		if (!noRender) {
-			this._showResults(results, search, noUpdateOverview);
-		}
+	if (!noRender) {
+		this._showResults(results, search, noUpdateOverview);
 	}
 
 	if (callback) {
@@ -583,7 +586,7 @@ function(search, noRender, callback, noUpdateOverview, result) {
 ZmSearchController.prototype._showResults =
 function(results, search, noUpdateOverview) {
 
-	this._results = results;
+	this._results = results = (results && results.isZmSearchResult) ? results : new ZmSearchResult(search);
 
 	DBG.timePt("handle search results");
 
@@ -594,13 +597,16 @@ function(results, search, noUpdateOverview) {
 		}
 	}
 
-	var app = appCtxt.getApp(ZmItem.APP[results.type]) || appCtxt.getCurrentApp();
-	if (search.userInitiated && ZmApp.SEARCH_RESULTS_TAB[app.getName()]) {
-		var ctlr = appCtxt.getApp(ZmApp.SEARCH).getSearchResultsController(search.sessionId);
-		ctlr.show(results);
+	var app = search.calController ? appCtxt.getApp(ZmApp.CALENDAR) : appCtxt.getApp(ZmItem.APP[results.type]) || appCtxt.getCurrentApp();
+	var appName = app.getName();
+	if (search.userInitiated && ZmApp.SEARCH_RESULTS_TAB[appName]) {
+		var ctlr = (search.calController && search.calController.searchResultsController) ||
+					appCtxt.getApp(ZmApp.SEARCH).getSearchResultsController(search.sessionId, appName);
+		DBG.println("sr", "New search results controller: " + ctlr.viewId);
+		ctlr.show(results, search.calController);
 		this._searchToolBar.setSearchFieldValue("");
 	}
-	else {
+	else if (app.showSearchResults) {
 		// show results based on type - may invoke package load
 		var loadCallback = this._handleLoadShowResults.bind(this, results, search, noUpdateOverview);
 		app.currentSearch = search;
@@ -709,7 +715,7 @@ ZmSearchController.prototype._toolbarSearch =
 function(params) {
 
 	// find out if the custom search menu item is selected and pass it the event
-	var result = this._searchToolBar.getSearchType();
+	var result = params.searchFor || this._searchToolBar.getSearchType();
 	if (result && result.listener) {
 		result.listener.run(params.ev);
 	} else {

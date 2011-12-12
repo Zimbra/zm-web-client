@@ -345,7 +345,8 @@ function() {
 							  chooserSort:			20,
 							  defaultSort:			40,
 							  upsellUrl:			ZmSetting.CONTACTS_UPSELL_URL,
-							  quickCommandType:		ZmQuickCommand[ZmId.ITEM_CONTACT]
+							  quickCommandType:		ZmQuickCommand[ZmId.ITEM_CONTACT],
+							  searchResultsTab:		true
 							  });
 };
 
@@ -549,7 +550,7 @@ function(results, callback, searchResultsController) {
 	var folderId = search && search.isSimple() && search.folderId;
 	var isInGal = search && (search.contactSource == ZmId.SEARCH_GAL);
 	var sessionId = searchResultsController ? searchResultsController.getCurrentViewId() : ZmApp.MAIN_SESSION;
-	var controller = this.getContactListController(sessionId, searchResultsController);
+	var controller = AjxDispatcher.run("GetContactListController", sessionId, searchResultsController);
 	controller.show(results, isInGal, folderId);
 	this._setLoadedTime(this.toString(), new Date());
 	if (callback) {

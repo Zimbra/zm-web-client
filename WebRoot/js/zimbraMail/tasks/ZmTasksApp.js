@@ -174,7 +174,8 @@ function() {
 							  gotoActionCode:		ZmKeyMap.GOTO_TASKS,
 							  newActionCode:		ZmKeyMap.NEW_TASK,
 							  chooserSort:			35,
-							  defaultSort:			25
+							  defaultSort:			25,
+							  searchResultsTab:		true
 							  });
 };
 
@@ -245,7 +246,7 @@ function(creates, force) {
 				this._handleCreateLink(create, ZmOrganizer.TASKS);
 			} else if (name == "task") {
 				// bug fix #29833 - always attempt to process new tasks
-				var taskList = this.getTaskListController().getList();
+				var taskList = AjxDispatcher.run("GetTaskListController").getList();
 				if (taskList) {
 					taskList.notifyCreate(create);
 				}
@@ -278,15 +279,16 @@ function(callback) {
  * @param	{AjxCallback}	callback		the callback
  */
 ZmTasksApp.prototype.showSearchResults =
-function(results, callback) {
-	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
+function(results, callback, searchResultsController) {
+	var loadCallback = this._handleLoadShowSearchResults.bind(this, results, callback, searchResultsController);
 	AjxDispatcher.require("Tasks", false, loadCallback, null, true);
 };
 
 ZmTasksApp.prototype._handleLoadShowSearchResults =
-function(results, callback) {
+function(results, callback, searchResultsController) {
 	var folderId = results && results.search && results.search.isSimple() && results.search.folderId;
-	var controller = this.getTaskListController();
+	var sessionId = searchResultsController ? searchResultsController.getCurrentViewId() : ZmApp.MAIN_SESSION;
+	var controller = AjxDispatcher.run("GetTaskListController", sessionId, searchResultsController);
 	controller.show(results, folderId);
 	this._setLoadedTime(this.toString(), new Date());
 	if (callback) {
@@ -299,7 +301,7 @@ function() {
 	if (window.ZmTaskListController === undefined) { //app not loaded yet - no need to update anything.
 		return;
 	}
-	this.getTaskListController().runRefresh();
+	AjxDispatcher.run("GetTaskListController").runRefresh();
 };
 
 
@@ -312,7 +314,7 @@ function() {
  */
 ZmTasksApp.prototype.getListController =
 function() {
-	return this.getTaskListController();
+	return AjxDispatcher.run("GetTaskListController");
 };
 
 /**
@@ -321,11 +323,10 @@ function() {
  * @return	{ZmTaskListController}	the controller
  */
 ZmTasksApp.prototype.getTaskListController =
-function() {
-	if (!this._taskListController) {
-		this._taskListController = new ZmTaskListController(this._container, this);
-	}
-	return this._taskListController;
+function(sessionId, searchResultsController) {
+	return this.getSessionController({controllerClass:			"ZmTaskListController",
+									  sessionId:				sessionId || ZmApp.MAIN_SESSION,
+									  searchResultsController:	searchResultsController});
 };
 
 /**
@@ -411,7 +412,7 @@ ZmTasksApp.prototype.getTaskFolderIds =
 function(localOnly) {
 	var folderIds = [];
 	if (AjxDispatcher.loaded("TasksCore")) {
-		folderIds = this.getTaskListController().getTaskFolderIds(localOnly);
+		folderIds = AjxDispatcher.run("GetTaskListController").getTaskFolderIds(localOnly);
 	} else {
 		// will be used in reminder dialog
 		this._folderNames = {};

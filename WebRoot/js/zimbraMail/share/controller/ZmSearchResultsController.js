@@ -50,8 +50,8 @@ ZmSearchResultsController.prototype.toString = function() { return "ZmSearchResu
 ZmSearchResultsController.DEFAULT_TAB_TEXT = ZmMsg.search;
 
 ZmSearchResultsController.getDefaultViewType =
-function() {
-	return ZmId.VIEW_SEARCH_RESULTS;
+function(params) {
+	return (params && params.appName) ? [ZmId.VIEW_SEARCH_RESULTS, params.appName].join("-") : ZmId.VIEW_SEARCH_RESULTS;
 };
 ZmSearchResultsController.prototype.getDefaultViewType = ZmSearchResultsController.getDefaultViewType;
 
@@ -61,11 +61,17 @@ ZmSearchResultsController.prototype.getDefaultViewType = ZmSearchResultsControll
  * @param {ZmSearchResults}		results		search results
  */
 ZmSearchResultsController.prototype.show =
-function(results) {
+function(results, resultsCtlr) {
 	var resultsType = results.type;
 	results.search.sessionId = this.sessionId;	// in case we reuse this search (eg view switch)
-	var app = this._resultsApp = appCtxt.getApp(ZmItem.APP[resultsType]) || appCtxt.getCurrentApp();
-	app.showSearchResults(results, this._displayResults.bind(this, results.search), this);
+	if (!resultsCtlr) {
+		var app = this._resultsApp = appCtxt.getApp(ZmItem.APP[resultsType]) || appCtxt.getCurrentApp();
+		app.showSearchResults(results, this._displayResults.bind(this, results.search), this);
+	}
+	else {
+		this._displayResults(results.search, resultsCtlr);
+	}
+	this._curSearch = results.search;
 	this.inactive = true;	// search tabs can always be reused (unless pinned)
 };
 
@@ -83,12 +89,6 @@ function() {
 	this._toolbar.getButton(ZmSearchToolBar.SAVE_BUTTON).addSelectionListener(this._saveListener.bind(this));
 	this._toolbar.registerEnterCallback(this._searchListener.bind(this));
 
-	this._filterPanel = new ZmSearchResultsFilterPanel({
-				parent:		this._container,
-				controller:	this,
-				id:			DwtId.makeId(ZmId.SEARCHRESULTS_PANEL, this._currentViewId)
-			});
-	
 	this.isPinned = false;
 };
 
@@ -103,6 +103,15 @@ function() {
  */
 ZmSearchResultsController.prototype._displayResults =
 function(search, resultsCtlr) {
+	
+	if (!this._filterPanel) {
+		this._filterPanel = new ZmSearchResultsFilterPanel({
+					parent:		this._container,
+					controller:	this,
+					id:			DwtId.makeId(ZmId.SEARCHRESULTS_PANEL, this._currentViewId),
+					resultsApp:	resultsCtlr.getApp().getName()
+				});
+	}
 	
 	this._resultsController = resultsCtlr;
 	if (appCtxt.getCurrentViewId() == this._currentViewId) {
@@ -183,6 +192,7 @@ function(ev, zimletEvent) {
 		sessionId:					this.sessionId,
 		skipUpdateSearchToolbar:	true,
 		origin:						ZmId.SEARCHRESULTS,
+		searchFor:					this._curSearch && this._curSearch.searchFor,
 		errorCallback:				this._errorCallback.bind(this)
 	}
 	appCtxt.getSearchController()._toolbarSearch(params);

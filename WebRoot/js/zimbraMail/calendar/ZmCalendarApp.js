@@ -550,7 +550,8 @@ function() {
 							  chooserSort:			30,
 							  defaultSort:			20,
 							  upsellUrl:			ZmSetting.CALENDAR_UPSELL_URL,
-                              quickCommandType:		ZmQuickCommand[ZmId.ITEM_APPOINTMENT]
+                              quickCommandType:		ZmQuickCommand[ZmId.ITEM_APPOINTMENT],
+							  searchResultsTab:		false
 							  });
 };
 
@@ -593,6 +594,7 @@ function(creates, force) {
 	if (!creates["folder"] && !creates["appt"] && !creates["link"]) { return; }
 	if (!force && !this._noDefer && this._deferNotifications("create", creates)) { return; }
 
+	var ctlr = AjxDispatcher.run("GetCalController");
 	for (var name in creates) {
 		var list = creates[name];
 		for (var i = 0; i < list.length; i++) {
@@ -604,11 +606,11 @@ function(creates, force) {
 			} else if (name == "link") {
 				this._handleCreateLink(create, ZmOrganizer.CALENDAR);
 			} else if (name == "appt") {
-				AjxDispatcher.run("GetCalController").notifyCreate(create);
+				ctlr.notifyCreate(create);
 			}
 
-			if ((name == "folder" || name == "link") && this._calController) {
-				this._calController._updateCheckedCalendars();
+			if ((name == "folder" || name == "link") && ctlr) {
+				ctlr._updateCheckedCalendars();
 			}
 		}
 	}
@@ -620,16 +622,19 @@ function(modifies, force) {
 	AjxDispatcher.run("GetCalController").notifyModify(modifies);
 };
 
-ZmCalendarApp.prototype.preNotify = function(notify) {
-	if(this._calController != null) {
-		this._calController.preNotify(notify);
+ZmCalendarApp.prototype.preNotify =
+function(notify) {
+	var ctlr = AjxDispatcher.run("GetCalController");
+	if (ctlr) {
+		ctlr.preNotify(notify);
 	}
 };
 
 ZmCalendarApp.prototype.postNotify =
 function(notify) {
-	if(this._calController != null) {
-		this._calController.postNotify(notify);
+	var ctlr = AjxDispatcher.run("GetCalController");
+	if (ctlr) {
+		ctlr.postNotify(notify);
 	}
 };
 
@@ -727,17 +732,18 @@ ZmCalendarApp.prototype.showSearchResults =
 function(results, callback) {
 	// calls ZmSearchController's _handleLoadShowResults
 	if (callback) {
-		callback.run(this._calController);
+		callback.run(AjxDispatcher.run("GetCalController"));
 	}
 };
 
 ZmCalendarApp.prototype.activate =
-function(active) {
+function(active, viewId) {
     this._createDeferredFolders(ZmApp.CALENDAR);
 	ZmApp.prototype.activate.apply(this, arguments);
 
 	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
-		var show = active || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);
+		var avm = appCtxt.getAppViewMgr();
+		var show = (active || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) && !avm.isHidden(ZmAppViewMgr.C_TREE_FOOTER, viewId);
 		AjxDispatcher.run("ShowMiniCalendar", show);
 	}
 };
@@ -768,7 +774,7 @@ function(show, delay) {
  */
 ZmCalendarApp.prototype.getListController =
 function() {
-	return this.getCalController();
+	return AjxDispatcher.run("GetCalController");
 };
 
 /**
@@ -777,12 +783,11 @@ function() {
  * @return	{ZmCalViewController}		the controller
  */
 ZmCalendarApp.prototype.getCalController =
-function() {
-	if (!this._calController) {
-		AjxDispatcher.require("CalendarCore");
-		this._calController = new ZmCalViewController(this._container, this);
-	}
-	return this._calController;
+function(sessionId, searchResultsController) {
+	AjxDispatcher.require("CalendarCore");
+	return this.getSessionController({controllerClass:			"ZmCalViewController",
+									  sessionId:				sessionId || ZmApp.MAIN_SESSION,
+									  searchResultsController:	searchResultsController});
 };
 
 /**
@@ -810,7 +815,7 @@ function() {
 		AjxDispatcher.require("CalendarCore");
 		var calMgr = appCtxt.getCalManager();
 		this._reminderController = calMgr.getReminderController();
-		this._reminderController._calController = this.getCalController();
+		this._reminderController._calController = AjxDispatcher.run("GetCalController");
 	}
 	return this._reminderController;
 };
@@ -897,7 +902,7 @@ ZmCalendarApp.prototype.getReminderCalendarFolderIds =
 function() {
 	var folderIds = [];
 	if (AjxDispatcher.loaded("CalendarCore")) {
-		folderIds = this.getCalController().getReminderCalendarFolderIds();
+		folderIds = AjxDispatcher.run("GetCalController").getReminderCalendarFolderIds();
 	} else {
 		// will be used in reminder dialog
 		this._folderNames = {};
@@ -924,7 +929,7 @@ ZmCalendarApp.prototype.getCheckedCalendarFolderIds =
 function(localOnly, includeTrash) {
 	var folderIds = [];
 	if (AjxDispatcher.loaded("CalendarCore")) {
-		folderIds = this.getCalController().getCheckedCalendarFolderIds(localOnly, includeTrash);
+		folderIds = AjxDispatcher.run("GetCalController").getCheckedCalendarFolderIds(localOnly, includeTrash);
 	} else {
 		// will be used in reminder dialog
 		this._folderNames = {};
@@ -1282,7 +1287,9 @@ function(ev) {
 	var setting = ev.source;
     if (setting.id == ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL) {
 		if (setting.getValue()) {
-			AjxDispatcher.run("ShowMiniCalendar", true);
+			var avm = appCtxt.getAppViewMgr();
+			var show = !avm.isHidden(ZmAppViewMgr.C_TREE_FOOTER, avm.getCurrentViewId());
+			AjxDispatcher.run("ShowMiniCalendar", show);
 		} else if (!this._active) {
 			AjxDispatcher.run("ShowMiniCalendar", false);
 		}

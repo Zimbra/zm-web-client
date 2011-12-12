@@ -972,10 +972,12 @@ ZmParsedQuery.IS_VALUES = [	"unread", "read", "flagged", "unflagged",
 
 // ops that can appear more than once in a query
 ZmParsedQuery.MULTIPLE = {};
-ZmParsedQuery.MULTIPLE["to"]	= true;
-ZmParsedQuery.MULTIPLE["is"]	= true;
-ZmParsedQuery.MULTIPLE["has"]	= true;
-ZmParsedQuery.MULTIPLE["tag"]	= true;
+ZmParsedQuery.MULTIPLE["to"]			= true;
+ZmParsedQuery.MULTIPLE["is"]			= true;
+ZmParsedQuery.MULTIPLE["has"]			= true;
+ZmParsedQuery.MULTIPLE["tag"]			= true;
+ZmParsedQuery.MULTIPLE["appt-start"]	= true;
+ZmParsedQuery.MULTIPLE["appt-end"]		= true;
 
 ZmParsedQuery.isMultiple =
 function(term) {

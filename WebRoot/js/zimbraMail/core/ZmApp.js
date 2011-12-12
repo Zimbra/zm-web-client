@@ -676,7 +676,7 @@ function(params) {
 	
 	var type;
 	try {
-		type = eval(params.controllerClass + ".getDefaultViewType()");
+		type = eval(params.controllerClass).getDefaultViewType(params);
 	}
 	catch (ex) {
 		throw new AjxException("Session controller " + params.controllerClass + " must implement getDefaultViewType()");
@@ -1011,9 +1011,10 @@ function(params, callback) {
  * Activates the application.
  *
  * @param	{Boolean}	active	<code>true</code> if the application is active
+ * @param	{string}	viewId	ID of view becoming active
  */
 ZmApp.prototype.activate =
-function(active) {
+function(active, viewId) {
 	this._active = active;
 	if (active) {
 		this.setOverviewPanelContent();
