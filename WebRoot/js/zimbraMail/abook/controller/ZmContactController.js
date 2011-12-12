@@ -118,10 +118,11 @@ function() {
 ZmContactController.prototype._getTabParams =
 function() {
 	return {id:this.tabId,
-			image: this._isGroup() ? "NewGroup" : "NewContact",
+			image: "Close",
 			text: null, //we update it using _updateTabTitle since before calling _setViewContents _getFullName does not return the name
 			textPrecedence:77,
-			tooltip: text};
+			tooltip: text,
+            style: DwtLabel.IMAGE_RIGHT};
 };
 
 ZmContactController.prototype.updateTabTitle =

@@ -173,10 +173,11 @@ ZmSearchResultsController.prototype._getTabParams =
 function() {
 	return {
 		id:				this.tabId,
-		image:			"Search",
+		image:			"Close",
 		text:			ZmSearchResultsController.DEFAULT_TAB_TEXT,
 		textPrecedence:	90,
-		tooltip:		ZmSearchResultsController.DEFAULT_TAB_TEXT
+		tooltip:		ZmSearchResultsController.DEFAULT_TAB_TEXT,
+        style:          DwtLabel.IMAGE_RIGHT
 	};
 };
 

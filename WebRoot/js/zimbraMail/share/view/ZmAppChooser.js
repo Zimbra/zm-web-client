@@ -129,6 +129,7 @@ function(id, params) {
 
 	var buttonParams = {parent:this, id:ZmId.getButtonId(ZmId.APP, id), text:params.text,
 						image:params.image, index:params.index};
+    buttonParams.style = params.style ? params.style : DwtLabel.IMAGE_LEFT;
     var button = new ZmAppButton(buttonParams);
 	button.setToolTipContent(params.tooltip);
 	button.textPrecedence = params.textPrecedence;

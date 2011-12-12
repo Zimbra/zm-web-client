@@ -41,7 +41,7 @@ ZmAppButton = function(params) {
 
 	if (arguments.length == 0) { return; }
 
-    params.style = DwtLabel.IMAGE_LEFT;
+    params.style = params.style ? params.style : DwtLabel.IMAGE_LEFT;
 	params.posStyle = DwtControl.RELATIVE_STYLE;
     DwtButton.call(this, params);
 

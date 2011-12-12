@@ -712,8 +712,8 @@ function(initHide, composeMode) {
 
 ZmComposeController.prototype._getTabParams =
 function() {
-	return {id:this.tabId, image:"NewMessage", text:ZmComposeController.DEFAULT_TAB_TEXT, textPrecedence:75,
-			tooltip:ZmComposeController.DEFAULT_TAB_TEXT};
+	return {id:this.tabId, image:"Close", text:ZmComposeController.DEFAULT_TAB_TEXT, textPrecedence:75,
+			tooltip:ZmComposeController.DEFAULT_TAB_TEXT, style: DwtLabel.IMAGE_RIGHT};
 };
 
 ZmComposeController.prototype._identityChangeListener =
