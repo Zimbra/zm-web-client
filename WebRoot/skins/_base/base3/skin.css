@@ -224,6 +224,9 @@ BODY						{	margin:0px; 	}
 .SplashScreen .ImgAltBanner {
     @ImgAltBanner@
 }
+.LoginScreen INPUT[disabled] {
+	background-color:white;
+}
 .LoginScreen .decor1 { 
     @Decor1L@ 
 }
