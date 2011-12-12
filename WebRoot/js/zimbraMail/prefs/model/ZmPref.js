@@ -702,3 +702,15 @@ ZmPref.__BY_PRIORITY =
 function(a, b) {
 	return Number(a.priority) - Number(b.priority);
 };
+
+ZmPref.regenerateSignatureEditor =
+function( control ) {
+    if( appCtxt.isTinyMCEEnabled() ){
+        var signaturePage = control.parent;
+        var valueEl = document.getElementById(signaturePage._htmlElId + "_SIG_EDITOR");
+        var htmlEditor = new ZmAdvancedHtmlEditor(signaturePage, null, null, null, null, valueEl.parentNode);
+        valueEl.parentNode.removeChild(valueEl);
+        signaturePage._sigEditor = htmlEditor;
+        signaturePage._populateSignatures();
+    }
+};

@@ -2362,11 +2362,11 @@ function() {
         rowHeight = 350;
     }
 
-    //	if(window.isTinyMCE) {
-    //        this._notesHtmlEditor.setSize(rowWidth-5, rowHeight)
-    //    }else {
+    if( appCtxt.isTinyMCEEnabled() ) {
+        this._notesHtmlEditor.setSize(rowWidth-5, rowHeight);
+    }else {
         this._notesHtmlEditor.setSize(rowWidth-10, rowHeight-25);
-    //    }
+    }
 };
 
 ZmApptEditView.prototype._getComponentsHeight =

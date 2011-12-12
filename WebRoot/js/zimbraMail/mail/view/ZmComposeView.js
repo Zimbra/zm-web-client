@@ -2454,7 +2454,8 @@ function() {
     // Bug 54805
     // disable tinymce
     //return window.isTinyMCE;
-    return true;
+    //return true;
+    return appCtxt.isTinyMCEEnabled();
 };
 
 /**

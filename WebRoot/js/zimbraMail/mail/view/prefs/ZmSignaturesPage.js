@@ -435,8 +435,10 @@ function(container) {
 
 	// Signature CONTENT
 	var valueEl = document.getElementById(this._htmlElId + "_SIG_EDITOR");
-	var htmlEditor = new ZmSignatureEditor(this);
-	this._replaceControlElement(valueEl, htmlEditor);
+    if( !appCtxt.isTinyMCEEnabled() ){
+        var htmlEditor = new ZmSignatureEditor(this);
+        this._replaceControlElement(valueEl, htmlEditor);
+    }
 	this._sigEditor = htmlEditor;
 
 	// Signature use by identity
@@ -645,7 +647,9 @@ function(id, setup, value) {
 		this._defaultRadioGroup = new DwtRadioButtonGroup();
 
 		this._initialize(container);
-		this._populateSignatures();
+        if( !appCtxt.isTinyMCEEnabled() ){
+            this._populateSignatures();
+        }
 
 		return container;
 	}

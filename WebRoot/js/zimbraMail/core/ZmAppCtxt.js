@@ -1868,3 +1868,11 @@ function() {
     var ac = window["appCtxt"].getAppController();
     return ac._isPrismOnline && ac._isUserOnline;
 };
+
+/**
+ * Returns true for enabling tinymce editor
+*/
+ZmAppCtxt.prototype.isTinyMCEEnabled =
+function() {
+    return true;
+};

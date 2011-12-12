@@ -600,7 +600,8 @@ function() {
 	});
 
 	ZmPref.registerPref("SIGNATURES", {
-		displayContainer:	ZmPref.TYPE_CUSTOM
+		displayContainer:	ZmPref.TYPE_CUSTOM,
+        initFunction: ZmPref.regenerateSignatureEditor
 	});
 
 	ZmPref.registerPref("START_DATE_ENABLED", {

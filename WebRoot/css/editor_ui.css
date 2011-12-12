@@ -22,7 +22,7 @@
     @PageBg@
 }
 
-.defaultSkin iframe {display:block; background:#FFF}
+.defaultSkin iframe {display:block; background:#FFF; width:100%;}
 .defaultSkin .mceToolbar {height:26px}
 .defaultSkin .mceLeft {text-align:left}
 .defaultSkin .mceRight {text-align:right}

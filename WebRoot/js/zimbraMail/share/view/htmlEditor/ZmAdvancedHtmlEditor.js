@@ -19,13 +19,13 @@
  * @author Satish S
  * @private
  */
-ZmAdvancedHtmlEditor = function(parent, posStyle, content, mode, withAce) {
+ZmAdvancedHtmlEditor = function(parent, posStyle, content, mode, withAce, reparentContainer) {
 	if (arguments.length == 0) { return; }
 
 	this.isTinyMCE = window.isTinyMCE;
 	this._mode = mode;
 	this._hasFocus = {};
-	this.initTinyMCEEditor(parent, posStyle, content, mode, withAce);
+	this.initTinyMCEEditor(parent, posStyle, content, mode, withAce, reparentContainer);
     this._ignoreWords = {};
 };
 
@@ -65,31 +65,61 @@ function(width) {
 
 ZmAdvancedHtmlEditor.prototype.setSize =
 function(x, y) {
+    var div = this._spellCheckDivId && document.getElementById(this._spellCheckDivId);
 	var editor = this.getEditor();
 	var bodyField = this.getBodyField();
 
 	// FUDGE: we must substract borders and paddings - yuck.
 	var delta = this._mode == DwtHtmlEditor.HTML ? 10 : 8;
 
-	x -= delta + 4;
-	y -= delta; // subtract fudge factor
+    if (x === Dwt.CLEAR) {
+		bodyField.style.width = null;
+        if (div) div.style.width = null;
+	} else if (x === Dwt.DEFAULT) {
+		bodyField.style.width = "auto";
+        if (div) div.style.width = "auto";
+	} else if (typeof(x) === "number") {
+        x -= delta + 4;
+    	// bug fix #6786 - normalize width/height if less than zero
+	    if (x < 0) { x = 0; }
+		bodyField.style.width = x + 5 + "px";
+        if (div) {
+			if (!AjxEnv.isIE) {
+				x = x > 4 ? (x-4) : x;
+			}
+			div.style.width = x + "px";
+		}
+	}
 
-	// bug fix #6786 - normalize width/height if less than zero
-	if (x < 0) { x = 0; }
-	if (y < 0) { y = 0; }
+    if (y === Dwt.CLEAR) {
+        bodyField.style.height = null;
+        if (div) div.style.height = null;
+    } else if (y === Dwt.DEFAULT) {
+        bodyField.style.height = "auto";
+        if (div) div.style.height = "auto";
+    } else if (typeof(y) === "number") {
+        if (this._mode == DwtHtmlEditor.HTML){
+            //y -= 52;
+            y -= 26;
+        }
 
+        y -= delta; // subtract fudge factor
+        if (y < 0) { y = 0; }
+        bodyField.style.height = y + "px";
+        if (div) {
+			if (!AjxEnv.isIE) {
+				y = y > 4 ? (y-4) : y;
+			} else {
+				y += 2;
+			}
+			div.style.height = y + "px";
+		}
+    }
 	var editorContainer = document.getElementById(this._bodyTextAreaId + "_tbl");
 	if (editor && editorContainer) {
 		editorContainer.style.height = y + "px";
 		editorContainer.style.width = "100%";
 	}
-
-	if (this._mode == DwtHtmlEditor.HTML && this.isTinyMCE)
-		y -= 26;
-
-	bodyField.style.width = x + 5 + "px";
-	bodyField.style.height = y + "px";
-
 	//todo: handle spellcheck ids
 };
 
@@ -327,7 +357,8 @@ function() {
 	return Boolean(this._hasFocus[this._mode]);
 };
 
-ZmAdvancedHtmlEditor.prototype._getIframeDoc =
+/*ZmSignature editor contains getIframeDoc method dont want to break the existing code*/
+ZmAdvancedHtmlEditor.prototype._getIframeDoc = ZmAdvancedHtmlEditor.prototype.getIframeDoc =
 function() {
 	var editor = this.getEditor();
 	return editor ? editor.getDoc() : null;
@@ -367,7 +398,7 @@ function() {
 };
 
 ZmAdvancedHtmlEditor.prototype.initTinyMCEEditor =
-function(parent, posStyle, content, mode, withAce) {
+function(parent, posStyle, content, mode, withAce, reparentContainer) {
 
 	var params = {
 		parent: parent,
@@ -378,6 +409,9 @@ function(parent, posStyle, content, mode, withAce) {
 		className:"ZmHtmlEditor"
 	};
 	this._editorContainer = new ZmEditorContainer(params);
+    if( reparentContainer ){
+        this._editorContainer.reparentHtmlElement(reparentContainer);
+    }
 	var htmlEl = this._editorContainer.getHtmlElement();
 
 	//textarea on which html editor is constructed
@@ -408,7 +442,7 @@ function(parent, posStyle, content, mode, withAce) {
         window.tinyMCE_GZ = {};
         window.tinyMCE_GZ.loaded = true;
 
-		var callback = new AjxCallback(this, this.initEditorManager, [id, mode, content]);
+		var callback = new AjxCallback(this, this.initEditorManager, [id, content]);
         var data = {
                 callback: callback,
                 basePath: ZmAdvancedHtmlEditor.TINY_MCE_PATH
@@ -486,7 +520,7 @@ function(hasFocus, isTextModeFocus) {
 };
 
 ZmAdvancedHtmlEditor.prototype.initEditorManager =
-function(id, mode, content) {
+function(id, content) {
 
 	var obj = this;
 
@@ -578,7 +612,7 @@ function(id, mode, content) {
 
     var tinyMCEInitObj = {
         // General options
-		mode :  (mode == DwtHtmlEditor.HTML)? "exact" : "none",
+		mode :  (this._mode == DwtHtmlEditor.HTML)? "exact" : "none",
 		elements:  id,
 		plugins : "table,ztable,inlinepopups,fullscreen,zbreakquote,emotions,autolink",
 		theme : "advanced",
@@ -667,6 +701,9 @@ function(mode, convert, convertor) {
 	if (mode == this._mode || (mode != DwtHtmlEditor.HTML && mode != DwtHtmlEditor.TEXT)) {	return;	}
 
 	this._mode = mode;
+    if(!window.tinyMCE){
+        return;
+    }
 	var editor = this.getEditor();
 	if (mode == DwtHtmlEditor.HTML) {
 		var textArea = this.getContentField();
@@ -685,7 +722,7 @@ function(mode, convert, convertor) {
 		tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);
 	} else {
 		var textArea = this.getContentField();
-		var doc = editor.getDoc();
+		var doc = editor && editor.getDoc();
 		var textContent = convert ? this._convertHtml2Text(convertor) : doc.innerHTML;
 
 		tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);
@@ -1640,6 +1677,10 @@ function() {
 	}
 };
 
+ZmAdvancedHtmlEditor.prototype.getHtmlElement =
+function() {
+    return this._editorContainer.getHtmlElement();
+};
 
 ZmEditorContainer = function(params) {
 	if (arguments.length == 0) { return; }
