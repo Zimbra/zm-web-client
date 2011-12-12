@@ -583,6 +583,11 @@ ZmSearchAutocomplete = function() {
 	this._registerHandler("type", params);
 	this._registerHandler("attachment", params);
 
+	params = {
+		loader:		this._loadCommands
+	};
+	this._registerHandler("set", params);
+
 	var folderTree = appCtxt.getFolderTree();
     if (folderTree) {
         folderTree.addChangeListener(this._folderTreeChangeListener.bind(this));
@@ -633,7 +638,7 @@ function(str, callback, aclv, options) {
 	if (idx != -1 && idx <= str.length) {
 		str = str.substr(idx + 1);
 	}
-	var m = str.match(/\b-?([a-z]+):/);
+	var m = str.match(/\b-?\$?([a-z]+):/);
 	if (!(m && m.length)) {
 		callback();
 		return;
@@ -803,6 +808,21 @@ ZmSearchAutocomplete.prototype._handleResponseLoadTypes =
 function(attachTypeList, listType, callback) {
 
 	this._list[listType] = attachTypeList.getAttachments();
+	if (callback) { callback(); }
+};
+
+/**
+ * @private
+ */
+ZmSearchAutocomplete.prototype._loadCommands =
+function(listType, callback) {
+	var list = this._list[listType];
+	for (var funcName in ZmClientCmdHandler.prototype) {
+		if (funcName.indexOf("execute_") == 0) {
+			list.push(funcName.substr(8));
+		}
+	}
+	list.sort();
 	if (callback) { callback(); }
 };
 
