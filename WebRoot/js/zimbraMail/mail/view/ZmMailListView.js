@@ -1037,6 +1037,16 @@ function(ev) {
  */
 ZmMailListView.prototype._itemClicked =
 function(clickedEl, ev) {
+
+    //bug:67455 request permission for desktop notifications
+    if(window.webkitNotifications && appCtxt.get(ZmSetting.MAIL_NOTIFY_TOASTER)){
+        var perm = webkitNotifications.checkPermission();
+        if(perm == 1){
+           webkitNotifications.requestPermission();
+        }
+        //else if(perm == 2) ){ /*ignore when browser has disabled notifications*/ }
+    }
+
 	Dwt.setLoadingTime("ZmMailItem", new Date());
 	ZmListView.prototype._itemClicked.apply(this, arguments);
 	
