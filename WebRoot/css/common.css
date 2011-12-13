@@ -30,12 +30,11 @@
 * HTML elements - use for global declarations
 */
 
-/* TODO: Unify these two -- for font/size/style we shouldn't have to segregate password|text|etc */
 P, TH, TD, DIV, SELECT, INPUT[type=text], INPUT[type=password], INPUT[type=file], TEXTAREA, BUTTON {
 	@FontSize-normal@
 }
-#IFDEF MSIE
-P, TH, TD, DIV, SELECT, INPUT, TEXTAREA, BUTTON {
+#IFDEF MSIE  /* not sure why INPUT is IE only, but leaving that alone */
+INPUT {
 	@FontSize-normal@
 }
 #ENDIF
@@ -46,12 +45,23 @@ HTML {
 
 BODY {
 	@FullSize@
-	margin: 0px;
+	margin:0px;
 }
 
 FORM {
-	margin: 0;
-	padding: 0;
+	margin:0;
+	padding:0;
+}
+
+TABLE {
+	border-collapse:collapse; 
+	border-spacing:0;
+	border-width:0;
+}
+
+TD {
+	border-width:0;
+	padding:0;
 }
 
 FIELDSET {
@@ -62,7 +72,6 @@ LEGEND {
 	@FieldSetLabel@
 }
 
-
 /****
  		Generic field borders/styles
  ****/
@@ -72,7 +81,7 @@ INPUT[readonly] {
 TEXTAREA {
 	@TextArea@ @TextArea-normal@
 	#IFDEF SAFARI
-		resize: none;
+		resize:none;
 	#ENDIF
 }
 TEXTAREA[readonly] {
@@ -257,7 +266,7 @@ ZmSectionLabel {
 .horizSep {
 	@PrettyBottomSeparator@
 	@AddVerticalSpace@
-	width: 100%;
+	width:100%;
 }
 
 /* Vertical separator */
@@ -267,7 +276,7 @@ ZmSectionLabel {
 	@LeftSeparator@
 	margin-left:3px;
 	padding-right:3px;
-	height: 20px;
+	height:20px;
 }
 
 /* Vertical space */
@@ -334,8 +343,8 @@ DIV.vSpace {
 
 /* Used by the text laid over the multi-select icon to show number of items selected */
 .DragProxyTextLabel {
-	font-weight: bold;
-	color: white;
+	font-weight:bold;
+	color:white;
 }
 
 
@@ -345,13 +354,13 @@ DIV.vSpace {
 .BusyOverlay TABLE, .VeilOverlay TABLE {
 	@VeilOpacity@
 	@BusyCursor@
-	background-color: transparent;	/* ??? */
+	background-color:transparent;	/* ??? */
 }
 /* As of 07/22/05 Linux (or rather X) has a nasty issue that causes a huge perf problem with opacity.*/
 
 .BusyOverlay-linux TABLE, .VeilOverlay-linux TABLE {
 	@BusyCursor@
-	background-color: transparent;
+	background-color:transparent;
 }
 
 
@@ -376,8 +385,8 @@ DIV.vSpace {
  *  New tag dialog
 ---UNUSED---
 .TagColorMenu {
-	background-color: white;
-	border: solid #CCCCCC 1px;
+	background-color:white;
+	border:1px solid #CCC;
 }
 */
 
@@ -386,13 +395,13 @@ DIV.vSpace {
  * New folder dialog
 ---UNUSED---
 .FolderTree {
-	background-color: white;
-	width: 400px;
-	height: 200px;
-	border: 1px solid #999999;
-	padding: @BoxPaddingSize@ 0 0 @BoxPaddingSize@;
+	background-color:white;
+	width:400px;
+	height:200px;
+	border:1px solid #999999;
+	padding:@BoxPaddingSize@ 0 0 @BoxPaddingSize@;
 }
-.FolderTree TD {padding: 0;}
+.FolderTree TD {padding:0;}
  */
 
 
@@ -417,7 +426,7 @@ DIV.vSpace {
 	@ListItemContainer@
 	@DisableSelection@
 	@ListItemHeightDouble@
-	border-bottom-color:#CCCCCC;  /* TODO: Color should be a property reference */
+	border-bottom-color:#CCC;  /* TODO: Color should be a property reference */
 	padding-top:3px;
 }
 
@@ -499,11 +508,11 @@ DIV.vSpace {
 .Row-selected-dragProxy TD.Flag, .Row-selected-dragProxy TD.Attach, .Row-selected-dragProxy TD.Tag, .Row-selected-dragProxy TD.Icon, .Row-selected-dragProxy TD.Count,
 .Row-matched-dragProxy TD.Flag, .Row-matched-dragProxy TD.Attach, .Row-matched-dragProxy TD.Tag, .Row-matched-dragProxy TD.Icon, .Row-matched-dragProxy TD.Count,
 .Row-dragProxy TD.Flag, .Row-dragProxy TD.Attach,.Row-dragProxy TD.Tag, .Row-dragProxy TD.Icon, .Row-dragProxy TD.Count {
-	text-align: center;
+	text-align:center;
 }
 
 .RowDouble TD.Count, .RowDouble-selected TD.Count {
-	text-align: right;
+	text-align:right;
 }
 
 
@@ -524,8 +533,8 @@ DIV.vSpace {
 .ZmVoiceOverviewContainer .ZmOverview,
 .ZmOverviewContainer .ZmOverview,
 .dialogOverviewContainer .OverviewTree {
-	height: auto;
-	padding-left: @SmallIconWidth@;
+	height:auto;
+	padding-left:@SmallIconWidth@;
 }
 
 .OverviewTree 				{	@FullWidth@ 		}
@@ -535,7 +544,7 @@ DIV.vSpace {
 	@TreeContainer@
 	@NormalInsetBorder@
 	@BoxPadding@
-	height: 200px;		/* ??? SIZE */
+	height:200px;		/* ??? SIZE */
 }
 
 .dialogOverviewContainer 		{	@PanelBg@ 			}
@@ -550,8 +559,8 @@ DIV.vSpace {
 	@TreeHeaderContainer@
 	@TreeHeaderText@
 	@TreeItemSpacing@
-	padding-top: 1px;
-	padding-bottom: 1px;
+	padding-top:1px;
+	padding-bottom:1px;
 }
 
 .overviewHeader-Text,
@@ -562,8 +571,8 @@ DIV.vSpace {
 .overviewHeader-selected {
 	@TreeHeaderText@
     @SelectedBg-blurred@
-	padding-top: 1px;
-	padding-bottom: 1px;
+	padding-top:1px;
+	padding-bottom:1px;
 }
 
 .overviewHeader-selected-focused {
@@ -573,7 +582,7 @@ DIV.vSpace {
 
 .overviewHeader .imageCell,.overviewHeader-actioned .imageCell {
 	@ImagePadding@
-	white-space: nowrap;	/* ??? */
+	white-space:nowrap;	/* ??? */
 }
 
 .inlineIcon {
@@ -586,13 +595,13 @@ DIV.vSpace {
 }
 
 .TooltipHint {
-	font-style: italic;
-	text-align: center;
-	white-space: nowrap;
+	font-style:italic;
+	text-align:center;
+	white-space:nowrap;
 }
 
 .TooltipNotInAddrBook {
 	white-space:nowrap;
 	text-align:center;
-	padding: 8px 0px 5px 0px;
+	padding:8px 0px 5px 0px;
 }
