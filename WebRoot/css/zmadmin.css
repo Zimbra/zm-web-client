@@ -826,3 +826,7 @@ div.ZaSearchBuilderOptionRemoveAll table  {
 }
 
 .ZaToastBG 				{	@ToastContainer@		}
+
+TABLE {
+    border-collapse:separate;
+}
