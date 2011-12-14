@@ -489,7 +489,7 @@ function(parent, name, color) {
 };
 
 ZmBriefcaseApp.prototype.getBriefcaseController =
-function() {
+function(sessionId, searchResultsController) {
 	return this.getSessionController({controllerClass:			"ZmBriefcaseController",
 									  sessionId:				sessionId || ZmApp.MAIN_SESSION,
 									  searchResultsController:	searchResultsController});

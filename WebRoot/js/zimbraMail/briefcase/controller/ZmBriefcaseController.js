@@ -421,7 +421,8 @@ ZmBriefcaseController.prototype.getDefaultViewType = ZmBriefcaseController.getDe
 ZmBriefcaseController.prototype._createNewView =
 function(view) {
 
-    var viewCtor = eval(ZmBriefcaseController._VIEWS[view]);
+	var viewType = appCtxt.getViewTypeFromId(view);
+    var viewCtor = eval(ZmBriefcaseController._VIEWS[viewType]);
 	this._parentView[view] = new viewCtor(this._container, this, this._dropTgt);
 	var listView = this._parentView[view].getListView();
 	if (this._dragSrc) {
