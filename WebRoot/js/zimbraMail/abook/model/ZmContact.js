@@ -69,6 +69,10 @@ ZmContact.F_department				= "department";
 ZmContact.F_dlist					= "dlist";				// Group fields
 ZmContact.F_dlDisplayName			= "dldisplayname"; //DL
 ZmContact.F_dlDesc					= "dldesc";  //DL
+ZmContact.F_dlHideInGal				= "dlhideingal";  //DL
+ZmContact.F_dlNotes					= "dlnotes";  //DL
+ZmContact.F_dlSubscriptionPolicy	= "dlsubspolicy";  //DL
+ZmContact.F_dlUnsubscriptionPolicy	= "dlunsubspolicy";  //DL
 ZmContact.F_email					= "email";
 ZmContact.F_email2					= "email2";
 ZmContact.F_email3					= "email3";
@@ -1222,8 +1226,24 @@ function(attr) {
 		reqs.push(this._getModifyDlReq("displayName", displayName));
 	}
 	var desc = attr[ZmContact.F_dlDesc];
-	if (displayName) {
+	if (desc) {
 		reqs.push(this._getModifyDlReq("description", desc));
+	}
+	var notes = attr[ZmContact.F_dlNotes];
+	if (notes) {
+		reqs.push(this._getModifyDlReq("zimbraNotes", notes));
+	}
+	var hideInGal = attr[ZmContact.F_dlHideInGal];
+	if (hideInGal) {
+		reqs.push(this._getModifyDlReq("zimbraHideInGal", hideInGal));
+	}
+	var subsPolicy = attr[ZmContact.F_dlSubscriptionPolicy];
+	if (subsPolicy) {
+		reqs.push(this._getModifyDlReq("zimbraDistributionListSubscriptionPolicy", subsPolicy));
+	}
+	var unsubsPolicy = attr[ZmContact.F_dlUnsubscriptionPolicy];
+	if (unsubsPolicy) {
+		reqs.push(this._getModifyDlReq("zimbraDistributionListUnsubscriptionPolicy", unsubsPolicy));
 	}
 
 	if (reqs.length == 0) {

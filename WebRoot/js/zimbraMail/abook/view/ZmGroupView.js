@@ -31,13 +31,12 @@
 ZmGroupView = function(parent, controller) {
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, {parent:parent, className:"ZmContactView", posStyle:DwtControl.ABSOLUTE_STYLE});
-	this.setScrollStyle(Dwt.SCROLL);
+	this.setScrollStyle(Dwt.CLIP); //default is clip, for regular group it's fine. (otherwise there's always a scroll for no reason, not sure why). For DL we change in "set"
 
 	this._searchRespCallback = new AjxCallback(this, this._handleResponseSearch);
 
 	this._controller = controller;
 
-	this.setScrollStyle(Dwt.CLIP);
 	this._offset = 0;
 	this._defaultQuery = ".";
 	this._view = ZmId.VIEW_GROUP;
@@ -120,6 +119,9 @@ function(contact, isDirty) {
 	}
 	contact.addChangeListener(this._changeListener);
 	this._contact = contact;
+	if (this._contact.isDistributionList()) {
+		this.setScrollStyle(Dwt.SCROLL);
+	}
 
 	if (!this._htmlInitialized) {
 		this._createHtml();
@@ -155,6 +157,19 @@ function() {
 		if (dlInfo.description != this._getDlDesc()) {
 			mods[ZmContact.F_dlDesc] = this._getDlDesc();
 		}
+		if (dlInfo.hideInGal != this._getDlHideInGal()) {
+			mods[ZmContact.F_dlHideInGal] = this._getDlHideInGal();
+		}
+		if (dlInfo.notes != this._getDlNotes()) {
+			mods[ZmContact.F_dlNotes] = this._getDlNotes();
+		}
+		if (dlInfo.subscriptionPolicy != this._getDlSubscriptionPolicy()) {
+			mods[ZmContact.F_dlSubscriptionPolicy] = this._getDlSubscriptionPolicy();
+		}
+		if (dlInfo.unsubscriptionPolicy != this._getDlUnsubscriptionPolicy()) {
+			mods[ZmContact.F_dlUnsubscriptionPolicy] = this._getDlUnsubscriptionPolicy();
+		}
+
 	}
 
 	// creating new contact (possibly some fields - but not ID - prepopulated)
@@ -214,6 +229,37 @@ function() {
 ZmGroupView.prototype._getDlDesc =
 function() {
 	return AjxStringUtil.trim(document.getElementById(this._dlDescId).value);
+};
+
+ZmGroupView.prototype._getDlNotes =
+function() {
+	return AjxStringUtil.trim(document.getElementById(this._dlNotesId).value);
+};
+
+ZmGroupView.prototype._getDlHideInGal =
+function() {
+	return document.getElementById(this._dlHideInGalId).checked ? "TRUE" : "FALSE";
+};
+
+
+ZmGroupView.prototype._getDlSubscriptionPolicy =
+function() {
+	return this._getDlPolicy(this._dlSubscriptionPolicyId);
+};
+
+ZmGroupView.prototype._getDlUnsubscriptionPolicy =
+function() {
+	return this._getDlPolicy(this._dlUnsubscriptionPolicyId);
+};
+
+ZmGroupView.prototype._getDlPolicy =
+function(fldId) {
+	for (var i = 0; i < this._policyOpts.length; i++) {
+		var opt = this._policyOpts[i];
+		if (document.getElementById(fldId[opt]).checked) {
+			return opt;
+		}
+	}
 };
 
 
@@ -283,6 +329,13 @@ function(bEnable) {
 	if (this._contact.isDistributionList()) {
 		document.getElementById(this._dlDisplayNameId).disabled = !bEnable;
 		document.getElementById(this._dlDescId).disabled = !bEnable;
+		document.getElementById(this._dlHideInGalId).disabled = !bEnable;
+		document.getElementById(this._dlNotesId).disabled = !bEnable;
+		for (var i = 0; i < this._policyOpts.length; i++) {
+			var opt = this._policyOpts[i];
+			document.getElementById(this._dlSubscriptionPolicyId[opt]).disabled = !bEnable;
+			document.getElementById(this._dlUnsubscriptionPolicyId[opt]).disabled = !bEnable;
+		}
 	}
 	if (!this._noManualEntry) {
 		this._groupMembers.disabled = !bEnable;
@@ -463,6 +516,18 @@ function() {
 	if (this._contact.isDistributionList()) {
 		this._dlDisplayNameId = 	this._htmlElId + "_dlDisplayName";
 		this._dlDescId = 			this._htmlElId + "_dlDesc";
+		this._dlHideInGalId = 	this._htmlElId + "_dlHideInGal";
+		this._dlNotesId = 			this._htmlElId + "_dlNotes";
+		this._policyOpts = [ZmContactSplitView.SUBSCRIPTION_POLICY_ACCEPT,
+							ZmContactSplitView.SUBSCRIPTION_POLICY_APPROVAL,
+							ZmContactSplitView.SUBSCRIPTION_POLICY_REJECT];
+		this._dlSubscriptionPolicyId = {};
+		this._dlUnsubscriptionPolicyId = {};
+		for (var i = 0; i < this._policyOpts.length; i++) {
+			var opt = this._policyOpts[i];
+			this._dlSubscriptionPolicyId[opt] = this._htmlElId + "_dlSubscriptionPolicy" + opt; //_dlSubscriptionPolicyACCEPT / APPROVAL / REJECT
+			this._dlUnsubscriptionPolicyId[opt] = this._htmlElId + "_dlUnsubscriptionPolicy" + opt; //_dlUnsubscriptionPolicyACCEPT / APPROVAL / REJECT
+		}
 	}
 	this._searchFieldId = 		this._htmlElId + "_searchField";
 
@@ -610,6 +675,25 @@ function() {
 		var dlDesc = document.getElementById(this._dlDescId);
 		Dwt.setHandler(dlDesc, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
 		Dwt.associateElementWithObject(dlDesc, this);
+
+		var dlHideInGal = document.getElementById(this._dlHideInGalId);
+		Dwt.setHandler(dlHideInGal, DwtEvent.ONCHANGE, ZmGroupView._onChange);
+		Dwt.associateElementWithObject(dlHideInGal, this);
+
+		var dlNotes = document.getElementById(this._dlNotesId);
+		Dwt.setHandler(dlNotes, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
+		Dwt.associateElementWithObject(dlNotes, this);
+
+		for (var i = 0; i < this._policyOpts.length; i++) {
+			var opt =  this._policyOpts[i];
+			var dlSubsPolicy = document.getElementById(this._dlSubscriptionPolicyId[opt]);
+			Dwt.setHandler(dlSubsPolicy, DwtEvent.ONCHANGE, ZmGroupView._onChange);
+			Dwt.associateElementWithObject(dlSubsPolicy, this);
+
+			var dlUnsubsPolicy = document.getElementById(this._dlUnsubscriptionPolicyId[opt]);
+			Dwt.setHandler(dlUnsubsPolicy, DwtEvent.ONCHANGE, ZmGroupView._onChange);
+			Dwt.associateElementWithObject(dlUnsubsPolicy, this);
+		}
 	}
 
 	if (!this._noManualEntry) {
@@ -631,6 +715,16 @@ function() {
 	if (this._contact.isDistributionList()) {
 		fields.push(document.getElementById(this._dlDisplayNameId));
 		fields.push(document.getElementById(this._dlDescId));
+		fields.push(document.getElementById(this._dlHideInGalId));
+		for (var i = 0; i < this._policyOpts.length; i++) {
+			var opt = this._policyOpts[i];
+			fields.push(document.getElementById(this._dlSubscriptionPolicyId[opt]));
+		}
+		for (i = 0; i < this._policyOpts.length; i++) {
+			opt = this._policyOpts[i];
+			fields.push(document.getElementById(this._dlUnsubscriptionPolicyId[opt]));
+		}
+		fields.push(document.getElementById(this._dlNotesId));
 	}
 	if (!this._noManualEntry) {
 		fields.push(this._groupMembers);
@@ -701,9 +795,26 @@ function() {
 ZmGroupView.prototype._setDlFields =
 function() {
 	var displayName = document.getElementById(this._dlDisplayNameId);
-	if (displayName) displayName.value = this._contact.dlInfo.displayName || "";
+	displayName.value = this._contact.dlInfo.displayName || "";
+
 	var desc = document.getElementById(this._dlDescId);
-	if (desc) desc.value = this._contact.dlInfo.description || "";
+	desc.value = this._contact.dlInfo.description || "";
+
+	var hideInGal = document.getElementById(this._dlHideInGalId);
+	hideInGal.checked = this._contact.dlInfo.hideInGal == "TRUE";
+
+	for (var i = 0; i < this._policyOpts.length; i++) {
+		var opt = this._policyOpts[i];
+		var subsPolicyOpt = document.getElementById(this._dlSubscriptionPolicyId[opt]);
+		subsPolicyOpt.checked = this._contact.dlInfo.subscriptionPolicy == opt;
+
+		var unsubsPolicyOpt = document.getElementById(this._dlUnsubscriptionPolicyId[opt]);
+		unsubsPolicyOpt.checked = this._contact.dlInfo.unsubscriptionPolicy == opt;
+	}
+
+	var notes = document.getElementById(this._dlNotesId);
+	notes.value = this._contact.dlInfo.notes || "";
+
 };
 
 ZmGroupView.prototype._resetSearchInSelect =
@@ -1149,6 +1260,19 @@ function(ev) {
 
 	var key = DwtKeyEvent.getCharCode(ev);
 	if (DwtKeyMapMgr.hasModifier(ev) || DwtKeyMap.IS_MODIFIER[key] ||	key == DwtKeyMapMgr.TAB_KEYCODE) { return; }
+
+	var e = DwtUiEvent.getTarget(ev);
+	var view = e ? Dwt.getObjectFromElement(e) : null;
+	if (view) {
+		view._isDirty = true;
+	}
+
+	return true;
+};
+
+ZmGroupView._onChange =
+function(ev) {
+	ev = DwtUiEvent.getEvent(ev);
 
 	var e = DwtUiEvent.getTarget(ev);
 	var view = e ? Dwt.getObjectFromElement(e) : null;

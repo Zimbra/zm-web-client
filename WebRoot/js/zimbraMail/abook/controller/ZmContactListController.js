@@ -241,7 +241,9 @@ function(contact, callback, result) {
 						subscriptionPolicy: attrs.zimbraDistributionListSubscriptionPolicy,
 						unsubscriptionPolicy: attrs.zimbraDistributionListUnsubscriptionPolicy,
 						description: attrs.description,
-						displayName: attrs.displayName};
+						displayName: attrs.displayName,
+						notes: attrs.zimbraNotes,
+						hideInGal: attrs.zimbraHideInGal};
 
 	this._resetOperations(this._toolbar[this._currentViewId], 0); // now that we got the dlInfo we can know better how to set the "edit" button.
 	var callbackFromGettingMembers = this._handleGetDlMembersResponse.bind(this, contact, callback);

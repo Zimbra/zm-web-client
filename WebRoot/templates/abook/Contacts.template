@@ -548,12 +548,47 @@
 	<$ if (data.contact.isDistributionList()) { $>
 		<table valign="top" width="100%" cellspacing="0" class="ZmEditContactView">
 			<tr valign="top">
-				<td class='rowLabel'>Display Name:</td>
+				<td class='rowLabel'><$= ZmMsg.displayNameLabel $></td>
 				<td class='rowValue'><input type='text' autocomplete='off' size=40 id='${id}_dlDisplayName' class="Text"></td>
 			</tr>
 			<tr valign="top">
-				<td class='rowLabel'>Description:</td>
+				<td class='rowLabel'><$= ZmMsg.descriptionLabel $></td>
 				<td class='rowValue'><textarea rows='4' cols='65' id='${id}_dlDesc'></textarea></td>
+			</tr>
+			<tr valign="top">
+				<td class='rowLabel'><$= ZmMsg.directoryLabel $></td>
+				<td class='rowValue'><input type="checkbox" id='${id}_dlHideInGal'><label for="${id}_dlHideInGal"><$= ZmMsg.hiddenInGlobal $></label></td>
+			</tr>
+
+			<tr valign="top">
+				<td class='rowLabel'><$= ZmMsg.newSubscriptionsLabel $></td>
+				<td class='rowValue'><input type="radio" name="subscriptionPolicy" id='${id}_dlSubscriptionPolicyACCEPT'><label for="${id}_dlSubscriptionPolicyACCEPT"><$= ZmMsg.policyAccept $></label></td>
+			</tr>
+			<tr valign="top">
+				<td class='rowLabel'></td>
+				<td class='rowValue'><input type="radio" name="subscriptionPolicy" id='${id}_dlSubscriptionPolicyAPPROVAL'><label for="${id}_dlSubscriptionPolicyAPPROVAL"><$= ZmMsg.policyApproval $></label></td>
+			</tr>
+			<tr valign="top">
+				<td class='rowLabel'></td>
+				<td class='rowValue'><input type="radio" name="subscriptionPolicy" id='${id}_dlSubscriptionPolicyREJECT'><label for="${id}_dlSubscriptionPolicyREJECT"><$= ZmMsg.policyReject $></label></td>
+			</tr>
+
+			<tr valign="top">
+				<td class='rowLabel'><$= ZmMsg.unsubscriptionsRequestLabel $></td>
+				<td class='rowValue'><input type="radio" name="unsubscriptionPolicy" id='${id}_dlUnsubscriptionPolicyACCEPT'><label for="${id}_dlUnsubscriptionPolicyACCEPT"><$= ZmMsg.policyAccept $></label></td>
+			</tr>
+			<tr valign="top">
+				<td class='rowLabel'></td>
+				<td class='rowValue'><input type="radio" name="unsubscriptionPolicy" id='${id}_dlUnsubscriptionPolicyAPPROVAL'><label for="${id}_dlUnsubscriptionPolicyAPPROVAL"><$= ZmMsg.policyApproval $></label></td>
+			</tr>
+			<tr valign="top">
+				<td class='rowLabel'></td>
+				<td class='rowValue'><input type="radio" name="unsubscriptionPolicy" id='${id}_dlUnsubscriptionPolicyREJECT'><label for="${id}_dlUnsubscriptionPolicyREJECT"><$= ZmMsg.policyReject $></label></td>
+			</tr>
+
+			<tr valign="top">
+				<td class='rowLabel'><$= ZmMsg.notesLabel $></td>
+				<td class='rowValue'><textarea rows='4' cols='65' id='${id}_dlNotes'></textarea></td>
 			</tr>
 		</table>
 	<$ } $>
