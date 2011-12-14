@@ -848,15 +848,24 @@ function(items) {
 
 ZmCalViewController.prototype._getToolBarOps =
 function() {
-	return [
+    var toolbarOptions = [
 		ZmOperation.DELETE, ZmOperation.SEP, ZmOperation.MOVE_MENU,
 		ZmOperation.TAG_MENU,
 		ZmOperation.SEP,
 		ZmOperation.PRINT_CALENDAR,
 		ZmOperation.SEP,
 		ZmOperation.TODAY,
-        ZmOperation.VIEW_MENU
+        ZmOperation.FILLER,
+        ZmOperation.DAY_VIEW,
+        ZmOperation.WORK_WEEK_VIEW,
+        ZmOperation.WEEK_VIEW,
+		ZmOperation.MONTH_VIEW,
+        ZmOperation.CAL_LIST_VIEW
 	];
+    if( appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED) ){
+        toolbarOptions.push(ZmOperation.FB_VIEW);
+    }
+    return toolbarOptions;
 };
 
 /* This method is called from ZmListController._setup. We control when this method is called in our
@@ -895,15 +904,6 @@ function(viewId) {
 
 	toolbar.getButton(ZmOperation.DELETE).setToolTipContent(ZmMsg.hardDeleteTooltip);
 
-	var viewButton = toolbar.getButton(ZmOperation.VIEW_MENU);
-	if (viewButton) {
-		viewButton.setMenu(new AjxCallback(this, this._setupViewMenuItems, [toolbar]));
-
-		var op = ZmCalViewController.VIEW_TO_OP[this.getDefaultViewType()];
-		var icon = ZmOperation.getProp(op, "image");
-		viewButton.setImage(icon);
-	}
-
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, toolbar, this, viewId], {waitUntilLoaded:true});
 };
 
@@ -929,35 +929,6 @@ function(viewId) {
 	return this._viewMgr.createView(viewId);
 };
 
-ZmCalViewController.prototype._setupViewMenuItems =
-function(toolbar) {
-	var viewBtn = toolbar.getButton(ZmOperation.VIEW_MENU);
-	var menu = new ZmPopupMenu(viewBtn);
-	viewBtn.setMenu(menu);
-
-	var defaultViewId = this.getDefaultViewType();
-	var calViews = ZmCalViewController.OPS;
-	for (var i = 0; i < calViews.length; i++) {
-		var id = calViews[i];
-		var params = {
-			image:		ZmOperation.getProp(id, "image"),
-			text:		ZmMsg[ZmOperation.getProp(id, "textKey")],
-			style:		DwtMenuItem.RADIO_STYLE,
-			shortcut:	ZmOperation.getProp(id, "shortcut")
-		};
-		var mi = menu.createMenuItem(id, params);
-		mi.setData(ZmOperation.MENUITEM_ID, id);
-		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
-		var viewId = ZmCalViewController.OP_TO_VIEW[id];
-		if (viewId == defaultViewId) {
-			mi.setChecked(true, true);
-		}
-	}
-
-	return menu;
-};
-
-
 // Switch to selected view.
 ZmCalViewController.prototype._viewActionMenuItemListener =
 function(ev) {
@@ -972,22 +943,7 @@ function(ev) {
 // Switch to selected view.
 ZmCalViewController.prototype._viewMenuItemListener =
 function(ev) {
-	Dwt.setLoadingTime("ZmCalViewItem", new Date())
-	if (ev.detail == DwtMenuItem.CHECKED ||
-		ev.detail == DwtMenuItem.UNCHECKED)
-	{
-        this.setCurrentListView(null);
-		if (appCtxt.multiAccounts) {
-			this.apptCache.clearCache();
-		}
-		var id = ev.item.getData(ZmOperation.MENUITEM_ID);
-		var viewBtn = this._toolbar[ZmId.VIEW_CAL].getButton(ZmOperation.VIEW_MENU);
-		if (viewBtn) {
-			var icon = ZmOperation.getProp(id, "image");
-			viewBtn.setImage(icon);
-		}
-		this.show(ZmCalViewController.OP_TO_VIEW[id]);
-	}
+
 };
 
 /**
@@ -2800,14 +2756,6 @@ function(view) {
 ZmCalViewController.prototype._resetToolbarOperations =
 function(viewId) {
 	ZmListController.prototype._resetToolbarOperations.call(this);
-
-	var viewBtn = viewId && this._toolbar[ZmId.VIEW_CAL].getButton(ZmOperation.VIEW_MENU);
-	if (viewBtn) {
-		var op = ZmCalViewController.VIEW_TO_OP[viewId];
-		var icon = ZmOperation.getProp(op, "image");
-		viewBtn.setImage(icon);
-		viewBtn.getMenu().checkItem(ZmOperation.MENUITEM_ID, op);
-	}
 };
 
 ZmCalViewController.prototype._setNavToolbarPosition =
