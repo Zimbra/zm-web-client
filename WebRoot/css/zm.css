@@ -701,6 +701,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	padding:3px 5px 4px;
 	@BottomSeparator@
 	/*@cssShadow@:0 3px 3px @darken(AppC,15)@;*/
+	white-space:nowrap;
 }
 
 .Conv2Header TABLE {
@@ -712,11 +713,18 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	font-weight:bold;
 	overflow:hidden;
 	@FontSize-normal@
+	white-space:nowrap;
 }
 
 .Conv2Header .info {
 	font-weight:normal;
 	white-space:nowrap;
+	/* background-color needs to be same as Conv2Header */
+	background: none repeat scroll 0 0 @lighten(AppC,25)@;
+	padding: 0 8px;
+	position: absolute;
+	right: 0;
+	text-align: right;
 }
 
 /* The messages area contains collapsed and expanded messages */
@@ -741,7 +749,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .Conv2View .Conv2Reply {
-    background-color:@lighten(AppC,55)@;
+    background-color:@lighten(AltC,55)@;
     border-top:1px solid @darken(AppC,33)@;
 	padding:5px;
 }
@@ -835,10 +843,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmConvView2 .ReplyTextarea {
-	width:98%;
-	margin:2px;
-#IFDEF MSIE
 	width:100%;
+#IFDEF MSIE
 	height:100%;
 #ENDIF
 }
@@ -855,11 +861,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 #ENDIF
 
-#IFDEF MSIE
 .Conv2ReplyContainer {
+	margin:5px;
+#IFDEF MSIE
 	height:20px;
-}
 #ENDIF
+}
 
 /* for browsers that don't support placeholder text */
 .ZmConvView2 .ReplyTextarea.hint {

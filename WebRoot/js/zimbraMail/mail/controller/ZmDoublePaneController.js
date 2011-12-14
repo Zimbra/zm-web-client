@@ -263,6 +263,16 @@ function() {
 };
 ZmDoublePaneController.prototype.getReferenceView = ZmDoublePaneController.prototype.getCurrentView;
 
+/**
+ * Returns the item view.
+ * 
+ * @return {ZmMailItemView}	item view
+ */
+ZmDoublePaneController.prototype.getItemView = 
+function() {
+	return this._doublePaneView && this._doublePaneView._itemView;
+};
+
 ZmDoublePaneController.prototype._getTagMenuMsg = 
 function(num) {
 	return AjxMessageFormat.format(ZmMsg.tagMessages, num);
