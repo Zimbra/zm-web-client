@@ -47,7 +47,8 @@ ZmTimeSuggestionPrefDialog.prototype.constructor = ZmTimeSuggestionPrefDialog;
 
 ZmTimeSuggestionPrefDialog.META_DATA_KEY = "MD_LOCATION_SEARCH_PREF";
 ZmTimeSuggestionPrefDialog.PREF_FIELDS = ["name", "site", "capacity", "building", "desc", "floor",
-                                          "my_working_hrs_pref", "others_working_hrs_pref"];
+                                          "my_working_hrs_pref", "others_working_hrs_pref",
+                                          "recurrenceSelect"];
 
 // corresponding attributes for search command
 ZmTimeSuggestionPrefDialog.SF_ATTR = {};
@@ -65,6 +66,7 @@ ZmTimeSuggestionPrefDialog.SF_OP["floor"]		= "eq";
 
 ZmTimeSuggestionPrefDialog.MY_WORKING_HOURS_FIELD = 'my_working_hrs_pref';
 ZmTimeSuggestionPrefDialog.OTHERS_WORKING_HOURS_FIELD = 'others_working_hrs_pref';
+ZmTimeSuggestionPrefDialog.RECURRENCE = 'recurrenceSelect';
 
 ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS = {};
 ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[ZmTimeSuggestionPrefDialog.MY_WORKING_HOURS_FIELD]      = true;
@@ -73,6 +75,11 @@ ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[ZmTimeSuggestionPrefDialog.OTHERS_WOR
 ZmTimeSuggestionPrefDialog.DEFAULT_VAL = {};
 ZmTimeSuggestionPrefDialog.DEFAULT_VAL[ZmTimeSuggestionPrefDialog.MY_WORKING_HOURS_FIELD]    = 'true';
 ZmTimeSuggestionPrefDialog.DEFAULT_VAL[ZmTimeSuggestionPrefDialog.OTHERS_WORKING_HOURS_FIELD] = 'true';
+ZmTimeSuggestionPrefDialog.DEFAULT_NUM_RECURRENCE = 4;
+ZmTimeSuggestionPrefDialog.MAX_NUM_RECURRENCE = 10;
+ZmTimeSuggestionPrefDialog.DEFAULT_VAL[ZmTimeSuggestionPrefDialog.RECURRENCE] =
+    ZmTimeSuggestionPrefDialog.DEFAULT_NUM_RECURRENCE.toString();
+
 
 // Public methods
 
@@ -86,7 +93,7 @@ function(event) {
     this.readPrefs();
     this.setSearchPreference();
     this.popdown();
-    if(this._callback) this._callback.run();    
+    if(this._callback) this._callback.run();
 };
 
 ZmTimeSuggestionPrefDialog.prototype._handleCancelButton =
@@ -124,6 +131,13 @@ function(text) {
 		d.innerHTML = text || "";
 	}
 
+    this._recurrenceSelect = new DwtSelect({id:this._htmlElId + "_recurrenceSelect",
+                                parent:this, parentElement:(this._htmlElId + "_recurrence")});
+    for (var i = 1; i <= ZmTimeSuggestionPrefDialog.MAX_NUM_RECURRENCE; i++) {
+        this._recurrenceSelect.addOption(i.toString(), (i == 1), i);
+    }
+
+
     this._dlgId = AjxCore.assignId(this);
 
     var suffix, id;
@@ -154,25 +168,33 @@ function(text) {
 
 ZmTimeSuggestionPrefDialog.prototype.getPreferenceFieldValue =
 function(id) {
-    var field = this._prefFields[id];
-    if(!field) return;
+    if (id == "recurrenceSelect") {
+        return this._recurrenceSelect.getValue();
+    } else {
+        var field = this._prefFields[id];
+        if(!field) return;
 
-    if(ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[id]){
-        return field.checked ? 'true' : 'false';
-    }else {
-        return field.value;
+        if(ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[id]){
+            return field.checked ? 'true' : 'false';
+        }else {
+            return field.value;
+        }
     }
 };
 
 ZmTimeSuggestionPrefDialog.prototype.setPreferenceFieldValue =
 function(id, value) {
-    var field = this._prefFields[id];
-    if(!field) return;
-    
-    if(ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[id]){
-        field.checked = (value == 'true');
-    }else {
-        field.value = value || "";
+    if (id == "recurrenceSelect") {
+       this._recurrenceSelect.setSelectedValue(value);
+    } else {
+        var field = this._prefFields[id];
+        if(!field) return;
+
+        if(ZmTimeSuggestionPrefDialog.CHECKBOX_FIELDS[id]){
+            field.checked = (value == 'true');
+        }else {
+            field.value = value || "";
+        }
     }
 };
 

@@ -45,6 +45,8 @@ ZmApptAssistantView = function(parent, controller, apptView, closeCallback) {
 
     this._enabled       = false;
 
+    this.numRecurrence  = this.getLocationConflictNumRecurrence();
+
     this.initialize();
 };
 
@@ -121,8 +123,18 @@ function() {
 };
 
 
+ZmApptAssistantView.prototype.getLocationConflictNumRecurrence =
+function() {
+    return this._prefDialog ?
+        parseInt(this._prefDialog.getPreference(ZmTimeSuggestionPrefDialog.RECURRENCE)) :
+        ZmTimeSuggestionPrefDialog.DEFAULT_NUM_RECURRENCE;
+};
+
 ZmApptAssistantView.prototype._prefListener =
 function(ev) {
+    // Record the current numRecurrence value, for detecting changes upon
+    // completion of the preferences dialog
+    this.numRecurrence = this.getLocationConflictNumRecurrence();
     this._prefDialog.popup(this._apptView.getCalendarAccount());
 };
 

@@ -176,8 +176,10 @@ function(id){
 
 ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
-
 	var appt = this._composeView.getAppt(attId);
+    var numRecurrence = this._composeView.getNumLocationConflictRecurrence ?
+        this._composeView.getNumLocationConflictRecurrence() :
+        ZmTimeSuggestionPrefDialog.DEFAULT_NUM_RECURRENCE;
 
     if (appt && !appt.isValidDuration()) {
         this._composeView.showInvalidDurationMsg();
@@ -298,7 +300,7 @@ function(attId) {
 								 (locations && locations.length > 0));
 
 		if (needsConflictCheck) {
-			this.checkConflicts(appt, attId, notifyList);
+			this.checkConflicts(appt, numRecurrence, attId, notifyList);
 			return false;
 		} else if (needsPermissionCheck) {
 			this.checkAttendeePermissions(appt, attId, notifyList);
@@ -560,7 +562,7 @@ function(appt) {
 };
 
 ZmApptComposeController.prototype.checkConflicts =
-function(appt, attId, notifyList) {
+function(appt, numRecurrence, attId, notifyList) {
 	var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
 	var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
 	var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
@@ -573,7 +575,7 @@ function(appt, attId, notifyList) {
 		? (new AjxCallback(this, this.checkAttendeePermissions, [appt, attId, notifyList]))
 		: (new AjxCallback(this, this.saveCalItemContinue, [appt, attId, notifyList]));
 
-	this._checkResourceConflicts(appt, callback);
+	this._checkResourceConflicts(appt, numRecurrence, callback, true, false);
 };
 
 ZmApptComposeController.prototype.checkAttendeePermissions =
@@ -610,28 +612,39 @@ function(appt, attId, notifyList) {
 	this._saveCalItemFoRealz(appt, attId, notifyList);
 };
 
+// Expose the resource conflict check call to allow the ApptEditView to
+// trigger a location conflict check
+ZmApptComposeController.prototype.getCheckResourceConflicts =
+function(appt, numRecurrence, callback, displayConflictDialog) {
+    return this.checkResourceConflicts.bind(this, appt, numRecurrence, callback, displayConflictDialog);
+}
+
 ZmApptComposeController.prototype.checkResourceConflicts =
-function(callback) {
-	this._conflictCallback = callback;
-	this._checkResourceConflicts(this._composeView.getAppt());
+function(appt, numRecurrence, callback, displayConflictDialog) {
+	return this._checkResourceConflicts(appt, numRecurrence, callback,
+        displayConflictDialog, true);
 };
 
 ZmApptComposeController.prototype._checkResourceConflicts =
-function(appt, callback) {
+function(appt, numRecurrence, callback, displayConflictDialog, conflictCallbackOverride) {
 	var mode = appt.viewMode;
-
+	var reqId;
 	if (mode!=ZmCalItem.MODE_NEW_FROM_QUICKADD && mode!= ZmCalItem.MODE_NEW) {
 		if(appt.isRecurring() && mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
 			// for recurring appt - user GetRecurRequest to get full recurrence
 			// information and use the component in CheckRecurConflictRequest
-			var recurInfoCallback = new AjxCallback(this, this._checkResourceConflictsSoap, [appt, callback]);
-			this.getRecurInfo(appt, recurInfoCallback);
+			var recurInfoCallback = new AjxCallback(this, this._checkResourceConflictsSoap,
+                [appt, numRecurrence, callback, displayConflictDialog, conflictCallbackOverride]);
+			reqId = this.getRecurInfo(appt, recurInfoCallback);
 		} else {
-			this._checkResourceConflictsSoap(appt, callback);
+			reqId = this._checkResourceConflictsSoap(appt, numRecurrence, callback,
+                displayConflictDialog, conflictCallbackOverride);
 		}
 	} else {
-		this._checkResourceConflictsSoap(appt, callback);
+		reqId = this._checkResourceConflictsSoap(appt, numRecurrence, callback,
+            displayConflictDialog, conflictCallbackOverride);
 	}
+	return reqId;
 };
 
 /**
@@ -705,21 +718,51 @@ function(soapDoc, recurInfo) {
 	}
 };
 
+// Use the (numRecurrences * the recurrence period * repeat.customCount)
+// time interval to determine the endDate of the resourceConflict check
+ZmApptComposeController.prototype.getCheckResourceConflictEndTime =
+function(appt, startDate, numRecurrence) {
+    var recurrence = appt.getRecurrence();
+    var endDate;
+    var range = recurrence.repeatCustomCount * numRecurrence;
+    if (recurrence.repeatType == ZmRecurrence.NONE) {
+        endDate = appt.endDate;
+    } else if (recurrence.repeatType == ZmRecurrence.DAILY) {
+        endDate = AjxDateUtil.roll(startDate, AjxDateUtil.DAY, range);
+    } else if (recurrence.repeatType == ZmRecurrence.WEEKLY) {
+        endDate = AjxDateUtil.roll(startDate, AjxDateUtil.WEEK, range);
+    } else if (recurrence.repeatType == ZmRecurrence.MONTHLY) {
+        endDate = AjxDateUtil.roll(startDate, AjxDateUtil.MONTH, range);
+    } else if (recurrence.repeatType == ZmRecurrence.YEARLY) {
+        endDate = AjxDateUtil.roll(startDate, AjxDateUtil.YEAR, range);
+    }
+    var endTime = endDate.getTime();
+    if (recurrence.repeatEndDate) {
+        var repeatEndTime = recurrence.repeatEndDate.getTime();
+        if (endTime > repeatEndTime) {
+            endTime = repeatEndTime;
+        }
+    }
+    return endTime;
+}
+
 /**
  * Soap Request is used when "comp" has to be generated from appt.
  * 
  * @private
  */
 ZmApptComposeController.prototype._checkResourceConflictsSoap =
-function(appt, callback, recurInfo) {
+function(appt, numRecurrence, callback, displayConflictDialog,
+         conflictCallbackOverride, recurInfo) {
 	var mode = appt.viewMode;
+    var startDate = new Date(appt.startDate);
+    startDate.setHours(0,0,0,0);
+    var startTime = startDate.getTime();
+    var endTime = this.getCheckResourceConflictEndTime(appt, startDate, numRecurrence);
+
 	var soapDoc = AjxSoapDoc.create("CheckRecurConflictsRequest", "urn:zimbraMail");
-
-	var today = new Date();
-	today.setHours(0,0,0,0);
-
-	soapDoc.setMethodAttribute("s", today.getTime());
-	soapDoc.setMethodAttribute("e", today.getTime() + (AjxDateUtil.MSEC_PER_DAY*365));
+	soapDoc.setMethodAttribute("s", startTime);
+	soapDoc.setMethodAttribute("e", endTime);
 
 	if (mode!=ZmCalItem.MODE_NEW_FROM_QUICKADD && mode!= ZmCalItem.MODE_NEW) {
 		soapDoc.setMethodAttribute("excludeUid", appt.uid);
@@ -745,7 +788,8 @@ function(appt, callback, recurInfo) {
 	return appCtxt.getAppController().sendRequest({
 		soapDoc: soapDoc,
 		asyncMode: true,
-		callback: (new AjxCallback(this, this._handleResourceConflict, [appt, callback])),
+		callback: (new AjxCallback(this, this._handleResourceConflict, [appt, callback,
+            displayConflictDialog, conflictCallbackOverride])),
 		errorCallback: (new AjxCallback(this, this._handleResourceConflictError, [appt, callback])),
 		noBusyOverlay: true
 	});
@@ -854,21 +898,23 @@ function(appt, attId, names, notifyList, response) {
 };
 
 ZmApptComposeController.prototype._handleResourceConflict =
-function(appt, callback, result) {
+function(appt, callback, displayConflictDialog, conflictCallbackOverride, result) {
 	var conflictExist = false;
+    var inst = null;
 	if (result) {
 		var conflictResponse = result.getResponse().CheckRecurConflictsResponse;
-		var inst = this._conflictingInstances = conflictResponse.inst;
+		inst = this._conflictingInstances = conflictResponse.inst;
 		if (inst && inst.length > 0) {
-			if(this._conflictCallback) this._conflictCallback.run(inst);
-			this.showConflictDialog(appt, callback, inst);
+			if (displayConflictDialog) {
+				this.showConflictDialog(appt, callback, inst);
+			}
 			conflictExist = true;
-            this.enableToolbar(true);
+			this.enableToolbar(true);
 		}
 	}
 
-	if (!conflictExist && callback) {
-		callback.run();
+	if ((conflictCallbackOverride || !conflictExist) && callback) {
+		callback.run(inst);
 	}
 };
 

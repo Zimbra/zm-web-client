@@ -56,6 +56,9 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle, 
 	this._kbMgr = appCtxt.getKeyboardMgr();
     this._isForward = false;
     this._isProposeTime = false;
+
+    this._customRecurDialogCallback = null;
+    this._enableCustomRecurCallback = true;
 };
 
 ZmCalItemEditView.prototype = new DwtComposite;
@@ -668,6 +671,11 @@ function(body, composingHtml) {
     return body;
 };
 
+ZmCalItemEditView.prototype.getRepeatType =
+function() {
+    return this._repeatSelectDisabled ? "NON" : this._repeatSelect.getValue();
+}
+
 /**
  * sets any recurrence rules w/in given ZmCalItem object
 */
@@ -1114,7 +1122,11 @@ function(ev) {
         {
             this._checkRecurrenceValidity = true;
             this._initRecurDialog(repeatType);
+            // Internal call of the custom recurrence dialog code -
+            // Suppress the callback function
+            this._enableCustomRecurCallback = false;
             this._recurOkListener();
+            this._enableCustomRecurCallback = true;
         }
         else
         {
@@ -1153,8 +1165,8 @@ function(ev) {
 	var popdown = true;
 	this._recurDialogRepeatValue = this._recurDialog.getSelectedRepeatValue();
 	if (this._recurDialogRepeatValue == "NON") {
-		this._repeatSelect.setSelectedValue(this._recurDialogRepeatValue);
-		this._repeatDescField.innerHTML = "";
+        this._repeatSelect.setSelectedValue(this._recurDialogRepeatValue);
+        this._repeatDescField.innerHTML = "";
 	} else {
 		if (this._recurDialog.isValid()) {
 			this._repeatSelect.setSelectedValue("CUS");
@@ -1192,6 +1204,9 @@ function(ev) {
 	if (popdown) {
 		this._recurDialog.popdown();
 	}
+    if (this._customRecurDialogCallback && this._enableCustomRecurCallback) {
+        this._customRecurDialogCallback.run();
+    }
 };
 
 ZmCalItemEditView.prototype.validateRecurrence =
@@ -1335,7 +1350,11 @@ function(sd) {
 		this._oldEndDate = temp._endDate;
 		this._checkRecurrenceValidity = true;
 		this._initRecurDialog(repeatType);
-		this._recurOkListener();		
+		// Internal call of the custom recurrence dialog code -
+		// Suppress the callback function
+		this._enableCustomRecurCallback = false;
+		this._recurOkListener();
+		this._enableCustomRecurCallback = true;
 	}
 	else
 	{

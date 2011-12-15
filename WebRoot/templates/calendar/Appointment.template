@@ -73,7 +73,11 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td colspan='4'><div id='${id}_suggest_location' style="margin-top:-4px;" class='fakeAnchor'><$= ZmMsg.suggestALocation $></div></td>
+                    <td colspan='4'>
+                        <div id='${id}_location_status'  class='ZmLocationStatusConflict' x-display='inline-block'></div>
+                        <div id='${id}_location_status_action' class='fakeAnchor ZmSuggestLocationLink' x-display='inline-block'></div>
+                        <div id='${id}_suggest_location' class='fakeAnchor ZmSuggestLocationLink' x-display='inline-block'><$= ZmMsg.suggestALocation $></div>
+                    </td>
                 </tr>
                 <$ if (data.isGalEnabled && data.isGroupCalEnabled) { $>
                 <tr id='${id}_resourcesContainer'>
@@ -1117,19 +1121,26 @@
     <table cellspacing="5" width="100%" cellpadding="0" border="0" id="${id}_timepref">
         <tbody>
         <tr>
-            <td class="SuggestionPrefTitle" colspan="2"><$= ZmMsg.timePreferences $><hr></td>
+            <td class="SuggestionPrefTitle" colspan="3"><$= ZmMsg.timePreferences $><hr></td>
         </tr>
         <tr>
+            <td align="right"><$= ZmMsg.suggestionTimes $>:</td>
             <td align="right"><input type="checkbox" id="${id}_my_working_hrs_pref"></td>
             <td align="left">
                 <label for="${id}_my_working_hrs_pref"><$= ZmMsg.schedulerPrefMyWorkingHours $></label>
             </td>
         </tr>
         <tr>
+            <td align="right">&nbsp;</td>
             <td align="right"><input type="checkbox" id="${id}_others_working_hrs_pref"></td>
             <td align="left">
                 <label for="${id}_others_working_hrs_pref"><$= ZmMsg.schedulerPrefOtherWorkingHours $></label>
             </td>
+        </tr>
+        <tr>
+            <td align="right"><$= ZmMsg.recurrence $>:</td>
+            <td align="right" id='${id}_recurrence'></td>
+            <td align="left"><$= ZmMsg.calculateAvailability $></td>
         </tr>
         </tbody>
     </table>

@@ -5176,7 +5176,8 @@ border:1px solid #666;
 .ZmSuggestView {
 }
 .ZmSuggestLocationList {
-    height:100%;
+    height:99%;
+    width:99%;
 }
 
 .ZmSuggestPref {
@@ -5208,4 +5209,28 @@ border:1px solid #666;
     margin:4px auto;
     padding-left:4px;
     margin-bottom:4px;
+}
+
+div.ZmSuggestLocationLink {
+    display:inline-block;
+    margin-top:-4px;
+    padding-right:8px;
+}
+.ZmLocationStatusValidating {
+    color:black;
+    display:inline-block;
+    margin-top:-4px;
+    padding-right:8px;
+}
+.ZmLocationStatusConflict {
+    color:red;
+    display:inline-block;
+    margin-top:-4px;
+    padding-right:8px;
+}
+.ZmLocationStatusResolved {
+    color:green;
+    display:inline-block;
+    margin-top:-4px;
+    padding-right:8px;
 }

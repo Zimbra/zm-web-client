@@ -59,6 +59,8 @@ ZmApptEditView = function(parent, attendees, controller, dateInfo) {
     // Store Appt form values.
     this._apptFormValue = {};
     this._showAsValueChanged = false;
+
+    this._customRecurDialogCallback = this._recurChangeForLocationConflict.bind(this);
 };
 
 ZmApptEditView.prototype = new ZmCalItemEditView;
@@ -89,6 +91,12 @@ ZmApptEditView.TIMEZONE_TYPE = "TZ_TYPE";
 ZmApptEditView.START_TIMEZONE = 1;
 ZmApptEditView.END_TIMEZONE = 2;
 
+ZmApptEditView.LOCATION_STATUS_NONE       = 0;
+ZmApptEditView.LOCATION_STATUS_VALIDATING = 1;
+ZmApptEditView.LOCATION_STATUS_CONFLICT   = 2;
+ZmApptEditView.LOCATION_STATUS_RESOLVED   = 3;
+
+
 // Public Methods
 
 ZmApptEditView.prototype.toString =
@@ -96,11 +104,49 @@ function() {
 	return "ZmApptEditView";
 };
 
+ZmApptEditView.prototype.isLocationConflictEnabled =
+function() {
+    return ((this._mode != ZmCalItem.MODE_NEW_FROM_QUICKADD) &&
+            (this._mode != ZmCalItem.MODE_NEW) &&
+            (this._mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) &&
+             this.getRepeatType() != "NON");
+}
+
+ZmLocationAppt = function() { };
+ZmLocationRecurrence = function() { };
 
 ZmApptEditView.prototype.show =
 function() {
 	ZmCalItemEditView.prototype.show.call(this);
 	this._setAttendees();
+
+    if (this.parent.setLocationConflictCallback) {
+        var appt = this.parent.getAppt();
+
+        // Create a 'Location-only' clone of the appt, for use with the
+        // resource conflict calls
+        ZmLocationAppt.prototype = appt;
+        ZmLocationRecurrence.prototype = appt.getRecurrence();
+        this._locationConflictAppt = new ZmLocationAppt();
+        this._locationConflictAppt._recurrence = new ZmLocationRecurrence();
+        this._locationConflictAppt._attendees[ZmCalBaseItem.LOCATION] =
+            appt._attendees[ZmCalBaseItem.LOCATION];
+        this._locationConflictAppt._attendees[ZmCalBaseItem.PERSON]	  = [];
+        this._locationConflictAppt._attendees[ZmCalBaseItem.EQUIPMENT]= [];
+
+        this._processLocationCallback = this.processLocationConflicts.bind(this);
+        this._noLocationCallback =
+            this.setLocationStatus.bind(this, ZmApptEditView.LOCATION_STATUS_NONE);
+        this.parent.setLocationConflictCallback(this.updatedLocationsConflictChecker.bind(this));
+
+        if (!this._pendingLocationRequest) {
+            // Trigger an initial location check - the appt may have been saved
+            // with a location that has conflicts.  Only do it if no pending request -
+            // the first time the view is used, it loads preferences, and a location
+            // conflict check is made when that is complete
+            this.locationConflictChecker();
+        }
+    }
 
     Dwt.setVisible(this._suggestTime, !this._isForward);
     Dwt.setVisible(this._suggestLocation, !this._isForward && !this._isProposeTime);
@@ -125,6 +171,113 @@ function() {
     }
 
 };
+
+ZmApptEditView.prototype.cancelLocationRequest =
+function() {
+    if (this._pendingLocationRequest) {
+        appCtxt.getRequestMgr().cancelRequest(this._pendingLocationRequest, null, true);
+        this._pendingLocationRequest = null;
+    }
+}
+
+ZmApptEditView.prototype.locationConflictChecker =
+function() {
+    // Cancel any pending requests
+    this.cancelLocationRequest();
+    if (this.isLocationConflictEnabled() &&
+        this._locationConflictAppt.hasAttendeeForType(ZmCalBaseItem.LOCATION)) {
+        // Send a request to the server to get location conflicts
+        this._runLocationConflictChecker();
+    } else {
+        if (this._noLocationCallback) {
+            // Restore the 'Suggest Location' line to its default
+            this._noLocationCallback.run();
+        }
+    }
+}
+
+ZmApptEditView.prototype.updatedLocationsConflictChecker =
+function(locations){
+    // Update locations in the appt clone, then run the conflict checker
+    this._locationConflictAppt.setAttendees(locations.getArray(), ZmCalBaseItem.LOCATION);
+    this.locationConflictChecker();
+}
+
+ZmApptEditView.prototype.getNumLocationConflictRecurrence =
+function() {
+    var numRecurrence = ZmTimeSuggestionPrefDialog.DEFAULT_NUM_RECURRENCE;
+    if (this._scheduleAssistant) {
+        numRecurrence = this._scheduleAssistant.getLocationConflictNumRecurrence();
+    }
+    return numRecurrence;
+}
+
+ZmApptEditView.prototype._runLocationConflictChecker =
+function() {
+    var numRecurrence = this.getNumLocationConflictRecurrence();
+    var locationCallback = this._controller.getCheckResourceConflicts(
+        this._locationConflictAppt, numRecurrence, this._processLocationCallback, false);
+    this.setLocationStatus(ZmApptEditView.LOCATION_STATUS_VALIDATING);
+    this._pendingLocationRequest = locationCallback.run();
+}
+
+// Callback executed when the CheckResourceConflictRequest completes.
+// Store the conflict instances (if any) and update the status field
+ZmApptEditView.prototype.processLocationConflicts =
+function(inst) {
+    this._inst = inst;
+    var instLength = inst ? inst.length : 0;
+    this.setLocationStatus(instLength > 0 ? ZmApptEditView.LOCATION_STATUS_CONFLICT :
+                           ZmApptEditView.LOCATION_STATUS_NONE);
+}
+
+ZmApptEditView.prototype.setLocationStatus =
+function(locationStatus) {
+    var className = "";
+    var statusMessage = "";
+    var linkMessage = "";
+    var msgVisible = false;
+    var linkVisible = false;
+
+    // Manage the location suggestion line beneath the location field.
+    switch (locationStatus) {
+        case ZmApptEditView.LOCATION_STATUS_NONE:
+             // No conflicts or nothing to check - display nothing
+             break;
+        case ZmApptEditView.LOCATION_STATUS_VALIDATING:
+             // The conflict resource check is in progress, show a busy spinner
+             className     = "ZmLocationStatusValidating";
+             statusMessage = AjxImg.getImageHtml("Wait_16", "display:inline-block;padding-right:4px;") + ZmMsg.validateLocation;
+             msgVisible    = true;
+             linkVisible   = false;
+             break;
+        case ZmApptEditView.LOCATION_STATUS_CONFLICT:
+             // Unresolved conflicts - show the 'Resolve Conflicts' link
+             className     = "ZmLocationStatusConflict";
+             statusMessage = AjxImg.getImageHtml("Warning_12", "display:inline-block;padding-right:4px;") + ZmMsg.locationRecurrenceConflicts;
+             linkMessage   = ZmMsg.resolveConflicts;
+             msgVisible    = true;
+             linkVisible   = true;
+             break;
+        case ZmApptEditView.LOCATION_STATUS_RESOLVED:
+             // Resolved conflicts - show the 'View Resolutions' link
+             className     = "ZmLocationStatusResolved";
+             statusMessage = ZmMsg.locationRecurrenceConflictsResolved;
+             linkMessage   = ZmMsg.viewResolutions;
+             msgVisible    = true;
+             linkVisible   = true;
+             break;
+        default: break;
+    }
+
+    Dwt.setVisible(this._locationStatus, msgVisible);
+    Dwt.setVisible(this._locationStatusAction, linkVisible);
+    Dwt.setInnerHtml(this._locationStatus, statusMessage);
+    Dwt.setInnerHtml(this._locationStatusAction, linkMessage);
+    this._locationStatus.className = className;
+
+    this._locationStatusMode = locationStatus;
+}
 
 ZmApptEditView.prototype.blur =
 function(useException) {
@@ -177,9 +330,10 @@ function() {
     this._attendeesHashMap = {};
     this._showAsValueChanged = false;
 
+    this.setLocationStatus(ZmApptEditView.LOCATION_STATUS_NONE);
+
     //Default Persona
     this.setIdentity();
-
     if(this._scheduleAssistant) this._scheduleAssistant.cleanup();
 };
 
@@ -254,14 +408,26 @@ function() {
 // called by schedule tab view when user changes start date field
 ZmApptEditView.prototype.updateDateField =
 function(newStartDate, newEndDate) {
+	var oldTimeInfo = this._getDateTimeText();
+
 	this._startDateField.value = newStartDate;
 	this._endDateField.value = newEndDate;
+
+	this._dateTimeChangeForLocationConflict(oldTimeInfo);
 };
 
 ZmApptEditView.prototype.updateAllDayField =
 function(isAllDay) {
+	var oldAllDay = this._allDayCheckbox.checked;
 	this._allDayCheckbox.checked = isAllDay;
 	this._showTimeFields(!isAllDay);
+	if (oldAllDay != isAllDay) {
+		var durationInfo = this.getDurationInfo();
+		this._locationConflictAppt.startDate = new Date(durationInfo.startTime);
+		this._locationConflictAppt.endDate = new Date(durationInfo.endTime);
+		this._locationConflictAppt.allDayEvent = isAllDay ? "1" : "0";
+		this.locationConflictChecker();
+	}
 };
 
 ZmApptEditView.prototype.toggleAllDayField =
@@ -295,6 +461,7 @@ function(dateInfo) {
 
 ZmApptEditView.prototype.setDate =
 function(startDate, endDate, ignoreTimeUpdate) {
+    var oldTimeInfo = this._getDateTimeText();
     this._startDateField.value = AjxDateUtil.simpleComputeDateStr(startDate);
     this._endDateField.value = AjxDateUtil.simpleComputeDateStr(endDate);
     if(!ignoreTimeUpdate) {
@@ -306,8 +473,12 @@ function(startDate, endDate, ignoreTimeUpdate) {
         this._scheduleView.handleTimeChange();
     }
     appCtxt.notifyZimlets("onEditAppt_updateTime", [this, {startDate:startDate, endDate:endDate}]);//notify Zimlets    
+
+    this._dateTimeChangeForLocationConflict(oldTimeInfo);
 };
 
+// ?? Not used - and not setting this._dateInfo.  If used,
+// need to check change in timezone in caller and then update location conflict
 ZmApptEditView.prototype.updateTimezone =
 function(dateInfo) {
 	this._tzoneSelectStart.setSelectedValue(dateInfo.timezone);
@@ -434,6 +605,8 @@ ZmApptEditView.prototype._populateForSave =
 function(calItem) {
 
     ZmCalItemEditView.prototype._populateForSave.call(this, calItem);
+
+    this.cancelLocationRequest();
 
     if(this.isOrganizer() && this.isKeyInfoChanged()) this.resetParticipantStatus();
 
@@ -843,6 +1016,15 @@ function(width) {
     this._suggestLocation   = document.getElementById(this._suggestLocationId);
     Dwt.setVisible(this._suggestLocation, !this._isForward && !this._isProposeTime);
 
+    this._locationStatusId = this._htmlElId + "_location_status";
+    this._locationStatus   = document.getElementById(this._locationStatusId);
+    Dwt.setVisible(this._locationStatus, false);
+    this._locationStatusMode = ZmApptEditView.LOCATION_STATUS_NONE;
+
+    this._locationStatusActionId = this._htmlElId + "_location_status_action";
+    this._locationStatusAction   = document.getElementById(this._locationStatusActionId);
+    Dwt.setVisible(this._locationStatusAction, false);
+
     this._notesContainerId = this._htmlElId + "_notes_container";
     this._notesContainer = document.getElementById(this._notesContainerId);
 
@@ -1034,6 +1216,43 @@ function() {
     this._resizeNotes();
     this._scheduleAssistant.suggestAction(true, false, true);
 };
+
+// Function to display a Stub dialog
+ZmApptEditView.prototype._showLocationStatusAction =
+function() {
+    if (this._locationStatusMode == ZmApptEditView.LOCATION_STATUS_CONFLICT) {
+        if (!this._unimplementedDialog) {
+            this._unimplementedDialog =
+                new DwtMessageDialog({id: "Unimplemented1",
+                    parent:appCtxt.getShell(),
+                    buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
+            this._unimplementedDialog.registerCallback(DwtDialog.OK_BUTTON,
+                this._locationConflictOKCallback, this);
+            this._unimplementedDialog.registerCallback(DwtDialog.CANCEL_BUTTON,
+                this._locationConflictCancelCallback, this);
+        }
+        this._unimplementedDialog.setMessage("Unimplemented, will show conflicts; " +
+            "Click OK to provide a fake Resolution.");
+    } else if (this._locationStatusMode == ZmApptEditView.LOCATION_STATUS_RESOLVED){
+        this._unimplementedDialog.setMessage("Unimplemented; will show resolved " +
+            "conflicts");
+    }
+	this._unimplementedDialog.popup();
+};
+
+// Function to hide a Stub dialog
+ZmApptEditView.prototype._locationConflictOKCallback =
+function(ev) {
+	this._unimplementedDialog.popdown();
+	this.setLocationStatus(ZmApptEditView.LOCATION_STATUS_RESOLVED);
+};
+
+// Function to hide a Stub dialog
+ZmApptEditView.prototype._locationConflictCancelCallback =
+function(ev) {
+	this._unimplementedDialog.popdown();
+};
+
 
 ZmApptEditView.prototype._toggleOptionalAttendees =
 function(forceShow) {
@@ -1740,6 +1959,7 @@ function() {
 	Dwt.setHandler(this._endDateField, DwtEvent.ONFOCUS, ZmCalItemEditView._onFocus);
     Dwt.setHandler(this._suggestTime, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
     Dwt.setHandler(this._suggestLocation, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+    Dwt.setHandler(this._locationStatusAction, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 
 	this._allDayCheckbox._editViewId = this._repeatDescField._editViewId = edvId;
 	this._startDateField._editViewId = this._endDateField._editViewId = edvId;
@@ -1747,6 +1967,7 @@ function() {
     if(this._showResources) this._showResources._editViewId = edvId;
     this._suggestTime._editViewId = edvId;
     this._suggestLocation._editViewId = edvId;
+    this._locationStatusAction._editViewId = edvId;
 
 	var inputFields = [this._attendeesInputField, this._optAttendeesInputField,
 					   this._locationInputField, this._forwardToField, this._resourceInputField];
@@ -1924,21 +2145,58 @@ function() {
 
 // Listeners
 
+ZmApptEditView.prototype._getDateTimeText =
+function() {
+    return this._dateInfo.startDate + "-" + this._dateInfo.startTimeStr + "_" +
+           this._dateInfo.endDate   + "_" + this._dateInfo.endTimeStr;
+
+}
+
 ZmApptEditView.prototype._timeChangeListener =
 function(ev, id) {
 	ZmTimeInput.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField, this._dateInfo, id);
-	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
-    this._dateInfo.isTimeModified = true;
+	var oldTimeInfo = this._getDateTimeText();
 
-    if(this._schedulerOpened) {
-        this._scheduleView._timeChangeListener(ev, id);
+    ZmApptViewHelper.getDateInfo(this, this._dateInfo);
+    var newTimeInfo = this._getDateTimeText();
+    if (oldTimeInfo != newTimeInfo) {
+
+        this._dateInfo.isTimeModified = true;
+
+        if(this._schedulerOpened) {
+            this._scheduleView._timeChangeListener(ev, id);
+        }
+
+        if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true, true);
+
+        var durationInfo = this.getDurationInfo();
+        this._locationConflictAppt.startDate = new Date(durationInfo.startTime);
+        this._locationConflictAppt.endDate   = new Date(durationInfo.endTime);
+        this.locationConflictChecker();
     }
-
-    if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true, true);
 };
+
+ZmApptEditView.prototype._recurChangeForLocationConflict =
+function() {
+    this._getRecurrence(this._locationConflictAppt);
+    this.locationConflictChecker();
+}
+
+ZmApptEditView.prototype._dateTimeChangeForLocationConflict =
+function(oldTimeInfo) {
+    var newTimeInfo = this._getDateTimeText();
+    if (oldTimeInfo != newTimeInfo) {
+        var durationInfo = this.getDurationInfo();
+        this._locationConflictAppt.startDate = new Date(durationInfo.startTime);
+        this._locationConflictAppt.endDate   = new Date(durationInfo.endTime);
+        this.locationConflictChecker();
+    }
+}
 
 ZmApptEditView.prototype._dateCalSelectionListener =
 function(ev) {
+    var oldTimeInfo = this._getDateTimeText();
+
     ZmCalItemEditView.prototype._dateCalSelectionListener.call(this, ev);
     if(this._schedulerOpened) {
         ZmApptViewHelper.getDateInfo(this, this._dateInfo);
@@ -1946,6 +2204,8 @@ function(ev) {
     }
     
     if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true, true);
+
+    this._dateTimeChangeForLocationConflict(oldTimeInfo);
 };
 
 
@@ -1970,6 +2230,7 @@ function() {
 
 ZmApptEditView.prototype._timezoneListener =
 function(ev) {
+    var oldTZ = this._dateInfo.timezone;
     var dwtSelect = ev.item.parent.parent;
     var type = dwtSelect ? dwtSelect.getData(ZmApptEditView.TIMEZONE_TYPE) : ZmApptEditView.START_TIMEZONE;
     //bug: 55256 - Changing start timezone should auto-change end timezone
@@ -1983,6 +2244,11 @@ function(ev) {
         //this._controller.getApp().getFreeBusyCache().clearCache();
         this._scheduleView._timeChangeListener(ev, id);
     }
+
+    if (oldTZ != this._dateInfo.timezone) {
+        this._locationConflictAppt.timezone = this._dateInfo.timezone;
+        this.locationConflictChecker();
+    }
 };
 
 
@@ -1990,6 +2256,12 @@ ZmApptEditView.prototype._repeatChangeListener =
 function(ev) {
     ZmCalItemEditView.prototype._repeatChangeListener.call(this, ev);
     this._setTimezoneVisible(this._dateInfo);
+    var newSelectVal = ev._args.newValue;
+    if (newSelectVal != "CUS") {
+        // CUS (Custom) launches a dialog. Otherwise act upon the change here
+        this._locationConflictAppt.setRecurType(newSelectVal);
+        this.locationConflictChecker();
+    }
 };
 
 /**
@@ -2259,6 +2531,14 @@ function(el) {
 		}
         this._scheduleView.handleTimeChange();
         if(this._scheduleAssistant) this._scheduleAssistant.updateTime(true, true);
+
+        var durationInfo = this.getDurationInfo();
+        this._locationConflictAppt.startDate = new Date(durationInfo.startTime);
+        this._locationConflictAppt.endDate = new Date(durationInfo.startTime +
+            AjxDateUtil.MSEC_PER_DAY);
+        this._locationConflictAppt.allDayEvent = el.checked ? "1" : "0";
+        this.locationConflictChecker();
+
 	} else if(el.id == this._schButtonId || el.id == this._htmlElId + "_scheduleImage") {
         this._toggleInlineScheduler();
 	} else if(el.id == this._showOptionalId) {
@@ -2269,6 +2549,8 @@ function(el) {
         this._showTimeSuggestions();
     }else if(el.id == this._suggestLocationId){
         this._showLocationSuggestions();
+    }else if(el.id == this._locationStatusActionId){
+        this._showLocationStatusAction();
     }else{
 		ZmCalItemEditView.prototype._handleOnClick.call(this, el);
 	}
@@ -2523,7 +2805,12 @@ ZmApptEditView.prototype.loadPreference =
 function() {
     var prefDlg = appCtxt.getSuggestionPreferenceDialog();
     prefDlg.setCallback(new AjxCallback(this, this._prefChangeListener));
-    prefDlg.getSearchPreference(appCtxt.getActiveAccount());
+    // Trigger an initial location check - the appt may have been saved
+    // with a location that has conflicts.  Need to do from here, so that
+    // the user's numRecurrence preference is loaded
+    var locationConflictCheckCallback = this.locationConflictChecker.bind(this);
+    prefDlg.getSearchPreference(appCtxt.getActiveAccount(),
+        locationConflictCheckCallback);
 };
 
 ZmApptEditView.prototype._prefChangeListener =
@@ -2531,4 +2818,10 @@ function() {
     // Preference Dialog is only displayed when the suggestions panel is visible - so update suggestions
     this._scheduleAssistant.clearResources();
     this._scheduleAssistant.suggestAction(true);
+
+    var newNumRecurrence = this.getNumLocationConflictRecurrence();
+    if (newNumRecurrence != this._scheduleAssistant.numRecurrence) {
+        // Trigger Location Conflict test if enabled
+        this.locationConflictChecker();
+    }
 };

@@ -229,6 +229,16 @@ function() {
 	return this._apptEditView.getHtmlEditor();
 };
 
+ZmApptComposeView.prototype.getNumLocationConflictRecurrence =
+function() {
+    return this._apptEditView.getNumLocationConflictRecurrence();
+}
+
+ZmApptComposeView.prototype.setLocationConflictCallback =
+function(locationConflictCallback) {
+    this._locationConflictCallback   = locationConflictCallback;
+};
+
 /**
  * Updates the set of attendees for this appointment, by adding attendees or by
  * replacing the current list (with a clone of the one passed in).
@@ -245,31 +255,58 @@ function(attendees, type, mode, index) {
 	attendees = (attendees instanceof AjxVector) ? attendees.getArray() :
 				(attendees instanceof Array) ? attendees : [attendees];
 	mode = mode || ZmApptComposeView.MODE_REPLACE;
+	// Note whether any of the attendees changed.  Needed to decide
+	// for Locations whether or not to check for conflicts
+	var changed = false;
+	var key;
 	if (mode == ZmApptComposeView.MODE_REPLACE) {
 		this._attendees[type] = new AjxVector();
+		var oldKeys = this._attendeeKeys[type];
 		this._attendeeKeys[type] = {};
 		for (var i = 0; i < attendees.length; i++) {
 			var attendee = attendees[i];
 			this._attendees[type].add(attendee);
-			this._addAttendeeKey(attendee, type);
+			key = this._addAttendeeKey(attendee, type);
+			if (key && !oldKeys[key]) {
+				// New key that was not in the old set
+				changed = true;
+			}
+		}
+		if ((type == ZmCalBaseItem.LOCATION) && this._locationConflictCallback) {
+			for (key in oldKeys) {
+				if (key && !this._attendeeKeys[type][key]) {
+					// Old location key that is not in the new set
+					changed = true;
+					break;
+				}
+			}
 		}
 	} else if (mode == ZmApptComposeView.MODE_ADD) {
 		for (var i = 0; i < attendees.length; i++) {
 			var attendee = attendees[i];
-			var key = this._getAttendeeKey(attendee);
+			key = this._getAttendeeKey(attendee);
 			if (!this._attendeeKeys[type][key] === true) {
 				this._attendees[type].add(attendee, index);
 				this._addAttendeeKey(attendee, type);
+				changed = true;
 			}
 		}
 	} else if (mode == ZmApptComposeView.MODE_REMOVE) {
 		for (var i = 0; i < attendees.length; i++) {
 			var attendee = attendees[i];
-			this._removeAttendeeKey(attendee, type);
+			key = this._removeAttendeeKey(attendee, type);
 			this._attendees[type].remove(attendee);
+			if (key) {
+				changed = true;
+			}
 		}
 	}
+
+    if (changed && (type == ZmCalBaseItem.LOCATION) && this._locationConflictCallback) {
+        this._locationConflictCallback.run(this._attendees[ZmCalBaseItem.LOCATION]);
+    }
 };
+
 
 ZmApptComposeView.prototype.setApptMessage =
 function(msg){
@@ -304,6 +341,7 @@ function(attendee, type) {
 	if (key) {
 		this._attendeeKeys[type][key] = true;
 	}
+	return key;
 };
 
 ZmApptComposeView.prototype._removeAttendeeKey =
@@ -312,6 +350,7 @@ function(attendee, type) {
 	if (key) {
 		delete this._attendeeKeys[type][key];
 	}
+	return key;
 };
 
 /**
