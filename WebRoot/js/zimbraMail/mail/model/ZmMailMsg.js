@@ -761,6 +761,11 @@ function(params, callback, result) {
 	}
 };
 
+ZmMailMsg.prototype.isLoaded =
+function() {
+	return this._loaded;
+};
+
 ZmMailMsg.prototype.getBodyParts =
 function() {
 	return this._bodyParts;

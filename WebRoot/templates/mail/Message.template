@@ -634,18 +634,30 @@
 	</div>
 </template>
 	
-<template id='mail.Message#Conv2MsgHeader'>
+<template id='mail.Message#Conv2MsgHeaderXXX'>
 	<table class='Conv2MsgHeaderTable'>
 		<tr id='${tableRowId}'>
 			<td class='Expand' width=19 id='${expandIconCellId}'></td>
-			<td class='Text' width='auto'>
-				<$= data.from $>&nbsp;<span class='ZmConvListFragment' id='${fragmentCellId}'><$= data.fragment $></span>
-			</td>
+			<td class='Text' width='auto' id='${infoCellId}'></td>
 			<td class='Text DateCol' width=<$= ZmMsg.COLUMN_WIDTH_DATE_CV2 $>>${date}</td>
 		</tr>
 	</table>
 </template>
 
+<template id='mail.Message#Conv2MsgHeader'>
+		<!--<span class='Expand' id='${expandIconCellId}'></span>-->
+		<span class='info' id='${msgInfoId}'></span>
+		<span class='date' id='${msgDateId}'>${date}</span>
+</template>
+		
+<template id='mail.Message#Conv2MsgHeaderInfo'>
+	<$ if (data.expanded) { $>
+		<$= data.addressSummary $>
+	<$ } else { $>
+		<$= data.from $>&nbsp;<span class='ZmConvListFragment'><$= data.fragment $></span>
+	<$ } $>	
+</template>
+	
 <template id='mail.Message#Conv2MsgFooter'>
 	<div>
 		<div id='${footerId}'>

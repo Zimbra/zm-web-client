@@ -463,7 +463,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 /* message fragment text */
 .Row .ZmConvListFragment,
-.ZmMailMsgCapsuleViewHeader .ZmConvListFragment,
+.Conv2MsgHeader .ZmConvListFragment,
 .Row .Row-Selected .ZmConvListFragment {
 	@Text-disabled@
 	font-weight:normal;
@@ -702,17 +702,13 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@BottomSeparator@
 	/*@cssShadow@:0 3px 3px @darken(AppC,15)@;*/
 	white-space:nowrap;
-}
-
-.Conv2Header TABLE {
-	border-collapse:collapse;
-	border-spacing:0;
+	position:relative;
 }
 
 .Conv2Header .subject {
+	@FontSize-normal@
 	font-weight:bold;
 	overflow:hidden;
-	@FontSize-normal@
 	white-space:nowrap;
 }
 
@@ -720,11 +716,11 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	font-weight:normal;
 	white-space:nowrap;
 	/* background-color needs to be same as Conv2Header */
-	background: none repeat scroll 0 0 @lighten(AppC,25)@;
-	padding: 0 8px;
-	position: absolute;
-	right: 0;
-	text-align: right;
+	background:none repeat scroll 0 0 @lighten(AppC,25)@;
+	padding:0 8px;
+	position:absolute;
+	right:0;
+	text-align:right;
 }
 
 /* The messages area contains collapsed and expanded messages */
@@ -779,39 +775,41 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	font-weight:bold;
 }
 
-.ZmMailMsgCapsuleViewHeader.focused {
-	background-color:@SelC@;
-}
-
-.Conv2MsgHeaderTable, .MsgFooterTable {
-	table-layout:fixed;
+.Conv2MsgHeader {
 	#IFNDEF MSIE
 	width:100%;
 	#ENDIF
+	white-space:nowrap;
+	cursor:pointer;
 }
 
-.Conv2MsgHeaderTable td {
-	padding:0 2px 0 @TextPaddingSize@;
-	overflow:hidden;
+.Conv2MsgHeader.focused {
+	background-color:@SelC@;
 }
 
-.Conv2MsgHeaderTable .Unread {
+.Conv2MsgHeader .Unread {
 	font-weight:bold;
 }
 
-.Conv2MsgHeaderTable .Text {
+.Conv2MsgHeader .info {
+	overflow:hidden;
 	white-space:nowrap;
-	vertical-align:top;
-	padding:0 3px;
+	padding-left:3px;
 }
 
-.Conv2MsgHeaderTable .DateCol {
-    padding-right:5px;
-    text-align:right;
+.Conv2MsgHeader .date {
+	white-space:nowrap;
+	/* background-color needs to be same as Conv2MsgHeader */
+	background: none repeat scroll 0 0 white;
+	padding: 0 2px 0 5px;
+	position: absolute;
+	/* right set to same as ZmMailMsgCapsuleView border + margin */
+	right: 0px;
+	text-align: right;
 }
 
-.ZmMailMsgCapsuleView .Expand {
-	cursor:pointer;
+.Conv2MsgHeader .date.focused {
+	background-color:@SelC@;
 }
 
 .ZmMailMsgCapsuleView .Link {
@@ -826,6 +824,13 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	border:1px solid @darken(MailMsgBkgdColor,12)@;
 	margin:5px;
 	padding:2px;
+}
+
+.MsgFooterTable {
+	table-layout:fixed;
+	#IFNDEF MSIE
+	width:100%;
+	#ENDIF
 }
 
 .MsgFooterTable TABLE {
