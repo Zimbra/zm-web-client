@@ -745,12 +745,9 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .Conv2View .Conv2Reply {
-	bottom:0;
-	left:0;
+    background-color:@lighten(AltC,55)@;
+    border-top:1px solid @darken(AppC,33)@;
 	padding:5px;
-    position:absolute;
-	right:0;
-	@Conv2Reply@
 }
 
 .Conv2View-bottom .Conv2ReplyCell {
@@ -855,12 +852,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 #IFDEF MSIE
 	height:100%;
 #ENDIF
-}
-
-.ZmConvView2 .ReplyTextarea,
-.ZmConvView2 .ReplyTextarea.hint {
-	margin:0;
-	@transition@:height 0.25s ease;
 }
 
 #IFDEF SAFARI
