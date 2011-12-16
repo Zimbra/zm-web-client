@@ -480,7 +480,7 @@ DIV.vSpace {
 
 /* list row TD's (eg: text) */
 
-.Row TD						{	@ListItemText-normal@				}
+.Row TD, .RowDouble TD		{	@ListItemText-normal@				}
 
 .RowOdd TD					{	@ListItemText-alt@					}
 
