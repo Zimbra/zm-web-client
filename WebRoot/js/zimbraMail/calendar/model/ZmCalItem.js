@@ -241,6 +241,13 @@ ZmCalItem.prototype.getOrigStartDate 	= function() { return this._origStartDate 
 ZmCalItem.prototype.getOrigStartTime 	= function() { return this.getOrigStartDate().getTime(); };
 
 /**
+ * Gets the original calendar item.
+ *
+ * @return	{ZmCalItem}	the original calendar item
+ */
+ZmCalItem.prototype.getOrig 	        = function() { return this._orig; };
+
+/**
  * Gets the original timezone.
  * 
  * @return	{Date}	the original timezone
