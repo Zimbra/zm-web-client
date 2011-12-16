@@ -1088,9 +1088,11 @@ function(apps) {
 		var app = ZmApp.APPS[i];
 		var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
 		var appEnabled = ZmApp.SETTING[app] && appCtxt.get(ZmApp.SETTING[app], null, account);
+        var forceEnabled = app == ZmApp.BRIEFCASE;
 		var upsellEnabled = ZmApp.UPSELL_SETTING[app] && appCtxt.get(ZmApp.UPSELL_SETTING[app]);
-		if (appEnabled || upsellEnabled) {
-			ZmApp.ENABLED_APPS[app] = true;
+		if (appEnabled || upsellEnabled || forceEnabled) {
+			ZmApp.ENABLED_APPS[app] = appEnabled || upsellEnabled;
+
 			this._createApp(app);
 			this._apps[app].isUpsell = (!appEnabled && upsellEnabled);
 		}

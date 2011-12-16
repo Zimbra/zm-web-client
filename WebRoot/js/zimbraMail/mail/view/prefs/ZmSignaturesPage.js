@@ -1178,9 +1178,9 @@ function() {
 		this._createUrlButton(tb);
 		this._createUrlImageButton(tb);
 
-        if (appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
+        //if (appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
             this._createImageButton(tb);
-        }
+        //}
 
 		this._resetFormatControls();
 	}
@@ -1209,9 +1209,8 @@ function(ev) {
 
 ZmSignatureEditor.prototype._insertImagesListener =
 function(ev) {
-	AjxDispatcher.require("BriefcaseCore");    
-	appCtxt.getApp(ZmApp.BRIEFCASE)._createDeferredFolders();
-
+	AjxDispatcher.require("BriefcaseCore");
+    appCtxt.getApp(ZmApp.BRIEFCASE)._createDeferredFolders();
 	var callback = new AjxCallback(this, this._imageUploaded);
 	var cFolder = appCtxt.getById(ZmOrganizer.ID_BRIEFCASE);
 	var dialog = appCtxt.getUploadDialog();
