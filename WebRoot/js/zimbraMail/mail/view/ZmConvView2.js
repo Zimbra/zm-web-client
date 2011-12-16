@@ -1354,6 +1354,8 @@ ZmMailMsgCapsuleViewHeader = function(params) {
         msg.sentByDomain = sentByAddr.substr(sentByAddr.indexOf("@") + 1);
         msg.showImages = this._msgView._isTrustedSender(msg);
     }
+	var folder = appCtxt.getById(msg.folderId);
+	msg.showImages = msg.showImages || (folder && folder.isFeed());
 
 	var id = this._htmlElId;
 	this._msgInfoId	= id + "_info";
@@ -1432,8 +1434,10 @@ function() {
 		var from = ZmConvView2._getAddressNames([fromAddr]);
 		var list = this._msg.getAddresses(AjxEmailAddress.TO).getArray();
 		list = list.concat(this._msg.getAddresses(AjxEmailAddress.CC).getArray());
-		var recips = ZmConvView2._getAddressNames(list, ZmConvView2.MAX_RECIPS / 2);
-		this._addressSummary = AjxMessageFormat.format(ZmMsg.addressSummary, [from, recips]);
+		if (list.length) {
+			var recips = ZmConvView2._getAddressNames(list, ZmConvView2.MAX_RECIPS / 2);
+			this._addressSummary = AjxMessageFormat.format(ZmMsg.addressSummary, [from, recips]);
+		}
 	}
 	return this._addressSummary || this._from;
 };
