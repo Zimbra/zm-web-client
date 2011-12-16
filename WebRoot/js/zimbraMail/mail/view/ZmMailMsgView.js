@@ -2598,5 +2598,6 @@ function(){
 
 ZmMailMsgView.prototype._getViewId =
 function() {
-	return this._controller.getCurrentViewId();
+	var ctlrViewId = this._controller.getCurrentViewId();
+	return this._controller.isZmMsgController ? ctlrViewId : [ctlrViewId, ZmId.VIEW_MSG].join("_");
 };
