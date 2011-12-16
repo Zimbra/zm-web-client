@@ -262,16 +262,16 @@ function(calItem, attach) {
 
 	// add file input field
 	var div = document.createElement("div");
-
-	var attachRemoveId = "_att_" + Dwt.getNextId();
-	var attachInputId = "_att_" + Dwt.getNextId();
-    var sizeContId = "_att_" + Dwt.getNextId();
+    var id = this._htmlElId;
+	var attachRemoveId = id + "_att_" + Dwt.getNextId();
+	var attachInputId = id + "_att_" + Dwt.getNextId();
+    var sizeContId = id + "_att_" + Dwt.getNextId();
 
 	if (attach) {
 		div.innerHTML = ZmApptViewHelper.getAttachListHtml(calItem, attach, true);
 	} else {
 		var subs = {
-			id: this._htmlElId,
+			id: id,
 			attachInputId: attachInputId,
 			attachRemoveId: attachRemoveId,
             sizeId: sizeContId,
@@ -862,10 +862,14 @@ function() {
 // Returns true if any of the attachment fields are populated
 ZmCalItemEditView.prototype._gotAttachments =
 function() {
+    var id = this._htmlElId;
+    if(!this._attachCount || !this._attachDiv) {
+        return false;
+    }
 	var atts = document.getElementsByName(ZmCalItemEditView.UPLOAD_FIELD_NAME);
 
 	for (var i = 0; i < atts.length; i++) {
-		if (atts[i].value.length)
+		if (atts[i].id.indexOf(id) === 0 && atts[i].value.length)
 			return true;
 	}
 
