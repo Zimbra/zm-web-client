@@ -1,5 +1,5 @@
 <template id="prefs.Options#OptionsOuter">
-<table id='' class='fullSize' cellspacing=0 cellpadding=0>
+<table id='' class='fullSize'>
 	<tr><td>
 		<ul id="${id}_outer_tabs" class='ZTabList'>
 			<li id='${id}_outer_tabs_general' class='ZTab' onclick='controller.showPage("general")'>General</li>
@@ -36,7 +36,7 @@
 -->
 <template id="prefs.Options#PopForm">
 <!--<div class='ZScrollContainerInner'>	-->
-	<table class="ZFormTable ZFixedTable" cellspacing=0 cellpadding=2 border=0>
+	<table class="ZFormTable ZFixedTable" class="ZPropertySheet">
 		<colgroup><col width=30%><col width=70%></colgroup>
 		<tr><td><div class='ZSmallSpacer'></div></td></tr>
 		<tr><td class='ZLabelCell'><$= ZmMsg.popAccountNameLabel $></td>
@@ -68,7 +68,7 @@
 	
 		<tr><td class='ZLabelCell'><$= ZmMsg.passwordLabel $></td>
 			<td>
-				<table cellspacing=0 cellpadding=0><tr>
+				<table><tr>
 					<td><input id="${id}_password" type='password' class='ZFieldSizeSmall'></td>
 					<td>&nbsp;<input id='${id}_show_password' type='checkbox' class='ZCheckbox'></td>
 					<td><label for='${id}_show_password' class='ZCheckboxLabelInline'><$= ZmMsg.showPassword $></label></td>
@@ -82,7 +82,7 @@
 	
 		<tr id='${id}_port_row'><td class='ZLabelCell'><$= ZmMsg.portLabel $></td>
 			<td>
-				<table cellspacing=0 cellpadding=0><tr>
+				<table><tr>
 					<td><input id="${id}_port" type=text style='width:6em'></td>
 					<td>&nbsp;<span class='ZHelpLabel' id="${id}_port_label"><$= ZmMsg.defaultPort $></span></td>
 				</tr></table>
@@ -126,7 +126,7 @@
 	
 		<tr id='${id}_identity_use_address_row'><td class='ZLabelCell'><$= ZmMsg.linkToNewIdentity $></td>
 			<td>
-				<table cellspacing=0 cellpadding=0><tr>
+				<table><tr>
 					<td><input id="${id}_identity_use_address" type=checkbox></td>
 					<td><label for="${id}_identity_use_address" class='ZCheckboxLabel'>
 						<$= ZmMsg.whenReplyingToAddress $>
@@ -137,7 +137,7 @@
 	
 		<tr id='${id}_identity_use_folder_row'><td></td>
 			<td>
-				<table cellspacing=0 cellpadding=0 border=0><tr>
+				<table><tr>
 					<td><input id="${id}_identity_use_folder" type=checkbox></td>
 					<td><label for="${id}_identity_use_folder" class='ZCheckboxLabel'>
 							<$= ZmMsg.whenReplyingToFolder $>
@@ -156,7 +156,7 @@
 
 
 <template id="prefs.Options#IdentityForm">
-<table class="ZFormTable ZFixedTable" cellspacing=0 cellpadding=2 border=0 style='height:100%'>
+<table class="ZFormTable ZFixedTable ZPropertySheet" style='height:100%'>
 	<colgroup><col width=103><col width='100%'></colgroup>
 
 	<tr><td><div class='ZSmallSpacer'></div></td></tr>
@@ -184,7 +184,7 @@
 <template id="prefs.Options#IdentityForm_options">
 <fieldset class='ZFieldset' style='width:auto'>
 	<legend class='ZLegend'><$= ZmMsg.sendWithIdentity $></legend>
-	<table class='ZFormTable XZFixedTable' cellspacing=0 cellpadding=2 width='99%'>
+	<table class='ZFormTable XZFixedTable ZPropertySheet' width='99%'>
 		<colgroup><col width=20><col width=60><col width='50%'><col width='50%'></colgroup>
 		<tr><td class='ZLabelCell' colspan=2><$= ZmMsg.sendFrom $></td>
 			<td><input id='${id}_sendFromName' style='width:100%'></td>
@@ -203,7 +203,7 @@
 <$ } $>
 <fieldset class='ZFieldset' style='width:auto'>
 	<legend class='ZLegend'><$= ZmMsg.selectIdentityWhen $></legend>
-	<table class='ZFormTable ZFixedTable' cellspacing=0 cellpadding=2 width='99%' border=0>
+	<table class='ZFormTable ZFixedTable ZPropertySheet' width='99%'>
 		<colgroup><col width=20><col width='100%'><col width=40></colgroup>
 
 		<tr><td class='ZCheckboxCell'><input id='${id}_whenSentToCheckbox' type='checkbox'></td>
@@ -225,7 +225,7 @@
 
 		<tr><td></td>
 			<td>
-				<table cellspacing=0 cellpadding=0 style='width:100%'><tr>
+				<table style='width:100%'><tr>
 					<td style='width:100%'><input id='${id}_whenInFolderInput' style='width:100%'></td>
 					<td style='padding-left:10px;'><button id='${id}_folderBrowseButton' style='width:30px'><div class='ImgFolder'></div></button></td>
 				</tr></table>
@@ -240,7 +240,7 @@
 </template>
 
 <template id="prefs.Options#IdentityForm_signature">
-<table class='ZFormTable ZFixedTable' cellspacing=0 cellpadding=2 style='width:95%;' border=0>
+<table class='ZFormTable ZFixedTable ZPropertySheet' style='width:95%;'>
 	<colgroup><col width=103><col width='100%'><col width=20></colgroup>
 
 	<tr><td><div class='ZSmallSpacer'></div></td></tr>
@@ -268,7 +268,7 @@
 </template>
 
 <template id="prefs.Options#IdentityForm_advanced">
-	<table class='ZFormTable ZFixedTable' cellspacing=0 cellpadding=2 width='99%' border=0>
+	<table class='ZFormTable ZFixedTable ZPropertySheet' width='99%'>
 		<colgroup><col width='200'><col width='100%'</colgroup>
 		<tr><td><div class='ZSmallSpacer'></div></td></tr>
 		<tr id='${id}_useDefaultsRadios'>

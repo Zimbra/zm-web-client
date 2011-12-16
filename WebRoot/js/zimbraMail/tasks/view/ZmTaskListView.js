@@ -170,7 +170,7 @@ function(sechdr) {
         var idx = 0;
 
         htmlArr[idx++] = "<div id='_upComingTaskListHdr'>";
-        htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100% class='DwtListView-Column'><tr>";
+        htmlArr[idx++] = "<table width=100% class='DwtListView-Column'><tr>";
         this.dId = Dwt.getNextId();
         htmlArr[idx++] = "<td><div class='DwtListHeaderItem-label ";
         htmlArr[idx++] = ZmTaskListView.SEC_COLOR[sechdr];
@@ -317,7 +317,7 @@ function(list, noResultsOk, doAdd) {
 	htmlArr = [];
 	var idx = 0;
 
-	htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100% class='newTaskBannerSep'><tr>";
+	htmlArr[idx++] = "<table width=100% class='newTaskBannerSep'><tr>";
 	for (var i = 0; i < this._headerList.length; i++) {
 		var hdr = this._headerList[i];
 		if (!hdr._visible) { continue; }
@@ -420,7 +420,7 @@ function(task, colIdx) {
 	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? "22" : "16";
 
 	// first row
-	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100% style='padding-bottom:4px;'>";
+	htmlArr[idx++] = "<table width=100% style='padding-bottom:4px;'>";
 	htmlArr[idx++] = "<tr id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, task.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
@@ -432,12 +432,12 @@ function(task, colIdx) {
 	htmlArr[idx++] = "</tr></table>";
 
     // second row
-    htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr>";
+    htmlArr[idx++] = "<table width=100%><tr>";
     htmlArr[idx++] = "<td width=50%><div style='height:10px; width:80px; border:1px solid #c5c5c5;'><div";
     htmlArr[idx++] = " class='";
     htmlArr[idx++] = this.getColorForStatus(task.status);
     htmlArr[idx++] = "' style='height:10px; width:"+ task.pComplete + "%;'></div></div></td>";
-    htmlArr[idx++] = "<td width=50% align=right><table border=0 cellspacing=0 cellpadding=0><tr>";
+    htmlArr[idx++] = "<td width=50% align=right><table><tr>";
 
     idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_TAG, colIdx, "16");
     if(task.priority == ZmCalItem.PRIORITY_HIGH || task.priority == ZmCalItem.PRIORITY_LOW) {
@@ -595,7 +595,7 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 		htmlArr[idx++] = "' class='";
 		htmlArr[idx++] = (id == this._currentColId)	? "DwtListView-Column DwtListView-ColumnActive'" :
 													  "DwtListView-Column'";
-		htmlArr[idx++] = " width='auto'><table border=0 cellpadding=0 cellspacing=0 width='100%'><tr><td id='";
+		htmlArr[idx++] = " width='auto'><table width='100%'><tr><td id='";
 		htmlArr[idx++] = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, field);
 		htmlArr[idx++] = "' class='DwtListHeaderItem-label'>";
 		htmlArr[idx++] = headerCol._label;

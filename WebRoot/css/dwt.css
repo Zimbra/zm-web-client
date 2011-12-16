@@ -562,6 +562,11 @@
 .LightWindowOuterContainer	{		@LightWindowOuterBorder@		}
 .LightWindowInnerContainer	{		@LightWindowInnerBorder@		}
 
+#IFDEF GECKO
+/* Special Gecko border colors require that the table border not be collapsed */
+.WindowOuterContainer>TABLE,
+.LightWindowOuterContainer>TABLE  {		border-collapse:separate;		}
+#ENDIF
 
 /* Text label in dialog toolbar. */
 .DwtDialogTitle {
@@ -601,6 +606,13 @@
 }
 
 .DwtDialogButtonBar {}
+
+.DwtDialogButtonBar>TABLE>TBODY>TR>TD {
+	padding:5px; 
+}
+.DwtDialogButtonBar .ZButton {
+	margin-left:3px;
+}
 
 
 /* TODO: Rationalize this ? */

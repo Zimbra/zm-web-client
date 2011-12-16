@@ -27,7 +27,7 @@
 </template>
 
 <template id='zimbra.Widgets#ZmColorMenuItem' class='ZWidget'>
-	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder' cellspacing='0' cellpadding='0'>
+	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder'>
 		<tr>
 			<td id='${id}_title' class='ZWidgetTitle'></td>
 		</tr>

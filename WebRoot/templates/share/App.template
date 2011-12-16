@@ -1,5 +1,5 @@
 <template id="share.App#Loading">
-	<table border=0 cellpadding=0 cellspacing=0 style='width:100%;height=100%'>
+	<table style='width:100%; height=100%'>
 		<tr>
 			<td align='center' valign='middle'>
 				<br><br><br>
@@ -16,13 +16,13 @@
 </template>
 
 <template id="share.App#Banner">
-	<table border=0 cellpadding=0 cellspacing=0 style='width:100%;height:100%'>
+	<table style='width:100%; height:100%'>
 		<tr><td align='center' valign='middle'><a<$ if (data.url && data.url != '') { $> href='${url}' target='_blank'<$ } $>><div class='ImgAppBanner' <$ if (data.isOffline) { $> style='width:220px;' <$ } $>></div></a></td></tr>
 	</table>
 </template>
 
 <template id="share.App#UserInfo">
-	<table class='skin_table' cellpadding=0 cellspacing=0 border=0>
+	<table class='skin_table'>
 <!--
 	<$ if (data.showOfflineLink) { $>
 		<tr>
@@ -68,7 +68,7 @@
 				<body>
 			<$ } $>
 
-		<table border=0 width=100%>
+		<table width=100%>
 			<tr>
 				<td class='ZmPrintView-company'>
 					<$= ZmMsg.zimbraTitle $> <$= ZmMsg.splashScreenAppName $>
@@ -87,7 +87,7 @@
 </template>
 
 <template id="share.App#FolderTooltip">
-	<table cellpadding=0 cellspacing=0 border=0>
+	<table>
 		<tr>
 			<td valign='top' style='padding-right:20px'>
 				<$= AjxMessageFormat.format(ZmMsg.makeLabel, data.itemText) $>
@@ -110,7 +110,7 @@
 </template>
 
 <template id="share.App#ZimbraAccountTooltip">
-	<table border=0>
+	<table>
 		<$ if (data.lastSync && data.lastSync != "") { $>
 			<tr>
 				<td class='nobreak' align=right><$= ZmMsg.lastSync $>:</td>
@@ -138,7 +138,7 @@
 
 <template id='share.App#presenceButton' class='ZWidget'>
 	<$ var buttonClass = data.buttonClass || "ToolbarButton"; $>
-	<table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' cellspacing=0 cellpadding=0 style='table-layout:auto;'><tr>
+	<table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' style='table-layout:auto;'><tr>
 		<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
 		<td id='${id}_title'		class='ZWidgetTitle'></td>
 	</tr></table>
@@ -151,14 +151,14 @@
 
 <template id='share.App#ZmStatusImageButton' class='ZWidget'>
 	<$ var buttonClass = data.buttonClass || "ToolbarButton"; $>
-	<table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' cellspacing=0 cellpadding=0 style='table-layout:auto;'><tr>
+	<table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' style='table-layout:auto;'><tr>
 		<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
 		<td id='${id}_status_icon'	class='ZLeftIcon ZWidgetIcon'><div></div></td>
 	</tr></table>
 </template>
 
 <template id='share.App#NetworkStatus'>
-	<table border=0 width=90 cellpadding=0 cellspacing=0>
+	<table width=90>
 		<tr>
 			<td class="ZmNetworkStatusIcon" onclick="ZmZimbraMail.handleNetworkStatusClick();" id="${id}_networkStatusText"></td>
 			<td class="ZmNetworkStatusIcon" align=right width=18 onclick="ZmZimbraMail.handleNetworkStatusClick();" id="${id}_networkStatusIcon"></td>

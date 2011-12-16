@@ -16,7 +16,7 @@
 <!-- NOTE: The tab indexes need to go sequentially across all #ZmEditContactView_* templates -->
 <template id="abook.Contacts#ZmEditContactView">
 	<div id="${id}_DEBUG"></div>
-    <table valign=top width='100%' cellspacing=0>
+    <table valign=top width='100%'>
         <$= AjxTemplate.expand("#ZmEditContactView_header", data) $>
         <$= AjxTemplate.expand("#ZmEditContactView_body", data) $>
     </table>
@@ -59,7 +59,7 @@
 <!-- NOTE: The tab indexes need to go sequentially across all #ZmEditContactView_* templates -->
 <template id="abook.Contacts#ZmEditContactView_headerName">
     <div id="${id}_NAME_row" style='padding-bottom:4;'>
-        <table border=0 cellpadding=0 cellspacing=0>
+        <table>
             <$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
             <tr id="${id}_PHONETIC_row">
                 <td id="${id}_PHONETIC_PREFIX"></td>
@@ -80,27 +80,27 @@
                     <div id="${id}_MIDDLE" tabindex="202"></div>
                 </td>
                 <td id="${id}_MAIDEN_row" style='padding-right:4;'>
-                    <table border=0 cellspacing=0 cellpadding=0>
+                    <table><tr>
                         <td style='padding:0 2;'>(</td>
                         <td><div id="${id}_MAIDEN" tabindex="203"></div></td>
                         <td style='padding:0 2;'>)</td>
-                    </table>
+                    </tr></table>
                 </td>
                 <td style='padding-right:4;'>
                     <div id="${id}_LAST" tabindex="204"></div>
                 </td>
                 <td id="${id}_SUFFIX_row" style='padding-right:4;'>
-                    <table border=0 cellspacing=0 cellpadding=0>
+                    <table><tr>
                         <td style='padding-right:4;'>,</td>
                         <td><div id="${id}_SUFFIX" tabindex="205"></div></td>
-                    </table>
+                    </tr></table>
                 </td>
                 <td><div id="${id}_DETAILS" tabindex="206"></div></td>
            </tr>
         </table>
     </div>
     <div id="${id}_NICKNAME_row" style='padding-bottom:4;'>
-        <table border=0 cellpadding=0 cellspacing=0><tr>
+        <table><tr>
             <td>&ldquo;</td>
             <td><div id="${id}_NICKNAME" tabindex="250"></div></td>
             <td>&rdquo;</td>
@@ -111,14 +111,14 @@
 <!-- NOTE: The tab indexes need to go sequentially across all #ZmEditContactView_* templates -->
 <template id="abook.Contacts#ZmEditContactView_headerJobInfo">
     <div id="${id}_JOB_row" style='padding-bottom:4;'>
-        <table border=0 cellpadding=0 cellspacing=0><tr>
+        <table><tr>
             <td id="${id}_TITLE_row"><div id="${id}_TITLE" tabindex="301"></div></td>
             <td id="${id}_TITLE_DEPARTMENT_SEP">&nbsp;-&nbsp;</td>
             <td id="${id}_DEPARTMENT_row"><div id="${id}_DEPARTMENT" tabindex="302"></div></td>
         </tr></table>
     </div>
     <div id="${id}_COMPANY_row" style='padding-bottom:4;'>
-        <table border=0 cellpadding=0 cellspacing=0>
+        <table>
             <$ if (appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS)) { $>
             <tr id="${id}_PHONETIC_COMPANY_row">
                 <td><div id="${id}_PHONETIC_COMPANY" tabindex="304"></div></td>
@@ -162,7 +162,7 @@
 </template>
 
 <template id="abook.Contacts#ZmEditContactViewRows">
-	<table border=0 cellspacing=0 cellpadding=0>
+	<table>
 		<tbody id="${id}_rows" tabindex="100"></tbody>
 	</table>
 </template>
@@ -172,7 +172,7 @@
 </template>
 
 <template id="abook.Contacts#ZmEditContactViewInputSelect">
-	<table border=0 cellpadding=0 cellspacing=0>
+	<table>
 		<tr><td style='padding-right:3'><div id='${id}_input' tabindex="100"></div></td>
 			<td><div id='${id}_select' tabindex="200"></div></td>
 		</tr>
@@ -180,7 +180,7 @@
 </template>
 
 <template id="abook.Contacts#ZmEditContactViewInputDoubleSelect">
-	<table border=0 cellpadding=0 cellspacing=0>
+	<table>
 		<tr><td style='padding-right:3'><div id='${id}_input' tabindex="100"></div></td>
 			<td><div id='${id}_select' tabindex="200"></div></td>
 			<td><div id='${id}_select2' tabindex="300"></div></td>
@@ -189,7 +189,7 @@
 </template>
 
 <template id="abook.Contacts#ZmEditContactViewOther">
-	<table border=0 cellpadding=0 cellspacing=0>
+	<table>
 		<tr><td style='padding-right:3'><div id='${id}_input' tabindex="100"></div></td>
 			<td style='padding-right:3;width:47px'><div id='${id}_picker' tabindex="200"></div></td>
 			<td><div id='${id}_select' tabindex="300"></div></td>
@@ -208,7 +208,7 @@
 </template>
 
 <template id="abook.Contacts#ZmEditContactViewAddressSelect">
-	<table border=0 cellpadding=0 cellspacing=0>
+	<table>
 		<tr valign=top>
 			<td style='padding-right:3'><div id='${id}_input' tabindex="100"></div></td>
 			<td><div id='${id}_select' tabindex="200"></div></td>
@@ -237,7 +237,7 @@
 <!---------------------------- ZmContactSplitView ----------------------------->
 <!----------------------------------------------------------------------------->
 <template id="abook.Contacts#SplitView">
-	<table border=0 cellpadding=0 cellspacing=5 width=100% height=100%>
+	<table width=100% height=100% class='ZPropertySheet'>
 		<col width=230></col>
 		<tr>
 			<td id='${id}_alphabetbar'></td>
@@ -340,7 +340,7 @@
 		var imgClassName = contact.isGroup() ? "GroupPerson_48" : "Person_48";
 		var isEdit = data.isEdit;
 	$>
-	<table border=0 cellspacing=2 cellpadding=2 width=100% class='contactHeaderTable <$= data.contactHdrClass $>'>
+	<table width=100% class='contactHeaderTable <$= data.contactHdrClass $> ZPropertySheet'>
 		<tr>
 			<$ if (imageUrl) { $>
 				<td valign=bottom width=48 rowspan=2><img src="<$= imageUrl $>" 
@@ -364,14 +364,14 @@
 			</td>
 			<td valign=bottom align='right'>
 				<$ if (accountName) { $>
-					<table border=0 cellpadding=0 cellspacing=0 width=1%>
+					<table width=1%>
 						<tr>
 							<td class='contactLocation' nowrap="nowrap"><$= ZmMsg.accountLabel $>&nbsp;</td>
 							<td class='companyFolder' colspan=10><$= AjxStringUtil.htmlEncode(accountName) $></td>
 						</tr>
 					</table>
 				<$ } $>
-				<table border=0 cellpadding=0 cellspacing=0 width=1%>
+				<table width=1%>
 					<tr>
 						<$ if (data.addrbook && !isEdit) { $>
 						    <td class='contactLocation' nowrap="nowrap"><$= ZmMsg.locationLabel $>&nbsp;</td>
@@ -530,7 +530,7 @@
 <!-------------------------------- ZmContactSimpleView ------------------------>
 <!----------------------------------------------------------------------------->
 <template id="abook.Contacts#SimpleView-NoResults">
-	<table width='100%' cellspacing=0 cellpadding=1>
+	<table width='100%'>
 		<tr>
 			<td class='NoResults' valign='top' >
 				<br/><br/><$= AjxMsg.noResults $>
@@ -546,7 +546,7 @@
 <template id="abook.Contacts#GroupView">
 	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
 	<$ if (data.contact.isDistributionList()) { $>
-		<table valign="top" width="100%" cellspacing="0" class="ZmEditContactView">
+		<table valign="top" width="100%" class="ZmEditContactView">
 			<tr valign="top">
 				<td class='rowLabel'><$= ZmMsg.displayNameLabel $></td>
 				<td class='rowValue'><input type='text' autocomplete='off' size=40 id='${id}_dlDisplayName' class="Text"></td>
@@ -593,7 +593,7 @@
 		</table>
 	<$ } $>
 
-	<table border=0 cellpadding=5 cellspacing=5 width=100% height=100%>
+	<table width=100% height=100% class='ZPropertySheet'>
 		<tr>
 			<!-- content: left pane -->
 			<td width=50% valign=top>
@@ -645,14 +645,14 @@
 				 </tr>
 				 <tr>
 			       <td width=50>
-                    <table border=0 cellpadding=3 cellspacing=2 width=100%>
+                    <table width=100% class='ZPropertySheet'>
                         <tr><td id='${id}_addButton'></td></tr>
                         <tr><td id='${id}_addAllButton'></td></tr>
                     </table>   
                    </td>
                    <td>
 					<div class='groupMembers' id='${id}_listView'></div>
-					<table border=0 cellpadding=3 cellspacing=2 width=100%>
+					<table width=100% class='ZPropertySheet'>
 						<tr>
 							<td width=100%></td>
 							<td id='${id}_prevButton'></td>
@@ -663,12 +663,12 @@
 				   </tr>
 				   <tr>
 					<td width=50>
-					 <table border=0 cellpadding=3 cellspacing=2 width=100%>
+					 <table width=100% class='ZPropertySheet'>
                         <tr><td id='${id}_addNewButton'></td></tr>
                      </table>
                     </td>
                     <td>
-                       <table border=0 cellpadding=3 cellspacing=2 width=100%>
+                       <table width=100% class='ZPropertySheet'>
                             <tr>
                                 <td><$=ZmMsg.enterAddrBelow$></td>
                             </tr>
@@ -691,7 +691,7 @@
 <!----------------------------------------------------------------------------->
 <template id="abook.Contacts#ZmAlphabetBar">
 	<center>
-		<table class='AlphabetBarTable' border=0 cellpadding=0 cellspacing=0 width=80% id='${id}_alphabet'>
+		<table class='AlphabetBarTable' width=80% id='${id}_alphabet'>
 			<tr>
 				<$ for (var i = 0; i < data.numLetters; i++) { $>
 					<td _idx='<$= i $>' onclick='ZmContactAlphabetBar.alphabetClicked(this
@@ -717,11 +717,11 @@
 <!------------------------------ Contact Tooltip ------------------------------>
 <!----------------------------------------------------------------------------->
 <template id="abook.Contacts#Tooltip">
-	<table cellpadding=0 cellspacing=0 border=0 width=250>
+	<table width=250>
 		<tr>
 			<td colspan=2 valign=top>
-				<div style='border-bottom: 1px solid black; margin-bottom:2px'>
-					<table cellpadding=0 cellspacing=0 border=0 width=100%>
+				<div style='border-bottom:1px solid black; margin-bottom:2px'>
+					<table width=100%>
 						<tr valign='bottom'>
 							<td style='font-weight:bold'><$= AjxStringUtil.htmlEncode(data.entryTitle); $></td>
 							<td align='right'><$= AjxImg.getImageHtml(data.contact.getIcon()); $></td>
@@ -787,12 +787,12 @@
 
 <template id="abook.Contacts#TooltipNotInAddrBook">
 	<$ if (data.hint) { $>
-	<table cellpadding=0 cellspacing=0 border=0 width=250>
+	<table width=250>
 		<tr>
 			<td valign=top>
 				<$ if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) { $>
-					<div style='border-bottom: 1px solid black;'>
-						<table cellpadding=0 cellspacing=0 border=0 width=100%>
+					<div style='border-bottom:1px solid black;'>
+						<table width=100%>
 							<tr valign='bottom'>
 								<td style='font-weight:bold'><$= ZmMsg.newContact $></td>
 								<td align='right'><$= AjxImg.getImageHtml("NewContact"); $></td>
@@ -851,10 +851,10 @@
 <!----------------------------------------------------------------------------->
 <template id="abook.Contacts#ZmContactPicker">
 	<div class='ZmContactPicker'>
-		<table border=0 cellpadding=1 cellspacing=1 width=100%>
+		<table width=100%>
 			<tr>
 				<td width=600>
-					<table border=0 cellpadding=0 cellspacing=0>
+					<table>
 						<$ if (data.detailed) { $>
 						<tr>
 							<td valign=middle colspan=3 width=400><div id='${id}_searchIcon' class="ImgSearch"></div></td>
@@ -889,7 +889,7 @@
 				</td>
 				<td align=right valign=bottom>
 					<$ if (data.showSelect) { $>
-						<table border=0 cellpadding=0 cellspacing=0>
+						<table>
 							<tr>
 								<td class='Label nobreak'><$= ZmMsg.showNames $>&nbsp;</td>
 								<td id='${id}_listSelect'></td>
@@ -902,7 +902,7 @@
 		<div id='${id}_chooser'></div>
 		<div id='${id}_paging'>
 			<center>
-				<table border=0 cellspacing=0 cellpadding=0 width=100%>
+				<table width=100%>
 					<tr>
 						<td>&nbsp;&nbsp;&nbsp;</td>
 						<td id='${id}_pageLeft'></td>
@@ -921,10 +921,10 @@
 <!----------------------------------------------------------------------------->
 <template id="abook.Contacts#ZmContactSearch">
 	<div id='${id}_preamble'></div>
-	<table border=0 cellpadding=1 cellspacing=1 width=100%>
+	<table width=100%>
 		<tr>
 			<td>
-				<table border=0 cellpadding=0 cellspacing=0>
+				<table>
 					<tr>
 						<td width=20 valign=middle><div id='${id}_searchIcon' class="ImgSearch"></div></td>
 						<td><input type='text' autocomplete='off' size=30 nowrap id='${id}_searchField'>&nbsp;</td>
@@ -934,7 +934,7 @@
 			</td>
 			<td align=right>
 				<$ if (data.showSelect) { $>
-					<table border=0 cellpadding=0 cellspacing=0>
+					<table>
 						<tr>
 							<td class='Label nobreak'><$= ZmMsg.showNames $>&nbsp;</td>
 							<td id='${id}_folders'></td>

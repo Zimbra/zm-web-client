@@ -529,7 +529,7 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 		htmlArr[idx++] = "' class='";
 		htmlArr[idx++] = (id == this._currentColId)	? "DwtListView-Column DwtListView-ColumnActive'" :
 													  "DwtListView-Column'";
-		htmlArr[idx++] = " width='auto'><table border=0 cellpadding=0 cellspacing=0 width='100%'><tr><td id='";
+		htmlArr[idx++] = " width='auto'><table width='100%'><tr><td id='";
 		htmlArr[idx++] = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, field);
 		htmlArr[idx++] = "' class='DwtListHeaderItem-label'>";
 		htmlArr[idx++] = headerCol._label;

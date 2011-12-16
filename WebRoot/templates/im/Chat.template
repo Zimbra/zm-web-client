@@ -1,11 +1,11 @@
 <template id="im.Chat#ChatWidget">
 
-	<div style="width: 100%; height: 100%;" cellspacing="0" cellpadding="0">
+	<div style="width:100%; height:100%;">
 
-		<div style="height: 22px" id="${id}_toolbarLayout"></div>
-		<div style="height: 1px"></div>
+		<div style="height:22px" id="${id}_toolbarLayout"></div>
+		<div style="height:1px"></div>
 		<div id="${id}_convLayout"></div>
-		<div style="height: 3px; cursor: s-resize" id="${id}_sash"></div>
+		<div style="height:3px; cursor:s-resize" id="${id}_sash"></div>
 		<div id="${id}_inputLayout"/>
 	</div>
 </template>
@@ -27,10 +27,10 @@
 <template id="im.Chat#RosterItemTooltip-row">
   <$ if (data.data) { $>
     <tr>
-      <td align="right" valign="middle" style="padding-right: 5px"><b><div style="white-space: nowrap">
+      <td align="right" valign="middle" style="padding-right:5px"><b><div style="white-space:nowrap">
         <$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(data.label)) $>
       </div></b></td>
-      <td align="left"><div style="white-space: nowrap">
+      <td align="left"><div style="white-space:nowrap">
         <$= AjxStringUtil.htmlEncode(data.data) $>
       </div></td>
     </tr>
@@ -43,15 +43,15 @@
     <!-- display contact toolipt first if available -->
     <$ if (data.contact) { $>
       <$= data.contact.getToolTip() $>
-      <div style="padding-top: 10px"></div>
+      <div style="padding-top:10px"></div>
     <$ } $>
 
     <!-- buddy tooltip -->
-    <table cellpadding="0" cellspacing="0" border="0" align="center" width="100%">
+    <table align="center" width="100%">
       <tr valign="middle">
         <td colspan="2" align="left">
-          <div style="border-bottom: 1px solid black;">
-            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+          <div style="border-bottom:1px solid black;">
+            <table width="100%">
               <tr valign="middle">
                 <td valign="middle"><$= AjxImg.getImageHtml(data.buddy.getPresence().getIcon()) $></td>
                 <td valign="middle" align="center">
@@ -79,18 +79,18 @@
 <template id="im.Chat#RosterItemsTooltip">
   <table><tr><td>
 
-    <table cellpadding="4" cellspacing="0" border="0" align="center" width="100%">
+    <table class="ZPropertySheet" align="center" width="100%">
       <$
         for (var i = 0, count = data.buddies.length; i < count; i++) {
         var buddy = data.buddies[i];
       $>
 	    <tr valign="middle">
 		  <$ if (i + 1 < count) { $>
-            <td colspan="2" align="left" style="border-bottom: 1px solid black;">
+            <td colspan="2" align="left" style="border-bottom:1px solid black;">
           <$ } else { $>
 			<td colspan="2" align="left">
 		  <$ } $>
-			  <table cellpadding="0" cellspacing="0" border="0" width="100%">
+			  <table width="100%">
                 <tr valign="middle">
                   <td valign="middle" width="20px"><$= AjxImg.getImageHtml(buddy.getPresence().getIcon()) $></td>
                   <td valign="middle" align="left">&nbsp;&nbsp;
@@ -131,15 +131,15 @@
 <template id="im.Chat#GatewayLoginDlg">
   <table>
     <tr>
-      <td style="text-align: right; white-space: nowrap;"><$= ZmMsg.imGatewayLabel $></td>
+      <td style="text-align:right; white-space:nowrap;"><$= ZmMsg.imGatewayLabel $></td>
       <td id="${id}_gatewayLayout"></td>
     </tr>
     <tr>
-      <td style="text-align: right; white-space: nowrap;"><$= ZmMsg.imScreenName $></td>
+      <td style="text-align:right; white-space:nowrap;"><$= ZmMsg.imScreenName $></td>
       <td id="${id}_screenNameLayout"></td>
     </tr>
     <tr>
-      <td style="text-align: right; white-space: nowrap;"><$= ZmMsg.passwordLabel $></td>
+      <td style="text-align:right; white-space:nowrap;"><$= ZmMsg.passwordLabel $></td>
       <td id="${id}_passwordLayout"></td>
     </tr>
   </table>
@@ -178,7 +178,7 @@
 <template id="im.Chat#SubscribeAuthDlg">
   <table width="250px">
     <tr>
-      <td style="text-align: center; padding-bottom: 10px">
+      <td style="text-align:center; padding-bottom:10px">
         <$= AjxMessageFormat.format(ZmMsg.imSubscribeAuthRequest, [ data.buddy ]) $>
       </td>
     </tr>
@@ -201,16 +201,16 @@
 <template id="im.Chat#InviteNotification">
   <table width="100%">
     <tr>
-      <td style="text-align: center; font-weight: bold; padding-bottom: 10px;" id="${id}_title"></td>
+      <td style="text-align:center; font-weight:bold; padding-bottom:10px;" id="${id}_title"></td>
     </tr>
     <tr>
       <td id="${id}_content"></td>
     </tr>
     <tr>
-      <td style="text-align: center; padding-top: 10px;">
-        <table align="center" cellspacing="0" cellpadding="0" style="width: 5em">
+      <td style="text-align:center; padding-top:10px;">
+        <table align="center" style="width:5em">
           <tr>
-            <td style="padding-right: 5px" id="${id}_buttonOK"></td>
+            <td style="padding-right:5px" id="${id}_buttonOK"></td>
             <td id="${id}_buttonCancel"></td>
           </tr>
         </table>
@@ -222,10 +222,10 @@
 <template id="im.Chat#JiveNotification">
   <table>
     <tr>
-      <td nowrap style="text-align: center"><span class="ImgImStartChat inlineIcon">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><$= ZmMsg.imPoweredBy $></td>
+      <td nowrap style="text-align:center"><span class="ImgImStartChat inlineIcon">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><$= ZmMsg.imPoweredBy $></td>
     </tr>
     <tr>
-      <td class="ZmChatJiveIcon ImgJiveBig" style="text-align: center; padding-top: 10px;">
+      <td class="ZmChatJiveIcon ImgJiveBig" style="text-align:center; padding-top:10px;">
           &nbsp;
       </td>
     </tr>
@@ -262,7 +262,7 @@
 </template>
 
 <template id='im.Chat#ZmNewConferenceRoomDialog'>
-	<table width='360px' cellpadding=2 cellspacing=2>
+	<table width='360px' class='ZPropertySheet'>
 		<tr>
 			<td class="ZmChatDialogField"><$= ZmMsg.imRoomNameLabel $></td>
 			<td class="ZmChatDialogInputCell"><div id="${id}_NAME" tabindex='10'/></td>
@@ -301,7 +301,7 @@
 
 <template id='im.Chat#ZmInfoTreeItem'>
 	<div class='${divClassName}' id='${id}_div' style="height:auto;">
-		<table id='${id}_table' border=0 cellpadding=0 cellspacing=0>
+		<table id='${id}_table'>
 			<tr>
 				<td class='${textClassName}' id='${id}_textCell'></td>
 			</tr>
@@ -310,7 +310,7 @@
 </template>
 
 <template id='im.Chat#ZmChatWidgetEditor'>
-	<table cellspcing=0 cellpadding=0>
+	<table>
 		<tr><td id='${id}_toolBar' colspan=2 /></tr>
 		<tr><td style='width:100%' id='${id}_textarea' /> <td style='width:60px' id='${id}_send'/></tr>
 	</table>
@@ -321,7 +321,7 @@
 		<div id='${id}_notLoggedIn' style='display:block'>
 			<$=ZmMsg.imGatewayNotLoggedInHeader $><br>
 			<br>
-			<table cellpadding=0 cellspacing=2>
+			<table class="ZPropertySheet">
 				<tr>
 					<td class="ImYahooLoginLabel"><$=ZmMsg.imScreenNameYahoo $></td>
 					<td class="ImYahooLoginValue"><input type="text" id="${id}_nameField" size="25"/>
@@ -339,7 +339,7 @@
 		</div>
 		<div id='${id}_loggedIn' style='display:block'>
 			<span id="${id}_loggedInHeader"></span><br>
-			<table cellpadding=0 cellspacing=2>
+			<table class="ZPropertySheet">
 				<tr>
 					<td colspan=2 align="right" style="padding-top:3px">
 						<table><tr>
@@ -352,7 +352,7 @@
 		</div>
 		<div id='${id}_disconnected' style='display:block'>
 			<$=ZmMsg.imGatewayDisconnectedHeader $><br>
-			<table cellpadding=0 cellspacing=2>
+			<table class="ZPropertySheet">
 				<tr>
 					<td colspan=2 align="right" style="padding-top:3px">
 						<table><tr>

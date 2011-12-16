@@ -12,18 +12,18 @@ and the container element is replaced with that control.
 -->
 
 <template id='prefs.Pages#General'>
-	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
-			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
+	<div align=right style='margin-right:20px; margin-bottom:10px;'>
+			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right:25px;'></div>
 	</div>
 
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.loginOptions$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
@@ -88,7 +88,7 @@ and the container element is replaced with that control.
 		</tr>
 	</table>
 
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.searches$></td>
@@ -96,7 +96,7 @@ and the container element is replaced with that control.
 		</tr>
 	</table>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
@@ -139,7 +139,7 @@ and the container element is replaced with that control.
 		</tr>
 	</table>
 
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.other$></td>
@@ -147,13 +147,13 @@ and the container element is replaced with that control.
 		</tr>
 	</table>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.pageSizeLabel$></td>
-						<td class='ZOptionsField'><table cellspacing=0 cellpadding=0 border=0><tr><td><div id='${id}_PAGE_SIZE' tabindex='90'></div></td><td style="padding-left:4px;"><$=ZmMsg.pageSizeDesc$></td></tr></table></td>
+						<td class='ZOptionsField'><table><tr><td><div id='${id}_PAGE_SIZE' tabindex='90'></div></td><td style="padding-left:4px;"><$=ZmMsg.pageSizeDesc$></td></tr></table></td>
 					</tr>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.settingsLabel$></td>
@@ -202,14 +202,14 @@ and the container element is replaced with that control.
 	</div>
 
 	<$ if (!appCtxt.multiAccounts || data.activeAccount.isMain) { $>
-		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table width=100%>
 			<tr class='ZOptionsHeaderRow'>
 				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.displayMessages$></td>
 				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 			</tr>
 		</table>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table class='ZOptionsSectionTable' width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
 					<table width=100%>
@@ -271,14 +271,14 @@ and the container element is replaced with that control.
 			var size = appCtxt.accountList.size();
 			if ((size > 2 && !appCtxt.get(ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES)) || size == 2) {
 	$>
-				<table border=0 cellspacing=0 cellpadding=0 width=100%>
+				<table width=100%>
 					<tr class='ZOptionsHeaderRow'>
 						<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 						<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.displayMessages$></td>
 						<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 					</tr>
 				</table>
-				<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+				<table class='ZOptionsSectionTable' width=100%>
 					<tr>
 						<td class='ZOptionsSectionMain'>
 							<table width=100%>
@@ -293,14 +293,14 @@ and the container element is replaced with that control.
 		<$ } $>
 	<$ } $>
 
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.messagesReceiving$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
@@ -329,7 +329,7 @@ and the container element is replaced with that control.
 						<tr>
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'>
-								<table cellspacing=0 cellpadding=0>
+								<table>
 									<tr>
 										<td><div id='${id}_MAIL_NOTIFY_TOASTER' tabindex='108'></div></td>
 										<td><$=ZmDesktopAlert.getInstance().getLinkText() $></td>
@@ -427,14 +427,14 @@ and the container element is replaced with that control.
 		</tr>
 	</table>
 
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.composingMessages$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
@@ -595,14 +595,14 @@ and the container element is replaced with that control.
 
 	<$ if (!appCtxt.multiAccounts || appCtxt.isFamilyMbox || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
 		<$ if (appCtxt.get(ZmSetting.MAIL_BLACKLIST_MAX_NUM_ENTRIES) > 0 || appCtxt.get(ZmSetting.MAIL_WHITELIST_MAX_NUM_ENTRIES) > 0) { $>
-			<table border=0 cellspacing=0 cellpadding=0 width=100%>
+			<table width=100%>
 				<tr class='ZOptionsHeaderRow'>
 					<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 					<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.junkMailOptions$></td>
 					<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 				</tr>
 			</table>
-			<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+			<table class='ZOptionsSectionTable' width=100%>
 				<tr>
 					<td class='ZOptionsSectionMain'>
 						<table width=100%>
@@ -622,14 +622,14 @@ and the container element is replaced with that control.
 	<$ } $>
 
 	<$ if (data.isEnabled(ZmSetting.POP_ENABLED)) { $>
-		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table width=100%>
 			<tr class='ZOptionsHeaderRow'>
 				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.externalAccess$></td>
 				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 			</tr>
 		</table>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table class='ZOptionsSectionTable' width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
 					<table width=100%>
@@ -664,7 +664,7 @@ and the container element is replaced with that control.
 
 <!-- NOTE: we have two separate templates for white/black lists for tabbing support -->
 <template id='prefs.Pages#BlackList'>
-	<table border=0>
+	<table>
 		<tr>
 			<td id='${id}_EMAIL_ADDRESS' tabindex='182'></div></td>
 			<td id='${id}_ADD_BUTTON' valign=top tabindex='184'></td>
@@ -677,7 +677,7 @@ and the container element is replaced with that control.
 	<div class='ZOptionsInfo' id='${id}_NUM_USED'></div>
 </template>
 <template id='prefs.Pages#WhiteList'>
-	<table border=0>
+	<table>
 		<tr>
 			<td id='${id}_EMAIL_ADDRESS' tabindex='190'></div></td>
 			<td id='${id}_ADD_BUTTON' valign=top tabindex='192'></td>
@@ -690,7 +690,7 @@ and the container element is replaced with that control.
 	<div class='ZOptionsInfo' id='${id}_NUM_USED'></div>
 </template>
 <template id='prefs.Pages#TrustedList'>
-	<table border=0>
+	<table>
 		<tr>
 			<td id='${id}_EMAIL_ADDRESS' tabindex='190'></div></td>
 			<td id='${id}_ADD_BUTTON' valign=top tabindex='192'></td>
@@ -709,14 +709,14 @@ and the container element is replaced with that control.
 	</div>
 
 
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.trustedAddrsDomains$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
 			    <div><$=ZmMsg.trustedAddrHeaderMsg$></div>
@@ -732,17 +732,17 @@ and the container element is replaced with that control.
 			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
 	</div>
 
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.signatures$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table width=100% cellspacing=0>
+				<table width=100%>
 					<tr>
 						<td><div id='${id}_SIGNATURES' tabindex='20'></div></td>
 					</tr>
@@ -751,17 +751,17 @@ and the container element is replaced with that control.
 		</tr>
 	</table>
 
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.signaturesUsing$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		</table>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table id='${id}_SIG_TABLE' border=0 cellpadding=0 cellspacing=10>
+				<table id='${id}_SIG_TABLE' class="ZPropertySheet">
 					<tr>
 						<td>&nbsp;</td>
 						<td><$=ZmMsg.newMessages$></td>
@@ -769,7 +769,7 @@ and the container element is replaced with that control.
 					</tr>
 				</table>
 				<hr>
-				<table width=100% cellspacing=0>
+				<table width=100%>
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.placeSignature$></td>
 						<td class='ZOptionsInfo'><div id='${id}_SIGNATURE_STYLE' tabindex='40'></div></td>
@@ -781,11 +781,11 @@ and the container element is replaced with that control.
 </template>
 
 <template id="prefs.Pages#SignatureSplitView">
-    <table border=0 cellpadding=0 cellspacing=0 width='100%'>
+    <table width='100%'>
 		<tr>
 			<td>&nbsp;</td>
 			<td>
-				<table border=0 cellpadding=0 cellspacing=0 width="100%">
+				<table width="100%">
 					<tr>
 						<td class="Label"><$=ZmMsg.nameLabel$></td>
 						<td class='ZOptionsField'><input id='${id}_SIG_NAME' tabindex='50' size=30></td>
@@ -814,7 +814,7 @@ and the container element is replaced with that control.
 				</table>
 			</td>
 			<td align='right'>
-				<table border=0 cellpadding=0 cellspacing=0>
+				<table>
 					<tr>
 						<td class="Label"><$=ZmMsg.signatureVcardLabel$></td>
 						<td class='ZOptionsField'><input id='${id}_SIG_VCARD' tabindex='85' size=30></td>
@@ -834,14 +834,14 @@ and the container element is replaced with that control.
 	</div>
 
 	<$ if (data.activeAccount.isMain) { $>
-		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table width=100%>
 			<tr class='ZOptionsHeaderRow'>
 				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.options$></td>
 				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 			</tr>
 		</table>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table class='ZOptionsSectionTable' width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
 					<table width=100%>
@@ -926,14 +926,14 @@ and the container element is replaced with that control.
 		<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
 	</div>
 
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.accounts$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
@@ -999,14 +999,14 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#PrimaryAccount'>
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.accountHeaderPrimary$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
@@ -1050,7 +1050,7 @@ and the container element is replaced with that control.
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField'>
-							<table cellpadding='0' cellspacing='0' border='0'>
+							<table>
 								<tr>
 									<td style='padding-right:.5em;'><input id='${id}_PRIMARY_REPLY_TO_NAME' tabindex='1050' size=30></td>
 									<td><select id='${id}_PRIMARY_REPLY_TO_EMAIL' tabindex='1060'></select></td>
@@ -1069,14 +1069,14 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#ExternalAccount'>
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.accountHeaderExternal$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
@@ -1132,7 +1132,7 @@ and the container element is replaced with that control.
 					<tr>
 						<td class='ZOptionsLabel'><$=ZmMsg.advancedSettingsLabel$></td>
 						<td class='ZOptionsField'>
-							<table cellpadding='0' cellspacing='0' border='0'>
+							<table>
 								<tr>
 									<td><input id='${id}_EXTERNAL_CHANGE_PORT' tabindex='2070' type=checkbox></td>
 									<td><input id='${id}_EXTERNAL_PORT' tabindex='2080' size=4></td>
@@ -1210,7 +1210,7 @@ and the container element is replaced with that control.
 					<tr>
 						<td class='ZOptionsLabel'>&nbsp;</td>
 						<td class='ZOptionsField'>
-							<table cellpadding='0' cellspacing='0' border='0'>
+							<table>
 								<tr>
 									<td style='padding-right:.5em;'>
 										<input id='${id}_EXTERNAL_REPLY_TO_NAME' tabindex='2150' size=30>
@@ -1233,14 +1233,14 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#Persona'>
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.personaSettings$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
@@ -1355,10 +1355,10 @@ and the container element is replaced with that control.
 
 <template id='prefs.Pages#MailFilters'>
 	<div class="rightAlign"><$=ZmMsg.filterRuleChangesSavedImmediately$></div>
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table width=100%>
 		<tr>
 			<td class='ZOptionsSectionTabView'>
-				<table width=100% cellspacing=0 cellpadding=0>
+				<table width=100%>
 					<tr>
 						<td><div id='${id}_tabview' tabindex='20'></div></td>
 					</tr>
@@ -1369,10 +1369,10 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#MailFilter'>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table width=100% cellpadding=0>
+				<table width=100%>
 					<tr>
 						<td><div id='${id}_toolbar' tabindex='20'></div></td>
 					</tr>
@@ -1407,7 +1407,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<div style='color:#555555'><div id='${id}_condition' tabindex='30'></div></div>
 	<fieldset class='FilterRuleSection'>
 		<div style='overflow-x:hidden;overflow-y:scroll;height:145px;'>
-			<table id='${id}_conditions' width='100%' border=0 cellpadding=0 cellspacing=0 tabindex='40'>
+			<table id='${id}_conditions' width='100%' tabindex='40'>
 				<tbody></tbody>
 			</table>
 		</div>
@@ -1418,7 +1418,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<div style='color:#555555'><$=ZmMsg.filterActions$></div>
 	<fieldset class='FilterRuleSection'>
 		<div style='overflow-x:hidden;overflow-y:scroll;height:82px'>
-			<table id='${id}_actions' width='100%' border=0 cellpadding=0 cellspacing=0 tabindex='50'>
+			<table id='${id}_actions' width='100%' tabindex='50'>
 				<tbody></tbody>
 			</table>
 		</div>
@@ -1433,14 +1433,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	</div>
 
 	<$ if (data.activeAccount.isMain) { $>
-		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table   width=100%>
 			<tr class='ZOptionsHeaderRow'>
 				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.general$></td>
 				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 			</tr>
 		</table>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table class='ZOptionsSectionTable'   width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
 					<table width=100%>
@@ -1520,7 +1520,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 						<tr>
 							<td class='ZOptionsLabel'>&nbsp;</td>
 							<td class='ZOptionsField'>
-								<table cellspacing=0 cellpadding=0><tr>
+								<table  ><tr>
 									<td><div id='${id}_CAL_REMINDER_NOTIFY_TOASTER' tabindex='69'></div></td>
 									<td><$=ZmDesktopAlert.getInstance().getLinkText() $></td>
 								</tr></table>
@@ -1531,14 +1531,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
                         <tr>
                         	<td class='ZOptionsLabel'><$=ZmMsg.defaultApptDuration$></td>
-                        	<td class='ZOptionsField'><table cellspacing=0 cellpadding=0 border=0><tr><td><select id='${id}_CAL_DEFAULT_APPT_DURATION' tabindex='70'></select></td><td style="padding-left:4px;"><$=ZmMsg.minutes$></td></tr></table></td>
+                        	<td class='ZOptionsField'><table  ><tr><td><select id='${id}_CAL_DEFAULT_APPT_DURATION' tabindex='70'></select></td><td style="padding-left:4px;"><$=ZmMsg.minutes$></td></tr></table></td>
                         </tr>
 
 					</table>
 				</td>
 			</tr>
 		</table>
-		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table   width=100%>
 			<tr class='ZOptionsHeaderRow'>
 				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.calendarWorkHoursHeader$></td>
@@ -1546,13 +1546,13 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			</tr>
 		</table>
 
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table class='ZOptionsSectionTable'   width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain' id='${id}_CAL_WORKING_HOURS'></td>
 			</tr>
 		</table>
 
-		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table   width=100%>
 			<tr class='ZOptionsHeaderRow'>
 				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.apptCreating$></td>
@@ -1560,7 +1560,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			</tr>
 		</table>
 
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table class='ZOptionsSectionTable'   width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
 					<table width=100%>
@@ -1587,14 +1587,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			appCtxt.getSettings(data.activeAccount).attrExists(ZmSetting.CAL_AUTO_ADD_INVITES))
 	{
 	$>
-		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table   width=100%>
 			<tr class='ZOptionsHeaderRow'>
 				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.general$></td>
 				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 			</tr>
 		</table>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table class='ZOptionsSectionTable'   width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
 					<table width=100%>
@@ -1609,14 +1609,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<$ } $>
 
 	<$ if (data.isAclSupported) { $>
-		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table   width=100%>
 			<tr class='ZOptionsHeaderRow'>
 				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.calPerms$></td>
 				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 			</tr>
 		</table>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table class='ZOptionsSectionTable'   width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
 					<table width=100%>
@@ -1654,14 +1654,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
 
 
-    <table border=0 cellspacing=0 cellpadding=0 width=100%>
+    <table   width=100%>
         <tr class='ZOptionsHeaderRow'>
             <td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
             <td class='ZOptionsHeader ImgPrefsHeader'>Apple iCal</td>
             <td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
         </tr>
     </table>
-    <table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+    <table class='ZOptionsSectionTable'   width=100%>
         <tr>
             <td class='ZOptionsSectionMain'>
                 <table width=100%>
@@ -1682,7 +1682,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#WorkHours'>
-<table border=0 cellspacing=0 cellpadding=0 width=100%>
+<table   width=100%>
     <tr>
         <td class='ZOptionsLabel'><$=ZmMsg.calendarWorkWeek $></td>
         <td class='ZOptionsField'>
@@ -1725,7 +1725,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#CustomWorkHoursDlg'>
-<table border=0 cellspacing=2 cellpadding=2 width=300>
+<table class='ZPropertySheet' width=300>
     <tr>
         <td id='${id}_CAL_WORKING_DAY_0' tabindex='10'></td>
         <td id='${id}_CAL_WORKING_START_TIME_0' tabindex='20'></td>
@@ -1780,7 +1780,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	</div>
 
 
-<table border=0 cellspacing=0 cellpadding=0 width=100%>
+<table   width=100%>
 	<tr class='ZOptionsHeaderRow'>
 		<td class='ZOptionsHeaderL'>
 			<div class='ImgPrefsHeader_L'></div>
@@ -1791,7 +1791,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</td>
 	</tr>
 </table>
-<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+<table class='ZOptionsSectionTable'   width=100%>
 	<tr>
 		<td class='ZOptionsSectionMain'>
 			<table width=100%>
@@ -1856,7 +1856,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 				<tr>
 					<td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField'>
-						<table cellspacing=0 cellpadding=0><tr>
+						<table  ><tr>
 							<td><div id='${id}_IM_PREF_DESKTOP_ALERT' tabindex='40'></div></td>
 							<td><$=ZmMsg.showPopupBrowserPlusLink $></td>
 						</tr></table>
@@ -1879,7 +1879,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 				<tr>
 					<td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField'>
-						<table cellspacing="0" cellpadding="0">
+						<table>
 							<tr>
 								<td colspan="2">
 									<div id='${id}_IM_PREF_REPORT_IDLE' tabindex='70'></div>
@@ -1961,14 +1961,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
 
 <template id='prefs.Pages#Shortcuts'>
-		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table   width=100%>
 			<tr class='ZOptionsHeaderRow'>
 				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.keyboardShortcuts$></td>
 				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 			</tr>
 		</table>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table class='ZOptionsSectionTable'   width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
 					<div align="right">
@@ -1981,7 +1981,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#AccountTestContent'>
-	<table id='${id}_accts' class='ZmDataSourceTestTable' border=0 cellspacing=0 cellpadding=3>
+	<table id='${id}_accts' class='ZmDataSourceTestTable' class="ZPropertySheet">
 		<tr><th><$=ZmMsg.account$></th><th><$=ZmMsg.status$></th></tr>
 		<$ for (var i = 0; i < data.accounts.length; i++) { $>
 			<$= AjxTemplate.expand("#AccountTestItem", { id: data.id, account: data.accounts[i] }) $>
@@ -2012,7 +2012,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
 <!-- NOTE: This is just for backwards compatibility. -->
 <template id='prefs.Pages#Import'>
-	<table border=0 cellpadding=3 cellspacing=3>
+	<table class='ZPropertySheet'>
 		<tr>
 		<td class='ZOptionsLabel'>${label}</td>
 			<td class='ZOptionsInfo'>
@@ -2034,7 +2034,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
 <!-- NOTE: This is just for backwards compatibility. -->
 <template id='prefs.Pages#Export'>
-	<table border=0 cellpadding=3 cellspacing=3>
+	<table class='ZPropertySheet'>
 		<tr>
 			<td class='ZOptionsLabel'>&nbsp;</td>
 			<td class='ZOptionsInfo'><div id='${id}_options' tabindex="10"></div></td>
@@ -2048,14 +2048,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
 	</div>
 
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table   width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.zimlets$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-    <table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+    <table class='ZOptionsSectionTable'   width=100%>
         <tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
@@ -2073,14 +2073,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	</table>
 
 	<$ if (appCtxt.isOffline) { $>
-		<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table   width=100%>
 			<tr class='ZOptionsHeaderRow'>
 				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.zimletInstall$></td>
 				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 			</tr>
 		</table>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table class='ZOptionsSectionTable'   width=100%>
 			<tr>
 				<td class='ZOptionsSectionMain'>
 					<table width=100%>
@@ -2091,7 +2091,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 						</tr>
 						<tr>
 							<td>
-								<table border=0>
+								<table>
 									<tr>
 										<td class='ZOptionsLabel'><$=ZmMsg.fileLabel$></td>
 										<td>
@@ -2111,14 +2111,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 				</td>
 			</tr>
 		</table>
-        <table border=0 cellspacing=0 cellpadding=0 width=100%>
+        <table   width=100%>
             <tr class='ZOptionsHeaderRow'>
                 <td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
                 <td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.zimletSyncData$></td>
                 <td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
             </tr>
         </table>
-        <table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+        <table class='ZOptionsSectionTable'   width=100%>
             <tr>
                 <td class='ZOptionsSectionMain'>
                     <table width=100%>
@@ -2134,17 +2134,17 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#BackUp'>
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table   width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.offlineBackupHeader$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-    <table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+    <table class='ZOptionsSectionTable'   width=100%>
 		<tr>
 		    <td class='ZOptionsSectionMain'>
-				<table width=100% cellpadding=5>
+				<table width=100% class='ZPropertySheet'>
                     <tr>
                         <td class='ZOptionsLabel'></td>
                     	<td class='ZOptionsField' colspan=2><div id='${id}_button' tabindex='200'></div></td>
@@ -2176,17 +2176,17 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			</td>
 		</tr>
 	</table>
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table   width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.offlineBackUpRestore$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-    <table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+    <table class='ZOptionsSectionTable'   width=100%>
     		<tr>
     		    <td class='ZOptionsSectionMain'>
-    				<table width=100% cellpadding=5>
+    				<table width=100% class='ZPropertySheet'>
     				    <tr>
     				    	<td class='ZOptionsField' colspan=2><div id='${id}_OFFLINE_BACKUP_RESTORE' tabindex='300'></div></td>
     					</tr>
@@ -2203,14 +2203,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
 <template id='prefs.Pages#SharingPrefPage'>
 
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table   width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.pendingSharesTitle$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable'   width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
@@ -2227,7 +2227,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</tr>
 	</table>
 
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table   width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.mountedSharesTitle$></td>
@@ -2235,7 +2235,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</tr>
 	</table>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable'   width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<div>
@@ -2245,14 +2245,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</tr>
 	</table>
 
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table   width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.sharingByMe$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable'   width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<div id='${id}_sharesBy'></div>
@@ -2283,7 +2283,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 <template id='prefs.Pages#GrantForm'>
 	<div><$=ZmMsg.grantFormText$></div>
 	<br/>
-	<table cellspacing=5>
+	<table class='ZPropertySheet'>
 		<tr><td><$=ZmMsg.folderType$></td>
 			<td><div id='${id}_folderType' tabindex='40'></div></td>
 			<td><div id='${id}_shareButton' tabindex='50'></div></td></tr>
@@ -2292,14 +2292,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#MobileDevices'>
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table   width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.mobileDevices$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable'   width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
 				<table width=100%>
@@ -2318,7 +2318,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#MobileDeviceInfo'>
-	<table border=0>
+	<table>
 		<tr>
 			<td><$=ZmMsg.mobileDevice$>:</td>
 			<td><$=data.device.type$></td>
@@ -2377,14 +2377,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
 	</div>
 
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table   width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.notificationsEmail$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable'   width=100%>
 		<tr><td class='ZOptionsSectionMain'>
 				<table width=100%>
 					<!--<tr><td class='ZOptionsLabel'><$=ZmMsg.emailNotificationsLabel$></td>-->
@@ -2399,7 +2399,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	</table>
     
     <$ if (appCtxt.get(ZmSetting.CAL_DEVICE_EMAIL_REMINDERS_ENABLED)) { $>
-    <table border=0 cellspacing=0 cellpadding=0 width=100%>
+    <table   width=100%>
         <tr class='ZOptionsHeaderRow'>
             <td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
             <td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.notificationsDeviceEmail$></td>
@@ -2407,12 +2407,12 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
         </tr>
     </table>
     <div class='ZOptionsSectionMain' style="width:100%;padding:0px;">
-        <table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0>
+        <table class='ZOptionsSectionTable'  >
             <tr><td class='ZOptionsSectionMain'>
                 <table width=100%>
                     <tr><td class='ZOptionsLabel'><$=ZmMsg.deviceEmailNotificationsRegionLabel$></td>
                         <td class='ZOptionsField' colspan="4">
-                            <table border="0" cellpadding="0" cellspacing="0"><tr><td>
+                            <table><tr><td>
                             <div id='${id}_DEVICE_EMAIL_REGION' tabindex='400'></div>
                             </td></tr></table>
                         </td>
@@ -2461,17 +2461,17 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#QuickCommandList'>
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table   width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.quickCommands$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table class='ZOptionsSectionTable'   width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-				<table width=100% cellpadding=0>
+				<table width=100% >
 					<tr>
 						<td><div id='${id}_toolbar' tabindex='20'></div></td>
 					</tr>
@@ -2515,7 +2515,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
         
             <fieldset class='FilterRuleSection' style='width:417px; height:250px; clear:both'>
                 <div style='overflow-x:hidden; overflow-y:scroll; height:100%'>
-                    <table id='${id}_actions' width='100%' border=0 cellpadding=0 cellspacing=0 tabindex='50'>
+                    <table id='${id}_actions' width='100%' tabindex='50'>
                         <tbody id="${id}_actionsTbody"></tbody>
                     </table>
                 </div>
@@ -2586,7 +2586,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#MailFilterListView'>
- <table width='100%' cellspacing=0 cellpadding=0 border=0 align='center'>
+ <table width='100%'   align='center'>
   <tr>
    <td id='${targetDivId}'></td>
    <td valign='top' id='${buttonsDivId}'>
@@ -2604,17 +2604,17 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
     <div align=right style='margin-right: 20px; margin-bottom: 10px;'>
 		<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
 	</div>
-    <table border=0 cellspacing=0 cellpadding=0 width=100%>
+    <table   width=100%>
         <tr class='ZOptionsHeaderRow'>
             <td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
             <td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.outOfOffice$></td>
             <td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
         </tr>
     </table>
-    <table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+    <table class='ZOptionsSectionTable'   width=100%>
         <tr>
             <td class='ZOptionsSectionMain'>
-                <table width='100%' cellspacing=0 cellpadding=0 border=0 align='center'>
+                <table width='100%'   align='center'>
                     <tr>
                         <td width="150px" valign="top" align="right" style="padding-top:3px;"><b><$=ZmMsg.outOfOfficeLabel$></b></td>
                         <td class='ZOptionsField' valign="top">
@@ -2624,7 +2624,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                     <tr>
                         <td width="150px" valign="top" align="right"><b><$=ZmMsg.autoReplyLabel$></b></td>
                         <td class='ZOptionsField' style='padding-left:2em;' valign="top">
-                        <table border="0">
+                        <table>
                             <tr>
                                 <td>
                                     <textarea id='${id}_VACATION_MSG' tabindex='160' rows=3 cols=70></textarea>
@@ -2640,7 +2640,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                     <tr>
                         <td width="150px" valign="top" align="right" style="padding-top:6px;"><b><$=ZmMsg.timePeriodLabel$></b></td>
                         <td valign="top">
-                        <table border="0">
+                        <table>
                         <tr>
                            <td><input type="checkbox" id="${id}_VACATION_DURATION_ENABLED" tabindex='170'></td>
                         </tr>
@@ -2650,7 +2650,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                                           <tr>
                                               <td><$=ZmMsg.startLabel$></td>
                                               <td>
-                                              <table border="0">
+                                              <table>
                                               <tr>
                                                   <td><input style='height:22px;' type='text' autocomplete='off' size=14 maxlength=10 id='${id}_VACATION_FROM1'></td>
                                                   <td id='${id}_startMiniCal'></td>
@@ -2662,7 +2662,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                                               <tr>
                                                   <td><$=ZmMsg.endLabel$></td>
                                                   <td>
-                                                  <table border="0">
+                                                  <table>
                                                   <tr>
                                                   <td><input style='height:22px;' type='text' autocomplete='off' size=14 maxlength=10 id='${id}_VACATION_UNTIL1'></td>
                                                   <td id='${id}_endMiniCal'></td>
@@ -2673,11 +2673,11 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                                               </tr>
                                               <tr>
                                                <td colspan="3">
-                                               <table border="0">
+                                               <table>
                                                 <tr>
                                                 <td align="right"><b><$=ZmMsg.calendarLabel$></b></td>
                                                 <td class='ZOptionsField' valign="top">
-                                                <table border="0">
+                                                <table>
                                                 <tr>
                                                 <td><div id='${id}_VACATION_CALENDAR_ENABLED' tabindex='180'></div></td>
                                                 <td><div id='${id}_VACATION_CALENDAR_TYPE' tabindex='190' size='3' /></td>
@@ -2697,14 +2697,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                     <tr>
                         <td width="150px" valign="top" align="right" style="padding-top:6px;"><b><$=ZmMsg.externalSendersLabel$></b></td>
                         <td class='ZOptionsField' valign="top">
-                        <table border="0">
+                        <table>
                           <tr>
                           <td><input id='${id}_VACATION_EXTERNAL_MSG_ENABLED' tabindex='200' type=checkbox></td>
                           <td><div id='${id}_VACATION_EXTERNAL_TYPE' tabindex='210' size='3' /></td>
                           </tr>
                           <tr>
                             <td class='ZOptionsField' style='padding-left:2em;' colspan="2">
-                            <table border="0">
+                            <table>
                             <tr>
                                 <td>
                                     <textarea id='${id}_VACATION_EXTERNAL_MSG' tabindex='220' rows=3 cols=70></textarea>

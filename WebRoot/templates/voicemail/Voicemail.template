@@ -1,8 +1,8 @@
 <template id="voicemail.Voicemail#VoicemailTooltip">
-<table border=0 cellpadding=0 cellspacing=0>
+<table>
 	<tr><td>
-		<div style='border-bottom:solid black 1px;margin-bottom:0.25em'>
-		<table width=100% border=0 cellpadding=0 cellspacing=0>
+		<div style='border-bottom:solid black 1px; margin-bottom:0.25em'>
+		<table width=100%>
 			<tr valign=top>
 				<td><b><$= ZmMsg.voiceMail $></b></td>
 				<td align=right style='padding-left:0.5em'><div class='ImgVoicemail'></div></td>
@@ -11,7 +11,7 @@
 		</div>
 	</td></tr>
 	<tr><td>
-	    <table border=0 cellpadding=0 cellspacing=0>
+	    <table>
 			<tr valign=top>
 				<td class='ZmTooltipLabel'><b><$= ZmMsg.fromLabel $></b></td>
 				<td>${caller}</td>
@@ -30,10 +30,10 @@
 </template>
 
 <template id="voicemail.Voicemail#CallTooltip">
-<table border=0 cellpadding=0 cellspacing=0>
+<table>
 	<tr><td>
-		<div style='border-bottom:solid black 1px;margin-bottom:0.25em'>
-		<table width=100% border=0 cellpadding=0 cellspacing=0>
+		<div style='border-bottom:solid black 1px; margin-bottom:0.25em'>
+		<table width=100%>
 			<tr valign=top>
 				<td><b><$= ZmMsg.call $></b></td>
 				<td align=right style='padding-left:0.5em'><div class='${image}'></div></td>
@@ -42,7 +42,7 @@
 		</div>
 	</td></tr>
 	<tr><td>
-	    <table border=0 cellpadding=0 cellspacing=0>
+	    <table>
 			<tr valign=top>
 				<td class='ZmTooltipLabel'><b>${callerLabel}</b></td>
 				<td>${caller}</td>
@@ -65,7 +65,7 @@
 </template>
 
 <template id='voicemail.Voicemail#ZmSoundPlayer' class='ZmSoundPlayer ZWidget'>
-    <table style='table-layout:auto;' cellspacing=0 cellpadding=0><tr>
+    <table style='table-layout:auto;'><tr>
     	<td><div id='${id}_play' class='ZmPlayButton'>Play</div></td>
     	<td><div id='${id}_pause' class='ZmPauseButton'>Pause</div></td>
     	<td><div id='${id}_status' class='ZmSoundStatus'>Time</div></td>
@@ -74,7 +74,7 @@
 </template>
 
 <template id='voicemail.Voicemail#ZmSoundPlayerNoScript' class='ZmSoundPlayer ZWidget'>
-    <table cellspacing=0 cellpadding=0><tr>
+    <table><tr>
     	<td><div id='${id}_play' class='ZmPlayButton'>Play</div></td>
     	<td><div id='${id}_status' class='ZmSoundStatus'>Time</div></td>
     	<td id='${id}_player' style='padding-left:6px'></td>

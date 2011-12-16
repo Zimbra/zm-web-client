@@ -133,7 +133,7 @@ BODY						{	margin:0px; 	}
 	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#19000000,endColorstr=#19000000); 
 #ENDIF
 }
-#skin_spacing_app_row TABLE				{	border-spacing:0; 	}
+#skin_spacing_app_row TABLE				{	border-collapse:separate; 	}
 #skin_spacing_app_row .ZToolbarButton	{	height:auto;		}
 /** App  **/
 #skin_spacing_app_main					{	height:100%;		}

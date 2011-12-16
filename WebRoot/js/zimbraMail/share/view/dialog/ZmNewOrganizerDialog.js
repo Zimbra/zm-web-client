@@ -184,7 +184,7 @@ ZmNewOrganizerDialog.prototype._contentHtml =
 function() {
 	var html = [];
 	var idx = 0;
-	html[idx++] = "<table cellpadding=0 cellspacing=5 border=0";
+	html[idx++] = "<table class='ZPropertySheet'";
 	html[idx++] = (AjxEnv.isSafari) ? " width='300'>" : ">";
 	idx = this._createStandardContentHtml(html, idx);
 	idx = this._createExtraContentHtml(html, idx);

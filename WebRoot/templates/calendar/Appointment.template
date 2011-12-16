@@ -15,12 +15,10 @@
     <$ var labelStyle = "width:"+(AjxEnv.isIE ? 30 : 32)+"px; overflow:visible; white-space:nowrap"; $>
     <$ var inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
 	<div id='${id}_top'>
-        <table border=0 width=100% cellpadding=0 cellspacing=0 style='table-layout:fixed;margin-top: 5px;' class='calendar_edit_view_separator'>
-
+        <table width=100% style='table-layout:fixed;margin-top: 5px;' class='calendar_edit_view_separator'>
             <tr>
             <td valign='top'>
-
-                <table border=0 width=100% style='table-layout:fixed;' id='${id}_table'>
+                <table width=100% style='table-layout:fixed;' id='${id}_table' class='ZPropertySheet'>
 
                 <$= AjxTemplate.expand("#ComposeViewColumns") $>
                 <tr id='${id}_invitemsg_container' style='display:none;'>
@@ -114,7 +112,7 @@
                         <tr>
                             <td id='${id}_reminder_options' class='ZmFieldLabelRight'></nobr><$= ZmMsg.reminderLabel $></td>
                             <td id='${id}_reminderSelectContainer' style="padding-top:5px;">
-                                <table border=0 cellpadding=0 cellspacing=0>
+                                <table>
                                     <tr><td id='${id}_reminderSelectInput'></td>
                                         <td id='${id}_reminderSelect'> </td>
                                     </tr>
@@ -264,7 +262,7 @@
 								<$ if (data.isAppt) { $>
 									<tr>
 										<td width="100%" colspan=3>
-											<table border=0 cellpadding=0 cellspacing=2>
+											<table>
 												<tr>
 													<td class='ZmFieldLabelRight'><nobr><$= ZmMsg.showAs $>&nbsp;</nobr></td>
 													<td id='${id}_showAsSelect'></td>
@@ -302,7 +300,7 @@
 					<fieldset>
 						<legend id="${id}_timeLegend"><$= (data.isAppt ? ZmMsg.time : ZmMsg.progress) $></legend>
 						<div style='overflow:hidden; <$= AjxEnv.isIE ? " width:99%" : "" $>'>
-							<table border=0 width=100%>
+							<table width=100% class="ZPropertySheet">
 								<colgroup>
 									<col width='1%' />
 									<col />
@@ -314,7 +312,7 @@
 								    <tr>
 										<td class='ZmFieldLabelRight' id='${id}_reminderLabel'></nobr><$= ZmMsg.reminderLabel $></td>
 										<td id='${id}_reminderSelectContainer' width="50px">
-                                            <table border=0 cellpadding=0 cellspacing=0><tr>
+                                            <table><tr>
                                                 <td class='ZmFieldLabelCenter'><div id='${id}_reminderCheckbox'></div></td>
                                                 <td class="quickAddDateFld"><$=AjxTemplate.expand("#DateField",{id:data.id+"_remindDateField",value:data.currDate})$></td>
                                                 <td id='${id}_remindMiniCalBtn'> </td>
@@ -325,7 +323,7 @@
 									<tr>
 										<td>&nbsp;</td>
                                         <td colspan="3">
-                                            <table border="0" cellpadding="0" cellspacing="0"><tr>
+                                            <table><tr>
                                                 <td style="padding:0 0 0 8;"><div id='${id}_reminderConfigure'></div></td>
                                             </tr></table>
                                         </td>
@@ -339,7 +337,7 @@
 								<tr id='${id}_repeat_options'>
 									<td valign=top class='ZmFieldLabelRight' style='line-height:22px' id='${id}_repeatLabel'><nobr><$= ZmMsg.repeatLabel $></nobr></td>
 									<td valign=top colspan=10>
-										<table border=0 cellpadding=0 cellspacing=0 width=100%>
+										<table width=100%>
 											<tr>
 												<td width=100 id='${id}_repeatSelect' style='padding-right: 5px;'></td>
 												<td id='${id}_repeatDesc' style='text-decoration:underline'></td>
@@ -351,7 +349,7 @@
 									<tr id='${id}_reminder_options'>
 										<td valign=top class='ZmFieldLabelRight' style='line-height:22px' id='${id}_repeatLabel'></nobr><$= ZmMsg.reminderLabel $></td>
 										<td valign=top colspan=9 align='left' id='${id}_reminderSelectContainer'>
-                                            <table border=0 cellpadding=0 cellspacing=0><tr>
+                                            <table><tr>
                                                 <td id='${id}_reminderSelectInput'></td>
                                                 <td id='${id}_reminderSelect'> </td>
                                             </tr></table>
@@ -383,7 +381,7 @@
 							</tr>
 							<tr id='${id}_notification_options'>
 								<td>
-									<table border=0 cellpadding=0 cellspacing=0><tr>
+									<table><tr>
 										<td><input type='checkbox' id='${id}_requestResponses'></td>
 										<td class='ZmFieldLabelLeft'><nobr>&nbsp;<label for='${id}_requestResponses'><$= ZmMsg.requestResponses $></label></nobr></td>
 										<td><input type='checkbox' id='${id}_sendNotificationMail'></td>
@@ -396,7 +394,7 @@
 							<tr>
 								<td colspan=2>
 									<div id='${id}_resourcesContainer' style='display:none'>
-										<table border=0 cellpadding=0 cellspacing=0 width=100%>
+										<table width=100%>
 											<tr>
 												<td valign=top width=1% align=right class='ZmApptTabViewPageField'><$= ZmMsg.resourcesLabel $></td>
 												<td id='${id}_resourcesData'></td>
@@ -435,10 +433,10 @@
 </template>
 
 <template id='calendar.Appointment#ZmApptQuickAddDialog'>
-    <table cellpadding=0 cellspacing=0 border=0>
+    <table class="ZPropertySheet">
     <tr>
         <td valign=top>
-            <table style="border:0px; margin-left:25px; width:330px;">
+            <table style="margin-left:25px; width:330px;" class="ZPropertySheet">
                 <tr>
                     <td class='ZmApptTabViewPageField'><sup>*</sup><$= ZmMsg.subjectLabel $></td>
                     <td colspan=2 id='${id}_subject'></td>
@@ -454,7 +452,7 @@
                 <tr>
                     <td class='ZmApptTabViewPageField'><$= ZmMsg.displayLabel $></td>
                     <td colspan=10>
-                        <table border=0 cellpadding=0 cellspacing=2>
+                        <table>
                             <tr>
                                 <td id='${id}_showAs'></td>
                                 <td>&nbsp;&nbsp;&nbsp;</td>
@@ -472,7 +470,7 @@
                 <tr>
                     <td class='ZmApptTabViewPageField'><$= ZmMsg.startTimeLabel $></td>
                     <td colspan=2>
-                        <table border=0 cellpadding=0 cellspacing=0>
+                        <table>
                             <tr>
                                 <td class="quickAddDateFld"><$=AjxTemplate.expand("#DateField",{id:data.id+"_startDate"})$></td>
                                 <td id='${id}_startMiniCal'></td>
@@ -487,7 +485,7 @@
                 <tr>
                     <td class='ZmApptTabViewPageField'><$= ZmMsg.endTimeLabel $></td>
                     <td colspan=2>
-                        <table border=0 cellpadding=0 cellspacing=0>
+                        <table>
                             <tr>
                                 <td class="quickAddDateFld"><$=AjxTemplate.expand("#DateField",{id:data.id+"_endDate"})$></td>
                                 <td id='${id}_endMiniCal'></td>
@@ -508,7 +506,7 @@
                 <tr>
                     <td class='ZmApptTabViewPageField'><$= ZmMsg.reminderLabel $></td>
                     <td colspan='2'>
-                        <table border=0 cellpadding=0 cellspacing=0><tr>
+                        <table><tr>
                             <td colspan='2' id='${id}_reminderSelect'></td>
                             <td style="padding:0 0 0 8;"><div id='${id}_reminderConfigure'></div></td>
                             <td><div id='${id}_reminderEmailCheckbox'></div></td>
@@ -546,7 +544,7 @@
 		<tr>
 			<td></td>
 			<td width=1%>
-				<table border=0 cellpadding=0 cellspacing=0><tr>
+				<table><tr>
 					<td><input type='checkbox' id='${id}_allDayCheckbox'></td>
 					<td class='ZmFieldLabelLeft'><nobr>&nbsp;<label for='${id}_allDayCheckbox'><$= ZmMsg.allDayEvent $></label></nobr></td>
 				</tr></table>
@@ -558,7 +556,7 @@
 		<tr>
 			<td class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.startLabel : (ZmMsg.startDate+":")) $></nobr></td>
 			<td <$ if (!data.isAppt) { $> colspan=3 <$ } $> >
-				<table border=0 cellpadding=0 cellspacing=0><tr>
+				<table><tr>
 					<td class="quickAddDateFld"><$=AjxTemplate.expand("#DateField",{id:data.id+"_startDateField",value:data.currDate})$></td>
 					<td id='${id}_startMiniCalBtn'></td>
 				</tr></table>
@@ -571,7 +569,7 @@
 		<tr>
 			<td class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.endLabel : ZmMsg.dateDueLabel ) $></nobr></td>
 			<td <$ if (!data.isAppt) { $> colspan=3 <$ } $>>
-				<table border=0 cellpadding=0 cellspacing=0><tr>
+				<table><tr>
 					<td class="quickAddDateFld"><$=AjxTemplate.expand("#DateField",{id:data.id+"_endDateField",value:data.currDate})$></td>
 					<td id='${id}_endMiniCalBtn'></td>
 				</tr></table>
@@ -587,7 +585,7 @@
 		<tr>
 			<td width="60" class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.startLabel : (ZmMsg.startDate+":")) $></nobr></td>
 			<td>
-				<table border=0 cellpadding=0 cellspacing=0><tr>
+				<table><tr>
 					<td class="quickAddDateFld"><$=AjxTemplate.expand("#DateField",{id:data.id+"_startDateField",value:data.currDate})$></td>
 					<td id='${id}_startMiniCalBtn'></td>
 				</tr></table>
@@ -601,7 +599,7 @@
 		<tr>
 			<td width="60" class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.endLabel : ZmMsg.dateDueLabel ) $></nobr></td>
 			<td>
-				<table border=0 cellpadding=0 cellspacing=0><tr>
+				<table><tr>
 					<td class="quickAddDateFld"><$=AjxTemplate.expand("#DateField",{id:data.id+"_endDateField",value:data.currDate})$></td>
 					<td id='${id}_endMiniCalBtn'></td>
 				</tr></table>
@@ -610,7 +608,7 @@
 				<td id='${id}_endTimeAtLbl' class='ZmFieldLabelCenter'><$= ZmMsg.at $></td>
 				<td id='${id}_endTimeSelect'></td>
                 <td>
-                    <table border=0 cellpadding=0 cellspacing=0><tr>
+                    <table><tr>
                         <td><input type='checkbox' id='${id}_allDayCheckbox'></td>
                         <td class='ZmFieldLabelLeft'><nobr>&nbsp;<label for='${id}_allDayCheckbox'> <$= ZmMsg.allDayEvent $></label></nobr></td>
                     </tr></table>
@@ -622,7 +620,7 @@
 
 <template id='calendar.Appointment#ApptTimeSection_EndDate'>
         <td>
-            <table border=0 cellpadding=0 cellspacing=0><tr>
+            <table><tr>
                 <td class="quickAddDateFld"><$=AjxTemplate.expand("#DateField",{id:data.id+"_endDateField",value:data.currDate})$></td>
                 <td id='${id}_endMiniCalBtn'></td>
             </tr></table>
@@ -634,7 +632,7 @@
 
 <template id='calendar.Appointment#ApptTimeSection_StartDate'>
 			<td>
-				<table border=0 cellpadding=0 cellspacing=0><tr>
+				<table><tr>
 					<td class="quickAddDateFld"><$=AjxTemplate.expand("#DateField",{id:data.id+"_startDateField",value:data.currDate})$></td>
 					<td id='${id}_startMiniCalBtn'></td>
 				</tr></table>
@@ -658,13 +656,13 @@
 		</td>
 		<td style='text-align:right'>
 			<!-- key/legend section -->
-			<table border=0 cellpadding=0 cellspacing=0 class='ZmGraphKey'>
+			<table class='ZmGraphKey'>
 				<tr>
 					<td class='ZmGraphKeyHeader'><$= ZmMsg.key $></td>
 				</tr>
 				<tr>
 					<td class='ZmGraphKeyBody'>
-						<table border=0 cellspacing=2>
+						<table>
 							<tr>
 								<td><div class='ZmGraphKeyColorBox ZmScheduler-free'></div></td>
 								<td class='ZmGraphKeyColorText'><$= ZmMsg.free $></td>
@@ -692,7 +690,7 @@
 	</tr></table>
 	<div style='margin-top:10'>
 		<!-- free/busy section -->
-		<table style='padding-left:3px;' border=0 cellpadding=0 cellspacing=0 width=100% id='${id}_attendeesTable'>
+		<table style='padding-left:3px;' width=100% id='${id}_attendeesTable'>
 			<colgroup>
 				<col style='width:165px' />
 				<col style='width:626px' />
@@ -700,7 +698,7 @@
 			<tr>
 				<td align='center' id='${id}_navToolbar' <$= AjxEnv.isIE ? " width=100%" : "" $>></td>
 				<td>
-					<table border=0 cellpadding=0 cellspacing=0 class='ZmSchedulerGridHeaderTable'>
+					<table class='ZmSchedulerGridHeaderTable'>
 						<tr>
 						<$
 							for (var j = 0; j <= 24; j++) {
@@ -719,7 +717,7 @@
 <template id='calendar.Appointment#InlineScheduleView'>
 	<div style='clear:both; margin-right:7px;'>
 		<!-- free/busy section -->
-		<table style='padding-left:3px;' border=0 cellpadding=0 cellspacing=0 width=100% id='${id}_attendeesTable'>
+		<table style='padding-left:3px;' width=100% id='${id}_attendeesTable'>
 			<colgroup>
 				<col style='width:250px' />
 				<col style='width:710px' />
@@ -727,7 +725,7 @@
 			<tr>
 				<td align='center' id='${id}_navToolbar'>&nbsp;</td>
 				<td valign=bottom>
-					<table width=100% border=0 cellpadding=0 cellspacing=0 class='ZmSchedulerGridHeaderTable' style='<$= AjxEnv.isIE ? "width:101%" : "" $>'>
+					<table width=100% class='ZmSchedulerGridHeaderTable' style='<$= AjxEnv.isIE ? "width:101%" : "" $>'>
 						<tr>
 						<$
 							for (var j = 0; j <= 24; j++) {
@@ -741,7 +739,7 @@
 			</tr>
             </table>
 
-            <table style='padding-left:3px; padding-top: 5px;' border=0 cellpadding=3 cellspacing=0>
+            <table style='padding-left:3px; padding-top: 5px;' class='ZPropertySheet'>
                 <tr>
                     <td id='${id}_graphKeySpacer'><span id='${id}_showMoreLink' class="removeLink" style='display: none;'><$= ZmMsg.showMore $></span></td>
                     <td><div class='ZmGraphKeyColorBox ZmScheduler-working'></div></td>
@@ -768,7 +766,7 @@
 </template>
 
 <template id='calendar.Appointment#AttendeeName'>
-	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<table width=100%>
 		<tr>
 			<$ if (data.isAllAttendees) { $>
 				<td class='ZmSchedulerAllLabel'><$=ZmMsg.allAttendees$></td>
@@ -791,7 +789,7 @@
 </template>
 
 <template id='calendar.Appointment#AttendeeFreeBusy'>
-	<table id='${sched.dwtTableId}' class='ZmSchedulerGridTable<$= data.isAllAttendees ? "-allAttendees" : "" $>' border=0 cellpadding=0 cellspacing=0 <$= AjxEnv.isIE ? "width=99%" : "width=100%" $>>
+	<table id='${sched.dwtTableId}' class='ZmSchedulerGridTable<$= data.isAllAttendees ? "-allAttendees" : "" $>' <$= AjxEnv.isIE ? "width=99%" : "width=100%" $>>
 		<tr>
 			<$
             var normalClassName = "ZmSchedulerGridDiv", newClass;
@@ -983,10 +981,10 @@
 
 <template id='calendar.Appointment#ReadOnlyView'>
     <div class='ApptHeaderDiv'>
-	<table border=0 class='MsgHeaderTable' id='${id}_hdrTable' cellspacing=0 cellpadding=0 width=100%>
+	<table class='MsgHeaderTable' id='${id}_hdrTable' width=100%>
         <tr>
             <td class='LabelColName' colspan='101' width=100%>
-                <table cellspacing=0 cellpadding=0 width=100% style="border-bottom: 1px solid #909090;">
+                <table width=100% style="border-bottom:1px solid #909090;">
                     <tr>
 		                <td style="width: 70px;" class='LabelColName' id='${id}_responseActionSelectCell'></td>
 		                <td class='LabelColValue' id='${id}_responseActionMsgCell' colspan=100></td>
@@ -1042,7 +1040,7 @@
 </template>
 
 <template id="calendar.Appointment#ApptDetailsDialog">
-	<table cellpadding=0 cellspacing=5 border=0>
+	<table class='ZPropertySheet'>
 		<tr valign='center'>
 			<td class='LabelColName'><$= ZmMsg.icsLabel $></td>
 			<td class='LabelColValue'><a href="<$= data.icsUrl $>" target="_blank"><$= data.icsUrl $></a></td>
@@ -1051,7 +1049,7 @@
 </template>
 
 <template id='calendar.Appointment#ApptTimeInput'>
-    <table border=0 cellpadding=0 cellspacing=0>
+    <table>
         <tr>
             <td id='${id}_timeSelectInput'></td>
             <td id='${id}_timeSelectBtn'> </td>            
@@ -1061,7 +1059,7 @@
 
 
 <template id='calendar.Appointment#TimeSuggestion'>
-    <table id='${id}' border=0 cellpadding=4 cellspacing=0 width="100%" style="border-bottom:1px solid black;" class="Row">
+    <table id='${id}' width="100%" style="border-bottom:1px solid black;" class="Row ZPropertySheet">
         <tr>
             <td width="16" ><$= AjxImg.getImageHtml(data.attendeeImage) $></td>
             <td><$= data.timeLabel $></td>
@@ -1118,7 +1116,7 @@
 </template>
 
 <template id='calendar.Appointment#TimeLocationPreference'>
-    <table cellspacing="5" width="100%" cellpadding="0" border="0" id="${id}_timepref">
+    <table width="100%" id="${id}_timepref" class="ZPropertySheet">
         <tbody>
         <tr>
             <td class="SuggestionPrefTitle" colspan="3"><$= ZmMsg.timePreferences $><hr></td>
@@ -1145,7 +1143,7 @@
         </tbody>
     </table>
 
-    <table cellspacing="5" cellpadding="0" border="0" id="${id}_locationpref">
+    <table id="${id}_locationpref" class="ZPropertySheet">
         <tbody>
         <tr>
             <td class="SuggestionPrefTitle" colspan="5"><$= ZmMsg.locationPreferences $><hr></td>
@@ -1189,7 +1187,7 @@
 
 
 <template id="calendar.Appointment#ChangesDialogOrganizer">
-	<table cellpadding='0' cellspacing='0' border='0' width='300'>
+	<table width='300'>
 		<tr>
 			<td><$=ZmMsg.apptSignificantChanges $></td>
 		</tr>
@@ -1206,7 +1204,7 @@
 </template>
 
 <template id="calendar.Appointment#ChangesDialogAttendee">
-	<table cellpadding='0' cellspacing='0' border='0' width='300'>
+	<table width='300'>
 		<tr>
 			<td><$=ZmMsg.apptSignificantChangesAttendee $></td>
 		</tr>

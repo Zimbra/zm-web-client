@@ -1,5 +1,5 @@
 <template id='admin.Widgets#ZaAppTab' class='ZAppTab'>
-  <table class='ZWidgetTable ZAppTabTable ZAppTabBorder' cellspacing=0 cellpadding=0 style='table-layout:auto;'>
+  <table class='ZWidgetTable ZAppTabTable ZAppTabBorder' style='table-layout:auto;'>
   <tr id='${id}_row'>
 		<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
 		<td id='${id}_title'		class='ZWidgetTitle'></td>
@@ -7,10 +7,10 @@
 	</tr></table>
 </template>
 <template id='admin.Widgets#ZaToolBarLabel' class='ZaToolBarLabel ZWidget'>
-  <table id='${id}_label' class='ZWidgetTable ZLabelBorder' cellspacing=0 cellpadding=0><tr>
-    <td id='${id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
-    <td id='${id}_title'		 class='ZWidgetTitle ZaNowrapTitle'></td>
-    <td id='${id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+  <table id='${id}_label'		class='ZWidgetTable ZLabelBorder'><tr>
+    <td id='${id}_left_icon'	class='ZLeftIcon ZWidgetIcon'></td>
+    <td id='${id}_title'		class='ZWidgetTitle ZaNowrapTitle'></td>
+    <td id='${id}_right_icon'	class='ZRightIcon ZWidgetIcon'></td>
   </tr></table>
 </template>
 <template id='admin.Widgets#ZaToast' class='ZaToastInfo'>
@@ -22,42 +22,42 @@
 	</div>
 </template>
 <template id='admin.Widgets#ZaCurrentAppBar' class='ZaCurrentAppBar'>
-	<table cellspacing=0 cellpadding=0 style='table-layout:fixed;width:100%; height:100%'>
+	<table style='table-layout:fixed;width:100%; height:100%'>
 		<tr>
-			<td id='${id}_typeimg' style='width:20px'></td>
-			<td id='${id}_title'		class='ZWidgetTitle' style='width: 100%'></td>
-			<td id='${id}_action' style='width:0px'>
+			<td id='${id}_typeimg'							style='width:20px'></td>
+			<td id='${id}_title'	class='ZWidgetTitle'	style='width:100%'></td>
+			<td id='${id}_action'							style='width:0px'>
 			    <div>
-                    <table class='ZToolbarTable' border=0 cellpadding=0 cellspacing=0>
+                    <table class='ZToolbarTable'>
                         <tr id='${id}_actionitems'>
                         </tr>
                     </table>
 	            </div>
 			</td>
-			<td id='${id}_settingimg' style='width:20px'></td>
-			<td id='${id}_dropdown' 	class='ZDropDown' style='width:20px'></td>
+			<td id='${id}_settingimg'						style='width:20px'></td>
+			<td id='${id}_dropdown'	class='ZDropDown'		style='width:20px'></td>
 		</tr>
 	</table>
 </template>
 <template id='admin.Widgets#ZaTreeHeaderButton' class='ZWidget'>
-	<table class='DwtLinkButtonTable ImgArrowShapeDisable' cellspacing=0 cellpadding=0 style='table-layout:fixed;width:100%'>
+	<table class='DwtLinkButtonTable ImgArrowShapeDisable' style='table-layout:fixed;width:100%'>
 		<tr>
 			<td id='${id}_doubleArrow' style='width:20px'>
 				<div>
 				</div>
 			</td>
-			<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon' style='width:0px'></td>
-			<td id='${id}_title'		class='ZWidgetTitle' style='width: 120px'></td>
-			<td id='${id}_right_icon' 	class='ZRightIcon ZWidgetIcon' style='width:0px'></td>
-			<td id='${id}_dropdown' 	class='ZDropDown' style='width:20px'></td>
-			<td id='${id}_fill' style='width:100%;'></td>
-			<td id='${id}_img' style='width:20px'></td>
+			<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'	style='width:0px'></td>
+			<td id='${id}_title'		class='ZWidgetTitle'			style='width:120px'></td>
+			<td id='${id}_right_icon' 	class='ZRightIcon ZWidgetIcon'	style='width:0px'></td>
+			<td id='${id}_dropdown' 	class='ZDropDown'				style='width:20px'></td>
+			<td id='${id}_fill'											style='width:100%;'></td>
+			<td id='${id}_img'											style='width:20px'></td>
 		</tr>
 	</table>
 </template>
 <template id='admin.Widgets#ZaTreeItem'>
 	<div class='${divClassName}' id='${id}_div'>
-		<table id='${id}_table' border=0 cellpadding=0 cellspacing=0 width=100%>
+		<table id='${id}_table' width=100%>
 			<tr>
 				<$ if (data.isCheckedStyle) { $>
 					<td nowrap id='${id}_checkboxCell' class="ZTreeItemCheckboxCell">
@@ -80,7 +80,7 @@
 
 <template id='admin.Widgets#ZaBaseDialog' width='20' height='32'>
 	<div class='DwtDialog WindowOuterContainer'>
-		<table cellspacing=0 cellpadding=0>
+		<table>
 			<tr class='DwtDialogHeader' id='${dragId}'>
 				<td class='minWidth'>${icon}</td>
 				<td id='${id}_title' class='DwtDialogTitle'>${title}</td>
@@ -95,7 +95,7 @@
             </tr>
 			<tr>
 				<td class='WindowInnerContainer' colspan='5'>
-				    <table cellspacing=0 cellpadding=0>
+				    <table>
 				        <tr>
 				            <td>
                                 <div id='${id}_content' class='DwtDialogBody'></div>
@@ -117,10 +117,10 @@
 
 <template id='admin.Widgets#ZaSeachOptionDialog' width='20' height='32'>
 	<div class='DwtDialog'>
-		<table cellspacing=0 cellpadding=0>
+		<table>
 			<tr>
 				<td class='WindowInnerContainer' colspan='4'>
-				    <table cellspacing=0 cellpadding=0>
+				    <table>
 				        <tr>
 				            <td>
                                 <div id='${id}_content' class='DwtDialogBody'></div>

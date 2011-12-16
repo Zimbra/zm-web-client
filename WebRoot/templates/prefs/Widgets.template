@@ -1,6 +1,6 @@
 <template id="prefs.Widgets#infoBox" xml:space="strip">
 <div id="${id}_infoBox" class='ZInfoBox'>
-	<table id='${id}_infoBox_outer' width='100%' cellspacing=0 cellpadding=0>
+	<table id='${id}_infoBox_outer' width='100%'>
 	<tr>
 		<td rowspan=2 style='vertical-align:top'><div class='ImgInformation_32'></div></td>
 		<td><div id="${id}_infoBox_close" class="ZInfoTitleClose" onclick='Dwt.toggle("${id}_infoBox_container")'><$= ZmMsg.close $></div><div id="${id}_title" class='ZInfoTitle'>${_labels.infoTitle}</div></td>
