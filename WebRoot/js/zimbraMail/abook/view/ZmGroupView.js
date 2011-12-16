@@ -329,7 +329,7 @@ function() {
 
     if (this._contactSource == ZmItem.CONTACT) {
         query = query.replace(/\"/g, '\\"');
-        query = "\"" + query + "\"";
+        query = query ? "\"" + query + "\"":"";
     }
 
 	var params = {
