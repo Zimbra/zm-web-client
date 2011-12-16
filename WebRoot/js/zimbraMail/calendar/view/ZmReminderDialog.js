@@ -684,3 +684,36 @@ function(deltaMSec) {
 	var args = [deltaMSec, years, months, days, hours, mins, secs];
 	return AjxMessageFormat.format(ZmMsg[key], args);
 };
+
+
+//Bug 65466: Method overridden to remove the ESC button behavior
+
+ZmReminderDialog.prototype.handleKeyAction =
+function(actionCode, ev) {
+	switch (actionCode) {
+
+		case DwtKeyMap.ENTER:
+			this.notifyListeners(DwtEvent.ENTER, ev);
+			break;
+
+		case DwtKeyMap.CANCEL:
+			// Dont do anything
+			break;
+
+		case DwtKeyMap.YES:
+			if (this._buttonDesc[DwtDialog.YES_BUTTON]) {
+				this._runCallbackForButtonId(DwtDialog.YES_BUTTON);
+			}
+			break;
+
+		case DwtKeyMap.NO:
+			if (this._buttonDesc[DwtDialog.NO_BUTTON]) {
+				this._runCallbackForButtonId(DwtDialog.NO_BUTTON);
+			}
+			break;
+
+		default:
+			return false;
+	}
+	return true;
+};
