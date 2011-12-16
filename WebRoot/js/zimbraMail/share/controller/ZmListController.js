@@ -1224,7 +1224,11 @@ function() {
 	if (total && (size != total)) {
 		return AjxMessageFormat.format(ZmMsg.itemCount1, [size, total, typeText]);
 	} else {
-		var sizeText = size + (this._list.hasMore() ? "+" : "");
+		var sizeText = size;
+		if (this._list.hasMore()) {
+			var pageSize = lv.getLimit();
+			sizeText = (Math.floor(size / pageSize) * pageSize) + "+";
+		}
 		return AjxMessageFormat.format(ZmMsg.itemCount, [sizeText, typeText]);
 	}
 };
