@@ -2805,13 +2805,12 @@ function(ev) {
 				appCtxt.getZimletMgr().notifyZimlets("onSelectApp", id);
 			}
 		} else {
-			if (id != this._activeTabId) {
-				this._appViewMgr.pushView(id);
+			var isCloseButton = (DwtUiEvent.getTargetWithProp(ev, "id") == ev.item._getIconEl());
+			if (isCloseButton) {
+				this._appViewMgr.popView(false, id);
 			}
-			if (ev.target && (ev.target.className == "ImgClose")) {
-				// tab may have just been pushed above (if it wasn't the active one)
-				// a bit inefficient, but the app view mgr won't pop non-current view
-				this._appViewMgr.popView();
+			else if (id != this._activeTabId) {
+				this._appViewMgr.pushView(id);
 			}
 		}
 	} catch (ex) {

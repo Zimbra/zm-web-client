@@ -220,7 +220,7 @@ function(ev) {
 
 ZmSearchResultsController.prototype._closeListener =
 function(ev) {
-	appCtxt.getAppViewMgr().popView();
+	appCtxt.getAppViewMgr().popView(false, this.getCurrentViewId());
 };
 
 // adds the given term to the search as a bubble

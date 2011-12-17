@@ -752,8 +752,16 @@ function(force, viewId, skipHistory) {
 		force = true;
 	}
 
-	// check if trying to pop non-current view
-	if (viewId && !isPendingView && (this._currentViewId != viewId)) { return false; }
+	// a tab view is the only type of non-current view we can pop; if it is not the
+	// current view, push it first so that callbacks etc work as expected
+	if (viewId && !isPendingView && (this._currentViewId != viewId)) {
+		if (view.isTabView && (this._currentViewId != viewId)) {
+			this.pushView(viewId);
+		}
+		else {
+			return false;
+		}
+	}
 
 	// handle cases where there are no views in the hidden stack (entry via deep link)
 	var noHide = false, noShow = false;
