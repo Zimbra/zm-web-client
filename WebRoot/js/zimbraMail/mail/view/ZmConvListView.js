@@ -973,7 +973,9 @@ function(ev) {
 
 	// msg count in a conv changed - see if we need to add or remove an expand icon
 	if (isConv && (ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_SIZE])) {
-		this._updateField(item, ZmItem.F_EXPAND);
+		if (item.numMsgs == 1 || item.numMsgs == 2) {
+			this.redrawItem(item);
+		}
 		if (this.isMultiColumn()) {
 			this._updateField(item, ZmItem.F_SIZE);
 		}
@@ -1076,10 +1078,12 @@ function() {
 	var offsets = {};
 	for (var cid in this._expandedItems) {
 		var items = this._expandedItems[cid];
-		for (var i = 0; i < items.length; i++) {
-			var id = items[i];
-			list.push(id);
-			offsets[id] = this._msgOffset[id];
+		if (items && items.length) {
+			for (var i = 0; i < items.length; i++) {
+				var id = items[i];
+				list.push(id);
+				offsets[id] = this._msgOffset[id];
+			}
 		}
 	}
 	this._expandAll(false);

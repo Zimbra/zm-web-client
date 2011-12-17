@@ -199,13 +199,20 @@ function(conv, container) {
 		actionsMenu:	this._actionsMenu
 	}
 	
-	var pref = appCtxt.get(ZmSetting.CONVERSATION_ORDER);
-	if (pref == ZmSearch.DATE_ASC) {
+	var oldToNew = (appCtxt.get(ZmSetting.CONVERSATION_ORDER) == ZmSearch.DATE_ASC);
+	if (oldToNew) {
 		msgs = msgs.reverse();
 	}
+	var firstExpanded;
 	for (var i = 0, len = msgs.length; i < len; i++) {
-		params.forceExpand = (msgs.length == 1) || (!conv.isUnread && i == 0);
-		this._renderMessage(msgs[i], params);
+		var msg = msgs[i];
+		params.forceExpand = (msgs.length == 1) || (!conv.isUnread && i == (oldToNew ? msgs.length - 1 : 0));
+		this._renderMessage(msg, params);
+		var msgView = this._msgViews[msg.id];
+		firstExpanded = firstExpanded || (msgView._expanded ? msgView : null);
+	}
+	if (firstExpanded) {
+		Dwt.scrollIntoView(msgView.getHtmlElement(), this._messagesDiv);
 	}
 };
 
@@ -225,7 +232,7 @@ function() {
 	this._setConvSubject()
 	this._setConvInfo();
 
-	// Clean up minor issue where bottom edge of overflowed subject text is visible in info span
+	// Clean up minor WebKit-only issue where bottom edge of overflowed subject text is visible in info span
 	if (AjxEnv.isWebKitBased && !this._headerSet) {
 		Dwt.setSize(this._infoSpan, Dwt.DEFAULT, Dwt.getSize(this._subjectSpan).y);
 		this._headerSet = true;
@@ -727,6 +734,8 @@ function(ev) {
 			index:			ev.getDetail("sortIndex")
 		}
 		this._renderMessage(msg, params);
+		var msgView = this._msgViews[msg.id];
+		Dwt.scrollIntoView(msgView.getHtmlElement(), this._messagesDiv);
 	}
 	else {
 		var msgView = this._msgViews[msg.id];
