@@ -44,6 +44,7 @@ ZmFolderChooser = function(params) {
 
 	this._uuid = Dwt.getNextId();
 
+	AjxDispatcher.require("Extras");	// ZmChooseFolderDialog
 	this._changeListener = ZmChooseFolderDialog.prototype._folderTreeChangeListener.bind(this);
 	this._treeViewListener = this._treeViewSelectionListener.bind(this);
 
@@ -71,7 +72,6 @@ ZmFolderChooser = function(params) {
 	}
 
 	this._init();
-	AjxDispatcher.require("Extras");	// ZmChooseFolderDialog
 };
 
 ZmFolderChooser.prototype = new DwtComposite;
