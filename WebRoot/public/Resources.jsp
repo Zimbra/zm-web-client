@@ -44,6 +44,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     String localeId = (String) request.getAttribute("localeId");
 	if (localeId == null) localeId = request.getParameter("localeId");
 	if (localeId != null) {
+		localeId = localeId.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll("\"", "&quot;");
         int index = localeId.indexOf("_");
         if (index == -1) {
             localeQs = "&language=" + localeId;
@@ -52,7 +53,6 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
                        "&country=" + localeId.substring(localeId.length() - 2);
         }
     }
-	localeQs = localeQs.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll("\"", "&quot;");
 
 	String skin = request.getParameter("skin");
 	if (skin == null) {
