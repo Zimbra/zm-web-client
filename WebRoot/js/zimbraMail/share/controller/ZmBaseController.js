@@ -1019,7 +1019,7 @@ function(parent, listener) {
 	if (parent.isZmButtonToolBar) {
 		var tagButton = parent.getOp(ZmOperation.TAG_MENU);
 		if (tagButton) {
-			tagButton.addDropDownSelectionListener(listener);
+			tagButton.addDropDownSelectionListener(this._listeners[ZmOperation.TAG_MENU]);
 		}
 	}
 };
