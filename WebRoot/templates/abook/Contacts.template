@@ -605,7 +605,7 @@
 			    <tr>
 			      <td width=50>&nbsp;</td>
                   <td>
-					<table border=0>
+					<table class='ZPropertySheet'>
 						<$ if (data.detailed) { $>
 						<tr id='${id}_searchNameRow'>
 							<td align=right><$= ZmMsg.nameLabel $></td>

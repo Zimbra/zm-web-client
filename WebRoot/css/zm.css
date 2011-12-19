@@ -745,6 +745,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@Conv2Reply@
 }
 
+.Conv2View .Conv2Reply .ZToolbarTable>TBODY>TR>TD {
+	padding:4px 2px 1px;
+}
+
 .Conv2View-bottom .Conv2ReplyCell {
     background-color:@lighten(AppC,55)@;
     border-left:1px solid @darken(AppC,33)@;
@@ -3287,6 +3291,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding:1em;
 }
 
+.ZOptionsSectionMain>TABLE>TBODY>TR>TD {
+	@PropertySheetSpacing@
+}
+
 .ZOptionsSectionTabView .ZmPreferencesPage,
 .ZOptionsSectionTabView .ZSelectedPrev .ZTabBorder {
 	border-style:solid;
@@ -5016,7 +5024,7 @@ DIV .SuggestBtn {
 
 
 .BriefcaseItemExpanded {
-    background-color:#EEEEFF;
+	@MailConvExpanded@
 }
 
 /*Calendar Appt Send button*/

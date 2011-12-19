@@ -420,7 +420,7 @@ function(task, colIdx) {
 	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? "22" : "16";
 
 	// first row
-	htmlArr[idx++] = "<table width=100% style='padding-bottom:4px;'>";
+	htmlArr[idx++] = "<table width=100% class='TopRow'>";
 	htmlArr[idx++] = "<tr id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, task.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
@@ -432,19 +432,19 @@ function(task, colIdx) {
 	htmlArr[idx++] = "</tr></table>";
 
     // second row
-    htmlArr[idx++] = "<table width=100%><tr>";
-    htmlArr[idx++] = "<td width=50%><div style='height:10px; width:80px; border:1px solid #c5c5c5;'><div";
+    htmlArr[idx++] = "<table width=100% class='BottomRow'><tr>";
+    htmlArr[idx++] = "<td><div style='height:10px; width:80px; border:1px solid #c5c5c5;'><div";
     htmlArr[idx++] = " class='";
     htmlArr[idx++] = this.getColorForStatus(task.status);
     htmlArr[idx++] = "' style='height:10px; width:"+ task.pComplete + "%;'></div></div></td>";
-    htmlArr[idx++] = "<td width=50% align=right><table><tr>";
+    htmlArr[idx++] = "<td width=60 align=right><table><tr>";
 
-    idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_TAG, colIdx, "16");
+    idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_TAG, colIdx, width);
     if(task.priority == ZmCalItem.PRIORITY_HIGH || task.priority == ZmCalItem.PRIORITY_LOW) {
-        idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_PRIORITY, colIdx, "16", "align=right");
+        idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_PRIORITY, colIdx, width, "align=right");
     }
     if (task.hasAttach) {
-        idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_ATTACHMENT, colIdx, "16");
+        idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_ATTACHMENT, colIdx, width);
     }
     htmlArr[idx++] = "</tr></table></td>";
     htmlArr[idx++] = "</tr></table>";

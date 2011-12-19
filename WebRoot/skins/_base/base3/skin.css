@@ -493,8 +493,8 @@ SELECT						{	@FieldBorder@	}
 .RowDouble>TABLE					{ border:1px solid white; 			}
 .RowDouble .TopRow,
 .RowDouble .ImgCheckboxChecked,
-.RowDouble .ImgCheckboxUnchecked 	{ margin:5px 0 2px; 	}
-.RowDouble .BottomRow				{ margin:2px 0 5px; 	}
+.RowDouble .ImgCheckboxUnchecked 	{ margin:6px 0 4px; 	}
+.RowDouble .BottomRow				{ margin:4px 0 6px; 	}
 
 .ZToolbarTable .vertSep				{ border-color:@ToolbarSeparatorColor@;     }
 #IFDEF MSIE

@@ -441,7 +441,7 @@ function(item, colIdx) {
 	var isConv = (item.type == ZmItem.CONV && item.numMsgs > 1);
 	
 	// first row
-	htmlArr[idx++] = "<table class='TopRow' style='width:100%;border-collapse:collapse;border-spacing:0;'>";
+	htmlArr[idx++] = "<table class='TopRow' style='width:100%;'>";
 	htmlArr[idx++] = (item.isUnread && !item.isMuted()) ? "<tr class='Unread' " : "<tr ";
 	htmlArr[idx++] = "id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
@@ -461,7 +461,7 @@ function(item, colIdx) {
 	htmlArr[idx++] = "</tr></table>";
 
 	// second row
-	htmlArr[idx++] = "<table class='BottomRow' style='width:100%;border-collapse:collapse;border-spacing:0;'><tr>";
+	htmlArr[idx++] = "<table class='BottomRow' style='width:100%;'><tr>";
 	htmlArr[idx++] = "<td width=";
 	htmlArr[idx++] = width;
 	htmlArr[idx++] = "></td>";

@@ -244,7 +244,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 				cname = creator.join("@");
 			}
 		}
-		htmlArr[idx++] = "<span style='white-space: nowrap'>";
+		htmlArr[idx++] = "<span style='white-space:nowrap'>";
 		htmlArr[idx++] = cname;
 		htmlArr[idx++] = "</span>";
 	} else if (field == ZmItem.F_FOLDER) {
@@ -264,7 +264,7 @@ ZmDetailListView.prototype._getDisplayName =
 function(item){
     var subject;
     if(item.isRevision){
-        subject = ("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + item.subject );
+        subject = (item.subject);
     }else if(parseInt(item.version) > 1){
         subject = AjxMessageFormat.format(ZmMsg.briefcaseFileVersion, [AjxStringUtil.htmlEncode(item.name), item.version])
     }
@@ -275,40 +275,41 @@ ZmDetailListView.prototype._getAbridgedContent =
 function(item, colIdx) {
 
     var idx=0, html=[];
-	idx = this._getTable(html, idx, item);
-	idx = this._getRow(html, idx, item);
+	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? 22 : 16;
+	
+    html[idx++] = "<table width=100% class='TopRow'><tr>";
 
     if(this._revisionView){
-        html[idx++] = "<td style='vertical-align:middle;' width=16 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
+        html[idx++] = "<td width=" + width + " id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
         idx = this._getCellContents(html, idx, item, ZmItem.F_EXPAND, colIdx);
         html[idx++] = "</center></td>";
     }
 
-	html[idx++] = "<td style='vertical-align:middle;' width=20 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
+	html[idx++] = "<td width=20 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
 	html[idx++] = AjxImg.getImageHtml(item.getIcon());
 	html[idx++] = "</center></td>";
-	html[idx++] = "<td style='vertical-align:middle;' width='100%' id='" + this._getFieldId(item, ZmItem.F_NAME) + "'>";
-    html[idx++] = "&nbsp;"+ this._getDisplayName(item);
+	html[idx++] = "<td style='vertical-align:middle;' width=100% id='" + this._getFieldId(item, ZmItem.F_NAME) + "'>";
+    html[idx++] = this._getDisplayName(item);
 	html[idx++] = "</td>";
 
-    html[idx++] = "<td style='vertical-align:middle;text-align:left;' width=40 id='" + this._getFieldId(item, ZmItem.F_SIZE) + "'>";
+    html[idx++] = "<td style='vertical-align:middle;text-align:right;' width=40 id='" + this._getFieldId(item, ZmItem.F_SIZE) + "'>";
 	idx = this._getCellContents(html, idx, item, ZmItem.F_SIZE, colIdx);
 	html[idx++] = "</td>";
 
-    html[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='" + this._getFieldId(item, ZmItem.F_TAG)+"'>";
+    html[idx++] = "<td style='text-align:right' width=" + width + " id='" + this._getFieldId(item, ZmItem.F_TAG)+"'>";
     idx = this._getImageHtml(html, idx, item.getTagImageInfo(), this._getFieldId(item, ZmItem.F_TAG));
 	html[idx++] = "</td>";
 
 	html[idx++] = "</tr>";
     html[idx++] = "</table>";
 
-    html[idx++] = "<table width='100%' border='0' cellpadding=0 cellspacing=0><tr>";
-    html[idx++] = "<td style='text-align:center'>";
+    html[idx++] = "<table width=100% class='BottomRow'><tr>";
+    html[idx++] = "<td style='vertical-align:middle;padding-left:50px;'>";
     idx = this._getCellContents(html, idx, item, ZmItem.F_FROM, colIdx);
-    html[idx++] = "<td style='text-align:right;padding-right:50px;'>";
+    html[idx++] = "<td style='vertical-align:middle;text-align:right;'>";
     idx = this._getCellContents(html, idx, item, ZmItem.F_DATE, colIdx);
     html[idx++] = "</td>";
-    html[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='" + this._getFieldId(item, ZmItem.F_LOCK)+"' ";
+    html[idx++] = "<td style='text-align:center;' width=" + width + " id='" + this._getFieldId(item, ZmItem.F_LOCK)+"'> ";
     idx =   this._getImageHtml(html, idx, (item.locked ? "PadLock" : "Blank_16") , this._getFieldId(item, ZmItem.F_LOCK));
 	html[idx++] = "</td>";
     html[idx++] = "</tr></table>";
@@ -612,7 +613,7 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 		htmlArr[idx++] = "' class='";
 		htmlArr[idx++] = (id == this._currentColId)	? "DwtListView-Column DwtListView-ColumnActive'" :
 													  "DwtListView-Column'";
-		htmlArr[idx++] = " width='auto'><table border=0 cellpadding=0 cellspacing=0 width='100%'><tr><td id='";
+		htmlArr[idx++] = " width='auto'><table width='100%'><tr><td id='";
 		htmlArr[idx++] = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, field);
 		htmlArr[idx++] = "' class='DwtListHeaderItem-label'>";
 		htmlArr[idx++] = headerCol._label;
