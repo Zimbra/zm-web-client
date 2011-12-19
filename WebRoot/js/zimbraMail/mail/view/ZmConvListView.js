@@ -248,6 +248,7 @@ function() {
 			ZmItem.F_FLAG,
 			ZmItem.F_PRIORITY,
 			ZmItem.F_TAG,
+			ZmItem.F_READ,
 			ZmItem.F_STATUS,
 			ZmItem.F_FROM,
 			ZmItem.F_ATTACHMENT,
