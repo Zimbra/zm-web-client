@@ -949,6 +949,16 @@ function(ex) {
 		// NOTE: This prevents details from being shown
 		ex = null;
 	}
+    if (ex instanceof ZmCsfeException && ex.code == "service.PERM_DENIED") {
+        //bug:67698 Displaying proper error message when grantee is owner
+        if(this.object.getOwner() == this.grantee.name){
+            message = ZmMsg.cannotGrantAccessToOwner;
+            ex = null;
+        }
+        else{
+            message = ZmMsg.errorPermission;
+        }
+	}
 
 	appCtxt.getAppController().popupErrorDialog(message, ex, null, true);
 	return true;

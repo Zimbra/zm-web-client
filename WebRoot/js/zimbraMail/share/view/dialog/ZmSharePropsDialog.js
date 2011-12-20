@@ -359,103 +359,113 @@ function(event) {
 ZmSharePropsDialog.prototype._handleResponseBatchCmd =
 function(shares, result) {
 
-	if (!shares || (shares && shares.length == 0)) { return; }
 
-	var ignore = this._getFaultyEmails(result);
-	var replyType = this._reply.getReplyType();
-	if (replyType != ZmShareReply.NONE) {
-		var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
-		var guestnotes;
-		var batchCmd;
+    var response = result.getResponse();
+    var batchResponse = response.BatchResponse;
 
-		if (replyType != ZmShareReply.COMPOSE && shares.length > 1) {
-			var accountName = appCtxt.multiAccounts ? this._object.getAccount().name : null;
-			batchCmd = new ZmBatchCommand(false, accountName, true);
-		}
+    //bug:67698 Do not send notification on failed share
+    if(batchResponse.Fault){
+       appCtxt.setStatusMsg(ZmMsg.shareNotCreated,ZmStatusView.LEVEL_WARNING);
+       return false;
+    }
+    else{
+        if (!shares || (shares && shares.length == 0)) { return; }
+        var ignore = this._getFaultyEmails(result);
+        var replyType = this._reply.getReplyType();
+        if (replyType != ZmShareReply.NONE) {
+            var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
+            var guestnotes;
+            var batchCmd;
 
-		for (var i = 0; i < shares.length; i++) {
-			var share = shares[i];
-			var email = share.grantee.email || share.grantee.id;
-			if (!email) {
-				// last resort: check if grantee name is a valid email address
-				if (AjxEmailAddress.isValid(share.grantee.name))
-					email = share.grantee.name;
-			}
-
-			if (!email || (email && ignore[email])) { continue; }
-
-			var addrs = new AjxVector();
-			var addr = new AjxEmailAddress(email, AjxEmailAddress.TO);
-			addrs.add(addr);
-
-			var tmpShare = new ZmShare({object:share.object});
-
-			tmpShare.grantee.id = share.grantee.id;
-			tmpShare.grantee.email = email;
-			tmpShare.grantee.name = share.grantee.name;
-
-			// REVISIT: What if you have delegated access???
-			if (tmpShare.object.isRemote()) {
-				tmpShare.grantor.id = tmpShare.object.zid;
-				tmpShare.grantor.email = tmpShare.object.owner;
-				tmpShare.grantor.name = tmpShare.grantor.email;
-				tmpShare.link.id = tmpShare.object.rid;
-                tmpShare.link.name = tmpShare.object.oname || tmpShare.object.name;
-			} else {
-                // bug: 50936  get setting for respective account 
-                // to prevent sharing the default account unintentionally
-				tmpShare.grantor.id = appCtxt.get(ZmSetting.USERID, null, this._object.getAccount());
-				tmpShare.grantor.email = appCtxt.get(ZmSetting.USERNAME, null, this._object.getAccount());
-				tmpShare.grantor.name = appCtxt.get(ZmSetting.DISPLAY_NAME, null, this._object.getAccount()) || tmpShare.grantor.email;
-				tmpShare.link.id = tmpShare.object.id;
-                tmpShare.link.name = tmpShare.object.name;
-			}
-            // If folder is not synced before sharing, link ID might have changed in ZD.
-            // Always get from response.
-            if(appCtxt.isOffline) {
-                var linkId = this.getLinkIdfromResp(result);
-                if(linkId) {
-                    tmpShare.link.id =  [tmpShare.grantor.id, linkId].join(":");
-                }
+            if (replyType != ZmShareReply.COMPOSE && shares.length > 1) {
+                var accountName = appCtxt.multiAccounts ? this._object.getAccount().name : null;
+                batchCmd = new ZmBatchCommand(false, accountName, true);
             }
 
-			tmpShare.link.perm = share.link.perm;
-			tmpShare.link.view = ZmOrganizer.getViewName(tmpShare.object.type);
-			tmpShare.link.inh = this._inheritEl ? this._inheritEl.checked : true;
+            for (var i = 0; i < shares.length; i++) {
+                var share = shares[i];
+                var email = share.grantee.email || share.grantee.id;
+                if (!email) {
+                    // last resort: check if grantee name is a valid email address
+                    if (AjxEmailAddress.isValid(share.grantee.name))
+                        email = share.grantee.name;
+                }
 
-			if (this._guestRadioEl.checked) {
-				if (!this._guestFormatter) {
-					this._guestFormatter = new AjxMessageFormat(ZmMsg.shareCalWithGuestNotes);
-				}
+                if (!email || (email && ignore[email])) { continue; }
 
-				var url = share.object.getRestUrl();
-				url = url.replace(/&/g,'%26');
-				if (appCtxt.isOffline) {
-					var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
-					url = remoteUri + url.substring((url.indexOf("/",7)));
-				}
+                var addrs = new AjxVector();
+                var addr = new AjxEmailAddress(email, AjxEmailAddress.TO);
+                addrs.add(addr);
 
-                //bug:34647 added webcal url for subscribing to outlook/ical on a click
-                var webcalURL = "webcal:" + url.substring((url.indexOf("//")));
+                var tmpShare = new ZmShare({object:share.object});
 
-				var password = this._passwordInput.getValue();
-				guestnotes = this._guestFormatter.format([url, webcalURL, email, password, notes]);
-			}
-			tmpShare.notes = guestnotes || notes;
+                tmpShare.grantee.id = share.grantee.id;
+                tmpShare.grantee.email = email;
+                tmpShare.grantee.name = share.grantee.name;
 
-			if (replyType == ZmShareReply.COMPOSE) {
-				tmpShare.composeMessage(this._shareMode, addrs);
-			} else {
-				tmpShare.sendMessage(this._shareMode, addrs, null, batchCmd);
-			}
-		}
-		if (batchCmd)
-			batchCmd.run();
+                // REVISIT: What if you have delegated access???
+                if (tmpShare.object.isRemote()) {
+                    tmpShare.grantor.id = tmpShare.object.zid;
+                    tmpShare.grantor.email = tmpShare.object.owner;
+                    tmpShare.grantor.name = tmpShare.grantor.email;
+                    tmpShare.link.id = tmpShare.object.rid;
+                    tmpShare.link.name = tmpShare.object.oname || tmpShare.object.name;
+                } else {
+                    // bug: 50936  get setting for respective account
+                    // to prevent sharing the default account unintentionally
+                    tmpShare.grantor.id = appCtxt.get(ZmSetting.USERID, null, this._object.getAccount());
+                    tmpShare.grantor.email = appCtxt.get(ZmSetting.USERNAME, null, this._object.getAccount());
+                    tmpShare.grantor.name = appCtxt.get(ZmSetting.DISPLAY_NAME, null, this._object.getAccount()) || tmpShare.grantor.email;
+                    tmpShare.link.id = tmpShare.object.id;
+                    tmpShare.link.name = tmpShare.object.name;
+                }
+                // If folder is not synced before sharing, link ID might have changed in ZD.
+                // Always get from response.
+                if(appCtxt.isOffline) {
+                    var linkId = this.getLinkIdfromResp(result);
+                    if(linkId) {
+                        tmpShare.link.id =  [tmpShare.grantor.id, linkId].join(":");
+                    }
+                }
 
-        var shareMsg = (this._shareMode==ZmSharePropsDialog.NEW)?ZmMsg.shareCreatedSubject:ZmMsg.shareModifiedSubject;
-        appCtxt.setStatusMsg(shareMsg);
+                tmpShare.link.perm = share.link.perm;
+                tmpShare.link.view = ZmOrganizer.getViewName(tmpShare.object.type);
+                tmpShare.link.inh = this._inheritEl ? this._inheritEl.checked : true;
 
-	}
+                if (this._guestRadioEl.checked) {
+                    if (!this._guestFormatter) {
+                        this._guestFormatter = new AjxMessageFormat(ZmMsg.shareCalWithGuestNotes);
+                    }
+
+                    var url = share.object.getRestUrl();
+                    url = url.replace(/&/g,'%26');
+                    if (appCtxt.isOffline) {
+                        var remoteUri = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_URI);
+                        url = remoteUri + url.substring((url.indexOf("/",7)));
+                    }
+
+                    //bug:34647 added webcal url for subscribing to outlook/ical on a click
+                    var webcalURL = "webcal:" + url.substring((url.indexOf("//")));
+
+                    var password = this._passwordInput.getValue();
+                    guestnotes = this._guestFormatter.format([url, webcalURL, email, password, notes]);
+                }
+                tmpShare.notes = guestnotes || notes;
+
+                if (replyType == ZmShareReply.COMPOSE) {
+                    tmpShare.composeMessage(this._shareMode, addrs);
+                } else {
+                    tmpShare.sendMessage(this._shareMode, addrs, null, batchCmd);
+                }
+            }
+            if (batchCmd)
+                batchCmd.run();
+
+            var shareMsg = (this._shareMode==ZmSharePropsDialog.NEW)?ZmMsg.shareCreatedSubject:ZmMsg.shareModifiedSubject;
+            appCtxt.setStatusMsg(shareMsg);
+
+        }
+    }
 };
 
 ZmSharePropsDialog.prototype.getLinkIdfromResp =
