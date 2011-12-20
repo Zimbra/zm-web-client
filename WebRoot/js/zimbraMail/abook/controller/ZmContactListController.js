@@ -243,12 +243,25 @@ function(contact, callback, result) {
 						description: attrs.description,
 						displayName: attrs.displayName,
 						notes: attrs.zimbraNotes,
-						hideInGal: attrs.zimbraHideInGal};
+						hideInGal: attrs.zimbraHideInGal,
+						owners: this._getOwners(response)};
 
 	this._resetOperations(this._toolbar[this._currentViewId], 0); // now that we got the dlInfo we can know better how to set the "edit" button.
 	var callbackFromGettingMembers = this._handleGetDlMembersResponse.bind(this, contact, callback);
 	contact.getAllDLMembers(callbackFromGettingMembers);
 };
+
+ZmContactListController.prototype._getOwners =
+function(response) {
+	var owners = response.dl[0].owners[0].owner;
+	var ownersArray = [];
+	for (var i = 0; i < owners.length; i++) {
+		var owner = owners[i].name;
+		ownersArray.push(owner); //just the email address, I think and hope.
+	}
+	return ownersArray;
+};
+
 
 
 ZmContactListController.prototype._handleGetDlMembersResponse =

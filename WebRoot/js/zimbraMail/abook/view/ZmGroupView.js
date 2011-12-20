@@ -169,6 +169,9 @@ function() {
 		if (dlInfo.unsubscriptionPolicy != this._getDlUnsubscriptionPolicy()) {
 			mods[ZmContact.F_dlUnsubscriptionPolicy] = this._getDlUnsubscriptionPolicy();
 		}
+		if (dlInfo.owners != this._getDlOwners()) {
+			mods[ZmContact.F_dlListOwners] = this._getDlOwners();
+		}
 
 	}
 
@@ -239,6 +242,19 @@ function() {
 ZmGroupView.prototype._getDlHideInGal =
 function() {
 	return document.getElementById(this._dlHideInGalId).checked ? "TRUE" : "FALSE";
+};
+
+ZmGroupView.prototype._getDlOwners =
+function() {
+	var owners = AjxStringUtil.trim(document.getElementById(this._dlListOwnersId).value).split(";");
+	var retOwners = [];
+	for (var i = 0; i < owners.length; i++) {
+		var owner = AjxStringUtil.trim(owners[i]);
+		if (owner != "") {
+			retOwners.push(owner);
+		}
+	}
+	return retOwners;
 };
 
 
@@ -336,6 +352,7 @@ function(bEnable) {
 			document.getElementById(this._dlSubscriptionPolicyId[opt]).disabled = !bEnable;
 			document.getElementById(this._dlUnsubscriptionPolicyId[opt]).disabled = !bEnable;
 		}
+		document.getElementById(this._dlListOwnersId).disabled = !bEnable;
 	}
 	if (!this._noManualEntry) {
 		this._groupMembers.disabled = !bEnable;
@@ -528,6 +545,21 @@ function() {
 			this._dlSubscriptionPolicyId[opt] = this._htmlElId + "_dlSubscriptionPolicy" + opt; //_dlSubscriptionPolicyACCEPT / APPROVAL / REJECT
 			this._dlUnsubscriptionPolicyId[opt] = this._htmlElId + "_dlUnsubscriptionPolicy" + opt; //_dlUnsubscriptionPolicyACCEPT / APPROVAL / REJECT
 		}
+		this._dlListOwnersId = 	this._htmlElId + "_dlListOwners";
+
+		// create auto-completer
+		var params = {
+			dataClass:		appCtxt.getAutocompleter(),
+			matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
+			keyUpCallback:	ZmGroupView._onKeyUp, 
+			contextId:		this.toString()
+		};
+		this._acAddrSelectList = new ZmAutocompleteListView(params);
+		if (appCtxt.multiAccounts) {
+			var acct = object.account || appCtxt.accountList.mainAccount;
+			this._acAddrSelectList.setActiveAccount(acct);
+		}
+		
 	}
 	this._searchFieldId = 		this._htmlElId + "_searchField";
 
@@ -544,7 +576,7 @@ function() {
 		isEdit: true,
 		addrbook: this._contact.getAddressBook()
 	};
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#GroupView", params);	
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#GroupView", params);
 	this._htmlInitialized = true;
 };
 
@@ -694,6 +726,16 @@ function() {
 			Dwt.setHandler(dlUnsubsPolicy, DwtEvent.ONCHANGE, ZmGroupView._onChange);
 			Dwt.associateElementWithObject(dlUnsubsPolicy, this);
 		}
+
+		var dlListOwners = document.getElementById(this._dlListOwnersId);
+		Dwt.associateElementWithObject(dlListOwners, this);
+		if (this._acAddrSelectList) {
+			this._acAddrSelectList.handle(dlListOwners);
+		}
+		else {
+			Dwt.setHandler(dlListOwners, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
+		}
+
 	}
 
 	if (!this._noManualEntry) {
@@ -812,10 +854,17 @@ function() {
 		unsubsPolicyOpt.checked = this._contact.dlInfo.unsubscriptionPolicy == opt;
 	}
 
+	var listOwners = document.getElementById(this._dlListOwnersId);
+	listOwners.value = this._contact.dlInfo.owners.join("; ");
+	if (listOwners.value.length > 0) {
+		listOwners.value += ";"; //so it's ready to add more by user.
+	}
+
 	var notes = document.getElementById(this._dlNotesId);
 	notes.value = this._contact.dlInfo.notes || "";
 
 };
+
 
 ZmGroupView.prototype._resetSearchInSelect =
 function() {

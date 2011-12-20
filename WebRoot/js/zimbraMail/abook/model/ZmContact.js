@@ -73,6 +73,7 @@ ZmContact.F_dlHideInGal				= "dlhideingal";  //DL
 ZmContact.F_dlNotes					= "dlnotes";  //DL
 ZmContact.F_dlSubscriptionPolicy	= "dlsubspolicy";  //DL
 ZmContact.F_dlUnsubscriptionPolicy	= "dlunsubspolicy";  //DL
+ZmContact.F_dlListOwners			= "dllistowners";  //DL
 ZmContact.F_email					= "email";
 ZmContact.F_email2					= "email2";
 ZmContact.F_email3					= "email3";
@@ -842,6 +843,7 @@ function(callback) {
 	}
 
 	var soapDoc = AjxSoapDoc.create("GetDistributionListRequest", "urn:zimbraAccount", null);
+	soapDoc.setMethodAttribute("needOwners", "1");
 	var elBy = soapDoc.set("dl", this.getEmail());
 	elBy.setAttribute("by", "name");
 
@@ -1246,6 +1248,11 @@ function(attr) {
 		reqs.push(this._getModifyDlReq("zimbraDistributionListUnsubscriptionPolicy", unsubsPolicy));
 	}
 
+	var listOwners = attr[ZmContact.F_dlListOwners];
+	if (listOwners) {
+		reqs.push(this._getSetOwnersReq(listOwners));
+	}
+
 	if (reqs.length == 0) {
 		return;
 	}
@@ -1295,6 +1302,28 @@ function(name) {
 	};
 };
 
+ZmContact.prototype._getSetOwnersReq =
+function(owners) {
+	var ownersPart = [];
+	for (var i = 0; i < owners.length; i++) {
+		ownersPart.push({
+			type: "usr",
+			by: "name",
+			_content: owners[i]
+		});
+	}
+	return {
+		_jsns: "urn:zimbraAccount",
+		dl: {by: "name",
+			 _content: this.getEmail()
+		},
+		action: {
+			op: "setOwners",
+			owner: ownersPart
+		}
+	};
+};
+	
 
 ZmContact.prototype._getModifyDlReq =
 function(name, value) {

@@ -587,6 +587,11 @@
 			</tr>
 
 			<tr valign="top">
+				<td class='rowLabel'><$= ZmMsg.listOwnersLabel $></td>
+				<td class='rowValue'><input type='text' autocomplete='off' size=60 id='${id}_dlListOwners' class="Text"></td>
+			</tr>
+
+			<tr valign="top">
 				<td class='rowLabel'><$= ZmMsg.notesLabel $></td>
 				<td class='rowValue'><textarea rows='4' cols='65' id='${id}_dlNotes'></textarea></td>
 			</tr>
