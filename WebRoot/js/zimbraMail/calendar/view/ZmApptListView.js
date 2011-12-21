@@ -171,7 +171,7 @@ ZmApptListView.prototype._getFieldId = function(item, field) {
 };
 
 ZmApptListView.prototype._getCellId = function(item, field) {
-	if (field == ZmItem.F_SUBJECT || field == ZmItem.F_DATE || field == ZmItem.F_LOCATION || field == ZmItem.F_STATUS) {
+	if (field == ZmItem.F_SUBJECT || field == ZmItem.F_DATE || field == ZmItem.F_LOCATION || field == ZmItem.F_STATUS || field == ZmItem.F_FOLDER) {
 		return this._getFieldId(item, field);
 	}
 };
@@ -212,7 +212,8 @@ ZmApptListView.prototype._getCellContents = function(htmlArr, idx, appt, field, 
 		var subs = {
             folder: calendar,
 			folderColor: colors.standard.header.bgcolor,
-			folderName: calendar.getName()
+			folderName: calendar.getName(),
+            id: Dwt.getNextId()
 		};
 		htmlArr[idx++] = AjxTemplate.expand("calendar.Calendar#ListViewFolder", subs);
 
