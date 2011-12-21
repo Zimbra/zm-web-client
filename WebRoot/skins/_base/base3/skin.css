@@ -51,7 +51,7 @@ BODY						{	margin:0px; 	}
 	
 /** Search box **/	
 #skin_spacing_search,
-#skin_spacing_people_search 				{	height:42px; @cssValue(HSashContainer,width)@; 	}
+#skin_spacing_people_search 				{	height:42px; width:@cssValue(HSashContainer,width)@; 	}
 #skin_container_search						{	height:20px; }
 
 #skin_container_search .ZmSearchToolbar 	{	background-color:white; @borderRadius@:@SkinSearchRadius@; 	}
@@ -109,8 +109,10 @@ BODY						{	margin:0px; 	}
 	background-image:none;  
 	border:0;
 	@cssShadow@:0px 0px 0px transparent;
+	#IFDEF MSIE
 	-ms-filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
 	filter:progid:DXImageTransform.Microsoft.gradient(enabled=false);
+	#ENDIF
 }
 
 /** App Toolbar **/
@@ -178,7 +180,7 @@ BODY						{	margin:0px; 	}
     top:0px;
     width:100%;
     height:100%;
-    font-family:@FontFamily-default@;
+    @FontFamily-default@
     @FontSize-normal@
 	@LoginScreen@
 }
