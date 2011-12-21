@@ -131,7 +131,7 @@ function(){
     if(isOrganizer) {
         dlg = this._changesDialog;
         if (!dlg) {
-           dlg = this._changesDialog = new DwtDialog({parent:appCtxt.getShell()});
+           dlg = this._changesDialog = new DwtDialog({parent:appCtxt.getShell(), id:Dwt.getNextId("CHNG_DLG_ORG_")});
            id = this._changesDialogId = Dwt.getNextId();
            dlg.setContent(AjxTemplate.expand("calendar.Appointment#ChangesDialogOrganizer", {id: id}));
            dlg.setTitle(ZmMsg.apptSave);
@@ -141,7 +141,7 @@ function(){
     else {
         dlg = this._attendeeChangesDialog;
         if (!dlg) {
-            dlg = this._attendeeChangesDialog = new DwtDialog({parent:appCtxt.getShell()});
+            dlg = this._attendeeChangesDialog = new DwtDialog({parent:appCtxt.getShell(), id:Dwt.getNextId("CHNG_DLG_ATTNDE_")});
             id = this._attendeeChangesDialogId = Dwt.getNextId();
             dlg.setContent(AjxTemplate.expand("calendar.Appointment#ChangesDialogAttendee", {id: id}));
             dlg.setTitle(ZmMsg.apptSave);
