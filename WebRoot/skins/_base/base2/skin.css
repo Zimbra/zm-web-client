@@ -529,3 +529,5 @@ SELECT						{	@FieldBorder@	}
  	border: 2px inset; 
     color:white;
 }
+
+.appt_new_time .ImgBlank_16{ display: none; }
