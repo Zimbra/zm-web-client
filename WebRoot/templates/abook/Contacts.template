@@ -561,6 +561,28 @@
 			</tr>
 
 			<tr valign="top">
+				<td class='rowLabel'><$= ZmMsg.mailLabel $></td>
+				<td class='rowValue'><input type="radio" name="mailPolicy" id='${id}_dlMailPolicyANYONE'><label for="${id}_dlMailPolicyANYONE"><$= ZmMsg.mailAnyone $></label></td>
+			</tr>
+			<tr valign="top">
+				<td class='rowLabel'></td>
+				<td class='rowValue'><input type="radio" name="mailPolicy" id='${id}_dlMailPolicyMEMBERS'><label for="${id}_dlMailPolicyMEMBERS"><$= ZmMsg.mailOnlyMembers $></label></td>
+			</tr>
+			<tr valign="top">
+				<td class='rowLabel'></td>
+				<td class='rowValue'><input type="radio" name="mailPolicy" id='${id}_dlMailPolicyINTERNAL'><label for="${id}_dlMailPolicyINTERNAL"><$= ZmMsg.mailOnlyInternal $></label></td>
+			</tr>
+			<tr valign="top">
+				<td class='rowLabel'></td>
+				<td class='rowValue'><input type="radio" name="mailPolicy" id='${id}_dlMailPolicySPECIFIC'><label for="${id}_dlMailPolicySPECIFIC"><$= ZmMsg.mailOnlySpecific $></label></td>
+			</tr>
+			<tr valign="top">
+				<td class='rowLabel'></td>
+				<td class='rowValue'><input type='text' autocomplete='off' size=80 id='${id}_dlListSpecificMailers' class="Text"></td>
+			</tr>
+			
+
+			<tr valign="top">
 				<td class='rowLabel'><$= ZmMsg.newSubscriptionsLabel $></td>
 				<td class='rowValue'><input type="radio" name="subscriptionPolicy" id='${id}_dlSubscriptionPolicyACCEPT'><label for="${id}_dlSubscriptionPolicyACCEPT"><$= ZmMsg.policyAccept $></label></td>
 			</tr>
@@ -588,7 +610,7 @@
 
 			<tr valign="top">
 				<td class='rowLabel'><$= ZmMsg.listOwnersLabel $></td>
-				<td class='rowValue'><input type='text' autocomplete='off' size=60 id='${id}_dlListOwners' class="Text"></td>
+				<td class='rowValue'><input type='text' autocomplete='off' size=80 id='${id}_dlListOwners' class="Text"></td>
 			</tr>
 
 			<tr valign="top">

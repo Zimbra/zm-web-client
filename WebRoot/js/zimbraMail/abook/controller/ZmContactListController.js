@@ -236,6 +236,7 @@ ZmContactListController.prototype._handleGetDlInfoResponse =
 function(contact, callback, result) {
 	var response = result._data.GetDistributionListResponse;
 	var attrs = response.dl[0]._attrs;
+	var mailPolicySpecificMailers = [];
 	contact.dlInfo = {	isMember: response.isMember, 
 						isOwner: response.isOwner,
 						subscriptionPolicy: attrs.zimbraDistributionListSubscriptionPolicy,
@@ -244,7 +245,10 @@ function(contact, callback, result) {
 						displayName: attrs.displayName,
 						notes: attrs.zimbraNotes,
 						hideInGal: attrs.zimbraHideInGal,
-						owners: this._getOwners(response)};
+						mailPolicy: response.isOwner && this._getMailPolicy(response, mailPolicySpecificMailers, contact),
+						owners: response.isOwner && this._getOwners(response)};
+
+	contact.dlInfo.mailPolicySpecificMailers = mailPolicySpecificMailers;
 
 	this._resetOperations(this._toolbar[this._currentViewId], 0); // now that we got the dlInfo we can know better how to set the "edit" button.
 	var callbackFromGettingMembers = this._handleGetDlMembersResponse.bind(this, contact, callback);
@@ -262,6 +266,44 @@ function(response) {
 	return ownersArray;
 };
 
+ZmContactListController.prototype._getMailPolicy =
+function(response, specificMailers, contact) {
+	var mailPolicy;
+
+	var rights = response.dl[0].rights[0].right;
+	var right = rights[0];
+	var grantees = right.grantee;
+	if (!grantees) {
+		return ZmGroupView.MAIL_POLICY_ANYONE;
+	}
+	for (var i = 0; i < grantees.length; i++) {
+		var grantee = grantees[i];
+
+		mailPolicy = ZmGroupView.GRANTEE_TYPE_TO_MAIL_POLICY_MAP[grantee.type];
+		
+		if (mailPolicy == ZmGroupView.MAIL_POLICY_SPECIFIC) {
+			specificMailers.push(grantee.name);
+		}
+		else if (mailPolicy == ZmGroupView.MAIL_POLICY_ANYONE) {
+			break;
+		}
+		else if (mailPolicy == ZmGroupView.MAIL_POLICY_INTERNAL) {
+			break;
+		}
+		else if (mailPolicy == ZmGroupView.MAIL_POLICY_MEMBERS) {
+			if (grantee.name == contact.getEmail()) {
+				break;
+			}
+			else {
+				mailPolicy = null;
+				//ignore permission of other groups since we don't allow in our UI
+			}
+		}
+	}
+	mailPolicy = mailPolicy || ZmGroupView.MAIL_POLICY_ANYONE;
+
+	return mailPolicy;
+};
 
 
 ZmContactListController.prototype._handleGetDlMembersResponse =

@@ -72,6 +72,8 @@ ZmContact.F_dlDesc					= "dldesc";  //DL
 ZmContact.F_dlHideInGal				= "dlhideingal";  //DL
 ZmContact.F_dlNotes					= "dlnotes";  //DL
 ZmContact.F_dlSubscriptionPolicy	= "dlsubspolicy";  //DL
+ZmContact.F_dlMailPolicy			= "dlmailpolicy";  //DL
+ZmContact.F_dlMailPolicySpecificMailers	= "dlmailpolicyspecificmailers";  //DL
 ZmContact.F_dlUnsubscriptionPolicy	= "dlunsubspolicy";  //DL
 ZmContact.F_dlListOwners			= "dllistowners";  //DL
 ZmContact.F_email					= "email";
@@ -844,6 +846,7 @@ function(callback) {
 
 	var soapDoc = AjxSoapDoc.create("GetDistributionListRequest", "urn:zimbraAccount", null);
 	soapDoc.setMethodAttribute("needOwners", "1");
+	soapDoc.setMethodAttribute("needRights", "sendToDistList");
 	var elBy = soapDoc.set("dl", this.getEmail());
 	elBy.setAttribute("by", "name");
 
@@ -1243,6 +1246,10 @@ function(attr) {
 	if (subsPolicy) {
 		reqs.push(this._getModifyDlReq("zimbraDistributionListSubscriptionPolicy", subsPolicy));
 	}
+	var mailPolicy = attr[ZmContact.F_dlMailPolicy];
+	if (mailPolicy) {
+		reqs.push(this._getSetMailPolicyReq(mailPolicy, attr[ZmContact.F_dlMailPolicySpecificMailers]));
+	}
 	var unsubsPolicy = attr[ZmContact.F_dlUnsubscriptionPolicy];
 	if (unsubsPolicy) {
 		reqs.push(this._getModifyDlReq("zimbraDistributionListUnsubscriptionPolicy", unsubsPolicy));
@@ -1307,7 +1314,7 @@ function(owners) {
 	var ownersPart = [];
 	for (var i = 0; i < owners.length; i++) {
 		ownersPart.push({
-			type: "usr",
+			type: ZmGroupView.GRANTEE_TYPE_USER,
 			by: "name",
 			_content: owners[i]
 		});
@@ -1323,7 +1330,57 @@ function(owners) {
 		}
 	};
 };
-	
+
+ZmContact.prototype._getSetMailPolicyReq =
+function(mailPolicy, specificMailers) {
+	var grantees = [];
+	if (mailPolicy == ZmGroupView.MAIL_POLICY_SPECIFIC) {
+		for (var i = 0; i < specificMailers.length; i++) {
+			grantees.push({
+				type: ZmGroupView.GRANTEE_TYPE_USER,
+				by: "name",
+				_content: specificMailers[i]
+			});
+		}
+	}
+	else if (mailPolicy == ZmGroupView.MAIL_POLICY_ANYONE) {
+		grantees.push({
+			type: ZmGroupView.GRANTEE_TYPE_PUBLIC
+		});
+	}
+	else if (mailPolicy == ZmGroupView.MAIL_POLICY_INTERNAL) {
+		grantees.push({
+			type: ZmGroupView.GRANTEE_TYPE_ALL
+		});
+	}
+	else if (mailPolicy == ZmGroupView.MAIL_POLICY_MEMBERS) {
+		grantees.push({
+			type: ZmGroupView.GRANTEE_TYPE_GROUP,
+			by: "name",
+			_content: this.getEmail()
+		});
+	}
+	else {
+		throw "invalid mailPolicy value " + mailPolicy;
+	}
+
+	return {
+		_jsns: "urn:zimbraAccount",
+		dl: {by: "name",
+			 _content: this.getEmail()
+		},
+		action: {
+			op: "setRights",
+			right: {
+				right: "sendToDistList",
+				grantee: grantees
+			}
+		}
+	};
+
+};
+
+
 
 ZmContact.prototype._getModifyDlReq =
 function(name, value) {

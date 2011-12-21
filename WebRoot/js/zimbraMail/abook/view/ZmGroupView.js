@@ -74,6 +74,22 @@ ZmGroupView.SEARCH_PHONETIC = "phonetic";
 ZmGroupView.SHOW_ON_GAL = [ZmGroupView.SEARCH_BASIC, ZmGroupView.SEARCH_NAME, ZmGroupView.SEARCH_EMAIL, ZmGroupView.SEARCH_DEPT];
 ZmGroupView.SHOW_ON_NONGAL = [ZmGroupView.SEARCH_BASIC, ZmGroupView.SEARCH_NAME, ZmGroupView.SEARCH_PHONETIC, ZmGroupView.SEARCH_EMAIL];
 
+ZmGroupView.MAIL_POLICY_ANYONE = "ANYONE";
+ZmGroupView.MAIL_POLICY_MEMBERS = "MEMBERS";
+ZmGroupView.MAIL_POLICY_INTERNAL = "INTERNAL";
+ZmGroupView.MAIL_POLICY_SPECIFIC = "SPECIFIC";
+
+ZmGroupView.GRANTEE_TYPE_USER = "usr";
+ZmGroupView.GRANTEE_TYPE_GROUP = "grp";
+ZmGroupView.GRANTEE_TYPE_ALL = "all";
+ZmGroupView.GRANTEE_TYPE_PUBLIC = "pub";
+
+ZmGroupView.GRANTEE_TYPE_TO_MAIL_POLICY_MAP = [];
+ZmGroupView.GRANTEE_TYPE_TO_MAIL_POLICY_MAP[ZmGroupView.GRANTEE_TYPE_USER] = ZmGroupView.MAIL_POLICY_SPECIFIC;
+ZmGroupView.GRANTEE_TYPE_TO_MAIL_POLICY_MAP[ZmGroupView.GRANTEE_TYPE_GROUP] = ZmGroupView.MAIL_POLICY_MEMBERS;
+ZmGroupView.GRANTEE_TYPE_TO_MAIL_POLICY_MAP[ZmGroupView.GRANTEE_TYPE_ALL] = ZmGroupView.MAIL_POLICY_INTERNAL;
+ZmGroupView.GRANTEE_TYPE_TO_MAIL_POLICY_MAP[ZmGroupView.GRANTEE_TYPE_PUBLIC] = ZmGroupView.MAIL_POLICY_ANYONE;
+
 //
 // Public methods
 //
@@ -169,10 +185,15 @@ function() {
 		if (dlInfo.unsubscriptionPolicy != this._getDlUnsubscriptionPolicy()) {
 			mods[ZmContact.F_dlUnsubscriptionPolicy] = this._getDlUnsubscriptionPolicy();
 		}
-		if (dlInfo.owners != this._getDlOwners()) {
+		if (!AjxUtil.arrayCompare(dlInfo.owners, this._getDlOwners())) {
 			mods[ZmContact.F_dlListOwners] = this._getDlOwners();
 		}
-
+		if (dlInfo.mailPolicy != this._getDlMailPolicy()
+				|| (this._getDlMailPolicy() == ZmGroupView.MAIL_POLICY_SPECIFIC
+					&& !AjxUtil.arrayCompare(dlInfo.mailPolicySpecificMailers, this._getDlSpecificMailers()))) {
+			mods[ZmContact.F_dlMailPolicy] = this._getDlMailPolicy();
+			mods[ZmContact.F_dlMailPolicySpecificMailers] = this._getDlSpecificMailers();
+		}
 	}
 
 	// creating new contact (possibly some fields - but not ID - prepopulated)
@@ -244,34 +265,49 @@ function() {
 	return document.getElementById(this._dlHideInGalId).checked ? "TRUE" : "FALSE";
 };
 
+ZmGroupView.prototype._getDlSpecificMailers =
+function() {
+	return this._getUserList(this._dlListSpecificMailersId);
+};
+
 ZmGroupView.prototype._getDlOwners =
 function() {
-	var owners = AjxStringUtil.trim(document.getElementById(this._dlListOwnersId).value).split(";");
-	var retOwners = [];
-	for (var i = 0; i < owners.length; i++) {
-		var owner = AjxStringUtil.trim(owners[i]);
-		if (owner != "") {
-			retOwners.push(owner);
+	return this._getUserList(this._dlListOwnersId);
+};
+
+ZmGroupView.prototype._getUserList =
+function(fldId) {
+	var users = AjxStringUtil.trim(document.getElementById(fldId).value).split(";");
+	var retUsers = [];
+	for (var i = 0; i < users.length; i++) {
+		var user = AjxStringUtil.trim(users[i]);
+		if (user != "") {
+			retUsers.push(user);
 		}
 	}
-	return retOwners;
+	return retUsers;
 };
 
 
 ZmGroupView.prototype._getDlSubscriptionPolicy =
 function() {
-	return this._getDlPolicy(this._dlSubscriptionPolicyId);
+	return this._getDlPolicy(this._dlSubscriptionPolicyId, this._subsPolicyOpts);
 };
 
 ZmGroupView.prototype._getDlUnsubscriptionPolicy =
 function() {
-	return this._getDlPolicy(this._dlUnsubscriptionPolicyId);
+	return this._getDlPolicy(this._dlUnsubscriptionPolicyId, this._subsPolicyOpts);
+};
+
+ZmGroupView.prototype._getDlMailPolicy =
+function() {
+	return this._getDlPolicy(this._dlMailPolicyId, this._mailPolicyOpts);
 };
 
 ZmGroupView.prototype._getDlPolicy =
-function(fldId) {
-	for (var i = 0; i < this._policyOpts.length; i++) {
-		var opt = this._policyOpts[i];
+function(fldId, opts) {
+	for (var i = 0; i < opts.length; i++) {
+		var opt = opts[i];
 		if (document.getElementById(fldId[opt]).checked) {
 			return opt;
 		}
@@ -347,8 +383,8 @@ function(bEnable) {
 		document.getElementById(this._dlDescId).disabled = !bEnable;
 		document.getElementById(this._dlHideInGalId).disabled = !bEnable;
 		document.getElementById(this._dlNotesId).disabled = !bEnable;
-		for (var i = 0; i < this._policyOpts.length; i++) {
-			var opt = this._policyOpts[i];
+		for (var i = 0; i < this._subsPolicyOpts.length; i++) {
+			var opt = this._subsPolicyOpts[i];
 			document.getElementById(this._dlSubscriptionPolicyId[opt]).disabled = !bEnable;
 			document.getElementById(this._dlUnsubscriptionPolicyId[opt]).disabled = !bEnable;
 		}
@@ -535,16 +571,27 @@ function() {
 		this._dlDescId = 			this._htmlElId + "_dlDesc";
 		this._dlHideInGalId = 	this._htmlElId + "_dlHideInGal";
 		this._dlNotesId = 			this._htmlElId + "_dlNotes";
-		this._policyOpts = [ZmContactSplitView.SUBSCRIPTION_POLICY_ACCEPT,
+		this._subsPolicyOpts = [ZmContactSplitView.SUBSCRIPTION_POLICY_ACCEPT,
 							ZmContactSplitView.SUBSCRIPTION_POLICY_APPROVAL,
 							ZmContactSplitView.SUBSCRIPTION_POLICY_REJECT];
 		this._dlSubscriptionPolicyId = {};
 		this._dlUnsubscriptionPolicyId = {};
-		for (var i = 0; i < this._policyOpts.length; i++) {
-			var opt = this._policyOpts[i];
+		for (var i = 0; i < this._subsPolicyOpts.length; i++) {
+			var opt = this._subsPolicyOpts[i];
 			this._dlSubscriptionPolicyId[opt] = this._htmlElId + "_dlSubscriptionPolicy" + opt; //_dlSubscriptionPolicyACCEPT / APPROVAL / REJECT
 			this._dlUnsubscriptionPolicyId[opt] = this._htmlElId + "_dlUnsubscriptionPolicy" + opt; //_dlUnsubscriptionPolicyACCEPT / APPROVAL / REJECT
 		}
+		this._mailPolicyOpts = [ZmGroupView.MAIL_POLICY_ANYONE,
+								ZmGroupView.MAIL_POLICY_MEMBERS,
+								ZmGroupView.MAIL_POLICY_INTERNAL,
+								ZmGroupView.MAIL_POLICY_SPECIFIC];
+		this._dlMailPolicyId = {};
+		for (i = 0; i < this._mailPolicyOpts.length; i++) {
+			opt = this._mailPolicyOpts[i];
+			this._dlMailPolicyId[opt] = this._htmlElId + "_dlMailPolicy" + opt; //_dlMailPolicyANYONE / etc
+		}
+		this._dlListSpecificMailersId = 	this._htmlElId + "_dlListSpecificMailers";
+
 		this._dlListOwnersId = 	this._htmlElId + "_dlListOwners";
 
 		// create auto-completer
@@ -559,7 +606,6 @@ function() {
 			var acct = object.account || appCtxt.accountList.mainAccount;
 			this._acAddrSelectList.setActiveAccount(acct);
 		}
-		
 	}
 	this._searchFieldId = 		this._htmlElId + "_searchField";
 
@@ -716,15 +762,15 @@ function() {
 		Dwt.setHandler(dlNotes, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
 		Dwt.associateElementWithObject(dlNotes, this);
 
-		for (var i = 0; i < this._policyOpts.length; i++) {
-			var opt =  this._policyOpts[i];
-			var dlSubsPolicy = document.getElementById(this._dlSubscriptionPolicyId[opt]);
-			Dwt.setHandler(dlSubsPolicy, DwtEvent.ONCHANGE, ZmGroupView._onChange);
-			Dwt.associateElementWithObject(dlSubsPolicy, this);
+		for (var i = 0; i < this._subsPolicyOpts.length; i++) {
+			var opt =  this._subsPolicyOpts[i];
+			var policy = document.getElementById(this._dlSubscriptionPolicyId[opt]);
+			Dwt.setHandler(policy, DwtEvent.ONCHANGE, ZmGroupView._onChange);
+			Dwt.associateElementWithObject(policy, this);
 
-			var dlUnsubsPolicy = document.getElementById(this._dlUnsubscriptionPolicyId[opt]);
-			Dwt.setHandler(dlUnsubsPolicy, DwtEvent.ONCHANGE, ZmGroupView._onChange);
-			Dwt.associateElementWithObject(dlUnsubsPolicy, this);
+			policy = document.getElementById(this._dlUnsubscriptionPolicyId[opt]);
+			Dwt.setHandler(policy, DwtEvent.ONCHANGE, ZmGroupView._onChange);
+			Dwt.associateElementWithObject(policy, this);
 		}
 
 		var dlListOwners = document.getElementById(this._dlListOwnersId);
@@ -734,6 +780,21 @@ function() {
 		}
 		else {
 			Dwt.setHandler(dlListOwners, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
+		}
+
+		for (i = 0; i < this._mailPolicyOpts.length; i++) {
+			opt =  this._mailPolicyOpts[i];
+			policy = document.getElementById(this._dlMailPolicyId[opt]);
+			Dwt.setHandler(policy, DwtEvent.ONCHANGE, ZmGroupView._onChange);
+			Dwt.associateElementWithObject(policy, this);
+		}
+		var dlListSpecificMailers = document.getElementById(this._dlListSpecificMailersId);
+		Dwt.associateElementWithObject(dlListSpecificMailers, this);
+		if (this._acAddrSelectList) {
+			this._acAddrSelectList.handle(dlListSpecificMailers);
+		}
+		else {
+			Dwt.setHandler(dlListSpecificMailers, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
 		}
 
 	}
@@ -758,12 +819,17 @@ function() {
 		fields.push(document.getElementById(this._dlDisplayNameId));
 		fields.push(document.getElementById(this._dlDescId));
 		fields.push(document.getElementById(this._dlHideInGalId));
-		for (var i = 0; i < this._policyOpts.length; i++) {
-			var opt = this._policyOpts[i];
+		for (var i = 0; i < this._mailPolicyOpts.length; i++) {
+			var opt = this._mailPolicyOpts[i];
+			fields.push(document.getElementById(this._dlMailPolicyId[opt]));
+		}
+
+		for (var i = 0; i < this._subsPolicyOpts.length; i++) {
+			var opt = this._subsPolicyOpts[i];
 			fields.push(document.getElementById(this._dlSubscriptionPolicyId[opt]));
 		}
-		for (i = 0; i < this._policyOpts.length; i++) {
-			opt = this._policyOpts[i];
+		for (i = 0; i < this._subsPolicyOpts.length; i++) {
+			opt = this._subsPolicyOpts[i];
 			fields.push(document.getElementById(this._dlUnsubscriptionPolicyId[opt]));
 		}
 		fields.push(document.getElementById(this._dlNotesId));
@@ -845,13 +911,25 @@ function() {
 	var hideInGal = document.getElementById(this._dlHideInGalId);
 	hideInGal.checked = this._contact.dlInfo.hideInGal == "TRUE";
 
-	for (var i = 0; i < this._policyOpts.length; i++) {
-		var opt = this._policyOpts[i];
+	for (var i = 0; i < this._subsPolicyOpts.length; i++) {
+		var opt = this._subsPolicyOpts[i];
 		var subsPolicyOpt = document.getElementById(this._dlSubscriptionPolicyId[opt]);
 		subsPolicyOpt.checked = this._contact.dlInfo.subscriptionPolicy == opt;
 
 		var unsubsPolicyOpt = document.getElementById(this._dlUnsubscriptionPolicyId[opt]);
 		unsubsPolicyOpt.checked = this._contact.dlInfo.unsubscriptionPolicy == opt;
+	}
+	for (i = 0; i < this._mailPolicyOpts.length; i++) {
+		opt = this._mailPolicyOpts[i];
+		var mailPolicyOpt = document.getElementById(this._dlMailPolicyId[opt]);
+		mailPolicyOpt.checked = this._contact.dlInfo.mailPolicy == opt;
+	}
+	if (this._contact.dlInfo.mailPolicy == ZmGroupView.MAIL_POLICY_SPECIFIC) {
+		var listSpecificMailers = document.getElementById(this._dlListSpecificMailersId);
+		listSpecificMailers.value = this._contact.dlInfo.mailPolicySpecificMailers.join("; ");
+		if (listSpecificMailers.value.length > 0) {
+			listSpecificMailers.value += ";"; //so it's ready to add more by user.
+		}
 	}
 
 	var listOwners = document.getElementById(this._dlListOwnersId);
