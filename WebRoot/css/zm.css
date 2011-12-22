@@ -4228,12 +4228,24 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 /* checkbox element */
-.ZCheckbox {
+.ZCheckbox,
+.ZRadioButton {
 	cursor:pointer;
 }
 
-.ZRadioButton {
-	cursor:pointer;
+.ZCheckboxTable>TBODY>TR>TD,
+.ZRadioButtonTable>TBODY>TR>TD {
+	padding:3px 0;  
+}
+
+.ZCheckboxTable input[type="checkbox"] {
+	padding:0;
+	margin:0 3px;
+}
+
+.ZRadioButtonTable input[type="radio"] {
+	padding:0;
+	margin:1px 3px;
 }
 
 .ZLabelCell {

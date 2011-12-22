@@ -1797,8 +1797,8 @@ input.xform_field {
 #ENDIF
 
 .ZWidgetTable .ZLeftIcon DIV, .ZWidgetTable .ZLeftIcon IMG	    {	margin:1px 0 1px 4px;	}
-.ZWidgetTable .ZRightIcon DIV, .ZWidgetTable .ZRightIcon IMG	{	margin:1px 4px 1px 0;	}
-.ZWidgetTable .ZDropDown DIV, .ZWidgetTable .ZDropDown IMG		{	margin:1px 4px 1px 0;	}
+.ZWidgetTable .ZRightIcon DIV, .ZWidgetTable .ZRightIcon IMG	{	margin:1px 0;			}
+.ZWidgetTable .ZDropDown DIV, .ZWidgetTable .ZDropDown IMG		{	margin:1px 0;			}
 
 .ZHasText .ZLeftIcon DIV, .ZHasText .ZLeftIcon IMG		{	margin-right:0px !important;	}
 .ZHasText .ZRightIcon DIV, .ZHasText .ZRightIcon IMG	{	margin-left:0px !important;		}

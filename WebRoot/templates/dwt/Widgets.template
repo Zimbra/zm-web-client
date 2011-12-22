@@ -22,7 +22,7 @@
 </template>
 
 <template id='dwt.Widgets#DwtCheckbox'>
-<table class='ZPropertySheet'>
+<table class='ZCheckboxTable'>
 		<tr>
 			<td>
 				<label id='${id}_text_left' for='${id}_input' class='Text' style='text-align:right'></label>
@@ -38,7 +38,7 @@
 </template>
 
 <template id='dwt.Widgets#DwtRadioButton'>
-	<table class='ZPropertySheet'>
+	<table class='ZRadioButtonTable'>
 		<tr>
 			<td>
 				<label id='${id}_text_left' for='${id}_input' class='Text' style='text-align:right'></label>
