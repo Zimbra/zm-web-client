@@ -97,7 +97,7 @@ function(notes){
 };
 
 ZmUploadDialog.prototype.popup =
-function(folder, callback, title, loc, oneFileOnly, noResolveAction, showNotes) {
+function(folder, callback, title, loc, oneFileOnly, noResolveAction, showNotes, isImage) {
 	this._uploadFolder = folder;
 	this._uploadCallback = callback;
 
@@ -118,12 +118,19 @@ function(folder, callback, title, loc, oneFileOnly, noResolveAction, showNotes) 
 	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
 
 	// hide/show elements
-	var id = this._htmlElId;
-	var labelEl = document.getElementById(id+"_label");
-	if (labelEl) {
-		Dwt.setVisible(labelEl, !oneFileOnly);
-	}
-	var actionRowEl = document.getElementById(id+"_actionRow");
+    var id = this._htmlElId;
+    var labelEl = document.getElementById(id+"_label");
+    if (labelEl) {
+        if(oneFileOnly && isImage){
+            labelEl.innerHTML = ZmMsg.uploadChooseImage;
+            Dwt.setVisible(labelEl, true);
+        }
+        else{
+            labelEl.innerHTML = ZmMsg.uploadChoose;
+            Dwt.setVisible(labelEl, !oneFileOnly);
+        }
+    }
+    var actionRowEl = document.getElementById(id+"_actionRow");
 	if (actionRowEl) {
 		Dwt.setVisible(actionRowEl, !noResolveAction);
 	}
@@ -132,6 +139,19 @@ function(folder, callback, title, loc, oneFileOnly, noResolveAction, showNotes) 
 	if (notesEl) {
 		Dwt.setVisible(notesEl, showNotes);
 	}
+    // In case of a single file upload show proper info message
+
+    var docSizeInfo = document.getElementById((id+"_info"));
+    var attSize = AjxUtil.formatSize(appCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT) || 0, true);
+        if(docSizeInfo){
+            if(oneFileOnly){
+                docSizeInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentLimitMsgSingleFile, attSize);
+            }
+            else{
+                docSizeInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentLimitMsg, attSize);
+            }
+        }
+
 
 	// show
 	DwtDialog.prototype.popup.call(this, loc);
@@ -631,7 +651,7 @@ ZmUploadDialog.prototype._createUploadHtml = function() {
 
     var subs = {
         id: id,
-        uri: uri 
+        uri: uri
     };
     this.setContent(AjxTemplate.expand("share.Dialogs#UploadDialog", subs));
 

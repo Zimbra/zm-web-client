@@ -1174,7 +1174,9 @@ ZmEditContactViewImage.prototype._chooseImage = function() {
 	var location = null;
 	var oneFileOnly = true;
 	var noResolveAction = true;
-	dialog.popup(folder, callback, title, location, oneFileOnly, noResolveAction);
+    var showNotes = false;
+    var isImage = true;
+	dialog.popup(folder, callback, title, location, oneFileOnly, noResolveAction, showNotes ,isImage);
 };
 
 /**

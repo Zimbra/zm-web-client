@@ -617,7 +617,7 @@
         
 <template id="share.Dialogs#UploadDialog">
 	<div style='overflow:auto'>
-        <div id="{id}_label" style="margin-bottom:0.5em;"><$=ZmMsg.uploadChoose$></div>
+        <div id="${id}_label" style="margin-bottom:0.5em;"><$=ZmMsg.uploadChoose$></div>
         <div style="margin-bottom:0.5em;margin-left:1em;">
             <form accept-charset='utf-8' method='POST' action='<$= data.uri $>' id='${id}_form' enctype='multipart/form-data'>
                 <table id='${id}_table' class='ZPropertySheet'></table>
