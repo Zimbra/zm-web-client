@@ -37,7 +37,7 @@ ZmHtmlEditor = function(parent, posStyle, content, mode, withAce, enablePaste) {
     }
 
 	DwtHtmlEditor.call(this, {parent:parent, className:"ZmHtmlEditor", posStyle:posStyle,
-							  content:content, mode:mode, blankIframeSrc:appContextPath+"/public/blank.html"});
+							  content:content, mode:mode});
 
 	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));
 
