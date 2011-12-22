@@ -521,6 +521,7 @@ DIV.vSpace {
  */
 .Unread 					{	@Text-unread@ 		}
 .Trash 					{	@Text-deleted@ 		}
+.Unread .SubjectDoubleRow	{	@Text-unread@ 		} /* overrides quirksmode, since quirks sets table font-weight to normal and takes precedence, so this is more specific, and since SubjectDoubleRow is on a TD it works */
 
 
 /* Overview */
