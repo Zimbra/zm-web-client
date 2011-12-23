@@ -643,7 +643,7 @@
 	<$ if (data.expanded) { $>
 		<$= data.addressSummary $>
 	<$ } else { $>
-		<$= data.from $>&nbsp;<span class='ZmConvListFragment'><$= data.fragment $></span>
+		<span><$= data.from $></span><span class='ZmConvListFragment'><$= data.fragment $></span>
 	<$ } $>
 </template>
 	

@@ -807,8 +807,6 @@ ZmMailMsgCapsuleView = function(params) {
 	this._showingQuotedText = false;
 	this._showingCalendar = false;
 	this._infoBarId = this._htmlElId;
-
-	this.addListener(DwtEvent.ONMOUSEDOWN, this._mouseDownListener.bind(this));
 	
 	this.addListener(ZmMailMsgView._TAG_CLICK, this._msgTagClicked.bind(this));
 	this.addListener(ZmInviteMsgView.REPLY_INVITE_EVENT, this._convView._inviteReplyListener);
@@ -1291,37 +1289,6 @@ function() {
 	ctlr._mailListView._selectedMsg = null;
 };
 
-// Left-click anywhere selects this msg view. Right-click on header shows action menu.
-ZmMailMsgCapsuleView.prototype._mouseDownListener =
-function(ev) {
-	
-	if (ev.button == DwtMouseEvent.LEFT) {
-		this._toggleExpansion();
-	}
-	else if (ev.button == DwtMouseEvent.RIGHT) {
-		var el = DwtUiEvent.getTargetWithProp(ev, "id", false, this._header._htmlElId);
-		if (el == this._header.getHtmlElement()) {
-			this._header.setFocused(true);
-			this._convView.actionedMsgView = this;
-			var target = DwtUiEvent.getTarget(ev);
-			if (this._objectManager && !AjxUtil.isBoolean(this._objectManager) && this._objectManager._findObjectSpan(target)) {
-				// let zimlet framework handle this; we don't want to popup our action menu
-				return;
-			}
-			this._resetOperations();
-			this._controller._setTagMenu(this._actionsMenu, [this._msg]);
-			this._actionsMenu.popup(0, ev.docX, ev.docY);
-			this._convView.setMsg(this._msg);
-			// set up the event so that we don't also get a browser menu
-			ev._dontCallPreventDefault = false;
-			ev._returnValue = false;
-			ev._stopPropagation = true;
-			ev._authoritative = true;	// don't let subsequent listeners mess with us
-			return true;
-		}
-	}
-};
-
 ZmMailMsgCapsuleView.prototype.setFocused =
 function(focused) {
 	this.condClassName(focused, DwtCssStyle.FOCUSED);
@@ -1405,6 +1372,7 @@ ZmMailMsgCapsuleViewHeader = function(params) {
 	this.addListener(DwtEvent.ONDBLCLICK, this._dblClickListener);
 	this.addListener(DwtEvent.ONMOUSEDOWN, this._mouseDownListener.bind(this));
 	
+	this.setScrollStyle(DwtControl.CLIP);
 	this._setHeaderClass();
 };
 
@@ -1481,7 +1449,36 @@ function() {
 
 ZmMailMsgCapsuleViewHeader.prototype._mouseDownListener =
 function(ev) {
-	return ZmMailMsgCapsuleView.prototype._mouseDownListener.apply(this._msgView, arguments);
+	
+	var msgView = this._msgView;
+	var convView = msgView._convView;
+	
+	if (ev.button == DwtMouseEvent.LEFT) {
+		msgView._toggleExpansion();
+	}
+	else if (ev.button == DwtMouseEvent.RIGHT) {
+		var el = DwtUiEvent.getTargetWithProp(ev, "id", false, this._htmlElId);
+		if (el == this.getHtmlElement()) {
+			this.setFocused(true);
+			convView.actionedMsgView = this;
+			var target = DwtUiEvent.getTarget(ev);
+			var objMgr = msgView._objectManager;
+			if (objMgr && !AjxUtil.isBoolean(objMgr) && objMgr._findObjectSpan(target)) {
+				// let zimlet framework handle this; we don't want to popup our action menu
+				return;
+			}
+			msgView._resetOperations();
+			msgView._controller._setTagMenu(this._actionsMenu, [this._msg]);
+			msgView._actionsMenu.popup(0, ev.docX, ev.docY);
+			convView.setMsg(this._msg);
+			// set up the event so that we don't also get a browser menu
+			ev._dontCallPreventDefault = false;
+			ev._returnValue = false;
+			ev._stopPropagation = true;
+			ev._authoritative = true;	// don't let subsequent listeners mess with us
+			return true;
+		}
+	}
 };
 	
 ZmMailMsgCapsuleViewHeader.prototype._dragListener =

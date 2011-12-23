@@ -466,6 +466,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	font-weight:normal;
 }
 
+.Conv2MsgHeader .ZmConvListFragment {
+	padding-left:5px;
+}
+
 /* bug #48863 - fix for IE/Webkit */
 .Trash TD {
 	text-decoration:line-through;
@@ -780,6 +784,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	#ENDIF
 	white-space:nowrap;
 	cursor:pointer;
+	-moz-user-select:text;
 }
 
 .Conv2MsgHeader.focused {
