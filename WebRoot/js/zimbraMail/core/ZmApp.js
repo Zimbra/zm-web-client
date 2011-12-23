@@ -699,7 +699,7 @@ function(params) {
 	if (!sessionId) {
 		var controllers = this._sessionController[type];
 		for (var id in controllers) {
-			if (controllers[id].inactive && !controllers[id].isPinned) {
+			if (controllers[id].inactive && !controllers[id].isPinned && !controllers[id].isHidden) {
 				controller = controllers[id];
 				break;
 			}

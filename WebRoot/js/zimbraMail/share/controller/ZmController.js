@@ -47,6 +47,7 @@ ZmController = function(container, app, type, sessionId) {
 	this._appViews = {};
 	
 	this._authenticating = false;
+	this.isHidden = (sessionId == ZmApp.HIDDEN_SESSION);
 };
 
 ZmController.prototype.isZmController = true;

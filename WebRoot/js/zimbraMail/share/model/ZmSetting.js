@@ -253,6 +253,9 @@ ZmSetting.FONT_MODERN	= "modern";
 ZmSetting.FONT_WIDE		= "wide";
 ZmSetting.FONT_SYSTEM	= "system";
 
+// name for dynamic CSS class created from user font prefs
+ZmSetting.USER_FONT_CLASS = "userFontPrefs";
+
 //task filterby setting
 ZmSetting.TASK_FILTER_ALL = "";
 ZmSetting.TASK_FILTER_TODO = "TODO";

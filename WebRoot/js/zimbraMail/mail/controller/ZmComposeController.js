@@ -174,16 +174,17 @@ function() {
 /**
  * Begins a compose session by presenting a form to the user.
  *
- * @param	{Hash}	params		a hash of parameters
- * @param {constant}	params.action		the new message, reply, forward, or an invite action
- * @param {Boolean}	params.inNewWindow		if <code>true</code>, we are in detached window
- * @param {ZmMailMsg}	params.msg			the original message (reply/forward), or address (new message)
- * @param {String}	params.toOverride 	the initial value for To: field
- * @param {String}	params.subjOverride 	the initial value for Subject: field
- * @param {String}	params.extraBodyText the canned text to prepend to body (invites)
- * @param {AjxCallback}	params.callback		the callback to run after view has been set
- * @param {String}	params.accountName	the on-behalf-of From address
- * @param {String}	accountName	[string]*		on-behalf-of From address
+ * @param {Hash}		params			a hash of parameters:
+ * @param {constant}	action			the new message, reply, forward, or an invite action
+ * @param {Boolean}		inNewWindow		if <code>true</code>, we are in detached window
+ * @param {ZmMailMsg}	msg				the original message (reply/forward), or address (new message)
+ * @param {String}		toOverride 		the initial value for To: field
+ * @param {String}		subjOverride 	the initial value for Subject: field
+ * @param {String}		extraBodyText	the canned text to prepend to body (invites)
+ * @param {AjxCallback}	callback		the callback to run after view has been set
+ * @param {String}		accountName		the on-behalf-of From address
+ * @param {String}		accountName		on-behalf-of From address
+ * @param {boolean}		hideView		if true, don't show compose view
  */
 ZmComposeController.prototype.doAction =
 function(params) {
@@ -442,20 +443,18 @@ function(params) {
 /**
  * Sends the message represented by the content of the compose view.
  * 
- * @param	{String}	attId		the id
- * @param	{constant}	draftType		the draft type (see <code>ZmComposeController.DRAFT_TYPE_</code> constants)
- * @param	{AjxCallback}	callback		the callback
- * @param	{Boolean}	processDataURIImages
+ * @param	{String}		attId					the id
+ * @param	{constant}		draftType				the draft type (see <code>ZmComposeController.DRAFT_TYPE_</code> constants)
+ * @param	{AjxCallback}	callback				the callback
+ * @param	{Boolean}		processDataURIImages
  */
 ZmComposeController.prototype.sendMsg =
 function(attId, draftType, callback, contactId, processDataURIImages) {
-    if(typeof processDataURIImages === "undefined"){
-        processDataURIImages = true;
-    }
-    if(processDataURIImages){
+	
+    if (processDataURIImages !== false) {
         var processDataURIImagesCallback = new AjxCallback(this, this._sendMsg, [attId, null, draftType, callback, contactId]);
         var result = this._processDataURIImages(this._composeView._getIframeDoc() ,processDataURIImagesCallback);
-        if(result){
+        if (result){
             return;
         }
     }
@@ -568,7 +567,7 @@ function(attId, docIds, draftType, callback, contactId) {
 	}
 
 	// check for read receipt
-	var requestReadReceipt = this.isRequestReadReceipt();
+	var requestReadReceipt = !this.isHidden && this.isRequestReadReceipt();
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg, [draftType, msg]);
@@ -674,39 +673,36 @@ function(draftType, msg, ex) {
 
 /**
  * Creates a new ZmComposeView if one does not already exist
- *
- * @param initHide	Set to true if compose view should be initially rendered
- *					off screen (used as an optimization to preload this view)
- *
- * @private
  */
 ZmComposeController.prototype.initComposeView =
-function(initHide, composeMode) {
+function() {
+
 	if (this._composeView) { return; }
 
-	this._composeView = new ZmComposeView(this._container, this, composeMode);
-	var callbacks = {};
-	callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
-	callbacks[ZmAppViewMgr.CB_PRE_UNLOAD] = new AjxCallback(this, this._preUnloadCallback);
-	callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
-	callbacks[ZmAppViewMgr.CB_PRE_SHOW] = new AjxCallback(this, this._preShowCallback);
-	callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
-	this._initializeToolBar();
-	var elements = this.getViewElements(null, this._composeView, this._toolbar);
+	if (!this.isHidden) {
+		this._composeView = new ZmComposeView(this._container, this, this._composeMode);
+		var callbacks = {};
+		callbacks[ZmAppViewMgr.CB_PRE_HIDE]		= this._preHideCallback.bind(this);
+		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD]	= this._preUnloadCallback.bind(this);
+		callbacks[ZmAppViewMgr.CB_POST_SHOW]	= this._postShowCallback.bind(this);
+		callbacks[ZmAppViewMgr.CB_PRE_SHOW]		= this._preShowCallback.bind(this);
+		callbacks[ZmAppViewMgr.CB_POST_HIDE]	= this._postHideCallback.bind(this);
+		this._initializeToolBar();
+		var elements = this.getViewElements(null, this._composeView, this._toolbar);
+	
+		this._app.createView({	viewId:		this._currentViewId,
+								viewType:	this._currentViewType,
+								elements:	elements, 
+								controller:	this,
+								callbacks:	callbacks,
+								tabParams:	this._getTabParams()});
 
-	this._app.createView({	viewId:		this._currentViewId,
-							viewType:	this._currentViewType,
-							elements:	elements, 
-							controller:	this,
-							callbacks:	callbacks,
-							tabParams:	this._getTabParams()});
-	if (initHide) {
-		this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-		this._composeView.enableInputs(false);
+		if (this._composeView.identitySelect) {
+			this._composeView.identitySelect.addChangeListener(new AjxListener(this, this._identityChangeListener, [true]));
+		}
 	}
-
-	if (this._composeView.identitySelect) {
-		this._composeView.identitySelect.addChangeListener(new AjxListener(this, this._identityChangeListener, [true]));
+	else {
+		this._composeView = new ZmHiddenComposeView(this, this._composeMode);
 	}
 };
 
@@ -850,11 +846,19 @@ function(map) {
  */
 ZmComposeController.prototype.getSelectedSignature =
 function() {
-	var button = this._getSignatureButton();
-	var menu = button ? button.getMenu() : null;
-	if (menu) {
-		var menuitem = menu.getSelectedItem(DwtMenuItem.RADIO_STYLE);
-		return menuitem ? menuitem.getData(ZmComposeController.SIGNATURE_KEY) : null;
+	if (!this.isHidden) {
+		var button = this._getSignatureButton();
+		var menu = button ? button.getMenu() : null;
+		if (menu) {
+			var menuitem = menu.getSelectedItem(DwtMenuItem.RADIO_STYLE);
+			return menuitem ? menuitem.getData(ZmComposeController.SIGNATURE_KEY) : null;
+		}
+	}
+	else {
+		// for hidden compose, return the default signature
+		var ac = window.parentAppCtxt || window.appCtxt;
+		var collection = ac.getIdentityCollection();
+		return this._composeView._getSignatureIdForAction(collection.defaultIdentity);
 	}
 };
 
@@ -945,7 +949,7 @@ function(params) {
 
 	var cv = this._composeView;
 	if (!cv) {
-		this.initComposeView(params.hideView, this._composeMode);
+		this.initComposeView();
 		cv = this._composeView;
 	} else {
 		cv.setComposeMode(this._composeMode, false, true);
@@ -955,44 +959,48 @@ function(params) {
 		this._currentSignatureId = cv._getSignatureIdForAction(identity, action);
 	}
 
-	this._initializeToolBar();
-	this.resetToolbarOperations();
-	this._setOptionsMenu();
+	if (!this.isHidden) {
+		this._initializeToolBar();
+		this.resetToolbarOperations();
+		this._setOptionsMenu();
+	}
 	this._curIncOptions = null;
 	cv.set(params);
-	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
 
-	this._setAddSignatureVisibility();
+	if (!this.isHidden) {
+		appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
+		this._setAddSignatureVisibility();
 
-    if (params.readReceipt) {
-        var menu = this._optionsMenu[this._action];
-        var mi = menu && menu.getOp(ZmOperation.REQUEST_READ_RECEIPT);
-        if (mi && this.isReadReceiptEnabled()) {
-            mi.setChecked(true, true);
-        }
-    }
-
-	this._setComposeTabGroup();
-	if (!params.hideView) {
-		this._app.pushView(this._currentViewId);
-	}
-	if (!appCtxt.isChildWindow) {
-		cv.updateTabTitle();
-	}
-	cv.reEnableDesignMode();
-
-	if (msg && (action == ZmOperation.DRAFT)) {
-		this._draftType = ZmComposeController.DRAFT_TYPE_MANUAL;
-		if (msg.autoSendTime) {
-			this.saveDraft(ZmComposeController.DRAFT_TYPE_MANUAL, null, null, new AjxCallback(msg, msg.setAutoSendTime, null));
-			if (!this._autoSendHaltedDialog) {
-				this._autoSendHaltedDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON]});
-				this._autoSendHaltedDialog.setMessage(ZmMsg.messageAutoSaveAborted, DwtMessageDialog.WARNING_STYLE);
+		if (params.readReceipt) {
+			var menu = this._optionsMenu[action];
+			var mi = menu && menu.getOp(ZmOperation.REQUEST_READ_RECEIPT);
+			if (mi && this.isReadReceiptEnabled()) {
+				mi.setChecked(true, true);
 			}
-			this._autoSendHaltedDialog.popup(cv._getDialogXY());
 		}
-	} else {
-		this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
+	
+		this._setComposeTabGroup();
+		if (!params.hideView) {
+			this._app.pushView(this._currentViewId);
+		}
+		if (!appCtxt.isChildWindow) {
+			cv.updateTabTitle();
+		}
+		cv.reEnableDesignMode();
+
+		if (msg && (action == ZmOperation.DRAFT)) {
+			this._draftType = ZmComposeController.DRAFT_TYPE_MANUAL;
+			if (msg.autoSendTime) {
+				this.saveDraft(ZmComposeController.DRAFT_TYPE_MANUAL, null, null, new AjxCallback(msg, msg.setAutoSendTime, null));
+				if (!this._autoSendHaltedDialog) {
+					this._autoSendHaltedDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON]});
+					this._autoSendHaltedDialog.setMessage(ZmMsg.messageAutoSaveAborted, DwtMessageDialog.WARNING_STYLE);
+				}
+				this._autoSendHaltedDialog.popup(cv._getDialogXY());
+			}
+		} else {
+			this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
+		}
 	}
 
     this.sendMsgCallback = params.sendMsgCallback;
@@ -1000,7 +1008,6 @@ function(params) {
 	if (params.callback) {
 		params.callback.run(this);
 	}
-    
 };
 
 ZmComposeController.prototype._initializeToolBar =
@@ -2011,7 +2018,7 @@ function() {
 
 ZmComposeController.prototype._canSaveDraft =
 function() {
-	return appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED) && !this._composeView._isInviteReply(this._action);
+	return !this.isHidden && appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED) && !this._composeView._isInviteReply(this._action);
 };
 
 /*

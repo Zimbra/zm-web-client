@@ -1885,7 +1885,7 @@ function(sessionId) {
     var controllers = this._sessionController[ZmId.VIEW_MSG];
     var controller;
     for (var id in controllers) {
-        if (controllers[id].getMsg() && controllers[id].getMsg().nId == sessionId) {
+        if (!controllers[id].isHidden && controllers[id].getMsg() && controllers[id].getMsg().nId == sessionId) {
             controller = controllers[id];
             break;
         }

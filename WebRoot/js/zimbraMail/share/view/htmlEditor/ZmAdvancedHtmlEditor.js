@@ -213,7 +213,7 @@ function(html, insertFontStyle, onlyInnerContent) {
 	var p_style = "<style type='text/css'>p { margin: 0; }</style>"; // bug 3264
 
 	if (insertFontStyle) {
-		html = this._getFontStyle(html);
+		html = ZmAdvancedHtmlEditor._getFontStyle(html);
 	}
 	return [
 		"<html><head>",
@@ -223,8 +223,9 @@ function(html, insertFontStyle, onlyInnerContent) {
 		"</body></html>"
 	].join("");
 };
+ZmAdvancedHtmlEditor._embedHtmlContent = ZmAdvancedHtmlEditor.prototype._embedHtmlContent;
 
-ZmAdvancedHtmlEditor.prototype._getFontStyle =
+ZmAdvancedHtmlEditor._getFontStyle =
 function(html) {
 	var a = [], i = 0;
 	a[i++] = "<div style='font-family: ";

@@ -140,8 +140,28 @@ function() {
 	this._replyDiv			= document.getElementById(this._replyDivId);
 	this._replyContainer	= document.getElementById(this._replyContainerId);
 	this._replyInput		= document.getElementById(this._replyInputId);
-	
+
+	this._setReplyInputClass();
+	var settings = appCtxt.getSettings();
+	var listener = this._setReplyInputClass.bind(this);
+	settings.getSetting(ZmSetting.COMPOSE_AS_FORMAT).addChangeListener(listener);
+	settings.getSetting(ZmSetting.COMPOSE_INIT_DIRECTION).addChangeListener(listener);
+		
 	this._initialized = true;
+};
+
+ZmConvView2.prototype._setReplyInputClass =
+function() {
+	var input = this._replyInput;
+	if (!input) { return; }
+	if ((this._showingHint === false) && (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML)) {
+		Dwt.addClass(input, ZmSetting.USER_FONT_CLASS);
+	}
+	else {
+		Dwt.delClass(input, ZmSetting.USER_FONT_CLASS);
+	}
+	var dir = appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION);
+	input.dir = (dir == ZmSetting.RTL || input.dir != "") ? dir : "";
 };
 
 ZmConvView2.prototype._actionsMenuPopdownListener =
@@ -153,7 +173,7 @@ function() {
 };
 
 ZmConvView2.prototype._renderConv =
-function(conv, callback) {
+function(conv) {
 
 	this._setConvHeader();
 	this._renderMessages(conv, this._messagesDiv);
@@ -170,10 +190,6 @@ function(conv, callback) {
 	Dwt.setHandler(this._replyInput, DwtEvent.ONBLUR, this._onInputFocusChange.bind(this, false));
 
 	this._scheduleResize();
-	
-	if (callback) {
-		callback();
-	}
 };
 
 /**
@@ -404,6 +420,8 @@ function(show, force, noResize) {
 		Dwt.setSize(AjxEnv.isIE ? this._replyContainer : this._replyInput, Dwt.DEFAULT, replyH);
 		Dwt.delClass(this._replyInput, ZmConvView2.HINT_CLASS, show ? ZmConvView2.HINT_CLASS : null);
 		this._showReplyToolbar(!show, noResize);
+		this._showingHint = show;
+		this._setReplyInputClass();
 	}
 };
 
@@ -571,9 +589,7 @@ function() {
 	if (val && (val != this._replyHint)) {
 		var params = {
 			sendNow:		true,
-			inNewWindow:	false,
-			sessionId:		ZmApp.HIDDEN_SESSION,
-			composeMode:	DwtHtmlEditor.TEXT
+			inNewWindow:	false
 		};
 		this._compose(params);
 	}
@@ -663,6 +679,32 @@ function(addresses, max) {
 	return new AjxListFormat().format(list);
 };
 
+ZmConvView2.prototype._cancelListener =
+function() {
+	this._replyInput.value = "";
+	this._showHint(true);
+};
+
+// Hands off to a compose view, or takes what's in the quick reply and sends it
+ZmConvView2.prototype._compose =
+function(params) {
+
+	params.action = params.action || ZmOperation.REPLY_ALL;
+	params.msg = params.msg || this._item.getFirstHotMsg();
+	params.text = this._replyInput.value;
+	params.hideView = true;
+	params.composeMode = (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+	if (params.composeMode == DwtHtmlEditor.HTML) {
+		// wrap <html> and <body> tags around content, and set font style
+		params.text = ZmAdvancedHtmlEditor._embedHtmlContent(params.text, true);
+	}
+	var composeCtlr = appCtxt.getApp(ZmApp.MAIL).getComposeController(ZmApp.HIDDEN_SESSION);
+	composeCtlr.doAction(params);
+	if (params.sendNow) {
+		composeCtlr.sendMsg(null, null, this._handleResponseSendMsg.bind(this));
+	}
+};
+
 ZmConvView2.prototype._handleResponseSendMsg =
 function() {
 	if (!appCtxt.isOffline) { // see bug #29372
@@ -670,25 +712,6 @@ function() {
 	}
 	this._replyInput.value = "";
 	this._showHint(true);
-};
-
-ZmConvView2.prototype._cancelListener =
-function() {
-	this._replyInput.value = "";
-	this._showHint(true);
-};
-
-ZmConvView2.prototype._compose =
-function(params) {
-	params.action = params.action || ZmOperation.REPLY_ALL;
-	params.msg = params.msg || this._item.getFirstHotMsg();
-	params.extraBodyText = this._replyInput.value;
-	params.hideView = params.sendNow;
-	this._controller._doAction(params);
-	if (params.sendNow) {
-		var composeCtlr = appCtxt.getApp(ZmApp.MAIL).getComposeController(ZmApp.HIDDEN_SESSION);
-		composeCtlr.sendMsg(null, null, this._handleResponseSendMsg.bind(this));
-	}
 };
 
 ZmConvView2.prototype.addInviteReplyListener =
@@ -1376,6 +1399,8 @@ ZmMailMsgCapsuleViewHeader = function(params) {
 		date:		dateString
 	}
 	this._createHtmlFromTemplate("mail.Message#Conv2MsgHeader", subs);
+	this._infoSpan = document.getElementById(this._msgInfoId);
+	this._dateSpan = document.getElementById(this._msgDateId);
 
 	this.addListener(DwtEvent.ONDBLCLICK, this._dblClickListener);
 	this.addListener(DwtEvent.ONMOUSEDOWN, this._mouseDownListener.bind(this));
@@ -1409,24 +1434,27 @@ function() {
 	this.setClassName(classes.join(" "));
 };
 
-// Expanded: From address (full name), fragment, date
-// Collapsed: Address summary (from W to X, Y, and Z), date
+// Collapsed: From address (full name), fragment, date
+// Expanded: Address summary (from W to X, Y, and Z), date
 ZmMailMsgCapsuleViewHeader.prototype._setExpanded =
 function(expanded) {
 
 	this._expanded = expanded;
-	var td = document.getElementById(this._msgInfoId);
-	if (td) {
-		var fromAddr = this._msg.getAddress(AjxEmailAddress.FROM);
-		var from = this._from = fromAddr ? AjxStringUtil.htmlEncode(fromAddr.toString(true)) : ZmMsg.unknown;
-		var subs = {
-			expanded:		expanded,
-			from:			from,
-			fragment:		this._getFragment(),
-			addressSummary:	this._getAddressSummary()
-		};
-		var html = AjxTemplate.expand("mail.Message#Conv2MsgHeaderInfo", subs);
-		td.innerHTML = html;
+	var fromAddr = this._msg.getAddress(AjxEmailAddress.FROM);
+	var from = this._from = fromAddr ? AjxStringUtil.htmlEncode(fromAddr.toString(true)) : ZmMsg.unknown;
+	var subs = {
+		expanded:		expanded,
+		from:			from,
+		fragment:		this._getFragment(),
+		addressSummary:	this._getAddressSummary()
+	};
+	var html = AjxTemplate.expand("mail.Message#Conv2MsgHeaderInfo", subs);
+	this._infoSpan.innerHTML = html;
+
+	// Clean up minor WebKit-only issue where bottom edge of overflowed subject text is visible in info span
+	if (AjxEnv.isWebKitBased && !expanded && !this._headerSet) {
+		Dwt.setSize(this._dateSpan, Dwt.DEFAULT, Dwt.getSize(this._infoSpan).y);
+		this._headerSet = true;
 	}
 };
 

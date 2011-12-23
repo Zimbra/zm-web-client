@@ -399,6 +399,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
         sortOrderSetting.defaultValue = AjxUtil.hashCopy(sortPref);
     }
 
+	this._updateUserFontPrefsRule();
 };
 
 /**
@@ -1077,4 +1078,17 @@ function(dialog) {
 	window.onbeforeunload = null;
 	var url = AjxUtil.formatUrl({});
 	window.location.replace(url);
+};
+
+// Adds/replaces a CSS rule that comprises user font prefs
+ZmSettings.prototype._updateUserFontPrefsRule =
+function() {
+	if (this._userFontPrefsRuleIndex != null) {
+		DwtCssStyle.removeRule(document.styleSheets[0], this._userFontPrefsRuleIndex);
+	}
+	var selector = "." + ZmSetting.USER_FONT_CLASS;
+	var declaration = "font-family:" + appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY) + ";" +
+					  "font-size:" + appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE) + ";" +
+					  "color:" + appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR) + ";";
+	this._userFontPrefsRuleIndex = DwtCssStyle.addRule(document.styleSheets[0], selector, declaration);
 };
