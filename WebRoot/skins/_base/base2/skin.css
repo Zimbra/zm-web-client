@@ -530,4 +530,4 @@ SELECT						{	@FieldBorder@	}
     color:white;
 }
 
-.appt_new_time .ImgBlank_16{ display: none; }
+.appt_new_time .ImgBlank_16, .appt_time .ImgBlank_16{ display: none; }
