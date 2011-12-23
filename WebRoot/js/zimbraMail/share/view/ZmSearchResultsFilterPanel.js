@@ -43,7 +43,6 @@ ZmSearchResultsFilterPanel = function(params) {
 	this._checkbox = {};
 	
 	// advanced filters
-	this._filter	= {};
 	this._menu		= {};
 	
 	this._createHtml();
@@ -184,11 +183,11 @@ ZmSearchResultsFilterPanel.CONDITIONALS = [
 ZmSearchResultsFilterPanel.prototype._createHtml =
 function() {
 	this.getHtmlElement().innerHTML = AjxTemplate.expand(this.TEMPLATE, {id:this._htmlElId});
-	this._basicPanel = document.getElementById(this._htmlElId + "_basicPanel");
-	this._basicContainer = document.getElementById(this._htmlElId + "_basic");
-	this._advancedPanel = document.getElementById(this._htmlElId + "_advancedPanel");
-	this._advancedContainer = document.getElementById(this._htmlElId + "_advanced");
-	this._conditionalsContainer = document.getElementById(this._htmlElId + "_conditionals");
+	this._basicPanel			= document.getElementById(this._htmlElId + "_basicPanel");
+	this._basicContainer		= document.getElementById(this._htmlElId + "_basic");
+	this._advancedPanel			= document.getElementById(this._htmlElId + "_advancedPanel");
+	this._advancedContainer		= document.getElementById(this._htmlElId + "_advanced");
+	this._conditionalsContainer	= document.getElementById(this._htmlElId + "_conditionals");
 };
 
 // returns a list of filters that apply for the results' app
@@ -207,15 +206,9 @@ function(filterIds, filterHash) {
 				continue;
 			}
 		}
-		var apps = filter.apps || [ZmApp.MAIL];
-		if (apps == ZmSearchResultsFilterPanel.ALL_APPS) {
+		var apps = (filter.apps == ZmSearchResultsFilterPanel.ALL_APPS) ? filter.apps : AjxUtil.arrayAsHash(filter.apps || [ZmApp.MAIL]);
+		if ((filter.apps == ZmSearchResultsFilterPanel.ALL_APPS) || apps[this._resultsApp]) {
 			filters.push({id:id, filter:filter});
-		}
-		else {
-			var hash = AjxUtil.arrayAsHash(apps);
-			if (hash[this._resultsApp]) {
-				filters.push({id:id, filter:filter});
-			}
 		}
 	}
 	return filters;
@@ -229,21 +222,10 @@ function() {
 		var result = results[i];
 		this._addBasicFilter(result.id, result.filter.text);
 	}
-	this._getDomains();
-};
-
-// TODO: fetch domains and att types in a batch request
-ZmSearchResultsFilterPanel.prototype._getDomains =
-function(callback) {
-	var domainList = new ZmDomainList();
-	domainList.search("", ZmAddressSearchFilter.NUM_DOMAINS_TO_FETCH, this._getAttachmentTypes.bind(this));
-};
-
-ZmSearchResultsFilterPanel.prototype._getAttachmentTypes =
-function(domains) {
-	ZmSearchResultsFilterPanel.domains = domains;
-	var attTypeList = new ZmAttachmentTypeList();
-	attTypeList.load(this._addAdvancedFilters.bind(this));
+	
+	var results = this._getApplicableFilters(ZmSearchResultsFilterPanel.ADVANCED_FILTER_LIST, ZmSearchResultsFilterPanel.ADVANCED_FILTER);
+	Dwt.setVisible(this._advancedPanel, (results.length > 0));
+	this._addAdvancedFilters();
 };
 
 ZmSearchResultsFilterPanel.prototype._addAdvancedFilters =
@@ -308,19 +290,33 @@ function(id, text) {
 	var filter = ZmSearchResultsFilterPanel.ADVANCED_FILTER[id];
 	// most filters start with a generic menu
 	if (!filter.noMenu) {
-		menu = this._menu[id] = new DwtMenu({
-					parent:	button,
-					id:		ZmId.getMenuId(this._viewId, id),
-					style:	DwtMenu.POPUP_STYLE
-				});
+		var params = {
+			parent:	button,
+			id:		ZmId.getMenuId(this._viewId, id),
+			style:	DwtMenu.POPUP_STYLE
+		};
+		menu = new AjxCallback(this, this._createMenu, [params, id, filter]);
 		button.setMenu({menu: menu, menuPopupStyle: DwtButton.MENU_POPUP_STYLE_CASCADE});
 	}
-	
-	var filterObject;
+	else {
+		this._createFilter(button, id, filter);
+	}
+};
+
+ZmSearchResultsFilterPanel.prototype._createMenu =
+function(params, id, filter, button) {
+
+	var menu = this._menu[id] = new DwtMenu(params);
+	this._createFilter(menu, id, filter);
+	return menu;
+};
+
+ZmSearchResultsFilterPanel.prototype._createFilter =
+function(parent, id, filter) {
 	var handler = filter && filter.handler;
 	var updateCallback = this.update.bind(this, id);
 	var params = {
-		parent:			menu || button,
+		parent:			parent,
 		id:				id,
 		viewId:			this._viewId,
 		searchOp:		filter.searchOp,
@@ -328,10 +324,7 @@ function(id, text) {
 		resultsApp:		this._resultsApp
 	}
 	var filterClass = eval(handler);
-	filterObject = new filterClass(params);
-	if (filterObject) {
-		this._filter[id] = filterObject;
-	}
+	new filterClass(params);
 };
 
 /**
@@ -593,14 +586,21 @@ function(menu) {
 	
 	this._addressBox = this._addInput(menu, ZmMsg.address, ZmAddressSearchFilter.INPUT_WIDTH);
 	this._initAutocomplete();
-	this._domainBox = this._addComboBox(menu, ZmMsg.domain, ZmAddressSearchFilter.INPUT_WIDTH);
-	this._addDomains();
+	
+	if (!ZmSearchResultsFilterPanel.domains) {
+		var domainList = new ZmDomainList();
+		domainList.search("", ZmAddressSearchFilter.NUM_DOMAINS_TO_FETCH, this._addDomains.bind(this, menu));
+	}
+	else {
+		this._addDomains(menu, ZmSearchResultsFilterPanel.domains);
+	}
 };
 
 ZmAddressSearchFilter.prototype._addDomains =
-function() {
+function(menu, domains) {
 
-	var domains = ZmSearchResultsFilterPanel.domains;
+	ZmSearchResultsFilterPanel.domains = domains;
+	this._domainBox = this._addComboBox(menu, ZmMsg.domain, ZmAddressSearchFilter.INPUT_WIDTH);
 	if (domains && domains.length) {
 		domains = domains.slice(0, ZmAddressSearchFilter.NUM_DOMAINS_TO_SHOW - 1);
 		for (var i = 0; i < domains.length; i++) {
@@ -751,8 +751,20 @@ ZmAttachmentSearchFilter.prototype.toString = function() { return "ZmAttachmentS
 
 ZmAttachmentSearchFilter.prototype._setUi =
 function(menu) {
+
+	if (!ZmSearchResultsFilterPanel.attTypes) {
+		var attTypeList = new ZmAttachmentTypeList();
+		attTypeList.load(this._addAttachmentTypes.bind(this, menu));
+	}
+	else {
+		this._addAttachmentTypes(menu, ZmSearchResultsFilterPanel.attTypes);
+	}
+};
 	
-	var attTypes = ZmSearchResultsFilterPanel.attTypes;
+ZmAttachmentSearchFilter.prototype._addAttachmentTypes =
+function(menu, attTypes) {
+
+	ZmSearchResultsFilterPanel.attTypes = attTypes;
 	if (attTypes && attTypes.length) {
 		for (var i = 0; i < attTypes.length; i++) {
 			var attType = attTypes[i];
