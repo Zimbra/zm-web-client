@@ -142,6 +142,10 @@ function(params) {
 	if (this._msg) {
 		this._msg.onChange = null;
 	}
+
+	this._isIncludingOriginalAttachments = false;
+	this._originalAttachmentsInitialized = false;
+
 	this._acceptFolderId = params.acceptFolderId;
 	var msg = this._msg = this._addressesMsg = params.msg;
 	var obo = this._getObo(params.accountName, msg);
@@ -592,8 +596,8 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 	}
 
 	// get list of message part id's for any forwarded attachements
-	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME + this._sessionId);
-	var forwardMsgIds = this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME + this._sessionId);
+	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME + this._sessionId, !isDraft && this._hideOriginalAttachments);
+	var forwardMsgIds = this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME + this._sessionId, false);
 
 	// --------------------------------------------
 	// Passed validation checks, message ok to send
@@ -1933,14 +1937,22 @@ function() {
 };
 
 ZmComposeView.prototype._getForwardAttIds =
-function(name) {
+function(name, removeOriginalAttachments) {
 	var forAttIds = [];
 	var forAttList = document.getElementsByName(name);
 
 	// walk collection of input elements
 	for (var i = 0; i < forAttList.length; i++) {
 		if (forAttList[i].checked) {
-			forAttIds.push(forAttList[i].value);
+			var part = forAttList[i].value;
+			var att = this._partToAttachmentMap[part];
+			var original = this._originalAttachments[att.label];
+			original = original && [att.sizeInBytes];
+
+			if (removeOriginalAttachments && original) {
+				continue;
+			}
+			forAttIds.push(part);
 		}
 	}
 
@@ -2887,6 +2899,12 @@ ZmComposeView.prototype._showForwardField =
 function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 
 	var html = "";
+	var attIncludeOrigLinkId = null;
+	this._partToAttachmentMap = [];
+	if (!this._originalAttachmentsInitialized ){  //only the first time we determine which attachments are original
+		this._originalAttachments = []; //keep it associated by label and size (label => size => true) since that's the only way the client has to identify attachments from previous msg version.
+		this._hideOriginalAttachments = msg && msg.hasAttach && (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL);
+	}
 	if (!(this._msgIds && this._msgIds.length) &&
 		((incOptions && incOptions.what == ZmSetting.INC_ATTACH) || action == ZmOperation.FORWARD_ATT))
 	{
@@ -2896,6 +2914,7 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 	else if (msg && (msg.hasAttach || includeInlineImages || includeInlineAtts))
 	{
 		var attInfo = msg.getAttachmentInfo(false, includeInlineImages, includeInlineAtts);
+
 		if (attInfo.length > 0) {
 			for (var i = 0; i < attInfo.length; i++) {
 				var att = attInfo[i];
@@ -2905,13 +2924,24 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 					text:	AjxStringUtil.clipFile(att.label, 30)
 				};
 				att.link = ZmMailMsgView.getMainAttachmentLinkHtml(params);
+				this._partToAttachmentMap[att.part] = att;
+				if (!this._originalAttachmentsInitialized) {
+					if (!this._originalAttachments[att.label]) {
+						this._originalAttachments[att.label] = [];
+					}
+					this._originalAttachments[att.label][att.sizeInBytes] = true;
+				}
 			}
+			attIncludeOrigLinkId = ZmId.getViewId(this._view, ZmId.CMP_ATT_INCL_ORIG_LINK);
 			var data = {
 				attachments:		attInfo,
 				isNew:				(action == ZmOperation.NEW_MESSAGE),
 				isForward:			(action == ZmOperation.FORWARD),
 				isForwardInline:	(action == ZmOperation.FORWARD_INLINE),
 				isDraft: 			(action == ZmOperation.DRAFT),
+				hideOriginalAttachments: this._hideOriginalAttachments,
+				attIncludeOrigLinkId:	attIncludeOrigLinkId,
+				originalAttachments: this._originalAttachments,
 				fwdFieldName:		(ZmComposeView.FORWARD_ATT_NAME + this._sessionId)
 			};
 			html = AjxTemplate.expand("mail.Message#ForwardAttachments", data);
@@ -2943,8 +2973,26 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 		this._attachCount = messages.length;
 	}
 
+	this._originalAttachmentsInitialized  = true; //ok, done setting it for the first time.
+
 	this._attcDiv.innerHTML = html;
+	// include original attachments
+	if (attIncludeOrigLinkId){
+		this._attIncludeOrigLinkEl = document.getElementById(attIncludeOrigLinkId);
+		if (this._attIncludeOrigLinkEl) {
+			Dwt.setHandler(this._attIncludeOrigLinkEl, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._includeOriginalAttachments, this));
+		}
+	}
+
 };
+
+ZmComposeView.prototype._includeOriginalAttachments =
+function(ev, force) {
+	this._hideOriginalAttachments = false;
+	this._isIncludingOriginalAttachments = true;
+	this._showForwardField(this._msg, this._action, null, true);
+};
+
 
 // Miscellaneous methods
 ZmComposeView.prototype._resetBodySize =

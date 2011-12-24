@@ -522,8 +522,13 @@
 <template id='mail.Message#ForwardAttachments'>
 	<table width=100%>
 	<$ for (var i = 0; i < data.attachments.length; i++) { $>
-		<$ var attachment = data.attachments[i]; $>
-		<tr>
+		<$ var attachment = data.attachments[i];
+			var original = data.originalAttachments[attachment.label];
+			original = original && [attachment.sizeInBytes];
+			var hide = data.hideOriginalAttachments && original;
+			var style = hide ? "display:none" : "";
+		$>
+		<tr style='<$= style$>'>
 			<td width=65 align=right>
 			<$ if (i == 0) { $>
 				<div class='ImgAttachment'></div>
@@ -531,7 +536,7 @@
 			</td>
 			<td width=1%>
 				<$ if (!data.isNew) { $>
-					<$ var isChecked = data.isForward || data.isForwardInline || data.isDraft  $>
+					<$ var isChecked = true; /*data.isForward || data.isForwardInline || data.isDraft*/  $>
 					<input type='checkbox' value='<$=attachment.part$>' name='<$= data.fwdFieldName $>' <$= isChecked ? "checked='checked'>" : ">" $>
 				<$ } $>
 			</td>
@@ -547,6 +552,14 @@
 			</td>
 		</tr>
 	<$ } $>
+	<$ if (data.hideOriginalAttachments) { $>
+			<tr>
+				<td width="70">&nbsp;</td>
+				<td class="nobreak" colspan="2">
+					<a href="#" id='${attIncludeOrigLinkId}'><$=ZmMsg.includeOriginalAttachments $></a>
+				</td>
+			</tr>
+		<$ } $>
 	</table>
 </template>
 

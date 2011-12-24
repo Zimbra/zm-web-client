@@ -1793,6 +1793,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 			// use content location instead of built href flag
 			var useCL = false;
 			// set size info if any
+			props.sizeInBytes = attach.s || 0;
 			if (attach.s != null && attach.s >= 0) {
 				var numFormatter = AjxNumberFormat.getInstance();  
 				if (attach.s < 1024) {
