@@ -1846,17 +1846,17 @@ function(appt, mode) {
 ZmCalViewController.prototype._confirmDeleteApptDialog =
 function(){
 
-if (!this._confirmDialog) {
+    if (!ZmCalViewController._confirmDialog) {
         // setting up order of display of buttons
         var buttons = [ DwtDialog.NO_BUTTON, DwtDialog.YES_BUTTON, DwtDialog.CANCEL_BUTTON ];
-		this._confirmDialog = new DwtConfirmDialog(this._shell, null, id, buttons);
-        var yesButton = this._confirmDialog.getButton(DwtDialog.YES_BUTTON);
-        var noButton = this._confirmDialog.getButton(DwtDialog.NO_BUTTON);
+		ZmCalViewController._confirmDialog = new DwtConfirmDialog(this._shell, null, "CNF_DEL_SENDEDIT", buttons);
+        var yesButton = ZmCalViewController._confirmDialog.getButton(DwtDialog.YES_BUTTON);
+        var noButton = ZmCalViewController._confirmDialog.getButton(DwtDialog.NO_BUTTON);
 
         yesButton.setText(ZmMsg.editMessage);     // Changing the text for Yes button
         noButton.setText(ZmMsg.sendCancellation); // Changing the text for No button
 	}
-	return this._confirmDialog;
+	return ZmCalViewController._confirmDialog;
 };
 
 ZmCalViewController.prototype._promptCancelReply =
@@ -1877,7 +1877,7 @@ function(appt, mode) {
         confirmDialog.setTitle(ZmMsg.confirmDeleteApptTitle);
 		confirmDialog.popup(ZmMsg.confirmCancelApptReply, cancelReplyCallback, cancelNoReplyCallback);
 	} else {
-        confirmDialog = appCtxt.getConfirmationDialog();
+        confirmDialog = appCtxt.getConfirmationDialog("CNF_DEL_YESNO");
 		var msg = isTrash ? ZmMsg.confirmPermanentCancelAppt : ZmMsg.confirmCancelAppt;
 
 		if (appt.isRecurring() && !appt.isException && !isTrash) {
