@@ -945,7 +945,7 @@ function(abook) {
 ZmCalColView.prototype.setTimer=function(min){
     var period = min*60*1000;
     return AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.updateTimeIndicator), period);
-}
+};
 
 ZmCalColView.prototype.updateTimeIndicator=function(){
     var curDate = new Date();
@@ -966,13 +966,13 @@ ZmCalColView.prototype.updateTimeIndicator=function(){
     }
     else{Dwt.setVisibility(calendarStrip,false);}
     return this.setTimer(1);
-}
+};
 
 ZmCalColView.prototype.startIndicatorTimer=function(){
    if(!this._indicatorTimer){
     this._indicatorTimer = this.updateTimeIndicator();
    }
-}
+};
 
 ZmCalColView.prototype.checkIndicatorNeed=function(viewId,startDate){
    var isValidView = (viewId == ZmId.VIEW_CAL_WORK_WEEK || viewId == ZmId.VIEW_CAL_WEEK || viewId == ZmId.VIEW_CAL_DAY);
@@ -995,7 +995,7 @@ ZmCalColView.prototype.checkIndicatorNeed=function(viewId,startDate){
    }else{
        this._isValidIndicatorDuration = true;
    }
-}
+};
 
 /*
 *   Checks whether any offscreen appointment exists, and indicates according to the direction it gets hidden.

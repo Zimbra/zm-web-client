@@ -896,6 +896,10 @@ function(appt) {};
 ZmCalBaseView.prototype._createHtml =
 function() {};
 
+// override
+ZmCalBaseView.prototype.checkIndicatorNeed =
+function(viewId, startDate) {};
+
 ZmCalBaseView.prototype._controlListener =
 function(ev) {
 	if ((ev.oldWidth != ev.newWidth) ||
