@@ -118,7 +118,8 @@ function() {
 ZmContactController.prototype._getTabParams =
 function() {
 	return {id:this.tabId,
-			image: "Close",
+			image:"CloseGray",
+            hoverImage:"Close",
 			text: null, //we update it using _updateTabTitle since before calling _setViewContents _getFullName does not return the name
 			textPrecedence:77,
 			tooltip: text,

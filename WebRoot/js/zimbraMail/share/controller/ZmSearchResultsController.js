@@ -173,7 +173,8 @@ ZmSearchResultsController.prototype._getTabParams =
 function() {
 	return {
 		id:				this.tabId,
-		image:			"Close",
+		image:          "CloseGray",
+        hoverImage:     "Close",
 		text:			ZmSearchResultsController.DEFAULT_TAB_TEXT,
 		textPrecedence:	90,
 		tooltip:		ZmSearchResultsController.DEFAULT_TAB_TEXT,

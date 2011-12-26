@@ -46,6 +46,7 @@ ZmAppButton = function(params) {
     DwtButton.call(this, params);
 
     this.setImage(params.image);
+    this.setHoverImage(params.hoverImage);
     this.setText(params.text);
 };
 

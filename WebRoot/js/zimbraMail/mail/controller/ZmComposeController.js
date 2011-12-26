@@ -708,7 +708,7 @@ function() {
 
 ZmComposeController.prototype._getTabParams =
 function() {
-	return {id:this.tabId, image:"Close", text:ZmComposeController.DEFAULT_TAB_TEXT, textPrecedence:75,
+	return {id:this.tabId, image:"CloseGray", hoverImage:"Close", text:ZmComposeController.DEFAULT_TAB_TEXT, textPrecedence:75,
 			tooltip:ZmComposeController.DEFAULT_TAB_TEXT, style: DwtLabel.IMAGE_RIGHT};
 };
 

@@ -157,7 +157,7 @@ function(task, newFolderId) {
 
 ZmTaskController.prototype._getTabParams =
 function() {
-	return {id:this.tabId, image:"Close", text:ZmTaskController.DEFAULT_TAB_TEXT, textPrecedence:77,
+	return {id:this.tabId, image:"CloseGray", hoverImage:"Close", text:ZmTaskController.DEFAULT_TAB_TEXT, textPrecedence:77,
 			tooltip:ZmTaskController.DEFAULT_TAB_TEXT, style: DwtLabel.IMAGE_RIGHT};
 };
 
