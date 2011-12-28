@@ -1309,8 +1309,15 @@ function(idoc){
 };
 
 ZmComposeView.prototype.showAttachmentDialog =
-function() {
+function(val) {
 	var attachDialog = this._attachDialog = appCtxt.getAttachDialog();
+	if (val == ZmMsg.myComputer){
+		attachDialog.getMyComputerView();
+	}else if (val == ZmMsg.briefcase){
+		attachDialog.getBriefcaseView();
+    }else {
+		return;
+	}
 	var callback = new AjxCallback(this, this._attsDoneCallback, [true]);
 	attachDialog.setUploadCallback(callback);
 	attachDialog.popup();
@@ -1817,6 +1824,24 @@ function(incAddrs, incSubject) {
 	return (curFormValue != this._origFormValue);
 };
 
+ZmComposeView.prototype._removeAttachedFile  =
+function(spanId){
+	var node = document.getElementById(spanId)
+	var parent = node && node.parentNode;
+
+    if (parent){
+		parent.removeChild(node);
+    }
+
+    if (!parent.childNodes.length){
+        this._attcDiv.innerHTML = "";
+        var dndTooltip = document.getElementById(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP));
+        if (dndTooltip){
+            dndTooltip.style.display = "block";
+        }
+    }
+};
+
 ZmComposeView.prototype.cleanupAttachments =
 function(all) {
 	var attachDialog = this._attachDialog;
@@ -1943,17 +1968,16 @@ function(name, removeOriginalAttachments) {
 
 	// walk collection of input elements
 	for (var i = 0; i < forAttList.length; i++) {
-		if (forAttList[i].checked) {
 			var part = forAttList[i].value;
-			var att = this._partToAttachmentMap[part];
-			var original = this._originalAttachments[att.label];
-			original = original && [att.sizeInBytes];
-
-			if (removeOriginalAttachments && original) {
-				continue;
-			}
+            if (this._partToAttachmentMap.length && removeOriginalAttachments){
+			    var att = this._partToAttachmentMap[part];
+			    var original = this._originalAttachments[att.label];
+			    original = original && [att.sizeInBytes];
+                if (removeOriginalAttachments && original) {
+				    continue;
+			    }
+            }
 			forAttIds.push(part);
-		}
 	}
 
 	return forAttIds;
@@ -2608,8 +2632,9 @@ function(templateId) {
 		identityRowId:		ZmId.getViewId(this._view, ZmId.CMP_IDENTITY_ROW),
 		identitySelectId:	ZmId.getViewId(this._view, ZmId.CMP_IDENTITY_SELECT),
 		priorityId:			ZmId.getViewId(this._view, ZmId.CMP_PRIORITY),
-		attRowId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
+		attRowId:		ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
 		attDivId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_DIV),
+		attBtnId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_BTN),
 		zdndToolTipId:		ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP),
 		acAddrBubbles:		this._useAcAddrBubbles
 	};
@@ -2635,6 +2660,7 @@ function(templateId, data) {
 	this._oboCheckbox = document.getElementById(data.oboCheckboxId);
 	this._oboLabel = document.getElementById(data.oboLabelId);
 	this._attcDiv = document.getElementById(data.attDivId);
+	this._attcBtn = document.getElementById(data.attBtnId);
 
 	this._setEventHandler(data.subjectInputId, "onKeyUp");
 	this._setEventHandler(data.subjectInputId, "onBlur");
@@ -2673,8 +2699,38 @@ function(templateId, data) {
 		this._priorityButton.reparentHtmlElement(data.priorityId);
 		this._priorityButton.setToolTipContent(ZmMsg.setPriority);
 	}
+    var attButtonId = ZmId.getButtonId(this._view, ZmId.CMP_ATT_BTN);
+	this._attButton = new DwtButton({parent:this, id:attButtonId});
+	this._attButton.setText(ZmMsg.attach);
 
+    if (AjxEnv.supportsHTML5File){
+        var styleStr = "";
+        var node = this._attButton.getHtmlElement().getElementsByClassName("ZWidgetTitle")[0];
 
+        if (AjxEnv.isChrome)
+            styleStr = "right:200px;";
+        else if (AjxEnv.isSafari)
+            styleStr = "right: 45px;width: 21px;";
+        else if (AjxEnv.isFirefox)
+            styleStr  = "right:185px;";
+
+        node.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentAttachBtn", {styleStr:styleStr});
+    } else {
+             this._attButton._textEl.onclick = function(event){
+                var curView = appCtxt.getAppViewMgr().getCurrentView();
+                curView.collapseAttMenu();
+                curView.showAttachmentDialog(ZmMsg.myComputer);
+             }
+    }
+    this._attButton.setMenu(new AjxCallback(this, this._attachButtonMenuCallback));
+	this._attButton.reparentHtmlElement(data.attBtnId);
+	this._attButton.setToolTipContent(ZmMsg.attach);
+};
+
+ZmComposeView.prototype.collapseAttMenu =
+function() {
+    var menu = this._attButton && this._attButton.getMenu();
+    menu.popdown();
 };
 
 ZmComposeView.prototype._handleFromListener =
@@ -2735,6 +2791,14 @@ function(accountName, msgId) {
 };
 
 
+ZmComposeView.prototype._createAttachMenuItem =
+function(menu, text, listner) {
+	var item = DwtMenuItem.create({parent:menu, text:text});
+	item.value = text;
+	if (listner)
+	item.addSelectionListener(listner);
+	return item;
+};
 ZmComposeView.prototype._createPriorityMenuItem =
 function(menu, text, flag) {
 	var item = DwtMenuItem.create({parent:menu, imageInfo:this._getPriorityImage(flag), text:text});
@@ -2749,6 +2813,157 @@ function() {
 	this._createPriorityMenuItem(menu, ZmMsg.high, ZmItem.FLAG_HIGH_PRIORITY);
 	this._createPriorityMenuItem(menu, ZmMsg.normal, "");
 	this._createPriorityMenuItem(menu, ZmMsg.low, ZmItem.FLAG_LOW_PRIORITY);
+	return menu;
+};
+
+ZmComposeView.prototype._startUploadAttachment =
+function() {
+
+	this._attButton.setEnabled(false);
+	this._controller._toolbar.getButton("SEND").setEnabled(false);
+	this._controller._toolbar.getButton("SAVE_DRAFT").setEnabled(false);
+	this._controller._uploadingProgress = true;
+};
+
+ZmComposeView.prototype.updateAttachFileNode =
+function(files,index) {
+    var curFileName = AjxStringUtil.htmlEncode(files[index].name.substr(-32));
+    var prevFileName = AjxStringUtil.htmlEncode(files[index-1].name.substr(-32));
+
+    this._loadingSpan.firstChild.innerHTML = curFileName;
+    this._loadingSpan.firstChild.nextSibling.innerHTML = curFileName;
+
+    var element = document.createElement("span");
+    element.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentBubble", {fileName:prevFileName});
+
+    if (this._loadingSpan.nextSibling)
+        this._loadingSpan.parentNode.insertBefore(element.firstChild,this._loadingSpan.nextSibling);
+    else
+       this._loadingSpan.parentNode.appendChild(element);
+
+};
+
+ZmComposeView.prototype._resetUpload =
+function(err) {
+	var curView = appCtxt.getAppViewMgr().getCurrentView();
+	curView._attButton.setEnabled(true);
+    curView._controller._toolbar.getButton("SEND").setEnabled(true);
+    curView._controller._toolbar.getButton("SAVE_DRAFT").setEnabled(true);
+    curView._controller._uploadingProgress = false;
+    if (curView._controller._uploadAttReq){
+		curView._controller._uploadAttReq = null;
+	}
+
+	if(curView.si){
+		clearTimeout(curView.si);
+	}
+    if (err === true && curView._loadingSpan){
+		curView._loadingSpan.parentNode.removeChild(curView._loadingSpan);
+        curView._controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO);// Save the previous state
+	}
+
+    if(curView._loadingSpan){
+		curView._loadingSpan = null;
+	}
+};
+
+ZmComposeView.prototype._uploadDoneCallback =
+function(resp) {
+	var response = resp && resp.length && resp[2];
+	this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, response, null, callback);
+};
+
+
+ZmComposeView.prototype._uploadFileProgress =
+function(progress){
+	if (!this._loadingSpan ||  (!progress.lengthComputable) ){ 
+		return;
+        }
+	var span1 = this._loadingSpan.childNodes[0];
+	var span2 = this._loadingSpan.childNodes[1];
+	span1.style.width = ((span2.offsetWidth) *  (progress.loaded / progress.total)) + "px";
+};
+
+ZmComposeView.prototype._abortUploadFile =
+function(){
+	if (this._controller._uploadAttReq)
+		this._controller._uploadAttReq.abort();
+	this._resetUpload(true);
+};
+
+ZmComposeView.prototype._progress =
+function() {
+    var span1 = this._loadingSpan.firstChild;
+    var span2 = this._loadingSpan.firstChild.nextSibling;
+    span1.style.width = ((span1.offsetWidth + 1) % span2.offsetWidth) + "px";
+};
+
+ZmComposeView.prototype._initProgressSpan =
+function(fileName) {
+    if (fileName.length > 35)
+        fileName = fileName.substr(-35);
+
+    fileName = AjxStringUtil.htmlEncode(fileName);
+
+    var node = this._attcDiv.getElementsByTagName("span") && this._attcDiv.getElementsByTagName("span")[0];
+    if (node){
+        var element = document.createElement("span");
+        element.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentBubble", {fileName:fileName});
+        node.parentNode.insertBefore(element.firstChild,node);
+    } else {
+        this._attcDiv.innerHTML = AjxTemplate.expand("mail.Message#UploadProgress",{fileName:fileName});
+    }
+    this._loadingSpan = this._attcDiv.getElementsByTagName("span")[0];
+};
+
+
+ZmComposeView.prototype._submitMyComputerAttachments =
+function(files, node) {
+    var size = 0;
+    var name = "";
+    if (!AjxEnv.supportsHTML5File){
+        // IE, FF 3.5 and lower
+        this.showAttachmentDialog(ZmMsg.myComputer);
+        return;
+    }
+
+    if(files) {
+        for (var j = 0; j < files.length; j++) {
+            var file = files[j];
+            size += file.size || file.fileSize; /*Safari*/;
+            if(size > appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)) {
+                var msgDlg = appCtxt.getMsgDialog();
+                var errorMsg = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(appCtxt.get(ZmSetting.ATTACHMENT_SIZE_LIMIT)));
+                msgDlg.setMessage(errorMsg, DwtMessageDialog.WARNING_STYLE);
+                msgDlg.popup();
+                return false;
+            }
+        }
+    }
+
+    this._initProgressSpan(files[0].name);
+
+    this._controller._uploadMyComputerFile(files);
+
+};
+
+ZmComposeView.prototype._attachButtonMenuCallback =
+function() {
+	var menu = new DwtMenu({parent:this._attButton});
+    var div = document.createElement("DIV");
+    if (!AjxEnv.supportsHTML5File){
+        mi = this._createAttachMenuItem(menu, ZmMsg.myComputer, new AjxListener(this, this.showAttachmentDialog,[ZmMsg.myComputer]) );
+    } else {
+        var mi = this._createAttachMenuItem(menu, ZmMsg.myComputer);
+        div.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentMyComputer");
+        mi.getHtmlElement().appendChild(div.firstChild);
+    }
+
+	if (appCtxt.multiAccounts || appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)){
+		mi = this._createAttachMenuItem(menu, ZmMsg.briefcase, new AjxListener(this, this.showAttachmentDialog, [ZmMsg.briefcase]) );
+	}
+	appCtxt.notifyZimlets("initializeAttachPopup", [menu, this], {waitUntilLoaded:true});
+
 	return menu;
 };
 
@@ -2945,12 +3160,13 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 				fwdFieldName:		(ZmComposeView.FORWARD_ATT_NAME + this._sessionId)
 			};
 			html = AjxTemplate.expand("mail.Message#ForwardAttachments", data);
+            this._attachCount = attInfo.length;
+            if (this._attachCount){
+                var dndTooltip = document.getElementById(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP));
+                if (dndTooltip)
+                    dndTooltip.style.display = "none";
+            }
 
-			if (attInfo.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
-				this._attcDiv.style.height = ZmComposeView.MAX_ATTACHMENT_HEIGHT;
-				this._attcDiv.style.overflow = "auto";
-			}
-			this._attachCount = attInfo.length;
 		}
 	} else if (this._msgIds && this._msgIds.length) {
 		// use main window's appCtxt
@@ -2966,10 +3182,6 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 			fwdFieldName: (ZmComposeView.FORWARD_MSG_NAME + this._sessionId)
 		};
 		html = AjxTemplate.expand("mail.Message#ForwardMessages", data);
-		if (messages.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
-			this._attcDiv.style.height = ZmComposeView.MAX_ATTACHMENT_HEIGHT;
-			this._attcDiv.style.overflow = "auto";
-		}
 		this._attachCount = messages.length;
 	}
 
@@ -2983,7 +3195,6 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 			Dwt.setHandler(this._attIncludeOrigLinkEl, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._includeOriginalAttachments, this));
 		}
 	}
-
 };
 
 ZmComposeView.prototype._includeOriginalAttachments =
@@ -3220,19 +3431,39 @@ function(type, dialog) {
 	this.reEnableDesignMode();
 };
 
+ZmComposeView.prototype._closeAttachDialog =
+function(){
+    if (this._attachDialog)
+        this._attachDialog.popdown();
+
+    this._initProgressSpan(ZmMsg.uploadingAttachment);
+
+    var progress = function (obj) {
+                    var selfobject = obj;
+				    obj.si = window.setInterval (function(){selfobject._progress();}, 500);
+     };
+    progress(this);
+
+};
+
 // Files have been uploaded, re-initiate the send with an attachment ID.
 ZmComposeView.prototype._attsDoneCallback =
 function(isDraft, status, attId, docIds) {
 	DBG.println(AjxDebug.DBG1, "Attachments: isDraft = " + isDraft + ", status = " + status + ", attId = " + attId);
+    this._closeAttachDialog();
 	if (status == AjxPost.SC_OK) {
-		this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, attId, docIds);
+		var callback = new AjxCallback(this, this._resetUpload);
+		this._startUploadAttachment(); 
+		this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, attId, docIds, callback);
 	} else if (status == AjxPost.SC_UNAUTHORIZED) {
 		// auth failed during att upload - let user relogin, continue with compose action
+		this._resetUpload(true);
 		var ex = new AjxException("401 response during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);
 		var callback = new AjxCallback(this._controller, isDraft ? this._controller.saveDraft : this._controller._send);
 		this._controller._handleException(ex, {continueCallback:callback});
 	} else {
 		// bug fix #2131 - handle errors during attachment upload.
+		this._resetUpload(true);
 		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, (status || AjxPost.SC_NO_CONTENT));
 		switch (status) {
 			// add other error codes/message here as necessary
