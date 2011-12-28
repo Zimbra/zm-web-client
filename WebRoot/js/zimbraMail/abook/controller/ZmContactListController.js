@@ -1030,11 +1030,19 @@ function(ev) {
  */
 ZmContactListController.prototype._printListener =
 function(ev) {
+
 	var contacts = this._listView[this._currentViewId].getSelection();
 	var ids = [];
 	for (var i = 0; i < contacts.length; i++) {
+		if (contacts[i].isDistributionList()) {
+			continue; //don't print DLs
+		}
 		ids.push(contacts[i].id);
 	}
+	if (ids.length == 0) {
+		return;
+	}
+
 	var url = "/h/printcontacts?id=" + ids.join(",");
 	if (this.isGalSearch()) {
 		url = "/h/printcontacts?id=" + ids.join("&id=");
