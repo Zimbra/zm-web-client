@@ -529,7 +529,10 @@ function(contact, subscribe, result) {
 	var awaitingApproval = status == "awaiting_approval";
 	this._subscriptionButton.setEnabled(!awaitingApproval);
 	contact.dlInfo.isMember = subscribed;
-	this._updateSubscriptionButtonAndMsg(contact);
+	if (subscribed || unsubscribed) {
+		contact.clearDlInfo();
+		contact._notify(ZmEvent.E_MODIFY);
+	}
 	var msg = subscribed ? ZmMsg.dlSubscribed
 			: unsubscribed ? ZmMsg.dlUnsubscribed
 			: awaitingApproval && subscribe ? ZmMsg.dlSubscriptionRequested

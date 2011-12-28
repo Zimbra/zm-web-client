@@ -1401,17 +1401,22 @@ function(ev, fileAsChanged) {
 	appCtxt.setStatusMsg(ZmMsg.dlSaved);
 
 	//for DLs we reload from the server since the server does not send notifications.
-	this.dlMembers = null;
-	this.dlInfo = null;
-	var app = appCtxt.getApp(ZmApp.CONTACTS);
-	app.cacheDL(this.getEmail(), null); //clear the cache for this DL.
-	appCtxt.cacheRemove(this.getId()); //also some other cache.
+	this.clearDlInfo();
 
 	var details = {
 		fileAsChanged: fileAsChanged
 	};
 
 	this._notify(ZmEvent.E_MODIFY, details);
+};
+
+ZmContact.prototype.clearDlInfo =
+function () {
+	this.dlMembers = null;
+	this.dlInfo = null;
+	var app = appCtxt.getApp(ZmApp.CONTACTS);
+	app.cacheDL(this.getEmail(), null); //clear the cache for this DL.
+	appCtxt.cacheRemove(this.getId()); //also some other cache.
 };
 
 /**
