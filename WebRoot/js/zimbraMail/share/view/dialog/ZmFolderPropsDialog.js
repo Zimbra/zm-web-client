@@ -37,7 +37,7 @@ ZmFolderPropsDialog = function(parent, className) {
 	}
 
 
-	DwtDialog.call(this, {parent:parent, className:className, title:ZmMsg.folderProperties, extraButtons:extraButtons});
+	DwtDialog.call(this, {parent:parent, className:className, title:ZmMsg.folderProperties, extraButtons:extraButtons, id:"FolderProperties"});
 
 	this._tabViews  = [];
 	this._tabKeys   = [];
