@@ -651,11 +651,13 @@ function(draftType, msg, ex) {
             this._composeView.setBackupForm();
             retVal = true;
         } else if (ex.code == ZmCsfeException.MAIL_QUOTA_EXCEEDED) {
-            if (this._composeView._attachDialog) {
-                msg = ZmMsg.errorQuotaExceeded;
-                this._composeView._attachDialog.setFooter('You have exceeded your mail quota. Please remove some attachments and try again.' );
-                showMsg = true;
-            }
+		    msg = ZmMsg.errorQuotaExceeded;
+	    }
+
+        if (this._uploadingProgress){
+		    this._composeView._resetUpload(true);
+		    msg = ZmMsg.attachingFilesError + (ex.msg || "");
+            showMsg = true;
         }
         if (msg && showMsg) {
             var msgDialog = appCtxt.getMsgDialog();
@@ -966,6 +968,7 @@ function(params) {
 	}
 	this._curIncOptions = null;
 	cv.set(params);
+	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
 
 	if (!this.isHidden) {
 		appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
@@ -1027,9 +1030,6 @@ function() {
 
 	buttons.push(ZmOperation.CANCEL, ZmOperation.SEP, ZmOperation.SAVE_DRAFT);
 
-	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
-		buttons.push(ZmOperation.SEP, ZmOperation.ATTACHMENT);
-	}
 
 	if (!appCtxt.isOffline) {
 		buttons.push(ZmOperation.SEP, ZmOperation.SPELL_CHECK);
@@ -2164,6 +2164,86 @@ ZmComposeController.prototype._processDataURIImages = function(idoc, callback){
     }
     return true;
 };
+
+ZmComposeController.prototype._uploadMyComputerFile =
+    function(files, prevData, start){
+    try {
+        var req = new XMLHttpRequest(); // we do not call this function in IE
+        var curView = appCtxt.getAppViewMgr().getCurrentView();
+        this.upLoadC = this.upLoadC + 1;
+        var controller = this;
+
+        if (!prevData){
+            prevData = [];
+            start = 1;
+        } else {
+            start++;
+        }
+
+
+        var file = files[start-1];
+
+        var fileName = file.name || file.fileName;
+
+
+        req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
+        req.setRequestHeader("Cache-Control", "no-cache");
+        req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        req.setRequestHeader("Content-Type",  (file.type || "application/octet-stream") + ";");
+        req.setRequestHeader("Content-Disposition", 'attachment; filename="'+ fileName + '"');
+
+	    curView._startUploadAttachment();
+
+        this._uploadAttReq = req;
+	    if (AjxEnv.supportsHTML5File){
+        	req.upload.addEventListener("progress", function(evt){
+                   curView._uploadFileProgress(evt)
+            }, false);
+	    }else{
+            var progress = function (obj) {
+                var viewObj = obj;
+		        viewObj.si = window.setInterval (function(){viewObj._progress();}, 500);
+	        };
+            progress(curView);
+        }
+
+	    req.onreadystatechange = function(){
+		    if(req.readyState === 4 && req.status === 200) {
+			    var resp = eval("["+req.responseText+"]");
+			    var response = resp.length && resp[2];
+			    if (response){
+                    prevData.push(response[0]);
+                    if (start < files.length){
+                        curView.updateAttachFileNode(files, start);
+                        controller._uploadMyComputerFile(files, prevData, start )
+                    }else {
+				        var callback = new AjxCallback(this, curView._resetUpload);
+				        controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, prevData, null, callback);
+                    }
+			    }else {
+                    var callback = new AjxCallback(this, curView._resetUpload);
+				    controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, prevData, null, callback);
+				    var msgDlg = appCtxt.getMsgDialog();
+				    this.upLoadC = this.upLoadC - 1;
+				    msgDlg.setMessage(ZmMsg.importErrorUpload, DwtMessageDialog.CRITICAL_STYLE);
+				    msgDlg.popup();
+				    return false;
+			    }
+		    }
+	    }
+        req.send(file);
+        delete req;
+    } catch(exp) {
+	    var curView = appCtxt.getAppViewMgr().getCurrentView();
+	    curView._resetUpload(true);
+        var msgDlg = appCtxt.getMsgDialog();
+        this.upLoadC = this.upLoadC - 1;
+        msgDlg.setMessage(ZmMsg.importErrorUpload, DwtMessageDialog.CRITICAL_STYLE);
+        msgDlg.popup();
+        return false;
+    }
+};
+
 
 ZmComposeController.prototype._uploadImage = function(blob, callback){
     var req = new XMLHttpRequest();

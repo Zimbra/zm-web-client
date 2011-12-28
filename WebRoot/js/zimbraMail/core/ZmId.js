@@ -670,6 +670,7 @@ ZmId.CMP_IDENTITY_SELECT	= "_identity_control";
 ZmId.CMP_PRIORITY			= "_priority";
 ZmId.CMP_ATT_ROW			= "_attachments_row";
 ZmId.CMP_ATT_DIV			= "_attachments_div";
+ZmId.CMP_ATT_BTN			= "_attachments_btn";
 ZmId.CMP_ATT_INCL_ORIG_LINK	= "_show_orig";
 ZmId.CMP_DND_TOOLTIP        = "_zdnd_tooltip";
 

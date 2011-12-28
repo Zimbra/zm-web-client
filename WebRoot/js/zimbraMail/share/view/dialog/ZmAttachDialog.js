@@ -37,10 +37,10 @@ ZmAttachDialog = function(shell, className) {
 
 	// Ok and Cancel Actions
 	this._defaultCancelCallback = new AjxCallback(this, this._defaultCancelListener);
-	this._cancelListeners = {};
+	this._cancelListener = null;
 
 	this._defaultOkCallback = new AjxCallback(this, this._defaultOkListener);
-	this._okListeners = {};
+	this._okListener = null;
 
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, function() {
 		this._cancelButtonListener();
@@ -50,25 +50,15 @@ ZmAttachDialog = function(shell, className) {
 		this._okButtonListener();
 	}));
 
-	this._tabKeys = {};
 
 	var okButton = this.getButton(DwtDialog.OK_BUTTON);
 	okButton.setText(ZmMsg.attach);
 
-	// Add Default MyComputer tab
-	this._addMyComputerTab();
-    if (appCtxt.multiAccounts || appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)) {
-        this._addBriefcaseViewTab();
-    }
 };
 
 ZmAttachDialog.prototype = new DwtDialog;
 ZmAttachDialog.prototype.constructor = ZmAttachDialog;
 
-/**
- * Defines the "my computer" tab key.
- */
-ZmAttachDialog.TABKEY_MYCOMPUTER	= "MY_COMPUTER";
 /**
  * Defines the "briefcase" tab key.
  */
@@ -84,15 +74,16 @@ ZmAttachDialog.supportsHTML5 = ( window.FileReader/*Firefox*/ || AjxEnv.isChrome
  * @param	{constant}		tabKey		the tab key (see <code>TABKEY_</code> constants)
  * @param	{AjxListener|AjxCallback}	cancelCallbackOrListener		the listener
  */
-ZmAttachDialog.prototype.addCancelListener =
-function(tabKey, cancelCallbackOrListener) {
+ZmAttachDialog.prototype.setCancelListener =
+function(cancelCallbackOrListener) {
 	if (cancelCallbackOrListener &&
 		(cancelCallbackOrListener instanceof AjxListener ||
 		 cancelCallbackOrListener instanceof AjxCallback))
 	{
-		this._cancelListeners[tabKey] = cancelCallbackOrListener;
+		this._cancelListener = cancelCallbackOrListener;
 	}
 };
+
 
 ZmAttachDialog.prototype._defaultCancelListener =
 function() {
@@ -101,9 +92,8 @@ function() {
 
 ZmAttachDialog.prototype._cancelButtonListener =
 function() {
-	var cancelListener = this._cancelListeners[this._tabView.getCurrentTab()];
-	if (cancelListener) {
-		cancelListener.run();
+	if (this._cancelListener) {
+		this._cancelListener.run();
 	} else {
 		this._defaultCancelCallback.run();
 	}
@@ -115,13 +105,13 @@ function() {
  * @param	{constant}		tabKey		the tab key (see <code>TABKEY_</code> constants)
  * @param	{AjxListener|AjxCallback}	cancelCallbackOrListener		the listener
  */
-ZmAttachDialog.prototype.addOkListener =
-function(tabKey, okCallbackOrListener) {
+ZmAttachDialog.prototype.setOkListener =
+function(okCallbackOrListener) {
 	if (okCallbackOrListener &&
 		(okCallbackOrListener instanceof AjxListener ||
 		 okCallbackOrListener instanceof AjxCallback))
 	{
-		this._okListeners[tabKey] = okCallbackOrListener;
+		this._okListener = okCallbackOrListener;
 	}
 };
 
@@ -136,9 +126,8 @@ function() {
     var okButton = this.getButton(DwtDialog.OK_BUTTON);
     okButton.setEnabled(false);
 
-	var okListener = this._okListeners[this._tabView.getCurrentTab()];
-	if (okListener) {
-		okListener.run(this);
+	if (this._okListener) {
+		this._okListener.run(this);
 	} else {
 		this._defaultOkCallback.run();
 	}
@@ -156,11 +145,9 @@ function() {
 
 ZmAttachDialog.prototype._initializeTabView =
 function(view) {
-	this._tabView = new ZmAttachTabView(view, null, Dwt.STATIC_STYLE);
-	this._tabView.addTabChangeListener(new AjxListener(this, this.tabChangeListener));
-	this._tabView.addStateChangeListener(new AjxListener(this, this.stateChangeListener));
     this._setAttachmentSizeSection(view);
 	this._setInlineOptionSection(view);
+    this._setMsgSection(view);
 	this._setFooterSection(view);
 };
 
@@ -173,22 +160,6 @@ function(ev) {
 	this._resetInlineOption();
 };
 
-/**
- * @private
- */
-ZmAttachDialog.prototype.tabChangeListener =
-function(ev) {
-	this.setFooter("");
-
-	// Add a warning if there are selected files.
-	var tabKey = this._tabView.getCurrentTab();
-	var tabView = this._tabView.getTabView(tabKey);
-	if (tabView && tabView.gotAttachments()) {
-		this.setFooter(ZmMsg.attachClearUploadMessage);
-		return false;
-	}
-	return true;
-};
 
 ZmAttachDialog.prototype._setAttachmentSizeSection =
 function(view) {
@@ -199,6 +170,14 @@ function(view) {
 	view.getHtmlElement().appendChild(div);
 };
 
+ZmAttachDialog.prototype._setMsgSection =
+function(view) {
+	var div = document.createElement("div");
+	div.className = "ZmAttachDialog-footer";
+	div.id = Dwt.getNextId();
+	view.getHtmlElement().appendChild(div);
+	this._msgDiv = document.getElementById(div.id);
+};
 
 ZmAttachDialog.prototype._setFooterSection =
 function(view) {
@@ -224,74 +203,11 @@ function(html) {
 	}
 };
 
-/**
- * Gets the tab view.
- * 
- * @return	{ZmAttachTabView}	the tab view
- */
-ZmAttachDialog.prototype.getTabView =
-function() {
-	return this._tabView;
-};
+//Called when AjxEnv.supportsHTML5File is false
 
-ZmAttachDialog.prototype.addTab =
-function(id, title, tabViewPage) {
-	if (!this._tabView || !tabViewPage) { return null; }
-
-	this._tabKeys[id] = this._tabView.addTab(title, tabViewPage);
-	return this._tabKeys[id];
-};
-
-ZmAttachDialog.prototype.getTabKey =
-function(id) {
-	return this._tabKeys[id];
-};
-
-ZmAttachDialog.prototype.getTabViewPage =
-function(id) {
-	return this._tabView.getTabView(this._tabKeys[id]);
-};
-
-// PopUp Hack to refresh the UI everytime
-ZmAttachDialog.prototype.popup =
-function() {
-	var tabKey = this.getTabKey(ZmAttachDialog.TABKEY_MYCOMPUTER);
-	this._tabView.switchToTab(tabKey, true);
-
-	this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
-	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
-	this.setFooter("");
-
-	DwtDialog.prototype.popup.call(this);
-	this.setFooter("");
-    if (appCtxt.multiAccounts) {
-        var acct = appCtxt.getAppViewMgr().getCurrentView().getFromAccount();
-        var ac = window.parentAppCtxt || window.appCtxt;
-        var isBC_Enabled = ac.get(ZmSetting.BRIEFCASE_ENABLED, null, acct);
-        tabKey = this.getTabKey(ZmAttachDialog.TABKEY_BRIEFCASE);
-        var el = this._tabView.getTabButton(tabKey);
-        el.setVisible(acct.isZimbraAccount && isBC_Enabled)
-    }
-};
-
-// Upload Utitlity Methods
-ZmAttachDialog.prototype.uploadFiles =
-function() {
-    this.setFooter('');
-	var tabKey = this._tabView.getCurrentTab();
-	var tabView = this._tabView.getTabView(tabKey);
-    if(tabView && tabView.validate){
-        var valid = tabView.validate();
-        if(!valid.status){
-            this.setFooter(valid.error);
-            return false;
-        }
-    }
-	if (tabView && tabView.gotAttachments()) {
-		this.upload(this._uploadCallback, tabView.uploadForm);
-	} else {
-		this.setFooter(ZmMsg.attachSelectMessage);
-	}
+ZmAttachDialog.prototype.submitAttachmentFile =
+function(view) {
+    this.upload(this._uploadCallback, view.uploadForm);
 };
 
 ZmAttachDialog.prototype.cancelUploadFiles =
@@ -377,31 +293,32 @@ function(callback, status, attId) {
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
 };
 
-// MyComputer: Add MyComputer Tab View
-ZmAttachDialog.prototype._addMyComputerTab =
-function() {
-	this._myComputerTabViewPage = new ZmMyComputerTabViewPage(this._tabView);
-	var tabKey = this.addTab(ZmAttachDialog.TABKEY_MYCOMPUTER, ZmMsg.myComputer, this._myComputerTabViewPage);
-	this.addOkListener(tabKey, (new AjxCallback(this, this.uploadFiles)));
-	this.addCancelListener(tabKey, (new AjxCallback(this, this.cancelUploadFiles)));
+ZmAttachDialog.prototype.removePrevAttDialogContent =
+function(contentDiv) {
+    var elementNode =  contentDiv && contentDiv.firstChild;
+    if (elementNode && elementNode.className == "DwtComposite" ){
+        contentDiv.removeChild(elementNode);
+    }
 };
 
-ZmAttachDialog.prototype._addBriefcaseViewTab =
+
+ZmAttachDialog.prototype.getBriefcaseView =
 function(){
-	var briefcaseTabViewCallback = new AjxCallback(this, this.getBriefcaseTabView);
-	var tabKey = this.addTab(ZmAttachDialog.TABKEY_BRIEFCASE, ZmMsg.briefcase, briefcaseTabViewCallback);
-};
 
-ZmAttachDialog.prototype.getBriefcaseTabView =
-function(tabKey){
-	if (!this._briefcaseTabView) {
+    this.removePrevAttDialogContent(this._getContentDiv().firstChild);
+
+	if (!this._briefcaseView) {
 		AjxDispatcher.require(["BriefcaseCore", "Briefcase"]);
-		this._briefcaseTabView = new ZmBriefcaseTabView(this._tabView);
-		var okCallback = new AjxCallback(this._briefcaseTabView, this._briefcaseTabView.uploadFiles);
-		this.addOkListener(tabKey, okCallback);
-		this.addCancelListener(tabKey, (new AjxCallback(this,this.cancelUploadFiles)));
+		this._briefcaseView = new ZmBriefcaseTabView(this);
 	}
-	return this._briefcaseTabView;
+
+    this._briefcaseView.reparentHtmlElement(this._getContentDiv().childNodes[0], 0);
+    var okCallback = new AjxCallback(this._briefcaseView, this._briefcaseView.uploadFiles);
+    this.setOkListener(okCallback);
+    this.setCancelListener((new AjxCallback(this,this.cancelUploadFiles)));
+
+
+	return this._briefcaseView;
 };
 
 // Inline Option for attachment Dialog.
@@ -450,48 +367,6 @@ function() {
 
 
 /**
- * Extended DwtTabView class to get handle over switchToTab() method, so that I
- * could run a pre-switchToTab listener.
- *
- * @param parent
- * @param className
- * @param position
- *
- * @class
- * @private
- */
-ZmAttachTabView = function(parent, className, position) {
-	if (arguments.length == 0) { return; }
-
-	DwtTabView.call(this, parent, className, position);
-};
-
-ZmAttachTabView.prototype = new DwtTabView;
-ZmAttachTabView.prototype.constructor = new ZmAttachTabView;
-
-ZmAttachTabView.prototype.addTabChangeListener =
-function(listener) {
-	this._addTabChangeListener = listener;
-};
-
-ZmAttachTabView.prototype.switchToTab =
-function(tabKey, skipTabChangeListener){
-	if (!skipTabChangeListener &&
-		this._addTabChangeListener &&
-		!this._addTabChangeListener.run())
-	{
-		var button = this._tabBar.getButton(this.getCurrentTab());
-		button.setOpen();
-
-		button = this._tabBar.getButton(tabKey);
-		button.setClosed();
-		return;
-	}
-
-	DwtTabView.prototype.switchToTab.call(this,tabKey);
-};
-
-/**
  * Attachment Upload View
  *
  * @param parent
@@ -501,32 +376,50 @@ function(tabKey, skipTabChangeListener){
  * @class
  * @private
  */
+ZmAttachDialog.prototype.getMyComputerView =
+function(){
+    var newElm = false;
+    this.removePrevAttDialogContent(this._getContentDiv().firstChild);
+
+	if (!this._myComputerView) {
+		this._myComputerView = new ZmMyComputerTabViewPage(this);
+        newElm = true;
+	}
+
+    this._myComputerView.reparentHtmlElement(this._getContentDiv().childNodes[0], 0);
+
+    if (!newElm) {
+        this._myComputerView.resetAttachments()
+    }
+
+    var okCallback = new AjxCallback(this, this.submitAttachmentFile,[this._myComputerView]);
+    this.setOkListener(okCallback);
+    this.setCancelListener((new AjxCallback(this,this.cancelUploadFiles)));
+
+	return this._myComputerView;
+};
+
+
 ZmMyComputerTabViewPage = function(parent, className, posStyle) {
 	if (arguments.length == 0) { return; }
 
-	DwtTabViewPage.call(this, parent, className, Dwt.STATIC_STYLE);
-
+	DwtComposite.call(this, parent, className, Dwt.STATIC_STYLE);
+    this._createHtml();
+    this.showMe();
 	this.setScrollStyle(Dwt.SCROLL);
 };
 
-ZmMyComputerTabViewPage.prototype = new DwtTabViewPage;
+ZmMyComputerTabViewPage.prototype = new DwtComposite;
 ZmMyComputerTabViewPage.prototype.constructor = ZmMyComputerTabViewPage;
 
 ZmMyComputerTabViewPage.SHOW_NO_ATTACHMENTS	= 5;
 ZmMyComputerTabViewPage.MAX_NO_ATTACHMENTS	= 10;
 ZmMyComputerTabViewPage.UPLOAD_FIELD_NAME	= "_attFile_";
 
-ZmMyComputerTabViewPage.prototype.toString =
-function() {
-	return "ZmMyComputerTabViewPage";
-};
 
 ZmMyComputerTabViewPage.prototype.showMe =
 function() {
 	this.resetAttachments();
-
-	DwtTabViewPage.prototype.showMe.call(this);
-
 	this.setSize(Dwt.DEFAULT, "240");
 	this._focusAttEl();
 };
@@ -544,8 +437,7 @@ function() {
 		id: this._htmlElId,
 		uri: (appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI) + "?fmt=extended")
 	};
-	this._contentEl = this.getContentHtmlElement(); // needs assigment b/c used by base class
-	this._contentEl.innerHTML = AjxTemplate.expand("share.Dialogs#ZmAttachDialog-MyComputerTab", subs);
+	this.setContent(AjxTemplate.expand("share.Dialogs#ZmAttachDialog-MyComputerTab", subs));
 
 	this.attachmentTable = document.getElementById(this._htmlElId+"_attachmentTable");
 	this.uploadForm = document.getElementById(this._htmlElId+"_uploadForm");

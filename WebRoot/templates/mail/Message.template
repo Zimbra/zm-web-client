@@ -119,6 +119,27 @@
 	</div>
 </template>
 
+<template id='mail.Message#MailAttachmentBubble'>
+        <span class="AttachmentLoading attachmentBubble" name="mailAttUploadingSpan" style="max-width: 235px; position: static; overflow: visible;">
+            <span class="AttProgressSpan1">${fileName}</span>
+            <span class="AttProgressSpan2">${fileName}</span>
+            <span onclick="window.appCtxt.getCurrentView()._abortUploadFile()"  class="ImgBubbleDelete AttachmentClose"></span>
+        </span>
+</template>
+
+<template id='mail.Message#MailAttachmentMyComputer'>
+        <input type="file" class="BrowseMyComputerMenuItem" multiple="true" name="files" onchange="window.appCtxt.getCurrentView()._submitMyComputerAttachments(files, this)">
+</template>
+
+<template id='mail.Message#MailAttachmentAttachBtn'>
+    <div style="position: relative; max-width: 21px;">
+	    <input type="file" class="BrowseAttachBtn" style="${styleStr};" multiple="true" name="files" onclick="window.appCtxt.getCurrentView().collapseAttMenu();"; onchange="window.appCtxt.getCurrentView()._submitMyComputerAttachments(files, this)">
+	    <div class="ComposeAttachBtn">
+		    <span> <$=ZmMsg.attach$> </span>
+	    </div>
+    </div>
+</template>
+
 <template id='mail.Message#AutoSend'>
 	<$ if (data.autoSendTime) { $>
 		<tr id='OBJ_PREFIX_<$=Dwt.getNextId()$>_scheduled'>
@@ -460,16 +481,19 @@
 				</table>
 			</td>
 		</tr>
-		<tr id='${oboRowId}' style='display:none;'>
-			<td align=right><input type='checkbox' id='${oboCheckboxId}'></td>
-			<td colspan=2><div id='${oboLabelId}'></div></td>
-		</tr>
-		<tr id='${attRowId}'>
-			<td colspan=3><div id='${attDivId}'></div></td>
-		</tr>
-		<tr>
-			<td colspan=10><div id='${zdndToolTipId}' class='zdnd_tooltip'><$=ZmMsg.dndTooltip$></div></td>
-		</tr>
+        <tr>
+            <td>
+                <table border=0 cellpadding=0 cellspacing=0 width='100%'>
+                <tr>
+                                <td align=right id='${attBtnId}'></td>
+                </tr>
+                 </table>
+            </td>
+            <td><span id='${zdndToolTipId}' class='zdnd_tooltip'><$=ZmMsg.dndTooltip$></span></td>
+        </tr>
+        <tr id='${attRowId}'>
+            <td colspan=3 ><div id='${attDivId}'></div></td>
+        </tr>
 	</table>
 	<!-- compose editor is automatically appended below the header -->
 </template>
@@ -519,49 +543,68 @@
 	</table>
 </template>
 
-<template id='mail.Message#ForwardAttachments'>
-	<table width=100%>
-	<$ for (var i = 0; i < data.attachments.length; i++) { $>
-		<$ var attachment = data.attachments[i];
-			var original = data.originalAttachments[attachment.label];
-			original = original && [attachment.sizeInBytes];
-			var hide = data.hideOriginalAttachments && original;
-			var style = hide ? "display:none" : "";
-		$>
-		<tr style='<$= style$>'>
-			<td width=65 align=right>
-			<$ if (i == 0) { $>
-				<div class='ImgAttachment'></div>
-			<$ } $>
-			</td>
-			<td width=1%>
-				<$ if (!data.isNew) { $>
-					<$ var isChecked = true; /*data.isForward || data.isForwardInline || data.isDraft*/  $>
-					<input type='checkbox' value='<$=attachment.part$>' name='<$= data.fwdFieldName $>' <$= isChecked ? "checked='checked'>" : ">" $>
-				<$ } $>
-			</td>
-			<td class='nobreak'>
-                <$ if(appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) { $>
-                    <$= AjxStringUtil.htmlEncode(AjxStringUtil.clipFile(attachment.label,100)) $>
-                <$ } else { $>
-				    <$= attachment.link $>
-                <$ } $>
-				<$ if (attachment.size) { $>
-					(<$= attachment.size $>)
-				<$ } $>
-			</td>
-		</tr>
-	<$ } $>
-	<$ if (data.hideOriginalAttachments) { $>
-			<tr>
-				<td width="70">&nbsp;</td>
-				<td class="nobreak" colspan="2">
-					<a href="#" id='${attIncludeOrigLinkId}'><$=ZmMsg.includeOriginalAttachments $></a>
-				</td>
-			</tr>
-		<$ } $>
-	</table>
+<template id='mail.Message#UploadProgress'>
+        <table cellspacing=0 cellpadding=0 width=100%>
+        <$ var id = Dwt.getNextId(data.rowId) $>
+        <tr '<$= id $>' style="display: table-row;">
+            <td valign="top" align="right" style="width:64px; overflow:visible; white-space:nowrap">
+               <div class='ImgAttachment' style="position:absolute; left:15px;"></div>
+            </td>
+            <td width="96%" colspan="2">
+                <div class="attBubbleContainer" style="position: static; overflow: visible;">
+                <div  class="attBubbleHolder" style="display:inline-block;border-radius: 4px;">
+                    <span class="AttachmentLoading attachmentBubble" name="mailAttUploadingSpan" style="position: static; overflow: visible;">
+                        <span class="AttProgressSpan1">${fileName}</span>
+                        <span class="AttProgressSpan2">${fileName}</span>
+                        <span onclick="window.appCtxt.getCurrentView()._abortUploadFile()"  class="ImgBubbleDelete AttachmentClose"></span>
+                    </span>
+                </div>
+                </div>
+            </td>
+        </tr>
+        </table>
 </template>
+
+<template id='mail.Message#ForwardAttachments'>
+        <table cellspacing=0 cellpadding=0 border=0 width=100%>
+        <$ var id = Dwt.getNextId(data.rowId) $>
+        <tr '<$= id $>' style="display: table-row;">
+        <td valign="top" align="right" style="width:64px; overflow:visible; white-space:nowrap">
+            <$ if (data.attachments.length > 0) { $>
+                 <div class='ImgAttachment' style="position:absolute; left:15px;"></div>
+            <$ } $>
+        </td>
+        <td  width="96%" colspan="2">
+            <div class="attBubbleContainer" style="position: static; overflow: visible;">
+            <div  class="attBubbleHolder" style="display:inline-block;border-radius: 4px;">
+
+            <$ for (var i = 0; i < data.attachments.length; i++) { $>
+               <$ var attachment = data.attachments[i]; $>
+               <$ var spanId = Dwt.getNextId(data.rowId)$>
+
+               <span  id='<$= spanId $>' class="AttachmentLoading attachmentBubble" style="position: static; overflow: visible;">
+                    <span>
+                       <input type="hidden" value='<$=attachment.part$>' name='<$= data.fwdFieldName $>' >
+                   </span>
+
+                   <$ if(appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) { $>
+                         <$= AjxStringUtil.htmlEncode(AjxStringUtil.clipFile(attachment.label,100)) $>
+                    <$ } else { $>
+                    <!-- The open A element is within the attachment.link string -->
+                    <$= attachment.link $></a>
+                    <$ } $>
+                    <$ if (attachment.size) { $>
+                        (<$= attachment.size $>)
+                    <$ } $>
+                    <span onclick="window.appCtxt.getCurrentView()._removeAttachedFile('<$= spanId $>')" class="ImgBubbleDelete AttachmentClose"></span>
+              </span>
+            <$ } $>
+
+        </td>
+        </tr>
+        </table>
+</template>
+
 
 <template id='mail.Message#ZmMailConfirmView'>
 	<table width=100%>

@@ -604,6 +604,105 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .MessageHeaderAttachments {
 	@MailMsgAttachments@
 }
+.AttachmentLoading .AttachmentLoaded {
+    color:black;
+    border:2px solid #999999;
+    padding:1px 3px;
+    margin-bottom:2px;
+    margin-left:3px;
+    display:inline-block;
+    background-color:@darken(AppC,20)@;
+    height: 16px;
+    #IFDEF MSIE
+        display:inline;
+    #ENDIF
+    #IFDEF SAFARI
+        -webkit-border-radius:4px;
+    #ENDIF
+    #IFDEF GECKO
+        -moz-border-radius:4px;
+    #ENDIF
+}
+
+.AttProgressSpan1, .AttProgressSpan2 {
+    height:14px;
+    overflow: hidden;
+
+}
+
+.AttProgressSpan1 {
+    width:1px;
+    position: absolute;
+    background:#999999;
+    margin-top: 2px;
+}
+
+.AttProgressSpan2 {
+    left: 0px;
+}
+
+.AttachmentClose{
+    position:relative;
+    left-margin:3px;
+    margin-top: 2px;
+    display:inline-block;
+    cursor:pointer;
+    #IFDEF MSIE
+        display:inline;
+    #ENDIF
+}
+
+.AttachmentLoadingSpan {
+    background-color:@darken(AppC,30)@;
+}
+
+.BrowseMyComputerMenuItem {
+    bottom: 0;
+    height:25px;
+    display: block;
+    left: 0;
+    margin: 0;
+    opacity: 0;
+    padding: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 300;
+}
+
+.BrowseAttachBtn {
+    position: relative;
+    height: 15px;
+    opacity:0;
+    text-align: right;
+    z-index: 300;
+}
+
+.ComposeAttachBtn {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    border-right: 1px solid #A9A9A9;
+    padding-right: 4px;
+    z-index: 1;
+}
+
+.ComposeAttachmentMail {
+    bottom: 0;
+    display:none;
+    z-index:-1;
+    height: 10;
+    width: 30px;
+    display: block;
+    left: 0;
+    margin: 0;
+    opacity: 0;
+    padding: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
 
 .ZmMailMsgView .LabelColName, .ZmMailMsgCapsuleView .LabelColName {
 	@MailMsgHeaderLabel@
@@ -999,7 +1098,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 /* Styles to support the autocomplete option to show addresses in bubbles */
 
-.addrBubbleContainer {
+.addrBubbleContainer, .attBubbleContainer {
 	background-color:white;
 	cursor:text;
 	border:1px inset #F0F0F0;
@@ -1010,7 +1109,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	margin-top:0;
 }
 
-.addrBubbleHolder {
+.addrBubbleHolder, .attBubbleHolder {
 	padding:2px 0;
 	margin-top:2px;
 	#IFDEF MSIE
@@ -1020,7 +1119,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	overflow:auto;
 }
 
-.addrBubbleContainer input {
+.addrBubbleContainer input, .attBubbleContainer input {
 	border:0px !important;
 	outline:none !important;
 	margin-left:3px;
@@ -1028,11 +1127,11 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
     background-color:transparent;
 }
 
-.addrBubbleContainer input:first-child {
+.addrBubbleContainer input:first-child, .attBubbleContainer input:first-child {
 	margin-left:0;
 }
 
-.addrBubble, .addrBubble-selected, .addrBubble-actioned {
+.addrBubble, .addrBubble-selected, .addrBubble-actioned, .attachmentBubble {
 	color:black;
 	border:1px solid #999999;
 	padding:1px 3px;
@@ -1048,7 +1147,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	#ENDIF
 }
 
-.addrBubble {
+.addrBubble, .attachmentBubble {
 	background-color:#EEEEEE;
 }
 
