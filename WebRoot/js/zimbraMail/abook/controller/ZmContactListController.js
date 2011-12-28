@@ -250,7 +250,7 @@ function(contact, callback, result) {
 
 	contact.dlInfo.mailPolicySpecificMailers = mailPolicySpecificMailers;
 
-	this._resetOperations(this._toolbar[this._currentViewId], 0); // now that we got the dlInfo we can know better how to set the "edit" button.
+	this._resetOperations(this._toolbar[this._currentViewId], 1); // now that we got the dlInfo we can know better how to set the "edit" button.
 	var callbackFromGettingMembers = this._handleGetDlMembersResponse.bind(this, contact, callback);
 	contact.getAllDLMembers(callbackFromGettingMembers);
 };
@@ -813,11 +813,14 @@ function(parent, num) {
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
 		parent.enable(ZmOperation.NEW_MESSAGE, num > 0);
 		parent.enable(ZmOperation.CONTACT, num == 1);
-		var contact = this._listView[this._currentViewId].getSelection()[0];
-		var isDL = contact && contact.isDistributionList();
-		var isOwner = isDL && contact.dlInfo && contact.dlInfo.isOwner;
+		var isOwner = false;
+		if (num == 1) {
+			var contact = this._listView[this._currentViewId].getSelection()[0];
+			var isDL = contact && contact.isDistributionList();
+			isOwner = isDL && contact.dlInfo && contact.dlInfo.isOwner;
+		}
 		parent.enable([ZmOperation.EDIT], isOwner);
-	};
+	}
 
     this._resetQuickCommandOperations(parent);
 
