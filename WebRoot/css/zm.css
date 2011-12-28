@@ -5240,6 +5240,8 @@ border:1px solid #666;
     padding-bottom:2px;
 }
 
+.ZmSuggestLabelImage div{ cursor: pointer; }
+
 .ZmLocationSuggestion {
     border:1px solid gray;
     background-color:#E0E0E0;
@@ -5247,6 +5249,7 @@ border:1px solid #666;
     margin:4px auto;
     padding-left:4px;
     margin-bottom:4px;
+    cursor: pointer;
 }
 
 div.ZmSuggestLocationLink {
