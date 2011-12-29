@@ -670,14 +670,14 @@ function(id, content) {
             //Adding Insert image button for uploading the insert image for signature alone
             ed.addButton('zmimage', {
                 title : ZmMsg.insertImage,
-                class : "mce_ImgInsertImage",
+                "class" : "mce_ImgInsertImage",
                 onclick : onInsertImage
             });
             //Adding toggle button for showing/hiding the extended toolbar
             ed.addButton('toggle', {
                 title : ZmMsg.showExtendedToolbar,
                 onclick : onToolbarToggle,
-                class : ""
+                "class" : ""
             });
             //For dev mode we are loading this js file which overrides some methods of tinymce
             //for normal mode this file will be compressed along with other files in TinyMCE_all.js.min
