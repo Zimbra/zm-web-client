@@ -25,6 +25,7 @@ ZmAdvancedHtmlEditor = function(parent, posStyle, content, mode, withAce, repare
 	this.isTinyMCE = window.isTinyMCE;
 	this._mode = mode;
 	this._hasFocus = {};
+    this.isSignatureEditor = parent.isSignatureEditor;
 	this.initTinyMCEEditor(parent, posStyle, content, mode, withAce, reparentContainer);
     this._ignoreWords = {};
 };
@@ -66,12 +67,18 @@ function(width) {
 ZmAdvancedHtmlEditor.prototype.setSize =
 function(x, y) {
     var div = this._spellCheckDivId && document.getElementById(this._spellCheckDivId);
-	var editor = this.getEditor();
-	var bodyField = this.getBodyField();
-
+    var editorContainer = document.getElementById(this._bodyTextAreaId + "_tbl");// holds editor iframe container (table)
+    var bodyField;
+    if( this._mode === DwtHtmlEditor.HTML && editorContainer ){
+        bodyField = editorContainer;
+    }
+    else{
+        bodyField = document.getElementById(this._bodyTextAreaId);//holds textarea;
+    }
 	// FUDGE: we must substract borders and paddings - yuck.
-	var delta = this._mode == DwtHtmlEditor.HTML ? 10 : 8;
+	var delta = 10;
 
+    /*
     if (x === Dwt.CLEAR) {
 		bodyField.style.width = null;
         if (div) div.style.width = null;
@@ -90,6 +97,7 @@ function(x, y) {
 			div.style.width = x + "px";
 		}
 	}
+	*/
 
     if (y === Dwt.CLEAR) {
         bodyField.style.height = null;
@@ -98,14 +106,25 @@ function(x, y) {
         bodyField.style.height = "auto";
         if (div) div.style.height = "auto";
     } else if (typeof(y) === "number") {
-        if (this._mode == DwtHtmlEditor.HTML){
-            //y -= 52;
-            y -= 26;
-        }
-
         y -= delta; // subtract fudge factor
         if (y < 0) { y = 0; }
-        bodyField.style.height = y + "px";
+        if( this._mode === DwtHtmlEditor.TEXT ){
+            bodyField.style.height = y + "px";
+        }
+        else{
+            var iframe = this._iFrameId && document.getElementById(this._iFrameId);//holds iframe
+            if(iframe){
+                if( this.getToolbar("2").style.display === Dwt.DISPLAY_NONE ){
+                    iframe.style.height = (y - 24)+"px";
+                }
+                else{
+                    iframe.style.height = (y - 64)+"px";
+                }
+            }
+            else{
+                bodyField.style.height = (y - 18) + "px";
+            }
+        }
         if (div) {
 			if (!AjxEnv.isIE) {
 				y = y > 4 ? (y-4) : y;
@@ -115,12 +134,6 @@ function(x, y) {
 			div.style.height = y + "px";
 		}
     }
-	var editorContainer = document.getElementById(this._bodyTextAreaId + "_tbl");
-	if (editor && editorContainer) {
-		editorContainer.style.height = y + "px";
-		editorContainer.style.width = "100%";
-	}
-	//todo: handle spellcheck ids
 };
 
 ZmAdvancedHtmlEditor.prototype.editorContainerFocus =
@@ -415,6 +428,9 @@ function(parent, posStyle, content, mode, withAce, reparentContainer) {
     }
 	var htmlEl = this._editorContainer.getHtmlElement();
 
+    if( this._mode === DwtHtmlEditor.HTML ){
+        Dwt.setVisible(htmlEl, false);
+    }
 	//textarea on which html editor is constructed
 	var id = this._bodyTextAreaId = this._editorContainer.getHTMLElId() + "_content";
 	var textEl = document.createElement("textarea");
@@ -454,7 +470,7 @@ function(parent, posStyle, content, mode, withAce, reparentContainer) {
             }
             else{
                 data.name = "TinyMCE_all";
-                data.extension = ".js";
+                data.extension = ".js.zgz";
             }
 		AjxPackage.require(data);
 	} else {
@@ -532,6 +548,8 @@ function(id, content) {
 	};
 
 	function onTinyMCEEditorInit(ed) {
+        obj.onToolbarToggle();
+        Dwt.setVisible(obj.getHtmlElement(), true);
 		obj.initDefaultFontSize(ed);
         obj.initDefaultDirection();
 		tinymce.dom.Event.add(ed.getWin(), 'focus', function(e) {
@@ -578,6 +596,14 @@ function(id, content) {
         return obj.onPaste(ev, ed);
     };
 
+    function onInsertImage(ev) {
+        ZmSignatureEditor.prototype._insertImagesListener.apply(obj, ev);
+    };
+
+    function onToolbarToggle(ev) {
+        return obj.onToolbarToggle();
+    };
+
 	var urlParts = AjxStringUtil.parseURL(location.href);
 
 	//important: tinymce doesn't handle url parsing well when loaded from REST URL - override baseURL/baseURI to fix this
@@ -615,10 +641,10 @@ function(id, content) {
         // General options
 		mode :  (this._mode == DwtHtmlEditor.HTML)? "exact" : "none",
 		elements:  id,
-		plugins : "table,ztable,inlinepopups,fullscreen,zbreakquote,emotions,autolink",
+        plugins : "autolink,advlist,inlinepopups,table,paste,directionality,emotions,media",
 		theme : "advanced",
-        theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,outdent,indent,separator,bold,italic,underline,separator,forecolor,backcolor,separator,link,ztablecontrols,fullscreen,emotions,seperator",
-        theme_advanced_buttons2 : "",
+        theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,link,unlink,image",
+        theme_advanced_buttons2 : "formatselect,undo,redo,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,emotions,charmap,media,|,removeformat,code",
 		theme_advanced_buttons3 : "",
 		theme_advanced_buttons4 : "",
 		theme_advanced_toolbar_location : "top",
@@ -634,12 +660,25 @@ function(id, content) {
 		inline_styles: false,
         dialog_type : "modal",
         forced_root_block : 'div',
+        width: "100%",
 		setup : function(ed) {
 			ed.onLoadContent.add(handleContentLoad);
 			ed.onInit.add(onTinyMCEEditorInit);
 			ed.onKeyPress.add(onEditorKeyPress);
             ed.onGetContent.add(onGetContent);
             ed.onPaste.add(onPaste);
+            //Adding Insert image button for uploading the insert image for signature alone
+            ed.addButton('zmimage', {
+                title : ZmMsg.insertImage,
+                class : "mce_ImgInsertImage",
+                onclick : onInsertImage
+            });
+            //Adding toggle button for showing/hiding the extended toolbar
+            ed.addButton('toggle', {
+                title : ZmMsg.showExtendedToolbar,
+                onclick : onToolbarToggle,
+                class : ""
+            });
             //For dev mode we are loading this js file which overrides some methods of tinymce
             //for normal mode this file will be compressed along with other files in TinyMCE_all.js.min
             if(window.appDevMode){
@@ -656,9 +695,18 @@ function(id, content) {
 		}
     }
 
+    if( obj.isSignatureEditor ){
+       tinyMCEInitObj.theme_advanced_buttons1 = tinyMCEInitObj.theme_advanced_buttons1 + ",zmimage";
+    }
     if(appCtxt.get(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS)){
-        tinyMCEInitObj.plugins = tinyMCEInitObj.plugins+",directionality";
-        tinyMCEInitObj.theme_advanced_buttons1 = tinyMCEInitObj.theme_advanced_buttons1+",ltr,rtl";
+        tinyMCEInitObj.theme_advanced_buttons1 = tinyMCEInitObj.theme_advanced_buttons1 + ",|,ltr,rtl";
+    }
+    tinyMCEInitObj.theme_advanced_buttons1 = tinyMCEInitObj.theme_advanced_buttons1 + ",|,toggle";
+	if( this._mode === DwtHtmlEditor.HTML ){
+        Dwt.setVisible(obj.getHtmlElement(), false);
+    }
+    else{
+        Dwt.setVisible(obj.getHtmlElement(), true);
     }
 
 	tinyMCE.init(tinyMCEInitObj);
@@ -720,6 +768,9 @@ function(mode, convert, convertor) {
 		} else {
 			this._pendingContent = content;
 		}
+        if( !this._editorInitialized ){
+            Dwt.setVisible(this.getHtmlElement(), false);
+        }
 		tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);
 	} else {
 		var textArea = this.getContentField();
@@ -739,7 +790,7 @@ function() {
 };
 
 ZmAdvancedHtmlEditor.prototype.insertImage =
-function(src, dontExecCommand, width, height) {
+function(src, dontExecCommand, width, height, dfsrc) {
 
 	var html = [];
 	var idx= 0 ;
@@ -749,6 +800,11 @@ function(src, dontExecCommand, width, height) {
 	html[idx++] = src;
 	html[idx++] = "'";
 
+    if ( dfsrc != null) {
+        html[idx++] = " dfsrc='";
+        html[idx++] = dfsrc;
+	    html[idx++] = "'";
+    }
 	if (width != null) {
 		html[idx++] = " width='" + width + "'";
 	}
@@ -1681,6 +1737,87 @@ function() {
 ZmAdvancedHtmlEditor.prototype.getHtmlElement =
 function() {
     return this._editorContainer.getHtmlElement();
+};
+
+/*
+ * Returns toolbar row of tinymce
+ *
+ *  @param {Number}	Toolbar Row Number 1,2
+ *  @return	{Toolbar HTML Element}
+ */
+ZmAdvancedHtmlEditor.prototype.getToolbar =
+function( number ) {
+    var editor = this.getEditor();
+    if( editor && editor.controlManager ){
+        var toolbar = editor.controlManager.get("toolbar"+number);
+        if( toolbar && toolbar.id ){
+            return document.getElementById( toolbar.id );
+        }
+    }
+};
+
+/*
+ *  Returns toolbar button of tinymce
+ *
+ *  @param {String}	button name
+ *  @return	{Toolbar Button HTML Element}
+ */
+ZmAdvancedHtmlEditor.prototype.getToolbarButton =
+function( buttonName ) {
+    var editor = this.getEditor();
+    if( editor && editor.controlManager ){
+        var toolbarButton = editor.controlManager.get(buttonName);
+        if( toolbarButton && toolbarButton.id ){
+            return document.getElementById( toolbarButton.id );
+        }
+    }
+};
+
+ZmAdvancedHtmlEditor.prototype.onToolbarToggle =
+function() {
+    var iframeStyle = this.getBodyField().style;
+    var toolbar = this.getToolbar("2");
+    var toggleButton = this.getToolbarButton("toggle");
+    if(toolbar && toggleButton ){
+        if( toolbar.style.display === Dwt.DISPLAY_NONE ){
+            toggleButton.title = ZmMsg.hideExtendedToolbar;
+            Dwt.addClass( toggleButton, "mceButtonActive");
+            Dwt.delClass( toggleButton.firstChild, "mce_toggle_collapsed", "mce_toggle_expanded");
+            Dwt.show(toolbar);
+            iframeStyle.height = parseInt( iframeStyle.height ) - 26 + "px";
+        }
+        else{
+            toggleButton.title = ZmMsg.showExtendedToolbar;
+            Dwt.delClass( toggleButton, "mceButtonActive");
+            Dwt.delClass( toggleButton.firstChild, "mce_toggle_expanded", "mce_toggle_collapsed");
+            Dwt.hide(toolbar);
+            iframeStyle.height = parseInt( iframeStyle.height ) + 26 + "px";
+        }
+    }
+};
+
+/*
+ *  Inserting image for signature
+ */
+ZmAdvancedHtmlEditor.prototype.insertImageDoc =
+function(file) {
+    var src = file.rest;
+    if (!src) { return; }
+    var path = appCtxt.get(ZmSetting.REST_URL) + ZmFolder.SEP;
+    var dfsrc = file.docpath;
+    if (dfsrc && dfsrc.indexOf("doc:") == 0) {
+        var url = [path, dfsrc.substring(4)].join('');
+        src = AjxStringUtil.fixCrossDomainReference(url);
+    }
+    this.insertImage(src, null, null, null, dfsrc);
+};
+
+/*
+ *  Signature Insert image callback
+ */
+ZmAdvancedHtmlEditor.prototype._imageUploaded =
+function() {
+    ZmSignatureEditor.prototype._imageUploaded.apply(this, arguments);
 };
 
 ZmEditorContainer = function(params) {

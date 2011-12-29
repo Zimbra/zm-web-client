@@ -708,8 +708,10 @@ function( control ) {
     if( appCtxt.isTinyMCEEnabled() ){
         var signaturePage = control.parent;
         var valueEl = document.getElementById(signaturePage._htmlElId + "_SIG_EDITOR");
+        signaturePage.isSignatureEditor = true;
         var htmlEditor = new ZmAdvancedHtmlEditor(signaturePage, null, null, null, null, valueEl.parentNode);
         valueEl.parentNode.removeChild(valueEl);
+        delete signaturePage.isSignatureEditor;
         signaturePage._sigEditor = htmlEditor;
         signaturePage._populateSignatures();
     }

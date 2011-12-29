@@ -33,7 +33,7 @@
 .defaultSkin .mceExternalClose {position:absolute; top:3px; right:3px; width:7px; height:7px; background:url("../js/ajax/3rdparty/tinymce/themes/advanced/img/icons.gif?v=@jsVersion@") -820px 0}
 
 /* Layout */
-.defaultSkin table.mceLayout {border:0; border-left:1px solid #CCC; border-right:1px solid #CCC}
+.defaultSkin table.mceLayout {border:0; border-left:1px solid #CCC; border-right:1px solid #CCC; width:100%;}
 .defaultSkin table.mceLayout tr.mceFirst td {border-top:1px solid #CCC}
 .defaultSkin table.mceLayout tr.mceLast td {border-bottom:1px solid #CCC}
 .defaultSkin table.mceToolbar, .defaultSkin tr.mceFirst .mceToolbar tr td, .defaultSkin tr.mceLast .mceToolbar tr td {border:0; margin:0; padding:0;}
@@ -147,8 +147,6 @@
 .defaultSkin span.mce_undo {background-position:-160px 0}
 .defaultSkin span.mce_redo {background-position:-100px 0}
 .defaultSkin span.mce_cleanup {background-position:-40px 0}
-.defaultSkin span.mce_bullist {background-position:-20px 0}
-.defaultSkin span.mce_numlist {background-position:-80px 0}
 .defaultSkin span.mce_justifyleft {background-position:-460px 0}
 .defaultSkin span.mce_justifyright {background-position:-480px 0}
 .defaultSkin span.mce_justifycenter {background-position:-420px 0}
@@ -172,6 +170,12 @@
 .defaultSkin span.mce_copy {background-position:-700px 0}
 .defaultSkin span.mce_cut {background-position:-680px 0}
 .defaultSkin span.mce_blockquote {background-position:-220px 0}
+.defaultSkin span.mce_ImgInsertImage,.defaultSkin span.mce_toggle_expanded,.defaultSkin span.mce_toggle_collapsed{width:16px;height:16px;overflow:hidden;background: url("/img/zimbra.png?v=@jsVersion@") no-repeat scroll transparent;}
+.defaultSkin span.mce_ImgInsertImage {background-position:0px -2375px; margin: 3px;}
+.defaultSkin span.mce_toggle_expanded {background-position:0 -3305px; margin-left: 2px;}
+.defaultSkin span.mce_toggle_collapsed {background-position:0 -3289px; margin-left: 1px;}
+.defaultSkin .mce_bullist span.mceAction {background-position:-20px 0}
+.defaultSkin .mce_numlist span.mceAction {background-position:-80px 0}
 .defaultSkin .mce_forecolor span.mceAction {background-position:-720px 0}
 .defaultSkin .mce_backcolor span.mceAction {background-position:-760px 0}
 .defaultSkin span.mce_forecolorpicker {background-position:-720px 0}
