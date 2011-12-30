@@ -19,13 +19,14 @@
  * @author Satish S
  * @private
  */
-ZmAdvancedHtmlEditor = function(parent, posStyle, content, mode, withAce, reparentContainer) {
+ZmAdvancedHtmlEditor = function(parent, posStyle, content, mode, withAce, reparentContainer, textAreaId) {
 	if (arguments.length == 0) { return; }
 
 	this.isTinyMCE = window.isTinyMCE;
 	this._mode = mode;
 	this._hasFocus = {};
     this.isSignatureEditor = parent.isSignatureEditor;
+    this._bodyTextAreaId = textAreaId;
 	this.initTinyMCEEditor(parent, posStyle, content, mode, withAce, reparentContainer);
     this._ignoreWords = {};
 };
@@ -432,7 +433,7 @@ function(parent, posStyle, content, mode, withAce, reparentContainer) {
         Dwt.setVisible(htmlEl, false);
     }
 	//textarea on which html editor is constructed
-	var id = this._bodyTextAreaId = this._editorContainer.getHTMLElId() + "_content";
+    var id = this._bodyTextAreaId = this._bodyTextAreaId || this._editorContainer.getHTMLElId() + "_content";
 	var textEl = document.createElement("textarea");
 	textEl.setAttribute("id", id);
 	textEl.setAttribute("name", id);

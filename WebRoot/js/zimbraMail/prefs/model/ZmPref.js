@@ -709,7 +709,7 @@ function( control ) {
         var signaturePage = control.parent;
         var valueEl = document.getElementById(signaturePage._htmlElId + "_SIG_EDITOR");
         signaturePage.isSignatureEditor = true;
-        var htmlEditor = new ZmAdvancedHtmlEditor(signaturePage, null, null, null, null, valueEl.parentNode);
+        var htmlEditor = new ZmAdvancedHtmlEditor(signaturePage, null, null, null, null, valueEl.parentNode, "TEXTAREA_SIGNATURE");
         valueEl.parentNode.removeChild(valueEl);
         delete signaturePage.isSignatureEditor;
         signaturePage._sigEditor = htmlEditor;
