@@ -406,6 +406,12 @@ function(contact) {
 	var attr = (contact instanceof ZmContact) ? contact.getAttrs() : contact;
 	if (!attr) return;
 
+	if (attr[ZmContact.F_dlDisplayName]) {
+		//this is only DL case. But since this is sometimes just the attrs,
+		//I can't always use isDistributionList method.
+		return attr[ZmContact.F_dlDisplayName];
+	}
+
 	var val = parseInt(attr.fileAs);
 	var fa;
 	var idx = 0;
@@ -1215,27 +1221,29 @@ function(attr) {
 		reqs.push(this._getAddOrRemoveReq(removes, false));
 	}
 
-	var newName = attr[ZmContact.F_nickname];
+	var newEmail = attr[ZmContact.F_email];
 
-	var fileAsChanged = false;
-	if (newName !== undefined) {
-		fileAsChanged = true;
-		reqs.push(this._getRenameDlReq(newName));
-		this.setAttr(ZmContact.F_email, newName); //todo - we need to separate the email from the nickname or display name. For now I don't have that.
-		this.setAttr(ZmContact.F_firstName, newName);
-		this._fileAs = newName;
+	if (newEmail !== undefined) {
+		reqs.push(this._getRenameDlReq(newEmail));
+		this.setAttr(ZmContact.F_email, newEmail);
 	}
 
 	var displayName = attr[ZmContact.F_dlDisplayName];
-	if (displayName) {
+	if (displayName !== undefined) {
 		reqs.push(this._getModifyDlReq("displayName", displayName));
+		this.setAttr(ZmContact.F_dlDisplayName, displayName);
 	}
+
+	var oldFileAs = this.getFileAs();
+	this._resetCachedFields();
+	var fileAsChanged = oldFileAs != this.getFileAs();
+
 	var desc = attr[ZmContact.F_dlDesc];
-	if (desc) {
+	if (desc !== undefined) {
 		reqs.push(this._getModifyDlReq("description", desc));
 	}
 	var notes = attr[ZmContact.F_dlNotes];
-	if (notes) {
+	if (notes !== undefined) {
 		reqs.push(this._getModifyDlReq("zimbraNotes", notes));
 	}
 	var hideInGal = attr[ZmContact.F_dlHideInGal];

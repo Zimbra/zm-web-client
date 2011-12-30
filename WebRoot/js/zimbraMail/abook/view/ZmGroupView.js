@@ -167,32 +167,44 @@ function() {
 
 	if (this._contact.isDistributionList()) {
 		var dlInfo = this._contact.dlInfo;
+		if (groupName != this._contact.getEmail()) {
+			mods[ZmContact.F_email] = groupName;
+			foundOne = true;
+		}
 		if (dlInfo.displayName != this._getDlDisplayName()) {
 			mods[ZmContact.F_dlDisplayName] = this._getDlDisplayName();
+			foundOne = true;
 		}
 		if (dlInfo.description != this._getDlDesc()) {
 			mods[ZmContact.F_dlDesc] = this._getDlDesc();
+			foundOne = true;
 		}
 		if (dlInfo.hideInGal != this._getDlHideInGal()) {
 			mods[ZmContact.F_dlHideInGal] = this._getDlHideInGal();
+			foundOne = true;
 		}
 		if (dlInfo.notes != this._getDlNotes()) {
 			mods[ZmContact.F_dlNotes] = this._getDlNotes();
+			foundOne = true;
 		}
 		if (dlInfo.subscriptionPolicy != this._getDlSubscriptionPolicy()) {
 			mods[ZmContact.F_dlSubscriptionPolicy] = this._getDlSubscriptionPolicy();
+			foundOne = true;
 		}
 		if (dlInfo.unsubscriptionPolicy != this._getDlUnsubscriptionPolicy()) {
 			mods[ZmContact.F_dlUnsubscriptionPolicy] = this._getDlUnsubscriptionPolicy();
+			foundOne = true;
 		}
 		if (!AjxUtil.arrayCompare(dlInfo.owners, this._getDlOwners())) {
 			mods[ZmContact.F_dlListOwners] = this._getDlOwners();
+			foundOne = true;
 		}
 		if (dlInfo.mailPolicy != this._getDlMailPolicy()
 				|| (this._getDlMailPolicy() == ZmGroupView.MAIL_POLICY_SPECIFIC
 					&& !AjxUtil.arrayCompare(dlInfo.mailPolicySpecificMailers, this._getDlSpecificMailers()))) {
 			mods[ZmContact.F_dlMailPolicy] = this._getDlMailPolicy();
 			mods[ZmContact.F_dlMailPolicySpecificMailers] = this._getDlSpecificMailers();
+			foundOne = true;
 		}
 	}
 
@@ -207,7 +219,7 @@ function() {
 	} 
 	else {
 		// modifying existing contact
-		if (this._contact.getFileAs() != groupName) {
+		if (!this._contact.isDistributionList() && this._contact.getFileAs() != groupName) {
 			mods[ZmContact.F_fileAs] = ZmContact.computeCustomFileAs(groupName);
 			mods[ZmContact.F_nickname] = groupName;
 			foundOne = true;
@@ -897,7 +909,14 @@ function() {
 ZmGroupView.prototype._setGroupName =
 function() {
 	var groupName = document.getElementById(this._groupNameId);
-	if (groupName) groupName.value = this._contact.getFileAs() || "";
+	if (groupName) {
+		if (this._contact.isDistributionList()) {
+			groupName.value = this._contact.getEmail() || "";
+		}
+		else {
+			groupName.value = this._contact.getFileAs() || "";
+		}
+	}
 };
 
 ZmGroupView.prototype._setDlFields =

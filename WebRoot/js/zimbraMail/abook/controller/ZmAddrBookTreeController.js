@@ -310,8 +310,9 @@ function(folder, result) {
 	if (dls) {
 		for (var i = 0; i < dls.length; i++) {
 			var dl = dls[i];
-			contactList.addFromDom({_attrs : {email: dl.name, type: "group", zimbraId: dl.id, firstName: dl.name, lastName: ""},
-									fileAsStr: dl.name,
+			var attrs = {email: dl.name, type: "group", zimbraId: dl.id, firstName: "", lastName: ""}
+			attrs[ZmContact.F_dlDisplayName] = dl.d || dl.name;
+			contactList.addFromDom({_attrs: attrs,
 									id: dl.id});
 		}
 	}
