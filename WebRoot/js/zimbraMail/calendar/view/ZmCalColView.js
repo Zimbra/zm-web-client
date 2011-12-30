@@ -104,7 +104,6 @@ function() {
 			return AjxDateUtil.WEEK;
 			break;
 		case ZmId.VIEW_CAL_DAY:
-		case ZmId.VIEW_CAL_SCHEDULE:
 		default:
 			return AjxDateUtil.DAY;
 			break;
@@ -632,8 +631,7 @@ function(appt) {
 		? ("<div class='appt_location'>" + AjxStringUtil.htmlEncode(appt.getLocation()) + "</div>") : null;
 
 	if (is30 &&
-		(this.view != ZmId.VIEW_CAL_DAY) &&
-		(this.view != ZmId.VIEW_CAL_SCHEDULE))
+		(this.view != ZmId.VIEW_CAL_DAY) )
 	{
 		var widthLimit = Math.floor(8 * apptWidthPercent)
 		if (apptName.length > widthLimit) {
@@ -1196,14 +1194,12 @@ function(colIndex, data) {
 		var startTime = appt.getStartTime();
 		var endTime = appt.getEndTime();
 		data.numDays = 1;
-		if (this.view != ZmId.VIEW_CAL_SCHEDULE) {
-			if (startTime != endTime) {
-				data.numDays = this._calcNumDays(startTime, endTime);
-			}
-			if (startTime < data.startTime) {
-				data.numDays -= this._calcNumDays(startTime, data.startTime);
-			}
-		}
+        if (startTime != endTime) {
+            data.numDays = this._calcNumDays(startTime, endTime);
+        }
+        if (startTime < data.startTime) {
+            data.numDays -= this._calcNumDays(startTime, data.startTime);
+        }
 	}
 	var rows = this._allDayApptsRowLayouts;
 	var row = null;

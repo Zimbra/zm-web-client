@@ -14,7 +14,7 @@
  */
 /****************** OLD VERSION OF SCHEDULE VIEW *********************/
 ZmCalScheduleView = function(parent, posStyle, controller, dropTgt) {
-	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmId.VIEW_CAL_SCHEDULE, 1, true);
+	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, null, 1, true);
 };
 
 ZmCalScheduleView.prototype = new ZmCalColView;

@@ -70,7 +70,6 @@ ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_DAY]		= ZmId.VIEW_CAL_DAY;
 ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_WEEK]		= ZmId.VIEW_CAL_WEEK;
 ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_WORK_WEEK]	= ZmId.VIEW_CAL_WORK_WEEK;
 ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_MONTH]		= ZmId.VIEW_CAL_MONTH;
-ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_SCHEDULE]	= ZmId.VIEW_CAL_SCHEDULE;
 ZmCalendarApp.VIEW_FOR_SETTING[ZmSetting.CAL_LIST]		= ZmId.VIEW_CAL_LIST;
 
 ZmCalendarApp.COLORS = [];
@@ -316,8 +315,8 @@ function() {
 	ZmPref.registerPref("CALENDAR_INITIAL_VIEW", {
 		displayName:		ZmMsg.calendarInitialView,
 		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth, ZmMsg.calViewList, ZmMsg.calViewSchedule],
-		options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_LIST, ZmSetting.CAL_SCHEDULE]
+		displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth, ZmMsg.calViewList],
+        options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_LIST]
 	});
 
 	ZmPref.registerPref("CAL_REMINDER_NOTIFY_SOUNDS", {
@@ -420,7 +419,6 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE_NOTIFY, {textKey:"notifyOrganizerLabel", image:"QuestionMark"});
 	ZmOperation.registerOp(ZmId.OP_REPLY_TENTATIVE_IGNORE, {textKey:"dontNotifyOrganizerLabel", image:"QuestionMark"});
     ZmOperation.registerOp(ZmId.OP_FB_VIEW, {textKey:"viewFB", tooltipKey:"viewFBTooltip", image:"GroupSchedule", shortcut:ZmKeyMap.CAL_FB_VIEW});
-    ZmOperation.registerOp(ZmId.OP_SCHEDULE_VIEW, {textKey:"viewSchedule", tooltipKey:"viewScheduleTooltip", image:"GroupSchedule", shortcut:ZmKeyMap.CAL_SCHEDULE_VIEW});
 	ZmOperation.registerOp(ZmId.OP_SEARCH_MAIL, {textKey:"searchMail", image:"SearchMail"}, ZmSetting.MAIL_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_CALENDAR, {textKey:"shareCalendar", image:"CalendarFolder"});
 	ZmOperation.registerOp(ZmId.OP_TODAY, {textKey:"today", tooltipKey:"todayTooltip", image:"Date", shortcut:ZmKeyMap.TODAY});
@@ -1148,7 +1146,7 @@ ZmCalendarApp.addCalViewMenu =
 function(parent) {
 	var list = [
 		ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
-		ZmOperation.MONTH_VIEW, ZmOperation.CAL_LIST_VIEW, ZmOperation.SCHEDULE_VIEW
+		ZmOperation.MONTH_VIEW, ZmOperation.CAL_LIST_VIEW
 	];
     if(appCtxt.get(ZmSetting.FREE_BUSY_VIEW_ENABLED)) {
         list.push(ZmOperation.FB_VIEW);    

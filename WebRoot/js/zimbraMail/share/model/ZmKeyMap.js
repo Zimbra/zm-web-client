@@ -95,7 +95,6 @@ ZmKeyMap.CAL_DAY_VIEW			= "DayView";
 ZmKeyMap.CAL_FB_VIEW			= "FBView";
 ZmKeyMap.CAL_LIST_VIEW			= "CalListView";
 ZmKeyMap.CAL_MONTH_VIEW			= "MonthView";
-ZmKeyMap.CAL_SCHEDULE_VIEW		= "ScheduleView";
 ZmKeyMap.CAL_WEEK_VIEW			= "WeekView";
 ZmKeyMap.CAL_WORK_WEEK_VIEW		= "WorkWeekView";
 ZmKeyMap.CALL_MANAGER       	= "CallManager";

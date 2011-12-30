@@ -153,7 +153,6 @@ ZmSetting.CAL_LIST				= "list";
 ZmSetting.CAL_MONTH				= "month";
 ZmSetting.CAL_WEEK				= "week";
 ZmSetting.CAL_WORK_WEEK			= "workWeek";
-ZmSetting.CAL_SCHEDULE			= "schedule";
 ZmSetting.CAL_VISIBILITY_PRIV	= "private";
 ZmSetting.CAL_VISIBILITY_PUB	= "public";
 ZmSetting.CLIENT_ADVANCED		= "advanced";				// zimbraPrefClientType

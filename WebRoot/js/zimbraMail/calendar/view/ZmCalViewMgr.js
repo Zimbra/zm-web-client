@@ -42,7 +42,6 @@ ZmCalViewMgr = function(parent, controller, dropTgt) {
 	this._viewFactory[ZmId.VIEW_CAL_MONTH]		= ZmCalMonthView;
 	this._viewFactory[ZmId.VIEW_CAL_LIST]		= ZmCalListView;
     this._viewFactory[ZmId.VIEW_CAL_FB]	        = ZmCalNewScheduleView;
-    this._viewFactory[ZmId.VIEW_CAL_SCHEDULE]	= ZmCalScheduleView;
 
     this._viewFactory[ZmId.VIEW_CAL_TRASH]		= ZmApptListView;
 };
@@ -83,8 +82,7 @@ function() {
 		if (name == ZmId.VIEW_CAL_DAY ||
             name == ZmId.VIEW_CAL_WORK_WEEK ||
             name == ZmId.VIEW_CAL_WEEK ||
-            name == ZmId.VIEW_CAL_FB ||
-            name == ZmId.VIEW_CAL_SCHEDULE
+            name == ZmId.VIEW_CAL_FB
             )
 			this._views[name].layoutWorkingHours();
 	}

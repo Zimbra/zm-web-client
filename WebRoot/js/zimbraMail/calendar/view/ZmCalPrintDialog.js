@@ -94,8 +94,7 @@ function(params) {
     if(cv == ZmOperation.WORK_WEEK_VIEW) {
         cv = ZmOperation.WEEK_VIEW;
     }
-    else if (cv == ZmOperation.SCHEDULE_VIEW ||
-             cv == ZmOperation.FB_VIEW) {
+    else if (cv == ZmOperation.FB_VIEW) {
         cv = ZmOperation.DAY_VIEW;
     }
     this._viewSelect.setSelectedValue(cv);
@@ -276,7 +275,6 @@ function(ev) {
 
     switch(val) {
         case ZmOperation.FB_VIEW:
-        case ZmOperation.SCHEDULE_VIEW:
         case ZmOperation.DAY_VIEW:
             Dwt.setDisplay(workDaysOnlyContainer, Dwt.DISPLAY_NONE);
             Dwt.setDisplay(oneWeekPerPageContainer, Dwt.DISPLAY_NONE);
@@ -358,7 +356,6 @@ function(view) {
         case ZmId.VIEW_CAL_DAY: 		viewStyle = "day"; break;
         case ZmId.VIEW_CAL_WORK_WEEK:	viewStyle = "workWeek"; break;
         case ZmId.VIEW_CAL_WEEK:		viewStyle = "week"; break;
-        case ZmId.VIEW_CAL_SCHEDULE:	viewStyle = "schedule"; break;
         case ZmId.VIEW_CAL_LIST:	    viewStyle = "list"; break;
         default:						viewStyle = "month"; break;				// default is month
     }
