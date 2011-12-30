@@ -1749,6 +1749,11 @@ function(html) {
 */
 ZmContact.prototype.getFullNameForDisplay =
 function(html){
+	if (this.isDistributionList()) {
+		//I'm not sure where that fullName is set sometime to the display name. This is so complicated
+		// I'm trying to set attr[ZmContact.F_dlDisplayName] to the display name but in soem cases it's not.
+		return this.getAttr(ZmContact.F_dlDisplayName) || this.getAttr("fullName");
+	}
     var prefix = this.getAttr(ZmContact.F_namePrefix);
     var first = this.getAttr(ZmContact.F_firstName);
     var middle = this.getAttr(ZmContact.F_middleName);
