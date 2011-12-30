@@ -1957,7 +1957,9 @@ function() {
 	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
 	Dwt.setHandler(this._startDateField, DwtEvent.ONFOCUS, ZmCalItemEditView._onFocus);
 	Dwt.setHandler(this._endDateField, DwtEvent.ONFOCUS, ZmCalItemEditView._onFocus);
-    Dwt.setHandler(this._suggestTime, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+    if (this.GROUP_CALENDAR_ENABLED) {
+        Dwt.setHandler(this._suggestTime, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+    }
     Dwt.setHandler(this._suggestLocation, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
     Dwt.setHandler(this._locationStatusAction, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 
@@ -1965,7 +1967,9 @@ function() {
 	this._startDateField._editViewId = this._endDateField._editViewId = edvId;
     if(this._showOptional) this._showOptional._editViewId = edvId;
     if(this._showResources) this._showResources._editViewId = edvId;
-    this._suggestTime._editViewId = edvId;
+    if (this.GROUP_CALENDAR_ENABLED) {
+        this._suggestTime._editViewId = edvId;
+    }
     this._suggestLocation._editViewId = edvId;
     this._locationStatusAction._editViewId = edvId;
 
