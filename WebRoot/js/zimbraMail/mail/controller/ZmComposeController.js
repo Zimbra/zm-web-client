@@ -2193,7 +2193,7 @@ ZmComposeController.prototype._uploadMyComputerFile =
         req.setRequestHeader("Content-Disposition", 'attachment; filename="'+ fileName + '"');
 
 	    curView._startUploadAttachment();
-
+        DBG.println(AjxDebug.DBG1,"Uploading file: "  + fileName + " file type" + (file.type || "application/octet-stream") );
         this._uploadAttReq = req;
 	    if (AjxEnv.supportsHTML5File){
         	req.upload.addEventListener("progress", function(evt){
@@ -2212,6 +2212,7 @@ ZmComposeController.prototype._uploadMyComputerFile =
 			    var resp = eval("["+req.responseText+"]");
 			    var response = resp.length && resp[2];
 			    if (response){
+                    DBG.println(AjxDebug.DBG1,"Uploaded file: "  + fileName + "Successfully.");
                     prevData.push(response[0]);
                     if (start < files.length){
                         curView.updateAttachFileNode(files, start);
@@ -2221,6 +2222,7 @@ ZmComposeController.prototype._uploadMyComputerFile =
 				        controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, prevData, null, callback);
                     }
 			    }else {
+                    DBG.println("Error while uploading file: "  + fileName + " response is null.");
                     var callback = new AjxCallback(this, curView._resetUpload);
 				    controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, prevData, null, callback);
 				    var msgDlg = appCtxt.getMsgDialog();
@@ -2234,6 +2236,8 @@ ZmComposeController.prototype._uploadMyComputerFile =
         req.send(file);
         delete req;
     } catch(exp) {
+        DBG.println("Error while uploading file: "  + fileName);
+        DBG.println("Exception: "  + exp);
 	    var curView = appCtxt.getAppViewMgr().getCurrentView();
 	    curView._resetUpload(true);
         var msgDlg = appCtxt.getMsgDialog();

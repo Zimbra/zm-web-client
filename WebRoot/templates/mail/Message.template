@@ -481,18 +481,21 @@
 				</table>
 			</td>
 		</tr>
-        <tr>
-            <td>
+        <tr id='${attRowId}'>
+            <td style='vertical-align: top; <$=labelStyle$>'>
                 <table border=0 cellpadding=0 cellspacing=0 width='100%'>
-                <tr>
-                                <td align=right id='${attBtnId}'></td>
-                </tr>
+                    <tr>
+                        <td align=right id='${attBtnId}'></td>
+                    </tr>
                  </table>
             </td>
-            <td><span id='${zdndToolTipId}' class='zdnd_tooltip'><$=ZmMsg.dndTooltip$></span></td>
-        </tr>
-        <tr id='${attRowId}'>
-            <td colspan=3 ><div id='${attDivId}'></div></td>
+            <td>
+                <span id='${zdndToolTipId}' class='zdnd_tooltip'>
+                        <$=ZmMsg.dndTooltip$>
+                </span>
+                <span id='${attDivId}'>
+                </span>
+            </td>
         </tr>
 	</table>
 	<!-- compose editor is automatically appended below the header -->
@@ -548,7 +551,7 @@
         <$ var id = Dwt.getNextId(data.rowId) $>
         <tr '<$= id $>' style="display: table-row;">
             <td valign="top" align="right" style="width:64px; overflow:visible; white-space:nowrap">
-               <div class='ImgAttachment' style="position:absolute; left:15px;"></div>
+               <div class='ImgAttachment' style="margin-right:5px;"></div>
             </td>
             <td width="96%" colspan="2">
                 <div class="attBubbleContainer" style="position: static; overflow: visible;">
@@ -571,7 +574,7 @@
         <tr '<$= id $>' style="display: table-row;">
         <td valign="top" align="right" style="width:64px; overflow:visible; white-space:nowrap">
             <$ if (data.attachments.length > 0) { $>
-                 <div class='ImgAttachment' style="position:absolute; left:15px;"></div>
+                 <div class='ImgAttachment' style="margin-right:5px;"></div>
             <$ } $>
         </td>
         <td  width="96%" colspan="2">
