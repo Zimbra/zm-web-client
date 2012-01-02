@@ -41,8 +41,8 @@
     <c:set var="sendFreeBusy" value="${not empty uploader.params.actionSendFreeBusyLink}"/>
 
     <c:if test="${sendFreeBusy}" >
-        <c:set var="calName" value="/${selectedFolder.name}"/>
-        <c:set var="bodyCont" value="${fn:substringBefore(fn:escapeXml(zm:getFolderRestURL(mailbox, selectedFolder)), calName)}" />
+        <c:set var="calName" value="/${mailbox.calendar.name}"/>
+        <c:set var="bodyCont" value="${fn:substringBefore(fn:escapeXml(zm:getFolderRestURL(mailbox, mailbox.calendar)), calName)}" />
         <c:set var="bodyCont" value="${bodyCont}?fmt=freebusy" />
           <c:redirect url="/h/search?action=compose">
 			  <c:param name="body" value="${bodyCont}" />
