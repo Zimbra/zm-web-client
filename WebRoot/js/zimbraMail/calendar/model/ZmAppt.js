@@ -644,6 +644,7 @@ function(message) {
 	this.setFromMessage(message, viewMode);
 	this.name = message.subject;
 	this.location = message.invite.getLocation();
+	this.allDayEvent = message.invite.isAllDayEvent();
 	if (message.apptId) {
 		this.invId = message.apptId;
 	}
