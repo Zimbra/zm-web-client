@@ -56,6 +56,13 @@
 						</td>
 						<td><div class='vertSep'></div></td>
 					</c:if>
+                    <td height="100%" nowrap valign="middle" style="padding: 0 1px 0 1px">
+						<input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="<app:imgurl value='startup/ImgPrint.png'/>" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
+					</td>
+					<td height="100%" nowrap valign="middle" style="padding: 0 1px 0 1px">
+						<input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
+					</td>
+					<td><div class='vertSep'></div></td>
 					<c:choose>
 						<c:when test="${context.isFolderSearch and context.folder.isTrash}">
 							<app:button id="${keys ? 'OPDELETE' : ''}" name="actionHardDelete" text="actionDelete" tooltip="actionTrashTT" src="startup/ImgDelete.png"/>
@@ -64,13 +71,6 @@
 							<app:button id="${keys ? 'OPDELETE' : ''}" name="actionDelete" text="actionDelete" tooltip="actionTrashTT" src="startup/ImgDelete.png"/>
 						</c:otherwise>
 					</c:choose>
-					<td><div class='vertSep'></div></td>
-					<td height="100%" nowrap valign="middle" style="padding: 0 1px 0 1px">
-						<input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="<app:imgurl value='startup/ImgPrint.png'/>" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
-					</td>
-					<td height="100%" nowrap valign="middle" style="padding: 0 1px 0 1px">
-						<input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
-					</td>
 					<td><div class='vertSep'></div></td>
 					<c:if test="${!context.folder.isDrafts}">
 						<td  nowrap valign=middle>
