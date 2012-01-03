@@ -357,6 +357,15 @@ ZmQuickCommandDialog.prototype._disposeRow = function(rowId) {
     }
 
     if (rowDetails.actionTypeSelect) {
+        var opt = rowDetails.actionTypeSelect.getOptions() && rowDetails.actionTypeSelect.getOptions().get(0);
+        if (opt && opt.getItem().parent){
+            var menu = opt.getItem().parent;
+            menu.dispose();
+            delete menu;
+            menu = null;
+        }
+        rowDetails.actionTypeSelect.clearOptions();
+        rowDetails.actionTypeSelect.clearContent();
         rowDetails.actionTypeSelect.dispose();
         delete rowDetails.actionTypeSelect;
     }
