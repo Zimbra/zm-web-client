@@ -145,7 +145,9 @@ function() {
 		start: timeRange.start,
 		end: timeRange.end,
 		fanoutAllDay: false,
-		folderIds: this._calController.getReminderCalendarFolderIds(),
+		folderIds: this._apptType ==
+            "appt" ? this._calController.getReminderCalendarFolderIds() :
+                     this._calController.getCheckedCalendarFolderIds(true),
 		callback: (new AjxCallback(this, this._refreshCallback)),
 		includeReminders: true
 	};
@@ -170,7 +172,7 @@ function() {
 /**
  * called after we get upcoming appts from server. Save list,
  * and call housekeeping.
- * 
+ *
  * @private
  */
 ZmReminderController.prototype._refreshCallback =
