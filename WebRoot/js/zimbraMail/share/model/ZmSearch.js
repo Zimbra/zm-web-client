@@ -627,20 +627,16 @@ function(callback, result) {
 ZmSearch.prototype.getTitle =
 function() {
 	var where;
-	DBG.println("bt", "ZmSearch.prototype.getTitle");
-	if (this.folderId) {
-		DBG.println("bt", "got folder id: " + this.folderId);
-		var fid = ZmOrganizer.getSystemId(this.folderId);
-		var folder = appCtxt.getById(fid);
-		if (folder) {
-			where = folder.getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
+	var pq = this.parsedQuery;
+	// if this is a saved search, show its name, otherwise show folder or tag name if it's the only term
+	var orgId = this.searchId || ((pq && (pq.getNumTokens() == 1)) ? this.folderId || this.tagId : null);
+	if (orgId) {
+		var org = appCtxt.getById(ZmOrganizer.getSystemId(orgId));
+		if (org) {
+			where = org.getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
 		}
-	} else if (this.tagId) {
-		where = appCtxt.getById(this.tagId).getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
 	}
-	return where
-		? ([ZmMsg.zimbraTitle, where].join(": "))
-		: ([ZmMsg.zimbraTitle, ZmMsg.searchResults].join(": "));
+	return where ? ([ZmMsg.zimbraTitle, where].join(": ")) : ([ZmMsg.zimbraTitle, ZmMsg.searchResults].join(": "));
 };
 
 /**
