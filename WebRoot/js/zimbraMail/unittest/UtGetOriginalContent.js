@@ -24,7 +24,8 @@ UtGetOriginalContent.test = function() {
     for (var i = 0, count = UtGetOriginalContent_data.length; i < count; i++) {
         var obj = UtGetOriginalContent_data[i];
         var output = AjxStringUtil.getOriginalContent(obj.input, obj.isHtml);
-        UT.equals(output, obj.output);
+		var referenceOutput = (obj.output == UtZWCUtils.SAME) ? obj.input : obj.output;
+        UT.equals(output, referenceOutput);
     }
 };
 
