@@ -2375,7 +2375,7 @@ HTML>BODY .appt-selected .appt_allday_body
     background-color:white;
 }
 
-.ZmDayTabNavToolBar {
+.ZmCalendarNavToolbar {
     position:absolute;
     top:0;
     left:42%;

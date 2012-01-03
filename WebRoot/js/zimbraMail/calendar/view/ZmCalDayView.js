@@ -111,8 +111,6 @@ ZmCalDayTabView.prototype.constructor = ZmCalDayTabView;
 ZmCalDayTabView._ALL_DAY_APPT_HEIGHT_PAD = 3;
 ZmCalDayTabView._UNION_DIV_WIDTH = 0;
 
-ZmCalDayTabView.NAV_TOOLBAR_CLASSNAME = "ZmDayTabNavToolBar";
-
 ZmCalDayTabView._TAB_BORDER_WIDTH = 1;
 ZmCalDayTabView._TAB_BORDER_MARGIN = 6;
 ZmCalDayTabView._TAB_SEP_WIDTH = 8;

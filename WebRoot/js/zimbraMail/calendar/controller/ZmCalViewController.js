@@ -888,7 +888,7 @@ function(viewId) {
 
 	//toolbar.addFiller();
 
-	var tb = new ZmNavToolBar({parent:toolbar, className:"ZmNavToolbar ZmCalendarNavToolbar", context:ZmId.VIEW_CAL});
+	var tb = new ZmNavToolBar({parent:toolbar, className:"ZmNavToolbar ZmCalendarNavToolbar", context:ZmId.VIEW_CAL, posStyle:Dwt.ABSOLUTE_STYLE});
 	this._setNavToolBar(tb, ZmId.VIEW_CAL);
 
 	this._setNewButtonProps(viewId, ZmMsg.newAppt, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
@@ -2757,17 +2757,6 @@ function(viewId) {
 ZmCalViewController.prototype._setNavToolbarPosition =
 function(navToolbar, currentViewName) {
     if(!navToolbar || !currentViewName) { return; }
-    var toolbarEl = navToolbar.getHtmlElement();
-    if(!toolbarEl) { return; }
-
-    if(currentViewName == ZmId.VIEW_CAL_DAY) {
-        Dwt.addClass(toolbarEl, ZmCalDayTabView.NAV_TOOLBAR_CLASSNAME);
-        Dwt.setPosition(toolbarEl, Dwt.ABSOLUTE_STYLE);
-    }
-    else {
-        Dwt.delClass(toolbarEl, ZmCalDayTabView.NAV_TOOLBAR_CLASSNAME);
-        Dwt.setPosition(toolbarEl, Dwt.STATIC_STYLE);
-    }
     navToolbar.setVisible(currentViewName != ZmId.VIEW_CAL_LIST);
 };
 
