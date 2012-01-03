@@ -342,9 +342,7 @@ function(displayShares, organizer) {
 
 	if (displayShares.length) {
 		var table = document.createElement("TABLE");
-		table.border = 0;
-		table.cellSpacing = 0;
-		table.cellPadding = 3;
+		table.className = "ZPropertySheet";
 		for (var i = 0; i < displayShares.length; i++) {
 			var share = displayShares[i];
 			var row = table.insertRow(-1);
