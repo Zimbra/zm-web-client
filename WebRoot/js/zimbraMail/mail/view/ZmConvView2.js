@@ -177,9 +177,18 @@ function(conv) {
 
 	this._setConvHeader();
 	this._renderMessages(conv, this._messagesDiv);
-	
+
+	var text = "";
+	var origMsg = this._item.getFirstHotMsg();
+	if (origMsg) {
+		var addresses = this._getReplyAddresses(origMsg);
+		var list = addresses[AjxEmailAddress.TO].concat(addresses[AjxEmailAddress.CC]);
+		text = ZmConvView2._getAddressNames(list, ZmConvView2.MAX_RECIPS);
+	}
+	this._replyHint = text ? AjxMessageFormat.format(ZmMsg.replyHint, text) : "";
+	Dwt.setVisible(this._replyDiv, (text != ""));
+
 	// browsers that support placeholder will manage display of the hint; otherwise, we handle it manually
-	this._replyHint = this._getReplyHint();
 	if (AjxEnv.supportsPlaceholder) {
 		this._replyInput.placeholder = this._replyHint;
 	}
@@ -595,7 +604,8 @@ function() {
 	}
 };
 
-// TODO: look at refactoring out of ZmComposeView
+// Returns lists of To: and Cc: addresses to reply to, based on the given msg
+// TODO: look at refactoring out of ZmComposeView?
 ZmConvView2.prototype._getReplyAddresses =
 function(origMsg) {
 
@@ -639,25 +649,13 @@ function(addresses, type, addrs, used) {
 	var a = addrs.getArray();
 	for (var i = 0; i < a.length; i++) {
 		var addr = a[i];
-		if (!used || !used[addr.address]) {
-			addresses[type].push(addr);
+		if (addr && addr.address) {
+			if (!used || !used[addr.address]) {
+				addresses[type].push(addr);
+			}
+			used[addr.address] = true;
 		}
-		used[addr.address] = true;
 	}
-};
-
-ZmConvView2.prototype._getReplyHint =
-function() {
-	
-	var text;
-	var origMsg = this._item.getFirstHotMsg();
-	if (origMsg) {
-		var addresses = this._getReplyAddresses(origMsg);
-		var list = addresses[AjxEmailAddress.TO].concat(addresses[AjxEmailAddress.CC]);
-		text = ZmConvView2._getAddressNames(list, ZmConvView2.MAX_RECIPS);
-	}
-	
-	return AjxMessageFormat.format(ZmMsg.replyHint, text || ZmMsg.all);
 };
 
 ZmConvView2._getAddressNames =
@@ -1384,7 +1382,6 @@ ZmMailMsgCapsuleViewHeader.prototype.toString = function() { return "ZmMailMsgCa
 
 ZmMailMsgCapsuleViewHeader.prototype.setFocused =
 function(focused) {
-	return;	// TODO: figure out focus/selection
 	this.condClassName(focused, DwtCssStyle.FOCUSED);
 };
 
