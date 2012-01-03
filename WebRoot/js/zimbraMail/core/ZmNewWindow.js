@@ -211,6 +211,10 @@ function() {
 	} else if (cmd == "msgViewDetach") {
 		target = "view-window";
 	}
+
+	ZmZimbraMail.prototype._registerOrganizers.call(this);
+	ZmZimbraMail.registerViewsToTypeMap();
+
     
 	// setup zimlets, Load it first becoz.. zimlets has to get processed first.
 	if (target) {
@@ -631,6 +635,10 @@ function(msg) {
 
 	if (msg.invite) {
 		newMsg.invite = msg.invite;
+	}
+
+	if (msg.share) {
+		newMsg.share = msg.share;
 	}
 
 	return newMsg;
