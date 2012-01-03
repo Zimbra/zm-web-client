@@ -1,0 +1,35 @@
+/* styles for the HTML client */
+
+HTML,Body					{	 }
+INPUT[type="text"],
+INPUT[type="password"]		{	@FieldBorder@	}
+SELECT						{	@FieldBorder@	}
+.TabSpacer 					{	display:none;		}
+.Tab						{	white-space:nowrap;	height:30px; padding-right:5px !important;	}
+.TbTop						{	border-width:0 1 1 0 !important; padding-right:5px !important;	}
+.TbBottom					{	border-width:0 1 1 0 !important; padding-right:5px !important;	}
+.TabFiller					{	@AppTabSpacer@ width:100%;	}
+.List .Header TH			{	@RightSeparator@	}
+.ZhSubTabs					{	@TabBar@	}
+.ZhSubTabs					{	padding:5px !important;	}
+.ZhSubTabs .TabSelected		{	@TabBorder-selected@	}
+
+.ZhRow TD,
+.ZhRowOdd TD				{	border-width:0 0 1 0 !important; padding-left:3px !important;	}
+
+.link a, .link a:visited, .Tabs A:link, .Tabs A:visited, .skin_link, .SearchBar	{	color: white !important; text-decoration: none; }
+
+.TabNormal {
+	@TabBorder@
+	@TabBorder-normal@
+	color: white !important;
+}
+
+.TabSelected {
+	@TabBorder@
+	@TabBorder-selected@
+}
+
+.topcontent{
+	width: 600px;
+}
