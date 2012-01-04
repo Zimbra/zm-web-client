@@ -41,10 +41,6 @@ ZmDoublePaneController = function(container, mailApp, type, sessionId, searchRes
 		this._dragSrc.addDragListener(this._dragListener.bind(this));
 	}
 	
-	this._listeners[ZmOperation.ADD_FILTER_RULE]	= this._filterListener.bind(this);
-	this._listeners[ZmOperation.CREATE_APPT]		= this._createApptListener.bind(this);
-	this._listeners[ZmOperation.CREATE_TASK]		= this._createTaskListener.bind(this);
-
 	this._listSelectionShortcutDelayAction = new AjxTimedAction(this, this._listSelectionTimedAction);
 };
 
@@ -617,84 +613,6 @@ function() {
 	ZmMailListController.prototype._doMove.apply(this, arguments);
 };
 
-ZmDoublePaneController.prototype._filterListener = 
-function() {
-	var respCallback = new AjxCallback(this, this._handleResponseFilterListener);
-	var msg = this._getLoadedMsg(null, respCallback);
-};
-
-ZmDoublePaneController.prototype._createApptListener =
-function() {
-	var respCallback = new AjxCallback(this, this._handleResponseNewApptListener);
-	var msg = this._getLoadedMsg(null, respCallback);
-};
-
-ZmDoublePaneController.prototype._createTaskListener = 
-function() {
-	var respCallback = new AjxCallback(this, this._handleResponseNewTaskListener);
-	var msg = this._getLoadedMsg(null, respCallback);
-};
-
-ZmDoublePaneController.prototype._handleResponseNewApptListener =
-function(msg) {
-	if (!msg) { return; }
-
-    var calController = AjxDispatcher.run("GetCalController"); 
-    calController.newApptFromMailItem(msg, new Date());    
-};
-
-ZmDoublePaneController.prototype._handleResponseNewTaskListener =
-function(msg) {
-	if (!msg) { return; }
-
-    AjxDispatcher.require(["TasksCore", "Tasks"]);
-    appCtxt.getApp(ZmApp.TASKS).newTaskFromMailItem(msg, new Date());
-};
-
-ZmDoublePaneController.prototype._handleResponseFilterListener =
-function(msg) {
-	if (!msg) { return; }
-
-	AjxDispatcher.require(["PreferencesCore", "Preferences"]);
-	var rule = new ZmFilterRule();
-
-	var listId = msg.getListIdHeader();
-	if (listId) {
-		rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, listId, ZmMailMsg.HDR_LISTID);
-	}
-	else { 
-		var from = msg.getAddress(AjxEmailAddress.FROM);
-		if (from) {
-			var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM];
-			rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, from.address, subjMod);
-		}	
-		var cc = msg.getAddress(AjxEmailAddress.CC);
-		if (cc)	{
-			var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_CC];
-			rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, cc.address, subjMod);
-		}
-		var xZimbraDL = msg.getXZimbraDLHeader();
-		if (xZimbraDL && xZimbraDL.good) {
-			var arr = xZimbraDL.good.getArray();
-			var max = arr.length < 5 ? arr.length : 5; //limit number of X-Zimbra-DL ids
-			for (var i=0; i < max; i++) { 
-				rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, arr[i].address, ZmMailMsg.HDR_XZIMBRADL);
-			}
-		}
-		var subj = msg.subject;
-		if (subj) {
-			var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_SUBJECT];
-			rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_IS, subj, subjMod);
-		}
-	}
-	rule.addAction(ZmFilterRule.A_KEEP);
-	rule.setGroupOp(ZmFilterRule.GROUP_ALL);
-
-	var accountName = appCtxt.multiAccounts && msg.getAccount().name;
-	var outgoing = AjxUtil.indexOf(ZmFolder.OUTBOUND, msg.getFolderId()) != -1;
-
-	appCtxt.getFilterRuleDialog().popup(rule, null, null, accountName, outgoing);
-};
 
 ZmDoublePaneController.prototype._dragListener =
 function(ev) {
