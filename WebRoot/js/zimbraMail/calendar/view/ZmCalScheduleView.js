@@ -328,7 +328,6 @@ function(metadataResponse) {
         emails = [],
         email,
         acct,
-        tb,
         i;
 
     for (email in objAttendees) {
@@ -348,8 +347,6 @@ function(metadataResponse) {
     this._scheduleView.setVisible(true);
     this._scheduleView.showMe();
     this._scheduleView.reparentHtmlElement(this._apptBodyDivId);
-    tb = this._controller._navToolBar[ZmId.VIEW_CAL];
-    tb.reparentHtmlElement(this._scheduleView._navToolbarContainerId);
 
     //Called to handle the sync issue
     this.resetListItems(this._calNotRenderedList);

@@ -259,7 +259,6 @@ function() {
 
 	var subs = { id:this._htmlElId, isAppt: true, showTZSelector: appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) };
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Appointment#InlineScheduleView", subs);
-    this._navToolbarContainerId = this._htmlElId + "_navToolbar";
 };
 
 ZmFreeBusySchedulerView.prototype._initAutocomplete =
