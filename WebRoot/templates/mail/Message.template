@@ -514,35 +514,51 @@
 </template>
 
 <template id='mail.Message#ForwardMessages'>
-	<table width=100%>
-	<$ for (var i = 0; i < data.messages.length; i++) { $>
-		<$ var message = data.messages[i]; $>
-		<tr>
-			<td width=65 align=right><div class='ImgMessage'></div></td>
-			<td width=1%>
-				<input value='<$=message.id$>' name='<$= data.fwdFieldName $>' type='checkbox' checked>
-			</td>
-			<td class='nobreak'></td>
-			<td>
-				<b><$= message.subject || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></b>&nbsp;
-				<span class='ZmConvListFragment'><$= message.getFragment(35) $></span>
-			</td>
-		</tr>
-	<$ } $>
-	</table>
+<table cellspacing=0 cellpadding=0 border=0 width=100%>
+        <$ var id = Dwt.getNextId(data.rowId) $>
+        <tr '<$= id $>' style="display: table-row;">
+        <td valign="top" align="right" style="width:64px; overflow:visible; white-space:nowrap">
+                 <div class='ImgAttachment' style="margin-right:5px;"></div>
+        </td>
+        <td  width="96%" colspan="2">
+            <div class="attBubbleContainer" style="position: static; overflow: visible;">
+            <div  class="attBubbleHolder" style="display:inline-block;border-radius: 4px;">
+
+            <$ for (var i = 0; i < data.messages.length; i++) { $>
+               <$ var message = data.messages[i]; $>
+               <$ var spanId = Dwt.getNextId(data.rowId)$>
+
+               <span  id='<$= spanId $>' class="AttachmentLoading attachmentBubble" style="position: static; overflow: visible;">
+                   <a style="color: #336699; cursor: pointer;text-decoration: none" > <$= (message ? AjxStringUtil.htmlEncode(message.subject) : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></a>
+                   (<$= AjxUtil.formatSize(message.size, false, 1) $>)
+                   <span onclick="window.appCtxt.getCurrentView()._removeAttachedMessage('<$= spanId $>' ,'<$= message.id $>')" class="ImgBubbleDelete AttachmentClose"></span>
+              </span>
+            <$ } $>
+
+        </td>
+        </tr>
+</table>
 </template>
 
 <template id='mail.Message#ForwardOneMessage'>
-	<$ var message = data.message; $>
-	<table width=100% class='ZPropertySheet'>
-		<tr>
-			<td width=60 align=right>
-				<div class='ImgAttachment'></div>
-			</td>
-			<td>
-				<b><$= (message ? AjxStringUtil.htmlEncode(message.subject) : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></b>
-			</td>
-		</tr>
+    <table cellspacing=0 cellpadding=0 border=0 width=100%>
+        <$ var id = Dwt.getNextId(data.rowId) $>
+        <$ var message = data.message; $>
+        <tr id='<$= id $>' style="display: table-row;">
+            <td valign="top" align="right" style="width:64px; overflow:visible; white-space:nowrap">
+                 <div class='ImgAttachment' style="margin-right:5px;"></div>
+            </td>
+            <td  width="96%" colspan="2">
+                <div class="attBubbleContainer" style="position: static; overflow: visible;">
+                <div  class="attBubbleHolder" style="display:inline-block;border-radius: 4px;">
+                    <$ var spanId = Dwt.getNextId(data.rowId)$>
+                    <span  id='<$= spanId $>' value='<$= message.id $>' class="AttachmentLoading attachmentBubble" style="position: static; overflow: visible;">
+                        <a style="color: #336699; cursor: pointer;text-decoration: none" > <$= (message ? AjxStringUtil.htmlEncode(message.subject) : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></a>
+                        (<$= AjxUtil.formatSize(message.size, false, 1) $>)
+                        <span onclick="window.appCtxt.getCurrentView()._removeAttachedMessage('<$= spanId $>')" class="ImgBubbleDelete AttachmentClose"></span>
+                    </span>
+            </td>
+        </tr>
 	</table>
 </template>
 

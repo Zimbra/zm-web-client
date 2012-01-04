@@ -1006,6 +1006,7 @@ function(params) {
 		}
 	}
 
+    cv.checkAttachments();
     this.sendMsgCallback = params.sendMsgCallback;
 
 	if (params.callback) {

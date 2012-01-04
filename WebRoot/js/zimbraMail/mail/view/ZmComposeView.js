@@ -597,7 +597,13 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 
 	// get list of message part id's for any forwarded attachements
 	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME + this._sessionId, !isDraft && this._hideOriginalAttachments);
-	var forwardMsgIds = this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME + this._sessionId, false);
+    var forwardMsgIds = [];
+
+    if (this._msgIds)
+        forwardMsgIds = forwardMsgIds.concat(this._msgIds);
+    if (this._msgAttId)
+        forwardMsgIds.push(this._msgAttId);
+
 
 	// --------------------------------------------
 	// Passed validation checks, message ok to send
@@ -1828,6 +1834,7 @@ ZmComposeView.prototype._removeAttachedFile  =
 function(spanId){
 	var node = document.getElementById(spanId)
 	var parent = node && node.parentNode;
+    this._attachCount--;
 
     if (parent){
 		parent.removeChild(node);
@@ -1840,6 +1847,17 @@ function(spanId){
             dndTooltip.style.display = "block";
         }
     }
+};
+
+ZmComposeView.prototype._removeAttachedMessage =
+function(spanId, id){
+    if (!id){// Forward/Reply one message
+        this._msgAttId = null;
+    } else if (this._msgIds && this._msgIds.length && (this._msgIds.indexOf(id) != -1)){
+        this._msgIds.splice(this._msgIds.indexOf(id), 1); // Remove message frm attached messages
+    }
+
+    this._removeAttachedFile(spanId);
 };
 
 ZmComposeView.prototype.cleanupAttachments =
@@ -2818,11 +2836,21 @@ function() {
 
 ZmComposeView.prototype._startUploadAttachment =
 function() {
-
 	this._attButton.setEnabled(false);
-	this._controller._toolbar.getButton("SEND").setEnabled(false);
+        this._controller._toolbar.getButton("SEND").setEnabled(false);
 	this._controller._toolbar.getButton("SAVE_DRAFT").setEnabled(false);
 	this._controller._uploadingProgress = true;
+    var dndTooltip = document.getElementById(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP));
+    if (dndTooltip)
+            dndTooltip.style.display = "none";
+};
+
+ZmComposeView.prototype.checkAttachments =
+function(){
+    if (!this._attachCount) return;
+    var dndTooltip = document.getElementById(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP));
+    if (dndTooltip)
+            dndTooltip.style.display = "none";
 };
 
 ZmComposeView.prototype.updateAttachFileNode =
@@ -3161,12 +3189,6 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 			};
 			html = AjxTemplate.expand("mail.Message#ForwardAttachments", data);
             this._attachCount = attInfo.length;
-            if (this._attachCount){
-                var dndTooltip = document.getElementById(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP));
-                if (dndTooltip)
-                    dndTooltip.style.display = "none";
-            }
-
 		}
 	} else if (this._msgIds && this._msgIds.length) {
 		// use main window's appCtxt
