@@ -157,14 +157,16 @@ function() {
 	for (var identityId in usage) {
 		var u1 = this._origUsage[identityId];
 		var u2 = usage[identityId];
-		for (var j = 0; j < ZmSignaturesPage.SIG_FIELDS.length; j++) {
-			var field = ZmSignaturesPage.SIG_FIELDS[j];
-			var savedSigId = u1[field];
-			var curSigId = this._newSigId[u2[field]] || u2[field];
-			if (savedSigId != curSigId) {
-				list.push({identity:identityId, sig:field, value:curSigId});
-			}
-		}
+        if (u1 && u2){
+		    for (var j = 0; j < ZmSignaturesPage.SIG_FIELDS.length; j++) {
+			    var field = ZmSignaturesPage.SIG_FIELDS[j];
+			    var savedSigId = (u1[field]) || ((field == ZmIdentity.REPLY_SIGNATURE) ? ZmIdentity.SIG_ID_NONE : u1[field]);
+			    var curSigId = this._newSigId[u2[field]] || u2[field];
+			    if (savedSigId != curSigId) {
+				    list.push({identity:identityId, sig:field, value:curSigId});
+		        }
+		    }
+        }
 	}
 	return list;
 };

@@ -202,6 +202,11 @@ function() {
 	return this.getPrefsView();
 };
 
+ZmPrefController.prototype.resetDirty =
+function(view, dirty) {
+	this._dirty = {};
+};
+
 ZmPrefController.prototype.setDirty =
 function(view, dirty) {
 	this._dirty[view] = dirty;
@@ -379,6 +384,7 @@ function(callback, noPop) {
 
 	// save generic settings
 	appCtxt.getSettings().save(list, null, batchCommand);
+    this.resetDirty();
 
 	// save any extra commands that may have been added
 	if (batchCommand.size()) {
