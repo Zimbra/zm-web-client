@@ -94,6 +94,8 @@ AjxPackage.require("zimbraMail.core.ZmRequestMgr");
 AjxPackage.require("zimbraMail.core.ZmZimbraMail");
 
 AjxPackage.require("zimbraMail.calendar.model.ZmCalBaseItem");
+AjxPackage.require("zimbraMail.calendar.model.ZmCalItem");
+AjxPackage.require("zimbraMail.tasks.model.ZmTask");
 
 AjxPackage.require("zimbraMail.prefs.ZmPreferencesApp");
 AjxPackage.require("zimbraMail.portal.ZmPortalApp");
