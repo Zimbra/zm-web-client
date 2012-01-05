@@ -306,6 +306,7 @@ ZmAttachDialog.prototype.getBriefcaseView =
 function(){
 
     this.removePrevAttDialogContent(this._getContentDiv().firstChild);
+    this.setTitle(ZmMsg.attachFile);
 
 	if (!this._briefcaseView) {
 		AjxDispatcher.require(["BriefcaseCore", "Briefcase"]);
@@ -380,6 +381,7 @@ ZmAttachDialog.prototype.getMyComputerView =
 function(){
     var newElm = false;
     this.removePrevAttDialogContent(this._getContentDiv().firstChild);
+    this.setTitle(ZmMsg.attachFile);
 
 	if (!this._myComputerView) {
 		this._myComputerView = new ZmMyComputerTabViewPage(this);
