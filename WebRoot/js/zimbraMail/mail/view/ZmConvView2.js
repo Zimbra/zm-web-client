@@ -272,6 +272,7 @@ function() {
 ZmConvView2.prototype._setConvInfo =
 function() {
 	var conv = this._item;
+	if (!conv) { return; }
 	var info = AjxMessageFormat.format(ZmMsg.messageCount, conv.numMsgs);
 	var numUnread = conv.getNumUnreadMsgs();
 	if (numUnread) {
