@@ -96,12 +96,14 @@ BODY						{	margin:0px; 	}
 #skin_spacing_app_chooser				{}
 #skin_border_app_chooser				{	@SkinBorderAppChooser@ 		}
 #skin_container_app_chooser				{
-	margin-top:-10px;
+	margin-right:100px; /* space to not overlap app row toolbar buttons */
 	position:absolute;
 	width:auto;
 	z-index:1;
-	@AppTab@
+	@AppTabChooser@
 }
+#skin_container_app_chooser>DIV>TABLE	{ @AppTabTable@		}
+
 /** reset styles on app row toolbar buttons **/
 #skin_container_global_buttons .ZToolbarButton,
 #skin_container_global_buttons .ZToolbarButtonTable { 
@@ -114,6 +116,24 @@ BODY						{	margin:0px; 	}
 	filter:progid:DXImageTransform.Microsoft.gradient(enabled=false);
 	#ENDIF
 }
+
+/***************
+ *
+ *	APP-ROW-TOOLBAR-BUTTONS
+ *
+ ***************/
+
+/* may want to eventually move this to zm.css */
+
+#skin_container_global_buttons .ZToolbarButton						{	@AppButton@	@AppButtonSpacing@	}
+
+#skin_container_global_buttons				.ZToolbarButtonBorder	{	@AppButtonBorder@	@AppButtonBorder-normal@   }
+#skin_container_global_buttons .ZHover		.ZToolbarButtonBorder	{	@AppButtonBorder-hover@			}
+#skin_container_global_buttons .ZDisabled	.ZToolbarButtonBorder	{	@AppButtonBorder-disabled@		}
+#skin_container_global_buttons .ZFocused	.ZToolbarButtonBorder	{	@AppButtonBorder-focused@		}
+#skin_container_global_buttons .ZActive		.ZToolbarButtonBorder	{	@AppButtonBorder-active@		}
+#skin_container_global_buttons .ZSelected	.ZToolbarButtonBorder	{	@AppButtonBorder-selected@		}
+
 
 /** App Toolbar **/
 #skin_tr_toolbar>TD						{	border-top:1px solid #999; 	}
