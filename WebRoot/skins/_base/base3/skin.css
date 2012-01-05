@@ -493,7 +493,7 @@ SELECT						{	@FieldBorder@	}
 
 .ZAppTabBorder .ZLeftIcon div{ display :none; }
 
-.itemCountText	{ visibility:hidden; width:0;}
+.itemCountText	{ display:none; visibility:hidden; width:0;}
 
 
 /*Temporary overrides that need to move to skin properties*/
