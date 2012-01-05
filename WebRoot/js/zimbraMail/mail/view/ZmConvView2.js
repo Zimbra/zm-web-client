@@ -694,7 +694,7 @@ function(params) {
 	params.composeMode = (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	if (params.composeMode == DwtHtmlEditor.HTML) {
 		// wrap <html> and <body> tags around content, and set font style
-		params.text = ZmAdvancedHtmlEditor._embedHtmlContent(params.text, true);
+		params.text = ZmAdvancedHtmlEditor._embedHtmlContent(AjxStringUtil.htmlEncode(params.text), true);
 	}
 	var composeCtlr = appCtxt.getApp(ZmApp.MAIL).getComposeController(ZmApp.HIDDEN_SESSION);
 	composeCtlr.doAction(params);
