@@ -968,7 +968,6 @@ function(params) {
 	}
 	this._curIncOptions = null;
 	cv.set(params);
-	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
 
 	if (!this.isHidden) {
 		appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
