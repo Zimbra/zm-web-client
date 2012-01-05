@@ -249,9 +249,9 @@ function(ev) {
 ZmAddrBookTreeController.prototype._itemClicked =
 function(folder) {
 	if (folder.id == ZmFolder.ID_DLS) {
-		var request = {_jsns: "urn:zimbraAccount", directOnly: 1};
-		var jsonObj = {GetAccountMembershipRequest: request};
-		var respCallback = new AjxCallback(this, this._handleMembershipResponse, [folder]);
+		var request = {_jsns: "urn:zimbraAccount", "ownerOf": 1};
+		var jsonObj = {GetAccountDistributionListsRequest: request};
+		var respCallback = new AjxCallback(this, this._handleAccountDistributionListResponse, [folder]);
 		appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
 	}
 	else if (folder.type == ZmOrganizer.SEARCH) {
@@ -302,11 +302,11 @@ function(folder, result) {
 /**
  * @private
  */
-ZmAddrBookTreeController.prototype._handleMembershipResponse =
+ZmAddrBookTreeController.prototype._handleAccountDistributionListResponse =
 function(folder, result) {
 
 	var contactList = new ZmContactList(null, true, ZmItem.CONTACT);
-	var dls = result._data.GetAccountMembershipResponse.dl;
+	var dls = result._data.GetAccountDistributionListsResponse.dl;
 	if (dls) {
 		for (var i = 0; i < dls.length; i++) {
 			var dl = dls[i];
