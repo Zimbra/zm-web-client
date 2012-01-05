@@ -2837,8 +2837,7 @@ function() {
 ZmComposeView.prototype._startUploadAttachment =
 function() {
 	this._attButton.setEnabled(false);
-        this._controller._toolbar.getButton("SEND").setEnabled(false);
-	this._controller._toolbar.getButton("SAVE_DRAFT").setEnabled(false);
+    this.enableToolbarButtons(this._controller, false);
 	this._controller._uploadingProgress = true;
     var dndTooltip = document.getElementById(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP));
     if (dndTooltip)
@@ -2871,12 +2870,21 @@ function(files,index) {
 
 };
 
+ZmComposeView.prototype.enableToolbarButtons =
+function(controller, value){ // value : true or false
+    if(appCtxt.get(ZmSetting.MAIL_SEND_LATER_ENABLED))
+        controller._toolbar.getButton("SEND_MENU").setEnabled(value);
+    else
+        controller._toolbar.getButton("SEND").setEnabled(value);
+    if (controller._toolbar.getButton("SAVE_DRAFT"))
+        controller._toolbar.getButton("SAVE_DRAFT").setEnabled(value);
+};
+
 ZmComposeView.prototype._resetUpload =
 function(err) {
 	var curView = appCtxt.getAppViewMgr().getCurrentView();
 	curView._attButton.setEnabled(true);
-    curView._controller._toolbar.getButton("SEND").setEnabled(true);
-    curView._controller._toolbar.getButton("SAVE_DRAFT").setEnabled(true);
+    curView.enableToolbarButtons(curView._controller, true);
     curView._controller._uploadingProgress = false;
     if (curView._controller._uploadAttReq){
 		curView._controller._uploadAttReq = null;
