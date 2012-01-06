@@ -928,6 +928,7 @@ function(params) {
 	// save args in case we need to re-display (eg go from Reply to Reply All)
 	var action = this._action = params.action;
 	var msg = this._msg = params.msg;
+	
 	this._toOverride = params.toOverride;
 	this._subjOverride = params.subjOverride;
 	this._extraBodyText = params.extraBodyText;
@@ -942,6 +943,12 @@ function(params) {
 
 	this._composeMode = params.composeMode || this._getComposeMode(msg, identity);
 	AjxDebug.println(AjxDebug.REPLY, "ZmComposeController::_setView - Compose mode: " + this._composeMode);
+	
+	var desiredPartType = (this._composeMode == DwtHtmlEditor.TEXT) ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML;
+	if (msg && msg.canFetchAlternativePart(desiredPartType)) {
+		msg.fetchAlternativePart(desiredPartType, this._setView.bind(this, params));
+		return;
+	}
 
 	if (this._needComposeViewRefresh) {
 		this._composeView.dispose();

@@ -165,7 +165,7 @@ function() {
 // TODO: see if we can remove these
 ZmDoublePaneView.prototype.getMsg =
 function() {
-	return (this._view == ZmId.VIEW_TRAD) ? this._itemView.getMsg() : null;
+	return (this._controller.getCurrentViewType() == ZmId.VIEW_TRAD) ? this._itemView.getMsg() : null;
 };
 
 ZmDoublePaneView.prototype.setMsg =

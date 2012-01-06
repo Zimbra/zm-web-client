@@ -40,6 +40,7 @@ ZmMailMsg = function(id, list, noCache) {
 	this._bodyParts = [];
 	this._inviteDescBody = {};
 	this._addrs = {};
+	this._fetchedAlternativePart = {};
 
 	for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
 		var type = ZmMailMsg.ADDRS[i];
@@ -216,7 +217,7 @@ function(params) {
 
 ZmMailMsg._handleResponseFetchMsg =
 function(callback, result) {
-	if (callback instanceof AjxCallback) {
+	if (callback) {
 		callback.run(result);
 	}
 };
@@ -772,22 +773,34 @@ function() {
 };
 
 /**
- * Returns true if this message has at least one HTML part
+ * Returns true if this message has at least one HTML part or inline image
  */
 ZmMailMsg.prototype.hasHtmlPart =
 function() {
-	if (this._bodyParts.length > 1) {
-		for (var i = 0; i < this._bodyParts.length; i++) {
-			var bodyPart = this._bodyParts[i];
-			if (bodyPart.ct == ZmMimeTable.TEXT_HTML || (bodyPart.cd == "inline" && bodyPart.filename && ZmMimeTable.isRenderableImage(bodyPart.ct))) {
-				return true;
-			}
+	for (var i = 0; i < this._bodyParts.length; i++) {
+		var bodyPart = this._bodyParts[i];
+		if (bodyPart.ct == ZmMimeTable.TEXT_HTML || (bodyPart.cd == "inline" && bodyPart.filename && ZmMimeTable.isRenderableImage(bodyPart.ct))) {
+			return true;
 		}
-		return false;
 	}
+	return false;
+};
 
-	return this.isHtmlMail();
-}
+ZmMailMsg.prototype.isMultipartAlternative =
+function() {
+	return (this._topPart.getContentType() == ZmMimeTable.MULTI_ALT);
+};
+
+// Returns true is the msg has a series of body parts. False is returned if the msg is multipart/alternative,
+// even if more than one alternative part has been loaded.
+ZmMailMsg.prototype.hasMultipleBodyParts =
+function() {
+	if (!this.isMultipartAlternative()) {
+		var parts = this.getBodyParts();
+		return (parts && parts.length > 1);
+	}
+	return false;
+};
 
 /**
  * Gets the body parts.
@@ -801,9 +814,7 @@ function() {
 ZmMailMsg.prototype.getBodyPart =
 function(contentType, useOriginal) {
 
-	if (contentType == ZmMimeTable.TEXT_HTML && !useOriginal &&
-		this._htmlBody && this._htmlBody.length > 0)
-	{
+	if (contentType == ZmMimeTable.TEXT_HTML && !useOriginal && this._htmlBody && this._htmlBody.length > 0) {
 		return this._htmlBody;
 	}
 
@@ -819,23 +830,19 @@ function(contentType, useOriginal) {
 	return bodyPart;
 };
 
+// return the first body part if content type was not specified,
+// otherwise, search for the first body part that matches the given ct.
 ZmMailMsg.prototype._getFirstBodyPart =
-function(contentType){
-	// return the first body part if content type was not specified,
-	// otherwise, search for the first body part that matches the given ct.
+function(contentType) {
 	for (var i = 0; i < this._bodyParts.length; i++) {
 		var bodyPart = this._bodyParts[i];
-		if (contentType) {
-			if (bodyPart.ct == contentType)
-				return bodyPart;
-		} else {
+		if (!contentType || (bodyPart.ct == contentType)) {
 			return bodyPart;
 		}
 	}
 
 	return null;
 };
-
 
 /**
  * Gets the body content.
@@ -844,105 +851,116 @@ function(contentType){
  */
 ZmMailMsg.prototype.getBodyContent =
 function() {
-	if (this._loaded) {
-		var bodyPart = this.getBodyPart();
-		return bodyPart ? bodyPart.content : null;
-	}
-
-	return null;
+	var bodyPart = this._loaded && this.getBodyPart();
+	return bodyPart ? bodyPart.content : null;
 };
 
 /**
- * loads the text part asyncroniously, if needed 
- * @param callback
- */
-ZmMailMsg.prototype.fetchTextPart =
-function(callback) {
-	// bug fix #19275 - if loaded and not viewing as HTML then assume no text part exists
-	if (!this._loaded || appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
-		var respCallback = new AjxCallback(this, this._handleResponseGetTextPart, [callback]);
-		ZmMailMsg.fetchMsg({sender:appCtxt.getAppController(), msgId:this.id, getHtml:false, callback:respCallback});
+  * Returns true if this msg is multipart/alternative and could fetch the given type of part.
+  * Will only really be used to fetch a text part, since we only get a multipart/alternative
+  * when requesting the HTML version of a msg.
+  * 
+  * @param {string}		contentType		type of part we might want to fetch
+  */
+ZmMailMsg.prototype.canFetchAlternativePart =
+function(contentType) {
+	if (this.isMultipartAlternative()) {
+		return (!this.getBodyPart(contentType) && !this._fetchedAlternativePart[contentType]);
 	}
-	else {
-		if (callback) { callback.run(); }
-	}
+	return false;
 };
-
 
 /**
- * Gets the text part.
- *
- */
-ZmMailMsg.prototype.getTextPart =
-function() {
-	var bodyPart = this.getBodyPart();
-	if (bodyPart && (bodyPart.ct == ZmMimeTable.TEXT_PLAIN || bodyPart.body && ZmMimeTable.isTextType(bodyPart.ct))) {
-		return bodyPart.content;
-	}
-    else if (bodyPart && bodyPart.ct == ZmMimeTable.TEXT_CAL) {
-        // NOTE: IE doesn't match multi-line regex, even when explicitly
-        // specifying the "m" attribute.
-        var lines = bodyPart.content.split(/\r\n/);
-        var desc = [];
-        var content = "";
-        for (var i = 0; i < lines.length; i++) {
-            var line = lines[i];
-            if (line.match(/^DESCRIPTION:/)) {
-                desc.push(line.substr(12));
-                for (var j = i + 1; j < lines.length; j++) {
-                    line = lines[j];
-                    if (line.match(/^\s+/)) {
-                        desc.push(line.replace(/^\s+/, " "));
-                        continue;
-                    }
-                    break;
-                }
-                break;
-            }
-        }
-        if (desc.length > 0) {
-            content = desc.join("");
-            content = content.replace(/\\t/g, "\t");
-            content = content.replace(/\\n/g, "\n");
-            content = content.replace(/\\(.)/g, "$1");
-        }
-        return content;
-    }
-    else if (bodyPart && bodyPart.ct != ZmMimeTable.TEXT_PLAIN && bodyPart.ct != ZmMimeTable.TEXT_HTML) {
-		// looks like the body of this message is the attachment itself
-		return "";
-	}
-	return -1;
+  * Fetches the requested alternative part.
+  * 
+  * @param {string}		contentType		MIME type of part to fetch
+  * @param {callback}	callback
+  */
+ZmMailMsg.prototype.fetchAlternativePart =
+function(contentType, callback) {
+	
+	var respCallback = this._handleResponseFetchAlternativePart.bind(this, contentType, callback);
+	ZmMailMsg.fetchMsg({
+		sender:		appCtxt.getAppController(),
+		msgId:		this.id,
+		getHtml:	(contentType == ZmMimeTable.TEXT_HTML),
+		callback:	respCallback
+	});
+	this._fetchedAlternativePart[contentType] = true;
 };
 
-ZmMailMsg.prototype.getOrFetchTextPart =
-function() {
-	var textPart = this.getTextPart();
-	if (textPart === -1) {
-		this.fetchTextPart();
-		return null;
-	}
-	return textPart;
-}
+ZmMailMsg.prototype._handleResponseFetchAlternativePart =
+function(contentType, callback, result) {
 
-ZmMailMsg.prototype.getTextBodyPart =
-function(){
-	var bodyPart = this.getBodyPart();
-	if (bodyPart && bodyPart.ct == ZmMimeTable.TEXT_PLAIN) {
-		return bodyPart;
-	} else if (bodyPart && bodyPart.body && ZmMimeTable.isTextType(bodyPart.ct)) {
-		return bodyPart;
-	}
-	return null;
-};
-
-ZmMailMsg.prototype._handleResponseGetTextPart =
-function(callback, result) {
 	var response = result.getResponse().GetMsgResponse;
 	this._loadFromDom(response.m[0]);
-	var bodyPart = this.getBodyPart(ZmMimeTable.TEXT_PLAIN);
+	var bodyPart = this.getBodyPart(contentType);
 	result.set(bodyPart ? bodyPart.content : null);
-	if (callback) callback.run(result, bodyPart.truncated);
+	if (callback) {
+		callback.run(result);
+	}
+};
+
+/**
+ * Gets the text content of this message, loading the text part if necessary.
+ *
+ * @param {callback}	callback
+ */
+ZmMailMsg.prototype.getTextContent =
+function(callback) {
+	var bodyPart = this.getTextBodyPart();
+	if (bodyPart) {
+		return bodyPart.content;
+	}
+	bodyPart = this.getBodyPart();
+	if (bodyPart && bodyPart.ct == ZmMimeTable.TEXT_CAL) {
+		return ZmMailMsg.getTextFromCalendarPart(bodyPart);
+	}
+	else if (bodyPart && bodyPart.ct != ZmMimeTable.TEXT_PLAIN && bodyPart.ct != ZmMimeTable.TEXT_HTML) {
+		// looks like the body of this message is the attachment itself
+		return "";
+	} else {
+		return -1;
+	}
+};
+
+ZmMailMsg.getTextFromCalendarPart =
+function(bodyPart) {
+
+	// NOTE: IE doesn't match multi-line regex, even when explicitly
+	// specifying the "m" attribute.
+	var lines = bodyPart.content.split(/\r\n/);
+	var desc = [];
+	var content = "";
+	for (var i = 0; i < lines.length; i++) {
+		var line = lines[i];
+		if (line.match(/^DESCRIPTION:/)) {
+			desc.push(line.substr(12));
+			for (var j = i + 1; j < lines.length; j++) {
+				line = lines[j];
+				if (line.match(/^\s+/)) {
+					desc.push(line.replace(/^\s+/, " "));
+					continue;
+				}
+				break;
+			}
+			break;
+		}
+	}
+	if (desc.length > 0) {
+		content = desc.join("");
+		content = content.replace(/\\t/g, "\t");
+		content = content.replace(/\\n/g, "\n");
+		content = content.replace(/\\(.)/g, "$1");
+	}
+	return content;
+};
+
+// returns a text/plain or text-like (not HTML or calendar) body part
+ZmMailMsg.prototype.getTextBodyPart =
+function() {
+	var bodyPart = this.getBodyPart(ZmMimeTable.TEXT_PLAIN) || this.getBodyPart();
+	return (bodyPart && bodyPart.body && ZmMimeTable.isTextType(bodyPart.ct)) ? bodyPart : null;
 };
 
 /**

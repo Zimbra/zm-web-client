@@ -707,8 +707,7 @@ function(msg, isDraft, bodyContent) {
 			},
 			"_after": AjxCallback.simpleClosure(this._applyHtmlPrefix, this, "<blockquote>", "</blockquote>")
 		}
-		textContent = !this.isHidden ? this._htmlEditor.getTextVersion(convertor) :
-									   AjxStringUtil.convertHtml2Text(bodyContent || "", convertor);
+		textContent = AjxStringUtil.convertHtml2Text(bodyContent || this._htmlEditor.getContent() || "", convertor);
 		textPart.setContent(textContent);
 		top.children.add(textPart);
 
@@ -795,7 +794,8 @@ function(msg, isDraft, bodyContent) {
 
 		var textPart = (this._extraParts || inline) ? new ZmMimePart() : top;
 		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
-		textPart.setContent(this._htmlEditor.getContent());
+		textContent = bodyContent || this._htmlEditor.getContent();
+		textPart.setContent(textContent);
 
 		if (inline) {
 			top.setContentType(ZmMimeTable.MULTI_ALT);
@@ -2390,7 +2390,7 @@ function(msg, htmlMode) {
 
 	// bug fix #7271 - if we have multiple body parts, append them all first
 	var parts = msg.getBodyParts();
-	if (parts && parts.length > 1) {
+	if (msg.hasMultipleBodyParts()) {
 		var bodyArr = [];
 		for (var k = 0; k < parts.length; k++) {
 			var part = parts[k];
@@ -2429,7 +2429,7 @@ function(msg, htmlMode) {
 		} else {
 			hasInlineImages = msg.hasInlineImagesInMsgBody();
 			// grab text part out of the body part
-			bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN) || msg.getBodyPart(ZmMimeTable.TEXT_HTML, true) || msg.getTextBodyPart();            
+			bodyPart = msg.getTextBodyPart() || msg.getBodyPart(ZmMimeTable.TEXT_HTML, true);            
 			body = bodyPart ? this._getTextPart(bodyPart) : null;
 		}
 	}

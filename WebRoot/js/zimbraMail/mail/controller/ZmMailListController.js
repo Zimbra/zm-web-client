@@ -973,11 +973,9 @@ function(params) {
 
 	// bug: 38928 - if user viewed entire truncated message, fetch the whole
 	// thing when replying/forwarding
-	if (action != ZmOperation.NEW_MESSAGE || action != ZmOperation.DRAFT) {
-		if (msg.viewEntireMessage) {
-			params.noTruncate = true;
-			params.forceLoad = true;
-		}
+	if (action != ZmOperation.NEW_MESSAGE && action != ZmOperation.DRAFT && msg.viewEntireMessage) {
+		params.noTruncate = true;
+		params.forceLoad = true;
 	}
 
 	if (action == ZmOperation.DRAFT || action == ZmOperation.FORWARD_INLINE ||

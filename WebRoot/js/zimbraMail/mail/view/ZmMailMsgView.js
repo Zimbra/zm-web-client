@@ -123,7 +123,7 @@ function() {
 	this._msg = this._item = null;
 	this._htmlBody = null;
 
-	// TODO: reuse all thses controls that are being disposed here.....
+	// TODO: reuse all these controls that are being disposed here.....
 	if (this._expandButton) {
 		this._expandButton.setVisible(false);
 		this._expandButton.reparentHtmlElement(this.getHtmlElement());
@@ -1452,9 +1452,9 @@ function(msg, container, callback, index) {
 	var el = container || this.getHtmlElement();
 	
 	// if multiple body parts, ignore prefs and just append everything
-	var bodyParts = msg.getBodyParts();
-	var len = bodyParts.length;
-	if (len > 1) {
+	if (msg.hasMultipleBodyParts()) {
+		var bodyParts = msg.getBodyParts();
+		var len = bodyParts.length;
 		var html = [];
 		var hasHtmlPart = msg.hasHtmlPart();
 		for (var i = 0; i < len; i++) {
@@ -1515,9 +1515,9 @@ function(msg, container, callback, index) {
 					});
 				}
 
-                if (!content) {
-                    content = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: true});
-                }
+				if (!content) {
+					content = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: true});
+				}
 
 				this._makeIframeProxy(el, content, false, bodyPart.truncated, index);
 			} else if (ZmMimeTable.isRenderableImage(bodyPart.ct)) {
@@ -1529,36 +1529,30 @@ function(msg, container, callback, index) {
 				].join("");
 				this._makeIframeProxy(el, html, false, false, index);
 			} else {
-				// otherwise, get the text part if necessary
-				if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
-					// try to go retrieve the text part
-					var content = msg.getTextPart();
-					if (content === -1) {
-						var respCallback = new AjxCallback(this, this._handleResponseRenderMessage, [el, bodyPart, callback]);
-						msg.fetchTextPart(respCallback);
-						return;
-					}
-					
-					if (content != null) {
-						content = (bodyPart.ct != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
-						this._makeIframeProxy(el, content, true, false, index);
-					}
-					if (callback) { callback.run(); }
-
+				
+				var desiredPartType = (appCtxt.get(ZmSetting.VIEW_AS_HTML)) ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
+				if (msg.canFetchAlternativePart(desiredPartType)) {
+					msg.fetchAlternativePart(desiredPartType, this._renderMessageBody.bind(this, msg, container, callback, index));
 					return;
-
-				} else {
+				}
+				
+				if (bodyPart.ct == ZmMimeTable.TEXT_PLAIN) {
 					if (invite && !invite.isEmpty()) {
 						content = ZmInviteMsgView.truncateBodyContent(content);
 					}
 
-                    var isTextMsg = true;
-                    if (!content) {
-                        content = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: false});
-                        isTextMsg = false; //To make sure we display html content properly
-                    }
+					var isTextMsg = true;
+					if (!content) {
+						content = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: false});
+						isTextMsg = false; //To make sure we display html content properly
+					}
 					content = isTextMsg ? AjxStringUtil.convertToHtml(content) : content;
 					this._makeIframeProxy(el, content, isTextMsg, bodyPart.truncated, index);
+				} else {					
+					if (content != null) {
+						content = (bodyPart.ct != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
+						this._makeIframeProxy(el, content, true, false, index);
+					}
 				}
 			}
 		}
@@ -1574,59 +1568,6 @@ function(msg, container, callback, index) {
 ZmMailMsgView.prototype._getBodyContent =
 function(bodyPart) {
 	return bodyPart.content;
-};
-
-ZmMailMsgView.prototype._handleResponseRenderMessage =
-function(el, bodyPart, callback, result, isTruncated) {
-	var content = result ? result.getResponse() : null;
-
-	// if no text part, check if theres a calendar part and generate some canned
-	// text, otherwise, get the html part if one exists
-	if (content == null) {
-		if (bodyPart.ct == ZmMimeTable.TEXT_CAL) {
-			// NOTE: IE doesn't match multi-line regex, even when explicitly
-			// specifying the "m" attribute.
-			var lines = bodyPart.content.split(/\r\n/);
-			var desc = [];
-			for (var i = 0; i < lines.length; i++) {
-				var line = lines[i];
-				if (line.match(/^DESCRIPTION:/)) {
-					desc.push(line.substr(12));
-					for (var j = i + 1; j < lines.length; j++) {
-						line = lines[j];
-						if (line.match(/^\s+/)) {
-							desc.push(line.replace(/^\s+/, " "));
-							continue;
-						}
-						break;
-					}
-					break;
-				}
-			}
-			if (desc.length > 0) {
-				content = desc.join("");
-				content = content.replace(/\\t/g, "\t");
-				content = content.replace(/\\n/g, "\n");
-				content = content.replace(/\\(.)/g, "$1");
-			}
-		}
-		else if (bodyPart.ct == ZmMimeTable.TEXT_HTML) {
-			// bug fix #8960 - convert the html content to text using the DOM
-			var div = document.createElement("div");
-			div.innerHTML = bodyPart.content;
-			content = AjxStringUtil.convertHtml2Text(div);
-		}
-	}
-
-	content = (bodyPart.ct != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
-	this._makeIframeProxy(el, (content || ""), true, isTruncated);
-
-	this._setAttachmentLinks();
-	this._setRows();
-	this._expandRows(this._expandHeader);
-
-	if (callback) { callback.run(); }
-	
 };
 
 ZmMailMsgView.prototype._renderMessageFooter = function(msg, container) {};

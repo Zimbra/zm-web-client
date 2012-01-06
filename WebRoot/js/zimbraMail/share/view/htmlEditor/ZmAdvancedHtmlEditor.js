@@ -160,11 +160,11 @@ function() {
 };
 
 ZmAdvancedHtmlEditor.prototype.getTextVersion =
-function() {
+function(convertor) {
 	var textArea = this.getContentField();
 	if (this._mode == DwtHtmlEditor.HTML) {
 		var editor = this.getEditor();
-		return editor ? this._convertHtml2Text(): "";
+		return editor ? this._convertHtml2Text(convertor): "";
 	}
 
 	return textArea.value;
@@ -290,21 +290,21 @@ function() {
 };
 
 ZmAdvancedHtmlEditor.prototype._convertHtml2Text =
-function() {
+function(convertor) {
 	var editor = this.getEditor();
 	var doc = editor && editor.getDoc();
 
 	return (doc && doc.body)
-		? this._convertHtml2TextContinue(doc.body) : "";
+		? this._convertHtml2TextContinue(doc.body, convertor) : "";
 };
 
 ZmAdvancedHtmlEditor.prototype._convertHtml2TextContinue =
-function(domRoot) {
+function(domRoot, convertor) {
 	var text = [];
 	var idx = 0;
 	var ctxt = {};
 
-	AjxStringUtil._traverse(domRoot, text, idx, AjxStringUtil._NO_LIST, 0, 0, ctxt);
+	AjxStringUtil._traverse(domRoot, text, idx, AjxStringUtil._NO_LIST, 0, 0, ctxt, convertor);
 
 	// tinymce always inserts <p> tag which creates unwanted new lines in format
 	// conversion
