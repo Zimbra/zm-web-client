@@ -488,11 +488,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .SubjectDoubleRow .ZmConvListFragment {
+	font-weight:normal;
 	@Text-disabled@
-}
-
-.Unread .SubjectDoubleRow .ZmConvListFragment {
-	@Text@
 }
 
 .ZmConvExpanded {
