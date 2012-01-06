@@ -1028,9 +1028,9 @@ function(msg, container) {
 	}
 	else if (!this._noQuotedText) {
 		links.push(this._makeLink(ZmMsg.showQuotedText, this._showTextLinkId));
-		links.push(this._makeLink(ZmMsg.reply, replyLinkId));
-		links.push(this._makeLink(ZmMsg.replyAll, replyAllLinkId));
 	}
+	links.push(this._makeLink(ZmMsg.reply, replyLinkId));
+	links.push(this._makeLink(ZmMsg.replyAll, replyAllLinkId));
 	
 	var subs = {
 		footerId:		this._footerId,
