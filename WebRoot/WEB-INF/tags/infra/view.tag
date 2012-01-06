@@ -55,12 +55,12 @@
 	<c:set var='helpUrl' value="/help/standard/Zimbra_User_Help.htm" scope="request" />
 </c:if>
 <c:choose>
-<c:when test="${skin eq 'yahoo'}">
+<c:when test="${skin eq 'serenity'}">
 <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 <table width="100%" cellpadding="6" cellspacing='0' border="0"><tr><td>
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
 	<tr><td colspan="${empty editmode ? 4 : 3}" style="padding-bottom:6px;">
-		<table width=100% border=0 cellspacing="0" cellpadding="0"><tr>
+		<table width=100% border=0 cellspacing="0" cellpadding="0" id="skin_spacing_top_row"><tr>
 		<td valign="middle" align="center" width="1%" style="padding: 4px 8px;">
 			<c:choose>
 				<c:when test="${not empty logoUrl}">
@@ -74,7 +74,7 @@
 		<td style="padding: 4px 8px 4px 0px; white-space:nowrap;">
 			<%--<b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b>--%>
 			<%--<br>--%>
-			<a class='skin_yahoo_link' href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>
+			
 			<!--a class='skin_yahoo_link' href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a-->
 			<!--<a class='skin_yahoo_link' target="_new" href="http://www.zimbra.com/products/desktop.html">Offline version</a>-->
 		</td>
@@ -82,13 +82,27 @@
 		<td valign="top" class="TopContent" align="center">
 			<app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
 		</td>
-		<!--td align="right" style="white-space:nowrap;padding-right:0.5em;">
-			<form action="<fmt:message key="yahooWebSearchURL"/>" method="GET" target="_new">
-				<input name="<fmt:message key="yahooWebSearchParamName"/>" maxlength="2048" value="">
-				<input type="submit" value="<fmt:message key="yahooWebSearchButton"/>" class='skin_yahoo_websearch_button' style='font-size:11px'>
-			</form>
-		</td-->
-		</tr></table>
+		</tr>
+		<tr>
+		<td colspan="4"><!-- Tabs -->
+			<table cellpadding="0" cellspacing="0" border="0" width="100%" id="skin_spacing_app_row">
+			<tr>
+			<td valign="bottom" nowrap="nowrap"><app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}' nofiller="${true}"/></td>
+			<td align="right" nowrap="nowrap" style="padding-right:0.5em;">
+				<c:if test="${mailbox.attrs.zimbraIsDomainAdminAccount[0] eq 'TRUE' and not empty adminReference }">
+					<a class='skin_yahoo_link' target="_new" href="${adminReference}"><fmt:message key="adminLinkLabel"/></a>&nbsp;<font color="gray">|</font>&nbsp;
+				</c:if>
+				<!--<a class='skin_yahoo_link' target="_new" href="<fmt:message key='yahooYahooMailURL'/>"><fmt:message key='yahooYahooMail'/></a>&nbsp;<font color="gray">|</font>&nbsp;-->
+				<a class='skin_link' target="_new" href="<c:url value="${helpUrl}"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><fmt:message key="help"/></a> &nbsp; 
+				<a class='skin_link' href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>
+			</td>
+			</tr>
+			</table>
+		</td>
+		</tr>
+		</table>
+	
+		
 		<app:appStatus/>
 		</td>
 	</tr>
@@ -115,18 +129,7 @@
 			</td>
 		</c:if>
 		<td colspan="3" valign="top">
-			<table cellpadding="0" cellspacing="0" border="0" width="100%">
-			<tr>
-			<td valign="bottom" nowrap="nowrap"><app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}' nofiller="${true}"/></td>
-			<td align="right" nowrap="nowrap" style="padding-right:0.5em;">
-				<c:if test="${mailbox.attrs.zimbraIsDomainAdminAccount[0] eq 'TRUE' and not empty adminReference }">
-					<a class='skin_yahoo_link' target="_new" href="${adminReference}"><fmt:message key="adminLinkLabel"/></a>&nbsp;<font color="gray">|</font>&nbsp;
-				</c:if>
-				<!--<a class='skin_yahoo_link' target="_new" href="<fmt:message key='yahooYahooMailURL'/>"><fmt:message key='yahooYahooMail'/></a>&nbsp;<font color="gray">|</font>&nbsp;-->
-				<a class='skin_yahoo_link' target="_new" href="<c:url value="${helpUrl}"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><fmt:message key="help"/></a>
-			</td>
-			</tr>
-			</table>
+			
 			<jsp:doBody/>
 		</td>
 	</tr>
