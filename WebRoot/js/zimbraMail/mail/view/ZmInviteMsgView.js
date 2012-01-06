@@ -633,7 +633,7 @@ function() {
 		posStyle: DwtControl.STATIC_STYLE,
 		className: "ZmInviteToolBar",
 		buttonClassName: "DwtToolbarButton",
-		context: this.mode,
+		context: this.parent.getHTMLElId(),
 		toolbarType: ZmId.TB_INVITE
 	};
 	var tb = new ZmButtonToolBar(params);
