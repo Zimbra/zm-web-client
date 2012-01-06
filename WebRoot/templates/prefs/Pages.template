@@ -444,7 +444,7 @@ and the container element is replaced with that control.
 					<tr>
 						<td class='ZOptionsLabel' valign=top><$=ZmMsg.composeLabel$></td>
 						<td class='ZOptionsNestedTable'>
-							<table>
+							<table class='ZPropertySheet'>
 								<colgroup>
 									<col width=1>
 									<col width=1>
@@ -664,7 +664,7 @@ and the container element is replaced with that control.
 
 <!-- NOTE: we have two separate templates for white/black lists for tabbing support -->
 <template id='prefs.Pages#BlackList'>
-	<table>
+	<table class='ZPropertySheet'>
 		<tr>
 			<td id='${id}_EMAIL_ADDRESS' tabindex='182'></div></td>
 			<td id='${id}_ADD_BUTTON' valign=top tabindex='184'></td>
@@ -677,7 +677,7 @@ and the container element is replaced with that control.
 	<div class='ZOptionsInfo' id='${id}_NUM_USED'></div>
 </template>
 <template id='prefs.Pages#WhiteList'>
-	<table>
+	<table class='ZPropertySheet'>
 		<tr>
 			<td id='${id}_EMAIL_ADDRESS' tabindex='190'></div></td>
 			<td id='${id}_ADD_BUTTON' valign=top tabindex='192'></td>
@@ -690,7 +690,7 @@ and the container element is replaced with that control.
 	<div class='ZOptionsInfo' id='${id}_NUM_USED'></div>
 </template>
 <template id='prefs.Pages#TrustedList'>
-	<table>
+	<table class='ZPropertySheet'>
 		<tr>
 			<td id='${id}_EMAIL_ADDRESS' tabindex='190'></div></td>
 			<td id='${id}_ADD_BUTTON' valign=top tabindex='192'></td>
@@ -1492,7 +1492,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
 						<tr>
 							<td class='ZOptionsLabel'><$=ZmMsg.forwardInvitesToLabel$></td>
-							<td class='ZOptionsField' style='padding-left:2em;'><$=ZmMsg.forwardInvitesTo$> <input id='${id}_CAL_INV_FORWARDING_ADDRESS' tabindex='110'></td>
+							<td class='ZOptionsField'><$=ZmMsg.forwardInvitesTo$> <input id='${id}_CAL_INV_FORWARDING_ADDRESS' tabindex='110'></td>
 						</tr>
 
 						<tr><td colspan=2><hr></td></tr>
@@ -1683,7 +1683,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
     <tr>
         <td class='ZOptionsLabel'><$=ZmMsg.calendarWorkWeek $></td>
         <td class='ZOptionsField'>
-            <table>
+            <table class='ZPropertySheet'>
                 <tr>
                     <td id='${id}_CAL_WORKING_DAY_0' tabindex='41'></td>
                     <td id='${id}_CAL_WORKING_DAY_1' tabindex='42'></td>
@@ -1700,7 +1700,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
     <tr>
         <td class='ZOptionsLabel'><$=ZmMsg.calendarWorkHours $></td>
         <td class='ZOptionsField'>
-            <table>
+            <table class='ZPropertySheet'>
                 <tr>
                     <td id='${id}_CAL_WORKING_HOURS_NORMAL'><td>
                     <td> <$=ZmMsg.calendarWorkHoursNormal $> <td>
