@@ -63,12 +63,12 @@
                     <tr valign="center">
                         <td>
                             <fmt:message key="showApptsFromThrough">
-                                <fmt:param value="<input id='start' type=text size='12' maxlength='20' name='startDate' value='${fn:escapeXml(fmtStartDate)}'/>"/>
-                                <fmt:param value="<input id='end' type=text size='12' maxlength='20' name='endDate' value='${fn:escapeXml(fmtEndDate)}'/>"/>
+                                <fmt:param value="<input id='start' onkeydown=\"return handleEnter(event);\" type=text size='12' maxlength='20' name='startDate' value='${fn:escapeXml(fmtStartDate)}'/>"/>
+                                <fmt:param value="<input id='end' onkeydown=\"return handleEnter(event);\" type=text size='12' maxlength='20' name='endDate' value='${fn:escapeXml(fmtEndDate)}'/>"/>
                             </fmt:message>
                         </td>
                         <td class="IEButton">
-                            <input align="left" type="submit" value="Search" name="search">
+                            <app:button id="OPSEARCH" name="search" text="search"/>
                             <input type="hidden" value="list" name="view"/>
                         </td>
                         <%--<td valign="right">--%>
@@ -95,6 +95,15 @@
     <SCRIPT TYPE="text/javascript">
     <!--
     function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.location = a.href;} }
+    var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+    function handleEnter (ev) {
+		var keyCode = ev.keyCode ? ev.keyCode : ev.which ? ev.which : ev.charCode;
+		if (keyCode == 13) {
+            zclick('SOPSEARCH');
+            return false;
+        }
+        return true;
+    }
     //-->
    </SCRIPT>
     <app:keyboard cache="cal.multiDayView" globals="true" mailbox="${mailbox}" calendars="true" tags="true">
