@@ -1301,7 +1301,6 @@ function(msg, container) {
 	var attachmentsCount = msg.getAttachmentCount(true);
 
 	// do we add a close button in the header section?
-	var hasHeaderCloseBtn = (this._mode == ZmId.VIEW_MSG && !appCtxt.isChildWindow);
 
 	var folder = appCtxt.getById(msg.folderId);
 	var isSyncFailureMsg = (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES);
@@ -1310,7 +1309,6 @@ function(msg, container) {
     }
 
 	this._hdrTableId		= ZmId.getViewId(this._viewId, ZmId.MV_HDR_TABLE, this._mode);
-	var closeBtnCellId		= hasHeaderCloseBtn ? ZmId.getViewId(this._viewId, ZmId.MV_CLOSE_BTN_CELL, this._mode) : null;
 	var reportBtnCellId		= ZmId.getViewId(this._viewId, ZmId.MV_REPORT_BTN_CELL, this._mode);
 	this._expandRowId		= ZmId.getViewId(this._viewId, ZmId.MV_EXPAND_ROW, this._mode);
 	var expandHeaderId		= ZmId.getViewId(this._viewId, ZmId.MV_EXPAND_HDR, this._mode);
@@ -1319,7 +1317,6 @@ function(msg, container) {
 		id: 				this._htmlElId,
 		hdrTableId: 		this._hdrTableId,
 		hdrTableTopRowId:	ZmId.getViewId(this._viewId, ZmId.MV_HDR_TABLE_TOP_ROW, this._mode),
-		closeBtnCellId:		closeBtnCellId,
 		expandRowId:		this._expandRowId,
 		expandHeaderId:		expandHeaderId,
 		attachId:			this._attLinksId,
@@ -1382,14 +1379,6 @@ function(msg, container) {
 		this._expandButton.setVisible(Dwt.DISPLAY_BLOCK);
 	}
 
-	// add the close button if applicable
-	if (hasHeaderCloseBtn) {
-		var id = ZmId.getButtonId(this._mode, ZmOperation.CLOSE, ZmId.MSG_VIEW);
-		var closeButton = new DwtButton({parent:this, id:id, parentElement:closeBtnCellId});
-		closeButton.setImage("Close");
-		closeButton.setText(ZmMsg.close);
-		closeButton.addSelectionListener(new AjxListener(this, this._closeButtonListener));
-	}
 
 	// add the report button if applicable
 	var reportBtnCell = document.getElementById(reportBtnCellId);
@@ -2218,13 +2207,6 @@ function(expand) {
 	}
 };
 
-ZmMailMsgView.prototype._closeButtonListener =
-function(ev) {
-	// bug fix #30835 - prism triggers this listener twice for some reason :/
-	if (!appCtxt.isOffline || (this._viewId == appCtxt.getCurrentViewId())) {
-		this._controller._backListener();
-	}
-};
 
 ZmMailMsgView.prototype._reportButtonListener =
 function(msg, ev) {

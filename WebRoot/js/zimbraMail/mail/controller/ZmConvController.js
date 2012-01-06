@@ -147,6 +147,14 @@ function(view) {
 	}
 };
 
+ZmConvController.prototype._getToolBarOps =
+function() {
+	var list = [ZmOperation.CLOSE, ZmOperation.SEP];
+	list = list.concat(ZmDoublePaneController.prototype._getToolBarOps.call(this, true));
+	return list;
+};
+
+
 ZmConvController.prototype._initializeToolBar = 
 function(view) {
 	if (!this._toolbar[view]) {

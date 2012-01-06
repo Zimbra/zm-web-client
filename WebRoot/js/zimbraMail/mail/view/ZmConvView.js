@@ -241,13 +241,6 @@ function() {
 
 	this._summary.getHtmlElement().innerHTML = AjxTemplate.expand("mail.Message#MessageListHeader", subs);
 
-	// add the close button
-	var closeButtonId = this._htmlElId + "_closeBtnCell";
-	var closeButton = new DwtButton({parent:this, className:"DwtToolbarButton", parentElement:closeButtonId});
-	closeButton.setImage("Close");
-	closeButton.setText(ZmMsg.close);
-	closeButton.addSelectionListener(new AjxListener(this, this._closeButtonListener));
-	
 	// save the necessary DOM objects we just created
 	this._subjectDiv = document.getElementById(this._htmlElId + "_subjDiv");
 
@@ -381,11 +374,6 @@ function(ev) {
 	
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.MODIFY)
 		this._setTags(this._conv);
-};
-
-ZmConvView.prototype._closeButtonListener = 
-function(ev) {
-	this._controller._app.popView();
 };
 
 // mimics handling by ZmConvListController.prototype._listSelectionListener

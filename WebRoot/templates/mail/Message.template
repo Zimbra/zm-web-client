@@ -17,11 +17,6 @@
 					<div>
 						<table width=100%>
 							<tr id='${hdrTableTopRowId}'>
-								<$ if (data.closeBtnCellId) { $>
-									<td>&nbsp;</td>
-									<td id='${closeBtnCellId}'></td>
-									<td>&nbsp;</td>
-								<$ } $>
 								<$ if (data.isSyncFailureMsg) { $>
 									<td>&nbsp;</td>
 									<td id='${reportBtnCellId}'></td>

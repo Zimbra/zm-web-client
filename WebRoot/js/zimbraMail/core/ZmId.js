@@ -596,7 +596,6 @@ ZmId.TREEITEM_BRIEFCASE				= "zti|Briefcase|16";
 // components that are part of the template
 ZmId.MV_HDR_TABLE			= "_hdrTable";			// TABLE that holds header elements
 ZmId.MV_HDR_TABLE_TOP_ROW	= "_hdrTableTopRow";	// first TR in header table
-ZmId.MV_CLOSE_BTN_CELL		= "_closeBtnCell";		// TD that holds Close button
 ZmId.MV_REPORT_BTN_CELL		= "_reportBtnCell";		// TD that holds Report button (sync failure msg)
 ZmId.MV_EXPAND_ROW			= "_expandRow";			// TR that holds expandable headers
 ZmId.MV_EXPAND_HDR			= "_expandHeader";		// TD that holds expand button

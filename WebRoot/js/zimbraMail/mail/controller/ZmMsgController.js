@@ -183,11 +183,8 @@ function(map) {
 
 ZmMsgController.prototype._getToolBarOps = 
 function() {
-	var list = [];
-	if (appCtxt.isChildWindow) {
-		list = [ZmOperation.CLOSE, ZmOperation.SEP];
-	}
-	list = list.concat(ZmMailListController.prototype._getToolBarOps(true));
+	var list = [ZmOperation.CLOSE, ZmOperation.SEP];
+	list = list.concat(ZmMailListController.prototype._getToolBarOps.call(this, true));
 	return list;
 };
 
@@ -360,6 +357,10 @@ function() {
 
 ZmMsgController.prototype._backListener =
 function(ev) {
+	// bug fix #30835 - prism triggers this listener twice for some reason :/
+	if (appCtxt.isOffline && (this._currentViewId != appCtxt.getCurrentViewId())) {
+		return;
+	}
 	var isChildWindow = appCtxt.isChildWindow;
 	if (!this._app.popView() && !isChildWindow) {
 		this._app.mailSearch();
