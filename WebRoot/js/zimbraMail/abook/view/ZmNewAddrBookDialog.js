@@ -82,5 +82,8 @@ function(html, idx) {
 ZmNewAddrBookDialog.prototype._setupFolderControl =
 function(){
     ZmNewOrganizerDialog.prototype._setupFolderControl.call(this);
-    if(this._omit) this._omit[ZmFolder.ID_TRASH] = true;
+    if (this._omit) {
+		this._omit[ZmFolder.ID_TRASH] = true;
+		this._omit[ZmFolder.ID_DLS] = true;
+	}
 };
