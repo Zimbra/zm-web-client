@@ -977,6 +977,7 @@ function(params) {
 	cv.set(params);
 
 	if (!this.isHidden) {
+		this._setOptionsMenu();	// reset now that compose view has figured out the inc options
 		appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
 		this._setAddSignatureVisibility();
 
