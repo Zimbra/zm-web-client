@@ -224,8 +224,9 @@ function() {
 
 ZmContactListController.prototype.gatherContactExtraDlStuff =
 function(contact, callback) {
-	if (contact.dlInfo && contact.dlMembers) {
-		callback();
+	if (contact.dlInfo) {
+		//already there, skip to next step, loading DL Members
+		this.loadDlMembers(contact, callback);
 		return;
 	}
 	var callbackFromGettingInfo = this._handleGetDlInfoResponse.bind(this, contact, callback);
@@ -251,9 +252,23 @@ function(contact, callback, result) {
 	contact.dlInfo.mailPolicySpecificMailers = mailPolicySpecificMailers;
 
 	this._resetOperations(this._toolbar[this._currentViewId], 1); // now that we got the dlInfo we can know better how to set the "edit" button.
-	var callbackFromGettingMembers = this._handleGetDlMembersResponse.bind(this, contact, callback);
-	contact.getAllDLMembers(callbackFromGettingMembers);
+	this.loadDlMembers(contact, callback);
 };
+
+ZmContactListController.prototype.loadDlMembers =
+function(contact, callback) {
+	if (contact.dlMembers) {
+		//already there - just callback
+		if (callback) {
+			callback();
+		}
+		return;
+	}
+	var respCallback = this._handleGetDlMembersResponse.bind(this, contact, callback);
+	contact.getAllDLMembers(respCallback);
+};
+
+
 
 ZmContactListController.prototype._getOwners =
 function(response) {
@@ -1020,8 +1035,15 @@ function(ev) {
  * @private
  */
 ZmContactListController.prototype._editListener =
-function(ev) {
+function(ev, isBack) {
 	var contact = this._listView[this._currentViewId].getSelection()[0];
+	if (contact.isDistributionList() && !isBack) {
+		//load the full DL info available for the owner, for edit.
+		var callback = this._editListener.bind(this, contact, ev, true); //callback HERE
+		contact.clearDlInfo();
+		this.gatherContactExtraDlStuff(contact, callback);
+		return;
+	}
 	AjxDispatcher.run("GetContactController").show(contact, false);
 };
 

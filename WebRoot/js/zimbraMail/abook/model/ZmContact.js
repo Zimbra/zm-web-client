@@ -747,6 +747,26 @@ function() {
 };
 
 /**
+ * Checks if the contact is locked. This is different for DLs than read-only.
+ *
+ * @return	{Boolean}	<code>true</code> if read-only
+ */
+ZmContact.prototype.isLocked =
+function() {
+	if (!this.isDistributionList() || !this.dlInfo) {
+		return this.isReadOnly();
+	}
+	var dlInfo = this.dlInfo;
+	if (dlInfo.isOwner) {
+		return false;
+	}
+	if (dlInfo.isMember) {
+    	return dlInfo.unsubscriptionPolicy == ZmContactSplitView.SUBSCRIPTION_POLICY_REJECT;
+	}
+	return dlInfo.subscriptionPolicy == ZmContactSplitView.SUBSCRIPTION_POLICY_REJECT;
+};
+
+/**
  * Checks if the contact is a group.
  * 
  * @return	{Boolean}	<code>true</code> if a group
@@ -2146,6 +2166,10 @@ function(node) {
 	this.created = node.cd;
 	this.modified = node.md;
 	this.ref = node.ref;
+
+	if (node.dlInfo) {
+		this.dlInfo = node.dlInfo;
+	}
 
 	this.attr = node._attrs || {};
 	if (node.m) {

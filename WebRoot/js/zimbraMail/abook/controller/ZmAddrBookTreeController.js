@@ -249,7 +249,12 @@ function(ev) {
 ZmAddrBookTreeController.prototype._itemClicked =
 function(folder) {
 	if (folder.id == ZmFolder.ID_DLS) {
-		var request = {_jsns: "urn:zimbraAccount", "ownerOf": 1};
+		var request = {
+			_jsns: "urn:zimbraAccount",
+			"ownerOf": 1,
+			attrs: "zimbraDistributionListUnsubscriptionPolicy,zimbraDistributionListSubscriptionPolicy"
+		};
+
 		var jsonObj = {GetAccountDistributionListsRequest: request};
 		var respCallback = new AjxCallback(this, this._handleAccountDistributionListResponse, [folder]);
 		appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
@@ -310,9 +315,17 @@ function(folder, result) {
 	if (dls) {
 		for (var i = 0; i < dls.length; i++) {
 			var dl = dls[i];
-			var attrs = {email: dl.name, type: "group", zimbraId: dl.id, firstName: "", lastName: ""}
+			var attrs = {email: dl.name, type: "group", zimbraId: dl.id, firstName: "", lastName: ""};
 			attrs[ZmContact.F_dlDisplayName] = dl.d || dl.name;
+			var dlInfo = { //this is minimal DL info, available mainly to allow to know whether to show the lock or not.
+				isMember: dl.isMember,
+				isOwner: dl.isOwner,
+				subscriptionPolicy: dl._attrs.zimbraDistributionListSubscriptionPolicy,
+				unsubscriptionPolicy: dl._attrs.zimbraDistributionListUnsubscriptionPolicy
+			};
+
 			contactList.addFromDom({_attrs: attrs,
+									dlInfo: dlInfo,
 									id: dl.id});
 		}
 	}

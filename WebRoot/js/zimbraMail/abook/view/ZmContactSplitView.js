@@ -1233,11 +1233,11 @@ function(contact, params) {
 	if (!params.isDragProxy) {
 		// if read only, show lock icon in place of the tag column since we dont
 		// currently support tags for "read-only" contacts (i.e. shares)
-		if (contact.isReadOnly()) {
+		if (contact.isLocked()) {
 			htmlArr[idx++] = "<td width=16>";
 			htmlArr[idx++] = AjxImg.getImageHtml("ReadOnly");
 			htmlArr[idx++] = "</td>";
-		} else if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+		} else if (!contact.isReadOnly() && appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 			// otherwise, show tag if there is one
 			htmlArr[idx++] = "<td style='vertical-align:middle;' width=16 class='Tag'>";
 			idx = this._getImageHtml(htmlArr, idx, contact.getTagImageInfo(), this._getFieldId(contact, ZmItem.F_TAG));
