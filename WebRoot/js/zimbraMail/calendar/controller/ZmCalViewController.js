@@ -3125,7 +3125,10 @@ function(appt, actionMenu) {
 			break;
 		}
 	}
-
+    //bug:68452 if its a trash folder then its not present in the calendars array
+    if(!calendar){
+        calendar = appt.getFolder();
+    }
 	var share = calendar && calendar.link ? calendar.getMainShare() : null;
 	var workflow = share ? share.isWorkflow() : true;
     var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;
