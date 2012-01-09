@@ -185,7 +185,7 @@ FORM {
 	margin:10px auto;
 	overflow:visible;
 	padding-top:5px; 
-	width:240px;
+	width:250px;
 	@grad(LoginCenterTop,LoginCenterBottom,linear-vertical)@
 }
 .center-small H1 {
@@ -225,7 +225,7 @@ FORM {
 	display:none;
 }
 .Footer-small {
-	position:relative !important;
+	position:relative;
 	text-align:center;
 	width:100%;
 }

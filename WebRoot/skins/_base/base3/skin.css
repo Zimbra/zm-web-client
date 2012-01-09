@@ -209,12 +209,13 @@ BODY						{	margin:0px; 	}
     margin-top:-160px;
     margin-left:-250px;
 }   
+
 .LoginScreen .center-small,
 .SplashScreen .center-small {
     height:270px;
     margin-top:-135px;
     margin-left:-175px;
-    width:350px;
+    width:250px;
 }
 .LoginScreen .center, .LoginScreen .center-small,
 .SplashScreen .center, .SplashScreen .center-small {
@@ -233,6 +234,12 @@ BODY						{	margin:0px; 	}
 #ENDIF
 	@LoginContentBox@ 	
 }
+
+.LoginScreen .center-small .contentBox,
+.SplashScreen .center-small .contentBox{ width: auto; }
+
+.center-small .form .submittd{ text-align: left; }
+ 
 .LoginScreen H1,
 .SplashScreen H1 	{	@LoginH1@ 		}
 #ZLoginAppName 		{	@LoginAppName@ 	}
@@ -262,13 +269,16 @@ BODY						{	margin:0px; 	}
     @Decor2S@ 
 }
 .LoginScreen .Footer,
-.SplashScreen .Footer {
+.SplashScreen .Footer,
+.LoginScreen .Footer-small,
+.SplashScreen .Footer-small, {
     bottom:0;
     position:absolute;
     text-align:center;
     width:100%;
     z-index:10;
 }
+
 .LoginScreen .copyright,
 .LoginScreen #ZLoginNotice,
 .SplashScreen .copyright {
