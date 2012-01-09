@@ -383,6 +383,14 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 				origValue = setup.valueFunction(origValue);
 			}
 		}
+
+        if (pref.name == "zimbraPrefAutoSaveDraftInterval"){
+          // We are checking if zimbraPrefAutoSaveDraftInterval is set or not
+          var orig = !(!origValue);
+          var current  = !(!value);
+          if (orig == current)
+              origValue = value;
+        }
 		
 		if (this._prefChanged(pref.dataType, origValue, value)) {
 			var isValid = true;
