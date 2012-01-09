@@ -106,6 +106,30 @@ function(mode) {
     ZmCalItemComposeController.prototype._initToolbar.call(this, mode);
     var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
     saveButton.setEnabled(false);
+
+    // bug 68451: disabling edit options for trashed appointments
+    var calItem = this.getCalItem();
+    var calendar = calItem && calItem.getFolder();
+    var isTrash = calendar && calendar.nId==ZmOrganizer.ID_TRASH;
+
+    if(isTrash){
+        this._disableEditForTrashedItems();
+    }
+};
+
+ZmApptController.prototype._disableEditForTrashedItems =
+function() {
+        var actionMenu = this._toolbar.getActionsMenu();
+        if(actionMenu){
+          var editButton = actionMenu.getOp(ZmOperation.EDIT);
+          var proposeNewTimeButton = actionMenu.getOp(ZmOperation.PROPOSE_NEW_TIME);
+          if(editButton){
+              editButton.setEnabled(false);
+          }
+          if(proposeNewTimeButton){
+              proposeNewTimeButton.setEnabled(false);
+          }
+        }
 };
 
 ZmApptController.prototype._deleteListener =
