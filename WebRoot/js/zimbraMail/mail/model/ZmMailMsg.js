@@ -788,7 +788,7 @@ function() {
 
 ZmMailMsg.prototype.isMultipartAlternative =
 function() {
-	return (this._topPart.getContentType() == ZmMimeTable.MULTI_ALT);
+	return (this._topPart && this._topPart.getContentType() == ZmMimeTable.MULTI_ALT);
 };
 
 // Returns true is the msg has a series of body parts. False is returned if the msg is multipart/alternative,
