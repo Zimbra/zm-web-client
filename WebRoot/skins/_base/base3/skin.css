@@ -143,16 +143,16 @@ BODY						{	margin:0px; 	}
 #skin_spacing_app_row					{	border-top:1px solid; border-spacing:0; padding:0px 7px; @AppTab@ 	}
 #skin_spacing_app_row					{	
 	background-color:transparent; 
-	background-color:rgba(0,0,0,.1);
-	border-color:rgba(0,0,0,.3);
+	background-color:rgba(@SkinAppRowColorRGB@,.1);
+	border-color:rgba(@SkinAppRowColorRGB@,.3);
 #IFDEF WEBKIT
-	border-color:rgba(0,0,0,.1);
+	border-color:rgba(@SkinAppRowColorRGB@,.1);
 #ENDIF
 #IFDEF MSIE
 	zoom:1;
-	border-color:@darken(AltC,33)@;
-	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#19000000, endColorstr=#19000000);
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#19000000,endColorstr=#19000000); 
+	@SkinAppRowBorderColorIE@
+	-ms-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#19@SkinAppRowColorHex@, endColorstr=#19@SkinAppRowColorHex@);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#19@SkinAppRowColorHex@,endColorstr=#19@SkinAppRowColorHex@); 
 #ENDIF
 }
 #skin_spacing_app_row TABLE				{	border-collapse:separate; 	}
@@ -271,7 +271,7 @@ BODY						{	margin:0px; 	}
 .LoginScreen .Footer,
 .SplashScreen .Footer,
 .LoginScreen .Footer-small,
-.SplashScreen .Footer-small, {
+.SplashScreen .Footer-small {
     bottom:0;
     position:absolute;
     text-align:center;
