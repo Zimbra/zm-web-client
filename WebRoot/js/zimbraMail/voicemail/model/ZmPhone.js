@@ -73,8 +73,12 @@ function(str) {
 
 ZmPhone.prototype.getDisplay =
 function() {
-	if (!this._display) {
-		this._display = ZmPhone.calculateDisplay(this.name);
+	this._display = ZmPhone.calculateDisplay(this.name);
+	if(this.label) {
+		this._display = [this.label, " - ", this._display].join("");
+	}
+	if(this._display == "") {
+		this._display = ZmMsg.phoneNotConfigured;
 	}
 	return this._display;
 };
@@ -87,8 +91,11 @@ function() {
 ZmPhone.prototype._loadFromDom = 
 function(node) {
 	this.name =  node.name;
-	this.id = node.name; // March '08: id only used in list view in voice prefs.
+	this.id = node.id;
+	this.label = node.label;
 	this.hasVoiceMail = node.vm;
+	this.allProps = node;
+
 	if (node.used && node.used.length) this.used =  node.used[0]._content;
 	if (this.limit && this.limit.length) this.limit = node.limit[0]._content;
 	this._initializeFeatures();
