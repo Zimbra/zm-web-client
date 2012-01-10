@@ -251,7 +251,7 @@ BODY						{	margin:0px; 	}
 }
 .LoginScreen .ImgAltBanner,
 .SplashScreen .ImgAltBanner {
-    @ImgAltBanner@
+    @AltBanner@
 }
 .LoginScreen INPUT[disabled] {
 	background-color:white;
@@ -282,13 +282,13 @@ BODY						{	margin:0px; 	}
 .LoginScreen .copyright,
 .LoginScreen #ZLoginNotice,
 .SplashScreen .copyright {
-    color:@darken(AppC,55)@;
     cursor:default;
-    @FontSize-normal@
     margin-bottom:5px;
+    @FontSize-normal@
+    @LoginFooterColor@
 }
 .LoginScreen #ZLoginNotice A {
-    color:@darken(AppC,55)@;
+    @LoginFooterColor@
 }
 /*Splash Screen Only Items*/
 .SplashScreen .content {
@@ -313,6 +313,7 @@ BODY						{	margin:0px; 	}
     @FontSize-normal@
 }
 /** Logo Images **/
+.center-small .ImgLoginBanner,
 .ImgAppBanner			{	background-repeat:no-repeat; @AppBanner@   }
 .ImgLoginBanner			{	background-repeat:no-repeat; @LoginBanner@   }
 #IFDEF MSIE
