@@ -96,7 +96,7 @@ function(conv, callback, result) {
 		this._activeSearch = searchResult;
 	}
 	
-	this._displayResults(this._currentViewId);
+	this._displayResults(this._currentViewId, true);
 	
 	if (callback) {
 		callback.run();

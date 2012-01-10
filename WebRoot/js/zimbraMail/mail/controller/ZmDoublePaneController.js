@@ -54,6 +54,7 @@ ZmDoublePaneController.LIST_SELECTION_SHORTCUT_DELAY = 300;
 
 ZmDoublePaneController.RP_IDS = [ZmSetting.RP_BOTTOM, ZmSetting.RP_RIGHT, ZmSetting.RP_OFF];
 
+ZmDoublePaneController.DEFAULT_TAB_TEXT = ZmMsg.conversation;
 
 /**
  * Displays the given list of mail items in a two-pane view where one pane shows the list
@@ -377,20 +378,48 @@ function(view, menu, checked) {
 };
 
 ZmDoublePaneController.prototype._displayResults =
-function(view) {
+function(view, newTab) {
 	var elements = this.getViewElements(view, this._doublePaneView);
 	
 	this._doublePaneView.setReadingPane();
+
+	if (newTab) {
+		var tabId = Dwt.getNextId();
+	}
 	this._setView({ view:		view,
 					viewType:	this._currentViewType,
 					elements:	elements,
+					tabParams:	newTab && this._getTabParams(tabId, this._tabCallback.bind(this)),
 					isAppView:	this._isTopLevelView()});
 	this._resetNavToolBarButtons(view);
+
+	if (newTab) {
+		var buttonText = (this._conv && this._conv.subject) ? this._conv.subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT) : ZmDoublePaneController.DEFAULT_TAB_TEXT;
+		var avm = appCtxt.getAppViewMgr();
+		avm.setTabTitle(view, buttonText);
+	}
 				
 	// always allow derived classes to reset size after loading
 	var sz = this._doublePaneView.getSize();
 	this._doublePaneView._resetSize(sz.x, sz.y);
 };
+
+ZmDoublePaneController.prototype._tabCallback =
+function(oldView, newView) {
+	return (appCtxt.getViewTypeFromId(oldView) == ZmId.VIEW_CONV);
+};
+
+ZmDoublePaneController.prototype._getTabParams =
+function(tabId, tabCallback) {
+	return {
+		id:				tabId,
+		image:			"ConvView",
+		textPrecedence:	85,
+		tooltip:		ZmDoublePaneController.DEFAULT_TAB_TEXT,
+		tabCallback:	tabCallback
+	};
+};
+
 
 /**
  * Loads and displays the given message. If the message was unread, it gets marked as
