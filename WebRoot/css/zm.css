@@ -665,7 +665,13 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
     right: 0;
     top: 0;
     z-index: 300;
+    cursor: pointer;
 }
+
+::-webkit-file-upload-button {
+    cursor:pointer;
+}
+
 
 .BrowseAttachBtn {
     position: relative;
@@ -698,6 +704,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
     position: absolute;
     right: 0;
     top: 0;
+    cursor:pointer;
 }
 
 
