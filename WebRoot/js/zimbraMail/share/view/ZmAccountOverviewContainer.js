@@ -756,6 +756,8 @@ function(ev) {
 
 	if (acct && appCtxt.getCurrentAppName() != ZmApp.PREFERENCES) {
 		if (!appCtxt.inStartup) {
+            // set account as active when account tree is opened/closed
+            appCtxt.accountList.setActiveAccount(acct);
 			appCtxt.set(ZmSetting.ACCOUNT_TREE_OPEN, expanded, null, null, null, acct);
 		}
 
