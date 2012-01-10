@@ -236,18 +236,21 @@ function(contact, callback) {
 ZmContactListController.prototype._handleGetDlInfoResponse =
 function(contact, callback, result) {
 	var response = result._data.GetDistributionListResponse;
-	var attrs = response.dl[0]._attrs;
+	var dl = response.dl[0];
+	var attrs = dl._attrs;
+	var isMember = dl.isMember;
+	var isOwner = dl.isOwner;
 	var mailPolicySpecificMailers = [];
-	contact.dlInfo = {	isMember: response.isMember, 
-						isOwner: response.isOwner,
+	contact.dlInfo = {	isMember: isMember,
+						isOwner: isOwner,
 						subscriptionPolicy: attrs.zimbraDistributionListSubscriptionPolicy,
 						unsubscriptionPolicy: attrs.zimbraDistributionListUnsubscriptionPolicy,
 						description: attrs.description,
 						displayName: attrs.displayName,
 						notes: attrs.zimbraNotes,
 						hideInGal: attrs.zimbraHideInGal,
-						mailPolicy: response.isOwner && this._getMailPolicy(response, mailPolicySpecificMailers, contact),
-						owners: response.isOwner && this._getOwners(response)};
+						mailPolicy: isOwner && this._getMailPolicy(dl, mailPolicySpecificMailers, contact),
+						owners: isOwner && this._getOwners(dl)};
 
 	contact.dlInfo.mailPolicySpecificMailers = mailPolicySpecificMailers;
 
@@ -271,8 +274,8 @@ function(contact, callback) {
 
 
 ZmContactListController.prototype._getOwners =
-function(response) {
-	var owners = response.dl[0].owners[0].owner;
+function(dl) {
+	var owners = dl.owners[0].owner;
 	var ownersArray = [];
 	for (var i = 0; i < owners.length; i++) {
 		var owner = owners[i].name;
@@ -282,10 +285,10 @@ function(response) {
 };
 
 ZmContactListController.prototype._getMailPolicy =
-function(response, specificMailers, contact) {
+function(dl, specificMailers, contact) {
 	var mailPolicy;
 
-	var rights = response.dl[0].rights[0].right;
+	var rights = dl.rights[0].right;
 	var right = rights[0];
 	var grantees = right.grantee;
 	if (!grantees) {
