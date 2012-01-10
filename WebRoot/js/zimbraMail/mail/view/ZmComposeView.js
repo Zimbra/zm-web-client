@@ -707,7 +707,7 @@ function(msg, isDraft, bodyContent) {
 			},
 			"_after": AjxCallback.simpleClosure(this._applyHtmlPrefix, this, "<blockquote>", "</blockquote>")
 		}
-		textContent = AjxStringUtil.convertHtml2Text(bodyContent || this._htmlEditor.getContent() || "", convertor);
+		textContent = AjxStringUtil.convertHtml2Text(bodyContent || (this._htmlEditor && this._htmlEditor.getContent()) || "", convertor);
 		textPart.setContent(textContent);
 		top.children.add(textPart);
 
@@ -794,7 +794,7 @@ function(msg, isDraft, bodyContent) {
 
 		var textPart = (this._extraParts || inline) ? new ZmMimePart() : top;
 		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
-		textContent = bodyContent || this._htmlEditor.getContent();
+		textContent = bodyContent || (this._htmlEditor && this._htmlEditor.getContent()) || "";
 		textPart.setContent(textContent);
 
 		if (inline) {
