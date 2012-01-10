@@ -535,11 +535,10 @@ function() {
 	var folder = this.getFolder();
 	var owner = folder && folder.link && folder.owner;
 
-    if (!owner && appCtxt.multiAccounts) {
-        var acct = folder.getAccount();
-        var isMain = acct && acct.isMain;
-        owner = isMain ?  appCtxt.accountList.defaultAccount.name : (acct && acct.name);
-    }
+    var acct = (!owner && appCtxt.multiAccounts && folder.getAccount());
+	if (acct) {
+		owner = acct.name;
+	}
 	return owner;
 };
 
@@ -2030,9 +2029,6 @@ function(soapDoc, attachmentId, notifyList, accountName) {
 
 	var calendar = this.getFolder();
 	var acct = calendar.getAccount();
-    if (appCtxt.multiAccounts && acct.isMain) {
-        acct = appCtxt.accountList.defaultAccount;
-    }
     var isOnBehalfOf = accountName && acct && acct.name != accountName;
 	m.setAttribute("l", (isOnBehalfOf ? this.getFolder().rid : this.folderId));
 
