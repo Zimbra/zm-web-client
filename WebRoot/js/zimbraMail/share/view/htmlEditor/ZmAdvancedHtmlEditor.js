@@ -461,19 +461,7 @@ function(parent, posStyle, content, mode, withAce, reparentContainer) {
         window.tinyMCE_GZ.loaded = true;
 
 		var callback = new AjxCallback(this, this.initEditorManager, [id, content]);
-        var data = {
-                callback: callback,
-                basePath: ZmAdvancedHtmlEditor.TINY_MCE_PATH
-            };
-            if(window.appDevMode){
-                data.name = "tiny_mce_src";
-                data.extension = ".js";
-            }
-            else{
-                data.name = "TinyMCE_all";
-                data.extension = ".js.zgz";
-            }
-		AjxPackage.require(data);
+        AjxDispatcher.require(["TinyMCE"], true, callback);
 	} else {
 		this.initEditorManager(id, mode, content);
 	}
@@ -680,19 +668,6 @@ function(id, content) {
                 onclick : onToolbarToggle,
                 "class" : ""
             });
-            //For dev mode we are loading this js file which overrides some methods of tinymce
-            //for normal mode this file will be compressed along with other files in TinyMCE_all.js.min
-            if(window.appDevMode){
-               ed.onBeforeRenderUI.add(function(ed) {
-                   var data = {
-                       name: "themes/advanced/Zmeditor_template",
-                       extension: ".js",
-                       method: AjxPackage.METHOD_SCRIPT_TAG,
-                       basePath: ZmAdvancedHtmlEditor.TINY_MCE_PATH
-                   };
-                   AjxPackage.require(data);
-               })
-           }
 		}
     }
 

@@ -105,7 +105,6 @@
     <!-- TINY_MCE INTEGRATION -->
     <property name="tinymce.version" value="3.4.3.2"/>
     <property name='tinymce.dir' value='${js.dir}/ajax/3rdparty/tinymce'/>
-    <property name="tinymce.files" value="TinyMCE**"/>
     <property name="tinymce.zplugins.dir" value="${web.dir}/tiny_mce_plugins"/>
         
     <!-- Tasks -->
@@ -169,7 +168,7 @@
         <property name='common.help.excludes' value='${custom.help.excludes}'/>
         <property name='common.build.web.includes' value='${custom.build.web.includes},**'/>
         <property name='common.build.web.excludes'
-                  value='${custom.build.web.excludes},js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext},js/${tinymce.files}'/>
+                  value='${custom.build.web.excludes},js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext}'/>
         <property name='common.webinf.includes' value='${custom.webinf.includes},**'/>
         <property name='common.webinf.excludes' value='${custom.webinf.excludes},web.*,lib/**'/>
     </target>
@@ -288,7 +287,6 @@
             <!-- files from build tree -->
             <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
 			<zipfileset dir='${build.web.dir}' includes='js/Boot_all.js${jsmin.ext}' />
-            <zipfileset file='${build.js.dir}/${tinymce.files}' prefix='js/ajax/3rdparty/tinymce' />
 
             <!-- primary files from source trees -->
             <zipfileset refid='customer.web.fileset'/>
