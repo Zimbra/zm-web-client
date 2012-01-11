@@ -526,6 +526,7 @@ SELECT						{	@FieldBorder@	}
 .RowDouble .ImgCheckboxChecked,
 .RowDouble .ImgCheckboxUnchecked 	{ margin:6px 0 4px; 	}
 .RowDouble .BottomRow				{ margin:4px 0 6px; 	}
+.Row-matched, .RowDouble-matched	{ background-color:@SearchResultColor@;		}
 
 .ZToolbarTable .vertSep				{ border-color:@ToolbarSeparatorColor@;     }
 #IFDEF MSIE
