@@ -599,9 +599,9 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME + this._sessionId, !isDraft && this._hideOriginalAttachments);
     var forwardMsgIds = [];
 
-    if (this._msgIds)
+    if (this._msgIds)// Forward two or more messages
         forwardMsgIds = forwardMsgIds.concat(this._msgIds);
-    if (this._msgAttId)
+    else if (this._msgAttId) // Forward one message or Reply as attachment
         forwardMsgIds.push(this._msgAttId);
 
 
@@ -833,7 +833,7 @@ function(msg, isDraft, bodyContent) {
 ZmComposeView.prototype._setMessageFlags =
 function(msg) {
 	
-	if (this._action != ZmOperation.NEW_MESSAGE && this._msg && !this._msgIds) {
+	if (this._action != ZmOperation.NEW_MESSAGE && this._msg) {
 		var isInviteReply = this._isInviteReply(this._action);
 		if (this._action == ZmOperation.DRAFT) {
 			msg.isReplied = (this._msg.rt == "r");
@@ -2890,6 +2890,10 @@ function(err) {
 		curView._controller._uploadAttReq = null;
 	}
 
+    if (curView._msgIds){
+      curView._msgIds = [];
+    }
+
 	if(curView.si){
 		clearTimeout(curView.si);
 	}
@@ -3476,12 +3480,27 @@ function(){
 
 };
 
+ZmComposeView.prototype._setAttachedMsgIds =
+function(msgIds){
+    if (!this._msgIds){
+        this._msgIds = msgIds;
+    } else {
+         for (val in msgIds){
+           if (AjxUtil.indexOf(this._msgIds, msgIds[val]) == -1) // Do not attach if the same message is forwarded
+             this._msgIds.push(msgIds[val]);
+         }
+    }
+};
+
 // Files have been uploaded, re-initiate the send with an attachment ID.
 ZmComposeView.prototype._attsDoneCallback =
-function(isDraft, status, attId, docIds) {
+function(isDraft, status, attId, docIds, msgIds) {
 	DBG.println(AjxDebug.DBG1, "Attachments: isDraft = " + isDraft + ", status = " + status + ", attId = " + attId);
     this._closeAttachDialog();
 	if (status == AjxPost.SC_OK) {
+        if (msgIds){
+          this._setAttachedMsgIds(msgIds);
+        }
 		var callback = new AjxCallback(this, this._resetUpload);
 		this._startUploadAttachment(); 
 		this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, attId, docIds, callback);
