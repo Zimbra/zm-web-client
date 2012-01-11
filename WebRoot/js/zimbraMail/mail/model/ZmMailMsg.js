@@ -1705,19 +1705,31 @@ function(attachment) {
 // this is a helper method to get an attachment url for multipart/related content
 ZmMailMsg.prototype.getContentPartAttachUrl =
 function(contentPartType, contentPart) {
-	if (this.attachments && this.attachments.length > 0 &&
-		(contentPartType == ZmMailMsg.CONTENT_PART_ID ||
-		 contentPartType == ZmMailMsg.CONTENT_PART_LOCATION))
-	{
-		for (var i = 0; i < this.attachments.length; i++) {
-			var attach = this.attachments[i];
-			if (attach[contentPartType] == contentPart) {
-				return [appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", this.id, "&part=", attach.part].join("");
-			}
+	if (contentPartType != ZmMailMsg.CONTENT_PART_ID &&
+		 				contentPartType != ZmMailMsg.CONTENT_PART_LOCATION) {
+		return null;
+	}
+	var url = this._getContentPartAttachUrlFromCollection(this.attachments, contentPartType, contentPart);
+	if (url) {
+		return url;
+	}
+	return this._getContentPartAttachUrlFromCollection(this._bodyParts, contentPartType, contentPart);
+};
+
+ZmMailMsg.prototype._getContentPartAttachUrlFromCollection =
+function(collection, contentPartType, contentPart) {
+	if (!collection) {
+		return null;
+	}
+	for (var i = 0; i < collection.length; i++) {
+		var attach = collection[i];
+		if (attach[contentPartType] == contentPart) {
+			return [appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", this.id, "&part=", attach.part].join("");
 		}
 	}
 	return null;
 };
+
 
 ZmMailMsg.prototype.findAttsFoundInMsgBody =
 function() {
