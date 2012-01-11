@@ -568,6 +568,7 @@ function(id, content) {
         if (obj._onTinyMCEEditorInitcallback) {
 		    obj._onTinyMCEEditorInitcallback.run();
         }
+        obj._handlePopup(ed);
 	};
 
 	function onEditorKeyPress(ed, e) {
@@ -650,6 +651,8 @@ function(id, content) {
         dialog_type : "modal",
         forced_root_block : 'div',
         width: "100%",
+        table_default_cellpadding : 3,
+        table_default_border: 1,
 		setup : function(ed) {
 			ed.onLoadContent.add(handleContentLoad);
 			ed.onInit.add(onTinyMCEEditorInit);
@@ -1794,6 +1797,45 @@ function(file) {
 ZmAdvancedHtmlEditor.prototype._imageUploaded =
 function() {
     ZmSignatureEditor.prototype._imageUploaded.apply(this, arguments);
+};
+
+/*
+ * Modifies popup dialog after rendering
+ */
+ZmAdvancedHtmlEditor.prototype._handlePopup =
+function(ed) {
+    var popupIframeLoad = function(popupWindow){
+        var doc = popupWindow.document;
+        if( doc ){
+            if( popupWindow.action === "insert" ){  //Insert Table dialog
+                var style = doc.getElementById("style");
+                var align = doc.getElementById("align");
+                var width = doc.getElementById("width");
+                style && (style.value = "border-collapse:collapse;");
+                align && (align.value = "center");
+                width && (width.value = "90%");
+            }
+        }
+    };
+
+    ed.windowManager.onOpen.add(function(windowManager, popupWindow) {
+        if( !popupWindow ){
+            return;
+        }
+        var popupIframe = popupWindow.frameElement;
+        if( popupIframe ){
+            if( popupIframe.attachEvent ){
+                 popupIframe.attachEvent("onload", function(){
+                    popupIframeLoad( popupWindow );
+                 });
+            }
+            else{
+                popupIframe.onload = function(){
+                    popupIframeLoad( popupWindow );
+                };
+            }
+        }
+    });
 };
 
 ZmEditorContainer = function(params) {
