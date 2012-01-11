@@ -504,8 +504,6 @@ SELECT						{	@FieldBorder@	}
 
 .ZAppTabBorder .ZLeftIcon div{ display :none; }
 
-.itemCountText	{ display:none; visibility:hidden; width:0;}
-
 
 /*Temporary overrides that need to move to skin properties*/
 /*.DwtListView-ColHeader			{ height:19px; 						}*/
