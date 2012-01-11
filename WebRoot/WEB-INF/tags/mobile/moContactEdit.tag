@@ -74,7 +74,7 @@
                         <div class="buttonRight button"><a id="cancel" href="${caction}"><span onclick="return zClickLink('cancel')"><fmt:message key="cancel"/></span></a></div>
                     </c:otherwise>
                 </c:choose>
-                <div class="compose button"><input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>"></div>
+                <input class="zo_button" name="actionSave" type="submit" value="<fmt:message key="save"/>">
         </span>
     </div>
 </div>
