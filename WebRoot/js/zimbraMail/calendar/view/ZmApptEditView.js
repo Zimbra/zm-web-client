@@ -58,7 +58,11 @@ ZmApptEditView = function(parent, attendees, controller, dateInfo) {
 
     // Store Appt form values.
     this._apptFormValue = {};
-    this._showAsValueChanged = false;
+    this._showAsValueChanged  = false;
+
+    this._locationExceptions  = null;
+    this._alteredLocations    = null;
+    this._enableResolveDialog = true;
 
     this._customRecurDialogCallback = this._recurChangeForLocationConflict.bind(this);
 };
@@ -106,9 +110,8 @@ function() {
 
 ZmApptEditView.prototype.isLocationConflictEnabled =
 function() {
-    return ((this._mode != ZmCalItem.MODE_NEW_FROM_QUICKADD) &&
-            (this._mode != ZmCalItem.MODE_NEW) &&
-            (this._mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) &&
+    return ((this._mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) &&
+            !this._isForward && !this._isProposeTime &&
              this.getRepeatType() != "NON");
 }
 
@@ -122,34 +125,12 @@ function() {
 
     if (this.parent.setLocationConflictCallback) {
         var appt = this.parent.getAppt();
-
-        // Create a 'Location-only' clone of the appt, for use with the
-        // resource conflict calls
-        ZmLocationAppt.prototype = appt;
-        ZmLocationRecurrence.prototype = appt.getRecurrence();
-        this._locationConflictAppt = new ZmLocationAppt();
-        this._locationConflictAppt._recurrence = new ZmLocationRecurrence();
-        this._locationConflictAppt._attendees[ZmCalBaseItem.LOCATION] =
-            appt._attendees[ZmCalBaseItem.LOCATION];
-        this._locationConflictAppt._attendees[ZmCalBaseItem.PERSON]	  = [];
-        this._locationConflictAppt._attendees[ZmCalBaseItem.EQUIPMENT]= [];
-
-        this._processLocationCallback = this.processLocationConflicts.bind(this);
-        this._noLocationCallback =
-            this.setLocationStatus.bind(this, ZmApptEditView.LOCATION_STATUS_NONE);
-        this.parent.setLocationConflictCallback(this.updatedLocationsConflictChecker.bind(this));
-
-        if (!this._pendingLocationRequest) {
-            // Trigger an initial location check - the appt may have been saved
-            // with a location that has conflicts.  Only do it if no pending request -
-            // the first time the view is used, it loads preferences, and a location
-            // conflict check is made when that is complete
-            this.locationConflictChecker();
-        }
+        this.initializeLocationConflictCheck(appt);
     }
 
     Dwt.setVisible(this._suggestTime, !this._isForward);
     Dwt.setVisible(this._suggestLocation, !this._isForward && !this._isProposeTime);
+    this._scheduleAssistant.close();
 
     if(!this.GROUP_CALENDAR_ENABLED) {
         this.setSchedulerVisibility(false);
@@ -172,6 +153,40 @@ function() {
 
 };
 
+ZmApptEditView.prototype.initializeLocationConflictCheck =
+function(appt) {
+    // Create a 'Location-only' clone of the appt, for use with the
+    // resource conflict calls
+    ZmLocationAppt.prototype = appt;
+    ZmLocationRecurrence.prototype = appt.getRecurrence();
+    this._locationConflictAppt = new ZmLocationAppt();
+    this._locationConflictAppt._recurrence = new ZmLocationRecurrence();
+    this._locationConflictAppt._attendees[ZmCalBaseItem.LOCATION] =
+        appt._attendees[ZmCalBaseItem.LOCATION];
+    this._locationConflictAppt._attendees[ZmCalBaseItem.PERSON]	  = [];
+    this._locationConflictAppt._attendees[ZmCalBaseItem.EQUIPMENT]= [];
+
+    this._processLocationCallback = this.processLocationConflicts.bind(this);
+    this._noLocationCallback =
+        this.setLocationStatus.bind(this, ZmApptEditView.LOCATION_STATUS_NONE);
+    this.parent.setLocationConflictCallback(this.updatedLocationsConflictChecker.bind(this));
+
+    this._getRecurrenceSearchResponseCallback =
+        this._getExceptionSearchResponse.bind(this, this._locationConflictAppt);
+    this._getRecurrenceSearchErrorCallback =
+        this._getExceptionSearchError.bind(this, this._locationConflictAppt);
+
+    if (!this._pendingLocationRequest &&
+         this._scheduleAssistant && this._scheduleAssistant.isInitialized()) {
+        // Trigger an initial location check - the appt may have been saved
+        // with a location that has conflicts.  Only do it if no pending
+        // request and the assistant is initialized (location preferences
+        // are loaded). If !initialized, the locationConflictChecker will
+        // be run when preferences are loaded.
+        this.locationConflictChecker();
+    }
+}
+
 ZmApptEditView.prototype.cancelLocationRequest =
 function() {
     if (this._pendingLocationRequest) {
@@ -187,7 +202,20 @@ function() {
     if (this.isLocationConflictEnabled() &&
         this._locationConflictAppt.hasAttendeeForType(ZmCalBaseItem.LOCATION)) {
         // Send a request to the server to get location conflicts
+
+        // DISABLED until Bug 56464 completed - server side CreateAppointment/ModifyAppointment
+        // SOAP API changes.  When done, add code in ZmCalItemComposeController to add the
+        // altered locations as a list of exceptions to the SOAP call.
+        //if (this._apptExceptionList) {
+        //    this._runLocationConflictChecker();
+        //} else {
+        //    // Get the existing exceptions, then runLocationConflictChecker
+        //    this._doExceptionSearchRequest();
+        //}
+
+        // Once bug 56464 completed, remove the following and enable the disabled code above
         this._runLocationConflictChecker();
+
     } else {
         if (this._noLocationCallback) {
             // Restore the 'Suggest Location' line to its default
@@ -221,14 +249,105 @@ function() {
     this._pendingLocationRequest = locationCallback.run();
 }
 
+
+ZmApptEditView.prototype._doExceptionSearchRequest =
+function() {
+    var numRecurrence = this.getNumLocationConflictRecurrence();
+    var startDate = new Date(this._calItem.startDate);
+    var endTime = ZmApptComposeController.getCheckResourceConflictEndTime(
+        this._locationConflictAppt, startDate, numRecurrence);
+
+    var jsonObj = {SearchRequest:{_jsns:"urn:zimbraMail"}};
+    var request = jsonObj.SearchRequest;
+
+    request.sortBy = "dateasc";
+    request.limit = numRecurrence.toString();
+    // AjxEnv.DEFAULT_LOCALE is set to the browser's locale setting in the case
+    // when the user's (or their COS) locale is not set.
+    request.locale = { _content: AjxEnv.DEFAULT_LOCALE };
+    request.calExpandInstStart = startDate.getTime();
+    request.calExpandInstEnd   = endTime;
+    request.types = ZmSearch.TYPE[ZmItem.APPT];
+    request.query = {_content:'item:"' + this._calItem.id.toString() + '"'};
+    var accountName = appCtxt.multiAccounts ? appCtxt.accountList.mainAccount.name : null;
+
+    var params = {
+        jsonObj:       jsonObj,
+        asyncMode:     true,
+        callback:      this._getExceptionSearchResponse.bind(this),
+        errorCallback: this._getExceptionSearchError.bind(this),
+        noBusyOverlay: true,
+        accountName:   accountName
+    };
+    appCtxt.getAppController().sendRequest(params);
+}
+
+ZmApptEditView.prototype._getExceptionSearchResponse =
+function(result) {
+	if (!result) { return; }
+
+	var resp;
+    var appt;
+	try {
+		resp = result.getResponse();
+	} catch (ex) {
+		return;
+	}
+
+    // See ZmApptCache.prototype.processSearchResponse
+    var rawAppts = resp.SearchResponse.appt;
+    this._apptExceptionList = new ZmApptList();
+    this._apptExceptionList.loadFromSummaryJs(rawAppts);
+    this._apptExceptionLookup = {};
+
+    this._locationExceptions = {}
+    for (var i = 0; i < this._apptExceptionList.size(); i++) {
+        appt = this._apptExceptionList.get(i);
+        this._apptExceptionLookup[appt.startDate.getTime()] = appt;
+        if (appt.isException) {
+            // Found an exception, store its location info, using its start date as the key
+            var location = appt._attendees[ZmCalBaseItem.LOCATION];
+            if (!location || (location.length == 0)) {
+                location = this.getAttendeesFromString(ZmCalBaseItem.LOCATION, appt.location, false);
+                location = location.getArray();
+            }
+            this._locationExceptions[appt.startDate.getTime()] = location;
+        }
+    }
+    this._enableResolveDialog = true;
+
+    // Now find the conflicts
+    this._runLocationConflictChecker();
+};
+
+ZmApptEditView.prototype._getExceptionSearchError =
+function(ex) {
+    // Disallow use of the resolve dialog if can't read the exceptions
+    this._enableResolveDialog = false;
+}
+
 // Callback executed when the CheckResourceConflictRequest completes.
 // Store the conflict instances (if any) and update the status field
 ZmApptEditView.prototype.processLocationConflicts =
 function(inst) {
     this._inst = inst;
-    var instLength = inst ? inst.length : 0;
-    this.setLocationStatus(instLength > 0 ? ZmApptEditView.LOCATION_STATUS_CONFLICT :
-                           ZmApptEditView.LOCATION_STATUS_NONE);
+    var locationStatus = ZmApptEditView.LOCATION_STATUS_NONE;
+    for (var i = 0; i < this._inst.length; i++) {
+        if (this._inst[i].usr) {
+            // Conflict exists for this instance
+            if (this._locationExceptions && this._locationExceptions[this._inst[i].s]) {
+                // Assume that an existing exception (either persisted to the DB, or set via
+                // the current use of the resolve dialog) means that the instance conflict is resolved
+                locationStatus = ZmApptEditView.LOCATION_STATUS_RESOLVED;
+            } else {
+                // No exception for the instance, using default location which has a conflict
+                locationStatus = ZmApptEditView.LOCATION_STATUS_CONFLICT;
+                break;
+            }
+        }
+    }
+
+    this.setLocationStatus(locationStatus);
 }
 
 ZmApptEditView.prototype.setLocationStatus =
@@ -247,14 +366,18 @@ function(locationStatus) {
         case ZmApptEditView.LOCATION_STATUS_VALIDATING:
              // The conflict resource check is in progress, show a busy spinner
              className     = "ZmLocationStatusValidating";
-             statusMessage = AjxImg.getImageHtml("Wait_16", "display:inline-block;padding-right:4px;") + ZmMsg.validateLocation;
+             statusMessage =
+                 AjxImg.getImageHtml("Wait_16", "display:inline-block;padding-right:4px;") +
+                 ZmMsg.validateLocation;
              msgVisible    = true;
              linkVisible   = false;
              break;
         case ZmApptEditView.LOCATION_STATUS_CONFLICT:
              // Unresolved conflicts - show the 'Resolve Conflicts' link
              className     = "ZmLocationStatusConflict";
-             statusMessage = AjxImg.getImageHtml("Warning_12", "display:inline-block;padding-right:4px;") + ZmMsg.locationRecurrenceConflicts;
+             statusMessage =
+                 AjxImg.getImageHtml("Warning_12", "display:inline-block;padding-right:4px;") +
+                 ZmMsg.locationRecurrenceConflicts;
              linkMessage   = ZmMsg.resolveConflicts;
              msgVisible    = true;
              linkVisible   = true;
@@ -271,6 +394,16 @@ function(locationStatus) {
     }
 
     Dwt.setVisible(this._locationStatus, msgVisible);
+    if (!this._enableResolveDialog) {
+        // Unable to read the exeptions, prevent the use of the resolve dialog
+        linkVisible = false;
+    }
+
+    // NOTE: Once CreateAppt/ModifyAppt SOAP API changes are completed (Bug 56464), enable
+    //       the display of the resolve links and the use of the resolve dialog
+    // *** NOT DONE ***
+    linkVisible = false;
+
     Dwt.setVisible(this._locationStatusAction, linkVisible);
     Dwt.setInnerHtml(this._locationStatus, statusMessage);
     Dwt.setInnerHtml(this._locationStatusAction, linkMessage);
@@ -335,6 +468,11 @@ function() {
     //Default Persona
     this.setIdentity();
     if(this._scheduleAssistant) this._scheduleAssistant.cleanup();
+
+    this._apptExceptionList  = null;
+    this._locationExceptions = null;
+    this._alteredLocations   = null;
+
 };
 
 // Acceptable hack needed to prevent cursor from bleeding thru higher z-index'd views
@@ -670,6 +808,9 @@ function(calItem) {
         calItem.setForwardAddress(a[AjxEmailAddress.TO]);
     }
 
+    // Only used for the save
+    calItem.alteredLocations   = this._alteredLocations;
+
 	return calItem;
 };
 
@@ -793,6 +934,12 @@ function(calItem, mode) {
 
 	// set the location attendee(s)
 	var locations = calItem.getAttendees(ZmCalBaseItem.LOCATION);
+    if (!locations || !locations.length) {
+        locations = this.getAttendeesFromString(ZmCalBaseItem.LOCATION, calItem.getLocation(), false);
+        if (locations) {
+            locations = locations.getArray();
+        }
+    }
 	if (locations && locations.length) {
         this.updateAttendeesCache(ZmCalBaseItem.LOCATION, locations);
 		this._attendees[ZmCalBaseItem.LOCATION] = AjxVector.fromArray(locations);
@@ -1202,7 +1349,7 @@ function() {
     this._scheduleAssistant.show(true);
     // Resize horizontally
     this._resizeNotes();
-    this._scheduleAssistant.suggestAction(true, false, false);
+    this._scheduleAssistant.suggestAction(true, false);
 };
 
 ZmApptEditView.prototype._showLocationSuggestions =
@@ -1214,45 +1361,30 @@ function() {
     this._scheduleAssistant.show(false);
     // Resize horizontally
     this._resizeNotes();
-    this._scheduleAssistant.suggestAction(true, false, true);
+    this._scheduleAssistant.suggestAction(true, false);
 };
 
-// Function to display a Stub dialog
 ZmApptEditView.prototype._showLocationStatusAction =
 function() {
-    if (this._locationStatusMode == ZmApptEditView.LOCATION_STATUS_CONFLICT) {
-        if (!this._unimplementedDialog) {
-            this._unimplementedDialog =
-                new DwtMessageDialog({id: "Unimplemented1",
-                    parent:appCtxt.getShell(),
-                    buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
-            this._unimplementedDialog.registerCallback(DwtDialog.OK_BUTTON,
-                this._locationConflictOKCallback, this);
-            this._unimplementedDialog.registerCallback(DwtDialog.CANCEL_BUTTON,
-                this._locationConflictCancelCallback, this);
-        }
-        this._unimplementedDialog.setMessage("Unimplemented, will show conflicts; " +
-            "Click OK to provide a fake Resolution.");
-    } else if (this._locationStatusMode == ZmApptEditView.LOCATION_STATUS_RESOLVED){
-        this._unimplementedDialog.setMessage("Unimplemented; will show resolved " +
-            "conflicts");
+    if (!this._resolveLocationDialog) {
+        this._resolveLocationDialog = new ZmResolveLocationConflictDialog(
+            this._controller, this,
+            this._locationConflictOKCallback.bind(this),
+            this._scheduleAssistant);
+    } else {
+        this._resolveLocationDialog.cleanup();
     }
-	this._unimplementedDialog.popup();
+
+    this._resolveLocationDialog.popup(this._calItem, this._inst, this._locationExceptions);
 };
 
-// Function to hide a Stub dialog
+// Invoked from 'OK' button of location conflict resolve dialog
 ZmApptEditView.prototype._locationConflictOKCallback =
-function(ev) {
-	this._unimplementedDialog.popdown();
-	this.setLocationStatus(ZmApptEditView.LOCATION_STATUS_RESOLVED);
+function(locationExceptions, alteredLocations) {
+    this._locationExceptions = locationExceptions;
+    this._alteredLocations   = alteredLocations;
+    this.locationConflictChecker();
 };
-
-// Function to hide a Stub dialog
-ZmApptEditView.prototype._locationConflictCancelCallback =
-function(ev) {
-	this._unimplementedDialog.popdown();
-};
-
 
 ZmApptEditView.prototype._toggleOptionalAttendees =
 function(forceShow) {

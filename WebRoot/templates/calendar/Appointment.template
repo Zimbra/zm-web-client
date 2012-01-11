@@ -1076,6 +1076,19 @@
     </div>
 </template>
 
+<template id='calendar.Appointment#ResolveLocationConflictHeader'>
+    <div class="ZmResolveLocationConflictHeader">
+        <div class="ZmResolveLocationConflictName"><$= ZmMsg.date $></div>
+        <div class="ZmResolveLocationConflictAlternate"><$= ZmMsg.location $></div>
+    </div>
+</template>
+<template id='calendar.Appointment#ResolveLocationConflict'>
+    <div id='${id}' class="ZmResolveLocationConflict <$= data.className $>">
+        <div class="ZmResolveLocationConflictName"><$= data.date $></div>
+        <div class="ZmResolveLocationConflictAlternate" id='${id}_alternatives'></div>
+    </div>
+</template>
+
 <template id='calendar.Appointment#TimeSuggestion-NoAttendees'>
     <center>
         <div class='NoResults' id='${id}'>
@@ -1107,6 +1120,15 @@
         <div>
             <br><br><div class='DwtWait32Icon'></div>    
             <br><$= ZmMsg.searching $>
+        </div>
+    </center>
+</template>
+
+<template id='calendar.Appointment#AlternateLocation-Loading'>
+    <center>
+        <div>
+            <br><br><div class='DwtWait32Icon'></div>
+            <br><$= ZmMsg.loadingAlternateLocations $>
         </div>
     </center>
 </template>

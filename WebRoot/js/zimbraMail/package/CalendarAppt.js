@@ -49,6 +49,8 @@ AjxPackage.require("zimbraMail.calendar.view.ZmSuggestionsView");
 AjxPackage.require("zimbraMail.calendar.view.ZmTimeSuggestionView");
 AjxPackage.require("zimbraMail.calendar.view.ZmLocationSuggestionView");
 AjxPackage.require("zimbraMail.calendar.view.ZmTimeSuggestionPrefDialog");
+AjxPackage.require("zimbraMail.calendar.view.ZmResolveLocationConflictDialog");
+AjxPackage.require("zimbraMail.calendar.view.ZmResolveLocationView");
 AjxPackage.require("zimbraMail.calendar.view.ZmAttendeePicker");
 AjxPackage.require("zimbraMail.calendar.view.ZmMiniCalendar");
 

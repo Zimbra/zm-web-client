@@ -297,7 +297,14 @@ function(attId) {
 
 		var needsConflictCheck = !appt.isForward &&
                                  ((resources && resources.length > 0) ||
-								 (locations && locations.length > 0));
+                                 // If alteredLocations specified, it implies the user
+                                 // has already examined and modified the location conflicts
+                                 // that they want - so issue no further warnings.
+
+                                 // NOTE: appt.alteredLocations is disabled (and hence undefined)
+                                 //       for now.  It will be set once CreateAppt/ModifyAppt
+                                 //       SOAP API changes are completed (Bug 56464)
+                                  (!appt.alteredLocations && locations && locations.length > 0));
 
 		if (needsConflictCheck) {
 			this.checkConflicts(appt, numRecurrence, attId, notifyList);
@@ -575,7 +582,7 @@ function(appt, numRecurrence, attId, notifyList) {
 		? (new AjxCallback(this, this.checkAttendeePermissions, [appt, attId, notifyList]))
 		: (new AjxCallback(this, this.saveCalItemContinue, [appt, attId, notifyList]));
 
-	this._checkResourceConflicts(appt, numRecurrence, callback, true, false);
+	this._checkResourceConflicts(appt, numRecurrence, callback, false, true, false);
 };
 
 ZmApptComposeController.prototype.checkAttendeePermissions =
@@ -622,11 +629,11 @@ function(appt, numRecurrence, callback, displayConflictDialog) {
 ZmApptComposeController.prototype.checkResourceConflicts =
 function(appt, numRecurrence, callback, displayConflictDialog) {
 	return this._checkResourceConflicts(appt, numRecurrence, callback,
-        displayConflictDialog, true);
+        true, displayConflictDialog, true);
 };
 
 ZmApptComposeController.prototype._checkResourceConflicts =
-function(appt, numRecurrence, callback, displayConflictDialog, conflictCallbackOverride) {
+function(appt, numRecurrence, callback, showAll, displayConflictDialog, conflictCallbackOverride) {
 	var mode = appt.viewMode;
 	var reqId;
 	if (mode!=ZmCalItem.MODE_NEW_FROM_QUICKADD && mode!= ZmCalItem.MODE_NEW) {
@@ -634,15 +641,15 @@ function(appt, numRecurrence, callback, displayConflictDialog, conflictCallbackO
 			// for recurring appt - user GetRecurRequest to get full recurrence
 			// information and use the component in CheckRecurConflictRequest
 			var recurInfoCallback = new AjxCallback(this, this._checkResourceConflictsSoap,
-                [appt, numRecurrence, callback, displayConflictDialog, conflictCallbackOverride]);
+                [appt, numRecurrence, callback, showAll, displayConflictDialog, conflictCallbackOverride]);
 			reqId = this.getRecurInfo(appt, recurInfoCallback);
 		} else {
 			reqId = this._checkResourceConflictsSoap(appt, numRecurrence, callback,
-                displayConflictDialog, conflictCallbackOverride);
+                showAll, displayConflictDialog, conflictCallbackOverride);
 		}
 	} else {
 		reqId = this._checkResourceConflictsSoap(appt, numRecurrence, callback,
-            displayConflictDialog, conflictCallbackOverride);
+            showAll, displayConflictDialog, conflictCallbackOverride);
 	}
 	return reqId;
 };
@@ -720,8 +727,9 @@ function(soapDoc, recurInfo) {
 
 // Use the (numRecurrences * the recurrence period * repeat.customCount)
 // time interval to determine the endDate of the resourceConflict check
-ZmApptComposeController.prototype.getCheckResourceConflictEndTime =
-function(appt, startDate, numRecurrence) {
+ZmApptComposeController.getCheckResourceConflictEndTime =
+function(appt, originalStartDate, numRecurrence) {
+    var startDate = new Date(originalStartDate.getTime());
     var recurrence = appt.getRecurrence();
     var endDate;
     var range = recurrence.repeatCustomCount * numRecurrence;
@@ -752,17 +760,21 @@ function(appt, startDate, numRecurrence) {
  * @private
  */
 ZmApptComposeController.prototype._checkResourceConflictsSoap =
-function(appt, numRecurrence, callback, displayConflictDialog,
+function(appt, numRecurrence, callback, showAll, displayConflictDialog,
          conflictCallbackOverride, recurInfo) {
 	var mode = appt.viewMode;
     var startDate = new Date(appt.startDate);
     startDate.setHours(0,0,0,0);
     var startTime = startDate.getTime();
-    var endTime = this.getCheckResourceConflictEndTime(appt, startDate, numRecurrence);
+    var endTime = ZmApptComposeController.getCheckResourceConflictEndTime(
+        appt, startDate, numRecurrence);
 
 	var soapDoc = AjxSoapDoc.create("CheckRecurConflictsRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("s", startTime);
 	soapDoc.setMethodAttribute("e", endTime);
+    if (showAll) {
+        soapDoc.setMethodAttribute("all", "1");
+    }
 
 	if (mode!=ZmCalItem.MODE_NEW_FROM_QUICKADD && mode!= ZmCalItem.MODE_NEW) {
 		soapDoc.setMethodAttribute("excludeUid", appt.uid);
@@ -1116,7 +1128,11 @@ function(calItem, attId, notifyList, force){
         notifyList = this.getForwardNotifyList(calItem);
     }
 
-    ZmCalItemComposeController.prototype._saveCalItemFoRealz.call(this, calItem, attId, notifyList, force);    
+    // NOTE: Once CreateAppt/ModifyAppt SOAP API changes are completed (Bug 56464), pass to
+    // the base _saveCalItemFoRealz appt.alteredLocations, to create a set of location
+    // exceptions along with creation/modification of the underlying appt
+    // *** NOT DONE ***
+    ZmCalItemComposeController.prototype._saveCalItemFoRealz.call(this, calItem, attId, notifyList, force);
 };
 
 /**

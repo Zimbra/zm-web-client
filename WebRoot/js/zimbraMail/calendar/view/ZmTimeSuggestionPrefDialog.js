@@ -31,6 +31,7 @@ ZmTimeSuggestionPrefDialog = function(parent, className) {
 
     this._prefs = {};
     this._prefFields = {};
+    this._prefLoaded = false;
 
 	className = className || "ZmTimeSuggestionPrefDialog";
 	DwtDialog.call(this, {parent:parent, className:className, title:ZmMsg.suggestionPreferences});
@@ -118,6 +119,11 @@ ZmTimeSuggestionPrefDialog.prototype.popdown =
 function() {
 	DwtDialog.prototype.popdown.call(this);
 };
+
+ZmTimeSuggestionPrefDialog.prototype.getPrefLoaded =
+function() {
+    return this._prefLoaded;
+}
 
 ZmTimeSuggestionPrefDialog.prototype._getContentHtml =
 function() {
@@ -224,6 +230,7 @@ function(prefSearchCallback, metadataResponse) {
         }
     }
 
+    this._prefLoaded = true;
     if(prefSearchCallback) prefSearchCallback.run();
 };
 

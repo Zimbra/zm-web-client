@@ -5378,3 +5378,38 @@ div.ZmSuggestLocationLink {
     margin-top:-4px;
     padding-right:8px;
 }
+.ZmResolveLocationConflict {
+    width:100%;
+}
+.ZmResolveLocationConflictOdd {
+    background-color:#E0E0E0;
+    width:100%;
+}
+.ZmResolveLocationConflictEven {
+    background-color:#F0F0F0;
+    width:100%;
+}
+.ZmResolveLocationConflictName {
+    display:inline-block;
+    text-align:left;
+    width:146px;
+    padding: 4px 0px 4px 4px;
+    overflow:hidden;
+}
+.ZmResolveLocationConflictAlternate {
+    padding: 4px 4px 4px 0px;
+    display:inline-block;
+    width:246px;
+ }
+.ZmResolveLocationConflictHeader {
+    border-bottom: 2px solid gray;
+    background-color:#D0D0D0;
+    width:100%;
+    font-size:14px;
+}
+.ZmResolveConflictList {
+    width:400px;
+}
+.ZmResolveNoLocationSelect {
+    border-top:1px solid gray;
+}

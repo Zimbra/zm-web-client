@@ -70,7 +70,7 @@ function(containerSize) {
 };
 
 ZmLocationAssistantView.prototype.suggestAction =
-function() {
+function(freeBusyCallback) {
 
     if(appCtxt.isOffline && !appCtxt.isZDOnline()) { return; }
 
@@ -78,7 +78,8 @@ function() {
         items: [],
         itemIndex: {},
         focus: true,
-        showOnlyGreenSuggestions: true
+        showOnlyGreenSuggestions: true,
+        fbCallback: freeBusyCallback
     };
 
     this._locationSuggestions.setLoadingHtml();
@@ -109,8 +110,9 @@ function() {
 ZmLocationAssistantView.prototype.reset =
 function(date) {
     var newDurationInfo = this._apptView.getDurationInfo();
-    if((newDurationInfo.startTime != this._duration.startTime) ||
-       (newDurationInfo.endTime   != this._duration.endTime)) {
+    if(!this._duration ||
+       ((newDurationInfo.startTime != this._duration.startTime) ||
+        (newDurationInfo.endTime   != this._duration.endTime))) {
         this._duration = newDurationInfo;
         if(this._locationSuggestions){
             this._locationSuggestions.removeAll();
@@ -144,7 +146,8 @@ function(params) {
         appCtxt.getRequestMgr().cancelRequest(this._freeBusyRequest, null, true);
     }
 
-    var callback = new AjxCallback(this, this.suggestLocations, [params]);
+    var callback = params.fbCallback ? params.fbCallback :
+        new AjxCallback(this, this.suggestLocations, [params]);
     var acct = (appCtxt.multiAccounts) ? this._apptView.getCalendarAccount() : null;
     var fbParams = {
                     startTime:     tf.start.getTime(),

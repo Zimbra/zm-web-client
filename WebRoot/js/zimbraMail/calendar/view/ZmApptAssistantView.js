@@ -37,7 +37,9 @@ ZmApptAssistantView = function(parent, controller, apptView, closeCallback) {
     this._prefDialog    = appCtxt.getSuggestionPreferenceDialog();
     this._closeCallback = closeCallback;
 
-    this._fbCache       = controller.getApp().getFreeBusyCache();
+    // For bug 68531
+    var app = appCtxt.getApp(ZmApp.CALENDAR);
+    this._fbCache       = app.getFreeBusyCache();
 
 	this._rendered      = false;
     this.type           = ZmCalBaseItem.LOCATION;
@@ -68,6 +70,13 @@ ZmApptAssistantView.prototype.initialize =
 function() {
     this._createHTML();
     this._createWidgets();
+};
+
+ZmApptAssistantView.prototype.isInitialized =
+function() {
+    var prefInitialized = this._prefDialog ? this._prefDialog.getPrefLoaded() : false;
+    // Only checking pref Dialog initialization for now
+    return prefInitialized;
 };
 
 ZmApptAssistantView.prototype.cleanup =
@@ -141,6 +150,10 @@ function(ev) {
 
 ZmApptAssistantView.prototype._closeListener =
 function(ev) {
+    this.close();
+};
+ZmApptAssistantView.prototype.close =
+function() {
     var parentEl = this.getHtmlElement().parentNode;
     Dwt.setVisible(parentEl, false);
     this._enabled = false;
@@ -273,7 +286,7 @@ function(durationInfo, params) {
 
         //collect all the item indexes of the locations available at this slot
         if(isFree) {
-            var displayInfo = this._createLocationDisplayInfo(params.itemIndex[email], email);
+            var displayInfo = this._createLocationDisplayInfo(email);
             locationInfo.locations.add(displayInfo);
         }
     }
@@ -296,7 +309,7 @@ function(slots, startTime, endTime) {
 };
 
 ZmApptAssistantView.prototype._createLocationDisplayInfo =
-function (index, email) {
+function (email) {
     var info = { email: email };
     info.locationObj = this.getLocationByEmail(email);
     info.name = email;

@@ -144,6 +144,28 @@ function(focusOnSuggestion, showAllSuggestions) {
 };
 
 
+ZmScheduleAssistantView.prototype.getLocationFBInfo =
+function(fbCallback, fbCallbackObj, endTime) {
+
+    if(appCtxt.isOffline && !appCtxt.isZDOnline()) { return; }
+
+    var params = {
+        items: [],
+        itemIndex: {},
+        focus: false,
+        fbEndTime: endTime,
+        showOnlyGreenSuggestions: true
+    };
+    params.fbCallback = fbCallback.bind(fbCallbackObj, params);
+
+    if(this._resources.length == 0) {
+        this.searchCalendarResources(new AjxCallback(this, this._findFreeBusyInfo, [params]));
+    } else {
+        this._findFreeBusyInfo(params);
+    }
+};
+
+
 
 ZmScheduleAssistantView.prototype._getTimeFrame =
 function() {
@@ -296,6 +318,11 @@ function(params) {
 	}
 
 	var tf = this._timeFrame = this._getTimeFrame();
+    if (params.fbEndTime) {
+        // Override the time frame.  Used for checking location
+        // recurrence collisions
+        tf.end = new Date(params.fbEndTime);
+    }
 	var emails = [], attendeeEmails = [], email;
 
     params.itemIndex = {};
@@ -332,10 +359,15 @@ function(params) {
 	}
 
     var callback;
-    if (this._suggestTime) {
-        callback = new AjxCallback(this, this.getWorkingHours, [params]);
+    if (params.fbCallback) {
+        // Custom FB processing
+        callback = params.fbCallback;
     } else {
-        callback = new AjxCallback(this, this.suggestLocations, [params]);
+        if (this._suggestTime) {
+            callback = new AjxCallback(this, this.getWorkingHours, [params]);
+        } else {
+            callback = new AjxCallback(this, this.suggestLocations, [params]);
+        }
     }
 
     var acct = (appCtxt.multiAccounts) ? this._apptView.getCalendarAccount() : null;
