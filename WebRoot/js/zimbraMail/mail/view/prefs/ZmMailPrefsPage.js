@@ -34,8 +34,16 @@ function() {
 ZmMailPrefsPage.prototype.showMe =
 function() {
 	ZmPreferencesPage.prototype.showMe.call(this);
-
-	if (!this._initialized || appCtxt.isOffline) {
+    if(appCtxt.isOffline){
+        if(this.isWhiteBlackListDirty()) {
+            this._initialized = true;
+        } else {
+            this._blackListControl._listView.removeAll();
+            this._whiteListControl._listView.removeAll();
+            this._initialized = false;
+        }
+    }
+	if (!this._initialized) {
 		this._initialized = true;
 		if (this._blackListControl && this._whiteListControl) {
 			var soapDoc = AjxSoapDoc.create("GetWhiteBlackListRequest", "urn:zimbraAccount");
@@ -449,7 +457,7 @@ function() {
 ZmWhiteBlackList.prototype.loadFromJson =
 function(data) {
 	if (data) {
-		for (var i = 0; i < data.length; i++) {
+        for (var i = 0; i < data.length; i++) {
             var content = AjxUtil.isSpecified(data[i]._content) ? data[i]._content : data[i];
             if(content){
 			    var item = this._addEmail(content);
