@@ -40,15 +40,15 @@
         <table width="100%" cellspacing="0" cellpadding="1">
             <tr valign="middle" style="background-color:${color}">
                 <td valign="middle" width=20 style='padding-left:5px'>
-                    <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
+                    <app:img src="${folder.image}" alt='${label}'/>
                 </td>
                 <td>
                     <span class='ZhFolderHeader' style='vertical-align:middle;'>
-                        ${fn:escapeXml(label)}
+                        ${label}
                     </span>
                     <c:if test="${folder.depth gt 0}">
                         <span class='ZhFolderType' style='vertical-align:middle;'>
-                            &nbsp;(${fn:escapeXml(folderRelativePath)})
+                            &nbsp;(${folderRelativePath})
                         </span>
                     </c:if>
                 </td>
@@ -208,7 +208,7 @@
                             <option
                                     <c:if test="${parent.id eq folder.parentId}">selected</c:if> value="${parent.id}"/>
                             <c:set var="label" value="${zm:getFolderPath(pageContext, parent.id)}"/>
-                            ${fn:escapeXml(label)}
+                            ${label}
                         </c:if>
                     </c:if>
                 </zm:forEachFolder>

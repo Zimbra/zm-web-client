@@ -90,7 +90,7 @@
             <c:choose>
                 <c:when test="${not empty day.folderId}">
                     <c:set var="fname" value="${zm:getFolderName(pageContext, day.folderId)}"/>
-                    ${fn:escapeXml(fname)}
+                    ${fname}
                 </c:when>
                 <c:otherwise>
                     <rest:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" timezone="${timezone}" rawdate="${zm:getCalendar(day.startTime, timezone)}" action=""/>

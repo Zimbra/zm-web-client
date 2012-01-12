@@ -22,6 +22,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
+<c:set var="truncatedLabel" value="${zm:getTruncatedFolderName(pageContext, folder.id, 17, true)}"/>
 <c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : folder.rgbColor)}"/>
 <tr style="background-color:${color}">
     <td nowrap colspan="2" class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if><c:if test="${folder.id eq requestScope.context.selectedId}"> Selected</c:if>'
@@ -40,12 +41,12 @@
                     <app:img altkey="unchecked" src="startup/ImgCheckboxUnchecked.png"/>
                 </c:otherwise>
             </c:choose>
-            <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
+            <app:img src="${folder.image}" alt='${label}'/>
             <c:choose>
                 <c:when test="${folder.isMountPoint and folder.effectivePerm == null}">
-                    <del>${fn:escapeXml(zm:truncate(label,17,true))}</del>
+                    <del>${truncatedLabel}</del>
                 </c:when>
-                <c:otherwise>${fn:escapeXml(zm:truncate(label,17,true))}</c:otherwise>
+                <c:otherwise>${truncatedLabel}</c:otherwise>
             </c:choose>
         </a>
 

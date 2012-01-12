@@ -248,7 +248,7 @@
                                                         </c:otherwise>
                                                         </c:choose>
                                                     </td>
-                                                    <td nowrap>${fn:escapeXml(zm:getFolderName(pageContext, hit.messageHit.folderId))}</td>
+                                                    <td nowrap>${zm:getFolderName(pageContext, hit.messageHit.folderId)}</td>
                                                     <td nowrap>${fn:escapeXml(zm:displaySize(pageContext, hit.messageHit.size))}</td>
                                                     <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}</td>
                                                 </tr>

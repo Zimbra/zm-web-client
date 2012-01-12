@@ -128,7 +128,7 @@
                                                     </c:url>
                                                     <a id="A${index}" href="${fn:escapeXml(selectUrl)}">
                                                         <app:img src="${folder.image}" alt="folder"/>
-                                                            <span style='vertical-align:middle'>${fn:escapeXml(label)}
+                                                            <span style='vertical-align:middle'>${label}
                                                             <c:if test="${folder.hasUnread}">(${folder.unreadCount}) </c:if>
                                                             </span>
                                                     </a>

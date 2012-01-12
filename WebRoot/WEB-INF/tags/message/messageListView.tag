@@ -157,7 +157,7 @@
 						</c:if>
 					</td>
 					<c:if test="${!context.isFolderSearch}">
-						<td nowrap='nowrap' width='5%'>${fn:escapeXml(zm:getFolderName(pageContext, hit.messageHit.folderId))}</td>
+						<td nowrap='nowrap' width='5%'>${zm:getFolderName(pageContext, hit.messageHit.folderId)}</td>
 					</c:if>
 					<td nowrap='nowrap' width='5%'>${fn:escapeXml(zm:displaySize(pageContext, hit.messageHit.size))}</td>
 					<td nowrap='nowrap' width='5%'>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}</td>

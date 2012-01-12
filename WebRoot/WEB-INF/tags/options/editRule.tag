@@ -404,7 +404,7 @@ action_stop                         stop checkbox (true)
                                                         <c:set var="label" value="${zm:getFolderPath(pageContext, folder.id)}"/>
                                                         <option value="${fn:escapeXml(folder.rootRelativePath)}"
                                                                 <c:if test="${fn:toLowerCase(folder.rootRelativePath) eq path}"> selected </c:if>
-                                                                >${fn:escapeXml(label)}</option>
+                                                                >${label}</option>
                                                     </c:if>
                                                 </zm:forEachFolder>
                                             </select>

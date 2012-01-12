@@ -129,7 +129,7 @@
                     <c:if test="${(parent.isMessageMoveTarget and !parent.isSpam) or parent.isTrash}">
                         <option value="${parent.id}"/>
                         <c:set var="label" value="${zm:getFolderPath(pageContext, parent.id)}"/>
-                        ${fn:escapeXml(label)}
+                        ${label}
                     </c:if>
                 </zm:forEachFolder>
             </select>
@@ -151,7 +151,7 @@
                     <c:if test="${parent.isDocumentMoveTarget and !parent.isTrash and !parent.isSpam}">
                         <option value="${parent.id}"/>
                         <c:set var="label" value="${zm:getFolderPath(pageContext, parent.id)}"/>
-                        ${fn:escapeXml(label)}
+                        ${label}
                     </c:if>
                 </zm:forEachFolder>
             </select>

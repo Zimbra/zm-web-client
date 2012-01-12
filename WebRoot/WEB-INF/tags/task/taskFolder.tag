@@ -22,6 +22,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
+<c:set var="truncatedLabel" value="${zm:getTruncatedFolderName(pageContext, folder.id, 20, true)}"/>
 <c:set var="padFudge" value="${folder.hasChildren ? 0 : 20}"/>
 <c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : folder.rgbColor)}"/>
 <tr>
@@ -42,9 +43,9 @@
                 </a>
         </c:if>
         <a href='${fn:escapeXml(url)}'>
-            <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
+            <app:img src="${folder.image}" alt='${label}'/>
             <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>
-             ${fn:escapeXml(zm:truncate(label,20,true))}
+             ${truncatedLabel}
             </span>
         </a>
     </td>
