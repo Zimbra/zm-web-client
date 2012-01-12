@@ -753,8 +753,11 @@ function() {
  */
 ZmContact.prototype.isLocked =
 function() {
-	if (!this.isDistributionList() || !this.dlInfo) {
+	if (!this.isDistributionList()) {
 		return this.isReadOnly();
+	}
+	if (!this.dlInfo) {
+		return false; //rare case after editing by an owner if the fileAsChanged, the new dl Info still not read, and the layout re-done. So don't show the lock.
 	}
 	var dlInfo = this.dlInfo;
 	if (dlInfo.isOwner) {
@@ -2167,10 +2170,6 @@ function(node) {
 	this.modified = node.md;
 	this.ref = node.ref;
 
-	if (node.dlInfo) {
-		this.dlInfo = node.dlInfo;
-	}
-
 	this.attr = node._attrs || {};
 	if (node.m) {
 		this.attr[ZmContact.F_groups] = node.m;
@@ -2212,6 +2211,13 @@ function(node) {
 	// Is this a distribution list?
 	this.isDL = this.isDistributionList();
 	if (this.isDL) {
+		this.dlInfo = { //this is minimal DL info, available mainly to allow to know whether to show the lock or not.
+			isMember: node.isMember,
+			isOwner: node.isOwner,
+			subscriptionPolicy: this.attr.zimbraDistributionListSubscriptionPolicy,
+			unsubscriptionPolicy: this.attr.zimbraDistributionListUnsubscriptionPolicy
+		};
+
 		this.canExpand = node.exp;
 		var emails = this.getEmails();
 		var ac = window.parentAppCtxt || window.appCtxt;

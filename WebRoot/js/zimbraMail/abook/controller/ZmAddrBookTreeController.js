@@ -315,18 +315,12 @@ function(folder, result) {
 	if (dls) {
 		for (var i = 0; i < dls.length; i++) {
 			var dl = dls[i];
-			var attrs = {email: dl.name, type: "group", zimbraId: dl.id, firstName: "", lastName: ""};
+			var attrs = dl._attrs;
+			attrs.email = dl.name; // in this case the email comes in the "name" property.
+			attrs.type = "group";
+			
 			attrs[ZmContact.F_dlDisplayName] = dl.d || dl.name;
-			var dlInfo = { //this is minimal DL info, available mainly to allow to know whether to show the lock or not.
-				isMember: dl.isMember,
-				isOwner: dl.isOwner,
-				subscriptionPolicy: dl._attrs.zimbraDistributionListSubscriptionPolicy,
-				unsubscriptionPolicy: dl._attrs.zimbraDistributionListUnsubscriptionPolicy
-			};
-
-			contactList.addFromDom({_attrs: attrs,
-									dlInfo: dlInfo,
-									id: dl.id});
+			contactList.addFromDom(dl);
 		}
 	}
 	var clc = AjxDispatcher.run("GetContactListController");

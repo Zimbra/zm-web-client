@@ -332,8 +332,12 @@ function(params) {
 	var jsonObj, request, soapDoc;
 	if (!this.response) {
 		if (this.isGalSearch) {
-			jsonObj = {SearchGalRequest:{_jsns:"urn:zimbraAccount"}};
-			request = jsonObj.SearchGalRequest;
+			request = {
+				_jsns:"urn:zimbraAccount",
+				needIsOwner: "1",
+				needIsMember: "directOnly"
+			};
+			jsonObj = {SearchGalRequest: request};
 			if (this.galType) {
 				request.type = this.galType;
 			}
