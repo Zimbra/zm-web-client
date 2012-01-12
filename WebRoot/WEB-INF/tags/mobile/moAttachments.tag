@@ -82,7 +82,7 @@
                 <c:set var="count" value="0"/>
                 <zm:forEachFolder var="folder" skiproot="${false}" skipsystem="${false}" skiptrash="${true}">
                         <c:if test="${folder.isDocumentView and count lt sessionScope.F_LIMIT}">
-                <option value="${folder.id}">${fn:escapeXml(zm:getFolderPath(pageContext,folder.id))}</option><c:set var="count" value="${count+1}"/>
+                <option value="${folder.id}">${zm:getFolderPath(pageContext,folder.id)}</option><c:set var="count" value="${count+1}"/>
                         </c:if>
                 </zm:forEachFolder>
             </select>

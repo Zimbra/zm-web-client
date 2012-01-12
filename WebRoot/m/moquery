@@ -115,7 +115,7 @@
                     <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
                     <c:if test="${not (folder.isSearchFolder or folder.isChats)}">
                         <option value=' in:"${folder.rootRelativePath}"'>
-                            ${fn:escapeXml(label)}
+                            ${label}
                         </option>
                     </c:if>
                 </zm:forEachFolder>

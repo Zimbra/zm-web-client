@@ -62,7 +62,7 @@
                 <c:if test="${empty sessionScope.calendar}">
                 <div class="roundness View ${apptFolder.styleColor}Bg" style="padding: 5px;">
                 <span class="label"><fmt:message
-                        key="calendarLabel"/></span> ${fn:escapeXml(zm:getFolderName(pageContext,apptFolder.id))}
+                        key="calendarLabel"/></span> ${zm:getFolderName(pageContext,apptFolder.id)}
                 </div><br>
                 </c:if>    
                 <mo:displayAppointment mailbox="${mailbox}" message="${msg}" invite="${invite}"

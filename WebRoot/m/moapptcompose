@@ -295,9 +295,9 @@
              <zm:forEachFolder var="folder">
                  <c:if test="${count lt sessionScope.F_LIMIT and param.st ne 'newtask' and folder.isAppointmentView and folder.isAppointmentMoveTarget }">
                      <option value="${folder.id}" <c:if test="${(param.invId ne '' && compose.apptFolderId eq folder.id) || (not empty sessionScope.calendar && sessionScope.calendar.id eq folder.id)}">selected='selected'</c:if>>
-                     ${fn:escapeXml(zm:getFolderName(pageContext, folder.id))}</option>
+                     ${zm:getFolderName(pageContext, folder.id)}</option>
                  <c:set var="count" value="${count+1}"/></c:if><c:if test="${count lt sessionScope.F_LIMIT and param.st eq 'newtask' and folder.isTaskView and folder.isTaskMoveTarget }">
-                     <option value="${folder.id}" <c:if test="${compose.apptFolderId eq folder.id }">selected='selected'</c:if>>${fn:escapeXml(zm:getFolderName(pageContext, folder.id))}</option>
+                     <option value="${folder.id}" <c:if test="${compose.apptFolderId eq folder.id }">selected='selected'</c:if>>${zm:getFolderName(pageContext, folder.id)}</option>
                  <c:set var="count" value="${count+1}"/></c:if>
              </zm:forEachFolder>
          </select></span>

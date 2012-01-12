@@ -22,6 +22,7 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <c:set var="label" value="${zm:getFolderPath(pageContext, folder.id)}"/>
+<c:set var="truncatedLabel" value="${zm:getTruncatedFolderPath(pageContext, folder.id, 20, true)}"/>
 <c:choose>
     <c:when test="${ua.isiPad == true}">
         <c:set var="baseUrl" value="zipad"/>
@@ -56,7 +57,7 @@
                     <c:set var="folderName" value="${label}"/>
                 </c:otherwise>
             </c:choose>
-            ${fn:escapeXml(zm:truncateFixed(folderName,20,true))}
+            ${truncatedLabel}
         </a>
     </span>
     <c:if test="${!folder.isSystemFolder}">
