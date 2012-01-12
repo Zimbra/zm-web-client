@@ -19,6 +19,8 @@ SELECT						{	@FieldBorder@	}
 
 .link a, .link a:visited, .Tabs A:link, .Tabs A:visited, .skin_link, .SearchBar	{	color: white !important; text-decoration: none; }
 
+.TabSelected A:link, .TabSelected A:visited{ color: #333 !important;}
+
 .TabNormal {
 	@TabBorder@
 	@TabBorder-normal@
