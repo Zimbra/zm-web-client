@@ -163,10 +163,10 @@ FORM {
 	height:35px;
 	text-align:center;
 	width:250px;
-	@borderRadius@:26px;
 	@cssShadow@:0px 0px 3px black;
 	@FontSize-bigger@
 	@grad(#DCF9FE,#9FF0FF,linear-vertical)@
+	@roundCorners(26px)@
 }
 .LaunchButton INPUT:hover {
 	@cssShadow@:0px 0px 1px black;

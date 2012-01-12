@@ -613,12 +613,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
     #IFDEF MSIE
         display:inline;
     #ENDIF
-    #IFDEF SAFARI
-        -webkit-border-radius:4px;
-    #ENDIF
-    #IFDEF GECKO
-        -moz-border-radius:4px;
-    #ENDIF
+	@roundCorners(4px)@
 }
 
 .AttProgressSpan1, .AttProgressSpan2 {
@@ -1142,13 +1137,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	margin-bottom:2px;
 	margin-left:3px;
 	display:inline-block;
-
-	#IFDEF SAFARI
-		-webkit-border-radius:4px;
-	#ENDIF
-	#IFDEF GECKO
-		-moz-border-radius:4px;
-	#ENDIF
+	@roundCorners(4px)@
 }
 
 .addrBubble, .attachmentBubble {
@@ -1921,7 +1910,7 @@ line-height:normal;
 .calendar_listview_folder {
 	width:16px;
 	height:16px;
-	@borderRadius@:4px;
+	@roundCorners(4px)@
 }
 
 
@@ -2351,10 +2340,10 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmCalDayTab{
     height:21px;
-    @blRadius@:4px;
-    @brRadius@:4px;
+    @roundCorners(0 0 4px 4px)@
     max-width:80px;
     min-width:80px;
+    white-space:nowrap;
     width:80px;
     @Text@
     @SeparatorBg@
@@ -2766,12 +2755,11 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmTaskbarContentParent {
-	@tlRadius@:3px;
-	@trRadius@:3px;
 	background-color:@TaskbarItem-selected@;
 	position:absolute;
 	bottom:23px;
 	padding:4px;
+	@roundCorners(3px 3px 0 0)@
 }
 
 .ZmTaskbarPopupTitle {
@@ -2821,8 +2809,8 @@ HTML>BODY .appt-selected .appt_allday_body
 	border:none;
 	padding:0;
 	padding-bottom:3px;
-	@borderRadius@:0;
 	background-color:white;
+	@roundCorners(0)@
 }
 
 .ZmTaskbarContentParent .ImYahooLoginLabel {
@@ -2985,7 +2973,7 @@ HTML>BODY .appt-selected .appt_allday_body
   padding:3px;
   border-width:2px;
   border-left:none;
-  -moz-border-radius:0 2px 2px 0;
+  @roundCorners(0 2px 2px 0)@
 }
 
 .DwtResizableWindow-focused .ZmChatTabs-MemberBar {
@@ -2994,7 +2982,7 @@ HTML>BODY .appt-selected .appt_allday_body
   padding:3px;
   border-width:2px;
   border-left:none;
-  -moz-border-radius:0 2px 2px 0;
+  @roundCorners(0 2px 2px 0)@
 }
 
 .ZAlert .DwtResizableWindow-topcont { @AlertColor@ }
@@ -3008,10 +2996,7 @@ HTML>BODY .appt-selected .appt_allday_body
   padding:2px 4px;
   border-width:2px;
   border-top:none;
-  -moz-border-radius-topleft:0;
-  -moz-border-radius-topright:0;
-  -moz-border-radius-bottomleft:2px;
-  -moz-border-radius-bottomright:2px;
+  @roundCorners(0 0 2px 2px)@
 }
 
 .ZmChatTabs-TabBar .ZmChatTab-Unread { @AlertColor@ }
@@ -3033,10 +3018,7 @@ HTML>BODY .appt-selected .appt_allday_body
   border-width:2px;
   border-top:none;
   margin-top:-1px;
-  -moz-border-radius-topleft:0;
-  -moz-border-radius-topright:0;
-  -moz-border-radius-bottomleft:2px;
-  -moz-border-radius-bottomright:2px;
+  @roundCorners(0 0 2px 2px)@
 }
 
 .DwtResizableWindow-unfocused .ZmChatTabs-TabBar .ZmChatTabs-Tab-Active { padding:2px 4px 3px 4px; }
@@ -3261,11 +3243,10 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmPeopleSearch-toolbar {
 	display:none;
 	@ListItemContainer-selected@
-	@blRadius@:5px;
-	@brRadius@:5px;
 	border:1px solid @darken(SelC,15)@;
 	border-top:0px;
 	z-index:1000;
+	@roundCorners(0 0 5px 5px)@
 }
 .ZmPeopleSearch-toolbar table {
 	padding:1px 5px;
@@ -3640,10 +3621,8 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin:10px;
 	background-color:#FFF6BF;
 	border:1px solid #FFDD00;
-#IFDEF GECKO
-    -moz-border-radius:10px;
-#ENDIF
 	padding:10px;
+	@roundCorners(10px)@
 }
 
 .infoBoxImg {
@@ -4125,13 +4104,8 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:800px;
 	height:600px;
 	color:white;
-#IFDEF GECKO
-	-moz-border-radius-bottomleft:10px;
-	-moz-border-radius-bottomright:10px;
-	-moz-border-radius-topleft:10px;
-	-moz-border-radius-topright:10px;
-#ENDIF
 	opacity:0.90;
+	@roundCorners(10px)@
 }
 
 .ZmShortcutsWindow {
@@ -4488,13 +4462,11 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin:0px 0px 10px 0px;
 	background-color:#FFF6BF;
 	border:1px solid #FFDD00;
-	#IFDEF GECKO
-    -moz-border-radius:10px;
-	#ENDIF
-    padding:10px;
-    #IFDEF MSIE
-    width:100%;
-    #ENDIF
+	padding:10px;
+#IFDEF MSIE
+	width:100%;
+#ENDIF
+	@roundCorners(10px)@
 }
 
 .ZInfoBoxImg {

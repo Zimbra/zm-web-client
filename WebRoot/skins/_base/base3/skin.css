@@ -54,7 +54,7 @@ BODY						{	margin:0px; 	}
 #skin_spacing_people_search 				{	height:42px; width:@cssValue(HSashContainer,width)@; 	}
 #skin_container_search						{	height:20px; }
 
-#skin_container_search .ZmSearchToolbar 	{	background-color:white; @borderRadius@:@SkinSearchRadius@; 	}
+#skin_container_search .ZmSearchToolbar 	{	background-color:white; @roundCorners(SkinSearchRadius)@ 	}
 #skin_container_search .ZButton				{	height:auto;	}
 #skin_container_search .ZButtonBorder		{	border:0; background-color:transparent; 	}
 #skin_container_search .ZLeftIcon DIV 		{	margin:0 0 0 10px; 	}
