@@ -254,12 +254,10 @@ function(snoozeSelectButton, menuSelectionListener, apptList) {
 
     var appts = apptList.getArray();
     var minStartDelta =  1;
-    var maxStartDelta = -1;
 
     if (this._apptType == "task") {
         // Tasks are simpler: No 'before' times allowed, and all fixed times are allowed
         minStartDelta = 1;
-        maxStartDelta = ZmReminderDialog.SNOOZE_MSEC[ZmReminderDialog.SNOOZE_MSEC.length-1];
     } else {
         for (var i = 0; i < appts.length; i++) {
             var appt = appts[i];
@@ -272,9 +270,6 @@ function(snoozeSelectButton, menuSelectionListener, apptList) {
                 }
                 // Get the largest snooze period that can be used by any appt (without snoozing past its start)
                 startDelta = -startDelta;
-                if (startDelta > maxStartDelta) {
-                    maxStartDelta = startDelta;
-                }
             }
         }
     }
@@ -294,14 +289,11 @@ function(snoozeSelectButton, menuSelectionListener, apptList) {
     var addSeparator = false;
     var anyAdded = false;
     for (var i = 0; i < ZmReminderDialog.SNOOZE_MINUTES.length; i++) {
-        // Don't display any fixed periods greater than the longest time till the start of an appt
-        if (ZmReminderDialog.SNOOZE_MSEC[i] > maxStartDelta) break;
-
         if (ZmReminderDialog.SNOOZE_MSEC[i] >= minStartDelta) {
             // Found a snooze period to display
             snoozeDisplayValue = ZmReminderDialog.SNOOZE_MINUTES[i];
             if (snoozeDisplayValue == 0) {
-                // Set up to add a seperator if any 'before' time were added; do the
+                // Set up to add a separator if any 'before' time were added; do the
                 // actual add if any fixed times are added
                 addSeparator = anyAdded;
             }
@@ -345,11 +337,6 @@ function(snoozeSelectButton, menuSelectionListener, apptList) {
         snoozeMenu.setEnabled(false, true);
         snoozeSelectButton.setEnabled(false);
         this.setButtonEnabled(ZmReminderDialog.SNOOZE_BUTTON, false);
-        if (this._openButtons) {
-            for (var id in this._openButtons) {
-                this._openButtons[id].setEnabled(false);
-            }
-        }
         this.unregisterCallback(ZmReminderDialog.SNOOZE_BUTTON);
     } else {
         this._snoozeSelectInput.setEnabled(true, true);
