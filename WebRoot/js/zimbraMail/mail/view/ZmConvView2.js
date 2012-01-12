@@ -914,6 +914,8 @@ function(msg, container, callback) {
 ZmMailMsgCapsuleView.prototype._renderMessageBody =
 function(msg, container, callback, index) {
 	
+	this._hasOrigContent = false;
+	
 	this._msgBodyDivId = [this._htmlElId, ZmId.MV_MSG_BODY].join("_");
 	var autoSendTime = AjxUtil.isDate(msg.autoSendTime) ? AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM).format(msg.autoSendTime) : null;
 	if (autoSendTime) {
@@ -1004,9 +1006,18 @@ function(subs, sentBy, sentByAddr, sender, addr) {
 
 ZmMailMsgCapsuleView.prototype._getBodyContent =
 function(bodyPart) {
-	var content = this._showingQuotedText ? bodyPart.content :
-		AjxStringUtil.getOriginalContent(bodyPart.content, (bodyPart.ct == ZmMimeTable.TEXT_HTML));
-	this._noQuotedText = (!this._showingQuotedText && (content == bodyPart.content));
+
+	var content;
+	if (this._showingQuotedText) {
+		content = bodyPart.content;
+	}
+	else {
+		// TODO: cache retrieved original content (will matter when/if we cache capsule views)
+		content = AjxStringUtil.getOriginalContent(bodyPart.content, (bodyPart.ct == ZmMimeTable.TEXT_HTML));
+		if (content.length != bodyPart.content.length) {
+			this._hasOrigContent = true;
+		}
+	}
 	return content;
 };
 
@@ -1026,7 +1037,7 @@ function(msg, container) {
 	if (this._isCalendarInvite) {
 		links.push(this._makeLink(ZmMsg.showCalendar, this._showCalendarLinkId));
 	}
-	else if (!this._noQuotedText) {
+	else if (this._hasOrigContent) {
 		links.push(this._makeLink(ZmMsg.showQuotedText, this._showTextLinkId));
 	}
 	links.push(this._makeLink(ZmMsg.reply, replyLinkId));

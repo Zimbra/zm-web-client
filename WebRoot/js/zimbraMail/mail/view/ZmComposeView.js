@@ -2448,7 +2448,7 @@ function(mode, action) {
 	action = action || this._action;
 	var preface;
 	if (mode == DwtHtmlEditor.HTML) {
-		preface = '<hr id="zwchr">';
+		preface = '<hr id="' + AjxStringUtil.HTML_SEP_ID + '">';
 	} else {
 		var msgText = (action == ZmOperation.FORWARD_INLINE) ? AjxMsg.forwardedMessage : AjxMsg.origMsg;
 		preface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
@@ -2480,7 +2480,7 @@ function(mode) {
 // for getting text version of HTML part when sending, used by AjxStringUtil._traverse
 ZmComposeView._convertHtmlPreface =
 function(self, el) {
-	return (el && el.id == "zwchr") ? self._getPreface(DwtHtmlEditor.TEXT) + ZmMsg.CRLF : null;
+	return (el && el.id == AjxStringUtil.HTML_SEP_ID) ? self._getPreface(DwtHtmlEditor.TEXT) + ZmMsg.CRLF : null;
 };
 
 ZmComposeView.prototype._applyHtmlPrefix =
