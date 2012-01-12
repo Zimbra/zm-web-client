@@ -37,6 +37,7 @@
  * @param	{Array}	params.secondaryButtons		a list of operation IDs
  * @param	{constant}	params.context			the vcontextID (used to generate button IDs)
  * @param	{constant}	params.toolbarType		the toolbar type (used to generate button IDs)
+ * @param	{Boolean}	params.addTextElement		if true, add a text "button" (element) at the end (but before the view button, if any). This can be used for message counts etc
  * @param	{ZmController}	params.controller		the owning controller
  *
  * @extends		ZmToolBar
@@ -103,9 +104,16 @@ ZmButtonToolBar = function(params) {
 
 	}
 
-	if (addViewAtEnd) {
+	if (params.addTextElement || addViewAtEnd) {
 		this.addOp(ZmOperation.FILLER);
+	}
+	if (params.addTextElement) {
+		this.addOp(ZmOperation.TEXT);
+		var text = this.getButton(ZmOperation.TEXT);
+		text.addClassName("itemCountText");
+	}
 
+	if (addViewAtEnd) {
 		var viewButton = ZmOperation.createOperations(this, [ZmOperation.VIEW_MENU], params.overrides);
 		this._buttons[ZmOperation.VIEW_MENU] = viewButton[ZmOperation.VIEW_MENU];
 		this.opList.push(ZmOperation.VIEW_MENU);

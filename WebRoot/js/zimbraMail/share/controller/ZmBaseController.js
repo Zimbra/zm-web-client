@@ -298,6 +298,7 @@ function(view, className) {
 		context:			view,
 		controller:			this,
 		refElementId:		ZmId.SKIN_APP_TOP_TOOLBAR,
+		addTextElement:		true,
 		className:			className
 	};
 	var tb = this._toolbar[view] = new ZmButtonToolBar(tbParams);

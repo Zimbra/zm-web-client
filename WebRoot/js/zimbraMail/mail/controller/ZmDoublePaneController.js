@@ -205,9 +205,8 @@ function(view) {
 
 ZmDoublePaneController.prototype._initializeNavToolBar =
 function(view) {
-	this._toolbar[view].addOp(ZmOperation.TEXT);
-	var text = this._itemCountText[ZmSetting.RP_BOTTOM] = this._toolbar[view].getButton(ZmOperation.TEXT);
-	text.addClassName("itemCountText");
+	var toolbar = this._toolbar[view];
+	this._itemCountText[ZmSetting.RP_BOTTOM] = toolbar.getButton(ZmOperation.TEXT);
 };
 
 ZmDoublePaneController.prototype._getActionMenuOps =

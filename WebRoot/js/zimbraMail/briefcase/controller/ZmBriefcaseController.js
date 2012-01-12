@@ -220,9 +220,7 @@ function(parent) {
 
 ZmBriefcaseController.prototype._initializeNavToolBar =
 function(view) {
-	this._toolbar[view].addOp(ZmOperation.TEXT);
-	var text = this._itemCountText[view] = this._toolbar[view].getButton(ZmOperation.TEXT);
-	text.addClassName("itemCountText");
+	this._itemCountText[view] = this._toolbar[view].getButton(ZmOperation.TEXT);
 };
 
 ZmBriefcaseController.prototype._resetOperations =
