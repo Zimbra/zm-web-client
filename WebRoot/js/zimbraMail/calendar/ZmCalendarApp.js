@@ -549,7 +549,7 @@ function() {
 							  defaultSort:			20,
 							  upsellUrl:			ZmSetting.CALENDAR_UPSELL_URL,
                               quickCommandType:		ZmQuickCommand[ZmId.ITEM_APPOINTMENT],
-							  searchResultsTab:		false
+							  searchResultsTab:		true
 							  });
 };
 

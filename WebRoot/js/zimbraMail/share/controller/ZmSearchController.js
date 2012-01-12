@@ -532,7 +532,7 @@ function(params, noRender, callback, errorCallback) {
 	search.calController = null;
 	if (searchFor == ZmItem.APPT && !params.forceSearch) {
 		var searchResultsController, sessionId;
-		if (search.userInitiated) {
+		if (search.userInitiated && ZmApp.SEARCH_RESULTS_TAB[ZmApp.CALENDAR]) {
 			searchResultsController = appCtxt.getApp(ZmApp.SEARCH).getSearchResultsController(search.sessionId, ZmApp.CALENDAR);
 			sessionId = searchResultsController.getCurrentViewId();
 		}
