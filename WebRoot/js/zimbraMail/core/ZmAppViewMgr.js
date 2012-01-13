@@ -970,8 +970,7 @@ ZmAppViewMgr.prototype.isOkToUnload =
 function() {
 	for (var viewId in this._view) {
 		var view = this._view[viewId];
-		if (view.isTabView) { continue; }
-		var callback = view.callback[ZmAppViewMgr.CB_PRE_UNLOAD];
+		var callback = view && view.callback && view.callback[ZmAppViewMgr.CB_PRE_UNLOAD];
 		if (callback) {
 			DBG.println(AjxDebug.DBG2, "checking if ok to unload " + viewId);
 			var okToContinue = callback.run(viewId);
