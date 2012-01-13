@@ -863,7 +863,6 @@ function(msg, container, callback) {
 	if (this._expanded) {
 		this._renderMessageHeader(msg, container);
 		this._renderMessageBodyAndFooter(msg, container, callback);
-		this._controller._handleMarkRead(msg);
 	}
 	else {
 		this._renderMessageHeader(msg, container);
@@ -1121,6 +1120,7 @@ function() {
 	
 	if (this._expanded && !body) {
 		this._renderMessage(this._msg);
+		this._controller._handleMarkRead(this._msg);
 	}
 	else {
 		// TODO: collect all these into a single DIV to hide/show

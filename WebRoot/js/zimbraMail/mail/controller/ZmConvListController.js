@@ -434,21 +434,6 @@ function(item) {
 	this._handleMarkRead(item);
 };
 
-ZmConvListController.prototype._handleMarkRead =
-function(msg) {
-	
-	var markRead = appCtxt.get(ZmSetting.MARK_MSG_READ);
-	if (markRead == ZmSetting.MARK_READ_NOW) {
-		this._doMarkRead([msg], true);
-	} else if (markRead > 0) {
-		if (!appCtxt.markReadAction) {
-			appCtxt.markReadAction = new AjxTimedAction(this, this._markReadAction);
-		}
-		appCtxt.markReadAction.args = [ msg ];
-		appCtxt.markReadActionId = AjxTimedAction.scheduleAction(appCtxt.markReadAction, markRead * 1000);
-	}
-};
-
 ZmConvListController.prototype._toggle =
 function(item, getFirstMsg) {
 	if (this._mailListView.isExpanded(item)) {
@@ -647,7 +632,12 @@ function(items, method, args) {
 		hasMsgs = true;
 	}
 	if (lists[ZmItem.CONV] && lists[ZmItem.CONV].length) {
-		hasMsgs ? args[0] = lists[ZmItem.CONV] : args.unshift(lists[ZmItem.CONV])
+		if (hasMsgs) {
+			args[0] = lists[ZmItem.CONV];
+		}
+		else {
+			args.unshift(lists[ZmItem.CONV]);
+		}
 		ZmDoublePaneController.prototype[method].apply(this, args);
 	}
 };
