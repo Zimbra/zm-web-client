@@ -1070,6 +1070,9 @@ function(newParent, noUndo, actionText, batchCmd) {
 		params.noUndo = noUndo;
 	}
 	else {
+		if (newParent.account.isLocal()) {
+			newId = [ZmAccount.LOCAL_ACCOUNT_ID, newId].join(":");
+		}
 		params.actionText = actionText || ZmMsg.actionMove;
 		params.actionArg = newParent.getName(false, false, true);
 		params.action = "move";

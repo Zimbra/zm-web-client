@@ -547,6 +547,16 @@ function() {
 	return "Folder";
 };
 
+ZmFolder.prototype.mayContainFolderFromAccount =
+function(otherAccount) {
+	var thisAccount = this.getAccount();
+	if (thisAccount == otherAccount) {
+		return true;
+	}
+	return thisAccount.isLocal(); // can only move to local
+
+};
+
 /**
 * Returns true if the given object(s) may be placed in this folder.
 *
@@ -589,7 +599,7 @@ function(what, folderType, ignoreExisting) {
 				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.nId == ZmOrganizer.ID_ROOT) ||
 				   (what.id == this.id) ||
 				   (what.disallowSubFolder) ||
-				   (appCtxt.multiAccounts && what.getAccount() != this.getAccount()) || // cannot move folders across accounts
+				   (appCtxt.multiAccounts && !this.mayContainFolderFromAccount(what.getAccount())) || // cannot move folders across accounts, unless the target is local
                    (this.isRemote() && !this._remoteMoveOk(what)) ||
 				   (what.isRemote() && !this._remoteMoveOk(what)));				// a remote folder can be DnD but not its children
 	} else {
