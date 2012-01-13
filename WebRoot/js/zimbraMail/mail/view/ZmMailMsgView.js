@@ -988,11 +988,24 @@ function(container, html, isTextMsg, isTruncated, index) {
 		head = idoc.createElement("head");
 		idoc.body.parentNode.insertBefore(head, idoc.body);
 	}
-	var link = idoc.createElement("link");
-	link.rel = "stylesheet";
-	link.href = appContextPath+"/css/msgview.css?v="+cacheKillerVersion;
-	head.appendChild(link);
-
+	
+	if (!ZmMailMsgView._CSS) {
+		// Make a synchronous request for the CSS. Should we do this earlier?
+		var cssUrl = appContextPath + "/css/msgview.css?v=" + cacheKillerVersion;
+		var result = AjxRpc.invoke(null, cssUrl, null, null, true);
+		ZmMailMsgView._CSS = result && result.text;
+	}
+	var style = document.createElement('style');
+	var rules = document.createTextNode(ZmMailMsgView._CSS);
+	style.type = 'text/css';
+	if (style.styleSheet) {
+		style.styleSheet.cssText = rules.nodeValue;
+	}
+	else {
+		style.appendChild(rules);
+	}
+	head.appendChild(style);
+	
 	ifw.getIframe().style.visibility = "";
 
 	if (!isTextMsg) {
