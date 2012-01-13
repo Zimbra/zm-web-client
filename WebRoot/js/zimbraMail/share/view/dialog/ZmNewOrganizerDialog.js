@@ -293,11 +293,13 @@ function() {
 	this._omit[ZmFolder.ID_DRAFTS] = true;
 	this._omit[ZmFolder.ID_SYNC_FAILURES] = true;
 	this._omit[ZmFolder.ID_OUTBOX] = true;
-	var folderTree = appCtxt.getFolderTree();
+
+	//Bug#68799: no special handling needed for sync issues folder
+	/*var folderTree = appCtxt.getFolderTree();
 	var syncIssuesFolder = folderTree ? folderTree.getByName(ZmFolder.SYNC_ISSUES) : null;
 	if (syncIssuesFolder) {
 		this._omit[syncIssuesFolder.id] = true;
-	}
+	}*/
 	this._omit[ZmOrganizer.ID_ZIMLET] = true;
 };
 

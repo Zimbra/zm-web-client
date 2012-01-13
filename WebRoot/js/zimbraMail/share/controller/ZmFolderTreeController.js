@@ -101,7 +101,7 @@ function(parent, type, id) {
 
 	// user folder or Folders header
 	var nId = ZmOrganizer.normalizeId(id, this.type);
-	if (nId == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder())) {
+	if (nId == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) /*&& !folder.isSyncIssuesFolder()*/)) {
 		var isShareVisible = (!folder.link || folder.isAdmin());
         if (appCtxt.isOffline) {
             isShareVisible = !folder.getAccount().isMain && folder.getAccount().isZimbraAccount;
@@ -590,7 +590,7 @@ function(ev) {
 	if (ev.action == DwtDragEvent.DRAG_START) {
 		var folder = ev.srcControl.getData(Dwt.KEY_OBJECT);
 		ev.srcData = {data:folder, controller:this};
-		if (!(folder instanceof ZmFolder) || folder.isSystem() || folder.isSyncIssuesFolder()) {
+		if (!(folder instanceof ZmFolder) || folder.isSystem() /*|| folder.isSyncIssuesFolder()*/) {
 			ev.operation = Dwt.DND_DROP_NONE;
 		}
 	}

@@ -268,9 +268,9 @@ function(name, parent) {
 				return ZmMsg.folderNameReserved;
 			}
 		}
-		if (lname == ZmFolder.SYNC_ISSUES.toLowerCase()) {
+		/*if (lname == ZmFolder.SYNC_ISSUES.toLowerCase()) {
 			return ZmMsg.folderNameReserved;
-		}
+		}*/
 	}
 
 	return null;
@@ -581,7 +581,7 @@ function(otherAccount) {
 ZmFolder.prototype.mayContain =
 function(what, folderType, ignoreExisting) {
 	if (!what) { return true; }
-	if (this.isFeed() || this.isSyncIssuesFolder()) { return false; }
+	if (this.isFeed() /*|| this.isSyncIssuesFolder()*/) { return false; }
 
 	var thisType = folderType || this.type;
 	var invalid = false;
@@ -697,10 +697,13 @@ function(what, folderType, ignoreExisting) {
  * 
  * @return	{Boolean}	<code>true</code> if the folder is the one dealing with Outlook sync issues
  */
-ZmFolder.prototype.isSyncIssuesFolder =
+
+//Bug#68799 Removing special handling of the folder named "Sync Issues"
+
+/*ZmFolder.prototype.isSyncIssuesFolder =
 function() {
 	return (this.name == ZmFolder.SYNC_ISSUES);
-};
+};*/
 
 /**
  * Checks if this folder required hard delete.
