@@ -617,6 +617,13 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@roundCorners(4px)@
 }
 
+.AttachmentSpan{
+    position: static;
+    overflow: visible;
+    padding: 0px 2px 4px !important;
+}
+
+
 .AttProgressSpan1, .AttProgressSpan2 {
     height:14px;
     overflow: hidden;
@@ -1134,7 +1141,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .addrBubble, .addrBubble-selected, .addrBubble-actioned, .attachmentBubble {
 	color:black;
 	border:1px solid #999999;
-	padding:1px 3px;
+	padding:1px 3px 3px;
 	margin-bottom:2px;
 	margin-left:3px;
 	display:inline-block;

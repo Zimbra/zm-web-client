@@ -115,7 +115,7 @@
 </template>
 
 <template id='mail.Message#MailAttachmentBubble'>
-        <span class="AttachmentLoading attachmentBubble" name="mailAttUploadingSpan" style="max-width: 235px; position: static; overflow: visible;">
+        <span class="AttachmentLoading attachmentBubble AttachmentSpan" name="mailAttUploadingSpan" style="max-width: 235px; position: static; overflow: visible;padding: 0 2px 4px">
             <span class="AttProgressSpan1">${fileName}</span>
             <span class="AttProgressSpan2">${fileName}</span>
             <span onclick="window.appCtxt.getCurrentView()._abortUploadFile()"  class="ImgBubbleDelete AttachmentClose"></span>
@@ -281,11 +281,6 @@
 								</tr>
 							<$ } $>
 						</table>
-						<$ if (data.hasAttachments) { $>
-							<div class="MessageHeaderAttachments" id="${attachId}_container">
-								<div id="${attachId}" style='overflow:auto;'></div>
-							</div>
-						<$ } $>
 					</div>
 				</td>
 				<td id='${id}_contactArea' class='ContactArea'>
@@ -484,7 +479,7 @@
                     </tr>
                  </table>
             </td>
-            <td>
+            <td colspan=2>
                 <span id='${zdndToolTipId}' class='zdnd_tooltip'>
                         <$=ZmMsg.dndTooltip$>
                 </span>
@@ -512,9 +507,6 @@
 <table cellspacing=0 cellpadding=0 border=0 width=100%>
         <$ var id = Dwt.getNextId(data.rowId) $>
         <tr '<$= id $>' style="display: table-row;">
-        <td valign="top" align="right" style="width:64px; overflow:visible; white-space:nowrap">
-                 <div class='ImgAttachment' style="margin-right:5px;"></div>
-        </td>
         <td  width="96%" colspan="2">
             <div class="attBubbleContainer" style="position: static; overflow: visible;">
             <div  class="attBubbleHolder" style="display:inline-block;border-radius: 4px;">
@@ -523,7 +515,7 @@
                <$ var message = data.messages[i]; $>
                <$ var spanId = Dwt.getNextId(data.rowId)$>
 
-               <span  id='<$= spanId $>' class="AttachmentLoading attachmentBubble" style="position: static; overflow: visible;">
+               <span  id='<$= spanId $>' class="AttachmentLoading attachmentBubble AttachmentSpan">
                    <a style="color: #336699; cursor: pointer;text-decoration: none" > <$= (message ? AjxStringUtil.htmlEncode(message.subject) : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></a>
                    (<$= AjxUtil.formatSize(message.size, false, 1) $>)
                    <span onclick="window.appCtxt.getCurrentView()._removeAttachedMessage('<$= spanId $>' ,'<$= message.id $>')" class="ImgBubbleDelete AttachmentClose"></span>
@@ -540,14 +532,11 @@
         <$ var id = Dwt.getNextId(data.rowId) $>
         <$ var message = data.message; $>
         <tr id='<$= id $>' style="display: table-row;">
-            <td valign="top" align="right" style="width:64px; overflow:visible; white-space:nowrap">
-                 <div class='ImgAttachment' style="margin-right:5px;"></div>
-            </td>
             <td  width="96%" colspan="2">
                 <div class="attBubbleContainer" style="position: static; overflow: visible;">
                 <div  class="attBubbleHolder" style="display:inline-block;border-radius: 4px;">
                     <$ var spanId = Dwt.getNextId(data.rowId)$>
-                    <span  id='<$= spanId $>' value='<$= message.id $>' class="AttachmentLoading attachmentBubble" style="position: static; overflow: visible;">
+                    <span  id='<$= spanId $>' value='<$= message.id $>' class="AttachmentLoading attachmentBubble" style="position: static; overflow: visible; padding: 0 2px 3px">
                         <a style="color: #336699; cursor: pointer;text-decoration: none" > <$= (message ? AjxStringUtil.htmlEncode(message.subject) : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></a>
                         (<$= AjxUtil.formatSize(message.size, false, 1) $>)
                         <span onclick="window.appCtxt.getCurrentView()._removeAttachedMessage('<$= spanId $>')" class="ImgBubbleDelete AttachmentClose"></span>
@@ -561,13 +550,10 @@
         <table cellspacing=0 cellpadding=0 width=100%>
         <$ var id = Dwt.getNextId(data.rowId) $>
         <tr '<$= id $>' style="display: table-row;">
-            <td valign="top" align="right" style="width:64px; overflow:visible; white-space:nowrap">
-               <div class='ImgAttachment' style="margin-right:5px;"></div>
-            </td>
             <td width="96%" colspan="2">
                 <div class="attBubbleContainer" style="position: static; overflow: visible;">
                 <div  class="attBubbleHolder" style="display:inline-block;border-radius: 4px;">
-                    <span class="AttachmentLoading attachmentBubble" name="mailAttUploadingSpan" style="position: static; overflow: visible;">
+                    <span class="AttachmentLoading attachmentBubble AttachmentSpan" name="mailAttUploadingSpan">
                         <span class="AttProgressSpan1">${fileName}</span>
                         <span class="AttProgressSpan2">${fileName}</span>
                         <span onclick="window.appCtxt.getCurrentView()._abortUploadFile()"  class="ImgBubbleDelete AttachmentClose"></span>
@@ -583,11 +569,6 @@
         <table cellspacing=0 cellpadding=0 border=0 width=100%>
         <$ var id = Dwt.getNextId(data.rowId) $>
         <tr '<$= id $>' style="display: table-row;">
-        <td valign="top" align="right" style="width:64px; overflow:visible; white-space:nowrap">
-            <$ if (data.attachments.length > 0) { $>
-                 <div class='ImgAttachment' style="margin-right:5px;"></div>
-            <$ } $>
-        </td>
         <td  width="96%" colspan="2">
             <div class="attBubbleContainer" style="position: static; overflow: visible;">
             <div  class="attBubbleHolder" style="display:inline-block;border-radius: 4px;">
@@ -596,7 +577,7 @@
                <$ var attachment = data.attachments[i]; $>
                <$ var spanId = Dwt.getNextId(data.rowId)$>
 
-               <span  id='<$= spanId $>' class="AttachmentLoading attachmentBubble" style="position: static; overflow: visible;">
+               <span  id='<$= spanId $>' class="AttachmentLoading attachmentBubble AttachmentSpan">
                     <span>
                        <input type="hidden" value='<$=attachment.part$>' name='<$= data.fwdFieldName $>' >
                    </span>
