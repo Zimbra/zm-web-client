@@ -228,7 +228,7 @@ function(params) {
 ZmChooseFolderDialog.prototype.popdown = 
 function() {
 	var ov = this._getOverview();
-	if (ov) {
+	if (ov && ov.itemSelected) { //I'm not sure how ov.itemSelected may be not a function, but I got that in ZD so making sure it's defined. 
 		ov.itemSelected(null);  //clear selected items
 	}
 	DwtDialog.prototype.popdown.call(this);

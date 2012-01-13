@@ -1234,6 +1234,9 @@ function(newParent, noUndo, actionText, batchCmd, organizerName) {
 		params.noUndo = noUndo;
 	}
 	else {
+		if (newParent.account.isLocal()) {
+			newId = [ZmAccount.LOCAL_ACCOUNT_ID, newId].join(":");
+		}
 		params.actionArg = organizerName || newParent.getName(false, false, true);
 		params.action = "move";
 		params.attrs = {l: newId};

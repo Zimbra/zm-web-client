@@ -89,6 +89,9 @@ ZmAccount.TYPE_ZIMBRA	= "Zimbra";
 ZmAccount.TYPE_CALDAV	= "CalDAV";
 
 
+ZmAccount.LOCAL_ACCOUNT_ID = "ffffffff-ffff-ffff-ffff-ffffffffffff";
+
+
 //
 // Public static methods
 //
@@ -183,4 +186,9 @@ function() {
 ZmAccount.prototype.getIdentity =
 function() {
 	throw this.toString()+"#getIdentity";
+};
+
+ZmAccount.prototype.isLocal =
+function() {
+	return this.id == ZmAccount.LOCAL_ACCOUNT_ID;
 };
