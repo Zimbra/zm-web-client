@@ -697,7 +697,7 @@ function(params) {
 		// wrap <html> and <body> tags around content, and set font style
 		params.text = ZmAdvancedHtmlEditor._embedHtmlContent(AjxStringUtil.htmlEncode(params.text), true);
 	}
-	var composeCtlr = appCtxt.getApp(ZmApp.MAIL).getComposeController(ZmApp.HIDDEN_SESSION);
+	var composeCtlr = AjxDispatcher.run("GetComposeController", ZmApp.HIDDEN_SESSION);
 	composeCtlr.doAction(params);
 	if (params.sendNow) {
 		composeCtlr.sendMsg(null, null, this._handleResponseSendMsg.bind(this));
