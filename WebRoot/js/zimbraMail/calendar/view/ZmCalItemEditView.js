@@ -595,45 +595,23 @@ function(calItem) {
 ZmCalItemEditView.prototype._setContent =
 function(calItem, mode) {
 
-    //TODO: remove the commented lines once the review is passed.
-	// set notes/content (based on compose mode per user prefs)
-	/*if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML))
-	{
-		this._controller.setFormatBtnItem(true, DwtHtmlEditor.HTML);
-		this.setComposeMode(DwtHtmlEditor.HTML);
-        var notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_HTML)
-        if(this._isForward && !calItem.isOrganizer()) {
-            var preface = [ZmMsg.DASHES, " ", ZmMsg.originalAppointment, " ", ZmMsg.DASHES].join("");
-            var crlf2 = "<br><br>";
-            var crlf = "<br>";
-            notesPart = crlf2 + preface + crlf + calItem.getInviteDescription(true);
-            notesPart = this.formatContent(notesPart, true);
-        }
-		this._notesHtmlEditor.setContent(notesPart);
-	}
-	else {
-		this._controller.setFormatBtnItem(true, ZmMimeTable.TEXT_PLAIN);
-		this.setComposeMode(DwtHtmlEditor.TEXT);
-        var notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN);
-        if(this._isForward && !calItem.isOrganizer()) {
-            var preface = [ZmMsg.DASHES, " ", ZmMsg.originalAppointment, " ", ZmMsg.DASHES].join("");
-            var crlf2 = ZmMsg.CRLF2;
-            var crlf = ZmMsg.CRLF;
-            notesPart = crlf2 + preface + crlf + calItem.getInviteDescription(false);
-            notesPart = this.formatContent(notesPart, false);
-        }
-		this._notesHtmlEditor.setContent(notesPart);
-	} */
-    //bug:60541 determining the notes format based on content
-    var notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN);
+    var isSavedinHTML = false,
+        notesHtmlPart = calItem.getNotesPart(ZmMimeTable.TEXT_HTML),
+        notesPart;
 
-    var notesHtmlPart = calItem.getNotesPart(ZmMimeTable.TEXT_HTML);
-    var pattern = /<div(.*?)>(.*?)<\/div>/;
-    var pMatch = notesHtmlPart.match(pattern);
-    var isSavedinHTML = false;
+    if (calItem.notesTopPart) { //Already existing appointment
+        var pattern = /<div(.*?)>(.*?)<\/div>/;
+        var pMatch = notesHtmlPart.match(pattern);
+        if (pMatch != null && pMatch[0] != null) {
+            isSavedinHTML = true;
+        }
+    }
+    else if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) === ZmSetting.COMPOSE_HTML)) {
+        isSavedinHTML = true;
+    }
 
-    if(pMatch != null && pMatch[0] != null) {
-       isSavedinHTML = true;
+    if( !isSavedinHTML ){
+        notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN);
     }
 
     this._controller.setFormatBtnItem(true, isSavedinHTML ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
