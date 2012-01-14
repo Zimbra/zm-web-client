@@ -669,7 +669,7 @@ function(id, content) {
             ed.addButton('toggle', {
                 title : ZmMsg.showExtendedToolbar,
                 onclick : onToolbarToggle,
-                "class" : ""
+                "class" : "mce_toggle"
             });
 		}
     }
@@ -1760,15 +1760,13 @@ function() {
     if(toolbar && toggleButton ){
         if( toolbar.style.display === Dwt.DISPLAY_NONE ){
             toggleButton.title = ZmMsg.hideExtendedToolbar;
-            Dwt.addClass( toggleButton, "mceButtonActive");
-            Dwt.delClass( toggleButton.firstChild, "mce_toggle_collapsed", "mce_toggle_expanded");
+            Dwt.setInnerHtml(toggleButton.firstChild, ZmMsg.lessToolbar);
             Dwt.show(toolbar);
             iframeStyle.height = parseInt( iframeStyle.height ) - 26 + "px";
         }
         else{
             toggleButton.title = ZmMsg.showExtendedToolbar;
-            Dwt.delClass( toggleButton, "mceButtonActive");
-            Dwt.delClass( toggleButton.firstChild, "mce_toggle_expanded", "mce_toggle_collapsed");
+            Dwt.setInnerHtml(toggleButton.firstChild, ZmMsg.moreToolbar);
             Dwt.hide(toolbar);
             iframeStyle.height = parseInt( iframeStyle.height ) + 26 + "px";
         }
