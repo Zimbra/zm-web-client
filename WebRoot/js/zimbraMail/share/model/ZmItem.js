@@ -497,7 +497,7 @@ function() {
 	this._notifyDelete();
 	for (var listId in this._list) {
 		var list = appCtxt.getById(listId);
-		if (!list || (listId == this.list.id)) { continue; }
+		if (!list || (this.list && listId == this.list.id)) { continue; }
 		var ctlr = list.controller;
 		if (!ctlr || ctlr.inactive || (ctlr.getList().id != listId)) { continue; }
 		var doppleganger = list.getById(this.id);
