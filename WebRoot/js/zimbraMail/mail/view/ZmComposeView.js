@@ -2186,31 +2186,12 @@ function(action, msg, extraBodyText) {
 	var bodyInfo = {};
 	var what = incOptions.what;
 	if (msg && (what == ZmSetting.INC_BODY || what == ZmSetting.INC_SMART)) {
-		bodyInfo = this._getBodyContent(msg, htmlMode);
+		bodyInfo = this._getBodyContent(msg, htmlMode, what);
 		body = bodyInfo.body;
 		AjxDebug.println(AjxDebug.REPLY, "Body length: " + body.length);
 		// Bug 7160: Strip off the ~*~*~*~ from invite replies.
 		if (this._isInviteReply(action)) {
 			body = body.replace(ZmItem.NOTES_SEPARATOR, "");
-		}
-		if (what == ZmSetting.INC_SMART) {
-			if (htmlMode) {
-				body = body.replace(this._preface,""); // Remove preface and anything inside <blockquote> tags
-				var lastTag = "</blockquote>";
-				var fidx = body.indexOf("<blockquote");
-				var lidx = body.lastIndexOf(lastTag);
-				if (fidx!=-1 && lidx!=-1) {
-					body = body.substring(0, fidx) + body.substring(lidx + lastTag.length);
-				}
-			} else {
-				if (this._preface) {
-					var idx = body.indexOf(this._preface); // Remove everything after preface
-					if (idx > 0) {
-						body = body.substr(0, idx);
-					}
-				}
-			}
-			AjxDebug.println(AjxDebug.REPLY, "Body length in smart mode: " + body.length);
 		}
 	}
 
@@ -2308,10 +2289,6 @@ function(action, msg, extraBodyText) {
 				value = leadingSpace + preText + divider + headerText + bodyText;
 			}
 		} else if (incOptions.what == ZmSetting.INC_SMART) {
-			var chunks = AjxStringUtil.getTopLevel(body);
-			if (chunks.length) {
-				body = chunks.join(crlf2);
-			}
 			if (htmlMode) {
 				var headerText = headers.length ? headers.join(crlf) + crlf2 : "";
 				wrapParams.text = isDraft ? body : headerText + body;
@@ -2382,11 +2359,12 @@ function() {
 };
 
 ZmComposeView.prototype._getBodyContent =
-function(msg, htmlMode) {
+function(msg, htmlMode, incWhat) {
 
 	var body, bodyPart, hasInlineImages, hasInlineAtts;
 	var crlf = htmlMode ? "<br>" : ZmMsg.CRLF;
 	var crlf2 = htmlMode ? "<br><br>" : ZmMsg.CRLF2;
+	var getOrig = (incWhat == ZmSetting.INC_SMART);
 
 	// bug fix #7271 - if we have multiple body parts, append them all first
 	var parts = msg.getBodyParts();
@@ -2404,13 +2382,15 @@ function(msg, htmlMode) {
 				bodyArr.push([crlf, "[", attInfo, ":", (part.filename||"..."), "]", crlf].join(""));
 				hasInlineAtts = true;
 			} else if (part.ct == ZmMimeTable.TEXT_PLAIN || (part.body && ZmMimeTable.isTextType(part.ct))) {
-				bodyArr.push( htmlMode ? AjxStringUtil.convertToHtml(part.content) : part.content );
+				content = getOrig ? AjxStringUtil.getOriginalContent(part.content, false) : part.content;
+				bodyArr.push( htmlMode ? AjxStringUtil.convertToHtml(content) : content );
 			} else if (part.ct == ZmMimeTable.TEXT_HTML) {
+				content = getOrig ? AjxStringUtil.getOriginalContent(part.content, true) : part.content;
 				if (htmlMode){
-					bodyArr.push(part.content);
+					bodyArr.push(content);
 				} else {
 					var div = document.createElement("div");
-					div.innerHTML = part.content;
+					div.innerHTML = content;
 					bodyArr.push(AjxStringUtil.convertHtml2Text(div));
 				}
 			}
@@ -2418,19 +2398,26 @@ function(msg, htmlMode) {
 		body = bodyArr.join(crlf);
 	} else {
 		if (htmlMode) {
-			body = msg.getBodyPart(ZmMimeTable.TEXT_HTML);
-			if (body) {
-				body = AjxUtil.isString(body) ? body : body.content;
+			bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_HTML);
+			if (bodyPart) {
+				content = AjxUtil.isString(bodyPart) ? bodyPart : bodyPart.content;
+				body = getOrig ? AjxStringUtil.getOriginalContent(content, (bodyPart.ct == ZmMimeTable.TEXT_HTML)) : content;
 			} else {
 				// if no html part exists, just grab the text
 				bodyPart = msg.getBodyPart();
-				body = bodyPart ? this._getTextPart(bodyPart, true) : null;
+				content = bodyPart ? this._getTextPart(bodyPart, true) : null;
+				if (content) {
+					body = getOrig ? AjxStringUtil.getOriginalContent(content, (bodyPart.ct == ZmMimeTable.TEXT_HTML)) : content;
+				}
 			}
 		} else {
 			hasInlineImages = msg.hasInlineImagesInMsgBody();
 			// grab text part out of the body part
 			bodyPart = msg.getTextBodyPart() || msg.getBodyPart(ZmMimeTable.TEXT_HTML, true);            
-			body = bodyPart ? this._getTextPart(bodyPart) : null;
+			content = bodyPart ? this._getTextPart(bodyPart) : null;
+			if (content) {
+				body = getOrig ? AjxStringUtil.getOriginalContent(content, (bodyPart.ct == ZmMimeTable.TEXT_HTML)) : content;
+			}
 		}
 	}
 
