@@ -1092,7 +1092,7 @@ function(params) {
 	this.updateTabTitle();
 
 	var content = params.body || "";
-	if((content == "") && (this._htmlEditor.getMode() == DwtHtmlEditor.HTML)) {
+	if((content == "") && (this.getComposeMode() == DwtHtmlEditor.HTML)) {
 		content	= "<br>";
 	}
 	this._htmlEditor.setContent(content);
@@ -1526,7 +1526,7 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 
 	//Caching previous Signature state.
 	this._previousSignature = signature;
-	this._previousSignatureMode = this._htmlEditor.getMode();
+	this._previousSignatureMode = this.getComposeMode();
 
 	var hadVcard = false;
 	if (oldSignatureId) {
@@ -1646,10 +1646,14 @@ function(content) {
 									sigContent,
 									this._getSignatureNewLine());
 
-	this._htmlEditor.setContent(content);
+	if (this._htmlEditor) {
+		this._htmlEditor.setContent(content);
+	}
 
 	this._previousSignature = sigContent;
-	this._previousSignatureMode = this._htmlEditor.getMode();
+	this._previousSignatureMode = this.getComposeMode();
+	
+	return content;
 };
 
 ZmComposeView.prototype._insertSignature =
@@ -1658,7 +1662,7 @@ function(content, sigStyle, sig, newLine) {
 	var re_newlines = "(" + AjxStringUtil.regExEscape(newLine) + ")*";
 	// get rid of all trailing newlines
 	var re = re_newlines;
-	if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
+	if (this.getComposeMode() == DwtHtmlEditor.HTML) {
 		re += "</body></html>";
 	}
 	re += "$";
@@ -2320,7 +2324,7 @@ function(action, msg, extraBodyText) {
 	AjxDebug.println(AjxDebug.REPLY, "value length B: " + vLen);
 	if (!isDraft && sigStyle == ZmSetting.SIG_INTERNET) {
 		AjxDebug.println(AjxDebug.REPLY, "internet style sig, call addSignature()");
-		this.addSignature(value);
+		value = this.addSignature(value);
 	} else {
 		value = value || (htmlMode ? "<br>" : "");
 		AjxDebug.println(AjxDebug.REPLY, "value snippet: " + AjxStringUtil.htmlEncode(value.substr(0, 200)));
@@ -2352,7 +2356,7 @@ function() {
 	if (prefaceIndex != -1) {
 		body = body.substring(0, prefaceIndex);
 	}
-	if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
+	if (this.getComposeMode() == DwtHtmlEditor.HTML) {
 		body = AjxStringUtil.htmlPlatformIndependent(body);
 	}
 	return body;
