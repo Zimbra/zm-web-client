@@ -703,6 +703,7 @@ function(width) {
 	var params = {
 		parent: this,
 		parentElement: (this._htmlElId + "_subject"),
+		inputId: this.parent._htmlElId + "_subject_input",
 		type: DwtInputField.STRING,
 		errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 		validationStyle: DwtInputField.CONTINUAL_VALIDATION

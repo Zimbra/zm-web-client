@@ -1275,7 +1275,7 @@ function(idTag, attType, params) {
     var height = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "52px;" : "21px";
     var overflow = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? false : true;
     
-	var inputId = this._htmlElId + idTag + "_input";
+	var inputId = this.parent._htmlElId + idTag + "_input";
 	var cellId = this._htmlElId + idTag;
 	var input;
 	if (this._useAcAddrBubbles) {
