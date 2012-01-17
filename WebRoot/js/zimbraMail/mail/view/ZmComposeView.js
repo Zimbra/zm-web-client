@@ -3392,6 +3392,8 @@ function(dialog) {
 
 	// dont make any calls after sendMsg if child window since window gets destroyed
 	if (appCtxt.isChildWindow && !AjxEnv.isNav) {
+        // bug fix #68774 Empty warning window when sending message without subject in chrome
+        dialog.popdown();
 		this._controller.sendMsg();
 	} else {
 		// bug fix #3251 - call popdown BEFORE sendMsg
