@@ -1525,7 +1525,13 @@ function(ev) {
         if (appt) {
             ids.push(appt.invId);
         }
-    }  else {
+        // bug:68735 if no selection is made in the calendar, open up the print dialog
+        else{
+            this._printCalendarListener(ev);
+        }
+
+    }
+    else {
         for (var i = 0; i < list.length; i++) {
             ids.push(list[i].invId);
         }
