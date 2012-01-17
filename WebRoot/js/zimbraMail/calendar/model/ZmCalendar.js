@@ -286,6 +286,13 @@ function() {
 	return true;
 };
 
+// overriding ZmFolder.prototype.supportsPublicAccess
+ZmCalendar.prototype.supportsPublicAccess =
+function() {
+	// calendars can be accessed outside of ZCS
+	return true;
+};
+
 ZmCalendar.prototype.getRestUrl =
 function(acct) {
 

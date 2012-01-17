@@ -318,7 +318,10 @@ function(event) {
 					if (email) {
 						addr = email.getAddress();
 					}
-					if (appCtxt.isMyAddress(addr)) { continue; }
+                    //bug#66610: allow Calendar Sharing with addresses present in zimbraAllowFromAddress
+                    var allowLocal;
+                    var excludeAllowFromAddress = true;
+					if (appCtxt.isMyAddress(addr, allowLocal, excludeAllowFromAddress)) { continue; }
 
 					var share = this._setUpShare();
 					share.grantee.name = addr;

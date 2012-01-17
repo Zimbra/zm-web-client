@@ -1714,12 +1714,13 @@ function() {
 /**
  * Checks if my address belongs to the current user (include aliases).
  * 
- * @param {String}		addr			the address
- * @param {Boolean}		allowLocal		if <code>true</code>, domain is not required
+ * @param {String}		addr			            the address
+ * @param {Boolean}		allowLocal		            if <code>true</code>, domain is not required
+ * @param {Boolean}		excludeAllowFromAddress		if <code>true</code>, addresses in zimbraAllowFromAddresses are ignored
  * @return	{Boolean}		<code>true</code> if the given address belongs to the current user; <code>false</code> otherwise
  */
 ZmAppCtxt.prototype.isMyAddress =
-function(addr, allowLocal) {
+function(addr, allowLocal, excludeAllowFromAddress) {
 
 	if (allowLocal && (addr.indexOf('@') == -1)) {
 		addr = [addr, this.getUserDomain()].join("@");
@@ -1729,7 +1730,15 @@ function(addr, allowLocal) {
 		return true;
 	}
 
-	var allAddresses = appCtxt.get(ZmSetting.MAIL_ALIASES).concat(appCtxt.get(ZmSetting.ALLOW_FROM_ADDRESSES));
+	var allAddresses;
+    if(excludeAllowFromAddress){
+        allAddresses= appCtxt.get(ZmSetting.MAIL_ALIASES);
+    }
+    else
+    {
+        allAddresses= appCtxt.get(ZmSetting.MAIL_ALIASES).concat(appCtxt.get(ZmSetting.ALLOW_FROM_ADDRESSES));
+    }
+
 	if (allAddresses && allAddresses.length) {
 		for (var i = 0; i < allAddresses.length; i++) {
 			if (addr == allAddresses[i])
