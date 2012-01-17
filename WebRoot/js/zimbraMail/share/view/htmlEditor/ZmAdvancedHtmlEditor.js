@@ -113,17 +113,19 @@ function(x, y) {
             bodyField.style.height = y + "px";
         }
         else{
-            var iframe = this._iFrameId && document.getElementById(this._iFrameId);//holds iframe
-            if(iframe){
-                if( this.getToolbar("2").style.display === Dwt.DISPLAY_NONE ){
-                    iframe.style.height = (y - 24)+"px";
+            if( y > 0 ){
+                var iframe = this._iFrameId && document.getElementById(this._iFrameId);//holds iframe
+                if(iframe){
+                    if( this.getToolbar("2").style.display === Dwt.DISPLAY_NONE ){
+                        iframe.style.height = (y - 24)+"px";
+                    }
+                    else{
+                        iframe.style.height = (y - 64)+"px";
+                    }
                 }
                 else{
-                    iframe.style.height = (y - 64)+"px";
+                    bodyField.style.height = (y - 18) + "px";
                 }
-            }
-            else{
-                bodyField.style.height = (y - 18) + "px";
             }
         }
         if (div) {
@@ -150,12 +152,16 @@ function() {
 		editor.focus();
 		this.setFocusStatus(true);
 	} else {
-		var bodyField = this.getContentField();
-		if (bodyField) {
-			bodyField.focus();
-		}
-		this.setFocusStatus(true, true);
-        this._onTinyMCEEditorInitcallback = new AjxCallback(this, this.focus);
+        if ( this._mode === DwtHtmlEditor.HTML ) {
+            this._onTinyMCEEditorInitcallback = new AjxCallback(this, this.focus);
+        }
+        else{
+            var bodyField = this.getContentField();
+            if (bodyField){
+                bodyField.focus();
+                this.setFocusStatus(true, true);
+            }
+        }
 	}
 };
 
@@ -536,10 +542,13 @@ function(id, content) {
         obj.initDefaultDirection();
 	};
 
-	function onTinyMCEEditorInit(ed) {
+    function onTinyMCEEditorPostRender(ed) {
         obj.onToolbarToggle();
         Dwt.setVisible(obj.getHtmlElement(), true);
-		obj.initDefaultFontSize(ed);
+    };
+
+	function onTinyMCEEditorInit(ed) {
+        obj.initDefaultFontSize(ed);
         obj.initDefaultDirection();
 		tinymce.dom.Event.add(ed.getWin(), 'focus', function(e) {
 			obj.setFocusStatus(true);
@@ -655,6 +664,7 @@ function(id, content) {
         table_default_border: 1,
 		setup : function(ed) {
 			ed.onLoadContent.add(handleContentLoad);
+            ed.onPostRender.add(onTinyMCEEditorPostRender);
 			ed.onInit.add(onTinyMCEEditorInit);
 			ed.onKeyPress.add(onEditorKeyPress);
             ed.onGetContent.add(onGetContent);
