@@ -51,14 +51,14 @@ BODY						{	margin:0px; 	}
 	
 /** Search box **/	
 #skin_spacing_search,
-#skin_spacing_people_search 				{	height:42px; width:@cssValue(HSashContainer,width)@; 	}
-#skin_container_search						{	height:20px; }
+#skin_spacing_people_search 			{	height:42px; width:@cssValue(HSashContainer,width)@; 	}
+#skin_container_search					{	height:20px; }
 
-#skin_container_search .ZmSearchToolbar 	{	background-color:white; @roundCorners(SkinSearchRadius)@ 	}
-#skin_container_search .ZButton				{	height:auto;	}
-#skin_container_search .ZButtonBorder		{	border:0; background-color:transparent; 	}
-#skin_container_search .ZLeftIcon DIV 		{	margin:0 0 0 10px; 	}
-#skin_container_search .ZWidgetTitle 		{	display:none; 	}
+#skin_container_search .ZmSearchToolbar {	background-color:white; @roundCorners(SkinSearchRadius)@ 	}
+#skin_container_search .ZButton			{	height:auto;	}
+#skin_container_search .ZButtonBorder	{	border:0; background-color:transparent; background-image:none; @noShadow@ @noRoundCorners@ }
+#skin_container_search .ZLeftIcon DIV 	{	margin:0 0 0 10px; 	}
+#skin_container_search .ZWidgetTitle 	{	display:none; 	}
 /** combined username/quota **/
 #skin_spacing_tree_top					{	text-align:center;		}
 #skin_container_tree_top				{	@SkinBorderUsername@	}
@@ -502,7 +502,13 @@ SELECT						{	@FieldBorder@	}
 }
 
 
-.ZAppTabBorder .ZLeftIcon div{ display :none; }
+.ZAppTabBorder .ZLeftIcon DIV		{ display:none; }
+
+.AlphabetBarTable .DwtButton, 
+.AlphabetBarTable .DwtButton-hover,
+.AlphabetBarTable .DwtButton-active	{ @noRoundCorners@ @noShadow@		}
+.AlphabetBarTable TD:first-child 	{ @ButtonRoundingLeft@				}
+.AlphabetBarTable TD:last-child		{ @ButtonRoundingRight@				}
 
 
 /*Temporary overrides that need to move to skin properties*/

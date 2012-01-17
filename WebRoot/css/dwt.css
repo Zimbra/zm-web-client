@@ -612,6 +612,7 @@
 }
 .DwtDialogButtonBar .ZButton {
 	margin-left:3px;
+	@DialogButtonHeight@
 }
 
 
@@ -2309,4 +2310,7 @@ input.xform_field {
 .DwtFormRowAdd .ZButtonTable, .DwtFormRowRemove .ZButtonTable {
 	border:none;
 	background-color:transparent;
+	background-image:none;
+	@cssShadow@:0 0 0 transparent;
+	@roundCorners(0)@
 }

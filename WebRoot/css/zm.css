@@ -1359,7 +1359,6 @@ line-height:normal;
 }
 
 .AlphabetBarTable {
-	background-color:@WidgetBgColor@;
 	border-collapse:separate;
 	margin:5px;
 	table-layout:fixed;
