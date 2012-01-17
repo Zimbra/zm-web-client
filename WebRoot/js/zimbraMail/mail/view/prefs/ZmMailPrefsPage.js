@@ -34,12 +34,9 @@ ZmMailPrefsPage.prototype.showMe =
 function() {
 	ZmPreferencesPage.prototype.showMe.call(this);
     if(appCtxt.isOffline){
-        if(this.isWhiteBlackListDirty()) {
-            this._initialized = true;
-        } else {
-            this._blackListControl._listView.removeAll();
-            this._whiteListControl._listView.removeAll();
+        if(this._initializedAcctId != appCtxt.getActiveAccount().id) {
             this._initialized = false;
+            this._initializedAcctId = appCtxt.getActiveAccount().id;
         }
     }
 	if (!this._initialized) {
