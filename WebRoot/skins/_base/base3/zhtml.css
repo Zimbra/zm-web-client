@@ -17,7 +17,7 @@ SELECT						{	@FieldBorder@	}
 .ZhRow TD,
 .ZhRowOdd TD				{	border-width:0 0 1 0 !important; padding-left:3px !important;	}
 
-.link a, .link a:visited, .Tabs A:link, .Tabs A:visited, .skin_link, .SearchBar	{	color: white !important; text-decoration: none; }
+.link a, .link a:visited, .Tabs A:link, .Tabs A:visited, .skin_link, .SearchBar	td{ color: white !important; text-decoration: none; }
 
 .TabSelected A:link, .TabSelected A:visited{ color: #333 !important;}
 
@@ -35,3 +35,7 @@ SELECT						{	@FieldBorder@	}
 .topcontent{
 	width: 600px;
 }
+
+input[type="search"]{ border: none !importnat;} /* Overriding UA style sheet to remove the 2px inset border*/
+ 
+.searchfield{ @borderRadius@:@SkinSearchRadius@; }
