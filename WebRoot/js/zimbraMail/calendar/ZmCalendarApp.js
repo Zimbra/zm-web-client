@@ -782,7 +782,7 @@ function() {
  */
 ZmCalendarApp.prototype.getCalController =
 function(sessionId, searchResultsController) {
-	AjxDispatcher.require("CalendarCore");
+	AjxDispatcher.require(["Startup2", "CalendarCore"]);
 	return this.getSessionController({controllerClass:			"ZmCalViewController",
 									  sessionId:				sessionId || ZmApp.MAIN_SESSION,
 									  searchResultsController:	searchResultsController});
