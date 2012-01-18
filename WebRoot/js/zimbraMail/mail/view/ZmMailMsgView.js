@@ -210,7 +210,7 @@ function(origText) {
 		// than parsing the DOM.
 		DBG.timePt("START - highlight objects on-demand, text msg.");
 		this._lazyCreateObjectManager();
-		var html = this._objectManager.findObjects(origText, false, null, true);
+		var html = this._objectManager.findObjects(origText, true, null, true);
 		html = html.replace(/^ /mg, "&nbsp;")
 			.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
 			.replace(/\n/g, "<br>");
@@ -865,7 +865,7 @@ function(html) {
 };
 
 ZmMailMsgView.prototype._makeIframeProxy =
-function(container, html, isTextMsg, isTruncated, index) {
+function(container, html, isTextMsg, isTruncated, index, origText) {
 	// bug fix #4943
 	if (html == null) { html = ""; }
 
@@ -899,7 +899,7 @@ function(container, html, isTextMsg, isTruncated, index) {
 				//Using callback to lazily find objects instead of doing it on a run.
 				callback = new AjxCallback(this, this.lazyFindMailMsgObjects, [500]);
 			} else {
-				this._makeHighlightObjectsDiv(html);
+				this._makeHighlightObjectsDiv(origText);
 			}
 		}
 		if (AjxEnv.isSafari) {
@@ -1465,6 +1465,7 @@ function(msg, container, callback, index) {
 	var el = container || this.getHtmlElement();
 	
 	// if multiple body parts, ignore prefs and just append everything
+	var origText;
 	if (msg.hasMultipleBodyParts()) {
 		var bodyParts = msg.getBodyParts();
 		var len = bodyParts.length;
@@ -1485,6 +1486,7 @@ function(msg, container, callback, index) {
 					html.push(hasHtmlPart ? "<pre>" : "");
 					html.push(content);
 					html.push(hasHtmlPart ? "</pre>" : "");
+					origText = bp.content;
 				} else {
 					if (appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
 						html.push(content);
@@ -1501,7 +1503,7 @@ function(msg, container, callback, index) {
 				}
 			}
 		}
-		this._makeIframeProxy(el, html.join(""), !hasHtmlPart, false, index);
+		this._makeIframeProxy(el, html.join(""), !hasHtmlPart, false, index, origText);
 	} else {
 		var bodyPart = msg.getBodyPart();
 		if (bodyPart) {
@@ -1560,7 +1562,7 @@ function(msg, container, callback, index) {
 						isTextMsg = false; //To make sure we display html content properly
 					}
 					content = isTextMsg ? AjxStringUtil.convertToHtml(content) : content;
-					this._makeIframeProxy(el, content, isTextMsg, bodyPart.truncated, index);
+					this._makeIframeProxy(el, content, isTextMsg, bodyPart.truncated, index, bodyPart.content);
 				} else {					
 					if (content != null) {
 						content = (bodyPart.ct != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
