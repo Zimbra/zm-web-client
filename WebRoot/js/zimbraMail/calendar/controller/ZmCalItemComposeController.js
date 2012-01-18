@@ -468,6 +468,8 @@ ZmCalItemComposeController.prototype._handleErrorSave =
 function(calItem, ex) {
 	// TODO: generalize error message for calItem instead of just Appt
 	var msg = null;
+	var continueSave = false;
+	var handled = false;
 	if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
 		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
 		var invalidMsg = (invalid && invalid.length)
@@ -480,34 +482,36 @@ function(calItem, ex) {
 			: ZmMsg.apptSendErrorAbort;
 	} else if(ex.code == ZmCsfeException.MAIL_MESSAGE_TOO_BIG) {
         msg = (calItem.type == ZmItem.TASK) ? ZmMsg.taskSaveErrorToobig : ZmMsg.apptSaveErrorToobig;
-        this.enableToolbar(true);
-    }
-    else if (ex.code == ZmCsfeException.MAIL_INVITE_OUT_OF_DATE) {
+    } else if (ex.code == ZmCsfeException.MAIL_INVITE_OUT_OF_DATE) {
         if(!calItem.isVersionIgnored()){
-                calItem.setIgnoreVersion(true);
-                this.saveCalItemContinue(calItem);
-                return true;
+            calItem.setIgnoreVersion(true);
+            this.saveCalItemContinue(calItem);
+            continueSave = true;
         }
         else{
             msg = ZmMsg.inviteOutOfDate;
-            this.enableToolbar(true);
             calItem.setIgnoreVersion(false);
         }
-    }
-    else if (ex.code == ZmCsfeException.MAIL_NO_SUCH_CALITEM) {
+    } else if (ex.code == ZmCsfeException.MAIL_NO_SUCH_CALITEM) {
         msg = ex.getErrorMsg([ex.getData("itemId")]);
-        this.enableToolbar(true);
     }
-	if (msg) {
-        var dialog = appCtxt.getMsgDialog();
-        dialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-        dialog.popup();
-		appCtxt.notifyZimlets("onSaveApptFailure", [this, calItem, ex]);//notify Zimlets on success 
-		return true;
-	} else {
-		appCtxt.notifyZimlets("onSaveApptFailure", [this, calItem, ex]);//notify Zimlets on success 
-		return false;
-	}
+
+    if (continueSave) {
+        handled = true;
+    } else {
+        // Enable toolbar if not attempting to continue the Save
+        this.enableToolbar(true);
+        if (msg) {
+            // Handled the error, display the error message
+            handled = true;
+            var dialog = appCtxt.getMsgDialog();
+            dialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+            dialog.popup();
+        }
+        appCtxt.notifyZimlets("onSaveApptFailure", [this, calItem, ex]);
+    }
+
+    return handled;
 };
 
 // Spell check methods
