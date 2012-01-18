@@ -471,12 +471,13 @@ function() {
 ZmApptRecurDialog.prototype._getEndHtml = 
 function() {
 	this._repeatEndName = Dwt.getNextId();
-	this._noEndDateRadioId = Dwt.getNextId();
-	this._endByRadioId = Dwt.getNextId();
-	this._endAfterRadioId = Dwt.getNextId();
-	this._endIntervalFieldId = Dwt.getNextId();
-	this._endByFieldId = Dwt.getNextId();
-	this._endByButtonId = Dwt.getNextId();
+	this._noEndDateRadioId = "NO_END_DATE_RADIO"; // Dwt.getNextId();
+	this._endByRadioId = "END_BY_RADIO"; // Dwt.getNextId();
+	this._endAfterRadioId = "END_AFTER_RADIO"; // Dwt.getNextId();
+    // unique ids for endIntervalFieldId and endByField
+    this._endIntervalFieldId = "END_INTERVAL_FIELD"; // Dwt.getNextId();
+	this._endByFieldId = "END_BY_FIELD"; // Dwt.getNextId();
+	this._endByButtonId = "END_BY_BUTTON"; // Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
@@ -568,28 +569,28 @@ function() {
 		var div = document.createElement("div");
 		div.style.position = "relative";
 		div.style.display = "none";
-		div.id = this._repeatDailyId = Dwt.getNextId();
+		div.id = this._repeatDailyId = "REPEAT_DAILY_DIV"; //Dwt.getNextId();
 		div.innerHTML = this._createRepeatDaily();
 		sectionDiv.appendChild(div);
 		
 		var div = document.createElement("div");
 		div.style.position = "relative";
 		div.style.display = "none";
-		div.id = this._repeatWeeklyId = Dwt.getNextId();
+		div.id = this._repeatWeeklyId = "REPEAT_WEEKLY_DIV"; // Dwt.getNextId();
 		div.innerHTML = this._createRepeatWeekly();;
 		sectionDiv.appendChild(div);
 	
 		var div = document.createElement("div");
 		div.style.position = "relative";
 		div.style.display = "none";
-		div.id = this._repeatMonthlyId = Dwt.getNextId();
+		div.id = this._repeatMonthlyId = "REPEAT_MONTHLY_DIV"; // Dwt.getNextId();
 		div.innerHTML = this._createRepeatMonthly();
 		sectionDiv.appendChild(div);
 	
 		var div = document.createElement("div");
 		div.style.position = "relative";
 		div.style.display = "none";
-		div.id = this._repeatYearlyId = Dwt.getNextId();
+		div.id = this._repeatYearlyId = "REPEAT_YEARLY_DIV"; // Dwt.getNextId();
 		div.innerHTML = this._createRepeatYearly();
 		sectionDiv.appendChild(div);
 	}
@@ -597,11 +598,11 @@ function() {
 
 ZmApptRecurDialog.prototype._createRepeatDaily = 
 function() {
-	this._dailyRadioName = Dwt.getNextId();
-	this._dailyDefaultId = Dwt.getNextId();
-	this._dailyWeekdayId = Dwt.getNextId();
-	this._dailyFieldRadioId = Dwt.getNextId();
-	this._dailyFieldId = Dwt.getNextId();
+	this._dailyRadioName = "DAILY_RADIO"; // Dwt.getNextId();
+	this._dailyDefaultId = "DAILY_DEFAULT"; // Dwt.getNextId();
+	this._dailyWeekdayId = "DAILY_WEEKDAY"; // Dwt.getNextId();
+	this._dailyFieldRadioId = "DAILY_FIELD_RADIO"; // Dwt.getNextId();
+	this._dailyFieldId = "DAILY_FIELD"; // Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
@@ -671,12 +672,12 @@ function() {
 
 ZmApptRecurDialog.prototype._createRepeatWeekly = 
 function() {
-	this._weeklyRadioName = Dwt.getNextId();
-	this._weeklyCheckboxName = Dwt.getNextId();
-	this._weeklyDefaultId = Dwt.getNextId();
-	this._weeklySelectId = Dwt.getNextId();
-	this._weeklyFieldRadioId = Dwt.getNextId();
-	this._weeklyFieldId = Dwt.getNextId();
+	this._weeklyRadioName = "WEEKLY_RADIO"; //Dwt.getNextId();
+	this._weeklyCheckboxName = "WEEKLY_CHECKBOX_NAME" ;//Dwt.getNextId();
+	this._weeklyDefaultId = "WEEKLY_DEFAULT" ; //Dwt.getNextId();
+	this._weeklySelectId = "WEEKLY_SELECT" ;//Dwt.getNextId();
+	this._weeklyFieldRadioId = "WEEKLY_FIELD_RADIO" //Dwt.getNextId();
+	this._weeklyFieldId = "WEEKLY_FIELD" ;//Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
@@ -779,14 +780,14 @@ function() {
 
 ZmApptRecurDialog.prototype._createRepeatMonthly = 
 function() {
-	this._monthlyRadioName = Dwt.getNextId();
-	this._monthlyDefaultId = Dwt.getNextId();
-	this._monthlyDayFieldId = Dwt.getNextId();
-	this._monthlyMonthFieldId = Dwt.getNextId();
-	this._monthlyFieldRadioId = Dwt.getNextId();
-	this._monthlyDaySelectId = Dwt.getNextId();
-	this._monthlyWeekdaySelectId = Dwt.getNextId();
-	this._monthlyMonthFieldExId = Dwt.getNextId();
+	this._monthlyRadioName = "MONTHLY_RADIO" ;//Dwt.getNextId();
+	this._monthlyDefaultId = "MONTHLY_DEFAULT";// Dwt.getNextId();
+	this._monthlyDayFieldId = "MONTHLY_DAY_FIELD_ID"; // Dwt.getNextId();
+	this._monthlyMonthFieldId = "MONTHLY_MONTH_FIELD"; //Dwt.getNextId();
+	this._monthlyFieldRadioId = "MONTHLY_FIELD_RADIO"; //Dwt.getNextId();
+	this._monthlyDaySelectId = "MONTHLY_DAY_SELECT"; // Dwt.getNextId();
+	this._monthlyWeekdaySelectId = "MONTHLY_WEEKDAY_SELECT";// Dwt.getNextId();
+	this._monthlyMonthFieldExId = "MONTHLY_MONTH_FIELD_EX"; // Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
@@ -878,14 +879,14 @@ function() {
 
 ZmApptRecurDialog.prototype._createRepeatYearly = 
 function() {
-	this._yearlyDefaultId = Dwt.getNextId();
-	this._yearlyRadioName = Dwt.getNextId();
-	this._yearlyMonthSelectId = Dwt.getNextId();
-	this._yearlyDayFieldId = Dwt.getNextId();
-	this._yearlyDaySelectId = Dwt.getNextId();
-	this._yearlyWeekdaySelectId = Dwt.getNextId();
-	this._yearlyMonthSelectExId = Dwt.getNextId();
-	this._yearlyFieldRadioId = Dwt.getNextId();
+	this._yearlyDefaultId = "YEALY_DEFAULT" ; //Dwt.getNextId();
+	this._yearlyRadioName = "YEARLY_RADIO"; //Dwt.getNextId();
+	this._yearlyMonthSelectId = "YEARLY_MONTH_SELECT"; // Dwt.getNextId();
+	this._yearlyDayFieldId = "YEARLY_DAY_FIELD"; // Dwt.getNextId();
+	this._yearlyDaySelectId = "YEARLY_DAY_SELECT"; // Dwt.getNextId();
+	this._yearlyWeekdaySelectId ="YEARLY_WEEKDAY_SELECT"; //Dwt.getNextId();
+	this._yearlyMonthSelectExId ="YEARLY_MONTH_SELECT_EX"; // Dwt.getNextId();
+	this._yearlyFieldRadioId = "YEARLY_FIELD_RADIO";// Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
@@ -1151,7 +1152,7 @@ function() {
 												errorIconStyle: DwtInputField.ERROR_ICON_NONE, 
 												validationStyle: DwtInputField.ONEXIT_VALIDATION, 
 												validator: this._positiveIntValidator, 
-												validatorCtxtObj: this});
+												validatorCtxtObj: this, inputId:"RECUR_END_INTERVAL_FIELD"});
 	this._endIntervalField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._endIntervalField.reparentHtmlElement(this._endIntervalFieldId);
 	delete this._endIntervalFieldId;
@@ -1161,7 +1162,7 @@ function() {
 										  errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 										  validationStyle: DwtInputField.ONEXIT_VALIDATION,
 										  validator: this._endByDateValidator, 
-										  validatorCtxtObj: this});
+										  validatorCtxtObj: this, inputId:"RECUR_END_BY_FIELD"});
 	this._endByField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._endByField.reparentHtmlElement(this._endByFieldId);
 	Dwt.setSize(this._endByField.getInputElement(), Dwt.DEFAULT, "22");
@@ -1173,7 +1174,7 @@ function() {
 										  errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 										  validationStyle: DwtInputField.ONEXIT_VALIDATION,
 										  validator: this._positiveIntValidator,
-										  validatorCtxtObj: this});
+										  validatorCtxtObj: this, inputId: "RECUR_DAILY_FIELD"});
 	this._dailyField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._dailyField.reparentHtmlElement(this._dailyFieldId);
 	delete this._dailyFieldId;
@@ -1184,7 +1185,7 @@ function() {
 										   errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 										   validationStyle: DwtInputField.ONEXIT_VALIDATION,
 										   validator: this._weeklyValidator,
-										   validatorCtxtObj: this});
+										   validatorCtxtObj: this, inputId:"RECUR_WEEKLY_FIELD"});
 	this._weeklyField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._weeklyField.reparentHtmlElement(this._weeklyFieldId);
 	delete this._weeklyFieldId;
@@ -1194,7 +1195,7 @@ function() {
 											   initialValue: "1", size: 2, maxLen: 2,
 											   errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 											   validationStyle: DwtInputField.ONEXIT_VALIDATION,
-											   validatorCtxtObj: this});
+											   validatorCtxtObj: this, inputId:"RECUR_MONTHLY_DAY_FIELD"});
 	this._monthlyDayField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._monthlyDayField.reparentHtmlElement(this._monthlyDayFieldId);
 	this._monthlyDayField.setValidNumberRange(1, 31);
@@ -1205,7 +1206,7 @@ function() {
 											   errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 											   validationStyle: DwtInputField.ONEXIT_VALIDATION,
 											   validator: this._positiveIntValidator,
-											   validatorCtxtObj: this});
+											   validatorCtxtObj: this, inputId:"RECUR_MONTHLY_MONTH_FIELD"});
 	this._monthlyMonthField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._monthlyMonthField.reparentHtmlElement(this._monthlyMonthFieldId);
 	delete this._monthlyMonthFieldId;
@@ -1215,7 +1216,7 @@ function() {
 												   errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 												   validationStyle: DwtInputField.ONEXIT_VALIDATION,
 												   validator: this._positiveIntValidator,
-												   validatorCtxtObj: this});
+												   validatorCtxtObj: this, inputId:"RECUR_MONTHLY_MONTH_FIELD_EX"});
 	this._monthlyMonthFieldEx.setDisplay(Dwt.DISPLAY_INLINE);
 	this._monthlyMonthFieldEx.reparentHtmlElement(this._monthlyMonthFieldExId);
 	delete this._monthlyMonthFieldExId;
@@ -1226,7 +1227,7 @@ function() {
 											  errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 											  validationStyle: DwtInputField.ONEXIT_VALIDATION,
 											  validator: this._yearlyDayValidator,
-											  validatorCtxtObj: this});
+											  validatorCtxtObj: this, inputId:"RECUR_YEARLY_DAY_FIELD"});
 	this._yearlyDayField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._yearlyDayField.reparentHtmlElement(this._yearlyDayFieldId);
 	delete this._yearlyDayFieldId;
