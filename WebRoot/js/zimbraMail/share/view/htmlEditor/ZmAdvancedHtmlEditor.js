@@ -656,7 +656,6 @@ function(id, content) {
         content_css : contentCSS,
 		editor_css: editorCSS,
         theme_advanced_runtime_fontsize:true,
-		inline_styles: false,
         dialog_type : "modal",
         forced_root_block : 'div',
         width: "100%",
