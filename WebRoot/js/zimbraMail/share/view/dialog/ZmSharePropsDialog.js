@@ -130,14 +130,14 @@ function(mode, object, share) {
 	// document. Otherwise, we won't be able to get a handle on them to perform
 	// operations.
 	this._props.setPropertyVisible(this._shareWithOptsId, true);
-	this._shareWithOptsProps.setPropertyVisible(this._passwordId, true);
+	//this._shareWithOptsProps.setPropertyVisible(this._passwordId, true);
 	this._props.setPropertyVisible(this._shareWithBreakId, true);
 
 	this._granteeInput.setValidatorFunction(null, isGuestShare ? DwtInputField.validateEmail : DwtInputField.validateAny);
 
-	this._passwordButton.setVisible(!isNewShare);
-	this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
-	this._passwordInput.setValue(password, true);
+	//this._passwordButton.setVisible(!isNewShare);
+	//this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
+	//this._passwordInput.setValue(password, true);
 
 	if (this._inheritEl) {
 		this._inheritEl.checked = share ? share.link.inh : isNewShare;
@@ -182,7 +182,7 @@ function(mode, object, share) {
 
 	var size = this.getSize();
 	Dwt.setSize(this._granteeInput.getInputElement(), 0.6*size.x);
-	Dwt.setSize(this._passwordInput.getInputElement(), 0.6*size.x);
+	//Dwt.setSize(this._passwordInput.getInputElement(), 0.6*size.x);
 
 	DwtDialog.prototype.popup.call(this);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
@@ -277,9 +277,9 @@ function(isUserShare, isGuestShare, isPublicShare) {
 
 ZmSharePropsDialog.prototype._handleChangeButton =
 function(event) {
-	this._passwordButton.setVisible(false);
-	this._passwordInput.setVisible(true);
-	this._passwordInput.focus();
+	//this._passwordButton.setVisible(false);
+	//this._passwordInput.setVisible(true);
+	//this._passwordInput.focus();
 };
 
 ZmSharePropsDialog.prototype._handleOkButton =
@@ -294,9 +294,9 @@ function(event) {
 		if (this._granteeInput.isValid() == null) {
 			error = this._granteeInput.getValue() ? AjxMsg.invalidEmailAddr : AjxMsg.valueIsRequired;
 		}
-		if (!error && isGuestShare && this._passwordInput.isValid() == null) {
+		/*if (!error && isGuestShare && this._passwordInput.isValid() == null) {
 			error = AjxMsg.valueIsRequired;
-		}
+		}*/
 		if (error) {
 			var dialog = appCtxt.getErrorDialog();
 			dialog.setMessage(error);
@@ -304,6 +304,11 @@ function(event) {
 			return;
 		}
 	}
+
+    var replyType = this._reply.getReplyType();
+    if (replyType != ZmShareReply.NONE) {
+        var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
+    }
 
 	var shares = [];
 	if (this._shareMode == ZmSharePropsDialog.NEW) {
@@ -342,11 +347,11 @@ function(event) {
 	var accountName = appCtxt.multiAccounts ? this._object.getAccount().name : null;
 	var batchCmd = new ZmBatchCommand(null, accountName);
 	var perm = this._getPermsFromRole();
-	var pw = isGuestShare && this._passwordInput.getValue();
+	//var pw = isGuestShare && this._passwordInput.getValue();
 	for (var i = 0; i < shares.length; i++) {
 		var share = shares[i];
-		if (perm != share.link.perm || pw != share.link.pw) {
-			var cmd = new AjxCallback(share, share.grant, [perm, pw]);
+		if (perm != share.link.perm) {
+			var cmd = new AjxCallback(share, share.grant, [perm, null, notes]);
 			batchCmd.add(cmd);
 		}
 	}
@@ -450,16 +455,16 @@ function(shares, result) {
                     //bug:34647 added webcal url for subscribing to outlook/ical on a click
                     var webcalURL = "webcal:" + url.substring((url.indexOf("//")));
 
-                    var password = this._passwordInput.getValue();
-                    guestnotes = this._guestFormatter.format([url, webcalURL, email, password, notes]);
+                    //var password = this._passwordInput.getValue();
+                    guestnotes = this._guestFormatter.format([url, webcalURL, email, "", notes]);
                 }
                 tmpShare.notes = guestnotes || notes;
 
-                if (replyType == ZmShareReply.COMPOSE) {
+                /*if (replyType == ZmShareReply.COMPOSE) {
                     tmpShare.composeMessage(this._shareMode, addrs);
                 } else {
                     tmpShare.sendMessage(this._shareMode, addrs, null, batchCmd);
-                }
+                }*/
             }
             if (batchCmd)
                 batchCmd.run();
@@ -547,12 +552,12 @@ function(dialog) {
 	dialog._privatePermission.setVisible(dialog._privatePermissionEnabled && !dialog._noneRadioEl.checked && !isPublicShare);
 
 	var hasEmail = AjxStringUtil.trim(dialog._granteeInput.getValue()) != "";
-	var hasPassword = AjxStringUtil.trim(dialog._passwordInput.getValue()) != "";
+	//var hasPassword = AjxStringUtil.trim(dialog._passwordInput.getValue()) != "";
 
 	var enabled = isEdit ||
 				  isPublicShare ||
 				  (isUserShare && hasEmail) ||
-				  (isGuestShare && hasEmail && hasPassword);
+				  (isGuestShare && hasEmail);
 	dialog.setButtonEnabled(DwtDialog.OK_BUTTON, enabled);
 };
 
@@ -577,7 +582,7 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
 	this._privatePermission.setVisible(this._privatePermissionEnabled && !isPublicShare);
 
 	this._props.setPropertyVisible(this._shareWithOptsId, !isPublicShare);
-	this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
+	//this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
 	this._props.setPropertyVisible(this._shareWithBreakId, !isPublicShare);
 
 	if (!isUserShare) {
@@ -646,18 +651,18 @@ function() {
 	this._granteeInput.setRequired(true);
 	Dwt.associateElementWithObject(this._granteeInput.getInputElement(), this);
 
-	var password = new DwtComposite(this);
-	this._passwordInput = new DwtInputField({parent: password, id:"ShareDialog_password"});
-	this._passwordInput.setData(Dwt.KEY_OBJECT, this);
-	this._passwordInput.setRequired(true);
-	this._passwordButton = new DwtButton({parent:password, id:"ShareDialog_Button"});
-	this._passwordButton.setText(ZmMsg.changePassword);
-	this._passwordButton.addSelectionListener(new AjxListener(this, this._handleChangeButton));
-	Dwt.associateElementWithObject(this._passwordInput.getInputElement(), this);
+	//var password = new DwtComposite(this);
+	//this._passwordInput = new DwtInputField({parent: password, id:"ShareDialog_password"});
+	//this._passwordInput.setData(Dwt.KEY_OBJECT, this);
+	//this._passwordInput.setRequired(true);
+	//this._passwordButton = new DwtButton({parent:password, id:"ShareDialog_Button"});
+	//this._passwordButton.setText(ZmMsg.changePassword);
+	//this._passwordButton.addSelectionListener(new AjxListener(this, this._handleChangeButton));
+	//Dwt.associateElementWithObject(this._passwordInput.getInputElement(), this);
 
 	this._shareWithOptsProps = new DwtPropertySheet(this);
 	this._shareWithOptsProps.addProperty(ZmMsg.emailLabel, this._granteeInput);
-	this._passwordId = this._shareWithOptsProps.addProperty(ZmMsg.passwordLabel, password);
+	//this._passwordId = this._shareWithOptsProps.addProperty(ZmMsg.passwordLabel, password);
 
 	var otherHtml = [
 		"<table border='0' cellpadding='0' cellpadding='3'>",
@@ -775,8 +780,8 @@ function() {
 		Dwt.associateElementWithObject(radioEls[i], this);
 	}
 
-	var inputEl = this._passwordInput.getInputElement();
-	Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmSharePropsDialog._handleEdit);
+	//var inputEl = this._passwordInput.getInputElement();
+	//Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmSharePropsDialog._handleEdit);
 
 	var radios = ["_noneRadioEl", "_viewerRadioEl", "_managerRadioEl", "_adminRadioEl"];
 	var radioEls = document.getElementsByName(roleRadioName);

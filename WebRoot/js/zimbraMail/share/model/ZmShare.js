@@ -614,9 +614,9 @@ function() {
  * @param	{ZmBatchCommand}	batchCmd	the batch command
  */
 ZmShare.prototype.grant =
-function(perm, pw, batchCmd) {
+function(perm, pw, notes, batchCmd) {
 	this.link.perm = perm;
-	var respCallback = new AjxCallback(this, this._handleResponseGrant);
+	var respCallback = new AjxCallback(this, this._handleResponseGrant, [notes]);
 	this._shareAction("grant", null, {perm: perm, pw: pw}, respCallback, batchCmd);
 };
 
@@ -624,23 +624,24 @@ function(perm, pw, batchCmd) {
  * @private
  */
 ZmShare.prototype._handleResponseGrant =
-function(result) {
+function(notes, result) {
 	var action = result.getResponse().FolderActionResponse.action;
 	this.grantee.id = action.zid;
 	this.grantee.email = action.d;
-    this._sendShareNotification(action);
+    this._sendShareNotification(action, notes);
 };
 
 /**
  * @private
  */
 ZmShare.prototype._sendShareNotification =
-function(action) {
+function(action, notes) {
     var soapDoc = AjxSoapDoc.create("SendShareNotificationRequest", "urn:zimbraMail");
     var shareNode = soapDoc.set("share");
     shareNode.setAttribute("d",action.d);
     shareNode.setAttribute("path",this.object.getPath());
     shareNode.setAttribute("gt",this.grantee.type);
+    var notesNode = soapDoc.set("notes", notes);
     /* temporarily commenting and using the old api since the new api is throwing invalid request exception
        Refer Bug:68548 for the api related info.
     var itemNode = soapDoc.set("item");

@@ -850,6 +850,7 @@ function() {
 	this.registerSetting("TOKEN_ENDTIME",                   {type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
 	this.registerSetting("REST_URL",						{name:"rest" , type:ZmSetting.T_COS});
 	this.registerSetting("IS_ADMIN",						{name:"zimbraIsAdminAccount", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: false});
+	this.registerSetting("IS_EXTERNAL",						{name:"zimbraIsExternalVirtualAccount", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("IS_DELEGATED_ADMIN",				{name:"zimbraIsDelegatedAdminAccount", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("ADMIN_REFERENCE",                 {name:"zimbraWebClientAdminReference", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING});
     this.registerSetting("ATTACHMENT_SIZE_LIMIT",           {type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});

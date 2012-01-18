@@ -1039,6 +1039,16 @@ function() {
 };
 
 /**
+ * Gets the active account.
+ *
+ * @return	{ZmZimbraAccount}	the active account
+ */
+ZmAppCtxt.prototype.isExternalAccount =
+function() {
+	return this.get(ZmSetting.IS_EXTERNAL);
+};
+
+/**
  * Gets the identity collection.
  * 
  * @param	{ZmZimbraAccount}	account		the account

@@ -891,7 +891,7 @@ function(viewId) {
 	var tb = new ZmNavToolBar({parent:toolbar, className:"ZmNavToolbar ZmCalendarNavToolbar", context:ZmId.VIEW_CAL, posStyle:Dwt.ABSOLUTE_STYLE});
 	this._setNavToolBar(tb, ZmId.VIEW_CAL);
 
-	this._setNewButtonProps(viewId, ZmMsg.newAppt, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
+	this._setNewButtonProps(viewId, ZmMsg.newAppt, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT, !this._app.containsWritableFolder());
 
 	var printButton = toolbar.getButton(ZmOperation.PRINT_CALENDAR);
 	if (printButton) {
@@ -1400,6 +1400,9 @@ function(startDate, duration, folderId, mailItem) {
 
 ZmCalViewController.prototype._timeSelectionListener =
 function(ev) {
+    if (!this._app.containsWritableFolder()) {
+        return;
+    }
 	var view = this._viewMgr.getCurrentView();
 	if (view.getSelectedItems().size() > 0) {
 		view.deselectAll();
@@ -2800,7 +2803,7 @@ function(parent, num) {
     parent.enable(ZmOperation.VIEW_APPT_INSTANCE,!isTrash);
 
     var apptAccess = ((appt && appt.isPrivate() && calendar.isRemote()) ? calendar.hasPrivateAccess() : true );
-    parent.enable(ZmOperation.DUPLICATE_APPT,apptAccess && !isTrashMultiple);
+    parent.enable(ZmOperation.DUPLICATE_APPT,apptAccess && !isTrashMultiple && this._app.containsWritableFolder());
     parent.enable(ZmOperation.SHOW_ORIG,apptAccess && !isTrashMultiple);
 
 	/*if (currViewName == ZmId.VIEW_CAL_LIST) {
@@ -2986,9 +2989,15 @@ function(menu) {
  */
 ZmCalViewController.prototype._getViewActionMenuOps =
 function () {
-	return [ZmOperation.NEW_APPT, ZmOperation.NEW_ALLDAY_APPT,
-			ZmOperation.SEP,
-			ZmOperation.TODAY, ZmOperation.CAL_VIEW_MENU];
+    if(this._app.containsWritableFolder()) {
+        return [ZmOperation.NEW_APPT, ZmOperation.NEW_ALLDAY_APPT,
+			    ZmOperation.SEP,
+			    ZmOperation.TODAY, ZmOperation.CAL_VIEW_MENU];
+    }
+    else {
+        return [ZmOperation.TODAY,
+                ZmOperation.CAL_VIEW_MENU];
+    }
 };
 
 /**

@@ -168,7 +168,7 @@ function(actionMenu, type, id) {
 			nId = ZmOrganizer.normalizeId(id);
 		}
 		var isTrash = (nId == ZmFolder.ID_TRASH);
-		actionMenu.enable(ZmOperation.DELETE_WITHOUT_SHORTCUT, (nId != ZmOrganizer.ID_CALENDAR && nId != ZmOrganizer.ID_TRASH));        
+		actionMenu.enable(ZmOperation.DELETE_WITHOUT_SHORTCUT, (nId != ZmOrganizer.ID_CALENDAR && nId != ZmOrganizer.ID_TRASH));
 		this.setVisibleIfExists(actionMenu, ZmOperation.EMPTY_FOLDER, nId == ZmFolder.ID_TRASH);
 		var hasContent = ((calendar.numTotal > 0) || (calendar.children && (calendar.children.size() > 0)));
 		actionMenu.enable(ZmOperation.EMPTY_FOLDER,hasContent);
@@ -266,12 +266,19 @@ function(ev) {
 // Returns a list of desired header action menu operations
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	var ops = [ZmOperation.NEW_CALENDAR];
-	ops.push(ZmOperation.ADD_EXTERNAL_CALENDAR,
-            ZmOperation.CHECK_ALL,
-			ZmOperation.CLEAR_ALL,
-			ZmOperation.SEP,
-			ZmOperation.FREE_BUSY_LINK);
+    var ops = [];
+    if (appCtxt.getCurrentApp().containsWritableFolder()) {
+        ops.push(ZmOperation.NEW_CALENDAR,
+                    ZmOperation.ADD_EXTERNAL_CALENDAR,
+                    ZmOperation.CHECK_ALL,
+                    ZmOperation.CLEAR_ALL,
+                    ZmOperation.SEP,
+                    ZmOperation.FREE_BUSY_LINK);
+    }
+    else {
+        ops.push(ZmOperation.CHECK_ALL,
+                ZmOperation.CLEAR_ALL);
+    }
 
 	return ops;
 };
@@ -279,16 +286,24 @@ function() {
 // Returns a list of desired action menu operations
 ZmCalendarTreeController.prototype._getActionMenuOps =
 function() {
-	return [
-        ZmOperation.SHARE_CALENDAR,
-        ZmOperation.DELETE_WITHOUT_SHORTCUT,
-        ZmOperation.MOVE,
-        ZmOperation.EDIT_PROPS,
-        ZmOperation.SYNC,
-        ZmOperation.DETACH_WIN,
-        ZmOperation.EMPTY_FOLDER,
-        ZmOperation.RECOVER_DELETED_ITEMS
-    ];
+    if(appCtxt.getCurrentApp().containsWritableFolder()) {
+        return [
+            ZmOperation.SHARE_CALENDAR,
+            ZmOperation.DELETE_WITHOUT_SHORTCUT,
+            ZmOperation.MOVE,
+            ZmOperation.EDIT_PROPS,
+            ZmOperation.SYNC,
+            ZmOperation.DETACH_WIN,
+            ZmOperation.EMPTY_FOLDER,
+            ZmOperation.RECOVER_DELETED_ITEMS
+        ];
+    }
+    else {
+        return [
+            ZmOperation.EDIT_PROPS,
+            ZmOperation.DETACH_WIN
+        ];
+    }
 };
 
 ZmCalendarTreeController.prototype._getActionMenu =

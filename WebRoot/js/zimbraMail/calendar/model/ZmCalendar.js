@@ -376,3 +376,14 @@ function(sharedReminder, callback, errorCallback, batchCmd) {
                                                 errorCallback:errorCallback});
     }
 };
+
+/**
+ * Checks if the calendar supports public access.
+ *
+ * @return	{Boolean}	always returns <code>true</code>
+ */
+ZmCalendar.prototype.supportsPublicAccess =
+function() {
+	// Overridden to allow sharing of calendar outside of ZCS
+	return true;
+};

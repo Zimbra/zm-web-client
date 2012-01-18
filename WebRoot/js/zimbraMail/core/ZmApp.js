@@ -778,6 +778,37 @@ function(type) {
 		this._createDeferredFolders(type);
 	}
 	this._handleDeferredNotifications();
+    if(appCtxt.isExternalAccount()) {
+        this._handleExternalAccountSettings(type);
+    }
+};
+
+/**
+ * @private
+ */
+ZmApp.prototype.containsWritableFolder =
+function() {
+    return appCtxt.isExternalAccount() ? (this._containsWritableFolder ? true : false) : true;
+};
+
+/**
+ * @private
+ */
+ZmApp.prototype._handleExternalAccountSettings =
+function(type) {
+    //Handle the external account settings
+    var dataTree = appCtxt.getTree(type, appCtxt.getActiveAccount()),
+        folders = dataTree.getByType(type),
+        len = folders.length,
+        folder,
+        i;
+    this._containsWritableFolder = false;
+    for (i=0; i<len; i++) {
+        folder = folders[i];
+        if (folder.isPermAllowed(ZmOrganizer.PERM_WRITE)) {
+            this._containsWritableFolder = true;
+        }
+    }
 };
 
 /**
