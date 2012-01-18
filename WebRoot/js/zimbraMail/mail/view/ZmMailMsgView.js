@@ -210,7 +210,7 @@ function(origText) {
 		// than parsing the DOM.
 		DBG.timePt("START - highlight objects on-demand, text msg.");
 		this._lazyCreateObjectManager();
-		var html = this._objectManager.findObjects(origText, true, null, true);
+		var html = this._objectManager.findObjects(origText, false, null, true);
 		html = html.replace(/^ /mg, "&nbsp;")
 			.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
 			.replace(/\n/g, "<br>");
