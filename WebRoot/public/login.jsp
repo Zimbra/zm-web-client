@@ -17,12 +17,18 @@
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
-<c:set var="ignoredQueryParams" value="loginOp,loginNewPassword,loginConfirmNewPassword,loginErrorCode,username,password,zrememberme,zlastserver,client"/>
+<c:set var="ignoredQueryParams" value="loginOp,loginNewPassword,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,zlastserver,client,virtualacctdomain"/>
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
 <c:set var="useMobile" value="${ua.isiPhone or ua.isiPod or ua.isOsAndroid}"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
+
+<%--'virtualacctdomain' param is set only for external virtual accounts--%>
+<c:if test="${not empty param.email and not empty param.virtualacctdomain}">
+    <%--External login email address are mapped to internal virtual account--%>
+    <c:set var="trimmedUserName" value="${fn:replace(param.email,'@' ,'.')}@${param.virtualacctdomain}"/>
+</c:if>
 
 <c:catch var="loginException">
     <c:choose>
@@ -186,6 +192,10 @@
             <fmt:param value="${arg.val}"/>
         </fmt:message>
     </c:forEach>
+    <%--External account auth failure should carry a new error code to avoid this condition--%>
+    <c:if test="${errorCode eq 'account.AUTH_FAILED' and not empty param.virtualacctdomain}">
+        <fmt:message bundle="${zhmsg}" var="errorMessage" key="account.EXTERNAL_AUTH_FAILED"/>
+    </c:if>
 </c:if>
 
 <%
@@ -310,62 +320,80 @@ if (application.getInitParameter("offlineMode") != null)  {
 					<span class="Img${smallScreen?'App':'Login'}Banner"></span>
 				</a></h1>
 				<div id="ZLoginAppName"><fmt:message key="splashScreenAppName"/></div>
-<c:choose>
-	<c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
-				<form method="post" name="loginForm" action="${domainLoginRedirectUrl}" accept-charset="UTF-8">
-	</c:when>
-	<c:otherwise>
-				<form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
-				<input type="hidden" name="loginOp" value="login"/>
-	</c:otherwise>
-</c:choose>
-<c:if test="${errorCode != null}">
-				<div id="ZLoginErrorPanel">
-					<table><tr>
-						<td><app:img id="ZLoginErrorIcon" altkey='ALT_ERROR' src="dwt/ImgCritical_32.png" /></td>
-						<td><c:out value="${errorMessage}"/></td>
-					</tr></table>
-				</div>
-</c:if>
+                <c:choose>
+                    <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
+                                <form method="post" name="loginForm" action="${domainLoginRedirectUrl}" accept-charset="UTF-8">
+                    </c:when>
+                    <c:otherwise>
+                                <form method="post" name="loginForm" action="${formActionUrl}" accept-charset="UTF-8">
+                                <input type="hidden" name="loginOp" value="login"/>
+                    </c:otherwise>
+                </c:choose>
+                <c:if test="${not empty virtualacctdomain}">
+                    <input type="hidden" name="virtualacctdomain" value="${virtualacctdomain}"/>
+                </c:if>
+                <c:if test="${not empty param.virtualacctdomain}">
+                    <input type="hidden" name="virtualacctdomain" value="${param.virtualacctdomain}"/>
+                </c:if>
+                <c:if test="${errorCode != null}">
+                    <div id="ZLoginErrorPanel">
+                        <table><tr>
+                            <td><app:img id="ZLoginErrorIcon" altkey='ALT_ERROR' src="dwt/ImgCritical_32.png" /></td>
+                            <td><c:out value="${errorMessage}"/></td>
+                        </tr></table>
+                    </div>
+                </c:if>
 				<table class="form">
-<c:choose>
-	<c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
-					<tr>
-						<td colspan="2">
-							<div class="LaunchButton">
-								<input type="submit" value="<fmt:message key="launch"/>" >
-							</div>
-						</td>
-					</tr>
-	</c:when>
-	<c:otherwise>
-					<tr>
-						<td><label for="username"><fmt:message key="username"/>:</label></td>
-						<td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-					</tr>
-					<tr>
-						<td><label for="password"><fmt:message key="password"/>:</label></td>
-						<td><input id="password" class="zLoginField" name="password" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-					</tr>
-		<c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword }">
-					<tr>
-						<td><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
-						<td><input id="loginNewPassword" class="zLoginField" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-					</tr>
-					<tr>
-						<td><label for="confirmNew"><fmt:message key="confirm"/>:</label></td>
-						<td><input id="confirmNew" class="zLoginField" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
-					</tr>
-		</c:if>
-					<tr>
-						<td>&nbsp;</td>
-						<td class="submitTD">
-							<input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
-							<input id="remember" value="1" type="checkbox" name="zrememberme" />
-							<label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label></td>
-					</tr>
-	</c:otherwise>
-</c:choose>
+                    <c:choose>
+                        <c:when test="${not empty domainLoginRedirectUrl && param.sso eq 1 && empty param.ignoreLoginURL && (isAllowedUA eq true)}">
+                                        <tr>
+                                            <td colspan="2">
+                                                <div class="LaunchButton">
+                                                    <input type="submit" value="<fmt:message key="launch"/>" >
+                                                </div>
+                                            </td>
+                                        </tr>
+                        </c:when>
+                        <c:otherwise>
+                                        <c:choose>
+                                            <c:when test="${not empty virtualacctdomain or not empty param.virtualacctdomain}">
+                                                <%--External/Guest user login - *email* & password input fields--%>
+                                                <tr>
+                                                    <td><label for="email"><fmt:message key="email"/>:</label></td>
+                                                    <td><input id="email" class="zLoginField" name="email" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                                </tr>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <%--Internal user login - username & password input fields--%>
+                                                <tr>
+                                                    <td><label for="username"><fmt:message key="username"/>:</label></td>
+                                                    <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                                </tr>
+                                            </c:otherwise>
+                                        </c:choose>
+                                        <tr>
+                                            <td><label for="password"><fmt:message key="password"/>:</label></td>
+                                            <td><input id="password" class="zLoginField" name="password" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                        </tr>
+                            <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword }">
+                                        <tr>
+                                            <td><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
+                                            <td><input id="loginNewPassword" class="zLoginField" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label for="confirmNew"><fmt:message key="confirm"/>:</label></td>
+                                            <td><input id="confirmNew" class="zLoginField" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                        </tr>
+                            </c:if>
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td class="submitTD">
+                                                <input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
+                                                <input id="remember" value="1" type="checkbox" name="zrememberme" />
+                                                <label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label></td>
+                                        </tr>
+                        </c:otherwise>
+                    </c:choose>
 					<tr>
 						<td colspan="2"><hr/></td>
 					</tr>
@@ -422,14 +450,14 @@ if (application.getInitParameter("offlineMode") != null)  {
 		<div class="${smallScreen?'Footer-small':'Footer'}">
 			<div id="ZLoginNotice" class="legalNotice-small"><fmt:message key="clientLoginNotice"/></div>
 			<div class="copyright">
-<c:choose>
-	<c:when test="${useMobile}">
-				<fmt:message bundle="${zhmsg}" key="splashScreenCopyright"/>
-	</c:when>
-	<c:otherwise>
-				<fmt:message key="splashScreenCopyright"/>
-	</c:otherwise>
-</c:choose>
+            <c:choose>
+                <c:when test="${useMobile}">
+                            <fmt:message bundle="${zhmsg}" key="splashScreenCopyright"/>
+                </c:when>
+                <c:otherwise>
+                            <fmt:message key="splashScreenCopyright"/>
+                </c:otherwise>
+            </c:choose>
 			</div>
         </div>
 		<div class="decor2"></div>
