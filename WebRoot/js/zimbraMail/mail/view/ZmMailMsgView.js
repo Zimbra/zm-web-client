@@ -919,7 +919,7 @@ function(html) {
 };
 
 ZmMailMsgView.prototype._makeIframeProxy =
-function(container, html, isTextMsg, isTruncated) {
+function(container, html, isTextMsg, isTruncated, origText) {
 	// bug fix #4943
 	if (html == null) { html = ""; }
 
@@ -954,7 +954,7 @@ function(container, html, isTextMsg, isTruncated) {
 				//Using callback to lazily find objects instead of doing it on a run.
 				callback = new AjxCallback(this, this.lazyFindMailMsgObjects, [500]);
 			} else {
-				this._makeHighlightObjectsDiv(html);
+				this._makeHighlightObjectsDiv(origText);
 			}
 		}
 		if (AjxEnv.isSafari) {
@@ -1269,6 +1269,7 @@ function(msg, container, callback) {
 	}
 
 	// if multiple body parts, ignore prefs and just append everything
+	var origText;
 	var bodyParts = msg.getBodyParts();
 	var len = bodyParts.length;
 	if (len > 1) {
@@ -1288,6 +1289,7 @@ function(msg, container, callback) {
 					html.push(hasHtmlPart ? "<pre>" : "");
 					html.push(content);
 					html.push(hasHtmlPart ? "</pre>" : "");
+					origText = bp.content;
 				} else {
 					if (appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
 						html.push(content);
@@ -1304,7 +1306,7 @@ function(msg, container, callback) {
 				}
 			}
 		}
-		this._makeIframeProxy(el, html.join(""), !hasHtmlPart);
+		this._makeIframeProxy(el, html.join(""), !hasHtmlPart, false, origText);
 	} else {
 		var bodyPart = msg.getBodyPart();
 		if (bodyPart) {
@@ -1340,7 +1342,7 @@ function(msg, container, callback) {
 					}
 					return;
 				} else {
-					this._makeIframeProxy(el, AjxStringUtil.convertToHtml(bodyPart.content), true, bodyPart.truncated);
+					this._makeIframeProxy(el, AjxStringUtil.convertToHtml(bodyPart.content), true, bodyPart.truncated, bodyPart.content);
 				}
 			}
 		}
@@ -1394,8 +1396,9 @@ function(el, bodyPart, callback, result, isTruncated) {
 		}
 	}
 
-	content = (bodyPart.ct != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
-	this._makeIframeProxy(el, (content || ""), true, isTruncated);
+	var html = (bodyPart.ct != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
+	var origText = (bodyPart.ct != ZmMimeTable.TEXT_HTML) ? content : null;
+	this._makeIframeProxy(el, (html || ""), true, isTruncated, origText);
 
 	this._setAttachmentLinks();
 	this._expandRows(this._expandHeader);
