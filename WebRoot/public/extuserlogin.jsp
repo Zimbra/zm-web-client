@@ -44,6 +44,7 @@
         <c:param name="customerDomain"	value="${param.customerDomain}" />
     </c:if>
 </c:url>">
+<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
 <zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
 <c:if test="${empty favIconUrl}">
     <fmt:message key="favIconUrl" var="favIconUrl"/>
@@ -112,11 +113,11 @@
             <tbody>
             <tr>
                 <td><label for="email"><fmt:message key="email"/>:</label></td>
-                <td><input id="email" class="zLoginField" name="email" type="text" value="${fn:escapeXml(param.email)}" size="40"/></td>
+                <td><input id="email" class="zLoginField" name="email" type="text" value="${fn:escapeXml(param.email)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
             </tr>
             <tr>
                 <td><label for="password"><fmt:message key="password"/>:</label></td>
-                <td><input id="password" class="zLoginField" name="password" type="password" value="${fn:escapeXml(param.password)}" size="40"/></td>
+                <td><input id="password" class="zLoginField" name="password" type="password" value="${fn:escapeXml(param.password)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
             </tr>
             <tr>
                 <td>&nbsp;</td>

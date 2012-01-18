@@ -54,7 +54,7 @@
         </c:when>
 
     </c:choose>
-
+    <zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
 </app:handleError>
 
 <html>
@@ -104,19 +104,19 @@
                             <tr>
                                 <td class='zLoginLabelContainer'><label for="oldPassword"><fmt:message key="oldPassword"/>:</label></td>
                                 <td class='zLoginFieldContainer'>
-                                    <input id="oldPassword" autocomplete="off" class='zLoginField' name='password' type='password' value=""/>
+                                    <input id="oldPassword" autocomplete="off" class='zLoginField' name='password' type='password' value="" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
                                 </td>
                             </tr>
                             <tr>
                                 <td class='zLoginLabelContainer'><label for="newPassword"><fmt:message key="newPassword"/>:</label></td>
                                 <td class='zLoginFieldContainer'>
-                                    <input id="newPassword" autocomplete="off" class='zLoginField' name='loginNewPassword' type='password' value=""/>
+                                    <input id="newPassword" autocomplete="off" class='zLoginField' name='loginNewPassword' type='password' value="" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
                                 </td>
                             </tr>
                             <tr>
                                 <td class='zLoginLabelContainer'><label for="confirm"><fmt:message key="confirm"/>:</label></td>
                                 <td class='zLoginFieldContainer'>
-                                    <input id="confirm" autocomplete="off" class='zLoginField' name='loginConfirmNewPassword' type='password' value=""/>
+                                    <input id="confirm" autocomplete="off" class='zLoginField' name='loginConfirmNewPassword' type='password' value="" maxlength="${domainInfo.webClientMaxInputBufferLength}"/>
                                 </td>
                             </tr>
                             <tr>

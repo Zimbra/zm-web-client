@@ -42,6 +42,7 @@
         <c:param name="customerDomain"	value="${param.customerDomain}" />
     </c:if>
 </c:url>">
+<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
 <zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
 <c:if test="${empty favIconUrl}">
     <fmt:message key="favIconUrl" var="favIconUrl"/>
@@ -84,15 +85,15 @@
                 <c:otherwise>
                     <tr>
                         <td><label for="displayname"><fmt:message key="displayName"/>:</label></td>
-                        <td><input id="displayname" class="zLoginField" name="displayname" type="text" value="${fn:escapeXml(param.displayname)}" size="40"/></td>
+                        <td><input id="displayname" class="zLoginField" name="displayname" type="text" value="${fn:escapeXml(param.displayname)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
                     </tr>
                     <tr>
                         <td><label for="password"><fmt:message key="password"/>:</label></td>
-                        <td><input id="password" class="zLoginField" name="password" type="password" value="${fn:escapeXml(param.password)}" size="40"/></td>
+                        <td><input id="password" class="zLoginField" name="password" type="password" value="${fn:escapeXml(param.password)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
                     </tr>
                     <tr>
                         <td><label for="password2"><fmt:message key="confirm"/>:</label></td>
-                        <td><input id="password2" class="zLoginField" name="password2" type="password" size="40"/></td>
+                        <td><input id="password2" class="zLoginField" name="password2" type="password" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
                     </tr>
                     <tr>
                         <td>&nbsp;</td>
