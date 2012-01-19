@@ -65,6 +65,8 @@ ZmRequestMgr.RETRY_ON_EXCEPTION[ZmCsfeException.EMPTY_RESPONSE] = true;
 
 ZmRequestMgr._nextReqId = 1;
 
+ZmRequestMgr.OFFLINE_HEAP_DUMP      = "heapdump_upload";
+ZmRequestMgr.OFFLINE_MUST_RESYNC    = "resync";
 /**
  * Returns a string representation of the object.
  * 
@@ -387,8 +389,13 @@ function(hdr) {
 	if (ctxt.zdsync && ctxt.zdsync.account) {
 		var acctList = ctxt.zdsync.account;
 		for (var i = 0; i < acctList.length; i++) {
-			var acct = appCtxt.accountList.getAccount(acctList[i].id);
+            var acct = appCtxt.accountList.getAccount(acctList[i].id);
 			if (acct) {
+                //server is sending info to get user's consent on something.
+                var dialog = acctList[i].dialog;
+                if(dialog) {
+                    this._handleOfflineInfoDialog(dialog[0], acct)
+                }
 				acct.updateState(acctList[i]);
 			}
 		}
@@ -401,6 +408,66 @@ function(hdr) {
 	}
 
 	return ctxt.refresh;
+};
+/**
+ * Handles server's notification to get user's consent on something
+ *
+ * @param {Object}	dlg is json object
+ * @param {Object}	account object
+ *
+ * @private
+ */
+ZmRequestMgr.prototype._handleOfflineInfoDialog =
+function(dlg, acct) {
+
+    if(!dlg.type) {
+        return;
+    }
+    var cont;
+    switch(dlg.type) {
+        case ZmRequestMgr.OFFLINE_HEAP_DUMP: {
+            cont = ZmMsg.offlineHeapDump;
+            break;
+        }
+        case ZmRequestMgr.OFFLINE_MUST_RESYNC: {
+            cont = AjxMessageFormat.format(ZmMsg.offlineMustReSync, acct.name);
+            break;
+        }
+    }
+    var dialog = appCtxt.getOkCancelMsgDialog();
+    dialog.setMessage(cont);
+    dialog.registerCallback(DwtDialog.OK_BUTTON, this._handleOfflineDialogAction, this, [dialog, dlg.type, acct.id, true]);
+    dialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._handleOfflineDialogAction, this, [dialog, dlg.type, acct.id, false]);
+    dialog.popup();
+};
+/**
+ * Sends DialogActionRequest with user's consent YES/NO
+ * @param {object} dlg is getOkCancelMsgDialog
+ * @param {string} type
+ * @param {string} acctId Account ID
+ * @param {boolean} action
+ */
+ZmRequestMgr.prototype._handleOfflineDialogAction =
+function(dlg, type, acctId, action) {
+    var args = {
+			jsonObj: { DialogActionRequest: { _jsns: "urn:zimbraOffline", type: type, id:acctId, action: action ? "yes" : "no" } },
+            callback: new AjxCallback(this, this._handleOfflineDialogActionResp, dlg),
+			errorCallback: new AjxCallback(this, this._handleOfflineDialogActionResp, dlg),
+			asyncMode: true
+		};
+    this.sendRequest(args);
+};
+/**
+ * callback to hide dialog
+ *
+ * @param dlg
+ * @param resp
+ */
+ZmRequestMgr.prototype._handleOfflineDialogActionResp =
+function(dlg, resp) {
+      if(dlg.isPoppedUp()){
+        dlg.popdown();
+    }
 };
 
 /**
