@@ -1130,7 +1130,7 @@ function() {
 		// TODO: collect all these into a single DIV to hide/show
 		Dwt.setVisible(this._autoSendHeaderId, this._expanded);
 		Dwt.setVisible(this._addedHeadersId, this._expanded);
-		Dwt.setVisible(this._highlightObjectsId, this._expanded);
+		Dwt.setVisible(this._highlightObjectsId, false);
 		Dwt.setVisible(this._attLinksId, this._expanded);
 		Dwt.setVisible(this._displayImagesId, this._expanded);
 		Dwt.setVisible(this._msgBodyDivId, this._expanded);
@@ -1200,11 +1200,17 @@ function(msg, container, tagCellId) {
 	container.innerHTML = html.join("");
 };
 
+// TODO: something more efficient than a re-render
 ZmMailMsgCapsuleView.prototype._handleShowTextLink =
 function() {
 
 	this._showingQuotedText = !this._showingQuotedText;
-	this._ifw.dispose();
+	if (this._ifw) {
+		this._ifw.dispose();
+	}
+	else if (this._containerEl) {
+		this._containerEl.parentNode.removeChild(this._containerEl);
+	}
 	
 	this._renderMessageBody(this._msg, null, null, 1);	// index of 1 to put rerendered body below header
 	var showTextLink = document.getElementById(this._showTextLinkId);
