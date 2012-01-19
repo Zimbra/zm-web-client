@@ -2302,7 +2302,7 @@ function(dwtIframe) {
 ZmMailMsgView._resetIframeHeight =
 function(self, iframe, attempt) {
 
-	if (!this._usingIframe) { return; }
+	if (!self._usingIframe) { return; }
 
 	DBG.println("cv2", "ZmMailMsgView::_resetIframeHeight " + (attempt || "0"));
 	var h;
