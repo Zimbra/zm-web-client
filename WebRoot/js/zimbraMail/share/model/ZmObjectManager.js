@@ -408,10 +408,8 @@ function(content, htmlEncode, type, isTextMsg, options) {
 ZmObjectManager.prototype.processObjectsInNode = function(doc, node){
 
     var objectManager = this;
+	doc = doc || node.ownerDocument;
     var tmpdiv = doc.createElement("div");
-
-    doc || ( doc = node.ownerDocument );
-
 
     var recurse = function(node, handlers) {
 		var tmp, i, val, next;

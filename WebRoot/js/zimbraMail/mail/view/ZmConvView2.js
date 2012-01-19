@@ -806,6 +806,8 @@ ZmMailMsgCapsuleView = function(params) {
 	this._showingQuotedText = false;
 	this._showingCalendar = false;
 	this._infoBarId = this._htmlElId;
+
+	this.useIframeToDisplayContent = false;
 	
 	this.addListener(ZmMailMsgView._TAG_CLICK, this._msgTagClicked.bind(this));
 	this.addListener(ZmInviteMsgView.REPLY_INVITE_EVENT, this._convView._inviteReplyListener);
@@ -1006,7 +1008,9 @@ function(subs, sentBy, sentByAddr, sender, addr) {
 ZmMailMsgCapsuleView.prototype._getBodyContent =
 function(bodyPart) {
 
-	var content;
+	if (!bodyPart || !bodyPart.content) { return ""; }
+	
+	var content = "";
 	if (this._showingQuotedText) {
 		content = bodyPart.content;
 	}
@@ -1093,7 +1097,7 @@ function(text, id) {
 // reports the height of the HTML element as at least 150.
 ZmMailMsgCapsuleView.prototype.resize =
 function() {
-	if (!this._expanded) { return; }
+	if (!this._expanded || this._containerEl) { return; }
 	var htmlEl = this.getIframeHtmlElement();
 	var htmlElHeight = htmlEl && Dwt.getSize(htmlEl).y;
 	if (htmlElHeight) {

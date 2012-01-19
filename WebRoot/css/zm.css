@@ -5392,3 +5392,6 @@ div.ZmSuggestLocationLink {
 .ZmResolveNoLocationSelect {
     border-top:1px solid gray;
 }
+
+/* for displaying a msg without using an iframe (bug 66466) */
+@import url("msgview.css");

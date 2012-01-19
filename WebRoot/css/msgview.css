@@ -33,6 +33,7 @@
 .MsgBody-text {
 	@MailMsgBodyText@
 	@MailMsgBodyText-fixed@
+	@FontSize-html@
 }
 
 .MsgBody-text, .MsgBody-html {
@@ -45,36 +46,37 @@
 .MsgBody .QuotedText2 { color: red; }
 
 
-.Object {
+.MsgBody .Object {
 	@Anchor@
 }
 
-.Object-hover {
+.MsgBody .Object-hover {
 	@Anchor-hover@
 }
 
-.Object-active {
+.MsgBody .Object-active {
 	@Anchor-active@
 }
 
 
-.FakeAnchor, a:link, a:visited {
+.MsgBody .FakeAnchor, .MsgBody a:link, .MsgBody a:visited {
 	@Anchor@
 }
 
-a:hover {
+.MsgBody a:hover {
 	@Anchor-hover@
 }
 
-a:active {
+.MsgBody a:active {
 	@Anchor-active@
 }
 
-.POObject {color: blue;}
-.POObjectApproved {color: green;}
-.POObjectRejected {color: red;}
+/* are these used? */
+.MsgBody .POObject {color: blue;}
+.MsgBody .POObjectApproved {color: green;}
+.MsgBody .POObjectRejected {color: red;}
 
-.zimbraHide {
+.MsgBody .zimbraHide {
 	display: none;
 }
 
@@ -88,6 +90,6 @@ a:active {
 }
 
 /* Search Highlighter Zimlet Styles */
-.ZmSearchResult {   
+.MsgBody .ZmSearchResult {   
     background-color:@SearchResultColor@;
 }

@@ -61,6 +61,7 @@ ZmMailMsgView = function(params) {
 		this._setAllowSelection();
 	}
 
+	this.useIframeToDisplayContent = true;
 	this.noTab = true;
     this._attachmentLinkIdToFileNameMap = null;
 };
@@ -122,6 +123,7 @@ function() {
 	}
 	this._msg = this._item = null;
 	this._htmlBody = null;
+	this._containerEl = null;
 
 	// TODO: reuse all these controls that are being disposed here.....
 	if (this._expandButton) {
@@ -203,7 +205,7 @@ function(organizer, zid, rid) {
 
 ZmMailMsgView.prototype.highlightObjects =
 function(origText) {
-	var idoc = document.getElementById(this._iframeId).contentWindow.document;
+	var idoc = this._usingIframe && document.getElementById(this._iframeId).contentWindow.document;
 	if (origText != null) {
 		// we get here only for text messages; it's a lot
 		// faster to call findObjects on the whole text rather
@@ -214,7 +216,8 @@ function(origText) {
 		html = html.replace(/^ /mg, "&nbsp;")
 			.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
 			.replace(/\n/g, "<br>");
-		idoc.body.innerHTML = html;
+		var container = idoc ? idoc.body : this._containerEl;
+		container.innerHTML = html;
 		DBG.timePt("END - highlight objects on-demand, text msg.");
 	} else {
 		this._processHtmlDoc(idoc);
@@ -577,7 +580,7 @@ function(interval, doc ) {
 
 ZmMailMsgView.prototype._findMailMsgObjects =
 function(doc) {
-	this._objectManager.processObjectsInNode(doc, doc.body);
+	this._objectManager.processObjectsInNode(doc, doc ? doc.body : this._containerEl);
 };
 
 ZmMailMsgView.prototype._checkImgInAttachments =
@@ -814,6 +817,7 @@ function(msg, idoc, id, iframe) {
 
 ZmMailMsgView.prototype._resetIframeHeightOnTimer =
 function(iframe, attempt) {
+	if (!this._usingIframe) { return; }
 	DBG.println(AjxDebug.DBG1, "_resetIframeHeightOnTimer attempt: " + (attempt != null ? attempt : "null"));
 	// Because sometimes our view contains images that are slow to download, wait a
 	// little while before resizing the iframe.
@@ -864,11 +868,11 @@ function(html) {
 	return html;
 };
 
-ZmMailMsgView.prototype._makeIframeProxy =
+ZmMailMsgView.prototype._displayContent =
 function(container, html, isTextMsg, isTruncated, index, origText) {
-	// bug fix #4943
-	if (html == null) { html = ""; }
 
+	html = html || "";
+	
 	if (!isTextMsg) {
 		//Microsoft silly smilies
 		html = html.replace(/<span style="font-family:Wingdings">J<\/span>/g, "\u263a"); // :)
@@ -942,71 +946,89 @@ function(container, html, isTextMsg, isTruncated, index, origText) {
 	}
 
 	this._msgBodyDivId = [this._htmlElId, ZmId.MV_MSG_BODY].join("_");
-	// bug fix #9475 - IE isnt resolving MsgBody class in iframe so set styles explicitly
-	var inner_styles = AjxEnv.isIE ? ".MsgBody-text, .MsgBody-text * { font: 10pt monospace; }" : "";
-	var params = {
-		parent:					this,
-		parentElement:			container,
-		index:					index,
-		className:				this._getBodyClass(),
-		id:						this._msgBodyDivId,
-		hidden:					true,
-		html:					html,
-		styles:					inner_styles,
-		noscroll:				!this._scrollWithIframe,
-		posStyle:				DwtControl.STATIC_STYLE,
-		processHtmlCallback:	callback,
-		useKbMgmt:				true
-	};
-	var ifw = this._ifw = new DwtIframe(params);
-	this._iframeId = ifw.getIframe().id;
+	
+	this._usingIframe = this.useIframeToDisplayContent || !isTextMsg;
+	
+	if (this._usingIframe) {
+		// bug fix #9475 - IE isnt resolving MsgBody class in iframe so set styles explicitly
+		var inner_styles = AjxEnv.isIE ? ".MsgBody-text, .MsgBody-text * { font: 10pt monospace; }" : "";
+		var params = {
+			parent:					this,
+			parentElement:			container,
+			index:					index,
+			className:				this._getBodyClass(),
+			id:						this._msgBodyDivId,
+			hidden:					true,
+			html:					html,
+			styles:					inner_styles,
+			noscroll:				!this._scrollWithIframe,
+			posStyle:				DwtControl.STATIC_STYLE,
+			processHtmlCallback:	callback,
+			useKbMgmt:				true
+		};
+		var ifw = this._ifw = new DwtIframe(params);
+		this._iframeId = ifw.getIframe().id;
 
-	var idoc = ifw.getDocument();
+		var idoc = ifw.getDocument();
 
-	if (AjxEnv.isGeckoBased) {
-		// patch local links (pass null as object so it gets called in context of link)
-		var geckoScrollCallback = AjxCallback.simpleClosure(ZmMailMsgView.__localLinkClicked, null, this);
-		var links = idoc.getElementsByTagName("a");
-		for (var i = links.length; --i >= 0;) {
-			var link = links[i];
-			if (!link.target) {
-				link.onclick = geckoScrollCallback; // has chances to be a local link
+		if (AjxEnv.isGeckoBased) {
+			// patch local links (pass null as object so it gets called in context of link)
+			var geckoScrollCallback = AjxCallback.simpleClosure(ZmMailMsgView.__localLinkClicked, null, this);
+			var links = idoc.getElementsByTagName("a");
+			for (var i = links.length; --i >= 0;) {
+				var link = links[i];
+				if (!link.target) {
+					link.onclick = geckoScrollCallback; // has chances to be a local link
+				}
 			}
 		}
-	}
 
-	// assign the right class name to the iframe body
-	idoc.body.className = this._getBodyClass() + (isTextMsg ? " MsgBody-text" : " MsgBody-html");
+		// assign the right class name to the iframe body
+		idoc.body.className = this._getBodyClass() + (isTextMsg ? " MsgBody-text" : " MsgBody-html");
 
-	idoc.body.style.height = "auto"; //see bug 56899 - if the body has height such as 100% or 94%, it causes a problem in FF in calcualting the iframe height. Make sure the height is clear.
+		idoc.body.style.height = "auto"; //see bug 56899 - if the body has height such as 100% or 94%, it causes a problem in FF in calcualting the iframe height. Make sure the height is clear.
 
-	ifw.getIframe().onload = AjxCallback.simpleClosure(this._onloadIframe, this, ifw);
+		ifw.getIframe().onload = AjxCallback.simpleClosure(this._onloadIframe, this, ifw);
 
-	// import the object styles
-	var head = idoc.getElementsByTagName("head")[0];
-	if (!head) {
-		head = idoc.createElement("head");
-		idoc.body.parentNode.insertBefore(head, idoc.body);
-	}
+		// import the object styles
+		var head = idoc.getElementsByTagName("head")[0];
+		if (!head) {
+			head = idoc.createElement("head");
+			idoc.body.parentNode.insertBefore(head, idoc.body);
+		}
 	
-	if (!ZmMailMsgView._CSS) {
-		// Make a synchronous request for the CSS. Should we do this earlier?
-		var cssUrl = appContextPath + "/css/msgview.css?v=" + cacheKillerVersion;
-		var result = AjxRpc.invoke(null, cssUrl, null, null, true);
-		ZmMailMsgView._CSS = result && result.text;
-	}
-	var style = document.createElement('style');
-	var rules = document.createTextNode(ZmMailMsgView._CSS);
-	style.type = 'text/css';
-	if (style.styleSheet) {
-		style.styleSheet.cssText = rules.nodeValue;
+		if (!ZmMailMsgView._CSS) {
+			// Make a synchronous request for the CSS. Should we do this earlier?
+			var cssUrl = appContextPath + "/css/msgview.css?v=" + cacheKillerVersion;
+			var result = AjxRpc.invoke(null, cssUrl, null, null, true);
+			ZmMailMsgView._CSS = result && result.text;
+		}
+		var style = document.createElement('style');
+		var rules = document.createTextNode(ZmMailMsgView._CSS);
+		style.type = 'text/css';
+		if (style.styleSheet) {
+			style.styleSheet.cssText = rules.nodeValue;
+		}
+		else {
+			style.appendChild(rules);
+		}
+		head.appendChild(style);
+	
+		ifw.getIframe().style.visibility = "";
 	}
 	else {
-		style.appendChild(rules);
+		var div = this._containerEl = document.createElement("div");
+		div.id = this._msgBodyDivId;
+		div.className = "MsgBody MsgBody-text";
+		var parent = this.getHtmlElement();
+		if (index != null) {
+			parent.insertBefore(div, parent.childNodes[index])
+		}
+		else {
+			parent.appendChild(div);
+		}
+		div.innerHTML = html;
 	}
-	head.appendChild(style);
-	
-	ifw.getIframe().style.visibility = "";
 
 	if (!isTextMsg) {
 		this._htmlBody = idoc.body.innerHTML;
@@ -1027,9 +1049,15 @@ function(container, html, isTextMsg, isTruncated, index, origText) {
 		Dwt.setHandler(msgTruncated, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._handleMsgTruncated, this));
 	}
 
-	// set height of view according to height of iframe on timer
-	this._resetIframeHeightOnTimer(ifw.getIframe());
+	if (this._usingIframe) {
+		// set height of view according to height of iframe on timer
+		this._resetIframeHeightOnTimer(ifw.getIframe());
+	}
+	else if (callback) {
+		callback.run();
+	}
 };
+ZmMailMsgView.prototype._makeIframeProxy = ZmMailMsgView.prototype._displayContent;
 
 ZmMailMsgView.prototype._showInfoBar =
 function(parentEl, html, isTextMsg) {
@@ -1503,7 +1531,7 @@ function(msg, container, callback, index) {
 				}
 			}
 		}
-		this._makeIframeProxy(el, html.join(""), !hasHtmlPart, false, index, origText);
+		this._displayContent(el, html.join(""), !hasHtmlPart, false, index, origText);
 	} else {
 		var bodyPart = msg.getBodyPart();
 		if (bodyPart) {
@@ -1534,7 +1562,7 @@ function(msg, container, callback, index) {
 					content = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: true});
 				}
 
-				this._makeIframeProxy(el, content, false, bodyPart.truncated, index);
+				this._displayContent(el, content, false, bodyPart.truncated, index);
 			} else if (ZmMimeTable.isRenderableImage(bodyPart.ct)) {
 				var html = [
 					"<img zmforced='1' class='InlineImage' src='",
@@ -1542,7 +1570,7 @@ function(msg, container, callback, index) {
 					"&id=", msg.id,
 					"&part=", bodyPart.part, "'>"
 				].join("");
-				this._makeIframeProxy(el, html, false, false, index);
+				this._displayContent(el, html, false, false, index);
 			} else {
 				
 				var desiredPartType = (appCtxt.get(ZmSetting.VIEW_AS_HTML)) ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
@@ -1562,11 +1590,11 @@ function(msg, container, callback, index) {
 						isTextMsg = false; //To make sure we display html content properly
 					}
 					content = isTextMsg ? AjxStringUtil.convertToHtml(content) : content;
-					this._makeIframeProxy(el, content, isTextMsg, bodyPart.truncated, index, bodyPart.content);
+					this._displayContent(el, content, isTextMsg, bodyPart.truncated, index, bodyPart.content);
 				} else {					
 					if (content != null) {
 						content = (bodyPart.ct != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
-						this._makeIframeProxy(el, content, true, false, index);
+						this._displayContent(el, content, true, false, index);
 					}
 				}
 			}
@@ -2273,6 +2301,9 @@ function(dwtIframe) {
 
 ZmMailMsgView._resetIframeHeight =
 function(self, iframe, attempt) {
+
+	if (!this._usingIframe) { return; }
+
 	DBG.println("cv2", "ZmMailMsgView::_resetIframeHeight " + (attempt || "0"));
 	var h;
 	if (self._scrollWithIframe) {
