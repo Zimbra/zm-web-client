@@ -404,13 +404,22 @@
         }
         var nickname	= contact.getAttr(ZmContact.F_nickname);
         var isEdit      = data.isEdit;
+		if (isEdit && data.contact.isDistributionList()) {
+			fullnameHtml = "";
+		}
     $>
     <div class='contactHeader <$= data.isInTrash ? "Trash" : "" $>'><$= fullnameHtml $></div>
     <$ if (nickname && !isEdit) { $>
         <div class='companyName'>&ldquo;<$= AjxStringUtil.htmlEncode(nickname) $>&rdquo;</div>
     <$ } $>
     <$ else if (isEdit) {$>
-       <div class='companyName'><input type='text' autocomplete='off' size=40 id='${id}_groupName' class="Text"></div>
+       <div class='companyName'>
+			<$ if (data.contact.isDistributionList()) { $>
+			   <input type='text' autocomplete='off' size=20 id='${id}_groupName' class="Text"> @ <input type='text' autocomplete='off' size=20 id='${id}_groupNameDomain' class="Text">
+			<$ } else { $>
+			   <input type='text' autocomplete='off' size=40 id='${id}_groupName' class="Text">
+			<$ } $>
+       </div>
        <div id='${id}_tags' style='padding-top: 5px'></div>
     <$ } $>
 

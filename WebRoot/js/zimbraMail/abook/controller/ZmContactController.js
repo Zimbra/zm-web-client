@@ -112,7 +112,11 @@ function() {
 
 ZmContactController.prototype._getDefaultTabText=
 function() {
-	return this._isGroup() ? ZmMsg.group : ZmMsg.contact;
+	return this._contact.isDistributionList()
+			? ZmMsg.distributionList
+				: this._isGroup()
+			? ZmMsg.group
+				: ZmMsg.contact;
 };
 
 ZmContactController.prototype._getTabParams =
@@ -340,7 +344,7 @@ function(ev, bIsPopCallback) {
 	var mods = view.getModifiedAttrs();
 	view.enableInputs(false);
 
-	if (mods) {
+	if (mods && AjxUtil.arraySize(mods) > 0) {
 		var contact = view.getContact();
 
 		// bug fix #22041 - when moving betw. shared/local folders, dont modify
@@ -390,10 +394,15 @@ function(ev, bIsPopCallback) {
 					appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 				}
 				else {
-					var clc = AjxDispatcher.run("GetContactListController");
-					var list = (clc && clc.getList()) || new ZmContactList(null);
-					fileAsChanged = true;
-					this._doCreate(list, mods);
+					if (contact.isDistributionList()) {
+						contact.create(mods);
+					}
+					else {
+						var clc = AjxDispatcher.run("GetContactListController");
+						var list = (clc && clc.getList()) || new ZmContactList(null);
+						fileAsChanged = true;
+						this._doCreate(list, mods);
+					}
 				}
 			}
 		}

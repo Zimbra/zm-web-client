@@ -36,17 +36,32 @@ if (!window.ZmContact) {
  * @param {int}	id		the unique ID
  * @param {ZmContactList}	list		the list that contains this contact
  * @param {constant}	type		the item type
- * 
+ * @param {object}	newDl		true if this is a new DL
+ *
  * @extends		ZmItem
  */
-ZmContact = function(id, list, type) {
+ZmContact = function(id, list, type, newDl) {
 	if (arguments.length == 0) { return; }
 
 	type = type || ZmItem.CONTACT;
 	ZmItem.call(this, type, id, list);
 
 	this.attr = {};
-	this.isGal = (this.list && this.list.isGal);
+	this.isGal = (this.list && this.list.isGal) || newDl;
+	if (newDl) {
+		this.dlInfo = {	isMember: false,
+						isOwner: true,
+						subscriptionPolicy: null,
+						unsubscriptionPolicy: null,
+						description: "",
+						displayName: "",
+						notes: "",
+						hideInGal: false,
+						mailPolicy: null,
+						owners: [appCtxt.get(ZmSetting.USERNAME)]
+		};
+
+	}
 
 	this.participants = new AjxVector(); // XXX: need to populate this guy (see ZmConv)
 };
@@ -1056,6 +1071,12 @@ ZmContact.prototype.getNormalizedAttrs = function(prefix) {
 */
 ZmContact.prototype.create =
 function(attr, batchCmd) {
+
+	if (this.isDistributionList()) {
+		this._createDl(attr);
+		return;
+	}
+
 	var jsonObj = {CreateContactRequest:{_jsns:"urn:zimbraMail"}};
 	var request = jsonObj.CreateContactRequest;
 	var cn = request.cn = {};
@@ -1223,8 +1244,51 @@ function(attr, callback) {
 	}
 };
 
-ZmContact.prototype._modifyDl =
+ZmContact.prototype._createDl =
 function(attr) {
+
+	this.attr = attr; //this is mainly important for the email. attr is not set before this.
+
+	var createDlReq = this._getCreateDlReq(attr);
+
+	var reqs = [];
+
+	this._addMemberModsReqs(reqs, attr);
+
+	this._addMailPolicyAndOwnersReqs(reqs, attr);
+
+	var jsonObj = {
+		BatchRequest: {
+			_jsns: "urn:zimbra",
+			CreateDistributionListRequest: createDlReq,
+			DistributionListActionRequest: reqs
+		}
+	};
+	var respCallback = this._createDlResponseHandler.bind(this);
+	appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
+	
+};
+
+ZmContact.prototype._addMailPolicyAndOwnersReqs =
+function(reqs, attr) {
+
+	var mailPolicy = attr[ZmContact.F_dlMailPolicy];
+	if (mailPolicy) {
+		reqs.push(this._getSetMailPolicyReq(mailPolicy, attr[ZmContact.F_dlMailPolicySpecificMailers]));
+	}
+
+	var listOwners = attr[ZmContact.F_dlListOwners];
+	if (listOwners) {
+		reqs.push(this._getSetOwnersReq(listOwners));
+	}
+
+
+};
+
+
+
+ZmContact.prototype._addMemberModsReqs =
+function(reqs, attr) {
 	var memberModifications = attr[ZmContact.F_groups];
 	var adds = [];
 	var removes = [];
@@ -1236,13 +1300,17 @@ function(attr) {
 		}
 	}
 
-	var reqs = [];
 	if (adds.length > 0) {
 		reqs.push(this._getAddOrRemoveReq(adds, true));
 	}
 	if (removes.length > 0) {
 		reqs.push(this._getAddOrRemoveReq(removes, false));
 	}
+};
+
+ZmContact.prototype._modifyDl =
+function(attr) {
+	var reqs = [];
 
 	var newEmail = attr[ZmContact.F_email];
 
@@ -1251,9 +1319,10 @@ function(attr) {
 		this.setAttr(ZmContact.F_email, newEmail);
 	}
 
+	reqs.push(this._getModifyDlAttributesReq(attr));
+
 	var displayName = attr[ZmContact.F_dlDisplayName];
 	if (displayName !== undefined) {
-		reqs.push(this._getModifyDlReq("displayName", displayName));
 		this.setAttr(ZmContact.F_dlDisplayName, displayName);
 	}
 
@@ -1261,35 +1330,9 @@ function(attr) {
 	this._resetCachedFields();
 	var fileAsChanged = oldFileAs != this.getFileAs();
 
-	var desc = attr[ZmContact.F_dlDesc];
-	if (desc !== undefined) {
-		reqs.push(this._getModifyDlReq("description", desc));
-	}
-	var notes = attr[ZmContact.F_dlNotes];
-	if (notes !== undefined) {
-		reqs.push(this._getModifyDlReq("zimbraNotes", notes));
-	}
-	var hideInGal = attr[ZmContact.F_dlHideInGal];
-	if (hideInGal) {
-		reqs.push(this._getModifyDlReq("zimbraHideInGal", hideInGal));
-	}
-	var subsPolicy = attr[ZmContact.F_dlSubscriptionPolicy];
-	if (subsPolicy) {
-		reqs.push(this._getModifyDlReq("zimbraDistributionListSubscriptionPolicy", subsPolicy));
-	}
-	var mailPolicy = attr[ZmContact.F_dlMailPolicy];
-	if (mailPolicy) {
-		reqs.push(this._getSetMailPolicyReq(mailPolicy, attr[ZmContact.F_dlMailPolicySpecificMailers]));
-	}
-	var unsubsPolicy = attr[ZmContact.F_dlUnsubscriptionPolicy];
-	if (unsubsPolicy) {
-		reqs.push(this._getModifyDlReq("zimbraDistributionListUnsubscriptionPolicy", unsubsPolicy));
-	}
+	this._addMemberModsReqs(reqs, attr);
 
-	var listOwners = attr[ZmContact.F_dlListOwners];
-	if (listOwners) {
-		reqs.push(this._getSetOwnersReq(listOwners));
-	}
+	this._addMailPolicyAndOwnersReqs(reqs, attr);
 
 	if (reqs.length == 0) {
 		return;
@@ -1411,8 +1454,6 @@ function(mailPolicy, specificMailers) {
 
 };
 
-
-
 ZmContact.prototype._getModifyDlReq =
 function(name, value) {
 	return {
@@ -1423,6 +1464,52 @@ function(name, value) {
 		action: {
 			op: "modify",
 			a: {n: name, _content: value}
+		}
+	};
+};
+
+ZmContact.prototype._addDlAttribute =
+function(attrs, mods, name, soapAttrName) {
+	var attr = mods[name];
+	if (!attr) {
+		return;
+	}
+	attrs.push({n: soapAttrName, _content: attr});
+};
+
+ZmContact.prototype._getDlAttributes =
+function(mods) {
+	var attrs = [];
+	this._addDlAttribute(attrs, mods, ZmContact.F_dlDisplayName, "displayName");
+	this._addDlAttribute(attrs, mods, ZmContact.F_dlDesc, "description");
+	this._addDlAttribute(attrs, mods, ZmContact.F_dlNotes, "zimbraNotes");
+	this._addDlAttribute(attrs, mods, ZmContact.F_dlHideInGal, "zimbraHideInGal");
+	this._addDlAttribute(attrs, mods, ZmContact.F_dlSubscriptionPolicy, "zimbraDistributionListSubscriptionPolicy");
+	this._addDlAttribute(attrs, mods, ZmContact.F_dlUnsubscriptionPolicy, "zimbraDistributionListUnsubscriptionPolicy");
+
+	return attrs;
+};
+
+
+ZmContact.prototype._getCreateDlReq =
+function(attr) {
+	return {
+		_jsns: "urn:zimbraAccount",
+		name: attr[ZmContact.F_email],
+		a: this._getDlAttributes(attr)
+	};
+};
+
+ZmContact.prototype._getModifyDlAttributesReq =
+function(attr) {
+	return {
+		_jsns: "urn:zimbraAccount",
+		dl: {by: "name",
+			 _content: this.getEmail()
+		},
+		action: {
+			op: "modify",
+			a: this._getDlAttributes(attr)
 		}
 	};
 };
@@ -1439,6 +1526,28 @@ function(ev, fileAsChanged) {
 	};
 
 	this._notify(ZmEvent.E_MODIFY, details);
+};
+
+ZmContact.prototype._createDlResponseHandler =
+function(result) {
+	var batchResp = result.getResponse().BatchResponse;
+	if (this._handleErrorCreateDl(batchResp)) {
+		return;
+	}
+	appCtxt.setStatusMsg(ZmMsg.distributionListCreated);
+};
+
+ZmContact.prototype._handleErrorCreateDl =
+function(batchResp) {
+	var faults = batchResp.Fault;
+	if (!faults) {
+		return false;
+	}
+	var ex = ZmCsfeCommand.faultToEx(faults[0]);
+	var controller = AjxDispatcher.run("GetContactController");
+	controller.popupErrorDialog(ZmMsg.dlCreateFailed, ex);
+	return true;
+
 };
 
 ZmContact.prototype.clearDlInfo =

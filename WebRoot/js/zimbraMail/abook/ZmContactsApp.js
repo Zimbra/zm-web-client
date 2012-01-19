@@ -216,6 +216,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_NEW_ADDRBOOK, {textKey:"newAddrBook", tooltipKey:"newAddrBookTooltip", image:"NewContactsFolder"}, ZmSetting.NEW_ADDR_BOOK_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_NEW_CONTACT, {textKey:"newContact", tooltipKey:"newContactTooltip", image:"NewContact", shortcut:ZmKeyMap.NEW_CONTACT}, ZmSetting.CONTACTS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_NEW_GROUP, {textKey:"newGroup", tooltipKey:"newGroupTooltip", image:"NewGroup"}, ZmSetting.CONTACTS_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_NEW_DISTRIBUTION_LIST, {textKey:"newDistList", tooltipKey:"newDistListTooltip", image:"NewGroup"}, ZmSetting.CONTACTS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_PRINT_CONTACT, {textKey:"printContact", image:"Print", shortcut:ZmKeyMap.PRINT}, ZmSetting.PRINT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_PRINT_ADDRBOOK, {textKey:"printAddrBook", image:"Print"}, ZmSetting.PRINT_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_ADDRBOOK, {textKey:"shareAddrBook", image:"SharedContactsFolder"});
@@ -317,6 +318,9 @@ function() {
 	var newItemOps = {};
 	newItemOps[ZmOperation.NEW_CONTACT]	= "contact";
 	newItemOps[ZmOperation.NEW_GROUP]	= "group";
+	if (appCtxt.createDistListAllowed) {
+		newItemOps[ZmOperation.NEW_DISTRIBUTION_LIST] = "distributionList";
+	}
 
 	var newOrgOps = {};
 	newOrgOps[ZmOperation.NEW_ADDRBOOK] = "addressBook";
@@ -425,9 +429,10 @@ ZmContactsApp.prototype.handleOp =
 function(op) {
 	switch (op) {
 		case ZmOperation.NEW_CONTACT:
+		case ZmOperation.NEW_DISTRIBUTION_LIST:
 		case ZmOperation.NEW_GROUP: {
-			var type = (op == ZmOperation.NEW_GROUP) ? ZmItem.GROUP : null;
-			var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [type]);
+			var type = (op == ZmOperation.NEW_CONTACT) ? null : ZmItem.GROUP;
+			var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [type, op == ZmOperation.NEW_DISTRIBUTION_LIST]);
 			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
 			break;
 		}
@@ -443,8 +448,8 @@ function(op) {
  * @private
  */
 ZmContactsApp.prototype._handleLoadNewItem =
-function(type) {
-	var contact = new ZmContact(null, null, type);
+function(type, isDl) {
+	var contact = new ZmContact(null, null, type, isDl);
 	AjxDispatcher.run("GetContactController").show(contact);
 };
 

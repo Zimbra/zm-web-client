@@ -213,16 +213,18 @@ ZmSettings.prototype.loadUserSettings =
 function(callback, errorCallback, accountName, response, batchCommand) {
 	var args = [callback, accountName];
 
+	var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
+	soapDoc.setMethodAttribute("rights", "createDistList"); //not sure when this is called, but let's add it anyway. (on login it's called from within launchZCS.JSP calling GetInfoJSONTag.java
+	var respCallback = this._handleResponseLoadUserSettings.bind(this, args);
 	if (batchCommand) {
-		var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
-		var respCallback = new AjxCallback(this, this._handleResponseLoadUserSettings, args);
 		batchCommand.addNewRequestParams(soapDoc, respCallback);
-	} else {
+	}
+	else {
 		var params = {
-			soapDoc: (response ? null : AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount")),
+			soapDoc: (response ? null : soapDoc),
 			accountName: accountName,
 			asyncMode: true,
-			callback: (new AjxCallback(this, this._handleResponseLoadUserSettings, args)),
+			callback: respCallback,
 			errorCallback: errorCallback,
 			response: response
 		};
@@ -257,6 +259,24 @@ ZmSettings.prototype.setUserSettings = function(params) {
     params = Dwt.getParams(arguments, ["info", "accountName", "setDefault", "skipNotify", "skipImplicit", "preInit"]);
 
     var info = this.getInfoResponse = params.info;
+
+	appCtxt.createDistListAllowed = false;
+	appCtxt.createDistListAllowedDomains = [];
+	var rightTargets = info.rights && info.rights.targets;
+	if (rightTargets) {
+		for (var i = 0; i < rightTargets.length; i++) {
+			var target = rightTargets[i];
+			if (target.right == "createDistList") {
+				if (target.target[0].type == "domain") {
+					appCtxt.createDistListAllowed = true;
+					appCtxt.createDistListAllowedDomains.push(target.target[0].name);
+					break;
+				}
+			}
+
+		}
+	}
+
     var accountName = params.accountName;
     var setDefault = params.preInit ? false : params.setDefault;
     var skipNotify = params.preInit ? true : params.skipNotify;

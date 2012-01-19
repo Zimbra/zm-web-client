@@ -150,6 +150,9 @@ function(contact, isDirty) {
 	this._isDirty = isDirty;
 
 	document.getElementById(this._groupNameId).onblur = this._controller.updateTabTitle.bind(this._controller);
+	if (contact.isDistributionList()) {
+		document.getElementById(this._groupNameDomainId).onblur = this._controller.updateTabTitle.bind(this._controller);
+	}
 
 	this.search();
 };
@@ -158,8 +161,7 @@ ZmGroupView.prototype.getModifiedAttrs =
 function() {
 	if (!this.isDirty()) return null;
 
-	var mods = this._attr = {};
-	var foundOne = false;
+	var mods = this._attr = [];
 
 	// get field values
 	var groupName = this._getGroupName();
@@ -169,43 +171,41 @@ function() {
 		var dlInfo = this._contact.dlInfo;
 		if (groupName != this._contact.getEmail()) {
 			mods[ZmContact.F_email] = groupName;
-			foundOne = true;
 		}
 		if (dlInfo.displayName != this._getDlDisplayName()) {
 			mods[ZmContact.F_dlDisplayName] = this._getDlDisplayName();
-			foundOne = true;
 		}
 		if (dlInfo.description != this._getDlDesc()) {
 			mods[ZmContact.F_dlDesc] = this._getDlDesc();
-			foundOne = true;
 		}
 		if (dlInfo.hideInGal != this._getDlHideInGal()) {
 			mods[ZmContact.F_dlHideInGal] = this._getDlHideInGal();
-			foundOne = true;
 		}
 		if (dlInfo.notes != this._getDlNotes()) {
 			mods[ZmContact.F_dlNotes] = this._getDlNotes();
-			foundOne = true;
 		}
 		if (dlInfo.subscriptionPolicy != this._getDlSubscriptionPolicy()) {
 			mods[ZmContact.F_dlSubscriptionPolicy] = this._getDlSubscriptionPolicy();
-			foundOne = true;
 		}
 		if (dlInfo.unsubscriptionPolicy != this._getDlUnsubscriptionPolicy()) {
 			mods[ZmContact.F_dlUnsubscriptionPolicy] = this._getDlUnsubscriptionPolicy();
-			foundOne = true;
 		}
 		if (!AjxUtil.arrayCompare(dlInfo.owners, this._getDlOwners())) {
 			mods[ZmContact.F_dlListOwners] = this._getDlOwners();
-			foundOne = true;
 		}
 		if (dlInfo.mailPolicy != this._getDlMailPolicy()
 				|| (this._getDlMailPolicy() == ZmGroupView.MAIL_POLICY_SPECIFIC
 					&& !AjxUtil.arrayCompare(dlInfo.mailPolicySpecificMailers, this._getDlSpecificMailers()))) {
 			mods[ZmContact.F_dlMailPolicy] = this._getDlMailPolicy();
 			mods[ZmContact.F_dlMailPolicySpecificMailers] = this._getDlSpecificMailers();
-			foundOne = true;
 		}
+
+		if (this._groupMemberMods) {
+			mods[ZmContact.F_groups] = this._getModifiedMembers();
+			this._groupMemberMods = {}; //empty the mods
+		}
+
+		return mods;
 	}
 
 	// creating new contact (possibly some fields - but not ID - prepopulated)
@@ -215,46 +215,57 @@ function() {
 		mods[ZmContact.F_nickname] = groupName;
 		mods[ZmContact.F_groups] = this._getGroupMembers();
 		mods[ZmContact.F_type] = "group";
-		foundOne = true;
-	} 
+	}
 	else {
 		// modifying existing contact
 		if (!this._contact.isDistributionList() && this._contact.getFileAs() != groupName) {
 			mods[ZmContact.F_fileAs] = ZmContact.computeCustomFileAs(groupName);
 			mods[ZmContact.F_nickname] = groupName;
-			foundOne = true;
 		}
 
 		if (this._groupMemberMods) {
-			var modifiedMembers = [];
-			for (var id in this._groupMemberMods) {
-				if (this._groupMemberMods[id].op) {
-					modifiedMembers.push(this._groupMemberMods[id]);
-				}
-			}
-			mods[ZmContact.F_groups] = modifiedMembers;
-			foundOne = true;
+			mods[ZmContact.F_groups] = this._getModifiedMembers();
 			this._groupMemberMods = {}; //empty the mods
 		} 
 		
 		var oldFolderId = this._contact.addrbook ? this._contact.addrbook.id : ZmFolder.ID_CONTACTS;
 		if (folderId != oldFolderId) {
 			mods[ZmContact.F_folderId] = folderId;
-			foundOne = true;
 		}
 	}
 
-	return foundOne ? mods : null;
+	return mods;
 };
+
+ZmGroupView.prototype._getModifiedMembers =
+function() {
+	var modifiedMembers = [];
+	for (var id in this._groupMemberMods) {
+		if (this._groupMemberMods[id].op) {
+			modifiedMembers.push(this._groupMemberMods[id]);
+		}
+	}
+	return modifiedMembers;
+};
+
 
 ZmGroupView.prototype._getFullName =
 function() {
 	return this._getGroupName();
 };
 
+ZmGroupView.prototype._getGroupDomainName =
+function() {
+	return AjxStringUtil.trim(document.getElementById(this._groupNameDomainId).value);
+};
+
 ZmGroupView.prototype._getGroupName =
 function() {
-	return AjxStringUtil.trim(document.getElementById(this._groupNameId).value);
+	var name = AjxStringUtil.trim(document.getElementById(this._groupNameId).value);
+	if (this._contact.isDistributionList()) {
+		name += "@" + this._getGroupDomainName();
+	}
+	return name;
 };
 
 ZmGroupView.prototype._getDlDisplayName =
@@ -347,6 +358,29 @@ function() {
 	return AjxEmailAddress.isValid(groupName);
 };
 
+ZmGroupView.prototype.isValidDlDomainName =
+function() {
+	if (!this._contact.isDistributionList()) {
+		return true;
+	}
+	var domain = this._getGroupDomainName();
+	var legalDomains = appCtxt.createDistListAllowedDomains;
+	for (var i = 0; i < legalDomains.length; i++) {
+		if (legalDomains[i] == domain) {
+			return true;
+		}
+	}
+	return false;
+};
+
+ZmGroupView.prototype.isValidOwners =
+function() {
+	if (!this._contact.isDistributionList()) {
+		return true;
+	}
+	return this._getDlOwners().length > 0
+};
+
 ZmGroupView.prototype.isValid =
 function() {
 	// check for required group name
@@ -356,9 +390,16 @@ function() {
 	if (!this.isValidDlName()) {
 		return false;
 	}
+	if (!this.isValidDlDomainName()) {
+		return false;
+	}
+	if (!this.isValidOwners()) {
+		return false;
+	}
 	return true;
 };
 
+//todo - really not sure why this way of having 3 methods with parallel values conditions is used here this way. I just continued to build on what was there, but should check if it can be simplified.
 ZmGroupView.prototype.getInvalidItems =
 function() {
 	if (this.isValid()) {
@@ -370,6 +411,12 @@ function() {
 	}
 	if (!this.isValidDlName()) {
 		items.push("dlName");
+	}
+	if (!this.isValidDlDomainName()) {
+		items.push("dlDomainName");
+	}
+	if (!this.isValidOwners()) {
+		items.push("owners");
 	}
 	return items;
 };
@@ -384,6 +431,12 @@ ZmGroupView.prototype.getErrorMessage = function(id) {
 	if (id == "dlName") { 
 		return ZmMsg.dlInvalidName; 
 	}
+	if (id == "dlDomainName") {
+		return ZmMsg.dlInvalidDomainName; 
+	}
+	if (id == "owners") {
+		return ZmMsg.dlInvalidOwners; 
+	}
 
 };
 
@@ -391,6 +444,7 @@ ZmGroupView.prototype.enableInputs =
 function(bEnable) {
 	document.getElementById(this._groupNameId).disabled = !bEnable;
 	if (this._contact.isDistributionList()) {
+		document.getElementById(this._groupNameDomainId).disabled = !bEnable || appCtxt.createDistListAllowedDomains.length <= 1;
 		document.getElementById(this._dlDisplayNameId).disabled = !bEnable;
 		document.getElementById(this._dlDescId).disabled = !bEnable;
 		document.getElementById(this._dlHideInGalId).disabled = !bEnable;
@@ -579,6 +633,7 @@ function() {
 	this._tagsId = 				this._htmlElId + "_tags";
 	this._groupNameId = 		this._htmlElId + "_groupName";
 	if (this._contact.isDistributionList()) {
+		this._groupNameDomainId = 		this._htmlElId + "_groupNameDomain";
 		this._dlDisplayNameId = 	this._htmlElId + "_dlDisplayName";
 		this._dlDescId = 			this._htmlElId + "_dlDesc";
 		this._dlHideInGalId = 	this._htmlElId + "_dlHideInGal";
@@ -758,6 +813,10 @@ function() {
 	Dwt.associateElementWithObject(groupName, this);
 
 	if (this._contact.isDistributionList()) {
+		var groupNameDomain = document.getElementById(this._groupNameDomainId);
+		Dwt.setHandler(groupNameDomain, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
+		Dwt.associateElementWithObject(groupNameDomain, this);
+
 		var dlDisplayName = document.getElementById(this._dlDisplayNameId);
 		Dwt.setHandler(dlDisplayName, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
 		Dwt.associateElementWithObject(dlDisplayName, this);
@@ -828,6 +887,7 @@ function() {
 	var fields = [];
 	fields.push(document.getElementById(this._groupNameId));
 	if (this._contact.isDistributionList()) {
+		fields.push(document.getElementById(this._groupNameDomainId));
 		fields.push(document.getElementById(this._dlDisplayNameId));
 		fields.push(document.getElementById(this._dlDescId));
 		fields.push(document.getElementById(this._dlHideInGalId));
@@ -911,7 +971,15 @@ function() {
 	var groupName = document.getElementById(this._groupNameId);
 	if (groupName) {
 		if (this._contact.isDistributionList()) {
-			groupName.value = this._contact.getEmail() || "";
+			var domains = appCtxt.createDistListAllowedDomains;
+			var email = this._contact.getEmail() || "@" + domains[0];
+			var groupNameDomain = document.getElementById(this._groupNameDomainId);
+			var temp = email.split("@");
+			var emailUserName = temp[0];
+			var emailDomainName = temp[1];
+			groupName.value = emailUserName;
+			groupNameDomain.value = emailDomainName;
+			groupNameDomain.disabled = appCtxt.createDistListAllowedDomains.length <= 1
 		}
 		else {
 			groupName.value = this._contact.getFileAs() || "";
@@ -922,43 +990,49 @@ function() {
 ZmGroupView.prototype._setDlFields =
 function() {
 	var displayName = document.getElementById(this._dlDisplayNameId);
-	displayName.value = this._contact.dlInfo.displayName || "";
+	var dlInfo = this._contact.dlInfo;
+	displayName.value = dlInfo.displayName || "";
 
 	var desc = document.getElementById(this._dlDescId);
-	desc.value = this._contact.dlInfo.description || "";
+	desc.value = dlInfo.description || "";
 
 	var hideInGal = document.getElementById(this._dlHideInGalId);
-	hideInGal.checked = this._contact.dlInfo.hideInGal == "TRUE";
+	hideInGal.checked = dlInfo.hideInGal == "TRUE";
 
+	//set the default only in temporary var so it will be saved later as modification, even if user doesn't change.
+	//this is for the new DL case
+	var subsPolicy = dlInfo.subscriptionPolicy || ZmContactSplitView.SUBSCRIPTION_POLICY_ACCEPT;
+	var unsubsPolicy = dlInfo.unsubscriptionPolicy || ZmContactSplitView.SUBSCRIPTION_POLICY_ACCEPT;
 	for (var i = 0; i < this._subsPolicyOpts.length; i++) {
 		var opt = this._subsPolicyOpts[i];
 		var subsPolicyOpt = document.getElementById(this._dlSubscriptionPolicyId[opt]);
-		subsPolicyOpt.checked = this._contact.dlInfo.subscriptionPolicy == opt;
+		subsPolicyOpt.checked = subsPolicy == opt;
 
 		var unsubsPolicyOpt = document.getElementById(this._dlUnsubscriptionPolicyId[opt]);
-		unsubsPolicyOpt.checked = this._contact.dlInfo.unsubscriptionPolicy == opt;
+		unsubsPolicyOpt.checked = unsubsPolicy == opt;
 	}
+	var mailPolicy = dlInfo.mailPolicy || ZmGroupView.MAIL_POLICY_ANYONE;
 	for (i = 0; i < this._mailPolicyOpts.length; i++) {
 		opt = this._mailPolicyOpts[i];
 		var mailPolicyOpt = document.getElementById(this._dlMailPolicyId[opt]);
-		mailPolicyOpt.checked = this._contact.dlInfo.mailPolicy == opt;
+		mailPolicyOpt.checked = mailPolicy == opt;
 	}
-	if (this._contact.dlInfo.mailPolicy == ZmGroupView.MAIL_POLICY_SPECIFIC) {
+	if (dlInfo.mailPolicy == ZmGroupView.MAIL_POLICY_SPECIFIC) {
 		var listSpecificMailers = document.getElementById(this._dlListSpecificMailersId);
-		listSpecificMailers.value = this._contact.dlInfo.mailPolicySpecificMailers.join("; ");
+		listSpecificMailers.value = dlInfo.mailPolicySpecificMailers.join("; ");
 		if (listSpecificMailers.value.length > 0) {
 			listSpecificMailers.value += ";"; //so it's ready to add more by user.
 		}
 	}
 
 	var listOwners = document.getElementById(this._dlListOwnersId);
-	listOwners.value = this._contact.dlInfo.owners.join("; ");
+	listOwners.value = dlInfo.owners.join("; ");
 	if (listOwners.value.length > 0) {
 		listOwners.value += ";"; //so it's ready to add more by user.
 	}
 
 	var notes = document.getElementById(this._dlNotesId);
-	notes.value = this._contact.dlInfo.notes || "";
+	notes.value = dlInfo.notes || "";
 
 };
 
