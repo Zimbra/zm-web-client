@@ -56,7 +56,7 @@ ZmDoublePaneView.prototype.toString = function() { return "ZmDoublePaneView"; };
 // consts
 
 ZmDoublePaneView.SASH_THRESHOLD = 5;
-ZmDoublePaneView.MIN_LISTVIEW_WIDTH = 20;
+ZmDoublePaneView.MIN_LISTVIEW_WIDTH = 40;
 
 ZmDoublePaneView._TAG_IMG = "TI";
 
@@ -289,7 +289,7 @@ function(delta) {
 
 		if (readingPaneOnRight) {
 			// moving sash left
-			var currentWidth = ((AjxEnv.isIE) ? this._vertSash.getLocation().x : this._mailListView.getSize().x);
+			var currentWidth = this._vertSash.getLocation().x;
 			absDelta = Math.max(0, Math.min(absDelta, currentWidth - ZmDoublePaneView.MIN_LISTVIEW_WIDTH));
 
 			if (absDelta > 0) {
