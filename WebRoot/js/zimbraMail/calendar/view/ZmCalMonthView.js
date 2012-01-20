@@ -206,7 +206,7 @@ function(appt, uniqueId, day) {
     } else {
         // DayIndex should be < 0 (no corresponding day, and assuming sliced appts
         // passed in from earliest to last)
-        dayIndex = this._createDayIndexFromDate(appt.startDate);
+        var dayIndex = this._createDayIndexFromDate(appt.startDate);
         var zeroDay = this._days[0]
         dow = (zeroDay.dow + dayIndex + 7) % 7;
     }
@@ -430,9 +430,9 @@ function(tr, createCell) {
 ZmCalMonthView.prototype._createItemHtml =	
 function(appt) {
 	var result = this._getDivForAppt(appt).insertRow(-1);
-	result.className = "calendar_month_day_item_row";
+	result.className = this._getStyle(ZmCalBaseView.TYPE_APPT);
     result.apptStartTimeOffset  = this._getTimeOffset(appt.getStartTime());
-	this._getStyle(ZmCalBaseView.TYPE_APPT);
+
 	this.associateItemWithElement(appt, result, ZmCalBaseView.TYPE_APPT);
 
     this._createItemHtmlContents(appt, result);
@@ -480,7 +480,9 @@ function(appt, tr) {
 ZmCalMonthView.prototype._getStyle =
 function(type, selected, disabled, item) {
 	if (type == ZmCalBaseView.TYPE_APPT && item && !item.isAllDayEvent()) {
-        return this._monthItemClass;
+        return (!selected) ? this._monthItemClass :
+                 (disabled ? this._monthItemDisabledSelectedClass :
+                             this._monthItemSelectedClass);
 	} else {
 		return ZmCalBaseView.prototype._getStyle.apply(this, arguments);
 	}
@@ -1588,7 +1590,12 @@ function(appt, iSlice) {
 // the 0 reference
 ZmCalMonthView.prototype._createDayIndexFromDate =
 function(dayDate) {
-    return (dayDate.getTime() - this._days[0].date.getTime())/AjxDateUtil.MSEC_PER_DAY;
+    // Bug 68507: all-day appointments don't appear correctly in month view
+    // Round it.  If the dayDate is has a daylight savings time transition between itself
+    // and the current day, the day index may be off by +/- 1/24.  The DayIndex needs
+    // to be an integer value, otherwise we get incorrect dayOfWeek values (dayIndex % 7)
+    return Math.round((dayDate.getTime() -
+        this._days[0].date.getTime())/AjxDateUtil.MSEC_PER_DAY);
 }
 
 

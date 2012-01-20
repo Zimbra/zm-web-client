@@ -2062,6 +2062,9 @@ line-height:normal;
 .calendar_month_day_item_row-Selected {
 	@SelectedBg@
 }
+.calendar_month_day_item_row-Selected TD {
+	font-weight:bold;
+}
 
 /* ??? USE?  text color comes from OrangeC, RedC, etc... */
 .calendar_month_day_item_row-Selected .calendar_month_day_item {
