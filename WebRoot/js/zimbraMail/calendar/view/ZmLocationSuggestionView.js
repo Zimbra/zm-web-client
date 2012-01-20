@@ -26,6 +26,7 @@
  */
 ZmLocationSuggestionView = function(parent, controller, apptEditView, className) {
     ZmSuggestionsView.call(this, parent, controller, apptEditView, ZmId.VIEW_SUGGEST_LOCATION_PANE, false, className);
+    this._warning = false;
 };
 
 ZmLocationSuggestionView.prototype = new ZmSuggestionsView;
@@ -83,3 +84,18 @@ function() {
     div.appendChild(elText);
     this._addRow(div);
 };
+
+ZmLocationSuggestionView.prototype.setWarning =
+function(warning) {
+    this._warning = warning;
+}
+
+
+ZmLocationSuggestionView.prototype._renderList =
+function(list, noResultsOk, doAdd) {
+    var warningHtml = "";
+    if (this._warning) {
+        warningHtml = AjxTemplate.expand("calendar.Appointment#LocationSuggestion-Warning");
+    }
+    ZmSuggestionsView.prototype._renderList.call(this, list, noResultsOk, doAdd, warningHtml);
+}

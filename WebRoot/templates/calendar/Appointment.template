@@ -184,7 +184,7 @@
 
             </td>
 
-            <td id='${id}_suggestions' valign='top' align='middle' style='width:180px;height:100%'>
+            <td id='${id}_suggestions' valign='top' align='middle' class='ZmSuggestView'>
             </td>
             </tr>
 
@@ -1122,6 +1122,17 @@
             <br><$= ZmMsg.searching $>
         </div>
     </center>
+</template>
+
+<template id='calendar.Appointment#LocationSuggestion-Warning'>
+    <div class="ZmLocationSuggestionWarning">
+        <div class="ZmLocationSuggestionWarningImage">
+            <$= AjxImg.getImageHtml("Warning_12") $>
+        </div>
+        <div class="ZmLocationSuggestionWarningText">
+            <$= ZmMsg.locationSuggestionWarning $>
+        </div>
+    </div>
 </template>
 
 <template id='calendar.Appointment#AlternateLocation-Loading'>

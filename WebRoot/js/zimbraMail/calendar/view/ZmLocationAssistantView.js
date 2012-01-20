@@ -173,6 +173,15 @@ ZmLocationAssistantView.prototype.renderSuggestions =
 function(params) {
     params.list = params.locationInfo.locations;
     params.totalLocations = this._totalLocations;
+    var warning = false;
+    if (params.list.size() >= ZmContactsApp.SEARCHFOR_MAX) {
+        // Problem: the locations search returned the Limit, implying there may
+        // be even more - and the location suggestion pane does not have a 'Next'
+        // button to get the next dollop, since large numbers of suggestions are
+        // not useful. Include a warning that the user should set their location prefs.
+        warning = true;
+    }
+    this._locationSuggestions.setWarning(warning);
 
     this._locationSuggestions.set(params);
     if(params.focus) this._locationSuggestions.focus();

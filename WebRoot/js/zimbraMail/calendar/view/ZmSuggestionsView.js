@@ -80,11 +80,14 @@ function(item) {
 }
 
 ZmSuggestionsView.prototype._renderList =
-function(list, noResultsOk, doAdd) {
+function(list, noResultsOk, doAdd, prefixHtml) {
 	if (list instanceof AjxVector && list.size()) {
 		var now = new Date();
 		var size = list.size();
 		var htmlArr = [], hdrKey, hdrListed = {};
+		if (prefixHtml) {
+		    htmlArr.push(prefixHtml);
+		}
 		for (var i = 0; i < size; i++) {
 			var item = list.get(i);
 

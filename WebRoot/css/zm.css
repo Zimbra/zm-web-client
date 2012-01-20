@@ -5286,7 +5286,6 @@ border:1px solid #666;
     clear:both;
     border:1px solid black;
     position:relative;
-    width:100%;
     top:4px;
     margin-bottom:8px;
 }
@@ -5297,6 +5296,8 @@ border:1px solid #666;
 
 /* Blank for now, included in the Appointment Suggestion template for ease of modification */
 .ZmSuggestView {
+    width:180px;
+    height:100%;
 }
 .ZmSuggestLocationList {
     height:99%;
@@ -5330,13 +5331,27 @@ border:1px solid #666;
 .ZmLocationSuggestion {
     border:1px solid gray;
     background-color:#E0E0E0;
-    width:90%;
+    width:95%;
     margin:4px auto;
     padding-left:4px;
     margin-bottom:4px;
     cursor: pointer;
 }
-
+.ZmLocationSuggestionWarningImage {
+    float:left;
+    padding-right:8px;
+    /* padding:0px 4px 0px 4px; */
+}
+.ZmLocationSuggestionWarningText {
+    /* margin-left:4px; */
+    font-style:italic;
+}
+.ZmLocationSuggestionWarning {
+    margin:4px auto;
+    text-align:left;
+    width: 95%;
+    border:0px;
+}
 div.ZmSuggestLocationLink {
     display:inline-block;
     margin-top:-4px;

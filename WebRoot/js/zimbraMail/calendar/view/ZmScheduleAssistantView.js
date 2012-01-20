@@ -720,15 +720,24 @@ function(attendee, startTime, endTime) {
 
 ZmScheduleAssistantView.prototype.renderSuggestions =
 function(params) {
+
     if (this._suggestTime) {
         params.list = this._fbStat;
     } else {
         params.list = params.locationInfo.locations;
+        var warning = false;
+        if (params.list.size() >= ZmContactsApp.SEARCHFOR_MAX) {
+            // Problem: the locations search returned the Limit, implying there may
+            // be even more - and the location suggestion pane does not have a 'Next'
+            // button to get the next dollop, since large numbers of suggestions are
+            // not useful. Include a warning that the user should set their location prefs.
+            warning = true;
+        }
+        this._locationSuggestions.setWarning(warning);
     }
     params.totalUsers = this._totalUsers;
     params.totalLocations = this._totalLocations;
 
-    //this._timeSuggestions.setSuggestionsPref(params.showOnlyGreenSuggestions);
     this._currentSuggestions.set(params);
     if(params.focus) this._currentSuggestions.focus();
 };
