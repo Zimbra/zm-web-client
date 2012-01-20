@@ -328,15 +328,6 @@ function() {
 	var messagesHeight = myHeight - headerSize.y - replySize.y - 1;
 	DBG.println("cv2", "set message area height to " + messagesHeight);
 	Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, messagesHeight);
-
-	// Deal with default 150px IFRAME height
-	if (this._msgViewList) {
-		for (var i = 0; i < this._msgViewList.length; i++) {
-			var id = this._msgViewList[i];
-			var msgView = this._msgViews[id];
-			this._msgViews[this._msgViewList[i]].resize();
-		}
-	}
 };
 
 // since we may get multiple calls to _resize
@@ -807,8 +798,6 @@ ZmMailMsgCapsuleView = function(params) {
 	this._showingCalendar = false;
 	this._infoBarId = this._htmlElId;
 
-	this.useIframeToDisplayContent = false;
-	
 	this.addListener(ZmMailMsgView._TAG_CLICK, this._msgTagClicked.bind(this));
 	this.addListener(ZmInviteMsgView.REPLY_INVITE_EVENT, this._convView._inviteReplyListener);
 	this.addListener(ZmMailMsgView.SHARE_EVENT, this._convView._shareListener);
@@ -910,6 +899,17 @@ function(msg, container, callback) {
 	this._renderMessageBody(msg, container, callback);
 	this._renderMessageFooter(msg, container);
 	this._header._setExpanded(this._expanded);
+};
+
+// When bug 69348 is implemented, the server will tell us whether we need an IFRAME. Until then,
+// display all HTML messages in an IFRAME.
+ZmMailMsgCapsuleView.prototype._useIframe =
+function(isTextMsg, html, isTruncated) {
+
+	if (isTruncated)	{ return true; }
+	if (isTextMsg)		{ return false; }
+	
+	return true;
 };
 
 ZmMailMsgCapsuleView.prototype._renderMessageBody =
@@ -1092,18 +1092,6 @@ function(text, id) {
 	return "<a class='Link' id='" + id + "'>" + text + "</a>";
 };
 
-// Resize IFRAME to match its content. IFRAMEs have a default height of 150, so we need to
-// explicitly set the correct height if the content is smaller. Doesn't work for IE, which
-// reports the height of the HTML element as at least 150.
-ZmMailMsgCapsuleView.prototype.resize =
-function() {
-	if (!this._expanded || this._containerEl) { return; }
-	var iframe = this.getIframeElement();
-	var doc = iframe.contentWindow.document;
-	h = Math.max(doc.documentElement.scrollHeight, doc.body.scrollHeight);
-	Dwt.setSize(this.getIframeElement(), Dwt.DEFAULT, h);
-};
-
 ZmMailMsgCapsuleView.prototype._actionsButtonListener =
 function(ev) {
 	this._convView.setMsg(this._msg);
@@ -1140,7 +1128,7 @@ function() {
 		}
 	}
 	this._header._setExpanded(this._expanded);
-	window.setTimeout(this.resize.bind(this), 250);
+	this._resetIframeHeightOnTimer();
 };
 
 ZmMailMsgCapsuleView.prototype._setFolderIcon =
@@ -1217,7 +1205,7 @@ function() {
 		showTextLink.innerHTML = this._showingQuotedText ? ZmMsg.hideQuotedText : ZmMsg.showQuotedText;
 	}
 	
-	window.setTimeout(this.resize.bind(this), 250);
+	this._resetIframeHeightOnTimer();
 };
 
 ZmMailMsgCapsuleView.prototype._handleShowCalendarLink =
@@ -1251,7 +1239,7 @@ function() {
 		showCalendarLink.innerHTML = this._showingCalendar ? ZmMsg.hideCalendar : ZmMsg.showCalendar;
 	}
 	
-	window.setTimeout(this.resize.bind(this), 250);
+	this._resetIframeHeightOnTimer();
 };
 
 ZmMailMsgCapsuleView.prototype._handleReplyLink =

@@ -41,7 +41,7 @@ UtMailMsgView._showCallback = function(index, controller, view) {
     } else {
         // If this piece of test data does not have a validate method, just compare the
         // view's body text with the data's expected value.
-        var viewBody = AjxStringUtil.trim(view.getIframeElement().contentWindow.document.body.innerText);
+        var viewBody = AjxStringUtil.trim(view.getContainer().innerText);
         var expectedBody = AjxStringUtil.trim(data.expectedBody);
         UT.equal(viewBody, expectedBody, "UtMailMsgView[" + index + "]");
     }
