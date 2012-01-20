@@ -364,7 +364,7 @@ function() {
 		return true;
 	}
 	var domain = this._getGroupDomainName();
-	var legalDomains = appCtxt.createDistListAllowedDomains;
+	var legalDomains = this._legalDomains;
 	for (var i = 0; i < legalDomains.length; i++) {
 		if (legalDomains[i] == domain) {
 			return true;
@@ -444,7 +444,7 @@ ZmGroupView.prototype.enableInputs =
 function(bEnable) {
 	document.getElementById(this._groupNameId).disabled = !bEnable;
 	if (this._contact.isDistributionList()) {
-		document.getElementById(this._groupNameDomainId).disabled = !bEnable || appCtxt.createDistListAllowedDomains.length <= 1;
+		document.getElementById(this._groupNameDomainId).disabled = !bEnable || this._legalDomains.length == 1;
 		document.getElementById(this._dlDisplayNameId).disabled = !bEnable;
 		document.getElementById(this._dlDescId).disabled = !bEnable;
 		document.getElementById(this._dlHideInGalId).disabled = !bEnable;
@@ -634,6 +634,23 @@ function() {
 	this._groupNameId = 		this._htmlElId + "_groupName";
 	if (this._contact.isDistributionList()) {
 		this._groupNameDomainId = 		this._htmlElId + "_groupNameDomain";
+		var email = this._contact.getEmail();
+		this._legalDomains = [];
+		var domain = null;
+		if (email) {
+			//this is editing an existing DL case
+			var temp = email.split("@");
+			domain = temp[1];
+			this._legalDomains.push(domain);
+		}
+		var domains = appCtxt.createDistListAllowedDomains;
+		for (var i = 0; i < domains.length; i++) {
+			if (domains[i] == domain) {
+				continue;
+			}
+			this._legalDomains.push(domains[i]);
+		}
+
 		this._dlDisplayNameId = 	this._htmlElId + "_dlDisplayName";
 		this._dlDescId = 			this._htmlElId + "_dlDesc";
 		this._dlHideInGalId = 	this._htmlElId + "_dlHideInGal";
@@ -971,7 +988,7 @@ function() {
 	var groupName = document.getElementById(this._groupNameId);
 	if (groupName) {
 		if (this._contact.isDistributionList()) {
-			var domains = appCtxt.createDistListAllowedDomains;
+			var domains = this._legalDomains;
 			var email = this._contact.getEmail() || "@" + domains[0];
 			var groupNameDomain = document.getElementById(this._groupNameDomainId);
 			var temp = email.split("@");
@@ -979,7 +996,7 @@ function() {
 			var emailDomainName = temp[1];
 			groupName.value = emailUserName;
 			groupNameDomain.value = emailDomainName;
-			groupNameDomain.disabled = appCtxt.createDistListAllowedDomains.length <= 1
+			groupNameDomain.disabled = domains.length == 1
 		}
 		else {
 			groupName.value = this._contact.getFileAs() || "";
