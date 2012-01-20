@@ -1098,11 +1098,10 @@ function(text, id) {
 ZmMailMsgCapsuleView.prototype.resize =
 function() {
 	if (!this._expanded || this._containerEl) { return; }
-	var htmlEl = this.getIframeHtmlElement();
-	var htmlElHeight = htmlEl && Dwt.getSize(htmlEl).y;
-	if (htmlElHeight) {
-		Dwt.setSize(this.getIframeElement(), Dwt.DEFAULT, htmlElHeight);
-	}
+	var iframe = this.getIframeElement();
+	var doc = iframe.contentWindow.document;
+	h = Math.max(doc.documentElement.scrollHeight, doc.body.scrollHeight);
+	Dwt.setSize(this.getIframeElement(), Dwt.DEFAULT, h);
 };
 
 ZmMailMsgCapsuleView.prototype._actionsButtonListener =
