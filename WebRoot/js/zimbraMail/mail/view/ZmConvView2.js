@@ -681,13 +681,9 @@ function(params) {
 
 	params.action = params.action || ZmOperation.REPLY_ALL;
 	params.msg = params.msg || this._item.getFirstHotMsg();
-	params.text = this._replyInput.value;
+	params.text = AjxStringUtil.htmlEncode(this._replyInput.value);
 	params.hideView = true;
 	params.composeMode = (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
-	if (params.composeMode == DwtHtmlEditor.HTML) {
-		// wrap <html> and <body> tags around content, and set font style
-		params.text = ZmAdvancedHtmlEditor._embedHtmlContent(AjxStringUtil.htmlEncode(params.text), true);
-	}
 	var composeCtlr = AjxDispatcher.run("GetComposeController", ZmApp.HIDDEN_SESSION);
 	composeCtlr.doAction(params);
 	if (params.sendNow) {

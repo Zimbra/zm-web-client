@@ -2347,6 +2347,11 @@ function(action, msg, extraBodyText) {
         this._attachSignatureVcard(sigId);
 	}
 	
+	if (this.isHidden && this._composeMode == DwtHtmlEditor.HTML) {
+		// wrap <html> and <body> tags around content, and set font style
+		value = ZmAdvancedHtmlEditor._embedHtmlContent(value, true);
+	}
+	
 	return value;
 };
 
@@ -2428,6 +2433,11 @@ function(msg, htmlMode, incWhat) {
 
 	if (bodyPart && AjxUtil.isObject(bodyPart) && bodyPart.truncated) {
 		body += crlf2 + ZmMsg.messageTruncated + crlf2;
+	}
+	
+	if (this.isHidden && this.getComposeMode() == DwtHtmlEditor.HTML) {
+		// strip wrapper tags from original msg
+		body = body.replace(/<\/?(html|head|body)[^>]*>/gi, '');
 	}
 
 	return {body:body || "", bodyPart:bodyPart, hasInlineImages:hasInlineImages, hasInlineAtts:hasInlineAtts};

@@ -230,15 +230,11 @@ function(html, insertFontStyle, onlyInnerContent) {
 		return cont.join("");
 	}
 
-	var p_style = "<style type='text/css'>p { margin: 0; }</style>"; // bug 3264
-
 	if (insertFontStyle) {
 		html = ZmAdvancedHtmlEditor._getFontStyle(html);
 	}
 	return [
-		"<html><head>",
-		p_style,
-		"</head><body>",
+		"<html><body>",
 		html,
 		"</body></html>"
 	].join("");
