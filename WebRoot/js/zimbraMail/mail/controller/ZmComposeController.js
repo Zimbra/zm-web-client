@@ -452,7 +452,7 @@ ZmComposeController.prototype.sendMsg =
 function(attId, draftType, callback, contactId, processDataURIImages) {
 	
     if (processDataURIImages !== false) {
-        var processDataURIImagesCallback = new AjxCallback(this, this._sendMsg, [attId, null, draftType, callback, contactId]);
+        var processDataURIImagesCallback = this._sendMsg.bind(this, attId, null, draftType, callback, contactId);
         var result = this._processDataURIImages(this._composeView._getIframeDoc() ,processDataURIImagesCallback);
         if (result){
             return;
@@ -511,7 +511,7 @@ function(attId, docIds, draftType, callback, contactId) {
 
 	if (isCancel || isModify) {
 		var appt = origMsg._appt;
-		var respCallback = new AjxCallback(this, this._handleResponseCancelOrModifyAppt);
+		var respCallback = this._handleResponseCancelOrModifyAppt.bind(this);
 		if (isCancel) {
 			appt.cancel(origMsg._mode, msg, respCallback);
 		} else {
@@ -569,8 +569,8 @@ function(attId, docIds, draftType, callback, contactId) {
 	// check for read receipt
 	var requestReadReceipt = !this.isHidden && this.isRequestReadReceipt();
 
-	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
-	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg, [draftType, msg]);
+	var respCallback = this._handleResponseSendMsg.bind(this, draftType, msg, callback);
+	var errorCallback = this._handleErrorSendMsg.bind(this, draftType, msg);
 	msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt, null, this._sendTime, isAutoSave);
 	this._resetDelayTime();
 };
@@ -608,8 +608,10 @@ function() {
 ZmComposeController.prototype._handleErrorSendMsg =
 function(draftType, msg, ex) {
     var retVal = false;
-    this.resetToolbarOperations();
-    this._composeView.enableInputs(true);
+	if (!this.isHidden) {
+		this.resetToolbarOperations();
+		this._composeView.enableInputs(true);
+	}
 
     appCtxt.notifyZimlets("onSendMsgFailure", [this, ex, msg]);//notify Zimlets on failure
     if (ex && ex.code) {
@@ -1118,7 +1120,7 @@ function() {
 	if (defaultAutoSaveInterval) {
 		if (!this._autoSaveTimer) {
             var interval = this._autoSaveInterval ? this._autoSaveInterval: defaultAutoSaveInterval
-			this._autoSaveTimer = window.setInterval(AjxCallback.simpleClosure(this._autoSaveCallback, this, true), interval * 1000);
+			this._autoSaveTimer = window.setInterval(this._autoSaveCallback.bind(this, true), interval * 1000);
 		}
 	}
 
@@ -1702,7 +1704,7 @@ function(draftType, attId, docIds, callback, contactId) {
 		return;
 	}
 
-	var respCallback = new AjxCallback(this, this._handleResponseSaveDraftListener, [draftType, callback]);
+	var respCallback = this._handleResponseSaveDraftListener.bind(this, draftType, callback);
 	this._resetDelayTime();
 	if (!docIds) {
 		this.sendMsg(attId, draftType, respCallback, contactId);
@@ -1734,7 +1736,7 @@ function(ev) {
 	var htmlEditor = this._composeView.getHtmlEditor();
 
 	if (spellCheckButton.isToggled()) {
-		var callback = new AjxCallback(this, this.toggleSpellCheckButton);
+		var callback = this.toggleSpellCheckButton.bind(this);
 		if (!htmlEditor.spellCheck(callback))
 			this.toggleSpellCheckButton(false);
 	} else {
@@ -1848,8 +1850,8 @@ function(mailtoParams) {
 	this._composeView.enableInputs(true);
 	if (this._canSaveDraft()) {
 		// save as draft
-		var callback = mailtoParams ? new AjxCallback(this, this.doAction, mailtoParams) :
-					   				  new AjxCallback(this, this._popShieldYesDraftSaved);
+		var callback = mailtoParams ? this.doAction.bind(this, mailtoParams) :
+					   				  this._popShieldYesDraftSaved.bind(this);
 		this._resetDelayTime();
 		this.sendMsg(null, ZmComposeController.DRAFT_TYPE_MANUAL, callback);
 	} else {
@@ -2013,6 +2015,7 @@ function(selected, account) {
 
 ZmComposeController.prototype.resetToolbarOperations =
 function() {
+	if (this.isHidden) { return; }
 	this._toolbar.enableAll(true);
 	if (this._composeView._isInviteReply(this._action)) {
 		var ops = [ ZmOperation.SAVE_DRAFT, ZmOperation.ATTACHMENT ];
@@ -2167,7 +2170,7 @@ ZmComposeController.prototype._processDataURIImages = function(idoc, callback){
     this._dataURIImagesLength = length;
     for( i = 0; i < length ; i++ ){
         var blob = blobArray[i];
-        var uploadImageCallback = new AjxCallback(this, this._handleUploadImage, [callback, blob.id]);
+        var uploadImageCallback = this._handleUploadImage.bind(this, callback, blob.id);
         this._uploadImage( blob, uploadImageCallback);
     }
     return true;

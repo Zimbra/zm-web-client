@@ -1388,6 +1388,7 @@ function(bEnableInputs) {
 
 ZmComposeView.prototype.enableInputs =
 function(bEnable) {
+	if (this.isHidden) { return; }
     this._recipients.enableInputs(bEnable);
 	this._subjectField.disabled = this._bodyField.disabled = !bEnable;
 };
