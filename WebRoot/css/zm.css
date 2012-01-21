@@ -4340,6 +4340,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin:1px 3px;
 }
 
+.ZInlineInput {
+	margin:0 .5em;
+}
+
 .ZLabelCell {
 	text-align:right;
 	vertical-align:top;
