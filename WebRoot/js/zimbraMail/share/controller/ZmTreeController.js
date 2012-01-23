@@ -441,7 +441,7 @@ function(treeItem, organizer, treeView, skipNotify) {
 
 ZmTreeController.prototype._expandTreeItem =
 function(treeItem, skipNotify) {
-	var expanded = appCtxt.get(ZmSetting.FOLDERS_EXPANDED);
+    var expanded = appCtxt.get(ZmSetting.FOLDERS_EXPANDED);
 	var folderId = treeItem.getData(Dwt.KEY_ID);
 	var parentTi = treeItem.parent;
 
@@ -908,6 +908,9 @@ ZmTreeController.prototype._treeListener =
 function(ev) {
 	var treeItem = ev && ev.item;
 	var overviewId = treeItem && treeItem._tree && treeItem._tree.overviewId;
+    var overview = appCtxt.getOverviewController().getOverview(overviewId);
+    var acct = overview.account;
+    appCtxt.accountList.setActiveAccount(acct);
 
 	// persist expand/collapse state for folders
 	var isExpand = ev.detail == DwtTree.ITEM_EXPANDED;
@@ -930,10 +933,9 @@ function(ev) {
 	}
 
 	// only handle events that come from headers in app overviews
-	var overview = appCtxt.getOverviewController().getOverview(overviewId);
 	if (!(ev && ev.detail && overview && overview.isAppOverview && treeItem._isHeader)) { return; }
 
-	var settings = appCtxt.getSettings(overview.account);
+	var settings = appCtxt.getSettings(acct);
 	var setting = settings.getSetting(ZmOrganizer.OPEN_SETTING[this.type]);
 	if (setting) {
 		setting.setValue(ev.detail == DwtTree.ITEM_EXPANDED);
