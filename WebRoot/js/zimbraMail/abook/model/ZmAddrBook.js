@@ -126,39 +126,42 @@ function(what) {
 		return false;
 	}
 
-
-	if (!(what instanceof ZmAddrBook)) {
-		var invalid = false;
-
-		if (this.nId == ZmOrganizer.ID_ROOT) {
-			// cannot drag anything onto root folder
-			invalid = true;
-		} else if (this.link) {
-			// cannot drop anything onto a read-only addrbook
-			invalid = this.isReadOnly();
+	if (what instanceof ZmAddrBook) {
+		if (!appCtxt.multiAccounts) {
+			return true;
 		}
+		return this.mayContainFolderFromAccount(what.getAccount()); // cannot move folders across accounts, unless the target is local
+	}
 
-		if (!invalid) {
-			// An item or an array of items is being moved
-			var items = (what instanceof Array) ? what : [what];
-			var item = items[0];
+	if (this.nId == ZmOrganizer.ID_ROOT) {
+		// cannot drag anything onto root folder
+		return false;
+	}
+	if (this.link) {
+		// cannot drop anything onto a read-only addrbook
+		if (this.isReadOnly()) {
+			return false;
+		}
+	}
 
-			if (item.type != ZmItem.CONTACT && item.type != ZmItem.GROUP) {
-				// only contacts are valid for addr books.
-				invalid = true;
-			} else {
-				// can't move items to folder they're already in; we're okay if
-				// we have one item from another folder
-				if (!invalid && item.folderId) {
-					invalid = true;
-					for (var i = 0; i < items.length; i++) {
-						var tree = appCtxt.getById(items[i].folderId);
-						if (tree != this) {
-							invalid = false;
-							break;
-						}
-					}
-				}
+	// An item or an array of items is being moved
+	var items = (what instanceof Array) ? what : [what];
+	var item = items[0];
+
+	if (item.type != ZmItem.CONTACT && item.type != ZmItem.GROUP) {
+		// only contacts are valid for addr books.
+		return false;
+	}
+
+	// can't move items to folder they're already in; we're okay if
+	// we have one item from another folder
+	if (item.folderId) {
+		var invalid = true;
+		for (var i = 0; i < items.length; i++) {
+			var tree = appCtxt.getById(items[i].folderId);
+			if (tree != this) {
+				invalid = false;
+				break;
 			}
 		}
 
