@@ -402,7 +402,7 @@
 			<table>
 				<tr>
 					<td valign=top align=right>
-						<table>
+						<table class='ZPropertySheet'>
 							<tr>
 								<td valign=top id='${openBtnId}'></td>
 								<td valign=top id='${dismissBtnId}'></td>
