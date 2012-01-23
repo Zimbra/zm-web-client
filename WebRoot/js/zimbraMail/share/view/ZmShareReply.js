@@ -156,7 +156,7 @@ function(options) {
 	
 	var doc = document;
 	this._replyTypeEl = doc.createElement("DIV");
-	this._replyTypeEl.style.paddingBottom = "0.125em";
+	this._replyTypeEl.style.paddingBottom = "0.5em";
 	this._replyTypeEl.appendChild(this._replyType.getHtmlElement());
 	
 	this._replyStandardMailNoteEl = doc.createElement("DIV");

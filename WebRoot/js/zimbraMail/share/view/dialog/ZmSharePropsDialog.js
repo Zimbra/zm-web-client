@@ -665,7 +665,7 @@ function() {
 	//this._passwordId = this._shareWithOptsProps.addProperty(ZmMsg.passwordLabel, password);
 
 	var otherHtml = [
-		"<table border='0' cellpadding='0' cellpadding='3'>",
+		"<table class='ZCheckboxTable'>",
 			"<tr>",
 				"<td>",
 					"<input type='checkbox' id='",inheritId,"' checked>",
@@ -692,19 +692,19 @@ function() {
 	// add role group
 	var idx = 0;
 	var html = [];
-	html[idx++] = "<table border=0 cellpadding=0 cellspacing=3>";
+	html[idx++] = "<table class='ZRadioButtonTable'>";
 
 	var roles = [ZmShare.ROLE_NONE, ZmShare.ROLE_VIEWER, ZmShare.ROLE_MANAGER, ZmShare.ROLE_ADMIN];
 	for (var i = 0; i < roles.length; i++) {
 		var role = roles[i];
 
-		html[idx++] = "<tr><td valign=top><input type='radio' name='";
+		html[idx++] = "<tr><td style='padding-left:10px; vertical-align:top;'><input type='radio' name='";
 		html[idx++] = roleRadioName;
 		html[idx++] = "' value='";
 		html[idx++] = role;
 		html[idx++] = "' id='ShareRole_";
         html[idx++] = role;
-        html[idx++] = "'></td><td style='font-weight:bold; padding-right:0.25em'>";
+        html[idx++] = "'></td><td style='font-weight:bold; padding:0 0.5em 0 .25em;'>";
 		html[idx++] = "<label for='ShareRole_";
         	html[idx++] = role;
         	html[idx++] = "'>";
