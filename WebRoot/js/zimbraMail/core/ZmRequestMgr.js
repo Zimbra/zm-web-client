@@ -67,7 +67,7 @@ ZmRequestMgr._nextReqId = 1;
 
 ZmRequestMgr.OFFLINE_HEAP_DUMP          = "heapdump_upload";
 ZmRequestMgr.OFFLINE_MUST_RESYNC        = "resync";
-ZmRequestMgr.OFFLINE_FOLDER_MOVE_FAILED = "foldermove_start";
+ZmRequestMgr.OFFLINE_FOLDER_MOVE_FAILED = "foldermove_failed";
 /**
  * Returns a string representation of the object.
  * 
