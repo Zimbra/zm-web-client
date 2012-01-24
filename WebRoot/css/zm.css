@@ -2349,12 +2349,13 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmCalDayTab{
-    height:21px;
+    height:1.909em;
     @roundCorners(0 0 4px 4px)@
-    max-width:80px;
-    min-width:80px;
+    max-width:9.091em;
+    min-width:9.091em;
+	overflow:hidden;
     white-space:nowrap;
-    width:80px;
+    width:9.091em;
     @Text@
     @SeparatorBg@
     padding-left:6px;
