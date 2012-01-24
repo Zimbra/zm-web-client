@@ -54,6 +54,7 @@
 
 <div class="LoginScreen">
 		<div class="center">
+            <div class="contentBox">
 			<div class="ImgAltBanner"></div>
 			<h1><a href="http://www.zimbra.com/" id="bannerLink" target="_new">
 				<span class="ImgLoginBanner"></span>
@@ -105,6 +106,7 @@
 			</table>
 
 			</form>
+            </div>
 
 			<div class="decor1"></div>
 		</div>

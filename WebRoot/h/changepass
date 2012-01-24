@@ -75,7 +75,8 @@
         </c:if>>
     <div class="LoginScreen">
         <div class="center">
-            <div class="ImgAltBanner"></div>					                                    
+            <div class="contentBox">
+            <div class="ImgAltBanner"></div>
             <h1>
                 <a href="http://www.zimbra.com/" target="_new">
                     <div class='ImgLoginBanner' style="margin: 20px 0 0 20px;"></div>
@@ -125,10 +126,11 @@
                                                      value="<fmt:message key="changePassword"/>"/></td>
                             </tr>
                         </table>
-                        <div class="decor1"></div>
                     </form>
                 </div>
             </c:if>
+            </div>
+            <div class="decor1"></div>
         </div>
     </div> 
 </body>
