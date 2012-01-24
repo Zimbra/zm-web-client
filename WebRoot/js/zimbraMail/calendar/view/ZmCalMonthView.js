@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -36,6 +36,10 @@ ZmCalMonthView.EXPANDED_HEIGHT_PERCENT = 70;
 ZmCalMonthView.EXPANDED_WIDTH_PERCENT = 50;
 ZmCalMonthView.ANIMATE_NO_OF_FRAMES = 5;
 ZmCalMonthView.ANIMATE_DURATION = 300;
+
+ZmCalMonthView.OUT_OF_BOUNDS_SNAP = -1000;
+
+ZmCalMonthView.ALL_DAY_DIV_BODY   = "_body";
 
 ZmCalMonthView.prototype.toString = 
 function() {
@@ -80,15 +84,15 @@ function() {
 	this._clearSelectedDay();
 };
 
-ZmCalMonthView.prototype._getWeekForAppt =
-function(appt) {
-	var day = this._getDayForAppt(appt);
-	return day ? this._weeks[day.week] : null;
-};
 
 ZmCalMonthView.prototype._getDayForAppt =
 function(appt) {
-	return this._dateToDayIndex[this._dayKey(appt.startDate)];
+	return this._getDayForDate(appt.startDate);
+};
+
+ZmCalMonthView.prototype._getDayForDate =
+function(date) {
+	return this._dateToDayIndex[this._dayKey(date)];
 };
 
 ZmCalMonthView.prototype._getDivForAppt =
@@ -112,66 +116,108 @@ function(date) {
 	return date.getDate();
 };
 
+ZmCalMonthView.prototype._getApptUniqueId =
+function(appt) {
+    return (appt._orig) ? appt._orig.getUniqueId() : appt.getUniqueId();
+}
+
 ZmCalMonthView.prototype._reserveRow = 
-function(day, data, appt, weekAppts) {
+function(day, apptSet, appt) {
 	var appts = day.allDayAppts;
-	if (data == null) { // find free slot or push
-		for (var k=0; k < appts.length; k++) {
-			if (appts[k] == null) {
-				appts[k] = appt;
-				return { row: k, first: appt, last: appt, num: 1, dow: day.dow};
-			}
-		}
-		appts.push(appt);
-		return { row: appts.length-1, first: appt, last: appt, num: 1, dow: day.dow};
-	} else { // reserve same row
-		var row = data.row;
-		var move = appts[row];
-		appts[row] = appt;
-		if (move) {
-			// in use, need to move to free slot or end
-			var moveIndex = -1;
-			for (var i=0; i < appts.length; i++) {
-				if (appts[i] == null) {
-					moveIndex = i;
-					break;
-				}
-			}
-			if (moveIndex == -1) moveIndex = appts.length;
-			appts[moveIndex] = move;
-			var uniqId = (move._orig) ? move._orig.getUniqueId() : move.getUniqueId();
-			weekAppts[uniqId].row = moveIndex;
-		} 
-		data.last = appt;
-		data.num++;
-		return data;
-	}
+    var row = -1;
+
+    if (apptSet.rows[day.week] === undefined) {
+        // New apptSet, or another week in the set.  Find a free slot or add to the end
+        row = this._allocateRow(day, apptSet);
+    } else {
+        // Use the existing row for the apptSet
+        row = apptSet.rows[day.week];
+    }
+    var apptToMove = appts[row];
+    appts[row] = appt;
+
+    if (apptToMove) {
+        // The row was in use, need to move to free slot or end
+        var uniqId = this._getApptUniqueId(apptToMove);
+        var apptSetToMove = this._apptSets[uniqId];
+        row = this._allocateRow(day, apptSetToMove);
+        appts[row] = apptToMove;
+        apptSetToMove.rows[day.week] = row;
+    }
 };
+
+ZmCalMonthView.prototype._allocateRow =
+function(day, apptSet) {
+    var appts = day.allDayAppts;
+    apptSet.rows[day.week] = appts.length;
+    for (var i=0; i < appts.length; i++) {
+        if (appts[i] == null) {
+            apptSet.rows[day.week] = i;
+            break;
+        }
+    }
+    return apptSet.rows[day.week];
+}
 
 ZmCalMonthView.prototype.addAppt = 
 function(appt) {
-	var day = this._getDayForAppt(appt);
-	if (!day) return;
-	
-	if (!appt.isAllDayEvent(appt)) {
-		if (!day.appts) day.appts = [];
-		day.appts.push(appt);
-		return;				
-	}
+    var day = this._getDayForAppt(appt);
 
-	// make sure multi-day all day appts line up
-	var uniqId = (appt._orig) ? appt._orig.getUniqueId() : appt.getUniqueId();
-	var week = this._weeks[day.week];
-	// check to see if appt already has a row number for its week
-	
-	var data = week.appts[uniqId];
-	if (!day.allDayAppts) day.allDayAppts = [];
-	if (data != null) {
-		this._reserveRow(day, data, appt, week.appts);
-	} else {
-		week.appts[uniqId] = this._reserveRow(day, null, appt, null);
-	}
+    if (appt._orig.isAllDayEvent() || appt._orig.isMultiDay()) {
+        var uniqueId = this._getApptUniqueId(appt);
+        var apptSet = this._apptSets[uniqueId];
+        if (apptSet == null) {
+            apptSet = this._createApptSet(appt, uniqueId);
+        }
+        apptSet.appts.push(appt);
+    }
+
+    if (day) {
+        if (appt._orig.isAllDayEvent(appt)) {
+            // make sure multi-day all day appts line up
+            // Assuming sliced up appts passed in chronological order (first is start) - verify
+            if (!day.allDayAppts) {
+                day.allDayAppts = [];
+            }  else {
+
+            }
+            // Reserve a row if its onscreen
+            this._reserveRow(day, apptSet, appt);
+        } else {
+            if (!day.appts) {
+                day.appts = [];
+            }
+            day.appts.push(appt);
+        }
+    }
+
 };
+
+
+// Multi-day appts have been sliced into a set of single day appts.  Accumulate
+// the appts into an apptSet, so that when DnD is performed we can update the
+// position of each appt slice that comprises the full appt.
+ZmCalMonthView.prototype._createApptSet =
+function(appt, uniqueId, day) {
+    var dow;
+    var apptSet = null;
+    if (day) {
+        dow = day.dow;
+    } else {
+        // DayIndex should be < 0 (no corresponding day, and assuming sliced appts
+        // passed in from earliest to last)
+        var dayIndex = this._createDayIndexFromDate(appt.startDate);
+        var zeroDay = this._days[0]
+        dow = (zeroDay.dow + dayIndex + 7) % 7;
+    }
+    // The set tracks the starting dow of the full appt, whether or not it is
+    // an all-day event (note that there can be multi-day non-all-day appts),
+    // the appt slices (one per day) that comprise the full appt, and the row
+    // position of each slice  (in case the full appt spans multiple weeks).
+    apptSet = { appts: [], rows: {}, dow: dow, allDay: appt.isAllDayEvent()};
+    this._apptSets[uniqueId] = apptSet;
+    return apptSet;
+}
 
 ZmCalMonthView.prototype._postSet = 
 function() {
@@ -193,21 +239,56 @@ function() {
 	}
 };
 
+
 ZmCalMonthView.prototype.createApptItems =
 function() {
-	var allDayParent = document.getElementById( this._daysId); 	
+	var allDayParent = document.getElementById( this._daysId);
+    var day;
+    // Create the all-day divs
+    this._apptAllDayDiv = {};
+    for (var uniqueId in this._apptSets) {
+        var apptSet = this._apptSets[uniqueId];
+        if (!apptSet.allDay) continue;
+
+        var currentWeek = -1;
+        var first = true;
+        var last = false;
+        var startDayIndex = this._createDayIndexFromDate(apptSet.appts[0]._orig.startDate);
+        // Set first (header div) if offscreen and first div, or first on the grid,
+        //   starting a new week.
+        // Set last if in last day (41) or last in appt sequence
+        for (var iAppt = 0; iAppt < apptSet.appts.length; iAppt++) {
+            var appt = apptSet.appts[iAppt];
+            day = this._getDayForAppt(appt);
+            first = (iAppt == 0);
+            last = (iAppt == (apptSet.appts.length - 1));
+            if (day) {
+                if (((startDayIndex + iAppt) == (this.numDays -1))) {
+                    last = true;
+                }
+                if (day.week != currentWeek) {
+                    // Catches 1st on-screen appt (0th or not)
+                    first = true;
+                    currentWeek = day.week;
+                }
+            }
+            var allDayDiv = this._createAllDayApptDiv(allDayParent, appt, iAppt, first, last);
+            if (!day) {
+                Dwt.setVisible(allDayDiv, false);
+            }
+            first = false;
+            last = false;
+        }
+    }
+
 	for (var i=0; i < 6; i++)	 {
-		var week = this._weeks[i];
-		for (var key in week.appts) {
-			var data = week.appts[key];
-			allDayParent.appendChild(this._createAllDayItemHtml(data.first, data.last));
-		}
 		for (var j=0; j < 7; j++)	 {
-			day = this._days[i*7+j];
+            var dayIndex = i*7+j;
+			day = this._days[dayIndex];
 			if (day.allDayAppts) {
 				for (var k=0; k < day.allDayAppts.length; k++) {
 					var appt = day.allDayAppts[k];			
-					var div = this._createAllDayFillerHtml(day);
+					var div = this._attachAllDayFillerHtml(appt, dayIndex);
 					this._fillers.push(div);
 				}
 			}
@@ -239,9 +320,9 @@ function() {
 		}
 		this._fillers = [];
 	}
+    this._apptSets = new Object();;
 	for (var i=0; i < 6; i++)	 {
-		this._weeks[i] = { appts: {} };
-		for (var j=0; j < 7; j++)	 {	
+		for (var j=0; j < 7; j++)	 {
 			day = this._days[i*7+j];
 			if (day.allDayAppts)	delete day.allDayAppts;
 			if (day.appts) delete day.appts;
@@ -249,8 +330,21 @@ function() {
 	}
 };
 
+
+ZmCalMonthView.prototype._createAllDayApptDiv =
+function(allDayParent, appt, iAppt, first, last) {
+    var allDayDiv = this._createAllDayItemHtml(appt, first, last);
+    allDayParent.appendChild(allDayDiv);
+    var divKey = appt.invId + "_" + iAppt.toString();
+    if (!this._apptAllDayDiv[divKey]) {
+        this._apptAllDayDiv[divKey] = allDayDiv.id;
+    }
+    return allDayDiv;
+}
+
+
 ZmCalMonthView.prototype._createAllDayItemHtml =
-function(appt, apptEnd) {
+function(appt, first, last) {
 	//DBG.println("---- createItem ---- "+appt);
 	
 	// set up DIV
@@ -260,67 +354,135 @@ function(appt, apptEnd) {
 	Dwt.setSize(div, 10, 10);
 	div.className = this._getStyle();
 
-	ZmCalColView._setApptOpacity(appt, div);
-
-
-	var bs = "";
-	if (!appt._fanoutFirst) bs = "border-left:none;";
-	if (!apptEnd._fanoutLast) bs += "border-right:none;";
-	var body_style = (bs != "") ? ("style='" + bs + "'") : "";
+    div.style.overflow = "hidden";
+    div.style.paddingBottom = "4px"
+    div.head = first;
+    div.tail = last;
 
 	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
-	div.innerHTML = ZmApptViewHelper._allDayItemHtml(appt, this._getItemId(appt), body_style, this._controller);
+    var id = this._getItemId(appt);
+	div.innerHTML = ZmApptViewHelper._allDayItemHtml(appt, id, this._controller, first, last);
+    var apptBodyDiv = div.firstChild;
+
+    if (!first) {
+        apptBodyDiv.style.cssText += "border-left: 0px none black !important;";
+    }
+    if (!last) {
+        apptBodyDiv.style.cssText += "border-right: 0px none black !important;";
+    }
+    // Set opacity on the table that is colored with the gradient - needed by IE
+    var tableEl = Dwt.getDescendant(apptBodyDiv, id + "_tableBody");
+    ZmCalBaseView._setApptOpacity(appt, tableEl);
 
 	return div;
 };
 
+
+ZmCalMonthView.prototype._attachAllDayFillerHtml =
+function(appt, dayIndex) {
+    var day = this._days[dayIndex];
+    var dayTable = document.getElementById(day.dayId);
+    return this._createAllDayFillerHtml(appt, dayIndex, dayTable);
+}
+
 ZmCalMonthView.prototype._createAllDayFillerHtml =
-function(day) {
-	var dayTable = document.getElementById(day.dayId);
-	var	result = dayTable.insertRow(-1);
+function(appt, dayIndex, dayTable) {
+    var targetTable = null;
+    var remove = false;
+    if (!dayTable) {
+        if (!this._fillerGenTableBody) {
+            var table = document.createElement("table");
+            this._fillerGenTableBody = document.createElement("tbody");
+            table.appendChild(this._fillerGenTableBody);
+        }
+        targetTable = this._fillerGenTableBody;
+        remove = true;
+    } else {
+        targetTable = dayTable;
+    }
+	var	result = targetTable.insertRow(-1);
+    if (appt) {
+        result.id = appt.invId + ":" + dayIndex;
+    }
 	result.className = "allday";
-	var cell = result.insertCell(-1);
-	cell.innerHTML = "<table class=allday><tr><td><div class=allday_item_filler></div></td></tr></table>";
-	cell.className = "calendar_month_day_item";
+    this._createAllDayFillerContent(result, true);
+    if (remove) {
+        result.parentNode.removeChild(result);
+    }
 	return result;
 };
+
+
+ZmCalMonthView.prototype._createAllDayFillerContent =
+function(tr, createCell) {
+    var cell;
+    if (createCell) {
+        cell = tr.insertCell(-1);
+    } else {
+        cell = tr.firstChild;
+    }
+    cell.innerHTML = "<table class=allday><tr><td><div class=allday_item_filler></div></td></tr></table>";
+    cell.className = "calendar_month_day_item";
+}
+
+
 
 ZmCalMonthView.prototype._createItemHtml =	
 function(appt) {
 	var result = this._getDivForAppt(appt).insertRow(-1);
-	result.className = "calendar_month_day_item_row";
-	this._getStyle(ZmCalBaseView.TYPE_APPT);
+	result.className = this._getStyle(ZmCalBaseView.TYPE_APPT);
+    result.apptStartTimeOffset  = this._getTimeOffset(appt.getStartTime());
+
 	this.associateItemWithElement(appt, result, ZmCalBaseView.TYPE_APPT);
 
-	var needsAction = appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
-	var calendar = appCtxt.getById(appt.folderId);
-	var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
-	var headerStyle = ZmCalBaseView._toColorsCss(needsAction ? colors.deeper.header : colors.standard.header);
-	var bodyStyle = ZmCalBaseView._toColorsCss(needsAction ? colors.deeper.body : colors.standard.body);
-    var fba = needsAction ? ZmCalBaseItem.PSTATUS_NEEDS_ACTION : appt.fba;
-    
-	var data = {
-		appt: appt,
-		duration: appt.getShortStartHour(),
-		headerStyle: headerStyle,
-		bodyStyle: bodyStyle,
-		multiday: appt._fanoutFirst != null,
-		first: appt._fanoutFirst,
-		last: appt._fanoutLast,
-		showAsColor : ZmApptViewHelper._getShowAsColorFromId(fba)
-	};
-
-	var cell = result.insertCell(-1);
-	cell.innerHTML = AjxTemplate.expand("calendar.Calendar#month_appt", data);
-	cell.className = "calendar_month_day_item";
+    this._createItemHtmlContents(appt, result);
 
 	return result;
 };
 
+ZmCalMonthView.prototype._createItemHtmlContents =
+function(appt, tr) {
+    var needsAction = appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
+    var calendar = appCtxt.getById(appt.folderId);
+    var fba = needsAction ? ZmCalBaseItem.PSTATUS_NEEDS_ACTION : appt.fba;
+
+    var tagIds  = appt.getVisibleTags();
+    var tagIcon = appt.getTagImageFromIds(tagIds);
+
+    var headerColors = ZmApptViewHelper.getApptColor(needsAction, calendar, tagIds, "header");
+    var headerStyle  = ZmCalBaseView._toColorsCss(headerColors.appt);
+    var bodyColors   = ZmApptViewHelper.getApptColor(needsAction, calendar, tagIds, "body");
+    var bodyStyle    = ZmCalBaseView._toColorsCss(bodyColors.appt);
+
+
+    var data = {
+        id: this._getItemId(appt),
+        appt: appt,
+        duration: appt.getShortStartHour(),
+        headerStyle: headerStyle,
+        bodyStyle: bodyStyle,
+        multiday: appt._fanoutFirst != null,
+        first: appt._fanoutFirst,
+        last: appt._fanoutLast,
+        showAsColor : ZmApptViewHelper._getShowAsColorFromId(fba),
+        tagIcon: tagIcon
+    };
+    ZmApptViewHelper.setupCalendarColor(true, bodyColors, tagIds, data, "headerStyle", null, 0, 0);
+
+    var cell = tr.insertCell(-1);
+    cell.className = "calendar_month_day_item";
+    cell.innerHTML = AjxTemplate.expand("calendar.Calendar#month_appt", data);
+    // Hack for IE - it doesn't display the tag and peel unless you  alter a containing className.
+    // The month template div does not have any classNames, so this is safe.
+    cell.firstChild.className = "";
+}
+
 ZmCalMonthView.prototype._getStyle =
 function(type, selected, disabled, item) {
 	if (type == ZmCalBaseView.TYPE_APPT && item && !item.isAllDayEvent()) {
-		return selected ? this._monthItemSelectedClass : this._monthItemClass;
+        return (!selected) ? this._monthItemClass :
+                 (disabled ? this._monthItemDisabledSelectedClass :
+                             this._monthItemSelectedClass);
 	} else {
 		return ZmCalBaseView.prototype._getStyle.apply(this, arguments);
 	}
@@ -350,7 +512,7 @@ function() {
     this._showWeekNumber = appCtxt.get(ZmSetting.CAL_SHOW_CALENDAR_WEEK);    
 	this._days = new Object();	
 	this._rowIds = new Object();		
-	this._weeks = new Array();
+    this._apptSets = new Object();
 	this._dayInfo = new Object();
 	this._fillers = [];
 	this._headerId = Dwt.getNextId();
@@ -429,7 +591,6 @@ function() {
 	html.append("</colgroup>");
 								
 	for (var i=0; i < 6; i++)	 {
-		this._weeks[i] = { appts: {} };
 		var weekId = Dwt.getNextId();
 		html.append("<tr id='" +  weekId + "'>");
 		for (var j=0; j < 7; j++)	 {
@@ -458,7 +619,10 @@ function(i) {
         var serverId = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
         var useISO8601WeekNo = (serverId && serverId.indexOf("Europe")==0 && serverId != "Europe/London");
 
-        var weekNumber = AjxDateUtil.getWeekNumber(day.date, this.firstDayOfWeek(), null, useISO8601WeekNo);
+        // AjxDateUtil alters the date.  Make a copy
+        var date = new Date(day.date.getTime());
+        var weekNumber = AjxDateUtil.getWeekNumber(date, this.firstDayOfWeek(), null, useISO8601WeekNo);
+
         var wkId = this._weekNumberIds[i];
         var wkCell = wkId ? document.getElementById(wkId) : null;
         if(wkCell) {
@@ -487,7 +651,7 @@ function() {
 	
 	for (var i=0; i < 6; i++) {
 		for (var j=0; j < 7; j++) {
-			var loc = i*7+j;
+			var loc = this._calcDayIndex(i, j);
 			var day = this._days[loc];
 			day.date = new Date(d.getTime());
 			this._dateToDayIndex[this._dayKey(day.date)] = day;
@@ -520,42 +684,85 @@ function() {
 	titleEl.innerHTML = this._title;
 };
 
+ZmCalMonthView.prototype._calcDayIndex =
+function(rowIndex, colIndex) {
+    return (rowIndex * 7) + colIndex;
+}
+
 ZmCalMonthView.prototype.getShortCalTitle = function(){
 	var formatter = DwtCalendar.getShortMonthFormatter();
 	return formatter.format(this._date);
 };
 
+ZmCalMonthView.prototype._setAllDayDivSize =
+function(allDayDiv, width) {
+    Dwt.setSize(allDayDiv, width, 16 + 4); //Dwt.DEFAULT);
+    var apptBodyDiv = document.getElementById(allDayDiv.id + ZmCalMonthView.ALL_DAY_DIV_BODY);
+    Dwt.setSize(apptBodyDiv, width, 16); //Dwt.DEFAULT);
+}
+
 ZmCalMonthView.prototype._layoutAllDay = 
 function() {
 	var dayY = [];
-	var dayWidth;
 	var sum = 0;
 	for (var i=0; i < 6; i++)  {
 		dayY[i] = sum;
 		var sz = Dwt.getSize(document.getElementById( this._days[7*i].tdId));
 		if (i == 0)
-			dayWidth = sz.x;
+			this.dayWidth = sz.x;
 		sum += sz.y;
 	}
-	
-	for (var i=0; i < 6; i++)	 {
-		var week = this._weeks[i];
-		for (var key in week.appts) {
-			var data = week.appts[key];
-			var appt = data.first;
-			var ae = document.getElementById( this._getItemId(appt));
-			if (ae) {
-				var apptWidth = (dayWidth * data.num) - 8;
-				var apptX = dayWidth*data.dow + 3;
-				var apptY = dayY[i] + (21*data.row) + 18 + 3; //first 17, each appt + 1, second 17, day heading
-				Dwt.setLocation(ae, apptX, apptY);
-				Dwt.setSize(ae, apptWidth, 16); //Dwt.DEFAULT);
-				var apptBodyDiv = document.getElementById(ae.id + "_body");
-				Dwt.setSize(apptBodyDiv, apptWidth, 16); //Dwt.DEFAULT);
-			}
-		}
-	}
+
+    var apptWidth = this.dayWidth;
+    for (var uniqueId in this._apptSets) {
+        var apptSet = this._apptSets[uniqueId];
+        if (!apptSet.allDay) continue;
+
+        for (var iAppt = 0; iAppt < apptSet.appts.length; iAppt++) {
+            var appt = apptSet.appts[iAppt];
+            var ae = document.getElementById( this._getItemId(appt));
+            if (ae) {
+                var width = this._calculateAllDayWidth(apptWidth, ae.head, ae.tail);
+                this._setAllDayDivSize(ae, width);
+
+                var day = this._getDayForAppt(appt);
+                if (day) {
+                    var dow = (apptSet.dow + iAppt) % 7;
+                    var apptX = this._calculateAllDayX(dow, ae.head);
+                    var apptY = dayY[day.week] + (21*apptSet.rows[day.week]) + 18 + 3; //first 17, each appt + 1, second 17, day heading
+                    Dwt.setLocation(ae, apptX, apptY);
+                }
+            }
+        }
+    }
+
 };
+
+// Week = week integer index, row = row index within cell, dow = day of week,
+// iAppt = appt slice of a multi-day appt, 0 .. (numDays-1)
+ZmCalMonthView.prototype._calculateAllDayX =
+function(dow, head) {
+    var apptX = 0;
+    if (head) {
+        apptX = (this.dayWidth * dow) + 3;
+    } else {
+        apptX = this.dayWidth * dow;
+    }
+    return apptX;
+}
+
+
+ZmCalMonthView.prototype._calculateAllDayWidth =
+function(baseWidth, head, tail) {
+    var apptWidth = baseWidth;
+    if (head) {
+        apptWidth -= 3;
+     }
+    //return (this.dayWidth * (dow + iAppt)) + 3;
+    // +1 for overlap to make box-shadow on the bottom be seamless
+    return apptWidth + (tail ? -3 : 1);
+}
+
 
 ZmCalMonthView.prototype._layout =
 function() {
@@ -592,7 +799,7 @@ function() {
         Dwt.setSize(wk, Dwt.DEFAULT, h);
     }
 
-	var colWidth = Math.floor(w/7) - 1;
+	colWidth = Math.floor(w/7) - 1;
 
 	var fdow = this.firstDayOfWeek();
 	for (var i=0; i < 7; i++) {
@@ -608,13 +815,13 @@ function() {
 	for (var i=0; i < 6; i++) {
 		var row = document.getElementById(this._rowIds[i]);
 		Dwt.setSize(row, Dwt.DEFAULT, Math.floor(100/6) + '%');
-        if(this._showWeekNumber) this.resizeWeekNumberCell(i, Math.floor(100/6) + '%');
 	}
 
 	this._layoutAllDay(h);
 	if(this._expandedDayInfo) {
         this.resizeCalendarGrid();
 	}
+    this.resizeAllWeekNumberCell();
 };
 
 ZmCalMonthView.getDayToolTipText =
@@ -636,11 +843,12 @@ function(date, list, controller, noheader) {
 		var ao = list.get(i);
 		if (ao.isAllDayEvent()) {
 			var bs = "";
-			if (!ao._fanoutFirst) bs = "border-left:none;";
-			if (!ao._fanoutLast) bs += "border-right:none;";
-			var bodyStyle = bs != "" ? ("style='" + bs + "'") : "";
+			//if (!ao._fanoutFirst) bs = "border-left:none;";
+			//if (!ao._fanoutLast) bs += "border-right:none;";
+			//var bodyStyle = bs != "" ? ("style='" + bs + "'") : "";
 			html[idx++] = "<tr><td><div class='appt'>";
-			html[idx++] = ZmApptViewHelper._allDayItemHtml(ao, Dwt.getNextId(), bodyStyle, controller);
+			html[idx++] = ZmApptViewHelper._allDayItemHtml(ao, Dwt.getNextId(),
+                controller, true, true);
 			html[idx++] = "</div></td></tr>";
 		}
 	}
@@ -676,7 +884,7 @@ function(date, list, controller, noheader) {
 ZmCalMonthView.prototype._mouseDownAction = 
 function(ev, div) {
 
-	if (Dwt.ffScrollbarCheck(ev)) { return false; }
+	//if (Dwt.ffScrollbarCheck(ev)) { return false; }
 
 	var type = this._getItemData(div, "type");
 	switch (type) {
@@ -688,9 +896,18 @@ function(ev, div) {
 				this._evtMgr.notifyListeners(ZmCalBaseView.VIEW_ACTION, this._actionEv);
 			}
 			break;
+        case ZmCalBaseView.TYPE_APPT:
+            this.setToolTipContent(null);
+            this._apptMouseDownAction(ev, div);
+            break;
+        case ZmCalBaseView.TYPE_ALL_DAY:
+            this.setToolTipContent(null);
+            this._apptMouseDownAction(ev, div);
+            break;
 	}
 	return false;
 };
+
 
 ZmCalMonthView.prototype._doubleClickAction =
 function(ev, div) {
@@ -700,6 +917,24 @@ function(ev, div) {
 		this._timeSelectionAction(ev, div, true);
 	}
 };
+
+
+ZmCalMonthView.prototype._getItemClickedSet =
+function(clickedEl) {
+    var clickedElSet = [];
+    var appt = this.getItemFromElement(clickedEl);
+    if (appt.isAllDayEvent()) {
+        var uniqueId = this._getApptUniqueId(appt);
+        var apptSet = this._apptSets[uniqueId];
+        for (var iAppt = 0; iAppt < apptSet.appts.length; iAppt++) {
+            clickedElSet.push(this._getAllDayDiv(appt, iAppt));
+        }
+    } else {
+        clickedElSet.push(clickedEl);
+    }
+    return clickedElSet;
+}
+
 
 ZmCalMonthView.prototype._timeSelectionAction =
 function(ev, div, dblclick) {
@@ -714,7 +949,11 @@ function(ev, div, dblclick) {
             var now = new Date();
             date.setHours(now.getHours(), now.getMinutes());
 			if(ev.button == DwtMouseEvent.LEFT) {
-            	AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.expandDay, [this._days[loc]]), 200);
+                if(ZmCalViewController._contextMenuOpened){
+                    ZmCalViewController._contextMenuOpened = false;
+                    break;
+                }
+                AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.expandDay, [this._days[loc]]), 200);
 			}
             break;
         default:
@@ -784,13 +1023,16 @@ function(markApptDays) {
     for (var i=0; i < 6; i++) {
 
         //clear all day appts
-        var week = this._weeks[i];
-        for (var key in week.appts) {
-            var data = week.appts[key];
-            var appt = data.first;
-            var ae = document.getElementById( this._getItemId(appt));
-            if(ae) {
-                ae.parentNode.removeChild(ae);
+        for (var uniqueId in this._apptSets) {
+            var apptSet = this._apptSets[uniqueId];
+            if (!apptSet.allDay) continue;
+
+            for (var iAppt = 0; iAppt < apptSet.appts.length; iAppt++) {
+                var appt = apptSet.appts[iAppt];
+                var ae = document.getElementById( this._getItemId(appt));
+                if(ae) {
+                    ae.parentNode.removeChild(ae);
+                }
             }
         }
 
@@ -856,8 +1098,6 @@ function() {
         if(AjxEnv.isSafari) {
             Dwt.setSize(this.getCell(i, 0), Dwt.DEFAULT, avgHeight);            
         }
-
-        this.resizeWeekNumberCell(i, avgHeight);
     }
 
     for (var j=0; j < 7; j++) {
@@ -873,6 +1113,23 @@ function() {
         }
     }
 };
+
+ZmCalMonthView.prototype.resizeAllWeekNumberCell =
+function() {
+    // Calculate the row heights and apply to the week number cells
+    var previousY = 0;
+    for (var iRow=0; iRow < 6; iRow++) {
+        var row = document.getElementById(this._rowIds[iRow]);
+        // Use location to calculate y size - getSize may get off by one
+        // due to rounding errors.
+        var location = Dwt.getLocation(row);
+        if (iRow > 0) {
+            var ySize = location.y - previousY;
+            this.resizeWeekNumberCell(iRow-1, ySize);
+        }
+        previousY = location.y;
+    }
+}
 
 ZmCalMonthView.prototype._closeDayView =
 function() {
@@ -1099,6 +1356,7 @@ function() {
     if(!this._expandedDayInfo) return;
     this.clearCellHeight(this._expandedDayInfo);
     this.resizeCalendarGrid();
+    this.resizeAllWeekNumberCell();
     this._expandedDayInfo = null;
 };
 
@@ -1173,3 +1431,513 @@ function(rowId, colId) {
     }
 
 };
+
+// --- Overrides of ZmCalBaseView Appt DnD, and custom DnD functions
+ZmCalMonthView.prototype._createContainerRect =
+function(data) {
+    var calendarBody = document.getElementById(this._bodyId);
+    var calPt = Dwt.getLocation(calendarBody);
+    var calSize = Dwt.getSize(calendarBody);
+    this._containerRect = new DwtRectangle(calPt.x, calPt.y, calSize.x, calSize.y);
+    data.originX = calPt.x;
+    data.originY = calPt.y;
+    DBG.println(AjxDebug.DBG3,"_createContainerRect containerRect.y: " + calPt.y);
+}
+
+
+// called when DND is confirmed after threshold
+ZmCalMonthView.prototype._apptDndBegin =
+function(data) {
+	var loc = Dwt.getLocation(data.apptEl);
+    data.dndObj = {};
+    data.apptX = loc.x;
+    data.apptY = loc.y;
+    //DBG.println(AjxDebug.DBG3,"MouseMove Begin apptOffset.x,y: " + data.apptOffset.x + "," + data.apptOffset.y +
+    //    ", originX, originY: " + data.originX + "," + data.originY);
+
+    this._colWidth = this.dayWidth;
+
+    data.snap = this._snapXYToDate(data.docX - data.originX, data.docY - data.originY);
+    if (data.snap == null) return false;
+
+    var originalAppt = data.appt._orig;
+    data.startDate   = new Date(originalAppt.getStartTime());
+    var date = new Date(data.startDate);
+    date.setHours(0,0,0,0);
+    data.startDayIndex = this._createDayIndexFromDate(date);
+    data.offsetDayIndex = data.snap.dayIndex - data.startDayIndex;
+    data.startDateOffset  = -(data.offsetDayIndex * AjxDateUtil.MSEC_PER_DAY);
+    data.timeOffset  = [];
+
+    if (data.appt.isAllDayEvent()) {
+        // All day, possibly multi-day appt
+        data.timeOffset.push(0);
+        data.numDays = this._createDayIndexFromDate(originalAppt.endDate) - data.startDayIndex;
+        data.offsetY  = [];
+        var allDayDiv = null;
+        var blankHtml = null;
+
+        // Offscreen divs are already setup, merely not positioned and made visible.
+        // Alter the display html of onscreen divs from 2nd to last-1 to be blank (!head and !tail)
+        for (var i = 0; i < data.numDays; i++) {
+            var iDay = data.startDayIndex + i;
+            allDayDiv = this._getAllDayDiv(data.appt, i);
+            if ((iDay >= 0) && (iDay < this.numDays)) {
+                // Initially onscreen div
+                day = this._days[iDay];
+                this._calculateOffsetY(data, allDayDiv, day.week);
+                if (data.numDays > 1) {
+                    if (i == 0) {
+                        allDayDiv.saveHtml  = allDayDiv.innerHTML;
+                        this._clearIcon(allDayDiv.id, "tag");
+                        this._clearIcon(allDayDiv.id, "peel");
+                    } else {
+                        if (allDayDiv.head || (allDayDiv.tail  && (i < (data.numDays - 1)))) {
+                            allDayDiv.saveHtml  = allDayDiv.innerHTML;
+                            if (!blankHtml) {
+                                var itemId = this._getItemId(data.appt);
+                                blankHtml = ZmApptViewHelper._allDayItemHtml(data.appt, itemId, this._controller, false, false);
+                            }
+                            allDayDiv.innerHTML = blankHtml;
+                            allDayDiv.firstChild.id = allDayDiv.id + ZmCalMonthView.ALL_DAY_DIV_BODY;
+
+                            allDayDiv.firstChild.style.cssText += "border-left: 0px none black !important;";
+                            allDayDiv.firstChild.style.cssText += "border-right: 0px none black !important;";
+                            this._setAllDayDnDSize(allDayDiv, false, false);
+                         }
+                    }
+                }
+
+            }
+            //this._setAllDayDnDSize(data, i, allDayDiv);
+            this._highlightAllDayDiv(allDayDiv, data.appt, true);
+        }
+
+    } else {
+        // Non-all day appt - It could be a multi-day non-all-day appt
+        var uniqueId = this._getApptUniqueId(data.appt);
+        var apptSet = this._apptSets[uniqueId];
+        if (!apptSet) {
+             // Non-multiday, Non-all-day
+            var apptDay = this._getDayForAppt(data.appt);
+            apptSet = this._createApptSet(data.appt, uniqueId, apptDay);
+            apptSet.appts.push(data.appt);
+        }
+        data.trEl = [];
+        data.tableEl = [];
+        for (var iAppt = 0; iAppt < apptSet.appts.length; iAppt++) {
+            var appt = apptSet.appts[iAppt];
+            var trId = this._getItemId(appt);
+            var trEl = document.getElementById(trId);
+            if (trEl == null) {
+                // Offscreen ,create a tr for DnD
+                trEl = document.createElement("tr");
+                trEl.className = "calendar_month_day_item_row_selected";
+                this._createItemHtmlContents(appt, trEl);
+                this.associateItemWithElement(appt, trEl, ZmCalBaseView.TYPE_APPT);
+            }
+            data.tableEl[iAppt] = Dwt.getDescendant(trEl, this._getItemId(appt) + "_tableBody");
+            data.trEl.push(trEl);
+            data.timeOffset.push(this._getTimeOffset(appt.getStartTime()));
+        }
+        this._calculateWeekY(data);
+        data.apptDiv = {};
+    }
+
+	data.dndStarted = true;
+	return true;
+};
+
+ZmCalMonthView.prototype._clearIcon =
+function(allDayDivId, iconName) {
+    var td = document.getElementById(allDayDivId + "_" + iconName);
+    if (td) {
+        td.innerHTML = "";
+    }
+}
+
+
+ZmCalMonthView.prototype._highlightAllDayDiv =
+function(allDayDiv, appt, highlight) {
+    var apptBodyDiv = document.getElementById(allDayDiv.id + ZmCalMonthView.ALL_DAY_DIV_BODY);
+    var tableEl = document.getElementById(this._getItemId(appt) + "_tableBody");
+    // Not altering opacity - it was setting it to 0.7 for DnD, but the base opacity for all day is 0.4
+    if (highlight) {
+        Dwt.addClass(apptBodyDiv, DwtCssStyle.DROPPABLE);
+        Dwt.setZIndex(allDayDiv, "1000000000");
+    } else {
+        Dwt.delClass(apptBodyDiv, DwtCssStyle.DROPPABLE);
+        Dwt.setZIndex(allDayDiv, "");
+    }
+}
+
+ZmCalMonthView.prototype._setAllDayDnDSize =
+function(allDayDiv, first, last) {
+    var width = this._calculateAllDayWidth(this.dayWidth, first, last);
+    this._setAllDayDivSize(allDayDiv, width);
+}
+
+ZmCalMonthView.prototype._getAllDayDiv =
+function(appt, iSlice) {
+    var divKey = appt.invId + "_" + iSlice.toString();
+    var allDayDivId = this._apptAllDayDiv[divKey];
+    return document.getElementById(allDayDivId);
+
+}
+
+
+// Generate a dayIndex that may be < 0 or > (number of days-1), using this._days[0] as
+// the 0 reference
+ZmCalMonthView.prototype._createDayIndexFromDate =
+function(dayDate) {
+    // Bug 68507: all-day appointments don't appear correctly in month view
+    // Round it.  If the dayDate is has a daylight savings time transition between itself
+    // and the current day, the day index may be off by +/- 1/24.  The DayIndex needs
+    // to be an integer value, otherwise we get incorrect dayOfWeek values (dayIndex % 7)
+    return Math.round((dayDate.getTime() -
+        this._days[0].date.getTime())/AjxDateUtil.MSEC_PER_DAY);
+}
+
+
+// Calculate the y position of each week
+ZmCalMonthView.prototype._calculateWeekY =
+function(data) {
+	data.weekY = [];
+	var y = 0;
+	for (var iWeek=0; iWeek < 6; iWeek++)  {
+		data.weekY[iWeek] = y;
+		var size = Dwt.getSize(document.getElementById( this._days[7*iWeek].tdId));
+		y += size.y;
+	}
+    data.weekY[6] = y;
+}
+
+ZmCalMonthView.prototype._calculateOffsetY =
+function(data, allDayDiv, week) {
+    // Record the y offset within the start cell for a particular week
+    if (!data.weekY) {
+        this._calculateWeekY(data);
+    }
+    if (data.offsetY[week] === undefined) {
+        var allDayDivPt = Dwt.getLocation(allDayDiv);
+        data.offsetY[week] = (allDayDivPt.y - data.weekY[week]);
+    }
+}
+
+ZmCalMonthView.prototype._getTimeOffset =
+function(time) {
+    var date = new Date(time);
+    date.setHours(0,0,0,0);
+    return time - date.getTime();
+}
+
+
+ZmCalMonthView.prototype._snapXYToDate =
+function(x, y) {
+    var colIndex = Math.floor(x/this._colWidth);
+    var rowIndex = 5;
+
+    // Recheck the row heights each time - these can change as an DnD element
+    // moves and out, potentially expanding or contracting a cell
+    var height = 0;
+    for (var iRow=0; iRow < 6; iRow++) {
+        var row = document.getElementById(this._rowIds[iRow]);
+        var rowSize = Dwt.getSize(row);
+        height += rowSize.y;
+        if (y < height) {
+            rowIndex = iRow;
+            break;
+        }
+    }
+    // containerRect should aways have constrained this to be 0 <= index < numDays
+    var dayIndex = this._calcDayIndex(rowIndex, colIndex);
+    var dayOffset = 0;
+    if (dayIndex < 0) {
+        dayOffset = -dayIndex;
+        dayIndex = 0;
+    } else if (dayIndex >= this.numDays) {
+        dayOffset = dayIndex - this.numDays + 1;
+        dayIndex = this.numDays - 1;
+    }
+    var day = this._days[dayIndex];
+    var dayDate = new Date(this._days[dayIndex].date.getTime());
+    // Set to zero hours/min/sec/msec - the last day has a time set to 23:59:59:999
+    dayDate.setHours(0,0,0,0);
+
+    var snapDate = null;
+    if(day && dayDate) {
+         snapDate = new Date(dayDate.getTime() + (AjxDateUtil.MSEC_PER_DAY * dayOffset));
+    }
+    DBG.println(AjxDebug.DBG3,"mouseMove colIndex: " + colIndex + ", rowIndex: " + rowIndex + ", dayIndex: " + dayIndex + ", snapDate: " + snapDate);
+
+    return {date:snapDate, dayIndex:dayIndex};
+}
+
+
+ZmCalMonthView.prototype._clearSnap =
+function(snap) {
+    snap.dayIndex = ZmCalMonthView.OUT_OF_BOUNDS_SNAP;
+}
+
+
+ZmCalMonthView.prototype._doApptMove =
+function(data, deltaX, deltaY) {
+    var x = data.docX - data.originX + deltaX;
+    var y = data.docY - data.originY + deltaY;
+    //DBG.println(AjxDebug.DBG3,"_doApptMove docY: " + data.docY + ",  originY: " + data.originY + ",  deltaY: " + deltaY + ",  y: " + y);
+    var snap = this._snapXYToDate(x, y);
+    if ((snap != null) && (snap.dayIndex != data.snap.dayIndex)) {
+        DBG.println(AjxDebug.DBG3,"mouseMove new snap: " + snap.date + " (" + snap.dayIndex + ")   data snap: " +
+                     data.snap.date+ " (" + data.snap.dayIndex + ")");
+
+        if (data.appt.isAllDayEvent()) {
+            // Map the dayIndex to the start of the (potentially) multi-day appt
+            this._moveAllDayAppt(data, snap.dayIndex- data.offsetDayIndex);
+        } else {
+            this._moveApptRow(data, snap.dayIndex);
+        }
+        data.startDate = new Date(snap.date.getTime() + data.startDateOffset + data.timeOffset[0]);
+        data.snap = snap;
+    }
+
+}
+
+ZmCalMonthView.prototype._moveAllDayAppt =
+function(data, newDayIndex) {
+    var currentWeek = -1;
+    var firstDow = this.firstDayOfWeek();
+    for (var i = 0; i < data.numDays; i++) {
+        var iDay = newDayIndex + i;
+        var allDayDiv = this._getAllDayDiv(data.appt, i);
+        if ((iDay < 0) || (iDay >= this.numDays)) {
+            Dwt.setVisible(allDayDiv, false);
+        } else {
+            var dow = (newDayIndex + i) % 7;
+            var first = (i== 0) || (firstDow == dow);
+            var last  = ((i == (data.numDays-1) || (iDay == (this.numDays-1)) || (dow == (firstDow + 6))));
+            var apptX = this._calculateAllDayX(dow, first);
+            var day = this._days[iDay];
+            var apptY = 0;
+            Dwt.setVisible(allDayDiv, true);
+            this._setAllDayDnDSize(allDayDiv, first, last);
+            var size = Dwt.getSize(allDayDiv);
+            var halfHeight = size.y/2;
+            if (data.offsetY[day.week] !== undefined) {
+                apptY = data.weekY[day.week] + data.offsetY[day.week];
+            } else {
+                apptY = (data.weekY[day.week] + data.weekY[day.week + 1])/2 - halfHeight;
+            }
+            Dwt.setLocation(allDayDiv, apptX, apptY);
+        }
+    }
+}
+
+
+// Move a non-all-day appt
+ZmCalMonthView.prototype._moveApptRow =
+function(data, newDayIndex) {
+    newDayIndex = newDayIndex - data.offsetDayIndex;
+    var allDayParent = null;
+    for (var i = 0; i < data.trEl.length; i++) {
+        var day = this._days[newDayIndex + i];
+        if (day) {
+            if (!data.apptDiv[i]) {
+                // TR -> TD -> TemplateApptDiv.
+                var td =  data.trEl[i].firstChild;
+                var templateApptDiv = td.firstChild;
+                td.saveHTML = td.innerHTML;
+                // Replace the templateApptDiv with filler content
+                td.removeChild(templateApptDiv);
+                // Create a spacer row - changes in height invalidates the all day div positioning
+                this._createAllDayFillerContent(data.trEl[i], false);
+                if (!allDayParent) {
+                    allDayParent = document.getElementById( this._daysId);
+                }
+                data.apptDiv[i] = this._createDnDApptDiv(data, i, allDayParent, templateApptDiv);
+            }
+            Dwt.setVisible(data.apptDiv[i], true);
+            var apptTable = data.apptDiv[i].firstChild;
+            var apptSize = Dwt.getSize(apptTable);
+            var apptX = (this.dayWidth * day.dow) + this.dayWidth/2 - apptSize.x/2;
+            var apptY = (data.weekY[day.week] + data.weekY[day.week + 1])/2 - apptSize.y/2;
+            Dwt.setLocation(data.apptDiv[i], apptX, apptY);
+
+        }  else if (data.apptDiv[i]) {
+            Dwt.setVisible(data.apptDiv[i], false);
+        }
+    }
+}
+
+ZmCalMonthView.prototype._createDnDApptDiv =
+function(data, iAppt, allDayParent, templateApptDiv) {
+    var div = document.createElement("div");
+    var subs = { apptSlice:iAppt};
+    div.style.position = "absolute";
+    // Attach month appt to DnD proxy div
+    div.appendChild(templateApptDiv);
+
+    var trSize  = Dwt.getSize(data.trEl[iAppt]);
+    Dwt.setSize(div, trSize.x, Dwt.CLEAR);
+    Dwt.setZIndex(div, '100000000');
+    allDayParent.appendChild(div);
+
+    // Set the opacity on the table that has the gradient coloring; Needed for IE
+    Dwt.setOpacity(data.tableEl[iAppt], ZmCalColView._OPACITY_APPT_DND);
+    Dwt.addClass(div, DwtCssStyle.DROPPABLE);
+
+    return div;
+}
+
+
+ZmCalMonthView.prototype._reattachApptDnDHtml =
+function(data, startIndex, deselect) {
+     for (var i = 0; i < data.trEl.length; i++) {
+         var day = this._days[startIndex + i];
+         if (data.apptDiv[i]) {
+             // Detach the Appt DnD Proxy Div from the allDayParent
+             data.apptDiv[i].parentNode.removeChild(data.apptDiv[i]);
+         }
+
+         if (day && data.trEl[i]) {
+             // TD that originally contained the appt
+             var td = data.trEl[i].firstChild;
+             if (td.saveHTML) {
+                 if (startIndex == data.startDayIndex) {
+                     // Remove the filler
+                     td.removeChild(td.firstChild);
+                 } else {
+                     // Dropped in a new cell - find the correct position within the appts of the current day
+                     var tBody = document.getElementById(day.dayId);
+                     var insertIndex = 0;
+                     for (insertIndex = 0; insertIndex < tBody.childNodes.length; insertIndex++) {
+                         var targetTR = tBody.childNodes[insertIndex];
+                         if ((targetTR.apptStartTimeOffset !== undefined) && (targetTR.apptStartTimeOffset > data.timeOffset[i])) {
+                              break;
+                        }
+                     }
+                     // Remove the original TR from its day div
+                     if (data.trEl[i].parentNode) {
+                         data.trEl[i].parentNode.removeChild(data.trEl[i]);
+                     }
+                     data.trEl[i].removeChild(td);
+
+                     // Create a new TR in the new day div
+                     var tr = tBody.insertRow(insertIndex);
+                     tr.appendChild(td);
+                     tr.id = data.trEl[i].id;
+                     tr.className = data.trEl[i].className;
+                 }
+                 // Set the td with the original appt content.  Do via innerHTML since IE
+                 // does not handle the gradient coloring properly if the appt's div is simply moved
+                 td.innerHTML = td.saveHTML;
+                 // Hack for IE - it doesn't display the tag and peel unless you  alter a containing className.
+                 // The month template div does not have any classNames, so this is safe.
+                 td.firstChild.className = "";
+             }
+         }
+     }
+     data.apptDiv = {};
+}
+
+ZmCalMonthView.prototype._removeDnDApptDiv =
+function(data) {
+    if (data.apptDiv) {
+        for (var iAppt in data.apptDiv) {
+            data.apptDiv[iAppt].parentNode.removeChild(data.apptDiv[iAppt]);
+        }
+        data.apptDiv = null;
+    }
+}
+
+ZmCalMonthView.prototype._restoreApptLoc =
+function(data) {
+    if (data.appt.isAllDayEvent()) {
+        this._moveAllDayAppt(data, data.startDayIndex);
+    } else {
+        this._reattachApptDnDHtml(data, data.startDayIndex, false);
+    }
+    data.snap.dayIndex = data.startDayIndex;
+};
+
+ZmCalMonthView.prototype._deselectDnDHighlight =
+function(data) {
+    if (data.appt.isAllDayEvent()) {
+        for (var i = 0; i < data.numDays; i++) {
+            var allDayDiv = this._getAllDayDiv(data.appt, i);
+            if (allDayDiv) {
+                this._highlightAllDayDiv(allDayDiv, data.appt, false);
+            }
+        }
+    } else {
+        if (data.snap.dayIndex == ZmCalMonthView.OUT_OF_BOUNDS_SNAP) {
+            for (var i = 0; i < data.trEl.length; i++) {
+                var day = this._days[data.startDayIndex + i];
+                if (day) {
+                    var td = data.trEl[i].firstChild;
+                    // Set the opacity on the table containing the gradient coloring; needed for IE
+                    ZmCalBaseView._setApptOpacity(data.appt, data.tableEl[i]);
+                }
+            }
+        } else {
+            this._reattachApptDnDHtml(data, data.snap.dayIndex - data.offsetDayIndex, true);
+        }
+    }
+};
+
+ZmCalMonthView.prototype._restoreAppt =
+function(data) {
+   if (data.appt.isAllDayEvent()) {
+        for (var i = 0; i < data.numDays; i++) {
+            var allDayDiv = this._getAllDayDiv(data.appt, i);
+            if (allDayDiv.saveHtml !== undefined) {
+                allDayDiv.innerHTML = allDayDiv.saveHtml;
+                allDayDiv.saveHtml = undefined;
+            }
+        }
+    }
+};
+
+ZmCalMonthView.prototype._handleApptScrollRegion =
+function(docX, docY, incr, data) {
+	var offset = 0;
+    var div = document.getElementById(this._daysId);
+    var fullDiv = document.getElementById(this._bodyId);
+    var originPt = Dwt.getLocation(div);
+    var size = Dwt.getSize(div);
+    var he = document.getElementById(this._headerId);
+    var headingHeight = Dwt.getSize(he).y;
+    var headingBaseY  = Dwt.getLocation(he).y;
+
+    DBG.println(AjxDebug.DBG3,"_handleApptScrollRegion mouseY: " + docY + "    headingHeight:" + headingHeight +
+        "    headingBaseY: " + headingBaseY +  "    sizeY:" + size.y);
+
+	var upper = docY < headingBaseY + headingHeight + 4;;
+	var lower = docY > originPt.y + size.y - 8; // - 8;
+
+	if (upper || lower) {
+		var sTop = div.scrollTop;
+		if (upper && sTop > 0) {
+            DBG.println(AjxDebug.DBG3,"_handleApptScrollRegion sTop: " + sTop);
+			offset = -(sTop > incr ? incr : sTop);
+		} else if (lower) {
+            var fullSize = Dwt.getSize(fullDiv);
+            var sVisibleTop = fullSize.y - size.y;
+            DBG.println(AjxDebug.DBG3,"_handleApptScrollRegion sTop: " + sTop + ", sVisibleTop: " + sVisibleTop);
+			if (sTop < sVisibleTop) {
+				var spaceLeft = sVisibleTop - sTop;
+				offset = spaceLeft  > incr ?incr : spaceLeft;
+                DBG.println(AjxDebug.DBG3,"_handleApptScrollRegion spaceLeft: " + spaceLeft);
+			}
+		}
+		if (offset != 0) {
+			div.scrollTop += offset;
+            DBG.println(AjxDebug.DBG3,"_handleApptScrollRegion offset: " + offset);
+            this._containerRect.set(this._containerRect.x, this._containerRect.y - offset);
+            data.originY -= offset;
+            //DBG.println(AjxDebug.DBG3,"_handleApptScrollRegion new containerRect.y = " + this._containerRect.y + ",   originY = " + data.originY);
+		}
+
+	}
+	return offset;
+};
+

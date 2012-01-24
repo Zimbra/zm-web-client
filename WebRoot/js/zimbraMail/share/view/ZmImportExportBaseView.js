@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -340,7 +340,7 @@ function(templateId, data) {
 
 		var checkbox = new ZmImportExportDataTypeCheckbox({parent:this,checked:true});
 		checkbox.setImage(ZmApp.ICON[appName]);
-		checkbox.setText(ZmMsg[ZmApp.NAME[appName]] || appName);
+		checkbox.setText(ZmMsg[ZmApp.NAME[appName]] || ZmApp.NAME[appName] || appName);
 		// NOTE: I know it's the default join string but I prefer
 		//       explicit behavior.
 		checkbox.setValue(views.join(","));

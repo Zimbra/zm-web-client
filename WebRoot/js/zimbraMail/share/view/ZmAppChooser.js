@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -129,6 +129,7 @@ function(id, params) {
 
 	var buttonParams = {parent:this, id:ZmId.getButtonId(ZmId.APP, id), text:params.text,
 						image:params.image, index:params.index};
+    buttonParams.style = params.style ? params.style : DwtLabel.IMAGE_LEFT;
     var button = new ZmAppButton(buttonParams);
 	button.setToolTipContent(params.tooltip);
 	button.textPrecedence = params.textPrecedence;
@@ -234,7 +235,7 @@ function(id) {
  */
 ZmAppChooser.prototype._createButton =
 function(id) {
-	this.addButton(id, {text:ZmMsg[ZmApp.NAME[id]], image:ZmApp.ICON[id], tooltip:ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]],
+	this.addButton(id, {text:ZmMsg[ZmApp.NAME[id]] || ZmApp.NAME[id], image:ZmApp.ICON[id], tooltip:ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]],
 						textPrecedence:ZmApp.TEXT_PRECEDENCE[id], imagePrecedence:ZmApp.IMAGE_PRECEDENCE[id]});
 };
 

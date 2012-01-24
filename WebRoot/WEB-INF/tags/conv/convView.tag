@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -202,14 +202,14 @@
                                                 <th width="3%" nowrap><fmt:message key="folder"/>
                                                 <th width="3%" nowrap><fmt:message key="size"/>
                                                 <th width="2%" nowrap>
-                                                    <zm:currentResultUrl var="dateSortUrl" value="search" action="${actionVar}" context="${context}" csi="${param.csi}" css="${param.css eq 'dateDesc' ? 'dateAsc' : 'dateDesc'}"/>
+                                                <zm:currentResultUrl var="dateSortUrl" value="search" action="${actionVar}" context="${context}" csi="0" css="${param.css eq 'dateDesc' or empty param.css ? 'dateAsc' : 'dateDesc'}"/>
                                                 <a href="${fn:escapeXml(dateSortUrl)}"><fmt:message key="received"/></a>
                                             </tr>
                                             <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
                                                 <zm:currentResultUrl var="msgUrl" value="search" cid="${convSummary.id}" id="${hit.id}" action='${actionVar}' context="${context}"
                                                                      cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
-                                                <zm:currentResultUrl var="msgSepUrl" value="search" action="${actionVar}" context="${context}"
-                                                                         cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}" st="message" sc=""/>
+                                                <zm:currentResultUrl var="msgSepUrl" value="search" action="${message.isDraft ? 'compose' : actionVar}" context="${context}"
+                                                                         cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}" st="${message.isDraft ? '' : 'message'}" sc="" id="${message.id}"/>
                                                 <c:if test="${empty selectedRow and hit.id eq message.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
 
                                                 <c:set var="aid" value="A${hit.id}"/>
@@ -248,7 +248,7 @@
                                                         </c:otherwise>
                                                         </c:choose>
                                                     </td>
-                                                    <td nowrap>${fn:escapeXml(zm:getFolderName(pageContext, hit.messageHit.folderId))}</td>
+                                                    <td nowrap>${zm:getFolderName(pageContext, hit.messageHit.folderId)}</td>
                                                     <td nowrap>${fn:escapeXml(zm:displaySize(pageContext, hit.messageHit.size))}</td>
                                                     <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}</td>
                                                 </tr>

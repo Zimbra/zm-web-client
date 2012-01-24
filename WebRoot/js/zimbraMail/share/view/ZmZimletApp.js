@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -148,7 +148,9 @@ function(reset) {
 	// only set overview panel content if not in full screen mode
 	var avm = appCtxt.getAppViewMgr();
 	if (!avm.isFullScreen()) {
-		avm.setComponent(ZmAppViewMgr.C_TREE, this.getOverviewPanelContent());
+		var components = {};
+		components[ZmAppViewMgr.C_TREE] = this.getOverviewPanelContent();
+		avm.setViewComponents(ZmAppViewMgr.APP, components, true, this.getName());
 	}
 };
 

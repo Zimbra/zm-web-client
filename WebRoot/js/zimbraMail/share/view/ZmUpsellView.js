@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -45,7 +45,7 @@ function(x, y, width, height, showToolbar) {
 
 ZmUpsellView.prototype._getToolbarHeight =
 function() {
-    var topToolbar = appCtxt.getAppViewMgr().getCurrentViewComponent(ZmAppViewMgr.C_TOOLBAR_TOP);
+    var topToolbar = appCtxt.getAppViewMgr().getViewComponent(ZmAppViewMgr.C_TOOLBAR_TOP);
 	if (topToolbar) {
 		var sz = topToolbar.getSize();
 		var height = sz.y ? sz.y : topToolbar.getHtmlElement().clientHeight;

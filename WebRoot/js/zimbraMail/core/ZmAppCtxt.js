@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -191,6 +191,11 @@ function(settings, account) {
 ZmAppCtxt.prototype.get =
 function(id, key, account) {
 
+	//todo - when we re-enable IM, remove the following lines:
+	if (id == ZmSetting.IM_ENABLED) {
+		return false;
+	}
+
     //use parentAppCtxt in case of new window
     var context = this.isChildWindow ? parentAppCtxt : this;
 
@@ -355,9 +360,9 @@ function() {
  * @return	{DwtMessageDialog}	the message dialog
  */
 ZmAppCtxt.prototype.getYesNoMsgDialog =
-function() {
+function(id) {
 	if (!this._yesNoMsgDialog) {
-		this._yesNoMsgDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]});
+		this._yesNoMsgDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON], id: "YesNoMsgDialog"});
 	}	
 	return this._yesNoMsgDialog;
 };
@@ -426,6 +431,19 @@ function() {
 		this._newTagDialog = new ZmNewTagDialog(this._shell);
 	}
 	return this._newTagDialog;
+};
+
+/**
+ * Gets the new contact group dialog.
+ *
+ * @return	{ZmNewContactGroupDialog}	the new contact group dialog
+ */
+ZmAppCtxt.prototype.getNewContactGroupDialog =
+function() {
+	if (!this._newContactGroupDialog) {
+		this._newContactGroupDialog = new ZmNewContactGroupDialog(this._shell);
+	}
+	return this._newContactGroupDialog;
 };
 
 /**
@@ -500,20 +518,6 @@ function() {
 };
 
 /**
- * Gets the new notebook dialog.
- * 
- * @return	{ZmNewNotebookDialog}		the new notebook dialog
- */
-ZmAppCtxt.prototype.getNewNotebookDialog =
-function() {
-	if (!this._newNotebookDialog) {
-		AjxDispatcher.require(["NotebookCore", "Notebook"]);
-		this._newNotebookDialog = new ZmNewNotebookDialog(this._shell);
-	}
-	return this._newNotebookDialog;
-};
-
-/**
  * Gets the new task folder dialog.
  * 
  * @return	{ZmNewTaskFolderDialog}		the new task folder dialog
@@ -528,17 +532,17 @@ function() {
 };
 
 /**
- * Gets the page conflict dialog.
- * 
- * @return	{ZmPageConflictDialog}		the page conflict dialog
+ * Gets the new suggestion Preferences dialog
+ *
+ * @return	{ZmTimeSuggestionPrefDialog}
  */
-ZmAppCtxt.prototype.getPageConflictDialog =
+ZmAppCtxt.prototype.getSuggestionPreferenceDialog =
 function() {
-	if (!this._pageConflictDialog) {
-		AjxDispatcher.require(["NotebookCore", "Notebook"]);
-		this._pageConflictDialog = new ZmPageConflictDialog(this._shell);
-	}
-	return this._pageConflictDialog;
+	if (!this._suggestionPrefDialog) {
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
+        this._suggestionPrefDialog = new ZmTimeSuggestionPrefDialog(this._shell);
+    }
+    return this._suggestionPrefDialog;
 };
 
 /**
@@ -652,7 +656,7 @@ function() {
 ZmAppCtxt.prototype.getLinkPropsDialog =
 function() {
 	if (!this._linkPropsDialog) {
-		AjxDispatcher.require("Share");
+		AjxDispatcher.require("Extras");
 		this._linkPropsDialog = new ZmLinkPropsDialog(this._shell);
 	}
 	return this._linkPropsDialog;
@@ -751,14 +755,70 @@ function() {
 };
 
 /**
+ * Gets the priority message filter dialog.
+ * 
+ * @return {ZmPriorityMessageFilterDialog}  the priority message filter dialog
+ */
+ZmAppCtxt.prototype.getPriorityMessageFilterDialog = 
+function() {
+	if (!this._priorityMessageFilterDialog) {
+		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
+		this._priorityMessageFilterDialog = new ZmPriorityMessageFilterDialog();
+	}
+	return this._priorityMessageFilterDialog;
+};
+
+/**
+ * Gets the prompt dialog for running priority message filters
+ * 
+ * @return {ZmPriorityMesagePromptDialog} the priority message prompt dialog
+ */
+ZmAppCtxt.prototype.getPriorityMessagePromptDialog = 
+function() {
+	if (!this._priorityMessagePromptDialog) {
+		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
+		this._priorityMessagePromptDialog = new ZmPriorityMessagePromptDialog();		
+	}
+	return this._priorityMessagePromptDialog;
+};
+
+/**
+ * Gets the activity stream prompt dialog for running activity stream filters
+ * 
+ * @return {ZmActivityStreamPromptDialog}
+*/
+ZmAppCtxt.prototype.getActivityStreamFilterDialog = 
+function() {
+	if (!this._activityStreamFilterDialog) {
+		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
+		this._activityStreamFilterDialog = new ZmActivityStreamPromptDialog();
+	}
+	return this._activityStreamFilterDialog;
+};
+
+/**
+ * Gets the quickadd dialog for creating a contact
+ * 
+ * @return {ZmContactQuickAddDialog}
+ */
+ZmAppCtxt.prototype.getContactQuickAddDialog = 
+function() {
+	if (!this._contactQuickAddDialog) {
+		AjxDispatcher.require(["ContactsCore", "Contacts"]);
+		this._contactQuickAddDialog = new ZmContactQuickAddDialog();
+	}
+	return this._contactQuickAddDialog;
+};
+
+/**
  * Gets the confirm dialog.
  * 
  * @return	{DwtConfirmDialog}		the confirmation dialog
  */
 ZmAppCtxt.prototype.getConfirmationDialog =
-function() {
+function(id) {
 	if (!this._confirmDialog) {
-		this._confirmDialog = new DwtConfirmDialog(this._shell);
+		this._confirmDialog = new DwtConfirmDialog(this._shell, null, id);
 	}
 	return this._confirmDialog;
 };
@@ -775,20 +835,6 @@ function() {
 		this._uploadDialog = new ZmUploadDialog(this._shell);
 	}
 	return this._uploadDialog;
-};
-
-/**
- * Gets the import dialog.
- * 
- * @return	{ZmImportDialog}		the import dialog
- */
-ZmAppCtxt.prototype.getImportDialog =
-function() {
-	if (!this._importDialog) {
-		AjxDispatcher.require(["NotebookCore", "Notebook"]);
-		this._importDialog = new ZmImportDialog(this._shell);
-	}
-	return this._importDialog;
 };
 
 /**
@@ -814,6 +860,34 @@ function() {
 	}
 	return this._dumpsterDialog;
 };
+
+
+/**
+ * Gets the mail redirect dialog.
+ *
+ * @return	{ZmMailRedirectDialog}	the new mail redirect dialog
+ */
+ZmAppCtxt.prototype.getMailRedirectDialog =
+function() {
+	if (!this._mailRedirectDialog) {
+		this._mailRedirectDialog = new ZmMailRedirectDialog(this._shell);
+	}
+	return this._mailRedirectDialog;
+};
+
+/**
+ * Gets the mail retention warning dialog.
+ *
+ * @return	{ZmRetetionWarningDialog}	the new mail retention warning dialog
+ */
+ZmAppCtxt.prototype.getRetentionWarningDialog =
+function() {
+	if (!this._retentionWarningDialog) {
+		this._retentionWarningDialog = new ZmRetentionWarningDialog(this._shell);
+	}
+	return this._retentionWarningDialog;
+};
+
 
 /**
  * Runs the attach dialog callbacks.
@@ -851,7 +925,7 @@ function(callback) {
 ZmAppCtxt.prototype.getUploadConflictDialog =
 function() {
 	if (!this._uploadConflictDialog) {
-		AjxDispatcher.require(["NotebookCore", "Notebook"]);
+		AjxDispatcher.require(["Extras"]);
 		this._uploadConflictDialog = new ZmUploadConflictDialog(this._shell);
 	}
 	return this._uploadConflictDialog;
@@ -962,6 +1036,16 @@ function() {
 	return this.isChildWindow
 		? parentAppCtxt.accountList.activeAccount
 		: this.accountList.activeAccount;
+};
+
+/**
+ * Gets the active account.
+ *
+ * @return	{ZmZimbraAccount}	the active account
+ */
+ZmAppCtxt.prototype.isExternalAccount =
+function() {
+	return this.get(ZmSetting.IS_EXTERNAL);
 };
 
 /**
@@ -1164,6 +1248,28 @@ function() {
 ZmAppCtxt.prototype.getCurrentViewId =
 function() {
 	return this.getAppViewMgr().getCurrentViewId();
+};
+
+/**
+ * Gets the current view id.
+ * 
+ * @return	{String}		the current view type
+ */
+ZmAppCtxt.prototype.getCurrentViewType =
+function() {
+	return this.getAppViewMgr().getCurrentViewType();
+};
+
+/**
+ * Extracts the view type from a view ID.
+ * 
+ * @param	{string}	viewId		a view ID
+ * @return	{String}	the view type
+ */
+ZmAppCtxt.prototype.getViewTypeFromId =
+function(viewId) {
+	var array = viewId && viewId.split(ZmController.SESSION_ID_SEP);
+	return array ? array[0] : "";
 };
 
 /**
@@ -1462,6 +1568,7 @@ function() {
  */
 ZmAppCtxt.prototype.notifyZimlets =
 function(event, args, options) {
+	this.notifySkin(event, args, options); // Also notify skin
 
 	var context = this.isChildWindow ? parentAppCtxt : this;
 
@@ -1476,6 +1583,16 @@ function(event, args, options) {
 
 	return this.getZimletMgr().notifyZimlets(event, args);
 };
+
+ZmAppCtxt.prototype.notifySkin =
+function(event, args, options) {
+	var context = this.isChildWindow ? parentAppCtxt : this;
+	if (options && options.noChildWindow && this.isChildWindow) { return; }
+	try {
+		return window.skin && AjxUtil.isFunction(window.skin.handleNotification) && window.skin.handleNotification(event, args);
+	} catch (e) {}
+};
+
 
 /**
  * Gets the calendar manager.
@@ -1607,12 +1724,13 @@ function() {
 /**
  * Checks if my address belongs to the current user (include aliases).
  * 
- * @param {String}		addr			the address
- * @param {Boolean}		allowLocal		if <code>true</code>, domain is not required
+ * @param {String}		addr			            the address
+ * @param {Boolean}		allowLocal		            if <code>true</code>, domain is not required
+ * @param {Boolean}		excludeAllowFromAddress		if <code>true</code>, addresses in zimbraAllowFromAddresses are ignored
  * @return	{Boolean}		<code>true</code> if the given address belongs to the current user; <code>false</code> otherwise
  */
 ZmAppCtxt.prototype.isMyAddress =
-function(addr, allowLocal) {
+function(addr, allowLocal, excludeAllowFromAddress) {
 
 	if (allowLocal && (addr.indexOf('@') == -1)) {
 		addr = [addr, this.getUserDomain()].join("@");
@@ -1622,7 +1740,15 @@ function(addr, allowLocal) {
 		return true;
 	}
 
-	var allAddresses = appCtxt.get(ZmSetting.MAIL_ALIASES).concat(appCtxt.get(ZmSetting.ALLOW_FROM_ADDRESSES));
+	var allAddresses;
+    if(excludeAllowFromAddress){
+        allAddresses= appCtxt.get(ZmSetting.MAIL_ALIASES);
+    }
+    else
+    {
+        allAddresses= appCtxt.get(ZmSetting.MAIL_ALIASES).concat(appCtxt.get(ZmSetting.ALLOW_FROM_ADDRESSES));
+    }
+
 	if (allAddresses && allAddresses.length) {
 		for (var i = 0; i < allAddresses.length; i++) {
 			if (addr == allAddresses[i])
@@ -1705,30 +1831,6 @@ function(type, account) {
 	}
 };
 
-ZmAppCtxt.prototype.setNotifyDebug =
-function(notify) {
-
-    if (!window.isNotifyDebugOn) {
-        return;
-    }
-
-    if (this._notify) {
-        this._notify =  [this._notify, notify, "\n\n"].join("");
-    } else {
-        this._notify = ["\n\n", notify, "\n\n"].join("");
-    }
-};
-
-ZmAppCtxt.prototype.getNotifyDebug =
-function() {
-    return this._notify;
-};
-
-ZmAppCtxt.prototype.clearNotifyDebug =
-function() {
-    this._notify = "";
-};
-
 ZmAppCtxt.prototype.getOutsideMouseEventMgr =
 function() {
 	return DwtOutsideMouseEventMgr.INSTANCE;
@@ -1789,4 +1891,12 @@ ZmAppCtxt.prototype.isZDOnline =
 function() {
     var ac = window["appCtxt"].getAppController();
     return ac._isPrismOnline && ac._isUserOnline;
+};
+
+/**
+ * Returns true for enabling tinymce editor
+*/
+ZmAppCtxt.prototype.isTinyMCEEnabled =
+function() {
+    return true;
 };

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -72,7 +72,7 @@ a {
     background: -webkit-gradient(linear, left top, right top, from(#c5ccd4), to(#cbd2d8));
     margin: 0px;
     padding: 4px;
-    background-image:url("@AppContextPath@/img/mobile/iphone/pinstripes.png");
+    background-image:url("@AppContextPath@/img/mobile/iphone/pinstripes.png?v=@jsVersion@");
 }
 .left {
     float: left;
@@ -102,7 +102,7 @@ a {
     background-position:0px -1px;
 }
 #appbar,.delete_button,.tb,.searchButton, input[type="submit"], input.submit,.zo_select_button,.zo_button,.zo_button_disabled, .zo_button_group, input[type="button"], input[type="reset"],.searchButton {
-    background: url("@AppContextPath@/img/mobile/iphone-ext/common2.gif") repeat-x;
+    background: url("@AppContextPath@/img/mobile/iphone-ext/common2.gif?v=@jsVersion@") repeat-x;
     -webkit-user-select: none;
 }
 span.nstd {padding: 0px;margin: 0px;display: none;}
@@ -163,7 +163,7 @@ span.nstd {padding: 0px;margin: 0px;display: none;}
     overflow: hidden;
 }
 .appTab,.appTab-active{
-    background: url("@AppContextPath@/img/mobile/iphone-ext/AppsNav.png") no-repeat top left;
+    background: url("@AppContextPath@/img/mobile/iphone-ext/AppsNav.png?v=@jsVersion@") no-repeat top left;
 }
 a.cal-active { background-position: 50% -1px !important; }
 a.cal { background-position: 50% -50px !important; }
@@ -200,6 +200,7 @@ form {
     margin: 2px;
     border: 1px solid #a7b2bc;
     padding: 4px; /* font-size:medium;*/
+	overflow: hidden;
 }
 .tb, .stb {
     background-color: #EEE;
@@ -399,7 +400,7 @@ form {
     left:15px;
 }
 .Person48 {
-    background: url( "@AppContextPath@/img/large/ImgPerson_48.png" ) 90% 50% no-repeat;
+    background: url( "@AppContextPath@/img/large/ImgPerson_48.png?v=@jsVersion@" ) 90% 50% no-repeat;
     height: 50px;
     width: 50px;
     padding: 2px;
@@ -648,7 +649,7 @@ h1, h2, h3, h4, h5, h6 {
     height: 16px;
     max-height: 16px;
     display: inline-block;
-    background: url("@AppContextPath@/img/mobile/iphone-ext/common.png") no-repeat top left;
+    background: url("@AppContextPath@/img/mobile/iphone-ext/common.png?v=@jsVersion@") no-repeat top left;
     vertical-align:middle;
 }
 .SmlDocIcnHldr {

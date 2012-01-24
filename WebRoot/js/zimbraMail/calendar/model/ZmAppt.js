@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -500,6 +500,14 @@ function() {
 };
 
 /**
+ * Returns an object with layout coordinates for this appointment.
+ */
+ZmAppt.prototype.getLayoutInfo =
+function() {
+	return this._layout;
+};
+
+/**
  * Gets the appointment time summary.
  *
  * @param	{Array}	    buf		    buffer array to fill summary content
@@ -636,6 +644,7 @@ function(message) {
 	this.setFromMessage(message, viewMode);
 	this.name = message.subject;
 	this.location = message.invite.getLocation();
+	this.allDayEvent = message.invite.isAllDayEvent();
 	if (message.apptId) {
 		this.invId = message.apptId;
 	}

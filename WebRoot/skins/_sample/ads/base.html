@@ -20,14 +20,6 @@ skin.hideQuota = function () {
 	this.showQuota(false);
 }
 
-skin.showSearchBuilder = function (state) {
-	skin._showEl("search_builder_outer", state);
-	skin._showEl("skin_td_search_builder", state);
-}
-skin.hideSearchBuilder = function () {
-	this.showSearchBuilder(false);
-}
-
 skin.showTopToolbar = function (state) {
 	skin._showEl("skin_tr_top_toolbar", state);
 }
@@ -158,26 +150,6 @@ skin._reflowApp = function () {
 				</div>
 			</td>
 		</tr>
-
-<!-- search builder -->
-		<tr id='skin_tr_search_builder'>
-			<td colspan=5 id='skin_td_search_builder'>
-				<div id='search_builder_outer' style='display:none;position:relative;'>
-					<div id='skin_border_search_builder_toolbar' class='skin_container'>
-						<div id='skin_container_search_builder_toolbar' class='skin_container'>
-						<!-- search builder toolbar -->
-						</div>
-					</div>
-					<div id='skin_border_search_builder' class='skin_container'>
-						<div id='skin_container_search_builder' class='skin_container'>
-							<!-- search builder -->
-						</div>
-					</div>
-				</div>
-			</td>
-		</tr>
-
-
 
 <!-- current app, sash and top toolbar -->
 		<tr id='skin_tr_toolbar'>

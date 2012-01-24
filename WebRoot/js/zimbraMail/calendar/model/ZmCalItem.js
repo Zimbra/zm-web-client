@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -239,6 +239,13 @@ ZmCalItem.prototype.getOrigStartDate 	= function() { return this._origStartDate 
  * @return	{Date}	the original start time
  */
 ZmCalItem.prototype.getOrigStartTime 	= function() { return this.getOrigStartDate().getTime(); };
+
+/**
+ * Gets the original calendar item.
+ *
+ * @return	{ZmCalItem}	the original calendar item
+ */
+ZmCalItem.prototype.getOrig 	        = function() { return this._orig; };
 
 /**
  * Gets the original timezone.
@@ -1680,8 +1687,10 @@ function(mode, callback, msg, batchCmd, result) {
 					for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
 						var type = ZmMailMsg.ADDRS[i];
 	
-						// if on-behalf-of, dont set the from address
-						if (accountName && type == AjxEmailAddress.FROM) { continue; }
+						// if on-behalf-of, dont set the from address and
+                        // don't set the reset-from (only valid when receiving a message)
+						if ((accountName && type == AjxEmailAddress.FROM) ||
+                            (type == AjxEmailAddress.RESENT_FROM)) { continue; }
 	
 						var vector = msg.getAddresses(type);
 						var count = vector.size();
@@ -1755,96 +1764,6 @@ function() {
 	return this.getSummary(true);
 };
 
-/**
- * Gets the attach list as HTML.
- * 
- * @param {Object}		attach		a generic Object contain meta info about the attachment
- * @param {Boolean}		hasCheckbox		<code>true</code> to insert a checkbox prior to the attachment
- * @return	{String}	the HTML
- */
-ZmCalItem.prototype.getAttachListHtml =
-function(attach, hasCheckbox) {
-	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
-
-	// gather meta data for this attachment
-	var mimeInfo = ZmMimeTable.getInfo(attach.ct);
-	var icon = mimeInfo ? mimeInfo.image : "GenericDoc";
-	var size = attach.s;
-	var sizeText;
-	if (size != null) {
-		if (size < 1024)		sizeText = size + " B";
-		else if (size < 1024^2)	sizeText = Math.round((size/1024) * 10) / 10 + " KB";
-		else 					sizeText = Math.round((size / (1024*1024)) * 10) / 10 + " MB";
-	}
-
-	var html = [];
-	var i = 0;
-
-	// start building html for this attachment
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
-	if (hasCheckbox) {
-		html[i++] = "<td width=1%><input type='checkbox' checked value='";
-		html[i++] = attach.part;
-		html[i++] = "' name='";
-		html[i++] = ZmCalItem.ATTACHMENT_CHECKBOX_NAME;
-		html[i++] = "'></td>";
-	}
-
-	var hrefRoot = ["href='", msgFetchUrl, "&id=", this.invId, "&amp;part="].join("");
-	html[i++] = "<td width=20><a target='_blank' class='AttLink' ";
-	html[i++] = hrefRoot;
-	html[i++] = attach.part;
-	html[i++] = "'>";
-	html[i++] = AjxImg.getImageHtml(icon);
-	html[i++] = "</a></td><td><a target='_blank' class='AttLink' ";
-	if (appCtxt.get(ZmSetting.MAIL_ENABLED) && attach.ct == ZmMimeTable.MSG_RFC822) {
-		html[i++] = " href='javascript:;' onclick='ZmCalItemView.rfc822Callback(";
-		html[i++] = '"';
-		html[i++] = this.invId;
-		html[i++] = '"';
-		html[i++] = ",\"";
-		html[i++] = attach.part;
-		html[i++] = "\"); return false;'";
-	} else {
-		html[i++] = hrefRoot;
-		html[i++] = attach.part;
-		html[i++] = "'";
-	}
-	html[i++] = ">";
-	html[i++] = attach.filename;
-	html[i++] = "</a>";
-
-	var addHtmlLink = (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML) &&
-					   attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct));
-
-	if (sizeText || addHtmlLink) {
-		html[i++] = "&nbsp;(";
-		if (sizeText) {
-			html[i++] = sizeText;
-			html[i++] = ") ";
-		}
-		if (addHtmlLink) {
-			html[i++] = "<a style='text-decoration:underline' target='_blank' class='AttLink' ";
-			html[i++] = hrefRoot;
-			html[i++] = attach.part;
-			html[i++] = "&view=html'>";
-			html[i++] = ZmMsg.preview;
-			html[i++] = "</a>&nbsp;";
-		}
-		if (attach.ct != ZmMimeTable.MSG_RFC822) {
-			html[i++] = "<a style='text-decoration:underline' class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' ";
-			html[i++] = hrefRoot;
-			html[i++] = attach.part;
-			html[i++] = "&disp=a'>";
-			html[i++] = ZmMsg.download;
-			html[i++] = "</a>";
-		}
-	}
-
-	html[i++] = "</td></tr></table>";
-
-	return html.join("");
-};
 
 
 // Private / Protected methods

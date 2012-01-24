@@ -97,7 +97,7 @@
                                                     </c:url>
                                                     <a id="A${index}" href="${selectUrl}">
                                                         <app:img src="${folder.image}" alt="folder"/>
-                                                        <span <c:if test="${selected}">class='ZhTISelected'</c:if> style='vertical-align:middle'>${fn:escapeXml(label)}</span>
+                                                        <span <c:if test="${selected}">class='ZhTISelected'</c:if> style='vertical-align:middle'>${label}</span>
                                                     </a>
                                                 </td>
                                             </tr>

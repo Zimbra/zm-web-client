@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -14,7 +14,7 @@
  */
 /****************** OLD VERSION OF SCHEDULE VIEW *********************/
 ZmCalScheduleView = function(parent, posStyle, controller, dropTgt) {
-	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmId.VIEW_CAL_SCHEDULE, 1, true);
+	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, null, 1, true);
 };
 
 ZmCalScheduleView.prototype = new ZmCalColView;
@@ -25,7 +25,15 @@ function() {
 	return "ZmCalScheduleView";
 };
 
-
+ZmCalScheduleView.prototype._apptMouseDownAction =
+function(ev, apptEl) {
+    appt = this.getItemFromElement(apptEl);
+    if (appt.isAllDayEvent()) {
+        return false;
+    } else {
+        return ZmCalBaseView.prototype._apptMouseDownAction.call(this, ev, apptEl, appt);
+    }
+}
 
 
 
@@ -95,7 +103,9 @@ function(abook) {
     this._attendees[ZmCalBaseItem.EQUIPMENT] = {};
 
     var html = new AjxBuffer();
+    html.append("<div id='", this._bodyDivId, "' class=calendar_body style='position:absolute'>");
     html.append("<div id='", this._apptBodyDivId, "' style='width:100%;position:absolute;'>","</div>");
+    html.append("</div>");
     this.getHtmlElement().innerHTML = html.toString();
     
 };
@@ -103,7 +113,14 @@ function(abook) {
 
 ZmCalNewScheduleView.prototype._layout =
 function(refreshApptLayout) {
-	DBG.println(AjxDebug.DBG2, "ZmCalColView in layout!");
+	DBG.println(AjxDebug.DBG2, "ZmCalNewScheduleView in layout!");
+
+    var sz = this.getSize();
+	var width = sz.x;
+	var height = sz.y;
+    if (width == 0 || height == 0) { return; }
+    this._setBounds(this._bodyDivId, 0, 0, width, height);
+    this._setBounds(this._apptBodyDivId, 0, 0, width-Dwt.SCROLLBAR_WIDTH, height);
     //this._layoutAllDayAppts();
 	
 };
@@ -222,11 +239,13 @@ function(list) {
 		var size = list.size();
 		DBG.println(AjxDebug.DBG2,"list.size:"+size);
 		if (size != 0) {
-			this._computeApptLayout();
+            var showDeclined = appCtxt.get(ZmSetting.CAL_SHOW_DECLINED_MEETINGS);
+            this._computeApptLayout();
 			for (var i=0; i < size; i++) {
 				var ao = list.get(i);
-				if (ao && ao.isInRange(timeRange.start, timeRange.end)) {
-					this.addAppt(ao);
+				if (ao && ao.isInRange(timeRange.start, timeRange.end) &&
+				    (showDeclined || (ao.ptst != ZmCalBaseItem.PSTATUS_DECLINED))) {
+                    this.addAppt(ao);
 				}
 			}
 		}
@@ -309,7 +328,6 @@ function(metadataResponse) {
         emails = [],
         email,
         acct,
-        tb,
         i;
 
     for (email in objAttendees) {
@@ -329,8 +347,6 @@ function(metadataResponse) {
     this._scheduleView.setVisible(true);
     this._scheduleView.showMe();
     this._scheduleView.reparentHtmlElement(this._apptBodyDivId);
-    tb = this._controller._navToolBar[ZmId.VIEW_CAL];
-    tb.reparentHtmlElement(this._scheduleView._navToolbarContainerId);
 
     //Called to handle the sync issue
     this.resetListItems(this._calNotRenderedList);

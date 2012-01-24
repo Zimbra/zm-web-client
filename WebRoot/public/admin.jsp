@@ -78,6 +78,11 @@
 		}
 		request.setAttribute("packages", "dev");
 	}
+
+    Boolean isNewUI = !getParameter(request, "old", "0").equals("1");
+    if (!isNewUI) {
+		request.setAttribute("skin", "carbon");
+    }
 	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
 	
     String mode = (String)request.getAttribute("mode");
@@ -97,8 +102,11 @@
 	if (skin == null) {
 		skin = application.getInitParameter("zimbraDefaultAdminSkin");
 	}
-	Cookie skinCookie = new Cookie("ZA_SKIN",skin);
-	response.addCookie(skinCookie);
+
+    if (isNewUI) { //only save new skin in cookie "ZA_SKIN"
+	    Cookie skinCookie = new Cookie("ZA_SKIN",skin);
+	    response.addCookie(skinCookie);
+    }
 		
     String contextPath = request.getContextPath();
     if(contextPath == null || contextPath.equals("/")) {
@@ -111,6 +119,7 @@
 	pageContext.setAttribute("ext", ext);
 	pageContext.setAttribute("vers", vers);
 	pageContext.setAttribute("isDevMode", isDevMode);
+	pageContext.setAttribute("isNewUI", isNewUI);
 %>
 <%
 	Cookie testCookie = new Cookie("ZA_TEST", "true");
@@ -123,7 +132,7 @@
 <!--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -135,7 +144,7 @@
  * ***** END LICENSE BLOCK *****
 -->
 	<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
-	<fmt:setBundle basename="/messages/ZaMsg" scope='request' />
+	<fmt:setBundle basename="/messages/ZabMsg" scope='request' />
     <title><fmt:message key="zimbraAdminTitle"/></title>
 	<zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
 	<c:if test="${empty favIconUrl}">
@@ -148,9 +157,10 @@
 		appCurrentSkin = "${zm:jsEncode(skin)}";
 		appVers   = "${zm:jsEncode(vers)}";
 		appDevMode     = ${isDevMode};
+        appNewUI     = ${isNewUI};
 	</script>
 <jsp:include page="Resources.jsp">
-	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZaMsg,AjxKeys" />
+	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZaMsg,ZabMsg,AjxKeys" />
 	<jsp:param name="skin" value="${skin}" />
 </jsp:include>
 <style type="text/css">
@@ -195,10 +205,7 @@
     <% }
 %>
 <script type="text/javascript">
-AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(pageContext.request.locale)}";
-/*if(!AjxEnv.isFirefox1up && !AjxEnv.isFirefox3up && !AjxEnv.isFirefox2_0up && !AjxEnv.isNav7 && !AjxEnv.isIE6up && !AjxEnv.isIE7up)
-	alert(ZaMsg.ERROR_BROWSER_UNSUPORTED_TXT);
-*/	
+AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(pageContext.request.locale)}";	
 </script>
     <script type="text/javascript" language="JavaScript">
 	   function launch() {
@@ -254,7 +261,7 @@ AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(pageContext.request.locale)}";
     </script>
   </head>
   <body>
-    <script type="text/javascript" src="<%=contextPath%>/js/skin.js?v=<%=vers %>"></script> 
+    <script type="text/javascript" src="<%=contextPath%>/js/skin.js?v=<%=vers %>&skin=<%=skin%>"></script>
     <%
 		// NOTE: This inserts raw HTML files from the user's skin
 		//       into the JSP output. It's done *this* way so that

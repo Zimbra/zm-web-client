@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -171,32 +171,29 @@ function(isStart, ev) {
 		calDate = cal.getDate() || new Date();
 		this.setValue(field, AjxDateUtil.simpleComputeDateStr(calDate));
 	} else {
-		if (calDate)
-			cal.setDate(calDate);
-		else
-			this.setValue(field, null);
+                if (calDate)
+                        cal.setDate(calDate);
+                else
+                        this.setValue(field, null);
 	}
 };
-
-
 
 ZmExportView.prototype._dateCalSelectionListener = 
 function(isStart, ev) {
 	var sd = AjxDateUtil.simpleParseDateStr(this.getValue("startDateField"));
 	var ed = AjxDateUtil.simpleParseDateStr(this.getValue("endDateField"));
 	var newDate = AjxDateUtil.simpleComputeDateStr(ev.detail);
-
 	// change the start/end date if they mismatch
 	if (isStart) {
 		if (ed && (ed.valueOf() < ev.detail.valueOf())) {
 			this.setValue("endDateField", newDate);
 		}
-			this.setValue("startDateField", newDate);
+		this.setValue("startDateField", newDate);
 	} else {
 		if (sd && (sd.valueOf() > ev.detail.valueOf())) {
 			this.setValue("startDateField", newDate);
 		}
-			this.setValue("endDateField", newDate);
+		this.setValue("endDateField", newDate);
 	}
 };
 

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -49,12 +49,11 @@ ZmChooseFolderDialog = function(parent, className) {
 ZmChooseFolderDialog.prototype = new ZmDialog;
 ZmChooseFolderDialog.prototype.constructor = ZmChooseFolderDialog;
 
+ZmChooseFolderDialog.prototype.isZmChooseFolderDialog = true;
+ZmChooseFolderDialog.prototype.toString = function() { return "ZmChooseFolderDialog"; };
+
 ZmChooseFolderDialog.NEW_BUTTON = ++DwtDialog.LAST_BUTTON;
 
-ZmChooseFolderDialog.prototype.toString =
-function() {
-	return "ZmChooseFolderDialog";
-};
 
 /**
  * Since this dialog is intended for use in a variety of situations, we need to be
@@ -121,18 +120,23 @@ function(params) {
 		}
 	}
 
-	this.setTitle(params.title || ZmMsg.chooseFolder);
-
+	if (this.setTitle) {
+		this.setTitle(params.title || ZmMsg.chooseFolder);
+	}
 	var descCell = document.getElementById(this._folderDescDivId);
-	descCell.innerHTML = params.description || "";
+	if (descCell) {
+		descCell.innerHTML = params.description || "";
+	}
 
 	var treeIds = this._treeIds = (params.treeIds && params.treeIds.length)
 		? params.treeIds : [ZmOrganizer.FOLDER];
 
 	// New button doesn't make sense if we're only showing saved searches
 	var searchOnly = (treeIds.length == 1 && treeIds[0] == ZmOrganizer.SEARCH);
-	var newButton = this.getButton(ZmChooseFolderDialog.NEW_BUTTON);
-	newButton.setVisible(!searchOnly && !params.hideNewButton);
+	var newButton = this._getNewButton();
+	if (newButton) {
+		newButton.setVisible(!searchOnly && !params.hideNewButton);
+	}
 
 	this._data = params.data;
 
@@ -173,10 +177,14 @@ function(params) {
 	if (treeIdMap[ZmOrganizer.CALENDAR]) pkg.push("CalendarCore","Calendar");
 	if (treeIdMap[ZmOrganizer.ADDRBOOK]) pkg.push("ContactsCore","Contacts");
 	if (treeIdMap[ZmOrganizer.FOLDER]) pkg.push("MailCore","Mail");
-	if (treeIdMap[ZmOrganizer.NOTEBOOK]) pkg.push("NotebookCore","Notebook");
 	if (treeIdMap[ZmOrganizer.TASKS]) pkg.push("TasksCore","Tasks");
 	
 	AjxDispatcher.require(pkg, true, new AjxCallback(this, this._doPopup, [popupParams]));
+};
+
+ZmChooseFolderDialog.prototype._getNewButton =
+function () {
+	return this.getButton(ZmChooseFolderDialog.NEW_BUTTON);
 };
 
 ZmChooseFolderDialog.prototype._doPopup =
@@ -206,9 +214,24 @@ function(params) {
 		this._resetTree(params.treeIds, ov);
 	}
 
-	this._focusElement = this._inputField;
-	this._inputField.setValue("");
-	ZmDialog.prototype.popup.call(this);
+	if (this.isZmDialog) {
+		this._focusElement = this._inputField;
+		this._inputField.setValue("");
+		this._selected = null;
+		ZmDialog.prototype.popup.call(this);
+	}
+};
+
+/**
+ * Clears selected items
+ */
+ZmChooseFolderDialog.prototype.popdown = 
+function() {
+	var ov = this._getOverview();
+	if (ov && ov.itemSelected) { //I'm not sure how ov.itemSelected may be not a function, but I got that in ZD so making sure it's defined. 
+		ov.itemSelected(null);  //clear selected items
+	}
+	DwtDialog.prototype.popdown.call(this);
 };
 
 ZmChooseFolderDialog.prototype.getOverviewId =
@@ -253,7 +276,7 @@ function(treeIds, overview) {
 	folderTree.addChangeListener(this._changeListener);
 
 	this._loadFolders();
-	this._resetTreeView(true);
+	this._resetTreeView(true,true);
 };
 
 ZmChooseFolderDialog.prototype.reset =
@@ -302,13 +325,19 @@ function(ftc, dialog, params) {
 	this._creatingFolder = true;
 };
 
+// After the user creates a folder, select it and optionally move items to it.
 ZmChooseFolderDialog.prototype._folderTreeChangeListener =
 function(ev) {
 	if (ev.event == ZmEvent.E_CREATE && this._creatingFolder) {
 		var organizers = ev.getDetail("organizers") || (ev.source && [ev.source]);
 		var org = organizers[0];
-		var tv = this._treeView[org.getAccount().id][org.type];
-		tv.setSelected(organizers[0], true);
+		if (org) {
+			var tv = this._treeView[org.getAccount().id][org.type];
+			tv.setSelected(org, true);
+			if (this._moveOnFolderCreate && !ev.shiftKey && !ev.ctrlKey) {
+				tv._itemClicked(tv.getTreeItemById(org.id), ev);
+			}
+		}
 		this._creatingFolder = false;
 	}
 	this._loadFolders();
@@ -331,7 +360,7 @@ function(ev) {
 		for (var i = 0; i < folderList.length; i++) {
 			var folder = folderList[i];
 			if (folder.mayContain && !folder.mayContain(this._data, null, this._acceptFolderMatch)) {
-				if(this._data instanceof ZmFolder) {
+				if (this._data.isZmFolder) {
 					msg = ZmMsg.badTargetFolder; 
 				} else {
 					var items = AjxUtil.toArray(this._data);
@@ -418,7 +447,6 @@ function(ev) {
 		return;
 	}
 
-
 	var key = DwtKeyEvent.getCharCode(ev);
 	if (key == 9) {
 		return;
@@ -453,7 +481,8 @@ function(ev) {
 
 	// now that we know which folders match, hide all items and then show
 	// the matches, expanding their parent chains as needed
-	this._resetTreeView(false);
+	this._resetTreeView(false, true);
+
 	for (var i = 0, len = matches.length; i < len; i++) {
 		var ti = matches[i];
 		ti._tree._expandUp(ti);
@@ -467,19 +496,22 @@ function(ev) {
 			ov.deselectAllTreeViews();
 		}
 		tv.setSelected(appCtxt.getById(firstMatch.id), true, true);
-        this._selected = firstMatch.id;
-        if (appCtxt.multiAccounts) {
-            var ov = this._getOverview();
-            for (var h in ov._headerItems) {
-                ov._headerItems[h].setExpanded((h == firstMatch.accountId), false, false);
-            }
-        }
-    }
+		this._selected = firstMatch.id;
+		if (appCtxt.multiAccounts) {
+		    var ov = this._getOverview();
+		    for (var h in ov._headerItems) {
+			ov._headerItems[h].setExpanded((h == firstMatch.accountId), false, false);
+		    }
+		}
+	}
+	else{
+	    this._selected = null;
+	}
 	this._lastVal = value;
 };
 
 ZmChooseFolderDialog.prototype._resetTreeView =
-function(visible) {
+    function(visible, deselect) {
 	for (var i = 0, len = this._folders.length; i < len; i++) {
 		var folderInfo = this._folders[i];
 		var tv = this._treeView[folderInfo.accountId][folderInfo.type];
@@ -487,6 +519,9 @@ function(visible) {
 		if (ti) {
 			ti.setVisible(visible);
 			ti.setChecked(false, true);
+		}
+		if (deselect){
+		    tv.deselectAll();
 		}
 	}
 };

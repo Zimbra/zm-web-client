@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -47,7 +47,7 @@ ZmApp = function(name, container, parentController) {
 	this._deferredNotifications = [];
 
 	this._sessionController		= {};
-	this._sessionId				= {};
+	this._nextSessionId			= {};
 	this._curSessionId			= {};
 
 	ZmApp.DROP_TARGETS[name] = {};
@@ -101,7 +101,9 @@ ZmApp.OPS_R					= {};	// map of operation ID to app
 ZmApp.QS_VIEWS				= {};	// list of views to handle in query string
 ZmApp.TRASH_VIEW_OP			= {};	// menu choice for "Show Only ..." in Trash view
 ZmApp.UPSELL_URL			= {};	// URL for content of upsell
+ZmApp.QUICK_COMMAND_TYPE	= {};	
 ZmApp.DROP_TARGETS			= {};	// drop targets (organizers) by item/organizer type
+ZmApp.SEARCH_RESULTS_TAB	= {};	// whether to show search results in a tab
 
 // assistants for each app; each value is a hash where key is the name of the
 // assistant class and value is the required package
@@ -120,6 +122,9 @@ ZmApp.DEFAULT_APPS			= [];	// ordered list
 ZmApp.OVERVIEW_ID			= "main";	// ID for main overview
 
 ZmApp.BATCH_NOTIF_LIMIT = 25;	// threshold for doing batched change notifications
+
+ZmApp.MAIN_SESSION			= "main";
+ZmApp.HIDDEN_SESSION		= "hidden";
 
 /**
  * Initializes the application.
@@ -143,32 +148,34 @@ function() {
  * @param params.mainPkg			[string]	main package that contains the app
  * @param params.nameKey			[string]	msg key for app name
  * @param params.icon				[string]	name of app icon class
- * @param params.textPrecedence	[int]		order for removing button text
+ * @param params.textPrecedence		[int]		order for removing button text
  * @param params.imagePrecedence	[int]		order for removing button image
  * @param params.chooserTooltipKey	[string]	msg key for app tooltip
- * @param params.viewTooltipKey	[string]	msg key for app view menu tooltip
+ * @param params.viewTooltipKey		[string]	msg key for app view menu tooltip
  * @param params.defaultSearch		[constant]	type of item to search for in the app
  * @param params.organizer			[constant]	main organizer for this app
  * @param params.overviewTrees		[array]		list of tree IDs to show in overview
  * @param params.hideZimlets		[boolean]	if true, hide Zimlet tree in overview
- * @param params.assistants		[hash]		hash of assistant class names and required packages
+ * @param params.assistants			[hash]		hash of assistant class names and required packages
  * @param params.searchTypes		[array]		list of types of saved searches to show in overview
- * @param params.gotoActionCode	[constant]	key action for jumping to this app
+ * @param params.gotoActionCode		[constant]	key action for jumping to this app
  * @param params.newActionCode		[constant]	default "new" action code
  * @param params.actionCodes		[hash]		keyboard actions mapped to operations
- * @param params.newItemOps		[hash]		IDs of operations that create a new item, and their text keys
+ * @param params.newItemOps			[hash]		IDs of operations that create a new item, and their text keys
  * @param params.newOrgOps			[hash]		IDs of operations that create a new organizer, and their text keys
  * @param params.qsViews			[array]		list of views to handle in query string
  * @param params.chooserSort		[int]		controls order of apps in app chooser toolbar
  * @param params.defaultSort		[int]		controls order in which app is chosen as default start app
  * @param params.trashViewOp		[constant]	menu choice for "Show Only ..." in Trash view
  * @param params.upsellUrl			[string]	URL for content of upsell
+ * @param params.searchResultsTab	[string]	if true, show search results in a tab
  *
  * @private
  */
 ZmApp.registerApp =
 function(app, params) {
 
+	// TODO: why the ifs? this should only be called once per app
 	if (params.mainPkg)				{ ZmApp.MAIN_PKG[app]			= params.mainPkg; }
 	if (params.nameKey)				{ ZmApp.NAME[app]				= params.nameKey; }
 	if (params.icon)				{ ZmApp.ICON[app]				= params.icon; }
@@ -189,6 +196,8 @@ function(app, params) {
 	if (params.defaultSort)			{ ZmApp.DEFAULT_SORT[app]		= params.defaultSort; }
 	if (params.trashViewOp)			{ ZmApp.TRASH_VIEW_OP[app]		= params.trashViewOp; }
 	if (params.upsellUrl)			{ ZmApp.UPSELL_URL[app]			= params.upsellUrl; }
+	if (params.quickCommandType)	{ ZmApp.QUICK_COMMAND_TYPE[app]	= params.quickCommandType; }
+	if (params.searchResultsTab)	{ ZmApp.SEARCH_RESULTS_TAB[app]	= params.searchResultsTab; }
 
 	if (params.searchTypes) {
 		ZmApp.SEARCH_TYPES_R[app] = {};
@@ -232,7 +241,37 @@ function(app, params) {
 			ZmApp.QS_VIEWS[params.qsViews[i]] = app;
 		}
 	}
+
+    if (params.quickCommandType) {
+        ZmQuickCommand.itemTypes.push(params.quickCommandType);
+    }
 };
+
+
+/**
+ * Runs the given function for all known (e.g. part of ZmApp.CLASS)
+ * app classes, passing args.
+ * NOTE: This runs class functions only, not instance (prototype) functions.
+ * @static
+ * @param funcName {String} The name of the function we will run on each
+ * application.
+ * @param mixed {mixed} 0 to n additional arguments are passed to funcName
+ * via apply.
+ */
+ZmApp.runAppFunction =
+function(funcName) {
+    var args;
+
+    for (var appName in ZmApp.CLASS) {
+        var app = window[ZmApp.CLASS[appName]];
+        var func = app && app[funcName];
+        if (func && (typeof(func) == "function")) {
+            args = args || Array.prototype.slice.call(arguments, 1);
+            func.apply(app, args);
+        }
+    }
+};
+
 
 // Public instance methods
 
@@ -283,7 +322,7 @@ function() {
  */
 ZmApp.prototype.getDisplayName =
 function() {
-	return ZmMsg[ZmApp.NAME[this._name]];
+	return ZmMsg[ZmApp.NAME[this._name]] || ZmApp.NAME[this._name];
 };
 
 /**
@@ -483,7 +522,9 @@ function(reset) {
 		var ov = ((appCtxt.multiAccounts && appCtxt.accountList.size() > 1) || this.getName() == ZmApp.VOICE)
 			? this.getOverviewContainer()
 			: this.getOverviewPanelContent();
-		avm.setComponent(ZmAppViewMgr.C_TREE, ov);
+		var components = {};
+		components[ZmAppViewMgr.C_TREE] = ov;
+		avm.setViewComponents(ZmAppViewMgr.APP, components, true, this.getName());
 	}
 };
 
@@ -619,38 +660,69 @@ function(type) {
     return activeCount;
 };
 
+/**
+ * Returns a controller of the given type and class. If no sessionId is provided, then
+ * the controller's session ID will be an incremental number. If a sessionId is given,
+ * then a check is made for an existing controller with that session ID. If none is
+ * found, one is created and given that session ID.
+ * 
+ * @param	{hash}							params						hash of params:
+ * @param	{string}						controllerClass				string name of controller class
+ * @param	{string}						sessionId					unique identifier for this controller
+ * @param 	{ZmSearchResultsController}		searchResultsController		containing controller
+ */
 ZmApp.prototype.getSessionController =
-function(type, controllerClass, sessionId) {
-
+function(params) {
+	
+	var type;
+	try {
+		type = eval(params.controllerClass).getDefaultViewType(params);
+	}
+	catch (ex) {
+		throw new AjxException("Session controller " + params.controllerClass + " must implement getDefaultViewType()");
+	}
+	
+	// track controllers of this type
 	if (!this._sessionController[type]) {
 		this._sessionController[type] = {};
-		this._sessionId[type] = 1;
+		this._nextSessionId[type] = 1;
 	}
 
+	// check if we've already created a session controller with the given ID
+	var sessionId = params.sessionId;
 	if (sessionId && this._sessionController[type][sessionId]) {
 		return this._sessionController[type][sessionId];
 	}
 
-	var controllers = this._sessionController[type];
+	// re-use an inactive controller if possible
 	var controller;
-	for (var id in controllers) {
-		if (controllers[id].inactive) {
-			controller = controllers[id];
-			break;
+	if (!sessionId) {
+		var controllers = this._sessionController[type];
+		for (var id in controllers) {
+			if (controllers[id].inactive && !controllers[id].isPinned && !controllers[id].isHidden) {
+				controller = controllers[id];
+				break;
+			}
 		}
 	}
 
-	sessionId = controller ? controller.sessionId : this._sessionId[type]++;
+	sessionId = (controller && controller.getSessionId()) || sessionId || String(this._nextSessionId[type]++);
 
 	if (!controller) {
-		var ctlrClass = eval(controllerClass);
-		controller = this._sessionController[type][sessionId] = new ctlrClass(this._container, this);
+		var ctlrClass = eval(params.controllerClass);
+		controller = this._sessionController[type][sessionId] =
+			new ctlrClass(this._container, this, type, sessionId, params.searchResultsController);
 	}
-	controller.setSessionId(type, sessionId);
 	this._curSessionId[type] = sessionId;
 	controller.inactive = false;
 
 	return controller;
+};
+
+// returns the session ID of the most recently retrieved controller of the given type
+ZmApp.prototype.getCurrentSessionId =
+function(type) {
+	return this._curSessionId[type];
 };
 
 /**
@@ -706,6 +778,37 @@ function(type) {
 		this._createDeferredFolders(type);
 	}
 	this._handleDeferredNotifications();
+    if(appCtxt.isExternalAccount()) {
+        this._handleExternalAccountSettings(type);
+    }
+};
+
+/**
+ * @private
+ */
+ZmApp.prototype.containsWritableFolder =
+function() {
+    return appCtxt.isExternalAccount() ? (this._containsWritableFolder ? true : false) : true;
+};
+
+/**
+ * @private
+ */
+ZmApp.prototype._handleExternalAccountSettings =
+function(type) {
+    //Handle the external account settings
+    var dataTree = appCtxt.getTree(type, appCtxt.getActiveAccount()),
+        folders = dataTree.getByType(type),
+        len = folders.length,
+        folder,
+        i;
+    this._containsWritableFolder = false;
+    for (i=0; i<len; i++) {
+        folder = folders[i];
+        if (folder.isPermAllowed(ZmOrganizer.PERM_WRITE)) {
+            this._containsWritableFolder = true;
+        }
+    }
 };
 
 /**
@@ -939,9 +1042,10 @@ function(params, callback) {
  * Activates the application.
  *
  * @param	{Boolean}	active	<code>true</code> if the application is active
+ * @param	{string}	viewId	ID of view becoming active
  */
 ZmApp.prototype.activate =
-function(active) {
+function(active, viewId) {
 	this._active = active;
 	if (active) {
 		this.setOverviewPanelContent();
@@ -998,6 +1102,7 @@ function() {
 		appCtxt.getAppController().appRendered(this._name);
 		this._hasRendered = true;
 	}
+	this.stopAlert();
 };
 
 /**

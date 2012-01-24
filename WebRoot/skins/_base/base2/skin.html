@@ -17,8 +17,12 @@
 							<div id='skin_container_toast' style='width:100%;height:100%'></div>
 						</td>
 						<td id='skin_spacing_search'>
-							<div id='skin_container_people_search' class='skin_container' style="margin-top:3px;"></div>
+							<div id='skin_container_search' class='skin_container' style="margin-top:3px;"></div>
 						</td>
+                        <td><div class="divider" ></div></td>
+                        <td id='skin_spacing_refresh'>
+                            <div id='skin_container_refresh' class='skin_container' style="margin-top:7px;"></div>
+                        </td>
 						<td><div class="divider" ></div></td>
 						<td id='skin_userAndQuota'>
 							<div id='skin_container_username' class='skin_container'></div>
@@ -47,9 +51,25 @@
 			<td id='skin_spacing_filler'>
 			</td>
 		</tr>
+		<tr id="skin_tr_search_results_toolbar">
+			<td id="skin_td_search_results_toolbar">
+				<div id='skin_container_search_results_toolbar' class='skin_container'></div>
+			</td>
+		</tr>
 		<tr id='skin_tr_main'>
 			<td id='skin_outer_td_main' style='height:100%'>
 				<table class='skin_table' cellpadding=0 cellspacing=0 border=0>
+					<tr id="skin_tr_toolbar">
+						<td id="skin_td_new_button">
+							<div id='skin_container_app_new_button' class='skin_container'></div>
+						</td>
+						<td id='skin_td_tree_app_sash' rowspan="2" id='skin_spacing_tree_app_sash'>
+							<div id='skin_container_tree_app_sash' class='skin_container'></div>
+						</td>
+						<td id='skin_spacing_app_top_toolbar'>
+							<div id='skin_container_app_top_toolbar' class='skin_container'></div>
+						</td>
+					</tr>
 					<tr>
 						<td id='skin_td_tree'>
 							<table class='skin_table' cellspacing=0 cellpadding=0 border=0>
@@ -75,37 +95,8 @@
 								</tr>
 							</table>
 						</td>
-						<td id='skin_td_tree_app_sash' id='skin_spacing_tree_app_sash'>
-							<div id='skin_container_tree_app_sash' class='skin_container'></div>
-						</td>
 						<td id='skin_td_main'>
 							<table class='skin_table' cellspacing=0 cellpadding=0 border=0>
-								
-								<tr id='skin_tr_search'>
-									<td id='skin_spacing_search_row'>
-										<table class='skin_table' cellpadding=0 cellspacing=0 border=0>
-											<tr>
-												<td id='skin_spacing_search'>
-													<div id='skin_container_search'></div>
-												</td>
-											</tr>
-										</table>
-									</td>
-								</tr>
-								<tr id='skin_tr_search_builder'>
-									<td id='skin_outer_td_search_builder' style='height:1px'>
-										<div id='skin_spacing_search_builder'>
-											<div id='skin_container_search_builder_toolbar' class='skin_container'></div>
-											<div id='skin_container_search_builder' class='skin_container'></div>
-										</div>
-									</td>
-								</tr>
-								
-								<tr id='skin_tr_toolbar'>
-									<td id='skin_spacing_app_top_toolbar'>
-										<div id='skin_container_app_top_toolbar' class='skin_container'></div>
-									</td>
-								</tr>
 								<tr id='skin_tr_app_main'>
 									<td id='skin_spacing_app_main'>
 										<div id='skin_container_app_main' class='skin_container'></div>
@@ -128,6 +119,11 @@
 		<tr id='skin_tr_bottom_ad' class='skin_outer_ad'>
 			<td id='skin_spacing_bottom_ad'>
 				<div id='skin_container_bottom_ad' class='skin_container'></div>
+			</td>
+		</tr>
+		<tr id='skin_tr_unittest'>
+			<td id='skin_spacing_unittest'>
+				<div id='skin_container_unittest' class='skin_container'></div>
 			</td>
 		</tr>
 	</table>

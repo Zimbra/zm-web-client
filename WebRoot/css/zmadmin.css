@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -778,6 +778,55 @@ div.ZaSearchBuilderOptionRemoveAll table  {
     margin:20px 0px 0px 20px;
     width:71px;
     height:11px;
-    background-image:url("@LogoImgDir@/AltBanner.png");
+    background-image:url("@LogoImgDir@/AltBanner.png?v=@jsVersion@");
     background-repeat:repeat-x;
+}
+
+/***************
+ *
+ *	Toast -- popup info panel
+ *
+ ***************/
+
+.ZaToast {
+	position: absolute;
+	top: -10000; left: -10000;
+	overflow: visible;
+
+	/* change the following to set the top of the toaster
+	margin-top: 10px;  */
+}
+.ZaToastContent {
+	@ToastContent@
+}
+
+.ZaToastIcon {
+  float: left;
+  position : relative;
+}
+
+.ZaToastText {
+	max-width: 500px;
+/************
+ *
+ * in IE, break-word can take effort when element has layout
+ * here we set to fixed width to get layout 	
+ *
+ ************/ 
+#IFDEF MSIE
+	width: 400px; 
+#ENDIF
+    	word-wrap: break-word;
+	@ToastText@
+}
+
+.ZaToastText a.undo {
+	font-size: 0.75em;
+	margin-left: 20px;
+}
+
+.ZaToastBG 				{	@ToastContainer@		}
+
+TABLE {
+    border-collapse:separate;
 }
