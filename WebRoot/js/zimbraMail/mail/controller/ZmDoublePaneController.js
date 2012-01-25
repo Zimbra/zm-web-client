@@ -91,7 +91,6 @@ function(search, mailList, callback, markRead) {
 	if (!this._itemViewCurrent()) {
 		dpv.clearItem();
 	}
-	this._toolbar[this._currentViewId].adjustSize();
 
 	if (callback) {
 		callback.run();
@@ -741,7 +740,6 @@ function(text) {
 	if (this._itemCountText[ZmSetting.RP_BOTTOM]) {
 		this._itemCountText[ZmSetting.RP_BOTTOM].setText(rpr ? "" : text);
 	}
-	this._toolbar[this._currentViewId].adjustSize();
 };
 
 ZmDoublePaneController.prototype._postShowCallback =

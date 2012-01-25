@@ -267,73 +267,6 @@ function() {
 	});
 };
 
-/**
- * Adjusts the toolbar size. Checks the toolbar width and compares the width of the container to see if it fits.
- * If it does not, we remove text and/or images in the specified order until the toolbar fits.
- * 
- */
-ZmToolBar.prototype.adjustSize =
-function() {
-
-	if (!this._refElementId || !this._inited) { return; }
-	
-	var el = this.getHtmlElement();
-	if (!this._refElement) {
-		this._refElement = document.getElementById(this._refElementId);
-	}
-	if (!el || !this._refElement) { return; }
-
-	var offset1 = this._refElement.offsetWidth;
-	var offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
-
-	DBG.println("tb", "-------------- checking width -------------");
-	DBG.println("tb", "tb width: " + offset2 + ", container width: " + offset1);
-
-	// restore all button text and images first
-	for (var i = 0; i < this._precedenceList.length; i++) {
-		var p = this._precedenceList[i];
-		var b = this._buttons[p.id];
-		if (!b) { continue; }
-		if (p.type == "text" && b._toggleText) {
-			b.setText(b._toggleText);
-			b._toggleText = null;
-		} else if (p.type == "image" && b._toggleimage) {
-			b.setImage(b._toggleimage);
-			b._toggleimage = null;
-		}
-	}
-	offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
-
-	if (offset1 > 0 && offset2 > offset1) {
-
-		 // now remove button labels as needed
-		for (var i = 0; i < this._precedenceList.length; i++) {
-
-			var p = this._precedenceList[i];
-			var b = this._buttons[p.id];
-			if (!b || !b.getVisible()) { continue; }
-
-			var text = b.getText();
-			var image = b.getImage();
-			var hasText = Boolean(text || b._toggleText);
-			var hasimage = Boolean(image || b._toggleimage);
-			if (hasText && hasimage && (offset2 > offset1)) {
-				if (p.type == "text") {
-					b._toggleText = text;
-					DBG.println("tb", "removed text: " + text);
-					b.setText("");
-				} else if (p.type == "image") {
-					b._toggleimage = image;
-					DBG.println("tb", "removed image: " + image);
-					b.setImage("");
-				}
-			}
-
-			offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
-		}
-	}
-};
-
 // The following overrides are so that we check our width after a call to a function that
 // may affect our size.
 
@@ -350,17 +283,27 @@ function(width, height) {
 	var sz = this.getSize();
 	if (sz && (width != sz.x || height != sz.y)) {
 		DwtToolBar.prototype.setSize.apply(this, arguments);
-		this.adjustSize();
 	}
 };
 
+ZmToolBar.prototype.adjustSize =
+function() {
+	if (!this._refElementId || !this._inited) { return; }
+    if (!this._refElement) {
+        this._refElement = document.getElementById(this._refElementId);
+    }
+    var container = this._refElement && this._refElement.parentNode;
+    if (container){
+        this._refElement.style.maxWidth = this._refElement.style.width =  (container.offsetWidth - 30);
+        this._refElement.style.overflow = "hidden";
+    }
+}
 /**
  * @private
  */
 ZmToolBar.prototype._addItem =
 function(type, element, index) {
 	DwtToolBar.prototype._addItem.apply(this, arguments);
-	this.adjustSize();
 };
 
 /**
@@ -369,7 +312,6 @@ function(type, element, index) {
 ZmToolBar.prototype._removeItem =
 function(type, element, index) {
 	DwtToolBar.prototype._removeItem.apply(this, arguments);
-	this.adjustSize();
 };
 
 /**

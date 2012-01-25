@@ -131,7 +131,6 @@ function() {
 	avm.setTabTitle(this._currentViewId, buttonText);
 	this._resetOperations(this._toolbar[this._currentViewId], 1); // enable all buttons
 	this._resetNavToolBarButtons();
-	this._toolbar[this._currentViewId].adjustSize();
 };
 
 ZmMsgController.prototype._getTabParams =

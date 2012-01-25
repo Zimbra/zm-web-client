@@ -90,9 +90,6 @@ function(view, force) {
 				this._mailListView.redoExpansion();
 			}
 		}
-		if (this._toolbar && this._toolbar[this._currentViewId]) {
-			this._toolbar[this._currentViewId].adjustSize();
-		}
 	} else {
 		ZmDoublePaneController.prototype.switchView.apply(this, arguments);
 	}

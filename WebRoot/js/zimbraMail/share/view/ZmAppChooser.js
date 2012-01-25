@@ -41,7 +41,7 @@ ZmAppChooser = function(params) {
 	this.setScrollStyle(Dwt.CLIP);
 
 	this._buttonListener = new AjxListener(this, this._handleButton);
-
+    this._initOverFlowTabs();
 	var buttons = params.buttons;
 	for (var i = 0; i < buttons.length; i++) {
 		var id = buttons[i];
@@ -58,6 +58,137 @@ ZmAppChooser = function(params) {
 
 ZmAppChooser.prototype = new ZmToolBar;
 ZmAppChooser.prototype.constructor = ZmAppChooser;
+
+ZmAppChooser.prototype._initOverFlowTabs =
+function(){
+    this._leftOverflow = document.getElementById("moreTabsLeftContainer");
+    this._rightOverflow = document.getElementById("moreTabsRightContainer");
+    this._leftOverflow.onclick = this._showLeftTab.bind(this);
+    this._rightOverflow.onclick = this._showRightTab.bind(this);
+    this._leftBtnIndex = -1;
+    this._deletedButtons = [];
+};
+
+ZmAppChooser.prototype._showLeftTab =
+function(){
+    var items = this.getItems();
+    if(this._leftBtnIndex > -1){
+        items[this._leftBtnIndex].setVisible(true);
+        this._leftBtnIndex--;
+    }
+    this._checkArrowVisibility();
+};
+
+ZmAppChooser.prototype._showRightTab =
+function(){
+    var items = this.getItems();
+    this._leftBtnIndex++;
+    items[this._leftBtnIndex].setVisible(false);
+    this._checkArrowVisibility();
+};
+
+ZmAppChooser.prototype._showTab =
+function(id, ev){
+    var button = this._buttons[id];
+    this._moreTabsBtn.getMenu().popdown();
+    if (!button) return;
+    if (!button.getVisible()){ // Left side
+        var found = false;
+        for (var index in this._buttons){
+            if (!found && this._buttons[index].getHTMLElId() == button.getHTMLElId())
+              found = true;
+            else if (this._buttons[index].getVisible())
+                break;
+            if (found){
+                this._buttons[index].setVisible(true)
+                this._leftBtnIndex--;
+            }
+        }
+    }else { // Right side
+        while(this._isTabOverflow(button.getHtmlElement())){
+            this._showRightTab();
+        }
+    }
+    this._checkArrowVisibility();
+    appCtxt.getAppController()._appButtonListener(ev);
+
+
+};
+
+ZmAppChooser.prototype._attachMoreTabMenuItems =
+function(menu){
+
+    for (var deletedIndex=0; deletedIndex < this._deletedButtons.length; deletedIndex++){
+        var mi = menu.getItemById("_menuItemId", this._deletedButtons[deletedIndex] + "_menu");
+        console.log(this._deletedButtons[deletedIndex] + "_menu" + " : deleted");
+        if (mi) {
+            menu.removeChild(mi);
+            mi.dispose();
+        }
+    }
+
+    this._deletedButtons = [];
+    for(var index in this._buttons){
+        var item = menu.getItemById("_menuItemId", index + "_menu");
+        if (item){
+            if (item.getText() != this._buttons[index].getText()){
+                item.setText(this._buttons[index].getText());
+            }
+        } else {
+            var mi = new DwtMenuItem({parent:menu, style:DwtMenuItem.CASCADE_STYLE, id: index + "_menu"});
+            mi.setData("_menuItemId", index + "_menu" );
+            mi.setData(Dwt.KEY_ID, index);
+            mi.addSelectionListener(this._showTab.bind(this, index));
+            mi.setText(this._buttons[index].getText());
+        }
+    }
+
+    if(menu.getHtmlElement().style.width == "0px"){
+        this._moreTabsBtn.popup();
+    }
+};
+
+ZmAppChooser.prototype._showOverflowTabsMenu =
+function(){
+    var menu = new DwtMenu({parent:this._moreTabsBtn});
+    menu.addPopupListener(new AjxListener(this, this._attachMoreTabMenuItems,[menu]));
+    return menu;
+};
+
+
+ZmAppChooser.prototype._checkArrowVisibility =
+function(){
+    var items = this.getItems();
+    if (this._leftBtnIndex < 0)
+        this._setArrowVisibility(this._leftOverflow, "none");
+    else
+        this._setArrowVisibility(this._leftOverflow, "");
+
+    if (!this._isTabOverflow(items[items.length -1].getHtmlElement())){
+        this._setArrowVisibility(this._rightOverflow, "none");
+    }else{
+        this._setArrowVisibility(this._rightOverflow, "");
+    }
+    this._adjustWidth();
+};
+
+
+
+ZmAppChooser.prototype._setArrowVisibility =
+function(element, option){
+    element.style.display = option|| "";
+    var display = (this._leftOverflow.style.display == "none" && this._rightOverflow.style.display == "none") ? "none" : "";
+    document.getElementById("moreTabsMenu").style.display = display;
+    if (display != "none" && !this._moreTabsBtn ){
+        var containerEl = document.getElementById("moreTabsMenu");
+        var button = new DwtToolBarButton({parent:DwtShell.getShell(window), id: "moreTabsMenuBtn", style:"background:none no-repeat scroll 0 0 transparent; border: none"});
+        button.setToolTipContent(ZmMsg.more);
+        button.setText("");
+        button.reparentHtmlElement(moreTabsMenu);
+        button.setMenu(new AjxListener(this, this._showOverflowTabsMenu));
+        this._moreTabsBtn =  button;
+    }
+};
 
 /**
  * Returns a string representation of the object.
@@ -110,6 +241,47 @@ function(listener) {
 	this.addListener(DwtEvent.SELECTION, listener);
 };
 
+ZmAppChooser.prototype._checkTabOverflowAdd =
+function(button) {
+    var display = "none";
+    if (this._isTabOverflow(button)){
+        display = "";
+    }
+    this._setArrowVisibility(this._rightOverflow, display);
+    this._adjustWidth();
+};
+
+ZmAppChooser.prototype._isTabOverflow =
+function(tab){
+        var tabPos = tab.offsetLeft + tab.clientWidth + 30;
+        if (!this._refElement){
+            this._refElement = document.getElementById(this._refElementId);
+        }
+        var container = this._refElement && this._refElement.parentNode;
+
+        if (!container) return false;
+        var offsetWidth = container.offsetWidth;
+        return (offsetWidth < tabPos);
+};
+
+ZmAppChooser.prototype._adjustWidth =
+function(){
+    var container = this._refElement && this._refElement.parentNode;
+    this._refElement.style.maxWidth = this._refElement.style.width =  (container.offsetWidth - 30);
+    this._refElement.style.overflow = "hidden";
+
+};
+
+ZmAppChooser.prototype._checkTabOverflowDelete =
+function(index){
+    var items = this.getItems();
+    if(this._isTabOverflow(items[items.length - 1])){
+      return;
+    }
+    this._showLeftTab();
+}
+
+
 /**
  * Adds a button to the toolbar.
  * 
@@ -137,12 +309,7 @@ function(id, params) {
 	button.setData(Dwt.KEY_ID, id);
 	button.addSelectionListener(this._buttonListener);
 	this._buttons[id] = button;
-
-	if (button.textPrecedence || button.imagePrecedence) {
-		this._createPrecedenceList();
-	}
-	this.adjustSize();
-
+    this._checkTabOverflowAdd(button.getHtmlElement());
 	return button;
 };
 
@@ -155,13 +322,19 @@ ZmAppChooser.prototype.removeButton =
 function(id) {
 	var button = this._buttons[id];
 	if (button) {
-		var index = this.__getButtonIndex(id);
+        var index = this.__getButtonIndex(id);
 		button.dispose();
 		this._buttons[id] = null;
 		delete this._buttons[id];
 		if (index != null) {
 			this._removeItem(this._items[index]);
 		}
+        if (this._moreTabsBtn &&
+            this._moreTabsBtn.getMenu() &&
+            this._moreTabsBtn.getMenu().getItemCount() > 0){
+            this._deletedButtons.push(id);
+        }
+        this._checkTabOverflowDelete(index);
 	}
 };
 
@@ -182,7 +355,7 @@ function(id) {
  */
 ZmAppChooser.prototype.replaceButton =
 function(oldId, newId, params) {
-	if (!this._buttons[oldId]) { return; }
+	if (!this._buttons[oldId]) { return null; }
 	params.index = this.__getButtonIndex(oldId);
 	this.removeButton(oldId);
 	return this.addButton(newId, params);
