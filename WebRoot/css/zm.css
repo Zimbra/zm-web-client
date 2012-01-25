@@ -3157,6 +3157,16 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin-left:@SmallBoxPaddingSize@;
 	margin-top:1px;
 	height:100%;
+    overflow: hidden;
+}
+
+/*
+ *	Tab overflow buttons
+ */
+
+.ZmMoreTabs {
+    padding-left:5px;
+    cursor:pointer;
 }
 
 
