@@ -63,8 +63,8 @@
                     <tr valign="center">
                         <td>
                             <fmt:message key="showApptsFromThrough">
-                                <fmt:param value="<input id='start' onkeydown=\"return handleEnter(event);\" type=text size='12' maxlength='20' name='startDate' value='${fn:escapeXml(fmtStartDate)}'/>"/>
-                                <fmt:param value="<input id='end' onkeydown=\"return handleEnter(event);\" type=text size='12' maxlength='20' name='endDate' value='${fn:escapeXml(fmtEndDate)}'/>"/>
+                                <fmt:param value="<input id='start' onkeypress=\"return handleEnter(event);\" type=text size='12' maxlength='20' name='startDate' value='${fn:escapeXml(fmtStartDate)}'/>"/>
+                                <fmt:param value="<input id='end' onkeypress=\"return handleEnter(event);\" type=text size='12' maxlength='20' name='endDate' value='${fn:escapeXml(fmtEndDate)}'/>"/>
                             </fmt:message>
                         </td>
                         <td class="IEButton">
@@ -100,6 +100,8 @@
 		var keyCode = ev.keyCode ? ev.keyCode : ev.which ? ev.which : ev.charCode;
 		if (keyCode == 13) {
             zclick('SOPSEARCH');
+            ev.cancelBubble = true;
+            if (ev.stopPropagation) ev.stopPropagation();
             return false;
         }
         return true;
