@@ -57,6 +57,9 @@ ZmApptComposeView = function(parent, className, calApp, controller) {
 	this._attendeeKeys[ZmCalBaseItem.LOCATION]	= {};
 	this._attendeeKeys[ZmCalBaseItem.EQUIPMENT]	= {};
 
+	// Email to type map
+	this._attendeeType = {};
+
 	// for attendees change events
 	this._evt = new ZmEvent(ZmEvent.S_CONTACT);
 	this._evtMgr = new AjxEventMgr();
@@ -234,6 +237,11 @@ function() {
     return this._apptEditView.getNumLocationConflictRecurrence();
 }
 
+ZmApptComposeView.prototype.cancelLocationRequest =
+function() {
+    return this._apptEditView.cancelLocationRequest();
+}
+
 ZmApptComposeView.prototype.setLocationConflictCallback =
 function(locationConflictCallback) {
     this._locationConflictCallback   = locationConflictCallback;
@@ -267,6 +275,7 @@ function(attendees, type, mode, index) {
 			var attendee = attendees[i];
 			this._attendees[type].add(attendee);
 			key = this._addAttendeeKey(attendee, type);
+			this._attendeeType[key] = type;
 			if (key && !oldKeys[key]) {
 				// New key that was not in the old set
 				changed = true;
@@ -285,6 +294,7 @@ function(attendees, type, mode, index) {
 		for (var i = 0; i < attendees.length; i++) {
 			var attendee = attendees[i];
 			key = this._getAttendeeKey(attendee);
+			this._attendeeType[key] = type;
 			if (!this._attendeeKeys[type][key] === true) {
 				this._attendees[type].add(attendee, index);
 				this._addAttendeeKey(attendee, type);
@@ -295,6 +305,7 @@ function(attendees, type, mode, index) {
 		for (var i = 0; i < attendees.length; i++) {
 			var attendee = attendees[i];
 			key = this._removeAttendeeKey(attendee, type);
+			delete this._attendeeType[key];
 			this._attendees[type].remove(attendee);
 			if (key) {
 				changed = true;
@@ -352,6 +363,11 @@ function(attendee, type) {
 	}
 	return key;
 };
+
+ZmApptComposeView.prototype.getAttendeeType =
+function(email) {
+    return this._attendeeType[email];
+}
 
 /**
 * Adds a change listener.
@@ -439,8 +455,8 @@ function() {
 	this._controller.inactive = true;
 
     //clear the free busy cache if the last tabbed compose view session is closed
-    var activeComposeSesions = this._app.getNumSessionControllers(ZmId.VIEW_APPOINTMENT);
-    if(activeComposeSesions == 0) this._app.getFreeBusyCache().clearCache();
+    //var activeComposeSesions = this._app.getNumSessionControllers(ZmId.VIEW_APPOINTMENT);
+    //if(activeComposeSesions == 0) this._app.getFreeBusyCache().clearCache();
 
 };
 

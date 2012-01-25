@@ -109,6 +109,7 @@ function(suggestTime) {
 
     this._suggestTime = suggestTime;
     if (this._suggestTime) {
+        this.updateTime(true, true);
         Dwt.setInnerHtml(this._suggestionName, ZmMsg.suggestedTimes);
         this._locationSuggestions.setVisible(false);
         this._timeSuggestions.setVisible(true);
@@ -605,9 +606,9 @@ function(startTime, endTime, params) {
         //ignore time slots for non-working hours of this user
         if(!isFree) continue;
 
-        if(sched.b) isFree = isFree && this.isBooked(sched.b, startTime, endTime);
-        if(sched.t) isFree = isFree && this.isBooked(sched.t, startTime, endTime);
-        if(sched.u) isFree = isFree && this.isBooked(sched.u, startTime, endTime);
+        if(sched.b) isFree = isFree && ZmApptAssistantView.isBooked(sched.b, startTime, endTime);
+        if(sched.t) isFree = isFree && ZmApptAssistantView.isBooked(sched.t, startTime, endTime);
+        if(sched.u) isFree = isFree && ZmApptAssistantView.isBooked(sched.u, startTime, endTime);
 
         //collect all the item indexes of the attendees available at this slot
         if(isFree) {
@@ -630,9 +631,9 @@ function(startTime, endTime, params) {
             var excludeTimeSlots = this._apptView.getFreeBusyExcludeInfo(resource);
             sched = this._fbCache.getFreeBusySlot(dayStartTime, dayEndTime, resource, excludeTimeSlots);
             isFree = true;
-            if(sched.b) isFree = isFree && this.isBooked(sched.b, startTime, endTime);
-            if(sched.t) isFree = isFree && this.isBooked(sched.t, startTime, endTime);
-            if(sched.u) isFree = isFree && this.isBooked(sched.u, startTime, endTime);
+            if(sched.b) isFree = isFree && ZmApptAssistantView.isBooked(sched.b, startTime, endTime);
+            if(sched.t) isFree = isFree && ZmApptAssistantView.isBooked(sched.t, startTime, endTime);
+            if(sched.u) isFree = isFree && ZmApptAssistantView.isBooked(sched.u, startTime, endTime);
 
             //collect all the item indexes of the locations available at this slot
             if(isFree) {

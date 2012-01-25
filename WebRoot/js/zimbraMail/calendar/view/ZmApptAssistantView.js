@@ -38,8 +38,9 @@ ZmApptAssistantView = function(parent, controller, apptView, closeCallback) {
     this._closeCallback = closeCallback;
 
     // For bug 68531
-    var app = appCtxt.getApp(ZmApp.CALENDAR);
-    this._fbCache       = app.getFreeBusyCache();
+    //var app = appCtxt.getApp(ZmApp.CALENDAR);
+    //this._fbCache       = app.getFreeBusyCache();
+    this._fbCache       = apptView.getFreeBusyCache();
 
 	this._rendered      = false;
     this.type           = ZmCalBaseItem.LOCATION;
@@ -280,9 +281,9 @@ function(durationInfo, params) {
 
         sched = this._fbCache.getFreeBusySlot(durationInfo.startTime, durationInfo.endTime, email, excludeTimeSlots);
         isFree = true;
-        if(sched.b) isFree = isFree && this.isBooked(sched.b, durationInfo.startTime, durationInfo.endTime);
-        if(sched.t) isFree = isFree && this.isBooked(sched.t, durationInfo.startTime, durationInfo.endTime);
-        if(sched.u) isFree = isFree && this.isBooked(sched.u, durationInfo.startTime, durationInfo.endTime);
+        if(sched.b) isFree = isFree && ZmApptAssistantView.isBooked(sched.b, durationInfo.startTime, durationInfo.endTime);
+        if(sched.t) isFree = isFree && ZmApptAssistantView.isBooked(sched.t, durationInfo.startTime, durationInfo.endTime);
+        if(sched.u) isFree = isFree && ZmApptAssistantView.isBooked(sched.u, durationInfo.startTime, durationInfo.endTime);
 
         //collect all the item indexes of the locations available at this slot
         if(isFree) {
@@ -295,7 +296,7 @@ function(durationInfo, params) {
 };
 
 
-ZmApptAssistantView.prototype.isBooked =
+ZmApptAssistantView.isBooked =
 function(slots, startTime, endTime) {
     for (var i = 0; i < slots.length; i++) {
         var startConflict = startTime >= slots[i].s && startTime < slots[i].e;

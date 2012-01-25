@@ -221,12 +221,17 @@ function(bubble, index, noFocus) {
 
 	var bubbleId = bubble._htmlElId;
 	this._bubble[bubbleId] = bubble;
-	this._addressHash[bubble.email] = true;
+	this._addressHash[bubble.email] = bubbleId;
 
 	if (!noFocus) {
 		this.focus();
 	}
 };
+
+ZmAddressInputField.prototype.getAddressBubble =
+function(email) {
+    return this._addressHash[email];
+}
 
 ZmAddressInputField.prototype._hasValidAddress =
 function(params) {

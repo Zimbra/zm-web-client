@@ -27,13 +27,15 @@
  * @param controller		[ZmApptComposeController]	the appt compose controller
  * @param dateInfo			[object]					hash of date info
  */
-ZmFreeBusySchedulerView = function(parent, attendees, controller, dateInfo) {
+ZmFreeBusySchedulerView = function(parent, attendees, controller, dateInfo, appt, fbParentCallback) {
 
 	DwtComposite.call(this, {parent: parent, posStyle: DwtControl.RELATIVE_STYLE});
 
-	this._attendees = attendees;
+	this._attendees  = attendees;
 	this._controller = controller;
-	this._dateInfo = dateInfo;
+	this._dateInfo   = dateInfo;
+	this._appt       = appt;
+	this._fbParentCallback = fbParentCallback;
 
 	this._editView = parent;
 
@@ -63,7 +65,10 @@ ZmFreeBusySchedulerView = function(parent, attendees, controller, dateInfo) {
     this._resultsPaginated = true;
     this._isPageless = false;
 
-    this._fbCache = controller.getApp().getFreeBusyCache();
+    this._fbConflict = {};
+
+    //this._fbCache = controller.getApp().getFreeBusyCache();
+    this._fbCache = parent.getFreeBusyCache();
 };
 
 ZmFreeBusySchedulerView.prototype = new DwtComposite;
@@ -142,7 +147,7 @@ function() {
 
     if(this.composeMode) ZmApptViewHelper.getDateInfo(this._editView, this._dateInfo);
 
-	this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
+	this._dateBorder = this._getBordersFromDateInfo();
 
 	if (!this._rendered) {
 		this._initialize();
@@ -227,6 +232,8 @@ function() {
     this._emailAliasMap = {};
     this._emptyRowIndex = null;
     this._autoCompleteHandled = {}
+
+    this._fbConflict = {};
 };
 
 // Private / protected methods
@@ -312,6 +319,7 @@ function(text, el, match) {
                 if(el._acHandlerInProgress) { return; }
                 el._acHandlerInProgress = true;
 				var index = this._handleAttendeeField(el);
+                this._editView.showConflicts();
                 el._acHandlerInProgress = false;
 
 				if (index && ((i+1) < members.length)) {
@@ -322,6 +330,7 @@ function(text, el, match) {
             if(el._acHandlerInProgress) { return; }
             el._acHandlerInProgress = true;
 			this._handleAttendeeField(el, match.item);
+            this._editView.showConflicts();
             el._acHandlerInProgress = false;
 		}
 	}
@@ -337,6 +346,7 @@ function(ev, aclv, result) {
         if(el._acHandlerInProgress) { return; }
         el._acHandlerInProgress = true;
         this._handleAttendeeField(el);
+        this._editView.showConflicts();
         el._acHandlerInProgress = false;
 	}
 };
@@ -404,7 +414,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 	sched._coloredCells = [];
 	this._schedTable[index] = sched;
 
-    this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
+	this._dateBorder = this._getBordersFromDateInfo();
 
 	var data = {
 		id: dwtId,
@@ -673,7 +683,6 @@ function(inputEl, attendee, useException) {
             this._editView.parent.updateAttendees(curAttendee, type, ZmApptComposeView.MODE_REMOVE);
             this._editView._setAttendees();
         }
-
 		// user erased an attendee
 		this._resetRow(sched, false, type);
         // bug:43660 removing row (splicing array) causes index mismatch.
@@ -954,6 +963,7 @@ function(organizer, attendees) {
             this._schedTable[idx] = null;
         }
     }
+    this._editView.showConflicts();
 
     this._setAttendee(this._organizerIndex, organizer, ZmCalBaseItem.PERSON, true);
 
@@ -962,9 +972,11 @@ function(organizer, attendees) {
 	    this._emptyRowIndex = this._addAttendeeRow(false, null, false, null, true, false);
     }
 
+    // Update the attendee list
+    this._allAttendeeEmails = this.getAllAttendeeEmails(attendees, organizer);
 	if (emails.length) {
         //all attendees status need to be update even for unshown attendees
-        var allAttendeeEmails =  this._allAttendeeEmails = this.getAllAttendeeEmails(attendees, organizer);
+        var allAttendeeEmails =  this._allAttendeeEmails;
 		this._getFreeBusyInfo(this._getStartTime(), allAttendeeEmails.join(","));
 	}else {
         this.postUpdateHandler();
@@ -1103,6 +1115,7 @@ function(sched, resetRole, type, noClear, noUpdate) {
 		}
 
         var email = this.getEmail(sched.attendee);
+        delete this._fbConflict[email];
 
         if (email instanceof Array) {
             for (var i in email) {
@@ -1241,7 +1254,7 @@ function(ev, id) {
 ZmFreeBusySchedulerView.prototype.handleTimeChange =
 function() {
     if(this.isComposeMode) ZmApptViewHelper.getDateInfo(this._editView, this._dateInfo);
-	this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
+	this._dateBorder = this._getBordersFromDateInfo();
 	this._outlineAppt();
     this._updateFreeBusy();
 };
@@ -1270,6 +1283,8 @@ function(sched, type, svp) {
 
         var email = this.getEmail(attendee);
         delete this._emailToIdx[email];
+        delete this._fbConflict[email];
+        this._editView.showConflicts();
 
 		if(this.isComposeMode) {
             this._editView.parent.updateAttendees(attendee, sched.attType, ZmApptComposeView.MODE_REMOVE);
@@ -1505,23 +1520,28 @@ function(time, isEnd, adjust) {
 };
 
 ZmFreeBusySchedulerView.prototype._getBordersFromDateInfo =
-function(dateInfo) {
+function() {
 	var index = {start: -99, end: -99};
-	if (dateInfo.showTime) {
+	if (this._dateInfo.showTime) {
 		var idx = AjxDateUtil.isLocale24Hour() ? 0 : 1;
-        var startDate = ZmTimeInput.getDateFromFields(dateInfo.startTimeStr,
-													   AjxDateUtil.simpleParseDateStr(dateInfo.startDate));
-		var endDate = ZmTimeInput.getDateFromFields(dateInfo.endTimeStr,
-													 AjxDateUtil.simpleParseDateStr(dateInfo.endDate));
+        this._processDateInfo(this._dateInfo);
 
         // subtract 1 from index since we're marking right borders
-		index.start = this._getIndexFromTime(startDate, null, false) - 1;
-		if (dateInfo.endDate == dateInfo.startDate) {
-			index.end = this._getIndexFromTime(endDate, true, false);
+		index.start = this._getIndexFromTime(this._startDate, null, false) - 1;
+		if (this._dateInfo.endDate == this._dateInfo.startDate) {
+			index.end = this._getIndexFromTime(this._endDate, true, false);
 		}
 	}
 	return index;
 };
+
+ZmFreeBusySchedulerView.prototype._processDateInfo =
+function(dateInfo) {
+    this._startDate = ZmTimeInput.getDateFromFields(dateInfo.startTimeStr,
+                                               AjxDateUtil.simpleParseDateStr(dateInfo.startDate));
+    this._endDate = ZmTimeInput.getDateFromFields(dateInfo.endTimeStr,
+                                             AjxDateUtil.simpleParseDateStr(dateInfo.endDate));
+}
 
 ZmFreeBusySchedulerView.prototype._getClassForStatus =
 function(status) {
@@ -1551,6 +1571,7 @@ function(startTime, emailList, callback) {
     var acct = (appCtxt.multiAccounts)
         ? this._editView.getCalendarAccount() : null;
 
+    var appt = this._editView.parent.getAppt();
     var params = {
         startTime: startTime,
         endTime: endTime,
@@ -1558,7 +1579,8 @@ function(startTime, emailList, callback) {
         callback: callback,
         errorCallback: errorCallback,
         noBusyOverlay: true,
-        account: acct
+        account: acct,
+        excludedId: appt.uid
     };
 
     this._freeBusyRequest = this._fbCache.getFreeBusyInfo(params);
@@ -1571,8 +1593,15 @@ function(params, result) {
 
     this._freeBusyRequest = null;
 
+    this._processDateInfo(this._dateInfo);
+    var apptStartTime = this._startDate.getTime();
+    var apptEndTime   = this._endDate.getTime();
+
     for (var i = 0; i < params.emails.length; i++) {
 		var email = params.emails[i];
+
+		this._detectConflict(email, apptStartTime, apptEndTime);
+
 		// first clear out the whole row for this email id
 		var sched = this._schedTable[this._emailToIdx[email]];
 		var table = sched ? document.getElementById(sched.dwtTableId) : null;
@@ -1602,6 +1631,10 @@ function(params, result) {
         }
 	}
 
+    if (this._fbParentCallback) {
+        this._fbParentCallback.run();
+    }
+
     var acct = (appCtxt.multiAccounts)
         ? this._editView.getCalendarAccount() : null;
     
@@ -1626,6 +1659,24 @@ function(params, result) {
 
     this._workingHoursRequest = this._fbCache.getWorkingHours(whrsParams);
 };
+
+ZmFreeBusySchedulerView.prototype._detectConflict =
+function(email, startTime, endTime) {
+    var sched = this._fbCache.getFreeBusySlot(startTime, endTime, email);
+    var isFree = true;
+    if(sched.b) isFree = isFree && ZmApptAssistantView.isBooked(sched.b, startTime, endTime);
+    if(sched.t) isFree = isFree && ZmApptAssistantView.isBooked(sched.t, startTime, endTime);
+    if(sched.u) isFree = isFree && ZmApptAssistantView.isBooked(sched.u, startTime, endTime);
+
+    this._fbConflict[email] = isFree;
+}
+
+ZmFreeBusySchedulerView.prototype.getConflicts =
+function() {
+    return this._fbConflict;
+}
+
+
 
 ZmFreeBusySchedulerView.prototype._handleResponseWorking =
 function(params, result) {
@@ -1963,6 +2014,7 @@ function(ev) {
     el._acHandlerInProgress = true;
     svp._handleAttendeeField(el);
     el._acHandlerInProgress = false;
+    this._editView.showConflicts();
 };
 
 ZmFreeBusySchedulerView._onPTSTMouseOver =

@@ -40,6 +40,10 @@ ZmApptQuickAddDialog = function(parent) {
 	DBG.timePt("ZmQuickAddDialog constructor", true);
 
 	AjxDispatcher.run("GetResources");
+    AjxDispatcher.require("CalendarCore");
+
+    var app = appCtxt.getApp(ZmApp.CALENDAR);
+    this._fbCache = new ZmFreeBusyCache(app);
 
 	var html = AjxTemplate.expand("calendar.Appointment#ZmApptQuickAddDialog", {id: this._htmlElId});
 	this.setContent(html);
@@ -73,6 +77,12 @@ ZmApptQuickAddDialog.prototype.toString =
 function() {
 	return "ZmApptQuickAddDialog";
 };
+
+
+ZmApptQuickAddDialog.prototype.getFreeBusyCache =
+function() {
+    return this._fbCache;
+}
 
 ZmApptQuickAddDialog.prototype.initialize = 
 function(appt) {

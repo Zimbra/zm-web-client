@@ -64,6 +64,18 @@ ZmApptEditView = function(parent, attendees, controller, dateInfo) {
     this._alteredLocations    = null;
     this._enableResolveDialog = true;
 
+    this._locationConflict    = false;
+    this._locationStatusMode = ZmApptEditView.LOCATION_STATUS_NONE;
+
+    var app = appCtxt.getApp(ZmApp.CALENDAR);
+    // Each ApptEditView must now have its own copy of the FreeBusyCache.  The cache will
+    // now hold FreeBusy info that is unique to an appointment, in that the Server provides
+    // Free busy info that excludes the current appointment.  So the cache information cannot
+    // be shared across appointments.
+    //this._fbCache = app.getFreeBusyCache();
+    AjxDispatcher.require("CalendarCore");
+    this._fbCache = new ZmFreeBusyCache(app);
+
     this._customRecurDialogCallback = this._recurChangeForLocationConflict.bind(this);
 };
 
@@ -95,10 +107,11 @@ ZmApptEditView.TIMEZONE_TYPE = "TZ_TYPE";
 ZmApptEditView.START_TIMEZONE = 1;
 ZmApptEditView.END_TIMEZONE = 2;
 
-ZmApptEditView.LOCATION_STATUS_NONE       = 0;
-ZmApptEditView.LOCATION_STATUS_VALIDATING = 1;
-ZmApptEditView.LOCATION_STATUS_CONFLICT   = 2;
-ZmApptEditView.LOCATION_STATUS_RESOLVED   = 3;
+ZmApptEditView.LOCATION_STATUS_UNDEFINED  = -1;
+ZmApptEditView.LOCATION_STATUS_NONE       =  0;
+ZmApptEditView.LOCATION_STATUS_VALIDATING =  1;
+ZmApptEditView.LOCATION_STATUS_CONFLICT   =  2;
+ZmApptEditView.LOCATION_STATUS_RESOLVED   =  3;
 
 
 // Public Methods
@@ -115,11 +128,18 @@ function() {
              this.getRepeatType() != "NON");
 }
 
+ZmApptEditView.prototype.getFreeBusyCache =
+function() {
+    return this._fbCache;
+}
+
+
 ZmLocationAppt = function() { };
 ZmLocationRecurrence = function() { };
 
 ZmApptEditView.prototype.show =
 function() {
+    this._fbCache.clearCache();
 	ZmCalItemEditView.prototype.show.call(this);
 	this._setAttendees();
 
@@ -128,6 +148,7 @@ function() {
         this.initializeLocationConflictCheck(appt);
     }
 
+    Dwt.setVisible(this._attendeeStatus, false);
     Dwt.setVisible(this._suggestTime, !this._isForward);
     Dwt.setVisible(this._suggestLocation, !this._isForward && !this._isProposeTime);
     this._scheduleAssistant.close();
@@ -149,8 +170,8 @@ function() {
     this._editViewInitialized = true;
     if(this._expandInlineScheduler) {
         this._pickAttendeesInfo(ZmCalBaseItem.PERSON);
+        this._pickAttendeesInfo(ZmCalBaseItem.LOCATION);
     }
-
 };
 
 ZmApptEditView.prototype.initializeLocationConflictCheck =
@@ -351,33 +372,50 @@ function(inst) {
 }
 
 ZmApptEditView.prototype.setLocationStatus =
-function(locationStatus) {
+function(locationStatus, currentLocationConflict) {
     var className = "";
     var statusMessage = "";
     var linkMessage = "";
     var msgVisible = false;
     var linkVisible = false;
+    var statusText = "";
+
+    if (locationStatus != ZmApptEditView.LOCATION_STATUS_UNDEFINED) {
+        this._locationStatusMode = locationStatus;
+    }
+    if (currentLocationConflict !== undefined) {
+        this._locationConflict  = currentLocationConflict;
+    }
 
     // Manage the location suggestion line beneath the location field.
-    switch (locationStatus) {
+    switch (this._locationStatusMode) {
         case ZmApptEditView.LOCATION_STATUS_NONE:
-             // No conflicts or nothing to check - display nothing
+             // No recurrence conflicts or nothing to check - display based on current conflict flag
+             if (this._locationConflict) {
+                 statusMessage = AjxImg.getImageHtml("Warning_12", "display:inline-block;padding-right:4px;") +
+                                 ZmMsg.locationCurrentConflicts;
+                 className     = "ZmLocationStatusConflict";
+                 msgVisible    = true;
+             } else {
+                 msgVisible    = false;
+             }
              break;
         case ZmApptEditView.LOCATION_STATUS_VALIDATING:
              // The conflict resource check is in progress, show a busy spinner
              className     = "ZmLocationStatusValidating";
-             statusMessage =
-                 AjxImg.getImageHtml("Wait_16", "display:inline-block;padding-right:4px;") +
-                 ZmMsg.validateLocation;
+             // Don't incorporate currentConflict flag - just show validating; It will update upon completion
+             statusMessage = AjxImg.getImageHtml("Wait_16", "display:inline-block;padding-right:4px;") +
+                             ZmMsg.validateLocation;
              msgVisible    = true;
              linkVisible   = false;
              break;
         case ZmApptEditView.LOCATION_STATUS_CONFLICT:
-             // Unresolved conflicts - show the 'Resolve Conflicts' link
+             // Unresolved recurrence conflicts - show the 'Resolve Conflicts' link
              className     = "ZmLocationStatusConflict";
-             statusMessage =
-                 AjxImg.getImageHtml("Warning_12", "display:inline-block;padding-right:4px;") +
-                 ZmMsg.locationRecurrenceConflicts;
+             statusText    = this._locationConflict ? ZmMsg.locationCurrentAndRecurrenceConflicts :
+                                                      ZmMsg.locationRecurrenceConflicts;
+             statusMessage = AjxImg.getImageHtml("Warning_12", "display:inline-block;padding-right:4px;") +
+                             statusText;
              linkMessage   = ZmMsg.resolveConflicts;
              msgVisible    = true;
              linkVisible   = true;
@@ -385,7 +423,8 @@ function(locationStatus) {
         case ZmApptEditView.LOCATION_STATUS_RESOLVED:
              // Resolved conflicts - show the 'View Resolutions' link
              className     = "ZmLocationStatusResolved";
-             statusMessage = ZmMsg.locationRecurrenceConflictsResolved;
+             statusMessage = this._locationConflict ? ZmMsg.locationRecurrenceResolvedButCurrentConflict :
+                             ZmMsg.locationRecurrenceConflictsResolved;
              linkMessage   = ZmMsg.viewResolutions;
              msgVisible    = true;
              linkVisible   = true;
@@ -408,8 +447,6 @@ function(locationStatus) {
     Dwt.setInnerHtml(this._locationStatus, statusMessage);
     Dwt.setInnerHtml(this._locationStatusAction, linkMessage);
     this._locationStatus.className = className;
-
-    this._locationStatusMode = locationStatus;
 }
 
 ZmApptEditView.prototype.blur =
@@ -463,7 +500,8 @@ function() {
     this._attendeesHashMap = {};
     this._showAsValueChanged = false;
 
-    this.setLocationStatus(ZmApptEditView.LOCATION_STATUS_NONE);
+    Dwt.setVisible(this._attendeeStatus, false);
+    this.setLocationStatus(ZmApptEditView.LOCATION_STATUS_NONE, false);
 
     //Default Persona
     this.setIdentity();
@@ -743,8 +781,6 @@ ZmApptEditView.prototype._populateForSave =
 function(calItem) {
 
     ZmCalItemEditView.prototype._populateForSave.call(this, calItem);
-
-    this.cancelLocationRequest();
 
     if(this.isOrganizer() && this.isKeyInfoChanged()) this.resetParticipantStatus();
 
@@ -1035,6 +1071,7 @@ function(calItem, mode) {
     }
 
     this._expandInlineScheduler = (showScheduleView && !isNew);
+
 };
 
 ZmApptEditView.prototype.getFreeBusyExcludeInfo =
@@ -1054,10 +1091,14 @@ function(locations, startTime, endTime){
 ZmApptEditView.prototype.addFreeBusyExcludeInfo =
 function(emailAddr, startTime, endTime){
     if(!this._fbExcludeInfo) this._fbExcludeInfo = {};
-    this._fbExcludeInfo[emailAddr] = {
-        s: startTime,
-        e: endTime
-    };
+    // DISABLE client side exclude info usage.  Now using the GetFreeBusyInfo
+    // call with ExcludeId, where the server performs the exclusion of the
+    // current appt.
+    //
+    //this._fbExcludeInfo[emailAddr] = {
+    //    s: startTime,
+    //    e: endTime
+    //};
 };
 
 ZmApptEditView.prototype._getMeetingStatusMsg =
@@ -1155,6 +1196,10 @@ function(width) {
     this._schedulerContainer = document.getElementById(this._htmlElId + "_scheduler");
     this._suggestions = document.getElementById(this._htmlElId + "_suggestions");
     Dwt.setVisible(this._suggestions, false);
+
+    this._attendeeStatusId = this._htmlElId + "_attendee_status";
+    this._attendeeStatus   = document.getElementById(this._attendeeStatusId);
+    Dwt.setVisible(this._attendeeStatus, false);
 
     this._suggestTimeId = this._htmlElId + "_suggest_time";
     this._suggestTime = document.getElementById(this._suggestTimeId);
@@ -1454,7 +1499,9 @@ function(forceShow) {
 ZmApptEditView.prototype.getScheduleView =
 function() {
     if(!this._scheduleView) {
-        this._scheduleView = new ZmFreeBusySchedulerView(this, this._attendees, this._controller, this._dateInfo);
+        var appt = this.parent.getAppt();
+        this._scheduleView = new ZmFreeBusySchedulerView(this, this._attendees, this._controller,
+            this._dateInfo, appt, this.showConflicts.bind(this));
         this._scheduleView.reparentHtmlElement(this._schedulerContainer);
 
         var closeCallback = this._onSuggestionClose.bind(this);
@@ -2589,14 +2636,18 @@ function(type, attendees) {
         this._scheduleView.setUpdateCallback(new AjxCallback(this, this.updateScheduleAssistant, [attendees, type]))
     }
 
+    var organizer = this._isProposeTime ? this.getCalItemOrganizer() : this.getOrganizer();
     if(this._schedulerOpened) {
-        var organizer = this._isProposeTime ? this.getCalItemOrganizer() : this.getOrganizer();
         this._scheduleView.update(this._dateInfo, organizer, this._attendees);
         this.autoSize();
     }else {
         if(this._schedulerOpened == null && attendees.length > 0 && !this._isForward) {
             this._toggleInlineScheduler(true);
         }else {
+            // Update the schedule view even if it won't be visible - it generates
+            // Free/Busy info for other components
+            this._scheduleView.showMe();
+            this._scheduleView.update(this._dateInfo, organizer, this._attendees);
             this.updateScheduleAssistant(attendees, type)
         }
     };
@@ -2961,3 +3012,43 @@ function() {
         this.locationConflictChecker();
     }
 };
+
+// Show/Hide the conflict warning beneath the attendee and location input fields, and
+// color any attendee or location that conflicts with the current appointment time.  If
+// the appointment is recurring, the conflict status and coloration only apply for the
+// current instance of the series.
+ZmApptEditView.prototype.showConflicts =
+function() {
+    var conflictColor = "#F08080";
+    var color, isFree, type, addressElId, addressEl;
+    var attendeeConflict = false;
+    var locationConflict = false;
+    var conflictEmails = this._scheduleView.getConflicts();
+    for (var email in conflictEmails) {
+        type = this.parent.getAttendeeType(email);
+        if ((type == ZmCalBaseItem.PERSON) || (type == ZmCalBaseItem.LOCATION)) {
+            isFree = conflictEmails[email];
+            if (!isFree) {
+                // Record attendee or location conflict
+                if (type == ZmCalBaseItem.PERSON) {
+                    attendeeConflict = true
+                } else {
+                    locationConflict = true;
+                }
+            }
+
+            // Color the address bubble or reset to default
+            color = isFree ? "" : conflictColor;
+            addressElId = this._attInputField[type].getAddressBubble(email);
+            if (addressElId) {
+                addressEl = document.getElementById(addressElId);
+                if (addressEl) {
+                    addressEl.style.backgroundColor = color;
+                }
+            }
+        }
+    }
+    Dwt.setVisible(this._attendeeStatus, attendeeConflict);
+    this.setLocationStatus(ZmApptEditView.LOCATION_STATUS_UNDEFINED, locationConflict);
+}
+

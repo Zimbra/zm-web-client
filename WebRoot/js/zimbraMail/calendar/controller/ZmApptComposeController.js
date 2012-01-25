@@ -176,6 +176,7 @@ function(id){
 
 ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
+	this._composeView.cancelLocationRequest();
 	var appt = this._composeView.getAppt(attId);
     var numRecurrence = this._composeView.getNumLocationConflictRecurrence ?
         this._composeView.getNumLocationConflictRecurrence() :

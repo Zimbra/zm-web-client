@@ -162,7 +162,8 @@ function(params) {
                                      fbCallback,
                                      fbErrorCallback,
                                      params.noBusyOverlay,
-                                     params.account);
+                                     params.account,
+                                     params.excludedId);
     }else {
         if(params.callback) {
             params.callback.run();
@@ -205,11 +206,12 @@ function(params, result) {
 };
 
 ZmFreeBusyCache.prototype._getFreeBusyInfo =
-function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay, acct) {
+function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay, acct, excludedId) {
 	var soapDoc = AjxSoapDoc.create("GetFreeBusyRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("s", startTime);
 	soapDoc.setMethodAttribute("e", endTime);
 	soapDoc.setMethodAttribute("uid", emailList);
+	soapDoc.setMethodAttribute("excludeUid", excludedId);
 
 	return appCtxt.getAppController().sendRequest({
 		soapDoc: soapDoc,
