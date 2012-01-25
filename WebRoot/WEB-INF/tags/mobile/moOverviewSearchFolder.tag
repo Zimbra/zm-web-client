@@ -26,7 +26,7 @@
     <div class="tbl">
     <div class="tr"><c:set var="url" value="${context_url}?sfi=${folder.id}"/><c:if test="${not empty types}"><c:set var="url" value="${url}&st=${types}"/></c:if>
     <span class="td left">
-        <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}"><c:if test="${ua.isiPad eq false}"><span class="Img Img${folder.type}"></span></c:if>&nbsp;${fn:escapeXml(label)}</a>
+        <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}"><c:if test="${ua.isiPad eq false}"><span class="Img Img${folder.type}"></span></c:if>&nbsp;${label}</a>
     </span>
     <c:if test="${!folder.isSystemFolder}"><span class="td right editFix" width="5%"> <a class="ImgEdit" href="?st=${param.st}&_ajxnoca=1&show${folder.isSearchFolder ? 'Search' : 'Folder'}Create=1&${folder.isSearchFolder ? 's' : ''}id=${folder.id}">&nbsp;</a></span></c:if>    
     </div>

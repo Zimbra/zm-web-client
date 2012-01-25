@@ -54,50 +54,50 @@
     </c:choose>
     <c:choose>
         <c:when test="${zm:actionSet(param, 'actionSaveFolder')}">
-            <zm:createFolder var="folder" view="${fn:escapeXml(types)}" name="${fn:escapeXml(param.folder_name)}"
+            <zm:createFolder var="folder" view="${fn:escapeXml(types)}" name="${param.folder_name}"
                              parentid="${fn:escapeXml(param.parentid)}"/>
             <c:if test="${param.st eq 'cals'}"><zm:modifyFolderColor id="${folder.id}" color="${zm:cook(param.color)}"/></c:if>
             <mo:status style="Info">
                 <fmt:message key="action${what}Created"><fmt:param
-                        value="${fn:escapeXml(param.folder_name)}"/></fmt:message>
+                        value="${param.folder_name}"/></fmt:message>
             </mo:status>
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionSaveSearch')}">
             <zm:createSearchFolder types="${fn:escapeXml(types)}" query="${fn:escapeXml(param.query)}" var="folder"
-                                   name="${fn:escapeXml(param.sname)}" parentid="${fn:escapeXml(param.parentid)}"/>
+                                   name="${param.sname}" parentid="${fn:escapeXml(param.parentid)}"/>
             <mo:status style="Info">
-                <fmt:message key="actionSearchCreated"><fmt:param value="${fn:escapeXml(folder.name)}"/></fmt:message>
+                <fmt:message key="actionSearchCreated"><fmt:param value="${folder.name}"/></fmt:message>
             </mo:status>
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionSaveTag')}">
-            <zm:createTag var="tag" name="${fn:escapeXml(param.tag_name)}" color="${fn:escapeXml(param.tag_color)}"/>
+            <zm:createTag var="tag" name="${param.tag_name}" color="${fn:escapeXml(param.tag_color)}"/>
             <mo:status style="Info">
-                <fmt:message key="actionTagCreated"><fmt:param value="${fn:escapeXml(param.tag_name)}"/></fmt:message>
+                <fmt:message key="actionTagCreated"><fmt:param value="${param.tag_name}"/></fmt:message>
             </mo:status>
         </c:when>
 
         <c:when test="${zm:actionSet(param, 'actionModifyFolder')}">
-            <zm:renameFolder newname="${fn:escapeXml(param.folder_name)}" id="${fn:escapeXml(param.efolderid)}"/>
+            <zm:renameFolder newname="${param.folder_name}" id="${fn:escapeXml(param.efolderid)}"/>
             <zm:moveFolder id="${fn:escapeXml(param.efolderid)}" parentid="${fn:escapeXml(param.parentid)}"/>
             <c:if test="${param.st eq 'cals'}"><zm:modifyFolderColor id="${param.efolderid}" color="${zm:cook(param.color)}"/></c:if>
             <mo:status style="Info">
                 <fmt:message key="action${what}Modified"><fmt:param
-                        value="${fn:escapeXml(param.folder_name)}"/></fmt:message>
+                        value="${param.folder_name}"/></fmt:message>
             </mo:status>
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionModifySearch')}">
             <zm:deleteFolder id="${fn:escapeXml(param.esearchid)}"/>
             <zm:createSearchFolder types="${fn:escapeXml(types)}" query="${fn:escapeXml(param.query)}" var="folder"
-                                   name="${fn:escapeXml(param.sname)}" parentid="${fn:escapeXml(param.parentid)}"/>
+                                   name="${param.sname}" parentid="${fn:escapeXml(param.parentid)}"/>
             <mo:status style="Info">
-                <fmt:message key="actionSearchModified"><fmt:param value="${fn:escapeXml(folder.name)}"/></fmt:message>
+                <fmt:message key="actionSearchModified"><fmt:param value="${folder.name}"/></fmt:message>
             </mo:status>
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionModifyTag')}">
-            <zm:renameTag id="${fn:escapeXml(param.etagid)}" newname="${fn:escapeXml(param.tag_name)}"/>
+            <zm:renameTag id="${fn:escapeXml(param.etagid)}" newname="${param.tag_name}"/>
             <zm:modifyTagColor id="${fn:escapeXml(param.etagid)}" color="${fn:escapeXml(param.tag_color)}"/>
             <mo:status style="Info">
-                <fmt:message key="actionTagModified"><fmt:param value="${fn:escapeXml(param.tag_name)}"/></fmt:message>
+                <fmt:message key="actionTagModified"><fmt:param value="${param.tag_name}"/></fmt:message>
             </mo:status>
         </c:when>
 
