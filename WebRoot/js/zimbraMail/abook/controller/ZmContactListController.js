@@ -831,13 +831,21 @@ function(parent, num) {
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
 		parent.enable(ZmOperation.NEW_MESSAGE, num > 0);
 		parent.enable(ZmOperation.CONTACT, num == 1);
-		var isOwner = false;
+		var selection = this._listView[this._currentViewId].getSelection();
+		var canEdit = false;
 		if (num == 1) {
-			var contact = this._listView[this._currentViewId].getSelection()[0];
+			var contact = selection[0];
 			var isDL = contact && contact.isDistributionList();
-			isOwner = isDL && contact.dlInfo && contact.dlInfo.isOwner;
+			canEdit = isDL && contact.dlInfo && contact.dlInfo.isOwner;
 		}
-		parent.enable([ZmOperation.EDIT], isOwner);
+		parent.enable([ZmOperation.EDIT], canEdit);
+
+		var canDelete = ZmContactList.deleteGalItemsAllowed(selection);
+
+		parent.enable([ZmOperation.DELETE], canDelete);
+
+
+
 	}
 
     this._resetQuickCommandOperations(parent);

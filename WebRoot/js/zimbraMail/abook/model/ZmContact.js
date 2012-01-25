@@ -1454,20 +1454,6 @@ function(mailPolicy, specificMailers) {
 
 };
 
-ZmContact.prototype._getModifyDlReq =
-function(name, value) {
-	return {
-		_jsns: "urn:zimbraAccount",
-		dl: {by: "name",
-			 _content: this.getEmail()
-		},
-		action: {
-			op: "modify",
-			a: {n: name, _content: value}
-		}
-	};
-};
-
 ZmContact.prototype._addDlAttribute =
 function(attrs, mods, name, soapAttrName) {
 	var attr = mods[name];

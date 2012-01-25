@@ -262,6 +262,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
 
 	appCtxt.createDistListAllowed = false;
 	appCtxt.createDistListAllowedDomains = [];
+	appCtxt.createDistListAllowedDomainsMap = [];
 	var rightTargets = info.rights && info.rights.targets;
 	if (rightTargets) {
 		for (var i = 0; i < rightTargets.length; i++) {
@@ -270,6 +271,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
 				if (target.target[0].type == "domain") {
 					appCtxt.createDistListAllowed = true;
 					appCtxt.createDistListAllowedDomains.push(target.target[0].name);
+					appCtxt.createDistListAllowedDomainsMap[target.target[0].name] = true;
 					break;
 				}
 			}

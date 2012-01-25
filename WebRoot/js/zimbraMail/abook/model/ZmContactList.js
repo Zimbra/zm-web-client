@@ -584,11 +584,77 @@ function(contact, folder) {
 ZmContactList.prototype.deleteItems =
 function(params) {
 	if (this.isGal) {
-		DBG.println(AjxDebug.DBG1, "Cannot delete GAL contacts");
+		if (ZmContactList.deleteGalItemsAllowed(params.items)) {
+			this._deleteDls(params.items);
+			return;
+		}
+		DBG.println(AjxDebug.DBG1, "Cannot delete GAL contacts that are not DLs");
 		return;
 	}
 	ZmList.prototype.deleteItems.call(this, params);
 };
+
+ZmContactList.deleteGalItemsAllowed =
+function(items) {
+	var deleteDomainsAllowed = appCtxt.createDistListAllowedDomainsMap;
+	for (var i = 0; i < items.length; i++) {
+		var contact = items[i];
+		var email = contact.getEmail();
+		var domain = email.split("@")[1];
+		var isDL = contact && contact.isDistributionList();
+		if (!isDL || !deleteDomainsAllowed[domain]) {
+			return false;
+		}
+	}
+	return true;
+};
+
+ZmContactList.prototype._deleteDls =
+function(items, confirmDelete) {
+
+	if (!confirmDelete) {
+		var callback = this._deleteDls.bind(this, items, true);
+		this._popupDeleteWarningDialog(callback, false, items.length);
+		return;
+	}
+
+	var reqs = [];
+	for (var i = 0; i < items.length; i++) {
+		var contact = items[i];
+		var email = contact.getEmail();
+		reqs.push({
+				_jsns: "urn:zimbraAccount",
+				dl: {by: "name",
+					 _content: contact.getEmail()
+				},
+				action: {
+					op: "delete"
+				}
+			});
+	}
+	var jsonObj = {
+		BatchRequest: {
+			_jsns: "urn:zimbra",
+			DistributionListActionRequest: reqs
+		}
+	};
+	var respCallback = this._deleteDlsResponseHandler.bind(this, items);
+	appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
+
+};
+
+ZmContactList.prototype._deleteDlsResponseHandler =
+function(items) {
+	appCtxt.setStatusMsg(items.length == 1 ? ZmMsg.dlDeleted : ZmMsg.dlsDeleted);
+
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		item.clearDlInfo();
+		item._notify(ZmEvent.E_DELETE);
+	}
+};
+
+
 
 /**
  * Sets the is GAL flag.
