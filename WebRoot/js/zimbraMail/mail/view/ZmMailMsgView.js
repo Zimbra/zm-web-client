@@ -102,6 +102,17 @@ ZmMailMsgView._MAILTO_RE = /^mailto:[\x27\x22]?([^@?&\x22\x27]+@[^@?&]+\.[^@?&\x
 
 ZmMailMsgView.MAX_ADDRESSES_IN_FIELD = 10;
 
+// tags that are trusted in HTML content that is not displayed in an iframe
+ZmMailMsgView.TRUSTED_TAGS = ["#text", "a", "abbr", "acronym", "address", "article", "b", "basefont", "bdo", "big",
+	"blockquote", "body", "br", "caption", "center", "cite", "code", "col", "colgroup", "dd", "del", "dfn", "dir",
+	"div", "dl", "dt", "em", "font", "footer", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hr", "html", "i", "img",
+	"ins", "kbd", "li", "mark", "menu", "meter", "nav", "ol", "p", "pre", "q", "s", "samp", "section", "small",
+	"span", "strike", "strong", "sub", "sup", "table", "tbody", "td", "tfoot", "th", "thead", "time", "tr", "tt",
+	"u", "ul", "var", "wbr"];
+
+// attributes that we don't want to appear in HTML displayed in a div
+ZmMailMsgView.UNTRUSTED_ATTRS = ["id", "class", "name", "profile"];
+
 // Public methods
 
 ZmMailMsgView.prototype.getController =
@@ -1046,7 +1057,7 @@ function(container, html, isTextMsg, isTruncated, index, origText) {
 		else {
 			parent.appendChild(div);
 		}
-		div.innerHTML = html;
+		div.innerHTML = this._cleanedHtml || html;
 	}
 
 	if (!isTextMsg) {
@@ -1555,6 +1566,11 @@ function(msg, container, callback, index) {
 			if (bodyPart.ct == ZmMimeTable.TEXT_HTML && appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
 				if (invite && !invite.isEmpty()) {
 					content = ZmInviteMsgView.truncateBodyContent(content, true);
+					// if the notes are empty, don't bother rendering them
+					var tmp = AjxStringUtil.stripTags(content);
+					if (!AjxStringUtil._NON_WHITESPACE.test(tmp)) {
+						return;
+					}
 				}
 
 				// fix broken inline images - take one like this: <img dfsrc="http:...part=1.2.2">

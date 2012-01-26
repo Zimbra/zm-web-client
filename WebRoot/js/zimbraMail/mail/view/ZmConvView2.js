@@ -198,7 +198,7 @@ function(conv) {
 	Dwt.setHandler(this._replyInput, DwtEvent.ONFOCUS, this._onInputFocusChange.bind(this, true)); 
 	Dwt.setHandler(this._replyInput, DwtEvent.ONBLUR, this._onInputFocusChange.bind(this, false));
 
-	this._scheduleResize();
+	this._scheduleResize(true);
 };
 
 /**
@@ -307,7 +307,7 @@ function(clear) {
 };
 
 ZmConvView2.prototype._resize =
-function() {
+function(scrollToTop) {
 
 	DBG.println("cv2", "ZmConvView2::_resize");
 	this._needResize = false;
@@ -328,13 +328,17 @@ function() {
 	var messagesHeight = myHeight - headerSize.y - replySize.y - 1;
 	DBG.println("cv2", "set message area height to " + messagesHeight);
 	Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, messagesHeight);
+	
+	if (scrollToTop) {
+		this._messagesDiv.scrollTop = 0;
+	}
 };
 
 // since we may get multiple calls to _resize
 ZmConvView2.prototype._scheduleResize =
-function() {
+function(scrollToTop) {
 	if (!this._needResize) {
-		window.setTimeout(this._resize.bind(this), 300);
+		window.setTimeout(this._resize.bind(this, scrollToTop), 300);
 	}
 	this._needResize = true;
 };
@@ -897,15 +901,22 @@ function(msg, container, callback) {
 	this._header._setExpanded(this._expanded);
 };
 
-// When bug 69348 is implemented, the server will tell us whether we need an IFRAME. Until then,
-// display all HTML messages in an IFRAME.
+// Display all text messages and some HTML messages in a DIV rather than in an IFRAME.
 ZmMailMsgCapsuleView.prototype._useIframe =
 function(isTextMsg, html, isTruncated) {
 
 	if (isTruncated)	{ return true; }
 	if (isTextMsg)		{ return false; }
-	
-	return true;
+
+	this._cleanedHtml = null;
+	var result = AjxStringUtil.checkForCleanHtml(html, ZmMailMsgView.TRUSTED_TAGS, ZmMailMsgView.UNTRUSTED_ATTRS);
+	if (result) {
+		this._cleanedHtml = result;
+		return false;
+	}
+	else {
+		return true;
+	}
 };
 
 ZmMailMsgCapsuleView.prototype._renderMessageBody =

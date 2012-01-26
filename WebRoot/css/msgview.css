@@ -40,6 +40,11 @@
 	padding: 10px;
 }
 
+/* override global rule for DIV and P in common.css (for display that does not use iframe) */
+.MsgBody DIV, .MsgBody P {
+	@FontSize-html@
+}
+
 .MsgBody .SignatureText { color: gray; }
 .MsgBody .QuotedText0 { color: purple; }
 .MsgBody .QuotedText1 { color: green; }
