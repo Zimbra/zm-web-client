@@ -1172,27 +1172,20 @@ function(creates, force) {
 		}
 	}
 
+	var controllers = this.getAllControllers();
 
-	var controllers = [this._tradController, this._convListController, this._convController];
+	// Move currentController to the end of the list if it's not there already
 	var currentController = this._getCurrentViewController();
-
-	if (currentController && controllers[controllers.length-1] !== currentController) { // Move currentController to the end of the list if it's not there already
+	if (currentController && controllers[controllers.length - 1] !== currentController) {
 		AjxUtil.arrayRemove(controllers, currentController);
 		controllers.push(currentController);
-	}
-
-	var lastIndex = 0;
-	for (var i = 0; i < controllers.length; i++) { // Some controllers may not be created yet. We need to determine the last existing controller in the list
-		if (controllers[i]) {
-			lastIndex = i;
-		}
 	}
 
 	// give each controller a chance to handle the creates
 	for (var i = 0; i < controllers.length; i++) {
 		var controller = controllers[i];
-		if (controller) {
-			this._checkList(creates, controller.getList(), controller, i == lastIndex);
+		if (controller && controller.isZmDoublePaneController) {
+			this._checkList(creates, controller.getList(), controller, i == controllers.length - 1);
 		}
 	}
 

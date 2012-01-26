@@ -725,6 +725,26 @@ function(type) {
 	return this._curSessionId[type];
 };
 
+// returns a list of this app's controllers
+ZmApp.prototype.getAllControllers =
+function() {
+
+	var controllers = [];
+	for (var viewType in this._sessionController) {
+		var viewHash = this._sessionController[viewType];
+		if (viewHash) {
+			for (var viewId in viewHash) {
+				var ctlr = viewHash[viewId];
+				if (ctlr) {
+					controllers.push(ctlr);
+				}
+			}
+		}
+	}
+	
+	return controllers;
+};
+
 /**
  * @private
  */
