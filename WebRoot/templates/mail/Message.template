@@ -281,6 +281,11 @@
 								</tr>
 							<$ } $>
 						</table>
+						<$ if (data.hasAttachments) { $>
+							<div class="MessageHeaderAttachments" id="${attachId}_container">
+								<div id="${attachId}" style='overflow:auto;'></div>
+							</div>
+						<$ } $>
 					</div>
 				</td>
 				<td id='${id}_contactArea' class='ContactArea'>
