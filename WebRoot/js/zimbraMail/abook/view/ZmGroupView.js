@@ -126,6 +126,11 @@ ZmGroupView.prototype.getSelectionCount = function() {
 	return 1;
 };
 
+ZmGroupView.prototype.isDistributionList =
+function() {
+	return this._contact.isDistributionList();
+};
+
 ZmGroupView.prototype.set =
 function(contact, isDirty) {
 	this._attr = {};
@@ -135,7 +140,7 @@ function(contact, isDirty) {
 	}
 	contact.addChangeListener(this._changeListener);
 	this._contact = contact;
-	if (this._contact.isDistributionList()) {
+	if (this.isDistributionList()) {
 		this.setScrollStyle(Dwt.SCROLL);
 	}
 
@@ -149,9 +154,16 @@ function(contact, isDirty) {
 	this._offset = 0;
 	this._isDirty = isDirty;
 
-	document.getElementById(this._groupNameId).onblur = this._controller.updateTabTitle.bind(this._controller);
 	if (contact.isDistributionList()) {
-		document.getElementById(this._groupNameDomainId).onblur = this._controller.updateTabTitle.bind(this._controller);
+		if (this._usernameEditable) {
+			document.getElementById(this._groupNameId).onblur = this._controller.updateTabTitle.bind(this._controller);
+		}
+		if (this._domainEditable) {
+			document.getElementById(this._groupNameDomainId).onblur = this._controller.updateTabTitle.bind(this._controller);
+		}
+	}
+	else {
+		document.getElementById(this._groupNameId).onblur = this._controller.updateTabTitle.bind(this._controller);
 	}
 
 	this.search();
@@ -167,7 +179,7 @@ function() {
 	var groupName = this._getGroupName();
 	var folderId = this._getFolderId();
 
-	if (this._contact.isDistributionList()) {
+	if (this.isDistributionList()) {
 		var dlInfo = this._contact.dlInfo;
 		if (groupName != this._contact.getEmail()) {
 			mods[ZmContact.F_email] = groupName;
@@ -209,7 +221,7 @@ function() {
 	}
 
 	// creating new contact (possibly some fields - but not ID - prepopulated)
-	if (this._contact.id == null || (this._contact.isGal && !this._contact.isDistributionList())) {
+	if (this._contact.id == null || (this._contact.isGal && !this.isDistributionList())) {
 		mods[ZmContact.F_folderId] = folderId;
 		mods[ZmContact.F_fileAs] = ZmContact.computeCustomFileAs(groupName);
 		mods[ZmContact.F_nickname] = groupName;
@@ -218,7 +230,7 @@ function() {
 	}
 	else {
 		// modifying existing contact
-		if (!this._contact.isDistributionList() && this._contact.getFileAs() != groupName) {
+		if (!this.isDistributionList() && this._contact.getFileAs() != groupName) {
 			mods[ZmContact.F_fileAs] = ZmContact.computeCustomFileAs(groupName);
 			mods[ZmContact.F_nickname] = groupName;
 		}
@@ -256,16 +268,23 @@ function() {
 
 ZmGroupView.prototype._getGroupDomainName =
 function() {
+	if (this.isDistributionList()) {
+		return this._domainEditable
+			? AjxStringUtil.trim(document.getElementById(this._groupNameDomainId).value)
+			: this._emailDomain;
+	}
 	return AjxStringUtil.trim(document.getElementById(this._groupNameDomainId).value);
 };
 
 ZmGroupView.prototype._getGroupName =
 function() {
-	var name = AjxStringUtil.trim(document.getElementById(this._groupNameId).value);
-	if (this._contact.isDistributionList()) {
-		name += "@" + this._getGroupDomainName();
+	if (this.isDistributionList()) {
+		var username = this._usernameEditable 
+				? AjxStringUtil.trim(document.getElementById(this._groupNameId).value)
+				: this._emailUsername;
+		return username + "@" + this._getGroupDomainName();
 	}
-	return name;
+	return AjxStringUtil.trim(document.getElementById(this._groupNameId).value);
 };
 
 ZmGroupView.prototype._getDlDisplayName =
@@ -351,8 +370,11 @@ function(checkEither) {
 
 ZmGroupView.prototype.isValidDlName =
 function() {
-	if (!this._contact.isDistributionList()) {
+	if (!this.isDistributionList()) {
 		return true;
+	}
+	if (!this._usernameEditable) {
+		return true; //to be on the safe and clear side. no need to check.
 	}
 	var groupName = this._getGroupName();
 	return AjxEmailAddress.isValid(groupName);
@@ -360,22 +382,20 @@ function() {
 
 ZmGroupView.prototype.isValidDlDomainName =
 function() {
-	if (!this._contact.isDistributionList()) {
+	if (!this.isDistributionList()) {
 		return true;
 	}
-	var domain = this._getGroupDomainName();
-	var legalDomains = this._legalDomains;
-	for (var i = 0; i < legalDomains.length; i++) {
-		if (legalDomains[i] == domain) {
-			return true;
-		}
+	if (!this._domainEditable) {
+		return true; //this takes care of a "vanilla" owner with no create rights.
 	}
-	return false;
+
+	var domain = this._getGroupDomainName();
+	return this._allowedDomains[domain];
 };
 
 ZmGroupView.prototype.isValidOwners =
 function() {
-	if (!this._contact.isDistributionList()) {
+	if (!this.isDistributionList()) {
 		return true;
 	}
 	return this._getDlOwners().length > 0
@@ -442,9 +462,13 @@ ZmGroupView.prototype.getErrorMessage = function(id) {
 
 ZmGroupView.prototype.enableInputs =
 function(bEnable) {
-	document.getElementById(this._groupNameId).disabled = !bEnable;
-	if (this._contact.isDistributionList()) {
-		document.getElementById(this._groupNameDomainId).disabled = !bEnable || this._legalDomains.length == 1;
+	if (this.isDistributionList()) {
+		if (this._usernameEditable) {
+			document.getElementById(this._groupNameId).disabled = !bEnable;
+		}
+		if (this._domainEditable) {
+			document.getElementById(this._groupNameDomainId).disabled = !bEnable;
+		}
 		document.getElementById(this._dlDisplayNameId).disabled = !bEnable;
 		document.getElementById(this._dlDescId).disabled = !bEnable;
 		document.getElementById(this._dlHideInGalId).disabled = !bEnable;
@@ -455,6 +479,9 @@ function(bEnable) {
 			document.getElementById(this._dlUnsubscriptionPolicyId[opt]).disabled = !bEnable;
 		}
 		document.getElementById(this._dlListOwnersId).disabled = !bEnable;
+	}
+	else {
+		document.getElementById(this._groupNameId).disabled = !bEnable;
 	}
 	if (!this._noManualEntry) {
 		this._groupMembers.disabled = !bEnable;
@@ -599,7 +626,7 @@ function() {
 	}
 
 	this._setGroupName();
-	if (this._contact.isDistributionList()) {
+	if (this.isDistributionList()) {
 		this._setDlFields();
 	}
 	this._setGroupMembers();
@@ -632,24 +659,21 @@ function() {
 	this._titleId = 			this._htmlElId + "_title";
 	this._tagsId = 				this._htmlElId + "_tags";
 	this._groupNameId = 		this._htmlElId + "_groupName";
-	if (this._contact.isDistributionList()) {
+	if (this.isDistributionList()) {
 		this._groupNameDomainId = 		this._htmlElId + "_groupNameDomain";
+		this._allowedDomains = appCtxt.createDistListAllowedDomainsMap;
+		this._emailDomain = appCtxt.createDistListAllowedDomains[0];
+		this._emailUsername = "";
 		var email = this._contact.getEmail();
-		this._legalDomains = [];
-		var domain = null;
 		if (email) {
-			//this is editing an existing DL case
 			var temp = email.split("@");
-			domain = temp[1];
-			this._legalDomains.push(domain);
+			this._emailUsername = temp[0];
+			this._emailDomain = temp[1];
 		}
-		var domains = appCtxt.createDistListAllowedDomains;
-		for (var i = 0; i < domains.length; i++) {
-			if (domains[i] == domain) {
-				continue;
-			}
-			this._legalDomains.push(domains[i]);
-		}
+		var isCreatingNew = !email;
+		var domainCount = appCtxt.createDistListAllowedDomains.length;
+		this._domainEditable = (domainCount > 1) && (isCreatingNew || this._allowedDomains[this._emailDomain]); //since a rename from one domain to another is like deleting on one and creating on other, both require createDistList right on the domains
+		this._usernameEditable = isCreatingNew || this._allowedDomains[this._emailDomain];
 
 		this._dlDisplayNameId = 	this._htmlElId + "_dlDisplayName";
 		this._dlDescId = 			this._htmlElId + "_dlDesc";
@@ -704,6 +728,10 @@ function() {
 		detailed: this._detailedSearch,
 		contact: this._contact,
 		isEdit: true,
+		usernameEditable: this._usernameEditable,
+		domainEditable: this._domainEditable,
+		username: this._emailUsername,
+		domain: this._emailDomain,
 		addrbook: this._contact.getAddressBook()
 	};
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#GroupView", params);
@@ -825,14 +853,18 @@ function() {
 
 ZmGroupView.prototype._installKeyHandlers =
 function() {
-	var groupName = document.getElementById(this._groupNameId);
-	Dwt.setHandler(groupName, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
-	Dwt.associateElementWithObject(groupName, this);
 
-	if (this._contact.isDistributionList()) {
-		var groupNameDomain = document.getElementById(this._groupNameDomainId);
-		Dwt.setHandler(groupNameDomain, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
-		Dwt.associateElementWithObject(groupNameDomain, this);
+	if (this.isDistributionList()) {
+		if (this._usernameEditable) {
+			var groupName = document.getElementById(this._groupNameId);
+			Dwt.setHandler(groupName, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
+			Dwt.associateElementWithObject(groupName, this);
+		}
+		if (this._domainEditable) {
+			var groupNameDomain = document.getElementById(this._groupNameDomainId);
+			Dwt.setHandler(groupNameDomain, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
+			Dwt.associateElementWithObject(groupNameDomain, this);
+		}
 
 		var dlDisplayName = document.getElementById(this._dlDisplayNameId);
 		Dwt.setHandler(dlDisplayName, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
@@ -886,6 +918,11 @@ function() {
 		}
 
 	}
+	else {
+		var groupName = document.getElementById(this._groupNameId);
+		Dwt.setHandler(groupName, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
+		Dwt.associateElementWithObject(groupName, this);
+	}
 
 	if (!this._noManualEntry) {
 		Dwt.setHandler(this._groupMembers, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
@@ -902,9 +939,13 @@ function() {
 ZmGroupView.prototype._getTabGroupMembers =
 function() {
 	var fields = [];
-	fields.push(document.getElementById(this._groupNameId));
-	if (this._contact.isDistributionList()) {
-		fields.push(document.getElementById(this._groupNameDomainId));
+	if (this.isDistributionList()) {
+		if (this._usernameEditable) {
+			fields.push(document.getElementById(this._groupNameId));
+		}
+		if (this._domainEditable) {
+			fields.push(document.getElementById(this._groupNameDomainId));
+		}
 		fields.push(document.getElementById(this._dlDisplayNameId));
 		fields.push(document.getElementById(this._dlDescId));
 		fields.push(document.getElementById(this._dlHideInGalId));
@@ -923,6 +964,9 @@ function() {
 		}
 		fields.push(document.getElementById(this._dlNotesId));
 	}
+	else {
+		fields.push(document.getElementById(this._groupNameId));
+	}
 	if (!this._noManualEntry) {
 		fields.push(this._groupMembers);
 	}
@@ -934,6 +978,9 @@ function() {
 
 ZmGroupView.prototype._getDefaultFocusItem =
 function() {
+	if (this.isDistributionList()) {
+		return document.getElementById(this._dlDisplayNameId);
+	}
 	return document.getElementById(this._groupNameId);
 };
 
@@ -985,23 +1032,22 @@ function() {
 
 ZmGroupView.prototype._setGroupName =
 function() {
-	var groupName = document.getElementById(this._groupNameId);
-	if (groupName) {
-		if (this._contact.isDistributionList()) {
-			var domains = this._legalDomains;
-			var email = this._contact.getEmail() || "@" + domains[0];
+	if (this.isDistributionList()) {
+		if (this._domainEditable) {
 			var groupNameDomain = document.getElementById(this._groupNameDomainId);
-			var temp = email.split("@");
-			var emailUserName = temp[0];
-			var emailDomainName = temp[1];
-			groupName.value = emailUserName;
-			groupNameDomain.value = emailDomainName;
-			groupNameDomain.disabled = domains.length == 1
+			groupNameDomain.value = this._emailDomain;
 		}
-		else {
-			groupName.value = this._contact.getFileAs() || "";
+		if (this._usernameEditable) {
+			var groupName = document.getElementById(this._groupNameId);
+			groupName.value = this._emailUsername;
 		}
+		return;
 	}
+	var groupName = document.getElementById(this._groupNameId);
+	if (!groupName) {
+		return;
+	}
+	groupName.value = this._contact.getFileAs() || "";
 };
 
 ZmGroupView.prototype._setDlFields =

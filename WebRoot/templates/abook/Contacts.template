@@ -414,10 +414,19 @@
     <$ } $>
     <$ else if (isEdit) {$>
        <div class='companyName'>
-			<$ if (data.contact.isDistributionList()) { $>
-			   <input type='text' autocomplete='off' size=20 id='${id}_groupName' class="Text"> @ <input type='text' autocomplete='off' size=20 id='${id}_groupNameDomain' class="Text">
+			<$	if (data.contact.isDistributionList()) {
+		    		if (data.usernameEditable) { $>
+						<input type='text' autocomplete='off' size=20 id='${id}_groupName' class="Text"> @
+		   	<$		} else { $>
+		   				<$= AjxStringUtil.htmlEncode(data.username)$> @
+			<$		}
+					if (data.domainEditable) { $>
+						<input type='text' autocomplete='off' size=20 id='${id}_groupNameDomain' class="Text">
+			<$ 		} else { $>
+						<$= AjxStringUtil.htmlEncode(data.domain)$>
+			<$ 		} $>
 			<$ } else { $>
-			   <input type='text' autocomplete='off' size=40 id='${id}_groupName' class="Text">
+					<input type='text' autocomplete='off' size=40 id='${id}_groupName' class="Text">
 			<$ } $>
        </div>
        <div id='${id}_tags' style='padding-top: 5px'></div>
