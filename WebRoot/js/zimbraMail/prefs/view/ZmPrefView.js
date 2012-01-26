@@ -330,9 +330,9 @@ function(dirtyCheck, noValidation, batchCommand) {
 				viewPage.addCommand(batchCommand);
 			}
 		}
-
+        var isSaveCommand = (batchCommand) ? true : false;
 		try {
-			var result = this._checkSection(section, viewPage, dirtyCheck, noValidation, list, errors, view);
+			var result = this._checkSection(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSaveCommand);
 		} catch (e) {
 			throw(e);
 		}
@@ -349,7 +349,7 @@ function(dirtyCheck, noValidation, batchCommand) {
 };
 
 ZmPrefView.prototype._checkSection =
-function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
+function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSaveCommand) {
 	var settings = appCtxt.getSettings();
 	var prefs = section && section.prefs;
 	for (var j = 0, count = prefs ? prefs.length : 0; j < count; j++) {
@@ -404,7 +404,7 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 				}
 			}
 			if (isValid) {
-                if (!dirtyCheck) {
+                if (!dirtyCheck && isSaveCommand) {
                     if (setup.setFunction) {
                         setup.setFunction(pref, value, list);
                     } else {
@@ -413,6 +413,9 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
                             list.push(pref);
                         }
                     }
+                } else if (!dirtyCheck) {
+                    //for logging
+                    list.push({origValue: origValue, value:value});
                 }
 			} else {
 				errors.push(AjxMessageFormat.format(setup.errorMessage, AjxStringUtil.htmlEncode(value)));

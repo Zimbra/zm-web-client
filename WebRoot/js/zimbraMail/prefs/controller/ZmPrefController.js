@@ -524,6 +524,7 @@ ZmPrefController.prototype._popShieldNoCallback =
 function() {
 	this._prefsView.reset();
 	this._popShield.popdown();
+    this.resetDirty();
 	appCtxt.getAppViewMgr().showPendingView(true);
 };
 
