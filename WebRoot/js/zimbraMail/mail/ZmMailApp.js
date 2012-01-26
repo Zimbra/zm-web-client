@@ -1500,9 +1500,12 @@ function(refresh) {
 		var viewIds = [ZmId.VIEW_TRAD, ZmId.VIEW_CONVLIST, ZmId.VIEW_CONV];
 		var avm = appCtxt.getAppViewMgr();
 		for (var i = 0; i < viewIds.length; i++) {
-			var dpv = avm.getViewComponent(viewIds[i], ZmAppViewMgr.C_APP_CONTENT);
-			if (dpv && dpv.isZmDoublePaneView) {
-				dpv.isStale = true;
+			var views = avm.getViewsByType(viewIds[i]);
+			for (var j = 0; j < views.length; j++) {
+				var dpv = avm.getViewComponent(ZmAppViewMgr.C_APP_CONTENT, views[j].id);
+				if (dpv && dpv.isZmDoublePaneView) {
+					dpv.isStale = true;
+				}
 			}
 		}
 		// view is normally updated when user returns to it (from whatever view
