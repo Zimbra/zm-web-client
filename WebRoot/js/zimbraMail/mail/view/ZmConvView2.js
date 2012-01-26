@@ -176,7 +176,7 @@ ZmConvView2.prototype._renderConv =
 function(conv) {
 
 	this._setConvHeader();
-	this._renderMessages(conv, this._messagesDiv);
+	var firstExpanded = this._renderMessages(conv, this._messagesDiv);
 
 	var text = "";
 	var origMsg = this._item.getFirstHotMsg();
@@ -198,7 +198,7 @@ function(conv) {
 	Dwt.setHandler(this._replyInput, DwtEvent.ONFOCUS, this._onInputFocusChange.bind(this, true)); 
 	Dwt.setHandler(this._replyInput, DwtEvent.ONBLUR, this._onInputFocusChange.bind(this, false));
 
-	this._scheduleResize(true);
+	this._scheduleResize(firstExpanded || true);
 };
 
 /**
@@ -235,9 +235,6 @@ function(conv, container) {
 		this._renderMessage(msg, params);
 		var msgView = this._msgViews[msg.id];
 		firstExpanded = firstExpanded || (msgView._expanded ? msgView : null);
-	}
-	if (firstExpanded) {
-		Dwt.scrollIntoView(msgView.getHtmlElement(), this._messagesDiv);
 	}
 };
 
@@ -301,13 +298,14 @@ function(clear) {
 	if (this._initialized) {
 		this._subjectSpan.innerHTML = this._infoSpan.innerHTML = "";
 		this._messagesDiv.innerHTML = "";
+		this._replyInput.value = "";
 		Dwt.setVisible(this._headerDiv, !clear);
 		Dwt.setVisible(this._replyDiv, !clear);
 	}
 };
 
 ZmConvView2.prototype._resize =
-function(scrollToTop) {
+function(scrollMsgView) {
 
 	DBG.println("cv2", "ZmConvView2::_resize");
 	this._needResize = false;
@@ -329,8 +327,13 @@ function(scrollToTop) {
 	DBG.println("cv2", "set message area height to " + messagesHeight);
 	Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, messagesHeight);
 	
-	if (scrollToTop) {
-		this._messagesDiv.scrollTop = 0;
+	if (scrollMsgView) {
+		if (scrollMsgView === true) {
+			this._messagesDiv.scrollTop = 0;
+		}
+		else if (scrollMsgView.isZmMailMsgCapsuleView) {
+			Dwt.scrollIntoView(scrollMsgView.getHtmlElement(), this._messagesDiv);
+		}
 	}
 };
 
