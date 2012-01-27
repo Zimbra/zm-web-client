@@ -747,6 +747,7 @@ function(ev) {
 			controller:		this._controller,
 			actionsMenu:	this._actionsMenu,
 			forceCollapse:	true,
+			forceExpand:	msg.isSent,	// trumps forceCollapse
 			index:			ev.getDetail("sortIndex")
 		}
 		this._renderMessage(msg, params);
