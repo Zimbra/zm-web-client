@@ -236,6 +236,8 @@ function(conv, container) {
 		var msgView = this._msgViews[msg.id];
 		firstExpanded = firstExpanded || (msgView._expanded ? msgView : null);
 	}
+	
+	return firstExpanded;
 };
 
 ZmConvView2.prototype._renderMessage =
@@ -339,9 +341,9 @@ function(scrollMsgView) {
 
 // since we may get multiple calls to _resize
 ZmConvView2.prototype._scheduleResize =
-function(scrollToTop) {
+function(scrollMsgView) {
 	if (!this._needResize) {
-		window.setTimeout(this._resize.bind(this, scrollToTop), 300);
+		window.setTimeout(this._resize.bind(this, scrollMsgView), 300);
 	}
 	this._needResize = true;
 };
