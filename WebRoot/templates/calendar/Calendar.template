@@ -153,16 +153,18 @@
         <table id='${id}_tableBody' width=100% style="table-layout:fixed; ${headerStyle}">
         <tr>
             <td width='4px' style="${showAsColor}" ></td>
-            <td width=100%><div style='overflow:hidden;white-space:nowrap; <$=style$>'>
+            <td width=100%><div id='${id}_st_su' style='overflow:hidden;white-space:nowrap; <$=style$>'>
                     <$ if (continues) { $>
                         <div class='calendar_month_day_item_continues'>&raquo;</div>
                     <$ } $>
                     <$ if (continued) { $>
                         &laquo;&nbsp;
                     <$ } else { $>
-                        &nbsp;${duration}
+                         <span id='${id}_start_time'>&nbsp;${duration}</span>
                     <$ } $>
-                    <$= AjxStringUtil.htmlEncode(data.appt.getName()) $>
+                    <span id='${id}_subject'>
+                        <$= AjxStringUtil.htmlEncode(data.appt.getName()) $>
+                    </span>
                 </div>
             </td>
             <$= AjxTemplate.expand("#calendar_tag_icon",  data) $>
