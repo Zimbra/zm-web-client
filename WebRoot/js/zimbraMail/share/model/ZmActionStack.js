@@ -129,7 +129,7 @@ ZmActionStack.prototype.logAction = function(params) {
 					}
 					if (moveAction) {
 						if (multi) {
-							if (!action) action = new ZmCompositeAction();
+							if (!action) action = new ZmCompositeAction(folderId);
 							action.addAction(moveAction);
 						} else {
 							action = moveAction;

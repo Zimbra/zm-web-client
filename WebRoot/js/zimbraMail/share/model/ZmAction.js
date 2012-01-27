@@ -211,7 +211,7 @@ ZmItemMoveAction.prototype.redo = function(callback, errorCallback) {
 	this._doMove(callback, errorCallback, this._toFolderId);
 };
 
-ZmItemMoveAction.multipleUndo = function(actions, redo) {
+ZmItemMoveAction.multipleUndo = function(actions, redo, fromFolderId) {
 	var masterAction = actions && actions.length && actions[0];
 	var sortingTable = {};
 	for (var i=0; i<actions.length; i++) {
@@ -254,6 +254,7 @@ ZmItemMoveAction.multipleUndo = function(actions, redo) {
 						items: items,
 						folder: appCtxt.getById(redo ? to : from),
 						noUndo: true,
+						fromFolderId: fromFolderId,
 						actionText: hasMasterAction ? (commonop && ZmItemMoveAction.UNDO_MSG[commonop]) : null
 					});
 				}
@@ -337,9 +338,10 @@ ZmOrganizerMoveAction.multipleRedo = function(actions) {
  *
  */
 
-ZmCompositeAction = function() {
+ZmCompositeAction = function(toFolderId) {
 	ZmAction.call(this);
 	this._actions = {};
+	this._toFolderId = toFolderId;
 };
 
 ZmCompositeAction.prototype = new ZmAction;
@@ -375,7 +377,7 @@ ZmCompositeAction.prototype.hasActions = function(type) {
 ZmCompositeAction.prototype.undo = function(callback, errorCallback) {
 
 	if (this.hasActions(ZmAction.ACTION_ZMITEMMOVEACTION)) {
-		ZmItemMoveAction.multipleUndo(this.getActions(ZmAction.ACTION_ZMITEMMOVEACTION));
+		ZmItemMoveAction.multipleUndo(this.getActions(ZmAction.ACTION_ZMITEMMOVEACTION), null, this._toFolderId);
 	}
 
 	if (this.hasActions(ZmAction.ACTION_ZMORGANIZERMOVEACTION)) {
