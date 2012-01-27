@@ -888,6 +888,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	#IFNDEF MSIE
 	width:100%;
 	#ENDIF
+	padding:3px 0;
 	white-space:nowrap;
 	cursor:pointer;
 	-moz-user-select:text;
@@ -904,18 +905,17 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .Conv2MsgHeader .info {
 	overflow:hidden;
 	white-space:nowrap;
-	padding-left:3px;
+	padding-left:7px;
 }
 
 .Conv2MsgHeader .date {
 	white-space:nowrap;
 	/* background-color needs to be same as Conv2MsgHeader */
-	background: none repeat scroll 0 0 white;
-	padding: 0 2px 0 5px;
-	position: absolute;
+	background:none repeat scroll 0 0 white;
+	padding:0 7px 0 5px;
+	position:absolute;
 	/* right set to same as ZmMailMsgCapsuleView border + margin */
-	right: 0px;
-	text-align: right;
+	right:0;
 }
 
 .Conv2MsgHeader.focused .date {
