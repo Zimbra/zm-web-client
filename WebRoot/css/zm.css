@@ -918,7 +918,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	text-align: right;
 }
 
-.Conv2MsgHeader .date.focused {
+.Conv2MsgHeader.focused .date {
 	background-color:@SelC@;
 }
 
