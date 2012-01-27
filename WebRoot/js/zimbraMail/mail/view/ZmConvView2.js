@@ -65,7 +65,7 @@ function(conv, force) {
 
 	if (!force && this._item && conv && (this._item.id == conv.id)) { return; }
 	
-	this.reset(!conv);
+	this.reset(conv != null);
 	this._item = conv;
 	if (!conv) { return; }
 
@@ -279,7 +279,7 @@ function() {
 };
 
 ZmConvView2.prototype.reset =
-function(clear) {
+function(noClear) {
 	
 	if (this._item) {
 		this._item.removeChangeListener(this._listChangeListener);
@@ -299,8 +299,8 @@ function(clear) {
 		this._subjectSpan.innerHTML = this._infoSpan.innerHTML = "";
 		this._messagesDiv.innerHTML = "";
 		this._replyInput.value = "";
-		Dwt.setVisible(this._headerDiv, !clear);
-		Dwt.setVisible(this._replyDiv, !clear);
+		Dwt.setVisible(this._headerDiv, noClear);
+		Dwt.setVisible(this._replyDiv, noClear);
 	}
 };
 
