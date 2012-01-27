@@ -356,9 +356,15 @@ function(node, instNode) {
         }
     }
 
-
-    if(node.alarm) this.alarm = node.alarm;
-    if(node.alarmData) this.alarmData = this._getAttr(node, comp, "alarmData");
+    if(node.alarm){
+        if(node.alarm) this.alarm = node.alarm;
+        if(node.alarmData) this.alarmData = this._getAttr(node, comp, "alarmData");
+    } else {
+       if(comp && comp.alarm && (comp.alarm.length > 0) ){
+         this.alarm = node.alarm = true;
+         this.alarmData = node.alarmData = comp.alarm;
+       }
+    }
 
     if (node.name || comp)				this.name		= this._getAttr(node, comp, "name");
 	if (node.loc || comp)				this.location	= this._getAttr(node, comp, "loc");
