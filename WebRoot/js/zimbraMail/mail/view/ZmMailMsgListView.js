@@ -346,14 +346,14 @@ function() {
 
 	ZmMailListView.prototype._initHeaders.apply(this, arguments);
 	if (this._mode == ZmId.VIEW_CONV) {
-		this._headerInit[ZmItem.F_SUBJECT] = {text:ZmMsg.fragment, noRemove:true, resizeable:true};
+		this._headerInit[ZmItem.F_SUBJECT] = {text:ZmMsg.message, noRemove:true, resizeable:true};
 	}
 };
 
 ZmMailMsgListView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
 	if (field == ZmItem.F_SUBJECT && this._mode == ZmId.VIEW_CONV) {
-		return ZmMsg.fragment;
+		return ZmMsg.message;
 	}
 	else {
 		return ZmMailListView.prototype._getHeaderToolTip.apply(this, arguments);
