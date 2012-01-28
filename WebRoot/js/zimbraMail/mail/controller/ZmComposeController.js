@@ -333,8 +333,7 @@ ZmComposeController.prototype._preHideCallback =
 function(view, force) {
 
 	if (this._autoSaveTimer) {
-		clearInterval(this._autoSaveTimer);
-		this._autoSaveTimer = null;
+        this._autoSaveTimer.kill();
 
 		//the following is a bit suspicous to me. I assume maybe this method might be called with force == true
 		//in a way that is not after the popShield was activated? That would be the only explanation to have this.
@@ -490,8 +489,7 @@ function(attId, docIds, draftType, callback, contactId) {
 
 	if (!isDraft && this._autoSaveTimer) {
 		//kill the timer so draft is not saved while message is sent.
-		clearInterval(this._autoSaveTimer);
-		this._autoSaveTimer = null;
+        this._autoSaveTimer.kill();
 	}
 
 	var origMsg = msg._origMsg;
@@ -891,8 +889,7 @@ ZmComposeController.prototype._setView =
 function(params) {
 
 	if (this._autoSaveTimer) {
-		window.clearInterval(this._autoSaveTimer);
-		this._autoSaveTimer = null;
+		this._autoSaveTimer.kill();
 	}
 
 	// save args in case we need to re-display (eg go from Reply to Reply All)
@@ -1075,12 +1072,14 @@ function() {
 ZmComposeController.prototype._initAutoSave =
 function() {
 	if (!this._canSaveDraft()) { return; }
-
-	var autoSaveInterval = appCtxt.get(ZmSetting.AUTO_SAVE_DRAFT_INTERVAL);
+    var autoSaveInterval = ZmMailApp.AUTO_SAVE_IDLE_TIME;
 	if (autoSaveInterval) {
-		if (!this._autoSaveTimer) {
-			this._autoSaveTimer = window.setInterval(AjxCallback.simpleClosure(this._autoSaveCallback, this, true), autoSaveInterval * 1000);
-		}
+        if (!this._autoSaveTimer) {
+            this._autoSaveTimer = new DwtIdleTimer(autoSaveInterval * 1000, new AjxCallback(this, this._autoSaveCallback));
+        }
+        else {
+            this._autoSaveTimer.resurrect(autoSaveInterval * 1000);
+        }
 	}
 
 };
