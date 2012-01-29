@@ -896,16 +896,16 @@ function(removeId) {
 ZmCalItemEditView.prototype._removeAllAttachments =
 function() {
 	if (this._attachCount == 0) { return; }
-
+    var attachRow = document.getElementById(this._htmlElId + "_attachment_container");
+    attachRow.innerHTML = "";
+    attachRow.style.display="none";
 	// let's be paranoid and really cleanup
 	delete this._uploadFormId;
 	delete this._attachDivId;
 	delete this._attachRemoveId;
 	delete this._attachDiv;
 	this._attachDiv = this._attachRemoveId = this._attachDivId = this._uploadFormId = null;
-	// finally, nuke the whole table row
-	var table = document.getElementById(this._htmlElId + "_table");
-	table.deleteRow(table.rows.length-1);
+
 	delete this._attachmentRow;
 	this._attachmentRow = null;
 	// reset any attachment related vars

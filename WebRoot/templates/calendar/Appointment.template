@@ -166,6 +166,9 @@
                     </tr>
                 <$ } $>
 
+                <tr id='${id}_attachment_container' style="display:none;">
+                </tr>
+
                 <tr>
                     <td colspan='5' id='${id}_scheduler_option' style='padding:7px;'>
                         <div style="float:left;" class="calendar_edit_field"><$= ZmMsg.scheduler $></div>

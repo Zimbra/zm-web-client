@@ -2814,6 +2814,10 @@ function() {
 		this._bodyField = document.getElementById(this._bodyFieldId);
 	}
 
+    var node = this.getHtmlElement();
+    if (node && node.parentNode)
+        node.style.height = node.parentNode.style.height;
+
     var size = this.getSize();
     // Size x by the containing table (excluding the suggestion panel)
     var mainTableSize = Dwt.getSize(this._mainTable);
@@ -2822,10 +2826,15 @@ function() {
     var topDiv = document.getElementById(this._htmlElId + "_top");
     var topDivSize = Dwt.getSize(topDiv);
     var topSizeHeight = this._getComponentsHeight(true);
-	var rowHeight = size.y - topSizeHeight;
+    var notesEditorHeight = (this._notesHtmlEditor && this._notesHtmlEditor.getHtmlElement()) ? this._notesHtmlEditor.getHtmlElement().clientHeight:0;
+	var rowHeight = (size.y - topSizeHeight) + notesEditorHeight ;
     var rowWidth = mainTableSize.x;
     if(AjxEnv.isIE)
         rowHeight = rowHeight - 10;
+    else {
+        var adj = (appCtxt.isTinyMCEEnabled()) ? 12 : 38;
+        rowHeight = rowHeight + adj;
+    }
 
     if(rowHeight < 350){
         rowHeight = 350;
@@ -2897,9 +2906,9 @@ function(newWidth, newHeight) {
 
 ZmApptEditView.prototype._initAttachContainer =
 function() {
-	// create new table row which will contain parent fieldset
-	var table = document.getElementById(this._htmlElId + "_table");
-	this._attachmentRow = table.insertRow(-1);
+
+	this._attachmentRow = document.getElementById(this._htmlElId + "_attachment_container");
+    this._attachmentRow.style.display="";
 	var cell = this._attachmentRow.insertCell(-1);
 	cell.colSpan = 5;
 
