@@ -79,6 +79,7 @@ ZmApp.LOAD_SORT[ZmApp.MAIL]					= 20;
 ZmApp.QS_ARG[ZmApp.MAIL]					= "mail";
 
 ZmMailApp.DEFAULT_AUTO_SAVE_DRAFT_INTERVAL	= 15;
+ZmMailApp.AUTO_SAVE_IDLE_TIME           	= 3;
 ZmMailApp.DEFAULT_MAX_MESSAGE_SIZE			= 250000;
 
 ZmMailApp.POP_DOWNLOAD_SINCE_ALL			= 0;
