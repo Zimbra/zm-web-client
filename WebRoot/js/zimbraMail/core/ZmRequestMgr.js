@@ -165,7 +165,8 @@ function(params) {
 						highestNotifySeen:	this._highestNotifySeen,
 						skipAuthCheck:		params.skipAuthCheck,
 						resend:				params.resend,
-						noSession:			params.noSession
+						noSession:			params.noSession,
+						useStringify1:		AjxEnv.isIE && params.fromChildWindow
 					};
 		methodName = params.methodName = ZmCsfeCommand.getMethodName(cmdParams.jsonObj || cmdParams.soapDoc);
 	}

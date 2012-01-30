@@ -61,15 +61,8 @@ ZmNewWindow = function() {
 ZmNewWindow.prototype = new ZmController;
 ZmNewWindow.prototype.constructor = ZmNewWindow;
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmNewWindow.prototype.toString =
-function() {
-	return "ZmNewWindow";
-};
+ZmNewWindow.prototype.isZmNewWindow = true;
+ZmNewWindow.prototype.toString = function() { return "ZmNewWindow"; };
 
 // Public methods
 
@@ -383,6 +376,7 @@ function(params) {
     window.onbeforeunload = null;
 	// bypass error callback to get control over exceptions in the childwindow.
 	params.errorCallback = new AjxCallback(this, this._handleException, [( params.errorCallback || null )]);
+	params.fromChildWindow = true;
 	return window.parentController ? window.parentController.sendRequest(params) : null;
 };
 
@@ -439,12 +433,6 @@ ZmNewWindow.prototype.setStatusMsg =
 function(params) {
 	// bug: 26478. Changed status msg to be displayed within the child window.
 	params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
-	/*if (AjxEnv.isIE) {
-		if (typeof params == "string") {
-			params = {msg: params};
-		}
-		params.transitions = [ZmToast.SHOW, ZmToast.PAUSE];
-	}*/
 	this._statusView.setStatusMsg(params);
 };
 
