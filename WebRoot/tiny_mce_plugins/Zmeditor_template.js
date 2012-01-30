@@ -416,4 +416,13 @@ Zmeditor_template.FONT_SIZE_MAPPING = {
         }
     }
     tinymce.extend(tinymce.themes.AdvancedTheme.prototype, updateToolbar);
+    tinymce.extend(tinymce.dom.DOMUtils.prototype, {
+        uniqueId : function(p){
+                        var id = (!p ? "mce_" : p) + this.counter++;
+                        if( document.getElementById(id) ){
+                            return this.uniqueId(p);
+                        }
+                        return id;
+                    }
+    });
 }(tinymce));
