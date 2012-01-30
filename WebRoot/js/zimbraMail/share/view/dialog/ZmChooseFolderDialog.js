@@ -42,7 +42,6 @@ ZmChooseFolderDialog = function(parent, className) {
 	this._treeViewListener = new AjxListener(this, this._treeViewSelectionListener);
 
 	this._multiAcctOverviews = {};
-	this._lastVal = "";
     this._selected = "";
 };
 
@@ -457,7 +456,6 @@ function(ev) {
 
 	var num = 0, firstMatch, matches = [];
 	var value = this._inputField.getValue().toLowerCase();
-	if (value == this._lastVal) { return; }
 	for (var i = 0, len = this._folders.length; i < len; i++) {
 		var folderInfo = this._folders[i];
 		var treeView = this._treeView[folderInfo.accountId][folderInfo.type];
@@ -507,7 +505,6 @@ function(ev) {
 	else{
 	    this._selected = null;
 	}
-	this._lastVal = value;
 };
 
 ZmChooseFolderDialog.prototype._resetTreeView =
@@ -561,8 +558,7 @@ function(ev) {
 	var organizer = ev.item && ev.item.getData(Dwt.KEY_OBJECT);
 	var value = organizer ? organizer.getName(null, null, true) : ev.item.getText();
 	this._inputField.setValue(value);
-	this._lastVal = value.toLowerCase();
-	if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
+	if (ev.detail == DwtTree.ITEM_DBL_CLICKED || ev.enter) {
 		this._okButtonListener();
 	}
 };
