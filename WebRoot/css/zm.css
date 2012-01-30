@@ -2389,10 +2389,10 @@ HTML>BODY .appt-selected .appt_allday_body
     border-collapse:separate;
 }
 
-/* ??? USED? */
 /* filler for a blank all day item row in month view */
 .allday_item_filler {
-	height:20;		/* ??? SIZE */
+    /* Size based on ZmCalMonthView._layoutAllDay */
+	height:21;
 }
 
 
