@@ -1890,7 +1890,7 @@ function() {
 ZmAppCtxt.prototype.isZDOnline =
 function() {
     var ac = window["appCtxt"].getAppController();
-    return ac._isPrismOnline && ac._isUserOnline;
+    return !AjxEnv.isPrism || (ac._isPrismOnline && ac._isUserOnline);
 };
 
 /**
