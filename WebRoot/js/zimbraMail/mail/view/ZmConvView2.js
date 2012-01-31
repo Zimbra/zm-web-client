@@ -702,6 +702,8 @@ function() {
 // Hands off to a compose view, or takes what's in the quick reply and sends it
 ZmConvView2.prototype._compose =
 function(params) {
+	
+	if (!this._item) { return; }
 
 	params.action = params.action || ZmOperation.REPLY_ALL;
 	params.msg = params.msg || this._item.getFirstHotMsg();
@@ -759,7 +761,7 @@ function(ev) {
 	var msg = ev.item;
 	if (!msg) { return; }
 
-	if (ev.event == ZmEvent.E_CREATE && (msg.cid == this._item.id)) {
+	if (ev.event == ZmEvent.E_CREATE && this._item && (msg.cid == this._item.id)) {
 		var params = {
 			parent:			this,
 			parentElement:	document.getElementById(this._messagesDivId),
