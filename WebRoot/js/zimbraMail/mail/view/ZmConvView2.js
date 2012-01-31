@@ -835,7 +835,7 @@ function() {
  */
 ZmMailMsgCapsuleView.prototype._notifyZimletsNewMsg =
 function(msg, oldMsg) {
-  //override and ignore notification
+    appCtxt.notifyZimlets("onConvView", [msg, oldMsg, this]);
 };
 
 ZmMailMsgCapsuleView.prototype.set =
@@ -1123,7 +1123,9 @@ function() {
 	var body = this.getMsgBodyElement();
 	
 	if (this._expanded && !body) {
-		this._renderMessage(this._msg);
+		// Provide a callback to insure address bubbles are properly set up
+        var respCallback = this._handleResponseSet.bind(this, this._msg);
+		this._renderMessage(this._msg, null, respCallback);
 		this._controller._handleMarkRead(this._msg);
 	}
 	else {
@@ -1232,19 +1234,19 @@ function() {
 	else if (this._showingCalendar) {
 		var imv = this._inviteMsgView;
 		var dayView = imv && imv._dayView;
-		if (dayView) {
-			// shove it in a relative-positioned container DIV so it can use absolute positioning
-			var div = this._inviteCalendarContainer = document.createElement("div");
-			Dwt.setSize(div, Dwt.DEFAULT, 220);
-			Dwt.setPosition(div, Dwt.RELATIVE_STYLE);
-			this.getHtmlElement().appendChild(div);
-			dayView.reparentHtmlElement(div);
-			var mySize = this.getSize();
-			dayView.setSize(mySize.x - 5, 218);
-			var el = dayView.getHtmlElement();
-			el.style.left = el.style.top = "auto";
-			dayView.setVisible(true);
-		}
+        if (dayView) {
+            // shove it in a relative-positioned container DIV so it can use absolute positioning
+            var div = this._inviteCalendarContainer = document.createElement("div");
+            Dwt.setSize(div, Dwt.DEFAULT, 220);
+            Dwt.setPosition(div, Dwt.RELATIVE_STYLE);
+            this.getHtmlElement().appendChild(div);
+            dayView.reparentHtmlElement(div);
+            var mySize = this.getSize();
+            dayView.setSize(mySize.x - 5, 218);
+            var el = dayView.getHtmlElement();
+            el.style.left = el.style.top = "auto";
+            dayView.setVisible(true);
+        }
 	}
 	
 	var showCalendarLink = document.getElementById(this._showCalendarLinkId);
