@@ -232,6 +232,8 @@ function(conv, container) {
 	for (var i = 0, len = msgs.length; i < len; i++) {
 		var msg = msgs[i];
 		params.forceExpand = (msgs.length == 1) || (!conv.isUnread && i == (oldToNew ? msgs.length - 1 : 0));
+		// don't look for quoted text in oldest msg - it is considered wholly original
+		params.forceOriginal = (i == msgs.length - 1);
 		this._renderMessage(msg, params);
 		var msgView = this._msgViews[msg.id];
 		firstExpanded = firstExpanded || (msgView._expanded ? msgView : null);
@@ -334,7 +336,12 @@ function(scrollMsgView) {
 			this._messagesDiv.scrollTop = 0;
 		}
 		else if (scrollMsgView.isZmMailMsgCapsuleView) {
-			Dwt.scrollIntoView(scrollMsgView.getHtmlElement(), this._messagesDiv);
+			var msgViewTop = Dwt.toWindow(scrollMsgView.getHtmlElement(), 0, 0, null, null, DwtPoint.tmp).y;
+			var containerTop = Dwt.toWindow(this._messagesDiv, 0, 0, null, null, DwtPoint.tmp).y;
+			var diff = msgViewTop - containerTop;
+			if (diff > 0) {
+				this._messagesDiv.scrollTop = diff;
+			}
 		}
 	}
 };
@@ -458,6 +465,14 @@ function(show, noResize) {
 		tb.addSelectionListener(ZmOperation.SEND, this._sendListener.bind(this));
 		tb.addSelectionListener(ZmOperation.CANCEL, this._cancelListener.bind(this));
 		tb.addSelectionListener(ZmOperation.REPLY_ALL, this._compose.bind(this));
+
+		// we need to process button press on mousedown so it happens before the blur
+		// event hides the reply toolbar
+		for (var i = 0; i < buttons.length; i++) {
+			var id = buttons[i];
+			if (id == ZmOperation.FILLER) { continue; }
+			tb.getOp(id).setActionTiming(DwtButton.ACTION_MOUSEDOWN);
+		}
 	}
 	
 	// show or hide toolbar
@@ -690,10 +705,12 @@ function(params) {
 
 	params.action = params.action || ZmOperation.REPLY_ALL;
 	params.msg = params.msg || this._item.getFirstHotMsg();
-	params.text = AjxStringUtil.htmlEncode(this._replyInput.value);
-	params.hideView = true;
 	params.composeMode = (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
-	var composeCtlr = AjxDispatcher.run("GetComposeController", ZmApp.HIDDEN_SESSION);
+	if (this._replyInput.value) {
+		params.extraBodyText = AjxStringUtil.htmlEncode(this._replyInput.value);
+	}
+	params.hideView = params.sendNow;
+	var composeCtlr = AjxDispatcher.run("GetComposeController", params.hideView ? ZmApp.HIDDEN_SESSION : null);
 	composeCtlr.doAction(params);
 	if (params.sendNow) {
 		composeCtlr.sendMsg(null, null, this._handleResponseSendMsg.bind(this));
@@ -800,9 +817,12 @@ ZmMailMsgCapsuleView = function(params) {
 	this._forceExpand = params.forceExpand;
 	this._forceCollapse = params.forceCollapse;
 	this._actionsMenu = params.actionsMenu;
-	this._showingQuotedText = false;
+	this._forceOriginal = params.forceOriginal;
 	this._showingCalendar = false;
 	this._infoBarId = this._htmlElId;
+	
+	// cache text and HTML versions of original content
+	this._origContent = {};
 
 	this.addListener(ZmMailMsgView._TAG_CLICK, this._msgTagClicked.bind(this));
 	this.addListener(ZmInviteMsgView.REPLY_INVITE_EVENT, this._convView._inviteReplyListener);
@@ -1023,18 +1043,17 @@ function(bodyPart) {
 
 	if (!bodyPart || !bodyPart.content) { return ""; }
 	
-	var content = "";
-	if (this._showingQuotedText) {
-		content = bodyPart.content;
-	}
-	else {
-		// TODO: cache retrieved original content (will matter when/if we cache capsule views)
-		content = AjxStringUtil.getOriginalContent(bodyPart.content, (bodyPart.ct == ZmMimeTable.TEXT_HTML));
-		if (content.length != bodyPart.content.length) {
+	var origContent = this._origContent[bodyPart.ct];
+	if (!origContent && !this._forceOriginal) {
+		origContent = AjxStringUtil.getOriginalContent(bodyPart.content, (bodyPart.ct == ZmMimeTable.TEXT_HTML));
+		if (origContent.length != bodyPart.content.length) {
+			this._origContent[bodyPart.ct] = origContent;
 			this._hasOrigContent = true;
 		}
 	}
-	return content;
+
+	var content = (this._showingQuotedText || this._forceOriginal) ? bodyPart.content : origContent;
+	return content || "";
 };
 
 ZmMailMsgCapsuleView.prototype._renderMessageFooter =
@@ -1054,7 +1073,7 @@ function(msg, container) {
 		links.push(this._makeLink(ZmMsg.showCalendar, this._showCalendarLinkId));
 	}
 	else if (this._hasOrigContent) {
-		links.push(this._makeLink(ZmMsg.showQuotedText, this._showTextLinkId));
+		links.push(this._makeLink(this._showingQuotedText ? ZmMsg.hideQuotedText : ZmMsg.showQuotedText, this._showTextLinkId));
 	}
 	links.push(this._makeLink(ZmMsg.reply, replyLinkId));
 	links.push(this._makeLink(ZmMsg.replyAll, replyAllLinkId));

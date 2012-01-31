@@ -200,7 +200,9 @@ function(params) {
 		this._setPriority(priority);
 	}
 
-	this.getHtmlEditor().moveCaretToTop();
+	AjxTimedAction.scheduleAction(new AjxTimedAction(this, function() {
+		this.getHtmlEditor().moveCaretToTop(params.extraBodyText ? params.extraBodyText.length : 0);
+	}), 1000);
 
 	if (action != ZmOperation.FORWARD_ATT) {
 		this._saveExtraMimeParts();
@@ -2242,7 +2244,7 @@ function(action, msg, extraBodyText) {
 			preText = sigPre;
 		}
 	} else { // No signature, just take the extraBodyText
-		preText = extraBodyText + crlf;
+		preText = extraBodyText + crlf2;
 	}
 	AjxDebug.println(AjxDebug.REPLY, "preText: " + AjxStringUtil.htmlEncode(preText));
 
@@ -2431,6 +2433,8 @@ function(msg, htmlMode, incWhat) {
 		}
 	}
 
+	body = body || "";
+	
 	if (bodyPart && AjxUtil.isObject(bodyPart) && bodyPart.truncated) {
 		body += crlf2 + ZmMsg.messageTruncated + crlf2;
 	}
@@ -2440,7 +2444,7 @@ function(msg, htmlMode, incWhat) {
 		body = body.replace(/<\/?(html|head|body)[^>]*>/gi, '');
 	}
 
-	return {body:body || "", bodyPart:bodyPart, hasInlineImages:hasInlineImages, hasInlineAtts:hasInlineAtts};
+	return {body:body, bodyPart:bodyPart, hasInlineImages:hasInlineImages, hasInlineAtts:hasInlineAtts};
 };
 
 ZmComposeView.prototype._getPreface =
@@ -3721,7 +3725,7 @@ ZmHiddenComposeView.prototype.toString = function() { return "ZmHiddenComposeVie
  * @param {String}		toOverride			To: addresses (optional)
  * @param {String}		ccOverride			Cc: addresses (optional)
  * @param {String}		subjectOverride		subject for new msg (optional)
- * @param {String}		text				text for new msg
+ * @param {String}		extraBodyText		text for new msg
  * @param {String}		accountName			on-behalf-of From address
  */
 ZmHiddenComposeView.prototype.set =
@@ -3732,7 +3736,7 @@ function(params) {
 
 	this._setAddresses(action, AjxEmailAddress.TO, params.toOverride);
 	this._subject = this._setSubject(action, msg, params.subjectOverride);
-	this._bodyContent = this._setBody(action, msg, params.text);
+	this._bodyContent = this._setBody(action, msg, params.extraBodyText);
 	this._obo = this._getObo(params.accountName, msg);
 	
 	if (action != ZmOperation.FORWARD_ATT) {

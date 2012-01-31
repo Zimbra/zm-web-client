@@ -318,29 +318,37 @@ function(domRoot, convertor) {
 };
 
 ZmAdvancedHtmlEditor.prototype.moveCaretToTop =
-function() {
+function(offset) {
 	var focused = document.activeElement;
 	if (this._mode == DwtHtmlEditor.TEXT) {
 		var control = this.getContentField();
 		if (control.createTextRange) { // IE
 			var range = control.createTextRange();
-			range.collapse(true);
+			if (offset) {
+				range.move('character', offset);
+			}
+			else {
+				range.collapse(true);
+			}
 			range.select();
 		} else if (control.setSelectionRange) { // FF
-			control.setSelectionRange(0, 0);
+			offset = offset || 0;
+			control.setSelectionRange(offset, offset);
 		}
 	} else {
-		this._moveCaretToTopHtml(true);
+		this._moveCaretToTopHtml(true, offset);
 	}
-    try{
-	    if (focused) focused.focus();
-    }catch(ex){
+    try {
+	    if (focused) {
+			focused.focus();
+		}
+    } catch(ex) {
         // do nothing
     }
 };
 
 ZmAdvancedHtmlEditor.prototype._moveCaretToTopHtml =
-function(tryOnTimer) {
+function(tryOnTimer, offset) {
 	var editor = this.getEditor();
 	if (!editor) { return; }
 
@@ -348,13 +356,21 @@ function(tryOnTimer) {
 	var success = false;
 	if (AjxEnv.isIE) {
 		if (body) {
-			body.createTextRange().collapse(true);
+			var range = body.createTextRange();
+			if (offset) {
+				range.move('character', offset);
+			} else {
+				range.collapse(true);
+			}
 			success = true;
 		}
 	} else {
 		var selection = editor.selection ? editor.selection.getSel() : "";
 		if (selection) {
-			selection.collapse(body,0);
+			// if we get an offset, use it as character count into text node
+			var target = offset ? body.firstChild : body;
+			offset = offset || 0;
+			selection.collapse(target, offset);
 			success = true;
 		}
 	}
