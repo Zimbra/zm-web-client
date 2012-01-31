@@ -633,7 +633,7 @@ function(what, folderType, ignoreExisting) {
                         invalid = true;
                         break;
                      }
-                } else if (childItem.isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
+                } else if (item.type == ZmItem.MSG && childItem.isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
 					// can move drafts into Trash or Drafts
 					invalid = true;
 					break;
