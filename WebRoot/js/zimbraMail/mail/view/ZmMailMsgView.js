@@ -2159,16 +2159,7 @@ ZmMailMsgView.prototype._tagChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_TAG) {	return; }
 
-	var fields = ev.getDetail("fields");
-	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
-		var tag = ev.getDetail("organizers")[0];
-		var img = document.getElementById(this._tagCellId +  ZmDoublePaneView._TAG_IMG + tag.id);
-		if (img) {
-			AjxImg.setImage(img, tag.getIconWithColor());
-		}
-	}
-
-	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.MODIFY) {
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MODIFY) {
 		this._setTags(this._msg);
 	}
 };

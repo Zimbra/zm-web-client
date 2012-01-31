@@ -2616,7 +2616,12 @@ function() {
 		var tagList = appCtxt.getTagTree()
 		var ta = [];
 		for (var i = 0; i < numTags; i++) {
-			ta[i] = tagList.getById(this.tags[i]);
+			var tag = tagList.getById(this.tags[i]);
+			//tag could be missing if this was called when deleting a whole tag (not just untagging one message). So this makes sure we don't have a null item.
+			if (!tag) {
+				continue;
+			}
+			ta.push(tag);
 		}
 		ta.sort(ZmTag.sortCompare);
 		return ta;
