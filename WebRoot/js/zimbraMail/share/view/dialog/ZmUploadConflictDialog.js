@@ -215,22 +215,26 @@ ZmUploadConflictDialog.prototype.__createRadio =
 function(name, value, checked, handler, object) {
 	var radio;
 	if (AjxEnv.isIE) {
-		var html = [];
-		var i = 0;
-		html[i++] = "<INPUT type=radio name='";
-		html[i++] = name;
-		html[i++] = "'";
-		if (checked) {
-			html[i++] = " checked"
-		}
-		html[i++] = ">";
-		radio = document.createElement(html.join(""));
+        try {
+            // NOTE: This has to be done because IE doesn't recognize the name
+            //       attribute if set programmatically.
+            var html = [];
+            var i = 0;
+            html[i++] = "<INPUT type=radio name='";
+            html[i++] = name;
+            html[i++] = "'";
+            if (checked) {
+                html[i++] = " checked"
+            }
+            html[i++] = ">";
+            radio = document.createElement(html.join(""));
+        } catch (e) {
+            // But the above throws an exception for IE9+, non-quirks mode
+            radio = this.__createRadio1(checked, name);
+        }
 	}
 	else {
-		radio = document.createElement("INPUT");
-		radio.type = 'radio';
-		radio.checked = checked;
-		radio.name = name;
+		radio = this.__createRadio1(checked, name);
 	}
 	radio.value = value;
 
@@ -241,6 +245,16 @@ function(name, value, checked, handler, object) {
 
 	return radio;
 };
+
+ZmUploadConflictDialog.prototype.__createRadio1 =
+function(checked, name) {
+    var radio     = document.createElement("INPUT");
+    radio.type    = 'radio';
+    radio.checked = checked;
+    radio.name    = name;
+    return radio;
+}
+
 
 ZmUploadConflictDialog.prototype.__createLink =
 function(id, text, handler, object) {

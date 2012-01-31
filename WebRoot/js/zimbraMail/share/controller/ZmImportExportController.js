@@ -582,12 +582,18 @@ function(form, onload, onerror) {
 	var id = Dwt.getNextId() + "_iframe";
 	var iframe;
 	if (AjxEnv.isIE) {
-		// NOTE: This has to be done because IE doesn't recognize the name
-		//       attribute if set programmatically. And without that, the
-		//       form target will cause it to return in a new window which
-		//       breaks the callback.
-		var html = [ "<IFRAME id='",id,"' name='",id,"'>" ].join("");
-		iframe = document.createElement(html);
+        try {
+            // NOTE: This has to be done because IE doesn't recognize the name
+            //       attribute if set programmatically. And without that, the
+            //       form target will cause it to return in a new window which
+            //       breaks the callback.
+            var html = [ "<IFRAME id='",id,"' name='",id,"'>" ].join("");
+            iframe = document.createElement(html);
+        } catch (e) {
+            // Unless its IE9+ in non-quirks mode, then the above throws an exception
+            iframe = document.createElement("IFRAME");
+            iframe.name = iframe.id = id;
+        }
 	}
 	else {
 		iframe = document.createElement("IFRAME");
