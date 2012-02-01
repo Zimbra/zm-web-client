@@ -401,10 +401,12 @@ function(searchObj) {
 			id = this._getNormalizedId(search.tagId);
 			type = ZmOrganizer.TAG;
 		}
-		var app = appCtxt.getCurrentApp();
-		var overview = app && app.getOverview();
-		if (overview) {
-			overview.setSelected(id, type);
+		if (type) {
+			var app = appCtxt.getCurrentApp();
+			var overview = app && app.getOverview();
+			if (overview) {
+				overview.setSelected(id, type);
+			}
 		}
 	}
 };

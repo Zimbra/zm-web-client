@@ -1234,10 +1234,10 @@ function() {
 		if (t.type == ZmParsedQuery.TERM) {
 			if (t.op == "in" || t.op == "inid") {
 				this.folderId = props.folderId = (t.op == "in") ? this._getFolderId(t.arg) : t.arg;
+			} else if (t.op == "tag") {
+				// TODO: make sure there's only one tag term?
+				this.tagId = props.tagId = this._getTagId(t.arg, true);
 			}
-		} else if (t.op == "tag") {
-			// TODO: make sure there's only one tag term?
-			this.tagId = props.tagId = this._getTagId(t.arg, true);
 		}
 	}
 	return props;
