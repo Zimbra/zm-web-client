@@ -1206,7 +1206,12 @@ function(viewId, show) {
 		// then display the components for this view 
 		for (var i = 0; i < ZmAppViewMgr.ALL_COMPONENTS.length; i++) {
 			var cid = ZmAppViewMgr.ALL_COMPONENTS[i];
+			var oldComp = this.getViewComponent(cid, this._lastViewId);
 			var comp = this.getViewComponent(cid, viewId);
+			// bug 67499 - make sure any components left over from previous views are hidden
+			if (oldComp && comp && oldComp != comp) {
+				this.showComponent(cid, false, oldComp);
+			}
 			if (comp && !this.isHidden(cid, viewId)) {
 				this.displayComponent(cid, true);
 				toFit.push(cid);
