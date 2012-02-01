@@ -608,7 +608,7 @@ function(id, content) {
     };
 
     function onInsertImage(ev) {
-        ZmSignatureEditor.prototype._insertImagesListener.apply(obj, ev);
+        ZmSignatureEditor.prototype._insertImagesListener.call(obj, ev);
     };
 
     function onToolbarToggle(ev) {
