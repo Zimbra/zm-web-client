@@ -1846,12 +1846,16 @@ function(spanId){
     if (parent){
 		parent.removeChild(node);
     }
-
+    var dndTooltip = document.getElementById(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP));
     if (!parent.childNodes.length){
         this._attcDiv.innerHTML = "";
-        var dndTooltip = document.getElementById(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP));
         if (dndTooltip){
+            dndTooltip.innerHTML = ZmMsg.dndTooltip;
             dndTooltip.style.display = "block";
+        }
+    }else{
+        if (dndTooltip){
+            dndTooltip.style.display = "none";
         }
     }
 };
