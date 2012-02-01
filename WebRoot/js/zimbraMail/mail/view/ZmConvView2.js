@@ -229,11 +229,12 @@ function(conv, container) {
 		msgs = msgs.reverse();
 	}
 	var firstExpanded;
+	var oldestIndex = oldToNew ? 0 : msgs.length - 1;
 	for (var i = 0, len = msgs.length; i < len; i++) {
 		var msg = msgs[i];
 		params.forceExpand = (msgs.length == 1) || (!conv.isUnread && i == (oldToNew ? msgs.length - 1 : 0));
 		// don't look for quoted text in oldest msg - it is considered wholly original
-		params.forceOriginal = (i == msgs.length - 1);
+		params.forceOriginal = (i == oldestIndex);
 		this._renderMessage(msg, params);
 		var msgView = this._msgViews[msg.id];
 		firstExpanded = firstExpanded || (msgView._expanded ? msgView : null);

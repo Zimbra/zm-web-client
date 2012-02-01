@@ -89,6 +89,11 @@ function(view, force) {
 			if (this._currentViewType == ZmId.VIEW_CONVLIST) {
 				this._mailListView.redoExpansion();
 			}
+			var itemView = this.getItemView();
+			var conv = itemView && itemView.getItem();
+			if (conv) {
+				itemView.set(conv, true);
+			}
 		}
 	} else {
 		ZmDoublePaneController.prototype.switchView.apply(this, arguments);
