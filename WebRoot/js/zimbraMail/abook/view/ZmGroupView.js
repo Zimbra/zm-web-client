@@ -191,7 +191,7 @@ function() {
 			mods[ZmContact.F_dlDesc] = this._getDlDesc();
 		}
 		if (dlInfo.hideInGal != this._getDlHideInGal()) {
-			mods[ZmContact.F_dlHideInGal] = this._getDlHideInGal();
+			mods[ZmContact.F_dlHideInGal] = this._getDlHideInGal() ? "TRUE" : "FALSE";
 		}
 		if (dlInfo.notes != this._getDlNotes()) {
 			mods[ZmContact.F_dlNotes] = this._getDlNotes();
@@ -304,7 +304,7 @@ function() {
 
 ZmGroupView.prototype._getDlHideInGal =
 function() {
-	return document.getElementById(this._dlHideInGalId).checked ? "TRUE" : "FALSE";
+	return document.getElementById(this._dlHideInGalId).checked;
 };
 
 ZmGroupView.prototype._getDlSpecificMailers =
@@ -1060,7 +1060,7 @@ function() {
 	desc.value = dlInfo.description || "";
 
 	var hideInGal = document.getElementById(this._dlHideInGalId);
-	hideInGal.checked = dlInfo.hideInGal == "TRUE";
+	hideInGal.checked = dlInfo.hideInGal;
 
 	//set the default only in temporary var so it will be saved later as modification, even if user doesn't change.
 	//this is for the new DL case

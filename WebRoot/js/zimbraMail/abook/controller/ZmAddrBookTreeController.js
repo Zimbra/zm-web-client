@@ -252,7 +252,7 @@ function(folder) {
 		var request = {
 			_jsns: "urn:zimbraAccount",
 			"ownerOf": 1,
-			attrs: "zimbraDistributionListUnsubscriptionPolicy,zimbraDistributionListSubscriptionPolicy"
+			attrs: "zimbraDistributionListUnsubscriptionPolicy,zimbraDistributionListSubscriptionPolicy,zimbraHideInGal"
 		};
 
 		var jsonObj = {GetAccountDistributionListsRequest: request};

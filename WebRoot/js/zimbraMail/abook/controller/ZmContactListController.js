@@ -248,7 +248,7 @@ function(contact, callback, result) {
 						description: attrs.description,
 						displayName: attrs.displayName,
 						notes: attrs.zimbraNotes,
-						hideInGal: attrs.zimbraHideInGal,
+						hideInGal: attrs.zimbraHideInGal == "TRUE",
 						mailPolicy: isOwner && this._getMailPolicy(dl, mailPolicySpecificMailers, contact),
 						owners: isOwner && this._getOwners(dl)};
 
@@ -260,6 +260,14 @@ function(contact, callback, result) {
 
 ZmContactListController.prototype.loadDlMembers =
 function(contact, callback) {
+	if (contact.dlInfo.hideInGal && !contact.dlInfo.isOwner) {
+		// can't get members if dl has zimbraHideInGal true, and not owner
+		contact.dlMembers = [];
+		if (callback) {
+			callback();
+		}
+		return;
+	}
 	if (contact.dlMembers) {
 		//already there - just callback
 		if (callback) {

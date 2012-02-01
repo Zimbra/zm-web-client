@@ -2310,7 +2310,8 @@ function(node) {
 			isMember: node.isMember,
 			isOwner: node.isOwner,
 			subscriptionPolicy: this.attr.zimbraDistributionListSubscriptionPolicy,
-			unsubscriptionPolicy: this.attr.zimbraDistributionListUnsubscriptionPolicy
+			unsubscriptionPolicy: this.attr.zimbraDistributionListUnsubscriptionPolicy,
+			hideInGal: this.attr.zimbraHideInGal == "TRUE"
 		};
 
 		this.canExpand = node.exp;
