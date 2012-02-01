@@ -925,6 +925,11 @@ function(msg, container, callback) {
 
 ZmMailMsgCapsuleView.prototype._handleResponseLoadMessage =
 function(msg, container, callback) {
+	// Take care of a race condition, where this view may be deleted while
+	// a ZmMailMsg.fetch (that references this function via a callback) is
+	// still in progress
+	if (this._disposed) return;
+
 	this._renderMessageBody(msg, container, callback);
 	this._renderMessageFooter(msg, container);
 	this._header._setExpanded(this._expanded);
@@ -1259,15 +1264,15 @@ function() {
         if (dayView) {
             // shove it in a relative-positioned container DIV so it can use absolute positioning
             var div = this._inviteCalendarContainer = document.createElement("div");
+            this.getHtmlElement().appendChild(div);
             Dwt.setSize(div, Dwt.DEFAULT, 220);
             Dwt.setPosition(div, Dwt.RELATIVE_STYLE);
-            this.getHtmlElement().appendChild(div);
             dayView.reparentHtmlElement(div);
+            dayView.setVisible(true);
             var mySize = this.getSize();
             dayView.setSize(mySize.x - 5, 218);
             var el = dayView.getHtmlElement();
             el.style.left = el.style.top = "auto";
-            dayView.setVisible(true);
         }
 	}
 	
@@ -1275,8 +1280,8 @@ function() {
 	if (showCalendarLink) {
 		showCalendarLink.innerHTML = this._showingCalendar ? ZmMsg.hideCalendar : ZmMsg.showCalendar;
 	}
-	
-	this._resetIframeHeightOnTimer();
+
+    this._resetIframeHeightOnTimer();
 };
 
 ZmMailMsgCapsuleView.prototype._handleReplyLink =

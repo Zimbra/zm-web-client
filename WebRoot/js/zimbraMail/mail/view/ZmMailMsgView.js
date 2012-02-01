@@ -1569,7 +1569,9 @@ function(msg, container, callback, index) {
 					// if the notes are empty, don't bother rendering them
 					var tmp = AjxStringUtil.stripTags(content);
 					if (!AjxStringUtil._NON_WHITESPACE.test(tmp)) {
-						return;
+	                    // Run callback to insure invite FB info loaded and day view set up
+	                    if (callback) { callback.run(); }
+                        return;
 					}
 				}
 

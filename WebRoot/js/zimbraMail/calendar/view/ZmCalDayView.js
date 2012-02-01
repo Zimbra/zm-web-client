@@ -14,7 +14,9 @@
  */
 
 ZmCalDayView = function(parent, posStyle, controller, dropTgt, view, numDays, readonly, isInviteMessage, isRight) {
-	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmId.VIEW_CAL_DAY, 1, false, readonly, isInviteMessage, isRight);
+	// Requires a unique id - used in the conversation view, so multiple simultaneous instances
+    var id = ZmId.getViewId(ZmId.VIEW_CAL_DAY, null, view);
+	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, id, 1, false, readonly, isInviteMessage, isRight);
 	this._compactMode = false;
 };
 
