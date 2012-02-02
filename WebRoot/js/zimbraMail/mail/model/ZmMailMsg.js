@@ -545,6 +545,14 @@ function (cid,aid,part) {
 	}
 };
 
+ZmMailMsg.prototype._resetAllInlineAttachments =
+function(){
+    this._inlineAtts = [];
+    for (var i = 0; i < this.attachments.length; i++) {
+       this.attachments[i].foundInMsgBody = false;
+    }
+}
+
 /**
  * Adds an inline document attachment.
  * 

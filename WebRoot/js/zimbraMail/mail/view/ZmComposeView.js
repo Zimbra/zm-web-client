@@ -391,6 +391,17 @@ function() {
 	return val;
 };
 
+ZmComposeView.prototype._setAttInline =
+function(opt){
+  this._isAttachInline = (opt === true);
+};
+
+ZmComposeView.prototype._getIsAttInline =
+function(opt){
+  return(this._isAttachInline);
+};
+
+
 ZmComposeView.prototype._isInline =
 function(msg) {
 
@@ -550,8 +561,8 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 
 	var zeroSizedAttachments = false;
 	// handle Inline Attachments
-    if (attId && ( (this._attachDialog && this._attachDialog.isInline()) || attId.clipboardPaste ) ){
-		for (var i = 0; i < attId.length; i++) {
+    if (attId && ( this._getIsAttInline() || (this._attachDialog && this._attachDialog.isInline()) || attId.clipboardPaste) ){
+        for (var i = 0; i < attId.length; i++) {
 			var att = attId[i];
 			if (att.s == 0) {
 				zeroSizedAttachments = true;
@@ -1838,7 +1849,7 @@ function(incAddrs, incSubject) {
 };
 
 ZmComposeView.prototype._removeAttachedFile  =
-function(spanId){
+function(spanId, attachmentPart){
 	var node = document.getElementById(spanId)
 	var parent = node && node.parentNode;
     this._attachCount--;
@@ -1846,6 +1857,16 @@ function(spanId){
     if (parent){
 		parent.removeChild(node);
     }
+
+    if (attachmentPart){
+        for (var i =0; i < this._msg.attachments.length; i++){
+            if (this._msg.attachments[i].part == attachmentPart){
+               this._msg.attachments.splice(i, 1);
+               break;
+            }
+        }
+    }
+
     var dndTooltip = document.getElementById(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP));
     if (!parent.childNodes.length){
         this._attcDiv.innerHTML = "";
@@ -2895,6 +2916,7 @@ function(err) {
 	var curView = appCtxt.getAppViewMgr().getCurrentView();
 	curView._attButton.setEnabled(true);
     curView.enableToolbarButtons(curView._controller, true);
+    curView._setAttInline(false);
     curView._controller._uploadingProgress = false;
     if (curView._controller._uploadAttReq){
 		curView._controller._uploadAttReq = null;
@@ -2990,11 +3012,16 @@ function(files, node) {
             }
         }
     }
-
+    this._setAttInline(node.isInline);
     this._initProgressSpan(files[0].name);
 
     this._controller._uploadMyComputerFile(files);
 
+};
+
+ZmComposeView.prototype._checkMenuItems =
+function(menuItem) {
+    menuItem.setEnabled((this._composeMode == DwtHtmlEditor.HTML));
 };
 
 ZmComposeView.prototype._attachButtonMenuCallback =
@@ -3007,6 +3034,17 @@ function() {
         var mi = this._createAttachMenuItem(menu, ZmMsg.myComputer);
         div.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentMyComputer");
         mi.getHtmlElement().appendChild(div.firstChild);
+    }
+
+
+    if (AjxEnv.supportsHTML5File){
+        div = document.createElement("DIV");
+        var mi = this._createAttachMenuItem(menu, ZmMsg.attachInline);
+        div.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentMyComputer");
+        div.firstChild.style.top = "22px";
+        div.firstChild.isInline = true;
+        mi.getHtmlElement().appendChild(div.firstChild);
+        menu.addPopupListener(new AjxListener(this, this._checkMenuItems,[mi]));
     }
 
 	if (appCtxt.multiAccounts || appCtxt.get(ZmSetting.BRIEFCASE_ENABLED)){

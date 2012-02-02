@@ -596,7 +596,7 @@
                     <$ if (attachment.size) { $>
                         (<$= attachment.size $>)
                     <$ } $>
-                    <span onclick="window.appCtxt.getCurrentView()._removeAttachedFile('<$= spanId $>')" class="ImgBubbleDelete AttachmentClose"></span>
+                    <span onclick="window.appCtxt.getCurrentView()._removeAttachedFile('<$= spanId $>', '<$= attachment.part$>' )" class="ImgBubbleDelete AttachmentClose"></span>
               </span>
             <$ } $>
 
