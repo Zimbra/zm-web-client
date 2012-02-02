@@ -209,7 +209,7 @@
         </div>
         <div class='ZmSuggestBody'>
             <div id='${id}_suggest_minical' class='ZmSuggestMiniCal'></div>
-            <div id='${id}_suggest_view' class='ZmSuggestView' ></div>
+            <div id='${id}_suggest_view'></div>
         </div>
     </div>
 </template>
@@ -521,8 +521,8 @@
                 </tr>
             </table>
         </td>
-        <td id='${id}_suggestions' valign=top>
-            <div id='${id}_suggest_view' class='ZmSuggestView'></div>
+        <td id='${id}_suggestions' class='ZmSuggestView' valign=top>
+            <div id='${id}_suggest_view'></div>
         </td>
     </tr>
     </table>
