@@ -177,3 +177,9 @@ function() {
 ZmTaskController.prototype.closeView = function() {
    this._closeView();
 };
+
+ZmTaskController.prototype._postShowCallback =
+function() {
+	this._hideLeftNav();
+};
+

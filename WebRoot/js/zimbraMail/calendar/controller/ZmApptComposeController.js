@@ -1318,12 +1318,10 @@ function() {
 };
 
 ZmApptComposeController.prototype._postShowCallback =
-function(view, force) {    
+function(view, force) {
 	var ta = new AjxTimedAction(this, this._setFocus);
 	AjxTimedAction.scheduleAction(ta, 10);
-	appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE_FOOTER, false);
-    appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE,        false);
-    appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_NEW_BUTTON,  false);
+	this._hideLeftNav();
 };
 
 ZmApptComposeController.prototype.getWorkingInfo =

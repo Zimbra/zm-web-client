@@ -380,6 +380,7 @@ function() {
 	if (!appCtxt.isChildWindow) {
 		// no need to "restore" focus between windows
 		ZmController.prototype._postShowCallback.call(this);
+		this._hideLeftNav();
 	}
     var view = this._composeView;
 	var composeMode = view.getComposeMode();

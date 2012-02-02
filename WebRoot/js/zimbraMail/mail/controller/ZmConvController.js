@@ -486,3 +486,8 @@ ZmConvController.prototype._msgViewCurrent =
 function() {
 	return true;
 };
+
+ZmConvController.prototype._postShowCallback =
+function() {
+	this._hideLeftNav();
+};

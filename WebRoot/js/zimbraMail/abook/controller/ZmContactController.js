@@ -108,6 +108,7 @@ ZmContactController.prototype._postShowCallback =
 function() {
 	//have to call it since it's overriden in ZmBaseController to do nothing.
 	ZmController.prototype._postShowCallback.call(this);
+	this._hideLeftNav();
 };
 
 ZmContactController.prototype._getDefaultTabText=

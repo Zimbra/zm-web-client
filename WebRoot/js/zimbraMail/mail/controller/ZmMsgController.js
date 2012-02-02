@@ -440,3 +440,8 @@ function(params, msg) {
     //complete action to open compose window
     ZmMailListController.prototype._handleResponseDoAction.call(this, params, msg);
 };
+
+ZmMsgController.prototype._postShowCallback =
+function() {
+	this._hideLeftNav();
+};

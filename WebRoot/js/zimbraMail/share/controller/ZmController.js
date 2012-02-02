@@ -1014,3 +1014,13 @@ function(visible) {
 
 };
 
+ZmController.prototype._hideLeftNav =
+function() {
+	appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE_FOOTER, false);
+    appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE,        false);
+    appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_NEW_BUTTON,  false);
+	appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_SASH,  false);
+	appCtxt.getAppViewMgr().getViewComponent(ZmAppViewMgr.C_TOOLBAR_TOP).getHtmlElement().style.paddingLeft = "6px";
+};
+
+
