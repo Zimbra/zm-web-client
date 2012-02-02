@@ -14,6 +14,7 @@
 --%>
 <%@ tag body-content="empty" %>
 <%@ tag import="java.text.*,java.util.*" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ tag import="com.zimbra.cs.taglib.bean.BeanUtils,com.zimbra.cs.taglib.bean.ZContactBean" %>
 <%@ attribute name="ruby" rtexprvalue="true" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="contact" rtexprvalue="true" required="false" type="com.zimbra.cs.taglib.bean.ZContactBean" %>
@@ -40,9 +41,13 @@
 <c:set var="phoneticLastName" value="${fn:escapeXml(not empty contact ? contact.phoneticLastName : phoneticLastName)}" />
 <c:set var="phoneticCompany" value="${fn:escapeXml(not empty contact ? contact.phoneticCompany : phoneticCompany)}" />
 <c:if test="${ruby}">
-    <c:set var="firstName"><app:ruby base="${firstName}" text="${phoneticFirstName}" /></c:set>
-    <c:set var="lastName"><app:ruby base="${lastName}" text="${phoneticLastName}" /></c:set> 
-    <c:set var="company"><app:ruby base="${company}" text="${phoneticCompany}" /></c:set>
+    <%--
+    The attributes are cooked in ruby.tag file as well resulting in double escaping. Hence, unCook them before
+    passing it over.
+    --%>
+    <c:set var="firstName"><app:ruby base="${zm:unCook(firstName)}" text="${zm:unCook(phoneticFirstName)}" /></c:set>
+    <c:set var="lastName"><app:ruby base="${zm:unCook(lastName)}" text="${zm:unCook(phoneticLastName)}" /></c:set>
+    <c:set var="company"><app:ruby base="${zm:unCook(company)}" text="${zm:unCook(phoneticCompany)}" /></c:set>
 </c:if>
 <%
     // make fields available to Java code
