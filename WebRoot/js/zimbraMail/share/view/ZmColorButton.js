@@ -49,7 +49,8 @@ ZmColorButton.prototype.setValue = function(color) {
     var image = this.getImage();
     if (image) {
         image = image.replace(/,.*$/,"");
-        this.setImage(this._color?[image,this._color].join(",color="):image, true);
+		var displayColor = this._color || ZmOrganizer.COLOR_VALUES[ZmOrganizer.ORG_DEFAULT_COLOR]; //default to gray
+        this.setImage([image, this._color].join(",color="), true);
     }
     this.setText(this._colorMenu.getTextForColor(this._color));
 };
