@@ -922,6 +922,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	background-color:@SelC@;
 }
 
+.Conv2MsgHeader .LabelColName {
+	padding-left:5px;
+}
+
 .ZmMailMsgCapsuleView .Link {
 	cursor:pointer;
 	white-space:nowrap;

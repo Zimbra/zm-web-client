@@ -600,7 +600,9 @@ function(interval) {
 ZmMailMsgView.prototype._findMailMsgObjects =
 function() {
 	var doc = this.getDocument();
-	this._objectManager.processObjectsInNode(doc, this._usingIframe ? doc.body : this._containerEl);
+	if (doc) {
+		this._objectManager.processObjectsInNode(doc, this._usingIframe ? doc.body : this._containerEl);
+	}
 };
 
 ZmMailMsgView.prototype._checkImgInAttachments =
@@ -1259,29 +1261,12 @@ function(msg, container) {
 	
 	this._renderInviteToolbar(msg, container);
 	
-	var acctId = appCtxt.getActiveAccount().id;
-	var cl;
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.getApp(ZmApp.CONTACTS).contactsLoaded[acctId]) {
-		cl = AjxDispatcher.run("GetContacts");
-	}
+	var ai = this._getAddrInfo(msg, true);
+	
 	var subject = msg.subject || ZmMsg.noSubject;
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
-	var dateString = msg.sentDate ? dateFormatter.format(new Date(msg.sentDate)) : dateFormatter.format(new Date(msg.date)); //bug fix #31512 - if no sentdate then display receieddate
-	var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
-	var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
-	var sentBy = (sender && sender.address) ? sender : addr;
-	var sentByAddr = sentBy && sentBy != ZmMsg.unknown ? sentBy.getAddress() : null;
-    if (sentByAddr) {
-        msg.sentByAddr = sentByAddr;
-        msg.sentByDomain = sentByAddr.substr(sentByAddr.indexOf("@")+1);
-        msg.showImages = this._isTrustedSender(msg);
-    }
-	var sentByIcon = cl	? (cl.getContactByEmail((sentBy && sentBy.address ) ? sentBy.address : sentByAddr ) ? "Contact" : "NewContact")	: null;
-	var obo = sender ? addr : null;
-	var oboAddr = obo && obo != ZmMsg.unknown ? obo.getAddress() : null;
-
-	var bwo = msg.getAddress(AjxEmailAddress.RESENT_FROM);
-	var bwoAddr = bwo ? bwo.getAddress() : null;
+	// bug fix #31512 - if no sent date then display received date
+	var dateString = msg.sentDate ? dateFormatter.format(new Date(msg.sentDate)) : dateFormatter.format(new Date(msg.date));
 
 	var additionalHdrs = [];
 	var invite = msg.invite;
@@ -1295,82 +1280,30 @@ function(msg, container) {
 		}
 	}
 
-	// find addresses we may need to search for contacts for, so that we can
-	// aggregate them into a single search
-	var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
-	if (contactsApp) {
-		var lookupAddrs = [];
-		if (sentBy) { lookupAddrs.push(sentBy); }
-		if (obo) { lookupAddrs.push(obo); }
-		for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
-			var type = ZmMailMsg.ADDRS[i];
-			if ((type == AjxEmailAddress.SENDER) || (type == AjxEmailAddress.RESENT_FROM)) { continue; }
-			var addrs = msg.getAddresses(type).getArray();
-			for (var j = 0; j < addrs.length; j++) {
-				if (addrs[j]) {
-					lookupAddrs.push(addrs[j].address);
-				}
-			}
-		}
-		if (lookupAddrs.length > 1) {
-			contactsApp.setAddrLookupGroup(lookupAddrs);
-		}
-	}
-
 	var options = {};
 	options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 	
 	if (this._objectManager) {
 		this._lazyCreateObjectManager();
-
-		// notify zimlets that we're finding objects in the message
-		appCtxt.notifyZimlets("onFindMsgObjects", [msg, this._objectManager, this]);
+		// zimlets notified above in _getAddrInfo(), be careful not to do it again
+//		appCtxt.notifyZimlets("onFindMsgObjects", [msg, this._objectManager, this]);
 
 		this._objectManager.setHandlerAttr(ZmObjectManager.DATE,
 											ZmObjectManager.ATTR_CURRENT_DATE,
 											this._dateObjectHandlerDate);
 
 		subject 	= this._objectManager.findObjects(subject, true);
-		sentBy		= this._objectManager.findObjects(sentBy, true, ZmObjectManager.EMAIL, false, options);
 		dateString	= this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE);
-		if (obo) {
-		    obo		= this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL, false, options);
-		}
-		if (bwo) {
-		    bwo		= this._objectManager.findObjects(bwo, true, ZmObjectManager.EMAIL, false, options);
-		}
-	} else {
-		sentBy = AjxStringUtil.htmlEncode(sentBy.toString());
-		if (obo) {
-		    obo = AjxStringUtil.htmlEncode(obo.toString());
-		}
-		if (bwo) {
-		    bwo = AjxStringUtil.htmlEncode(bwo.toString());
-		}
 	}
 
-	var participants = [];
-	for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
-		var type = ZmMailMsg.ADDRS[i];
-		if ((type == AjxEmailAddress.SENDER) || (type == AjxEmailAddress.RESENT_FROM)) { continue; }
-
-		var addrs = msg.getAddresses(type).getArray();
-		if (addrs.length > 0) {
-			var prefix = AjxStringUtil.htmlEncode(ZmMsg[AjxEmailAddress.TYPE_STRING[type]]);
-			var partStr = this.getAddressesFieldHtml(addrs, options, type);
-			participants.push({ prefix: prefix, partStr: partStr });
-		}
-	}
-
-	var isTextView = !appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	var attachmentsCount = msg.getAttachmentCount(true);
 
 	// do we add a close button in the header section?
 
 	var folder = appCtxt.getById(msg.folderId);
 	var isSyncFailureMsg = (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES);
-    if(!msg.showImages) {
+    if (!msg.showImages) {
         msg.showImages = folder && folder.isFeed();
     }
 
@@ -1391,8 +1324,8 @@ function(msg, container) {
 		dateString:			dateString,
 		hasAttachments:		(attachmentsCount != 0),
 		attachmentsCount:	attachmentsCount,
-		bwo:                bwo,
-		bwoAddr:            bwoAddr
+		bwo:                ai.bwo,
+		bwoAddr:            ai.bwoAddr
 	};
 
 	if (msg.isHighPriority || msg.isLowPriority) {
@@ -1402,16 +1335,16 @@ function(msg, container) {
 	}
 
 	if (invite && !invite.isEmpty() && this._inviteMsgView) {
-		this._getInviteSubs(subs, sentBy, sentByAddr, sender ? addr : null);
+		this._getInviteSubs(subs, ai.sentBy, ai.sentByAddr, ai.sender ? ai.fromAddr : null);
 	}
 	else {
-		subs.sentBy = sentBy;
-		subs.sentByNormal = sentByAddr;
-		subs.sentByIcon = sentByIcon;
-		subs.sentByAddr = sentByAddr;
-		subs.obo = obo;
-		subs.oboAddr = oboAddr;
-		subs.participants = participants;
+		subs.sentBy = ai.sentBy;
+		subs.sentByNormal = ai.sentByAddr;
+		subs.sentByIcon = ai.sentByIcon;
+		subs.sentByAddr = ai.sentByAddr;
+		subs.obo = ai.obo;
+		subs.oboAddr = ai.oboAddr;
+		subs.participants = ai.participants;
 		subs.reportBtnCellId = reportBtnCellId;
 		subs.isSyncFailureMsg = isSyncFailureMsg;
 		subs.autoSendTime = autoSendTime;
@@ -1445,7 +1378,6 @@ function(msg, container) {
 		this._expandButton.setVisible(Dwt.DISPLAY_BLOCK);
 	}
 
-
 	// add the report button if applicable
 	var reportBtnCell = document.getElementById(reportBtnCellId);
 	if (reportBtnCell) {
@@ -1454,6 +1386,109 @@ function(msg, container) {
 		reportBtn.setText(ZmMsg.reportSyncFailure);
 		reportBtn.addSelectionListener(this._reportButtonListener.bind(this, msg));
 	}
+};
+
+ZmMailMsgView.prototype._getAddrInfo =
+function(msg, notifyZimlets) {
+	
+	var acctId = appCtxt.getActiveAccount().id;
+	var cl;
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.getApp(ZmApp.CONTACTS).contactsLoaded[acctId]) {
+		cl = AjxDispatcher.run("GetContacts");
+	}
+	var fromAddr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
+	var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - Sender: header means on-behalf-of
+	var sentBy = (sender && sender.address) ? sender : fromAddr;
+	var from = AjxStringUtil.htmlEncode(sentBy.toString(true));
+	var sentByAddr = (sentBy && sentBy != ZmMsg.unknown) ? sentBy.getAddress() : null;
+    if (sentByAddr) {
+        msg.sentByAddr = sentByAddr;
+        msg.sentByDomain = sentByAddr.substr(sentByAddr.indexOf("@") + 1);
+        msg.showImages = this._isTrustedSender(msg);
+    }
+	var sentByIcon = cl	&& (cl.getContactByEmail((sentBy && sentBy.address) ? sentBy.address : sentByAddr) ? "Contact" : "NewContact");
+	var obo = sender ? fromAddr : null;
+	var oboAddr = (obo && obo != ZmMsg.unknown) ? obo.getAddress() : null;
+
+	var bwo = msg.getAddress(AjxEmailAddress.RESENT_FROM);
+	var bwoAddr = bwo ? bwo.getAddress() : null;
+	
+	// find addresses we may need to search for contacts for, so that we can
+	// aggregate them into a single search
+	var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
+	if (contactsApp) {
+		var lookupAddrs = [];
+		if (sentBy) { lookupAddrs.push(sentBy); }
+		if (obo) { lookupAddrs.push(obo); }
+		for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
+			var type = ZmMailMsg.ADDRS[i];
+			if ((type == AjxEmailAddress.SENDER) || (type == AjxEmailAddress.RESENT_FROM)) { continue; }
+			var addrs = msg.getAddresses(type).getArray();
+			for (var j = 0; j < addrs.length; j++) {
+				if (addrs[j]) {
+					lookupAddrs.push(addrs[j].address);
+				}
+			}
+		}
+		if (lookupAddrs.length > 1) {
+			contactsApp.setAddrLookupGroup(lookupAddrs);
+		}
+	}
+
+	var options = {};
+	options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
+	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
+	
+	if (this._objectManager) {
+		this._lazyCreateObjectManager();
+
+		if (notifyZimlets) {
+			appCtxt.notifyZimlets("onFindMsgObjects", [msg, this._objectManager, this]);
+		}
+
+		sentBy		= this._objectManager.findObjects(sentBy, true, ZmObjectManager.EMAIL, false, options);
+		if (obo) {
+		    obo		= this._objectManager.findObjects(fromAddr, true, ZmObjectManager.EMAIL, false, options);
+		}
+		if (bwo) {
+		    bwo		= this._objectManager.findObjects(bwo, true, ZmObjectManager.EMAIL, false, options);
+		}
+	} else {
+		sentBy = AjxStringUtil.htmlEncode(sentBy.toString());
+		if (obo) {
+		    obo = AjxStringUtil.htmlEncode(obo.toString());
+		}
+		if (bwo) {
+		    bwo = AjxStringUtil.htmlEncode(bwo.toString());
+		}
+	}
+
+	var participants = [];
+	for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
+		var type = ZmMailMsg.ADDRS[i];
+		if ((type == AjxEmailAddress.SENDER) || (type == AjxEmailAddress.RESENT_FROM)) { continue; }
+
+		var addrs = msg.getAddresses(type).getArray();
+		if (addrs.length > 0) {
+			var prefix = AjxStringUtil.htmlEncode(ZmMsg[AjxEmailAddress.TYPE_STRING[type]]);
+			var partStr = this.getAddressesFieldHtml(addrs, options, type);
+			participants.push({ prefix: prefix, partStr: partStr });
+		}
+	}
+	
+	return {
+		fromAddr:		fromAddr,
+		from:			from,
+		sender:			sender,
+		sentBy:			sentBy,
+		sentByAddr:		sentByAddr,
+		sentByIcon:		sentByIcon,
+		obo:			obo,
+		oboAddr:		oboAddr,
+		bwo:			bwo,
+		bwoAddr:		bwoAddr,
+		participants:	participants
+	};
 };
 
 ZmMailMsgView.prototype._getInviteSubs =

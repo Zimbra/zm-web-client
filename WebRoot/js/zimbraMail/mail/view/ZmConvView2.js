@@ -237,7 +237,7 @@ function(conv, container) {
 		params.forceOriginal = (i == oldestIndex);
 		this._renderMessage(msg, params);
 		var msgView = this._msgViews[msg.id];
-		firstExpanded = firstExpanded || (msgView._expanded ? msgView : null);
+		firstExpanded = firstExpanded || ((msgView._expanded && i > 0) ? msgView : null);
 	}
 	
 	return firstExpanded;
@@ -865,10 +865,6 @@ ZmMailMsgCapsuleView.prototype.set =
 function(msg, force) {
 	this._expanded = this._forceExpand || (!this._forceCollapse && msg.isUnread);
 	ZmMailMsgView.prototype.set.apply(this, arguments);
-	// header for expanded msg requires msg load, so wait on that
-	if (!this._expanded) {
-		this._header._setExpanded(this._expanded);
-	}
 };
 
 ZmMailMsgCapsuleView.prototype.reset =
@@ -880,12 +876,12 @@ function() {
 ZmMailMsgCapsuleView.prototype._renderMessage =
 function(msg, container, callback) {
 	
+	this._createMessageHeader(msg, container);
 	if (this._expanded) {
-		this._renderMessageHeader(msg, container);
 		this._renderMessageBodyAndFooter(msg, container, callback);
 	}
 	else {
-		this._renderMessageHeader(msg, container);
+		this._header.set(ZmMailMsgCapsuleViewHeader.COLLAPSED);
 	}
 	msg.addChangeListener(this._changeListener);
 };
@@ -896,7 +892,7 @@ function(msg, container, callback) {
  * @param msg
  * @param container
  */
-ZmMailMsgCapsuleView.prototype._renderMessageHeader =
+ZmMailMsgCapsuleView.prototype._createMessageHeader =
 function(msg, container) {
 	
 	if (this._header) { return; }
@@ -928,11 +924,11 @@ function(msg, container, callback) {
 	// Take care of a race condition, where this view may be deleted while
 	// a ZmMailMsg.fetch (that references this function via a callback) is
 	// still in progress
-	if (this._disposed) return;
+	if (this._disposed) { return; }
 
 	this._renderMessageBody(msg, container, callback);
 	this._renderMessageFooter(msg, container);
-	this._header._setExpanded(this._expanded);
+	this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
 };
 
 // Display all text messages and some HTML messages in a DIV rather than in an IFRAME.
@@ -1168,8 +1164,8 @@ function() {
 			Dwt.setVisible(this._headerElement, this._expanded);
 			Dwt.setVisible(this._inviteCalendarContainer, this._showingCalendar && this._expanded);
 		}
+		this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
 	}
-	this._header._setExpanded(this._expanded);
 	this._resetIframeHeightOnTimer();
 };
 
@@ -1392,32 +1388,6 @@ ZmMailMsgCapsuleViewHeader = function(params) {
 		this.setDropTarget(dropTgt);
 	}
 	
-	var msg = this._msg;
-	var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
-	var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
-	var sentBy = (sender && sender.address) ? sender : addr;
-	var sentByAddr = sentBy && sentBy != ZmMsg.unknown ? sentBy.getAddress() : null;
-    if (sentByAddr) {
-        msg.sentByAddr = sentByAddr;
-        msg.sentByDomain = sentByAddr.substr(sentByAddr.indexOf("@") + 1);
-        msg.showImages = this._msgView._isTrustedSender(msg);
-    }
-	var folder = appCtxt.getById(msg.folderId);
-	msg.showImages = msg.showImages || (folder && folder.isFeed());
-
-	var id = this._htmlElId;
-	this._msgInfoId	= id + "_info";
-	this._msgDateId	= id + "_date";
-	var dateString = new AjxDateFormat("EEEE h:mm a").format(new Date(msg.sentDate || msg.date));
-	var subs = {
-		msgInfoId:	this._msgInfoId,
-		msgDateId:	this._msgDateId,
-		date:		dateString
-	}
-	this._createHtmlFromTemplate("mail.Message#Conv2MsgHeader", subs);
-	this._infoSpan = document.getElementById(this._msgInfoId);
-	this._dateSpan = document.getElementById(this._msgDateId);
-
 	this.addListener(DwtEvent.ONDBLCLICK, this._dblClickListener);
 	this.addListener(DwtEvent.ONMOUSEDOWN, this._mouseDownListener.bind(this));
 	
@@ -1430,6 +1400,93 @@ ZmMailMsgCapsuleViewHeader.prototype.constructor = ZmMailMsgCapsuleViewHeader;
 
 ZmMailMsgCapsuleViewHeader.prototype.isZmMailMsgCapsuleViewHeader = true;
 ZmMailMsgCapsuleViewHeader.prototype.toString = function() { return "ZmMailMsgCapsuleViewHeader"; };
+
+ZmMailMsgCapsuleViewHeader.COLLAPSED	= "collapsed";
+ZmMailMsgCapsuleViewHeader.EXPANDED		= "expanded";
+ZmMailMsgCapsuleViewHeader.FULL			= "full";
+
+/**
+ * Renders a header in one of three ways:
+ * 
+ *		collapsed:	from address (full name), fragment, date
+ *		expanded:	address summary (from W to X, Y, and Z), date
+ *		full:		address headers with bubbles, date
+ *	
+ * We can't cache the header content because the email zimlet fills in the bubbles after the
+ * HTML has been generated (full view).
+ * 
+ * @param {constant}	state	collapsed, expanded, or full	
+ */
+ZmMailMsgCapsuleViewHeader.prototype.set =
+function(state) {
+
+	if (!state || state == this._state) { return; }
+	this._state = state;
+	
+	var id = this._htmlElId;
+	var msg = this._msg;
+	var ai = this._msgView._getAddrInfo(msg, true);
+	var folder = appCtxt.getById(msg.folderId);
+	msg.showImages = msg.showImages || (folder && folder.isFeed());
+	this._msgDateId	= id + "_date";
+	this._detailsLinkId = this._htmlElId + "_details";
+
+	var dateString = new AjxDateFormat("EEEE h:mm a").format(new Date(msg.sentDate || msg.date));
+	var detailsLink, subs, html;
+	
+	if (state == ZmMailMsgCapsuleViewHeader.COLLAPSED) {
+		subs = {
+			from:			ai.from,
+			fragment:		this._getFragment(),
+			msgDateId:		this._msgDateId,
+			date:			dateString
+		};
+		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-collapsed", subs);
+	}
+	else if (state == ZmMailMsgCapsuleViewHeader.EXPANDED) {
+		detailsLink = this._msgView._makeLink(ZmMsg.showDetails, this._detailsLinkId);
+		subs = {
+			addressSummary:	this._getAddressSummary(),
+			showDetails:	detailsLink,
+			msgDateId:		this._msgDateId,
+			date:			dateString
+		};
+		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-expanded", subs);
+	}
+	else if (state == ZmMailMsgCapsuleViewHeader.FULL) {
+		detailsLink = this._msgView._makeLink(ZmMsg.hideDetails, this._detailsLinkId);
+		subs = {
+			sentBy:			ai.sentBy,
+			sentByAddr:		ai.sentByAddr,
+			obo:			ai.obo,
+			oboAddr:		ai.oboAddr,
+			bwo:			ai.bwo,
+			bwoAddr:		ai.bwoAddr,
+			participants:	ai.participants,
+			showDetails:	detailsLink,
+			msgDateId:		this._msgDateId,
+			date:			dateString
+		};
+		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-full", subs);
+	}
+
+	this.setContent(html);
+	
+	if (!this._dateSpan) {
+		this._dateSpan = document.getElementById(this._msgDateId);
+	}
+	
+	if (state != ZmMailMsgCapsuleViewHeader.COLLAPSED) {
+		var link = document.getElementById(this._detailsLinkId);
+		if (link) {
+			Dwt.setHandler(link, DwtEvent.ONCLICK, this._handleShowDetailsLink.bind(this, (state == ZmMailMsgCapsuleViewHeader.EXPANDED)));
+		}
+	}
+	
+	if (state == ZmMailMsgCapsuleViewHeader.FULL) {
+		this._msgView._notifyZimletsNewMsg(msg);	// create bubbles
+	}
+};
 
 ZmMailMsgCapsuleViewHeader.prototype.setFocused =
 function(focused) {
@@ -1450,30 +1507,6 @@ function() {
 	this.setClassName(classes.join(" "));
 };
 
-// Collapsed: From address (full name), fragment, date
-// Expanded: Address summary (from W to X, Y, and Z), date
-ZmMailMsgCapsuleViewHeader.prototype._setExpanded =
-function(expanded) {
-
-	this._expanded = expanded;
-	var fromAddr = this._msg.getAddress(AjxEmailAddress.FROM);
-	var from = this._from = fromAddr ? AjxStringUtil.htmlEncode(fromAddr.toString(true)) : ZmMsg.unknown;
-	var subs = {
-		expanded:		expanded,
-		from:			from,
-		fragment:		this._getFragment(),
-		addressSummary:	this._getAddressSummary()
-	};
-	var html = AjxTemplate.expand("mail.Message#Conv2MsgHeaderInfo", subs);
-	this._infoSpan.innerHTML = html;
-
-	// Clean up minor WebKit-only issue where bottom edge of overflowed subject text is visible in info span
-	if (AjxEnv.isWebKitBased && !expanded && !this._headerSet) {
-		Dwt.setSize(this._dateSpan, Dwt.DEFAULT, Dwt.getSize(this._infoSpan).y);
-		this._headerSet = true;
-	}
-};
-
 ZmMailMsgCapsuleViewHeader.prototype._getFragment =
 function() {
 	var fragment = appCtxt.get(ZmSetting.SHOW_FRAGMENTS) ? this._msg.fragment : "";
@@ -1488,11 +1521,26 @@ function() {
 		var list = this._msg.getAddresses(AjxEmailAddress.TO).getArray();
 		list = list.concat(this._msg.getAddresses(AjxEmailAddress.CC).getArray());
 		if (list.length) {
-			var recips = ZmConvView2._getAddressNames(list, ZmConvView2.MAX_RECIPS / 2);
+			// remove duplicate addresses
+			var list1 = [], used = {};
+			for (var i = 0; i < list.length; i++) {
+				var addr = list[i];
+				var email = addr && addr.address;
+				if (!used[email]) {
+					list1.push(addr);
+					used[email] = true;
+				}
+			}
+			var recips = ZmConvView2._getAddressNames(list1, ZmConvView2.MAX_RECIPS / 2);
 			this._addressSummary = AjxMessageFormat.format(ZmMsg.addressSummary, [from, recips]);
 		}
 	}
 	return this._addressSummary || this._from;
+};
+
+ZmMailMsgCapsuleViewHeader.prototype._handleShowDetailsLink =
+function(show) {
+	this.set(show ? ZmMailMsgCapsuleViewHeader.FULL : ZmMailMsgCapsuleViewHeader.EXPANDED);
 };
 
 ZmMailMsgCapsuleViewHeader.prototype._mouseDownListener =
@@ -1500,6 +1548,8 @@ function(ev) {
 	
 	var msgView = this._msgView;
 	var convView = msgView._convView;
+	
+	if (ev.target && ev.target.id == this._detailsLinkId) { return; }
 	
 	if (ev.button == DwtMouseEvent.LEFT) {
 		msgView._toggleExpansion();

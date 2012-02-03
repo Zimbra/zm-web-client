@@ -688,20 +688,59 @@
 		<span class="info" id='${convInfoId}'></span>
 	</div>
 </template>
-	
-<template id='mail.Message#Conv2MsgHeader'>
-		<span class='info' id='${msgInfoId}'></span>
-		<span class='date' id='${msgDateId}'>${date}</span>
+
+<template id='mail.Message#Conv2MsgHeader-collapsed'>
+	<span class='info' id='${msgInfoId}'>
+		<span><$= data.from $></span>
+		<span class='ZmConvListFragment'><$= data.fragment $></span>
+	</span>
+	<span class='date' id='${msgDateId}'>${date}</span>
+</template>
+
+<template id='mail.Message#Conv2MsgHeader-expanded'>
+	<span class='info' id='${msgInfoId}'>
+		<span><$= data.addressSummary $></span>
+		<span><$= data.showDetails $></span>
+	</span>
+	<span class='date' id='${msgDateId}'>${date}</span>
+</template>
+
+<template id='mail.Message#Conv2MsgHeader-full'>
+	<table>
+		<tr>
+			<td class='LabelColName'><$= ZmMsg.fromLabel $></td>
+			<td class='LabelColValue' valign=top colspan=10>
+				<span id="OBJ_PREFIX_<$=Dwt.getNextId()$>_from">${sentBy}</span>
+				<$ var useObo = data.obo && (data.oboAddr != data.sentByAddr); $>
+				<$ var useBwo = data.bwo && (data.bwoAddr != data.sentByAddr); $>
+				<$ if (useObo && useBwo) { $>
+					<span id='OBJ_PREFIX_obo_label' class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></span>
+					<span id='OBJ_PREFIX_obo' class='LabelColValue'><$= data.obo $></span>
+					<span id='OBJ_PREFIX_bwo_label' class='LabelColName'><$= ZmMsg.byWayOfLabel $></span>
+					<span id='OBJ_PREFIX_bwo' class='LabelColValue'><$= data.bwo $></span>
+				<$ } else if (useObo) { $>
+					<span id='OBJ_PREFIX_obo_label' class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></span>
+					<span id='OBJ_PREFIX_obo' class='LabelColValue' colspan=10><$= data.obo $></span>
+				<$ } else if (useBwo) { $>
+					<span id='OBJ_PREFIX_bwo_label' class='LabelColName'><$= ZmMsg.byWayOfLabel $></span>
+					<span id='OBJ_PREFIX_bwo' class='LabelColValue' colspan=10><$= data.bwo $></span>
+				<$ } $>
+				<span align='left'><$= data.showDetails $></span>
+				<span id='${msgDateId}' class='date'>${date}</span>
+			</td>
+		</tr>
+
+		<$ for (var i = 0; i < data.participants.length; i++) { $>
+			<tr id='OBJ_PREFIX_<$=Dwt.getNextId()$>_<$=data.participants[i].prefix.toLowerCase()$>'>
+				<td class='LabelColName'>
+					<$= AjxMessageFormat.format(ZmMsg.makeLabel, data.participants[i].prefix) $>
+				</td>
+				<td class='LabelColValue' colspan='10'><$= data.participants[i].partStr $></td>
+			</tr>
+		<$ } $>
+	</table>
 </template>
 		
-<template id='mail.Message#Conv2MsgHeaderInfo'>
-	<$ if (data.expanded) { $>
-		<$= data.addressSummary $>
-	<$ } else { $>
-		<span><$= data.from $></span><span class='ZmConvListFragment'><$= data.fragment $></span>
-	<$ } $>
-</template>
-	
 <template id='mail.Message#Conv2MsgFooter'>
 	<div>
 		<div id='${footerId}'>
