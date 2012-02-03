@@ -2076,7 +2076,7 @@ function(text, el, match) {
 			}
 			var locations = text.split(/[\n,;]/);
 			var newAttendees = [];
-			for(var i in locations) {
+			for(var i = 0; i < locations.length; i++) {
 				var l = AjxStringUtil.trim(locations[i]);
 				if(this._locationTextMap[l]) {
 					newAttendees.push(this._locationTextMap[l]);

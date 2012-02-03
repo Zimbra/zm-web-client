@@ -567,7 +567,7 @@ ZmApptCache.prototype.markAllInvalidAccounts =
 function(zidsMap) {
 	if (this._calViewController) {
 		var folderIds = this._calViewController.getCheckedCalendarFolderIds();
-		for (var i in folderIds) {
+		for (var i = 0; i < folderIds.length; i++) {
 			var folder = appCtxt.getById(folderIds[i]);
 			if (folder) {
 				if (folder.zid && zidsMap[folder.zid]) {
@@ -690,7 +690,7 @@ function(params, ex) {
 	// check for deleted remote mount point or account
 	var itemIds = (ex.data && ex.data.itemId && ex.data.itemId.length) ? ex.data.itemId : [];
 	if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT || code == ZmCsfeException.MAIL_NO_SUCH_MOUNTPOINT) {
-		for(var j in itemIds) {
+		for(var j = 0; j < itemIds.length; j++) {
 			var id = itemIds[j];
 			ids[id] = true;
 			if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT) {
@@ -705,7 +705,7 @@ function(params, ex) {
 		var newFolderIds = [];
 
 		// filter out invalid folder ids
-		for (var i in params.folderIds) {
+		for (var i = 0; i < params.folderIds.length; i++) {
 			var folderId = params.folderIds[i];
 			var isDeleted = (folderId && ids[folderId]);
 			if (!isDeleted) {

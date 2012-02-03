@@ -697,7 +697,7 @@ function(message) {
 	var ptstReplies = {};
 	this._replies = message.invite.getReplies();
 	if (this._replies) {
-		for (var i in this._replies) {
+		for (var i = 0; i < this._replies.length; i++) {
 			var name = this._replies[i].at;
 			var ptst = this._replies[i].ptst;
 			if (name && ptst) {
@@ -1096,7 +1096,7 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 		var ptst = attendee.getParticipantStatus() || ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 		if (notifyList) {
 			var attendeeFound = false;
-			for (var i in notifyList) {
+			for (var i = 0; i < notifyList.length; i++) {
 				if (address == notifyList[i]) {
 					attendeeFound = true;
 					break;
@@ -1426,7 +1426,7 @@ function(invites, proposedInvite) {
 
 	if (proposedInvite.components[0].ridZ) {
 		// search all the invites for an appointment
-		for (var i in invites) {
+		for (var i=0; i < invites.length; i++) {
 			var inv = invites[i];
 			if (inv.comp[0].ridZ  == proposalRidZ) {
 				this.invId = this.id + "-" + inv.id;

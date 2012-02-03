@@ -325,7 +325,7 @@ function() {
 
 	// remove any appts in cachedAppts that are no longer supposed to be in there	
 	// need to do this here so we don't screw up iteration above
-	for (var i in toRemove) {
+	for (var i = 0; i < toRemove.length; i++) {
 		this._cachedAppts.remove(toRemove[i]);
 	}
 
@@ -468,7 +468,7 @@ function(list, callback, response) {
 ZmReminderController.prototype._updateApptAlarmData =
 function(apptList, responseAppts) {
     var updateData = {};
-    for (var i in responseAppts) {
+    for (var i = 0; i < responseAppts.length; i++) {
         var appt = responseAppts[i];
         if (appt && appt.calItemId) {
             updateData[appt.calItemId] = appt.alarmData ? appt.alarmData : {};

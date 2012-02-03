@@ -550,7 +550,7 @@ function() {
 ZmApptComposeController.prototype.getNotifyList =
 function(addrs) {
     var notifyList = [];
-    for(var i in addrs) {
+    for(var i = 0; i < addrs.length; i++) {
         notifyList.push(addrs[i]._inviteAddress || addrs[i].address || addrs[i].getEmail());
     }
 
@@ -855,7 +855,7 @@ function(names, appt, attId, notifyList) {
     var request = jsonObj.CheckRightsRequest;
 
     request.target = [];
-    for (var i in names) {
+    for (var i = 0; i < names.length; i++) {
         var targetInstance = {
             type: "account",
             by:   "name",

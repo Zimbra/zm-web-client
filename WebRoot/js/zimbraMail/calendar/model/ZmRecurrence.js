@@ -113,7 +113,7 @@ function(soapDoc, inv) {
 			// TODO: for now, handle "every weekday" as M-F
 			//       eventually, needs to be localized work week days
 			var bwd = soapDoc.set("byday", null, rule);
-			for (var i in ZmCalItem.SERVER_WEEK_DAYS) {
+			for (var i = 0; i < ZmCalItem.SERVER_WEEK_DAYS.length; i++) {
 				var day = ZmCalItem.SERVER_WEEK_DAYS[i];
 				if (day == "SA" || day == "SU")
 					continue;
@@ -407,7 +407,7 @@ function(recurRules) {
 					} else {
 						this.repeatCustomDayOfWeek = wkday[0].day;
                         var days = [];
-                        for(var i in wkday) {
+                        for(var i = 0; i < wkday.length; i++) {
                             days.push(wkday[i].day);
                         }
                         this.repeatCustomDays = days;                        

@@ -1039,7 +1039,7 @@ function(layout, max) {
 	if (layout.maxDone) return layout.maxcol;
 	layout.maxcol = Math.max(layout.col, layout.maxcol, max);
 	if (layout.right) {
-		for (var r in layout.right) {
+		for (var r = 0; r < layout.right.length; r++) {
 			layout.maxcol = Math.max(layout.col, this._computeMaxCols(layout.right[r], layout.maxcol));
 		}
 	}
@@ -1120,7 +1120,7 @@ function() {
 
 		// figure out who is on our right
 		if (overlap != null) {
-			for (var c in overlap) {
+			for (var c = 0; c < overlap.length; c++) {
 				var l = overlap[c];
 				if (newLayout.col < l.col) {
 					if (!newLayout.right) newLayout.right = [l];

@@ -685,10 +685,10 @@ ZmCalItem.prototype.parseAlarmData =
 function() {
 	if (!this.alarmData) { return; }
 
-	for (var i in this.alarmData) {
+	for (var i = 0; i < this.alarmData.length; i++) {
 		var alarm = this.alarmData[i].alarm;
 		if (alarm) {
-			for (var j in alarm) {
+			for (var j = 0; j < alarm.length; j++) {
 				this.parseAlarm(alarm[j]);
 			}
 		}
@@ -1175,7 +1175,7 @@ function(message) {
 	this._reminderMinutes = 0;
 	var alarm = message.invite.getAlarm();
 	if (alarm) {
-		for (var i in alarm) {
+		for (var i = 0; i < alarm.length; i++) {
             var alarmInst = alarm[i];
             if (!alarmInst) continue;
 
@@ -1477,7 +1477,7 @@ function(alarmInst, soapDoc, alarmNode)  {
 	// bug 28924: preserve x props
 	xprops = (xprops instanceof Array) ? xprops : [xprops];
 
-	for (var i in xprops) {
+	for (var i = 0; i < xprops.length; i++) {
 		var xprop = xprops[i];
 		if (xprop && xprop.name) {
 			var x = soapDoc.set("xprop", null, alarmNode);
@@ -2133,7 +2133,7 @@ function(soapDoc, inv, comp) {
 	// bug 16024: preserve x props
 	xprops = (xprops instanceof Array) ? xprops : [xprops];
 
-	for (var i in xprops) {
+	for (var i = 0; i < xprops.length; i++) {
 		var xprop = xprops[i];
 		if (xprop && xprop.name) {
 			var x = soapDoc.set("xprop", null, comp);
@@ -2155,7 +2155,7 @@ function(soapDoc, xprop, xparams) {
 
 	xparams = (xparams instanceof Array) ? xparams : [xparams];
 
-	for (var j in xparams) {
+	for (var j = 0; j < xparams.length; j++) {
 		var xparam = xparams[j];
 		if (xparam && xparam.name) {
 			var x = soapDoc.set("xparam", null, xprop);

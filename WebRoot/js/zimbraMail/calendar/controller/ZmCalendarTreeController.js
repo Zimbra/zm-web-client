@@ -610,7 +610,8 @@ function(root, totalItems) {
 	if (!root || (root && root._isSeparator)) { return; }
 
 	var items = root.getItems();
-	for (var i in items) {
+    //items is an array
+	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		if (item && !item._isSeparator) {
 			totalItems.push(item);

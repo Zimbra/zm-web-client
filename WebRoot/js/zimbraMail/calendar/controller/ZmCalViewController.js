@@ -2220,7 +2220,7 @@ function(appt, serverId) {
 
 ZmCalViewController.prototype.updateDefaultTimezone =
 function(serverId) {
-	for (var i in AjxTimezone.MATCHING_RULES) {
+	for (var i =0; i < AjxTimezone.MATCHING_RULES.length; i++) {
 		if (AjxTimezone.MATCHING_RULES[i].serverId == serverId) {
 			AjxTimezone.DEFAULT_RULE = AjxTimezone.MATCHING_RULES[i];
 			AjxTimezone.DEFAULT = AjxTimezone.getClientId(AjxTimezone.DEFAULT_RULE.serverId);

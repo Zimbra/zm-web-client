@@ -1329,7 +1329,7 @@ function() {
 	if (!items) { return; }
 
 	items = AjxUtil.toArray(items);
-	for (var i in items) {
+	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		var restUrl = item.getRestUrl();
 		if(item && !item.isFolder && restUrl != null) {

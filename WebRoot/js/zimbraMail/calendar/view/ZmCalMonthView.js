@@ -995,7 +995,7 @@ function(dayInfo) {
     var appts = dayInfo.appts;
 
     if(appts) {
-        for(var i in appts) {
+        for(var i = 0; i < appts.length; i++) {
             subList.add(appts[i]);
         }
     }
@@ -1003,7 +1003,7 @@ function(dayInfo) {
     var allDayAppts = dayInfo.allDayAppts;
 
     if(allDayAppts) {
-        for(var i in allDayAppts) {
+        for(var i = 0; i < allDayAppts.length; i++) {
             subList.add(allDayAppts[i])
         }
     }
