@@ -3104,7 +3104,8 @@ function(recurrenceMode) {
 	    		ZmOperation.REPLY_TENTATIVE,
 	    		ZmOperation.REPLY_DECLINE,
 	    		ZmOperation.INVITE_REPLY_MENU,
-	    		ZmOperation.PROPOSE_NEW_TIME,
+                ZmOperation.PROPOSE_NEW_TIME,
+                ZmOperation.REINVITE_ATTENDEES,
 	    		ZmOperation.DUPLICATE_APPT,
 	    		ZmOperation.SEP,
 	    		ZmOperation.REPLY,
@@ -3152,15 +3153,22 @@ function(appt, actionMenu) {
     var isReplyable = !isTrash && appt.otherAttendees;
 	var isForwardable = !isTrash && calendar && !calendar.isReadOnly();
 
+    actionMenu.setItemVisible(ZmOperation.REPLY_ACCEPT,      !isOrganizer);
+    actionMenu.setItemVisible(ZmOperation.REPLY_DECLINE,     !isOrganizer);
+    actionMenu.setItemVisible(ZmOperation.REPLY_TENTATIVE,   !isOrganizer);
+    actionMenu.setItemVisible(ZmOperation.INVITE_REPLY_MENU, !isOrganizer);
+    actionMenu.setItemVisible(ZmOperation.PROPOSE_NEW_TIME,  !isOrganizer);
+    actionMenu.setItemVisible(ZmOperation.REINVITE_ATTENDEES, isOrganizer && !appt.inviteNeverSent && appt.otherAttendees);
+
 	// reply action menu
-	actionMenu.enable(ZmOperation.REPLY_ACCEPT, enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
-	actionMenu.enable(ZmOperation.REPLY_DECLINE, enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
-	actionMenu.enable(ZmOperation.REPLY_TENTATIVE, enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
-	actionMenu.enable(ZmOperation.INVITE_REPLY_MENU, enabled && isReplyable);
-	actionMenu.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
+    if (!isOrganizer) {
+        actionMenu.enable(ZmOperation.REPLY_ACCEPT,      enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
+        actionMenu.enable(ZmOperation.REPLY_DECLINE,     enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
+        actionMenu.enable(ZmOperation.REPLY_TENTATIVE,   enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
+        actionMenu.enable(ZmOperation.INVITE_REPLY_MENU, enabled && isReplyable);
+    }
 
-	actionMenu.enable(ZmOperation.PROPOSE_NEW_TIME, !isOrganizer);
-
+    actionMenu.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
 	actionMenu.enable(ZmOperation.REPLY, isReplyable && !isOrganizer);
 	actionMenu.enable(ZmOperation.REPLY_ALL, isReplyable);
 
