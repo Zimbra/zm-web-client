@@ -29,7 +29,7 @@ ZmContactAssistant = function() {
 	ZmAssistant.call(this, ZmMsg.createNewContact, ZmMsg.ASST_CMD_CONTACT, ZmMsg.ASST_CMD_SUM_CONTACT);
 	this._commandIndex = {};	
 	this._sortedFields = [];
-	for (var i in ZmContactAssistant._CONTACT_FIELDS) {
+	for (var i=0; i < ZmContactAssistant._CONTACT_FIELDS.length; i++) {
 		var f = ZmContactAssistant._CONTACT_FIELDS[i];
 		this._sortedFields.push(f.scmd);
 		this._commandIndex[f.scmd.toLowerCase()] = i;
@@ -136,7 +136,7 @@ function() {
 		html.append("<table cellspacing=1 cellpadding=2 border=0>");
 		html.append("<tr class=ZmAsstContactHelpHeader><td>", "Short Name", "</td><td>", "Long Name", "</td><td>", "Contact Field", "</td></tr>");
 		var cmds = ZmAssistant.getHandlerCommands();
-		for (var i in this._sortedFields) {
+		for (var i=0; i < this._sortedFields.length; i++) {
 			var field = this._lookupField(this._sortedFields[i]);
 			if (field.noHelp) continue;
 			html.append("<tr><td><b>", AjxStringUtil.htmlEncode(field.scmd), "</b></td><td><b>", AjxStringUtil.htmlEncode(field.lcmd), "</b></td><td>", AjxStringUtil.htmlEncode(field.field),"</td></tr>");

@@ -570,7 +570,7 @@ function(msg) {
 		// manually add objects since they are no longer recognizable
 		newSearch.types = new AjxVector();
 		var types = oldSearch.types.getArray();
-		for (var i in types) {
+		for (var i = 0;  i < types.length; i++) {
 			newSearch.types.add(types[i]);
 		}
 	}
@@ -593,18 +593,18 @@ function(msg) {
 	// manually add any objects since they are no longer recognizable
 	for (var i in msg._addrs) {
 		var addrs = msg._addrs[i].getArray();
-		for (var j in addrs) {
+		for (var j = 0; j < addrs.length; j++) {
 			newMsg._addrs[i].add(addrs[j]);
 		}
 	}
 
 	if (msg.attachments && msg.attachments.length > 0) {
-		for (var i in msg.attachments) {
+		for (var i = 0; i < msg.attachments.length; i++) {
 			newMsg.attachments.push(msg.attachments[i]);
 		}
 	}
 
-	for (var i in msg._bodyParts) {
+	for (var i = 0; i < msg._bodyParts.length; i++) {
 		newMsg._bodyParts.push(msg._bodyParts[i]);
 	}
 
@@ -616,7 +616,7 @@ function(msg) {
 			newMsg._topPart[i] = msg._topPart[i];
 		}
 		var children = msg._topPart.children.getArray();
-		for (var i in children) {
+		for (var i = 0; i < children.length; i++) {
 			newMsg._topPart.children.add(children[i]);
 		}
 	}
