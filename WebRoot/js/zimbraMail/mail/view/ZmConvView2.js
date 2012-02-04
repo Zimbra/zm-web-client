@@ -946,7 +946,7 @@ function(isTextMsg, html, isTruncated) {
 	if (isTextMsg)		{ return false; }
 
 	this._cleanedHtml = null;
-	var result = AjxStringUtil.checkForCleanHtml(html, ZmMailMsgView.TRUSTED_TAGS, ZmMailMsgView.UNTRUSTED_ATTRS);
+	var result = AjxStringUtil.checkForCleanHtml(html, ZmMailMsgView.TRUSTED_TAGS, ZmMailMsgView.UNTRUSTED_ATTRS, ZmMailMsgView.BAD_STYLES);
 	if (result) {
 		this._cleanedHtml = result;
 		return false;
