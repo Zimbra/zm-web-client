@@ -676,15 +676,22 @@ function(addresses, type, addrs, used) {
 };
 
 ZmConvView2._getAddressNames =
-function(addresses, max) {
+function(addresses, max, ids, idMap) {
 	
 	if (!(addresses && addresses.length)) { return ""; }
+	
+	var useSpan = Boolean(ids && idMap);
 	
 	var list = [];
 	for (var i = 0; i < addresses.length; i++) {
 		var addr = addresses[i];
 		if (addr) {
-			list.push(addr.dispName || addr.name || addr.address || ZmMsg.unknown);
+			var text = addr.dispName || addr.name || addr.address || ZmMsg.unknown;
+			if (useSpan) {
+				text = "<span id='" + ids[i] + "'>" + text + "</span>";
+				idMap[ids[i]] = addr;
+			}
+			list.push(text);
 		}
 	}
 	if (max && list.length > max) {
@@ -1430,13 +1437,17 @@ function(state) {
 	msg.showImages = msg.showImages || (folder && folder.isFeed());
 	this._msgDateId	= id + "_date";
 	this._detailsLinkId = this._htmlElId + "_details";
+	this._idToAddr = {};
 
 	var dateString = new AjxDateFormat("EEEE h:mm a").format(new Date(msg.sentDate || msg.date));
 	var detailsLink, subs, html;
 	
 	if (state == ZmMailMsgCapsuleViewHeader.COLLAPSED) {
+		var fromId = id + "_0";
+		this._idToAddr[fromId] = ai.fromAddr;
 		subs = {
 			from:			ai.from,
+			fromId:			fromId,
 			fragment:		this._getFragment(),
 			msgDateId:		this._msgDateId,
 			date:			dateString
@@ -1493,6 +1504,28 @@ function(focused) {
 	this.condClassName(focused, DwtCssStyle.FOCUSED);
 };
 
+/**
+ * Gets the tool tip content.
+ * 
+ * @param	{Object}	ev		the hover event
+ * @return	{String}	the tool tip content
+ */
+ZmMailMsgCapsuleViewHeader.prototype.getToolTipContent =
+function(ev) {
+	var el = DwtUiEvent.getTarget(ev);
+	if (el && el.id) {
+		var addr = this._idToAddr[el.id];
+		if (addr) {
+			var ttParams = {address:addr, ev:ev, noRightClick:true};
+			var ttCallback = new AjxCallback(this,
+				function(callback) {
+					appCtxt.getToolTipMgr().getToolTip(ZmToolTipMgr.PERSON, ttParams, callback);
+				});
+			return {callback:ttCallback};
+		}
+	}
+};
+
 // Indicate unread and/or in Trash
 ZmMailMsgCapsuleViewHeader.prototype._setHeaderClass =
 function() {
@@ -1515,11 +1548,15 @@ function() {
 
 ZmMailMsgCapsuleViewHeader.prototype._getAddressSummary =
 function() {
+
+	var id = this._htmlElId;
+
 	if (!this._addressSummary && this._msg.isLoaded()) {
 		var fromAddr = this._msg.getAddress(AjxEmailAddress.FROM);
-		var from = ZmConvView2._getAddressNames([fromAddr]);
+		var from = ZmConvView2._getAddressNames([fromAddr], null, [id + "_0"], this._idToAddr);
 		var list = this._msg.getAddresses(AjxEmailAddress.TO).getArray();
 		list = list.concat(this._msg.getAddresses(AjxEmailAddress.CC).getArray());
+		var ids = [];
 		if (list.length) {
 			// remove duplicate addresses
 			var list1 = [], used = {};
@@ -1529,9 +1566,10 @@ function() {
 				if (!used[email]) {
 					list1.push(addr);
 					used[email] = true;
+					ids.push([id, i + 1].join("_"));
 				}
 			}
-			var recips = ZmConvView2._getAddressNames(list1, ZmConvView2.MAX_RECIPS / 2);
+			var recips = ZmConvView2._getAddressNames(list1, ZmConvView2.MAX_RECIPS / 2, ids, this._idToAddr);
 			this._addressSummary = AjxMessageFormat.format(ZmMsg.addressSummary, [from, recips]);
 		}
 	}

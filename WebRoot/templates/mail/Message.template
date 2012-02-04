@@ -690,15 +690,15 @@
 </template>
 
 <template id='mail.Message#Conv2MsgHeader-collapsed'>
-	<span class='info' id='${msgInfoId}'>
-		<span><$= data.from $></span>
+	<span class='info'>
+		<span id='${fromId}'>${from}</span>
 		<span class='ZmConvListFragment'><$= data.fragment $></span>
 	</span>
 	<span class='date' id='${msgDateId}'>${date}</span>
 </template>
 
 <template id='mail.Message#Conv2MsgHeader-expanded'>
-	<span class='info' id='${msgInfoId}'>
+	<span class='info'>
 		<span><$= data.addressSummary $></span>
 		<span><$= data.showDetails $></span>
 	</span>
