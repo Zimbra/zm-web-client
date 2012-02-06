@@ -1609,9 +1609,10 @@ function(msg, container, callback, index) {
 					// if the notes are empty, don't bother rendering them
 					var tmp = AjxStringUtil.stripTags(content);
 					if (!AjxStringUtil._NON_WHITESPACE.test(tmp)) {
-	                    // Run callback to insure invite FB info loaded and day view set up
-	                    if (callback) { callback.run(); }
-                        return;
+					    // Run the remainder of the formatting to insure the invite
+					    // display is set up properly
+					    this._completeMessageBody(callback);
+					    return;
 					}
 				}
 
@@ -1673,12 +1674,20 @@ function(msg, container, callback, index) {
 		}
 	}
 
+	this._completeMessageBody(callback);
+};
+
+ZmMailMsgView.prototype._completeMessageBody =
+function(callback) {
+	// Used in ZmConvView2._toggleExpansion : if False, create the message body (the
+	// first time a message is expanded).
+	this._msgBodyCreated = true;
 	this._setAttachmentLinks();
 	this._setRows();
 	this._expandRows(this._expandHeader);
 
 	if (callback) { callback.run(); }
-};
+}
 
 ZmMailMsgView.prototype._getBodyContent =
 function(bodyPart) {
@@ -2241,7 +2250,8 @@ function(expand) {
 
 	var attContainer = document.getElementById(this._attLinksId + "_container");
 	if (attContainer) {
-		Dwt.setVisible(attContainer, expand);
+		var attInfo = this._msg.getAttachmentInfo(true, !appCtxt.get(ZmSetting.VIEW_AS_HTML), true);
+		Dwt.setVisible(attContainer, expand && (attInfo.length > 0));
 	}
 	if (this._scrollWithIframe) {
 		ZmMailMsgView._resetIframeHeight(this);

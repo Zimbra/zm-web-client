@@ -1161,9 +1161,8 @@ ZmMailMsgCapsuleView.prototype._toggleExpansion =
 function() {
 	
 	this._expanded = !this._expanded;
-	var body = this.getMsgBodyElement();
-	
-	if (this._expanded && !body) {
+
+	if (this._expanded && !this._msgBodyCreated) {
 		// Provide a callback to insure address bubbles are properly set up
         var respCallback = this._handleResponseSet.bind(this, this._msg);
 		this._renderMessage(this._msg, null, respCallback);
