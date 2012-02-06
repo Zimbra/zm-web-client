@@ -1391,7 +1391,7 @@ ZmMailMsgCapsuleViewHeader = function(params) {
 	this._msg = this.parent._msg;
 	this._controller = this.parent._controller;
 	
-	if (this._msgView._controller.supportsDnD()) {
+	if (this._controller.supportsDnD()) {
 		var dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 		dragSrc.addDragListener(this._dragListener.bind(this));
 		this.setDragSource(dragSrc);
@@ -1443,6 +1443,7 @@ function(state, force) {
 	msg.showImages = msg.showImages || (folder && folder.isFeed());
 	this._msgDateId	= id + "_date";
 	this._detailsLinkId = id + "_details";
+	this._readIconId = id + "_read";
 	this._idToAddr = {};
 
 	var dateString = new AjxDateFormat("EEEE h:mm a").format(new Date(msg.sentDate || msg.date));
@@ -1452,7 +1453,7 @@ function(state, force) {
 		var fromId = id + "_0";
 		this._idToAddr[fromId] = ai.fromAddr;
 		subs = {
-			readIcon:		AjxImg.getImageHtml(msg.getReadIcon(), "display:inline-block"),
+			readIcon:		AjxImg.getImageHtml(msg.getReadIcon(), "display:inline-block", "id='" + this._readIconId + "'"),
 			from:			ai.from,
 			fromId:			fromId,
 			fragment:		this._getFragment(),
@@ -1464,7 +1465,7 @@ function(state, force) {
 	else if (state == ZmMailMsgCapsuleViewHeader.EXPANDED) {
 		detailsLink = this._msgView._makeLink(ZmMsg.showDetails, this._detailsLinkId);
 		subs = {
-			readIcon:		AjxImg.getImageHtml(msg.getReadIcon(), "display:inline-block"),
+			readIcon:		AjxImg.getImageHtml(msg.getReadIcon(), "display:inline-block", "id='" + this._readIconId + "'"),
 			addressSummary:	this._getAddressSummary(),
 			showDetails:	detailsLink,
 			msgDateId:		this._msgDateId,
@@ -1475,7 +1476,7 @@ function(state, force) {
 	else if (state == ZmMailMsgCapsuleViewHeader.FULL) {
 		detailsLink = this._msgView._makeLink(ZmMsg.hideDetails, this._detailsLinkId);
 		subs = {
-			readIcon:		AjxImg.getImageHtml(msg.getReadIcon()),
+			readIcon:		AjxImg.getImageHtml(msg.getReadIcon(), null, "id='" + this._readIconId + "'"),
 			sentBy:			ai.sentBy,
 			sentByAddr:		ai.sentByAddr,
 			obo:			ai.obo,
@@ -1501,6 +1502,11 @@ function(state, force) {
 		if (link) {
 			Dwt.setHandler(link, DwtEvent.ONCLICK, this._handleShowDetailsLink.bind(this, (state == ZmMailMsgCapsuleViewHeader.EXPANDED)));
 		}
+	}
+	
+	var readIcon = document.getElementById(this._readIconId);
+	if (readIcon) {
+		Dwt.setHandler(readIcon, DwtEvent.ONMOUSEDOWN, this._handleMarkRead.bind(this));
 	}
 	
 	if (state == ZmMailMsgCapsuleViewHeader.FULL) {
@@ -1590,6 +1596,11 @@ function(show) {
 	this.set(show ? ZmMailMsgCapsuleViewHeader.FULL : ZmMailMsgCapsuleViewHeader.EXPANDED);
 };
 
+ZmMailMsgCapsuleViewHeader.prototype._handleMarkRead =
+function() {
+	this._controller._doMarkRead([this._msg], this._msg.isUnread);
+};
+
 ZmMailMsgCapsuleViewHeader.prototype._mouseDownListener =
 function(ev) {
 	
@@ -1597,6 +1608,7 @@ function(ev) {
 	var convView = msgView._convView;
 	
 	if (ev.target && ev.target.id == this._detailsLinkId) { return; }
+	if (ev.target && ev.target.id == this._readIconId) { return; }
 	
 	if (ev.button == DwtMouseEvent.LEFT) {
 		msgView._toggleExpansion();
@@ -1613,7 +1625,7 @@ function(ev) {
 				return;
 			}
 			msgView._resetOperations();
-			msgView._controller._setTagMenu(this._actionsMenu, [this._msg]);
+			this._controller._setTagMenu(this._actionsMenu, [this._msg]);
 			msgView._actionsMenu.popup(0, ev.docX, ev.docY);
 			convView.setMsg(this._msg);
 			// set up the event so that we don't also get a browser menu
@@ -1636,7 +1648,7 @@ function(ev) {
 ZmMailMsgCapsuleViewHeader.prototype._getDragProxy =
 function(dragOp) {
 	var view = this._msgView;
-	var icon = ZmMailMsgListView.prototype._createItemHtml.call(view._controller._mailListView, view._msg, {now:new Date(), isDragProxy:true});
+	var icon = ZmMailMsgListView.prototype._createItemHtml.call(this._controller._mailListView, view._msg, {now:new Date(), isDragProxy:true});
 	Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE);
 	appCtxt.getShell().getHtmlElement().appendChild(icon);
 	Dwt.setZIndex(icon, Dwt.Z_DND);
