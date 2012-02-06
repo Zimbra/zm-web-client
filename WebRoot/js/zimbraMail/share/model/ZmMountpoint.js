@@ -86,7 +86,8 @@ function(name, response) {
 	if (response.code == ZmCsfeException.SVC_PERM_DENIED || response.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
 		msg = ZmCsfeException.getErrorMsg(response.code);
 	} else if (response.code == ZmCsfeException.MAIL_ALREADY_EXISTS) {
-		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name]);
+        var type = appCtxt.getFolderTree(appCtxt.getActiveAccount()).getFolderTypeByName(name);
+		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name,type.toLowerCase()]);
 	}
 	if (msg) {
 		appCtxt.getAppController().popupErrorDialog(msg, null, null, true);

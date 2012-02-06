@@ -218,10 +218,11 @@ function(event) {
 ZmFolderPropertyView.prototype._handleRenameError =
 function(response) {
 	var value = this._nameInputEl.value;
+    var type = appCtxt.getFolderTree(appCtxt.getActiveAccount()).getFolderTypeByName(value);
 	var msg;
 	var noDetails = false;
 	if (response.code == ZmCsfeException.MAIL_ALREADY_EXISTS) {
-		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [value]);
+		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [value,type.toLowerCase()]);
 	} else if (response.code == ZmCsfeException.MAIL_IMMUTABLE) {
 		msg = AjxMessageFormat.format(ZmMsg.errorCannotRename, [value]);
 	} else if (response.code == ZmCsfeException.SVC_INVALID_REQUEST) {

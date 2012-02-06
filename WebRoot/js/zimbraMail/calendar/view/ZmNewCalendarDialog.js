@@ -27,8 +27,7 @@ ZmNewCalendarDialog.prototype = new ZmNewOrganizerDialog;
 ZmNewCalendarDialog.prototype.constructor = ZmNewCalendarDialog;
 
 
-// Overridden properties
-ZmNewCalendarDialog.prototype._folderNameAlreadyExistsMsg = ZmMsg.errorCalendarAlreadyExists;
+
 
 ZmNewCalendarDialog.BACK_BUTTON = ++DwtDialog.LAST_BUTTON;
 

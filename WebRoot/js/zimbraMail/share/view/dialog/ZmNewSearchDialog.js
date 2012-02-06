@@ -42,7 +42,7 @@ function() {
 };
 
 //overriden properties
-ZmNewSearchDialog.prototype._folderNameAlreadyExistsMsg = ZmMsg.folderOrSearchNameExists;
+
 ZmNewSearchDialog.prototype._folderLocationLabel = ZmMsg.newSearchParent;
 
 

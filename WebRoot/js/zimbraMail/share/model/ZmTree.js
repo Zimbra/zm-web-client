@@ -81,6 +81,54 @@ function(name) {
 };
 
 /**
+ * Gets the item type by name.
+ *
+ * @param	{String}	name		the name
+ * @return	{String}    type of folder
+ */
+//Bug:47848: new method that returns type of the item given its name
+ZmTree.prototype.getFolderTypeByName =
+function(name){
+
+    //As folder names are case-insensitive
+    var formattedName = name.toLowerCase();
+
+    //Iterate through folders of loaded apps
+    var folderList = appCtxt.getTree(ZmOrganizer.FOLDER).asList();
+    var type;
+    var i;
+    for(i=0 ; i < folderList.length ; i ++){
+        var currentName = folderList[i].name;
+        if(formattedName == currentName.toLowerCase()){
+            return folderList[i].type;
+        }
+    }
+
+    // check for _deferredFolders in the apps that have not been loaded
+    var apps = ZmApp.APPS;
+
+    for(i=0 ; i<apps.length; i++){
+       var currentApp = appCtxt.getApp(apps[i]);
+       var deferredFolders = currentApp && currentApp._deferredFolders;
+       if(!deferredFolders){
+           continue;
+       }
+       var j;
+       for(j=0 ; j < deferredFolders.length ; j++){
+           var currentFolder = deferredFolders[j];
+           var currentName = currentFolder.obj && currentFolder.obj.name;
+            if(formattedName == currentName.toLowerCase()){
+                return currentFolder.type;
+            }
+       }
+
+    }
+    // if still not found return type as "Folder"
+    type = ZmMsg.folder;
+    return type;
+}
+
+/**
  * Gets the item by type.
  * 
  * @param	{String}	name		the type name

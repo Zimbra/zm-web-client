@@ -444,7 +444,8 @@ function(params, ex) {
 	
 	var msg;
 	if (params.name && (ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS)) {
-		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [params.name]);
+		var type = appCtxt.getFolderTree(appCtxt.getActiveAccount()).getFolderTypeByName(params.name);
+        msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [params.name, type.toLowerCase()]);
 	} else if (params.url) {
 		var errorMsg = (ex.code == ZmCsfeException.SVC_RESOURCE_UNREACHABLE) ? ZmMsg.feedUnreachable : ZmMsg.feedInvalid;
 		msg = AjxMessageFormat.format(errorMsg, params.url);

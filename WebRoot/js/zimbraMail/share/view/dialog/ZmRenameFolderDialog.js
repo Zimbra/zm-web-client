@@ -81,8 +81,9 @@ function() {
 	// make sure another folder with this name doesn't already exist at this level
 	if (!msg) {
 		var folder = this._folder.parent.getByName(name);
-		if (folder && (folder.id != this._folder.id)) {
-			msg = ZmMsg.folderOrSearchNameExists;
+        var folderType = appCtxt.getFolderTree(appCtxt.getActiveAccount()).getFolderTypeByName(name);
+        if (folder && (folder.id != this._folder.id)) {
+			msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name,folderType.toLowerCase()]);
 		}
 	}
 
