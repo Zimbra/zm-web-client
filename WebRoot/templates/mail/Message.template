@@ -690,6 +690,7 @@
 </template>
 
 <template id='mail.Message#Conv2MsgHeader-collapsed'>
+	${readIcon}
 	<span class='info'>
 		<span id='${fromId}'>${from}</span>
 		<span class='ZmConvListFragment'><$= data.fragment $></span>
@@ -698,6 +699,7 @@
 </template>
 
 <template id='mail.Message#Conv2MsgHeader-expanded'>
+	${readIcon}
 	<span class='info'>
 		<span><$= data.addressSummary $></span>
 		<span><$= data.showDetails $></span>
@@ -708,6 +710,7 @@
 <template id='mail.Message#Conv2MsgHeader-full'>
 	<table>
 		<tr>
+			<td>${readIcon}</td>
 			<td class='LabelColName'><$= ZmMsg.fromLabel $></td>
 			<td class='LabelColValue' valign=top colspan=10>
 				<span id="OBJ_PREFIX_<$=Dwt.getNextId()$>_from">${sentBy}</span>
@@ -732,6 +735,7 @@
 
 		<$ for (var i = 0; i < data.participants.length; i++) { $>
 			<tr id='OBJ_PREFIX_<$=Dwt.getNextId()$>_<$=data.participants[i].prefix.toLowerCase()$>'>
+				<td>&nbsp;</td>
 				<td class='LabelColName'>
 					<$= AjxMessageFormat.format(ZmMsg.makeLabel, data.participants[i].prefix) $>
 				</td>

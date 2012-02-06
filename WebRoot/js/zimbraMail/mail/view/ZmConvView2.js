@@ -959,6 +959,8 @@ function(isTextMsg, html, isTruncated) {
 ZmMailMsgCapsuleView.prototype._renderMessageBody =
 function(msg, container, callback, index) {
 	
+	this._addLine();
+	
 	this._hasOrigContent = false;
 	
 	this._msgBodyDivId = [this._htmlElId, ZmId.MV_MSG_BODY].join("_");
@@ -1040,6 +1042,15 @@ function(msg, container, callback, index) {
 		// invite header
 		bodyEl.insertBefore(this._headerElement.parentNode, bodyEl.firstChild);
 	}
+
+	this._addLine();
+};
+
+ZmMailMsgCapsuleView.prototype._addLine =
+function() {
+	var hr = document.createElement("hr");
+	hr.className = "separator";
+	this.getHtmlElement().appendChild(hr);
 };
 
 ZmMailMsgCapsuleView.prototype._getInviteSubs =
@@ -1159,17 +1170,10 @@ function() {
 		this._controller._handleMarkRead(this._msg);
 	}
 	else {
-		// TODO: collect all these into a single DIV to hide/show
-		Dwt.setVisible(this._autoSendHeaderId, this._expanded);
-		Dwt.setVisible(this._addedHeadersId, this._expanded);
-		Dwt.setVisible(this._highlightObjectsId, false);
-		Dwt.setVisible(this._attLinksId, this._expanded);
-		Dwt.setVisible(this._displayImagesId, this._expanded);
-		Dwt.setVisible(this._msgBodyDivId, this._expanded);
-		Dwt.setVisible(this._footerId, this._expanded);
-		if (this._isCalendarInvite) {
-			Dwt.setVisible(this._headerElement, this._expanded);
-			Dwt.setVisible(this._inviteCalendarContainer, this._showingCalendar && this._expanded);
+		// hide or show everything below the header
+		var children = this.getHtmlElement().childNodes;
+		for (var i = 1; i < children.length; i++) {
+			Dwt.setVisible(children[i], this._expanded);
 		}
 		this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
 	}
@@ -1298,12 +1302,14 @@ ZmMailMsgCapsuleView.prototype._msgChangeListener =
 function(ev) {
 
 	if (ev.type != ZmEvent.S_MSG) { return; }
+	if (this._disposed) { return; }
 
 	if (ev.event == ZmEvent.E_FLAGS) {
 		var flags = ev.getDetail("flags");
 		for (var j = 0; j < flags.length; j++) {
 			var flag = flags[j];
 			if (flag == ZmItem.FLAG_UNREAD) {
+				this._header.set(null, true);
 				this._header._setHeaderClass();
 				this._convView._setConvInfo();
 			}
@@ -1422,13 +1428,14 @@ ZmMailMsgCapsuleViewHeader.FULL			= "full";
  * We can't cache the header content because the email zimlet fills in the bubbles after the
  * HTML has been generated (full view).
  * 
- * @param {constant}	state	collapsed, expanded, or full	
+ * @param {constant}	state	collapsed, expanded, or full
+ * @param {boolean}		force	if true, render even if not changing state
  */
 ZmMailMsgCapsuleViewHeader.prototype.set =
-function(state) {
+function(state, force) {
 
-	if (!state || state == this._state) { return; }
-	this._state = state;
+	if (!force && state == this._state) { return; }
+	state = this._state = state || this._state;
 	
 	var id = this._htmlElId;
 	var msg = this._msg;
@@ -1436,7 +1443,7 @@ function(state) {
 	var folder = appCtxt.getById(msg.folderId);
 	msg.showImages = msg.showImages || (folder && folder.isFeed());
 	this._msgDateId	= id + "_date";
-	this._detailsLinkId = this._htmlElId + "_details";
+	this._detailsLinkId = id + "_details";
 	this._idToAddr = {};
 
 	var dateString = new AjxDateFormat("EEEE h:mm a").format(new Date(msg.sentDate || msg.date));
@@ -1446,6 +1453,7 @@ function(state) {
 		var fromId = id + "_0";
 		this._idToAddr[fromId] = ai.fromAddr;
 		subs = {
+			readIcon:		AjxImg.getImageHtml(msg.getReadIcon(), "display:inline-block"),
 			from:			ai.from,
 			fromId:			fromId,
 			fragment:		this._getFragment(),
@@ -1457,6 +1465,7 @@ function(state) {
 	else if (state == ZmMailMsgCapsuleViewHeader.EXPANDED) {
 		detailsLink = this._msgView._makeLink(ZmMsg.showDetails, this._detailsLinkId);
 		subs = {
+			readIcon:		AjxImg.getImageHtml(msg.getReadIcon(), "display:inline-block"),
 			addressSummary:	this._getAddressSummary(),
 			showDetails:	detailsLink,
 			msgDateId:		this._msgDateId,
@@ -1467,6 +1476,7 @@ function(state) {
 	else if (state == ZmMailMsgCapsuleViewHeader.FULL) {
 		detailsLink = this._msgView._makeLink(ZmMsg.hideDetails, this._detailsLinkId);
 		subs = {
+			readIcon:		AjxImg.getImageHtml(msg.getReadIcon()),
 			sentBy:			ai.sentBy,
 			sentByAddr:		ai.sentByAddr,
 			obo:			ai.obo,

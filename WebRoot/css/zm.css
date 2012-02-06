@@ -884,6 +884,14 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	font-weight:bold;
 }
 
+.ZmMailMsgCapsuleView .separator {
+	width:94%;
+	margin-left:3%;
+	border-style:solid;
+	border-top-width:0;
+	color:lightgray;
+}
+
 .Conv2MsgHeader {
 	#IFNDEF MSIE
 	width:100%;
@@ -906,6 +914,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	overflow:hidden;
 	white-space:nowrap;
 	padding-left:7px;
+	vertical-align:top;
 }
 
 .Conv2MsgHeader .date {
