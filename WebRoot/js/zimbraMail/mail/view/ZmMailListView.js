@@ -28,6 +28,7 @@ ZmMailListView = function(params) {
 		this._normalClass = ZmMailListView.ROW_DOUBLE_CLASS;
 	}
 
+	this._disallowSelection[ZmItem.F_READ] = true;
 };
 
 ZmMailListView.prototype = new ZmListView;
@@ -680,9 +681,9 @@ function(params) {
 	if (field == ZmItem.F_STATUS) {
 		tooltip = item.getStatusTooltip();
 	}
-	else if (field == ZmItem.F_READ) {
-		tooltip = item.isUnread ? ZmMsg.unread : ZmMsg.read;
-	}
+//	else if (field == ZmItem.F_READ) {
+//		tooltip = item.isUnread ? ZmMsg.unread : ZmMsg.read;
+//	}
 	else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
 			(field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT))
 	{

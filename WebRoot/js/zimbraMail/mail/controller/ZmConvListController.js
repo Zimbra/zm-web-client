@@ -297,6 +297,7 @@ function(ev) {
 	if (!item) { return; }
 	if (ev.field == ZmItem.F_EXPAND && this._mailListView._isExpandable(item)) {
 		this._toggle(item, false);
+		return true;
 	} else {
 		var handled = ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
 		if (!handled) {
@@ -311,9 +312,11 @@ function(ev) {
 				} else {
 					AjxDispatcher.run("GetConvController").show(this._activeSearch, item, this, respCallback, true);
 				}
+				return true;
 			}
 		}
 	}
+	return false;
 };
 
 ZmConvListController.prototype._handleResponseListSelectionListener =

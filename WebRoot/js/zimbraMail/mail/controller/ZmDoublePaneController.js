@@ -492,11 +492,12 @@ function(listView) {
 // Clicking on a message in the message list loads and displays it.
 ZmDoublePaneController.prototype._listSelectionListener =
 function(ev) {
-	ZmMailListController.prototype._listSelectionListener.call(this, ev);
+
+	var handled = ZmMailListController.prototype._listSelectionListener.call(this, ev);
 	
 	var currView = this._listView[this._currentViewId];
 
-	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
+	if (!handled && ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var item = ev.item;
 		if (!item) { return; }
 
@@ -523,7 +524,7 @@ function(ev) {
 		} else {
 			return false;
 		}
-	} else {
+	} else if (!handled) {
 		if (this.isReadingPaneOn()) {
 			// Give the user a chance to zip around the list view via shortcuts without having to
 			// wait for each successively selected msg to load, by waiting briefly for more list
@@ -538,6 +539,7 @@ function(ev) {
 			} else {
 				this._setSelectedItem();
 			}
+			return true;
 		} else {
 			var msg = currView.getSelection()[0];
 			if (msg) {
@@ -545,6 +547,7 @@ function(ev) {
 			}
 		}
 	}
+	return handled;
 	DBG.timePt("***** CONV: msg selection");
 };
 

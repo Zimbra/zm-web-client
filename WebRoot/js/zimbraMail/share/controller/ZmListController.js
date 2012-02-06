@@ -359,9 +359,11 @@ function(ev) {
 
 	if (ev.field == ZmItem.F_FLAG) {
 		this._doFlag([ev.item]);
+		return true;
 	} 
 	else if (ev.field == ZmItem.F_MSG_PRIORITY) {
 		this._doMsgPriority([ev.item]);
+		return true;
 	}
 	else {
 		var lv = this._listView[this._currentViewId];
@@ -374,6 +376,7 @@ function(ev) {
 			this._resetOperations(this.getCurrentToolbar(), lv.getSelectionCount());
 		}
 	}
+	return false;
 };
 
 /**

@@ -748,8 +748,15 @@ function(ev) {
 		var account = ev.item.account || ZmOrganizer.parseId(ev.item.id).account;
 		var folder = appCtxt.getById(ZmOrganizer.getSystemId(ZmFolder.ID_DRAFTS, account));
 		this._list.moveItems({items:[ev.item], folder:folder});
+		return false;
 	}
-	ZmListController.prototype._listSelectionListener.apply(this, arguments);
+	if (ev.field == ZmItem.F_READ) {
+		this._doMarkRead([ev.item], ev.item.isUnread);
+		return true;
+	}
+	else {
+		return ZmListController.prototype._listSelectionListener.apply(this, arguments);
+	}
 };
 
 // Based on context, enable read/unread operation, add/edit contact.
