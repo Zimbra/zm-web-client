@@ -208,7 +208,7 @@ ZmShareSearchDialog.prototype._doUserSearch = function(emails) {
         }
         var text = this._loadingUserFormatter.format([email]);
         var loadingId = [ZmShareProxy.ID_LOADING,Dwt.getNextId("share")].join(":");
-        this._appendInfoNode(ZmOrganizer.ID_ROOT, loadingId, text);
+        this._appendInfoNode(ZmOrganizer.ID_ROOT, loadingId, AjxStringUtil.htmlEncode(text));
 
         // remember the placeholder nodes
         emailMap[emailId] = loadingId;
