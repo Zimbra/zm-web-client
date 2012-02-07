@@ -959,7 +959,9 @@ function(isTextMsg, html, isTruncated) {
 ZmMailMsgCapsuleView.prototype._renderMessageBody =
 function(msg, container, callback, index) {
 	
-	this._addLine();
+	if (!this._beenHere) {
+		this._addLine();
+	}
 	
 	this._hasOrigContent = false;
 	
@@ -1043,7 +1045,11 @@ function(msg, container, callback, index) {
 		bodyEl.insertBefore(this._headerElement.parentNode, bodyEl.firstChild);
 	}
 
-	this._addLine();
+	if (!this._beenHere) {
+		this._addLine();
+	}
+	
+	this._beenHere = true;
 };
 
 ZmMailMsgCapsuleView.prototype._addLine =
@@ -1247,7 +1253,7 @@ function() {
 		this._containerEl.parentNode.removeChild(this._containerEl);
 	}
 	
-	this._renderMessageBody(this._msg, null, null, 1);	// index of 1 to put rerendered body below header
+	this._renderMessageBody(this._msg, null, null, 2);	// index of 2 to put rerendered body below header and HR
 	var showTextLink = document.getElementById(this._showTextLinkId);
 	if (showTextLink) {
 		showTextLink.innerHTML = this._showingQuotedText ? ZmMsg.hideQuotedText : ZmMsg.showQuotedText;
