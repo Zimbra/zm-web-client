@@ -52,8 +52,6 @@ ZmImOverview = function(parent, params) {
 			ZmOperation.IM_CREATE_CONTACT, ZmOperation.IM_ADD_TO_CONTACT, ZmOperation.IM_EDIT_CONTACT
 		],
 
-		assistant : [ ZmOperation.IM_NEW_CHAT ],
-
 		group : [
 			ZmOperation.NEW_ROSTER_ITEM,
 			ZmOperation.IM_DELETE_GROUP
@@ -418,12 +416,6 @@ ZmImOverview.prototype._init = function() {
 	this._rootItem.enableSelection(false);
 
 	var roster = this._roster = AjxDispatcher.run("GetRoster");
-	if (!this._options.noAssistant) {
-		// Zimbra Assistant buddy
-		var buddyList = roster.getRosterItemList();
-		var assistant = new ZmAssistantBuddy(buddyList);
-		this._createTreeItems("assistant", assistant);
-	}
 
 	this._listen(roster, new AjxListener(this, this._rosterListener));
 	this._listen(roster.getRosterItemList(), new AjxListener(this, this._rosterItemListListener));
@@ -625,7 +617,7 @@ ZmImOverview.prototype._createTreeItems = function(type, buddy) {
 	if (groups.length == 0) {
 		groups = type == "buddy"
 				? [ ZmMsg.buddies ] // default to "Buddies"
-				: [ null ]; // add to root item for type == i.e. "assistant"
+				: [ null ]; // add to root item for type
 	}
 	var label = buddy.getDisplayName();
 	var icon = this._getBuddyIcon(buddy);
@@ -747,7 +739,6 @@ ZmImOverview.prototype.getSortIndex = function(label, root) {
 			// label is a buddy here (ZmRosterItem)
 			if (this._sortBy == ZmImApp.BUDDY_SORT_NAME) {
 				var txt = data.buddy.getDisplayName()
-                                // txt can be null if type is "assistant"
 				if (txt && txt.toLowerCase() > label.getDisplayName())
 					break;
 			} else if (this._sortBy == ZmImApp.BUDDY_SORT_PRESENCE) {

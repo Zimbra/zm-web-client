@@ -338,7 +338,6 @@ function() {
 							  defaultSearch:		ZmItem.CONTACT,
 							  organizer:			ZmOrganizer.ADDRBOOK,
 							  overviewTrees:		[ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
-							  assistants:			{"ZmContactAssistant":["ContactsCore", "Contacts"]},
 							  searchTypes:			[ZmItem.CONTACT],
 							  newItemOps:			newItemOps,
 							  newOrgOps:			newOrgOps,

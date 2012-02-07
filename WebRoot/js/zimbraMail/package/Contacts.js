@@ -31,7 +31,6 @@ AjxPackage.require("zimbraMail.abook.view.ZmContactsBaseView");
 AjxPackage.require("zimbraMail.abook.view.ZmContactGroupMenu");
 AjxPackage.require("zimbraMail.abook.view.ZmContactSplitView");
 AjxPackage.require("zimbraMail.abook.view.ZmNewAddrBookDialog");
-AjxPackage.require("zimbraMail.abook.view.ZmContactAssistant");
 AjxPackage.require("zimbraMail.abook.view.ZmNewContactGroupDialog");
 AjxPackage.require("zimbraMail.abook.view.ZmContactQuickAddDialog");
 

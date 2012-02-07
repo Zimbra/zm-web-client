@@ -964,7 +964,6 @@ function() {
 				defaultSearch:		appCtxt.isChildWindow ? null : ZmId.SEARCH_MAIL,
 				organizer:			ZmOrganizer.FOLDER,
 				overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
-				assistants:			{"ZmMailAssistant":"Mail"},
 				searchTypes:		[ZmItem.MSG, ZmItem.CONV],
 				newItemOps:			newItemOps,
 				actionCodes:		actionCodes,

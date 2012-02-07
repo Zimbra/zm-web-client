@@ -19,7 +19,6 @@ ZmBuddyListPopup = function(params) {
 	var overviewArgs = {
 //		parentElement: parentElement,
 		posStyle: Dwt.STATIC_STYLE,
-		noAssistant: true,
 		expanded: true,
 		singleClick: true,
 		noHeaderNodeCell: true

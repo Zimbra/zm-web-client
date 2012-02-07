@@ -2933,17 +2933,6 @@ function(actionCode, ev) {
 			break;
 		}
 
-		case ZmKeyMap.ASSISTANT: {
-			if (appCtxt.get(ZmSetting.ASSISTANT_ENABLED)) {
-				if (!this._assistantDialog) {
-					AjxDispatcher.require("Assistant");
-					this._assistantDialog = new ZmAssistantDialog();
-				}
-				this._assistantDialog.popup();
-			}
-			break;
-		}
-
 		case ZmKeyMap.QUICK_REMINDER: {
             var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
             if (appCtxt.get(ZmSetting.CALENDAR_ENABLED, null, account)) {

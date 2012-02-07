@@ -40,8 +40,6 @@ AjxPackage.require("zimbraMail.calendar.view.ZmApptQuickAddDialog");
 AjxPackage.require("zimbraMail.calendar.view.ZmFreeBusySchedulerView");
 AjxPackage.require("zimbraMail.calendar.view.ZmNewCalendarDialog");
 AjxPackage.require("zimbraMail.calendar.view.ZmExternalCalendarDialog");
-AjxPackage.require("zimbraMail.calendar.view.ZmAppointmentAssistant");
-AjxPackage.require("zimbraMail.calendar.view.ZmCalendarAssistant");
 AjxPackage.require("zimbraMail.calendar.view.ZmApptAssistantView");
 AjxPackage.require("zimbraMail.calendar.view.ZmScheduleAssistantView");
 AjxPackage.require("zimbraMail.calendar.view.ZmLocationAssistantView");

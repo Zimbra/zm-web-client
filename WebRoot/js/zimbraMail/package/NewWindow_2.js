@@ -92,7 +92,6 @@ AjxPackage.require("zimbraMail.share.view.ZmActionMenu");
 AjxPackage.require("zimbraMail.share.view.ZmAutocompleteListView");
 AjxPackage.require("zimbraMail.share.view.ZmAddressInputField");
 AjxPackage.require("zimbraMail.share.view.ZmDLAutocompleteListView");
-AjxPackage.require("zimbraMail.share.view.assistant.ZmAssistant");
 AjxPackage.require("zimbraMail.share.view.ZmSearchToolBar");
 AjxPackage.require("zimbraMail.share.view.ZmStatusView");
 AjxPackage.require("zimbraMail.share.view.ZmTagMenu");

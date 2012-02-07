@@ -120,11 +120,6 @@ ZmChat.prototype.getRosterItem = function(index) {
 	return this._rosterItemList.getArray()[index];
 };
 
-ZmChat.prototype.isZimbraAssistant = function() {
-	return (this._rosterItemList.size() == 1 &&
-		this.getRosterItem(0).getAddress() == ZmAssistantBuddy.ADDR);
-};
-
 ZmChat.prototype.getIcon = function() {
 	return this.getRosterItem().getPresence().getIcon();
 };

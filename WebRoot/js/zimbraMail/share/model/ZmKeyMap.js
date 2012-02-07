@@ -89,7 +89,6 @@ ZmKeyMap.MAP_NAME_R = {};
 // Action codes
 ZmKeyMap.ADDRESS_PICKER			= "AddressPicker";
 ZmKeyMap.ADD_EXTERNAL_CALENDAR	= "AddExternalCalendar";
-ZmKeyMap.ASSISTANT				= "Assistant";
 ZmKeyMap.ATTACHMENT				= "Attachment";
 ZmKeyMap.CAL_DAY_VIEW			= "DayView";
 ZmKeyMap.CAL_FB_VIEW			= "FBView";

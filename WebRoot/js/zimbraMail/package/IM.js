@@ -31,8 +31,6 @@ AjxPackage.require("ajax.dwt.widgets.DwtSoundPlugin");
 
 AjxPackage.require("zimbraMail.share.view.dialog.ZmPromptDialog");
 
-AjxPackage.require("zimbraMail.im.model.ZmAssistantBuddy");
-
 AjxPackage.require("zimbraMail.im.view.ZmChatWidget");
 AjxPackage.require("zimbraMail.im.view.ZmImNewChatDlg");
 AjxPackage.require("zimbraMail.im.view.ZmCustomStatusDlg");

@@ -164,7 +164,7 @@ ZmRosterItem.prototype.getUnread = function() { return this.numUnreadIMs; };
 // str       : new string to include in the input field
 // sel_start : place new selection
 // sel_end   : ^^
-// stop      : true to avoid sending the message to server (useful for Zimbra Assistant)
+// stop      : true to avoid sending the message to server
 ZmRosterItem.prototype.handleInput = function(args) {
 	// by default we do typing notification
  	function clearTyping(chat) {

@@ -105,10 +105,6 @@ ZmApp.QUICK_COMMAND_TYPE	= {};
 ZmApp.DROP_TARGETS			= {};	// drop targets (organizers) by item/organizer type
 ZmApp.SEARCH_RESULTS_TAB	= {};	// whether to show search results in a tab
 
-// assistants for each app; each value is a hash where key is the name of the
-// assistant class and value is the required package
-ZmApp.ASSISTANTS			= {};
-
 // indexes to control order of appearance/action
 ZmApp.CHOOSER_SORT			= {};	// controls order of apps in app chooser toolbar
 ZmApp.DEFAULT_SORT			= {};	// controls order in which app is chosen as default start app
@@ -156,7 +152,6 @@ function() {
  * @param params.organizer			[constant]	main organizer for this app
  * @param params.overviewTrees		[array]		list of tree IDs to show in overview
  * @param params.hideZimlets		[boolean]	if true, hide Zimlet tree in overview
- * @param params.assistants			[hash]		hash of assistant class names and required packages
  * @param params.searchTypes		[array]		list of types of saved searches to show in overview
  * @param params.gotoActionCode		[constant]	key action for jumping to this app
  * @param params.newActionCode		[constant]	default "new" action code
@@ -187,7 +182,6 @@ function(app, params) {
 	if (params.organizer)			{ ZmApp.ORGANIZER[app]			= params.organizer; }
 	if (params.overviewTrees)		{ ZmApp.OVERVIEW_TREES[app]		= params.overviewTrees; }
 	if (params.hideZimlets)			{ ZmApp.HIDE_ZIMLETS[app]		= params.hideZimlets; }
-	if (params.assistants)			{ ZmApp.ASSISTANTS[app]			= params.assistants; }
 	if (params.searchTypes) 		{ ZmApp.SEARCH_TYPES[app]		= params.searchTypes; }
 	if (params.gotoActionCode)		{ ZmApp.GOTO_ACTION_CODE[app]	= params.gotoActionCode; }
 	if (params.newActionCode)		{ ZmApp.NEW_ACTION_CODE[app]	= params.newActionCode; }
