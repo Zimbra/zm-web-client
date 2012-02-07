@@ -302,7 +302,7 @@ function(view, appContentView, toolbar) {
  * @param	{Boolean}	expanded		if <code>true</code>, contents are expanded by default
  */
 ZmController.prototype.popupErrorDialog = 
-function(msg, ex, noExecReset, hideReportButton, expanded) {
+function(msg, ex, noExecReset, hideReportButton, expanded, noEncoding) {
 	// popup alert
 	var errorDialog = appCtxt.getErrorDialog();
 	var detailStr = "";
@@ -333,7 +333,10 @@ function(msg, ex, noExecReset, hideReportButton, expanded) {
 		detailStr = html.join("");
 	}
 	errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
-	errorDialog.setMessage(AjxStringUtil.htmlEncode(msg), detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
+	if (!noEncoding) {
+		msg = AjxStringUtil.htmlEncode(msg);
+	}
+	errorDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
 	errorDialog.popup(null, hideReportButton);
 	if (expanded)
 		errorDialog.showDetail();

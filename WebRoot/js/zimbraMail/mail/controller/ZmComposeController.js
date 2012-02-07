@@ -622,8 +622,8 @@ function(draftType, msg, ex) {
             var invalidMsg = (invalid && invalid.length)
                 ? AjxMessageFormat.format(ZmMsg.sendErrorInvalidAddresses, AjxStringUtil.htmlEncode(invalid.join(", ")))
                 : null;
-            msg = ZmMsg.sendErrorAbort + "<br/>" + invalidMsg;
-            this.popupErrorDialog(msg, ex, true, true);
+            msg = ZmMsg.sendErrorAbort + "<br/>" +  AjxStringUtil.htmlEncode(invalidMsg);
+            this.popupErrorDialog(msg, ex, true, true, false, true);
             retVal = true;
         } else if (ex.code == ZmCsfeException.MAIL_SEND_PARTIAL_ADDRESS_FAILURE) {
             var invalid = ex.getData ? ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID) : null;
