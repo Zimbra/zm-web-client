@@ -40,8 +40,14 @@
 	padding: 10px;
 }
 
-/* override global rule for DIV and P in common.css (for display that does not use iframe) */
-.MsgBody DIV, .MsgBody P {
+/* Override global rule in common.css (for display that does not use iframe).
+   A better way would be to simply ignore the more global rule so that the
+   browser default is used. But there's no way to do that. The CSS3 ":not"
+   pseudo-class almost helps, but it only takes a simple selector - you can't
+   say "any TD that's not a child of a DIV with class 'MsgBody'". */
+.MsgBody P, .MsgBody TH, .MsgBody TD, .MsgBody DIV, .MsgBody SELECT,
+.MsgBody INPUT[type=text], .MsgBody INPUT[type=password], .MsgBody INPUT[type=file],
+.MsgBody TEXTAREA, .MsgBody BUTTON {
 	@FontSize-html@
 }
 

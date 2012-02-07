@@ -984,6 +984,7 @@ function(container, html, isTextMsg, isTruncated, index, origText) {
 	this._msgBodyDivId = [this._htmlElId, ZmId.MV_MSG_BODY].join("_");
 	
 	this._usingIframe = this._useIframe(isTextMsg, html, isTruncated);
+	DBG.println(AjxDebug.DBG1, "Use IFRAME: " + this._usingIframe);
 	
 	if (this._usingIframe) {
 		// bug fix #9475 - IE isnt resolving MsgBody class in iframe so set styles explicitly
