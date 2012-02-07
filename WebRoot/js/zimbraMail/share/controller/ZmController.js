@@ -81,7 +81,7 @@ ZmController.prototype.getApp = function() {
  * @param	{Boolean}	hideReportButton		if <code>true</code>, hide the "Send error report" button
  */
 ZmController.prototype.popupErrorDialog = 
-function(msg, ex, noExecReset, hideReportButton) {
+function(msg, ex, noExecReset, hideReportButton, noEncode) {
 	// popup alert
 	var errorDialog = appCtxt.getErrorDialog();
 	var detailStr = "";
@@ -111,8 +111,11 @@ function(msg, ex, noExecReset, hideReportButton) {
 		html[i++] = "</table>";
 		detailStr = html.join("");
 	}
+    if (!noEncode) {
+        msg = AjxStringUtil.htmlEncode(msg);
+    }
 	errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
-	errorDialog.setMessage(AjxStringUtil.htmlEncode(msg), detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
+	errorDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
 	errorDialog.popup(null, hideReportButton);
 };
 
