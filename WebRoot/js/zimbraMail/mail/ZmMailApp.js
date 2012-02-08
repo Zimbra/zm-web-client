@@ -654,7 +654,8 @@ function() {
         orientation:		ZmPref.ORIENT_VERTICAL,
 		errorMessage:		ZmMsg.missingAwayMessage,
 		displayOptions:		[ZmMsg.noAutoReplyMessage, ZmMsg.autoReplyMessage],
-		options:			[false, true]
+		options:			[false, true],
+        inputId:            ["VACATION_MSG_DISABLED", "VACATION_MSG_ENABLED"]
 	});
 
     ZmPref.registerPref("VACATION_EXTERNAL_TYPE", {
