@@ -1447,30 +1447,30 @@ function(params) {
 	var selectId = id + "_select";
 	var sep = params.separator ? AjxStringUtil.trim(params.separator) : "";
 	
-	var html = [], idx = 0;
-	html[idx++] = "<span>" + text + " </span>";
-	var addrText = html.join("");
-
-	var expandLinkText = "", removeLinkText = "";
-	var style = "display:inline-block;cursor:pointer;";
-	if (AjxEnv.isIE) {
-		// hack - IE won't display block elements inline via inline-block
-		style = style + "*display:inline;zoom:1;";
-	}
+	var expandLinkText = "", removeLinkText = "", addrStyle = "";
+	var style = "cursor:pointer;position:absolute;top:2px;";
 
 	if (params.canExpand) {
 		var addr = params.email || params.address;
 		var expandLinkId = id + "_expand";
 		var expandLink = 'ZmAddressInputField.expandBubble("' + id + '","' + addr + '");';
-		var expStyle = style + "margin-right:3px;";
+		var expStyle = style + "left:2px;";
 		var expandLinkText = AjxImg.getImageHtml("BubbleExpand", expStyle, "id='" + expandLinkId + "' onclick='" + expandLink + "'");
+		addrStyle += "padding-left:12px;";
 	}
 
 	if (params.canRemove) {
 		var removeLinkId = id + "_remove";
 		var removeLink = 'ZmAddressInputField.removeBubble("' + id + '");';
-		var removeLinkText = AjxImg.getImageHtml("BubbleDelete", style, "id='" + removeLinkId + "' onclick='" + removeLink + "'");
+		var removeStyle = style + "right:2px;";
+		var removeLinkText = AjxImg.getImageHtml("BubbleDelete", removeStyle, "id='" + removeLinkId + "' onclick='" + removeLink + "'");
+		addrStyle += "padding-right:12px;";
 	}
+	
+	var html = [], idx = 0;
+	var addrStyleText = (params.canExpand || params.canRemove) ? " style='" + addrStyle + "'" : "";
+	html[idx++] = "<span" + addrStyleText + ">" + text + " </span>";
+	var addrText = html.join("");
 
 	return expandLinkText + addrText + removeLinkText;
 };
