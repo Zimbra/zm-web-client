@@ -45,6 +45,8 @@ function() {
 	params.template = "prefs.Pages#ActivityStreamPrompt";
 	params.form = {
 		items: [
+			{ id: "SENTTO", type: "DwtCheckbox", label: ZmMsg.to, value: "to"},
+			{ id: "TO", type: "DwtInputField", value: "", cols: 30},
 			{ id: "RECEIVED", type: "DwtCheckbox", label: ZmMsg.receivedFrom, value: "received"},
 			{ id: "FROM", type: "DwtInputField", value: "", cols: 30},
 			{ id: "SUBJECT", type: "DwtCheckbox", label: ZmMsg.subjectContains, value: "subject"},
@@ -95,6 +97,11 @@ function(item) {
 			}
 		}
 	}
+
+
+	var arr = msg._addrs && msg._addrs["TO"] && msg._addrs["TO"].getArray();
+    this._to = (arr.length == 1) ? arr[0].getAddress() : "";
+
 	if (this._subject) {
 		var subjectField = this._activityStreamForm.getControl("CONTAINS");
 		subjectField.setValue(this._subject);
@@ -104,6 +111,9 @@ function(item) {
 		var fromField = this._activityStreamForm.getControl("FROM");
 		fromField.setValue(this._from);
 	}
+    var toField = this._activityStreamForm.getControl("TO");
+	toField.setValue(this._to);
+
 };
 
 ZmActivityStreamPromptDialog.prototype._saveListener =
@@ -118,6 +128,7 @@ function() {
 ZmActivityStreamPromptDialog.prototype._setConditions = 
 function(rule) {
 	var received = this._activityStreamForm.getControl("RECEIVED");
+    var sentto = this._activityStreamForm.getControl("SENTTO");
 	var subject = this._activityStreamForm.getControl("SUBJECT");
 	var foundCondition = false;
 	
@@ -125,6 +136,14 @@ function(rule) {
 		var from = this._activityStreamForm.getControl("FROM");
 		if (from) {
 			rule.addCondition(ZmFilterRule.TEST_ADDRESS, ZmFilterRule.OP_CONTAINS, from.getValue(), ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM]);
+			foundCondition = true;
+		}
+	}
+
+    if (sentto && sentto.isSelected() && rule) {
+		var to = this._activityStreamForm.getControl("TO");
+		if (to) {
+			rule.addCondition(ZmFilterRule.TEST_ADDRESS, ZmFilterRule.OP_CONTAINS, to.getValue(), ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_TO]);
 			foundCondition = true;
 		}
 	}

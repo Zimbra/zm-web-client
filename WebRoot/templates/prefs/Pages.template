@@ -2536,6 +2536,10 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	    <td colspan='2'><div class='horizSep'></div></td>
     </tr>	 
     <tr>
+        <td class='ZOptionsLabel'><div id='${id}_SENTTO'></div></td>
+        <td><div id='${id}_TO'></div></td>
+    </tr>
+    <tr>
         <td class='ZOptionsLabel'><div id='${id}_RECEIVED'></div></td>
         <td><div id='${id}_FROM'></div></td>
     </tr>
