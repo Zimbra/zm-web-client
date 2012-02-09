@@ -152,6 +152,9 @@ ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.LAST_UNREAD]	= DwtKeyMap.SELECT_
 ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.NEXT_UNREAD]	= DwtKeyMap.SELECT_NEXT;
 ZmMailListController.ACTION_CODE_WHICH[ZmKeyMap.PREV_UNREAD]	= DwtKeyMap.SELECT_PREV;
 
+ZmMailListController.viewToTab = {};
+
+
 // Public methods
 
 /**
@@ -1153,6 +1156,33 @@ function() {
     appCtxt.setStatusMsg(ZmMsg.redirectSent, ZmStatusView.LEVEL_INFO, null);
 };
 
+ZmMailListController.prototype._handleMarkRead =
+function(msg) {
+
+	if (msg.isUnread) {
+		var folder = appCtxt.getById(msg.folderId);
+		var readOnly = folder && folder.isReadOnly();
+		if (!readOnly) {
+			var markRead = appCtxt.get(ZmSetting.MARK_MSG_READ);
+			if (markRead == ZmSetting.MARK_READ_NOW) {
+				// msg was cached as unread, mark it read now
+				this._doMarkRead([msg], true);
+			} else if (markRead > 0) {
+				if (!appCtxt.markReadAction) {
+					appCtxt.markReadAction = new AjxTimedAction(this, this._markReadAction);
+				}
+				appCtxt.markReadAction.args = [ msg ];
+				appCtxt.markReadActionId = AjxTimedAction.scheduleAction(appCtxt.markReadAction, markRead * 1000);
+			}
+		}
+	}
+};
+
+ZmMailListController.prototype._markReadAction =
+function(msg) {
+	this._doMarkRead([msg], true);
+};
+
 ZmMailListController.prototype._doMarkRead =
 function(items, on, callback, forceCallback) {
 
@@ -2032,6 +2062,32 @@ function(parent, num) {
 
 	this._cleanupToolbar(parent);
 };
+
+
+ZmMailListController.prototype._showMailItem =
+function() {
+	var avm = appCtxt.getAppViewMgr();
+	this._setup(this._currentViewId);
+	var elements = this.getViewElements(this._currentViewId, this._view[this._currentViewId]);
+
+	var curView = avm.getCurrentViewId();
+	var tabId = ZmMailListController.viewToTab[curView] || Dwt.getNextId();
+	ZmMailListController.viewToTab[this._currentViewId] = tabId;
+	var viewParams = {
+		view:		this._currentViewId,
+		viewType:	this._currentViewType,
+		elements:	elements,
+		clear:		appCtxt.isChildWindow,
+		tabParams:	this._getTabParams(tabId, this._tabCallback.bind(this))
+	};
+	var buttonText = (this._conv && this._conv.subject) ? this._conv.subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT) : ZmMsgController.DEFAULT_TAB_TEXT;
+
+	this._setView(viewParams);
+	avm.setTabTitle(this._currentViewId, buttonText);
+	this._resetOperations(this._toolbar[this._currentViewId], 1); // enable all buttons
+	this._resetNavToolBarButtons();
+};
+
 
 /**
  * if parent is a toolbar, it might have an actionsMenu. If it does, we can clean up the separators in that menu.

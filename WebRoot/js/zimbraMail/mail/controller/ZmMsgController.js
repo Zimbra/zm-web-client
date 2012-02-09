@@ -112,25 +112,7 @@ function() {
 
 ZmMsgController.prototype._showMsg = 
 function() {
-	var avm = appCtxt.getAppViewMgr();
-	this._setup(this._currentViewId);
-	var elements = this.getViewElements(this._currentViewId, this._view[this._currentViewId]);
-
-	var curView = avm.getCurrentViewId();
-	var tabId = ZmMsgController.viewToTab[curView] || Dwt.getNextId();
-	ZmMsgController.viewToTab[this._currentViewId] = tabId;
-	var viewParams = {
-		view:		this._currentViewId,
-		viewType:	this._currentViewType,
-		elements:	elements,
-		clear:		appCtxt.isChildWindow,
-		tabParams:	this._getTabParams(tabId, this._tabCallback.bind(this))
-	};
-	var buttonText = (this._msg && this._msg.subject) ? this._msg.subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT) : ZmMsgController.DEFAULT_TAB_TEXT;
-	this._setView(viewParams);
-	avm.setTabTitle(this._currentViewId, buttonText);
-	this._resetOperations(this._toolbar[this._currentViewId], 1); // enable all buttons
-	this._resetNavToolBarButtons();
+	this._showMailItem();
 };
 
 ZmMsgController.prototype._getTabParams =

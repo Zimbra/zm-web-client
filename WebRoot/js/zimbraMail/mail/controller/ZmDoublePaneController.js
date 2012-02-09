@@ -312,28 +312,6 @@ function(item) {
 ZmDoublePaneController.prototype._displayMsg = ZmDoublePaneController.prototype._displayItem;
 
 
-ZmDoublePaneController.prototype._handleMarkRead =
-function(msg) {
-
-	if (msg.isUnread) {
-		var folder = appCtxt.getById(msg.folderId);
-		var readOnly = folder && folder.isReadOnly();
-		if (!readOnly) {
-			var markRead = appCtxt.get(ZmSetting.MARK_MSG_READ);
-			if (markRead == ZmSetting.MARK_READ_NOW) {
-				// msg was cached as unread, mark it read now
-				this._doMarkRead([msg], true);
-			} else if (markRead > 0) {
-				if (!appCtxt.markReadAction) {
-					appCtxt.markReadAction = new AjxTimedAction(this, this._markReadAction);
-				}
-				appCtxt.markReadAction.args = [ msg ];
-				appCtxt.markReadActionId = AjxTimedAction.scheduleAction(appCtxt.markReadAction, markRead * 1000);
-			}
-		}
-	}
-};
-
 ZmDoublePaneController.prototype._markReadAction =
 function(msg) {
 	this._doMarkRead([msg], true);
@@ -400,11 +378,6 @@ function(view, newTab) {
 	// always allow derived classes to reset size after loading
 	var sz = this._doublePaneView.getSize();
 	this._doublePaneView._resetSize(sz.x, sz.y);
-};
-
-ZmDoublePaneController.prototype._tabCallback =
-function(oldView, newView) {
-	return (appCtxt.getViewTypeFromId(oldView) == ZmId.VIEW_CONV);
 };
 
 ZmDoublePaneController.prototype._getTabParams =

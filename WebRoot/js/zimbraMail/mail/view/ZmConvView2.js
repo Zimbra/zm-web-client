@@ -34,6 +34,7 @@ ZmConvView2 = function(params) {
 	this._mode = ZmId.VIEW_CONV2;
 	this._controller = params.controller;
 	this._listChangeListener = this._msgListChangeListener.bind(this);
+	this._standalone = params.standalone;
 
 	// Add change listener to taglist to track changes in tag color
 	this._tagList = appCtxt.getTagTree();
@@ -319,8 +320,13 @@ function(scrollMsgView) {
 	
 	// textarea is bigger if focused
 	var ctlr = this._controller;
-	var rpRight = ctlr.isReadingPaneOnRight();
-	var container = rpRight ? ctlr.getListView() : ctlr.getItemView();
+	if (this._isStandalone()) {
+		var container = this; 
+	}
+	else {
+		var rpRight = ctlr.isReadingPaneOnRight();
+		var container = rpRight ? ctlr.getListView() : ctlr.getItemView();
+	}
 	var myHeight = container.getSize().y;
 	DBG.println("cv2", "cv2 height = " + myHeight);
 	// messages container DIV scrolls independently of header and reply DIVs
@@ -592,6 +598,25 @@ function(next, isUnread, actionCode) {
 	}
 };
 
+/**
+ * returns true if we are under the standalone conv view (double-clicked from conv list view)
+ */
+ZmConvView2.prototype._isStandalone =
+function() {
+	return this._standalone;
+};
+
+
+ZmConvView2.prototype._setSelectedMsg =
+function(msg) {
+	if (this._isStandalone()) {
+		this._selectedMsg = this._msg;
+	}
+	else {
+		this._controller._mailListView._selectedMsg = this._msg;
+	}
+};
+
 // Bridge to real listeners in the conv list controller that rigs the selection to be a msg from this conv view
 // instead of the selected conv.
 ZmConvView2.prototype._listenerProxy =
@@ -601,9 +626,9 @@ function(listener, ev) {
 		return false;
 	} 
 
-	this._controller._mailListView._selectedMsg = this._msg;
+	this._setSelectedMsg(this._msg);
 	var retVal = listener.handleEvent ? listener.handleEvent(ev) : listener(ev);
-	this._controller._mailListView._selectedMsg = null;
+	this._setSelectedMsg(null);
 	this.clearMsg();
 	return retVal;
 };
@@ -798,6 +823,21 @@ function(ev) {
 
 ZmConvView2.prototype.resetMsg =
 function(newMsg) {
+};
+
+
+// Following two overrides are a hack to allow this view to pretend it's a list view
+ZmConvView2.prototype.getSelection =
+function() {
+	if (this._selectedMsg) {
+		return [this._selectedMsg];
+	}
+	return [this._item];
+};
+
+ZmConvView2.prototype.getSelectionCount =
+function() {
+	return 1;
 };
 
 
@@ -1086,8 +1126,8 @@ function(bodyPart) {
 
 ZmMailMsgCapsuleView.prototype._renderMessageFooter =
 function(msg, container) {
-	
-	this._footerId				= [this._viewId, ZmId.MV_MSG_FOOTER].join("_");
+
+	this._footerId				= [this.getHTMLElId(), ZmId.MV_MSG_FOOTER].join("_");
 	this._folderContainerCellId	= this._footerId + "_folderContainerCell";
 	this._tagContainerCellId	= this._footerId + "_tagContainerCell";
 	this._showTextLinkId		= this._footerId + "_showText";
@@ -1296,11 +1336,18 @@ function() {
     this._resetIframeHeightOnTimer();
 };
 
+/**
+ * returns true if we are under the standalone conv view (double-clicked from conv list view)
+ */
+ZmMailMsgCapsuleView.prototype._isStandalone =
+function() {
+	return this.parent._isStandalone();
+};
+
 ZmMailMsgCapsuleView.prototype._handleReplyLink =
 function(op, ev) {
-	this._controller._mailListView._selectedMsg = this._msg;
-	this._controller._doAction({action:op});
-	this._controller._mailListView._selectedMsg = null;
+
+	this._controller._doAction({action:op, msg: this._msg});
 };
 
 ZmMailMsgCapsuleView.prototype._msgChangeListener =
@@ -1338,7 +1385,9 @@ function(ev) {
 ZmMailMsgCapsuleView.prototype._resetOperations =
 function() {
 	var ctlr = this._controller, menu = this._actionsMenu;
-	ctlr._mailListView._selectedMsg = this._msg;
+	if (ctlr._mailListView) {
+		ctlr._mailListView._selectedMsg = this._msg;
+	}
 	ctlr._resetOperations(menu, 1);
 	menu.enable(ZmOperation.MARK_READ, this._msg.isUnread);
 	menu.enable(ZmOperation.MARK_UNREAD, !this._msg.isUnread);
@@ -1349,7 +1398,9 @@ function() {
 	ctlr._setupTagMenu(menu, listener);
 	ctlr._setTagMenu(menu, [this._msg]);
 	ctlr._setupSpamButton(menu);
-	ctlr._mailListView._selectedMsg = null;
+	if (ctlr._mailListView) {
+		ctlr._mailListView._selectedMsg = null;
+	}
 };
 
 ZmMailMsgCapsuleView.prototype.setFocused =
