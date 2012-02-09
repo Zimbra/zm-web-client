@@ -40,6 +40,13 @@ ZmCalendarApp = function(container) {
 	this._resByEmail = {};
 };
 
+ZmCalendarApp.prototype = new ZmApp;
+ZmCalendarApp.prototype.constructor = ZmCalendarApp;
+
+ZmCalendarApp.prototype.isZmCalendarApp = true;
+ZmCalendarApp.prototype.toString = function() {	return "ZmCalendarApp"; };
+
+
 // Organizer and item-related constants
 ZmEvent.S_APPT				= ZmId.ITEM_APPOINTMENT;
 ZmEvent.S_RESOURCE			= ZmId.ITEM_RESOURCE;
@@ -108,13 +115,6 @@ ZmCalendarApp.METHOD_COUNTER			= "COUNTER";
 ZmCalendarApp.DEFAULT_WORKING_HOURS			= "1:N:0800:1700,2:Y:0800:1700,3:Y:0800:1700,4:Y:0800:1700,5:Y:0800:1700,6:Y:0800:1700,7:N:0800:1700";
 ZmCalendarApp.DEFAULT_APPT_DURATION         = "60"; //60minutes
 
-ZmCalendarApp.prototype = new ZmApp;
-ZmCalendarApp.prototype.constructor = ZmCalendarApp;
-
-ZmCalendarApp.prototype.toString = 
-function() {
-	return "ZmCalendarApp";
-};
 
 // Construction
 
@@ -723,6 +723,18 @@ function(params, callback) {
 	if (callback) {
 		callback.run();
 	}
+};
+
+ZmCalendarApp.prototype.getNewButtonProps =
+function() {
+	return {
+		text:		ZmMsg.newAppt,
+		tooltip:	ZmMsg.createNewAppt,
+		icon:		"NewAppointment",
+		iconDis:	"NewAppointmentDis",
+		defaultId:	ZmOperation.NEW_APPT,
+		disabled:	!this.containsWritableFolder()
+	};
 };
 
 ZmCalendarApp.prototype.showSearchResults =

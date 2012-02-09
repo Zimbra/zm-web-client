@@ -446,7 +446,6 @@ function(view) {
 
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
-	this._setNewButtonProps(view, ZmMsg.newTask, ZmMsg.createNewTask, "NewTask", "NewTaskDis", ZmOperation.NEW_TASK);
 	this._setupPrintMenu(view);
     this._setupViewMenu(view);
 	this._setupSortByMenu(view);

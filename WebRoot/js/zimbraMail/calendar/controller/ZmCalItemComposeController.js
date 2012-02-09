@@ -31,6 +31,7 @@
 ZmCalItemComposeController = function(container, app, type, sessionId) {
 	if (arguments.length == 0) { return; }
 	ZmBaseController.apply(this, arguments);
+	this._elementsToHide = ZmAppViewMgr.LEFT_NAV;
 };
 
 ZmCalItemComposeController.prototype = new ZmBaseController;
@@ -164,6 +165,7 @@ function(initHide) {
 		this._app.createView({	viewId:		this._currentViewId,
 								viewType:	this._currentViewType,
 								elements:	elements,
+								hide:		this._elementsToHide,
 								controller:	this,
 								callbacks:	callbacks,
 								tabParams:	this._getTabParams()});
@@ -326,8 +328,6 @@ function(mode) {
 
 ZmCalItemComposeController.prototype._createToolBar =
 function() {
-
-	this._setNewButtonProps(null, ZmMsg.newAppt, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
 
 	var buttons = [ZmOperation.SEND_INVITE, ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP];
 

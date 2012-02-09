@@ -29,6 +29,7 @@
 ZmMailConfirmController = function(container, mailApp, type, sessionId) {
 
 	ZmController.apply(this, arguments);
+	this._elementsToHide = ZmAppViewMgr.LEFT_NAV;
 };
 
 ZmMailConfirmController.prototype = new ZmController();
@@ -110,15 +111,15 @@ function() {
 	tg.addMember(this._view.getTabGroupMember());
 
 	this._initializeToolBar();
-	this._newButton = this._composeController.getNewButton();
 	var elements = this.getViewElements(null, this._view, this._toolbar);
 
 	var callbacks = {};
-	callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
-	callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
+	callbacks[ZmAppViewMgr.CB_PRE_HIDE] = this._preHideCallback.bind(this);
+	callbacks[ZmAppViewMgr.CB_POST_SHOW] = this._postShowCallback.bind(this);
     this._app.createView({	viewId:		this._currentViewId,
 							viewType:	this._currentViewType,
 							elements:	elements,
+							hide:		this._elementsToHide,
 							controller:	this,
 							callbacks:	callbacks,
 							tabParams:	{ id:this._composeTabId }});

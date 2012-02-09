@@ -33,6 +33,7 @@
 ZmMsgController = function(container, mailApp, type, sessionId) {
 
 	ZmMailListController.apply(this, arguments);
+	this._elementsToHide = ZmAppViewMgr.LEFT_NAV;
 };
 
 ZmMsgController.prototype = new ZmMailListController;
@@ -421,9 +422,4 @@ function(params, msg) {
 
     //complete action to open compose window
     ZmMailListController.prototype._handleResponseDoAction.call(this, params, msg);
-};
-
-ZmMsgController.prototype._postShowCallback =
-function() {
-	this._hideLeftNav();
 };

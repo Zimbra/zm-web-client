@@ -585,7 +585,6 @@ function(view) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
 		var tb = this._toolbar[view];
 //		this._setupViewMenu(view, true);
-		this._setNewButtonProps(view, ZmMsg.newContact, ZmMsg.createNewContact, "NewContact", "NewContactDis", ZmOperation.NEW_CONTACT);
 		this._setupPrintMenu(view);
 		tb.addFiller();
 		this._initializeNavToolBar(view);

@@ -99,7 +99,10 @@ ZmZimbraMail = function(params) {
 
     // create app view manager
     this._appViewMgr = new ZmAppViewMgr(this._shell, this, false, true);
-	var hidden = [ ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR, ZmAppViewMgr.C_TASKBAR ]; 
+	var hidden = [ ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR, ZmAppViewMgr.C_TASKBAR ];
+	if (!appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
+		hidden.push(ZmAppViewMgr.C_TREE_FOOTER);
+	}
 	this._appViewMgr.setHiddenComponents(ZmAppViewMgr.GLOBAL, hidden, true);
 
     // register handlers
@@ -756,6 +759,17 @@ function(params) {
 	else {
 		Dwt.hide(ZmId.SKIN_SEARCH);
 	}
+	
+	var newButton = this.getNewButton();
+	var tbParams = {
+		parent:				this._shell,
+		buttons:			ZmOperation.NONE,
+		controller:			this,
+		refElementId:		ZmId.SKIN_APP_NEW_BUTTON
+	};
+	var tb = this._newToolbar = new ZmButtonToolBar(tbParams);
+	newButton.reparent(tb);
+	this._components[ZmAppViewMgr.C_NEW_BUTTON] = tb;
 	
 	if (params.unitTest) {
 		var utm = window.unitTestManager;
@@ -2149,6 +2163,106 @@ function(parent, parentElement, adminUrl) {
 	button.setMenu(menu);
 	return button;
 };
+
+ZmZimbraMail.prototype.getNewButton =
+function() {
+	
+	var newButton = this._newButton;
+	if (!newButton) {
+		var buttonId = ZmId.getButtonId(null, ZmOperation.NEW_MENU);
+		var buttonParams = {
+			parent:		appCtxt.getShell(),
+			id:			buttonId,
+			posStyle:	DwtControl.ABSOLUTE_STYLE,
+			className:	"ZToolbarButton ZNewButton"
+		}
+		var newButton = this._newButton = new DwtToolBarButton(buttonParams);
+		newButton.setText(ZmMsg._new);
+	
+		ZmOperation.addNewMenu(newButton);
+	
+		var selectionListener = this._newButtonListener.bind(this);
+		var listener = this._newDropDownListener.bind(this, selectionListener);
+		this._newDropDownListener = listener;
+		newButton.addSelectionListener(selectionListener);
+		newButton.addDropDownSelectionListener(listener);
+	}
+
+	return newButton;
+};
+
+/**
+ * Creates the New menu's drop down menu the first time the drop down arrow is used,
+ * then removes itself as a listener.
+ *
+ * @private
+ */
+ZmZimbraMail.prototype._newDropDownListener =
+function(selectionListener, event) {
+
+	var newButton = this.getNewButton();
+	var menu = newButton.getMenu();
+	var items = menu.getItems();
+	for (var i = 0; i < menu.getItemCount(); i++) {
+		items[i].addSelectionListener(selectionListener);
+	}
+
+	var listener = this._newDropDownListener;
+	newButton.removeDropDownSelectionListener(listener);
+	//Called explicitly as its a selection listener. Refer DwtButton._dropDownCellMouseDownHdlr()
+	newButton.popup();
+
+	delete this._newDropDownListener;
+};
+
+/**
+ * Create some new thing, via a dialog. If just the button has been pressed (rather than
+ * a menu item), the action taken depends on the app.
+ *
+ * @param {DwtUiEvent}	ev		the ui event
+ * @param {constant}	op		the operation ID
+ * @param {Boolean}		newWin	<code>true</code> if in a separate window
+ *
+ * @private
+ */
+ZmZimbraMail.prototype._newButtonListener =
+function(ev, op, params) {
+
+	if (!ev && !op) { return; }
+
+	op = op || ev.item.getData(ZmOperation.KEY_ID);
+	if (!op || op == ZmOperation.NEW_MENU) {
+		op = ZmController._defaultNewId;
+	}
+
+	var app = ZmApp.OPS_R[op];
+	if (app) {
+		params = params || {};
+		params.ev = ev;
+		appCtxt.getApp(app).handleOp(op, params);
+	} else {
+		var ctlr = appCtxt.getCurrentController();
+		if (ctlr) {
+			ctlr._newListener(ev, op);
+		}
+	}
+};
+
+/**
+ * Set up the New button based on the current app.
+ */
+ZmZimbraMail.prototype.setNewButtonProps =
+function(params) {
+	var newButton = this.getNewButton();
+	if (newButton) {
+		newButton.setText(params.text);
+		newButton.setToolTipContent(params.tooltip);
+		newButton.setImage(params.icon);
+		newButton.setEnabled(!params.disabled);
+		ZmController._defaultNewId = params.defaultId;
+	}
+};
+
 
 /**
 * Adds a "help" submenu.

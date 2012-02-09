@@ -37,6 +37,10 @@ ZmBriefcaseApp = function(container, parentController) {
 ZmBriefcaseApp.prototype = new ZmApp;
 ZmBriefcaseApp.prototype.constructor = ZmBriefcaseApp;
 
+ZmBriefcaseApp.prototype.isZmBriefcaseApp = true;
+ZmBriefcaseApp.prototype.toString = function() { return "ZmBriefcaseApp"; };
+
+
 // Constants
 
 // Organizer and item-related constants
@@ -64,15 +68,6 @@ ZmApp.LOAD_SORT[ZmApp.BRIEFCASE]	= 65;
 ZmApp.QS_ARG[ZmApp.BRIEFCASE]		= "briefcase";
 ZmApp.BUTTON_ID[ZmApp.BRIEFCASE]	= ZmId.BRIEFCASE_APP;
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmBriefcaseApp.prototype.toString =
-function() {
-	return "ZmBriefcaseApp";
-};
 
 ZmBriefcaseApp.prototype._defineAPI =
 function() {
@@ -410,6 +405,17 @@ ZmBriefcaseApp.prototype._handleLoadLaunch =
 function(callback) {
 	this.search();
 	if (callback) { callback.run(); }
+};
+
+ZmBriefcaseApp.prototype.getNewButtonProps =
+function() {
+	return {
+		text:		ZmMsg.newDocument,
+		tooltip:	ZmMsg.newDocument,
+		icon:		"NewDoc",
+		iconDis:	"NewDocDis",
+		defaultId:	ZmOperation.NEW_DOC
+	};
 };
 
 /**

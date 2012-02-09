@@ -31,6 +31,13 @@ ZmTasksApp = function(container) {
 	ZmApp.call(this, ZmApp.TASKS, container);
 };
 
+ZmTasksApp.prototype = new ZmApp;
+ZmTasksApp.prototype.constructor = ZmTasksApp;
+
+ZmTasksApp.prototype.isZmTasksApp = true;
+ZmTasksApp.prototype.toString = function() { return "ZmTasksApp"; };
+
+
 // Organizer and item-related constants
 ZmEvent.S_TASK			= ZmId.ITEM_TASK;
 ZmItem.TASK				= ZmEvent.S_TASK;
@@ -43,20 +50,8 @@ ZmApp.SETTING[ZmApp.TASKS]		= ZmSetting.TASKS_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.TASKS]	= 45;
 ZmApp.QS_ARG[ZmApp.TASKS]		= "tasks";
 
-ZmTasksApp.prototype = new ZmApp;
-ZmTasksApp.prototype.constructor = ZmTasksApp;
-
 ZmTasksApp.REMINDER_START_DELAY = 10000;
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmTasksApp.prototype.toString =
-function() {
-	return "ZmTasksApp";
-};
 
 // Construction
 
@@ -263,12 +258,22 @@ function(params, callback) {
 	AjxDispatcher.require(["TasksCore", "Tasks"], true, loadCallback, null, true);
 };
 
-
 ZmTasksApp.prototype._handleLoadLaunch =
 function(callback) {
 	var acct = this._getExternalAccount();
 	this.search(null, null, null, null, (acct && acct.name));
 	if (callback) { callback.run(); }
+};
+
+ZmTasksApp.prototype.getNewButtonProps =
+function() {
+	return {
+		text:		ZmMsg.newTask,
+		tooltip:	ZmMsg.createNewTask,
+		icon:		"NewTask",
+		iconDis:	"NewTaskDis",
+		defaultId:	ZmOperation.NEW_TASK
+	};
 };
 
 /**

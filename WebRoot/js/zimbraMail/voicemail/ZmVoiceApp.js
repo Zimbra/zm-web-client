@@ -48,6 +48,10 @@ ZmVoiceApp.overviewFallbackApp		= ZmApp.PORTAL;
 ZmVoiceApp.prototype = new ZmApp;
 ZmVoiceApp.prototype.constructor = ZmVoiceApp;
 
+ZmVoiceApp.prototype.isZmVoiceApp = true;
+ZmVoiceApp.prototype.toString = function() { return "ZmVoiceApp"; };
+
+
 //voice mail formats
 ZmVoiceApp.AUDIO_MP3_FORMAT = "audio/mpeg";
 ZmVoiceApp.AUDIO_WAV_FORMAT = "audio/wav";
@@ -58,10 +62,6 @@ ZmVoiceApp.audioType =  ZmVoiceApp.AUDIO_MP3_FORMAT;
 //Indicates if Voice items can be moved to Trash-folder
 ZmVoiceApp.hasTrashFolder = false;
 
-ZmVoiceApp.prototype.toString = 
-function() {
-	return "ZmVoiceApp";
-};
 
 // Construction
 
@@ -228,6 +228,17 @@ function() {
 	}
 
 	return this._overviewContainer;
+};
+
+ZmVoiceApp.prototype.getNewButtonProps =
+function() {
+	return {
+		text:		ZmMsg.newCall,
+		tooltip:	ZmMsg.newCallTooltip,
+		icon:		"PlacedCalls",
+		iconDis:	"PlacedCallsDis",
+		defaultId:	ZmOperation.NEW_CALL
+	};
 };
 
 ZmVoiceApp.prototype.getVoiceInfo =

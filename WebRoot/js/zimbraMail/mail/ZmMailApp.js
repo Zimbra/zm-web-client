@@ -1572,6 +1572,17 @@ function() {
 	return container;
 };
 
+ZmMailApp.prototype.getNewButtonProps =
+function() {
+	return {
+		text:		ZmMsg.newMessage,
+		tooltip:	ZmMsg.compose,
+		icon:		"NewMessage",
+		iconDis:	"NewMessageDis",
+		defaultId:	ZmOperation.NEW_MESSAGE
+	};
+};
+
 ZmMailApp.prototype.launch =
 function(params, callback) {
 	this._setLaunchTime(this.toString(), new Date());

@@ -1280,6 +1280,7 @@ function(initHide) {
 		this._app.createView({	viewId:		this._currentViewId,
 								viewType:	this._currentViewType,
 								elements:	elements,
+								hide:		this._elementsToHide,
 								controller:	this,
 								callbacks:	callbacks,
 								tabParams:	this._getTabParams()});
@@ -1321,7 +1322,6 @@ ZmApptComposeController.prototype._postShowCallback =
 function(view, force) {
 	var ta = new AjxTimedAction(this, this._setFocus);
 	AjxTimedAction.scheduleAction(ta, 10);
-	this._hideLeftNav();
 };
 
 ZmApptComposeController.prototype.getWorkingInfo =

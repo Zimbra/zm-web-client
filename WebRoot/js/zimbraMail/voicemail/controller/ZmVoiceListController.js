@@ -96,7 +96,6 @@ ZmVoiceListController.prototype._initializeToolBar =
 function(view) {
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
-		this._setNewButtonProps(null, ZmMsg.newCall, ZmMsg.newCallTooltip, "PlacedCalls", "PlacedCallsDis", ZmOperation.NEW_CALL);
 		this._toolbar[view].addFiller();
 		this._toolbar[view].addOp(ZmOperation.FILLER);
 		this._initializeNavToolBar(view);

@@ -39,6 +39,7 @@ ZmContactController = function(container, abApp, type, sessionId) {
 	this._listeners[ZmOperation.CANCEL]	= this._cancelListener.bind(this);
 
 	this._tabGroupDone = {};
+	this._elementsToHide = ZmAppViewMgr.LEFT_NAV;
 };
 
 ZmContactController.prototype = new ZmListController();
@@ -91,14 +92,15 @@ function(viewId) {
 	this._view[viewId] = view;
 
 	var callbacks = {};
-		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
-		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD] = new AjxCallback(this, this._preUnloadCallback);
-		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
+		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = this._preHideCallback.bind(this);
+		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD] = this._preUnloadCallback.bind(this);
+		callbacks[ZmAppViewMgr.CB_POST_SHOW] = this._postShowCallback.bind(this);
 	var elements = this.getViewElements(null, view, this._toolbar[viewId]);
 
 	this._app.createView({	viewId:		viewId,
 							viewType:	this._currentViewType,
 							elements:	elements, 
+							hide:		this._elementsToHide,
 							controller:	this,
 							callbacks:	callbacks,
 							tabParams:	this._getTabParams()});
@@ -106,9 +108,8 @@ function(viewId) {
 
 ZmContactController.prototype._postShowCallback =
 function() {
-	//have to call it since it's overriden in ZmBaseController to do nothing.
+	//have to call it since it's overridden in ZmBaseController to do nothing.
 	ZmController.prototype._postShowCallback.call(this);
-	this._hideLeftNav();
 };
 
 ZmContactController.prototype._getDefaultTabText=
@@ -223,8 +224,6 @@ function() {
 ZmContactController.prototype._initializeToolBar =
 function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
-
-	this._setNewButtonProps(view, ZmMsg.newContact, ZmMsg.createNewContact, "NewContact", "NewContactDis", ZmOperation.NEW_CONTACT);
 
 	var tb = this._toolbar[view];
 

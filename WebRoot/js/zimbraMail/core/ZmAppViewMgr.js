@@ -160,6 +160,9 @@ ZmAppViewMgr.C_TREE_FOOTER				= "treeFooter";
 ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR	= "searchResultsToolbar";
 ZmAppViewMgr.C_TASKBAR					= "taskbar";
 
+// Components that make up the left nav, which we may want to hide
+ZmAppViewMgr.LEFT_NAV = [ ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_SASH ];
+
 // deprecated, unused, and obsolete components
 
 //ZmAppViewMgr.C_TOOLBAR_BOTTOM			= "bottomToolbar";
@@ -276,7 +279,9 @@ function(viewId, components, show, app) {
 	for (var cid in components) {
 		var comp = components[cid];
 		if (!comp) { continue; }
+		if (this.isHidden(cid, viewId)) { continue; }
 		
+		show = show && !this.isHidden(cid, this._currentViewId);
 		if (show) {
 			// if we're replacing a visible component, hide the old one
 			var oldComp = this._component[cid] && this._component[cid].control;
@@ -336,7 +341,7 @@ function(cid, viewId) {
 	else if (view && view.hide[cid])					{ return true; }	// view says hide
 	else if (appView && appView.component[cid])			{ return false; }	// app has comp
 	else if (appView && appView.hide[cid])				{ return true; }	// app says hide
-	else if (globalView &&globalView.component[cid])	{ return false; }	// global comp
+	else if (globalView && globalView.component[cid])	{ return false; }	// global comp
 	else												{ return globalView && globalView.hide[cid]; }	// global hide
 };
 

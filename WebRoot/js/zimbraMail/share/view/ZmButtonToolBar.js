@@ -45,6 +45,9 @@
 ZmButtonToolBar = function(params) {
 	if (arguments.length == 0) return;
 
+	if (!params.className && (params.controller && params.controller._elementsToHide == ZmAppViewMgr.LEFT_NAV)) {
+		params.className = "ZToolbar itemToolbar";
+	}
     params.className = params.className || "ZToolbar";
     params.id = params.context ? ZmId.getToolbarId(params.context, params.toolbarType) : null;
     ZmToolBar.call(this, params);

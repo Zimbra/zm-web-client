@@ -33,7 +33,7 @@
 ZmConvController = function(container, mailApp, type, sessionId) {
 
 	ZmMailListController.apply(this, arguments);
-
+	this._elementsToHide = ZmAppViewMgr.LEFT_NAV;
 };
 
 ZmConvController.prototype = new ZmMailListController;
@@ -400,9 +400,4 @@ function() {
 ZmConvController.prototype._msgViewCurrent =
 function() {
 	return true;
-};
-
-ZmConvController.prototype._postShowCallback =
-function() {
-	this._hideLeftNav();
 };

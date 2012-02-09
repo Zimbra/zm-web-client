@@ -57,6 +57,7 @@ ZmComposeController = function(container, mailApp, type, sessionId) {
 
 	this._autoSaveTimer = null;
 	this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
+	this._elementsToHide = ZmAppViewMgr.LEFT_NAV;
 };
 
 ZmComposeController.prototype = new ZmController();
@@ -380,7 +381,6 @@ function() {
 	if (!appCtxt.isChildWindow) {
 		// no need to "restore" focus between windows
 		ZmController.prototype._postShowCallback.call(this);
-		this._hideLeftNav();
 	}
     var view = this._composeView;
 	var composeMode = view.getComposeMode();
@@ -695,7 +695,8 @@ function() {
 	
 		this._app.createView({	viewId:		this._currentViewId,
 								viewType:	this._currentViewType,
-								elements:	elements, 
+								elements:	elements,
+								hide:		this._elementsToHide,
 								controller:	this,
 								callbacks:	callbacks,
 								tabParams:	this._getTabParams()});
@@ -1023,11 +1024,8 @@ function(params) {
 
 ZmComposeController.prototype._initializeToolBar =
 function() {
-	if (this._toolbar) { return; }
 
-	if (!appCtxt.isChildWindow) {
-		this._setNewButtonProps(null, ZmMsg.newMessage, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
-	}
+	if (this._toolbar) { return; }
 	
 	var buttons = [];
 	if (this._canSaveDraft() && appCtxt.get(ZmSetting.MAIL_SEND_LATER_ENABLED)) {
@@ -1037,7 +1035,6 @@ function() {
 	}
 
 	buttons.push(ZmOperation.CANCEL, ZmOperation.SEP, ZmOperation.SAVE_DRAFT);
-
 
 	if (!appCtxt.isOffline) {
 		buttons.push(ZmOperation.SEP, ZmOperation.SPELL_CHECK);
@@ -1051,7 +1048,7 @@ function() {
 	var tb = this._toolbar = new ZmButtonToolBar({
 		parent: this._container,
 		buttons: buttons,
-		className: (appCtxt.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar") + " ImgSkin_Toolbar",
+		className: (appCtxt.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar") + " ImgSkin_Toolbar itemToolbar",
 		context: this._currentViewId
 	});
 
@@ -1089,14 +1086,6 @@ function() {
 	var spellCheckButton = tb.getButton(ZmOperation.SPELL_CHECK);
 	if (spellCheckButton) {
 		spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
-	}
-
-	var button = tb.getButton(ZmOperation.NEW_MENU);
-	if (button) {
-		var listener = new AjxListener(tb, ZmListController._newDropDownListener);
-		button.addDropDownSelectionListener(listener);
-		tb._ZmListController_this = this;
-		tb._ZmListController_newDropDownListener = listener;
 	}
 
 	var button = tb.getButton(ZmOperation.SEND_MENU);

@@ -586,8 +586,6 @@ function(view, className) {
 
 	if (!appCtxt.isChildWindow) {
 		this._setupViewMenu(view);
-		// reset new button properties
-		this._setNewButtonProps(view, ZmMsg.newMessage, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 	}
 	this._setupDeleteButton(this._toolbar[view]);
 	if (appCtxt.get(ZmSetting.SPAM_ENABLED)) {
@@ -2077,6 +2075,7 @@ function() {
 		view:		this._currentViewId,
 		viewType:	this._currentViewType,
 		elements:	elements,
+		hide:		this._elementsToHide,
 		clear:		appCtxt.isChildWindow,
 		tabParams:	this._getTabParams(tabId, this._tabCallback.bind(this))
 	};

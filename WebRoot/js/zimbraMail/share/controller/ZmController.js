@@ -48,6 +48,7 @@ ZmController = function(container, app, type, sessionId) {
 	
 	this._authenticating = false;
 	this.isHidden = (sessionId == ZmApp.HIDDEN_SESSION);
+	this._elementsToHide = null;
 };
 
 ZmController.prototype.isZmController = true;
@@ -162,103 +163,6 @@ ZmController.prototype.getApp = function() {
 	return this._app;
 };
 
-ZmController.prototype.getNewButton =
-function(view, overrides) {
-	if (this._newButton) {
-		return this._newButton;
-	}
-	overrides = overrides || {};
-	var buttonId = ZmId.getButtonId(view || this._currentViewId, ZmOperation.NEW_MENU);
-	var buttonParams = {
-		parent:		this._container,
-		id:			buttonId,
-		posStyle:	DwtControl.ABSOLUTE_STYLE,
-		className:	"ZToolbarButton ZNewButton"
-	}
-	var newButton = this._newButton = new DwtToolBarButton(buttonParams);
-	newButton.setText(ZmMsg._new);
-
-	ZmOperation.addNewMenu(newButton);
-
-	var selectionListener = new AjxListener(this, this._newButtonListener);
-	var listener = new AjxListener(this, this._newDropDownListener, selectionListener);
-	this._ZmController_newDropDownListener = listener;
-	newButton.addSelectionListener(selectionListener);
-	newButton.addDropDownSelectionListener(listener);
-
-	return newButton;
-};
-
-
-/**
- * Creates the New menu's drop down menu the first time the drop down arrow is used,
- * then removes itself as a listener.
- *
- * @private
- */
-ZmController.prototype._newDropDownListener =
-function(selectionListener, event) {
-
-	var menu = this._newButton.getMenu();
-	var items = menu.getItems();
-	for (var i = 0; i < menu.getItemCount(); i++) {
-		items[i].addSelectionListener(selectionListener);
-	}
-
-
-	var listener = this._ZmController_newDropDownListener;
-	this._newButton.removeDropDownSelectionListener(listener);
-	//Called explicitly as its a selection listener. Refer DwtButton._dropDownCellMouseDownHdlr()
-	this._newButton.popup();
-
-	delete this._ZmController_newDropDownListener;
-};
-
-/**
- * Create some new thing, via a dialog. If just the button has been pressed (rather than
- * a menu item), the action taken depends on the app.
- *
- * @param {DwtUiEvent}	ev		the ui event
- * @param {constant}	op		the operation ID
- * @param {Boolean}		newWin	<code>true</code> if in a separate window
- *
- * @private
- */
-ZmController.prototype._newButtonListener =
-function(ev, op, params) {
-	if (!ev && !op) { return; }
-	op = op || ev.item.getData(ZmOperation.KEY_ID);
-	if (!op || op == ZmOperation.NEW_MENU) {
-		op = this._defaultNewId;
-	}
-
-	var app = ZmApp.OPS_R[op];
-	if (app) {
-		params = params || {};
-		params.ev = ev;
-		appCtxt.getApp(app).handleOp(op, params);
-	} else {
-		this._newListener(ev, op);
-	}
-};
-
-
-/**
- * Set up the New button based on the current app.
- *
- * @private
- */
-ZmController.prototype._setNewButtonProps =
-function(view, text, toolTip, enabledIconId, disabledIconId, defaultId, disabled) {
-	var newButton = this.getNewButton(view);
-	newButton.setText(text);
-	newButton.setToolTipContent(toolTip);
-	newButton.setImage(enabledIconId);
-    newButton.setEnabled(!disabled);
-	this._defaultNewId = defaultId;
-};
-
-
 /**
  * return the view elements. Currently a toolbar, app content, and "new" button.
  * 
@@ -272,25 +176,10 @@ function(view, appContentView, toolbar) {
 	var elements = {};
 	toolbar = toolbar || this._toolbar[view];
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = toolbar;
-
-	if (this._newButton && !appCtxt.isChildWindow && !this._newToolbar) {
-		var tbParams = {
-			parent:				this._shell,
-			buttons:			ZmOperation.NONE,
-			controller:			this,
-			refElementId:		ZmId.SKIN_APP_NEW_BUTTON
-		};
-		var tb = this._newToolbar = new ZmButtonToolBar(tbParams);
-		this._newButton.reparent(tb);
-		elements[ZmAppViewMgr.C_NEW_BUTTON] = tb;
-	}
-
 	elements[ZmAppViewMgr.C_APP_CONTENT] = appContentView;
 
 	return elements;
 };
-
-
 
 /**
  * Pops-up the error dialog.
@@ -1016,14 +905,3 @@ function(visible) {
 	tb.style.display = visible ? "block" : "none";
 
 };
-
-ZmController.prototype._hideLeftNav =
-function() {
-	appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE_FOOTER, false);
-    appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_TREE,        false);
-    appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_NEW_BUTTON,  false);
-	appCtxt.getAppViewMgr().displayComponent(ZmAppViewMgr.C_SASH,  false);
-	appCtxt.getAppViewMgr().getViewComponent(ZmAppViewMgr.C_TOOLBAR_TOP).getHtmlElement().style.paddingLeft = "6px";
-};
-
-

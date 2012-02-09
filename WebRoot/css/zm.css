@@ -254,6 +254,10 @@
 	@FullWidth@
 }
 
+.itemToolbar {
+	padding-left:6px;
+}
+
 /* toolbar in child window for message view */
 .ZmMsgViewToolBar_cw {
 	@ToolbarContainer@
@@ -2974,15 +2978,6 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmRosterItem-typing .DwtTreeItem .DwtTreeItem-Text 	{ color:#1A1; }
 .ZmRosterItem-typing .ZWidgetTitle { color:#070; }
-
-/* chat with Zimbra Assistant */
-
-.ZmAssistantChat .ZmAssistantButtons { float:right; }
-.ZmAssistantChat .ZmAssistantButtons SPAN { @Anchor@ padding:0 10px; font-weight:bold; margin-left:5px; }
-.ZmAssistantChat .ZmAssistantButtons SPAN:hover { @Anchor-hover@ }
-.ZmAssistantChat .ZmChatWindowChatEntry .time { display:none; }
-.ZmAssistantChat .ZmChatWindowChatEntry .body { margin-right:0; padding-right:15px; }
-.ZmAssistantChat .ZmAsstContactHelp { height:auto; overflow:auto; }
 
 /* label in the chat record for system notes (eg:roland goes offline, etc) */
 .ZmChatWindowChatEntrySystem {

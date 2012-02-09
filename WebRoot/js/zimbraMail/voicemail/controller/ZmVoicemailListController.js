@@ -112,7 +112,6 @@ function() {
 ZmVoicemailListController.prototype._initializeToolBar =
 function(view) {
 	ZmVoiceListController.prototype._initializeToolBar.call(this, view);
-	this._setNewButtonProps(null, ZmMsg.newCall, ZmMsg.newCallTooltip, "PlacedCalls", "PlacedCalls", ZmOperation.NEW_CALL);
 
 	this._toolbar[view].getButton(ZmOperation.PRINT).setToolTipContent(ZmMsg.printVoicemailTooltip)
 };

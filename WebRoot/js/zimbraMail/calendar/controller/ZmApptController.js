@@ -405,5 +405,4 @@ ZmApptController.prototype._postShowCallback =
 function() {
 	ZmCalItemComposeController.prototype._postShowCallback.call(this);
     this._app.setOverviewPanelContent();
-	this._hideLeftNav();
 };

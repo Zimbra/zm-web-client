@@ -365,6 +365,7 @@ function(view, newTab) {
 	this._setView({ view:		view,
 					viewType:	this._currentViewType,
 					elements:	elements,
+					hide:		this._elementsToHide,
 					tabParams:	newTab && this._getTabParams(tabId, this._tabCallback.bind(this)),
 					isAppView:	this._isTopLevelView()});
 	this._resetNavToolBarButtons(view);

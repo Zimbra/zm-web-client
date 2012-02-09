@@ -757,6 +757,12 @@ function(ev) {
 
 };
 
+// Returns a hash of properties for the New Button
+ZmApp.prototype.getNewButtonProps =
+function() {
+	return {};
+};
+
 /**
  * Gets the search parameters.
  *
@@ -1062,6 +1068,7 @@ ZmApp.prototype.activate =
 function(active, viewId) {
 	this._active = active;
 	if (active) {
+		appCtxt.getAppController().setNewButtonProps(this.getNewButtonProps());
 		this.setOverviewPanelContent();
 		this.stopAlert();
 	}

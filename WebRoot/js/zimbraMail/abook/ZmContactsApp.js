@@ -48,6 +48,13 @@ ZmContactsApp = function(container, parentController) {
 	this._dlCache	= {};
 };
 
+ZmContactsApp.prototype = new ZmApp;
+ZmContactsApp.prototype.constructor = ZmContactsApp;
+
+ZmContactsApp.prototype.isZmContactsApp = true;
+ZmContactsApp.prototype.toString = function() { return "ZmContactsApp"; };
+
+
 // Organizer and item-related constants
 ZmEvent.S_CONTACT				= ZmId.ITEM_CONTACT;
 ZmEvent.S_GROUP					= ZmId.ITEM_GROUP;
@@ -77,18 +84,6 @@ ZmContactsApp.SEARCHFOR_FOLDERS		= 4;
 
 ZmContactsApp.SEARCHFOR_MAX 		= 50;
 
-ZmContactsApp.prototype = new ZmApp;
-ZmContactsApp.prototype.constructor = ZmContactsApp;
-
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmContactsApp.prototype.toString = 
-function() {
-	return "ZmContactsApp";
-};
 
 // Construction
 
@@ -476,6 +471,17 @@ function() {
 ZmContactsApp.prototype.activate =
 function(active) {
 	ZmApp.prototype.activate.apply(this, arguments);
+};
+
+ZmContactsApp.prototype.getNewButtonProps =
+function() {
+	return {
+		text:		ZmMsg.newContact,
+		tooltip:	ZmMsg.createNewContact,
+		icon:		"NewContact",
+		iconDis:	"NewContactDis",
+		defaultId:	ZmOperation.NEW_CONTACT
+	};
 };
 
 /**

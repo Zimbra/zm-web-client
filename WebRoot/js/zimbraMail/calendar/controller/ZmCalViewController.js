@@ -891,8 +891,6 @@ function(viewId) {
 	var tb = new ZmNavToolBar({parent:toolbar, className:"ZmNavToolbar ZmCalendarNavToolbar", context:ZmId.VIEW_CAL, posStyle:Dwt.ABSOLUTE_STYLE});
 	this._setNavToolBar(tb, ZmId.VIEW_CAL);
 
-	this._setNewButtonProps(viewId, ZmMsg.newAppt, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT, !this._app.containsWritableFolder());
-
 	var printButton = toolbar.getButton(ZmOperation.PRINT_CALENDAR);
 	if (printButton) {
 		printButton.setToolTipContent(ZmMsg.printCalendar);
