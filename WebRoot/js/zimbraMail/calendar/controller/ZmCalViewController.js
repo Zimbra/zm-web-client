@@ -2345,8 +2345,27 @@ function(ev) {
 				if (appt.getFolder() && appt.getFolder().noSuchFolder) {
 					throw AjxMessageFormat.format(ZmMsg.errorInvalidFolder, appt.getFolder().name);
 				}
-				this._quickAddDialog.popdown();
-				appt.save(null, new AjxCallback(this, this._quickAddCallback));
+
+				if (!this._quickComposeController) {
+				    // Create a compose controller, used solely for saving
+				    // the quick add appt, in order to trigger permission
+				    // and resource checks.  Ise the QuickAddAppointment type
+                    // so that it doesn't pollute the other compose controllers
+				    this._quickComposeController =
+				        this._app.getSessionController(ZmId.VIEW_QUICK_ADD_APPOINTMENT,
+				            "ZmApptComposeController");
+				    // Somewhat wasteful, but insures greater stability
+				    this._quickComposeController.initComposeView(false);
+				    var composeView = this._quickComposeController._composeView;
+				    // Override some critical functions
+				    composeView.isDirty   = function() { return true; };
+				    this._quickComposeController.closeView = function() { };
+				    this._quickComposeController._action =
+				        ZmCalItemComposeController.SAVE_CLOSE;
+				    this._closeCallback =
+				        new AjxCallback(this, this._quickAddCallback);
+				}
+				this._quickComposeController.doQuickSave(appt, this._closeCallback);
 			}
 		}
 	} catch(ex) {
@@ -2363,6 +2382,7 @@ function(ev) {
 
 ZmCalViewController.prototype._quickAddCallback =
 function(response) {
+    this._quickAddDialog.popdown();
     appCtxt.setStatusMsg(ZmMsg.apptCreated);
 };
 

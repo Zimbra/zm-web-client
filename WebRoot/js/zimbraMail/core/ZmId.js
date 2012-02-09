@@ -762,6 +762,7 @@ ZmId.APP_VOICE			= "Voice";
 // views - often used as context for ID
 ZmId.VIEW_ACCOUNT				= "ACCT";
 ZmId.VIEW_APPOINTMENT 			= "APPT";
+ZmId.VIEW_QUICK_ADD_APPOINTMENT = "QAPPT";
 ZmId.VIEW_APPT_SCHEDULE			= "APPTS";
 ZmId.VIEW_BRIEFCASE			    = "BC";
 ZmId.VIEW_BRIEFCASE_DETAIL		= "BCD";

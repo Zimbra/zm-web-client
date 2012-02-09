@@ -35,6 +35,8 @@ ZmApptComposeController = function(container, app) {
 	this._kbMgr = appCtxt.getKeyboardMgr();
 
 	appCtxt.getSettings().getSetting(ZmSetting.USE_ADDR_BUBBLES).addChangeListener(new AjxListener(this, this._handleSettingChange));
+
+    this._closeCallback = null;
 };
 
 ZmApptComposeController.prototype = new ZmCalItemComposeController;
@@ -54,6 +56,7 @@ function(calItem, mode, isDirty) {
 	ZmCalItemComposeController.prototype.show.call(this, calItem, mode, isDirty);
 
 	this._addedAttendees.length = this._removedAttendees.length = 0;
+    this._closeCallback = null;
 	this._setComposeTabGroup();
 };
 
@@ -143,6 +146,19 @@ function(id){
     }
     this._changesDialog.popdown();
 };
+
+ZmApptComposeController.prototype.doQuickSave =
+function(appt, closeCallback) {
+    var ret = false;
+    if(!appt.isValidDuration()){
+        this._composeView.showInvalidDurationMsg();
+    } else if (appt) {
+        this._closeCallback = closeCallback;
+        ret = this._initiateSaveWithChecks(appt, null);
+    }
+    return ret;
+};
+
 
 ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
@@ -252,34 +268,40 @@ function(attId) {
 			}
 		}
 
-		var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
-		var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
-		var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
-
-        var notifyList;
-
-		var needsPermissionCheck = (attendees && attendees.length > 0) ||
-								   (resources && resources.length > 0) ||
-								   (locations && locations.length > 0);
-
-		var needsConflictCheck = !appt.isForward &&
-                                 ((resources && resources.length > 0) ||
-								 (locations && locations.length > 0));
-
-		if (needsConflictCheck) {
-			this.checkConflicts(appt, attId, notifyList);
-			return false;
-		} else if (needsPermissionCheck) {
-			this.checkAttendeePermissions(appt, attId, notifyList);
-			return false;
-		} else {
-			this._saveCalItemFoRealz(appt, attId, notifyList);
-		}
-		return true;
+        var ret = this._initiateSaveWithChecks(appt, attId);
+		return ret;
 	}
 
 	return false;
 };
+
+ZmApptComposeController.prototype._initiateSaveWithChecks =
+function(appt, attId) {
+    var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
+    var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
+    var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
+
+    var notifyList;
+
+    var needsPermissionCheck = (attendees && attendees.length > 0) ||
+                               (resources && resources.length > 0) ||
+                               (locations && locations.length > 0);
+
+    var needsConflictCheck = !appt.isForward &&
+                             ((resources && resources.length > 0) ||
+                             (locations && locations.length > 0));
+
+    if (needsConflictCheck) {
+        this.checkConflicts(appt, attId, notifyList);
+        return false;
+    } else if (needsPermissionCheck) {
+        this.checkAttendeePermissions(appt, attId, notifyList);
+        return false;
+    } else {
+        this._saveCalItemFoRealz(appt, attId, notifyList);
+    }
+    return true;
+}
 
 ZmApptComposeController.prototype.updateToolbarOps =
 function(mode, appt) {
@@ -1088,6 +1110,9 @@ function(calItem, result) {
     if(this.isCloseAction()) {
         calItem.handlePostSaveCallbacks();
         this.closeView();	    
+        if (this._closeCallback) {
+            this._closeCallback.run();
+        }
     }else {
         this.enableToolbar(true);
         if(isNewAppt) {
