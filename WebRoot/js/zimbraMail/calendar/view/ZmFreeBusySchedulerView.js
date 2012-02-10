@@ -1594,8 +1594,9 @@ function(params, result) {
     this._freeBusyRequest = null;
 
     this._processDateInfo(this._dateInfo);
-    var apptStartTime = this._startDate.getTime();
-    var apptEndTime   = this._endDate.getTime();
+    // Adjust start and end time by 1 msec, to avoid fencepost problems when detecting conflicts
+    var apptStartTime = this._startDate.getTime()+1;
+    var apptEndTime   = this._endDate.getTime()-1;
 
     for (var i = 0; i < params.emails.length; i++) {
 		var email = params.emails[i];
