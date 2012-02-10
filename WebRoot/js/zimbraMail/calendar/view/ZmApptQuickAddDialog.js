@@ -454,7 +454,8 @@ function(text, el, match) {
 ZmApptQuickAddDialog.prototype._handleLocationChange =
 function(event, aclv, result) {
 	var val = this._locationField.getValue();
-	if (val == "") {
+    if (val.length <= 1) {
+        // This is only called onKeyUp, so a length 1 string means typing just started
         this._locations = [];
 		this._isKnownLocation = false;
 	}

@@ -2426,8 +2426,14 @@ function(ev) {
 				if (appt.getFolder() && appt.getFolder().noSuchFolder) {
 					throw AjxMessageFormat.format(ZmMsg.errorInvalidFolder, appt.getFolder().name);
 				}
-				this._quickAddDialog.popdown();
-				appt.save(null, new AjxCallback(this, this._quickAddCallback));
+                if (!this._quickComposeController) {
+                    // Create a compose controller, used solely for saving the quick add
+                    // appt, in order to trigger permission and resource checks.
+                    var params = { controllerClass: "ZmQuickAddApptComposeController"};
+                    this._quickComposeController = this._app.getSessionController(params);
+                    this._closeCallback = this._quickAddCallback.bind(this);
+                }
+                this._quickComposeController.doQuickSave(appt, this._closeCallback);
 			}
 		}
 	} catch(ex) {
@@ -2444,6 +2450,7 @@ function(ev) {
 
 ZmCalViewController.prototype._quickAddCallback =
 function(response) {
+    this._quickAddDialog.popdown();
     appCtxt.setStatusMsg(ZmMsg.apptCreated);
 };
 

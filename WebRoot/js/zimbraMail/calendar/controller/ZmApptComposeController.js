@@ -29,6 +29,7 @@
  * @extends		ZmCalItemComposeController
  */
 ZmApptComposeController = function(container, app, type, sessionId) {
+    if (arguments.length == 0) { return; }
 
 	ZmCalItemComposeController.apply(this, arguments);
 
@@ -286,40 +287,46 @@ function(attId) {
 			}
 		}
 
-		var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
-		var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
-		var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
-
-        var notifyList;
-
-		var needsPermissionCheck = (attendees && attendees.length > 0) ||
-								   (resources && resources.length > 0) ||
-								   (locations && locations.length > 0);
-
-		var needsConflictCheck = !appt.isForward &&
-                                 ((resources && resources.length > 0) ||
-                                 // If alteredLocations specified, it implies the user
-                                 // has already examined and modified the location conflicts
-                                 // that they want - so issue no further warnings.
-
-                                 // NOTE: appt.alteredLocations is disabled (and hence undefined)
-                                 //       for now.  It will be set once CreateAppt/ModifyAppt
-                                 //       SOAP API changes are completed (Bug 56464)
-                                  (!appt.alteredLocations && locations && locations.length > 0));
-
-		if (needsConflictCheck) {
-			this.checkConflicts(appt, numRecurrence, attId, notifyList);
-			return false;
-		} else if (needsPermissionCheck) {
-			this.checkAttendeePermissions(appt, attId, notifyList);
-			return false;
-		} else {
-			this._saveCalItemFoRealz(appt, attId, notifyList);
-		}
-		return true;
+        var ret = this._initiateSaveWithChecks(appt, attId);
+		return ret;
 	}
 
 	return false;
+};
+
+ZmApptComposeController.prototype._initiateSaveWithChecks =
+function(appt, attId, numRecurrence) {
+    var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
+    var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
+    var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
+
+    var notifyList;
+
+    var needsPermissionCheck = (attendees && attendees.length > 0) ||
+                               (resources && resources.length > 0) ||
+                               (locations && locations.length > 0);
+
+    var needsConflictCheck = !appt.isForward &&
+         ((resources && resources.length > 0) ||
+         // If alteredLocations specified, it implies the user
+         // has already examined and modified the location conflicts
+         // that they want - so issue no further warnings.
+
+         // NOTE: appt.alteredLocations is disabled (and hence undefined)
+         //       for now.  It will be set once CreateAppt/ModifyAppt
+         //       SOAP API changes are completed (Bug 56464)
+          (!appt.alteredLocations && locations && locations.length > 0));
+
+    if (needsConflictCheck) {
+        this.checkConflicts(appt, numRecurrence, attId, notifyList);
+        return false;
+    } else if (needsPermissionCheck) {
+        this.checkAttendeePermissions(appt, attId, notifyList);
+        return false;
+    } else {
+        this._saveCalItemFoRealz(appt, attId, notifyList);
+    }
+    return true;
 };
 
 ZmApptComposeController.prototype.updateToolbarOps =
@@ -1359,3 +1366,57 @@ function(ev) {
 		this._needComposeViewRefresh = true;
 	}
 };
+
+
+// --- Subclass the ApptComposeController for saving Quick Add dialog appointments
+ZmQuickAddApptComposeController = function(container, app, type, sessionId) {
+    ZmApptComposeController.apply(this, arguments);
+    this._closeCallback = null;
+    // Init the composeView as a filler
+    this.initComposeView();
+};
+
+ZmQuickAddApptComposeController.prototype = new ZmApptComposeController;
+ZmQuickAddApptComposeController.prototype.constructor = ZmQuickAddApptComposeController;
+
+ZmQuickAddApptComposeController.prototype.toString = function() { return "ZmQuickAddApptComposeController"; };
+
+ZmQuickAddApptComposeController.getDefaultViewType =
+function() {
+	return ZmId.VIEW_QUICK_ADD_APPOINTMENT;
+};
+
+ZmQuickAddApptComposeController.prototype.doQuickSave =
+function(appt, closeCallback) {
+    var ret = false;
+    this._closeCallback = null;
+    if(!appt.isValidDuration()){
+        this._composeView.showInvalidDurationMsg();
+    } else if (appt) {
+        this._closeCallback = closeCallback;
+        ret = this._initiateSaveWithChecks(appt, null, ZmTimeSuggestionPrefDialog.DEFAULT_NUM_RECURRENCE);
+    }
+    return ret;
+};
+
+ZmQuickAddApptComposeController.prototype._handleResponseSave =
+function(calItem, result) {
+    if (this._closeCallback) {
+        this._closeCallback.run();
+    }
+    appCtxt.notifyZimlets("onSaveApptSuccess", [this, calItem, result]);//notify Zimlets on success
+};
+
+ZmQuickAddApptComposeController.prototype.initComposeView =
+function() {
+	if (!this._composeView) {
+		// Create an empty compose view and make it always return isDirty == true
+		this._composeView = this._createComposeView();
+		this._composeView.isDirty = function() { return true; };
+		return true;
+    }
+	return false;
+};
+
+ZmQuickAddApptComposeController.prototype.enableToolbar =
+function(enabled) { }
