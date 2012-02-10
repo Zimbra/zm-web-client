@@ -800,8 +800,9 @@ function(ev) {
 	var overviewId = this._actionedOverviewId = treeItem.getData(ZmTreeView.KEY_ID);
 	var overview = this._opc.getOverview(overviewId);
 	if (!overview) { return; }
+    var isContextCmd = (ev.detail ==  DwtTree.ITEM_SELECTED && treeItem._extraCell && (treeItem._extraCell.id == (DwtUiEvent.getTargetWithProp(ev, "id").id)));
 
-	if (ev.detail == DwtTree.ITEM_ACTIONED) {
+	if ((ev.detail == DwtTree.ITEM_ACTIONED) || (isContextCmd)) {
 		// right click
 		if (overview.actionSupported) {
 			var actionMenu = (item.nId == ZmOrganizer.ID_ROOT || item.isDataSource(ZmAccount.TYPE_IMAP))

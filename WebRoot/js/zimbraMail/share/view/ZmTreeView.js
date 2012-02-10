@@ -175,7 +175,7 @@ function(params) {
 		ti.setDropTarget(this._dropTgt);
 	}
 	this._treeItemHash[root.id] = ti;
-	
+	ti.getHtmlElement().style.overflow = "hidden";
 	// render the root item's children (ie everything else)
 	params.treeNode = ti;
 	params.organizer = root;

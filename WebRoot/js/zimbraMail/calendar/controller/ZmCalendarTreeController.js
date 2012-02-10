@@ -335,6 +335,8 @@ function(organizer) {
             return;
         }
 
+        if (organizer.id == ZmOrganizer.ID_TRASH) return;
+
 		var appId = ZmOrganizer.APP[organizer.type];
 		var app = appId && appCtxt.getApp(appId);
 		if (app) {
