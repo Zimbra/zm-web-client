@@ -612,10 +612,12 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME + this._sessionId, !isDraft && this._hideOriginalAttachments);
     var forwardMsgIds = [];
 
-    if (this._msgIds)// Forward two or more messages
-        forwardMsgIds = forwardMsgIds.concat(this._msgIds);
-    else if (this._msgAttId) // Forward one message or Reply as attachment
+    if (this._msgIds) {// Forward two or more messages
+        forwardMsgIds = this._msgIds; // don't use concat (no need anyway) as it's not safe cross windows on IE as the 2nd argument is not identified as an Array in the child window.
+	}
+    else if (this._msgAttId) {// Forward one message or Reply as attachment
         forwardMsgIds.push(this._msgAttId);
+	}
 
 
 	// --------------------------------------------
