@@ -243,7 +243,7 @@ function(colItem, ascending, firstTime, lastId, lastSortVal) {
 		query = this._defaultQuery;
 	}
 
-    if (this._contactSource == ZmItem.CONTACT) {
+    if (this._contactSource == ZmItem.CONTACT && query != "") {
         query = query.replace(/\"/g, '\\"');
         query = "\"" + query + "\"";
     }
