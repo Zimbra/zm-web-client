@@ -425,4 +425,12 @@ Zmeditor_template.FONT_SIZE_MAPPING = {
                         return id;
                     }
     });
+    tinymce.extend(tinymce.Editor.prototype, {
+        saveHTML : function(){
+            var ele = this.getElement();
+            if(ele && ele.nodeName === "TEXTAREA"){
+                ele.value = this.getContent();
+            }
+        }
+    });
 }(tinymce));

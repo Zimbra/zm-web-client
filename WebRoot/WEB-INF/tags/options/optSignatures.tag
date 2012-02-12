@@ -21,6 +21,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
 
+<script type="text/javascript" src="../js/ajax/3rdparty/tinymce/tiny_mce.js"></script>
 <body class="yui-skin-sam">
 <table width="100%" cellpadding="10" cellspacing="10">
 <tr>
@@ -71,7 +72,7 @@
                 <fmt:message key="optionsSignature"/>
                 :
             </td>
-            <td colspan=2>
+            <td colspan=2 <c:if test="${isHtml}">style="background-color: #FFFFFF;"</c:if>>
                 <input type="hidden" id="signatureType${numSigs}" name="signatureType${numSigs}" value="${fn:escapeXml(signature.type)}"/>
                 <input type="hidden" name="origSignatureValue${numSigs}" value="${fn:escapeXml(signature.value)}"/>
                 <textarea style='width:100%' id="signatureValue${numSigs}" name='signatureValue${numSigs}' cols='80' rows='5' style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${fn:escapeXml(signature.value)}</textarea>
@@ -114,7 +115,7 @@
                 <td class='ZOptionsTableLabel' style='vertical-align:top;' valign='top'>
                     <fmt:message key="optionsSignature"/>:
                 </td>
-                <td colspan=2>
+                <td colspan=2 style="background-color: #FFFFFF;">
                     <input type="hidden" id="newSignatureType" name="newSignatureType" value="text/html"/>
                     <textarea style='width:100%' id="newSignatureValue" name='newSignatureValue' cols='80'rows='5' style='visibility:hidden;width:100%'>${fn:escapeXml(param.newSignatureValue)}</textarea>
                 </td>
@@ -228,98 +229,98 @@
 
 <script type="text/javascript">
 
-    <%-- Get font definitions from AjxMsg --%>
-    var fonts = [];
-    var defaultFont;
-    <c:forEach var="KEY" items="fontFamilyIntl,fontFamilyBase">
-    <c:forEach var="i" begin="1" end="30">
-        <fmt:message var="style" bundle='${AjxMsg}' key="${KEY}${i}.css"/>
-        <c:choose>
-            <c:when test="${fn:startsWith(style, '#') or fn:startsWith(style, '?')}">
-                <%-- Do nothing --%>
-            </c:when>
-            <c:otherwise>
-                <c:set var="style" value="${fn:replace(style,', ',',')}"/>
-                <fmt:message var="name" bundle='${AjxMsg}' key="${KEY}${i}.display"/>
-                <c:set var="selected" value="${fn:replace(mailbox.prefs.htmlEditorDefaultFontFamily,', ',',') eq style}"/>
-                fonts.push({text:"${name}",value:"${style}"<c:if test="${selected}">,checked:true</c:if>});
-                <c:if test="${selected}">
-                defaultFont="${name}";
-                </c:if>
-            </c:otherwise>
-        </c:choose>
-    </c:forEach>
-    </c:forEach>
+    (function(){
+        <%-- Get font definitions from AjxMsg --%>
+        var fonts = [];
+        <c:forEach var="KEY" items="fontFamilyIntl,fontFamilyBase">
+            <c:forEach var="i" begin="1" end="30">
+                <fmt:message var="style" bundle='${AjxMsg}' key="${KEY}${i}.css"/>
+                <c:choose>
+                    <c:when test="${fn:startsWith(style, '#') or fn:startsWith(style, '?')}">
+                    <%-- Do nothing --%>
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="style" value="${fn:replace(style,', ',',')}"/>
+                            <fmt:message var="name" bundle='${AjxMsg}' key="${KEY}${i}.display"/>
+                        <c:set var="selected" value="${fn:replace(mailbox.prefs.htmlEditorDefaultFontFamily,', ',',') eq style}"/>
+                            fonts.push("${name}=${style}");
+                    </c:otherwise>
+                </c:choose>
+            </c:forEach>
+        </c:forEach>
 
-
-    var sigcount = ${numSigs};
-    var myEdit = new Array();
-    for(var i = 0 ;i < sigcount ; i++) {
-        var sigTextAreaId = "signatureValue"+i;
-        var sigType = document.getElementById("signatureType"+i).value;
-        if(sigType == 'text/html') {
-            myEdit[i] = new YAHOO.widget.SimpleEditor(sigTextAreaId, {
-                height: '100px',
-                width: '100%',
-                dompath: false, //Turns on the bar at the bottom
-                animate: true, //Animates the opening, closing and moving of Editor windows
-                plainText: false,
-                focusAtStart: true,
-                collapse: true,
-                draggable: false,
-                fonts: fonts,
-                defaultFont: defaultFont
+        var onTinyMCEEditorInit = function(ed){
+            ed.dom.setStyles( ed.getBody(), {
+                "font-family" : "${mailbox.prefs.htmlEditorDefaultFontFamily}",
+                "font-size"   : "${mailbox.prefs.htmlEditorDefaultFontSize}",
+                "color"       : "${mailbox.prefs.htmlEditorDefaultFontColor}"
             });
-            /*enable buttons that are disabled by default */
-            myEdit[i].on('afterNodeChange', function() {
-                    this.toolbar.enableAllButtons();
-            });
-            /* Fix signature image src url*/
-            myEdit[i].on('editorContentLoaded', function() {
-                var _edit = arguments[1];
-                var idoc = _edit._getDoc();
-                if (idoc) {
-                    var images = idoc.getElementsByTagName("img");
-                    var path = ["/home/","${mailbox.accountInfo.name}", "/"].join("");
-                    var img;
-                    for (var i = 0; i < images.length; i++) {
-                        img = images[i];
-                        var dfsrc = img.getAttribute("dfsrc");
-                        if (dfsrc && dfsrc.indexOf("doc:") == 0) {
-                            img.src = [path, dfsrc.substring(4)].join('');
-                        }
-                    }
-                }
-            }, myEdit[i], true);
+            if( ed.id === "newSignatureValue"){
+                myEditor = ed;
+                ed.focus();
+            }
+            else{
+                myEdit.push(ed);
+            }
+        };
 
-            myEdit[i]._defaultToolbar.titlebar = false;
-            myEdit[i].render();
-        } else if(sigType == 'text/plain') {
-            myEdit[i] == null;
+        var handleContentLoad = function(ed){
+            var imageArray = ed.dom.select("img[dfsrc^='doc:']"),
+                    path = ["/home/", "${mailbox.accountInfo.name}", "/"].join(""),
+                    image;
+
+            while( image = imageArray.shift() ){
+                image.src = [path, image.getAttribute("dfsrc").substring(4)].join('');
+            }
+        };
+
+        var tinyMCEInitObj = {
+            mode : "none",
+            height : "200px",
+            width : "100%",
+            plugins : "autolink,advlist,inlinepopups,table,paste,directionality,emotions,media",
+            theme : "advanced",
+            theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,link,unlink,image",
+            theme_advanced_buttons2 : "formatselect,undo,redo,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,emotions,charmap,media,|,removeformat",
+            theme_advanced_buttons3 : "",
+            theme_advanced_buttons4 : "",
+            theme_advanced_toolbar_location : "top",
+            theme_advanced_toolbar_align : "left",
+            theme_advanced_resizing : true,
+            theme_advanced_fonts : fonts.join(";"),
+            convert_urls : false,
+            verify_html : false,
+            gecko_spellcheck : true,
+            theme_advanced_runtime_fontsize:true,
+            dialog_type : "modal",
+            forced_root_block : 'div',
+            table_default_cellpadding : 3,
+            table_default_border: 1,
+            content_css : false,
+            setup : function(ed) {
+                ed.onInit.add(onTinyMCEEditorInit);
+                ed.onLoadContent.add(handleContentLoad);
+                ed.onBeforeRenderUI.add(function() {
+                    tinymce.ScriptLoader.loadScripts(['../js/ajax/3rdparty/tinymce/themes/advanced/Zmeditor_template.js']);
+                });
+            }
+        };
+        window.tinyMCE && window.tinyMCE.init(tinyMCEInitObj);
+
+        window.sigcount = ${numSigs};
+        window.myEdit = [];
+
+        for(var i = 0 ;i < sigcount ; i++) {
+            var sigType = document.getElementById("signatureType"+i).value;
+            if(sigType == 'text/html') {
+                window.tinyMCE && window.tinyMCE.execCommand('mceAddControl', false, "signatureValue"+i);
+            }
+            else if(sigType == 'text/plain') {
+                myEdit[i] == null;
+            }
         }
-    }
-
-    var myEditor = new YAHOO.widget.SimpleEditor("newSignatureValue", {
-        height: '100px',
-        width: '100%',
-        dompath: false, //Turns on the bar at the bottom
-        animate: true, //Animates the opening, closing and moving of Editor windows
-        plainText: false,
-        focusAtStart: true,
-        collapse: true,
-        draggable: false,
-        fonts: fonts,
-        defaultFont: defaultFont
-    });
-
-	/*enable buttons that are disabled by default */
-    myEditor.on('afterNodeChange', function() {
-         this.toolbar.enableAllButtons();
-    });
-
-    /*hide titlebar*/
-    myEditor._defaultToolbar.titlebar = false;
-    myEditor.render();
+        window.tinyMCE && window.tinyMCE.execCommand('mceAddControl', false, "newSignatureValue");
+    }());
 
     /* List of elements that has to be handled for send */
     var sendElemts = new Array("SOPSEND","IOPSEND");

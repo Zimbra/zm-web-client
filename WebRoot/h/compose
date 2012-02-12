@@ -208,7 +208,7 @@
                     value="${zm:cook(param.attachId)}" name="uploadedAttachment"/>
 </c:if>
 <tr>
-    <td colspan="3"  width="100%" >
+    <td colspan="3"  width="100%" <c:if test="${isHtml}">style="background-color: #FFFFFF;"</c:if>>
         <c:set var="isHTMLContType" value="${compose.contentType eq 'text/html'}" />
         <c:set var="isHtmlCont" value="${not empty compose.htmlContent}" />
         <c:set var="theBody" value="${fn:escapeXml(isHtml ? (empty compose.htmlContent ? (isHTMLContType or isHtml ? compose.content : zm:cook(compose.content)) : compose.htmlContent) : compose.content)}"/>
