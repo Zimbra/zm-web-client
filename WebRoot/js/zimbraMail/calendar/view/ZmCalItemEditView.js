@@ -131,7 +131,7 @@ function() {
 
 	// clear out all input fields
 	this._subjectField.setValue("");
-	this._notesHtmlEditor.setContent("");
+    this._notesHtmlEditor.clear();
 
     if(this._hasRepeatSupport) {
         this._repeatDescField.innerHTML = "";

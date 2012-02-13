@@ -875,6 +875,7 @@ function(signature, clear) {
 	}
 	this._vcardField.value = vcardName;
 
+    this._sigEditor.clear();
 	var editorMode = (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && signature.getContentType() == ZmMimeTable.TEXT_HTML)
 		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	var htmlModeInited = this._sigEditor.isHtmlModeInited();

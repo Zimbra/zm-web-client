@@ -409,6 +409,7 @@ function() {
 	var editor = this.getEditor();
     if (editor && this._editorInitialized) {
 		editor.setContent("", {format: "raw"});
+        editor.undoManager && editor.undoManager.clear();
         this.initDefaultFontSize(editor);
 	}
     var field = this.getContentField();
