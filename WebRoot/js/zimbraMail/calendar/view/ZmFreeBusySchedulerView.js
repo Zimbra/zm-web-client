@@ -1537,10 +1537,17 @@ function() {
 
 ZmFreeBusySchedulerView.prototype._processDateInfo =
 function(dateInfo) {
-    this._startDate = ZmTimeInput.getDateFromFields(dateInfo.startTimeStr,
-                                               AjxDateUtil.simpleParseDateStr(dateInfo.startDate));
-    this._endDate = ZmTimeInput.getDateFromFields(dateInfo.endTimeStr,
-                                             AjxDateUtil.simpleParseDateStr(dateInfo.endDate));
+    var startDate = AjxDateUtil.simpleParseDateStr(dateInfo.startDate);
+    var endDate   = AjxDateUtil.simpleParseDateStr(dateInfo.endDate);
+    if (dateInfo.isAllDay) {
+        startDate.setHours(0,0,0,0);
+        this._startDate = startDate;
+        endDate.setHours(23,59,59,999);
+        this._endDate   = endDate;
+    } else {
+        this._startDate = ZmTimeInput.getDateFromFields(dateInfo.startTimeStr,startDate);
+        this._endDate   = ZmTimeInput.getDateFromFields(dateInfo.endTimeStr,  endDate);
+    }
 }
 
 ZmFreeBusySchedulerView.prototype._getClassForStatus =
