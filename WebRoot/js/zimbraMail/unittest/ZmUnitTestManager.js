@@ -29,8 +29,11 @@ ZmUnitTestManager = function() {
 	window.UT.callback = {};
 
 	// clean up hack for getting QUnit to export into UT namespace
-	delete window.exports;
-	delete window.require;
+	window.exports = window.require = null;
+	try {
+		delete window.exports;
+		delete window.require;
+	} catch(e) {}	// IE bug: exception thrown on delete on window object
 };
 
 ZmUnitTestManager.prototype.toString = function() { return "ZmUnitTestManager"; };
@@ -84,8 +87,8 @@ function() {
 	var panel = document.createElement("div");
 	panel.id = Dwt.getNextId();
 	panel.className = "ZmUnitTestPanel";
-	panel.style.position = Dwt.ABSOLUTE_STYLE;
-	panel.style.overflow = Dwt.SCROLL;
+	Dwt.setPosition(panel, Dwt.ABSOLUTE_STYLE);
+	Dwt.setScrollStyle(panel, Dwt.SCROLL);
 	document.body.appendChild(panel);
 	
 	var qs = AjxStringUtil.parseQueryString();
@@ -186,8 +189,7 @@ function(element, event, ev) {
 
 ZmUnitTestUtil.goToCompose =
 function() {
-	var ctlr = appCtxt.getApp(ZmApp.MAIL).getMailListController();
-	ctlr._newButtonListener(new DwtSelectionEvent(true), ZmOperation.NEW_MENU);
+	AjxDispatcher.run("Compose");
 };
 
 ZmUnitTestUtil.goToMail =

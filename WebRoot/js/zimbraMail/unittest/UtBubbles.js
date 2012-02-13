@@ -48,7 +48,7 @@ UtBubbles.teardown = function() {
 
 UtBubbles.test = function() {
 	
-	UT.expect(2);
+	UT.expect(3);
 	ZmUnitTestUtil.log("starting bubbles test");
 	ZmUnitTestUtil.goToCompose();
 	var input = document.getElementById("zv__COMPOSE-1_to_control");
@@ -73,7 +73,7 @@ UtBubbles._handleResponse = function(evt) {
 		var bubbleList = toField._getBubbleList();
 		UT.equals(bubbleList.size(), 1, "No bubbles");
 		UT.start();
-	}, 200);
+	}, 400);
 }
 
 UT.test("basic bubble test 2", {

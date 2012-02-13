@@ -17,7 +17,7 @@ UT.module("Calendar");
 
 UT.test("Show Calendar view",
     function() {
-        console.debug("starting calendar test");
+        console.log("starting calendar test");
 
         UtZWCUtils.chooseApp(ZmApp.CALENDAR);
         UT.stop(UtZWCUtils.MAX_STOP);
@@ -25,7 +25,7 @@ UT.test("Show Calendar view",
         UT.expect(1);
         setTimeout(
             function() {
-                console.debug("continuing calendar test");
+                console.log("continuing calendar test");
                 var isRightView = UtZWCUtils.isCalendarViewCurrent();
                 UT.ok(isRightView, "Calendar view loaded");
                 UT.start();

@@ -37,7 +37,7 @@ UtZWCUtils.isCurrentViewByViewIds = function(viewIds) {
             break;
         }
     }
-    console.debug("Expecting View: " + viewIds.toString() + " | Found view: " + ret.currentViewId);
+    console.log("Expecting View: " + viewIds.toString() + " | Found view: " + ret.currentViewId);
     return ret;
 };
 //---------------
@@ -68,12 +68,18 @@ UtZWCUtils.isPreferencesViewCurrent = function() {
 UtZWCUtils.closeAllComposeViews = function() {
 	
 	var avm = appCtxt.getAppViewMgr();
-	var views = avm.getViewsByType(ZmId.VIEW_COMPOSE);
+	var views = avm.getViewsByType(ZmId.VIEW_COMPOSE, true);
+	views = views.concat(avm.getViewsByType(ZmId.VIEW_MAIL_CONFIRM, true));
 	if (views && views.length) {
 		for (var i = 0; i < views.length; i++) {
 			var ctlr = views[i].controller;
 			if (ctlr) {
-				ctlr._cancelListener();
+				if (ctlr._cancelListener) {
+					ctlr._cancelListener();
+				}
+				else if (ctlr._closeListener) {
+					ctlr._closeListener();
+				}
 			}
 		}
 	}
@@ -81,13 +87,13 @@ UtZWCUtils.closeAllComposeViews = function() {
 
 UtZWCUtils.getLastView = function(viewType) {
 	var avm = appCtxt.getAppViewMgr();
-	var list = avm.getViewsByType(viewType);
+	var list = avm.getViewsByType(viewType, true);
 	var view = list && list[list.length - 1];
 	return view ? avm.getCurrentView(view.id) : null;
 };
 
 UtZWCUtils.getComposeViewCount = function() {
-	return appCtxt.getAppViewMgr().getViewsByType(ZmId.VIEW_COMPOSE).length;
+	return appCtxt.getAppViewMgr().getViewsByType(ZmId.VIEW_COMPOSE, true).length;
 };
 
 UtZWCUtils.getEmailAddressOfCurrentAccount = function() {

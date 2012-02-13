@@ -1124,7 +1124,8 @@ function() {
  */
 ZmComposeController.prototype._getSignatureButton =
 function() {
-	return this._getOptionsMenu().getItemById(ZmPopupMenu.MENU_ITEM_ID_KEY, ZmOperation.ADD_SIGNATURE);
+	var menu = this._getOptionsMenu();
+	return menu && menu.getItemById(ZmPopupMenu.MENU_ITEM_ID_KEY, ZmOperation.ADD_SIGNATURE);
 };
 
 ZmComposeController.prototype._setAddSignatureVisibility =
@@ -1135,11 +1136,11 @@ function(account) {
 	}
 	
 	var button = this._getSignatureButton();
-
-	var visible = ac.getSignatureCollection(account).getSize() > 0;
-
-	button.setVisible(visible);
-	button.parent.cleanupSeparators();
+	if (button) {
+		var visible = ac.getSignatureCollection(account).getSize() > 0;
+		button.setVisible(visible);
+		button.parent.cleanupSeparators();
+	}
 };
 
 ZmComposeController.prototype._createOptionsMenu =

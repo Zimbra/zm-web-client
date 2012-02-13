@@ -19,8 +19,11 @@ UT.module("Compose", ["Mail", "Smoke"]);
 UT.test("Show compose page", {
 	
 	teardown: function() {
-		var ctlr = appCtxt.getCurrentController();
-		ctlr._cancelListener();	
+		var cv = UtZWCUtils.getLastView(ZmId.VIEW_COMPOSE)
+		var ctlr = cv && cv._controller;
+		if (ctlr) {
+			ctlr._cancelListener();
+		}
 	}},
 		
 	function() {
@@ -32,7 +35,11 @@ UT.test("Show compose page", {
 );
 
 // Launch New window compose
-UT.test("New window compose",
+UT.test("New window compose", {
+
+	teardown: function() {
+		ZmZimbraMail.closeChildWindows();
+	}},
 
     // New window compose.
     function() {
@@ -48,5 +55,4 @@ UT.test("New window compose",
         UT.stop(10000);
         UT.expect(1);
     }
-
 );

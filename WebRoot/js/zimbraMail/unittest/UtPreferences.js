@@ -18,7 +18,7 @@ UT.module("Preferences");
 
 UT.test("Show preferences view",
     function() {
-        console.debug("starting preferences test");
+        console.log("starting preferences test");
 
         UtZWCUtils.chooseApp(ZmApp.PREFERENCES);
         UT.stop(UtZWCUtils.MAX_STOP);
@@ -26,7 +26,7 @@ UT.test("Show preferences view",
         UT.expect(1);
         setTimeout(
             function() {
-                console.debug("continuing preferences test");
+                console.log("continuing preferences test");
                 UT.start();
                 var isRightView = UtZWCUtils.isPreferencesViewCurrent();
                 UT.ok(isRightView,"Preferences view loaded");

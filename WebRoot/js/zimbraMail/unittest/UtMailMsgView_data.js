@@ -24,7 +24,7 @@ UtMailMsgView_data = [
       // Bug #67854 - HTML code in "no content" message
       //
       {
-      expectedBody: "\nThe message has no text content.",
+      expectedBody: '<table width="100%"><tbody><tr><td class="NoResults" style="text-align:center;"><br>The message has no text content.</td></tr></tbody></table>',
       json: {
         cid: "561",
         d: 1322781373000,
@@ -66,7 +66,7 @@ UtMailMsgView_data = [
     // Bug #67744 - XSS injecting malicious email
     //
     ,{
-        expectedBody: "<script>alert('Bad');</script>",
+        expectedBody: '<pre>&lt;script&gt;alert("Bad");&lt;/script&gt;</pre><img zmforced="1" class="InlineImage" src="http://localhost:7070/service/home/%7E/?auth=co&amp;id=600&amp;part=2">',
         json:
                   {
         cid: "-600",
@@ -87,7 +87,7 @@ UtMailMsgView_data = [
            }
          ],
         f: "u",
-        fr: "<script>alert('Bad');</script>",
+        fr: '<script>alert("Bad");</script>',
         id: "600",
         l: "2",
         mid: "<6c3594eb-a17f-493f-8b70-44b41f8336b8@zcs103.zimbraqa.lab>",
@@ -99,7 +99,7 @@ UtMailMsgView_data = [
               // [0]:
               {
                 body: true,
-                content: "<script>alert('Bad');</script>",
+                content: '<script>alert("Bad");</script>',
                 ct: "text/plain",
                 part: "1",
                 s: 142
@@ -130,7 +130,7 @@ UtMailMsgView_data = [
     // Bug #66192 - Blank body with JS error on viewing some messages
     //
     ,{
-        expectedBody: "Here's an empty image:",
+        expectedBody: '<div style="font-family: times new roman, new york, times, serif; font-size: 12pt; color: #000000"><div>Here\'s an empty image:<img></div></div>',
         json: {
             cid: "612",
             d: 1322801640000,

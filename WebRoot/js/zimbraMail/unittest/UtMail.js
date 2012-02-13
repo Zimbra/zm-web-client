@@ -13,11 +13,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-UT.module("Mail");
+UT.module("MailCore", ["Mail"]);
 
 UT.test("Show view",
     function() {
-        console.debug("starting mail test");
+        console.log("starting mail test");
 
         UtZWCUtils.chooseApp(ZmApp.MAIL);
         UT.stop(UtZWCUtils.MAX_STOP);
@@ -25,14 +25,10 @@ UT.test("Show view",
         UT.expect(1);
         setTimeout(
             function() {
-                console.debug("continuing mail test");
+                console.log("continuing mail test");
                 var isRightView = UtZWCUtils.isMailViewCurrent();
                 UT.ok(isRightView,"Mail view loaded");
                 UT.start();
-
-                if (isRightView) {
-                    UtMail.postLoad();
-                }
             },
             UtZWCUtils.LOAD_VIEW_SETTIMEOUT
         );
@@ -41,59 +37,54 @@ UT.test("Show view",
 
 UT.test("Close compose views",
     function() {
-		console.debug("mail test #2 - close compose views");
-		var newButton = appCtxt.getApp(ZmApp.MAIL).getMailListController().getNewButton();
+		console.log("mail test #2 - close compose views");
+		var newButton = appCtxt.getAppController().getNewButton();
         newButton._emulateSingleClick();
         newButton._emulateSingleClick();
         newButton._emulateSingleClick();
 
         UtZWCUtils.closeAllComposeViews();
         var openComposeViewCount = UtZWCUtils.getComposeViewCount();
-        UT.ok(openComposeViewCount == 0, "No Compose view should be open");
+        UT.ok(openComposeViewCount == 0, openComposeViewCount + " compose view(s) are open");
     }
 );
 
-UtMail = {
-    postLoad: function() {
+UT.test("Send email",
+	function() {
+		console.log("send email");
+		var newButton = appCtxt.getAppController().getNewButton();
+		newButton._emulateSingleClick();
 
-        UT.test("Send email",
-            function() {
-				console.debug("send email");
-                var newButton = appCtxt.getApp(ZmApp.MAIL).getMailListController().getNewButton();
-                newButton._emulateSingleClick();
+		var composeView = appCtxt.getCurrentView();
+		var isRightView = (composeView && composeView instanceof ZmComposeView);
+		UT.ok(isRightView, "Compose view loaded");
 
-                var composeView = appCtxt.getCurrentView();
-                var isRightView = (composeView && composeView instanceof ZmComposeView);
-                UT.ok(isRightView, "Compose view loaded");
+		var randomString = UtZWCUtils.getRandomString(10);
+		var toEmail = UtZWCUtils.getEmailAddressOfCurrentAccount();
+		composeView._subjectField.value = "Unit testing mail: " + randomString;
+		composeView.getRecipientField(AjxEmailAddress.TO).value = toEmail;
+		composeView._bodyField.value = "Unit test mail: " + randomString;
 
-                var randomString = UtZWCUtils.getRandomString(10);
-                var toEmail = UtZWCUtils.getEmailAddressOfCurrentAccount();
-                composeView._subjectField.value = "Unit testing mail: " + randomString;
-				composeView.getRecipientField(AjxEmailAddress.TO).value = toEmail;
-                composeView._bodyField.value = "Unit test mail: " + randomString;
+		var composeViewController = composeView._controller;
+		var originalHandleResponse = composeViewController._handleResponseSendMsg;
+		var postSendMessageClosure = UT._postSendMessage.bind(null, composeView, composeViewController, originalHandleResponse);
+		composeViewController._handleResponseSendMsg = postSendMessageClosure;
+		composeViewController._send();
 
-                var composeViewController = composeView._controller;
-                var originalHandleResponse = composeViewController._handleResponseSendMsg;
-                var postSendMessageClosure = UtMail.postSendMessage.bind(null, composeView, composeViewController, originalHandleResponse);
-                composeViewController._handleResponseSendMsg = postSendMessageClosure;
-                composeViewController._send();
+		console.log("call stop");
+		UT.stop(UtZWCUtils.MAX_STOP);
+		UT.expect(2);
+	}
+);
 
-				console.debug("call stop");
-                UT.stop(UtZWCUtils.MAX_STOP);
-                UT.expect(2);
-            }
-        );
-    },
+UT._postSendMessage =
+function(composeView, composeViewController, originalHandleResponse, draftType, msg, callback, result) {
+	var success = !result.isException();
+	UT.ok(success, "Send message failed");
+	composeViewController._handleResponseSendMsg = originalHandleResponse;
+	composeViewController._handleResponseSendMsg(draftType, msg, callback, result);
 
-    postSendMessage: function(composeView, composeViewController, originalHandleResponse, draftType, msg, callback, result) {
-        var success = !result.isException();
-        UT.ok(success, "Send message failed");
-        composeViewController._handleResponseSendMsg = originalHandleResponse;
-        composeViewController._handleResponseSendMsg(draftType, msg, callback, result);
-
-		console.debug("returned, call start");
-        UT.start();
-        UtZWCUtils.closeAllComposeViews();
-    }
-};
-
+	console.log("returned, call start");
+	UT.start();
+	UtZWCUtils.closeAllComposeViews();
+}

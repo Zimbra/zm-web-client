@@ -225,6 +225,17 @@ function() {
 		ZmCsfeCommand.clearAuthToken();
 	}
 
+	ZmZimbraMail.closeChildWindows();
+	
+	ZmZimbraMail.stayOnPagePrompt = false;
+	ZmZimbraMail.setExitTimer(false);
+	ZmZimbraMail.sessionTimerInvoked = false;
+	window._zimbraMail = window.onload = window.onunload = window.onresize = window.document.onkeypress = null;
+};
+
+ZmZimbraMail.closeChildWindows =
+function() {
+	
 	var childWinList = window._zimbraMail ? window._zimbraMail._childWinList : null;
 	if (childWinList) {
 		// close all child windows
@@ -235,11 +246,6 @@ function() {
 			childWin.win.close();
 		}
 	}
-	
-	ZmZimbraMail.stayOnPagePrompt = false;
-	ZmZimbraMail.setExitTimer(false);
-	ZmZimbraMail.sessionTimerInvoked = false;
-	window._zimbraMail = window.onload = window.onunload = window.onresize = window.document.onkeypress = null;
 };
 
 /**
@@ -2796,7 +2802,7 @@ function() {
 	if (childWinList) {
 		for (var i = 0; i < childWinList.size(); i++) {
 			var childWin = childWinList.get(i);
-			if (childWin.win.ZmNewWindow._confirmExitMethod()) {
+			if (childWin.win.ZmNewWindow && childWin.win.ZmNewWindow._confirmExitMethod()) {
 				return false;
 			}
 		}

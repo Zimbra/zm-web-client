@@ -536,13 +536,14 @@ function(app, viewId) {
  * Returns a list of views of the given type. The views are the anonymous view objects used by the app view mgr.
  * 
  * @param {string}	type	a view type
+ * @param {boolean}	visible if true, only return visible views
  */
 ZmAppViewMgr.prototype.getViewsByType =
-function(type) {
+function(type, visible) {
 	var list = [];
 	for (var viewId in this._view) {
 		var view = this._view[viewId];
-		if (view.type == type) {
+		if (view.type == type && (!visible || view.visible)) {
 			list.push(view);
 		}
 	}
@@ -1193,6 +1194,7 @@ function(viewId, show) {
 	DBG.println("avm", "-------------- " + (show ? "SHOW " : "HIDE ") + viewId);
 
 	var view = this._view[viewId] || this._emptyView;
+	view.visible = show;
 	
 	var toFit = [];
 	if (show) {

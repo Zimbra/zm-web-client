@@ -300,7 +300,7 @@ What you see in the output are the only accounts we deploy.\n\
 	{
 		isHtml: true,
 		input: "\
-<html><head><style type='text/css'>p { margin: 0; }</style></head><body>\
+<html><head><style type=\"text/css\">p { margin: 0; }</style></head><body>\
 <div style='font-family: Arial; font-size: 10pt; color: #000000'>\
 I'm getting the same problem.<br><br>\
 -Jiho<br><br>\
@@ -312,7 +312,7 @@ browser thing works fine).<span><br><br>\
 -- <br>Marc MacIntyre<br>marcmac@zimbra.com<br></span></div></blockquote><br></div></body></html>\
 ",
 		output: "\
-<html><head><style type='text/css'>p { margin: 0; }</style></head><body>\
+<html><head><style type=\"text/css\">p { margin: 0; }</style></head><body>\
 <div style=\"font-family: Arial; font-size: 10pt; color: #000000\">\
 I'm getting the same problem.<br><br>\
 -Jiho<br><br>\
@@ -346,9 +346,9 @@ IMAP (etc.), I think you&#39;d have to turn on the scheduled task<br>manager in 
 		output: "\
 <html><head><style>p { margin: 0; }</style></head><body>\
 <div style=\"font-family: Arial; font-size: 10pt; color: #000000\">\
-<span style=\"color: rgb(0, 128, 0);\"><br>\
+<br><span style=\"color: rgb(0, 128, 0);\"><br>\
 I thought about that but what if ZD can't connect to ZCS at that instant?<br><br>Vishal<br></span>\
-</div></body></html>\
+<br><br></div></body></html>\
 "
 	},
 	
