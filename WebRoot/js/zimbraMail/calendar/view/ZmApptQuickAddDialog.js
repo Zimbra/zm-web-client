@@ -70,7 +70,6 @@ ZmApptQuickAddDialog.prototype.constructor = ZmApptQuickAddDialog;
 
 ZmApptQuickAddDialog.MORE_DETAILS_BUTTON = ++DwtDialog.LAST_BUTTON;
 
-
 // Public
 
 ZmApptQuickAddDialog.prototype.toString = 
@@ -194,6 +193,11 @@ function() {
 	return this._formValue() != this._origFormValue;
 };
 
+ZmApptQuickAddDialog.prototype._setFocusToSubjectFeild =
+function(){
+    this._tabGroup.setFocusMember(this._subjectField);
+};
+
 ZmApptQuickAddDialog.prototype.popup =
 function(loc) {
 	ZmQuickAddDialog.prototype.popup.call(this, loc);
@@ -213,7 +217,9 @@ function(loc) {
 		}
 		this._tabGroupComplete = true;
 	}
-	this._tabGroup.setFocusMember(this._subjectField);
+    //bug:68208 Focus must be in the Subject of QuickAdd Appointment dialog after double-click in calendar
+    this._focusAction = new AjxTimedAction(this, this._setFocusToSubjectFeild);
+    AjxTimedAction.scheduleAction(this._focusAction, 300);
 
     if (this._hasReminderSupport) {
         var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
