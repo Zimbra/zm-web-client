@@ -261,9 +261,9 @@ function(delta) {
 		if (readingPaneOnRight) {
 			// moving sash right
 			var minMsgViewWidth = this._itemView.getMinWidth();
-			var currentMsgWidth = this._itemView.getSize().x;
+			var currentMsgWidth = this._itemView.getSize(true).x;
 			delta = Math.max(0, Math.min(delta, currentMsgWidth - minMsgViewWidth));
-			var newListWidth = ((AjxEnv.isIE) ? this._vertSash.getLocation().x : this._mailListView.getSize().x) + delta;
+			var newListWidth = ((AjxEnv.isIE) ? this._vertSash.getLocation().x : this._mailListView.getSize(true).x) + delta;
 
 			if (delta > 0) {
 				this._mailListView.resetSize(newListWidth, Dwt.DEFAULT);
@@ -274,10 +274,10 @@ function(delta) {
 			}
 		} else {
 			// moving sash down
-			var newMsgViewHeight = this._itemView.getSize().y - delta;
+			var newMsgViewHeight = this._itemView.getSize(true).y - delta;
 			var minMsgViewHeight = this._itemView.getMinHeight();
 			if (newMsgViewHeight > minMsgViewHeight) {
-				this._mailListView.resetSize(Dwt.DEFAULT, this._mailListView.getSize().y + delta);
+				this._mailListView.resetSize(Dwt.DEFAULT, this._mailListView.getSize(true).y + delta);
 				this._itemView.setBounds(Dwt.DEFAULT, this._itemView.getLocation().y + delta,
 										Dwt.DEFAULT, newMsgViewHeight);
 			} else {
@@ -296,7 +296,7 @@ function(delta) {
 				delta = -absDelta;
 				this._mailListView.resetSize(currentWidth - absDelta, Dwt.DEFAULT);
 				this._itemView.setBounds(this._itemView.getLocation().x - absDelta, Dwt.DEFAULT,
-										this._itemView.getSize().x + absDelta, Dwt.DEFAULT);
+										this._itemView.getSize(true).x + absDelta, Dwt.DEFAULT);
 			} else {
 				delta = 0;
 			}
@@ -315,9 +315,9 @@ function(delta) {
 
 			if (this.getSash().getLocation().y - absDelta > this._minMLVHeight) {
 				// moving sash up
-				this._mailListView.resetSize(Dwt.DEFAULT, this._mailListView.getSize().y - absDelta);
+				this._mailListView.resetSize(Dwt.DEFAULT, this._mailListView.getSize(true).y - absDelta);
 				this._itemView.setBounds(Dwt.DEFAULT, this._itemView.getLocation().y - absDelta,
-										Dwt.DEFAULT, this._itemView.getSize().y + absDelta);
+										Dwt.DEFAULT, this._itemView.getSize(true).y + absDelta);
 			} else {
 				delta = 0;
 			}
