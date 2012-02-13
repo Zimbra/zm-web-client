@@ -1443,7 +1443,9 @@ function(result) {
 ZmMailListController.prototype._spamListener =
 function(ev) {
 	var items = this._listView[this._currentView].getSelection();
-	this._doSpam(items, ev.item.isMarkAsSpam);
+	var button = this.getCurrentToolbar().getButton(ZmOperation.SPAM);
+
+	this._doSpam(items, button.isMarkAsSpam);
 };
 
 ZmMailListController.prototype._detachListener =
