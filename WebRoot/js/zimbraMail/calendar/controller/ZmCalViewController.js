@@ -174,6 +174,16 @@ function() {
 	return appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
 };
 
+ZmCalViewController.prototype.setCurrentViewId =
+function(viewId) {
+    if (viewId != ZmId.VIEW_CAL) {
+        // Only store a real view id; VIEW_CAL is a placeholder used to identity the
+        // constellation of calendar views to the AppViewMgr.  Cal views are handled
+        // by their own ZmCalViewMgr.
+        ZmController.prototype.setCurrentViewId.call(this, viewId);
+    }
+};
+
 ZmCalViewController.prototype.show =
 function(viewId, startDate, skipMaintenance) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
@@ -195,11 +205,12 @@ function(viewId, startDate, skipMaintenance) {
 
 	var elements = this.getViewElements(ZmId.VIEW_CAL, this._viewMgr);
 
-	this._setView({ view:		ZmId.VIEW_CAL,
+    this._setView({ view:		ZmId.VIEW_CAL,
 					viewType:	this._currentViewType,
 					elements:	elements,
 					isAppView:	true});
-	this._currentViewId = this._currentViewType = this._viewMgr.getCurrentViewName();
+    this._currentViewId = this._currentViewType = this._viewMgr.getCurrentViewName();
+
     this.setCurrentListView(null);
 	this._listView[this._currentViewId] = this._viewMgr.getCurrentView();
 	this._resetToolbarOperations(viewId);
