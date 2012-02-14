@@ -1241,23 +1241,33 @@ function() {
 };
 
 /**
- * Gets the current view id.
+ * Gets the current view id. If we're showing search results, returns the ID of the
+ * view within the search results (rather than the ID of the search results).
  * 
  * @return	{String}		the current view id
  */
 ZmAppCtxt.prototype.getCurrentViewId =
 function() {
-	return this.getAppViewMgr().getCurrentViewId();
+	var viewId = this.getAppViewMgr().getCurrentViewId();
+	if (viewId && viewId.indexOf(ZmId.VIEW_SEARCH_RESULTS) === 0) {
+		viewId = this.getCurrentController().getCurrentViewId();
+	}
+	return viewId;
 };
 
 /**
- * Gets the current view id.
+ * Gets the current view type. If we're showing search results, returns the type of the
+ * view within the search results (rather than the type of the search results).
  * 
  * @return	{String}		the current view type
  */
 ZmAppCtxt.prototype.getCurrentViewType =
 function() {
-	return this.getAppViewMgr().getCurrentViewType();
+	var viewType = this.getAppViewMgr().getCurrentViewType();
+	if (viewType && viewType.indexOf(ZmId.VIEW_SEARCH_RESULTS) === 0) {
+		viewType = this.getCurrentController().getCurrentViewType();
+	}
+	return viewType;
 };
 
 /**
