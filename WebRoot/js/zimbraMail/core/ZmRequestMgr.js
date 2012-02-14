@@ -163,6 +163,7 @@ function(params) {
 						callback:			asyncCallback,
 						logRequest:			this._logRequest,
 						highestNotifySeen:	this._highestNotifySeen,
+						noAuthToken:		true,	// browser will handle auth token cookie
 						skipAuthCheck:		params.skipAuthCheck,
 						resend:				params.resend,
 						noSession:			params.noSession,

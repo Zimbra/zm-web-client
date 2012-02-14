@@ -55,15 +55,8 @@ ZmZimbraAccount = function(id, name, visible) {
 ZmZimbraAccount.prototype = new ZmAccount;
 ZmZimbraAccount.prototype.constructor = ZmZimbraAccount;
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmZimbraAccount.prototype.toString =
-function() {
-	return "ZmZimbraAccount";
-};
+ZmZimbraAccount.prototype.isZmZimbraAccount;
+ZmZimbraAccount.prototype.toString = function() { return "ZmZimbraAccount"; };
 
 
 //
@@ -596,8 +589,6 @@ function(callback, errorCallback, batchCmd) {
  */
 ZmZimbraAccount.prototype.saveImplicitPrefs =
 function() {
-	// HACK: in multi-account, hanging noop gets dropped and somehow the auth token changes
-	ZmCsfeCommand._curAuthToken = ZmCsfeCommand.getAuthToken();
 
 	var list = [];
 	for (var id in ZmSetting.CHANGED_IMPLICIT) {

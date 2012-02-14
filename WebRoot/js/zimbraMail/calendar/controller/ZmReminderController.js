@@ -256,7 +256,7 @@ ZmReminderController.prototype._housekeepingAction =
 function() {
 	DBG.println(AjxDebug.DBG2, "reminder house keeping action...");
 	var rd = this.getReminderDialog();
-	if (!ZmCsfeCommand.getAuthToken()) {
+	if (ZmCsfeCommand.noAuth) {
 		DBG.println(AjxDebug.DBG1, "reminder check: no auth token, bailing");
 		if (rd && rd.isPoppedUp()) {
 			rd.popdown();

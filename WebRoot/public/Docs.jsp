@@ -178,7 +178,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     window.appCoverageMode = ${isCoverage};
     window.DBG = new AjxDebug(AjxDebug.NONE, null, false);
 
-    if(ZmCsfeCommand.getAuthToken()){
+    if(!ZmCsfeCommand.noAuth){
         ZmDocsEditApp.setFile('${fileId}', '${fileName}', '${folderId}');
     }else{
         window.location = window.appContextPath;

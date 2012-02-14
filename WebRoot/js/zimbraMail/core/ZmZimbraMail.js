@@ -37,7 +37,6 @@ ZmZimbraMail = function(params) {
 
     if (arguments.length == 0) { return; }
 
-	this._startTime = new Date().getTime(); //time we started up
 	ZmController.call(this, null);
 
     appCtxt.setAppController(this);
@@ -222,7 +221,7 @@ function() {
 			window._zimbraMail.setSessionTimer(false);
 		}
 
-		ZmCsfeCommand.clearAuthToken();
+		ZmCsfeCommand.noAuth = true;
 	}
 
 	ZmZimbraMail.closeChildWindows();
@@ -785,7 +784,6 @@ function(params) {
 	this.getKeyMapMgr();	// make sure keyboard handling is initialized
 
 	this.setSessionTimer(true);
-	ZmZimbraMail.setAuthTokenEndTime(this._startTime);
 	ZmZimbraMail.killSplash();
 
 	// Give apps a chance to add their own UI components.
@@ -2638,24 +2636,6 @@ function(bStartTimer) {
 };
 
 /**
- * Sets the ZmSetting.TOKEN_ENDTIME
- * @param {int} startTime   auth token creation time in milliseconds; uses current time if not specified
- */
-ZmZimbraMail.setAuthTokenEndTime =
-function(startTime) {
-	if(!startTime) {
-		startTime = new Date().getTime();
-	}
-	var authTokenLifetime = appCtxt.get(ZmSetting.TOKEN_LIFETIME);
-	if (authTokenLifetime) {
-		var authTokenEndTime = startTime + authTokenLifetime;
-		appCtxt.set(ZmSetting.TOKEN_ENDTIME, authTokenEndTime);
-		DBG.println(AjxDebug.DBG1, "Setting authTokenEndTime to " + new Date(authTokenEndTime).toLocaleString());
-
-	}
-};
-
-/**
  * Adds a child window.
  * 
  * @private
@@ -2747,7 +2727,7 @@ function(ex, continuation) {
 ZmZimbraMail._confirmExitMethod =
 function() {
 
-	if (ZmCsfeCommand.getAuthToken()) {
+	if (!ZmCsfeCommand.noAuth) {
 		appCtxt.accountList.saveImplicitPrefs();
 
 		if (appCtxt.get(ZmSetting.WARN_ON_EXIT) && !ZmZimbraMail._isOkToExit()) {

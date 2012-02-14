@@ -582,7 +582,7 @@ function(ex, continuation) {
 		ex.code == ZmCsfeException.SVC_AUTH_REQUIRED || 
 		ex.code == ZmCsfeException.NO_AUTH_TOKEN)
 	{
-		ZmCsfeCommand.clearAuthToken();
+		ZmCsfeCommand.noAuth = true;
 		var reloginMode = false;
 		var loginDialog = appCtxt.getLoginDialog();
 		if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED) {
@@ -725,11 +725,6 @@ function(continuation, rememberMe, result) {
 		var result = result.getResponse();
 		this._authenticating = false;
 		appCtxt.rememberMe = rememberMe;
-		//set up auth token expires time
-		if (result && result.Body && result.Body.AuthResponse) {
-			appCtxt.set(ZmSetting.TOKEN_LIFETIME, result.Body.AuthResponse.lifetime)
-		}
-		ZmZimbraMail.setAuthTokenEndTime();
 		if (continuation) {
 			if (continuation.continueCallback) {
 				// sync request
@@ -786,17 +781,15 @@ function(result) {
 		// ignore token change for offline; maybe put out diagnostic info (bug 24842)
 		if (location.search.indexOf("offlineHack") != -1) {
 			var text = "old user: " + appCtxt.getUsername() + "\n" +
-					   "old auth token: " + ZmCsfeCommand._curAuthToken + "\n" +
 					   "old session ID: " + ZmCsfeCommand._oldSessionId + "\n" +
 					   "\n" +
 					   "new user: " + obj.name + "\n" +
-					   "new auth token: " + ZmCsfeCommand.getAuthToken() + "\n" +
 					   "new session ID: " + ZmCsfeCommand._sessionId + "\n";
 			alert(text);
 		}
 	} else if (obj.name != appCtxt.getUsername()) {
 		DBG.println(AjxDebug.DBG1, "AUTH TOKEN CHANGED, NEW USER: " + obj.name + " (old user: " + appCtxt.getUsername() + ")");
-		ZmCsfeCommand.clearAuthToken();
+		ZmCsfeCommand.noAuth = true;
 		var loginDialog = appCtxt.getLoginDialog();
 		loginDialog.setError(ZmMsg.authChanged);
 		var reloginMode = false;
