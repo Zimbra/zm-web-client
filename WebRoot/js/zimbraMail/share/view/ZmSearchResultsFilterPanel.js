@@ -334,9 +334,10 @@ function(parent, id, filter) {
  * 
  * @param {string}			id			filter ID
  * @param {ZmSearchToken}	newTerms	search term(s)
+ * @param {boolean}			noPopdown	if true, don't popdown menu after update
  */
 ZmSearchResultsFilterPanel.prototype.update =
-function(id, newTerms) {
+function(id, newTerms, noPopdown) {
 	
 	if (!id || !newTerms) { return; }
 	
@@ -359,7 +360,7 @@ function(id, newTerms) {
 		this._controller.addSearchTerm(newTerms[i]);
 	}
 	
-	if (this._menu[id]) {
+	if (this._menu[id] && !noPopdown) {
 		this._menu[id].popdown();
 	}
 };
@@ -675,7 +676,7 @@ function(type) {
 	var cal = this._calendar[type];
 	var date = this._formatter.format(cal.getDate());
 	var term = this._getSearchTerm(type, date);
-	this._updateCallback(term);
+	this._updateCallback(term, true);
 };
 
 ZmDateSearchFilter.prototype._getTypes =
