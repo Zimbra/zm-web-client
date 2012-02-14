@@ -201,7 +201,7 @@ function(id, key, account) {
 
 	// for offline, global settings always come from the "local" parent account
 	var acct = (context.multiAccounts && ZmSetting.IS_GLOBAL[id])
-		? context.accountList.mainAccount : account;
+		? context.accountList.mainAccount : (account || context.accountList.mainAccount);
 	return context.getSettings(acct).get(id, key);
 };
 
