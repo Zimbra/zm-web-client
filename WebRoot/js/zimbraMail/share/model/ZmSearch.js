@@ -1123,7 +1123,7 @@ function(query) {
 	}
 
 	var len = query.length;
-	var tokens = [], ch, lastCh, op, word = "", isEow = false, endOk = true, compound = 0;
+	var tokens = [], ch, lastCh, op, word = "", isEow = false, endOk = true, compound = 0, numParens = 0;
 	var pos = skipSpace(query, 0);
 	while (pos < len) {
 		lastCh = (ch != " ") ? ch : lastCh;
@@ -1181,10 +1181,14 @@ function(query) {
 				compound = 1;
 			}
 			tokens.push(new ZmSearchToken(ch));
+			numParens++;
 			pos = skipSpace(query, pos + 1);
 		} else if (ch == ZmParsedQuery.GROUP_CLOSE) {
 			if (compound > 0) {
 				compound--;
+			}
+			if (compound == 0) {
+				op = "";
 			}
 			tokens.push(new ZmSearchToken(ch));
 			pos = skipSpace(query, pos + 1);
@@ -1206,6 +1210,14 @@ function(query) {
 		endOk = true;
 	} else if (!op && word) {
 		tokens.push(new ZmSearchToken(word));
+	}
+	
+	// remove unnecessary enclosing parens from when a single compound term is expanded, for example when
+	// "subject:(foo bar)" is expanded into "(subject:foo subject:bar)"
+	if (tokens.length >= 3 && numParens == 1 && tokens[0].op == ZmParsedQuery.GROUP_OPEN &&
+			tokens[tokens.length - 1].op == ZmParsedQuery.GROUP_CLOSE) {
+		tokens.shift();
+		tokens.pop();
 	}
 
 	if (!endOk) {
