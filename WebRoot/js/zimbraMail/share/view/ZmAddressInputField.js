@@ -651,7 +651,7 @@ function(ev, aclv) {
 
 	ev = DwtUiEvent.getEvent(ev);
 	var key = DwtKeyEvent.getCharCode(ev);
-	var propagate = true;
+	var propagate;
 	var clearInput = false;
 	
 	if (DwtKeyMapMgr.hasModifier(ev) || ev.shiftKey) {
@@ -668,7 +668,9 @@ function(ev, aclv) {
 	// Del removes selected bubbles, or selects last bubble if there is no input
 	else if (key == 8) {
 		DBG.println("aif", "_keyDownCallback found DEL key");
-		propagate = !this.handleDelete(true);
+		if (this.handleDelete(true)) {
+			propagate = false;
+		}
 	}
 	// Left arrow selects last bubble if there is no input
 	else if (key == 37) {
