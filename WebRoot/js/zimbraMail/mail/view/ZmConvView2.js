@@ -176,6 +176,7 @@ function() {
 ZmConvView2.prototype._renderConv =
 function(conv) {
 
+	this._now = new Date();
 	this._setConvHeader();
 	var firstExpanded = this._renderMessages(conv, this._messagesDiv);
 
@@ -1503,7 +1504,7 @@ function(state, force) {
 	this._readIconId = id + "_read";
 	this._idToAddr = {};
 
-	var dateString = new AjxDateFormat("EEEE h:mm a").format(new Date(msg.sentDate || msg.date));
+	var dateString = AjxDateUtil.computeDateStr(this._convView._now || new Date(), msg.sentDate || msg.date);
 	var detailsLink, subs, html;
 	
 	if (state == ZmMailMsgCapsuleViewHeader.COLLAPSED) {
