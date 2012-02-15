@@ -409,14 +409,14 @@ function(htmlArr, idx, item, field, colIdx, params) {
 			}
 		}
 		else if (field == ZmItem.F_SIZE) {
-			if (item.size) {
-				htmlArr[idx++] = "<nobr>";
-				htmlArr[idx++] = AjxUtil.formatSize(item.size);
-				htmlArr[idx++] = "</nobr>";
-			} else if (item.numMsgs > 1) {
+			if (item.type == ZmItem.CONV && item.numMsgs > 1) {
 				htmlArr[idx++] = "(";
 				htmlArr[idx++] = item.numMsgs;
 				htmlArr[idx++] = ")";
+			} else if (item.size) {
+				htmlArr[idx++] = "<nobr>";
+				htmlArr[idx++] = AjxUtil.formatSize(item.size);
+				htmlArr[idx++] = "</nobr>";
 			}
 		}
 		else if (field == ZmItem.F_SORTED_BY) {
