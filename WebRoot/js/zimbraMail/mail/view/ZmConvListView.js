@@ -921,6 +921,12 @@ function(ev) {
 		handled = ev.handled = true;
 	}
 
+	// The sort index we're given is relative to a list of convs. We want one relative to a list view which may
+	// have some msg rows from expanded convs in there.
+	if (isConv && (ev.event == ZmEvent.E_CREATE)) {
+		ev.setDetail("sortIndex", this._getSortIndex(item, sortBy));
+	}
+	
 	// virtual conv promoted to real conv, got new ID
 	if (isConv && (ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_ID])) {
 		// a virtual conv has become real, and changed its ID
