@@ -245,7 +245,7 @@ function() {
 		dataClass:			new ZmSearchAutocomplete(),
 		matchValue:			"matchText",
 		delims:				[" ", "\t"],
-		delimCodes:			[3, 13, 32, 9],
+		delimCodes:			[3, 13, 9],
 		separator:			" ",
 		keyDownCallback:	this._handleKeyDown.bind(this),
 		contextId:			this.toString(),
