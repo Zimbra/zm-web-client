@@ -378,6 +378,7 @@ function() {
 
 		var val = this.getAddrFieldValue(type);
 		if (val.length == 0) { continue; }
+		val = val.replace(/[; ,]+$/, "");	// ignore trailing (and possibly extra) separators
 		var result = AjxEmailAddress.parseEmailString(val, type, false);
 		if (result.all.size() == 0) { continue; }
 		addrs.gotAddress = true;
