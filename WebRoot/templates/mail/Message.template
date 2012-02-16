@@ -475,6 +475,10 @@
 				</table>
 			</td>
 		</tr>
+        <tr id='${oboRowId}' style='display:none;'>
+			<td align=right><input type='checkbox' id='${oboCheckboxId}'></td>
+			<td colspan=2><div id='${oboLabelId}'></div></td>
+        </tr>
         <tr id='${attRowId}'>
             <td style='vertical-align:top; <$=labelStyle$>'>
                 <table width='100%'>
