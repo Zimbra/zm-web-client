@@ -378,7 +378,7 @@
 							<td width=20><$= AjxImg.getImageHtml(data.addrbook.getIcon()) $></td>
 							<td>&nbsp;</td>
 							<td class='companyFolder'><$= data.addrbook.getName() $></td>
-						<$ } else if (data.addrbook && isEdit) { $>
+						<$ } else if (isEdit) { $>
 						<td  nowrap="nowrap"><$= ZmMsg.locationLabel $>&nbsp;</td>
 						    <td id='${id}_LOCATION_FOLDER'></td						    
 						<$ } else if (data.isGal) { $>
