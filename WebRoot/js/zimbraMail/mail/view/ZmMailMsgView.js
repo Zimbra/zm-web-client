@@ -1076,6 +1076,7 @@ function(container, html, isTextMsg, isTruncated, index, origText) {
 		var didAllImages = this._fixMultipartRelatedImages(this._msg, idoc || this._containerEl);
 		if (didAllImages) {
 			Dwt.setVisible(displayImages, false);
+			this._needToShowInfoBar = false;
 		} else {
 			this._setupInfoBarClicks(displayImages);
 		}

@@ -1219,7 +1219,9 @@ function() {
 		// hide or show everything below the header
 		var children = this.getHtmlElement().childNodes;
 		for (var i = 1; i < children.length; i++) {
-			Dwt.setVisible(children[i], this._expanded);
+			var child = children[i];
+			var show = (child && (child.id == this._displayImagesId)) ? this._expanded && this._needToShowInfoBar : this._expanded;
+			Dwt.setVisible(child, show);
 		}
 		this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
 	}
