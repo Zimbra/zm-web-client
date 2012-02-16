@@ -940,7 +940,7 @@ function(items, folder, attrs, isShiftKey) {
 	if (copy.length) {
 		params.items = copy;
 		var list = params.list = this._getList(params.items);
-		this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback);
+		this._setupContinuation(this._doMove, [folder, attrs, isShiftKey], params, allDoneCallback, true);
 		list.copyItems(params);
 	}
 };

@@ -1271,14 +1271,14 @@ function(text) {
  * @private
  */
 ZmListController.prototype._setupContinuation =
-function(actionMethod, args, params, allDoneCallback) {
+function(actionMethod, args, params, allDoneCallback, notIdsOnly) {
 
 	// need to use AjxCallback here so we can prepend items arg when calling it
 	var actionCallback = new AjxCallback(this, actionMethod, args);
-	params.finalCallback = this._continueAction.bind(this, {actionCallback:actionCallback, allDoneCallback:allDoneCallback});
+	params.finalCallback = this._continueAction.bind(this, {actionCallback:actionCallback, allDoneCallback:allDoneCallback, notIdsOnly: notIdsOnly});
 	
 	params.count = this._continuation.count;
-	params.idsOnly = true;
+	params.idsOnly = !notIdsOnly;
 
 	if (!this._continuation.lastItem) {
 		this._continuation.lastItem = params.list.getVector().getLast();
@@ -1319,7 +1319,7 @@ function(params, actionParams) {
 			types:		cs.types,
 			sortBy:		cs.sortBy,
 			limit:		limit,
-			idsOnly:	true
+			idsOnly:	!params.notIdsOnly
 		};
 
 		var list = contResult ? contResult.getResults() : this._list.getArray();
