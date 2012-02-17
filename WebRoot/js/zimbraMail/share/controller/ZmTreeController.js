@@ -800,7 +800,8 @@ function(ev) {
 	var overviewId = this._actionedOverviewId = treeItem.getData(ZmTreeView.KEY_ID);
 	var overview = this._opc.getOverview(overviewId);
 	if (!overview) { return; }
-    var isContextCmd = (ev.detail ==  DwtTree.ITEM_SELECTED && treeItem._extraCell && (treeItem._extraCell.id == (DwtUiEvent.getTargetWithProp(ev, "id").id)));
+    var targetElement = DwtUiEvent.getTargetWithProp(ev, "id");
+    var isContextCmd = (ev.detail ==  DwtTree.ITEM_SELECTED) && treeItem._extraCell && targetElement &&  (treeItem._extraCell.id == targetElement.id);
 
 	if ((ev.detail == DwtTree.ITEM_ACTIONED) || (isContextCmd)) {
 		// right click
