@@ -1608,6 +1608,7 @@ function() {
 	var htmlArr = [];
 	var idx = 0;
 	var imageAttsFound = 0;
+	var hasGeneratedAttachments = false;
 
 	var attColumns = (this._controller.isReadingPaneOn() && this._controller.isReadingPaneOnRight())
 		? 1 : ZmMailMsgView.ATTC_COLUMNS;
@@ -1617,6 +1618,8 @@ function() {
 	var rows = 0;
 	for (var i = 0; i < attLinks.length; i++) {
 		var att = attLinks[i];
+
+		hasGeneratedAttachments = hasGeneratedAttachments && att.part;
 
 		if ((i % attColumns) == 0) {
 			if (i != 0) {
@@ -1743,7 +1746,7 @@ function() {
 	}
 	htmlArr[idx++] = "</tr></table>";
 
-	if (attLinks.length > 1) {
+	if (!hasGeneratedAttachments && attLinks.length > 1) {
 		imageAttsFound = imageAttsFound > 1;
 		htmlArr[idx++] = ZmMailMsgView._buildZipUrl(this._msg.id, attLinks, imageAttsFound, this._msg.subject);
 	}

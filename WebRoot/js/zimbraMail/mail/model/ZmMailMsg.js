@@ -1741,12 +1741,18 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 				if (attach.s < 1024)		props.size = numFormater.format(attach.s) + " "+ZmMsg.b;//" B";
 				else if (attach.s < (1024*1024) )	props.size = numFormater.format(Math.round((attach.s / 1024) * 10) / 10) + " "+ZmMsg.kb;//" KB";
 				else						props.size = numFormater.format(Math.round((attach.s / (1024*1024)) * 10) / 10) + " "+ZmMsg.mb;//" MB";
+
+				// use content location for generated attachments,
+				// such as from S/MIME messages
+				if (!attach.part)
+					useCL = true;
+
 			} else {
 				useCL = attach.cl && (attach.relativeCl || ZmMailMsg.URL_RE.test(attach.cl));
 			}
 
 			// handle rfc/822 attachments differently
-			if (attach.ct == ZmMimeTable.MSG_RFC822) {
+			if (attach.part && attach.ct == ZmMimeTable.MSG_RFC822) {
 				var html = [];
 				var j = 0;
 				html[j++] = "<a href='javascript:;' onclick='ZmMailMsgView.rfc822Callback(";
@@ -1800,6 +1806,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 				var folder = appCtxt.getById(this.folderId);
 				if ((attach.name || attach.filename) &&
 					appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) &&
+					attach.part &&
 					(folder && !folder.isRemote()))
 				{
 					var partLabel = props.label;
@@ -1840,9 +1847,11 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 					props.url = url;
 				}
 
-				// bug: 233 - remove attachment
-				var onclickStr = "ZmMailMsgView.removeAttachmentCallback(" + "\"" + this.id + "\"" +  ",\"" + attach.part + "\");";
-				props.removeLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
+				if (attach.part) {
+					// bug: 233 - remove attachment
+					var onclickStr = "ZmMailMsgView.removeAttachmentCallback(" + "\"" + this.id + "\"" +  ",\"" + attach.part + "\");";
+					props.removeLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
+				}
 			}
 
 			// set the link icon
