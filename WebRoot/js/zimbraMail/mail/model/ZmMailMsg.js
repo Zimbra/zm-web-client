@@ -1778,9 +1778,15 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 				}
 
                 props.attachmentLinkId = Dwt.getNextId();
-				props.link = "<a target='_blank' class='AttLink'" +
-                        AjxStringUtil.buildAttribute("href", url) +
-                        AjxStringUtil.buildAttribute("id", props.attachmentLinkId) + ">";
+
+                props.link = "<a class='AttLink'";
+                if (url.indexOf('javascript:') != 0)
+                    props.link += " target='_blank'";
+                props.link += AjxStringUtil.buildAttribute("href", url);
+                props.link +=
+                    AjxStringUtil.buildAttribute("id", props.attachmentLinkId);
+                props.link += ">";
+
 				if (!useCL) {
 					props.download = [
 						"<a style='text-decoration:underline' class='AttLink' href='",
