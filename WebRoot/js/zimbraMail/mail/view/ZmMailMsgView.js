@@ -1570,6 +1570,10 @@ function(msg, container, callback, index) {
 			var bp = bodyParts[i];
 			var content = this._getBodyContent(bp);
 			if (ZmMimeTable.isRenderableImage(bp.ct)) {
+				if (bp.cd && bp.cd == "inline") {
+					//ignore inline attachments here. No need to append it as it was already inline.
+					continue;
+				}
 				// Hack: (Bug:27320) Done specifically for sMime
 				var imgHtml = content
 					? ["<img zmforced='1' class='InlineImage' src='", bp.content, "'>"].join("")
