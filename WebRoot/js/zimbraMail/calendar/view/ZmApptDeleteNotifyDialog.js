@@ -32,7 +32,7 @@ ZmApptDeleteNotifyDialog = function(params) {
 
     params = Dwt.getParams(arguments, ZmApptDeleteNotifyDialog.PARAMS);
     var buttons = [ DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON ];
-    DwtDialog.call(this, {parent: params.parent, standardButtons:buttons});
+    DwtDialog.call(this, {parent: params.parent, standardButtons:buttons, id:"CONFIRM_DELETE_APPT_DIALOG"});
 
     this._choiceLabel1 = params.choiceLabel1;
     this._choiceLabel2 = params.choiceLabel2;
