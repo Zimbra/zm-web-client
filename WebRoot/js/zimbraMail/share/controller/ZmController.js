@@ -272,7 +272,7 @@ function() {
  * @see		ZmKeyMap
  */
 ZmController.prototype.handleKeyAction =
-function(actionCode) {
+function(actionCode, ev) {
 	DBG.println(AjxDebug.DBG3, "ZmController.handleKeyAction");
 	
 	// tab navigation shortcut

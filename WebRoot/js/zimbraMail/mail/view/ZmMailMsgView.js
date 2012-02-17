@@ -2645,3 +2645,15 @@ function() {
 	var ctlrViewId = this._controller.getCurrentViewId();
 	return this._controller.isZmMsgController ? ctlrViewId : [ctlrViewId, ZmId.VIEW_MSG].join("_");
 };
+
+ZmMailMsgView.prototype._keepReading =
+function() {
+	var cont = this.getHtmlElement();
+	var contHeight = Dwt.getSize(cont).y;
+	var canScroll = (cont.scrollHeight > contHeight && (cont.scrollTop + contHeight < cont.scrollHeight));
+	if (canScroll) {
+		cont.scrollTop = cont.scrollTop + contHeight;
+		return true;
+	}
+	return false;
+};

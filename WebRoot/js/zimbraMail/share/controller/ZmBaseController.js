@@ -161,7 +161,7 @@ ZmBaseController.prototype.getItemCount = function() {};
  * @return	{Boolean}	<code>true</code> if the action is handled
  */
 ZmBaseController.prototype.handleKeyAction =
-function(actionCode) {
+function(actionCode, ev) {
 
 	DBG.println(AjxDebug.DBG3, "ZmBaseController.handleKeyAction");
 
@@ -201,7 +201,7 @@ function(actionCode) {
 			break;
 
 		default:
-			return ZmController.prototype.handleKeyAction.call(this, actionCode);
+			return ZmController.prototype.handleKeyAction.apply(this, arguments);
 	}
 	return true;
 };

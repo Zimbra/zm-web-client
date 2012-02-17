@@ -167,10 +167,7 @@ function() {
 
 ZmConvView2.prototype._actionsMenuPopdownListener =
 function() {
-	if (this.actionedMsgView) {
-		this.actionedMsgView.setFocused(false);
-		this.actionedMsgView = null;
-	}
+	this.actionedMsgView = null;
 };
 
 ZmConvView2.prototype._renderConv =
@@ -230,7 +227,7 @@ function(conv, container) {
 	if (oldToNew) {
 		msgs = msgs.reverse();
 	}
-	var firstExpanded;
+	var idx;
 	var oldestIndex = oldToNew ? 0 : msgs.length - 1;
 	for (var i = 0, len = msgs.length; i < len; i++) {
 		var msg = msgs[i];
@@ -239,10 +236,12 @@ function(conv, container) {
 		params.forceOriginal = (i == oldestIndex);
 		this._renderMessage(msg, params);
 		var msgView = this._msgViews[msg.id];
-		firstExpanded = firstExpanded || ((msgView._expanded && i > 0) ? msgView : null);
+		if (idx == null) {
+			idx = msgView._expanded ? i : null;
+		}
 	}
 	
-	return firstExpanded;
+	return idx && this._msgViews[this._msgViewList[idx]];
 };
 
 ZmConvView2.prototype._renderMessage =
@@ -299,8 +298,7 @@ function(noClear) {
 		delete this._msgViews[id];
 	}
 	this._msgViewList = null;
-	this._focusedMsgView = null;
-	this._controller._convViewHasFocus = false;
+	this._currentMsgView = null;
 
 	if (this._initialized) {
 		this._subjectSpan.innerHTML = this._infoSpan.innerHTML = "";
@@ -344,14 +342,18 @@ function(scrollMsgView) {
 			this._messagesDiv.scrollTop = 0;
 		}
 		else if (scrollMsgView.isZmMailMsgCapsuleView) {
-			var msgViewTop = Dwt.toWindow(scrollMsgView.getHtmlElement(), 0, 0, null, null, DwtPoint.tmp).y;
-			var containerTop = Dwt.toWindow(this._messagesDiv, 0, 0, null, null, DwtPoint.tmp).y;
-			var diff = msgViewTop - containerTop;
-			if (diff > 0) {
-				this._messagesDiv.scrollTop = diff;
-			}
+			this._scrollToTop(scrollMsgView);
 		}
 	}
+};
+
+ZmConvView2.prototype._scrollToTop =
+function(msgView) {
+	var msgViewTop = Dwt.toWindow(msgView.getHtmlElement(), 0, 0, null, null, DwtPoint.tmp).y;
+	var containerTop = Dwt.toWindow(this._messagesDiv, 0, 0, null, null, DwtPoint.tmp).y;
+	var diff = msgViewTop - containerTop;
+	this._messagesDiv.scrollTop = (diff > 0) ? diff : 0;
+	this._currentMsgView = msgView;
 };
 
 // since we may get multiple calls to _resize
@@ -379,46 +381,6 @@ function() {
 	var rpLoc = this._controller._getReadingPanePref();
 	if (this._rpLoc != ZmSetting.RP_OFF && rpLoc != ZmSetting.RP_OFF && this._rpLoc != rpLoc) {
 		this.set(this._item, true);
-	}
-};
-
-// Focus the last msg that was focused, or, if none, the first msg
-ZmConvView2.prototype._focus =
-function() {
-	var msgView = this._focusedMsgView || (this._children && this._children.get(0));
-	if (msgView) {
-		if (msgView.setFocused) {
-			msgView.setFocused(true);
-		}
-		this._focusedMsgView = msgView;
-		this._controller._convViewHasFocus = true;
-	}
-};
-
-ZmConvView2.prototype._blur =
-function() {
-	if (this._focusedMsgView) {
-		if (this._focusedMsgView.setFocused) {
-			this._focusedMsgView.setFocused(false);
-		}
-		this._controller._convViewHasFocus = false;
-	}
-};
-
-// Move focus to the given msg
-ZmConvView2.prototype.setFocusedMsgView =
-function(msgView) {
-
-	msgView = msgView || (this._children && this._children.get(0));
-	if (this._focusedMsgView && this._focusedMsgView.setFocused) {
-		this._focusedMsgView.setFocused(false);
-	}
-	if (msgView) {
-		if (msgView.setFocused) {
-			msgView.setFocused(true);
-		}
-		this._focusedMsgView = msgView;
-		this._controller._convViewHasFocus = true;
 	}
 };
 
@@ -493,110 +455,58 @@ function(show, noResize) {
 	}
 };
 
-ZmConvView2.prototype.handleKeyAction =
-function(actionCode) {
-	
-	if (!this._controller._convViewHasFocus) { return false; }
-	
-	switch (actionCode) {
+// Scrolls to show the user something new. If the current msg view isn't completely visible,
+// scroll to show the next page. Otherwise, scroll the next expanded msg view to the top.
+// Returns true if scrolling was done.
+ZmConvView2.prototype._keepReading =
+function() {
 
-		case ZmKeyMap.NEXT_MSG:
-		case ZmKeyMap.PREV_MSG:
-			this._selectMsg((actionCode == ZmKeyMap.NEXT_MSG), false, actionCode);
-			break;
-
-		case ZmKeyMap.NEXT_UNREAD:
-		case ZmKeyMap.PREV_UNREAD:
-			this._selectMsg((actionCode == ZmKeyMap.NEXT_UNREAD), true, actionCode);
-			break;
-		
-		case ZmKeyMap.TOGGLE:
-			if (this._focusedMsgView) {
-				this._focusedMsgView._toggleExpansion();
-			}
-			break;
-		
-		case ZmKeyMap.EXPAND:
-		case ZmKeyMap.COLLAPSE:
-			var expand = (actionCode == ZmKeyMap.EXPAND);
-			if (this._focusedMsgView && (this._focusedMsgView._expanded != expand)) {
-				this._focusedMsgView._toggleExpansion();
-			}
-			else if (!expand) {
-				// left arrow on collapsed msg moves focus to CLV
-				this._blur();
-				this._controller._mailListView._focus();
-			}
-			break;
-
-		case ZmKeyMap.EXPAND_ALL:
-		case ZmKeyMap.COLLAPSE_ALL:
-			var expand = (actionCode == ZmKeyMap.EXPAND_ALL);
-			for (var i = 0; i < this._msgViewList.length; i++) {
-				var id = this._msgViewList[i];
-				var msgView = this._msgViews[id];
-				if (msgView && (msgView._expanded != expand)) {
-					msgView._toggleExpansion();
-				}
-			}			
-			break;
-		
-		default:
-			if (this._focusedMsgView) {
-				this._controller._mailListView._selectedMsg = this._focusedMsgView._msg;
-				var returnVal = ZmDoublePaneController.prototype.handleKeyAction.call(this._controller, actionCode);
-				this._controller._mailListView._selectedMsg = null;
-				return returnVal;
-			}
-	}
-	return true;
-};
-
-// the "isUnread" arg means we're handling the magic spacebar shortcut - it will select next expanded
-// msg, which was presumably unread when conv was displayed
-ZmConvView2.prototype._selectMsg =
-function(next, isUnread, actionCode) {
-
-	var startMsgView = this._focusedMsgView || this._msgViews[this._msgViewList[0]];
+	var firstMsgView = this._msgViews[this._msgViewList[0]];
+	var startMsgView = this._currentMsgView || firstMsgView;
 	var el = startMsgView.getHtmlElement();
-	var msgView, done = false;
+
+	// offsetTop is supposed to be relative to parent, but msgView seems to be relative to conv view rather than
+	// messages container, so we figure out an adjustment that also includes margin.
+	if (!this._offsetAdjustment) {
+		var firstEl = firstMsgView.getHtmlElement();
+		this._offsetAdjustment = firstEl.offsetTop - parseInt(DwtCssStyle.getComputedStyleObject(firstEl).marginTop);
+	}
 	
-	if (isUnread && next) {
-		// if bottom of current msg is not visible, scroll down a page
+	var cont = this._messagesDiv;
+	var contHeight = Dwt.getSize(cont).y;
+	var canScroll = (cont.scrollHeight > contHeight && (cont.scrollTop + contHeight < cont.scrollHeight));
+
+	// first, see if the current msg view could be scrolled
+	if (canScroll) {
+		// if bottom of current msg view is not visible, scroll down a page
 		var elHeight = Dwt.getSize(el).y;
-		var cont = this._messagesDiv;
-		var contHeight = Dwt.getSize(cont).y;
-		if ((el.offsetTop + elHeight) > (cont.scrollTop + contHeight + 5)) {	// 5 is fudge factor
+		// is bottom of msg view below bottom of container?
+		if (((el.offsetTop - this._offsetAdjustment) + elHeight) > (cont.scrollTop + contHeight)) {
 			cont.scrollTop = cont.scrollTop + contHeight;
-			done = true;
+			return true;
 		}
 	}
 	
-	el = next ? el.nextSibling : el.previousSibling;
+	// next, see if there's an expanded msg view we could bring to the top
+	el = el.nextSibling;
+	var msgView, done;
 	while (el && !done) {
 		msgView = DwtControl.findControl(el);
-		if (msgView && (!isUnread || msgView._expanded)) {
+		if (msgView && msgView._expanded) {
 			done = true;
 		}
 		else {
-			el = next ? el.nextSibling : el.previousSibling;
+			el = el.nextSibling;
 		}
 	}
-
-	if (done && msgView) {
-		this.setFocusedMsgView(msgView);
-		Dwt.scrollIntoView(el, this._messagesDiv);
+	if (msgView && done && canScroll) {
+		this._scrollToTop(msgView);
+		// following also works to bring msg view to top
+		// cont.scrollTop = el.offsetTop - this._offsetAdjustment;
+		return true;
 	}
-	else if (!done) {
-		this._controller._convViewHasFocus = false;
-		if (isUnread) {
-			this._controller.handleKeyAction(actionCode);
-			this._controller.handleKeyAction(ZmKeyMap.EXPAND);
-		}
-		else {
-			this._controller._mailListView.handleKeyAction(actionCode);
-		}
-	}
+	
+	return false;
 };
 
 /**
@@ -606,7 +516,6 @@ ZmConvView2.prototype._isStandalone =
 function() {
 	return this._standalone;
 };
-
 
 ZmConvView2.prototype._setSelectedMsg =
 function(msg) {
@@ -1406,12 +1315,6 @@ function() {
 	}
 };
 
-ZmMailMsgCapsuleView.prototype.setFocused =
-function(focused) {
-	this.condClassName(focused, DwtCssStyle.FOCUSED);
-	this._header.setFocused(focused);
-};
-
 ZmMailMsgCapsuleView.prototype._changeFolderName = 
 function(oldFolderId) {
 
@@ -1433,7 +1336,6 @@ function(oldFolderId) {
  * 	- has an expansion icon
  * 	- is used to drag the message
  * 	- is the drop target for tags
- * 	- shows focus
  * 	
  * @param params
  */
@@ -1574,11 +1476,6 @@ function(state, force) {
 	}
 };
 
-ZmMailMsgCapsuleViewHeader.prototype.setFocused =
-function(focused) {
-	this.condClassName(focused, DwtCssStyle.FOCUSED);
-};
-
 /**
  * Gets the tool tip content.
  * 
@@ -1676,7 +1573,6 @@ function(ev) {
 	else if (ev.button == DwtMouseEvent.RIGHT) {
 		var el = DwtUiEvent.getTargetWithProp(ev, "id", false, this._htmlElId);
 		if (el == this.getHtmlElement()) {
-			this.setFocused(true);
 			convView.actionedMsgView = this;
 			var target = DwtUiEvent.getTarget(ev);
 			var objMgr = msgView._objectManager;

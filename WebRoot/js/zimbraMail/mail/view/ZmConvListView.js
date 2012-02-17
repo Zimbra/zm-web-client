@@ -138,15 +138,16 @@ function(list, sortField) {
 
 ZmConvListView.prototype.handleKeyAction =
 function(actionCode, ev) {
-	// Enter is normally a list view widget shortcut for DBLCLICK; we need to no-op
-	// it here so that it gets handled as an app shortcut (app shortcuts happen
-	// after widget shortcuts).
+
 	switch (actionCode) {
+		// Enter is normally a list view widget shortcut for DBLCLICK; we need to no-op
+		// it here so that it gets handled as an app shortcut (app shortcuts happen
+		// after widget shortcuts).
 		case DwtKeyMap.DBLCLICK:
 			return false;
-
+		
 		default:
-			return ZmMailListView.prototype.handleKeyAction.call(this, actionCode, ev);
+			return ZmMailListView.prototype.handleKeyAction.apply(this, arguments);
 	}
 };
 

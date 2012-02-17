@@ -103,19 +103,14 @@ function(view, force) {
 // Internally we manage two maps, one for CLV and one for CV2 (if applicable)
 ZmConvListController.prototype.getKeyMapName =
 function() {
-	return this._convViewHasFocus ? "ZmConvView2" : "ZmConvListController";
+	return "ZmConvListController";
 };
 
 ZmConvListController.prototype.handleKeyAction =
-function(actionCode) {
+function(actionCode, ev) {
 
 	DBG.println(AjxDebug.DBG3, "ZmConvListController.handleKeyAction");
 	
-	if (this._convViewHasFocus) {
-		// hand off to ZmConvView2
-		return this._doublePaneView._itemView.handleKeyAction(actionCode);
-	}
-
 	var mlv = this._mailListView;
 	
 	switch (actionCode) {
@@ -177,13 +172,49 @@ function(actionCode) {
 				this._selectItem(mlv, item);
 			}
 			break;
+		
+		case ZmKeyMap.KEEP_READING:
+			if (mlv.getSelectionCount() == 1) {
+				var itemView = this.getItemView();
+				// conv view
+				if (itemView && itemView.isZmConvView2) {
+					if (!itemView._keepReading()) {
+						return this.handleKeyAction(ZmKeyMap.NEXT_UNREAD, ev);
+					}
+				}
+				// msg view (within an expanded conv)
+				else if (itemView && itemView.isZmMailMsgView) {
+					if (!itemView._keepReading()) {
+						// go to next unread msg in this expanded conv, otherwise next unread conv
+						var msg = mlv.getSelection()[0];
+						var conv = msg && appCtxt.getById(msg.cid);
+						var msgList = conv && conv.msgs && conv.msgs.getArray();
+						var msgFound, item;
+						for (var i = 0; i < msgList.length; i++) {
+							var m = msgList[i];
+							msgFound = msgFound || (m.id == msg.id);
+							if (msgFound && m.isUnread) {
+								item = m;
+								break;
+							}
+						}
+						if (item) {
+							this._selectItem(mlv, item);
+						}
+						else {
+							return this.handleKeyAction(ZmKeyMap.NEXT_UNREAD, ev);
+						}
+					}
+				}
+			}
+			break;
 
 		// need to invoke DwtListView method directly since our list view no-ops DBLCLICK
 		case DwtKeyMap.DBLCLICK:
 			return DwtListView.prototype.handleKeyAction.apply(mlv, arguments);
 
 		default:
-			return ZmDoublePaneController.prototype.handleKeyAction.call(this, actionCode);
+			return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
 	}
 	return true;
 };

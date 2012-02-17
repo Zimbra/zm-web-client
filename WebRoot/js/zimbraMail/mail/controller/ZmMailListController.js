@@ -234,7 +234,7 @@ function() {
 
 // We need to stay in sync with what's allowed by _resetOperations
 ZmMailListController.prototype.handleKeyAction =
-function(actionCode) {
+function(actionCode, ev) {
 	DBG.println(AjxDebug.DBG3, "ZmMailListController.handleKeyAction");
 
 	var folder = this._getSearchFolder();
@@ -367,7 +367,7 @@ function(actionCode) {
 			break;
 	
 		default:
-			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
+			return ZmListController.prototype.handleKeyAction.apply(this, arguments);
 	}
 	return true;
 };

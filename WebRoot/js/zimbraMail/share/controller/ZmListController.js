@@ -215,7 +215,8 @@ function() {
  * @return	{Boolean}	<code>true</code> if the action is handled
  */
 ZmListController.prototype.handleKeyAction =
-function(actionCode) {
+function(actionCode, ev) {
+
 	DBG.println(AjxDebug.DBG3, "ZmListController.handleKeyAction");
 	var listView = this._view[this._currentViewId];
 	var hardDelete = false;
@@ -255,7 +256,7 @@ function(actionCode) {
 			break;
 
 		default:
-			return ZmBaseController.prototype.handleKeyAction.call(this, actionCode);
+			return ZmBaseController.prototype.handleKeyAction.apply(this, arguments);
 	}
 	return true;
 };

@@ -146,15 +146,27 @@ function(list) {
 
 ZmMailListView.prototype.handleKeyAction =
 function(actionCode, ev) {
-	if (actionCode == DwtKeyMap.SELECT_NEXT || actionCode == DwtKeyMap.SELECT_PREV) {
-		this._controller.lastListAction = actionCode;
-	} else if (actionCode == DwtKeyMap.SELECT_ALL) {
-		DwtListView.prototype.handleKeyAction.apply(this, arguments);
-		var ctlr = this._controller;
-		ctlr._resetOperations(ctlr.getCurrentToolbar(), this.getSelectionCount());
-		return true;
+
+	switch (actionCode) {
+		// Block widget shortcut for space since we want to handle it as app shortcut.
+		case DwtKeyMap.SELECT_NEXT:
+			if (ev.charCode == 32) {
+				return false;
+			}
+		
+		case DwtKeyMap.SELECT_ALL:
+			DwtListView.prototype.handleKeyAction.apply(this, arguments);
+			var ctlr = this._controller;
+			ctlr._resetOperations(ctlr.getCurrentToolbar(), this.getSelectionCount());
+			return true;
+
+		case DwtKeyMap.SELECT_NEXT:
+		case DwtKeyMap.SELECT_PREV:
+			this._controller.lastListAction = actionCode;
+		
+		default:
+			return DwtListView.prototype.handleKeyAction.apply(this, arguments);
 	}
-	return DwtListView.prototype.handleKeyAction.apply(this, arguments);
 };
 
 ZmMailListView.prototype.getTitle =

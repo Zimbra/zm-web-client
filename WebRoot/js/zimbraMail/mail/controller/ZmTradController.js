@@ -67,6 +67,27 @@ function(search) {
 	this._resetNavToolBarButtons(ZmId.VIEW_TRAD);
 };
 
+ZmTradController.prototype.handleKeyAction =
+function(actionCode, ev) {
+
+	DBG.println(AjxDebug.DBG3, "ZmTradController.handleKeyAction");
+
+	switch (actionCode) {
+		case ZmKeyMap.KEEP_READING:
+			var itemView = this.getItemView();
+			if (itemView) {
+				if (!itemView._keepReading()) {
+					return this.handleKeyAction(ZmKeyMap.NEXT_UNREAD, ev);
+				}
+			}
+			break;
+
+		default:
+			return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
+	}
+	return true;
+};
+
 // Private methods
 
 ZmTradController.prototype._createDoublePaneView = 

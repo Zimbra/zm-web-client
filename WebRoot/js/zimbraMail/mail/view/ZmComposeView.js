@@ -1514,7 +1514,7 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 			var sigIndex = content.indexOf(replaceSignature);
 			var sigLength = replaceSignature && replaceSignature.length || 0;
 
-			if (sigIndex != -1) {
+			if (replaceSignature && (sigIndex != -1)) {
 				var contentBefore = content.substring(0, sigIndex).replace(/\s+$/,""); // Get the message content before the signature and cut off any trailing whitespace
 				var contentAfter = content.substring(sigIndex + sigLength).replace(/^\s+/,""); // Get the message content after the signature and cut off any leading whitespace
 
@@ -1522,6 +1522,15 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 					newSig += "\n";
 				}
 				content = contentBefore + this._getSignatureSeparator() + (newSig || "\n") + contentAfter;
+				done = true;
+			}
+			else {
+				if (isAbove) {
+					content = this._getSignatureSeparator() + (newSig || "\n") + content;
+				}
+				else {
+					content = content + this._getSignatureSeparator() + (newSig || "\n");
+				}
 				done = true;
 			}
 		}

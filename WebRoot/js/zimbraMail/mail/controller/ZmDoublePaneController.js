@@ -159,7 +159,7 @@ function() {
 };
 
 ZmDoublePaneController.prototype.handleKeyAction =
-function(actionCode) {
+function(actionCode, ev) {
 
 	DBG.println(AjxDebug.DBG3, "ZmDoublePaneController.handleKeyAction");
 	var lv = this._listView[this._currentViewId];
@@ -169,12 +169,12 @@ function(actionCode) {
 		case DwtKeyMap.SELECT_NEXT:
 		case DwtKeyMap.SELECT_PREV:
 			if (lv) {
-				return lv.handleKeyAction(actionCode);
+				return lv.handleKeyAction(actionCode, ev);
 			}
 			break;
 
 		default:
-			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
+			return ZmMailListController.prototype.handleKeyAction.apply(this, arguments);
 	}
 	return true;
 };

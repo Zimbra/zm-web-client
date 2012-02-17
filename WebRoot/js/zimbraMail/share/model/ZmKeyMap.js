@@ -133,6 +133,7 @@ ZmKeyMap.GOTO_TASKS				= "GoToTasks";
 ZmKeyMap.GOTO_TRASH				= "GoToTrash";
 ZmKeyMap.GOTO_VOICE				= "GoToVoice";
 ZmKeyMap.HTML_FORMAT			= "HtmlFormat";
+ZmKeyMap.KEEP_READING			= "KeepReading";
 ZmKeyMap.LAST_UNREAD			= "LastUnread";
 ZmKeyMap.LAST_UNREAD_MSG		= "LastUnreadMsg";
 ZmKeyMap.LOGOFF					= "LogOff";
