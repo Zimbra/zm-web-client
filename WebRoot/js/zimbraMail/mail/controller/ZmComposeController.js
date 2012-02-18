@@ -277,23 +277,24 @@ function() {
     }
 	newWinObj.command = "composeDetach";
 	newWinObj.params = {
-		action: action,
-		msg: msg,
-		addrs: addrList,
-		subj: subj,
-		priority: view._getPriority(),
-		forwardHtml: forAttHtml,
-		msgAttId: msgAttId,
-		body: body,
-		composeMode: composeMode,
-		identityId: (identity ? identity.id : null),
-		accountName: this._accountName,
-		backupForm: backupForm,
-		sendUID: sendUID,
-		msgIds: this._msgIds,
-		forAttIds: this._forAttIds,
-		sessionId: this.getSessionId(),
-        readReceipt: requestReadReceipt
+		action:			action,
+		msg:			msg,
+		addrs:			addrList,
+		subj:			subj,
+		priority:		view._getPriority(),
+		forwardHtml:	forAttHtml,
+		msgAttId:		msgAttId,
+		body:			body,
+		composeMode:	composeMode,
+		identityId:		(identity ? identity.id : null),
+		accountName:	this._accountName,
+		backupForm:		backupForm,
+		sendUID:		sendUID,
+		msgIds:			this._msgIds,
+		forAttIds:		this._forAttIds,
+		sessionId:		this.getSessionId(),
+        readReceipt:	requestReadReceipt,
+		sigId:			this.getSelectedSignature()
 	};
 };
 
@@ -981,6 +982,10 @@ function(params) {
 		this._setOptionsMenu();	// reset now that compose view has figured out the inc options
 		appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
 		this._setAddSignatureVisibility();
+		if (params.sigId) {
+			this.setSelectedSignature(params.sigId);
+			this._currentSignatureId = params.sigId;
+		}
 
 		if (params.readReceipt) {
 			var menu = this._optionsMenu[action];
