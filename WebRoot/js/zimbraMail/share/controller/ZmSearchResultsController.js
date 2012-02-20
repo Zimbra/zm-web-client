@@ -117,7 +117,7 @@ function(search, resultsCtlr) {
 	if (appCtxt.getCurrentViewId() == this._currentViewId) {
 		var elements = {};
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = resultsCtlr.getCurrentToolbar();
-		elements[ZmAppViewMgr.C_APP_CONTENT] = resultsCtlr.getCurrentView();
+		elements[ZmAppViewMgr.C_APP_CONTENT] = resultsCtlr.getViewMgr ? resultsCtlr.getViewMgr() : resultsCtlr.getCurrentView();
 		appCtxt.getAppViewMgr().setViewComponents(this._currentViewId, elements, true);
 	}
 	else {
@@ -126,7 +126,7 @@ function(search, resultsCtlr) {
 		elements[ZmAppViewMgr.C_SEARCH_RESULTS_TOOLBAR] = this._toolbar;
 		elements[ZmAppViewMgr.C_TREE] = this._filterPanel;
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = resultsCtlr.getCurrentToolbar();
-		elements[ZmAppViewMgr.C_APP_CONTENT] = resultsCtlr.getCurrentView();
+		elements[ZmAppViewMgr.C_APP_CONTENT] = resultsCtlr.getViewMgr ? resultsCtlr.getViewMgr() : resultsCtlr.getCurrentView();
 		
 		this._app.createView({	viewId:		this._currentViewId,
 								viewType:	this._currentViewType,
