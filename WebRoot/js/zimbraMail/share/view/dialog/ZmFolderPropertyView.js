@@ -116,15 +116,6 @@ function(batchCommand, saveState) {
         }
     }
 
-    // Shared Calendars only
-    if (Dwt.getVisible(this._calendarReminderEl)) {
-        var reminder = this._calendarReminderCheckbox.checked;
-        if (organizer.reminder != reminder) {
-            batchCommand.add(new AjxCallback(organizer, organizer.setSharedReminder, [reminder, null, this._handleErrorCallback]));
-            saveState.commandCount++;
-        }
-    }
-
 };
 
 ZmFolderPropertyView.prototype._handleFolderChange =
@@ -178,7 +169,6 @@ function(event) {
 		this._props.setPropertyVisible(this._colorId, isVisible);
 	}
     this._excludeFbCheckbox.checked = organizer.excludeFreeBusy;
-    this._calendarReminderCheckbox.checked = organizer.reminder;
 
 	var showPerm = organizer.isMountpoint;
 	if (showPerm) {
@@ -209,8 +199,6 @@ function(event) {
 	// TODO: False until server handling of the flag is added
 	//Dwt.setVisible(this._globalMarkReadEl, organizer.type == ZmOrganizer.FOLDER);
     Dwt.setVisible(this._globalMarkReadEl, false);
-
-    Dwt.setVisible(this._calendarReminderEl, (organizer.type == ZmOrganizer.CALENDAR) && organizer.link);
 
 };
 
@@ -257,7 +245,6 @@ function() {
 
 	var excludeFbEl      = this._createCheckboxItem("excludeFb",        ZmMsg.excludeFromFreeBusy);
 	var globalMarkReadEl = this._createCheckboxItem("globalMarkRead",   ZmMsg.globalMarkRead);
-	var calReminderEl    = this._createCheckboxItem("calendarReminder", ZmMsg.sharedCalendarReminder);
 
 	this._props = new DwtPropertySheet(this);
 	this._color = new ZmColorButton({parent:this});
@@ -273,7 +260,6 @@ function() {
 	container.appendChild(this._props.getHtmlElement());
 	container.appendChild(excludeFbEl);
 	container.appendChild(globalMarkReadEl);
-	container.appendChild(calReminderEl);
 
     this._contentEl = container;
 

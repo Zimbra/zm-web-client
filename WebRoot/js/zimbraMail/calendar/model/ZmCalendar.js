@@ -37,7 +37,6 @@
 ZmCalendar = function(params) {
 	params.type = ZmOrganizer.CALENDAR;
 	ZmFolder.call(this, params);
-	this.reminder = params.reminder;
 };
 
 ZmCalendar.prototype = new ZmFolder;
@@ -218,11 +217,6 @@ function(obj) {
 		fields["excludeFreeBusy"] = true;
 		doNotify = true;
 	}
-	if (obj.reminder !== undefined && !obj._isRemote) {
-		this.reminder = obj.reminder;
-		fields["reminder"] = true;
-		doNotify = true;
-	}
 
 	if (doNotify) {
 		this._notify(ZmEvent.E_MODIFY, {fields: fields});
@@ -348,34 +342,6 @@ function() {
 	return ZmFolder.prototype.isReadOnly.call(this);
 };
 
-
-/**
- * Sets the reminder flag
- *
- * @param	{Boolean}	        sharedReminder  if <code>true</code>, display reminders from shared calendars
- * @param	{AjxCallback}	    callback		the callback
- * @param	{AjxCallback}	    errorCallback	the error callback
- * @param   {ZmBatchCommand}    batchCmd        optional batch command
- */
-ZmCalendar.prototype.setSharedReminder =
-function(sharedReminder, callback, errorCallback, batchCmd) {
-	if (this.reminder == sharedReminder) { return; }
-
-    var soapDoc = AjxSoapDoc.create("EnableSharedReminderRequest", "urn:zimbraMail");
-
-    var linkNode = soapDoc.set("link");
-    linkNode.setAttribute("id", this.id);
-    linkNode.setAttribute("reminder", sharedReminder ? "1" : "0");
-
-    if (batchCmd) {
-        batchCmd.addRequestParams(soapDoc, callback, errorCallback);
-    } else {
-        appCtxt.getAppController().sendRequest({soapDoc:soapDoc,
-                                                asyncMode:true,
-                                                callback:callback,
-                                                errorCallback:errorCallback});
-    }
-};
 
 /**
  * Checks if the calendar supports public access.

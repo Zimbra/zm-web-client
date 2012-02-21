@@ -495,7 +495,7 @@ function() {
     for (var i = 0; i < allCalendars.length; i++) {
         var cal = allCalendars[i];
         if (!cal.noSuchFolder && (cal.id != ZmOrganizer.ID_TRASH) &&
-            ((cal.isRemote && !cal.isRemote()) || cal.reminder)) {
+            (cal.isRemote && !cal.isRemote())) {
             this._reminderCalendarIds.push(cal.id);
         }
         if (cal.isChecked) {

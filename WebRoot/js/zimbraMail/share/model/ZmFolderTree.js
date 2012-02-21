@@ -252,7 +252,6 @@ function(type, parent, obj, tree, path, elementType, account) {
 		perm: 		obj.perm,
 		link: 		elementType == "link",
 		account:	account,
-		reminder:	obj.reminder,
         retentionPolicy: obj.retentionPolicy
 	};
 
