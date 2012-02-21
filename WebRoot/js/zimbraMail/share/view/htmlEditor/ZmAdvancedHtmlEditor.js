@@ -413,7 +413,9 @@ function() {
         this.initDefaultFontSize(editor);
 	}
     var field = this.getContentField();
-    if(field) field.value = "";
+    if(field){
+        field.parentNode.replaceChild(field.cloneNode(false), field);//To clear undo/redo queue of textarea
+    }
 };
 
 ZmAdvancedHtmlEditor.prototype.reparentHtmlElement =
