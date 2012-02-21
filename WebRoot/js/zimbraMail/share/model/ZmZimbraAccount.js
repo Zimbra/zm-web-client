@@ -596,8 +596,6 @@ function(callback, errorCallback, batchCmd) {
  */
 ZmZimbraAccount.prototype.saveImplicitPrefs =
 function() {
-	// HACK: in multi-account, hanging noop gets dropped and somehow the auth token changes
-	ZmCsfeCommand._curAuthToken = ZmCsfeCommand.getAuthToken();
 
 	var list = [];
 	for (var id in ZmSetting.CHANGED_IMPLICIT) {

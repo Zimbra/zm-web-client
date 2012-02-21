@@ -23,7 +23,7 @@
 /**
  * Constructor. Use {@link execute} to construct the authentication.
  * @class
- * This class represents authentication.
+ * This class represents in-app authentication following the expiration of the session.
  * 
  * @see		#execute
  */
@@ -82,19 +82,10 @@ function(uname, pword, callback) {
 ZmAuthenticate.prototype._handleResponseExecute =
 function(callback, result) {
 	if (!result.isException()) {
-		var resp = result.getResponse().Body.AuthResponse;
-		this._setAuthToken(resp);
+		ZmCsfeCommand.noAuth = false;
 	}
 
-	if (callback) callback.run(result);
-};
-
-/**
- * @private
- */
-ZmAuthenticate.prototype._setAuthToken =
-function(resp) {
-	var lifetime = appCtxt.rememberMe ? resp.lifetime : 0;
-	// ignore sessionId so we get a <refresh> block
-	ZmCsfeCommand.setAuthToken(resp.authToken[0]._content, lifetime);
+	if (callback) {
+		callback.run(result);
+	}
 };

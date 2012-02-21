@@ -172,7 +172,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     window.appRequestLocaleId = "${locale}";
     window.appDevMode     = ${isDevMode};
 
-    if(!ZmCsfeCommand.getAuthToken()){
+    if(ZmCsfeCommand.noAuth){
         window.location = window.appContextPath;
     }
 
