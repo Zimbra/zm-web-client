@@ -1187,7 +1187,13 @@ function(account) {
 ZmAppCtxt.prototype.getUserDomain =
 function(account) {
 	if (!this.userDomain) {
-		var username = this.getUsername(account);
+        var username;
+        if(this.isExternalAccount()) {
+            username = this.get(ZmSetting.EXTERNAL_USER_MAIL_ADDRESS);
+        }
+        else {
+		    username = this.getUsername(account);
+        }
 		if (username) {
 			var parts = username.split("@");
 			this.userDomain = (parts && parts.length) ? parts[1] : "";

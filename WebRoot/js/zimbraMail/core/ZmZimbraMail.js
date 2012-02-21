@@ -2489,8 +2489,17 @@ function() {
 		window.platform.icon().imageSpec = "resource://webapp/icons/default/launcher.ico";
 		window.platform.icon().title = null;
 	}
-
-	var url = AjxUtil.formatUrl({path:appContextPath, qsArgs:{loginOp:'logout'}});
+    var urlParams = {
+                path:appContextPath,
+                qsArgs: {
+                        loginOp:'logout'
+                    }
+                };
+    if(appCtxt.isExternalAccount()) {
+        var vAcctDomain = appCtxt.getUserDomain();
+        urlParams.qsArgs.virtualacctdomain = vAcctDomain ? vAcctDomain : "";
+    }
+	var url = AjxUtil.formatUrl(urlParams);
 	ZmZimbraMail.sendRedirect(url);	// will trigger onbeforeunload
 	if (AjxEnv.isFirefox) {
 		DBG.println(AjxDebug.DBG1, "calling setExitTimer from logoff "  + new Date().toLocaleString());
