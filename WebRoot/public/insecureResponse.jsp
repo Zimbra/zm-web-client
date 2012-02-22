@@ -23,6 +23,7 @@
 	response.setContentType("text/html");
 
 	// data
+	String emptyJsonObject = "{}";
 	String data = request.getParameter("data");
 	if (data != null) {
 		// TODO: protecting against script tag in text is making some assumptions
@@ -35,5 +36,7 @@
 var reqId = "${zm:jsEncode(param.reqId)}";
 </script>
 <script>
-parent.parent.parent.appCtxt.getRequestMgr().sendRequest({reqId:reqId,response:${ (not empty data and data ne "") ? zm:cook(data) : "{}"}});
+var params = {reqId: reqId};
+params.response = "${ (not empty data and data ne "") ? zm:jsEncode(data) : emptyJsonObject }";
+parent.parent.parent.appCtxt.getRequestMgr().sendRequest(params);
 </script>
