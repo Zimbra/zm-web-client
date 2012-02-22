@@ -477,6 +477,12 @@
     <env-entry-value>%%zimbraMailTrustedIP%%</env-entry-value>
   </env-entry>
   
+  <env-entry>
+    <env-entry-name>httpLocalBind</env-entry-name>
+    <env-entry-type>java.lang.String</env-entry-type>
+    <env-entry-value>%%zimbraMailLocalBind%%</env-entry-value>
+  </env-entry>
+  
   <jsp-config>
     <jsp-property-group>
       <url-pattern>/h/ac</url-pattern>
