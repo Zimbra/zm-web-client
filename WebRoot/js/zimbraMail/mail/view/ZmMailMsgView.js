@@ -908,11 +908,11 @@ function(isTextMsg, html, isTruncated) {
 
 // Displays the given content in an IFRAME or a DIV.
 ZmMailMsgView.prototype._displayContent =
-function(container, html, isTextMsg, isTruncated, index, origText) {
+function(params) {
 
-	html = html || "";
+	var html = params.html || "";
 	
-	if (!isTextMsg) {
+	if (!params.isTextMsg) {
 		//Microsoft silly smilies
 		html = html.replace(/<span style="font-family:Wingdings">J<\/span>/g, "\u263a"); // :)
 		html = html.replace(/<span style="font-family:Wingdings">L<\/span>/g, "\u2639"); // :(
@@ -925,7 +925,7 @@ function(container, html, isTextMsg, isTruncated, index, origText) {
 	// - there are <img> tags
 	var isSpam = (this._msg && this._msg.folderId == ZmOrganizer.ID_SPAM);
 	var imagesNotShown = (!this._msg || !this._msg.showImages);
-	this._needToShowInfoBar = (!isTextMsg &&
+	this._needToShowInfoBar = (!params.isTextMsg &&
 		(!appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || isSpam) &&
 		imagesNotShown && /<img/i.test(html));
 	var displayImages;
@@ -936,12 +936,12 @@ function(container, html, isTextMsg, isTruncated, index, origText) {
 	var callback;
 	var msgSize = (html.length / 1024);
 	var maxHighlightSize = appCtxt.get(ZmSetting.HIGHLIGHT_OBJECTS);
-	if (isTextMsg) {
+	if (params.isTextMsg) {
 		if (this._objectManager) {
 			if (msgSize <= maxHighlightSize) {
 				callback = this.lazyFindMailMsgObjects.bind(this, 500);
 			} else {
-				this._makeHighlightObjectsDiv(origText);
+				this._makeHighlightObjectsDiv(params.origText);
 			}
 		}
 		if (AjxEnv.isSafari) {
@@ -963,7 +963,7 @@ function(container, html, isTextMsg, isTruncated, index, origText) {
 
 	var msgTruncated;
 	this._isMsgTruncated = false;
-	if (isTruncated) {
+	if (params.isTruncated) {
 		this._isMsgTruncated = true;
 		var msgTruncatedDiv = document.getElementById(this._msgTruncatedId);
 		if (!msgTruncatedDiv) {
@@ -983,7 +983,7 @@ function(container, html, isTextMsg, isTruncated, index, origText) {
 
 	this._msgBodyDivId = [this._htmlElId, ZmId.MV_MSG_BODY].join("_");
 	
-	this._usingIframe = this._useIframe(isTextMsg, html, isTruncated);
+	this._usingIframe = this._useIframe(params.isTextMsg, html, params.isTruncated);
 	DBG.println(AjxDebug.DBG1, "Use IFRAME: " + this._usingIframe);
 	
 	if (this._usingIframe) {
@@ -991,8 +991,8 @@ function(container, html, isTextMsg, isTruncated, index, origText) {
 		var inner_styles = AjxEnv.isIE ? ".MsgBody-text, .MsgBody-text * { font: 10pt monospace; }" : "";
 		var params = {
 			parent:					this,
-			parentElement:			container,
-			index:					index,
+			parentElement:			params.container,
+			index:					params.index,
 			className:				this._getBodyClass(),
 			id:						this._msgBodyDivId,
 			hidden:					true,
@@ -1004,6 +1004,11 @@ function(container, html, isTextMsg, isTruncated, index, origText) {
 			useKbMgmt:				true
 		};
 		var ifw = this._ifw = new DwtIframe(params);
+		if (ifw.initFailed) {
+			AjxDebug.println(AjxDebug.MSG_DISPLAY, "Message display: IFRAME was not ready");
+			appCtxt.setStatusMsg(ZmMsg.messageDisplayProblem);
+			return;
+		}
 		this._iframeId = ifw.getIframe().id;
 
 		var idoc = ifw.getDocument();
@@ -1021,7 +1026,7 @@ function(container, html, isTextMsg, isTruncated, index, origText) {
 		}
 
 		// assign the right class name to the iframe body
-		idoc.body.className = this._getBodyClass() + (isTextMsg ? " MsgBody-text" : " MsgBody-html");
+		idoc.body.className = this._getBodyClass() + (params.isTextMsg ? " MsgBody-text" : " MsgBody-html");
 
 		idoc.body.style.height = "auto"; //see bug 56899 - if the body has height such as 100% or 94%, it causes a problem in FF in calcualting the iframe height. Make sure the height is clear.
 
@@ -1056,11 +1061,16 @@ function(container, html, isTextMsg, isTruncated, index, origText) {
 	else {
 		var div = this._containerEl = document.createElement("div");
 		div.id = this._msgBodyDivId;
-		div.className = "MsgBody MsgBody-" + (isTextMsg ? "text" : "html");
+		div.className = "MsgBody MsgBody-" + (params.isTextMsg ? "text" : "html");
 		Dwt.setScrollStyle(div, Dwt.CLIP);
 		var parent = this.getHtmlElement();
-		if (index != null) {
-			parent.insertBefore(div, parent.childNodes[index])
+		if (!parent) {
+			AjxDebug.println(AjxDebug.MSG_DISPLAY, "Message display: DIV was not ready");
+			appCtxt.setStatusMsg(ZmMsg.messageDisplayProblem);
+			return;
+		}
+		if (params.index != null) {
+			parent.insertBefore(div, parent.childNodes[params.index])
 		}
 		else {
 			parent.appendChild(div);
@@ -1068,7 +1078,7 @@ function(container, html, isTextMsg, isTruncated, index, origText) {
 		div.innerHTML = this._cleanedHtml || html;
 	}
 
-	if (!isTextMsg) {
+	if (!params.isTextMsg) {
 		this._htmlBody = this.getContentContainer().innerHTML;
 
 		// TODO: only call this if top-level is multipart/related?
@@ -1602,7 +1612,13 @@ function(msg, container, callback, index) {
 				}
 			}
 		}
-		this._displayContent(el, html.join(""), !hasHtmlPart, false, index, origText);
+		this._displayContent({	container:		el,
+								html:			html.join(""),
+								isTextMsg:		!hasHtmlPart,
+								isTruncated:	false,
+								index:			index,
+								origText:		origText
+							});
 	} else {
 		var bodyPart = msg.getBodyPart();
 		if (bodyPart) {
@@ -1641,7 +1657,12 @@ function(msg, container, callback, index) {
 					content = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: true});
 				}
 
-				this._displayContent(el, content, false, bodyPart.truncated, index);
+				this._displayContent({	container:		el,
+										html:			content,
+										isTextMsg:		false,
+										isTruncated:	bodyPart.truncated,
+										index:			index
+									});
 			} else if (ZmMimeTable.isRenderableImage(bodyPart.ct)) {
 				var html = [
 					"<img zmforced='1' class='InlineImage' src='",
@@ -1649,7 +1670,12 @@ function(msg, container, callback, index) {
 					"&id=", msg.id,
 					"&part=", bodyPart.part, "'>"
 				].join("");
-				this._displayContent(el, html, false, false, index);
+				this._displayContent({	container:		el,
+										html:			html,
+										isTextMsg:		false,
+										isTruncated:	false,
+										index:			index
+									});
 			} else {
 				
 				var desiredPartType = (appCtxt.get(ZmSetting.VIEW_AS_HTML)) ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
@@ -1669,11 +1695,22 @@ function(msg, container, callback, index) {
 						isTextMsg = false; //To make sure we display html content properly
 					}
 					content = isTextMsg ? AjxStringUtil.convertToHtml(content) : content;
-					this._displayContent(el, content, isTextMsg, bodyPart.truncated, index, bodyPart.content);
+					this._displayContent({	container:		el,
+											html:			content,
+											isTextMsg:		isTextMsg,
+											isTruncated:	bodyPart.truncated,
+											index:			index,
+											origText:		bodyPart.content
+										});
 				} else {					
 					if (content != null) {
 						content = (bodyPart.ct != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
-						this._displayContent(el, content, true, false, index);
+						this._displayContent({	container:		el,
+												html:			content,
+												isTextMsg:		true,
+												isTruncated:	false,
+												index:			index
+											});
 					}
 				}
 			}
