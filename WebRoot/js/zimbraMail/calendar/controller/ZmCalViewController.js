@@ -75,7 +75,8 @@ ZmCalViewController = function(container, calApp, sessionId, searchResultsContro
 	this._listeners[ZmOperation.DELETE_INSTANCE]		= this._deleteListener.bind(this);
 	this._listeners[ZmOperation.DELETE_SERIES]			= this._deleteListener.bind(this);
 	this._listeners[ZmOperation.FORWARD_APPT]			= this._forwardListener.bind(this);
-	this._listeners[ZmOperation.PROPOSE_NEW_TIME]		= this._proposeTimeListener.bind(this);
+    this._listeners[ZmOperation.PROPOSE_NEW_TIME]		= this._proposeTimeListener.bind(this);
+    this._listeners[ZmOperation.REINVITE_ATTENDEES]		= this._reinviteAttendeesListener.bind(this);
 	this._listeners[ZmOperation.FORWARD_APPT_INSTANCE]	= this._forwardListener.bind(this);
 	this._listeners[ZmOperation.FORWARD_APPT_SERIES]	= this._forwardListener.bind(this);
 	this._listeners[ZmOperation.REPLY]					= this._replyListener.bind(this);
@@ -1672,6 +1673,56 @@ ZmCalViewController.prototype._proposeTimeContinue =
 function(appt, mode) {
 	appt.setViewMode(mode);
 	AjxDispatcher.run("GetApptComposeController").proposeNewTime(appt);
+};
+
+ZmCalViewController.prototype._reinviteAttendeesListener =
+function(ev) {
+    var items = this.getSelection();
+    // listview cannot handle reinvite for multiple items at once
+    if (this._viewMgr.getCurrentViewName() == ZmId.VIEW_CAL_LIST && items.length > 1) {
+        return;
+    }
+    // Get the details.  Otherwise, on send, any missing information will be deleted server side
+    var detailsSuccessCallback = this._sendAppt.bind(this, items[0]);
+    items[0].getDetails(null, detailsSuccessCallback, this._errorCallback);
+};
+
+ZmCalViewController.prototype._sendAppt =
+function(appt) {
+    var mode = appt.viewMode;
+    appt.viewMode =  ZmCalItem.MODE_EDIT;
+
+    var callback = new AjxCallback(this, this._handleResponseSave, appt);
+    var errorCallback = new AjxCallback(this, this._handleErrorSave, appt);
+    appt.send(null, callback, errorCallback);
+
+    appt.viewMode = mode;
+};
+
+ZmCalViewController.prototype._handleResponseSave =
+function(response) {
+    appCtxt.setStatusMsg(ZmMsg.apptSent);
+};
+
+ZmCalViewController.prototype._handleErrorSave =
+function(calItem, ex) {
+    var status = calItem.processErrorSave(ex);
+    var handled = false;
+
+    if (status.continueSave) {
+        this._sendAppt(calItem);
+        handled = true;
+    } else {
+        if (status.errorMessage) {
+            // Handled the error, display the error message
+            handled = true;
+            var dialog = appCtxt.getMsgDialog();
+            dialog.setMessage(status.errorMessage, DwtMessageDialog.CRITICAL_STYLE);
+            dialog.popup();
+        }
+        appCtxt.notifyZimlets("onSaveApptFailure", [this, calItem, ex]);
+    }
+    return handled;
 };
 
 ZmCalViewController.prototype._doForward =

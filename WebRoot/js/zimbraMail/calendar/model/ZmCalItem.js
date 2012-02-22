@@ -2386,6 +2386,40 @@ function(respName, callback, result) {
 	}
 };
 
+ZmCalItem.prototype.processErrorSave =
+function(ex) {
+	// TODO: generalize error message for calItem instead of just Appt
+    var status = {
+        continueSave: false,
+        errorMessage: ""
+    };
+	if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
+		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
+		var invalidMsg = (invalid && invalid.length)
+			? AjxMessageFormat.format(ZmMsg.apptSendErrorInvalidAddresses, AjxStringUtil.htmlEncode(invalid.join(", "))) : null;
+		status.errorMessage = ZmMsg.apptSendErrorAbort + "<br/>" + invalidMsg;
+	} else if (ex.code == ZmCsfeException.MAIL_SEND_PARTIAL_ADDRESS_FAILURE) {
+		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
+		status.errorMessage = (invalid && invalid.length)
+			? AjxMessageFormat.format(ZmMsg.apptSendErrorPartial, AjxStringUtil.htmlEncode(invalid.join(", ")))
+			: ZmMsg.apptSendErrorAbort;
+	} else if(ex.code == ZmCsfeException.MAIL_MESSAGE_TOO_BIG) {
+        status.errorMessage = (this.type == ZmItem.TASK) ? ZmMsg.taskSaveErrorToobig : ZmMsg.apptSaveErrorToobig;
+    } else if (ex.code == ZmCsfeException.MAIL_INVITE_OUT_OF_DATE) {
+        if(!this.isVersionIgnored()){
+            this.setIgnoreVersion(true);
+            status.continueSave = true;
+        }
+        else{
+            status.errorMessage = ZmMsg.inviteOutOfDate;
+            this.setIgnoreVersion(false);
+        }
+    } else if (ex.code == ZmCsfeException.MAIL_NO_SUCH_CALITEM) {
+        status.errorMessage = ex.getErrorMsg([ex.getData("itemId")]);
+    }
+
+    return status;
+};
 
 ZmCalItem.prototype.setProposedTimeCallback =
 function(callback) {

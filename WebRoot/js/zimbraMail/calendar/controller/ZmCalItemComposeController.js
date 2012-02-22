@@ -467,45 +467,20 @@ function(calItem, result) {
 ZmCalItemComposeController.prototype._handleErrorSave =
 function(calItem, ex) {
 	// TODO: generalize error message for calItem instead of just Appt
-	var msg = null;
-	var continueSave = false;
+	var status = calItem.processErrorSave(ex);
 	var handled = false;
-	if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
-		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
-		var invalidMsg = (invalid && invalid.length)
-			? AjxMessageFormat.format(ZmMsg.apptSendErrorInvalidAddresses, AjxStringUtil.htmlEncode(invalid.join(", "))) : null;
-		msg = ZmMsg.apptSendErrorAbort + "<br/>" + invalidMsg;
-	} else if (ex.code == ZmCsfeException.MAIL_SEND_PARTIAL_ADDRESS_FAILURE) {
-		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
-		msg = (invalid && invalid.length)
-			? AjxMessageFormat.format(ZmMsg.apptSendErrorPartial, AjxStringUtil.htmlEncode(invalid.join(", ")))
-			: ZmMsg.apptSendErrorAbort;
-	} else if(ex.code == ZmCsfeException.MAIL_MESSAGE_TOO_BIG) {
-        msg = (calItem.type == ZmItem.TASK) ? ZmMsg.taskSaveErrorToobig : ZmMsg.apptSaveErrorToobig;
-    } else if (ex.code == ZmCsfeException.MAIL_INVITE_OUT_OF_DATE) {
-        if(!calItem.isVersionIgnored()){
-            calItem.setIgnoreVersion(true);
-            this.saveCalItemContinue(calItem);
-            continueSave = true;
-        }
-        else{
-            msg = ZmMsg.inviteOutOfDate;
-            calItem.setIgnoreVersion(false);
-        }
-    } else if (ex.code == ZmCsfeException.MAIL_NO_SUCH_CALITEM) {
-        msg = ex.getErrorMsg([ex.getData("itemId")]);
-    }
 
-    if (continueSave) {
+    if (status.continueSave) {
+        this.saveCalItemContinue(calItem);
         handled = true;
     } else {
         // Enable toolbar if not attempting to continue the Save
         this.enableToolbar(true);
-        if (msg) {
+        if (status.errorMessage) {
             // Handled the error, display the error message
             handled = true;
             var dialog = appCtxt.getMsgDialog();
-            dialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+            dialog.setMessage(status.errorMessage, DwtMessageDialog.CRITICAL_STYLE);
             dialog.popup();
         }
         appCtxt.notifyZimlets("onSaveApptFailure", [this, calItem, ex]);
