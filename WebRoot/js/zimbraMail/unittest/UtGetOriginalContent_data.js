@@ -595,7 +595,7 @@ roland\n\
 	},
 		
 	// 23
-	// "wrote" delimiter split across two lines
+	// "wrote" delimiter split across two lines, top post
 	// Text: U W Q
 	{
 		input: "\
@@ -616,6 +616,37 @@ On Feb 13, 2010, at 2:05 AM, Satishkumar Sugumaran\n\
 >\n\
 > Guys, any idea if these are going to be fixable (amid all the move\n\
 > chaos)?\n\
+",
+		output: "\
+If not fixed try to leave a comment so that me/rajesh can look into it\n\
+this weekend, lite client bug are already closed\n\
+\n\
+-satish s\n\
+"
+	},
+		
+	// 24
+	// "wrote" delimiter split across two lines, bottom post
+	// Text: W Q U
+	{
+		input: "\
+On Feb 13, 2010, at 2:05 AM, Satishkumar Sugumaran\n\
+<satishs@zimbra.com> wrote:\n\
+\n\
+>\n\
+>\n\
+> -satish s\n\
+>\n\
+> On Feb 11, 2010, at 11:55 PM, Marc MacIntyre <marcmac@zimbra.com>\n\
+> wrote:\n\
+>\n\
+> Guys, any idea if these are going to be fixable (amid all the move\n\
+> chaos)?\n\
+\n\
+If not fixed try to leave a comment so that me/rajesh can look into it\n\
+this weekend, lite client bug are already closed\n\
+\n\
+-satish s\n\
 ",
 		output: "\
 If not fixed try to leave a comment so that me/rajesh can look into it\n\
