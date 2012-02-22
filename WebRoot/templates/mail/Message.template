@@ -495,6 +495,14 @@
                 </span>
             </td>
         </tr>
+        <tr id='${replyAttRowId}' style='display:none;'>
+            <td></td>
+            <td colspan="2">
+                <a class='FakeAnchor' onclick="window.appCtxt.getCurrentView()._addReplyAttachments()">
+                    <$=ZmMsg.replyAttach$>
+                </a>
+            </td>
+        </tr>
 	</table>
 	<!-- compose editor is automatically appended below the header -->
 </template>
@@ -587,7 +595,7 @@
 
                <span  id='<$= spanId $>' class="AttachmentLoading attachmentBubble AttachmentSpan">
                     <span>
-                       <input type="hidden" value='<$=attachment.part$>' name='<$= data.fwdFieldName $>' >
+                       <input type="hidden" mid='<$=attachment.mid$>' value='<$=attachment.part$>' name='<$= data.fwdFieldName $>' >
                    </span>
 
                    <$ if(appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) { $>

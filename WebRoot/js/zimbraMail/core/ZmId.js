@@ -667,6 +667,7 @@ ZmId.CMP_SUBJECT_INPUT		= "_subject_control";
 ZmId.CMP_IDENTITY_ROW		= "_identity_row";
 ZmId.CMP_IDENTITY_SELECT	= "_identity_control";
 ZmId.CMP_PRIORITY			= "_priority";
+ZmId.CMP_REPLY_ATT_ROW		= "_reply_attachments_link";
 ZmId.CMP_ATT_ROW			= "_attachments_row";
 ZmId.CMP_ATT_DIV			= "_attachments_div";
 ZmId.CMP_ATT_BTN			= "_attachments_btn";

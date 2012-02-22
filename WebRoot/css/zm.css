@@ -1065,7 +1065,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .zdnd_tooltip {
 	display:none;
 	color:#666666;
-	padding-left:70px;
+	padding-left:2px;
+}
+
+.reply_attachments {
+    color:#666666;
+	cursor:pointer;
 }
 
 /*

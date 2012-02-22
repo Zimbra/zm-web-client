@@ -101,6 +101,7 @@ ZmComposeView.DIALOG_Y 					= 100;
 ZmComposeView.UPLOAD_FIELD_NAME			= "attUpload";
 ZmComposeView.FORWARD_ATT_NAME			= "ZmComposeView_forAttName";
 ZmComposeView.FORWARD_MSG_NAME			= "ZmComposeView_forMsgName";
+ZmComposeView.ADD_ORIG_MSG_ATTS			= "add_original_attachments";
 
 // max # of attachments to show
 ZmComposeView.SHOW_MAX_ATTACHMENTS		= AjxEnv.is800x600orLower ? 2 : 3;
@@ -427,6 +428,12 @@ function(msg) {
 	return false;
 };
 
+
+ZmComposeView.prototype._addReplyAttachments =
+function(){
+    this._showForwardField(this._msg, ZmComposeView.ADD_ORIG_MSG_ATTS);
+};
+
 ZmComposeView.prototype._handleInlineAtts =
 function(msg, handleInlineDocs){
 
@@ -630,6 +637,7 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 	msg.setTopPart(top);
 	msg.setSubject(subject);
 	msg.setForwardAttIds(forwardAttIds);
+    msg.setForwardAttObjs(this._getForwardAttObjs(forwardAttIds));
     if (!contactId) {
     //contactId not passed in, but vcard signature may be set
         if (this._msg && this._msg._contactAttIds){
@@ -2022,6 +2030,16 @@ function() {
 	return new DwtPoint(loc.x + ZmComposeView.DIALOG_X, loc.y + ZmComposeView.DIALOG_Y);
 };
 
+ZmComposeView.prototype._getForwardAttObjs =
+function(parts) {
+    var forAttObjs = [];
+	for (var i = 0; i < parts.length; i++) {
+      if (this._partToAttachmentMap[i].part == parts[i] )
+			forAttObjs.push({part:parts[i], mid:this._partToAttachmentMap[i].mid});
+	}
+	return forAttObjs;
+};
+
 ZmComposeView.prototype._getForwardAttIds =
 function(name, removeOriginalAttachments) {
 	var forAttIds = [];
@@ -2031,7 +2049,7 @@ function(name, removeOriginalAttachments) {
 	for (var i = 0; i < forAttList.length; i++) {
 			var part = forAttList[i].value;
             if (this._partToAttachmentMap.length && removeOriginalAttachments){
-			    var att = this._partToAttachmentMap[part];
+			    var att = this._partToAttachmentMap[i].part;
 			    var original = this._originalAttachments[att.label];
 			    original = original && [att.sizeInBytes];
                 if (removeOriginalAttachments && original) {
@@ -2692,7 +2710,8 @@ function(templateId) {
 		identityRowId:		ZmId.getViewId(this._view, ZmId.CMP_IDENTITY_ROW),
 		identitySelectId:	ZmId.getViewId(this._view, ZmId.CMP_IDENTITY_SELECT),
 		priorityId:			ZmId.getViewId(this._view, ZmId.CMP_PRIORITY),
-		attRowId:		ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
+        replyAttRowId:      ZmId.getViewId(this._view, ZmId.CMP_REPLY_ATT_ROW),
+		attRowId:		    ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
 		attDivId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_DIV),
 		attBtnId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_BTN),
 		zdndToolTipId:		ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP),
@@ -2881,17 +2900,14 @@ function() {
 	this._attButton.setEnabled(false);
     this.enableToolbarButtons(this._controller, false);
 	this._controller._uploadingProgress = true;
-    var dndTooltip = document.getElementById(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP));
-    if (dndTooltip)
-            dndTooltip.style.display = "none";
+    Dwt.setVisible(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP), false);
+
 };
 
 ZmComposeView.prototype.checkAttachments =
 function(){
     if (!this._attachCount) return;
-    var dndTooltip = document.getElementById(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP));
-    if (dndTooltip)
-            dndTooltip.style.display = "none";
+    Dwt.setVisible(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP), false);
 };
 
 ZmComposeView.prototype.updateAttachFileNode =
@@ -3225,9 +3241,24 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 		html = AjxTemplate.expand("mail.Message#ForwardOneMessage", {message:msg});
 		this._attachCount = 1;
 	}
-	else if (msg && (msg.hasAttach || includeInlineImages || includeInlineAtts))
+	else if (msg && (msg.hasAttach || includeInlineImages || includeInlineAtts || (action == ZmComposeView.ADD_ORIG_MSG_ATTS)))
 	{
 		var attInfo = msg.getAttachmentInfo(false, includeInlineImages, includeInlineAtts);
+
+        if (action == ZmComposeView.ADD_ORIG_MSG_ATTS){
+                attInfo = attInfo.concat(this._replyAttachInfo);
+                this._msg.attachments = this._msg.attachments.concat(this._replyAttachments);
+                this._replyAttachInfo = this._replyAttachments = [];
+                Dwt.setVisible(ZmId.getViewId(this._view, ZmId.CMP_REPLY_ATT_ROW), false);
+        } else if (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL){
+                if (attInfo && attInfo.length)
+                    this._replyAttachInfo = attInfo;
+                this._replyAttachments = this._msg.attachments;
+                attInfo = this.att = this._msg.attachments = [];
+                this._attachCount = 0;
+                Dwt.setVisible(ZmId.getViewId(this._view, ZmId.CMP_REPLY_ATT_ROW), true);
+                return;
+        }
 
 		if (attInfo.length > 0) {
 			for (var i = 0; i < attInfo.length; i++) {
@@ -3238,7 +3269,7 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 					text:	AjxStringUtil.clipFile(att.label, 30)
 				};
 				att.link = ZmMailMsgView.getMainAttachmentLinkHtml(params);
-				this._partToAttachmentMap[att.part] = att;
+				this._partToAttachmentMap[i] = att;
 				if (!this._originalAttachmentsInitialized) {
 					if (!this._originalAttachments[att.label]) {
 						this._originalAttachments[att.label] = [];
@@ -3247,7 +3278,13 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 				}
 			}
 			attIncludeOrigLinkId = ZmId.getViewId(this._view, ZmId.CMP_ATT_INCL_ORIG_LINK);
-			var data = {
+
+
+            if (action == ZmComposeView.ADD_ORIG_MSG_ATTS){
+                action = this._action;
+            }
+
+            var data = {
 				attachments:		attInfo,
 				isNew:				(action == ZmOperation.NEW_MESSAGE),
 				isForward:			(action == ZmOperation.FORWARD),
@@ -3260,6 +3297,7 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 			};
 			html = AjxTemplate.expand("mail.Message#ForwardAttachments", data);
             this._attachCount = attInfo.length;
+            this.checkAttachments();
 		}
 	} else if (this._msgIds && this._msgIds.length) {
 		// use main window's appCtxt

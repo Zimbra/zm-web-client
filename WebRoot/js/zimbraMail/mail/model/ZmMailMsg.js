@@ -663,6 +663,17 @@ function(ids) {
 	this._forAttIds = ids;
 };
 
+
+/**
+* Sets the list of attachments details(message id and message part) to be forwarded
+*
+* @param {Array}	objs		a list of attachments details {id, part}
+*/
+ZmMailMsg.prototype.setForwardAttObjs =
+function(objs) {
+	this._forAttObjs = objs;
+};
+
 /**
 * Sets the ID of the contacts that are to be attached as vCards
 *
@@ -1553,33 +1564,8 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 		}
 
 		// attach msg attachments
-		if (this._forAttIds && this._forAttIds.length) {
-			var attIds = this._forAttIds;
-			if (attIds && attIds.length) {
-				var parts = attachNode.mp = [];
-				for (var i = 0; i < attIds.length; i++) {
-					// YUCKY YUCK YUCK: find an ID to send 
-					var id = (isDraft || this.isDraft)
-						? (oboDraftMsgId || this.id || this.origId)
-						: (this.origId || this.id);
-
-					if (!id && this._origMsg) {
-						id = this._origMsg.id;
-					}
-
-					if (!id && (isDraft || this.isDraft) && appCtxt.multiAccounts) {
-						id = this.origAcctMsgId;
-					}
-
-					// bug fix #33312 - should be reverted(?) once bug #33691 is fixed.
-					if (id && doQualifyIds) {
-						id = ZmOrganizer.getSystemId(id, mainAccount, true);
-					}
-					if(id) {
-						parts.push({mid:id, part:attIds[i]});
-					}
-				}
-			}
+		if (this._forAttObjs && this._forAttObjs.length) {
+				var parts = attachNode.mp = this._forAttObjs;
 		}
 
 		if (this._contactAttIds && this._contactAttIds.length) {
@@ -1919,7 +1905,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 			if (attach.ci || (includeInlineImages && attach.cd == "inline")) {  // bug: 28741
 				props.ci = true;
 			}
-
+            props.mid = this.id;
 			props.foundInMsgBody = attach.foundInMsgBody;
 
 			// and finally, add to attLink array
