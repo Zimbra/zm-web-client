@@ -2919,6 +2919,8 @@ function(ev) {
 	var appt = actionMenu.__appt;
 	delete actionMenu.__appt;
 
+    var orig = appt.getOrig();
+    appt = orig && orig.isMultiDay() ? orig : appt;
 	var calendar = appt.getFolder();
     var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;
 	var isSynced = Boolean(calendar.url);
