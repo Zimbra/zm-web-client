@@ -231,6 +231,7 @@ function(loc) {
 	this._privacySelect.setSelectedValue((defaultPrivacyOption == ZmSetting.CAL_VISIBILITY_PRIV) ?  "PRI" : "PUB");
 
     Dwt.setVisible(this._suggestions, false);
+    Dwt.setSize(this._suggestions, '0px', '100%');
     Dwt.setVisible(this._suggestLocation, true);
 
 	DBG.timePt("ZmQuickAddDialog#popup", true);
@@ -373,6 +374,7 @@ function() {
 	this._suggestLocation   = document.getElementById(this._suggestLocationId);
 
 	this._suggestions = document.getElementById(this._htmlElId + "_suggestions");
+    Dwt.setSize(this._suggestions, '0px', '100%');
 	Dwt.setVisible(this._suggestions, false);
 
 	var closeCallback = this._onSuggestionClose.bind(this);
@@ -531,6 +533,7 @@ ZmApptQuickAddDialog.prototype._onSuggestionClose =
 function() {
     // Make the trigger link visible
     Dwt.setVisible(this._suggestLocation, true);
+    Dwt.setSize(this._suggestions, '0px', '100%');
 }
 
 ZmApptQuickAddDialog.prototype._showLocationSuggestions =
@@ -538,6 +541,7 @@ function() {
     // Hide the trigger link and display the location suggestion panel
     Dwt.setVisible(this._suggestLocation, false);
     Dwt.setVisible(this._suggestions, true);
+    Dwt.setSize(this._suggestions, '180px', '100%');
     this._locationAssistant.show(this._containerSize);
     this._locationAssistant.suggestAction();
 };
@@ -694,6 +698,7 @@ function(location, locationStr) {
         this._locationField.clear();
         this._locationField.addBubble({address:locationStr, match:match, skipNotify:true});
     }
+    this._locations.push(location);
 };
 
 // Stub for the location picker and ZmScheduleAssistant
