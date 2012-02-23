@@ -2,7 +2,7 @@
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
@@ -231,7 +231,6 @@ function(loc) {
 	this._privacySelect.setSelectedValue((defaultPrivacyOption == ZmSetting.CAL_VISIBILITY_PRIV) ?  "PRI" : "PUB");
 
     Dwt.setVisible(this._suggestions, false);
-    Dwt.setSize(this._suggestions, '0px', '100%');
     Dwt.setVisible(this._suggestLocation, true);
 
 	DBG.timePt("ZmQuickAddDialog#popup", true);
@@ -374,7 +373,6 @@ function() {
 	this._suggestLocation   = document.getElementById(this._suggestLocationId);
 
 	this._suggestions = document.getElementById(this._htmlElId + "_suggestions");
-    Dwt.setSize(this._suggestions, '0px', '100%');
 	Dwt.setVisible(this._suggestions, false);
 
 	var closeCallback = this._onSuggestionClose.bind(this);
@@ -533,7 +531,6 @@ ZmApptQuickAddDialog.prototype._onSuggestionClose =
 function() {
     // Make the trigger link visible
     Dwt.setVisible(this._suggestLocation, true);
-    Dwt.setSize(this._suggestions, '0px', '100%');
 }
 
 ZmApptQuickAddDialog.prototype._showLocationSuggestions =
@@ -541,11 +538,9 @@ function() {
     // Hide the trigger link and display the location suggestion panel
     Dwt.setVisible(this._suggestLocation, false);
     Dwt.setVisible(this._suggestions, true);
-    Dwt.setSize(this._suggestions, '180px', '100%');
     this._locationAssistant.show(this._containerSize);
     this._locationAssistant.suggestAction();
 };
-
 
 ZmApptQuickAddDialog.prototype._formValue =
 function() {
