@@ -403,8 +403,9 @@ function(item, type, strictText, strictEmail, checkForAvailability) {
 													new ZmResource(type);
 			attendee.initFromEmail(item, true);
 		}
-		
-		attendee.isGroup = item.isGroup;
+		if(item.isGroup) {
+		    attendee.isGroup = item.isGroup;
+        }
 		attendee.canExpand = item.canExpand;
 		var ac = window.parentAppCtxt || window.appCtxt;
 		ac.setIsExpandableDL(addr, attendee.canExpand);
