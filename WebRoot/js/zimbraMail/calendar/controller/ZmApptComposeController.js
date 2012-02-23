@@ -287,7 +287,7 @@ function(attId) {
 			}
 		}
 
-        var ret = this._initiateSaveWithChecks(appt, attId);
+        var ret = this._initiateSaveWithChecks(appt, attId, numRecurrence);
 		return ret;
 	}
 
