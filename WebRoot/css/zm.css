@@ -5475,6 +5475,12 @@ div.ZmSuggestLocationLink {
 .ZmResolveNoLocationSelect {
 	border-top:1px solid gray;
 }
+.ZmLocationSuggestionTooltip {
+    white-space:nowrap;
+}
+.ZmLocationTooltipTitle {
+    font-weight:bold;
+}
 
 /* for displaying a msg without using an iframe (bug 66466) */
 @import url("msgview.css");

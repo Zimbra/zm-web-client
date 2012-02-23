@@ -1221,6 +1221,20 @@
     $>
 </template>
 
+<template id='calendar.Appointment#LocationSuggestionTooltip'>
+    <div class='ZmLocationSuggestionTooltip'>
+        <div class='ZmLocationTooltipTitle'><$= AjxStringUtil.htmlEncode(data.name) $></div>
+        <$ if (data.description != "") {  $>
+           <$= AjxStringUtil.htmlEncode(data.description) $><br>
+        <$ } $>
+        <$ if (data.contactMail != "") {  $>
+           <$= ZmMsg.contact + ": " + AjxStringUtil.htmlEncode(data.contactMail) $><br>
+        <$ } $>
+        <$ if (data.capacity != "") {  $>
+           <$= ZmMsg.capacity + ": " + AjxStringUtil.htmlEncode(data.capacity) $><br>
+        <$ } $>
+    </div>
+</template>
 
 <template id="calendar.Appointment#ChangesDialogOrganizer">
 	<table width='300'>

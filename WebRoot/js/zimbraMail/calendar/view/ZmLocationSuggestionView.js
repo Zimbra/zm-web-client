@@ -27,6 +27,7 @@
 ZmLocationSuggestionView = function(parent, controller, apptEditView, className) {
     ZmSuggestionsView.call(this, parent, controller, apptEditView, ZmId.VIEW_SUGGEST_LOCATION_PANE, false, className);
     this._warning = false;
+    this._emailToDivIdMap = {};
 };
 
 ZmLocationSuggestionView.prototype = new ZmSuggestionsView;
@@ -49,11 +50,26 @@ function (item) {
     return AjxTemplate.expand("calendar.Appointment#LocationSuggestion", params);
 };
 
+ZmLocationSuggestionView.prototype._getItemId =
+function(item) {
+    var id;
+    if (item.email) {
+        id = this._emailToDivIdMap[item.email];
+        if (!id) {
+            // No email->id mapping - first time accessed, so generate an id and create a mapping.
+            // Return the id, which will be used as the id of the containing div.
+            id = ZmListView.prototype._getItemId.call(this, item);
+            this._emailToDivIdMap[item.email] = id;
+        }
+    }
+    return id;
+};
+
 ZmLocationSuggestionView.prototype.set =
 function(params) {
+    this._emailToDivIdMap = {};
     this._items = params.locationInfo.locations;
     ZmListView.prototype.set.call(this, params.locationInfo.locations);
-    //ZmSuggestionsView.prototype.set.call(this, params);
 };
 
 ZmLocationSuggestionView.prototype.handleLocationOverflow =
@@ -74,6 +90,7 @@ function(itemDiv, ev) {
         var locationObj = locationInfo.locationObj;
         var locationStr = locationInfo.email;
         this._editView.updateLocation(locationObj, locationStr);
+        this.setToolTipContent(null);
     }
 };
 
@@ -99,3 +116,28 @@ function(list, noResultsOk, doAdd) {
     }
     ZmSuggestionsView.prototype._renderList.call(this, list, noResultsOk, doAdd, warningHtml);
 }
+
+ZmLocationSuggestionView.prototype.getToolTipContent =
+function(ev) {
+    var tooltip = "";
+    var div = this.getTargetItemDiv(ev);
+    if (div) {
+        var item = this.getItemFromElement(div);
+        if(item) {
+            tooltip = AjxTemplate.expand("calendar.Appointment#LocationSuggestionTooltip",
+                        {name:        item.name,
+                         description: item.description,
+                         contactMail: item.contactMail,
+                         capacity:    item.capacity
+                        });
+        }
+    }
+    var consoleText = tooltip;
+    if (!consoleText) {
+        consoleText = "None";
+    } else if(consoleText.length > 15) {
+        consoleText = consoleText.substring(0, 15) + '...';
+    }
+    console.log("getToolTipContent, div = " + (div ? div.id : "null") + ", text = " + consoleText);
+    return tooltip;
+};

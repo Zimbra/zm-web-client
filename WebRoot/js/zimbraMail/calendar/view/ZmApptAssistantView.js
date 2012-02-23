@@ -322,6 +322,8 @@ function (email) {
         if (info.description == info.name) {
             info.description = '';
         }
+        info.contactMail = info.locationObj.getAttr(ZmResource.F_contactMail)
+        info.capacity    = info.locationObj.getAttr(ZmResource.F_capacity)
     }
     return info;
 }
