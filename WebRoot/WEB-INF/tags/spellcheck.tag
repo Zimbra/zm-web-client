@@ -31,232 +31,127 @@
     <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
 <script type="text/javascript">
 function enableSpellCheck(myEditor) {
-    var Dom = YAHOO.util.Dom,
-        Event = YAHOO.util.Event,
-        Lang = YAHOO.lang;
 
-    var _handleWindowClose = function() {
-    };
+    //Editor onclick handler
+    var onClick = function(editor, ev){
+        var menu = editor._spellCheckMenu,
+            target = ev.target;
 
-    var _handleWindow = function() {
-        try{ this.nodeChange(); } catch(ex) {;}
-        var el = this.currentElement[0],
-        win = new YAHOO.widget.EditorWindow('spellcheck', {
-            width: '170px'
-        }),
-        body = document.createElement('div');
-
-        var list = '';
-        //Change this code to suit your backend checker
-        for (var i = 0; i < this._spellData.length; i++) {
-            if (el.innerHTML == this._spellData[i].word) {
-                for (var s = 0; s < this._spellData[i].suggestions.length; s++) {
-                    list = list + '<li title="Replace (' + this._spellData[i].word + ') with (' + this._spellData[i].suggestions[s] + ')">' + this._spellData[i].suggestions[s] + '</li>';
+        if( target.className === "ZM-SPELLCHECK-MISSPELLED" ){
+            var spellData = editor._spellData,
+                dom = tinyMCE.DOM;
+            target.className = "ZM-SPELLCHECK-MISSPELLED2";
+            menu.removeAll();
+            var text = target.textContent || target.innerText;
+            for (var i = 0, spellDataLength = spellData.length; i < spellDataLength; i++){
+                var data = spellData[i];
+                if( data.word === text ){
+                    var suggestions = data.suggestions,
+                        suggestionsLength = suggestions.length;
+                    for (var j = 0; j < suggestionsLength; j++) {
+                        menu.add({
+                            title: suggestions[j]
+                        });
+                    }
                 }
             }
-        }
-		if (list) {
-			body.innerHTML = '<strong><fmt:message key="spellcheckSuggestionsLabel"/></strong><br>';
-			var ul = document.createElement('ul');
-			ul.className = 'yui-spellcheck-list';
-			body.appendChild(ul);
-			ul.innerHTML = list;
-		} else {
-			body.innerHTML = "<fmt:message key="spellcheckNoSuggestions"/>";
-		}
-
-		Event.on(ul, 'click', function(ev) {
-            var tar = Event.getTarget(ev);
-            if (this._isElement(tar, 'li')) {
-                Event.stopEvent(ev);
-            	el.innerHTML = tar.innerHTML;
-                Dom.removeClass(el, 'yui-spellcheck');
-                Dom.addClass(el, 'yui-non');
-
-                var next = Dom.getElementsByClassName('yui-spellcheck', 'span', this._getDoc().body)[0];
-                if (next) {
-                    this.STOP_NODE_CHANGE = true;
-                    this.currentElement = [next];
-                    _handleWindow.call(this);
-                } else {
-                    this.checking = false;
-                    this.toolbar.set('disabled', false);
-                    this.closeWindow();
+            var position = dom.getPos(editor.getContentAreaContainer());
+            menu.showMenu(position.x+(ev.clientX || ev.pageX), position.y+( ev.clientY || ev.pageY)+target.offsetHeight );
+            editor.spellCheckTarget = target;
+            dom.bind(menu.element.id, "click", function(ev){
+                var dom = tinyMCE.DOM,
+                    span = dom.select("span.mceText", dom.getParent(ev.target, "tr"));
+                if(span = span.shift()){
+                    var element = myEditor.spellCheckTarget;
+                    element.className = "ZM-SPELLCHECK-FIXED";
+                    element.innerHTML = span.innerHTML;
                 }
-                try{ this.nodeChange(); } catch(ex) {;}
-            }
-        }, this, true);
-
-        this.on('afterOpenWindow', function() {
-            this.get('panel').syncIframe();
-            var l = parseInt(this.currentWindow._knob.style.left, 10);
-            if (l === 40) {
-               this.currentWindow._knob.style.left = '1px';
-            }
-        }, this, true);
-
-        win.setHeader('<fmt:message key="spellcheckSpellingSuggestions"/>');
-        win.setBody(body);
-        this.get('panel').editor_form.innerHTML="";
-
-        if (!this._windows.spellcheck) {
-            this._windows.spellcheck = {};
+            });
         }
-
-        this.openWindow(win);
-    };
-
-    /* {{{ Override _handleClick method to keep the window open on click */
-    myEditor._handleClick = function(ev) {
-        if (this._isNonEditable(ev)) {
-            return false;
-        }
-        this._setCurrentEvent(ev);
-        var tar =Event.getTarget(ev);
-        if (this.currentWindow) {
-            if (!Dom.hasClass(tar, 'yui-spellcheck')) {
-                this.closeWindow();
-            }
-        }
-        if (!Dom.hasClass(tar, 'yui-spellcheck')) {
-            if (YAHOO.widget.EditorInfo.window.win && YAHOO.widget.EditorInfo.window.scope) {
-                YAHOO.widget.EditorInfo.window.scope.closeWindow.call(YAHOO.widget.EditorInfo.window.scope);
-            }
-        }
-        if (this.browser.webkit) {
-            var tar =Event.getTarget(ev);
-            if (this._isElement(tar, 'a') || this._isElement(tar.parentNode, 'a')) {
-                Event.stopEvent(ev);
-                try{ this.nodeChange(); } catch(ex) {;}
-            }
-        } else {
-            try{ this.nodeChange(); } catch(ex) {;}
+        else{
+            menu.hideMenu();
         }
     };
-    /* }}} */
 
-    myEditor.checking = false;
+    myEditor.startSpellCheck = function() {
+        if (!this.checking) {
+            this.checking = true;
+            document.getElementById("SpellCheckData").value = this.getContent({format : 'text'});
+            var connect = YAHOO.util.Connect;
+            connect.setForm('SpellCheckForm', false, null);
+            connect.asyncRequest('POST', '<c:url value="/h/checkspelling" />', {
+                success: this._checkSpelling,
+                failure: function() {},
+                scope: this
+            }, null);
+        }
+    };
 
-    /* Commented the hardcoded config buttons[10].buttons[2] and added the spellcheck button on toolbarLoaded function below.
-    myEditor._defaultToolbar.buttons[10].buttons[2] = {
-      type: 'push',
-      label: 'Check Spelling',
-      value: 'spellcheck'
-    };*/
-
-  /*
-	This function traverses each node recursively and includes incorrect words in the textNodes as shown below 
-	<span> <span class="yui-spellcheck"> word </span> .... </span>
-  */
-
-    myEditor._processSpellCheck = function(n, data) {
-	if (n.nodeType == 3) { // Text Node
-		var p = n.parentNode;
-		var ele = document.createElement("span");
-		for (var i = 0; i< data.length; i++){
-			n.nodeValue  = n.nodeValue && n.nodeValue.replace(data[i].word,
-				 '<span class="yui-spellcheck">' + data[i].word + '</span>');
-		}
-		ele.innerHTML = n.nodeValue;
-		p.replaceChild(ele, n);
-		ele.processed = true;
-	} else {
-		var childs = n.childNodes;
-		for(var i = 0; i < childs.length; i++){
-			if (!childs[i].parentNode.processed)
-				this._processSpellCheck(childs[i], data);
-		}
-	}
+    myEditor.endSpellCheck = function() {
+        if(this.checking){
+            var spellCheckSpans = this.dom.select("span.ZM-SPELLCHECK-MISSPELLED,span.ZM-SPELLCHECK-MISSPELLED2,span.ZM-SPELLCHECK-FIXED"),
+                span,
+                doc = this.getDoc();
+            while(span = spellCheckSpans.shift()){
+                span.parentNode.replaceChild(doc.createTextNode(span.textContent || span.innerText), span);
+            }
+            doc.body.normalize();
+            this.onClick.remove(onClick);
+            delete this._spellData;
+            delete this.checking;
+            delete this.spellCheckTarget;
+            var menu = this._spellCheckMenu;
+            if(menu){
+                menu.removeAll();
+                menu.destroy();
+                delete this._spellCheckMenu;
+            }
+        }
     };
 
     myEditor._checkSpelling = function(o) {
+        o.responseText = '{"available":true,"data":[{"word":"onee","suggestions":["one","nee","knee","once","ones"]}]}';
         //Change this code to suit your backend checker
-		var data = eval('(' + o.responseText + ')');
-		if (!data || !data.available) {
-			alert("<fmt:message key="spellcheckServiceUnavailableMessage"/>");
-			this.endSpellCheck();
-		} else if (!data.data.length) {
-			alert("<fmt:message key="spellcheckNoMistakesFound"/>");
-			this.endSpellCheck();
-		} else {
-			this._processSpellCheck(this._getDoc().body, data.data);
-			this._spellData = data.data;
-		}
-	};
-
-    myEditor.on('windowspellcheckClose', function() {
-        _handleWindowClose.call(this);
-    }, myEditor, true);
-
-    myEditor.on('editorMouseDown', function() {
-        var el = this._getSelectedElement();
-        if (Dom.hasClass(el, 'yui-spellcheck')) {
-            this.currentElement = [el];
-            _handleWindow.call(this);
-            return false;
+        var data = eval('(' + o.responseText + ')');
+        if (!data || !data.available) {
+            alert("<fmt:message key="spellcheckServiceUnavailableMessage"/>");
+            this.endSpellCheck();
+        } else if (!data.data.length) {
+            alert("<fmt:message key="spellcheckNoMistakesFound"/>");
+            this.endSpellCheck();
+        } else {
+            this._spellData = data.data;
+            this._processSpellCheck(this.getDoc(), this.dom, this.getBody(), data.data);
+            this.onClick.add(onClick);
+            this._spellCheckMenu = this.controlManager.createDropMenu("spellcheckmenu");
         }
-    }, myEditor, true);
-    myEditor.on('editorKeyDown', function(ev) {
-        if (this.checking) {
-            //We are spell checking, stop the event
-            Event.stopEvent(ev.ev);
+    };
+
+    myEditor._processSpellCheck = function(doc, dom, node, data) {
+        if(!node)return;
+        if(node.nodeType === 3){ // Text node
+            var text = node.nodeValue;
+            for (var i = 0, dataLength = data.length ; i < dataLength; i++ ){
+                var word = data[i].word;
+                var index = text.indexOf(word);
+                if(index !== -1){
+                    var text1 = node.splitText(index);
+                    text1.splitText(word.length);
+                    var span = doc.createElement("span");
+                    span.className = "ZM-SPELLCHECK-MISSPELLED";
+                    span.appendChild(text1.cloneNode(true));
+                    text1.parentNode.replaceChild(span, text1);
+                }
+            }
         }
-    }, myEditor, true);
-    myEditor.on('afterNodeChange', function() {
-        this.toolbar.enableButton('spellcheck');
-        if (this.checking) {
-            this.toolbar.set('disabled', true);
-            this.toolbar.getButtonByValue('spellcheck').set('disabled', false);
-            this.toolbar.selectButton('spellcheck');
+        else{//element node
+            if( !dom.hasClass(node, "ZM-SPELLCHECK-MISSPELLED") ){
+                var child = node.childNodes;
+                for( var i = 0 ; i < child.length ; i++ ){
+                    this._processSpellCheck(doc, dom, child[i], data);
+                }
+            }
         }
-    }, myEditor, true);
-	myEditor.startSpellCheck = function() {
-		if (!this.checking) {
-			this.checking = true;
-			var body = myEditor._getDoc().body;
-			document.getElementById("SpellCheckData").value = body.textContent || body.innerText; // FF uses textContent, IE uses innerText
-			YAHOO.util.Connect.setForm('SpellCheckForm', false, null);
-			this._conn = YAHOO.util.Connect.asyncRequest('POST', '<c:url value="/h/checkspelling" />', {
-				success: this._checkSpelling,
-				failure: function() {},
-				scope: this
-			}, null);
-		}
-	}
-	myEditor.endSpellCheck = function() {
-		if (this.checking) {
-			this.checking = false;
-			var el = Dom.getElementsByClassName('yui-spellcheck', 'span', this._getDoc().body);
-			var length = el ? el.length:0;
- 			// reverting the styles added by _processSpellCheck function
-			for (var i=0; i < length; i++){
-				if (el[i].parentNode){
-					el[i].parentNode.processed = false;
-					el[i].parentNode.replaceChild(document.createTextNode(el[i].innerHTML), el[i]);
-				}
-			}
-			this.toolbar.set('disabled', false);
-			try{ this.nodeChange(); } catch(ex) {;}
-		}
-	}
-	myEditor.on('toolbarLoaded', function() {
-
-        var spellCheckButton = {
-            type: 'push',
-            label: 'Check Spelling',
-            value: 'spellcheck'
-	    };
-
-	    this.toolbar.addButtonToGroup(spellCheckButton,'insertitem');
-
-        this.toolbar.on('spellcheckClick', function() {
-			if (!this.checking) {
-				this.startSpellCheck();
-			} else {
-				this.endSpellCheck();
-			}
-			return false;
-        }, this, true);
-    }, myEditor, true);
+    };
 };
 </script>

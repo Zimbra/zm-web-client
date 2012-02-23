@@ -21,12 +21,7 @@
 <%@ attribute name="isHtmlCont" rtexprvalue="true" required="true" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
-
-<style media="screen" type="text/css">
-    .yui-skin-sam .yui-toolbar-container .yui-toolbar-fontsize2 {
-        width: 50px;
-    }
-</style>
+<app:spellcheck/>
 <script type="text/javascript" src="../js/ajax/3rdparty/tinymce/tiny_mce.js"></script>
 <script type="text/javascript">
 <!--             
@@ -79,6 +74,7 @@ var myEditor;
                 "color"       : "${mailbox.prefs.htmlEditorDefaultFontColor}"
             });
             window.myEditor = ed;
+            enableSpellCheck(ed);
         };
 
         var handleContentLoad = function(ed){
@@ -91,6 +87,27 @@ var myEditor;
             }
         };
 
+        /* Spellcheck button action*/
+        var onSpellCheck = function(event){
+            this.dom.loadCSS("../css/spellcheck.css");
+            var onSpellCheck = function(event){
+                var spellCheckerId = this.controlManager.get("spellchecker").id, //Spellchecker button id
+                    dom;
+                if(spellCheckerId){
+                    dom = tinyMCE.DOM;
+                    if( dom.hasClass(spellCheckerId, "mceButtonActive") ){
+                        dom.removeClass(spellCheckerId, "mceButtonActive");
+                        this.endSpellCheck();
+                    }
+                    else{
+                        dom.addClass(spellCheckerId, "mceButtonActive");
+                        this.startSpellCheck();
+                    }
+                }
+            };
+            return onSpellCheck.call(this, event);
+        };
+
         var tinyMCEInitObj = {
             mode : "exact",
             elements: "body",
@@ -101,7 +118,7 @@ var myEditor;
             </c:if>
             plugins : "autolink,advlist,inlinepopups,table,paste,directionality,emotions,media",
             theme : "advanced",
-            theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,link,unlink,image",
+            theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,link,unlink,image,|,spellchecker",
             theme_advanced_buttons2 : "formatselect,undo,redo,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,emotions,charmap,media,|,removeformat",
             theme_advanced_buttons3 : "",
             theme_advanced_buttons4 : "",
@@ -123,6 +140,10 @@ var myEditor;
                 ed.onLoadContent.add(handleContentLoad);
                 ed.onBeforeRenderUI.add(function() {
                     tinymce.ScriptLoader.loadScripts(['../js/ajax/3rdparty/tinymce/themes/advanced/Zmeditor_template.js']);
+                });
+                ed.addButton('spellchecker', {
+                    onclick : onSpellCheck,
+                    title: "Check spelling"
                 });
             }
         };
