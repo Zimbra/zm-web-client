@@ -600,7 +600,7 @@ function(calItem, mode) {
         notesPart;
 
     if (calItem.notesTopPart) { //Already existing appointment
-        var pattern = /<div(.*?)>(.*?)<\/div>/;
+        var pattern = /<div(.*?)>[\S\s]*?<\/div>/gi;
         var pMatch = notesHtmlPart.match(pattern);
         if (pMatch != null && pMatch[0] != null) {
             isSavedinHTML = true;
