@@ -625,7 +625,7 @@ function(calItem, mode) {
     var notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN);
 
     var notesHtmlPart = calItem.getNotesPart(ZmMimeTable.TEXT_HTML);
-    var pattern = /<div(.*?)>(.*?)<\/div>/;
+    var pattern = /<div(.*?)>[\S\s]*?<\/div>/gi;
     var pMatch = notesHtmlPart.match(pattern);
     var isSavedinHTML = false;
 
