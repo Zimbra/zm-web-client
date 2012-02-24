@@ -909,17 +909,20 @@ function(xslt, canvas, result) {
  */
 ZmZimletContext._getMsgBody =
 function(o) {
-	//load if the msg is not loaded
+	//If message is not loaded let developer take care of it
+	var content = "";
 	if(!o._loaded) {
-		o.load({});
+		return "";
 	}
-	var body = o.getBodyPart(ZmMimeTable.TEXT_PLAIN);
-	if (!body || !body.content) {
-		var div = document.createElement("div");
-		div.innerHTML = o.getBodyPart(ZmMimeTable.TEXT_HTML).content;
-		body = AjxStringUtil.convertHtml2Text(div);
-	} else {
-		body = body.content;
+	var part = o.getBodyPart(ZmMimeTable.TEXT_PLAIN) || o.getBodyPart(ZmMimeTable.TEXT_HTML);
+	if(part && part.content) {
+		if(part.ct == ZmMimeTable.TEXT_PLAIN) {
+			content = part.content;
+		} else if(part.ct == ZmMimeTable.TEXT_HTML) {
+			var div = document.createElement("div");
+			div.innerHTML = part.content;
+			content = AjxStringUtil.convertHtml2Text(div);
+		}
 	}
-	return body;
+	return content;
 };
