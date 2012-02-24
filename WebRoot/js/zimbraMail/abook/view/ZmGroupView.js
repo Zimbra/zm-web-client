@@ -1004,7 +1004,7 @@ function(ev) {
 ZmGroupListView = function(parent) {
 	if (arguments.length == 0) { return; }
 	DwtListView.call(this, {parent:parent, className:"DwtChooserListView",
-							headerList:this._getHeaderList(parent), view:parent._view});
+							headerList:this._getHeaderList(parent), view:this._view, posStyle: Dwt.RELATIVE_STYLE});
 };
 
 ZmGroupListView.prototype = new DwtListView;
@@ -1024,9 +1024,9 @@ ZmGroupListView.prototype._getHeaderList =
 function() {
 	return [
 		(new DwtListHeaderItem({field:ZmItem.F_TYPE,	icon:"Contact",		width:ZmMsg.COLUMN_WIDTH_TYPE_CN})),
-		(new DwtListHeaderItem({field:ZmItem.F_NAME,	text:ZmMsg._name,	width:ZmMsg.COLUMN_WIDTH_NAME_CN})),
-		(new DwtListHeaderItem({field:ZmItem.F_EMAIL,	text:ZmMsg.email})),
-		(new DwtListHeaderItem({field:ZmItem.F_DEPARTMENT,	text:ZmMsg.department,	width:ZmMsg.COLUMN_WIDTH_DEPARTMENT_CN}))
+		(new DwtListHeaderItem({field:ZmItem.F_NAME,	text:ZmMsg._name,	width:ZmMsg.COLUMN_WIDTH_NAME_CN, resizeable: true})),
+		(new DwtListHeaderItem({field:ZmItem.F_EMAIL,	text:ZmMsg.email, resizeable: true})),
+		(new DwtListHeaderItem({field:ZmItem.F_DEPARTMENT,	text:ZmMsg.department,	width:ZmMsg.COLUMN_WIDTH_DEPARTMENT_CN, resizeable: true}))
 	];
 };
 
