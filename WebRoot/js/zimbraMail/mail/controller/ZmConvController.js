@@ -113,7 +113,9 @@ ZmConvController.prototype._getTabParams =
 function(tabId, tabCallback) {
 	return {
 		id:				tabId,
-		image:			"ConvView",
+		image:          "CloseGray",
+        hoverImage:     "Close",
+        style:          DwtLabel.IMAGE_RIGHT,
 		textPrecedence:	85,
 		tooltip:		ZmDoublePaneController.DEFAULT_TAB_TEXT,
 		tabCallback:	tabCallback

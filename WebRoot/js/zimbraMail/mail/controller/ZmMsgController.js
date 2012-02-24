@@ -120,8 +120,10 @@ ZmMsgController.prototype._getTabParams =
 function(tabId, tabCallback) {
 	return {
 		id:				tabId,
-		image:			"MessageView",
 		textPrecedence:	85,
+        image:          "CloseGray",
+        hoverImage:     "Close",
+        style:          DwtLabel.IMAGE_RIGHT,
 		tooltip:		ZmMsgController.DEFAULT_TAB_TEXT,
 		tabCallback:	tabCallback
 	};
