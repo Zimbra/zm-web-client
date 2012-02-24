@@ -255,7 +255,7 @@
     <target name='prod'>
         <property name='build.prod' value='true'/>
         <property name='war.compress' value='true'/>
-        <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**,test/**,qunit/**'/>
+        <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**,test/**'/>
     </target>
 
     <target name="war"
