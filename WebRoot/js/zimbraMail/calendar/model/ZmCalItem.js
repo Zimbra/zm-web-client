@@ -1039,6 +1039,7 @@ function(message, viewMode) {
         this.recurring =  message.invite.isRecurring();
         this.location = message.invite.getLocation();
         this.seq = message.invite.getSequenceNo();
+        this.allDayEvent = message.invite.isAllDayEvent();
         if(message.invite.id) {
             this.invId = this.id + "-" + message.invite.id;
         }
