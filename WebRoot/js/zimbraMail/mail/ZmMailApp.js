@@ -762,7 +762,11 @@ function(awayMsg) {
 	if (!section) { return false; }
 	var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
 	var input = view.getView(section.id).getFormObject(ZmSetting.VACATION_MSG_ENABLED);
-	return (input && !input.isSelected());
+    var isValid = (input && !input.getSelectedValue());
+    if (!isValid)
+        ZmPref.SETUP["VACATION_MSG"].errorMessage = ZmMsg.missingAwayMessage;
+
+	return isValid
 };
 
 /**

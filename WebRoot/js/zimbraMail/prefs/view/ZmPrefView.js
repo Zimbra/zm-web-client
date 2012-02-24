@@ -356,6 +356,7 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSave
 		var id = prefs[j];
 		if (!viewPage._prefPresent || !viewPage._prefPresent[id]) { continue; }
 		var setup = ZmPref.SETUP[id];
+        var defaultError = setup.errorMessage;
 		if (!this._controller.checkPreCondition(setup)) { continue; }
 
 		var type = setup ? setup.displayContainer : null;
@@ -419,6 +420,7 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSave
                 }
 			} else {
 				errors.push(AjxMessageFormat.format(setup.errorMessage, AjxStringUtil.htmlEncode(value)));
+                setup.errorMessage = defaultError;
 			}
 			this._controller.setDirty(view, true);
 			if (dirtyCheck) {
