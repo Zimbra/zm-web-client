@@ -187,7 +187,7 @@ function(insertFontStyle, onlyInnerContent) {
 		var editor = this.getEditor();
         var params = {};
         params.format ='raw';
-		var content = editor ? editor.getContent(params) : (this._pendingContent || "");
+		var content = editor ? editor.getContent(params) : (field.value || "");
         if(content == '<br mce_bogus="1">' || content == '<br mce_bogus="1"/>') {
             content = '';
         }        
@@ -260,19 +260,15 @@ function(html) {
 	return a.join("");
 };
 
-ZmAdvancedHtmlEditor.prototype.setContent =
-function(content) {
-	if (this._mode == DwtHtmlEditor.HTML) {
-		var editor = this.getEditor();
-		if (editor && this._editorInitialized) {
-			editor.setContent(content, {format: 'raw'});
-		} else {
-			this._pendingContent = content;
-		}
-	} else {
-		var field = this.getContentField();
-		field.value = content;
-	}
+/*
+ If editor is not initialized and mode is HTML, tinymce will automatically initialize the editor with the content in textarea
+ */
+ZmAdvancedHtmlEditor.prototype.setContent = function (content) {
+    if (this._mode === DwtHtmlEditor.HTML && this._editorInitialized) {
+        this.getEditor().setContent(content, {format:'raw'});
+    } else {
+        this.getContentField().value = content;
+    }
     this._ignoreWords = {};
 };
 
@@ -291,30 +287,25 @@ function() {
 	return Boolean(this.getEditor());
 };
 
-ZmAdvancedHtmlEditor.prototype._convertHtml2Text =
-function(convertor) {
-	var editor = this.getEditor();
-	var doc = editor && editor.getDoc();
+ZmAdvancedHtmlEditor.prototype._convertHtml2Text = function (convertor) {
+    var editor = this.getEditor();
+    if (editor) {
+        var body = editor.getBody();
+        if (body) {
+            var text = [],
+                idx = 0,
+                ctxt = {};
 
-	return (doc && doc.body)
-		? this._convertHtml2TextContinue(doc.body, convertor) : "";
-};
+            AjxStringUtil._traverse(body, text, idx, AjxStringUtil._NO_LIST, 0, 0, ctxt, convertor);
 
-ZmAdvancedHtmlEditor.prototype._convertHtml2TextContinue =
-function(domRoot, convertor) {
-	var text = [];
-	var idx = 0;
-	var ctxt = {};
-
-	AjxStringUtil._traverse(domRoot, text, idx, AjxStringUtil._NO_LIST, 0, 0, ctxt, convertor);
-
-	// tinymce always inserts <p> tag which creates unwanted new lines in format
-	// conversion
-	if (text.length && text[0] == "\n\n") {
-		text[0] = "";
-	}
-
-	return text.join("");
+            // tinymce always inserts <div> tag which creates unwanted new lines in format conversion
+            if (text.length && text[0] === "\n") {
+                text[0] = "";
+            }
+            return text.join("");
+        }
+    }
+    return "";
 };
 
 ZmAdvancedHtmlEditor.prototype.moveCaretToTop =
@@ -405,7 +396,6 @@ function() {
 
 ZmAdvancedHtmlEditor.prototype.clear =
 function() {
-	this.setPendingContent(null);
 	var editor = this.getEditor();
     if (editor && this._editorInitialized) {
 		editor.setContent("", {format: "raw"});
@@ -462,16 +452,15 @@ function(parent, posStyle, content, mode, withAce, reparentContainer) {
         textEl.setAttribute("dir", ZmSetting.RTL);
     }
 	textEl.className = "DwtHtmlEditorTextArea";
+    if ( content !== null ) {
+        textEl.value = content;
+    }
 	htmlEl.appendChild(textEl);
 	this._textAreaId = id;
 
 	Dwt.setHandler(textEl, DwtEvent.ONFOCUS, AjxCallback.simpleClosure(this.setFocusStatus, this, true, true));
 	Dwt.setHandler(textEl, DwtEvent.ONBLUR, AjxCallback.simpleClosure(this.setFocusStatus, this, false, true));
 	this._editorContainer.setFocusMember(textEl);
-
-	if (content != null) {
-		this.setPendingContent(content);
-	}
 
 	if (!window.tinyMCE) {
         window.tinyMCEPreInit = {};
@@ -486,16 +475,6 @@ function(parent, posStyle, content, mode, withAce, reparentContainer) {
 	} else {
 		this.initEditorManager(id, mode, content);
 	}
-};
-
-ZmAdvancedHtmlEditor.prototype.getPendingContent =
-function() {
-	return this._pendingContent;
-};
-
-ZmAdvancedHtmlEditor.prototype.setPendingContent =
-function(content) {
-	this._pendingContent = content;
 };
 
 ZmAdvancedHtmlEditor.prototype.addOnContentInitializedListener =
@@ -529,12 +508,6 @@ function(ev, ed) {
 
 ZmAdvancedHtmlEditor.prototype.onLoadContent =
 function(ed) {
-	var pendingContent = this.getPendingContent();
-	if (pendingContent != null) {
-		ed.setContent(pendingContent, {format: "raw"});
-		this.setPendingContent(null);
-	}
-
 	if (this._onContentInitializeCallback) {
 		this._onContentInitializeCallback.run();
 	}
@@ -745,46 +718,33 @@ ZmAdvancedHtmlEditor.prototype.onPaste = function(ev, ed) {
     }
 };
 
-ZmAdvancedHtmlEditor.prototype.setMode =
-function(mode, convert, convertor) {
-
+ZmAdvancedHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
     this.discardMisspelledWords();
-
-	if (mode == this._mode || (mode != DwtHtmlEditor.HTML && mode != DwtHtmlEditor.TEXT)) {	return;	}
-
-	this._mode = mode;
-    if(!window.tinyMCE){
+    if (mode === this._mode || (mode !== DwtHtmlEditor.HTML && mode !== DwtHtmlEditor.TEXT)) {
         return;
     }
-	var editor = this.getEditor();
-	if (mode == DwtHtmlEditor.HTML) {
-		var textArea = this.getContentField();
-		var content = convert ? AjxStringUtil.convertToHtml(textArea.value, true) : textArea.value;
-		if (editor && editor.getDoc()) {
-			var doc = editor.getDoc();
-			doc.body.innerHTML = content;
-			this._pendingContent = content;
-			//important: tinymce expects html markup in textarea so it might treat email
-			//address in <user1@testdomain.com> as tag
-			textArea.value = "";
-			this._editorContainer.setFocusMember(editor.getWin());
-		} else {
-			this._pendingContent = content;
-		}
-        if( !this._editorInitialized ){
+    this._mode = mode;
+    if (!window.tinyMCE) {//Tinymce script is getting loaded
+        return;
+    }
+    if (mode === DwtHtmlEditor.HTML) {
+        if (convert) {
+            var textarea = this.getContentField();
+            textarea.value = AjxStringUtil.convertToHtml(textarea.value, true);
+        }
+        if (!this._editorInitialized) {//To avoid the initial jerk of html editor make the initial display as none
             Dwt.setVisible(this.getHtmlElement(), false);
         }
-		tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);
-	} else {
-		var textArea = this.getContentField();
-		var doc = editor && editor.getDoc();
-		var textContent = convert ? this._convertHtml2Text(convertor) : doc.innerHTML;
-
-		tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);
-		textArea.value = textContent;
-		this._editorContainer.setFocusMember(textArea);
-	}
+    } else {
+        if (convert) {
+            var content = this._convertHtml2Text(convertor);
+        }
+    }
     this.initDefaultDirection();
+    tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);//tinymce will automatically toggles the editor and sets the corresponding content.
+    if (convert && mode === DwtHtmlEditor.TEXT) {//tinymce will set html content directly in textarea. Resetting the content after removing the html tags.
+        this.setContent(content);
+    }
 };
 
 ZmAdvancedHtmlEditor.prototype.getContentField =
