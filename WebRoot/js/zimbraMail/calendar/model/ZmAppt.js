@@ -1230,7 +1230,7 @@ function(isProposeTimeMode) {
 };
 
 ZmAppt.prototype.sendCounterAppointmentRequest =
-function(callback, errorCallback) {
+function(callback, errorCallback, viewMode) {
 	var mode = ZmCalItem.MODE_PROPOSE_TIME;
 
 	var soapDoc = AjxSoapDoc.create(this._getSoapForMode(mode, this.isException), "urn:zimbraMail");
@@ -1262,7 +1262,8 @@ function(callback, errorCallback) {
 	var inv = soapDoc.set("inv", null, m);
 	var comp = soapDoc.set("comp", null, inv);
 
-	if (this.ridZ) {
+    //Do not add exceptId if propose new time for series
+	if (this.ridZ && viewMode != ZmCalItem.MODE_EDIT_SERIES) {
 		var exceptId = soapDoc.set("exceptId", null, comp);
 		exceptId.setAttribute("d", this.ridZ);
 	}

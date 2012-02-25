@@ -2495,6 +2495,11 @@ function(type) {
     return this.getAttendeesFromString(type, this._attInputField[type].getValue());
 };
 
+ZmApptEditView.prototype.getMode =
+function(type) {
+    return this._mode;
+};
+
 ZmApptEditView.prototype.getRequiredAttendeeEmails =
 function() {
     var requiredEmails = this._attInputField[ZmCalBaseItem.PERSON].getValue();
