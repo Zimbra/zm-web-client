@@ -778,6 +778,7 @@ function(abook) {
 	this._hoursScrollDivId = Dwt.getNextId();
 	this._bodyHourDivId = Dwt.getNextId();
 	this._allDaySepDivId = Dwt.getNextId();
+	this._allDaySepSashDivId = Dwt.getNextId();
 	this._bodyDivId = Dwt.getNextId();
 	this._apptBodyDivId = Dwt.getNextId();
 	this._newApptDivId = Dwt.getNextId();
@@ -882,7 +883,7 @@ function(abook) {
 	html.append("</div>");
 
 	// sep betwen all day and normal appts
-	html.append("<div id='", this._allDaySepDivId, "' class=calendar_header_allday_separator style='overflow:hidden;position:absolute;'></div>");
+	html.append("<div id='", this._allDaySepDivId, "' class=calendar_header_allday_separator style='overflow:hidden;position:absolute;'><div id='", this._allDaySepSashDivId, "' class='calendar_header_allday_separator_sash open'></div></div>");
 
 	// div to hold hours
 	html.append("<div id='", this._hoursScrollDivId, "' class=calendar_hour_scroll style='position:absolute;'>");
@@ -2856,7 +2857,13 @@ ZmCalColView.prototype.toggleAllDayAppt =
 function(hide) {
 	var apptScroll = document.getElementById(this._allDayApptScrollDivId);
 	Dwt.setVisible(apptScroll, !hide);
-
+    var sash = document.getElementById(this._allDaySepSashDivId);
+    if(hide) {
+        Dwt.addClass(sash, 'closed');
+    }
+    else {
+        Dwt.delClass(sash, 'closed');
+    }
 	if (this._scheduleMode) {
 		var unionAllDayDiv = document.getElementById(this._unionAllDayDivId);
 		Dwt.setVisible(unionAllDayDiv, !hide);

@@ -1884,6 +1884,27 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@HSashSize@
 	@SashBg@
 	@ActiveCursor@
+    @BottomSeparator@
+}
+
+/* Separator between all-day and hourly sections */
+.calendar_header_allday_separator_sash {
+	@HSashSize@
+	@SashBg@
+	@ActiveCursor@
+    width: 18px !important;
+    height: 3px !important;
+    margin-left: 50%;
+    margin-right: auto;
+    margin-top: 1px;
+}
+
+.calendar_header_allday_separator .open {
+	background: url("/img/arrows/ImgSashArrowsUp.png") no-repeat scroll 0 0 transparent;
+}
+
+.calendar_header_allday_separator .closed {
+	background: url("/img/arrows/ImgSashArrowsDown.png") no-repeat scroll 0 0 transparent;
 }
 
 /* Separator between individual days of the calendar */
