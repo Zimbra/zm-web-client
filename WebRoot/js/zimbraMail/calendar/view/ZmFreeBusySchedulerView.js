@@ -1578,7 +1578,7 @@ function(startTime, emailList, callback) {
     var acct = (appCtxt.multiAccounts)
         ? this._editView.getCalendarAccount() : null;
 
-    var appt = this._editView.parent.getAppt();
+    var appt = this._editView.parent.getAppt(true);
     var params = {
         startTime: startTime,
         endTime: endTime,
