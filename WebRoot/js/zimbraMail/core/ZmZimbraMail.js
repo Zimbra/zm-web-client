@@ -3304,11 +3304,10 @@ ZmZimbraMail._endSession =
 function() {
 	if (!AjxEnv.isPrism) {
 		// Let the server know that the session is ending.
-		var errorCallback = new AjxCallback(null, function() { return true; } ); // Ignores any error.
 		var args = {
 			jsonObj: { EndSessionRequest: { _jsns: "urn:zimbraAccount" } },
 			asyncMode: true,
-			errorCallback: errorCallback
+			emptyResponseOkay:	true
 		};
 		appCtxt.getAppController().sendRequest(args);
 	}

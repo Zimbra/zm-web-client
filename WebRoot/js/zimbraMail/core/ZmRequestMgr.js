@@ -86,22 +86,23 @@ function() {
  * handled the exception, and false if standard exception handling should still
  * be performed.
  *
- * @param {Hash}	params				a hash of parameters
- * @param {AjxSoapDoc}	params.soapDoc				the SOAP document that represents the request
- * @param {Object}	params.jsonObj				the JSON object that represents the request (alternative to soapDoc)
- * @param {Boolean}	params.asyncMode				if <code>true</code>, request will be made asynchronously
- * @param {AjxCallback}	params.callback				the next callback in chain for async request
- * @param {AjxCallback}	params.errorCallback			the callback to run if there is an exception
- * @param {AjxCallback}	params.continueCallback		the callback to run after user re-auths
- * @param {int}	params.timeout				the timeout value (in seconds)
- * @param {Boolean}	params.noBusyOverlay			if <code>true</code>, don't use the busy overlay
- * @param {String}	params.accountName			the name of account to execute on behalf of
- * @param {Object}	params.response				the pre-determined response (no request will be made)
- * @param {Boolean}	params.skipAuthCheck			if <code>true</code>, do not check if auth token has changed
- * @param {constant}	params.resend				the reason for resending request
- * @param {Boolean}	params.sensitive				if <code>true</code>, attempt to use secure conn to protect data
- * @param {Boolean}	params.noSession				if <code>true</code>, no session info is included
- * @param {String}	params.restUri				the REST URI to send the request to
+ * @param {Hash}		params				a hash of parameters
+ * @param {AjxSoapDoc}	soapDoc				the SOAP document that represents the request
+ * @param {Object}		jsonObj				the JSON object that represents the request (alternative to soapDoc)
+ * @param {Boolean}		asyncMode			if <code>true</code>, request will be made asynchronously
+ * @param {AjxCallback}	callback			the next callback in chain for async request
+ * @param {AjxCallback}	errorCallback		the callback to run if there is an exception
+ * @param {AjxCallback}	continueCallback	the callback to run after user re-auths
+ * @param {int}			timeout				the timeout value (in seconds)
+ * @param {Boolean}		noBusyOverlay		if <code>true</code>, don't use the busy overlay
+ * @param {String}		accountName			the name of account to execute on behalf of
+ * @param {Object}		response			the pre-determined response (no request will be made)
+ * @param {Boolean}		skipAuthCheck		if <code>true</code>, do not check if auth token has changed
+ * @param {constant}	resend				the reason for resending request
+ * @param {Boolean}		sensitive			if <code>true</code>, attempt to use secure conn to protect data
+ * @param {Boolean}		noSession			if <code>true</code>, no session info is included
+ * @param {String}		restUri				the REST URI to send the request to
+ * @param {boolean}		emptyResponseOkay	if true, empty or no response from server is not an erro
  */
 ZmRequestMgr.prototype.sendRequest =
 function(params) {
@@ -167,7 +168,8 @@ function(params) {
 						skipAuthCheck:		params.skipAuthCheck,
 						resend:				params.resend,
 						noSession:			params.noSession,
-						useStringify1:		AjxEnv.isIE && params.fromChildWindow
+						useStringify1:		AjxEnv.isIE && params.fromChildWindow,
+						emptyResponseOkay:	params.emptyResponseOkay
 					};
 		methodName = params.methodName = ZmCsfeCommand.getMethodName(cmdParams.jsonObj || cmdParams.soapDoc);
 	}
