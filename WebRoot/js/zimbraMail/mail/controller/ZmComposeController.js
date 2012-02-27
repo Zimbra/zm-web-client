@@ -452,10 +452,10 @@ function(params) {
 ZmComposeController.prototype.sendMsg =
 function(attId, draftType, callback, contactId, processDataURIImages) {
 	
-    if (processDataURIImages !== false) {
+    if (processDataURIImages !== false && this._composeView) {
         var processDataURIImagesCallback = this._sendMsg.bind(this, attId, null, draftType, callback, contactId);
-        var result = this._processDataURIImages(this._composeView._getIframeDoc() ,processDataURIImagesCallback);
-        if (result){
+        var result = this._processDataURIImages(this._composeView._getIframeDoc(), processDataURIImagesCallback);
+        if (result) {
             return;
         }
     }
@@ -946,12 +946,6 @@ function(params) {
 	this._composeMode = params.composeMode || this._getComposeMode(msg, identity);
 	AjxDebug.println(AjxDebug.REPLY, "ZmComposeController::_setView - Compose mode: " + this._composeMode);
 	
-	var desiredPartType = (this._composeMode == DwtHtmlEditor.TEXT) ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML;
-	if (msg && msg.canFetchAlternativePart(desiredPartType)) {
-		msg.fetchAlternativePart(desiredPartType, this._setView.bind(this, params));
-		return;
-	}
-
 	if (this._needComposeViewRefresh) {
 		this._composeView.dispose();
 		this._composeView = null;

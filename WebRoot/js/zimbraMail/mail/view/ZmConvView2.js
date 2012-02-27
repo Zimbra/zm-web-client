@@ -649,12 +649,23 @@ function(params) {
 	if (!this._item) { return; }
 
 	params.action = params.action || ZmOperation.REPLY_ALL;
-	params.msg = params.msg || this._item.getFirstHotMsg();
+	var msg = params.msg = params.msg || this._item.getFirstHotMsg();
 	params.composeMode = (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	if (this._replyInput.value) {
 		params.extraBodyText = AjxStringUtil.htmlEncode(this._replyInput.value);
 	}
 	params.hideView = params.sendNow;
+	var desiredPartType = (params.composeMode == DwtHtmlEditor.TEXT) ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML;
+	if (msg && msg.canFetchAlternativePart(desiredPartType)) {
+		msg.fetchAlternativePart(desiredPartType, this._sendMsg.bind(this, params));
+	}
+	else {
+		this._sendMsg(params);
+	}
+};
+
+ZmConvView2.prototype._sendMsg =
+function(params) {
 	var composeCtlr = AjxDispatcher.run("GetComposeController", params.hideView ? ZmApp.HIDDEN_SESSION : null);
 	composeCtlr.doAction(params);
 	if (params.sendNow) {
@@ -888,9 +899,9 @@ function(msg, container, callback) {
 	// still in progress
 	if (this._disposed) { return; }
 
+	this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
 	this._renderMessageBody(msg, container, callback);
 	this._renderMessageFooter(msg, container);
-	this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
 };
 
 // Display all text messages and some HTML messages in a DIV rather than in an IFRAME.
