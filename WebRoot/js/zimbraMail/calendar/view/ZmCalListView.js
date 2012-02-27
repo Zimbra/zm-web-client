@@ -506,11 +506,9 @@ function(itemArray) {
 		this._renderList(filterV, this._list.size() != 0, true);
 		this._list.addList(filterV.getArray());
         this._resetColWidth();
-        if(AjxEnv.isIE) {
-            //Does not make sense but required to make the scrollbar appear
-            var size = this.getSize();
-            this._listDiv.style.height = (size.y - DwtListView.HEADERITEM_HEIGHT)+"px";
-        }
+        //Does not make sense but required to make the scrollbar appear
+        var size = this.getSize();
+        this._listDiv.style.height = (size.y - DwtListView.HEADERITEM_HEIGHT)+"px";
 	}
 };
 

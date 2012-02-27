@@ -153,11 +153,9 @@ ZmApptListView.prototype.set = function(apptList, skipMiniCalUpdate, skipSort) {
 	}
 	ZmListView.prototype.set.call(this, apptList, this._defaultSortField);
     this._resetColWidth();
-    if(AjxEnv.isIE) {
-        //Does not make sense but required to make the scrollbar appear
-        var size = this.getSize();
-        this._listDiv.style.height = (size.y - DwtListView.HEADERITEM_HEIGHT)+"px";
-    }
+    //Does not make sense but required to make the scrollbar appear
+    var size = this.getSize();
+    this._listDiv.style.height = (size.y - DwtListView.HEADERITEM_HEIGHT)+"px";
 };
 
 ZmApptListView.prototype._getItemId = function(item) {
