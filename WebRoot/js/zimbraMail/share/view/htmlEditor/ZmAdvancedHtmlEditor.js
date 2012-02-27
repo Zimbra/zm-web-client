@@ -165,15 +165,14 @@ function() {
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype.getTextVersion =
-function(convertor) {
-	var textArea = this.getContentField();
-	if (this._mode == DwtHtmlEditor.HTML) {
-		var editor = this.getEditor();
-		return editor ? this._convertHtml2Text(convertor): "";
-	}
-
-	return textArea.value;
+/**
+ * @param	{Boolean}	keepModeDiv	if <code>true</code>, _spellCheckModeDiv is not removed
+ */
+ZmAdvancedHtmlEditor.prototype.getTextVersion = function (convertor, keepModeDiv) {
+    this.discardMisspelledWords(keepModeDiv);
+    return this._mode === DwtHtmlEditor.HTML
+        ? this._convertHtml2Text(convertor)
+        : this.getContentField().value;
 };
 
 ZmAdvancedHtmlEditor.prototype.getContent =
@@ -915,8 +914,8 @@ function(callback, onExitCallback, errCallback){
 };
 
 ZmAdvancedHtmlEditor.prototype.spellCheck =
-function(callback) {
-	var text = this.getTextVersion();
+function(callback, keepModeDiv) {
+	var text = this.getTextVersion(null, keepModeDiv);
 
 	if (/\S/.test(text)) {
 		AjxDispatcher.require("Extras");
@@ -1376,9 +1375,7 @@ function() {
 
 ZmAdvancedHtmlEditor._spellCheckAgain =
 function() {
-	var editor = Dwt.getObjectFromElement(this);
-	editor.discardMisspelledWords();
-	editor.spellCheck();
+    Dwt.getObjectFromElement(this).spellCheck(null, true);
 };
 
 
