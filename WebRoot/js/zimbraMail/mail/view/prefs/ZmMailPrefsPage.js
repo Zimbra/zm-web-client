@@ -311,7 +311,9 @@ function(ev) {
         sd = this._startTimeSelect.getValue(sd);
         ed = this._endTimeSelect.getValue(ed);
     }
-	this._fixDates(sd, ed, DwtUiEvent.getTarget(ev) == this._endDateField);
+    this._fixDates(sd, ed, DwtUiEvent.getTarget(ev) == this._endDateField);
+    this._startDateVal.value = this._formatter.format(AjxDateUtil.simpleParseDateStr(this._startDateField.value));
+    this._endDateVal.value = this._formatter.format(AjxDateUtil.simpleParseDateStr(this._endDateField.value));
     this._isCalDurationChanged = true;
 };
 
