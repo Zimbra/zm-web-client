@@ -1062,7 +1062,6 @@ function(params) {
 		var div = this._containerEl = document.createElement("div");
 		div.id = this._msgBodyDivId;
 		div.className = "MsgBody MsgBody-" + (params.isTextMsg ? "text" : "html");
-		Dwt.setScrollStyle(div, Dwt.CLIP);
 		var parent = this.getHtmlElement();
 		if (!parent) {
 			AjxDebug.println(AjxDebug.MSG_DISPLAY, "Message display: DIV was not ready");
