@@ -688,11 +688,9 @@ function(params, result) {
 ZmZimbraMail.prototype.handleTaskComponents =
 function() {
     // reminder controlled by calendar preferences setting
-	if (appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME) != 0) {
-		var reminderAction = new AjxTimedAction(this, this.showTaskReminder);
-		var delay = appCtxt.isOffline ? 0 : ZmTasksApp.REMINDER_START_DELAY;
-		AjxTimedAction.scheduleAction(reminderAction, delay);
-	}
+    var reminderAction = new AjxTimedAction(this, this.showTaskReminder);
+    var delay = appCtxt.isOffline ? 0 : ZmTasksApp.REMINDER_START_DELAY;
+    AjxTimedAction.scheduleAction(reminderAction, delay);
 };
 
 /**
@@ -709,11 +707,9 @@ function() {
 	}
 
 	// reminder controlled by calendar preferences setting
-	if (appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME) != 0) {
-		var reminderAction = new AjxTimedAction(this, this.showReminder);
-		var delay = appCtxt.isOffline ? 0 : ZmCalendarApp.REMINDER_START_DELAY;
-		AjxTimedAction.scheduleAction(reminderAction, delay);
-	}
+    var reminderAction = new AjxTimedAction(this, this.showReminder);
+    var delay = appCtxt.isOffline ? 0 : ZmCalendarApp.REMINDER_START_DELAY;
+    AjxTimedAction.scheduleAction(reminderAction, delay);
 
 };
 
