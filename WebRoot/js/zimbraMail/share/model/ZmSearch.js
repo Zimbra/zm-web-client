@@ -617,7 +617,8 @@ function() {
 			where = folder.getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
 		}
 	} else if (this.tagId) {
-		where = appCtxt.getById(this.tagId).getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
+		var tag = appCtxt.getById(this.tagId);
+		where = tag && tag.getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
 	}
 	return where
 		? ([ZmMsg.zimbraTitle, where].join(": "))
