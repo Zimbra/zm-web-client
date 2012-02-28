@@ -2404,7 +2404,7 @@ function() {
 	var login = appCtxt.get(ZmSetting.USERNAME);
 	var username = (appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
 	if (username) {
-		this._userNameField.getHtmlElement().innerHTML =  AjxStringUtil.clipByLength(username, 24);
+        this._userNameField.getHtmlElement().innerHTML =  AjxStringUtil.htmlEncode(AjxStringUtil.clipByLength(username, 24));
 		if (AjxEnv.isLinux) {	// bug fix #3355
 			this._userNameField.getHtmlElement().style.lineHeight = "13px";
 		}
