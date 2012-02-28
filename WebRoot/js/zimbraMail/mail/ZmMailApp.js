@@ -241,7 +241,7 @@ function(settings) {
     settings.registerSetting("VACATION_FROM_TIME",				{type:ZmSetting.T_PREF, defaultValue:""});
 	settings.registerSetting("VACATION_MSG",					{name:"zimbraPrefOutOfOfficeReply", type:ZmSetting.T_PREF, defaultValue:""});
     settings.registerSetting("VACATION_EXTERNAL_TYPE",			{name:"zimbraPrefExternalSendersType", type:ZmSetting.T_PREF, defaultValue:"ALL"});
-    settings.registerSetting("VACATION_CALENDAR_TYPE",			{name:"zimbraPrefOutOfOfficeFreeBusyStatus", type:ZmSetting.T_PREF, defaultValue:""});
+    settings.registerSetting("VACATION_CALENDAR_TYPE",			{name:"zimbraPrefOutOfOfficeFreeBusyStatus", type:ZmSetting.T_PREF, defaultValue:"OUTOFOFFICE"});
     settings.registerSetting("VACATION_CALENDAR_ENABLED",		{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
     settings.registerSetting("VACATION_EXTERNAL_MSG",			{name:"zimbraPrefOutOfOfficeExternalReply", type:ZmSetting.T_PREF, defaultValue:""});
 	settings.registerSetting("VACATION_MSG_ENABLED",			{name:"zimbraPrefOutOfOfficeReplyEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});

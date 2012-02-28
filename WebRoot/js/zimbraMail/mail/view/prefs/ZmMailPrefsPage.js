@@ -426,7 +426,7 @@ function(cbox, id, evt) {
 
             var calCheckBox = this.getFormObject(ZmSetting.VACATION_CALENDAR_ENABLED);
             calCheckBox.setEnabled((this._durationCheckbox.isSelected() || appCtxt.get(ZmSetting.VACATION_DURATION_ENABLED)) && enabled);
-            calCheckBox.setSelected((appCtxt.get(ZmSetting.VACATION_CALENDAR_TYPE).length!=0));
+            calCheckBox.setSelected(enabled && (appCtxt.get(ZmSetting.VACATION_CALENDAR_TYPE).length!=0));
 
             var calendarType = this.getFormObject(ZmSetting.VACATION_CALENDAR_TYPE);
             calendarType.setEnabled(calCheckBox.isSelected() && this._durationCheckbox.isSelected() && enabled);
@@ -437,7 +437,7 @@ function(cbox, id, evt) {
             externalTypeSelect.setEnabled(externalEnabled);
             extTextarea.setEnabled(externalEnabled);
 
-			var val = !this._startDateVal.value ? false : true;
+			var val = this._startDateVal.value && enabled ? true : false;
 			this._durationCheckbox.setSelected(val);
 
 			this._setEnabledStartDate(enabled && this._durationCheckbox.isSelected());
