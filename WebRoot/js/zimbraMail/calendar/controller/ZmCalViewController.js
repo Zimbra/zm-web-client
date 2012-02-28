@@ -1821,7 +1821,8 @@ function(appt, mode) {
 			title: ZmMsg.confirmDeleteApptTitle,
 			confirmMsg: ZmMsg.confirmCancelApptSeries,
 			choiceLabel1: ZmMsg.confirmDeleteApptWholeSeries,
-			choiceLabel2 : ZmMsg.confirmDeleteApptFutureInstances
+			choiceLabel2 : ZmMsg.confirmDeleteApptFutureInstances,
+			choice2WarningMsg : ZmMsg.deleteApptWarning
 		    });
     }
 	this._delFutureInstNotifyDlg.popup(new AjxCallback(this, this._deleteFutureInstYesCallback, [appt,mode]));
