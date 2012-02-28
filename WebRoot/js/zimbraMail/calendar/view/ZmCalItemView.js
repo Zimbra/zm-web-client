@@ -448,6 +448,12 @@ function() {
     return retVal;
 };
 
+ZmApptView.prototype.isValid =
+function() {
+    // No fields to validate
+    return true;
+}
+
 ZmApptView.prototype.setOrigPtst =
 function(value) {
     this._origPtst = value;

@@ -223,7 +223,16 @@ function(ev) {
 
 ZmApptController.prototype._handleSaveResponse =
 function(result, value) {
-    this.getCurrentView().setOrigPtst(value);
+    if (this.isCloseAction()) {
+        this._closeView();
+    } else {
+        this.getCurrentView().setOrigPtst(value);
+    }
+};
+
+ZmApptController.prototype.isCloseAction =
+function() {
+    return this._action == ZmCalItemComposeController.SAVE_CLOSE;
 };
 
 ZmApptController.prototype._forwardListener =
@@ -405,4 +414,32 @@ ZmApptController.prototype._postShowCallback =
 function() {
 	ZmCalItemComposeController.prototype._postShowCallback.call(this);
     this._app.setOverviewPanelContent();
+};
+
+
+ZmApptController.prototype.saveCalItem =
+function(attId) {
+    var done = true;
+    if (this.isDirty()) {
+        var calItem = this.getCalItem();
+        if(calItem) {
+            var saveCallback = new AjxCallback(this, this._handleSaveResponse);
+            var calViewCtrl = this._app.getCalController();
+            var respCallback =
+                new AjxCallback(calViewCtrl, calViewCtrl._handleResponseHandleApptRespondAction,
+                    [calItem, this.getOpValue(), null, saveCallback]);
+            calItem.getDetails(null, respCallback, this._errorCallback);
+            done = false;
+        }
+    }
+    if(done && this.isCloseAction()) {
+        this._closeView();
+    }
+
+};
+
+ZmApptController.prototype._closeView =
+function() {
+	this._app.popView(true,this._currentViewId);
+    this._composeView.cleanup();
 };

@@ -2953,17 +2953,17 @@ function(ev) {
 };
 
 ZmCalViewController.prototype._handleResponseHandleApptRespondAction =
-function(appt, type, op) {
+function(appt, type, op, callback) {
 	var msgController = this._getMsgController();
 	msgController.setMsg(appt.message);
 	// poke the msgController
 	var instanceDate = op == ZmOperation.VIEW_APPT_INSTANCE ? new Date(appt.uniqStartTime) : null;
 
     if(type == ZmOperation.REPLY_DECLINE) {
-        var callback = new AjxCallback(this, this._sendInviteReply, [type, instanceDate]);
-        this._promptDeclineNotify(appt, callback);
+        var promptCallback = new AjxCallback(this, this._sendInviteReply, [type, instanceDate]);
+        this._promptDeclineNotify(appt, promptCallback);
     }else {
-        msgController._sendInviteReply(type, appt.compNum || 0, instanceDate, appt.getRemoteFolderOwner());
+        msgController._sendInviteReply(type, appt.compNum || 0, instanceDate, appt.getRemoteFolderOwner(), false, null, null, callback);
     }
 };
 
