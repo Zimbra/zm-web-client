@@ -1379,6 +1379,10 @@ function(bEnableInputs) {
 	this._htmlEditor.resetSpellCheck();
 	this._htmlEditor.clear();
 
+    // this._htmlEditor.clear() resets html editor body filed.
+    // Setting this._bodyField to its latest value
+    this._bodyField = this._htmlEditor.getBodyField();
+
 	// the div that holds the attc.table and null out innerHTML
 	this.cleanupAttachments(true);
 
