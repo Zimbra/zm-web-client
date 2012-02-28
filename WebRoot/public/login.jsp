@@ -373,16 +373,16 @@ if (application.getInitParameter("offlineMode") != null)  {
                                         </c:choose>
                                         <tr>
                                             <td><label for="password"><fmt:message key="password"/>:</label></td>
-                                            <td><input id="password" class="zLoginField" name="password" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                            <td><input id="password" autocomplete="off" class="zLoginField" name="password" type="password" value="" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
                                         </tr>
                             <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword }">
                                         <tr>
                                             <td><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
-                                            <td><input id="loginNewPassword" class="zLoginField" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                            <td><input id="loginNewPassword" autocomplete="off" class="zLoginField" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
                                         </tr>
                                         <tr>
                                             <td><label for="confirmNew"><fmt:message key="confirm"/>:</label></td>
-                                            <td><input id="confirmNew" class="zLoginField" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                            <td><input id="confirmNew" autocomplete="off" class="zLoginField" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
                                         </tr>
                             </c:if>
                                         <tr>
