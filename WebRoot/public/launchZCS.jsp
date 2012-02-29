@@ -176,8 +176,8 @@
 		window.exports = window.UT = {};
 		window.require = true;
 	</script>
-	<link rel="stylesheet" href="/zimbra/qunit/qunit.css" />
-	<script src="/zimbra/qunit/qunit.js"></script>
+	<link rel="stylesheet" href="/qunit/qunit.css" />
+	<script src="/qunit/qunit.js"></script>
 	<script src="/js/zimbraMail/unittest/ZmUnitTestManager.js"></script>
 </c:if>
 <zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
