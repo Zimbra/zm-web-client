@@ -466,19 +466,25 @@ function(calItem, result) {
 
 ZmCalItemComposeController.prototype._handleErrorSave =
 function(calItem, ex) {
+	var status = this._getErrorSaveStatus(calItem, ex);
+	return status.handled;
+};
+
+ZmCalItemComposeController.prototype._getErrorSaveStatus =
+function(calItem, ex) {
 	// TODO: generalize error message for calItem instead of just Appt
 	var status = calItem.processErrorSave(ex);
-	var handled = false;
+	status.handled = false;
 
     if (status.continueSave) {
         this.saveCalItemContinue(calItem);
-        handled = true;
+        status.handled = true;
     } else {
         // Enable toolbar if not attempting to continue the Save
         this.enableToolbar(true);
         if (status.errorMessage) {
             // Handled the error, display the error message
-            handled = true;
+            status.handled = true;
             var dialog = appCtxt.getMsgDialog();
             dialog.setMessage(status.errorMessage, DwtMessageDialog.CRITICAL_STYLE);
             dialog.popup();
@@ -486,7 +492,7 @@ function(calItem, ex) {
         appCtxt.notifyZimlets("onSaveApptFailure", [this, calItem, ex]);
     }
 
-    return handled;
+    return status;
 };
 
 // Spell check methods

@@ -1368,46 +1368,60 @@ function(ev) {
 };
 
 
-// --- Subclass the ApptComposeController for saving Quick Add dialog appointments
-ZmQuickAddApptComposeController = function(container, app, type, sessionId) {
+// --- Subclass the ApptComposeController for saving Quick Add dialog appointments, and doing a
+//     save when the CalColView drag and drop is used
+ZmSimpleApptComposeController = function(container, app, type, sessionId) {
     ZmApptComposeController.apply(this, arguments);
     this._closeCallback = null;
     // Init the composeView as a filler
     this.initComposeView();
 };
 
-ZmQuickAddApptComposeController.prototype = new ZmApptComposeController;
-ZmQuickAddApptComposeController.prototype.constructor = ZmQuickAddApptComposeController;
+ZmSimpleApptComposeController.prototype = new ZmApptComposeController;
+ZmSimpleApptComposeController.prototype.constructor = ZmSimpleApptComposeController;
 
-ZmQuickAddApptComposeController.prototype.toString = function() { return "ZmQuickAddApptComposeController"; };
+ZmSimpleApptComposeController.prototype.toString = function() { return "ZmSimpleApptComposeController"; };
 
-ZmQuickAddApptComposeController.getDefaultViewType =
+ZmSimpleApptComposeController.getDefaultViewType =
 function() {
-	return ZmId.VIEW_QUICK_ADD_APPOINTMENT;
+	return ZmId.VIEW_SIMPLE_ADD_APPOINTMENT;
 };
 
-ZmQuickAddApptComposeController.prototype.doQuickSave =
-function(appt, closeCallback) {
+ZmSimpleApptComposeController.prototype.doSimpleSave =
+function(appt, action, closeCallback, errorCallback, cancelCallback) {
     var ret = false;
+    this._action = action;
     this._closeCallback = null;
     if(!appt.isValidDuration()){
         this._composeView.showInvalidDurationMsg();
     } else if (appt) {
-        this._closeCallback = closeCallback;
+        this._simpleCloseCallback  = closeCallback;
+        this._simpleErrorCallback  = errorCallback;
+        this._simpleCancelCallback = cancelCallback;
         ret = this._initiateSaveWithChecks(appt, null, ZmTimeSuggestionPrefDialog.DEFAULT_NUM_RECURRENCE);
     }
     return ret;
 };
 
-ZmQuickAddApptComposeController.prototype._handleResponseSave =
+ZmSimpleApptComposeController.prototype._handleResponseSave =
 function(calItem, result) {
-    if (this._closeCallback) {
-        this._closeCallback.run();
+    if (this._simpleCloseCallback) {
+        this._simpleCloseCallback.run();
     }
     appCtxt.notifyZimlets("onSaveApptSuccess", [this, calItem, result]);//notify Zimlets on success
 };
 
-ZmQuickAddApptComposeController.prototype.initComposeView =
+ZmSimpleApptComposeController.prototype._getErrorSaveStatus =
+function(calItem, ex) {
+    var status = ZmCalItemComposeController.prototype._getErrorSaveStatus.call(this, calItem, ex);
+    if (!status.continueSave && this._simpleErrorCallback) {
+        this._simpleErrorCallback.run(this);
+    }
+
+    return status;
+};
+
+ZmSimpleApptComposeController.prototype.initComposeView =
 function() {
 	if (!this._composeView) {
 		// Create an empty compose view and make it always return isDirty == true
@@ -1418,5 +1432,15 @@ function() {
 	return false;
 };
 
-ZmQuickAddApptComposeController.prototype.enableToolbar =
+ZmSimpleApptComposeController.prototype.enableToolbar =
 function(enabled) { }
+
+
+ZmSimpleApptComposeController.prototype.showConflictDialog =
+function(appt, callback, inst) {
+	DBG.println("conflict instances :" + inst.length);
+
+	var conflictDialog = this.getConflictDialog();
+	conflictDialog.initialize(inst, appt, callback, this._simpleCancelCallback);
+	conflictDialog.popup();
+};

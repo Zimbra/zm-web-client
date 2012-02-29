@@ -2481,23 +2481,30 @@ function(ev) {
 
 ZmCalViewController.prototype._quickAddOkListener =
 function(ev) {
+    var isValid = this._quickAddDialog.isValid();
+    var appt = this._quickAddDialog.getAppt();
+    var closeCallback = this._quickAddCallback.bind(this, true);
+    var errorCallback = this._quickAddCallback.bind(this, false);
+    this._saveSimpleAppt(isValid, appt, ZmCalItemComposeController.SAVE_CLOSE, closeCallback, errorCallback);
+}
+
+ZmCalViewController.prototype._saveSimpleAppt =
+function(isValid, appt, action, closeCallback, errorCallback, cancelCallback) {
 	try {
-		if (this._quickAddDialog.isValid()) {
-			var appt = this._quickAddDialog.getAppt();
-			if (appt) {
-				if (appt.getFolder() && appt.getFolder().noSuchFolder) {
-					throw AjxMessageFormat.format(ZmMsg.errorInvalidFolder, appt.getFolder().name);
-				}
-                if (!this._quickComposeController) {
-                    // Create a compose controller, used solely for saving the quick add
-                    // appt, in order to trigger permission and resource checks.
-                    var params = { controllerClass: "ZmQuickAddApptComposeController"};
-                    this._quickComposeController = this._app.getSessionController(params);
-                    this._closeCallback = this._quickAddCallback.bind(this);
-                }
-                this._quickComposeController.doQuickSave(appt, this._closeCallback);
-			}
-		}
+		if (isValid && appt) {
+            if (appt.getFolder() && appt.getFolder().noSuchFolder) {
+                throw AjxMessageFormat.format(ZmMsg.errorInvalidFolder, appt.getFolder().name);
+            }
+            if (!this._simpleComposeController) {
+                // Create a compose controller, used for saving the quick add
+                // appt and modifications made via ZmCalColView drag and drop, in
+                // order to trigger permission and resource checks.
+                var params = { controllerClass: "ZmSimpleApptComposeController"};
+                this._simpleComposeController = this._app.getSessionController(params);
+            }
+            this._simpleComposeController.doSimpleSave(appt, action, closeCallback,
+                                                       errorCallback, cancelCallback);
+        }
 	} catch(ex) {
 		if (typeof ex == "string") {
 			var errorDialog = new DwtMessageDialog({parent:this._shell});
@@ -2511,9 +2518,11 @@ function(ev) {
 };
 
 ZmCalViewController.prototype._quickAddCallback =
-function(response) {
-    this._quickAddDialog.popdown();
-    appCtxt.setStatusMsg(ZmMsg.apptCreated);
+function(success) {
+    if (success) {
+        this._quickAddDialog.popdown();
+    }
+    appCtxt.setStatusMsg(success ? ZmMsg.apptCreated : ZmMsg.apptCreationError);
 };
 
 ZmCalViewController.prototype._quickAddMoreListener =
@@ -2634,6 +2643,8 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 		if (result) {
 			result.getResponse();
 		}
+		var apptStartDate = appt.startDate;
+		var apptEndDate   = appt.endDate;
 		appt.setViewMode(viewMode);
 		if (startDateOffset) {
 			var sd = (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) ? appt.getUniqueStartDate() : new Date(appt.getStartTime());
@@ -2650,15 +2661,13 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 		}
 
 		if(!appt.getTimezone()) appt.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
-		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [callback]);
-		var respErrCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [errorCallback]);
+		var respCallback    = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [callback]);
+		var respErrCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [errorCallback, appt, apptStartDate, apptEndDate]);
 		appCtxt.getShell().setBusy(true);
-        if(appt.inviteNeverSent) {
-            appt.save(null, respCallback, respErrCallback);
-        }
-        else {
-		    appt.send(null, respCallback, respErrCallback);
-        }
+
+        var action = appt.inviteNeverSent ? ZmCalItemComposeController.SAVE_CLOSE :
+                                            ZmCalItemComposeController.SEND;
+        this._saveSimpleAppt(true, appt, action, respCallback, respErrCallback, respErrCallback);
 	} catch (ex) {
 		appCtxt.getShell().setBusy(false);
 		if (ex.msg) {
@@ -2688,9 +2697,17 @@ ZmCalViewController.prototype._handleExceptionWarningResponse = function(dialog,
 }
 
 ZmCalViewController.prototype._handleResponseUpdateApptDateSave2 =
-function(callback) {
-	appCtxt.getShell().setBusy(false);
-	if (callback) callback.run();
+function(callback, appt, apptStartDate, apptEndDate) {
+    // Appt passed in for cancel/failure.  Restore the start and endDates
+    if (appt) {
+        appt.setStartDate(apptStartDate);
+        appt.setEndDate(apptEndDate);
+        appt.resetRepeatWeeklyDays();
+    }
+    if (callback) callback.run();
+    appCtxt.getShell().setBusy(false);
+
+
 };
 
 ZmCalViewController.prototype._handleResponseUpdateApptDateIgnore =

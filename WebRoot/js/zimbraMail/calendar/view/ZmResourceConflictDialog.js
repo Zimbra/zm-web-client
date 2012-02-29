@@ -181,11 +181,12 @@ function(inst) {
 };
 
 ZmResourceConflictDialog.prototype.initialize =
-function(list, appt, callback) {
+function(list, appt, callback, cancelCallback) {
 	this._list = list;
 	this._appt = appt;
 	this._instData = {};
-	this._callback = callback;
+    this._callback = callback;
+    this._cancelCallback = cancelCallback;
 	this._canceledInstanceCount = 0;
 	
 	var attendeeMap = {};
@@ -298,6 +299,7 @@ function() {
 
 ZmResourceConflictDialog.prototype._handleCancelButton =
 function() {
+    if(this._cancelCallback) this._cancelCallback.run();
     if(this._appt) this._appt.getRecurrence().resetCancelRecurIds();
     this.popdown();
 };

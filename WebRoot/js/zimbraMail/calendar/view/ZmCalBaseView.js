@@ -1196,7 +1196,7 @@ function(ev) {
 			data.view._autoScrollDisabled = true;
 			var cc = appCtxt.getCurrentController();
 			var endDate = new Date(data.startDate.getTime() + origDuration);
-			var errorCallback = new AjxCallback(null, ZmCalColView._handleError, data);
+			var errorCallback = new AjxCallback(null, ZmCalColView._handleDnDError, data);
 			var sdOffset = data.startDate ? (data.startDate.getTime() - data.appt._orig.getStartTime()) : null;
 			var edOffset = endDate ? (endDate.getTime() - data.appt._orig.getEndTime() ) : null;
 			cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback, mouseEv);
