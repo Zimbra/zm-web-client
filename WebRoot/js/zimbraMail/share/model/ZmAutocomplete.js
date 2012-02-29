@@ -439,7 +439,7 @@ ZmAutocompleteMatch = function(match, options, isContact, str) {
 			var contactGroup = appCtxt.cacheGet(match.id);
 			if (contactGroup) {
 				var groups = contactGroup.getGroupMembers();
-				var addresses = ((groups.good.size()) && groups.good.getArray()) || [];
+				var addresses = (groups && groups.good && groups.good.getArray()) || [];
 				var emails = [], addrs = [];
 				for (var i = 0; i < addresses.length; i++) {
 					var addr = addresses[i];
