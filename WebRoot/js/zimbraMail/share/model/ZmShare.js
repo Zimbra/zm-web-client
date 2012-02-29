@@ -628,7 +628,9 @@ function(notes, result) {
 	var action = result.getResponse().FolderActionResponse.action;
 	this.grantee.id = action.zid;
 	this.grantee.email = action.d;
-    this._sendShareNotification(action, notes);
+    if(action.d && action.zid) {
+        this._sendShareNotification(action, notes);
+    }
 };
 
 /**
