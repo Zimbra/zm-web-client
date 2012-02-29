@@ -670,6 +670,11 @@ function(msg, parent) {
 			ZmMailMsgView.__unfangInternalImage(msg, images[i], "src");
 			images[i].onload = onload;
 		}
+        else {
+            images[i].setAttribute("src", "/img/mail/ImgBlockedImage.png");
+            images[i].setAttribute("onload", "this.style.visibility = 'hidden'");
+            images[i].style.visibility = 'hidden';
+        }
 		hasExternalImages = external || hasExternalImages;
 	}
 	// fix all elems with "background" attribute
@@ -830,6 +835,7 @@ function(msg, parent, id) {
 					AjxTimedAction.scheduleAction(act, 0);
 				} else {
 					images[i].src = images[i].getAttribute("dfsrc");
+                    images[i].setAttribute("onload", "this.style.visibility = 'visible'");
 				}
 			}
 		}
