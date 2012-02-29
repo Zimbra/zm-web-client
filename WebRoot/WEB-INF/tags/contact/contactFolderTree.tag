@@ -61,8 +61,8 @@
             <%--
                 Rest of the address book folders, do not display folders with unknown view here.
             --%>
-            <zm:forEachFolder var="folder" skiproot="${true}" skipsystem="${true}" expanded="${sessionScope.expanded}" skiptrash="${true}">
-                <c:if test="${not folder.isSearchFolder and folder.isContactView}">
+            <zm:forEachFolder var="folder" skiproot="${true}" skipsystem="${false}" expanded="${sessionScope.expanded}" skiptrash="${true}">
+                <c:if test="${not folder.isSearchFolder and folder.isContactView and folder.id ne mailbox.contacts.id}">
                     <app:contactFolder folder="${folder}"/>
                 </c:if>
             </zm:forEachFolder>
