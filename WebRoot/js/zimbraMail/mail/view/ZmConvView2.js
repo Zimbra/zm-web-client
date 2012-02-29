@@ -908,10 +908,11 @@ function(msg, container, callback) {
 ZmMailMsgCapsuleView.prototype._useIframe =
 function(isTextMsg, html, isTruncated) {
 
+	this._cleanedHtml = null;
+
 	if (isTruncated)	{ return true; }
 	if (isTextMsg)		{ return false; }
 
-	this._cleanedHtml = null;
 	var result = AjxStringUtil.checkForCleanHtml(html, ZmMailMsgView.TRUSTED_TAGS, ZmMailMsgView.UNTRUSTED_ATTRS, ZmMailMsgView.BAD_STYLES);
 	if (result) {
 		this._cleanedHtml = result;
