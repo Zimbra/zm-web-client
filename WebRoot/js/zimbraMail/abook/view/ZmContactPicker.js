@@ -276,22 +276,24 @@ function(colItem, ascending, firstTime, lastId, lastSortVal) {
 ZmContactPicker.prototype._contentHtml =
 function(account) {
 	var showSelect;
-	if (appCtxt.multiAccounts) {
-		var list = appCtxt.accountList.visibleAccounts;
+	var context = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
+
+	if (context.multiAccounts) {
+		var list = context.accountList.visibleAccounts;
 		for (var i = 0; i < list.length; i++) {
 			var account = list[i];
-			if (appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, account) &&
-				(appCtxt.get(ZmSetting.GAL_ENABLED, null, account) ||
-				 appCtxt.get(ZmSetting.SHARING_ENABLED, null, account)))
+			if (context.get(ZmSetting.CONTACTS_ENABLED, null, account) &&
+				(context.get(ZmSetting.GAL_ENABLED, null, account) ||
+				 context.get(ZmSetting.SHARING_ENABLED, null, account)))
 			{
 				showSelect = true;
 				break;
 			}
 		}
 	} else {
-		showSelect = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
-					  (appCtxt.get(ZmSetting.GAL_ENABLED) ||
-					   appCtxt.get(ZmSetting.SHARING_ENABLED)));
+		showSelect = (context.get(ZmSetting.CONTACTS_ENABLED) &&
+					  (context.get(ZmSetting.GAL_ENABLED) ||
+					   context.get(ZmSetting.SHARING_ENABLED)));
 	}
 
 	var subs = {
