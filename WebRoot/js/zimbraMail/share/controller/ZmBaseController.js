@@ -392,11 +392,6 @@ ZmBaseController.prototype._setView =
 function(params) {
 
 	var view = params.view;
-	if (this.isSearchResults) {
-		// view is being embedded within search results, so don't push it
-		this._setViewContents(view);
-		return;
-	}
 	
 	// create the view (if we haven't yet)
 	if (!this._appViews[view]) {

@@ -71,7 +71,9 @@ ZmConvListController.prototype.getDefaultViewType = ZmConvListController.getDefa
 ZmConvListController.prototype.show =
 function(search) {
 	ZmDoublePaneController.prototype.show.call(this, search, search.getResults(ZmItem.CONV));
-	appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_CONV);
+	if (!this.isSearchResults) {
+		appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_CONV);
+	}
 };
 
 /**
