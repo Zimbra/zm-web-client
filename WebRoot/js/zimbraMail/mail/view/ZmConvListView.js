@@ -536,7 +536,7 @@ function(conv, fieldId) {
 			html[idx++] = "</span>";
 		}
 	} else {
-		html[idx++] = ZmMsg.unknown;
+		html[idx++] = ZmMsg.noRecipients;
 	}
 
 	return html.join("");

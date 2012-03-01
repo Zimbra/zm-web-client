@@ -114,11 +114,6 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		if (this._isOutboundFolder()) {
 			var addrs = msg.getAddresses(AjxEmailAddress.TO).getArray();
 
-			// default to FROM addresses if no TO: found
-			if (!addrs || addrs.length == 0) {
-				addrs = msg.getAddresses(AjxEmailAddress.FROM).getArray();
-			}
-
 			if (addrs && addrs.length) {
 				var fieldId = this._getFieldId(msg, ZmItem.F_PARTICIPANT);
 				var origLen = addrs.length;
@@ -138,7 +133,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 					htmlArr[idx++] = "</span>";
 				}
 			} else {
-				htmlArr[idx++] = "&nbsp;"
+				htmlArr[idx++] = ZmMsg.noRecipients;
 			}
 		} else {
 			if ((this._mode == ZmId.VIEW_CONVLIST) && this._isMultiColumn) {
