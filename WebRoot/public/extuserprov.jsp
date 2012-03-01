@@ -60,17 +60,15 @@
 				<span class="ImgLoginBanner"></span>
 			</a></h1>
 
-            <form action="/service/extuserprov/" method="post">
+            <form action="/service/extuserprov/" method="post" onsubmit="return checkPasswords();">
 
-            <c:if test="${errorCode != null}">
-				    <!-- ${fn:escapeXml(error.stackStrace)} -->
-				    <div id="ZLoginErrorPanel">
-				        <table><tr>
-				            <td><app:img id="ZLoginErrorIcon" altkey='ALT_ERROR' src="dwt/ImgCritical_32.png" /></td>
-				            <td><c:out value="${errorMessage}"/></td>
-				        </tr></table>
+		    <div id="ZLoginErrorPanel" style="display:none;">
+                    <table><tr>
+                        <td><app:img id="ZLoginErrorIcon" altkey='ALT_ERROR' src="dwt/ImgCritical_32.png" /></td>
+                        <td id="errorMessage"></td>
+                    </tr></table>
 				    </div>
-				</c:if>
+			
 
             <table class="form">
                 <c:choose>
@@ -92,7 +90,7 @@
                         <td><label for="password"><fmt:message key="password"/>:</label></td>
                         <td><input id="password" class="zLoginField" name="password" type="password" value="${fn:escapeXml(param.password)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
                     </tr>
-                    <tr>
+                    <tr id="confirmPassword" style="display:none">
                         <td><label for="password2"><fmt:message key="confirm"/>:</label></td>
                         <td><input id="password2" class="zLoginField" name="password2" type="password" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
                     </tr>
@@ -126,6 +124,25 @@
             </div>
         </div>
 	</div>
-
+<script>
+    document.getElementById("confirmPassword").style.display= "table-row";
+    function checkPasswords() {
+        var password = document.getElementById("password").value;
+        var password2 = document.getElementById("password2").value;
+        var isError = false;
+        var emptyPass = "<fmt:message bundle="${zhmsg}" key='emptyPassword'/>";
+        var bothPassMustMatch = "<fmt:message bundle="${zhmsg}" key='bothPasswordsMustMatch'/>";
+        if (password == '' || password2 == '') {
+           document.getElementById("errorMessage").innerHTML = emptyPass;
+           isError = true;
+        }
+        if(password != password2){
+            document.getElementById("errorMessage").innerHTML = bothPassMustMatch;
+            isError = true;
+        }
+        document.getElementById("ZLoginErrorPanel").style.display = "block";
+        return !isError;
+    }
+</script>
 </body>
 </html>
