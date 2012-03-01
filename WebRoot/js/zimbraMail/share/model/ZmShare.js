@@ -82,7 +82,7 @@ ZmShare = function(params) {
 // Constants
 
 ZmShare.URI = "urn:zimbraShare";
-ZmShare.VERSION = "0.1";
+ZmShare.VERSION = "0.2";
 
 // actions
 /**
