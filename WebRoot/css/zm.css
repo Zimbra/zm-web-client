@@ -340,9 +340,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
     position:relative;
 }
 .ZmSearchToolbarDiv INPUT {
-    border:none;
-    border-color:transparent;
+	border:none;
+	border-color:transparent;
 	outline:none;
+	@transition@:width .25s ease;
 }
 
 .ZmSearchResultsToolBar {
