@@ -67,7 +67,21 @@
 	        }
 	    }    
 	}
-
+	
+    Boolean isLogoff = getParameter(request, "logoff", "0").equals("1");
+    if (isLogoff) {
+        Cookie killAuthToken = new Cookie("ZM_ADMIN_AUTH_TOKEN", null);
+		killAuthToken.setMaxAge(0);
+		killAuthToken.setPath("/");
+		response.addCookie(killAuthToken);
+		String queryString = request.getQueryString();
+        queryString = queryString.replaceAll("&?logoff=1", "");
+		if (queryString.length() > 0)
+			response.sendRedirect(adminUrl + "?" + queryString);
+		else
+			response.sendRedirect(adminUrl); 
+    }	
+	
 	Boolean isDev = getParameter(request, "dev", "0").equals("1");
 	if (isDev) {
 		request.setAttribute("mode", "mjsf");
