@@ -124,7 +124,7 @@ function(calItem) {
 	var bodyPart = calItem.getNotesPart(mode);
 	if (bodyPart) {
 		this._msg = this._msg || this._calItem._currentlyLoaded;
-		this._makeIframeProxy(el, bodyPart, mode == ZmMimeTable.TEXT_PLAIN);
+        this._makeIframeProxy({container: el, html:bodyPart, isTextMsg:(mode == ZmMimeTable.TEXT_PLAIN)});
 	}
    } else {
      ZmCalItemView.prototype._renderCalItem.call(this, calItem);
