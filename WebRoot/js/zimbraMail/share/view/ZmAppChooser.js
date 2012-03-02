@@ -120,7 +120,6 @@ function(menu){
 
     for (var deletedIndex=0; deletedIndex < this._deletedButtons.length; deletedIndex++){
         var mi = menu.getItemById("_menuItemId", this._deletedButtons[deletedIndex] + "_menu");
-        console.log(this._deletedButtons[deletedIndex] + "_menu" + " : deleted");
         if (mi) {
             menu.removeChild(mi);
             mi.dispose();
