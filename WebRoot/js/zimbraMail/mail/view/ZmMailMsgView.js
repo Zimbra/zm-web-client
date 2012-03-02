@@ -2090,7 +2090,7 @@ function(params) {
 	html[i++] = params.blankTarget ? "target='_blank' " : "";
 	var href = params.href || (params.jsHref && "javascript:;");
 	html[i++] = href ? "href='" + href + "' " : "";
-	html[i++] = ">" + params.text + "</a>";
+	html[i++] = ">" + AjxStringUtil.htmlEncode(params.text) + "</a>";
 
 	return html.join("");
 };

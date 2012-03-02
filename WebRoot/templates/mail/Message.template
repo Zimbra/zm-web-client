@@ -602,7 +602,7 @@
                          <$= AjxStringUtil.htmlEncode(AjxStringUtil.clipFile(attachment.label,100)) $>
                     <$ } else { $>
                     <!-- The open A element is within the attachment.link string -->
-                    <$= attachment.link $></a>
+                    <$= attachment.link $>
                     <$ } $>
                     <$ if (attachment.size) { $>
                         (<$= attachment.size $>)
