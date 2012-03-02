@@ -88,7 +88,9 @@ function(appt, forwardCallback) {
 ZmApptComposeController.prototype.sendCounterAppointmentRequest =
 function(appt, proposeTimeCallback) {
 	var callback = new AjxCallback(this, this._handleCounterAppointmentRequest, proposeTimeCallback);
-	appt.sendCounterAppointmentRequest(callback);
+    var apptEditView = this._composeView ? this._composeView.getApptEditView() : null;
+    var viewMode = apptEditView ? apptEditView.getMode() : null;
+	appt.sendCounterAppointmentRequest(callback, null, viewMode);
 	return true;
 };
 
