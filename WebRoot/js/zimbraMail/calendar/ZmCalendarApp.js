@@ -486,6 +486,7 @@ function() {
 							 labelKey:			"calendars",
 							 itemsKey:			"appointments",
 							 hasColor:			true,
+                             defaultColor:      ZmOrganizer.C_BLUE,
 							 treeType:			ZmOrganizer.FOLDER,
 							 views:				["appointment"],
 							 folderKey:			"calendar",
