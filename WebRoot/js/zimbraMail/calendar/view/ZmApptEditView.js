@@ -2502,9 +2502,12 @@ function(type) {
 
 ZmApptEditView.prototype.getRequiredAttendeeEmails =
 function() {
-    var requiredEmails = this._attInputField[ZmCalBaseItem.PERSON].getValue();
-    var items = AjxEmailAddress.split(requiredEmails);
     var attendees = [];
+    var inputField = this._attInputField[ZmCalBaseItem.PERSON];
+    if(!inputField) { return attendees; } // input field can be null if zimbraFeatureGroupCalendarEnabled is FALSE
+
+    var requiredEmails = inputField.getValue();
+    var items = AjxEmailAddress.split(requiredEmails);
     for (var i = 0; i < items.length; i++) {
 
         var item = AjxStringUtil.trim(items[i]);
