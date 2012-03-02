@@ -31,8 +31,6 @@
  * @param {ZmSearchResultsController}	searchResultsController		containing controller
  * 
  * @extends		ZmListController
- *
- * @see	ZmListControl.initializeToolBar
  */
 ZmCalViewController = function(container, calApp, sessionId, searchResultsController) {
 
@@ -115,7 +113,7 @@ ZmCalViewController = function(container, calApp, sessionId, searchResultsContro
 	this._apptSessionId = {};
 };
 
-ZmCalViewController.prototype = new ZmListController();
+ZmCalViewController.prototype = new ZmListController;
 ZmCalViewController.prototype.constructor = ZmCalViewController;
 
 ZmCalViewController.DEFAULT_APPOINTMENT_DURATION = 30*60*1000;
@@ -917,6 +915,13 @@ function(viewId) {
 ZmCalViewController.prototype.runRefresh =
 function() {
 	this._refreshButtonListener();
+};
+
+ZmCalViewController.prototype._setView =
+function(params) {
+	if (!this.isSearchResults) {
+		ZmListController.prototype._setView.apply(this, arguments);
+	}
 };
 
 ZmCalViewController.prototype._setViewContents =
