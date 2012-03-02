@@ -73,7 +73,7 @@ function(callback) {
 ZmAccessControlList.prototype._handleResponseLoad =
 function(callback, result) {
 	var response = result.getResponse();
-	var aces = response.GetPermissionResponse.ace;
+	var aces = response.GetRightsResponse.ace;
 	if (aces && aces.length) {
 		for (var i = 0; i < aces.length; i++) {
 			this.add(ZmAccessControlEntry.createFromDom(aces[i]));
@@ -289,7 +289,7 @@ function(aces, revoke, callback, batchCmd) {
 ZmAccessControlList.prototype._handleResponseSetPerms =
 function(revoke, callback, result) {
 	var response = result.getResponse();
-	var resp = revoke ? response.RevokePermissionResponse : response.GrantPermissionResponse;
+	var resp = revoke ? response.RevokeRightsResponse : response.GrantRightsResponse;
 	var aces = resp && resp.ace;
 	var aceList = [];
 	if (aces && aces.length) {
