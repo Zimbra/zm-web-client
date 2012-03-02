@@ -1275,7 +1275,7 @@ ZmBaseController.prototype._resetQuickCommandOperations = function(parent) {
 				}
 			}
 			parent._hasQuickCommands = (quickCommands && quickCommands.length);
-			parent.enable(ZmOperation.QUICK_COMMANDS, parent._hasQuickCommands);
+			parent.setItemVisible(ZmOperation.QUICK_COMMANDS, parent._hasQuickCommands);
         }
     }
 };
