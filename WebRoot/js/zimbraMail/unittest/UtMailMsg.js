@@ -153,7 +153,7 @@ UT.test("Unfang Internal Test: Copy/Paste Inline Image", {
        for(var i=0; i<images.length; i++) {
 	     var isExternal = ZmMailMsgView._isExternalImage(images[i]);
 	     UT.equal(isExternal, false, "src=cid:xxxx is not external");  
-         var unfang = ZmMailMsgView.__unfangInternalImage(mailMsg, images[i], "src");
+         var unfang = ZmMailMsgView.__unfangInternalImage(mailMsg, images[i], "src", false);
 	     var src = images[i].getAttribute("src");
 	     var hasCid = src.match("cid:");  //cid should be removed
 	     UT.equal(hasCid, null, "src=" + src);
@@ -167,7 +167,7 @@ UT.test("Unfang Internal Test: External Image", {
 	}},
 	
 	function() {
-		UT.expect(2);
+		UT.expect(3);
 		
 		var node =  { 
 		cid: "-560",
@@ -226,7 +226,8 @@ UT.test("Unfang Internal Test: External Image", {
        for(var i=0; i<images.length; i++) {
 	     var isExternal = ZmMailMsgView._isExternalImage(images[i]);
 	     UT.equal(isExternal, true, "dfsrc=URL is external");  
-	     var unfang = ZmMailMsgView.__unfangInternalImage(mailMsg, images[i], "src");
+	     var unfang = ZmMailMsgView.__unfangInternalImage(mailMsg, images[i], "src", true);
+		 UT.equal(unfang, true, "dfsrc=URL not external according to unfanger");
 	     var src = images[i].getAttribute("dfsrc");
 	     UT.equal(src, "http://www.google.com/intl/en_com/images/srpr/logo3w.png", "dfsrc=http://www.google.com/intl/en_com/images/srpr/logo3w.png");  
        }
@@ -311,10 +312,95 @@ UT.test("Unfang Internal Test: Inline Attachment", {
        for(var i=0; i<images.length; i++) {
 	     var isExternal = ZmMailMsgView._isExternalImage(images[i]);
 	     UT.equal(isExternal, false, "Image is inline and should not be external");
-         var unfang = ZmMailMsgView.__unfangInternalImage(mailMsg, images[i], "src");
+         var unfang = ZmMailMsgView.__unfangInternalImage(mailMsg, images[i], "src", false);
 	     var src = images[i].getAttribute("src");
 	     UT.equal(src, "http://localhost:7070/service/home/~/?auth=co&id=564&part=2.2", "src value should be converted from cid to server path reference");
        }
 	}	
 );
 
+UT.test("Unfang Internal Test: Inline Attachment (Content-Location)", {
+	
+	teardown: function() {
+	}},
+	
+	function() {
+		UT.expect(2);
+		
+		var node =  {
+		cid: "566",
+        d: 1316619840000,
+        e: [
+          {
+            a: "user1@prome-2n-dhcp138.eng.vmware.com",
+            d: "Demo",
+            p: "Demo User One",
+            t: "f"
+           },
+          {
+            a: "user1@prome-2n-dhcp138.eng.vmware.com",
+            d: "Demo",
+            p: "Demo User One",
+            t: "t"
+           }
+         ],
+        f: "sa",
+        id: "564",
+        l: "5",
+        mid: "<d8ae52d5-71f4-4b9b-a2b7-33f9aa6bd02b@prome-2n-dhcp138.eng.vmware.com>",
+        mp: [
+          {
+            ct: "multipart/alternative",
+            mp: [
+             {
+                ct: "text/plain",
+                part: "1",
+                s: 2
+               },
+              {
+                ct: "multipart/related",
+                mp: [
+                  {
+                    body: true,
+                    content: '<html><head><style>p { margin: 0; }</style></head><body><div style="font-family: Times New Roman; font-size: 12pt; color: #000000"><div><img pnsrc="image001.png"><br></div></div></body></html>',
+                    ct: "text/html",
+                    part: "2.1",
+                    s: 308
+                   },
+                  {
+                    cd: "attachment",
+					cl: "image001.png",
+                    ci: "<29e427a6ce209cef3387c9a3aa5a4e689ab50d9c@zimbra>",
+                    ct: "image/png",
+                    filename: "Tag Icons.png",
+                    part: "2.2",
+                    s: 16692
+                   }
+                 ],
+                part: "2"
+               }
+             ],
+            part: "TEXT"
+           }
+         ],
+        rev: 308,
+        s: 24525,
+        sd: 1316619840000,
+        su: "inline attachment"
+       }
+	   var args = {};
+	   args.list = [];
+	   var mailMsg = ZmMailMsg.createFromDom(node, args);
+	   var bodyPart = mailMsg.getBodyPart(ZmMimeTable.TEXT_HTML);
+	   var div = document.createElement("div");
+	   div.innerHTML = bodyPart.content;
+	   var images = div.getElementsByTagName("img");
+       for(var i=0; i<images.length; i++) {
+	     var isExternal = ZmMailMsgView._isExternalImage(images[i]);
+	     UT.equal(isExternal, false, "Image is inline and should not be external");
+         var unfang = ZmMailMsgView.__unfangInternalImage(mailMsg, images[i], "src", false);
+	     var src = images[i].getAttribute("src");
+	     UT.equal(src, "http://localhost:7070/service/home/~/?auth=co&id=564&part=2.2", "src value should be converted from cid to server path reference");
+       }
+	}	
+);

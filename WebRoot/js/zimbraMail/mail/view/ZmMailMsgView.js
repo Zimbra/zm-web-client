@@ -641,7 +641,7 @@ function(img) {
 				att.foundInMsgBody = true;
 				break;
 			}
-		} else if (att.cl) {
+		} else if (att.cl && src) {
 			var filename = src.substring(src.lastIndexOf("/") + 1);
 			if (filename == att.filename) {
 				att.foundInMsgBody = true;
@@ -665,15 +665,16 @@ function(msg, parent) {
 		};
 	}
 	for (var i = 0; i < images.length; i++) {
-		var external = ZmMailMsgView._isExternalImage(images[i]);
+		var img = images[i];
+		var external = ZmMailMsgView._isExternalImage(img);	// has "dfsrc" attr
 		if (!external) { //Inline image
-			ZmMailMsgView.__unfangInternalImage(msg, images[i], "src");
-			images[i].onload = onload;
+			ZmMailMsgView.__unfangInternalImage(msg, img, "src", false);
+			img.onload = onload;
 		}
         else {
-            images[i].setAttribute("src", "/img/mail/ImgBlockedImage.png");
-            images[i].setAttribute("onload", "this.style.visibility = 'hidden'");
-            images[i].style.visibility = 'hidden';
+            img.setAttribute("src", "/img/mail/ImgBlockedImage.png");
+            img.setAttribute("onload", "this.style.visibility = 'hidden'");
+            img.style.visibility = 'hidden';
         }
 		hasExternalImages = external || hasExternalImages;
 	}
@@ -686,6 +687,7 @@ function(msg, parent) {
 
 ZmMailMsgView.prototype._fixMultipartRelatedImagesRecurse =
 function(msg, node) {
+
 	var hasExternalImages = false;
 
 	function recurse(node){
@@ -699,7 +701,7 @@ function(msg, node) {
 		}
 	}
 
-	if(node.innerHTML.indexOf("dfbackground") != -1) {
+	if (node.innerHTML.indexOf("dfbackground") != -1) {
 		recurse(node);
 	}
 	else if (node.attributes && node.getAttribute("dfbackground") != -1) {
@@ -723,49 +725,56 @@ function(elem) {
 }
 
 /**
- * Unfangs images
- * @param msg {ZmMailMsg} mail message
- * @param elem  {HTMLElement} element to be checked
- * @param aname {String} attribute name
- * @param prependDF  {Boolean} true to prepend "df" to attribute name 
+ * Reverses the work of the (server-side) defanger, so that images are displayed.
+ * 
+ * @param {ZmMailMsg}	msg			mail message
+ * @param {Element}		elem		element to be checked (img)
+ * @param {string}		aname		attribute name
+ * @param {boolean}		external	if true, look only for external images
+ * 
+ * @return	true if the image is external
  */
 ZmMailMsgView.__unfangInternalImage =
-function(msg, elem, aname, prependDF) {
+function(msg, elem, aname, external) {
+	
+	var avalue, pnsrc;
 	try {
-	  var avalue = elem.getAttribute(prependDF ? "df" + aname : aname);
+		if (external) {
+			avalue = elem.getAttribute("df" + aname);
+		}
+		else {
+			pnsrc = avalue = elem.getAttribute("pn" + aname);
+			avalue = avalue || elem.getAttribute(aname);
+		}
 	}
 	catch(e) {
 		AjxDebug.println(AjxDebug.DATA_URI, "__unfangInternalImage: couldn't access attribute " + aname);
 	}
+
 	if (avalue) {
 		if (avalue.substr(0,4) == "cid:") {
 			var cid = "<" + AjxStringUtil.urlComponentDecode(avalue.substr(4)) + ">"; // Parse percent-escaping per bug #52085 (especially %40 to @)
 			avalue = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, cid);
 			if (avalue) {
 				elem.setAttribute(aname, avalue);
-				// elem.setAttribute(df_aname, avalue)
-				return false;
-			}else{
-				// Since dfsrc="cid:xxxx", it cannot be external url
-				return false;
 			}
+			return false;
 		} else if (avalue.substring(0,4) == "doc:") {
 			avalue = [appCtxt.get(ZmSetting.REST_URL), ZmFolder.SEP, avalue.substring(4)].join('');
 			if (avalue) {
 				elem.setAttribute(aname, avalue);
 				return false;
 			}
-		} else if (avalue.indexOf("//") == -1) { // check for content-location verison
+		} else if (pnsrc) { // check for content-location verison
 			avalue = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_LOCATION, avalue);
 			if (avalue) {
 				elem.setAttribute(aname, avalue);
-				//elem.setAttribute(df_aname, avalue)
 				return false;
 			}
 		} else if (avalue.substring(0,5) == "data:") {
 			return false;
 		}
-		return true;
+		return true;	// not recognized as inline img
 	}
 	return false;
 };
@@ -1275,7 +1284,7 @@ function(msg, container, callback) {
 	this._renderMessageHeader(msg, container);
 	this._renderMessageBody(msg, container, callback);
 	this._renderMessageFooter(msg, container);
-	Dwt.setLoadedTime("ZmMailItem", new Date());
+	Dwt.setLoadedTime("ZmMailItem");
 };
 
 ZmMailMsgView.prototype._renderMessageHeader =
