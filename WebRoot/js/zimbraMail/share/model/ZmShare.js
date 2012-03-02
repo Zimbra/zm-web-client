@@ -83,6 +83,7 @@ ZmShare = function(params) {
 
 ZmShare.URI = "urn:zimbraShare";
 ZmShare.VERSION = "0.2";
+ZmShare.PREV_VERSION = "0.1"; // keep this till it's no longer supported
 
 // actions
 /**
@@ -383,7 +384,7 @@ function(doc) {
 
 	var shareNode = doc.documentElement;
 	share.version = shareNode.getAttribute("version");
-	if (share.version != ZmShare.VERSION) {
+	if (share.version != ZmShare.VERSION && share.version != ZmShare.PREV_VERSION) { //support previous version here for smooth transition. 
 		throw "Zimbra share version must be " + ZmShare.VERSION;
 	}
 	share.action = shareNode.getAttribute("action");
