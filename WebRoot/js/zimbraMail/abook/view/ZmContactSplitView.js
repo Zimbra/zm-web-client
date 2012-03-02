@@ -500,7 +500,7 @@ function(contact, isGal, oldContact, expandDL, isBack) {
 	}
 
 	this._setHeaderInfo();
-	Dwt.setLoadedTime("ZmContactItem", new Date());
+	Dwt.setLoadedTime("ZmContactItem");
 };
 
 ZmContactSplitView.prototype._showContact =

@@ -368,6 +368,7 @@ function() {
 		var sel = this._listView[this._currentViewId].getSelection();
 		var item = (sel && sel.length) ? sel[0] : null;
 		if (item.type == ZmItem.CONV) {
+			Dwt.setLoadingTime("ZmConv", new Date());
 			var respCallback = this._handleResponseSetSelectedItem.bind(this, item);
 			item.load({getUnreadOrFirstMsg:true, markRead:false}, respCallback);
 		} else {

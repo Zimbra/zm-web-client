@@ -129,5 +129,5 @@ function(calItem) {
    } else {
      ZmCalItemView.prototype._renderCalItem.call(this, calItem);
    }
-   Dwt.setLoadedTime("ZmTaskItem", new Date());
+   Dwt.setLoadedTime("ZmTaskItem");
 };

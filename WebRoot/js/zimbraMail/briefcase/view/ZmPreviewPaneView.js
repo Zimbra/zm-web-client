@@ -662,7 +662,7 @@ function(item){
     }
 
     this._iframePreview.setSrc(restUrl);
-	Dwt.setLoadedTime("ZmBriefcaseItem", new Date()); //iframe src set but item may not be downloaded by browser
+	Dwt.setLoadedTime("ZmBriefcaseItem"); //iframe src set but item may not be downloaded by browser
 };
 
 ZmPreviewView.prototype._setupLoading =

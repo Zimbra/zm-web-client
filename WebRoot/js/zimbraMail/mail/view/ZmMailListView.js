@@ -1060,7 +1060,7 @@ function(clickedEl, ev) {
         //else if(perm == 2) ){ /*ignore when browser has disabled notifications*/ }
     }
 
-	Dwt.setLoadingTime("ZmMailItem", new Date());
+	Dwt.setLoadingTime("ZmMailItem");
 	ZmListView.prototype._itemClicked.apply(this, arguments);
 	
 	var ctlr = this._controller;

@@ -1771,10 +1771,13 @@ function(result){
     if(!this._fbBarSlots){
         var div = document.createElement("DIV");
         //div.style.backgroundColor = "#EFE7D4";
-        document.getElementById(this._hoursScrollDivId).appendChild(div);
-        Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
-        this._fbBarSlots = div;
-        this._fbBarSlotsId = div.id = Dwt.getNextId();
+		var hoursDiv = document.getElementById(this._hoursScrollDivId);
+		if (hoursDiv) {
+			hoursDiv.appendChild(div);
+			Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
+			this._fbBarSlots = div;
+			this._fbBarSlotsId = div.id = Dwt.getNextId();
+		}
     }
 
     //Calculate X, Y
@@ -2624,7 +2627,7 @@ function(list, skipMiniCalUpdate) {
     }
 
     this._checkForOffscreenAppt();
-	Dwt.setLoadedTime("ZmCalItemView", new Date());
+	Dwt.setLoadedTime("ZmCalItemView");
 };
 
 /*

@@ -938,7 +938,7 @@ function(viewId) {
 // Switch to selected view.
 ZmCalViewController.prototype._viewActionMenuItemListener =
 function(ev) {
-	Dwt.setLoadingTime("ZmCalItemView", new Date());
+	Dwt.setLoadingTime("ZmCalItemView");
 	if (appCtxt.multiAccounts) {
 		this.apptCache.clearCache();
 	}

@@ -198,6 +198,7 @@ function(conv) {
 	Dwt.setHandler(this._replyInput, DwtEvent.ONBLUR, this._onInputFocusChange.bind(this, false));
 
 	this._scheduleResize(firstExpanded || true);
+	Dwt.setLoadedTime("ZmConv");
 };
 
 /**
