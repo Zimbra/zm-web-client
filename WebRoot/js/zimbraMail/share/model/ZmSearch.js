@@ -964,7 +964,7 @@ ZmParsedQuery.IS_OP		= AjxUtil.arrayAsHash(ZmParsedQuery.OP_LIST);
 
 // valid arguments for the search term "is:"
 ZmParsedQuery.IS_VALUES = [	"unread", "read", "flagged", "unflagged",
-							"sent", "received", "replied", "unreplied", "forwarded", "unforwarded",
+							"draft", "sent", "received", "replied", "unreplied", "forwarded", "unforwarded",
 							"invite",
 							"solo",
 							"tome", "fromme", "ccme", "tofromme", "toccme", "fromccme", "tofromccme",
@@ -989,7 +989,7 @@ ZmParsedQuery.EXCLUDE = {};
 ZmParsedQuery.EXCLUDE["before"]	= ["date"];
 ZmParsedQuery.EXCLUDE["after"]	= ["date"];
 
-// values that mutually exclusive - list value implies full multi-way exclusivity
+// values that are mutually exclusive - list value implies full multi-way exclusivity
 ZmParsedQuery.EXCLUDE["is"]					= {};
 ZmParsedQuery.EXCLUDE["is"]["read"]			= ["unread"];
 ZmParsedQuery.EXCLUDE["is"]["flagged"]		= ["unflagged"];
@@ -1086,6 +1086,7 @@ ZmParsedQuery.FLAG["unflagged"]		= "!item.isFlagged";
 ZmParsedQuery.FLAG["forwarded"]		= "item.isForwarded";
 ZmParsedQuery.FLAG["unforwarded"]	= "!item.isForwarded";
 ZmParsedQuery.FLAG["sent"]			= "item.isSent";
+ZmParsedQuery.FLAG["draft"]			= "item.isDraft";
 ZmParsedQuery.FLAG["replied"]		= "item.isReplied";
 ZmParsedQuery.FLAG["unreplied"]		= "!item.isReplied";
 
