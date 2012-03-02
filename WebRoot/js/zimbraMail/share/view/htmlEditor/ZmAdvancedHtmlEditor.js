@@ -287,21 +287,12 @@ function() {
 };
 
 ZmAdvancedHtmlEditor.prototype._convertHtml2Text = function (convertor) {
-    var editor = this.getEditor();
+    var editor = this.getEditor(),
+        body;
     if (editor) {
-        var body = editor.getBody();
+        body = editor.getBody();
         if (body) {
-            var text = [],
-                idx = 0,
-                ctxt = {};
-
-            AjxStringUtil._traverse(body, text, idx, AjxStringUtil._NO_LIST, 0, 0, ctxt, convertor);
-
-            // tinymce always inserts <div> tag which creates unwanted new lines in format conversion
-            if (text.length && text[0] === "\n") {
-                text[0] = "";
-            }
-            return text.join("");
+            return (AjxStringUtil.convertHtml2Text(body, convertor, true));
         }
     }
     return "";
