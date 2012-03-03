@@ -912,7 +912,9 @@ function(ev) {
 	var overviewId = treeItem && treeItem._tree && treeItem._tree.overviewId;
     var overview = appCtxt.getOverviewController().getOverview(overviewId);
     var acct = overview.account;
-    appCtxt.accountList.setActiveAccount(acct);
+    if (appCtxt.multiAccounts && acct) {
+        appCtxt.accountList.setActiveAccount(acct);
+    }
 
 	// persist expand/collapse state for folders
 	var isExpand = ev.detail == DwtTree.ITEM_EXPANDED;
