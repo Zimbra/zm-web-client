@@ -17,7 +17,6 @@ ZmMailPrefsPage = function(parent, section, controller) {
 	ZmPreferencesPage.apply(this, arguments);
 
 	this._initialized = false;
-    this._isCalDurationChanged = false;
 };
 
 ZmMailPrefsPage.prototype = new ZmPreferencesPage;
@@ -51,12 +50,17 @@ function() {
 
 ZmMailPrefsPage.prototype.reset =
 function(useDefaults) {
-	ZmPreferencesPage.prototype.reset.apply(this, arguments);
+	// Disable - since it doesn't use defaults and there are fields
+	// in the form that are not persisted to the server, reset changes
+	// fields to unexpected values.
+	//ZmPreferencesPage.prototype.reset.apply(this, arguments);
 
 	var cbox = this.getFormObject(ZmSetting.VACATION_MSG_ENABLED);
 	if (cbox) {
 		this._handleEnableVacationMsg(cbox);
 	}
+
+	this._initialAllDayFlag   = this._allDayCheckbox.isSelected();
 
 	this._setPopDownloadSinceControls();
 
@@ -142,30 +146,31 @@ function() {
         }
 		this._formatter = new AjxDateFormat("yyyyMMddHHmmss'Z'");
 
-        var now = AjxDateUtil.roundTimeMins(new Date(), 30);
+	    var startDate = new Date();
+	    startDate.setHours(0,0,0,0);
 	    var timeSelectListener = new AjxListener(this, this._timeChangeListener);
 	    this._startTimeSelect = new ZmTimeInput(this, ZmTimeInput.START);
 	    this._startTimeSelect.reparentHtmlElement(this._htmlElId + "_VACATION_FROM_TIME");
-	    this._startTimeSelect.addChangeListener(timeSelectListener);
         this._startTimeSelect.set((this._startDateVal.value != null && this._startDateVal.value != "")
 			? (this._formatter.parse(this._startDateVal.value))
-			: now);
+			: startDate);
 
 	    this._endTimeSelect = new ZmTimeInput(this, ZmTimeInput.END);
 	    this._endTimeSelect.reparentHtmlElement(this._htmlElId + "_VACATION_UNTIL_TIME");
-	    this._endTimeSelect.addChangeListener(timeSelectListener);
 
-        now.setTime(now.getTime() + ZmCalViewController.DEFAULT_APPOINTMENT_DURATION);
+	    // Defaulting to 11:59 PM. Ignored for all day
+	    var endDate = new Date(startDate);
+	    endDate.setHours(23,59,59,999);
 	    this._endTimeSelect.set((this._endDateVal.value != null && this._endDateVal.value != "")
 			? (this._formatter.parse(this._endDateVal.value))
-			: now);
+			: endDate);
 
         var stDateValue = (this._startDateVal.value != null && this._startDateVal.value != "")
 			? (this._formatter.parse(this._startDateVal.value))
-			: (new Date());
+			: startDate;
         var endDateValue = (this._endDateVal.value != null && this._endDateVal.value != "")
 			? (this._formatter.parse(this._endDateVal.value))
-			: (AjxDateUtil.getDateForNextDay(new Date(),AjxDateUtil.FRIDAY));
+			: endDate;
 
         stDateValue = this._startTimeSelect.getValue(stDateValue);
         endDateValue = this._endTimeSelect.getValue(endDateValue);
@@ -189,6 +194,8 @@ function() {
 
 		this._durationCheckbox = this.getFormObject(ZmSetting.VACATION_DURATION_ENABLED);
         this._extMsgCheckbox = this.getFormObject(ZmSetting.VACATION_EXTERNAL_MSG_ENABLED);
+
+        this._allDayCheckbox = this.getFormObject(ZmSetting.VACATION_DURATION_ALL_DAY);
 	}
 
 
@@ -237,17 +244,6 @@ function() {
 	}
 
 	this._setPopDownloadSinceControls();
-};
-
-ZmMailPrefsPage.prototype._timeChangeListener =
-function(ev) {
-   var stDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-   var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
-   stDate = this._startTimeSelect.getValue(stDate);
-   endDate = this._endTimeSelect.getValue(endDate);
-   this._startDateVal.value = this._formatter.format(stDate);
-   this._endDateVal.value = this._formatter.format(endDate);
-   this._isCalDurationChanged = true;
 };
 
 ZmMailPrefsPage.prototype._dateButtonListener =
@@ -299,8 +295,6 @@ function(ev) {
 		this._startDateVal.value = this._formatter.format(sd);
         this._endDateVal.value = this._formatter.format(ed);
 	}
-
-    this._isCalDurationChanged = true;
 };
 
 ZmMailPrefsPage.prototype._dateFieldListener =
@@ -314,7 +308,6 @@ function(ev) {
     this._fixDates(sd, ed, DwtUiEvent.getTarget(ev) == this._endDateField);
     this._startDateVal.value = this._formatter.format(AjxDateUtil.simpleParseDateStr(this._startDateField.value));
     this._endDateVal.value = this._formatter.format(AjxDateUtil.simpleParseDateStr(this._endDateField.value));
-    this._isCalDurationChanged = true;
 };
 
 /* Fixes the field values so that end date always is later than or equal to start date
@@ -335,7 +328,6 @@ function(startDate, endDate, modifyStart) {
 			this._endDateField.value = AjxDateUtil.simpleComputeDateStr(AjxDateUtil.getDateForNextDay(startDate,AjxDateUtil.FRIDAY));
 		}
 
-        this._isCalDurationChanged = true;
 	}
 };
 
@@ -344,7 +336,8 @@ function(id, setup, value) {
 	var cbox = ZmPreferencesPage.prototype._setupCheckbox.apply(this, arguments);
 	if (id == ZmSetting.VACATION_EXTERNAL_MSG_ENABLED ||
         id == ZmSetting.VACATION_CALENDAR_ENABLED ||
-        id == ZmSetting.VACATION_DURATION_ENABLED )
+        id == ZmSetting.VACATION_DURATION_ENABLED ||
+        id == ZmSetting.VACATION_DURATION_ALL_DAY)
 	{
 		cbox.addSelectionListener(new AjxListener(this, this._handleEnableVacationMsg, [cbox, id]));
 	}
@@ -400,30 +393,27 @@ function(cbox, id, evt) {
     var extTextarea = this.getFormObject(ZmSetting.VACATION_EXTERNAL_MSG);
     var externalTypeSelect = this.getFormObject(ZmSetting.VACATION_EXTERNAL_TYPE);
 	if (textarea) {
-		if (id == ZmSetting.VACATION_DURATION_ENABLED) {
-			this._setEnabledStartDate(cbox.isSelected());
-            this._setEnabledEndDate(cbox.isSelected());
-            this._startTimeSelect.setEnabled(cbox.isSelected());
-            this._endTimeSelect.setEnabled(cbox.isSelected());
+        if (id == ZmSetting.VACATION_DURATION_ALL_DAY) {
+            this._enableDateTimeControls(true);
+        } else if (id == ZmSetting.VACATION_DURATION_ENABLED) {
+            this._allDayCheckbox.setEnabled(cbox.isSelected());
+            this._enableDateTimeControls(cbox.isSelected());
             var calCheckBox = this.getFormObject(ZmSetting.VACATION_CALENDAR_ENABLED);
             calCheckBox.setEnabled(cbox.isSelected());
             var calendarType = this.getFormObject(ZmSetting.VACATION_CALENDAR_TYPE);
             calendarType.setEnabled(calCheckBox.isSelected() && cbox.isSelected());
-            this._isCalDurationChanged = calCheckBox.isSelected();
 		}else if(id == ZmSetting.VACATION_EXTERNAL_MSG_ENABLED){
             externalTypeSelect.setEnabled(cbox.isSelected());
             extTextarea.setEnabled(cbox.isSelected());
         }else if(id == ZmSetting.VACATION_CALENDAR_ENABLED){
             var calendarType = this.getFormObject(ZmSetting.VACATION_CALENDAR_TYPE);
             calendarType.setEnabled(cbox.isSelected());
-            this._isCalDurationChanged = cbox.isSelected();
-        }else {
-
+         }else {
+            // MESSAGE_ENABLED, main On/Off switch
 			var enabled = cbox.getSelectedValue()=="true";
 			textarea.setEnabled(enabled);
 
-			this._durationCheckbox.setEnabled(enabled);
-
+            this._durationCheckbox.setEnabled(enabled);
             var calCheckBox = this.getFormObject(ZmSetting.VACATION_CALENDAR_ENABLED);
             calCheckBox.setEnabled((this._durationCheckbox.isSelected() || appCtxt.get(ZmSetting.VACATION_DURATION_ENABLED)) && enabled);
             calCheckBox.setSelected(enabled && (appCtxt.get(ZmSetting.VACATION_CALENDAR_TYPE).length!=0));
@@ -440,13 +430,20 @@ function(cbox, id, evt) {
 			var val = this._startDateVal.value && enabled ? true : false;
 			this._durationCheckbox.setSelected(val);
 
-			this._setEnabledStartDate(enabled && this._durationCheckbox.isSelected());
-			this._setEnabledEndDate(enabled && this._durationCheckbox.isSelected());
-            this._startTimeSelect.setEnabled(enabled && this._durationCheckbox.isSelected());
-            this._endTimeSelect.setEnabled(enabled && this._durationCheckbox.isSelected());
+            this._allDayCheckbox.setEnabled(enabled && this._durationCheckbox.isSelected());
+            this._enableDateTimeControls(enabled && this._durationCheckbox.isSelected());
 		}
 	}
 };
+
+ZmMailPrefsPage.prototype._enableDateTimeControls =
+function(enableDate) {
+    this._setEnabledStartDate(enableDate);
+    this._setEnabledEndDate(enableDate);
+    var enableTime = enableDate && !this._allDayCheckbox.isSelected();
+    this._startTimeSelect.setEnabled(enableTime);
+    this._endTimeSelect.setEnabled(enableTime);
+}
 
 ZmMailPrefsPage.prototype._setEnabledStartDate =
 function(val) {
@@ -469,6 +466,34 @@ function(val) {
     if(this._endTimeSelect){endDateVal = this._endTimeSelect.getValue(endDateVal);}
 	this._endDateVal.value = (!condition)
 		? "" : (this._formatter.format(endDateVal));
+};
+
+
+ZmMailPrefsPage.prototype.getPreSaveCallback =
+function() {
+	return new AjxCallback(this, this._preSave);
+};
+
+ZmMailPrefsPage.prototype._preSave =
+function(callback) {
+    var stDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+    var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+
+    var allDay = this._allDayCheckbox.isSelected();
+    if (!allDay) {
+        // Add in time fields if not all-day
+        stDate = this._startTimeSelect.getValue(stDate);
+        endDate = this._endTimeSelect.getValue(endDate);
+    }
+    this._startDateVal.value = this._formatter.format(stDate);
+    this._endDateVal.value = this._formatter.format(endDate);
+
+    this._oldStartDate = appCtxt.get(ZmSetting.VACATION_FROM);
+    this._oldEndDate   = appCtxt.get(ZmSetting.VACATION_UNTIL);
+
+    if (callback) {
+        callback.run();
+    }
 };
 
 ZmMailPrefsPage.prototype.getPostSaveCallback =
@@ -497,12 +522,21 @@ function(changed) {
         appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true});
     }
 
-    if(this._isCalDurationChanged){
-       var stDate = this._formatter.parse(ZmPref.dateGMT2Local(appCtxt.get(ZmSetting.VACATION_FROM)));
-       var endDate = this._formatter.parse(ZmPref.dateGMT2Local(appCtxt.get(ZmSetting.VACATION_UNTIL)));
-       var calController = appCtxt.getApp(ZmApp.CALENDAR).getCalController();
-       calController.createAppointmentFromOOOPref(stDate,endDate,new AjxCallback(this, this._oooApptCallback));
-       this._isCalDurationChanged = false;
+    if (this._durationCheckbox.isSelected()) {
+        // Generate appt if there was a Date/Time change, or all day flag flipped on.
+        // This would be better implemented as a button - explicit appt creation by the user.
+        var newStartDate = appCtxt.get(ZmSetting.VACATION_FROM);
+        var newEndDate   = appCtxt.get(ZmSetting.VACATION_UNTIL);
+        var allDay = this._allDayCheckbox.isSelected();
+        if ((this._oldStartDate !=  newStartDate) || (this._oldEndDate != newEndDate) ||
+            (this._initialAllDayFlag != allDay)) {
+            var stDate = this._formatter.parse(ZmPref.dateGMT2Local(appCtxt.get(ZmSetting.VACATION_FROM)));
+            var endDate = this._formatter.parse(ZmPref.dateGMT2Local(appCtxt.get(ZmSetting.VACATION_UNTIL)));
+            if (stDate != null && endDate != null) {
+                var calController = appCtxt.getApp(ZmApp.CALENDAR).getCalController();
+                calController.createAppointmentFromOOOPref(stDate,endDate, allDay, new AjxCallback(this, this._oooApptCallback));
+            }
+        }
     }
 };
 

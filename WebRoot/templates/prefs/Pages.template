@@ -2649,8 +2649,8 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                                   <td>
                                       <table>
                                           <tr>
-                                              <td><$=ZmMsg.startLabel$></td>
-                                              <td>
+                                              <td align="right"><$=ZmMsg.startLabel$></td>
+                                              <td class='ZmOOODuration' >
                                               <table>
                                               <tr>
                                                   <td><input style='height:22px;' type='text' autocomplete='off' size=14 maxlength=10 id='${id}_VACATION_FROM1'></td>
@@ -2658,11 +2658,12 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                                               </tr>
                                               </table>
                                                </td>
-                                                  <td id='${id}_VACATION_FROM_TIME'></td>
+                                                  <td id='${id}_VACATION_FROM_TIME' class='ZmOOODuration' ></td>
+                                                  <td id='${id}_VACATION_DURATION_ALL_DAY' class='ZmOOODuration' ></td>
                                               </tr>
                                               <tr>
-                                                  <td><$=ZmMsg.endLabel$></td>
-                                                  <td>
+                                                  <td align="right"><$=ZmMsg.endLabel$></td>
+                                                  <td class='ZmOOODuration'>
                                                   <table>
                                                   <tr>
                                                   <td><input style='height:22px;' type='text' autocomplete='off' size=14 maxlength=10 id='${id}_VACATION_UNTIL1'></td>
@@ -2670,7 +2671,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                                                   </tr>
                                                   </table>
                                                   </td>
-                                                  <td id='${id}_VACATION_UNTIL_TIME'></td>
+                                                  <td colspan="2" class='ZmOOODuration'  id='${id}_VACATION_UNTIL_TIME'></td>
                                               </tr>
                                               <tr>
                                                <td colspan="3">
@@ -2680,8 +2681,8 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                                                 <td class='ZOptionsField' valign="top">
                                                 <table>
                                                 <tr>
-                                                <td><div id='${id}_VACATION_CALENDAR_ENABLED' tabindex='180'></div></td>
-                                                <td><div id='${id}_VACATION_CALENDAR_TYPE' tabindex='190' size='3' /></td>
+                                                <td class='ZmOOOCalendar'><div id='${id}_VACATION_CALENDAR_ENABLED' tabindex='180'></div></td>
+                                                <td class='ZmOOOCalendar'><div id='${id}_VACATION_CALENDAR_TYPE' tabindex='190' size='3' /></td>
                                                 </tr>
                                                 </table>
                                                 </td>

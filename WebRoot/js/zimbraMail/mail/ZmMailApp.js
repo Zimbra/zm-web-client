@@ -236,6 +236,7 @@ function(settings) {
 	settings.registerSetting("SIGNATURE_STYLE",					{name:"zimbraPrefMailSignatureStyle", type:ZmSetting.T_PREF, defaultValue:ZmSetting.SIG_OUTLOOK});
 	settings.registerSetting("START_DATE_ENABLED",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
     settings.registerSetting("VACATION_DURATION_ENABLED",		{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+    settings.registerSetting("VACATION_DURATION_ALL_DAY",		{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("USER_FOLDERS_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("VACATION_FROM",					{name:"zimbraPrefOutOfOfficeFromDate", type:ZmSetting.T_PREF, defaultValue:""});
     settings.registerSetting("VACATION_FROM_TIME",				{type:ZmSetting.T_PREF, defaultValue:""});
@@ -302,6 +303,7 @@ function() {
 				ZmSetting.SHOW_FRAGMENTS,
 				ZmSetting.START_DATE_ENABLED,
                 ZmSetting.VACATION_DURATION_ENABLED,
+                ZmSetting.VACATION_DURATION_ALL_DAY,
 				ZmSetting.VACATION_FROM,
                 ZmSetting.VACATION_FROM_TIME,
                 ZmSetting.VACATION_CALENDAR_ENABLED,
@@ -614,6 +616,12 @@ function() {
     ZmPref.registerPref("VACATION_DURATION_ENABLED", {
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		displayName:		ZmMsg.oooDurationLabel,
+		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
+	});
+
+    ZmPref.registerPref("VACATION_DURATION_ALL_DAY", {
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		displayName:		ZmMsg.oooAllDayDurationLabel,
 		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
 	});
 

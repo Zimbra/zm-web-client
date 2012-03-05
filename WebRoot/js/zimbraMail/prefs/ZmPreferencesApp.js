@@ -349,6 +349,7 @@ function() {
                 ZmSetting.START_DATE_ENABLED,
                 ZmSetting.END_DATE_ENABLED,
                 ZmSetting.VACATION_DURATION_ENABLED,
+                ZmSetting.VACATION_DURATION_ALL_DAY,
                 ZmSetting.VACATION_CALENDAR_ENABLED,
                 ZmSetting.VACATION_FROM,
                 ZmSetting.VACATION_FROM_TIME,

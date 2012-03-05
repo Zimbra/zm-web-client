@@ -5504,5 +5504,12 @@ div.ZmSuggestLocationLink {
     font-weight:bold;
 }
 
+.ZmOOODuration {
+    padding:4px 2px 2px 4px;
+}
+.ZmOOOCalendar {
+    padding:4px 2px 2px 4px;
+}
+
 /* for displaying a msg without using an iframe (bug 66466) */
 @import url("msgview.css");

@@ -4207,9 +4207,10 @@ ZmCalViewController.prototype.getCurrentListView = function() {
  * Creates appointment as configured in the out-of-office preference
  */
 ZmCalViewController.prototype.createAppointmentFromOOOPref=
-function(stDate,endDate,respCallback){
+function(startDate, endDate, allDay, respCallback){
        var newAppt = new ZmAppt();
-	   newAppt.setStartDate(stDate);
+       newAppt.setAllDayEvent(allDay);
+	   newAppt.setStartDate(startDate);
 	   newAppt.setEndDate(endDate);
        newAppt.name = ZmMsg.outOfOffice;
        newAppt.freeBusy = (appCtxt.get(ZmSetting.VACATION_CALENDAR_TYPE)=="BUSY")?"B":"O";
