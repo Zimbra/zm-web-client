@@ -521,10 +521,10 @@ function() {
 ZmConvView2.prototype._setSelectedMsg =
 function(msg) {
 	if (this._isStandalone()) {
-		this._selectedMsg = this._msg;
+		this._selectedMsg = msg;
 	}
 	else {
-		this._controller._mailListView._selectedMsg = this._msg;
+		this._controller._mailListView._selectedMsg = msg;
 	}
 };
 
