@@ -640,17 +640,10 @@ function(notes, result) {
 ZmShare.prototype._sendShareNotification =
 function(action, notes) {
     var soapDoc = AjxSoapDoc.create("SendShareNotificationRequest", "urn:zimbraMail");
-    var shareNode = soapDoc.set("share");
-    shareNode.setAttribute("d",action.d);
-    shareNode.setAttribute("path",this.object.getPath());
-    shareNode.setAttribute("gt",this.grantee.type);
-    var notesNode = soapDoc.set("notes", notes);
-    /* temporarily commenting and using the old api since the new api is throwing invalid request exception
-       Refer Bug:68548 for the api related info.
     var itemNode = soapDoc.set("item");
     itemNode.setAttribute("id", action.id);
     var emailNode = soapDoc.set("e");
-    emailNode.setAttribute("a",action.d);*/
+    emailNode.setAttribute("a",action.d);
     appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
 };
 
