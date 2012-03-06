@@ -256,7 +256,7 @@ ZmNotebookTreeController.prototype._editNotebookListener = function(ev) {
 ZmNotebookTreeController.prototype._deleteListener = function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
 	var callback = new AjxCallback(this, this._deleteListener2, [ organizer ]);
-	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteNotebook, organizer.name);
+	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteNotebook, AjxStringUtil.htmlEncode(organizer.name));
 
 	var dialog = appCtxt.getConfirmationDialog();
 	dialog.popup(message, callback);
