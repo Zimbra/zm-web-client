@@ -1619,7 +1619,7 @@ function() {
 	for (var i = 0; i < attLinks.length; i++) {
 		var att = attLinks[i];
 
-		hasGeneratedAttachments = hasGeneratedAttachments && att.part;
+		hasGeneratedAttachments = hasGeneratedAttachments || !att.part;
 
 		if ((i % attColumns) == 0) {
 			if (i != 0) {
