@@ -35,7 +35,13 @@ function enableSpellCheck(myEditor) {
     //Editor onclick handler
     var onClick = function(editor, ev){
         var menu = editor._spellCheckMenu,
-            target = ev.target;
+            target = ev.target,
+            oldTarget = editor.spellCheckTarget;
+
+        if(oldTarget && oldTarget.className === "ZM-SPELLCHECK-MISSPELLED2"){
+            oldTarget.className = "ZM-SPELLCHECK-MISSPELLED";
+            delete editor.spellCheckTarget;
+        }
 
         if( target.className === "ZM-SPELLCHECK-MISSPELLED" ){
             var spellData = editor._spellData,
@@ -91,7 +97,8 @@ function enableSpellCheck(myEditor) {
         if(this.checking){
             var spellCheckSpans = this.dom.select("span.ZM-SPELLCHECK-MISSPELLED,span.ZM-SPELLCHECK-MISSPELLED2,span.ZM-SPELLCHECK-FIXED"),
                 span,
-                doc = this.getDoc();
+                doc = this.getDoc(),
+                spellCheckerId = this.controlManager.get("spellchecker").id; //Spellchecker toolbar button id
             while(span = spellCheckSpans.shift()){
                 span.parentNode.replaceChild(doc.createTextNode(span.textContent || span.innerText), span);
             }
@@ -106,11 +113,13 @@ function enableSpellCheck(myEditor) {
                 menu.destroy();
                 delete this._spellCheckMenu;
             }
+            if(spellCheckerId){
+                tinyMCE.DOM.removeClass(spellCheckerId, "mceButtonActive");
+            }
         }
     };
 
     myEditor._checkSpelling = function(o) {
-        o.responseText = '{"available":true,"data":[{"word":"onee","suggestions":["one","nee","knee","once","ones"]}]}';
         //Change this code to suit your backend checker
         var data = eval('(' + o.responseText + ')');
         if (!data || !data.available) {
@@ -136,7 +145,8 @@ function enableSpellCheck(myEditor) {
                 var index = text.indexOf(word);
                 if(index !== -1){
                     var text1 = node.splitText(index);
-                    text1.splitText(word.length);
+                    node = text1.splitText(word.length);
+                    text = node.nodeValue;
                     var span = doc.createElement("span");
                     span.className = "ZM-SPELLCHECK-MISSPELLED";
                     span.appendChild(text1.cloneNode(true));
