@@ -2159,7 +2159,7 @@ function(text, tagStart, tagEnd) {
 				out[k++] = line;
 			}
 		}
-		return out.join("");
+		return out.join("\n");
 	} else {
 		return text.replace(tagStart,"").replace(tagEnd,"");
 	}
