@@ -1170,6 +1170,9 @@ function(id, setup, value) {
 	var select;
 	if (id == "FROM_EMAIL") {
 		setup.displayOptions = this._getAllAddresses();
+		var fromAddress = appCtxt.get(ZmSetting.MAIL_FROM_ADDRESS);
+		setup.displayOptions = AjxUtil.mergeArrays(setup.displayOptions, fromAddress);
+
 		if (appCtxt.get(ZmSetting.ALLOW_ANY_FROM_ADDRESS)) {
 			select = this._setupComboBox(id, setup, value);
 			// By setting the setSelectedValue method on the combox
