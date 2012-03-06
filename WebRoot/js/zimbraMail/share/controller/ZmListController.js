@@ -1374,6 +1374,9 @@ function(actionCallback, result) {
 	this._continuation.result = result.getResponse();
 	var items = this._continuation.result.getResults();
 	DBG.println("sa", "continuation search results: " + items.length);
+	if (items.isZmMailList) { //no idsOnly case
+		items = items.getArray();
+	}
 	if (items.length) {
 		this._continuation.lastItem = items[items.length - 1];
 		this._continuation.totalItems += items.length;
