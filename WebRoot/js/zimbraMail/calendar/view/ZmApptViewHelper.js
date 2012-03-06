@@ -551,7 +551,9 @@ function(list, type, role, objectManager, htmlElId) {
 	var options = {};
 	options.addrBubbles = false; //todo - do we really want false here? why not use bubbles?
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
-	return ZmMailMsgView.getAddressesFieldHtmlHelper(emails, options, role, objectManager, htmlElId);
+	var addressInfo = ZmMailMsgView.getAddressesFieldHtmlHelper(emails, options,
+		role, objectManager, htmlElId);
+	return addressInfo.html;
 };
 
 

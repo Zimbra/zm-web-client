@@ -1419,6 +1419,7 @@ function(state, force) {
 	var id = this._htmlElId;
 	var msg = this._msg;
 	var ai = this._msgView._getAddrInfo(msg, true);
+	this._showMoreIds = ai.showMoreIds;
 	var folder = appCtxt.getById(msg.folderId);
 	msg.showImages = msg.showImages || (folder && folder.isFeed());
 	this._msgDateId	= id + "_date";
@@ -1582,8 +1583,13 @@ function(ev) {
 	var msgView = this._msgView;
 	var convView = msgView._convView;
 	
-	if (ev.target && ev.target.id == this._detailsLinkId) { return; }
-	if (ev.target && ev.target.id == this._readIconId) { return; }
+	if (ev.target) {
+		if ((ev.target.id == this._detailsLinkId) ||
+		    (ev.target.id == this._readIconId)    ||
+		    this._showMoreIds[ev.target.id]) {
+		    return;
+		}
+	}
 	
 	if (ev.button == DwtMouseEvent.LEFT) {
 		msgView._toggleExpansion();

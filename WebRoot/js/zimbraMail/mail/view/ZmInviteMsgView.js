@@ -521,8 +521,10 @@ function(subs, sentBy, sentByAddr, obo) {
             invitees.push(attendee);
         }
 	}
-	subs.invitees = this.parent.getAddressesFieldHtml(invitees, options, "inv");
-	subs.optInvitees = this.parent.getAddressesFieldHtml(optInvitees, options, "opt");
+    var addressInfo = this.parent.getAddressesFieldInfo(invitees, options, "inv");
+    subs.invitees = addressInfo.html;
+    addressInfo = this.parent.getAddressesFieldInfo(optInvitees, options, "opt");
+    subs.optInvitees = addressInfo.html;
 
 	// convert to local timezone if necessary
 	var inviteTz = this._invite.getServerStartTimeTz();

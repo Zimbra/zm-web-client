@@ -1225,10 +1225,11 @@ function(elementId, type) {
  * @param om {ZmObjectManager}
  * @param htmlElId - unique view id so it works with multiple views open.
  *
- * returns {String} the html
+ * returns object with the html and ShowMore link id
  */
 ZmMailMsgView.getAddressesFieldHtmlHelper =
 function(addrs, options, type, om, htmlElId) {
+	var addressInfo = {};
 	var idx = 0;
 	var parts = [];
 	var showMoreLink = false;
@@ -1241,8 +1242,10 @@ function(addrs, options, type, om, htmlElId) {
 		if (i == ZmMailMsgView.MAX_ADDRESSES_IN_FIELD) {
 			showMoreLink = true;
 			var showMoreId = ZmMailMsgView._getShowMoreId(htmlElId, type);
+			addressInfo.showMoreLinkId = showMoreId + "_link";
 			var moreId = ZmMailMsgView._getMoreId(htmlElId, type);
-			parts[idx++] = "<span id='" + showMoreId + "'>&nbsp;<a href='' onclick='ZmMailMsgView.showMore(\"" + htmlElId + "\", \"" + type + "\"); return false;'>";
+			parts[idx++] = "<span id='" + showMoreId + "' style='white-space:nowrap'>&nbsp;";
+			parts[idx++] = "<a id='" + addressInfo.showMoreLinkId + "' href='' onclick='ZmMailMsgView.showMore(\"" + htmlElId + "\", \"" + type + "\"); return false;'>";
 			parts[idx++] = ZmMsg.showMore;
 			parts[idx++] = "</a></span><span style='display:none;' id='" + moreId + "'>";
 		}
@@ -1259,7 +1262,8 @@ function(addrs, options, type, om, htmlElId) {
 	if (showMoreLink) {
 		parts[idx++] = "</span>";
 	}
-	return parts.join("");
+	addressInfo.html =  parts.join("");
+	return addressInfo;
 };
 
 
@@ -1271,9 +1275,9 @@ function(addrs, options, type, om, htmlElId) {
  * @param options
  * @param type some type identifier (one per page)
  *
- * returns {String} the html
+ * returns object with the html and ShowMore link id
  */
-ZmMailMsgView.prototype.getAddressesFieldHtml =
+ZmMailMsgView.prototype.getAddressesFieldInfo =
 function(addrs, options, type) {
 	return ZmMailMsgView.getAddressesFieldHtmlHelper(addrs, options, type, this._objectManager, this._htmlElId);
 };
@@ -1494,6 +1498,7 @@ function(msg, notifyZimlets) {
 		}
 	}
 
+	var showMoreIds = {};
 	var participants = [];
 	for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
 		var type = ZmMailMsg.ADDRS[i];
@@ -1502,8 +1507,11 @@ function(msg, notifyZimlets) {
 		var addrs = msg.getAddresses(type).getArray();
 		if (addrs.length > 0) {
 			var prefix = AjxStringUtil.htmlEncode(ZmMsg[AjxEmailAddress.TYPE_STRING[type]]);
-			var partStr = this.getAddressesFieldHtml(addrs, options, type);
-			participants.push({ prefix: prefix, partStr: partStr });
+			var addressInfo = this.getAddressesFieldInfo(addrs, options, type);
+			participants.push({ prefix: prefix, partStr: addressInfo.html });
+			if (addressInfo.showMoreLinkId) {
+			    showMoreIds[addressInfo.showMoreLinkId] = true;
+			}
 		}
 	}
 	
@@ -1518,7 +1526,8 @@ function(msg, notifyZimlets) {
 		oboAddr:		oboAddr,
 		bwo:			bwo,
 		bwoAddr:		bwoAddr,
-		participants:	participants
+		participants:	participants,
+        showMoreIds:    showMoreIds
 	};
 };
 
