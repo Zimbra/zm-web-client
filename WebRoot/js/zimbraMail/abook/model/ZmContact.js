@@ -705,7 +705,7 @@ function(callback, result) {
 			if (contact.cn && contact.cn.length > 0) {
 				var loadContact = ZmContact.createFromDom(contact.cn[0], {list : this.list, isGal : isGal}); //pass GAL so fileAS gets set correctly
 				loadContact.isDL = isGal && loadContact.attr[ZmContact.F_type] == "group";
-				appCtxt.cacheSet(contact.cn[0].id, loadContact);
+				appCtxt.cacheSet(contact.value, loadContact);
 			}
 			
 		}
