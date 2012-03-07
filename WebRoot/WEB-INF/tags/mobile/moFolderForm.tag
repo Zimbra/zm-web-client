@@ -63,7 +63,7 @@
                    
          <div class="msgBody">
                     <div class="tbl" width="100%"><div class="tr">
-                        <span class="label td"><fmt:message key="nameLabel"/><input type="text" name="folder_name" style="" class="Textarea" value="${efolder.name}">
+                        <span class="label td"><fmt:message key="nameLabel"/><input type="text" name="folder_name" style="" class="Textarea" value="${zm:cook(efolder.name)}">
                         <c:if test="${ua.isiPad == false}">
                         <input class="zo_button" type="submit" name="action${not empty efolder ? 'Modify':'Save'}Folder" value="<fmt:message key='save'/>"></c:if></span>
                     </div></div>
@@ -195,7 +195,7 @@
                     <c:if test="${empty id}"><input type="hidden" name="parentid" value="${mailbox.inbox.parentId}"></c:if>
                     <div class="tbl" width="100%">
                         <div class="tr">
-                        <span class="label td"> <fmt:message key="nameLabel"/>  <input type="text" name="sname" style="width:100px;" class="Textarea" value="${efolder.name}">
+                        <span class="label td"> <fmt:message key="nameLabel"/>  <input type="text" name="sname" style="width:100px;" class="Textarea" value="${zm:cook(efolder.name)}">
                             <input class="zo_button" type="submit" name="action${empty efolder ? 'Save' : 'Modify'}Search" value="<fmt:message key='save'/>">
                         </span>
                         </div>
