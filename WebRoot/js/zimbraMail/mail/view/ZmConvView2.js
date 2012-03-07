@@ -989,7 +989,7 @@ function(msg, container, callback, index) {
 		// rearrange invite components to be part of the body
 		var bodyEl = this.getMsgBodyElement();
 		var imv = this._inviteMsgView;
-		if (imv && imv._inviteToolbar) {
+		if (imv && imv._inviteToolbar && imv._inviteToolbar.getVisible()) {
 			var cell = document.getElementById(this._inviteToolbarCellId);
 			if (cell) {
 				imv._inviteToolbar.reparentHtmlElement(cell, 0);
@@ -1031,7 +1031,10 @@ ZmMailMsgCapsuleView.prototype._getInviteSubs =
 function(subs, sentBy, sentByAddr, sender, addr) {
 	ZmMailMsgView.prototype._getInviteSubs.apply(this, arguments);
 	subs.noTopHeader = true;
-	subs.toolbarCellId = this._inviteToolbarCellId = [this._viewId, "inviteToolbarCell"].join("_");
+	var imv = this._inviteMsgView;
+	if (imv && imv._inviteToolbar && imv._inviteToolbar.getVisible()) {
+		subs.toolbarCellId = this._inviteToolbarCellId = [this._viewId, "inviteToolbarCell"].join("_");
+	}
 };
 
 ZmMailMsgCapsuleView.prototype._getBodyContent =

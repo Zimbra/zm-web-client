@@ -1421,6 +1421,9 @@ function(msg, container) {
 		reportBtn.setText(ZmMsg.reportSyncFailure);
 		reportBtn.addSelectionListener(this._reportButtonListener.bind(this, msg));
 	}
+	// Bind the address bubbles now - the conversation view makes multiple calls that
+	//  trigger the email Zimlet's onFindMsgObjects, clearing out the existing entries
+	this._notifyZimletsNewMsg(msg);
 };
 
 ZmMailMsgView.prototype._getAddrInfo =
