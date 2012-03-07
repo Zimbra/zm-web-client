@@ -60,7 +60,7 @@ function(useDefaults) {
 		this._handleEnableVacationMsg(cbox);
 	}
 
-	this._initialAllDayFlag   = this._allDayCheckbox.isSelected();
+	this._initialAllDayFlag   = this._allDayCheckbox ? this._allDayCheckbox.isSelected() : true;
 
 	this._setPopDownloadSinceControls();
 
@@ -476,20 +476,22 @@ function() {
 
 ZmMailPrefsPage.prototype._preSave =
 function(callback) {
-    var stDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-    var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+    if (this._startDateField && this._endDateField) {
+        var stDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+        var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 
-    var allDay = this._allDayCheckbox.isSelected();
-    if (!allDay) {
-        // Add in time fields if not all-day
-        stDate = this._startTimeSelect.getValue(stDate);
-        endDate = this._endTimeSelect.getValue(endDate);
+        var allDay = this._allDayCheckbox.isSelected();
+        if (!allDay) {
+            // Add in time fields if not all-day
+            stDate = this._startTimeSelect.getValue(stDate);
+            endDate = this._endTimeSelect.getValue(endDate);
+        }
+        this._startDateVal.value = this._formatter.format(stDate);
+        this._endDateVal.value = this._formatter.format(endDate);
+
+        this._oldStartDate = appCtxt.get(ZmSetting.VACATION_FROM);
+        this._oldEndDate   = appCtxt.get(ZmSetting.VACATION_UNTIL);
     }
-    this._startDateVal.value = this._formatter.format(stDate);
-    this._endDateVal.value = this._formatter.format(endDate);
-
-    this._oldStartDate = appCtxt.get(ZmSetting.VACATION_FROM);
-    this._oldEndDate   = appCtxt.get(ZmSetting.VACATION_UNTIL);
 
     if (callback) {
         callback.run();
@@ -522,7 +524,7 @@ function(changed) {
         appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true});
     }
 
-    if (this._durationCheckbox.isSelected()) {
+    if (this._durationCheckbox && this._durationCheckbox.isSelected()) {
         // Generate appt if there was a Date/Time change, or all day flag flipped on.
         // This would be better implemented as a button - explicit appt creation by the user.
         var newStartDate = appCtxt.get(ZmSetting.VACATION_FROM);
