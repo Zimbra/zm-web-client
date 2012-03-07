@@ -1578,7 +1578,7 @@ function(startTime, emailList, callback) {
     var acct = (appCtxt.multiAccounts)
         ? this._editView.getCalendarAccount() : null;
 
-    var appt = this._editView.parent.getAppt(true);
+
     var params = {
         startTime: startTime,
         endTime: endTime,
@@ -1586,9 +1586,13 @@ function(startTime, emailList, callback) {
         callback: callback,
         errorCallback: errorCallback,
         noBusyOverlay: true,
-        account: acct,
-        excludedId: appt.uid
+        account: acct
     };
+    var appt = this._editView.parent.getAppt ? this._editView.parent.getAppt(true) : null;
+    if (appt) {
+        params.excludedId = appt.uid;
+
+    }
 
     this._freeBusyRequest = this._fbCache.getFreeBusyInfo(params);
 };

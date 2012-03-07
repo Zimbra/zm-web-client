@@ -42,6 +42,8 @@ function(ev, apptEl) {
 /****************** NEW VERSION OF SCHEDULE VIEW *********************/
 ZmCalNewScheduleView = function(parent, posStyle, controller, dropTgt) {
 	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmId.VIEW_CAL_FB, 1, true);
+    var app = appCtxt.getApp(ZmApp.CALENDAR);
+    this._fbCache = new ZmFreeBusyCache(app);
 };
 
 ZmCalNewScheduleView.prototype = new ZmCalColView;
@@ -54,6 +56,10 @@ function() {
 
 ZmCalNewScheduleView.ATTENDEES_METADATA = 'MD_SCHED_VIEW_ATTENDEES';
 
+ZmCalNewScheduleView.prototype.getFreeBusyCache =
+function() {
+    return this._fbCache;
+}
 
 ZmCalNewScheduleView.prototype._createHtml =
 function(abook) {
@@ -196,6 +202,7 @@ function(date) {
 	dateInfo.startDate = AjxDateUtil.simpleComputeDateStr(d);
 	dateInfo.endDate = AjxDateUtil.simpleComputeDateStr(d);
 	dateInfo.timezone = AjxDateFormat.format("z", d);
+    dateInfo.isAllDay = true;
     return dateInfo;
 };
 

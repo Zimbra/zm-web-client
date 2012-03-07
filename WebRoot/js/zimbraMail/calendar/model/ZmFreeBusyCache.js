@@ -211,7 +211,9 @@ function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay, 
 	soapDoc.setMethodAttribute("s", startTime);
 	soapDoc.setMethodAttribute("e", endTime);
 	soapDoc.setMethodAttribute("uid", emailList);
-	soapDoc.setMethodAttribute("excludeUid", excludedId);
+	if (excludedId) {
+		soapDoc.setMethodAttribute("excludeUid", excludedId);
+	}
 
 	return appCtxt.getAppController().sendRequest({
 		soapDoc: soapDoc,
