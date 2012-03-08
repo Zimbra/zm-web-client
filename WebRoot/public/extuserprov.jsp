@@ -56,7 +56,7 @@
 		<div class="center">
             <div class="contentBox">
 			<div class="ImgAltBanner"></div>
-			<h1><a href="http://www.zimbra.com/" id="bannerLink" target="_new">
+			<h1><a href="<fmt:message key="splashScreenCompanyURL" />" id="bannerLink" target="_new">
 				<span class="ImgLoginBanner"></span>
 			</a></h1>
 
