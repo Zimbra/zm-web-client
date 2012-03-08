@@ -308,13 +308,7 @@ function(params) {
 	for (var i in ZmSearch.TYPE) {
 		ZmSearch.TYPE_MAP[ZmSearch.TYPE[i]] = i;
 	}
-	// organizer types based on view
-	for (var i in ZmOrganizer.VIEWS) {
-		var list = ZmOrganizer.VIEWS[i];
-		for (var j = 0; j < list.length; j++) {
-			ZmOrganizer.TYPE[list[j]] = i;
-		}
-	}
+	ZmZimbraMail.registerViewsToTypeMap();
 
 	this._getStartApp(params);
 
@@ -355,6 +349,16 @@ function(params) {
         var updatePref = appCtxt.get(ZmSetting.OFFLINE_UPDATE_NOTIFY);
         this._offlineUpdateChannelPref(updatePref)
     }
+};
+
+ZmZimbraMail.registerViewsToTypeMap = function() {
+	// organizer types based on view
+	for (var i in ZmOrganizer.VIEWS) {
+		var list = ZmOrganizer.VIEWS[i];
+		for (var j = 0; j < list.length; j++) {
+			ZmOrganizer.TYPE[list[j]] = i;
+		}
+	}
 };
 
 ZmZimbraMail.prototype._createSettings = function(params) {

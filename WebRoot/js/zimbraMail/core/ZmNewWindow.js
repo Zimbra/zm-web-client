@@ -624,8 +624,16 @@ function(msg) {
 		}
 	}
 
+	ZmZimbraMail.prototype._registerOrganizers.call(this);
+	ZmZimbraMail.registerViewsToTypeMap();
+
+
 	if (msg.invite) {
 		newMsg.invite = msg.invite;
+	}
+
+	if (msg.share) {
+		newMsg.share = msg.share;
 	}
 
 	return newMsg;
