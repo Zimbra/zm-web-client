@@ -350,6 +350,9 @@ function(params) {
 			request.offset = this.offset = (this.offset || 0);
 			request.limit = this._getLimit();
 
+			// bug 15878: see same in ZmSearch.prototype._getStandardMethodJson
+			request.locale = { _content: AjxEnv.DEFAULT_LOCALE };
+
 			if (this.lastId) { // add lastSortVal and lastId for cursor-based paging
 				request.cursor = {id:this.lastId, sortVal:(this.lastSortVal || "")};
 			}
