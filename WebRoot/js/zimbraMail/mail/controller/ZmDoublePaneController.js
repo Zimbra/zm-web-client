@@ -544,13 +544,21 @@ function() {
 	this._setSelectedItem();
 };
 
+/**
+ * Handles selection of a row by loading the item.
+ * 
+ * @param {hash}	params		params for loading the item
+ * 
+ * @private
+ */
 ZmDoublePaneController.prototype._setSelectedItem =
-function() {
+function(params) {
 	var selCnt = this._listView[this._currentViewId].getSelectionCount();
 	if (selCnt == 1) {
-		var respCallback = new AjxCallback(this, this._handleResponseSetSelectedItem);
-		var markRead = (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
-		this._getLoadedMsg({markRead:markRead}, respCallback);
+		var respCallback = this._handleResponseSetSelectedItem.bind(this);
+		params = params || {};
+		params.markRead = (params.markRead != null) ? params.markRead : (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
+		this._getLoadedMsg(params, respCallback);
 	}
 };
 

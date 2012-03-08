@@ -880,13 +880,16 @@ function(msg, container) {
 ZmMailMsgCapsuleView.prototype._renderMessageBodyAndFooter =
 function(msg, container, callback) {
 
-	if (!msg.isLoaded()) {
+	if (!msg.isLoaded() || this._showEntireMsg) {
 		var params = {
 			getHtml:		appCtxt.get(ZmSetting.VIEW_AS_HTML),
 			callback:		this._handleResponseLoadMessage.bind(this, msg, container, callback),
-			needExp:		true
+			needExp:		true,
+			noTruncate:		this._showEntireMsg,
+			forceLoad:		this._showEntireMsg
 		}
 		msg.load(params);
+		this._showEntireMsg = false;
 	}
 	else {
 		this._handleResponseLoadMessage(msg, container, callback);
@@ -1347,7 +1350,15 @@ function(oldFolderId) {
 	}
 };
 
-
+ZmMailMsgCapsuleView.prototype._handleMsgTruncated =
+function() {
+	this._msg.viewEntireMessage = true;	// remember so we reply to entire msg
+	this._showEntireMsg = true;			// set flag to load non-truncated msg
+	// redo loading and display of entire msg
+	this.set(this._msg, true);
+	
+	Dwt.setVisible(this._msgTruncatedId, false);
+};
 
 
 

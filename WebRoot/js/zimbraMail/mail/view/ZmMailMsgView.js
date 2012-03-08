@@ -2370,19 +2370,11 @@ function(tagId) {
 
 ZmMailMsgView.prototype._handleMsgTruncated =
 function() {
-	// remember that the user clicked this link
-	this._msg.viewEntireMessage = true;
-
-	var url = ("/h/imessage?id=" + this._msg.id);
-    if (this._isTrustedSender(this._msg)) {
-        url += '&xim=1';
-    }
-	//bug:52081 modified iframe src to point imessage.
-    var iframe = this.getIframe();
-    if (iframe) {
-        iframe.src = url;
-    }
-    this._resetIframeHeightOnTimer();
+	this._msg.viewEntireMessage = true;	// remember so we reply to entire msg
+	this._msg = null;					// so that this view refreshes
+	// redo selection to trigger loading and display of entire msg
+	this._controller._setSelectedItem({noTruncate: true, forceLoad: true, markRead: false});
+	
 	Dwt.setVisible(this._msgTruncatedId, false);
 };
 
