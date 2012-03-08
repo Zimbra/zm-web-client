@@ -654,5 +654,29 @@ this weekend, lite client bug are already closed\n\
 \n\
 -satish s\n\
 "
+	},
+		
+	// 25
+	// "wrote" delimiter in HTML, parent node also has original content
+	// HTML: U W Q
+	{
+		input: "\
+<html><head></head><body>\
+<div>Not enough teams signed up. The bball time slots have been getting a good turn out as well \
+so I didn't want to disrupt that.&nbsp;<br><br>\
+On Mar 5, 2012, at 1:58 PM, Jeff Wagner &lt;<a href=\"mailto:jwagner@zimbra.com\" target=\"_blank\">\
+jwagner@zimbra.com</a>&gt; wrote:\
+<br><br></div>\
+<div></div><blockquote><div>\
+<div style=\"font-family: times new roman, new york, times, serif; font-size: 12pt; color: #000000\">\
+<div>Hey Jon,</div><div>Is the bball league on? &nbsp;Or not have people signed up?<br><br></div></div></div></blockquote>\
+</body></html>\
+",
+		output: "\
+<html><head></head><body>\
+<div>Not enough teams signed up. The bball time slots have been getting a good turn out as well \
+so I didn't want to disrupt that.&nbsp;<br><br></div><div></div>\
+</body></html>\
+"
 	}
 ];

@@ -1054,7 +1054,7 @@ function(bodyPart) {
 		}
 	}
 
-	var content = (this._showingQuotedText || this._forceOriginal || this._isMatchingMsg) ? bodyPart.content : origContent;
+	var content = (this._showingQuotedText || this._forceOriginal || this._isMatchingMsg || !origContent) ? bodyPart.content : origContent;
 	return content || "";
 };
 
