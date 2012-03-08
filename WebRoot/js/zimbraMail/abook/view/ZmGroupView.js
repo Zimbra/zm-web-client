@@ -1364,6 +1364,9 @@ function(list) {
 				}
 				else {
 					var contact = list[i].__contact;
+                    if (contact && contact.isGal) {
+                        appCtxt.cacheSet(contact.ref, contact);
+                    }
 					var obj = {};
 					obj.__contact = contact;
 					obj.address = list[i].address;
@@ -1372,6 +1375,9 @@ function(list) {
 			}	
 		} else {
 			items.push(list[i]);
+            if (list[i].__contact && list[i].__contact.isGal) {
+                appCtxt.cacheSet(list[i].__contact.ref, list[i].__contact); 
+            }
 		}
 	}
 
@@ -1429,9 +1435,14 @@ function(items, addrs) {
 				var type = addrs[j].type || ZmContact.GROUP_INLINE_REF;
 				if (addrs[j].__contact) {
 					type = addrs[j].__contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
-					value = addrs[j].__contact.getId(type == ZmContact.GROUP_CONTACT_REF);
+					value = type == ZmContact.GROUP_GAL_REF ? addrs[j].__contact.ref : addrs[j].__contact.getId(type == ZmContact.GROUP_CONTACT_REF);
 				}
-				if (type != ZmContact.GROUP_INLINE_REF && value == (items[i].__contact && items[i].__contact.getId(type == ZmContact.GROUP_CONTACT_REF))) {
+                if (type == ZmContact.GROUP_GAL_REF && value == (items[i].__contact && items[i].__contact.ref)) {
+                    items.splice(i, 1);
+                    found = true;
+                    break;
+                }
+				else if (type == ZmContact.GROUP_CONTACT_REF && value == (items[i].__contact && items[i].__contact.getId(type == ZmContact.GROUP_CONTACT_REF))) {
 					items.splice(i, 1);
 					found = true;
 					break;

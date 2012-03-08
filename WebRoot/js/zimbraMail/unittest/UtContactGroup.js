@@ -449,10 +449,10 @@ UT.test("dedupe contact group", {
 		
 		//Test GAL contact dedupe
 		var galContact = new ZmMockContact();
-		galContact.id = "uid=user1,ou=people,dc=eng,dc=vmware,dc=com";
+		galContact.ref = "uid=user1,ou=people,dc=eng,dc=vmware,dc=com";
 		galContact.isGal = true;
 		var galContactB = new ZmMockContact();
-		galContactB.id = "uid=user2,ou=people,dc=eng,dc=vmware,dc=com";
+		galContactB.ref = "uid=user2,ou=people,dc=eng,dc=vmware,dc=com";
 		galContactB.isGal = true;
 		items.push({__contact: galContact});
 		items.push({__contact: galContactB});
