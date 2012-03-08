@@ -35,7 +35,7 @@ ZmAdvancedHtmlEditor.prototype.isZmAdvancedHtmlEditor = true;
 ZmAdvancedHtmlEditor.prototype.isInputControl = true;
 ZmAdvancedHtmlEditor.prototype.toString = function() { return "ZmAdvancedHtmlEditor"; };
 
-ZmAdvancedHtmlEditor.TINY_MCE_PATH = appContextPath + "/js/ajax/3rdparty/tinymce";
+ZmAdvancedHtmlEditor.TINY_MCE_PATH = "/js/ajax/3rdparty/tinymce";
 
 ZmAdvancedHtmlEditor.prototype.getEditor =
 function() {
@@ -455,7 +455,7 @@ function(parent, posStyle, content, mode, withAce, reparentContainer) {
 	if (!window.tinyMCE) {
         window.tinyMCEPreInit = {};
         window.tinyMCEPreInit.suffix = '';
-        window.tinyMCEPreInit.base = ZmAdvancedHtmlEditor.TINY_MCE_PATH; // SET PATH TO TINYMCE HERE
+        window.tinyMCEPreInit.base = appContextPath + ZmAdvancedHtmlEditor.TINY_MCE_PATH; // SET PATH TO TINYMCE HERE
         // Tell TinyMCE that the page has already been loaded
         window.tinyMCE_GZ = {};
         window.tinyMCE_GZ.loaded = true;
@@ -584,7 +584,7 @@ function(id, content) {
 	var urlParts = AjxStringUtil.parseURL(location.href);
 
 	//important: tinymce doesn't handle url parsing well when loaded from REST URL - override baseURL/baseURI to fix this
-	tinymce.baseURL = ZmAdvancedHtmlEditor.TINY_MCE_PATH + "/";
+	tinymce.baseURL = appContextPath + ZmAdvancedHtmlEditor.TINY_MCE_PATH + "/";
 
 	if (tinymce.EditorManager) {
 		tinymce.EditorManager.baseURI = new tinymce.util.URI(urlParts.protocol + "://" + urlParts.authority + tinymce.baseURL);

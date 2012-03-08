@@ -162,7 +162,7 @@ function(id, params, htmlElId) {
     //set context menu tr id
     var row = mi.getRowElement();
 	if (row) {
-		row.setAttribute("id", "POPUP" + "_" + mi.getHTMLElId().replace(/\s/g, ""));
+		row.setAttribute("id", "POPUP" + "_" + mi.getHTMLElId().toString().replace(/\s/g, ""));
     }
 
 	return mi;
