@@ -136,10 +136,6 @@ function(respEl) {
 				this._results[currentType].addFromDom(data[j]);
 			}
 
-			// manually sort gal results since server won't do it for us :(
-			if (isGalSearch) {
-				this._results[currentType].getArray().sort(ZmSearchResult._sortGalResults)
-			}
 			count = data.length;
 		}
 	} else if (this.search.idsOnly) {
