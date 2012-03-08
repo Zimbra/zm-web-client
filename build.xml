@@ -166,6 +166,8 @@
         <property name='common.jam.excludes' value='${custom.jam.excludes},'/>
         <property name='common.help.includes' value='${custom.help.includes}'/>
         <property name='common.help.excludes' value='${custom.help.excludes}'/>
+        <property name='common.admin.help.includes' value='${custom.admin.help.includes}'/>
+        <property name='common.admin.help.excludes' value='${custom.admin.help.excludes}'/>
         <property name='common.build.web.includes' value='${custom.build.web.includes},**'/>
         <property name='common.build.web.excludes'
                   value='${custom.build.web.excludes},js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext}'/>
@@ -239,8 +241,8 @@
         <property name='template.excludes' value='${common.template.excludes}'/>
         <property name='jam.includes' value='${common.jam.includes}'/>
         <property name='jam.excludes' value='${common.jam.excludes},**/zimbraMail/**'/>
-		<property name='help.includes' value='${common.help.includes},*/**'/>
-		<property name='help.excludes' value='${common.help.excludes},*/standard/**,*/advanced/**'/>
+		    <property name='help.includes' value='${common.admin.help.includes},*/**'/>
+		    <property name='help.excludes' value='${common.admin.help.excludes},*/standard/**,*/advanced/**'/>
         <property name='build.web.includes' value='${common.build.web.includes}'/>
         <property name='build.web.excludes' value='${common.build.web.excludes}'/>
         <property name='webinf.includes' value='${common.webinf.includes}'/>
@@ -304,7 +306,7 @@
             <zipfileset refid='skins.fileset' prefix='skins' />
 
             <zipfileset refid='help.fileset' prefix='help' />
-			<zipfileset refid='network.help.fileset' prefix='help' />
+			      <zipfileset refid='network.help.fileset' prefix='help' />
         </war>
     </target>
 
@@ -1177,18 +1179,18 @@ if (ext == null) ext = "";
 		<if><isset property='build.network' />
 			<then>
 				<fileset id='network.help.fileset' erroronmissingdir="false"
-                         dir='${network.zwc.help.dir}' includes='${help.includes}' excludes='${help.excludes}' />
+          dir='${network.zwc.help.dir}' includes='${help.includes}' excludes='${help.excludes}' />
 				<!-- NOTE:	This allows us to exclude help dirs from the base
 							help dir that are replaced by the network help. -->
 				<dirset id='network.help.dirset' erroronmissingdir="false"
-                        dir='${network.zwc.help.dir}' includes='*/*' />
+          dir='${network.zwc.help.dir}' includes='*/*' />
 				<pathconvert property='help.excludes2' pathsep=',' refid="network.help.dirset">
 					<regexpmapper from="^.*/WebRoot/help/(.*)$$" to="\1/**"/>
 				</pathconvert>
 			</then>
 		</if>
 		<fileset id='help.fileset' erroronmissingdir="false"
-                 dir='${help.dir}' includes='${help.includes}' excludes='${help.excludes},${help.excludes2}' />
+      dir='${help.dir}' includes='${help.includes}' excludes='${help.excludes},${help.excludes2}' />
 	</target>
 
     <target name='deploy' depends='war'>
