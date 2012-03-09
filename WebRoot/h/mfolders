@@ -115,7 +115,7 @@
                                 <table width="100%" cellpadding=2 cellspacing=0>
                                     <c:set var="index" value="${0}"/>
                                     <zm:forEachFolder var="folder">
-                                        <c:if test="${(folder.isMailView and not folder.isChats) or folder.isTrash}">
+                                        <c:if test="${(folder.isMailView and not folder.isChats and not folder.isSpam) or folder.isTrash or (mailbox.features.spam and folder.isSpam)}">
                                             <c:if test="${selectedFolder.id eq folder.id and not newFolder}"><c:set var="selectedRow" value="${index}"/></c:if>
                                             <tr <c:if test="${index eq selectedRow}">class='RowSelected'</c:if>>
                                                 <td width="1%">
