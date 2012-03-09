@@ -456,7 +456,15 @@ function(calItem, result) {
 
 ZmCalItemComposeController.prototype._handleErrorSave =
 function(calItem, ex) {
+    var status = this._getErrorSaveStatus(calItem, ex);
+    return status.handled;
+};
+
+ZmCalItemComposeController.prototype._getErrorSaveStatus =
+function(calItem, ex) {
 	// TODO: generalize error message for calItem instead of just Appt
+    var status = { handled: false,
+                   continueSave: false};
 	var msg = null;
 	if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
 		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
@@ -474,9 +482,10 @@ function(calItem, ex) {
     }
     else if (ex.code == ZmCsfeException.MAIL_INVITE_OUT_OF_DATE) {
         if(!calItem.isVersionIgnored()){
-                calItem.setIgnoreVersion(true);
-                this.saveCalItemContinue(calItem);
-                return true;
+            calItem.setIgnoreVersion(true);
+            this.saveCalItemContinue(calItem);
+            status.continueSave = true;
+            status.handled = true;
         }
         else{
             msg = ZmMsg.inviteOutOfDate;
@@ -488,16 +497,19 @@ function(calItem, ex) {
         msg = ex.getErrorMsg([ex.getData("itemId")]);
         this.enableToolbar(true);
     }
-	if (msg) {
-        var dialog = appCtxt.getMsgDialog();
-        dialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-        dialog.popup();
-		appCtxt.notifyZimlets("onSaveApptFailure", [this, calItem, ex]);//notify Zimlets on success 
-		return true;
-	} else {
-		appCtxt.notifyZimlets("onSaveApptFailure", [this, calItem, ex]);//notify Zimlets on success 
-		return false;
-	}
+    if (!status.handled) {
+        if (msg) {
+            var dialog = appCtxt.getMsgDialog();
+            dialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+            dialog.popup();
+            appCtxt.notifyZimlets("onSaveApptFailure", [this, calItem, ex]);//notify Zimlets on success
+            status.handled = true;
+        } else {
+            appCtxt.notifyZimlets("onSaveApptFailure", [this, calItem, ex]);//notify Zimlets on success
+            status.handled = false;
+        }
+    }
+    return status;
 };
 
 // Spell check methods
