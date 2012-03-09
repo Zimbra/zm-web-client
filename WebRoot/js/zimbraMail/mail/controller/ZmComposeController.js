@@ -565,7 +565,7 @@ function(attId, docIds, draftType, callback, contactId) {
 ZmComposeController.prototype._handleResponseSendMsg =
 function(draftType, msg, callback, result) {
 	var resp = result.getResponse();
-	this._processSendMsg(draftType, msg, resp);
+	var needToPop = this._processSendMsg(draftType, msg, resp);
 
 	this._msg = msg;
 
@@ -578,6 +578,11 @@ function(draftType, msg, callback, result) {
     }
 
 	appCtxt.notifyZimlets("onSendMsgSuccess", [this, msg]);//notify Zimlets on success
+
+	if (needToPop) {
+		this._app.popView(true, this._currentView);
+	}
+
 };
 
 ZmComposeController.prototype._handleResponseCancelOrModifyAppt =
@@ -1322,18 +1327,23 @@ function(mode) {
 	return false;
 };
 
+/**
+ *
+ * @return {Boolean} needToPop - whether we need to pop the view
+ */
 ZmComposeController.prototype._processSendMsg =
 function(draftType, msg, resp) {
 
 	this._msgSent = true;
 	var isScheduled = draftType == ZmComposeController.DRAFT_TYPE_DELAYSEND;
 	var isDraft = (draftType != ZmComposeController.DRAFT_TYPE_NONE && !isScheduled);
+	var needToPop = false;
 	if (!isDraft) {
-		var popped = false;
+		needToPop = true;
 		if (appCtxt.get(ZmSetting.SHOW_MAIL_CONFIRM)) {
 			var confirmController = AjxDispatcher.run("GetMailConfirmController");
 			confirmController.showConfirmation(msg, this.viewId, this.tabId);
-			popped = true;	// don't pop confirm page
+			needToPop = false;	// don't pop confirm page
 		} else {
 			if (appCtxt.isChildWindow && window.parentController) {
 				window.onbeforeunload = null;
@@ -1350,7 +1360,6 @@ function(draftType, msg, resp) {
 					appCtxt.setStatusMsg(ZmMsg.messageSent);
 				}
 			}
-			popped = this._app.popView(true, this._currentView);
 		}
 
 		if (resp || !appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
@@ -1401,10 +1410,6 @@ function(draftType, msg, resp) {
 					}
 				}
 			}
-
-			if (!popped) {
-				this._app.popView(true, this._currentView);
-			}
 		}
 	} else {
 		if (draftType != ZmComposeController.DRAFT_TYPE_AUTO) {
@@ -1445,6 +1450,7 @@ function(draftType, msg, resp) {
 			}
 		}
 	}
+	return needToPop;
 };
 
 
