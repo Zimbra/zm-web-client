@@ -981,6 +981,7 @@ ZmParsedQuery.MULTIPLE["has"]			= true;
 ZmParsedQuery.MULTIPLE["tag"]			= true;
 ZmParsedQuery.MULTIPLE["appt-start"]	= true;
 ZmParsedQuery.MULTIPLE["appt-end"]		= true;
+ZmParsedQuery.MULTIPLE["type"]			= true;
 
 ZmParsedQuery.isMultiple =
 function(term) {

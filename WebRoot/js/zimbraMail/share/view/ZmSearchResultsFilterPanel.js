@@ -402,7 +402,7 @@ function() {
 ZmSearchResultsFilterPanel.prototype._conditionalSelectionListener =
 function(ev) {
 	var bubble = ev.item;
-	this._controller.addSearchTerm(new ZmSearchToken(bubble.address), false, true);
+	this._controller.addSearchTerm(new ZmSearchToken(bubble.address), true, true);
 };
 
 /**

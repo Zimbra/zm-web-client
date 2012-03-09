@@ -137,7 +137,7 @@ function(child, index) {
  * Creates a bubble for the given address and adds it into the holding area. If the address
  * is a local group, it is expanded and the members are added individually.
  *
- * @param {hash}				params				hash of params:
+ * @param {hash}				params		hash of params:
  * @param {string}				address		address text to go in the bubble
  * @param {ZmAutocompleteMatch}	match		match object
  * @param {ZmAddressBubble}		bubble		bubble to clone
@@ -202,7 +202,7 @@ function(params) {
 	if (bubbleAdded) {
 		this._holder.className = "addrBubbleHolder";
 		if (this._bubbleAddedCallback && !params.skipNotify) {
-			this._bubbleAddedCallback.run();
+			this._bubbleAddedCallback.run(bubble, true);
 		}
 		this._leaveEditMode();
 		return bubble;
@@ -270,7 +270,7 @@ function(bubbleId, skipNotify) {
 	this._resizeInput();
 
 	if (this._bubbleRemovedCallback && !skipNotify) {
-		this._bubbleRemovedCallback.run();
+		this._bubbleRemovedCallback.run(bubble, false);
 	}
 };
 

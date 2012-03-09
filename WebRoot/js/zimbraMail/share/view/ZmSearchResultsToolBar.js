@@ -141,11 +141,16 @@ function(text, showError) {
 
 // Don't let the removal or addition of a bubble when we're setting up trigger a search loop.
 ZmSearchResultsToolBar.prototype._bubbleChange =
-function() {
+function(bubble, added) {
 	if (!this._settingSearch) {
-		// use timer to let content of search bar get set - if a search term is autocompleted,
-		// the bubble is added before the text it replaces is removed 
-		setTimeout(this._handleEnterKeyPress.bind(this), 10);
+		var pq = new ZmParsedQuery(bubble.address);
+		var tokens = pq.getTokens();
+		// don't run search if a conditional was added or removed
+		if (!(tokens && tokens[0] && tokens[0].type == ZmParsedQuery.COND)) {
+			// use timer to let content of search bar get set - if a search term is autocompleted,
+			// the bubble is added before the text it replaces is removed
+			setTimeout(this._handleEnterKeyPress.bind(this), 10);
+		}
 	}
 };
 
