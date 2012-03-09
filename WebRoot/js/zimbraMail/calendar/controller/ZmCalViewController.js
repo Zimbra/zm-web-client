@@ -2875,7 +2875,7 @@ function(parent, num) {
     var isShared = calendar ? calendar.isRemote() : false;
     var disabled = isSynced || isReadOnly || (num == 0);
     var isPrivate = appt && appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
-    var isForwardable = !isTrash && calendar && !calendar.isReadOnly();
+    var isForwardable = !isTrash && calendar && !calendar.isReadOnly() && appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED);
     var isReplyable = !isTrash && appt && (num == 1);
     var isTrashMultiple = isTrash && (num && num>1);
 
@@ -3241,7 +3241,7 @@ function(appt, actionMenu) {
 	var isPrivate = appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
 	var enabled = !isOrganizer && workflow && !isPrivate;
     var isReplyable = !isTrash && appt.otherAttendees;
-	var isForwardable = !isTrash && calendar && !calendar.isReadOnly();
+	var isForwardable = !isTrash && calendar && !calendar.isReadOnly() && appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED);
 
     actionMenu.setItemVisible(ZmOperation.REPLY_ACCEPT,      !isOrganizer);
     actionMenu.setItemVisible(ZmOperation.REPLY_DECLINE,     !isOrganizer);
