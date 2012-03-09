@@ -412,7 +412,7 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 	// fill in folder field
 	if (this.getControl("FOLDER")) {
 		var folderOrId = contact && contact.getAddressBook();
-		if (!folderOrId) {
+		if (!folderOrId && (appCtxt.getCurrentViewId() == ZmId.VIEW_CONTACT_SIMPLE)) {
 			var overview = appCtxt.getApp(ZmApp.CONTACTS).getOverview();
 			folderOrId = overview && overview.getSelected();
 			if (folderOrId && folderOrId.type != ZmOrganizer.ADDRBOOK) {
