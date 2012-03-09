@@ -45,6 +45,7 @@ ZmContactPicker = function(buttonInfo) {
 	this._list = new AjxVector();
 	this._detailed = appCtxt.get(ZmSetting.DETAILED_CONTACT_SEARCH_ENABLED);
 	this._searchCleared = {};
+	this._ignoreSetDragBoundries = true;
 
 	this._searchErrorCallback = new AjxCallback(this, this._handleErrorSearch);
 };
