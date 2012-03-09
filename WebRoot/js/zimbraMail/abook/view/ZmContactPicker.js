@@ -45,6 +45,7 @@ ZmContactPicker = function(buttonInfo) {
 	this._list = new AjxVector();
 	this._detailed = appCtxt.get(ZmSetting.DETAILED_CONTACT_SEARCH_ENABLED);
 	this._searchCleared = {};
+	this._ignoreSetDragBoundries = true;
 
 	this._searchErrorCallback = new AjxCallback(this, this._handleErrorSearch);
 };
@@ -149,6 +150,14 @@ function(buttonId, addrs, str, account) {
 	this.search(null, null, true);
 
 	DwtDialog.prototype.popup.call(this);
+    if ((this.getLocation().x < 0 ||  this.getLocation().y < 0) ){
+                // parent window size is smaller than Dialog size
+                this.setLocation(0,30);
+                var size = Dwt.getWindowSize();
+                var currentSize = this.getSize();
+                var dragElement = document.getElementById(this._dragHandleId);
+                DwtDraggable.setDragBoundaries(dragElement, 100 - currentSize.x, size.x - 100, 0, size.y - 100);
+    }
 };
 
 /**
