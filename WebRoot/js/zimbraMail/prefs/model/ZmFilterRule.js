@@ -631,7 +631,7 @@ ZmFilterRule.ACTIONS[ZmFilterRule.A_FOLDER]	= {
 ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG] = {
 	param:				ZmFilterRule.TYPE_SELECT,
 	// NOTE: If you change the order of these options, also change _setPreconditions!!!
-	pOptions:			[{label: ZmMsg.read, value: ZmFilterRule.READ}, {label: ZmMsg.flagged, value: ZmFilterRule.FLAGGED}, {label: ZmMsg.priority, value: ZmFilterRule.PRIORITY}]
+	pOptions:			[{label: ZmMsg.read, value: ZmFilterRule.READ}, {label: ZmMsg.flagged, value: ZmFilterRule.FLAGGED}]
 };
 
 ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG] = {
@@ -666,7 +666,6 @@ ZmFilterRule.ACTIONS_OUTGOING_LIST = [
 ZmFilterRule._setPreconditions =
 function() {
 	ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG].pOptions[1].precondition = ZmSetting.FLAGGING_ENABLED;
-	ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG].pOptions[2].precondition = ZmSetting.PRIORITY_INBOX_ENABLED;
 	ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG].precondition = ZmSetting.TAGGING_ENABLED;
 	ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD].precondition = ZmSetting.FILTERS_MAIL_FORWARDING_ENABLED;
 	ZmFilterRule.ACTIONS[ZmFilterRule.A_DISCARD].precondition = ZmSetting.DISCARD_IN_FILTER_ENABLED;

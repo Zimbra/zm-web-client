@@ -2218,11 +2218,6 @@ function(items, on) {
 	appCtxt.notifyZimlets("onMailFlagClick", [items, on]);
 };
 
-ZmMailListController.prototype._doMsgPriority = 
-function(items, on) {
-	ZmListController.prototype._doMsgPriority.call(this, items, on);	
-};
-
 // Tag/untag items(override ZmListController to add hook to zimletMgr
 ZmMailListController.prototype._doTag =
 function(items, tag, doTag) {

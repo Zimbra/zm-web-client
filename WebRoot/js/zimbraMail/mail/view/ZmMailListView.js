@@ -270,9 +270,6 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_ACCOUNT) {
 		idx = this._getImageHtml(htmlArr, idx, item.getAccount().getIcon(), this._getFieldId(item, field));
 	} 
-	else if (field == ZmItem.F_MSG_PRIORITY) {
-		idx = this._getImageHtml(htmlArr, idx, this._getMsgPriorityIcon(item.isPriority), this._getFieldId(item, field));	
-	}
 	else {
 		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
 	}
@@ -323,7 +320,6 @@ function() {
 		this._headerInit[ZmItem.F_SIZE]			= {text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, sortable:ZmItem.F_SIZE, resizeable:true};
 		this._headerInit[ZmItem.F_DATE]			= {text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE, resizeable:true};
 		this._headerInit[ZmItem.F_SORTED_BY]	= {text:AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg.date), sortable:ZmItem.F_SORTED_BY, resizeable:false};
-		this._headerInit[ZmItem.F_MSG_PRIORITY] = {icon:"Priority", width:ZmListView.COL_WIDTH_ICON, resizable:false, name:ZmMsg.messagePriority, precondition: ZmSetting.PRIORITY_INBOX_ENABLED};
 	}
 };
 
@@ -802,12 +798,6 @@ function(isFlagged, isMouseover) {
 		: (this._isMultiColumn ? "Blank_16" : "FlagDis");
 };
 
-ZmMailListView.prototype._getMsgPriorityIcon = 
-function(isFlagged, isMouseover) {
-	return (isFlagged || isMouseover) 
-		? "Priority"
-		: (this._isMultiColumn ? "Blank_16" : "PriorityDis");
-};
 
 /**
  * Returns a list of the largest subset of the given participants that will fit within the

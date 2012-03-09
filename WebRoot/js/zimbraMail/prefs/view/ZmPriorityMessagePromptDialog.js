@@ -40,15 +40,7 @@ function() {
 	var prefsApp = appCtxt.getApp(ZmId.APP_PREFERENCES);
 	var filterSel = [];
 	if (this._rules) {
-		this._priorityRule = this._rules.getRuleByName(ZmMsg.markAsPriorityRule);
-		this._stopOnPriorityRule = this._rules.getRuleByName(ZmMsg.priorityFlagRule);
 		this._activityStreamRule = this._rules.getRuleByName(ZmMsg.activityStreamsRule);
-		if (this._priorityRule && this._priorityRule.active) {
-			filterSel.push(this._priorityRule);
-		}
-		if (this._stopOnPriorityRule && this._stopOnPriorityRule.active) {
-			filterSel.push(this._stopOnPriorityRule);
-		}
 		if (this._activityStreamRule && this._activityStreamRule.active) {
 			filterSel.push(this._activityStreamRule);
 		}

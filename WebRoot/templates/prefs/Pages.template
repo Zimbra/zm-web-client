@@ -2553,29 +2553,16 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 <template id='prefs.Pages#PriorityMessageFilterPrompt'>
      <div><$=ZmMsg.priorityFilterDescription$></div>
      <div class='horizSep'></div>
-     <div style='float: left'> 
-        <div id='${id}_MARK_AS_PRIORITY'></div> 
-        <div id='${id}_FREQUENTLY_EMAIL' class='ZmPriorityFilterCriteria'></div>
-         <div id='${id}_CONV_I_START' class='ZmPriorityFilterCriteria'></div>
-         <div id='${id}_MENTIONS_DIRECT_MESSAGES' class='ZmPriorityFilterCriteria'></div> 
-         <div style='padding-left: 20px'>
-            <div id='${id}_SOCIAL_LIST' class='ZmPriorityFilterSocialList'>
-             <div id='${id}_SOCIAL_CAST'></div>
-             <div id='${id}_FACEBOOK'></div>
-             <div id='${id}_TWITTER'></div>
-             <div id='${id}_LINKEDIN'></div>
-            </div>
-         </div>
-         <div id='${id}_PRIORITY_ADVANCED'></div>
-      </div>
-      <div class='ZmPriorityFilterDivider' style='float: left;'></div>
-      <div id='${id}_MOVE_MSG_STREAM'></div> 
-      <div style='padding-left: 10px; float: left;'> 
+    
+      <div id='${id}_MOVE_MSG_STREAM'></div>
+      <div style='padding-left: 10px; float: left;'>
+       <div style='padding-top: 10px;' class='Text'><$=ZmMsg.moveToActivityStream $></div>
+        <div id='${id}_MOVE_LIST' class='ZmActivityStreamFilterList'>
           <div id='${id}_NOT_TO_ME'></div> 
           <div id='${id}_NOT_IN_ADDR'></div>
           <div id='${id}_DL_SUBSCRIBED'></div> 
           <div id='${id}_MASS_MARKETING'></div>
-          <div id='${id}_STREAM_ADVANCED'></div>
+        </div>
       </div>
 </template>
 

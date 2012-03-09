@@ -240,9 +240,6 @@ function(item, colIdx) {
 	if (tags && tags.length) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_TAG, colIdx, width);
 	}
-	if (appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED)) {
-		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_MSG_PRIORITY, colIdx, "16", "align=right");	
-	}
 	if (appCtxt.get("FLAGGING_ENABLED")) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_FLAG, colIdx, width);
 	}
@@ -316,7 +313,6 @@ function() {
 			ZmItem.F_STATUS,
 			ZmItem.F_FROM,
 			ZmItem.F_ATTACHMENT,
-			ZmItem.F_MSG_PRIORITY,
 			ZmItem.F_SUBJECT,
 			ZmItem.F_FOLDER,
 			ZmItem.F_SIZE

@@ -5291,8 +5291,7 @@ DIV .SuggestBtn {
 	padding-right:10px;
 }
 
-.ZmPriorityFilterSocialList {
-	height:100px;
+.ZmActivityStreamFilterList {
 	width:200px;
 	border:1px solid #666;
 }
