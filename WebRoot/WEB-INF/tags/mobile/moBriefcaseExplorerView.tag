@@ -38,7 +38,7 @@
 
                 <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                     <c:set var="bchit" value="${hit.briefcaseHit}"/>
-
+                    <c:set var="folder" value="${zm:getFolder(pageContext, bchit.document.folderId)}"/>
                     <c:set value=",${hit.id}," var="stringToCheck"/>
                     <c:set var="ctype" value="${fn:split(bchit.document.contentType,';')}"/>
                     <c:choose>
@@ -120,7 +120,7 @@
                         </c:otherwise>
                     </c:choose>
                     <c:set var="aid" value="A${status.index}"/>
-                    <c:set var="briefUrl" value="/service/home/~/?id=${bchit.id}&auth=co"/>
+                    <c:set var="briefUrl" value="/home/${mailbox.accountInfo.name}${folder.path}/${bchit.document.name}?auth=co"/>
 
                         <div class="ZmThumbnailItem" style="">
                             <div align="left">

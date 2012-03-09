@@ -35,6 +35,7 @@
    <div class="tbl dlist">
    <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
         <c:set var="bchit" value="${hit.briefcaseHit}"/>
+       <c:set var="folder" value="${zm:getFolder(pageContext, bchit.document.folderId)}"/>
         <div class="list-row tr" id="cn${bchit.id}">
             <c:set value=",${hit.id}," var="stringToCheck"/>
             <c:set var="ctype" value="${fn:split(bchit.document.contentType,';')}" />
@@ -121,7 +122,7 @@
                 <span class="Img ${mimeImg}">&nbsp;</span>
             </span>
             <span class="td m" onclick='return zClickLink("a${bchit.id}")'>
-                <c:set var="briefUrl" value="/service/home/~/?id=${bchit.id}&auth=co"/>
+                <c:set var="briefUrl" value="/home/${mailbox.accountInfo.name}${folder.path}/${bchit.document.name}?auth=co"/>
                 <a id="a${bchit.id}" href="${briefUrl}" target="_blank">
                 <div>
                     <strong><c:out escapeXml="true" value="${zm:truncate(bchit.document.name,100,true)}"/></strong>
