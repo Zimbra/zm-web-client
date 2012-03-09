@@ -40,6 +40,7 @@ ZmMimeTable.APP_MS_PPT				= "application/vnd.ms-powerpoint";
 ZmMimeTable.APP_MS_PROJECT			= "application/vnd.ms-project";
 ZmMimeTable.APP_MS_TNEF				= "application/ms-tnef"; 		// IGNORE
 ZmMimeTable.APP_MS_TNEF2 			= "application/vnd.ms-tnef"; 	// IGNORE (added per bug 2339)
+ZmMimeTable.APP_SIGNATURE           = "application/pkcs7-signature"; // IGNORE (added per bug 69476)
 ZmMimeTable.APP_MS_VISIO			= "application/vnd.visio";
 ZmMimeTable.APP_MS_WORD				= "application/msword";
 ZmMimeTable.APP_OCTET_STREAM		= "application/octet-stream";
@@ -157,7 +158,8 @@ function(type) {
 			type == ZmMimeTable.MULTI_RELATED ||
 			type == ZmMimeTable.MULTI_APPLE_DBL ||
 			type == ZmMimeTable.APP_MS_TNEF ||
-			type == ZmMimeTable.APP_MS_TNEF2);
+			type == ZmMimeTable.APP_MS_TNEF2 ||
+            type == ZmMimeTable.APP_SIGNATURE);
 };
 
 /**
