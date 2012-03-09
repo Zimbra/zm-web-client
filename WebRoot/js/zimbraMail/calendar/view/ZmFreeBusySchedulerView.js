@@ -2026,7 +2026,7 @@ function(ev) {
     el._acHandlerInProgress = true;
     svp._handleAttendeeField(el);
     el._acHandlerInProgress = false;
-    this._editView.showConflicts();
+    if (svp._editView) { svp._editView.showConflicts(); }
 };
 
 ZmFreeBusySchedulerView._onPTSTMouseOver =
