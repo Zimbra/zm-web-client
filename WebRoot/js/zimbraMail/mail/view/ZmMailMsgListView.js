@@ -160,7 +160,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 				htmlArr[idx++] = ZmMailMsgListView.INDENT;
 			}
 			if (!this._isMultiColumn) {
-				htmlArr[idx++] = "<span class='ZmConvListFragment'>";
+				htmlArr[idx++] = "<span class='ZmConvListFragment' id='" + this._getFieldId(msg, ZmItem.F_FRAGMENT) + "'>";
 			}
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
 			if (!this._isMultiColumn) {
@@ -246,6 +246,32 @@ function(item, colIdx) {
 	htmlArr[idx++] = "</tr></table>";
 
 	return htmlArr.join("");
+};
+
+ZmMailMsgListView.prototype._getToolTip =
+function(params) {
+
+	var tooltip, field = params.field, item = params.item;
+	if (!item) { return; }
+
+	if (!this._isMultiColumn && (field == ZmItem.F_SUBJECT || field ==  ZmItem.F_FRAGMENT)) {
+		if ((item.type == ZmItem.MSG) && item.isInvite() && item.needsRsvp()) {
+			tooltip = item.invite.getToolTip();
+		} else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
+		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
+			var folderTip = null;
+			var folder = appCtxt.getById(item.folderId);
+			if (folder && folder.parent) {
+				folderTip = AjxMessageFormat.format(ZmMsg.accountDownloadToFolder, folder.getPath());
+			}
+			tooltip = folderTip ? [tooltip, folderTip].join("<br>") : tooltip;
+        }
+	}
+	else {
+		return ZmMailListView.prototype._getToolTip.apply(this, arguments);
+	}
+	
+	return tooltip;
 };
 
 // Listeners

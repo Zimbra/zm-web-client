@@ -108,37 +108,7 @@
 </template>
 
 <template id='dwt.Widgets#DwtToolTip' width='5' height='5'>
-	<div id='${id}TopPointer' class='DwtToolTipTopPointer'>
-		<center>
-			<div class='DwtToolTipPointerRow' style='width:1px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:3px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:5px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:7px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:9px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:11px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:13px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:15px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:17px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:19px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:21px;'>&nbsp;</div>
-		</center>
-	</div>
 	<div id='${id}Contents' class='DwtToolTipBody'></div>
-	<div id='${id}BottomPointer' class='DwtToolTipBottomPointer'>
-		<center>
-			<div class='DwtToolTipPointerRow' style='width:21px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:19px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:17px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:15px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:13px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:11px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:9px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:7px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:5px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:3px;'>&nbsp;</div>
-			<div class='DwtToolTipPointerRow' style='width:1px;'>&nbsp;</div>
-		</center>
-	</div>
 </template>
 
 

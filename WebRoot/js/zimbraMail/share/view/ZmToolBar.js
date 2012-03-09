@@ -193,7 +193,7 @@ function(id, params, whatToShow) {
 		b.setText(params.text);
 	}
 	if (params.tooltip) {
-		b.setToolTipContent(ZmOperation.getToolTip(id, this._keyMap) || params.tooltip);
+		b.setToolTipContent(ZmOperation.getToolTip(id, this._keyMap) || params.tooltip, true);
 	}
 	b.setEnabled(params.enabled !== false);
 	b.setData("_buttonId", id);
@@ -342,7 +342,7 @@ function(params) {
 		var hint = Dwt.getAttr(buttonEl, "hint");
 		ZmToolBar._setButtonStyle(button, hint, params.lbl, params.icon);
 		if (params.tooltip) {
-			button.setToolTipContent(params.tooltip);
+			button.setToolTipContent(params.tooltip, true);
 		}
 		button.reparentHtmlElement(tdId);
 	}

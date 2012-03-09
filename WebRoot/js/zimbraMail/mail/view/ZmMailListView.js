@@ -684,14 +684,10 @@ ZmMailListView.prototype._getToolTip =
 function(params) {
 	var tooltip, field = params.field, item = params.item, matchIndex = params.match.participant;
 	if (!item) { return; }
-	var folder = appCtxt.getById(item.folderId);
 
 	if (field == ZmItem.F_STATUS) {
 		tooltip = item.getStatusTooltip();
 	}
-//	else if (field == ZmItem.F_READ) {
-//		tooltip = item.isUnread ? ZmMsg.unread : ZmMsg.read;
-//	}
 	else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
 			(field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT))
 	{
@@ -721,14 +717,10 @@ function(params) {
 			tooltip = item.invite.getToolTip();
 		} else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
 		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
-			var folderTip = null;
-			if (folder && folder.parent) {
-				folderTip = AjxMessageFormat.format(ZmMsg.accountDownloadToFolder, folder.getPath());
-			}
-			tooltip = folderTip ? [tooltip, folderTip].join("<br>") : tooltip;
         }
 	}
 	else if (field == ZmItem.F_FOLDER) {
+		var folder = appCtxt.getById(item.folderId);
 		if (folder && folder.parent) {
 			var name = folder.getName();
 			var path = folder.getPath();

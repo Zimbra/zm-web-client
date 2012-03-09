@@ -390,6 +390,12 @@ function(ev) {
 	return item.getToolTip(this._controller);
 };
 
+// tooltip position will be based on cursor
+ZmCalBaseView.prototype.getTooltipBase =
+function(hoverEv) {
+	return null;
+};
+
 ZmCalBaseView.prototype.getApptDetails =
 function(appt, callback, uid) {
 	if (this._currentMouseOverApptId &&

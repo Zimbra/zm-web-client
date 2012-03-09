@@ -342,7 +342,7 @@ function(actionCode, ev) {
 						frag = item.invite ? item.invite.getToolTip() : this.getMsg().invite.getToolTip();
 					} else {
 						frag = item.fragment ? item.fragment : ZmMsg.fragmentIsEmpty;
-						if (frag != "") { lv.setToolTipContent(AjxStringUtil.htmlEncode(frag)); }
+						if (frag != "") { lv.setToolTipContent(AjxStringUtil.htmlEncode(frag), true); }
 					}
 					var tooltip = this._shell.getToolTip();
 					tooltip.popdown();
@@ -1397,10 +1397,10 @@ function(parent) {
 	var deleteMenuButton = parent.getButton(ZmOperation.DELETE_MENU);
 	var tooltip = inTrashFolder ? ZmMsg.deletePermanentTooltip : ZmMsg.deleteTooltip;
 	if (deleteButton) {
-		deleteButton.setToolTipContent(ZmOperation.getToolTip(ZmOperation.DELETE, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip));
+		deleteButton.setToolTipContent(ZmOperation.getToolTip(ZmOperation.DELETE, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip), true);
 	}
 	if (deleteMenuButton) {
-		deleteMenuButton.setToolTipContent(ZmOperation.getToolTip(ZmOperation.DELETE_MENU, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip));
+		deleteMenuButton.setToolTipContent(ZmOperation.getToolTip(ZmOperation.DELETE_MENU, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip), true);
 	}
 };
 
@@ -1430,7 +1430,7 @@ function(parent) {
 		item.setImage(inSpamFolder ? 'NotJunk' : 'JunkMail');
 		if (item.setToolTipContent) {
 			var tooltip = inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip;
-			item.setToolTipContent(ZmOperation.getToolTip(ZmOperation.SPAM, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip));
+			item.setToolTipContent(ZmOperation.getToolTip(ZmOperation.SPAM, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip), true);
 		}
 		item.isMarkAsSpam = !inSpamFolder;
 	}
@@ -1443,8 +1443,7 @@ function(parent) {
 
     var item = parent.getOp(ZmOperation.PRINT);
     if (item) {
-        item.setToolTipContent(ZmMsg.printMultiTooltip);
-
+        item.setToolTipContent(ZmMsg.printMultiTooltip, true);
     }
 };
 

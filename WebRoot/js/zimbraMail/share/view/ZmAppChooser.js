@@ -181,7 +181,7 @@ function(element, option){
     if (display != "none" && !this._moreTabsBtn ){
         var containerEl = document.getElementById("moreTabsMenu");
         var button = new DwtToolBarButton({parent:DwtShell.getShell(window), id: "moreTabsMenuBtn", style:"background:none no-repeat scroll 0 0 transparent; border: none"});
-        button.setToolTipContent(ZmMsg.more);
+        button.setToolTipContent(ZmMsg.more, true);
         button.setText("");
         button.reparentHtmlElement(moreTabsMenu);
         button.setMenu(new AjxListener(this, this._showOverflowTabsMenu));
@@ -302,7 +302,7 @@ function(id, params) {
 						image:params.image, index:params.index};
     buttonParams.style = params.style ? params.style : DwtLabel.IMAGE_LEFT;
     var button = new ZmAppButton(buttonParams);
-	button.setToolTipContent(params.tooltip);
+	button.setToolTipContent(params.tooltip, true);
 	button.textPrecedence = params.textPrecedence;
 	button.imagePrecedence = params.imagePrecedence;
 	button.setData(Dwt.KEY_ID, id);

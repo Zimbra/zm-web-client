@@ -793,6 +793,8 @@ ZmMailMsgCapsuleView = function(params) {
 	this._showingCalendar = false;
 	this._infoBarId = this._htmlElId;
 	
+	this._browserToolTip = !AjxEnv.isGeckoBased;	// folder/tag browser tooltip not working in FF
+	
 	// cache text and HTML versions of original content
 	this._origContent = {};
 
@@ -1167,6 +1169,7 @@ function() {
 	var folder = this._msg.folderId && appCtxt.getById(this._msg.folderId);
 	if (cell && folder) {
 		AjxImg.setImage(cell, folder.getIconWithColor());
+		cell.title = folder.getName();
 	}
 };
 
@@ -1212,7 +1215,8 @@ function(msg, container, tagCellId) {
 	for (var i = 0; i < tags.length; i++) {
 		var tag = tags[i];
 		var id = this._htmlElId + "_tag" + tag.id;
-		html[idx++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, "id='" + id + "'");
+		var attrStr = ["id='", id, "' title='", tag.getName(), "'"].join("");
+		html[idx++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, attrStr);
 	}
 	container.innerHTML = html.join("");
 };

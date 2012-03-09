@@ -233,7 +233,7 @@ ZmConvListView.prototype._initHeaders =
 function() {
 	if (!this._headerInit) {
 		ZmMailListView.prototype._initHeaders.call(this);
-		this._headerInit[ZmItem.F_EXPAND]	= {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand};
+		this._headerInit[ZmItem.F_EXPAND]	= {icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand, tooltip: ZmMsg.expandCollapse};
         //bug:45171 removed sorted from converstaion for FROM field
         this._headerInit[ZmItem.F_FROM]		= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_CLV, resizeable:true};
 	}
@@ -540,13 +540,15 @@ function(conv, fieldId) {
 
 ZmConvListView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
+	
     return (field == ZmItem.F_EXPAND)
-		? ZmMsg.expandCollapse
+		? "" //ZmMsg.expandCollapse
 		: ZmMailListView.prototype._getHeaderToolTip.call(this, field, itemIdx, this._isOutboundFolder());
 };
 
 ZmConvListView.prototype._getToolTip =
 function(params) {
+
 	if (!params.item) { return; }
 
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && (params.field == ZmItem.F_PARTICIPANT || params.field == ZmItem.F_FROM)) { 
@@ -561,6 +563,8 @@ function(params) {
 				appCtxt.getToolTipMgr().getToolTip(ZmToolTipMgr.PERSON, ttParams, callback);
 			});
 		return {callback:ttCallback};
+	} else if (params.item.type == ZmItem.MSG) {
+		return ZmMailMsgListView.prototype._getToolTip.apply(this, arguments);
 	} else {
 		return ZmMailListView.prototype._getToolTip.apply(this, arguments);
 	}

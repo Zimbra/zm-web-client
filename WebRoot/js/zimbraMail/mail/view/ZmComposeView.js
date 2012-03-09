@@ -2759,7 +2759,7 @@ function(templateId, data) {
 		// initialize identity select
 		var identityOptions = this._getIdentityOptions();
 		this.identitySelect = new DwtSelect({parent:this, id:this.getHTMLElId() + "_identitySelect", options:identityOptions});
-		this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
+		this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity, true);
 
 		if (!this._identityChangeListenerObj) {
 			this._identityChangeListenerObj = new AjxListener(this, this._identityChangeListener);
@@ -2780,7 +2780,7 @@ function(templateId, data) {
 		this._priorityButton = new DwtButton({parent:this, id:buttonId});
 		this._priorityButton.setMenu(new AjxCallback(this, this._priorityButtonMenuCallback));
 		this._priorityButton.reparentHtmlElement(data.priorityId);
-		this._priorityButton.setToolTipContent(ZmMsg.setPriority);
+		this._priorityButton.setToolTipContent(ZmMsg.setPriority, true);
 	}
     var attButtonId = ZmId.getButtonId(this._view, ZmId.CMP_ATT_BTN);
 	this._attButton = new DwtButton({parent:this, id:attButtonId});
@@ -2807,7 +2807,7 @@ function(templateId, data) {
     }
     this._attButton.setMenu(new AjxCallback(this, this._attachButtonMenuCallback));
 	this._attButton.reparentHtmlElement(data.attBtnId);
-	this._attButton.setToolTipContent(ZmMsg.attach);
+	this._attButton.setToolTipContent(ZmMsg.attach, true);
 };
 
 ZmComposeView.prototype.collapseAttMenu =

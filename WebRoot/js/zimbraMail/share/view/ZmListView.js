@@ -988,6 +988,11 @@ function(ev) {
 	return tooltip;
 };
 
+ZmListView.prototype.getTooltipBase =
+function(hoverEv) {
+	return hoverEv ? DwtUiEvent.getTargetWithProp(hoverEv.object, "id") : DwtListView.prototype.getTooltipBase.apply(this, arguments);
+};
+
 ZmListView.prototype._getHeaderToolTip =
 function(field, itemIdx, isOutboundFolder) {
 

@@ -810,7 +810,7 @@ function() {
 	}
 	var button = this._refreshButton = new DwtToolBarButton({parent:DwtShell.getShell(window), id: ZmId.OP_CHECK_MAIL}); //use ToolbarButton just for the style, for now it looks ok.
 	button.setImage("RefreshAll");
-	button.setToolTipContent(ZmMsg.checkMailPrefUpdate);
+	button.setToolTipContent(ZmMsg.checkMailPrefUpdate, true);
 
 	button.reparentHtmlElement(ZmId.SKIN_REFRESH);
 
@@ -927,7 +927,7 @@ function(online) {
         this.sendClientEventNotify(this._currentNetworkStatus);
 	}
 
-	this._networkStatusIcon.setToolTipContent(online ? ZmMsg.networkStatusOffline : ZmMsg.networkStatusOnline);
+	this._networkStatusIcon.setToolTipContent(online ? ZmMsg.networkStatusOffline : ZmMsg.networkStatusOnline, true);
 	this._networkStatusIcon.getHtmlElement().innerHTML = AjxImg.getImageHtml(online ? "Connect" : "Disconnect");
 	var netStatus = online ? ZmMsg.imStatusOnline : ZmMsg.imStatusOffline;
 	this._networkStatusText.getHtmlElement().innerHTML = netStatus.substr(0, 1).toUpperCase() + netStatus.substr(1);
@@ -2260,7 +2260,8 @@ function(params) {
 	var newButton = this.getNewButton();
 	if (newButton) {
 		newButton.setText(params.text);
-		newButton.setToolTipContent(params.tooltip);
+		// TODO: get browser tooltip working for FF
+		newButton.setToolTipContent(params.tooltip, !AjxEnv.isGeckoBased);
 		newButton.setImage(params.icon);
 		newButton.setEnabled(!params.disabled);
 		ZmController._defaultNewId = params.defaultId;

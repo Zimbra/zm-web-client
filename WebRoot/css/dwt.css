@@ -131,10 +131,6 @@
 .ZHover .DwtLinkButtonDropDownArrowTd /* this works for all browsers but the border disappears when the arrow is clicked since ZHover class is removed */
 								{	padding-left:0; border-left:solid 1px @LinkButtonArrowColor@; 	}
 
-/* One row of the tooltip pointer -- used to do arrows without images */
-.DwtToolTipPointerRow 				{	font-size:1px; height:2px; overflow:hidden; position:relative; 
-										@TooltipArrowContainer@ 	}
-
 /* One row of the DwtLinkButton drop-down arrow -- used to do arrows without images */
 .DwtLinkButtonDropDownArrowRow 	{	font-size:1px; height:1px; overflow:hidden; position:relative; 
 										@LinkButtonArrowContainer@ 	}

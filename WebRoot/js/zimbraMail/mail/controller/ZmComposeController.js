@@ -1228,7 +1228,7 @@ function(composeMode, incOptions) {
     var ac = window.parentAppCtxt || window.appCtxt;
 
 	var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
-	button.setToolTipContent(ZmMsg[ZmComposeController.OPTIONS_TT[this._action]]);
+	button.setToolTipContent(ZmMsg[ZmComposeController.OPTIONS_TT[this._action]], true);
 	var menu = this._optionsMenu[this._action];
 	if (!menu) { return; }
 
