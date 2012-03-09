@@ -772,7 +772,7 @@ function() {
 
 	if (uids.length) {
         //all attendees status need to be update even for unshown attendees
-		var emails = this._allAttendeeEmails ? this._allAttendeeEmails.join(",") : uids.join(",");
+		var emails = uids.join(",");
 		this._getFreeBusyInfo(this._getStartTime(), emails);
 	}
 };
