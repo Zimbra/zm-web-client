@@ -915,7 +915,7 @@ function(params) {
 	this._composeMode = params.composeMode || this._getComposeMode(msg, identity);
 	AjxDebug.println(AjxDebug.REPLY, "ZmComposeController::_setView - Compose mode: " + this._composeMode);
 
-	if (this._needComposeViewRefresh) {
+	if (this._needComposeViewRefresh || (this._composeView && appCtxt.get(ZmSetting.SHOW_MAIL_CONFIRM))) {
 		this._composeView.dispose();
 		this._composeView = null;
 		this._needComposeViewRefresh = false;
