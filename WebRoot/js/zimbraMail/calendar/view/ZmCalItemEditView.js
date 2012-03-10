@@ -823,6 +823,7 @@ function() {
 	// create new table row which will contain parent fieldset
 	var table = document.getElementById(this._htmlElId + "_table");
 	this._attachmentRow = table.insertRow(-1);
+    this._attachmentRow.id = this._htmlElId + "_attachment_container"
 	var cell = this._attachmentRow.insertCell(-1);
 	cell.colSpan = 2;
 
