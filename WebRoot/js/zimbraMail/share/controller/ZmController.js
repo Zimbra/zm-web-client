@@ -492,27 +492,32 @@ function(ex, continuation) {
 	
 	if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED || 
 		ex.code == ZmCsfeException.SVC_AUTH_REQUIRED || 
-		ex.code == ZmCsfeException.NO_AUTH_TOKEN)
+		ex.code == ZmCsfeException.NO_AUTH_TOKEN ||
+		ex.code == ZmCsfeException.AUTH_TOKEN_CHANGED)
 	{
 		ZmCsfeCommand.noAuth = true;
-		var reloginMode = false;
-		var loginDialog = appCtxt.getLoginDialog();
-		if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED) {
-			loginDialog.setError(ZmMsg.sessionExpired);
-			reloginMode = true;
-		} else if (ex.code == ZmCsfeException.SVC_AUTH_REQUIRED) {
-			// bug fix #413 - always logoff if we get auth required
-			DBG.println(AjxDebug.DBG1, "ZmController.prototype._handleException ex.code : ZmCsfeException.SVC_AUTH_REQUIRED. Invoking logout.");
-			ZmZimbraMail.logOff();
-			return;
-		} else {
-			// NO_AUTH_TOKEN
-			reloginMode = true;
-			loginDialog.setError(null);
-		}
-		loginDialog.setReloginMode(reloginMode);
-		this._handleLogin(reloginMode, continuation);
+		DBG.println(AjxDebug.DBG1, "Got auth exception " + ex.code + ", logging out");
+		ZmZimbraMail.logOff();
 		return;
+		
+//		var reloginMode = false;
+//		var loginDialog = appCtxt.getLoginDialog();
+//		if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED) {
+//			loginDialog.setError(ZmMsg.sessionExpired);
+//			reloginMode = true;
+//		} else if (ex.code == ZmCsfeException.SVC_AUTH_REQUIRED) {
+//			// bug fix #413 - always logoff if we get auth required
+//			DBG.println(AjxDebug.DBG1, "ZmController.prototype._handleException ex.code : ZmCsfeException.SVC_AUTH_REQUIRED. Invoking logout.");
+//			ZmZimbraMail.logOff();
+//			return;
+//		} else {
+//			// NO_AUTH_TOKEN
+//			reloginMode = true;
+//			loginDialog.setError(null);
+//		}
+//		loginDialog.setReloginMode(reloginMode);
+//		this._handleLogin(reloginMode, continuation);
+//		return;
 	}
 
 	if (ex.code == ZmCsfeException.AUTH_TOKEN_CHANGED) {
