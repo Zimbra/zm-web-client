@@ -205,6 +205,7 @@ function(type) {
 ZmMimeTable.hasHtmlVersion =
 function(type) {
 	return (!(ZmMimeTable.isIgnored(type) ||
+			type.match(/^text\/plain/) ||
 			type.match(/^image/) ||
 			type.match(/^audio/) ||
 			type.match(/^video/)));
