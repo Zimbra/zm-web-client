@@ -329,19 +329,6 @@ ZmAppCtxt.prototype.getImportExportController = function() {
 };
 
 /**
- * Gets the login dialog.
- * 
- * @return	{ZmLoginDialog}		the login dialog
- */
-ZmAppCtxt.prototype.getLoginDialog =
-function() {
-	if (!this._loginDialog) {
-		this._loginDialog = new ZmLoginDialog(this._shell);
-	}
-	return this._loginDialog;
-};
-
-/**
  * Gets the message dialog.
  * 
  * @return	{DwtMessageDialog}	the message dialog
