@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -129,7 +129,7 @@
                     <c:if test="${(parent.isMessageMoveTarget and !parent.isSpam) or parent.isTrash}">
                         <option value="${parent.id}"/>
                         <c:set var="label" value="${zm:getFolderPath(pageContext, parent.id)}"/>
-                        ${fn:escapeXml(label)}
+                        ${label}
                     </c:if>
                 </zm:forEachFolder>
             </select>
@@ -151,7 +151,7 @@
                     <c:if test="${parent.isDocumentMoveTarget and !parent.isTrash and !parent.isSpam}">
                         <option value="${parent.id}"/>
                         <c:set var="label" value="${zm:getFolderPath(pageContext, parent.id)}"/>
-                        ${fn:escapeXml(label)}
+                        ${label}
                     </c:if>
                 </zm:forEachFolder>
             </select>

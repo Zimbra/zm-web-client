@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -47,7 +47,7 @@
                             <zm:forEachFolder var="fldr" skiproot="true">
                                 <c:if test="${count lt sessionScope.F_LIMIT and fldr.isTaskView}">
                                     <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
-                                            value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
+                                            value="${fldr.id}">${zm:cook(zm:truncateFixed(zm:getUncookedFolderName(pageContext,fldr.id),15,true))}
                                     </option>
                                 <c:set var="count" value="${count+1}"/></c:if>
                             </zm:forEachFolder>
@@ -191,7 +191,7 @@
                             <zm:forEachFolder var="fldr" skiproot="true">
                                 <c:if test="${count lt sessionScope.F_LIMIT and fldr.isTaskView}">
                                     <option ${param.sfi eq fldr.id || context.folder.id eq fldr.id ? 'selected="selected"' : ''}
-                                            value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),15,true))}
+                                            value="${fldr.id}">${zm:cook(zm:truncateFixed(zm:getUncookedFolderName(pageContext,fldr.id),15,true))}
                                     </option>
                                 <c:set var="count" value="${count+1}"/></c:if>
                             </zm:forEachFolder>

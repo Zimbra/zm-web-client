@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011 VMware, Inc.
- * 
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -41,10 +41,9 @@ ZmSelectAddrDialog = function(parent) {
     // create auto-completer
     if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
         var params = {
-            dataClass: appCtxt.getAutocompleter(),
-            matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
-            compCallback: (new AjxCallback(this, this._handleCompletionData, [this])),
-            keyUpCallback: (new AjxCallback(this, this._acKeyUpListener))
+            dataClass:		appCtxt.getAutocompleter(),
+            matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
+			contextId:		this.toString()
         };
         this._acAddrSelectList = new ZmAutocompleteListView(params);
     }
@@ -58,10 +57,8 @@ ZmSelectAddrDialog = function(parent) {
 ZmSelectAddrDialog.prototype = new DwtDialog;
 ZmSelectAddrDialog.prototype.constructor = ZmQuickAddDialog;
 
-ZmSelectAddrDialog.prototype.toString =
-function() {
-	return "ZmSelectAddrDialog";
-};
+ZmSelectAddrDialog.prototype.isZmSelectAddrDialog = true;
+ZmSelectAddrDialog.prototype.toString = function() { return "ZmSelectAddrDialog"; };
 
 ZmSelectAddrDialog.prototype._contentHtml =
 function() {

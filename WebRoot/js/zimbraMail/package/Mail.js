@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -25,8 +25,6 @@
 AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
 
 AjxPackage.require("zimbraMail.mail.view.ZmComposeView");
-AjxPackage.require("zimbraMail.mail.view.ZmConvView");
-AjxPackage.require("zimbraMail.mail.view.ZmMailAssistant");
 AjxPackage.require("zimbraMail.mail.view.ZmAttachmentsView");
 AjxPackage.require("zimbraMail.mail.view.ZmMailConfirmView");
 AjxPackage.require("zimbraMail.mail.view.ZmSelectAddrDialog");

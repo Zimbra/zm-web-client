@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -49,10 +49,24 @@
 			<c:set var="myCard" value="${mailbox.myCard}"/>
 			<c:set var="myCardSelected" value="${not empty myCard and myCard.id eq param.id and not empty param.actionEdit}" scope="request"/>
 
-            <app:doContactFolderTree skiproot="${false}" skipsystem="false" skiptrash="true"/>
+            <app:contactFolder folder="${mailbox.contacts}"/>
 			<c:if test="${not empty myCard}">
 				<app:myCardFolder myCard="${myCard}"/>
 			</c:if>
+            <%--
+                Display the children of Contact folder, if any. Folders with unknown view also get listed.
+            --%>
+            <app:doContactFolderTree skiproot="${true}" parentid="${mailbox.contacts.id}" skipsystem="false" skiptopsearch="true"/>
+
+            <%--
+                Rest of the address book folders, do not display folders with unknown view here.
+            --%>
+            <zm:forEachFolder var="folder" skiproot="${true}" skipsystem="${false}" expanded="${sessionScope.expanded}" skiptrash="${true}">
+                <c:if test="${not folder.isSearchFolder and folder.isContactView and folder.id ne mailbox.contacts.id}">
+                    <app:contactFolder folder="${folder}"/>
+                </c:if>
+            </zm:forEachFolder>
+            
             <app:overviewFolder types="contact" folder="${mailbox.trash}"/>
             <app:doContactFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
         </c:if>

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -28,7 +28,6 @@
 ZmZimletTreeController = function() {
 
 	ZmTreeController.call(this, ZmOrganizer.ZIMLET);
-    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
 
     this._eventMgrs = {};
 }
@@ -36,41 +35,10 @@ ZmZimletTreeController = function() {
 ZmZimletTreeController.prototype = new ZmTreeController;
 ZmZimletTreeController.prototype.constructor = ZmZimletTreeController;
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmZimletTreeController.prototype.toString = function() {
-	return "ZmZimletTreeController";
-};
-
-/**
- * @private
- */
-ZmZimletTreeController.prototype._browseListener =
-function(ev){
-    var folder = this._getActionedOrganizer(ev);
-    if (folder) {
-        AjxDispatcher.require("Browse");
-        appCtxt.getSearchController().showBrowsePickers([ZmPicker.ZIMLET]);
-        //appCtxt.getSearchController()._browseViewController.addPicker(ZmPicker.FOLDER);
-    }
-}
+ZmZimletTreeController.prototype.isZmZimletTreeController = true;
+ZmZimletTreeController.prototype.toString = function() { return "ZmZimletTreeController"; };
 
 // Public methods
-
-/**
- * Resets and enables/disables operations based on context.
- *
- * @param {Object}	parent		the widget that contains the operations
- * @param {constant}	type	the type
- * @param {Objct}	id			the currently selected/activated organizer
- */
-ZmZimletTreeController.prototype.resetOperations =
-function(parent, type, id) {
-	parent.enable(ZmOperation.BROWSE, true);
-};
 
 /**
  * Adds a selection listener.
@@ -166,7 +134,7 @@ function() {
  * @private
  */
 ZmZimletTreeController.prototype._getHeaderActionMenuOps = function() {
-	return [ZmOperation.BROWSE];
+	return null;
 };
 
 /**

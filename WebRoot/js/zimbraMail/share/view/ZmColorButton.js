@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011 VMware, Inc.
- * 
+ * Copyright (C) 2010 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -49,7 +49,8 @@ ZmColorButton.prototype.setValue = function(color) {
     var image = this.getImage();
     if (image) {
         image = image.replace(/,.*$/,"");
-        this.setImage(this._color?[image,this._color].join(",color="):image, true);
+		var displayColor = this._color || ZmOrganizer.COLOR_VALUES[ZmOrganizer.ORG_DEFAULT_COLOR]; //default to gray
+        this.setImage([image, this._color].join(",color="), true);
     }
     this.setText(this._colorMenu.getTextForColor(this._color));
 };

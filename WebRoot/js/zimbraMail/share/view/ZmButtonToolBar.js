@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -34,15 +34,20 @@
  * @param	{String}	params.className			the CSS class name
  * @param	{Stirng}	params.buttonClassName	the CSS class name for buttons
  * @param	{Hash}	params.overrides			a hash of overrides by op ID
+ * @param	{Array}	params.secondaryButtons		a list of operation IDs
  * @param	{constant}	params.context			the vcontextID (used to generate button IDs)
  * @param	{constant}	params.toolbarType		the toolbar type (used to generate button IDs)
+ * @param	{Boolean}	params.addTextElement		if true, add a text "button" (element) at the end (but before the view button, if any). This can be used for message counts etc
  * @param	{ZmController}	params.controller		the owning controller
- * 
+ *
  * @extends		ZmToolBar
  */
 ZmButtonToolBar = function(params) {
 	if (arguments.length == 0) return;
 
+	if (!params.className && (params.controller && params.controller._elementsToHide == ZmAppViewMgr.LEFT_NAV)) {
+		params.className = "ZToolbar itemToolbar";
+	}
     params.className = params.className || "ZToolbar";
     params.id = params.context ? ZmId.getToolbarId(params.context, params.toolbarType) : null;
     ZmToolBar.call(this, params);
@@ -52,21 +57,73 @@ ZmButtonToolBar = function(params) {
 	this._buttonStyle = params.buttonClassName;
 
 	// standard buttons default to New/Tag/Print/Delete
-	var buttons = params.buttons;
-	if (!buttons) {
-		buttons = [ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.PRINT, ZmOperation.DELETE];
-	} else if (buttons == ZmOperation.NONE) {
-		buttons = null;
+	var buttonOps = params.buttons;
+	if (!buttonOps) {
+		buttonOps = [ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.PRINT, ZmOperation.DELETE];
+	} else if (buttonOps == ZmOperation.NONE) {
+		buttonOps = null;
 	}
 	// weed out disabled ops, save list of ones that make it
 	/**
 	 * The operation list property.
 	 * @type Array
 	 */
-	this.opList = ZmOperation.filterOperations(buttons);
+	this.opList = ZmOperation.filterOperations(buttonOps);
+
+	var addViewAtEnd = false;
+	if (this.opList[this.opList.length - 1] == ZmOperation.VIEW_MENU) {
+		this.opList.splice(this.opList.length - 1, 1);
+		addViewAtEnd = true;
+	}
+
+	this._zimletButtonLocation = this.opList.length;
+
+	var secondaryOpList = ZmOperation.filterOperations(params.secondaryButtons);
+
+	if (secondaryOpList && secondaryOpList.length) {
+		this.opList.push(ZmOperation.SEP, ZmOperation.ACTIONS_MENU);
+	}
+
 	this._buttons = ZmOperation.createOperations(this, this.opList, params.overrides);
 
-	this._createPrecedenceList();
+
+	if (secondaryOpList && secondaryOpList.length) {
+		var actionsButton =  this._secondaryButton = this.getButton(ZmOperation.ACTIONS_MENU);
+
+		actionsButton.noMenuBar = true;
+
+		var secondaryMenu = this._secondaryButtonMenu = new ZmActionMenu({parent: actionsButton, menuItems: ZmOperation.NONE, context: this._context});
+		var secondaryButtons  = ZmOperation.createOperations(secondaryMenu, secondaryOpList, params.overrides);
+		actionsButton.setMenu(secondaryMenu);
+
+		//add secondary buttons to buttons list as I believe from now on it shouldn't matter if they are primary or under the secondary "actions" menu.
+		//that way we don't need to operate on 2 different collections when enabling/disabling, adding listeners, etc.
+		//var secondaryButtons = secondaryMenu._menuItems;
+		for (var id in secondaryButtons) {
+			this._buttons[id] = secondaryButtons[id];
+		}
+		//same as buttons, with opList.
+		this.opList = this.opList.concat(secondaryOpList);
+
+	}
+
+	if (params.addTextElement || addViewAtEnd) {
+		this.addOp(ZmOperation.FILLER);
+	}
+	if (params.addTextElement) {
+		this.addOp(ZmOperation.TEXT);
+		var text = this.getButton(ZmOperation.TEXT);
+		text.addClassName("itemCountText");
+	}
+
+	if (addViewAtEnd) {
+		var viewButton = ZmOperation.createOperations(this, [ZmOperation.VIEW_MENU], params.overrides);
+		this._buttons[ZmOperation.VIEW_MENU] = viewButton[ZmOperation.VIEW_MENU];
+		this.opList.push(ZmOperation.VIEW_MENU);
+	}
+
+	//todo - I guess in the new UI a button (primary) will have either text or image. not both. Think of whether this precedence is still required then.
+	this._createPrecedenceList(); //this is only done to the primary, not the secondary buttons (since the secondary are in a drop-down so removing one's image or text won't make sense.)
 	
 	this._inited = true;
 };
@@ -74,12 +131,12 @@ ZmButtonToolBar = function(params) {
 ZmButtonToolBar.prototype = new ZmToolBar;
 ZmButtonToolBar.prototype.constructor = ZmButtonToolBar;
 
+ZmButtonToolBar.prototype.isZmButtonToolBar = true;
+ZmButtonToolBar.prototype.toString = function() { return "ZmButtonToolBar"; };
+
+
 // Public methods
 
-ZmButtonToolBar.prototype.toString = 
-function() {
-	return "ZmButtonToolBar";
-};
 
 /**
  * Creates a button and adds its operation ID as data.
@@ -94,6 +151,8 @@ function() {
  * @param {String}	params.className		the CSS class name
  * @param {String}	params.style			thebutton style
  * @param {int} params.index			the position at which to add the button
+ * @param {Boolean}	params.showImageInToolbar	if <code>true</code>, the button should show image (default is false)
+ * @param {Boolean}	params.showTextInToolbar	if <code>true</code>, the button should show text (default is !params.showImageInToolbar)
  */
 ZmButtonToolBar.prototype.createOp =
 function(id, params) {
@@ -111,12 +170,29 @@ function(id, params) {
 		params.id = this._context ? ZmId.getButtonId(this._context, id, this._toolbarType) : null;
 		params.textPrecedence = ZmOperation.getProp(id, "textPrecedence");
 		params.iconPrecedence = ZmOperation.getProp(id, "iconPrecedence");
-		b = this.createButton(id, params);
+		var showImage = params.showImageInToolbar || false; //default to false;
+		var showText = !showImage || params.showTextInToolbar;
+		showImage = showImage || !params.text; //no text? gotta show image
+		showText = showText || !params.image; //no image? gotta show text
+		params.image = showImage && params.image; 
+		b = this.createButton(id, params, {showImage: showImage, showText: showText});
 	}
 	b.setData(ZmOperation.KEY_ID, id);
 
 	return b;
 };
+
+/**
+ * Creates a zimlet button and adds its operation ID as data. This method selects the best location for the zimlet, so zimlets don't have to do it and it's consistent.
+ *
+ * for parameters see createOp
+ */
+ZmButtonToolBar.prototype.createZimletOp =
+function(id, params) {
+	params.index = this._zimletButtonLocation;
+	return this.createOp(id, params);
+};
+
 
 /**
  * Adds the operation.
@@ -171,6 +247,23 @@ function() {
 		return button.getMenu();
 	}
 };
+
+/**
+ * gets the secondary menu (the "Actions" menu in the toolbar)
+ */
+ZmButtonToolBar.prototype.getActionsMenu =
+function() {
+	return this._secondaryButtonMenu;
+};
+
+/**
+ * gets the secondary button (the "Actions" button in the toolbar)
+ */
+ZmButtonToolBar.prototype.getActionsButton =
+function() {
+	return this._secondaryButton;
+};
+
 
 //
 // Private methods

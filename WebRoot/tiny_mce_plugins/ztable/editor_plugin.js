@@ -1,17 +1,3 @@
-/*
- * ***** BEGIN LICENSE BLOCK *****
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011 VMware, Inc.
- * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * ***** END LICENSE BLOCK *****
- */
 (function() {
 	tinymce.create('tinymce.plugins.ZTablePlugin', {
         init : function(ed, url) {
@@ -172,34 +158,34 @@
                             return w;
                         }
                         sub1.add({title : 'Menu 1.1'});
-                    
+
                         //m.add({title : 'table.desc', cmd : 'mceInsertTable', ui: true, icon: 'table'});
                         m.addSeparator();
-                        c.ztmenu['row_props'] = m.add({id : 'row_props', title : 'table.row_desc', cmd : 'mceTableRowProps', ui: true, icon: 'row_props'});
+                        c.ztmenu['row_props'] = m.add({id : this.id + '_row_props', title : 'table.row_desc', cmd : 'mceTableRowProps', icon: 'row_props', ui : true});
                         c.ztmenu['row_props'].setDisabled(1);
-                        c.ztmenu['cell_props'] = m.add({title : 'table.cell_desc', cmd : 'mceTableCellProps', ui: true, icon: 'cell_props'});
+                        c.ztmenu['cell_props'] = m.add({id : this.id + '_cell_props', title : 'table.cell_desc', cmd : 'mceTableCellProps', icon: 'cell_props', ui : true});
                         c.ztmenu['cell_props'].setDisabled(1);
                         m.addSeparator();
-                        c.ztmenu['row_before'] = m.add({title : 'table.row_before_desc', cmd : 'mceTableInsertRowBefore', icon: 'row_before'});
+                        c.ztmenu['row_before'] = m.add({id : this.id + '_row_before', title : 'table.row_before_desc', cmd : 'mceTableInsertRowBefore', icon: 'row_before'});
                         c.ztmenu['row_before'].setDisabled(1);
-                        c.ztmenu['row_after'] = m.add({title : 'table.row_after_desc', cmd : 'mceTableInsertRowAfter', icon: 'row_after'});
+                        c.ztmenu['row_after'] = m.add({id : this.id + '_row_after', title : 'table.row_after_desc', cmd : 'mceTableInsertRowAfter', icon: 'row_after'});
                         c.ztmenu['row_after'].setDisabled(1);
-                        c.ztmenu['delete_row'] = m.add({title : 'table.delete_row_desc', cmd : 'mceTableDeleteRow', icon: 'delete_row'});
+                        c.ztmenu['delete_row'] = m.add({id : this.id + '_delete_row', title : 'table.delete_row_desc', cmd : 'mceTableDeleteRow', icon: 'delete_row'});
                         c.ztmenu['delete_row'].setDisabled(1);
                         m.addSeparator();
-                        c.ztmenu['col_before'] = m.add({title : 'table.col_before_desc', cmd : 'mceTableInsertColBefore', icon: 'col_before'});
+                        c.ztmenu['col_before'] = m.add({id : this.id + '_col_before', title : 'table.col_before_desc', cmd : 'mceTableInsertColBefore', icon: 'col_before'});
                         c.ztmenu['col_before'].setDisabled(1);
-                        c.ztmenu['col_after'] = m.add({title : 'table.col_after_desc', cmd : 'mceTableInsertColAfter', icon: 'col_after'});
+                        c.ztmenu['col_after'] = m.add({id : this.id + '_col_after', title : 'table.col_after_desc', cmd : 'mceTableInsertColAfter', icon: 'col_after'});
                         c.ztmenu['col_after'].setDisabled(1);
-                        c.ztmenu['delete_col'] = m.add({title : 'table.delete_col_desc', cmd : 'mceTableDeleteCol', icon: 'delete_col'});
+                        c.ztmenu['delete_col'] = m.add({id : this.id + '_delete_col', title : 'table.delete_col_desc', cmd : 'mceTableDeleteCol', icon: 'delete_col'});
                         c.ztmenu['delete_col'].setDisabled(1);
                         m.addSeparator();
-                        c.ztmenu['split_cells'] = m.add({title : 'table.split_cells_desc', cmd : 'mceTableSplitCells', ui: true, icon: 'split_cells'});
+                        c.ztmenu['split_cells'] = m.add({id : this.id + '_split_cells', title : 'table.split_cells_desc', cmd : 'mceTableSplitCells', icon: 'split_cells'});
                         c.ztmenu['split_cells'].setDisabled(1);
-                        c.ztmenu['merge_cells'] = m.add({title : 'table.merge_cells_desc', cmd : 'mceTableMergeCells', ui: true, icon: 'merge_cells'});
+                        c.ztmenu['merge_cells'] = m.add({id : this.id + '_merge_cells', title : 'table.merge_cells_desc', cmd : 'mceTableMergeCells', ui: true, icon: 'merge_cells'});
                         c.ztmenu['merge_cells'].setDisabled(1);
                         m.addSeparator();
-                        c.ztmenu['delete_table'] = m.add({title : 'table.del', cmd : 'mceTableDelete', icon: 'delete_table'});
+                        c.ztmenu['delete_table'] = m.add({id : this.id + '_delete_table', title : 'table.del', cmd : 'mceTableDelete', icon: 'delete_table'});
                         c.ztmenu['delete_table'].setDisabled(1);
                     });
                     /*

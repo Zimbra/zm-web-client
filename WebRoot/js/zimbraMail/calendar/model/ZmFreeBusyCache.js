@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -162,7 +162,8 @@ function(params) {
                                      fbCallback,
                                      fbErrorCallback,
                                      params.noBusyOverlay,
-                                     params.account);
+                                     params.account,
+                                     params.excludedId);
     }else {
         if(params.callback) {
             params.callback.run();
@@ -205,11 +206,14 @@ function(params, result) {
 };
 
 ZmFreeBusyCache.prototype._getFreeBusyInfo =
-function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay, acct) {
+function(startTime, endTime, emailList, callback, errorCallback, noBusyOverlay, acct, excludedId) {
 	var soapDoc = AjxSoapDoc.create("GetFreeBusyRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("s", startTime);
 	soapDoc.setMethodAttribute("e", endTime);
 	soapDoc.setMethodAttribute("uid", emailList);
+	if (excludedId) {
+		soapDoc.setMethodAttribute("excludeUid", excludedId);
+	}
 
 	return appCtxt.getAppController().sendRequest({
 		soapDoc: soapDoc,

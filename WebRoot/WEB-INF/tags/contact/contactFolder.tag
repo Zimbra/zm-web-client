@@ -2,7 +2,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -23,6 +23,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
+<c:set var="truncatedLabel" value="${zm:getTruncatedFolderName(pageContext, folder.id, 20, true)}"/>
 <c:set var="padFudge" value="${folder.hasChildren ? 0 : 20}"/>
 <fmt:message var="colorGray" key="colorGray"/>
 <c:set var="color" value="${zm:lightenColor(not empty folder.rgb ? folder.rgb : (not empty folder.rgbColor ? folder.rgbColor : colorGray))}"/>
@@ -46,13 +47,13 @@
         </c:if>
 
         <a href='${fn:escapeXml(url)}'>
-            <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
+            <app:img src="${folder.image}" alt='${label}'/>
             <span <c:if test="${not requestScope.myCardSelected and (folder.id eq requestScope.context.selectedId)}"> class='ZhTISelected'</c:if>>
             <c:choose>
                 <c:when test="${folder.isMountPoint and folder.effectivePerm == null}">
-                    <del>${fn:escapeXml(zm:truncate(label,20,true))}</del>
+                    <del>${truncatedLabel}</del>
                 </c:when>
-                <c:otherwise>${fn:escapeXml(zm:truncate(label,20,true))}</c:otherwise>
+                <c:otherwise>${truncatedLabel}</c:otherwise>
             </c:choose>
             </span>
         </a>
