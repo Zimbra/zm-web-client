@@ -2379,7 +2379,7 @@ function(action, msg, extraBodyText) {
 		this._msgAttId = this._msg.id;
 	} else {
 		var preface = this._preface = this._getPreface();
-		var divider = !body ? "" : htmlMode ? preface : preface + crlf;
+		var divider = (!body && !headers) ? "" : htmlMode ? preface : preface + crlf;
 		AjxDebug.println(AjxDebug.REPLY, "divider: " + AjxStringUtil.htmlEncode(divider));
 		var leadingSpace = preText ? "" : crlf2;
 		var wrapParams = ZmHtmlEditor.getWrapParams(htmlMode, incOptions);
