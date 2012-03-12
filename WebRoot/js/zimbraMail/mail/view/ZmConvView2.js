@@ -420,7 +420,7 @@ function(show, noResize) {
 	if (show && !this._replyToolbar) {
 		var buttons = [ZmOperation.SEND, ZmOperation.CANCEL, ZmOperation.FILLER, ZmOperation.REPLY_ALL];
 		var overrides = {};
-		overrides[ZmOperation.REPLY_ALL] = {showImageInToolbar:true};
+		overrides[ZmOperation.REPLY_ALL] = {textKey:"moreComposeOptions"};
 		var tbParams = {
 			parent:				this,
 			buttons:			buttons,
