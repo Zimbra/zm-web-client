@@ -34,6 +34,7 @@
 ZmProgressController = function(container, app) {
 	if (arguments.length == 0) { return; }
 	ZmController.call(this, container, app);
+    this._totalNumMsgs = 0; //for determining if run in background is available
 };
 
 ZmProgressController.prototype = new ZmController;
@@ -58,9 +59,9 @@ function() {
 		var dialog = this._progressDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.YES_BUTTON, DwtDialog.CANCEL_BUTTON], id: Dwt.getNextId("ZmProgressControllerDialog_")});
 		dialog.registerCallback(DwtDialog.CANCEL_BUTTON, new AjxCallback(this, this._cancelAction));
 		dialog.registerCallback(DwtDialog.YES_BUTTON, new AjxCallback(this, this._runInBackgroundAction));
-		var button = dialog.getButton(DwtDialog.YES_BUTTON);
-		button.setText(ZmMsg.runInBackground);
-	}
+        dialog.getButton(DwtDialog.YES_BUTTON).setText(ZmMsg.runInBackground);
+    }
+    this._progressDialog.getButton(DwtDialog.YES_BUTTON).setVisible(this._totalNumMsgs <= appCtxt.get(ZmSetting.FILTER_BATCH_SIZE));
 	return this._progressDialog;
 };
 
@@ -83,7 +84,7 @@ ZmProgressController.prototype.start =
 function(folderList, work) {
 	this._currentWork = work;
 	this._currentRun = new ZmProgressRun(folderList);
-
+    this._totalNumMsgs = this.getNumMsgs(folderList);
 	this._nextChunk();
 };
 
@@ -231,6 +232,24 @@ function(folderList) {
 
 };
 
+/**
+ * Determine total number of messages filters are being applied to.
+ * @param folderList {ZmOrganizer[]} array of folders
+ * @return {int} number of messages
+ */
+ZmProgressController.prototype.getNumMsgs = 
+function(folderList) {
+    var numMsgs = 0;
+    if (!(folderList instanceof Array)) {
+        folderList = [folderList];
+    }
+
+    for (var j = 0; j < folderList.length; j++) {
+        numMsgs += folderList[j].numTotal;
+    }
+    return numMsgs;
+};
+
 ZmProgressController.prototype._cancelAction =
 function() {
 	this._currentRun._cancelled = true;
@@ -259,8 +278,5 @@ ZmProgressRun = function(folderList) {
 	this._totalMessagesProcessed = 0;
 	this._folderList = folderList;
 };
+
 ZmProgressRun.CHUNK_SIZE = 100;
-
-
-
-
