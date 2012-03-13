@@ -31,7 +31,7 @@ ZmPriorityMessageFilterDialog.prototype.constructor = ZmPriorityMessageFilterDia
 
 ZmPriorityMessageFilterDialog.prototype._contentHtml = 
 function() {   
-	var html = "<div style='width: 500px; height: 300px' id='PRIORITYMESSAGE_PROMPT_FORM'>";
+	var html = "<div style='width: 375px; height: 225px' id='PRIORITYMESSAGE_PROMPT_FORM'>";
 	return html;			
 };
 
@@ -48,7 +48,7 @@ function() {
 			{ id: "MOVE_MSG_STREAM", type: "DwtCheckbox", label: ZmMsg.enableActivityStream, checked: false, onclick: streamListener},
 			{ id: "NOT_TO_ME", type: "DwtCheckbox", label: ZmMsg.moveNotToMe, checked: true},
 			{ id: "NOT_IN_ADDR", type: "DwtCheckbox", label: ZmMsg.moveNotInAddrBook, checked: true},
-			{ id: "DL_SUBSCRIBED", type: "DwtCheckbox", label: ZmMsg.moveNotSubscribedTo, checked: true},
+			{ id: "DL_SUBSCRIBED", type: "DwtCheckbox", label: ZmMsg.moveMessagesFromDL, checked: true},
 			{ id: "MASS_MARKETING", type: "DwtCheckbox", label: ZmMsg.massMarketingMessages, checked: true}
 		]
 	};
