@@ -2556,13 +2556,15 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
     
       <div id='${id}_MOVE_MSG_STREAM'></div>
       <div style='padding-left: 10px; float: left;'>
-       <div style='padding-top: 10px;' class='Text'><$=ZmMsg.moveToActivityStream $></div>
+      <fieldset>
+       <legend class='Text'><$=ZmMsg.moveToActivityStream $></legend>
         <div id='${id}_MOVE_LIST' class='ZmActivityStreamFilterList'>
           <div id='${id}_NOT_TO_ME'></div> 
           <div id='${id}_NOT_IN_ADDR'></div>
           <div id='${id}_DL_SUBSCRIBED'></div> 
           <div id='${id}_MASS_MARKETING'></div>
         </div>
+        </fieldset>
       </div>
 </template>
 

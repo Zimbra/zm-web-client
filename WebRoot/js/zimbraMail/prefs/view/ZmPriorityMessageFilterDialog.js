@@ -31,7 +31,7 @@ ZmPriorityMessageFilterDialog.prototype.constructor = ZmPriorityMessageFilterDia
 
 ZmPriorityMessageFilterDialog.prototype._contentHtml = 
 function() {   
-	var html = "<div style='width: 375px; height: 225px' id='PRIORITYMESSAGE_PROMPT_FORM'>";
+	var html = "<div style='width: 400px; height: 225px' id='PRIORITYMESSAGE_PROMPT_FORM'>";
 	return html;			
 };
 
