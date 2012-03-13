@@ -954,7 +954,8 @@ function(items){
     }else{
         item = AjxUtil.isArray(items) ? items[0] : items;
         restUrl = item.getRestUrl();
-        restUrl += "?disp=a"+(item.version ? "&ver="+item.version : "");
+        restUrl += ( restUrl.indexOf('?') == -1 ) ? "?" : "&";
+        restUrl += "disp=a"+(item.version ? "&ver="+item.version : "");
     }
 
     if (!restUrl) {
