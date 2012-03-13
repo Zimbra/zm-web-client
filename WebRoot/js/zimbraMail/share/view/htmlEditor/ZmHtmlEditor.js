@@ -2197,6 +2197,13 @@ function(words) {
 		this.onExitSpellChecker.run(wordsFound);
 };
 
+/**
+ * Returns true if editor content is spell checked
+ */
+ZmHtmlEditor.prototype.isSpellCheckMode = function() {
+    return Boolean( this._spellCheck );
+};
+
 // overwrites the base class' _enableDesignMode in order to work around Gecko problems
 ZmHtmlEditor.prototype._enableDesignMode =
 function(doc) {
