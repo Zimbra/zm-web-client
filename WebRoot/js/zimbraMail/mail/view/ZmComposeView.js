@@ -699,7 +699,7 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 		msg.fromSelectValue = this._fromSelect.getSelectedOption();
 	}
 
-	this._zimletCheck(msg, isDraft, forceBail);
+    if (!this._zimletCheck(msg, isDraft, forceBail)) return;
 	
 	return msg;
 };
@@ -929,9 +929,11 @@ function(msg, isDraft, forceBail) {
 			cd.registerCallback(DwtDialog.OK_BUTTON, this._errViaZimletOkCallback, this, params);
 			cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._errViaZimletCancelCallback, this, params);
 			cd.popup(this._getDialogXY());
-			return;
+			return false;
 		}
 	}
+    
+    return true;
 };
 
 ZmComposeView.prototype.setDocAttachments =
