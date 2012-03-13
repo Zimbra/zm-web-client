@@ -472,6 +472,7 @@ function(attId, docIds, draftType, callback, contactId) {
 	var isTimed = Boolean(this._sendTime);
 	draftType = draftType || (isTimed ? ZmComposeController.DRAFT_TYPE_DELAYSEND : ZmComposeController.DRAFT_TYPE_NONE);
 	var isDraft = draftType != ZmComposeController.DRAFT_TYPE_NONE;
+    var isAutoSave = draftType == ZmComposeController.DRAFT_TYPE_AUTO;
 
 	// bug fix #38408 - briefcase attachments need to be set *before* calling
 	// getMsg() but we cannot do that without having a ZmMailMsg to store it in.
@@ -558,7 +559,7 @@ function(attId, docIds, draftType, callback, contactId) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg, msg);
-	msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt, null, this._sendTime);
+	msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt, null, this._sendTime, isAutoSave);
 	this._resetDelayTime();
 };
 
