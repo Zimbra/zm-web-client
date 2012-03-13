@@ -1107,13 +1107,12 @@ function() {
 ZmComposeController.prototype._initAutoSave =
 function() {
 	if (!this._canSaveDraft()) { return; }
-    var autoSaveInterval = ZmMailApp.AUTO_SAVE_IDLE_TIME;
-    if (autoSaveInterval) {
+    if (appCtxt.get(ZmSetting.AUTO_SAVE_DRAFT_INTERVAL)) {
         if (!this._autoSaveTimer) {
-            this._autoSaveTimer = new DwtIdleTimer(autoSaveInterval * 1000, new AjxCallback(this, this._autoSaveCallback));
+            this._autoSaveTimer = new DwtIdleTimer(ZmMailApp.AUTO_SAVE_IDLE_TIME * 1000, new AjxCallback(this, this._autoSaveCallback));
         }
         else{
-            this._autoSaveTimer.resurrect(autoSaveInterval * 1000);
+            this._autoSaveTimer.resurrect(ZmMailApp.AUTO_SAVE_IDLE_TIME * 1000);
         }
     }
 };
