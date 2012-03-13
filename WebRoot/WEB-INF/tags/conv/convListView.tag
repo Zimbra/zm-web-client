@@ -171,8 +171,9 @@
                     <c:if test="${context.searchResult.size ne '0' and mailbox.prefs.readingPaneLocation eq 'off' and not empty cid and (param.action eq 'offView' or param.action eq 'offView2') and convdisp eq 'true' and selectedRow eq status.index and convHit.messageCount > 1}">
                     <c:set var="convdisp" value="false"/>
                     <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="stat">
-                           <zm:currentResultUrl var="msgUrl" value="search" action="${hit.id eq msg.id ? 'view' : 'offView2'}" context="${context}" cso="${convSearchResult.offset}" csi="${stat.index}" css="${param.css}"/>
-                           <c:set var="aid" value="A${stat.index}11"/>
+                            <zm:currentResultUrl var="msgUrl" value="search" action="${hit.id eq msg.id ? 'view' : 'offView2'}" context="${context}" cso="${convSearchResult.offset}" csi="${stat.index}" css="${param.css}"/>
+                            <zm:currentResultUrl var="msgSepUrl" value="search" action="${msg.isDraft ? 'compose' : 'view'}" context="${context}"
+                                                 cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}" st="${msg.isDraft ? '' : 'message'}" sc="" id="${msg.id}"/>                           <c:set var="aid" value="A${stat.index}11"/>
                            <tr onclick='zSelectRow(event,"${aid}","C${stat.index}11")' id="R${stat.index}11" class='ZhRow${(hit.messageHit.isUnread and (hit.id != msg.id)) ? ' Unread':''}${hit.id eq msg.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : ' ZhConvExpanded')}'>
                                 <td class='CB' nowrap><input id="C${stat.index}11"<c:if test="${hit.id eq msg.id}">checked</c:if> type=checkbox name="idcv" value="${hit.id}"/></td>
                                 <td class="Img" nowrap>&nbsp;</td> 
@@ -193,7 +194,7 @@
                                 <td class='Img' nowrap><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                 <td nowrap> <%-- allow wrap --%>
                                     &nbsp;&nbsp;&nbsp;&nbsp;
-                                    <a href="${fn:escapeXml(msgUrl)}" id="A${stat.index}11">
+                                    <a href="${hit.id eq msg.id ? fn:escapeXml(msgSepUrl) : fn:escapeXml(msgUrl)}" id="A${stat.index}11">
                                         <c:if test="${mailbox.prefs.showFragments and not empty hit.messageHit.fragment}">
                                             <span class='Fragment'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,50, true))}</span>
                                         </c:if>

@@ -40,7 +40,8 @@
 	<app:certifiedMessage var="reqHdr"/>
 	<c:if test="${context.searchResult.size ne '0' and mailbox.prefs.readingPaneLocation eq 'bottom' and not empty cid}">
 		<zm:searchConv  var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}" limit="${-1}" />
-		<c:if test="${empty csi}">
+        <c:set var="convSummary" value="${convSearchResult.conversationSummary}"/>
+        <c:if test="${empty csi}">
 			<c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
 			<c:if test="${csi ge 0}">
 				<zm:getMessage var="msg" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : empty param.xim}" requestHeaders="${reqHdr}"/>
@@ -66,6 +67,7 @@
 	</c:if>
 </app:handleError>
 <app:view mailbox="${mailbox}" title="${title}" selected='mail' folders="true" tags="true" searches="true" context="${context}" keys="true">
+<c:set var="actionVar" value="${empty param.paction ? param.action : param.paction}" />
 <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
 <form name="zform" action="${fn:escapeXml(currentUrl)}" method="post">
 <table width="100%" cellpadding="0" cellspacing="0">
@@ -173,7 +175,10 @@
                     <c:if test="${context.searchResult.size ne '0' and mailbox.prefs.readingPaneLocation eq 'bottom' and not empty cid and (param.action eq 'rowView' or param.action eq 'rowView2') and convdisp eq 'true' and selectedRow eq status.index and convHit.messageCount > 1}">
                     <c:set var="convdisp" value="false"/>
                     <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="stat">
-                           <zm:currentResultUrl var="msgUrl" value="search" action="${hit.id eq msg.id ? 'view' : 'rowView2'}" context="${context}" cso="${convSearchResult.offset}" csi="${stat.index}" css="${param.css}"/>
+                        <zm:currentResultUrl var="msgUrl" value="search" cid="${convSummary.id}" id="${hit.id}" action='${actionVar}' context="${context}"
+                                             cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
+                        <zm:currentResultUrl var="msgSepUrl" value="search" action="${msg.isDraft ? 'compose' : 'view'}" context="${context}"
+                                             cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}" st="${msg.isDraft ? '' : 'message'}" sc="" id="${msg.id}"/>
                            <c:set var="aid" value="A${stat.index}11"/>
                            <tr onclick='zSelectRow(event,"${aid}","C${stat.index}11")' id="R${stat.index}11" class='ZhRow${(hit.messageHit.isUnread and (hit.id != msg.id)) ? ' Unread':''}${hit.id eq msg.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : ' ZhConvExpanded')}'>
                                 <td class='CB' nowrap><input id="C${stat.index}11"<c:if test="${hit.id eq msg.id}">checked</c:if> type=checkbox name="idcv" value="${hit.id}"/></td>
@@ -195,7 +200,7 @@
                                 <td class='Img' nowrap><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                 <td nowrap> <%-- allow wrap --%>
                                     &nbsp;&nbsp;&nbsp;&nbsp;
-                                    <a href="${fn:escapeXml(msgUrl)}" id="A${stat.index}11">
+                                    <a href="${hit.id eq msg.id ? fn:escapeXml(msgSepUrl) : fn:escapeXml(msgUrl)}" id="A${stat.index}11">
                                         <c:if test="${mailbox.prefs.showFragments and not empty hit.messageHit.fragment}">
                                             <span class='Fragment'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,50, true))}</span>
                                         </c:if>
