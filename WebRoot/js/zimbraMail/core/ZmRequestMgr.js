@@ -314,7 +314,7 @@ function(params, result) {
 	}
 	
 	var ctlr = this._controller;
-	if (ctlr._evtMgr.isListenerRegistered(ZmAppEvent.RESPONSE)) {
+	if (ctlr._evtMgr && ctlr._evtMgr.isListenerRegistered(ZmAppEvent.RESPONSE)) {
 		ctlr._evt.request = methodName;
 		ctlr.notify(ZmAppEvent.RESPONSE);
 	}
