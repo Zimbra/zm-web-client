@@ -86,7 +86,10 @@ function() {
 				noMenuButton:	true
 			});
 	this._toolbar.getButton(ZmSearchToolBar.SEARCH_BUTTON).addSelectionListener(this._searchListener.bind(this));
-	this._toolbar.getButton(ZmSearchToolBar.SAVE_BUTTON).addSelectionListener(this._saveListener.bind(this));
+	var saveButton = this._toolbar.getButton(ZmSearchToolBar.SAVE_BUTTON);
+	if (saveButton) {
+		saveButton.addSelectionListener(this._saveListener.bind(this));
+	}
 	this._toolbar.registerEnterCallback(this._searchListener.bind(this));
 
 	this.isPinned = false;
