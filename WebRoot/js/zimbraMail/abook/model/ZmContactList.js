@@ -456,7 +456,6 @@ function(params) {
 	var moveBatchCmd = new ZmBatchCommand(true, null, true);
 	var loadBatchCmd = new ZmBatchCommand(true, null, true);
 	var softMove = [];
-	var hardMove = [];
 
 	// if the folder we're moving contacts to is a shared folder, then dont bother
 	// checking whether each item is shared or not
@@ -466,45 +465,18 @@ function(params) {
 
 			if (contact.isReadOnly()) { continue; }
 
-			if (contact.isShared() || params.folder.link) {
-				hardMove.push(contact);
-				if (!contact.isLoaded) {
-					loadBatchCmd.add(new AjxCallback(contact, contact.load, [null, null]));
-				}
-				moveBatchCmd.add(this._getCopyCmd(contact, params.folder));
-			} else {
-				softMove.push(contact);
-			}
+			softMove.push(contact);
 		}
 	} else {
 		softMove = params.items;
-	}
-
-	if (hardMove.length > 0) {
-		var params1 = {
-			items: hardMove,
-			action: "delete",
-			actionText: ZmMsg.actionMove,
-			actionArg: params.folder.getName(false, false, true)
-		};
-
-		if (loadBatchCmd.size()) {
-			var respCallback = new AjxCallback(this, this._handleResponseLoadMove, [moveBatchCmd, params1]);
-			loadBatchCmd.run(respCallback);
-		} else {
-			var deleteCmd = new AjxCallback(this, this._itemAction, [params1]);
-			moveBatchCmd.add(deleteCmd);
-
-			var respCallback = new AjxCallback(this, this._handleResponseMoveBatchCmd);
-			moveBatchCmd.run(respCallback);
-		}
 	}
 
 	// for "soft" moves, handle moving out of Trash differently
 	if (softMove.length > 0) {
 		var params1 = AjxUtil.hashCopy(params);
 		params1.attrs = params.attrs || {};
-		params1.attrs.l = params.folder.id;
+		var toFolder = params.folder;
+		params1.attrs.l = toFolder.isRemote() ? toFolder.getRemoteId() : toFolder.id;
 		params1.action = "move";
         params1.accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
         if (params1.folder.id == ZmFolder.ID_TRASH) {
@@ -513,7 +485,7 @@ function(params) {
             params1.accountName = appCtxt.multiAccounts && params.items[0].getAccount().name;
         } else {
             params1.actionText = ZmMsg.actionMove;
-            params1.actionArg = params.folder.getName(false, false, true);
+            params1.actionArg = toFolder.getName(false, false, true);
         }
 		params1.callback = params.outOfTrash && new AjxCallback(this, this._handleResponseMoveItems, params);
 
