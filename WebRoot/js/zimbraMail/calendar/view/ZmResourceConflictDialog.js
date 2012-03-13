@@ -165,12 +165,13 @@ function(inst) {
 };
 
 ZmResourceConflictDialog.prototype.initialize =
-function(list, appt, callback) {
+function(list, appt, callback, cancelCallback) {
 	this._list = list;
 	this._appt = appt;
 	this._instData = {};
 	this._callback = callback;
-	this._canceledInstanceCount = 0;
+    this._cancelCallback = cancelCallback;
+    this._canceledInstanceCount = 0;
 	
 	var attendeeMap = {};
 	var types = [ZmCalBaseItem.PERSON, ZmCalBaseItem.LOCATION, ZmCalBaseItem.EQUIPMENT];
@@ -204,6 +205,10 @@ function(list, appt, callback) {
 	}
 	html.append("</table>");
 
+
+    // Override the default dialog cancel behaviour
+    this.registerCallback(ZmResourceConflictDialog.CANCEL_BUTTON, this._handleCancelButton, this);
+
 	if (this._cancelButtons) {
 		for (var buttonId in this._cancelButtons) {
 			this._cancelButtons[buttonId].dispose();
@@ -226,6 +231,12 @@ function(list, appt, callback) {
         cancelButtonContainer.innerHTML = this.getCancelHTML(recurrence.isInstanceCanceled(data.inst.ridZ));
         Dwt.setHandler(cancelButtonContainer, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._handleCancelInstance, this, data.inst.ridZ, data.cancelButtonId, data.deltaId));
     }
+};
+
+ZmResourceConflictDialog.prototype.reset =
+function() {
+    DwtDialog.prototype.reset();
+    this.registerCallback(ZmResourceConflictDialog.CANCEL_BUTTON, this._handleCancelButton, this);
 };
 
 ZmResourceConflictDialog._onClick =
@@ -277,6 +288,12 @@ function() {
 ZmResourceConflictDialog.prototype._handleSaveButton =
 function() {
     if(this._callback) this._callback.run();
+    this.popdown();
+};
+
+ZmResourceConflictDialog.prototype._handleCancelButton =
+function() {
+    if(this._cancelCallback) this._cancelCallback.run();
     this.popdown();
 };
 

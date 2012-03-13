@@ -1971,7 +1971,7 @@ function(ev) {
 			data.view._autoScrollDisabled = true;
 			var cc = appCtxt.getCurrentController();
 			var endDate = new Date(data.startDate.getTime() + origDuration);
-			var errorCallback = new AjxCallback(null, ZmCalColView._handleError, data);
+			var errorCallback = new AjxCallback(null, ZmCalColView._handleDnDError, data);
 			var sdOffset = data.startDate ? (data.startDate.getTime() - data.appt.getStartTime()) : null;
 			var edOffset = endDate ? (endDate.getTime() - data.appt._orig.getEndTime() ) : null;
 			cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback, mouseEv);
@@ -2209,7 +2209,7 @@ function(ev) {
 	if (needUpdate) {
 		data.view._autoScrollDisabled = true;
 		var cc = data.view.getController();
-		var errorCallback = new AjxCallback(null, ZmCalColView._handleError, data);
+		var errorCallback = new AjxCallback(null, ZmCalColView._handleDnDError, data);
 		var sdOffset = startDate ? (startDate.getTime() - data.appt.getStartTime()) : null;
 		var edOffset = endDate ? (endDate.getTime() - data.appt.getEndTime()) : null;
 		cc.dndUpdateApptDate(data.appt._orig, sdOffset, edOffset, null, errorCallback, mouseEv);
@@ -2484,6 +2484,13 @@ function(ev) {
 ZmCalColView._handleError =
 function(data) {
 	data.view.getController()._refreshAction(true);
+	return false;
+};
+
+ZmCalColView._handleDnDError =
+function(data) {
+	// Redraw the grid to reposition whatever DnD failed
+	data.view._layout(true);
 	return false;
 };
 

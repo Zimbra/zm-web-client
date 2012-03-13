@@ -97,7 +97,7 @@ ZmCalViewController = function(container, calApp) {
 	// needed by ZmCalListView:
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
-	this._clearCacheFolderMap = {};	
+	this._clearCacheFolderMap = {};
 };
 
 ZmCalViewController.prototype = new ZmListController();
@@ -1975,17 +1975,30 @@ function(ev) {
 
 ZmCalViewController.prototype._quickAddOkListener =
 function(ev) {
+    var isValid = this._quickAddDialog.isValid();
+    var appt = this._quickAddDialog.getAppt();
+    var closeCallback = new AjxCallback(this, this._quickAddCallback, [true]);
+    var errorCallback = new AjxCallback(this, this._quickAddCallback, [false]);
+    this._saveSimpleAppt(isValid, appt, closeCallback, errorCallback);
+};
+
+
+ZmCalViewController.prototype._saveSimpleAppt =
+function(isValid, appt,  closeCallback, errorCallback, cancelCallback) {
 	try {
-		if (this._quickAddDialog.isValid()) {
-			var appt = this._quickAddDialog.getAppt();
-			if (appt) {
-				if (appt.getFolder() && appt.getFolder().noSuchFolder) {
-					throw AjxMessageFormat.format(ZmMsg.errorInvalidFolder, appt.getFolder().name);
-				}
-				this._quickAddDialog.popdown();
-				appt.save();
-			}
-		}
+		if (isValid && appt) {
+            if (appt.getFolder() && appt.getFolder().noSuchFolder) {
+                throw AjxMessageFormat.format(ZmMsg.errorInvalidFolder, appt.getFolder().name);
+            }
+            if (!this._simpleComposeController) {
+                // Create a compose controller, used for saving the quick add
+                // appt and modifications made via ZmCalColView drag and drop, in
+                // order to trigger permission and resource checks.
+                this._simpleComposeController = new ZmSimpleApptComposeController(this._container, this._app);
+            }
+            this._simpleComposeController.doSimpleSave(appt, closeCallback,
+                                                       errorCallback, cancelCallback);
+        }
 	} catch(ex) {
 		if (typeof ex == "string") {
 			var errorDialog = new DwtMessageDialog({parent:this._shell});
@@ -1996,6 +2009,14 @@ function(ev) {
             ZmController.handleScriptError(ex);
         }
 	}
+};
+
+ZmCalViewController.prototype._quickAddCallback =
+function(success) {
+    if (success) {
+        this._quickAddDialog.popdown();
+    }
+    appCtxt.setStatusMsg(success ? ZmMsg.apptCreated : ZmMsg.apptCreationError);
 };
 
 ZmCalViewController.prototype._quickAddMoreListener =
@@ -2116,11 +2137,14 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 			appt.setOrigTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 		}
 
+        var apptStartDate = appt.startDate;
+        var apptEndDate   = appt.endDate;
 		if(!appt.getTimezone()) appt.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [callback]);
-		var respErrCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [errorCallback]);
+		var respErrCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [errorCallback, appt, apptStartDate, apptEndDate]);
 		appCtxt.getShell().setBusy(true);
-		appt.save(null, respCallback, respErrCallback);
+		//appt.save(null, respCallback, respErrCallback);
+        this._saveSimpleAppt(true, appt, respCallback, respErrCallback, respErrCallback);
 	} catch (ex) {
 		appCtxt.getShell().setBusy(false);
 		if (ex.msg) {
@@ -2134,8 +2158,14 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 };
 
 ZmCalViewController.prototype._handleResponseUpdateApptDateSave2 =
-function(callback) {
-	appCtxt.getShell().setBusy(false);
+function(callback, appt, apptStartDate, apptEndDate) {
+    // Appt passed in for cancel/failure.  Restore the start and endDates
+    if (appt) {
+        appt.setStartDate(apptStartDate);
+        appt.setEndDate(apptEndDate);
+        appt.resetRepeatWeeklyDays();
+    }
+    appCtxt.getShell().setBusy(false);
 	if (callback) callback.run();
 };
 

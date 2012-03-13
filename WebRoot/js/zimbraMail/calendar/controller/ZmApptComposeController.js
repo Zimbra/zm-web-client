@@ -27,6 +27,7 @@
  * @extends		ZmCalItemComposeController
  */
 ZmApptComposeController = function(container, app) {
+    if (arguments.length == 0) return;
 
 	ZmCalItemComposeController.call(this, container, app);
 
@@ -189,42 +190,49 @@ function(attId) {
 			}
 		}
 
-		var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
-		var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
-		var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
-
-        var notifyList;
-        
-        //organizer forwarding an appt - add forward addr as attendees
-        if(appt.isForward) {
-            if(!attendees) attendees = [];
-            var fwdAddrs = appt.getForwardAddress();
-            attendees = attendees.concat(fwdAddrs);
-            appt.setAttendees(attendees, ZmCalBaseItem.PERSON);
-            notifyList = this.getNotifyList(fwdAddrs);
-        }        
-
-		var needsPermissionCheck = (attendees && attendees.length > 0) ||
-								   (resources && resources.length > 0) ||
-								   (locations && locations.length > 0);
-
-		var needsConflictCheck = (resources && resources.length > 0) ||
-								 (locations && locations.length > 0);
-
-		if (needsConflictCheck) {
-			this.checkConflicts(appt, attId, notifyList);
-			return false;
-		} else if (needsPermissionCheck) {
-			this.checkAttendeePermissions(appt, attId, notifyList);
-			return false;
-		} else {
-			this._saveCalItemFoRealz(appt, attId, notifyList);
-		}
-		return true;
+        var ret = this._initiateSaveWithChecks(appt, attId);
+		return ret;
 	}
 
 	return false;
 };
+
+
+ZmApptComposeController.prototype._initiateSaveWithChecks =
+function(appt, attId) {
+    var resources = appt.getAttendees(ZmCalBaseItem.EQUIPMENT);
+    var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
+    var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
+
+    var notifyList;
+    //organizer forwarding an appt - add forward addr as attendees
+    if(appt.isForward) {
+        if(!attendees) attendees = [];
+        var fwdAddrs = appt.getForwardAddress();
+        attendees = attendees.concat(fwdAddrs);
+        appt.setAttendees(attendees, ZmCalBaseItem.PERSON);
+        notifyList = this.getNotifyList(fwdAddrs);
+    }
+
+    var needsPermissionCheck = (attendees && attendees.length > 0) ||
+                               (resources && resources.length > 0) ||
+                               (locations && locations.length > 0);
+
+    var needsConflictCheck = !appt.isForward &&
+                             ((resources && resources.length > 0) ||
+                             (locations && locations.length > 0));
+
+    if (needsConflictCheck) {
+        this.checkConflicts(appt, attId, notifyList);
+        return false;
+    } else if (needsPermissionCheck) {
+        this.checkAttendeePermissions(appt, attId, notifyList);
+        return false;
+    } else {
+        this._saveCalItemFoRealz(appt, attId, notifyList);
+    }
+    return true;
+}
 
 ZmApptComposeController.prototype.getNotifyList =
 function(addrs) {
@@ -734,4 +742,86 @@ function(newAppt) {
 ZmApptComposeController.prototype.proposeNewTime =
 function(newAppt) {
 	this.show(newAppt, ZmCalItem.MODE_PROPOSE_TIME);
+};
+
+
+
+
+// --- Subclass the ApptComposeController for saving Quick Add dialog appointments, and doing a
+//     save when the CalColView drag and drop is used
+ZmSimpleApptComposeController = function(container, app) {
+    ZmApptComposeController.apply(this, arguments);
+    this._closeCallback = null;
+    // Init the composeView as a filler
+    this.initComposeView();
+};
+
+ZmSimpleApptComposeController.prototype = new ZmApptComposeController;
+ZmSimpleApptComposeController.prototype.constructor = ZmSimpleApptComposeController;
+
+ZmSimpleApptComposeController.prototype.toString = function() { return "ZmSimpleApptComposeController"; };
+
+ZmSimpleApptComposeController.getDefaultViewType =
+function() {
+	return ZmId.VIEW_SIMPLE_ADD_APPOINTMENT;
+};
+
+ZmSimpleApptComposeController.prototype.doSimpleSave =
+function(appt, closeCallback, errorCallback, cancelCallback) {
+    var ret = false;
+    this._closeCallback = null;
+    if (appt) {
+        this._simpleCloseCallback  = closeCallback;
+        this._simpleErrorCallback  = errorCallback;
+        this._simpleCancelCallback = cancelCallback;
+        ret = this._initiateSaveWithChecks(appt, null);
+    }
+    return ret;
+};
+
+// Override - do not popView
+ZmSimpleApptComposeController.prototype.saveCalItemContinue =
+function(appt, attId, notifyList) {
+	this._saveCalItemFoRealz(appt, attId, notifyList);
+};
+
+ZmSimpleApptComposeController.prototype._handleResponseSave =
+function(calItem, result) {
+    if (this._simpleCloseCallback) {
+        this._simpleCloseCallback.run();
+    }
+    appCtxt.notifyZimlets("onSaveApptSuccess", [this, calItem, result]);//notify Zimlets on success
+};
+
+ZmSimpleApptComposeController.prototype._handleErrorSave =
+function(calItem, ex) {
+    var handled = ZmCalItemComposeController.prototype._handleErrorSave.call(this, calItem, ex);
+    if (this._simpleErrorCallback) {
+        this._simpleErrorCallback.run(this);
+    }
+    return handled;
+};
+
+ZmSimpleApptComposeController.prototype.initComposeView =
+function() {
+	if (!this._composeView) {
+		// Create an empty compose view and make it always return isDirty == true
+		this._composeView = this._createComposeView();
+		this._composeView.isDirty = function() { return true; };
+		return true;
+    }
+	return false;
+};
+
+ZmSimpleApptComposeController.prototype.enableToolbar =
+function(enabled) { }
+
+
+ZmSimpleApptComposeController.prototype.showConflictDialog =
+function(appt, callback, inst) {
+	DBG.println("conflict instances :" + inst.length);
+
+	var conflictDialog = this.getConflictDialog();
+	conflictDialog.initialize(inst, appt, callback, this._simpleCancelCallback);
+	conflictDialog.popup();
 };
