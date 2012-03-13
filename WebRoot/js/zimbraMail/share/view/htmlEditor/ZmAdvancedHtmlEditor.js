@@ -786,9 +786,11 @@ function(id, src){
     var doc = this.getEditor().getDoc();
     if(doc){
         var img = doc.getElementById(id);
-        if(img){
+        if( img && img.getAttribute("data-zim-uri") === id ){
             img.src = src;
             img.removeAttribute("id");
+            img.removeAttribute("data-mce-src");
+            img.removeAttribute("data-zim-uri");
         }
     }
 };

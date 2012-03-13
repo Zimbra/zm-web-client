@@ -453,7 +453,8 @@ ZmComposeController.prototype.sendMsg =
 function(attId, draftType, callback, contactId, processDataURIImages) {
 	
     if (processDataURIImages !== false && this._composeView) {
-        var processDataURIImagesCallback = this._sendMsg.bind(this, attId, null, draftType, callback, contactId);
+        //Dont use bind as its arguments cannot be modified before its execution.
+        var processDataURIImagesCallback = new AjxCallback(this, this._sendMsg, [attId, null, draftType, callback, contactId]);
         var result = this._processDataURIImages(this._composeView._getIframeDoc(), processDataURIImagesCallback);
         if (result) {
             return;
@@ -2282,7 +2283,7 @@ ZmComposeController.prototype._handleUploadImage = function(callback, id, respon
         uploadedImageArray.push(response[0]);
     }
     if( this._dataURIImagesLength === 0 && callback ){
-        if( uploadedImageArray.length > 0 ){
+        if( uploadedImageArray.length > 0 && callback.args ){
             uploadedImageArray.clipboardPaste = true;
             if(callback.args[0]){  //attid argument of _sendMsg method
                 callback.args[0] = callback.args[0].concat(uploadedImageArray);
