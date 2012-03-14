@@ -488,8 +488,8 @@ function(attId, docIds, draftType, callback, contactId) {
 		return;
 	}
 
-	if (!isDraft && this._autoSaveTimer) {
-		//kill the timer so draft is not saved while message is sent.
+	if (this._autoSaveTimer) {
+		//kill the timer, no save is attempted while message is pending
         this._autoSaveTimer.kill();
 	}
 
@@ -558,7 +558,7 @@ function(attId, docIds, draftType, callback, contactId) {
 	var requestReadReceipt = this.isRequestReadReceipt();
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
-	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg, msg);
+	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg, [draftType, msg]);
 	msg.send(isDraft, respCallback, errorCallback, acctName, null, requestReadReceipt, null, this._sendTime, isAutoSave);
 	this._resetDelayTime();
 };
@@ -566,6 +566,10 @@ function(attId, docIds, draftType, callback, contactId) {
 ZmComposeController.prototype._handleResponseSendMsg =
 function(draftType, msg, callback, result) {
 	var resp = result.getResponse();
+	// Reset the autosave interval to the default
+	delete(this._autoSaveInterval);
+	// Re-enable autosave
+	this._initAutoSave();
 	var needToPop = this._processSendMsg(draftType, msg, resp);
 
 	this._msg = msg;
@@ -595,49 +599,69 @@ function() {
 };
 
 ZmComposeController.prototype._handleErrorSendMsg =
-function(msg, ex) {
-	this.resetToolbarOperations();
-	this._composeView.enableInputs(true);
+function(draftType, msg, ex) {
+    var retVal = false;
+    this.resetToolbarOperations();
+    this._composeView.enableInputs(true);
 
-	if (!this._autoSaveTimer) { //I assume in all the different exit points from this method, the user stays on the compose view so we need the timer (it was canceled when send was called)
-		this._initAutoSave();
-	}
+    appCtxt.notifyZimlets("onSendMsgFailure", [this, ex, msg]);//notify Zimlets on failure
+    if (ex && ex.code) {
 
-	appCtxt.notifyZimlets("onSendMsgFailure", [this, ex, msg]);//notify Zimlets on failure
-	if (!(ex && ex.code)) { return false; }
-	
-	var msg = null;
-	if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
-		var invalid = ex.getData ? ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID) : null;
-		var invalidMsg = (invalid && invalid.length)
-			? AjxMessageFormat.format(ZmMsg.sendErrorInvalidAddresses, AjxStringUtil.htmlEncode(invalid.join(", ")))
-			: null;
-		msg = ZmMsg.sendErrorAbort + "<br/>" + AjxStringUtil.htmlEncode(invalidMsg);
-		this.popupErrorDialog(msg, ex, true, true, false, true);
-		return true;
-	} else if (ex.code == ZmCsfeException.MAIL_SEND_PARTIAL_ADDRESS_FAILURE) {
-		var invalid = ex.getData ? ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID) : null;
-		msg = (invalid && invalid.length)
-			? AjxMessageFormat.format(ZmMsg.sendErrorPartial, AjxStringUtil.htmlEncode(invalid.join(", ")))
-			: ZmMsg.sendErrorAbort;
-	} else if (ex.code == AjxException.CANCELED) {
-		msg = ZmMsg.cancelSendMsgWarning;
-		this._composeView.setBackupForm();
-		return true;
-	} else if (ex.code == ZmCsfeException.MAIL_QUOTA_EXCEEDED) {
-		if (this._composeView._attachDialog) {
-			msg = ZmMsg.errorQuotaExceeded;
-			this._composeView._attachDialog.setFooter('You have exceeded your mail quota. Please remove some attachments and try again.' );
-		}
-	}
-	if (msg) {
-		var msgDialog = appCtxt.getMsgDialog();
-		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-		msgDialog.popup();
-		return true;
-	} else {
-		return false;
-	}
+        var msg = null;
+        var showMsg = false;
+        if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
+            var invalid = ex.getData ? ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID) : null;
+            var invalidMsg = (invalid && invalid.length)
+                ? AjxMessageFormat.format(ZmMsg.sendErrorInvalidAddresses, AjxStringUtil.htmlEncode(invalid.join(", ")))
+                : null;
+            msg = ZmMsg.sendErrorAbort + "<br/>" + invalidMsg;
+            this.popupErrorDialog(msg, ex, true, true);
+            retVal = true;
+        } else if (ex.code == ZmCsfeException.MAIL_SEND_PARTIAL_ADDRESS_FAILURE) {
+            var invalid = ex.getData ? ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID) : null;
+            msg = (invalid && invalid.length)
+                ? AjxMessageFormat.format(ZmMsg.sendErrorPartial, AjxStringUtil.htmlEncode(invalid.join(", ")))
+                : ZmMsg.sendErrorAbort;
+            showMsg = true;
+        } else if (ex.code == AjxException.CANCELED) {
+            if (draftType == ZmComposeController.DRAFT_TYPE_AUTO) {
+                if (!this._autoSaveInterval) {
+                    // Request was cancelled due to a ZmRequestMgr send timeout.
+                    // The server can either be hung or this particular message is taking
+                    // too long to process. Backoff the send interval - restored to
+                    // default upon first successful save
+                    this._autoSaveInterval = appCtxt.get(ZmSetting.AUTO_SAVE_DRAFT_INTERVAL);
+                }
+                if (this._autoSaveInterval) {
+                    this._autoSaveInterval *= 2;
+                    if (this._autoSaveInterval > 300) {
+                        // Cap the save attempt interval at 5 minutes
+                        this._autoSaveInterval = 300;
+                    }
+                }
+            }
+            msg = ZmMsg.cancelSendMsgWarning;
+            this._composeView.setBackupForm();
+            retVal = true;
+        } else if (ex.code == ZmCsfeException.MAIL_QUOTA_EXCEEDED) {
+            if (this._composeView._attachDialog) {
+                msg = ZmMsg.errorQuotaExceeded;
+                this._composeView._attachDialog.setFooter('You have exceeded your mail quota. Please remove some attachments and try again.' );
+                showMsg = true;
+            }
+        }
+        if (msg && showMsg) {
+            var msgDialog = appCtxt.getMsgDialog();
+            msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+            msgDialog.popup();
+            retVal = true;
+        }
+    }
+
+    // Assume the user stays on the compose view, so we need the timer.
+    // (it was canceled when send was called)
+    this._initAutoSave();
+    return retVal;
 };
 
 /**
@@ -1078,15 +1102,17 @@ function() {
 ZmComposeController.prototype._initAutoSave =
 function() {
 	if (!this._canSaveDraft()) { return; }
-    if (appCtxt.get(ZmSetting.AUTO_SAVE_DRAFT_INTERVAL)) {
+
+    var defaultAutoSaveInterval = appCtxt.get(ZmSetting.AUTO_SAVE_DRAFT_INTERVAL);
+	if (defaultAutoSaveInterval) {
+        var interval = this._autoSaveInterval ? this._autoSaveInterval: defaultAutoSaveInterval
         if (!this._autoSaveTimer) {
-            this._autoSaveTimer = new DwtIdleTimer(ZmMailApp.AUTO_SAVE_IDLE_TIME * 1000, new AjxCallback(this, this._autoSaveCallback));
+            this._autoSaveTimer = new DwtIdleTimer(interval * 1000, new AjxCallback(this, this._autoSaveCallback, true));
         }
         else {
-            this._autoSaveTimer.resurrect(ZmMailApp.AUTO_SAVE_IDLE_TIME * 1000);
+            this._autoSaveTimer.resurrect(interval * 1000);
         }
 	}
-
 };
 
 ZmComposeController.prototype._setAddSignatureVisibility =
