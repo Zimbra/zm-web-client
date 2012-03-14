@@ -70,7 +70,7 @@ function(params) {
  * @private
  */
 ZmContactsHelper._processSearchResponse = 
-function(resp) {
+function(resp, includeContactsWithNoEmail) {
 	var vec = resp.getResults(ZmItem.CONTACT);
 
 	// Take the contacts and create a list of their email addresses (a contact may have more than one)
@@ -85,6 +85,9 @@ function(resp) {
 			var emails = contact.isGal ? [contact.getEmail()] : contact.getEmails();
 			for (var j = 0; j < emails.length; j++) {
 				ZmContactsHelper._addContactToList(list, contact, emails[j]);
+			}
+			if (includeContactsWithNoEmail && emails.length == 0) {
+				ZmContactsHelper._addContactToList(list, contact, null);
 			}
 		}
 	}

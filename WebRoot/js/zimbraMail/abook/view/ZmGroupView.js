@@ -1484,7 +1484,7 @@ function(result) {
 	this._prevButton.setEnabled(this._offset > 0);
 	this._nextButton.setEnabled(more);
 
-	var list = ZmContactsHelper._processSearchResponse(resp);
+	var list = ZmContactsHelper._processSearchResponse(resp, true);
 	this._listview.setItems(list);
 	this._resetSearchColHeaders();
 
