@@ -46,12 +46,12 @@ function() {
 
 ZmPersona.prototype.setName =
 function(name) {
-	this.getIdentity().name = name;
+	this.getIdentity().name = AjxStringUtil.htmlEncode(name);
 };
 
 ZmPersona.prototype.getName =
 function() {
-	return this.getIdentity().name;
+	return AjxStringUtil.htmlDecode(this.getIdentity().name);
 };
 
 ZmPersona.prototype.setEmail =
