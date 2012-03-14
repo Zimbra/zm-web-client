@@ -2067,6 +2067,9 @@ function() {
 		if (att.links.briefcase) {
 			this._addClickHandler(att.part, ZmMailMsgView.ATT_LINK_BRIEFCASE, ZmMailMsgView.briefcaseCallback, null, this._msg.id, att.part, att.label.replace(/\x27/g, "&apos;"));
 		}
+		if (att.links.download) {
+			this._addClickHandler(att.part, ZmMailMsgView.ATT_LINK_DOWNLOAD, ZmMailMsgView.downloadCallback, null, att.url + "&disp=a");
+		}
 		if (att.links.vcard) {
 			this._addClickHandler(att.part, ZmMailMsgView.ATT_LINK_VCARD, ZmMailMsgView.vcardCallback, null, this._msg.id, att.part);
 		}
@@ -2620,6 +2623,13 @@ function(msgId, partId) {
 	var ac = window.parentAppCtxt || window.appCtxt;
 	ac.getApp(ZmApp.CONTACTS).createFromVCard(msgId, partId);
 };
+
+ZmMailMsgView.downloadCallback =
+function(downloadUrl) {
+	ZmZimbraMail.unloadHackCallback();
+	location.href = downloadUrl;
+};
+
 
 ZmMailMsgView.prototype.removeAttachmentCallback =
 function(partIds) {
