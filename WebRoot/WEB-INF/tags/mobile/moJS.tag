@@ -314,7 +314,7 @@ var getFormValues = function(obj) {
             }
         }
         if (type == "text") {
-            getstr += control.name + "=" + control.value + "&";
+            getstr += control.name + "=" + encodeURIComponent(control.value) + "&";
         }
         if (control.tagName == "SELECT") {
             getstr += control.name + "=" + control.options[control.selectedIndex].value + "&";
