@@ -86,7 +86,7 @@ ZmMimeTable.XML_ZIMBRA_SHARE		= "xml/x-zimbra-share";
 ZmMimeTable._table = new Object();
 
 // only add types which are NOT ignored by the client	
-ZmMimeTable._table[ZmMimeTable.APP]					= {desc: ZmMsg.unknownBinaryType, image: "ExeDoc", imageLarge: "ExeDoc_48", query: "application/*"};
+ZmMimeTable._table[ZmMimeTable.APP]					= {desc: ZmMsg.application, image: "ExeDoc", imageLarge: "ExeDoc_48", query: "application/*"};
 ZmMimeTable._table[ZmMimeTable.APP_ADOBE_PDF]		= {desc: ZmMsg.adobePdfDocument, image: "PDFDoc", imageLarge: "PDFDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_ADOBE_PS]		= {desc: ZmMsg.adobePsDocument, image: "GenericDoc", imageLarge: "GenericDoc_48"};
 ZmMimeTable._table[ZmMimeTable.APP_EXE]				= {desc: ZmMsg.application, image: "ExeDoc", imageLarge: "ExeDoc_48"};
