@@ -1580,6 +1580,13 @@ function(words, keepModeDiv) {
 	};
 };
 
+/**
+ * Returns true if editor content is spell checked
+ */
+ZmAdvancedHtmlEditor.prototype.isSpellCheckMode = function() {
+    return Boolean( this._spellCheck );
+};
+
 ZmAdvancedHtmlEditor.prototype._loadExternalStyle =
 function(path) {
 	var doc = this._getIframeDoc();
