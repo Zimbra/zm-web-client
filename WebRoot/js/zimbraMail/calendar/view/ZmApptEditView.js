@@ -2484,6 +2484,26 @@ function() {
 	}
 };
 
+ZmApptEditView.prototype.removeAttendees =
+function(attendees, type) {
+    attendees = (attendees instanceof AjxVector) ? attendees.getArray() :
+				(attendees instanceof Array) ? attendees : [attendees];
+
+    for (var i = 0; i < attendees.length; i++) {
+        var attendee = attendees[i];
+        var idx = -1;
+        if (attendee instanceof ZmContact) {
+            idx = this._attendees[type].indexOfLike(attendee, attendee.getAttendeeKey);
+            if (idx !== -1) {
+                this._attendees[type].removeAt(idx);
+            }
+        }
+        else {
+            this._attendees[type].remove(attendee);
+        }
+    }
+};
+
 ZmApptEditView.prototype.setApptLocation =
 function(val) {
     this._setAddresses(this._attInputField[ZmCalBaseItem.LOCATION], val);

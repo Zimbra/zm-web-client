@@ -2335,6 +2335,20 @@ function(type, shortForm) {
 };
 
 /**
+ * Gets display text for an attendee. Prefers name over email.
+ *
+ * @param {constant}	type		the attendee type
+ * @param {Boolean}	shortForm		if <code>true</code>, return only name or email
+ * @return	{String}	the attendee
+ */
+ZmContact.prototype.getAttendeeKey =
+function() {
+	var email = this.getLookupEmail() || this.getEmail();
+	var name = this.getFullName();
+	return email ? email : name;
+};
+
+/**
  * Gets the unknown fields.
  * 
  * @param	{function}	[sortByNameFunc]	sort by function

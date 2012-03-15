@@ -681,6 +681,7 @@ function(inputEl, attendee, useException) {
 
         if(this.isComposeMode) {
             this._editView.parent.updateAttendees(curAttendee, type, ZmApptComposeView.MODE_REMOVE);
+            this._editView.removeAttendees(curAttendee, type);
             this._editView._setAttendees();
         }
 		// user erased an attendee
