@@ -965,6 +965,19 @@ function(bodyPart) {
 			}
 			break;
 		}
+        else if (line.match(/^COMMENT:/)) {
+            //DESCRIPTION is sent as COMMENT in Lotus notes.
+            desc.push(line.substr(8));
+            for (var j = i + 1; j < lines.length; j++) {
+                line = lines[j];
+                if (line.match(/^\s+/)) {
+                    desc.push(line.replace(/^\s+/, " "));
+                    continue;
+                }
+                break;
+            }
+            break;
+        }
 	}
 	if (desc.length > 0) {
 		content = desc.join("");
