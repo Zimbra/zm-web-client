@@ -2023,6 +2023,7 @@ function() {
 	if (op) {
 		op.setVisible(appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED));
 	}
+	appCtxt.notifyZimlets("resetToolbarOperations", [this._toolbar, 1]);
 };
 
 ZmComposeController.prototype._canSaveDraft =
