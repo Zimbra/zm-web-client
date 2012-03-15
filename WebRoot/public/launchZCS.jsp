@@ -100,11 +100,14 @@
     boolean isScriptErrorOn = getParameter(request, "scripterrors", "0").equals("1");
     boolean isNotifyDebugOn = getParameter(request, "notifydebug", "0").equals("1");
 	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
+    debug = BeanUtils.cook(debug);
 	String debugLogTarget = getParameter(request, "log", getAttribute(request, "log", null));
-	String extraPackages = getParameter(request, "packages", getAttribute(request, "packages", null));
+    debugLogTarget = BeanUtils.cook(debug);
+    String extraPackages = getParameter(request, "packages", getAttribute(request, "packages", null));
 	String startApp = getParameter(request, "app", "");
 	String noSplashScreen = getParameter(request, "nss", null);
-	boolean isLeakDetectorOn = getParameter(request, "leak", "0").equals("1");
+	noSplashScreen = BeanUtils.cook(noSplashScreen);
+    boolean isLeakDetectorOn = getParameter(request, "leak", "0").equals("1");
 
 	String mode = getAttribute(request, "mode", null);
 	boolean isDevMode = mode != null && mode.equalsIgnoreCase("mjsf");
