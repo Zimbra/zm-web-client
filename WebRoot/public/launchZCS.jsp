@@ -102,7 +102,7 @@
 	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
     debug = BeanUtils.cook(debug);
 	String debugLogTarget = getParameter(request, "log", getAttribute(request, "log", null));
-    debugLogTarget = BeanUtils.cook(debug);
+    debugLogTarget = BeanUtils.cook(debugLogTarget);
     String extraPackages = getParameter(request, "packages", getAttribute(request, "packages", null));
 	String startApp = getParameter(request, "app", "");
 	String noSplashScreen = getParameter(request, "nss", null);
