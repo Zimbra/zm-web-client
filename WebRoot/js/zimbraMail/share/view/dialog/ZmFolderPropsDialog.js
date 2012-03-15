@@ -228,18 +228,22 @@ function(response) {
 	var callback = new AjxCallback(this, this._handleFreeBusy);
 	var organizer = this._organizer;
 	var color = this._color.getValue() || ZmOrganizer.DEFAULT_COLOR[organizer.type];
-	if (organizer.color != color) {
+	if (this._isColorChanged(color, organizer.color, organizer.rgb)) {
         if (String(color).match(/^#/)) {
             organizer.setRGB(color, callback, this._handleErrorCallback);
         }
         else {
             organizer.setColor(color, callback, this._handleErrorCallback);
         }
-		return;
+        return;
 	}
-
 	// else, change free/busy
 	callback.run(response);
+};
+
+ZmFolderPropsDialog.prototype._isColorChanged =
+function(color, oColor, rgb) {
+    return !((String(color).match(/^#/) && color == rgb) || oColor == color);
 };
 
 ZmFolderPropsDialog.prototype._handleFreeBusy =
