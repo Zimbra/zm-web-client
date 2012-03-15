@@ -179,17 +179,18 @@ function(enabled) {
  * @param {AjxCallback|DwtMenu}	params.menu				the menu creation callback (recommended) or menu
  * @param {Boolean}	params.menuAbove	if <code>true</code>, popup menu above the button.
  *
- * @param {Boolean}	whatToShow.showImage		if <code>true</code>, display image
- * @param {Boolean}	whatToShow.showText		if <code>true</code>, display text
+ * @param {Object}	params.whatToShow		if exists, determines what to show as follows: (for usage, see ZmToolBar.prototype._createButton and DwtButton.prototype.setImage and DwtButton.prototype.setText
+ * @param {Boolean}	params.whatToShow.showImage		if <code>true</code>, display image
+ * @param {Boolean}	params.whatToShow.showText		if <code>true</code>, display text
  *
  */
 ZmToolBar.prototype.createButton =
-function(id, params, whatToShow) {
+function(id, params) {
 	var b = this._buttons[id] = this._createButton(params);
-	if (params.image && (!whatToShow || whatToShow.showImage)) {
+	if (params.image) {
 		b.setImage(params.image);
 	}
-	if (params.text && (!whatToShow || whatToShow.showText)) {
+	if (params.text) {
 		b.setText(params.text);
 	}
 	if (params.tooltip) {
@@ -230,6 +231,7 @@ function(params, className) {
 	});
 	button.textPrecedence = params.textPrecedence;
 	button.imagePrecedence = params.imagePrecedence;
+	button.whatToShow = params.whatToShow;
 
 	return button;
 };

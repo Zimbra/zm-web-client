@@ -524,7 +524,7 @@ function(address, item, ev){
 
 ZmMailListController.prototype._getToolBarOps =
 function(noViewMenu) {
-	list = this._standardToolBarOps();
+	var list = [];
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._msgOps());
 	list.push(ZmOperation.SEP);
@@ -543,8 +543,7 @@ ZmMailListController.prototype._getSecondaryToolBarOps =
 function() {
 	var list = [ZmOperation.PRINT,
                 ZmOperation.MUTE_CONV,
-                ZmOperation.UNMUTE_CONV,
-				ZmOperation.SPAM];
+                ZmOperation.UNMUTE_CONV];
 	if (!appCtxt.isChildWindow && appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
 		list.push(ZmOperation.SEP, ZmOperation.DETACH);
 	}
@@ -617,11 +616,6 @@ function() {
 
 // Groups of mail-related operations
 
-ZmMailListController.prototype._standardToolBarOps =
-function() {
-	return [];
-};
-
 ZmMailListController.prototype._flagOps =
 function() {
 	return [ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD];
@@ -631,15 +625,22 @@ ZmMailListController.prototype._msgOps =
 function() {
 	var list = [];
 
-	list.push(ZmOperation.EDIT, this.getDeleteOperation(), ZmOperation.SEP); // hidden except for Drafts)
+	list.push(ZmOperation.EDIT); // hidden except for Drafts
 
+	var replyGroupExists = false;
 	if (appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
 		list.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
+		replyGroupExists = true;
 	}
 
 	if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
 		list.push(ZmOperation.FORWARD);
+		replyGroupExists = true;
 	}
+	if (replyGroupExists) {
+		list.push(ZmOperation.SEP);
+	}
+	list.push(this.getDeleteOperation(), ZmOperation.SPAM); // hidden except for Drafts)
 	return list;
 };
 

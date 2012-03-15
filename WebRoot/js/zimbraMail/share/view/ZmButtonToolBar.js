@@ -174,8 +174,9 @@ function(id, params) {
 		var showText = !showImage || params.showTextInToolbar;
 		showImage = showImage || !params.text; //no text? gotta show image
 		showText = showText || !params.image; //no image? gotta show text
-		params.image = showImage && params.image; 
-		b = this.createButton(id, params, {showImage: showImage, showText: showText});
+		params.image = showImage && params.image;
+		params.whatToShow = {showImage: showImage, showText: showText}
+		b = this.createButton(id, params);
 	}
 	b.setData(ZmOperation.KEY_ID, id);
 
