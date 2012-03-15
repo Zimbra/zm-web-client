@@ -2970,6 +2970,11 @@ function(err) {
     if(curView._loadingSpan){
 		curView._loadingSpan = null;
 	}
+
+    if (curView._uploadElementForm){
+        curView._uploadElementForm.reset();
+        curView._uploadElementForm = null;
+    }
 };
 
 ZmComposeView.prototype._uploadDoneCallback =
@@ -3045,6 +3050,7 @@ function(files, node) {
             }
         }
     }
+    this._uploadElementForm = node.parentNode;
     this._setAttInline(node.isInline);
     this._initProgressSpan(files[0].name);
 
