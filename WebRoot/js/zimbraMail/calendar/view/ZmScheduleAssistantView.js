@@ -484,13 +484,15 @@ function(params, result) {
 
     this._workingHoursRequest = null;
     this._workingHours = {};
-    
+
     if(this._organizerEmail) {
         this._workingHours[this._organizerEmail] =
             this._fbCache.getWorkingHrsSlot(params.timeFrame.start.getTime(),
                                             params.timeFrame.end.getTime(), this._organizerEmail);
     }
-    this.suggestTimeSlots(params);
+    if(this.isSuggestionsEnabled()) {
+        this.suggestTimeSlots(params);
+    }
 };
 
 ZmScheduleAssistantView.prototype._handleWorkingHoursError =
