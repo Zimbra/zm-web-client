@@ -57,7 +57,7 @@ function() {
 ZmFilterRules.prototype.addRule = 
 function(rule, referenceRule, callback) {
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: add rule '" + rule.name + "'");
-	var index = referenceRule ? this._vector.indexOf(referenceRule) : null;
+	var index = referenceRule ? this._vector.indexOf(referenceRule) : 0;
 	this._insertRule(rule, index);
 	this._saveRules(index, true, callback);
 };

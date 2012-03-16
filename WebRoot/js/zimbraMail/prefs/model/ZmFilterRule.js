@@ -101,6 +101,7 @@ ZmFilterRule.C_FROM			= "FROM";
 ZmFilterRule.C_TO			= "TO";
 ZmFilterRule.C_CC			= "CC";
 ZmFilterRule.C_TO_CC		= "TO_CC";
+ZmFilterRule.C_BCC          = "BCC";
 ZmFilterRule.C_SUBJECT		= "SUBJECT";
 ZmFilterRule.C_HEADER		= "HEADER";
 ZmFilterRule.C_SIZE			= "SIZE";
@@ -124,10 +125,6 @@ ZmFilterRule.C_ME           = "ME";
 ZmFilterRule.C_IMPORTANCE   = "IMPORTANCE";
 
 ZmFilterRule.C_HEADER_VALUE = {};
-ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM]	= "from";
-ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_TO]		= "to";
-ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_CC]		= "cc";
-ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_TO_CC]	= "to,cc";
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_SUBJECT]	= "subject";
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_HEADER]	= "header";
 
@@ -136,11 +133,24 @@ for (var i in ZmFilterRule.C_HEADER_VALUE) {
 	ZmFilterRule.C_HEADER_MAP[ZmFilterRule.C_HEADER_VALUE[i]] = i;
 };
 
+ZmFilterRule.C_ADDRESS_VALUE = {};
+ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_FROM]	= "from";
+ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_TO]		= "to";
+ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_CC]		= "cc";
+ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_TO_CC]	= "to,cc";
+ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_BCC]     = "bcc";
+
+ZmFilterRule.C_ADDRESS_MAP = {};
+for (var i in ZmFilterRule.C_ADDRESS_VALUE) {
+    ZmFilterRule.C_ADDRESS_MAP[ZmFilterRule.C_ADDRESS_VALUE[i]] = i;
+}
+
 ZmFilterRule.C_LABEL = {};
 ZmFilterRule.C_LABEL[ZmFilterRule.C_FROM]		= ZmMsg.from;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_TO]			= ZmMsg.to;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_CC]			= ZmMsg.cc;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_TO_CC]		= ZmMsg.toCc;
+ZmFilterRule.C_LABEL[ZmFilterRule.C_BCC]        = ZmMsg.bcc;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_SUBJECT]	= ZmMsg.subject;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_HEADER]		= ZmMsg.headerNamed;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_SIZE]		= ZmMsg.size;
@@ -182,10 +192,11 @@ ZmFilterRule.TEST_FLAGGED                       = "flaggedTest";
 
 // Conditions map to Tests
 ZmFilterRule.C_TEST_MAP = {};
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_FROM]		= ZmFilterRule.TEST_HEADER;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_TO]			= ZmFilterRule.TEST_HEADER;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_CC]			= ZmFilterRule.TEST_HEADER;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_TO_CC]		= ZmFilterRule.TEST_HEADER;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_FROM]		= ZmFilterRule.TEST_ADDRESS;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_TO]			= ZmFilterRule.TEST_ADDRESS;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_CC]			= ZmFilterRule.TEST_ADDRESS;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_TO_CC]		= ZmFilterRule.TEST_ADDRESS;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_BCC]         = ZmFilterRule.TEST_ADDRESS;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SUBJECT]		= ZmFilterRule.TEST_HEADER;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_HEADER]		= ZmFilterRule.TEST_HEADER;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SIZE]		= ZmFilterRule.TEST_SIZE;
@@ -362,24 +373,39 @@ ZmFilterRule.MATCHING_OPS = [
  */
 ZmFilterRule.CONDITIONS = {};
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_FROM] = {
-		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	ZmFilterRule.MATCHING_OPS,
-		value:		ZmFilterRule.TYPE_INPUT
+	ops:		ZmFilterRule.TYPE_SELECT,
+	opsOptions:	ZmFilterRule.MATCHING_OPS,
+	value:		ZmFilterRule.TYPE_INPUT,
+	valueMod:   ZmFilterRule.TYPE_SELECT,
+	vmOptions:	[{label: "all", value: "all"}, {label: "localpart", value: "localpart"}, {label:"domain", value: "domain"}]
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_TO] = {
-		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	ZmFilterRule.MATCHING_OPS,
-		value:		ZmFilterRule.TYPE_INPUT
+	ops:		ZmFilterRule.TYPE_SELECT,
+	opsOptions:	ZmFilterRule.MATCHING_OPS,
+	value:		ZmFilterRule.TYPE_INPUT,
+	valueMod:   ZmFilterRule.TYPE_SELECT,
+	vmOptions:	[{label: "all", value: "all"}, {label: "localpart", value: "localpart"}, {label:"domain", value: "domain"}]
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_CC] = {
-		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	ZmFilterRule.MATCHING_OPS,
-		value:		ZmFilterRule.TYPE_INPUT
+	ops:		ZmFilterRule.TYPE_SELECT,
+	opsOptions:	ZmFilterRule.MATCHING_OPS,
+	value:		ZmFilterRule.TYPE_INPUT,
+	valueMod:   ZmFilterRule.TYPE_SELECT,
+	vmOptions:	[{label: "all", value: "all"}, {label: "localpart", value: "localpart"}, {label:"domain", value: "domain"}]
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_TO_CC] = {
-		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	ZmFilterRule.MATCHING_OPS,
-		value:		ZmFilterRule.TYPE_INPUT
+	ops:		ZmFilterRule.TYPE_SELECT,
+	opsOptions:	ZmFilterRule.MATCHING_OPS,
+	value:		ZmFilterRule.TYPE_INPUT,
+	valueMod:   ZmFilterRule.TYPE_SELECT,
+	vmOptions:	[{label: "all", value: "all"}, {label: "localpart", value: "localpart"}, {label:"domain", value: "domain"}]
+};
+ZmFilterRule.CONDITIONS[ZmFilterRule.C_BCC] = {
+	ops:		ZmFilterRule.TYPE_SELECT,
+	opsOptions:	ZmFilterRule.MATCHING_OPS,
+	value:		ZmFilterRule.TYPE_INPUT,
+	valueMod:   ZmFilterRule.TYPE_SELECT,
+	vmOptions:	[{label: "all", value: "all"}, {label: "localpart", value: "localpart"}, {label:"domain", value: "domain"}]
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_SUBJECT] = {
 		ops:		ZmFilterRule.TYPE_SELECT,
@@ -452,9 +478,6 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_SOCIAL] = {
 			         {label: ZmMsg.socialFilterOpNegative, value: "not_social"}]
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_ADDRESS] = {
-		subjectMod:	ZmFilterRule.TYPE_SELECT,
-		smOptions:	[{label: ZmMsg.from, value: "from"}, {label: ZmMsg.to, value: "to"},
-					 {label: ZmMsg.cc, value: "cc"}, {label: ZmMsg.toOrCc, value: "to,cc"}, {label: ZmMsg.bcc, value: "bcc"}],
 		ops:		ZmFilterRule.TYPE_SELECT,
 		opsOptions:	ZmFilterRule.MATCHING_OPS,
 		value:		ZmFilterRule.TYPE_INPUT,
@@ -475,7 +498,8 @@ ZmFilterRule.CONDITIONS_LIST = [
 	ZmFilterRule.C_FROM,
 	ZmFilterRule.C_TO,
 	ZmFilterRule.C_CC,
-	ZmFilterRule.C_TO_CC,	
+	ZmFilterRule.C_TO_CC,
+    ZmFilterRule.C_BCC,
 	ZmFilterRule.C_SUBJECT,
 	ZmFilterRule.C_CONV,	
 	ZmFilterRule.C_SIZE,
@@ -486,19 +510,20 @@ ZmFilterRule.CONDITIONS_LIST = [
 	ZmFilterRule.C_ADDRBOOK,
 	ZmFilterRule.C_INVITE,
 	ZmFilterRule.C_SOCIAL,
-	ZmFilterRule.C_HEADER,	
-	ZmFilterRule.C_ADDRESS
+	ZmFilterRule.C_HEADER
 ];
 
 // mark certain conditions as headers
 ZmFilterRule.IS_HEADER = {};
-ZmFilterRule.IS_HEADER[ZmFilterRule.C_FROM]		= true;
-ZmFilterRule.IS_HEADER[ZmFilterRule.C_TO]		= true;
-ZmFilterRule.IS_HEADER[ZmFilterRule.C_CC]		= true;
-ZmFilterRule.IS_HEADER[ZmFilterRule.C_TO_CC]	= true;
 ZmFilterRule.IS_HEADER[ZmFilterRule.C_SUBJECT]	= true;
 ZmFilterRule.IS_HEADER[ZmFilterRule.C_HEADER]	= true;
 
+ZmFilterRule.IS_ADDRESS = {};
+ZmFilterRule.IS_ADDRESS[ZmFilterRule.C_FROM]    = true;
+ZmFilterRule.IS_ADDRESS[ZmFilterRule.C_TO]      = true;
+ZmFilterRule.IS_ADDRESS[ZmFilterRule.C_CC]      = true;
+ZmFilterRule.IS_ADDRESS[ZmFilterRule.C_TO_CC]   = true;
+ZmFilterRule.IS_ADDRESS[ZmFilterRule.C_BCC]     = true;
 ZmFilterRule.IS_SOCIAL = "social";
 ZmFilterRule.IS_NOT_SOCIAL = "not_social";
 // Actions

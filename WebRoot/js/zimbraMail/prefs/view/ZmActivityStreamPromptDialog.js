@@ -135,7 +135,7 @@ function(rule) {
 	if (received && received.isSelected() && rule) {
 		var from = this._activityStreamForm.getControl("FROM");
 		if (from) {
-			rule.addCondition(ZmFilterRule.TEST_ADDRESS, ZmFilterRule.OP_CONTAINS, from.getValue(), ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM]);
+			rule.addCondition(ZmFilterRule.TEST_ADDRESS, ZmFilterRule.OP_CONTAINS, from.getValue(), ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_FROM]);
 			foundCondition = true;
 		}
 	}
@@ -143,7 +143,7 @@ function(rule) {
     if (sentto && sentto.isSelected() && rule) {
 		var to = this._activityStreamForm.getControl("TO");
 		if (to) {
-			rule.addCondition(ZmFilterRule.TEST_ADDRESS, ZmFilterRule.OP_CONTAINS, to.getValue(), ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_TO]);
+			rule.addCondition(ZmFilterRule.TEST_ADDRESS, ZmFilterRule.OP_CONTAINS, to.getValue(), ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_TO]);
 			foundCondition = true;
 		}
 	}

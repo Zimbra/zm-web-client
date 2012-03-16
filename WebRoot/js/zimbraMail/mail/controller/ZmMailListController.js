@@ -1510,13 +1510,13 @@ function(msg) {
 	else {
 		var from = msg.getAddress(AjxEmailAddress.FROM);
 		if (from) {
-			var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM];
-			rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, from.address, subjMod);
+			var subjMod = ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_FROM];
+			rule.addCondition(ZmFilterRule.TEST_ADDRESS, ZmFilterRule.OP_CONTAINS, from.address, subjMod);
 		}
 		var cc = msg.getAddress(AjxEmailAddress.CC);
 		if (cc)	{
-			var subjMod = ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_CC];
-			rule.addCondition(ZmFilterRule.TEST_HEADER, ZmFilterRule.OP_CONTAINS, cc.address, subjMod);
+			var subjMod = ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_CC];
+			rule.addCondition(ZmFilterRule.TEST_ADDRESS, ZmFilterRule.OP_CONTAINS, cc.address, subjMod);
 		}
 		var xZimbraDL = msg.getXZimbraDLHeader();
 		if (xZimbraDL && xZimbraDL.good) {
