@@ -213,10 +213,10 @@ ZmSectionLabel {
 	padding:2px;
 }
 
-/* ??? */
-.ZmSelectedHeaderBg {
+/* Commenting out - if no use found soon, just delete */
+/*.ZmSelectedHeaderBg {
 	@SelectedBg@
-}
+}*/
 
 
 
