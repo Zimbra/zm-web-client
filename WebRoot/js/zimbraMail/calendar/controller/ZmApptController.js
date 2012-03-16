@@ -205,10 +205,9 @@ function(ev) {
 
 ZmApptController.prototype._duplicateApptListener =
 function(ev) {
-	var op = (ev && ev.item instanceof DwtMenuItem)
-		? ev.item.parent.getData(ZmOperation.KEY_ID) : null;
+	var op = this.getMode();
 	var appt = this.getCalItem();
-	var isException = (appt.isRecurring() && op == ZmOperation.VIEW_APPT_INSTANCE);
+	var isException = (appt.isRecurring() && op == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE);
     var calViewCtrl = this._app.getCalController();
 	calViewCtrl.duplicateAppt(appt, {isException: isException});
 };
