@@ -1285,7 +1285,6 @@ function(isDraft, callback, result) {
 			this._notifySendListeners();
 		}
 	} else {
-		this._loadFromDom(resp);
 		if (resp.autoSendTime) {
 			this._notifySendListeners();
 		}
