@@ -436,6 +436,10 @@ function(actionCode) {
 			}
 			break;
 
+		case ZmKeyMap.NEW_MESSAGE:
+			this._participantComposeListener();
+			break;
+
 		default:
 			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
 	}
