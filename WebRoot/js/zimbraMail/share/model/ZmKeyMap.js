@@ -154,6 +154,7 @@ ZmKeyMap.NEW_BRIEFCASE			= "NewBriefcase";
 ZmKeyMap.NEW_CALENDAR			= "NewCalendar";
 ZmKeyMap.NEW_CHAT				= "NewChat";
 ZmKeyMap.NEW_CONTACT			= "NewContact";
+ZmKeyMap.NEW_DOC    			= "NewDocument";
 ZmKeyMap.NEW_FILE				= "NewFile";
 ZmKeyMap.NEW_FOLDER				= "NewFolder";
 ZmKeyMap.NEW_MESSAGE			= "NewMessage";
