@@ -387,29 +387,6 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 	<input id='${id}_field' class='ZFieldInput'>
 </template>
 
-<template id='dwt.Widgets#ZTreeItem1'>
-	<div class='${divClassName}' id='${id}_div'>
-		<table id='${id}_table'>
-			<tr>
-				<td style="width:20px" align=center nowrap id='${id}_nodeCell'></td>
-				<$ if (data.isCheckedStyle) { $>
-					<td nowrap id='${id}_checkboxCell' class="ZTreeItemCheckboxCell">
-                        <div class="ZTreeItemCheckbox" id='${id}_checkbox'>
-							<div class="ZTreeItemCheckboxImg" id='${id}_checkboxImg'>
-								<$= AjxImg.getImageHtml("MenuCheck") $>
-							</div>
-                        </div>
-					</td>
-				<$ } $>
-				<td nowrap class='imageCell' id='${id}_imageCell'></td>
-				<td nowrap class='${textClassName}' id='${id}_textCell'></td>
-                <td style='padding-left:5px;' class='imageCell' id='${id}_extraCell'></td>
-			</tr>
-		</table>
-	</div>
-</template>
-
-
 <template id='dwt.Widgets#ZTreeItem'>
 	<div class='${divClassName}' id='${id}_div'>
 		<table id='${id}_table' style="table-layout:fixed; width:100%">
@@ -425,8 +402,8 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 					</td>
 				<$ } $>
 				<td style="width:20px" nowrap class='imageCell' id='${id}_imageCell'></td>
-				<td nowrap style="display: inline-block;overflow: hidden;width:100%;"class='${textClassName}' id='${id}_textCell'></td>
-                <td style='width:20px; padding-left:5px;' class='imageCell' id='${id}_extraCell'></td>
+				<td nowrap class='${textClassName}' id='${id}_textCell'></td>
+                <td class='imageCell' id='${id}_extraCell'></td>
 			</tr>
 		</table>
 	</div>
