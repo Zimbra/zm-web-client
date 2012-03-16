@@ -491,11 +491,13 @@ function(params, noRender, callback, errorCallback) {
 	}
 
 	// get types from search type if not passed in explicitly
-	var types = params.types || this.getTypes(params);
+	var types = params.types || (params.skipUpdateSearchToolbar && searchFor == ZmId.SEARCH_MAIL && this._prevTypes) || this.getTypes(params);
+
 	if (types instanceof Array) { // convert array to AjxVector if necessary
 		types = AjxVector.fromArray(types);
 	}
 	if (searchFor == ZmId.SEARCH_MAIL) {
+        this._prevTypes = params.types || this._prevTypes; // Saves previous user action, if user selects view
 		params = appCtxt.getApp(ZmApp.MAIL).getSearchParams(params);
 	}
 
