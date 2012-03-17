@@ -3641,7 +3641,7 @@ function(isDraft, status, attId, docIds, msgIds) {
 ZmComposeView.prototype._spellCheckShield =
 function(words){
 	if (words && words.available && words.misspelled != null && words.misspelled.length != 0) {
-		var msgDialog = appCtxt.getYesNoMsgDialog();
+		var msgDialog = new DwtMessageDialog({parent: appCtxt.getShell(), buttons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON], id: Dwt.getNextId("SpellCheckConfirm_")});
 		msgDialog.setMessage(AjxMessageFormat.format(ZmMsg.misspellingsMessage, [words.misspelled.length]), DwtMessageDialog.WARNING_STYLE);
 		msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._spellCheckShieldOkListener, this, [ msgDialog, words ] );
 		msgDialog.registerCallback(DwtDialog.NO_BUTTON, this._spellCheckShieldCancelListener, this, msgDialog);
