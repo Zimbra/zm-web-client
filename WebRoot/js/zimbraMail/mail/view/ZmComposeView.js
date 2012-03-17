@@ -3642,10 +3642,12 @@ ZmComposeView.prototype._spellCheckShield =
 function(words){
 	if (words && words.available && words.misspelled != null && words.misspelled.length != 0) {
 		var msgDialog = appCtxt.getYesNoMsgDialog();
-		msgDialog.setMessage(AjxMessageFormat.format(ZmMsg.misspellingsMessage, [words.misspelled.length]));
+		msgDialog.setMessage(AjxMessageFormat.format(ZmMsg.misspellingsMessage, [words.misspelled.length]), DwtMessageDialog.WARNING_STYLE);
 		msgDialog.registerCallback(DwtDialog.YES_BUTTON, this._spellCheckShieldOkListener, this, [ msgDialog, words ] );
 		msgDialog.registerCallback(DwtDialog.NO_BUTTON, this._spellCheckShieldCancelListener, this, msgDialog);
 		msgDialog.associateEnterWithButton(DwtDialog.NO_BUTTON);
+		msgDialog.getButton(DwtDialog.YES_BUTTON).setText(ZmMsg.correctSpelling);
+		msgDialog.getButton(DwtDialog.NO_BUTTON).setText(ZmMsg.sendAnyway);
 		var composeView = this;
 		msgDialog.handleKeyAction = function(actionCode, ev) { if (actionCode && actionCode==DwtKeyMap.CANCEL) { composeView._spellCheckShieldOkListener(msgDialog, words, ev); return(true); } };
 		msgDialog.popup(null, DwtDialog.NO_BUTTON);
