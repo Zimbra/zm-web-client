@@ -1807,7 +1807,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 
 	this._attInfo = [];
 
-	var attachments = includeInlineAtts ? [].concat(this.attachments, this._getInlineAttachments()) : this.attachments;
+	var attachments = (includeInlineAtts || includeInlineImages) ? [].concat(this.attachments, this._getInlineAttachments()) : this.attachments;
 	if (attachments && attachments.length > 0) {
 		var hrefRoot = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=";
 		this.findAttsFoundInMsgBody();
@@ -1817,7 +1817,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 
 			if (!this.isRealAttachment(attach) ||
 					(attach.ct.match(/^image/) && attach.ci && attach.foundInMsgBody && !includeInlineImages) ||
-					(attach.cd == "inline" && attach.filename && ZmMimeTable.isRenderable(attach.ct) && !includeInlineAtts)) {
+					(attach.cd == "inline" && attach.filename && ZmMimeTable.isRenderable(attach.ct, true) && !includeInlineAtts)) {
 				continue;
 			}
 
