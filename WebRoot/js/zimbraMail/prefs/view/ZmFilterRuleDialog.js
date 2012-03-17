@@ -1573,11 +1573,6 @@ function(condition) {
 			return this._conditionErrorFormatter.format([ZmFilterRule.C_LABEL[condition.subject]]);
 		}
 	}
-	if (condition.value &&
-			(condition.value.indexOf('"') != -1) || (condition.value.indexOf("\\") != -1))
-	{
-		return ZmMsg.filterErrorIllegalCharacter;
-	}
 };
 
 /**
