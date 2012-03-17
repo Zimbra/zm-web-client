@@ -408,7 +408,8 @@ function(msg) {
 		dlg.setMessage(ZmMsg.readReceiptSend, DwtMessageDialog.WARNING_STYLE);
 		dlg.popup();
 	} else if (rrPref == ZmMailApp.SEND_RECEIPT_ALWAYS) {
-		this._sendReadReceipt(msg);
+		msg.readReceiptSent = true;
+        this._sendReadReceipt(msg);
 	}
 };
 
@@ -417,12 +418,13 @@ function(msg, dlg) {
 	if (dlg) {
 		dlg.popdown();
 	}
-	msg.sendReadReceipt(this._handleSendReadReceipt.bind(this));
+	msg.sendReadReceipt(this._handleSendReadReceipt.bind(this, msg));
 };
 
 ZmMailListController.prototype._handleSendReadReceipt =
-function() {
+function(msg) {
 	appCtxt.setStatusMsg(ZmMsg.readReceiptSent);
+    this._sendReadReceiptNotified(msg);
 };
 
 ZmMailListController.prototype._sendReadReceiptNotified =
