@@ -386,6 +386,7 @@ function(msg) {
 		dlg.setMessage(ZmMsg.readReceiptSend, DwtMessageDialog.WARNING_STYLE);
 		dlg.popup();
 	} else if (rrPref == ZmMailApp.SEND_RECEIPT_ALWAYS) {
+		msg.readReceiptSent = true;
 		this._sendReadReceipt(msg);
 	}
 };
