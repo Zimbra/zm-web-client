@@ -1138,6 +1138,8 @@ function(calItem, attId, notifyList, force){
         notifyList = this.getForwardNotifyList(calItem);
     }
 
+    this._composeView.getApptEditView().resetParticipantStatus();
+
     // NOTE: Once CreateAppt/ModifyAppt SOAP API changes are completed (Bug 56464), pass to
     // the base _saveCalItemFoRealz appt.alteredLocations, to create a set of location
     // exceptions along with creation/modification of the underlying appt

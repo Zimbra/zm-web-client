@@ -782,8 +782,6 @@ function(calItem) {
 
     ZmCalItemEditView.prototype._populateForSave.call(this, calItem);
 
-    if(this.isOrganizer() && this.isKeyInfoChanged()) this.resetParticipantStatus();
-
     //Handle Persona's
     var identity = this.getIdentity();
     if(identity){
@@ -2603,10 +2601,12 @@ function(attendees, role) {
 
 ZmApptEditView.prototype.resetParticipantStatus =
 function() {
-    var personalAttendees = this._attendees[ZmCalBaseItem.PERSON].getArray();
-    for (var i = 0; i < personalAttendees.length; i++) {
-        var attendee = personalAttendees[i];
-        if(attendee) attendee.setParticipantStatus(ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
+    if (this.isOrganizer() && this.isKeyInfoChanged()) {
+        var personalAttendees = this._attendees[ZmCalBaseItem.PERSON].getArray();
+        for (var i = 0; i < personalAttendees.length; i++) {
+            var attendee = personalAttendees[i];
+            if(attendee) attendee.setParticipantStatus(ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
+        }
     }
 };
 
