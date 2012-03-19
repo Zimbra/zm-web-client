@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -118,11 +118,6 @@ ZmChat.prototype.hasRosterAddr = function(addr) {
 ZmChat.prototype.getRosterItem = function(index) {
 	if (index == null) index = 0;
 	return this._rosterItemList.getArray()[index];
-};
-
-ZmChat.prototype.isZimbraAssistant = function() {
-	return (this._rosterItemList.size() == 1 &&
-		this.getRosterItem(0).getAddress() == ZmAssistantBuddy.ADDR);
 };
 
 ZmChat.prototype.getIcon = function() {

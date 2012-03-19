@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -25,8 +25,11 @@ BODY						{	margin:0px; 				}
 /* hide the main screen initially - hide if html facade is not needed */
 #skin_outer					{	display:none;				}
 
-/* hide search builder initially */
-#skin_tr_search_builder		{	display:none;				}
+/* hide search results toolbar initially */
+#skin_tr_search_results_toolbar		{	display:none;
+										height:40px;
+										width:100%;
+									}
 
 /* hide all ads initially */
 .skin_outer_ad				{	display:none;				}
@@ -55,15 +58,6 @@ BODY						{	margin:0px; 				}
 
 #skin_container_search           		{	width:700px; }
 
-#skin_container_people_search			{	width:200px; }
-
-	
-
-/** Search Builder & its toolbar **/
-#skin_spacing_search_builder			{	padding-bottom:5px;	}
-#skin_container_search_builder			{	@SkinBorderSB@	}
-#skin_spacing_search_builder_toolbar	{}
-#skin_container_search_builder_toolbar	{	@SkinBorderSBToolbar@		}
 
 
 /** combined username/quota **/
@@ -118,13 +112,20 @@ BODY						{	margin:0px; 				}
 /** App Toolbar **/
 #skin_spacing_app_top_toolbar			{	}
 #skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@	width:auto;	}
+#skin_container_app_new_button			{	@SkinBorderAppToolbar@	width:auto;	padding-left: 5px; padding-right:5px; padding-bottom:2px;}			
 #skin_spacing_filler				{	
 	height:12px; 
 	background-color: @AltC@;
+	#IFDEF GECKO
 	background-image: -moz-linear-gradient(top, @AltC@, @AppC@); /* FF3.6 */
+	#ENDIF
+	#IFDEF SAFARI
  	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AltC@),color-stop(1, @AppC@));                /* Saf4+, Chrome */
+ 	#ENDIF
+ 	#IFDEF MSIE
     filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@AppC@');                          /* IE6,IE7 */
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@AppC@')";                     /* IE8 */
+    #ENDIF
  }
 #skin_spacing_app_row					{ 
 /*	background-color:@AppC@; 
@@ -171,10 +172,10 @@ BODY						{	margin:0px; 				}
 /*** HACKS: this makes the tables work properly -- rationalize this!  **/
 #skin_td_tree				{	width:@TreeStartWidth@;	}
 #skin_td_tree_app_sash 		{	width:@SashSize@;	}
-#skin_td_main				{	width:auto;	}
+#skin_td_main				{	width:auto;	height: 100%}
 #skin_td_sidebar_ad			{	width:@SidebarAdWidth@;	}
 
-
+#skin_td_new_button			{padding:2px;}
 
 /** LoginPanel and Splash screen **/
 #skin_container_splash_screen			{	@SkinOuter@	@FullWindow@ z-index:90000000;		}
@@ -184,32 +185,44 @@ BODY						{	margin:0px; 				}
 #ZSplashPanel			{	@SplashOuterBorder@		}
 #ZSplashBodyContainer	{	@SplashInnerBorder@		}
 
+.LoginScreen,
 .SplashScreen { position:absolute;
     left:0px;
     top:0px;
     width:100%;
     height:100%;
     font-family:@FontFamily-default@;
-    font-size:11px;
+    font-size:11px;	
     background-color: @AltC@;
+    #IFDEF GECKO
     background-image: -moz-linear-gradient(top, @AltC@, @darken(AltC,19)@); /* FF3.6 */
+    #ENDIF
+    #IFDEF SAFARI
     background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AltC@),color-stop(1, @darken(AltC,19)@)); /* Saf4+, Chrome */
+    #ENDIF
+    #IFDEF MSIE
     filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@darken(AltC,19)@'); /* IE6,IE7 */
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@darken(AltC,19)@')"; /* IE8 */
+    #ENDIF
 }
+.LoginScreen .center,
 .SplashScreen .center { 
     margin-top:-150px;
     margin-left:-250px;
     min-height:300px;
     width:500px;
 }   
+.LoginScreen .center-small,
 .SplashScreen .center-small {
     height:270px;
     margin-top:-135px;
     margin-left:-175px;
     width:350px;
 }
-.SplashScreen .center, .SplashScreen .center-small {
+.LoginScreen .center,
+.LoginScreen .center-small,
+.SplashScreen .center, 
+.SplashScreen .center-small {
     left:50%;
     overflow:visible;
     position:absolute;
@@ -217,58 +230,76 @@ BODY						{	margin:0px; 				}
 
     /*Linear gradient backgrounds*/
     background-color: @darken(AppC,10)@;
+    #IFDEF GECKO
     background-image: -moz-linear-gradient(top, @AppC@, @darken(AppC,10)@); /* FF3.6 */
+    #ENDIF
+    #IFDEF SAFARI
     background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AppC@),color-stop(1, @darken(AppC,10)@)); /* Saf4+, Chrome */
+    #ENDIF
+    #IFDEF MSIE
     filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@'); /* IE6,IE7 */
     -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AppC@', EndColorStr='@darken(AppC,10)@')"; /* IE8 */
+    #ENDIF
 
     /*Radial gradient backgrounds*/
+    #IFDEF GECKO
     background-image: -moz-radial-gradient(50% 0, circle farthest-corner, @AppC@ 0%, @darken(AppC,10)@ 100%); /* FF3.6 */
-    background-image: -webkit-gradient( radial, 50% 0%, 0, 50% 0%, 390, from(@AppC@), to(@darken(AppC,10)@) ); /* Saf4+, Chrome */
-
     -moz-border-radius: 15px; /* FF1+ */
-    -webkit-border-radius: 15px; /* Saf3-4 */
-    border-radius: 15px; /* Opera 10.5, IE 9, Saf5, Chrome */
-    
     -moz-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* FF3.5+ */
+    #ENDIF
+    #IFDEF SAFARI
+    background-image: -webkit-gradient( radial, 50% 0%, 0, 50% 0%, 390, from(@AppC@), to(@darken(AppC,10)@) ); /* Saf4+, Chrome */
+    -webkit-border-radius: 15px; /* Saf3-4 */
     -webkit-box-shadow: 0px 0px 10px @darken(AltC,50)@; /* Saf3.0+, Chrome */
+    #ENDIF
+    
+    border-radius: 15px; /* Opera 10.5, IE 9, Saf5, Chrome */
     box-shadow: 0px 0px 10px #000000; /* Opera 10.5, IE 9.0 */
     #IFDEF MSIE
     border: 1px solid @darken(AltC,50)@; /* Plain border for IE */
     #ENDIF
 }
-.SplashScreen h1 {
+.LoginScreen H1,
+.SplashScreen H1 {
     margin:22px 100px 0px 20px;
 }
-.SplashScreen h2 {
+#ZLoginAppName 		{	@LoginAppName@ 	}
+.LoginScreen H2,
+.SplashScreen H2 {
     cursor:default;
     margin:0px 0px 32px 100px;
 }
+.LoginScreen .ImgLoginBanner,
+.LoginScreen .ImgAppBanner,
 .SplashScreen .ImgLoginBanner {
     cursor:pointer;
+	display:block;
 }
+.LoginScreen .ImgAltBanner,
 .SplashScreen .ImgAltBanner {
-    background-image:url("@LogoImgDir@/AltBanner.png");
+    background-image:url("@LogoImgDir@/AltBanner.png?v=@jsVersion@");
     background-repeat:repeat-x;
     height:11px;
     margin:20px 0px 0px 20px;
     width:71px;
 }
+
 .SplashScreen .content {
     color: @darken(AppC,50)@;
-    font-size:10px;
     text-align:center;
+	@FontSize-small@
 }
 .SplashScreen .message {
     color:#000000;
     cursor:default;
-    font-size:14px;
-    font-weight:bold;
     padding-top:20px;
+	@FontSize-big@
 }
 .SplashScreen .switch{
     margin:30px 100px 60px;
 }
+
+.LoginScreen .Footer,
 .SplashScreen .Footer {
     bottom:0;
     position:absolute;
@@ -276,11 +307,12 @@ BODY						{	margin:0px; 				}
     width:100%;
     z-index:10;
 }
+.LoginScreen .copyright,
 .SplashScreen .copyright {
     color: @darken(AppC,50)@;
     cursor:default;
-    font-size:11px;
     margin-bottom:5px;
+	@FontSize-normal@
 }
 
 /** Logo Images **/
@@ -487,10 +519,15 @@ SELECT						{	@FieldBorder@	}
 /* Quick fix for selected Adv. Search button */
 
 .ZmSearchToolbarCell .ZSelected .ZToolbarButtonBorder{
+#IFDEF GECKO
  	-moz-border-top-colors:#77736A #BFB8A9;
  	-moz-border-right-colors:#A7A194 #F0E9D8;
  	-moz-border-left-colors:#77736A #BFB8A9;
  	-moz-border-bottom-colors:#A7A194 #F0E9D8;
+#ENDIF 	
  	background-color:#FBF9F4 !important;
  	border: 2px inset; 
+    color:white;
 }
+
+.appt_new_time .ImgBlank_16, .appt_time .ImgBlank_16{ display: none; }

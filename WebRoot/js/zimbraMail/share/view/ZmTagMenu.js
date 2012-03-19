@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -184,7 +184,11 @@ function(tagList, addRemove) {
 	}
 
 	// add static "New Tag" menu item
-	var miNew = this._menuItems[ZmTagMenu.MENU_ITEM_ADD_ID] = new DwtMenuItem({parent:this, id: this._htmlElId + "|NEWTAG"});
+	var app = appCtxt.getCurrentController() && appCtxt.getCurrentController().getKeyMapName();
+	var addid = app ? (ZmKeyMap.MAP_NAME_R[app] + "_newtag"):this._htmlElId + "|NEWTAG";
+	var removeid = app ? (ZmKeyMap.MAP_NAME_R[app] + "_removetag"):this._htmlElId + "|REMOVETAG";
+
+	var miNew = this._menuItems[ZmTagMenu.MENU_ITEM_ADD_ID] = new DwtMenuItem({parent:this, id: addid});
 	miNew.setText(AjxStringUtil.htmlEncode(ZmMsg.newTag));
 	miNew.setImage("NewTag");
 	miNew.setShortcut(appCtxt.getShortcutHint(this._keyMap, ZmKeyMap.NEW_TAG));
@@ -192,7 +196,7 @@ function(tagList, addRemove) {
 	miNew.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
 
 	// add static "Remove Tag" menu item
-	var miRemove = this._menuItems[ZmTagMenu.MENU_ITEM_REM_ID] = new DwtMenuItem({parent:this, id: this._htmlElId + "|REMOVETAG"});
+	var miRemove = this._menuItems[ZmTagMenu.MENU_ITEM_REM_ID] = new DwtMenuItem({parent:this, id: removeid});
 	miRemove.setEnabled(false);
 	miRemove.setText(AjxStringUtil.htmlEncode(ZmMsg.removeTag));
 	miRemove.setImage("DeleteTag");
@@ -250,7 +254,7 @@ ZmTagMenu.prototype._menuItemSelectionListener =
 function(ev) {
 	// Only notify if the node is one of our nodes
 	if (ev.item.getData(ZmTagMenu.KEY_TAG_EVENT)) {
-		this._evtMgr.notifyListeners(DwtEvent.SELECTION, ev.item);
+		this._evtMgr.notifyListeners(DwtEvent.SELECTION, ev);
 	}
 };
 

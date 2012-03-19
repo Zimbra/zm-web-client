@@ -1,7 +1,7 @@
 	/*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -113,7 +113,9 @@ function(parent, obj, tree, elementType, path, account) {
 			query: obj.query,
 			types: types,
 			sortBy: obj.sortBy,
-			account: account
+			account: account,
+			color: obj.color,
+			rgb: obj.rgb
 		};
 		folder = new ZmSearchFolder(params);
 		ZmFolderTree._fillInFolder(folder, obj, path);
@@ -249,7 +251,8 @@ function(type, parent, obj, tree, path, elementType, account) {
 		sizeTotal: 	obj.s,
 		perm: 		obj.perm,
 		link: 		elementType == "link",
-		account:	account
+		account:	account,
+        retentionPolicy: obj.retentionPolicy
 	};
 
 	var folder = new orgClass(params);
@@ -415,7 +418,7 @@ function(params) {
 ZmFolderTree.prototype._getItemsWithoutPerms =
 function(type) {
 	var needPerms = [];
-	var orgs = type ? [type] : [ZmOrganizer.FOLDER, ZmOrganizer.CALENDAR, ZmOrganizer.TASKS, ZmOrganizer.NOTEBOOK, ZmOrganizer.BRIEFCASE, ZmOrganizer.ADDRBOOK];
+	var orgs = type ? [type] : [ZmOrganizer.FOLDER, ZmOrganizer.CALENDAR, ZmOrganizer.TASKS, ZmOrganizer.BRIEFCASE, ZmOrganizer.ADDRBOOK];
 
 	for (var j = 0; j < orgs.length; j++) {
 		var org = orgs[j];

@@ -1,17 +1,3 @@
-/*
- * ***** BEGIN LICENSE BLOCK *****
- * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011 VMware, Inc.
- * 
- * The contents of this file are subject to the Zimbra Public License
- * Version 1.3 ("License"); you may not use this file except in
- * compliance with the License.  You may obtain a copy of the License at
- * http://www.zimbra.com/license.
- * 
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * ***** END LICENSE BLOCK *****
- */
 /**
  * Appointment list view.
  */
@@ -109,9 +95,12 @@ ZmApptListView.prototype._sortList = function(list, column) {
 ZmApptListView.prototype._sortColumn = function(columnItem, bSortAsc) {
 	this._defaultSortField = columnItem._field;
 
-	var list = this.getList().clone();
-	this._sortList(list, columnItem._field);
-	this.set(list, null, true);
+	var list = this.getList();
+	list = list && list.clone();
+	if (list) {
+		this._sortList(list, columnItem._field);
+		this.set(list, null, true);
+	}
 };
 
 ZmApptListView.prototype._getHeaderToolTip = function(field, itemIdx) {
@@ -164,11 +153,9 @@ ZmApptListView.prototype.set = function(apptList, skipMiniCalUpdate, skipSort) {
 	}
 	ZmListView.prototype.set.call(this, apptList, this._defaultSortField);
     this._resetColWidth();
-    if(AjxEnv.isIE) {
-        //Does not make sense but required to make the scrollbar appear
-        var size = this.getSize();
-        this._listDiv.style.height = (size.y - DwtListView.HEADERITEM_HEIGHT)+"px";
-    }
+    //Does not make sense but required to make the scrollbar appear
+    var size = this.getSize();
+    this._listDiv.style.height = (size.y - DwtListView.HEADERITEM_HEIGHT)+"px";
 };
 
 ZmApptListView.prototype._getItemId = function(item) {
@@ -182,7 +169,7 @@ ZmApptListView.prototype._getFieldId = function(item, field) {
 };
 
 ZmApptListView.prototype._getCellId = function(item, field) {
-	if (field == ZmItem.F_SUBJECT || field == ZmItem.F_DATE) {
+	if (field == ZmItem.F_SUBJECT || field == ZmItem.F_DATE || field == ZmItem.F_LOCATION || field == ZmItem.F_STATUS || field == ZmItem.F_FOLDER) {
 		return this._getFieldId(item, field);
 	}
 };
@@ -199,17 +186,8 @@ ZmApptListView.prototype._getCellContents = function(htmlArr, idx, appt, field, 
 		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(appt, field));
 
 	}
-    else if (field == ZmItem.F_FROM) { // for mixed view
-		htmlArr[idx++] = appt.getOrganizer();
-
-	}
     else if (field == ZmItem.F_SUBJECT) {
-		if (params.isMixedView) {
-			htmlArr[idx++] = appt.name ? AjxStringUtil.htmlEncode(appt.name, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
-		}
-        else {
-			htmlArr[idx++] = AjxStringUtil.htmlEncode(appt.getName(), true);
-		}
+		htmlArr[idx++] = AjxStringUtil.htmlEncode(appt.getName(), true);
 		if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && appt.fragment) {
 			htmlArr[idx++] = this._getFragmentSpan(appt);
 		}
@@ -232,7 +210,8 @@ ZmApptListView.prototype._getCellContents = function(htmlArr, idx, appt, field, 
 		var subs = {
             folder: calendar,
 			folderColor: colors.standard.header.bgcolor,
-			folderName: calendar.getName()
+			folderName: calendar.getName(),
+            id: Dwt.getNextId()
 		};
 		htmlArr[idx++] = AjxTemplate.expand("calendar.Calendar#ListViewFolder", subs);
 

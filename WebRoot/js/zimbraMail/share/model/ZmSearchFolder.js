@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -76,7 +76,18 @@ function(params) {
 		accountName = appCtxt.accountList.mainAccount.name;
 	}
 
-	searchNode.setAttribute("l", params.parent.id);
+	searchNode.setAttribute("l", params.l);
+
+	if (params.rgb) {
+		searchNode.setAttribute("rgb", params.rgb);
+	}
+	else if (params.color) {
+		var color = ZmOrganizer.getColorValue(params.color, params.type);
+		if (color) {
+			searchNode.setAttribute("color", color);
+		}
+	}
+
 	appCtxt.getAppController().sendRequest({
 		soapDoc: soapDoc,
 		asyncMode: true,

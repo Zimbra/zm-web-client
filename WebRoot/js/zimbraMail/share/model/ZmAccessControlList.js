@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -62,7 +62,7 @@ function() {
  */
 ZmAccessControlList.prototype.load =
 function(callback) {
-	var jsonObj = {GetPermissionRequest:{_jsns:"urn:zimbraMail"}};
+	var jsonObj = {GetRightsRequest:{_jsns:"urn:zimbraAccount"}};
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
 	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 };
@@ -73,7 +73,7 @@ function(callback) {
 ZmAccessControlList.prototype._handleResponseLoad =
 function(callback, result) {
 	var response = result.getResponse();
-	var aces = response.GetPermissionResponse.ace;
+	var aces = response.GetRightsResponse.ace;
 	if (aces && aces.length) {
 		for (var i = 0; i < aces.length; i++) {
 			this.add(ZmAccessControlEntry.createFromDom(aces[i]));
@@ -258,8 +258,8 @@ function(aces, callback, batchCmd) {
  */
 ZmAccessControlList.prototype._setPerms =
 function(aces, revoke, callback, batchCmd) {
-	var reqName = revoke ? "RevokePermissionRequest" : "GrantPermissionRequest";
-	var soapDoc = AjxSoapDoc.create(reqName, "urn:zimbraMail");
+	var reqName = revoke ? "RevokeRightsRequest" : "GrantRightsRequest";
+	var soapDoc = AjxSoapDoc.create(reqName, "urn:zimbraAccount");
 	for (var i = 0; i < aces.length; i++) {
 		var ace = aces[i];
 		var aceNode = soapDoc.set("ace");
@@ -289,7 +289,7 @@ function(aces, revoke, callback, batchCmd) {
 ZmAccessControlList.prototype._handleResponseSetPerms =
 function(revoke, callback, result) {
 	var response = result.getResponse();
-	var resp = revoke ? response.RevokePermissionResponse : response.GrantPermissionResponse;
+	var resp = revoke ? response.RevokeRightsResponse : response.GrantRightsResponse;
 	var aces = resp && resp.ace;
 	var aceList = [];
 	if (aces && aces.length) {

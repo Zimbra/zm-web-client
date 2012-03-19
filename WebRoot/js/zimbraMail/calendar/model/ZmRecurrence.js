@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -113,7 +113,7 @@ function(soapDoc, inv) {
 			// TODO: for now, handle "every weekday" as M-F
 			//       eventually, needs to be localized work week days
 			var bwd = soapDoc.set("byday", null, rule);
-			for (var i in ZmCalItem.SERVER_WEEK_DAYS) {
+			for (var i = 0; i < ZmCalItem.SERVER_WEEK_DAYS.length; i++) {
 				var day = ZmCalItem.SERVER_WEEK_DAYS[i];
 				if (day == "SA" || day == "SU")
 					continue;
@@ -407,7 +407,7 @@ function(recurRules) {
 					} else {
 						this.repeatCustomDayOfWeek = wkday[0].day;
                         var days = [];
-                        for(var i in wkday) {
+                        for(var i = 0; i < wkday.length; i++) {
                             days.push(wkday[i].day);
                         }
                         this.repeatCustomDays = days;                        

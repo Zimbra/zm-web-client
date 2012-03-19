@@ -268,7 +268,7 @@
                                                                     <zm:forEachFolder var="folder">
                                                                         <c:if test="${folder.isAppointmentView and folder.isAppointmentMoveTarget}">
                                                                             <option value="${folder.id}" <c:if test="${compose.apptFolderId eq folder.id}">selected </c:if>/>
-                                                                            ${fn:escapeXml(zm:getFolderName(pageContext, folder.id))}
+                                                                            ${zm:getFolderName(pageContext, folder.id)}
                                                                         </c:if>
                                                                     </zm:forEachFolder>
                                                                 </select>

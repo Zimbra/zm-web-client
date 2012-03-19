@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -26,8 +26,9 @@
  * This class represents a zimlet application controller.
  * 
  * @param	{String}	name		the application name
- * @param	{ZmComposite}	container	the container
+ * @param	{DwtShell}	container	the container
  * @param	{ZmApp}		app			the app
+ * 
  * @extends		ZmController
  */
 ZmZimletAppController = function(name, container, app) {
@@ -39,18 +40,24 @@ ZmZimletAppController = function(name, container, app) {
 ZmZimletAppController.prototype = new ZmController;
 ZmZimletAppController.prototype.constructor = ZmZimletAppController;
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmZimletAppController.prototype.toString = function() {
-	return "ZmZimletAppController";
-};
+ZmZimletAppController.prototype.isZmZimletAppController = true;
+ZmZimletAppController.prototype.toString = function() { return "ZmZimletAppController"; };
 
 //
 // Public methods
 //
+
+// Note: If there's ever a need to make this a session controller (unlikely), we'll have to figure
+// out some way to return an appropriate view type in a static context.
+ZmZimletAppController.getDefaultViewType =
+function() {
+	return "zimlet";
+};
+
+ZmZimletAppController.prototype.getDefaultViewType =
+function() {
+	return this._name;
+};
 
 /**
  * Gets the view.
@@ -65,9 +72,8 @@ function() {
 		this._toolbar = new ZmToolBar({parent:DwtShell.getShell(window)});
 
 		// setup app elements
-		var elements = {};
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._view;
+		var elements = this.getViewElements(null, this._view, this._toolbar);
+
 
 		// create callbacks
 		var callbacks = {};
@@ -77,7 +83,12 @@ function() {
 //		callbacks[ZmAppViewMgr.CB_POST_HIDE] = new AjxCallback(this, this._postHideCallback);
 
 		// create app view
-	    this._app.createView({viewId:this._getViewType(), elements:elements, callbacks:callbacks, isAppView:true, isTransient:true});
+	    this._app.createView({	viewId:			this.getDefaultViewType(),
+								elements:		elements,
+								controller:		this,
+								callbacks:		callbacks,
+								isAppView:		true,
+								isTransient:	true});
 	}
 	return this._view;
 };
@@ -99,16 +110,5 @@ ZmZimletAppController.prototype.getToolbar = function() {
  */
 ZmZimletAppController.prototype.show = function() {
 	this.getView();
-	return this._app.pushView(this._getViewType());
-};
-
-//
-// Protected methods
-//
-
-/**
- * @private
- */
-ZmZimletAppController.prototype._getViewType = function() {
-	return this._name;
+	return this._app.pushView(this.getDefaultViewType());
 };

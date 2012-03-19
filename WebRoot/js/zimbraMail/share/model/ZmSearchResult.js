@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -31,29 +31,8 @@ ZmSearchResult = function(search) {
 	this.search = search;
 };
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmSearchResult.prototype.toString = 
-function() {
-	return "ZmSearchResult";
-};
-
-/**
- * @private
- */
-ZmSearchResult.prototype.dtor = 
-function() {
-	for (var type in this._results) {
-		if (this._results[type].clear) {
-			this._results[type].clear();
-			this._results[type] = null;
-		}
-	}
-	this._results = null;
-};
+ZmSearchResult.prototype.isZmSearchResult = true;
+ZmSearchResult.prototype.toString = function() { return "ZmSearchResult"; };
 
 /**
  * Gets the results.
@@ -68,20 +47,6 @@ function(type) {
 	if (!this._results) {
 		// probably got an exception - return an empty list
 		return ZmItem.RESULTS_LIST[type](this.search);
-	}
-	if (type == ZmItem.MIXED) {
-		// mail list - lazy way to make it easy to do mail ops on items
-		var list = new ZmMailList(ZmItem.MIXED, this.search);
-		for (var type in this._results) {
-			var results = this._results[type];
-			if (results && results.size()) {
-				var a = results.getArray();
-				for (var j = 0; j < a.length; j++) {
-					list.add(a[j]);
-				}
-			}
-		}
-		return list;
 	} else if (this.search.idsOnly) {
 		return this._results;
 	} else {
@@ -136,6 +101,10 @@ function(respEl) {
 				this._results[currentType].addFromDom(data[j]);
 			}
 
+			// manually sort gal results since server won't do it for us :(
+			if (isGalSearch) {
+				this._results[currentType].getArray().sort(ZmSearchResult._sortGalResults)
+			}
 			count = data.length;
 		}
 	} else if (this.search.idsOnly) {
@@ -214,10 +183,6 @@ function(respEl) {
 	currentType = currentType || defaultType;
 	if (numTypes <= 1) {
 		this.type = currentType;
-	} else if (numTypes == 2 && (foundType[ZmItem.PAGE] || foundType[ZmItem.DOCUMENT])) {
-		this.type = ZmItem.PAGE;	// notebook search can return either/both
-	} else {
-		this.type = appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED) ? ZmItem.MIXED : currentType;
 	}
 
 	return this.type;
