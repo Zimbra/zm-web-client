@@ -1391,14 +1391,15 @@ function(view, btn) {
 };
 
 
-// If we're in the Trash folder, change the "Delete" button tooltip
+// If we're in the Trash or Junk folder, change the "Delete" button tooltip
 ZmMailListController.prototype._setupDeleteButton =
 function(parent) {
 	var folder = this._getSearchFolder();
 	var inTrashFolder = (folder && folder.nId == ZmFolder.ID_TRASH);
-	var deleteButton = parent.getButton(ZmOperation.DELETE);
+    var inJunkFolder =  (folder && folder.nId == ZmFolder.ID_SPAM);
+    var deleteButton = parent.getButton(ZmOperation.DELETE);
 	var deleteMenuButton = parent.getButton(ZmOperation.DELETE_MENU);
-	var tooltip = inTrashFolder ? ZmMsg.deletePermanentTooltip : ZmMsg.deleteTooltip;
+	var tooltip = (inTrashFolder || inJunkFolder) ? ZmMsg.deletePermanentTooltip : ZmMsg.deleteTooltip;
 	if (deleteButton) {
 		deleteButton.setToolTipContent(ZmOperation.getToolTip(ZmOperation.DELETE, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip), true);
 	}
