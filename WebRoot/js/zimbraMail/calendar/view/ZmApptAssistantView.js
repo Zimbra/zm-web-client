@@ -279,7 +279,9 @@ function(durationInfo, params) {
 
         var excludeTimeSlots = this._apptView.getFreeBusyExcludeInfo(email);
 
-        sched = this._fbCache.getFreeBusySlot(durationInfo.startTime, durationInfo.endTime, email, excludeTimeSlots);
+        // Adjust start and end time by 1 msec, to avoid fencepost problems
+        sched = this._fbCache.getFreeBusySlot(durationInfo.startTime+1,
+            durationInfo.endTime-1, email, excludeTimeSlots);
         isFree = true;
         if(sched.b) isFree = isFree && ZmApptAssistantView.isBooked(sched.b, durationInfo.startTime, durationInfo.endTime);
         if(sched.t) isFree = isFree && ZmApptAssistantView.isBooked(sched.t, durationInfo.startTime, durationInfo.endTime);
