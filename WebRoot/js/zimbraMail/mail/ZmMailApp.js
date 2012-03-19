@@ -770,7 +770,7 @@ function(awayMsg) {
 	if (!section) { return false; }
 	var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
 	var input = view.getView(section.id).getFormObject(ZmSetting.VACATION_MSG_ENABLED);
-    var isValid = (input && !input.getSelectedValue());
+    var isValid = (input && !(input.getSelectedValue() == "true"));
     if (!isValid)
         ZmPref.SETUP["VACATION_MSG"].errorMessage = ZmMsg.missingAwayMessage;
 
