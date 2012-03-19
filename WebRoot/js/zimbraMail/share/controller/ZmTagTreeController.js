@@ -175,7 +175,7 @@ function(tag) {
 ZmTagTreeController.prototype._deleteListener = 
 function(ev) {
 	var organizer = this._pendingActionData = this._getActionedOrganizer(ev);
-	var ds = this._deleteShield = appCtxt.getYesNoCancelMsgDialog();
+	var ds = this._deleteShield = appCtxt.getYesNoMsgDialog();
 	ds.reset();
 	ds.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
 	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, organizer);
