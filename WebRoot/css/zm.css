@@ -1526,7 +1526,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@FontSize-bigger@
 }
 
-.ZmContactView .companyFolder
+.ZmContactView .companyFolder,
 .ZmContactInfoView .companyFolder {
 	@FontSize-big@
 	@NoWrap@
