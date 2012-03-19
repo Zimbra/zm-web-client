@@ -487,6 +487,9 @@ function(callback) {
             // Add in time fields if not all-day
             stDate = this._startTimeSelect.getValue(stDate);
             endDate = this._endTimeSelect.getValue(endDate);
+        }  else  {
+            // For the prefs, need to set the all day end time
+            endDate.setHours(23, 59, 0, 0);
         }
         this._startDateVal.value = this._formatter.format(stDate);
         this._endDateVal.value = this._formatter.format(endDate);
@@ -537,6 +540,11 @@ function(changed) {
             var stDate = this._formatter.parse(ZmPref.dateGMT2Local(appCtxt.get(ZmSetting.VACATION_FROM)));
             var endDate = this._formatter.parse(ZmPref.dateGMT2Local(appCtxt.get(ZmSetting.VACATION_UNTIL)));
             if (stDate != null && endDate != null) {
+                if (allDay) {
+                    // Strip the time of day information - calendar view
+                    // creates all-day appt with just day info
+                    endDate.setHours(0,0,0,0);
+                }
                 var calController = appCtxt.getApp(ZmApp.CALENDAR).getCalController();
                 calController.createAppointmentFromOOOPref(stDate,endDate, allDay, new AjxCallback(this, this._oooApptCallback));
             }
