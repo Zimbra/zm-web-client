@@ -2969,7 +2969,7 @@ function(ev) {
     if(!appt){return;}
 	var type = ev.item.getData(ZmOperation.KEY_ID);
 	var op = ev.item.parent.getData(ZmOperation.KEY_ID);
-	var respCallback = new AjxCallback(this, this._handleResponseHandleApptRespondAction, [appt, type, op]);
+	var respCallback = new AjxCallback(this, this._handleResponseHandleApptRespondAction, [appt, type, op, null]);
 	appt.getDetails(null, respCallback, this._errorCallback);
 };
 
