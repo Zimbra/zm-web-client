@@ -191,10 +191,17 @@ function(ev) {
     }
 	var op = (ev && ev.item instanceof DwtMenuItem)
 		? ev.item.getData(ZmOperation.KEY_ID) : null;
+
+
     var calItem = this.getCalItem();
     if(!calItem) {
         return;
     }
+    if (calItem.isRecurring() && !op) {
+        var mode = this.getMode();
+        op = (mode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) ? ZmOperation.VIEW_APPT_INSTANCE : ZmOperation.VIEW_APPT_SERIES;
+    }
+
     var saveCallback = new AjxCallback(this, this._handleSaveResponse);
     var calViewCtrl = this._app.getCalController();
     var respCallback = new AjxCallback(calViewCtrl, calViewCtrl._handleResponseHandleApptRespondAction, [calItem, this.getOpValue(), op, saveCallback]);
@@ -290,20 +297,15 @@ function(parent) {
 
 ZmApptController.prototype._proposeTimeListener =
 function(ev) {
-	var op = this.getMode();
-
 	var calItem = this.getCalItem();
     if(!calItem) {
         return;
     }
-
+    //Pass mode edit to open the appt in edit mode. The mode 'propose new time' will be added later.
 	var mode = ZmCalItem.MODE_EDIT;
 	if (calItem.isRecurring()) {
-		mode = (op == ZmOperation.VIEW_APPT_INSTANCE)
-			? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE
-			: ZmCalItem.MODE_EDIT_SERIES;
+		mode = this.getMode();
 	}
-
 	var appt = calItem;
 	var clone = ZmAppt.quickClone(appt);
 	clone.setProposeTimeMode(true);
