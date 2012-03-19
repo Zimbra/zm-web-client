@@ -1616,7 +1616,11 @@ function(msg, container, callback, index) {
 					: ["<img zmforced='1' class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
 				html.push(imgHtml);
 			} else {
-				content = (bp.ct != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
+				if (bp.ct == ZmMimeTable.TEXT_CAL) {
+				    content =ZmMailMsg.getTextFromCalendarPart(bp);
+				} else if (bp.ct != ZmMimeTable.TEXT_HTML) {
+				    content = AjxStringUtil.convertToHtml(content);
+				}
 				if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
 					html.push(hasHtmlPart ? "<pre>" : "");
 					html.push(content);
