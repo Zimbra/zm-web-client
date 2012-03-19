@@ -1799,7 +1799,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	padding:0;
 	z-index:1000000;
 	position:absolute;
-	width:100%;
 }
 .calendar_cur_time_indicator_arr{
 	height:10px;
@@ -1819,7 +1818,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	height:20px;
 	z-index:10000000;
 	color:black;
-	width:100%;
 	margin:0 49%;
 }
 
