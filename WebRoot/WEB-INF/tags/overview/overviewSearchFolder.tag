@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -22,6 +22,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
+<c:set var="truncatedLabel" value="${zm:getTruncatedFolderName(pageContext, folder.id, 20, true)}"/>
 <c:set var="padFudge" value="${folder.hasChildren ? 0 : 20}"/>
 <tr><td nowrap colspan="3" class="Folder" style="padding-left: ${padFudge+folder.depth*8}px">
     <c:if test="${folder.hasChildren}">
@@ -34,7 +35,7 @@
         </a>
     </c:if>
     <a id="SRCH${folder.id}" href='search?sfi=${folder.id}'>
-        <app:img alt='${fn:escapeXml(label)}' src="${folder.image}"/>
-        <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>${zm:truncate(fn:escapeXml(label),20,true)}</span>
+        <app:img alt='${label}' src="${folder.image}"/>
+        <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>${truncatedLabel}</span>
     </a>
 </td></tr>

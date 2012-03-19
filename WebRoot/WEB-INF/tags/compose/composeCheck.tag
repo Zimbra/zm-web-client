@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -144,11 +144,6 @@
                 </c:choose>
                 <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
                 <app:status><fmt:message key="messageSent"/></app:status>
-                <c:if test="${!empty uploader.compose.draftId}">
-                    <c:catch>
-                        <zm:deleteMessage var="actionResult" id="${uploader.compose.draftId}"/>
-                    </c:catch>
-                </c:if>
                 <c:set var="needComposeView" value="${false}"/>
                 <c:set var="noComposeView" scope="session" value="${true}"/>
             </app:handleError>

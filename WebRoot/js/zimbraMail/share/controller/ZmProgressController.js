@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -34,6 +34,7 @@
 ZmProgressController = function(container, app) {
 	if (arguments.length == 0) { return; }
 	ZmController.call(this, container, app);
+    this._totalNumMsgs = 0; //for determining if run in background is available
 };
 
 ZmProgressController.prototype = new ZmController;
@@ -54,12 +55,14 @@ function() {
 
 ZmProgressController.prototype._getProgressDialog =
 function() {
-	if (!ZmProgressController._progressDialog) {
-		var dialog = ZmProgressController._progressDialog = appCtxt.getCancelMsgDialog();
-		dialog.reset();
+	if (!this._progressDialog ) {
+		var dialog = this._progressDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.YES_BUTTON, DwtDialog.CANCEL_BUTTON], id: Dwt.getNextId("ZmProgressControllerDialog_")});
 		dialog.registerCallback(DwtDialog.CANCEL_BUTTON, new AjxCallback(this, this._cancelAction));
-	}
-	return ZmProgressController._progressDialog;
+		dialog.registerCallback(DwtDialog.YES_BUTTON, new AjxCallback(this, this._runInBackgroundAction));
+        dialog.getButton(DwtDialog.YES_BUTTON).setText(ZmMsg.runInBackground);
+    }
+    this._progressDialog.getButton(DwtDialog.YES_BUTTON).setVisible(this._totalNumMsgs <= appCtxt.get(ZmSetting.FILTER_BATCH_SIZE));
+	return this._progressDialog;
 };
 
 ZmProgressController.prototype._getFinishedDialog =
@@ -81,7 +84,7 @@ ZmProgressController.prototype.start =
 function(folderList, work) {
 	this._currentWork = work;
 	this._currentRun = new ZmProgressRun(folderList);
-
+    this._totalNumMsgs = this.getNumMsgs(folderList);
 	this._nextChunk();
 };
 
@@ -93,23 +96,41 @@ ZmProgressController.prototype._nextChunk =
 function() {
 	var run = this._currentRun;
 	var work = this._currentWork;
-	var searchParams = {
-		query:		this._getFolderQuery(run._folderList),
-		types:		ZmItem.MSG,
-		limit:		ZmProgressRun.CHUNK_SIZE,
-		idsOnly:	true
-	};
-
-	if (run._lastItem) {
-		//this is not the first chunk - supply the last id and sort val to the search.
-		searchParams.lastId = run._lastItem.id;
-		searchParams.lastSortVal = run._lastItem.sf;
-		DBG.println("progress", "***** progress search: " + searchParams.query + " --- " + [run._lastItem.id, run._lastItem.sf].join("/"));
+	if (run._runInBackground) {
+		//don't get Ids
+		this._handleRunInBackground(this._getFolderQuery(run._folderList));	
 	}
+	else {
+		var searchParams = {
+			query:		this._getFolderQuery(run._folderList),
+			types:		ZmItem.MSG,
+			limit:		ZmProgressController.CHUNK_SIZE,
+			idsOnly:	true,
+			noBusyOverlay: true
+		};
+	
+		if (run._lastItem) {
+			//this is not the first chunk - supply the last id and sort val to the search.
+			searchParams.lastId = run._lastItem.id;
+			searchParams.lastSortVal = run._lastItem.sf;
+			AjxDebug.println(AjxDebug.PROGRESS, "***** progress search: " + searchParams.query + " --- " + [run._lastItem.id, run._lastItem.sf].join("/"));
+		}
+	
+		var search = new ZmSearch(searchParams);
+		var respCallback = new AjxCallback(this, this._handleSearchResults);
+		appCtxt.getSearchController().redoSearch(search, true, null, respCallback);
+	}
+};
 
-	var search = new ZmSearch(searchParams);
-	var respCallback = new AjxCallback(this, this._handleSearchResults);
-	appCtxt.getSearchController().redoSearch(search, true, null, respCallback);
+ZmProgressController.prototype._handleRunInBackground = 
+function(query) {
+	var run = this._currentRun;
+	if (run._cancelled) {
+		return;
+	}
+	run._finished = true; //running all at once
+	var afterWorkCallback = new AjxCallback(this, this._afterChunk);
+	this._currentWork.doWork(null, query, afterWorkCallback); //callback the work to do it's job on the message ids	
 };
 
 /**
@@ -126,9 +147,9 @@ function(result) {
 	var response = result.getResponse();
 	var items = response.getResults();
 
-	DBG.println("progress", "progress search results: " + items.length);
+	AjxDebug.println(AjxDebug.PROGRESS, "progress search results: " + items.length);
 	if (!items.length) {
-		DBG.println(AjxDebug.DBG1, "progress with empty search results!");
+		AjxDebug.println(AjxDebug.PROGRESS, "progress with empty search results!");
 		return;
 	}
 
@@ -140,7 +161,7 @@ function(result) {
 	items = this._getIds(items);
 
 	var afterWorkCallback = new AjxCallback(this, this._afterChunk);
-	this._currentWork.doWork(items, afterWorkCallback); //callback the work to do it's job on the message ids
+	this._currentWork.doWork(items, null, afterWorkCallback); //callback the work to do it's job on the message ids
 
 };
 
@@ -161,18 +182,20 @@ function() {
 		if (progDialog.isPoppedUp()) {
 			progDialog.popdown();
 		}
-		var finishedMessage = work.getFinishedMessage(run._totalMessagesProcessed);
+		var messagesProcessed = run._runInBackground ? false : run._totalMessagesProcessed;
+		var finishedMessage = work.getFinishedMessage(messagesProcessed);
 		var finishDialog = this._getFinishedDialog();
 		finishDialog.setMessage(finishedMessage, DwtMessageDialog.INFO_STYLE, work.getFinishedTitle());
 		finishDialog.popup();
 		return;
 	}
 
-	var workMessage = work.getProgressMessage(run._totalMessagesProcessed);
-	progDialog.setMessage(workMessage, DwtMessageDialog.INFO_STYLE, work.getProgressTitle());
-
-	if (!progDialog.isPoppedUp()) {
-		progDialog.popup();
+	if (!run._runInBackground) {
+		var workMessage = work.getProgressMessage(run._totalMessagesProcessed);
+		progDialog.setMessage(workMessage, DwtMessageDialog.INFO_STYLE, work.getProgressTitle());
+		if (!progDialog.isPoppedUp()) {
+			progDialog.popup();
+		}
 	}
 
 	this._nextChunk();
@@ -209,6 +232,24 @@ function(folderList) {
 
 };
 
+/**
+ * Determine total number of messages filters are being applied to.
+ * @param folderList {ZmOrganizer[]} array of folders
+ * @return {int} number of messages
+ */
+ZmProgressController.prototype.getNumMsgs = 
+function(folderList) {
+    var numMsgs = 0;
+    if (!(folderList instanceof Array)) {
+        folderList = [folderList];
+    }
+
+    for (var j = 0; j < folderList.length; j++) {
+        numMsgs += folderList[j].numTotal;
+    }
+    return numMsgs;
+};
+
 ZmProgressController.prototype._cancelAction =
 function() {
 	this._currentRun._cancelled = true;
@@ -218,6 +259,15 @@ function() {
 	}
 };
 
+ZmProgressController.prototype._runInBackgroundAction = 
+function() {
+	this._currentRun._runInBackground = true;
+	var dialog = this._getProgressDialog();
+	if (dialog && dialog.isPoppedUp()) {
+		dialog.popdown();
+	}
+	AjxDebug.println(AjxDebug.PROGRESS, "set to run in background");
+};
 
 /**
  * internal class to keep track of progress, with last item processed, total messages processed, and the folder list we work on
@@ -228,8 +278,5 @@ ZmProgressRun = function(folderList) {
 	this._totalMessagesProcessed = 0;
 	this._folderList = folderList;
 };
+
 ZmProgressRun.CHUNK_SIZE = 100;
-
-
-
-

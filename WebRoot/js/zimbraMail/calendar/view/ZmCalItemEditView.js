@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -56,6 +56,9 @@ ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle, 
 	this._kbMgr = appCtxt.getKeyboardMgr();
     this._isForward = false;
     this._isProposeTime = false;
+
+    this._customRecurDialogCallback = null;
+    this._enableCustomRecurCallback = true;
 };
 
 ZmCalItemEditView.prototype = new DwtComposite;
@@ -128,7 +131,7 @@ function() {
 
 	// clear out all input fields
 	this._subjectField.setValue("");
-	this._notesHtmlEditor.setContent("");
+    this._notesHtmlEditor.clear();
 
     if(this._hasRepeatSupport) {
         this._repeatDescField.innerHTML = "";
@@ -259,16 +262,16 @@ function(calItem, attach) {
 
 	// add file input field
 	var div = document.createElement("div");
-
-	var attachRemoveId = "_att_" + Dwt.getNextId();
-	var attachInputId = "_att_" + Dwt.getNextId();
-    var sizeContId = "_att_" + Dwt.getNextId();
+    var id = this._htmlElId;
+	var attachRemoveId = id + "_att_" + Dwt.getNextId();
+	var attachInputId = id + "_att_" + Dwt.getNextId();
+    var sizeContId = id + "_att_" + Dwt.getNextId();
 
 	if (attach) {
-		div.innerHTML = calItem.getAttachListHtml(attach, true);
+		div.innerHTML = ZmApptViewHelper.getAttachListHtml(calItem, attach, true);
 	} else {
 		var subs = {
-			id: this._htmlElId,
+			id: id,
 			attachInputId: attachInputId,
 			attachRemoveId: attachRemoveId,
             sizeId: sizeContId,
@@ -541,7 +544,7 @@ function(calItem, mode) {
 	this._subjectField.setValue(subject);
     if(subject) {
         buttonText = subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT);
-        appCtxt.getAppViewMgr().setTabTitle(this._controller.viewId, buttonText);
+        appCtxt.getAppViewMgr().setTabTitle(this._controller.getCurrentViewId(), buttonText);
     }
     if (this._hasRepeatSupport) {
         this._repeatSelect.setSelectedValue(calItem.getRecurType());
@@ -592,45 +595,23 @@ function(calItem) {
 ZmCalItemEditView.prototype._setContent =
 function(calItem, mode) {
 
-    //TODO: remove the commented lines once the review is passed.
-	// set notes/content (based on compose mode per user prefs)
-	/*if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML))
-	{
-		this._controller.setFormatBtnItem(true, DwtHtmlEditor.HTML);
-		this.setComposeMode(DwtHtmlEditor.HTML);
-        var notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_HTML)
-        if(this._isForward && !calItem.isOrganizer()) {
-            var preface = [ZmMsg.DASHES, " ", ZmMsg.originalAppointment, " ", ZmMsg.DASHES].join("");
-            var crlf2 = "<br><br>";
-            var crlf = "<br>";
-            notesPart = crlf2 + preface + crlf + calItem.getInviteDescription(true);
-            notesPart = this.formatContent(notesPart, true);
-        }
-		this._notesHtmlEditor.setContent(notesPart);
-	}
-	else {
-		this._controller.setFormatBtnItem(true, ZmMimeTable.TEXT_PLAIN);
-		this.setComposeMode(DwtHtmlEditor.TEXT);
-        var notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN);
-        if(this._isForward && !calItem.isOrganizer()) {
-            var preface = [ZmMsg.DASHES, " ", ZmMsg.originalAppointment, " ", ZmMsg.DASHES].join("");
-            var crlf2 = ZmMsg.CRLF2;
-            var crlf = ZmMsg.CRLF;
-            notesPart = crlf2 + preface + crlf + calItem.getInviteDescription(false);
-            notesPart = this.formatContent(notesPart, false);
-        }
-		this._notesHtmlEditor.setContent(notesPart);
-	} */
-    //bug:60541 determining the notes format based on content
-    var notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN);
+    var isSavedinHTML = false,
+        notesHtmlPart = calItem.getNotesPart(ZmMimeTable.TEXT_HTML),
+        notesPart;
 
-    var notesHtmlPart = calItem.getNotesPart(ZmMimeTable.TEXT_HTML);
-    var pattern = /<div(.*?)>[\S\s]*?<\/div>/gi;
-    var pMatch = notesHtmlPart.match(pattern);
-    var isSavedinHTML = false;
+    if (calItem.notesTopPart) { //Already existing appointment
+        var pattern = /<div(.*?)>[\S\s]*?<\/div>/gi;
+        var pMatch = notesHtmlPart.match(pattern);
+        if (pMatch != null && pMatch[0] != null) {
+            isSavedinHTML = true;
+        }
+    }
+    else if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) === ZmSetting.COMPOSE_HTML)) {
+        isSavedinHTML = true;
+    }
 
-    if(pMatch != null && pMatch[0] != null) {
-       isSavedinHTML = true;
+    if( !isSavedinHTML ){
+        notesPart = calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN);
     }
 
     this._controller.setFormatBtnItem(true, isSavedinHTML ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
@@ -667,6 +648,11 @@ function(body, composingHtml) {
     }
     return body;
 };
+
+ZmCalItemEditView.prototype.getRepeatType =
+function() {
+    return this._repeatSelectDisabled ? "NON" : this._repeatSelect.getValue();
+}
 
 /**
  * sets any recurrence rules w/in given ZmCalItem object
@@ -717,6 +703,7 @@ function(width) {
 	var params = {
 		parent: this,
 		parentElement: (this._htmlElId + "_subject"),
+		inputId: this.parent._htmlElId + "_subject_input",
 		type: DwtInputField.STRING,
 		errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 		validationStyle: DwtInputField.CONTINUAL_VALIDATION
@@ -792,20 +779,15 @@ function(width) {
     this._notesContainer = document.getElementById(this._htmlElId + "_notes");
     this._topContainer = document.getElementById(this._htmlElId + "_top");
 
-	// notes ZmHtmlEditor
-    //	if (window.isTinyMCE) {
-    //		this._notesHtmlEditor = new ZmAdvancedHtmlEditor(this, null, null, this._composeMode);
-    //		this._notesHtmlEditor.addOnContentInitializedListener(new AjxCallback(this,this.resizeNotesEditor));
-    //        //tinymce editor issue: reparenting the container breaks the editor
-    //		//this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
-    //		// bug: 19079 to avoid access denied exception set some content which corrects the doc domain
-    //		this._notesHtmlEditor.setContent("");
-    //	} else {
-		this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode);
-		this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
-		// bug: 19079 to avoid access denied exception set some content which corrects the doc domain
-		this._notesHtmlEditor.setContent("");
-    //	}
+    if( appCtxt.isTinyMCEEnabled() ) {
+        this._notesHtmlEditor = new ZmAdvancedHtmlEditor(this, null, null, this._composeMode, null, this._htmlElId + "_notes");
+        this._notesHtmlEditor.addOnContentInitializedListener(new AjxCallback(this,this.resizeNotesEditor));
+    } else {
+        this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode);
+        this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
+        // bug: 19079 to avoid access denied exception set some content which corrects the doc domain
+        this._notesHtmlEditor.setContent("");
+    }
 };
 
 ZmCalItemEditView.prototype._handleReminderOnBlur =
@@ -841,6 +823,7 @@ function() {
 	// create new table row which will contain parent fieldset
 	var table = document.getElementById(this._htmlElId + "_table");
 	this._attachmentRow = table.insertRow(-1);
+    this._attachmentRow.id = this._htmlElId + "_attachment_container"
 	var cell = this._attachmentRow.insertCell(-1);
 	cell.colSpan = 2;
 
@@ -859,10 +842,14 @@ function() {
 // Returns true if any of the attachment fields are populated
 ZmCalItemEditView.prototype._gotAttachments =
 function() {
+    var id = this._htmlElId;
+    if(!this._attachCount || !this._attachDiv) {
+        return false;
+    }
 	var atts = document.getElementsByName(ZmCalItemEditView.UPLOAD_FIELD_NAME);
 
 	for (var i = 0; i < atts.length; i++) {
-		if (atts[i].value.length)
+		if (atts[i].id.indexOf(id) === 0 && atts[i].value.length)
 			return true;
 	}
 
@@ -910,16 +897,16 @@ function(removeId) {
 ZmCalItemEditView.prototype._removeAllAttachments =
 function() {
 	if (this._attachCount == 0) { return; }
-
+    var attachRow = document.getElementById(this._htmlElId + "_attachment_container");
+    attachRow.innerHTML = "";
+    attachRow.style.display="none";
 	// let's be paranoid and really cleanup
 	delete this._uploadFormId;
 	delete this._attachDivId;
 	delete this._attachRemoveId;
 	delete this._attachDiv;
 	this._attachDiv = this._attachRemoveId = this._attachDivId = this._uploadFormId = null;
-	// finally, nuke the whole table row
-	var table = document.getElementById(this._htmlElId + "_table");
-	table.deleteRow(table.rows.length-1);
+
 	delete this._attachmentRow;
 	this._attachmentRow = null;
 	// reset any attachment related vars
@@ -1119,7 +1106,11 @@ function(ev) {
         {
             this._checkRecurrenceValidity = true;
             this._initRecurDialog(repeatType);
+            // Internal call of the custom recurrence dialog code -
+            // Suppress the callback function
+            this._enableCustomRecurCallback = false;
             this._recurOkListener();
+            this._enableCustomRecurCallback = true;
         }
         else
         {
@@ -1158,8 +1149,8 @@ function(ev) {
 	var popdown = true;
 	this._recurDialogRepeatValue = this._recurDialog.getSelectedRepeatValue();
 	if (this._recurDialogRepeatValue == "NON") {
-		this._repeatSelect.setSelectedValue(this._recurDialogRepeatValue);
-		this._repeatDescField.innerHTML = "";
+        this._repeatSelect.setSelectedValue(this._recurDialogRepeatValue);
+        this._repeatDescField.innerHTML = "";
 	} else {
 		if (this._recurDialog.isValid()) {
 			this._repeatSelect.setSelectedValue("CUS");
@@ -1197,6 +1188,9 @@ function(ev) {
 	if (popdown) {
 		this._recurDialog.popdown();
 	}
+    if (this._customRecurDialogCallback && this._enableCustomRecurCallback) {
+        this._customRecurDialogCallback.run();
+    }
 };
 
 ZmCalItemEditView.prototype.validateRecurrence =
@@ -1340,7 +1334,11 @@ function(sd) {
 		this._oldEndDate = temp._endDate;
 		this._checkRecurrenceValidity = true;
 		this._initRecurDialog(repeatType);
-		this._recurOkListener();		
+		// Internal call of the custom recurrence dialog code -
+		// Suppress the callback function
+		this._enableCustomRecurCallback = false;
+		this._recurOkListener();
+		this._enableCustomRecurCallback = true;
 	}
 	else
 	{

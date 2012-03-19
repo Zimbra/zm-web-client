@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -29,6 +29,10 @@
  */
 ZmAuthenticate = function() {}
 
+ZmAuthenticate.prototype.isZmAuthenticate = true;
+ZmAuthenticate.prototype.toString = function() { return "ZmAuthenticate"; };
+
+
 ZmAuthenticate._isAdmin = false;
 
 /**
@@ -39,16 +43,6 @@ ZmAuthenticate._isAdmin = false;
 ZmAuthenticate.setAdmin =
 function(isAdmin) {
 	ZmAuthenticate._isAdmin = isAdmin;
-};
-
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmAuthenticate.prototype.toString = 
-function() {
-	return "ZmAuthenticate";
 };
 
 /**

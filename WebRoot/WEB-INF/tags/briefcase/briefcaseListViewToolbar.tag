@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -53,7 +53,7 @@
                             <option disabled /><fmt:message key="actionOptSep"/>
                             <zm:forEachFolder var="folder">
                                 <c:if test="${folder.isDocumentMoveTarget and !folder.isTrash}">
-                                    <option value="m:${folder.id}" />${fn:escapeXml(zm:getFolderPath(pageContext, folder.id))}
+                                    <option value="m:${folder.id}" />${zm:getFolderPath(pageContext, folder.id)}
                                 </c:if>
                             </zm:forEachFolder>
                         </select>

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -138,7 +138,7 @@ ZmPortalApp.prototype._handleLoadManifest = function(callback, req) {
         try {
             // serialize manifest into JSON and evaluate
             var json = new AjxJsonSerializer(true).serialize(req.responseXML);
-            eval("this._manifest = "+json);
+			this._manifest = JSON.parse(json);
 
             // further minimize the object structure
             var portalDef = this._manifest.portal ;

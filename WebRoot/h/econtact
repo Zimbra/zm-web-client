@@ -63,7 +63,7 @@
             <zm:getContact id="${contactId}" var="contact"/>
             <c:set var="noDisplayAs"><fmt:message key="noDisplayAs"/></c:set>
             <c:set var="fileAsStr"><app:contactFileAs contact="${contact}" /></c:set>
-            <c:set var="title" value="${empty contact.displayFileAs ? noDisplayAs : fileAsStr}" />
+            <c:set var="title" value="${zm:unCook(empty contact.displayFileAs ? noDisplayAs : fileAsStr)}" />
         </c:otherwise>
     </c:choose>
 </app:handleError>

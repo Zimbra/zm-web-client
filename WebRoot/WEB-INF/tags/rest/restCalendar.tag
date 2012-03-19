@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -62,7 +62,7 @@
         <rest:multiDayView mailbox="${mailbox}" timezone="${timezone}" date="${dateContext}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>
     </c:when>
     <c:when test="${view eq 'workWeek'}">
-        <rest:multiDayView mailbox="${mailbox}" timezone="${timezone}" date="${dateContext}" view='${view}' numdays="5"/>
+        <rest:multiDayView mailbox="${mailbox}" timezone="${timezone}" date="${dateContext}" view='${view}' numdays="7"/>
     </c:when>
     <c:when test="${view eq 'week'}">
         <rest:multiDayView mailbox="${mailbox}" timezone="${timezone}" date="${dateContext}" view='${view}' numdays="7"/>

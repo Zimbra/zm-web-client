@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -58,7 +58,7 @@
 												<zm:forEachFolder var="folder">
 													<c:if test="${folder.isContactCreateTarget}">
 														<option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.id)}">selected </c:if> value="${folder.id}" />
-														${zm:cook(zm:getFolderName(pageContext, folder.id))}
+														${zm:getFolderName(pageContext, folder.id)}
 													</c:if>
 												</zm:forEachFolder>
 											</select>
@@ -120,7 +120,7 @@
                         <c:if test="${folder.isContactCreateTarget}">
                             <option <c:if test="${(empty contact and ((context.selectedId eq (folder.isMountPoint ? folder.canonicalId : folder.id)) or (empty context.selectedId and folder.isContacts)))
                             or (!empty contact and (contact.folderId eq (folder.isMountPoint ? folder.canonicalId : folder.id)))}">selected </c:if> value="${folder.id}">
-                            ${zm:cook(zm:getFolderName(pageContext, folder.id))}</option>
+                            ${zm:getFolderName(pageContext, folder.id) }</option>
                         </c:if>
                     </zm:forEachFolder>
                 </select>

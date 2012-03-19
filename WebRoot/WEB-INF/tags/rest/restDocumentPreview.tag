@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011 VMware, Inc.
+ * Copyright (C) 2009, 2010 Zimbra, Inc.
  *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -23,7 +23,7 @@
     <fmt:getLocale var="locale"/>
     <fmt:setLocale value="${not empty param.localeId ? param.localeId : (not empty requestScope.zimbra_target_account_prefLocale ? requestScope.zimbra_target_account_prefLocale : locale)}"/>
     <zm:getDocument var="doc" box="${mailbox}" id="${requestScope.zimbra_target_account_id}:${requestScope.zimbra_target_item_id}"/>
-    <fmt:setBundle basename="/messages/ZhMsg" scope='request'/>
+    <fmt:setBundle basename="/messages/ZhMsg" scope='request'/> 
 </rest:handleError>
 <c:set var="isViewOnly" value="${not empty param.viewonly}" scope="request"/>
 <html>

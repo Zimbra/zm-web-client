@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -13,13 +13,8 @@
  * ***** END LICENSE BLOCK *****
  */
 /*
- * Package: NotebookCore
+ * Package: BriefcaseCore
  * 
- * Supports: Loading of a notebook
- * 
- * Loaded:
- * 	- When a notebook object arrives in a <refresh> block
- * 	- When a search for pages/documents returns data
  */
 AjxPackage.require("zimbraMail.briefcase.model.ZmBriefcase");
 AjxPackage.require("zimbraMail.briefcase.model.ZmBriefcaseItem");

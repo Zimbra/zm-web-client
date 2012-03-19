@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -32,12 +32,11 @@ ZmApptDeleteNotifyDialog = function(params) {
 
     params = Dwt.getParams(arguments, ZmApptDeleteNotifyDialog.PARAMS);
     var buttons = [ DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON ];
-    DwtDialog.call(this, {parent: params.parent, standardButtons:buttons});
+    DwtDialog.call(this, {parent: params.parent, standardButtons:buttons, id:"CONFIRM_DELETE_APPT_DIALOG"});
 
     this._choiceLabel1 = params.choiceLabel1;
     this._choiceLabel2 = params.choiceLabel2;
-    this._confirmMsg   = params.confirmMsg;
-    this._choice2WarningMsg = params.choice2WarningMsg;
+    this._confirmMsg = params.confirmMsg;
 
 	this.setTitle(params.title || AjxMsg.confirmTitle);
 	this.setContent(this._setHtml());
@@ -113,23 +112,25 @@ function() {
 	html[i++] = this._confirmMsg;
 	html[i++] = "<br>";
 	html[i++] = "</div><p>";
-	html[i++] = "<table align=center border=0 width='400px'>";
+	html[i++] = "<table align=center border=0 width=1%>";
 	html[i++] = "<tr><td width=1%><input checked value='1' type='radio' id='";
 	html[i++] = this._defaultRadioId;
 	html[i++] = "' name='";
 	html[i++] = this._notifyChoiceName;
 	html[i++] = "'></td><td style='white-space:nowrap'>";
+	html[i++] = "<label for='" + this._defaultRadioId + "'>";
 	html[i++] = this._choiceLabel1;
+	html[i++] = "</label>";
 	html[i++] = "</td></tr>";
-	html[i++] = "<tr><td width=1% valign=top><input value='2' type='radio' name='";
+	html[i++] = "<tr><td width=1%><input value='2' type='radio' id='";
+	html[i++] = this._defaultRadioId + this._notifyChoiceName;
+	html[i++] = "' name='";
 	html[i++] = this._notifyChoiceName;
 	html[i++] = "'></td><td style='white-space:nowrap'>";
+	html[i++] = "<label for='" + this._defaultRadioId + this._notifyChoiceName + "'>"
 	html[i++] = this._choiceLabel2;
-	if (this._choice2WarningMsg) {
-		html[i++] = "<br><span style='font-style:italic'>" + this._choice2WarningMsg + "</span>";
-	}
+	html[i++] = "</label>";
 	html[i++] = "</td></tr>";
-
 	html[i++] = "</table>";
 
 	return html.join("");

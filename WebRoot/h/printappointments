@@ -122,7 +122,7 @@ action="compose" paction="view" id="${msg.id}"/>
                         <c:set var="folderImage" value="${zm:getFolder(pageContext, message.folderId).image}"/>
                         <app:img altkey='ALT_CONTACT_FOLDER' src="${folderImage}"/>
                     </td>
-                    <td class="companyFolder">${fn:escapeXml(zm:getFolderName(pageContext, message.folderId))}</td>
+                    <td class="companyFolder">${zm:getFolderName(pageContext, message.folderId)}</td>
                 </tr>
             </table>
         </td>

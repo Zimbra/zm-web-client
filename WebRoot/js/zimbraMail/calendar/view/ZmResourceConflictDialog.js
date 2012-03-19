@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -116,7 +116,7 @@ function(html, inst, data, attendeeMap, needSep) {
         if(!(usr instanceof Array)) {
             usr = [usr];
         }
-        for(var i in usr) {
+        for(var i = 0; i < usr.length; i++) {
 			var fbStatusStr = "";
 
             var name = usr[i].name;			
@@ -185,16 +185,16 @@ function(list, appt, callback, cancelCallback) {
 	this._list = list;
 	this._appt = appt;
 	this._instData = {};
-	this._callback = callback;
+    this._callback = callback;
     this._cancelCallback = cancelCallback;
 	this._canceledInstanceCount = 0;
 	
 	var attendeeMap = {};
 	var types = [ZmCalBaseItem.PERSON, ZmCalBaseItem.LOCATION, ZmCalBaseItem.EQUIPMENT];
 	
-	for(var i in types) {
+	for(var i = 0; i < types.length; i++) {
 		var attendees = appt.getAttendees(types[i]);
-		for(var j in attendees) {
+		for(var j = 0; j < attendees.length; j++) {
 			var at = attendees[j];
 			var email = at ? at.getEmail() : null;
 			if(email) {

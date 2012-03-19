@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -74,8 +74,14 @@ function(){
 };
 
 ZmZimletsPage.prototype.showMe =
-function(){
-	ZmPreferencesPage.prototype.showMe.call(this);
+function(deferred){
+	ZmPreferencesPage.prototype.showMe.call(this);	
+	if (!appCtxt.getZimletMgr().getZimlets().length) {
+		if (!deferred) {
+			appCtxt.getAppController().addListener(ZmAppEvent.POST_STARTUP, new AjxListener(this, this.showMe, [true]));
+		}
+		return;
+	}
 	if (this._listView) {
 		var s = this._listView.getSelection();
 		this._listView.set(this.getZimlets()._vector.clone());
@@ -392,15 +398,28 @@ function(name) {
 ZmZimletsPage.prototype.isDirty =
 function() {
 	var allZimlets = this.getZimlets();
-	var r = false;
+	var dirty = false;
 	var arr = allZimlets._vector.getArray();
+	var dirtyZimlets = [];
+
+	var printZimlet = function(zimlet) {
+		if (AjxUtil.isArray(zimlet)) {
+			return AjxUtil.map(zimlet, printZimlet).join("\n");
+		}
+		return [zimlet.name," (from ",zimlet._origStatus," to ",zimlet.active,")"].join("");
+	}
+
 	for (var i = 0; i < arr.length; i++) {
 		if (arr[i]._origStatus != arr[i].active) {
-			r = true;
-			break;
+			dirty = true;
+			dirtyZimlets.push(arr[i]);
 		}
 	}
-	return r;
+
+	if (dirty) {
+		AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\n" + "Dirty zimlets:\n" + printZimlet(dirtyZimlets));
+	}
+	return dirty;
 };
 
 /**

@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -24,5 +24,5 @@
 <c:set var="tags" value="${zm:getTags(pageContext, ids)}"/>
 <c:set var="tagNames" value="${fn:escapeXml(zm:getTagNames(pageContext, ids))}"/>
 <c:if test="${fn:length(tags) eq 0}">&nbsp;</c:if>
-<c:if test="${fn:length(tags) eq 1}"><app:img src="${tags[0].miniImage}" alt="${fn:escapeXml(tagNames)}" rawtitle="true" title="${fn:escapeXml(tagNames)}"/></c:if>
-<c:if test="${fn:length(tags) gt 1}"><app:img src="startup/ImgTagStack.png" alt="${fn:escapeXml(tagNames)}" rawtitle="true" title="${fn:escapeXml(tagNames)}"/></c:if>
+<c:if test="${fn:length(tags) eq 1}"><app:img src="${tags[0].miniImage}" alt="${tagNames}" rawtitle="true" title="${tagNames}"/></c:if>
+<c:if test="${fn:length(tags) gt 1}"><app:img src="startup/ImgTagStack.png" alt="${tagNames}" rawtitle="true" title="${tagNames}"/></c:if>

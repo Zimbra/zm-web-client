@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -54,6 +54,10 @@ ZmFolder = function(params) {
 ZmFolder.prototype = new ZmOrganizer;
 ZmFolder.prototype.constructor = ZmFolder;
 
+ZmFolder.prototype.isZmFolder = true;
+ZmFolder.prototype.toString = function() { return "ZmFolder"; };
+
+
 // needed to construct USER_ROOT if mail disabled
 ZmOrganizer.ORG_CLASS[ZmId.ORG_FOLDER] = "ZmFolder";
 
@@ -77,6 +81,7 @@ ZmFolder.ID_SYNC_FAILURES						= ZmOrganizer.ID_SYNC_FAILURES;
 ZmFolder.ID_OUTBOX	 							= ZmOrganizer.ID_OUTBOX;
 ZmFolder.ID_CHATS	 							= ZmOrganizer.ID_CHATS;
 ZmFolder.ID_ATTACHMENTS                         = ZmOrganizer.ID_ATTACHMENTS;
+ZmFolder.ID_DLS									= ZmOrganizer.ID_DLS;
 
 // system folder names
 ZmFolder.MSG_KEY = {};
@@ -90,7 +95,6 @@ ZmFolder.MSG_KEY[ZmFolder.ID_AUTO_ADDED]		= "emailedContacts";
 ZmFolder.MSG_KEY[ZmFolder.ID_TASKS]				= "tasks";
 ZmFolder.MSG_KEY[ZmFolder.ID_TAGS]				= "tags";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_CALENDAR]		= "calendar";
-ZmFolder.MSG_KEY[ZmOrganizer.ID_NOTEBOOK]		= "notebook";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_BRIEFCASE]		= "briefcase";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_CHATS]			= "chats";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_ALL_MAILBOXES]	= "allMailboxes";
@@ -122,7 +126,6 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]			= "drafts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]		= "contacts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_TASKS]			= "tasks";
 ZmFolder.QUERY_NAME[ZmFolder.ID_AUTO_ADDED]		= "Emailed Contacts";
-ZmFolder.QUERY_NAME[ZmOrganizer.ID_NOTEBOOK]	= "notebook";
 ZmFolder.QUERY_NAME[ZmOrganizer.ID_BRIEFCASE]	= "briefcase";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CHATS]			= "chats";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SYNC_FAILURES]	= "Error Reports";
@@ -265,9 +268,9 @@ function(name, parent) {
 				return ZmMsg.folderNameReserved;
 			}
 		}
-		if (lname == ZmFolder.SYNC_ISSUES.toLowerCase()) {
+		/*if (lname == ZmFolder.SYNC_ISSUES.toLowerCase()) {
 			return ZmMsg.folderNameReserved;
-		}
+		}*/
 	}
 
 	return null;
@@ -288,16 +291,6 @@ function(folderName) {
 		}
 	}
 	return null;
-};
-
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmFolder.prototype.toString =
-function() {
-	return "ZmFolder";
 };
 
 /**
@@ -588,28 +581,32 @@ function(otherAccount) {
 ZmFolder.prototype.mayContain =
 function(what, folderType, ignoreExisting) {
 	if (!what) { return true; }
-	if (this.isFeed() || this.isSyncIssuesFolder()) { return false; }
+	if (this.isFeed() /*|| this.isSyncIssuesFolder()*/) { return false; }
 
 	var thisType = folderType || this.type;
 	var invalid = false;
 	if (what instanceof ZmFolder) {
-		invalid = ((what.parent == this && !ignoreExisting) || this.isChildOf(what) || this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_SPAM ||
+        invalid = ((what.parent == this && !ignoreExisting) || this.isChildOf(what) || this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_SPAM ||
 				   (!this.isInTrash() && this.hasChild(what.name) && !ignoreExisting) ||
 				   (what.type == ZmOrganizer.FOLDER && thisType == ZmOrganizer.SEARCH) ||
 				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.nId == ZmOrganizer.ID_ROOT) ||
+                   (what.type == ZmOrganizer.TASKS && thisType == ZmOrganizer.SEARCH) ||
+                   (what.type == ZmOrganizer.ADDRBOOK && thisType == ZmOrganizer.SEARCH) ||
 				   (what.id == this.id) ||
 				   (what.disallowSubFolder) ||
 				   (appCtxt.multiAccounts && !this.mayContainFolderFromAccount(what.getAccount())) || // cannot move folders across accounts, unless the target is local
                    (this.isRemote() && !this._remoteMoveOk(what)) ||
 				   (what.isRemote() && !this._remoteMoveOk(what)));				// a remote folder can be DnD but not its children
-	} else {
+    } else {
 		// An item or an array of items is being moved
 		var items = AjxUtil.toArray(what);
 		var item = items[0];
 
-		if (this.nId == ZmOrganizer.ID_ROOT ||									// container can only have folders/searches
-			this.nId == ZmOrganizer.ID_OUTBOX ||								// nothing can be moved to outbox/sync failures folders
-			this.nId == ZmOrganizer.ID_SYNC_FAILURES)
+            // container can only have folders/searches or calendars
+		if ((this.nId == ZmOrganizer.ID_ROOT && (what.type != ZmOrganizer.CALENDAR)) ||
+             // nothing can be moved to outbox/sync failures folders
+			 this.nId == ZmOrganizer.ID_OUTBOX ||
+			 this.nId == ZmOrganizer.ID_SYNC_FAILURES)
 		{
 			invalid = true;
 		} else if (thisType == ZmOrganizer.SEARCH) {
@@ -636,7 +633,7 @@ function(what, folderType, ignoreExisting) {
                         invalid = true;
                         break;
                      }
-                } else if (childItem.isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
+                } else if (item.type == ZmItem.MSG && childItem.isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS && this.rid != ZmFolder.ID_DRAFTS)) {
 					// can move drafts into Trash or Drafts
 					invalid = true;
 					break;
@@ -677,7 +674,7 @@ function(what, folderType, ignoreExisting) {
 			// can't move items to folder they're already in; we're okay if we
 			// have one item from another folder
 			if (!invalid && !ignoreExisting) {
-				if (item.folderId) {
+				if (item && item.folderId) {
 					invalid = true;
 					for (var i = 0; i < items.length; i++) {
 						if (items[i].folderId != this.id) {
@@ -700,10 +697,13 @@ function(what, folderType, ignoreExisting) {
  * 
  * @return	{Boolean}	<code>true</code> if the folder is the one dealing with Outlook sync issues
  */
-ZmFolder.prototype.isSyncIssuesFolder =
+
+//Bug#68799 Removing special handling of the folder named "Sync Issues"
+
+/*ZmFolder.prototype.isSyncIssuesFolder =
 function() {
 	return (this.name == ZmFolder.SYNC_ISSUES);
-};
+};*/
 
 /**
  * Checks if this folder required hard delete.
@@ -757,4 +757,26 @@ function() {
 		}
 	}
 	return false;
+};
+
+
+/**
+ * Sets the Global Mark Read flag.  When the user sets this flag, read flags are global for all
+ * shared instances of the folder. When not set, each user accessing the shared folder will maintain
+ * their own read/unread flag.
+ *
+ * @param	{Object}	        globalMarkRead		the globalMarkRead boolean flag
+ * @param	{AjxCallback}	    callback		    the callback
+ * @param	{AjxCallback}	    errorCallback		the error callback
+ * @param   {ZmBatchCommand}    batchCmd            optional batch command
+ */
+ZmOrganizer.prototype.setGlobalMarkRead = function(globalMarkRead, callback, errorCallback, batchCmd) {
+	if (this.globalMarkRead == globalMarkRead) { return; }
+    // TODO: Bug 59559, awaiting server side implementation (Bug 24567)
+    // TODO: - For ZmFolderPropsDialog and ZmSharePropsDialog:
+    // TODO:     Make sure that the attrName is indeed globalMarkRead - used in the dialogs
+    // TODO:     Make the globalMarkRead labels and controls visible.
+    // TODO: - Uncomment this once the server call is ready, make sure action/attrs are correct
+	//this._organizerAction({action: "globalMarkRead", attrs: {globalMarkRead: globalMarkRead}, callback: callback,
+    //                       errorCallback: errorCallback, batchCmd: batchCmd});
 };

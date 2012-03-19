@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -13,7 +13,7 @@
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="empty" %>
-<%@ attribute name="rule" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZFilterRule" %>
+<%@ attribute name="rule" rtexprvalue="true" required="true" type="com.zimbra.client.ZFilterRule" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -180,9 +180,22 @@ action_stop                         stop checkbox (true)
     </td>
 </c:when>
 <c:when test="${zm:isDateCondition(condition)}">
+
+    <c:set var="split" value="${fn:split(requestScope.badDate,',')}"/>
+    <c:set var="thisBadDate" value="${split[condStatus.index]}"/>
     <c:set var="date" value="${zm:getDate(condition)}"/>
-    <fmt:message var="dateFmt" key="FILT_COND_DATE_FORMAT"/>
-    <fmt:formatDate pattern="${dateFmt}" value="${date.date}" var="fdate"/>
+
+    <c:choose>
+        <c:when test="${!empty thisBadDate}">
+            <c:set var="fdate" value="${thisBadDate}"/>
+            <c:set var="dateError" value="${true}"/>
+        </c:when>
+        <c:otherwise>
+            <fmt:message var="dateFmt" key="FILT_COND_DATE_FORMAT"/>
+            <fmt:formatDate pattern="${dateFmt}" value="${date.date}" var="fdate"/>
+        </c:otherwise>
+    </c:choose>
+
     <td>
         <input type="hidden" name="${condi}" value="date"/>
         <select name="${condi}_op">
@@ -193,7 +206,7 @@ action_stop                         stop checkbox (true)
         </select>
     </td>
     <td colspan='3'>
-        <input name='${condi}_value' type='text' autocomplete='off' size='20' value="${fn:escapeXml(fdate)}"> 
+        <input name='${condi}_value' type='text' autocomplete='off' size='20' value="${fn:escapeXml(fdate)}"<c:if test="${dateError}">style="border-color:#f00"</c:if> /> 
     </td>
 </c:when>
 <c:when test="${zm:isHeaderCondition(condition)}">
@@ -259,6 +272,39 @@ action_stop                         stop checkbox (true)
     <td colspan='3'>&nbsp;
     </td>
 </c:when>
+<c:when test="${zm:isAddressCondition(condition)}">
+    <c:set var="ab" value="${zm:getAddress(condition)}"/>
+    <td>
+        <input type="hidden" name="${condi}" value="address"/>
+        <c:set var="selected" value="${ab.headerName}"/>
+        <select name="${condi}_header" style='width:100%'>
+            <option <c:if test="${selected eq 'from'}">selected</c:if> value="from">
+                    <fmt:message key="EFILT_COND_addressIn"><fmt:param><fmt:message key="from"/></fmt:param></fmt:message>
+            <option <c:if test="${selected eq 'to'}">selected</c:if> value="to">
+                    <fmt:message key="EFILT_COND_addressIn"><fmt:param><fmt:message key="to"/></fmt:param></fmt:message>
+            <option <c:if test="${selected eq 'cc'}">selected</c:if> value="cc">
+                    <fmt:message key="EFILT_COND_addressIn"><fmt:param><fmt:message key="cc"/></fmt:param></fmt:message>
+            <option <c:if test="${selected eq 'to,cc'}">selected</c:if> value="to,cc">
+                    <fmt:message key="EFILT_COND_addressIn"><fmt:param><fmt:message key="tocc"/></fmt:param></fmt:message>
+            <option <c:if test="${selected eq 'bcc'}">selected</c:if> value="bcc">
+                    <fmt:message key="EFILT_COND_addressIn"><fmt:param><fmt:message key="bcc"/></fmt:param></fmt:message>
+        </select>
+    </td>
+    <td colspan='3'>
+        <select name="${condi}_op">
+            <option  value="IS"><fmt:message key="EFILT_COND_HEADER_IS"/>
+            <option  value="NOT_Is"><fmt:message key="EFILT_COND_HEADER_NOT_IS"/>
+            <option  value="CONTAINS"><fmt:message key="EFILT_COND_HEADER_CONTAINS"/>
+            <option  value="NOT_CONTAINS"><fmt:message key="EFILT_COND_HEADER_NOT_CONTAINS"/>
+            <option  value="MATCHES"><fmt:message key="EFILT_COND_HEADER_MATCHES"/>
+            <option  value="NOT_MATCHES"><fmt:message key="EFILT_COND_HEADER_NOT_MATCHES"/>
+        </select>
+    </td>
+    <td colspan=2>
+        <input name='${condi}_value' type='text' autocomplete='off' size='20' value="${fn:escapeXml(ab.headerValue)}">
+        <input type="hidden" name="${condi}" value="header"/>
+    </td>
+</c:when>
 </c:choose>
 <td align='right'>
     <c:if test="${condStatus.last}">
@@ -290,6 +336,7 @@ action_stop                         stop checkbox (true)
             <c:if test="${mailbox.features.contacts}">
             <option value="addressbook"><fmt:message key="EFILT_NEW_COND_ADDRESS_IN"/>
             </c:if>
+            <option value="address"><fmt:message key="EFILT_NEW_COND_ADDRESS"/></option>
         </select>
         <input class='tbButton' type="submit"
                name="actionNewCond" value="<fmt:message key="EFILT_add"/>">
@@ -357,7 +404,7 @@ action_stop                         stop checkbox (true)
                                                         <c:set var="label" value="${zm:getFolderPath(pageContext, folder.id)}"/>
                                                         <option value="${fn:escapeXml(folder.rootRelativePath)}"
                                                                 <c:if test="${fn:toLowerCase(folder.rootRelativePath) eq path}"> selected </c:if>
-                                                                >${fn:escapeXml(label)}</option>
+                                                                >${label}</option>
                                                     </c:if>
                                                 </zm:forEachFolder>
                                             </select>
@@ -423,7 +470,10 @@ action_stop                         stop checkbox (true)
                         <select name="action_add">
                             <option value="select"><fmt:message key="EFILT_NEW_ACTION_SELECT"/>
                             <option value="keep"><fmt:message key="EFILT_NEW_ACTION_KEEP"/>
-                            <option value="discard"><fmt:message key="EFILT_NEW_ACTION_DISCARD"/>
+                            <%--Display discard action only if zimbraFeatureDiscardInFiltersEnabled is true--%>
+                            <c:if test="${mailbox.features.discardFilterEnabled eq true}">
+                                <option value="discard"><fmt:message key="EFILT_NEW_ACTION_DISCARD"/>
+                            </c:if>
                             <option value="fileinto"><fmt:message key="EFILT_NEW_ACTION_FILEINTO"/>
                             <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
                             <option value="tag"><fmt:message key="EFILT_NEW_ACTION_TAG"/>

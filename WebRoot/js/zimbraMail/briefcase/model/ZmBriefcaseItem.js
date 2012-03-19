@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -360,7 +360,10 @@ function(node) {
 	if (node.name)	{ this.name = node.name; }
 	if (node.cr)	{ this.creator = node.cr; }
 	if (node.d)		{ this.createDate = new Date(Number(node.d)); }
-	if (node.md)	{ this.modifyDate = new Date(Number(node.md)); }
+	if (node.md)	{ //node.md is seconds since epoch
+        var mdMilliSecs = Number(node.md)*1000;
+        this.modifyDate = new Date(mdMilliSecs);
+    }
 	if (node.leb)	{ this.modifier = node.leb; }
 	if (node.s || node.s == 0) //size can be 0
                     { this.size = Number(node.s); }

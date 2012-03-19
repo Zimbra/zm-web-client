@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -40,8 +40,8 @@
 	<app:certifiedMessage var="reqHdr"/>
 	<c:if test="${context.searchResult.size ne '0' and mailbox.prefs.readingPaneLocation eq 'right' and not empty cid}">
 		<zm:searchConv  var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}" limit="${-1}" />
-        <c:set var="convSummary" value="${convSearchResult.conversationSummary}"/>
-        <c:if test="${empty csi}">
+        <c:set var="convSummary" value="${convSearchResult.conversationSummary}"/>        
+		<c:if test="${empty csi}">
 			<c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
 			<c:if test="${csi ge 0}">
 				<zm:getMessage var="msg" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : empty param.xim}" requestHeaders="${reqHdr}"/>
@@ -54,9 +54,9 @@
 			<c:if test="${csi lt 0 or csi ge convSearchResult.size}">
 				<c:set var="csi" value="0"/>
 			</c:if>
-			<zm:getMessage var="msg" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : empty param.xim}" requestHeaders="${reqHdr}"/>
+			<zm:getMessage var="msg" id="${not empty param.id and param.action ne 'compose' ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : empty param.xim}" requestHeaders="${reqHdr}"/>
 			<c:if test="${not empty msg.requestHeader}">
-				<zm:getMessage var="msg" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${false}" requestHeaders="${reqHdr}"/>				
+				<zm:getMessage var="msg" id="${not empty param.id and param.action ne 'compose' ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${false}" requestHeaders="${reqHdr}"/>				
 			</c:if>
 		</c:if>
 		<zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
@@ -99,29 +99,23 @@
 			<tbody id="mess_list_tbody">										
 				<c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
 					<c:set var="convHit" value="${hit.conversationHit}"/>
-					<c:choose>
-						<c:when test="${convHit.isDraft}">
-							<zm:currentResultUrl var="convUrl" value="search" index="${status.index}" context="${context}" usecache="true" id="${fn:substringAfter(convHit.id,'-')}" action="compose"/>
-						</c:when>
-                        <c:otherwise>
-                            <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action="${(mailbox.prefs.readingPaneLocation eq 'right' and param.action != 'paneView') ? 'paneView' : 'view'}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
-                            <zm:currentResultUrl var="collapseUrl" value="search" cid="${hit.id}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
-                        </c:otherwise>
-					</c:choose>
+					<zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action="${(mailbox.prefs.readingPaneLocation eq 'right' and param.action != 'paneView') ? 'paneView' : (hit.id eq param.cid ? 'view' : 'paneView2')}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+                    <zm:currentResultUrl var="expandUrl" value="search" cid="${hit.id}" action="paneView" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>                                       
+                    <zm:currentResultUrl var="collapseUrl" value="search" cid="${hit.id}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
                     <c:if test="${empty selectedRow and convHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
 					<c:set var="aid" value="A${status.index}"/>
-					<tr onclick='zSelectRow(event,"${aid}","C${status.index}")' id="R${status.index}" class='${status.index mod 2 eq 1 ? 'ZhRowOdd':'ZhRow'} ${convHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ''}'>
+					<tr onclick='zSelectRow(event,"B${status.index}","C${status.index}")' id="R${status.index}" class='${status.index mod 2 eq 1 ? 'ZhRowOdd':'ZhRow'} ${convHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ''}'>
 						<td class='CB' nowrap><input  id="C${status.index}" type="checkbox" name="id" value="${convHit.id}"></td>
                         <td class='Img' nowrap>
                             <c:choose>
                                 <c:when test="${convHit.messageCount > 1 and param.action == 'paneView' and hit.id eq param.cid}"><a href="${fn:escapeXml(collapseUrl)}" id="${aid}"><app:img src="startup/ImgNodeExpanded.png"/></a></c:when>
-                                <c:when test="${convHit.messageCount > 1}"><a href="${fn:escapeXml(convUrl)}" id="${aid}"><app:img src="startup/ImgNodeCollapsed.png"/></a></c:when>
+                                <c:when test="${convHit.messageCount > 1}"><a href="${fn:escapeXml(expandUrl)}" id="${aid}"><app:img src="startup/ImgNodeCollapsed.png"/></a></c:when>
                             </c:choose>
                         </td>
 						<td colspan="3" nowrap><%-- allow this column to wrap --%>
-							<c:set var="dispRec" value="${zm:truncate(convHit.displayRecipients,20,true)}"/>${fn:escapeXml(empty dispRec ? unknownRecipient : dispRec)} &nbsp;&nbsp; <c:if test="${convHit.messageCount > 1}">(${convHit.messageCount})&nbsp;</c:if>
+							<c:set var="dispRec" value="${zm:truncate(convHit.displayRecipients,20,true)}"/>${fn:escapeXml(empty dispRec ? unknownRecipient : dispRec)} &nbsp;&nbsp; <c:if test="${convHit.messageCount > 1 and not context.folder.isDrafts}">(${convHit.messageCount})&nbsp;</c:if>
 							<br>
-                            <a href="${fn:escapeXml(convUrl)}" id="${aid}">
+                            <a href="${fn:escapeXml(convUrl)}" id="B${status.index}">
                             	<c:set var='subj' value="${empty convHit.subject ? unknownSubject : zm:truncate(convHit.subject,100,true)}"/>
 								<span class="Fragment"><c:out value="${zm:truncate(subj,45,true)}"/></span>
 								<c:if test="${mailbox.prefs.showFragments and not empty convHit.fragment and fn:length(subj) lt 90}">
@@ -159,10 +153,10 @@
                     <c:if test="${context.searchResult.size ne '0' and mailbox.prefs.readingPaneLocation eq 'right' and not empty cid and (param.action eq 'paneView' or param.action eq 'paneView2') and convdisp eq 'true' and selectedRow eq status.index and convHit.messageCount > 1}">
                     <c:set var="convdisp" value="false"/>
                     <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="stat">
-                        <zm:currentResultUrl var="msgUrl" value="search" cid="${convSummary.id}" id="${hit.id}" action='${actionVar}' context="${context}"
-                                             cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
-                        <zm:currentResultUrl var="msgSepUrl" value="search" action="${msg.isDraft ? 'compose' : 'view'}" context="${context}"
-                                             cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}" st="${msg.isDraft ? '' : 'message'}" sc="" id="${msg.id}"/>
+                           <zm:currentResultUrl var="msgUrl" value="search" cid="${convSummary.id}" id="${hit.id}" action='${actionVar}' context="${context}"
+                                                                     cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
+                           <zm:currentResultUrl var="msgSepUrl" value="search" action="${msg.isDraft ? 'compose' : 'view'}" context="${context}"
+                                                                         cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}" st="${msg.isDraft ? '' : 'message'}" sc="" id="${msg.id}"/>
                            <c:set var="aid" value="A${stat.index}11"/>
                            <tr onclick='zSelectRow(event,"${aid}","C${stat.index}11")' id="R${stat.index}11" class='ZhRow${(hit.messageHit.isUnread and (hit.id != msg.id)) ? ' Unread':''}${hit.id eq msg.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : ' ZhConvExpanded')}'>
                                 <td class='CB' nowrap><input id="C${stat.index}11"<c:if test="${hit.id eq msg.id}">checked</c:if> type=checkbox name="idcv" value="${hit.id}"/></td>
@@ -171,7 +165,8 @@
                                 <td class='MsgStatusImg' align="right"><app:img src="${hit.messageHit.statusImage}" altkey='${hit.messageHit.statusImageAltKey}'/></td>
                                 <td nowrap> <%-- allow wrap --%>
                                     <a href="${hit.id eq msg.id ? fn:escapeXml(msgSepUrl) : fn:escapeXml(msgUrl)}" id="A${stat.index}11">
-                                    <br>
+                                    ${fn:escapeXml(hit.messageHit.displaySender)}
+                                    <br>                                    
                                         <c:if test="${mailbox.prefs.showFragments and not empty hit.messageHit.fragment}">
                                             <span class='Fragment'>${fn:escapeXml(empty hit.messageHit.fragment ? noFragment : zm:truncate(hit.messageHit.fragment,50, true))}</span>
                                         </c:if>
