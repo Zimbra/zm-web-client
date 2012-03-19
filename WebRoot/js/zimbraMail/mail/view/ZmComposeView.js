@@ -1398,6 +1398,9 @@ function(bEnableInputs) {
 
 	Dwt.setVisible(this._oboRow, false);
 
+    // Resetting Add attachments from original link option
+    Dwt.setVisible(ZmId.getViewId(this._view, ZmId.CMP_REPLY_ATT_ROW), false);
+
 	// remove extra mime parts
 	this._extraParts = null;
 
