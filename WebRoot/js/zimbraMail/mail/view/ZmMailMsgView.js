@@ -833,19 +833,8 @@ function(msg, parent, id) {
 		for (var i = 0; i < images.length; i++) {
 			var dfsrc = images[i].getAttribute("dfsrc");
 			if (dfsrc && dfsrc.match(/https?:\/\/([-\w\.]+)+(:\d+)?(\/([\w\_\.]*(\?\S+)?)?)?/)) {
-				// If we just loop through the images, IE for some reason,
-				// doesn't fetch the image. By launching them off in the
-				// background we seem to kick IE's engine a bit.
-				images[i].onload = onload;
-				if (AjxEnv.isIE) {
-					parent = self._usingIframe ? self.getDocument().documentElement : parent;
-					var args = [images[i], i, images.length, msg, parent, self];
-					var act = new AjxTimedAction(null, ZmMailMsgView._swapIdAndSrc, args);
-					AjxTimedAction.scheduleAction(act, 0);
-				} else {
-					images[i].src = images[i].getAttribute("dfsrc");
-                    images[i].setAttribute("onload", "this.style.visibility = 'visible'");
-				}
+				images[i].onload = function(e) {this.style.visibility = 'visible'};
+				images[i].src = images[i].getAttribute("dfsrc");
 			}
 		}
 
