@@ -19,6 +19,24 @@ ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, sc
 	view = view || ZmId.VIEW_CAL_DAY;
 	// set before call to parent
 	this._scheduleMode = scheduleMode;
+    var workingHours = ZmCalBaseView.parseWorkingHours(ZmCalBaseView.getWorkingHours());
+    if (!numDays && view === ZmId.VIEW_CAL_WORK_WEEK) {
+        // Edge Case:   Work week is selected but all the days are configured as non working days,
+        //              Fall back to week view by faking all the days are working days with same start and end time
+        for (var i=0; i<workingHours.length; i++) {
+            if (!workingHours[i].isWorkingDay) {
+                workingHours[i].isWorkingDay = true;
+            }
+        }
+        numDays = 7;
+        var msgDlg = appCtxt.getMsgDialog();
+        msgDlg.setMessage(ZmMsg.emptyWorkingHoursWarning, DwtMessageDialog.WARNING_STYLE);
+        msgDlg.popup();
+        var listener = msgDlg.popdown.bind(msgDlg);
+        msgDlg.setButtonListener(DwtDialog.OK_BUTTON, listener);
+    }
+    this.workingHours = workingHours;
+
 	this.numDays = numDays || 1;
 	this._daySepWidth = 2;														// width of separator between days
 	this._columns = [];
@@ -35,7 +53,7 @@ ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, sc
 	this.setDropTarget(dropTgt);
 	this.setScrollStyle(DwtControl.CLIP);
 	this._needFirstLayout = true;
-    this.workingHours = ZmCalBaseView.parseWorkingHours(ZmCalBaseView.getWorkingHours());
+
     this._isValidIndicatorDuration = true;
 };
 
