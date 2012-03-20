@@ -2017,6 +2017,9 @@ function(appName, view, isTabView) {
 		this._evt.item = this._apps[appName];
 		this.notify(ZmAppEvent.ACTIVATE);
 	}
+	else if (this._activeApp && this._apps[this._activeApp]) {
+		this._apps[this._activeApp].stopAlert();
+	}
 };
 
 /**
