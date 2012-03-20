@@ -211,8 +211,7 @@ function(actionCode, ev) {
  */
 ZmBaseController.prototype.isCurrent =
 function() {
-	var thisView = this.isSearchResults ? this.searchResultsController.getCurrentViewId() : this._currentViewId;
-	return (thisView == appCtxt.getCurrentViewId());
+	return (this._currentViewId == appCtxt.getCurrentViewId());
 };
 
 ZmBaseController.prototype.supportsDnD =
