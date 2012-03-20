@@ -135,7 +135,7 @@ function(search, resultsCtlr) {
 								viewType:	this._currentViewType,
 								elements:	elements,
 								controller:	this,
-								hide:		[ ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_TREE_FOOTER ],
+								hide:		[ ZmAppViewMgr.C_TREE_FOOTER ],
 								tabParams:	this._getTabParams()});
 		this._app.pushView(this._currentViewId);
 		
