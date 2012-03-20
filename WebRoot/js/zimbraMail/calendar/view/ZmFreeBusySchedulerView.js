@@ -998,7 +998,7 @@ function(index, attendee, type, isOrganizer) {
 	sched.attType = type;
 	var input = sched.inputObj;
 	if (input) {
-		input.setValue(ZmApptViewHelper.getAttendeesText(attendee, type, true), true);
+		input.setValue(ZmApptViewHelper.getAttendeesText(attendee, type, false), true);
 		this._setAttendeeToolTip(sched, attendee, type);
 	}
 
