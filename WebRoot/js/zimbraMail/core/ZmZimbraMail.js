@@ -1997,6 +1997,9 @@ function(appName, view, isTabView) {
 		this._evt.item = this._apps[appName];
 		this._evtMgr.notifyListeners(ZmAppEvent.ACTIVATE, this._evt);
 	}
+	else if (this._activeApp && this._apps[this._activeApp]) {
+		this._apps[this._activeApp].stopAlert();
+	}
 };
 
 /**
