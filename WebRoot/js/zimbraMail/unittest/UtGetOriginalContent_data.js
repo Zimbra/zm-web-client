@@ -678,5 +678,31 @@ jwagner@zimbra.com</a>&gt; wrote:\
 so I didn't want to disrupt that.&nbsp;<br><br></div><div></div>\
 </body></html>\
 "
+	},
+		
+	// 26
+	// "original" separator followed by line ending with colon (bug 71816)
+	// Text: U OS
+	{
+		input: "\
+Fixed.\n\
+\n\
+-Conrad\n\
+\n\
+----- Original Message -----\n\
+> Enjoy!  If you get a chance before you leave any thoughts on:\n\
+> https://bugzilla.zimbra.com/show_bug.cgi?id=68203\n\
+> \n\
+> It's marked 7_2_0 which is code freeze for Monday.  I was going to\n\
+> punt to 7_2_x.\n\
+> \n\
+> Thanks,\n\
+> Jeff\n\
+",
+		output: "\
+Fixed.\n\
+\n\
+-Conrad\n\
+"
 	}
 ];
