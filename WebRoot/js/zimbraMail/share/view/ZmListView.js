@@ -1194,7 +1194,8 @@ function(columnItem, bSortAsc, callback) {
 
 	if (sortBy) {
 		this._sortByString = sortBy;
-		appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
+		var skipFirstNotify = this._folderId ? true : false; //just making it explicit boolean
+		appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view, null, skipFirstNotify);
 		if (this._folderId) {
             appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this._folderId);
 		}
