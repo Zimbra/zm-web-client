@@ -793,7 +793,7 @@ ZmMailMsgCapsuleView = function(params) {
 	this._showingCalendar = false;
 	this._infoBarId = this._htmlElId;
 	
-	this._browserToolTip = !AjxEnv.isGeckoBased;	// folder/tag browser tooltip not working in FF
+	this._browserToolTip = appCtxt.get(ZmSetting.BROWSER_TOOLTIPS_ENABLED);
 	
 	// cache text and HTML versions of original content
 	this._origContent = {};

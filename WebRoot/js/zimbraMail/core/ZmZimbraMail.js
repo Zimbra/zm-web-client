@@ -2260,8 +2260,7 @@ function(params) {
 	var newButton = this.getNewButton();
 	if (newButton) {
 		newButton.setText(params.text);
-		// TODO: get browser tooltip working for FF
-		newButton.setToolTipContent(params.tooltip, !AjxEnv.isGeckoBased);
+		newButton.setToolTipContent(params.tooltip);
 		newButton.setImage(params.icon);
 		newButton.setEnabled(!params.disabled);
 		ZmController._defaultNewId = params.defaultId;

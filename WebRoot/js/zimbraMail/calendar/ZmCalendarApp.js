@@ -437,7 +437,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_FORWARD_APPT_SERIES, {textKey:"forwardSeries", tooltipKey:"forwardSeries", image:"Forward"});
 	ZmOperation.registerOp(ZmId.OP_DUPLICATE_APPT, {textKey:"createCopy", tooltipKey:"createCopy", image:"Copy"});
     ZmOperation.registerOp(ZmId.OP_INVITE_ATTENDEES, {textKey:"inviteAttendees", tooltipKey:"inviteAttendees", image:"Group"});
-    ZmOperation.registerOp(ZmId.OP_SEND_INVITE, {textKey:"send", tooltipKey:"send", image:"MeetingRequest"});
+    ZmOperation.registerOp(ZmId.OP_SEND_INVITE, {textKey:"send", tooltipKey:"sendInvites", image:"MeetingRequest"});
 };
 
 ZmCalendarApp.prototype._registerItems =

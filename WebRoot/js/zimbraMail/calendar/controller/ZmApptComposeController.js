@@ -339,13 +339,13 @@ function(mode, appt) {
     var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
     var sendButton = this._toolbar.getButton(ZmOperation.SEND_INVITE);
 
-    if(mode == ZmCalItemComposeController.APPT_MODE) {
+    if (mode == ZmCalItemComposeController.APPT_MODE) {
         saveButton.setText(ZmMsg.saveClose);
         saveButton.setVisible(true);
         sendButton.setVisible(false);
 
         this._requestResponses.setEnabled(false);
-    }else {
+    } else {
         sendButton.setVisible(true);
         saveButton.setVisible(true);
         saveButton.setText(ZmMsg.save);
@@ -386,6 +386,9 @@ function(mode) {
     sendButton.removeSelectionListeners();
     sendButton.addSelectionListener(new AjxListener(this, this._sendBtnListener));
 
+	var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
+	saveButton.setToolTipContent(ZmMsg.saveToCalendar);
+	
     var btn = this._toolbar.getButton(ZmOperation.ATTACHMENT);
     if(btn)
         btn.setEnabled(!(this._mode == ZmCalItem.MODE_PROPOSE_TIME || ZmCalItem.FORWARD_MAPPING[mode]));

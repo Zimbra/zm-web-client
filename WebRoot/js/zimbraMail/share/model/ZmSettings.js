@@ -316,7 +316,7 @@ ZmSettings.prototype.setUserSettings = function(params) {
         this.getSetting(ZmSetting.MAIL_ENABLED).setValue(false);
     }
 
-    if (params.preInit) return;
+    if (params.preInit) { return; }
 
     // preferences
     if (info.prefs && info.prefs._attrs) {
@@ -420,6 +420,8 @@ ZmSettings.prototype.setUserSettings = function(params) {
         //Explicitly Set defaultValue
         sortOrderSetting.defaultValue = AjxUtil.hashCopy(sortPref);
     }
+	
+	DwtControl.useBrowserTooltips = this.get(ZmSetting.BROWSER_TOOLTIPS_ENABLED);
 
 	this._updateUserFontPrefsRule();
 };
@@ -889,6 +891,7 @@ function() {
 	// CLIENT SIDE FEATURE SUPPORT
 	this.registerSetting("ATTACHMENT_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("ATT_VIEW_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("BROWSER_TOOLTIPS_ENABLED",		{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:!AjxEnv.isGeckoBased});
 	this.registerSetting("EVAL_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("FEED_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("HELP_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
