@@ -171,7 +171,7 @@ function(view, force) {
 			delete this._showingAccountColumn;
 		}
 
-		if (!this.isSearchResults) {
+		if (!this.isSearchResults && !this._currentSearch.isOutboundFolder) {
 			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[view]);
 		}
 
@@ -183,7 +183,14 @@ function(view, force) {
 		var limit = this._listView[this._currentViewId].getLimit();
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		var groupByItem = (view == ZmId.VIEW_TRAD) ? ZmItem.MSG : ZmItem.CONV;
-		var params = {types:[groupByItem], offset:0, limit:limit, sortBy:sortBy, getHtml:getHtml};
+		var params = {
+			types:			[groupByItem],
+			offset:			0,
+			limit:			limit,
+			sortBy:			sortBy,
+			getHtml:		getHtml,
+			isViewSwitch:	true
+		};
 		appCtxt.getSearchController().redoSearch(this._currentSearch, null, params);
 	}
 };

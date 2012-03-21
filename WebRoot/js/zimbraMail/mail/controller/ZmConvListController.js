@@ -64,14 +64,14 @@ function() {
 ZmConvListController.prototype.getDefaultViewType = ZmConvListController.getDefaultViewType;
 
 /**
- * Displays the given conversation in a two-pane view.
+ * Displays the given conversation list in a two-pane view.
  *
- * @param {ZmSearchResult}	search		the current search results
+ * @param {ZmSearchResult}	searchResults		the current search results
  */
 ZmConvListController.prototype.show =
-function(search) {
-	ZmDoublePaneController.prototype.show.call(this, search, search.getResults(ZmItem.CONV));
-	if (!this.isSearchResults) {
+function(searchResults) {
+	ZmDoublePaneController.prototype.show.call(this, searchResults, searchResults.getResults(ZmItem.CONV));
+	if (!this.isSearchResults && !(searchResults && searchResults.search && searchResults.search.isOutboundFolder)) {
 		appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_CONV);
 	}
 };
