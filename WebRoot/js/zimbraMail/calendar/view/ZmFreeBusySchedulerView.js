@@ -1851,7 +1851,7 @@ function(email) {
     var organizer = this._schedTable[this._organizerIndex] ? this._schedTable[this._organizerIndex].attendee : null,
         organizerEmail = organizer ? this.getEmail(organizer) : "";
 
-    if(!email || email == organizerEmail) {
+    if(!email || email == organizerEmail || email == appCtxt.getUsername()) {
         return [];
     }
     if(this._sharedCalIds && this._sharedCalIds[email]) {
@@ -1861,7 +1861,8 @@ function(email) {
 	var request = jsonObj.GetShareInfoRequest;
 	if (email) {
 		request.owner = {by:"name", _content:email};
-	}
+    }
+
 	var result = appCtxt.getAppController().sendRequest({jsonObj:	jsonObj});
 
     //parse the response
