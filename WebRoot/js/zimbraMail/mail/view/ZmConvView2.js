@@ -1047,9 +1047,10 @@ function(bodyPart) {
 
 	if (!bodyPart || !bodyPart.content) { return ""; }
 	
+	var isHtml = (bodyPart.ct == ZmMimeTable.TEXT_HTML);
 	var origContent = this._origContent[bodyPart.ct];
 	if (!origContent && !this._forceOriginal && !this._isMatchingMsg) {
-		origContent = AjxStringUtil.getOriginalContent(bodyPart.content, (bodyPart.ct == ZmMimeTable.TEXT_HTML));
+		origContent = AjxStringUtil.getOriginalContent(bodyPart.content, isHtml);
 		if (origContent.length != bodyPart.content.length) {
 			this._origContent[bodyPart.ct] = origContent;
 			this._hasOrigContent = true;
@@ -1057,7 +1058,10 @@ function(bodyPart) {
 	}
 
 	var content = (this._showingQuotedText || this._forceOriginal || this._isMatchingMsg || !origContent) ? bodyPart.content : origContent;
-	return content || "";
+	content = content || "";
+	// remove trailing blank lines
+	content = isHtml ? AjxStringUtil.removeTrailingBR(content) : AjxStringUtil.trim(content);
+	return content;
 };
 
 ZmMailMsgCapsuleView.prototype._renderMessageFooter =
