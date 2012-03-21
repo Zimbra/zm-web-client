@@ -47,7 +47,7 @@ function() {
 		//can't reliably get filterRulesController so make call here.
 		var work = new ZmFilterWork(filterSel, false);
 		var progressController = new ZmProgressController(this, prefsApp);
-		progressController.start(this, work);    
+		progressController.start([appCtxt.getById(ZmFolder.ID_INBOX)], work);    
 
 	}
 	this.popdown();
