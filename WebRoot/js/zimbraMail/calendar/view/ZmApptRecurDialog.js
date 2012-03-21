@@ -94,7 +94,7 @@ function(startDate, endDate, repeatType, appt) {
     var formatter = new AjxMessageFormat(ZmMsg.recurWeeklyEveryWeekday);
     var dayFormatter = formatter.getFormatsByArgumentIndex()[0];
     this._weeklySelectButton.setText(dayFormatter.format(this._origRefDate));
-    
+
     this._weeklyCheckboxes[startDay].checked = true;
 	this._monthlyDayField.setValue(startDate);
 	this._monthlyWeekdaySelect.setSelected(startDay);
@@ -1506,6 +1506,8 @@ function(appt) {
 		var weeklyRadioOptions = document.getElementsByName(this._weeklyRadioName);
 		if (recur.repeatCustomCount == 1 && recur.repeatWeeklyDays.length == 1) {
 			weeklyRadioOptions[0].checked = true;
+            //Do not check the custom checkboxes if every weekday option is selected
+            this._weeklyCheckboxes[this._startDate.getDay()].checked = false;
 			for (var j = 0; j < ZmCalItem.SERVER_WEEK_DAYS.length; j++) {
 				if (recur.repeatWeeklyDays[0] == ZmCalItem.SERVER_WEEK_DAYS[j]) {
 					this._weeklySelectButton._selected = j;
@@ -1522,7 +1524,10 @@ function(appt) {
 			weeklyRadioOptions[1].checked = true;
 			this._weeklyField.setValue(recur.repeatCustomCount);
 			// xxx: minor hack-- uncheck this since we init'd it earlier
-			this._weeklyCheckboxes[this._startDate.getDay()].checked = false;
+			// Check if we have repeatWeeklyDays set
+			if (recur.repeatWeeklyDays.length) {
+                this._weeklyCheckboxes[this._startDate.getDay()].checked = false;
+            }
 			for (var i = 0; i < recur.repeatWeeklyDays.length; i++) {
 				for (var j = 0; j < ZmCalItem.SERVER_WEEK_DAYS.length; j++) {
 					if (recur.repeatWeeklyDays[i] == ZmCalItem.SERVER_WEEK_DAYS[j]) {
