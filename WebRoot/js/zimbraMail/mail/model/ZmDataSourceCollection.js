@@ -251,7 +251,7 @@ ZmDataSourceCollection.prototype.initialize = function(dataSources) {
 			array.push(AjxMessageFormat.format(pattern, params));
 		}
 		array.push(ZmMsg.dataSourceFailureInstructions);
-		var message = AjxStringUtil.htmlEncode(array.join(""));
+		var message = array.join("");
 
 		// show error message
 		var shell = DwtShell.getShell(window);
