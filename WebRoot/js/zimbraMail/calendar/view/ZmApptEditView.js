@@ -526,7 +526,8 @@ function(bEnableInputs) {
 		}
 		this._attendeesInputField.setEnabled(bEnableAttendees);
 		this._optAttendeesInputField.setEnabled(bEnableAttendees);
-        this.enablePickers(bEnableAttendees);        
+		this._locationInputField.setEnabled(bEnableAttendees); //this was a small bug - the text field of that was not disabled!
+        this.enablePickers(bEnableAttendees);
 	}else {
         //bug 57083 - disabling group calendar should disable attendee pickers
         this.enablePickers(false);
@@ -1922,6 +1923,12 @@ function() {
     if(this._calItem && this._calItem.organizer != this._calendarOrgs[calId]) {
         this._calItem.setOrganizer(this._calendarOrgs[calId]);
     }
+
+	//Should we do this only if appCtxt.isOffline (i.e. inside the next if block)? Not sure.
+	this._calItem.setFolderId(calId); //I have no IDEA how _folderListener here did not actually set the folder on the cal item. Does ANYTHING work here?
+	if (appCtxt.isOffline) {
+		this.enableInputs(true); //enableInputs enables or disables the attendees/location/etc inputs based on the selected folder (calendar) - if it's local it will be disabled, and if remote - enabled.
+	}
 };
 
 ZmApptEditView.prototype.setSchedulerVisibility =
