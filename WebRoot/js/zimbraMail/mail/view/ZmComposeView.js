@@ -3083,8 +3083,9 @@ function() {
         div = document.createElement("DIV");
         var mi = this._createAttachMenuItem(menu, ZmMsg.attachInline);
         div.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentMyComputer");
-        div.firstChild.style.top = "22px";
-        div.firstChild.isInline = true;
+        var fromElement = div.firstChild;
+        fromElement.firstChild.style.top = "22px";
+        fromElement.firstChild.isInline = true;
         mi.getHtmlElement().appendChild(div.firstChild);
         menu.addPopupListener(new AjxListener(this, this._checkMenuItems,[mi]));
     }
