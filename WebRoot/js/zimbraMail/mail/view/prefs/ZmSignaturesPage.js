@@ -63,7 +63,9 @@ function() {
 	this._byName = {};
 	for (var id in this._signatures) {
 		var signature = this._signatures[id];
-		this._byName[signature.name] = signature;
+        if(!signature._new){         // avoid messing with existing signatures with same names
+		    this._byName[signature.name] = signature;
+        }
 	}
 };
 
@@ -257,8 +259,10 @@ function(signature, strict) {
 	} else if (strict && isNameDefault && !hasValue) {
 		return true;
 	}
-	if (signature._new && hasName && this._byName[signature.name] != signature) {
-		return AjxMessageFormat.format(ZmMsg.signatureNameDuplicate, signature.name);
+	if (hasName && this._byName[signature.name]) {
+        // If its a new signature with a in-use name or a existing signature whose name the user is trying to edit to a existing name value
+		if(signature._new || (this._byName[signature.name].id != signature.id))
+        return AjxMessageFormat.format(ZmMsg.signatureNameDuplicate, AjxStringUtil.htmlEncode(signature.name));
 	}
 	var sigValue = signature.value;
 	var maxLength = appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH);
