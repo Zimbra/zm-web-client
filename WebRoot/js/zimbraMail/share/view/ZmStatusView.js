@@ -83,7 +83,7 @@ function(params) {
         params = { msg: params };
     }
     var work = {
-        msg: AjxStringUtil.htmlEncode(params.msg),
+        msg: params.msg,
         level: params.level || ZmStatusView.LEVEL_INFO,
         detail: params.detail,
         date: new Date(),
