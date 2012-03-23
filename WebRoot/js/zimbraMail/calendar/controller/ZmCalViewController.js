@@ -1812,7 +1812,8 @@ function(appt, mode) {
 			title: AjxMsg.confirmTitle,
 			confirmMsg: ZmMsg.confirmCancelApptSeries,
 			choiceLabel1: ZmMsg.confirmCancelApptWholeSeries,
-			choiceLabel2 : ZmMsg.confirmCancelApptFutureInstances
+			choiceLabel2 : ZmMsg.confirmCancelApptFutureInstances,
+			choice2WarningMsg : ZmMsg.deleteApptWarning
 		});
 	}
     else{
