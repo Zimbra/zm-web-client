@@ -1965,7 +1965,8 @@ function(appt, mode) {
 			title: AjxMsg.confirmTitle,
 			confirmMsg: ZmMsg.confirmCancelApptSeries,
 			choiceLabel1: ZmMsg.confirmCancelApptWholeSeries,
-			choiceLabel2 : ZmMsg.confirmCancelApptFutureInstances
+			choiceLabel2 : ZmMsg.confirmCancelApptFutureInstances,
+            choice2WarningMsg : ZmMsg.deleteApptWarning
 		});
 	}
     else{
@@ -1974,8 +1975,9 @@ function(appt, mode) {
 			title: ZmMsg.confirmDeleteApptTitle,
 			confirmMsg: ZmMsg.confirmCancelApptSeries,
 			choiceLabel1: ZmMsg.confirmDeleteApptWholeSeries,
-			choiceLabel2 : ZmMsg.confirmDeleteApptFutureInstances
-		    });
+            choiceLabel2 : ZmMsg.confirmDeleteApptFutureInstances,
+            choice2WarningMsg : ZmMsg.deleteApptWarning
+		});
     }
 	this._delFutureInstNotifyDlg.popup(new AjxCallback(this, this._deleteFutureInstYesCallback, [appt,mode]));
 };
