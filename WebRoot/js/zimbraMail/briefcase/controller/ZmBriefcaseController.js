@@ -1177,12 +1177,11 @@ function(menu, btn){
 ZmBriefcaseController.prototype._resetPreviewPaneMenu =
 function(menu, view){
     view = view || this._currentViewId;
-    var enabled = (view == ZmId.VIEW_BRIEFCASE_DETAIL);
-    var ids = ZmDoublePaneController.RP_IDS;    
+    var ids = ZmDoublePaneController.RP_IDS;
     for (var i = 0; i < ids.length; i++) {
 		var id = ids[i];
 		if (menu._menuItems[id]) {
-            menu._menuItems[id].setEnabled(enabled);
+            menu._menuItems[id].setEnabled(true);
         }
     }
 };
