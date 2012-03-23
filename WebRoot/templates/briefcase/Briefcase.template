@@ -161,7 +161,7 @@
                                         <tr>
                                             <td width="100%">
                                                 <div id="${id}_name" class="itemName"></div>
-                                                <div class="itemMeta"><span id="${id}_modified"></span>&nbsp;by <span id="${id}_modifier"></span></div>
+                                                <div class="itemMeta"><span id="${id}_modified"></span>&nbsp;<$=ZmMsg.by$>&nbsp;<span id="${id}_modifier"></span></div>
                                             </td>
                                             <td align=middle width=30 valign="top">
                                                 <div id="${id}_lock"></div>
