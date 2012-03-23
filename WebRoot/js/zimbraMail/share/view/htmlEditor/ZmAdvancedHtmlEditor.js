@@ -388,9 +388,8 @@ ZmAdvancedHtmlEditor.prototype.clear =
 function() {
 	var editor = this.getEditor();
     if (editor && this._editorInitialized) {
-		editor.setContent("", {format: "raw"});
         editor.undoManager && editor.undoManager.clear();
-        this.initDefaultFontSize(editor);
+        editor.isNotDirty = true;//setting tinymce editor internal property
 	}
     var field = this.getContentField();
     if(field){
@@ -478,16 +477,13 @@ function() {
 };
 
 ZmAdvancedHtmlEditor.prototype._handleEditorKeyEvent =
-function(ev, ed) {
+function(ed, ev) {
 	var retVal = true;
 
-	var cmd = null;
-	if (DwtKeyEvent.isKeyPressEvent(ev)) {
-		if (DwtKeyboardMgr.isPossibleInputShortcut(ev)) {
-			// pass to keyboard mgr for kb nav
-			retVal = DwtKeyboardMgr.__keyDownHdlr(ev);
-		}
-	}
+    if (DwtKeyboardMgr.isPossibleInputShortcut(ev)) {
+        // pass to keyboard mgr for kb nav
+        retVal = DwtKeyboardMgr.__keyDownHdlr(ev);
+    }
 
 	if (window.DwtIdleTimer) {
 		DwtIdleTimer.resetIdle();
@@ -558,29 +554,6 @@ function(id, content) {
         obj._handlePopup(ed);
 	};
 
-	function onEditorKeyPress(ed, e) {
-		return obj._handleEditorKeyEvent(e, ed);
-	};
-
-    function onGetContent(ed, o) {
-        // Replace <p tags with <span tags
-        // and </p with </span><br / tags
-        //o.content = o.content.replace(/<p/g, '<span').replace(/<\/p/g, '</span><br /');
-        //causing issue in dir attribute as it is not valid for span tag
-    };
-
-    function onPaste(ed, ev) {
-        return obj.onPaste(ev, ed);
-    };
-
-    function onInsertImage(ev) {
-        ZmSignatureEditor.prototype._insertImagesListener.call(obj, ev);
-    };
-
-    function onToolbarToggle(ev) {
-        return obj.onToolbarToggle();
-    };
-
 	var urlParts = AjxStringUtil.parseURL(location.href);
 
 	//important: tinymce doesn't handle url parsing well when loaded from REST URL - override baseURL/baseURI to fix this
@@ -643,19 +616,18 @@ function(id, content) {
 			ed.onLoadContent.add(handleContentLoad);
             ed.onPostRender.add(onTinyMCEEditorPostRender);
 			ed.onInit.add(onTinyMCEEditorInit);
-			ed.onKeyPress.add(onEditorKeyPress);
-            ed.onGetContent.add(onGetContent);
-            ed.onPaste.add(onPaste);
+            ed.onKeyDown.add(obj._handleEditorKeyEvent.bind(obj));
+            ed.onPaste.add(obj.onPaste.bind(obj));
             //Adding Insert image button for uploading the insert image for signature alone
             ed.addButton('zmimage', {
                 title : ZmMsg.insertImage,
                 "class" : "mce_ImgInsertImage",
-                onclick : onInsertImage
+                onclick : ZmSignatureEditor.prototype._insertImagesListener.bind(obj)
             });
             //Adding toggle button for showing/hiding the extended toolbar
             ed.addButton('toggle', {
                 title : ZmMsg.showExtendedToolbar,
-                onclick : onToolbarToggle,
+                onclick : obj.onToolbarToggle.bind(obj),
                 "class" : "mce_toggle"
             });
 		}
@@ -680,7 +652,7 @@ function(id, content) {
 	this._iFrameId = this._bodyTextAreaId + "_ifr";
 };
 
-ZmAdvancedHtmlEditor.prototype.onPaste = function(ev, ed) {
+ZmAdvancedHtmlEditor.prototype.onPaste = function(ed, ev) {
     if (ev.clipboardData) {
         var items = ev.clipboardData.items;
         if( items ){
@@ -1815,6 +1787,18 @@ function(ed) {
             }
         }
     });
+};
+
+/**
+ * Returns true if editor content is modified
+ */
+ZmAdvancedHtmlEditor.prototype.isDirty = function(){
+    if( this._mode === DwtHtmlEditor.HTML ){
+        var editor = this.getEditor();
+        if (editor) {
+            return editor.isDirty();
+        }
+    }
 };
 
 ZmEditorContainer = function(params) {

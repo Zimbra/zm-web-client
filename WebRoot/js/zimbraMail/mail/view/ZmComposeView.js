@@ -1852,13 +1852,7 @@ function(incAddrs, incSubject) {
 	var curFormValue = this._formValue(incAddrs, incSubject);
 
 	// empty subject and body => not dirty
-	if (curFormValue.match(ZmComposeView.EMPTY_FORM_RE) ||
-		(this._composeMode == DwtHtmlEditor.HTML &&
-		 (curFormValue == "<html><body></body></html>" ||
-		  curFormValue == "<html><body><br></body></html>" ||
-          curFormValue == '<html><body><div><br data-mce-bogus="1"></div></body></html>' ||
-          curFormValue == '<html><body><div><br></div></body></html>' ||
-		  curFormValue == '<html><body><br mce_bogus="1"></body></html>')))
+    if (curFormValue.match(ZmComposeView.EMPTY_FORM_RE) || (this._composeMode == DwtHtmlEditor.HTML && !this._htmlEditor.isDirty()) )
 	{
 		return false;
 	}
