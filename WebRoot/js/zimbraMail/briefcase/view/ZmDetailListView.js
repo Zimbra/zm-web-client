@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -44,14 +44,16 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
     this._expanded = {};
     this._itemRowIdList = {};
 
-    this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
-	this.setDragSource(this._dragSrc);
-
-    this._dropTgt = new DwtDropTarget("ZmDetailListView");
-	this._dropTgt.markAsMultiple();
-	this._dropTgt.addDropListener(new AjxListener(this, this._dropListener));
-	this.setDropTarget(this._dropTgt);
+	if (controller.supportsDnD()) {
+		this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+		this._dragSrc.addDragListener(this._dragListener.bind(this));
+		this.setDragSource(this._dragSrc);
+	
+		this._dropTgt = new DwtDropTarget("ZmDetailListView");
+		this._dropTgt.markAsMultiple();
+		this._dropTgt.addDropListener(this._dropListener.bind(this));
+		this.setDropTarget(this._dropTgt);
+	}
 };
 
 ZmDetailListView.prototype = new ZmBriefcaseBaseView;
@@ -242,7 +244,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 				cname = creator.join("@");
 			}
 		}
-		htmlArr[idx++] = "<span style='white-space: nowrap'>";
+		htmlArr[idx++] = "<span style='white-space:nowrap'>";
 		htmlArr[idx++] = cname;
 		htmlArr[idx++] = "</span>";
 	} else if (field == ZmItem.F_FOLDER) {
@@ -262,7 +264,7 @@ ZmDetailListView.prototype._getDisplayName =
 function(item){
     var subject;
     if(item.isRevision){
-        subject = ("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + item.subject );
+        subject = (item.subject);
     }else if(parseInt(item.version) > 1){
         subject = AjxMessageFormat.format(ZmMsg.briefcaseFileVersion, [AjxStringUtil.htmlEncode(item.name), item.version])
     }
@@ -273,40 +275,41 @@ ZmDetailListView.prototype._getAbridgedContent =
 function(item, colIdx) {
 
     var idx=0, html=[];
-	idx = this._getTable(html, idx, item);
-	idx = this._getRow(html, idx, item);
+	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? 22 : 16;
+	
+    html[idx++] = "<table width=100% class='TopRow'><tr>";
 
     if(this._revisionView){
-        html[idx++] = "<td style='vertical-align:middle;' width=16 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
+        html[idx++] = "<td width=" + width + " id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
         idx = this._getCellContents(html, idx, item, ZmItem.F_EXPAND, colIdx);
         html[idx++] = "</center></td>";
     }
 
-	html[idx++] = "<td style='vertical-align:middle;' width=20 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
+	html[idx++] = "<td width=20 id='" + this._getFieldId(item, ZmItem.F_FOLDER) + "'><center>";
 	html[idx++] = AjxImg.getImageHtml(item.getIcon());
 	html[idx++] = "</center></td>";
-	html[idx++] = "<td style='vertical-align:middle;' width='100%' id='" + this._getFieldId(item, ZmItem.F_NAME) + "'>";
-    html[idx++] = "&nbsp;"+ this._getDisplayName(item);
+	html[idx++] = "<td style='vertical-align:middle;' width=100% id='" + this._getFieldId(item, ZmItem.F_NAME) + "'>";
+    html[idx++] = this._getDisplayName(item);
 	html[idx++] = "</td>";
 
-    html[idx++] = "<td style='vertical-align:middle;text-align:left;' width=40 id='" + this._getFieldId(item, ZmItem.F_SIZE) + "'>";
+    html[idx++] = "<td style='vertical-align:middle;text-align:right;' width=40 id='" + this._getFieldId(item, ZmItem.F_SIZE) + "'>";
 	idx = this._getCellContents(html, idx, item, ZmItem.F_SIZE, colIdx);
 	html[idx++] = "</td>";
 
-    html[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='" + this._getFieldId(item, ZmItem.F_TAG)+"'>";
+    html[idx++] = "<td style='text-align:right' width=" + width + " id='" + this._getFieldId(item, ZmItem.F_TAG)+"'>";
     idx = this._getImageHtml(html, idx, item.getTagImageInfo(), this._getFieldId(item, ZmItem.F_TAG));
 	html[idx++] = "</td>";
 
 	html[idx++] = "</tr>";
     html[idx++] = "</table>";
 
-    html[idx++] = "<table width='100%' border='0' cellpadding=0 cellspacing=0><tr>";
-    html[idx++] = "<td style='text-align:center'>";
+    html[idx++] = "<table width=100% class='BottomRow'><tr>";
+    html[idx++] = "<td style='vertical-align:middle;padding-left:50px;'>";
     idx = this._getCellContents(html, idx, item, ZmItem.F_FROM, colIdx);
-    html[idx++] = "<td style='text-align:right;padding-right:50px;'>";
+    html[idx++] = "<td style='vertical-align:middle;text-align:right;'>";
     idx = this._getCellContents(html, idx, item, ZmItem.F_DATE, colIdx);
     html[idx++] = "</td>";
-    html[idx++] = "<td style='vertical-align:middle;' width='16' align='right' id='" + this._getFieldId(item, ZmItem.F_LOCK)+"' ";
+    html[idx++] = "<td style='text-align:center;' width=" + width + " id='" + this._getFieldId(item, ZmItem.F_LOCK)+"'> ";
     idx =   this._getImageHtml(html, idx, (item.locked ? "PadLock" : "Blank_16") , this._getFieldId(item, ZmItem.F_LOCK));
 	html[idx++] = "</td>";
     html[idx++] = "</tr></table>";
@@ -604,13 +607,13 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 
 	if (headerCol._field == ZmItem.F_SORTED_BY) {
 		var field = headerCol._field;
-		var textTdId = this._itemCountTextTdId = DwtId._makeId(this.view, ZmSetting.RP_RIGHT, "td");
+		var textTdId = this._itemCountTextTdId = DwtId.makeId(this.view, ZmSetting.RP_RIGHT, "td");
 		htmlArr[idx++] = "<td id='";
 		htmlArr[idx++] = id;
 		htmlArr[idx++] = "' class='";
 		htmlArr[idx++] = (id == this._currentColId)	? "DwtListView-Column DwtListView-ColumnActive'" :
 													  "DwtListView-Column'";
-		htmlArr[idx++] = " width='auto'><table border=0 cellpadding=0 cellspacing=0 width='100%'><tr><td id='";
+		htmlArr[idx++] = " width='auto'><table width='100%'><tr><td id='";
 		htmlArr[idx++] = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, field);
 		htmlArr[idx++] = "' class='DwtListHeaderItem-label'>";
 		htmlArr[idx++] = headerCol._label;

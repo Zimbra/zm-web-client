@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -28,9 +28,11 @@ AjxPackage.require("zimbraMail.share.view.ZmImAddressEntry");
 AjxPackage.require("zimbraMail.abook.view.ZmEditContactView");
 AjxPackage.require("zimbraMail.abook.view.ZmGroupView");
 AjxPackage.require("zimbraMail.abook.view.ZmContactsBaseView");
+AjxPackage.require("zimbraMail.abook.view.ZmContactGroupMenu");
 AjxPackage.require("zimbraMail.abook.view.ZmContactSplitView");
 AjxPackage.require("zimbraMail.abook.view.ZmNewAddrBookDialog");
-AjxPackage.require("zimbraMail.abook.view.ZmContactAssistant");
+AjxPackage.require("zimbraMail.abook.view.ZmNewContactGroupDialog");
+AjxPackage.require("zimbraMail.abook.view.ZmContactQuickAddDialog");
 
 AjxPackage.require("zimbraMail.abook.controller.ZmContactListController");
 AjxPackage.require("zimbraMail.abook.controller.ZmContactController");

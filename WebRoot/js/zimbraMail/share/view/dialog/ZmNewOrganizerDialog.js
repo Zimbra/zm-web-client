@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -29,10 +29,10 @@
  * 
  * @extends		ZmDialog
  */
-ZmNewOrganizerDialog = function(parent, className, title, type) {
+ZmNewOrganizerDialog = function(parent, className, title, type, extraButtons) {
 	if (arguments.length == 0) return;
 	
-	ZmDialog.call(this, {parent:parent, className:className, title:title, id:"CreateNewFolderDialog"});
+	ZmDialog.call(this, {parent:parent, className:className, title:title, id:"CreateNewFolderDialog", extraButtons: extraButtons});
 	this._organizerType = type;
 	this._setupControls();
 };
@@ -44,6 +44,10 @@ ZmNewOrganizerDialog.prototype.toString =
 function() {
 	return "ZmNewOrganizerDialog";
 };
+
+//override the following if needed
+ZmNewOrganizerDialog.prototype._folderLocationLabel = ZmMsg.newFolderParent;
+ZmNewOrganizerDialog.prototype._folderNameAlreadyExistsMsg = ZmMsg.errorAlreadyExists;
 
 // Public methods
 
@@ -62,7 +66,8 @@ function(params, account) {
 			treeIds:		this._treeIds,
 			omit:			this._omit,
 			fieldId:		this._folderTreeCellId,
-			overviewTrees:	[this._organizerType]
+			overviewTrees:	[this._organizerType],
+            treeStyle:      this._treeStyle
 		};
 		this._setOverview(overviewParams);
 
@@ -179,7 +184,7 @@ ZmNewOrganizerDialog.prototype._contentHtml =
 function() {
 	var html = [];
 	var idx = 0;
-	html[idx++] = "<table cellpadding=0 cellspacing=5 border=0";
+	html[idx++] = "<table class='ZPropertySheet'";
 	html[idx++] = (AjxEnv.isSafari) ? " width='300'>" : ">";
 	idx = this._createStandardContentHtml(html, idx);
 	idx = this._createExtraContentHtml(html, idx);
@@ -231,7 +236,7 @@ function(html, idx) {
 ZmNewOrganizerDialog.prototype._createFolderContentHtml =
 function(html, idx) {
 	this._folderTreeCellId = this._htmlElId + "_folderTree";
-	html[idx++] = AjxTemplate.expand("share.Dialogs#ZmNewOrgDialogFolder", {id:this._htmlElId});
+	html[idx++] = AjxTemplate.expand("share.Dialogs#ZmNewOrgDialogFolder", {id:this._htmlElId, label:this._folderLocationLabel});
 	return idx;
 };
 
@@ -288,11 +293,13 @@ function() {
 	this._omit[ZmFolder.ID_DRAFTS] = true;
 	this._omit[ZmFolder.ID_SYNC_FAILURES] = true;
 	this._omit[ZmFolder.ID_OUTBOX] = true;
-	var folderTree = appCtxt.getFolderTree();
+
+	//Bug#68799: no special handling needed for sync issues folder
+	/*var folderTree = appCtxt.getFolderTree();
 	var syncIssuesFolder = folderTree ? folderTree.getByName(ZmFolder.SYNC_ISSUES) : null;
 	if (syncIssuesFolder) {
 		this._omit[syncIssuesFolder.id] = true;
-	}
+	}*/
 	this._omit[ZmOrganizer.ID_ZIMLET] = true;
 };
 
@@ -304,6 +311,16 @@ function(overview, treeIds, omit, noRootSelect) {
 	ZmDialog.prototype._renderOverview.apply(this, arguments);
 	this._folderTreeView = overview.getTreeView(this._organizerType);
 };
+
+ZmNewOrganizerDialog.prototype._getOverviewOrOverviewContainer =
+function() {
+	if (appCtxt.multiAccounts) {
+		return this._opc.getOverviewContainer(this.toString());
+	}
+	return this._opc.getOverview(this._curOverviewId);
+
+};
+
 
 /** 
  * Checks the input for validity and returns the following array of values:
@@ -317,11 +334,14 @@ function(overview, treeIds, omit, noRootSelect) {
 ZmNewOrganizerDialog.prototype._getFolderData =
 function() {
 	// make sure a parent was selected
-	var ov = appCtxt.multiAccounts 
-		? this._opc.getOverviewContainer(this.toString())
-		: this._opc.getOverview(this._curOverviewId);
+	var ov = this._getOverviewOrOverviewContainer();
 
 	var parentFolder = ov ? ov.getSelected() : appCtxt.getFolderTree(this._account).root;
+
+	if (this._isGlobalSearch) {
+		//special case for global search (only possible if this is ZmNewSearchDialog
+		parentFolder = appCtxt.getById(ZmOrganizer.ID_ROOT);
+	}
 
 	// check name for presence and validity
 	var name = AjxStringUtil.trim(this._nameField.value);
@@ -329,7 +349,8 @@ function() {
 
 	// make sure parent doesn't already have a child by this name
 	if (!msg && parentFolder.hasChild(name)) {
-		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name]);
+        var folderType = appCtxt.getFolderTree(appCtxt.getActiveAccount()).getFolderTypeByName(name);
+		msg = AjxMessageFormat.format(this._folderNameAlreadyExistsMsg, [name,folderType.toLowerCase()]);
 	}
 
 	var color = null;
@@ -405,4 +426,14 @@ function(event) {
 	if (target.checked) {
 		urlField.focus();
 	}
+};
+
+ZmNewOrganizerDialog.prototype.setRemoteURL =
+function(url) {
+    this._remoteCheckboxField.checked = true;
+    this._urlField.value = url;
+    var urlRow = document.getElementById(this._remoteCheckboxFieldId + "URLrow");
+	var urlField= document.getElementById(this._remoteCheckboxFieldId + "URLfield");
+	urlRow.style.display = AjxEnv.isIE ? "block" : "table-row";
+
 };

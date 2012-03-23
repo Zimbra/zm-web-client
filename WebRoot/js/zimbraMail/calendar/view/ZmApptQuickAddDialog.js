@@ -1,8 +1,8 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
- * 
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
@@ -34,16 +34,20 @@
  */
 ZmApptQuickAddDialog = function(parent) {
 	// create extra "more details" button to be added at the footer of DwtDialog
-	var moreDetailsButton = new DwtDialog_ButtonDescriptor(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, 
-														   ZmMsg.moreDetails, DwtDialog.ALIGN_LEFT);
-
-	ZmQuickAddDialog.call(this, parent, null, null, [moreDetailsButton]);
+    var moreDetailsButton = new DwtDialog_ButtonDescriptor(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON,
+                                                           ZmMsg.moreDetails, DwtDialog.ALIGN_LEFT);
+    ZmQuickAddDialog.call(this, parent, null, null, [moreDetailsButton]);
 	DBG.timePt("ZmQuickAddDialog constructor", true);
 
 	AjxDispatcher.run("GetResources");
+    AjxDispatcher.require("CalendarCore");
+
+    var app = appCtxt.getApp(ZmApp.CALENDAR);
+    this._fbCache = new ZmFreeBusyCache(app);
 
 	var html = AjxTemplate.expand("calendar.Appointment#ZmApptQuickAddDialog", {id: this._htmlElId});
 	this.setContent(html);
+
 	this.setTitle(ZmMsg.quickAddAppt);
 	DBG.timePt("create content");
 	this._locations = [];
@@ -54,6 +58,7 @@ ZmApptQuickAddDialog = function(parent) {
 	this._addEventHandlers();
 	this._button[ZmApptQuickAddDialog.MORE_DETAILS_BUTTON].setSize("100");
     this._dateInfo = {};
+
 	DBG.timePt("create dwt controls, fields; register handlers");
 };
 
@@ -65,13 +70,18 @@ ZmApptQuickAddDialog.prototype.constructor = ZmApptQuickAddDialog;
 
 ZmApptQuickAddDialog.MORE_DETAILS_BUTTON = ++DwtDialog.LAST_BUTTON;
 
-
 // Public
 
 ZmApptQuickAddDialog.prototype.toString = 
 function() {
 	return "ZmApptQuickAddDialog";
 };
+
+
+ZmApptQuickAddDialog.prototype.getFreeBusyCache =
+function() {
+    return this._fbCache;
+}
 
 ZmApptQuickAddDialog.prototype.initialize = 
 function(appt) {
@@ -183,6 +193,11 @@ function() {
 	return this._formValue() != this._origFormValue;
 };
 
+ZmApptQuickAddDialog.prototype._setFocusToSubjectFeild =
+function(){
+    this._tabGroup.setFocusMember(this._subjectField);
+};
+
 ZmApptQuickAddDialog.prototype.popup =
 function(loc) {
 	ZmQuickAddDialog.prototype.popup.call(this, loc);
@@ -202,7 +217,9 @@ function(loc) {
 		}
 		this._tabGroupComplete = true;
 	}
-	this._tabGroup.setFocusMember(this._subjectField);
+    //bug:68208 Focus must be in the Subject of QuickAdd Appointment dialog after double-click in calendar
+    this._focusAction = new AjxTimedAction(this, this._setFocusToSubjectFeild);
+    AjxTimedAction.scheduleAction(this._focusAction, 300);
 
     if (this._hasReminderSupport) {
         var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
@@ -212,6 +229,9 @@ function(loc) {
 
 	var defaultPrivacyOption = appCtxt.get(ZmSetting.CAL_APPT_VISIBILITY);
 	this._privacySelect.setSelectedValue((defaultPrivacyOption == ZmSetting.CAL_VISIBILITY_PRIV) ?  "PRI" : "PUB");
+
+    Dwt.setVisible(this._suggestions, false);
+    Dwt.setVisible(this._suggestLocation, true);
 
 	DBG.timePt("ZmQuickAddDialog#popup", true);
 };
@@ -348,6 +368,33 @@ function() {
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		this._initAutocomplete();
 	}
+
+	this._suggestLocationId = this._htmlElId + "_suggest_location";
+	this._suggestLocation   = document.getElementById(this._suggestLocationId);
+
+	this._suggestions = document.getElementById(this._htmlElId + "_suggestions");
+	Dwt.setVisible(this._suggestions, false);
+
+	var closeCallback = this._onSuggestionClose.bind(this);
+	var dialogContentEl = document.getElementById(this._htmlElId + "_content");
+	this._containerSize = Dwt.getSize(dialogContentEl);
+	this._locationAssistant = new ZmLocationAssistantView(this, appCtxt.getCurrentController(), this, closeCallback);
+	this._locationAssistant.reparentHtmlElement(this._suggestions);
+	AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.loadPreference), 300);
+};
+
+ZmApptQuickAddDialog.prototype.loadPreference =
+function() {
+    var prefDlg = appCtxt.getSuggestionPreferenceDialog();
+    prefDlg.setCallback(new AjxCallback(this, this._prefChangeListener));
+    prefDlg.getSearchPreference(appCtxt.getActiveAccount());
+};
+
+ZmApptQuickAddDialog.prototype._prefChangeListener =
+function() {
+    // Preference Dialog is only displayed when the suggestions panel is visible - so update suggestions
+    this._locationAssistant.clearResources();
+    this._locationAssistant.suggestAction(true);
 };
 
 ZmApptQuickAddDialog.prototype._handleConfigureClick = function() {
@@ -378,11 +425,12 @@ function() {
 		// autocomplete for locations
 		var app = appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {
-			dataClass: appCtxt.getAutocompleter(),
-			matchValue: ZmAutocomplete.AC_VALUE_NAME,
-			compCallback: acCallback,
-            keyUpCallback: new AjxCallback(this, this._handleLocationChange),
-			options: {type:ZmAutocomplete.AC_TYPE_LOCATION}
+			dataClass:		appCtxt.getAutocompleter(),
+			matchValue:		ZmAutocomplete.AC_VALUE_NAME,
+			compCallback:	acCallback,
+            keyUpCallback:	this._handleLocationChange.bind(this),
+			options:		{type:ZmAutocomplete.AC_TYPE_LOCATION},
+			contextId:		[this.toString(), ZmCalBaseItem.LOCATION].join("-")
 		};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acLocationsList.handle(this._locationField.getInputElement());
@@ -457,6 +505,11 @@ function() {
 
 	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmApptQuickAddDialog._onChange);
 	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmApptQuickAddDialog._onChange);
+	Dwt.setHandler(this._suggestLocation, DwtEvent.ONCLICK, this._showLocationSuggestions.bind(this));
+
+	var dateSelectListener = this._dateChangeListener.bind(this);
+	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, dateSelectListener);
+	Dwt.setHandler(this._endDateField,   DwtEvent.ONCHANGE, dateSelectListener);
 
 	this._startDateField._qadId = this._endDateField._qadId =  qadId;
 };
@@ -470,6 +523,23 @@ function(show) {
 	// also show/hide the "@" text
 	Dwt.setVisibility(this._startTimeSelect.getHtmlElement().parentNode.previousSibling.previousSibling, show);
 	Dwt.setVisibility(this._endTimeSelect.getHtmlElement().parentNode.previousSibling.previousSibling, show);
+};
+
+
+
+ZmApptQuickAddDialog.prototype._onSuggestionClose =
+function() {
+    // Make the trigger link visible
+    Dwt.setVisible(this._suggestLocation, true);
+}
+
+ZmApptQuickAddDialog.prototype._showLocationSuggestions =
+function() {
+    // Hide the trigger link and display the location suggestion panel
+    Dwt.setVisible(this._suggestLocation, false);
+    Dwt.setVisible(this._suggestions, true);
+    this._locationAssistant.show(this._containerSize);
+    this._locationAssistant.suggestAction();
 };
 
 ZmApptQuickAddDialog.prototype._formValue =
@@ -540,6 +610,7 @@ function(ev) {
 			this._startDateField.value = newDate;
 		this._endDateField.value = newDate;
 	}
+    this._dateChangeListener();
 };
 
 ZmApptQuickAddDialog.prototype._repeatChangeListener = 
@@ -553,6 +624,29 @@ function(ev, id) {
     if (!this._appt.isAllDayEvent()) {
         ZmApptViewHelper.getDateInfo(this, this._dateInfo);
     }
+    this._locationAssistant.updateTime();
+};
+
+ZmApptQuickAddDialog.prototype._dateChangeListener =
+function(ev, id) {
+    if (!this._appt.isAllDayEvent()) {
+        ZmApptViewHelper.getDateInfo(this, this._dateInfo);
+    }
+    this._locationAssistant.updateTime();
+};
+
+ZmApptQuickAddDialog.prototype.getDurationInfo =
+function() {
+    var startDate = AjxDateUtil.simpleParseDateStr(this._dateInfo.startDate);
+    var endDate   = AjxDateUtil.simpleParseDateStr(this._dateInfo.endDate);
+    startDate = this._startTimeSelect.getValue(startDate);
+    endDate   = this._endTimeSelect.getValue(endDate);
+
+    var durationInfo = {};
+    durationInfo.startTime = startDate.getTime();
+    durationInfo.endTime   = endDate.getTime();
+    durationInfo.duration  = durationInfo.endTime - durationInfo.startTime;
+    return durationInfo;
 };
 
 ZmApptQuickAddDialog.prototype._setEmailReminderControls =
@@ -590,4 +684,26 @@ function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var qad = AjxCore.objectWithId(el._qadId);
 	ZmApptViewHelper.handleDateChange(qad._startDateField, qad._endDateField, el == qad._startDateField);
+};
+
+ZmApptQuickAddDialog.prototype.updateLocation =
+function(location, locationStr) {
+    this._locationField.setValue(locationStr);
+    if (this._useAcAddrBubbles) {
+        this._locationField.clear();
+        this._locationField.addBubble({address:locationStr, match:match, skipNotify:true});
+    }
+    this._locations.push(location);
+};
+
+// Stub for the location picker and ZmScheduleAssistant
+ZmApptQuickAddDialog.prototype.getCalendarAccount =
+function() {
+    var cal = appCtxt.getById(this._folderSelect.getValue());
+    return cal && cal.getAccount();
+};
+
+ZmApptQuickAddDialog.prototype.getFreeBusyExcludeInfo =
+function(emailAddr){
+    return null;
 };

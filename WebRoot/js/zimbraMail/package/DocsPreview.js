@@ -1,5 +1,5 @@
-AjxPackage.require("ajax.util.AjxStringUtil");
 AjxPackage.require("ajax.util.AjxUtil");
+AjxPackage.require("ajax.util.AjxStringUtil");
 AjxPackage.require("ajax.util.AjxTimedAction");
 AjxPackage.require("ajax.util.AjxText");
 

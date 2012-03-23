@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -40,7 +40,6 @@ AjxPackage.require("zimbraMail.tasks.view.ZmTaskView");
 AjxPackage.require("zimbraMail.tasks.view.ZmTaskMultiView");
 AjxPackage.require("zimbraMail.tasks.view.ZmTaskEditView");
 AjxPackage.require("zimbraMail.tasks.view.ZmNewTaskFolderDialog");
-AjxPackage.require("zimbraMail.tasks.view.ZmTaskAssistant");
 
 AjxPackage.require("zimbraMail.tasks.controller.ZmTaskController");
 AjxPackage.require("zimbraMail.tasks.controller.ZmTaskTreeController");

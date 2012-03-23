@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010, 2011 VMware, Inc.
- * 
+ * Copyright (C) 2010 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -53,7 +53,8 @@ ZmColorMenu.prototype.setImage = function(image) {
         for (var i = 0; i < children.length; i++) {
             var child = children[i];
             var color = child.getData(ZmColorMenu.__KEY_COLOR);
-            var icon = image && color ?[image,color].join(",color=") : image;
+			var displayColor = color || ZmOrganizer.COLOR_VALUES[ZmOrganizer.ORG_DEFAULT_COLOR]; //default to gray
+            var icon = [image, displayColor].join(",color=");
             child.setImage(icon);
         }
     }
@@ -128,7 +129,8 @@ ZmColorMenu.prototype._populateMenu = function() {
     for (var id = 0; id < list.length; id++) {
         var color = ZmOrganizer.COLOR_VALUES[id];
         if (!color && this._hideNone) continue;
-        var image = this._image && color ? [this._image,color].join(",color=") : this._image;
+		var displayColor = color || ZmOrganizer.COLOR_VALUES[ZmOrganizer.ORG_DEFAULT_COLOR]; //default to gray
+        var image = this._image ? [this._image, displayColor].join(",color=") : null;
         var text = ZmOrganizer.COLOR_TEXT[id];
         var menuItem = new DwtMenuItem({parent:this});
         menuItem.setImage(image);

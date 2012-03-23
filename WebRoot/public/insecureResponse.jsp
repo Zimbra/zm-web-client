@@ -1,7 +1,7 @@
 <!--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -23,6 +23,7 @@
 	response.setContentType("text/html");
 
 	// data
+	String emptyJsonObject = "{}";
 	String data = request.getParameter("data");
 	if (data != null) {
 		// TODO: protecting against script tag in text is making some assumptions
@@ -35,5 +36,7 @@
 var reqId = "${zm:jsEncode(param.reqId)}";
 </script>
 <script>
-parent.parent.parent.appCtxt.getRequestMgr().sendRequest({reqId:reqId,response:${ (not empty data and data ne "") ? zm:cook(data) : "{}"}});
+var params = {reqId: reqId};
+params.response = "${ (not empty data and data ne "") ? zm:jsEncode(data) : emptyJsonObject }";
+parent.parent.parent.appCtxt.getRequestMgr().sendRequest(params);
 </script>

@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -22,6 +22,7 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <c:set var="label" value="${zm:getFolderPath(pageContext, folder.id)}"/>
+<c:set var="truncatedLabel" value="${zm:getTruncatedFolderPath(pageContext, folder.id, 20, true)}"/>
 <c:choose>
     <c:when test="${ua.isiPad == true}">
         <c:set var="baseUrl" value="zipad"/>
@@ -56,7 +57,7 @@
                     <c:set var="folderName" value="${label}"/>
                 </c:otherwise>
             </c:choose>
-            ${fn:escapeXml(zm:truncateFixed(folderName,20,true))}
+            ${truncatedLabel}
         </a>
     </span>
     <c:if test="${!folder.isSystemFolder}">

@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -14,7 +14,7 @@
 --%>
 <%@ tag body-content="empty" %>
 <%@ attribute name="var" rtexprvalue="false" required="true" type="java.lang.String" %>
-<%@ variable name-from-attribute="var" alias='ruleVar' scope="AT_BEGIN" variable-class="com.zimbra.cs.zclient.ZFilterRule" %>
+<%@ variable name-from-attribute="var" alias='ruleVar' scope="AT_BEGIN" variable-class="com.zimbra.client.ZFilterRule" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -22,7 +22,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
 <zm:filterRule var="ruleVar" name="${param.rulename}" active="${param.ruleactive}" allconditions="${param.allof eq 'all'}">
-
+    <c:set var="badDate" value=""/>
     <c:forEach var="i" begin="0" end="${empty param.cond_count ? 0 : param.cond_count - 1}">
         <c:set var="key_condi" value="cond${i}"/>
         <c:set var="key_condop" value="cond${i}_op"/>
@@ -51,10 +51,21 @@
                         <fmt:message var="parseFormat" key="FILT_COND_DATE_FORMAT"/>
                         <fmt:parseDate var="parsedDate" pattern="${parseFormat}" value="${cond_value}"/>
                         <fmt:formatDate var="fmtDate" value="${parsedDate}" pattern="yyyyMMdd"/>
+
+                        <fmt:formatDate var="testDate" value="${parsedDate}" pattern="${parseFormat}"/>
+                        <c:set var="inputParts" value="${fn:split(cond_value, '/.-')}"/>
+                        <c:set var="parsedParts" value="${fn:split(testDate, '/.-')}"/>
+                        <c:forEach items="${inputParts}" var="item" varStatus="status">
+                            <c:if test="${zm:cookInt(item,0) != zm:cookInt(parsedParts[status.index],0)}">
+                                <c:set var="fmtDate" value=""/>
+                            </c:if>
+                        </c:forEach>
+
                     </c:catch>
                     <c:if test="${not empty parseError}">
                         <c:set var="fmtDate" value=""/>
                     </c:if>
+                    <c:set var="badDate" scope="request" value="${badDate}${empty fmtDate ? cond_value : ''},"/>
                     <zm:dateCondition value="${fmtDate}" op="${cond_op}"/>
                 </c:when>
                 <c:when test="${cond eq 'header'}">
@@ -65,6 +76,9 @@
                 </c:when>
                 <c:when test="${cond eq 'attachment'}">
                     <zm:attachmentExistsCondition  op="${cond_op}"/>
+                </c:when>
+                <c:when test="${cond eq 'address'}">
+                    <zm:addressCondition name="${cond_header}" part="all" value="${cond_value}" op="${cond_op}"/>
                 </c:when>
             </c:choose>
         </c:if>
@@ -107,6 +121,9 @@
             </c:when>
             <c:when test="${param.cond_add eq 'attachment'}">
                 <zm:attachmentExistsCondition op="EXISTS"/>
+            </c:when>
+            <c:when test="${param.cond_add eq 'address'}">
+                <zm:addressCondition name="from" part="all" value="" op="IS"/>
             </c:when>
         </c:choose>
     </c:if>

@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -29,8 +29,9 @@
         <table width="100%" cellspacing="0" cellpadding="0" style="padding:3px;">
         <tr>
         <td rowspan="2" width="20" align="center" valign="bottom" style="padding-right:3px;">
-            <c:set var="imageUrl" value="/service/home/~/?id=${contact.id}&amp;part=${contact.imagePart}&amp;auth=co"/>
-            <app:img clazz="contactImage" src="${contact.imagePart != null ? imageUrl : (contact.isGroup ? 'large/ImgGroup_48.png' : 'large/ImgPerson_48.png')}" altkey="${contact.imageAltKey}" />
+            <c:set var="contactImage" value="${contact.imagePart != null ? contact.imagePart : ''}"/>
+            <c:set var="imageUrl" value="/service/home/~/?id=${contact.id}&amp;part=${contactImage}&amp;auth=co"/>
+            <app:img clazz="contactImage" src="${not empty contactImage ? imageUrl : (contact.isGroup ? 'large/ImgGroup_48.png' : 'large/ImgPerson_48.png')}" altkey="${contact.imageAltKey}" />
         </td>
         <td>
             <c:choose>
@@ -71,7 +72,7 @@
             </c:if>
         </c:if>
         </td>
-        <td class="companyFolder">${not empty folder ? zm:cook(zm:getFolderName(pageContext, folder.id)) : ''}</td>
+        <td class="companyFolder">${not empty folder ? zm:getFolderName(pageContext, folder.id) : ''}</td>
         </tr>
         </table>
     </td>

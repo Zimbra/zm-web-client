@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -26,7 +26,7 @@
     <div class="tbl">
     <div class="tr"><c:set var="url" value="${context_url}?sfi=${folder.id}"/><c:if test="${not empty types}"><c:set var="url" value="${url}&st=${types}"/></c:if>
     <span class="td left">
-        <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}"><c:if test="${ua.isiPad eq false}"><span class="Img Img${folder.type}"></span></c:if>&nbsp;${fn:escapeXml(label)}</a>
+        <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}"><c:if test="${ua.isiPad eq false}"><span class="Img Img${folder.type}"></span></c:if>&nbsp;${label}</a>
     </span>
     <c:if test="${!folder.isSystemFolder}"><span class="td right editFix" width="5%"> <a class="ImgEdit" href="?st=${param.st}&_ajxnoca=1&show${folder.isSearchFolder ? 'Search' : 'Folder'}Create=1&${folder.isSearchFolder ? 's' : ''}id=${folder.id}">&nbsp;</a></span></c:if>    
     </div>

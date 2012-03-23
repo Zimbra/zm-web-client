@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -45,6 +45,11 @@ ZmTaskListView = function(parent, controller, dropTgt) {
 ZmTaskListView.prototype = new ZmListView;
 ZmTaskListView.prototype.constructor = ZmTaskListView;
 
+ZmTaskListView.prototype.isZmTaskListView = true;
+ZmTaskListView.prototype.toString = function() { return "ZmTaskListView"; };
+
+
+
 ZmTaskListView.SASH_THRESHOLD = 5;
 
 // Consts
@@ -77,15 +82,6 @@ ZmTaskListView._NEW_TASK_ROW_ID = "_newTaskBannerId";
 
 // Public Methods
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmTaskListView.prototype.toString =
-function() {
-	return "ZmTaskListView";
-};
 
 ZmTaskListView.prototype.setSize =
 function(width, height) {
@@ -174,7 +170,7 @@ function(sechdr) {
         var idx = 0;
 
         htmlArr[idx++] = "<div id='_upComingTaskListHdr'>";
-        htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100% class='DwtListView-Column'><tr>";
+        htmlArr[idx++] = "<table width=100% class='DwtListView-Column'><tr>";
         this.dId = Dwt.getNextId();
         htmlArr[idx++] = "<td><div class='DwtListHeaderItem-label ";
         htmlArr[idx++] = ZmTaskListView.SEC_COLOR[sechdr];
@@ -321,7 +317,7 @@ function(list, noResultsOk, doAdd) {
 	htmlArr = [];
 	var idx = 0;
 
-	htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100% class='newTaskBannerSep'><tr>";
+	htmlArr[idx++] = "<table width=100% class='newTaskBannerSep'><tr>";
 	for (var i = 0; i < this._headerList.length; i++) {
 		var hdr = this._headerList[i];
 		if (!hdr._visible) { continue; }
@@ -424,7 +420,7 @@ function(task, colIdx) {
 	var width = (AjxEnv.isIE || AjxEnv.isSafari) ? "22" : "16";
 
 	// first row
-	htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100% style='padding-bottom:4px;'>";
+	htmlArr[idx++] = "<table width=100% class='TopRow'>";
 	htmlArr[idx++] = "<tr id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, task.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
@@ -436,19 +432,19 @@ function(task, colIdx) {
 	htmlArr[idx++] = "</tr></table>";
 
     // second row
-    htmlArr[idx++] = "<table border=0 cellspacing=0 cellpadding=0 width=100%><tr>";
-    htmlArr[idx++] = "<td width=50%><div style='height:10px; width:80px; border:1px solid #c5c5c5;'><div";
+    htmlArr[idx++] = "<table width=100% class='BottomRow'><tr>";
+    htmlArr[idx++] = "<td><div style='height:10px; width:80px; border:1px solid #c5c5c5;'><div";
     htmlArr[idx++] = " class='";
     htmlArr[idx++] = this.getColorForStatus(task.status);
     htmlArr[idx++] = "' style='height:10px; width:"+ task.pComplete + "%;'></div></div></td>";
-    htmlArr[idx++] = "<td width=50% align=right><table border=0 cellspacing=0 cellpadding=0><tr>";
+    htmlArr[idx++] = "<td width=60 align=right><table><tr>";
 
-    idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_TAG, colIdx, "16");
+    idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_TAG, colIdx, width);
     if(task.priority == ZmCalItem.PRIORITY_HIGH || task.priority == ZmCalItem.PRIORITY_LOW) {
-        idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_PRIORITY, colIdx, "16", "align=right");
+        idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_PRIORITY, colIdx, width, "align=right");
     }
     if (task.hasAttach) {
-        idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_ATTACHMENT, colIdx, "16");
+        idx = this._getAbridgedCell(htmlArr, idx, task, ZmItem.F_ATTACHMENT, colIdx, width);
     }
     htmlArr[idx++] = "</tr></table></td>";
     htmlArr[idx++] = "</tr></table>";
@@ -470,15 +466,8 @@ function(htmlArr, idx, task, field, colIdx, params) {
 		htmlArr[idx++] = ZmCalItem.getImageForPriority(task, params.fieldId);
 		htmlArr[idx++] = "</center>";
 
-	} else if (params.isMixedView && (field == ZmItem.F_FROM)) {
-		htmlArr[idx++] = task.organizer || "&nbsp";
-
 	} else if (field == ZmItem.F_SUBJECT) {
-		if (params.isMixedView) {
-			htmlArr[idx++] = task.name ? AjxStringUtil.htmlEncode(task.name, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
-		} else {
-			htmlArr[idx++] = AjxStringUtil.htmlEncode(task.getName(), true);
-		}
+		htmlArr[idx++] = AjxStringUtil.htmlEncode(task.getName(), true);
 
 	} else if (field == ZmItem.F_STATUS) {
 		htmlArr[idx++] = ZmCalItem.getLabelForStatus(task.status);
@@ -528,7 +517,9 @@ function(columnItem, bSortAsc) {
 		appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
 	}
 
-	if (this.getList().size() > 0 && this._sortByString) {
+	var list = this.getList();
+	var size = list ? list.size() : 0;
+	if (size > 0 && this._sortByString) {
 		var params = {
 			query: this._controller.getSearchString(),
 			queryHint: this._controller.getSearchStringHint(),
@@ -598,13 +589,13 @@ ZmTaskListView.prototype._createHeader =
 function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
     if (headerCol._field == ZmItem.F_SORTED_BY) {
 		var field = headerCol._field;
-		var textTdId = this._itemCountTextTdId = DwtId._makeId(this.view, ZmSetting.RP_RIGHT, "td");
+		var textTdId = this._itemCountTextTdId = DwtId.makeId(this.view, ZmSetting.RP_RIGHT, "td");
 		htmlArr[idx++] = "<td id='";
 		htmlArr[idx++] = id;
 		htmlArr[idx++] = "' class='";
 		htmlArr[idx++] = (id == this._currentColId)	? "DwtListView-Column DwtListView-ColumnActive'" :
 													  "DwtListView-Column'";
-		htmlArr[idx++] = " width='auto'><table border=0 cellpadding=0 cellspacing=0 width='100%'><tr><td id='";
+		htmlArr[idx++] = " width='auto'><table width='100%'><tr><td id='";
 		htmlArr[idx++] = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, field);
 		htmlArr[idx++] = "' class='DwtListHeaderItem-label'>";
 		htmlArr[idx++] = headerCol._label;
@@ -641,7 +632,7 @@ ZmTaskListView.prototype.checkTaskReplenishListView = function() {
 
 ZmTaskListView.prototype._changeListener =
 function(ev) {
-	if ((ev.type != this.type) && (ZmList.MIXED != this.type))
+	if (ev.type != this.type)
 		return;
 
     //TODO: Optimize ChangeListener logic
@@ -666,8 +657,6 @@ function(ev) {
 			if (folderId && folderId != item.folderId) { continue; }			// does not belong to this folder
 			if (this._list && this._list.contains(item)) { continue; }			// skip if we already have it
 
-			// add new item at the beg. of list view's internal list
-			var idx = this._list && this._list.size() > 0 ? 1 : null;
 
 			if (!this._list) {
 				this._list = new AjxVector();
@@ -677,7 +666,8 @@ function(ev) {
 				this._resetList();
 			}
 
-			this._list.add(item, idx);
+			// add new item at the beg. of list view's internal list
+			this._list.add(item, 0);
             this._renderList(this.getList(),true,false);
             if(this._list && this._list.size() == 1) { this.setSelection(this._list.get(0)); }
 		}
@@ -754,14 +744,14 @@ function(ev) {
 ZmTaskListView._handleOnClick =
 function(div) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getCurrentView();
+	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getListView();
 	tlv._handleNewTaskClick(div);
 };
 
 ZmTaskListView._handleOnBlur =
 function(ev) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getCurrentView();
+	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getListView();
 	tlv.saveNewTask();
 };
 
@@ -784,7 +774,7 @@ function(ev) {
 	var key = DwtKeyEvent.getCharCode(ev);
 
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getCurrentView();
+	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getListView();
 
 	if (key == DwtKeyEvent.KEY_ENTER) {
 		tlv.saveNewTask(true);

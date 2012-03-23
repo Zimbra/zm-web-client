@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -24,7 +24,6 @@
  * 		$set:instant_notify {on,off}		turn instant notify on/off
  *		$set:poll [N]						set poll interval to N ms (unless doing instant notify)
  * 		$set:noop							send a poll (get notifications)
- * 		$set:a								open the assistant
  * 		$set:rr								refresh reminders
  * 		$set:rh								run reminder housekeeping
  * 		$set:toast							show sample toast messages
@@ -141,30 +140,6 @@ function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 };
 
 /**
- * Executes the command with debug support info.
- * 
- * @param	{String}	cmdStr		the command
- * @param	{ZmSearchController}	searchController	the search controller
- * @param	{Object}	[cmdArg1]		command arguments
- */
-ZmClientCmdHandler.prototype.execute_support =
-function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
-	if (!cmdArg1) return;
-	var feature = cmdArg1.toUpperCase();
-	var setting = "ZmSetting." + feature + "_ENABLED";
-	var id = eval(setting);
-	var on = appCtxt.get(id);
-	if (on == undefined) {
-		this._alert("No such setting: " + setting);
-		return;
-	}
-	var newState = on ? "off" : "on";
-	alert("Turning " + feature + " support " + newState);
-	this._settings[id] = !on;
-	appCtxt.getAppController().restart(this._settings);
-};
-
-/**
  * Executes the instant notify "ON" command.
  * 
  * @param	{String}	cmdStr		the command
@@ -212,23 +187,6 @@ ZmClientCmdHandler.prototype.execute_noop =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
 	appCtxt.getAppController().sendNoOp();
 	this._alert("Sent NoOpRequest");
-};
-
-/**
- * Executes the assistant command.
- * 
- * @param	{String}	cmdStr		the command
- * @param	{ZmSearchController}	searchController	the search controller
- * @param	{Object}	[cmdArg1]		command arguments
- */
-ZmClientCmdHandler.prototype.execute_a =
-function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
-	if (!this._assistantDialog) {
-		AjxDispatcher.require("Assistant");
-		this._assistantDialog = new ZmAssistantDialog();
-	}
-	searchController.setSearchField("");
-	this._assistantDialog.popup();
 };
 
 /**
@@ -363,8 +321,9 @@ function(cmdStr, searchController, cmdName, cmdArg1, cmdArg2 /* ..., cmdArgN */)
  */
 ZmClientCmdHandler.prototype.execute_leak =
 function(cmdStr, searchController, cmdName, cmdArg1 /* ..., cmdArgN */) {
+	AjxPackage.require("ajax.debug.AjxLeakDetector");
 	if (!window.AjxLeakDetector) {
-		this._alert("AjxLeakDetector is not loaded", ZmStatusView.LEVEL_WARNING);
+		this._alert("AjxLeakDetector could not be loaded", ZmStatusView.LEVEL_WARNING);
 	} else {
 		var leakResult = AjxLeakDetector.execute(cmdArg1);
 		this._alert(leakResult.message, leakResult.success ? ZmStatusView.LEVEL_INFO : ZmStatusView.LEVEL_WARNING);

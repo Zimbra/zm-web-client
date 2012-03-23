@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -13,7 +13,8 @@
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="empty" %>
-<%@ attribute name="rule" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZFilterRule" %>
+<%@ attribute name="rule" rtexprvalue="true" required="true" type="com.zimbra.client.ZFilterRule" %>
+<%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
@@ -118,54 +119,46 @@
     <tr>
         <td width="5">&nbsp;</td>
         <td valign="top" width="385" class="contactOutput">
+            <c:if test="${zm:isKeepAction(action)}">
+                <fmt:message key="FILT_ACTION_KEEP"/>
+            </c:if>
 
-                <c:choose>
-                    <c:when test="${zm:isKeepAction(action)}">
-                        <fmt:message key="FILT_ACTION_KEEP"/>
-                    </c:when>
-                </c:choose>
-                <c:choose>
-                    <c:when test="${zm:isDiscardAction(action)}">
-                        <fmt:message key="FILT_ACTION_DISCARD"/>
-                    </c:when>
-                </c:choose>
-                <c:choose>
-                    <c:when test="${zm:isStopAction(action)}">
-                        <fmt:message key="FILT_ACTION_STOP"/>
-                    </c:when>
-                </c:choose>
-                <c:choose>
-                    <c:when test="${zm:isFileIntoAction(action)}">
-                        <c:set var="fileInto" value="${zm:getFileIntoAction(action)}"/>
-                        <c:set var="path" value="${fn:toLowerCase(fn:startsWith(fileInto.folderPath, '/') ? fn:substring(fileInto.folderPath, 1, -1) : fileInto.folderPath)}"/>
-                        <fmt:message key="${fn:toLowerCase(fn:escapeXml(path))}" var="rootPath" />
-                        <fmt:message key="FILT_ACTION_FILEINTO">
-                            <fmt:param>${fn:escapeXml(fn:startsWith(rootPath,'???') ? path : rootPath)}</fmt:param>
-                        </fmt:message>
-                    </c:when>
-                </c:choose>
-                <c:choose>
-                    <c:when test="${zm:isTagAction(action)}">
-                        <c:set var="tag" value="${zm:getTagAction(action)}"/>
-                        <fmt:message key="FILT_ACTION_TAG">
-                            <fmt:param>${fn:escapeXml(tag.tagName)}</fmt:param>
-                        </fmt:message>
-                    </c:when>
-                </c:choose>
-                <c:choose>
-                    <c:when test="${zm:isRedirectAction(action)}">
-                        <c:set var="redirect" value="${zm:getRedirectAction(action)}"/>
-                        <fmt:message key="FILT_ACTION_REDIRECT">
-                            <fmt:param>${fn:escapeXml(redirect.address)}</fmt:param>
-                        </fmt:message>
-                    </c:when>
-                </c:choose>
-                <c:choose>
-                    <c:when test="${zm:isFlagAction(action)}">
-                        <c:set var="flag" value="${zm:getFlagAction(action)}"/>
-                        <fmt:message key="FILT_ACTION_FLAG_${flag.markOp}"/>
-                    </c:when>
-                </c:choose>
+            <%--Display discard action only if zimbraFeatureDiscardInFiltersEnabled is true--%>            
+            <c:if test="${mailbox.features.discardFilterEnabled eq true and zm:isDiscardAction(action)}">
+                <fmt:message key="FILT_ACTION_DISCARD"/>
+            </c:if>
+
+            <c:if test="${zm:isStopAction(action)}">
+                <fmt:message key="FILT_ACTION_STOP"/>
+            </c:if>
+
+            <c:if test="${zm:isFileIntoAction(action)}">
+                <c:set var="fileInto" value="${zm:getFileIntoAction(action)}"/>
+                <c:set var="path" value="${fn:toLowerCase(fn:startsWith(fileInto.folderPath, '/') ? fn:substring(fileInto.folderPath, 1, -1) : fileInto.folderPath)}"/>
+                <fmt:message key="${fn:toLowerCase(fn:escapeXml(path))}" var="rootPath" />
+                <fmt:message key="FILT_ACTION_FILEINTO">
+                    <fmt:param>${fn:escapeXml(fn:startsWith(rootPath,'???') ? path : rootPath)}</fmt:param>
+                </fmt:message>
+            </c:if>
+
+            <c:if test="${zm:isTagAction(action)}">
+                <c:set var="tag" value="${zm:getTagAction(action)}"/>
+                <fmt:message key="FILT_ACTION_TAG">
+                    <fmt:param>${fn:escapeXml(tag.tagName)}</fmt:param>
+                </fmt:message>
+            </c:if>
+
+            <c:if test="${zm:isRedirectAction(action)}">
+                <c:set var="redirect" value="${zm:getRedirectAction(action)}"/>
+                <fmt:message key="FILT_ACTION_REDIRECT">
+                    <fmt:param>${fn:escapeXml(redirect.address)}</fmt:param>
+                </fmt:message>
+            </c:if>
+
+            <c:if test="${zm:isFlagAction(action)}">
+                <c:set var="flag" value="${zm:getFlagAction(action)}"/>
+                <fmt:message key="FILT_ACTION_FLAG_${flag.markOp}"/>
+            </c:if>
         </td>
     </tr>
     </c:forEach>

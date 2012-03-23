@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -174,7 +174,7 @@ function(section, index) {
 	this.prefView[section.id] = view;
 	
 	// add section as a tab
-	var tabButtonId = ZmId.getTabId(this._controller._currentView, ZmId.getPrefPageId(section.id));
+	var tabButtonId = ZmId.getTabId(this._controller.getCurrentViewId(), ZmId.getPrefPageId(section.id));
 	var tabId = this.addTab(section.title, view, tabButtonId, index);
 	this._tabId[section.id] = tabId;
 	this._sectionId[tabId] = section.id;
@@ -330,9 +330,9 @@ function(dirtyCheck, noValidation, batchCommand) {
 				viewPage.addCommand(batchCommand);
 			}
 		}
-
+        var isSaveCommand = (batchCommand) ? true : false;
 		try {
-			var result = this._checkSection(section, viewPage, dirtyCheck, noValidation, list, errors, view);
+			var result = this._checkSection(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSaveCommand);
 		} catch (e) {
 			throw(e);
 		}
@@ -349,13 +349,14 @@ function(dirtyCheck, noValidation, batchCommand) {
 };
 
 ZmPrefView.prototype._checkSection =
-function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
+function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSaveCommand) {
 	var settings = appCtxt.getSettings();
 	var prefs = section && section.prefs;
 	for (var j = 0, count = prefs ? prefs.length : 0; j < count; j++) {
 		var id = prefs[j];
 		if (!viewPage._prefPresent || !viewPage._prefPresent[id]) { continue; }
 		var setup = ZmPref.SETUP[id];
+        var defaultError = setup.errorMessage;
 		if (!this._controller.checkPreCondition(setup)) { continue; }
 
 		var type = setup ? setup.displayContainer : null;
@@ -383,6 +384,14 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 				origValue = setup.valueFunction(origValue);
 			}
 		}
+
+        if (pref.name == "zimbraPrefAutoSaveDraftInterval"){
+          // We are checking if zimbraPrefAutoSaveDraftInterval is set or not
+          var orig = !(!origValue);
+          var current  = !(!value);
+          if (orig == current)
+              origValue = value;
+        }
 		
 		if (this._prefChanged(pref.dataType, origValue, value)) {
 			var isValid = true;
@@ -396,7 +405,7 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
 				}
 			}
 			if (isValid) {
-                if (!dirtyCheck) {
+                if (!dirtyCheck && isSaveCommand) {
                     if (setup.setFunction) {
                         setup.setFunction(pref, value, list);
                     } else {
@@ -405,9 +414,13 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
                             list.push(pref);
                         }
                     }
+                } else if (!dirtyCheck) {
+                    //for logging
+                    list.push({origValue: origValue, value:value});
                 }
 			} else {
 				errors.push(AjxMessageFormat.format(setup.errorMessage, AjxStringUtil.htmlEncode(value)));
+                setup.errorMessage = defaultError;
 			}
 			this._controller.setDirty(view, true);
 			if (dirtyCheck) {
@@ -443,7 +456,31 @@ function(type, origValue, value) {
  */
 ZmPrefView.prototype.isDirty =
 function() {
-	return this.getChangedPrefs(true, true);
+	try {
+		var printPref = function(pref) {
+			if (AjxUtil.isArray(pref)) {
+				return AjxUtil.map(pref, printPref).join("\n");
+			}
+			return [pref.name, " (from ", (pref.origValue!=="" ? pref.origValue : "[empty]"), " to ", (pref.value!=="" ? pref.value : "[empty]"), ")"].join("");
+		}
+
+		var changed = this.getChangedPrefs(false, true); // Will also update this._controller._dirty
+		if (changed && changed.length) {
+			AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\n" + printPref(changed));
+			return true;
+		}
+
+		var dirtyViews = AjxUtil.keys(this._controller._dirty, function(key,obj){return obj[key]});
+		if (dirtyViews.length) {
+			AjxDebug.println(AjxDebug.PREFS, "Dirty preference views:\n" + dirtyViews.join("\n"));
+			return true;
+		}
+
+		return false;
+	} catch (e) {
+		AjxDebug.println(AjxDebug.PREFS, "Exception in preferences: " + e.name + ": " + e.message);
+		return true;
+	}
 };
 
 /**

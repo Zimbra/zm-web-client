@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2009, 2010, 2011 VMware, Inc.
- * 
+ * Copyright (C) 2009, 2010 Zimbra, Inc.
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -19,22 +19,23 @@
  * @author Satish S
  * @private
  */
-ZmAdvancedHtmlEditor = function(parent, posStyle, content, mode, withAce) {
+ZmAdvancedHtmlEditor = function(parent, posStyle, content, mode, withAce, reparentContainer, textAreaId) {
 	if (arguments.length == 0) { return; }
 
 	this.isTinyMCE = window.isTinyMCE;
 	this._mode = mode;
 	this._hasFocus = {};
-	this.initTinyMCEEditor(parent, posStyle, content, mode, withAce);
+    this.isSignatureEditor = parent.isSignatureEditor;
+    this._bodyTextAreaId = textAreaId;
+	this.initTinyMCEEditor(parent, posStyle, content, mode, withAce, reparentContainer);
     this._ignoreWords = {};
 };
 
-ZmAdvancedHtmlEditor.TINY_MCE_PATH = "/tiny_mce/3.2.6";
+ZmAdvancedHtmlEditor.prototype.isZmAdvancedHtmlEditor = true;
+ZmAdvancedHtmlEditor.prototype.isInputControl = true;
+ZmAdvancedHtmlEditor.prototype.toString = function() { return "ZmAdvancedHtmlEditor"; };
 
-ZmAdvancedHtmlEditor.prototype.toString =
-function() {
-	return "ZmAdvancedHtmlEditor";
-};
+ZmAdvancedHtmlEditor.TINY_MCE_PATH = "/js/ajax/3rdparty/tinymce";
 
 ZmAdvancedHtmlEditor.prototype.getEditor =
 function() {
@@ -66,32 +67,76 @@ function(width) {
 
 ZmAdvancedHtmlEditor.prototype.setSize =
 function(x, y) {
-	var editor = this.getEditor();
-	var bodyField = this.getBodyField();
-
+    var div = this._spellCheckDivId && document.getElementById(this._spellCheckDivId);
+    var editorContainer = document.getElementById(this._bodyTextAreaId + "_tbl");// holds editor iframe container (table)
+    var bodyField;
+    if( this._mode === DwtHtmlEditor.HTML && editorContainer ){
+        bodyField = editorContainer;
+    }
+    else{
+        bodyField = document.getElementById(this._bodyTextAreaId);//holds textarea;
+    }
 	// FUDGE: we must substract borders and paddings - yuck.
-	var delta = this._mode == DwtHtmlEditor.HTML ? 10 : 8;
+	var delta = 10;
 
-	x -= delta + 4;
-	y -= delta; // subtract fudge factor
-
-	// bug fix #6786 - normalize width/height if less than zero
-	if (x < 0) { x = 0; }
-	if (y < 0) { y = 0; }
-
-	var editorContainer = document.getElementById(this._bodyTextAreaId + "_tbl");
-	if (editor && editorContainer) {
-		editorContainer.style.height = y + "px";
-		editorContainer.style.width = "100%";
+    /*
+    if (x === Dwt.CLEAR) {
+		bodyField.style.width = null;
+        if (div) div.style.width = null;
+	} else if (x === Dwt.DEFAULT) {
+		bodyField.style.width = "auto";
+        if (div) div.style.width = "auto";
+	} else if (typeof(x) === "number") {
+        x -= delta + 4;
+    	// bug fix #6786 - normalize width/height if less than zero
+	    if (x < 0) { x = 0; }
+		bodyField.style.width = x + 5 + "px";
+        if (div) {
+			if (!AjxEnv.isIE) {
+				x = x > 4 ? (x-4) : x;
+			}
+			div.style.width = x + "px";
+		}
 	}
+	*/
 
-	if (this._mode == DwtHtmlEditor.HTML && this.isTinyMCE)
-		y -= 26;
-
-	bodyField.style.width = x + 5 + "px";
-	bodyField.style.height = y + "px";
-
-	//todo: handle spellcheck ids
+    if (y === Dwt.CLEAR) {
+        bodyField.style.height = null;
+        if (div) div.style.height = null;
+    } else if (y === Dwt.DEFAULT) {
+        bodyField.style.height = "auto";
+        if (div) div.style.height = "auto";
+    } else if (typeof(y) === "number") {
+        y -= delta; // subtract fudge factor
+        if (y < 0) { y = 0; }
+        if( this._mode === DwtHtmlEditor.TEXT ){
+            bodyField.style.height = y + "px";
+        }
+        else{
+            if( y > 0 ){
+                var iframe = this._iFrameId && document.getElementById(this._iFrameId);//holds iframe
+                if(iframe){
+                    if( this.getToolbar("2").style.display === Dwt.DISPLAY_NONE ){
+                        iframe.style.height = (y - 24)+"px";
+                    }
+                    else{
+                        iframe.style.height = (y - 64)+"px";
+                    }
+                }
+                else{
+                    bodyField.style.height = (y - 18) + "px";
+                }
+            }
+        }
+        if (div) {
+			if (!AjxEnv.isIE) {
+				y = y > 4 ? (y-4) : y;
+			} else {
+				y += 2;
+			}
+			div.style.height = y + "px";
+		}
+    }
 };
 
 ZmAdvancedHtmlEditor.prototype.editorContainerFocus =
@@ -103,27 +148,31 @@ function() {
 ZmAdvancedHtmlEditor.prototype.focus =
 function() {
 	var editor = this.getEditor();
-	if (editor) {
+	if (this._editorInitialized && editor) {
 		editor.focus();
 		this.setFocusStatus(true);
 	} else {
-		var bodyField = this.getContentField();
-		if (bodyField) {
-			bodyField.focus();
-		}
-		this.setFocusStatus(true, true);
+        if ( this._mode === DwtHtmlEditor.HTML ) {
+            this._onTinyMCEEditorInitcallback = new AjxCallback(this, this.focus);
+        }
+        else{
+            var bodyField = this.getContentField();
+            if (bodyField){
+                bodyField.focus();
+                this.setFocusStatus(true, true);
+            }
+        }
 	}
 };
 
-ZmAdvancedHtmlEditor.prototype.getTextVersion =
-function() {
-	var textArea = this.getContentField();
-	if (this._mode == DwtHtmlEditor.HTML) {
-		var editor = this.getEditor();
-		return editor ? this._convertHtml2Text(): "";
-	}
-
-	return textArea.value;
+/**
+ * @param	{Boolean}	keepModeDiv	if <code>true</code>, _spellCheckModeDiv is not removed
+ */
+ZmAdvancedHtmlEditor.prototype.getTextVersion = function (convertor, keepModeDiv) {
+    this.discardMisspelledWords(keepModeDiv);
+    return this._mode === DwtHtmlEditor.HTML
+        ? this._convertHtml2Text(convertor)
+        : this.getContentField().value;
 };
 
 ZmAdvancedHtmlEditor.prototype.getContent =
@@ -137,7 +186,7 @@ function(insertFontStyle, onlyInnerContent) {
 		var editor = this.getEditor();
         var params = {};
         params.format ='raw';
-		var content = editor ? editor.getContent(params) : (this._pendingContent || "");
+		var content = editor ? editor.getContent(params) : (field.value || "");
         if(content == '<br mce_bogus="1">' || content == '<br mce_bogus="1"/>') {
             content = '';
         }        
@@ -166,7 +215,11 @@ function(html, insertFontStyle, onlyInnerContent) {
 			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 			cont[idx++] = "; color: ";
 			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
-			cont[idx++] = ";'>";
+            cont[idx++] = ";' ";
+            if ( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){ //Default compose direction is ltr no need to specify direction as ltr
+                cont[idx++] = "dir='"+ZmSetting.RTL+"' ";
+            }
+            cont[idx++] = ">";
 			cont[idx++] = html;
 			cont[idx++] = "</div>";
 		} else {
@@ -176,21 +229,18 @@ function(html, insertFontStyle, onlyInnerContent) {
 		return cont.join("");
 	}
 
-	var p_style = "<style type='text/css'>p { margin: 0; }</style>"; // bug 3264
-
 	if (insertFontStyle) {
-		html = this._getFontStyle(html);
+		html = ZmAdvancedHtmlEditor._getFontStyle(html);
 	}
 	return [
-		"<html><head>",
-		p_style,
-		"</head><body>",
+		"<html><body>",
 		html,
 		"</body></html>"
 	].join("");
 };
+ZmAdvancedHtmlEditor._embedHtmlContent = ZmAdvancedHtmlEditor.prototype._embedHtmlContent;
 
-ZmAdvancedHtmlEditor.prototype._getFontStyle =
+ZmAdvancedHtmlEditor._getFontStyle =
 function(html) {
 	var a = [], i = 0;
 	a[i++] = "<div style='font-family: ";
@@ -199,25 +249,25 @@ function(html) {
 	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 	a[i++] = "; color: ";
 	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
-	a[i++] = "'>";
+	a[i++] = "' ";
+    if( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){
+        a[i++] = "dir='"+ZmSetting.RTL+"' ";
+    }
+    a[i++] = ">";
 	a[i++] = html;
 	a[i++] = "</div>";
 	return a.join("");
 };
 
-ZmAdvancedHtmlEditor.prototype.setContent =
-function(content) {
-	if (this._mode == DwtHtmlEditor.HTML) {
-		var editor = this.getEditor();
-		if (editor && this._editorInitialized) {
-			editor.setContent(content, {format: 'raw'});
-		} else {
-			this._pendingContent = content;
-		}
-	} else {
-		var field = this.getContentField();
-		field.value = content;
-	}
+/*
+ If editor is not initialized and mode is HTML, tinymce will automatically initialize the editor with the content in textarea
+ */
+ZmAdvancedHtmlEditor.prototype.setContent = function (content) {
+    if (this._mode === DwtHtmlEditor.HTML && this._editorInitialized) {
+        this.getEditor().setContent(content, {format:'raw'});
+    } else {
+        this.getContentField().value = content;
+    }
     this._ignoreWords = {};
 };
 
@@ -236,56 +286,50 @@ function() {
 	return Boolean(this.getEditor());
 };
 
-ZmAdvancedHtmlEditor.prototype._convertHtml2Text =
-function() {
-	var editor = this.getEditor();
-	var doc = editor && editor.getDoc();
-
-	return (doc && doc.body)
-		? this._convertHtml2TextContinue(doc.body) : "";
-};
-
-ZmAdvancedHtmlEditor.prototype._convertHtml2TextContinue =
-function(domRoot) {
-	var text = [];
-	var idx = 0;
-	var ctxt = {};
-
-	AjxStringUtil._traverse(domRoot, text, idx, AjxStringUtil._NO_LIST, 0, 0, ctxt);
-
-	// tinymce always inserts <p> tag which creates unwanted new lines in format
-	// conversion
-	if (text.length && text[0] == "\n\n") {
-		text[0] = "";
-	}
-
-	return text.join("");
+ZmAdvancedHtmlEditor.prototype._convertHtml2Text = function (convertor) {
+    var editor = this.getEditor(),
+        body;
+    if (editor) {
+        body = editor.getBody();
+        if (body) {
+            return (AjxStringUtil.convertHtml2Text(body, convertor, true));
+        }
+    }
+    return "";
 };
 
 ZmAdvancedHtmlEditor.prototype.moveCaretToTop =
-function() {
+function(offset) {
 	var focused = document.activeElement;
 	if (this._mode == DwtHtmlEditor.TEXT) {
 		var control = this.getContentField();
 		if (control.createTextRange) { // IE
 			var range = control.createTextRange();
-			range.collapse(true);
+			if (offset) {
+				range.move('character', offset);
+			}
+			else {
+				range.collapse(true);
+			}
 			range.select();
 		} else if (control.setSelectionRange) { // FF
-			control.setSelectionRange(0, 0);
+			offset = offset || 0;
+			control.setSelectionRange(offset, offset);
 		}
 	} else {
-		this._moveCaretToTopHtml(true);
+		this._moveCaretToTopHtml(true, offset);
 	}
-    try{
-	    if (focused) focused.focus();
-    }catch(ex){
+    try {
+	    if (focused) {
+			focused.focus();
+		}
+    } catch(ex) {
         // do nothing
     }
 };
 
 ZmAdvancedHtmlEditor.prototype._moveCaretToTopHtml =
-function(tryOnTimer) {
+function(tryOnTimer, offset) {
 	var editor = this.getEditor();
 	if (!editor) { return; }
 
@@ -293,13 +337,21 @@ function(tryOnTimer) {
 	var success = false;
 	if (AjxEnv.isIE) {
 		if (body) {
-			body.createTextRange().collapse(true);
+			var range = body.createTextRange();
+			if (offset) {
+				range.move('character', offset);
+			} else {
+				range.collapse(true);
+			}
 			success = true;
 		}
 	} else {
 		var selection = editor.selection ? editor.selection.getSel() : "";
 		if (selection) {
-			selection.collapse(body,0);
+			// if we get an offset, use it as character count into text node
+			var target = offset ? body.firstChild : body;
+			offset = offset || 0;
+			selection.collapse(target, offset);
 			success = true;
 		}
 	}
@@ -319,7 +371,8 @@ function() {
 	return Boolean(this._hasFocus[this._mode]);
 };
 
-ZmAdvancedHtmlEditor.prototype._getIframeDoc =
+/*ZmSignature editor contains getIframeDoc method dont want to break the existing code*/
+ZmAdvancedHtmlEditor.prototype._getIframeDoc = ZmAdvancedHtmlEditor.prototype.getIframeDoc =
 function() {
 	var editor = this.getEditor();
 	return editor ? editor.getDoc() : null;
@@ -333,14 +386,15 @@ function() {
 
 ZmAdvancedHtmlEditor.prototype.clear =
 function() {
-	this.setPendingContent(null);
 	var editor = this.getEditor();
-	if (editor) {
-		editor.setContent("", {format: "raw"});
-        this.initDefaultFontSize(editor);
+    if (editor && this._editorInitialized) {
+        editor.undoManager && editor.undoManager.clear();
+        editor.isNotDirty = true;//setting tinymce editor internal property
 	}
     var field = this.getContentField();
-    if(field) field.value = "";
+    if(field){
+        field.parentNode.replaceChild(field.cloneNode(false), field);//To clear undo/redo queue of textarea
+    }
 };
 
 ZmAdvancedHtmlEditor.prototype.reparentHtmlElement =
@@ -359,7 +413,7 @@ function() {
 };
 
 ZmAdvancedHtmlEditor.prototype.initTinyMCEEditor =
-function(parent, posStyle, content, mode, withAce) {
+function(parent, posStyle, content, mode, withAce, reparentContainer) {
 
 	var params = {
 		parent: parent,
@@ -370,14 +424,26 @@ function(parent, posStyle, content, mode, withAce) {
 		className:"ZmHtmlEditor"
 	};
 	this._editorContainer = new ZmEditorContainer(params);
+    if( reparentContainer ){
+        this._editorContainer.reparentHtmlElement(reparentContainer);
+    }
 	var htmlEl = this._editorContainer.getHtmlElement();
 
+    if( this._mode === DwtHtmlEditor.HTML ){
+        Dwt.setVisible(htmlEl, false);
+    }
 	//textarea on which html editor is constructed
-	var id = this._bodyTextAreaId = this._editorContainer.getHTMLElId() + "_content";
+    var id = this._bodyTextAreaId = this._bodyTextAreaId || this._editorContainer.getHTMLElId() + "_content";
 	var textEl = document.createElement("textarea");
 	textEl.setAttribute("id", id);
 	textEl.setAttribute("name", id);
+    if( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){
+        textEl.setAttribute("dir", ZmSetting.RTL);
+    }
 	textEl.className = "DwtHtmlEditorTextArea";
+    if ( content !== null ) {
+        textEl.value = content;
+    }
 	htmlEl.appendChild(textEl);
 	this._textAreaId = id;
 
@@ -385,38 +451,19 @@ function(parent, posStyle, content, mode, withAce) {
 	Dwt.setHandler(textEl, DwtEvent.ONBLUR, AjxCallback.simpleClosure(this.setFocusStatus, this, false, true));
 	this._editorContainer.setFocusMember(textEl);
 
-	if (content != null) {
-		this.setPendingContent(content);
-	}
-
 	if (!window.tinyMCE) {
-		var callback = new AjxCallback(this, this.initEditorManager, [id, mode, content]);
-		var data = {
-			name: "tiny_mce",
-			path: appContextPath + ZmAdvancedHtmlEditor.TINY_MCE_PATH + "/tiny_mce.js",
-			extension: ".js",
-			method: AjxPackage.METHOD_XHR_SYNC,
-			async: false,
-			callback: null,
-			scripts: [],
-			basePath: appContextPath + ZmAdvancedHtmlEditor.TINY_MCE_PATH
-		};
+        window.tinyMCEPreInit = {};
+        window.tinyMCEPreInit.suffix = '';
+        window.tinyMCEPreInit.base = appContextPath + ZmAdvancedHtmlEditor.TINY_MCE_PATH; // SET PATH TO TINYMCE HERE
+        // Tell TinyMCE that the page has already been loaded
+        window.tinyMCE_GZ = {};
+        window.tinyMCE_GZ.loaded = true;
 
-		AjxPackage.require(data);
-		this.initEditorManager(id, mode, content);
+		var callback = new AjxCallback(this, this.initEditorManager, [id, content]);
+        AjxDispatcher.require(["TinyMCE"], true, callback);
 	} else {
 		this.initEditorManager(id, mode, content);
 	}
-};
-
-ZmAdvancedHtmlEditor.prototype.getPendingContent =
-function() {
-	return this._pendingContent;
-};
-
-ZmAdvancedHtmlEditor.prototype.setPendingContent =
-function(content) {
-	this._pendingContent = content;
 };
 
 ZmAdvancedHtmlEditor.prototype.addOnContentInitializedListener =
@@ -430,16 +477,13 @@ function() {
 };
 
 ZmAdvancedHtmlEditor.prototype._handleEditorKeyEvent =
-function(ev, ed) {
+function(ed, ev) {
 	var retVal = true;
 
-	var cmd = null;
-	if (DwtKeyEvent.isKeyPressEvent(ev)) {
-		if (DwtKeyboardMgr.isPossibleInputShortcut(ev)) {
-			// pass to keyboard mgr for kb nav
-			retVal = DwtKeyboardMgr.__keyDownHdlr(ev);
-		}
-	}
+    if (DwtKeyboardMgr.isPossibleInputShortcut(ev)) {
+        // pass to keyboard mgr for kb nav
+        retVal = DwtKeyboardMgr.__keyDownHdlr(ev);
+    }
 
 	if (window.DwtIdleTimer) {
 		DwtIdleTimer.resetIdle();
@@ -450,12 +494,6 @@ function(ev, ed) {
 
 ZmAdvancedHtmlEditor.prototype.onLoadContent =
 function(ed) {
-	var pendingContent = this.getPendingContent();
-	if (pendingContent != null) {
-		ed.setContent(pendingContent, {format: "raw"});
-		this.setPendingContent(null);
-	}
-
 	if (this._onContentInitializeCallback) {
 		this._onContentInitializeCallback.run();
 	}
@@ -468,32 +506,52 @@ function(hasFocus, isTextModeFocus) {
 };
 
 ZmAdvancedHtmlEditor.prototype.initEditorManager =
-function(id, mode, content) {
+function(id, content) {
 
 	var obj = this;
 
 	function handleContentLoad(ed) {
 		obj.onLoadContent(ed);
 		obj.initDefaultFontSize(ed);
+        obj.initDefaultDirection();
 	};
 
+    function onTinyMCEEditorPostRender(ed) {
+        obj.onToolbarToggle();
+        Dwt.setVisible(obj.getHtmlElement(), true);
+    };
+
 	function onTinyMCEEditorInit(ed) {
-		obj.initDefaultFontSize(ed);
+        obj.initDefaultFontSize(ed);
+        obj.initDefaultDirection();
 		tinymce.dom.Event.add(ed.getWin(), 'focus', function(e) {
 			obj.setFocusStatus(true);
 		});
 		tinymce.dom.Event.add(ed.getWin(), 'blur', function(e) {
 			obj.setFocusStatus(false);
 		});
+	    // Set's up the a range for the current ins point or selection. This is IE only because the iFrame can
+	    // easily lose focus (e.g. by clicking on a button in the toolbar) and we need to be able to get back
+	    // to the correct insertion point/selection.
+        // DwtHtmlEditor is using _currInsPtBm property to store the cursor position in editor event handler function which is heavy.
+	    // Here we are registering this dedicated event to store the bookmark which will fire when focus moves outside the editor
+        if(AjxEnv.isIE){
+            tinymce.dom.Event.add(ed.getDoc(), 'beforedeactivate', function(e) {
+                if(ed.windowManager){
+                    ed.windowManager.bookmark = ed.selection.getBookmark(1);
+                }
+            });
+        }
 
 		var ec = obj.getEditorContainer();
 		ec.setFocusMember(ed.getWin());
 
 		obj._editorInitialized = true;
-	};
 
-	function onEditorKeyPress(ed, e) {
-		return obj._handleEditorKeyEvent(e, ed);
+        if (obj._onTinyMCEEditorInitcallback) {
+		    obj._onTinyMCEEditorInitcallback.run();
+        }
+        obj._handlePopup(ed);
 	};
 
 	var urlParts = AjxStringUtil.parseURL(location.href);
@@ -514,6 +572,7 @@ function(id, mode, content) {
 	}
 
 	var locale = appCtxt.get(ZmSetting.LOCALE_NAME);
+    var contentCSS = appContextPath + "/css/editor.css?v=" + window.cacheKillerVersion;
 	var editorCSS = appContextPath + "/css/editor_ui.css?v=" + window.cacheKillerVersion + "&skin=" + appCurrentSkin + "&locale=" + locale;
 
     var fonts = [];
@@ -528,16 +587,16 @@ function(id, mode, content) {
 		}
 	}
 
-	tinyMCE.init({
-		// General options
-		mode :  (mode == DwtHtmlEditor.HTML)? "exact" : "none",
+    var tinyMCEInitObj = {
+        // General options
+		mode :  (this._mode == DwtHtmlEditor.HTML)? "exact" : "none",
 		elements:  id,
-		plugins : "table,ztable,inlinepopups,zcontextmenu,fullscreen,zbreakquote",
+        plugins : "autolink,advlist,inlinepopups,table,paste,directionality,emotions,media",
 		theme : "advanced",
-		theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,justifyleft,justifycenter,justifyright,justifyfull,separator,bullist,numlist,outdent,indent,separator,bold,italic,underline,separator,forecolor,backcolor,separator,link,ztablecontrols,fullscreen",
-		theme_advanced_buttons2: "",
-		theme_advanced_buttons3: "",
-		theme_advanced_buttons4: "",
+        theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,link,unlink,image",
+        theme_advanced_buttons2 : "formatselect,undo,redo,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,emotions,charmap,media,|,removeformat",
+		theme_advanced_buttons3 : "",
+		theme_advanced_buttons4 : "",
 		theme_advanced_toolbar_location : "top",
 		theme_advanced_toolbar_align : "left",
 		theme_advanced_resizing : true,
@@ -545,57 +604,109 @@ function(id, mode, content) {
 		convert_urls : false,
 		verify_html : false,
 		gecko_spellcheck : true,
-		force_br_newlines : true,
-		forced_root_block : '',
-		force_p_newlines : false,
-		content_css : false,
+        content_css : contentCSS,
 		editor_css: editorCSS,
-		inline_styles: false,
+        theme_advanced_runtime_fontsize:true,
+        dialog_type : "modal",
+        forced_root_block : 'div',
+        width: "100%",
+        table_default_cellpadding : 3,
+        table_default_border: 1,
 		setup : function(ed) {
 			ed.onLoadContent.add(handleContentLoad);
+            ed.onPostRender.add(onTinyMCEEditorPostRender);
 			ed.onInit.add(onTinyMCEEditorInit);
-			ed.onKeyPress.add(onEditorKeyPress);
-
+            ed.onKeyDown.add(obj._handleEditorKeyEvent.bind(obj));
+            ed.onPaste.add(obj.onPaste.bind(obj));
+            //Adding Insert image button for uploading the insert image for signature alone
+            ed.addButton('zmimage', {
+                title : ZmMsg.insertImage,
+                "class" : "mce_ImgInsertImage",
+                onclick : ZmSignatureEditor.prototype._insertImagesListener.bind(obj)
+            });
+            //Adding toggle button for showing/hiding the extended toolbar
+            ed.addButton('toggle', {
+                title : ZmMsg.showExtendedToolbar,
+                onclick : obj.onToolbarToggle.bind(obj),
+                "class" : "mce_toggle"
+            });
 		}
-	});
+    }
 
+    if( obj.isSignatureEditor ){
+       tinyMCEInitObj.theme_advanced_buttons1 = tinyMCEInitObj.theme_advanced_buttons1 + ",zmimage";
+    }
+    if(appCtxt.get(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS)){
+        tinyMCEInitObj.theme_advanced_buttons1 = tinyMCEInitObj.theme_advanced_buttons1 + ",|,ltr,rtl";
+    }
+    tinyMCEInitObj.theme_advanced_buttons1 = tinyMCEInitObj.theme_advanced_buttons1 + ",|,toggle";
+	if( this._mode === DwtHtmlEditor.HTML ){
+        Dwt.setVisible(obj.getHtmlElement(), false);
+    }
+    else{
+        Dwt.setVisible(obj.getHtmlElement(), true);
+    }
+
+	tinyMCE.init(tinyMCEInitObj);
 	this._editor = this.getEditor();
 	this._iFrameId = this._bodyTextAreaId + "_ifr";
 };
 
-ZmAdvancedHtmlEditor.prototype.setMode =
-function(mode, convert, convertor) {
+ZmAdvancedHtmlEditor.prototype.onPaste = function(ed, ev) {
+    if (ev.clipboardData) {
+        var items = ev.clipboardData.items;
+        if( items ){
+            var blob = items[0].getAsFile();
+            if( blob ){
+                var req = new XMLHttpRequest();
+                req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
+                req.setRequestHeader("Cache-Control", "no-cache");
+                req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                req.setRequestHeader("Content-Type", blob.type);
+                req.setRequestHeader("Content-Disposition", 'attachment; filename="' + blob.fileName + '"');//For paste from clipboard filename is undefined
+                req.onreadystatechange = function(){
+                    if(req.readyState === 4 && req.status === 200) {
+                        var resp = eval("["+req.responseText+"]");
+                        if(resp.length === 3) {
+                            resp[2].clipboardPaste = true;
+                            var curView = appCtxt.getAppViewMgr().getCurrentView();
+                            curView.getController().saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, resp[2]);
+                        }
+                    }
+                }
+                req.send(blob);
+            }
+        }
+    }
+};
 
+ZmAdvancedHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
     this.discardMisspelledWords();
-
-	if (mode == this._mode || (mode != DwtHtmlEditor.HTML && mode != DwtHtmlEditor.TEXT)) {	return;	}
-
-	this._mode = mode;
-	var editor = this.getEditor();
-	if (mode == DwtHtmlEditor.HTML) {
-		var textArea = this.getContentField();
-		var content = convert ? AjxStringUtil.convertToHtml(textArea.value, true) : textArea.value;
-		if (editor && editor.getDoc()) {
-			var doc = editor.getDoc();
-			doc.body.innerHTML = content;
-			this._pendingContent = content;
-			//important: tinymce expects html markup in textarea so it might treat email
-			//address in <user1@testdomain.com> as tag
-			textArea.value = "";
-			this._editorContainer.setFocusMember(editor.getWin());
-		} else {
-			this._pendingContent = content;
-		}
-		tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);
-	} else {
-		var textArea = this.getContentField();
-		var doc = editor.getDoc();
-		var textContent = convert ? this._convertHtml2Text(convertor) : doc.innerHTML;
-
-		tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);
-		textArea.value = textContent;
-		this._editorContainer.setFocusMember(textArea);
-	}
+    if (mode === this._mode || (mode !== DwtHtmlEditor.HTML && mode !== DwtHtmlEditor.TEXT)) {
+        return;
+    }
+    this._mode = mode;
+    if (!window.tinyMCE) {//Tinymce script is getting loaded
+        return;
+    }
+    if (mode === DwtHtmlEditor.HTML) {
+        if (convert) {
+            var textarea = this.getContentField();
+            textarea.value = AjxStringUtil.convertToHtml(textarea.value, true);
+        }
+        if (!this._editorInitialized) {//To avoid the initial jerk of html editor make the initial display as none
+            Dwt.setVisible(this.getHtmlElement(), false);
+        }
+    } else {
+        if (convert) {
+            var content = this._convertHtml2Text(convertor);
+        }
+    }
+    this.initDefaultDirection();
+    tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);//tinymce will automatically toggles the editor and sets the corresponding content.
+    if (convert && mode === DwtHtmlEditor.TEXT) {//tinymce will set html content directly in textarea. Resetting the content after removing the html tags.
+        this.setContent(content);
+    }
 };
 
 ZmAdvancedHtmlEditor.prototype.getContentField =
@@ -604,7 +715,7 @@ function() {
 };
 
 ZmAdvancedHtmlEditor.prototype.insertImage =
-function(src, dontExecCommand, width, height) {
+function(src, dontExecCommand, width, height, dfsrc) {
 
 	var html = [];
 	var idx= 0 ;
@@ -614,6 +725,11 @@ function(src, dontExecCommand, width, height) {
 	html[idx++] = src;
 	html[idx++] = "'";
 
+    if ( dfsrc != null) {
+        html[idx++] = " dfsrc='";
+        html[idx++] = dfsrc;
+	    html[idx++] = "'";
+    }
 	if (width != null) {
 		html[idx++] = " width='" + width + "'";
 	}
@@ -624,12 +740,31 @@ function(src, dontExecCommand, width, height) {
 
 	var ed = this.getEditor();
 
+    if(ed.windowManager && ed.windowManager.bookmark){
+        ed.selection.moveToBookmark(ed.windowManager.bookmark);
+    }
 	// Fixes crash in Safari
 	if (tinymce.isWebKit) {
 		ed.getWin().focus();
 	}
 
-	ed.execCommand('mceInsertContent', false, html.join(""), {skip_undo : 1});
+	//tinymce modifies the source when using mceInsertContent
+    //ed.execCommand('mceInsertContent', false, html.join(""), {skip_undo : 1});
+    ed.execCommand('mceInsertRawHTML', false, html.join(""), {skip_undo : 1});
+};
+
+ZmAdvancedHtmlEditor.prototype.replaceImage =
+function(id, src){
+    var doc = this.getEditor().getDoc();
+    if(doc){
+        var img = doc.getElementById(id);
+        if( img && img.getAttribute("data-zim-uri") === id ){
+            img.src = src;
+            img.removeAttribute("id");
+            img.removeAttribute("data-mce-src");
+            img.removeAttribute("data-zim-uri");
+        }
+    }
 };
 
 ZmAdvancedHtmlEditor.prototype.initDefaultFontSize =
@@ -640,6 +775,35 @@ function(editor) {
 		doc.body.style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 		doc.body.style.color = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
 	}
+};
+
+ZmAdvancedHtmlEditor.prototype.initDefaultDirection =
+function() {
+    if( this._mode === DwtHtmlEditor.HTML ){
+        var doc = this._getIframeDoc();
+        if (doc){
+            //Dont use css for direction Refer : http://www.w3.org/International/questions/qa-bidi-css-markup
+            if( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){
+                if(doc.body.dir !== ZmSetting.RTL){
+                    doc.body.dir = ZmSetting.RTL;
+                }
+            }
+            else{
+                doc.body.removeAttribute("dir");
+            }
+        }
+    }
+    else{
+        var textArea = this.getContentField();
+        if( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){
+            if(textArea.getAttribute("dir") !== ZmSetting.RTL){
+                textArea.setAttribute("dir", ZmSetting.RTL);
+            }
+        }
+        else{
+            textArea.removeAttribute("dir");
+        }
+    }
 };
 
 ZmAdvancedHtmlEditor.prototype.addCSSForDefaultFontSize =
@@ -715,8 +879,8 @@ function(callback, onExitCallback, errCallback){
 };
 
 ZmAdvancedHtmlEditor.prototype.spellCheck =
-function(callback) {
-	var text = this.getTextVersion();
+function(callback, keepModeDiv) {
+	var text = this.getTextVersion(null, keepModeDiv);
 
 	if (/\S/.test(text)) {
 		AjxDispatcher.require("Extras");
@@ -1176,9 +1340,7 @@ function() {
 
 ZmAdvancedHtmlEditor._spellCheckAgain =
 function() {
-	var editor = Dwt.getObjectFromElement(this);
-	editor.discardMisspelledWords();
-	editor.spellCheck();
+    Dwt.getObjectFromElement(this).spellCheck(null, true);
 };
 
 
@@ -1390,6 +1552,13 @@ function(words, keepModeDiv) {
 	};
 };
 
+/**
+ * Returns true if editor content is spell checked
+ */
+ZmAdvancedHtmlEditor.prototype.isSpellCheckMode = function() {
+    return Boolean( this._spellCheck );
+};
+
 ZmAdvancedHtmlEditor.prototype._loadExternalStyle =
 function(path) {
 	var doc = this._getIframeDoc();
@@ -1497,6 +1666,140 @@ function() {
 	}
 };
 
+ZmAdvancedHtmlEditor.prototype.getHtmlElement =
+function() {
+    return this._editorContainer.getHtmlElement();
+};
+
+/*
+ * Returns toolbar row of tinymce
+ *
+ *  @param {Number}	Toolbar Row Number 1,2
+ *  @return	{Toolbar HTML Element}
+ */
+ZmAdvancedHtmlEditor.prototype.getToolbar =
+function( number ) {
+    var editor = this.getEditor();
+    if( editor && editor.controlManager ){
+        var toolbar = editor.controlManager.get("toolbar"+number);
+        if( toolbar && toolbar.id ){
+            return document.getElementById( toolbar.id );
+        }
+    }
+};
+
+/*
+ *  Returns toolbar button of tinymce
+ *
+ *  @param {String}	button name
+ *  @return	{Toolbar Button HTML Element}
+ */
+ZmAdvancedHtmlEditor.prototype.getToolbarButton =
+function( buttonName ) {
+    var editor = this.getEditor();
+    if( editor && editor.controlManager ){
+        var toolbarButton = editor.controlManager.get(buttonName);
+        if( toolbarButton && toolbarButton.id ){
+            return document.getElementById( toolbarButton.id );
+        }
+    }
+};
+
+ZmAdvancedHtmlEditor.prototype.onToolbarToggle =
+function() {
+    var iframeStyle = this.getBodyField().style;
+    var toolbar = this.getToolbar("2");
+    var toggleButton = this.getToolbarButton("toggle");
+    if(toolbar && toggleButton ){
+        if( toolbar.style.display === Dwt.DISPLAY_NONE ){
+            toggleButton.title = ZmMsg.hideExtendedToolbar;
+            Dwt.setInnerHtml(toggleButton.firstChild, ZmMsg.lessToolbar);
+            Dwt.show(toolbar);
+            iframeStyle.height = parseInt( iframeStyle.height ) - 26 + "px";
+        }
+        else{
+            toggleButton.title = ZmMsg.showExtendedToolbar;
+            Dwt.setInnerHtml(toggleButton.firstChild, ZmMsg.moreToolbar);
+            Dwt.hide(toolbar);
+            iframeStyle.height = parseInt( iframeStyle.height ) + 26 + "px";
+        }
+    }
+};
+
+/*
+ *  Inserting image for signature
+ */
+ZmAdvancedHtmlEditor.prototype.insertImageDoc =
+function(file) {
+    var src = file.rest;
+    if (!src) { return; }
+    var path = appCtxt.get(ZmSetting.REST_URL) + ZmFolder.SEP;
+    var dfsrc = file.docpath;
+    if (dfsrc && dfsrc.indexOf("doc:") == 0) {
+        var url = [path, dfsrc.substring(4)].join('');
+        src = AjxStringUtil.fixCrossDomainReference(url);
+    }
+    this.insertImage(src, null, null, null, dfsrc);
+};
+
+/*
+ *  Signature Insert image callback
+ */
+ZmAdvancedHtmlEditor.prototype._imageUploaded =
+function() {
+    ZmSignatureEditor.prototype._imageUploaded.apply(this, arguments);
+};
+
+/*
+ * Modifies popup dialog after rendering
+ */
+ZmAdvancedHtmlEditor.prototype._handlePopup =
+function(ed) {
+    var popupIframeLoad = function(popupWindow){
+        var doc = popupWindow.document;
+        if( doc ){
+            if( popupWindow.action === "insert" ){  //Insert Table dialog
+                var style = doc.getElementById("style");
+                var align = doc.getElementById("align");
+                var width = doc.getElementById("width");
+                style && (style.value = "border-collapse:collapse;");
+                align && (align.value = "center");
+                width && (width.value = "90%");
+            }
+        }
+    };
+
+    ed.windowManager.onOpen.add(function(windowManager, popupWindow) {
+        if( !popupWindow ){
+            return;
+        }
+        var popupIframe = popupWindow.frameElement;
+        if( popupIframe ){
+            if( popupIframe.attachEvent ){
+                 popupIframe.attachEvent("onload", function(){
+                    popupIframeLoad( popupWindow );
+                 });
+            }
+            else{
+                popupIframe.onload = function(){
+                    popupIframeLoad( popupWindow );
+                };
+            }
+        }
+    });
+};
+
+/**
+ * Returns true if editor content is modified
+ */
+ZmAdvancedHtmlEditor.prototype.isDirty = function(){
+    if( this._mode === DwtHtmlEditor.HTML ){
+        var editor = this.getEditor();
+        if (editor) {
+            return editor.isDirty();
+        }
+    }
+};
 
 ZmEditorContainer = function(params) {
 	if (arguments.length == 0) { return; }
