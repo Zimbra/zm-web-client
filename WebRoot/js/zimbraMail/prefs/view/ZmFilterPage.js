@@ -40,6 +40,11 @@ function () {
 
 ZmFilterPage.prototype._createControls =
 function() {
+	if (appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED)) {
+		this._activityStreamsButton = new DwtButton({parent:this, parentElement: this._htmlElId+"_ACTIVITY_STREAM_BUTTON", });
+		this._activityStreamsButton.setText(ZmMsg.activityStreamSettings);
+		this._activityStreamsButton.addSelectionListener(new AjxListener(this, this._activityStreamDialog));
+	}
 	this._tabView = new DwtTabView({parent:this, posStyle:Dwt.STATIC_STYLE});
 	this._tabView.reparentHtmlElement(this._htmlElId+"_tabview");
 	var incomingController = this._controller.getIncomingFilterRulesController();
@@ -56,6 +61,7 @@ function () {
 	return this._tabView;
 };
 
+
 //
 // Protected methods
 //
@@ -67,3 +73,7 @@ ZmFilterPage.prototype._setupCustom = function(id, setup, value) {
 	return ZmPreferencesPage.prototype._setupCustom.apply(this, arguments);
 };
 
+ZmFilterPage.prototype._activityStreamDialog = function() {
+	var priorityFilterDialog = appCtxt.getPriorityMessageFilterDialog();
+	ZmController.showDialog(priorityFilterDialog);
+};

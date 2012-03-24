@@ -920,11 +920,20 @@ function(items, folder, attrs, isShiftKey) {
 				list.moveItems(params);
 			}
 		}
-		else if (folder.getName() == ZmMsg.activityStreamsRule && items.length == 1) { //TODO: does this need to be a system folder for comaparison?
+		else if (folder.getName() == ZmMsg.activityStreamFolder && items.length == 1) { //TODO: does this need to be a system folder for comparison?
 			list.moveItems(params);
 			var activityStreamDialog = appCtxt.getActivityStreamFilterDialog();
 			activityStreamDialog.setFields(items[0]);
 			activityStreamDialog.popup();
+		}
+		else if (items.length == 1 && folder.id == ZmFolder.ID_INBOX) {
+			var fromFolder = appCtxt.getById(items[0].folderId);
+			if (fromFolder && fromFolder.getName() == ZmMsg.activityStreamFolder) { //TODO: does this need to be a system folder for comparison?
+				list.moveItems(params);
+				var activityStreamDialog = appCtxt.getActivityToInboxFilterDialog();
+				activityStreamDialog.setFields(items[0]);
+				activityStreamDialog.popup();
+			}
 		}
 		else {
 			list.moveItems(params);

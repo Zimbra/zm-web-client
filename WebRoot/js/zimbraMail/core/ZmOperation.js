@@ -155,7 +155,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_PAGE_BACK, {image:"LeftArrow", shortcut:ZmKeyMap.PREV_PAGE});
 	ZmOperation.registerOp(ZmId.OP_PAGE_FORWARD, {image:"RightArrow", shortcut:ZmKeyMap.NEXT_PAGE});
 	ZmOperation.registerOp(ZmId.OP_PRINT, {textKey:"print", tooltipKey:"printTooltip", image:"Print", shortcut:ZmKeyMap.PRINT, textPrecedence:30, showImageInToolbar: true}, ZmSetting.PRINT_ENABLED);
-    ZmOperation.registerOp(ZmId.OP_PRIORITY_FILTER, {image:"Priority", textKey:"messagePriority"}, ZmSetting.PRIORITY_INBOX_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_PRIORITY_FILTER, {image:"Priority", textKey:"activityStream"}, ZmSetting.PRIORITY_INBOX_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_QUICK_COMMANDS, {textKey:"quickCommands", image:"QuickCommand"});
 	ZmOperation.registerOp(ZmId.OP_RECOVER_DELETED_ITEMS, {textKey:"recoverDeletedItems", image:"Trash", tooltipKey:"recoverDeletedItems"}, ZmSetting.DUMPSTER_ENABLED);
     ZmOperation.registerOp(ZmId.OP_REFRESH, {textKey:"refresh", tooltipKey:"refreshTooltip"});

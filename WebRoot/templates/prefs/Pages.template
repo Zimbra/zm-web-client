@@ -1355,6 +1355,19 @@ and the container element is replaced with that control.
 
 <template id='prefs.Pages#MailFilters'>
 	<div class="rightAlign"><$=ZmMsg.filterRuleChangesSavedImmediately$></div>
+	<$ if (appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED)) { $>
+	<div>
+	  <fieldset>
+            <legend><$=ZmMsg.activityStreamFilterTitle$></legend>
+            <table>
+              <tr>
+                <td style='padding: 5px'><div id='${id}_ACTIVITY_STREAM_BUTTON'></div></td>
+                <td><$=ZmMsg.activityStreamFilterMsg$></td>
+              </tr>
+            </table>
+          </fieldset>
+        </div>
+        <$ }$>
 	<table width=100%>
 		<tr>
 			<td class='ZOptionsSectionTabView'>
@@ -2559,7 +2572,9 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
       <fieldset>
        <legend class='Text'><$=ZmMsg.moveToActivityStream $></legend>
         <div id='${id}_MOVE_LIST' class='ZmActivityStreamFilterList'>
-          <div id='${id}_NOT_TO_ME'></div> 
+          <div id='${id}_NOT_TO_ME'></div>
+          <div class='text' style='float: right; padding-right: 25px; padding-top: 5px'><$=ZmMsg.field$></div>
+          <div id='${id}_SELECT_FIELD'></div> 
           <div id='${id}_NOT_IN_ADDR'></div>
           <div id='${id}_DL_SUBSCRIBED'></div> 
           <div id='${id}_MASS_MARKETING'></div>

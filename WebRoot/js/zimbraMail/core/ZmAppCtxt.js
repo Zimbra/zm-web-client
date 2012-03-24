@@ -784,6 +784,20 @@ function() {
 };
 
 /**
+ * Gets the prompt for moving files from the Activity Stream to the Inbox
+ * 
+ * @return {ZmActivityToInboxPromptDialog}
+ */
+ZmAppCtxt.prototype.getActivityToInboxFilterDialog =
+function() {
+	if (!this._activityToInboxFilterDialog) {
+		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
+		this._activityToInboxFilterDialog = new ZmActivityToInboxPromptDialog();
+	}
+	return this._activityToInboxFilterDialog;
+};
+
+/**
  * Gets the quickadd dialog for creating a contact
  * 
  * @return {ZmContactQuickAddDialog}

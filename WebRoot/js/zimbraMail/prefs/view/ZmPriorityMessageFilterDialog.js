@@ -15,7 +15,7 @@
 
 ZmPriorityMessageFilterDialog = function() {
 
-	DwtDialog.call(this, {parent:appCtxt.getShell(), className:"ZmPriorityMessageFilterDialog", title:ZmMsg.messagePriority});
+	DwtDialog.call(this, {parent:appCtxt.getShell(), className:"ZmPriorityMessageFilterDialog", title:ZmMsg.activityStream});
 
 	// set content
 	this.setContent(this._contentHtml());
@@ -47,6 +47,7 @@ function() {
 		items: [
 			{ id: "MOVE_MSG_STREAM", type: "DwtCheckbox", label: ZmMsg.enableActivityStream, checked: false, onclick: streamListener},
 			{ id: "NOT_TO_ME", type: "DwtCheckbox", label: ZmMsg.moveNotToMe, checked: true},
+			{ id: "SELECT_FIELD", type: "DwtSelect", items:[ZmMsg.to, ZmMsg.toOrCc]},
 			{ id: "NOT_IN_ADDR", type: "DwtCheckbox", label: ZmMsg.moveNotInAddrBook, checked: true},
 			{ id: "DL_SUBSCRIBED", type: "DwtCheckbox", label: ZmMsg.moveMessagesFromDL, checked: true},
 			{ id: "MASS_MARKETING", type: "DwtCheckbox", label: ZmMsg.massMarketingMessages, checked: true}
@@ -58,6 +59,7 @@ function() {
 	
 	this._moveMsgIntoStream = this._priorityMessageForm.getControl("MOVE_MSG_STREAM");
 	this._notToMe = this._priorityMessageForm.getControl("NOT_TO_ME");
+	this._selectField = this._priorityMessageForm.getControl("SELECT_FIELD");
 	this._notInMyAddrBk = this._priorityMessageForm.getControl("NOT_IN_ADDR");
 	this._dlSubscribedTo = this._priorityMessageForm.getControl("DL_SUBSCRIBED");
 	this._massMarketing = this._priorityMessageForm.getControl("MASS_MARKETING");
@@ -67,11 +69,17 @@ function() {
 	this._streamHash[ZmFilterRule.TEST_LIST] = {control: this._dlSubscribedTo, negative: false};
 	this._streamHash[ZmFilterRule.TEST_ADDRBOOK] = {control: this._notInMyAddrBk, negative: true, headerValue: "from"};
 	this._streamHash[ZmFilterRule.TEST_ME] = {control: this._notToMe, negative: true, headerValue: "to"};
-
+	
     this._advancedControls = new DwtText({parent:this,className:"FakeAnchor"});
     this._advancedControls.setText(ZmMsg.advancedControls);
     this._advancedControls.getHtmlElement().onclick = advancedListener;
     this._advancedControls.replaceElement(document.getElementById("PriorityInboxAdvancedControls"));
+
+	var htmlEl = this._notToMe.getHtmlElement();
+	if (htmlEl) {
+		htmlEl.style.cssFloat = "left";
+		htmlEl.style.paddingRight = "3px";
+	}
 };
 
 ZmPriorityMessageFilterDialog.prototype.popup =
@@ -113,7 +121,8 @@ function(controlId) {
         rule.addAction(ZmFilterRule.A_FOLDER, ZmMsg.activityStreamsRule);
         for (var id in this._streamHash) {
             if (id == ZmFilterRule.TEST_ME) {
-                rule.addCondition(id, ZmFilterRule.OP_NOT_IS, null, this._streamHash[id].headerValue);	
+				var meTestValue = this._selectField.getValue() == ZmMsg.to ? ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_TO] : ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_TO_CC];
+                rule.addCondition(id, ZmFilterRule.OP_NOT_IS, null, meTestValue);	
             }
             else if (id == ZmFilterRule.TEST_ADDRBOOK) {
                 rule.addCondition(id, ZmFilterRule.OP_NOT_IN ,"contacts", this._streamHash[id].headerValue); //Address in From not in Contacts	
@@ -145,20 +154,36 @@ function() {
 		this._notToMe.setSelected(false);
 
 		for (var c in conditions) {
-			var isNegative = AjxUtil.isArray(conditions[c]) && conditions[c][0].negative ? (conditions[c][0].negative == "1") : false;
-			if (this._streamHash[c]) {
-				if (isNegative && (c == ZmFilterRule.TEST_ADDRBOOK || c == ZmFilterRule.TEST_ME)) {
-					var header = AjxUtil.isArray(conditions[c]) && conditions[c][0].header;
-					var value = (c == ZmFilterRule.TEST_ADDRBOOK) ? ZmFilterRule.C_FROM : ZmFilterRule.C_TO;
-					if (header && header.toLowerCase() == value.toLowerCase()) {
+			var length = AjxUtil.isArray(conditions[c]) ? conditions[c].length : -1;
+			for (var i=0; i<length; i++) {
+				var isNegative = AjxUtil.isArray(conditions[c]) && conditions[c][i].negative ? (conditions[c][i].negative == "1") : false;
+				if (this._streamHash[c]) {
+					if (isNegative && (c == ZmFilterRule.TEST_ADDRBOOK || c == ZmFilterRule.TEST_ME)) {
+						var header = AjxUtil.isArray(conditions[c]) && conditions[c][i].header;
+						if (c == ZmFilterRule.TEST_ADDRBOOK) {
+							value = ZmFilterRule.C_FROM;
+						}
+						else if (c == ZmFilterRule.TEST_ME) {
+							if (header &&  header.toUpperCase() == ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_TO].toUpperCase()) {
+								value = header;
+								this._selectField.setSelected(ZmMsg.to);
+							}
+							else if (header &&  header.toUpperCase() == ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_TO_CC].toUpperCase()) {
+								value = header;
+								this._selectField.setSelected(ZmMsg.toOrCc);
+							}
+						}
+						//var value = (c == ZmFilterRule.TEST_ADDRBOOK) ? ZmFilterRule.C_FROM : ZmFilterRule.C_TO;
+						if (header && header.toLowerCase() == value.toLowerCase()) {
+							this._streamHash[c].control.setSelected(true);
+							this._streamHash[c].control.setEnabled(true);
+						}
+					}
+					else if (!isNegative) {
 						this._streamHash[c].control.setSelected(true);
 						this._streamHash[c].control.setEnabled(true);
 					}
-				}
-				else if (!isNegative) {
-					this._streamHash[c].control.setSelected(true);
-					this._streamHash[c].control.setEnabled(true);
-				}
+				} 
 			}
 		}
 	}
@@ -190,7 +215,8 @@ function() {
 			var headerValue = this._streamHash[id].headerValue;
 			if (control.isSelected()) {
 				if (id == ZmFilterRule.TEST_ME) {
-					streamRule.addCondition(id, ZmFilterRule.OP_NOT_IS, null, headerValue);	
+					var meTestValue = this._selectField.getValue() == ZmMsg.to ? ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_TO] : ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_TO_CC];
+					streamRule.addCondition(id, ZmFilterRule.OP_NOT_IS, null, meTestValue);	
 				}
 				else if (id == ZmFilterRule.TEST_ADDRBOOK) {
 					streamRule.addCondition(id, ZmFilterRule.OP_NOT_IN ,"contacts", headerValue); //Address in From not in Contacts	
@@ -201,7 +227,13 @@ function() {
 				foundCondition = true;
 			}
 			else if (activityRule) {
-				activityRule = this._removeCondition(activityRule, id, negative, headerValue);
+				if (id == ZmFilterRule.TEST_ME && this._activityStreamRule.conditions[ZmFilterRule.TEST_ME]) {
+					//if we uncheck the me filter we need to know which headerValue we are removing ("to" or "to,cc")
+					activityRule = this._removeCondition(activityRule, id, negative, this._activityStreamRule.conditions[ZmFilterRule.TEST_ME][0].headerValue);	
+				}
+				else {
+					activityRule = this._removeCondition(activityRule, id, negative, headerValue);
+				}
 			}
 		}
 		

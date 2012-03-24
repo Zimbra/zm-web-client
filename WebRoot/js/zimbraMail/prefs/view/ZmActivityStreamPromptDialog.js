@@ -45,7 +45,7 @@ function() {
 	params.template = "prefs.Pages#ActivityStreamPrompt";
 	params.form = {
 		items: [
-			{ id: "SENTTO", type: "DwtCheckbox", label: ZmMsg.to, value: "to"},
+			{ id: "SENTTO", type: "DwtCheckbox", label: ZmMsg.to + ":", value: "to"},
 			{ id: "TO", type: "DwtInputField", value: "", cols: 30},
 			{ id: "RECEIVED", type: "DwtCheckbox", label: ZmMsg.receivedFrom, value: "received"},
 			{ id: "FROM", type: "DwtInputField", value: "", cols: 30},
