@@ -2383,8 +2383,8 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
 <template id='prefs.Pages#Notifications'>
 	<!-- REVERT_PAGE (button) -->
-	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
-			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div>
+	<div align=right style='margin-right: 20px; margin-bottom: 10px; float:right;'>
+			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px; float:right;'></div>
 	</div>
 
 	<table   width=100%>
