@@ -959,11 +959,6 @@ function(abook) {
 	this._scrollToTime(8);
 };
 
-ZmCalColView.prototype.setTimer=function(min){
-    var period = min*60*1000;
-    return AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.updateTimeIndicator), period);
-};
-
 ZmCalColView.prototype.updateTimeIndicator=function(){
     var curDate = new Date();
     var  hr = curDate.getHours();
