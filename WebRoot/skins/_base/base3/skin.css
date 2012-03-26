@@ -253,6 +253,9 @@ BODY						{	margin:0px; 	}
 .SplashScreen .ImgAltBanner {
     @AltBanner@
 }
+.LoginScreen .ZLoginField {
+	@roundCorners(5px)@
+}
 .LoginScreen INPUT[disabled] {
 	background-color:white;
 }
