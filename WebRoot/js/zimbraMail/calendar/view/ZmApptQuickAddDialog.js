@@ -180,12 +180,13 @@ function() {
 	} else {
 		errorMsg = ZmMsg.errorMissingSubject;
 	}
+    if (errorMsg) {
+        var dlg = appCtxt.getMsgDialog();
+		dlg.setMessage(errorMsg, DwtMessageDialog.WARNING_STYLE);
+		dlg.popup();
+    }
 
-	if (errorMsg) {
-		throw errorMsg;
-	}
-
-	return true;
+	return errorMsg == null;
 };
 
 ZmApptQuickAddDialog.prototype.isDirty = 
