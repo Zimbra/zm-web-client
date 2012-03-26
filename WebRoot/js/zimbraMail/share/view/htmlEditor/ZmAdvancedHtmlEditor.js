@@ -516,11 +516,6 @@ function(id, content) {
         obj.initDefaultDirection();
 	};
 
-    function onTinyMCEEditorPostRender(ed) {
-        obj.onToolbarToggle();
-        Dwt.setVisible(obj.getHtmlElement(), true);
-    };
-
 	function onTinyMCEEditorInit(ed) {
         obj.initDefaultFontSize(ed);
         obj.initDefaultDirection();
@@ -614,7 +609,7 @@ function(id, content) {
         table_default_border: 1,
 		setup : function(ed) {
 			ed.onLoadContent.add(handleContentLoad);
-            ed.onPostRender.add(onTinyMCEEditorPostRender);
+            ed.onPostRender.add(obj.onPostRender.bind(obj));
 			ed.onInit.add(onTinyMCEEditorInit);
             ed.onKeyDown.add(obj._handleEditorKeyEvent.bind(obj));
             ed.onPaste.add(obj.onPaste.bind(obj));
@@ -678,6 +673,63 @@ ZmAdvancedHtmlEditor.prototype.onPaste = function(ed, ev) {
             }
         }
     }
+};
+
+ZmAdvancedHtmlEditor.prototype.onPostRender = function(ed, ev) {
+    var defaultShortcuts = ed.shortcuts;//Tinymce editor internal object for storing default keyboard shortcuts
+    if (defaultShortcuts) {
+        delete defaultShortcuts[",alt,,48"];
+        delete defaultShortcuts["ctrl,,,49"];//H1
+        delete defaultShortcuts["ctrl,,,50"];//H2
+        delete defaultShortcuts["ctrl,,,51"];//H3
+        delete defaultShortcuts["ctrl,,,52"];//H4
+        delete defaultShortcuts["ctrl,,,53"];//H5
+        delete defaultShortcuts["ctrl,,,54"];//H6
+        delete defaultShortcuts["ctrl,,,55"];//P
+        delete defaultShortcuts["ctrl,,,56"];//div
+        delete defaultShortcuts["ctrl,,,57"];//address
+    }
+
+    var strikethrough = AjxKeys["editor."+DwtKeyMap.TEXT_STRIKETHRU+".display"],
+        justifyLeft = AjxKeys["editor."+DwtKeyMap.JUSTIFY_LEFT+".display"],
+        justifyCenter = AjxKeys["editor."+DwtKeyMap.JUSTIFY_CENTER+".display"],
+        justifyRight = AjxKeys["editor."+DwtKeyMap.JUSTIFY_RIGHT+".display"],
+        link = AjxKeys["editor."+DwtKeyMap.INSERT_LINK+".display"],
+        strikethroughBtn = this.getToolbarButton("strikethrough"),
+        justifyLeftBtn = this.getToolbarButton("justifyleft"),
+        justifyCenterBtn = this.getToolbarButton("justifycenter"),
+        justifyRightBtn = this.getToolbarButton("justifyright"),
+        linkBtn = this.getToolbarButton("link");
+
+    //Adding shortcuts
+    strikethrough && ed.addShortcut(strikethrough.toLowerCase(), '', 'strikethrough');//shortcut for strikethrough
+    justifyLeft && ed.addShortcut(justifyLeft.toLowerCase(), '', 'justifyLeft');//shortcut for align left
+    justifyCenter && ed.addShortcut(justifyCenter.toLowerCase(), '', 'justifyCenter');//shortcut for align center
+    justifyRight && ed.addShortcut(justifyRight.toLowerCase(), '', 'justifyRight');//shortcut for align right
+    //shortcut for insert link dialog
+    if (link) {
+        ed.addShortcut(link.toLowerCase(), '', function(){
+            if (!ed.controlManager.get('link').isDisabled()) { //Invokes dialog only if some selection is in the editor
+                ed.execCommand("mceLink");
+            }
+        });
+    }
+    //Setting tooltip
+    strikethroughBtn.title += " (" + strikethrough + ")";
+    justifyLeftBtn.title += " (" + justifyLeft + ")";
+    justifyCenterBtn.title += " (" + justifyCenter + ")";
+    justifyRightBtn.title += " (" + justifyRight + ")";
+    linkBtn.title += " (" + link + ")";
+
+    if (AjxEnv.isMac) {
+        var anchorButtonsArray = tinyMCE.DOM.select("a[title*='Ctrl']", this.getToolbar(1).parentNode),//selects all anchor buttons having title ctrl
+            anchorButton;
+        while ( anchorButton = anchorButtonsArray.shift() ) {
+            anchorButton.title = anchorButton.title.replace("Ctrl", "Cmd");
+        }
+    }
+    this.onToolbarToggle();
+    Dwt.setVisible(this.getHtmlElement(), true);
 };
 
 ZmAdvancedHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
@@ -1759,10 +1811,8 @@ function(ed) {
         var doc = popupWindow.document;
         if( doc ){
             if( popupWindow.action === "insert" ){  //Insert Table dialog
-                var style = doc.getElementById("style");
                 var align = doc.getElementById("align");
                 var width = doc.getElementById("width");
-                style && (style.value = "border-collapse:collapse;");
                 align && (align.value = "center");
                 width && (width.value = "90%");
             }
