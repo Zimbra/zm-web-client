@@ -70,6 +70,7 @@ function(actionMenu, type, id) {
 		var isLink = briefcase.link;
 		var isLinkOrRemote = isLink || briefcase.isRemote();
         var isTrash = (nId == ZmFolder.ID_TRASH);
+        var isReadOnly = briefcase ? briefcase.isReadOnly() : false;
 
         var deleteText = ZmMsg.del;
 
@@ -83,7 +84,7 @@ function(actionMenu, type, id) {
         } else {
             actionMenu.enableAll(true);
             var menuItem = actionMenu.getMenuItem(ZmOperation.DELETE_WITHOUT_SHORTCUT);
-            menuItem.setEnabled(!isBriefcase && (!isLinkOrRemote || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
+            menuItem.setEnabled(!isBriefcase && (!isLinkOrRemote || !isReadOnly || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
 
             menuItem = actionMenu.getMenuItem(ZmOperation.NEW_BRIEFCASE);
             menuItem.setText(ZmMsg.newFolder);
