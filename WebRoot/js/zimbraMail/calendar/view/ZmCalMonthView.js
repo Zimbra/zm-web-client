@@ -74,9 +74,11 @@ function() {
 ZmCalMonthView.prototype._updateSelectedDay =
 function() {
 	var day = this._dateToDayIndex[this._dayKey(this._date)];
-	var te = document.getElementById( day.tdId);	
-	te.className = 'calendar_month_cells_td-Selected';	
-	this._selectedData = day;	
+	if (day) {
+		var te = document.getElementById( day.tdId);
+		te.className = 'calendar_month_cells_td-Selected';
+		this._selectedData = day;
+	}
 };
 
 ZmCalMonthView.prototype._apptSelected =
@@ -310,7 +312,7 @@ function() {
 
 ZmCalMonthView.prototype._preSet = 
 function() {
-	// reset all layout data
+    // reset all layout data
 	// cleanup any filler
 	if (this._fillers.length > 0) {
 		for (var i=0; i < this._fillers.length; i++) {
@@ -1941,3 +1943,22 @@ function(docX, docY, incr, data) {
 	return offset;
 };
 
+ZmCalMonthView.prototype.startIndicatorTimer=function(){
+   if(!this._indicatorTimer){
+    this._indicatorTimer = this.updateTimeIndicator();
+   }
+};
+
+ZmCalMonthView.prototype.updateTimeIndicator=function(){
+    // For the monthView, the indicator is the highlighting for the current day
+    if (this._selectedData) {
+        var today = new Date();
+        today.setHours(0,0,0, 0);
+        if (this._selectedData.date.getTime() != today.getTime()) {
+            // Current date has changed
+            this._date = today;
+            this._dateUpdate();
+        }
+    }
+    return this.setTimer(1);
+};

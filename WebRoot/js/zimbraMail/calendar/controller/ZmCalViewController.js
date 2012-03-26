@@ -233,6 +233,7 @@ function(viewId, startDate, skipMaintenance) {
             this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWeek);
             break;
         case ZmId.VIEW_CAL_MONTH:
+            this._viewMgr.getView(viewId).startIndicatorTimer();
             // use day until month does something
             this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
             this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousMonth);

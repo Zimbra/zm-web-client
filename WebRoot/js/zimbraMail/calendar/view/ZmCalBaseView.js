@@ -1312,3 +1312,12 @@ function(data) { }
 
 ZmCalBaseView.prototype._handleApptScrollRegion =
 function(docX, docY, incr, data) {  }
+
+ZmCalBaseView.prototype.startIndicatorTimer=function() { };
+
+ZmCalBaseView.prototype.setTimer=function(min){
+    var period = min*60*1000;
+    return AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.updateTimeIndicator), period);
+};
+
+ZmCalBaseView.prototype.updateTimeIndicator=function() { };
