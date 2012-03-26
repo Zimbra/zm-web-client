@@ -805,37 +805,37 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
    The view has a conv header, a messages area, and a reply area. */
 
 .Conv2View, .Conv2View-bottom {
-	height:100%;
 	@Conv2Bg@
+	height:100%;
 }
 
 /* The conv header contains the subject and a summary of number of messages / unread */
 
 .Conv2Header {
+	@BottomSeparator@
 	background-color:@lighten(AppC,25)@;
 	padding:3px 5px 4px;
-	@BottomSeparator@
-	/*@cssShadow@:0 3px 3px @darken(AppC,15)@;*/
-	white-space:nowrap;
 	position:relative;
+	white-space:nowrap;
+	/*@cssShadow@:0 3px 3px @darken(AppC,15)@;*/
 }
 
 .Conv2Header .subject {
-	@FontSize-normal@
-	font-weight:bold;
+	@FontSize-bigger@
 	overflow:hidden;
 	white-space:nowrap;
 }
 
 .Conv2Header .info {
-	font-weight:normal;
-	white-space:nowrap;
-	/* background-color needs to be same as Conv2Header */
+	/* background-color MUST be the same as Conv2Header */
 	background:none repeat scroll 0 0 @lighten(AppC,25)@;
-	padding:0 8px;
+	font-weight:normal;
+	padding:5px 8px 2px;
 	position:absolute;
 	right:0;
 	text-align:right;
+	top:0;
+	white-space:nowrap;
 }
 
 /* The messages area contains collapsed and expanded messages */
@@ -862,12 +862,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .Conv2View .Conv2Reply {
+	@Conv2Reply@
 	bottom:0;
 	left:0;
 	padding:5px;
 	position:absolute;
 	right:0;
-	@Conv2Reply@
 }
 
 .Conv2View .Conv2Reply .ZToolbarTable>TBODY>TR>TD {
