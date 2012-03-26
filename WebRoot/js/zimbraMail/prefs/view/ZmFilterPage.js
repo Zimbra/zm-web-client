@@ -41,7 +41,7 @@ function () {
 ZmFilterPage.prototype._createControls =
 function() {
 	if (appCtxt.get(ZmSetting.PRIORITY_INBOX_ENABLED)) {
-		this._activityStreamsButton = new DwtButton({parent:this, parentElement: this._htmlElId+"_ACTIVITY_STREAM_BUTTON", });
+		this._activityStreamsButton = new DwtButton({parent:this, parentElement: this._htmlElId+"_ACTIVITY_STREAM_BUTTON" });
 		this._activityStreamsButton.setText(ZmMsg.activityStreamSettings);
 		this._activityStreamsButton.addSelectionListener(new AjxListener(this, this._activityStreamDialog));
 	}
