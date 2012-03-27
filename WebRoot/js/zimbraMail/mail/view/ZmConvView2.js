@@ -174,8 +174,10 @@ ZmConvView2.prototype._renderConv =
 function(conv) {
 
 	this._now = new Date();
+	appCtxt.notifyZimlets("onConvStart", [this]);
 	this._setConvHeader();
 	var firstExpanded = this._renderMessages(conv, this._messagesDiv);
+	appCtxt.notifyZimlets("onConvEnd", [this]);
 
 	var text = "";
 	var origMsg = this._item.getFirstHotMsg();
@@ -223,7 +225,7 @@ function(conv, container) {
 		controller:		this._controller,
 		actionsMenu:	this._actionsMenu
 	}
-	
+
 	var oldToNew = (appCtxt.get(ZmSetting.CONVERSATION_ORDER) == ZmSearch.DATE_ASC);
 	if (oldToNew) {
 		msgs = msgs.reverse();
