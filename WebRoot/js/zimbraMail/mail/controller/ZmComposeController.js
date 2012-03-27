@@ -627,8 +627,7 @@ function(draftType, msg, ex) {
         if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
             var invalid = ex.getData ? ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID) : null;
             var invalidMsg = (invalid && invalid.length)
-                ? AjxMessageFormat.format(ZmMsg.sendErrorInvalidAddresses, AjxStringUtil.htmlEncode(invalid.join(", ")))
-                : null;
+                ? AjxMessageFormat.format(ZmMsg.sendErrorInvalidAddresses, invalid.join(", ")) : null;
             msg = ZmMsg.sendErrorAbort + "<br/>" +  AjxStringUtil.htmlEncode(invalidMsg);
             this.popupErrorDialog(msg, ex, true, true, false, true);
             retVal = true;
