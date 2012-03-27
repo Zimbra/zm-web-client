@@ -164,7 +164,7 @@ function(contact, isGal) {
 	} else {
 		var callback = new AjxCallback(this, this._handleResponseLoad, [isGal, oldContact]);
 		var errorCallback = new AjxCallback(this, this._handleErrorLoad);
-		this._contact.load(callback, errorCallback);
+		this._contact.load(callback, errorCallback, null, contact.isGroup());
 	}
 };
 
