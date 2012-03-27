@@ -599,15 +599,25 @@ function(name, updateView) {
 ZmVoiceApp.prototype.getStartFolder =
 function(name) {
 	var which = 0;
+    var i = 0;
 	var startPhone = name || this._startPhone;
 	if (startPhone) {
-		for (var i = 0; i < this.phones.length; i++) {
+		for (i = 0; i < this.phones.length; i++) {
 			var phone = this.phones[i];
 			if (phone.name == startPhone) {
 				which = i;
 			}
 		}
 	}
+    else {
+        for (i = 0; i < this.phones.length; i++) {
+            var phone = this.phones[i];
+            if (phone.hasVoiceMail) {
+                which = i;
+                break;
+            }
+        }
+    }
 	return this.phones[which].folderTree.getByName(ZmVoiceFolder.VOICEMAIL);
 };
 
