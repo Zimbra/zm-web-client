@@ -144,7 +144,7 @@ BODY						{	margin:0px; 	}
 #skin_spacing_app_row					{	
 	background-color:transparent; 
 	background-color:rgba(@SkinAppRowColorRGB@,.1);
-	border-color:rgba(@SkinAppRowColorRGB@,.3);
+	border-color:rgba(@SkinAppRowColorRGB@,.2);
 #IFDEF WEBKIT
 	border-color:rgba(@SkinAppRowColorRGB@,.1);
 #ENDIF
