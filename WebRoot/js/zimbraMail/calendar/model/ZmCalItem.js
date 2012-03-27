@@ -509,7 +509,7 @@ function(contentType) {
 		var content = this.notesTopPart.getContentForType(ct);
 
 		// if requested content type not found, try the other
-		if (content == null || content == "") {
+		if (!content) {
 			if (ct == ZmMimeTable.TEXT_PLAIN) {
 				var div = document.createElement("div");
 				content = this.notesTopPart.getContentForType(ZmMimeTable.TEXT_HTML);
@@ -520,7 +520,7 @@ function(contentType) {
 				content = AjxStringUtil.convertToHtml(this.notesTopPart.getContentForType(ZmMimeTable.TEXT_PLAIN));
 			}
 		}
-		return AjxUtil.isString(content) ? content : content.content;
+		return content;
 	} else {
 		return this.fragment;
 	}
@@ -800,8 +800,9 @@ function(ids) {
 
 	if (ids && ids.length > 0) {
 		var split = ids.split(',');
-		for (var i = 0 ; i < split.length; i++)
+		for (var i = 0 ; i < split.length; i++) {
 			this.attachments[i] = { id:split[i] };
+		}
 	}
 };
 
@@ -817,8 +818,9 @@ function() {
 		if (this._validAttachments == null) {
 			this._validAttachments = [];
 			for (var i = 0; i < attachs.length; ++i) {
-				if (this.message.isRealAttachment(attachs[i]) || attachs[i].ct == ZmMimeTable.TEXT_CAL)
+				if (this.message.isRealAttachment(attachs[i]) || attachs[i].contentType == ZmMimeTable.TEXT_CAL) {
 					this._validAttachments.push(attachs[i]);
+				}
 			}
 		}
 		return this._validAttachments.length > 0 ? this._validAttachments : null;
@@ -1252,22 +1254,19 @@ function(dwtIframe) {
  */
 ZmCalItem.prototype._setNotes =
 function(message) {
-	var text = message.getBodyPart(ZmMimeTable.TEXT_PLAIN);
-	var html = message.getBodyPart(ZmMimeTable.TEXT_HTML);
 
 	this.notesTopPart = new ZmMimePart();
-	var htmlContent = "";
-	var textContent = "";
+	var htmlContent = message.getBodyContent(ZmMimeTable.TEXT_HTML);
+	var textContent = message.getBodyContent(ZmMimeTable.TEXT_PLAIN);
 
-	if (html) {
-		var notes = AjxUtil.isString(html) ? html : html.content;
-		var htmlContent = notes.replace(/<title\s*>.*\/title>/ig,"");
+	if (htmlContent) {
+		htmlContent = htmlContent.replace(/<title\s*>.*\/title>/ig,"");
 		if (!this._includeEditReply) {
 			htmlContent = this._trimNotesSummary(htmlContent, true);
 		}
 	}
 
-	if (html && htmlContent) {
+	if (htmlContent) {
 		// create a temp iframe to create a proper DOM tree
 		var params = {parent:appCtxt.getShell(), hidden:true, html:htmlContent};
 		var dwtIframe = new DwtIframe(params);
@@ -1295,7 +1294,6 @@ function(message) {
 		this.notesTopPart.children.add(textPart);
 		this.notesTopPart.children.add(htmlPart);
 	} else {
-        textContent = (text && text.content) || "";
 		if (!this._includeEditReply) {
 			textContent = this._trimNotesSummary(textContent);
 		}
@@ -1555,7 +1553,7 @@ function(mode, msg, callback, errorCallback, batchCmd) {
 		// ZmComposeView#getMsg only sets topPart on new message that's returned.
 		// And ZmCalItem#_setNotes calls ZmMailMsg#getBodyPart.
 		var bodyParts = [];
-		var childParts = msg._topPart.node.ct == ZmMimeTable.MULTI_ALT
+		var childParts = (msg._topPart.contentType == ZmMimeTable.MULTI_ALT)
 			? msg._topPart.children.getArray()
 			: [msg._topPart];
 		for (var i = 0; i < childParts.length; i++) {

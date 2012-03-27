@@ -247,15 +247,15 @@ function() {
 	var bodyParts = this._msg ? this._msg.getBodyParts() : [];
 	for (var i = 0; i < bodyParts.length; i++) {
 		var bodyPart = bodyParts[i];
-		var contentType = bodyPart.ct;
+		var contentType = bodyPart.contentType;
 
 		if (contentType == ZmMimeTable.TEXT_PLAIN) { continue; }
 		if (contentType == ZmMimeTable.TEXT_HTML) { continue; }
-		if (ZmMimeTable.isRenderableImage(contentType) && bodyPart.cd == "inline") { continue; } // bug: 28741
+		if (ZmMimeTable.isRenderableImage(contentType) && bodyPart.contentDisposition == "inline") { continue; } // bug: 28741
 
 		var mimePart = new ZmMimePart();
 		mimePart.setContentType(contentType);
-		mimePart.setContent(bodyPart.content);
+		mimePart.setContent(bodyPart.getContent());
 		this.addMimePart(mimePart);
 	}
 };
@@ -419,7 +419,7 @@ function(msg) {
 	if (msg && msg.attachments) {
 		var atts = msg.attachments;
 		for (var i = 0; i < atts.length; i++) {
-			if (atts[i].ci) {
+			if (atts[i].contentId) {
 				return true;
 			}
 		}
@@ -457,10 +457,11 @@ function(msg, handleInlineDocs){
 						inlineAtt = this._msg.findInlineAtt(ci);
 					}
                     if (inlineAtt) {
-                        if(!attached[(cid+"_"+inlineAtt.part)]){
+						var id = [cid, inlineAtt.part].join("_");
+                        if (!attached[id]){
                             msg.addInlineAttachmentId(cid, null, inlineAtt.part);
                             handled = true;
-                            attached[(cid+"_"+inlineAtt.part)] = true;
+                            attached[id] = true;
                         }
 					}
 				}
@@ -479,7 +480,7 @@ function(msg, forwardAttIds) {
 
 	function checkFwdAttExists(part) {
 		for (var j = 0; j < forwardAttIds.length; j++) {
-			if(forwardAttIds[j] == part){
+			if (forwardAttIds[j] == part) {
 				return true;
 			}
 		}
@@ -770,30 +771,32 @@ function(msg, isDraft, bodyContent) {
         
         //set img src to cid for inline or dfsrc if external image and remove dfsrc before sending
         var content = htmlPart.getContent();
-        var imgContent = content.split(/<img/i);
-        for (var i = 0; i < imgContent.length; i++) {
-            var externalImage = false;
-            var dfsrc = imgContent[i].match(/dfsrc=[\"|\'](cid:[^\"\']+)/); //look for CID assignment in image
-			if (dfsrc && dfsrc.length > 1) {
-				dfsrc = [dfsrc[1]]; //the cid is the 2nd element, but next lines expect it as first 
+        var imgContent = content.match(/<img/i) && content.split(/<img/i);
+		if (imgContent && imgContent.length) {
+			for (var i = 0; i < imgContent.length; i++) {
+				var externalImage = false;
+				var dfsrc = imgContent[i].match(/dfsrc=[\"|\'](cid:[^\"\']+)/); //look for CID assignment in image
+				if (dfsrc && dfsrc.length > 1) {
+					dfsrc = [dfsrc[1]]; //the cid is the 2nd element, but next lines expect it as first 
+				}
+				if (!dfsrc) {
+					dfsrc = imgContent[i].match(/\s+dfsrc=[\"\'][^\"\']+[\"\']+/); //look for dfsrc="" in image
+					externalImage = dfsrc ? true : false;
+				}
+				if (dfsrc && dfsrc.length > 0 && !externalImage) {
+					var tempStr = imgContent[i].replace(/\s+src=[\"\'][^\"\']+[\"\']/," src=\""+dfsrc[0]+"\""); //set src to cid
+					tempStr = tempStr.replace(/\s+dfsrc=[\"\'][^\"\']+[\"\']+/,"");
+					content = content.replace(imgContent[i], tempStr);
+				}
+				else if (dfsrc && dfsrc.length > 0 && externalImage) {
+					var tempArr = imgContent[i].match(/\s+dfsrc=[\"\']([^\"\']+)[\"\']/); //match dfsrc
+					if (tempArr && tempArr.length > 1) {
+					   var tempStr = imgContent[i].replace(/\s+dfsrc=[\"\'][^\"\']+[\"\']/," src=\""+tempArr[1]+"\"");
+					   content = content.replace(imgContent[i], tempStr);
+					}
+				}
 			}
-            if (!dfsrc) {
-                dfsrc = imgContent[i].match(/\s+dfsrc=[\"\'][^\"\']+[\"\']+/); //look for dfsrc="" in image
-                externalImage = dfsrc ? true : false;
-            }
-            if (dfsrc && dfsrc.length > 0 && !externalImage) {
-                var tempStr = imgContent[i].replace(/\s+src=[\"\'][^\"\']+[\"\']/," src=\""+dfsrc[0]+"\""); //set src to cid
-                tempStr = tempStr.replace(/\s+dfsrc=[\"\'][^\"\']+[\"\']+/,"");
-                content = content.replace(imgContent[i], tempStr);
-            }
-            else if (dfsrc && dfsrc.length > 0 && externalImage) {
-                var tempArr = imgContent[i].match(/\s+dfsrc=[\"\']([^\"\']+)[\"\']/); //match dfsrc
-                if (tempArr && tempArr.length > 1) {
-                   var tempStr = imgContent[i].replace(/\s+dfsrc=[\"\'][^\"\']+[\"\']/," src=\""+tempArr[1]+"\"");
-                   content = content.replace(imgContent[i], tempStr);
-                }
-            }
-        }
+		}
 
         htmlPart.setContent(content);
 
@@ -1375,7 +1378,7 @@ function(bEnableInputs) {
     this._recipients.reset();
 
 	// reset subject / body fields
-	this._subjectField.value = "";
+	this._subjectField.value = this._subject = "";
 	this.updateTabTitle();
 
 	this._htmlEditor.resetSpellCheck();
@@ -1384,6 +1387,7 @@ function(bEnableInputs) {
     // this._htmlEditor.clear() resets html editor body filed.
     // Setting this._bodyField to its latest value
     this._bodyField = this._htmlEditor.getBodyField();
+	this._bodyContent = "";
 
 	// the div that holds the attc.table and null out innerHTML
 	this.cleanupAttachments(true);
@@ -1584,10 +1588,10 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 
                 }
 				for (var i = 0; i < atts.length && !vcardPart; i++) {
-					if (atts[i].ct == ZmMimeTable.TEXT_VCARD) {
+					if (atts[i].contentType == ZmMimeTable.TEXT_VCARD) {
                         //we may have multiple vcards, determine which one to remove based on signature in cache
                         if (sigContact) {
-                            var name = atts[i].filename.substring(0, atts[i].filename.length -4)
+                            var name = atts[i].fileName.substring(0, atts[i].fileName.length - 4)
                             if (name == sigContact._fileAs)
                                 vcardPart = atts[i].part
                         }
@@ -1996,36 +2000,6 @@ function(action) {
 			action == ZmOperation.FORWARD_ATT);
 };
 
-// returns the text part given a body part (if body part is HTML, converts it to text)
-ZmComposeView.prototype._getTextPart =
-function(bodyPart, encodeSpace) {
-	var text = "";
-	// if the only content type returned is html, convert to text
-	if (bodyPart.ct == ZmMimeTable.TEXT_HTML) {
-		// create a temp iframe to create a proper DOM tree
-		var params = {parent: this, hidden: true, html: bodyPart.content};
-		var dwtIframe = new DwtIframe(params);
-		if (dwtIframe) {
-			var self = this;
-			var convertor = {"hr":
-				function(el) {
-					return ZmComposeView._convertHtmlPreface(self, el);
-				}
-			}
-			text = AjxStringUtil.convertHtml2Text(dwtIframe.getDocument().body, convertor);
-			var dwtEl = this.getHtmlElement().removeChild(dwtIframe.getHtmlElement());
-			delete dwtEl;
-			delete dwtIframe;
-		}
-	} else {
-		text = encodeSpace
-			? AjxStringUtil.convertToHtml(bodyPart.content)
-			: bodyPart.content;
-	}
-
-	return text;
-};
-
 // Consistent spot to locate various dialogs
 ZmComposeView.prototype._getDialogXY =
 function() {
@@ -2191,13 +2165,10 @@ function(action, msg, subjOverride) {
 		case ZmOperation.REPLY_NEW_TIME:	prefix = ZmMsg.subjectNewTime + ": "; break;
 	}
 	
-	subj = prefix + (subj || "");
+	subj = this._subject = prefix + (subj || "");
 	if (this._subjectField) {
 		this._subjectField.value = subj;
 		this.updateTabTitle();
-	}
-	else {
-		return subj;
 	}
 };
 
@@ -2241,6 +2212,24 @@ function(action, msg, extraBodyText) {
 		incOptions.what = ZmSetting.INC_NONE;
 	}
 	AjxDebug.println(AjxDebug.REPLY, "Inc options: " + [incOptions.what, incOptions.prefix, incOptions.headers].join(" / ")); 
+	
+	// make sure we've loaded the part with the type we want to reply in, if it's available
+	if (msg && (incOptions.what == ZmSetting.INC_BODY || incOptions.what == ZmSetting.INC_SMART)) {
+		var desiredPartType = htmlMode ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
+		msg.getBodyPart(desiredPartType, this._setBody1.bind(this, action, msg, extraBodyText));
+	}
+	else {
+		this._setBody1(action, msg, extraBodyText);
+	}
+};
+
+ZmComposeView.prototype._setBody1 =
+function(action, msg, extraBodyText) {
+
+	var htmlMode = (this._composeMode == DwtHtmlEditor.HTML);
+	var isDraft = (action == ZmOperation.DRAFT);
+	var incOptions = this._controller._curIncOptions;
+    var ac = window.parentAppCtxt || window.appCtxt;
 	
 	var crlf = htmlMode ? "<br>" : ZmMsg.CRLF;
 	var crlf2 = htmlMode ? "<br><br>" : ZmMsg.CRLF2;
@@ -2411,7 +2400,7 @@ function(action, msg, extraBodyText) {
 		value = ZmAdvancedHtmlEditor._embedHtmlContent(value, true);
 	}
 	
-	return value;
+	this._bodyContent = value;
 };
 
 ZmComposeView.prototype.getUnQuotedContent =
@@ -2435,6 +2424,8 @@ function(msg, htmlMode, incWhat) {
 	var crlf2 = htmlMode ? "<br><br>" : ZmMsg.CRLF2;
 	var getOrig = (incWhat == ZmSetting.INC_SMART);
 
+	var content;
+	
 	// bug fix #7271 - if we have multiple body parts, append them all first
 	var parts = msg.getBodyParts();
 	if (msg.hasMultipleBodyParts()) {
@@ -2442,19 +2433,19 @@ function(msg, htmlMode, incWhat) {
 		for (var k = 0; k < parts.length; k++) {
 			var part = parts[k];
 			// bug: 28741
-			if (ZmMimeTable.isRenderableImage(part.ct)) {
-				bodyArr.push([crlf, "[", part.ct, ":", (part.filename || "..."), "]", crlf].join(""));
+			if (ZmMimeTable.isRenderableImage(part.contentType)) {
+				bodyArr.push([crlf, "[", part.contentType, ":", (part.fileName || "..."), "]", crlf].join(""));
 				hasInlineImages = true;
-			} else if (part.filename && part.cd == "inline") {   //Inline attachments
-				var attInfo = ZmMimeTable.getInfo(part.ct);
-				attInfo = attInfo ? attInfo.desc : part.ct;
-				bodyArr.push([crlf, "[", attInfo, ":", (part.filename||"..."), "]", crlf].join(""));
+			} else if (part.fileName && part.contentDisposition == "inline") {   //Inline attachments
+				var attInfo = ZmMimeTable.getInfo(part.contentType);
+				attInfo = attInfo ? attInfo.desc : part.contentType;
+				bodyArr.push([crlf, "[", attInfo, ":", (part.fileName||"..."), "]", crlf].join(""));
 				hasInlineAtts = true;
-			} else if (part.ct == ZmMimeTable.TEXT_PLAIN || (part.body && ZmMimeTable.isTextType(part.ct))) {
-				content = getOrig ? AjxStringUtil.getOriginalContent(part.content, false) : part.content;
+			} else if (part.contentType == ZmMimeTable.TEXT_PLAIN || (part.body && ZmMimeTable.isTextType(part.contentType))) {
+				content = getOrig ? AjxStringUtil.getOriginalContent(part.getContent(), false) : part.getContent();
 				bodyArr.push( htmlMode ? AjxStringUtil.convertToHtml(content) : content );
-			} else if (part.ct == ZmMimeTable.TEXT_HTML) {
-				content = getOrig ? AjxStringUtil.getOriginalContent(part.content, true) : part.content;
+			} else if (part.contentType == ZmMimeTable.TEXT_HTML) {
+				content = getOrig ? AjxStringUtil.getOriginalContent(part.getContent(), true) : part.getContent();
 				if (htmlMode){
 					bodyArr.push(content);
 				} else {
@@ -2466,33 +2457,34 @@ function(msg, htmlMode, incWhat) {
 		}
 		body = bodyArr.join(crlf);
 	} else {
+		// at this point, we should have the type of part we want if we're dealing with multipart/alternative
 		if (htmlMode) {
-			bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_HTML);
-			if (bodyPart) {
-				content = AjxUtil.isString(bodyPart) ? bodyPart : bodyPart.content;
-				body = getOrig ? AjxStringUtil.getOriginalContent(content, (bodyPart.ct == ZmMimeTable.TEXT_HTML)) : content;
-			} else {
-				// if no html part exists, just grab the text
-				bodyPart = msg.getBodyPart();
-				content = bodyPart ? this._getTextPart(bodyPart, true) : null;
-				if (content) {
-					body = getOrig ? AjxStringUtil.getOriginalContent(content, (bodyPart.ct == ZmMimeTable.TEXT_HTML)) : content;
-				}
+			content = msg.getBodyContent(ZmMimeTable.TEXT_HTML);
+			if (!content) {
+				// just grab the first body part and convert it to HTML
+				content = AjxStringUtil.convertToHtml(msg.getBodyContent());
 			}
+			body = getOrig ? AjxStringUtil.getOriginalContent(content, true) : content;
 		} else {
 			hasInlineImages = msg.hasInlineImagesInMsgBody();
-			// grab text part out of the body part
-			bodyPart = msg.getTextBodyPart() || msg.getBodyPart(ZmMimeTable.TEXT_HTML, true);            
-			content = bodyPart ? this._getTextPart(bodyPart) : null;
-			if (content) {
-				body = getOrig ? AjxStringUtil.getOriginalContent(content, (bodyPart.ct == ZmMimeTable.TEXT_HTML)) : content;
+			bodyPart = msg.getTextBodyPart();
+			if (bodyPart) {
+				// cool, got a textish body part
+				content = bodyPart.getContent();
 			}
+			else {
+				// if we can find an HTML body part, convert it to text
+				var html = msg.getBodyContent(ZmMimeTable.TEXT_HTML, true);
+				content = html ? this._htmlToText(html) : "";
+			}
+			content = content || msg.getBodyContent();	// just grab first body part
+			body = getOrig ? AjxStringUtil.getOriginalContent(content, true) : content;
 		}
 	}
 
 	body = body || "";
 	
-	if (bodyPart && AjxUtil.isObject(bodyPart) && bodyPart.truncated) {
+	if (bodyPart && AjxUtil.isObject(bodyPart) && bodyPart.isTruncated) {
 		body += crlf2 + ZmMsg.messageTruncated + crlf2;
 	}
 	
@@ -2502,6 +2494,30 @@ function(msg, htmlMode, incWhat) {
 	}
 
 	return {body:body, bodyPart:bodyPart, hasInlineImages:hasInlineImages, hasInlineAtts:hasInlineAtts};
+};
+
+ZmComposeView.prototype._htmlToText =
+function(html) {
+	
+	var text = "";
+	
+	// create a temp iframe to create a proper DOM tree
+	var params = {parent: appCtxt.getShell(), hidden: true, html: html};
+	var dwtIframe = new DwtIframe(params);
+	if (html && dwtIframe) {
+		var self = this;
+		var convertor = {"hr":
+			function(el) {
+				return ZmComposeView._convertHtmlPreface(self, el);
+			}
+		}
+		text = AjxStringUtil.convertHtml2Text(dwtIframe.getDocument().body, convertor);
+		var dwtEl = appCtxt.getShell().getHtmlElement().removeChild(dwtIframe.getHtmlElement());
+		delete dwtEl;
+		delete dwtIframe;
+	}
+	
+	return text;
 };
 
 ZmComposeView.prototype._getPreface =
@@ -3838,8 +3854,8 @@ function(params) {
 	var msg = this._msg = this._addressesMsg = params.msg;
 
 	this._setAddresses(action, AjxEmailAddress.TO, params.toOverride);
-	this._subject = this._setSubject(action, msg, params.subjectOverride);
-	this._bodyContent = this._setBody(action, msg, params.extraBodyText);
+	this._setSubject(action, msg, params.subjectOverride);
+	this._setBody(action, msg, params.extraBodyText);
 	this._obo = this._getObo(params.accountName, msg);
 	
 	if (action != ZmOperation.FORWARD_ATT) {
@@ -3902,6 +3918,7 @@ function(bEnableInputs) {
 
 	this.sendUID = null;
 	this._recipients = new ZmHiddenRecipients();
+	this._subject = this._bodyContent = "";
 	this._controller._curIncOptions = null;
 	this._msgAttId = null;
 
@@ -3909,6 +3926,7 @@ function(bEnableInputs) {
 	this._extraParts = null;
 };
 
+ZmHiddenComposeView.prototype.__initCtrl = function() {};
 
 /**
  * Minimal version of ZmRecipients that has no UI. Note that addresses are stored in

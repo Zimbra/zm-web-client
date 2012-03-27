@@ -910,19 +910,15 @@ function(xslt, canvas, result) {
 ZmZimletContext._getMsgBody =
 function(o) {
 	//If message is not loaded let developer take care of it
-	var content = "";
-	if(!o._loaded) {
+	if (!o._loaded) {
 		return "";
 	}
 	var part = o.getBodyPart(ZmMimeTable.TEXT_PLAIN) || o.getBodyPart(ZmMimeTable.TEXT_HTML);
-	if(part && part.content) {
-		if(part.ct == ZmMimeTable.TEXT_PLAIN) {
-			content = part.content;
-		} else if(part.ct == ZmMimeTable.TEXT_HTML) {
-			var div = document.createElement("div");
-			div.innerHTML = part.content;
-			content = AjxStringUtil.convertHtml2Text(div);
-		}
+	var content = part && part.getContent();
+	if (content && (part.contentType == ZmMimeTable.TEXT_HTML)) {
+		var div = document.createElement("div");
+		div.innerHTML = content;
+		content = AjxStringUtil.convertHtml2Text(div);
 	}
-	return content;
+	return content || "";
 };

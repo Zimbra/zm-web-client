@@ -999,7 +999,7 @@ function(params) {
 	if (action == ZmOperation.DRAFT || action == ZmOperation.FORWARD_INLINE ||
             action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL) {
 		var bp = msg.getBodyPart();
-		if ((bp && bp.truncated) || !msg._loaded) {
+		if ((bp && bp.isTruncated) || !msg._loaded) {
 			params.noTruncate = true;
 			params.forceLoad = true;
 		}

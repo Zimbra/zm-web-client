@@ -139,7 +139,6 @@ function() {
 	AjxDispatcher.registerMethod("GetIdentityCollection", "MailCore", new AjxCallback(this, this.getIdentityCollection));
 	AjxDispatcher.registerMethod("GetSignatureCollection", "MailCore", new AjxCallback(this, this.getSignatureCollection));
 	AjxDispatcher.registerMethod("GetDataSourceCollection", "MailCore", new AjxCallback(this, this.getDataSourceCollection));
-	AjxDispatcher.registerMethod("GetAttachmentsController", ["MailCore","Mail"], new AjxCallback(this, this.getAttachmentsController));
 	AjxDispatcher.registerMethod("GetMailConfirmController", ["MailCore","Mail"], new AjxCallback(this, this.getConfirmController));
 };
 
@@ -1955,19 +1954,6 @@ function() {
 ZmMailApp.prototype.runRefresh =
 function() {
 	this.getMailListController().runRefresh();
-};
-
-/**
- * Gets the attachment controller.
- * 
- * @return	{ZmAttachmentsController}		the controller
- */
-ZmMailApp.prototype.getAttachmentsController =
-function() {
-	if (!this._attachmentsController) {
-		this._attachmentsController = new ZmAttachmentsController(this._container, this);
-	}
-	return this._attachmentsController;
 };
 
 /**

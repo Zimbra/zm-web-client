@@ -632,7 +632,7 @@ function(img) {
 
 		if (att.foundInMsgBody) { continue; }
 
-		if (cid && att.ci == cid) {
+		if (cid && att.contentId == cid) {
 			att.foundInMsgBody = true;
 			break;
 		} else if (src && src.indexOf(csfeMsgFetch) == 0) {
@@ -641,9 +641,9 @@ function(img) {
 				att.foundInMsgBody = true;
 				break;
 			}
-		} else if (att.cl && src) {
+		} else if (att.contentLocation && src) {
 			var filename = src.substring(src.lastIndexOf("/") + 1);
-			if (filename == att.filename) {
+			if (filename == att.fileName) {
 				att.foundInMsgBody = true;
 				break;
 			}
@@ -1570,48 +1570,58 @@ function(msg, container) {
 };
 
 /**
- * Renders the message body. There is a chance a server call will be made to fetch the text part.
+ * Renders the message body. There is a chance a server call will be made to fetch an alternative part.
  * 
- * @param msg
- * @param container
- * @param callback
+ * @param {ZmMailMsg}	msg
+ * @param {Element}		container
+ * @param {callback}	callback
  */
 ZmMailMsgView.prototype._renderMessageBody =
 function(msg, container, callback, index) {
 
+	var htmlMode = appCtxt.get(ZmSetting.VIEW_AS_HTML);
+	var contentType = htmlMode ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
+	msg.getBodyPart(contentType, this._renderMessageBody1.bind(this, msg, container, callback, index));
+};
+
+ZmMailMsgView.prototype._renderMessageBody1 =
+function(msg, container, callback, index) {
+
 	var el = container || this.getHtmlElement();
-	
+	var htmlMode = appCtxt.get(ZmSetting.VIEW_AS_HTML);
+	var contentType = htmlMode ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
+
 	// if multiple body parts, ignore prefs and just append everything
 	var origText;
 	if (msg.hasMultipleBodyParts()) {
-		var bodyParts = msg.getBodyParts();
+		var bodyParts = msg.getBodyParts(contentType);
 		var len = bodyParts.length;
 		var html = [];
-		var hasHtmlPart = msg.hasHtmlPart();
+		var hasHtmlPart = (htmlMode && msg.hasContentType(ZmMimeTable.TEXT_HTML)) || msg.hasInlineImage();
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
 			var content = this._getBodyContent(bp);
-			if (ZmMimeTable.isRenderableImage(bp.ct)) {
-				if (bp.cd && bp.cd == "inline") {
+			if (ZmMimeTable.isRenderableImage(bp.contentType)) {
+				if (bp.contentDisposition == "inline") {
 					//ignore inline attachments here. No need to append it as it was already inline.
 					continue;
 				}
 				// Hack: (Bug:27320) Done specifically for sMime
 				var imgHtml = content
-					? ["<img zmforced='1' class='InlineImage' src='", bp.content, "'>"].join("")
+					? ["<img zmforced='1' class='InlineImage' src='", bp.getContent(), "'>"].join("")
 					: ["<img zmforced='1' class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
 				html.push(imgHtml);
 			} else {
-				if (bp.ct == ZmMimeTable.TEXT_CAL) {
-				    content =ZmMailMsg.getTextFromCalendarPart(bp);
-				} else if (bp.ct != ZmMimeTable.TEXT_HTML) {
+				if (bp.contentType == ZmMimeTable.TEXT_CAL) {
+				    content = ZmMailMsg.getTextFromCalendarPart(bp);
+				} else if (bp.contentType != ZmMimeTable.TEXT_HTML) {
 				    content = AjxStringUtil.convertToHtml(content);
 				}
-				if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
+				if (bp.contentType == ZmMimeTable.TEXT_PLAIN) {
 					html.push(hasHtmlPart ? "<pre>" : "");
 					html.push(content);
 					html.push(hasHtmlPart ? "</pre>" : "");
-					origText = bp.content;
+					origText = bp.getContent();
 				} else {
 					if (appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
 						html.push(content);
@@ -1636,12 +1646,12 @@ function(msg, container, callback, index) {
 								origText:		origText
 							});
 	} else {
-		var bodyPart = msg.getBodyPart();
+		var bodyPart = msg.getBodyPart(contentType) || msg.getBodyPart();
 		if (bodyPart) {
 			var content = this._getBodyContent(bodyPart);
 			var invite = msg.invite;
 
-			if (bodyPart.ct == ZmMimeTable.TEXT_HTML && appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
+			if (bodyPart.contentType == ZmMimeTable.TEXT_HTML && htmlMode) {
 				if (invite && !invite.isEmpty()) {
 					content = ZmInviteMsgView.truncateBodyContent(content, true);
 					// if the notes are empty, don't bother rendering them
@@ -1660,8 +1670,8 @@ function(msg, container, callback, index) {
 					var partToCid = {};
 					for (var i = 0; i < msg._attachments.length; i++) {
 						var att = msg._attachments[i];
-						if (att.ci) {
-							partToCid[att.part] = att.ci.substring(1, att.ci.length - 1);
+						if (att.contentId) {
+							partToCid[att.part] = att.contentId.substring(1, att.contentId.length - 1);
 						}
 					}
 					content = content.replace(ZmMailMsgView.IMG_FIX_RE, function(s, p1, p2, p3) {
@@ -1676,10 +1686,10 @@ function(msg, container, callback, index) {
 				this._displayContent({	container:		el,
 										html:			content,
 										isTextMsg:		false,
-										isTruncated:	bodyPart.truncated,
+										isTruncated:	bodyPart.isTruncated,
 										index:			index
 									});
-			} else if (ZmMimeTable.isRenderableImage(bodyPart.ct)) {
+			} else if (ZmMimeTable.isRenderableImage(bodyPart.contentType)) {
 				var html = [
 					"<img zmforced='1' class='InlineImage' src='",
 					appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI),
@@ -1694,13 +1704,7 @@ function(msg, container, callback, index) {
 									});
 			} else {
 				
-				var desiredPartType = (appCtxt.get(ZmSetting.VIEW_AS_HTML)) ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
-				if (msg.canFetchAlternativePart(desiredPartType)) {
-					msg.fetchAlternativePart(desiredPartType, this._renderMessageBody.bind(this, msg, container, callback, index));
-					return;
-				}
-				
-				if (bodyPart.ct == ZmMimeTable.TEXT_PLAIN) {
+				if (bodyPart.contentType == ZmMimeTable.TEXT_PLAIN) {
 					if (invite && !invite.isEmpty()) {
 						content = ZmInviteMsgView.truncateBodyContent(content);
 					}
@@ -1714,13 +1718,13 @@ function(msg, container, callback, index) {
 					this._displayContent({	container:		el,
 											html:			content,
 											isTextMsg:		isTextMsg,
-											isTruncated:	bodyPart.truncated,
+											isTruncated:	bodyPart.isTruncated,
 											index:			index,
-											origText:		bodyPart.content
+											origText:		bodyPart.getContent()
 										});
 				} else {					
 					if (content != null) {
-						content = (bodyPart.ct != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
+						content = (bodyPart.contentType != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
 						this._displayContent({	container:		el,
 												html:			content,
 												isTextMsg:		true,
@@ -1750,7 +1754,7 @@ function(callback) {
 
 ZmMailMsgView.prototype._getBodyContent =
 function(bodyPart) {
-	return bodyPart.content;
+	return bodyPart.getContent();
 };
 
 ZmMailMsgView.prototype._renderMessageFooter = function(msg, container) {};
@@ -2333,7 +2337,7 @@ function(msg, ev) {
 	if (bp) {
 		var top = new ZmMimePart();
 		top.setContentType(bp.ct);
-		top.setContent(msg.getBodyPart().content);
+		top.setContent(msg.getBodyPart().getContent());
 		proxy.setTopPart(top);
 	}
 
@@ -2549,14 +2553,12 @@ function(myId, tagId) {
 	ZmListController.prototype._doTag.call(dwtObj._controller, dwtObj._msg, tag, false);
 };
 
-
 ZmMailMsgView._detachCallback =
 function(isRfc822, parentController, result) {
+	var msgNode = result.getResponse().GetMsgResponse.m[0];
 	var ac = window.parentAppCtxt || window.appCtxt;
-	var resp = result.getResponse().GetMsgResponse;
-	var list = ac.getApp(ZmApp.MAIL).getMailListController().getList();
-	var msg = new ZmMailMsg(resp.m[0].id, list, true); // do not cache this temp msg
-	msg._loadFromDom(resp.m[0]);
+	var ctlr = ac.getApp(ZmApp.MAIL).getMailListController();
+	var msg = ZmMailMsg.createFromDom(msgNode, {list: ctlr.getList()}, true);
 	msg._loaded = true; // bug fix #8868 - force load for rfc822 msgs since they may not return any content
 	msg.readReceiptRequested = false; // bug #36247 - never allow read receipt for rfc/822 message
 	msg._part = resp.m[0].part;
@@ -2645,17 +2647,14 @@ function(partIds) {
 
 ZmMailMsgView.prototype._handleRemoveAttachment =
 function(result) {
+	var msgNode = result.getResponse().RemoveAttachmentsResponse.m[0];
+	var ac = window.parentAppCtxt || window.appCtxt;
+	var ctlr = ac.getApp(ZmApp.MAIL).getMailListController();
+	var msg = ZmMailMsg.createFromDom(msgNode, {list: ctlr.getList()}, true);
+	this._msg = this._item = null;
 	// cache this actioned ID so we can reset selection to it once the CREATE
 	// notifications have been processed.
-	var ac = window.parentAppCtxt || window.appCtxt;
-	var msgNode = result.getResponse().RemoveAttachmentsResponse.m[0];
-	var mailListCtlr = ac.getApp(ZmApp.MAIL).getMailListController();
-	mailListCtlr.actionedMsgId = msgNode.id;
-	var list = mailListCtlr.getList();
-	var msg = new ZmMailMsg(msgNode.id, list, true);
-	msg._loadFromDom(msgNode);
-
-	this._msg = this._item = null;
+	ctlr.actionedMsgId = msgNode.id;
 	this.set(msg);
 };
 

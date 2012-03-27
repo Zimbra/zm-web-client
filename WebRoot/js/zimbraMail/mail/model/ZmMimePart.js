@@ -16,144 +16,162 @@
 /**
  * Creates a mime part.
  * @class
- * This class represents a mime part.
+ * This class represents a mime part. Note that the content of the node is
+ * not copied into this object, for performance reasons. It is typically
+ * available via the 'bodyParts' list that is populated during node parsing.
  * 
  * @extends		ZmModel
  */
-ZmMimePart = function() {
+ZmMimePart = function(parent) {
 	
 	ZmModel.call(this, ZmEvent.S_ATT);
 	
+	this.parent = parent;
 	this.children = new AjxVector();
-	this.node = new Object();
 };
 
 ZmMimePart.prototype = new ZmModel;
 ZmMimePart.prototype.constructor = ZmMimePart;
 
-ZmMimePart.prototype.toString = 
-function() {
-	return "ZmMimePart";
-};
+ZmMimePart.prototype.isZmMimePart = true;
+ZmMimePart.prototype.toString = function() { return "ZmMimePart"; };
 
+/**
+ * Returns a ZmMimePart constructed from the given JSON object. If a context
+ * hash is provided with 'attachments' and 'bodyParts' arrays, and a hash
+ * 'contentTypes', those will be populated as the node is recursively parsed.
+ * 
+ * @param	{object}		node	JSON representation of MIME part
+ * @param	{hash}			ctxt	optional context
+ * @return	{ZmMimePart}			a MIME part
+ */
 ZmMimePart.createFromDom =
-function(node, args) {
-	var mimePart = new ZmMimePart();
-	mimePart._loadFromDom(node, args.attachments, args.bodyParts, args.parentNode);
+function(node, ctxt, parent) {
+	var mimePart = new ZmMimePart(parent);
+	mimePart._loadFromDom(node, ctxt);
 	return mimePart;
 };
 
 /**
- * Gets the content.
+ * Returns this part's content.
  * 
- * @return		{String}	content.
+ * @return	{string}	content		the content
  */
 ZmMimePart.prototype.getContent = 
 function() {
-	return this.node.content;
+	return this.content || (this.node && this.node.content) || "";
 };
 
 /**
- * Gets the content by type.
+ * Returns content of the given type, in or below this part.
  * 
- * @param	{String}	contentType		the content type
- * @return	{String}	the content
+ * @param	{string}	contentType		the content type
+ * @return	{string}					the content
  * 
  */
 ZmMimePart.prototype.getContentForType = 
 function(contentType) {
-	var topChildren = this.children.getArray();
 
-	if (topChildren.length) {
-		for (var i = 0; i < topChildren.length; i++) {
-			if (topChildren[i].getContentType() == contentType)
-				return topChildren[i].getContent();
-		}
-	} else {
-		if (this.getContentType() == contentType)
-			return this.getContent();
+	if (this.contentType == contentType) {
+		return this.getContent();
 	}
-	return null;
+	else {
+		var children = this.children.getArray();
+		if (children.length) {
+			for (var i = 0; i < children.length; i++) {
+				var content = children[i].getContentForType(contentType);
+				if (content) {
+					return content;
+				}
+			}
+		}
+	}
+	return "";
 };
 
 /**
- * Sets the content.
+ * Sets the content, overriding the original content.
  * 
- * @param	{String}	content		the content
+ * @param	{string}	content		the content
  */
 ZmMimePart.prototype.setContent = 
 function(content) {
-	this.node.content = content;
+	this.content = content;
 };
 
 /**
- * Gets the content disposition.
+ * Returns the content disposition.
  * 
- * @return	{String}	the content disposition
+ * @return	{string}	the content disposition
  */
 ZmMimePart.prototype.getContentDisposition =
 function() {
-	return this.node.cd;
+	return this.contentDisposition;
 };
 
 /**
- * Gets the content type.
+ * Returns the content type.
  * 
- * @return	{String}	the content type
+ * @return	{string}	the content type
  */
 ZmMimePart.prototype.getContentType =
 function() {
-	return this.node.ct;
+	return this.contentType;
 };
 
 /**
- * Sets the content type.
+ * Sets the content type, , overriding the original content type.
  * 
- * @param	{String}	ct		the content type
+ * @param	{string}	contentType		the content type
  */
 ZmMimePart.prototype.setContentType =
-function(ct) {
-	this.node.ct = ct;
+function(contentType) {
+	this.contentType = contentType;
 };
 
 /**
- * Sets the is body flag.
+ * Sets the 'is body' flag, overriding the original part's value.
  * 
- * @param	{Boolean}	isBody		if <code>true</code>, this part is the body
+ * @param	{boolean}	isBody		if true, this part is the body
  */
 ZmMimePart.prototype.setIsBody = 
 function(isBody) {
-	this.node.body = isBody;
+	this.isBody = isBody;
 };
 
 /**
- * Gets the filename.
+ * Returns the filename.
  * 
- * @return	{String}	the filename
+ * @return	{string}	the filename
  */
 ZmMimePart.prototype.getFilename =
 function() {
-	return this.node.filename;
+	return this.fileName;
 };
 
+/**
+ * Returns true if this part should not be considered to be an attachment.
+ * 
+ * @return	{boolean}
+ */
 ZmMimePart.prototype.isIgnoredPart =
-function(parentNode) {
+function() {
 	// bug fix #5889 - if parent node was multipart/appledouble,
 	// ignore all application/applefile attachments - YUCK
-	if (parentNode && parentNode.ct == ZmMimeTable.MULTI_APPLE_DBL &&
-		this.node.ct == ZmMimeTable.APP_APPLE_DOUBLE)
+	if (this.parent && this.parent.contentType == ZmMimeTable.MULTI_APPLE_DBL &&
+		this.contentType == ZmMimeTable.APP_APPLE_DOUBLE)
 	{
 		return true;
 	}
 
 	// bug fix #7271 - dont show renderable body parts as attachments anymore
-	if (this.node.body && AjxUtil.isSpecified(this.node.content) && 
-		(this.node.ct == ZmMimeTable.TEXT_HTML || this.node.ct == ZmMimeTable.TEXT_PLAIN))
+	if (this.isBody && this.getContent() && 
+		(this.contentType == ZmMimeTable.TEXT_HTML || this.contentType == ZmMimeTable.TEXT_PLAIN))
 	{
 		return true;
 	}
 
-	if (this.node.ct == ZmMimeTable.MULTI_DIGEST) {
+	if (this.contentType == ZmMimeTable.MULTI_DIGEST) {
 		return true;
 	}
 
@@ -161,45 +179,111 @@ function(parentNode) {
 };
 
 ZmMimePart.prototype._loadFromDom =
-function(partNode, attachments, bodyParts, parentNode) {
-	for (var i = 0; i < partNode.length; i++) {
-		this.node = partNode[i];
+function(node, ctxt) {
+	
+	this._loadProps(node);
+	
+	if (node.content) {
+		this._loaded = true;
+	}
+	
+	if (ctxt.contentTypes) {
+		ctxt.contentTypes[node.ct] = true;
+	}
 
-		if (this.node.content)
-			this._loaded = true;
+	var isAtt = false;
+	if (this.contentDisposition == "attachment" || 
+		this.contentType == ZmMimeTable.MSG_RFC822 || this.contentType == ZmMimeTable.TEXT_CAL ||            
+		this.fileName || this.contentId || this.contentLocation) {
 
-        var isAtt = false;
-		if (this.node.cd == "attachment" || 
-			this.node.ct == ZmMimeTable.MSG_RFC822 ||
-            this.node.ct == ZmMimeTable.TEXT_CAL ||            
-			this.node.filename != null || 
-			this.node.ci != null ||
-			this.node.cl != null)
-		{
-			if (!this.isIgnoredPart(parentNode)) {
-				attachments.push(this.node);
-                isAtt = true;
+		if (!this.isIgnoredPart()) {
+			if (ctxt.attachments) {
+				ctxt.attachments.push(this);
 			}
+			isAtt = true;
 		}
+	}
 
-        if(this.node.body){
-            var hasContent = AjxUtil.isSpecified(this.node.content);
-            if((ZmMimeTable.isRenderableImage(this.node.ct) || hasContent)) {
-                bodyParts.push(this.node);
-                if(isAtt){
-                    //To avoid duplication, Remove attachment that was just added as bodypart.
-                    attachments.pop();
-                }
-            }else if(!isAtt && this.node.size != 0 && !this.isIgnoredPart(parentNode)){
-                attachments.push(this.node);
-                isAtt = true;
-            }
-        }
+	if (this.isBody) {
+		var hasContent = AjxUtil.isSpecified(node.content);
+		if ((ZmMimeTable.isRenderableImage(this.contentType) || hasContent)) {
+			if (ctxt.bodyParts) {
+				if (this.contentType == ZmMimeTable.MULTI_ALT) {
+					ctxt.bodyParts.push({});
+				}
+				else if (this.parent && this.parent.contentType == ZmMimeTable.MULTI_ALT) {
+					var altPart = {};
+					altPart[this.contentType] = this;
+					ctxt.bodyParts.push(altPart);
+				}
+				else {
+					ctxt.bodyParts.push(this);
+				}
+			}
+			if (isAtt && ctxt.attachments) {
+				//To avoid duplication, Remove attachment that was just added as bodypart.
+				ctxt.attachments.pop();
+			}
+		} else if (!isAtt && this.size != 0 && !this.isIgnoredPart()){
+			if (ctxt.attachments) {
+				ctxt.attachments.push(this);
+			}
+			isAtt = true;
+		}
+	}
 
-		// bug fix #4616 - dont add attachments part of a rfc822 msg part
-		if (this.node.mp && this.node.ct != ZmMimeTable.MSG_RFC822) {
-			var params = {attachments: attachments, bodyParts: bodyParts, parentNode: this.node};
-			this.children.add(ZmMimePart.createFromDom(this.node.mp, params));
+	// bug fix #4616 - dont add attachments part of a rfc822 msg part
+	if (node.mp && this.contentType != ZmMimeTable.MSG_RFC822) {
+		for (var i = 0; i < node.mp.length; i++) {
+			this.children.add(ZmMimePart.createFromDom(node.mp[i], ctxt, this));
+		}
+	}
+};
+
+ZmMimePart.prototype._loadProps =
+function(node) {
+
+	this.node				= node;
+	
+	// the middle column is for backward compatibility
+	this.contentType		= this.ct			= node.ct;
+	this.name									= node.name;
+	this.part									= node.part;
+	this.size				= this.s			= node.s;
+	this.contentDisposition	= this.cd			= node.cd;
+	this.contentId			= this.ci			= node.ci;
+	this.contentLocation	= this.cl			= node.cl;
+	this.fileName			= this.filename		= node.filename;
+	this.isTruncated		= this.truncated	= !!(node.truncated);
+	this.isBody				= this.body			= !!(node.body);
+};
+
+/**
+ * Checks within the given node tree for content within a multipart/alternative part that
+ * we don't have, and then creates and adds a MIME part for it. Assumes that there will be
+ * at most one multipart/alternative.
+ * 
+ * @param {object}		node			
+ * @param {string}		contentType
+ * @param {int}			index
+ * 
+ * @return {ZmMimePart}		the MIME part that was created and added
+ */
+ZmMimePart.prototype.addAlternativePart =
+function(node, contentType, index) {
+
+	// replace this part if we got new content
+	if (node.ct == contentType && (this.parent && this.parent.contentType == ZmMimeTable.MULTI_ALT) && node.body && !this.getContent()) {
+		var mimePart = new ZmMimePart(this);
+		mimePart._loadProps(node);
+		this.parent.children.replace(index, mimePart);
+		return mimePart;
+	}
+	for (var i = 0; i < node.mp.length; i++) {
+		var mimePart = this.children.get(i);
+		var altPart = mimePart.addAlternativePart(node.mp[i], contentType, i);
+		if (altPart) {
+			return altPart;
 		}
 	}
 };

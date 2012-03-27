@@ -24,9 +24,9 @@
  * @class
  * Creates a new (empty) mail message.
  *
- * @param {int}		id			the unique ID
+ * @param {int}			id			the unique ID
  * @param {Array}		list		the list that contains this message
- * @param {Boolean}		noCache		if <code>true</code>, do not cache this message; <code>false</code> otherwise
+ * @param {Boolean}		noCache		if true, do not cache this message
  * 
  * @extends	ZmMailItem
  */
@@ -36,12 +36,14 @@ ZmMailMsg = function(id, list, noCache) {
 
 	this.inHitList = false;
 	this._attHitList = [];
-	this.attachments = [];
-	this._bodyParts = [];
 	this._inviteDescBody = {};
 	this._addrs = {};
-	this._fetchedAlternativePart = {};
 
+	// info about MIME parts
+	this.attachments = [];
+	this._bodyParts = [];
+	this._contentType = {};
+	
 	for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
 		var type = ZmMailMsg.ADDRS[i];
 		this._addrs[type] = new AjxVector();
@@ -52,6 +54,7 @@ ZmMailMsg = function(id, list, noCache) {
 ZmMailMsg.prototype = new ZmMailItem;
 ZmMailMsg.prototype.constructor = ZmMailMsg;
 
+ZmMailMsg.prototype.isZmMailMsg = true;
 ZmMailMsg.prototype.toString = function() {	return "ZmMailMsg"; };
 
 ZmMailMsg.DL_SUB_VERSION = "0.1";
@@ -62,45 +65,15 @@ ZmMailMsg.ADDRS = [AjxEmailAddress.FROM, AjxEmailAddress.TO, AjxEmailAddress.CC,
 
 ZmMailMsg.COMPOSE_ADDRS = [AjxEmailAddress.TO, AjxEmailAddress.CC, AjxEmailAddress.BCC];
 
-/**
- * Defines the "from" header.
- */
 ZmMailMsg.HDR_FROM		= AjxEmailAddress.FROM;
-/**
- * Defines the "to" header.
- */
 ZmMailMsg.HDR_TO		= AjxEmailAddress.TO;
-/**
- * Defines the "cc" header.
- */
 ZmMailMsg.HDR_CC		= AjxEmailAddress.CC;
-/**
- * Defines the "bcc" header.
- */
 ZmMailMsg.HDR_BCC		= AjxEmailAddress.BCC;
-/**
- * Defines the "reply-to" header.
- */
 ZmMailMsg.HDR_REPLY_TO	= AjxEmailAddress.REPLY_TO;
-/**
- * Defines the "sender" header.
- */
 ZmMailMsg.HDR_SENDER	= AjxEmailAddress.SENDER;
-/**
- * Defines the "date" header.
- */
 ZmMailMsg.HDR_DATE		= "DATE";
-/**
- * Defines the "subject" header.
- */
 ZmMailMsg.HDR_SUBJECT	= "SUBJECT";
-/**
- * Defines the "List-ID" header.
- */
 ZmMailMsg.HDR_LISTID    = "List-ID";
-/**
- * Defines the "X-ZIMBRA-DL" header.
- */
 ZmMailMsg.HDR_XZIMBRADL = "X-Zimbra-DL";
 
 ZmMailMsg.HDR_KEY = {};
@@ -204,12 +177,12 @@ function(params) {
 		params.batchCmd.addRequestParams(jsonObj, params.callback);
 	} else {
 		var newParams = {
-			jsonObj: jsonObj,
-			asyncMode: true,
-			callback: (new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, [params.callback])),
-			errorCallback: params.errorCallback,
-			noBusyOverlay: params.noBusyOverlay,
-			accountName: params.accountName
+			jsonObj:		jsonObj,
+			asyncMode:		true,
+			callback:		ZmMailMsg._handleResponseFetchMsg.bind(null, params.callback),
+			errorCallback:	params.errorCallback,
+			noBusyOverlay:	params.noBusyOverlay,
+			accountName:	params.accountName
 		};
 		params.sender.sendRequest(newParams);
 	}
@@ -232,8 +205,6 @@ function(subj) {
 };
 
 // Public methods
-
-// Getters
 
 /**
  * Gets a vector of addresses of the given type.
@@ -497,12 +468,9 @@ function(part) {
 };
 
 /**
- * Sets the body parts. Note: It's assumed by other parts of the code that body parts
- * is an array of the node properties of {@link ZmMimePart}, <em>not</em> the
- * {@link ZmMimePart} objects themselves. Therefore, the caller must pass in
- * an array like <code>[ part.node, ... ]</code>.
- * 
- * @param	{Array}	parts		an array of parts
+ * Sets the body parts.
+ *  
+ * @param	{array}	parts		an array of ZmMimePart
  * 
  */
 ZmMailMsg.prototype.setBodyParts =
@@ -533,15 +501,15 @@ function(id) {
  * @param	{String}	part		the part
  */
 ZmMailMsg.prototype.addInlineAttachmentId =
-function (cid,aid,part) {
+function (cid, aid, part) {
 	if (!this._inlineAtts) {
 		this._inlineAtts = [];
 	}
 	this._onChange("inlineAttachments",aid);
 	if (aid) {
-		this._inlineAtts.push({"cid":cid,"aid":aid});
+		this._inlineAtts.push({"cid":cid, "aid":aid});
 	} else if (part) {
-		this._inlineAtts.push({"cid":cid,"part":part});
+		this._inlineAtts.push({"cid":cid, "part":part});
 	}
 };
 
@@ -615,7 +583,7 @@ function(cid) {
 	if (!(this.attachments && this.attachments.length)) { return null; }
 
 	for (var i = 0; i < this.attachments.length; i++) {
-		if (this.attachments[i].ci == cid) {
+		if (this.attachments[i].contentId == cid) {
 			return this.attachments[i];
 		}
 	}
@@ -663,7 +631,6 @@ function(ids) {
 	this._forAttIds = ids;
 };
 
-
 /**
 * Sets the list of attachments details(message id and message part) to be forwarded
 *
@@ -693,13 +660,14 @@ function(ids) {
  * are available will be used. The message node is not always fully populated, since it
  * may have been created as part of getting a conversation.
  *
- * @param {Object}	node		a message node
- * @param {Hash}	args		a hash of arguments
- * @return	{ZmMailMsg}		the message
+ * @param	{Object}	node		a message node
+ * @param	{Hash}		args		a hash of arguments
+ * @param	{Boolean}	noCache		if true, do not cache this message
+ * @return	{ZmMailMsg}				the message
  */
 ZmMailMsg.createFromDom =
-function(node, args) {
-	var msg = new ZmMailMsg(node.id, args.list);
+function(node, args, noCache) {
+	var msg = new ZmMailMsg(node.id, args.list, noCache);
 	msg._loadFromDom(node);
 	return msg;
 };
@@ -725,12 +693,12 @@ function(params) {
 	// If we are already loaded, then don't bother loading
 	if ((!this._loaded && !this._loading) || params.forceLoad) {
 		this._loading = true;
-		var respCallback = new AjxCallback(this, this._handleResponseLoad, [params, params.callback]);
+		var respCallback = this._handleResponseLoad.bind(this, params, params.callback);
 		params.getHtml = params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		params.sender = appCtxt.getAppController();
 		params.msgId = this.id;
 		params.callback = respCallback;
-		var errorCallback = new AjxCallback(this, this._handleResponseLoadFail, [params, params.errorCallback]);
+		var errorCallback = this._handleResponseLoadFail.bind(this, params, params.errorCallback);
 		params.errorCallback = errorCallback;
 		ZmMailMsg.fetchMsg(params);
 	} else {
@@ -752,10 +720,6 @@ function(params, callback, result) {
 	if (this.participants) {
 		this.participants.removeAll();
 	}
-
-	// clear all attachments and body data
-	this.attachments.length = this._bodyParts.length = 0;
-	this.findAttsFoundInMsgBodyDone = false;
 
 	this._loadFromDom(response.m[0]);
 	if (!this.isReadOnly() && params.markRead) {
@@ -786,111 +750,120 @@ function() {
 	return this._loaded;
 };
 
-ZmMailMsg.prototype.getBodyParts =
-function() {
-	return this._bodyParts;
-};
-
 /**
- * Returns true if this message has at least one HTML part or inline image
+ * Returns the list of body parts.
+ * 
+ * @param	{string}	contentType		preferred MIME type of alternative parts (optional)
  */
-ZmMailMsg.prototype.hasHtmlPart =
-function() {
+ZmMailMsg.prototype.getBodyParts =
+function(contentType) {
+
+	if (contentType) {
+		this._lastContentType = contentType;
+	}
+
+	// no multi/alt, so we have a plain list
+	if (!this.hasContentType(ZmMimeTable.MULTI_ALT)) {
+		return this._bodyParts;
+	}
+	
+	// grab the preferred type out of multi/alt parts
+	contentType = contentType || this._lastContentType;
+	var parts = [];
 	for (var i = 0; i < this._bodyParts.length; i++) {
-		var bodyPart = this._bodyParts[i];
-		if (bodyPart.ct == ZmMimeTable.TEXT_HTML || (bodyPart.cd == "inline" && bodyPart.filename && ZmMimeTable.isRenderableImage(bodyPart.ct))) {
-			return true;
+		var part = this._bodyParts[i];
+		if (part.isZmMimePart) {
+			parts.push(part);
+		}
+		else if (part) {
+			// part is a hash of alternative parts by content type
+			var altPart = contentType && part[contentType];
+			parts.push(altPart || AjxUtil.values(part)[0]);
 		}
 	}
-	return false;
-};
-
-ZmMailMsg.prototype.isMultipartAlternative =
-function() {
-	return (this._topPart && this._topPart.getContentType() == ZmMimeTable.MULTI_ALT);
-};
-
-// Returns true is the msg has a series of body parts. False is returned if the msg is multipart/alternative,
-// even if more than one alternative part has been loaded.
-ZmMailMsg.prototype.hasMultipleBodyParts =
-function() {
-	if (!this.isMultipartAlternative()) {
-		var parts = this.getBodyParts();
-		return (parts && parts.length > 1);
-	}
-	return false;
+		
+	return parts;
 };
 
 /**
- * Gets the body parts.
+ * Returns true if this msg has loaded a part with the given content type.
  * 
- * @param {String}	contentType	the content type ("text/plain" or "text/html")
- * @param {Boolean}	useOriginal	if <code>true</code>, do not grab the copy w/ the images defanged
- *									(only applies when contentType is "text/html")
- *
- * @return	{String}	the body
+ * @param	{string}		contentType		MIME type
+ */
+ZmMailMsg.prototype.hasContentType =
+function(contentType) {
+	return this._contentType[contentType];
+};
+
+/**
+ * Returns true is the msg has more than one body part. The server marks parts that
+ * it considers to be body parts.
+ * 
+ * @return {boolean}
+ */
+ZmMailMsg.prototype.hasMultipleBodyParts =
+function() {
+	return (this._bodyParts.length > 1);
+};
+
+/**
+ * Returns the first body part, of the given type if provided. May invoke a
+ * server call if it needs to fetch an alternative part.
+ * 
+ * @param	{string}		contentType		MIME type
+ * @param	{callback}		callback		callback
+ * 
+ * @return	{ZmMimePart}					MIME part
  */
 ZmMailMsg.prototype.getBodyPart =
-function(contentType, useOriginal) {
+function(contentType, callback) {
 
-	if (contentType == ZmMimeTable.TEXT_HTML && !useOriginal && this._htmlBody && this._htmlBody.length > 0) {
-		return this._htmlBody;
+	if (contentType) {
+		this._lastContentType = contentType;
 	}
 
-	var bodyPart = this._getFirstBodyPart(contentType);
-
+	var bodyPart;
+	var bodyParts = this.getBodyParts(contentType);
+	for (var i = 0; i < bodyParts.length; i++) {
+		var part = bodyParts[i];
+		if (!contentType || (part.contentType == contentType)) {
+			bodyPart = part;
+			break;
+		}
+	}
+	
 	if (this.isInvite()) {
 		// bug: 46071, handle missing body part/content
-		if (!bodyPart || (bodyPart && !bodyPart.content)) {
-			return this.getInviteDescriptionContent(contentType);
+		if (!bodyPart || (bodyPart && !bodyPart.getContent())) {
+			bodyPart = this.getInviteDescriptionContent(contentType);
+		}
+	}
+
+	if (callback) {
+		if (bodyPart) {
+			callback.run(bodyPart);
+		}
+		// see if we should try to fetch an alternative part
+		else if (this.hasContentType(ZmMimeTable.MULTI_ALT) &&
+				(contentType == ZmMimeTable.TEXT_PLAIN || contentType == ZmMimeTable.TEXT_HTML)) {
+
+			ZmMailMsg.fetchMsg({
+				sender:		appCtxt.getAppController(),
+				msgId:		this.id,
+				getHtml:	(contentType == ZmMimeTable.TEXT_HTML),
+				callback:	this._handleResponseFetchAlternativePart.bind(this, contentType, callback)
+			});
+		}
+		else {
+			callback.run();
 		}
 	}
 
 	return bodyPart;
 };
 
-// return the first body part if content type was not specified,
-// otherwise, search for the first body part that matches the given ct.
-ZmMailMsg.prototype._getFirstBodyPart =
-function(contentType) {
-	for (var i = 0; i < this._bodyParts.length; i++) {
-		var bodyPart = this._bodyParts[i];
-		if (!contentType || (bodyPart.ct == contentType)) {
-			return bodyPart;
-		}
-	}
-
-	return null;
-};
-
 /**
- * Gets the body content.
- * 
- * @return	{String}	the content or <code>null</code> for none
- */
-ZmMailMsg.prototype.getBodyContent =
-function() {
-	var bodyPart = this._loaded && this.getBodyPart();
-	return bodyPart ? bodyPart.content : null;
-};
-
-/**
-  * Returns true if this msg is multipart/alternative and could fetch the given type of part.
-  * Will only really be used to fetch a text part, since we only get a multipart/alternative
-  * when requesting the HTML version of a msg.
-  * 
-  * @param {string}		contentType		type of part we might want to fetch
-  */
-ZmMailMsg.prototype.canFetchAlternativePart =
-function(contentType) {
-	if (this.isMultipartAlternative()) {
-		return (!this.getBodyPart(contentType) && !this._fetchedAlternativePart[contentType]);
-	}
-	return false;
-};
-
-/**
-  * Fetches the requested alternative part.
+  * Fetches the requested alternative part and adds it to our MIME structure, and body parts.
   * 
   * @param {string}		contentType		MIME type of part to fetch
   * @param {callback}	callback
@@ -905,50 +878,66 @@ function(contentType, callback) {
 		getHtml:	(contentType == ZmMimeTable.TEXT_HTML),
 		callback:	respCallback
 	});
-	this._fetchedAlternativePart[contentType] = true;
 };
 
 ZmMailMsg.prototype._handleResponseFetchAlternativePart =
 function(contentType, callback, result) {
 
+	// look for first multi/alt with child of type we want, add it; assumes at most one multi/alt per msg
 	var response = result.getResponse().GetMsgResponse;
-	this._loadFromDom(response.m[0]);
-	var bodyPart = this.getBodyPart(contentType);
-	result.set(bodyPart ? bodyPart.content : null);
+	var altPart = this._topPart.addAlternativePart(response.m[0].mp[0], contentType, 0);
+	if (altPart) {
+		for (var i = 0; i < this._bodyParts.length; i++) {
+			var bp = this._bodyParts[i];
+			if (!bp.isZmMimePart) {
+				bp[altPart.contentType] = altPart;
+				break;
+			}
+		}
+	}
+	
 	if (callback) {
-		callback.run(result);
+		callback.run();
 	}
 };
 
 /**
- * Gets the text content of this message, loading the text part if necessary.
- *
- * @param {callback}	callback
+ * Gets the content of the first body part of the given content type (if provided).
+ * If HTML is requested, may return content set via setHtmlContent().
+ * 
+ * @param	{string}	contentType		MIME type
+ * @param	{boolean}	useOriginal		if true, do not grab the copy w/ the images defanged (HTML only)
+ * 
+ * @return	{string}					the content
  */
-ZmMailMsg.prototype.getTextContent =
-function(callback) {
-	var bodyPart = this.getTextBodyPart();
-	if (bodyPart) {
-		return bodyPart.content;
+ZmMailMsg.prototype.getBodyContent =
+function(contentType, useOriginal) {
+
+	if (contentType) {
+		this._lastContentType = contentType;
 	}
-	bodyPart = this.getBodyPart();
-	if (bodyPart && bodyPart.ct == ZmMimeTable.TEXT_CAL) {
-		return ZmMailMsg.getTextFromCalendarPart(bodyPart);
+
+	if (contentType == ZmMimeTable.TEXT_HTML && !useOriginal && this._htmlBody) {
+		return this._htmlBody;
 	}
-	else if (bodyPart && bodyPart.ct != ZmMimeTable.TEXT_PLAIN && bodyPart.ct != ZmMimeTable.TEXT_HTML) {
-		// looks like the body of this message is the attachment itself
-		return "";
-	} else {
-		return -1;
-	}
+
+	var bodyPart = this._loaded && this.getBodyPart(contentType);
+	return bodyPart ? bodyPart.getContent() : "";
 };
 
+/**
+ * Extracts and returns the text content out of a text/calendar part.
+ * 
+ * @param	{ZmMimePart}	bodyPart	a text/calendar MIME part
+ * @return	{string}					text content
+ */
 ZmMailMsg.getTextFromCalendarPart =
 function(bodyPart) {
 
 	// NOTE: IE doesn't match multi-line regex, even when explicitly
 	// specifying the "m" attribute.
-	var lines = bodyPart.content.split(/\r\n/);
+	var bpContent = bodyPart ? bodyPart.getContent() : "";
+	var lines = bpContent.split(/\r\n/);
 	var desc = [];
 	var content = "";
 	for (var i = 0; i < lines.length; i++) {
@@ -988,17 +977,37 @@ function(bodyPart) {
 	return content;
 };
 
-// returns a text/plain or text-like (not HTML or calendar) body part
+/**
+ * Returns a text/plain or text-like (not HTML or calendar) body part
+ * 
+ * @return {ZmMimePart}		MIME part
+ */
 ZmMailMsg.prototype.getTextBodyPart =
 function() {
 	var bodyPart = this.getBodyPart(ZmMimeTable.TEXT_PLAIN) || this.getBodyPart();
-	return (bodyPart && bodyPart.body && ZmMimeTable.isTextType(bodyPart.ct)) ? bodyPart : null;
+	return (bodyPart && bodyPart.isBody && ZmMimeTable.isTextType(bodyPart.contentType)) ? bodyPart : null;
 };
 
 /**
- * Sets the html content.
+ * Returns true if this message has an inline image
  * 
- * @param	{String}	content		the content
+ * @return {boolean}
+ */
+ZmMailMsg.prototype.hasInlineImage =
+function() {
+	for (var i = 0; i < this._bodyParts.length; i++) {
+		var bp = this._bodyParts[i];
+		if (bp.isZmMimePart && bp.contentDisposition == "inline" && bp.fileName && ZmMimeTable.isRenderableImage(bp.contentType)) {
+			return true;
+		}
+	}
+	return false;
+};
+
+/**
+ * Sets the html content, overriding that of any HTML body part.
+ * 
+ * @param	{string}	content		the HTML content
  */
 ZmMailMsg.prototype.setHtmlContent =
 function(content) {
@@ -1205,7 +1214,7 @@ function(callback, toastMessage, result) {
 		this._origMsg.folderId = ZmFolder.ID_TRASH;
 	}
 
-	// allow or disallow move clusterfuck logic:
+	// allow or disallow move logic:
 	var allowMove;
 	if ((this.acceptFolderId != ZmOrganizer.ID_CALENDAR) ||
 		(appCtxt.multiAccounts &&
@@ -1267,7 +1276,8 @@ function(itemId, nfolderId) {
 	}
 };
 
-ZmMailMsg.prototype._moveApptItem = function(itemId, nfolder) {
+ZmMailMsg.prototype._moveApptItem =
+function(itemId, nfolder) {
 	var callback = new AjxCallback(this, this._handleMoveApptResponse, [nfolder]);
 	var errorCallback = new AjxCallback(this, this._handleMoveApptError, [nfolder]);
 	var ac = window.parentAppCtxt || window.appCtxt;
@@ -1696,15 +1706,17 @@ function() {
 
 ZmMailMsg.prototype.isRealAttachment =
 function(attachment) {
-	var type = attachment.ct;
+	var type = attachment.contentType;
 
 	// bug fix #6374 - ignore if attachment is body unless content type is message/rfc822
-	if (ZmMimeTable.isIgnored(type))
+	if (ZmMimeTable.isIgnored(type)) {
 		return false;
+	}
 
 	// bug fix #8751 - dont ignore text/calendar type if msg is not an invite
-	if (type == ZmMimeTable.TEXT_CAL && appCtxt.get(ZmSetting.CALENDAR_ENABLED) && this.isInvite())
+	if (type == ZmMimeTable.TEXT_CAL && appCtxt.get(ZmSetting.CALENDAR_ENABLED) && this.isInvite()) {
 		return false;
+	}
 
 	return true;
 };
@@ -1742,12 +1754,12 @@ ZmMailMsg.prototype.findAttsFoundInMsgBody =
 function() {
 	if (this.findAttsFoundInMsgBodyDone) { return; }
 
-	var content ="", cid;
+	var content = "", cid;
 	var bodyParts = this.getBodyParts();
 	for (var i = 0; i < bodyParts.length; i++) {
 		var bodyPart = bodyParts[i];
-		if (bodyPart.ct == ZmMimeTable.TEXT_HTML) {
-			content = bodyPart.content;
+		if (bodyPart.contentType == ZmMimeTable.TEXT_HTML) {
+			content = bodyPart.getContent();
 			var msgRef = this;
 			content.replace(/src=([\x27\x22])cid:([^\x27\x22]+)\1/ig, function(s, q, cid) {
 				var attach = msgRef.findInlineAtt("<" + AjxStringUtil.urlComponentDecode(cid)  + ">");
@@ -1762,14 +1774,8 @@ function() {
 
 ZmMailMsg.prototype.hasInlineImagesInMsgBody =
 function() {
-	var body = this.getBodyPart(ZmMimeTable.TEXT_HTML);
-	if (body) {
-		body = AjxUtil.isString(body) ? body : body.content;
-		if (body && body.search(/src=([\x27\x22])cid:([^\x27\x22]+)\1/ig) != -1) {
-			return true;
-		}
-	}
-	return false;
+	var body = this.getBodyContent(ZmMimeTable.TEXT_HTML);
+	return (body && body.search(/src=([\x27\x22])cid:([^\x27\x22]+)\1/ig) != -1);
 };
 
 /**
@@ -1791,7 +1797,7 @@ function() {
 		var part;
 		for (var k = 0; k < parts.length; k++) {
 			part = parts[k];
-			if (part.filename && part.cd == "inline") {
+			if (part.fileName && part.contentDisposition == "inline") {
 				atts.push(part);
 			}
 		}
@@ -1816,8 +1822,8 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 			var attach = attachments[i];
 
 			if (!this.isRealAttachment(attach) ||
-					(attach.ct.match(/^image/) && attach.ci && attach.foundInMsgBody && !includeInlineImages) ||
-					(attach.cd == "inline" && attach.filename && ZmMimeTable.isRenderable(attach.ct, true) && !includeInlineAtts)) {
+					(attach.contentType.match(/^image/) && attach.contentId && attach.foundInMsgBody && !includeInlineImages) ||
+					(attach.contentDisposition == "inline" && attach.fileName && ZmMimeTable.isRenderable(attach.contentType, true) && !includeInlineAtts)) {
 				continue;
 			}
 
@@ -1825,42 +1831,42 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 			props.links = {};	// flags that indicate whether to include a certain type of link
 
 			// set a viable label for this attachment
-			props.label = attach.name || attach.filename || (ZmMsg.unknown + " <" + attach.ct + ">");
+			props.label = attach.name || attach.fileName || (ZmMsg.unknown + " <" + attach.contentType + ">");
 
 			// use content location instead of built href flag
 			var useCL = false;
 			// set size info if any
 			props.sizeInBytes = attach.s || 0;
-			if (attach.s != null && attach.s >= 0) {
+			if (attach.size != null && attach.size >= 0) {
 				var numFormatter = AjxNumberFormat.getInstance();  
-				if (attach.s < 1024) {
-					props.size = numFormatter.format(attach.s) + " " + ZmMsg.b;
+				if (attach.size < 1024) {
+					props.size = numFormatter.format(attach.size) + " " + ZmMsg.b;
 				}
-				else if (attach.s < (1024 * 1024)) {
-					props.size = numFormatter.format(Math.round((attach.s / 1024) * 10) / 10) + " " + ZmMsg.kb;
+				else if (attach.size < (1024 * 1024)) {
+					props.size = numFormatter.format(Math.round((attach.size / 1024) * 10) / 10) + " " + ZmMsg.kb;
 				}
 				else {
-					props.size = numFormatter.format(Math.round((attach.s / (1024 * 1024)) * 10) / 10) + " " + ZmMsg.mb;
+					props.size = numFormatter.format(Math.round((attach.size / (1024 * 1024)) * 10) / 10) + " " + ZmMsg.mb;
 				}
 			} else {
-				useCL = attach.cl && (attach.relativeCl || ZmMailMsg.URL_RE.test(attach.cl));
+				useCL = attach.contentLocation && (attach.relativeCl || ZmMailMsg.URL_RE.test(attach.contentLocation));
 			}
 
 			// see if rfc822 is an invite
-			if (attach.ct == ZmMimeTable.MSG_RFC822) {
-				var calPart = attach.mp && (attach.mp.length == 1) && (attach.mp[0].ct == ZmMimeTable.TEXT_CAL) && attach.mp[0]; 
-				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) && calPart) {
+			if (attach.contentType == ZmMimeTable.MSG_RFC822) {
+				var calPart = (attach.children.size() == 1) && attach.children.get(0);
+				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) && calPart && (calPart.contentType == ZmMimeTable.TEXT_CAL)) {
 					props.links.importICS = true;
 					props.rfc822CalPart = calPart.part;
 				}
 			} else {
 				// set the anchor html for the link to this attachment on the server
-				var url = useCL ? attach.cl : (hrefRoot + attach.part);
+				var url = useCL ? attach.contentLocation : (hrefRoot + attach.part);
 
 				// bug fix #6500 - append filename w/in so "Save As" wont append .html at the end
 				if (!useCL) {
 					var insertIdx = url.indexOf("?auth=co&");
-					var fn = AjxStringUtil.urlComponentEncode(attach.filename);
+					var fn = AjxStringUtil.urlComponentEncode(attach.fileName);
 					fn = fn.replace(/\x27/g, "%27");
 					url = url.substring(0,insertIdx) + fn + url.substring(insertIdx);
 				}
@@ -1869,27 +1875,27 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 				}
 
 				var folder = appCtxt.getById(this.folderId);
-				if ((attach.name || attach.filename) && appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) && (folder && !folder.isRemote())) {
+				if ((attach.name || attach.fileName) && appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) && (folder && !folder.isRemote())) {
 					props.links.briefcase = true;
 				}
 
-				var isICSAttachment = (attach.filename && attach.filename.match(/\./) && attach.filename.replace(/^.*\./, "").toLowerCase() == "ics");
+				var isICSAttachment = (attach.fileName && attach.fileName.match(/\./) && attach.fileName.replace(/^.*\./, "").toLowerCase() == "ics");
 
-				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) && ((attach.ct == ZmMimeTable.TEXT_CAL) || isICSAttachment)) {
+				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) && ((attach.contentType == ZmMimeTable.TEXT_CAL) || isICSAttachment)) {
 					props.links.importICS = true;
 				}
 
 				if (!useCL) {
 					// check for vcard *first* since we dont care to view it in HTML
-					if (attach.ct == ZmMimeTable.TEXT_VCARD || attach.ct == ZmMimeTable.TEXT_DIRECTORY) {
+					if (attach.contentType == ZmMimeTable.TEXT_VCARD || attach.contentType == ZmMimeTable.TEXT_DIRECTORY) {
 						props.links.vcard = true;
 					}
-					else if (ZmMimeTable.hasHtmlVersion(attach.ct) && appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
+					else if (ZmMimeTable.hasHtmlVersion(attach.contentType) && appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
 						props.links.html = true;
 					}
 					else {
 						// set the objectify flag
-						props.objectify = attach.ct && attach.ct.match(/^image/);
+						props.objectify = attach.contentType && attach.contentType.match(/^image/);
 					}
 				} else {
 					props.url = url;
@@ -1900,9 +1906,9 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 			}
 
 			// set the link icon
-			var mimeInfo = ZmMimeTable.getInfo(attach.ct);
+			var mimeInfo = ZmMimeTable.getInfo(attach.contentType);
 			props.linkIcon = mimeInfo ? mimeInfo.image : "GenericDoc";
-			props.ct = attach.ct;
+			props.ct = attach.contentType;
 
 			// set other meta info
 			props.isHit = findHits && this._isAttInHitList(attach);
@@ -1915,7 +1921,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 					"&part=", attach.part
 				].join("");
 			}
-			if (attach.ci || (includeInlineImages && attach.cd == "inline")) {  // bug: 28741
+			if (attach.contentId || (includeInlineImages && attach.contentDisposition == "inline")) {  // bug: 28741
 				props.ci = true;
 			}
             props.mid = this.id;
@@ -1951,7 +1957,12 @@ function(partIds, callback) {
 
 // Private methods
 
-// Processes a message node, getting attributes and child nodes to fill in the message.
+/**
+ * Processes a message node, getting attributes and child nodes to fill in the message.
+ * This method may be called on an existing msg, since only metadata is returned when a
+ * conv is expanded via SearchConvRequest. That is why we check values before setting
+ * them, and why we don't clear out all the msg properties here first.
+ */
 ZmMailMsg.prototype._loadFromDom =
 function(msgNode) {
 	// this method could potentially be called twice (SearchConvResponse and
@@ -2022,7 +2033,7 @@ function(msgNode) {
 				conv.msgIds = [this.id];
 			}
 
-            if(conv.isMuted()) {
+            if (conv.isMuted()) {
                 this._muted = true;
                 this.isUnread = false;
                 this._markReadLocal(true);
@@ -2030,12 +2041,21 @@ function(msgNode) {
 		}
 	}
 
-	// always call parseFlags even if server didnt return any
+	// always call parseFlags even if server didn't return any
 	this._parseFlags(msgNode.f);
 
 	if (msgNode.mp) {
-		var params = {attachments: this.attachments, bodyParts: this._bodyParts};
-		this._topPart = ZmMimePart.createFromDom(msgNode.mp, params);
+		// clear all attachments and body data
+		this.attachments = [];
+		this._bodyParts = [];
+		this._contentType = {};
+		this.findAttsFoundInMsgBodyDone = false;
+		var ctxt = {
+			attachments:	this.attachments,
+			bodyParts:		this._bodyParts,
+			contentTypes:	this._contentType
+		};
+		this._topPart = ZmMimePart.createFromDom(msgNode.mp[0], ctxt);
 		this._loaded = this._bodyParts.length > 0 || this.attachments.length > 0;
 		this._cleanupCIds();
 	}
@@ -2062,7 +2082,6 @@ function(msgNode) {
 			DBG.println(AjxDebug.DBG1, "createDlSubFromDom failed, content is:" + msgNode.dlSubs[0].content + " ex:" + ex);
 		}
 	}
-
 
 	if (msgNode.e && this.participants && this.participants.size() == 0) {
 		for (var i = 0; i < msgNode.e.length; i++) {
@@ -2150,8 +2169,8 @@ function(atts) {
 
 	for (var i = 0; i < atts.length; i++) {
 		var att = atts[i];
-		if (att.ci && !/^<.+>$/.test(att.ci)) {
-			att.ci = '<' + att.ci + '>';
+		if (att.contentId && !/^<.+>$/.test(att.contentId)) {
+			att.contentId = '<' + att.contentId + '>';
 		}
 	}
 };

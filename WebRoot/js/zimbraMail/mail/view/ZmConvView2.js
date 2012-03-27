@@ -234,7 +234,7 @@ function(conv, container) {
 	var oldestIndex = oldToNew ? 0 : msgs.length - 1;
 	for (var i = 0, len = msgs.length; i < len; i++) {
 		var msg = msgs[i];
-		params.forceExpand = (msgs.length == 1) || (!conv.isUnread && i == (oldToNew ? msgs.length - 1 : 0));
+		params.forceExpand = msg.isLoaded();
 		// don't look for quoted text in oldest msg - it is considered wholly original
 		params.forceOriginal = (i == oldestIndex);
 		this._renderMessage(msg, params);
@@ -659,9 +659,12 @@ function(params) {
 		params.extraBodyText = htmlMode ? AjxStringUtil.htmlEncode(this._replyInput.value) : this._replyInput.value;
 	}
 	params.hideView = params.sendNow;
-	var desiredPartType = (params.composeMode == DwtHtmlEditor.TEXT) ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML;
-	if (msg && msg.canFetchAlternativePart(desiredPartType)) {
-		msg.fetchAlternativePart(desiredPartType, this._sendMsg.bind(this, params));
+
+	var what = appCtxt.get(ZmSetting.REPLY_INCLUDE_WHAT);
+	if (what == ZmSetting.INC_BODY || what == ZmSetting.INC_SMART) {
+		// make sure we've loaded the part with the type we want to reply in, if it's available
+		var desiredPartType = htmlMode ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
+		msg.getBodyPart(desiredPartType, this._sendMsg.bind(this, params));
 	}
 	else {
 		this._sendMsg(params);
@@ -1048,19 +1051,19 @@ function(subs, sentBy, sentByAddr, sender, addr) {
 ZmMailMsgCapsuleView.prototype._getBodyContent =
 function(bodyPart) {
 
-	if (!bodyPart || !bodyPart.content) { return ""; }
+	if (!bodyPart || !bodyPart.getContent()) { return ""; }
 	
 	var isHtml = (bodyPart.ct == ZmMimeTable.TEXT_HTML);
 	var origContent = this._origContent[bodyPart.ct];
 	if (!origContent && !this._forceOriginal && !this._isMatchingMsg) {
-		origContent = AjxStringUtil.getOriginalContent(bodyPart.content, isHtml);
-		if (origContent.length != bodyPart.content.length) {
+		origContent = AjxStringUtil.getOriginalContent(bodyPart.getContent(), isHtml);
+		if (origContent.length != bodyPart.getContent().length) {
 			this._origContent[bodyPart.ct] = origContent;
 			this._hasOrigContent = true;
 		}
 	}
 
-	var content = (this._showingQuotedText || this._forceOriginal || this._isMatchingMsg || !origContent) ? bodyPart.content : origContent;
+	var content = (this._showingQuotedText || this._forceOriginal || this._isMatchingMsg || !origContent) ? bodyPart.getContent() : origContent;
 	content = content || "";
 	// remove trailing blank lines
 	content = isHtml ? AjxStringUtil.removeTrailingBR(content) : AjxStringUtil.trim(content);

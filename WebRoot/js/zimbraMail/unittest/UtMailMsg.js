@@ -148,7 +148,7 @@ UT.test("Unfang Internal Test: Copy/Paste Inline Image", {
 	   var mailMsg = ZmMailMsg.createFromDom(node, args);
 	   var bodyPart = mailMsg.getBodyPart(ZmMimeTable.TEXT_HTML);
 	   var div = document.createElement("div");
-	   div.innerHTML = bodyPart.content;
+	   div.innerHTML = bodyPart.getContent();
 	   var images = div.getElementsByTagName("img");
        for(var i=0; i<images.length; i++) {
 	     var isExternal = ZmMailMsgView._isExternalImage(images[i]);
@@ -221,7 +221,7 @@ UT.test("Unfang Internal Test: External Image", {
 	   var mailMsg = ZmMailMsg.createFromDom(node, args);
 	   var bodyPart = mailMsg.getBodyPart(ZmMimeTable.TEXT_HTML);
 	   var div = document.createElement("div");
-	   div.innerHTML = bodyPart.content;
+	   div.innerHTML = bodyPart.getContent();
 	   var images = div.getElementsByTagName("img");
        for(var i=0; i<images.length; i++) {
 	     var isExternal = ZmMailMsgView._isExternalImage(images[i]);
@@ -307,7 +307,7 @@ UT.test("Unfang Internal Test: Inline Attachment", {
 	   var mailMsg = ZmMailMsg.createFromDom(node, args);
 	   var bodyPart = mailMsg.getBodyPart(ZmMimeTable.TEXT_HTML);
 	   var div = document.createElement("div");
-	   div.innerHTML = bodyPart.content;
+	   div.innerHTML = bodyPart.getContent();
 	   var images = div.getElementsByTagName("img");
        for(var i=0; i<images.length; i++) {
 	     var isExternal = ZmMailMsgView._isExternalImage(images[i]);
@@ -393,7 +393,7 @@ UT.test("Unfang Internal Test: Inline Attachment (Content-Location)", {
 	   var mailMsg = ZmMailMsg.createFromDom(node, args);
 	   var bodyPart = mailMsg.getBodyPart(ZmMimeTable.TEXT_HTML);
 	   var div = document.createElement("div");
-	   div.innerHTML = bodyPart.content;
+	   div.innerHTML = bodyPart.getContent();
 	   var images = div.getElementsByTagName("img");
        for(var i=0; i<images.length; i++) {
 	     var isExternal = ZmMailMsgView._isExternalImage(images[i]);
