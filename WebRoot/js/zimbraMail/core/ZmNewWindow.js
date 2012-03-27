@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -39,9 +39,6 @@ ZmNewWindow = function() {
 
 	appCtxt.setAppController(this);
 
-	//update body class to reflect user selected font
-	document.body.className = "user_font_" + appCtxt.get(ZmSetting.FONT_NAME);
-
 	this._settings = appCtxt.getSettings();
 	this._settings.setReportScriptErrorsSettings(AjxException, ZmController.handleScriptError); //must set this for child window since AjxException is fresh for this window. Also must pass AjxException and the handler since we want it to update the one from this child window, and not the parent window
 
@@ -61,8 +58,15 @@ ZmNewWindow = function() {
 ZmNewWindow.prototype = new ZmController;
 ZmNewWindow.prototype.constructor = ZmNewWindow;
 
-ZmNewWindow.prototype.isZmNewWindow = true;
-ZmNewWindow.prototype.toString = function() { return "ZmNewWindow"; };
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmNewWindow.prototype.toString =
+function() {
+	return "ZmNewWindow";
+};
 
 // Public methods
 
@@ -204,10 +208,6 @@ function() {
 	} else if (cmd == "msgViewDetach") {
 		target = "view-window";
 	}
-
-	ZmZimbraMail.prototype._registerOrganizers.call(this);
-	ZmZimbraMail.registerViewsToTypeMap();
-
     
 	// setup zimlets, Load it first becoz.. zimlets has to get processed first.
 	if (target) {
@@ -246,7 +246,7 @@ function() {
 	// depending on the command, do the right thing
 	if (cmd == "compose" || cmd == "composeDetach") {
 		var cc = AjxDispatcher.run("GetComposeController");	// get a new compose ctlr
-		appCtxt.composeCtlrSessionId = cc.getSessionId();
+		appCtxt.composeCtlrSessionId = cc.sessionId;
 		if (params.action == ZmOperation.REPLY_ALL) {
 			params.msg = this._deepCopyMsg(params.msg);
 		}
@@ -288,8 +288,8 @@ function() {
 		params.msg = this._deepCopyMsg(params.msg);
 		
 		var msgController = AjxDispatcher.run("GetMsgController");
-		appCtxt.msgCtlrSessionId = msgController.getSessionId();
-		msgController.show(params.msg, params.parentController);
+		appCtxt.msgCtlrSessionId = msgController.sessionId;
+		msgController.show(params.msg, params.mode);
 		rootTg.addMember(msgController.getTabGroup());
 		startupFocusItem = msgController.getCurrentView();
 
@@ -298,8 +298,6 @@ function() {
 		var panel = appCtxt.getShortcutsPanel();
 		panel.popup(params.cols);
 	}
-	
-	this._appViewMgr.loadingView.setVisible(false);
 
 	var kbMgr = appCtxt.getKeyboardMgr();
 	kbMgr.setTabGroup(rootTg);
@@ -376,7 +374,6 @@ function(params) {
     window.onbeforeunload = null;
 	// bypass error callback to get control over exceptions in the childwindow.
 	params.errorCallback = new AjxCallback(this, this._handleException, [( params.errorCallback || null )]);
-	params.fromChildWindow = true;
 	return window.parentController ? window.parentController.sendRequest(params) : null;
 };
 
@@ -433,6 +430,12 @@ ZmNewWindow.prototype.setStatusMsg =
 function(params) {
 	// bug: 26478. Changed status msg to be displayed within the child window.
 	params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
+	/*if (AjxEnv.isIE) {
+		if (typeof params == "string") {
+			params = {msg: params};
+		}
+		params.transitions = [ZmToast.SHOW, ZmToast.PAUSE];
+	}*/
 	this._statusView.setStatusMsg(params);
 };
 
@@ -570,7 +573,7 @@ function(msg) {
 		// manually add objects since they are no longer recognizable
 		newSearch.types = new AjxVector();
 		var types = oldSearch.types.getArray();
-		for (var i = 0;  i < types.length; i++) {
+		for (var i in types) {
 			newSearch.types.add(types[i]);
 		}
 	}
@@ -593,18 +596,18 @@ function(msg) {
 	// manually add any objects since they are no longer recognizable
 	for (var i in msg._addrs) {
 		var addrs = msg._addrs[i].getArray();
-		for (var j = 0; j < addrs.length; j++) {
+		for (var j in addrs) {
 			newMsg._addrs[i].add(addrs[j]);
 		}
 	}
 
 	if (msg.attachments && msg.attachments.length > 0) {
-		for (var i = 0; i < msg.attachments.length; i++) {
+		for (var i in msg.attachments) {
 			newMsg.attachments.push(msg.attachments[i]);
 		}
 	}
 
-	for (var i = 0; i < msg._bodyParts.length; i++) {
+	for (var i in msg._bodyParts) {
 		newMsg._bodyParts.push(msg._bodyParts[i]);
 	}
 
@@ -616,10 +619,14 @@ function(msg) {
 			newMsg._topPart[i] = msg._topPart[i];
 		}
 		var children = msg._topPart.children.getArray();
-		for (var i = 0; i < children.length; i++) {
+		for (var i in children) {
 			newMsg._topPart.children.add(children[i]);
 		}
 	}
+
+	ZmZimbraMail.prototype._registerOrganizers.call(this);
+	ZmZimbraMail.registerViewsToTypeMap();
+
 
 	if (msg.invite) {
 		newMsg.invite = msg.invite;

@@ -1,20 +1,19 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2011 Zimbra, Inc.
- *
+ * Copyright (C) 2011 VMware, Inc.
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="empty" %>
 <%@ tag import="java.text.*,java.util.*" %>
-<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ tag import="com.zimbra.cs.taglib.bean.BeanUtils,com.zimbra.cs.taglib.bean.ZContactBean" %>
 <%@ attribute name="ruby" rtexprvalue="true" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="contact" rtexprvalue="true" required="false" type="com.zimbra.cs.taglib.bean.ZContactBean" %>
@@ -41,13 +40,9 @@
 <c:set var="phoneticLastName" value="${fn:escapeXml(not empty contact ? contact.phoneticLastName : phoneticLastName)}" />
 <c:set var="phoneticCompany" value="${fn:escapeXml(not empty contact ? contact.phoneticCompany : phoneticCompany)}" />
 <c:if test="${ruby}">
-    <%--
-    The attributes are cooked in ruby.tag file as well resulting in double escaping. Hence, unCook them before
-    passing it over.
-    --%>
-    <c:set var="firstName"><app:ruby base="${zm:unCook(firstName)}" text="${zm:unCook(phoneticFirstName)}" /></c:set>
-    <c:set var="lastName"><app:ruby base="${zm:unCook(lastName)}" text="${zm:unCook(phoneticLastName)}" /></c:set>
-    <c:set var="company"><app:ruby base="${zm:unCook(company)}" text="${zm:unCook(phoneticCompany)}" /></c:set>
+    <c:set var="firstName"><app:ruby base="${firstName}" text="${phoneticFirstName}" /></c:set>
+    <c:set var="lastName"><app:ruby base="${lastName}" text="${phoneticLastName}" /></c:set> 
+    <c:set var="company"><app:ruby base="${company}" text="${phoneticCompany}" /></c:set>
 </c:if>
 <%
     // make fields available to Java code

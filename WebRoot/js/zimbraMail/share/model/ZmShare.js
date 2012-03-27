@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -82,8 +82,7 @@ ZmShare = function(params) {
 // Constants
 
 ZmShare.URI = "urn:zimbraShare";
-ZmShare.VERSION = "0.2";
-ZmShare.PREV_VERSION = "0.1"; // keep this till it's no longer supported
+ZmShare.VERSION = "0.1";
 
 // actions
 /**
@@ -384,7 +383,7 @@ function(doc) {
 
 	var shareNode = doc.documentElement;
 	share.version = shareNode.getAttribute("version");
-	if (share.version != ZmShare.VERSION && share.version != ZmShare.PREV_VERSION) { //support previous version here for smooth transition. 
+	if (share.version != ZmShare.VERSION) {
 		throw "Zimbra share version must be " + ZmShare.VERSION;
 	}
 	share.action = shareNode.getAttribute("action");
@@ -615,9 +614,9 @@ function() {
  * @param	{ZmBatchCommand}	batchCmd	the batch command
  */
 ZmShare.prototype.grant =
-function(perm, pw, notes, batchCmd) {
+function(perm, pw, batchCmd) {
 	this.link.perm = perm;
-	var respCallback = new AjxCallback(this, this._handleResponseGrant, [notes]);
+	var respCallback = new AjxCallback(this, this._handleResponseGrant);
 	this._shareAction("grant", null, {perm: perm, pw: pw}, respCallback, batchCmd);
 };
 
@@ -625,26 +624,10 @@ function(perm, pw, notes, batchCmd) {
  * @private
  */
 ZmShare.prototype._handleResponseGrant =
-function(notes, result) {
+function(result) {
 	var action = result.getResponse().FolderActionResponse.action;
 	this.grantee.id = action.zid;
 	this.grantee.email = action.d;
-    if(action.d && action.zid) {
-        this._sendShareNotification(action, notes);
-    }
-};
-
-/**
- * @private
- */
-ZmShare.prototype._sendShareNotification =
-function(action, notes) {
-    var soapDoc = AjxSoapDoc.create("SendShareNotificationRequest", "urn:zimbraMail");
-    var itemNode = soapDoc.set("item");
-    itemNode.setAttribute("id", action.id);
-    var emailNode = soapDoc.set("e");
-    emailNode.setAttribute("a",action.d);
-    appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
 };
 
 /**
@@ -966,16 +949,6 @@ function(ex) {
 		// NOTE: This prevents details from being shown
 		ex = null;
 	}
-    if (ex instanceof ZmCsfeException && ex.code == "service.PERM_DENIED") {
-        //bug:67698 Displaying proper error message when grantee is owner
-        if(this.object.getOwner() == this.grantee.name){
-            message = ZmMsg.cannotGrantAccessToOwner;
-            ex = null;
-        }
-        else{
-            message = ZmMsg.errorPermission;
-        }
-	}
 
 	appCtxt.getAppController().popupErrorDialog(message, ex, null, true);
 	return true;
@@ -1098,10 +1071,10 @@ function(mode) {
 ZmShare.prototype._createContent =
 function(formatter) {
 	var role = ZmShare.getRoleFromPerm(this.link.perm);
-	var owner = this.object ? (this.object.owner || this.grantor.name) : this.grantor.name;
+	var owner = this.object ?  (this.object.owner || this.grantor.name) : this.grantor.name;
 	owner = AjxStringUtil.htmlEncode(owner);
 	var params = [
-		AjxStringUtil.htmlEncode(this.link.name),
+		AjxStringUtil.htmlEncode(this.link.name), 
 		"(" + ZmShare._getFolderType(this.link.view) + ")",
 		owner,
 		AjxStringUtil.htmlEncode(this.grantee.name),

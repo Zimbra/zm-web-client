@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- *
+ * Copyright (C) 2010, 2011 VMware, Inc.
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -662,7 +662,7 @@ function(item){
     }
 
     this._iframePreview.setSrc(restUrl);
-	Dwt.setLoadedTime("ZmBriefcaseItem"); //iframe src set but item may not be downloaded by browser
+	Dwt.setLoadedTime("ZmBriefcaseItem", new Date()); //iframe src set but item may not be downloaded by browser
 };
 
 ZmPreviewView.prototype._setupLoading =
@@ -771,14 +771,12 @@ function(item){
 
     //Modified & Created
     var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
-    if (this._headerModified && item.modifyDate) {
+    if(this._headerModified)
         this._headerModified.innerHTML = dateFormatter.format(item.modifyDate);
-	}
     if(this._headerModifier)
         this._headerModifier.innerHTML = item.modifier;
-    if (this._headerCreated && item.createDate) {
+    if(this._headerCreated)
         this._headerCreated.innerHTML = dateFormatter.format(item.createDate);
-	}
     if(this._headerCreator)
         this._headerCreator.innerHTML = item.creator;
 

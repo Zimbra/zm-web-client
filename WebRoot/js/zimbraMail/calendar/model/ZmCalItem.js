@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -239,13 +239,6 @@ ZmCalItem.prototype.getOrigStartDate 	= function() { return this._origStartDate 
  * @return	{Date}	the original start time
  */
 ZmCalItem.prototype.getOrigStartTime 	= function() { return this.getOrigStartDate().getTime(); };
-
-/**
- * Gets the original calendar item.
- *
- * @return	{ZmCalItem}	the original calendar item
- */
-ZmCalItem.prototype.getOrig 	        = function() { return this._orig; };
 
 /**
  * Gets the original timezone.
@@ -685,10 +678,10 @@ ZmCalItem.prototype.parseAlarmData =
 function() {
 	if (!this.alarmData) { return; }
 
-	for (var i = 0; i < this.alarmData.length; i++) {
+	for (var i in this.alarmData) {
 		var alarm = this.alarmData[i].alarm;
 		if (alarm) {
-			for (var j = 0; j < alarm.length; j++) {
+			for (var j in alarm) {
 				this.parseAlarm(alarm[j]);
 			}
 		}
@@ -1039,7 +1032,6 @@ function(message, viewMode) {
         this.recurring =  message.invite.isRecurring();
         this.location = message.invite.getLocation();
         this.seq = message.invite.getSequenceNo();
-        this.allDayEvent = message.invite.isAllDayEvent();
         if(message.invite.id) {
             this.invId = this.id + "-" + message.invite.id;
         }
@@ -1176,7 +1168,7 @@ function(message) {
 	this._reminderMinutes = 0;
 	var alarm = message.invite.getAlarm();
 	if (alarm) {
-		for (var i = 0; i < alarm.length; i++) {
+		for (var i in alarm) {
             var alarmInst = alarm[i];
             if (!alarmInst) continue;
 
@@ -1478,7 +1470,7 @@ function(alarmInst, soapDoc, alarmNode)  {
 	// bug 28924: preserve x props
 	xprops = (xprops instanceof Array) ? xprops : [xprops];
 
-	for (var i = 0; i < xprops.length; i++) {
+	for (var i in xprops) {
 		var xprop = xprops[i];
 		if (xprop && xprop.name) {
 			var x = soapDoc.set("xprop", null, alarmNode);
@@ -1688,10 +1680,8 @@ function(mode, callback, msg, batchCmd, result) {
 					for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
 						var type = ZmMailMsg.ADDRS[i];
 	
-						// if on-behalf-of, dont set the from address and
-                        // don't set the reset-from (only valid when receiving a message)
-						if ((accountName && type == AjxEmailAddress.FROM) ||
-                            (type == AjxEmailAddress.RESENT_FROM)) { continue; }
+						// if on-behalf-of, dont set the from address
+						if (accountName && type == AjxEmailAddress.FROM) { continue; }
 	
 						var vector = msg.getAddresses(type);
 						var count = vector.size();
@@ -1765,6 +1755,96 @@ function() {
 	return this.getSummary(true);
 };
 
+/**
+ * Gets the attach list as HTML.
+ * 
+ * @param {Object}		attach		a generic Object contain meta info about the attachment
+ * @param {Boolean}		hasCheckbox		<code>true</code> to insert a checkbox prior to the attachment
+ * @return	{String}	the HTML
+ */
+ZmCalItem.prototype.getAttachListHtml =
+function(attach, hasCheckbox) {
+	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+
+	// gather meta data for this attachment
+	var mimeInfo = ZmMimeTable.getInfo(attach.ct);
+	var icon = mimeInfo ? mimeInfo.image : "GenericDoc";
+	var size = attach.s;
+	var sizeText;
+	if (size != null) {
+		if (size < 1024)		sizeText = size + " B";
+		else if (size < 1024^2)	sizeText = Math.round((size/1024) * 10) / 10 + " KB";
+		else 					sizeText = Math.round((size / (1024*1024)) * 10) / 10 + " MB";
+	}
+
+	var html = [];
+	var i = 0;
+
+	// start building html for this attachment
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
+	if (hasCheckbox) {
+		html[i++] = "<td width=1%><input type='checkbox' checked value='";
+		html[i++] = attach.part;
+		html[i++] = "' name='";
+		html[i++] = ZmCalItem.ATTACHMENT_CHECKBOX_NAME;
+		html[i++] = "'></td>";
+	}
+
+	var hrefRoot = ["href='", msgFetchUrl, "&id=", this.invId, "&amp;part="].join("");
+	html[i++] = "<td width=20><a target='_blank' class='AttLink' ";
+	html[i++] = hrefRoot;
+	html[i++] = attach.part;
+	html[i++] = "'>";
+	html[i++] = AjxImg.getImageHtml(icon);
+	html[i++] = "</a></td><td><a target='_blank' class='AttLink' ";
+	if (appCtxt.get(ZmSetting.MAIL_ENABLED) && attach.ct == ZmMimeTable.MSG_RFC822) {
+		html[i++] = " href='javascript:;' onclick='ZmCalItemView.rfc822Callback(";
+		html[i++] = '"';
+		html[i++] = this.invId;
+		html[i++] = '"';
+		html[i++] = ",\"";
+		html[i++] = attach.part;
+		html[i++] = "\"); return false;'";
+	} else {
+		html[i++] = hrefRoot;
+		html[i++] = attach.part;
+		html[i++] = "'";
+	}
+	html[i++] = ">";
+	html[i++] = attach.filename;
+	html[i++] = "</a>";
+
+	var addHtmlLink = (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML) &&
+					   attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct));
+
+	if (sizeText || addHtmlLink) {
+		html[i++] = "&nbsp;(";
+		if (sizeText) {
+			html[i++] = sizeText;
+			html[i++] = ") ";
+		}
+		if (addHtmlLink) {
+			html[i++] = "<a style='text-decoration:underline' target='_blank' class='AttLink' ";
+			html[i++] = hrefRoot;
+			html[i++] = attach.part;
+			html[i++] = "&view=html'>";
+			html[i++] = ZmMsg.preview;
+			html[i++] = "</a>&nbsp;";
+		}
+		if (attach.ct != ZmMimeTable.MSG_RFC822) {
+			html[i++] = "<a style='text-decoration:underline' class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' ";
+			html[i++] = hrefRoot;
+			html[i++] = attach.part;
+			html[i++] = "&disp=a'>";
+			html[i++] = ZmMsg.download;
+			html[i++] = "</a>";
+		}
+	}
+
+	html[i++] = "</td></tr></table>";
+
+	return html.join("");
+};
 
 
 // Private / Protected methods
@@ -2134,7 +2214,7 @@ function(soapDoc, inv, comp) {
 	// bug 16024: preserve x props
 	xprops = (xprops instanceof Array) ? xprops : [xprops];
 
-	for (var i = 0; i < xprops.length; i++) {
+	for (var i in xprops) {
 		var xprop = xprops[i];
 		if (xprop && xprop.name) {
 			var x = soapDoc.set("xprop", null, comp);
@@ -2156,7 +2236,7 @@ function(soapDoc, xprop, xparams) {
 
 	xparams = (xparams instanceof Array) ? xparams : [xparams];
 
-	for (var j = 0; j < xparams.length; j++) {
+	for (var j in xparams) {
 		var xparam = xparams[j];
 		if (xparam && xparam.name) {
 			var x = soapDoc.set("xparam", null, xprop);
@@ -2387,40 +2467,6 @@ function(respName, callback, result) {
 	}
 };
 
-ZmCalItem.prototype.processErrorSave =
-function(ex) {
-	// TODO: generalize error message for calItem instead of just Appt
-    var status = {
-        continueSave: false,
-        errorMessage: ""
-    };
-	if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
-		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
-		var invalidMsg = (invalid && invalid.length)
-			? AjxMessageFormat.format(ZmMsg.apptSendErrorInvalidAddresses, AjxStringUtil.htmlEncode(invalid.join(", "))) : null;
-		status.errorMessage = ZmMsg.apptSendErrorAbort + "<br/>" + invalidMsg;
-	} else if (ex.code == ZmCsfeException.MAIL_SEND_PARTIAL_ADDRESS_FAILURE) {
-		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
-		status.errorMessage = (invalid && invalid.length)
-			? AjxMessageFormat.format(ZmMsg.apptSendErrorPartial, AjxStringUtil.htmlEncode(invalid.join(", ")))
-			: ZmMsg.apptSendErrorAbort;
-	} else if(ex.code == ZmCsfeException.MAIL_MESSAGE_TOO_BIG) {
-        status.errorMessage = (this.type == ZmItem.TASK) ? ZmMsg.taskSaveErrorToobig : ZmMsg.apptSaveErrorToobig;
-    } else if (ex.code == ZmCsfeException.MAIL_INVITE_OUT_OF_DATE) {
-        if(!this.isVersionIgnored()){
-            this.setIgnoreVersion(true);
-            status.continueSave = true;
-        }
-        else{
-            status.errorMessage = ZmMsg.inviteOutOfDate;
-            this.setIgnoreVersion(false);
-        }
-    } else if (ex.code == ZmCsfeException.MAIL_NO_SUCH_CALITEM) {
-        status.errorMessage = ex.getErrorMsg([ex.getData("itemId")]);
-    }
-
-    return status;
-};
 
 ZmCalItem.prototype.setProposedTimeCallback =
 function(callback) {

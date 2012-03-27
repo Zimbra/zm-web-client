@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -500,14 +500,6 @@ function() {
 };
 
 /**
- * Returns an object with layout coordinates for this appointment.
- */
-ZmAppt.prototype.getLayoutInfo =
-function() {
-	return this._layout;
-};
-
-/**
  * Gets the appointment time summary.
  *
  * @param	{Array}	    buf		    buffer array to fill summary content
@@ -644,7 +636,6 @@ function(message) {
 	this.setFromMessage(message, viewMode);
 	this.name = message.subject;
 	this.location = message.invite.getLocation();
-	this.allDayEvent = message.invite.isAllDayEvent();
 	if (message.apptId) {
 		this.invId = message.apptId;
 	}
@@ -697,7 +688,7 @@ function(message) {
 	var ptstReplies = {};
 	this._replies = message.invite.getReplies();
 	if (this._replies) {
-		for (var i = 0; i < this._replies.length; i++) {
+		for (var i in this._replies) {
 			var name = this._replies[i].at;
 			var ptst = this._replies[i].ptst;
 			if (name && ptst) {
@@ -1096,7 +1087,7 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 		var ptst = attendee.getParticipantStatus() || ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 		if (notifyList) {
 			var attendeeFound = false;
-			for (var i = 0; i < notifyList.length; i++) {
+			for (var i in notifyList) {
 				if (address == notifyList[i]) {
 					attendeeFound = true;
 					break;
@@ -1230,7 +1221,7 @@ function(isProposeTimeMode) {
 };
 
 ZmAppt.prototype.sendCounterAppointmentRequest =
-function(callback, errorCallback, viewMode) {
+function(callback, errorCallback) {
 	var mode = ZmCalItem.MODE_PROPOSE_TIME;
 
 	var soapDoc = AjxSoapDoc.create(this._getSoapForMode(mode, this.isException), "urn:zimbraMail");
@@ -1262,8 +1253,7 @@ function(callback, errorCallback, viewMode) {
 	var inv = soapDoc.set("inv", null, m);
 	var comp = soapDoc.set("comp", null, inv);
 
-    //Do not add exceptId if propose new time for series
-	if (this.ridZ && viewMode != ZmCalItem.MODE_EDIT_SERIES) {
+	if (this.ridZ) {
 		var exceptId = soapDoc.set("exceptId", null, comp);
 		exceptId.setAttribute("d", this.ridZ);
 	}
@@ -1427,7 +1417,7 @@ function(invites, proposedInvite) {
 
 	if (proposedInvite.components[0].ridZ) {
 		// search all the invites for an appointment
-		for (var i=0; i < invites.length; i++) {
+		for (var i in invites) {
 			var inv = invites[i];
 			if (inv.comp[0].ridZ  == proposalRidZ) {
 				this.invId = this.id + "-" + inv.id;

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -436,13 +436,13 @@ function(params) {
 	var formParams = { "fmt" : type };
 	if (isCSV) { formParams[type+"fmt"] = subType; }
 	if (isTGZ && params.views) { formParams["types"] = params.views; }
-        if (params.views == "appointment"){
-                if (params.start) { formParams["start"] = params.start; }
-                if (params.end) { formParams["end"] = params.end; }
-        } else {
-                if (isTGZ && params.start){ params.searchFilter = (params.searchFilter) ? params.searchFilter + " AND " : "" + "after:" + params.start; }
-                if (isTGZ && params.end){ params.searchFilter = ((params.searchFilter) ? params.searchFilter + " AND " : "") + "before:" + params.end; }
-        }
+	if (params.views == "appointment"){ 
+		if (params.start) { formParams["start"] = params.start; }
+		if (params.end) { formParams["end"] = params.end; }
+	} else {
+		if (isTGZ && params.start){ params.searchFilter = (params.searchFilter) ? params.searchFilter + " AND " : "" + "after:" + params.start; } 
+		if (isTGZ && params.end){ params.searchFilter = ((params.searchFilter) ? params.searchFilter + " AND " : "") + "before:" + params.end; } 
+	}
 	if (isTGZ && params.searchFilter) { formParams["query"] = params.searchFilter; }
 	if (params.skipMeta) { formParams["meta"] = "0"; }
 	if (params.filename) { formParams["filename"] = params.filename; }
@@ -582,18 +582,12 @@ function(form, onload, onerror) {
 	var id = Dwt.getNextId() + "_iframe";
 	var iframe;
 	if (AjxEnv.isIE) {
-        try {
-            // NOTE: This has to be done because IE doesn't recognize the name
-            //       attribute if set programmatically. And without that, the
-            //       form target will cause it to return in a new window which
-            //       breaks the callback.
-            var html = [ "<IFRAME id='",id,"' name='",id,"'>" ].join("");
-            iframe = document.createElement(html);
-        } catch (e) {
-            // Unless its IE9+ in non-quirks mode, then the above throws an exception
-            iframe = document.createElement("IFRAME");
-            iframe.name = iframe.id = id;
-        }
+		// NOTE: This has to be done because IE doesn't recognize the name
+		//       attribute if set programmatically. And without that, the
+		//       form target will cause it to return in a new window which
+		//       breaks the callback.
+		var html = [ "<IFRAME id='",id,"' name='",id,"'>" ].join("");
+		iframe = document.createElement(html);
 	}
 	else {
 		iframe = document.createElement("IFRAME");

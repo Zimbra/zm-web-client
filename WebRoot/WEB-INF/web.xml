@@ -5,7 +5,7 @@
     version="2.4">
 
   <context-param>
-    <param-name>org.eclipse.jetty.servlet.SessionPath</param-name>
+    <param-name>org.mortbay.jetty.servlet.SessionPath</param-name>
     <param-value>/</param-value>
   </context-param>
 
@@ -48,12 +48,12 @@
 
   <context-param>
     <param-name>zimbraDefaultSkin</param-name>
-    <param-value>serenity</param-value>
+    <param-value>carbon</param-value>
   </context-param>
 
   <context-param>
     <param-name>zimbraDefaultAdminSkin</param-name>
-    <param-value>%%zimbraDefaultAdminSkin%%</param-value>
+    <param-value>carbon</param-value>
   </context-param>
 
   <context-param>
@@ -77,37 +77,6 @@
     <url-pattern>/</url-pattern>
     <url-pattern>/m/*</url-pattern>
   </filter-mapping>
-  
-  <filter>
-    <filter-name>DoSFilter</filter-name>
-    <filter-class>com.zimbra.cs.servlet.DoSFilter</filter-class>
-    
-    <init-param>
-     <param-name>maxRequestsPerSec</param-name>
-     <param-value>30</param-value>
-    </init-param>
-    
-    <init-param>
-     <param-name>remotePort</param-name>
-     <param-value>true</param-value>
-    </init-param>
-    
-    <init-param>
-     <param-name>ipWhitelist</param-name>
-     <param-value>127.0.0.1</param-value>
-    </init-param>
-    
-    <init-param>
-     <param-name>maxRequestMs</param-name>
-     <param-value>9223372036854775807</param-value>
-    </init-param>
-    
-  </filter>
-    
-  <filter-mapping>
-    <filter-name>DoSFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
 
   <!-- <filter>
     <filter-name>ThrottlingFilter</filter-name>
@@ -121,7 +90,7 @@
  -->
   <filter>
     <filter-name>GzipFilter</filter-name>
-    <filter-class>org.eclipse.jetty.servlets.IncludableGzipFilter</filter-class>
+    <filter-class>org.mortbay.servlet.jetty.IncludableGzipFilter</filter-class>
     <init-param>
       <param-name>mimeTypes</param-name>
       <param-value>text/html,text/plain,text/css,application/soap+xml</param-value>
@@ -431,8 +400,8 @@
     <welcome-file>public/login.jsp</welcome-file>
     <welcome-file>public/admin.jsp</welcome-file>
   </welcome-file-list>
-  
-    <env-entry>
+
+  <env-entry>
     <description>
       The protocol mode can be one of three modes - mixed, http,
       or https.
@@ -476,13 +445,7 @@
     <env-entry-type>java.lang.String</env-entry-type>
     <env-entry-value>%%zimbraMailTrustedIP%%</env-entry-value>
   </env-entry>
-  
-  <env-entry>
-    <env-entry-name>httpLocalBind</env-entry-name>
-    <env-entry-type>java.lang.String</env-entry-type>
-    <env-entry-value>%%zimbraMailLocalBind%%</env-entry-value>
-  </env-entry>
-  
+
   <jsp-config>
     <jsp-property-group>
       <url-pattern>/h/ac</url-pattern>

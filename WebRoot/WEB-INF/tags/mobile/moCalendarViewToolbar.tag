@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -62,21 +62,21 @@
         <option value="null">${checkedInUI}</option><c:set var="count" value="${0}"/>
         <zm:forEachFolder var="fldr" skiproot="true">
             <c:if test="${count lt sessionScope.F_LIMIT and fldr.isCalendar || fldr.isAppointmentView}">
-                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${zm:cook(zm:truncateFixed(zm:getUncookedFolderName(pageContext,fldr.id),12,true))}</option><c:set var="count" value="${count+1}"/>
+                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),12,true))}</option><c:set var="count" value="${count+1}"/>
             </c:if>
         </zm:forEachFolder>
         </select>
         </c:if>
     </div></div></div>
 </c:if>
-<c:url var='eaction' value="?st=newappt&date=${dateDf}">
+<c:url var='eaction' value="?st=newappt&date=${dateDf}">                
 <c:if test="${empty invId}">
     <c:param name="_replaceDate" value="1"/>    
 </c:if>
 <c:if test="${not empty invId}">
 	<c:param name="useInstance" value="0"/>
 	<c:param name="invId" value="${invId}"/>
-    <c:param name="_ajxnoca" value="1"/>
+    <c:param name="_ajxnoca" value="1"/>    
 </c:if>
 <c:if test="${not empty param.bt}">
 	<c:param name="bt" value="${param.bt}"/>
@@ -104,7 +104,7 @@
         <option value="null">${checkedInUI}</option><c:set var="count" value="${0}"/>
         <zm:forEachFolder var="fldr" skiproot="true">
             <c:if test="${count lt sessionScope.F_LIMIT and fldr.isCalendar || fldr.isAppointmentView}">
-                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${zm:cook(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),12,true))}</option><c:set var="count" value="${count+1}"/>
+                <option ${param.sfi eq fldr.id || sessionScope.calendar.id eq fldr.id ? 'selected=selected' : ''} value="${fldr.id}">${fn:escapeXml(zm:truncateFixed(zm:getFolderName(pageContext,fldr.id),12,true))}</option><c:set var="count" value="${count+1}"/>
             </c:if>
         </zm:forEachFolder>
         </select>

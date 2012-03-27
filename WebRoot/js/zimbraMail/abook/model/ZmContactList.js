@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -50,24 +50,13 @@ ZmContactList = function(search, isGal, type) {
 	this.isLoaded = false;
 
 	this._app = appCtxt.getApp(ZmApp.CONTACTS);
-	if (!this._app) { 
-		this._emailToContact = this._imAddressToContact = this._phoneToContact = {};
-		return;
-	}
 	this._emailToContact = this._app._byEmail;
 	this._imAddressToContact = this._app._byIM;
 	this._phoneToContact = this._app._byPhone;
-
-	this._alwaysUpdateHashes = true; // Should we update the phone & IM fast-lookup hashes even when account features don't require it? (bug #60411)
 };
 
 ZmContactList.prototype = new ZmList;
 ZmContactList.prototype.constructor = ZmContactList;
-
-ZmContactList.prototype.isZmContactList = true;
-ZmContactList.prototype.toString = function() { return "ZmContactList"; };
-
-
 
 
 // Constants
@@ -81,6 +70,15 @@ ZmContactList.FIELD_SPLIT_CHAR		= '\u001D';	// char for splitting contact into f
 ZmContactList.IS_CONTACT_FIELD = {"id":true, "l":true, "d":true, "fileAsStr":true, "rev":true};
 
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmContactList.prototype.toString =
+function() {
+	return "ZmContactList";
+};
 
 /**
  * @private
@@ -140,81 +138,29 @@ function(callback, errorCallback, accountName) {
 ZmContactList.prototype._handleResponseLoad =
 function(callback, result) {
 	DBG.timePt("got contact list");
+
 	var text = result.getResponse();
-	var derefList = [];
 	if (text) {
 		var contacts = text.split(ZmContactList.CONTACT_SPLIT_CHAR);
-		var derefBatchCmd = new ZmBatchCommand(true, null, true);
 		for (var i = 0, len = contacts.length; i < len; i++) {
 			var fields = contacts[i].split(ZmContactList.FIELD_SPLIT_CHAR);
-			var contact = {}, attrs = {};
-			var groupMembers = [];
-			var foundDeref = false;
+			var contact = {}, attrs = {};;
 			for (var j = 0, len1 = fields.length; j < len1; j += 2) {
 				if (ZmContactList.IS_CONTACT_FIELD[fields[j]]) {
 					contact[fields[j]] = fields[j + 1];
 				} else {
-					var value = fields[j+1];
-					switch (fields[j]) {
-						case ZmContact.F_memberC:
-							groupMembers.push({type: ZmContact.GROUP_CONTACT_REF, value: value});
-							foundDeref = true; //load shared contacts
-							break;
-						case ZmContact.F_memberG:
-							groupMembers.push({type: ZmContact.GROUP_GAL_REF, value: value});
-							foundDeref = true;
-							break;
-						case ZmContact.F_memberI:
-							groupMembers.push({type: ZmContact.GROUP_INLINE_REF, value: value});
-							foundDeref = true;
-							break;
-						default:
-							attrs[fields[j]] = value;
-					}
+					attrs[fields[j]] = fields[j + 1];
 				}
-			}
-			attrs[ZmContact.F_groups] = groupMembers;
-			if (foundDeref) {
-				//batch group members for deref loading
-				var dummy = new ZmContact(contact["id"], this);
-				derefBatchCmd.add(new AjxCallback(dummy, dummy.load, [null, null, derefBatchCmd, true]));
 			}
 			contact._attrs = attrs;
 			this._addContact(contact);
 		}
-		derefBatchCmd.run();
 	}
-
-	this._addDlFolder();
-
 	this._finishLoading();
 
 	if (callback) {
 		callback.run();
 	}
-};
-
-ZmContactList.prototype._addDlFolder =
-function() {
-	if (this._dlFolder) {
-		return;
-	}
-	var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
-	var params = {
-		id: ZmOrganizer.ID_DLS,
-		name: ZmMsg.distributionLists, 
-		parent: root,
-		tree: root.tree,
-		type: ZmOrganizer.ADDRBOOK,
-		numTotal: null, //we don't know how many
-		noTooltip: true //so don't show tooltip
-
-	};
-	var addrBook = new ZmAddrBook(params);
-	root.children.add(addrBook);
-	addrBook._notify(ZmEvent.E_CREATE)
-	addrBook._isDL = true;
-	this._dlFolder = addrBook;
 };
 
 ZmContactList.prototype.add = 
@@ -294,7 +240,7 @@ function(contact, idx) {
 
 	if (this.isCanonical) {
 		var a = this.getArray();
-		idx = idx || this.getIndexById(contact.id);
+		idx = idx || this._getIndexById(contact.id);
 		a[idx] = realContact;
 		this._updateHashes(realContact, true);
 		this._idHash[contact.id] = realContact;
@@ -310,7 +256,7 @@ function(contact, idx) {
  * @return	{int}	the index
  * @private
  */
-ZmContactList.prototype.getIndexById =
+ZmContactList.prototype._getIndexById =
 function(id) {
 	var a = this.getArray();
 	for (var i = 0; i < a.length; i++) {
@@ -456,6 +402,7 @@ function(params) {
 	var moveBatchCmd = new ZmBatchCommand(true, null, true);
 	var loadBatchCmd = new ZmBatchCommand(true, null, true);
 	var softMove = [];
+	var hardMove = [];
 
 	// if the folder we're moving contacts to is a shared folder, then dont bother
 	// checking whether each item is shared or not
@@ -465,18 +412,45 @@ function(params) {
 
 			if (contact.isReadOnly()) { continue; }
 
-			softMove.push(contact);
+			if (contact.isShared() || params.folder.link) {
+				hardMove.push(contact);
+				if (!contact.isLoaded) {
+					loadBatchCmd.add(new AjxCallback(contact, contact.load, [null, null]));
+				}
+				moveBatchCmd.add(this._getCopyCmd(contact, params.folder));
+			} else {
+				softMove.push(contact);
+			}
 		}
 	} else {
 		softMove = params.items;
+	}
+
+	if (hardMove.length > 0) {
+		var params1 = {
+			items: hardMove,
+			action: "delete",
+			actionText: ZmMsg.actionMove,
+			actionArg: params.folder.getName(false, false, true)
+		};
+
+		if (loadBatchCmd.size()) {
+			var respCallback = new AjxCallback(this, this._handleResponseLoadMove, [moveBatchCmd, params1]);
+			loadBatchCmd.run(respCallback);
+		} else {
+			var deleteCmd = new AjxCallback(this, this._itemAction, [params1]);
+			moveBatchCmd.add(deleteCmd);
+
+			var respCallback = new AjxCallback(this, this._handleResponseMoveBatchCmd);
+			moveBatchCmd.run(respCallback);
+		}
 	}
 
 	// for "soft" moves, handle moving out of Trash differently
 	if (softMove.length > 0) {
 		var params1 = AjxUtil.hashCopy(params);
 		params1.attrs = params.attrs || {};
-		var toFolder = params.folder;
-		params1.attrs.l = toFolder.isRemote() ? toFolder.getRemoteId() : toFolder.id;
+		params1.attrs.l = params.folder.id;
 		params1.action = "move";
         params1.accountName = appCtxt.multiAccounts && appCtxt.accountList.mainAccount.name;
         if (params1.folder.id == ZmFolder.ID_TRASH) {
@@ -485,7 +459,7 @@ function(params) {
             params1.accountName = appCtxt.multiAccounts && params.items[0].getAccount().name;
         } else {
             params1.actionText = ZmMsg.actionMove;
-            params1.actionArg = toFolder.getName(false, false, true);
+            params1.actionArg = params.folder.getName(false, false, true);
         }
 		params1.callback = params.outOfTrash && new AjxCallback(this, this._handleResponseMoveItems, params);
 
@@ -556,77 +530,11 @@ function(contact, folder) {
 ZmContactList.prototype.deleteItems =
 function(params) {
 	if (this.isGal) {
-		if (ZmContactList.deleteGalItemsAllowed(params.items)) {
-			this._deleteDls(params.items);
-			return;
-		}
-		DBG.println(AjxDebug.DBG1, "Cannot delete GAL contacts that are not DLs");
+		DBG.println(AjxDebug.DBG1, "Cannot delete GAL contacts");
 		return;
 	}
 	ZmList.prototype.deleteItems.call(this, params);
 };
-
-ZmContactList.deleteGalItemsAllowed =
-function(items) {
-	var deleteDomainsAllowed = appCtxt.createDistListAllowedDomainsMap;
-	for (var i = 0; i < items.length; i++) {
-		var contact = items[i];
-		var email = contact.getEmail();
-		var domain = email.split("@")[1];
-		var isDL = contact && contact.isDistributionList();
-		if (!isDL || !deleteDomainsAllowed[domain]) {
-			return false;
-		}
-	}
-	return true;
-};
-
-ZmContactList.prototype._deleteDls =
-function(items, confirmDelete) {
-
-	if (!confirmDelete) {
-		var callback = this._deleteDls.bind(this, items, true);
-		this._popupDeleteWarningDialog(callback, false, items.length);
-		return;
-	}
-
-	var reqs = [];
-	for (var i = 0; i < items.length; i++) {
-		var contact = items[i];
-		var email = contact.getEmail();
-		reqs.push({
-				_jsns: "urn:zimbraAccount",
-				dl: {by: "name",
-					 _content: contact.getEmail()
-				},
-				action: {
-					op: "delete"
-				}
-			});
-	}
-	var jsonObj = {
-		BatchRequest: {
-			_jsns: "urn:zimbra",
-			DistributionListActionRequest: reqs
-		}
-	};
-	var respCallback = this._deleteDlsResponseHandler.bind(this, items);
-	appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
-
-};
-
-ZmContactList.prototype._deleteDlsResponseHandler =
-function(items) {
-	appCtxt.setStatusMsg(items.length == 1 ? ZmMsg.dlDeleted : ZmMsg.dlsDeleted);
-
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		item.clearDlInfo();
-		item._notify(ZmEvent.E_DELETE);
-	}
-};
-
-
 
 /**
  * Sets the is GAL flag.
@@ -763,7 +671,7 @@ function(contact, doAdd) {
 	}
 
 	// Update phone hash.
-	if (appCtxt.get(ZmSetting.VOICE_ENABLED) || this._alwaysUpdateHashes) {
+	if (appCtxt.get(ZmSetting.VOICE_ENABLED)) {
 		for (var index = 0; index < ZmContact.PHONE_FIELDS.length; index++) {
 			var field = ZmContact.PHONE_FIELDS[index];
 			for (var i = 1; true; i++) {
@@ -783,7 +691,7 @@ function(contact, doAdd) {
 	}
 
 	// Update IM hash.
-	if (appCtxt.get(ZmSetting.IM_ENABLED) || this._alwaysUpdateHashes) {
+	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
 		for (var index = 0; index < ZmContact.IM_FIELDS.length; index++) {
 			var field = ZmContact.IM_FIELDS[index];
 			for (var i = 1; true; i++) {
@@ -825,15 +733,6 @@ function(contact) {
 	}
 	return a.length;
 };
-
-/**
- * Gets the list ID hash
- * @return idHash {Ojbect} list ID hash
- */
-ZmContactList.prototype.getIdHash =
-function() {
-	return this._idHash;
-}
 
 /**
  * @private
