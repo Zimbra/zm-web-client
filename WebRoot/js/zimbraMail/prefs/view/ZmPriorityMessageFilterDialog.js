@@ -329,9 +329,18 @@ function(msg) {
 ZmPriorityMessageFilterDialog.prototype._createActivityStreamsFolder =
 function() {
 	var jsonObj = {CreateFolderRequest:{_jsns:"urn:zimbraMail"}};
-	var folder = jsonObj.CreateFolderRequest.folder = {l: ZmOrganizer.ID_ROOT, name: ZmMsg.activityStreamsRule, fie: 1};
+	var folder = jsonObj.CreateFolderRequest.folder = {l: ZmOrganizer.ID_ROOT, name: ZmMsg.activityStreamFolder, fie: 1};
 	return appCtxt.getAppController().sendRequest({
 		jsonObj: jsonObj,
-		asyncMode: true
+		asyncMode: true,
+		callback:  new AjxCallback(this, this._handleActivityStreamsFolderCreate)
 	});
+};
+
+ZmPriorityMessageFilterDialog.prototype._handleActivityStreamsFolderCreate = 
+function(result) {
+	var resp = result && result._data && result._data.CreateFolderResponse;
+	if (resp) {
+		appCtxt.set(ZmSetting.MAIL_ACTIVITYSTREAM_FOLDER, resp.folder[0].id);
+	}
 };

@@ -920,7 +920,7 @@ function(items, folder, attrs, isShiftKey) {
 				list.moveItems(params);
 			}
 		}
-		else if (folder.getName() == ZmMsg.activityStreamFolder && items.length == 1) { //TODO: does this need to be a system folder for comparison?
+		else if (folder.id == appCtxt.get(ZmSetting.MAIL_ACTIVITYSTREAM_FOLDER) && items.length == 1) { 
 			list.moveItems(params);
 			var activityStreamDialog = appCtxt.getActivityStreamFilterDialog();
 			activityStreamDialog.setFields(items[0]);
@@ -928,7 +928,7 @@ function(items, folder, attrs, isShiftKey) {
 		}
 		else if (items.length == 1 && folder.id == ZmFolder.ID_INBOX) {
 			var fromFolder = appCtxt.getById(items[0].folderId);
-			if (fromFolder && fromFolder.getName() == ZmMsg.activityStreamFolder) { //TODO: does this need to be a system folder for comparison?
+			if (fromFolder && fromFolder.id == appCtxt.get(ZmSetting.MAIL_ACTIVITYSTREAM_FOLDER)) { 
 				list.moveItems(params);
 				var activityStreamDialog = appCtxt.getActivityToInboxFilterDialog();
 				activityStreamDialog.setFields(items[0]);
