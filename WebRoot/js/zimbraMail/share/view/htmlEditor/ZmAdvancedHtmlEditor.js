@@ -549,6 +549,10 @@ function(id, content) {
         obj._handlePopup(ed);
 	};
 
+    function onInsertImage(ev) {
+        ZmSignatureEditor.prototype._insertImagesListener.call(obj, ev);
+    };
+
 	var urlParts = AjxStringUtil.parseURL(location.href);
 
 	//important: tinymce doesn't handle url parsing well when loaded from REST URL - override baseURL/baseURI to fix this
@@ -617,7 +621,7 @@ function(id, content) {
             ed.addButton('zmimage', {
                 title : ZmMsg.insertImage,
                 "class" : "mce_ImgInsertImage",
-                onclick : ZmSignatureEditor.prototype._insertImagesListener.bind(obj)
+                onclick : onInsertImage
             });
             //Adding toggle button for showing/hiding the extended toolbar
             ed.addButton('toggle', {
