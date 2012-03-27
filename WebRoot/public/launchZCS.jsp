@@ -133,7 +133,6 @@
 			locale = new Locale(language, country);
 		}
     }
-
 	String unitTest = getParameter(request, "unittest", "");
 	String preset = getParameter(request, "preset", "");
 
@@ -153,13 +152,21 @@
 	pageContext.setAttribute("unitTest", unitTest);
 	pageContext.setAttribute("preset", preset);
 	pageContext.setAttribute("editor", editor);
-    pageContext.setAttribute("isCoverage", isCoverage);
-    pageContext.setAttribute("isPerfMetric", isPerfMetric);
+        pageContext.setAttribute("isCoverage", isCoverage);
+        pageContext.setAttribute("isPerfMetric", isPerfMetric);
+        pageContext.setAttribute("isLocaleId", localeId != null);
 %>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <meta http-equiv="cache-control" content="no-cache"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <fmt:setLocale value='${locale}' scope='request' />
+<c:if test="${not isLocaleId}">
+<zm:getValidLocale locale='${locale}' var='validLocale'/>
+  <c:if test="${not validLocale}">
+    <% pageContext.setAttribute("locale", Locale.US); //unsupported locale being set default to US%>
+   </c:if>
+</c:if>
+	
 <fmt:setBundle basename="/messages/ZmMsg" scope="request" force="true" />
 <title><fmt:message key="zimbraTitle"/></title>
 <link href="<c:url value="/css/images,common,dwt,msgview,login,zm,spellcheck,wiki,skin.css">
