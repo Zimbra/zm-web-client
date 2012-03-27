@@ -652,8 +652,9 @@ function(params) {
 	params.action = params.action || ZmOperation.REPLY_ALL;
 	var msg = params.msg = params.msg || this._item.getFirstHotMsg();
 	params.composeMode = (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+	var htmlMode = (params.composeMode == DwtHtmlEditor.HTML);
 	if (this._replyInput.value) {
-		params.extraBodyText = AjxStringUtil.htmlEncode(this._replyInput.value);
+		params.extraBodyText = htmlMode ? AjxStringUtil.htmlEncode(this._replyInput.value) : this._replyInput.value;
 	}
 	params.hideView = params.sendNow;
 	var desiredPartType = (params.composeMode == DwtHtmlEditor.TEXT) ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML;
