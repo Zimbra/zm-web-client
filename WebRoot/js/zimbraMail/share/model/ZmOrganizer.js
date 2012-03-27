@@ -791,7 +791,7 @@ ZmOrganizer.prototype.getRestUrl =
 function() {
 	var restUrl = appCtxt.get(ZmSetting.REST_URL);
 	if (restUrl) {
-		var path = AjxStringUtil.urlEncode(this.getSearchPath()).replace("#","%23"); // User may type in a # in a folder name, but that's not ok for our urls
+		var path = AjxStringUtil.urlEncode(this.getSearchPath()).replace("#","%23").replace(";", "%3B"); // User may type in a # in a folder name, but that's not ok for our urls
 		// return REST URL as seen by the GetInfoResponse
 		return ([restUrl, "/", path].join(""));
 	}
