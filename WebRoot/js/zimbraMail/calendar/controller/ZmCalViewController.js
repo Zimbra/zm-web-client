@@ -1639,7 +1639,9 @@ function(appt, mode, params) {
           appt.isOrg=true;
           if(appt.isShared()) {
             appt.isSharedCopy = true;
-            appt.setFolderId(ZmOrganizer.ID_CALENDAR);
+			if (!appt.getFolderId()) { //not sure why the following line is done, but if the appt is of a certain folder, it should be kept that folder in the copy.
+            	appt.setFolderId(ZmOrganizer.ID_CALENDAR);
+			}
           }
           var dlg = appCtxt.getMsgDialog();
 		  var callback = new AjxCallback(this, this.newAppointment,[appt,mode,true]);
@@ -2886,7 +2888,7 @@ function(parent, num) {
     var isTrashMultiple = isTrash && (num && num>1);
 
     parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (isReplyable && !isTrashMultiple));
-    parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0) || isTrashMultiple);
+    parent.enable(ZmOperation.TAG_MENU, (!isSynced && num > 0) || isTrashMultiple);
     parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate && !isTrashMultiple);
     parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable && !isTrashMultiple);
     parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()) && !isTrashMultiple);
