@@ -274,13 +274,16 @@ function(parent, num) {
     var isAdmin = briefcase && briefcase.isAdmin(); 
 
     var item = items[0];
-    var isRevision = item && item.isRevision;
+    //bug 65351
+    // treat the latest revision selection as if it was a file selection.
+    // isOldRevision is true if the item is a revision but not the latest.
+    var isOldRevision = item && item.isRevision && !hasHighestRevisionSelected;
 	
 	parent.enable([ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT], (isZimbraAccount && isMailEnabled && isItemSelected && !isMultiFolder && !isFolderSelected));
-	parent.enable(ZmOperation.TAG_MENU, (!isShared && isItemSelected && !isFolderSelected && !isRevision));
+	parent.enable(ZmOperation.TAG_MENU, (!isShared && isItemSelected && !isFolderSelected && !isOldRevision));
 	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
 	parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
-	parent.enable([ZmOperation.MOVE, ZmOperation.MOVE_MENU], ( isItemSelected &&  !isReadOnly && !isShared && !isRevision));
+	parent.enable([ZmOperation.MOVE, ZmOperation.MOVE_MENU], ( isItemSelected &&  !isReadOnly && !isShared && !isOldRevision));
     parent.enable(ZmOperation.NEW_FILE, !(isTrash || isReadOnly));
     parent.enable(ZmOperation.NEW_BRIEFCASE_WIN, (isItemSelected && !isFolderSelected));
 
@@ -291,17 +294,17 @@ function(parent, num) {
 
 
     //Rename Operation
-    parent.enable(ZmOperation.RENAME_FILE, ( num ==1 && !isFolderSelected && !isReadOnly && !isRevision && (isLocked ? isLockOwner : true) ));
+    parent.enable(ZmOperation.RENAME_FILE, ( num ==1 && !isFolderSelected && !isReadOnly && !isOldRevision && (isLocked ? isLockOwner : true) ));
 
     //Download - Files
     parent.enable(ZmOperation.SAVE_FILE, num >0 && (!isFolderSelected || isBriefcaseItemSelected));
 
     // Edit
     parent.enable(ZmOperation.OPEN_FILE, (num == 1 && isWebDoc));
-    parent.enable(ZmOperation.EDIT_FILE, !isReadOnly && (  !isLocked || isLockOwner ) && isWebDoc && !isRevision && num == 1);
+    parent.enable(ZmOperation.EDIT_FILE, !isReadOnly && (  !isLocked || isLockOwner ) && isWebDoc && !isOldRevision && num == 1);
 
     //Delete Operation
-    parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected && !isMixedSelected && (isLocked ? isLockOwner : true) &&  (isRevision ? !hasHighestRevisionSelected : true )));
+    parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected && !isMixedSelected && (isLocked ? isLockOwner : true) &&  !isOldRevision));
 
     if(parent &&  parent instanceof ZmActionMenu){
 
@@ -315,7 +318,7 @@ function(parent, num) {
 	//Checkin
 	var op = parent.getOp(ZmOperation.CHECKIN);
 	if (op) {
-		var checkinEnabled = !isReadOnly && isLockOwner && !isWebDoc && !isRevision;
+		var checkinEnabled = !isReadOnly && isLockOwner && !isWebDoc && !isOldRevision;
 		op.setVisible(checkinEnabled);
 		parent.enable(ZmOperation.CHECKIN, checkinEnabled && num == 1);
 	}
@@ -324,7 +327,7 @@ function(parent, num) {
 	op = parent.getOp(ZmOperation.CHECKOUT);
 	if (op) {
 		var checkoutEnabled = !isReadOnly && !hasLocked && !isRevisionSelected;
-		op.setVisible(!isRevision && !isLocked);
+		op.setVisible(!isOldRevision && !isLocked);
 		parent.enable(ZmOperation.CHECKOUT, checkoutEnabled);
 	}
 
@@ -339,9 +342,9 @@ function(parent, num) {
 	//Versioning
 	op = parent.getOp(ZmOperation.RESTORE_VERSION);
 	if (op) {
-		var versionEnabled = (!isReadOnly && num == 1 && isRevision);
+		var versionEnabled = (!isReadOnly && num == 1 && isOldRevision);
 		var isHightestVersion = item && item.isRevision && ( item.parent.version == item.version );
-		op.setVisible(isRevision);
+		op.setVisible(isOldRevision);
 		parent.enable(ZmOperation.RESTORE_VERSION, versionEnabled && !isHightestVersion);
 	}
 
