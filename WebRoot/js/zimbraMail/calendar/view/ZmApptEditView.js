@@ -3080,6 +3080,7 @@ function() {
                 }
             }
 
+            if (!this._useAcAddrBubbles) { continue; }
             // Color the address bubble or reset to default
             color = isFree ? "" : conflictColor;
             addressElId = this._attInputField[type].getAddressBubble(email);
