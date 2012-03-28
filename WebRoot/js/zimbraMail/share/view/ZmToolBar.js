@@ -148,6 +148,16 @@ function(ids, enabled) {
 	}
 };
 
+ZmToolBar.prototype.setSelected =
+function(ids, enabled) {
+	ids = (ids instanceof Array) ? ids : [ids];
+	for (var i = 0; i < ids.length; i++) {
+		if (this._buttons[ids[i]]) {
+			this._buttons[ids[i]].setDisplayState(DwtControl.SELECTED);
+		}
+	}
+};
+
 /**
  * Enables or disables all buttons.
  * 

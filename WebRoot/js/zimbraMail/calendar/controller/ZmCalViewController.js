@@ -949,7 +949,12 @@ function(ev) {
 		this.apptCache.clearCache();
 	}
 	var id = ev.item.getData(ZmOperation.KEY_ID);
-	this.show(ZmCalViewController.OP_TO_VIEW[id]);
+    var viewType = ZmCalViewController.OP_TO_VIEW[id];
+    //Check if the view is current calendar view
+    if (this.getCurrentViewType() === viewType) {
+        return;
+    }
+	this.show(viewType);
 };
 
 // Switch to selected view.
@@ -2902,7 +2907,7 @@ function(parent, num) {
 	// disable button for current view
 	var op = ZmCalViewController.VIEW_TO_OP[currViewName];
 	if (op) {
-		parent.enable(op, false);
+		parent.setSelected(op);
 	};
 
     this._resetQuickCommandOperations(parent);
