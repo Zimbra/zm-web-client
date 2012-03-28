@@ -14,8 +14,9 @@
  */
 
 ZmCalDayView = function(parent, posStyle, controller, dropTgt, view, numDays, readonly, isInviteMessage, isRight) {
-	// Requires a unique id - used in the conversation view, so multiple simultaneous instances
-    var id = ZmId.getViewId(ZmId.VIEW_CAL_DAY, null, view);
+	// Usage in ZmInviteMsgView requires a unique id - used in the conversation view,
+	// so multiple simultaneous instances
+    var id = isInviteMessage ? ZmId.getViewId(ZmId.VIEW_CAL_DAY, null, view) : ZmId.VIEW_CAL_DAY;
 	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, id, 1, false, readonly, isInviteMessage, isRight);
 	this._compactMode = false;
 };
@@ -100,6 +101,18 @@ function(ev, apptEl) {
         return ZmCalBaseView.prototype._apptMouseDownAction.call(this, ev, apptEl, appt);
     }
 };
+
+ZmCalDayView.prototype._updateDays =
+function() {
+    // When used from the ZmInviteMsgView, the day view requires a unique id - but
+    // underlying views count on the id being the standard ZmId.VIEW_CAL_DAY.  Since
+    // the use from ZmInviteMsgView is read-only, _updateDays is the only superclass
+    // function that we have to fool by using the standard id.
+    var viewId = this.view;
+    this.view = ZmId.VIEW_CAL_DAY;
+    ZmCalColView.prototype._updateDays.call(this);
+    this.view = viewId;
+}
 
 ZmCalDayTabView = function(parent, posStyle, controller, dropTgt, view, numDays, readonly, isInviteMessage, isRight) {
 	//ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmId.VIEW_CAL_DAY_TAB, 1, false, readonly, isInviteMessage, isRight);
