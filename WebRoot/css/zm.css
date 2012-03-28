@@ -3947,9 +3947,11 @@ HTML>BODY .appt-selected .appt_allday_body
 	overflow-x:auto;
 }
 .ZmDataSourceTestTable {
-	margin:0.5em;
+	width:100%;
 }
-.ZmDataSourceTestTable TH {
+.ZmDataSourceTestTable TH,
+.ZmDataSourceTestTable TD {
+	padding:3px;
 	text-align:left;
 }
 .ZmTestItem, .ZmTestStatus {
