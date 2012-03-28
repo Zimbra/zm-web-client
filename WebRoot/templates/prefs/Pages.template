@@ -332,7 +332,7 @@ and the container element is replaced with that control.
 								<table>
 									<tr>
 										<td><div id='${id}_MAIL_NOTIFY_TOASTER' tabindex='108'></div></td>
-										<td><$=ZmDesktopAlert.getInstance().getLinkText() $></td>
+										<td class='Text'>&nbsp;<$=ZmDesktopAlert.getInstance().getLinkText() $></td>
 									</tr>
 								</table>
 							</td>
@@ -1535,7 +1535,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 							<td class='ZOptionsField'>
 								<table  ><tr>
 									<td><div id='${id}_CAL_REMINDER_NOTIFY_TOASTER' tabindex='69'></div></td>
-									<td><$=ZmDesktopAlert.getInstance().getLinkText() $></td>
+									<td class='Text'>&nbsp;<$=ZmDesktopAlert.getInstance().getLinkText() $></td>
 								</tr></table>
 							</td>
 						</tr>
