@@ -309,6 +309,12 @@ function() {
 	}
 };
 
+ZmMailMsgView.prototype.getContent =
+function() {
+	var container = this.getContentContainer();
+	return container ? container.innerHTML : "";
+};
+
 ZmMailMsgView.prototype.addInviteReplyListener =
 function(listener) {
 	this.addListener(ZmInviteMsgView.REPLY_INVITE_EVENT, listener);
@@ -416,7 +422,6 @@ function(msg, oldMsg) {
 	// notify zimlets that a new message has been opened
 	appCtxt.notifyZimlets("onMsgView", [msg, oldMsg, this]);
 };
-
 
 ZmMailMsgView.prototype._handleResponseSet =
 function(msg, oldMsg) {

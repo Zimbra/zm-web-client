@@ -660,6 +660,7 @@ this weekend, lite client bug are already closed\n\
 	// "wrote" delimiter in HTML, parent node also has original content
 	// HTML: U W Q
 	{
+		isHtml: true,
 		input: "\
 <html><head></head><body>\
 <div>Not enough teams signed up. The bball time slots have been getting a good turn out as well \
@@ -703,6 +704,43 @@ Fixed.\n\
 Fixed.\n\
 \n\
 -Conrad\n\
+"
+	},
+
+	// 27
+	// content that still has <script> tag
+	// HTML: U
+	{
+		isHtml: true,
+		input: "\
+| DO NOT REPLY TO THIS EMAIL\n\
+|\n\
+| https://bugzilla.zimbra.com/show_bug.cgi?id=71945\n\
+\n\
+--- Comment #5 from Jong Yoon Lee <jylee@zimbra.com>  2012-03-26 09:39:13 ---\n\
+<html>\n\
+<body>\n\
+<script>alert(document.cookie);</script>\n\
+</body>\n\
+</html>\n\
+\n\
+-- \n\
+Configure bugmail: http://bugzilla.zimbra.com/userprefs.cgi?tab=email\n\
+",
+		output: "\
+| DO NOT REPLY TO THIS EMAIL\n\
+|\n\
+| https://bugzilla.zimbra.com/show_bug.cgi?id=71945\n\
+\n\
+--- Comment #5 from Jong Yoon Lee <jylee@zimbra.com>  2012-03-26 09:39:13 ---\n\
+<html>\n\
+<body>\n\
+\n\
+</body>\n\
+</html>\n\
+\n\
+-- \n\
+Configure bugmail: http://bugzilla.zimbra.com/userprefs.cgi?tab=email\n\
 "
 	}
 ];
