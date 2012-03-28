@@ -770,7 +770,6 @@
 
 /* Alert appearance for informative message, nothing is wrong */
 .DwtAlertInfo {
-	max-width:770px; 
 	@NoticeText@
 	@NoticeContainer-info@
 }
