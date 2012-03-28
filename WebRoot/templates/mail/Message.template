@@ -714,15 +714,6 @@
 </template>
 
 <template id='mail.Message#Conv2MsgHeader-expanded'>
-	${readIcon}
-	<span class='info'>
-		<span><$= data.addressSummary $></span>
-		<span><$= data.showDetails $></span>
-	</span>
-	<span class='date' id='${msgDateId}'>${date}</span>
-</template>
-
-<template id='mail.Message#Conv2MsgHeader-full'>
 	<table>
 		<tr>
 			<td>${readIcon}</td>
@@ -743,7 +734,6 @@
 					<span id='OBJ_PREFIX_bwo_label' class='LabelColName'><$= ZmMsg.byWayOfLabel $></span>
 					<span id='OBJ_PREFIX_bwo' class='LabelColValue' colspan=10><$= data.bwo $></span>
 				<$ } $>
-				<span align='left'><$= data.showDetails $></span>
 				<span id='${msgDateId}' class='date'>${date}</span>
 			</td>
 		</tr>

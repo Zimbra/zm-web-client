@@ -1423,7 +1423,6 @@ ZmMailMsgCapsuleViewHeader.prototype.toString = function() { return "ZmMailMsgCa
 
 ZmMailMsgCapsuleViewHeader.COLLAPSED	= "collapsed";
 ZmMailMsgCapsuleViewHeader.EXPANDED		= "expanded";
-ZmMailMsgCapsuleViewHeader.FULL			= "full";
 
 /**
  * Renders a header in one of three ways:
@@ -1451,12 +1450,11 @@ function(state, force) {
 	var folder = appCtxt.getById(msg.folderId);
 	msg.showImages = msg.showImages || (folder && folder.isFeed());
 	this._msgDateId	= id + "_date";
-	this._detailsLinkId = id + "_details";
 	this._readIconId = id + "_read";
 	this._idToAddr = {};
 
 	var dateString = AjxDateUtil.computeDateStr(this._convView._now || new Date(), msg.sentDate || msg.date);
-	var detailsLink, subs, html;
+	var subs, html;
 	
 	if (state == ZmMailMsgCapsuleViewHeader.COLLAPSED) {
 		var fromId = id + "_0";
@@ -1472,18 +1470,6 @@ function(state, force) {
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-collapsed", subs);
 	}
 	else if (state == ZmMailMsgCapsuleViewHeader.EXPANDED) {
-		detailsLink = this._msgView._makeLink(ZmMsg.showDetails, this._detailsLinkId);
-		subs = {
-			readIcon:		AjxImg.getImageHtml(msg.getReadIcon(), "display:inline-block", "id='" + this._readIconId + "'"),
-			addressSummary:	this._getAddressSummary(),
-			showDetails:	detailsLink,
-			msgDateId:		this._msgDateId,
-			date:			dateString
-		};
-		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-expanded", subs);
-	}
-	else if (state == ZmMailMsgCapsuleViewHeader.FULL) {
-		detailsLink = this._msgView._makeLink(ZmMsg.hideDetails, this._detailsLinkId);
 		subs = {
 			readIcon:		AjxImg.getImageHtml(msg.getReadIcon(), null, "id='" + this._readIconId + "'"),
 			sentBy:			ai.sentBy,
@@ -1493,11 +1479,10 @@ function(state, force) {
 			bwo:			ai.bwo,
 			bwoAddr:		ai.bwoAddr,
 			participants:	ai.participants,
-			showDetails:	detailsLink,
 			msgDateId:		this._msgDateId,
 			date:			dateString
 		};
-		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-full", subs);
+		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-expanded", subs);
 	}
 
 	this.setContent(html);
@@ -1506,19 +1491,12 @@ function(state, force) {
 		this._dateSpan = document.getElementById(this._msgDateId);
 	}
 	
-	if (state != ZmMailMsgCapsuleViewHeader.COLLAPSED) {
-		var link = document.getElementById(this._detailsLinkId);
-		if (link) {
-			Dwt.setHandler(link, DwtEvent.ONCLICK, this._handleShowDetailsLink.bind(this, (state == ZmMailMsgCapsuleViewHeader.EXPANDED)));
-		}
-	}
-	
 	var readIcon = document.getElementById(this._readIconId);
 	if (readIcon) {
 		Dwt.setHandler(readIcon, DwtEvent.ONMOUSEDOWN, this._handleMarkRead.bind(this));
 	}
 	
-	if (state == ZmMailMsgCapsuleViewHeader.FULL) {
+	if (state == ZmMailMsgCapsuleViewHeader.EXPANDED) {
 		this._msgView._notifyZimletsNewMsg(msg);	// create bubbles
 	}
 };
@@ -1565,41 +1543,6 @@ function() {
 	return AjxStringUtil.htmlEncode(fragment);
 };
 
-ZmMailMsgCapsuleViewHeader.prototype._getAddressSummary =
-function() {
-
-	var id = this._htmlElId;
-
-	if (!this._addressSummary && this._msg.isLoaded()) {
-		var fromAddr = this._msg.getAddress(AjxEmailAddress.FROM);
-		var from = ZmConvView2._getAddressNames([fromAddr], null, [id + "_0"], this._idToAddr);
-		var list = this._msg.getAddresses(AjxEmailAddress.TO).getArray();
-		list = list.concat(this._msg.getAddresses(AjxEmailAddress.CC).getArray());
-		var ids = [];
-		if (list.length) {
-			// remove duplicate addresses
-			var list1 = [], used = {};
-			for (var i = 0; i < list.length; i++) {
-				var addr = list[i];
-				var email = addr && addr.address;
-				if (!used[email]) {
-					list1.push(addr);
-					used[email] = true;
-					ids.push([id, i + 1].join("_"));
-				}
-			}
-			var recips = ZmConvView2._getAddressNames(list1, ZmConvView2.MAX_RECIPS / 2, ids, this._idToAddr);
-			this._addressSummary = AjxMessageFormat.format(ZmMsg.addressSummary, [from, recips]);
-		}
-	}
-	return this._addressSummary || this._from;
-};
-
-ZmMailMsgCapsuleViewHeader.prototype._handleShowDetailsLink =
-function(show) {
-	this.set(show ? ZmMailMsgCapsuleViewHeader.FULL : ZmMailMsgCapsuleViewHeader.EXPANDED);
-};
-
 ZmMailMsgCapsuleViewHeader.prototype._handleMarkRead =
 function() {
 	this._controller._doMarkRead([this._msg], this._msg.isUnread);
@@ -1611,13 +1554,7 @@ function(ev) {
 	var msgView = this._msgView;
 	var convView = msgView._convView;
 	
-	if (ev.target) {
-		if ((ev.target.id == this._detailsLinkId) ||
-		    (ev.target.id == this._readIconId)    ||
-		    this._showMoreIds[ev.target.id]) {
-		    return;
-		}
-	}
+	if (ev.target && ((ev.target.id == this._readIconId) || this._showMoreIds[ev.target.id])) { return; }
 	
 	if (ev.button == DwtMouseEvent.LEFT) {
 		msgView._toggleExpansion();
