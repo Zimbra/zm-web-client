@@ -1551,7 +1551,9 @@ function(appt, mode, params) {
           appt.isOrg=true;
           if(appt.isShared()) {
             appt.isSharedCopy = true;
-            appt.setFolderId(ZmOrganizer.ID_CALENDAR);
+			if (!appt.getFolderId()) { //not sure why the following line is done, but if the appt is of a certain folder, it should be kept that folder in the copy.
+				appt.setFolderId(ZmOrganizer.ID_CALENDAR);
+			}
           }
           var dlg = appCtxt.getMsgDialog();
 		  var callback = new AjxCallback(this, this.newAppointment,[appt,mode,true]);
