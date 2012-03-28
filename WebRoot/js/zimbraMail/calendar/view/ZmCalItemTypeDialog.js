@@ -27,7 +27,7 @@
  */
 ZmCalItemTypeDialog = function(parent) {
 
-	DwtDialog.call(this, {parent:parent});
+	DwtDialog.call(this, {parent:parent, id: "CAL_ITEM_TYPE_DIALOG"});
 
 	var content = AjxTemplate.expand("calendar.Calendar#TypeDialog", {id:this._htmlElId});
 	this.setContent(content);
