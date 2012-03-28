@@ -360,9 +360,8 @@ function(mode, appt) {
     if((this._mode == ZmCalItem.MODE_PROPOSE_TIME) || ZmCalItem.FORWARD_MAPPING[this._mode]) {
         sendButton.setVisible(true);
         saveButton.setVisible(false);
-
-        this._requestResponses.setEnabled(false);
-        this.setRequestResponses(false);
+        // Enable the RequestResponse when Forwarding
+        this._requestResponses.setEnabled(this._mode != ZmCalItem.MODE_PROPOSE_TIME);
     }
 
 };
@@ -555,8 +554,8 @@ function(requestResponses) {
 
 ZmApptComposeController.prototype.getRequestResponses =
 function() {
-   if (this._requestResponses)
-   return this._requestResponses.getEnabled() ? this._requestResponses.getChecked() : true;
+    if (this._requestResponses)
+    return this._requestResponses.getEnabled() ? this._requestResponses.getChecked() : true;
 };
 
 ZmApptComposeController.prototype.getNotifyList =
