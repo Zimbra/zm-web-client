@@ -156,7 +156,8 @@ function(type) {
 			type == ZmMimeTable.MULTI_APPLE_DBL ||
 			type == ZmMimeTable.APP_MS_TNEF ||
 			type == ZmMimeTable.APP_MS_TNEF2 ||
-            type == ZmMimeTable.APP_SIGNATURE);
+			type == ZmMimeTable.APP_SIGNATURE ||
+			type == ZmMimeTable.XML_ZIMBRA_SHARE);
 };
 
 /**
