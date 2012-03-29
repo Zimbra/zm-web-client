@@ -49,7 +49,7 @@
         </c:choose>
     </c:when>
     <c:when test="${empty ids}">
-        <app:status style="Warning">No files selected</app:status>
+        <app:status style="Warning"><fmt:message key="actionNoItemSelected"/></app:status>
     </c:when>
     <c:otherwise>
         <c:choose>
