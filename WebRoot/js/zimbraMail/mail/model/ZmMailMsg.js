@@ -826,6 +826,8 @@ function(contentType, callback) {
 	var bodyParts = this.getBodyParts(contentType);
 	for (var i = 0; i < bodyParts.length; i++) {
 		var part = bodyParts[i];
+		// should be a ZmMimePart, but check just in case
+		part = part.isZmMimePart ? part : part[contentType];
 		if (!contentType || (part.contentType == contentType)) {
 			bodyPart = part;
 			break;

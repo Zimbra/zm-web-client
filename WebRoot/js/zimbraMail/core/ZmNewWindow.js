@@ -552,6 +552,7 @@ function(appName) {
 
 /**
  * @private
+ * TODO: get rid of this function
  */
 ZmNewWindow.prototype._deepCopyMsg =
 function(msg) {
@@ -606,6 +607,10 @@ function(msg) {
 
 	for (var i = 0; i < msg._bodyParts.length; i++) {
 		newMsg._bodyParts.push(msg._bodyParts[i]);
+	}
+	
+	for (var ct in msg._contentType) {
+		newMsg._contentType[ct] = true;
 	}
 
 	if (msg._topPart) {

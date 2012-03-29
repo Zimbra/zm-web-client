@@ -1759,7 +1759,7 @@ function(callback) {
 
 ZmMailMsgView.prototype._getBodyContent =
 function(bodyPart) {
-	return bodyPart.getContent();
+	return bodyPart ? bodyPart.getContent() : "";
 };
 
 ZmMailMsgView.prototype._renderMessageFooter = function(msg, container) {};
@@ -2566,7 +2566,6 @@ function(isRfc822, parentController, result) {
 	var msg = ZmMailMsg.createFromDom(msgNode, {list: ctlr.getList()}, true);
 	msg._loaded = true; // bug fix #8868 - force load for rfc822 msgs since they may not return any content
 	msg.readReceiptRequested = false; // bug #36247 - never allow read receipt for rfc/822 message
-	msg._part = resp.m[0].part;
 	ZmMailMsgView.detachMsgInNewWindow(msg, isRfc822, parentController);
 };
 

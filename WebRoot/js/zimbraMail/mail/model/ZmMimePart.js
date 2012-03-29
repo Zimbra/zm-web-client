@@ -279,11 +279,13 @@ function(node, contentType, index) {
 		this.parent.children.replace(index, mimePart);
 		return mimePart;
 	}
-	for (var i = 0; i < node.mp.length; i++) {
-		var mimePart = this.children.get(i);
-		var altPart = mimePart.addAlternativePart(node.mp[i], contentType, i);
-		if (altPart) {
-			return altPart;
+	if (node.mp && node.mp.length) {
+		for (var i = 0; i < node.mp.length; i++) {
+			var mimePart = this.children.get(i);
+			var altPart = mimePart.addAlternativePart(node.mp[i], contentType, i);
+			if (altPart) {
+				return altPart;
+			}
 		}
 	}
 };
