@@ -280,7 +280,10 @@ DIV.vSpace {
 	@AddVerticalSpace@
 }
 
-
+/* Vertical space for td*/
+TD.vSpace {
+    width:2px;
+}
 
 /*
 	Link to open an attachment
