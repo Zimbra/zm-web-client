@@ -87,7 +87,6 @@
 								</optgroup>
 							</select>
 						</td>
-                        <td class='vSpace'></td>
 						<app:button id="${keys ? 'OPMOVE' : ''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
 						<td><div class='vertSep'></div></td>
 					</c:if>
@@ -103,7 +102,6 @@
 							<app:tagOptions mailbox="${mailbox}" keys="${keys}"/>
 						</select>
 					</td>
-                    <td class='vSpace'></td>
 					<app:button id="${keys ? 'OPGO' : ''}" name="action" tooltip="actionMessageGoTT" text="actionGo" />
 
 					<c:if test="${mailbox.features.spam}">
