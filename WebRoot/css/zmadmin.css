@@ -399,6 +399,8 @@ input.admin_xform_name_input_disabled {
 
 .AdminTitle {
 	@FontSize-biggest@
+	line-height:2em;
+	margin-left:.5em;
 }
 
 .progressbar {
@@ -517,6 +519,7 @@ input.admin_xform_name_input_disabled {
 }
 
 .DwtListView-Rows TD {
+	padding-top:.2em;
 	vertical-align:top;
 }
 
@@ -770,8 +773,9 @@ DIV.ZaSearchBuilderOptionRemoveAll TABLE  {
 	text-decoration:underline;
 }
 .AboutScreen {}
-.AboutScreen H1 {	margin:22px 20px 32px 20px; }
-
+.AboutScreen H1 {	
+	margin:0 20px;
+}
 .AboutScreen .ImgLoginBanner, 
 .AboutScreen .ImgAppBanner {
 	cursor:pointer;

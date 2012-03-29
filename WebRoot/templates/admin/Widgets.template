@@ -24,7 +24,6 @@
 <template id='admin.Widgets#ZaCurrentAppBar' class='ZaCurrentAppBar'>
 	<table style='table-layout:fixed;width:100%; height:100%'>
 		<tr>
-			<td id='${id}_typeimg'							style='width:20px'></td>
 			<td id='${id}_title'	class='ZWidgetTitle'	style='width:100%'></td>
 			<td id='${id}_action'							style='width:0px'>
 			    <div>
