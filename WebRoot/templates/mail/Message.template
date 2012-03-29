@@ -467,7 +467,7 @@
 			<td width=1%>
 				<$ if (!data.isNew) { $>
 					<$ var isChecked = data.isForward || data.isForwardInline || data.isDraft  $>
-					<input type='checkbox' value='<$=attachment.part$>' name='<$= data.fwdFieldName $>' <$= isChecked ? "checked='checked'>" : ">" $>
+					<input type='checkbox' value='<$=attachment.part || attachment.attachmentId$>' name='<$= data.fwdFieldName $>' <$= isChecked ? "checked='checked'>" : ">" $>
 				<$ } $>
 			</td>
 			<td class='nobreak'>

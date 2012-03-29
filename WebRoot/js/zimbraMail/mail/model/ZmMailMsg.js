@@ -1799,6 +1799,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 				}
 
                 props.attachmentLinkId = Dwt.getNextId();
+                props.attachmentId = attach.cachekey;
 
                 props.link = "<a class='AttLink'";
                 if (url.indexOf('javascript:') != 0)
