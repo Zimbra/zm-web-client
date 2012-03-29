@@ -1256,9 +1256,8 @@ ZmCalItem.prototype._setNotes =
 function(message) {
 
 	this.notesTopPart = new ZmMimePart();
-	var htmlContent = message.getBodyContent(ZmMimeTable.TEXT_HTML);
-	var textContent = message.getBodyContent(ZmMimeTable.TEXT_PLAIN);
 
+	var htmlContent = message.getBodyContent(ZmMimeTable.TEXT_HTML);
 	if (htmlContent) {
 		htmlContent = htmlContent.replace(/<title\s*>.*\/title>/ig,"");
 		if (!this._includeEditReply) {
@@ -1271,7 +1270,7 @@ function(message) {
 		var params = {parent:appCtxt.getShell(), hidden:true, html:htmlContent};
 		var dwtIframe = new DwtIframe(params);
 		if (dwtIframe) {
-			textContent = this._getCleanHtml2Text(dwtIframe);
+			var textContent = this._getCleanHtml2Text(dwtIframe);
 			// bug: 23034 this hidden iframe under shell is adding more space
 			// which breaks calendar column view
 			var iframe = dwtIframe.getIframe();
@@ -1294,6 +1293,7 @@ function(message) {
 		this.notesTopPart.children.add(textPart);
 		this.notesTopPart.children.add(htmlPart);
 	} else {
+		var textContent = message.getBodyContent(ZmMimeTable.TEXT_PLAIN);
 		if (!this._includeEditReply) {
 			textContent = this._trimNotesSummary(textContent);
 		}

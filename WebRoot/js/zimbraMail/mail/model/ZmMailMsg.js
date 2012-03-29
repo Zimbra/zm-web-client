@@ -1066,7 +1066,11 @@ function(contentType) {
 	}
 
 	if (desc != null) {
-		return { ct:contentType, s: desc.length, content: desc };
+		var part = new ZmMimePart();
+		part.contentType = part.ct = contentType;
+		part.size = part.s = desc.length;
+		part.node = {content: desc};
+		return part;
 	}
 };
 
