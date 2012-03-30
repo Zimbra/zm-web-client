@@ -1531,7 +1531,7 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 			var sigContent = this.getSignatureContent(oldSignatureId);
 			var oldSignature = this.getSignatureById(oldSignatureId);
 			replaceSignature = (oldSignature && (oldSignature.getContentType() == ZmMimeTable.TEXT_HTML)) ?
-				AjxStringUtil.convertHtml2Text(sigContent, {"#text": ZmComposeView._convertTextNode}) : sigContent;
+				AjxStringUtil.convertHtml2Text(oldSignature.value, {"#text": ZmComposeView._convertTextNode}) : sigContent;
 			var sigIndex = content.indexOf(replaceSignature);
 			var sigLength = replaceSignature && replaceSignature.length || 0;
 
