@@ -2415,6 +2415,12 @@ function(ex) {
         }
     } else if (ex.code == ZmCsfeException.MAIL_NO_SUCH_CALITEM) {
         status.errorMessage = ex.getErrorMsg([ex.getData("itemId")]);
+    } else if (ex.code == ZmCsfeException.MAIL_QUOTA_EXCEEDED) {
+    		if(this.type == ZmItem.APPT){
+                status.errorMessage=ZmMsg.errorQuotaExceededAppt;
+            } else if(this.type == ZmItem.TASK){
+                status.errorMessage=ZmMsg.errorQuotaExceededTask;
+            }
     }
 
     return status;
