@@ -79,10 +79,14 @@
 <template id='share.Widgets#ZmSearchResultsToolBar'>
 	<table class='ZmSearchToolbarTable'>
 		<tr>
-			<td class='label'><div id='${id}_icon' class='ImgWarning_12' style='display:none; margin-right:5px;'></div><span id='${id}_label'></span></td>
-			<td id='${id}_inputFieldCell' width='70%'></td>
-			<td id='${id}_searchButton'></td>
-			<td id='${id}_saveButton'></td>
+			<td class='ZmSearchResultText'><div id='${id}_icon' class='ImgWarning_12' style='display:none; margin-right:5px;'></div><span id='${id}_label'></span></td>
+			<td>
+			    <table><tr>
+			        <td id='${id}_inputFieldCell' class='ZmSearchResultInputField'></td>
+			        <td id='${id}_searchButton'   class='ZmSearchResultButton'></td>
+			        <td id='${id}_saveButton'     class='ZmSearchResultButton'></td>
+			    </tr></table>
+			</td>
 		</tr>
 	</table>
 </template>
