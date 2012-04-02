@@ -1922,13 +1922,11 @@ ZmCalViewController.prototype._confirmDeleteApptDialog =
 function(){
 
     if (!ZmCalViewController._confirmDialog) {
-        // setting up order of display of buttons
-        var buttons = [ DwtDialog.NO_BUTTON, DwtDialog.YES_BUTTON, DwtDialog.CANCEL_BUTTON ];
-		ZmCalViewController._confirmDialog = new DwtConfirmDialog(this._shell, null, "CNF_DEL_SENDEDIT", buttons);
-        var yesButton = ZmCalViewController._confirmDialog.getButton(DwtDialog.YES_BUTTON);
+        var editMessageButton =new DwtDialog_ButtonDescriptor(DwtDialog.YES_BUTTON, ZmMsg.editMessage , DwtDialog.ALIGN_LEFT);
+        var buttons = [ DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON ];
+        var extraButtons = [editMessageButton];
+        ZmCalViewController._confirmDialog = new DwtConfirmDialog(this._shell, null, "CNF_DEL_SENDEDIT", buttons, extraButtons);
         var noButton = ZmCalViewController._confirmDialog.getButton(DwtDialog.NO_BUTTON);
-
-        yesButton.setText(ZmMsg.editMessage);     // Changing the text for Yes button
         noButton.setText(ZmMsg.sendCancellation); // Changing the text for No button
 	}
 	return ZmCalViewController._confirmDialog;
