@@ -382,6 +382,8 @@ function(node) {
     if (node.desc){  this.notes = AjxStringUtil.htmlEncode(node.desc); }
     this.subject = this.getNotes();
 
+    this._parseFlags(node.f);
+
 };
 
 /**
