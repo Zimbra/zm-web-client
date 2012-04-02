@@ -2906,7 +2906,8 @@ function(parent, num) {
 
 	// disable button for current view
 	var op = ZmCalViewController.VIEW_TO_OP[currViewName];
-	if (op) {
+	// setSelected on a Toolbar; Do nothing for an ActionMenu
+	if (op && parent.setSelected) {
 		parent.setSelected(op);
 	};
 
