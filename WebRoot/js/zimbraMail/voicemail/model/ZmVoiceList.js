@@ -38,6 +38,7 @@ function() {
 };
 
 /**
+ * Moves items from one voice folder to another (typically Trash)
  * @param params		[hash]			hash of params:
  *        items			[array]			a list of items to move
  *        folder		[ZmFolder]		destination folder
@@ -67,6 +68,36 @@ function(params) {
 	this._itemAction(params1);
 };
 
+/**
+ * Does a hard (permanent) delete
+ * @param params		[hash]			hash of params:
+ *        items			[array]			a list of items to delete
+ *        attrs			[hash]			additional attrs for SOAP command
+ */
+ZmVoiceList.prototype.deleteItems =
+    function(params) {
+
+        params = Dwt.getParams(arguments, ["items", "attrs"]);
+
+        var params1 = AjxUtil.hashCopy(params);
+        params1.items = AjxUtil.toArray(params.items);
+        params1.attrs = params.attrs || {};
+        params1.attrs.phone = this.folder.phone.name;
+        //params1.attrs.l = params.folder.id;
+        var plen = params1.items && params1.items.length || 0;
+        if ( plen && !params.confirmDelete) {
+            params.confirmDelete = true;
+            var callback = ZmVoiceList.prototype.deleteItems.bind(this, params);
+            this._popupDeleteWarningDialog(callback, 0, plen);
+            return;
+        }
+        params.confirmDelete=false;
+        params1.action = "delete";
+        params1.callback = new AjxCallback(this, this._handleResponseMoveItems, params);    // Post processing for soft/hard delete is the same
+
+        this._itemAction(params1);
+    };
+
 // The voice server isn't sending notifications. This callback updates
 // folders and such after a move.
 ZmVoiceList.prototype._handleResponseMoveItems =
@@ -87,7 +118,9 @@ function(params) {
 	var sourceFolder = params.items[0].getFolder();
 	if (numUnheard) {
 		sourceFolder.changeNumUnheardBy(-numUnheard);
-		params.folder.changeNumUnheardBy(numUnheard);
+        if (sourceFolder != params.folder){    // For hard delete, the source & destination folders are the same
+		    params.folder.changeNumUnheardBy(numUnheard);
+        }
 	}
 	
 	// Replenish the list view.
