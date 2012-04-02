@@ -475,6 +475,14 @@ A:visited { color: blue; }
 	@WordWrapPRE@
 }
 
+.MsgBody-plain-tab {
+    display:inline;
+    word-wrap:break-word !important;
+#IFDEF MSIE
+    @WordWrapPRE@
+#ENDIF
+}
+
 .MsgCompose {
 	@FontFamily-fixed@
 	@FontSize-big@
