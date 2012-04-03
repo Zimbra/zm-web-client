@@ -317,7 +317,8 @@ function(ev) {
     var isTrash = organizer.id == ZmOrganizer.ID_TRASH;
     //bug 67531: "Move" Option should be disabled for the default calendar
     var isCalendar = organizer.id == ZmOrganizer.ID_CALENDAR;
-    menu.enableAll(!isTrash && !isCalendar);
+    menu.enableAll(!isTrash);
+    menu.enable(ZmOperation.MOVE, !isCalendar);
     menu.enable(ZmOperation.EMPTY_FOLDER, isTrash);
     var menuItem = menu.getMenuItem(ZmOperation.EMPTY_FOLDER);
     if (menuItem) {
