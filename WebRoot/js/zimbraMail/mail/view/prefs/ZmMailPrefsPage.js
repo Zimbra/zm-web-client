@@ -205,7 +205,12 @@ function() {
 
 	if (cbox) {
 		this._handleEnableVacationMsg(cbox);
+        // HandleEnableVacationMsg will alter other (non-persisted) settings - update
+        // their 'orginal' values so the section will not be thought dirty upon exit
+        this._updateOriginalValue(ZmSetting.VACATION_DURATION_ENABLED);
+        this._updateOriginalValue(ZmSetting.VACATION_CALENDAR_ENABLED);
 	}
+	this._initialAllDayFlag   = this._allDayCheckbox ? this._allDayCheckbox.isSelected() : true;
 
 	// enable downloadSince appropriately based on presence of downloadSinceEnabled
 	var downloadSinceCbox = this.getFormObject(ZmSetting.POP_DOWNLOAD_SINCE_ENABLED);
@@ -246,6 +251,13 @@ function() {
 	}
 
 	this._setPopDownloadSinceControls();
+};
+
+ZmMailPrefsPage.prototype._updateOriginalValue =
+function(id) {
+    var pref = appCtxt.getSettings().getSetting(id);
+    var cbox = this.getFormObject(id);
+    pref.origValue = cbox.isSelected();
 };
 
 ZmMailPrefsPage.prototype._dateButtonListener =
