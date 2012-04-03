@@ -2495,7 +2495,12 @@ function(ev) {
     var appt = this._quickAddDialog.getAppt();
     var closeCallback = this._quickAddCallback.bind(this, true);
     var errorCallback = this._quickAddCallback.bind(this, false);
-    this._saveSimpleAppt(isValid, appt, ZmCalItemComposeController.SAVE_CLOSE, closeCallback, errorCallback);
+
+    var locations = appt.getAttendees(ZmCalBaseItem.LOCATION);
+    // Send if any locations attendees are specified.  This will send invites
+    var action = (locations.length == 0) ? ZmCalItemComposeController.SAVE_CLOSE :
+                                           ZmCalItemComposeController.SEND;
+    this._saveSimpleAppt(isValid, appt, action, closeCallback, errorCallback);
 }
 
 ZmCalViewController.prototype._saveSimpleAppt =

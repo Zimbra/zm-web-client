@@ -202,6 +202,7 @@ function(){
 ZmApptQuickAddDialog.prototype.popup =
 function(loc) {
 	ZmQuickAddDialog.prototype.popup.call(this, loc);
+    this._fbCache.clearCache();
 	if (!this._tabGroupComplete) {
 		// tab group filled in here rather than in the constructor b/c we need
 		// all the content fields to have been created
