@@ -179,7 +179,7 @@ function(){
 
 ZmAppChooser.prototype._setArrowVisibility =
 function(element, option){
-	if (!element) return;
+		if (!element) return;
     element.style.display = option|| "";
     var display = ((this._leftOverflow && this._leftOverflow.style.display == "none") && 
 					(this._rightOverflow && this._rightOverflow.style.display == "none")) ? "none" : "";
