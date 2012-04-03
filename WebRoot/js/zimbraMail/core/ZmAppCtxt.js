@@ -1607,6 +1607,12 @@ function(event, args, options) {
 	return this.getZimletMgr().notifyZimlets(event, args);
 };
 
+ZmAppCtxt.prototype.notifyZimlet =
+function(zimletName, event, args, options) {
+	if (options && options.noChildWindow && this.isChildWindow) { return false; }
+	return this.getZimletMgr().notifyZimlet(zimletName, event, args);
+};
+
 ZmAppCtxt.prototype.notifySkin =
 function(event, args, options) {
 	var context = this.isChildWindow ? parentAppCtxt : this;

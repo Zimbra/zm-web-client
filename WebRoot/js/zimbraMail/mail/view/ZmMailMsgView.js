@@ -1226,7 +1226,6 @@ function(addrs, options, type, om, htmlElId) {
 	var addressInfo = {};
 	var idx = 0;
 	var parts = [];
-	var showMoreLink = false;
 	for (var i = 0; i < addrs.length; i++) {
 		if (i > 0) {
 			// no need for semicolon if we're showing addr bubbles
@@ -1234,7 +1233,6 @@ function(addrs, options, type, om, htmlElId) {
 		}
 
 		if (i == ZmMailMsgView.MAX_ADDRESSES_IN_FIELD) {
-			showMoreLink = true;
 			var showMoreId = ZmMailMsgView._getShowMoreId(htmlElId, type);
 			addressInfo.showMoreLinkId = showMoreId + "_link";
 			var moreId = ZmMailMsgView._getMoreId(htmlElId, type);
@@ -1253,7 +1251,7 @@ function(addrs, options, type, om, htmlElId) {
 			parts[idx++] = AjxStringUtil.htmlEncode(email.name);
 		}
 	}
-	if (showMoreLink) {
+	if (addressInfo.showMoreLinkId) {
 		parts[idx++] = "</span>";
 	}
 	addressInfo.html =  parts.join("");
@@ -1417,6 +1415,7 @@ function(msg, container) {
 	}
 };
 
+// Returns a hash with what we need to show the message's address headers
 ZmMailMsgView.prototype._getAddrInfo =
 function(msg, notifyZimlets) {
 	
@@ -1435,7 +1434,7 @@ function(msg, notifyZimlets) {
         msg.sentByDomain = sentByAddr.substr(sentByAddr.indexOf("@") + 1);
         msg.showImages = this._isTrustedSender(msg);
     }
-	var sentByIcon = cl	&& (cl.getContactByEmail((sentBy && sentBy.address) ? sentBy.address : sentByAddr) ? "Contact" : "NewContact");
+	var sentByIcon = cl && (cl.getContactByEmail((sentBy && sentBy.address) ? sentBy.address : sentByAddr) ? "Contact" : "NewContact");
 	var obo = sender ? fromAddr : null;
 	var oboAddr = (obo && obo != ZmMsg.unknown) ? obo.getAddress() : null;
 
@@ -1475,21 +1474,13 @@ function(msg, notifyZimlets) {
 			appCtxt.notifyZimlets("onFindMsgObjects", [msg, this._objectManager, this]);
 		}
 
-		sentBy		= this._objectManager.findObjects(sentBy, true, ZmObjectManager.EMAIL, false, options);
-		if (obo) {
-		    obo		= this._objectManager.findObjects(fromAddr, true, ZmObjectManager.EMAIL, false, options);
-		}
-		if (bwo) {
-		    bwo		= this._objectManager.findObjects(bwo, true, ZmObjectManager.EMAIL, false, options);
-		}
+		sentBy = this._objectManager.findObjects(sentBy, true, ZmObjectManager.EMAIL, false, options);
+		obo = obo && this._objectManager.findObjects(fromAddr, true, ZmObjectManager.EMAIL, false, options);
+		bwo = bwo && this._objectManager.findObjects(bwo, true, ZmObjectManager.EMAIL, false, options);
 	} else {
 		sentBy = AjxStringUtil.htmlEncode(sentBy.toString());
-		if (obo) {
-		    obo = AjxStringUtil.htmlEncode(obo.toString());
-		}
-		if (bwo) {
-		    bwo = AjxStringUtil.htmlEncode(bwo.toString());
-		}
+		obo = obo && AjxStringUtil.htmlEncode(obo.toString());
+		bwo = bwo && AjxStringUtil.htmlEncode(bwo.toString());
 	}
 
 	var showMoreIds = {};

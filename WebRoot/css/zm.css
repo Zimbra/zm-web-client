@@ -816,14 +816,15 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* Styles for Conv2.0 */
 
 /* Conv2View is for reading pane on right. Conv2View-bottom is for reading pane at bottom.
-   The view has a conv header, a messages area, and a reply area. */
+   The view has a conv header, a messages area, and a reply area that opens up on demand under
+   the msg that invoked it. */
 
 .Conv2View, .Conv2View-bottom {
 	@Conv2Bg@
 	height:100%;
 }
 
-/* The conv header contains the subject and a summary of number of messages / unread */
+/* The conv header contains the subject and a summary of the number of messages */
 
 .Conv2Header {
 	@BottomSeparator@
@@ -875,26 +876,23 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	border-bottom-width:0;
 }
 
-.Conv2View .Conv2Reply {
+/* The quick reply view opens up under a msg when a reply link is clicked */
+
+.Conv2Reply {
 	@Conv2Reply@
-	bottom:0;
-	left:0;
 	padding:5px;
-	position:absolute;
-	right:0;
 }
 
-.Conv2View .Conv2Reply .ZToolbarTable>TBODY>TR>TD {
+.Conv2Reply .ReplyTextarea {
+	width:100%;
+	height:100px;
+}
+
+.Conv2Reply .ZToolbarTable>TBODY>TR>TD {
 	padding:4px 2px 1px;
 }
 
-.Conv2View-bottom .Conv2ReplyCell {
-	background-color:@lighten(AppC,55)@;
-	border-left:1px solid @darken(AppC,33)@;
-	width:300px;
-}
-
-/* Each msg capsule view has a header bar, a body, and a footer bar. */
+/* Each msg capsule view has a header, a body, and a footer. */
 
 .ZmMailMsgCapsuleView {
 	background-color:@MailMsgBkgdColor@;
@@ -970,6 +968,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@Text-link@
 }
 
+.ZmMailMsgCapsuleView .Link.followed {
+	color:gray;
+}
+
 .ZmMailMsgCapsuleView .attachments {
 	background-color:@darken(MailMsgBkgdColor,2)@;
 	border:1px solid @darken(MailMsgBkgdColor,12)@;
@@ -977,61 +979,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	padding:2px;
 }
 
-.MsgFooterTable {
-	table-layout:fixed;
-	#IFNDEF MSIE
-	width:100%;
-	#ENDIF
-}
-
-#IFNDEF MSIE
-.MsgFooterTable TABLE {
-	width:100%;
-}
-#ENDIF
-
-.MsgFooterTable>TBODY>TR>TD:first-child {
-	padding-left:5px;
-}
-
-.MsgFooterTable>TBODY>TR>TD:last-child {
-	padding-right:5px;
-}
-
-.ZmConvView2 .ReplyTextarea {
-	width:100%;
-#IFDEF MSIE
-	height:100%;
-#ENDIF
-}
-
-.ZmConvView2 .ReplyTextarea,
-.ZmConvView2 .ReplyTextarea.hint {
-	margin:0;
-	@transition@:height 0.25s ease;
-}
-
-#IFDEF SAFARI
-.ZmConvView2 TEXTAREA::-webkit-input-placeholder {
-	@InputField-hint@
-}
-#ENDIF
-
-#IFDEF GECKO
-.ZmConvView2 TEXTAREA:-moz-placeholder {
-	@InputField-hint@
-}
-#ENDIF
-
-#IFDEF MSIE
-.Conv2ReplyContainer {
-	height:20px;
-}
-#ENDIF
-
-/* for browsers that don't support placeholder text */
-.ZmConvView2 .ReplyTextarea.hint {
-	@InputField-hint@
+.ZmMailMsgCapsuleView .footer {
+	padding:0 5px 5px 5px;
 }
 
 /* the sash next to overview does not need borders or a background color */

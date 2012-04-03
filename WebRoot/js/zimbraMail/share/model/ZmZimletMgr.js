@@ -425,6 +425,15 @@ function(event, args) {
 	return handled;
 };
 
+ZmZimletMgr.prototype.notifyZimlet =
+function(zimletName, event, args) {
+	var zimlet = this.getZimletByName(zimletName);
+	var z = zimlet && zimlet.handlerObject;
+	if (z && (z instanceof ZmZimletBase) && z.getEnabled() && (typeof z[event] == "function")) {
+		return (z[event].apply(z, args));
+	}
+};
+
 /**
  * Processes a request (from core-zcs to zimlets) and returns value of the
  * first zimlet that serves the request.
