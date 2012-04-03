@@ -163,6 +163,9 @@ ZmImportExportBaseView.prototype._folderButton_onclick = function() {
 		this._TREES = {};
 		this._TREES[ZmImportExportController.TYPE_TGZ] = [];
         for (var org in ZmOrganizer.VIEWS) {
+            if (org == ZmId.APP_VOICE){
+                continue;  //Skip voice folders for import/export (Bug: 72269)
+            }
             var settingId = ZmApp.SETTING[ZmOrganizer.APP2ORGANIZER_R[org]];
             if (settingId == null || appCtxt.get(settingId)) {
                 this._TREES[ZmImportExportController.TYPE_TGZ].push(org);
