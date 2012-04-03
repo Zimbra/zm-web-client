@@ -5453,7 +5453,6 @@ DIV .SuggestBtn {
 }
 div.ZmSuggestLocationLink {
 	display:inline-block;
-	margin-top:-4px;
 	padding-right:8px;
 }
 .ZmLocationStatusValidating {
