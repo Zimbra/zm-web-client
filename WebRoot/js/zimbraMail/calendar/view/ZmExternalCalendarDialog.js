@@ -19,7 +19,7 @@ ZmExternalCalendarDialog = function(params) {
     var cancel = new DwtDialog_ButtonDescriptor(ZmExternalCalendarDialog.SHARE_CANCEL_BUTTON, ZmMsg.cancel, DwtDialog.ALIGN_RIGHT);
     var parent = params.parent || appCtxt.getShell();
     this._controller = params.controller;
-    ZmDialog.call(this, {parent:parent, standardButtons:[DwtDialog.NO_BUTTONS], extraButtons: [back, next, cancel]});
+    ZmDialog.call(this, {parent:parent, standardButtons:[DwtDialog.NO_BUTTONS], extraButtons: [back, next, cancel], id:'ADD_EXTERNAL_CAL_DIALOG'});
 
 	this.setButtonListener(ZmExternalCalendarDialog.BACK_BUTTON, new AjxListener(this, this._backButtonListener));
 	this.setButtonListener(ZmExternalCalendarDialog.NEXT_BUTTON, new AjxListener(this, this._nextButtonListener));
@@ -47,8 +47,8 @@ ZmExternalCalendarDialog.FIRST_VIEW_ID = "_shareCalendarView1";
 ZmExternalCalendarDialog.SECOND_VIEW_ID = "_shareCalendarView2";
 ZmExternalCalendarDialog.THIRD_VIEW_ID = "_shareCalendarView3";
 
-ZmExternalCalendarDialog.SYNC_TYPE_ICAL = "ical";
-ZmExternalCalendarDialog.SYNC_TYPE_CALDAV = "caldav";
+ZmExternalCalendarDialog.SYNC_TYPE_ICAL = "EXT_CAL_SYNCTYPE_DIALOG_ical";
+ZmExternalCalendarDialog.SYNC_TYPE_CALDAV = "EXT_CAL_DIALOG_SYNCTYPE_caldav";
 
 ZmExternalCalendarDialog.TYPE_GOOGLE = "Google";
 ZmExternalCalendarDialog.TYPE_YAHOO = "Yahoo";
@@ -324,10 +324,10 @@ function(viewId) {
             syncTypeSelect.addChangeListener(new AjxListener(this, this._changeCalType));
             this._syncTypeSelect = syncTypeSelect;
 
-            this._userNameInput = new DwtInputField({parent:this, parentElement: id + '_syncUserName', hint: ZmMsg.sharedCalUserNameHint});
-            this._passwordInput = new DwtInputField({parent:this, parentElement: id + '_syncPassword', type: DwtInputField.PASSWORD});
-            this._urlInput = new DwtInputField({parent:this, parentElement: id + '_syncUrl', hint: ZmMsg.sharedCalCalDAVServerHint});
-            this._icsUrlInput = new DwtInputField({parent:this, parentElement: id + '_syncIcsUrl', hint: ZmMsg.sharedCalIcsUrlHint});
+            this._userNameInput = new DwtInputField({parent:this, parentElement: id + '_syncUserName', hint: ZmMsg.sharedCalUserNameHint, inputId:'ADD_EXTERNAL_CAL_DIALOG_syncUserName'});
+            this._passwordInput = new DwtInputField({parent:this, parentElement: id + '_syncPassword', type: DwtInputField.PASSWORD, inputId:'ADD_EXTERNAL_CAL_DIALOG_syncPassword'});
+            this._urlInput = new DwtInputField({parent:this, parentElement: id + '_syncUrl', hint: ZmMsg.sharedCalCalDAVServerHint, inputId:'ADD_EXTERNAL_CAL_DIALOG_syncUrl'});
+            this._icsUrlInput = new DwtInputField({parent:this, parentElement: id + '_syncIcsUrl', hint: ZmMsg.sharedCalIcsUrlHint, inputId:'ADD_EXTERNAL_CAL_DIALOG_syncIcsUrl'});
             this._syncMsg = document.getElementById(id + '_syncMsg');
             this._viewsLoaded[ZmExternalCalendarDialog.SECOND_VIEW] = true;
 
