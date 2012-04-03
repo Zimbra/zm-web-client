@@ -556,18 +556,12 @@ input.admin_xform_name_input_disabled {
 
 .LeftGrouperBorder {
 	@FieldSet@
-	padding-left:10px;	/* ??? SIZE */
-	padding-right:10px;
-	padding-bottom:10px;
 	margin-left:20px;
 	margin-right:10px;
 }
 
 .RightGrouperBorder {
 	@FieldSet@
-	padding-left:10px;	/* ??? SIZE */
-	padding-right:10px;
-	padding-bottom:10px;
 	margin-left:10px;
 	margin-right:20px;
 }
@@ -575,9 +569,7 @@ input.admin_xform_name_input_disabled {
 .CenterGrouperBorder {
 	@FieldSet@
 	padding-top:7px;
-	padding-left:5px;	
-	padding-right:10px;
-	padding-bottom:10px;
+	padding-left:5px;
 	margin-left:3px;
 	margin-right:3px;
 }
@@ -587,7 +579,6 @@ input.admin_xform_name_input_disabled {
 	padding-top:7px;
 	padding-left:5px;	
 	padding-right:5px;
-	padding-bottom:10px;
 	margin-left:7px;
 	margin-right:7px;
 }
