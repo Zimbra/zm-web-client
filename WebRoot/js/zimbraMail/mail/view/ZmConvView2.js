@@ -1196,7 +1196,7 @@ function(event) {
 	else {
 		var idx = id.indexOf("tag");
 		var tagId = idx && id.substr(idx + 3);
-		var tag = tagId && this._tagList.getById(tagId);
+		var tag = tagId && this._tagList.root.getByNameOrRemote(tagId); //tagList is actually tagTree :(
 		return tag && tag.getName();
 	}
 };

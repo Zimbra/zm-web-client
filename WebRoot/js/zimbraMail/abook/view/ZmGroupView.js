@@ -1162,7 +1162,7 @@ function() {
 	// get sorted list of tags for this msg
 	var ta = [];
 	for (var i = 0; i < this._contact.tags.length; i++)
-		ta.push(this._tagList.getById(this._contact.tags[i]));
+		ta.push(this._tagList.root.getByNameOrRemote(this._contact.tags[i]));
 	ta.sort(ZmTag.sortCompare);
 
 	var html = [];

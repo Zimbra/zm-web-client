@@ -2886,7 +2886,7 @@ function(parent, num) {
     var isTrashMultiple = isTrash && (num && num>1);
 
     parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (isReplyable && !isTrashMultiple));
-    parent.enable(ZmOperation.TAG_MENU, (!isSynced && num > 0) || isTrashMultiple);
+    parent.enable(ZmOperation.TAG_MENU, (!isReadOnly && !isSynced && num > 0) || isTrashMultiple);
     parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate && !isTrashMultiple);
     parent.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable && !isTrashMultiple);
     parent.enable(ZmOperation.PROPOSE_NEW_TIME, !isTrash && (appt && !appt.isOrganizer()) && !isTrashMultiple);
@@ -2909,7 +2909,7 @@ function(parent, num) {
 	// setSelected on a Toolbar; Do nothing for an ActionMenu
 	if (op && parent.setSelected) {
 		parent.setSelected(op);
-	};
+	}
 
     this._resetQuickCommandOperations(parent);
 };

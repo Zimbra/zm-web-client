@@ -29,10 +29,12 @@
 ZmTag = function(params) {
 	params.type = ZmOrganizer.TAG;
 	ZmOrganizer.call(this, params);
+	this.notLocal = params.notLocal;
 };
 
 ZmTag.prototype = new ZmOrganizer;
 ZmTag.prototype.constructor = ZmTag;
+ZmTag.prototype.isZmTag = true;
 
 /**
  * Returns a string representation of the object.
@@ -80,7 +82,7 @@ function(parent, obj, tree, sorted, account) {
 	if (tag) { return tag; }
 
 	var params = {
-		id: obj.id,
+		id: obj.name, //yeah, let's ID it by the name
 		name: obj.name,
 		color: ZmTag.checkColor(obj.color),
 		rgb: obj.rgb,
@@ -93,6 +95,19 @@ function(parent, obj, tree, sorted, account) {
 	var index = sorted ? ZmOrganizer.getSortIndex(tag, ZmTag.sortCompare) : null;
 	parent.children.add(tag, index);
 
+	return tag;
+};
+
+ZmTag.createNotLocalTag =
+function(name) {
+	//cache so we don't create many objects in case many items are tagged by non local tags.
+	var cache = ZmTag.notLocalCache = ZmTag.notLocalCache || [];
+	var tag = cache[name];
+	if (tag) {
+		return tag;
+	}
+	tag = new ZmTag({notLocal: true, id: name, name: name});
+	cache[name] = tag;
 	return tag;
 };
 
@@ -195,6 +210,10 @@ function(params, ex) {
  */
 ZmTag.prototype.getIcon = 
 function() {
+	if (this.notLocal) {
+		return "TagShared";
+	}
+	
 	return (this.id == ZmOrganizer.ID_ROOT) ? null : "Tag";
 };
 
@@ -234,3 +253,34 @@ function() {
 	// tags cannot be shared
 	return false;
 };
+
+ZmTag.prototype.getByNameOrRemote =
+function(name) {
+	var tag = this.getById(name);
+	if (tag) {
+		return tag;
+	}
+	return ZmTag.createNotLocalTag(name);
+};
+
+/**
+ * Renames the tag.
+ *
+ * @param	{String}	name		the new name
+ * @param	{AjxCallback}	callback		the callback
+ * @param	{AjxCallback}	errorCallback		the error callback
+ * @param	{ZmBatchCommand}	batchCmd		the batch command
+ */
+ZmTag.prototype.rename =
+function(name, callback, errorCallback, batchCmd) {
+	if (name == this.name) { return; }
+	var params = {
+		action: "rename",
+		attrs: {newName: name}, //todo - depends on server implementation. bug 72312
+		callback: callback,
+		errorCallback: errorCallback,
+		batchCmd: batchCmd
+	};
+	this._organizerAction(params);
+};
+

@@ -913,11 +913,14 @@ function() {
 	var html = [];
 	var idx = 0;
 
+	var account = appCtxt.multiAccounts ? this._contact.getAccount() : null;
+	var tagList = appCtxt.getTagList(account);
+
 	// get sorted list of tags for this msg
-	var tagsList = this._contact.tags;
+	var tags = this._contact.tags;
 	var ta = [];
-	for (var i = 0; i < tagsList.length; i++) {
-		ta.push(appCtxt.getById(tagsList[i]));
+	for (var i = 0; i < tags.length; i++) {
+		ta.push(tagList.getByNameOrRemote(tags[i]));
 	}
 	ta.sort(ZmTag.sortCompare);
 
@@ -960,9 +963,8 @@ function(ev) {
 	var fields = ev.getDetail("fields");
 	var changed = fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]);
 	if ((ev.event == ZmEvent.E_MODIFY && changed) ||
-		ev.event == ZmEvent.E_DELETE ||
-		ev.event == ZmEvent.MODIFY)
-	{
+			ev.event == ZmEvent.E_DELETE ||
+			ev.event == ZmEvent.E_CREATE) { //could be tag that was not local (from share) becomes local now.
 		var tagCell = document.getElementById(this._tagCellId);
         if (tagCell) {
 		    tagCell.innerHTML = this._getTagHtml();

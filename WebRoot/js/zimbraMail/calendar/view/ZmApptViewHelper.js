@@ -617,13 +617,13 @@ function(appt, id, controller, first, last) {
 	var calendar = appt.getFolder();
     AjxDispatcher.require(["CalendarCore", "Calendar"]);
 
-    var tagIds  = appt.getVisibleTags();
-    var tagIcon = last ? appt.getTagImageFromIds(tagIds) : null;
+    var tagNames  = appt.getVisibleTags();
+    var tagIcon = last ? appt.getTagImageFromNames(tagNames) : null;
 
     var fba = isNew ? ZmCalBaseItem.PSTATUS_NEEDS_ACTION : appt.fba;
-    var headerColors = ZmApptViewHelper.getApptColor(isNew, calendar, tagIds, "header");
+    var headerColors = ZmApptViewHelper.getApptColor(isNew, calendar, tagNames, "header");
     var headerStyle  = ZmCalBaseView._toColorsCss(headerColors.appt);
-    var bodyColors   = ZmApptViewHelper.getApptColor(isNew, calendar, tagIds, "body");
+    var bodyColors   = ZmApptViewHelper.getApptColor(isNew, calendar, tagNames, "body");
     var bodyStyle    = ZmCalBaseView._toColorsCss(bodyColors.appt);
 
     var borderLeft  = first ? "" : "border-left:0;";
@@ -649,7 +649,7 @@ function(appt, id, controller, first, last) {
         borderRight:  borderRight,
         tagIcon:      tagIcon
 	};
-    ZmApptViewHelper.setupCalendarColor(last, headerColors, tagIds, subs, "headerStyle", null, 1, 1);
+    ZmApptViewHelper.setupCalendarColor(last, headerColors, tagNames, subs, "headerStyle", null, 1, 1);
     return AjxTemplate.expand("calendar.Calendar#calendar_appt_allday", subs);
 };
 
@@ -705,19 +705,19 @@ function(list, role) {
 };
 
 ZmApptViewHelper.getApptColor =
-function(deeper, calendar, tagIds, segment) {
+function(deeper, calendar, tagNames, segment) {
     var colors = ZmCalBaseView._getColors(calendar.rgb || ZmOrganizer.COLOR_VALUES[calendar.color]);
     var calColor = deeper ? colors.deeper[segment] : colors.standard[segment];
     var apptColor = calColor;
-    if (tagIds && (tagIds.length == 1)) {
-        var tag = appCtxt.getById(tagIds[0]);
+    if (tagNames && (tagNames.length == 1)) {
+        var tag = appCtxt.getById(tagNames[0]);
         if(tag){apptColor = { bgcolor: tag.getColor() };}
     }
     return {calendar:calColor, appt:apptColor};
 };
 
 ZmApptViewHelper.setupCalendarColor =
-function(last, colors, tagIds, templateData, colorParam, clearParam, peelTopOffset, peelRightOffset, div) {
+function(last, colors, tagNames, templateData, colorParam, clearParam, peelTopOffset, peelRightOffset, div) {
     var colorCss = Dwt.createLinearGradientCss("#FFFFFF", colors.appt.bgcolor, "v");
     if (colorCss) {
         templateData[colorParam] = colorCss;
@@ -725,7 +725,7 @@ function(last, colors, tagIds, templateData, colorParam, clearParam, peelTopOffs
             templateData[clearParam] = null;
         }
     }
-    if (last && tagIds && (tagIds.length == 1)) {
+    if (last && tagNames && (tagNames.length == 1)) {
         if (!colorCss) {
             // Can't use the gradient color.  IE masking doesn't work properly for tags on appts;
             // Since the color is already set in the background, just print the overlay image

@@ -2329,8 +2329,8 @@ function(calItemNode, instNode) {
 	this.seriesInvId	= this.recurring ? calItemNode.invId : null;
 	this.ridZ 			= instNode && instNode.ridZ;
 
-	if (calItemNode.t) {
-		this._parseTags(calItemNode.t);
+	if (calItemNode.tn) {
+		this._parseTagNames(calItemNode.tn);
 	}
 	if (calItemNode.f) {
 		this._parseFlags(calItemNode.f);

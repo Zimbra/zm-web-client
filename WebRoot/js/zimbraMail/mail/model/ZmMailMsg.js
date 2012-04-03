@@ -1979,7 +1979,7 @@ function(msgNode) {
 	if (msgNode.d) 		{ this.date = msgNode.d; }
 	if (msgNode.sd) 	{ this.sentDate = msgNode.sd; }
 	if (msgNode.l) 		{ this.folderId = msgNode.l; }
-	if (msgNode.t) 		{ this._parseTags(msgNode.t); }
+	if (msgNode.tn)		{ this._parseTagNames(msgNode.tn); }
 	if (msgNode.cm) 	{ this.inHitList = msgNode.cm; }
 	if (msgNode.su) 	{ this.subject = msgNode.su; }
 	if (msgNode.fr) 	{ this.fragment = msgNode.fr; }
@@ -2647,10 +2647,10 @@ ZmMailMsg.prototype.getSortedTags =
 function() {
 	var numTags = this.tags && this.tags.length;
 	if (numTags) {
-		var tagList = appCtxt.getTagTree()
+		var tagList = appCtxt.getTagList();
 		var ta = [];
 		for (var i = 0; i < numTags; i++) {
-			var tag = tagList.getById(this.tags[i]);
+			var tag = tagList.getByNameOrRemote(this.tags[i]);
 			//tag could be missing if this was called when deleting a whole tag (not just untagging one message). So this makes sure we don't have a null item.
 			if (!tag) {
 				continue;

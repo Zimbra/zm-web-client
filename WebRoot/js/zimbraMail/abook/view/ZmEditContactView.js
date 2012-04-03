@@ -672,9 +672,12 @@ function(tagIds) {
 	var tagCellId = this.getControl("TAG").getHTMLElId();
 
 	// get sorted list of tags for this msg
+	var account = appCtxt.multiAccounts ? this._contact.getAccount() : null;
+	var tagList = appCtxt.getTagList(account);
+
 	var tags = [];
 	for (var i = 0; i < tagIds.length; i++) {
-		tags.push(appCtxt.getById(tagIds[i]));
+		tags.push(tagList.getByNameOrRemote(tagIds[i]));
 	}
 	tags.sort(ZmTag.sortCompare);
 
@@ -902,7 +905,7 @@ ZmEditContactView.prototype._tagChangeListener = function(ev) {
 
 	var fields = ev.getDetail("fields");
 	var changed = fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]);
-	if ((ev.event == ZmEvent.E_MODIFY && changed) || ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.MODIFY) {
+	if ((ev.event == ZmEvent.E_MODIFY && changed) || ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_CREATE) {
 		this._setTags(this._contact);
 	}
 };

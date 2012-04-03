@@ -624,7 +624,7 @@ function(convNode) {
 	this.numMsgs = convNode.n;
 	this.date = convNode.d;
 	this._parseFlags(convNode.f);
-	this._parseTags(convNode.t);	
+	this._parseTagNames(convNode.tn);
 	if (convNode.e) {
 		for (var i = 0; i < convNode.e.length; i++) {
 			this._parseParticipantNode(convNode.e[i]);

@@ -369,8 +369,7 @@ function(node) {
                     { this.size = Number(node.s); }
 	if (node.ver)	{ this.version = Number(node.ver) || 0; }
 	if (node.ct)	{ this.contentType = node.ct.split(";")[0]; }
-	if (node.t)		{ this._parseTags(node.t); }
-
+	if (node.tn)	{ this._parseTagNames(node.tn);	}
     this.locked = false;
     if (node.loid)    {
         this.locked = true;
@@ -536,7 +535,7 @@ function(data) {
 	if (data.s) this.size = Number(data.s);
 	if (data.ver) this.version = Number(data.ver);
 	if (data.ct) this.contentType = data.ct.split(";")[0];
-    if (data.t) this._parseTags(data.t);
+    if (data.tn) { this._parseTagNames(data.tn); }
     if (data.loid)    {
         this.locked = true;
         this.lockId = data.loid;
@@ -646,7 +645,7 @@ function(data){
 	if (data.desc)  this.notes = AjxStringUtil.htmlEncode(data.desc);
 
     this.subject = this.getNotes();
-    this._parseTags(data.t);
+	if (data.tn) { this._parseTagNames(data.tn); }
 
 };
 

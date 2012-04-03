@@ -304,7 +304,7 @@ function(parent, num) {
 		// disble all buttons except SAVE and CANCEL
 		parent.enableAll(false);
 		parent.enable([ZmOperation.SAVE, ZmOperation.CANCEL], true);
-	} else if (this._contact.isShared()) {
+	} else if (this._contact.isReadOnly()) {
 		parent.enableAll(true);
 		parent.enable(ZmOperation.TAG_MENU, false);
 	} else {

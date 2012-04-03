@@ -412,24 +412,27 @@ function(ev) {
 	if (ev.type != ZmEvent.S_TAG) return;
 
 	var fields = ev.getDetail("fields");
-	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
-		var divs = this._getChildren();
-		var tag = ev.getDetail("organizers")[0];
-		for (var i = 0; i < divs.length; i++) {
-			var item = this.getItemFromElement(divs[i]);
-			if (item && item.tags && (item.tags.length == 1) && (item.tags[0] == tag.id))
-				this._setImage(item, ZmItem.F_TAG, item.getTagImageInfo());
+
+	var divs = this._getChildren();
+	var tag = ev.getDetail("organizers")[0];
+	for (var i = 0; i < divs.length; i++) {
+		var item = this.getItemFromElement(divs[i]);
+		if (!item || !item.tags || !item.hasTag(tag.name)) {
+			continue;
 		}
-	} else if(ev.event == ZmEvent.E_DELETE) {
-		var divs = this._getChildren();
-		var tag = ev.getDetail("organizers")[0];
-		for (var i=0; i < divs.length; i++) {
-			var item = this.getItemFromElement(divs[i]);
-			var nTagId = ZmOrganizer.normalizeId(tag.id);
-			if (item && item.tags && item.hasTag(nTagId)) {
-				 item.tagLocal(nTagId, false);
-				 this._setImage(item, ZmItem.F_TAG, item.getTagImageInfo());
-			}
+		var updateRequired = false;
+		if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
+			updateRequired = item.tags.length == 1;
+		}
+		else if (ev.event == ZmEvent.E_DELETE) {
+			updateRequired = true;
+		}
+		else if (ev.event == ZmEvent.E_CREATE) {
+			//this could affect item if it had a tag not on tag list (remotely created on shared item, either shared by this user or shared to this user)
+			updateRequired = true;
+		}
+		if (updateRequired) {
+			this._setImage(item, ZmItem.F_TAG, item.getTagImageInfo());
 		}
 	}
 };
@@ -1074,17 +1077,18 @@ function(item) {
 	var numTags = item.tags && item.tags.length;
 	if (!numTags) { return; }
 	var account = appCtxt.multiAccounts ? item.getAccount() : null;
-	var tagList = appCtxt.getTagTree(account);
+	var tagList = appCtxt.getTagList(account);
 	var tags = item.tags;
 	var html = [];
 	var idx = 0;
     for (var i = 0; i < numTags; i++) {
-		var tag = tagList.getById(tags[i]);
+		var tag = tagList.getByNameOrRemote(tags[i]);
         if (!tag) { continue; }        
+		var nameText = tag.notLocal ? AjxMessageFormat.format(ZmMsg.tagNotLocal, tag.name) : tag.name;
         html[idx++] = "<table><tr><td>";
 		html[idx++] = AjxImg.getImageHtml(tag.getIconWithColor());
 		html[idx++] = "</td><td valign='middle'>";
-		html[idx++] = AjxStringUtil.htmlEncode(tag.name);
+		html[idx++] = AjxStringUtil.htmlEncode(nameText);
 		html[idx++] = "</td></tr></table>";
 	}
 	return html.join("");

@@ -818,7 +818,7 @@ function(parent, num) {
 			var canEdit = (folder == null || !folder.isReadOnly());
 
 			parent.enable([ZmOperation.CONTACTGROUP_MENU], (num > 0));
-			parent.enable([ZmOperation.TAG_MENU], (!isShare && num > 0));
+			parent.enable([ZmOperation.TAG_MENU], canEdit && num > 0);
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU], canEdit && num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1 && !isInTrash);
 

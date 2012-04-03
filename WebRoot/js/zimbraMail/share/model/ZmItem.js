@@ -407,15 +407,17 @@ function() {
 */
 ZmItem.prototype.getTagImageInfo =
 function() {
-	var tagIds = this.getVisibleTags();
-	return this.getTagImageFromIds(tagIds);
+	return this.getTagImageFromNames(this.getVisibleTags());
 };
 
+/**
+ * @deprecated
+ * */
 ZmItem.prototype.getTagImageFromIds =
 function(tagIds) {
 	var tagImageInfo;
 
-	if (!tagIds) {
+	if (!tagIds || tagIds.length == 0) {
 		tagImageInfo = "Blank_16";
 	} else if (tagIds.length == 1) {
         tagImageInfo = this.getTagImage(tagIds[0]);
@@ -428,22 +430,42 @@ function(tagIds) {
 
 ZmItem.prototype.getVisibleTags =
 function() {
-    var searchAll = appCtxt.getSearchController().searchAllAccounts;
-    if (!this.tags.length || (!searchAll && this.isShared())) {
-        return null;
-    } else {
-        return this.tags;
-    }
-}
+	return this.tags;
+	//todo - do we need anything from this?
+//    var searchAll = appCtxt.getSearchController().searchAllAccounts;
+//    if (!searchAll && this.isShared()) {
+//        return [];
+//    } else {
+//        return this.tags;
+//    }
+};
+
+ZmItem.prototype.getTagImageFromNames =
+function(tags) {
+
+	if (!tags || tags.length == 0) {
+		return "Blank_16";
+	}
+	if (tags.length == 1) {
+        return this.getTagImage(tags[0]);
+	} 
+
+	return "TagStack";
+};
+
 
 ZmItem.prototype.getTagImage =
-function(tagId) {
-    var tagFullId = (!this.getAccount().isMain)
-        ? ([this.getAccount().id, tagId].join(":"))
-        : (ZmOrganizer.getSystemId(tagId));
-    var tag = appCtxt.getById(tagFullId);
+function(tagName) {
+	//todo - I don't think we need the qualified/normalized/whatever id anymore.
+//	var tagFullId = (!this.getAccount().isMain)
+//		? ([this.getAccount().id, tagName].join(":"))
+//		: (ZmOrganizer.getSystemId(tagName));
+	var account = appCtxt.multiAccounts ? this.getAccount() : null;
+	var tagList = appCtxt.getTagList(account);
+
+	var tag = tagList.getByNameOrRemote(tagName);
     return tag ? tag.getIconWithColor() : "Blank_16";
-}
+};
 
 /**
 * Gets the default action to use when dragging this item. This method
@@ -543,8 +565,8 @@ function(obj, batchMode) {
 ZmItem.prototype._notifyModify =
 function(obj, batchMode) {
 	// empty string is meaningful here, it means no tags
-	if (obj.t != null) {
-		this._parseTags(obj.t);
+	if (obj.tn != null) {
+		this._parseTagNames(obj.tn);
 		this._notify(ZmEvent.E_TAGS);
 	}
 	// empty string is meaningful here, it means no flags
@@ -620,24 +642,24 @@ function(flag, on) {
 /**
  * Adds or removes the given tag for this item.
  *
- * @param {Object}		tagId		a numeric tag ID
+ * @param {Object}		tag		tag name
  * @param {Boolean}		doTag		<code>true</code> if tag is being added; <code>false</code> if it is being removed
  * @return	{Boolean}	<code>true</code> to notify
  */
 ZmItem.prototype.tagLocal =
-function(tagId, doTag) {
+function(tag, doTag) {
 	var bNotify = false;
 	if (doTag) {
-		if (!this.tagHash[tagId]) {
+		if (!this.tagHash[tag]) {
 			bNotify = true;
-			this.tags.push(tagId);
-			this.tagHash[tagId] = true;
+			this.tags.push(tag);
+			this.tagHash[tag] = true;
 		}
 	} else {
 		for (var i = 0; i < this.tags.length; i++) {
-			if (this.tags[i] == tagId) {
+			if (this.tags[i] == tag) {
 				this.tags.splice(i, 1);
-				delete this.tagHash[tagId];
+				delete this.tagHash[tag];
 				bNotify = true;
 				break;
 			}
@@ -731,6 +753,27 @@ function(str) {
 			if (tagId >= ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG])
 				this.tagLocal(tagId, true);
 		}
+	}
+};
+
+/**
+ * Takes a comma-separated list of tag names and applies the tags to this item.
+ *
+ * @private
+ */
+ZmItem.prototype._parseTagNames =
+function(str) {
+	this.tags = [];
+	this.tagHash = {};
+	if (!str || !str.length) {
+		return;
+	}
+	var tags = str.split(/^\,/); //ignore escaped comma as this comes from the server if the tag name has a comma in it.
+	
+	for (var i = 0; i < tags.length; i++) {
+		var tagName = tags[i];
+		tagName = tagName.replace(/\\,/g, ","); //replace escaped comma with a comma
+		this.tagLocal(tagName, true);
 	}
 };
 

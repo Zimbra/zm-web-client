@@ -609,3 +609,7 @@ TD.vSpace {
 	text-align:center;
 	padding:8px 0px 5px 0px;
 }
+
+.ImgTagShared {
+	display: inline-block;
+}

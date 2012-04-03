@@ -95,7 +95,9 @@ function(items, tagList) {
 	this._items = items;
 	this._dirty = true;
 
-	this.parent.setEnabled(true);
+	//commented out since in ZmMailMsgCapsuleView.prototype._resetOperations we call resetOperations of the ctrlr before this set. And I don't think this should enable the button anyway - this should be done elsewhere like it is.
+	//another option would have been to reorder but I think this one is the safer one.
+	//this.parent.setEnabled(true);
 
 	// Turn on the hover delay.
 	if (this.parent instanceof DwtMenuItem) {
@@ -134,27 +136,28 @@ function(items, tagList) {
 	var tagCount = {};
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-		if (!item) continue;
-		if (item.tags && item.tags.length) {
-			for (var j = 0; j < item.tags.length; j++) {
-				var tagId = item.tags[j];
-				tagCount[tagId] = tagCount[tagId] ? tagCount[tagId] + 1 : 1;
-			}
+		if (!item || !item.tags || !item.tags.length) {
+			continue;
+		}
+		for (var j = 0; j < item.tags.length; j++) {
+			var tagName = item.tags[j];
+			tagCount[tagName] = tagCount[tagName] || 0;
+			tagCount[tagName] += 1;
 		}
 	}
 	var add = {};
-	var remove = {};
+	var remove = [];
 	// any tag held by fewer than all the items can be added
 	var a = tagList.children.getArray();
 	for (var i = 0; i < a.length; i++) {
-		var tagId = a[i].nId;
-		if (!tagCount[tagId] || (tagCount[tagId] < items.length)) {
-			add[tagId] = true;
+		var tagName = a[i].name;
+		if (!tagCount[tagName] || (tagCount[tagName] < items.length)) {
+			add[tagName] = true;
 		}
 	}
 	// any tag we saw can be removed
-	for (var tagId in tagCount) {
-		remove[tagId] = true;
+	for (var tagName in tagCount) {
+		remove.push(tagName);
 	}
 
 	return {add: add, remove: remove};
@@ -167,15 +170,11 @@ function(tagList, addRemove) {
 
 	var sz = tagList.size();
 	var a = tagList.children.getArray();
-	var removeList = [];
 	for (var i = 0; i < sz; i++) {
 		var tag = a[i];
-		var tagId = tag.nId;
-		if (addRemove.add[tagId]) {
+		var tagName = tag.name;
+		if (addRemove.add[tagName]) {
 			this._addNewTag(this, tag, true, null, this._addHash);
-		}
-		if (addRemove.remove[tagId]) {
-			removeList.push(tagId);
 		}
 	}
 
@@ -201,6 +200,7 @@ function(tagList, addRemove) {
 	miRemove.setText(AjxStringUtil.htmlEncode(ZmMsg.removeTag));
 	miRemove.setImage("DeleteTag");
 
+	var removeList = addRemove.remove;
 	if (removeList.length > 0) {
 		miRemove.setEnabled(true);
 		var removeMenu = null;
@@ -210,19 +210,10 @@ function(tagList, addRemove) {
 					removeMenu = new DwtMenu({parent:miRemove, className:this._className});
 					miRemove.setMenu(removeMenu);
 				}
-				var tag = tagList.getById(removeList[i]);
+				var tag = tagList.getByNameOrRemote(removeList[i]);
 				this._addNewTag(removeMenu, tag, false, null, this._removeHash);
 			}
-		} else if (removeList.length == 1) {
-			var tag = tagList.getById(removeList[0]);
-			miRemove.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_TAGS);
-			miRemove.setData(ZmTagMenu.KEY_TAG_ADDED, false);
-			miRemove.setData(Dwt.KEY_OBJECT, tag);
-			miRemove.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
-		}		
-
-		// if multiple removable tags, offer "Remove All"
-		if (removeList.length > 1) {
+			// if multiple removable tags, offer "Remove All"
 			new DwtMenuItem({parent:removeMenu, style:DwtMenuItem.SEPARATOR_STYLE});
 			var mi = new DwtMenuItem({parent:removeMenu});
 			mi.setText(ZmMsg.allTags);
@@ -232,6 +223,14 @@ function(tagList, addRemove) {
 			mi.setData(Dwt.KEY_OBJECT, removeList);
 			mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
 		}
+		else {
+			var tag = tagList.getByNameOrRemote(removeList[0]);
+			miRemove.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_TAGS);
+			miRemove.setData(ZmTagMenu.KEY_TAG_ADDED, false);
+			miRemove.setData(Dwt.KEY_OBJECT, tag);
+			miRemove.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
+		}		
+
 	}
 };
 
@@ -240,7 +239,8 @@ ZmTagMenu.prototype._addNewTag =
 function(menu, newTag, add, index, tagHash) {
 	var mi = new DwtMenuItem({parent:menu, index:index});
     var tagName = AjxStringUtil.clipByLength(newTag.getName(false),ZmTagMenu.tagNameLength);
-    mi.setText(tagName);
+	var nameText = newTag.notLocal ? AjxMessageFormat.format(ZmMsg.tagNotLocal, tagName) : tagName;
+    mi.setText(nameText);
     mi.setImage(newTag.getIconWithColor());
 	mi.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_TAGS);
 	mi.setData(ZmTagMenu.KEY_TAG_ADDED, add);

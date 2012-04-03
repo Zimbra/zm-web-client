@@ -1961,7 +1961,12 @@ function(params) {
 	var soapDoc = AjxSoapDoc.create(cmd + "Request", "urn:zimbraMail");
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("op", params.action);
-	actionNode.setAttribute("id", params.id || this.id);
+	if (this.isZmTag) { //this kinda sucks but not sure how best to refactor, so for now it will do
+		actionNode.setAttribute("name", params.name || this.name);
+	}
+	else {
+		actionNode.setAttribute("id", params.id || this.id);
+	}
 	for (var attr in params.attrs) {
 		if (AjxEnv.isIE) {
 			params.attrs[attr] += ""; //To string

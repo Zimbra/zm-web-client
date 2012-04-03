@@ -448,12 +448,12 @@ function(appt, tr) {
     var calendar = appCtxt.getById(appt.folderId);
     var fba = needsAction ? ZmCalBaseItem.PSTATUS_NEEDS_ACTION : appt.fba;
 
-    var tagIds  = appt.getVisibleTags();
-    var tagIcon = appt.getTagImageFromIds(tagIds);
+    var tagNames  = appt.getVisibleTags();
+    var tagIcon = appt.getTagImageFromNames(tagNames);
 
-    var headerColors = ZmApptViewHelper.getApptColor(needsAction, calendar, tagIds, "header");
+    var headerColors = ZmApptViewHelper.getApptColor(needsAction, calendar, tagNames, "header");
     var headerStyle  = ZmCalBaseView._toColorsCss(headerColors.appt);
-    var bodyColors   = ZmApptViewHelper.getApptColor(needsAction, calendar, tagIds, "body");
+    var bodyColors   = ZmApptViewHelper.getApptColor(needsAction, calendar, tagNames, "body");
     var bodyStyle    = ZmCalBaseView._toColorsCss(bodyColors.appt);
 
 
@@ -469,7 +469,7 @@ function(appt, tr) {
         showAsColor : ZmApptViewHelper._getShowAsColorFromId(fba),
         tagIcon: tagIcon
     };
-    ZmApptViewHelper.setupCalendarColor(true, bodyColors, tagIds, data, "headerStyle", null, 0, 0);
+    ZmApptViewHelper.setupCalendarColor(true, bodyColors, tagNames, data, "headerStyle", null, 0, 0);
 
     var cell = tr.insertCell(-1);
     cell.className = "calendar_month_day_item";

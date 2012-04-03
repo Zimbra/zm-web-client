@@ -2281,7 +2281,8 @@ ZmMailMsgView.prototype._tagChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_TAG) {	return; }
 
-	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MODIFY) {
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MODIFY || ev.event == ZmEvent.E_CREATE) {
+		//note - create is needed in case of a tag that was not in local tag list (due to sharing) that now is.
 		this._setTags(this._msg);
 	}
 };

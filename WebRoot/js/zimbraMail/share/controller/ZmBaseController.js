@@ -1131,7 +1131,7 @@ function(parent, num) {
 
 	// bug: 41758 - don't allow shared items to be tagged
 	var folder = (num > 0) && this._getSearchFolder();
-	if (folder && folder.isRemote()) {
+	if (folder && folder.isReadOnly()) {
 		parent.enable(ZmOperation.TAG_MENU, false);
 	}
     this._resetQuickCommandOperations(parent);

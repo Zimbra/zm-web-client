@@ -610,7 +610,7 @@ function(parent, num) {
 		parent.enable([ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.DELETE], canEdit && num > 0);
 		parent.enable(ZmOperation.EDIT, !isTrash && canEdit && num == 1);
 		parent.enable(ZmOperation.MARK_AS_COMPLETED, !isTrash && canEdit && num > 0);
-		parent.enable(ZmOperation.TAG_MENU, (!isShare && num > 0));
+		parent.enable(ZmOperation.TAG_MENU, (canEdit && num > 0));
 	} else {
       	var task = this._listView[this._currentViewId].getSelection()[0];
 		var canEdit = (num == 1 && !task.isReadOnly() && !ZmTask.isInTrash(task));

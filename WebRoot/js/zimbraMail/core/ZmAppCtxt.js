@@ -1157,6 +1157,18 @@ function(account) {
 };
 
 /**
+ * Gets the tag organizer tree's root.
+ *
+ * @param	{ZmZimbraAccount}	account		the account
+ * @return	{ZmTag}		the root of the tree, which is also a list.
+ */
+ZmAppCtxt.prototype.getTagList =
+function(account) {
+	return this.getTagTree(account).root;
+};
+
+
+/**
  * Gets the zimlet organizer tree.
  * 
  * @param	{ZmZimbraAccount}	account		the account

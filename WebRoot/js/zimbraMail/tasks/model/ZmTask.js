@@ -378,7 +378,9 @@ function(node, instNode) {
 	if (node.compNum != null)			this.compNum	= (this._getAttr(node, comp, "compNum") || "0");
 
 	if (node.f)	this._parseFlags(node.f);
-	if (node.t)	this._parseTags(node.t);
+	if (node.tn) {
+		this._parseTagNames(node.tn);
+	}
 
     this.type = ZmItem.TASK;
 };

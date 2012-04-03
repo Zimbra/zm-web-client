@@ -380,12 +380,13 @@ function(params) {
 
 	params = Dwt.getParams(arguments, ["items", "tagId", "doTag"]);
 
-    var tagId = params.tagId || (params.tag && params.tag.id);
+    var tagName = params.tagName || (params.tag && params.tag.name);
 
-	// for multi-account mbox, normalize tagId
-	if (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain) {
-		tagId = ZmOrganizer.normalizeId(tagId);
-	}
+	//todo - i hope this is no longer needed. I think the item we apply the tag to should determine the tag id on the server side.
+//	// for multi-account mbox, normalize tagId
+//	if (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain) {
+//		tagId = ZmOrganizer.normalizeId(tagId);
+//	}
 
 	// only tag items that don't have the tag, and untag ones that do
 	// always tag a conv, because we don't know if all items in the conv have the tag yet
@@ -394,7 +395,7 @@ function(params) {
 	if (items[0] && items[0] instanceof ZmItem) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
-			if ((doTag && (!item.hasTag(tagId) || item.type == ZmItem.CONV)) ||	(!doTag && item.hasTag(tagId))) {
+			if ((doTag && (!item.hasTag(tagName) || item.type == ZmItem.CONV)) ||	(!doTag && item.hasTag(tagName))) {
 				items1.push(item);
 			}
 		}
@@ -402,7 +403,7 @@ function(params) {
 		items1 = items;
 	}
 	params.items = items1;
-	params.attrs = {tag:tagId};
+	params.attrs = {tn: tagName};
 	params.action = doTag ? "tag" : "!tag";
     params.actionText = doTag ? ZmMsg.actionTag : ZmMsg.actionUntag;
 	if (params.tag && params.tag.name) {

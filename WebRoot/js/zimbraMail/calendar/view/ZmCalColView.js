@@ -658,10 +658,10 @@ function(appt) {
 		apptName = appt.getDurationText(true, true) + " - " + apptName;
 	}
 
-    var tagIds  = appt.getVisibleTags();
-    var tagIcon = appt.getTagImageFromIds(tagIds);
+    var tagNames  = appt.getVisibleTags();
+    var tagIcon = appt.getTagImageFromNames(tagNames);
 
-    var colors = ZmApptViewHelper.getApptColor(isNew, calendar, tagIds, "body");
+    var colors = ZmApptViewHelper.getApptColor(isNew, calendar, tagNames, "body");
 	var bodyStyle = ZmCalBaseView._toColorsCss(colors.appt);
     var fba = isNew ? ZmCalBaseItem.PSTATUS_NEEDS_ACTION : appt.fba;
 	var subs = {
@@ -709,7 +709,7 @@ function(appt) {
 	}
     // Currently header/bodyStyles are only used for coloring.  Replace with a gradient
     // if supported by the browser
-    ZmApptViewHelper.setupCalendarColor(true, colors, tagIds, subs, colorParam, clearParam, 1, 1);
+    ZmApptViewHelper.setupCalendarColor(true, colors, tagNames, subs, colorParam, clearParam, 1, 1);
 
 	div.innerHTML = AjxTemplate.expand("calendar.Calendar#"+template, subs);
     // Set opacity on the table element that is colored with the gradient.  Needed for IE

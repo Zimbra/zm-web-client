@@ -2287,10 +2287,11 @@ function(node) {
 	var ac = window.parentAppCtxt || window.appCtxt;
 	this.addrbook = ac.getById(this.folderId);
 
-	// dont process tags/flags for shared contacts until we get server support
+	this._parseTagNames(node.tn);
+
+	// dont process flags for shared contacts until we get server support
 	if (!this.isShared()) {
 		this._parseFlags(node.f);
-		this._parseTags(node.t);
 	} else {
 		// shared contacts are never fully loaded since we never cache them
 		this.isLoaded = false;
