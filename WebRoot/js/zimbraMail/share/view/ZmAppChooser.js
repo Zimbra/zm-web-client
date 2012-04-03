@@ -63,8 +63,12 @@ ZmAppChooser.prototype._initOverFlowTabs =
 function(){
     this._leftOverflow = document.getElementById("moreTabsLeftContainer");
     this._rightOverflow = document.getElementById("moreTabsRightContainer");
-    this._leftOverflow.onclick = this._showLeftTab.bind(this);
-    this._rightOverflow.onclick = this._showRightTab.bind(this);
+    if (this._leftOverflow) {
+		this._leftOverflow.onclick = this._showLeftTab.bind(this);
+	}
+	if (this._rightOverFlow) {
+    	this._rightOverflow.onclick = this._showRightTab.bind(this);
+	}
     this._leftBtnIndex = -1;
     this._deletedButtons = [];
 };
@@ -175,11 +179,16 @@ function(){
 
 ZmAppChooser.prototype._setArrowVisibility =
 function(element, option){
+	if (!element) return;
     element.style.display = option|| "";
-    var display = (this._leftOverflow.style.display == "none" && this._rightOverflow.style.display == "none") ? "none" : "";
-    document.getElementById("moreTabsMenu").style.display = display;
-    if (display != "none" && !this._moreTabsBtn ){
-        var containerEl = document.getElementById("moreTabsMenu");
+    var display = ((this._leftOverflow && this._leftOverflow.style.display == "none") && 
+					(this._rightOverflow && this._rightOverflow.style.display == "none")) ? "none" : "";
+	var moreTabsMenu = document.getElementById("moreTabsMenu");
+	if (moreTabsMenu) {
+    	moreTabsMenu.style.display = display;
+	}
+    if (display != "none" && !this._moreTabsBtn && moreTabsMenu ){
+        var containerEl = moreTabsMenu;
         var button = new DwtToolBarButton({parent:DwtShell.getShell(window), id: "moreTabsMenuBtn", style:"background:none no-repeat scroll 0 0 transparent; border: none"});
         button.setToolTipContent(ZmMsg.more, true);
         button.setText("");
