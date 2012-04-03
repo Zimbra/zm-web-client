@@ -132,14 +132,15 @@ ZmColorMenu.prototype._populateMenu = function() {
 		var displayColor = color || ZmOrganizer.COLOR_VALUES[ZmOrganizer.ORG_DEFAULT_COLOR]; //default to gray
         var image = this._image ? [this._image, displayColor].join(",color=") : null;
         var text = ZmOrganizer.COLOR_TEXT[id];
-        var menuItem = new DwtMenuItem({parent:this});
+        var menuItemId = "COLOR_" + id;
+        var menuItem = new DwtMenuItem({parent:this, id:menuItemId});
         menuItem.setImage(image);
         menuItem.setText(text);
         menuItem.setData(ZmOperation.MENUITEM_ID, id);
         menuItem.setData(ZmColorMenu.__KEY_COLOR, color);
     }
     var callback = new AjxCallback(this, this.showMoreColors); 
-    var showMoreItem = new ZmColorMenuItem({parent:this,callback:callback});
+    var showMoreItem = new ZmColorMenuItem({parent:this,callback:callback, id:"SHOW_MORE_ITEMS"});
     showMoreItem.setText(ZmMsg.colorsShowMore);
 };
 
