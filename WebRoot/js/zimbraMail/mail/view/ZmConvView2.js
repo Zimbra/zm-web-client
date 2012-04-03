@@ -1067,11 +1067,12 @@ function(bodyPart) {
 	if (!bodyPart || !bodyPart.getContent()) { return ""; }
 	
 	var isHtml = (bodyPart.ct == ZmMimeTable.TEXT_HTML);
-	var origContent = this._origContent[bodyPart.ct];
+	var cacheKey = [bodyPart.part, bodyPart.contentType].join("|");
+	var origContent = this._origContent[cacheKey];
 	if (!origContent && !this._forceOriginal && !this._isMatchingMsg) {
 		origContent = AjxStringUtil.getOriginalContent(bodyPart.getContent(), isHtml);
 		if (origContent.length != bodyPart.getContent().length) {
-			this._origContent[bodyPart.ct] = origContent;
+			this._origContent[cacheKey] = origContent;
 			this._hasOrigContent = true;
 		}
 	}

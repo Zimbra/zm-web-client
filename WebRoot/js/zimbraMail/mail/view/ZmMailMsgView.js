@@ -1608,6 +1608,9 @@ function(msg, container, callback, index) {
 					: ["<img zmforced='1' class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
 				html.push(imgHtml);
 			} else {
+				if (i > 0) {
+					html.push("<br><br>");	// add paragraph break before textual content
+				}
 				if (bp.contentType == ZmMimeTable.TEXT_CAL) {
 				    content = ZmMailMsg.getTextFromCalendarPart(bp);
 				} else if (bp.contentType != ZmMimeTable.TEXT_HTML) {
