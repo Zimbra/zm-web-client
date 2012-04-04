@@ -124,7 +124,7 @@ function(parent, type, id) {
 	else {
 		parent.enableAll(true);        
 		if (addrBook) {
-			if (addrBook.isSystem()) {
+			if (addrBook.isSystem() || appCtxt.isExternalAccount()) {
 				parent.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.RENAME_FOLDER], false);
 			} else if (addrBook.link) {
 				parent.enable([ZmOperation.SHARE_ADDRBOOK], !addrBook.link || addrBook.isAdmin());

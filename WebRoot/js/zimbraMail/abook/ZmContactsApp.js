@@ -480,7 +480,8 @@ function() {
 		tooltip:	ZmMsg.createNewContact,
 		icon:		"NewContact",
 		iconDis:	"NewContactDis",
-		defaultId:	ZmOperation.NEW_CONTACT
+		defaultId:	ZmOperation.NEW_CONTACT,
+        disabled:   this.containsWritableFolder()
 	};
 };
 
@@ -493,7 +494,22 @@ function() {
 ZmContactsApp.prototype.launch =
 function(params, callback) {
 	this._setLaunchTime(this.toString(), new Date());
-	this._contactsSearch("in:contacts", callback);
+    var loadCallback = new AjxCallback(this, this._handleLoadLaunch, callback);
+	AjxDispatcher.require(["ContactsCore", "Contacts"], true, loadCallback, null, true);
+
+};
+
+/**
+ * @private
+ */
+ZmContactsApp.prototype._handleLoadLaunch =
+function(callback) {
+    var query = "in:contacts";
+    if(appCtxt.isExternalAccount()) {
+        query = "inid:" + this.getDefaultFolderId();
+
+    }
+	this._contactsSearch(query, callback);
 };
 
 /**

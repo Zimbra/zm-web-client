@@ -127,11 +127,22 @@ function(callback, errorCallback, accountName) {
 	this.isCanonical = true;
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
 	DBG.timePt("requesting contact list", true);
-
+    if(appCtxt.isExternalAccount()) {
+        //Do not make a call in case of external user
+        //The rest url constructed wont exist in case of external user
+        if (callback) {
+		    callback.run();
+	    }
+        return;
+    }
 	var params = {asyncMode:true, noBusyOverlay:true, callback:respCallback, errorCallback:errorCallback};
 	params.restUri = AjxUtil.formatUrl({path:["/home/", (accountName || appCtxt.getUsername()), ZmContactList.URL].join(""), qsReset:true});
 	DBG.println(AjxDebug.DBG1, "loading contacts from " + params.restUri);
 	appCtxt.getAppController().sendRequest(params);
+};
+
+ZmContactList.prototype._handleResponseLoad =
+function(callback, result) {
 };
 
 /**

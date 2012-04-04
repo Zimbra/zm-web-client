@@ -817,7 +817,7 @@ function(parent, num) {
 			var isInTrash = folder && folder.isInTrash();
 			var canEdit = (folder == null || !folder.isReadOnly());
 
-			parent.enable([ZmOperation.CONTACTGROUP_MENU], (num > 0));
+			parent.enable([ZmOperation.CONTACTGROUP_MENU], (num > 0 && !appCtxt.isExternalAccount()));
 			parent.enable([ZmOperation.TAG_MENU], canEdit && num > 0);
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU], canEdit && num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1 && !isInTrash);
@@ -833,12 +833,12 @@ function(parent, num) {
 			var canEdit = (num == 1 && !contact.isReadOnly() && !ZmContact.isInTrash(contact));
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.TAG_MENU], num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit);
-			parent.enable([ZmOperation.CONTACTGROUP_MENU], (num > 0));
+			parent.enable([ZmOperation.CONTACTGROUP_MENU], (num > 0 && !appCtxt.isExternalAccount()));
 		}
 	} else {
 		// gal contacts cannot be tagged/moved/deleted
 		parent.enableAll(false);
-		parent.enable([ZmOperation.CONTACTGROUP_MENU], (num > 0));
+		parent.enable([ZmOperation.CONTACTGROUP_MENU], (num > 0 && !appCtxt.isExternalAccount()));
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
 		parent.enable(ZmOperation.NEW_MESSAGE, num > 0);
 		parent.enable(ZmOperation.CONTACT, num == 1);
@@ -863,7 +863,7 @@ function(parent, num) {
 
 	var selection = this._listView[this._currentViewId].getSelection();
 	var contact = (selection.length == 1) ? selection[0] : null;
-	parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE], num == 1);
+	parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE], num == 1 && !appCtxt.isExternalAccount());
 
 	if (num == 1 && contact.isGroup()) {
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE], false);
@@ -1281,7 +1281,7 @@ function(parent) {
 
 ZmContactListController.prototype._setContactGroupMenu =
 function(parent) {
-	if (!parent) { return; }
+	if (!parent || appCtxt.isExternalAccount()) { return; }
 
 	var groupMenu = this._getContactGroupMenu(parent);
 	if (!groupMenu) {

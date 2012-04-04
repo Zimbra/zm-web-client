@@ -84,12 +84,12 @@ function(actionMenu, type, id) {
         } else {
             actionMenu.enableAll(true);
             var menuItem = actionMenu.getMenuItem(ZmOperation.DELETE_WITHOUT_SHORTCUT);
-            menuItem.setEnabled(!isBriefcase && (!isLinkOrRemote || !isReadOnly || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
+            menuItem.setEnabled(!appCtxt.isExternalAccount() && !isBriefcase && (!isLinkOrRemote || !isReadOnly || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
 
             menuItem = actionMenu.getMenuItem(ZmOperation.NEW_BRIEFCASE);
             menuItem.setText(ZmMsg.newFolder);
             menuItem.setImage("NewFolder");
-            menuItem.setEnabled(!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR) || briefcase.isAdmin() || ZmShare.getRoleFromPerm(briefcase.perm) == ZmShare.ROLE_MANAGER);
+            menuItem.setEnabled(!appCtxt.isExternalAccount() && (!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR) || briefcase.isAdmin() || ZmShare.getRoleFromPerm(briefcase.perm) == ZmShare.ROLE_MANAGER));
 
             if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
                 isBriefcase = (!isRoot && briefcase.parent.id == rootId) || type==ZmOrganizer.BRIEFCASE;
@@ -145,7 +145,12 @@ function(organizer, perm) {
 // Returns a list of desired header action menu operations
 ZmBriefcaseTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.NEW_BRIEFCASE, ZmOperation.EXPAND_ALL];
+    var ops = [];
+    if (!appCtxt.isExternalAccount()) {
+        ops.push(ZmOperation.NEW_BRIEFCASE);
+    }
+    ops.push(ZmOperation.EXPAND_ALL);
+	return ops;
 };
 
 // Returns a list of desired action menu operations

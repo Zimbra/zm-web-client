@@ -284,7 +284,7 @@ function(parent, num) {
 	parent.enable([ZmOperation.NEW_FILE, ZmOperation.VIEW_MENU], true);
 	parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
 	parent.enable([ZmOperation.MOVE, ZmOperation.MOVE_MENU], ( isItemSelected &&  !isReadOnly && !isShared && !isOldRevision));
-    parent.enable(ZmOperation.NEW_FILE, !(isTrash || isReadOnly));
+    parent.enable(ZmOperation.NEW_FILE, !(isTrash || isReadOnly || appCtxt.isExternalAccount()));
     parent.enable(ZmOperation.NEW_BRIEFCASE_WIN, (isItemSelected && !isFolderSelected));
 
     var firstItem = items && items[0];
@@ -1216,7 +1216,7 @@ function() {
 
 ZmBriefcaseController.prototype._setReadingPanePref =
 function(value) {
-	if (this.isSearchResults) {
+	if (this.isSearchResults || appCtxt.isExternalAccount()) {
 		this._readingPaneLoc = value;
 	}
 	else {
@@ -1227,7 +1227,7 @@ function(value) {
 ZmBriefcaseController.prototype._previewPaneListener =
 function(newPreviewStatus){
     var oldPreviewStatus = appCtxt.get(ZmSetting.READING_PANE_LOCATION_BRIEFCASE);
-    appCtxt.set(ZmSetting.READING_PANE_LOCATION_BRIEFCASE, newPreviewStatus);
+    this._setReadingPanePref(newPreviewStatus);
     var lv = this._parentView[this._currentViewId];
     lv.resetPreviewPane(newPreviewStatus, oldPreviewStatus);
 	//update view button icon to reflect current selection

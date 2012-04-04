@@ -41,6 +41,7 @@ ZmApp = function(name, container, parentController) {
 	this._parentController = parentController;
 	this._active = false;
 	this.currentSearch = null;
+    this._defaultFolderId = null;   //reqd in case of external user
 
 	this._deferredFolders = [];
 	this._deferredFolderHash = {};
@@ -803,12 +804,15 @@ function(type) {
     }
 };
 
-/**
- * @private
- */
+
 ZmApp.prototype.containsWritableFolder =
 function() {
     return appCtxt.isExternalAccount() ? (this._containsWritableFolder ? true : false) : true;
+};
+
+ZmApp.prototype.getDefaultFolderId =
+function() {
+    return this._defaultFolderId;
 };
 
 /**
@@ -825,6 +829,7 @@ function(type) {
     this._containsWritableFolder = false;
     for (i=0; i<len; i++) {
         folder = folders[i];
+        if(!this._defaultFolderId) { this._defaultFolderId = folder.id; }
         if (folder.isPermAllowed(ZmOrganizer.PERM_WRITE)) {
             this._containsWritableFolder = true;
         }

@@ -214,7 +214,7 @@ function(view) {
         var btn = this._toolbar[this._currentViewId].getButton(ZmOperation.VIEW_MENU);
         btn.setImage(ZmTaskListController.READING_PANE_ICON[view]);
 	} else {
-        if(view != this._getFilterByPref()) {
+        if(view != this._getFilterByPref() && !appCtxt.isExternalAccount()) {
             this._setFilterByPref(ZmTaskListController.FILTERBY_SETTING[view]);
         }
         var btn = this._toolbar[this._currentViewId].getButton(ZmOperation.SORTBY_MENU);
@@ -337,7 +337,7 @@ function() {
 
 ZmTaskListController.prototype._setReadingPanePref =
 function(value) {
-	if (this.isSearchResults) {
+	if (this.isSearchResults || appCtxt.isExternalAccount()) {
 		this._readingPaneLoc = value;
 	}
 	else {

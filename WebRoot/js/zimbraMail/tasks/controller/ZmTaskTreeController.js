@@ -78,7 +78,7 @@ function(parent, type, id) {
 
 	parent.enableAll(true);
 	if (folder) {
-        if (folder.isSystem()) {
+        if (folder.isSystem() || appCtxt.isExternalAccount()) {
             parent.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.RENAME_FOLDER], false);
         } else if (folder.link && !folder.isAdmin()) {
             isShareVisible = false;
@@ -109,6 +109,9 @@ function(parent, type, id) {
 		op.setText(deleteText);
 	}
 
+
+
+
 	// we always enable sharing in case we're in multi-mbox mode
 	// But no sharing for trash folder
 	this._resetButtonPerSetting(parent, ZmOperation.SHARE_TASKFOLDER, !isTrash && appCtxt.get(ZmSetting.SHARING_ENABLED));
@@ -134,6 +137,9 @@ function() {
 // Returns a list of desired header action menu operations
 ZmTaskTreeController.prototype._getHeaderActionMenuOps =
 function() {
+    if (appCtxt.isExternalAccount()) {
+        return [];
+    }
 	return [ZmOperation.NEW_TASK_FOLDER];
 };
 

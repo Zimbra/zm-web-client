@@ -272,7 +272,8 @@ function() {
 		tooltip:	ZmMsg.createNewTask,
 		icon:		"NewTask",
 		iconDis:	"NewTaskDis",
-		defaultId:	ZmOperation.NEW_TASK
+		defaultId:	ZmOperation.NEW_TASK,
+        disabled:	!this.containsWritableFolder()
 	};
 };
 
@@ -381,8 +382,15 @@ function(mailItem, date, subject) {
  */
 ZmTasksApp.prototype.search =
 function(folder, startDate, endDate, callback, accountName) {
+    var query = "";
+    if(appCtxt.isExternalAccount()) {
+        query = "inid:" + this.getDefaultFolderId();
+    }
+    else {
+        query = folder ? folder.createQuery() : "in:tasks";
+    }
 	var params = {
-		query:			(folder ? folder.createQuery() : "in:tasks"),
+		query:			query,
 		types:			[ZmItem.TASK],
 		limit:			this.getLimit(),
 		searchFor:		ZmItem.TASK,

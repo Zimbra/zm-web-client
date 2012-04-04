@@ -414,7 +414,8 @@ function() {
 		tooltip:	ZmMsg.newDocument,
 		icon:		"NewDoc",
 		iconDis:	"NewDocDis",
-		defaultId:	ZmOperation.NEW_DOC
+		defaultId:	ZmOperation.NEW_DOC,
+        disabled:	!this.containsWritableFolder()
 	};
 };
 

@@ -533,6 +533,9 @@ function(columnItem, bSortAsc) {
 
 ZmTaskListView.prototype._handleNewTaskClick =
 function(el) {
+    if  (appCtxt.isExternalAccount()) {
+        return;
+    }
 	if (!this._newTaskInputEl) {
 		this._newTaskInputEl = document.createElement("INPUT");
 		this._newTaskInputEl.type = "text";
