@@ -251,6 +251,7 @@ function(type, parent, obj, tree, path, elementType, account) {
 		sizeTotal: 	obj.s,
 		perm: 		obj.perm,
 		link: 		elementType == "link",
+		broken: 	obj.broken,
 		account:	account,
         retentionPolicy: obj.retentionPolicy
 	};

@@ -37,6 +37,7 @@
 * @param {constant}	params.color		the color for this organizer
 * @param {String}	params.rgb		the color for this organizer, as HTML RGB value
 * @param {Boolean}	params.link		<code>true</code> if this organizer is shared
+* @param {Boolean}	params.broken		<code>true</code> if this link is broken
 * @param {int}	params.numUnread	the number of unread items for this organizer
 * @param {int}	params.numTotal	the number of items for this organizer
 * @param {Boolean}	params.noTooltip	do not show tooltip 
@@ -75,7 +76,7 @@ ZmOrganizer = function(params) {
 	this.restUrl = params.restUrl;
 	this.account = params.account;
     this.perm = params.perm;
-	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
+	this.noSuchFolder = params.broken; // Is this a link to some folder that ain't there.
 	this._isAdmin = this._isReadOnly = this._hasPrivateAccess = null;
     this.retentionPolicy = params.retentionPolicy;
 
