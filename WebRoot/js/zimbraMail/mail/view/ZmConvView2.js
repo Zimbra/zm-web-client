@@ -442,6 +442,7 @@ ZmConvView2.prototype._compose =
 function(params) {
 	
 	if (!this._item) { return; }
+	params = params || {};
 
 	params.action = params.action || ZmOperation.REPLY_ALL;
 	var msg = params.msg = params.msg || this._item.getFirstHotMsg();
@@ -639,6 +640,7 @@ function(msg, msgView, op) {
 	else {
 		this.reset();
 	}
+	this._msg = msg;
 	var gotCc = (op == ZmOperation.REPLY_ALL && ai.participants.length > 1);
 	this._replyToTable.innerHTML = AjxTemplate.expand(this.ROW_TEMPLATE, ai.participants[0]);
 	this._replyCcTable.innerHTML = gotCc ? AjxTemplate.expand(this.ROW_TEMPLATE, ai.participants[1]) : "";
@@ -679,6 +681,7 @@ ZmConvReplyView.prototype.reset =
 function() {
 	this.setValue("");
 	this.setVisible(false);
+	this._msg = null;
 };
 
 ZmConvReplyView.prototype._initializeToolbar =
@@ -700,8 +703,13 @@ function() {
 		var tb = this._replyToolbar = new ZmButtonToolBar(tbParams);
 		tb.addSelectionListener(ZmOperation.SEND, this._convView._sendListener.bind(this._convView));
 		tb.addSelectionListener(ZmOperation.CANCEL, this._convView._cancelListener.bind(this._convView));
-		tb.addSelectionListener(ZmOperation.REPLY_ALL, this._convView._compose.bind(this._convView));
+		tb.addSelectionListener(ZmOperation.REPLY_ALL, this._moreOptions.bind(this));
 	}
+};
+
+ZmConvReplyView.prototype._moreOptions =
+function() {
+	this._convView._compose({msg:this._msg});
 };
 
 // Returns lists of To: and Cc: addresses to reply to, based on the msg
