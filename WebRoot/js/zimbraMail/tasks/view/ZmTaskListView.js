@@ -805,9 +805,17 @@ ZmTaskListView.prototype.updateListViewEl =
 function(task) {
 	var div = this._getElFromItem(task);
 	if (div) {
-		var bContained = this._selectedItems.contains(div);
-		this._createItemHtml(task, {div:div, bContained:bContained});
-		this.associateItemWithElement(task, div);
+        if (this._controller.isHiddenTask(task)){
+            this.removeItem(task, true);
+            if(this._controller.isReadingPaneOn()) {
+			    this._controller.getTaskMultiView().getTaskView().reset();
+		    }
+        }else{
+		    var bContained = this._selectedItems.contains(div);
+		    this._createItemHtml(task, {div:div, bContained:bContained});
+		    this.associateItemWithElement(task, div);
+        }
+
 	}
 };
 

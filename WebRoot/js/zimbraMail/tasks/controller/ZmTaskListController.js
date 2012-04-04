@@ -737,6 +737,19 @@ function(task,ftask) {
 	clone.save(null, callback);
 };
 
+ZmTaskListController.prototype.isHiddenTask  =
+function(task) {
+    var pref = this._getFilterByPref();
+	if (task.isComplete() && !(pref == ZmSetting.TASK_FILTER_ALL || pref == ZmSetting.TASK_FILTER_COMPLETED))
+      return true;
+
+    if (task.pComplete != 0 && (pref == ZmSetting.TASK_FILTER_NOTSTARTED))
+        return true;
+
+    return false;
+
+};
+
 ZmTaskListController.prototype._markAsCompletedResponse = 
 function(task,ftask) {
 	if (task && task._orig)
@@ -744,7 +757,7 @@ function(task,ftask) {
 	//Cache the item for further processing
 	task.cache();
 	this._taskListView.updateListViewEl(task);
-	if(ftask && this.isReadingPaneOn()) {
+	if(ftask && this.isReadingPaneOn() && !this.isHiddenTask(task)) {
 		this._taskMultiView.setTask(task);
 	}
 };
