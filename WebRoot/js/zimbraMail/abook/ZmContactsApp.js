@@ -481,7 +481,7 @@ function() {
 		icon:		"NewContact",
 		iconDis:	"NewContactDis",
 		defaultId:	ZmOperation.NEW_CONTACT,
-        disabled:   this.containsWritableFolder()
+        disabled:   !this.containsWritableFolder()
 	};
 };
 
