@@ -349,10 +349,10 @@ function(view, force) {
 		//I wonder if that's the case that leaves orphan drafts
 		if (force) {
 			// auto-save if we leave this compose tab and the message has not yet been sent
-			//note that _msgSent is true after message was saved as draft.
-			if (!this._msgSent) {
-				//note that it will not save if !this._composeView.isDirty(), which is the case after the
-				//user said "no" to keeping the draft.
+			if (this._dontSavePreHide) {
+				this._dontSavePreHide = false;
+			}
+			else {
 				this._autoSaveCallback(true);
 			}
 		}
@@ -1905,6 +1905,7 @@ function(mailtoParams) {
 ZmComposeController.prototype._popShieldDiscardCallback =
 function() {
 	this._deleteDraft(this._composeView._msg);
+	this._dontSavePreHide = true; //do not save dirty state to a draft in pre hide
 	this._popShieldNoCallback();
 };
 
