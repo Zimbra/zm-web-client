@@ -759,7 +759,11 @@ ZmAdvancedHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
         }
     }
     this.initDefaultDirection();
-    tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);//tinymce will automatically toggles the editor and sets the corresponding content.
+    if (mode === DwtHtmlEditor.TEXT && !this._editorInitialized) {
+    }
+    else {
+        tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);//tinymce will automatically toggles the editor and sets the corresponding content.
+    }
     if (convert && mode === DwtHtmlEditor.TEXT) {//tinymce will set html content directly in textarea. Resetting the content after removing the html tags.
         this.setContent(content);
     }
