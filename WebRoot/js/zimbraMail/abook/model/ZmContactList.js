@@ -574,7 +574,7 @@ function(items) {
 		var email = contact.getEmail();
 		var domain = email.split("@")[1];
 		var isDL = contact && contact.isDistributionList();
-		if (!isDL || !deleteDomainsAllowed[domain]) {
+		if (!isDL || !deleteDomainsAllowed[domain] || !contact.dlInfo.isOwner) {
 			return false;
 		}
 	}
