@@ -987,6 +987,16 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .console_inset_app_l .DwtHorizontalSash {
 	border:0px;
 	background-color:transparent;
+    margin-left: 1px;
+}
+
+/* Adding the margin values to the app sash so that it will be applicable to all apps */
+.AppSash-vert .DwtVerticalSash {
+    margin-top: 1px;
+}
+
+.AppSash-horiz .DwtHorizontalSash {
+    margin-left: 2px;
 }
 
 /* ??? MOVE ME */
