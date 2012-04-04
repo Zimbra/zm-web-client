@@ -82,6 +82,10 @@ function(callback){
 
 ZmDocsEditView.prototype.save = function(force){
 
+    // Ignore save if document is not dirty
+    var _docModified = ZmDocsEditApp._controller._isDirty();
+    if(!_docModified) { return ;}
+
     ZmDocsEditApp.fileInfo.descEnabled = this._getVersionNotesChk().checked;
 
     var fileName = this._buttons.fileName.getValue();

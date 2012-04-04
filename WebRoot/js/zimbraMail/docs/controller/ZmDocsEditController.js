@@ -148,6 +148,21 @@ ZmDocsEditController.prototype.checkForChanges = function() {
         return ZmMsg.exitDocUnSavedChanges;
    } 
 };
+/**
+* return boolean  - Check if document has any changes to be saved
+* */
+ZmDocsEditController.prototype._isDirty = function() {
+   var curDoc = null;
+   var controller = ZmDocsEditApp._controller;
+   curDoc = controller._docsEdit._editor.getContent();
+   if(  ZmDocsEditController.savedDoc == null &&
+       (curDoc == '<html><body></body></html>' ||
+       !curDoc)) {
+        return false;
+   } else if(curDoc != ZmDocsEditController.savedDoc) {
+        return true;
+   }
+}
 
 ZmDocsEditController.prototype.exit = function(){
     if(ZmDocsEditApp.fileInfo.locked){
