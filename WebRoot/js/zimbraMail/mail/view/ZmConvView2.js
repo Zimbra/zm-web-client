@@ -825,6 +825,8 @@ ZmMailMsgCapsuleView = function(params) {
 	// cache text and HTML versions of original content
 	this._origContent = {};
 
+    this._autoCalendarDisplayComplete = false;
+
 	this.addListener(ZmMailMsgView._TAG_CLICK, this._msgTagClicked.bind(this));
 	this.addListener(ZmInviteMsgView.REPLY_INVITE_EVENT, this._convView._inviteReplyListener);
 	this.addListener(ZmMailMsgView.SHARE_EVENT, this._convView._shareListener);
@@ -867,7 +869,12 @@ function(msg, force) {
 	else {
 		this._expanded = this._forceExpand || (!this._forceCollapse && msg.isUnread);
 	}
-	ZmMailMsgView.prototype.set.apply(this, arguments);
+
+	var dayViewCallback = null;
+    if (this._expanded && appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR)) {
+		dayViewCallback = this._handleShowCalendarLink.bind(this, ZmOperation.SHOW_ORIG, true);
+	}
+	ZmMailMsgView.prototype.set.apply(this, [msg, force, dayViewCallback]);
 };
 
 ZmMailMsgCapsuleView.prototype.reset =
@@ -1140,6 +1147,10 @@ function(msg, container) {
 			link.onclick = this._linkClicked.bind(this, links[i], info.op);
 		}
 	}
+    // Attempt to display the calendar if the preference is to auto-open it
+    if (appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR)) {
+        this._handleShowCalendarLink(ZmOperation.SHOW_ORIG, true);
+    }
 };
 
 ZmMailMsgCapsuleView.prototype._makeLink =
@@ -1201,38 +1212,62 @@ function(id, op, ev) {
 };
 
 ZmMailMsgCapsuleView.prototype._handleShowCalendarLink =
-function(id, op, ev) {
-	
-	this._showingCalendar = !this._showingCalendar;
-	
-	if (this._inviteCalendarContainer) {
-		Dwt.setVisible(this._inviteCalendarContainer, this._showingCalendar);
-	}
-	else if (this._showingCalendar) {
-		var imv = this._inviteMsgView;
-		var dayView = imv && imv._dayView;
-        if (dayView) {
-            // shove it in a relative-positioned container DIV so it can use absolute positioning
-            var div = this._inviteCalendarContainer = document.createElement("div");
-            this.getHtmlElement().appendChild(div);
-            Dwt.setSize(div, Dwt.DEFAULT, 220);
-            Dwt.setPosition(div, Dwt.RELATIVE_STYLE);
-            dayView.reparentHtmlElement(div);
-            dayView.setVisible(true);
-            var mySize = this.getSize();
-            dayView.setSize(mySize.x - 5, 218);
-            var el = dayView.getHtmlElement();
-            el.style.left = el.style.top = "auto";
-        }
-	}
-	
-	var showCalendarLink = document.getElementById(this._linkInfo[ZmOperation.SHOW_ORIG].linkId);
-	if (showCalendarLink) {
-		showCalendarLink.innerHTML = this._showingCalendar ? ZmMsg.hideCalendar : ZmMsg.showCalendar;
-	}
+function(id, autoDisplay) {
+    // Allow one of two possible paths to auto display the calendar view
+    if (!this._isCalendarInvite || (autoDisplay && this._autoCalendarDisplayComplete)) return;
 
-    this._resetIframeHeightOnTimer();
+    var imv = this._inviteMsgView;
+    var showCalendarLink = document.getElementById(this._linkInfo[ZmOperation.SHOW_ORIG].linkId);
+    var changed = false;
+
+    if (this._inviteCalendarContainer) {
+        this._showingCalendar = !this._showingCalendar;
+        Dwt.setVisible(this._inviteCalendarContainer, this._showingCalendar);
+        changed = true;
+    } else if (imv) {
+        var dayView = imv && imv._dayView;
+        if (dayView && showCalendarLink) {
+            // Both components (dayView and footer) have been rendered - can go ahead and
+            // attach the dayView.  This is only an issue for the initial auto display
+            this._showingCalendar = true;
+
+            // Shove it in a relative-positioned container DIV so it can use absolute positioning
+            var div = this._inviteCalendarContainer = document.createElement("div");
+            var elRef = this.getHtmlElement();
+            if (elRef) {
+                elRef.appendChild(div);
+                Dwt.setSize(div, Dwt.DEFAULT, 220);
+                Dwt.setPosition(div, Dwt.RELATIVE_STYLE);
+                dayView.reparentHtmlElement(div);
+                dayView.setVisible(true);
+                var mySize = this.getSize();
+                dayView.setSize(mySize.x - 5, 218);
+                var el = dayView.getHtmlElement();
+                el.style.left = el.style.top = "auto";
+            }
+            // Auto calendar display complete whether done via auto or a manual click
+            this._autoCalendarDisplayComplete = true;
+            changed = true;
+        }
+    }
+
+
+    if (changed) {
+        if (imv && this._showingCalendar) {
+            imv.scrollToInvite();
+        }
+        if (showCalendarLink) {
+            showCalendarLink.innerHTML = this._showingCalendar ? ZmMsg.hideCalendar : ZmMsg.showCalendar;
+        }
+        if (!autoDisplay) {
+            // Track the last show/hide and apply to other invites that are opened.
+            appCtxt.set(ZmSetting.CONV_SHOW_CALENDAR, this._showingCalendar);
+        }
+        this._resetIframeHeightOnTimer();
+    }
 };
+
+
 
 ZmMailMsgCapsuleView.prototype._handleForwardLink =
 function(id, op, ev) {
@@ -1268,12 +1303,20 @@ function() {
 
 	if (this._expanded && !this._msgBodyCreated) {
 		// Provide a callback to ensure address bubbles are properly set up
-        var respCallback = this._handleResponseSet.bind(this, this._msg);
+        var dayViewCallback = null;
+        if (this._isCalendarInvite && appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR)) {
+            dayViewCallback = this._handleShowCalendarLink.bind(this, ZmOperation.SHOW_ORIG, true);
+        }
+        var respCallback = this._handleResponseSet.bind(this, this._msg, null, dayViewCallback);
 		this._renderMessage(this._msg, null, respCallback);
 		this._controller._handleMarkRead(this._msg);
 	}
 	else {
 		// hide or show everything below the header
+        if (this._expanded && this._isCalendarInvite && appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR) &&
+            !this._showingCalendar) {
+            this._handleShowCalendarLink(ZmOperation.SHOW_ORIG, true);
+        }
 		var children = this.getHtmlElement().childNodes;
 		for (var i = 1; i < children.length; i++) {
 			var child = children[i];

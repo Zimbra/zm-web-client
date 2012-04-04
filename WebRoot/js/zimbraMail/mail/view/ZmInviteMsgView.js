@@ -170,7 +170,7 @@ function(msg) {
  *    with the results returned.
  */
 ZmInviteMsgView.prototype.showMoreInfo =
-function(callback) {
+function(callback, dayViewCallback) {
 	var apptId = this._invite && this._invite.hasAttendeeResponse() && this._invite.getAppointmentId();
 	if (apptId) {
 		var jsonObj = {GetAppointmentRequest:{_jsns:"urn:zimbraMail"}};
@@ -180,11 +180,11 @@ function(callback) {
 		appCtxt.getAppController().sendRequest({
 			jsonObj: jsonObj,
 			asyncMode: true,
-			callback: (new AjxCallback(this, this._handleShowMoreInfo, [callback]))
+			callback: (new AjxCallback(this, this._handleShowMoreInfo, [callback, dayViewCallback]))
 		});
 	}
 	else {
-		this._showFreeBusy();
+		this._showFreeBusy(dayViewCallback);
 		if (callback) {
 			callback.run();
 		}
@@ -192,7 +192,7 @@ function(callback) {
 };
 
 ZmInviteMsgView.prototype._handleShowMoreInfo =
-function(callback, result) {
+function(callback, dayViewCallback, result) {
 	var appt = result && result.getResponse().GetAppointmentResponse.appt[0];
 	if (appt) {
 		var om = this.parent._objectManager;
@@ -223,27 +223,21 @@ function(callback, result) {
 		callback.run();
 	}
 
-	this._showFreeBusy();
+	this._showFreeBusy(dayViewCallback);
 };
 
 ZmInviteMsgView.prototype._showFreeBusy =
-function() {
+function(dayViewCallback) {
 	var ac = window.parentAppCtxt || window.appCtxt;
 
 	if (!appCtxt.isChildWindow &&
 		(ac.get(ZmSetting.CALENDAR_ENABLED) || ac.multiAccounts) &&
 		(this._invite && this._invite.type != "task"))
 	{
-
-		var inviteDate = this._invite.getServerStartDate(null, true);
-		if (inviteDate == null) { /* not sure when this happens (probably a bug) but this is defensive check for bug 51754 */
-			return;
-		}
-
-		var inviteTz = this._invite.getServerStartTimeTz();
-
-		inviteDate = AjxTimezone.convertTimezone(inviteDate, AjxTimezone.getClientId(inviteTz), AjxTimezone.DEFAULT);
-
+        var inviteDate = this._getInviteDate();
+        if (inviteDate == null) {
+            return;
+        }
 
 		AjxDispatcher.require(["CalendarCore", "Calendar"]);
 		var cc = AjxDispatcher.run("GetCalController");
@@ -270,12 +264,25 @@ function() {
 			start: rt.start,
 			end: rt.end,
 			fanoutAllDay: this._dayView._fanoutAllDay(),
-			callback: (new AjxCallback(this, this._dayResultsCallback, [inviteDate.getHours()])),
+			callback: (new AjxCallback(this, this._dayResultsCallback, [dayViewCallback, inviteDate.getHours()])),
 			accountFolderIds: [acctFolderIds] // pass in array of array
 		};
 		cc.apptCache.batchRequest(params);
 	}
 };
+
+ZmInviteMsgView.prototype._getInviteDate =
+function() {
+    var inviteDate = this._invite.getServerStartDate(null, true);
+    // Not sure when null inviteDate happens (probably a bug) but this is defensive
+    // check for bug 51754
+    if (inviteDate != null) {
+        var inviteTz = this._invite.getServerStartTimeTz();
+        inviteDate = AjxTimezone.convertTimezone(inviteDate,
+            AjxTimezone.getClientId(inviteTz), AjxTimezone.DEFAULT);
+    }
+    return inviteDate;
+}
 
 ZmInviteMsgView.prototype.isRight =
 function() {
@@ -684,9 +691,12 @@ function(ev) {
 };
 
 ZmInviteMsgView.prototype._dayResultsCallback =
-function(invitedHour, list, skipMiniCalUpdate, query) {
+function(dayViewCallback, invitedHour, list, skipMiniCalUpdate, query) {
     this._dayView.set(list, true);
     this._dayView._scrollToTime(invitedHour);
+    if (dayViewCallback) {
+        dayViewCallback.run();
+    }
 };
 
 ZmInviteMsgView.prototype._apptSelectionListener =
@@ -704,3 +714,11 @@ function(ev) {
 		}
 	}
 };
+
+ZmInviteMsgView.prototype.scrollToInvite =
+function() {
+    var inviteDate = this._getInviteDate();
+    if ((inviteDate != null) && this._dayView) {
+        this._dayView._scrollToTime(inviteDate.getHours());
+    }
+}

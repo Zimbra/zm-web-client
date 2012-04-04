@@ -166,7 +166,7 @@ function() {
 };
 
 ZmMailMsgView.prototype.set =
-function(msg, force) {
+function(msg, force, dayViewCallback) {
 	if (!force && this._msg && msg && (this._msg.id == msg.id)) { return; }
 
 	var oldMsg = this._msg;
@@ -183,7 +183,7 @@ function(msg, force) {
 		return;
 	}
 
-	var respCallback = this._handleResponseSet.bind(this, msg, oldMsg);
+	var respCallback = this._handleResponseSet.bind(this, msg, oldMsg, dayViewCallback);
 	this._renderMessage(msg, contentDiv, respCallback);
 	this.noTab = AjxEnv.isIE;
 };
@@ -424,7 +424,7 @@ function(msg, oldMsg) {
 };
 
 ZmMailMsgView.prototype._handleResponseSet =
-function(msg, oldMsg) {
+function(msg, oldMsg, dayViewCallback) {
 
 	var notifyZimletsInShowMore = false;
 	if (this._inviteMsgView) {
@@ -434,13 +434,13 @@ function(msg, oldMsg) {
 			(this._controller.isReadingPaneOn() || (this._controller instanceof ZmMsgController)))
 		{
 			notifyZimletsInShowMore = true;
-			this._inviteMsgView.showMoreInfo(this._notifyZimletsNewMsg.bind(this, msg, oldMsg));
+			this._inviteMsgView.showMoreInfo(this._notifyZimletsNewMsg.bind(this, msg, oldMsg), dayViewCallback);
 		}
 		else {
 			// resize the message view without F/B view
 			this._inviteMsgView.resize(true);
 		}
-	}
+    }
 
 	if (!appCtxt.isChildWindow) {
 		this._setTags(msg);
@@ -1915,10 +1915,10 @@ function() {
                 this._attachmentLinkIdToFileNameMap[att.attachmentLinkId] = att.label;
             }
 			var params = {
-				att:	att,
-				id:		this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_MAIN),
-				text:	AjxStringUtil.htmlEncode(displayFileName)
-			}; 
+				att:	    att,
+				id:		    this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_MAIN),
+				text:	    AjxStringUtil.htmlEncode(displayFileName)
+			};
 			var link = ZmMailMsgView.getMainAttachmentLinkHtml(params);
 			link = att.isHit ? "<span class='AttName-matched'>" + link + "</span>" : link;
 			// objectify if this attachment is an image
@@ -2047,6 +2047,7 @@ function() {
 	// Push all that HTML to the DOM
 	var attLinksDiv = document.getElementById(this._attLinksId);
 	attLinksDiv.innerHTML = htmlArr.join("");
+
 
 	// add handlers for individual attachment links
 	for (var i = 0; i < attInfo.length; i++) {

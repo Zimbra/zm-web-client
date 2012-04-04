@@ -77,7 +77,7 @@ function() {
  * Displays the reading pane, based on the current settings.
  */
 ZmDoublePaneView.prototype.setReadingPane =
-function() {
+function(noSet) {
 
 	var mlv = this._mailListView, mv = this._itemView;
 	var readingPaneEnabled = this._controller.isReadingPaneOn();
@@ -102,7 +102,9 @@ function() {
 	}
 
 	mlv.reRenderListView();
-	mv.setReadingPane();
+    if (!noSet) {
+	    mv.setReadingPane();
+    }
 
 	mv.noTab = !readingPaneEnabled || AjxEnv.isIE;
 	var sz = this.getSize();

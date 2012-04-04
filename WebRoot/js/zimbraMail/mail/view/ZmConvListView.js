@@ -87,7 +87,7 @@ function(item, force, dontFocus) {
 	}
 	this._itemView.setVisible(true);
 	if (changed) {
-		this.setReadingPane();	// so that second view gets positioned
+		this.setReadingPane(true);	// so that second view gets positioned
 	}
 	ZmDoublePaneView.prototype.setItem.apply(this, arguments);
 };
