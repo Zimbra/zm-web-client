@@ -396,7 +396,7 @@ ZmApptQuickAddDialog.prototype._prefChangeListener =
 function() {
     // Preference Dialog is only displayed when the suggestions panel is visible - so update suggestions
     this._locationAssistant.clearResources();
-    this._locationAssistant.suggestAction(true);
+    this._locationAssistant.suggestAction();
 };
 
 ZmApptQuickAddDialog.prototype._handleConfigureClick = function() {
