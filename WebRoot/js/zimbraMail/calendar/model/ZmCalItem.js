@@ -2172,7 +2172,7 @@ function(soapDoc, xprop, xparams) {
 ZmCalItem.prototype._addDateTimeToSoap =
 function(soapDoc, inv, comp) {
 	// always(?) set all day
-	comp.setAttribute("allDay", this.allDayEvent);
+	comp.setAttribute("allDay", this.allDayEvent + ""); // XML attribute value can contain only text
 
 	// timezone
 	var tz;
