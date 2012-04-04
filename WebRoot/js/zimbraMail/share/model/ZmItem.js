@@ -768,11 +768,13 @@ function(str) {
 	if (!str || !str.length) {
 		return;
 	}
-	var tags = str.split(/^\,/); //ignore escaped comma as this comes from the server if the tag name has a comma in it.
+	
+	// server escapes comma with backslash
+	str = str.replace(/\\,/g, "\u001D");
+	var tags = str.split(",");
 	
 	for (var i = 0; i < tags.length; i++) {
-		var tagName = tags[i];
-		tagName = tagName.replace(/\\,/g, ","); //replace escaped comma with a comma
+		var tagName = tags[i].replace("\u001D", ",");
 		this.tagLocal(tagName, true);
 	}
 };
