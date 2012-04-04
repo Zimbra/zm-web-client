@@ -543,7 +543,7 @@ function(params, noRender, callback, errorCallback) {
 
 	// calendar searching is special so hand it off if necessary
 	search.calController = null;
-	if (searchFor == ZmItem.APPT && !params.forceSearch) {
+	if (searchFor == ZmItem.APPT && !params.forceSearch && !params.inDumpster) {
 		var searchResultsController, sessionId;
 		if (search.userInitiated && ZmApp.SEARCH_RESULTS_TAB[ZmApp.CALENDAR]) {
 			searchResultsController = appCtxt.getApp(ZmApp.SEARCH).getSearchResultsController(search.sessionId, ZmApp.CALENDAR);
