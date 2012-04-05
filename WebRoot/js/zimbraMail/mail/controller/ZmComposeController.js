@@ -1592,7 +1592,7 @@ function(ev) {
 		cv.setAddress(AjxEmailAddress.CC, "");
 		cv._setAddresses(op, AjxEmailAddress.TO, this._toOverride);
 	} else if (op == ZmOperation.FORMAT_HTML || op == ZmOperation.FORMAT_TEXT) {
-        if (op == ZmOperation.FORMAT_TEXT){
+        if (op == ZmOperation.FORMAT_TEXT && this._msg) {
             this._msg._resetAllInlineAttachments();
         }
 
