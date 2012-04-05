@@ -175,20 +175,24 @@ function(folderA, folderB) {
 
 ZmVoiceFolder.prototype.getToolTip =
 function (force) {
-	if (this.callType == ZmVoiceFolder.VOICEMAIL) {
-   		return ZmOrganizer.prototype.getToolTip.call(this, force);
-	} else {
-		return null;
-	}
+     return ZmOrganizer.prototype.getToolTip.call(this, force);
 };
 
 ZmVoiceFolder.prototype._getItemsText =
 function() {
-	if (this.callType == ZmVoiceFolder.VOICEMAIL || this.callType == ZmVoiceFolder.TRASH) {
-		return ZmMsg.voicemailMessages;
-	} else {
-		return ZmMsg.calls;
-	}
+    switch (this.callType){
+        case ZmVoiceFolder.VOICEMAIL:
+        case ZmVoiceFolder.TRASH:
+            return ZmMsg.voicemailMessages;
+        case ZmVoiceFolder.ANSWERED_CALL:
+            return ZmMsg.answeredCalls;
+        case ZmVoiceFolder.MISSED_CALL:
+            return ZmMsg.missedCalls;
+        case ZmVoiceFolder.PLACED_CALL:
+            return ZmMsg.placedCalls;
+        default:
+            return ZmMsg.calls;
+    }
 };
 
 ZmVoiceFolder.prototype.empty =
