@@ -79,6 +79,11 @@ function enableSpellCheck(myEditor) {
         }
     };
 
+    //Editor oncontextmenu handler
+    var onContextMenu = function(editor, ev){
+        tinymce.dom.Event.cancel(ev);
+    };
+
     myEditor.startSpellCheck = function() {
         if (!this.checking) {
             this.checking = true;
@@ -104,6 +109,7 @@ function enableSpellCheck(myEditor) {
             }
             doc.body.normalize();
             this.onClick.remove(onClick);
+            this.onContextMenu.remove(onContextMenu);
             delete this._spellData;
             delete this.checking;
             delete this.spellCheckTarget;
@@ -132,6 +138,7 @@ function enableSpellCheck(myEditor) {
             this._spellData = data.data;
             this._processSpellCheck(this.getDoc(), this.dom, this.getBody(), data.data);
             this.onClick.add(onClick);
+            this.onContextMenu.add(onContextMenu);
             this._spellCheckMenu = this.controlManager.createDropMenu("spellcheckmenu");
         }
     };
