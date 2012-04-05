@@ -1860,6 +1860,7 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 
 			// see if rfc822 is an invite
 			if (attach.contentType == ZmMimeTable.MSG_RFC822) {
+				props.rfc822Part = attach.part;
 				var calPart = (attach.children.size() == 1) && attach.children.get(0);
 				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) && calPart && (calPart.contentType == ZmMimeTable.TEXT_CAL)) {
 					props.links.importICS = true;

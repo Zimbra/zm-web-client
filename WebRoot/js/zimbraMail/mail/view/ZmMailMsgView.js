@@ -1918,7 +1918,9 @@ function() {
 			var params = {
 				att:	    att,
 				id:		    this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_MAIN),
-				text:	    AjxStringUtil.htmlEncode(displayFileName)
+				text:	    AjxStringUtil.htmlEncode(displayFileName),
+				mid:        att.mid,
+				rfc822Part: att.rfc822Part
 			};
 			var link = ZmMailMsgView.getMainAttachmentLinkHtml(params);
 			link = att.isHit ? "<span class='AttName-matched'>" + link + "</span>" : link;
@@ -2109,6 +2111,13 @@ function(params) {
 	html[i++] = params.blankTarget ? "target='_blank' " : "";
 	var href = params.href || (params.jsHref && "javascript:;");
 	html[i++] = href ? "href='" + href + "' " : "";
+	if (params.isRfc822) {
+		html[i++] = " onclick='ZmMailMsgView.rfc822Callback(\"";
+		html[i++] = params.mid;
+		html[i++] = "\",\"";
+		html[i++] = params.rfc822Part;
+		html[i++] = "\"); return false;'";
+	}
 	html[i++] = ">" + AjxStringUtil.htmlEncode(params.text) + "</a>";
 
 	return html.join("");
@@ -2129,7 +2138,10 @@ function(params) {
 	}; 
 	// handle rfc/822 attachments differently
 	if (params.att.ct == ZmMimeTable.MSG_RFC822) {
-		params1.jsHref = true;
+		params1.jsHref      = true;
+		params1.isRfc822    = true;
+		params1.mid         = params.mid;
+		params1.rfc822Part  = params.rfc822Part;
 	}
 	else {
 		params1.blankTarget = true;

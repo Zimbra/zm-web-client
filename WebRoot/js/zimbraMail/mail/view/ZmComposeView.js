@@ -2010,11 +2010,19 @@ function() {
 ZmComposeView.prototype._getForwardAttObjs =
 function(parts) {
     var forAttObjs = [];
-	for (var i = 0; i < parts.length; i++) {
-      if (this._partToAttachmentMap[i].part == parts[i] )
-			forAttObjs.push({part:parts[i], mid:this._partToAttachmentMap[i].mid});
-	}
-	return forAttObjs;
+    var partMap = {};
+    for (var i = 0; i < this._partToAttachmentMap.length; i++) {
+        if (this._partToAttachmentMap[i].part) {
+            partMap[this._partToAttachmentMap[i].part] = this._partToAttachmentMap[i].mid;
+        }
+    }
+    for (var i = 0; i < parts.length; i++) {
+        var part = parts[i];
+        if (partMap[part]) {
+            forAttObjs.push({part:part, mid:partMap[part]});
+        }
+    }
+    return forAttObjs;
 };
 
 ZmComposeView.prototype._getForwardAttIds =
@@ -3294,9 +3302,11 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 			for (var i = 0; i < attInfo.length; i++) {
 				var att = attInfo[i];
 				var params = {
-					att:	att,
-					id:		[this._view, att.part, ZmMailMsgView.ATT_LINK_MAIN].join("_"),
-					text:	AjxStringUtil.clipFile(att.label, 30)
+					att:	    att,
+					id:		    [this._view, att.part, ZmMailMsgView.ATT_LINK_MAIN].join("_"),
+					text:	    AjxStringUtil.clipFile(att.label, 30),
+					mid:        att.mid,
+					rfc822Part: att.rfc822Part
 				};
 				att.link = ZmMailMsgView.getMainAttachmentLinkHtml(params);
 				this._partToAttachmentMap[i] = att;
