@@ -679,6 +679,10 @@ function(value) {
  */
 ZmConvReplyView.prototype.reset =
 function() {
+	var msgView = this._msg && this._convView._msgViews[this._msg.id];
+	if (msgView) {
+		msgView._resetLinks();
+	}
 	this.setValue("");
 	this.setVisible(false);
 	this._msg = null;
@@ -688,22 +692,23 @@ ZmConvReplyView.prototype._initializeToolbar =
 function() {
 	
 	if (!this._replyToolbar) {
-		var buttons = [ZmOperation.SEND, ZmOperation.CANCEL, ZmOperation.FILLER, ZmOperation.REPLY_ALL];
-		var overrides = {};
-		overrides[ZmOperation.REPLY_ALL] = {textKey:"moreComposeOptions"};
+		var buttons = [ZmOperation.SEND, ZmOperation.CANCEL];
 		var tbParams = {
 			parent:				this,
 			buttons:			buttons,
 			posStyle:			DwtControl.STATIC_STYLE,
 			buttonClassName:	"DwtToolbarButton",
 			context:			ZmId.VIEW_CONV2,
-			toolbarType:		ZmId.TB_REPLY,
-			overrides:			overrides
+			toolbarType:		ZmId.TB_REPLY
 		};
 		var tb = this._replyToolbar = new ZmButtonToolBar(tbParams);
 		tb.addSelectionListener(ZmOperation.SEND, this._convView._sendListener.bind(this._convView));
 		tb.addSelectionListener(ZmOperation.CANCEL, this._convView._cancelListener.bind(this._convView));
-		tb.addSelectionListener(ZmOperation.REPLY_ALL, this._moreOptions.bind(this));
+		var link = document.createElement("a");
+		link.className = "Link";
+		link.onclick = this._moreOptions.bind(this);
+		link.innerHTML = ZmMsg.moreComposeOptions;
+		tb._addItem(null, link);
 	}
 };
 
@@ -1276,8 +1281,9 @@ function(id, autoDisplay) {
 
 ZmMailMsgCapsuleView.prototype._handleForwardLink =
 function(id, op, ev) {
+	var text = this._convView._replyView.getValue();
 	this._convView._replyView.reset();
-	this._controller._doAction({action:op, msg: this._msg});
+	this._controller._doAction({action:op, msg:this._msg, extraBodyText:text});
 };
 
 ZmMailMsgCapsuleView.prototype._handleMoreActionsLink =
@@ -1364,34 +1370,22 @@ function(event) {
 	}
 };
 
-ZmMailMsgCapsuleView.prototype._setTags =
-function() {
+ZmMailMsgCapsuleView.prototype._insertTagRow =
+function(table) {
 	
-	var msg = this._msg;
-	if (!appCtxt.get(ZmSetting.TAGGING_ENABLED) || !msg || !this._convView._tagList) { return; }
-	
-	this._tagCellId = this._footerId + "_tagCell";
-	this._renderTags(msg, document.getElementById(this._tagContainerCellId), this._tagCellId);
-};
-
-ZmMailMsgCapsuleView.prototype._renderTags =
-function(msg, container, tagCellId) {
-
-	if (!container) { return; }
-	var tags = msg && msg.getSortedTags();
-	if (!(tags && tags.length)) {
-		container.innerHTML = "";
-		return;
-	}
-
-	var html = [], idx = 0;
-	for (var i = 0; i < tags.length; i++) {
-		var tag = tags[i];
-		var id = this._htmlElId + "_tag" + tag.id;
-		var attrStr = ["id='", id, "' title='", tag.getName(), "'"].join("");
-		html[idx++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, attrStr);
-	}
-	container.innerHTML = html.join("");
+	var tagRow = table.insertRow(-1);
+	var cell;
+	tagRow.id = this._tagRowId;
+	cell = tagRow.insertCell(-1);
+	cell.innerHTML = "&nbsp;";
+	cell = tagRow.insertCell(-1);
+	cell.className = "LabelColName";
+	cell.innerHTML = ZmMsg.tags + ":";
+	cell.style.verticalAlign = "middle";
+	var tagCell = tagRow.insertCell(-1);
+	cell = tagRow.insertCell(-1);
+	cell.innerHTML = "&nbsp;";
+	return tagCell;
 };
 
 /**
@@ -1551,7 +1545,6 @@ function(state, force) {
 	this._showMoreIds = ai.showMoreIds;
 	var folder = appCtxt.getById(msg.folderId);
 	msg.showImages = msg.showImages || (folder && folder.isFeed());
-	this._msgDateId	= id + "_date";
 	this._readIconId = id + "_read";
 	this._idToAddr = {};
 
@@ -1566,13 +1559,20 @@ function(state, force) {
 			from:			ai.from,
 			fromId:			fromId,
 			fragment:		this._getFragment(),
-			msgDateId:		this._msgDateId,
 			date:			dateString
 		};
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-collapsed", subs);
 	}
 	else if (state == ZmMailMsgCapsuleViewHeader.EXPANDED) {
+		var folder = this._msg.folderId && appCtxt.getById(this._msg.folderId);
+		if (folder) {
+			var tooltip = 
+			ai.participants[0].folderIcon = AjxImg.getImageHtml(folder.getIconWithColor(), null, "title='" + folder.getName() + "'");
+		}
+		var hdrTableId = this._msgView._hdrTableId = id + "_hdrTable";
+		
 		subs = {
+			hdrTableId:		hdrTableId,
 			readIcon:		AjxImg.getImageHtml(msg.getReadIcon(), null, "id='" + this._readIconId + "'"),
 			sentBy:			ai.sentBy,
 			sentByAddr:		ai.sentByAddr,
@@ -1581,17 +1581,12 @@ function(state, force) {
 			bwo:			ai.bwo,
 			bwoAddr:		ai.bwoAddr,
 			addresses:		ai.participants,
-			msgDateId:		this._msgDateId,
 			date:			dateString
 		};
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-expanded", subs);
 	}
 
 	this.setContent(html);
-	
-	if (!this._dateSpan) {
-		this._dateSpan = document.getElementById(this._msgDateId);
-	}
 	
 	var readIcon = document.getElementById(this._readIconId);
 	if (readIcon) {

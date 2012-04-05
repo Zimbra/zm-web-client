@@ -928,6 +928,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	-moz-user-select:text;
 }
 
+.Conv2MsgHeader TD:last-child {
+	padding-right:3px;
+}
+
 .Conv2MsgHeader.focused {
 	background-color:@SelC@;
 }
@@ -945,11 +949,9 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .Conv2MsgHeader .date {
 	white-space:nowrap;
-	/* background-color needs to be same as Conv2MsgHeader */
 	background:none repeat scroll 0 0 white;
 	padding:0 7px 0 5px;
 	position:absolute;
-	/* right set to same as ZmMailMsgCapsuleView border + margin */
 	right:0;
 }
 
@@ -961,7 +963,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	padding-left:5px;
 }
 
-.ZmMailMsgCapsuleView .Link {
+.ZmMailMsgCapsuleView .Link, .Conv2Reply .Link {
 	cursor:pointer;
 	white-space:nowrap;
 	margin:0 3px;

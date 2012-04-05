@@ -1760,34 +1760,35 @@ ZmMailMsgView.prototype._renderMessageFooter = function(msg, container) {};
 
 ZmMailMsgView.prototype._setTags =
 function(msg) {
-	if (!appCtxt.get(ZmSetting.TAGGING_ENABLED) || msg == null || !this._tagList) { return; }
+
+	if (!appCtxt.get(ZmSetting.TAGGING_ENABLED) || !msg || !this._tagList) { return; }
 
 	var numTags = msg.tags.length;
 	var table = document.getElementById(this._hdrTableId);
 	var tagRow = document.getElementById(this._tagRowId);
-	var tagCell = null;
-
-	if (tagRow != null && table.rows[table.rows.length-1] == tagRow) {
-		if (numTags == 0) {
-			table.deleteRow(-1);
-			return;
+	var tagCell = document.getElementById(this._tagCellId);
+	
+	if (!msg.tags || msg.tags.length == 0) {
+		if (tagRow) {
+			table.deleteRow(tagRow.rowIndex);
 		}
-		tagCell = tagRow.cells[1];
 	}
 	else {
-		if (numTags == 0) {
-			return;
-		}
-		tagRow = table.insertRow(-1);
-		tagRow.id = this._tagRowId;
-		var tagLabelCell = tagRow.insertCell(-1);
-		tagLabelCell.className = "LabelColName";
-		tagLabelCell.innerHTML = ZmMsg.tags + ":";
-		tagLabelCell.style.verticalAlign = "middle";
-		tagCell = tagRow.insertCell(-1);
+		tagCell = tagCell || this._insertTagRow(table);
+		this._renderTags(msg, tagCell, this._tagCellId);
 	}
-	
-	this._renderTags(msg, tagCell);
+};
+
+ZmMailMsgView.prototype._insertTagRow =
+function(table) {
+	var tagRow = table.insertRow(-1);
+	tagRow.id = this._tagRowId;
+	var tagLabelCell = tagRow.insertCell(-1);
+	tagLabelCell.className = "LabelColName";
+	tagLabelCell.innerHTML = ZmMsg.tags + ":";
+	tagLabelCell.style.verticalAlign = "middle";
+	var tagCell = tagRow.insertCell(-1);
+	return tagCell;
 };
 
 ZmMailMsgView.prototype._renderTags =

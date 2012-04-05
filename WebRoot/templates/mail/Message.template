@@ -730,11 +730,11 @@
 </template>
 
 <template id='mail.Message#Conv2MsgHeader-expanded'>
-	<table>
+	<table id='${hdrTableId}'>
 		<tr>
 			<td>${readIcon}</td>
 			<td class='LabelColName'><$= ZmMsg.fromLabel $></td>
-			<td class='LabelColValue' valign=top colspan=10>
+			<td class='LabelColValue'>
 				<span>${sentBy}</span>
 				<$ var useObo = data.obo && (data.oboAddr != data.sentByAddr); $>
 				<$ var useBwo = data.bwo && (data.bwoAddr != data.sentByAddr); $>
@@ -750,8 +750,8 @@
 					<span class='LabelColName'><$= ZmMsg.byWayOfLabel $></span>
 					<span class='LabelColValue' colspan=10><$= data.bwo $></span>
 				<$ } $>
-				<span id='${msgDateId}' class='date'>${date}</span>
 			</td>
+			<td>${date}</td>
 		</tr>
 
 		<$ for (var i = 0; i < data.addresses.length; i++) { $>
@@ -768,7 +768,10 @@
 		<td class='LabelColName'>
 			<$= AjxMessageFormat.format(ZmMsg.makeLabel, data.prefix) $>
 		</td>
-		<td class='LabelColValue' colspan='10'><$= data.partStr $></td>
+		<td class='LabelColValue'><$= data.partStr $></td>
+		<$ if (!data.isReply) { $>
+		<td align="right"><$= data.folderIcon ? data.folderIcon : "&nbsp;"; $></td>
+		<$ } $>
 	</tr>
 </template>
 
