@@ -476,9 +476,6 @@ function(params) {
 
 ZmConvView2.prototype._handleResponseSendMsg =
 function() {
-	if (!appCtxt.isOffline) { // see bug #29372
-		appCtxt.setStatusMsg(ZmMsg.messageSent);
-	}
 	this._replyView.setValue("");
 };
 
