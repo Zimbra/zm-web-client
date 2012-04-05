@@ -335,8 +335,8 @@ function(type) {
 };
 
 ZmComposeView.prototype.getAddressButtonListener =
-function() {
-    return this._recipients.addressButtonListener;
+function(ev, addrType) {
+    return this._recipients.addressButtonListener(ev, addrType);
 };
 
 ZmComposeView.prototype.setAddress =

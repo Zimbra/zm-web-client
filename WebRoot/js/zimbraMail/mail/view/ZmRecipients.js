@@ -424,7 +424,7 @@ function(bEnable) {
 
 // Address buttons invoke contact picker
 ZmRecipients.prototype.addressButtonListener =
-function(ev, addrTypet) {
+function(ev, addrType) {
 	var obj = ev ? DwtControl.getTargetControl(ev) : null;
 	if (this._enableContainerInputs) {
 		this._enableContainerInputs(false);
