@@ -2806,13 +2806,17 @@ function(templateId, data) {
         var node = this._attButton.getHtmlElement().getElementsByClassName("ZWidgetTitle")[0];
 
         if (AjxEnv.isChrome)
-            styleStr = "right:200px;";
+            styleStr = "right:200px";
         else if (AjxEnv.isSafari)
-            styleStr = "right: 45px;width: 21px;";
+            styleStr = "right: 45px;width: 21px";
         else if (AjxEnv.isFirefox)
-            styleStr  = "right:185px;";
-
-        node.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentAttachBtn", {styleStr:styleStr});
+            styleStr  = "right:185px";
+        var data = {
+            styleStr : styleStr,
+            fileInputId : ZmId.getViewId(this._view, ZmId.CMP_ATT_INP)
+        }
+        node.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentAttachBtn", data);
+        this._attcBtnFileInpId = data.fileInputId;
     } else {
              this._attButton._textEl.onclick = function(event){
                 var curView = appCtxt.getAppViewMgr().getCurrentView();

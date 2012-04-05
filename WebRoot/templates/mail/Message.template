@@ -131,7 +131,7 @@
 <template id='mail.Message#MailAttachmentAttachBtn'>
     <div style="position:relative; max-width:21px;">
         <form>
-	        <input type="file" class="BrowseAttachBtn" style="${styleStr};" multiple="true" name="files" onclick="window.appCtxt.getCurrentView().collapseAttMenu();"; onchange="window.appCtxt.getCurrentView()._submitMyComputerAttachments(files, this)">
+	        <input type="file" class="BrowseAttachBtn" style="${styleStr};" multiple="true" name="files" onclick="window.appCtxt.getCurrentView().collapseAttMenu();"; onchange="window.appCtxt.getCurrentView()._submitMyComputerAttachments(files, this)" id='${fileInputId}'>
 	    </form>
         <div class="ComposeAttachBtn">
 		    <span> <$=ZmMsg.attach$> </span>

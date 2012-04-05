@@ -1554,7 +1554,19 @@ function(ev) {
 		this._detachOkCancel.setMessage(ZmMsg.detachAnyway, DwtMessageDialog.WARNING_STYLE);
 		this._detachOkCancel.registerCallback(DwtDialog.OK_BUTTON, this._detachCallback, this);
 	}
-	this._composeView.showAttachmentDialog();
+    var view = this._composeView;
+    if (view._attcBtnFileInpId) {
+        var fileInputElement = document.getElementById(view._attcBtnFileInpId);
+        if (fileInputElement && fileInputElement.click) {
+            try {
+                fileInputElement.click();
+                return;
+            }
+            catch(e) {
+            }
+        }
+    }
+    view.showAttachmentDialog(ZmMsg.myComputer);
 };
 
 ZmComposeController.prototype._optionsListener =
