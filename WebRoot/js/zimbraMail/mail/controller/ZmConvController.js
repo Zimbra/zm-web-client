@@ -148,7 +148,7 @@ function() {
 
 ZmConvController.prototype._setReadingPanePref =
 function(value) {
-	if (this.isSearchResults) {
+	if (this.isSearchResults || appCtxt.isExternalAccount()) {
 		this._readingPaneLoc = value;
 	}
 	else {

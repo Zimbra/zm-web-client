@@ -1117,10 +1117,11 @@ function(msg, container) {
 	}
 	
 	var linkInfo = this._linkInfo = {};
-	linkInfo[ZmOperation.SHOW_ORIG] 	= {key: showTextKey,	handler: showTextHandler};
-	linkInfo[ZmOperation.REPLY]			= {key: "reply",		handler: this._handleReplyLink, 	op: ZmOperation.REPLY};
-	linkInfo[ZmOperation.REPLY_ALL]		= {key: "replyAll",		handler: this._handleReplyLink, 	op: ZmOperation.REPLY_ALL};
-	linkInfo[ZmOperation.FORWARD]		= {key: "forward",		handler: this._handleForwardLink};
+    var isExternalAccount = appCtxt.isExternalAccount();
+	linkInfo[ZmOperation.SHOW_ORIG] 	= {key: showTextKey,	handler: showTextHandler,  disabled: isExternalAccount};
+	linkInfo[ZmOperation.REPLY]			= {key: "reply",		handler: this._handleReplyLink, 	op: ZmOperation.REPLY,  disabled: isExternalAccount};
+	linkInfo[ZmOperation.REPLY_ALL]		= {key: "replyAll",		handler: this._handleReplyLink, 	op: ZmOperation.REPLY_ALL,  disabled: isExternalAccount};
+	linkInfo[ZmOperation.FORWARD]		= {key: "forward",		handler: this._handleForwardLink,  disabled: isExternalAccount};
 	linkInfo[ZmOperation.ACTIONS_MENU]	= {key: "moreActions",	handler: this._handleMoreActionsLink};
 
 	var links = [
@@ -1159,6 +1160,9 @@ function(id) {
 	if (!(info && info.key && info.handler)) { return ""; } 
 	
 	var linkId = info.linkId = [this._footerId, info.key].join("_");
+    if (info.disabled) {
+        return "<span id='" + linkId + "'>" + ZmMsg[info.key] + "</span>";
+    }
 	return "<a class='Link' id='" + linkId + "'>" + ZmMsg[info.key] + "</a>";
 };
 
@@ -1172,7 +1176,7 @@ function(id, op, ev) {
 		link.className = this._linkFollowedClass;
 	}
 	
-	var handler = info && info.handler;
+	var handler = info && !info.disabled ? info.handler : null;
 	if (handler) {
 		handler.apply(this, [id, info.op, ev]);
 	}
@@ -1183,6 +1187,7 @@ function() {
 	var links = [ZmOperation.REPLY, ZmOperation.REPLY_ALL];
 	for (var i = 0; i < links.length; i++) {
 		var info = this._linkInfo[links[i]];
+        if (info && info.disabled) { continue; }
 		var link = info && document.getElementById(info.linkId);
 		if (link) {
 			link.className = this._linkClass;
@@ -1436,10 +1441,10 @@ function() {
 		ctlr._mailListView._selectedMsg = this._msg;
 	}
 	ctlr._resetOperations(menu, 1);
-	menu.enable(ZmOperation.MARK_READ, this._msg.isUnread);
-	menu.enable(ZmOperation.MARK_UNREAD, !this._msg.isUnread);
-	menu.enable(ZmOperation.MUTE_CONV, !this._msg.isMuted());
-	menu.enable(ZmOperation.UNMUTE_CONV, this._msg.isMuted());
+    ctlr._enableFlags(menu);
+    ctlr._enableMuteUnmute(menu);
+	/*menu.enable(ZmOperation.MARK_READ, this._msg.isUnread);
+	menu.enable(ZmOperation.MARK_UNREAD, !this._msg.isUnread);*/
 	var cv = this._convView, op = ZmOperation.TAG;
 	var listener = cv._listenerProxy.bind(cv, ctlr._listeners[op]);
 	ctlr._setupTagMenu(menu, listener);
@@ -1630,7 +1635,7 @@ function() {
 	if (folder && folder.isInTrash()) {
 		classes.push("Trash");
 	}
-	if (msg.isUnread && !msg.isMuted())	{ classes.push("Unread"); }
+	if (msg.isUnread && !msg.isMute)	{ classes.push("Unread"); }
 	this.setClassName(classes.join(" "));
 };
 

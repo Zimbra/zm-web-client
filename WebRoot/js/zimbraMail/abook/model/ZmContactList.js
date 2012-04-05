@@ -141,10 +141,6 @@ function(callback, errorCallback, accountName) {
 	appCtxt.getAppController().sendRequest(params);
 };
 
-ZmContactList.prototype._handleResponseLoad =
-function(callback, result) {
-};
-
 /**
  * @private
  */

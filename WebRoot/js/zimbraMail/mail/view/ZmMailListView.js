@@ -653,7 +653,7 @@ function() {
 
 ZmMailListView.prototype._getRowClass =
 function(item) {
-	return item.isUnread && !item.isMuted() ? "Unread" : null;
+	return item.isUnread && !item.isMute ? "Unread" : null;
 };
 
 ZmMailListView.prototype._getCellId =
@@ -1435,7 +1435,7 @@ function(msg) {
 
 	var row = this._getElement(msg, ZmItem.F_ITEM_ROW);
 	if (row) {
-		if (msg.isUnread && !msg.isMuted()) {
+		if (msg.isUnread) {
 			Dwt.addClass(row, "Unread");
 		}
 		var folder = appCtxt.getById(msg.folderId);

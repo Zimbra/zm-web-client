@@ -171,12 +171,12 @@ function(view, force) {
 			delete this._showingAccountColumn;
 		}
 
-		if (!this.isSearchResults && !this._currentSearch.isOutboundFolder) {
+		if (!appCtxt.isExternalAccount() && !this.isSearchResults && !this._currentSearch.isOutboundFolder) {
 			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[view]);
 		}
 
 		var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, view);
-		if (this._mailListView) {
+		if (this._mailListView && !appCtxt.isExternalAccount()) {
 			//clear the groups to address "from" grouping for conversation
 			this._mailListView.setGroup(ZmId.GROUPBY_NONE);
 		}
@@ -226,7 +226,7 @@ function() {
 
 ZmMailListController.prototype._setReadingPanePref =
 function(value) {
-	if (this.isSearchResults) {
+	if (this.isSearchResults || appCtxt.isExternalAccount()) {
 		this._readingPaneLoc = value;
 	}
 	else {
@@ -249,11 +249,12 @@ function(actionCode, ev) {
 	var isDrafts = this.isDraftsFolder();
 	var lv = this._listView[this._currentViewId];
 	var num = lv.getSelectionCount();
+    var isExternalAccount = appCtxt.isExternalAccount();
 
 	switch (actionCode) {
 
 		case ZmKeyMap.FORWARD:
-			if (!isDrafts) {
+			if (!isDrafts && !isExternalAccount) {
 				this._doAction({action:ZmOperation.FORWARD});
 			}
 			break;
@@ -267,6 +268,7 @@ function(actionCode, ev) {
 		case ZmKeyMap.GOTO_JUNK:
 		case ZmKeyMap.GOTO_SENT:
 		case ZmKeyMap.GOTO_TRASH:
+            if (isExternalAccount) { break; }
 			if (actionCode == ZmKeyMap.GOTO_JUNK && !appCtxt.get(ZmSetting.SPAM_ENABLED)) { break; }
 			this._folderSearch(ZmMailListController.ACTION_CODE_TO_FOLDER[actionCode]);
 			break;
@@ -286,7 +288,7 @@ function(actionCode, ev) {
 
 		case ZmKeyMap.REPLY:
 		case ZmKeyMap.REPLY_ALL:
-			if (!isDrafts && (num == 1) && !isSyncFailures) {
+			if (!isDrafts && !isExternalAccount && (num == 1) && !isSyncFailures) {
 				this._doAction({action:ZmMailListController.ACTION_CODE_TO_OP[actionCode]});
 			}
 			break;
@@ -296,7 +298,7 @@ function(actionCode, ev) {
 			break;
 	
 		case ZmKeyMap.SPAM:
-			if (num && !isDrafts && !isSyncFailures && appCtxt.get(ZmSetting.SPAM_ENABLED) && (folder && !folder.isReadOnly())) {
+			if (num && !isDrafts && !isExternalAccount && !isSyncFailures && appCtxt.get(ZmSetting.SPAM_ENABLED) && (folder && !folder.isReadOnly())) {
 				this._spamListener();
 			}
 			break;
@@ -553,7 +555,7 @@ function() {
 	var list = [ZmOperation.PRINT,
                 ZmOperation.MUTE_CONV,
                 ZmOperation.UNMUTE_CONV];
-	if (!appCtxt.isChildWindow && appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
+	if (!appCtxt.isChildWindow && appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !appCtxt.isExternalAccount()) {
 		list.push(ZmOperation.SEP, ZmOperation.DETACH);
 	}
 	list.push(ZmOperation.SEP, ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD);
@@ -711,14 +713,11 @@ function() {
 
 ZmMailListController.prototype._getConvMuteStatus =
 function() {
-
-	var status = {hasRead : false, hasUnread : false}
-
 	var items = this.getItems();
     if (items.length > 1) { return false; }
 
     var item = items[0];
-	return item.isMuted();
+	return item.isMute;
 };
 
 /**
@@ -1201,6 +1200,16 @@ function(items, on, callback, forceCallback) {
 	list.markRead(params);
 };
 
+ZmMailListController.prototype._doMarkMute =
+function(items, on, callback, forceCallback) {
+
+	var params = {items:items, value:on, callback:callback};
+	var list = params.list = this._getList(params.items);
+    params.forceCallback = forceCallback;
+	this._setupContinuation(this._doMarkMute, [on, callback], params);
+	list.markMute(params);
+};
+
 /**
 * Marks the given items as "spam" or "not spam". Items marked as spam are moved to
 * the Junk folder. If items are being moved out of the Junk folder, they will be
@@ -1385,12 +1394,12 @@ function(view, btn) {
 
 	var menu = new ZmPopupMenu(btn, null, null, this);
 	btn.setMenu(menu);
-
+    var isExternalAccount = appCtxt.isExternalAccount();
 	if (appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
 		this._setupGroupByMenuItems(view, menu);
 	}
 	this._setupReadingPaneMenuItems(view, menu, this.isReadingPaneOn());
-	if (appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
+	if (!isExternalAccount && appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
 		this._setupConvOrderMenuItems(view, menu);
 	}
 
@@ -1810,65 +1819,27 @@ function(ev) {
 
 ZmMailListController.prototype._muteConvListener =
 function(ev) {
-	//this._doAction({ev:ev, action:ZmOperation.DRAFT});
     var listView = this._listView[this._currentView];
 	var items = listView.getSelection();
 	items = AjxUtil.toArray(items);
-
-    var ids = [];
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-        item.mute();
-		// always extract out the msg ids from the conv
-		if (item.toString() == "ZmConv") {
-			// get msg ID in case of virtual conv.
-			// item.msgIds.length is inconsistent, so checking if conv id is negative.
-			if (appCtxt.isOffline && item.id.split(":")[1]<0) {
-				ids.push(item.msgIds[0]);
-			} else {
-				ids.push(item.id);
-			}
-		} else {
-			ids.push(item.id);
-		}
-	}
     var markReadcallback = this._getMarkReadCallback();
     var callback = new AjxCallback(this, this._handleMuteUnmuteConvResponse, [markReadcallback, ZmId.OP_MUTE_CONV]);
-    this._doMarkRead(items, true, callback, true);
+    this._doMarkMute(items, true, callback, true);
 };
 
 ZmMailListController.prototype._unmuteConvListener =
 function(ev) {
-	//this._doAction({ev:ev, action:ZmOperation.DRAFT});
     var listView = this._listView[this._currentView];
 	var items = listView.getSelection();
 	items = AjxUtil.toArray(items);
-
-    var ids = [];
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-        item.unmute();
-		// always extract out the msg ids from the conv
-		if (item.toString() == "ZmConv") {
-			// get msg ID in case of virtual conv.
-			// item.msgIds.length is inconsistent, so checking if conv id is negative.
-			if (appCtxt.isOffline && item.id.split(":")[1]<0) {
-				ids.push(item.msgIds[0]);
-			} else {
-				ids.push(item.id);
-			}
-		} else {
-			ids.push(item.id);
-		}
-	}
-    var convListView = this._mailListView;
+    var convListView = this._mailListView || this._parentController._mailListView;
+    //When a conv is unmuted it needs to be rearranged in the list as per its sorting order. convListCallback will handle it.
     var convListCallback = null;
-    if(convListView.toString() == "ZmConvListView") {
+    if(convListView && convListView.toString() == "ZmConvListView") {
         convListCallback = new AjxCallback(convListView, convListView.handleUnmuteConv, items);
     }
-
     var callback = new AjxCallback(this, this._handleMuteUnmuteConvResponse, [convListCallback, ZmId.OP_UNMUTE_CONV]);
-    this._doMarkRead(items, true, callback, true); //mark the conv as read if there are any conv not yet loaded
+    this._doMarkMute(items, false, callback, true);
 };
 
 ZmMailListController.prototype._handleMuteUnmuteConvResponse =
@@ -1883,12 +1854,6 @@ function(callback, actionId, result) {
     if(callback != null) {
         callback.run();
     }
-};
-
-ZmMailListController.prototype._appendUndoLink =
-function(msg, actionId) {
-    var html = new AjxBuffer();
-    html.append("<span class='fakeanchor' onclick=''>",ZmMsg.undo,"</span>")
 };
 
 ZmMailListController.prototype._checkMailListener =
@@ -2023,6 +1988,8 @@ function(parent, num) {
 	parent.setItemVisible(ZmOperation.MARK_UNREAD, !isDrafts);
 	parent.setItemVisible(ZmOperation.SPAM, !isDrafts);
 	parent.setItemVisible(ZmOperation.DETACH, !isDrafts);
+
+
 	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !isDrafts && num == 1));
 
 	if (parent instanceof ZmActionMenu) {
@@ -2043,7 +2010,6 @@ function(parent, num) {
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.SPAM, ZmOperation.TAG_MENU], false);
 		} else {
 			parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (!isDrafts && !isFeed && num == 1));
-			parent.enable([ZmOperation.SPAM, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.FORWARD], (!isDrafts && num > 0));
 			parent.enable([ZmOperation.VIEW_MENU], true);
 		}
 	} else {
@@ -2067,6 +2033,24 @@ function(parent, num) {
 	{
 		parent.enable(ZmOperation.TAG_MENU, false);
 	}
+
+    if (appCtxt.isExternalAccount()) {
+        parent.enable(
+                        [
+                            ZmOperation.REPLY,
+                            ZmOperation.REPLY_ALL,
+                            ZmOperation.FORWARD,
+                            ZmOperation.EDIT_AS_NEW,
+                            ZmOperation.REDIRECT,
+                            ZmOperation.MARK_READ,
+                            ZmOperation.MARK_UNREAD,
+                            ZmOperation.SPAM,
+                            ZmOperation.DETACH,
+                            ZmOperation.ADD_FILTER_RULE
+                        ],
+                        false
+                    );
+    }
 
 	this._cleanupToolbar(parent);
 };
@@ -2121,7 +2105,10 @@ function(parent) {
 // Enable mark read/unread as appropriate.
 ZmMailListController.prototype._enableFlags =
 function(menu) {
-
+    if(appCtxt.isExternalAccount()) {
+        menu.enable([ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD], false);
+        return;
+    }
 	var status = this._getReadStatus();
 	menu.enable([ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD], true);
 	if (!status.hasUnread) {
@@ -2135,10 +2122,12 @@ function(menu) {
 // Enable mark read/unread as appropriate.
 ZmMailListController.prototype._enableMuteUnmute =
 function(menu) {
-
-	var isMuted = this._getConvMuteStatus();
     menu.enable([ZmOperation.UNMUTE_CONV, ZmOperation.MUTE_CONV], false);
-	if(isMuted) {
+    if(appCtxt.isExternalAccount()) {
+        return;
+    }
+    var isMute = this._getConvMuteStatus();
+	if(isMute) {
          menu.enable(ZmOperation.UNMUTE_CONV, true);
     }
     else {

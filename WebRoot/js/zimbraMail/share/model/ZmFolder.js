@@ -385,14 +385,13 @@ function(id) {
 };
 
 /**
- * Checks if the folder supports public access.
+ * Checks if the folder supports public access. Override this method if you dont want a folder to be accessed publicly
  * 
- * @return	{Boolean}	always returns <code>false</code>
+ * @return	{Boolean}	always returns <code>true</code>
  */
 ZmFolder.prototype.supportsPublicAccess =
 function() {
-	// mail folders cannot be accessed outside of ZCS
-	return false;
+	return true;
 };
 
 /**

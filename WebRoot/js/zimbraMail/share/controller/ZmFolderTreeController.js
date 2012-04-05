@@ -110,12 +110,15 @@ function(parent, type, id) {
 		parent.enable(ZmOperation.SYNC, folder.isFeed()/* || folder.hasFeeds()*/);
 		parent.enable(ZmOperation.SYNC_ALL, folder.isFeed() || folder.hasFeeds());
 		parent.enable(ZmOperation.SHARE_FOLDER, isShareVisible);
-		parent.enable(ZmOperation.EMPTY_FOLDER, ((hasContent || folder.link) && isEmptyFolderAllowed));	// numTotal is not set for shared folders
-		parent.enable(ZmOperation.RENAME_FOLDER, !folder.isDataSource());		// dont allow datasource'd folder to be renamed via overview
-		parent.enable(ZmOperation.NEW_FOLDER, !folder.disallowSubFolder);
+		parent.enable(ZmOperation.EMPTY_FOLDER, ((hasContent || folder.link) && isEmptyFolderAllowed && !appCtxt.isExternalAccount()));	// numTotal is not set for shared folders
+		parent.enable(ZmOperation.RENAME_FOLDER, !(folder.isDataSource() || appCtxt.isExternalAccount()));		// dont allow datasource'd folder to be renamed via overview
+		parent.enable(ZmOperation.NEW_FOLDER, !(folder.disallowSubFolder || appCtxt.isExternalAccount()));
 
 		if (folder.isRemote() && folder.isReadOnly()) {
 			parent.enable([ZmOperation.NEW_FOLDER, ZmOperation.MARK_ALL_READ, ZmOperation.EMPTY_FOLDER], false);
+		}
+        if (appCtxt.isExternalAccount()) {
+			parent.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.MOVE], false);
 		}
 	}
 	// system folder
@@ -250,6 +253,9 @@ function(parent, type, id) {
  */
 ZmFolderTreeController.prototype._getHeaderActionMenuOps =
 function() {
+    if (appCtxt.isExternalAccount()) {
+        return [ZmOperation.EXPAND_ALL];
+    }
 	return [
 		ZmOperation.NEW_FOLDER,
 		ZmOperation.SEP,

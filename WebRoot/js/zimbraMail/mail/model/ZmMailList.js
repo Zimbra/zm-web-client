@@ -365,6 +365,56 @@ function(params) {
     }
 };
 
+/**
+ * Only make the request for items whose state will be changed.
+ *
+ * @param {Hash}		params		a hash of parameters
+ *
+ *        items			[array]				a list of items to mark read/unread
+ *        value			[boolean]			if true, mark items read
+ *        callback		[AjxCallback]*		callback to run after each sub-request
+ *        finalCallback	[closure]*			callback to run after all items have been processed
+ *        count			[int]*				starting count for number of items processed
+ *
+ * @private
+ */
+ZmMailList.prototype.markMute =
+function(params) {
+
+	var items = AjxUtil.toArray(params.items);
+
+	var items1;
+	if (items[0] && items[0] instanceof ZmItem) {
+		items1 = [];
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			if (params.value != item.isMute) {
+				items1.push(item);
+			}
+		}
+	} else {
+		items1 = items;
+	}
+
+	if (items1.length) {
+		params.items = items1;
+		params.op = "mute";
+		if (items1.length > 1) {
+        	params.actionText = params.value ? ZmMsg.actionMarkMute : ZmMsg.actionMarkUnmute;
+		}
+		this.flagItems(params);
+	}
+    else if(params.forceCallback) {
+        if (params.callback) {
+			params.callback.run(new ZmCsfeResult([]));
+		}
+		if (params.finalCallback) {
+			params.finalCallback(params);
+		}
+		return;
+    }
+};
+
 // set "force" flag to true on actual hard deletes, so that msgs
 // in a conv list are removed
 ZmMailList.prototype.deleteLocal =

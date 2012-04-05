@@ -2038,11 +2038,9 @@ function(msgNode) {
 			if (!conv.msgIds) {
 				conv.msgIds = [this.id];
 			}
-
-            if (conv.isMuted()) {
-                this._muted = true;
-                this.isUnread = false;
-                this._markReadLocal(true);
+            
+            if(conv.isMute) {
+                this.isMute = true;
             }
 		}
 	}
@@ -2181,19 +2179,14 @@ function(atts) {
 	}
 };
 
-ZmMailMsg.prototype.isMuted =
-function () {
-	return this._muted ? this._muted : false;
-};
-
 ZmMailMsg.prototype.mute =
 function () {
-	this._muted = true;
+	this.isMute = true;
 };
 
 ZmMailMsg.prototype.unmute =
 function () {
-	this._muted = false;
+	this.isMute = false;
 };
 
 ZmMailMsg.prototype.isInvite =

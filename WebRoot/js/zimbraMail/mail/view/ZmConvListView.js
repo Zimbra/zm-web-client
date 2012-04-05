@@ -442,7 +442,7 @@ function(item, colIdx) {
 	
 	// first row
 	htmlArr[idx++] = "<table class='TopRow' style='width:100%;'>";
-	htmlArr[idx++] = (item.isUnread && !item.isMuted()) ? "<tr class='Unread' " : "<tr ";
+	htmlArr[idx++] = (item.isUnread && !item.isMute) ? "<tr class='Unread' " : "<tr ";
 	htmlArr[idx++] = "id='";
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
@@ -833,7 +833,7 @@ function(ev) {
 
 	var fields = ev.getDetail("fields");
 	var isConv = (item.type == ZmItem.CONV);
-    var isMuted = item.isMuted ? item.isMuted() : false;
+    var isMute = item.isMute ? item.isMute : false;
 	var sortBy = this._sortByString || ZmSearch.DATE_DESC;
 	var handled = false;
 	
@@ -956,16 +956,8 @@ function(ev) {
             AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: change position of conv " + item.id + " to " + sortIndex);
             this._removeMsgRows(item.id);
             this.removeItem(item);
-            if(isMuted) {
-                AjxDebug.println(AjxDebug.NOTIFY, "ZmConvListView: change position of conv " + item.id + " to " + curIndex);
-                this.addItem(item, curIndex);
-                this._controller._doMarkRead([item], true);
-                // TODO: mark create notif handled?
-            }
-            else {
-                this.addItem(item, sortIndex);
-                // TODO: mark create notif handled?
-            }
+            this.addItem(item, sortIndex);
+            // TODO: mark create notif handled?
 		}
 	}
 

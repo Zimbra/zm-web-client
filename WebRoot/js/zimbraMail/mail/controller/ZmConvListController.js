@@ -71,7 +71,7 @@ ZmConvListController.prototype.getDefaultViewType = ZmConvListController.getDefa
 ZmConvListController.prototype.show =
 function(searchResults) {
 	ZmDoublePaneController.prototype.show.call(this, searchResults, searchResults.getResults(ZmItem.CONV));
-	if (!this.isSearchResults && !(searchResults && searchResults.search && searchResults.search.isOutboundFolder)) {
+	if (!appCtxt.isExternalAccount() && !this.isSearchResults && !(searchResults && searchResults.search && searchResults.search.isOutboundFolder)) {
 		appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_CONV);
 	}
 };
@@ -716,6 +716,11 @@ function(items, folder, attrs, isShiftKey) {
 ZmConvListController.prototype._doMarkRead =
 function(items, on, callback, forceCallback) {
 	this._applyAction(items, "_doMarkRead", [on, callback, forceCallback]);
+};
+
+ZmConvListController.prototype._doMarkMute =
+function(items, on, callback, forceCallback) {
+	this._applyAction(items, "_doMarkMute", [on, callback, forceCallback]);
 };
 
 ZmConvListController.prototype._doSpam =

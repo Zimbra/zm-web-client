@@ -139,6 +139,7 @@ ZmItem.FLAG_ISSENT				= "s";
 ZmItem.FLAG_READ_RECEIPT_SENT	= "n";
 ZmItem.FLAG_REPLIED				= "r";
 ZmItem.FLAG_UNREAD				= "u";
+ZmItem.FLAG_MUTE				= "(";
 ZmItem.FLAG_LOW_PRIORITY		= "?";
 ZmItem.FLAG_HIGH_PRIORITY		= "!";
 ZmItem.FLAG_PRIORITY            = "+"; //msg prioritization
@@ -148,6 +149,7 @@ ZmItem.ALL_FLAGS = [
 	ZmItem.FLAG_FLAGGED,
 	ZmItem.FLAG_ATTACH,
 	ZmItem.FLAG_UNREAD,
+	ZmItem.FLAG_MUTE,
 	ZmItem.FLAG_REPLIED,
 	ZmItem.FLAG_FORWARDED,
 	ZmItem.FLAG_ISSENT,
@@ -171,6 +173,7 @@ ZmItem.FLAG_PROP[ZmItem.FLAG_ISSENT]			= "isSent";
 ZmItem.FLAG_PROP[ZmItem.FLAG_READ_RECEIPT_SENT]	= "readReceiptSent";
 ZmItem.FLAG_PROP[ZmItem.FLAG_REPLIED]			= "isReplied";
 ZmItem.FLAG_PROP[ZmItem.FLAG_UNREAD]			= "isUnread";
+ZmItem.FLAG_PROP[ZmItem.FLAG_MUTE]			    = "isMute";
 ZmItem.FLAG_PROP[ZmItem.FLAG_LOW_PRIORITY]		= "isLowPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_HIGH_PRIORITY]		= "isHighPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_PRIORITY]          = "isPriority";

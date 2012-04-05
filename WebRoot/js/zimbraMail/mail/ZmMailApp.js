@@ -128,7 +128,7 @@ function() {
 ZmMailApp.prototype._defineAPI =
 function() {
 	AjxDispatcher.setPackageLoadFunction("MailCore", new AjxCallback(this, this._postLoadCore));
-	AjxDispatcher.setPackageLoadFunction("Mail", new AjxCallback(this, this._postLoad));
+	AjxDispatcher.setPackageLoadFunction("Mail", new AjxCallback(this, this._postLoad, ZmOrganizer.FOLDER));
 	AjxDispatcher.registerMethod("Compose", ["MailCore", "Mail"], new AjxCallback(this, this.compose));
 	AjxDispatcher.registerMethod("GetComposeController", ["MailCore", "Mail"], new AjxCallback(this, this.getComposeController));
 	AjxDispatcher.registerMethod("GetConvController", ["MailCore", "Mail"], new AjxCallback(this, this.getConvController));
@@ -1592,13 +1592,26 @@ function() {
 		tooltip:	ZmMsg.compose,
 		icon:		"NewMessage",
 		iconDis:	"NewMessageDis",
-		defaultId:	ZmOperation.NEW_MESSAGE
+		defaultId:	ZmOperation.NEW_MESSAGE,
+        disabled:   !this.containsWritableFolder()
 	};
 };
 
 ZmMailApp.prototype.launch =
 function(params, callback) {
 	this._setLaunchTime(this.toString(), new Date());
+
+    if (appCtxt.isExternalAccount()) {
+        var loadCallback = this._handleLoadLaunch.bind(this, params, callback);
+	    AjxDispatcher.require(["MailCore", "Mail"], true, loadCallback, null, true);
+    }
+    else {
+        this._handleLoadLaunch(params, callback);
+    }
+};
+
+ZmMailApp.prototype._handleLoadLaunch =
+function(params, callback) {
 	// set type for initial search
 	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 
@@ -1706,7 +1719,10 @@ function(query, callback, response, type) {
 		noUpdateOverview = true;
 		sc.searchAllAccounts = true;
 	}
-	else {
+	else if(appCtxt.isExternalAccount()) {
+        query = "inid:" + this.getDefaultFolderId();
+    }
+    else {
 		query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH, null, account);
 	}
 
