@@ -1763,19 +1763,23 @@ function(msg) {
 
 	if (!appCtxt.get(ZmSetting.TAGGING_ENABLED) || !msg || !this._tagList) { return; }
 
-	var numTags = msg.tags.length;
+	var numTags = msg.tags && msg.tags.length;
 	var table = document.getElementById(this._hdrTableId);
 	var tagRow = document.getElementById(this._tagRowId);
 	var tagCell = document.getElementById(this._tagCellId);
 	
-	if (!msg.tags || msg.tags.length == 0) {
-		if (tagRow) {
-			table.deleteRow(tagRow.rowIndex);
-		}
+	if (tagRow && tagCell && !numTags) {
+		// last tag was removed
+		tagCell.innerHTML = "";
 	}
-	else {
-		tagCell = tagCell || this._insertTagRow(table);
-		this._renderTags(msg, tagCell, this._tagCellId);
+	else if (tagRow && tagCell && numTags) {
+		// tag added or removed, still some tags remain
+		table.deleteRow(tagRow.rowIndex);
+		this._renderTags(msg, this._insertTagRow(table), this._tagCellId);
+	}
+	else if (numTags) {
+		// rendering for first time, create row and cell
+		this._renderTags(msg, this._insertTagRow(table), this._tagCellId);
 	}
 };
 
@@ -1803,7 +1807,7 @@ function(msg, container, tagCellId) {
 
 	var html = [], i = 0;
 	html[i++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%><tr>";
-	html[i++] = "<td style='overflow:hidden; id='";
+	html[i++] = "<td style='overflow:hidden;' id='";
 	html[i++] = tagCellId;
 	html[i++] = "'>";
 
@@ -1828,7 +1832,9 @@ function(tag, baseId, html, i) {
 	html[i++] = "<span class='addrBubble TagBubble'";
 	html[i++] = " id='";
 	html[i++] = anchorId;
-	html[i++] = "'>";
+	html[i++] = "' ";
+	html[i++] = this._getTagAttrHtml(tag);
+	html[i++] = ">";
 
 	html[i++] = "<span class='TagImage' onclick='";
 	html[i++] = tagClick;
@@ -1849,6 +1855,11 @@ function(tag, baseId, html, i) {
 	html[i++] = "</span>";
 	
 	return i;
+};
+
+ZmMailMsgView.prototype._getTagAttrHtml =
+function(tag) {
+	return "";
 };
 
 // Types of links for eacha attachment

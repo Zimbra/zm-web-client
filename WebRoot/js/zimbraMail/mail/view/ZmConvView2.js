@@ -455,7 +455,7 @@ function(params) {
 	params.hideView = params.sendNow;
 
 	var what = appCtxt.get(ZmSetting.REPLY_INCLUDE_WHAT);
-	if (what == ZmSetting.INC_BODY || what == ZmSetting.INC_SMART) {
+	if (msg && (what == ZmSetting.INC_BODY || what == ZmSetting.INC_SMART)) {
 		// make sure we've loaded the part with the type we want to reply in, if it's available
 		var desiredPartType = htmlMode ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
 		msg.getBodyPart(desiredPartType, this._sendMsg.bind(this, params));
@@ -528,12 +528,6 @@ function(ev) {
 		this._renderMessage(msg, params);
 		var msgView = this._msgViews[msg.id];
 		Dwt.scrollIntoView(msgView.getHtmlElement(), this._messagesDiv);
-	}
-	else {
-		var msgView = this._msgViews[msg.id];
-		if (msgView) {
-			msgView._msgChangeListener(ev);
-		}
 	}
 };
 
@@ -1336,6 +1330,7 @@ function() {
 		}
 		this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
 		if (this._expanded) {
+			this._setTags(this._msg);
 			this._resetLinks();
 		}
 	}
@@ -1386,6 +1381,11 @@ function(table) {
 	cell = tagRow.insertCell(-1);
 	cell.innerHTML = "&nbsp;";
 	return tagCell;
+};
+
+ZmMailMsgCapsuleView.prototype._getTagAttrHtml =
+function(tag) {
+	return "notoggle=1";
 };
 
 /**
@@ -1545,17 +1545,20 @@ function(state, force) {
 	this._showMoreIds = ai.showMoreIds;
 	var folder = appCtxt.getById(msg.folderId);
 	msg.showImages = msg.showImages || (folder && folder.isFeed());
-	this._readIconId = id + "_read";
 	this._idToAddr = {};
 
 	var dateString = AjxDateUtil.computeDateStr(this._convView._now || new Date(), msg.sentDate || msg.date);
-	var subs, html;
 	
+	this._readIconId = id + "_read";
+	var attrs = "id='" + this._readIconId + "' noToggle=1";
+	var readIcon = AjxImg.getImageHtml(msg.getReadIcon(), "display:inline-block", attrs);
+
+	var subs, html;
 	if (state == ZmMailMsgCapsuleViewHeader.COLLAPSED) {
 		var fromId = id + "_0";
 		this._idToAddr[fromId] = ai.fromAddr;
 		subs = {
-			readIcon:		AjxImg.getImageHtml(msg.getReadIcon(), "display:inline-block", "id='" + this._readIconId + "'"),
+			readIcon:		readIcon,
 			from:			ai.from,
 			fromId:			fromId,
 			fragment:		this._getFragment(),
@@ -1573,7 +1576,7 @@ function(state, force) {
 		
 		subs = {
 			hdrTableId:		hdrTableId,
-			readIcon:		AjxImg.getImageHtml(msg.getReadIcon(), null, "id='" + this._readIconId + "'"),
+			readIcon:		readIcon,
 			sentBy:			ai.sentBy,
 			sentByAddr:		ai.sentByAddr,
 			obo:			ai.obo,
@@ -1591,6 +1594,13 @@ function(state, force) {
 	var readIcon = document.getElementById(this._readIconId);
 	if (readIcon) {
 		Dwt.setHandler(readIcon, DwtEvent.ONMOUSEDOWN, this._handleMarkRead.bind(this));
+	}
+	
+	for (var id in this._showMoreIds) {
+		var showMoreLink = document.getElementById(id);
+		if (showMoreLink) {
+			showMoreLink.notoggle = 1;
+		}
 	}
 	
 	if (beenHere && state == ZmMailMsgCapsuleViewHeader.EXPANDED) {
@@ -1650,8 +1660,10 @@ function(ev) {
 	
 	var msgView = this._msgView;
 	var convView = msgView._convView;
-	
-	if (ev.target && ((ev.target.id == this._readIconId) || this._showMoreIds[ev.target.id])) { return; }
+
+	// ignore event if an internal control should handle it
+	var t = DwtUiEvent.getTargetWithProp(ev, "notoggle");
+	if (t) { return false; }
 	
 	if (ev.button == DwtMouseEvent.LEFT) {
 		msgView._toggleExpansion();

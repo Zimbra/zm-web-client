@@ -751,7 +751,7 @@
 					<span class='LabelColValue' colspan=10><$= data.bwo $></span>
 				<$ } $>
 			</td>
-			<td>${date}</td>
+			<td style='white-space:nowrap;'>${date}</td>
 		</tr>
 
 		<$ for (var i = 0; i < data.addresses.length; i++) { $>
