@@ -180,6 +180,7 @@ ZmShareSearchDialog.prototype._doGroupSearch = function() {
 };
 
 ZmShareSearchDialog.prototype._doUserSearch = function(emails) {
+    this._resetTree();
     // collect unique email addresses
     emails = emails.split(/\s*[;,]\s*/);
     var emailMap = {};
@@ -282,7 +283,7 @@ ZmShareSearchDialog.prototype._handleGroupSearchError = function(resp) {
 
 ZmShareSearchDialog.prototype._handleUserSearchResults = function(emailMap, requestIdMap, resp) {
     this._setSearching(false);
-
+	
     // remove placeholder nodes
     for (var email in emailMap) {
         this._removeNode(emailMap[email]);
