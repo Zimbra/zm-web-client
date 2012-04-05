@@ -1378,10 +1378,6 @@ input.xform_field {
 .RadioGrouperBorder,
 .TopGrouperBorder {
 	@FieldSet@
-	padding-left:10px;	/* ??? SIZE */
-	padding-right:10px;
-	padding-bottom:10px;
-
 }
 
 .TopGrouperBorder {
@@ -1390,37 +1386,37 @@ input.xform_field {
 	border-right:none;
 	border-bottom:none;
 	margin-top:20px;
-	margin-bottom:0px;
-	padding-bottom:0px;
+	margin-bottom:0;
+	padding-bottom:0;
 }
 
-.LowPadedTopGrouperBorder {
+.LowPaddedTopGrouperBorder {
 	@FieldSet@
 	border-left:none;
 	border-right:none;
 	border-bottom:none;
 	margin-top:20px;
-	margin-bottom:0px;
+	margin-bottom:0;
 	padding-bottom:10px;
 }
 .SmallRadioGrouperLabel,
 .GrouperLabel,
 .RadioGrouperLabel {
-	display:inline;
-	position:relative;
-	top:-15;
 	@PageBg@
 	@TextPadding@
 	@Label@
+	display:inline;
+	position:relative;
+	top:-17px;			/* equals top-margin + top-padding of GrouperBorder */
 }
 
 .GrouperLabel,
 .RadioGrouperLabel {
-	left:10; 					/* ??? SIZE */
+	left:0; 			/* insets label equal to GrouperBorder left-padding */
 }
 .GrouperLabel {
-	font-weight:bold;
 	@FontSize-big@
+	font-weight:bold;
 }
 
 .GrouperInset {
@@ -1433,7 +1429,6 @@ input.xform_field {
 
 .RadioGrouperBorder {
 	margin-bottom:2px;
-
 }
 
 .RadioGrouperLabel {
