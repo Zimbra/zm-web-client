@@ -324,10 +324,10 @@ function(viewId) {
             syncTypeSelect.addChangeListener(new AjxListener(this, this._changeCalType));
             this._syncTypeSelect = syncTypeSelect;
 
-            this._userNameInput = new DwtInputField({parent:this, parentElement: id + '_syncUserName', hint: ZmMsg.sharedCalUserNameHint, inputId:'ADD_EXTERNAL_CAL_DIALOG_syncUserName'});
-            this._passwordInput = new DwtInputField({parent:this, parentElement: id + '_syncPassword', type: DwtInputField.PASSWORD, inputId:'ADD_EXTERNAL_CAL_DIALOG_syncPassword'});
-            this._urlInput = new DwtInputField({parent:this, parentElement: id + '_syncUrl', hint: ZmMsg.sharedCalCalDAVServerHint, inputId:'ADD_EXTERNAL_CAL_DIALOG_syncUrl'});
-            this._icsUrlInput = new DwtInputField({parent:this, parentElement: id + '_syncIcsUrl', hint: ZmMsg.sharedCalIcsUrlHint, inputId:'ADD_EXTERNAL_CAL_DIALOG_syncIcsUrl'});
+            this._userNameInput = new DwtInputField({parent:this, parentElement: id + '_syncUserName', hint: ZmMsg.sharedCalUserNameHint, inputId:id + '_syncUserNameInput'});
+            this._passwordInput = new DwtInputField({parent:this, parentElement: id + '_syncPassword', type: DwtInputField.PASSWORD, inputId: id + '_syncPasswordInput'});
+            this._urlInput = new DwtInputField({parent:this, parentElement: id + '_syncUrl', hint: ZmMsg.sharedCalCalDAVServerHint, inputId: id+ 'syncUrlInput'});
+            this._icsUrlInput = new DwtInputField({parent:this, parentElement: id + '_syncIcsUrl', hint: ZmMsg.sharedCalIcsUrlHint, inputId: id+ '_syncIcsUrlInput'});
             this._syncMsg = document.getElementById(id + '_syncMsg');
             this._viewsLoaded[ZmExternalCalendarDialog.SECOND_VIEW] = true;
 
