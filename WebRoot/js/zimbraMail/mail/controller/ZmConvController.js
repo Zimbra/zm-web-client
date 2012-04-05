@@ -403,3 +403,8 @@ ZmConvController.prototype._msgViewCurrent =
 function() {
 	return true;
 };
+
+ZmConvController.prototype._getTagMenuMsg =
+function(num) {
+	return AjxMessageFormat.format(ZmMsg.tagMessages, num);
+};
