@@ -1299,7 +1299,7 @@ function(id, name) {
 	return ZmFont.fontMap[id] = new ZmFont(id, name);
 };
 
+ZmFont.create(ZmSetting.FONT_SYSTEM, ZmMsg.fontSystem);
 ZmFont.create(ZmSetting.FONT_MODERN, ZmMsg.fontModern);
 ZmFont.create(ZmSetting.FONT_CLASSIC, ZmMsg.fontClassic);
 ZmFont.create(ZmSetting.FONT_WIDE, ZmMsg.fontWide);
-ZmFont.create(ZmSetting.FONT_SYSTEM, ZmMsg.fontSystem);

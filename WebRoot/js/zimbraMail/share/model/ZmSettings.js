@@ -925,7 +925,7 @@ function() {
 	this.registerSetting("GROUPBY_HASH",                    {type: ZmSetting.T_PREF, dataType:ZmSetting.D_HASH});
 	this.registerSetting("GROUPBY_LIST",                    {name:"zimbraPrefGroupByList", type:ZmSetting.T_METADATA, dataType:ZmSetting.D_HASH, isImplicit:true, section:ZmSetting.M_IMPLICIT});
     this.registerSetting("FILTERS",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
-	this.registerSetting("FONT_NAME",						{name:"zimbraPrefFont", type:ZmSetting.T_PREF, defaultValue: ZmSetting.FONT_MODERN, isGlobal:true});
+	this.registerSetting("FONT_NAME",						{name:"zimbraPrefFont", type:ZmSetting.T_PREF, defaultValue: ZmSetting.FONT_SYSTEM, isGlobal:true});
 	this.registerSetting("IDENTITIES",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
 	this.registerSetting("INITIALLY_SEARCH_GAL",			{name:"zimbraPrefGalSearchEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("LIST_VIEW_COLUMNS",				{name:"zimbraPrefListViewColumns", type:ZmSetting.T_PREF, dataType:ZmSetting.D_HASH, isImplicit:true});
