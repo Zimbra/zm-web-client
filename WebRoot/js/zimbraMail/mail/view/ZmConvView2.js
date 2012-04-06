@@ -1272,8 +1272,11 @@ function(id, autoDisplay) {
 
 ZmMailMsgCapsuleView.prototype._handleForwardLink =
 function(id, op, ev) {
-	var text = this._convView._replyView.getValue();
-	this._convView._replyView.reset();
+	var text = "", replyView = this._convView._replyView;
+	if (replyView) {
+		text = replyView.getValue();
+		replyView.reset();
+	}
 	this._controller._doAction({action:op, msg:this._msg, extraBodyText:text});
 };
 
