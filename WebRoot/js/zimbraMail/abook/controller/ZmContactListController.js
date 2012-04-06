@@ -871,6 +871,9 @@ function(parent, num) {
 			ZmOperation.setOperation(parent, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT, ZmMsg.AB_EDIT_GROUP);
 		}
 	}
+	else if (num == 1 && !contact.getEmail()) {
+		parent.enable([ZmOperation.SEARCH_MENU], false);	
+	}
 	else {
 		if (parent instanceof ZmPopupMenu) {
 			this._setContactText(!this.isGalSearch());
@@ -963,7 +966,7 @@ function(ev) {
 		this._resetNavToolBarButtons();
 		if (this._currentViewType == ZmId.VIEW_CONTACT_SIMPLE) {
 			this._parentView[this._currentViewId].setContact(ev.item, this.isGalSearch());
-		}
+		}	
 	} else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var folder = appCtxt.getById(ev.item.folderId);
 		if (!this.isGalSearch() && (!folder || (!folder.isReadOnly() && !folder.isInTrash()))) {
@@ -1027,12 +1030,19 @@ function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
 	this._actionEv.contact = ev.item;
 	var actionMenu = this.getActionMenu();
+	if (!this._actionEv.contact.getEmail()  && actionMenu) {
+		var menuItem = actionMenu.getMenuItem(ZmOperation.SEARCH_MENU);
+		if (menuItem) {
+			menuItem.setEnabled(false);
+		}
+	}
 	actionMenu.popup(0, ev.docX, ev.docY);
 	if (ev.ersatz) {
 		// menu popped up via keyboard nav
 		actionMenu.setSelectedItem(0);
 	}
 };
+
 
 /**
  * @private
