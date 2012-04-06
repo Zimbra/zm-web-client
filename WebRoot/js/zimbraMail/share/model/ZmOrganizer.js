@@ -1927,6 +1927,16 @@ function() {
 };
 
 /**
+ * return the id to be used as part of DOM ids. This is overriden in ZmTag since the ID there is the name and we
+ * replace it with a serial ID for use in the DOM.
+ */
+ZmOrganizer.prototype.getDomId =
+function() {
+	return this.id;
+};
+
+
+/**
  * Gets the sort index.
  * 
  * @return	{int}	the sort index

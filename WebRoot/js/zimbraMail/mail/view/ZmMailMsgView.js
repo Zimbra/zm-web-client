@@ -1823,23 +1823,17 @@ function(msg, container, tagCellId) {
 ZmMailMsgView.prototype._getTagHtml =
 function(tag, baseId, html, i) {
 
-	var anchorId = [baseId, ZmMailMsgView._TAG_ANCHOR, tag.id].join("");
-	var imageId = [baseId, ZmMailMsgView._TAG_IMG, tag.id].join("");
+	var tagClick = ['ZmMailMsgView._tagClick("', this._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.id), '");'].join("");
+	var removeClick = ['ZmMailMsgView._removeTagClick("', this._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.id), '");'].join("");
 
-	var tagClick = ['ZmMailMsgView._tagClick("', this._htmlElId, '","', tag.id, '");'].join("");
-	var removeClick = ['ZmMailMsgView._removeTagClick("', this._htmlElId, '","', tag.id, '");'].join("");
-
-	html[i++] = "<span class='addrBubble TagBubble'";
-	html[i++] = " id='";
-	html[i++] = anchorId;
-	html[i++] = "' ";
+	html[i++] = "<span class='addrBubble TagBubble' ";
 	html[i++] = this._getTagAttrHtml(tag);
 	html[i++] = ">";
 
 	html[i++] = "<span class='TagImage' onclick='";
 	html[i++] = tagClick;
 	html[i++] = "'>";
-	html[i++] = AjxImg.getImageHtml(tag.getIconWithColor(), null, ["id='", imageId, "'"].join(""));
+	html[i++] = AjxImg.getImageHtml(tag.getIconWithColor(), null);
 	html[i++] = "</span>";
 
 	html[i++] = "<span class='TagName' onclick='";
@@ -2385,8 +2379,7 @@ function() {
 // Callbacks
 
 ZmMailMsgView.prototype._msgTagClicked =
-function(tagId) {
-	var tag = appCtxt.getById(tagId);
+function(tag) {
 	appCtxt.getSearchController().search({query: tag.createQuery()});
 };
 
@@ -2566,17 +2559,27 @@ function(val) {
 };
 
 ZmMailMsgView._tagClick =
-function(myId, tagId) {
+function(myId, tagName) {
+	var tag = ZmMailMsgView._getTagClicked(tagName);
 	var dwtObj = DwtControl.fromElementId(myId);
-	dwtObj.notifyListeners(ZmMailMsgView._TAG_CLICK, tagId);
+	dwtObj.notifyListeners(ZmMailMsgView._TAG_CLICK, tag);
 };
 
 ZmMailMsgView._removeTagClick =
-function(myId, tagId) {
+function(myId, tagName) {
+	var tag = ZmMailMsgView._getTagClicked(tagName);
 	var dwtObj = DwtControl.fromElementId(myId);
-	var tag = appCtxt.getById(tagId);
 	ZmListController.prototype._doTag.call(dwtObj._controller, dwtObj._msg, tag, false);
 };
+
+ZmMailMsgView._getTagClicked =
+function(tagName) {
+
+	var account = appCtxt.multiAccounts ? this._msg.getAccount() : null;
+	var tagList = appCtxt.getTagList(account);
+	return tagList.getByNameOrRemote(tagName);
+};
+
 
 ZmMailMsgView._detachCallback =
 function(isRfc822, parentController, result) {

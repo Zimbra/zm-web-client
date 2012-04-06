@@ -932,7 +932,7 @@ function() {
 		// XXX: set proper class name for link once defined!
 		html[idx++] = "<a href='javascript:;' class='' onclick='ZmContactSplitView._tagClicked(";
 		html[idx++] = '"';
-		html[idx++] = tag.id;
+		html[idx++] = AjxStringUtil.encodeQuotes(tag.id);
 		html[idx++] = '"';
 		html[idx++] = "); return false;'>";
 		html[idx++] = AjxImg.getImageSpanHtml(icon, null, attr, AjxStringUtil.htmlEncode(tag.name));

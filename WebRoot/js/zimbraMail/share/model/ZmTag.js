@@ -216,6 +216,20 @@ function() {
 	
 	return (this.id == ZmOrganizer.ID_ROOT) ? null : "Tag";
 };
+/**
+ * return a serialized id to be used as part of ids in DOM elements, so we do not use the real id of the tags here since they are
+ * tag names and slightly unsafe.
+ */
+ZmTag.prototype.getDomId =
+function() {
+	if (this._domId) {
+		return this._domId;
+	}
+	ZmTag._domCount = (ZmTag._domCount || 0) + 1;
+	this._domId = "tag" + ZmTag._domCount;
+	return this._domId;
+};
+
 
 /**
  * Creates a query for this tag.
