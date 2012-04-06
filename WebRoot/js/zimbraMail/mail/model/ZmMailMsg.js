@@ -2641,7 +2641,7 @@ ZmMailMsg.prototype.getSortedTags =
 function() {
 	var numTags = this.tags && this.tags.length;
 	if (numTags) {
-		var tagList = appCtxt.getTagList();
+		var tagList = appCtxt.getAccountTagList(this);
 		var ta = [];
 		for (var i = 0; i < numTags; i++) {
 			var tag = tagList.getByNameOrRemote(this.tags[i]);

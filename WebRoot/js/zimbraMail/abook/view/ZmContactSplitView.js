@@ -913,8 +913,7 @@ function() {
 	var html = [];
 	var idx = 0;
 
-	var account = appCtxt.multiAccounts ? this._contact.getAccount() : null;
-	var tagList = appCtxt.getTagList(account);
+	var tagList = appCtxt.getAccountTagList(this._contact);
 
 	// get sorted list of tags for this msg
 	var tags = this._contact.tags;

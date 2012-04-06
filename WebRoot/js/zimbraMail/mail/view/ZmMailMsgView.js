@@ -2575,8 +2575,7 @@ function(myId, tagName) {
 ZmMailMsgView._getTagClicked =
 function(tagName) {
 
-	var account = appCtxt.multiAccounts ? this._msg.getAccount() : null;
-	var tagList = appCtxt.getTagList(account);
+	var tagList = appCtxt.getAccountTagList(this._msg);
 	return tagList.getByNameOrRemote(tagName);
 };
 

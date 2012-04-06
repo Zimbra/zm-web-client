@@ -463,8 +463,7 @@ function(tagName) {
 //	var tagFullId = (!this.getAccount().isMain)
 //		? ([this.getAccount().id, tagName].join(":"))
 //		: (ZmOrganizer.getSystemId(tagName));
-	var account = appCtxt.multiAccounts ? this.getAccount() : null;
-	var tagList = appCtxt.getTagList(account);
+	var tagList = appCtxt.getAccountTagList(this);
 
 	var tag = tagList.getByNameOrRemote(tagName);
     return tag ? tag.getIconWithColor() : "Blank_16";

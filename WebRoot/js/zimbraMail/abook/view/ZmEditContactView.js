@@ -672,8 +672,7 @@ function(tagIds) {
 	var tagCellId = this.getControl("TAG").getHTMLElId();
 
 	// get sorted list of tags for this msg
-	var account = appCtxt.multiAccounts ? this._contact.getAccount() : null;
-	var tagList = appCtxt.getTagList(account);
+	var tagList = appCtxt.getAccountTagList(this._contact);
 
 	var tags = [];
 	for (var i = 0; i < tagIds.length; i++) {

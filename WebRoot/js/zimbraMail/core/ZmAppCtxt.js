@@ -1159,11 +1159,13 @@ function(account) {
 /**
  * Gets the tag organizer tree's root.
  *
- * @param	{ZmZimbraAccount}	account		the account
+ * @param	{ZmItem}	item		item to look up the account of for and get the account tag list.
  * @return	{ZmTag}		the root of the tree, which is also a list.
  */
-ZmAppCtxt.prototype.getTagList =
-function(account) {
+ZmAppCtxt.prototype.getAccountTagList =
+function(item) {
+	var account = (item && appCtxt.multiAccounts) ? item.getAccount() : null;
+
 	return this.getTagTree(account).root;
 };
 
