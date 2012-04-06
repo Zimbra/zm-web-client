@@ -710,7 +710,10 @@ function(deeper, calendar, tagNames, segment) {
     var calColor = deeper ? colors.deeper[segment] : colors.standard[segment];
     var apptColor = calColor;
     if (tagNames && (tagNames.length == 1)) {
-        var tag = appCtxt.getById(tagNames[0]);
+		var account = appCtxt.multiAccounts ? calendar.getAccount() : null;
+		var tagList = appCtxt.getTagList(account);
+		
+        var tag = tagList.getByNameOrRemote(tagNames[0]);
         if(tag){apptColor = { bgcolor: tag.getColor() };}
     }
     return {calendar:calColor, appt:apptColor};
