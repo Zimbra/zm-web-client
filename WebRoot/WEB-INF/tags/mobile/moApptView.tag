@@ -39,8 +39,14 @@
 
     <c:set var="apptFolder" value="${zm:getFolder(pageContext, msg.folderId)}"/>
     <c:set var="readOnly" value="${apptFolder.isMountPoint or apptFolder.isFeed}"/>
+    <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'zmain'}"/>
+    <zm:currentResultUrl var="currentUrl" value="${context_url}" context="${context}"/>
 
 </mo:handleError>
+<form action="${currentUrl}" method="post" accept-charset="utf-8" onsubmit="return submitForm(this);">
+    <input type="hidden" name="doApptAction" value="1"/>
+    <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+    <input type="hidden" name="invId" value="${param.invId}"/>
     <c:set var="title" scope="request" value="${requestScope.title} : ${zm:truncate(msg.subject,10,true)}"/>
     <c:choose>
     <c:when test="${ua.isiPad eq true}">
@@ -80,3 +86,4 @@
 <c:if test="${ua.isiPad eq false}">
     <mo:calendarViewToolbar invId="${invite.component.isOrganizer ? id : ''}" urlTarget="${urlTarget}" date="${date}" timezone="${timezone}" view="appt" isTop="${false}"/>
 </c:if>
+</form>

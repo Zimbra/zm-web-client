@@ -88,9 +88,21 @@
     <c:if test="${view ne 'appt'}"><a ${list} class='prev_button ${view!=null && view=='list'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewListShort"/></a><a ${day} class='next_button ${view!=null && view=='day'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewDayShort"/></a><a ${month} class='next_button ${view!=null && view=='month'?'zo_button_disabled':'zo_button'}'><fmt:message key="calViewMonthShort"/></a></c:if>
     <c:if test="${view eq 'appt'}"><mo:calendarUrl var="backurl" action="${null}"/><a href="${backurl}" class="zo_button prev_button"><fmt:message key="back"/></a></c:if>
     </span>
-	<span>
-         <a accesskey="${requestScope.mainaction_accesskey}" href="${eaction}" class='zo_button'><fmt:message key="${empty invId ? 'add' : 'edit'}"/></a>
+    <c:if test="${view ne 'appt'}">
+    <span>
+         <a accesskey="${requestScope.mainaction_accesskey}" href="${eaction}" class='zo_button'><fmt:message key="add"/></a>
     </span>
+    </c:if>
+    <c:if test="${view eq 'appt'}">
+        <c:if test="${not empty invId}">
+            <span>
+                <a accesskey="${requestScope.mainaction_accesskey}" href="${eaction}" class='zo_button'><fmt:message key="edit"/></a>
+            </span>
+        </c:if>
+        <span>
+             <input class="zo_button" name="actionApptDelete" type="submit" value="<fmt:message key="delete"/>">
+        </span>
+    </c:if>
 </span></span></div>
 </c:if>    
 <c:if test="${!isTop && '1' eq btm_stb}">

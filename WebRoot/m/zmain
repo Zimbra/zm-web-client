@@ -130,6 +130,9 @@
         <c:when test="${not empty param.doFolderAction}">
             <mo:folderAction/>
         </c:when>
+        <c:when test="${not empty param.doApptAction}">
+            <mo:apptAction/>
+        </c:when>
     </c:choose>
     <c:set var="action" value="${zm:cook(empty param.paction ? param.action : param.paction)}" scope="request"/>
 </mo:handleError>
