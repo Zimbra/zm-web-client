@@ -82,14 +82,21 @@ function(callback){
 
 ZmDocsEditView.prototype.save = function(force){
 
-    // Ignore save if document is not dirty
-    var _docModified = ZmDocsEditApp._controller._isDirty();
-    if(!_docModified) { return ;}
-
-    ZmDocsEditApp.fileInfo.descEnabled = this._getVersionNotesChk().checked;
-
     var fileName = this._buttons.fileName.getValue();
     var message = this._docMgr.checkInvalidDocName(fileName);
+
+    // Ignore save if document is not dirty
+    var _docModified = ZmDocsEditApp._controller._isDirty();
+    var _docNameModified = fileName && (fileName != ZmDocsEditApp.fileInfo.name);
+    if(!_docModified && !_docNameModified) {
+        if(this._saveClose){
+            window.close();
+        } else {
+            return;
+        }
+    }
+
+    ZmDocsEditApp.fileInfo.descEnabled = this._getVersionNotesChk().checked;
     if (message) {
 		var style = DwtMessageDialog.WARNING_STYLE;
 		var dialog = this.warngDlg = appCtxt.getMsgDialog();
@@ -98,13 +105,12 @@ ZmDocsEditView.prototype.save = function(force){
 	    dialog.registerCallback(DwtDialog.OK_BUTTON, this._focusPageInput, this);
 		return false;
 	}
-    ZmDocsEditApp.fileInfo.name    = fileName;
-
     if(!force && this._getVersionNotesChk().checked){
         this._showVersionDescDialog(new AjxCallback(this, this.save, true));
         return false;
     }
 
+    ZmDocsEditApp.fileInfo.name    = fileName;
     ZmDocsEditApp.fileInfo.content = this._editor.getContent();
     ZmDocsEditController.savedDoc = ZmDocsEditApp.fileInfo.content; 
     ZmDocsEditApp.fileInfo.contentType = ZmDocsEditApp.APP_ZIMBRA_DOC;
