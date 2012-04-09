@@ -1154,6 +1154,7 @@ function(params, selection) {
 		}
 	}
 	params.msgIds = msgIds.getArray();
+    params.selectedMessages = selection;
 
 	AjxDispatcher.run("Compose", params);
 };

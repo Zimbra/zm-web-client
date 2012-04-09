@@ -149,7 +149,8 @@ function(params) {
 
 	this._acceptFolderId = params.acceptFolderId;
 	var msg = this._msg = this._addressesMsg = params.msg;
-	var obo = this._getObo(params.accountName, msg);
+    var oboMsg = msg || (params.selectedMessages && params.selectedMessages.length && params.selectedMessages[0]);
+	var obo = this._getObo(params.accountName, oboMsg);
 	if (msg) {
 		msg.onChange = this._onMsgDataChange;
 	}
@@ -3870,7 +3871,8 @@ function(params) {
 	this._setAddresses(action, AjxEmailAddress.TO, params.toOverride);
 	this._setSubject(action, msg, params.subjectOverride);
 	this._setBody(action, msg, params.extraBodyText);
-	this._obo = this._getObo(params.accountName, msg);
+    var oboMsg = msg || (params.selectedMessages && params.selectedMessages.length && params.selectedMessages[0]);
+	var obo = this._getObo(params.accountName, oboMsg);
 	
 	if (action != ZmOperation.FORWARD_ATT) {
 		this._saveExtraMimeParts();
