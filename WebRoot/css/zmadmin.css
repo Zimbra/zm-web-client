@@ -100,16 +100,10 @@
 	line-height:18px;
 }
 
-
-/* Account */
-.ZaAccountView {
-	/*background-color:rgb(245, 245, 245);*/
-}
-
 .AdminTitleBar {
 	@FontSize-big@
 	font-weight:bold;
-	padding:3px;
+	padding:5px 10px;
 }
 
 .AdminSubtitleBar {
@@ -121,9 +115,58 @@
 	width:500px;
 }
 
+/* Monitoring Statistics */
+.StatsHeader {
+	padding:3px 10px 10px;
+}
+
+.StatsDiv {
+	padding:0 10px;
+}
+
 .StatsImageTitle {
-	font:bold 16pt Arial, Helvetica, sans-serif;
-	padding:3px;
+	@FontSize-biggest@
+	padding:3px 0;
+}
+
+.StatsImage {
+	padding:3px 0 18px;
+}
+
+.ChartSettings {
+	background-color:#F5F5F5;	/* TODO: Make colors functions of AppC */
+	border:1px solid #D7D7D7;
+	padding:8px;
+	width:100%;
+	@roundCorners(4px)@
+}
+
+.LinkButton {
+	@FontSize-normal@
+	border:1px solid #D7D7D7;
+	line-height:2.5em;
+	margin-right:5px;
+	padding:3px 15px;
+	text-decoration:none;
+	@roundCorners(4px)@
+}
+/* TODO: Abstract colors out to skin properties */
+.LinkButton:link, 
+.LinkButton:visited {
+	@Text@
+	background-color:#DFE2E2;
+	@grad(#FFF,#DFE2E2)@
+	
+}
+.LinkButton:hover {
+	background-color:#B8DEF3;
+	color:black;
+	@grad(#FFF,#B8DEF3)@
+}
+.LinkButton:active {
+	background-color:#74B6DD;
+	color:black;
+	@grad(#E3F4FC,#74B6DD)@
 }
 
 .serverPickList {
@@ -275,7 +318,7 @@ input.admin_xform_name_input_disabled {
 	overflow:auto;
 }
 
-.DLSource, .DLTarget, .MBXList { 
+.DLSource, .DLTarget { 
 	@ListBg@
 	border:2px solid;
 	border-color:#848484 #FAFAFA #FAFAFA #848484;
@@ -392,7 +435,7 @@ input.admin_xform_name_input_disabled {
 
 /* Tab button grid */
 .ZaTabBar {
-	@InsetBg@
+	background-color:transparent;
 	overflow-x:hidden;
 	overflow-y:hidden;
 }
