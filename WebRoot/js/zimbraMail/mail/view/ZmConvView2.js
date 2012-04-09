@@ -611,7 +611,7 @@ ZmConvReplyView.prototype.ROW_TEMPLATE = "mail.Message#Conv2MsgAddressRow";
 ZmConvReplyView.prototype.set =
 function(msg, msgView, op) {
 
-	appCtxt.notifyZimlets("onFindMsgObjects");
+	appCtxt.notifyZimlet("com_zimbra_email", "onFindMsgObjects");
 	var ai = this._getReplyAddressInfo(msg, msgView, op);
 
 	if (!this._initialized) {
@@ -1575,8 +1575,13 @@ function(state, force) {
 	else if (state == ZmMailMsgCapsuleViewHeader.EXPANDED) {
 		var folder = this._msg.folderId && appCtxt.getById(this._msg.folderId);
 		if (folder) {
-			var tooltip = 
-			ai.participants[0].folderIcon = AjxImg.getImageHtml(folder.getIconWithColor(), null, "title='" + folder.getName() + "'");
+			var tooltip = AjxImg.getImageHtml(folder.getIconWithColor(), null, "title='" + folder.getName() + "'");
+			if (ai.participants[0]) {
+				ai.participants[0].folderIcon = tooltip;
+			}
+			else {
+				ai.participants.push({folderIcon:tooltip});
+			}
 		}
 		var hdrTableId = this._msgView._hdrTableId = id + "_hdrTable";
 		
