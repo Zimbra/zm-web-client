@@ -1489,7 +1489,7 @@ function(msg, notifyZimlets) {
 		var type = ZmMailMsg.ADDRS[i];
 		if ((type == AjxEmailAddress.SENDER) || (type == AjxEmailAddress.RESENT_FROM)) { continue; }
 
-		var addrs = msg.getAddresses(type).getArray();
+		var addrs = AjxEmailAddress.dedup(msg.getAddresses(type).getArray());
 		if (addrs.length > 0) {
 			var prefix = AjxStringUtil.htmlEncode(ZmMsg[AjxEmailAddress.TYPE_STRING[type]]);
 			var addressInfo = this.getAddressesFieldInfo(addrs, options, type);
