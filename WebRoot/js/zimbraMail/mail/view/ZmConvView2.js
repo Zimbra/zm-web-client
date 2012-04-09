@@ -837,7 +837,7 @@ ZmMailMsgCapsuleView.prototype.toString = function() { return "ZmMailMsgCapsuleV
 
 ZmMailMsgCapsuleView.prototype._getViewId =
 function(sessionId) {
-	var prefix = sessionId ? sessionId + "_" : "";
+	var prefix = !sessionId ? "" : this._standalone ? ZmId.VIEW_CONV + sessionId + "_" : sessionId + "_";
 	return prefix + ZmId.VIEW_MSG_CAPSULE + this._msgId;
 };
 

@@ -22,7 +22,7 @@ ZmMailMsgView = function(params) {
 
 	this._mode = params.mode;
 	this._controller = params.controller;
-	this._viewId = this._getViewId();
+	this._viewId = this._getViewId(params.sessionId);
 
 	this._displayImagesId	= ZmId.getViewId(this._viewId, ZmId.MV_DISPLAY_IMAGES, this._mode);
 	this._msgTruncatedId	= ZmId.getViewId(this._viewId, ZmId.MV_MSG_TRUNC, this._mode);
