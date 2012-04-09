@@ -576,6 +576,9 @@ function(params) {
 ZmContactList.deleteGalItemsAllowed =
 function(items) {
 	var deleteDomainsAllowed = appCtxt.createDistListAllowedDomainsMap;
+	if (items.length == 0) {
+		return false; //need a special case since we don't want to enable the "delete" button for 0 items.
+	}
 	for (var i = 0; i < items.length; i++) {
 		var contact = items[i];
 		var email = contact.getEmail();
