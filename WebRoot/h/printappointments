@@ -19,6 +19,7 @@
         </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
+    <fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
 
     <c:choose>
         <c:when test="${not empty param.tz}">
@@ -169,7 +170,11 @@ action="compose" paction="view" id="${msg.id}"/>
             </c:otherwise>
         </c:choose>
         ${fn:escapeXml(zm:getApptDateBlurb(pageContext, tz, startDate.time, endDate.time, appt.allDay))}
-        &nbsp;<span class='ZhCalTimeZone'>${zm:getCanonicalId(tz)}</span>
+        &nbsp;
+        <span class='ZhCalTimeZone'>
+        <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.ID}"/>
+        ${fn:escapeXml(displayName)}
+        </span>
     </td>
 </tr>
 <c:if test="${appt.exception}">
