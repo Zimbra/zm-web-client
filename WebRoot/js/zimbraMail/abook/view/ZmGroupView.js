@@ -801,7 +801,7 @@ function() {
 
 	this._locationButton = new DwtButton({parent:this, parentElement: (this._htmlElId + "_LOCATION_FOLDER")});
 	this._locationButton.setImage("ContactsFolder");
-	this._locationButton.setEnabled(this._contact && !this._contact.isShared());
+	this._locationButton.setEnabled(this._contact && !this._contact.isShared() && !this._contact.isDistributionList());
 	this._locationButton.addSelectionListener(new AjxListener(this, this._handleFolderButton));
 	var folderOrId = this._contact && this._contact.getAddressBook();
 	if (!folderOrId) {
@@ -1118,7 +1118,7 @@ ZmGroupView.prototype._setLocationFolder = function(organizerOrId) {
 	if (organizerOrId) {
 		var organizer = organizerOrId instanceof ZmOrganizer ? organizerOrId : appCtxt.getById(organizerOrId);
 	}
-	if (!organizer || organizer.isReadOnly() || organizer.id == ZmFolder.ID_DLS) {
+	if (!organizer || organizer.isReadOnly()) {
 		//default to the main contacts folder
 		organizer = appCtxt.getById(ZmOrganizer.ID_ADDRBOOK);
 	}

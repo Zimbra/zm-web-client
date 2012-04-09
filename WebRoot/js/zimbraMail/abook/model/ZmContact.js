@@ -49,6 +49,7 @@ ZmContact = function(id, list, type, newDl) {
 	this.attr = {};
 	this.isGal = (this.list && this.list.isGal) || newDl;
 	if (newDl) {
+		this.folderId = ZmFolder.ID_DLS;
 		this.dlInfo = {	isMember: false,
 						isOwner: true,
 						subscriptionPolicy: null,
