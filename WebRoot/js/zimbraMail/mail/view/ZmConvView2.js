@@ -1333,6 +1333,12 @@ function() {
 			this._setTags(this._msg);
 			this._resetLinks();
 		}
+		else {
+			var replyView = this._convView._replyView;
+			if (replyView && replyView._msg == this._msg) {
+				replyView.reset();
+			}
+		}
 	}
 	this._resetIframeHeightOnTimer();
 };
