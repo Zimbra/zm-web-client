@@ -137,3 +137,45 @@
 		</table>
 	</div>
 </template>
+
+<template id='admin.Widgets#ZaAboutDialog' width='20' height='32'>
+	<div class='ZaAboutDialog'>
+		<table style='table-layout:fixed;width:100%'>
+			<tr class='ZaAboutDialogHeader' id='${dragId}'>
+				<td id='${id}_full' class='ZaAboutDialogTitle' style='width:100%;'>&nbsp</td>
+				<td width=24 id='${id}_close' >
+				    <div class=${closeIcon}></div>
+				</td>
+			</tr>
+			<tr>
+				<td class='WindowInnerContainer' colspan='2'>
+				    <table>
+				        <tr>
+				            <td>
+                                <div id='${id}_content' class='DwtDialogBody'>
+                                    <div>
+                                        <div class='contentBox'>
+                                            <h1>
+                                                <a id='${id}_bannerLink' target='_new' href="http://www.zimbra.com">
+                                                    <span class='${aboutBanner}'></span>
+                                                </a>
+                                            </h1>
+                                            <div id='${id}_longVersion' class='version'>
+                                                ${version}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id='${id}_footer' class='Footer'>
+                                        <div class='copyright'>
+                                            ${copyright}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</div>
+</template>
