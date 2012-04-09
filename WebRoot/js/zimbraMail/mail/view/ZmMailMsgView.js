@@ -1923,7 +1923,7 @@ function() {
 			var params = {
 				att:	    att,
 				id:		    this._getAttachmentLinkId(att.part, ZmMailMsgView.ATT_LINK_MAIN),
-				text:	    AjxStringUtil.htmlEncode(displayFileName),
+				text:	    displayFileName,
 				mid:        att.mid,
 				rfc822Part: att.rfc822Part
 			};
