@@ -85,11 +85,19 @@ function(callback) {
 ZmAttachmentTypeList.prototype._handleResponseLoad =
 function(callback, result) {
 	var att = this._organizeTypes(result.getResponse().BrowseResponse.bd);
+    var isZipFileIncluded = false;
 	if (att) {
 		for (var i = 0; i < att.length; i++) {
 			var type = att[i]._content;
 			if (!ZmMimeTable.isIgnored(type)) {
-				this._attachments.push(ZmMimeTable.getInfo(type, true));
+               var mimeInfo = ZmMimeTable.getInfo(type, true);
+               // To handle application/zip and application/x-zip-compressed type
+               if (type == ZmMimeTable.APP_ZIP  || type == ZmMimeTable.APP_ZIP2 ){
+                   if (isZipFileIncluded) continue;
+                   isZipFileIncluded = true;
+                   mimeInfo.type =  ZmMimeTable.APP_ZIP + " or " + "type: " + ZmMimeTable.APP_ZIP2;
+                }
+				this._attachments.push(mimeInfo);
 			}
 		}
 		this._attachments.sort(ZmAttachmentTypeList.compareEntry);
