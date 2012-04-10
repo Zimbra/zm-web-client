@@ -539,11 +539,13 @@ function(firstTime, result) {
 
 	// if we don't get a full number of addresses in the results, repeat the search.
 	// Could search several times.
-	if (((this._list.size() - this._offset) < ZmContactsApp.SEARCHFOR_MAX) && more) {
-		// We want to base our search off the ID of the last contact in the response,
-		// NOT the last contact with an email address
-		var vec = resp.getResults(ZmItem.CONTACT);
 
+	// We want to base our search off the ID of the last contact in the response,
+	// NOT the last contact with an email address
+	var vec = resp.getResults(ZmItem.CONTACT);
+	if (vec.size() < ZmContactsApp.SEARCHFOR_MAX && more) {
+
+		var lastId, lastSortVal;
 		var email = (vec.size() > 0) ? vec.getVector().getLast() : null;
 		if (email) {
 			if (email.__contact) {
