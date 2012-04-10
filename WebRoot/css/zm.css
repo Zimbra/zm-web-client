@@ -901,8 +901,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@cssShadow@:1px 2px 3px @darken(AppC,25)@
 }
 
-.ZmMailMsgCapsuleView.focused {
-	border-color:@darken(SelC,33)@;
+.ZmMailMsgCapsuleView.Reply {
+	margin-bottom:0;
 }
 
 .ZmMailMsgCapsuleView .SubjectCol {
@@ -912,28 +912,45 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmMailMsgCapsuleView .separator {
+	border-color:black;
 	border-style:solid;
-	border-top-width:0;
-	color:lightgray;
+	border-width:0 0 1px;
+	color:black;
 	margin:3px 7px;
+	opacity:.25;
 }
 
 .Conv2MsgHeader {
 	#IFNDEF MSIE
 	width:100%;
 	#ENDIF
-	padding:3px 0;
+	padding:3px 0 5px;
 	white-space:nowrap;
 	cursor:pointer;
 	-moz-user-select:text;
 }
 
-.Conv2MsgHeader TD:last-child {
-	padding-right:3px;
+/* Msg read/unread bubble */
+.Conv2MsgHeader .ImgMsgRead,
+.Conv2MsgHeader .ImgMsgUnread {
+	left:0;
+	position:absolute;
+	top:1px;
 }
 
-.Conv2MsgHeader.focused {
-	background-color:@SelC@;
+.Conv2MsgHeader TR:first-child TD:first-child {
+	padding:0 10px;
+}
+
+.Conv2MsgHeader TD .ImgMsgRead,
+.Conv2MsgHeader TD .ImgMsgUnread {
+	top:7px;
+}
+
+/* Right-aligned header elements */
+.Conv2MsgHeader TD:last-child {
+	padding-right:7px;
+	text-align:right;
 }
 
 .Conv2MsgHeader .Unread {
@@ -942,36 +959,37 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .Conv2MsgHeader .info {
 	overflow:hidden;
-	white-space:nowrap;
-	padding-left:7px;
+	margin-left:20px;
 	vertical-align:top;
+	white-space:nowrap;
 }
 
 .Conv2MsgHeader .date {
-	white-space:nowrap;
 	background:none repeat scroll 0 0 white;
 	padding:0 7px 0 5px;
 	position:absolute;
 	right:0;
-}
-
-.Conv2MsgHeader.focused .date {
-	background-color:@SelC@;
+	white-space:nowrap;
 }
 
 .Conv2MsgHeader .LabelColName {
-	padding-left:5px;
+	padding:5px 0;
 }
 
 .ZmMailMsgCapsuleView .Link, .Conv2Reply .Link {
+	@FontSize-normal@
+	@Text-link@
 	cursor:pointer;
 	white-space:nowrap;
 	margin:0 3px;
-	@Text-link@
 }
 
 .ZmMailMsgCapsuleView .Link.followed {
-	color:gray;
+	@Text-active@
+}
+
+.Conv2Reply .Link {
+	line-height:3em;
 }
 
 .ZmMailMsgCapsuleView .attachments {
@@ -982,7 +1000,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmMailMsgCapsuleView .footer {
-	padding:0 5px 5px 5px;
+	padding:0 5px 5px;
 }
 
 /* the sash next to overview does not need borders or a background color */
