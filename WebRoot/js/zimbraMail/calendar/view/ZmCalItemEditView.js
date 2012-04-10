@@ -781,7 +781,7 @@ function(width) {
 
     if( appCtxt.isTinyMCEEnabled() ) {
         this._notesHtmlEditor = new ZmAdvancedHtmlEditor(this, null, null, this._composeMode, null, this._htmlElId + "_notes");
-        this._notesHtmlEditor.addOnContentInitializedListener(new AjxCallback(this,this.resizeNotesEditor));
+        this._notesHtmlEditor.addOnContentInitializedListener(new AjxCallback(this,this._resizeNotes));
     } else {
         this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode);
         this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
@@ -951,12 +951,6 @@ function(show) {
 ZmCalItemEditView.prototype._formValue =
 function(excludeAttendees) {
 	// override
-};
-
-ZmCalItemEditView.prototype.resizeNotesEditor =
-function() {
-    this._notesHtmlEditor.resizeWidth('100%');
-    this._resizeNotes();
 };
 
 ZmCalItemEditView.prototype._resizeNotes =

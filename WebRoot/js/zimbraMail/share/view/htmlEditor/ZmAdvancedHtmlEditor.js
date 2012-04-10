@@ -36,6 +36,7 @@ ZmAdvancedHtmlEditor.prototype.isInputControl = true;
 ZmAdvancedHtmlEditor.prototype.toString = function() { return "ZmAdvancedHtmlEditor"; };
 
 ZmAdvancedHtmlEditor.TINY_MCE_PATH = "/js/ajax/3rdparty/tinymce";
+ZmAdvancedHtmlEditor.DELTA_HEIGHT = 6;
 
 ZmAdvancedHtmlEditor.prototype.getEditor =
 function() {
@@ -57,48 +58,10 @@ function() {
 	return document.getElementById(this.getBodyFieldId());
 };
 
-ZmAdvancedHtmlEditor.prototype.resizeWidth =
-function(width) {
-	var editorContainer = document.getElementById(this._bodyTextAreaId + "_tbl");
-	if (editorContainer) {
-		editorContainer.style.width = width;
-	}
-};
-
 ZmAdvancedHtmlEditor.prototype.setSize =
 function(x, y) {
-    var div = this._spellCheckDivId && document.getElementById(this._spellCheckDivId);
-    var editorContainer = document.getElementById(this._bodyTextAreaId + "_tbl");// holds editor iframe container (table)
-    var bodyField;
-    if( this._mode === DwtHtmlEditor.HTML && editorContainer ){
-        bodyField = editorContainer;
-    }
-    else{
-        bodyField = document.getElementById(this._bodyTextAreaId);//holds textarea;
-    }
-	// FUDGE: we must substract borders and paddings - yuck.
-	var delta = 10;
-
-    /*
-    if (x === Dwt.CLEAR) {
-		bodyField.style.width = null;
-        if (div) div.style.width = null;
-	} else if (x === Dwt.DEFAULT) {
-		bodyField.style.width = "auto";
-        if (div) div.style.width = "auto";
-	} else if (typeof(x) === "number") {
-        x -= delta + 4;
-    	// bug fix #6786 - normalize width/height if less than zero
-	    if (x < 0) { x = 0; }
-		bodyField.style.width = x + 5 + "px";
-        if (div) {
-			if (!AjxEnv.isIE) {
-				x = x > 4 ? (x-4) : x;
-			}
-			div.style.width = x + "px";
-		}
-	}
-	*/
+    var div = this._spellCheckDivId && document.getElementById(this._spellCheckDivId),
+        bodyField = this.getBodyField();  //textarea or editor iframe
 
     if (y === Dwt.CLEAR) {
         bodyField.style.height = null;
@@ -107,35 +70,30 @@ function(x, y) {
         bodyField.style.height = "auto";
         if (div) div.style.height = "auto";
     } else if (typeof(y) === "number") {
-        y -= delta; // subtract fudge factor
-        if (y < 0) { y = 0; }
-        if( this._mode === DwtHtmlEditor.TEXT ){
-            bodyField.style.height = y + "px";
-        }
-        else{
-            if( y > 0 ){
-                var iframe = this._iFrameId && document.getElementById(this._iFrameId);//holds iframe
-                if(iframe){
-                    if( this.getToolbar("2").style.display === Dwt.DISPLAY_NONE ){
-                        iframe.style.height = (y - 24)+"px";
-                    }
-                    else{
-                        iframe.style.height = (y - 64)+"px";
-                    }
-                }
-                else{
-                    bodyField.style.height = (y - 18) + "px";
-                }
+        //Subtracting editor toolbar height
+        if (bodyField.nodeName.toLowerCase() === "iframe") {
+            y = y - 28;
+            var secondToolbarRow = this.getToolbar("2");
+            if (secondToolbarRow && secondToolbarRow.style.display !== "none") {
+                y = y - 26; // subtracting second Toolbar height
             }
         }
+        //Subtracting spellcheckmodediv height
+        var spellCheckModeDiv = this._spellCheckModeDivId && document.getElementById(this._spellCheckModeDivId);
+        if (spellCheckModeDiv && spellCheckModeDiv.style.display !== "none") {
+            y = y - (div ? 45 : 39);
+        }
+        // FUDGE: we must substract borders and paddings - yuck.
+        y = y - ZmAdvancedHtmlEditor.DELTA_HEIGHT;
+        y = y < 0 ? 0 : y;
+
+        if (y + "px" !== bodyField.style.height) {
+            bodyField.style.height = y + "px";
+        }
+
         if (div) {
-			if (!AjxEnv.isIE) {
-				y = y > 4 ? (y-4) : y;
-			} else {
-				y += 2;
-			}
-			div.style.height = y + "px";
-		}
+            div.style.height = y + (AjxEnv.isIE ? 8 : 2) + "px";
+        }
     }
 };
 
@@ -571,7 +529,6 @@ function(id, content) {
 	}
 
 	var locale = appCtxt.get(ZmSetting.LOCALE_NAME);
-    var contentCSS = appContextPath + "/css/editor.css?v=" + window.cacheKillerVersion;
 	var editorCSS = appContextPath + "/css/editor_ui.css?v=" + window.cacheKillerVersion + "&skin=" + appCurrentSkin + "&locale=" + locale;
 
     var fonts = [];
@@ -603,12 +560,13 @@ function(id, content) {
 		convert_urls : false,
 		verify_html : false,
 		gecko_spellcheck : true,
-        content_css : contentCSS,
+        content_css : false,
 		editor_css: editorCSS,
         theme_advanced_runtime_fontsize:true,
         dialog_type : "modal",
         forced_root_block : 'div',
         width: "100%",
+        height: "auto",
         table_default_cellpadding : 3,
         table_default_border: 1,
 		setup : function(ed) {
@@ -732,6 +690,7 @@ ZmAdvancedHtmlEditor.prototype.onPostRender = function(ed, ev) {
             anchorButton.title = anchorButton.title.replace("Ctrl", "Cmd");
         }
     }
+    this.setSize("", parseInt(this.getContentField().style.height) + ZmAdvancedHtmlEditor.DELTA_HEIGHT);
     this.onToolbarToggle();
     Dwt.setVisible(this.getHtmlElement(), true);
 };
@@ -1292,6 +1251,7 @@ ZmAdvancedHtmlEditor.prototype.discardMisspelledWords =
 function(keepModeDiv) {
 	if (!this._spellCheck) { return; }
 
+    var size = this._editorContainer.getSize();
 	if (this._mode == DwtHtmlEditor.HTML) {
 		var doc = this._getIframeDoc();
 		doc.body.style.display = "none";
@@ -1323,7 +1283,7 @@ function(keepModeDiv) {
 
 		doc.body.style.display = "";
 		this._unregisterEditorEventHandler(doc, "contextmenu");
-
+        size.y = size.y - (keepModeDiv ? 0 : 2);
 	} else if (this._spellCheckDivId != null) {
 		var div = document.getElementById(this._spellCheckDivId);
 		var scrollTop = div.scrollTop;
@@ -1342,6 +1302,7 @@ function(keepModeDiv) {
 		div.parentNode.removeChild(div);
 		textArea.style.display = "";
 		textArea.scrollTop = scrollTop;
+        size.y = size.y + (keepModeDiv ? 2 : 0);
 	}
 
 	this._spellCheckDivId = this._spellCheck = null;
@@ -1354,6 +1315,7 @@ function(keepModeDiv) {
 	if (this.onExitSpellChecker) {
 		this.onExitSpellChecker.run();
 	}
+    this.setSize(size.x, size.y);
 };
 
 ZmAdvancedHtmlEditor.prototype._spellCheckShowModeDiv =
@@ -1389,7 +1351,7 @@ function() {
 	else {
 		document.getElementById(this._spellCheckModeDivId).style.display = "";
 	}
-	this.setSize(size.x, size.y + (this._mode == DwtHtmlEditor.TEXT ? 1 : 2));
+    this.setSize(size.x, size.y);
 };
 
 ZmAdvancedHtmlEditor._spellCheckResumeEditing =
@@ -1410,7 +1372,7 @@ function() {
 	if (this._spellCheckModeDivId) {
 		document.getElementById(this._spellCheckModeDivId).style.display = "none";
 	}
-	this.setSize(size.x, size.y + (this._mode == DwtHtmlEditor.TEXT ? 1 : 2));
+    this.setSize(size.x, size.y + (this._mode == DwtHtmlEditor.TEXT ? 1 : 0));
 };
 
 ZmAdvancedHtmlEditor.prototype.highlightMisspelledWords =
@@ -1589,7 +1551,6 @@ function(words, keepModeDiv) {
 			size.x -= 4;
 			size.y -= 6;
 		}
-		div.style.width = size.x + "px";
 		div.style.height = size.y + "px";
 
 		div.innerHTML = AjxStringUtil.convertToHtml(this.getContent());
