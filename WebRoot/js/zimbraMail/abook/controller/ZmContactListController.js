@@ -849,7 +849,7 @@ function(parent, num) {
 			var isDL = contact && contact.isDistributionList();
 			canEdit = isDL && contact.dlInfo && contact.dlInfo.isOwner;
 		}
-		parent.enable([ZmOperation.EDIT], canEdit);
+		parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit);  //not sure what is this ZmOperation.CONTACT exactly, but it's used as the "edit group" below. 
 
 		var canDelete = ZmContactList.deleteGalItemsAllowed(selection);
 
@@ -1067,11 +1067,11 @@ function(ev) {
  * @private
  */
 ZmContactListController.prototype._editListener =
-function(ev, isBack) {
-	var contact = this._listView[this._currentViewId].getSelection()[0];
+function(ev, isBack, contact) {
+	contact = contact || this._listView[this._currentViewId].getSelection()[0];
 	if (contact.isDistributionList() && !isBack) {
 		//load the full DL info available for the owner, for edit.
-		var callback = this._editListener.bind(this, contact, ev, true); //callback HERE
+		var callback = this._editListener.bind(this, ev, true, contact); //callback HERE
 		contact.clearDlInfo();
 		this.gatherContactExtraDlStuff(contact, callback);
 		return;

@@ -535,13 +535,18 @@ function(ev) {
 ZmListController.prototype._handleLoadParticipantContactListener =
 function() {
 	var cc = AjxDispatcher.run("GetContactController");
-	if (this._actionEv.contact) {
-		if (this._actionEv.contact.isLoaded) {
-			var isDirty = this._actionEv.contact.isGal;
-			cc.show(this._actionEv.contact, isDirty);
+	var contact = this._actionEv.contact;
+	if (contact) {
+		if (contact.isDistributionList()) {
+			this._editListener(this._actionEv, false, contact);
+			return;
+		}
+		if (contact.isLoaded) {
+			var isDirty = contact.isGal;
+			cc.show(contact, isDirty);
 		} else {
 			var callback = this._loadContactCallback.bind(this);
-			this._actionEv.contact.load(callback);
+			contact.load(callback);
 		}
 	} else {
 		var contact = this._createNewContact(this._actionEv);
