@@ -140,6 +140,7 @@ function(conv) {
 	this._setConvHeader();
 	var firstExpanded = this._renderMessages(conv, this._messagesDiv);
 	appCtxt.notifyZimlets("onConvEnd", [this]);
+	DBG.println("cv2", "Conv render time: " + ((new Date()).getTime() - this._now.getTime()));
 
 	this._scheduleResize(firstExpanded || true);
 	Dwt.setLoadedTime("ZmConv");
@@ -264,25 +265,40 @@ function(scrollMsgView) {
 	if (this._noResults) { return; }
 	if (!this._messagesDiv) { return; }
 	
-	// textarea is bigger if focused
-	var ctlr = this._controller;
+	var ctlr = this._controller, container;
 	if (this._isStandalone()) {
-		var container = this; 
+		container = this; 
 	}
 	else {
+		// height of list view more reliable for reading pane on right
 		var rpRight = ctlr.isReadingPaneOnRight();
-		var container = rpRight ? ctlr.getListView() : ctlr.getItemView();
+		container = rpRight ? ctlr.getListView() : ctlr.getItemView();
 	}
 	var myHeight = container.getSize().y;
 	DBG.println("cv2", "cv2 height = " + myHeight);
 	var headerSize = Dwt.getSize(document.getElementById(this._convHeaderId));
 	DBG.println("cv2", "header height = " + headerSize.y);
-	var replySize = this._replyView ? this._replyView.getSize() : {x:0, y:0};
-	DBG.println("cv2", "reply view height = " + replySize.y);
-	var messagesHeight = myHeight - headerSize.y - replySize.y - 1;
+	var replyHeight = this._replyView ? this._replyView.getSize().y : 0;
+	DBG.println("cv2", "reply view height = " + replyHeight);
+	var messagesHeight = myHeight - headerSize.y - replyHeight - 1;
 	DBG.println("cv2", "set message area height to " + messagesHeight);
 	Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, messagesHeight);
 	
+	// widen msg views if needed
+	if (this._msgViewList && this._msgViewList.length) {
+		for (var i = 0; i < this._msgViewList.length; i++) {
+			var msgView = this._msgViews[this._msgViewList[i]];
+			if (msgView) {
+				var iframe = msgView._usingIframe && msgView.getIframe();
+				var width = iframe ? Dwt.getSize(iframe).x : msgView._contentWidth;
+				if (width && width > Dwt.getSize(this._messagesDiv).x) {
+					msgView.setSize(width, Dwt.DEFAULT);
+				}
+			}
+		}
+	}
+	
+	// see if we need to scroll to top or a particular msg view
 	if (scrollMsgView) {
 		if (scrollMsgView === true) {
 			this._messagesDiv.scrollTop = 0;
@@ -818,6 +834,8 @@ ZmMailMsgCapsuleView = function(params) {
 	this._linkClass = "Link";
 	this._followedLinkClass = "Link followed";
 	
+	this.setScrollStyle(Dwt.VISIBLE);
+	
 	// cache text and HTML versions of original content
 	this._origContent = {};
 
@@ -948,10 +966,16 @@ function(isTextMsg, html, isTruncated) {
 
 	if (isTruncated)	{ return true; }
 	if (isTextMsg)		{ return false; }
+	
+//	return true;
+
+	// bail on trying to display simple HTML msgs without using an IFRAME. Issues:
+	// - since we set a width on the container (CV div), we don't know how wide the msg content is
 
 	var result = AjxStringUtil.checkForCleanHtml(html, ZmMailMsgView.TRUSTED_TAGS, ZmMailMsgView.UNTRUSTED_ATTRS, ZmMailMsgView.BAD_STYLES);
 	if (result) {
-		this._cleanedHtml = result;
+		this._cleanedHtml = result.html;
+		this._contentWidth = result.width;
 		return false;
 	}
 	else {
@@ -1559,11 +1583,16 @@ function(state, force) {
 		var folder = this._msg.folderId && appCtxt.getById(this._msg.folderId);
 		if (folder) {
 			var tooltip = AjxImg.getImageHtml(folder.getIconWithColor(), null, "title='" + folder.getName() + "'");
-			if (ai.participants[0]) {
-				ai.participants[0].folderIcon = tooltip;
+			if (ai.addressTypes[0]) {
+				ai.participants[ai.addressTypes[0]].folderIcon = tooltip;
 			}
 			else {
-				ai.participants.push({folderIcon:tooltip});
+				ai.addressTypes.push(AjxEmailAddress.TO);
+				ai.participants[AjxEmailAddress.TO] = {
+					prefix:		"",
+					partStr:	"",
+					folderIcon:	tooltip
+				};
 			}
 		}
 		var hdrTableId = this._msgView._hdrTableId = id + "_hdrTable";
@@ -1577,7 +1606,8 @@ function(state, force) {
 			oboAddr:		ai.oboAddr,
 			bwo:			ai.bwo,
 			bwoAddr:		ai.bwoAddr,
-			addresses:		ai.participants,
+			addressTypes:	ai.addressTypes,
+			participants:	ai.participants,
 			date:			dateString
 		};
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-expanded", subs);

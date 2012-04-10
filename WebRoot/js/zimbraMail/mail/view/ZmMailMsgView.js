@@ -1371,6 +1371,7 @@ function(msg, container) {
 		subs.sentByAddr = ai.sentByAddr;
 		subs.obo = ai.obo;
 		subs.oboAddr = ai.oboAddr;
+		subs.addressTypes = ai.addressTypes;
 		subs.participants = ai.participants;
 		subs.reportBtnCellId = reportBtnCellId;
 		subs.isSyncFailureMsg = isSyncFailureMsg;
@@ -1494,16 +1495,17 @@ function(msg, notifyZimlets) {
 	}
 
 	var showMoreIds = {};
-	var participants = [];
-	for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
+	var addressTypes = [], participants = {};
+	for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
 		var type = ZmMailMsg.ADDRS[i];
-		if ((type == AjxEmailAddress.SENDER) || (type == AjxEmailAddress.RESENT_FROM)) { continue; }
+		if ((type == AjxEmailAddress.FROM) || (type == AjxEmailAddress.SENDER) || (type == AjxEmailAddress.RESENT_FROM)) { continue; }
 
 		var addrs = AjxEmailAddress.dedup(msg.getAddresses(type).getArray());
 		if (addrs.length > 0) {
 			var prefix = AjxStringUtil.htmlEncode(ZmMsg[AjxEmailAddress.TYPE_STRING[type]]);
 			var addressInfo = this.getAddressesFieldInfo(addrs, options, type);
-			participants.push({ prefix: prefix, partStr: addressInfo.html });
+			addressTypes.push(type);
+			participants[type] = { prefix: prefix, partStr: addressInfo.html };
 			if (addressInfo.showMoreLinkId) {
 			    showMoreIds[addressInfo.showMoreLinkId] = true;
 			}
@@ -1521,6 +1523,7 @@ function(msg, notifyZimlets) {
 		oboAddr:		oboAddr,
 		bwo:			bwo,
 		bwoAddr:		bwoAddr,
+		addressTypes:	addressTypes,
 		participants:	participants,
         showMoreIds:    showMoreIds
 	};

@@ -84,12 +84,13 @@
 							</tr>
 
 
-							<$ for (var i = 0; i < data.participants.length; i++) { $>
+							<$ for (var i = 0; i < data.addressTypes.length; i++) { 
+									var participants = data.participants[data.addressTypes[i]]; $>
 								<tr id='OBJ_PREFIX_<$=Dwt.getNextId()$>_<$=data.participants[i].prefix.toLowerCase()$>'>
 									<td class='LabelColName'>
-										<$= AjxMessageFormat.format(ZmMsg.makeLabel, data.participants[i].prefix) $>
+										<$= participants.prefix ? AjxMessageFormat.format(ZmMsg.makeLabel, participants.prefix) : "&nbsp;" $>
 									</td>
-									<td class='LabelColValue' colspan='10'><$= data.participants[i].partStr $></td>
+									<td class='LabelColValue' colspan='10'><$= participants.partStr $></td>
 								</tr>
 							<$ } $>
 
@@ -760,8 +761,8 @@
 			<td style='white-space:nowrap;'>${date}</td>
 		</tr>
 
-		<$ for (var i = 0; i < data.addresses.length; i++) { $>
-			<$= AjxTemplate.expand("#Conv2MsgAddressRow", data.addresses[i]) $>
+		<$ for (var i = 0; i < data.addressTypes.length; i++) { $>
+			<$= AjxTemplate.expand("#Conv2MsgAddressRow", data.participants[data.addressTypes[i]]); $>
 		<$ } $>
 	</table>
 </template>
@@ -772,7 +773,7 @@
 		<td>&nbsp;</td>
 		<$ } $>
 		<td class='LabelColName'>
-			<$= AjxMessageFormat.format(ZmMsg.makeLabel, data.prefix) $>
+			<$= data.prefix ? AjxMessageFormat.format(ZmMsg.makeLabel, data.prefix) : "&nbsp;" $>
 		</td>
 		<td class='LabelColValue'><$= data.partStr $></td>
 		<$ if (!data.isReply) { $>
