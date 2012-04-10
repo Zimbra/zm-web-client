@@ -534,7 +534,7 @@
 		<$ if (data.dlInfo.description) { $>
 			<table class="contactGroupTable" width="100%">
 			<tr>
-				<td width="100%"><$= data.dlInfo.description $></td>
+				<td width="100%"><$= AjxStringUtil.htmlEncode(data.dlInfo.description) $></td>
 			</tr>
 			</table>
 		<$ } $>

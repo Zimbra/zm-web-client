@@ -2311,6 +2311,7 @@ function(node) {
 			isOwner: node.isOwner,
 			subscriptionPolicy: this.attr.zimbraDistributionListSubscriptionPolicy,
 			unsubscriptionPolicy: this.attr.zimbraDistributionListUnsubscriptionPolicy,
+			description: node.d,
 			hideInGal: this.attr.zimbraHideInGal == "TRUE"
 		};
 
