@@ -153,6 +153,7 @@ function(tag) {
 	var params = {
 		query: tag.createQuery(),
 		searchFor: searchFor,
+		noGal: true,
 		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
 		accountName: (appCtxt.multiAccounts ? tag.getAccount().name : null)
 	};

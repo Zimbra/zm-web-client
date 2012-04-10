@@ -237,7 +237,8 @@ function(menu) {
  * @param {boolean}		skipUpdateSearchToolbar     don't update the search toolbar (e.g. from the ZmDumpsterDialog where the search is called from its own search toolbar
  * @param {string}		origin						indicates what initiated the search
  * @param {string}		sessionId					session ID of search results tab (if search came from one)
- * 
+ * @param {Boolean}		noGal     if true, don't search GAL. This is to override the this._contactSource value in contacts search, specifically for clicking on TAGS. 
+ *
  */
 ZmSearchController.prototype.search =
 function(params) {
@@ -468,6 +469,7 @@ function(types) {
  * @param {AjxCallback}	callback		the callback
  * @param {AjxCallback}	errorCallback	the error callback
  * @param {boolean} params.skipUpdateSearchToolbar     don't update the search toolbar (e.g. from the ZmDumpsterDialog where the search is called from its own search toolbar
+ * @param {Boolean}		noGal     if true, don't search GAL. This is to override the this._contactSource value in contacts search, specifically for clicking on TAGS.
  *
  * @see	#search
  * 
@@ -516,7 +518,7 @@ function(params, noRender, callback, errorCallback) {
 	}
 
 	// only set contact source if we are searching for contacts
-	params.contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmId.SEARCH_GAL))
+	params.contactSource = !params.noGal && (types.contains(ZmItem.CONTACT) || types.contains(ZmId.SEARCH_GAL))
 		? this._contactSource : null;
 	if (params.contactSource == ZmId.SEARCH_GAL) {
 		params.expandDL = true;
