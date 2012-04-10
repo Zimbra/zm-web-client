@@ -100,7 +100,6 @@ function(msg) {
 
 			var inviteToolbar = this.getInviteToolbar();
 
-			inviteToolbar.reparentHtmlElement(this.parent.getHtmlElement(), 0);
 			inviteToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 
 			// show on-behalf-of info?
@@ -155,7 +154,6 @@ function(msg) {
 					this._inviteMoveSelect.setSelectedValue(ZmOrganizer.ID_CALENDAR);
 				}
 			}
-			this._inviteMoveLabel.setVisible(visible);
 			this._inviteMoveSelect.setVisible(visible);
 		}
 	}
@@ -353,7 +351,8 @@ function(reset) {
                     if (bodyDiv) Dwt.setScrollStyle(bodyDiv, Dwt.CLIP);
                     if (el) {
                         Dwt.setScrollStyle(el, Dwt.SCROLL);
-                        el.style.height = (mvHeight - ( this._inviteToolbar ? this._inviteToolbar.getYH() : 0 ) + 10) + "px";
+                        var yOffset = this.parent.getBounds().y;
+                        el.style.height = (mvHeight - yOffset) + "px";
                     }
                 }
             }
@@ -583,7 +582,7 @@ function() {
 		parent: this.parent,
 		buttons: [ZmOperation.ACCEPT_PROPOSAL, ZmOperation.DECLINE_PROPOSAL],
 		posStyle: DwtControl.STATIC_STYLE,
-		className: "ZmInviteToolBar",
+		className: "ZmCounterToolBar",
 		buttonClassName: "DwtToolbarButton",
 		context: this.mode,
 		toolbarType: ZmId.TB_COUNTER
@@ -671,12 +670,7 @@ function() {
 	tb.addFiller();
 
 	// folder picker
-	var label = this._inviteMoveLabel = new DwtText({parent: tb, className: "DwtText InviteSelectLabel"});
-	label.setSize(Dwt.DEFAULT, DwtControl.DEFAULT);
-	label.setText(ZmMsg.calendarLabel);
-	tb.addSpacer();
 	this._inviteMoveSelect = new DwtSelect({parent:tb});
-	tb.addSpacer();
 
 	return tb;
 };

@@ -1387,6 +1387,16 @@ function(msg, container) {
 	el.appendChild(Dwt.parseHtmlFragment(html));
 	this._headerElement = Dwt.byId(this._htmlElId + "_headerElement");
 
+    if (this._inviteMsgView) {
+        if (this._inviteToolbarCellId && this._inviteToolbarCellId) {
+            this._inviteMsgView._inviteToolbar.reparentHtmlElement(this._inviteToolbarCellId, 0);
+        }
+        if (this._calendarSelectCellId && this._inviteMsgView._inviteMoveSelect) {
+            this._inviteMsgView._inviteMoveSelect.reparentHtmlElement(this._calendarSelectCellId, 0);
+        }
+    }
+
+
 	/**************************************************************************/
 	/* Add to DOM based on Id's used to generate HTML via templates           */
 	/**************************************************************************/
@@ -1519,6 +1529,16 @@ function(msg, notifyZimlets) {
 ZmMailMsgView.prototype._getInviteSubs =
 function(subs, sentBy, sentByAddr, sender, addr) {
 	this._inviteMsgView.addSubs(subs, sentBy, sentByAddr, sender ? addr : null);
+    subs.noTopHeader = true;
+    var imv = this._inviteMsgView;
+    if (imv._inviteToolbar && imv._inviteToolbar.getVisible()) {
+        subs.toolbarCellId = this._inviteToolbarCellId =
+            [this._viewId, "inviteToolbarCell"].join("_");
+    }
+    if (imv._inviteMoveSelect && imv._inviteMoveSelect.getVisible()) {
+        subs.calendarSelectCellId = this._calendarSelectCellId =
+            [this._viewId, "calendarSelectToolbarCell"].join("_");
+    }
 };
 
 ZmMailMsgView.prototype._renderInviteToolbar =

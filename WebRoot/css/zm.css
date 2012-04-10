@@ -265,10 +265,14 @@
 }
 
 /* toolbars in read message view that let you accept an appointment, share, etc (with no border) */
-.ZmInviteToolBar, .ZmShareToolBar {
+.ZmCounterToolBar, .ZmShareToolBar {
 	@InlineToolbarContainer@
 	padding-left:@BoxPaddingSize@;
 	background-color:@lighten(AppC,90)@; 
+}
+.ZmInviteToolBar {
+	@InlineToolbarContainer@
+	background-color:@lighten(AppC,90)@;
 }
 
 .ZmInviteToolBar .ZToolbarTable, .ZmShareToolBar .ZToolbarTable {

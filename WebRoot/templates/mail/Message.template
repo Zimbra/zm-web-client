@@ -283,6 +283,12 @@
 									<td class='LabelColValue' id='${toolbarCellId}'></td>
 								</tr>
 							<$ } $>
+							<$ if (data.calendarSelectCellId) { $>
+								<tr>
+									<td class='LabelColName'><$= ZmMsg.calendarLabel $></td>
+									<td class='LabelColValue' style='padding-left:2px;' id='${calendarSelectCellId}'></td>
+								</tr>
+							<$ } $>
 						</table>
 						<$ if (data.hasAttachments) { $>
 							<div class="MessageHeaderAttachments" id="${attachId}_container">
