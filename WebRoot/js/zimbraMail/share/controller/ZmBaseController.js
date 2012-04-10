@@ -870,10 +870,11 @@ function(items, hardDelete, attrs, confirmDelete) {
  * @param {ZmFolder}	folder		the destination folder
  * @param {Object}	attrs		the additional attrs for SOAP command
  * @param {Boolean}		isShiftKey	<code>true</code> if forcing a copy action
+ * @param {Boolean}		noUndo	<code>true</code> undo not allowed
  * @private
  */
 ZmBaseController.prototype._doMove =
-function(items, folder, attrs, isShiftKey) {
+function(items, folder, attrs, isShiftKey, noUndo) {
 
 	items = AjxUtil.toArray(items);
 	if (!items.length) { return; }
@@ -895,7 +896,7 @@ function(items, folder, attrs, isShiftKey) {
 		move = items;
 	}
 
-	var params = {folder:folder, attrs:attrs};
+	var params = {folder:folder, attrs:attrs, noUndo: noUndo};
     params.errorCallback = this._actionErrorCallback.bind(this);
 
 	var allDoneCallback = this._getAllDoneCallback();

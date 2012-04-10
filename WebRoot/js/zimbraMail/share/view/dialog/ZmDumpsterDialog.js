@@ -624,7 +624,7 @@ function(items, folder, attrs, isShiftKey) {
 	attrs.op = "recover";
 	attrs.l = folder.id;
 	                                                                                                                                              		
-	ZmListController.prototype._doMove.call(this, items, folder, attrs, isShiftKey);
+	ZmListController.prototype._doMove.call(this, items, folder, attrs, isShiftKey, true);
 };
 
 ZmDumpsterListController.prototype._getMoreSearchParams =
