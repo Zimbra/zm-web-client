@@ -1799,16 +1799,16 @@ function(msg) {
 	else if (tagRow && tagCell && numTags) {
 		// tag added or removed, still some tags remain
 		table.deleteRow(tagRow.rowIndex);
-		this._renderTags(msg, this._insertTagRow(table), this._tagCellId);
+		this._renderTags(msg, this._insertTagRow(table, this._tagCellId));
 	}
 	else if (numTags) {
 		// rendering for first time, create row and cell
-		this._renderTags(msg, this._insertTagRow(table), this._tagCellId);
+		this._renderTags(msg, this._insertTagRow(table, this._tagCellId));
 	}
 };
 
 ZmMailMsgView.prototype._insertTagRow =
-function(table) {
+function(table, tagCellId) {
 	var tagRow = table.insertRow(-1);
 	tagRow.id = this._tagRowId;
 	var tagLabelCell = tagRow.insertCell(-1);
@@ -1820,7 +1820,7 @@ function(table) {
 };
 
 ZmMailMsgView.prototype._renderTags =
-function(msg, container, tagCellId) {
+function(msg, container) {
 
 	if (!container) { return; }
 	var tags = msg && msg.getSortedTags();
@@ -1830,22 +1830,16 @@ function(msg, container, tagCellId) {
 	}
 
 	var html = [], i = 0;
-	html[i++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%><tr>";
-	html[i++] = "<td style='overflow:hidden;' id='";
-	html[i++] = tagCellId;
-	html[i++] = "'>";
-
 	for (var j = 0; j < tags.length; j++) {
 		var tag = tags[j];
 		if (!tag) { continue; }
-		i = this._getTagHtml(tag, tagCellId, html, i);
+		i = this._getTagHtml(tag, html, i);
 	}
-	html[i++] = "</td></tr></table>";
 	container.innerHTML = html.join("");
 };
 
 ZmMailMsgView.prototype._getTagHtml =
-function(tag, baseId, html, i) {
+function(tag, html, i) {
 
 	var tagClick = ['ZmMailMsgView._tagClick("', this._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.id), '");'].join("");
 	var removeClick = ['ZmMailMsgView._removeTagClick("', this._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.id), '");'].join("");
