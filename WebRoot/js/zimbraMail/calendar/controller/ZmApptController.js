@@ -115,6 +115,10 @@ function(mode) {
     if(isTrash){
         this._disableEditForTrashedItems();
     }
+
+    if (appCtxt.isExternalAccount()) {
+        this._disableActionsForExternalAccount();
+    }
 };
 
 ZmApptController.prototype._disableEditForTrashedItems =
@@ -129,6 +133,20 @@ function() {
           if(proposeNewTimeButton){
               proposeNewTimeButton.setEnabled(false);
           }
+        }
+};
+
+ZmApptController.prototype._disableActionsForExternalAccount =
+function() {
+        var actionMenu = this._toolbar.getActionsMenu();
+        if(actionMenu){
+            actionMenu.enable([
+                            ZmOperation.EDIT,
+                            ZmOperation.PROPOSE_NEW_TIME,
+                            ZmOperation.DUPLICATE_APPT,
+                            ZmOperation.FORWARD_APPT,
+                            ZmOperation.DELETE
+                            ], false);
         }
 };
 

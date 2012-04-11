@@ -309,6 +309,7 @@ function(calItem) {
             statusSelect.setSelectedValue(stat);
         }
     }
+    if (isReadOnly) { statusSelect.setEnabled(false); }
 
     this._statusSelect = statusSelect;
     this._origPtst = calItem.ptst;
