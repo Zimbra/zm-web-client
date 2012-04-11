@@ -1560,9 +1560,10 @@ function(msg, container) {
 		}
 		this._inviteMsgView.set(msg);
 	}
-	else if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
-			 msg.share && msg.folderId != ZmFolder.ID_TRASH &&
-			 appCtxt.getActiveAccount().id != msg.share.grantor.id)
+	else if (appCtxt.get(ZmSetting.SHARING_ENABLED) && msg.share &&
+             ZmOrganizer.normalizeId(msg.folderId) != ZmFolder.ID_TRASH &&
+             ZmOrganizer.normalizeId(msg.folderId) != ZmFolder.ID_SENT &&
+             appCtxt.getActiveAccount().id != msg.share.grantor.id)
 	{
 		AjxDispatcher.require("Share");
 		var action = msg.share.action;
