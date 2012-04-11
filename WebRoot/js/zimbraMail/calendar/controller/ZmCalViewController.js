@@ -2344,12 +2344,19 @@ function(appt, all, result) {
 	var orig = appt.message;
 	if (orig) {
 		var inviteHtml = orig.getInviteDescriptionContent(ZmMimeTable.TEXT_HTML);
-		if (inviteHtml && inviteHtml.content)
-			msg.setInviteDescriptionContent(ZmMimeTable.TEXT_HTML, inviteHtml.content);
+        if (inviteHtml) {
+            var htmlContent = inviteHtml.getContent();
+            htmlContent && msg.setInviteDescriptionContent(ZmMimeTable.TEXT_HTML, htmlContent);
+        }
 
 		var inviteText = orig.getInviteDescriptionContent(ZmMimeTable.TEXT_PLAIN);
-		if (inviteText && inviteText.content)
-			msg.setInviteDescriptionContent(ZmMimeTable.TEXT_PLAIN, inviteText.content);
+        if (inviteText) {
+            var textContent = inviteText.getContent();
+            textContent && msg.setInviteDescriptionContent(ZmMimeTable.TEXT_PLAIN, textContent);
+        }
+        if (htmlContent || textContent) {
+            msg._loaded = true;
+        }
 
 		msg.invite = orig.invite;
 		msg.id = orig.id;
