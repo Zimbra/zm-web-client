@@ -715,7 +715,7 @@ function() {
 		link.className = "Link";
 		link.onclick = this._moreOptions.bind(this);
 		link.innerHTML = ZmMsg.moreComposeOptions;
-		tb._addItem(null, link);
+		tb.addChild(link);
 	}
 };
 
