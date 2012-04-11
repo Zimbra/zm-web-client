@@ -280,9 +280,6 @@
                                                             <td>
                                                                 <input id="start" type=text size="12" maxlength="20" name="startDate" value="${fn:escapeXml(compose.startDate)}">
                                                             </td>
-                                                            <td class='ZhDateHint'>
-                                                                <fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/>
-                                                            </td>
                                                         </tr>
                                                     </table>
                                                 </td>
@@ -294,9 +291,6 @@
                                                         <tr>
                                                             <td>
                                                                 <input id="end" type=text size="12" maxlength="20" name="endDate" value="${fn:escapeXml(compose.endDate)}">
-                                                            </td>
-                                                            <td class='ZhDateHint'>
-                                                                <fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/>
                                                             </td>
                                                         </tr>
                                                     </table>

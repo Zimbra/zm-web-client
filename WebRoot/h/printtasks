@@ -155,8 +155,7 @@
                         <td class="MsgHdrName"><fmt:message key="startDate"/>:</td>
                         <td class="MsgHdrValue">
                                 <fmt:formatDate var="sDate" pattern="${tdtPattern}" value="${taskObj.start.date}"/>
-                                ${fn:escapeXml(sDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/> </span>
-
+                                ${fn:escapeXml(sDate)}
                         </td>
 
                     </tr>
@@ -166,7 +165,7 @@
                         <td class="MsgHdrName"><fmt:message key="taskDueDate"/>:</td>
                         <td class="MsgHdrValue">
                                 <fmt:formatDate var="eDate" pattern="${tdtPattern}" value="${taskObj.end.date}"/>
-                                ${fn:escapeXml(eDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/></span>
+                                ${fn:escapeXml(eDate)}
                         </td>
                     </tr>
                     </c:if>
@@ -289,8 +288,7 @@
                         <td class="MsgHdrName"><fmt:message key="startDate"/>:</td>
                         <td class="MsgHdrValue">
                                 <fmt:formatDate var="sDate" pattern="${tdtPattern}" value="${taskObj.start.date}"/>
-                                ${fn:escapeXml(sDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/> </span>
-
+                                ${fn:escapeXml(sDate)}
                         </td>
 
                     </tr>
@@ -300,7 +298,7 @@
                         <td class="MsgHdrName"><fmt:message key="taskDueDate"/>:</td>
                         <td class="MsgHdrValue">
                                 <fmt:formatDate var="eDate" pattern="${tdtPattern}" value="${taskObj.end.date}"/>
-                                ${fn:escapeXml(eDate)}<span class="smalltext" >&nbsp;&nbsp;&nbsp;<fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/></span>
+                                ${fn:escapeXml(eDate)}
                         </td>
                     </tr>
                     </c:if>
