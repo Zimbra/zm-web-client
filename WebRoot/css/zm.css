@@ -969,11 +969,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .Conv2MsgHeader .date {
-	background:none repeat scroll 0 0 white;
 	padding:0 7px 0 5px;
 	position:absolute;
 	right:0;
+	top:3px;
 	white-space:nowrap;
+	background:none repeat scroll 0 0 white;
 }
 
 .Conv2MsgHeader .LabelColName {
