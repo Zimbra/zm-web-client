@@ -2820,11 +2820,11 @@ function(templateId, data) {
             styleStr = "right: 45px;width: 21px";
         else if (AjxEnv.isFirefox)
             styleStr  = "right:185px";
-        var data = {
+        var newData = {
             styleStr : styleStr,
             fileInputId : ZmId.getViewId(this._view, ZmId.CMP_ATT_INP)
-        }
-        node.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentAttachBtn", data);
+        };
+        node.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentAttachBtn", newData);
         this._attcBtnFileInpId = data.fileInputId;
     } else {
              this._attButton._textEl.onclick = function(event){
