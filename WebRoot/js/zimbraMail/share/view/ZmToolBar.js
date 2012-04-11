@@ -149,18 +149,24 @@ function(ids, enabled) {
 };
 
 ZmToolBar.prototype.setSelected =
-function(ids, enabled) {
-	ids = (ids instanceof Array) ? ids : [ids];
-	for (var i = 0; i < ids.length; i++) {
-		if (this._buttons[ids[i]]) {
-			this._buttons[ids[i]].setDisplayState(DwtControl.SELECTED);
-		}
-	}
+function(id) {
+    var oldButton = this._selectedId ? this._buttons[this._selectedId] : null;
+    var newButton = id ? this._buttons[id] : null;
+    if (oldButton) {
+        oldButton.setSelected(false);
+        oldButton._noFocus = false;
+    }
+    if (newButton) {
+        newButton.setSelected(true);
+        newButton._noFocus = true;
+
+        this._selectedId = id;
+    }
 };
 
 /**
  * Enables or disables all buttons.
- * 
+ *
  * @param {Boolean}	enabled			if <code>true</code>, enable the buttons
  */
 ZmToolBar.prototype.enableAll =
