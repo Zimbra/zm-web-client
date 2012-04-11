@@ -1036,7 +1036,8 @@ function(msg, container, callback, index) {
 	var isShareInvite = this._isShareInvite = (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
 												msg.share && msg.folderId != ZmFolder.ID_TRASH &&
 												appCtxt.getActiveAccount().id != msg.share.grantor.id);
-	if (isCalendarInvite || isShareInvite) {
+	var isSubscribeReq = msg.subscribeReq && msg.folderId != ZmFolder.ID_TRASH;
+	if (isCalendarInvite || isShareInvite || isSubscribeReq) {
 		ZmMailMsgView.prototype._renderMessageHeader.apply(this, arguments);
 	}
 	
@@ -1064,10 +1065,11 @@ function(msg, container, callback, index) {
 		}
 	}
 	
-	if (isShareInvite) {
+	if (isShareInvite || isSubscribeReq) {
 		var bodyEl = this.getMsgBodyElement();
-		if (this._shareToolbar) {
-			this._shareToolbar.reparentHtmlElement(bodyEl, 0);
+		var toolbar = isShareInvite ? this._shareToolbar : this._subscribeToolbar;
+		if (toolbar) {
+			toolbar.reparentHtmlElement(bodyEl, 0);
 		}
 		// invite header
 		bodyEl.insertBefore(this._headerElement.parentNode, bodyEl.firstChild);
