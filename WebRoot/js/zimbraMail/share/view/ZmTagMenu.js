@@ -209,13 +209,15 @@ function(tagList, addRemove) {
 				if (!removeMenu) {
 					removeMenu = new DwtMenu({parent:miRemove, className:this._className});
 					miRemove.setMenu(removeMenu);
+                    removeMenu.setHtmlElementId('REMOVE_TAG_MENU');
 				}
 				var tag = tagList.getByNameOrRemote(removeList[i]);
-				this._addNewTag(removeMenu, tag, false, null, this._removeHash);
+                var tagHtmlId = 'Remove_tag_' + i;
+				this._addNewTag(removeMenu, tag, false, null, this._removeHash, tagHtmlId);
 			}
 			// if multiple removable tags, offer "Remove All"
 			new DwtMenuItem({parent:removeMenu, style:DwtMenuItem.SEPARATOR_STYLE});
-			var mi = new DwtMenuItem({parent:removeMenu});
+			var mi = new DwtMenuItem({parent:removeMenu, id:"REMOVE_ALL_TAGS"});
 			mi.setText(ZmMsg.allTags);
 			mi.setImage("TagStack");
 			mi.setShortcut(appCtxt.getShortcutHint(this._keyMap, ZmKeyMap.UNTAG));
@@ -236,8 +238,8 @@ function(tagList, addRemove) {
 
 ZmTagMenu.tagNameLength = 20;
 ZmTagMenu.prototype._addNewTag =
-function(menu, newTag, add, index, tagHash) {
-	var mi = new DwtMenuItem({parent:menu, index:index});
+function(menu, newTag, add, index, tagHash, tagHtmlId) {
+	var mi = new DwtMenuItem({parent:menu, index:index, id:tagHtmlId});
     var tagName = AjxStringUtil.clipByLength(newTag.getName(false),ZmTagMenu.tagNameLength);
 	var nameText = newTag.notLocal ? AjxMessageFormat.format(ZmMsg.tagNotLocal, tagName) : tagName;
     mi.setText(nameText);
