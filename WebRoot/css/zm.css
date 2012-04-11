@@ -919,6 +919,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	border-color:black;
 	border-style:solid;
 	border-width:0 0 1px;
+	clear:both;
 	color:black;
 	margin:3px 7px;
 	opacity:.25;
