@@ -83,11 +83,12 @@ function(enabled) {
 
 // Dynamically set the list of contact groups that can be added/removed based on the given list of items.
 ZmContactGroupMenu.prototype.set =
-function(items, contactGroupList) {
+function(items, contactGroupList, newDisabled) {
 	DBG.println(AjxDebug.DBG3, "set contact group menu");
 	this._contactGroupList = contactGroupList;
 	this._items = items;
 	this._dirty = true;
+	this._newDisabled = newDisabled;
 
 	this.parent.setEnabled(true);
 
@@ -141,8 +142,13 @@ function(groupNames, addRemove) {
 	var miNew = this._menuItems[ZmContactGroupMenu.MENU_ITEM_ADD_ID] = new DwtMenuItem({parent:this, id: this._htmlElId + "|NEWGROUP"});
 	miNew.setText(AjxStringUtil.htmlEncode(ZmMsg.newGroup));
 	miNew.setImage("NewGroup");
-	miNew.setData(ZmContactGroupMenu.KEY_GROUP_EVENT, ZmEvent.E_CREATE);
-	miNew.addSelectionListener(this._menuItemSelectionListener.bind(this), 0);
+	if (this._newDisabled) {
+		miNew.setEnabled(false);
+	}
+	else {
+		miNew.setData(ZmContactGroupMenu.KEY_GROUP_EVENT, ZmEvent.E_CREATE);
+		miNew.addSelectionListener(this._menuItemSelectionListener.bind(this), 0);
+	}
 };
 
 ZmContactGroupMenu.groupNameLength = 20;

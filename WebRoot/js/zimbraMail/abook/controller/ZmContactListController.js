@@ -969,6 +969,10 @@ function(ev) {
 		}	
 	} else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var folder = appCtxt.getById(ev.item.folderId);
+		if (ev.item.isDistributionList() && ev.item.dlInfo.isOwner) {
+			this._editListener.call(this, ev);
+			return;
+		}
 		if (!this.isGalSearch() && (!folder || (!folder.isReadOnly() && !folder.isInTrash()))) {
 			AjxDispatcher.run("GetContactController").show(ev.item);
 		}
@@ -1050,7 +1054,9 @@ function(ev) {
 ZmContactListController.prototype._dropListener =
 function(ev) {
 	var view = this._listView[this._currentViewId];
-	var item = view.getTargetItem(ev);
+	//var item = view.getTargetItem(ev); - this didn't seem to return any item in my tests, while the below (copied from ZmListController.prototype._dropListener) does, and thus solves the gal issue for DLs as well.
+	var div = view.getTargetItemDiv(ev.uiEvent);
+	var item = view.getItemFromElement(div);
 
 	// only tags can be dropped on us
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
@@ -1302,7 +1308,7 @@ function(parent) {
 	var contacts = this._getContactsFromCache();
 	var contactGroups = this._filterGroups(contacts);
 	var sortedGroups = this._sortContactGroups(contactGroups);
-	groupMenu.set(items, sortedGroups);
+	groupMenu.set(items, sortedGroups, this._folderId == ZmFolder.ID_DLS); //disabled "new" from this for DLs folder.
 };
 
 ZmContactListController.prototype._setupContactGroupMenu =
