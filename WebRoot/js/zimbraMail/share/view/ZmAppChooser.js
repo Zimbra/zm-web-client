@@ -275,8 +275,10 @@ function(tab){
 ZmAppChooser.prototype._adjustWidth =
 function(){
     var container = this._refElement && this._refElement.parentNode;
-    this._refElement.style.maxWidth = this._refElement.style.width =  (container.offsetWidth - 30);
-    this._refElement.style.overflow = "hidden";
+	if (container && container.offsetWidth >= 30) {
+    	this._refElement.style.maxWidth = this._refElement.style.width =  (container.offsetWidth - 30);
+    	this._refElement.style.overflow = "hidden";
+	}
 
 };
 
