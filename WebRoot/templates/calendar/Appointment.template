@@ -805,6 +805,9 @@
                 }else if (k % 2 == 0) {
                     newClass = normalClassName + "-halfHour";
                 }
+                if ((k==0) && (data.dateBorder.start == -1)) {
+                    newClass += " " + normalClassName + "-leftStart";
+                }
             $>
 			<td class='ZmScheduler-free' width=2%>
 				<div id='${sched.dwtTableId}_<$= k $>' class='<$= newClass $>'></div>

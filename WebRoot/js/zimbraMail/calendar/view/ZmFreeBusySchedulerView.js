@@ -1442,7 +1442,7 @@ ZmFreeBusySchedulerView.prototype._updateBorders =
 function(sched, isAllAttendees) {
 	if (!sched) { return; }
 
-	var div, curClass, newClass;
+	var td, div, curClass, newClass;
 
 	// mark right borders of appropriate f/b table cells
 	var normalClassName = "ZmSchedulerGridDiv";
@@ -1454,7 +1454,7 @@ function(sched, isAllAttendees) {
 	var row = table.rows[0];
 	if (row) {
 		for (var i = 0; i < ZmFreeBusySchedulerView.FREEBUSY_NUM_CELLS; i++) {
-			var td = row.cells[i];
+		    td = row.cells[i];
 			div = td ? td.getElementsByTagName("*")[0] : null;
 			if (div) {
 				curClass = div.className;
@@ -1470,6 +1470,11 @@ function(sched, isAllAttendees) {
 					div.className = newClass;
 				}
 			}
+		}
+		td = row.cells[0];
+		div = td ? td.getElementsByTagName("*")[0] : null;
+		if (div && (this._dateBorder.start == -1)) {
+		    div.className += " " + normalClassName + "-leftStart";
 		}
 	}
 };
@@ -1522,12 +1527,14 @@ function(time, isEnd, adjust) {
 
 ZmFreeBusySchedulerView.prototype._getBordersFromDateInfo =
 function() {
-	var index = {start: -99, end: -99};
+	// Setup the start/end for an all day appt
+	var index = {start: -1, end: ZmFreeBusySchedulerView.FREEBUSY_NUM_CELLS-1};
 	if (this._dateInfo.showTime) {
+		// Not an all day appt, determine the appts start and end
 		var idx = AjxDateUtil.isLocale24Hour() ? 0 : 1;
-        this._processDateInfo(this._dateInfo);
+		this._processDateInfo(this._dateInfo);
 
-        // subtract 1 from index since we're marking right borders
+		// subtract 1 from index since we're marking right borders
 		index.start = this._getIndexFromTime(this._startDate, null, false) - 1;
 		if (this._dateInfo.endDate == this._dateInfo.startDate) {
 			index.end = this._getIndexFromTime(this._endDate, true, false);

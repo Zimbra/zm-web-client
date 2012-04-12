@@ -2767,6 +2767,9 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:8px;			/* ??? SIZE */
 	height:21px;
 }
+.ZmSchedulerGridDiv-leftStart {
+	border-left:3px solid green;
+}
 
 /* marker cell in the grid (showing currently selected time) */
 .ZmSchedulerGrid-end {
