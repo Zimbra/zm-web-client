@@ -1994,11 +1994,11 @@ function(appt, mode) {
 	}
 
 	var cancelNoReplyCallback = new AjxCallback(this, this._continueDelete, [appt, mode]);
-	var confirmDialog = appCtxt.getConfirmationDialog();
 
+    var confirmDialog = this._confirmDeleteApptDialog();
 	if (appt.otherAttendees && !appt.inviteNeverSent && appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		var cancelReplyCallback = new AjxCallback(this, this._continueDeleteReply, [appt, mode]);
-		confirmDialog.popup(ZmMsg.confirmCancelApptReply, cancelReplyCallback, cancelNoReplyCallback);
+		confirmDialog.popup(ZmMsg.sendCancellationConfirmation, cancelReplyCallback, cancelNoReplyCallback);
 	} else {
 		this._continueDelete(appt, mode);
 	}
