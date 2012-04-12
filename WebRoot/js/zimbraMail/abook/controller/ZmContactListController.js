@@ -245,9 +245,9 @@ function(contact, callback, result) {
 						isOwner: isOwner,
 						subscriptionPolicy: attrs.zimbraDistributionListSubscriptionPolicy,
 						unsubscriptionPolicy: attrs.zimbraDistributionListUnsubscriptionPolicy,
-						description: attrs.description,
-						displayName: attrs.displayName,
-						notes: attrs.zimbraNotes,
+						description: attrs.description || "",
+						displayName: attrs.displayName || "",
+						notes: attrs.zimbraNotes || "",
 						hideInGal: attrs.zimbraHideInGal == "TRUE",
 						mailPolicy: isOwner && this._getMailPolicy(dl, mailPolicySpecificMailers, contact),
 						owners: isOwner && this._getOwners(dl)};

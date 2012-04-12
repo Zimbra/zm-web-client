@@ -1318,7 +1318,10 @@ function(attr) {
 		this.setAttr(ZmContact.F_email, newEmail);
 	}
 
-	reqs.push(this._getModifyDlAttributesReq(attr));
+	var modDlReq = this._getModifyDlAttributesReq(attr);
+	if (modDlReq) {
+		reqs.push(modDlReq);
+	}
 
 	var displayName = attr[ZmContact.F_dlDisplayName];
 	if (displayName !== undefined) {
@@ -1487,6 +1490,10 @@ function(attr) {
 
 ZmContact.prototype._getModifyDlAttributesReq =
 function(attr) {
+	var modAttrs = this._getDlAttributes(attr);
+	if (modAttrs.length == 0) {
+		return null;
+	}
 	return {
 		_jsns: "urn:zimbraAccount",
 		dl: {by: "name",
@@ -1494,7 +1501,7 @@ function(attr) {
 		},
 		action: {
 			op: "modify",
-			a: this._getDlAttributes(attr)
+			a: modAttrs
 		}
 	};
 };
@@ -2311,7 +2318,7 @@ function(node) {
 			isOwner: node.isOwner,
 			subscriptionPolicy: this.attr.zimbraDistributionListSubscriptionPolicy,
 			unsubscriptionPolicy: this.attr.zimbraDistributionListUnsubscriptionPolicy,
-			description: node.d,
+			description: node.d || "",
 			hideInGal: this.attr.zimbraHideInGal == "TRUE"
 		};
 
