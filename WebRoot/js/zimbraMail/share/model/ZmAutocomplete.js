@@ -425,6 +425,7 @@ ZmAutocompleteMatch = function(match, options, isContact, str) {
 	if (!match) { return; }
 	this.type = match.type;
 	this.str = str;
+	var ac = window.parentAppCtxt || window.appCtxt;
 	if (isContact) {
 		this.text = this.name = match.getFullName();
 		this.email = match.getEmail();
@@ -435,8 +436,8 @@ ZmAutocompleteMatch = function(match, options, isContact, str) {
 		this.isGroup = Boolean(match.isGroup);
 		this.isDL = (this.isGroup && this.type == ZmAutocomplete.AC_TYPE_GAL);
 		if (this.isGroup && !this.isDL) {
-			// Local contact group; emails need to be looked up by group member ids.  
-			var contactGroup = appCtxt.cacheGet(match.id);
+			// Local contact group; emails need to be looked up by group member ids. 
+			var contactGroup = ac.cacheGet(match.id);
 			if (contactGroup) {
 				var groups = contactGroup.getGroupMembers();
 				var addresses = (groups && groups.good && groups.good.getArray()) || [];
@@ -469,7 +470,6 @@ ZmAutocompleteMatch = function(match, options, isContact, str) {
 			}
 			this.icon = this.isDL ? "Group" : ZmAutocomplete.AC_ICON[match.type];
 			this.canExpand = this.isDL && match.exp;
-			var ac = window.parentAppCtxt || window.appCtxt;
 			ac.setIsExpandableDL(this.email, this.canExpand);
 		}
 	}
