@@ -42,6 +42,8 @@ ZmAppCtxt = function() {
 	// account-specific
 	this.isFamilyMbox = false;
 	this.multiAccounts = false;
+    this.sendAsEmails = [];
+    this.sendOboEmails = [];
 
 	this._evtMgr = new AjxEventMgr();
 

@@ -95,7 +95,9 @@ function() {
 	appCtxt.setSettings(parentAppCtxt.getSettings());
 	appCtxt.isOffline = parentAppCtxt.isOffline;
 	appCtxt.multiAccounts = parentAppCtxt.multiAccounts;
-	window.ZmSetting = winOpener.ZmSetting;
+    appCtxt.sendAsEmails = parentAppCtxt.sendAsEmails;
+    appCtxt.sendOboEmails = parentAppCtxt.sendOboEmails;
+    window.ZmSetting = winOpener.ZmSetting;
 
 	ZmOperation.initialize();
 	ZmApp.initialize();

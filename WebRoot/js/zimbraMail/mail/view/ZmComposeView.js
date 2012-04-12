@@ -185,7 +185,7 @@ function(params) {
 		this._setAddresses(action, AjxEmailAddress.BCC, params.bccOverride);
 	}
 	if (obo) {
-		this._setObo(obo);
+        this.identitySelect.setSelectedValue(obo);
 	}
 	this._setSubject(action, msg, params.subjOverride);
 	this._setBody(action, msg, params.extraBodyText);
@@ -403,6 +403,14 @@ function(opt){
   return(this._isAttachInline);
 };
 
+ZmComposeView.prototype._checkIsOnBehalfOf =
+function(){
+    var oboCheck = appCtxt.getUsername() + " " + ZmMsg.sendOnBehalfOf + " ";
+    var opt = this.identitySelect.getSelectedOption();
+    var optDisplayName = opt && opt.getDisplayValue();
+    if (!optDisplayName) return false;
+    return !(optDisplayName.indexOf(oboCheck));
+};
 
 ZmComposeView.prototype._isInline =
 function(msg) {
@@ -657,6 +665,10 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 	msg.identity = this.getIdentity();
 	msg.sendUID = this.sendUID;
 
+    if(!msg.identity){
+      msg.delegatedSenderAddr = this.identitySelect.getValue();
+      msg.isOnBehalfOf = this._checkIsOnBehalfOf();
+    }
 	// save a reference to the original message
 	msg._origMsg = this._msg;
 	if (this._msg && this._msg._instanceDate) {
@@ -1132,7 +1144,8 @@ function(params) {
 		this._msgAttId = params.msgAttId;
 	}
 	if (params.identityId && this.identitySelect) {
-		this.identitySelect.setSelectedValue(params.identityId);
+        var opt = this.identitySelect.getOptionAtIndex(params.identityId);
+		this.identitySelect.setSelectedOption(opt);
 	}
 
 	this.backupForm = params.backupForm;
@@ -2133,14 +2146,6 @@ function(action, type, override) {
 };
 
 
-
-ZmComposeView.prototype._setObo =
-function(obo) {
-	Dwt.setVisible(this._oboRow, true);
-	this._oboCheckbox.checked = true;
-	this._oboLabel.innerHTML = AjxMessageFormat.format(ZmMsg.sendObo, obo);
-};
-
 ZmComposeView.prototype._setSubject =
 function(action, msg, subjOverride) {
 
@@ -2748,6 +2753,26 @@ function(templateId) {
 
 	this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
 };
+ZmComposeView.prototype._addSendAsAndSendOboAddresses  =
+function(menu){
+
+    var optData = null;
+    var displayName = appCtxt.getUsername();
+    for(var i=0;i<appCtxt.sendAsEmails.length;i++){
+        var email = appCtxt.sendAsEmails[i];
+        optData = new DwtSelectOptionData(email,email);
+        menu.addOption(optData);
+    }
+
+    for(var i=0;i<appCtxt.sendOboEmails.length;i++){
+        var email = appCtxt.sendOboEmails[i];
+        optData =new DwtSelectOptionData(email, displayName + " " + ZmMsg.sendOnBehalfOf + " "  + email);
+        optData.obo = true;
+        menu.addOption(optData);
+
+    }
+
+};
 
 ZmComposeView.prototype._createHtmlFromTemplate =
 function(templateId, data) {
@@ -2776,14 +2801,16 @@ function(templateId, data) {
 	if (appCtxt.multiAccounts) {
 		if (!this._fromSelect) {
 			this._fromSelect = new DwtSelect({parent:this, id:this.getHTMLElId() + "_fromSelect", parentElement:data.fromSelectId});
-			this._fromSelect.addChangeListener(new AjxListener(this, this._handleFromListener));
+			//this._addSendAsAndSendOboAddresses(this._fromSelect);
+            this._fromSelect.addChangeListener(new AjxListener(this, this._handleFromListener));
             this._recipients.attachFromSelect(this._fromSelect);
 		}
 	} else {
 		// initialize identity select
 		var identityOptions = this._getIdentityOptions();
 		this.identitySelect = new DwtSelect({parent:this, id:this.getHTMLElId() + "_identitySelect", options:identityOptions});
-		this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity, true);
+		this._addSendAsAndSendOboAddresses(this.identitySelect);
+        this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity, true);
 
 		if (!this._identityChangeListenerObj) {
 			this._identityChangeListenerObj = new AjxListener(this, this._identityChangeListener);
@@ -3236,11 +3263,10 @@ function(ev) {
 
 ZmComposeView.prototype._setIdentityVisible =
 function() {
-	if (!appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) { return; }
 	var div = document.getElementById(this._identityDivId);
 	if (!div) return;
 
-	var visible = appCtxt.getIdentityCollection().getSize() > 1;
+	var visible = this.identitySelect.getOptionCount() > 1;
 	Dwt.setVisible(div, visible);
 };
 
@@ -3260,7 +3286,7 @@ function() {
 		var collection = ac.getIdentityCollection();
 		var val = this.identitySelect.getValue();
 		var identity = collection.getById(val);
-		return identity ? identity : collection.defaultIdentity;
+        return identity;
 	}
 };
 

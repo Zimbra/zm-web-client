@@ -364,12 +364,56 @@ function(params) {
 	// fetch meta data for the main account
 	var respCallback = new AjxCallback(this, this._handleResponseGetMetaData, params);
 	appCtxt.accountList.mainAccount.loadMetaData(respCallback);
-
+    this._initDelegatedSenderAddrs();
     if(appCtxt.isOffline) {
         var updatePref = appCtxt.get(ZmSetting.OFFLINE_UPDATE_NOTIFY);
         this._offlineUpdateChannelPref(updatePref)
     }
 };
+
+
+ZmZimbraMail.prototype._initDelegatedSenderAddrs =
+function() {
+    var soapDoc = AjxSoapDoc.create("DiscoverRightsRequest", "urn:zimbraAccount");
+    soapDoc.set("right","sendAs" );
+    soapDoc.set("right","sendOnBehalfOf");
+    soapDoc.set("right","sendAsDistList");
+    soapDoc.set("right","sendOnBehalfOfDistList");
+    var batchCmd = new ZmBatchCommand(null, appCtxt.accountList.mainAccount.name);
+    var callback = this._initDelegatedSenderEmails.bind(this);
+	batchCmd.addNewRequestParams(soapDoc, callback, callback);
+    batchCmd.run();
+};
+
+ZmZimbraMail.prototype._getDelegatedSenderEmails =
+function(sendRights, sendRight) {
+    var emails = [];
+        if (sendRights && sendRights.length){
+            for (var i=0;i<sendRights.length; i++){
+                var target = sendRights[i].target;
+                var right =  sendRights[i].right;
+                if (right == sendRight){
+                    for (var j=0;j < target.length; j++){
+                        var emailList = target[j].email;
+                        for (var k=0; k < emailList.length; k++){
+                            var email = emailList[k].addr;
+                            emails.push(email);
+                        }
+                    }
+                }
+
+            }
+        }
+    return emails;
+};
+
+ZmZimbraMail.prototype._initDelegatedSenderEmails =
+function(result){
+    var response = result.getResponse().DiscoverRightsResponse;
+    var sendRights = response && response.targets;
+    appCtxt.sendAsEmails = this._getDelegatedSenderEmails(sendRights, 'sendAs');
+    appCtxt.sendOboEmails = this._getDelegatedSenderEmails(sendRights, 'sendOnBehalfOf');
+}
 
 ZmZimbraMail.registerViewsToTypeMap = function() {
 	// organizer types based on view

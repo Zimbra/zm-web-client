@@ -261,6 +261,7 @@ function() {
 	var action = view._action || this._action;
 	var identity = view.getIdentity();
     var requestReadReceipt = this.isRequestReadReceipt();
+    var selectedIdentityIndex = view.identitySelect && view.identitySelect.getSelectedIndex();
 
 	var addrList = {};
 	var addrs = !view._useAcAddrBubbles && view.getRawAddrFields();
@@ -286,7 +287,7 @@ function() {
 		msgAttId:		msgAttId,
 		body:			body,
 		composeMode:	composeMode,
-		identityId:		(identity ? identity.id : null),
+		identityId:		selectedIdentityIndex,
 		accountName:	this._accountName,
 		backupForm:		backupForm,
 		sendUID:		sendUID,

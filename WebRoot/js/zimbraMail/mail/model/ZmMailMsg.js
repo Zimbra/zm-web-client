@@ -2326,7 +2326,8 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			if (onBehalfOf) {
 				addr = accountName;
 			} else {
-				addr = identity ? identity.sendFromAddress : accountName;
+				addr = identity ? identity.sendFromAddress : (this.delegatedSenderAddr || accountName);
+                onBehalfOf = this.isOnBehalfOf;
 				displayName = identity && identity.sendFromDisplay;
 			}
 		}
@@ -2340,7 +2341,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 			// the main account is *always* the sender
 			addrNodes.push({t:"s", a:mainAcct});
 		}
-	} else if (identity) {
+	} else{
 
 		var mainAcct = ac.accountList.mainAccount.getEmail();
 		var onBehalfOf = false;
@@ -2363,10 +2364,13 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		var addr, displayName;
 		if (onBehalfOf) {
 			addr = accountName;
-		} else {
+		} else if(identity) {
 			addr = identity.sendFromAddress || mainAcct;
 			displayName = identity.sendFromDisplay;
-		}
+		} else{
+           addr = this.delegatedSenderAddr;
+           onBehalfOf = this.isOnBehalfOf;
+        }
 
 		var addrNode = {t:"f", a:addr};
 		if( displayName) {
