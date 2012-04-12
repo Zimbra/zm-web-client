@@ -714,8 +714,8 @@
 
 <template id='mail.Message#Conv2ReplyTable'>
 	<table id="${replyTableId}">
-		<$ for (var i = 0; i < data.addresses.length; i++) { $>
-			<$= AjxTemplate.expand("#Conv2MsgAddressRow", data.addresses[i]) $>
+		<$ for (var i = 0; i < data.participants.length; i++) { $>
+			<$= AjxTemplate.expand("#Conv2MsgAddressRow", data.participants[i]) $>
 		<$ } $>
 	</table>
 </template>
