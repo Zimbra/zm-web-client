@@ -1165,14 +1165,62 @@ function(id, setup, value) {
 	return container;
 };
 
+ZmAccountsPage.prototype._setSelectFromLabels =
+function( displayOptions, fromAddress){
+ if (!this._selectFromLabels){
+    var tmpArray1 = [];
+    var tmpArray2 = [];
+    var email  = null;
+    var index = -1;
+     // Add sendOnBehalfOf emails
+    for (var i=0;i < appCtxt.sendOboEmails.length; i++){
+      email = appCtxt.sendOboEmails[i];
+      index = -1;
+      if (index = AjxUtil.indexOf(fromAddress,email) != -1)
+          fromAddress.splice(index, 1);
+      if (index = AjxUtil.indexOf(displayOptions,email) != -1)
+           displayOptions.splice(index, 1);
+      tmpArray2.push({label:(ZmMsg.sendOnBehalfOf + " " + email), value:email});
+    }
+
+    // Add sendAs emails
+    for (var i=0;i < appCtxt.sendAsEmails.length; i++){
+      email = appCtxt.sendAsEmails[i];
+      index = -1;
+      if ((index = AjxUtil.indexOf(fromAddress,email)) != -1)
+          fromAddress.splice(index, 1);
+      if ((index = AjxUtil.indexOf(displayOptions,email)) != -1)
+           displayOptions.splice(index, 1);
+      tmpArray2.push({label:email, value:email});
+    }
+
+
+    if (fromAddress && fromAddress.length)
+        fromAddress = fromAddress.sort();
+
+    if (displayOptions && displayOptions.length)
+        displayOptions = displayOptions.sort();
+
+    displayOptions = AjxUtil.mergeArrays(displayOptions, fromAddress);
+
+    var length = displayOptions.length;
+    for (var i=0;i<length; i++){
+        tmpArray1.push({label:displayOptions[i], value:displayOptions[i]});
+    }
+    this._selectFromLabels =  tmpArray1.concat(tmpArray2);
+ }
+ return this._selectFromLabels;
+};
+
+
 ZmAccountsPage.prototype._setupSelect =
 function(id, setup, value) {
 	var select;
 	if (id == "FROM_EMAIL") {
 		setup.displayOptions = this._getAllAddresses();
 		var fromAddress = appCtxt.get(ZmSetting.MAIL_FROM_ADDRESS);
-		setup.displayOptions = AjxUtil.mergeArrays(setup.displayOptions, fromAddress);
-
+        setup.options = this._setSelectFromLabels(setup.displayOptions, fromAddress );
+        setup.choices = setup.options;
 		if (appCtxt.get(ZmSetting.ALLOW_ANY_FROM_ADDRESS)) {
 			select = this._setupComboBox(id, setup, value);
 			// By setting the setSelectedValue method on the combox
