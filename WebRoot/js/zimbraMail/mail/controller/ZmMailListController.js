@@ -2012,6 +2012,7 @@ function(parent, num) {
 		} else {
 			parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (!isDrafts && !isFeed && num == 1));
 			parent.enable([ZmOperation.VIEW_MENU], true);
+            parent.enable([ZmOperation.SPAM], (!isDrafts && num > 0));
 		}
 	} else {
 		if (folder && folder.isReadOnly() && num > 0) {
@@ -2124,7 +2125,7 @@ function(menu) {
 ZmMailListController.prototype._enableMuteUnmute =
 function(menu) {
     menu.enable([ZmOperation.UNMUTE_CONV, ZmOperation.MUTE_CONV], false);
-    if(appCtxt.isExternalAccount()) {
+    if(appCtxt.isExternalAccount() || this._app.getGroupMailBy() === ZmItem.MSG) {
         return;
     }
     var isMute = this._getConvMuteStatus();
