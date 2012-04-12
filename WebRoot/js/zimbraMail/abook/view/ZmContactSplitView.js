@@ -528,7 +528,9 @@ function(contact, subscribe, result) {
 	var unsubscribed = status == "unsubscribed";
 	var awaitingApproval = status == "awaiting_approval";
 	this._subscriptionButton.setEnabled(!awaitingApproval);
-	contact.dlInfo.isMember = subscribed;
+	if (!awaitingApproval) {
+		contact.dlInfo.isMember = subscribed;
+	}
 	if (subscribed || unsubscribed) {
 		contact.clearDlInfo();
 		contact._notify(ZmEvent.E_MODIFY);
