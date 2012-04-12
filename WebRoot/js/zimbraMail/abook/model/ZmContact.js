@@ -1456,7 +1456,7 @@ function(mailPolicy, specificMailers) {
 ZmContact.prototype._addDlAttribute =
 function(attrs, mods, name, soapAttrName) {
 	var attr = mods[name];
-	if (!attr) {
+	if (attr === undefined) {
 		return;
 	}
 	attrs.push({n: soapAttrName, _content: attr});
