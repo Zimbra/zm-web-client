@@ -987,28 +987,7 @@ function(ev) {
 // Popup the change password dialog.
 ZmPreferencesPage.prototype._changePasswordListener =
 function(ev) {
-
-	var url = appCtxt.get(ZmSetting.CHANGE_PASSWORD_URL);
-
-	if (!url) {
-		var isHttp	= appCtxt.get(ZmSetting.PROTOCOL_MODE) == ZmSetting.PROTO_HTTP;
-		var proto	= isHttp ? ZmSetting.PROTO_HTTP : ZmSetting.PROTO_HTTPS;
-		var port	= appCtxt.get(isHttp ? ZmSetting.HTTP_PORT : ZmSetting.HTTPS_PORT);
-		var path	= appContextPath+"/h/changepass";
-
-		var publicUrl = appCtxt.get(ZmSetting.PUBLIC_URL);
-		if (publicUrl) {
-			var parts = AjxStringUtil.parseURL(publicUrl);
-			path = parts.path + "/h/changepass";
-			var switchMode = (parts.protocol == "http" && proto == ZmSetting.PROTO_HTTPS);
-			proto = switchMode ? proto : parts.protocol;
-			port = switchMode ? port : parts.port;
-		}
-		url = AjxUtil.formatUrl({protocol:proto, port:port, path:path, qsReset:true});
-	}
-
-	var args  = "height=465,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
-	window.open(url, "_blank", args);
+	appCtxt.getChangePasswordWindow(ev);
 };
 
 ZmPreferencesPage.prototype._exportButtonListener =

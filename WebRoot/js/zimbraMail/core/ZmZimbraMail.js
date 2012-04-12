@@ -2164,6 +2164,10 @@ function(parent, parentElement, adminUrl) {
 	mi.addSelectionListener(new AjxListener(this, this._aboutListener));
 
     menu.createSeparator();
+
+    mi = menu.createMenuItem("changePassword", {text: ZmMsg.changePassword});
+    mi.addSelectionListener(new AjxListener(this, this._changePasswordListener));
+
     mi = menu.createMenuItem("logOff", {text: ZmMsg.logOff});
 	mi.addSelectionListener(new AjxListener(null, ZmZimbraMail.logOff));
 
@@ -2343,6 +2347,11 @@ function(ev) {
 	var url = [ZmZimbraMail.NEW_FEATURES_URL, this._getQueryParams()].join("");
 	window.open(url);
 };
+
+ZmZimbraMail.prototype._changePasswordListener =
+function(ev) {
+    appCtxt.getChangePasswordWindow(ev);
+}
 
 ZmZimbraMail.prototype._aboutListener =
 function(ev) {
