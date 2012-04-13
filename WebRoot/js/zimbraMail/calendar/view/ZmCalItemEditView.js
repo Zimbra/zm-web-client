@@ -898,8 +898,10 @@ ZmCalItemEditView.prototype._removeAllAttachments =
 function() {
 	if (this._attachCount == 0) { return; }
     var attachRow = document.getElementById(this._htmlElId + "_attachment_container");
-    attachRow.innerHTML = "";
-    attachRow.style.display="none";
+    if(attachRow) {
+        attachRow.deleteCell(0);
+        attachRow.style.display="none";
+    }
 	// let's be paranoid and really cleanup
 	delete this._uploadFormId;
 	delete this._attachDivId;
