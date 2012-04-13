@@ -96,6 +96,7 @@ function(params) {
 		omit[ZmFolder.ID_DRAFTS] = !params.showDrafts;
 		omit[ZmFolder.ID_OUTBOX] = true;
 		omit[ZmFolder.ID_SYNC_FAILURES] = true;
+		omit[ZmFolder.ID_DLS] = true;
 
 		var folderTree = appCtxt.getFolderTree(acct);
 
