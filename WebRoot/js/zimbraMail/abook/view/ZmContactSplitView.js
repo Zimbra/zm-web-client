@@ -34,7 +34,6 @@ ZmContactSplitView = function(params) {
 	DwtComposite.call(this, params);
 
 	this._controller = params.controller;
-
 	this.setScrollStyle(Dwt.CLIP);
 
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
@@ -330,18 +329,17 @@ function(controller, dropTgt) {
 	this._detailsId		= this._htmlElId + "_details";
 
 	// contact groups is not child of DwtTabGroup
-	this._contactGroupView = new DwtComposite(this);
+	this._contactGroupView = new ZmContactView(this);
 	this._contactGroupView.setVisible(false);
 	this._contactGroupView.reparentHtmlElement(this._contentId);
 	this._contactGroupView._setMouseEventHdlrs();
 	this._groupObjectManager = new ZmObjectManager(this._contactGroupView);
 
 	// create an empty slate
-	this._contactView = new DwtComposite(this);
+	this._contactView = new ZmContactView(this);
 	this._contactView.reparentHtmlElement(this._contentId);
 	this._contactView._setMouseEventHdlrs();
 	this._objectManager = new ZmObjectManager(this._contactView);
-
 	this._contentCell.style.right = "0px";
 };
 
@@ -1017,6 +1015,30 @@ ZmContactSplitView.prototype._sashCallback = function(delta) {
 	Dwt.setBounds(this._contentCell, newContentPos, Dwt.DEFAULT, newContentWidth, Dwt.DEFAULT);
 
 	return delta;
+};
+
+/**
+ * View for displaying the contact information. Provides events for enabling text selection. 
+ * @param parent
+ */
+ZmContactView = function(parent) {
+	DwtComposite.call(this, {parent:parent});
+	this._setAllowSelection();
+	this.addListener(DwtEvent.ONSELECTSTART, this._selectStartListener.bind(this));
+};
+ZmContactView.prototype = new DwtComposite;
+ZmContactView.prototype.constructor = ZmContactView;
+
+ZmContactView.prototype.preventSelection = 
+function() {
+	return false;
+};
+
+ZmContactView.prototype._selectStartListener =
+function(ev) {
+	// reset mouse event to propagate event to browser (allows text selection)
+	ev._stopPropagation = false;
+	ev._returnValue = true;
 };
 
 /**
