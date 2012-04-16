@@ -2145,6 +2145,14 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	/*color:#2869FF;*/		/* ??? USE?  text color comes from OrangeC, RedC, etc? */
 }
 
+.calendar_month_day_item .subject {
+    padding-left: 4px;
+}
+
+.calendar_month_day_item .start_time {
+    padding-left: 2px;
+}
+
 .calendar_month_day_item-dnd {
 	@DragBorder@
 	@DragBg@
