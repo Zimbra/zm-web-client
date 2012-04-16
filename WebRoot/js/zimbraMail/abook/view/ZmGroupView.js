@@ -1181,6 +1181,10 @@ function() {
 // Consistent spot to locate various dialogs
 ZmGroupView.prototype._getDialogXY =
 function() {
+	if (this.isDistributionList()) {
+		// the scrolling messes up the calculation of Dwt.toWindow. This however seems to work fine, the dialog is just a little higher than other cases
+		return new DwtPoint(ZmGroupView.DIALOG_X, ZmGroupView.DIALOG_Y);
+	}
 	var loc = Dwt.toWindow(this.getHtmlElement(), 0, 0);
 	return new DwtPoint(loc.x + ZmGroupView.DIALOG_X, loc.y + ZmGroupView.DIALOG_Y);
 };
