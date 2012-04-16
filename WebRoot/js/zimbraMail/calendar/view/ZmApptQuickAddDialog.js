@@ -523,8 +523,8 @@ function(show) {
 	if (this._supportTimeZones)
 		Dwt.setVisibility(this._endTZoneSelect.getHtmlElement(), show);
 	// also show/hide the "@" text
-	Dwt.setVisibility(this._startTimeSelect.getHtmlElement().parentNode.previousSibling.previousSibling, show);
-	Dwt.setVisibility(this._endTimeSelect.getHtmlElement().parentNode.previousSibling.previousSibling, show);
+	Dwt.setVisibility(document.getElementById(this._htmlElId + "_startTimeAt"), show);
+	Dwt.setVisibility(document.getElementById(this._htmlElId + "_endTimeAt"), show);
 };
 
 
