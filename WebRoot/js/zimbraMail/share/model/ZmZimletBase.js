@@ -852,10 +852,10 @@ function(icon) {
         var container = appCtxt.getCurrentApp().getOverviewContainer();
         var overviewId = appCtxt.getOverviewId([container.containerId, ZmOrganizer.LABEL[ZmOrganizer.ZIMLET]], null);
         var ov = container.getOverview(overviewId);
-        treeItem = ov && ov.getTreeItemById(this.xmlObj().getOrganizer().id);
+        treeItem = ov && ov.getTreeItemById && ov.getTreeItemById(this.xmlObj().getOrganizer().id);
     } else {
         var treeView = appCtxt.getAppViewMgr().getViewComponent(ZmAppViewMgr.C_TREE);
-        treeItem = treeView && treeView.getTreeItemById(this.xmlObj().getOrganizer().id);
+        treeItem = treeView && treeView.getTreeItemById && treeView.getTreeItemById(this.xmlObj().getOrganizer().id);
     }
 
 	if (treeItem) {
