@@ -714,10 +714,22 @@ function() {
 ZmMailListController.prototype._getConvMuteStatus =
 function() {
 	var items = this.getItems();
-    if (items.length > 1) { return false; }
-
-    var item = items[0];
-	return item.isMute;
+    var status = {
+                    hasMuteConv: false,
+                    hasUnmuteConv: false
+                },
+        item,
+        i;
+    for (i=0; i<items.length; i++) {
+        item = items[i];
+        if (item.isMute) {
+            status.hasMuteConv = true;
+        }
+        else {
+            status.hasUnmuteConv = true;
+        }
+    }
+    return status;
 };
 
 /**
@@ -1845,13 +1857,6 @@ function(ev) {
 
 ZmMailListController.prototype._handleMuteUnmuteConvResponse =
 function(callback, actionId, result) {
-    var msg = ZmMsg.muteConvSuccess;
-    if(actionId == ZmId.OP_UNMUTE_CONV) {
-        //appCtxt.setStatusMsg(ZmMsg.unmuteConvSuccess);
-        msg = ZmMsg.unmuteConvSuccess;
-    }
-    //this._appendUndoLink(msg, actionId);
-    appCtxt.setStatusMsg(msg);
     if(callback != null) {
         callback.run();
     }
@@ -2125,11 +2130,15 @@ function(menu) {
 ZmMailListController.prototype._enableMuteUnmute =
 function(menu) {
     menu.enable([ZmOperation.UNMUTE_CONV, ZmOperation.MUTE_CONV], false);
-    if(appCtxt.isExternalAccount() || this._app.getGroupMailBy() === ZmItem.MSG) {
+    if (appCtxt.isExternalAccount() || appCtxt.isChildWindow || this._app.getGroupMailBy() === ZmItem.MSG) {
         return;
     }
-    var isMute = this._getConvMuteStatus();
-	if(isMute) {
+    var status = this._getConvMuteStatus();
+    if (status.hasMuteConv && status.hasUnmuteConv) {
+        menu.enable(ZmOperation.UNMUTE_CONV, true);
+        menu.enable(ZmOperation.MUTE_CONV, true);
+    }
+	else if (status.hasMuteConv) {
          menu.enable(ZmOperation.UNMUTE_CONV, true);
     }
     else {

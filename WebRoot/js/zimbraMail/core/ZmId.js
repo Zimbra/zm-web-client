@@ -833,6 +833,7 @@ ZmId.FLD_SIZE			= "sz";
 ZmId.FLD_SORTED_BY		= "sb";
 ZmId.FLD_STATUS			= "st";
 ZmId.FLD_READ			= "rd";
+ZmId.FLD_MUTE			= "mt";
 ZmId.FLD_SUBJECT		= "su";
 ZmId.FLD_TAG			= "tg";
 ZmId.FLD_TAG_CELL		= "tc";

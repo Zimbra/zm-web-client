@@ -66,6 +66,8 @@ ZmMailListView.SORTBY_HASH[ZmSearch.ATTACH_ASC] = {field:ZmItem.F_ATTACHMENT, ms
 ZmMailListView.SORTBY_HASH[ZmSearch.ATTACH_DESC] = {field:ZmItem.F_ATTACHMENT, msg:"attachment"};
 ZmMailListView.SORTBY_HASH[ZmSearch.FLAG_ASC] = {field:ZmItem.F_FLAG, msg:"flag"};
 ZmMailListView.SORTBY_HASH[ZmSearch.FLAG_DESC] = {field:ZmItem.F_FLAG, msg:"flag"};
+ZmMailListView.SORTBY_HASH[ZmSearch.MUTE_ASC] = {field:ZmItem.F_MUTE, msg:"mute"};
+ZmMailListView.SORTBY_HASH[ZmSearch.MUTE_DESC] = {field:ZmItem.F_MUTE, msg:"mute"};
 ZmMailListView.SORTBY_HASH[ZmSearch.READ_ASC] = {field:ZmItem.F_READ, msg:"read"};
 ZmMailListView.SORTBY_HASH[ZmSearch.READ_DESC] = {field:ZmItem.F_READ, msg:"read"};
 ZmMailListView.SORTBY_HASH[ZmSearch.PRIORITY_ASC] = {field:ZmItem.F_PRIORITY, msg:"priority"};
@@ -76,7 +78,13 @@ ZmMailListView.SORTBY_HASH[ZmSearch.PRIORITY_DESC] = {field:ZmItem.F_PRIORITY, m
 
 
 // Reset row style
-ZmMailListView.prototype.markUIAsRead = 
+ZmMailListView.prototype.markUIAsMute =
+function(item) {
+	this._setImage(item, ZmItem.F_MUTE, item.getMuteIcon());
+};
+
+// Reset row style
+ZmMailListView.prototype.markUIAsRead =
 function(item) {
 	this._setImage(item, ZmItem.F_READ, item.getReadIcon());
 
@@ -312,6 +320,7 @@ function() {
 		this._headerInit[ZmItem.F_TAG]			= {icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, precondition:ZmSetting.TAGGING_ENABLED};
 		this._headerInit[ZmItem.F_ACCOUNT]		= {icon:"AccountAll", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.account, noRemove:true, resizeable:true};
 		this._headerInit[ZmItem.F_STATUS]		= {icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status};
+		this._headerInit[ZmItem.F_MUTE]			= {icon:"Mute", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.muteUnmute, sortable: false /*ZmItem.F_MUTE*/, noSortArrow:true}; //todo - once server supports readAsc/readDesc sort orders, uncomment the sortable
 		this._headerInit[ZmItem.F_READ]			= {icon:"MsgUnread", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.readUnread, sortable: false /*ZmItem.F_READ*/, noSortArrow:true}; //todo - once server supports readAsc/readDesc sort orders, uncomment the sortable
 		this._headerInit[ZmItem.F_FROM]			= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_MLV, resizeable:true, sortable:ZmItem.F_FROM};
 		this._headerInit[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment, sortable:ZmItem.F_ATTACHMENT, noSortArrow:true};
@@ -673,6 +682,9 @@ function(field, itemIdx) {
 	if (field == ZmItem.F_STATUS) {
 		return ZmMsg.messageStatus;
 	}
+    if (field == ZmItem.F_MUTE) {
+		return ZmMsg.muteUnmute;
+	}
 	if (field == ZmItem.F_READ) {
 		return ZmMsg.readUnread;
 	}
@@ -974,7 +986,11 @@ function(ev) {
 		var flags = ev.getDetail("flags");
 		for (var j = 0; j < flags.length; j++) {
 			var flag = flags[j];
-			if (flag == ZmItem.FLAG_UNREAD) {
+			if (flag == ZmItem.FLAG_MUTE) {
+				var on = item[ZmItem.FLAG_PROP[flag]];
+				this.markUIAsMute(item, !on);
+			}
+            else if (flag == ZmItem.FLAG_UNREAD) {
 				var on = item[ZmItem.FLAG_PROP[flag]];
 				this.markUIAsRead(item, !on);
 			} else if (flag == ZmItem.FLAG_ISSCHEDULED) {

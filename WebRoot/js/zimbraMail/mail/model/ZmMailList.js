@@ -399,9 +399,7 @@ function(params) {
 	if (items1.length) {
 		params.items = items1;
 		params.op = "mute";
-		if (items1.length > 1) {
-        	params.actionText = params.value ? ZmMsg.actionMarkMute : ZmMsg.actionMarkUnmute;
-		}
+        params.actionText = params.value ? ZmMsg.actionMarkMute : ZmMsg.actionMarkUnmute;
 		this.flagItems(params);
 	}
     else if(params.forceCallback) {

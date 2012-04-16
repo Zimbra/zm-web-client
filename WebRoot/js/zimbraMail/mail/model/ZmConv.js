@@ -295,6 +295,17 @@ function() {
     }
 };
 
+/**
+ * Gets the mute/unmute icon.
+ *
+ * @return	{String}	the icon
+ */
+ZmConv.prototype.getMuteIcon =
+function() {
+	return this.isMute ? "Mute" : "Unmute";
+};
+
+
 ZmConv.prototype.clear =
 function() {
 	if (this.msgs) {

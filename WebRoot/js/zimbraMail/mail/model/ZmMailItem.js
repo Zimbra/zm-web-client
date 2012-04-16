@@ -71,6 +71,16 @@ function() {
 };
 
 /**
+ * Gets the mute/unmute icon.
+ *
+ * @return	{String}	the icon
+ */
+ZmMailItem.prototype.getMuteIcon =
+function() {
+	return "";
+};
+
+/**
  * Clears this item.
  * 
  */
@@ -120,7 +130,7 @@ function() {
 ZmMailItem.prototype._getFlags =
 function() {
 	var list = ZmItem.prototype._getFlags.call(this);
-	list.push(ZmItem.FLAG_UNREAD, ZmItem.FLAG_REPLIED, ZmItem.FLAG_FORWARDED, ZmItem.FLAG_READ_RECEIPT_SENT, ZmItem.FLAG_PRIORITY);
+	list.push(ZmItem.FLAG_UNREAD, ZmItem.FLAG_MUTE, ZmItem.FLAG_REPLIED, ZmItem.FLAG_FORWARDED, ZmItem.FLAG_READ_RECEIPT_SENT, ZmItem.FLAG_PRIORITY);
 	return list;
 };
 
