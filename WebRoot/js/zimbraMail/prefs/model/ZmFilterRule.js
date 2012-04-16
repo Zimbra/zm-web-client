@@ -446,9 +446,9 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_MIME_HEADER] = {
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_ADDRBOOK] = {
 		subjectMod:	ZmFilterRule.TYPE_SELECT,
-		smOptions:	[{label: ZmMsg.from, value: "from"}, {label: ZmMsg.to, value: "to"},
-					 {label: ZmMsg.cc, value: "cc"}, {label: ZmMsg.toOrCc, value: "to,cc"},
-					 {label: ZmMsg.bcc, value: "bcc"}],
+		smOptions:	[{label: ZmMsg.from, value: "FROM"}, {label: ZmMsg.to, value: "TO"},
+					 {label: ZmMsg.cc, value: "CC"}, {label: ZmMsg.toOrCc, value: "TO,CC"},
+					 {label: ZmMsg.bcc, value: "BCC"}],
 		ops:		ZmFilterRule.TYPE_SELECT,
 		opsOptions:	[ZmFilterRule.OP_IN, ZmFilterRule.OP_NOT_IN, ZmFilterRule.OP_IS_ME, ZmFilterRule.OP_NOT_ME],
 		value:		ZmFilterRule.TYPE_SELECT,
