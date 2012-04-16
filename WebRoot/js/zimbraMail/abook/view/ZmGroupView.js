@@ -156,14 +156,14 @@ function(contact, isDirty) {
 
 	if (contact.isDistributionList()) {
 		if (this._usernameEditable) {
-			document.getElementById(this._groupNameId).onblur = this._controller.updateTabTitle.bind(this._controller);
+			this._groupNameInput.addListener(DwtEvent.ONBLUR, this._controller.updateTabTitle.bind(this._controller));
 		}
 		if (this._domainEditable) {
 			document.getElementById(this._groupNameDomainId).onblur = this._controller.updateTabTitle.bind(this._controller);
 		}
 	}
 	else {
-		document.getElementById(this._groupNameId).onblur = this._controller.updateTabTitle.bind(this._controller);
+		this._groupNameInput.addListener(DwtEvent.ONBLUR, this._controller.updateTabTitle.bind(this._controller));
 	}
 
 	this.search();
@@ -280,11 +280,11 @@ ZmGroupView.prototype._getGroupName =
 function() {
 	if (this.isDistributionList()) {
 		var username = this._usernameEditable 
-				? AjxStringUtil.trim(document.getElementById(this._groupNameId).value)
+				? AjxStringUtil.trim(this._groupNameInput.getValue())
 				: this._emailUsername;
 		return username + "@" + this._getGroupDomainName();
 	}
-	return AjxStringUtil.trim(document.getElementById(this._groupNameId).value);
+	return AjxStringUtil.trim(this._groupNameInput.getValue());
 };
 
 ZmGroupView.prototype._getDlDisplayName =
@@ -659,6 +659,7 @@ function() {
 	this._titleId = 			this._htmlElId + "_title";
 	this._tagsId = 				this._htmlElId + "_tags";
 	this._groupNameId = 		this._htmlElId + "_groupName";
+	
 	if (this.isDistributionList()) {
 		this._groupNameDomainId = 		this._htmlElId + "_groupNameDomain";
 		this._allowedDomains = appCtxt.createDistListAllowedDomainsMap;
@@ -740,6 +741,12 @@ function() {
 
 ZmGroupView.prototype._addWidgets =
 function() {
+	this._groupNameInput = new DwtInputField({parent:this, size: this.isDistributionList() ? 20: 40, inputId: this._htmlElId + "_groupName"});
+	this._groupNameInput.setHint(this.isDistributionList() ? ZmMsg.distributionList : ZmMsg.groupNameLabel);
+	if (document.getElementById(this._htmlElId + "_groupNameParent")) {
+		this._groupNameInput.reparentHtmlElement(this._htmlElId + "_groupNameParent");
+	}
+	
 	this._groupMembers = document.getElementById(this._htmlElId + "_groupMembers");
 	this._noManualEntry = this._groupMembers.disabled; // see bug 23858
 
@@ -1038,8 +1045,7 @@ function() {
 			groupNameDomain.value = this._emailDomain;
 		}
 		if (this._usernameEditable) {
-			var groupName = document.getElementById(this._groupNameId);
-			groupName.value = this._emailUsername;
+			this._groupNameInput.setValue(this._emailUsername);
 		}
 		return;
 	}
@@ -1047,7 +1053,8 @@ function() {
 	if (!groupName) {
 		return;
 	}
-	groupName.value = this._contact.getFileAs() || "";
+
+	this._groupNameInput.setValue(this._contact.getFileAs());
 };
 
 ZmGroupView.prototype._setDlFields =

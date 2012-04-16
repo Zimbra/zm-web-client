@@ -416,7 +416,7 @@
        <div class='companyName'>
 			<$	if (data.contact.isDistributionList()) {
 		    		if (data.usernameEditable) { $>
-						<input type='text' autocomplete='off' size=20 id='${id}_groupName' class="Text"> @
+						<div id='${id}_groupNameParent'></div> @
 		   	<$		} else { $>
 		   				<$= AjxStringUtil.htmlEncode(data.username)$> @
 			<$		}
@@ -426,7 +426,7 @@
 						<$= AjxStringUtil.htmlEncode(data.domain)$>
 			<$ 		} $>
 			<$ } else { $>
-					<input type='text' autocomplete='off' size=40 id='${id}_groupName' class="Text">
+					<div id='${id}_groupNameParent'></div>
 			<$ } $>
        </div>
        <div id='${id}_tags' style='padding-top: 5px'></div>

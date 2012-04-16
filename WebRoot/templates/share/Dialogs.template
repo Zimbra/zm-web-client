@@ -421,7 +421,7 @@
 <template id="share.Dialogs#ZmContactGroupDialog">
 	<table class='ZPropertySheet'>
 		<tr>
-			<td class='Label'><$= ZmMsg.groupNameLabel $></td>
+			<td class='Label'><$= ZmMsg.groupNameLabel $>:</td>
 		</tr>
 		<tr>
 			<td>
