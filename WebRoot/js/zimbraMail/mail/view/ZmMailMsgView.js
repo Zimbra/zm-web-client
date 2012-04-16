@@ -2065,7 +2065,13 @@ function() {
 	htmlArr[idx++] = "</tr></table>";
 
 	var allAttParams;
-	if (attInfo.length > 1) {
+	var hasGeneratedAttachments = false;
+
+	for (var i = 0; i < attInfo.length; i++) {
+		hasGeneratedAttachments = hasGeneratedAttachments || !att.part;
+	}
+
+	if (!hasGeneratedAttachments && attInfo.length > 1) {
 		allAttParams = this._addAllAttachmentsLinks(attInfo, (imageAttsFound > 1), this._msg.subject);
 		htmlArr[idx++] = allAttParams.html;
 	}

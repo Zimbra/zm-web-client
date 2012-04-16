@@ -1854,8 +1854,12 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 				else {
 					props.size = numFormatter.format(Math.round((attach.size / (1024 * 1024)) * 10) / 10) + " " + ZmMsg.mb;
 				}
-			} else {
+			}
+
+			if (attach.part) {
 				useCL = attach.contentLocation && (attach.relativeCl || ZmMailMsg.URL_RE.test(attach.contentLocation));
+			} else {
+				useCL = attach.contentLocation && true;
 			}
 
 			// see if rfc822 is an invite
@@ -1883,7 +1887,9 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 
 				var folder = appCtxt.getById(this.folderId);
 				if ((attach.name || attach.fileName) && appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) && (folder && !folder.isRemote())) {
-					props.links.briefcase = true;
+					if (!useCL) {
+						props.links.briefcase = true;
+					}
 				}
 
 				var isICSAttachment = (attach.fileName && attach.fileName.match(/\./) && attach.fileName.replace(/^.*\./, "").toLowerCase() == "ics");
@@ -1908,8 +1914,10 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 					props.url = url;
 				}
 
-				// bug: 233 - remove attachment
-				props.links.remove = true;
+				if (attach.part) {
+					// bug: 233 - remove attachment
+					props.links.remove = true;
+				}
 			}
 
 			// set the link icon
