@@ -1255,6 +1255,7 @@ function(dwtIframe) {
 ZmCalItem.prototype._setNotes =
 function(message) {
 
+    if(!(message instanceof ZmMailMsg)) { return; }
 	this.notesTopPart = new ZmMimePart();
 
 	var htmlContent = message.getBodyContent(ZmMimeTable.TEXT_HTML);
