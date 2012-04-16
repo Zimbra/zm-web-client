@@ -1972,8 +1972,10 @@ function(params) {
 	var soapDoc = AjxSoapDoc.create(cmd + "Request", "urn:zimbraMail");
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("op", params.action);
-	if (this.isZmTag) { //this kinda sucks but not sure how best to refactor, so for now it will do
-		actionNode.setAttribute("name", params.name || this.name);
+	if (this.isZmTag) {
+		var tn = params.name || this.name;
+		tn = tn.replace(/,/g, "\\,"); //escape comma in tag name (since the server for some reason supports a comma separated list of tag names. I don't think there's a real client use case for that.
+		actionNode.setAttribute("tn", tn);
 	}
 	else {
 		actionNode.setAttribute("id", params.id || this.id);

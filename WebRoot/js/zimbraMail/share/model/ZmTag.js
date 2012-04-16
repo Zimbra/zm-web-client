@@ -290,7 +290,7 @@ function(name, callback, errorCallback, batchCmd) {
 	if (name == this.name) { return; }
 	var params = {
 		action: "rename",
-		attrs: {newName: name}, //todo - depends on server implementation. bug 72312
+		attrs: {name: name}, //name is the new name. 
 		callback: callback,
 		errorCallback: errorCallback,
 		batchCmd: batchCmd
