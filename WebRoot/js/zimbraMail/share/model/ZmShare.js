@@ -618,7 +618,7 @@ ZmShare.prototype.grant =
 function(perm, pw, notes, batchCmd) {
 	this.link.perm = perm;
 	var respCallback = new AjxCallback(this, this._handleResponseGrant, [notes]);
-	this._shareAction("grant", null, {perm: perm, pw: pw}, respCallback, batchCmd);
+	this._shareAction("grant", null, {perm: perm, pw: pw}, respCallback, batchCmd, notes);
 };
 
 /**
@@ -630,7 +630,7 @@ function(notes, result) {
 	this.grantee.id = action.zid;
 	this.grantee.email = action.d;
     if(action.d && action.zid) {
-        this._sendShareNotification(action, notes);
+        this._sendShareNotification(this.grantee.email, action.id, notes);
     }
 };
 
@@ -638,13 +638,14 @@ function(notes, result) {
  * @private
  */
 ZmShare.prototype._sendShareNotification =
-function(action, notes) {
+function(userEmail, folderId, notes, callback) {
+	//todo - the notes are not used. nobody cares? when did we stop using them?
     var soapDoc = AjxSoapDoc.create("SendShareNotificationRequest", "urn:zimbraMail");
     var itemNode = soapDoc.set("item");
-    itemNode.setAttribute("id", action.id);
+    itemNode.setAttribute("id", folderId);
     var emailNode = soapDoc.set("e");
-    emailNode.setAttribute("a",action.d);
-    appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
+    emailNode.setAttribute("a",userEmail);
+    appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback});
 };
 
 /**
@@ -865,7 +866,7 @@ function() {
  * @private
  */
 ZmShare.prototype._shareAction =
-function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
+function(operation, actionAttrs, grantAttrs, callback, batchCmd, notes) {
 	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
 
 	var actionNode = soapDoc.set("action");
@@ -893,7 +894,7 @@ function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 		}
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseShareAction, [callback]);
-	var errorCallback = new AjxCallback(this, this._handleErrorShareAction);
+	var errorCallback = this._handleErrorShareAction.bind(this, notes);
 	
 	if (batchCmd) {
 		batchCmd.addRequestParams(soapDoc, respCallback, errorCallback);
@@ -956,9 +957,9 @@ function(callback, result) {
  * @private
  */
 ZmShare.prototype._handleErrorShareAction =
-function(ex) {
+function(notes, ex) {
 	var message = ZmMsg.unknownError;
-	if (ex instanceof ZmCsfeException && ex.code == "account.NO_SUCH_ACCOUNT") {
+	if (ex.isZmCsfeException && ex.code == "account.NO_SUCH_ACCOUNT") {
 		if (!this._unknownUserFormatter) {
 			this._unknownUserFormatter = new AjxMessageFormat(ZmMsg.unknownUser);
 		}
@@ -966,7 +967,7 @@ function(ex) {
 		// NOTE: This prevents details from being shown
 		ex = null;
 	}
-    if (ex instanceof ZmCsfeException && ex.code == "service.PERM_DENIED") {
+    if (ex.isZmCsfeException && ex.code == "service.PERM_DENIED") {
         //bug:67698 Displaying proper error message when grantee is owner
         if(this.object.getOwner() == this.grantee.name){
             message = ZmMsg.cannotGrantAccessToOwner;
@@ -976,10 +977,45 @@ function(ex) {
             message = ZmMsg.errorPermission;
         }
 	}
+	if (ex.isZmCsfeException && ex.code == "mail.GRANT_EXISTS") {
+		this._popupAlreadySharedWarningDialog(notes);
+		return true;
+	}
 
-	appCtxt.getAppController().popupErrorDialog(message, ex, null, true);
+	appCtxt.getAppController().popupErrorDialog(message, ex, null, true, null, null, true);
 	return true;
 };
+
+
+ZmShare.prototype._popupAlreadySharedWarningDialog =
+function(notes) {
+	if (!this._shareExistsFormatter) {
+		this._shareExistsFormatter = new AjxMessageFormat(ZmMsg.shareExists);
+	}
+	var message = this._shareExistsFormatter.format(AjxStringUtil.htmlEncode(this.grantee.name));
+
+	//creating a dialog for each one of those instead of re-using the singleton dialog from appCtxt for the case you are re-sharing with multiple users already shared. It's not ideal but it would have a warning for each. Since it's rare I think it's good enough for simplicity.
+	var dialog = new DwtMessageDialog({parent:appCtxt._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON], id:"ResendCancel"});
+	dialog.getButton(DwtDialog.OK_BUTTON).setText(ZmMsg.resend);
+	dialog.reset();
+	dialog.setMessage(message, DwtMessageDialog.WARNING_STYLE);
+	dialog.registerCallback(DwtDialog.OK_BUTTON, this._sendAnyway.bind(this, notes, dialog));
+	dialog.associateEnterWithButton(DwtDialog.OK_BUTTON);
+	dialog.popup(null, DwtDialog.OK_BUTTON);
+};
+
+ZmShare.prototype._sendAnyway =
+function(notes, dialog) {
+	dialog.popdown();
+	var callback = this._sendAnywayCallback.bind(this);
+	this._sendShareNotification(this.grantee.name, this.object.id,  notes, callback);
+};
+
+ZmShare.prototype._sendAnywayCallback =
+function() {
+	appCtxt.setStatusMsg(ZmMsg.notificationSent, ZmStatusView.LEVEL_INFO);
+};
+
 
 /**
  * @private
