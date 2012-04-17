@@ -266,7 +266,7 @@ function(scrollMsgView) {
 	
 	var ctlr = this._controller, container;
 	if (this._isStandalone()) {
-		container = this; 
+		container = this;
 	}
 	else {
 		// height of list view more reliable for reading pane on right
@@ -282,7 +282,7 @@ function(scrollMsgView) {
 	var messagesHeight = myHeight - headerSize.y - replyHeight - 1;
 	DBG.println("cv2", "set message area height to " + messagesHeight);
 	Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, messagesHeight);
-	
+
 	// widen msg views if needed
 	if (this._msgViewList && this._msgViewList.length) {
 		for (var i = 0; i < this._msgViewList.length; i++) {
@@ -296,7 +296,7 @@ function(scrollMsgView) {
 			}
 		}
 	}
-	
+
 	// see if we need to scroll to top or a particular msg view
 	if (scrollMsgView) {
 		if (scrollMsgView === true) {
@@ -1028,19 +1028,23 @@ function(msg, container, callback, index) {
 		}
 	}
 
-	var attachmentsCount = this._msg.getAttachmentLinks(true, !appCtxt.get(ZmSetting.VIEW_AS_HTML), true).length;
-	if (attachmentsCount > 0) {
-		var div = document.createElement("DIV");
-		div.id = this._attLinksId;
-		div.className = "attachments";
-		this.getHtmlElement().appendChild(div);
-	}
-	
+
 	var isCalendarInvite = this._isCalendarInvite = appCtxt.get(ZmSetting.CALENDAR_ENABLED) && msg.invite && !msg.invite.isEmpty();
 	var isShareInvite = this._isShareInvite = (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
 												msg.share && msg.folderId != ZmFolder.ID_TRASH &&
 												appCtxt.getActiveAccount().id != msg.share.grantor.id);
 	var isSubscribeReq = msg.subscribeReq && msg.folderId != ZmFolder.ID_TRASH;
+
+    if (!isCalendarInvite) {
+        var attachmentsCount = this._msg.getAttachmentLinks(true, !appCtxt.get(ZmSetting.VIEW_AS_HTML), true).length;
+        if (attachmentsCount > 0) {
+            var div = document.createElement("DIV");
+            div.id = this._attLinksId;
+            div.className = "attachments";
+            this.getHtmlElement().appendChild(div);
+        }
+    }
+
 	if (isCalendarInvite || isShareInvite || isSubscribeReq) {
 		ZmMailMsgView.prototype._renderMessageHeader.apply(this, arguments);
 	}
