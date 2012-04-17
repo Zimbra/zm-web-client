@@ -281,7 +281,7 @@ function(calItem) {
 
 
     var calendar = calItem.getFolder();
-    var isReadOnly = calendar.isReadOnly();
+    var isReadOnly = calendar.isReadOnly() || calendar.isInTrash();
     subs.allowEdit = !isReadOnly && (appCtxt.get(ZmSetting.CAL_APPT_ALLOW_ATTENDEE_EDIT) || calItem.isOrg);
 
 	var el = this.getHtmlElement();
@@ -299,25 +299,26 @@ function(calItem) {
 
     this._ptst = ptst;
     //var statusMsgs = {};
+    var calItemPtst = calItem.ptst || ZmCalBaseItem.PSTATUS_ACCEPT;
 
     var data = null;
     for (var stat in ptst) {
         //stat = ptst[index];
         data = new DwtSelectOptionData(stat, ZmCalItem.getLabelForParticipationStatus(stat), false, null, ZmCalItem.getParticipationStatusIcon(stat));
         statusSelect.addOption(data);
-        if (stat == calItem.ptst){
+        if (stat == calItemPtst){
             statusSelect.setSelectedValue(stat);
         }
     }
     if (isReadOnly) { statusSelect.setEnabled(false); }
 
     this._statusSelect = statusSelect;
-    this._origPtst = calItem.ptst;
+    this._origPtst = calItemPtst;
     statusSelect.reparentHtmlElement(this._htmlElId + "_responseActionSelectCell");
     statusSelect.addChangeListener(new AjxListener(this, this._statusSelectListener));
 
     this._statusMsgEl = document.getElementById(this._htmlElId + "_responseActionMsgCell");
-    this._statusMsgEl.innerHTML = ptst[calItem.ptst];
+    this._statusMsgEl.innerHTML = ptst[calItemPtst];
 
 	// content/body
 	var hasHtmlPart = (calItem.notesTopPart && calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);

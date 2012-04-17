@@ -123,31 +123,30 @@ function(mode) {
 
 ZmApptController.prototype._disableEditForTrashedItems =
 function() {
-        var actionMenu = this._toolbar.getActionsMenu();
-        if(actionMenu){
-          var editButton = actionMenu.getOp(ZmOperation.EDIT);
-          var proposeNewTimeButton = actionMenu.getOp(ZmOperation.PROPOSE_NEW_TIME);
-          if(editButton){
-              editButton.setEnabled(false);
-          }
-          if(proposeNewTimeButton){
-              proposeNewTimeButton.setEnabled(false);
-          }
-        }
+    var actionMenu = this._toolbar.getActionsMenu();
+    if(actionMenu){
+        actionMenu.enable([
+                            ZmOperation.EDIT,
+                            ZmOperation.REPLY,
+                            ZmOperation.REPLY_ALL,
+                            ZmOperation.PROPOSE_NEW_TIME,
+                            ZmOperation.FORWARD_APPT
+                            ], false);
+    }
 };
 
 ZmApptController.prototype._disableActionsForExternalAccount =
 function() {
-        var actionMenu = this._toolbar.getActionsMenu();
-        if(actionMenu){
-            actionMenu.enable([
-                            ZmOperation.EDIT,
-                            ZmOperation.PROPOSE_NEW_TIME,
-                            ZmOperation.DUPLICATE_APPT,
-                            ZmOperation.FORWARD_APPT,
-                            ZmOperation.DELETE
-                            ], false);
-        }
+    var actionMenu = this._toolbar.getActionsMenu();
+    if(actionMenu){
+        actionMenu.enable([
+                        ZmOperation.EDIT,
+                        ZmOperation.PROPOSE_NEW_TIME,
+                        ZmOperation.DUPLICATE_APPT,
+                        ZmOperation.FORWARD_APPT,
+                        ZmOperation.DELETE
+                        ], false);
+    }
 };
 
 ZmApptController.prototype._deleteListener =
