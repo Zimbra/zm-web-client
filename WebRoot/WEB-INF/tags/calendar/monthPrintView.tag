@@ -71,6 +71,7 @@
         </app:status>
         <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
+    <c:set var="isShowDeclined" value="${mailbox.prefs.calendarShowDeclinedMeetings}"/>
 </app:handleError>
 <c:if test="${param.imc eq 'true'}">
 <table cellpadding="0" cellspacing="0" border="0" style="margin-left: 1%;">
@@ -140,7 +141,9 @@
                                             <c:set var="dayStart" value="${currentDay.timeInMillis}"/>
                                             <c:set var="dayEnd" value="${zm:addDay(currentDay, 1).timeInMillis}"/>
                                             <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}">
+                                                <c:if test="${not appt.partStatusDeclined or (appt.partStatusDeclined and isShowDeclined)}">
                                                 <tr><td height="15px"><app:monthAppt appt="${appt}" start="${dayStart}" end="${dayEnd}" timezone="${timezone}"/></td></tr>
+                                                </c:if>
                                                 <c:set var="count" value="${count+1}"/>
                                             </zm:forEachAppoinment>
                                             <c:if test="${count lt 4}">

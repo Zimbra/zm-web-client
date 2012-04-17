@@ -83,6 +83,13 @@
                  </td>
              </tr>
              <tr>
+                 <td class='ZOptionsTableLabel'>&nbsp;</td>
+                 <td>
+                     <app:optCheckbox boxfirst="true" trailingcolon="false" label="showDeclinedMeetings" pref="zimbraPrefCalendarShowDeclinedMeetings"
+                                      checked="${mailbox.prefs.calendarShowDeclinedMeetings}"/>
+                 </td>
+             </tr>
+             <tr>
                  <td colspan="2">
                      &nbsp;
                  </td>

@@ -99,11 +99,14 @@
         <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
     <c:set var="folderIds" value="${zm:getCanonicalFolderIds(mailbox, validFolderIds)}"/>
+    <c:set var="isShowDeclined" value="${mailbox.prefs.calendarShowDeclinedMeetings}"/>
     <zm:apptMultiDayLayout timezone="${timezone}"
                            schedule="${scheduleView ? folderIds : ''}"
                            var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numDays}"  wdays="${wdays}" weekStart="${firstDayOfWeek}"
                            hourstart="${not empty startHour ? startHour : mailbox.prefs.calendarDayHourStart}" hourend="${not empty endHour ? endHour : mailbox.prefs.calendarDayHourEnd}"
-                           minstart="${not empty startMin ? startMin : 0}" minend="${not empty endMin ? endMin : 0}" isprint="${print eq true ? true : false}"/>
+                           minstart="${not empty startMin ? startMin : 0}" minend="${not empty endMin ? endMin : 0}" isprint="${print eq true ? true : false}"
+                           isShowDeclined="${isShowDeclined}"/>
+
 </app:handleError>
 <c:choose>
     <c:when test="${param.view eq 'list'}">
@@ -123,6 +126,7 @@
             </tr>
 
             <c:forEach var="appt" items="${appts.appointments}" varStatus="status">
+                <c:if test="${not appt.partStatusDeclined or (appt.partStatusDeclined and isShowDeclined)}">
                 <app:calendarUrl appt="${appt}" var="apptUrl"/>
                 <c:set var="aid" value="A${status.index}"/>
                 <c:set var="apptId" value="APPT${appt.id}${appt.startTime}"/>
@@ -189,7 +193,8 @@
                     </c:choose>
                 </td>
             </tr>
-            </c:forEach> 
+            </c:if>
+            </c:forEach>
       </table>
     </c:when>
     <c:when test="${param.view eq 'day' and not scheduleView}">
@@ -210,7 +215,7 @@
                         <c:choose>
                             <c:when test="${not empty day.folderId}">
                                 <c:set var="fname" value="${zm:getFolderName(pageContext, day.folderId)}"/>
-                                ${fn:escapeXml(fname)}
+                                ${fname}
                             </c:when>
                             <c:otherwise>
                                 <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" timezone="${timezone}" rawdate="${zm:getCalendar(day.startTime, timezone)}" action=""/>
@@ -344,7 +349,7 @@
                     <c:choose>
                         <c:when test="${not empty day.folderId}">
                             <c:set var="fname" value="${zm:getFolderName(pageContext, day.folderId)}"/>
-                                ${fn:escapeXml(fname)}
+                                ${fname}
                         </c:when>
                         <c:otherwise>
                             <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" timezone="${timezone}" rawdate="${zm:getCalendar(day.startTime, timezone)}" action=""/>
