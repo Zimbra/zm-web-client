@@ -728,6 +728,7 @@ function() {
 ZmConvReplyView.prototype._moreOptions =
 function() {
 	this._convView._compose({msg:this._msg});
+	this.reset();
 };
 
 // Returns lists of To: and Cc: addresses to reply to, based on the msg
