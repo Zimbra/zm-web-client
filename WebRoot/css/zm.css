@@ -4908,11 +4908,17 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 /*Attachments View*/
 .ZmFilterTree {
-   border-width:0px;
+	border-width:0px;
 }
 
-/*IE hack - To stop the button shake in the MSg Header*/
+/* Remove styling applied to other button types */
+.arrowbtn .ZToolbarButtonBorder {
+	background-image:none;
+	border-width:0;
+	@cssShadow@:none;
+}
 
+/*IE hack - To stop the button shake in the Msg Header*/
 #IFDEF MSIE
 .arrowbtn DIV .ZToolbarButtonBorder {
 	margin-top:0px;
