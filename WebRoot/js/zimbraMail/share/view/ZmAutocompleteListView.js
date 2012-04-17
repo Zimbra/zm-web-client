@@ -860,6 +860,20 @@ function(context, match) {
 	if (!context) { return; }
 	match = match || this._matchHash[this._selected];
 	
+	if (match && match.needDerefGroup) {
+		var contact = new ZmContact(match.groupId, {});
+		var continuationCb = new AjxCallback(this, this._updateContinuation, [context, match]);
+		var derefCallback = new AjxCallback(match, match.setContactGroupMembers, [match.groupId, continuationCb]);
+		contact.load(derefCallback, null, null, true);
+	}
+	else {
+		this._updateContinuation(context, match);
+	}
+};
+
+// continuation of _update
+ZmAutocompleteListView.prototype._updateContinuation = 
+function(context, match) {
 	var newText = "";
 	var address = context.address = context.address || (context.isAddress && context.str) || (match && this._getCompletionValue(match));
 	DBG.println("ac", "UPDATE: result for '" + context.str + "' is " + AjxStringUtil.htmlEncode(address));

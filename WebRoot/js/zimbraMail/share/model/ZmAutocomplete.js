@@ -439,20 +439,16 @@ ZmAutocompleteMatch = function(match, options, isContact, str) {
 			// Local contact group; emails need to be looked up by group member ids. 
 			var contactGroup = ac.cacheGet(match.id);
 			if (contactGroup) {
-				var groups = contactGroup.getGroupMembers();
-				var addresses = (groups && groups.good && groups.good.getArray()) || [];
-				var emails = [], addrs = [];
-				for (var i = 0; i < addresses.length; i++) {
-					var addr = addresses[i];
-					emails.push(addr.getAddress());
-					addrs.push(addr.toString());
-				}				
-				this.name = match.display;
-				this.email = emails.join(AjxEmailAddress.SEPARATOR);
-				this.fullAddress = addrs.join(AjxEmailAddress.SEPARATOR);
-				this.text = AjxStringUtil.htmlEncode(match.display) || this.email;
-				this.icon = "Group";
+				this.setContactGroupMembers(match.id);
 			}
+			else {
+				//not a contact group that is in cache.  we'll need to deref it
+				this.needDerefGroup = true;
+				this.groupId = match.id;
+			}
+			this.name = match.display;
+			this.text = AjxStringUtil.htmlEncode(match.display) || this.email;
+			this.icon = "Group";
 		} else {   
 			// Local contact, GAL contact, or distribution list
 			var email = AjxEmailAddress.parse(match.email);
@@ -480,6 +476,32 @@ ZmAutocompleteMatch = function(match, options, isContact, str) {
     if(this.type == ZmAutocomplete.AC_TYPE_LOCATION || this.type == ZmAutocomplete.AC_TYPE_EQUIPMENT) {
         this.icon = ZmAutocomplete.AC_ICON[this.type];
     }
+};
+
+/**
+ * Sets the email & fullAddress properties of a contact group
+ * @param groupId {String} contact group id to lookup from cache
+ * @param callback {AjxCallback} callback to be run
+ */
+ZmAutocompleteMatch.prototype.setContactGroupMembers = 
+function(groupId, callback) {
+	var ac = window.parentAppCtxt || window.appCtxt;
+	var contactGroup = ac.cacheGet(groupId);
+	if (contactGroup) {
+		var groups = contactGroup.getGroupMembers();
+		var addresses = (groups && groups.good && groups.good.getArray()) || [];
+		var emails = [], addrs = [];
+		for (var i = 0; i < addresses.length; i++) {
+			var addr = addresses[i];
+			emails.push(addr.getAddress());
+			addrs.push(addr.toString());
+		}
+		this.email = emails.join(AjxEmailAddress.SEPARATOR);
+		this.fullAddress = addrs.join(AjxEmailAddress.SEPARATOR);
+	}
+	if (callback) {
+		callback.run();
+	}
 };
 
 /**
