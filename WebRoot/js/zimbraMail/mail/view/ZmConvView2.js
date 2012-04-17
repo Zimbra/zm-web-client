@@ -1184,28 +1184,24 @@ function(id) {
 ZmMailMsgCapsuleView.prototype._linkClicked =
 function(id, op, ev) {
 
-	this._resetLinks();
+	this._resetLinks(op);
 	var info = this._linkInfo && id && this._linkInfo[id];
-	var link = info && document.getElementById(info.linkId);
-	if (link) {
-		link.className = this._linkFollowedClass;
-	}
-	
-	var handler = info && !info.disabled ? info.handler : null;
+	var handler = (info && !info.disabled) ? info.handler : null;
 	if (handler) {
 		handler.apply(this, [id, info.op, ev]);
 	}
 };
 
 ZmMailMsgCapsuleView.prototype._resetLinks =
-function() {
+function(op) {
 	var links = [ZmOperation.REPLY, ZmOperation.REPLY_ALL];
 	for (var i = 0; i < links.length; i++) {
+		var id = links[i];
 		var info = this._linkInfo && this._linkInfo[id];
         if (info && info.disabled) { continue; }
 		var link = info && document.getElementById(info.linkId);
 		if (link) {
-			link.className = this._linkClass;
+			link.className = (op == id) ? this._followedLinkClass : this._linkClass;
 		}
 	}
 };
