@@ -928,9 +928,9 @@ function(items, folder, attrs, isShiftKey, noUndo) {
 			activityStreamDialog.popup();
 		}
 		else if (items.length == 1 && folder.id == ZmFolder.ID_INBOX) {
+			list.moveItems(params);
 			var fromFolder = appCtxt.getById(items[0].folderId);
 			if (fromFolder && fromFolder.id == appCtxt.get(ZmSetting.MAIL_ACTIVITYSTREAM_FOLDER)) { 
-				list.moveItems(params);
 				var activityStreamDialog = appCtxt.getActivityToInboxFilterDialog();
 				activityStreamDialog.setFields(items[0]);
 				activityStreamDialog.popup();
