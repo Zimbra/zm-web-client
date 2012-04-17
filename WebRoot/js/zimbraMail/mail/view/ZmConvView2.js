@@ -1355,6 +1355,11 @@ function() {
 			}
 		}
 	}
+
+	if (this._expanded)
+		// create bubbles
+		this._notifyZimletsNewMsg(this._msg);
+
 	this._resetIframeHeightOnTimer();
 };
 
@@ -1615,10 +1620,6 @@ function(state, force) {
 		if (showMoreLink) {
 			showMoreLink.notoggle = 1;
 		}
-	}
-	
-	if (beenHere && state == ZmMailMsgCapsuleViewHeader.EXPANDED) {
-		this._msgView._notifyZimletsNewMsg(msg);	// create bubbles
 	}
 };
 
