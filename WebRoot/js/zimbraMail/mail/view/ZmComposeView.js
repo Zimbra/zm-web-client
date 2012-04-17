@@ -627,14 +627,8 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 
 	// get list of message part id's for any forwarded attachements
 	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME + this._sessionId, !isDraft && this._hideOriginalAttachments);
-    var forwardMsgIds = [];
+    var forwardMsgIds = this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME + this._sessionId, false);
 
-    if (this._msgIds) {// Forward two or more messages
-        forwardMsgIds = this._msgIds; // don't use concat (no need anyway) as it's not safe cross windows on IE as the 2nd argument is not identified as an Array in the child window.
-	}
-    else if (this._msgAttId) {// Forward one message or Reply as attachment
-        forwardMsgIds.push(this._msgAttId);
-	}
 
 
 	// --------------------------------------------
@@ -2024,16 +2018,12 @@ function() {
 ZmComposeView.prototype._getForwardAttObjs =
 function(parts) {
     var forAttObjs = [];
-    var partMap = {};
     for (var i = 0; i < this._partToAttachmentMap.length; i++) {
-        if (this._partToAttachmentMap[i].part) {
-            partMap[this._partToAttachmentMap[i].part] = this._partToAttachmentMap[i].mid;
-        }
-    }
-    for (var i = 0; i < parts.length; i++) {
-        var part = parts[i];
-        if (partMap[part]) {
-            forAttObjs.push({part:part, mid:partMap[part]});
+        for (var j = 0; j < parts.length; j++) {
+            if (this._partToAttachmentMap[i].part === parts[j]) {
+                forAttObjs.push( { part : parts[j], mid : this._partToAttachmentMap[i].mid } );
+                break;
+            }
         }
     }
     return forAttObjs;
@@ -3311,15 +3301,16 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 		var attInfo = msg.getAttachmentInfo(false, includeInlineImages, includeInlineAtts);
 
         if (action == ZmComposeView.ADD_ORIG_MSG_ATTS){
+            if (this._replyAttachments !== this._msg.attachments) {
                 attInfo = attInfo.concat(this._replyAttachInfo);
                 this._msg.attachments = this._msg.attachments.concat(this._replyAttachments);
+            }
                 this._replyAttachInfo = this._replyAttachments = [];
                 Dwt.setVisible(ZmId.getViewId(this._view, ZmId.CMP_REPLY_ATT_ROW), false);
         } else if (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL){
                 if (attInfo && attInfo.length)
                     this._replyAttachInfo = attInfo;
                 this._replyAttachments = this._msg.attachments;
-                attInfo = this.att = this._msg.attachments = [];
                 this._attachCount = 0;
                 Dwt.setVisible(ZmId.getViewId(this._view, ZmId.CMP_REPLY_ATT_ROW), true);
                 return;
