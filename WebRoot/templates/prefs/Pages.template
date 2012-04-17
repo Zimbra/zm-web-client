@@ -2632,7 +2632,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                         <table class="ZPropertySheet">
                             <tr>
                                 <td>
-                                    <textarea id='${id}_VACATION_MSG' tabindex='160' rows=3 cols=70></textarea>
+                                    <textarea id='${id}_VACATION_MSG' tabindex='160' rows=6 cols=70></textarea>
                                     <span style="display:none">
                                         <input type="hidden" name="st_dt" id="${id}_VACATION_FROM"/>
                                         <input type="hidden" name="ed_dt" id="${id}_VACATION_UNTIL"/>
@@ -2713,7 +2713,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                             <table>
                             <tr>
                                 <td>
-                                    <textarea id='${id}_VACATION_EXTERNAL_MSG' tabindex='220' rows=3 cols=70></textarea>
+                                    <textarea id='${id}_VACATION_EXTERNAL_MSG' tabindex='220' rows=6 cols=70 onfocus="this.rows=10;"></textarea>
                                 </td>
                             </tr>
                             </table>

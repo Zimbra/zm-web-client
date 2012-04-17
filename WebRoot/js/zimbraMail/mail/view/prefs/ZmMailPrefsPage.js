@@ -198,6 +198,9 @@ function() {
 
 		this._durationCheckbox = this.getFormObject(ZmSetting.VACATION_DURATION_ENABLED);
         this._extMsgCheckbox = this.getFormObject(ZmSetting.VACATION_EXTERNAL_MSG_ENABLED);
+		if (this._extMsgCheckbox._textEl) {
+			this._extMsgCheckbox._textEl.style.paddingRight = "3px";
+		}
 
         this._allDayCheckbox = this.getFormObject(ZmSetting.VACATION_DURATION_ALL_DAY);
 	}
