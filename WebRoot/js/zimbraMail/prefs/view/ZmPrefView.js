@@ -416,7 +416,7 @@ function(section, viewPage, dirtyCheck, noValidation, list, errors, view, isSave
                     }
                 } else if (!dirtyCheck) {
                     //for logging
-                    list.push({origValue: origValue, value:value});
+                    list.push({name: section.title + "." + id, origValue: origValue, value:value});
                 }
 			} else {
 				errors.push(AjxMessageFormat.format(setup.errorMessage, AjxStringUtil.htmlEncode(value)));
@@ -459,20 +459,20 @@ function() {
 	try {
 		var printPref = function(pref) {
 			if (AjxUtil.isArray(pref)) {
-				return AjxUtil.map(pref, printPref).join("\n");
+				return AjxUtil.map(pref, printPref).join("<br>");
 			}
-			return [pref.name, " (from ", (pref.origValue!=="" ? pref.origValue : "[empty]"), " to ", (pref.value!=="" ? pref.value : "[empty]"), ")"].join("");
+			return [pref.name, ": from ", (pref.origValue!=="" ? pref.origValue : "[empty]"), " to ", (pref.value!=="" ? pref.value : "[empty]")].join("");
 		}
 
 		var changed = this.getChangedPrefs(false, true); // Will also update this._controller._dirty
 		if (changed && changed.length) {
-			AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:\n" + printPref(changed));
+			AjxDebug.println(AjxDebug.PREFS, "Dirty preferences:<br>" + printPref(changed));
 			return true;
 		}
 
 		var dirtyViews = AjxUtil.keys(this._controller._dirty, function(key,obj){return obj[key]});
 		if (dirtyViews.length) {
-			AjxDebug.println(AjxDebug.PREFS, "Dirty preference views:\n" + dirtyViews.join("\n"));
+			AjxDebug.println(AjxDebug.PREFS, "Dirty preference views:<br>" + dirtyViews.join("<br>"));
 			return true;
 		}
 

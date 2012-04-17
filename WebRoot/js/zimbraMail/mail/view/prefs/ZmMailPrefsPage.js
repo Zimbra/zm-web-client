@@ -58,6 +58,10 @@ function(useDefaults) {
 	var cbox = this.getFormObject(ZmSetting.VACATION_MSG_ENABLED);
 	if (cbox) {
 		this._handleEnableVacationMsg(cbox);
+        // HandleEnableVacationMsg will alter other (non-persisted) settings - update
+        // their 'orginal' values so the section will not be thought dirty upon exit
+        this._updateOriginalValue(ZmSetting.VACATION_DURATION_ENABLED);
+        this._updateOriginalValue(ZmSetting.VACATION_CALENDAR_ENABLED);
 	}
 
 	this._initialAllDayFlag   = this._allDayCheckbox ? this._allDayCheckbox.isSelected() : true;
@@ -201,8 +205,6 @@ function() {
 
 
 	var cbox = this.getFormObject(ZmSetting.VACATION_MSG_ENABLED);
-
-
 	if (cbox) {
 		this._handleEnableVacationMsg(cbox);
         // HandleEnableVacationMsg will alter other (non-persisted) settings - update
@@ -503,8 +505,16 @@ function(callback) {
             // For the prefs, need to set the all day end time
             endDate.setHours(23, 59, 0, 0);
         }
-        this._startDateVal.value = this._formatter.format(stDate);
-        this._endDateVal.value = this._formatter.format(endDate);
+        if (this._startDateField.disabled) {
+            this._startDateVal.value = "";
+        } else {
+            this._startDateVal.value = this._formatter.format(stDate);
+        }
+        if (this._endDateField.disabled) {
+             this._endDateVal.value = "";
+        } else {
+            this._endDateVal.value = this._formatter.format(endDate);
+        }
 
         this._oldStartDate = appCtxt.get(ZmSetting.VACATION_FROM);
         this._oldEndDate   = appCtxt.get(ZmSetting.VACATION_UNTIL);
