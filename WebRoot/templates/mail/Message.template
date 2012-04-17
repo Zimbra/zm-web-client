@@ -700,23 +700,15 @@
 </template>
 
 <template id='mail.Message#Conv2Reply'>
-	<div>
-		<table id="${replyToTableId}">
-		</table>
-	</div>
-	<div id="${replyCcDivId}" style="display:none;">
-		<table id="${replyCcTableId}">
-		</table>
-	</div>
+	<div id="${replyToDivId}"></div>
+	<div id="${replyCcDivId}" style="display:none;"></div>
 	<textarea id="${replyInputId}" class="ReplyTextarea"></textarea>
 	<div id="${replyToolbarId}"></div>
 </template>
 
 <template id='mail.Message#Conv2ReplyTable'>
-	<table id="${replyTableId}">
-		<$ for (var i = 0; i < data.participants.length; i++) { $>
-			<$= AjxTemplate.expand("#Conv2MsgAddressRow", data.participants[i]) $>
-		<$ } $>
+	<table>
+		<$= AjxTemplate.expand("#Conv2MsgAddressRow", data) $>
 	</table>
 </template>
 	

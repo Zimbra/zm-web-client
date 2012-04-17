@@ -248,7 +248,6 @@ function(noClear) {
 
 	if (this._initialized) {
 		this._subjectSpan.innerHTML = this._infoSpan.innerHTML = "";
-		this._messagesDiv.innerHTML = "";
 		Dwt.setVisible(this._headerDiv, noClear);
 	}
 	
@@ -621,8 +620,9 @@ ZmConvReplyView.prototype.toString = function() { return "ZmConvReplyView"; };
 
 
 ZmConvReplyView.prototype.TEMPLATE = "mail.Message#Conv2Reply";
-ZmConvReplyView.prototype.ROW_TEMPLATE = "mail.Message#Conv2MsgAddressRow";
+ZmConvReplyView.prototype.TABLE_TEMPLATE = "mail.Message#Conv2ReplyTable";
 
+ZmConvReplyView.ADDR_TYPES = [AjxEmailAddress.TO, AjxEmailAddress.CC];
 
 /**
  * Opens up the quick reply area below the given msg view. Addresses are set as
@@ -639,16 +639,14 @@ function(msg, msgView, op) {
 	var ai = this._getReplyAddressInfo(msg, msgView, op);
 
 	if (!this._initialized) {
-		var subs = { addresses: ai.participants };
-		subs.replyToTableId = this._htmlElId + "_replyToTable";
+		var subs = ai;
+		subs.replyToDivId = this._htmlElId + "_replyToDiv";
 		subs.replyCcDivId = this._htmlElId + "_replyCcDiv";
-		subs.replyCcTableId = this._htmlElId + "_replyCcTable";
 		subs.replyInputId = this._htmlElId + "_replyInput";
 		this._createHtmlFromTemplate(this.TEMPLATE, subs);
 		this._initializeToolbar();
-		this._replyToTable = document.getElementById(subs.replyToTableId);
+		this._replyToDiv = document.getElementById(subs.replyToDivId);
 		this._replyCcDiv = document.getElementById(subs.replyCcDivId);
-		this._replyCcTable = document.getElementById(subs.replyCcTableId);
 		this._input = document.getElementById(subs.replyInputId);
 		this._initialized = true;
 	}
@@ -656,9 +654,9 @@ function(msg, msgView, op) {
 		this.reset();
 	}
 	this._msg = msg;
-	var gotCc = (op == ZmOperation.REPLY_ALL && ai.participants.length > 1);
-	this._replyToTable.innerHTML = AjxTemplate.expand(this.ROW_TEMPLATE, ai.participants[0]);
-	this._replyCcTable.innerHTML = gotCc ? AjxTemplate.expand(this.ROW_TEMPLATE, ai.participants[1]) : "";
+	var gotCc = (op == ZmOperation.REPLY_ALL && ai.participants[AjxEmailAddress.CC]);
+	this._replyToDiv.innerHTML = AjxTemplate.expand(this.TABLE_TEMPLATE, ai.participants[AjxEmailAddress.TO]);
+	this._replyCcDiv.innerHTML = gotCc ? AjxTemplate.expand(this.TABLE_TEMPLATE, ai.participants[AjxEmailAddress.CC]) : "";
 	Dwt.setVisible(this._replyCcDiv, gotCc);
 
 	var index = this._convView.getMsgViewIndex(msgView);
@@ -771,13 +769,15 @@ function(msg, msgView, op) {
 	options.shortAddress = appCtxt.get(ZmSetting.SHORT_ADDRESS);
 
 	var showMoreIds = {};
-	var participants = [];
-	for (var type in addresses) {
+	var addressTypes = [], participants = {};
+	for (var i = 0; i < ZmConvReplyView.ADDR_TYPES.length; i++) {
+		var type = ZmConvReplyView.ADDR_TYPES[i];
 		var addrs = addresses[type];
 		if (addrs && addrs.length > 0) {
+			addressTypes.push(type);
 			var prefix = AjxStringUtil.htmlEncode(ZmMsg[AjxEmailAddress.TYPE_STRING[type]]);
 			var addressInfo = msgView.getAddressesFieldInfo(addrs, options, type);
-			participants.push({ prefix: prefix, partStr: addressInfo.html });
+			participants[type] = { prefix: prefix, partStr: addressInfo.html };
 			if (addressInfo.showMoreLinkId) {
 			    showMoreIds[addressInfo.showMoreLinkId] = true;
 			}
@@ -785,6 +785,7 @@ function(msg, msgView, op) {
 	}
 	
 	return {
+		addressTypes:	addressTypes,
 		participants:	participants,
         showMoreIds:    showMoreIds
 	}

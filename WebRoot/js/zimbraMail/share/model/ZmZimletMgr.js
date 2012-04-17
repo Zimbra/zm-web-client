@@ -416,9 +416,8 @@ function(event, args) {
 	for (var i = 0; i < this._ZIMLETS.length; ++i) {
 		var z = this._ZIMLETS[i].handlerObject;
 		if (z && (z instanceof ZmZimletBase) && z.getEnabled() && (typeof z[event] == "function")) {
-			if (z[event].apply(z, args)) {
-				handled = true;
-			}
+			var result = args ? z[event].apply(z, args) : z[event].apply(z);	// IE cannot handle empty args
+			handled = handled || result;
 		}
 	}
 	
@@ -430,7 +429,7 @@ function(zimletName, event, args) {
 	var zimlet = this.getZimletByName(zimletName);
 	var z = zimlet && zimlet.handlerObject;
 	if (z && (z instanceof ZmZimletBase) && z.getEnabled() && (typeof z[event] == "function")) {
-		return (z[event].apply(z, args));
+		return (args ? z[event].apply(z, args) : z[event].apply(z));	// IE cannot handle empty args
 	}
 };
 
