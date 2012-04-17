@@ -871,3 +871,11 @@ DIV.ZaSearchBuilderOptionRemoveAll TABLE  {
 .ZaToastBG {	@ToastContainer@	}
 
 TABLE {	border-collapse:separate;	}
+
+.oselect_display {
+	white-space:normal;
+}
+
+.oselect_display_disabled {
+	white-space:normal;
+}
