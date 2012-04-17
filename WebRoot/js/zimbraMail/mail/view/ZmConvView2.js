@@ -439,6 +439,7 @@ function() {
 	var val = this._replyView.getValue();
 	if (val) {
 		var params = {
+			action:			this._replyView.action,
 			sendNow:		true,
 			inNewWindow:	false
 		};
@@ -638,6 +639,7 @@ ZmConvReplyView.prototype.set =
 function(msg, msgView, op) {
 
 	appCtxt.notifyZimlet("com_zimbra_email", "onFindMsgObjects");
+	this.action = op;
 	var ai = this._getReplyAddressInfo(msg, msgView, op);
 
 	if (!this._initialized) {

@@ -1459,18 +1459,20 @@ function(request, isDraft, accountName, requestReadReceipt, sendTime) {
 	    msgNode.f = ZmItem.FLAG_PRIORITY;			
 	}
 	
-	if (ZmMailMsg.COMPOSE_ADDRS.length > 0) { // If no addrs, no element 'e'
-		var addrNodes = msgNode.e = [];
-		for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-			var type = ZmMailMsg.COMPOSE_ADDRS[i];
-			this._addAddressNodes(addrNodes, type, isDraft);
-		}
-		this._addFrom(addrNodes, msgNode, isDraft, accountName);
-		this._addReplyTo(addrNodes);
-		if (requestReadReceipt) {
-			this._addReadReceipt(addrNodes, accountName);
-		}
+	var addrNodes = msgNode.e = [];
+	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
+		var type = ZmMailMsg.COMPOSE_ADDRS[i];
+		this._addAddressNodes(addrNodes, type, isDraft);
 	}
+	this._addFrom(addrNodes, msgNode, isDraft, accountName);
+	this._addReplyTo(addrNodes);
+	if (requestReadReceipt) {
+		this._addReadReceipt(addrNodes, accountName);
+	}
+	if (addrNodes.length) {
+		msgNode.e = addrNodes;
+	}
+	
 	//Let Zimlets set custom mime headers. They need to push header-name and header-value like below:
 	//customMimeHeaders.push({name:"header1", _content:"headerValue"})
 	var customMimeHeaders = [];
@@ -2372,11 +2374,11 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		var addr, displayName;
 		if (onBehalfOf) {
 			addr = accountName;
-		} else if(identity) {
+		} else if (identity) {
 			addr = identity.sendFromAddress || mainAcct;
 			displayName = identity.sendFromDisplay;
-		} else{
-           addr = this.delegatedSenderAddr;
+		} else {
+           addr = this.delegatedSenderAddr || mainAcct;
            onBehalfOf = this.isOnBehalfOf;
         }
 
