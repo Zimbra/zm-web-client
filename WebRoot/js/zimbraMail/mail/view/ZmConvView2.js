@@ -601,7 +601,9 @@ function(msgView) {
 	return null;
 };
 
-
+ZmConvView2.prototype.getController = function() {
+    return this._controller;
+};
 
 ZmConvReplyView = function(params) {
 
