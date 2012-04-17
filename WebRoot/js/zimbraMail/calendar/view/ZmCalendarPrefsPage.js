@@ -129,9 +129,16 @@ function(setting, right) {
 
 	appCtxt.set(setting, gt);
 	var list = this._acl.getGrantees(right);
-	appCtxt.set(ZmCalendarPrefsPage.TEXTAREA[setting], list.join("\n"));
+	var textDisplay = list.join("\n");
+	appCtxt.set(ZmCalendarPrefsPage.TEXTAREA[setting], textDisplay);
 
 	this._acl.getGranteeType(right);
+	// Set up the preference initial value (derived from ACL data) so that the
+	// pref is not incorrectly detected as dirty in the _checkSection call.
+	var pref = appCtxt.getSettings().getSetting(setting);
+	pref.origValue = this._currentSelection[setting];
+	pref = appCtxt.getSettings().getSetting(ZmCalendarPrefsPage.TEXTAREA[setting]);
+	pref.origValue = textDisplay;
 };
 
 /**
