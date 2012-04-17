@@ -31,10 +31,6 @@ ZmMailMsgView = function(params) {
 	this._tagCellId			= ZmId.getViewId(this._viewId, ZmId.MV_TAG_CELL, this._mode);
 	this._attLinksId		= ZmId.getViewId(this._viewId, ZmId.MV_ATT_LINKS, this._mode);
 
-	// expand/collapse vars
-	this._expandHeader = true;
-	this._expandDivId = ZmId.getViewId(this._viewId, ZmId.MV_EXPAND_DIV, this._mode);
-
 	this._scrollWithIframe = params.scrollWithIframe;
 	this._limitAttachments = this._scrollWithIframe ? 3 : 0; //making it local
 	this._attcMaxSize = this._limitAttachments * 16 + 8;
@@ -141,10 +137,6 @@ function() {
 	this._containerEl = null;
 
 	// TODO: reuse all these controls that are being disposed here.....
-	if (this._expandButton) {
-		this._expandButton.setVisible(false);
-		this._expandButton.reparentHtmlElement(this.getHtmlElement());
-	}
 	if (this._ifw) {
 		this._ifw.dispose();
 		this._ifw = null;
@@ -1337,14 +1329,12 @@ function(msg, container) {
 	this._hdrTableId		= ZmId.getViewId(this._viewId, ZmId.MV_HDR_TABLE, this._mode);
 	var reportBtnCellId		= ZmId.getViewId(this._viewId, ZmId.MV_REPORT_BTN_CELL, this._mode);
 	this._expandRowId		= ZmId.getViewId(this._viewId, ZmId.MV_EXPAND_ROW, this._mode);
-	var expandHeaderId		= ZmId.getViewId(this._viewId, ZmId.MV_EXPAND_HDR, this._mode);
 
 	var subs = {
 		id: 				this._htmlElId,
 		hdrTableId: 		this._hdrTableId,
 		hdrTableTopRowId:	ZmId.getViewId(this._viewId, ZmId.MV_HDR_TABLE_TOP_ROW, this._mode),
 		expandRowId:		this._expandRowId,
-		expandHeaderId:		expandHeaderId,
 		attachId:			this._attLinksId,
 		infoBarId:			this._infoBarId,
 		subject:			subject,
@@ -1401,21 +1391,6 @@ function(msg, container) {
 	/**************************************************************************/
 	/* Add to DOM based on Id's used to generate HTML via templates           */
 	/**************************************************************************/
-
-	// add the expand/collapse arrow button now that we have add to the DOM tree
-	var expandHeaderEl = document.getElementById(expandHeaderId);
-	if (expandHeaderEl) {
-		// Added for bug 26579. Creating this control at object level was not working in IE
-		var id = ZmId.getButtonId(this._mode, ZmId.OP_EXPAND, ZmId.MSG_VIEW);
-		if (this._expandButton) {
-			this._expandButton.dispose();
-		}
-		this._expandButton = new DwtToolBarButton({parent:this, id:id, parentElement:expandHeaderId});
-		this._expandButton.addSelectionListener(this._expandButtonListener.bind(this));
-		this._expandButton.setImage(this._expandHeader ? "HeaderExpanded" : "HeaderCollapsed");
-		this._expandButton.setVisible(Dwt.DISPLAY_BLOCK);
-	}
-
 	// add the report button if applicable
 	var reportBtnCell = document.getElementById(reportBtnCellId);
 	if (reportBtnCell) {
@@ -1769,8 +1744,6 @@ function(callback) {
 	// first time a message is expanded).
 	this._msgBodyCreated = true;
 	this._setAttachmentLinks();
-	this._setRows();
-	this._expandRows(this._expandHeader);
 
 	if (callback) { callback.run(); }
 }
@@ -2323,50 +2296,6 @@ function(ev) {
 		this._setTags(this._msg);
 	}
 };
-
-ZmMailMsgView.prototype._setRows =
-function() {
-        var expandRow = document.getElementById(this._expandRowId);
-	var table = expandRow && expandRow.parentNode;
-        if (!table) { return; } 
-	if (this._addressRows) {
-		for (var i = 0; i < this._addressRows.length; i++) {
-			var addressRow = this._addressRows[i];
-			table.appendChild(addressRow);
-		}
-	}
-};
-
-ZmMailMsgView.prototype._expandButtonListener =
-function(ev) {
-	this._expandRows(!this._expandHeader);
-};
-
-ZmMailMsgView.prototype._expandRows =
-function(expand) {
-	var expandRow = document.getElementById(this._expandRowId);
-	if (!expandRow) { return; } 
-	this._expandHeader = expand;
-	if (this._expandButton) {
-		this._expandButton.setImage(expand ? "HeaderExpanded" : "HeaderCollapsed");
-	}
-
-	var table = expandRow.parentNode;
-
-	for (var i = 1; i < table.rows.length; i++) { // row[0] is From address
-		table.rows[i].style.display = expand ? "" : "none";
-	}
-
-	var attContainer = document.getElementById(this._attLinksId + "_container");
-	if (attContainer) {
-		var attInfo = this._msg.getAttachmentInfo(true, !appCtxt.get(ZmSetting.VIEW_AS_HTML), true);
-		Dwt.setVisible(attContainer, expand && (attInfo.length > 0));
-	}
-	if (this._scrollWithIframe) {
-		ZmMailMsgView._resetIframeHeight(this);
-	}
-};
-
 
 ZmMailMsgView.prototype._reportButtonListener =
 function(msg, ev) {

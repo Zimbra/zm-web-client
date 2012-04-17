@@ -40,7 +40,7 @@
 								<td>
 									<table align=right>
 										<tr>
-											<td valign=top id='${expandHeaderId}' class='arrowbtn'></td>
+											<td>&nbsp;</td>
 											<td class='LabelColName'><$= ZmMsg.fromLabel $></td>
 										</tr>
 									</table>
