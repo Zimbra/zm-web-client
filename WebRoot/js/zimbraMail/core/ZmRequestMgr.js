@@ -409,6 +409,7 @@ function(hdr) {
 	if (ctxt.refresh) {
 		this._controller.runAppFunction("_clearDeferredFolders");
 		this._loadTrees(ctxt.refresh);
+		this._controller.runAppFunction("_createVirtualFolders");
 		this._highestNotifySeen = 0;
 	}
 

@@ -192,7 +192,7 @@ function(callback, result) {
 		derefBatchCmd.run();
 	}
 
-	this._addDlFolder();
+	ZmContactList.addDlFolder();
 
 	this._finishLoading();
 
@@ -201,27 +201,41 @@ function(callback, result) {
 	}
 };
 
-ZmContactList.prototype._addDlFolder =
+/**
+ * @static
+ */
+ZmContactList.addDlFolder =
 function() {
-	if (this._dlFolder) {
+	var dlsFolder = appCtxt.getById(ZmOrganizer.ID_DLS);
+
+	var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
+
+	if (dlsFolder && root.getById(ZmOrganizer.ID_DLS)) {
+		//somehow (after a refresh block, can be reprod using $set:refresh. ZmClientCmdHandler.prototype.execute_refresh) the DLs folder object is removed from under the root (but still cached in appCtxt). So making sure it's there.
 		return;
 	}
-	var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
-	var params = {
-		id: ZmOrganizer.ID_DLS,
-		name: ZmMsg.distributionLists, 
-		parent: root,
-		tree: root.tree,
-		type: ZmOrganizer.ADDRBOOK,
-		numTotal: null, //we don't know how many
-		noTooltip: true //so don't show tooltip
 
-	};
-	var addrBook = new ZmAddrBook(params);
-	root.children.add(addrBook);
-	addrBook._notify(ZmEvent.E_CREATE)
-	addrBook._isDL = true;
-	this._dlFolder = addrBook;
+	if (!dlsFolder) {
+		var params = {
+			id: ZmOrganizer.ID_DLS,
+			name: ZmMsg.distributionLists,
+			parent: root,
+			tree: root.tree,
+			type: ZmOrganizer.ADDRBOOK,
+			numTotal: null, //we don't know how many
+			noTooltip: true //so don't show tooltip
+		};
+
+		dlsFolder = new ZmAddrBook(params);
+		root.children.add(dlsFolder);
+		dlsFolder._isDL = true;
+	}
+	else {
+		//the dls folder object exists but no longer as a child of the root.
+		dlsFolder.parent = root;
+		root.children.add(dlsFolder); //any better way to do this?
+	}
+
 };
 
 ZmContactList.prototype.add = 

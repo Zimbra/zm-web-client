@@ -203,6 +203,15 @@ function() {
 /**
  * @private
  */
+ZmContactsApp.prototype._createVirtualFolders =
+function() {
+	ZmContactList.addDlFolder(); 
+};
+
+
+/**
+ * @private
+ */
 ZmContactsApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_CONTACT);	// placeholder
