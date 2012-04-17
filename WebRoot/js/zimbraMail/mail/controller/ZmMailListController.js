@@ -303,7 +303,13 @@ function(actionCode, ev) {
 			}
 			break;
 
-		case ZmKeyMap.MARK_READ:
+		case ZmKeyMap.MUTE_UNMUTE_CONV:
+			if (num && (!folder || (folder && !folder.isReadOnly()))) {
+				this._muteUnmuteConvListener();
+			}
+			break;
+
+        case ZmKeyMap.MARK_READ:
 			if (num && (!folder || (folder && !folder.isReadOnly()))) {
 				this._markReadListener();
 			}
@@ -1828,6 +1834,17 @@ function(ev) {
 ZmMailListController.prototype._editListener =
 function(ev) {
 	this._doAction({ev:ev, action:ZmOperation.DRAFT});
+};
+
+ZmMailListController.prototype._muteUnmuteConvListener =
+function(ev) {
+    var status = this._getConvMuteStatus();
+    if (status.hasUnmuteConv) {
+        this._muteConvListener();
+    }
+    else {
+        this._unmuteConvListener();
+    }
 };
 
 ZmMailListController.prototype._muteConvListener =

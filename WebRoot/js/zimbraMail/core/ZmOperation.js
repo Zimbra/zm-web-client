@@ -143,7 +143,7 @@ function() {
 			ZmOperation.addDeferredMenu(ZmOperation.addMoveMenu, parent, true);
 		}));
 
-    ZmOperation.registerOp(ZmId.OP_MUTE_CONV, {textKey:"muteConv", tooltipKey:"muteConvTooltip", image:"Mute", shortcut:ZmKeyMap.MUTE_CONV});
+    ZmOperation.registerOp(ZmId.OP_MUTE_CONV, {textKey:"muteConv", tooltipKey:"muteConvTooltip", image:"Mute", shortcut:ZmKeyMap.MUTE_UNMUTE_CONV});
 	ZmOperation.registerOp(ZmId.OP_OPTS, {textKey:"options", tooltipKey:"options", image:"ContextMenu"});
 	ZmOperation.registerOp(ZmId.OP_NEW_FOLDER, {textKey:"newFolder", tooltipKey:"newFolderTooltip", image:"NewFolder", shortcut:ZmKeyMap.NEW_FOLDER}, ZmSetting.USER_FOLDERS_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_NEW_MENU, {textKey:"_new", shortcut:ZmKeyMap.NEW, textPrecedence:100}, null,
@@ -201,7 +201,7 @@ function() {
 	// XXX: need new icon? -
 	//      Undelete is stupid. We should either add it for all items types (not just contacts) or just kill it
     ZmOperation.registerOp(ZmId.OP_UNDELETE, {textKey:"undelete", tooltipKey:"undelete", image:"MoveToFolder"});
-    ZmOperation.registerOp(ZmId.OP_UNMUTE_CONV, {textKey:"unmuteConv", tooltipKey:"unmuteConvTooltip", image:"Unmute", shortcut:ZmKeyMap.UNMUTE_CONV});
+    ZmOperation.registerOp(ZmId.OP_UNMUTE_CONV, {textKey:"unmuteConv", tooltipKey:"unmuteConvTooltip", image:"Unmute", shortcut:ZmKeyMap.MUTE_UNMUTE_CONV});
 	ZmOperation.registerOp(ZmId.OP_VIEW, {textKey:"view", image:"SplitView"});
 	ZmOperation.registerOp(ZmId.OP_VIEW_MENU, {tooltipKey:"viewTooltip", textKey:"view", image:"SplitPane", textPrecedence:80, showImageInToolbar: true, showTextInToolbar: true});
 	ZmOperation.registerOp(ZmId.OP_ZIMLET, {image:"ZimbraIcon"});
