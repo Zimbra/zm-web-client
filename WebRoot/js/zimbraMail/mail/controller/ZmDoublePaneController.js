@@ -487,7 +487,7 @@ function(ev) {
 
 		var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
 		var folder = appCtxt.getById(item.getFolderId());
-		if (item.isDraft && item.type != ZmId.ITEM_CONV && (!folder || !folder.isReadOnly())) {
+		if (item.isDraft && folder && folder.id == ZmFolder.ID_DRAFTS && (!folder || !folder.isReadOnly())) {
 			this._doAction({ev:ev, action:ZmOperation.DRAFT});
 			return true;
 		} else if (appCtxt.get(ZmSetting.OPEN_MAIL_IN_NEW_WIN)) {
