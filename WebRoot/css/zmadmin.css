@@ -792,6 +792,7 @@ DIV.ZaSearchBuilderOptionRemoveAll TABLE  {
 	@TreeItem@
 	@RightClickBg@
 	@ImagePadding@
+	padding-top:2px;
 }
 
 /* text style for a tree item when dragged over */
