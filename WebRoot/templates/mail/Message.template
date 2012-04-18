@@ -765,17 +765,17 @@
 <template id='mail.Message#Conv2MsgAddressRow'>
 	<tr>
 		<$ if (!data.isReply) { $>
-		<td>&nbsp;</td>
+		<td></td>
 		<$ } $>
 		<td class='LabelColName'>
-			<$= data.prefix ? AjxMessageFormat.format(ZmMsg.makeLabel, data.prefix) : "&nbsp;" $>
+			<$= data.prefix ? AjxMessageFormat.format(ZmMsg.makeLabel, data.prefix) : "" $>
 		</td>
 		<td class='LabelColValue'><$= data.partStr $></td>
 		<$ if (!data.isReply) { $>
 			<$ if (data.folderIcon) { $>
 		<td align="right" id='${folderCellId}'><$= data.folderIcon $></td>
 			<$ } else { $>
-		<td align="right">&nbsp;</td>
+		<td align="right"></td>
 			<$ } $>
 		<$ } $>
 	</tr>
