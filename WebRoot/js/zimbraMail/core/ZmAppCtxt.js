@@ -970,7 +970,7 @@ function() {
 ZmAppCtxt.prototype.getAddrSelectDialog =
 function() {
 	if (!this._addrSelectDialog) {
-		AjxDispatcher.require(["MailCore", "Mail"]);
+		AjxDispatcher.require(["Startup2", "MailCore", "Mail"]);
 		this._addrSelectDialog = new ZmSelectAddrDialog(this._shell);
 	}
 	return this._addrSelectDialog;
