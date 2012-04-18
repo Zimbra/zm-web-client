@@ -1492,7 +1492,15 @@ ZmSearchToken.prototype.isZmSearchToken = true;
 ZmSearchToken.prototype.toString =
 function(force) {
 	if (this.type == ZmParsedQuery.TERM) {
-		return (this.op == ZmParsedQuery.OP_CONTENT) ? this.arg : [this.op, this.arg].join(":");
+		var arg = this.arg;
+		if (this.op == ZmParsedQuery.OP_CONTENT) {
+			return arg;
+		}
+		else {
+			// quote arg if any non-word chars
+			arg = (arg && /\W/.test(arg)) ? '"' + arg + '"' : arg;
+			return [this.op, arg].join(":");
+		}
 	}
 	else {
 		return (!force && this.op == ZmParsedQuery.COND_AND) ? "" : this.op;
