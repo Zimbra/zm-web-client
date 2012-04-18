@@ -159,21 +159,23 @@ function(results, folderId) {
 		tlv._saveState({selection:true});
 		tlv.reset();
 	}
+    //Generate view Id again as loading the read only view changes the viewId of the TaskListView
+    var viewId = [this.getCurrentViewType(), this.getSessionId()].join(ZmController.SESSION_ID_SEP);
 
-	this._setup(this._currentViewId);
+	this._setup(viewId);
 
 	// reset offset if list view has been created
-	var lv = this._listView[this._currentViewId];
+	var lv = this.getListView();
 	if (lv) { lv.offset = 0; }
 
-	var elements = this.getViewElements(this._currentViewId, this._taskMultiView);
+	var elements = this.getViewElements(viewId, this._taskMultiView);
 	
-	this._setView({ view:		this._currentViewId,
+	this._setView({ view:		viewId,
 					viewType:	this._currentViewType,
 					elements:	elements,
 					isAppView:	true});
 
-	this._setTabGroup(this._tabGroups[this._currentViewId]);
+	this._setTabGroup(this._tabGroups[viewId]);
 	this._resetNavToolBarButtons();
 
     // do this last
@@ -188,6 +190,11 @@ function(results, folderId) {
 ZmTaskListController.prototype.getCurrentView = 
 function() {
 	return this._taskMultiView;
+};
+
+ZmTaskListController.prototype.getListView =
+function() {
+	return this._taskListView;
 };
 
 ZmTaskListController.prototype._getDefaultFocusItem =
