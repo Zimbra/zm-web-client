@@ -108,7 +108,7 @@ function(mode, object, share) {
 	this._guestRadioEl.checked = isGuestShare;
 	this._guestRadioEl.disabled = !isNewShare || !supportsPublic;
 	this._publicRadioEl.checked = isPublicShare;
-	this._publicRadioEl.disabled = !isNewShare || !supportsPublic;
+	this._publicRadioEl.disabled = !isNewShare || !supportsPublic || (object.type === ZmOrganizer.FOLDER);
 
 	var type = this._getType(isUserShare, isGuestShare, isPublicShare);
 	this._handleShareWith(type);
