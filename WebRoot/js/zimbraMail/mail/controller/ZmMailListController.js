@@ -2070,7 +2070,9 @@ function(parent, num) {
                             ZmOperation.MARK_UNREAD,
                             ZmOperation.SPAM,
                             ZmOperation.DETACH,
-                            ZmOperation.ADD_FILTER_RULE
+                            ZmOperation.ADD_FILTER_RULE,
+                            ZmOperation.CREATE_APPT,
+                            ZmOperation.CREATE_TASK
                         ],
                         false
                     );
