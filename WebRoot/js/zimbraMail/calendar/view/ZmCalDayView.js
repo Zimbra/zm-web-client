@@ -127,7 +127,7 @@ ZmCalDayTabView._ALL_DAY_APPT_HEIGHT_PAD = 3;
 ZmCalDayTabView._UNION_DIV_WIDTH = 0;
 
 ZmCalDayTabView._TAB_BORDER_WIDTH = 1;
-ZmCalDayTabView._TAB_BORDER_MARGIN = 6;
+ZmCalDayTabView._TAB_BORDER_MARGIN = 4;
 ZmCalDayTabView._TAB_SEP_WIDTH = 8;
 ZmCalDayTabView._TAB_TITLE_MAX_LENGTH = 15;
 
@@ -208,9 +208,7 @@ function(abook) {
 
 	// div under year
 	html.append("<div id='", this._yearAllDayDivId, "' name='_yearAllDayDivId' style='position:absolute;'>");
-	html.append("<div id='", this._yearAllDayTopBorderId, "' class='calendar_day_separator'  name='_yearAllDayTopBorderId' style='position:absolute;top:0px;width:100%;height:2px;'></div>");
-    html.append("<div id='", this._yearAllDayBottomBorderId, "' class='calendar_day_separator'  name='_yearAllDayTopBorderId' style='position:absolute;bottom:0px;width:100%;height:2px;'></div>");
-    html.append("<div id='", this._yearHeadingDivId, "' class='calendar_heading' name='_yearHeadingDivId' style='", headerStyle,	"top:1px;'>");
+    html.append("<div id='", this._yearHeadingDivId, "' class='calendar_heading_day_tab' name='_yearHeadingDivId' style='width:100%;height:100%;'>");
 	html.append("<div id='", this._headerYearId,
 		"' name='_headerYearId' class=calendar_heading_year_text style='position:absolute; width:", ZmCalColView._HOURS_DIV_WIDTH,"px;'></div>");
 	html.append("</div>");
@@ -219,7 +217,7 @@ function(abook) {
 	// sep between year and headings
 	html.append("<div id='", this._leftAllDaySepDivId, "' name='_leftAllDaySepDivId' class='calendar_day_separator' style='position:absolute'></div>");
 
-	if (this._scheduleMode) {
+	/*if (this._scheduleMode) {
 
 		// div in all day space
 		html.append("<div id='", this._unionAllDayDivId, "' name='_unionAllDayDivId' style='position:absolute'>");
@@ -230,7 +228,7 @@ function(abook) {
 
 		// sep between year and headings
 		html.append("<div id='", this._unionHeadingSepDivId, "' name='_unionHeadingSepDivId' class='calendar_day_separator' style='position:absolute'></div>");
-	}
+	} */
 
 	// all day scroll	=============
 	html.append("<div id='", this._allDayScrollDivId, "' name='_allDayScrollDivId' style='position:absolute; overflow:hidden;'>");
@@ -313,7 +311,6 @@ function(abook) {
 	this._scrollToTime(8);
 };
 
-
 ZmCalDayTabView.prototype._layout =
 function(refreshApptLayout) {
 	DBG.println(AjxDebug.DBG2, "ZmCalColView in layout!");
@@ -323,7 +320,7 @@ function(refreshApptLayout) {
         sz = this.getSize(),
         width = sz.x,
         height = sz.y,
-        hoursWidth = ZmCalColView._HOURS_DIV_WIDTH,
+        hoursWidth = ZmCalColView._HOURS_DIV_WIDTH-1,
         bodyX = hoursWidth + this._daySepWidth,
         bodyY,
         unionX = ZmCalColView._HOURS_DIV_WIDTH,
@@ -341,10 +338,10 @@ function(refreshApptLayout) {
 
     height -= 25;
 	this._needFirstLayout = false;
-	bodyX += this._daySepWidth + ZmCalDayTabView._TAB_SEP_WIDTH;;
+	bodyX += this._daySepWidth + ZmCalDayTabView._TAB_SEP_WIDTH;
 
 	// compute height for hours/grid
-	this._bodyDivWidth = width - bodyX;
+	this._bodyDivWidth = width - bodyX - ZmCalDayTabView._TAB_SEP_WIDTH;
 
 	// size appts divs
 	this._apptBodyDivHeight = ZmCalColView._DAY_HEIGHT + 1; // extra for midnight to show up
@@ -387,8 +384,8 @@ function(refreshApptLayout) {
 	this._allDayVerticalScrollbar(this._allDayDivHeight != this._allDayFullDivHeight);
 
 	// div under year
-	this._setBounds(this._yearAllDayDivId, 0, ZmCalDayTabView._TAB_BORDER_MARGIN, hoursWidth + ZmCalDayTabView._UNION_DIV_WIDTH + this._daySepWidth, this._allDayDivHeight);
-    this._setBounds(this._yearHeadingDivId, 0, this._daySepWidth, hoursWidth + ZmCalDayTabView._UNION_DIV_WIDTH + this._daySepWidth, ZmCalColView._ALL_DAY_APPT_HEIGHT+2);
+	this._setBounds(this._yearAllDayDivId, 0, ZmCalDayTabView._TAB_BORDER_MARGIN, hoursWidth + ZmCalDayTabView._UNION_DIV_WIDTH + this._daySepWidth-1, this._allDayDivHeight);
+    //this._setBounds(this._yearHeadingDivId, 0, this._daySepWidth-1, hoursWidth + ZmCalDayTabView._UNION_DIV_WIDTH + this._daySepWidth, ZmCalColView._ALL_DAY_APPT_HEIGHT+ZmCalDayTabView._TAB_BORDER_MARGIN+1);
 	// all day scroll
 	allDayScrollHeight =  this._allDayDivHeight;
 	this._setBounds(this._allDayScrollDivId, bodyX, 0, this._bodyDivWidth, allDayScrollHeight);
@@ -413,7 +410,7 @@ function(refreshApptLayout) {
 
     // sep in all day area
     unionSepX = unionX + ZmCalDayTabView._UNION_DIV_WIDTH;
-    this._setBounds(this._unionHeadingSepDivId, unionSepX, ZmCalDayTabView._TAB_BORDER_MARGIN, this._daySepWidth, allDayScrollHeight+1);
+    this._setBounds(this._unionHeadingSepDivId, unionSepX, ZmCalDayTabView._TAB_BORDER_MARGIN, this._daySepWidth-1, allDayScrollHeight+1);
 
     // div for scrolling union
     this._setBounds(this._unionGridScrollDivId, unionX, bodyY, ZmCalDayTabView._UNION_DIV_WIDTH, this._bodyDivHeight);
@@ -482,14 +479,19 @@ function(workingHours){
         this._setBounds(col.borderLeftDivId, currentX, 0, ZmCalDayTabView._TAB_BORDER_WIDTH, this._apptBodyDivHeight);
         this._setBounds(col.borderRightDivId, currentX+dayWidth-ZmCalDayTabView._TAB_BORDER_WIDTH-ZmCalDayTabView._TAB_BORDER_MARGIN, 0, ZmCalDayTabView._TAB_BORDER_WIDTH, this._apptBodyDivHeight);
 
-        this._setBounds(col.borderLeftAllDayDivId, currentX, 0, ZmCalDayTabView._TAB_BORDER_WIDTH, this._allDayDivHeight+ZmCalDayTabView._TAB_BORDER_WIDTH);
+        this._setBounds(col.borderLeftAllDayDivId, currentX, 0, ZmCalDayTabView._TAB_BORDER_WIDTH, this._allDayDivHeight+ZmCalDayTabView._TAB_BORDER_WIDTH+1);
         this._setBounds(col.borderTopAllDayDivId, currentX, 0, dayWidth-ZmCalDayTabView._TAB_BORDER_MARGIN, Dwt.CLEAR);
-        this._setBounds(col.borderRightAllDayDivId, currentX+dayWidth-ZmCalDayTabView._TAB_BORDER_WIDTH-ZmCalDayTabView._TAB_BORDER_MARGIN, 0, ZmCalDayTabView._TAB_BORDER_WIDTH, this._allDayDivHeight+ZmCalDayTabView._TAB_BORDER_WIDTH);
+        this._setBounds(col.borderRightAllDayDivId, currentX+dayWidth-ZmCalDayTabView._TAB_BORDER_WIDTH-ZmCalDayTabView._TAB_BORDER_MARGIN, 0, ZmCalDayTabView._TAB_BORDER_WIDTH, this._allDayDivHeight+ZmCalDayTabView._TAB_BORDER_WIDTH+1);
 
         currentX += dayWidth;
 
-		//this._setBounds(col.headingDaySepDivId, currentX, 0, this._daySepWidth, allDayHeadingDivHeight + this._allDayDivHeight);
-		this._setBounds(col.daySepDivId, currentX-ZmCalDayTabView._TAB_BORDER_MARGIN, 0, ZmCalDayTabView._TAB_SEP_WIDTH, this._apptBodyDivHeight);
+        if (i == numCols-1) {
+            //If the border div is last border div add 6 to the width
+            this._setBounds(col.daySepDivId, currentX-ZmCalDayTabView._TAB_BORDER_MARGIN, 0, ZmCalDayTabView._TAB_SEP_WIDTH+6, this._apptBodyDivHeight);
+        }
+        else {
+		    this._setBounds(col.daySepDivId, currentX-ZmCalDayTabView._TAB_BORDER_MARGIN, 0, ZmCalDayTabView._TAB_SEP_WIDTH-1, this._apptBodyDivHeight);
+        }
 
 		currentX += this._daySepWidth;
 	}
@@ -606,7 +608,7 @@ function() {
             for (k=0; k<this._calendars.length; k++) {
                 mergedCal = this._calendars[k];
                 calMergerdTabColor = mergedCal.rgb;
-                calName = AjxStringUtil.htmlEncode(AjxStringUtil.clipByLength(mergedCal.getName(), ZmCalDayTabView._TAB_TITLE_MAX_LENGTH));
+                calName = AjxStringUtil.clipByLength(mergedCal.getName(), ZmCalDayTabView._TAB_TITLE_MAX_LENGTH);
                 html.push('<td class=ZmCalDayTab style="background-color: ', calMergerdTabColor, ';" valign="top">');
                 html.push(calName);
                 html.push('</td>');
@@ -615,7 +617,7 @@ function() {
             html.push('</tr</table>');
             div.innerHTML = html.join("");
 		} else {
-            calName = AjxStringUtil.htmlEncode(AjxStringUtil.clipByLength(cal.getName(), ZmCalDayTabView._TAB_TITLE_MAX_LENGTH));
+            calName = AjxStringUtil.clipByLength(cal.getName(), ZmCalDayTabView._TAB_TITLE_MAX_LENGTH);
             div.style.top = ZmCalDayTabView._TAB_BORDER_WIDTH + 'px';
 			div.innerHTML = calName;
 		}

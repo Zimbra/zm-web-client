@@ -1877,6 +1877,13 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	font-weight:bold;
 }
 
+.calendar_heading_day_tab {
+    border:1px solid @DarkSeparatorColor@;
+    border-left: none;
+	@WidgetHeaderContainer-normal@
+	overflow:hidden;
+}
+
 /* Separator between all-day and hourly sections */
 .calendar_header_allday_separator {
 	@HSashSize@
