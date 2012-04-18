@@ -1789,6 +1789,7 @@ function(table, tagCellId) {
 	tagLabelCell.innerHTML = ZmMsg.tags + ":";
 	tagLabelCell.style.verticalAlign = "middle";
 	var tagCell = tagRow.insertCell(-1);
+	tagCell.id = tagCellId;
 	return tagCell;
 };
 
