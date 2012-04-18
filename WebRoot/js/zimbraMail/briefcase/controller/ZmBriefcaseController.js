@@ -491,8 +491,13 @@ function(results) {
 
 	this._setView({	view:		this._currentViewId,
 					viewType:	this._currentViewType,
+					noPush:		this.isSearchResults,
 					elements:	elements,
 					isAppView:	true});
+	if (this.isSearchResults) {
+		// if we are switching views, make sure app view mgr is up to date on search view's components
+		appCtxt.getAppViewMgr().setViewComponents(this.searchResultsController.getCurrentViewId(), elements, true);
+	}
 	this._resetNavToolBarButtons();
 };
 

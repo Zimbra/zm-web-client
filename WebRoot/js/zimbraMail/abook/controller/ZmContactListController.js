@@ -183,9 +183,14 @@ function(view, force, initialized, stageView) {
 
 		this._setView({ view:		view,
 						viewType:	this._currentViewType,
+						noPush:		this.isSearchResults,
 						elements:	elements,
 						isAppView:	true,
 						stageView:	stageView});
+		if (this.isSearchResults) {
+			// if we are switching views, make sure app view mgr is up to date on search view's components
+			appCtxt.getAppViewMgr().setViewComponents(this.searchResultsController.getCurrentViewId(), elements, true);
+		}
 		this._resetNavToolBarButtons();
 
 		// HACK: reset search toolbar icon (its a hack we're willing to live with)

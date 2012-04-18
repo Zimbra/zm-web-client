@@ -357,15 +357,18 @@ function(view, newTab) {
 	
 	this._doublePaneView.setReadingPane();
 
-	if (newTab) {
-		var tabId = Dwt.getNextId();
-	}
+	var tabId = newTab && Dwt.getNextId();
 	this._setView({ view:		view,
+					noPush:		this.isSearchResults,
 					viewType:	this._currentViewType,
 					elements:	elements,
 					hide:		this._elementsToHide,
 					tabParams:	newTab && this._getTabParams(tabId, this._tabCallback.bind(this)),
 					isAppView:	this._isTopLevelView()});
+	if (this.isSearchResults) {
+		// if we are switching views, make sure app view mgr is up to date on search view's components
+		appCtxt.getAppViewMgr().setViewComponents(this.searchResultsController.getCurrentViewId(), elements, true);
+	}
 	this._resetNavToolBarButtons(view);
 
 	if (newTab) {

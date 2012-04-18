@@ -172,8 +172,13 @@ function(results, folderId) {
 	
 	this._setView({ view:		viewId,
 					viewType:	this._currentViewType,
+					noPush:		this.isSearchResults,
 					elements:	elements,
 					isAppView:	true});
+	if (this.isSearchResults) {
+		// if we are switching views, make sure app view mgr is up to date on search view's components
+		appCtxt.getAppViewMgr().setViewComponents(this.searchResultsController.getCurrentViewId(), elements, true);
+	}
 
 	this._setTabGroup(this._tabGroups[viewId]);
 	this._resetNavToolBarButtons();
