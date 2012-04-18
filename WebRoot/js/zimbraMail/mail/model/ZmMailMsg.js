@@ -477,6 +477,7 @@ ZmMailMsg.prototype.setBodyParts =
 function(parts) {
 	this._onChange("bodyParts", parts);
 	this._bodyParts = parts;
+    this._loaded = this._bodyParts.length > 0 || this.attachments.length > 0;
 };
 
 /**
