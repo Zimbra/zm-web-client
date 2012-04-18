@@ -184,6 +184,7 @@ function(callback, errorCallback, batchCommand) {
 	var params = {
 		soapDoc: soapDoc,
 		sensitive: Boolean(this.password),
+        noAuthToken: Boolean(this.password),
 		asyncMode: Boolean(callback),
 		callback: respCallback,
 		errorCallback: errorCallback
