@@ -43,6 +43,7 @@ ZmConvView2 = function(params) {
 	}
 
 	this.addControlListener(this._scheduleResize.bind(this));
+	this._setAllowSelection();
 };
 
 ZmConvView2.prototype = new ZmMailItemView;
