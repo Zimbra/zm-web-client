@@ -816,13 +816,15 @@ function(task) {
 		clone.getDetails(mode, new AjxCallback(this, this._showTaskReadOnlyView, clone));
 	} else {
 		if (task.isRecurring()) {
+			/*recurring tasks not yet supported bug 23454
 			// prompt user to edit instance vs. series if recurring but not exception
-			if (task.isException) {
-				mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
-			} else {
-				this._showTypeDialog(task, ZmCalItem.MODE_EDIT);
-				return;
-			}
+			//if (task.isException) {
+			//	mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
+			//} else {
+			//	this._showTypeDialog(task, ZmCalItem.MODE_EDIT);
+			//	return;
+			/}*/
+			mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
 		}
         task.message = null; //null out message so we re-fetch task next time its opened
 		task.getDetails(mode, new AjxCallback(this, this._showTaskEditView, [task, mode]));
