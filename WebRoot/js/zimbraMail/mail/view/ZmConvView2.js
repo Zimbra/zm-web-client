@@ -278,9 +278,7 @@ function(scrollMsgView) {
 	DBG.println("cv2", "cv2 height = " + myHeight);
 	var headerSize = Dwt.getSize(document.getElementById(this._convHeaderId));
 	DBG.println("cv2", "header height = " + headerSize.y);
-	var replyHeight = this._replyView ? this._replyView.getSize().y : 0;
-	DBG.println("cv2", "reply view height = " + replyHeight);
-	var messagesHeight = myHeight - headerSize.y - replyHeight - 1;
+	var messagesHeight = myHeight - headerSize.y - 1;
 	DBG.println("cv2", "set message area height to " + messagesHeight);
 	Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, messagesHeight);
 
