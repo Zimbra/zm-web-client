@@ -758,6 +758,10 @@ function(msg, msgView, op) {
 	addresses[AjxEmailAddress.TO] = [];
 	var addrVec = msg.isSent ? msg.getAddresses(AjxEmailAddress.TO) : msg.getReplyAddresses(op);
 	this._addAddresses(addresses, AjxEmailAddress.TO, addrVec, used);
+	if (addresses[AjxEmailAddress.TO].length == 0) {
+		// try again without dropping user's address(es)
+		this._addAddresses(addresses, AjxEmailAddress.TO, addrVec);
+	}
 
 	if (op == ZmOperation.REPLY_ALL) {
 		addresses[AjxEmailAddress.CC] = [];
@@ -806,7 +810,9 @@ function(addresses, type, addrs, used) {
 			if (!used || !used[addr.address]) {
 				addresses[type].push(addr);
 			}
-			used[addr.address] = true;
+			if (used) {
+				used[addr.address] = true;
+			}
 		}
 	}
 };
