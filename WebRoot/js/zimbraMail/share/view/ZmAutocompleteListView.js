@@ -262,6 +262,11 @@ function(ev) {
 				result = false;
 			}
 		}
+		else if ((key == 9) && aclv._complete(element)) {
+			// a Tab following an address turns it into a bubble
+			result = true;
+		}
+		
 		aclv._inputLength[element.id] = element.value.length;
 		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYDOWN, element && element.id, [ev, aclv, result, element]);
 		// DBG.println("ac", ev.type.toUpperCase() + " cbResult: " + cbResult);
@@ -363,21 +368,8 @@ function(ev) {
 	}
 
 	// a Return following an address turns it into a bubble
-	if (key == 13 || key == 3) {
-		if (aclv._dataAPI.isComplete && aclv._dataAPI.isComplete(value)) {
-			DBG.println("ac", "got a Return, found an addr: " + value);
-			var result = aclv._parseInput(element)[0];
-			var context = {
-				element:	element,
-				str:		result.str,
-				isAddress:	true,
-				isComplete:	result.isComplete,
-				key:		aclv._getKey(result)
-			}
-			aclv._update(context);
-			aclv.reset(element);
-			return false;
-		}
+	if ((key == 13 || key == 3) && aclv._complete(element)) {
+		return false;
 	}
 
 	// skip if it's some weird character that didn't change the input
@@ -486,6 +478,33 @@ function(element) {
 
 	var results = this._parseInput(element);
 	this._process(results, element);
+};
+
+/**
+ * See if the text in the input is an address. If it is, complete it.
+ * 
+ * @param {Element}		element
+ * @return {boolean}	true if the value in the input was completed
+ */
+ZmAutocompleteListView.prototype._complete =
+function(element) {
+
+	var value = element.value;
+	if (this._dataAPI.isComplete && this._dataAPI.isComplete(value)) {
+		DBG.println("ac", "got a Return or Tab, found an addr: " + value);
+		var result = this._parseInput(element)[0];
+		var context = {
+			element:	element,
+			str:		result.str,
+			isAddress:	true,
+			isComplete:	result.isComplete,
+			key:		this._getKey(result)
+		}
+		this._update(context);
+		this.reset(element);
+		return true;
+	}
+	return false;
 };
 
 // Parses the content of the given input by splitting the text at delimiters. Returns a list of
