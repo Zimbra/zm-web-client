@@ -728,7 +728,7 @@
 		<span id='${fromId}'>${from}</span>
 		<span class='ZmConvListFragment'><$= data.fragment $></span>
 	</span>
-	<span class='date' id='${msgDateId}'>${date}</span>
+	<span class='date' id='${dateCellId}' title='${dateTooltip}'>${date}</span>
 </template>
 
 <template id='mail.Message#Conv2MsgHeader-expanded'>
@@ -753,7 +753,7 @@
 					<span class='LabelColValue' colspan=10><$= data.bwo $></span>
 				<$ } $>
 			</td>
-			<td style='white-space:nowrap;'>${date}</td>
+			<td style='white-space:nowrap;' id='${dateCellId}' title='${dateTooltip}'>${date}</td>
 		</tr>
 
 		<$ for (var i = 0; i < data.addressTypes.length; i++) { $>

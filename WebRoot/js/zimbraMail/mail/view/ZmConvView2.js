@@ -1561,7 +1561,12 @@ function(state, force) {
 	this._folderCellId = id + "_folderCell";
 	this._idToAddr = {};
 
-	var dateString = AjxDateUtil.computeDateStr(this._convView._now || new Date(), msg.sentDate || msg.date);
+	this._dateCellId = id + "_dateCell";
+	var date = msg.sentDate || msg.date;
+	var dateString = AjxDateUtil.computeDateStr(this._convView._now || new Date(), date);
+	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
+	this._fullDateString = dateFormatter.format(new Date(date));
+	var dateTooltip = this._browserToolTip ? this._fullDateString : "";
 	
 	this._readIconId = id + "_read";
 	var attrs = "id='" + this._readIconId + "' noToggle=1";
@@ -1576,7 +1581,9 @@ function(state, force) {
 			from:			ai.from,
 			fromId:			fromId,
 			fragment:		this._getFragment(),
-			date:			dateString
+			date:			dateString,
+			dateCellId:		this._dateCellId,
+			dateTooltip:	dateTooltip
 		};
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-collapsed", subs);
 	}
@@ -1612,7 +1619,9 @@ function(state, force) {
 			bwoAddr:		ai.bwoAddr,
 			addressTypes:	ai.addressTypes,
 			participants:	ai.participants,
-			date:			dateString
+			date:			dateString,
+			dateCellId:		this._dateCellId,
+			dateTooltip:	dateTooltip
 		};
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-expanded", subs);
 	}
@@ -1647,6 +1656,9 @@ function(ev) {
 		if (id == this._folderCellId) {
 			var folder = this._msg.folderId && appCtxt.getById(this._msg.folderId);
 			return folder && folder.getName();
+		}
+		else if (id == this._dateCellId) {
+			return this._fullDateString;
 		}
 		else {
 			var addr = this._idToAddr[id];
