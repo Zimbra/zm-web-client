@@ -547,10 +547,10 @@ function(id, content) {
         // General options
 		mode :  (this._mode == DwtHtmlEditor.HTML)? "exact" : "none",
 		elements:  id,
-        plugins : "autolink,advlist,inlinepopups,table,paste,directionality,emotions,media",
+        plugins : "autolink,advlist,inlinepopups,table,paste,directionality,media",
 		theme : "advanced",
-        theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,link,unlink,image",
-        theme_advanced_buttons2 : "formatselect,undo,redo,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,emotions,charmap,media,|,removeformat",
+        theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,link,unlink",
+        theme_advanced_buttons2 : "formatselect,undo,redo,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,image,charmap,media,|,removeformat",
 		theme_advanced_buttons3 : "",
 		theme_advanced_buttons4 : "",
 		theme_advanced_toolbar_location : "top",

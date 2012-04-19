@@ -116,10 +116,10 @@ var myEditor;
             <c:if test="${param.op eq 'reply' or param.op eq 'replyAll'}" >
                 auto_focus : "body",
             </c:if>
-            plugins : "autolink,advlist,inlinepopups,table,paste,directionality,emotions,media",
+            plugins : "autolink,advlist,inlinepopups,table,paste,directionality,media",
             theme : "advanced",
-            theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,link,unlink,image,|,spellchecker",
-            theme_advanced_buttons2 : "formatselect,undo,redo,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,emotions,charmap,media,|,removeformat",
+            theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,link,unlink,|,spellchecker",
+            theme_advanced_buttons2 : "formatselect,undo,redo,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,image,charmap,media,|,removeformat",
             theme_advanced_buttons3 : "",
             theme_advanced_buttons4 : "",
             theme_advanced_toolbar_location : "top",
