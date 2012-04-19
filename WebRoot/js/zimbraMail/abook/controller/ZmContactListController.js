@@ -822,7 +822,7 @@ function(parent, num) {
 			var isInTrash = folder && folder.isInTrash();
 			var canEdit = (folder == null || !folder.isReadOnly());
 
-			parent.enable([ZmOperation.CONTACTGROUP_MENU], (num > 0 && !appCtxt.isExternalAccount()));
+			parent.enable([ZmOperation.CONTACTGROUP_MENU, ZmOperation.NEW_MESSAGE], (num > 0 && !appCtxt.isExternalAccount()));
 			parent.enable([ZmOperation.TAG_MENU], canEdit && num > 0);
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU], canEdit && num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1 && !isInTrash);
@@ -843,7 +843,7 @@ function(parent, num) {
 	} else {
 		// gal contacts cannot be tagged/moved/deleted
 		parent.enableAll(false);
-		parent.enable([ZmOperation.CONTACTGROUP_MENU], (num > 0 && !appCtxt.isExternalAccount()));
+		parent.enable([ZmOperation.CONTACTGROUP_MENU, ZmOperation.NEW_MESSAGE], (num > 0 && !appCtxt.isExternalAccount()));
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
 		parent.enable(ZmOperation.NEW_MESSAGE, num > 0);
 		parent.enable(ZmOperation.CONTACT, num == 1);
