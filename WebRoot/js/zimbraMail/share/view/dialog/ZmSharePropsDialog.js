@@ -36,6 +36,7 @@ ZmSharePropsDialog = function(shell, className) {
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var params = {
 			dataClass:		appCtxt.getAutocompleter(),
+			options:		{massDLComplete:true},
 			matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
 			keyUpCallback:	this._acKeyUpListener.bind(this),
 			contextId:		this.toString()
