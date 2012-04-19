@@ -871,7 +871,9 @@ DIV.ZaSearchBuilderOptionRemoveAll TABLE  {
 
 .ZaToastBG {	@ToastContainer@	}
 
+#IFNDEF  MSIE
 TABLE {	border-collapse:separate;	}
+#ENDIF
 
 .oselect_display {
 	white-space:normal;
