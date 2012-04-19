@@ -2076,6 +2076,7 @@ function(parent, num) {
                         ],
                         false
                     );
+        parent.setItemVisible(ZmOperation.TAG_MENU, false);
     }
 
 	this._cleanupToolbar(parent);
