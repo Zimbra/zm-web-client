@@ -75,6 +75,11 @@ function(activeSearch, conv, parentController, callback, markRead) {
 	}
 };
 
+ZmConvController.prototype.supportsDnD =
+function() {
+	return false;
+};
+
 ZmConvController.prototype._handleResponseLoadConv =
 function(conv, callback, result) {
 
