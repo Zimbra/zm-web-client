@@ -350,12 +350,12 @@ function(){
 /**
  * Checks if the item has a given tag.
  * 
- * @param {String}		tagId		a numeric tag id to check
+ * @param {String}		tagName		tag name
  * @return	{Boolean}	<code>true</code> is this item has the given tag.
  */
 ZmItem.prototype.hasTag =
-function(tagId) {
-	return (this.tagHash[tagId] == true);
+function(tagName) {
+	return (this.tagHash[tagName] == true);
 };
 
 /**

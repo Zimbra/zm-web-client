@@ -82,7 +82,7 @@ function(parent, obj, tree, sorted, account) {
 	if (tag) { return tag; }
 
 	var params = {
-		id: obj.name, //yeah, let's ID it by the name
+		id: obj.id,
 		name: obj.name,
 		color: ZmTag.checkColor(obj.color),
 		rgb: obj.rgb,
@@ -94,6 +94,9 @@ function(parent, obj, tree, sorted, account) {
 	tag = new ZmTag(params);
 	var index = sorted ? ZmOrganizer.getSortIndex(tag, ZmTag.sortCompare) : null;
 	parent.children.add(tag, index);
+
+	var tagNameMap = parent.getTagNameMap();
+	tagNameMap[obj.name] = tag;
 
 	return tag;
 };
@@ -216,20 +219,17 @@ function() {
 	
 	return (this.id == ZmOrganizer.ID_ROOT) ? null : "Tag";
 };
-/**
- * return a serialized id to be used as part of ids in DOM elements, so we do not use the real id of the tags here since they are
- * tag names and slightly unsafe.
- */
-ZmTag.prototype.getDomId =
-function() {
-	if (this._domId) {
-		return this._domId;
-	}
-	ZmTag._domCount = (ZmTag._domCount || 0) + 1;
-	this._domId = "tag" + ZmTag._domCount;
-	return this._domId;
-};
 
+/**
+ * map from tag names to tags. used by getByNameOrRemote
+ */
+ZmTag.prototype.getTagNameMap =
+function() {
+	if (!this.tagNameMap) {
+		this.tagNameMap = {};
+	}
+	return this.tagNameMap;
+};
 
 /**
  * Creates a query for this tag.
@@ -257,6 +257,29 @@ function(obj) {
 	child._notify(ZmEvent.E_CREATE);
 };
 
+
+ZmTag.prototype.notifyModify =
+function(obj) {
+	if (obj.name) {
+		//this is a rename - update the tagNameMap
+		var oldName = this.name;
+		var nameMap = this.parent.getTagNameMap();
+		delete nameMap[oldName];
+		nameMap[obj.name] = this;
+		//we don't change the name on this ZmTag object here, it is done in ZmOrganizer.prototype.notifyModify
+	}
+	ZmOrganizer.prototype.notifyModify.call(this, obj);
+};
+
+
+ZmTag.prototype.notifyDelete =
+function() {
+	var nameMap = this.parent.getTagNameMap();
+	delete nameMap[this.name];  //remove from name map
+	
+	ZmOrganizer.prototype.notifyDelete.call(this);
+};
+
 /**
  * Checks if the tag supports sharing.
  * 
@@ -270,31 +293,13 @@ function() {
 
 ZmTag.prototype.getByNameOrRemote =
 function(name) {
-	var tag = this.getById(name);
+	var tagNameMap = this.getTagNameMap();
+	var tag = tagNameMap[name];
 	if (tag) {
 		return tag;
 	}
 	return ZmTag.createNotLocalTag(name);
 };
 
-/**
- * Renames the tag.
- *
- * @param	{String}	name		the new name
- * @param	{AjxCallback}	callback		the callback
- * @param	{AjxCallback}	errorCallback		the error callback
- * @param	{ZmBatchCommand}	batchCmd		the batch command
- */
-ZmTag.prototype.rename =
-function(name, callback, errorCallback, batchCmd) {
-	if (name == this.name) { return; }
-	var params = {
-		action: "rename",
-		attrs: {name: name}, //name is the new name. 
-		callback: callback,
-		errorCallback: errorCallback,
-		batchCmd: batchCmd
-	};
-	this._organizerAction(params);
-};
+
 

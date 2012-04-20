@@ -421,7 +421,8 @@ function(ev) {
 			continue;
 		}
 		var updateRequired = false;
-		if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
+		if (ev.event == ZmEvent.E_MODIFY && (fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]))) {
+			//rename could change the color (for remote shared items, from the remote gray icon to local color and vice versa)
 			updateRequired = item.tags.length == 1;
 		}
 		else if (ev.event == ZmEvent.E_DELETE) {

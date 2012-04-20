@@ -468,7 +468,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 					forceNotifySelection:	true,
 					dndScrollCallback:		this._overview && this._overview._dndScrollCallback,
 					dndScrollId:			this._overview && this._overview._scrollableContainerId,
-					id:						ZmId.getTreeItemId(this.overviewId, parentOrganizer.getDomId())
+					id:						ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
 				});
 				parentNode.setData(Dwt.KEY_ID, parentOrganizer.id);
 				parentNode.setData(Dwt.KEY_OBJECT, parentOrganizer);
@@ -489,7 +489,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 			dndScrollCallback:	this._overview && this._overview._dndScrollCallback,
 			dndScrollId:		this._overview && this._overview._scrollableContainerId,
 			imageInfo:			organizer.getIconWithColor(),
-			id:					ZmId.getTreeItemId(this.overviewId, organizer.getDomId())
+			id:					ZmId.getTreeItemId(this.overviewId, organizer.id)
 		};
 		// now add item
 		ti = new DwtTreeItem(params);

@@ -688,7 +688,7 @@ function(tagIds) {
 		// XXX: set proper class name for link once defined!
 		html[idx++] = "<a href='javascript:;' class='' onclick='ZmEditContactView._tagClicked(";
 		html[idx++] = '"';
-		html[idx++] = AjxStringUtil.encodeQuotes(tag.id);
+		html[idx++] = AjxStringUtil.encodeQuotes(tag.name);
 		html[idx++] = '"';
 		html[idx++] = "); return false;'>";
 		html[idx++] = AjxImg.getImageSpanHtml(icon, "vertical-align:middle; margin-right:4px", attr, AjxStringUtil.htmlEncode(tag.name), "inlineContactTagIcon");

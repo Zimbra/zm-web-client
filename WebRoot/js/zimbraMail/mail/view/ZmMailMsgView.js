@@ -1815,8 +1815,8 @@ function(msg, container) {
 ZmMailMsgView.prototype._getTagHtml =
 function(tag, html, i) {
 
-	var tagClick = ['ZmMailMsgView._tagClick("', this._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.id), '");'].join("");
-	var removeClick = ['ZmMailMsgView._removeTagClick("', this._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.id), '");'].join("");
+	var tagClick = ['ZmMailMsgView._tagClick("', this._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.name), '");'].join("");
+	var removeClick = ['ZmMailMsgView._removeTagClick("', this._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.name), '");'].join("");
 
 	html[i++] = "<span class='addrBubble TagBubble' ";
 	html[i++] = this._getTagAttrHtml(tag);

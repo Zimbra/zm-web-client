@@ -1190,6 +1190,8 @@ function(ev) {
 };
 
 /**
+ * this method is for handling changes in the tag tree itself (tag rename, delete). In some places it is named _tagChangeListener.
+ * the ZmListView equivalent is actually called ZmListView.prototype._tagChangeListener 
  * @private
  */
 ZmList.prototype._tagTreeChangeListener =
@@ -1201,6 +1203,8 @@ function(ev) {
 	var ctlr = appCtxt.getCurrentController();
 	if (!ctlr || (appCtxt.getCurrentList() != this)) { return; }
 
+	var a = this.getArray();
+
 	if ((ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME]) {
 		// on tag rename, update current query if tag is part of query
 		var oldName = ev.getDetail("oldName");
@@ -1208,14 +1212,40 @@ function(ev) {
 			ctlr._currentSearch.replaceTagTerm(oldName, tag.getName());
 			appCtxt.getSearchController().setSearchField(ctlr._currentSearch.query);
 		}
+
+		//since we tag (and map the tags) by name, replace the tag name in the list and hash of tags.
+		var newName = tag.name;
+		for (var i = 0; i < a.length; i++) {
+			var item = a[i]; //not using the following here as it didn't seem to work for contacts, the list is !isCanonical and null is returned, even though a[i] is fine ==> this.getById(a[i].id); // make sure item is realized (contact may not be)
+			if (!item || !item.hasTag(oldName)) {
+				continue; //nothing to do if item does not have tag
+			}
+			if (item.isShared()) {
+				continue; //overview tag rename does not affect remote items tags
+			}
+			var tagHash = item.tagHash;
+			var tags = item.tags;
+			delete tagHash[oldName];
+			tagHash[newName] = true;
+			for (var j = 0 ; j < tags.length; j++) {
+				if (tags[j] == oldName) {
+					tags[j] = newName;
+					break;
+				}
+			}
+		}
+
+
 	} else if (ev.event == ZmEvent.E_DELETE) {
 		// Remove tag from any items that have it
-		var a = this.getArray();
 		var hasTagListener = this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY);
 		for (var i = 0; i < a.length; i++) {
 			var item = this.getById(a[i].id);	// make sure item is realized (contact may not be)
-			if (item && item.hasTag(tag.id)) {
-				item.tagLocal(tag.id, false);
+			if (item.isShared()) {
+				continue; //overview tag delete does not affect remote items tags
+			}
+			if (item && item.hasTag(tag.name)) {
+				item.tagLocal(tag.name, false);
 				if (hasTagListener) {
 					this._notify(ZmEvent.E_TAGS, {items:[item]});
 				}

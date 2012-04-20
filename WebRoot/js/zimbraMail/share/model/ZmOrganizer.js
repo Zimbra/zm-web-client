@@ -1926,14 +1926,6 @@ function() {
 	return this.owner || (this.parent && this.parent.getOwner()) || appCtxt.get(ZmSetting.USERNAME);
 };
 
-/**
- * return the id to be used as part of DOM ids. This is overriden in ZmTag since the ID there is the name and we
- * replace it with a serial ID for use in the DOM.
- */
-ZmOrganizer.prototype.getDomId =
-function() {
-	return this.id;
-};
 
 
 /**
@@ -1972,14 +1964,7 @@ function(params) {
 	var soapDoc = AjxSoapDoc.create(cmd + "Request", "urn:zimbraMail");
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("op", params.action);
-	if (this.isZmTag) {
-		var tn = params.name || this.name;
-		tn = tn.replace(/,/g, "\\,"); //escape comma in tag name (since the server for some reason supports a comma separated list of tag names. I don't think there's a real client use case for that.
-		actionNode.setAttribute("tn", tn);
-	}
-	else {
-		actionNode.setAttribute("id", params.id || this.id);
-	}
+	actionNode.setAttribute("id", params.id || this.id);
 	for (var attr in params.attrs) {
 		if (AjxEnv.isIE) {
 			params.attrs[attr] += ""; //To string
