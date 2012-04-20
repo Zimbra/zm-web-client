@@ -30,3 +30,4 @@ AjxPackage.require("zimbraMail.briefcase.view.dialog.ZmBriefcaseTabView");
 AjxPackage.require("zimbraMail.briefcase.view.dialog.ZmCheckinDialog");
 AjxPackage.require("zimbraMail.briefcase.controller.ZmBriefcaseController");
 AjxPackage.require("zimbraMail.briefcase.controller.ZmBriefcaseTreeController");
+AjxPackage.require("ajax.util.AjxPluginDetector");
