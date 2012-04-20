@@ -2203,6 +2203,7 @@ function(appt, mode) {
 
 ZmCalViewController.prototype._showQuickAddDialog =
 function(appt, shiftKey) {
+    if(appCtxt.isExternalAccount()) { return; }
 	// find out if we really should display the quick add dialog
 	var useQuickAdd = appCtxt.get(ZmSetting.CAL_USE_QUICK_ADD);
 	if ((useQuickAdd && !shiftKey) || (!useQuickAdd && shiftKey)) {
@@ -3263,7 +3264,7 @@ function(appt, actionMenu) {
 	var workflow = share ? share.isWorkflow() : true;
     var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;
 	var isPrivate = appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
-	var enabled = !isOrganizer && workflow && !isPrivate;
+	var enabled = !isOrganizer && workflow && !isPrivate && !appCtxt.isExternalAccount();
     var isReplyable = !isTrash && appt.otherAttendees;
 	var isForwardable = !isTrash && calendar && !calendar.isReadOnly() && appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED);
 
@@ -3273,6 +3274,7 @@ function(appt, actionMenu) {
     actionMenu.setItemVisible(ZmOperation.INVITE_REPLY_MENU, !isOrganizer);
     actionMenu.setItemVisible(ZmOperation.PROPOSE_NEW_TIME,  !isOrganizer);
     actionMenu.setItemVisible(ZmOperation.REINVITE_ATTENDEES, isOrganizer && !appt.inviteNeverSent && appt.otherAttendees);
+    actionMenu.setItemVisible(ZmOperation.TAG_MENU, !appCtxt.isExternalAccount());
 
 	// reply action menu
     if (!isOrganizer) {
@@ -3285,6 +3287,11 @@ function(appt, actionMenu) {
     actionMenu.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
 	actionMenu.enable(ZmOperation.REPLY, isReplyable && !isOrganizer);
 	actionMenu.enable(ZmOperation.REPLY_ALL, isReplyable);
+    if(appCtxt.isExternalAccount()) {
+	    actionMenu.enable(ZmOperation.PROPOSE_NEW_TIME, false);
+        actionMenu.enable(ZmOperation.REPLY, false);
+	    actionMenu.enable(ZmOperation.REPLY_ALL, false);
+    }
 
 	// edit reply menu
 	if (enabled) {
