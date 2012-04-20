@@ -326,7 +326,7 @@ ZmMainSearchToolBar.CUSTOM_BUTTON 		= "CUSTOM";				// button ID
 
 ZmMainSearchToolBar.prototype._createHtml =
 function() {
-
+    var isExternalAccount = appCtxt.isExternalAccount()
 	this.getHtmlElement().innerHTML = AjxTemplate.expand(this.TEMPLATE, {id:this._htmlElId});
 
 	// add search input field
@@ -340,6 +340,9 @@ function() {
 		this._searchField._showHint();
 		this._searchField.addListener(DwtEvent.ONFOCUS, this._onInputFocus.bind(this));
 		this._searchField.addListener(DwtEvent.ONBLUR, this._onInputBlur.bind(this));
+        if(isExternalAccount) {
+            this._searchField.setEnabled(false);
+        }
 	}
 
 	// add "search types" menu
@@ -357,6 +360,9 @@ function() {
 		var menu = new AjxCallback(this, this._createSearchMenu);
 		button.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 		button.reparentHtmlElement(searchMenuBtnId);
+        if(isExternalAccount) {
+            button.setEnabled(false);
+        }
 	}
 
 	// add search button
@@ -381,6 +387,10 @@ function() {
 				icon:		"Save",
 				type:		"toolbar",
 				tooltip:	ZmMsg.saveSearchTooltip });
+    if(isExternalAccount) {
+        if(this._button[ZmSearchToolBar.SEARCH_BUTTON]) this._button[ZmSearchToolBar.SEARCH_BUTTON].setEnabled(false);
+        if(this._button[ZmSearchToolBar.SAVE_BUTTON]) this._button[ZmSearchToolBar.SAVE_BUTTON].setEnabled(false);
+    }
 };
 
 ZmMainSearchToolBar.prototype._createSearchMenu =
