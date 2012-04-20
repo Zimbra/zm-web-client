@@ -1183,6 +1183,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	position:relative !important;
 	margin:0 2px 2px 1px;
 	display:inline-block;
+	white-space:nowrap;
 	@roundCorners(8px)@
 }
 
