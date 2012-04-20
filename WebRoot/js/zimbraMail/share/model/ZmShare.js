@@ -780,7 +780,7 @@ function(mode, addrs, owner) {
 	var textPart = parts.get(0);
 	var htmlPart = parts.get(1);
 	var xmlPart = parts.get(2);
-	msg.setBodyParts([ textPart.node, htmlPart.node, xmlPart.node ]);
+	msg.setBodyParts([ textPart, htmlPart, xmlPart ]);
 	AjxDispatcher.run("Compose", {action: ZmOperation.SHARE, inNewWindow: true, msg: msg});
 };
 
