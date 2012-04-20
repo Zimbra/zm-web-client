@@ -514,7 +514,9 @@ function(columnItem, bSortAsc) {
 
     if (sortBy) {
 		this._sortByString = sortBy;
-		appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
+        if (!appCtxt.isExternalAccount()) {
+		    appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
+        }
 	}
 
 	var list = this.getList();

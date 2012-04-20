@@ -136,7 +136,7 @@ function(list, sortField) {
 
 	this._sortByString = this._controller._currentSearch && this._controller._currentSearch.sortBy;
     var settings = appCtxt.getSettings();
-	if(this.view && ( settings && settings.persistImplicitSortPrefs(this.view) ) )
+	if(!appCtxt.isExternalAccount() && this.view && ( settings && settings.persistImplicitSortPrefs(this.view) ) )
         appCtxt.set(ZmSetting.SORTING_PREF, this._sortByString, this.view);
 
 	this.setSelectionHdrCbox(false);
@@ -1244,7 +1244,9 @@ function() {
 	}
 	var value = fields.join(ZmListView.COL_JOIN);
 	value = (value == this._defaultCols) ? "" : value;
-	appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, value, this.view);
+    if (!appCtxt.isExternalAccount()) {
+	    appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, value, this.view);
+    }
 
 	this._getActionMenuForColHeader(true); // re-create action menu so order is correct
 };
