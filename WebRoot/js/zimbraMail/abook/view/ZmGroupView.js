@@ -817,6 +817,9 @@ function() {
 		if (folderOrId && folderOrId.type != ZmOrganizer.ADDRBOOK) {
 			folderOrId = null;
 		}
+		if (!this.isDistributionList() && folderOrId && folderOrId.id && folderOrId.id == ZmFolder.ID_DLS) { //can't create under Distribution Lists virtual folder
+			folderOrId = null;
+		}
 	}
 
 	this._setLocationFolder(folderOrId);
