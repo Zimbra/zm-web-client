@@ -1369,9 +1369,10 @@ function() {
 		}
 	}
 
-	if (this._expanded)
+	if (this._expanded) {
 		// create bubbles
 		this._notifyZimletsNewMsg(this._msg);
+	}
 
 	this._resetIframeHeightOnTimer();
 };
@@ -1422,7 +1423,7 @@ function(ev) {
 		for (var j = 0; j < flags.length; j++) {
 			var flag = flags[j];
 			if (flag == ZmItem.FLAG_UNREAD) {
-				this._header.set(null, true);
+				this._header._setReadIcon();
 				this._header._setHeaderClass();
 				this._convView._setConvInfo();
 			}
@@ -1554,6 +1555,7 @@ function(state, force) {
 	if (!force && state == this._state) { return; }
 	var beenHere = !!this._state;
 	state = this._state = state || this._state;
+	var isExpanded = (state == ZmMailMsgCapsuleViewHeader.EXPANDED);
 	
 	var id = this._htmlElId;
 	var msg = this._msg;
@@ -1573,15 +1575,14 @@ function(state, force) {
 	var dateTooltip = this._browserToolTip ? this._fullDateString : "";
 	
 	this._readIconId = id + "_read";
-	var attrs = "id='" + this._readIconId + "' noToggle=1";
-	var readIcon = AjxImg.getImageHtml(msg.getReadIcon(), "display:inline-block", attrs);
+	this._readCellId = id + "_readCell";
 
 	var subs, html;
-	if (state == ZmMailMsgCapsuleViewHeader.COLLAPSED) {
+	if (!isExpanded) {
 		var fromId = id + "_0";
 		this._idToAddr[fromId] = ai.fromAddr;
 		subs = {
-			readIcon:		readIcon,
+			readCellId:		this._readCellId,
 			from:			ai.from,
 			fromId:			fromId,
 			fragment:		this._getFragment(),
@@ -1591,7 +1592,7 @@ function(state, force) {
 		};
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-collapsed", subs);
 	}
-	else if (state == ZmMailMsgCapsuleViewHeader.EXPANDED) {
+	else {
 		var folder = this._msg.folderId && appCtxt.getById(this._msg.folderId);
 		if (folder) {
 			var title = this._browserToolTip ? "title='" + folder.getName() + "'" : "";
@@ -1614,7 +1615,7 @@ function(state, force) {
 		
 		subs = {
 			hdrTableId:		hdrTableId,
-			readIcon:		readIcon,
+			readCellId:		this._readCellId,
 			sentBy:			ai.sentBy,
 			sentByAddr:		ai.sentByAddr,
 			obo:			ai.obo,
@@ -1632,10 +1633,7 @@ function(state, force) {
 
 	this.setContent(html);
 	
-	var readIcon = document.getElementById(this._readIconId);
-	if (readIcon) {
-		Dwt.setHandler(readIcon, DwtEvent.ONMOUSEDOWN, this._handleMarkRead.bind(this));
-	}
+	this._setReadIcon();
 	
 	for (var id in this._showMoreIds) {
 		var showMoreLink = document.getElementById(id);
@@ -1695,6 +1693,21 @@ function() {
 	}
 	if (msg.isUnread && !msg.isMute)	{ classes.push("Unread"); }
 	this.setClassName(classes.join(" "));
+};
+
+// Set the ball icon to show read or unread
+ZmMailMsgCapsuleViewHeader.prototype._setReadIcon =
+function() {
+	var readCell = document.getElementById(this._readCellId);
+	if (readCell) {
+		var isExpanded = (this._state == ZmMailMsgCapsuleViewHeader.EXPANDED);
+		var attrs = "id='" + this._readIconId + "' noToggle=1";
+		readCell.innerHTML = AjxImg.getImageHtml(this._msg.getReadIcon(), isExpanded ? null : "display:inline-block", attrs);
+	}
+	var readIcon = document.getElementById(this._readIconId);
+	if (readIcon) {
+		Dwt.setHandler(readIcon, DwtEvent.ONMOUSEDOWN, this._handleMarkRead.bind(this));
+	}
 };
 
 ZmMailMsgCapsuleViewHeader.prototype._getFragment =

@@ -723,7 +723,7 @@
 </template>
 
 <template id='mail.Message#Conv2MsgHeader-collapsed'>
-	${readIcon}
+	<span id='${readCellId}'></span>
 	<span class='info'>
 		<span id='${fromId}'>${from}</span>
 		<span class='ZmConvListFragment'><$= data.fragment $></span>
@@ -734,7 +734,7 @@
 <template id='mail.Message#Conv2MsgHeader-expanded'>
 	<table id='${hdrTableId}'>
 		<tr>
-			<td>${readIcon}</td>
+			<td id='${readCellId}'></td>
 			<td class='LabelColName'><$= ZmMsg.fromLabel $></td>
 			<td class='LabelColValue'>
 				<span>${sentBy}</span>
