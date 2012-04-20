@@ -543,10 +543,10 @@ function(ev) {
 			Dwt.scrollIntoView(msgView.getHtmlElement(), this._messagesDiv);
 		}
 	}
-	else if (ev.event == ZmEvent.E_MOVE) {
+	else {
 		var msgView = this._msgViews[msg.id];
 		if (msgView) {
-			ZmMailMsgCapsuleView.prototype._msgChangeListener.apply(msgView, arguments);
+			return msgView._handleChange(ev);
 		}
 	}
 };
@@ -926,7 +926,6 @@ function(msg, container, callback) {
 	else {
 		this._header.set(ZmMailMsgCapsuleViewHeader.COLLAPSED);
 	}
-	msg.addChangeListener(this._changeListener);
 };
 
 /**
@@ -1412,7 +1411,12 @@ function() {
 	return this.parent._isStandalone();
 };
 
-ZmMailMsgCapsuleView.prototype._msgChangeListener =
+// No-op parent change listener. We rely on list change listener.
+ZmMailMsgCapsuleView.prototype._msgChangeListener = function(ev) {};
+
+// Handle changes internally, without using ZmMailMsgView's change listener (it assumes a single
+// msg displayed in reading pane).
+ZmMailMsgCapsuleView.prototype._handleChange =
 function(ev) {
 
 	if (ev.type != ZmEvent.S_MSG) { return; }
@@ -1436,11 +1440,8 @@ function(ev) {
 	else if (ev.event == ZmEvent.E_MOVE) {
 		this._changeFolderName(ev.getDetail("oldFolderId"));
 	}
-	else if (ev.event == ZmEvent.E_MODIFY) {
-		// eat MODIFY since parent class does a re-render
-	}
-	else {
-		ZmMailMsgView.prototype._msgChangeListener.apply(this, arguments);
+	else if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
+		this._setTags(this._msg);
 	}
 };
 

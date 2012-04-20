@@ -339,25 +339,16 @@ function(ev) {
 					var msg = item.getFirstHotMsg();
 					item = msg || item;
 				}
-				var respCallback = this._handleResponseListSelectionListener.bind(this, item);
 				if (item.type == ZmItem.MSG) {
-					AjxDispatcher.run("GetMsgController", item && item.nId).show(item, this, respCallback, true);
+					AjxDispatcher.run("GetMsgController", item && item.nId).show(item, this, null, true);
 				} else {
-					AjxDispatcher.run("GetConvController").show(this._activeSearch, item, this, respCallback, true);
+					AjxDispatcher.run("GetConvController").show(this._activeSearch, item, this, null, true);
 				}
 				return true;
 			}
 		}
 	}
 	return false;
-};
-
-ZmConvListController.prototype._handleResponseListSelectionListener =
-function(item) {
-	// make sure correct msg is displayed in msg pane when user returns
-	if (this.isReadingPaneOn()) {
-		this._setSelectedItem();
-	}
 };
 
 ZmConvListController.prototype._setSelectedItem =
