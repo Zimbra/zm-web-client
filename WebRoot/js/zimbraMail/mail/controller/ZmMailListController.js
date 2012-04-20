@@ -1188,7 +1188,7 @@ function(msg) {
 	if (msg.isUnread) {
 		var folder = appCtxt.getById(msg.folderId);
 		var readOnly = folder && folder.isReadOnly();
-		if (!readOnly) {
+		if (!readOnly && !appCtxt.isExternalAccount()) {
 			var markRead = appCtxt.get(ZmSetting.MARK_MSG_READ);
 			if (markRead == ZmSetting.MARK_READ_NOW) {
 				// msg was cached as unread, mark it read now

@@ -482,6 +482,9 @@ function(pathOnly) {
 		path = name + "/" + path;
 		f = f.parent;
 	}
+    if (appCtxt.isExternalAccount() && path.indexOf("/") !== 0) {
+        path = "/" + path;
+    }
 	path = '"' + path + '"';
 	return pathOnly ? path : ("in:" + path);
 };
