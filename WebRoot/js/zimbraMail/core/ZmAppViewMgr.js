@@ -1216,7 +1216,7 @@ function(viewId, show) {
 			var oldComp = this.getViewComponent(cid, this._lastViewId);
 			var comp = this.getViewComponent(cid, viewId);
 			// bug 67499 - make sure any components left over from previous views are hidden
-			if (oldComp && comp && oldComp != comp) {
+			if (oldComp && (oldComp != comp)) {
 				this.showComponent(cid, false, oldComp);
 			}
 			if (comp && !this.isHidden(cid, viewId)) {
