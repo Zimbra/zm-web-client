@@ -62,18 +62,18 @@ function(conv, force) {
 	
 	this.reset(conv != null);
 	this._item = conv;
-	if (!conv) { return; }
 
-	this._initialize();
-	conv.addChangeListener(this._convChangeListener.bind(this));
-	
-	this._noResults = false;
 	if (!conv) {
 		this.getHtmlElement().innerHTML = AjxTemplate.expand("mail.Message#viewMessage", {isConv:true});
 		this.noTab = true;
 		this._noResults = true;
 		return;
 	}
+
+	this._initialize();
+	conv.addChangeListener(this._convChangeListener.bind(this));
+	
+	this._noResults = false;
 	this._renderConv(conv);
 	if (conv.msgs) {
 		conv.msgs.addChangeListener(this._listChangeListener);
