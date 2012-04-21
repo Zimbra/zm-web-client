@@ -120,6 +120,9 @@ function() {
 	
 	var addrBooks = this._getAddressBooks();
 	for (var i=0; i<addrBooks.length; i++) {
+		if (addrBooks[i].id == ZmFolder.ID_DLS) {
+			continue;
+		}
 		var selectOption = new DwtSelectOption(addrBooks[i].nId, false, addrBooks[i].name);
 		select.addOption(selectOption);	
 	}
