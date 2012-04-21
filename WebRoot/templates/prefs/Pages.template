@@ -2681,7 +2681,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                                                <td colspan="3">
                                                <table>
                                                 <tr>
-                                                <td align="right"><b><$=ZmMsg.calendarLabel$></b></td>
+                                                <td align="right"><$=ZmMsg.calendarLabel$></td>
                                                 <td class='ZOptionsField' valign="top">
                                                 <table>
                                                 <tr>
