@@ -61,6 +61,7 @@ function(share) {
 	this._share = share;
 
 	var isPubShare = share.isPublic();
+	var isGuestShare = share.isGuest();
 	var isAllShare = share.grantee && (share.grantee.type == ZmShare.TYPE_ALL);
 
 	var params = isPubShare ? ZmMsg.shareWithPublic : isAllShare ? ZmMsg.shareWithAll :
@@ -70,6 +71,13 @@ function(share) {
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
 	this._reply.setVisible(!isPubShare && !isAllShare);
+
+    if (isGuestShare) {
+        this._reply.setReplyOptions(ZmShareReply.EXTERNAL_USER_OPTIONS);
+    }
+    else {
+        this._reply.setReplyOptions(ZmShareReply.DEFAULT_OPTIONS);
+    }
 
 	DwtDialog.prototype.popup.call(this);
 	this.setButtonEnabled(DwtDialog.YES_BUTTON, true);

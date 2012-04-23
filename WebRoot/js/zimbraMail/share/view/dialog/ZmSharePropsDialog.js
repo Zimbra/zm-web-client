@@ -581,7 +581,12 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
 	this._rolesGroup.setVisible(isUserShare);
 	this._messageGroup.setVisible(!isPublicShare);
 	this._privatePermission.setVisible(this._privatePermissionEnabled && !isPublicShare);
-
+    if (isGuestShare) {
+        this._reply && this._reply.setReplyOptions(ZmShareReply.EXTERNAL_USER_OPTIONS);
+    }
+    else {
+        this._reply && this._reply.setReplyOptions(ZmShareReply.DEFAULT_OPTIONS);
+    }
 	this._props.setPropertyVisible(this._shareWithOptsId, !isPublicShare);
 	//this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
 	this._props.setPropertyVisible(this._shareWithBreakId, !isPublicShare);

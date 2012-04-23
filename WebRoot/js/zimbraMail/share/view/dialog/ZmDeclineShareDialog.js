@@ -65,13 +65,19 @@ ZmDeclineShareDialog.prototype.constructor = ZmDeclineShareDialog;
 ZmDeclineShareDialog.prototype.popup =
 function(share, fromAddr) {
 	this._share = share;
+    var isGuestShare = share.isGuest();
 	this._fromAddr = fromAddr;
 	var message = this._formatter.format([share.grantor.name, share.link.name]);
 	this._confirmMsgEl.innerHTML = AjxStringUtil.htmlEncode(message);
 
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
-
+    if (isGuestShare) {
+        this._reply.setReplyOptions(ZmShareReply.EXTERNAL_USER_OPTIONS);
+    }
+    else {
+        this._reply.setReplyOptions(ZmShareReply.DEFAULT_OPTIONS);
+    }
 	DwtDialog.prototype.popup.call(this);
 };
 

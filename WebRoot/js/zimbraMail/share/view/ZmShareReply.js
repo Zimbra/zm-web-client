@@ -61,6 +61,10 @@ ZmShareReply.DEFAULT_OPTIONS = [
 	ZmShareReply.NONE, ZmShareReply.STANDARD, ZmShareReply.QUICK, ZmShareReply.COMPOSE
 ];
 
+ZmShareReply.EXTERNAL_USER_OPTIONS = [
+	ZmShareReply.STANDARD, ZmShareReply.QUICK
+];
+
 ZmShareReply._LABELS = {};
 ZmShareReply._LABELS[ZmShareReply.NONE]		= ZmMsg.sendNoMailAboutShare;
 ZmShareReply._LABELS[ZmShareReply.STANDARD] = ZmMsg.sendStandardMailAboutShare;
