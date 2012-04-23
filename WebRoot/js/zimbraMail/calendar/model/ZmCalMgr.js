@@ -149,6 +149,7 @@ function(ev) {
 
 ZmCalMgr.prototype._miniCalActionListener =
 function(ev) {
+    if (appCtxt.isExternalAccount()) { return; }
 	var mm = this._getMiniCalActionMenu();
 	mm.__detail = ev.detail;
 	mm.popup(0, ev.docX, ev.docY);
