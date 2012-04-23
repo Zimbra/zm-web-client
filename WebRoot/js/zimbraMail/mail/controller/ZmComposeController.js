@@ -1547,7 +1547,14 @@ function() {
 
 // Attachment button was pressed
 ZmComposeController.prototype._attachmentListener =
-function(ev) {
+function(isInline) {
+
+    var view = this._composeView,
+        fileInputElement;
+
+    if (isInline && AjxEnv.supportsHTML5File && !view._attcBtnInlineFileInpId) {
+        view.collapseAttMenu();//This will create the attach menu options
+    }
 
 	if (!this._detachOkCancel) {
 		// detach ok/cancel dialog is only necessary if user clicked on the add attachments button
@@ -1555,9 +1562,17 @@ function(ev) {
 		this._detachOkCancel.setMessage(ZmMsg.detachAnyway, DwtMessageDialog.WARNING_STYLE);
 		this._detachOkCancel.registerCallback(DwtDialog.OK_BUTTON, this._detachCallback, this);
 	}
-    var view = this._composeView;
-    if (view._attcBtnFileInpId) {
-        var fileInputElement = document.getElementById(view._attcBtnFileInpId);
+    if (AjxEnv.supportsHTML5File) {
+        if (isInline) {
+            if (view._attcBtnInlineFileInpId) {
+                fileInputElement = document.getElementById(view._attcBtnInlineFileInpId);
+            }
+        }
+        else {
+            if (view._attcBtnFileInpId) {
+                fileInputElement = document.getElementById(view._attcBtnFileInpId);
+            }
+        }
         if (fileInputElement && fileInputElement.click) {
             try {
                 fileInputElement.click();

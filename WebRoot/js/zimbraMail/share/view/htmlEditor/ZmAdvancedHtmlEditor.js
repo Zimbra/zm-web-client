@@ -507,10 +507,6 @@ function(id, content) {
         obj._handlePopup(ed);
 	};
 
-    function onInsertImage(ev) {
-        ZmSignatureEditor.prototype._insertImagesListener.call(obj, ev);
-    };
-
 	var urlParts = AjxStringUtil.parseURL(location.href);
 
 	//important: tinymce doesn't handle url parsing well when loaded from REST URL - override baseURL/baseURI to fix this
@@ -549,8 +545,8 @@ function(id, content) {
 		elements:  id,
         plugins : "autolink,advlist,inlinepopups,table,paste,directionality,media",
 		theme : "advanced",
-        theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,link,unlink",
-        theme_advanced_buttons2 : "formatselect,undo,redo,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,image,charmap,media,|,removeformat",
+        theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,link,image",
+        theme_advanced_buttons2 : "formatselect,undo,redo,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,image,charmap,media,|,unlink,removeformat",
 		theme_advanced_buttons3 : "",
 		theme_advanced_buttons4 : "",
 		theme_advanced_toolbar_location : "top",
@@ -575,12 +571,7 @@ function(id, content) {
 			ed.onInit.add(onTinyMCEEditorInit);
             ed.onKeyDown.add(obj._handleEditorKeyEvent.bind(obj));
             ed.onPaste.add(obj.onPaste.bind(obj));
-            //Adding Insert image button for uploading the insert image for signature alone
-            ed.addButton('zmimage', {
-                title : ZmMsg.insertImage,
-                "class" : "mce_ImgInsertImage",
-                onclick : onInsertImage
-            });
+            ed.onBeforeExecCommand.add(obj.onBeforeExecCommand.bind(obj));
             //Adding toggle button for showing/hiding the extended toolbar
             ed.addButton('toggle', {
                 title : ZmMsg.showExtendedToolbar,
@@ -590,9 +581,6 @@ function(id, content) {
 		}
     }
 
-    if( obj.isSignatureEditor ){
-       tinyMCEInitObj.theme_advanced_buttons1 = tinyMCEInitObj.theme_advanced_buttons1 + ",zmimage";
-    }
     if(appCtxt.get(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS)){
         tinyMCEInitObj.theme_advanced_buttons1 = tinyMCEInitObj.theme_advanced_buttons1 + ",|,ltr,rtl";
     }
@@ -693,6 +681,32 @@ ZmAdvancedHtmlEditor.prototype.onPostRender = function(ed, ev) {
     this.setSize("", parseInt(this.getContentField().style.height) + ZmAdvancedHtmlEditor.DELTA_HEIGHT);
     this.onToolbarToggle();
     Dwt.setVisible(this.getHtmlElement(), true);
+};
+
+/*
+**   TinyMCE will fire onBeforeExecCommand before executing all commands
+ */
+ZmAdvancedHtmlEditor.prototype.onBeforeExecCommand = function(ed, cmd, ui, val, o) {
+    if (cmd === "mceImage") {
+        this.onBeforeInsertImage(ed, cmd, ui, val, o);
+    }
+};
+
+ZmAdvancedHtmlEditor.prototype.onBeforeInsertImage = function(ed, cmd, ui, val, o) {
+    var element = ed.selection.getNode();
+    if (!element || element.nodeName !== 'IMG') {
+        if (this.isSignatureEditor) {
+            ZmSignatureEditor.prototype._insertImagesListener.call(this);
+            o.terminate = true; //This will terminate tinymce from executing this command
+        }
+        else {
+            var view = this.getParent();
+            if (view && view.toString() === "ZmComposeView") {
+                view.getController()._attachmentListener(true);
+                o.terminate = true;
+            }
+        }
+    }
 };
 
 ZmAdvancedHtmlEditor.prototype.setMode = function (mode, convert, convertor) {

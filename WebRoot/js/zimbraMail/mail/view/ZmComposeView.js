@@ -2842,7 +2842,7 @@ function(templateId, data) {
             fileInputId : ZmId.getViewId(this._view, ZmId.CMP_ATT_INP)
         };
         node.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentAttachBtn", newData);
-        this._attcBtnFileInpId = data.fileInputId;
+        this._attcBtnFileInpId = newData.fileInputId;
     } else {
              this._attButton._textEl.onclick = function(event){
                 var curView = appCtxt.getAppViewMgr().getCurrentView();
@@ -3122,7 +3122,11 @@ function() {
     if (AjxEnv.supportsHTML5File){
         div = document.createElement("DIV");
         var mi = this._createAttachMenuItem(menu, ZmMsg.attachInline);
-        div.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentMyComputer");
+        var data = {
+            inlineFileInputId : ZmId.getViewId(this._view, ZmId.CMP_ATT_INLINE_INP)
+        };
+        this._attcBtnInlineFileInpId = data.inlineFileInputId;
+        div.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentMyComputer", data);
         var fromElement = div.firstChild;
         fromElement.firstChild.style.top = "22px";
         fromElement.firstChild.isInline = true;
