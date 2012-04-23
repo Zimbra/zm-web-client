@@ -164,14 +164,17 @@ ZmBaseController.prototype.handleKeyAction =
 function(actionCode, ev) {
 
 	DBG.println(AjxDebug.DBG3, "ZmBaseController.handleKeyAction");
+    var isExternalAccount = appCtxt.isExternalAccount();
 
 	switch (actionCode) {
 
 		case ZmKeyMap.FLAG:
+            if (isExternalAccount) { break; }
 			this._doFlag(this.getItems());
 			break;
 
 		case ZmKeyMap.MOVE:
+            if (isExternalAccount) { break; }
 			if (!appCtxt.isChildWindow) {
 				this._moveListener();
 			}
@@ -184,6 +187,7 @@ function(actionCode, ev) {
 			break;
 
 		case ZmKeyMap.TAG:
+            if (isExternalAccount) { break; }
 			var items = this.getItems();
 			if (items && items.length && (appCtxt.getTagTree().size() > 0)) {
 				var dlg = appCtxt.getPickTagDialog();
@@ -192,6 +196,7 @@ function(actionCode, ev) {
 			break;
 
 		case ZmKeyMap.UNTAG:
+            if (isExternalAccount) { break; }
 			if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 				var items = this.getItems();
 				if (items && items.length) {

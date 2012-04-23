@@ -276,7 +276,7 @@ function(actionCode, ev) {
 		case ZmKeyMap.MOVE_TO_INBOX:
 		case ZmKeyMap.MOVE_TO_TRASH:
 		case ZmKeyMap.MOVE_TO_JUNK:
-			if (isSyncFailures) { break; }
+			if (isSyncFailures || isExternalAccount) { break; }
 			if (actionCode == ZmKeyMap.MOVE_TO_JUNK && !appCtxt.get(ZmSetting.SPAM_ENABLED)) { break; }
 			if (num && !(isDrafts && actionCode != ZmKeyMap.MOVE_TO_TRASH)) {
 			 	var folderId = ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[actionCode];
@@ -298,24 +298,28 @@ function(actionCode, ev) {
 			break;
 	
 		case ZmKeyMap.SPAM:
+            if (isExternalAccount) { break; }
 			if (num && !isDrafts && !isExternalAccount && !isSyncFailures && appCtxt.get(ZmSetting.SPAM_ENABLED) && (folder && !folder.isReadOnly())) {
 				this._spamListener();
 			}
 			break;
 
 		case ZmKeyMap.MUTE_UNMUTE_CONV:
+            if (isExternalAccount) { break; }
 			if (num && (!folder || (folder && !folder.isReadOnly()))) {
 				this._muteUnmuteConvListener();
 			}
 			break;
 
         case ZmKeyMap.MARK_READ:
+            if (isExternalAccount) { break; }
 			if (num && (!folder || (folder && !folder.isReadOnly()))) {
 				this._markReadListener();
 			}
 			break;
 
 		case ZmKeyMap.MARK_UNREAD:
+            if (isExternalAccount) { break; }
 			if (num && (!folder || (folder && !folder.isReadOnly()))) {
 				this._markUnreadListener();
 			}

@@ -282,18 +282,21 @@ function(actionCode, ev) {
 	}
 
 	// shortcuts tied directly to operations
+    var isExternalAccount = appCtxt.isExternalAccount();
 	var app = ZmApp.ACTION_CODES_R[actionCode];
 	if (app) {
 		var op = ZmApp.ACTION_CODES[actionCode];
 		if (op) {
+            if (isExternalAccount) { return true; }
 			appCtxt.getApp(app).handleOp(op);
 			return true;
 		}
 	}
 
-	switch (actionCode) {
+    switch (actionCode) {
 
 		case ZmKeyMap.NEW: {
+            if (isExternalAccount) { break; }
 			// find default "New" action code for current app
 			app = appCtxt.getCurrentAppName();
 			var newActionCode = ZmApp.NEW_ACTION_CODE[app];
@@ -309,6 +312,7 @@ function(actionCode, ev) {
 
 		case ZmKeyMap.NEW_FOLDER:
 		case ZmKeyMap.NEW_TAG:
+            if (isExternalAccount) { break; }
 			var op = ZmApp.ACTION_CODES[actionCode];
 			if (op) {
 				this._newListener(null, op);
@@ -316,6 +320,7 @@ function(actionCode, ev) {
 			break;
 
 		case ZmKeyMap.SAVED_SEARCH:
+            if (isExternalAccount) { break; }
 			var searches = appCtxt.getFolderTree().getByType(ZmOrganizer.SEARCH);
 			if (searches && searches.length > 0) {
 				var dlg = appCtxt.getChooseFolderDialog();
