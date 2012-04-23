@@ -176,9 +176,9 @@ function(ev) {
  */
 ZmAddrBookTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	var ops = [];
+	var ops = null;
 	if (appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED)) {
-		ops.push(ZmOperation.NEW_ADDRBOOK);
+		ops = [].push(ZmOperation.NEW_ADDRBOOK);
 	}
 	return ops;
 };
