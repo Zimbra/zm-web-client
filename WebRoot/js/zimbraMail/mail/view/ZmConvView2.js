@@ -1336,6 +1336,7 @@ ZmMailMsgCapsuleView.prototype._handleMoreActionsLink =
 function(id, op, ev) {
 	this._convView.setMsg(this._msg);
 	this._resetOperations();
+	ev = DwtUiEvent.getEvent(ev);
 	this._actionsMenu.popup(null, ev.clientX, ev.clientY);
 };
 
