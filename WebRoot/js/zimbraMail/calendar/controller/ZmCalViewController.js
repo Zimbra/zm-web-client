@@ -3288,9 +3288,14 @@ function(appt, actionMenu) {
 	actionMenu.enable(ZmOperation.REPLY, isReplyable && !isOrganizer);
 	actionMenu.enable(ZmOperation.REPLY_ALL, isReplyable);
     if(appCtxt.isExternalAccount()) {
+	    actionMenu.enable(ZmOperation.REINVITE_ATTENDEES, false);
 	    actionMenu.enable(ZmOperation.PROPOSE_NEW_TIME, false);
         actionMenu.enable(ZmOperation.REPLY, false);
 	    actionMenu.enable(ZmOperation.REPLY_ALL, false);
+	    actionMenu.enable(ZmOperation.DUPLICATE_APPT, false);
+	    actionMenu.enable(ZmOperation.DELETE, false);
+	    actionMenu.enable(ZmOperation.DELETE_INSTANCE, false);
+	    actionMenu.enable(ZmOperation.DELETE_SERIES, false);
     }
 
 	// edit reply menu
