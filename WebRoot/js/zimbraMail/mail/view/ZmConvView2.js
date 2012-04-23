@@ -53,31 +53,42 @@ ZmConvView2.prototype.isZmConvView2 = true;
 ZmConvView2.prototype.toString = function() { return "ZmConvView2"; };
 
 
-
-
+/**
+ * Displays the given conversation.
+ * 
+ * @param {ZmConv}		conv		the conversation to display
+ * @param {boolean}		force		if true, re-render even if already showing this conv
+ * 
+ * @return	{boolean}	true if a conv was displayed
+ */
 ZmConvView2.prototype.set =
 function(conv, force) {
 
-	if (!force && this._item && conv && (this._item.id == conv.id)) { return; }
+	if (!force && this._item && conv && (this._item.id == conv.id)) { return false; }
 	
-	this.reset(conv != null);
+	var gotConv = (conv != null);
+	this.reset(gotConv);
 	this._item = conv;
 
-	if (!conv) {
-		this.getHtmlElement().innerHTML = AjxTemplate.expand("mail.Message#viewMessage", {isConv:true});
-		this.noTab = true;
-		this._noResults = true;
-		return;
-	}
-
-	this._initialize();
-	conv.addChangeListener(this._convChangeListener.bind(this));
+	this._cleared = this.noTab = !gotConv;
+	if (gotConv) {
+		this._initialize();
+		conv.addChangeListener(this._convChangeListener.bind(this));
 	
-	this._noResults = false;
-	this._renderConv(conv);
-	if (conv.msgs) {
-		conv.msgs.addChangeListener(this._listChangeListener);
+		this._renderConv(conv);
+		if (conv.msgs) {
+			conv.msgs.addChangeListener(this._listChangeListener);
+		}
 	}
+	else {
+		this._initializeClear();
+		this._clearDiv.innerHTML = (this._controller.getList().size()) ? this._viewConvHtml : "";
+	}
+	
+	Dwt.setVisible(this._mainDiv, gotConv);
+	Dwt.setVisible(this._clearDiv, !gotConv);
+	
+	return gotConv;
 };
 
 ZmConvView2.prototype._initialize =
@@ -86,7 +97,7 @@ function() {
 	if (this._initialized) { return; }
 	
 	// Create HTML structure
-	this._mainDivId			= this._htmlElId + "_main";	// reading pane at bottom only
+	this._mainDivId			= this._htmlElId + "_main";
 	this._convHeaderId		= this._htmlElId + "_header";
 	this._convSubjectId		= this._htmlElId + "_subject";
 	this._convInfoId		= this._htmlElId + "_info";
@@ -120,12 +131,26 @@ function() {
 	}
 	menu.addPopdownListener(this._actionsMenuPopdownListener.bind(this));
 	
+	this._mainDiv			= document.getElementById(this._mainDivId);
 	this._headerDiv			= document.getElementById(this._convHeaderId);
 	this._subjectSpan		= document.getElementById(this._convSubjectId);
 	this._infoSpan			= document.getElementById(this._convInfoId);
 	this._messagesDiv		= document.getElementById(this._messagesDivId);
 		
 	this._initialized = true;
+};
+
+ZmConvView2.prototype._initializeClear =
+function() {
+
+	if (this._initializedClear) { return; }
+	
+	this._viewConvHtml = AjxTemplate.expand("mail.Message#viewMessage", {isConv:true});
+	var div = this._clearDiv = document.createElement("div");
+	div.id = this._htmlElId + "_clear";
+	this.getHtmlElement().appendChild(div);
+	
+	this._initializedClear = true;
 };
 
 ZmConvView2.prototype._actionsMenuPopdownListener =
@@ -262,7 +287,7 @@ function(scrollMsgView) {
 
 	DBG.println("cv2", "ZmConvView2::_resize");
 	this._needResize = false;
-	if (this._noResults) { return; }
+	if (this._cleared) { return; }
 	if (!this._messagesDiv) { return; }
 	
 	var ctlr = this._controller, container;

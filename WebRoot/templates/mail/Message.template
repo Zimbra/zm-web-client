@@ -699,7 +699,7 @@
 </template>
 
 <template id='mail.Message#Conv2View'>
-	<div class='Conv2View'>
+	<div class='Conv2View' id="${mainDivId}">
 		<$= AjxTemplate.expand("#Conv2Header", data) $>
 		<div id="${messagesDivId}" class='Conv2Messages'></div>
 	</div>

@@ -170,7 +170,7 @@ function(msg, force, dayViewCallback) {
 		if (this._inviteMsgView) {
 			this._inviteMsgView.resize(true); //make sure the msg preview pane takes the entire area, in case we were viewing an invite. (since then it was resized to allow for day view) - bug 53098
 		}
-		contentDiv.innerHTML = AjxTemplate.expand("mail.Message#viewMessage");
+		contentDiv.innerHTML = (this._controller.getList().size()) ? AjxTemplate.expand("mail.Message#viewMessage") : "";
 		this.noTab = true;
 		return;
 	}

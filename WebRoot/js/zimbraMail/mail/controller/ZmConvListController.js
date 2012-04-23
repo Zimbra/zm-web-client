@@ -460,8 +460,9 @@ function(callback) {
 
 ZmConvListController.prototype._displayItem =
 function(item) {
-	this._doublePaneView.setItem(item);
-	this._handleMarkRead(item);
+	if (this._doublePaneView.setItem(item)) {
+		this._handleMarkRead(item);
+	}
 };
 
 ZmConvListController.prototype._toggle =
