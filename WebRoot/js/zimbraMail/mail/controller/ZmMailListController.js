@@ -812,7 +812,7 @@ function(ev) {
         this._resetOperations(this._draftsActionMenu, items.length);
 		this._draftsActionMenu.popup(0, ev.docX, ev.docY);
 	}
-	else if (address && items.length == 1 &&
+	else if (!appCtxt.isExternalAccount() && address && items.length == 1 &&
 			(appCtxt.get(ZmSetting.CONTACTS_ENABLED) && (ev.field == ZmItem.F_PARTICIPANT || ev.field == ZmItem.F_FROM)))
 	{
 		// show participant menu
@@ -2069,9 +2069,14 @@ function(parent, num) {
                             ZmOperation.MARK_READ,
                             ZmOperation.MARK_UNREAD,
                             ZmOperation.SPAM,
+                            ZmOperation.MOVE,
+                            ZmOperation.MOVE_MENU,
+                            ZmOperation.DELETE,
                             ZmOperation.DETACH,
                             ZmOperation.ADD_FILTER_RULE,
                             ZmOperation.CREATE_APPT,
+                            ZmOperation.SEARCH_TO,
+                            ZmOperation.SEARCH,
                             ZmOperation.CREATE_TASK
                         ],
                         false
