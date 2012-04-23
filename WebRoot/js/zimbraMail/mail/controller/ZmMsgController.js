@@ -32,6 +32,7 @@
  */
 ZmMsgController = function(container, mailApp, type, sessionId) {
 
+    if (arguments.length == 0) { return; }
 	ZmMailListController.apply(this, arguments);
 	this._elementsToHide = ZmAppViewMgr.LEFT_NAV;
 };
@@ -72,7 +73,9 @@ ZmMsgController.prototype.show =
 function(msg, parentController, callback, markRead, hidePagination) {
 	this.setMsg(msg);
 	this._parentController = parentController;
-	this.setList(msg.list);
+	//if(msg.list) {
+        this.setList(msg.list);
+    //}
 	if (!msg._loaded) {
 		var respCallback = new AjxCallback(this, this._handleResponseShow, [callback, hidePagination]);
 		if (msg._loadPending) {

@@ -46,6 +46,7 @@ AjxPackage.require("zimbraMail.mail.controller.ZmMailListController");
 AjxPackage.require("zimbraMail.mail.controller.ZmDoublePaneController");
 AjxPackage.require("zimbraMail.mail.controller.ZmConvListController");
 AjxPackage.require("zimbraMail.mail.controller.ZmTradController");
+AjxPackage.require("zimbraMail.mail.controller.ZmMsgController");
 
 AjxPackage.require("zimbraMail.mail.model.ZmIdentity");
 AjxPackage.require("zimbraMail.mail.model.ZmIdentityCollection");

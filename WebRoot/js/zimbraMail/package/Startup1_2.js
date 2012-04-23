@@ -70,6 +70,7 @@ AjxPackage.require("zimbraMail.share.view.ZmAccountOverviewContainer");
 AjxPackage.require("zimbraMail.share.view.ZmOverview");
 AjxPackage.require("zimbraMail.share.view.ZmUpsellView");
 AjxPackage.require("zimbraMail.share.view.ZmTimeSelect");
+AjxPackage.require("zimbraMail.share.view.dialog.ZmQuickAddDialog");
 
 AjxPackage.require("zimbraMail.share.controller.ZmController");
 AjxPackage.require("zimbraMail.share.controller.ZmBaseController");
