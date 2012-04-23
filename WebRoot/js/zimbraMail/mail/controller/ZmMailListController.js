@@ -544,7 +544,7 @@ function(address, item, ev){
 };
 
 ZmMailListController.prototype._getToolBarOps =
-function(noViewMenu) {
+function() {
 	var list = [];
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._msgOps());
@@ -553,11 +553,23 @@ function(noViewMenu) {
 		list.push(ZmOperation.MOVE_MENU);
 		list.push(ZmOperation.TAG_MENU);
 	}
+	return list;
+};
 
+ZmMailListController.prototype._getRightSideToolBarOps =
+function(noViewMenu) {
+	var list = [];
+	if (appCtxt.isChildWindow) {
+		return list;
+	}
+	if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !appCtxt.isExternalAccount()) {
+		list.push(ZmOperation.DETACH);
+	}
 	if (!noViewMenu) {
-    	list.push(ZmOperation.VIEW_MENU);
+   		list.push(ZmOperation.VIEW_MENU);
 	}
 	return list;
+
 };
 
 ZmMailListController.prototype._getSecondaryToolBarOps =
@@ -565,9 +577,6 @@ function() {
 	var list = [ZmOperation.PRINT,
                 ZmOperation.MUTE_CONV,
                 ZmOperation.UNMUTE_CONV];
-	if (!appCtxt.isChildWindow && appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !appCtxt.isExternalAccount()) {
-		list.push(ZmOperation.SEP, ZmOperation.DETACH);
-	}
 	list.push(ZmOperation.SEP, ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD);
 	list.push(ZmOperation.SEP, ZmOperation.SHOW_ORIG);
     list.push(ZmOperation.SEP, ZmOperation.REDIRECT, ZmOperation.EDIT_AS_NEW);

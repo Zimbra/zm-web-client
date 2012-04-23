@@ -179,10 +179,14 @@ function() {
 	}*/
 
 
-    ops.push(ZmOperation.VIEW_MENU);
-
 	return ops;
 };
+
+ZmBriefcaseController.prototype._getRightSideToolBarOps =
+function(noViewMenu) {
+	return [ZmOperation.VIEW_MENU];
+};
+
 
 ZmBriefcaseController.prototype._handleDoc =
 function(op) {

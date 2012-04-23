@@ -428,12 +428,17 @@ function() {
 			ZmOperation.SEP,
             ZmOperation.SORTBY_MENU,
             ZmOperation.SEP,
-            ZmOperation.MARK_AS_COMPLETED,
-            ZmOperation.VIEW_MENU
+            ZmOperation.MARK_AS_COMPLETED
             );
 	
 	return toolbarOps;
 };
+
+ZmTaskListController.prototype._getRightSideToolBarOps =
+function(noViewMenu) {
+	return [ZmOperation.VIEW_MENU];
+};
+
 
 ZmTaskListController.prototype._initialize =
 function(view) {

@@ -182,9 +182,15 @@ function(view) {
 ZmConvController.prototype._getToolBarOps =
 function() {
 	var list = [ZmOperation.CLOSE, ZmOperation.SEP];
-	list = list.concat(ZmMailListController.prototype._getToolBarOps.call(this, true));
+	list = list.concat(ZmMailListController.prototype._getToolBarOps.call(this));
 	return list;
 };
+
+ZmConvController.prototype._getRightSideToolBarOps =
+function(noViewMenu) {
+	return ZmMailListController.prototype._getRightSideToolBarOps.call(this, true)
+};
+
 
 
 ZmConvController.prototype._initializeToolBar = 

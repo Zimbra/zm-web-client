@@ -171,7 +171,7 @@ function(map) {
 ZmMsgController.prototype._getToolBarOps = 
 function() {
 	var list = [ZmOperation.CLOSE, ZmOperation.SEP];
-	list = list.concat(ZmMailListController.prototype._getToolBarOps.call(this, true));
+	list = list.concat(ZmMailListController.prototype._getToolBarOps.call(this));
 	return list;
 };
 

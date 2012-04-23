@@ -244,6 +244,9 @@ ZmBaseController.prototype._getToolBarOps 			= function() {};
 // Returns a list of secondary (non primary) toolbar operations
 ZmBaseController.prototype._getSecondaryToolBarOps 	= function() {};
 
+// Returns a list of buttons that align to the right, like view and detach
+ZmBaseController.prototype._getRightSideToolBarOps 	= function() {};
+
 
 // private and protected methods
 
@@ -293,12 +296,14 @@ function(view, className) {
 
 	var buttons = this._getToolBarOps();
 	var secondaryButtons = this._getSecondaryToolBarOps();
+	var rightSideButtons = this._getRightSideToolBarOps();
 	if (!(buttons || secondaryButtons)) { return; }
 
 	var tbParams = {
 		parent:				this._container,
 		buttons:			buttons,
 		secondaryButtons:	secondaryButtons,
+		rightSideButtons: 	rightSideButtons,
 		context:			view,
 		controller:			this,
 		refElementId:		ZmId.SKIN_APP_TOP_TOOLBAR,

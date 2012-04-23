@@ -35,6 +35,7 @@
  * @param	{Stirng}	params.buttonClassName	the CSS class name for buttons
  * @param	{Hash}	params.overrides			a hash of overrides by op ID
  * @param	{Array}	params.secondaryButtons		a list of operation IDs
+ * @param	{Array}	params.rightSideButtons		a list of operation IDs
  * @param	{constant}	params.context			the vcontextID (used to generate button IDs)
  * @param	{constant}	params.toolbarType		the toolbar type (used to generate button IDs)
  * @param	{Boolean}	params.addTextElement		if true, add a text "button" (element) at the end (but before the view button, if any). This can be used for message counts etc
@@ -70,12 +71,6 @@ ZmButtonToolBar = function(params) {
 	 */
 	this.opList = ZmOperation.filterOperations(buttonOps);
 
-	var addViewAtEnd = false;
-	if (this.opList[this.opList.length - 1] == ZmOperation.VIEW_MENU) {
-		this.opList.splice(this.opList.length - 1, 1);
-		addViewAtEnd = true;
-	}
-
 	this._zimletButtonLocation = this.opList.length;
 
 	var secondaryOpList = ZmOperation.filterOperations(params.secondaryButtons);
@@ -84,7 +79,26 @@ ZmButtonToolBar = function(params) {
 		this.opList.push(ZmOperation.SEP, ZmOperation.ACTIONS_MENU);
 	}
 
+	var rightSideOpList = ZmOperation.filterOperations(params.rightSideButtons);
+
+	if (rightSideOpList.length > 0 || params.addTextElement) {
+		this.opList.push(ZmOperation.FILLER);
+	}
+	
+	if (params.addTextElement) {
+		this.opList.push(ZmOperation.TEXT);
+	}
+
+	if (rightSideOpList.length > 0) {
+		this.opList = this.opList.concat(rightSideOpList);
+	}
+
 	this._buttons = ZmOperation.createOperations(this, this.opList, params.overrides);
+
+	var text = this.getButton(ZmOperation.TEXT);
+	if (text) {
+		text.addClassName("itemCountText");
+	}
 
 
 	if (secondaryOpList && secondaryOpList.length) {
@@ -105,21 +119,6 @@ ZmButtonToolBar = function(params) {
 		//same as buttons, with opList.
 		this.opList = this.opList.concat(secondaryOpList);
 
-	}
-
-	if (params.addTextElement || addViewAtEnd) {
-		this.addOp(ZmOperation.FILLER);
-	}
-	if (params.addTextElement) {
-		this.addOp(ZmOperation.TEXT);
-		var text = this.getButton(ZmOperation.TEXT);
-		text.addClassName("itemCountText");
-	}
-
-	if (addViewAtEnd) {
-		var viewButton = ZmOperation.createOperations(this, [ZmOperation.VIEW_MENU], params.overrides);
-		this._buttons[ZmOperation.VIEW_MENU] = viewButton[ZmOperation.VIEW_MENU];
-		this.opList.push(ZmOperation.VIEW_MENU);
 	}
 
 	//todo - I guess in the new UI a button (primary) will have either text or image. not both. Think of whether this precedence is still required then.
