@@ -382,13 +382,9 @@ function(mailItem, date, subject) {
  */
 ZmTasksApp.prototype.search =
 function(folder, startDate, endDate, callback, accountName) {
-    var query = "";
-    if(appCtxt.isExternalAccount()) {
-        query = "inid:" + this.getDefaultFolderId();
-    }
-    else {
-        query = folder ? folder.createQuery() : "in:tasks";
-    }
+    var query = folder ? folder.createQuery() : "";
+    query = query || (appCtxt.isExternalAccount() ? "inid:" + this.getDefaultFolderId() : "in:tasks");
+
 	var params = {
 		query:			query,
 		types:			[ZmItem.TASK],
