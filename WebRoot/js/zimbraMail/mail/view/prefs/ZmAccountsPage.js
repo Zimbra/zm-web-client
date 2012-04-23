@@ -278,6 +278,246 @@ ZmAccountsPage.IDENTITY_PROPS = {
 	"WHEN_IN_FOLDER_LIST":	"whenInFolderIds"
 };
 
+ZmAccountsPage.prototype.getGrantRightsDlg =
+function(callback) {
+
+    if (!this._grantRightsDlg){
+        this._grantRightsDlg = new ZmGrantRightsDialog(appCtxt.getShell(),null);
+    }
+    this._grantRightsDlg._okCallBack = callback;
+    return this._grantRightsDlg;
+
+};
+
+ZmAccountsPage.prototype._errRightsCommand =
+function(err){
+    // To be implemented
+};
+
+ZmAccountsPage.prototype._handleDelegateRights =
+function(user,sendAs,sendObo,isGrant,noRefresh) {
+   var request = (isGrant) ? ZmSetting.GRANT_RIGHTS_REQUEST : ZmSetting.REVOKE_RIGHTS_REQUEST;
+   var soapDoc = AjxSoapDoc.create(request, "urn:zimbraAccount");
+   var batchCmd = new ZmBatchCommand(null, appCtxt.accountList.mainAccount.name);
+   var callback = (noRefresh)?null:this._getGrants.bind(this);
+   var errCallback = this._errRightsCommand.bind(this);
+   var aceNode = null;
+   if (sendAs){
+            aceNode = soapDoc.set("ace");
+            aceNode.setAttribute("gt", "usr");
+            aceNode.setAttribute("d", user);
+            aceNode.setAttribute("right",ZmSetting.SEND_AS);
+   }
+
+   if (sendObo){
+            aceNode = soapDoc.set("ace");
+            aceNode.setAttribute("gt", "usr");
+            aceNode.setAttribute("d", user);
+            aceNode.setAttribute("right",ZmSetting.SEND_ON_BEHALF_OF);
+   }
+   this._sendGrantRightsMessage(appCtxt.accountList.mainAccount.name, user,sendAs,sendObo,isGrant);
+   batchCmd.addNewRequestParams(soapDoc, callback, errCallback);
+   batchCmd.run();
+};
+
+
+
+ZmAccountsPage.prototype._grantDelegateRights =
+function(user,sendAs,sendObo) {
+    this._handleDelegateRights(user,sendAs,sendObo,true,false);
+};
+
+ZmAccountsPage.prototype._handleAddDelegateButton =
+function() {
+    var callback = this._grantDelegateRights.bind(this);
+    var dlg = this.getGrantRightsDlg(callback);
+    dlg.setData();
+    dlg.popup();
+};
+
+
+ZmAccountsPage.prototype._editDelegateRights =
+function() {
+    var user = this._editDelegateOrig.user;
+    var sendAs = arguments[1];
+    var sendObo = arguments[2];
+    var isGrant = null;
+    var updateSendAs = false;
+    var updateSendObo = false;
+
+    if (sendAs != this._editDelegateOrig.sendAs && sendObo != this._editDelegateOrig.sendOnBehalfOf){
+        if (sendAs == sendObo){
+            updateSendAs = updateSendObo = true;
+            isGrant = sendAs;
+        }else{
+            this._handleDelegateRights(user,true,false,sendAs,true);
+            updateSendObo = true;
+            isGrant = sendObo;
+        }
+    }else if (sendAs != this._editDelegateOrig.sendAs){
+            updateSendAs = true;
+            isGrant = sendAs;
+    }else if (sendObo != this._editDelegateOrig.sendOnBehalfOf){
+            updateSendObo = true;
+            isGrant = sendObo;
+    }
+    this._handleDelegateRights(user,updateSendAs,updateSendObo,isGrant,false)
+};
+
+ZmAccountsPage.prototype._editDelegateButton =
+    function() {
+    var item = this.delegatesList.getSelection()[0];
+    this._editDelegateOrig = item;
+    var callback = this._editDelegateRights.bind(this);
+    var dlg = this.getGrantRightsDlg(callback);
+    dlg.setData(item);
+    dlg.popup();
+};
+ZmAccountsPage.prototype._compareDelegateEntries =
+function(a, b) {
+	return a.user < b.user ? -1 : (a.user > b.user ? 1 : 0);
+};
+ZmAccountsPage.prototype._setDelegateSendPrefs =
+function(grants) {
+    var ace = grants._data.GetRightsResponse && grants._data.GetRightsResponse.ace;
+    var userRights = [];
+    var right = user = node = null;
+    var res = new AjxVector();
+    if (!ace){
+        this._dlSelectionListener(false);
+        return res;
+    }
+    for (var i=0;i<ace.length;i++){
+        user = ace[i].d;
+        right = ace[i].right;
+        if (!userRights[user]){
+         userRights[user] = {user:user, id:ace[i].zid};
+
+        }
+        userRights[user][right] = true;
+    }
+
+    for (var usr in userRights) {
+        res.add(userRights[usr])
+    }
+
+    res.sort(this._compareDelegateEntries);
+    return res;
+};
+
+ZmAccountsPage.prototype._refreshRights =
+function(grants) {
+    var delegatesEl =   document.getElementById(this._htmlElId+"_DELEGATE_RIGHTS") || (this.delegatesList && this.delegatesList.getHtmlElement());
+    var dlUsers = this._setDelegateSendPrefs(grants);
+    var delegatesList = new ZmAccountDelegatesListView(this);
+    delegatesList.replaceElement(delegatesEl);
+    delegatesList.setEnabled(true);
+    delegatesList.set(dlUsers);
+    delegatesList.addSelectionListener(this._dlSelectionListener.bind(this,(dlUsers.size() > 0)));
+    this.delegatesList = delegatesList;
+    if (this._grantRightsDlg && this._grantRightsDlg.isPoppedUp()) this._grantRightsDlg.popdown();
+
+    this._dlSelectionListener(false);
+};
+
+ZmAccountsPage.prototype._removeDelegateButton =
+function() {
+    var item = this.delegatesList.getSelection()[0];
+    this._handleDelegateRights(item.user,item.sendAs,item.sendOnBehalfOf,false);
+};
+
+ZmAccountsPage.prototype._sendGrantRightsMessage =
+function(granter, grantee, sendAs,sendObo,isGrant) {
+    var msg = new ZmMailMsg();
+    var addrs = new AjxVector();
+    var permissions = (sendAs && sendObo)?ZmMsg.sendAsAndSendOnBehalfOf:(sendAs?ZmMsg.sendAs:ZmMsg.sendOnBehalfOflbl);
+    var subject = (isGrant) ? ZmMsg.delegateRightsSubject : ZmMsg.revokeRightsSubject;
+    subject = AjxMessageFormat.format(subject, [granter]);
+    var text = (isGrant)?ZmMsg.delegateCreatedText : ZmMsg.delegateRevokedText;
+    text = AjxMessageFormat.format(text, [permissions, grantee, granter]);
+    var html = (isGrant)?ZmMsg.delegateCreatedHtml : ZmMsg.delegateRevokedHtml;
+    html = AjxMessageFormat.format(html, [permissions, grantee, granter]);
+
+    addrs.add(new AjxEmailAddress(grantee, AjxEmailAddress.TO));
+    msg.setAddresses(AjxEmailAddress.TO, addrs);
+    msg.setSubject(subject);
+    var topPart = new ZmMimePart();
+    topPart.setContentType(ZmMimeTable.MULTI_ALT);
+
+    var htmlPart = new ZmMimePart();
+    htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
+    htmlPart.setContent(html);
+
+    var textPart = new ZmMimePart();
+    textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
+    textPart.setContent(text);
+
+    topPart.children.add(textPart);
+    topPart.children.add(htmlPart);
+    msg.setTopPart(topPart);
+    msg.send();
+};
+
+ZmAccountsPage.prototype._getGrants =
+function() {
+    var jsonObj = {GetRightsRequest:{
+        _jsns:"urn:zimbraAccount",
+        "ace":[
+            {right:ZmSetting.SEND_AS},
+            {right:ZmSetting.SEND_ON_BEHALF_OF}
+        ]
+      }
+    };
+    var respCallback = this._refreshRights.bind(this);
+    appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+};
+
+ZmAccountsPage.prototype._dlSelectionListener =
+function(opt) {
+    this.editDelegateButton.setEnabled(opt);
+    this.removeDelegateButton.setEnabled(opt);
+}
+
+ZmAccountsPage.prototype.setAccountDelegates =
+function() {
+    var delegatesEl =   document.getElementById(this._htmlElId+"_DELEGATE_RIGHTS");
+    if(!delegatesEl) return;
+    this._getGrants(delegatesEl);
+
+
+    var addDelegateButtonDiv = document.getElementById(this._htmlElId+"_ADD_DELEGATE");
+	if (addDelegateButtonDiv) {
+		var button = new DwtButton({parent:this});
+		button.setText(ZmMsg.addDelegate);
+		button.setEnabled(true);
+		button.addSelectionListener(new AjxListener(this, this._handleAddDelegateButton));
+        button.replaceElement(addDelegateButtonDiv);
+		this.addDelegateButton = button;
+	}
+
+    var editDelegateButtonDiv = document.getElementById(this._htmlElId+"_EDIT_DELEGATE");
+    if (editDelegateButtonDiv) {
+        var button = new DwtButton({parent:this});
+        button.setText(ZmMsg.editPermissions);
+        button.setEnabled(false);
+        button.addSelectionListener(new AjxListener(this, this._editDelegateButton));
+        button.replaceElement(editDelegateButtonDiv);
+        this.editDelegateButton = button;
+    }
+
+    var removeDelegateButtonDiv = document.getElementById(this._htmlElId+"_REMOVE_DELEGATE");
+    if (removeDelegateButtonDiv) {
+       var button = new DwtButton({parent:this});
+       button.setText(ZmMsg.remove);
+       button.setEnabled(false);
+       button.addSelectionListener(new AjxListener(this, this._removeDelegateButton));
+       button.replaceElement(removeDelegateButtonDiv);
+       this.removeDelegateButton = button;
+    }
+
+
+
+}
 //
 // Public methods
 //
@@ -451,6 +691,7 @@ function(useDefaults) {
 	var account = this._accounts.get(0);
 	this._resetAccountListView(account);
 	this.setAccount(account);
+    this.setAccountDelegates();
 };
 
 // saving
@@ -2190,6 +2431,90 @@ function(account) {
 	return (provider && AjxStringUtil.htmlEncode(provider.name)) || (account.isMain ? ZmMsg.accountTypePrimary : ZmAccount.getTypeName(account.type));
 };
 
+// Delegate Permissions
+
+ZmAccountDelegatesListView = function(parent, className, posStyle, noMaximize) {
+	className = className || "DwtListView";
+	className += " ZOptionsItemsListView";
+	DwtListView.call(this, {parent:parent, className:className, posStyle:posStyle,
+							headerList:this._getHeaderList(), noMaximize:noMaximize});
+	this.multiSelectEnabled = false;
+};
+ZmAccountDelegatesListView.prototype = new DwtListView;
+ZmAccountDelegatesListView.prototype.constructor = ZmAccountDelegatesListView;
+
+ZmAccountDelegatesListView.prototype.toString =
+function() {
+	return "ZmAccountDelegatesListView";
+};
+
+// Constants
+
+ZmAccountDelegatesListView.WIDTH_NAME	= ZmMsg.COLUMN_WIDTH_NAME_ACC;
+ZmAccountDelegatesListView.WIDTH_STATUS	= ZmMsg.COLUMN_WIDTH_STATUS_ACC;
+ZmAccountDelegatesListView.WIDTH_TYPE	= ZmMsg.COLUMN_WIDTH_TYPE_ACC;
+
+// Public methods
+
+ZmAccountDelegatesListView.prototype.getCellElement =
+function(account, field) {
+	return document.getElementById(this._getCellId(account, field));
+};
+
+ZmAccountDelegatesListView.prototype.setCellContents =
+function(account, field, html) {
+	var el = this.getCellElement(account, field);
+	if (!el) { return; }
+
+	if (field == ZmItem.F_NAME) {
+		el = document.getElementById(this._getCellId(account, field)+"_name");
+    }
+    if(field == ZmItem.F_EMAIL) {
+        html = "<div style='margin-left: 10px;'>"+ html +"</div>";
+    }
+	el.innerHTML = html;
+};
+
+// Protected methods
+
+ZmAccountDelegatesListView.prototype._getCellContents =
+function(buffer, i, item, field, col, params) {
+	if (field == ZmItem.F_NAME) {
+		var cellId = this._getCellId(item, field);
+		buffer[i++] = "<div id='";
+		buffer[i++] = cellId;
+		buffer[i++] = "_name'>";
+		buffer[i++] = AjxStringUtil.htmlEncode(item.user);
+		buffer[i++] = "</div>";
+		return i;
+	}
+	if (field == ZmItem.F_TYPE) {
+        var cellId = this._getCellId(item, field);
+		buffer[i++] = "<div id='";
+		buffer[i++] = cellId;
+		buffer[i++] = "_type'>";
+        buffer[i++] = (item.sendAs && item.sendOnBehalfOf)  ? ZmMsg.sendAsAndSendOnBehalfOf : (item.sendAs ? ZmMsg.sendAs : ZmMsg.sendOnBehalfOflbl);
+
+		//buffer[i++] = (item.sendAs ? "SendAs " : ""  ) + ( item.sendOnBehalfOf ? " sendOnBehalfOf " : "" );
+		buffer[i++] = "</div>";
+		return i;
+	}
+	return DwtListView.prototype._getCellContents.apply(this, arguments);
+};
+
+ZmAccountDelegatesListView.prototype._getCellId =
+function(item, field, params) {
+    return DwtId.getListViewItemId(DwtId.WIDGET_ITEM_CELL, this._view, item.id, field);
+};
+
+ZmAccountDelegatesListView.prototype._getHeaderList =
+function() {
+	return [
+		new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg.name, width:ZmAccountsListView.WIDTH_NAME}),
+		new DwtListHeaderItem({field:ZmItem.F_TYPE, text:ZmMsg.type, width:ZmAccountsListView.WIDTH_TYPE})
+	];
+};
+
 //
 // New data source class
 //
@@ -2262,3 +2587,89 @@ function() {
 
 ZmNewPersona.ID = 0;
 }; // function ZmAccountsPage._defineClasses
+
+
+// GrantRights Dialog
+
+
+/**
+ * Creates a grantRights Dialog.
+ * @class
+ * This class represents a rename folder dialog.
+ *
+ * @param	{DwtComposite}	parent		the parent
+ * @param	{String}	className		the class name
+ *
+ * @extends		ZmDialog
+ */
+ZmGrantRightsDialog = function(parent, className,callback) {
+
+	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.grantRights, id:"GrantRightsDialog"});
+    var id = "ZmGrantRightsDialog";
+    this._userName = document.getElementById(id+"_name");
+
+    this._userNameRow = document.getElementById(id+"_name_row");
+    this._sendAs = document.getElementById(id+"_sendAs");
+    this._sendObo = document.getElementById(id+"_sendObo");
+    this._okCallBack = callback;
+    this._initAutoComplete();
+};
+
+ZmGrantRightsDialog.prototype = new ZmDialog;
+ZmGrantRightsDialog.prototype.constructor = ZmGrantRightsDialog;
+
+ZmGrantRightsDialog.prototype.toString =
+function() {
+	return "ZmGrantRightsDialog";
+};
+
+/**
+ * Pops-up the dialog.
+ *
+ */
+ZmGrantRightsDialog.prototype.popup =
+function() {
+	ZmDialog.prototype.popup.call(this);
+};
+
+ZmGrantRightsDialog.prototype._contentHtml =
+function() {
+    var subs = {id:ZmSetting.ZM_GRANT_RIGHTS_DIALOG}
+	return AjxTemplate.expand("prefs.Pages#GrantRightsDialog",subs);
+};
+
+ZmGrantRightsDialog.prototype._okButtonListener =
+function(ev) {
+    this._okCallBack.run(this._userName.value,this._sendAs.checked, this._sendObo.checked);
+};
+
+ZmGrantRightsDialog.prototype.setData =
+function(item){
+    if (item){
+        this.setTitle(ZmMsg.editDelegatePermissions + " - " + item.user);
+        this._userNameRow.style.display ="none";
+        this._sendAs.checked = item.sendAs;
+        this._sendObo.checked = item.sendOnBehalfOf;
+    } else {
+        this.setTitle(ZmMsg.delegatePermissions);
+        this._userNameRow.style.display ="";
+        this._userName.value="";
+        this._sendAs.checked = false;
+        this._sendObo.checked = false;
+    }
+};
+ZmGrantRightsDialog.prototype._initAutoComplete =
+function(){
+    if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
+                var params = {
+                        parent:                 appCtxt.getShell(),
+                        dataClass:              appCtxt.getAutocompleter(),
+                        options:                {massDLComplete:true},
+                        matchValue:             ZmAutocomplete.AC_VALUE_EMAIL,
+                        separator:              "",
+                        contextId:              this.toString()
+                };
+                this._acAddrSelectList = new ZmAutocompleteListView(params);
+                this._acAddrSelectList.handle(this._userName);
+    }
+};

@@ -1062,6 +1062,40 @@ and the container element is replaced with that control.
 						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
 						<td class='ZOptionsField' valign='middle'><$=ZmMsg.manageSignatures$></td>
 					</tr>
+
+                    <tr><td colspan=2><hr></td></tr>
+                    <tr><td style='text-align:left' colspan=2><b><$=ZmMsg.delegateRightsPrompt$></b></td></tr>
+                    <tr>
+                    <table class='ZOptionsSectionTable'   width=100%>
+		                <tr>
+			                <td class='ZOptionsSectionMain'>
+				            <div>
+					            <div id='${id}_DELEGATE_RIGHTS'></div>
+				            </div>
+			                </td>
+		                </tr>
+                        <tr>
+						    <td>
+							    <table width=100% cellspacing="10">
+							        <colgroup>
+								        <col width=1>
+								        <col width=1>
+								        <col width=1>
+								        <col width=*>
+							        </colgroup>
+							        <tr>
+								        <td align=left><button id='${id}_ADD_DELEGATE' tabindex='70'><$=ZmMsg.addDelegate$></button></td>
+								        <td align=left style='padding-left:8px'><button id='${id}_EDIT_DELEGATE' tabindex='80'><$=ZmMsg.editPermissions$></button></td>
+                                        <td align=right style='padding-left:8px'><button id='${id}_REMOVE_DELEGATE' tabindex='100'><$=ZmMsg.remove$></button></td>
+                                        <td>&nbsp;</td>
+							        </tr>
+                               </table>
+						    </td>
+					    </tr>
+
+	                </table>
+                  <tr>
+
 				</table>
 			</td>
 		</tr>
@@ -1194,9 +1228,6 @@ and the container element is replaced with that control.
 									<td style='padding-right:.5em;'>
 										<input id='${id}_EXTERNAL_FROM_NAME' tabindex='2130' size=30>
 									</td>
-									<td>
-										<select id='${id}_EXTERNAL_FROM_EMAIL' tabindex='2135' size=40></select>
-									</td>
 								</tr>
 							</table>
 						</td>
@@ -1272,9 +1303,6 @@ and the container element is replaced with that control.
 								<tr>
 									<td style='padding-right:.5em;'>
 										<input id='${id}_PERSONA_FROM_NAME' tabindex='3020' size=30>
-									</td>
-									<td>
-										<select id='${id}_PERSONA_FROM_EMAIL' tabindex='3030' size=40></select>
 									</td>
 								</tr>
 							</table>
@@ -2541,6 +2569,35 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
         <td style='padding:4px' id='${id}_valueContainer'></td>
         <td style='padding:4px' nowrap=nowrap' id='${id}_buttonsContainer'></td>
     </tr>
+</template>
+
+<template id='prefs.Pages#GrantRightsDialog'>
+    <table>
+    <tr id='${id}_name_row'>
+        <td class="Label" style="padding-right:10px"><$=ZmMsg.name$></td>
+        <td>
+            <input id='${id}_name' class="Field" type="text" autocomplete="off">
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <input type="checkbox" id='${id}_sendAs'>
+        </td>
+        <td>
+            <label style="text-align:left" class="Text" for='${id}_sendAs'><$=ZmMsg.sendAs$></label>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <input type="checkbox" id='${id}_sendObo'>
+        </td>
+        <td>
+            <label style="text-align:left" class="Text" for='${id}_sendObo'><$=ZmMsg.sendOnBehalfOflbl$></label>
+        </td>
+    </tr>
+    </table>
 </template>
 
 <template id='prefs.Pages#ActivityStreamPrompt'>

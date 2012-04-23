@@ -273,6 +273,15 @@ ZmSetting.IS_IMPLICIT = {};
 // hash of implicit settings that have been changed during the current session
 ZmSetting.CHANGED_IMPLICIT = {};
 
+// Send As and Send On Behalf Of settings
+ZmSetting.GRANT_RIGHTS_REQUEST = "GrantRightsRequest";
+ZmSetting.REVOKE_RIGHTS_REQUEST = "RevokeRightsRequest";
+ZmSetting.SEND_AS = "sendAs";
+ZmSetting.SEND_ON_BEHALF_OF = "sendOnBehalfOf";
+ZmSetting.ZM_GRANT_RIGHTS_DIALOG = "ZmGrantRightsDialog"
+
+
+
 /**
  * Returns a string representation of the object.
  * 

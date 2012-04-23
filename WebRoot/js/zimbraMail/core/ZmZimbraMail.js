@@ -392,7 +392,7 @@ function(sendRights, sendRight) {
             for (var i=0;i<sendRights.length; i++){
                 var target = sendRights[i].target;
                 var right =  sendRights[i].right;
-                if (right == sendRight){
+                if (right == sendRight || right == (sendRight + "DistList")){
                     for (var j=0;j < target.length; j++){
                         var emailList = target[j].email;
                         for (var k=0; k < emailList.length; k++){
