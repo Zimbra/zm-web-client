@@ -170,19 +170,11 @@ function(event, share) {
 	tmpShare.link.perm = share.link.perm;
 
 	if (share.grantee.type == "guest") {
-		if (!this._guestFormatter) {
-			this._guestFormatter = new AjxMessageFormat(ZmMsg.shareWithGuestNotes);
-		}
-		var url = share.object.getRestUrl();
-		var username = tmpShare.grantee.email;
-		var password = share.link.pw;
-
-		if (password && username) {
-			tmpShare.notes = this._guestFormatter.format([url, username, password]);
-		}
+        tmpShare._sendShareNotification(tmpShare.grantor.email, tmpShare.link.id);
 	}
-
-	tmpShare.sendMessage(ZmShare.NEW);
+    else {
+	    tmpShare.sendMessage(ZmShare.NEW);
+    }
 	appCtxt.setStatusMsg(ZmMsg.resentShareMessage);
 
 	return false;
@@ -396,7 +388,7 @@ function(row, share) {
 
 		// public shares have no editable fields, and sent no mail
 		var isAllShare = share.grantee && (share.grantee.type == ZmShare.TYPE_ALL);
-		if ((isAllShare || share.isPublic()) && (action == ZmShare.EDIT || action == ZmShare.RESEND)) { continue; }
+		if ((isAllShare || share.isPublic() || share.isGuest()) && (action == ZmShare.EDIT || action == ZmShare.RESEND)) { continue; }
 
 		var link = document.createElement("A");
 		link.href = "#";
