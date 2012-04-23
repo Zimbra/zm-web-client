@@ -396,10 +396,10 @@ function(ptst) {
 	}
 	var inviteToolbar = this.getInviteToolbar();
 
-	var buttonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE];
+	var buttonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE, ZmOperation.PROPOSE_NEW_TIME];
 	for (var i = 0; i < buttonIds.length; i++) {
 		var buttonId = buttonIds[i];
-		inviteToolbar.getButton(buttonId).setEnabled(buttonId != disableButtonId);
+		inviteToolbar.getButton(buttonId).setEnabled(appCtxt.isExternalAccount() ? false : buttonId != disableButtonId);
 	}
 };
 
