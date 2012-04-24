@@ -590,6 +590,7 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
 	this._props.setPropertyVisible(this._shareWithOptsId, !isPublicShare);
 	//this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
 	this._props.setPropertyVisible(this._shareWithBreakId, !isPublicShare);
+    this._setAutoComplete(isGuestShare);
 
 	if (!isUserShare) {
 		this._viewerRadioEl.checked = true;
@@ -764,13 +765,7 @@ function() {
     this._markReadEl = document.getElementById(markReadValueId);
 	this._urlEl = document.getElementById(urlId);
 
-	var inputEl = this._granteeInput.getInputElement();
-	if (this._acAddrSelectList) {
-		this._acAddrSelectList.handle(inputEl);
-	}
-	else {
-		Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmSharePropsDialog._handleKeyUp);
-	}
+	this._setAutoComplete();
 
 	// add change handlers
 	if (this._inheritEl) {
@@ -801,4 +796,15 @@ function() {
 	}
 
 	return view;
+};
+
+ZmSharePropsDialog.prototype._setAutoComplete =
+function(disabled) {
+    var inputEl = this._granteeInput.getInputElement();
+	if (!disabled && this._acAddrSelectList) {
+		this._acAddrSelectList.handle(inputEl);
+	}
+	else {
+		Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmSharePropsDialog._handleKeyUp);
+	}
 };
