@@ -140,7 +140,7 @@ function() {
 ZmBriefcaseController.prototype._getSecondaryToolBarOps =
 function() {
 	var list = [];
-
+    if (appCtxt.isExternalAccount()) { return list; }
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		list.push(ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT, ZmOperation.SEP);
 	}
@@ -369,10 +369,12 @@ function(parent, num) {
                         ZmOperation.SEND_FILE_AS_ATT,
                         ZmOperation.RENAME_FILE,
                         ZmOperation.MOVE,
+                        ZmOperation.MOVE_MENU,
                         ZmOperation.NEW_FILE,
                         ZmOperation.TAG_MENU,
-                        ZmOperation.RENAME_FILE,
+                        ZmOperation.SAVE_FILE,
                         ZmOperation.EDIT_FILE,
+                        ZmOperation.OPEN_FILE,
                         ZmOperation.CHECKIN,
                         ZmOperation.CHECKOUT,
                         ZmOperation.DISCARD_CHECKOUT,
