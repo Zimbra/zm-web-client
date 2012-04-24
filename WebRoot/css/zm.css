@@ -1424,7 +1424,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* ??? RENAME */
 .ZmContactSimpleView {
 	@ListBg@
-	border:solid @darken(AppC,50)@; border-width:1px 0px 1px 1px;
+	border:1px solid @darken(AppC,50)@;
 	width:100%;
 }
 
