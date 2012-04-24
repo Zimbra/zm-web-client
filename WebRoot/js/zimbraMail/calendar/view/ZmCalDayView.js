@@ -217,7 +217,7 @@ function(abook) {
 	// sep between year and headings
 	html.append("<div id='", this._leftAllDaySepDivId, "' name='_leftAllDaySepDivId' class='calendar_day_separator' style='position:absolute'></div>");
 
-	/*if (this._scheduleMode) {
+    if (this._scheduleMode) {
 
 		// div in all day space
 		html.append("<div id='", this._unionAllDayDivId, "' name='_unionAllDayDivId' style='position:absolute'>");
@@ -228,7 +228,7 @@ function(abook) {
 
 		// sep between year and headings
 		html.append("<div id='", this._unionHeadingSepDivId, "' name='_unionHeadingSepDivId' class='calendar_day_separator' style='position:absolute'></div>");
-	} */
+	}
 
 	// all day scroll	=============
 	html.append("<div id='", this._allDayScrollDivId, "' name='_allDayScrollDivId' style='position:absolute; overflow:hidden;'>");
