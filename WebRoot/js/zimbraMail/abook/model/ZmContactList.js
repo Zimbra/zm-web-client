@@ -139,6 +139,9 @@ function(callback, errorCallback, accountName) {
 	params.restUri = AjxUtil.formatUrl({path:["/home/", (accountName || appCtxt.getUsername()), ZmContactList.URL].join(""), qsReset:true});
 	DBG.println(AjxDebug.DBG1, "loading contacts from " + params.restUri);
 	appCtxt.getAppController().sendRequest(params);
+
+	ZmContactList.addDlFolder();
+	
 };
 
 /**
@@ -191,8 +194,6 @@ function(callback, result) {
 		}
 		derefBatchCmd.run();
 	}
-
-	ZmContactList.addDlFolder();
 
 	this._finishLoading();
 

@@ -828,7 +828,10 @@ function() {
 			}
 			else if(type == ZmContact.GROUP_CONTACT_REF || type == ZmContact.GROUP_GAL_REF) {
 				var contact = ZmContact.getContactFromCache(value);	 //TODO: handle contacts not cached?
-				var email = contact && contact.getEmail();
+				if (!contact) {
+					continue;
+				}
+				var email = contact.getEmail();
 				if (email && email != "") {
 					var ajxEmailAddress = new AjxEmailAddress(email, null, contact.getFileAs(), contact.getFullNameForDisplay(), false);
 					addrs.push(ajxEmailAddress.toString());
@@ -867,7 +870,10 @@ function() {
 		}
 		else if(type == ZmContact.GROUP_CONTACT_REF || type == ZmContact.GROUP_GAL_REF) {
 			var contact = ZmContact.getContactFromCache(value);  //TODO: handle contacts not cached?
-			var email = contact && contact.getEmail();
+			if (!contact) {
+				continue;
+			}
+			var email = contact.getEmail();
 			var ajxEmailAddress = new AjxEmailAddress(email, null, contact.getFileAs(), contact.getFullNameForDisplay(), false);
 			members.push({type : type, value : value, address : ajxEmailAddress.toString()});
 		}
