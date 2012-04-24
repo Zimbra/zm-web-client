@@ -941,6 +941,13 @@ function(menu) {
  */
 ZmFolderSearchFilter = function(params) {
 	ZmSearchFilter.apply(this, arguments);
+	
+	// set button title to appropriate organizer type
+	if (!ZmFolderSearchFilter.TEXT_KEY) {
+		ZmFolderSearchFilter._initConstants();
+	}
+	var title = ZmMsg[ZmFolderSearchFilter.TEXT_KEY[this._resultsApp]] || ZmMsg.filterFolder;
+	params.parent.setText(title);
 };
 
 ZmFolderSearchFilter.prototype = new ZmSearchFilter;
@@ -948,6 +955,15 @@ ZmFolderSearchFilter.prototype.constructor = ZmFolderSearchFilter;
 
 ZmFolderSearchFilter.prototype.isZmFolderSearchFilter = true;
 ZmFolderSearchFilter.prototype.toString = function() { return "ZmFolderSearchFilter"; };
+
+ZmFolderSearchFilter._initConstants =
+function(button) {
+	ZmFolderSearchFilter.TEXT_KEY = {};
+	ZmFolderSearchFilter.TEXT_KEY[ZmApp.MAIL]		= "filterFolder";
+	ZmFolderSearchFilter.TEXT_KEY[ZmApp.CALENDAR]	= "filterCalendar";
+	ZmFolderSearchFilter.TEXT_KEY[ZmApp.CONTACTS]	= "filterAddressBook";
+	ZmFolderSearchFilter.TEXT_KEY[ZmApp.TASKS]		= "filterTasksFolder";
+};
 
 ZmFolderSearchFilter.prototype._setUi =
 function(button) {
@@ -972,7 +988,7 @@ function(button) {
 ZmFolderSearchFilter.prototype._getMoveParams =
 function(dlg) {
 	return {
-		overviewId:		dlg.getOverviewId(this.toString()),
+		overviewId:		dlg.getOverviewId([this.toString(), this._resultsApp].join("_")),
 		treeIds:		[ZmApp.ORGANIZER[this._resultsApp]],
 		treeStyle:		DwtTree.SINGLE_STYLE
 	};
