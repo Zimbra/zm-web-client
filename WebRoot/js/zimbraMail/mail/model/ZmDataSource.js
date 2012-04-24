@@ -227,6 +227,7 @@ function(callback, errorCallback, batchCommand) {
 	var params = {
 		soapDoc: soapDoc,
 		sensitive: Boolean(this.password),
+        noAuthToken: Boolean(this.password),
 		asyncMode: Boolean(callback),
 		callback: respCallback,
 		errorCallback: errorCallback
@@ -285,6 +286,7 @@ function(callback, errorCallback, batchCommand, noBusyOverlay) {
 	var params = {
 		soapDoc: soapDoc,
 		sensitive: true,
+        noAuthToken: true,
 		asyncMode: Boolean(callback),
 		noBusyOverlay: noBusyOverlay,
 		callback: callback,
