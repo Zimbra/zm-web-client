@@ -88,6 +88,7 @@ ZmOrganizer = function(params) {
         ZmOrganizer.DEFAULT_COLOR[this.type] ||
         ZmOrganizer.C_NONE
     ;
+	this.isColorCustom = params.rgb != null; //set so we know if the user chose a custom color (to distiguish from basic color or none
 	this.rgb =
         params.rgb ||
         ZmOrganizer.COLOR_VALUES[this.color] ||
@@ -1398,6 +1399,7 @@ function(obj, details) {
 		doNotify = true;
 	}
 	if ((obj.rgb != null || obj.color != null) && !obj._isRemote) {
+		this.isColorCustom = obj.rgb != null;
 		var color = ZmOrganizer.checkColor(obj.color) || ZmOrganizer.DEFAULT_COLOR[this.type] || ZmOrganizer.ORG_DEFAULT_COLOR;
 		if (color != this.color) {
 			this.color = color;

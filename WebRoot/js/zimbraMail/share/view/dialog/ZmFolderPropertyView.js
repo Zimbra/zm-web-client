@@ -131,21 +131,24 @@ function(event) {
     if (this._color) {
         var icon = organizer.getIcon();
         this._color.setImage(icon);
-        if(ZmOrganizer.COLOR_VALUES[organizer.color] && (organizer.rgb != ZmOrganizer.COLOR_VALUES[organizer.color])) {
-            colorCode = organizer.rgb;
-        } else {
-            colorCode = organizer.color;
-        }
+
+		var colorCode = organizer.isColorCustom ? organizer.rgb : organizer.color;
+		
         var defaultColorCode = ZmOrganizer.DEFAULT_COLOR[organizer.type],
             defaultColor = ZmOrganizer.COLOR_VALUES[defaultColorCode],
             colorMenu = this._color.getMenu(),
             moreColorMenu;
-        if(colorMenu) {
+        if (colorMenu) {
             moreColorMenu = (colorMenu.toString() == "ZmMoreColorMenu") ? colorMenu : colorMenu._getMoreColorMenu();
-            if(moreColorMenu) moreColorMenu.setDefaultColor(defaultColor);
+            if (moreColorMenu) {
+				moreColorMenu.setDefaultColor(defaultColor);
+			}
         }
         this._color.setValue(colorCode);
         this._color.setEnabled(organizer.id != ZmFolder.ID_DRAFTS);
+		var isVisible = (organizer.type != ZmOrganizer.FOLDER ||
+						 (organizer.type == ZmOrganizer.FOLDER && appCtxt.get(ZmSetting.MAIL_FOLDER_COLORS_ENABLED)));
+		this._props.setPropertyVisible(this._colorId, isVisible);
     }
 
 	if (organizer.isSystem() || organizer.isDataSource()) {
@@ -161,18 +164,6 @@ function(event) {
 	this._ownerEl.innerHTML = AjxStringUtil.htmlEncode(organizer.owner);
 	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[organizer.type]] || ZmMsg.folder;
 
-	if (this._color) {
-		var colorCode = 0;
-		if(ZmOrganizer.COLOR_VALUES[organizer.color] && (organizer.rgb != ZmOrganizer.COLOR_VALUES[organizer.color])) {
-			colorCode = organizer.rgb;
-		} else {
-			colorCode = organizer.color;
-		}
-		this._color.setValue(colorCode);
-		var isVisible = (organizer.type != ZmOrganizer.FOLDER ||
-						 (organizer.type == ZmOrganizer.FOLDER && appCtxt.get(ZmSetting.MAIL_FOLDER_COLORS_ENABLED)));
-		this._props.setPropertyVisible(this._colorId, isVisible);
-	}
     this._excludeFbCheckbox.checked = organizer.excludeFreeBusy;
 
 	var showPerm = organizer.isMountpoint;
