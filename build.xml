@@ -1494,8 +1494,10 @@ if (ext == null) ext = "";
         <copy todir='${tinymce.dir}/plugins' verbose='${sync.verbose}'>
             <fileset dir='${tinymce.zplugins.dir}' excludes="plugins/**,themes/**" />
         </copy>
-        <copy todir='${tinymce.dir}' verbose='${sync.verbose}'>
-            <fileset dir="${tinymce.zplugins.dir}" includes="plugins/**,themes/**"/>
+        <copy todir='${tinymce.dir}' verbose='${sync.verbose}' overwrite="true">
+            <fileset dir="${tinymce.zplugins.dir}" includes="plugins/**,themes/**">
+                <different targetdir="${tinymce.dir}"/>
+            </fileset>
         </copy>
     </target>
 </project>
