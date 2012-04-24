@@ -98,7 +98,7 @@ function(str, callback, aclv, options, account) {
 	this._curAcStr = str;
 	DBG.println("ac", "begin autocomplete for " + str);
 
-	var acType = (options && options.type) || ZmAutocomplete.AC_TYPE_CONTACT;
+	var acType = (options && (options.acType || options.type)) || ZmAutocomplete.AC_TYPE_CONTACT;
 
 	var list = this._checkCache(str, acType, account);
 	if (!str || (list !== null)) {
@@ -119,7 +119,7 @@ function(str, aclv, options, acType, callback, account) {
 		params.isAutocompleteSearch = false;
 		params.limit = params.limit * 2;
 		params.types = AjxVector.fromArray([ZmItem.CONTACT]);
-		params.galType = ZmSearch.GAL_RESOURCE;
+		params.galType = params.galType || ZmSearch.GAL_RESOURCE;
 		DBG.println("ac", "AutoCompleteGalRequest: " + str);
 	} else {
 		DBG.println("ac", "AutoCompleteRequest: " + str);
@@ -162,6 +162,7 @@ function(str, aclv, options, acType, callback, account, result) {
 	for (var i = 0; i < resultList.length; i++) {
 		var match = new ZmAutocompleteMatch(resultList[i], options, gotContacts, str);
 		if (match.acType == acType) {
+            if (options.excludeGroups && match.isGroup ) continue;
 			if (match.type == ZmAutocomplete.AC_TYPE_GAL) {
 				hasGal = true;
 			}

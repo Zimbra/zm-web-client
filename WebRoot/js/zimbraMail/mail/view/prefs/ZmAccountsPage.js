@@ -2664,9 +2664,10 @@ function(){
                 var params = {
                         parent:                 appCtxt.getShell(),
                         dataClass:              appCtxt.getAutocompleter(),
-                        options:                {massDLComplete:true},
+                        options:                {type:ZmAutocomplete.AC_TYPE_GAL, acType:ZmAutocomplete.AC_TYPE_CONTACT, excludeGroups:true},
                         matchValue:             ZmAutocomplete.AC_VALUE_EMAIL,
                         separator:              "",
+                        galType:                ZmSearch.GAL_ALL,
                         contextId:              this.toString()
                 };
                 this._acAddrSelectList = new ZmAutocompleteListView(params);
