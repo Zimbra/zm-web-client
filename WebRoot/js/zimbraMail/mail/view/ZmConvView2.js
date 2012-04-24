@@ -297,9 +297,12 @@ function(scrollMsgView) {
 		var rpRight = ctlr.isReadingPaneOnRight();
 		container = rpRight ? ctlr.getListView() : ctlr.getItemView();
 	}
+	var header = document.getElementById(this._convHeaderId);
+	if (!container || !header || !this._messagesDiv) { return; }
+	
 	var myHeight = container.getSize().y;
 	DBG.println("cv2", "cv2 height = " + myHeight);
-	var headerSize = Dwt.getSize(document.getElementById(this._convHeaderId));
+	var headerSize = Dwt.getSize(header);
 	DBG.println("cv2", "header height = " + headerSize.y);
 	var messagesHeight = myHeight - headerSize.y - 1;
 	DBG.println("cv2", "set message area height to " + messagesHeight);
