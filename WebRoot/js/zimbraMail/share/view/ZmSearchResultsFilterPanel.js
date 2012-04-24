@@ -906,6 +906,11 @@ function(menu) {
  */
 ZmTagSearchFilter = function(params) {
 	ZmSearchFilter.apply(this, arguments);
+
+	this._tagList = appCtxt.getTagTree();
+	if (this._tagList) {
+		this._tagList.addChangeListener(this._tagChangeListener.bind(this));
+	}
 };
 
 ZmTagSearchFilter.prototype = new ZmSearchFilter;
@@ -916,6 +921,8 @@ ZmTagSearchFilter.prototype.toString = function() { return "ZmTagSearchFilter"; 
 
 ZmTagSearchFilter.prototype._setUi =
 function(menu) {
+
+	this._menu = menu;
 	var tags = appCtxt.getTagTree().asList();
 	if (tags && tags.length) {
 		for (var i = 0; i < tags.length; i++) {
@@ -933,6 +940,14 @@ function(menu) {
 	menu.addSelectionListener(this._selectionListener.bind(this));
 };
 
+// for any change to tags, just re-render
+ZmTagSearchFilter.prototype._tagChangeListener =
+function(ev) {
+	if (this._menu) {
+		this._menu.removeChildren();
+		this._setUi(this._menu);
+	}
+};
 
 /**
  * Allows the user to search by folder.
