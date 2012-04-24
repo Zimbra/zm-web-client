@@ -781,6 +781,23 @@ function(menu, attTypes) {
 	menu.addSelectionListener(this._selectionListener.bind(this));
 };
 
+ZmAttachmentSearchFilter.prototype._selectionListener =
+function(ev) {
+	var data = ev && ev.dwtObj && ev.dwtObj.getData(ZmSearchFilter.DATA_KEY);
+	if (data && this._searchOp) {
+		var terms = [];
+		if (data == ZmMimeTable.APP_ZIP  || data == ZmMimeTable.APP_ZIP2) {
+			var other = (data == ZmMimeTable.APP_ZIP) ? ZmMimeTable.APP_ZIP2 : ZmMimeTable.APP_ZIP;
+			terms.push(new ZmSearchToken(this._searchOp, data));
+			terms.push(new ZmSearchToken(ZmParsedQuery.COND_OR));
+			terms.push(new ZmSearchToken(this._searchOp, other));
+		}
+		else {
+			terms.push(new ZmSearchToken(this._searchOp, data));
+		}
+		this._updateCallback(terms);
+	}
+};
 
 
 /**
