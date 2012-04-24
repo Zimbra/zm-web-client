@@ -64,7 +64,7 @@ ZmConvView2.prototype.toString = function() { return "ZmConvView2"; };
 ZmConvView2.prototype.set =
 function(conv, force) {
 
-	if (!force && this._item && conv && (this._item.id == conv.id)) { return false; }
+	if (!force && this._item && conv && (this._item.id == conv.id)) { return; }
 	
 	var gotConv = (conv != null);
 	this.reset(gotConv);
@@ -87,8 +87,6 @@ function(conv, force) {
 	
 	Dwt.setVisible(this._mainDiv, gotConv);
 	Dwt.setVisible(this._clearDiv, !gotConv);
-	
-	return gotConv;
 };
 
 ZmConvView2.prototype._initialize =

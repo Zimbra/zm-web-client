@@ -460,7 +460,10 @@ function(callback) {
 
 ZmConvListController.prototype._displayItem =
 function(item) {
-	if (this._doublePaneView.setItem(item)) {
+	var curItem = this._doublePaneView.getItem();
+	var noMarkRead = (curItem && item.id == curItem.id);
+	this._doublePaneView.setItem(item);
+	if (!noMarkRead) {
 		this._handleMarkRead(item);
 	}
 };
