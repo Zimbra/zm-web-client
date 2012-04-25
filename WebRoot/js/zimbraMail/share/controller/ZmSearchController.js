@@ -367,7 +367,7 @@ function() {
  * be passed in).
  *
  * @param {Hash}	params			a hash of arguments for the search
- * @param {String}	params.searchFor	the string for.
+ * @param {String}	searchFor		general description of what to search for
  * @return	{AjxVector}		a list of types
  * 
  * @see		#search
@@ -511,7 +511,10 @@ function(params, noRender, callback, errorCallback) {
 	}
 
 	// get types from search type if not passed in explicitly
-	var types = params.types || (params.skipUpdateSearchToolbar && searchFor == ZmId.SEARCH_MAIL && this._prevTypes) || this.getTypes(params);
+	var types = params.types;
+	if (!types || (types.length == 0) || (types.isAjxVector && types.size() == 0)) {
+		types = (params.skipUpdateSearchToolbar && searchFor == ZmId.SEARCH_MAIL && this._prevTypes) || this.getTypes(params);
+	}
 
 	if (types instanceof Array) { // convert array to AjxVector if necessary
 		types = AjxVector.fromArray(types);

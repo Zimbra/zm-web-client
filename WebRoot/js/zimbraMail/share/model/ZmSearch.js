@@ -88,21 +88,18 @@ ZmSearch = function(params) {
 		}
 	}
 
-	if (!(this.types instanceof AjxVector)) {
-		this.types = AjxUtil.toArray(this.types);
-        if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-            this.types = AjxUtil.arrayAsHash(this.types);
-            delete this.types[ZmSearch.TYPE[ZmItem.MSG]];
-            delete this.types[ZmSearch.TYPE[ZmItem.CONV]];
-            this.types = AjxUtil.keys(this.types);
-        }
-        this.types = AjxVector.fromArray(this.types);
+	if (params.checkTypes) {
+		var types = AjxUtil.toArray(this.types);
+		var enabledTypes = [];
+		for (var i = 0; i < types.length; i++) {
+			var type = types[i];
+			var app = ZmItem.APP[type];
+			if (appCtxt.get(ZmApp.SETTING[app])) {
+				enabledTypes.push(type);
+			}
+		}
+		this.types = AjxVector.fromArray(enabledTypes);
 	}
-
-    // a search of no types is equivalent to a search of all allowed types
-    if (this.types.size() == 0) {
-        this.types = AjxVector.fromArray(AjxUtil.keys(ZmSearch.TYPE));
-    }
 };
 
 ZmSearch.prototype.isZmSearch = true;

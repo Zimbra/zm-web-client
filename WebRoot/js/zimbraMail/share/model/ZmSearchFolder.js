@@ -33,11 +33,12 @@ ZmSearchFolder = function(params) {
 	
 	if (params.query) {
 		var searchParams = {
-			query:params.query,
-			types:params.types,
-			sortBy:params.sortBy,
-			searchId:params.id,
-			accountName:(params.account && params.account.name)
+			query:			params.query,
+			types:			params.types,
+			checkTypes:		true,
+			sortBy:			params.sortBy,
+			searchId:		params.id,
+			accountName:	(params.account && params.account.name)
 		};
 		this.search = new ZmSearch(searchParams);
 	}
