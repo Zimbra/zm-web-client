@@ -51,9 +51,13 @@ function() {
 ZmMailPrefsPage.prototype.reset =
 function(useDefaults) {
     ZmPreferencesPage.prototype.reset.apply(this, arguments);
-    var noDuration = (this._startDateVal.value == null || this._startDateVal.value == "");
 
-    this._initStartEndDisplayFields();
+    var noDuration = true;
+    if (this._startDateVal) {
+        noDuration = (this._startDateVal.value == null || this._startDateVal.value == "");
+        this._initStartEndDisplayFields();
+    }
+
 
     var cbox = this.getFormObject(ZmSetting.VACATION_MSG_ENABLED);
     if (cbox) {
@@ -288,10 +292,12 @@ function(dateVal, timeSelect, dateField, date) {
 
 ZmMailPrefsPage.prototype._updateOriginalValue =
 function(id) {
-    var pref = appCtxt.getSettings().getSetting(id);
     var cbox = this.getFormObject(id);
-    pref.origValue = cbox.isSelected();
-    pref.value = pref.origValue;
+    if (cbox) {
+        var pref = appCtxt.getSettings().getSetting(id);
+        pref.origValue = cbox.isSelected();
+        pref.value = pref.origValue;
+    }
 };
 
 ZmMailPrefsPage.prototype._dateButtonListener =
