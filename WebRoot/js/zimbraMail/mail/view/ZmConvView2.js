@@ -36,12 +36,6 @@ ZmConvView2 = function(params) {
 	this._listChangeListener = this._msgListChangeListener.bind(this);
 	this._standalone = params.standalone;
 
-	// Add change listener to taglist to track changes in tag color
-	this._tagList = appCtxt.getTagTree();
-	if (this._tagList) {
-		this._tagList.addChangeListener(this._tagChangeListener.bind(this));
-	}
-
 	this.addControlListener(this._scheduleResize.bind(this));
 	this._setAllowSelection();
 };
@@ -489,6 +483,8 @@ function(params) {
 	var msg = params.msg = params.msg || this._item.getFirstHotMsg();
 	params.composeMode = (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	var htmlMode = (params.composeMode == DwtHtmlEditor.HTML);
+	params.toOverride = this._replyView.getAddresses(AjxEmailAddress.TO);
+	params.ccOverride = this._replyView.getAddresses(AjxEmailAddress.CC);
 	var value = this._replyView.getValue();
 	if (value) {
 		params.extraBodyText = htmlMode ? AjxStringUtil.htmlEncode(value) : value;
@@ -577,11 +573,6 @@ function(ev) {
 	}
 };
 
-ZmConvView2.prototype._tagChangeListener =
-function(ev) {
-	// TODO: handle tag change
-};
-
 ZmConvView2.prototype.resetMsg =
 function(newMsg) {
 };
@@ -665,7 +656,7 @@ function(msg, msgView, op) {
 
 	appCtxt.notifyZimlet("com_zimbra_email", "onFindMsgObjects");
 	this.action = op;
-	var ai = this._getReplyAddressInfo(msg, msgView, op);
+	var ai = this._addressInfo = this._getReplyAddressInfo(msg, msgView, op);
 
 	if (!this._initialized) {
 		var subs = ai;
@@ -695,6 +686,12 @@ function(msg, msgView, op) {
 	// Notify only the email zimlet, since other zimlets either hit an error or do something unneeded
 	appCtxt.notifyZimlet("com_zimbra_email", "onMsgView");
 	this.setVisible(true);
+	Dwt.scrollIntoView(this.getHtmlElement(), this._convView._messagesDiv)
+};
+
+ZmConvReplyView.prototype.getAddresses =
+function(type) {
+	return this._addressInfo && this._addressInfo.participants[type] && this._addressInfo.participants[type].addresses;
 };
 
 /**
@@ -811,7 +808,11 @@ function(msg, msgView, op) {
 			addressTypes.push(type);
 			var prefix = AjxStringUtil.htmlEncode(ZmMsg[AjxEmailAddress.TYPE_STRING[type]]);
 			var addressInfo = msgView.getAddressesFieldInfo(addrs, options, type);
-			participants[type] = { prefix: prefix, partStr: addressInfo.html };
+			participants[type] = {
+				addresses:	addrs,
+				prefix:		prefix,
+				partStr:	addressInfo.html
+			};
 			if (addressInfo.showMoreLinkId) {
 			    showMoreIds[addressInfo.showMoreLinkId] = true;
 			}

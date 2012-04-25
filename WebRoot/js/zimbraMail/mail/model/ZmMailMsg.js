@@ -2250,6 +2250,7 @@ function(addrNodes, type, isDraft) {
 
 	var addrs = this._addrs[type];
 	var num = addrs.size();
+	var contactsApp;
 	if (num) {
 	 if (appCtxt.isOffline) {
             contactsApp = appCtxt.getApp(ZmApp.CONTACTS)
@@ -2261,13 +2262,16 @@ function(addrNodes, type, isDraft) {
         }
 		for (var i = 0; i < num; i++) {
 			var addr = addrs.get(i);
-			var email = addr.getAddress();
-			var name = addr.getName();
-			var addrNode = {t:AjxEmailAddress.toSoapType[type], a:email};
-			if (name) {
-				addrNode.p = name;
+			addr = addr.isAjxEmailAddress ? addr : AjxEmailAddress.parse(addr);
+			if (addr) {
+				var email = addr.getAddress();
+				var name = addr.getName();
+				var addrNode = {t:AjxEmailAddress.toSoapType[type], a:email};
+				if (name) {
+					addrNode.p = name;
+				}
+				addrNodes.push(addrNode);
 			}
-			addrNodes.push(addrNode);
 		}
 	}
 };

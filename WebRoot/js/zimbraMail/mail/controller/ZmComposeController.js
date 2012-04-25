@@ -180,6 +180,7 @@ function() {
  * @param {Boolean}		inNewWindow		if <code>true</code>, we are in detached window
  * @param {ZmMailMsg}	msg				the original message (reply/forward), or address (new message)
  * @param {String}		toOverride 		the initial value for To: field
+ * @param {String}		ccOverride		Cc: addresses (optional)
  * @param {String}		subjOverride 	the initial value for Subject: field
  * @param {String}		extraBodyText	the canned text to prepend to body (invites)
  * @param {AjxCallback}	callback		the callback to run after view has been set

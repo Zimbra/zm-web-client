@@ -2059,8 +2059,11 @@ ZmComposeView.prototype._setAddresses =
 function(action, type, override) {
 	this._action = action;
 
-	if (action == ZmOperation.NEW_MESSAGE && override) {
-		this._recipients.setAddress(type, override);
+	if (override) {
+		override = AjxUtil.toArray(override);
+		for (var i = 0; i < override.length; i++) {
+			this._recipients.setAddress(type, override[i]);
+		}
 	} else if (this._isReply(action)) {
 		var ac = window.parentAppCtxt || window.appCtxt;
 
@@ -3886,10 +3889,18 @@ ZmHiddenComposeView.prototype.toString = function() { return "ZmHiddenComposeVie
 ZmHiddenComposeView.prototype.set =
 function(params) {
 
+	this.reset();
+	
 	var action = this._action = params.action;
 	var msg = this._msg = this._addressesMsg = params.msg;
 
 	this._setAddresses(action, AjxEmailAddress.TO, params.toOverride);
+	if (params.ccOverride) {
+		this._setAddresses(action, AjxEmailAddress.CC, params.ccOverride);
+	}
+	if (params.bccOverride) {
+		this._setAddresses(action, AjxEmailAddress.BCC, params.bccOverride);
+	}
 	this._setSubject(action, msg, params.subjectOverride);
 	this._setBody(action, msg, params.extraBodyText);
     var oboMsg = msg || (params.selectedMessages && params.selectedMessages.length && params.selectedMessages[0]);
@@ -3958,6 +3969,7 @@ function(bEnableInputs) {
 	this._subject = this._bodyContent = "";
 	this._controller._curIncOptions = null;
 	this._msgAttId = null;
+	this._addresses = {};
 
 	// remove extra mime parts
 	this._extraParts = null;
@@ -3976,8 +3988,8 @@ ZmHiddenRecipients = function() {
 ZmHiddenRecipients.prototype.setAddress =
 function(type, addr) {
 	if (type && addr) {
-		this._addresses[type] = [];
-		this._addresses[type].push(addr.isAjxEmailAddress ? addr.toString() : addr);
+		this._addresses[type] = this._addresses[type] || [];
+		this._addresses[type].push(addr);
 	}
 };
 
@@ -3993,13 +4005,16 @@ function(type, addrVec, used) {
 		}
 		for (var i = 0, len = addrs.length; i < len; i++) {
 			var addr = addrs[i];
-			var email = addr.isAjxEmailAddress ? addr && addr.getAddress() : addr;
-			if (!email) { continue; }
-			email = email.toLowerCase();
-			if (!used[email]) {
-				this._addresses[type].push(addr);
-				used[email] = true;
-				addrAdded = true;
+			addr = addr.isAjxEmailAddress ? addr : AjxEmailAddress.parse(addr);
+			if (addr) {
+				var email = addr.getAddress();
+				if (!email) { continue; }
+				email = email.toLowerCase();
+				if (!used[email]) {
+					this._addresses[type].push(addr);
+					used[email] = true;
+					addrAdded = true;
+				}
 			}
 		}
 	}
