@@ -50,7 +50,7 @@
 		    <c:choose>
 	        	<c:when test="${!empty cookie.ZM_TEST}">
 		            <zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
-		                      newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
+		                      varNeedRefer="needRefer" newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
 		                      prefs="${prefsToFetch}" attrs="${attrsToFetch}"
 							  requestedSkin="${param.skin}"/>
 		            <%-- continue on at not empty authResult test --%>
@@ -66,7 +66,7 @@
 	        <c:set var="authtoken" value="${not empty param.zauthtoken ? param.zauthtoken : cookie.ZM_AUTH_TOKEN.value}"/>
 	        <c:if test="${not empty authtoken}">
 	            <zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
-	                      varRedirectUrl="postLoginUrl" varAuthResult="authResult"
+	                      varRedirectUrl="postLoginUrl" varAuthResult="authResult" varNeedRefer="needRefer"
 	                      rememberme="${param.zrememberme == '1'}"
                           prefs="${prefsToFetch}" attrs="${attrsToFetch}"
 						  requestedSkin="${param.skin}"/>
