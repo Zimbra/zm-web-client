@@ -718,7 +718,7 @@ function(includeRoot, showUnread, maxLength, noMarkup, useSystemName, useOwnerNa
 };
 
 /**
- * Gets the tooltip. The tooltip shows number of items and total size.
+ * Gets the tooltip. The tooltip shows number of unread items, total messages and the total size.
  *
  * @param {Boolean}	force		if <code>true</code>, don't use cached tooltip
  * @return	{String}	the tooltip
@@ -729,8 +729,7 @@ function(force) {
 		return null;
 	}
 	if (!this._tooltip || force) {
-		var itemText = this._getItemsText();
-		var subs = {itemText:itemText, numTotal:this.numTotal, sizeTotal:this.sizeTotal};
+		var subs = {name:this.name, numTotal:this.numTotal, sizeTotal:this.sizeTotal, numUnread:this.numUnread};
 		this._tooltip = AjxTemplate.expand("share.App#FolderTooltip", subs);
 	}
 	return this._tooltip;

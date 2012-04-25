@@ -1042,7 +1042,7 @@ function(ev, treeView, overviewId) {
 			this._evHandled[overviewId] = true;
 		} else if (ev.event == ZmEvent.E_MODIFY) {
 			if (!fields) { return; }
-			if (fields[ZmOrganizer.F_TOTAL] || fields[ZmOrganizer.F_SIZE]) {
+			if (fields[ZmOrganizer.F_TOTAL] || fields[ZmOrganizer.F_SIZE] || fields[ZmOrganizer.F_UNREAD] || fields[ZmOrganizer.F_NAME]) {
 				node.setToolTipContent(organizer.getToolTip(true));
 				if (appCtxt.multiAccounts && organizer.type == ZmOrganizer.FOLDER) {
 					appCtxt.getApp(ZmApp.MAIL).getOverviewContainer().updateTooltip(organizer.nId);
