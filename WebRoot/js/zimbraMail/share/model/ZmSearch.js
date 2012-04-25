@@ -1196,7 +1196,7 @@ function(query) {
 			}
 			tokens.push(new ZmSearchToken(ch));
 			pos = skipSpace(query, pos + 1);
-		} else if (ch == "-" && !word) {
+		} else if (ch == "-" && !word && !op) {
 			tokens.push(new ZmSearchToken(ZmParsedQuery.COND_NOT));
 			pos = skipSpace(query, pos + 1);
 			endOk = false;
