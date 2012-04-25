@@ -1491,7 +1491,7 @@ function(force) {
 	if (this.type == ZmParsedQuery.TERM) {
 		var arg = this.arg;
 		if (this.op == ZmParsedQuery.OP_CONTENT) {
-			return arg;
+			return '"' + arg.replace(/"/g, '\\"') + '"';
 		}
 		else {
 			// quote arg if any non-word chars
