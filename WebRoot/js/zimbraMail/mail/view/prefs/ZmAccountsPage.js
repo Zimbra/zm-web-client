@@ -295,11 +295,11 @@ function(err){
 };
 
 ZmAccountsPage.prototype._handleDelegateRights =
-function(user,sendAs,sendObo,isGrant,noRefresh) {
+function(user,sendAs,sendObo,isGrant,refresh) {
    var request = (isGrant) ? ZmSetting.GRANT_RIGHTS_REQUEST : ZmSetting.REVOKE_RIGHTS_REQUEST;
    var soapDoc = AjxSoapDoc.create(request, "urn:zimbraAccount");
    var batchCmd = new ZmBatchCommand(null, appCtxt.accountList.mainAccount.name);
-   var callback = (noRefresh)?null:this._getGrants.bind(this);
+   var callback = this._handleDelegateRightsCallback.bind(this,user,sendAs,sendObo,isGrant,refresh);
    var errCallback = this._errRightsCommand.bind(this);
    var aceNode = null;
    if (sendAs){
@@ -315,16 +315,22 @@ function(user,sendAs,sendObo,isGrant,noRefresh) {
             aceNode.setAttribute("d", user);
             aceNode.setAttribute("right",ZmSetting.SEND_ON_BEHALF_OF);
    }
-   this._sendGrantRightsMessage(appCtxt.accountList.mainAccount.name, user,sendAs,sendObo,isGrant);
+
    batchCmd.addNewRequestParams(soapDoc, callback, errCallback);
    batchCmd.run();
 };
 
-
+ ZmAccountsPage.prototype._handleDelegateRightsCallback =
+ function(user,sendAs,sendObo,isGrant,refresh){
+     if (refresh) {
+         this._getGrants();
+     }
+     this._sendGrantRightsMessage(appCtxt.accountList.mainAccount.name, user,sendAs,sendObo,isGrant);
+ };
 
 ZmAccountsPage.prototype._grantDelegateRights =
 function(user,sendAs,sendObo) {
-    this._handleDelegateRights(user,sendAs,sendObo,true,false);
+    this._handleDelegateRights(user,sendAs,sendObo,true,true);
 };
 
 ZmAccountsPage.prototype._handleAddDelegateButton =
@@ -350,7 +356,7 @@ function() {
             updateSendAs = updateSendObo = true;
             isGrant = sendAs;
         }else{
-            this._handleDelegateRights(user,true,false,sendAs,true);
+            this._handleDelegateRights(user,true,false,sendAs,false);
             updateSendObo = true;
             isGrant = sendObo;
         }
@@ -361,7 +367,7 @@ function() {
             updateSendObo = true;
             isGrant = sendObo;
     }
-    this._handleDelegateRights(user,updateSendAs,updateSendObo,isGrant,false)
+    this._handleDelegateRights(user,updateSendAs,updateSendObo,isGrant,true)
 };
 
 ZmAccountsPage.prototype._editDelegateButton =
@@ -423,7 +429,7 @@ function(grants) {
 ZmAccountsPage.prototype._removeDelegateButton =
 function() {
     var item = this.delegatesList.getSelection()[0];
-    this._handleDelegateRights(item.user,item.sendAs,item.sendOnBehalfOf,false);
+    this._handleDelegateRights(item.user,item.sendAs,item.sendOnBehalfOf,false,true);
 };
 
 ZmAccountsPage.prototype._sendGrantRightsMessage =
