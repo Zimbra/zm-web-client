@@ -739,15 +739,17 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .ZmMailMsgView .LabelColName, 
 .ZmMailMsgCapsuleView .LabelColName {
 	@MailMsgHeaderLabel@
-	vertical-align:top;
+	line-height:1.6em;
+	padding:3px 0;
 	text-align:right;
-	padding:3px 0px 3px 0px;
+	vertical-align:top;
 	white-space:nowrap;
 }
 
 .ZmMailMsgView .LabelColValue, 
 .ZmMailMsgCapsuleView .LabelColValue {
 	@MailMsgHeaderText@
+	line-height:1.6em;
 	padding:3px;
 	vertical-align:top;
 	white-space:normal;
@@ -756,8 +758,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .ZmMailMsgView .SubjectCol {
 	@FontSize-big@
-	font-weight:bold;
 	@MailMsgHeaderText@
+	font-weight:bold;
 }
 
 .ZmMailMsgView .DateCol {
@@ -979,7 +981,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .Conv2MsgHeader .LabelColName {
-	padding:5px 0;
+	padding:3px;
 }
 
 .ZmMailMsgCapsuleView .Link, .Conv2Reply .Link {
