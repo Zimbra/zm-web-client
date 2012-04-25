@@ -126,7 +126,7 @@ function() {
 	this._mainDiv			= document.getElementById(this._mainDivId);
 	this._headerDiv			= document.getElementById(this._convHeaderId);
 	this._subjectSpan		= document.getElementById(this._convSubjectId);
-	this._infoSpan			= document.getElementById(this._convInfoId);
+	this._infoDiv			= document.getElementById(this._convInfoId);
 	this._messagesDiv		= document.getElementById(this._messagesDivId);
 		
 	this._initialized = true;
@@ -224,9 +224,9 @@ function() {
 	this._setConvSubject()
 	this._setConvInfo();
 
-	// Clean up minor WebKit-only issue where bottom edge of overflowed subject text is visible in info span
+	// Clean up minor WebKit-only issue where bottom edge of overflowed subject text is visible in info div
 	if (AjxEnv.isWebKitBased && !this._headerSet) {
-		Dwt.setSize(this._infoSpan, Dwt.DEFAULT, Dwt.getSize(this._subjectSpan).y);
+		Dwt.setSize(this._infoDiv, Dwt.DEFAULT, Dwt.getSize(this._subjectSpan).y);
 		this._headerSet = true;
 	}
 };
@@ -245,7 +245,7 @@ function() {
 	if (numUnread) {
 		info = info + ", " + AjxMessageFormat.format(ZmMsg.unreadCount, numUnread).toLowerCase();
 	}
-	this._infoSpan.innerHTML = info;
+	this._infoDiv.innerHTML = info;
 };
 
 ZmConvView2.prototype.reset =
@@ -265,7 +265,7 @@ function(noClear) {
 	this._currentMsgView = null;
 
 	if (this._initialized) {
-		this._subjectSpan.innerHTML = this._infoSpan.innerHTML = "";
+		this._subjectSpan.innerHTML = this._infoDiv.innerHTML = "";
 		Dwt.setVisible(this._headerDiv, noClear);
 	}
 	

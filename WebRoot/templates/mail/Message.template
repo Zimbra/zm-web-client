@@ -727,10 +727,10 @@
 
 <template id='mail.Message#Conv2MsgHeader-collapsed'>
 	<span id='${readCellId}'></span>
-	<span class='info'>
+	<div class='info'>
 		<span id='${fromId}'>${from}</span>
 		<span class='ZmConvListFragment'><$= data.fragment $></span>
-	</span>
+	</div>
 	<span class='date' id='${dateCellId}' title='${dateTooltip}'>${date}</span>
 </template>
 
