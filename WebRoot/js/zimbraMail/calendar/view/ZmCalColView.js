@@ -2577,6 +2577,7 @@ function(ev, gridEl, gridLoc, isAllDay) {
 // called when DND is confirmed after threshold
 ZmCalColView.prototype._gridDndBegin =
 function(data) {
+    if(appCtxt.isExternalAccount()) { return false; }
 	var col = data.view._getColFromX(data.gridX);
 	data.folderId = col ? (col.cal ? col.cal.id : null) : null;
 	if (data.isAllDay) {
