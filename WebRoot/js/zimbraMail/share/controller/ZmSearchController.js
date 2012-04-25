@@ -73,7 +73,13 @@ function(d, searchFor) {
     var date = formatter.format(d);
 	var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 	var query = "date:" + date;
-	this.search({query:query, types:[groupBy], searchFor: searchFor});
+	this.search({
+		query:			query,
+		types:			[groupBy],
+		searchFor:		searchFor,
+		origin:			ZmId.SEARCH,
+		userInitiated:	true
+	});
 };
 
 /**
@@ -90,7 +96,12 @@ function(address) {
 		query[i] = ["from:(", query[i], ")"].join("");
 	}
 
-    this.search({query:query.join(" OR "), types:[groupBy]});
+    this.search({
+		query:			query.join(" OR "),
+		types:			[groupBy],
+		origin:			ZmId.SEARCH,
+		userInitiated:	true
+	});
 };
 
 
@@ -107,11 +118,18 @@ function(address) {
 	for (var i = 0; i < query.length; i++) {
 		query[i] = ["tocc:(", query[i], ")"].join("");
 	}
+	var params = {
+		types:			[groupBy],
+		origin:			ZmId.SEARCH,
+		userInitiated:	true
+	}
     if (this.currentSearch && this.currentSearch.folderId == ZmFolder.ID_SENT) {
-        this.search({query:"in:sent AND (" + query.join(" OR ") + ")", types:[groupBy]});
+		params.query = "in:sent AND (" + query.join(" OR ") + ")";
+        this.search(params);
 	}
     else {
-	    this.search({query:query.join(" OR "), types:[groupBy]});
+		params.query = query.join(" OR ");
+	    this.search(params);
 	}
 };
 
