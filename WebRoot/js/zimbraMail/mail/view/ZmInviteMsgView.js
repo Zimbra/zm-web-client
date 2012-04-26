@@ -251,7 +251,7 @@ function(dayViewCallback) {
 
 		this._dayView.setDisplay(Dwt.DISPLAY_BLOCK);
 		this._dayView.setDate(inviteDate, 0, false);
-		this.resize();
+        this.resize();
 
         var acctFolderIds = [].concat(cc.getCheckedCalendarFolderIds()); // create a *copy*
         if(this._msg.cif) {
@@ -286,6 +286,16 @@ ZmInviteMsgView.prototype.isRight =
 function() {
 	return this.parent._controller.isReadingPaneOnRight();
 };
+
+ZmInviteMsgView.prototype.convResize =
+function() {
+	var parentSize = this.parent.getSize();
+	if (this._dayView) {
+		this._dayView.setSize(parentSize.x - 5, 218);
+		var el = this._dayView.getHtmlElement();
+		el.style.left = el.style.top = "auto";
+	}
+}
 
 /**
  * Resizes the view depending on whether f/b is being shown or not.

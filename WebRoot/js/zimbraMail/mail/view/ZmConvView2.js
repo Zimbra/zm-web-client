@@ -78,9 +78,9 @@ function(conv, force) {
 		this._initializeClear();
 		this._clearDiv.innerHTML = (this._controller.getList().size()) ? this._viewConvHtml : "";
 	}
-	
-	Dwt.setVisible(this._mainDiv, gotConv);
-	Dwt.setVisible(this._clearDiv, !gotConv);
+
+    Dwt.setVisible(this._mainDiv, gotConv);
+    Dwt.setVisible(this._clearDiv, !gotConv);
 };
 
 ZmConvView2.prototype._initialize =
@@ -312,6 +312,10 @@ function(scrollMsgView) {
 				if (width && width > Dwt.getSize(this._messagesDiv).x) {
 					msgView.setSize(width, Dwt.DEFAULT);
 				}
+				if (msgView._isCalendarInvite) {
+				    msgView._inviteMsgView.convResize();
+				    msgView._inviteMsgView.scrollToInvite();
+				}
 			}
 		}
 	}
@@ -325,6 +329,8 @@ function(scrollMsgView) {
 			this._scrollToTop(scrollMsgView);
 		}
 	}
+
+
 };
 
 ZmConvView2.prototype._scrollToTop =
@@ -999,7 +1005,7 @@ function(msg, container, callback) {
 	if (this._disposed) { return; }
 
 	this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
-	this._renderMessageBody(msg, container, callback);
+    this._renderMessageBody(msg, container, callback);
 	this._renderMessageFooter(msg, container);
 };
 
@@ -1295,10 +1301,7 @@ function(id, autoDisplay) {
                 Dwt.setPosition(div, Dwt.RELATIVE_STYLE);
                 dayView.reparentHtmlElement(div);
                 dayView.setVisible(true);
-                var mySize = this.getSize();
-                dayView.setSize(mySize.x - 5, 218);
-                var el = dayView.getHtmlElement();
-                el.style.left = el.style.top = "auto";
+                imv.convResize();
             }
             // Auto calendar display complete whether done via auto or a manual click
             this._autoCalendarDisplayComplete = true;
