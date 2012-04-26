@@ -766,9 +766,11 @@ ZmAttachmentSearchFilter.prototype._addAttachmentTypes =
 function(menu, attTypes) {
 
 	ZmSearchResultsFilterPanel.attTypes = attTypes;
+	var added = {};
 	if (attTypes && attTypes.length) {
 		for (var i = 0; i < attTypes.length; i++) {
 			var attType = attTypes[i];
+			if (added[attType.desc]) { continue; }
 			var menuItem = new DwtMenuItem({
 						parent:	menu,
 						id:		ZmId.getMenuItemId(this._viewId, this.id, attType.type.replace("/", ":"))
@@ -776,6 +778,7 @@ function(menu, attTypes) {
 			menuItem.setText(attType.desc);
 			menuItem.setImage(attType.image);
 			menuItem.setData(ZmSearchFilter.DATA_KEY, attType.query || attType.type);
+			added[attType.desc] = true;
 		}
 	}
 	menu.addSelectionListener(this._selectionListener.bind(this));
