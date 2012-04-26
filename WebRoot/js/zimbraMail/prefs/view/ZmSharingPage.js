@@ -513,12 +513,15 @@ function(orgType) {
 	if (appCtxt.multiAccounts) {
 		overviewId = [overviewId, "-", this.toString(), "-", appCtxt.getActiveAccount().name].join("");
 	}
+	var omit = {};
+	omit[ZmFolder.ID_TRASH] = true;
 	var params = {
 		treeIds: [orgType],
 		overviewId: overviewId,
 		title: ZmMsg.chooseFolder,
 		skipReadOnly: true,
 		skipRemote: true,
+		omit: omit,
 		hideNewButton: true,
 		appName: ZmOrganizer.APP[orgType],
 		noRootSelect: true,
