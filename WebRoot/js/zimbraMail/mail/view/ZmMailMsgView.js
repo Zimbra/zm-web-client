@@ -1767,7 +1767,7 @@ function(msg) {
 	
 	if (tagRow && tagCell && !numTags) {
 		// last tag was removed
-		tagCell.innerHTML = "";
+		table.deleteRow(tagRow.rowIndex);
 	}
 	else if (tagRow && tagCell && numTags) {
 		// tag added or removed, still some tags remain
