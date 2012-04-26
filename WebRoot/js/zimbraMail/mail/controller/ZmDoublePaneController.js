@@ -442,7 +442,7 @@ function(parent, num) {
 		var isSyncFailuresFolder = this.isSyncFailuresFolder();
 		parent.enable(ZmOperation.ADD_FILTER_RULE, isMsg && !isSyncFailuresFolder);
 	}
-	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !isDraft));
+	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && num == 1 && !isDraft));
 	parent.enable(ZmOperation.TEXT, true);
 
 };
