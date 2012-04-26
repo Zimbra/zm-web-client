@@ -727,6 +727,14 @@ function(params, result) {
 		});
 	this.addPostRenderCallback(callback, 5, 100);
 
+    if (appCtxt.get(ZmSetting.MAIL_ENABLED) && !appCtxt.isExternalAccount() && navigator.registerProtocolHandler){
+        callback = new AjxCallback(this,
+            function() {
+                navigator.registerProtocolHandler("mailto",AjxUtil.formatUrl({qsArgs:{view:'compose',to:'%s'}, qsReset:true}) ,ZmMsg.zimbraTitle);
+        });
+        this.addPostRenderCallback(callback, 6, 100);
+    }
+
 	this.activateApp(params.startApp, false, respCallback, this._errorCallback, params);
 
 	var account = appCtxt.multiAccounts && appCtxt.accountList.mainAccount;
