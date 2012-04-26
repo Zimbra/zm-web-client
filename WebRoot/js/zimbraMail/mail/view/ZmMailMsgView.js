@@ -40,8 +40,10 @@ ZmMailMsgView = function(params) {
 		// Add change listener to taglist to track changes in tag color
 		this._tagList = appCtxt.getTagTree();
 		if (this._tagList) {
-			this._tagList.addChangeListener(this._tagChangeListener.bind(this));
-			this.addListener(ZmMailMsgView._TAG_CLICK, this._msgTagClicked.bind(this));
+			this._tagChangeHandler = this._tagChangeListener.bind(this);
+			this._tagList.addChangeListener(this._tagChangeHandler);
+			this._msgTagClickHandler = this._msgTagClicked.bind(this);
+			this.addListener(ZmMailMsgView._TAG_CLICK, this._msgTagClickHandler);
 		}
 	}
 
@@ -150,6 +152,13 @@ function() {
 		this._objectManager.reset();
 	}
 	this.setScrollWithIframe(this._scrollWithIframe);
+};
+
+ZmMailMsgView.prototype.dispose =
+function() {
+	this._tagList.removeChangeListener(this._tagChangeHandler);
+	this.removeListener(ZmMailMsgView._TAG_CLICK, this._msgTagClickHandler);
+	ZmMailItemView.prototype.dispose.apply(this, arguments);
 };
 
 ZmMailMsgView.prototype.preventSelection =
@@ -1762,6 +1771,7 @@ function(msg) {
 
 	var numTags = msg.tags && msg.tags.length;
 	var table = document.getElementById(this._hdrTableId);
+	if (!table) { return; }
 	var tagRow = document.getElementById(this._tagRowId);
 	var tagCell = document.getElementById(this._tagCellId);
 	
@@ -1782,6 +1792,9 @@ function(msg) {
 
 ZmMailMsgView.prototype._insertTagRow =
 function(table, tagCellId) {
+	
+	if (!table) { return; }
+	
 	var tagRow = table.insertRow(-1);
 	tagRow.id = this._tagRowId;
 	var tagLabelCell = tagRow.insertCell(-1);
@@ -2291,6 +2304,7 @@ function(ev) {
 ZmMailMsgView.prototype._tagChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_TAG) {	return; }
+	if (this._disposed) { return; }
 
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MODIFY || ev.event == ZmEvent.E_CREATE) {
 		//note - create is needed in case of a tag that was not in local tag list (due to sharing) that now is.

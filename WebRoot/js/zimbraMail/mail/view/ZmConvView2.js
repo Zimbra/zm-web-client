@@ -33,6 +33,7 @@ ZmConvView2 = function(params) {
 
 	this._mode = ZmId.VIEW_CONV2;
 	this._controller = params.controller;
+	this._convChangeHandler = this._convChangeListener.bind(this);
 	this._listChangeListener = this._msgListChangeListener.bind(this);
 	this._standalone = params.standalone;
 
@@ -67,7 +68,7 @@ function(conv, force) {
 	this._cleared = this.noTab = !gotConv;
 	if (gotConv) {
 		this._initialize();
-		conv.addChangeListener(this._convChangeListener.bind(this));
+		conv.addChangeListener(this._convChangeHandler);
 	
 		this._renderConv(conv);
 		if (conv.msgs) {
@@ -252,13 +253,16 @@ ZmConvView2.prototype.reset =
 function(noClear) {
 	
 	if (this._item) {
-		this._item.removeChangeListener(this._listChangeListener);
+		this._item.removeChangeListener(this._convChangeHandler);
+		this._item.msgs.removeChangeListener(this._listChangeListener);
 		this._item = null;
 	}
 	
 	for (var id in this._msgViews) {
-		this._msgViews[id].dispose();
-		this._msgViews[id] = null;
+		var msgView = this._msgViews[id];
+		msgView.reset();
+		msgView.dispose();
+		msgView = null;
 		delete this._msgViews[id];
 	}
 	this._msgViewList = null;
@@ -946,7 +950,10 @@ function(msg, force) {
 ZmMailMsgCapsuleView.prototype.reset =
 function() {
 	ZmMailMsgView.prototype.reset.call(this);
-	this._header = null;
+	if (this._header) {
+		this._header.dispose();
+		this._header = null;
+	}
 };
 
 ZmMailMsgCapsuleView.prototype._renderMessage =
@@ -1409,6 +1416,8 @@ function() {
 
 ZmMailMsgCapsuleView.prototype._insertTagRow =
 function(table, tagCellId) {
+	
+	if (!table) { return; }
 	
 	var tagRow = table.insertRow(-1);
 	var cell;
