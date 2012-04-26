@@ -40,9 +40,11 @@ ZmContactPicker = function(buttonInfo) {
 
 	this._buttonInfo = buttonInfo;
 	this._initialized = false;
-	this._offset = 0;
+	this._emailListOffset = 0; //client side paginating over email list. Offset of current page of email addresses. Quite different than _lastServerOffset if contacts have 0 or more than 1 email addresses.
+	this._serverContactOffset = 0; //server side paginating over contact list. Offset of last contact block we got from the server (each contact could have 0, 1, or more emails so we have to keep track of this separate from the view offset.
+	this._ascending = true; //asending or descending search. Keep it stored for pagination to do the right sort.
 	this._defaultQuery = ".";
-	this._list = new AjxVector();
+	this._emailList = new AjxVector();
 	this._detailed = appCtxt.get(ZmSetting.DETAILED_CONTACT_SEARCH_ENABLED);
 	this._searchCleared = {};
 	this._ignoreSetDragBoundries = true;
@@ -107,7 +109,7 @@ function(buttonId, addrs, str, account) {
 		this._account = account;
 		this._resetSelectDiv();
 	}
-	this._offset = 0;
+	this._emailListOffset = 0;
 
 	var searchFor = this._selectDiv ? this._selectDiv.getValue() : ZmContactsApp.SEARCHFOR_CONTACTS;
 
@@ -147,7 +149,7 @@ function(buttonId, addrs, str, account) {
 	this._prevButton.setEnabled(false);
 	this._nextButton.setEnabled(false);
 
-	this.search(null, null, true);
+	this.search(null, true, true);
 
 	DwtDialog.prototype.popup.call(this);
     if ((this.getLocation().x < 0 ||  this.getLocation().y < 0) ){
@@ -158,6 +160,14 @@ function(buttonId, addrs, str, account) {
                 var dragElement = document.getElementById(this._dragHandleId);
                 DwtDraggable.setDragBoundaries(dragElement, 100 - currentSize.x, size.x - 100, 0, size.y - 100);
     }
+};
+
+
+ZmContactPicker.prototype._resetResults =
+function() {
+	this._emailList.removeAll();
+	this._serverContactOffset = 0;
+	this._emailListOffset = 0;
 };
 
 /**
@@ -173,7 +183,7 @@ function() {
 	}
 
 	this._contactSource = null;
-	this._list.removeAll();
+	this._resetResults();
 
 	DwtDialog.prototype.popdown.call(this);
 };
@@ -184,11 +194,20 @@ function() {
  * @private
  */
 ZmContactPicker.prototype.search =
-function(colItem, ascending, firstTime, lastId, lastSortVal) {
-	if (!AjxUtil.isSpecified(ascending)) {
-		ascending = true;
+function(colItem, ascending, firstTime, lastId, lastSortVal, offset) {
+	if (offset == undefined) {
+		//this could be a call from DwtChooserListView.prototype._sortColumn, which means we have to reset the result and both server and client pagination.
+		//In any case the results should be reset or are already reset so doesn't hurt to reset.
+		this._resetResults();
 	}
 
+	if (ascending === null || ascending === undefined) {
+		ascending = this._ascending;
+	}
+	else {
+		this._ascending = ascending;
+	}
+	
 	var query;
 	var queryHint = [];
 	var conds = [];
@@ -268,7 +287,7 @@ function(colItem, ascending, firstTime, lastId, lastSortVal) {
 		query:			query,
 		queryHint:		queryHint.join(" "),
 		conds:			conds,
-		offset:			this._list.size(),
+		offset:			offset || 0,
 		lastId:			lastId,
 		lastSortVal:	lastSortVal,
 		respCallback:	(new AjxCallback(this, this._handleResponseSearch, [firstTime])),
@@ -496,8 +515,7 @@ function(account) {
  */
 ZmContactPicker.prototype._searchButtonListener =
 function(ev) {
-	this._offset = 0;
-	this._list.removeAll();
+	this._resetResults();
 	this.search();
 };
 
@@ -509,6 +527,7 @@ function(firstTime, result) {
 	var resp = result.getResponse();
 	var more = resp.getAttribute("more");
 	var offset = resp.getAttribute("offset");
+	this._serverContactOffset = offset || 0;
 	var isPagingSupported = AjxUtil.isSpecified(offset);
 	var info = resp.getAttribute("info");
 	var expanded = info && info[0].wildcard[0].expanded == "0";
@@ -524,67 +543,41 @@ function(firstTime, result) {
 
 	// this method will expand the list depending on the number of email
 	// addresses per contact.
-	var list = AjxVector.fromArray(ZmContactsHelper._processSearchResponse(resp));
+	var emailArray = ZmContactsHelper._processSearchResponse(resp);
+	var emailList = AjxVector.fromArray(emailArray);
 
 	if (isPagingSupported) {
-		this._list.merge(offset, list);
-		this._list.hasMore = more;
+		this._emailList.addList(emailArray); //this internally calls concat. we do not need "merge" here because we use the _serverContactOffset as a marker of where to search next, never searching a block we already did.
+		this._emailList.hasMore = more;
 	} else {
-		this._list = list;
+		this._emailList = emailList;
 	}
 
-	if (list.size() == 0 && firstTime) {
+	if (emailList.size() == 0 && firstTime) {
 		this._chooser.sourceListView._setNoResultsHtml();
 	}
 
-	// if we don't get a full number of addresses in the results, repeat the search.
+	// if we don't get a full number of addresses in the results, search forward another block
 	// Could search several times.
-
-	// We want to base our search off the ID of the last contact in the response,
-	// NOT the last contact with an email address
-	var vec = resp.getResults(ZmItem.CONTACT);
-	if (vec.size() < ZmContactsApp.SEARCHFOR_MAX && more) {
-
-		var lastId, lastSortVal;
-		var email = (vec.size() > 0) ? vec.getVector().getLast() : null;
-		if (email) {
-			if (email.__contact) {
-				lastId = email.__contact.id;
-				lastSortVal = email.__contact.sf;
-			} else {
-				lastId = email.id;
-				lastSortVal = email.sf;
-			}
-		}
-        if (!lastSortVal && isPagingSupported) {
-			// BAIL. Server didn't send us enough info to make the next request
-			this._searchIcon.className = "ImgSearch";
-			return;
-		}
-        else if (!lastSortVal && !isPagingSupported) {
-            //paging not supported, show what we have
-            this._showResults(isPagingSupported, more, this.getSubList());
-        }
-        else {
-            this.search(null, null, null, lastId, lastSortVal);
-        }
+	if (((this._emailList.size() - this._emailListOffset) < ZmContactsApp.SEARCHFOR_MAX) && more) {
+		this.search(null, null, null, null, null, offset + ZmContactsApp.SEARCHFOR_MAX); //search another page size
 	}
 	else {
-		list = this.getSubList();
+		emailList = this.getSubList();
 		// If the AB ends with a long list of contacts w/o addresses,
 		// we may never get a list back.  If that's the case, roll back the offset
 		// and refetch, should disable the "next page" button.
-		if (!list) {
-			this._offset -= ZmContactsApp.SEARCHFOR_MAX;
-			if (this._offset < 0) {
-				this._offset = 0;
+		if (!emailList) {
+			this._emailListOffset -= ZmContactsApp.SEARCHFOR_MAX;
+			if (this._emailListOffset < 0) {
+				this._emailListOffset = 0;
 			}
-			list = this.getSubList();
+			emailList = this.getSubList();
 		}
 		if (!more) {
-			more = (this._offset+ZmContactsApp.SEARCHFOR_MAX) < this._list.size();
+			more = (this._emailListOffset + ZmContactsApp.SEARCHFOR_MAX) < this._emailList.size();
 		}
-		this._showResults(isPagingSupported, more, list);
+		this._showResults(isPagingSupported, more, emailList);
 	}
 
 };
@@ -596,7 +589,7 @@ function(isPagingSupported, more, list) {
 		this._prevButton.setEnabled(false);
 		this._nextButton.setEnabled(false);
 	} else {
-		this._prevButton.setEnabled(this._offset > 0);
+		this._prevButton.setEnabled(this._emailListOffset > 0);
 		this._nextButton.setEnabled(more);
 	}
 
@@ -638,31 +631,22 @@ function() {
 ZmContactPicker.prototype._pageListener =
 function(ev) {
 	if (ev.item == this._prevButton) {
-		this._offset -= ZmContactsApp.SEARCHFOR_MAX;
-		if (this._offset < 0) {
-			this._offset = 0;
+		this._emailListOffset -= ZmContactsApp.SEARCHFOR_MAX;
+		if (this._emailListOffset < 0) {
+			this._emailListOffset = 0;
 		}
 		this._showResults(true, true, this.getSubList()); // show cached results
 	}
 	else {
-		var lastId;
-		var lastSortVal;
-		this._offset += ZmContactsApp.SEARCHFOR_MAX;
+		this._emailListOffset += ZmContactsApp.SEARCHFOR_MAX;
 		var list = this.getSubList();
-		if (!list || ((list.size() < ZmContactsApp.SEARCHFOR_MAX) && this._list.hasMore)) {
-			if (!list) {
-				list = this._chooser.sourceListView.getList();
-			}
-			var email = (list.size() > 0) ? list.getLast() : null;
-			if (email) {
-				lastId = email.__contact.id;
-				lastSortVal = email.__contact.sf;
-			}
-			this.search(null, null, null, lastId, lastSortVal);
-		} else {
-			var more = this._list.hasMore;
+		if (!list || ((list.size() < ZmContactsApp.SEARCHFOR_MAX) && this._emailList.hasMore)) {
+			this.search(null, null, null, null, null, this._serverContactOffset + ZmContactsApp.SEARCHFOR_MAX); //search another page
+		}
+		else {
+			var more = this._emailList.hasMore;
 			if (!more) {
-				more = (this._offset+ZmContactsApp.SEARCHFOR_MAX) < this._list.size();
+				more = (this._emailListOffset+ZmContactsApp.SEARCHFOR_MAX) < this._emailList.size();
 			}
 			this._showResults(true, more, list); // show cached results
 		}
@@ -676,16 +660,16 @@ function(ev) {
  */
 ZmContactPicker.prototype.getSubList =
 function() {
-	var size = this._list.size();
+	var size = this._emailList.size();
 
-	var end = this._offset+ZmContactsApp.SEARCHFOR_MAX;
+	var end = this._emailListOffset + ZmContactsApp.SEARCHFOR_MAX;
 
 	if (end > size) {
 		end = size;
 	}
 
-	return (this._offset < end)
-		? (AjxVector.fromArray(this._list.getArray().slice(this._offset, end))) : null;
+	return (this._emailListOffset < end)
+		? (AjxVector.fromArray(this._emailList.getArray().slice(this._emailListOffset, end))) : null;
 };
 
 /**
