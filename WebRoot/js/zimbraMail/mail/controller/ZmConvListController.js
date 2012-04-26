@@ -323,6 +323,11 @@ function(params) {
 	params.markRead = true;
 };
 
+ZmConvListController.prototype._preUnloadCallback =
+function(view) {
+	return !(this._doublePaneView && this._doublePaneView._itemView.isDirty());
+};
+
 ZmConvListController.prototype._listSelectionListener =
 function(ev) {
 

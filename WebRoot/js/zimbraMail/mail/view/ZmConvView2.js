@@ -374,6 +374,11 @@ function() {
 	}
 };
 
+ZmConvView2.prototype.isDirty =
+function() {
+	return (this._replyView && (this._replyView.getValue() != ""));
+};
+
 // Scrolls to show the user something new. If the current msg view isn't completely visible,
 // scroll to show the next page. Otherwise, scroll the next expanded msg view to the top.
 // Returns true if scrolling was done.
