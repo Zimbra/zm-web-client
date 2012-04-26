@@ -53,7 +53,6 @@ ZmPortalController.prototype.toString = function() { return "ZmPortalController"
 ZmPortalController.prototype.getDefaultViewType = function() {
 	return ZmId.VIEW_PORTAL;
 };
-ZmPortalController.prototype.getDefaultViewType = ZmPortalController.getDefaultViewType;
 
 ZmPortalController.prototype.show = function() {
 	ZmListController.prototype.show.call(this);
