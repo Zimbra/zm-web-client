@@ -1781,10 +1781,10 @@ function(result){
 
 
     //Prepare UI
+    var hoursDiv = document.getElementById(this._hoursScrollDivId);
     if(!this._fbBarSlots){
         var div = document.createElement("DIV");
         //div.style.backgroundColor = "#EFE7D4";
-		var hoursDiv = document.getElementById(this._hoursScrollDivId);
 		if (hoursDiv) {
 			hoursDiv.appendChild(div);
 			Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
@@ -1794,26 +1794,27 @@ function(result){
     }
 
     //Calculate X, Y
-    var hourScrollDivLoc = Dwt.getLocation(document.getElementById(this._hoursScrollDivId));
-    var x = hourScrollDivLoc.x;
-    x = x + (ZmCalColView._HOURS_DIV_WIDTH - ZmCalColView._FBBAR_DIV_WIDTH + 1);
-    Dwt.setLocation(this._fbBarSlots, x, 0);
+    if (hoursDiv) {
+        var hourScrollDivLoc = Dwt.getLocation(hoursDiv);
+        var x = hourScrollDivLoc.x;
+        x = x + (ZmCalColView._HOURS_DIV_WIDTH - ZmCalColView._FBBAR_DIV_WIDTH + 1);
+        Dwt.setLocation(this._fbBarSlots, x, 0);
 
-    //Set Ht./ Width
-    var calBodyHt = document.getElementById(this._bodyDivId).scrollHeight;
-    Dwt.setSize(this._fbBarSlots, ZmCalColView._FBBAR_DIV_WIDTH - 2, calBodyHt);
+        //Set Ht./ Width
+        var calBodyHt = document.getElementById(this._bodyDivId).scrollHeight;
+        Dwt.setSize(this._fbBarSlots, ZmCalColView._FBBAR_DIV_WIDTH - 2, calBodyHt);
 
-    //Cleanup Existing Slots
-    this._fbBarSlots.innerHTML = "";
+        //Cleanup Existing Slots
+        this._fbBarSlots.innerHTML = "";
 
-    //Handle Slots
-    if(statusSlots.t) this._drawSlots(ZmCalColView._STATUS_TENTATIVE, statusSlots.t);
-    if(statusSlots.b) this._drawSlots(ZmCalColView._STATUS_BUSY, statusSlots.b);
-    if(statusSlots.o) this._drawSlots(ZmCalColView._STATUS_OOO, statusSlots.o);
-    if(statusSlots.u) this._drawSlots(ZmCalColView._STATUS_OOO, statusSlots.u);
-    //non tentative/busy/ooo are all free, dont handle them
-    //if(statusSlots.f) this._drawSlots(ZmCalColView._STATUS_FREE, statusSlots.f);
-
+        //Handle Slots
+        if(statusSlots.t) this._drawSlots(ZmCalColView._STATUS_TENTATIVE, statusSlots.t);
+        if(statusSlots.b) this._drawSlots(ZmCalColView._STATUS_BUSY, statusSlots.b);
+        if(statusSlots.o) this._drawSlots(ZmCalColView._STATUS_OOO, statusSlots.o);
+        if(statusSlots.u) this._drawSlots(ZmCalColView._STATUS_OOO, statusSlots.u);
+        //non tentative/busy/ooo are all free, dont handle them
+        //if(statusSlots.f) this._drawSlots(ZmCalColView._STATUS_FREE, statusSlots.f);
+    }
 };
 
 ZmCalColView.prototype._drawSlots =
