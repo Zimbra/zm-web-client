@@ -2440,7 +2440,7 @@ function(appt) {
 			// if simple appointment, no prompting necessary
             var isTrash = calendar.nId == ZmOrganizer.ID_TRASH;
 			if (appt.isReadOnly() || calendar.isReadOnly() || isSynced || isTrash) {
-				var mode = appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
+                var mode = appt.isRecurring() ? (appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES) : ZmCalItem.MODE_EDIT;
 				this.showApptReadOnlyView(appt, mode);
 			} else {
 				this.editAppointment(appt, ZmCalItem.MODE_EDIT);

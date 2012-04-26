@@ -107,6 +107,40 @@ function(mode) {
     var saveButton = this._toolbar.getButton(ZmOperation.SAVE);
     saveButton.setEnabled(false);
 
+    var editButton = this._toolbar.getButton(ZmOperation.EDIT),
+        forwardApptButton,
+        deleteButton;
+
+    if (editButton) {
+        if (mode === ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
+            if (editButton.getText() !== ZmMsg.editInstance) {
+                editButton.setText(ZmMsg.editInstance);
+                forwardApptButton = this._toolbar.getButton(ZmOperation.FORWARD_APPT);
+                deleteButton = this._toolbar.getButton(ZmOperation.DELETE);
+                forwardApptButton && forwardApptButton.setText(ZmMsg.forwardInstance);
+                deleteButton && deleteButton.setText(ZmMsg.deleteApptInstance);
+            }
+        }
+        else if (mode === ZmCalItem.MODE_EDIT_SERIES) {
+            if (editButton.getText() !== ZmMsg.editSeries) {
+                editButton.setText(ZmMsg.editSeries);
+                forwardApptButton = this._toolbar.getButton(ZmOperation.FORWARD_APPT);
+                deleteButton = this._toolbar.getButton(ZmOperation.DELETE);
+                forwardApptButton && forwardApptButton.setText(ZmMsg.forwardSeries);
+                deleteButton && deleteButton.setText(ZmMsg.deleteApptSeries);
+            }
+        }
+        else {
+            if (editButton.getText() !== ZmMsg.edit) {
+                editButton.setText(ZmMsg.edit);
+                forwardApptButton = this._toolbar.getButton(ZmOperation.FORWARD_APPT);
+                deleteButton = this._toolbar.getButton(ZmOperation.DELETE);
+                forwardApptButton && forwardApptButton.setText(ZmMsg.forward);
+                deleteButton && deleteButton.setText(ZmMsg.del);
+            }
+        }
+    }
+
     // bug 68451: disabling edit options for trashed appointments
     var calItem = this.getCalItem();
     var calendar = calItem && calItem.getFolder();
