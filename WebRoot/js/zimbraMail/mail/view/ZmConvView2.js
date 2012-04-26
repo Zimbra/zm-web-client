@@ -1025,13 +1025,11 @@ function(isTextMsg, html, isTruncated) {
 	if (isTruncated)	{ return true; }
 	if (isTextMsg)		{ return false; }
 	
-//	return true;
-
-	// bail on trying to display simple HTML msgs without using an IFRAME. Issues:
-	// - since we set a width on the container (CV div), we don't know how wide the msg content is
-
+	// Code below attempts to determine if we can display an HTML msg in a DIV. If there are
+	// issues with the msg DOM being part of the window DOM, we may want to just always return
+	// true from this function.
 	var result = AjxStringUtil.checkForCleanHtml(html, ZmMailMsgView.TRUSTED_TAGS, ZmMailMsgView.UNTRUSTED_ATTRS, ZmMailMsgView.BAD_STYLES);
-	if (result) {
+	if (result.html) {
 		this._cleanedHtml = result.html;
 		this._contentWidth = result.width;
 		return false;
