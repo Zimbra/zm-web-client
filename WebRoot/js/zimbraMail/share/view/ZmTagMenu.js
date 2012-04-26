@@ -209,7 +209,7 @@ function(tagList, addRemove) {
 				if (!removeMenu) {
 					removeMenu = new DwtMenu({parent:miRemove, className:this._className});
 					miRemove.setMenu(removeMenu);
-                    removeMenu.setHtmlElementId('REMOVE_TAG_MENU');
+                    removeMenu.setHtmlElementId('REMOVE_TAG_MENU_' + this.getHTMLElId());
 				}
 				var tag = tagList.getByNameOrRemote(removeList[i]);
                 var tagHtmlId = 'Remove_tag_' + i;
