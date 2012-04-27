@@ -3298,6 +3298,20 @@ function(appt, actionMenu) {
 	    actionMenu.enable(ZmOperation.DELETE_SERIES, false);
     }
 
+    // bug:71007 Disabling unsupported options for shared calendar with view only rights
+    if(appt.isReadOnly() && appt.isShared()) {
+	    actionMenu.enable(ZmOperation.REINVITE_ATTENDEES, false);
+	    actionMenu.enable(ZmOperation.PROPOSE_NEW_TIME, false);
+        actionMenu.enable(ZmOperation.REPLY, false);
+	    actionMenu.enable(ZmOperation.REPLY_ALL, false);
+	    actionMenu.enable(ZmOperation.DELETE, false);
+	    actionMenu.enable(ZmOperation.DELETE_INSTANCE, false);
+	    actionMenu.enable(ZmOperation.DELETE_SERIES, false);
+        actionMenu.enable(ZmOperation.TAG_MENU, false);
+        actionMenu.enable(ZmOperation.MOVE, false);
+        actionMenu.enable(ZmOperation.MOVE_MENU, false);
+    }
+
 	// edit reply menu
 	if (enabled) {
 		var mi = actionMenu.getMenuItem(ZmOperation.INVITE_REPLY_MENU);
