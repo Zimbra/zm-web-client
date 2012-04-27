@@ -508,11 +508,12 @@ ZmObjectManager.prototype.processObjectsInNode = function(doc, node){
 		return node.nextSibling;
 	};
 
-    //Parse thorough the DOM directly and find objects.
-    for(var i=0; i<node.childNodes.length; i++){
-        recurse(node.childNodes[i], true);
-    }
-
+    // Parse through the DOM directly and find objects.
+	if (node && node.childNodes && node.childNodes.length) {
+		for (var i = 0; i < node.childNodes.length; i++){
+			recurse(node.childNodes[i], true);
+		}
+	}
 };
 
 /**

@@ -601,7 +601,7 @@ function() {
 
 ZmMailMsgView.prototype.lazyFindMailMsgObjects =
 function(interval) {
-	if (this._objectManager) {
+	if (this._objectManager && !this._disposed) {
 		this._lazyCreateObjectManager();
 		this._objectsAction = new AjxTimedAction(this, this._findMailMsgObjects);
 		AjxTimedAction.scheduleAction(this._objectsAction, ( interval || 500 ));
@@ -612,7 +612,7 @@ ZmMailMsgView.prototype._findMailMsgObjects =
 function() {
 	var doc = this.getDocument();
 	if (doc) {
-		this._objectManager.processObjectsInNode(doc, this._usingIframe ? doc.body : this._containerEl);
+		this._objectManager.processObjectsInNode(doc, this.getContentContainer());
 	}
 };
 
