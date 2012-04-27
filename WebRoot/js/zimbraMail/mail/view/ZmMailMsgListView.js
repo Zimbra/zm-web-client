@@ -355,7 +355,7 @@ function() {
 		];
 	}
 
-	return this._getHeaders(this.view, headers);
+	return this._getHeaders(ZmId.VIEW_TRAD, headers);
 };
 
 ZmMailMsgListView.prototype._initHeaders =

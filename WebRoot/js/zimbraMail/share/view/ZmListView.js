@@ -1246,7 +1246,7 @@ function() {
 	var value = fields.join(ZmListView.COL_JOIN);
 	value = (value == this._defaultCols) ? "" : value;
     if (!appCtxt.isExternalAccount()) {
-	    appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, value, this.view);
+	    appCtxt.set(ZmSetting.LIST_VIEW_COLUMNS, value, appCtxt.getViewTypeFromId(this.view));
     }
 
 	this._getActionMenuForColHeader(true); // re-create action menu so order is correct
