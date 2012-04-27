@@ -1946,7 +1946,7 @@ function() {
 		
 		// add any discretionary links depending on the attachment and what's enabled
 		var linkCount = 0;
-		if (att.size || att.links.html || att.links.vcard || att.links.download || att.links.briefcase || att.links.importICS) {
+		if (!appCtxt.isExternalAccount() && (att.size || att.links.html || att.links.vcard || att.links.download || att.links.briefcase || att.links.importICS)) {
 			// size
 			htmlArr[idx++] = "&nbsp;(";
 			if (att.size) {
