@@ -484,7 +484,9 @@ function() {
 
 ZmConvView2.prototype._cancelListener =
 function() {
-	this._replyView.reset();
+	if (this._controller.popShield()) {
+		this._replyView.reset();
+	}
 };
 
 // Hands off to a compose view, or takes what's in the quick reply and sends it

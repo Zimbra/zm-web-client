@@ -268,12 +268,14 @@ function(currentItem, forward) {
 
 ZmConvListController.prototype._createDoublePaneView = 
 function() {
-	return new ZmConvDoublePaneView({
+	var dpv = new ZmConvDoublePaneView({
 		parent:		this._container,
 		posStyle:	Dwt.ABSOLUTE_STYLE,
 		controller:	this,
 		dropTgt:	this._dropTgt
 	});
+	this._convView = dpv._itemView;
+	return dpv;
 };
 
 ZmConvListController.prototype._paginate = 
@@ -325,7 +327,51 @@ function(params) {
 
 ZmConvListController.prototype._preUnloadCallback =
 function(view) {
-	return !(this._doublePaneView && this._doublePaneView._itemView.isDirty());
+	return !(this._convView && this._convView.isDirty());
+};
+
+ZmConvListController.prototype._preHideCallback =
+function(view, force) {
+	return force ? true : this.popShield(view);
+};
+
+ZmConvListController.prototype.popShield =
+function(view) {
+	if (this._convView && this._convView.isDirty()) {
+		var ps = this._popShield = this._popShield || appCtxt.getYesNoMsgDialog();
+		ps.reset();
+		var msg = view ? ZmMsg.convViewSwitch : ZmMsg.convViewCancel;
+		ps.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+		ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this, [view]);
+		ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this, [view]);
+		ps.popup();
+		return false;
+	}
+	else {
+		return true;
+	}
+};
+
+ZmConvListController.prototype._popShieldYesCallback =
+function(view) {
+	this._convView._replyView.reset();
+	this._popShield.popdown();
+	if (view) {
+		appCtxt.getAppViewMgr().showPendingView(true);
+	}
+};
+
+ZmConvListController.prototype._popShieldNoCallback =
+function(view) {
+	this._popShield.popdown();
+	if (view) {
+		// attempt to switch to TV was canceled - need to undo changes
+		var viewType = appCtxt.getViewTypeFromId(view);
+		this._updateViewMenu(viewType);
+		if (!appCtxt.isExternalAccount() && !this.isSearchResults && !this._currentSearch.isOutboundFolder) {
+			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[viewType]);
+		}
+	}
 };
 
 ZmConvListController.prototype._listSelectionListener =
