@@ -703,7 +703,8 @@ function(msg, msgView, op) {
 	// Notify only the email zimlet, since other zimlets either hit an error or do something unneeded
 	appCtxt.notifyZimlet("com_zimbra_email", "onMsgView");
 	this.setVisible(true);
-	Dwt.scrollIntoView(this.getHtmlElement(), this._convView._messagesDiv)
+	Dwt.scrollIntoView(this.getHtmlElement(), this._convView._messagesDiv);
+	appCtxt.getKeyboardMgr().grabFocus(this._input);
 };
 
 ZmConvReplyView.prototype.getAddresses =
