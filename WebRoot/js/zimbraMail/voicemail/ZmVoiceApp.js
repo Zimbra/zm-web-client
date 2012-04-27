@@ -84,7 +84,7 @@ function() {
 						 node:			"vm",
 						 organizer:		ZmOrganizer.VOICE,
 						 dropTargets:	[ZmOrganizer.VOICE],
-//						 searchType:	"voicemail",
+						 searchType:	"voicemail",
 						 resultsList:	AjxCallback.simpleClosure(function(search) {
 											AjxDispatcher.require("Voicemail");
 											return new ZmVoiceList(ZmItem.VOICEMAIL, search);
@@ -100,7 +100,7 @@ function() {
 						 itemClass:		"ZmCall",
 						 node:			"cl",
 						 organizer:		ZmOrganizer.VOICE,
-//						 searchType:	"calllog",
+						 searchType:	"calllog",
 						 resultsList:	AjxCallback.simpleClosure(function(search) {
 											AjxDispatcher.require("Voicemail");
 											return new ZmVoiceList(ZmItem.CALL, search);
