@@ -482,7 +482,7 @@ function(pathOnly) {
 		path = name + "/" + path;
 		f = f.parent;
 	}
-    if (appCtxt.isExternalAccount() && path.indexOf("/") !== 0) {
+    if (appCtxt.isExternalAccount() && path.indexOf("/") === -1) {
         path = "/" + path;
     }
 	path = '"' + path + '"';

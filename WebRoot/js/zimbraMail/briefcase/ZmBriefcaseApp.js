@@ -433,7 +433,9 @@ ZmBriefcaseApp.prototype.search =
 function(params) {
 
 	params = params || {};
-	var folder = appCtxt.getById(params.folderId || ZmOrganizer.ID_BRIEFCASE);
+    var folderId = params.folderId || (appCtxt.isExternalAccount() ? this.getDefaultFolderId() : ZmOrganizer.ID_BRIEFCASE);
+	var folder = appCtxt.getById(folderId);
+
 	var searchParams = {
 		query:			params.query || folder.createQuery(),
 		types:			[ZmItem.BRIEFCASE_ITEM],
