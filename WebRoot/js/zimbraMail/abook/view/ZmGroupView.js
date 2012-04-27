@@ -47,6 +47,8 @@ ZmGroupView = function(parent, controller) {
 	this._changeListener = new AjxListener(this, this._groupChangeListener);
 	this._detailedSearch = appCtxt.get(ZmSetting.DETAILED_CONTACT_SEARCH_ENABLED);
 	this._groupMemberMods = {};
+	this._tabGroup = new DwtTabGroup(this._htmlElId);
+	
 };
 
 ZmGroupView.prototype = new DwtComposite;
@@ -148,6 +150,7 @@ function(contact, isDirty) {
 		this._createHtml();
 		this._addWidgets();
 		this._installKeyHandlers();
+		this._tabGroup.addMember(this._getTabGroupMembers());
 	}
 	
 	this._setFields();
@@ -946,6 +949,13 @@ function() {
 	}
 };
 
+/**
+ * very important method to have in order for the tab group (and tabbing) to be set up correctly (called from ZmBaseController.prototype._initializeTabGroup)
+ */
+ZmGroupView.prototype.getTabGroupMember = function() {
+	return this._tabGroup;
+};
+
 ZmGroupView.prototype._getTabGroupMembers =
 function() {
 	var fields = [];
@@ -989,6 +999,12 @@ function() {
 ZmGroupView.prototype._getDefaultFocusItem =
 function() {
 	if (this.isDistributionList()) {
+		if (this._usernameEditable) {
+			return document.getElementById(this._groupNameId);
+		}
+		if (this._domainEditable) {
+			return document.getElementById(this._groupNameDomainId);
+		}
 		return document.getElementById(this._dlDisplayNameId);
 	}
 	return document.getElementById(this._groupNameId);
