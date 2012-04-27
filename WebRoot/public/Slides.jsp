@@ -121,7 +121,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <title>Zimbra Presentations</title>
     <style type="text/css">                                                               
         <!--
-        @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,presentation,slides,images,skin.css?v=<%= vers %><%= isSkinDebugMode || isDevMode ? "&debug=1" : "" %>&skin=${zm:cook(skin)});
+        @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,spreadsheet,presentation,slides,images,skin.css?v=<%= vers %><%= isSkinDebugMode || isDevMode ? "&debug=1" : "" %>&skin=${zm:cook(skin)});
         -->
     </style>
     <jsp:include page="Resources.jsp">

@@ -54,7 +54,7 @@
 	<html>
 		<head>
 			<title><$= ZmMsg.zimbraLabel $> <$= data.username $></title>
-			<link rel='stylesheet' href='<$= data.appContextPath $>/css/msgview,zm,wiki.css?v=<$= data.cacheKillerVersion $>' media='screen'></link>
+			<link rel='stylesheet' href='<$= data.appContextPath $>/css/msgview,zm.css?v=<$= data.cacheKillerVersion $>' media='screen'></link>
 			<$ if (data.onloadStr) { $>
 				<script language='javascript'>
 					function handleOnload() {

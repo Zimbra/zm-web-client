@@ -54,7 +54,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 <html>
   <head>
     <title>Zimbra Spreadsheet Prototype</title>
-    <link rel="stylesheet" href="<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,images,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=${zm:cook(skin)}" />
+    <link rel="stylesheet" href="<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,spreadsheet,images,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=${zm:cook(skin)}" />
 	<jsp:include page="Resources.jsp">
 		<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys" />
 		<jsp:param name="skin" value="${zm:cook(skin)}" />

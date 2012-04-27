@@ -105,7 +105,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 <head>
     <fmt:setBundle basename="/messages/ZmMsg" scope="request" force="true" />
     <title><fmt:message key="spreadsheetTitle"/></title>
-    <link href="<c:url value="/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,presentation,slides,images,skin.css">
+    <link href="<c:url value="/css/common,dwt,msgview,login,zm,spellcheck,spreadsheet,presentation,slides,images,skin.css">
         <c:param name="v" value="${vers}" />
 	    <c:param name="debug" value='${isDebug?"1":""}' />
 	    <c:param name="skin" value="${zm:cook(skin)}" />
