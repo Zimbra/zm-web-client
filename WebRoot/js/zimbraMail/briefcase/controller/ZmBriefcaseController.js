@@ -372,7 +372,6 @@ function(parent, num) {
                         ZmOperation.MOVE_MENU,
                         ZmOperation.NEW_FILE,
                         ZmOperation.TAG_MENU,
-                        ZmOperation.SAVE_FILE,
                         ZmOperation.EDIT_FILE,
                         ZmOperation.OPEN_FILE,
                         ZmOperation.CHECKIN,
