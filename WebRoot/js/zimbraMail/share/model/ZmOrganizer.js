@@ -728,8 +728,9 @@ function(force) {
 	if (this.noTooltip) {
 		return null;
 	}
-	if (!this._tooltip || force) {
-		var subs = {name:this.name, numTotal:this.numTotal, sizeTotal:this.sizeTotal, numUnread:this.numUnread};
+    if (!this._tooltip || force) {
+		var itemText = this._getItemsText();
+		var subs = {name:this.name, itemText:itemText, numTotal:this.numTotal, sizeTotal:this.sizeTotal, numUnread:this.numUnread};
 		this._tooltip = AjxTemplate.expand("share.App#FolderTooltip", subs);
 	}
 	return this._tooltip;
