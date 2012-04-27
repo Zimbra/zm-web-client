@@ -1458,7 +1458,7 @@ function(attachment, controller) {
         req.setRequestHeader("Cache-Control", "no-cache");
         req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         req.setRequestHeader("Content-Type",  (contentType || "application/octet-stream") );
-        req.setRequestHeader("Content-Disposition", 'attachment; filename="'+ filename + '"');
+        req.setRequestHeader("Content-Disposition", 'attachment; filename="'+ AjxUtil.convertToEntities(filename) + '"');
 
         var reqObj = req;
         req.onreadystatechange = AjxCallback.simpleClosure(this._handleUploadResponse, this, reqObj, controller);

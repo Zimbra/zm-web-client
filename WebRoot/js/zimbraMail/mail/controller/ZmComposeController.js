@@ -2230,7 +2230,7 @@ ZmComposeController.prototype._uploadMyComputerFile =
         req.setRequestHeader("Cache-Control", "no-cache");
         req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         req.setRequestHeader("Content-Type",  (file.type || "application/octet-stream") + ";");
-        req.setRequestHeader("Content-Disposition", 'attachment; filename="'+ fileName + '"');
+        req.setRequestHeader("Content-Disposition", 'attachment; filename="'+ AjxUtil.convertToEntities(fileName) + '"');
 
 	    curView._startUploadAttachment();
         DBG.println(AjxDebug.DBG1,"Uploading file: "  + fileName + " file type" + (file.type || "application/octet-stream") );
@@ -2295,7 +2295,7 @@ ZmComposeController.prototype._uploadImage = function(blob, callback){
     req.setRequestHeader("Cache-Control", "no-cache");
     req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     req.setRequestHeader("Content-Type", blob.type);
-    req.setRequestHeader("Content-Disposition", 'attachment; filename="' + blob.name + '"');
+    req.setRequestHeader("Content-Disposition", 'attachment; filename="' + AjxUtil.convertToEntities(blob.name) + '"');
     req.onreadystatechange = function(){
         if(req.readyState === 4 && req.status === 200) {
             var resp = eval("["+req.responseText+"]");
