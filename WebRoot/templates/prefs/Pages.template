@@ -1304,6 +1304,9 @@ and the container element is replaced with that control.
 									<td style='padding-right:.5em;'>
 										<input id='${id}_PERSONA_FROM_NAME' tabindex='3020' size=30>
 									</td>
+                                    <td>
+                                        <select id='${id}_PERSONA_FROM_EMAIL' tabindex='3030' size=40></select>
+                                    </td>
 								</tr>
 							</table>
 						</td>
