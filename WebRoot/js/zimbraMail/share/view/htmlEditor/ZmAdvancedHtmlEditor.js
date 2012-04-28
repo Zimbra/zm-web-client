@@ -504,7 +504,7 @@ function(id, content) {
         if (obj._onTinyMCEEditorInitcallback) {
 		    obj._onTinyMCEEditorInitcallback.run();
         }
-        obj._handlePopup(ed);
+        (ed.windowManager) && ed.windowManager.onOpen.add(ZmAdvancedHtmlEditor.onPopupOpen);
 	};
 
 	var urlParts = AjxStringUtil.parseURL(location.href);
@@ -1786,40 +1786,52 @@ function() {
 };
 
 /*
- * Modifies popup dialog after rendering
+ * This will be fired before every popup open
+ *
+ * @param {windowManager} tinymce window manager for popups
+ * @param {popupWindow}	contains tinymce popup info or popup DOM Window
+ *
  */
-ZmAdvancedHtmlEditor.prototype._handlePopup =
-function(ed) {
-    var popupIframeLoad = function(popupWindow){
-        var doc = popupWindow.document;
-        if( doc ){
-            if( popupWindow.action === "insert" ){  //Insert Table dialog
-                var align = doc.getElementById("align");
-                var width = doc.getElementById("width");
-                align && (align.value = "center");
-                width && (width.value = "90%");
-            }
-        }
-    };
+ZmAdvancedHtmlEditor.onPopupOpen = function(windowManager, popupWindow) {
+    if (!popupWindow) {
+        return;
+    }
+    if (popupWindow.resizable) {
+        popupWindow.resizable = 0;
+    }
 
-    ed.windowManager.onOpen.add(function(windowManager, popupWindow) {
-        if( !popupWindow ){
-            return;
-        }
-        var popupIframe = popupWindow.frameElement;
-        if( popupIframe ){
-            if( popupIframe.attachEvent ){
-                 popupIframe.attachEvent("onload", function(){
-                    popupIframeLoad( popupWindow );
-                 });
+    var popupIframe = popupWindow.frameElement,
+        popupIframeLoad;
+
+    if (popupIframe && popupIframe.src && popupIframe.src.match("/table.htm")) {//Table dialog
+        popupIframeLoad = function(popupWindow, popupIframe) {
+            var doc,align,width;
+            if (popupWindow.action === "insert") {//Insert Table Action
+                doc = popupWindow.document;
+                if (doc) {
+                    align = doc.getElementById("align");
+                    width = doc.getElementById("width");
+                    align && (align.value = "center");
+                    width && (width.value = "90%");
+                }
             }
-            else{
-                popupIframe.onload = function(){
-                    popupIframeLoad( popupWindow );
-                };
+            if (this._popupIframeLoad) {
+                popupIframe.detachEvent("onload", this._popupIframeLoad);
+                delete this._popupIframeLoad;
             }
+            else {
+                popupIframe.onload = null;
+            }
+        };
+
+        if (popupIframe.attachEvent) {
+            this._popupIframeLoad = popupIframeLoad.bind(this, popupWindow, popupIframe);
+            popupIframe.attachEvent("onload", this._popupIframeLoad);
         }
-    });
+        else {
+            popupIframe.onload = popupIframeLoad.bind(this, popupWindow, popupIframe);
+        }
+    }
 };
 
 /**
