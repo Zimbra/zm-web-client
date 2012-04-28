@@ -171,9 +171,6 @@ function(ev) {
 				if (inAlphaBar) {
 					this.setSelection(newContact, false, true);
 				}
-			} else {
-				this.deselectAll();
-				this.setSelection(newContact, false, true);
 			}
 		} else if (ev.event == ZmEvent.E_DELETE) {
 			// bug fix #19308 - do house-keeping on controller's list so

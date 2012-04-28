@@ -710,6 +710,9 @@ function(ev) {
 ZmContactListController.prototype._handleListChange =
 function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY || ev.event == ZmEvent.E_CREATE) {
+		if (!ev._details.visible) {
+			return;
+		}
 		var item = ev && ev._details && ev._details.items && ev._details.items.length && ev._details.items[0];
 		if (item instanceof ZmContact && this._currentViewType == ZmId.VIEW_CONTACT_SIMPLE && item.folderId == this._folderId) {
 			var alphaBar = this._parentView[this._currentViewId].getAlphabetBar();
