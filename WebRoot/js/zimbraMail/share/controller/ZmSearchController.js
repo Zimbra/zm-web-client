@@ -512,6 +512,11 @@ function(params, noRender, callback, errorCallback) {
 
 	// get types from search type if not passed in explicitly
 	var types = params.types;
+
+	if (types && !types.isAjxVector) { // change a scalar type to array. (unless it's a vector)
+		types = AjxUtil.toArray(types);
+	}
+
 	if (!types || (types.length == 0) || (types.isAjxVector && types.size() == 0)) {
 		types = (params.skipUpdateSearchToolbar && searchFor == ZmId.SEARCH_MAIL && this._prevTypes) || this.getTypes(params);
 	}
