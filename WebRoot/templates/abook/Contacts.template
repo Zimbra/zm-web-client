@@ -638,7 +638,7 @@
 		</table>
 	<$ } $>
 
-	<table width=100% height=100% class='ZPropertySheet'>
+	<table width=98% height=100% class='ZPropertySheet'>
 		<tr>
 			<!-- content: left pane -->
 			<td width=50% valign=top>
