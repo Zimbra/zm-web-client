@@ -330,7 +330,9 @@ function(user,sendAs,sendObo,isGrant,refresh) {
 
 ZmAccountsPage.prototype._grantDelegateRights =
 function(user,sendAs,sendObo) {
-    this._handleDelegateRights(user,sendAs,sendObo,true,true);
+    if (sendAs || sendObo){
+        this._handleDelegateRights(user,sendAs,sendObo,true,true);
+    }
 };
 
 ZmAccountsPage.prototype._handleAddDelegateButton =
@@ -2617,6 +2619,7 @@ ZmGrantRightsDialog = function(parent, className,callback) {
     this._userNameRow = document.getElementById(id+"_name_row");
     this._sendAs = document.getElementById(id+"_sendAs");
     this._sendObo = document.getElementById(id+"_sendObo");
+    this._editPermissions = false;
     this._okCallBack = callback;
     this._initAutoComplete();
 };
@@ -2636,6 +2639,11 @@ function() {
 ZmGrantRightsDialog.prototype.popup =
 function() {
 	ZmDialog.prototype.popup.call(this);
+    if (!this._editPermissions){
+     this._userName.focus();
+    } else {
+     this._sendAs.focus();
+    }
 };
 
 ZmGrantRightsDialog.prototype._contentHtml =
@@ -2656,13 +2664,20 @@ function(item){
         this._userNameRow.style.display ="none";
         this._sendAs.checked = item.sendAs;
         this._sendObo.checked = item.sendOnBehalfOf;
+        this._editPermissions = true;
+        this._prevData = item;
     } else {
         this.setTitle(ZmMsg.delegatePermissions);
         this._userNameRow.style.display ="";
         this._userName.value="";
         this._sendAs.checked = false;
         this._sendObo.checked = false;
+        this._editPermissions = false;
+        Dwt.setHandler(this._userName, DwtEvent.ONCHANGE, this._onChange.bind(this));
     }
+    this.getButton(DwtDialog.OK_BUTTON).setEnabled(false);
+    Dwt.setHandler(this._sendAs, DwtEvent.ONCHANGE, this._onChange.bind(this));
+    Dwt.setHandler(this._sendObo, DwtEvent.ONCHANGE, this._onChange.bind(this));
 };
 ZmGrantRightsDialog.prototype._initAutoComplete =
 function(){
@@ -2680,3 +2695,15 @@ function(){
                 this._acAddrSelectList.handle(this._userName);
     }
 };
+
+ZmGrantRightsDialog.prototype._onChange =
+function(){
+    var enable = false;
+    if (!this._editPermissions){
+       enable = Boolean(this._userName.value) && (this._sendAs.checked || this._sendObo.checked);
+    }else {
+       enable = (this._prevData.sendAs != this._sendAs.checked) || (this._prevData.sendOnBehalfOf != this._sendObo.checked);
+    }
+    this.getButton(DwtDialog.OK_BUTTON).setEnabled(enable);
+
+}
