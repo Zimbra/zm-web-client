@@ -2577,7 +2577,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 <template id='prefs.Pages#GrantRightsDialog'>
     <table>
     <tr id='${id}_name_row'>
-        <td class="Label" style="padding-right:10px"><$=ZmMsg.name$></td>
+        <td class="Label" style="padding-right:10px"><$=ZmMsg.emailLabel$></td>
         <td>
             <input id='${id}_name' class="Field" type="text" autocomplete="off">
         </td>
