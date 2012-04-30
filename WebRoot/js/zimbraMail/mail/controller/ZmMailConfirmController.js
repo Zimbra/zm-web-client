@@ -72,7 +72,6 @@ function(msg, composeViewId, composeTabId, controller) {
 	}
 
 	var avm = appCtxt.getAppViewMgr();
-	avm.popView(this._composeViewId);
 	avm.pushView(this._currentViewId);
 };
 

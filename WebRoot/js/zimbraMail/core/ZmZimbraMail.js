@@ -333,6 +333,7 @@ function(params) {
 	ZmZimbraMail.registerViewsToTypeMap();
 
 	this._getStartApp(params);
+	appCtxt.startApp = params.startApp;
 
 	this._postRenderCallbacks = [];
 	this._postRenderLast = 0;

@@ -724,6 +724,11 @@ function() {
 			tooltip:ZmComposeController.DEFAULT_TAB_TEXT, style: DwtLabel.IMAGE_RIGHT};
 };
 
+ZmComposeController.prototype.isTransient =
+function(oldView, newView) {
+	return (appCtxt.getViewTypeFromId(newView) == ZmId.VIEW_MAIL_CONFIRM);
+};
+
 ZmComposeController.prototype._identityChangeListener =
 function(setSignature, event) {
 
