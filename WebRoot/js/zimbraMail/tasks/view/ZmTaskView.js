@@ -122,6 +122,11 @@ function(calItem) {
 		? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
 
 	var bodyPart = calItem.getNotesPart(mode);
+
+    if (!bodyPart && calItem.message){
+        bodyPart = calItem.message.getInviteDescriptionContentValue(ZmMimeTable.TEXT_PLAIN);
+    }
+
 	if (bodyPart) {
 		this._msg = this._msg || this._calItem._currentlyLoaded;
         if (mode === ZmMimeTable.TEXT_PLAIN) {

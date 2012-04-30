@@ -154,6 +154,9 @@ function(calItem, mode) {
 	this._setPriority(calItem.priority);
 	this._statusSelect.setSelectedValue(calItem.status);
     this._pCompleteSelectInput.setValue(this.formatPercentComplete(calItem.pComplete));
+    if (!this._notesHtmlEditor.getContent() && calItem.message){
+        this._notesHtmlEditor.setContent(calItem.message.getInviteDescriptionContentValue(ZmMimeTable.TEXT_PLAIN) || "");
+    }
 };
 
 ZmTaskEditView.prototype._populateForSave =

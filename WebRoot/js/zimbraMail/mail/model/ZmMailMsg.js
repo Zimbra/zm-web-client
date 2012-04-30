@@ -1030,6 +1030,16 @@ function(contentType, content) {
 };
 
 /**
+ * Gets the invite description content value.
+ *
+ * @param {String}	contentType	the content type ("text/plain" or "text/html")
+ * @return	{String}	the content value
+ */
+ZmMailMsg.prototype.getInviteDescriptionContentValue =
+function(contentType) {
+    return this._inviteDescBody[contentType];
+}
+/**
  * Gets the invite description content.
  * 
  * @param {String}	contentType	the content type ("text/plain" or "text/html")
