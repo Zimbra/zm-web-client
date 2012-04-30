@@ -372,6 +372,7 @@ function(view) {
 			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[viewType]);
 		}
 	}
+	appCtxt.getKeyboardMgr().grabFocus(this._convView._replyView._input);
 };
 
 ZmConvListController.prototype._listSelectionListener =
