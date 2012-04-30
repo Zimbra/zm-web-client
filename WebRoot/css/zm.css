@@ -5540,5 +5540,9 @@ div.ZmSuggestLocationLink {
     padding:4px 2px 2px 4px;
 }
 
+.FakeAnchor, a:link, a:visited {
+	@Anchor@
+}
+
 /* for displaying a msg without using an iframe (bug 66466) */
 @import url("msgview.css");
