@@ -243,7 +243,9 @@ function(dayViewCallback) {
 		if (!this._dayView) {
 			// create a new ZmCalDayView under msgview's parent otherwise, we
 			// cannot position the day view correctly.
-			this._dayView = new ZmCalDayView(this.parent.parent, DwtControl.ABSOLUTE_STYLE, cc, null,
+			var dayViewParent = (this.mode && (this.mode == ZmId.VIEW_CONV2)) ?
+			    this.parent : this.parent.parent;
+			this._dayView = new ZmCalDayView(dayViewParent, DwtControl.ABSOLUTE_STYLE, cc, null,
                 this.parent._viewId, null, true, true, this.isRight());
 			this._dayView.addSelectionListener(new AjxListener(this, this._apptSelectionListener));
 			this._dayView.setZIndex(Dwt.Z_VIEW); // needed by ZmMsgController's msgview
