@@ -254,7 +254,9 @@ function(noClear) {
 	
 	if (this._item) {
 		this._item.removeChangeListener(this._convChangeHandler);
-		this._item.msgs.removeChangeListener(this._listChangeListener);
+		if (this._item.msgs) {
+			this._item.msgs.removeChangeListener(this._listChangeListener);
+		}
 		this._item = null;
 	}
 	
@@ -387,7 +389,10 @@ function() {
 ZmConvView2.prototype._keepReading =
 function() {
 
+	if (!(this._msgViewList && this._msgViewList.length)) { return false; }
+	
 	var firstMsgView = this._msgViews[this._msgViewList[0]];
+	if (!firstMsgView) { return false; }
 	var startMsgView = this._currentMsgView || firstMsgView;
 	var el = startMsgView.getHtmlElement();
 
