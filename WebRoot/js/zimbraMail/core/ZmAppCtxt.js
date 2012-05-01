@@ -216,16 +216,17 @@ function(id, key, account) {
  * @param {Boolean}	setDefault			if <code>true</code>, also replace setting default value
  * @param {Boolean}	skipNotify			if <code>true</code>, do not notify setting listeners
  * @param {ZmZimbraAccount}	account		if set, use this account setting instead of the currently active account
+ * @param {Boolean}	skipImplicit		if <code>true</code>, do not check for change to implicit pref
  */
 ZmAppCtxt.prototype.set =
-function(id, value, key, setDefault, skipNotify, account) {
+function(id, value, key, setDefault, skipNotify, account, skipImplicit) {
 	// for offline, global settings always come from "parent" account
 	var acct = (this.multiAccounts && ZmSetting.IS_GLOBAL[id])
 		? this.accountList.mainAccount : account;
 	var setting = this.getSettings(acct).getSetting(id);
 
 	if (setting) {
-		setting.setValue(value, key, setDefault, skipNotify);
+		setting.setValue(value, key, setDefault, skipNotify, skipImplicit);
 	}
 };
 

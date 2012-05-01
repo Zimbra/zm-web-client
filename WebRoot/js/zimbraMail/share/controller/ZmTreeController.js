@@ -927,7 +927,7 @@ function(ev) {
 			setExpanded = (setExpanded === "true");
 		}
 		if (setExpanded != isExpand) { //set only if changed (ZmSetting.prototype.setValue is supposed to not send a request if no change, but it might have bugs)
-			appCtxt.set(ZmSetting.FOLDERS_EXPANDED, isExpand, folderId);
+			appCtxt.set(ZmSetting.FOLDERS_EXPANDED, isExpand, folderId, null, null, null, overview.skipImplicit);
 		}
 
 		// check if any of this treeItem's children need to be expanded as well

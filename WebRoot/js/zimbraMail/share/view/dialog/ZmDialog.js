@@ -201,7 +201,8 @@ function(params, forceSingle) {
 			noTooltips:		true,
 			treeStyle:		params.treeStyle,
 			treeIds:		params.treeIds,
-			account:		((appCtxt.multiAccounts && params.forceSingle) ? appCtxt.getActiveAccount() : (params.account || appCtxt.getActiveAccount()))
+			account:		((appCtxt.multiAccounts && params.forceSingle) ? appCtxt.getActiveAccount() : (params.account || appCtxt.getActiveAccount())),
+			skipImplicit: 	true
 		};
 		overview = this._overview[overviewId] = this._opc.createOverview(ovParams);
 		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect);
