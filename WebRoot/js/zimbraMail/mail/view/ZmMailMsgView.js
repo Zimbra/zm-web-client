@@ -146,8 +146,11 @@ function() {
 	if (this._inviteMsgView) {
 		this._inviteMsgView.reset();
 	}
-
-	this.getHtmlElement().innerHTML = "";
+	
+	var el = this.getHtmlElement();
+	if (el) {
+		el.innerHTML = "";
+	}
 	if (this._objectManager && this._objectManager.reset) {
 		this._objectManager.reset();
 	}

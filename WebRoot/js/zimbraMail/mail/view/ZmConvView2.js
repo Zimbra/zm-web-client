@@ -269,7 +269,9 @@ function(noClear) {
 	this._currentMsgView = null;
 
 	if (this._initialized) {
-		this._subjectSpan.innerHTML = this._infoDiv.innerHTML = "";
+		if (this._subjectSpan && this._infoDiv) {
+			this._subjectSpan.innerHTML = this._infoDiv.innerHTML = "";
+		}
 		Dwt.setVisible(this._headerDiv, noClear);
 	}
 	
