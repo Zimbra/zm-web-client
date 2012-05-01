@@ -133,12 +133,12 @@
 </template>
 
 <template id='mail.Message#MailAttachmentAttachBtn'>
-    <div style="position:relative; max-width:21px;">
+    <div style="position:relative;">
         <form>
 	        <input type="file" class="BrowseAttachBtn" style="${styleStr};" multiple="true" name="files" onclick="window.appCtxt.getCurrentView().collapseAttMenu();"; onchange="window.appCtxt.getCurrentView()._submitMyComputerAttachments(files, this)" id='${fileInputId}'>
 	    </form>
         <div class="ComposeAttachBtn">
-		    <span> <$=ZmMsg.attach$> </span>
+		    <span class="attach_text"> <$=ZmMsg.attach$> </span>
 	    </div>
     </div>
 </template>
@@ -489,11 +489,10 @@
 				</table>
 			</td>
 		</tr>
-        <tr id='${oboRowId}' style='display:none;'>
-			<td align=right><input type='checkbox' id='${oboCheckboxId}'></td>
-			<td colspan=2><div id='${oboLabelId}'></div></td>
-        </tr>
-        <tr id='${attRowId}'>
+        <tr>
+        <td colspan='10'>
+            <table width='100%'>
+            <tr id='${attRowId}'>
             <td style='vertical-align:top; <$=labelStyle$>'>
                 <table width='100%'>
                     <tr>
@@ -508,6 +507,9 @@
                 <span id='${attDivId}'>
                 </span>
             </td>
+            </tr>
+            </table>
+        </td>
         </tr>
         <tr id='${replyAttRowId}' style='display:none;'>
             <td></td>
