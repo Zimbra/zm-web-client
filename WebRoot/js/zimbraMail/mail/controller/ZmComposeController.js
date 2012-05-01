@@ -2132,7 +2132,7 @@ ZmComposeController.prototype._pasteHandler = function( ev ){
 };
 
 ZmComposeController.prototype._processDataURIImages = function(idoc, callback){
-    var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder;
+    var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.BlobBuilder;
     if(!BlobBuilder || !idoc || !window.atob){
         return;
     }
@@ -2147,9 +2147,17 @@ ZmComposeController.prototype._processDataURIImages = function(idoc, callback){
         if( dataURI ){
             var dataURIArray = dataURI.split(",");
             if( dataURIArray.length === 2 ){
+                if (dataURIArray[0].indexOf('base64') === -1){
+                    return;
+                }
                 // convert base64 to raw binary data held in a string
                 // doesn't handle URLEncoded DataURIs
-                var byteString = window.atob( dataURIArray[1] );
+                try{
+                    var byteString = window.atob( dataURIArray[1] );
+                }
+                catch(e){
+                    return;
+                }
                 if( !byteString ){
                     return;
                 }
