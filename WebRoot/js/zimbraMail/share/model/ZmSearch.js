@@ -1492,8 +1492,8 @@ function(force) {
 			return '"' + arg.replace(/"/g, '\\"') + '"';
 		}
 		else {
-			// quote arg if any non-word chars
-			arg = (arg && /\W/.test(arg)) ? '"' + arg + '"' : arg;
+			// quote arg if any non-word chars and not already quoted
+			arg = (arg && (arg.indexOf('"') !== 0) && /\W/.test(arg)) ? '"' + arg + '"' : arg;
 			return [this.op, arg].join(":");
 		}
 	}
