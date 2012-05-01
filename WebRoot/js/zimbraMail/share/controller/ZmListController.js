@@ -1230,8 +1230,9 @@ function() {
 	} else {
 		var sizeText = size;
 		if (this._list.hasMore()) {
-			var pageSize = lv.getLimit();
-			sizeText = (Math.floor(size / pageSize) * pageSize) + "+";
+			//show 4+, 5+, 10+, 20+, 100+, 200+
+			var granularity = size < 10 ? 1	: size < 100 ? 10 : 100;
+			sizeText = (Math.floor(size / granularity)) * granularity + "+"; //round down to the chosen granularity
 		}
 		return AjxMessageFormat.format(ZmMsg.itemCount, [sizeText, typeText]);
 	}
