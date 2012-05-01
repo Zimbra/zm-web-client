@@ -931,13 +931,14 @@ function(force) {
 			var hCol = this._headerList[i];
 			// lets not allow columns w/ relative width to be removed (for now) - it messes stuff up
 			if (hCol._width) {
-				var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
+				var id = ZmId.getMenuItemId(this._view + "_header", hCol._field);
+				var mi = this._colHeaderActionMenu.createMenuItem(id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
 				mi.setData(ZmListView.KEY_ID, hCol._id);
 				mi.setChecked(hCol._visible, true);
                 if (hCol._noRemove) {
 					mi.setEnabled(false);
 				}
-                this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
+                this._colHeaderActionMenu.addSelectionListener(id, actionListener);
 			}
 		}
 	}
