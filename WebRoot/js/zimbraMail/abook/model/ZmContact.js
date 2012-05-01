@@ -152,6 +152,7 @@ ZmContact.F_workPostalCode			= "workPostalCode";
 ZmContact.F_workState				= "workState";
 ZmContact.F_workStreet				= "workStreet";
 ZmContact.F_workURL					= "workURL";
+ZmContact.F_imagepart               = "imagepart";          // New field for bug 73146 - Contacts call does not return the image information
 ZmContact.X_fileAs					= "fileAs";				// extra fields
 ZmContact.X_firstLast				= "firstLast";
 ZmContact.X_fullName				= "fullName";

@@ -340,7 +340,11 @@ function(response) {
 	this._voiceInfoCallbacks = null;
 	this._voiceInfoErrorCallbacks = null;
 	this._gettingVoiceInfo = false;
-	return returnValue;
+    if (!returnValue){
+        this.processErrors(response);
+    }
+	//return returnValue;
+    return true;  // Mark error handled
 };
 
 ZmVoiceApp.prototype.refreshFolders =
@@ -716,3 +720,24 @@ function(toPhoneNumber) {
 	}
 	this._click2CallZimlet.display(toPhoneNumber);
 };
+
+ZmVoiceApp.prototype.processErrors =
+    function(ex) {
+        var errorMessage = ZmMsg.voicemailErrorUnknown;
+        if (ex.code == "mitel.MITEL_ERROR"){
+           msg = ex.msg || "";
+           if (msg.indexOf("401") != -1){
+               errorMessage = ZmMsg.voicemailErrorAuth;  // Not authorized
+           }
+           else if (msg.toLowerCase().indexOf("invalid_pin") != -1){
+               errorMessage = ZmMsg.voicemailErrorPIN;   // Invalid PIN
+           }
+           else if (msg.toLowerCase().indexOf("null") != -1){
+               errorMessage = ZmMsg.voicemailErrorPIN;   // Null PIN
+           }
+        }
+        var dialog = appCtxt.getErrorDialog();
+        dialog.setMessage(errorMessage, errorMessage, DwtMessageDialog.CRITICAL_STYLE);
+        dialog.popup();
+        return;
+    }
