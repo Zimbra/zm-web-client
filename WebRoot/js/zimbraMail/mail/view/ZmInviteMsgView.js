@@ -75,6 +75,16 @@ function(msg) {
 	this._msg = msg;
 	var invite = this._invite = msg.invite;
 
+    // Can operate the toolbar if user is the invite recipient, or invite is in a
+    // non-trash shared folder with admin/workflow access permissions
+    var folder   =  appCtxt.getById(msg.folderId);
+    var enabled  = !appCtxt.isExternalAccount();
+    if (enabled && folder.isRemote()) {
+        var workflow = folder.isPermAllowed(ZmOrganizer.PERM_WORKFLOW);
+        var admin    = folder.isPermAllowed(ZmOrganizer.PERM_ADMIN);
+        var enabled  = (admin || workflow) &&
+                       (ZmOrganizer.normalizeId(msg.folderId) != ZmFolder.ID_TRASH);
+    }
 	if (invite && invite.hasAcceptableComponents() &&
 		msg.folderId != ZmFolder.ID_SENT)
 	{
@@ -87,7 +97,7 @@ function(msg) {
 				this._counterToolbar = this._getCounterToolbar();
 			}
 			this._counterToolbar.reparentHtmlElement(this.parent.getHtmlElement(), 0);
-			this._counterToolbar.setVisible(Dwt.DISPLAY_BLOCK);
+			this._counterToolbar.setVisible(enabled);
 		}
 		else if (!invite.isOrganizer() && invite.hasInviteReplyMethod()) {
 			var ac = window.parentAppCtxt || window.appCtxt;
@@ -99,8 +109,7 @@ function(msg) {
 			}
 
 			var inviteToolbar = this.getInviteToolbar();
-
-			inviteToolbar.setVisible(Dwt.DISPLAY_BLOCK);
+			inviteToolbar.setVisible(enabled);
 
 			// show on-behalf-of info?
 			this._respondOnBehalfLabel.innerHTML = msg.cif
