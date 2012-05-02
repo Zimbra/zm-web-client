@@ -981,6 +981,7 @@ function(button) {
 	ZmFolderSearchFilter.TEXT_KEY[ZmApp.CALENDAR]	= "filterCalendar";
 	ZmFolderSearchFilter.TEXT_KEY[ZmApp.CONTACTS]	= "filterAddressBook";
 	ZmFolderSearchFilter.TEXT_KEY[ZmApp.TASKS]		= "filterTasksFolder";
+	ZmFolderSearchFilter.TEXT_KEY[ZmApp.BRIEFCASE]	= "filterBriefcase";
 };
 
 ZmFolderSearchFilter.prototype._setUi =
