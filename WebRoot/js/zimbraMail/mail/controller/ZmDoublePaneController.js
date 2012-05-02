@@ -626,6 +626,10 @@ function() {
 	ZmMailListController.prototype._doMove.apply(this, arguments);
 };
 
+ZmDoublePaneController.prototype._keepReadingListener =
+function(ev) {
+	this.handleKeyAction(ZmKeyMap.KEEP_READING, ev);
+};
 
 ZmDoublePaneController.prototype._dragListener =
 function(ev) {
