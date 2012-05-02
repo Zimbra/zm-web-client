@@ -1010,6 +1010,9 @@ function() {
 	for (var fieldId in this._searchField) {
 		fields.push(this._searchField[fieldId]);
 	}
+	fields.push(this._searchButton);
+	fields.push(this._searchInSelect);
+
 	return fields;
 };
 
