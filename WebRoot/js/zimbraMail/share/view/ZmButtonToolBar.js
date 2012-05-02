@@ -106,7 +106,7 @@ ZmButtonToolBar = function(params) {
 
 		actionsButton.noMenuBar = true;
 
-		var secondaryMenu = this._secondaryButtonMenu = new ZmActionMenu({parent: actionsButton, menuItems: ZmOperation.NONE, context: this._context});
+		var secondaryMenu = this._secondaryButtonMenu = new ZmActionMenu({parent: actionsButton, menuItems: ZmOperation.NONE, context: this._context, controller: params.controller});
 		var secondaryButtons  = ZmOperation.createOperations(secondaryMenu, secondaryOpList, params.overrides);
 		actionsButton.setMenu(secondaryMenu);
 
