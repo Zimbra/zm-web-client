@@ -724,12 +724,15 @@ function(toPhoneNumber) {
 ZmVoiceApp.prototype.processErrors =
     function(ex) {
         var errorMessage = ZmMsg.voicemailErrorUnknown;
-        if (ex.code == "mitel.MITEL_ERROR"){
+        if (!ex.code){
+            return;
+        }
+        if (ex.code.indexOf("mitel") != -1){
            msg = ex.msg || "";
            if (msg.indexOf("401") != -1){
                errorMessage = ZmMsg.voicemailErrorAuth;  // Not authorized
            }
-           else if (msg.toLowerCase().indexOf("invalid_pin") != -1){
+           else if (msg.indexOf("0009") != -1){
                errorMessage = ZmMsg.voicemailErrorPIN;   // Invalid PIN
            }
            else if (msg.toLowerCase().indexOf("null") != -1){
