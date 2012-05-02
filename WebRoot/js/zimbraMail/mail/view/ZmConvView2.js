@@ -505,7 +505,8 @@ function(params) {
 
 	params.action = params.action || ZmOperation.REPLY_ALL;
 	var msg = params.msg = params.msg || this._item.getFirstHotMsg();
-	params.composeMode = (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+	var composeCtlr = AjxDispatcher.run("GetComposeController", params.hideView ? ZmApp.HIDDEN_SESSION : null);
+	params.composeMode = composeCtlr._getComposeMode(msg, composeCtlr._getIdentity(msg));
 	var htmlMode = (params.composeMode == DwtHtmlEditor.HTML);
 	params.toOverride = this._replyView.getAddresses(AjxEmailAddress.TO);
 	params.ccOverride = this._replyView.getAddresses(AjxEmailAddress.CC);
@@ -519,16 +520,15 @@ function(params) {
 	if (msg && (what == ZmSetting.INC_BODY || what == ZmSetting.INC_SMART)) {
 		// make sure we've loaded the part with the type we want to reply in, if it's available
 		var desiredPartType = htmlMode ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
-		msg.getBodyPart(desiredPartType, this._sendMsg.bind(this, params));
+		msg.getBodyPart(desiredPartType, this._sendMsg.bind(this, params, composeCtlr));
 	}
 	else {
-		this._sendMsg(params);
+		this._sendMsg(params, composeCtlr);
 	}
 };
 
 ZmConvView2.prototype._sendMsg =
-function(params) {
-	var composeCtlr = AjxDispatcher.run("GetComposeController", params.hideView ? ZmApp.HIDDEN_SESSION : null);
+function(params, composeCtlr) {
 	composeCtlr.doAction(params);
 	if (params.sendNow) {
 		composeCtlr.sendMsg(null, null, this._handleResponseSendMsg.bind(this));

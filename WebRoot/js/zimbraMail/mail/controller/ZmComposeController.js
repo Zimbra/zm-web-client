@@ -948,12 +948,7 @@ function(params) {
 	this._extraBodyText = params.extraBodyText;
 	this._msgIds = params.msgIds;
 	this._accountName = params.accountName;
-
-	var account = (appCtxt.multiAccounts && appCtxt.getActiveAccount().isMain)
-		? appCtxt.accountList.defaultAccount : null;
-	var identityCollection = appCtxt.getIdentityCollection(account);
-	var identity = (msg && msg.identity) ? msg.identity : identityCollection.selectIdentity(msg);
-	params.identity = identity;
+	var identity = params.identity = this._getIdentity(msg);
 
 	this._composeMode = params.composeMode || this._getComposeMode(msg, identity);
 	AjxDebug.println(AjxDebug.REPLY, "ZmComposeController::_setView - Compose mode: " + this._composeMode);
@@ -1031,6 +1026,13 @@ function(params) {
 	if (params.callback) {
 		params.callback.run(this);
 	}
+};
+
+ZmComposeController.prototype._getIdentity =
+function(msg) {
+	var account = (appCtxt.multiAccounts && appCtxt.getActiveAccount().isMain)
+		? appCtxt.accountList.defaultAccount : null;
+	return (msg && msg.identity) ? msg.identity : appCtxt.getIdentityCollection(account).selectIdentity(msg);
 };
 
 ZmComposeController.prototype._initializeToolBar =
