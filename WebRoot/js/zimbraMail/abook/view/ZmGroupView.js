@@ -404,6 +404,14 @@ function() {
 	return this._getDlOwners().length > 0
 };
 
+
+ZmGroupView.prototype.isValidMailPolicy =
+function() {
+	return this._getDlMailPolicy() != ZmGroupView.MAIL_POLICY_SPECIFIC || this._getDlSpecificMailers().length > 0;
+};
+
+
+
 ZmGroupView.prototype.isValid =
 function() {
 	// check for required group name
@@ -417,6 +425,9 @@ function() {
 		return false;
 	}
 	if (!this.isValidOwners()) {
+		return false;
+	}
+	if (!this.isValidMailPolicy()) {
 		return false;
 	}
 	return true;
@@ -441,6 +452,9 @@ function() {
 	if (!this.isValidOwners()) {
 		items.push("owners");
 	}
+	if (!this.isValidMailPolicy()) {
+		items.push("mailPolicy");
+	}
 	return items;
 };
 
@@ -459,6 +473,9 @@ ZmGroupView.prototype.getErrorMessage = function(id) {
 	}
 	if (id == "owners") {
 		return ZmMsg.dlInvalidOwners; 
+	}
+	if (id == "mailPolicy") {
+		return ZmMsg.dlInvalidMailPolicy;
 	}
 
 };
