@@ -1424,7 +1424,7 @@ function(msg, notifyZimlets) {
 	var fromAddr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
 	var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - Sender: header means on-behalf-of
 	var sentBy = (sender && sender.address) ? sender : fromAddr;
-	var from = AjxStringUtil.htmlEncode(sentBy.toString(true));
+	var from = AjxStringUtil.htmlEncode(fromAddr.toString(true));
 	var sentByAddr = (sentBy && sentBy != ZmMsg.unknown) ? sentBy.getAddress() : null;
     if (sentByAddr) {
         msg.sentByAddr = sentByAddr;
