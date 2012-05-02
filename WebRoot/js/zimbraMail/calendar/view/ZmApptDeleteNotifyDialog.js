@@ -109,16 +109,16 @@ function() {
 	var html = new Array();
 	var i = 0;
 
-	html[i++] = "<div style='width:275px'>";
+	html[i++] = "<div style='width:300px'>";
 	html[i++] = this._confirmMsg;
 	html[i++] = "<br>";
 	html[i++] = "</div><p>";
-	html[i++] = "<table align=center border=0 width='400px'>";
+	html[i++] = "<table align=center border=0 width='300px'>";
 	html[i++] = "<tr><td width=1%><input checked value='1' type='radio' id='";
 	html[i++] = this._defaultRadioId;
 	html[i++] = "' name='";
 	html[i++] = this._notifyChoiceName;
-	html[i++] = "'></td><td style='white-space:nowrap'>";
+	html[i++] = "'></td><td>";
 	html[i++] = "<label for='" + this._defaultRadioId + "'>";
 	html[i++] = this._choiceLabel1;
 	html[i++] = "</label>";
@@ -127,7 +127,7 @@ function() {
 	html[i++] = this._defaultRadioId + this._notifyChoiceName;
 	html[i++] = "' name='";
 	html[i++] = this._notifyChoiceName;
-	html[i++] = "'></td><td style='white-space:nowrap'>";
+	html[i++] = "'></td><td>";
 	html[i++] = "<label for='" + this._defaultRadioId + this._notifyChoiceName + "'>"
 	html[i++] = this._choiceLabel2;
 	html[i++] = "</label>";
