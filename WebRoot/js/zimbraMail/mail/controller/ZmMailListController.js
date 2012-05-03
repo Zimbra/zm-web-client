@@ -558,7 +558,7 @@ function() {
 };
 
 ZmMailListController.prototype._getRightSideToolBarOps =
-function(noViewMenu) {
+function() {
 	var list = [];
 	if (appCtxt.isChildWindow) {
 		return list;
@@ -567,11 +567,8 @@ function(noViewMenu) {
 	if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !appCtxt.isExternalAccount()) {
 		list.push(ZmOperation.DETACH);
 	}
-	if (!noViewMenu) {
-   		list.push(ZmOperation.VIEW_MENU);
-	}
+	list.push(ZmOperation.VIEW_MENU);
 	return list;
-
 };
 
 ZmMailListController.prototype._getSecondaryToolBarOps =

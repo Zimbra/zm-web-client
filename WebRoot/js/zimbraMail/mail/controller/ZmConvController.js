@@ -187,11 +187,16 @@ function() {
 };
 
 ZmConvController.prototype._getRightSideToolBarOps =
-function(noViewMenu) {
-	return ZmMailListController.prototype._getRightSideToolBarOps.call(this, true)
+function() {
+	var list = [];
+	if (appCtxt.isChildWindow) {
+		return list;
+	}
+	if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !appCtxt.isExternalAccount()) {
+		list.push(ZmOperation.DETACH);
+	}
+	return list;
 };
-
-
 
 ZmConvController.prototype._initializeToolBar = 
 function(view) {
@@ -322,6 +327,11 @@ function(actionCode) {
 			if (this._navToolBar[this._currentViewId].getButton(ZmOperation.PAGE_BACK).getEnabled()) {
 				this._goToConv(false);
 			}
+			break;
+
+		// switching view not supported here
+		case ZmKeyMap.VIEW_BY_CONV:
+		case ZmKeyMap.VIEW_BY_MSG:
 			break;
 
 		default:

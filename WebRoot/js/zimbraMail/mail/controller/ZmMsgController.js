@@ -154,6 +154,11 @@ function(actionCode) {
 			this._goToMsg(this._currentViewId, false);
 			break;
 
+		// switching view not supported here
+		case ZmKeyMap.VIEW_BY_CONV:
+		case ZmKeyMap.VIEW_BY_MSG:
+			break;
+		
 		default:
 			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
 			break;
@@ -172,6 +177,18 @@ ZmMsgController.prototype._getToolBarOps =
 function() {
 	var list = [ZmOperation.CLOSE, ZmOperation.SEP];
 	list = list.concat(ZmMailListController.prototype._getToolBarOps.call(this));
+	return list;
+};
+
+ZmMsgController.prototype._getRightSideToolBarOps =
+function() {
+	var list = [];
+	if (appCtxt.isChildWindow) {
+		return list;
+	}
+	if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !appCtxt.isExternalAccount()) {
+		list.push(ZmOperation.DETACH);
+	}
 	return list;
 };
 
