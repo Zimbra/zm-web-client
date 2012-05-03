@@ -257,7 +257,8 @@ function(ev) {
 		return;
 	}
 
-    var folderType = this._folder && (this._folder.callType == ZmVoiceFolder.TRASH) ? ZmVoiceFolder.TRASH_ID : ZmVoiceFolder.VOICEMAIL_ID;
+    //If it is in Trash, destination is Voice mail. If it is in Voice mail, destination is Trash.
+    var folderType = this._folder && (this._folder.callType == ZmVoiceFolder.TRASH) ? ZmVoiceFolder.VOICEMAIL_ID : ZmVoiceFolder.TRASH_ID;
     var phone = this._folder.phone;
     var folderId = folderType + "-" + phone.name;
     var destination = phone.folderTree.getById(folderId);
