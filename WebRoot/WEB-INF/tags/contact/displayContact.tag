@@ -31,9 +31,10 @@
         <td rowspan="2" width="20" align="center" valign="bottom" style="padding-right:3px;">
             <c:set var="contactImage" value="${contact.imagePart != null ? contact.imagePart : ''}"/>
             <c:set var="imageUrl" value="/service/home/~/?id=${contact.id}&amp;part=${contactImage}&amp;auth=co"/>
-            <app:img clazz="contactImage" src="${not empty contactImage ? imageUrl : (contact.isGroup ? 'large/ImgGroup_48.png' : 'large/ImgPerson_48.png')}" altkey="${contact.imageAltKey}" />
+            <app:img clazz="contactImage" src="${not empty contactImage ? imageUrl : (contact.isGroup ? 'large/ImgGroupPerson_48.png' : 'large/ImgPerson_48.png')}" altkey="${contact.imageAltKey}" />
         </td>
         <td>
+            <c:if test="${not contact.isGroup}">
             <c:choose>
                 <c:when test="${empty contact.displayFileAs}">
                     <div class='contactHeader' style='padding:0;'>
@@ -47,6 +48,7 @@
                     </div>
                 </c:otherwise>
             </c:choose>
+            </c:if>
             <c:if test="${not empty contact.nickname}">
                 <div class='companyName'>"${fn:escapeXml(contact.nickname)}"</div>
             </c:if>
@@ -84,9 +86,29 @@
 
 <c:if test="${contact.isGroup}">
     <c:forEach var="member" items="${contact.groupMembers}">
+        <c:set var="memberContact" value="${zm:groupMemberById(contact, member)}"/>
+        <c:set var="memberContactImage" value="${memberContact.imagePart != null ? memberContact.imagePart : ''}"/>
+        <c:set var="imageUrl" value="/service/home/~/?id=${memberContact.id}&amp;part=${memberContactImage}&amp;auth=co"/>
         <tr>
-            <td width='20px'><app:img altkey='ALT_CONTACT_GROUP_EMAIL' src="startup/ImgMessage.png"/></td>
-            <td><nobr>${fn:escapeXml(member)}</nobr></td>            
+            <td width="20" valign="bottom" align="left" style="padding-right:3px;" rowspan="4">
+                <app:img clazz="contactImage" src="${not empty memberContactImage ? imageUrl : (memberContact.isGroup ? 'large/ImgGroupPerson_48.png' : 'large/ImgPerson_48.png')}" altkey="${memberContact.imageAltKey}" />
+            </td>
+            <td>
+                <b><app:contactDisplayName contact="${memberContact}" /></b>
+            </td>
+        </tr>
+        <tr>
+            <td width="100%">
+                <app:contactJobInfo contact="${memberContact}" />
+            </td>
+            <td width="20" class="contactOutput">
+                <app:contactEmail email="${memberContact.email}"/>
+            </td>
+            <c:set var="memberContactAttrs" value="${memberContact.attrs}"/>
+            <td width="20" class="contactOutput" nowrap="nowrap"><c:if test="${zm:anySet(memberContact,'mobilePhone')}">${fn:escapeXml(memberContactAttrs['mobilePhone'])}</c:if></td>
+        </tr>
+        <tr>
+            <td colspan="2"><br/></td>
         </tr>
     </c:forEach>
     <tr><td><br></td></tr>

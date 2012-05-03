@@ -100,7 +100,7 @@
                                                     />
                                                </c:set>
                                            </c:when>
-                                           <c:when test="${empty hit.contactHit.fileAsStr and context.isGALSearch}">
+                                           <c:when test="${empty hit.contactHit.fileAsStr and (context.isGALSearch or hit.contactHit.isGroup)}">
                                                <c:set var="contactUrlText" value="${fn:escapeXml(hit.contactHit.fullName)}" />
                                            </c:when>
                                            <c:otherwise>

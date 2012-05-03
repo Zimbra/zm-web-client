@@ -84,16 +84,36 @@
                     </tr>
                     <c:forEach var="gMember" items="${requestScope.groupSearchContacts}">
                     <tr>
+                        <c:set var="contactInfo" value="${fn:split(gMember,';')}"/>
                         <td><input checked name="dlist" value="${fn:escapeXml(gMember)}" type="checkbox"></td>
-                        <td>${fn:escapeXml(gMember)}</td>
+                        <td>${fn:escapeXml(contactInfo[0])}</td>
+                        <input type=hidden name="dlistId" value="${contactInfo[1]}"/>
+                        <input type=hidden name="dlistType" value="${contactInfo[2]}"/>
                     </tr>
                     </c:forEach>
                     <c:forEach var="gMember" items="${contactValues}">
-                    <tr>
-                        <td><input checked name="dlist" value="${fn:escapeXml(gMember)}" type="checkbox"></td>
-                        <td>${fn:escapeXml(gMember)}</td>
-                    </tr>
+                        <c:choose>
+                            <c:when test="${not empty contact}">
+                                <c:set var="memberContact" value="${zm:groupMemberById(contact, gMember)}"/>
+                                <tr>
+                                    <td><input checked name="dlist" value="${fn:escapeXml(gMember)}" type="checkbox"></td>
+                                    <td>${fn:escapeXml(memberContact.fullAddress)}</td>
+                                    <input type=hidden name="dlistId" value="${gMember}"/>
+                                    <input type=hidden name="dlistType" value="${memberContact.isGalContact ? "G" : "C"}"/>
+                                </tr>
+                            </c:when>
+                            <c:otherwise>
+                                <c:set var="contactInfo" value="${fn:split(gMember,';')}"/>
+                                <tr>
+                                <td><input checked name="dlist" value="${fn:escapeXml(gMember)}" type="checkbox"></td>
+                                <td>${fn:escapeXml(contactInfo[0])}</td>
+                                <input type=hidden name="dlistId" value="${contactInfo[1]}"/>
+                                <input type=hidden name="dlistType" value="${contactInfo[2]}"/>
+                                </tr>
+                            </c:otherwise>
+                        </c:choose>
                     </c:forEach>
+                    <input type=hidden name="fileAs" value="8"/>
                 </table>
                 <c:if test="${empty contactValues and empty requestScope.groupSearchContacts}">
                     <div class="NoResults"><fmt:message key="addMembers"/></div>

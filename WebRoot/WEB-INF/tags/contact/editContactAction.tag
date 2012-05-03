@@ -31,13 +31,16 @@
         fullName="${param.fullName}" nickname="${param.nickname}"
     />
 </c:set>
-<zm:modifyContact var="id" id="${id}" folderid="${param.folderid}">
+<c:if test="${zm:isFileAsExplicit(param.fileAs)}">
+    <c:set var="groupName" value="8:${param.nickname}"/>
+</c:if>
+<zm:modifyContact var="id" id="${id}" folderid="${param.folderid}" replace="${!empty id and param.isgroup ? true : false}">
     <zm:field name="firstName" value="${param.firstName}"/>
     <zm:field name="phoneticFirstName" value="${param.phoneticFirstName}"/>
     <zm:field name="lastName" value="${param.lastName}"/>
     <zm:field name="phoneticLastName" value="${param.phoneticLastName}"/>
     <zm:field name="middleName" value="${param.middleName}"/>
-    <zm:field name="fileAs" value="${param.fileAs}"/>
+    <zm:field name="fileAs" value="${zm:isFileAsExplicit(param.fileAs) ?  groupName : param.fileAs}"/>
     <zm:field name="company" value="${param.company}"/>
     <zm:field name="phoneticCompany" value="${param.phoneticCompany}"/>
     <zm:field name="jobTitle" value="${param.jobTitle}"/>
@@ -90,10 +93,11 @@
     <zm:field name="otherFax" value="${param.otherFax}"/>
     <zm:field name="notes" value="${param.notes}"/>
 
-    <c:if test="${not empty param.dlist and param.isgroup}">
-        <zm:field name="fileAs" value="8:${param.nickname}"/>
-        <zm:field name="dlist" value="${fn:join(paramValues.dlist,', ')}"/>
+    <c:if test="${not empty param.dlistId and not empty param.dlistType and param.isgroup}">
         <zm:field name="type" value="group"/>
+        <c:forEach var="mem" items="${paramValues.dlistId}" varStatus="status">
+            <zm:member name="${paramValues.dlistType[status.index]}" value="${paramValues.dlistId[status.index]}"/>
+        </c:forEach>
     </c:if>
-    
+
 </zm:modifyContact>

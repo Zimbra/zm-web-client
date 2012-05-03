@@ -102,7 +102,8 @@
                     <td width=2% nowrap><input type=checkbox  name="addAttendees" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
                 </c:when>
                 <c:when test="${groupMode}">
-                    <td width=2% nowrap><input type=checkbox  name="addToGroup" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
+                    <td width=2% nowrap><input type=checkbox  name="addToGroup" value="${fn:escapeXml(hit.contactHit.fullAddress)};${fn:escapeXml(hit.contactHit.id)};C">
+                    </td>
                 </c:when>
                 <c:otherwise>
                     <td width=2% nowrap><input type=checkbox  name="addTo" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
@@ -470,7 +471,8 @@
 
                 </c:when>
                 <c:when test="${groupMode}">
-                    <td width=2% nowrap><input type=checkbox  name="addToGroup" value="${fn:escapeXml(contact.galFullAddress)}"></td>
+                    <td width=2% nowrap><input type=checkbox  name="addToGroup" value="${fn:escapeXml(contact.galFullAddress)};${fn:escapeXml(contact.id)};G">
+                    </td>
                 </c:when>
                 <c:otherwise>
                     <td width=2% nowrap><input type=checkbox  name="addTo" value="${fn:escapeXml(contact.galFullAddress)}"></td>
