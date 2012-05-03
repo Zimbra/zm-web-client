@@ -586,6 +586,7 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
     }
     else {
         this._reply && this._reply.setReplyOptions(ZmShareReply.DEFAULT_OPTIONS);
+        this._reply.setReplyType(ZmShareReply.STANDARD);
     }
 	this._props.setPropertyVisible(this._shareWithOptsId, !isPublicShare);
 	//this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
