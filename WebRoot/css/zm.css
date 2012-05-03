@@ -5263,8 +5263,11 @@ DIV .SuggestBtn {
 	padding-top:20px;
 }
 
+.SuggestionMessage,
+.NoResults,
 .NoSuggestions {
-	font-size:10pt;
+	@FontSize-big@
+	padding:15px 10px;
 	text-align:center;
 }
 
@@ -5301,6 +5304,7 @@ DIV .SuggestBtn {
 .ZmTimeSuggestionView-Column {
 	@ListColHeaderContainer@
 	@WidgetHeaderContainer@
+	border-top:0;
 }
 
 .ReminderInput INPUT{
@@ -5308,6 +5312,8 @@ DIV .SuggestBtn {
 }
 
 .SuggestionPrefTitle {
+	@Text@
+	border-bottom:1px solid @TxtC@;
 	font-weight:bold;
 }
 
@@ -5387,135 +5393,142 @@ DIV .SuggestBtn {
 	bottom:10px;
 }
 
-.ZmSuggestionPreferencesButton {
-	height:20px;
-	margin-right:2px;
+.ZmSuggestView {
+	background-color:@darken(AppC,20)@;
+	border-color:@darken(AppC,30)@;
+	border-style:solid;
+	border-width:1px 0 0 1px;
+	height:100%;
+	vertical-align:top;
+	width:180px;
 }
 
-.ZmSuggestionCalendar {
-	border:1px solid black;
+.DwtDialog .ZmSuggestView {
+	border-width:1px;
+	padding:0;
 }
 
 .ZmSuggestContainer {
 	position:relative;
 }
 
-.ZmSuggestClose {
+.ZmSuggestHeader {
+	background-color:@lighten(AppC,33)@;
+	border:1px solid white;
+	color:@TxtC@;
+	font-weight:bold;
+	height:1.8em;
+	margin-bottom:1px;
 	position:relative;
-	height:20px;
-	width:100%;
-	border:1px solid black;
-	background-color:#FAFAFA;
 }
 
-.ZmSuggestBody {
-	border:1px solid black;
-	position:relative;
-	top:4px;
-	margin-bottom:8px;
+.ZmSuggestLabel,
+.ZmSuggestOptionsButton,
+.ZmSuggestCloseButton {
+	position:absolute;
+	top:2px;
 }
+
+.ZmSuggestLabel {
+	left:5px;
+	overflow:hidden;
+	right:40px;
+	text-align:left;
+}
+
+.ZmSuggestOptionsButton {
+	right:22px;
+}
+
+.ZmSuggestCloseButton {
+	right:3px;
+}
+
+.ZmSuggestOptionsButton DIV,
+.ZmSuggestCloseButton DIV { cursor:pointer; }
+
+.ZmSuggestBody {}
 
 .ZmSuggestMiniCal {
-	border-bottom:1px solid black;
+	border-bottom:1px solid @darken(AppC,30)@;
+	margin-bottom:3px;
 }
 
-/* Blank for now, included in the Appointment Suggestion template for ease of modification */
-.ZmSuggestView {
-	width:180px;
-	height:100%;
-	padding-left:8px;
-}
-.ZmSuggestLocationList {
-	height:99%;
-	width:99%;
-	border:0px solid black;
-}
-
-.ZmSuggestPref {
+.ZmSuggestResults {
 	position:relative;
-	height:20px;
+	overflow:auto;
+	overflow-y:auto;
+	overflow-x:auto;
+}
+
+.ZmSuggestResults .DwtListView {
+	border-width:0;
+}
+
+.ZmSuggestResults .Row:hover .FakeAnchor,  /* accounts for lack of .Row-hover state class */
+.ZmSuggestResults .Row-selected .FakeAnchor {
+	text-decoration:underline;
+}
+
+.ZmSuggestLocationList {
+	height:100%;
 	width:100%;
-	border:1px solid black;
-	background-color:#FAFAFA;
+	border-width:0;
 }
-
-.ZmSuggestLabelText {
-	float:left;
-	text-align:left;
-	padding-left:2px;
-	padding-top:2px;
-	width:130px;
-}
-.ZmSuggestLabelImage {
-	float:right;
-	padding-top:2px;
-	padding-right:4px;
-	padding-bottom:2px;
-}
-
-.ZmSuggestLabelImage DIV { cursor: pointer; }
 
 .ZmLocationSuggestion {
-	border:1px solid gray;
-	background-color:#E0E0E0;
+	background-color:@AppC@;
+	border:1px solid @darken(AppC,10)@;
+	cursor:pointer;
 	margin:4px;
-	padding-left:4px;
-	cursor: pointer;
+	padding:2px 4px;
 }
-.ZmLocationSuggestionWarningImage {
-	float:left;
-	padding-right:8px;
-	/* padding:0px 4px; */
+.ZmLocationSuggestion.Row-selected {
+	border-color:@SelC@ @darken(SelC,25)@ @darken(SelC,25)@ @SelC@;
 }
-.ZmLocationSuggestionWarningText {
-	/* margin-left:4px; */
-	font-style:italic;
-}
-.ZmLocationSuggestionWarning {
-	margin:4px auto;
-	text-align:left;
-	width:95%;
-	border:0;
-}
-div.ZmSuggestLocationLink {
+
+
+DIV.ZmSuggestLink {
 	display:inline-block;
+	padding-right:8px;
+}
+
+
+.ZmLocationStatusValidating,
+.ZmLocationStatusConflict,
+.ZmLocationStatusResolved {
+	display:inline-block;
+	margin-top:-4px;
 	padding-right:8px;
 }
 .ZmLocationStatusValidating {
 	color:black;
-	display:inline-block;
-	margin-top:-4px;
-	padding-right:8px;
 }
 .ZmLocationStatusConflict {
 	color:red;
-	display:inline-block;
-	margin-top:-4px;
-	padding-right:8px;
 }
 .ZmLocationStatusResolved {
 	color:green;
-	display:inline-block;
-	margin-top:-4px;
-	padding-right:8px;
 }
-.ZmResolveLocationConflict {
+
+.ZmResolveLocationConflict,
+.ZmResolveLocationConflictOdd,
+.ZmResolveLocationConflictEven {
 	width:100%;
 }
 .ZmResolveLocationConflictOdd {
-	background-color:#E0E0E0;
-	width:100%;
+	background-color:@darken(AppC,10)@;
 }
 .ZmResolveLocationConflictEven {
-	background-color:#F0F0F0;
-	width:100%;
+	background-color:@lighten(AppC,10)@;
 }
+
 .ZmResolveLocationConflictName {
 	display:inline-block;
 	text-align:left;
-	width:146px;
-	padding:4px 0 4px 4px;
 	overflow:hidden;
+	padding:4px 0 4px 4px;
+	width:146px;
 }
 .ZmResolveLocationConflictAlternate {
 	padding:4px 4px 4px 0;
@@ -5523,16 +5536,17 @@ div.ZmSuggestLocationLink {
 	width:246px;
  }
 .ZmResolveLocationConflictHeader {
-	border-bottom: 2px solid gray;
-	background-color:#D0D0D0;
+	@FontSize-big@
+	border-bottom: 2px solid @darken(AppC,50)@;
+	background-color:@darken(AppC,20)@;
 	width:100%;
-	font-size:14px;
 }
+
 .ZmResolveConflictList {
 	width:400px;
 }
 .ZmResolveNoLocationSelect {
-	border-top:1px solid gray;
+	border-top:1px solid @darken(AppC,50)@;
 }
 .ZmLocationSuggestionTooltip {
     white-space:nowrap;

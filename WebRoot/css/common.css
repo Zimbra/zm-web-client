@@ -613,3 +613,17 @@ TD.vSpace {
 .ImgTagShared {
 	display: inline-block;
 }
+
+/* Anchor and Link styles */
+
+.FakeAnchor, a:link, a:visited {
+	@Anchor@
+}
+
+.FakeAnchor:hover, a:hover {
+	@Anchor-hover@
+}
+
+.FakeAnchor:active, a:active {
+	@Anchor-active@
+}

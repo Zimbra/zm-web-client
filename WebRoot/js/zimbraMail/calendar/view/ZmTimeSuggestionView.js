@@ -93,7 +93,7 @@ function(itemDiv, ev) {
     if(item) {
         this._editView.setDate(new Date(item.startTime), new Date(item.endTime));
         //user clicked the link directly
-        if (ev.target && (ev.target.className == "removeLink" || ev.target.className == "ImgLocationGreen" || ev.target.className == "ImgLocationRed")) {
+        if (ev.target && (ev.target.className == "fakeAnchor" || ev.target.className == "ImgLocationGreen" || ev.target.className == "ImgLocationRed")) {
             var menu = this._createLocationsMenu(item);
             menu.popup(0, ev.docX, ev.docY);
         }
@@ -390,11 +390,10 @@ function(hdrKey, item) {
     if(!this._sectionHeaderHtml[hdrKey]) {
         var htmlArr = [];
         var idx = 0;
-        htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100% class='ZmTimeSuggestionView-Column ";
+        htmlArr[idx++] = "<table width=100% class='ZmTimeSuggestionView-Column ";
         htmlArr[idx++] =  this._getHeaderColor(item);        
         htmlArr[idx++] = "'><tr>";
-        htmlArr[idx++] = "<td><div class='DwtListHeaderItem-label ";
-        htmlArr[idx++] = "' style='padding:0px 0px 2px 2px;'>";
+        htmlArr[idx++] = "<td><div class='DwtListHeaderItem-label'>";
         htmlArr[idx++] = AjxMessageFormat.format(ZmMsg.availableCount, [item.availableUsers, this._totalUsers]);
         htmlArr[idx++] = "</div></td>";
         htmlArr[idx++] = "</tr></table>";
