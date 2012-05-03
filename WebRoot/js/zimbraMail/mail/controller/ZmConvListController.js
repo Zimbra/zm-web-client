@@ -105,6 +105,9 @@ function(view, force) {
 // Internally we manage two maps, one for CLV and one for CV2 (if applicable)
 ZmConvListController.prototype.getKeyMapName =
 function() {
+	if (this._convView.isActiveQuickReply()) { //if user is quick replying, don't use the mapping of conv/mail list - so Ctrl+Z works
+		return "Global";
+	}
 	return "ZmConvListController";
 };
 

@@ -646,6 +646,13 @@ ZmConvView2.prototype.getController = function() {
     return this._controller;
 };
 
+/**
+ * is the user actively focused on the quick reply? This is used from ZmConvListController.prototype.getKeyMapName to determine what key mapping we should use
+ */
+ZmConvView2.prototype.isActiveQuickReply = function() {
+	return this._replyView && this._replyView._input == document.activeElement;
+};
+
 ZmConvReplyView = function(params) {
 
 	params.className = params.className || "Conv2Reply";
