@@ -221,7 +221,7 @@ function() {
 
 ZmBaseController.prototype.supportsDnD =
 function() {
-	return !this.isSearchResults;
+	return !(this.isSearchResults || appCtxt.isExternalAccount());
 };
 
 // abstract protected methods
