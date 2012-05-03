@@ -1017,7 +1017,7 @@
 		<!-- exception warning -->
 		<$ if (data.isException) { $>
 		<tr valign='center'>
-			<td colspan=100>
+			<td colspan=101>
 				<table>
 					<tr>
 						<td><$= AjxImg.getImageHtml("ApptException") $></td>
