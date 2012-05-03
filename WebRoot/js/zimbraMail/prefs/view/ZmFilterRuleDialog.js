@@ -588,7 +588,7 @@ function(conf, field, options, rowData, testType, rowId) {
 				value = o.value;
 				label = o.label;
 			}
-			var selected = (dataValue && (value == dataValue));
+			var selected = (dataValue && value && (value.toLowerCase() == dataValue.toLowerCase()));
 			if (value && value.toLowerCase()== "bcc" && !this._outgoing && !selected) {
 				continue;
 			}

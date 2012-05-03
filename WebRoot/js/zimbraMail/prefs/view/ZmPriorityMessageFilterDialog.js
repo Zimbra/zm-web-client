@@ -166,11 +166,11 @@ function() {
 						else if (c == ZmFilterRule.TEST_ME) {
 							if (header &&  header.toUpperCase() == ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_TO].toUpperCase()) {
 								value = header;
-								this._selectField.setSelected(ZmMsg.to);
+								this._selectField.setSelected(0);
 							}
 							else if (header &&  header.toUpperCase() == ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_TO_CC].toUpperCase()) {
 								value = header;
-								this._selectField.setSelected(ZmMsg.toOrCc);
+								this._selectField.setSelected(1);
 							}
 						}
 						//var value = (c == ZmFilterRule.TEST_ADDRBOOK) ? ZmFilterRule.C_FROM : ZmFilterRule.C_TO;
@@ -179,7 +179,7 @@ function() {
 							this._streamHash[c].control.setEnabled(true);
 						}
 					}
-					else if (!isNegative) {
+					else if (!isNegative && !(c == ZmFilterRule.TEST_ADDRBOOK || c == ZmFilterRule.TEST_ME)) {
 						this._streamHash[c].control.setSelected(true);
 						this._streamHash[c].control.setEnabled(true);
 					}
