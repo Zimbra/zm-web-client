@@ -3106,7 +3106,9 @@ function(files, node) {
 
 ZmComposeView.prototype._checkMenuItems =
 function(menuItem) {
-    menuItem.setEnabled((this._composeMode == DwtHtmlEditor.HTML));
+    var isHTML = (this._composeMode === DwtHtmlEditor.HTML);
+    menuItem.setEnabled(isHTML);
+    document.getElementById(this._attcBtnInlineFileInpId).disabled = !isHTML;
 };
 
 ZmComposeView.prototype._attachButtonMenuCallback =
