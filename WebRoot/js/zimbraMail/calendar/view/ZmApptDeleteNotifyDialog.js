@@ -103,13 +103,16 @@ function(buttonId, listener) {
 
 ZmApptDeleteNotifyDialog.prototype._setHtml =
 function() {
+    this._confirmMessageDivId = Dwt.getNextId();
 	this._defaultRadioId	= Dwt.getNextId();
 	this._notifyChoiceName	= Dwt.getNextId();
 
 	var html = new Array();
 	var i = 0;
 
-	html[i++] = "<div style='width:300px'>";
+	html[i++] = "<div style='width:300px' id='";
+    html[i++] = this._confirmMessageDivId;
+    html[i++] = "'>";
 	html[i++] = this._confirmMsg;
 	html[i++] = "<br>";
 	html[i++] = "</div><p>";

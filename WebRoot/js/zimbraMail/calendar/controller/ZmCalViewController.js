@@ -2012,20 +2012,25 @@ function(appt, mode) {
 ZmCalViewController.prototype._promptDeleteNotify =
 function(appt, mode) {
 	if (!this._deleteNotifyDialog) {
-		var msg = ZmMsg.confirmCancelAppt;
-		if (appt.isRecurring()) {
-			msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE)
-				? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, appt.name)
-				: ZmMsg.confirmCancelApptSeries;
-		}
 		this._deleteNotifyDialog = new ZmApptDeleteNotifyDialog({
 			parent: this._shell,
 			title: AjxMsg.confirmTitle,
-			confirmMsg: msg,
-			choiceLabel1: ZmMsg.dontNotifyOrganizer,
+			confirmMsg: "",
+            choiceLabel1: ZmMsg.dontNotifyOrganizer,
 			choiceLabel2 : ZmMsg.notifyOrganizer
 		});
 	}
+    if(this._deleteMode != mode){
+        var msg = ZmMsg.confirmCancelAppt;
+        if(appt.isRecurring()){
+            msg = (mode == ZmCalItem.MODE_DELETE_INSTANCE)
+    			? AjxMessageFormat.format(ZmMsg.confirmCancelApptInst, appt.name)
+    			: ZmMsg.confirmCancelApptSeries;
+        }
+        var msgDiv = document.getElementById(this._deleteNotifyDialog._confirmMessageDivId);
+        msgDiv.innerHTML = msg;
+        this._deleteMode = mode;
+    }
 	this._deleteNotifyDialog.popup(new AjxCallback(this, this._deleteNotifyYesCallback, [appt,mode]));
 };
 
