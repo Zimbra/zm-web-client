@@ -135,7 +135,7 @@ function(params) {
 	var searchOnly = (treeIds.length == 1 && treeIds[0] == ZmOrganizer.SEARCH);
 	var newButton = this._getNewButton();
 	if (newButton) {
-		newButton.setVisible(!searchOnly && !params.hideNewButton);
+		newButton.setVisible(!searchOnly && !params.hideNewButton && !appCtxt.isExternalAccount());
 	}
 
 	this._data = params.data;
