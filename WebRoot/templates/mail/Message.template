@@ -573,7 +573,7 @@
                 <div class="attBubbleContainer" style="position:static; overflow:visible;">
                 <div class="attBubbleHolder" style="display:inline-block; border-radius:4px;">
                     <$ var spanId = Dwt.getNextId(data.rowId)$>
-                    <span  id='<$= spanId $>' value='<$= message.id $>' class="AttachmentLoading attachmentBubble" style="position:static; overflow:visible; padding:0 2px 3px">
+                    <span  id='<$= spanId $>' value='<$= message.id $>' class="AttachmentLoading attachmentBubble AttachmentSpan">
                         <a style="color:#336699; cursor:pointer; text-decoration:none;" > <$= (message ? AjxStringUtil.htmlEncode(message.subject) : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></a>
                         (<$= AjxUtil.formatSize(message.size, false, 1) $>)
                         <span onclick="window.appCtxt.getCurrentView()._removeAttachedMessage('<$= spanId $>')" class="ImgBubbleDelete AttachmentClose"></span>
