@@ -407,6 +407,9 @@ function() {
 
 ZmGroupView.prototype.isValidMailPolicy =
 function() {
+	if (!this.isDistributionList()) {
+		return true;
+	}
 	return this._getDlMailPolicy() != ZmGroupView.MAIL_POLICY_SPECIFIC || this._getDlSpecificMailers().length > 0;
 };
 
