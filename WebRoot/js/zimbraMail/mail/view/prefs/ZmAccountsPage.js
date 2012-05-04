@@ -376,6 +376,8 @@ ZmAccountsPage.prototype._editDelegateButton =
     function() {
     var item = this.delegatesList.getSelection()[0];
     this._editDelegateOrig = item;
+    this._editDelegateOrig.sendAs = item.sendAs || false;
+    this._editDelegateOrig.sendOnBehalfOf = item.sendOnBehalfOf || false;
     var callback = this._editDelegateRights.bind(this);
     var dlg = this.getGrantRightsDlg(callback);
     dlg.setData(item);
