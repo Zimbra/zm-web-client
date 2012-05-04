@@ -473,6 +473,11 @@ function() {
     return false;
 };
 
+ZmApptView.prototype.close =
+function() {
+    this._controller._closeView();
+};
+
 ZmApptView.prototype.getOpValue =
 function() {
     var value = this._statusSelect.getValue(),

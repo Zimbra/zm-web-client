@@ -460,11 +460,6 @@ function() {
 	return this._composeView;
 };
 
-ZmApptController.prototype.getCurrentViewId =
-function() {
-	return this._viewId;
-};
-
 ZmApptController.prototype.getCurrentToolbar =
 function() {
 	return this._toolbar;
@@ -475,7 +470,6 @@ function() {
 	ZmCalItemComposeController.prototype._postShowCallback.call(this);
     this._app.setOverviewPanelContent();
 };
-
 
 ZmApptController.prototype.saveCalItem =
 function(attId) {
@@ -500,6 +494,6 @@ function(attId) {
 
 ZmApptController.prototype._closeView =
 function() {
-	this._app.popView(true,this._currentViewId);
+	this._app.popView(true, this.getCurrentViewId());
     this._composeView.cleanup();
 };
