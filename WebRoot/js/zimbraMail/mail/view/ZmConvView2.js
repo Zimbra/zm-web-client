@@ -1393,8 +1393,17 @@ function(id, op, ev) {
 ZmMailMsgCapsuleView.prototype._toggleExpansion =
 function() {
 	
-	this._expanded = !this._expanded;
+	var expanded = !this._expanded;
+	if (!expanded && !this._controller.popShield(null, this._setExpansion.bind(this, false))) {
+		return;
+	}
+	this._setExpansion(expanded);
+};
 
+ZmMailMsgCapsuleView.prototype._setExpansion =
+function(expanded) {
+
+	this._expanded = expanded;
 	if (this._expanded && !this._msgBodyCreated) {
 		// Provide a callback to ensure address bubbles are properly set up
         var dayViewCallback = null;
@@ -1407,8 +1416,7 @@ function() {
 	}
 	else {
 		// hide or show everything below the header
-        if (this._expanded && this._isCalendarInvite && appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR) &&
-            !this._showingCalendar) {
+        if (this._expanded && this._isCalendarInvite && appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR) && !this._showingCalendar) {
             this._handleShowCalendarLink(ZmOperation.SHOW_ORIG, true);
         }
 		var children = this.getHtmlElement().childNodes;

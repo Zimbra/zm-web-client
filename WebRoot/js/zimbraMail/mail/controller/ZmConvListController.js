@@ -357,14 +357,14 @@ function(view, force) {
 };
 
 ZmConvListController.prototype.popShield =
-function(view) {
+function(view, callback) {
 	if (this._convView && this._convView.isDirty()) {
 		var ps = this._popShield = this._popShield || appCtxt.getYesNoMsgDialog();
 		ps.reset();
 		var msg = view ? ZmMsg.convViewSwitch : ZmMsg.convViewCancel;
 		ps.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-		ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this, [view]);
-		ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this, [view]);
+		ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this, [view, callback]);
+		ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this, [view, callback]);
 		ps.popup();
 		return false;
 	}
@@ -374,16 +374,19 @@ function(view) {
 };
 
 ZmConvListController.prototype._popShieldYesCallback =
-function(view) {
+function(view, callback) {
 	this._convView._replyView.reset();
 	this._popShield.popdown();
 	if (view) {
 		appCtxt.getAppViewMgr().showPendingView(true);
 	}
+	else if (callback) {
+		callback();
+	}
 };
 
 ZmConvListController.prototype._popShieldNoCallback =
-function(view) {
+function(view, callback) {
 	this._popShield.popdown();
 	if (view) {
 		// attempt to switch to TV was canceled - need to undo changes
