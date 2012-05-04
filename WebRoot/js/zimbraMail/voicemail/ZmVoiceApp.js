@@ -705,6 +705,8 @@ function() {
 	return [ZmOrganizer.VOICE];
 };
 
+// todo - Voice app shouldn't know about click2call
+
 ZmVoiceApp.prototype.displayClickToCallDlg =
 function(toPhoneNumber) {
 	if(!this._click2CallZimlet) {
@@ -720,6 +722,8 @@ function(toPhoneNumber) {
 	}
 	this._click2CallZimlet.display(toPhoneNumber);
 };
+
+// todo - Move the vendor specific code out
 
 ZmVoiceApp.prototype.processErrors =
     function(ex) {
