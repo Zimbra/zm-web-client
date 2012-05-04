@@ -187,6 +187,8 @@ ZmTasksApp.prototype.handleOp =
 function(op, params) {
 	switch (op) {
 		case ZmOperation.NEW_TASK: {
+            params = params || {};
+            params.folderId = params.folderId || appCtxt.getCurrentController()._folderId;
 			var loadCallback = new AjxCallback(this, this._handleLoadNewTask, [params]);
 			AjxDispatcher.require(["TasksCore", "Tasks"], false, loadCallback, null, true);
 			break;
