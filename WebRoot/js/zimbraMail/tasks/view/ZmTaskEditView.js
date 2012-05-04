@@ -479,6 +479,15 @@ function(ev) {
 	ev.item.popup();
 };
 
+ZmTaskEditView.prototype._checkReminderDate =
+function(){
+    var currDate = new Date();
+    var rd = AjxDateUtil.simpleParseDateStr(this._remindDateField.value);
+    if (rd.valueOf() < currDate.valueOf()){
+        this._remindDateField.value = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT).format(currDate);
+    }
+};
+
 ZmTaskEditView.prototype._dateCalSelectionListener = function(ev) {
 
     ZmCalItemEditView.prototype._dateCalSelectionListener.call(this,ev);
@@ -509,7 +518,7 @@ ZmTaskEditView.prototype._dateCalSelectionListener = function(ev) {
               this._remindDateField.value = newDate;
         }
     }
-    
+    this._checkReminderDate();
 };
 
 
