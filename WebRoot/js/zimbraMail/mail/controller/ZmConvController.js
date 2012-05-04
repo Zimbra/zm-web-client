@@ -186,18 +186,6 @@ function() {
 	return list;
 };
 
-ZmConvController.prototype._getRightSideToolBarOps =
-function() {
-	var list = [];
-	if (appCtxt.isChildWindow) {
-		return list;
-	}
-	if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !appCtxt.isExternalAccount()) {
-		list.push(ZmOperation.DETACH);
-	}
-	return list;
-};
-
 ZmConvController.prototype._initializeToolBar = 
 function(view) {
 	if (!this._toolbar[view]) {

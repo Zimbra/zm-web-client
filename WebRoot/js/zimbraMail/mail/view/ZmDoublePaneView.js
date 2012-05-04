@@ -157,6 +157,7 @@ function(item, force, dontFocus) {
 	if (!dontFocus) {
 		this._controller._restoreFocus();	// bug 47700
 	}
+	this._controller._checkKeepReading();
  };
 
 ZmDoublePaneView.prototype.clearItem =

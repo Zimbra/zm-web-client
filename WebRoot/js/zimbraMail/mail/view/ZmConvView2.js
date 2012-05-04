@@ -387,7 +387,7 @@ function() {
 // scroll to show the next page. Otherwise, scroll the next expanded msg view to the top.
 // Returns true if scrolling was done.
 ZmConvView2.prototype._keepReading =
-function() {
+function(check) {
 
 	if (!(this._msgViewList && this._msgViewList.length)) { return false; }
 	
@@ -413,7 +413,9 @@ function() {
 		var elHeight = Dwt.getSize(el).y;
 		// is bottom of msg view below bottom of container?
 		if (((el.offsetTop - this._offsetAdjustment) + elHeight) > (cont.scrollTop + contHeight)) {
-			cont.scrollTop = cont.scrollTop + contHeight;
+			if (!check) {
+				cont.scrollTop = cont.scrollTop + contHeight;
+			}
 			return true;
 		}
 	}
@@ -431,9 +433,11 @@ function() {
 		}
 	}
 	if (msgView && done && canScroll) {
-		this._scrollToTop(msgView);
-		// following also works to bring msg view to top
-		// cont.scrollTop = el.offsetTop - this._offsetAdjustment;
+		if (!check) {
+			this._scrollToTop(msgView);
+			// following also works to bring msg view to top
+			// cont.scrollTop = el.offsetTop - this._offsetAdjustment;
+		}
 		return true;
 	}
 	
@@ -1429,6 +1433,7 @@ function() {
 	if (this._expanded) {
 		// create bubbles
 		this._notifyZimletsNewMsg(this._msg);
+		this._controller._checkKeepReading();
 	}
 
 	this._resetIframeHeightOnTimer();

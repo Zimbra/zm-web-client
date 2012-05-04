@@ -99,6 +99,7 @@ function(item) {
 		var row2 = this._getElement(item, ZmItem.F_ITEM_ROW_3PANE);
 		if (row2) { row2.className = rowClass; }
 	}
+	this._controller._checkKeepReading();
 };
 
 ZmMailListView.prototype.set =

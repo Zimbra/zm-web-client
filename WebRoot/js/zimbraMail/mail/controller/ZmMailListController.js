@@ -78,7 +78,6 @@ ZmMailListController = function(container, mailApp, type, sessionId, searchResul
 		this._listeners[ZmOperation.SPAM] = this._spamListener.bind(this);
 	}
 
-	this._listeners[ZmOperation.KEEP_READING] = this._keepReadingListener.bind(this);
 	this._listeners[ZmOperation.DETACH] = this._detachListener.bind(this);
 	this._inviteReplyListener = this._inviteReplyHandler.bind(this);
 	this._shareListener = this._shareHandler.bind(this);
@@ -563,7 +562,6 @@ function() {
 	if (appCtxt.isChildWindow) {
 		return list;
 	}
-	list.push(ZmOperation.KEEP_READING);
 	if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !appCtxt.isExternalAccount()) {
 		list.push(ZmOperation.DETACH);
 	}
@@ -1781,8 +1779,6 @@ function(ev) {
 	this._doSpam(items, button.isMarkAsSpam);
 };
 
-ZmMailListController.prototype._keepReadingListener = function(ev) {};
-
 ZmMailListController.prototype._detachListener =
 function(ev, callback) {
 	var msg = this.getMsg();
@@ -2289,8 +2285,9 @@ ZmMailListController.prototype._getUnreadItem =
 function(which, type, noBump) {
 
 	var lv = this._listView[this._currentViewId];
-	var list = lv.getList(true).getArray();
-	var size = list.length;
+	var vec = lv.getList(true);
+	var list = vec && vec.getArray();
+	var size = list && list.length;
 	if (!size) { return; }
 
 	var start, index;

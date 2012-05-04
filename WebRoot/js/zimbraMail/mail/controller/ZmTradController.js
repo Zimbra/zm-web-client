@@ -81,12 +81,7 @@ function(actionCode, ev) {
 
 	switch (actionCode) {
 		case ZmKeyMap.KEEP_READING:
-			var itemView = this.getItemView();
-			if (itemView) {
-				if (!itemView._keepReading()) {
-					return this.handleKeyAction(ZmKeyMap.NEXT_UNREAD, ev);
-				}
-			}
+			return this._keepReading(false, ev);
 			break;
 
 		default:
@@ -137,6 +132,27 @@ function(ev) {
 		var ctlr = AjxDispatcher.run("GetMsgController", item.nId);
 		ctlr.show(item, this, respCallback, true);
 	}
+};
+
+ZmTradController.prototype._keepReading = 
+function(check, ev) {
+	
+	if (!this.isReadingPaneOn() || !this._itemViewCurrent()) { return false; }
+	var mlv = this._mailListView;
+	if (!mlv || mlv.getSelectionCount() != 1) { return false; }
+	
+	var itemView = this.getItemView();
+	var result = itemView && itemView._keepReading(check);
+	if (check) {
+		result = result || !!(this._getUnreadItem(DwtKeyMap.SELECT_NEXT));
+	}
+	else {
+		result = result || this.handleKeyAction(ZmKeyMap.NEXT_UNREAD, ev);
+		if (result) {
+			this._checkKeepReading();
+		}
+	}
+	return result;
 };
 
 // Callbacks

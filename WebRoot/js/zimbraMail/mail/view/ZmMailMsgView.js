@@ -2697,12 +2697,14 @@ function() {
 };
 
 ZmMailMsgView.prototype._keepReading =
-function() {
+function(check) {
 	var cont = this.getHtmlElement();
 	var contHeight = Dwt.getSize(cont).y;
 	var canScroll = (cont.scrollHeight > contHeight && (cont.scrollTop + contHeight < cont.scrollHeight));
 	if (canScroll) {
-		cont.scrollTop = cont.scrollTop + contHeight;
+		if (!check) {
+			cont.scrollTop = cont.scrollTop + contHeight;
+		}
 		return true;
 	}
 	return false;

@@ -1121,8 +1121,10 @@ function(moveButton) {
 };
 
 /**
- * Resets the available options on a toolbar or action menu.
+ * Resets the available operations on a toolbar or action menu.
  * 
+ * @param {DwtControl}	parent		toolbar or action menu
+ * @param {number}		num			number of items selected currently
  * @private
  */
 ZmBaseController.prototype._resetOperations =
@@ -1148,6 +1150,16 @@ function(parent, num) {
 	}
     this._resetQuickCommandOperations(parent);
 };
+
+/**
+ * Resets a single operation on a toolbar or action menu.
+ * 
+ * @param {DwtControl}	parent		toolbar or action menu
+ * @param {number}		num			number of items selected currently
+ * @param {constant}	op			operation
+ * @private
+ */
+ZmBaseController.prototype._resetOperation = function(parent, num, op) {};
 
 /**
  * Resets the available options on the toolbar.

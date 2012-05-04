@@ -179,39 +179,7 @@ function(actionCode, ev) {
 			break;
 		
 		case ZmKeyMap.KEEP_READING:
-			if (mlv.getSelectionCount() == 1) {
-				var itemView = this.getItemView();
-				// conv view
-				if (itemView && itemView.isZmConvView2) {
-					if (!itemView._keepReading()) {
-						return this.handleKeyAction(ZmKeyMap.NEXT_UNREAD, ev);
-					}
-				}
-				// msg view (within an expanded conv)
-				else if (itemView && itemView.isZmMailMsgView) {
-					if (!itemView._keepReading()) {
-						// go to next unread msg in this expanded conv, otherwise next unread conv
-						var msg = mlv.getSelection()[0];
-						var conv = msg && appCtxt.getById(msg.cid);
-						var msgList = conv && conv.msgs && conv.msgs.getArray();
-						var msgFound, item;
-						for (var i = 0; i < msgList.length; i++) {
-							var m = msgList[i];
-							msgFound = msgFound || (m.id == msg.id);
-							if (msgFound && m.isUnread) {
-								item = m;
-								break;
-							}
-						}
-						if (item) {
-							this._selectItem(mlv, item);
-						}
-						else {
-							return this.handleKeyAction(ZmKeyMap.NEXT_UNREAD, ev);
-						}
-					}
-				}
-			}
+			return this._keepReading(false, ev);
 			break;
 
 		// need to invoke DwtListView method directly since our list view no-ops DBLCLICK
@@ -230,6 +198,56 @@ function(actionCode) {
 	if (unreadItem) {
 		this._selectItem(this._mailListView, unreadItem);
 	}
+};
+
+ZmConvListController.prototype._keepReading =
+function(check, ev) {
+
+	if (!this.isReadingPaneOn() || !this._itemViewCurrent()) { return false; }
+	var mlv = this._mailListView;
+	if (!mlv || mlv.getSelectionCount() != 1) { return false; }
+	
+	var result = false;
+	var itemView = this.getItemView();
+	// conv view
+	if (itemView && itemView.isZmConvView2) {
+		result = itemView._keepReading(check);
+		result = result || (check ? !!(this._getUnreadItem(DwtKeyMap.SELECT_NEXT)) :
+									   this.handleKeyAction(ZmKeyMap.NEXT_UNREAD, ev));
+	}
+	// msg view (within an expanded conv)
+	else if (itemView && itemView.isZmMailMsgView) {
+		var result = itemView._keepReading(check);
+		if (!check || !result) {
+			// go to next unread msg in this expanded conv, otherwise next unread conv
+			var msg = mlv.getSelection()[0];
+			var conv = msg && appCtxt.getById(msg.cid);
+			var msgList = conv && conv.msgs && conv.msgs.getArray();
+			var msgFound, item;
+			for (var i = 0; i < msgList.length; i++) {
+				var m = msgList[i];
+				msgFound = msgFound || (m.id == msg.id);
+				if (msgFound && m.isUnread) {
+					item = m;
+					break;
+				}
+			}
+			if (item) {
+				result = true;
+				if (!check) {
+					this._selectItem(mlv, item);
+				}
+			}
+			else {
+				result = check ? !!(this._getUnreadItem(DwtKeyMap.SELECT_NEXT)) :
+									this.handleKeyAction(ZmKeyMap.NEXT_UNREAD, ev);
+			}
+		}
+	}
+	if (!check && result) {
+		this._checkKeepReading();
+	}
+	return result;
 };
 
 /**
