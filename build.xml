@@ -825,6 +825,7 @@
 				<!-- default locale images -->
 				<imagemerge destdir='${destdir}' disable='true'
 							cssfile='${build.css.filename}' csspath='${csspath}'
+							spacerimagespath='${this.zwc.basedir}/WebRoot/img/zimbra/'
 							jsfile='${build.css.filename}.js'>
 					<dirset dir='${srcdir}' includes='*' excludes='?*_??,?*_??_??' />
 				</imagemerge>
@@ -842,6 +843,7 @@
 								<imagemerge destdir='${destdir}' disable='true'
 											cssfile='${build.css.file}_@{locale}${build.css.ext}'
 											csspath='${csspath}'
+											spacerimagespath='${this.zwc.basedir}/WebRoot/img/zimbra/'
 											jsfile='${build.css.filename}.js'>
 									<dirset dir='${srcdir}' includes='?*_@{locale}' />
 								</imagemerge>
@@ -879,6 +881,7 @@
         <echo/>
         <imagemerge destdir='${build.this.skin.dir}'
                     cssfile='${build.css.filename}' csspath='@AppContextPath@/skins/${skindir}/img/'
+					spacerimagespath='${this.zwc.basedir}/WebRoot/img/zimbra/'
 					jsfile='${build.css.filename}.js'>
             <dirset dir='${skinbasedir}/skins/${skindir}' includes='img/**'/>
         </imagemerge>
