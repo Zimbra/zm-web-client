@@ -437,8 +437,15 @@ function(params) {
 	if (isCSV) { formParams[type+"fmt"] = subType; }
 	if (isTGZ && params.views) { formParams["types"] = params.views; }
         if (params.views == "appointment"){
-                if (params.start) { formParams["start"] = params.start; }
-                if (params.end) { formParams["end"] = params.end; }
+            var startDate = params.start ? AjxDateUtil.simpleParseDateStr(params.start) : null;
+            var endDate = params.end ? AjxDateUtil.simpleParseDateStr(params.end) : null;
+            if(startDate) {
+                formParams["start"] = startDate.getTime();
+            }
+            if(endDate) {
+                endDate = AjxDateUtil.roll(endDate, AjxDateUtil.DAY, 1);
+                formParams["end"] = endDate.getTime();
+            }
         } else {
                 if (isTGZ && params.start){ params.searchFilter = (params.searchFilter) ? params.searchFilter + " AND " : "" + "after:" + params.start; }
                 if (isTGZ && params.end){ params.searchFilter = ((params.searchFilter) ? params.searchFilter + " AND " : "") + "before:" + params.end; }
