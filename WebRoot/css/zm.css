@@ -707,6 +707,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	opacity:0;
 	text-align: right;
 	z-index: 300;
+    overflow: hidden;
 }
 
 .ComposeAttachBtn {
