@@ -156,7 +156,7 @@
                                     <div>
                                         <div class='contentBox'>
                                             <h1>
-                                                <a id='${id}_bannerLink' target='_new' href="http://www.zimbra.com">
+                                                <a id='${id}_bannerLink' target='_new' href='${logoURL}'>
                                                     <span class='${aboutBanner}'></span>
                                                 </a>
                                             </h1>
