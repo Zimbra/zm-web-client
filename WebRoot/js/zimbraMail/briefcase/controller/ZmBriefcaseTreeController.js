@@ -83,9 +83,9 @@ function(actionMenu, type, id) {
             actionMenu.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);            
         } else {
             actionMenu.enableAll(true);
-            var menuItem = actionMenu.getMenuItem(ZmOperation.DELETE_WITHOUT_SHORTCUT);
-            menuItem.setEnabled(!appCtxt.isExternalAccount() && !isBriefcase && (!isLinkOrRemote || !isReadOnly || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
+			actionMenu.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.EDIT_PROPS], !appCtxt.isExternalAccount() && !isBriefcase && (!isLinkOrRemote || !isReadOnly || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
 
+			var menuItem;
             menuItem = actionMenu.getMenuItem(ZmOperation.NEW_BRIEFCASE);
             menuItem.setText(ZmMsg.newFolder);
             menuItem.setImage("NewFolder");
