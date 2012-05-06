@@ -5339,7 +5339,22 @@ DIV .SuggestBtn {
 }
 
 .ZmActivityStreamFilterList {
-	width:350px;
+	margin:1em 2em;
+	padding:0;
+}
+
+.ZmActivityStreamFilterList DIV {
+	margin-bottom:.5em;
+}
+
+#IFDEF WEBKIT
+.ZmActivityStreamFilterList INPUT[type='checkbox'] {
+	margin-top:.25em;
+}
+#ENDIF
+
+.ZmActivityStreamFilterList LABEL {
+	white-space:nowrap;
 }
 
 .ZmPriorityFilterDivider {
