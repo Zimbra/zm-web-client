@@ -636,6 +636,7 @@ function(viewId, force) {
 	var viewController = view.controller;
 
 	// if same view, no need to hide previous view or check for callbacks
+	//also no need to make the view visible, it already is.
 	if (viewId == this._currentViewId) {
 		this._setViewVisible(viewId, true);
 		// make sure the new content has focus
@@ -1210,7 +1211,7 @@ function(viewId, show) {
 				this.showSkinElement(cid, false);
 			}
 		}
-		
+
 		// fit the components now that we're done messing with the skin
 		if (this._hasSkin) {
 			this._fitToContainer(toFit);
