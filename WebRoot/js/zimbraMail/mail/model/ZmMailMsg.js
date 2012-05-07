@@ -848,7 +848,8 @@ function(contentType, callback) {
 		}
 		// see if we should try to fetch an alternative part
 		else if (this.hasContentType(ZmMimeTable.MULTI_ALT) &&
-				(contentType == ZmMimeTable.TEXT_PLAIN || contentType == ZmMimeTable.TEXT_HTML)) {
+				((contentType == ZmMimeTable.TEXT_PLAIN && this.hasContentType(ZmMimeTable.TEXT_PLAIN)) ||
+				 (contentType == ZmMimeTable.TEXT_HTML && this.hasContentType(ZmMimeTable.TEXT_HTML)))) {
 
 			ZmMailMsg.fetchMsg({
 				sender:		appCtxt.getAppController(),
