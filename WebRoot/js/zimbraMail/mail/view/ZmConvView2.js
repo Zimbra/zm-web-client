@@ -181,12 +181,6 @@ function(conv, container) {
 	this._msgViews = {};
 	this._msgViewList = [];
 	var msgs = conv.getMsgList();
-	var params = {
-		parent:			this,
-		parentElement:	container,
-		controller:		this._controller,
-		actionsMenu:	this._actionsMenu
-	}
 
 	var oldToNew = (appCtxt.get(ZmSetting.CONVERSATION_ORDER) == ZmSearch.DATE_ASC);
 	if (oldToNew) {
@@ -195,6 +189,12 @@ function(conv, container) {
 	var idx;
 	var oldestIndex = oldToNew ? 0 : msgs.length - 1;
 	for (var i = 0, len = msgs.length; i < len; i++) {
+		var params = {
+			parent:			this,
+			parentElement:	container,
+			controller:		this._controller,
+			actionsMenu:	this._actionsMenu
+		}
 		var msg = msgs[i];
 		params.forceExpand = msg.isLoaded();
 		// don't look for quoted text in oldest msg - it is considered wholly original
@@ -215,6 +215,7 @@ function(msg, params) {
 	params = params || {};
 	params.msgId = msg.id;
 	params.sessionId = this._controller.getSessionId();
+	params.isDraft = msg.isDraft;
 	var msgView = this._msgViews[msg.id] = new ZmMailMsgCapsuleView(params);
 	this._msgViewList.push(msg.id);
 	msgView.set(msg);
@@ -894,10 +895,11 @@ function(addresses, type, addrs, used) {
  * @param {ZmActionMenu}	actionsMenu		shared action menu
  * @param {boolean}			forceExpand		if true, show header, body, and footer
  * @param {boolean}			forceCollapse	if true, just show header
+ * @param {boolean}			isDraft			is this message a draft
  */
 ZmMailMsgCapsuleView = function(params) {
 
-	params.className = params.className || "ZmMailMsgCapsuleView";
+	params.className = params.className || "ZmMailMsgCapsuleView" + (params.isDraft ? " draft" : "");
 	this._msgId = params.msgId;
 	params.id = this._getViewId(params.sessionId);
 	ZmMailMsgView.call(this, params);
@@ -1210,18 +1212,30 @@ function(msg, container) {
 	var linkInfo = this._linkInfo = {};
     var isExternalAccount = appCtxt.isExternalAccount();
 	linkInfo[ZmOperation.SHOW_ORIG] 	= {key: showTextKey,	handler: showTextHandler,  disabled: isExternalAccount};
+	linkInfo[ZmOperation.DRAFT]			= {key: "editDraft",	handler: this._handleEditDraftLink, op: ZmOperation.DRAFT,  disabled: isExternalAccount};
 	linkInfo[ZmOperation.REPLY]			= {key: "reply",		handler: this._handleReplyLink, 	op: ZmOperation.REPLY,  disabled: isExternalAccount};
 	linkInfo[ZmOperation.REPLY_ALL]		= {key: "replyAll",		handler: this._handleReplyLink, 	op: ZmOperation.REPLY_ALL,  disabled: isExternalAccount};
 	linkInfo[ZmOperation.FORWARD]		= {key: "forward",		handler: this._handleForwardLink,  disabled: isExternalAccount};
 	linkInfo[ZmOperation.ACTIONS_MENU]	= {key: "moreActions",	handler: this._handleMoreActionsLink};
 
-	var links = [
-		ZmOperation.SHOW_ORIG,
-		ZmOperation.REPLY,
-		ZmOperation.REPLY_ALL,
-		ZmOperation.FORWARD,
-		ZmOperation.ACTIONS_MENU
-	];
+	var links;
+
+	if (msg.isDraft) {
+		links = [
+			ZmOperation.DRAFT,
+			ZmOperation.SHOW_ORIG,
+			ZmOperation.ACTIONS_MENU
+		];
+	}
+	else {
+		links = [
+			ZmOperation.SHOW_ORIG,
+			ZmOperation.REPLY,
+			ZmOperation.REPLY_ALL,
+			ZmOperation.FORWARD,
+			ZmOperation.ACTIONS_MENU
+		];
+	}
 	var linkHtml = [];
 	for (var i = 0; i < links.length; i++) {
 		var html = this._makeLink(links[i]);
@@ -1385,6 +1399,12 @@ function(id, op, ev) {
 		link.className = "Link followed";
 	}
 };
+
+ZmMailMsgCapsuleView.prototype._handleEditDraftLink =
+function(id, op, ev) {
+	this._controller._doAction({action:op, msg:this._msg});
+};
+
 
 /**
  * Expand the msg view by hiding/showing the body and footer. If the msg hasn't
