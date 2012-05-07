@@ -406,6 +406,9 @@ function(ev) {
         var acctName = item.getAccount().name;
         url+="&acct=" + acctName ;
     }
+    if (appCtxt.isExternalAccount()) {
+        url += "&isext=true";
+    }
     window.open(appContextPath+url, "_blank");
 };
 
