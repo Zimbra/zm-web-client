@@ -80,7 +80,7 @@ ZmMailListView.SORTBY_HASH[ZmSearch.PRIORITY_DESC] = {field:ZmItem.F_PRIORITY, m
 // Reset row style
 ZmMailListView.prototype.markUIAsMute =
 function(item) {
-	this._setImage(item, ZmItem.F_MUTE, item.getMuteIcon());
+    //Removed
 };
 
 // Reset row style

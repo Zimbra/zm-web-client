@@ -254,7 +254,6 @@ function() {
 			ZmItem.F_FLAG,
 			ZmItem.F_PRIORITY,
 			ZmItem.F_TAG,
-			ZmItem.F_MUTE,
 			ZmItem.F_READ,
 			ZmItem.F_STATUS,
 			ZmItem.F_FROM,
@@ -373,9 +372,6 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	else if (field == ZmItem.F_EXPAND) {
 		idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, field));
 	}
-	else if (field == ZmItem.F_MUTE) {
-		idx = this._getImageHtml(htmlArr, idx, item.getMuteIcon(), this._getFieldId(item, field));
-	}
     else if (field == ZmItem.F_READ) {
 		idx = this._getImageHtml(htmlArr, idx, item.getReadIcon(), this._getFieldId(item, field));
 	}
@@ -456,7 +452,6 @@ function(item, colIdx) {
 	htmlArr[idx++] = DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, ZmItem.F_ITEM_ROW_3PANE);
 	htmlArr[idx++] = "'>";
 	
-	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_MUTE, colIdx, width);
 	idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_READ, colIdx, width);
 	if (isConv) {
 		idx = this._getAbridgedCell(htmlArr, idx, item, ZmItem.F_EXPAND, colIdx, "16", "style='padding:0'");

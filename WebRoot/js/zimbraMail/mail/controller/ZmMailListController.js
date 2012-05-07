@@ -305,10 +305,7 @@ function(actionCode, ev) {
 			break;
 
 		case ZmKeyMap.MUTE_UNMUTE_CONV:
-            if (isExternalAccount) { break; }
-			if (num && (!folder || (folder && !folder.isReadOnly()))) {
-				this._muteUnmuteConvListener();
-			}
+            // Mute/Unmute Code removed for IM will be added for JP
 			break;
 
         case ZmKeyMap.MARK_READ:
@@ -571,9 +568,7 @@ function() {
 
 ZmMailListController.prototype._getSecondaryToolBarOps =
 function() {
-	var list = [ZmOperation.PRINT,
-                ZmOperation.MUTE_CONV,
-                ZmOperation.UNMUTE_CONV];
+	var list = [ZmOperation.PRINT];
 	list.push(ZmOperation.SEP, ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD);
 	list.push(ZmOperation.SEP, ZmOperation.SHOW_ORIG);
     list.push(ZmOperation.SEP, ZmOperation.REDIRECT, ZmOperation.EDIT_AS_NEW);
