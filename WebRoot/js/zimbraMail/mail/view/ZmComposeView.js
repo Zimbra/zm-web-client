@@ -3290,7 +3290,10 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 
 	var html = "";
 	var attIncludeOrigLinkId = null;
-	this._partToAttachmentMap = [];
+    this._partToAttachmentMap = [];
+    var appCtxt = window.parentAppCtxt || window.appCtxt
+    var messages = [];
+
 	if (!this._originalAttachmentsInitialized ){  //only the first time we determine which attachments are original
 		this._originalAttachments = []; //keep it associated by label and size (label => size => true) since that's the only way the client has to identify attachments from previous msg version.
 		this._hideOriginalAttachments = msg && msg.hasAttach && (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL);
@@ -3346,9 +3349,18 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
             if (action == ZmComposeView.ADD_ORIG_MSG_ATTS){
                 action = this._action;
             }
+            if (this._msgIds && this._msgIds.length) {
+                for (var i = 0; i < this._msgIds.length; i++) {
+                    var message = appCtxt.cacheGet(this._msgIds[i]);
+                    if (!message) continue;
+                    messages.push(message);
+                };
+            }
 
             var data = {
 				attachments:		attInfo,
+                messages:           messages,
+                messagesFwdFieldName: (ZmComposeView.FORWARD_MSG_NAME + this._sessionId),
 				isNew:				(action == ZmOperation.NEW_MESSAGE),
 				isForward:			(action == ZmOperation.FORWARD),
 				isForwardInline:	(action == ZmOperation.FORWARD_INLINE),
@@ -3359,13 +3371,11 @@ function(msg, action, incOptions, includeInlineImages, includeInlineAtts) {
 				fwdFieldName:		(ZmComposeView.FORWARD_ATT_NAME + this._sessionId)
 			};
 			html = AjxTemplate.expand("mail.Message#ForwardAttachments", data);
-            this._attachCount = attInfo.length;
+            this._attachCount = attInfo.length + messages.length;
             this.checkAttachments();
 		}
 	} else if (this._msgIds && this._msgIds.length) {
 		// use main window's appCtxt
-		var appCtxt = window.parentAppCtxt || window.appCtxt;
-		var messages = [];
 		for (var i = 0; i < this._msgIds.length; i++) {
 			var message = appCtxt.cacheGet(this._msgIds[i]);
 			if (!message) continue;

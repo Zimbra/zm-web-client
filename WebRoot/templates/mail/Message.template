@@ -632,6 +632,19 @@
               </span>
             <$ } $>
 
+               <$ for (var i = 0; i < data.messages.length; i++) { $>
+               <$ var message = data.messages[i]; $>
+               <$ var msgSpanId = Dwt.getNextId(data.rowId)$>
+
+               <span  id='<$= msgSpanId $>' class="AttachmentLoading attachmentBubble AttachmentSpan">
+                    <span>
+                          <input type="hidden" value='<$=message.id$>' name='<$= data.messagesFwdFieldName $>' >
+                    </span>
+                   <a style="color:#336699; cursor:pointer; text-decoration:none;" > <$= (message ? AjxStringUtil.htmlEncode(message.subject) : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></a>
+                   (<$= AjxUtil.formatSize(message.size, false, 1) $>)
+                   <span onclick="window.appCtxt.getCurrentView()._removeAttachedMessage('<$= msgSpanId $>' ,'<$= message.id $>')" class="ImgBubbleDelete AttachmentClose"></span>
+              </span>
+            <$ } $>
         </td>
         </tr>
         </table>
