@@ -84,6 +84,11 @@ function() {
 	return {date: date, timezone: timezone};
 }
 
+ZmTimeDialog.prototype.isValidDateStr =
+function() {
+    return AjxDateUtil.isValidSimpleDateStr(this._dateField.value);
+};
+
 ZmTimeDialog.prototype.popup =
 function() {
 	this.initialize();

@@ -1809,7 +1809,10 @@ function() {
 	var nowOffset = AjxTimezone.getOffset(AjxTimezone.DEFAULT_RULE, now);
 	var utcNow = new Date(now.getTime() - nowOffset*60*1000);
 
-	if (utcDate < utcNow) {
+    if(!this._delayDialog.isValidDateStr()){
+        this.showInvalidDateDialog();
+    }
+	else if (utcDate < utcNow) {
 		this.showDelayPastDialog();
 	} else {
 		this._toolbar.enableAll(false); // thwart multiple clicks on Send button
@@ -1825,8 +1828,24 @@ function() {
 		this._delayPastDialog.setMessage(ZmMsg.sendLaterPastError, DwtMessageDialog.WARNING_STYLE);
 		this._delayPastDialog.registerCallback(DwtDialog.OK_BUTTON, this._handleDelayPastDialog, this, []);
 	}
-	this._delayPastDialog.popup(this._composeView._getDialogXY());
+	this._delayPastDialog.popup();
 };
+
+ZmComposeController.prototype.showInvalidDateDialog =
+function() {
+	if (!this._invalidDateDialog) {
+		this._invalidDateDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON], id: "ShowDelayPastDialog"});
+		this._invalidDateDialog.setMessage(ZmMsg.invalidDateFormat, DwtMessageDialog.CRITICAL_STYLE);
+		this._invalidDateDialog.registerCallback(DwtDialog.OK_BUTTON, this._handleInvalidDateDialog, this, []);
+	}
+	this._invalidDateDialog.popup();
+};
+
+ZmComposeController.prototype._handleInvalidDateDialog =
+function() {
+    this._invalidDateDialog.popdown();
+    this._sendLaterListener();
+}
 
 ZmComposeController.prototype._handleDelayPastDialog =
 function() {
