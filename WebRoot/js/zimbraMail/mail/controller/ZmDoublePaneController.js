@@ -216,9 +216,6 @@ function() {
 		return list;
 	}
 	list.push(ZmOperation.KEEP_READING);
-	if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !appCtxt.isExternalAccount()) {
-		list.push(ZmOperation.DETACH);
-	}
 	list.push(ZmOperation.VIEW_MENU);
 	return list;
 };

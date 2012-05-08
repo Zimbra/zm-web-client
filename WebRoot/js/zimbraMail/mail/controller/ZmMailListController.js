@@ -555,15 +555,16 @@ function() {
 
 ZmMailListController.prototype._getRightSideToolBarOps =
 function() {
-	var list = [];
 	if (appCtxt.isChildWindow) {
-		return list;
+		return [];
 	}
-	if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !appCtxt.isExternalAccount()) {
-		list.push(ZmOperation.DETACH);
-	}
-	list.push(ZmOperation.VIEW_MENU);
-	return list;
+	return [ZmOperation.VIEW_MENU];
+};
+
+
+ZmMailListController.prototype._showDetachInSecondary =
+function() {
+	return true;
 };
 
 ZmMailListController.prototype._getSecondaryToolBarOps =
@@ -571,6 +572,9 @@ function() {
 	var list = [ZmOperation.PRINT];
 	list.push(ZmOperation.SEP, ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD);
 	list.push(ZmOperation.SEP, ZmOperation.SHOW_ORIG);
+	if (!appCtxt.isChildWindow && this._showDetachInSecondary() && appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !appCtxt.isExternalAccount()) {
+		list.push(ZmOperation.DETACH);
+	}
     list.push(ZmOperation.SEP, ZmOperation.REDIRECT, ZmOperation.EDIT_AS_NEW);
 
 	if (!appCtxt.isChildWindow) {
