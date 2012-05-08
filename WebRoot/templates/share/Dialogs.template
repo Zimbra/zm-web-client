@@ -597,7 +597,7 @@
 				<table>
 					<tr>
 						<td><$=AjxTemplate.expand("#DateField",{id:data.id+"_date"})$></td>
-						<td id='${id}_miniCal'></td>
+						<td class="miniCalendarButton" id='${id}_miniCal'></td>
 						<td>&nbsp;</td>
 						<td id='${id}_time'></td>
 					</tr>

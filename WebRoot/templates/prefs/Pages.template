@@ -2589,7 +2589,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 											<td class='ZmOOODuration' >
 												<table><tr>
 													<td><input style='height:22px;' type='text' autocomplete='off' size=14 maxlength=10 id='${id}_VACATION_FROM1'></td>
-													<td id='${id}_startMiniCal'></td>
+													<td class="miniCalendarButton" id='${id}_startMiniCal'></td>
 												</tr></table>
 											</td>
 											<td id='${id}_VACATION_FROM_TIME' class='ZmOOODuration' ></td>
@@ -2600,7 +2600,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 											<td class='ZmOOODuration'>
 												<table><tr>
 													<td><input style='height:22px;' type='text' autocomplete='off' size=14 maxlength=10 id='${id}_VACATION_UNTIL1'></td>
-													<td id='${id}_endMiniCal'></td>
+													<td class="miniCalendarButton" id='${id}_endMiniCal'></td>
 												</tr></table>
 											</td>
 											<td colspan="2" class='ZmOOODuration'  id='${id}_VACATION_UNTIL_TIME'></td>

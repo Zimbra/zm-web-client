@@ -198,10 +198,10 @@
 
 <template id='data.ImportExport#StartDate'>
 	<td class="quickAddDateFld"><$=ZmMsg.startOn$>&nbsp;<$=AjxTemplate.expand("#DateField",{id:data.id+"_startDateField"})$></td>
-	<td><div id='${id}_startMiniCalBtn'/></td>
+	<td class="miniCalendarButton"><div id='${id}_startMiniCalBtn'/></td>
 </template>
 
 <template id='data.ImportExport#EndDate'>
         <td class="quickAddDateFld"><$=ZmMsg.endOn$>&nbsp;<$=AjxTemplate.expand("#DateField",{id:data.id+"_endDateField"})$></td>
-        <td><div id='${id}_endMiniCalBtn'/></td>
+        <td class="miniCalendarButton"><div id='${id}_endMiniCalBtn'/></td>
 </template>

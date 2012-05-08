@@ -360,7 +360,7 @@
 <template id='calendar.Calendar#ListViewSearchBarInput'>
 	<table width=100%>
 		<tr><td class='calendar_date_search_td'><input autocomplete='off' style='height:22px;' type='text' size=14 id='${id}DateInput' value='${value}'></td>
-			<td id='${id}MiniCal'></td>
+			<td class="miniCalendarButton" id='${id}MiniCal'></td>
 		</tr>
 	</table>
 </template>

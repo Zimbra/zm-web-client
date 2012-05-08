@@ -2021,6 +2021,9 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	width:16%;
 }
 
+.miniCalendarButton{
+
+}
 
 /* outer table for the month view */
 .calendar_month_table {
