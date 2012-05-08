@@ -547,7 +547,8 @@ function(calItem, mode) {
         appCtxt.getAppViewMgr().setTabTitle(this._controller.getCurrentViewId(), buttonText);
     }
     if (this._hasRepeatSupport) {
-        this._repeatSelect.setSelectedValue(calItem.getRecurType());
+        var selected = calItem.isCustomRecurrence() ? "CUS" : calItem.getRecurType();
+        this._repeatSelect.setSelectedValue(selected);
         // recurrence string
 	    this._setRepeatDesc(calItem);
     }
