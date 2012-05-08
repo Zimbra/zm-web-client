@@ -705,10 +705,9 @@ function(params) {
 	if (field == ZmItem.F_STATUS) {
 		tooltip = item.getStatusTooltip();
 	}
-	else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
-			(field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT))
-	{
+	else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT)) {
 		var addr;
+		if (!item.getAddress) { return; }
 		if (field == ZmItem.F_FROM) { 
 			addr = item.getAddress(AjxEmailAddress.FROM);
 		} else if (field == ZmItem.F_PARTICIPANT) {

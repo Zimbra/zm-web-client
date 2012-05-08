@@ -556,7 +556,7 @@ function(params) {
 
 	if (!params.item) { return; }
 
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && (params.field == ZmItem.F_PARTICIPANT || params.field == ZmItem.F_FROM)) { 
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && (params.field == ZmItem.F_PARTICIPANT)) { 
 		var parts = params.item.participants;
 		var matchedPart = params.match && params.match.participant;
 		var addr = parts && parts.get(matchedPart || 0);
@@ -570,6 +570,8 @@ function(params) {
 		return {callback:ttCallback};
 	} else if (params.item.type == ZmItem.MSG) {
 		return ZmMailMsgListView.prototype._getToolTip.apply(this, arguments);
+	} else if (params.field == ZmItem.F_FROM) {
+		// do nothing - this is white space in the TD not taken up by participants
 	} else {
 		return ZmMailListView.prototype._getToolTip.apply(this, arguments);
 	}
