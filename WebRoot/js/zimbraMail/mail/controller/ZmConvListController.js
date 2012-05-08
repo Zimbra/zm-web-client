@@ -224,12 +224,14 @@ function(check, ev) {
 			var conv = msg && appCtxt.getById(msg.cid);
 			var msgList = conv && conv.msgs && conv.msgs.getArray();
 			var msgFound, item;
-			for (var i = 0; i < msgList.length; i++) {
-				var m = msgList[i];
-				msgFound = msgFound || (m.id == msg.id);
-				if (msgFound && m.isUnread) {
-					item = m;
-					break;
+			if (msgList && msgList.length) {
+				for (var i = 0; i < msgList.length; i++) {
+					var m = msgList[i];
+					msgFound = msgFound || (m.id == msg.id);
+					if (msgFound && m.isUnread) {
+						item = m;
+						break;
+					}
 				}
 			}
 			if (item) {
@@ -427,6 +429,12 @@ function(ev) {
 	return false;
 };
 
+ZmConvListController.prototype._menuPopdownActionListener =
+function(ev) {
+	ZmDoublePaneController.prototype._menuPopdownActionListener.apply(this, arguments);
+	this._selectedMsg = null;
+};
+
 ZmConvListController.prototype._setSelectedItem =
 function() {
 	
@@ -488,7 +496,15 @@ function(items) {
  */
 ZmConvListController.prototype.getMsg =
 function(params) {
-	var sel = this._listView[this._currentViewId].getSelection();
+	
+	// First see if action is being performed on a msg in the conv view in the reading pane
+	var lv = this._listView[this._currentViewId];
+	var msg = lv && lv._selectedMsg;
+	if (msg && DwtMenu.menuShowing()) {
+		return msg;
+	}
+	
+	var sel = lv.getSelection();
 	var item = (sel && sel.length) ? sel[0] : null;
 	if (item) {
 		if (item.type == ZmItem.CONV) {

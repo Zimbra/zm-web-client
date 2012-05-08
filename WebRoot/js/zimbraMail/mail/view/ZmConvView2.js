@@ -107,23 +107,6 @@ function() {
 	var html = AjxTemplate.expand("mail.Message#Conv2View", subs);
 	this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
 	
-	// A single action menu is shared by the msgs in this conv. It appears when the msg body is
-	// right-clicked, or when the Actions button is clicked.
-	var opList = this._controller._getActionMenuOps();
-	var menu = this._actionsMenu = new ZmActionMenu({
-				parent:		appCtxt.getShell(),
-				menuItems:	opList,
-				context:	[this._controller.getCurrentViewId(), ZmId.VIEW_CONV2].join("_")
-			});
-	for (var i = 0; i < opList.length; i++) {
-		var menuItem = opList[i];
-		if (this._controller._listeners[menuItem]) {
-			var listener = this._listenerProxy.bind(this, this._controller._listeners[menuItem]);
-			menu.addSelectionListener(menuItem, listener, 0);
-		}
-	}
-	menu.addPopdownListener(this._actionsMenuPopdownListener.bind(this));
-	
 	this._mainDiv			= document.getElementById(this._mainDivId);
 	this._headerDiv			= document.getElementById(this._convHeaderId);
 	this._subjectSpan		= document.getElementById(this._convSubjectId);
@@ -144,11 +127,6 @@ function() {
 	this.getHtmlElement().appendChild(div);
 	
 	this._initializedClear = true;
-};
-
-ZmConvView2.prototype._actionsMenuPopdownListener =
-function() {
-	this.actionedMsgView = null;
 };
 
 ZmConvView2.prototype._renderConv =
@@ -253,6 +231,7 @@ function() {
 ZmConvView2.prototype.reset =
 function(noClear) {
 	
+	this._setSelectedMsg(null);
 	if (this._item) {
 		this._item.removeChangeListener(this._convChangeHandler);
 		if (this._item.msgs) {
@@ -360,16 +339,6 @@ function(scrollMsgView) {
 	this._needResize = true;
 };
 
-ZmConvView2.prototype.setMsg =
-function(msg) {
-	this._msg = msg;
-};
-
-ZmConvView2.prototype.clearMsg =
-function(msg) {
-	this._msg = null;
-};
-
 // re-render if reading pane moved between right and bottom
 ZmConvView2.prototype.setReadingPane =
 function() {
@@ -458,25 +427,9 @@ function(msg) {
 	if (this._isStandalone()) {
 		this._selectedMsg = msg;
 	}
-	else {
+	else if (this._controller._mailListView) {
 		this._controller._mailListView._selectedMsg = msg;
 	}
-};
-
-// Bridge to real listeners in the conv list controller that rigs the selection to be a msg from this conv view
-// instead of the selected conv.
-ZmConvView2.prototype._listenerProxy =
-function(listener, ev) {
-	
-	if (!this._msg) {
-		return false;
-	} 
-
-	this._setSelectedMsg(this._msg);
-	var retVal = listener.handleEvent ? listener.handleEvent(ev) : listener(ev);
-	this._setSelectedMsg(null);
-	this.clearMsg();
-	return retVal;
 };
 
 ZmConvView2.prototype._sendListener =
@@ -1370,8 +1323,6 @@ function(id, autoDisplay) {
     }
 };
 
-
-
 ZmMailMsgCapsuleView.prototype._handleForwardLink =
 function(id, op, ev) {
 	var text = "", replyView = this._convView._replyView;
@@ -1384,10 +1335,9 @@ function(id, op, ev) {
 
 ZmMailMsgCapsuleView.prototype._handleMoreActionsLink =
 function(id, op, ev) {
-	this._convView.setMsg(this._msg);
-	this._resetOperations();
-	ev = DwtUiEvent.getEvent(ev);
-	this._actionsMenu.popup(null, ev.clientX, ev.clientY);
+	ev.docX = ev.clientX;
+	ev.docY = ev.clientY;
+	this._actionListener(ev, true);
 };
 
 ZmMailMsgCapsuleView.prototype._handleReplyLink =
@@ -1404,7 +1354,6 @@ ZmMailMsgCapsuleView.prototype._handleEditDraftLink =
 function(id, op, ev) {
 	this._controller._doAction({action:op, msg:this._msg});
 };
-
 
 /**
  * Expand the msg view by hiding/showing the body and footer. If the msg hasn't
@@ -1496,6 +1445,33 @@ function(tag) {
 	return "notoggle=1";
 };
 
+// Msg view header has been left-clicked
+ZmMailMsgCapsuleView.prototype._selectionListener =
+function(ev) {
+	this._toggleExpansion();
+	return true;
+};
+
+// Msg view header has been right-clicked
+ZmMailMsgCapsuleView.prototype._actionListener =
+function(ev, force) {
+
+	var hdr = this._header;
+	var el = DwtUiEvent.getTargetWithProp(ev, "id", false, hdr._htmlElId);
+	if (force || (el == hdr.getHtmlElement())) {
+		var target = DwtUiEvent.getTarget(ev);
+		var objMgr = this._objectManager;
+		if (objMgr && !AjxUtil.isBoolean(objMgr) && objMgr._findObjectSpan(target)) {
+			// let zimlet framework handle this; we don't want to popup our action menu
+			return;
+		}
+		this._convView._setSelectedMsg(this._msg);
+		this._controller._listActionListener.call(this._controller, ev);
+		return true;
+	}
+	return false;
+};
+
 /**
  * returns true if we are under the standalone conv view (double-clicked from conv list view)
  */
@@ -1535,27 +1511,6 @@ function(ev) {
 	}
 	else if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
 		this._setTags(this._msg);
-	}
-};
-
-ZmMailMsgCapsuleView.prototype._resetOperations =
-function() {
-	var ctlr = this._controller, menu = this._actionsMenu;
-	if (ctlr._mailListView) {
-		ctlr._mailListView._selectedMsg = this._msg;
-	}
-	ctlr._resetOperations(menu, 1);
-    ctlr._enableFlags(menu);
-    ctlr._enableMuteUnmute(menu);
-	/*menu.enable(ZmOperation.MARK_READ, this._msg.isUnread);
-	menu.enable(ZmOperation.MARK_UNREAD, !this._msg.isUnread);*/
-	var cv = this._convView, op = ZmOperation.TAG;
-	var listener = cv._listenerProxy.bind(cv, ctlr._listeners[op]);
-	ctlr._setupTagMenu(menu, listener);
-	ctlr._setTagMenu(menu, [this._msg]);
-	ctlr._setupSpamButton(menu);
-	if (ctlr._mailListView) {
-		ctlr._mailListView._selectedMsg = null;
 	}
 };
 
@@ -1826,29 +1781,10 @@ function(ev) {
 	if (t) { return false; }
 	
 	if (ev.button == DwtMouseEvent.LEFT) {
-		msgView._toggleExpansion();
+		return msgView._selectionListener(ev);
 	}
 	else if (ev.button == DwtMouseEvent.RIGHT) {
-		var el = DwtUiEvent.getTargetWithProp(ev, "id", false, this._htmlElId);
-		if (el == this.getHtmlElement()) {
-			convView.actionedMsgView = this;
-			var target = DwtUiEvent.getTarget(ev);
-			var objMgr = msgView._objectManager;
-			if (objMgr && !AjxUtil.isBoolean(objMgr) && objMgr._findObjectSpan(target)) {
-				// let zimlet framework handle this; we don't want to popup our action menu
-				return;
-			}
-			msgView._resetOperations();
-			this._controller._setTagMenu(this._actionsMenu, [this._msg]);
-			msgView._actionsMenu.popup(0, ev.docX, ev.docY);
-			convView.setMsg(this._msg);
-			// set up the event so that we don't also get a browser menu
-			ev._dontCallPreventDefault = false;
-			ev._returnValue = false;
-			ev._stopPropagation = true;
-			ev._authoritative = true;	// don't let subsequent listeners mess with us
-			return true;
-		}
+		return msgView._actionListener(ev);
 	}
 };
 	
