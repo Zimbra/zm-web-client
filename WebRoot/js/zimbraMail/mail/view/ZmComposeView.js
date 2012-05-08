@@ -987,7 +987,7 @@ function(composeMode, switchPreface, dontReplaceContent) {
 	var htmlMode = (composeMode == DwtHtmlEditor.HTML);
 	if (!htmlMode || appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 
-		var curMember = (this._composeMode == DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor;
+		var curMember = (this._composeMode == DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor.getEditorContainer();
 		// get these before we change mode so we can find them in current body
 		var sig = this.getSignatureContent(sigId);
 		var sigSep = this._getSignatureSeparator();
@@ -1079,11 +1079,7 @@ function(composeMode, switchPreface, dontReplaceContent) {
 		this._setFormValue();
 
 		// swap new body field into tab group
-		var newMember = (composeMode == DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor;
-        //        if (window.isTinyMCE) {
-        //            curMember = newMember = this._htmlEditor.getEditorContainer();
-        //            this._retryHtmlEditorFocus();
-        //        }
+        var newMember = (composeMode == DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor.getEditorContainer();
 		if (curMember && newMember && (curMember != newMember) && this._controller._tabGroup) {
 			this._controller._tabGroup.replaceMember(curMember, newMember);
 			// focus via replaceMember() doesn't take, try again
