@@ -65,6 +65,7 @@ function(activeSearch, conv, parentController, callback, markRead) {
 	this._parentController = parentController;
 
 	this._setup(this._currentViewId);
+	this._convView = this._view[this._currentViewId];
 
 	if (!conv._loaded) {
 		var respCallback = this._handleResponseLoadConv.bind(this, conv, callback);
@@ -199,6 +200,19 @@ ZmConvController.prototype._initializeNavToolBar =
 function(view) {
 //	ZmMailListController.prototype._initializeNavToolBar.apply(this, arguments);
 //	this._itemCountText[ZmSetting.RP_BOTTOM] = this._navToolBar[view]._textButton;
+};
+
+ZmConvController.prototype._backListener =
+function(ev) {
+	if (!this.popShield(null, this._close.bind(this))) {
+		return;
+	}
+	this._close();
+};
+
+ZmConvController.prototype._close =
+function(ev) {
+	this._app.popView();
 };
 
 ZmConvController.prototype._navBarListener =
@@ -416,4 +430,19 @@ function() {
 ZmConvController.prototype._getTagMenuMsg =
 function(num) {
 	return AjxMessageFormat.format(ZmMsg.tagMessages, num);
+};
+
+ZmConvController.prototype.popShield =
+function(viewId, callback, newViewId) {
+	return this._parentController.popShield.apply(this, arguments);
+};
+
+ZmConvController.prototype._popShieldYesCallback =
+function(switchingView, callback) {
+	return this._parentController._popShieldYesCallback.apply(this, arguments);
+};
+
+ZmConvController.prototype._popShieldNoCallback =
+function(switchingView, callback) {
+	return this._parentController._popShieldNoCallback.apply(this, arguments);
 };

@@ -1409,7 +1409,9 @@ function(expanded) {
 	if (this._expanded) {
 		// create bubbles
 		this._notifyZimletsNewMsg(this._msg);
-		this._controller._checkKeepReading();
+		if (this._controller._checkKeepReading) {
+			this._controller._checkKeepReading();
+		}
 	}
 
 	this._resetIframeHeightOnTimer();
