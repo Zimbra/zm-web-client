@@ -25,9 +25,9 @@
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
 <%--'virtualacctdomain' param is set only for external virtual accounts--%>
-<c:if test="${not empty param.email and not empty param.virtualacctdomain}">
+<c:if test="${not empty param.username and not empty param.virtualacctdomain}">
     <%--External login email address are mapped to internal virtual account--%>
-    <c:set var="trimmedUserName" value="${fn:replace(param.email,'@' ,'.')}@${param.virtualacctdomain}"/>
+    <c:set var="trimmedUserName" value="${fn:replace(param.username,'@' ,'.')}@${param.virtualacctdomain}"/>
 </c:if>
 
 <c:catch var="loginException">
@@ -359,8 +359,8 @@ if (application.getInitParameter("offlineMode") != null)  {
                                             <c:when test="${not empty virtualacctdomain or not empty param.virtualacctdomain}">
                                                 <%--External/Guest user login - *email* & password input fields--%>
                                                 <tr>
-                                                    <td><label for="email"><fmt:message key="email"/>:</label></td>
-                                                    <td><input id="email" class="zLoginField" name="email" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
+                                                    <td><label for="username"><fmt:message key="email"/>:</label></td>
+                                                    <td><input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" size="40" maxlength="${domainInfo.webClientMaxInputBufferLength}"/></td>
                                                 </tr>
                                             </c:when>
                                             <c:otherwise>
@@ -394,6 +394,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                                         </tr>
                         </c:otherwise>
                     </c:choose>
+                    <c:if test="${empty param.virtualacctdomain}">
 					<tr>
 						<td colspan="2"><hr/></td>
 					</tr>
@@ -441,6 +442,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 						<tr>
 							<td colspan="2"><hr/></td>
 						</tr>
+                    </c:if>
 					</table>
 				<div class="offline"><fmt:message key="switchToOfflineClientEx"/></div>
 			</div>
