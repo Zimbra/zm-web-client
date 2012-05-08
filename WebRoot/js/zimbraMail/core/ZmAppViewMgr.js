@@ -667,7 +667,7 @@ function(viewId, force) {
 	}
 
 	var curView = this._view[this._currentViewId] || this._emptyView;
-	if (!this._hideView(this._currentViewId, force || curView.isTabView)) {
+	if (!this._hideView(this._currentViewId, force || curView.isTabView, false, viewId)) {
 		this._pendingAction = this._pushCallback;
 		this._pendingView = viewId;
 		return false;
@@ -1120,7 +1120,7 @@ function(view) {
  * @private
  */
 ZmAppViewMgr.prototype._hideView =
-function(viewId, force, noHide) {
+function(viewId, force, noHide, newViewId) {
 
 	if (!viewId) { return true; }
 
@@ -1129,7 +1129,7 @@ function(viewId, force, noHide) {
 	var callback = view.callback[ZmAppViewMgr.CB_PRE_HIDE];
 	if (callback) {
 		DBG.println(AjxDebug.DBG2, "hiding " + viewId);
-		okToContinue = callback.run(viewId, force);
+		okToContinue = callback.run(viewId, force, newViewId);
 	}
 	if (okToContinue) {
 		if (!noHide) {
@@ -1141,7 +1141,7 @@ function(viewId, force, noHide) {
 		DBG.println(AjxDebug.DBG2, viewId + " hidden");
 		callback = view.callback[ZmAppViewMgr.CB_POST_HIDE];
 		if (callback) {
-			callback.run(viewId);
+			callback.run(viewId, newViewId);
 		}
 	}
 

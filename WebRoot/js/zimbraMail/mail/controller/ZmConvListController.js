@@ -354,19 +354,29 @@ function(view) {
 };
 
 ZmConvListController.prototype._preHideCallback =
-function(view, force) {
-	return force ? true : this.popShield(view);
+function(viewId, force, newViewId) {
+	return force ? true : this.popShield(viewId, null, newViewId);
 };
 
+/**
+ * Figure out if the given view change is destructive. If so, put up pop shield.
+ * 
+ * @param {string}		viewId		ID of view being hidden
+ * @param {function}	callback	function to call if user agrees to leave
+ * @param {string}		newViewId	ID of view that will be shown
+ */
 ZmConvListController.prototype.popShield =
-function(view, callback) {
-	if (this._convView && this._convView.isDirty()) {
+function(viewId, callback, newViewId) {
+
+	var newViewType = newViewId && appCtxt.getViewTypeFromId(newViewId);
+	var switchingView = (newViewType == ZmId.VIEW_TRAD);
+	if (this._convView && this._convView.isDirty() && (!newViewType || switchingView)) {
 		var ps = this._popShield = this._popShield || appCtxt.getYesNoMsgDialog();
 		ps.reset();
-		var msg = view ? ZmMsg.convViewSwitch : ZmMsg.convViewCancel;
+		var msg = switchingView ? ZmMsg.convViewSwitch : ZmMsg.convViewCancel;
 		ps.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-		ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this, [view, callback]);
-		ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this, [view, callback]);
+		ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this, [switchingView, callback]);
+		ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this, [switchingView, callback]);
 		ps.popup();
 		return false;
 	}
@@ -375,11 +385,13 @@ function(view, callback) {
 	}
 };
 
+// yes, I want to leave even though I've typed some text
 ZmConvListController.prototype._popShieldYesCallback =
-function(view, callback) {
+function(switchingView, callback) {
 	this._convView._replyView.reset();
 	this._popShield.popdown();
-	if (view) {
+	if (switchingView) {
+		// tell app view mgr it's okay to show TV
 		appCtxt.getAppViewMgr().showPendingView(true);
 	}
 	else if (callback) {
@@ -387,15 +399,15 @@ function(view, callback) {
 	}
 };
 
+// no, I don't want to leave
 ZmConvListController.prototype._popShieldNoCallback =
-function(view, callback) {
+function(switchingView, callback) {
 	this._popShield.popdown();
-	if (view) {
+	if (switchingView) {
 		// attempt to switch to TV was canceled - need to undo changes
-		var viewType = appCtxt.getViewTypeFromId(view);
-		this._updateViewMenu(viewType);
+		this._updateViewMenu(ZmId.VIEW_TRAD);
 		if (!appCtxt.isExternalAccount() && !this.isSearchResults && !this._currentSearch.isOutboundFolder) {
-			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[viewType]);
+			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_TRAD]);
 		}
 	}
 	appCtxt.getKeyboardMgr().grabFocus(this._convView._replyView._input);
