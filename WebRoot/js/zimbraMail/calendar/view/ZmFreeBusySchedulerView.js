@@ -2111,7 +2111,7 @@ function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
 
 	var el = DwtUiEvent.getTarget(ev);
-	var svp = AjxCore.objectWithId(el._schedViewPageId);
+	var svp = el && el._schedViewPageId ? AjxCore.objectWithId(el._schedViewPageId) : null;
 	if (!svp) { return; }
 
 	svp._fbToolTipInfo = null;
