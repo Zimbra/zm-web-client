@@ -219,23 +219,20 @@ function(actionCode, ev) {
 
 	DBG.println(AjxDebug.DBG3, "ZmListController.handleKeyAction");
 	var listView = this._view[this._currentViewId];
-	var hardDelete = false;
+	var result = false;
 
 	switch (actionCode) {
 
 		case DwtKeyMap.DBLCLICK:
 			return listView.handleKeyAction(actionCode);
 
-
 		case ZmKeyMap.SHIFT_DEL:
-			hardDelete = true;
-			//Intentional fall-through to the next case. Watch out not to add something after this. 
-
 		case ZmKeyMap.DEL:
 			var tb = this.getCurrentToolbar();
 			var button = tb && (tb.getButton(ZmOperation.DELETE) || tb.getButton(ZmOperation.DELETE_MENU));
 			if (button && button.getEnabled()) {
-				this._doDelete(this.getSelection(), hardDelete);
+				this._doDelete(this.getSelection(), (actionCode == ZmKeyMap.SHIFT_DEL));
+				result = true;
 			}
 			break;
 
@@ -244,6 +241,7 @@ function(actionCode, ev) {
 			var button = ntb ? ntb.getButton(ZmOperation.PAGE_FORWARD) : null;
 			if (button && button.getEnabled()) {
 				this._paginate(this._currentViewId, true);
+				result = true;
 			}
 			break;
 
@@ -252,13 +250,14 @@ function(actionCode, ev) {
 			var button = ntb ? ntb.getButton(ZmOperation.PAGE_BACK) : null;
 			if (button && button.getEnabled()) {
 				this._paginate(this._currentViewId, false);
+				result = true;
 			}
 			break;
 
 		default:
 			return ZmBaseController.prototype.handleKeyAction.apply(this, arguments);
 	}
-	return true;
+	return result;
 };
 
 // Returns a list of desired action menu operations
