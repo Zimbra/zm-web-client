@@ -638,7 +638,6 @@ function(viewId, force) {
 	// if same view, no need to hide previous view or check for callbacks
 	//also no need to make the view visible, it already is.
 	if (viewId == this._currentViewId) {
-		this._setViewVisible(viewId, true);
 		// make sure the new content has focus
 		if (viewController) {
 			viewController._restoreFocus();
