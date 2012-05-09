@@ -1337,6 +1337,7 @@ function(id, op, ev) {
 
 ZmMailMsgCapsuleView.prototype._handleMoreActionsLink =
 function(id, op, ev) {
+	ev = DwtUiEvent.getEvent(ev);
 	ev.docX = ev.clientX;
 	ev.docY = ev.clientY;
 	this._actionListener(ev, true);
