@@ -1826,9 +1826,18 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	font-size:0;
 	line-height:0;
 	background-color:@CalendarNowColor@;
-	height:1px;
+	height: 4px;
+    position: static;
+    margin: -3px;
 }
-
+.calendar_cur_time_indicator_container{
+	font-size:0;
+	line-height:0;
+	height: 1px;
+    position: absolute;
+    overflow: hidden;
+    z-index: 1000000;
+}
 .calendar_start_limit_indicator,.calendar_end_limit_indicator{
 	padding:0px;
 	height:20px;

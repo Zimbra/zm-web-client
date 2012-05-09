@@ -940,7 +940,7 @@ function(abook) {
 
 	html.append("</div>");
     //Strip to indicate the current time
-    html.append("<div id='"+this._curTimeIndicatorGridDivId+"' class='calendar_cur_time_indicator_strip'></div>");
+    html.append("<div id='"+this._curTimeIndicatorGridDivId+"' class='calendar_cur_time_indicator_container'><div class='calendar_cur_time_indicator_strip'></div></div>");
     html.append("<div id='"+this._startLimitIndicatorDivId+"' class='calendar_start_limit_indicator'><div class='ImgArrowMoreUp'></div></div>");
     html.append("<div id='"+this._endLimitIndicatorDivId+"' class='calendar_end_limit_indicator'><div class='ImgArrowMoreDown'></div></div>");
 	html.append("</div>");
