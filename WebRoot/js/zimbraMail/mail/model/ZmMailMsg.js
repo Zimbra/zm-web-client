@@ -330,7 +330,7 @@ function(maxLen) {
  */
 ZmMailMsg.prototype.isReadOnly =
 function() {
-	if (!this._isReadOnly) {
+	if (this._isReadOnly == null) {
 		var folder = appCtxt.getById(this.folderId);
 		this._isReadOnly = (folder ? folder.isReadOnly() : false);
 	}

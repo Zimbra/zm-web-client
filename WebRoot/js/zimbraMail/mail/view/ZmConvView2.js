@@ -975,7 +975,8 @@ function(msg, container, callback) {
 			callback:		this._handleResponseLoadMessage.bind(this, msg, container, callback),
 			needExp:		true,
 			noTruncate:		this._showEntireMsg,
-			forceLoad:		this._showEntireMsg
+			forceLoad:		this._showEntireMsg,
+			markRead:		this._controller._handleMarkRead(msg, true)
 		}
 		msg.load(params);
 		this._showEntireMsg = false;
@@ -995,6 +996,7 @@ function(msg, container, callback) {
 	this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
     this._renderMessageBody(msg, container, callback);
 	this._renderMessageFooter(msg, container);
+	this._controller._handleMarkRead(msg);	// in case we need to mark read after a delay
 };
 
 // Display all text messages and some HTML messages in a DIV rather than in an IFRAME.
@@ -1381,7 +1383,6 @@ function(expanded) {
         }
         var respCallback = this._handleResponseSet.bind(this, this._msg, null, dayViewCallback);
 		this._renderMessage(this._msg, null, respCallback);
-		this._controller._handleMarkRead(this._msg);
 	}
 	else {
 		// hide or show everything below the header

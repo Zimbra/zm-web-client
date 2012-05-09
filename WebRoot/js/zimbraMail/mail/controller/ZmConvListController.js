@@ -539,8 +539,8 @@ function(params, callback) {
 	var sel = this._listView[this._currentViewId].getSelection();
 	var item = (sel && sel.length) ? sel[0] : null;
 	if (item) {
-		params.markRead = (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
 		if (item.type == ZmItem.CONV) {
+			params.markRead = (params.markRead != null) ? params.markRead : this._handleMarkRead(item, true);
 			var respCallback = new AjxCallback(this, this._handleResponseGetLoadedMsg, callback);
 			item.getFirstHotMsg(params, respCallback);
 		} else if (item.type == ZmItem.MSG) {
@@ -566,10 +566,9 @@ function(callback) {
 
 ZmConvListController.prototype._displayItem =
 function(item) {
-	var curItem = this._doublePaneView.getItem();
-	var noMarkRead = (curItem && item.id == curItem.id);
 	this._doublePaneView.setItem(item);
-	if (!noMarkRead) {
+	var curItem = this._doublePaneView.getItem();
+	if (!(curItem && item.id == curItem.id)) {
 		this._handleMarkRead(item);
 	}
 };

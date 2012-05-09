@@ -319,18 +319,29 @@ function() {
 };
 
 /**
- * Checks if the conversation is read only.
+ * Checks if the conversation is read only. Returns false if it cannot be determined.
  * 
  * @return	{Boolean}	<code>true</code> if the conversation is read only
  */
 ZmConv.prototype.isReadOnly =
 function() {
-	var folderId = this.getFolderId();
-	var folder = appCtxt.getById(folderId);
-	// NOTE: if no folder, we're in a search so we dont know whether this conv
-	// is read-only or not. That means we should load the whole conv and iterate
-	// thru its messages to see if they all belong w/in read-only folders.
-	return (folder ? folder.isReadOnly() : false);
+	
+	if (this._loaded && this.msgs && this.msgs.size()) {
+		// conv has been loaded, check each msg
+		var msgs = this.msgs.getArray();
+		for (var i = 0; i < msgs.length; i++) {
+			if (msgs[i].isReadOnly()) {
+				return true;
+			}
+		}
+	}
+	else {
+		// conv has not been loaded, see if it's constrained to a folder
+		var folderId = this.getFolderId();
+		var folder = folderId && appCtxt.getById(folderId);
+		return !!(folder && folder.isReadOnly());
+	}
+	return false;
 };
 
 /**
@@ -639,7 +650,9 @@ function(convNode) {
 	if (convNode.m) {
 		this.msgIds = [];
 		for (var i = 0, count = convNode.m.length; i < count; i++) {
-			this.msgIds.push(convNode.m[i].id);
+			var msgNode = convNode.m[i];
+			this.msgIds.push(msgNode.id);
+			this.folders[msgNode.l] = true;
 		}
 		if (count == 1) {
 			var msgNode = convNode.m[0];
