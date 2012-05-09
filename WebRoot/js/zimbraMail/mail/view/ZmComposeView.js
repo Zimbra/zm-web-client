@@ -1339,8 +1339,7 @@ function(idoc) {
 
 ZmComposeView.prototype._cleanupSignatureIds =
 function(idoc){
-	var signatureId = this._controller._currentSignatureId;
-	var signatureEl = idoc.getElementById(signatureId);
+	var signatureEl = idoc && idoc.getElementById(this._controller._currentSignatureId);
 	if (signatureEl) {
 		signatureEl.removeAttribute("id");
 	}
