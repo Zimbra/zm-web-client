@@ -560,7 +560,7 @@ function(id, content) {
 		editor_css: editorCSS,
         theme_advanced_runtime_fontsize:true,
         dialog_type : "modal",
-        forced_root_block : 'div',
+        forced_root_block : AjxEnv.isIE ? "div" : false,
         width: "100%",
         height: "auto",
         table_default_cellpadding : 3,

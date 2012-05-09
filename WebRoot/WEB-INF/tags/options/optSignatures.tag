@@ -293,7 +293,7 @@
             gecko_spellcheck : true,
             theme_advanced_runtime_fontsize:true,
             dialog_type : "modal",
-            forced_root_block : 'div',
+            forced_root_block : (tinymce && tinymce.isIE) ? 'div' : false,
             table_default_cellpadding : 3,
             table_default_border: 1,
             content_css : false,
