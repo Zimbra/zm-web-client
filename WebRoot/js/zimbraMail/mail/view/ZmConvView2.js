@@ -531,7 +531,7 @@ function(ev) {
 	var msg = ev.item;
 	if (!msg) { return; }
 
-	if (ev.event == ZmEvent.E_CREATE && this._item && (msg.cid == this._item.id)) {
+	if (ev.event == ZmEvent.E_CREATE && this._item && (msg.cid == this._item.id) && !msg.isDraft) {
 		var params = {
 			parent:			this,
 			parentElement:	document.getElementById(this._messagesDivId),
@@ -744,6 +744,7 @@ function() {
 ZmConvReplyView.prototype._moreOptions =
 function() {
 	this._convView._compose({msg:this._msg});
+	this.reset();
 };
 
 // Returns lists of To: and Cc: addresses to reply to, based on the msg
