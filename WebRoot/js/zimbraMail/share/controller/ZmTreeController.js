@@ -1028,9 +1028,17 @@ function(ev, treeView, overviewId) {
 				}
                 this.createDataSource(organizer);
 			} else if (ev.event == ZmEvent.E_MOVE) {
+				var selectedItem = treeView.getSelected();
+				if (AjxUtil.isArray1(selectedItem)) { //make sure this tree is not a checked style one (no idea where we have that, but see the getSelected code
+					selectedItem = null;
+				}
 				node.dispose();
 				if (parentNode) {
 					node = this._addNew(treeView, parentNode, organizer, idx); // add to new parent
+				}
+				//highlight the current chosen one again, in case it was moved, thus losing selection
+				if (!treeView.getSelected() && selectedItem) { //if item was selected but now it is not
+					treeView.setSelected(selectedItem.id, true, true);
 				}
 			}
 			if (parentNode) {
