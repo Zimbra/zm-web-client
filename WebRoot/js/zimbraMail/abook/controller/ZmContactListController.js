@@ -896,7 +896,10 @@ function(parent, num) {
 		}
 	}
 	if (parent instanceof ZmPopupMenu) {
-		parent.getMenuItem(ZmOperation.TAG_MENU).setText(contact && contact.isGroup() ? ZmMsg.AB_TAG_GROUP : ZmMsg.AB_TAG_CONTACT);
+		var tagMenu = parent.getMenuItem(ZmOperation.TAG_MENU);
+		if (tagMenu) {
+			tagMenu.setText(contact && contact.isGroup() ? ZmMsg.AB_TAG_GROUP : ZmMsg.AB_TAG_CONTACT);
+		}
 	}
 	this._setContactGroupMenu(parent);
 
