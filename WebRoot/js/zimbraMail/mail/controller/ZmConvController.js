@@ -373,7 +373,7 @@ function(view, offset, limit, callback) {
 
 ZmConvController.prototype._goToConv =
 function(next) {
-	var ctlr = this._parentController || AjxDispatcher.run("GetConvListController");
+	var ctlr = this._getConvListController();
 	if (ctlr) {
 		ctlr.pageItemSilently(this._conv, next);
 	}
@@ -396,7 +396,7 @@ ZmConvController.prototype._resetSelection = function() {};
 
 ZmConvController.prototype._selectNextItemInParentListView =
 function() {
-	var controller = this._parentController || AjxDispatcher.run("GetConvListController");
+	var controller = this._getConvListController();
 	if (controller) {
 		controller._listView[controller._currentViewId]._itemToSelect = controller._getNextItemToSelect();
 	}
@@ -432,17 +432,25 @@ function(num) {
 	return AjxMessageFormat.format(ZmMsg.tagMessages, num);
 };
 
+ZmConvController.prototype._getConvListController =
+function(num) {
+	return this._parentController || AjxDispatcher.run("GetConvListController");
+};
+
 ZmConvController.prototype.popShield =
 function(viewId, callback, newViewId) {
-	return this._parentController.popShield.apply(this, arguments);
+	var ctlr = this._getConvListController();
+	return ctlr && ctlr.popShield.apply(this, arguments);
 };
 
 ZmConvController.prototype._popShieldYesCallback =
 function(switchingView, callback) {
-	return this._parentController._popShieldYesCallback.apply(this, arguments);
+	var ctlr = this._getConvListController();
+	return ctlr && ctlr._popShieldYesCallback.apply(this, arguments);
 };
 
 ZmConvController.prototype._popShieldNoCallback =
 function(switchingView, callback) {
-	return this._parentController._popShieldNoCallback.apply(this, arguments);
+	var ctlr = this._getConvListController();
+	return ctlr && ctlr._popShieldNoCallback.apply(this, arguments);
 };
