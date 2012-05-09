@@ -418,6 +418,8 @@ function(ev) {
 
 	var item = ev.item;
 	if (!item) { return; }
+	
+	this._mailListView._selectedMsg = null;
 	if (ev.field == ZmItem.F_EXPAND && this._mailListView._isExpandable(item)) {
 		this._toggle(item, false);
 		return true;
@@ -444,7 +446,7 @@ function(ev) {
 ZmConvListController.prototype._menuPopdownActionListener =
 function(ev) {
 	ZmDoublePaneController.prototype._menuPopdownActionListener.apply(this, arguments);
-	this._selectedMsg = null;
+	this._mailListView._selectedMsg = null;
 };
 
 ZmConvListController.prototype._setSelectedItem =
