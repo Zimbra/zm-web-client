@@ -921,8 +921,8 @@ function(params, batchCmd) {
 			action.setAttribute(attr, params.attrs[attr]);
 		}
 	}
-
-	var actionController = appCtxt.getActionController();
+    var ac =  window.parentAppCtxt || appCtxt;
+	var actionController = ac.getActionController();
 	var actionLogItem = (!params.noUndo && actionController && actionController.actionPerformed({op: params.action, ids: idList, attrs: params.attrs})) || null;
 	var respCallback = new AjxCallback(this, this._handleResponseItemAction, [params.callback, actionLogItem]);
 
