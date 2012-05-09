@@ -139,7 +139,6 @@ ZmLocationRecurrence = function() { };
 
 ZmApptEditView.prototype.show =
 function() {
-    this._fbCache.clearCache();
 	ZmCalItemEditView.prototype.show.call(this);
 	this._setAttendees();
 
@@ -1872,6 +1871,7 @@ function(addrStr) {
 
 ZmApptEditView.prototype.initialize =
 function(calItem, mode, isDirty, apptComposeMode) {
+    this._fbCache.clearCache();
     this._editViewInitialized = false;
     this._isForward = (apptComposeMode == ZmApptComposeView.FORWARD);
     this._isProposeTime = (apptComposeMode == ZmApptComposeView.PROPOSE_TIME);
