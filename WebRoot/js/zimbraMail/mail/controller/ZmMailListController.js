@@ -295,6 +295,7 @@ function(actionCode, ev) {
 
 		case ZmKeyMap.SELECT_ALL:
 			lv.selectAll(true);
+			this._resetToolbarOperations();
 			break;
 	
 		case ZmKeyMap.SPAM:
