@@ -252,7 +252,16 @@ function(treeIds, overview) {
 		if (!treeView) { continue; }
 
 		// bug #18533 - always make sure header item is visible in "MoveTo" dialog
-		treeView.getHeaderItem().setVisible(true, true);
+		var headerItem = treeView.getHeaderItem();
+		if (treeIds.length > 1) {
+			if (treeId == ZmId.ORG_FOLDER) {
+				headerItem.setText(ZmMsg.mailFolders);
+			}
+			else if (treeId == ZmId.ORG_BRIEFCASE) {
+				headerItem.setText(ZmMsg.briefcaseFolders);
+			}
+		}
+		headerItem.setVisible(true, true);
 
 		// expand root item
 		var ti = treeView.getTreeItemById(folderTree.root.id);
