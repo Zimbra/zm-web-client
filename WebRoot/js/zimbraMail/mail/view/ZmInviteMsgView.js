@@ -305,6 +305,7 @@ function() {
 		this._dayView.setSize(parentSize.x - 5, 218);
 		var el = this._dayView.getHtmlElement();
 		el.style.left = el.style.top = "auto";
+		this._dayView.layout();
 	}
 }
 

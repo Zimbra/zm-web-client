@@ -84,6 +84,11 @@ function(width, height) {
 	}
 };
 
+ZmCalDayView.prototype.layout =
+function() {
+    this._layout(true);
+}
+
 ZmCalDayView.prototype._controlListener =
 function(ev) {
 	if (!this._compactMode) {
