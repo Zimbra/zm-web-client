@@ -1400,11 +1400,9 @@ function(item, index, skipNotify, itemIndex) {
             if (group.getSectionSize(section) == 1){
                 headerDiv = this._getSectionHeaderDiv(group, section);
                 this._addRow(headerDiv, index);
-                this._addRow(div, index+1); //account for header
             }
-            else {
-                this._addRow(div, index);
-            }
+            this._addRow(div, index+1); //account for header
+
 		}
 	}
 
