@@ -321,11 +321,19 @@ function(user,sendAs,sendObo,isGrant,refresh) {
 };
 
  ZmAccountsPage.prototype._handleDelegateRightsCallback =
- function(user,sendAs,sendObo,isGrant,refresh){
+ function(user, sendAs,sendObo,isGrant,refresh,result){
+     var email = user;
+     if (isGrant){
+        var response = result.getResponse();
+        var aces = response && response.GrantRightsResponse && response.GrantRightsResponse.ace;
+        if (aces && aces.length && aces[0].d)
+            email = aces[0].d;
+     }
      if (refresh) {
          this._getGrants();
      }
-     this._sendGrantRightsMessage(appCtxt.accountList.mainAccount.name, user,sendAs,sendObo,isGrant);
+     this._sendGrantRightsMessage(appCtxt.accountList.mainAccount.name, email, sendAs,sendObo,isGrant);
+
  };
 
 ZmAccountsPage.prototype._grantDelegateRights =
