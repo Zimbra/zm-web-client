@@ -795,7 +795,8 @@
         <echo>DEBUG skin files: ${this.build.skins.files}</echo>
         <for list='${this.build.skins.files}' param='skinname'>
             <sequential>
-                <if><available file='${skin.dir}/@{skinname}/img' />
+                <mkdir dir='${skin.dir}/@{skinname}/img'/>
+                <if><available file='${skin.dir}/@{skinname}/img' type='dir' />
                     <then>
                         <antcall target="images-merge">
                             <param name='srcdir' value='${skin.dir}/@{skinname}/img' />
