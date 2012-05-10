@@ -893,6 +893,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .Conv2Reply .ReplyTextarea {
 	width:100%;
 	height:100px;
+    overflow: auto;
 }
 
 .Conv2Reply .ZToolbarTable>TBODY>TR>TD {

@@ -725,7 +725,9 @@
 <template id='mail.Message#Conv2Reply'>
 	<div id="${replyToDivId}"></div>
 	<div id="${replyCcDivId}" style="display:none;"></div>
+	 <div style="width:100%">
 	<textarea id="${replyInputId}" class="ReplyTextarea"></textarea>
+	</div>
 	<div id="${replyToolbarId}"></div>
 </template>
 
