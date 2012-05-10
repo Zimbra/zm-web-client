@@ -747,7 +747,7 @@ function(ev) {
 		}
 	}
 	else {
-		this._setContactText(false);
+		this._setContactText(false, true);
 		menu.popup(0, ev.docX, ev.docY);
 	}
 
@@ -839,10 +839,14 @@ function(ev, contact) {
 };
 
 ZmAddressInputField.prototype._setContactText =
-function(isContact) {
+function(isContact, hideContactAction) {
+	var actionMenu = this.getActionMenu();
+	actionMenu.getOp(ZmOperation.CONTACT).setVisible(!hideContactAction);
+	actionMenu.getOp(ZmOperation.EXPAND).setVisible(!hideContactAction);
+	
 	var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
 	var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
-	ZmOperation.setOperation(this.getActionMenu(), ZmOperation.CONTACT, newOp, newText);
+	ZmOperation.setOperation(actionMenu, ZmOperation.CONTACT, newOp, newText);
 };
 
 ZmAddressInputField.prototype._deleteListener =
