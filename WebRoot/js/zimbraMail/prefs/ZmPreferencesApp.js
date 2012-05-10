@@ -461,7 +461,7 @@ function() {
             createView: function(parent, section, controller) {
 				return new ZmZimletsPage(parent, section, controller);
 			}
-		},
+		}
 		/* QUICKCOMMANDS: {
 			icon: "QuickCommand",
 			title: ZmMsg.quickCommands,
