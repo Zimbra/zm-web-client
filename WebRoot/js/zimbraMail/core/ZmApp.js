@@ -102,7 +102,7 @@ ZmApp.OPS_R					= {};	// map of operation ID to app
 ZmApp.QS_VIEWS				= {};	// list of views to handle in query string
 ZmApp.TRASH_VIEW_OP			= {};	// menu choice for "Show Only ..." in Trash view
 ZmApp.UPSELL_URL			= {};	// URL for content of upsell
-ZmApp.QUICK_COMMAND_TYPE	= {};	
+//ZmApp.QUICK_COMMAND_TYPE	= {};
 ZmApp.DROP_TARGETS			= {};	// drop targets (organizers) by item/organizer type
 ZmApp.SEARCH_RESULTS_TAB	= {};	// whether to show search results in a tab
 
@@ -191,7 +191,7 @@ function(app, params) {
 	if (params.defaultSort)			{ ZmApp.DEFAULT_SORT[app]		= params.defaultSort; }
 	if (params.trashViewOp)			{ ZmApp.TRASH_VIEW_OP[app]		= params.trashViewOp; }
 	if (params.upsellUrl)			{ ZmApp.UPSELL_URL[app]			= params.upsellUrl; }
-	if (params.quickCommandType)	{ ZmApp.QUICK_COMMAND_TYPE[app]	= params.quickCommandType; }
+	//if (params.quickCommandType)	{ ZmApp.QUICK_COMMAND_TYPE[app]	= params.quickCommandType; }
 	if (params.searchResultsTab)	{ ZmApp.SEARCH_RESULTS_TAB[app]	= params.searchResultsTab; }
 
 	if (params.searchTypes) {
@@ -237,9 +237,9 @@ function(app, params) {
 		}
 	}
 
-    if (params.quickCommandType) {
+    /* if (params.quickCommandType) {
         ZmQuickCommand.itemTypes.push(params.quickCommandType);
-    }
+    } */
 };
 
 

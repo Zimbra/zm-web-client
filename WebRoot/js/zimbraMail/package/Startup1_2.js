@@ -108,6 +108,6 @@ AjxPackage.require("zimbraMail.im.ZmImApp");
 AjxPackage.require("zimbraMail.briefcase.ZmBriefcaseApp");
 AjxPackage.require("zimbraMail.voicemail.ZmVoiceApp");
 
-AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommandAction");
+/* AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommandAction");
 AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommand");
-AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommands");
+AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommands"); */

@@ -2390,7 +2390,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 <$ } $>
 	
 </template>
-
+<!--
 <template id='prefs.Pages#QuickCommandList'>
 	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
@@ -2462,7 +2462,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		<td id='${id}_buttonsContainer' style='padding:3px' nowrap=nowrap'></td>
 	</tr>
 </template>
-
+-->
 <template id='prefs.Pages#GrantRightsDialog'>
 	<table>
 		<tr id='${id}_name_row'>

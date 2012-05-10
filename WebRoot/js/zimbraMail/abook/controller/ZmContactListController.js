@@ -496,7 +496,7 @@ function() {
 	}
 
 	list.push(ZmOperation.SEP, ZmOperation.CONTACTGROUP_MENU);
-    list.push(ZmOperation.QUICK_COMMANDS);
+//    list.push(ZmOperation.QUICK_COMMANDS);
 
 	return list;
 };
@@ -513,7 +513,7 @@ function() {
 				ZmOperation.DELETE,
 				ZmOperation.MOVE,
 				ZmOperation.PRINT_CONTACT);
-    list.push(ZmOperation.QUICK_COMMANDS);
+//    list.push(ZmOperation.QUICK_COMMANDS);
 
 	return list;
 };
@@ -871,7 +871,7 @@ function(parent, num) {
 
 	}
 
-    this._resetQuickCommandOperations(parent);
+    //this._resetQuickCommandOperations(parent);
 
 	var selection = this._listView[this._currentViewId].getSelection();
 	var contact = (selection.length == 1) ? selection[0] : null;

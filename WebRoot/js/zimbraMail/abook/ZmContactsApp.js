@@ -355,7 +355,7 @@ function() {
 							  chooserSort:			20,
 							  defaultSort:			40,
 							  upsellUrl:			ZmSetting.CONTACTS_UPSELL_URL,
-							  quickCommandType:		ZmQuickCommand[ZmId.ITEM_CONTACT],
+							  //quickCommandType:		ZmQuickCommand[ZmId.ITEM_CONTACT],
 							  searchResultsTab:		true
 							  });
 };

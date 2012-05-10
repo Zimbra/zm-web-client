@@ -41,8 +41,8 @@ ZmBaseController = function(container, app, type, sessionId, searchResultsContro
 
 	this.setSessionId(sessionId, type || this.getDefaultViewType(), searchResultsController);
 	
-    this._refreshQuickCommandsClosure = this._refreshQuickCommands.bind(this);
-    this._quickCommandMenuHandlerClosure = this._quickCommandMenuHandler.bind(this);
+    //this._refreshQuickCommandsClosure = this._refreshQuickCommands.bind(this);
+    //this._quickCommandMenuHandlerClosure = this._quickCommandMenuHandler.bind(this);
 
 	// hashes keyed by view type
 	this._view		= {};
@@ -1148,7 +1148,7 @@ function(parent, num) {
 	if (folder && folder.isReadOnly()) {
 		parent.enable(ZmOperation.TAG_MENU, false);
 	}
-    this._resetQuickCommandOperations(parent);
+    //this._resetQuickCommandOperations(parent);
 };
 
 /**
@@ -1214,7 +1214,7 @@ function(params) {
 	ZmBaseController.showSummary(params.actionSummary, params.actionLogItem, params.closeChildWin);
 };
 
-ZmBaseController.prototype._quickCommandMenuHandler = function(evt, batchCmd) {
+/* ZmBaseController.prototype._quickCommandMenuHandler = function(evt, batchCmd) {
     var selectedItems = this.getItems();
     if (!selectedItems || !selectedItems.length) {return;}
 
@@ -1311,3 +1311,4 @@ ZmBaseController.prototype._resetQuickCommandOperations = function(parent) {
         }
     }
 };
+*/

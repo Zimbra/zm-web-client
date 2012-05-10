@@ -242,7 +242,7 @@ function() {
     if(appCtxt.get(ZmSetting.TASKS_ENABLED)) {
         list.push(ZmOperation.CREATE_TASK);        
     }
-    list.push(ZmOperation.QUICK_COMMANDS);
+    //list.push(ZmOperation.QUICK_COMMANDS);
 	return list;
 };
 

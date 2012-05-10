@@ -2934,7 +2934,7 @@ function(parent, num) {
 		parent.setSelected(op);
 	}
 
-    this._resetQuickCommandOperations(parent);
+    //this._resetQuickCommandOperations(parent);
 };
 
 ZmCalViewController.prototype._listSelectionListener =
@@ -3238,7 +3238,7 @@ function(recurrenceMode) {
 	}
 	retVal.push(ZmOperation.TAG_MENU);
 	retVal.push(ZmOperation.SHOW_ORIG);
-    retVal.push(ZmOperation.QUICK_COMMANDS);
+    //retVal.push(ZmOperation.QUICK_COMMANDS);
 	return retVal;
 };
 

@@ -589,7 +589,7 @@ function() {
 	    if(appCtxt.get(ZmSetting.TASKS_ENABLED)) {
 	        list.push(ZmOperation.CREATE_TASK);
 	    }
-	    list.push(ZmOperation.QUICK_COMMANDS);
+	    //list.push(ZmOperation.QUICK_COMMANDS);
 	}
 
 
@@ -2039,11 +2039,11 @@ function(parent, num) {
 
 	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !isDrafts && num == 1));
 
-	if (parent instanceof ZmActionMenu) {
+	/*if (parent instanceof ZmActionMenu) {
 		parent.setItemVisible(ZmOperation.QUICK_COMMANDS, !isDrafts && parent._hasQuickCommands);
 	} else {
 		parent.setItemVisible(ZmOperation.QUICK_COMMANDS, !isDrafts);
-	}
+	} */
 
 	parent.setItemVisible(ZmOperation.ADD_FILTER_RULE, !isDrafts);
 	parent.setItemVisible(ZmOperation.CREATE_APPT, !isDrafts);
@@ -2379,7 +2379,7 @@ function() {
 	return id && appCtxt.getById(id);
 };
 
-ZmMailListController.prototype._quickCommandMenuHandler = function(evt, batchCmd) {
+/* ZmMailListController.prototype._quickCommandMenuHandler = function(evt, batchCmd) {
     var selectedItems = this.getItems();
 
     ZmListController.prototype._quickCommandMenuHandler.call(this, evt);
@@ -2403,7 +2403,7 @@ ZmMailListController.prototype._quickCommandMenuHandler = function(evt, batchCmd
         }
     }
 };
-
+*/
 
 /**
 * Deletes one or more items from the list.

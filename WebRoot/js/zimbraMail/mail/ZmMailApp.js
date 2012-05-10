@@ -988,7 +988,7 @@ function() {
 				chooserSort:		10,
 				defaultSort:		10,
 				upsellUrl:			ZmSetting.MAIL_UPSELL_URL,
-                quickCommandType:	ZmQuickCommand[ZmId.ITEM_MSG],
+                //quickCommandType:	ZmQuickCommand[ZmId.ITEM_MSG],
 				searchResultsTab:	true
 			});
 };
