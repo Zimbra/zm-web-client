@@ -990,3 +990,8 @@ function(outgoing) {
 
     return null;
 };
+
+ZmPreferencesApp.prototype.getNewButtonProps =
+function (){
+    return {disabled:true};
+}

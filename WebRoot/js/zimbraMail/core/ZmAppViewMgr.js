@@ -1056,6 +1056,9 @@ function(cidList, isIeTimerHack) {
 		}
 	}
 
+    //bug 71111: On resizing window, the nav tree position does not get updated
+    this._checkTree(this.getCurrentViewId());
+
 	if (window.DBG && DBG.getDebugLevel() >= AjxDebug.DBG2) {
 		this._debugShowMetrics(cidList);
 	}
