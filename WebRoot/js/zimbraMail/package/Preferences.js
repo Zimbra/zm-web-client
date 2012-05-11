@@ -67,9 +67,3 @@ AjxPackage.require("zimbraMail.prefs.controller.ZmFilterRulesController");
 AjxPackage.require("zimbraMail.prefs.controller.ZmMobileDevicesController");
 
 AjxPackage.require("zimbraMail.share.controller.ZmProgressController");
-
-/* AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommandAction");
-AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommand");
-AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommands");
-AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommandDialog");
-AjxPackage.require("zimbraMail.quickCommand.ZmQuickCommandPage");*/
