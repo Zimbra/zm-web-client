@@ -1033,7 +1033,7 @@ function(params) {
 	}
 
 	if (params.msg) {
-		this._handleResponseDoAction(params, params.msg);
+		this._handleResponseDoAction(params, params.msg, true);
 	}
 	else {
 		var respCallback = this._handleResponseDoAction.bind(this, params);
@@ -1043,7 +1043,7 @@ function(params) {
 };
 
 ZmMailListController.prototype._handleResponseDoAction =
-function(params, msg) {
+function(params, msg, finalChoice) {
 
 	if (!msg) { return; }
 
@@ -1059,7 +1059,8 @@ function(params, msg) {
 	// this is really weird. I debugged and till it got here I was so mind boggled, how it loads just one message or conv. Apparantly for no reason
 	// if this is the case. Why go through the request, that gets only part of the info at most? Very strange, but probably not easy to change - Eran
 	var action = params.action;
-	if (action == ZmOperation.FORWARD_ATT || action == ZmOperation.FORWARD_INLINE) {
+	//finalChoice - see ZmMailListController.prototype._doAction which is called from ZmMailMsgCapsuleView.prototype._handleForwardLink
+	if (!finalChoice && (action == ZmOperation.FORWARD_ATT || action == ZmOperation.FORWARD_INLINE)) {
 		var cview = this._listView[this._currentViewId];
 		if (cview) {
 			var selection = cview.getSelection();
