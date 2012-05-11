@@ -985,7 +985,7 @@ function(ev) {
 		ev.handled = true;
 	}
 
-	if (ev.event == ZmEvent.E_FLAGS) { // handle "unread" and "isScheduled" flag
+	if (ev.event == ZmEvent.E_FLAGS) { // handle "unread" flag
 		DBG.println(AjxDebug.DBG2, "ZmMailListView: FLAGS");
 		var flags = ev.getDetail("flags");
 		for (var j = 0; j < flags.length; j++) {
@@ -997,8 +997,6 @@ function(ev) {
             else if (flag == ZmItem.FLAG_UNREAD) {
 				var on = item[ZmItem.FLAG_PROP[flag]];
 				this.markUIAsRead(item, !on);
-			} else if (flag == ZmItem.FLAG_ISSCHEDULED) {
-				this._setImage(item, ZmItem.F_STATUS, "SendLater");
 			}
 		}
 	}
