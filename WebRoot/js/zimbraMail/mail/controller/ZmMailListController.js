@@ -1056,6 +1056,8 @@ function(params, msg) {
     }
 
 	// special handling for multiple forward action
+	// this is really weird. I debugged and till it got here I was so mind boggled, how it loads just one message or conv. Apparantly for no reason
+	// if this is the case. Why go through the request, that gets only part of the info at most? Very strange, but probably not easy to change - Eran
 	var action = params.action;
 	if (action == ZmOperation.FORWARD_ATT || action == ZmOperation.FORWARD_INLINE) {
 		var cview = this._listView[this._currentViewId];
@@ -1076,8 +1078,15 @@ function(params, msg) {
 			}
 		}
 
+		var forwardAsAttachments = selCount > 1;
+		if (selCount == 1) {
+			//do as attachments for one conv too, in the case it has more than one message
+			var item = selection[0];
+			forwardAsAttachments = item.type == ZmItem.CONV && item.numMsgs > 1;
+		}
+
 		// reset the action if user is forwarding multiple mail items inline
-		if (selCount > 1) {
+		if (forwardAsAttachments) {
 			action = params.action = ZmOperation.FORWARD_ATT;
 			// get msg Id's for each conversation selected
 			var batchCmd = new ZmBatchCommand();
