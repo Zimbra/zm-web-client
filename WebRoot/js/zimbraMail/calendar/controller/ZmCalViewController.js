@@ -3250,6 +3250,8 @@ function() {
 ZmCalViewController.prototype._enableActionMenuReplyOptions =
 function(appt, actionMenu) {
 	var isOrganizer = appt.isOrganizer();
+    var isExternalAccount = appCtxt.isExternalAccount();
+    var isSharedViewOnly = appt.isReadOnly() && appt.isShared();
 
 	// find the checked calendar for this appt
 	var calendar;
@@ -3269,7 +3271,7 @@ function(appt, actionMenu) {
 	var workflow = share ? share.isWorkflow() : true;
     var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;
 	var isPrivate = appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
-	var enabled = !isOrganizer && workflow && !isPrivate && !appCtxt.isExternalAccount();
+	var enabled = !isOrganizer && workflow && !isPrivate && !isExternalAccount;
     var isReplyable = !isTrash && appt.otherAttendees;
 	var isForwardable = !isTrash && calendar && !calendar.isReadOnly() && appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED);
 
@@ -3282,6 +3284,7 @@ function(appt, actionMenu) {
     actionMenu.setItemVisible(ZmOperation.TAG_MENU, !appCtxt.isExternalAccount());
 
 	// reply action menu
+    actionMenu.enableAll(isOrganizer);
     if (!isOrganizer) {
         actionMenu.enable(ZmOperation.REPLY_ACCEPT,      enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
         actionMenu.enable(ZmOperation.REPLY_DECLINE,     enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
@@ -3292,30 +3295,34 @@ function(appt, actionMenu) {
     actionMenu.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
 	actionMenu.enable(ZmOperation.REPLY, isReplyable && !isOrganizer);
 	actionMenu.enable(ZmOperation.REPLY_ALL, isReplyable);
-    if(appCtxt.isExternalAccount()) {
-	    actionMenu.enable(ZmOperation.REINVITE_ATTENDEES, false);
-	    actionMenu.enable(ZmOperation.PROPOSE_NEW_TIME, false);
-        actionMenu.enable(ZmOperation.REPLY, false);
-	    actionMenu.enable(ZmOperation.REPLY_ALL, false);
-	    actionMenu.enable(ZmOperation.DUPLICATE_APPT, false);
-	    actionMenu.enable(ZmOperation.DELETE, false);
-	    actionMenu.enable(ZmOperation.DELETE_INSTANCE, false);
-	    actionMenu.enable(ZmOperation.DELETE_SERIES, false);
+
+    var disabledOps;
+    if(isExternalAccount) {
+        disabledOps = [ZmOperation.REINVITE_ATTENDEES,
+                       ZmOperation.PROPOSE_NEW_TIME,
+                       ZmOperation.REPLY,
+                       ZmOperation.REPLY_ALL,
+                       ZmOperation.DUPLICATE_APPT,
+                       ZmOperation.DELETE,
+                       ZmOperation.DELETE_INSTANCE,
+                       ZmOperation.DELETE_SERIES];
+
+        actionMenu.enable(disabledOps, false);
     }
 
     // bug:71007 Disabling unsupported options for shared calendar with view only rights
-    if(appt.isReadOnly() && appt.isShared()) {
-	    actionMenu.enable(ZmOperation.REINVITE_ATTENDEES, false);
-	    actionMenu.enable(ZmOperation.PROPOSE_NEW_TIME, false);
-        actionMenu.enable(ZmOperation.REPLY, false);
-	    actionMenu.enable(ZmOperation.REPLY_ALL, false);
-	    actionMenu.enable(ZmOperation.DELETE, false);
-	    actionMenu.enable(ZmOperation.DELETE_INSTANCE, false);
-	    actionMenu.enable(ZmOperation.DELETE_SERIES, false);
-        actionMenu.enable(ZmOperation.TAG_MENU, false);
-        actionMenu.enable(ZmOperation.MOVE, false);
-        actionMenu.enable(ZmOperation.MOVE_MENU, false);
-    }
+    if(isSharedViewOnly) {
+        disabledOps = [ZmOperation.REINVITE_ATTENDEES,
+                       ZmOperation.PROPOSE_NEW_TIME,
+                       ZmOperation.DELETE,
+                       ZmOperation.DELETE_INSTANCE,
+                       ZmOperation.DELETE_SERIES,
+                       ZmOperation.MOVE,
+                       ZmOperation.TAG_MENU,
+                       ZmOperation.MOVE_MENU];
+
+	    actionMenu.enable(disabledOps, false);
+	}
 
 	// edit reply menu
 	if (enabled) {
