@@ -2409,6 +2409,11 @@ ZmComposeView.prototype.getUnQuotedContent =
 function() {
 	var body = this._htmlEditor.getContent();
 	var prefaceIndex = body.indexOf(this._getPreface());
+	if (prefaceIndex == -1 && AjxEnv.isIE) {
+		//TODO: Please make this better.  IE innerHTML value is returning <HR id=zwch> -- uppercase HR and no quotes around id
+		//which causes match to fail w/out this check
+		prefaceIndex = body.toUpperCase().indexOf(this._getPreface().replace(/\"/g,"").toUpperCase());
+	}
 	if (prefaceIndex != -1) {
 		body = body.substring(0, prefaceIndex);
 	}
