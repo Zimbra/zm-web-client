@@ -625,7 +625,7 @@ function(parent, num) {
 		var folder = appCtxt.getById(folderId);
 		var isShare = folder && folder.link;
         var isTrash = folder && folder.id == ZmOrganizer.ID_TRASH;
-		var canEdit = (folder == null || !folder.isReadOnly());
+		var canEdit = !(folder && (folder.isReadOnly() || folder.isFeed()));
 
 		parent.enable([ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.DELETE], canEdit && num > 0);
 		parent.enable(ZmOperation.EDIT, !isTrash && canEdit && num == 1);
