@@ -462,7 +462,9 @@ function(params) {
 	params = params || {};
 
 	params.action = params.action || ZmOperation.REPLY_ALL;
-	var msg = params.msg = params.msg || this._item.getFirstHotMsg();
+	var msg = params.msg = params.msg || (this._replyView && this._replyView.getMsg());
+	if (!msg) { return; }
+	
 	var composeCtlr = AjxDispatcher.run("GetComposeController", params.hideView ? ZmApp.HIDDEN_SESSION : null);
 	params.composeMode = composeCtlr._getComposeMode(msg, composeCtlr._getIdentity(msg));
 	var htmlMode = (params.composeMode == DwtHtmlEditor.HTML);
@@ -691,6 +693,15 @@ function(type) {
 ZmConvReplyView.prototype.getValue =
 function() {
 	return this._input.value;
+};
+
+/**
+ * Returns the msg associated with this quick reply.
+ * @return {ZmMailMsg}
+ */
+ZmConvReplyView.prototype.getMsg =
+function() {
+	return this._msg;
 };
 
 /**
