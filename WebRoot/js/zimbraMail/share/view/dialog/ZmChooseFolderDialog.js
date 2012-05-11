@@ -43,6 +43,7 @@ ZmChooseFolderDialog = function(parent, className) {
 
 	this._multiAcctOverviews = {};
     this._selected = "";
+    this._showRemainingFolders = AjxMessageFormat.format(ZmMsg.showRemainingFolders, "folders");
 };
 
 ZmChooseFolderDialog.prototype = new ZmDialog;
@@ -567,6 +568,7 @@ function(ev) {
 
 	var organizer = ev.item && ev.item.getData(Dwt.KEY_OBJECT);
 	var value = organizer ? organizer.getName(null, null, true) : ev.item.getText();
+    if (this._showRemainingFolders == organizer.getName(null, null, true) ) value = "";
 	this._inputField.setValue(value);
 	if (ev.detail == DwtTree.ITEM_DBL_CLICKED || ev.enter) {
 		this._okButtonListener();
