@@ -133,8 +133,8 @@ function(params, callback) {
 		this._limit = limit;
 
 		var searchParams = {
-			query: query,
-			queryHint: queryHint,
+			query: params.getUnreadOrFirstMsg ? "*" : query,
+			queryHint: params.getUnreadOrFirstMsg ? "" : queryHint,
 			types: (AjxVector.fromArray([ZmItem.MSG])),
 			sortBy: sortBy,
 			offset: offset,
