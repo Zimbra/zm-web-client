@@ -681,8 +681,7 @@ function(msg, parent) {
 			img.onload = onload;
 		}
         else {
-            img.setAttribute("src", "/img/mail/ImgBlockedImage.png");
-            img.style.display = 'none';
+            img.src = "/img/zimbra/1x1-trans.png";
         }
 		hasExternalImages = external || hasExternalImages;
 	}
@@ -841,8 +840,8 @@ function(msg, parent, id) {
 		for (var i = 0; i < images.length; i++) {
 			var dfsrc = images[i].getAttribute("dfsrc");
 			if (dfsrc && dfsrc.match(/https?:\/\/([-\w\.]+)+(:\d+)?(\/([\w\_\.]*(\?\S+)?)?)?/)) {
+                images[i].onload = onload;
 				images[i].src = images[i].getAttribute("dfsrc");
-                images[i].style.display = "";
 			}
 		}
 
