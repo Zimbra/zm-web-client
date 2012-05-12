@@ -182,12 +182,12 @@ function() {
 	this._moveUpButtonId = Dwt.getNextId();
 	this._moveUpButton = this._setupButton(ZmFilterRulesChooser.MOVE_UP_BTN_ID, this._moveUpButtonId, this._moveUpButtonDivId, ZmMsg.filterMoveUp);
 	this._moveUpButton.addSelectionListener(new AjxListener(this._controller, this._controller.moveUpListener));
-	this._moveUpButton.setImage("UpArrowSmall");
+	this._moveUpButton.setImage("UpArrow");
 	this._moveUpButton.setEnabled(false);
 	this._moveDownButtonId = Dwt.getNextId();
 	this._moveDownButton = this._setupButton(ZmFilterRulesChooser.MOVE_DOWN_BTN_ID, this._moveDownButtonId, this._moveDownButtonDivId, ZmMsg.filterMoveDown);
 	this._moveDownButton.addSelectionListener(new AjxListener(this._controller, this._controller.moveDownListener));
-	this._moveDownButton.setImage("DownArrowSmall");
+	this._moveDownButton.setImage("DownArrow");
 	this._moveDownButton.setEnabled(false);
 	this._removeButton.setEnabled(false);
 	this._removeButton.setAlign(DwtLabel.IMAGE_RIGHT);
@@ -198,6 +198,11 @@ function() {
 	this._transferButton.setEnabled(false);
 	this.notActiveListView = this.sourceListView;
 	this.activeListView = this.targetListView;
+    AjxUtil.foreach([this._moveUpButton, this._moveDownButton, this._removeButton, this._transferButton],
+    function(item){
+            var htmlElement = item.getHtmlElement();
+            if (htmlElement && htmlElement.firstChild) htmlElement.firstChild.style.width = "100%";
+    });
 };
 
 ZmFilterRulesChooser.prototype._createHtml = 
