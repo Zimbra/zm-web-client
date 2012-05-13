@@ -118,8 +118,8 @@ var myEditor;
             </c:if>
             plugins : "autolink,advlist,inlinepopups,table,paste,directionality,media",
             theme : "advanced",
-            theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,link,unlink,|,spellchecker",
-            theme_advanced_buttons2 : "formatselect,undo,redo,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,image,charmap,media,|,removeformat",
+            theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,image,link,unlink,|,spellchecker",
+            theme_advanced_buttons2 : "formatselect,undo,redo,|,removeformat,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,charmap,media",
             theme_advanced_buttons3 : "",
             theme_advanced_buttons4 : "",
             theme_advanced_toolbar_location : "top",
