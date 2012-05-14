@@ -627,9 +627,16 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 
 	// get list of message part id's for any forwarded attachements
 	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME + this._sessionId, !isDraft && this._hideOriginalAttachments);
-    var forwardMsgIds = this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME + this._sessionId, false);
-
-
+	var forwardMsgIds = [];
+	if (this._msgIds) {
+		// Get any message ids added via the attachment dialog (See
+		// _attsDoneCallback which adds new forwarded attachments to msgIds)
+		forwardMsgIds = this._msgIds;
+		this._msgIds = null;
+	} else if (this._msgAttId) {
+		// Forward one message or Reply as attachment
+		forwardMsgIds.push(this._msgAttId);
+	}
 
 	// --------------------------------------------
 	// Passed validation checks, message ok to send
