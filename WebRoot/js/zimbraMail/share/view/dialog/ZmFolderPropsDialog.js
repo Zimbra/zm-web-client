@@ -417,8 +417,8 @@ function(view) {
     this._tabContainer = new DwtTabView(view, null, Dwt.STATIC_STYLE);
 
 	//ZmFolderPropertyView handle things such as color and type. (in case you're searching for "color" and can't find in this file. I know I did)
-    this.addTab(0, ZmFolderPropsDialog.TABKEY_PROPERTIES, new ZmFolderPropertyView(this._tabContainer));
-    this.addTab(1, ZmFolderPropsDialog.TABKEY_RETENTION,  new ZmFolderRetentionView(this._tabContainer));
+    this.addTab(0, ZmFolderPropsDialog.TABKEY_PROPERTIES, new ZmFolderPropertyView(this, this._tabContainer));
+    this.addTab(1, ZmFolderPropsDialog.TABKEY_RETENTION,  new ZmFolderRetentionView(this, this._tabContainer));
 
 	// setup shares group
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED))	{

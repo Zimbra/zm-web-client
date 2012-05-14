@@ -18,10 +18,11 @@
  */
 
 // Creates a folder retention view for the folder dialog
-ZmFolderRetentionView = function(parent) {
+ZmFolderRetentionView = function(dialog, parent) {
     if (arguments.length == 0) return;
     ZmFolderDialogTabView.call(this, parent);
 
+    this._dialog = dialog;
     this._initialized = false;
 };
 
@@ -31,10 +32,10 @@ ZmFolderRetentionView.prototype.constructor = ZmFolderRetentionView;
 // Data to populate and process the custom units and values
 ZmFolderRetentionView._CustomUnitsToDays = { year: 366, month:31, week:7, day:1};
 ZmFolderRetentionView._CustomUnits = [
-    { id:"day",   label: ZmMsg.day,   days: ZmFolderRetentionView._CustomUnitsToDays.day},
-    { id:"week",  label: ZmMsg.week,  days: ZmFolderRetentionView._CustomUnitsToDays.week},
-    { id:"month", label: ZmMsg.month, days: ZmFolderRetentionView._CustomUnitsToDays.month},
-    { id:"year",  label: ZmMsg.year,  days: ZmFolderRetentionView._CustomUnitsToDays.year}];
+    { id:"day",   label: ZmMsg.days.toLowerCase(),   days: ZmFolderRetentionView._CustomUnitsToDays.day},
+    { id:"week",  label: ZmMsg.weeks.toLowerCase(),  days: ZmFolderRetentionView._CustomUnitsToDays.week},
+    { id:"month", label: ZmMsg.months.toLowerCase(), days: ZmFolderRetentionView._CustomUnitsToDays.month},
+    { id:"year",  label: ZmMsg.years.toLowerCase(),  days: ZmFolderRetentionView._CustomUnitsToDays.year}];
 
 
 
@@ -51,6 +52,7 @@ function() {
 ZmFolderRetentionView.prototype.showMe =
 function() {
 	DwtTabViewPage.prototype.showMe.call(this);
+    this._dialog.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, false);
 
 	this.setSize(Dwt.DEFAULT, "200");
 
