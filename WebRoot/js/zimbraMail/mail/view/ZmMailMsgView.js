@@ -678,7 +678,9 @@ function(msg, parent) {
 		var external = ZmMailMsgView._isExternalImage(img);	// has "dfsrc" attr
 		if (!external) { //Inline image
 			ZmMailMsgView.__unfangInternalImage(msg, img, "src", false);
-			img.onload = onload;
+			if (onload) {
+				img.onload = onload;
+			}
 		}
         else {
             img.src = "/img/zimbra/1x1-trans.png";
