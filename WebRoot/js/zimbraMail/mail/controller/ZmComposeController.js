@@ -504,6 +504,12 @@ function(attId, docIds, draftType, callback, contactId) {
 	}
 
 	if (this._autoSaveTimer) {
+        //If this._autoSaveTimer._timer is null then this._autoSaveTimer.kill(); is already called.
+        //Due to browsers cleartimeout taking some time, we are again checking this._autoSaveTimer._timer to prevent unnecessary autosave call
+        //Bug:74148
+        if (isAutoSave && isDraft && !this._autoSaveTimer._timer) {
+            return;
+        }
 		//kill the timer, no save is attempted while message is pending
         this._autoSaveTimer.kill();
 	}
