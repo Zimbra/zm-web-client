@@ -458,8 +458,9 @@ function() {
 		var item = (sel && sel.length) ? sel[0] : null;
 		if (item.type == ZmItem.CONV) {
 			Dwt.setLoadingTime("ZmConv", new Date());
+			var markRead = this._handleMarkRead(item, true);
 			var respCallback = this._handleResponseSetSelectedItem.bind(this, item);
-			item.load({getUnreadOrFirstMsg:true, markRead:false}, respCallback);
+			item.load({getUnreadOrFirstMsg:true, markRead:markRead}, respCallback);
 		} else {
 			ZmDoublePaneController.prototype._setSelectedItem.apply(this, arguments);
 		}
