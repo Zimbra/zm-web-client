@@ -483,7 +483,6 @@ function(ev, div) { return true; };
 ZmCalBaseView.prototype._doubleClickListener =
 function(ev) {
 	var div = this.getTargetItemDiv(ev);
-	
 	if (!div) { return;	}
 		
 	if (this._getItemData(div, "type") == ZmCalBaseView.TYPE_APPT) {
@@ -505,7 +504,6 @@ function(clickedEl, ev) {
 	var i;
 	var a = this._selectedItems.getArray();
 	var numSelectedItems = this._selectedItems.size();
-
 	// is this element currently in the selected items list?
     var clickedElSet = this._getItemClickedSet(clickedEl);
     // If one of a click set is contained, all should be.  Handles sliced up multi-day appts
@@ -1192,7 +1190,7 @@ function(ev) {
 
 	var draggedOut = data.view._apptDraggedOut(mouseEv.docX, mouseEv.docY);
 
-	if (data.dndStarted) {
+	if (data.dndStarted && data.appt) {
         data.view._deselectDnDHighlight(data);
 		//notify Zimlet when an appt is dragged.
  		appCtxt.notifyZimlets("onApptDrag", [data]);

@@ -2890,6 +2890,7 @@ ZmCalViewController.prototype._resetOperations =
 function(parent, num) {
 	parent.enableAll(true);
 	var currViewName = this._viewMgr.getCurrentViewName();
+    parent.enable(ZmOperation.TAG_MENU, appCtxt.get(ZmSetting.TAGGING_ENABLED));
 
 	if (currViewName == ZmId.VIEW_CAL_LIST && num > 1) { return; }
 
@@ -3281,7 +3282,7 @@ function(appt, actionMenu) {
     actionMenu.setItemVisible(ZmOperation.INVITE_REPLY_MENU, !isOrganizer);
     actionMenu.setItemVisible(ZmOperation.PROPOSE_NEW_TIME,  !isOrganizer);
     actionMenu.setItemVisible(ZmOperation.REINVITE_ATTENDEES, isOrganizer && !appt.inviteNeverSent && appt.otherAttendees);
-    actionMenu.setItemVisible(ZmOperation.TAG_MENU, !appCtxt.isExternalAccount());
+    actionMenu.setItemVisible(ZmOperation.TAG_MENU, appCtxt.get(ZmSetting.TAGGING_ENABLED));
 
 	// reply action menu
     actionMenu.enableAll(isOrganizer);
@@ -3960,7 +3961,7 @@ function(actionCode) {
                 var data = DwtMouseEventCapture.getTargetObj();
                 if (data) {
                     currentView._restoreApptLoc(data);
-                    data.startDate = data.appt._orig.startDate;
+                    data.startDate = data.appt ? data.appt._orig.startDate : null;
                     ZmCalBaseView._apptMouseUpHdlr(null);
                 }
             }

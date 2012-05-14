@@ -2270,15 +2270,26 @@ function(data) {
 
 ZmCalColView.prototype._restoreApptLoc =
 function(data) {
-	var lo = data.appt._layout;
-	data.view._layoutAppt(null, data.apptEl, lo.x, lo.y, lo.w, lo.h);
-	if (data.startTimeEl) {
-		data.startTimeEl.innerHTML = ZmCalBaseItem._getTTHour(data.appt.startDate);
-	}
-    if (data.endTimeEl) {
-		data.endTimeEl.innerHTML = ZmCalBaseItem._getTTHour(data.appt.endDate);
-	}
-	ZmCalBaseView._setApptOpacity(data.appt, data.apptEl);
+    if (data && data.appt) {
+        //Appt move by drag cancelled
+        var lo = data.appt._layout;
+        data.view._layoutAppt(null, data.apptEl, lo.x, lo.y, lo.w, lo.h);
+        if (data.startTimeEl) {
+            data.startTimeEl.innerHTML = ZmCalBaseItem._getTTHour(data.appt.startDate);
+        }
+        if (data.endTimeEl) {
+            data.endTimeEl.innerHTML = ZmCalBaseItem._getTTHour(data.appt.endDate);
+        }
+        ZmCalBaseView._setApptOpacity(data.appt, data.apptEl);
+    }
+    else if (data.newApptDivEl) {
+        // ESC key is pressed while dragging the mouse
+        // Undo the drag event and hide the new appt div
+        data.gridEl.style.cursor = 'auto';
+        var col = data.view._getColFromX(data.gridX);
+	    data.folderId = col ? (col.cal ? col.cal.id : null) : null;
+		Dwt.setVisible(data.newApptDivEl, false);
+    }
 };
 
 
