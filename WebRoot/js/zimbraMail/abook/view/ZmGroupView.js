@@ -82,12 +82,15 @@ ZmGroupView.MAIL_POLICY_INTERNAL = "INTERNAL";
 ZmGroupView.MAIL_POLICY_SPECIFIC = "SPECIFIC";
 
 ZmGroupView.GRANTEE_TYPE_USER = "usr";
+ZmGroupView.GRANTEE_TYPE_GUEST = "gst"; // an external user. This is returned by GetDistributionListResponse for a non-internal user. Could be a mix of this and "usr"
+ZmGroupView.GRANTEE_TYPE_EMAIL = "email"; //this covers both guest and user when setting rights via the setRights op of DistributionListActionRequest
 ZmGroupView.GRANTEE_TYPE_GROUP = "grp";
 ZmGroupView.GRANTEE_TYPE_ALL = "all";
 ZmGroupView.GRANTEE_TYPE_PUBLIC = "pub";
 
 ZmGroupView.GRANTEE_TYPE_TO_MAIL_POLICY_MAP = [];
 ZmGroupView.GRANTEE_TYPE_TO_MAIL_POLICY_MAP[ZmGroupView.GRANTEE_TYPE_USER] = ZmGroupView.MAIL_POLICY_SPECIFIC;
+ZmGroupView.GRANTEE_TYPE_TO_MAIL_POLICY_MAP[ZmGroupView.GRANTEE_TYPE_GUEST] = ZmGroupView.MAIL_POLICY_SPECIFIC;
 ZmGroupView.GRANTEE_TYPE_TO_MAIL_POLICY_MAP[ZmGroupView.GRANTEE_TYPE_GROUP] = ZmGroupView.MAIL_POLICY_MEMBERS;
 ZmGroupView.GRANTEE_TYPE_TO_MAIL_POLICY_MAP[ZmGroupView.GRANTEE_TYPE_ALL] = ZmGroupView.MAIL_POLICY_INTERNAL;
 ZmGroupView.GRANTEE_TYPE_TO_MAIL_POLICY_MAP[ZmGroupView.GRANTEE_TYPE_PUBLIC] = ZmGroupView.MAIL_POLICY_ANYONE;

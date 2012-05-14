@@ -1420,7 +1420,7 @@ function(mailPolicy, specificMailers) {
 	if (mailPolicy == ZmGroupView.MAIL_POLICY_SPECIFIC) {
 		for (var i = 0; i < specificMailers.length; i++) {
 			grantees.push({
-				type: ZmGroupView.GRANTEE_TYPE_USER,
+				type: ZmGroupView.GRANTEE_TYPE_EMAIL,
 				by: "name",
 				_content: specificMailers[i]
 			});
