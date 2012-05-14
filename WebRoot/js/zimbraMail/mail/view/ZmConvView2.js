@@ -1004,10 +1004,12 @@ function(msg, container, callback) {
 	// still in progress
 	if (this._disposed) { return; }
 
+    appCtxt.notifyZimlets("onConvStart", [this]);
 	this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
     this._renderMessageBody(msg, container, callback);
 	this._renderMessageFooter(msg, container);
 	this._controller._handleMarkRead(msg);	// in case we need to mark read after a delay
+    appCtxt.notifyZimlets("onConvEnd", [this]);
 };
 
 // Display all text messages and some HTML messages in a DIV rather than in an IFRAME.
