@@ -1795,7 +1795,7 @@ function(html, idx, item, field, colIdx, params) {
 		data.delButtonId = Dwt.getNextId("DelContact_");
 		this.delButtons[data.delButtonId] = true;
 		var addr = item.address ? item.address : item;
-		if ((item.__contact && item.__contact instanceof ZmContact) || (item.type == ZmContact.GROUP_GAL_REF || item.type == ZmContact.GROUP_CONTACT_REF)) {
+		if (!this.parent.isDistributionList() && (item.__contact && item.__contact instanceof ZmContact) || (item.type == ZmContact.GROUP_GAL_REF || item.type == ZmContact.GROUP_CONTACT_REF)) {
 			var contact = item.__contact || ZmContact.getContactFromCache(item.value);
 			if (!contact) {
 				data.email = AjxStringUtil.htmlEncode(addr);
@@ -1818,9 +1818,11 @@ function(html, idx, item, field, colIdx, params) {
 		else {
 			data.imgClassName = "PersonInline_48";
 			data.email = AjxStringUtil.htmlEncode(addr);
-			data.isInline = true;
-			data.quickAddId = Dwt.getNextId("QuickAdd_");
-			this.quickAddButtons[data.quickAddId] = true;
+			if (!this.parent.isDistributionList()) {
+				data.isInline = true;
+				data.quickAddId = Dwt.getNextId("QuickAdd_");
+				this.quickAddButtons[data.quickAddId] = true;
+			}
 			html[idx++] = AjxTemplate.expand("abook.Contacts#SplitView_group", data);
 		}
 		
