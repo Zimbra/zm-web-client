@@ -185,11 +185,14 @@ function(section, callback) {
 		var prefsView = prefCtlr && prefCtlr.getPrefsView();
 		if (prefsView) {
 			section = section.toUpperCase();
-			this.getOverview().setSelected([ZmOrganizer.PREF_PAGE,section].join("_"));
+			var overview = this.getOverview();
+			if (overview) {
+				overview.setSelected([ZmOrganizer.PREF_PAGE, section].join("_"));
+			}
 			prefsView.selectSection(section);
 		}
 	}
-	if (callback instanceof AjxCallback) {
+	if (callback && callback.run) {
 		callback.run();
 	}
 };
