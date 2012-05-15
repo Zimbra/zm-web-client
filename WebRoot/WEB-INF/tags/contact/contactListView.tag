@@ -91,7 +91,7 @@
                                        <c:set var="noName" value="${noNameStr} ${not empty hit.contactHit.email ? hit.contactHit.email : hit.contactHit.email2 }" />
                                        <c:choose>
                                            <c:when test="${not empty hit.contactHit.fileAsStr}">
-                                               <c:set var="contactUrlText">
+                                               <c:set var="contactFileAsText">
                                                    <app:contactFileAs
                                                        fileAs="${hit.contactHit.fileAs}"
                                                        firstName="${hit.contactHit.firstName}" lastName="${hit.contactHit.lastName}"
@@ -99,6 +99,7 @@
                                                        nickname="${hit.contactHit.nickname}"
                                                     />
                                                </c:set>
+                                               <c:set var="contactUrlText" value="${fn:escapeXml(contactFileAsText)}"/>
                                            </c:when>
                                            <c:when test="${empty hit.contactHit.fileAsStr and (context.isGALSearch or hit.contactHit.isGroup)}">
                                                <c:set var="contactUrlText" value="${fn:escapeXml(hit.contactHit.fullName)}" />

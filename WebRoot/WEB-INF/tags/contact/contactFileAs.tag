@@ -32,22 +32,18 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <c:set var="fileAs" value="${not empty contact ? contact.fileAs : fileAs}" />
-<c:set var="firstName" value="${fn:escapeXml(not empty contact ? contact.firstName : firstName)}" />
-<c:set var="lastName" value="${fn:escapeXml(not empty contact ? contact.lastName : lastName)}" />
-<c:set var="company" value="${fn:escapeXml(not empty contact ? contact.company : company)}" />
-<c:set var="fullName" value="${fn:escapeXml(not empty contact ? contact.fullName : fullName)}" />
-<c:set var="nickname" value="${fn:escapeXml(not empty contact ? contact.nickname : nickname)}" />
-<c:set var="phoneticFirstName" value="${fn:escapeXml(not empty contact ? contact.phoneticFirstName : phoneticFirstName)}" />
-<c:set var="phoneticLastName" value="${fn:escapeXml(not empty contact ? contact.phoneticLastName : phoneticLastName)}" />
-<c:set var="phoneticCompany" value="${fn:escapeXml(not empty contact ? contact.phoneticCompany : phoneticCompany)}" />
+<c:set var="firstName" value="${not empty contact ? contact.firstName : firstName}" />
+<c:set var="lastName" value="${not empty contact ? contact.lastName : lastName}" />
+<c:set var="company" value="${not empty contact ? contact.company : company}" />
+<c:set var="fullName" value="${not empty contact ? contact.fullName : fullName}" />
+<c:set var="nickname" value="${not empty contact ? contact.nickname : nickname}" />
+<c:set var="phoneticFirstName" value="${not empty contact ? contact.phoneticFirstName : phoneticFirstName}" />
+<c:set var="phoneticLastName" value="${not empty contact ? contact.phoneticLastName : phoneticLastName}" />
+<c:set var="phoneticCompany" value="${not empty contact ? contact.phoneticCompany : phoneticCompany}" />
 <c:if test="${ruby}">
-    <%--
-    The attributes are cooked in ruby.tag file as well resulting in double escaping. Hence, unCook them before
-    passing it over.
-    --%>
-    <c:set var="firstName"><app:ruby base="${zm:unCook(firstName)}" text="${zm:unCook(phoneticFirstName)}" /></c:set>
-    <c:set var="lastName"><app:ruby base="${zm:unCook(lastName)}" text="${zm:unCook(phoneticLastName)}" /></c:set>
-    <c:set var="company"><app:ruby base="${zm:unCook(company)}" text="${zm:unCook(phoneticCompany)}" /></c:set>
+    <c:set var="firstName"><app:ruby base="${firstName}" text="${phoneticFirstName}" /></c:set>
+    <c:set var="lastName"><app:ruby base="${lastName}" text="${phoneticLastName}" /></c:set>
+    <c:set var="company"><app:ruby base="${company}" text="${phoneticCompany}" /></c:set>
 </c:if>
 <%
     // make fields available to Java code

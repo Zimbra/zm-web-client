@@ -94,7 +94,10 @@
                                ${fn:escapeXml(noDisplayAs)}
                            </c:when>
                            <c:otherwise>
-                               <app:contactFileAs contact="${contact}" />
+                               <c:set var="contactFileAs">
+                                    <app:contactFileAs contact="${contact}"/>)/>
+                               </c:set>
+                               ${fn:escapeXml(contactFileAs)}
                            </c:otherwise>
                        </c:choose>
                    </div>
