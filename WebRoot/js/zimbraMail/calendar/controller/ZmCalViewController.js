@@ -3272,7 +3272,7 @@ function(appt, actionMenu) {
 	var workflow = share ? share.isWorkflow() : true;
     var isTrash = calendar && calendar.nId == ZmOrganizer.ID_TRASH;
 	var isPrivate = appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
-	var enabled = !isOrganizer && workflow && !isPrivate && !isExternalAccount;
+	var enabled = !isOrganizer && workflow && !isPrivate && !isExternalAccount && !isSharedViewOnly;
     var isReplyable = !isTrash && appt.otherAttendees;
 	var isForwardable = !isTrash && calendar && !calendar.isReadOnly() && appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED);
 
@@ -3284,8 +3284,10 @@ function(appt, actionMenu) {
     actionMenu.setItemVisible(ZmOperation.REINVITE_ATTENDEES, isOrganizer && !appt.inviteNeverSent && appt.otherAttendees);
     actionMenu.setItemVisible(ZmOperation.TAG_MENU, appCtxt.get(ZmSetting.TAGGING_ENABLED));
 
-	// reply action menu
-    actionMenu.enableAll(isOrganizer);
+    // Initially enabling all the options in the action menu. And then selectively disabling unsupported options for special users.
+    actionMenu.enableAll(true);
+
+// reply action menu
     if (!isOrganizer) {
         actionMenu.enable(ZmOperation.REPLY_ACCEPT,      enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
         actionMenu.enable(ZmOperation.REPLY_DECLINE,     enabled && isReplyable && appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
