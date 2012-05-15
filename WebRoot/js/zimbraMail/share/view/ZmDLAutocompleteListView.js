@@ -27,6 +27,7 @@
  *
  * @param {Hash}	params			a hash of parameters:
  * @param	{ZmAutocompleteListView}		parent autocomplete list view
+ * @param	{AjxCallback}	selectionCallback	the callback into client to notify it that selection from extended DL happened (passed from email.js, and accessed from ZmDLAutocompleteListView.prototype._doUpdate)
  *
  * @extends		ZmAutocompleteListView
  */
@@ -34,6 +35,7 @@ ZmDLAutocompleteListView = function(params) {
 	ZmAutocompleteListView.call(this, params);
 	this._parentAclv = params.parentAclv;
 	this._dlScrollDiv = this.getHtmlElement();
+	this._selectionCallback = params.selectionCallback;
 	Dwt.setHandler(this._dlScrollDiv, DwtEvent.ONSCROLL, ZmDLAutocompleteListView.handleDLScroll);
 };
 
@@ -155,9 +157,16 @@ function(match) {
 		this._parentAclv._currentContext.address = null;
 	}
 	match = match || this._matchHash[this._selected];
-	if (match) {
-		this._parentAclv._update(null, match);
+	if (!match) {
+		return;
 	}
+
+	if (this._selectionCallback) {
+		this._selectionCallback(match.fullAddress);
+		return;
+	}
+
+	this._parentAclv._update(null, match);
 };
 
 ZmDLAutocompleteListView.handleDLScroll =

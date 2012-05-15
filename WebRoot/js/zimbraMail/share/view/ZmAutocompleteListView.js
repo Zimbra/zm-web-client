@@ -123,6 +123,7 @@
  * @param	{Array}			delimCodes			the list of delimiter key codes
  * @param	{String}		separator			the separator (gets added to the end of a match)
  * @param	{AjxCallback}	compCallback		the callback into client to notify it that completion happened
+ * @param	{AjxCallback}	selectionCallback	the callback into client to notify it that selection from extended DL happened (passed from email.js, and accessed from ZmDLAutocompleteListView.prototype._doUpdate)
  * @param	{AjxCallback}	keyDownCallback		the additional client ONKEYDOWN handler
  * @param	{AjxCallback}	keyPressCallback	the additional client ONKEYPRESS handler
  * @param	{AjxCallback}	keyUpCallback		the additional client ONKEYUP handler
@@ -148,6 +149,7 @@ ZmAutocompleteListView = function(params) {
 	this._dataLoader = params.dataLoader;
 	this._dataLoaded = false;
 	this._matchValue = params.matchValue;
+	this._selectionCallback = params.selectionCallback;
 	this._separator = (params.separator != null) ? params.separator : AjxEmailAddress.SEPARATOR;
     this._options = params.options || {};
 	this._locationCallback = params.locationCallback;
@@ -1453,7 +1455,7 @@ function(contact, params, matches) {
 
 	var mlv = this._memberListView;
 	if (!mlv) {
-		mlv = this._memberListView = new ZmDLAutocompleteListView({parent:appCtxt.getShell(), parentAclv:this});
+		mlv = this._memberListView = new ZmDLAutocompleteListView({parent:appCtxt.getShell(), parentAclv:this, selectionCallback: this._selectionCallback});
 	}
 	mlv._dlContact = contact;
 	mlv._dlBubbleId = params.textId;
