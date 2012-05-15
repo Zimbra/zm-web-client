@@ -87,26 +87,40 @@
 <c:if test="${contact.isGroup}">
     <c:forEach var="member" items="${contact.groupMembers}">
         <c:set var="memberContact" value="${zm:groupMemberById(contact, member)}"/>
-        <c:set var="memberContactImage" value="${memberContact.imagePart != null ? memberContact.imagePart : ''}"/>
-        <c:set var="imageUrl" value="/service/home/~/?id=${memberContact.id}&amp;part=${memberContactImage}&amp;auth=co"/>
-        <tr>
-            <td width="20" valign="bottom" align="left" style="padding-right:3px;" rowspan="4">
-                <app:img clazz="contactImage" src="${not empty memberContactImage ? imageUrl : (memberContact.isGroup ? 'large/ImgGroupPerson_48.png' : 'large/ImgPerson_48.png')}" altkey="${memberContact.imageAltKey}" />
-            </td>
-            <td>
-                <b><app:contactDisplayName contact="${memberContact}" /></b>
-            </td>
-        </tr>
-        <tr>
-            <td width="100%">
-                <app:contactJobInfo contact="${memberContact}" />
-            </td>
-            <td width="20" class="contactOutput">
-                <app:contactEmail email="${memberContact.email}"/>
-            </td>
-            <c:set var="memberContactAttrs" value="${memberContact.attrs}"/>
-            <td width="20" class="contactOutput" nowrap="nowrap"><c:if test="${zm:anySet(memberContact,'mobilePhone')}">${fn:escapeXml(memberContactAttrs['mobilePhone'])}</c:if></td>
-        </tr>
+        <c:choose>
+        <c:when test="${memberContact.isTypeI}">
+            <tr>
+                <td width="20" valign="top" align="left" style="padding-right:3px;" rowspan="1">
+                    <app:img clazz="contactImage" src="large/ImgPersonInline_48.png"/>
+                </td>
+                <td>
+                    <b>${fn:escapeXml(memberContact.id)}</b>
+                </td>
+            </tr>
+        </c:when>
+        <c:otherwise>
+            <c:set var="memberContactImage" value="${memberContact.imagePart != null ? memberContact.imagePart : ''}"/>
+            <c:set var="imageUrl" value="/service/home/~/?id=${memberContact.id}&amp;part=${memberContactImage}&amp;auth=co"/>
+            <tr>
+                <td width="20" valign="bottom" align="left" style="padding-right:3px;" rowspan="4">
+                    <app:img clazz="contactImage" src="${not empty memberContactImage ? imageUrl : (memberContact.isGroup ? 'large/ImgGroupPerson_48.png' : 'large/ImgPerson_48.png')}" altkey="${memberContact.imageAltKey}" />
+                </td>
+                <td>
+                    <b><app:contactDisplayName contact="${memberContact}" /></b>
+                </td>
+            </tr>
+            <tr>
+                <td width="100%">
+                    <app:contactJobInfo contact="${memberContact}" />
+                </td>
+                <td width="20" class="contactOutput">
+                    <app:contactEmail email="${memberContact.email}"/>
+                </td>
+                <c:set var="memberContactAttrs" value="${memberContact.attrs}"/>
+                <td width="20" class="contactOutput" nowrap="nowrap"><c:if test="${zm:anySet(memberContact,'mobilePhone')}">${fn:escapeXml(memberContactAttrs['mobilePhone'])}</c:if></td>
+            </tr>
+        </c:otherwise> 
+        </c:choose>
         <tr>
             <td colspan="2"><br/></td>
         </tr>
