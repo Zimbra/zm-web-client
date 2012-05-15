@@ -93,9 +93,16 @@ function(params) {
 		soapDoc: soapDoc,
 		asyncMode: true,
 		accountName: accountName,
+		callback: ZmSearchFolder._handleCreate,
 		errorCallback: (new AjxCallback(null, ZmOrganizer._handleErrorCreate, params))
 	});
 };
+
+ZmSearchFolder._handleCreate =
+function(params) {
+	appCtxt.setStatusMsg(ZmMsg.searchSaved);
+};
+
 
 ZmSearchFolder.prototype = new ZmFolder;
 ZmSearchFolder.prototype.constructor = ZmSearchFolder;
