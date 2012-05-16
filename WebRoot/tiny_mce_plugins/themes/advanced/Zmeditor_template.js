@@ -20,9 +20,25 @@ Zmeditor_template = function() {
 
 }
 
-Zmeditor_template.FONT_SIZE_MAPPING = {
+/*
+    Chrome pt to px values
+    "8pt":"11px",
+    "10pt":"13px",
+    "12pt":"16px",
+    "14pt":"19px",
+    "18pt":"24px",
+    "24pt":"32px",
+    "36pt":"48px",
 
-    /*
+    Firefox pt to px values
+    "8pt":"10.6667px",
+    "10pt":"13.3333px",12,13,14
+    "12pt":"16px",15,16,17
+    "14pt":"18.6667px",
+    "18pt":"24px",
+    "24pt":"32px",
+    "36pt:"48px",
+
     Exact font size mapping
     "11px":"xx-small",
     "13px":"x-small",
@@ -31,64 +47,65 @@ Zmeditor_template.FONT_SIZE_MAPPING = {
     "24px":"large",
     "32px":"x-large",
     "48px":"xx-large",
-    */
+*/
 
-    "1":"xx-small",
-    "2":"x-small",
-    "3":"small",
-    "4":"medium",
-    "5":"large",
-    "6":"x-large",
-    "7":"xx-large",
-
-    "9px":"xx-small",
-    "10px":"xx-small",
-    "11px":"xx-small",
-
-    "12px":"x-small",
-    "13px":"x-small",
-    "14px":"x-small",
-
-    "15px":"small",
-    "16px":"small",
-    "17px":"small",
-
-    "18px":"medium",
-    "19px":"medium",
-    "20px":"medium",
-    "21px":"medium",
-    "22px":"medium",
-
-    "23px":"large",
-    "24px":"large",
-    "25px":"large",
-    "26px":"large",
-    "27px":"large",
-
-    "28px":"x-large",
-    "29px":"x-large",
-    "30px":"x-large",
-    "31px":"x-large",
-    "32px":"x-large",
-    "33px":"x-large",
-    "34px":"x-large",
-    "35px":"x-large",
-    "36px":"x-large",
-
-    "37px":"xx-large",
-    "38px":"xx-large",
-    "39px":"xx-large",
-    "40px":"xx-large",
-    "41px":"xx-large",
-    "42px":"xx-large",
-    "43px":"xx-large",
-    "44px":"xx-large",
-    "45px":"xx-large",
-    "46px":"xx-large",
-    "47px":"xx-large",
-    "48px":"xx-large",
-    "49px":"xx-large",
-    "50px":"xx-large"
+/*
+    will return string based font size based on px or pt
+ */
+Zmeditor_template.getFontSize = function(value){
+    if (!value) {
+        return;
+    }
+    value = (value+"").toLowerCase();
+    if (value.indexOf("px") !== -1) {
+        value = value.replace("px", "");
+        if (value < 12) {
+            return "xx-small";
+        }
+        else if (value >= 12 && value < 15) {
+            return "x-small";
+        }
+        else if (value >= 15 && value < 18) {
+            return "small";
+        }
+        else if (value >= 18 && value < 23) {
+            return "medium";
+        }
+        else if (value >= 23 && value < 28) {
+            return "large";
+        }
+        else if (value >= 28 && value < 37) {
+            return "x-large";
+        }
+        else {
+            return "xx-large";
+        }
+    }
+    else if(value.indexOf("pt") !== -1) {
+        value = value.replace("pt", "");
+        if (value < 9) {
+            return "xx-small";
+        }
+        else if (value >= 9 && value < 11) {
+            return "x-small";
+        }
+        else if (value >= 11 && value < 13) {
+            return "small";
+        }
+        else if (value >= 13 && value < 17) {
+            return "medium";
+        }
+        else if (value >= 17 && value < 22) {
+            return "large";
+        }
+        else if (value >= 22 && value < 30) {
+            return "x-large";
+        }
+        else {
+            return "xx-large";
+        }
+    }
+    return value;
 };
 
 (function(tinymce) {
@@ -179,7 +196,7 @@ Zmeditor_template.FONT_SIZE_MAPPING = {
 
                 if (ed.dom.is(n, s.theme_advanced_font_selector)) {
                     if (!fz && n.style.fontSize){
-                        fz = n.style.fontSize;
+                        fz = Zmeditor_template.getFontSize(n.style.fontSize);
                     }
 
                     if (!fn && n.style.fontFamily){
@@ -259,8 +276,7 @@ Zmeditor_template.FONT_SIZE_MAPPING = {
 
                 // Use computed style
                 if (s.theme_advanced_runtime_fontsize && !fz && !cl) {
-                    fz = ed.dom.getStyle(n, 'fontSize', true);
-                    fz = Zmeditor_template.FONT_SIZE_MAPPING[fz] || fz;
+                    fz = Zmeditor_template.getFontSize(ed.dom.getStyle(n, 'fontSize', true));
                 }
 
                 c.select(function(v) {
