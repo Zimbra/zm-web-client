@@ -2552,11 +2552,7 @@ function() {
 
 ZmMailMsg.prototype.setAutoSendTime =
 function(autoSendTime) {
-	var item = this;
-	while (item instanceof ZmMailMsg) {
-		item._setAutoSendTime(autoSendTime);
-		item = item._origMsg;
-	}
+    this._setAutoSendTime(autoSendTime);
 };
 
 ZmMailMsg.prototype._setAutoSendTime =
