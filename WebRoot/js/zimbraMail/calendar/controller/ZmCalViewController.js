@@ -3963,6 +3963,7 @@ function(actionCode) {
                 var data = DwtMouseEventCapture.getTargetObj();
                 if (data) {
                     currentView._restoreApptLoc(data);
+                    currentView._cancelNewApptDrag(data);
                     data.startDate = data.appt ? data.appt._orig.startDate : null;
                     ZmCalBaseView._apptMouseUpHdlr(null);
                 }
@@ -4173,7 +4174,7 @@ function(msg) {
 	var newAppt = this.newApptObject(new Date(), null, null, msg);
 	newAppt.setProposeTimeMode(true);
 	newAppt.setFromMailMessageInvite(msg);
-	AjxDispatcher.run("GetApptComposeController").proposeNewTime(newAppt);	
+	AjxDispatcher.run("GetApptComposeController").proposeNewTime(newAppt);
 };
 
 ZmCalViewController.prototype.forwardInvite =

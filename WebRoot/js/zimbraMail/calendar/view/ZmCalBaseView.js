@@ -1309,6 +1309,18 @@ function(data, deltaX, deltaY) { }
 ZmCalBaseView.prototype._restoreApptLoc =
 function(data) { }
 
+ZmCalBaseView.prototype._cancelNewApptDrag =
+function(data) {
+    if (data && data.newApptDivEl) {
+        // ESC key is pressed while dragging the mouse
+        // Undo the drag event and hide the new appt div
+        data.gridEl.style.cursor = 'auto';
+        var col = data.view._getColFromX(data.gridX);
+	    data.folderId = col ? (col.cal ? col.cal.id : null) : null;
+		Dwt.setVisible(data.newApptDivEl, false);
+    }
+};
+
 ZmCalBaseView.prototype._handleApptScrollRegion =
 function(docX, docY, incr, data) {  }
 

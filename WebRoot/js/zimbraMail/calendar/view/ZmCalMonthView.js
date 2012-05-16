@@ -1853,12 +1853,14 @@ function(data) {
 
 ZmCalMonthView.prototype._restoreApptLoc =
 function(data) {
-    if (data.appt.isAllDayEvent()) {
-        this._moveAllDayAppt(data, data.startDayIndex);
-    } else {
-        this._reattachApptDnDHtml(data, data.startDayIndex, false);
+    if(data && data.appt) {
+        if (data.appt.isAllDayEvent()) {
+            this._moveAllDayAppt(data, data.startDayIndex);
+        } else {
+            this._reattachApptDnDHtml(data, data.startDayIndex, false);
+        }
+        data.snap.dayIndex = data.startDayIndex;
     }
-    data.snap.dayIndex = data.startDayIndex;
 };
 
 ZmCalMonthView.prototype._deselectDnDHighlight =
