@@ -628,7 +628,7 @@ ZmFilterRule.A_LABEL[ZmFilterRule.A_DISCARD]	= ZmMsg.del;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_STOP]		= ZmMsg.stopEvaluation;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_FLAG]		= ZmMsg.filterMarkAs;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_TAG]		= ZmMsg.tagWith;
-ZmFilterRule.A_LABEL[ZmFilterRule.A_FORWARD]	= ZmMsg.forwardToAddress;
+ZmFilterRule.A_LABEL[ZmFilterRule.A_FORWARD]	= ZmMsg.redirectToAddress;
 
 /**
  * This defines a hash of actions. The hash key is known as the action "name".
