@@ -469,18 +469,27 @@ input.admin_xform_name_input_disabled {
 	height:8px; 
 	background-color:green;
 	margin:1px 0;
+#IFDEF MSIE
+    font-size: 0px;
+#ENDIF
 }
 
 .mbxprogressusedWarning {
 	height:8px; 
 	background-color:orange;
 	margin:1px 0;
+#IFDEF MSIE
+    font-size: 0px;
+#ENDIF
 }
 
 .mbxprogressusedCritical {
 	height:8px; 
 	background-color:red;
 	margin:1px 0;
+#IFDEF MSIE
+    font-size: 0px;
+#ENDIF
 }
 
 .mbxprogressbar {
@@ -488,6 +497,9 @@ input.admin_xform_name_input_disabled {
 	width:100px; 
 	height:10px;
 	background-color:white;
+#IFDEF MSIE
+    font-size: 0px;
+#ENDIF
 }
 
 .ImgAppBanner {
