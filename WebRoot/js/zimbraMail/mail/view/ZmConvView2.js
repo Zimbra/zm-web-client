@@ -282,7 +282,7 @@ function(scrollMsgView) {
 	var header = document.getElementById(this._convHeaderId);
 	if (!container || !header || !this._messagesDiv) { return; }
 	
-	var myHeight = container.getSize().y;
+	var myHeight = container.getSize(AjxEnv.isIE).y;
 	DBG.println("cv2", "cv2 height = " + myHeight);
 	var headerSize = Dwt.getSize(header);
 	DBG.println("cv2", "header height = " + headerSize.y);
