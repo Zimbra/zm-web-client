@@ -415,16 +415,28 @@
     <$ else if (isEdit) {$>
        <div class='companyName'>
 			<$	if (data.contact.isDistributionList()) {
+		    $>
+			<table>
+				<tr>
+					<td class='companyName'>
+		   <$
 		    		if (data.usernameEditable) { $>
-						<div id='${id}_groupNameParent'></div> @
+						<div id='${id}_groupNameParent'></div>
 		   	<$		} else { $>
-		   				<$= AjxStringUtil.htmlEncode(data.username)$> @
+		   				<$= AjxStringUtil.htmlEncode(data.username)$>
 			<$		}
+			$>
+					</td>
+					<td class='companyName'>&nbsp;@
+			<$
 					if (data.domainEditable) { $>
 						<input type='text' autocomplete='off' size=20 id='${id}_groupNameDomain' class="Text">
 			<$ 		} else { $>
 						<$= AjxStringUtil.htmlEncode(data.domain)$>
 			<$ 		} $>
+					</td>
+				</tr>
+			</table>
 			<$ } else { $>
 					<div id='${id}_groupNameParent'></div>
 			<$ } $>
