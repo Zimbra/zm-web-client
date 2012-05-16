@@ -148,6 +148,14 @@ function(params) {
 	}
 
 	params.ext = params.filename.replace(/^.*\./,"").toLowerCase();
+    if (!ZmImportExportController.EXTS_TYPE[params.ext]) {
+        var params = {
+            msg:	AjxMessageFormat.format(ZmMsg.importErrorTypeNotSupported, params.ext),
+            level:	ZmStatusView.LEVEL_CRITICAL
+        };
+        appCtxt.setStatusMsg(params);
+        return false;
+    }
 	params.defaultType = params.type || ZmImportExportController.EXTS_TYPE[params.ext] || ZmImportExportController.TYPE_DEFAULT;
 	var isZimbra = ZmImportExportController.EXTS_TYPE[params.defaultType] == ZmImportExportController.TYPE_TGZ;
 	var folder = appCtxt.getById(folderId);
