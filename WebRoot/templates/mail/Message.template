@@ -746,7 +746,7 @@
 
 <template id='mail.Message#Conv2MsgHeader-collapsed'>
 	<span id='${readCellId}'></span>
-	<div class='info'>
+	<div class='info' style='position: relative; width: 100%;'>
 		<span id='${fromId}'>${from}</span>
 		<span class='ZmConvListFragment'><$= data.fragment $></span>
 	</div>
