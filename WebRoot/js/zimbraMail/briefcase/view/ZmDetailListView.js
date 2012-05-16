@@ -296,7 +296,7 @@ function(item, colIdx) {
 	idx = this._getCellContents(html, idx, item, ZmItem.F_SIZE, colIdx);
 	html[idx++] = "</td>";
 
-    html[idx++] = "<td style='text-align:right' width=" + width + " id='" + this._getFieldId(item, ZmItem.F_TAG)+"'>";
+    html[idx++] = "<td style='text-align:right' width=" + width + " >";
     idx = this._getImageHtml(html, idx, item.getTagImageInfo(), this._getFieldId(item, ZmItem.F_TAG));
 	html[idx++] = "</td>";
 
