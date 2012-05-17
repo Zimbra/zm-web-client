@@ -1430,6 +1430,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	border-right-width:1px;
 }
 
+.AlphabetBarCell span {
+	width:100%	
+}
+
 .AlphabetBarDisabled {
 	/* TODO: this was hard-coded to 50% opaque -- why not same as icon? */
 	@HalfOpacity@
