@@ -1709,11 +1709,6 @@ function() {
 	} else if (this.isReplied) {
 		flag = ZmItem.FLAG_REPLIED;
 		msg = this._origMsg;
-	} else if (this.isScheduled) {
-		flag = ZmItem.FLAG_ISSCHEDULED;
-		msg = this;
-		while (!msg.list && msg._origMsg)
-			msg = msg._origMsg;
 	}
 
 	if (flag && msg) {
