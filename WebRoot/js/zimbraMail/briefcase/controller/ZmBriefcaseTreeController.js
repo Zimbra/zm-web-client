@@ -83,7 +83,9 @@ function(actionMenu, type, id) {
             actionMenu.getOp(ZmOperation.EMPTY_FOLDER).setText(ZmMsg.emptyTrash);            
         } else {
             actionMenu.enableAll(true);
-			actionMenu.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.EDIT_PROPS], !appCtxt.isExternalAccount() && !isBriefcase && (!isLinkOrRemote || !isReadOnly || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
+            var showEditMenu = !appCtxt.isExternalAccount() && (!isLinkOrRemote || !isReadOnly || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE));
+            actionMenu.enable(ZmOperation.DELETE_WITHOUT_SHORTCUT, showEditMenu && !isBriefcase);
+            actionMenu.enable(ZmOperation.EDIT_PROPS, showEditMenu);
 
 			var menuItem;
             menuItem = actionMenu.getMenuItem(ZmOperation.NEW_BRIEFCASE);
