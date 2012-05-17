@@ -1977,6 +1977,25 @@ function(lower) {
 };
 
 /**
+ * Gets the filing string for this contact, from the email address (used in case no name exists).
+ * todo - maybe return this from getFileAs, but there are a lot of callers to getFileAs, and not sure
+ * of the implications on all the user-cases.
+ *
+ * @return	{String}	the file as string
+ */
+ZmContact.prototype.getFileAsNoName =
+function() {
+	var val = this.getEmail();
+	if (!val || !val.length) {
+		var imAddr = ZmImAddress.parse(this.getIMAddress());
+		if (imAddr) {
+			val = imAddr.screenName;
+		}
+	}
+	return [ZmMsg.noName, val].join(" ");
+};
+
+/**
  * Gets the header.
  * 
  * @return	{String}	the header

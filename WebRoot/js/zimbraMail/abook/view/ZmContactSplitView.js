@@ -1240,19 +1240,8 @@ function(contact, params) {
 	htmlArr[idx++] = "</center></td>";
 
 	// file as
-	var fileAs = AjxStringUtil.htmlEncode(contact.getFileAs());
-	if (!fileAs) {
-		var val = contact.getEmail();
-		if (!val || (val && val.length ==0)) {
-			var imAddr = ZmImAddress.parse(contact.getIMAddress());
-			if (imAddr) {
-				val = imAddr.screenName;
-			}
-		}
-		fileAs = [AjxStringUtil.htmlEncode(ZmMsg.noName), AjxStringUtil.htmlEncode(val)].join(" ");
-	}
 	htmlArr[idx++] = "<td id='" + this._getFieldId(contact, "fileas") + "' style='vertical-align:middle;'>&nbsp;";
-	htmlArr[idx++] = fileAs;
+	htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs() || contact.getFileAsNoName());
 	htmlArr[idx++] = "</td>";
 
 	if (!params.isDragProxy) {

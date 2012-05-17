@@ -359,7 +359,7 @@ function(contact) {
 	if (this._selSignature) {
 		this._selSignature.contactId = contact.id;
 	}
-	this._vcardField.value = contact.getFileAs();
+	this._vcardField.value = contact.getFileAs() || contact.getFileAsNoName();
 };
 
 //
@@ -874,7 +874,7 @@ function(signature, clear) {
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		var contact = contactsApp && contactsApp.getContactList().getById(signature.contactId);
 		if (contact) {
-			vcardName = contact.getFileAs();
+			vcardName = contact.getFileAs() || contact.getFileAsNoName();
 		}
 	}
 	this._vcardField.value = vcardName;
