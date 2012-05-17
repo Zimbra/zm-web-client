@@ -60,7 +60,7 @@
 <style type="text/css">
     .ZhCallListPrintView td, .zPrintMsgs *{
         font-family:Tahoma,Arial,Helvetica,sans-serif;
-        font-size:${mailbox.prefs.defaultPrintFontSize} !important;
+        font-size:${mailbox.prefs.defaultPrintFontSize};
     }
     .ZhPrintSubject {
         padding: 10px;

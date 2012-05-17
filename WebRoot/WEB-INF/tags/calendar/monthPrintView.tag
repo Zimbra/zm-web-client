@@ -175,6 +175,6 @@
 
 <style type="text/css">
     .zPrintMsgs *{
-        font-size:${mailbox.prefs.defaultPrintFontSize} !important;
+        font-size:${mailbox.prefs.defaultPrintFontSize};
     }
 </style>

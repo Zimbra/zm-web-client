@@ -70,7 +70,7 @@
 <style type="text/css">
     .zPrintMsgs *{
         font-family:Tahoma,Arial,Helvetica,sans-serif;
-        font-size:${mailbox.prefs.defaultPrintFontSize} !important;
+        font-size:${mailbox.prefs.defaultPrintFontSize};
     }
      .zhcalmonthheadermonth, .zhcalmonthheadercellstext, .zhappcontent, .zhcalmonthtable, .zhcaldaygrid, .zhcalmonthheaderrow, .zhcaldayhour, .zhcaldayheader, .zhcaldayheadertoday{ background-color: white;}
     .ZhCalDayHeader{font-weight: bold; }

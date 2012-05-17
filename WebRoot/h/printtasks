@@ -47,7 +47,7 @@
         }
         .ZhCallListPrintView td, .zPrintMsgs *{
             font-family:Tahoma,Arial,Helvetica,sans-serif;
-            font-size:${mailbox.prefs.defaultPrintFontSize} !important;
+            font-size:${mailbox.prefs.defaultPrintFontSize};
         }
         .companyName{
              color: #555555 !important;
