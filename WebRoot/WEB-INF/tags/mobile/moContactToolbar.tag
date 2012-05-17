@@ -116,6 +116,7 @@
         </select><noscript><input id="actGo${isTop}" class="zo_button" name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
         <script type="text/javascript">var actGo=document.getElementById('actGo${isTop}');if(actGo){actGo.style.display='none';}</script>
         </span>
+        <c:if test="${not contact.isGroup}">
         <span>
             <c:url var="addUrl" value="${closeUrl}">
                 <c:param name="action" value="edit"/>
@@ -125,6 +126,7 @@
         <c:if test="${contact != null}"><a accesskey="${requestScope.mainaction_accesskey}" class="zo_button" href="${editUrl}"><fmt:message key="edit"/></a></c:if>
         <c:if test="${contact == null}"><a accesskey="${requestScope.mainaction_accesskey}" href="${addUrl}" class='zo_button'><fmt:message key="add"/></a></c:if>
         </span>
+        </c:if>
     </c:otherwise>
 </c:choose>
 </div></div></div>
