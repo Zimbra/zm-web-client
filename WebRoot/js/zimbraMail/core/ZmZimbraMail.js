@@ -2545,6 +2545,11 @@ function(startTimer) {
  */
 ZmZimbraMail.logOff =
 function() {
+	if (appCtxt.isChildWindow) {
+		window.close();
+		return;
+	}
+
 	ZmZimbraMail._isLogOff = true;
 
 	// bug fix #36791 - reset the systray icon when returning to Account Setup
