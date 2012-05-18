@@ -86,4 +86,13 @@ function(){
 		this._omit[ZmFolder.ID_TRASH] = true;
 		this._omit[ZmFolder.ID_DLS] = true;
 	}
+	var folderTree = appCtxt.getFolderTree();
+	if (!folderTree) { return; }
+	var folders = folderTree.getByType(this._organizerType);
+	for (var i = 0; i < folders.length; i++) {
+		var folder = folders[i];
+		if (folder.isReadOnly()) {
+			this._omit[folder.id] = true;
+		}
+	}
 };
