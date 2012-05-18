@@ -873,7 +873,7 @@ ZmMailMsgCapsuleView = function(params) {
 	this._forceExpand = params.forceExpand;
 	this._forceCollapse = params.forceCollapse;
 	this._actionsMenu = params.actionsMenu;
-	this._forceOriginal = params.forceOriginal;
+	this._forceOriginal = params.forceOriginal && !(DBG && DBG.getDebugLevel() == "orig");
 	this._showingCalendar = false;
 	this._infoBarId = this._htmlElId;
 	

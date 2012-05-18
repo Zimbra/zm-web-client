@@ -540,8 +540,8 @@ Call me in a week when they have this stuff straightened out.\n\
 	},
 
 	// 22
-	// Top posting
-	// Text: U Q
+	// Middle posting
+	// Text: W Q U Q
 	{
 		input: "\
 ----- \"Parag Shah\" <pshah@zimbra.com> wrote:\n\
@@ -742,5 +742,55 @@ Configure bugmail: http://bugzilla.zimbra.com/userprefs.cgi?tab=email\n\
 -- \n\
 Configure bugmail: http://bugzilla.zimbra.com/userprefs.cgi?tab=email\n\
 "
-	}
+	},
+
+	// 28
+    // "wrote" separator followed by inline reply
+	// HTML: U W Q U Q U
+    {
+		isHtml: true,
+        input: "\
+<html><head></head><body>\
+<div>Inline reply below</div>\n\
+<div>On <span>May 8, 2012</span>, at 12:13 PM, Andy Flomm wrote:</div>\n\
+<div>\n\
+<br>\n\
+<blockquote>this is some stuff Andy wrote</blockquote>\n\
+<div>This is some inline replying</div>\n\
+<br>\n\
+<blockquote>more stuff Andy wrote</blockquote>\n\
+<div>a second inline comment</div>\n\
+<br>\n\
+</div></body></html>\n\
+"
+,
+		output: UtZWCUtils.SAME
+    },
+
+	// 29
+    // "wrote" separator followed by inline reply
+	// Text: U W Q U Q U
+    {
+        input: "\
+No need. Thanks!\n\
+\n\
+----- 'Joanne Haggerty' <joanneh@example.com> wrote:\n\
+\n\
+> Conrad,\n\
+> \n\
+> Since you returned the other trophies, do you want a trophy for the Flag Football League?\n\
+> \n\
+> Joanne\n\
+\n\
+some text\n\
+\n\
+> some quoted stuff\n\
+\n\
+more text\n\
+\n\
+> more quoted stuff\n\
+"
+,
+		output: UtZWCUtils.SAME
+    }
 ];
