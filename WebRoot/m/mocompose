@@ -131,7 +131,7 @@
 		</c:choose>
 </c:if>
 
-<div class="View">
+<div class="View" style="overflow:visible">
 <div class="tbl cmp_from_to_cc_table">
     <c:if test="${fn:length(mailbox.accountInfo.identities) gt 1 }"><c:set value="nr" var="classForNextRow"/><div class="tr cmp_from_row">
             <span class='td label'><label for="fromField"><fmt:message key="fromLabel"/></label></span>
