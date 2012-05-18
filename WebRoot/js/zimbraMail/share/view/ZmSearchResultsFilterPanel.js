@@ -781,6 +781,10 @@ function(menu, attTypes) {
 			added[attType.desc] = true;
 		}
 	}
+	else {
+		var menuItem = new DwtMenuItem({parent:	menu}); 
+		menuItem.setText(ZmMsg.noAtt);
+	}
 	menu.addSelectionListener(this._selectionListener.bind(this));
 };
 
