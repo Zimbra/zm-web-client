@@ -121,6 +121,9 @@ var myEditor;
             else if (tinymce.inArray(tinyMCELocaleArray, tinyMCELocale) !== -1) {
                 locale = tinyMCELocale;
             }
+            else {
+                locale = "en";
+            }
         }
 
         var tinyMCEInitObj = {
