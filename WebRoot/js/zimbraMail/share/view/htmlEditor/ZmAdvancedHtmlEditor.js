@@ -37,6 +37,7 @@ ZmAdvancedHtmlEditor.prototype.toString = function() { return "ZmAdvancedHtmlEdi
 
 ZmAdvancedHtmlEditor.TINY_MCE_PATH = "/js/ajax/3rdparty/tinymce";
 ZmAdvancedHtmlEditor.DELTA_HEIGHT = 6;
+ZmAdvancedHtmlEditor.LOCALE = "en";
 
 ZmAdvancedHtmlEditor.prototype.getEditor =
 function() {
@@ -417,6 +418,17 @@ function(parent, posStyle, content, mode, withAce, reparentContainer) {
         window.tinyMCE_GZ = {};
         window.tinyMCE_GZ.loaded = true;
 
+        //Refer http://www.tinymce.com/i18n/index.php?ctrl=lang&act=download&pr_id=1
+        var tinyMCELocaleArray = ['sq', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'nb', 'bs', 'br', 'bg', 'my', 'ca', 'km', 'ch', 'zh', 'hr', 'cs', 'da', 'dv', 'nl', 'en', 'eo', 'et', 'fi', 'fr', 'gl', 'ka', 'de', 'el', 'gu', 'he', 'hi', 'hu', 'is', 'id', 'ia', 'it', 'ja', 'kl', 'ko', 'lv', 'lt', 'lb', 'mk', 'ms', 'ml', 'mn', 'se', 'no', 'nn', 'fa', 'pl', 'pt', 'ps', 'ro', 'ru', 'sc', 'sr', 'si', 'sk', 'sl', 'es', 'sv', 'ta', 'tt', 'te', 'th', 'tn', 'tr', 'tw', 'uk', 'ur', 'vi', 'cy', 'zu', 'zh-tw', 'cn', 'zh-cn'],
+            locale = appCtxt.get(ZmSetting.LOCALE_NAME),
+            tinyMCELocale = locale.toLowerCase().replace("_", "-");
+
+        if (tinyMCELocale === "zh-hk") {//setting chinese language for Hong kong chinese
+            ZmAdvancedHtmlEditor.LOCALE = "zh";
+        }
+        else if (AjxUtil.arrayContains(tinyMCELocaleArray, tinyMCELocale, true)) {
+            ZmAdvancedHtmlEditor.LOCALE = tinyMCELocale;
+        }
 		var callback = new AjxCallback(this, this.initEditorManager, [id, content]);
         AjxDispatcher.require(["TinyMCE"], true, callback);
 	} else {
@@ -504,6 +516,9 @@ function(id, content) {
         if (obj._onTinyMCEEditorInitcallback) {
 		    obj._onTinyMCEEditorInitcallback.run();
         }
+        if (tinymce.settings && tinymce.settings.language_load === false){
+            tinymce.settings.language_load = true;
+        }
         (ed.windowManager) && ed.windowManager.onOpen.add(ZmAdvancedHtmlEditor.onPopupOpen);
 	};
 
@@ -565,6 +580,8 @@ function(id, content) {
         height: "auto",
         table_default_cellpadding : 3,
         table_default_border: 1,
+        language : ZmAdvancedHtmlEditor.LOCALE,
+        language_load : (ZmAdvancedHtmlEditor.LOCALE === "en") ? false : true,
 		setup : function(ed) {
 			ed.onLoadContent.add(handleContentLoad);
             ed.onPostRender.add(obj.onPostRender.bind(obj));

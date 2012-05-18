@@ -449,4 +449,13 @@ Zmeditor_template.getFontSize = function(value){
             }
         }
     });
+
+    var scriptLoader = tinymce.ScriptLoader,
+        locale;
+    if (scriptLoader && scriptLoader.load && typeof ZmAdvancedHtmlEditor !== "undefined") {
+        locale = ZmAdvancedHtmlEditor.LOCALE;
+        if (locale && locale !== "en") {
+            scriptLoader.load('../js/ajax/3rdparty/tinymce/themes/advanced/langs/' + locale +'.js');
+        }
+    }
 }(tinymce));

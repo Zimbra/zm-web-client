@@ -274,6 +274,21 @@
             }
         };
 
+        //Refer http://www.tinymce.com/i18n/index.php?ctrl=lang&act=download&pr_id=1
+        var tinyMCELocaleArray = ['sq', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'nb', 'bs', 'br', 'bg', 'my', 'ca', 'km', 'ch', 'zh', 'hr', 'cs', 'da', 'dv', 'nl', 'en', 'eo', 'et', 'fi', 'fr', 'gl', 'ka', 'de', 'el', 'gu', 'he', 'hi', 'hu', 'is', 'id', 'ia', 'it', 'ja', 'kl', 'ko', 'lv', 'lt', 'lb', 'mk', 'ms', 'ml', 'mn', 'se', 'no', 'nn', 'fa', 'pl', 'pt', 'ps', 'ro', 'ru', 'sc', 'sr', 'si', 'sk', 'sl', 'es', 'sv', 'ta', 'tt', 'te', 'th', 'tn', 'tr', 'tw', 'uk', 'ur', 'vi', 'cy', 'zu', 'zh-tw', 'cn', 'zh-cn'],
+                locale = "${mailbox.prefs.locale}",
+                tinyMCELocale;
+
+        if (locale) {
+            tinyMCELocale = locale.toLowerCase().replace("_", "-");
+            if (tinyMCELocale === "zh-hk") {//setting chinese language for Hong kong chinese
+                locale = "zh";
+            }
+            else if (tinymce.inArray(tinyMCELocaleArray, tinyMCELocale) !== -1) {
+                locale = tinyMCELocale;
+            }
+        }
+
         var tinyMCEInitObj = {
             mode : "none",
             height : "200px",
@@ -297,6 +312,7 @@
             table_default_cellpadding : 3,
             table_default_border: 1,
             content_css : false,
+            language : locale || "en",
             setup : function(ed) {
                 ed.onInit.add(onTinyMCEEditorInit);
                 ed.onLoadContent.add(handleContentLoad);
