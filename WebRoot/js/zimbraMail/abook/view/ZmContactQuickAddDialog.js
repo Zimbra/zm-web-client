@@ -39,7 +39,7 @@ function() {
 	var addrBooks = this._getAddressBooks();
 	var options = [];
 	for (var i=0; i<addrBooks.length; i++) {
-		options.push({id: "ADDRBOOK_" + addrBooks[i].nId, value: addrBooks[i].nId, label: addrBooks[i].name});	
+		options.push({id: "ADDRBOOK_" + addrBooks[i].nId, value: addrBooks[i].nId, label: addrBooks[i].name});
 	}
 	var params = {};
 	params.parent = this;
@@ -110,6 +110,11 @@ ZmContactQuickAddDialog.prototype._getAddressBooks =
 function() {
 	var folderTree = appCtxt.getFolderTree();
 	var addrBooks = folderTree.getByType(ZmOrganizer.ADDRBOOK);
+	for (var i=0; i<addrBooks.length; i++) {
+		if (addrBooks[i].isReadOnly()) {
+			addrBooks.splice(i,1); //if addrBook is read only do not add it to list
+		}
+	}
 	return addrBooks;
 };
 
