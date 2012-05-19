@@ -7,7 +7,7 @@
 		<$ } $>
 	</div>
 
-	<table align='center' class='ZPropertySheet'>
+	<table align='center' class='ZPropertySheet' cellspacing='6'>
 		<$
 			for (var propIdx = 0; propIdx < data.fileProperties.length; propIdx++) {
 				var prop = data.fileProperties[propIdx];
@@ -112,7 +112,7 @@
 
 <template id="briefcase.Briefcase#CheckinDialog">
 	<div><$=ZmMsg.checkInFileChoose$></div>
-    <table class='ZPropertySheet' width='400'>
+    <table class='ZPropertySheet' cellspacing='6' width='400'>
 		    <tr>            
 			    <td class="rowLabel"><$=ZmMsg.fileLabel$></td>
                 <td class="rowField">
@@ -151,7 +151,7 @@
                 <td style="background-color:#eee;vertical-align:middle;">
                     <div id='${id}_header' class="PreviewViewHeader">
 
-                        <table width="100%" height="100%" class="ZPropertySheet">
+                        <table width="100%" height="100%" class="ZPropertySheet" cellspacing="6">
                             <tr>
                                 <td width="60px" valign="top">
                                     <div id="${id}_image" class="ImgImageDoc_48">&nbsp;</div>
@@ -221,7 +221,7 @@
 </template>
 
 <template id="briefcase.Briefcase#NameConflictDialog">
-	<table class='ZPropertySheet' width='300'>
+	<table class='ZPropertySheet' cellspacing='6' width='300'>
 		<tr>
 			<td><$=ZmMsg.errorFileAlreadyExistsReplace $></td>
 		</tr>
@@ -236,7 +236,7 @@
 </template>
 
 <template id="briefcase.Briefcase#VersionNotes">
-	<table class='ZPropertySheet' width='300'>
+	<table class='ZPropertySheet' cellspacing='6' width='300'>
 		<tr>
 			<td><$=ZmMsg.notesLabel$></td>
 		</tr>

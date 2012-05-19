@@ -49,7 +49,7 @@
 							<td class="VSep-L">&nbsp;</td>
 							<td class="VSep-R">&nbsp;</td>
 							<td>
-								<table class="ZPropertySheet">
+								<table class="ZPropertySheet" cellspacing="6">
 								<tr>
 									<td><input type="checkbox" id="${id}_FixedLayout" /></td>
 									<td><label for="${id}_FixedLayout"><$= ZmMsg.fixedCellWidth $></label></td>
@@ -123,7 +123,7 @@
 							<td class="VSep-R">&nbsp;</td>
 
 							<td colspan="2" style="padding:2px 0">
-								<table align="center" class="ZPropertySheet">
+								<table align="center" class="ZPropertySheet" cellspacing="6">
 									<tr>
 										<td><input type="checkbox" id="${id}_BorderCollapse" /></td>
 										<td><label for="${id}_BorderCollapse"><$= ZmMsg.collapsedBorders $></label></td>
@@ -387,7 +387,7 @@
 </template>
 
 <template id="share.Dialogs#ZmPromptDialog">
-	<table class='ZPropertySheet'>
+	<table class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<td class='Label' id='${id}_label'/>
 		</tr>
@@ -400,7 +400,7 @@
 </template>
 
 <template id="share.Dialogs#ZmPromptDialog">
-	<table class='ZPropertySheet'>
+	<table class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<td class='Label'><$= ZmMsg.tagName $>:</td>
 			<$ if (appCtxt.multiAccounts) { $>
@@ -419,7 +419,7 @@
 </template>
 
 <template id="share.Dialogs#ZmContactGroupDialog">
-	<table class='ZPropertySheet'>
+	<table class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<td class='Label'><$= ZmMsg.groupNameLabel $>:</td>
 		</tr>
@@ -432,7 +432,7 @@
 </template>
 
 <template id="share.Dialogs#ZmTimezonePicker">
-	<table class='ZPropertySheet'>
+	<table class='ZPropertySheet' cellspacing='6'>
 	    <tr>
 			<td colspan='2' class='Label'><$= ZmMsg.selectTimezoneInfo $></td>
 		</tr>
@@ -459,7 +459,7 @@
 </template>
 
 <template id="share.Dialogs#ZmAttachDialog-MyComputerTab-AddAttachment">
-	<table class='ZPropertySheet'>
+	<table class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<td>
 				<div class='attachText'><$= ZmMsg.attach $>:</div>
@@ -479,7 +479,7 @@
 <template id="share.Dialogs#ZmNewOrgDialogRemote">
 	<tr>
 		<td colspan=2>
-			<table class='ZPropertySheet'>
+			<table class='ZPropertySheet' cellspacing='6'>
 				<tr valign='center'>
 					<td class='Label'>
 						<input type='checkbox' id='${id}_remote' />
@@ -542,7 +542,7 @@
 <template id="share.Dialogs#ZmNewCalDialogFreeBusy">
 	<tr>
 		<td colspan=2>
-			<table class='ZPropertySheet'>
+			<table class='ZPropertySheet' cellspacing='6'>
 				<tr valign='center'>
 					<td class='Label'><input type='checkbox' id='${id}_excludeFbCheckbox' /></td>
 					<td><label for='${id}_excludeFbCheckbox'> <$= ZmMsg.excludeFromFreeBusy $> </label></td>
@@ -567,7 +567,7 @@
 
 <!-- change password dialog template -->
 <template id="share.Dialogs#ZmPasswordUpdateDialog">
-    <table class='ZPropertySheet'>
+    <table class='ZPropertySheet' cellspacing='6'>
         <tr>
             <td colspan="2" id="${id}_desc">
 
@@ -614,30 +614,30 @@
 <template id='share.Dialogs#DateField'>
 	<input autocomplete='off' style='height:22px;' type='text' size=14 id='${id}' value='${value}'>
 </template>
-        
+
 <template id="share.Dialogs#UploadDialog">
 	<div style='overflow:auto'>
-        <div id="${id}_label" style="margin-bottom:0.5em;"><$=ZmMsg.uploadChoose$></div>
-        <div style="margin-bottom:0.5em;margin-left:1em;">
-            <form accept-charset='utf-8' method='POST' action='<$= data.uri $>' id='${id}_form' enctype='multipart/form-data'>
-                <table id='${id}_table' class='ZPropertySheet'></table>
-            </form>
-        </div>
-        <table class='ZPropertySheet'>
-            <tr id="${id}_actionRow">
-                <td><$= ZmMsg.uploadAction $></td>
-                <td id="${id}_conflict"></td>
-            </tr>
-            <tr>
-                <td colspan="2" id="${id}_notesTD">
-                    <div><$=ZmMsg.notesLabel$></div>
-                    <textarea id="${id}_notes" style="height:80px; width:450px;"></textarea>
-                </td>
-            </tr>
-            <tr><td colspan="2" id="${id}_info"></td></tr>
-            <tr><td colspan="2" id="${id}_msg"></td></tr>
-        </table>                
-	</div>	
+		<div id="${id}_label" style="margin-bottom:0.5em;"><$=ZmMsg.uploadChoose$></div>
+		<div style="margin-bottom:0.5em;margin-left:1em;">
+			<form accept-charset='utf-8' method='POST' action='<$= data.uri $>' id='${id}_form' enctype='multipart/form-data'>
+				<table id='${id}_table' class='ZPropertySheet' cellspacing='6'></table>
+			</form>
+		</div>
+		<table class='ZPropertySheet' cellspacing='6'>
+			<tr id="${id}_actionRow">
+				<td><$= ZmMsg.uploadAction $></td>
+				<td id="${id}_conflict"></td>
+			</tr>
+			<tr>
+				<td colspan="2" id="${id}_notesTD">
+					<div><$=ZmMsg.notesLabel$></div>
+					<textarea id="${id}_notes" style="height:80px; width:450px;"></textarea>
+				</td>
+			</tr>
+			<tr><td colspan="2" id="${id}_info"></td></tr>
+			<tr><td colspan="2" id="${id}_msg"></td></tr>
+		</table>
+	</div>
 </template>
 
 <template id="share.Dialogs#ZmFolderRetentionView">
@@ -659,9 +659,9 @@
             <td>&nbsp;</td>
             <td class='ZmFolderRetentionLabel'><$=ZmMsg.messageRetentionRange$></td>
             <td  class='ZmFolderPolicySelection'>
-                <select id='${id}_keep'      class='ZmFolderPolicySelect'/>
-                <input id='${id}_keepValue' class='ZmFolderPolicyAmountInput' type='text' />
-                <select id='${id}_keepUnit'  class='ZmFolderPolicyUnitSelect' />
+                <select id='${id}_keep'			class='ZmFolderPolicySelect'/>
+                <input id='${id}_keepValue'		class='ZmFolderPolicyAmountInput' type='text' />
+                <select id='${id}_keepUnit'		class='ZmFolderPolicyUnitSelect' />
             </td>
         </tr>
         <tr><td colspan=3>&nbsp;</td></tr>
@@ -681,9 +681,9 @@
             <td>&nbsp;</td>
             <td class='ZmFolderRetentionLabel'><$=ZmMsg.messageDisposalThreshold$></td>
             <td class='ZmFolderPolicySelection'>
-                <select id='${id}_purge'      class='ZmFolderPolicySelect'/>
-                <input id='${id}_purgeValue'  class='ZmFolderPolicyAmountInput' type='text' />
-                <select id='${id}_purgeUnit'  class='ZmFolderPolicyUnitSelect' />
+                <select id='${id}_purge'		class='ZmFolderPolicySelect'/>
+                <input id='${id}_purgeValue'	class='ZmFolderPolicyAmountInput' type='text' />
+                <select id='${id}_purgeUnit'	class='ZmFolderPolicyUnitSelect' />
             </td>
         </tr>
         <tr><td colspan=3>&nbsp;</td></tr>

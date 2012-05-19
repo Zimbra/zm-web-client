@@ -1,5 +1,5 @@
 <template id="tasks.Task#TaskDetailsDialog">
-	<table class="ZPropertySheet">
+	<table class="ZPropertySheet" cellspacing="6">
 		<tr valign='center'>
 			<td class='LabelColName'><$= ZmMsg.icsLabel $></td>
 			<td class='LabelColValue'><a href="<$= data.icsUrl $>" target="_blank"><$= data.icsUrl $></a></td>
@@ -8,9 +8,9 @@
 </template>
 
 <template id='tasks.Tasks#ReadOnlyView'>
-    <div class='MsgHeaderTable'>
-    <div class='SubjectCol LabelColValue' style="margin-left:5px;" id='zv__TKV__<$=Dwt.getNextId()$>__su'><$= data.subject $></div>
-	<table id='${id}_hdrTable' class="ZPropertySheet" style="margin-left:5px;">
+	<div class='MsgHeaderTable'>
+	<div class='SubjectCol LabelColValue' style="margin-left:5px;" id='zv__TKV__<$=Dwt.getNextId()$>__su'><$= data.subject $></div>
+	<table id='${id}_hdrTable' class="ZPropertySheet" cellspacing="6" style="margin-left:5px;">
 
 		<$ if (data.location) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.location, val:data.location, id:'__lo'}) $><$ } $>
 		<$ if (data.startDate) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.startDate, val:data.startDate, id:'__sd'}) $><$ } $>
@@ -18,8 +18,8 @@
 		<$ if (data.priority) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.priority, val:data.priority, id:'__pr'}) $><$ } $>
 		<$ if (data.status) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.status, val:data.status, id:'__st'}) $><$ } $>
 		<$ if (data.pComplete) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.completed, val:data.pComplete+'%', id:'__pc'}) $><$ } $>
-        <$ if (data.alarm) { $><$= AjxTemplate.expand("tasks.Tasks#ReminderEntry", {lbl:ZmMsg.reminder, val1:data.remindDate, val2:data.remindTime, id:'__al' }) $><$ } $>
-        
+		<$ if (data.alarm) { $><$= AjxTemplate.expand("tasks.Tasks#ReminderEntry", {lbl:ZmMsg.reminder, val1:data.remindDate, val2:data.remindTime, id:'__al' }) $><$ } $>
+
 		<!-- exception warning -->
 		<$ if (data.isException) { $>
 		<tr valign='center'>

@@ -216,7 +216,7 @@
             <$= AjxStringUtil.htmlEncode(data.normalizedFolderPath) $>
         </div>
         <div style="clear:both;">
-            <table class="ZPropertySheet">
+            <table class="ZPropertySheet" cellspacing="6">
                 <tr valign="top">
                     <th align="right"><$= ZmMsg.ownerLabel $></th>
                     <td><$= AjxStringUtil.htmlEncode(data.normalizedOwnerName) $></td>
@@ -251,7 +251,7 @@
         <div id="${id}_FILTER" tabindex="100"></div>
         <div id="${id}_TREE" tabindex="200"></div>
     </div>
-    <table width="100%" class="ZPropertySheet">
+    <table width="100%" class="ZPropertySheet" cellspacing="6">
         <tr><td><$=ZmMsg.sharedFoldersFindLabel$></td>
             <td><div id="${id}_EMAIL" tabindex="300"></div></td>
             <td><div id="${id}_SEARCH" tabindex="400"></div></td>

@@ -896,6 +896,9 @@
 /* Container of the calendar titlebar (arrows and month label, not DOW labels) */
 .DwtCalendarTitlebar {
 	@MiniCalHeaderBg@
+#IFNDEF MSIE
+	height:1.8em;
+#ENDIF	
 }
 
 /* Arrow buttons in the calendar titlebar in various states */
@@ -937,6 +940,12 @@
     @Text-anchor@
 }
 
+#IFNDEF MSIE
+.DwtCalendarBody {
+	border-collapse:separate;
+}
+#ENDIF
+
 /* Actual day of the month in the calendar in various states */
 .DwtCalendarDay {
 	@MiniCalButton@
@@ -970,13 +979,11 @@
 
 /* hilited because it has appointments */
 .DwtCalendarDay-hilited {
-	@MiniCalButton@
 	@MiniCalDay-hilited@
 }
 
 /* gray because it's not in the current month */
 .DwtCalendarDay-grey {
-	@MiniCalButton@
 	@MiniCalDay-wrongMonth@
 }
 
@@ -1781,7 +1788,7 @@ input.xform_field {
 
 .ZWidgetTable					{	width:100%;	height:100%;}
 
-.ZWidgetIcon					{	width:0px;	height:@SmallIconHeight@;}
+.ZWidgetIcon					{	width:0px;	height:@SmallIconHeight@; overflow:hidden;}
 .ZDisabled .ZWidgetIcon DIV		{ 	@Icon-disabled@	}
 
 .ZWidgetTitle					{ 	height:@SmallIconHeight@;	width:100%;	white-space:nowrap;		}
@@ -1806,6 +1813,11 @@ input.xform_field {
 .ZWidgetTable .ZLeftIcon DIV, .ZWidgetTable .ZLeftIcon IMG	    {	margin:1px 0;			}
 .ZWidgetTable .ZRightIcon DIV, .ZWidgetTable .ZRightIcon IMG	{	margin:1px 0;			}
 .ZWidgetTable .ZDropDown DIV, .ZWidgetTable .ZDropDown IMG		{	margin:1px 0;			}
+
+#IFDEF MSIE
+.ZWidgetTable .ZLeftIcon DIV, .ZWidgetTable .ZLeftIcon IMG	    {	margin-left:4px;		}
+.ZWidgetTable .ZDropDown DIV, .ZWidgetTable .ZDropDown IMG		{	margin-right:4px;		}
+#ENDIF
 
 .ZHasText .ZLeftIcon DIV, .ZHasText .ZLeftIcon IMG		{	margin-right:0px !important;	}
 .ZHasText .ZRightIcon DIV, .ZHasText .ZRightIcon IMG	{	margin-left:0px !important;		}

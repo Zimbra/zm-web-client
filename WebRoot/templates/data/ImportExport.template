@@ -14,7 +14,7 @@
 		</table>
 		<table class='ZOptionsSectionTable' width=100%>
 			<tr><td class='ZOptionsSectionMain'>
-				<table width="100%">
+				<table width="100%" cellspacing='6'>
 					<tr><td><div id='${id}_IMPORT_FOLDER' tabindex="100"></div></td></tr>
 					<tr><td>
 						<table align="right">
@@ -36,7 +36,7 @@
 		</table>
 		<table class='ZOptionsSectionTable' width=100%>
 			<tr><td class='ZOptionsSectionMain'>
-				<table width="100%">
+				<table width="100%" cellspacing='6'>
 					<tr><td><div id='${id}_EXPORT_FOLDER' tabindex="300"></div></td></tr>
 					<tr><td>
 						<table align="right">
@@ -51,7 +51,7 @@
 </template>
 
 <template id="data.ImportExport#ImportView" class="ZmImportView">
-	<table class='ZOptionsSectionTable' width=100%>
+	<table width=100% class='ZPropertySheet' cellspacing='6'>
 		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.fileLabel$></td>
 			<td class="ZOptionsField" style='padding-left:0.5em;'>
 				<form id="${id}_FORM" method="POST" enctype="multipart/form-data">
@@ -98,20 +98,19 @@
 </template>
 
 <template id="data.ImportExport#ExportView" class="ZmExportView">
-	<table class='ZOptionsSectionTable' width=100%>
+	<table width=100% class='ZPropertySheet' cellspacing='6'>
 		<$ if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) || appCtxt.get(ZmSetting.CONTACTS_ENABLED)) { $>
 		<tr><td class="ZOptionsLabelTop"><$=ZmMsg.typeLabel$></td>
 			<td class="ZOptionsField">
 				<table>
-					<tr><td><table><tr>
-							<td><div id="${id}_TYPE_TGZ" tabindex="100"></div></td>
-                            <$ if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) { $>
-							    <td><div id="${id}_TYPE_ICS" tabindex="101"></div></td>
-                            <$ } $>
-                            <$ if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) { $>
-							    <td><div id="${id}_TYPE_CSV" tabindex="102"></div></td>
-                            <$ } $>
-						</tr></table></td>
+					<tr>
+						<td><div id="${id}_TYPE_TGZ" tabindex="100"></div></td>
+					<$ if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) { $>
+						<td><div id="${id}_TYPE_ICS" tabindex="101"></div></td>
+					<$ } $>
+					<$ if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) { $>
+						<td><div id="${id}_TYPE_CSV" tabindex="102"></div></td>
+					<$ } $>
 						<td><select id="${id}_SUBTYPE" tabindex="200"></select></td>
 					</tr>
 				</table>
@@ -162,7 +161,7 @@
 </template>
 
 <template id="data.ImportExport#DataTypes">
-	<table>
+	<table class='ZPropertySheet' cellspacing='6'>
 		<$ var count = data.count; $>
 		<$ var rows = count / 3; $>
 		<$ for (var i = 0; i < count; i++) { $>
@@ -189,19 +188,18 @@
 </template>
 
 <template id='data.ImportExport#DatePickers'>
-	<td><table>
+	<td><table><tr>
 		<$= AjxTemplate.expand("#StartDate", data) $>
-		&nbsp;
 		<$= AjxTemplate.expand("#EndDate", data) $>
-	</table></td>
+	</tr></table></td>
 </template>
 
 <template id='data.ImportExport#StartDate'>
-	<td class="quickAddDateFld"><$=ZmMsg.startOn$>&nbsp;<$=AjxTemplate.expand("#DateField",{id:data.id+"_startDateField"})$></td>
-	<td class="miniCalendarButton"><div id='${id}_startMiniCalBtn'/></td>
+	<td><$=ZmMsg.startOn$>&nbsp;<$=AjxTemplate.expand("#DateField",{id:data.id+"_startDateField"})$></td>
+	<td class="miniCalendarButton" style='padding-right:10px;'><div id='${id}_startMiniCalBtn'></div></td>
 </template>
 
 <template id='data.ImportExport#EndDate'>
-        <td class="quickAddDateFld"><$=ZmMsg.endOn$>&nbsp;<$=AjxTemplate.expand("#DateField",{id:data.id+"_endDateField"})$></td>
-        <td class="miniCalendarButton"><div id='${id}_endMiniCalBtn'/></td>
+	<td><$=ZmMsg.endOn$>&nbsp;<$=AjxTemplate.expand("#DateField",{id:data.id+"_endDateField"})$></td>
+	<td class="miniCalendarButton" style='padding-right:10px;'><div id='${id}_endMiniCalBtn'></div></td>
 </template>

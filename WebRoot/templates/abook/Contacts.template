@@ -45,7 +45,7 @@
             <$= AjxTemplate.expand("#ZmEditContactView_headerJobInfo", data) $>
         </td>
         <td class=contactHeaderCell>
-            <table>
+            <table class="ZPropertySheet" cellspacing="6">
             <tr><td><$=ZmMsg.fileAsLabel$></td><td><div id="${id}_FILE_AS" tabindex="400"></div></td></tr>
             <tr><td><$=ZmMsg.locationLabel$></td><td><div id="${id}_FOLDER" tabindex="401"></div></td></tr>
             <$ if (appCtxt.multiAccounts) { $>
@@ -237,7 +237,7 @@
 <!---------------------------- ZmContactSplitView ----------------------------->
 <!----------------------------------------------------------------------------->
 <template id="abook.Contacts#SplitView">
-	<table width=100% height=100% class='ZPropertySheet'>
+	<table width=100% height=100% class='ZPropertySheet' cellspacing='6'>
 		<col width=230></col>
 		<tr>
 			<td id='${id}_alphabetbar'></td>
@@ -340,7 +340,7 @@
 		var imgClassName = contact.isGroup() ? "GroupPerson_48" : "Person_48";
 		var isEdit = data.isEdit;
 	$>
-	<table width=100% class='contactHeaderTable <$= data.contactHdrClass $> ZPropertySheet'>
+	<table width=100% class='contactHeaderTable <$= data.contactHdrClass $> ZPropertySheet' cellspacing='6'>
 		<tr>
 			<$ if (imageUrl) { $>
 				<td valign=bottom width=48 rowspan=2><img src="<$= imageUrl $>" 
@@ -650,7 +650,7 @@
 		</table>
 	<$ } $>
 
-	<table width=98% height=100% class='ZPropertySheet'>
+	<table width=98% height=100% class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<!-- content: left pane -->
 			<td width=50% valign=top>
@@ -662,7 +662,7 @@
 			    <tr>
 			      <td width=50>&nbsp;</td>
                   <td>
-					<table class='ZPropertySheet'>
+					<table class='ZPropertySheet' cellspacing='6'>
 						<$ if (data.detailed) { $>
 						<tr id='${id}_searchNameRow'>
 							<td align=right><$= ZmMsg.nameLabel $></td>
@@ -702,14 +702,14 @@
 				 </tr>
 				 <tr>
 			       <td width=50>
-                    <table width=100% class='ZPropertySheet'>
+                    <table width=100% class='ZPropertySheet' cellspacing='6'>
                         <tr><td id='${id}_addButton'></td></tr>
                         <tr><td id='${id}_addAllButton'></td></tr>
                     </table>   
                    </td>
                    <td>
 					<div class='groupMembers' id='${id}_listView'></div>
-					<table width=100% class='ZPropertySheet'>
+					<table width=100% class='ZPropertySheet' cellspacing='6'>
 						<tr>
 							<td width=100%></td>
 							<td id='${id}_prevButton'></td>
@@ -720,12 +720,12 @@
 				   </tr>
 				   <tr>
 					<td width=50>
-					 <table width=100% class='ZPropertySheet'>
+					 <table width=100% class='ZPropertySheet' cellspacing='6'>
                         <tr><td id='${id}_addNewButton'></td></tr>
                      </table>
                     </td>
                     <td>
-                       <table width=100% class='ZPropertySheet'>
+                       <table width=100% class='ZPropertySheet' cellspacing='6'>
                             <tr>
                                 <td><$=ZmMsg.enterAddrBelow$></td>
                             </tr>
@@ -748,7 +748,7 @@
 <!----------------------------------------------------------------------------->
 <template id="abook.Contacts#ZmAlphabetBar">
 	<center>
-		<table class='AlphabetBarTable' width=80% id='${id}_alphabet'>
+		<table id='${id}_alphabet' width=80% class='AlphabetBarTable' cellspacing='0'>
 			<tr>
 				<$ for (var i = 0; i < data.numLetters; i++) { $>
 					<td _idx='<$= i $>' onclick='ZmContactAlphabetBar.alphabetClicked(this

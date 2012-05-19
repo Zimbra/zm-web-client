@@ -335,6 +335,7 @@ function(displayShares, organizer) {
 	if (displayShares.length) {
 		var table = document.createElement("TABLE");
 		table.className = "ZPropertySheet";
+		table.cellSpacing = "6";
 		for (var i = 0; i < displayShares.length; i++) {
 			var share = displayShares[i];
 			var row = table.insertRow(-1);
@@ -346,7 +347,7 @@ function(displayShares, organizer) {
 			} else if (share.isPublic()) {
 				nameText = ZmMsg.shareWithPublic;
 			} else if (share.isGuest()){
-                nameText = nameText || (share.grantee && share.grantee.id);
+				nameText = nameText || (share.grantee && share.grantee.id);
 			}
 			nameEl.innerHTML = AjxStringUtil.htmlEncode(nameText);
 

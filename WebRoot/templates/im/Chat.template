@@ -79,7 +79,7 @@
 <template id="im.Chat#RosterItemsTooltip">
   <table><tr><td>
 
-    <table class="ZPropertySheet" align="center" width="100%">
+    <table class="ZPropertySheet" cellspacing="6" align="center" width="100%">
       <$
         for (var i = 0, count = data.buddies.length; i < count; i++) {
         var buddy = data.buddies[i];
@@ -262,7 +262,7 @@
 </template>
 
 <template id='im.Chat#ZmNewConferenceRoomDialog'>
-	<table width='360px' class='ZPropertySheet'>
+	<table width='360px' class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<td class="ZmChatDialogField"><$= ZmMsg.imRoomNameLabel $></td>
 			<td class="ZmChatDialogInputCell"><div id="${id}_NAME" tabindex='10'/></td>
@@ -321,7 +321,7 @@
 		<div id='${id}_notLoggedIn' style='display:block'>
 			<$=ZmMsg.imGatewayNotLoggedInHeader $><br>
 			<br>
-			<table class="ZPropertySheet">
+			<table class="ZPropertySheet" cellspacing="6">
 				<tr>
 					<td class="ImYahooLoginLabel"><$=ZmMsg.imScreenNameYahoo $></td>
 					<td class="ImYahooLoginValue"><input type="text" id="${id}_nameField" size="25"/>
@@ -339,7 +339,7 @@
 		</div>
 		<div id='${id}_loggedIn' style='display:block'>
 			<span id="${id}_loggedInHeader"></span><br>
-			<table class="ZPropertySheet">
+			<table class="ZPropertySheet" cellspacing="6">
 				<tr>
 					<td colspan=2 align="right" style="padding-top:3px">
 						<table><tr>
@@ -352,7 +352,7 @@
 		</div>
 		<div id='${id}_disconnected' style='display:block'>
 			<$=ZmMsg.imGatewayDisconnectedHeader $><br>
-			<table class="ZPropertySheet">
+			<table class="ZPropertySheet" cellspacing="6">
 				<tr>
 					<td colspan=2 align="right" style="padding-top:3px">
 						<table><tr>

@@ -85,12 +85,20 @@ FORM {
 .form TD:first-child LABEL 			{ margin-right:20px; 						}
 .form TD 							{ padding-bottom:10px; 						}
 .form INPUT[type='text'], 
-.form INPUT[type='password'] 		{ height:22px; width:235px; border:1px solid @AppC@; }
+.form INPUT[type='password'] 		{ 
+	border:1px solid @AppC@; 
+	height:22px;
+	width:235px;
+#IFDEF MSIE
+	height:18px;
+	padding:0;
+#ENDIF 
+}
 .form INPUT[type='text']:focus, 
 .form INPUT[type='password']:focus 	{ border:1px solid @SelC@; 					}
 .form SELECT 						{ height:22px; width:165px; 				}
 .form .submitTD 					{ text-align:left; 							}
-.form .ZLoginButton					{ float:right; @LoginButton@ 				}
+.form .ZLoginButton					{ @LoginButton@ float:right; font-size:11px;}
 .form HR { 
 	border-color:transparent transparent @LoginLabelColor@; 
 	height:0;

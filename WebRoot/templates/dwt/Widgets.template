@@ -168,7 +168,7 @@
 
 <template id='dwt.Widgets#ZButton' class='ZWidget'>
 	<$ var buttonClass = data.buttonClass || "Button"; $>
-	<table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' style='table-layout:auto;'>
+	<table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' style='table-layout:auto;' cellspacing='0'>
 		<tr>
 			<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
 			<td id='${id}_title'		class='ZWidgetTitle'></td>
@@ -522,7 +522,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id="dwt.Widgets#DwtFormRows">
-	<table class="ZPropertySheet">
+	<table class="ZPropertySheet" cellspacing="6">
 		<tbody id="${id}_rows" tabindex="100"></tbody>
 	</table>
 </template>
