@@ -754,7 +754,7 @@ function() {
 
 ZmConvReplyView.prototype._moreOptions =
 function() {
-	this._convView._compose({msg:this._msg});
+	this._convView._compose({msg:this._msg, action:this.action});
 	this.reset();
 };
 
