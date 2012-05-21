@@ -103,6 +103,7 @@
 	String extraPackages = getParameter(request, "packages", getAttribute(request, "packages", null));
 	String startApp = getParameter(request, "app", "");
 	String noSplashScreen = getParameter(request, "nss", null);
+	String virtualAcctDomain = getParameter(request, "virtualacctdomain", null);
 	boolean isLeakDetectorOn = getParameter(request, "leak", "0").equals("1");
 
 	String mode = getAttribute(request, "mode", null);
@@ -278,10 +279,20 @@
 <jsp:include page="Boot.jsp"/>
 <script>
 	AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(locale)}";
-
+    var virtualAcctDomain = "<%= (virtualAcctDomain != null) ? virtualAcctDomain : "" %>";
+    function killSplashScreenSwitch() {
+        if (!virtualAcctDomain) {
+            return false;
+        }
+        var splSwitch = document.getElementById("splashScreenSwitchContainer");
+        if (splSwitch) {
+            splSwitch.style.display = 'none';
+        }
+    }
 	function switchToStandardClient() {
 		document.location = appContextPath + "/?client=standard";
 	}
+    killSplashScreenSwitch();
 	<c:set var="enforceMinDisplay" value="${requestScope.authResult.prefs.zimbraPrefAdvancedClientEnforceMinDisplay[0]}"/>
 	<c:if test="${param.client ne 'advanced'}">
 		var enforceMinDisplay = ${enforceMinDisplay ne 'FALSE'};
@@ -439,7 +450,7 @@ for (var pkg in window.AjxTemplateMsg) {
 			settings:settings, batchInfoResponse:batchInfoResponse,
 			offlineMode:${isOfflineMode}, devMode:${isDevMode},
 			protocolMode:protocolMode, httpPort:"<%=httpPort%>", httpsPort:"<%=httpsPort%>",
-			noSplashScreen:noSplashScreen, unitTest:"${unitTest}", preset:"${preset}"
+			noSplashScreen:noSplashScreen, unitTest:"${unitTest}", preset:"${preset}", virtualAcctDomain : virtualAcctDomain
 		};
 		ZmZimbraMail.run(params);
 	}

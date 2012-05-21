@@ -17,7 +17,7 @@
 <fmt:setBundle basename="/messages/ZMsg" var="zmsg" scope="request"/>
 
 <%-- query params to ignore when constructing form port url or redirect url --%>
-<c:set var="ignoredQueryParams" value="loginOp,loginNewPassword,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,zlastserver,client,virtualacctdomain"/>
+<c:set var="ignoredQueryParams" value="loginOp,loginNewPassword,loginConfirmNewPassword,loginErrorCode,username,email,password,zrememberme,zlastserver,client"/>
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
@@ -329,12 +329,6 @@ if (application.getInitParameter("offlineMode") != null)  {
                                 <input type="hidden" name="loginOp" value="login"/>
                     </c:otherwise>
                 </c:choose>
-                <c:if test="${not empty virtualacctdomain}">
-                    <input type="hidden" name="virtualacctdomain" value="${virtualacctdomain}"/>
-                </c:if>
-                <c:if test="${not empty param.virtualacctdomain}">
-                    <input type="hidden" name="virtualacctdomain" value="${param.virtualacctdomain}"/>
-                </c:if>
                 <c:if test="${errorCode != null}">
                     <div id="ZLoginErrorPanel">
                         <table><tr>
