@@ -4174,6 +4174,14 @@ function(msg) {
 	var newAppt = this.newApptObject(new Date(), null, null, msg);
 	newAppt.setProposeTimeMode(true);
 	newAppt.setFromMailMessageInvite(msg);
+    newAppt.invId = msg.invite.getAppointmentId() + "-" + msg.id;
+    var mode = ZmCalItem.MODE_EDIT;
+    newAppt.getDetails(mode, new AjxCallback(this, this.proposeNewTimeContinue, [newAppt, mode]));
+};
+
+ZmCalViewController.prototype.proposeNewTimeContinue =
+function(newAppt, mode) {
+    newAppt.setViewMode(mode);
 	AjxDispatcher.run("GetApptComposeController").proposeNewTime(newAppt);
 };
 

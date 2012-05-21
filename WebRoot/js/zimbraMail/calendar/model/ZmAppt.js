@@ -1235,6 +1235,8 @@ function(callback, errorCallback, viewMode) {
 
 	var soapDoc = AjxSoapDoc.create(this._getSoapForMode(mode, this.isException), "urn:zimbraMail");
 
+    this._addInviteAndCompNum(soapDoc);
+
 	var m = soapDoc.set("m");
 	soapDoc.set("su", ZmMsg.subjectNewTime + ": " + this.name, m);
 
