@@ -204,7 +204,7 @@ function(params) {
 
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this, function() {
 		this.getHtmlEditor().moveCaretToTop(params.extraBodyText ? params.extraBodyText.length : 0);
-	}), 1000);
+	}), 200);
 
 	if (action != ZmOperation.FORWARD_ATT) {
 		this._saveExtraMimeParts();
