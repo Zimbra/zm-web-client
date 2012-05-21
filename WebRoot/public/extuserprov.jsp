@@ -63,11 +63,13 @@
             <form action="/service/extuserprov/" method="post" onsubmit="return checkPasswords();">
 
 		    <div id="ZLoginErrorPanel" style="display:none;">
-                    <table><tr>
+                <table>
+                    <tr>
                         <td><app:img id="ZLoginErrorIcon" altkey='ALT_ERROR' src="dwt/ImgCritical_32.png" /></td>
                         <td id="errorMessage"></td>
-                    </tr></table>
-				    </div>
+                    </tr>
+                </table>
+		    </div>
 			
 
             <table class="form">
@@ -140,7 +142,8 @@
             document.getElementById("errorMessage").innerHTML = bothPassMustMatch;
             isError = true;
         }
-        document.getElementById("ZLoginErrorPanel").style.display = "block";
+        if (isError)
+            document.getElementById("ZLoginErrorPanel").style.display = "block";
         return !isError;
     }
 </script>
