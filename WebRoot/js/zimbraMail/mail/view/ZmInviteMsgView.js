@@ -693,6 +693,7 @@ function() {
 
 	// folder picker
 	this._inviteMoveSelect = new DwtSelect({parent:tb});
+	this._inviteMoveSelect.setVisible(false); //by default hide it. bug 74254
 
 	return tb;
 };
