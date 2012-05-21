@@ -2492,7 +2492,7 @@ function(msg, htmlMode, incWhat) {
 				content = html ? this._htmlToText(html) : "";
 			}
 			content = content || msg.getBodyContent();	// just grab first body part
-			body = getOrig ? AjxStringUtil.getOriginalContent(content, true) : content;
+			body = getOrig ? AjxStringUtil.getOriginalContent(content, false) : content;
 		}
 	}
 
