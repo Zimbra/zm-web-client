@@ -52,7 +52,9 @@ function() {
 ZmFolderPropertyView.prototype.showMe =
 function() {
 	DwtTabViewPage.prototype.showMe.call(this);
-    this._dialog.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, true);
+    if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+        this._dialog.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, true);
+    }
 
 	this.setSize(Dwt.DEFAULT, "200");
     if (Dwt.getVisible(this._nameInputEl)) {
