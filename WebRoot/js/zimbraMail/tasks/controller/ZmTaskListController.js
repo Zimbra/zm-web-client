@@ -827,7 +827,7 @@ function(task) {
     var canEdit = null;
 
     if(folder) {
-        canEdit = folder.id != ZmOrganizer.ID_TRASH && !folder.isReadOnly();
+        canEdit = folder.id != ZmOrganizer.ID_TRASH && !folder.isReadOnly() && !folder.isFeed();
     }
     
     if (!canEdit) {
