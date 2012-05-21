@@ -1002,7 +1002,7 @@ function(params) {
 	if (this._usingIframe) {
 		// bug fix #9475 - IE isnt resolving MsgBody class in iframe so set styles explicitly
 		var inner_styles = AjxEnv.isIE ? ".MsgBody-text, .MsgBody-text * { font: 10pt monospace; }" : "";
-		var params = {
+		var params1 = {
 			parent:					this,
 			parentElement:			params.container,
 			index:					params.index,
@@ -1016,7 +1016,7 @@ function(params) {
 			processHtmlCallback:	callback,
 			useKbMgmt:				true
 		};
-		var ifw = this._ifw = new DwtIframe(params);
+		var ifw = this._ifw = new DwtIframe(params1);
 		if (ifw.initFailed) {
 			AjxDebug.println(AjxDebug.MSG_DISPLAY, "Message display: IFRAME was not ready");
 			appCtxt.setStatusMsg(ZmMsg.messageDisplayProblem);
