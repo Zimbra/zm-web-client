@@ -229,8 +229,6 @@ function(view) {
         if(view != this._getFilterByPref() && !appCtxt.isExternalAccount()) {
             this._setFilterByPref(ZmTaskListController.FILTERBY_SETTING[view]);
         }
-        var btn = this._toolbar[this._currentViewId].getButton(ZmOperation.SORTBY_MENU);
-        btn.setImage(ZmTaskListController.ICON[view]);
 	}
 	var sc = appCtxt.getSearchController();
 	var soapStatus = ZmTaskListController.SOAP_STATUS[view];
@@ -244,12 +242,8 @@ function(view) {
  */
 ZmTaskListController.prototype.getAllowableTaskStatus =
 function() {
-	var tb = this._toolbar && this._toolbar[this._currentViewId];
-	var menu = tb ? tb.getButton(ZmOperation.SORTBY_MENU).getMenu() : null;
-	var mi = menu ? menu.getSelectedItem(DwtMenuItem.RADIO_STYLE) : null;
     var prefFilter = this._getFilterByPref();
-	var id = mi ? mi.getData(ZmOperation.MENUITEM_ID) : ZmTaskListController.FILTERBY_SETTING_ID[prefFilter];
-
+	var id = ZmTaskListController.FILTERBY_SETTING_ID[prefFilter];
 	return ZmTaskListController.SOAP_STATUS[id];
 };
 
@@ -426,8 +420,6 @@ function() {
 			ZmOperation.SEP,
 			ZmOperation.PRINT,
 			ZmOperation.SEP,
-            ZmOperation.SORTBY_MENU,
-            ZmOperation.SEP,
             ZmOperation.MARK_AS_COMPLETED
             );
 	
@@ -468,7 +460,6 @@ function(view) {
 
 	this._setupPrintMenu(view);
     this._setupViewMenu(view);
-	this._setupSortByMenu(view);
 	this._setupMarkAsCompletedMenu(view);
 	
 	this._toolbar[view].getButton(ZmOperation.DELETE).setToolTipContent(ZmMsg.hardDeleteTooltip);
@@ -543,47 +534,19 @@ ZmTaskListController.prototype._setupViewMenu =
 function(view) {
     var btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
     var menu = btn.getMenu();
-    var pref = this._getReadingPanePref();
-
     if (!menu) {
 		menu = new ZmPopupMenu(btn);
 		btn.setMenu(menu);
-		for (var i = 0; i < ZmTaskListController.RP_IDS.length; i++) {
-			var id = ZmTaskListController.RP_IDS[i];
-			var params = {
-				image:ZmTaskListController.READING_PANE_ICON[id],
-				text:ZmTaskListController.READING_PANE_TEXT[id],
-				style:DwtMenuItem.RADIO_STYLE
-			};
-			var mi = menu.createMenuItem(id, params);
-			mi.setData(ZmOperation.MENUITEM_ID, id);
-			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
-			if (id == pref) {
-				mi.setChecked(true, true);
-			}
-		}
-        btn.setImage(ZmTaskListController.READING_PANE_ICON[pref]);
-	}
-};
 
-ZmTaskListController.prototype._setupSortByMenu =
-function(view) {
-	var btn = this._toolbar[view].getButton(ZmOperation.SORTBY_MENU);
-	var menu = btn.getMenu();
-    var pref = this._getFilterByPref();
 
-	if (!menu) {
-		menu = new ZmPopupMenu(btn);
-		btn.setMenu(menu);
-		for (var i = 0; i < ZmTaskListController.SORT_BY.length; i++) {
+        var pref = this._getFilterByPref();
+        for (var i = 0; i < ZmTaskListController.SORT_BY.length; i++) {
 			var id = ZmTaskListController.SORT_BY[i];
-			if (id == ZmId.VIEW_TASK_ALL) {
-				new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
-			}
 			var params = {
 				image:ZmTaskListController.ICON[id],
 				text:ZmMsg[ZmTaskListController.MSG_KEY[id]],
-				style:DwtMenuItem.RADIO_STYLE
+				style:DwtMenuItem.RADIO_STYLE,
+                radioGroupId:"TAKS_FILTER_BY"
 			};
 			var mi = menu.createMenuItem(id, params);
 			mi.setData(ZmOperation.MENUITEM_ID, id);
@@ -592,7 +555,24 @@ function(view) {
             	mi.setChecked(true, true);
 			}
 		}
-		btn.setImage(ZmTaskListController.ICON[ZmTaskListController.FILTERBY_SETTING_ID[pref]]);
+        new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
+        btn.setImage(ZmTaskListController.READING_PANE_ICON[pref]);
+        pref = this._getReadingPanePref();
+        for (var i = 0; i < ZmTaskListController.RP_IDS.length; i++) {
+			var id = ZmTaskListController.RP_IDS[i];
+			var params = {
+				image:ZmTaskListController.READING_PANE_ICON[id],
+				text:ZmTaskListController.READING_PANE_TEXT[id],
+				style:DwtMenuItem.RADIO_STYLE,
+                radioGroupId:"TASKS_READING_PANE"
+			};
+			var mi = menu.createMenuItem(id, params);
+			mi.setData(ZmOperation.MENUITEM_ID, id);
+			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
+			if (id == pref) {
+				mi.setChecked(true, true);
+			}
+		}
 	}
 };
 
@@ -648,7 +628,6 @@ function(parent, num) {
 
 	var printOp = (parent instanceof ZmActionMenu) ? ZmOperation.PRINT_TASK : ZmOperation.PRINT;
 	parent.enable(printOp, num > 0);
-    parent.enable(ZmOperation.SORTBY_MENU, true);
     parent.enable(ZmOperation.VIEW_MENU, true)
     parent.enable(ZmOperation.TEXT, true);
 
