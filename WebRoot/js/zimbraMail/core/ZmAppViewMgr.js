@@ -414,11 +414,12 @@ function(cid, show, comp) {
  * @param {constant}	cid		the component ID
  * @param {boolean}		show	if true, show the component; otherwise hide it
  * @param {boolean}		doFit	if true, fit component to container
+ * @param {object}		comp	if provided, pass this to showComponent, so it does not just look for the cid in the current view (useful for previous view. see ZmAppViewMgr.prototype._setViewVisible)
  */
 ZmAppViewMgr.prototype.displayComponent =
-function(cid, show, doFit) {
+function(cid, show, doFit, comp) {
 	this.showSkinElement(cid, show);
-	this.showComponent(cid, show);
+	this.showComponent(cid, show, comp);
 	if (doFit) {
 		this._fitToContainer(cid);
 	}
@@ -1200,12 +1201,12 @@ function(viewId, show) {
 			var cid = ZmAppViewMgr.ALL_COMPONENTS[i];
 			var oldComp = this.getViewComponent(cid, this._lastViewId);
 			if (oldComp) {
-				this.displayComponent(cid, false);
+				this.displayComponent(cid, false, null, oldComp);
 			}
 			var comp = this.getViewComponent(cid, viewId);
 			if (comp) {
 				if (!this.isHidden(cid, viewId)) {
-					this.displayComponent(cid, true);
+					this.displayComponent(cid, true, null, comp);
 					toFit.push(cid);
 				}
 			}
