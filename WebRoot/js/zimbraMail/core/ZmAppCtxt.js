@@ -822,7 +822,7 @@ function() {
 ZmAppCtxt.prototype.getConfirmationDialog =
 function(id) {
 	if (!this._confirmDialog) {
-		this._confirmDialog = new DwtConfirmDialog(this._shell, null, id);
+		this._confirmDialog = new DwtConfirmDialog(this._shell, null, "CONFIRM_DIALOG");
 	}
 	return this._confirmDialog;
 };
