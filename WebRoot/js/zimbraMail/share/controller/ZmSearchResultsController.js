@@ -188,6 +188,16 @@ function() {
 // runs a search based on the contents of the input
 ZmSearchResultsController.prototype._searchListener =
 function(ev, zimletEvent) {
+
+	// add bubble if needed before running search, but don't let "bubble added" callback trigger a search
+	var toolbar = this._toolbar, element = toolbar && toolbar._searchField.getInputElement();
+	if (element && toolbar._acList) {
+		toolbar._settingSearch = true;
+		toolbar._acList._complete(element);
+		toolbar._settingSearch = false;
+	}
+
+	// run the search
 	var query = this._toolbar.getSearchFieldValue();
 	var params = {
 		ev:							ev,

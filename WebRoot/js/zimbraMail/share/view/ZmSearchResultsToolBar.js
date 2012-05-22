@@ -205,16 +205,3 @@ function(term, skipNotify) {
 		delete this._bubbleId[text];
 	}
 };
-
-// add bubble if Enter was typed, but don't let "bubble added" callback trigger a search
-ZmSearchResultsToolBar.prototype._handleEnterKeyPress =
-function(ev) {
-
-	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
-	if (this._acList && element) {
-		this._settingSearch = true;
-		this._acList._complete(element);
-		this._settingSearch = false;
-	}
-	ZmSearchToolBar.prototype._handleEnterKeyPress.apply(this, arguments);
-};
