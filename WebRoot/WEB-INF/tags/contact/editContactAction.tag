@@ -93,10 +93,13 @@
     <zm:field name="otherFax" value="${param.otherFax}"/>
     <zm:field name="notes" value="${param.notes}"/>
 
-    <c:if test="${not empty param.dlistId and not empty param.dlistType and param.isgroup}">
+    <c:if test="${(not empty param.dlist or not empty param.dlist1) and param.isgroup}">
         <zm:field name="type" value="group"/>
-        <c:forEach var="mem" items="${paramValues.dlistId}" varStatus="status">
+        <c:forEach var="mem" items="${paramValues.dlist}" varStatus="status">
             <zm:member name="${paramValues.dlistType[status.index]}" value="${paramValues.dlistId[status.index]}"/>
+        </c:forEach>
+        <c:forEach var="mem" items="${paramValues.dlist1}" varStatus="status">
+            <zm:member name="${paramValues.dlistType1[status.index]}" value="${paramValues.dlistId1[status.index]}"/>
         </c:forEach>
     </c:if>
 

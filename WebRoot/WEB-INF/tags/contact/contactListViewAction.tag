@@ -40,7 +40,7 @@
             <fmt:message key="noContactGroupName"/>
         </app:status>
     </c:when>
-    <c:when test="${ (zm:actionSet(param, 'actionCreate') or zm:actionSet(param, 'actionModify')) and (param.isgroup and empty fn:trim(param.dlist))}">
+    <c:when test="${ (zm:actionSet(param, 'actionCreate') or zm:actionSet(param, 'actionModify')) and (param.isgroup and empty fn:trim(param.dlist1) and empty fn:trim(param.dlist))}">
         <c:set var="contactError" value="true"/>
         <app:status>
             <fmt:message key="noContactGroupMembers"/>
@@ -76,13 +76,13 @@
     <c:when test="${zm:actionSet(param, 'actionCreate') and not contactError}">
         <zm:checkCrumb crumb="${param.crumb}"/>
         <app:editContactAction id="${param.id}"/>
-        <app:status><fmt:message key="${not empty param.dlist and param.isgroup ? 'contactGroupCreated' :'contactCreated'}"/></app:status>
+        <app:status><fmt:message key="${(not empty param.dlist or not empty param.dlist1) and param.isgroup ? 'contactGroupCreated' :'contactCreated'}"/></app:status>
         <zm:clearSearchCache type="contact"/>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionModify') and not contactError}">
         <zm:checkCrumb crumb="${param.crumb}"/>
         <app:editContactAction id="${param.id}"/>
-        <app:status><fmt:message key="${not empty param.dlist and param.isgroup ? 'contactGroupModified' :'contactModified'}"/></app:status>
+        <app:status><fmt:message key="${(not empty param.dlist or not empty param.dlist1) and param.isgroup ? 'contactGroupModified' :'contactModified'}"/></app:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionCancelCreate')}">
         <app:status style="Warning"><fmt:message key="contactCancelCreate"/></app:status>
