@@ -188,7 +188,6 @@ function(op, params) {
 	switch (op) {
 		case ZmOperation.NEW_TASK: {
             params = params || {};
-            params.folderId = params.folderId || this.getTaskListController()._folderId;
 			var loadCallback = new AjxCallback(this, this._handleLoadNewTask, [params]);
 			AjxDispatcher.require(["TasksCore", "Tasks"], false, loadCallback, null, true);
 			break;
@@ -203,6 +202,7 @@ function(op, params) {
 
 ZmTasksApp.prototype._handleLoadNewTask =
 function(params) {
+	params.folderId = params.folderId || this.getTaskListController()._folderId;
 	AjxDispatcher.run("GetTaskController").show((new ZmTask(null, null, params && params.folderId)));
 };
 
