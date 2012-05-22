@@ -330,7 +330,7 @@ function(parent, num) {
 	//Checkout
 	op = parent.getOp(ZmOperation.CHECKOUT);
 	if (op) {
-		var checkoutEnabled = !isReadOnly && !hasLocked && !isRevisionSelected;
+		var checkoutEnabled = !isReadOnly && !hasLocked && !isRevisionSelected && !isFolderSelected;
 		op.setVisible(!isOldRevision && !isLocked);
 		parent.enable(ZmOperation.CHECKOUT, checkoutEnabled);
 	}
