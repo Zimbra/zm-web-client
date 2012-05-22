@@ -419,14 +419,10 @@ function(calItem, mode, firstTime) {
 
     this._resetReminders();
 
-	// if first time reset'ing, delay saving form value since all widgets
-	// (i.e. html editor) may not have finished initializing yet.
-    if (firstTime || this._notesHtmlModeFirstTime) {   // Also, handling HTML mode specially as it takes some time to initialize.
-		var ta = new AjxTimedAction(this, this._finishReset);
-		AjxTimedAction.scheduleAction(ta, 500);
-	} else {
-		this._finishReset();
-	}
+    // Delay of 500ms to call the finishReset
+    // It should be called only when all the items are loaded properly including the scheduler
+    var ta = new AjxTimedAction(this, this._finishReset);
+    AjxTimedAction.scheduleAction(ta, 500);
 };
 
 ZmCalItemEditView.prototype._resetReminders = function() {
