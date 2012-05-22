@@ -1768,7 +1768,8 @@ function() {
 	if (readCell) {
 		var isExpanded = (this._state == ZmMailMsgCapsuleViewHeader.EXPANDED);
 		var attrs = "id='" + this._readIconId + "' noToggle=1";
-		readCell.innerHTML = AjxImg.getImageHtml(this._msg.getReadIcon(), isExpanded ? null : "display:inline-block", attrs);
+		var iePos = AjxEnv.isIE ? "position: static" : null;
+		readCell.innerHTML = AjxImg.getImageHtml(this._msg.getReadIcon(), isExpanded ? iePos : "display:inline-block", attrs);
 	}
 	var readIcon = document.getElementById(this._readIconId);
 	if (readIcon) {

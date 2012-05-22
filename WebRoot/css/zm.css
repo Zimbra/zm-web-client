@@ -991,6 +991,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	padding:3px;
 }
 
+.Conv2MsgHeader TABLE {
+    border-collapse: separate;
+}
+
 .ZmMailMsgCapsuleView .Link, .Conv2Reply .Link {
 	@FontSize-normal@
 	@Text-link@
