@@ -95,7 +95,7 @@
                            </c:when>
                            <c:otherwise>
                                <c:set var="contactFileAs">
-                                    <app:contactFileAs contact="${contact}"/>)/>
+                                    <app:contactFileAs contact="${contact}"/>
                                </c:set>
                                ${fn:escapeXml(contactFileAs)}
                            </c:otherwise>
