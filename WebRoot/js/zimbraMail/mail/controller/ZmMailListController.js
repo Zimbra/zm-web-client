@@ -988,6 +988,7 @@ ZmMailListController.prototype._doAction =
 function(params) {
 
 	// get msg w/ addrs to select identity from - don't load it yet (no callback)
+	// for special handling of multiple forwarded messages, see _handleResponseDoAction
 	var msg = params.msg || this.getMsg(params);
 	if (!msg) { return; }
 
@@ -1084,6 +1085,9 @@ function(params, msg, finalChoice) {
 			//do as attachments for one conv too, in the case it has more than one message
 			var item = selection[0];
 			forwardAsAttachments = item.type == ZmItem.CONV && item.numMsgs > 1;
+			if (forwardAsAttachments) {
+				params.subjOverride = item.subject; //set the subject to the subject of the conv, since all the messages are from the conv
+			}
 		}
 
 		// reset the action if user is forwarding multiple mail items inline
