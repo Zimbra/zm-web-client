@@ -1689,7 +1689,7 @@ function(msg, container, callback, index) {
 					});
 				}
 
-				if (!content) {
+				if (!content || ZmAdvancedHtmlEditor.isEmpty(content, true)) {
 					content = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: true});
 				}
 
@@ -1720,7 +1720,7 @@ function(msg, container, callback, index) {
 					}
 
 					var isTextMsg = true;
-					if (!content) {
+					if (!content || ZmAdvancedHtmlEditor.isEmpty(content, false)) {
 						content = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: false});
 						isTextMsg = false; //To make sure we display html content properly
 					}

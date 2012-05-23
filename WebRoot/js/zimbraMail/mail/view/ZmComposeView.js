@@ -835,7 +835,8 @@ function(msg, isDraft, bodyContent) {
 		}
 	}
 
-	// store text-content of the current email
+	// store text-content of the current email for zimlets to work with
+	// TODO: zimlets are being lazy here, and text content could be large; zimlets should get content from parts
 	msg.textBodyContent = this.isHidden ? textContent : (this._composeMode == DwtHtmlEditor.HTML)
 		? this._htmlEditor.getTextVersion()
 		: this._htmlEditor.getContent();

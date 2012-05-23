@@ -134,6 +134,12 @@ ZmAdvancedHtmlEditor.prototype.getTextVersion = function (convertor, keepModeDiv
         : this.getContentField().value;
 };
 
+/**
+ * Returns the content of the editor.
+ * 
+ * @param {boolean}		insertFontStyle		if true, add surrounding DIV with font settings
+ * @param {boolean}		onlyInnerContent	if true, do not surround with HTML and BODY
+ */
 ZmAdvancedHtmlEditor.prototype.getContent =
 function(insertFontStyle, onlyInnerContent) {
 
@@ -141,81 +147,91 @@ function(insertFontStyle, onlyInnerContent) {
     
 	var field = this.getContentField();
 
+	var content = "";
 	if (this._mode == DwtHtmlEditor.HTML) {
 		var editor = this.getEditor();
         var params = {};
         params.format ='raw';
-		var content = editor ? editor.getContent(params) : (field.value || "");
-        if(content == '<br mce_bogus="1">' || content == '<br mce_bogus="1"/>') {
-            content = '';
-        }        
-		content = this._embedHtmlContent(content, insertFontStyle, onlyInnerContent);
-		return content;
+		var content1 = editor ? editor.getContent(params) : (field.value || "");
+		if (/\S+/.test(AjxStringUtil.convertHtml2Text(content1))) {
+			content = this._embedHtmlContent(content1, insertFontStyle, onlyInnerContent);
+		}
+	}
+	else {
+		if (/\S+/.test(AjxStringUtil.convertHtml2Text(field.value))) {
+			content = field.value;
+		}
 	}
 
-	return field.value;
+	return content;
 };
 
 ZmAdvancedHtmlEditor.prototype._embedHtmlContent =
 function(html, insertFontStyle, onlyInnerContent) {
-	if (!insertFontStyle && !onlyInnerContent) {
-		return [ "<html><body>", html, "</body></html>" ].join("");
-	}
 
-	if (onlyInnerContent) {
-		var cont = [];
-		var idx = 0;
-
-		if (insertFontStyle) {
-			cont[idx++] = "<div";
-			cont[idx++] = " style='font-family:";
-			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
-			cont[idx++] = "; font-size: ";
-			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
-			cont[idx++] = "; color: ";
-			cont[idx++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
-            cont[idx++] = ";' ";
-            if ( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){ //Default compose direction is ltr no need to specify direction as ltr
-                cont[idx++] = "dir='"+ZmSetting.RTL+"' ";
-            }
-            cont[idx++] = ">";
-			cont[idx++] = html;
-			cont[idx++] = "</div>";
-		} else {
-			cont[idx++] = html;
-		}
-
-		return cont.join("");
-	}
-
+	html = html || "";
 	if (insertFontStyle) {
 		html = ZmAdvancedHtmlEditor._getFontStyle(html);
 	}
-	return [
-		"<html><body>",
-		html,
-		"</body></html>"
-	].join("");
+	return onlyInnerContent ? html : [ "<html><body>", html, "</body></html>" ].join("");
 };
 ZmAdvancedHtmlEditor._embedHtmlContent = ZmAdvancedHtmlEditor.prototype._embedHtmlContent;
 
 ZmAdvancedHtmlEditor._getFontStyle =
 function(html) {
+	return ZmAdvancedHtmlEditor._getFontStylePrefix() + html + ZmAdvancedHtmlEditor._getFontStyleSuffix();
+};
+
+ZmAdvancedHtmlEditor._getFontStylePrefix =
+function() {
 	var a = [], i = 0;
-	a[i++] = "<div style='font-family: ";
+	a[i++] = '<div style="font-family: ';
 	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
-	a[i++] = "; font-size: ";
+	a[i++] = '; font-size: ';
 	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
-	a[i++] = "; color: ";
+	a[i++] = '; color: ';
 	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
-	a[i++] = "' ";
-    if( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){
-        a[i++] = "dir='"+ZmSetting.RTL+"' ";
+	a[i++] = '"';
+    if (appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL) {
+        a[i++] = ' dir="' + ZmSetting.RTL + '"';
     }
     a[i++] = ">";
-	a[i++] = html;
-	a[i++] = "</div>";
 	return a.join("");
+};
+
+ZmAdvancedHtmlEditor._getFontStyleSuffix =
+function() {
+	return "</div>";
+};
+
+/**
+ * Returns true if the given content is considered empty. For text, that means it is all whitespace.
+ * For HTML, we strip any wrapper HTML that we recognize as our own (eg font style), then convert
+ * it to text to see if it is whitespace.
+ * 
+ * @param {string}		content		content to check
+ * @param {boolean}		isHtml		if true, content is HTML
+ * 
+ * @return {boolean}	true if content is empty
+ */
+ZmAdvancedHtmlEditor.isEmpty =
+function(content, isHtml) {
+
+	if (!content) {
+		return true;
+	}
+	
+	var test = content;
+	if (isHtml) {
+		test = test.toLowerCase().replace(/^<html><body>/, "").replace(/<\/body><\/html>$/, "");
+		var fontPrefix = ZmAdvancedHtmlEditor._getFontStylePrefix(), fontSuffix = ZmAdvancedHtmlEditor._getFontStyleSuffix();
+		if (test.indexOf(fontPrefix) == 0) {
+			test = test.replace(fontPrefix, "").replace(new RegExp(fontSuffix + "$"), "");
+		}
+		test = AjxStringUtil.convertHtml2Text(test);
+	}
+	
+	return (!/\S+/.test(test));
 };
 
 /*
