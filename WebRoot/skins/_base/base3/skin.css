@@ -510,7 +510,7 @@ SELECT						{	@FieldBorder@	}
 
 .AlphabetBarTable .DwtButton, 
 .AlphabetBarTable .DwtButton-hover,
-.AlphabetBarTable .DwtButton-active	{ @NoRoundCorners@ @NoShadow@		}
+.AlphabetBarTable .DwtButton-active	{ @NoRoundCorners@ @NoShadow@ border-color:@ButtonBorderColor@;	}
 .AlphabetBarTable TD:first-child 	{ @ButtonRoundingLeft@				}
 .AlphabetBarTable TD:last-child		{ @ButtonRoundingRight@				}
 

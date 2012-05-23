@@ -1423,18 +1423,18 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .AlphabetBarTable {
+	@ButtonShadowDefault@
 	border-collapse:separate;
 	margin:5px;
 	table-layout:fixed;
 }
 
 .AlphabetBarCell {
-	text-align:center;
 	@ActiveCursor@
-	border-right-width:1px;
+	text-align:center;
 }
 
-.AlphabetBarCell span {
+.AlphabetBarCell SPAN {
 	width:100%	
 }
 
