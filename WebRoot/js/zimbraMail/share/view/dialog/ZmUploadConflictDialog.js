@@ -262,6 +262,7 @@ function(id, text, handler, object) {
 	element.id = id;
 	element.style.color = "blue";
 	element.style.textDecoration = "underline";
+	element.style.padding = "3px";
 	element.innerHTML = text;
 
 	Dwt.setHandler(element, DwtEvent.ONMOUSEOVER, ZmUploadConflictDialog._handleLinkOver);
