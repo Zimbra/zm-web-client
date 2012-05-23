@@ -289,7 +289,7 @@ function(parent, num) {
 	parent.enable([ZmOperation.NEW_SPREADSHEET, ZmOperation.NEW_PRESENTATION, ZmOperation.NEW_DOC], true);
 	parent.enable([ZmOperation.MOVE, ZmOperation.MOVE_MENU], ( isItemSelected &&  !isReadOnly && !isShared && !isOldRevision));
     parent.enable(ZmOperation.NEW_FILE, !(isTrash || isReadOnly));
-    parent.enable(ZmOperation.NEW_BRIEFCASE_WIN, (isItemSelected && !isFolderSelected));
+    parent.enable(ZmOperation.NEW_BRIEFCASE_WIN, (isItemSelected && !isFolderSelected && num==1));
 
     var firstItem = items && items[0];
     var isWebDoc = firstItem && !firstItem.isFolder && firstItem.isWebDoc();
