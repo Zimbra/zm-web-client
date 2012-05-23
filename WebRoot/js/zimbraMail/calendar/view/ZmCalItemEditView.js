@@ -628,6 +628,7 @@ function(calItem, mode) {
             notesPart = this.formatContent(notesPart, false);
         }
     }
+    if (isSavedinHTML && notesHtmlPart) notesHtmlPart = AjxStringUtil.defangHtmlContent(notesHtmlPart);
 
     this._notesHtmlEditor.setContent(isSavedinHTML ? notesHtmlPart : notesPart);
 };

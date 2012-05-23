@@ -35,6 +35,7 @@
 		<$ } $>
 		<$ if (data.attachStr) { $><$= AjxTemplate.expand("tasks.Tasks#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr}) $><$ } $>
 	</table>
+    <div id='${_infoBarId}'></div>
 	</div>
 </template>
 

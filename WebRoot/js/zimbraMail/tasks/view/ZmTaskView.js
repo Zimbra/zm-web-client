@@ -97,7 +97,8 @@ function(calItem) {
         remindTime: remindTime,
         alarm: alarm,
 		folder: appCtxt.getTree(ZmOrganizer.TASKS).getById(calItem.folderId),
-		folderLabel: ZmMsg.folder
+		folderLabel: ZmMsg.folder,
+        _infoBarId:this._infoBarId
 	};
 };
 
