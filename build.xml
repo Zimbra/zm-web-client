@@ -1037,7 +1037,7 @@
                     <then>
                         <propertycopy property="jam.template.includes" from="jam.template.${arg}.includes"
                                       override="true" silent="true" />
-                        <var name="jam.templates.excludes" value="**/*_*" />
+                        <var name="jam.template.excludes" value="**/*_*" />
                         <if><isset property="jam.template.${arg}.excludes" />
                             <then>
                                 <propertycopy property="jam.template.excludes" from="jam.template.${arg}.excludes"
