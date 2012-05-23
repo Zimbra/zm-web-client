@@ -515,7 +515,10 @@ function(menu, text, width) {
 	var comboBox = new DwtComboBox({
 				parent:			subMenu,
 				id:		DwtId.makeId(ZmId.WIDGET_COMBOBOX, this._viewId, this.id, ZmAddressSearchFilter.ADDRESS),
-				inputParams:	{size: width}
+				inputParams:	{size: width},
+				maxRows: ZmAddressSearchFilter.NUM_DOMAINS_TO_SHOW,
+				layout:DwtMenu.LAYOUT_SCROLL,
+				autoScroll:true
 			});
 	comboBox.addChangeListener(this._domainChangeListener.bind(this));
 	comboBox.input.addListener(DwtEvent.ONKEYUP, this._keyUpListener.bind(this));
@@ -603,7 +606,6 @@ function(menu, domains) {
 	ZmSearchResultsFilterPanel.domains = domains;
 	this._domainBox = this._addComboBox(menu, ZmMsg.domain, ZmAddressSearchFilter.INPUT_WIDTH);
 	if (domains && domains.length) {
-		domains = domains.slice(0, ZmAddressSearchFilter.NUM_DOMAINS_TO_SHOW - 1);
 		for (var i = 0; i < domains.length; i++) {
 			var domain = domains[i];
 			var addrType = ZmAddressSearchFilter.ADDR[this._searchOp];
