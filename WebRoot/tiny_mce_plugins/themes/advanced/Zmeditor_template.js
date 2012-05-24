@@ -40,10 +40,10 @@ Zmeditor_template = function() {
     "36pt:"48px",
 
     Exact font size mapping
-    "11px":"xx-small",
+    "10px":"xx-small",
     "13px":"x-small",
     "16px":"small",
-    "19px":"medium",
+    "18px":"medium",
     "24px":"large",
     "32px":"x-large",
     "48px":"xx-large",
@@ -65,10 +65,10 @@ Zmeditor_template.getFontSize = function(value){
         else if (value >= 12 && value < 15) {
             return "x-small";
         }
-        else if (value >= 15 && value < 18) {
+        else if (value >= 15 && value < 17) {
             return "small";
         }
-        else if (value >= 18 && value < 23) {
+        else if (value >= 17 && value < 23) {
             return "medium";
         }
         else if (value >= 23 && value < 28) {
@@ -105,7 +105,15 @@ Zmeditor_template.getFontSize = function(value){
             return "xx-large";
         }
     }
-    return value;
+    return ({
+            1 : "xx-small",
+            2 : "x-small",
+            3 : "small",
+            4 : "medium",
+            5 : "large",
+            6 : "x-large",
+            7 : "xx-large"
+        })[value] || value;
 };
 
 (function(tinymce) {
@@ -194,91 +202,45 @@ Zmeditor_template.getFontSize = function(value){
                         cl = n.className;
                 }
 
-                if (ed.dom.is(n, s.theme_advanced_font_selector)) {
-                    if (!fz && n.style.fontSize){
-                        fz = Zmeditor_template.getFontSize(n.style.fontSize);
-                    }
-
-                    if (!fn && n.style.fontFamily){
-                        fn = n.style.fontFamily.replace(/[\"\']+/g, '').replace(/^([^,]+).*/, '$1').toLowerCase();
-                    }
-
-                    if (!fc && n.style.color)
-                        fc = n.style.color;
-
-                    if (!bc && n.style.backgroundColor)
-                        bc = n.style.backgroundColor;
+                if (!fz && (n.style.fontSize || n.size)) {
+                    fz = n.style.fontSize || n.size;
                 }
+                if (!fn && (n.style.fontFamily || n.face)) {
+                    fn = (n.style.fontFamily || n.face).replace(/[\"\']+/g, '').replace(/^([^,]+).*/, '$1').toLowerCase();
+                }
+
+                if (!fc && n.style.color)
+                    fc = n.style.color;
+
+                if (!bc && n.style.backgroundColor)
+                    bc = n.style.backgroundColor;
 
                 return false;
             });
 
-            /* Zimbra Comment Start
+            //select font family
             if (c = cm.get('fontselect')) {
-                c.select(function(v) {
-                    return v.replace(/^([^,]+).*//*, '$1').toLowerCase() == fn;
-                });
-            }
-            Zimbra Comment End */
-
-            if (c = cm.get('fontselect')) {
-
-                /* This line is causing some error in firefox some times
-                    uncaught exception: [Exception... "Component returned failure code: 0x80004001 (NS_ERROR_NOT_IMPLEMENTED) [nsIDOMNSHTMLDocument.queryCommandValue]" nsresult: "0x80004001 (NS_ERROR_NOT_IMPLEMENTED)"
-                if(!fn){
-                    fn = ed.getDoc().queryCommandValue("fontfamily");
-                    if(fn){
-                        fn = fn .replace(/[\"\']+/g, '').replace(/^([^,]+).*//*, '$1').toLowerCase();
-                    }
+                //console.log("sytle font family ::"+fn);
+                //console.log("queryCommandValue :: "+ed.getDoc().queryCommandValue("fontname"));
+                //console.log("Body "+ed.getBody().style.fontFamily);
+                fn = fn || ed.getDoc().queryCommandValue("fontname") || ed.getBody().style.fontFamily;
+                if(fn){
+                    fn = fn .replace(/[\"\']+/g, '').replace(/^([^,]+).*/, '$1').toLowerCase();
                 }
-                */
-
-                // Use computed style
-                if (s.theme_advanced_runtime_fontsize && !fn) {
-                    fn = ed.dom.getStyle(n, 'fontFamily', true);
-                    if(fn){
-                        fn = fn.replace(/[\"\']+/g, '').replace(/^([^,]+).*/, '$1').toLowerCase();
-                    }
-                }
-
                 c.select(function(v) {
                     return v.replace(/^([^,]+).*/, '$1').toLowerCase() == fn;
                 });
             }
 
-            /* Zimbra Comment Start
             // Select font size
             if (c = cm.get('fontsizeselect')) {
-                // Use computed style
-                if (s.theme_advanced_runtime_fontsize && !fz && !cl)
-                    fz = ed.dom.getStyle(n, 'fontSize', true);
-
-                c.select(function(v) {
-                    if (v.fontSize && v.fontSize === fz)
-                        return true;
-
-                    if (v['class'] && v['class'] === cl)
-                        return true;
-                });
-            }
-            Zimbra Comment End*/
-
-            // Select font size
-            if (c = cm.get('fontsizeselect')) {
-
-                /*
-                This line is causing some error in firefox some times
-                uncaught exception: [Exception... "Component returned failure code: 0x80004001 (NS_ERROR_NOT_IMPLEMENTED) [nsIDOMNSHTMLDocument.queryCommandValue]" nsresult: "0x80004001 (NS_ERROR_NOT_IMPLEMENTED)"
-                if(!fz){
-                    fz = Zmeditor_template.FONT_SIZE_MAPPING[ed.getDoc().queryCommandValue("fontsize")];
+                //console.log("sytle font size font size ::"+fz);
+                //console.log("queryCommandValue :: "+ed.getDoc().queryCommandValue("fontSize"));
+                //console.log("Body "+ed.getBody().style.fontSize);
+                fz = fz || ed.getDoc().queryCommandValue("fontsize") || ed.getBody().style.fontSize;
+                if (fz) {
+                    fz = Zmeditor_template.getFontSize(fz);
                 }
-                */
-
-                // Use computed style
-                if (s.theme_advanced_runtime_fontsize && !fz && !cl) {
-                    fz = Zmeditor_template.getFontSize(ed.dom.getStyle(n, 'fontSize', true));
-                }
-
                 c.select(function(v) {
                     if (v.fontSize && v.fontSize === fz)
                         return true;
