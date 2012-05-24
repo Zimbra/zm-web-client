@@ -110,7 +110,7 @@ function() {
 
 ZmVoiceApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp(ZmId.OP_CALL_BACK, {textKey:"callBack", tooltipKey:"callBackTooltip"});
+	ZmOperation.registerOp(ZmId.OP_CALL_BACK, {textKey:"callBack", image:"CallManager", tooltipKey:"callBackTooltip"});
 	ZmOperation.registerOp(ZmId.OP_MARK_HEARD, {textKey:"markAsHeard", image:"MarkAsHeard", shortcut:ZmKeyMap.MARK_HEARD});
 	ZmOperation.registerOp(ZmId.OP_MARK_UNHEARD, {textKey:"markAsUnheard", image:"MarkAsUnheard", shortcut:ZmKeyMap.MARK_UNHEARD});
 	ZmOperation.registerOp(ZmId.OP_VIEW_BY_DATE, {textKey:"viewByDate"});
