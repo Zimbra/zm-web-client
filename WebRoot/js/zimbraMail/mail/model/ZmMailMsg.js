@@ -742,7 +742,7 @@ ZmMailMsg.prototype._handleResponseLoadFail =
 function(params, callback, result) {
 	this._loading = false;
 	if (callback) {
-		callback.run(result);
+		return callback.run(result);
 	}
 };
 

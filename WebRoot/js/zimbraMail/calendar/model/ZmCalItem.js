@@ -1001,6 +1001,14 @@ function(mode, callback, errorCallback, ex) {
 		appCtxt.getAppController().sendRequest(params);
 		return true;
 	}
+	if (ex.code == "account.ACCOUNT_INACTIVE") {
+        var msg = ex.msg ? ex.msg.split(':') : null;
+        var acctEmailId = msg ? msg[1] : '';
+        var msgDlg = appCtxt.getMsgDialog();
+        msgDlg.setMessage(AjxMessageFormat.format(ZmMsg.accountInactiveError, acctEmailId), DwtMessageDialog.CRITICAL_STYLE);
+        msgDlg.popup();
+		return true;
+	}
 	if (errorCallback) {
 		return errorCallback.run(ex);
 	}
