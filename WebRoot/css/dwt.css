@@ -1913,7 +1913,7 @@ input.xform_field {
  *
  ***************/
 
-.ZSelectAutoSizingContainer 		{ overflow:hidden; height:22px; width:auto; }		/* TODO: SIZE ASSUMPTION! */
+.ZSelectAutoSizingContainer					{	height:22px; width:auto;				}		/* TODO: SIZE ASSUMPTION! */
 
 .ZSelect									{	@Select@		@SelectSpacing@			}
 .ZSelect .ZWidgetTitle						{	padding-left:5px; text-align:left;		}
