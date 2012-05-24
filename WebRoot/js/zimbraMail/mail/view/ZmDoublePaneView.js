@@ -361,6 +361,8 @@ function(offset) {
 
 ZmDoublePaneView.prototype._staleHandler =
 function() {
+	return;	// bug 72605 - rerunning search is too disruptive
+
 	var search = this._controller._currentSearch;
 	if (search) {
 		search.lastId = search.lastSortVal = null
