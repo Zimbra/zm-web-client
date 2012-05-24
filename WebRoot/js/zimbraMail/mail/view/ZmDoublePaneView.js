@@ -43,6 +43,7 @@ ZmDoublePaneView = function(params) {
 								   threshold:ZmDoublePaneView.SASH_THRESHOLD, posStyle:Dwt.ABSOLUTE_STYLE});
 	this._horizSash.registerCallback(this._sashCallback, this);
 	this._horizSash.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._sashHorizRelease));
+	this.addListener(DwtEvent.CONTROL, new AjxListener(this, this._controlEventListener));
 
 	this.setReadingPane();
 };
@@ -442,3 +443,22 @@ ZmDoublePaneView.prototype._sashHorizRelease =
 function() {
 	this.setReadingSashPosition(false, this._horizSashY);
 };
+
+ZmDoublePaneView.prototype._controlEventListener =
+function(ev) {
+	//resize can be called multiple times based on the browser so wait till resizing is complete
+	if (ev && (ev.newWidth == ev.requestedWidth) && (ev.newHeight == ev.requestedHeight))  {
+		var readingPaneOnRight = this._controller.isReadingPaneOnRight();
+		//reset the sash values and resize the pane based on settings
+		if (readingPaneOnRight) {
+			this._readingPaneSashVertPos = appCtxt.get(ZmSetting.READING_PANE_SASH_VERTICAL);
+			delete this._vertSashX;
+		} else {
+			this._readingPaneSashHorizPos = appCtxt.get(ZmSetting.READING_PANE_SASH_HORIZONTAL);
+			delete this._horizSashY;
+		}
+		var sz = this.getSize();
+		this._resetSize(sz.x, sz.y, true);
+	}
+};
+
