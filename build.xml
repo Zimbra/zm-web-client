@@ -285,6 +285,15 @@
             <lib file="${client.jarfile}"/>
             <lib dir='${taglib.build.dir}' includes='zimbrataglib.jar'/>
             <lib dir='${server.build.dir}' includes='zimbrastore.jar'/>
+            <lib dir='${common.lib.dir}' includes='gmbal-api-only-*.jar'/>
+            <lib dir='${common.lib.dir}' includes='jaxb-api-*.jar'/>
+            <lib dir='${common.lib.dir}' includes='jaxb-impl-*.jar'/>
+            <lib dir='${common.lib.dir}' includes='jaxws-api-*.jar'/>
+            <lib dir='${common.lib.dir}' includes='jaxws-rt-*.jar'/>
+            <lib dir='${common.lib.dir}' includes='jsr181-api-*.jar'/>
+            <lib dir='${common.lib.dir}' includes='policy-*.jar'/>
+            <lib dir='${common.lib.dir}' includes='stax-ex-*.jar'/>
+            <lib dir='${common.lib.dir}' includes='streambuffer-*.jar'/>
 
             <!-- files from build tree -->
             <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
@@ -332,6 +341,15 @@
             <fileset file="${client.jarfile}" />
             <fileset dir='${taglib.build.dir}' includes='zimbrataglib.jar'/>
             <fileset dir='${server.build.dir}' includes='zimbrastore.jar'/>
+            <fileset dir='${common.lib.dir}' includes='gmbal-api-only-*.jar'/>
+            <fileset dir='${common.lib.dir}' includes='jaxb-api-*.jar'/>
+            <fileset dir='${common.lib.dir}' includes='jaxb-impl-*.jar'/>
+            <fileset dir='${common.lib.dir}' includes='jaxws-api-*.jar'/>
+            <fileset dir='${common.lib.dir}' includes='jaxws-rt-*.jar'/>
+            <fileset dir='${common.lib.dir}' includes='jsr181-api-*.jar'/>
+            <fileset dir='${common.lib.dir}' includes='policy-*.jar'/>
+            <fileset dir='${common.lib.dir}' includes='stax-ex-*.jar'/>
+            <fileset dir='${common.lib.dir}' includes='streambuffer-*.jar'/>
         </copy>
 
         <!-- primary files from source trees -->
