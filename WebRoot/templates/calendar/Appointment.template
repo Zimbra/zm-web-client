@@ -1026,6 +1026,7 @@
 		<$ if (data.attachStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr}) $><$ } $>
 	</table>
 	</div>
+    <div id='${_infoBarId}'></div>
 </template>
 
 <template id="calendar.Appointment#AddEntry">

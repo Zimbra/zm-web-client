@@ -393,7 +393,8 @@ function(calItem) {
 		folderLabel: ZmMsg.calendar,
 		reminderLabel: ZmMsg.reminder,
 		alarm: calItem.alarm,
-		isAppt: true
+		isAppt: true,
+        _infoBarId:this._infoBarId
 	};
 };
 
