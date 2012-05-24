@@ -202,9 +202,7 @@ function(params) {
 		this._setPriority(priority);
 	}
 
-	AjxTimedAction.scheduleAction(new AjxTimedAction(this, function() {
-		this.getHtmlEditor().moveCaretToTop(params.extraBodyText ? params.extraBodyText.length : 0);
-	}), 200);
+	this._moveCaretOnTimer(true, params.extraBodyText ? params.extraBodyText.length : 0);
 
 	if (action != ZmOperation.FORWARD_ATT) {
 		this._saveExtraMimeParts();
@@ -1069,7 +1067,7 @@ function(composeMode, switchPreface, dontReplaceContent) {
 			}
 		}
 		if (!htmlMode) {
-			AjxTimedAction.scheduleAction(new AjxTimedAction(this, function() { this.getHtmlEditor().moveCaretToTop(); }), 200);
+			this._moveCaretOnTimer();
 		}
 	}
 
@@ -1546,7 +1544,7 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 	}
 
 	if (!isHtml) {
-		AjxTimedAction.scheduleAction(new AjxTimedAction(this, function() { this.getHtmlEditor().moveCaretToTop(); }), 200);
+		this._moveCaretOnTimer();
 	}
 
 	if (!donotsetcontent) {
@@ -3828,18 +3826,42 @@ function() {
 	this._controller.inactive = true;
 };
 
-ZmComposeView.prototype._handleEditorEvent = function(ev){
+ZmComposeView.prototype._handleEditorEvent =
+function(ev){
     if( ev.type === "paste" ){
         this._controller._pasteHandler(ev);
     }
     return true;
 };
 
-ZmComposeView.prototype._getIframeDoc = function(){
+ZmComposeView.prototype._getIframeDoc =
+function(){
     var editor = this._htmlEditor;
     if( editor ){
         return editor._getIframeDoc();
     }
+};
+
+/**
+ * Moves the cursor to the beginning of the editor.
+ * 
+ * @param {boolean}		checkContent	if true, only move cursor if content is unchanged during delay
+ * @param {number}		delay			timer delay in ms
+ * @param {number}		offset			number of characters to skip ahead when placing cursor
+ * 
+ * @private
+ */
+ZmComposeView.prototype._moveCaretOnTimer =
+function(checkContent, offset, delay) {
+
+	delay = (delay != undefined) ? delay : 200;
+	var editor = this.getHtmlEditor();
+	var len = editor.getContent().length;
+	AjxTimedAction.scheduleAction(new AjxTimedAction(this, function() {
+		if (editor.getContent().length == len) {
+			editor.moveCaretToTop(offset);
+		}
+	}), delay);
 };
 
 
