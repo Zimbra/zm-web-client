@@ -1146,19 +1146,15 @@ function(msg, container, callback, index) {
 		// invite header
 		bodyEl.insertBefore(this._headerElement.parentNode, bodyEl.firstChild);
 	}
-
-	if (!this._beenHere) {
-		this._addLine();
-	}
 	
 	this._beenHere = true;
 };
 
 ZmMailMsgCapsuleView.prototype._addLine =
 function() {
-	var hr = document.createElement("hr");
-	hr.className = "separator";
-	this.getHtmlElement().appendChild(hr);
+	var div = document.createElement("div");
+	div.className = "separator";
+	this.getHtmlElement().appendChild(div);
 };
 
 ZmMailMsgCapsuleView.prototype._getBodyContent =
