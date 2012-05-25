@@ -530,7 +530,10 @@ function(data) {
 	if (data.name) this.name = data.name;
 	if (data.cr) this.creator = data.cr;
 	if (data.d) this.createDate = new Date(Number(data.d));
-	if (data.md) this.modifyDate = new Date(Number(data.md));
+	if (data.md)	{ //node.md is seconds since epoch
+		var mdMilliSecs = Number(data.md)*1000;
+		this.modifyDate = new Date(mdMilliSecs);
+	}
 	if (data.leb) this.modifier = data.leb;
 	if (data.s) this.size = Number(data.s);
 	if (data.ver) this.version = Number(data.ver);
@@ -641,7 +644,10 @@ function(data){
     if (data.cr)    this.creator = data.cr;
     if (data.cd)    this.createDate = new Date(Number(data.cd));
     if (data.leb)   this.modifier = data.leb;
-    if (data.md)    this.modifyDate = new Date(Number(data.md));
+	if (data.md)	{ //node.md is seconds since epoch
+		var mdMilliSecs = Number(data.md)*1000;
+		this.modifyDate = new Date(mdMilliSecs);
+	}
 	if (data.desc)  this.notes = AjxStringUtil.htmlEncode(data.desc);
 
     this.subject = this.getNotes();
