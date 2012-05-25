@@ -1753,11 +1753,16 @@ function() {
 
 	var msg = this._msg;
 	var classes = [this._normalClass];
+	if (this._state == ZmMailMsgCapsuleViewHeader.EXPANDED) {
+		classes.push("Expanded");
+	}
 	var folder = appCtxt.getById(msg.folderId);
 	if (folder && folder.isInTrash()) {
 		classes.push("Trash");
 	}
-	if (msg.isUnread && !msg.isMute)	{ classes.push("Unread"); }
+	if (msg.isUnread && !msg.isMute) {
+		classes.push("Unread");
+	}
 	this.setClassName(classes.join(" "));
 };
 
