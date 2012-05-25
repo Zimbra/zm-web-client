@@ -45,6 +45,7 @@ ZmMailListView.LAST_ITEM	= -2;
 
 ZmMailListView.SINGLE_COLUMN_SORT = [
 	{field:ZmItem.F_FROM,	msg:"from"		},
+	{field:ZmItem.F_TO,		msg:"to"		},
 	{field:ZmItem.F_SUBJECT,msg:"subject"	},
 	{field:ZmItem.F_SIZE,	msg:"size"		},
 	{field:ZmItem.F_DATE,	msg:"date"		},
@@ -72,6 +73,8 @@ ZmMailListView.SORTBY_HASH[ZmSearch.READ_ASC] = {field:ZmItem.F_READ, msg:"read"
 ZmMailListView.SORTBY_HASH[ZmSearch.READ_DESC] = {field:ZmItem.F_READ, msg:"read"};
 ZmMailListView.SORTBY_HASH[ZmSearch.PRIORITY_ASC] = {field:ZmItem.F_PRIORITY, msg:"priority"};
 ZmMailListView.SORTBY_HASH[ZmSearch.PRIORITY_DESC] = {field:ZmItem.F_PRIORITY, msg:"priority"};
+ZmMailListView.SORTBY_HASH[ZmSearch.RCPT_ASC] = {field:ZmItem.F_TO, msg:"to"};
+ZmMailListView.SORTBY_HASH[ZmSearch.RCPT_DESC] = {field:ZmItem.F_TO, msg:"to"};
 
 
 // Public methods
@@ -525,13 +528,7 @@ function(defaultColumnSort) {
 			colSpan.innerHTML = colLabel;
 		}
 		if (this._colHeaderActionMenu) {
-			if (this._isMultiColumn) {
-				var item = this._colHeaderActionMenu.getItem(headerCol._index);
-				if (item) {
-					item.setText(colLabel);
-				}
-			}
-			else {
+			if (!this._isMultiColumn) {
 				var mi = this._colHeaderActionMenu.getMenuItem(field);
 				if (mi) {
 					mi.setChecked(true, true);
@@ -625,7 +622,7 @@ function() {
 
 	// set the from column name based on query string
 	var headerCol = this._headerHash[ZmItem.F_FROM];
-	if (headerCol) {
+	if (headerCol) { //this means viewing pane on bottom
 		var colLabel = this._isOutboundFolder() ? ZmMsg.to : ZmMsg.from;
         //bug:1108 & 43789#c19 since sort-by-rcpt affects server performance avoid using in convList instead used in outbound folder
         headerCol._sortable = this._isOutboundFolder() ? ZmItem.F_TO :
@@ -884,9 +881,13 @@ function(force) {
 			this._colHeaderActionMenu = this._getSortMenu(this._getSingleColumnSortFields(), defaultSort);
             this._getGroupByActionMenu(this._colHeaderActionMenu);
 		}
-		var mi = this._colHeaderActionMenu.getItemById(ZmItem.F_FROM);
+		var mi = this._colHeaderActionMenu.getMenuItem(ZmItem.F_FROM);
 		if (mi) {
 			mi.setVisible(!this._isOutboundFolder());
+		}
+		mi = this._colHeaderActionMenu.getMenuItem(ZmItem.F_TO);
+		if (mi) {
+			mi.setVisible(this._isOutboundFolder());
 		}
         this._setGroupByCheck();
 		return this._colHeaderActionMenu;
@@ -1325,7 +1326,7 @@ function(ev) {
 ZmMailListView.prototype._sortMenuListener =
 function(ev) {
    var mId = this._bSortAsc ? ZmOperation.OP_SORT_DESC : ZmOperation.OP_SORT_ASC;
-   var mi = this._groupByActionMenu.getItemById(mId);
+   var mi = this._groupByActionMenu.getMenuItem(mId);
    if (mi) {
        mi.setChecked(true, true);
    }

@@ -1116,7 +1116,11 @@ function(force) {
 
 	var menu = ZmMailListView.prototype._getActionMenuForColHeader.apply(this, arguments);
 	if (!this.isMultiColumn()) {
-		var mi = this._colHeaderActionMenu.getItemById(ZmItem.F_FROM);
+		var mi = this._colHeaderActionMenu.getMenuItem(ZmItem.F_FROM);
+		if (mi) {
+			mi.setVisible(false);
+		}
+		mi = this._colHeaderActionMenu.getMenuItem(ZmItem.F_TO);
 		if (mi) {
 			mi.setVisible(false);
 		}
