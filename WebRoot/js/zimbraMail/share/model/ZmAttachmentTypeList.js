@@ -101,23 +101,22 @@ function(callback, result) {
 	}
 };
 
-/*
-
-* Check whether type is from the following list
-* Adobe PDF
-* Microsoft Word (doc, docx)
-* Microsoft Powerpoint
-* Microsoft Excel
-* Email Message
-* HTML
-* Calendar (ical)
-*
-*
-* @param	{String}			attachment type
-* @return	{Boolean}           true if the type in the above list, otherwise false
-*
-*/
-
+/**
+ * Check whether type is from the following list
+ * Adobe PDF
+ * Microsoft Word (doc, docx)
+ * Microsoft Powerpoint
+ * Microsoft Excel
+ * Email Message
+ * HTML
+ * Calendar (ical)
+ *
+ *
+ * @param	{String}			attachment type
+ * @return	{Boolean}           true if the type in the above list, otherwise false
+ *
+ * @private
+ */
 ZmAttachmentTypeList.prototype._isSupportedType  =
 function(type){
 var supportedTypes =  [ZmMimeTable.APP_ADOBE_PDF, ZmMimeTable.APP_MS_WORD,ZmMimeTable.APP_MS_EXCEL,
@@ -127,23 +126,20 @@ var supportedTypes =  [ZmMimeTable.APP_ADOBE_PDF, ZmMimeTable.APP_MS_WORD,ZmMime
     return AjxUtil.arrayContains(supportedTypes, type);
 };
 
-
-/*
-
-* returns group type if type belongs to following group
-*  Text (vcard, csv)
-*  Video (mpeg, mov)
-*  Audio (wav, mp3, etc)
-*  Archive (zip, etc)
-*  Application (any)
-*  Image (bmp, png, gif, tiff, jpg, psd, ai, jpeg)
-
-* @param	{String}	    attachment type
-* @return	{String}	    attachment group if it exits in the above list, otherwise null
-*
-
+/**
+ * Returns group type if type belongs to following group:
+ *  Text (vcard, csv)
+ *  Video (mpeg, mov)
+ *  Audio (wav, mp3, etc)
+ *  Archive (zip, etc)
+ *  Application (any)
+ *  Image (bmp, png, gif, tiff, jpg, psd, ai, jpeg)
+ *
+ * @param	{String}	    attachment type
+ * @return	{String}	    attachment group if it exits in the above list, otherwise null
+ *
+ * @private
  */
-
 ZmAttachmentTypeList.prototype._isSupportedGroup =
 function(type){
     var supportedGroups = [ZmMimeTable.APP,ZmMimeTable.AUDIO,ZmMimeTable.IMG,ZmMimeTable.TEXT,ZmMimeTable.VIDEO ];
@@ -153,43 +149,44 @@ function(type){
 
 };
 
-/*
-
-* Returns set of supported type/group of attachments
-
-* @param	{Array} list of attachment types
-* @return	{Array} Set of types which is an intersection of att and supported types/groups
-
-*/
-
+/**
+ * Returns set of supported type/group of attachments
+ *
+ * @param	{Array} list of attachment types
+ * @return	{Array} Set of types which is an intersection of att and supported types/groups
+ * @private
+ */
 ZmAttachmentTypeList.prototype._organizeTypes =
-function(att){
+function(att) {
 
-var res = [];
+	var res = [];
+	if (!(att && att.length)) {
+		return res;
+	}
 
-   for(var i=0; i<att.length; i++){
-   var type = att[i]._content;
-   var freq = att[i].freq;
-   var skip = true;
-   var groupType = null;
-   if (this._isSupportedType(type)){
-        skip = false;
-   }else if (type = this._isSupportedGroup(type)){
-        skip=false;
-       // Check if group is already in result
-        for (var j=0; j < res.length; j++){
-           if (res[j]. _content === type ){
-              res[j].freq += freq;
-              skip = true;
-              break;
-           }
-         }
-   }
+	for (var i = 0; i < att.length; i++) {
+		var type = att[i]._content;
+		var freq = att[i].freq;
+		var skip = true;
+		var groupType = null;
+		if (this._isSupportedType(type)) {
+			skip = false;
+		} else if (type = this._isSupportedGroup(type)) {
+			skip = false;
+			// Check if group is already in result
+			for (var j=0; j < res.length; j++) {
+				if (res[j]. _content === type ) {
+					res[j].freq += freq;
+					skip = true;
+					break;
+				}
+			}
+		}
+	
+		if (!skip) {
+			res.push({_content: type, freq: freq});
+		}
 
-   if (!skip){
-      res.push({_content: type, freq: freq});
-   }
-
-  }
-    return res;
-}
+	}
+	return res;
+};
