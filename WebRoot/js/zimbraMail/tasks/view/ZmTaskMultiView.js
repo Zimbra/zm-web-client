@@ -316,16 +316,6 @@ function(offset) {
 	return this._taskListView.getLimit(offset);
 };
 
-ZmTaskMultiView.prototype._staleHandler =
-function() {
-	var search = this._controller._currentSearch;
-	if (search) {
-		search.lastId = search.lastSortVal = null
-		search.offset = search.limit = 0;
-		appCtxt.getSearchController().redoSearch(search);
-	}
-};
-
 ZmTaskMultiView.prototype.set =
 function(list, sortField) { 
 	this._taskListView.set(list, sortField);

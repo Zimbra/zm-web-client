@@ -755,13 +755,3 @@ function(text) {
 		this._itemCountText[ZmSetting.RP_BOTTOM].setText(rpr ? "" : text);
 	}
 };
-
-ZmDoublePaneController.prototype._postShowCallback =
-function() {
-
-	ZmMailListController.prototype._postShowCallback.apply(this, arguments);
-	var dpv = this._doublePaneView;
-	if (dpv && dpv.isStale && dpv._staleHandler) {
-		dpv._staleHandler();
-	}
-};

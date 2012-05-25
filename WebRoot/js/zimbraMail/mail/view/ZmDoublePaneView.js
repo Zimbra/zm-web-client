@@ -360,18 +360,6 @@ function(offset) {
 	return this._mailListView.getLimit(offset);
 };
 
-ZmDoublePaneView.prototype._staleHandler =
-function() {
-	return;	// bug 72605 - rerunning search is too disruptive
-
-	var search = this._controller._currentSearch;
-	if (search) {
-		search.lastId = search.lastSortVal = null
-		search.offset = search.limit = 0;
-		appCtxt.getSearchController().redoSearch(search);
-	}
-};
-
 ZmDoublePaneView.prototype.handleRemoveAttachment =
 function(oldMsgId, newMsg) {
 	this._itemView.handleRemoveAttachment(oldMsgId, newMsg);

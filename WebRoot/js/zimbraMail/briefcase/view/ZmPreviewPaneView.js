@@ -322,16 +322,6 @@ function(offset) {
 	return this._detailListView.getLimit(offset);
 };
 
-ZmPreviewPaneView.prototype._staleHandler =
-function() {
-	var search = this._controller._currentSearch;
-	if (search) {
-		search.lastId = search.lastSortVal = null
-		search.offset = search.limit = 0;
-		appCtxt.getSearchController().redoSearch(search);
-	}
-};
-
 ZmPreviewPaneView.prototype.set =
 function(list, sortField) {
 	this._detailListView.set(list, sortField);
