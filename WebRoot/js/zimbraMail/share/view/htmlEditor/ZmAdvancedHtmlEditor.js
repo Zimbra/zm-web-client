@@ -640,7 +640,7 @@ ZmAdvancedHtmlEditor.prototype.onPaste = function(ed, ev) {
                 req.setRequestHeader("Cache-Control", "no-cache");
                 req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
                 req.setRequestHeader("Content-Type", blob.type);
-                req.setRequestHeader("Content-Disposition", 'attachment; filename="' + AjxUtil.convertToEntities(blob.fileName) + '"');//For paste from clipboard filename is undefined
+                req.setRequestHeader("Content-Disposition", 'attachment; filename="' + ev.timeStamp + '"');//For paste from clipboard filename is undefined
                 req.onreadystatechange = function(){
                     if(req.readyState === 4 && req.status === 200) {
                         var resp = eval("["+req.responseText+"]");
