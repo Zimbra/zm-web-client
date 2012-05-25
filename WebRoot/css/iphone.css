@@ -642,7 +642,9 @@ h1, h2, h3, h4, h5, h6 {
 .msg-list-in-conv .cell {
     padding: 2px !important;
 }
-
+.msgwrap {
+    word-wrap: break-word;
+}
 /* TODO: Do we still need these classes?
 .SmlIcnHldr,.Edit {
     width: 16px;

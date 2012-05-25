@@ -167,7 +167,7 @@
 <c:if test="${empty djs or not djs}"><script type="text/javascript">window.currentUrl='<c:url value="${zm:cook(currentUrl)}"><c:param name="ajax" value="true"/></c:url>';
 <mo:handleError><c:import url="/m/mojs${dbg ? '?dev=1':''}"/></mo:handleError></script></c:if>
 <c:set var="calcss" value=",${sessionScope.zms}-cal"/>
-<link href="<c:url value='/css/${sessionScope.zms}${calcss},images.css'/>" type="text/css" rel="stylesheet"/>
+<link href="<c:url value='/css/${sessionScope.zms}${calcss},images.css${not empty param.dev ? "?debug=1" : ""}'/>" type="text/css" rel="stylesheet"/>
 </head>
 <body onorientationchange="updateOrientation()"><c:if test="${dbg}"><!--${ua.userAgent}--></c:if>    
 <div class="container tbl" id="appbar" align="center"><c:set var="appcount" value="1"/>

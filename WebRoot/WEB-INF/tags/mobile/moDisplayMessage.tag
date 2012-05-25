@@ -143,7 +143,7 @@ elem = document.getElementById('inboxUnread'); var unreadCount = ${mailbox.inbox
 <c:if test="${not empty externalImageUrl and (message.externalImageCount gt 0)}">
     <div class='zo_dispimages'><fmt:message key="externalImages"/>&nbsp;<a id="DISPEXTIMG" href="${fn:escapeXml(externalImageUrl)}"><fmt:message key="displayExternalImages"/></a></div>
 </c:if>
-<div id="iframeBody${counter}" class="zo_mv_body">
+<div id="iframeBody${counter}" class="msgwrap">
     <mo:body message="${message}" body="${body}" theBody="${theBody}" mailbox="${mailbox}" counter="${counter}"/>
     <c:set var="bodies" value="${zm:getAdditionalBodies(body,message)}"/>
     <c:if test="${not empty bodies}">
