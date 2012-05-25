@@ -458,9 +458,17 @@ function() {
 		var item = (sel && sel.length) ? sel[0] : null;
 		if (item.type == ZmItem.CONV) {
 			Dwt.setLoadingTime("ZmConv", new Date());
-			var markRead = this._handleMarkRead(item, true);
-			var respCallback = this._handleResponseSetSelectedItem.bind(this, item);
-			item.load({getUnreadOrFirstMsg:true, markRead:markRead}, respCallback);
+			var convParams = {};
+			convParams.markRead = this._handleMarkRead(item, true);
+			if (this.isSearchResults) {
+				convParams.getMatches = true;
+			}
+			else {
+				convParams.getUnreadOrFirstMsg = true;
+				// generalize query so if conv is read we get latest msg and not just latest matching msg
+				convParams.query = "underid:1 AND NOT underid:3 AND NOT underid:4";
+			}
+			item.load(convParams, this._handleResponseSetSelectedItem.bind(this, item));
 		} else {
 			ZmDoublePaneController.prototype._setSelectedItem.apply(this, arguments);
 		}
