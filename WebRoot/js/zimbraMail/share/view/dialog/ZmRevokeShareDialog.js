@@ -64,7 +64,7 @@ function(share) {
 	var isGuestShare = share.isGuest();
 	var isAllShare = share.grantee && (share.grantee.type == ZmShare.TYPE_ALL);
 
-	var params = isPubShare ? ZmMsg.shareWithPublic : isAllShare ? ZmMsg.shareWithAll :
+	var params = isPubShare ? ZmMsg.shareWithPublic : isGuestShare ? share.grantee.id : isAllShare ? ZmMsg.shareWithAll :
 					(share.grantee.name || ZmMsg.userUnknown);
 	this._confirmMsgEl.innerHTML = this._formatter.format(params);
 
