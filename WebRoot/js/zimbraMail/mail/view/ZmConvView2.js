@@ -672,6 +672,7 @@ function(msg, msgView, op) {
 
 	var index = this._convView.getMsgViewIndex(msgView);
 	this.reparentHtmlElement(this._convView._messagesDiv, (index != null) ? index + 1 : index);
+	msgView.addClassName("Reply");
 
 	// Argghhh - it's very messed up that we have to go through a zimlet to create bubbles
 	// Notify only the email zimlet, since other zimlets either hit an error or do something unneeded
@@ -722,6 +723,7 @@ function() {
 	var msgView = this._msg && this._convView._msgViews[this._msg.id];
 	if (msgView) {
 		msgView._resetLinks();
+		msgView.delClassName("Reply");
 	}
 	this.setValue("");
 	this.setVisible(false);
