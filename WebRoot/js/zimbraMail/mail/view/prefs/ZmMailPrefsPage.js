@@ -483,7 +483,7 @@ function(cbox, noDuration, id, evt) {
 
             var calCheckBox = this.getFormObject(ZmSetting.VACATION_CALENDAR_ENABLED);
             calCheckBox.setEnabled((this._durationCheckbox.isSelected() || appCtxt.get(ZmSetting.VACATION_DURATION_ENABLED)) && enabled);
-            calCheckBox.setSelected(enabled && (appCtxt.get(ZmSetting.VACATION_CALENDAR_TYPE).length!=0));
+            calCheckBox.setSelected(enabled && (appCtxt.get(ZmSetting.VACATION_CALENDAR_APPT_ID) != "-1"));
 
             var calendarType = this.getFormObject(ZmSetting.VACATION_CALENDAR_TYPE);
             calendarType.setEnabled(calCheckBox.isSelected() && this._durationCheckbox.isSelected() && enabled);
@@ -599,30 +599,46 @@ function(changed) {
         appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true});
     }
 
+	//if old end date was greater than today then fetch appt id from metadata and delete the old appointment
+	var now = new Date();
+	if (appCtxt.get(ZmSetting.VACATION_CALENDAR_APPT_ID) != "-1" &&
+		this._formatter.parse(ZmPref.dateGMT2Local(this._oldEndDate)) > now)
+	{
+		ZmAppt.loadById(appCtxt.get(ZmSetting.VACATION_CALENDAR_APPT_ID),new AjxCallback(this, this._oooDeleteApptCallback));
+	}
     if (this._durationCheckbox && this._durationCheckbox.isSelected()) {
-        // Generate appt if there was a Date/Time change, or all day flag flipped on.
-        // This would be better implemented as a button - explicit appt creation by the user.
-        var newStartDate = appCtxt.get(ZmSetting.VACATION_FROM);
-        var newEndDate   = appCtxt.get(ZmSetting.VACATION_UNTIL);
-        var allDay = this._allDayCheckbox.isSelected();
-        if ((this._oldStartDate !=  newStartDate) || (this._oldEndDate != newEndDate) ||
-            (this._initialAllDayFlag != allDay)) {
+        //Create calendar appointments for this out of office request.
+	    var calCheckBox = this.getFormObject(ZmSetting.VACATION_CALENDAR_ENABLED);
+	    if (calCheckBox && calCheckBox.isSelected()) {
             var stDate  = this._getPrefDate(ZmSetting.VACATION_FROM);
             var endDate = this._getPrefDate(ZmSetting.VACATION_UNTIL);
+		    var allDay = this._allDayCheckbox.isSelected();
             if (stDate != null && endDate != null) {
                 if (allDay) {
                     // Strip the time of day information - calendar view
                     // creates all-day appt with just day info
                     endDate.setHours(0,0,0,0);
                 }
-                var calController = appCtxt.getApp(ZmApp.CALENDAR).getCalController();
-                calController.createAppointmentFromOOOPref(stDate,endDate, allDay, new AjxCallback(this, this._oooApptCallback));
+	            var calController = appCtxt.getApp(ZmApp.CALENDAR).getCalController();
+	            calController.createAppointmentFromOOOPref(stDate,endDate, allDay, new AjxCallback(this, this._oooApptCallback));
             }
         }
     }
 };
 
-ZmMailPrefsPage.prototype._oooApptCallback = function(){
+ZmMailPrefsPage.prototype._oooDeleteApptCallback = function(appt){
+	if (appt) {
+		var calController = appCtxt.getApp(ZmApp.CALENDAR).getCalController();
+		calController._continueDelete(appt, ZmCalItem.MODE_DELETE);
+		appCtxt.set(ZmSetting.VACATION_CALENDAR_APPT_ID, "-1");
+	}
+};
+
+ZmMailPrefsPage.prototype._oooApptCallback = function(response){
+	//store the appt id as meta data
+	if (response && response.apptId) {
+		appCtxt.set(ZmSetting.VACATION_CALENDAR_APPT_ID, response.apptId);
+	}
     appCtxt.setStatusMsg(ZmMsg.oooStatus);
 }
 
