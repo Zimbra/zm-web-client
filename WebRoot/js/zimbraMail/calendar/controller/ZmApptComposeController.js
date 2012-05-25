@@ -1379,7 +1379,9 @@ function(ev) {
 ZmSimpleApptComposeController = function(container, app, type, sessionId) {
     ZmApptComposeController.apply(this, arguments);
     this._closeCallback = null;
-    // Init the composeView as a filler
+    // Initialize a static/dummy compose view.  It is never actually used
+    // for display (only for the function calls made to it during the save),
+    // so it can be setup here.
     this.initComposeView();
 };
 

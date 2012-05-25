@@ -2532,8 +2532,7 @@ function(isValid, appt, action, closeCallback, errorCallback, cancelCallback) {
                 // Create a compose controller, used for saving the quick add
                 // appt and modifications made via ZmCalColView drag and drop, in
                 // order to trigger permission and resource checks.
-                var params = { controllerClass: "ZmSimpleApptComposeController"};
-                this._simpleComposeController = this._app.getSessionController(params);
+                this._simpleComposeController = this._app.getSimpleApptComposeController();
             }
             this._simpleComposeController.doSimpleSave(appt, action, closeCallback,
                                                        errorCallback, cancelCallback);

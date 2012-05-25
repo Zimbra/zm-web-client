@@ -842,6 +842,12 @@ function(sessionId) {
 									  sessionId:		sessionId});
 };
 
+ZmCalendarApp.prototype.getSimpleApptComposeController =
+function() {
+	AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+	return this.getSessionController({controllerClass:	"ZmSimpleApptComposeController"});
+};
+
 ZmCalendarApp.prototype.getApptViewController =
 function(sessionId) {
 	AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
