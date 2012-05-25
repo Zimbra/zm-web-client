@@ -630,30 +630,41 @@ function(id, content) {
 };
 
 ZmAdvancedHtmlEditor.prototype.onPaste = function(ed, ev) {
-    if (ev.clipboardData) {
-        var items = ev.clipboardData.items;
-        if( items ){
-            var blob = items[0].getAsFile();
-            if( blob ){
-                var req = new XMLHttpRequest();
-                req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
-                req.setRequestHeader("Cache-Control", "no-cache");
-                req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-                req.setRequestHeader("Content-Type", blob.type);
-                req.setRequestHeader("Content-Disposition", 'attachment; filename="' + ev.timeStamp + '"');//For paste from clipboard filename is undefined
-                req.onreadystatechange = function(){
-                    if(req.readyState === 4 && req.status === 200) {
-                        var resp = eval("["+req.responseText+"]");
-                        if(resp.length === 3) {
-                            resp[2].clipboardPaste = true;
-                            var curView = appCtxt.getAppViewMgr().getCurrentView();
-                            curView.getController().saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, resp[2]);
-                        }
-                    }
+    var data = ev.clipboardData,
+        items,
+        blob,
+        req,
+        view;
+
+    if (!data) {
+        return;
+    }
+    items = data.items;
+    if (!items) {
+        return;
+    }
+    view = this.getParent();
+    if (view && view.toString() !== "ZmComposeView") {
+        return;
+    }
+    blob = items[0].getAsFile();
+    if (blob) {
+        req = new XMLHttpRequest();
+        req.open("POST", appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI)+"?fmt=extended,raw", true);
+        req.setRequestHeader("Cache-Control", "no-cache");
+        req.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        req.setRequestHeader("Content-Type", blob.type);
+        req.setRequestHeader("Content-Disposition", 'attachment; filename="' + (blob.fileName ? AjxUtil.convertToEntities(blob.fileName) : ev.timeStamp || new Date().getTime()) + '"');//For paste from clipboard filename is undefined
+        req.onreadystatechange = function(){
+            if(req.readyState === 4 && req.status === 200) {
+                var resp = eval("["+req.responseText+"]");
+                if(resp.length === 3) {
+                    resp[2].clipboardPaste = true;
+                    view.getController().saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, resp[2]);
                 }
-                req.send(blob);
             }
         }
+        req.send(blob);
     }
 };
 

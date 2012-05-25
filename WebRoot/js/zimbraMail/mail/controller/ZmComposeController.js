@@ -2133,27 +2133,6 @@ function(){
     return this._msg;
 };
 
-ZmComposeController.prototype._pasteHandler = function( ev ){
-    var items,blob,controller,responseHandler;
-    if (ev.clipboardData){
-        items = ev.clipboardData.items;
-        if( items ){
-            blob = items[0].getAsFile();
-            if( blob ){
-                controller = this;
-                blob.name = blob.name || ev.timeStamp;//For paste from clipboard filename is undefined so we are using timestamp
-                responseHandler = function( response ){
-                    if( response ){
-                        response.clipboardPaste = true;
-                        controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, response);
-                    }
-                };
-                controller._uploadImage(blob, new AjxCallback(this, responseHandler));
-            }
-        }
-    }
-};
-
 ZmComposeController.prototype._processDataURIImages = function(idoc, callback){
     var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.BlobBuilder;
     if(!BlobBuilder || !idoc || !window.atob){

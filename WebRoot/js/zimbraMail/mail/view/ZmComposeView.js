@@ -2667,15 +2667,9 @@ function(composeMode) {
 		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 		this._bodyField = document.getElementById(this._bodyFieldId);
 	} else {
-        if( AjxEnv.isChrome ){
-            this._isPasteEnabled = true;
-        }
-		this._htmlEditor = new ZmHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode, null, this._isPasteEnabled);
+		this._htmlEditor = new ZmHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode, null);
 		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 		this._bodyField = document.getElementById(this._bodyFieldId);
-        if( this._isPasteEnabled ){
-            this._htmlEditor.addEventCallback( new AjxListener(this, this._handleEditorEvent) );
-        }
 	}
 	this._includedPreface = "";
 
@@ -3824,14 +3818,6 @@ function() {
 ZmComposeView.prototype.deactivate =
 function() {
 	this._controller.inactive = true;
-};
-
-ZmComposeView.prototype._handleEditorEvent =
-function(ev){
-    if( ev.type === "paste" ){
-        this._controller._pasteHandler(ev);
-    }
-    return true;
 };
 
 ZmComposeView.prototype._getIframeDoc =
