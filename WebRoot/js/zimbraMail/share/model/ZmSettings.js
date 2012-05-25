@@ -431,8 +431,8 @@ ZmSettings.prototype.setUserSettings = function(params) {
  */
 ZmSettings.prototype._beginLoadZimlets =
 function(zimlet, prop, sync) {
-    var zimletsCallback = new AjxCallback(this, this._loadZimlets, [zimlet, prop, sync]);
-    AjxDispatcher.require(["Startup2"], false, zimletsCallback);
+	var zimletsCallback = new AjxCallback(this, this._loadZimletPackage, [zimlet, prop, sync]);
+	AjxDispatcher.require(["Startup2"], false, zimletsCallback);
 };
 
 ZmSettings.prototype._loadZimletPackage =
