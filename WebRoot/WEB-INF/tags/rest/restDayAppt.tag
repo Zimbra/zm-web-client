@@ -115,8 +115,8 @@
                         <table border="0" cellspacing="0" cellpadding="0">
                             <tr>
                                 <c:if test="${appt.exception}">
-                                    <td valign='top'>
-                                        <app:img src="calendar/ImgApptException.png" alt="exception"/>
+                                    <td valign='top' class='ImgApptExceptionIndicator'>
+
                                     </td>
                                 </c:if>
                                 <c:if test="${not empty appt.isFlagged}">
@@ -160,8 +160,8 @@
                         <table border="0" cellspacing="0" cellpadding="0">
                             <tr>
                                 <c:if test="${appt.exception}">
-                                    <td valign='top'>
-                                        <app:img src="calendar/ImgApptException.png" alt="exception"/>
+                                    <td valign='top' class='ImgApptExceptionIndicator'>
+
                                     </td>
                                 </c:if>
                                 <c:if test="${not empty appt.isFlagged}">

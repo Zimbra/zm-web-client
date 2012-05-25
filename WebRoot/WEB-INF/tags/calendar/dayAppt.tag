@@ -107,7 +107,7 @@
                         <tr>
                             <c:if test="${appt.exception}">
                                 <td valign='top'>
-                                    <app:img src="calendar/ImgApptException.png" alt="exception"/>
+                                <div width='24' class='ImgApptExceptionIndicator'></div>
                                 </td>
                             </c:if>
                             <c:if test="${not empty appt.tagIds}">
