@@ -1,4 +1,3 @@
-<%@ page session="false" %>
 <%@ page import='java.util.Locale' %>
 <%@ page import="java.util.regex.Pattern" %>
 <%@ page import="java.util.regex.Matcher" %>
@@ -37,6 +36,11 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <meta http-equiv="cache-control" content="no-cache"/>
 <meta http-equiv="Pragma" content="no-cache"/>
+
+<%--bug:74490 The page session = "false" has been removed hence it defaults to true. This is required for getting the mailbox object--%>
+<app:handleError>
+    <zm:getMailbox var="mailbox"/>
+</app:handleError>
 <%!
 	static String getParameter(HttpServletRequest request, String pname, String defValue) {
 		String value = request.getParameter(pname);
@@ -53,7 +57,7 @@
 	if(contextPath.equals("/")) contextPath = "";
 
     String skin = request.getParameter("skin");
-    if (skin == null) {
+    if (skin == null || !mailbox.getAvailableSkins().contains(skin)) {
         skin = application.getInitParameter("zimbraDefaultSkin");
 	}
 	skin = skin.replaceAll("['\"<>&]", "");
