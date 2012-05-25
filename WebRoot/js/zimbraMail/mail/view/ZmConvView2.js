@@ -534,6 +534,10 @@ function(ev) {
 	if (!msg) { return; }
 
 	if (ev.event == ZmEvent.E_CREATE && this._item && (msg.cid == this._item.id) && !msg.isDraft) {
+		var index = ev.getDetail("sortIndex");
+		var replyViewIndex = this.getReplyViewIndex();
+		// bump index by one if reply view comes before it
+		index = (replyViewIndex != -1 && index > replyViewIndex) ? index + 1 : index; 
 		var params = {
 			parent:			this,
 			parentElement:	document.getElementById(this._messagesDivId),
@@ -541,7 +545,7 @@ function(ev) {
 			actionsMenu:	this._actionsMenu,
 			forceCollapse:	true,
 			forceExpand:	msg.isSent,	// trumps forceCollapse
-			index:			ev.getDetail("sortIndex")
+			index:			index
 		}
 		this._renderMessage(msg, params);
 		var msgView = this._msgViews[msg.id];
@@ -593,13 +597,30 @@ function(msg, msgView, op) {
  */
 ZmConvView2.prototype.getMsgViewIndex =
 function(msgView) {
+
 	var el = msgView && msgView.getHtmlElement();
-	for (var i = 0; i < this._messagesDiv.childNodes.length; i++) {
-		if (this._messagesDiv.childNodes[i] == el) {
-			return i;
+	if (msgView && this._messagesDiv) {
+		for (var i = 0; i < this._messagesDiv.childNodes.length; i++) {
+			if (this._messagesDiv.childNodes[i] == el) {
+				return i;
+			}
 		}
 	}
-	return null;
+	return -1;
+};
+
+ZmConvView2.prototype.getReplyViewIndex =
+function(msgView) {
+
+	if (this._messagesDiv && this._replyView) {
+		var children = this._messagesDiv.childNodes;
+		for (var i = 0; i < children.length; i++) {
+			if (children[i].id == this._replyView._htmlElId) {
+				return i;
+			}
+		}
+	}
+	return -1;
 };
 
 ZmConvView2.prototype.getController = function() {
@@ -671,7 +692,8 @@ function(msg, msgView, op) {
 	Dwt.setVisible(this._replyCcDiv, gotCc);
 
 	var index = this._convView.getMsgViewIndex(msgView);
-	this.reparentHtmlElement(this._convView._messagesDiv, (index != null) ? index + 1 : index);
+	index = this._index = (index != -1) ? index + 1 : null;
+	this.reparentHtmlElement(this._convView._messagesDiv, index);
 	msgView.addClassName("Reply");
 
 	// Argghhh - it's very messed up that we have to go through a zimlet to create bubbles
