@@ -72,10 +72,10 @@
 												</td>
 											<$ } else if (useObo) { $>
 												<td id='OBJ_PREFIX_obo_label' class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></td>
-												<td id='OBJ_PREFIX_obo' class='LabelColValue' colspan=10><$= data.obo $></td>
+												<td id='OBJ_PREFIX_obo' colspan=10><$= data.obo $></td>
 											<$ } else if (useBwo) { $>
 												<td id='OBJ_PREFIX_bwo_label' class='LabelColName'><$= ZmMsg.byWayOfLabel $></td>
-												<td id='OBJ_PREFIX_bwo' class='LabelColValue' colspan=10><$= data.bwo $></td>
+												<td id='OBJ_PREFIX_bwo' colspan=10><$= data.bwo $></td>
 											<$ } $>
 										</tr>
 									</table>
