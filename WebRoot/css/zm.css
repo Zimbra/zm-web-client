@@ -1008,15 +1008,22 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .ZmMailMsgCapsuleView .footer {
 	padding:15px 5px 5px;
+/* IE doesn't seem to support the show/hide.  TODO:investigate why */
+#IFNDEF MSIE
 	@transition@: visibility 0s linear .5s, opacity .5s linear 0s;
 	visibility:hidden;
 	opacity:0;
 }
-
 .ZmMailMsgCapsuleView:hover .footer {
 	@transition@-delay:0s;
 	visibility:visible;
 	opacity:1;
+}
+/* always show footer while reply box is open */
+.ZmMailMsgCapsuleView.Reply .footer {
+	visibility:visible;
+	opacity:1;
+#ENDIF
 }
 
 /* the sash next to overview does not need borders or a background color */
