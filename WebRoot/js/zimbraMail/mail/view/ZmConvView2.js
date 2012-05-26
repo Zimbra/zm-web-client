@@ -1554,7 +1554,6 @@ function(ev) {
 ZmMailMsgCapsuleView.prototype._changeFolderName = 
 function(oldFolderId) {
 
-	this._header._setFolderIcon();
 	var msg = this._msg;
 	var folder = appCtxt.getById(msg.folderId);
 	if (folder && (folder.nId == ZmFolder.ID_TRASH || oldFolderId == ZmFolder.ID_TRASH)) {
@@ -1650,7 +1649,6 @@ function(state, force) {
 
 	var folder = appCtxt.getById(msg.folderId);
 	msg.showImages = msg.showImages || (folder && folder.isFeed());
-	this._folderCellId = id + "_folderCell";
 	this._idToAddr = {};
 
 	this._dateCellId = id + "_dateCell";
@@ -1679,28 +1677,8 @@ function(state, force) {
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-collapsed", subs);
 	}
 	else {
-		var folder = this._msg.folderId && appCtxt.getById(this._msg.folderId);
-		if (folder) {
-			var title = this._browserToolTip ? "title='" + folder.getName() + "'" : "";
-			var folderIcon = AjxImg.getImageHtml(folder.getIconWithColor(), null, title);
-			if (ai.addressTypes[0]) {
-				ai.participants[ai.addressTypes[0]].folderIcon = folderIcon;
-				ai.participants[ai.addressTypes[0]].folderCellId = this._folderCellId;
-			}
-			else {
-				ai.addressTypes.push(AjxEmailAddress.TO);
-				ai.participants[AjxEmailAddress.TO] = {
-					prefix:			"",
-					partStr:		"",
-					folderIcon:		folderIcon,
-					folderCellId:	this._folderCellId
-				};
-			}
-		}
-		var hdrTableId = this._msgView._hdrTableId = id + "_hdrTable";
-		
 		subs = {
-			hdrTableId:		hdrTableId,
+			hdrTableId:		this._msgView._hdrTableId = id + "_hdrTable",
 			readCellId:		this._readCellId,
 			sentBy:			ai.sentBy,
 			sentByAddr:		ai.sentByAddr,
@@ -1741,11 +1719,7 @@ function(ev) {
 	if (el && el.id) {
 		var id = el.id;
 		if (!id) { return ""; }
-		if (id == this._folderCellId) {
-			var folder = this._msg.folderId && appCtxt.getById(this._msg.folderId);
-			return folder && folder.getName();
-		}
-		else if (id == this._dateCellId) {
+		if (id == this._dateCellId) {
 			return this._fullDateString;
 		}
 		else {
@@ -1878,15 +1852,5 @@ function(ev) {
 	var msg = ev.dwtObj && ev.dwtObj.parent && ev.dwtObj.parent._msg;
 	if (msg) {
 		AjxDispatcher.run("GetMsgController", msg && msg.nId).show(msg, this._controller, null, true);
-	}
-};
-
-ZmMailMsgCapsuleViewHeader.prototype._setFolderIcon =
-function() {
-	var cell = document.getElementById(this._folderCellId);
-	var folder = this._msg.folderId && appCtxt.getById(this._msg.folderId);
-	if (cell && folder) {
-		AjxImg.setImage(cell, folder.getIconWithColor());
-		cell.title = folder.getName();
 	}
 };
