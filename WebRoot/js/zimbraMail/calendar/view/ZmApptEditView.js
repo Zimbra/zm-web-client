@@ -962,7 +962,6 @@ function(calItem, mode) {
             this._optAttendeesInputField.clear();
         }
         this._attendees[ZmCalBaseItem.PERSON] = new AjxVector();
-        this._attInputField[ZmCalBaseItem.PERSON] = this._isForward ? this._forwardToField : this._attendeesInputField;        
     }
 
 	// set the location attendee(s)
@@ -2574,7 +2573,7 @@ function(type, useException) {
 
 ZmApptEditView.prototype._pickAttendeesInfo =
 function(type, useException) {
-    var attendees;
+    var attendees = new AjxVector();
 
     if(type == ZmCalBaseItem.OPTIONAL_PERSON || type == ZmCalBaseItem.PERSON || type == ZmCalBaseItem.FORWARD) {
         attendees = this.getAttendeesFromString(ZmCalBaseItem.PERSON, this._attInputField[ZmCalBaseItem.PERSON].getValue());
@@ -2594,7 +2593,7 @@ function(type, useException) {
         var value = this._attInputField[type].getValue();        
         attendees = this.getAttendeesFromString(type, value);
     }
-
+    if (!attendees.size()) { return; }
     return this._updateAttendeeFieldValues(type, attendees);
 };
 
