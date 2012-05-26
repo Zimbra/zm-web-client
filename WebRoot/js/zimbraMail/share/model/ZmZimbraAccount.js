@@ -589,7 +589,10 @@ function(callback, errorCallback, batchCmd) {
  */
 ZmZimbraAccount.prototype.saveImplicitPrefs =
 function() {
-
+    var isExternal = this.settings ? this.settings.get(ZmSetting.IS_EXTERNAL) : false;
+    if (isExternal) {
+        return;
+    }
 	var list = [];
 	for (var id in ZmSetting.CHANGED_IMPLICIT) {
 		var setting = this.settings ? this.settings.getSetting(id) : null;

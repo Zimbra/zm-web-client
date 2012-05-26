@@ -286,7 +286,7 @@
         }
         var splSwitch = document.getElementById("splashScreenSwitchContainer");
         if (splSwitch) {
-            splSwitch.style.display = 'none';
+            splSwitch.style.visibility = 'hidden';
         }
     }
 	function switchToStandardClient() {

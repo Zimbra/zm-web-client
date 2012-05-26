@@ -2582,7 +2582,7 @@ function(msgId, msgPartId, parentController) {
 		msgId: msgId,
 		partId: msgPartId,
 		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
-		markRead: true,
+		markRead: appCtxt.isExternalAccount() ? false : true,
 		callback: ZmMailMsgView._detachCallback.bind(null, isRfc822, parentController)
 	};
 	ZmMailMsg.fetchMsg(params);
