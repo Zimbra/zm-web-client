@@ -574,7 +574,7 @@ function(id, content) {
         // General options
 		mode :  (this._mode == DwtHtmlEditor.HTML)? "exact" : "none",
 		elements:  id,
-        plugins : "autolink,advlist,inlinepopups,table,paste,directionality,media",
+        plugins : "advlist,inlinepopups,table,paste,directionality,media" + (AjxEnv.isIE ? "" : ",autolink"),
 		theme : "advanced",
         theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,image,link,unlink",
         theme_advanced_buttons2 : "formatselect,undo,redo,|,removeformat,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,charmap,media",
@@ -597,6 +597,7 @@ function(id, content) {
         table_default_border: 1,
         language : ZmAdvancedHtmlEditor.LOCALE,
         language_load : (ZmAdvancedHtmlEditor.LOCALE === "en") ? false : true,
+        theme_advanced_show_current_color : true,
 		setup : function(ed) {
 			ed.onLoadContent.add(handleContentLoad);
             ed.onPostRender.add(obj.onPostRender.bind(obj));

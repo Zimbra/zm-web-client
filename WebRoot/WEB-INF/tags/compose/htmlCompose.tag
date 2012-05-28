@@ -134,7 +134,7 @@ var myEditor;
             <c:if test="${param.op eq 'reply' or param.op eq 'replyAll'}" >
                 auto_focus : "body",
             </c:if>
-            plugins : "autolink,advlist,inlinepopups,table,paste,directionality,media",
+            plugins : "advlist,inlinepopups,table,paste,directionality,media" + (tinymce.isIE ? "" : ",autolink"),
             theme : "advanced",
             theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,image,link,unlink,|,spellchecker",
             theme_advanced_buttons2 : "formatselect,undo,redo,|,removeformat,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,charmap,media",
@@ -153,6 +153,7 @@ var myEditor;
             table_default_border: 1,
             content_css : false,
             language : locale || "en",
+            theme_advanced_show_current_color : true,
             setup : function(ed) {
                 ed.onInit.add(onTinyMCEEditorInit);
                 ed.onLoadContent.add(handleContentLoad);

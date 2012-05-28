@@ -260,22 +260,26 @@ Zmeditor_template.getFontSize = function(value){
                             c.displayColor(color);
                         }
                     }
-                }
-                updateColor('forecolor', fc);
-                updateColor('backcolor', bc);
-            }
-
-            if (s.theme_advanced_show_current_color) {
-                function updateColor(controlId, color) {
-                    if (c = cm.get(controlId)) {
-                        if (!color)
-                            color = c.settings.default_color;
-                        if (color !== c.value) {
-                            c.displayColor(color);
-                        }
-                    }
                 };
 
+                if (tinymce.isIE) {
+                    if (!fc) {
+                        fc = ed.getDoc().queryCommandValue("forecolor");
+                        if (fc) {
+                            fc = "rgb(" + (fc & 0xFF) + "," + ((fc >> 8) & 0xFF) + "," + ((fc >> 16) & 0xFF) + ")";
+                        }
+                    }
+                    if (!bc) {
+                        bc = ed.getDoc().queryCommandValue("backcolor");
+                        if (bc) {
+                            bc = "rgb(" + (bc & 0xFF) + "," + ((bc >> 8) & 0xFF) + "," + ((bc >> 16) & 0xFF) + ")";
+                        }
+                    }
+                }
+                else {
+                    fc = fc || ed.getDoc().queryCommandValue("forecolor") || ed.getBody().style.color;
+                    bc = bc || ed.getDoc().queryCommandValue("backcolor") || "white";
+                }
                 updateColor('forecolor', fc);
                 updateColor('backcolor', bc);
             }
@@ -420,4 +424,53 @@ Zmeditor_template.getFontSize = function(value){
             scriptLoader.load('../js/ajax/3rdparty/tinymce/themes/advanced/langs/' + locale +'.js');
         }
     }
+    /*
+    tinymce.create('tinymce.plugins.onEditorEvent', {
+        init : function(ed, url) {
+            if (tinymce.isIE) {
+                ed.onPostRender.add(function(ed) {
+                    var doc = ed.getDoc(),
+                        head = doc.getElementsByTagName('head')[0],
+                        style = doc.createElement('style'),
+                        rules = doc.createTextNode('p{margin:0;}');
+
+                    style.type = 'text/css';
+                    if(style.styleSheet)
+                        style.styleSheet.cssText = rules.nodeValue;
+                    else
+                        style.appendChild(rules);
+                    head.appendChild(style);
+                });
+                ed.onBeforeSetContent.add(function(ed, o) {
+                    console && console.log("isDirty ::"+ed.isDirty());
+                    var content = o.content;
+                    //console && console.log("content before ::"+content);
+                    if (content) {
+                        o.content = content.replace(/<br><br>/gi, '<br><div><br></div>');
+                    }
+                    //console && console.log("content after ::"+ o.content);
+                });
+                //Replacing p tag with div tag
+                ed.onGetContent.add(function(ed, o) {
+                    console && console.log("isDirty ::"+ed.isDirty());
+                    if (ed.isDirty()) {
+                        var content = o.content;
+                        //console && console.log("content before ::"+content);
+                        if (content) {
+                            o.content = content.replace(/<p/gi, '<div').replace(/\/p>/gi, '/div>');
+                        }
+                        //console && console.log("content after ::"+ o.content);
+                    }
+                });
+                ed.onKeyDown.add(function(ed, e) {
+                    if (e.keyCode === 13) {
+                        //console && console.log("aaa "+ed.selection.getStart().nodeName);
+                    }
+                });
+            }
+
+        }
+    });
+    // Register plugin
+    tinymce.PluginManager.add('zimbraplugin', tinymce.plugins.onEditorEvent);*/
 }(tinymce));
