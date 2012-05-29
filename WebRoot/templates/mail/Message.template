@@ -760,7 +760,7 @@
 		<table id='${hdrTableId}' class='ZPropertySheet' cellspacing='3'>
 			<tr>
 			<td class='LabelColName'><$= ZmMsg.fromLabel $></td>
-			<td class='LabelColValue'>
+			<td class='LabelColValue' style='white-space:nowrap'>
 				<span>${sentBy}</span>
 				<$ var useObo = data.obo && (data.oboAddr != data.sentByAddr); $>
 				<$ var useBwo = data.bwo && (data.bwoAddr != data.sentByAddr); $>
