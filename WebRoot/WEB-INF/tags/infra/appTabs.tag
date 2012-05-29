@@ -50,7 +50,7 @@
         <c:if test="${mailbox.features.voice}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='voice' ? 'TabSelected' :'TabNormal'}'>
-                <a id='TAB_VOICE' href="<c:url value="/h/search?st=voicemail"/>" <c:if test="${keys}">accesskey="v"</c:if>><span id='tab_ikon_voice'><app:img src="voicemail/ImgVoicemailApp.png" altkey='ALT_APP_CONTACTS'/></span><span><fmt:message
+                <a id='TAB_VOICE' href="<c:url value="/h/search?st=voicemail"/>" <c:if test="${keys}">accesskey="v"</c:if>><span id='tab_ikon_voice'><app:img src="voicemail/ImgVoicemailApp.gif" altkey='ALT_APP_CONTACTS'/></span><span><fmt:message
                         key="voice"/></span></a>
             </td>
             <td class='TabSpacerR'/>
