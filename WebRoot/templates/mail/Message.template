@@ -124,7 +124,7 @@
 
 <template id='mail.Message#MailAttachmentMyComputer'>
 		<form>
-			<input type="file" class="BrowseMyComputerMenuItem" multiple="true" name="files" onchange="window.appCtxt.getCurrentView()._submitMyComputerAttachments(files,this)"
+			<input type="file" title='<$=ZmMsg.uploadNewFile$>' class="BrowseMyComputerMenuItem" multiple="true" name="files" onchange="window.appCtxt.getCurrentView()._submitMyComputerAttachments(files,this)"
 				<$ if (data.inlineFileInputId) { $>
 					id='${inlineFileInputId}'
 				<$ } $>
