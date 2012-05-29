@@ -230,8 +230,8 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_SIZE) {
 	    htmlArr[idx++] = item.isFolder ? ZmMsg.folder : AjxUtil.formatSize(item.size);
 	} else if (field == ZmItem.F_DATE) {
-		if (item.modifyDate) {
-			htmlArr[idx++] = AjxDateUtil.simpleComputeDateStr(item.modifyDate);
+		if (item.modifyDate || item.createDate) {
+			htmlArr[idx++] = AjxDateUtil.simpleComputeDateStr(item.modifyDate ? item.modifyDate : item.createDate);
 		}
 	} else if (field == ZmItem.F_FROM) {
         var creator = item.modifier || item.creator;
