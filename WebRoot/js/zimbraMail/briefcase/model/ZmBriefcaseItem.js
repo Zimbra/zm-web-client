@@ -674,3 +674,15 @@ function(){
    return null; 
 };
 
+/**
+ * Rename the item.
+ *
+ * @param	{String}	newName
+ * @param	{AjxCallback}	callback		the callback
+ * @param	{AjxCallback}	errorCallback	the callback on error
+ * @return	{Object}		the result of the move
+ */
+ZmRevisionItem.prototype.rename =
+function(newName, callback, errorCallback) {
+	return ZmItem.rename(this.parent.id, newName, callback, errorCallback);
+};

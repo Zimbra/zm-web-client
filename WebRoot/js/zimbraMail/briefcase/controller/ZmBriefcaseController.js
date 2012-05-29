@@ -236,7 +236,7 @@ function(parent, num) {
 	var items = this._listView[this._currentViewId].getSelection();
 	var isFolderSelected=false, noOfFolders = 0, isRevisionSelected=false, isBriefcaseItemSelected=false, isMixedSelected=false;
     var isWebDocSelected= false, hasLocked = false, allLocked = true, sameLockOwner=true;
-    var hasHighestRevisionSelected = false;
+    var hasHighestRevisionSelected = false, hasOldRevisionSelected = false;
 	if (items) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
@@ -248,6 +248,9 @@ function(parent, num) {
                 if(item.parent.version == item.version){
                     hasHighestRevisionSelected = true;
                 }
+				else {
+					hasOldRevisionSelected = true;
+				}
             }else{
                 isBriefcaseItemSelected = true;
             }
@@ -281,7 +284,7 @@ function(parent, num) {
     //bug 65351
     // treat the latest revision selection as if it was a file selection.
     // isOldRevision is true if the item is a revision but not the latest.
-    var isOldRevision = item && item.isRevision && !hasHighestRevisionSelected;
+    var isOldRevision = hasOldRevisionSelected ? true : item && item.revision && !hasHighestRevisionSelected;
 	
 	parent.enable([ZmOperation.SEND_FILE, ZmOperation.SEND_FILE_AS_ATT], (isZimbraAccount && isMailEnabled && isItemSelected && !isMultiFolder && !isFolderSelected));
 	parent.enable(ZmOperation.TAG_MENU, (!isReadOnly && isItemSelected && !isFolderSelected && !isOldRevision));
@@ -308,7 +311,7 @@ function(parent, num) {
     parent.enable(ZmOperation.EDIT_FILE, !isReadOnly && (  !isLocked || isLockOwner ) && isWebDoc && !isOldRevision && num == 1);
 
     //Delete Operation
-    parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected && !isMixedSelected && (isLocked ? isLockOwner : true) &&  !isOldRevision));
+    parent.enable(ZmOperation.DELETE, (!isReadOnly && isItemSelected && (hasHighestRevisionSelected ? !hasOldRevisionSelected : true) && !isMixedSelected && (isLocked ? isLockOwner : true)));
 
     if(parent &&  parent instanceof ZmActionMenu){
 
@@ -399,9 +402,9 @@ function(items) {
     var item = (items instanceof Array) ? items[0] : items;
     if(!item) return;
 
-	var message = ( items.length > 1 ) ?  ( item.isRevision ? ZmMsg.confirmPermanentDeleteItemList : ZmMsg.confirmDeleteItemList ) : null;
+	var message = ( items.length > 1 ) ?  ( item.isRevision  ? ZmMsg.confirmPermanentDeleteItemList : ZmMsg.confirmDeleteItemList ) : null;
 	if (!message) {
-        var delMsgFormatter = new AjxMessageFormat( (this._folderId == String(ZmOrganizer.ID_TRASH) || item.isRevision ) ? ZmMsg.confirmPermanentDeleteItem : ZmMsg.confirmDeleteItem );
+        var delMsgFormatter = new AjxMessageFormat( (this._folderId == String(ZmOrganizer.ID_TRASH) || (item.isRevision && item.parent.version != item.version) ) ? ZmMsg.confirmPermanentDeleteItem : ZmMsg.confirmDeleteItem );
 		message = delMsgFormatter.format(AjxStringUtil.htmlEncode(item.name));
 	}
 
@@ -414,7 +417,7 @@ function(items) {
 
     var item = (items instanceof Array) ? items[0] : items;
 
-    if(item.isRevision){
+    if(item.isRevision && item.parent.version != item.version){
         var view = this._parentView[this._currentViewId];
         view.deleteVersions(items);
     }else if(item.isFolder){
@@ -430,6 +433,11 @@ function(items) {
         }
         delBatchCmd.run();
     }else{
+		for (var i=0; i<items.length; i++) {
+			if (items[i].isRevision) {
+				items[i] = items[i].parent;
+			}
+		}
         ZmListController.prototype._doDelete.call(this, items, null, null, true);
     }
 };
@@ -1620,4 +1628,46 @@ function(actionCode) {
             return ZmListController.prototype.handleKeyAction.call(this, actionCode);
     }
     return true;
+};
+
+/**
+ * Tag/untag items
+ *
+ * @private
+ */
+ZmBriefcaseController.prototype._doTag =
+function(items, tag, doTag) {
+	items = AjxUtil.toArray(items);
+	if (!items.length) { return; }
+	
+	for (var i=0; i<items.length; i++) {
+		if (items[i].isRevision) {
+			items[i] = items[i].parent;
+		}	
+	}
+	return ZmListController.prototype._doTag.call(this, items, tag, doTag);
+};
+
+
+/**
+ * Moves a list of items to the given folder. Any item already in that folder is excluded.
+ *
+ * @param {Array}	items		a list of items to move
+ * @param {ZmFolder}	folder		the destination folder
+ * @param {Object}	attrs		the additional attrs for SOAP command
+ * @param {Boolean}		isShiftKey	<code>true</code> if forcing a copy action
+ * @param {Boolean}		noUndo	<code>true</code> undo not allowed
+ * @private
+ */
+ZmBriefcaseController.prototype._doMove =
+function(items, folder, attrs, isShiftKey, noUndo) {
+	items = AjxUtil.toArray(items);
+	if (!items.length) { return; }
+
+	for (var i=0; i<items.length; i++) {
+		if (items[i].isRevision) {
+			items[i] = items[i].parent;
+		}
+	}
+	return ZmListController.prototype._doMove.call(this, items, folder, attrs, isShiftKey, noUndo);
 };

@@ -253,7 +253,7 @@ function(item){
     var fileNameBounds = Dwt.getBounds(fileNameEl);
 
     var fileInput = this._enableRenameInput(true, fileNameBounds);
-    fileInput.setValue(item.name);
+    fileInput.setValue(item.isRevision ? item.parent.name : item.name);
     this._fileItem = item;
 };
 
