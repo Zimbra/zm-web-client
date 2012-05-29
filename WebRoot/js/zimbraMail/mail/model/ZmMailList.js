@@ -723,7 +723,8 @@ function(items, sortBy, event, details) {
 			if (this.type == ZmItem.CONV && itemType == ZmItem.MSG) {
 				var conv = this.getById(item.cid);
 				if (conv) {
-					sortIndex = conv.msgs._getSortIndex(item, appCtxt.get(ZmSetting.CONVERSATION_ORDER));
+					// server always orders msgs within a conv by DATE_DESC, so maintain that
+					sortIndex = conv.msgs._getSortIndex(item, ZmSearch.DATE_DESC);
 					if (event == ZmEvent.E_CREATE) {
 						conv.addMsg(item, sortIndex);
 					}
