@@ -1411,11 +1411,11 @@ function(expanded) {
 	this._expanded = expanded;
 	if (this._expanded && !this._msgBodyCreated) {
 		// Provide a callback to ensure address bubbles are properly set up
-        var dayViewCallback = null;
-        if (this._isCalendarInvite && appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR)) {
-            dayViewCallback = this._handleShowCalendarLink.bind(this, ZmOperation.SHOW_ORIG, true);
-        }
-        var respCallback = this._handleResponseSet.bind(this, this._msg, null, dayViewCallback);
+		var dayViewCallback = null;
+		if (this._isCalendarInvite && appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR)) {
+			dayViewCallback = this._handleShowCalendarLink.bind(this, ZmOperation.SHOW_ORIG, true);
+		}
+		var respCallback = this._handleResponseSet.bind(this, this._msg, null, dayViewCallback);
 		this._renderMessage(this._msg, null, respCallback);
 	}
 	else {
@@ -1433,6 +1433,7 @@ function(expanded) {
 		if (this._expanded) {
 			this._setTags(this._msg);
 			this._resetLinks();
+			this._controller._handleMarkRead(this._msg);
 		}
 		else {
 			var replyView = this._convView._replyView;
