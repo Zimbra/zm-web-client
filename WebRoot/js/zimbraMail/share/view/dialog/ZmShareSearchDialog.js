@@ -510,6 +510,7 @@ ZmShareSearchDialog.prototype._createHtmlFromTemplate = function(templateId, dat
 	    id: "ZmShareSearchView"
     };
     this._form = new DwtForm(params);
+	this._form.setScrollStyle(DwtControl.CLIP);
     this.setView(this._form);
 
     var inputEl = this._form.getControl("EMAIL").getInputElement();
