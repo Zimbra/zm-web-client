@@ -4756,7 +4756,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmSoundPlayer .ZButton .ZLeftIcon DIV, .ZmSoundPlayer .ZButton .ZLeftIcon IMG {
-	margin-left:5px;
+	margin-left:0;
 	margin-right:5px;
 }
 .ZmSoundPlayer .ZButton .ZWidgetTitle {
@@ -4768,7 +4768,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmSoundPlayer .ZmPlayButton,
 .ZmSoundPlayer .ZmPauseButton,
-.ZmSoundPlayer .ZmVolumeButton 		{	margin:0 2px;		}
+.ZmSoundPlayer .ZmVolumeButton 		{	margin:0;		}
 
 
 .DwtSliderThumb {
