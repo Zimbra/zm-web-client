@@ -130,7 +130,7 @@ Zmeditor_template.getFontSize = function(value){
 
         _nodeChanged : function(ed, cm, n, co, ob) {
             var t = this, p, de = 0, v, c, s = t.settings, cl, fz, fn, fc, bc, formatNames, matches,
-            DOM = tinymce.DOM, each = tinymce.each; //Zimbra code
+            DOM = tinymce.DOM, each = tinymce.each, doc = ed.getDoc(), body = doc.body; //Zimbra code
 
             tinymce.each(t.stateControls, function(c) {
                 cm.setActive(c, ed.queryCommandState(t.controls[c][1]));
@@ -223,7 +223,10 @@ Zmeditor_template.getFontSize = function(value){
                 //console.log("sytle font family ::"+fn);
                 //console.log("queryCommandValue :: "+ed.getDoc().queryCommandValue("fontname"));
                 //console.log("Body "+ed.getBody().style.fontFamily);
-                fn = fn || ed.getDoc().queryCommandValue("fontname") || ed.getBody().style.fontFamily;
+                if (!fn && doc.queryCommandEnabled("fontname")) {
+                    fn = doc.queryCommandValue("fontname");
+                }
+                fn = fn || body.style.fontFamily;
                 if(fn){
                     fn = fn .replace(/[\"\']+/g, '').replace(/^([^,]+).*/, '$1').toLowerCase();
                 }
@@ -237,7 +240,10 @@ Zmeditor_template.getFontSize = function(value){
                 //console.log("sytle font size font size ::"+fz);
                 //console.log("queryCommandValue :: "+ed.getDoc().queryCommandValue("fontSize"));
                 //console.log("Body "+ed.getBody().style.fontSize);
-                fz = fz || ed.getDoc().queryCommandValue("fontsize") || ed.getBody().style.fontSize;
+                if (!fz && doc.queryCommandEnabled("fontsize")) {
+                    fz = doc.queryCommandValue("fontsize");
+                }
+                fz = fz || body.style.fontSize;
                 if (fz) {
                     fz = Zmeditor_template.getFontSize(fz);
                 }
@@ -277,8 +283,14 @@ Zmeditor_template.getFontSize = function(value){
                     }
                 }
                 else {
-                    fc = fc || ed.getDoc().queryCommandValue("forecolor") || ed.getBody().style.color;
-                    bc = bc || ed.getDoc().queryCommandValue("backcolor") || "white";
+                    if (!fc && doc.queryCommandEnabled("forecolor")) {
+                        fc = doc.queryCommandValue("forecolor");
+                    }
+                    fc = fc || body.style.color;
+                    if (!bc && doc.queryCommandEnabled("backcolor")) {
+                        bc = doc.queryCommandValue("backcolor");
+                    }
+                    bc = bc || "white";
                 }
                 updateColor('forecolor', fc);
                 updateColor('backcolor', bc);
