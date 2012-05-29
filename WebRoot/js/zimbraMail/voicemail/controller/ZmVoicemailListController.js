@@ -184,7 +184,7 @@ function(actionCode) {
 			}
 			break;
 		case ZmKeyMap.DEL:
-			if (num > 0 && !(this._folder && (this._folder.callType == ZmVoiceFolder.TRASH))) {
+			if (num > 0 ) {
 				this._deleteListener();
 			}
 			break;
