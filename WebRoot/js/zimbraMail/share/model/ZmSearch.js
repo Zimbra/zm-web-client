@@ -624,6 +624,14 @@ function(callback, result) {
 };
 
 /**
+ * Clears cursor-related fields from this search so that it will not create a cursor.
+ */
+ZmSearch.prototype.clearCursor =
+function() {
+	this.lastId = this.lastSortVal = this.endSortVal = null;
+};
+
+/**
  * Gets a title that summarizes this search.
  * 
  * @return	{String}	the title

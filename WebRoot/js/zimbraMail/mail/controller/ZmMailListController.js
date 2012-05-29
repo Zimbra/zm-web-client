@@ -180,6 +180,8 @@ function(view, force) {
 			//clear the groups to address "from" grouping for conversation
 			this._mailListView.setGroup(ZmId.GROUPBY_NONE);
 		}
+		
+		this._currentSearch.clearCursor();
 		var limit = this._listView[this._currentViewId].getLimit();
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		var groupByItem = (view == ZmId.VIEW_TRAD) ? ZmItem.MSG : ZmItem.CONV;

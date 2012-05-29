@@ -245,8 +245,6 @@ function(menu) {
  * @param {int}			offset						the starting point in list of matching items
  * @param {int}			limit						the maximum number of items to return
  * @param {int}			searchId					the ID of owning search folder (if any)
- * @param {int}			prevId						the ID of last items displayed (for pagination)
- * @param {constant}	prevSortBy					previous sort order (for pagination)
  * @param {Boolean}		noRender					if <code>true</code>, results will not be passed to controller
  * @param {Boolean}		userText					if <code>true</code>, text was typed by user into search box
  * @param {AjxCallback}	callback					the async callback
@@ -302,8 +300,6 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.sortBy		= search.sortBy;
 	params.offset		= search.offset;
 	params.limit		= search.limit;
-	params.prevId		= search.prevId;
-	params.prevSortBy	= search.prevSortBy;
 	params.fetch		= search.fetch;
 	params.searchId		= search.searchId;
 	params.lastSortVal	= search.lastSortVal;
