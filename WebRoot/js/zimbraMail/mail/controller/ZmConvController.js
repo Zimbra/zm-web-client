@@ -223,17 +223,12 @@ function(ev) {
 	}
 };
 
-ZmConvController.prototype._setupViewMenuItems =
-function(view, btn) {
-
-	var menu = new ZmPopupMenu(btn);
-	btn.setMenu(menu);
-
-	this._setupReadingPaneMenuItems(view, menu, this.isReadingPaneOn());
-
-	return menu;
+ZmConvController.prototype._setupConvOrderMenuItems =
+function(view, menu) {
+	ZmConvListController.prototype._setupConvOrderMenuItems.apply(this, arguments);
 };
 
+ZmConvController.prototype._setupGroupByMenuItems = function(view, menu) {};
 
 ZmConvController.getDefaultViewType =
 function() {
@@ -245,6 +240,18 @@ ZmConvController.prototype._setActiveSearch =
 function(view) {
 	// bug fix #7389 - do nothing!
 };
+
+// Handle change of msg order within conv
+ZmConvController.prototype.switchView =
+function(view, force) {
+	ZmConvListController.prototype.switchView.apply(this, arguments);
+};
+
+ZmConvController.prototype.getItemView = 
+function() {
+	return this._view[this._currentViewId];
+};
+
 
 // Operation listeners
 
