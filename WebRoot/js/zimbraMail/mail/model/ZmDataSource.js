@@ -73,7 +73,6 @@ ZmDataSource.DATASOURCE_ATTRS = {
 ZmDataSource.IDENTITY_ATTRS = {
 	// SOAP attr:					JS property
 	"fromDisplay":					"sendFromDisplay",
-	"fromAddress":					"sendFromAddress",
 	"useAddressForForwardReply":	"setReplyTo",
 	"replyToAddress":				"setReplyToAddress",
 	"replyToDisplay":				"setReplyToDisplay",
