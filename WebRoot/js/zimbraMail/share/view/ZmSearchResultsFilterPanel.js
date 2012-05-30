@@ -828,6 +828,11 @@ ZmSizeSearchFilter.prototype.toString = function() { return "ZmSizeSearchFilter"
 ZmSizeSearchFilter.LARGER	= "LARGER";
 ZmSizeSearchFilter.SMALLER	= "SMALLER";
 
+// used for element IDs
+ZmSizeSearchFilter.UNIT	= "unit";
+
+ZmSizeSearchFilter.COMBO_INPUT_WIDTH = 2;
+
 ZmSizeSearchFilter.TYPES = [
 		ZmSizeSearchFilter.LARGER,
 		ZmSizeSearchFilter.SMALLER
@@ -850,24 +855,44 @@ function(menu) {
 		var menuItem = new DwtMenuItem({
 					parent:	menu,
 					id:		ZmId.getMenuItemId(this._viewId, this.id, type)
-				}); 
+				});
 		menuItem.setText(ZmMsg[ZmSizeSearchFilter.TEXT_KEY[type]]);
 		var subMenu = new DwtMenu({
 					parent:	menuItem,
 					id:		ZmId.getMenuId(this._viewId, this.id, type),
 					style:	DwtMenu.GENERIC_WIDGET_STYLE
 				});
+		subMenu.addClassName(this.toString() + "SubMenu");
 		menuItem.setMenu({menu: subMenu, menuPopupStyle: DwtButton.MENU_POPUP_STYLE_CASCADE});
-		var input = this._input[type] = new DwtInputField({parent:subMenu, size: 10});
-		input.addListener(DwtEvent.ONKEYUP, this._keyUpListener.bind(this, type));
+		var input = this._input[type] = new DwtInputField({parent:subMenu, size: 5});
+		var comboBox = new DwtComboBox({
+			parent:			input,
+			id:		DwtId.makeId(ZmId.WIDGET_COMBOBOX, this._viewId, this.id, type+ZmSizeSearchFilter.UNIT),
+			inputParams:	{size: ZmSizeSearchFilter.COMBO_INPUT_WIDTH},
+			posStyle:DwtControl.ABSOLUTE_STYLE,
+			className: this.toString() + "Combobox"
+		});
+		input.addListener(DwtEvent.ONKEYUP, this._keyUpListener.bind(this, type, comboBox));
+		comboBox.addChangeListener(this._unitChangeListener.bind(this, type, comboBox));
+		comboBox.add(ZmMsg.kb,"KB",true); //select kb as default value
+		comboBox.add(ZmMsg.mb,"MB");
+	}
+};
+
+ZmSizeSearchFilter.prototype._unitChangeListener =
+function(type, comboBox, ev) {
+	var value = this._input[type].getValue();
+	if (value && value != "") {
+		var term = new ZmSearchToken(ZmSizeSearchFilter.OP[type], value + comboBox.getValue());
+		this._updateCallback(term);
 	}
 };
 
 ZmSizeSearchFilter.prototype._keyUpListener =
-function(type, ev) {
+function(type, comboBox, ev) {
 	var keyCode = DwtKeyEvent.getCharCode(ev);
 	if (keyCode == 13 || keyCode == 3) {
-		var term = new ZmSearchToken(ZmSizeSearchFilter.OP[type], this._input[type].getValue());
+		var term = new ZmSearchToken(ZmSizeSearchFilter.OP[type], this._input[type].getValue() + comboBox.getValue());
 		this._updateCallback(term);
 	}
 };

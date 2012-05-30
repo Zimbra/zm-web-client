@@ -387,6 +387,19 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	height:20px;
 }
 
+.ZmSizeSearchFilterSubMenu {
+    width: 125px;
+#IFDEF MSIE
+    width:149px;
+    height: 37px !important;
+#ENDIF
+}
+
+.ZmSizeSearchFilterCombobox {
+    display: inline;
+    margin-left: 4px;
+}
+
 .ZmSearchResultText {
     width: 175px;
     text-align: right;
