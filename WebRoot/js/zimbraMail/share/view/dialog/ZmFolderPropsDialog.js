@@ -389,7 +389,8 @@ function(row, share) {
 
 		// public shares have no editable fields, and sent no mail
 		var isAllShare = share.grantee && (share.grantee.type == ZmShare.TYPE_ALL);
-		if ((isAllShare || share.isPublic()) && (action == ZmShare.EDIT || action == ZmShare.RESEND)) { continue; }
+		if (((isAllShare || share.isPublic() || share.isGuest()) && (action == ZmShare.EDIT)) ||
+            ((isAllShare || share.isPublic()) && action == ZmShare.RESEND)) { continue; }
 
 		var link = document.createElement("A");
 		link.href = "#";
