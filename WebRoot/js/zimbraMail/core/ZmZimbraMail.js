@@ -783,6 +783,7 @@ function() {
 
 	// reminder controlled by calendar preferences setting
 	if (appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME) != 0) {
+        AjxDispatcher.require(["CalendarCore", "Calendar"]);
 		var reminderAction = new AjxTimedAction(this, this.showReminder);
 		var delay = appCtxt.isOffline ? 0 : ZmCalendarApp.REMINDER_START_DELAY;
 		AjxTimedAction.scheduleAction(reminderAction, delay);
