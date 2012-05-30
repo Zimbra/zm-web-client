@@ -1198,6 +1198,14 @@ function(columnItem, bSortAsc, callback) {
 	}
 
 	if (sortBy) {
+		//special case - switching from read/unread to another sort column - remove it from the query, so users are not confused that they still see only unread messages after clicking on another sort column.
+		if (columnItem._sortable != ZmItem.F_READ && (this._sortByString == ZmSearch.READ_ASC || this._sortByString == ZmSearch.READ_DESC)) {
+			var controller = this._controller;
+			var query = controller.getSearchString();
+			if (query) {
+				 controller.setSearchString(AjxStringUtil.trim(query.replace("is:unread", "")));
+			}
+		}
 		this._sortByString = sortBy;
 		var skipFirstNotify = this._folderId ? true : false; //just making it explicit boolean
         if (!appCtxt.isExternalAccount()) {

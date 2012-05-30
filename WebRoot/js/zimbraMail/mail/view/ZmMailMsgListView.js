@@ -391,7 +391,10 @@ function(columnItem, bSortAsc, callback) {
 	var query;
 	var list = this.getList();
 	var controller = AjxDispatcher.run((this._mode == ZmId.VIEW_CONV) ? "GetConvController" : "GetTradController");
-	if (list && list.size() > 1 && this._sortByString) {
+	if (this._columnHasCustomQuery(columnItem)) {
+		query = this._getSearchForSort(columnItem._sortable, controller);
+	}
+	else if (list && list.size() > 1 && this._sortByString) {
 		query = controller.getSearchString();
 	}
 

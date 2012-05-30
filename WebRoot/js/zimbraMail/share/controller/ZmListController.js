@@ -126,6 +126,12 @@ function() {
 	return this._currentSearch ? this._currentSearch.query : "";
 };
 
+
+ZmListController.prototype.setSearchString =
+function(query) {
+	this._currentSearch.query = query;
+};
+
 /**
  * Gets the search string hint.
  * 

@@ -806,7 +806,10 @@ function(columnItem, bSortAsc, callback) {
 
 	var query;
 	var list = this.getList();
-	if (list && list.size() > 1 && this._sortByString) {
+	if (this._columnHasCustomQuery(columnItem)) {
+		query = this._getSearchForSort(columnItem._sortable);
+	}
+	else if (list && list.size() > 1 && this._sortByString) {
 		query = this._controller.getSearchString();
 	}
 

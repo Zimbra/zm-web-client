@@ -51,7 +51,8 @@ ZmMailListView.SINGLE_COLUMN_SORT = [
 	{field:ZmItem.F_DATE,	msg:"date"		},
     {field:ZmItem.F_ATTACHMENT, msg:"attachment" },
     {field:ZmItem.F_FLAG, msg:"flag" },
-    {field:ZmItem.F_PRIORITY, msg:"priority" }
+    {field:ZmItem.F_PRIORITY, msg:"priority" },
+	{field:ZmItem.F_READ, msg:"readUnread" }
 ];
 
 ZmMailListView.SORTBY_HASH = [];
@@ -69,8 +70,8 @@ ZmMailListView.SORTBY_HASH[ZmSearch.FLAG_ASC] = {field:ZmItem.F_FLAG, msg:"flag"
 ZmMailListView.SORTBY_HASH[ZmSearch.FLAG_DESC] = {field:ZmItem.F_FLAG, msg:"flag"};
 ZmMailListView.SORTBY_HASH[ZmSearch.MUTE_ASC] = {field:ZmItem.F_MUTE, msg:"mute"};
 ZmMailListView.SORTBY_HASH[ZmSearch.MUTE_DESC] = {field:ZmItem.F_MUTE, msg:"mute"};
-ZmMailListView.SORTBY_HASH[ZmSearch.READ_ASC] = {field:ZmItem.F_READ, msg:"read"};
-ZmMailListView.SORTBY_HASH[ZmSearch.READ_DESC] = {field:ZmItem.F_READ, msg:"read"};
+ZmMailListView.SORTBY_HASH[ZmSearch.READ_ASC] = {field:ZmItem.F_READ, msg:"readUnread"};
+ZmMailListView.SORTBY_HASH[ZmSearch.READ_DESC] = {field:ZmItem.F_READ, msg:"readUnread"};
 ZmMailListView.SORTBY_HASH[ZmSearch.PRIORITY_ASC] = {field:ZmItem.F_PRIORITY, msg:"priority"};
 ZmMailListView.SORTBY_HASH[ZmSearch.PRIORITY_DESC] = {field:ZmItem.F_PRIORITY, msg:"priority"};
 ZmMailListView.SORTBY_HASH[ZmSearch.RCPT_ASC] = {field:ZmItem.F_TO, msg:"to"};
@@ -325,7 +326,7 @@ function() {
 		this._headerInit[ZmItem.F_ACCOUNT]		= {icon:"AccountAll", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.account, noRemove:true, resizeable:true};
 		this._headerInit[ZmItem.F_STATUS]		= {icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status};
 		this._headerInit[ZmItem.F_MUTE]			= {icon:"Mute", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.muteUnmute, sortable: false /*ZmItem.F_MUTE*/, noSortArrow:true}; //todo - once server supports readAsc/readDesc sort orders, uncomment the sortable
-		this._headerInit[ZmItem.F_READ]			= {icon:"MsgUnread", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.readUnread, sortable: false /*ZmItem.F_READ*/, noSortArrow:true}; //todo - once server supports readAsc/readDesc sort orders, uncomment the sortable
+		this._headerInit[ZmItem.F_READ]			= {icon:"MsgUnread", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.readUnread, sortable: ZmItem.F_READ, noSortArrow:true};
 		this._headerInit[ZmItem.F_FROM]			= {text:ZmMsg.from, width:ZmMsg.COLUMN_WIDTH_FROM_MLV, resizeable:true, sortable:ZmItem.F_FROM};
 		this._headerInit[ZmItem.F_ATTACHMENT]	= {icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment, sortable:ZmItem.F_ATTACHMENT, noSortArrow:true};
 		this._headerInit[ZmItem.F_SUBJECT]		= {text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true, resizeable:true};
@@ -1122,14 +1123,22 @@ function(sortField, controller) {
 	controller = controller || this._controller;
 	var query = controller.getSearchString();
 	if (!query) { return ""; }
+	if (sortField != ZmItem.F_READ) {
+		return; //shouldn't happen. READ/Unread is the only current filter
+	}
 
-	var str = (sortField == ZmItem.F_FLAG) ? " is:flagged" : " has:attachment";
+	var str = "is:unread";
 	if (query.indexOf(str) != -1) {
-		query = query.replace(str, "");
+		query = AjxStringUtil.trim(query.replace(str, ""));
 	} else {
-		query = query + str;
+		query = query + " " + str;
 	}
 	return query;
+};
+
+ZmMailListView.prototype._columnHasCustomQuery =
+function(columnItem) {
+	return columnItem._sortable == ZmItem.F_READ;
 };
 
 ZmMailListView.prototype._getDefaultSortbyForCol =
