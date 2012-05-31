@@ -466,13 +466,19 @@ function() {
 			else {
 				convParams.getUnreadOrFirstMsg = true;
 				// generalize query so if conv is read we get latest msg and not just latest matching msg
-				var terms = ["underid:1"];
+				var acctId = item.isShared() && ZmOrganizer.parseId(item.id).acctId;
+				var rootFolderId = acctId ? ['"', acctId, ':1"'].join("") : "1";
+				var terms = ["underid:" + rootFolderId];
 				var search = this._currentSearch;
 				if (search) {
 					var foldersToExclude = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM];
 					for (var i = 0; i < foldersToExclude.length; i++) {
 						var folderId = foldersToExclude[i];
-						if (!search.hasFolderTerm(ZmFolder.QUERY_NAME[folderId])) {
+						if (acctId) {
+							folderId = ['"', acctId, ":", folderId, '"'].join("");
+						}
+						// note that Trash and Spam cannot be shared
+						if (acctId || !search.hasFolderTerm(ZmFolder.QUERY_NAME[folderId])) {
 							terms.push("underid:" + folderId);
 						}
 					}

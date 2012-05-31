@@ -110,6 +110,9 @@ ZmOrganizer = function(params) {
 	this.children = new AjxVector();
 };
 
+ZmOrganizer.prototype.isZmOrganizer = true;
+ZmOrganizer.prototype.toString = function() { return "ZmOrganizer"; };
+
 // global organizer types
 ZmOrganizer.TAG					= ZmEvent.S_TAG;
 ZmOrganizer.SEARCH				= ZmEvent.S_SEARCH;
@@ -653,23 +656,14 @@ function(id, result) {
 		result.account = ac.accountList.mainAccount;
 		result.id = id;
 	} else {
-		result.account = ac.accountList.getAccount(id.substring(0, idx));
+		result.acctId = id.substring(0, idx);
+		result.account = ac.accountList.getAccount(result.acctId);
 		result.id = id.substr(idx + 1);
 	}
 	return result;
 };
 
 // Public methods
-
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmOrganizer.prototype.toString = 
-function() {
-	return "ZmOrganizer";
-};
 
 /**
 * Gets the name of this organizer.
