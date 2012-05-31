@@ -1514,10 +1514,10 @@ if (ext == null) ext = "";
             <fileset dir='${web.dir}/tiny_mce/${tinymce.version}' />
         </copy>
         <copy todir='${tinymce.dir}/plugins' verbose='${sync.verbose}'>
-            <fileset dir='${tinymce.zplugins.dir}' excludes="plugins/**,themes/**" />
+            <fileset dir='${tinymce.zplugins.dir}' excludes="plugins/**,themes/**,langs/**"/>
         </copy>
         <copy todir='${tinymce.dir}' verbose='${sync.verbose}' overwrite="true">
-            <fileset dir="${tinymce.zplugins.dir}" includes="plugins/**,themes/**">
+            <fileset dir="${tinymce.zplugins.dir}" includes="plugins/**,themes/**,langs/**">
                 <different targetdir="${tinymce.dir}"/>
             </fileset>
         </copy>
