@@ -2171,6 +2171,8 @@ function(params) {
 
 ZmMailMsgView.prototype._getAttachmentLinkId =
 function(part, type) {
+	if (!part)
+		return;
 	return [this._viewId, part, type].join("_");
 };
 
