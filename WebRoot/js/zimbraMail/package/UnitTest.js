@@ -22,6 +22,7 @@ AjxPackage.require({name:"zimbraMail.unittest.UtZWCUtils",			method:AjxPackage.M
 AjxPackage.require({name:"zimbraMail.unittest.UtMailMsgView_data",			method:AjxPackage.METHOD_SCRIPT_TAG});
 AjxPackage.require({name:"zimbraMail.unittest.UtGetOriginalContent_data",	method:AjxPackage.METHOD_SCRIPT_TAG});
 
+AjxPackage.require({name:"zimbraMail.unittest.UtAjxStringUtil",		method:AjxPackage.METHOD_SCRIPT_TAG});
 AjxPackage.require({name:"zimbraMail.unittest.UtAjxTimezone",		method:AjxPackage.METHOD_SCRIPT_TAG});
 AjxPackage.require({name:"zimbraMail.unittest.UtBubbles",			method:AjxPackage.METHOD_SCRIPT_TAG});
 AjxPackage.require({name:"zimbraMail.unittest.UtCompose",			method:AjxPackage.METHOD_SCRIPT_TAG});
