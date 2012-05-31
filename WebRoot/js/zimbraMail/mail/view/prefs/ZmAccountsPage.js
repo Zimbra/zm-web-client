@@ -2533,6 +2533,12 @@ function() {
 	];
 };
 
+ZmAccountDelegatesListView.prototype._doubleClickAction =
+function(){
+   this.parent._editDelegateButton();
+}
+
+
 //
 // New data source class
 //
