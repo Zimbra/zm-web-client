@@ -204,36 +204,6 @@ function() {
 	return "</div>";
 };
 
-/**
- * Returns true if the given content is considered empty. For text, that means it is all whitespace.
- * For HTML, we strip any wrapper HTML that we recognize as our own (eg font style), then convert
- * it to text to see if it is whitespace.
- * 
- * @param {string}		content		content to check
- * @param {boolean}		isHtml		if true, content is HTML
- * 
- * @return {boolean}	true if content is empty
- */
-ZmAdvancedHtmlEditor.isEmpty =
-function(content, isHtml) {
-
-	if (!content) {
-		return true;
-	}
-	
-	var test = content;
-	if (isHtml) {
-		test = test.toLowerCase().replace(/^<html><body>/, "").replace(/<\/body><\/html>$/, "");
-		var fontPrefix = ZmAdvancedHtmlEditor._getFontStylePrefix(), fontSuffix = ZmAdvancedHtmlEditor._getFontStyleSuffix();
-		if (test.indexOf(fontPrefix) == 0) {
-			test = test.replace(fontPrefix, "").replace(new RegExp(fontSuffix + "$"), "");
-		}
-		test = AjxStringUtil.convertHtml2Text(test);
-	}
-	
-	return (!/\S+/.test(test));
-};
-
 /*
  If editor is not initialized and mode is HTML, tinymce will automatically initialize the editor with the content in textarea
  */

@@ -1689,8 +1689,9 @@ function(msg, container, callback, index) {
 					});
 				}
 
-				if (!content || ZmAdvancedHtmlEditor.isEmpty(content, true)) {
-					content = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: true});
+				if (!msg.fragment) {
+					var empty = AjxTemplate.expand("mail.Message#EmptyMessage");
+					content = content ? [empty, content].join("<br><br>") : empty;
 				}
 
 				this._displayContent({	container:		el,
@@ -1720,8 +1721,9 @@ function(msg, container, callback, index) {
 					}
 
 					var isTextMsg = true;
-					if (!content || ZmAdvancedHtmlEditor.isEmpty(content, false)) {
-						content = AjxTemplate.expand("mail.Message#EmptyMessage", {isHtml: false});
+					if (!msg.fragment) {
+						var empty = AjxTemplate.expand("mail.Message#EmptyMessage");
+						content = content ? [empty, content].join(ZmMsg.CRLF2) : empty;
 						isTextMsg = false; //To make sure we display html content properly
 					}
 					content = isTextMsg ? AjxStringUtil.convertToHtml(content) : content;
