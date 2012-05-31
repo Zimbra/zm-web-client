@@ -719,31 +719,32 @@ function(items, sortBy, event, details) {
 		var item = items[i];
 		if (doSort) {
 			var doAdd = (itemType == this.type);
-			var sortIndex = 0;
+			var listSortIndex = 0, viewSortIndex = 0;
 			if (this.type == ZmItem.CONV && itemType == ZmItem.MSG) {
 				var conv = this.getById(item.cid);
 				if (conv) {
 					// server always orders msgs within a conv by DATE_DESC, so maintain that
-					sortIndex = conv.msgs._getSortIndex(item, ZmSearch.DATE_DESC);
+					listSortIndex = conv.msgs._getSortIndex(item, ZmSearch.DATE_DESC);
+					viewSortIndex = conv.msgs._getSortIndex(item, appCtxt.get(ZmSetting.CONVERSATION_ORDER));
 					if (event == ZmEvent.E_CREATE) {
-						conv.addMsg(item, sortIndex);
+						conv.addMsg(item, listSortIndex);
 					}
 				}
 			} else {
-				sortIndex = this._getSortIndex(item, sortBy);
+				viewSortIndex = listSortIndex = this._getSortIndex(item, sortBy);
 			}
 			if (event != ZmEvent.E_CREATE) {
 				// if date changed, re-insert item into correct slot
-				if (sortIndex != this.indexOf(item)) {
+				if (listSortIndex != this.indexOf(item)) {
 					this.remove(item);
 				} else {
 					doAdd = false;
 				}
 			}
 			if (doAdd) {
-				this.add(item, sortIndex);
+				this.add(item, listSortIndex);
 			}
-			details.sortIndex = sortIndex;
+			details.sortIndex = viewSortIndex;
 		}
 		item._notify(event, details);
 	}
