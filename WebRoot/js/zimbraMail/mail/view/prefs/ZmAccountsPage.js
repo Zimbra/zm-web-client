@@ -290,8 +290,16 @@ function(callback) {
 };
 
 ZmAccountsPage.prototype._errRightsCommand =
-function(err){
-    // To be implemented
+function(user, ex){
+    this._delegateErrFormatter = this._delegateErrFormatter || new AjxMessageFormat(ZmMsg.delegateNoSuchAccErr);
+    var msg = this._delegateErrFormatter.format(user);
+    if (ex.code == "account.NO_SUCH_ACCOUNT"){
+        appCtxt.getAppController().popupErrorDialog(msg, ex);
+        return true;
+    }
+
+    return false;
+
 };
 
 ZmAccountsPage.prototype._handleDelegateRights =
@@ -300,7 +308,7 @@ function(user,sendAs,sendObo,isGrant,refresh) {
    var soapDoc = AjxSoapDoc.create(request, "urn:zimbraAccount");
    var batchCmd = new ZmBatchCommand(null, appCtxt.accountList.mainAccount.name);
    var callback = this._handleDelegateRightsCallback.bind(this,user,sendAs,sendObo,isGrant,refresh);
-   var errCallback = this._errRightsCommand.bind(this);
+   var errCallback = this._errRightsCommand.bind(this, user);
    var aceNode = null;
    if (sendAs){
             aceNode = soapDoc.set("ace");
