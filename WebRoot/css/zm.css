@@ -977,7 +977,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 #ENDIF
 }
 
-.Conv2MsgHeader .info DIV {
+.Conv2MsgHeader .info .ZmConvListFrom,
+.Conv2MsgHeader .info .ZmConvListFragment {
 	display:inline;
 	margin:5px 1em 5px 0;
 	overflow:hidden;
