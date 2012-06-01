@@ -543,8 +543,7 @@ function(calItem, mode) {
         appCtxt.getAppViewMgr().setTabTitle(this._controller.getCurrentViewId(), buttonText);
     }
     if (this._hasRepeatSupport) {
-        var selected = calItem.isCustomRecurrence() ? "CUS" : calItem.getRecurType();
-        this._repeatSelect.setSelectedValue(selected);
+        this._repeatSelect.setSelectedValue(calItem.getRecurType());
         // recurrence string
 	    this._setRepeatDesc(calItem);
     }
