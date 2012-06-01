@@ -1671,3 +1671,22 @@ function(items, folder, attrs, isShiftKey, noUndo) {
 	}
 	return ZmListController.prototype._doMove.call(this, items, folder, attrs, isShiftKey, noUndo);
 };
+
+/**
+ * Remove all tags for given items
+ *
+ * @private
+ */
+ZmBriefcaseController.prototype._doRemoveAllTags =
+function(items) {
+
+	items = AjxUtil.toArray(items);
+	if (!items.length) { return; }
+
+	for (var i=0; i<items.length; i++) {
+		if (items[i].isRevision) {
+			items[i] = items[i].parent;
+		}
+	}
+	return ZmListController.prototype._doRemoveAllTags.call(this, items);
+};
