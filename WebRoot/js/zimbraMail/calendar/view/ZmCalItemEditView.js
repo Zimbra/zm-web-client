@@ -897,7 +897,8 @@ function() {
     var table = document.getElementById(this._htmlElId + "_table");
     var attachRow = document.getElementById(this._htmlElId + "_attachment_container");
     if(table && attachRow) {
-        table.deleteRow(attachRow.rowIndex);
+	    //clear the attachment container
+        attachRow.innerHTML = "";
     }
 	// let's be paranoid and really cleanup
 	delete this._uploadFormId;
