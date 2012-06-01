@@ -1689,7 +1689,7 @@ function(msg, container, callback, index) {
 					});
 				}
 
-				if (!msg.fragment) {
+				if (!msg.fragment && !msg.hasInlineImagesInMsgBody() && !msg.hasInlineImage()) {
 					var empty = AjxTemplate.expand("mail.Message#EmptyMessage");
 					content = content ? [empty, content].join("<br><br>") : empty;
 				}
