@@ -73,6 +73,10 @@ function(conv, force) {
 		this._renderConv(conv);
 		if (conv.msgs) {
 			conv.msgs.addChangeListener(this._listChangeListener);
+			var clv = this._controller.getListView();
+			if (clv && clv.isExpanded(conv)) {
+				conv.msgs.addChangeListener(clv._listChangeListener);
+			}
 		}
 	}
 	else {
@@ -236,6 +240,10 @@ function(noClear) {
 		this._item.removeChangeListener(this._convChangeHandler);
 		if (this._item.msgs) {
 			this._item.msgs.removeChangeListener(this._listChangeListener);
+			var clv = this._controller.getListView();
+			if (clv) {
+				this._item.msgs.removeChangeListener(clv._listChangeListener);
+			}
 		}
 		this._item = null;
 	}
