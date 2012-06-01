@@ -1471,8 +1471,6 @@ function(table, tagCellId) {
 	var cell;
 	tagRow.id = this._tagRowId;
 	cell = tagRow.insertCell(-1);
-	cell.innerHTML = "&nbsp;";
-	cell = tagRow.insertCell(-1);
 	cell.className = "LabelColName";
 	cell.innerHTML = ZmMsg.tags + ":";
 	cell.style.verticalAlign = "middle";
