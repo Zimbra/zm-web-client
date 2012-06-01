@@ -22,6 +22,7 @@
 ZmImportExportBaseView = function(params) {
 	if (arguments.length == 0) return;
 	DwtForm.call(this, params);
+	this.setScrollStyle(DwtControl.VISIBLE);
 	this._initSubType(ZmImportExportController.TYPE_CSV);
 	this._setFolderButton(appCtxt.getById(ZmOrganizer.ID_ROOT));
 };
