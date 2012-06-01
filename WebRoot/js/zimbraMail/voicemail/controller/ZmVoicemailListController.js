@@ -335,7 +335,7 @@ ZmVoicemailListController.prototype._handleResponseUpload =
 function(voicemail, inNewWindow, subject, to, response) {
 	// Load the message in the compose view.
 	var duration = AjxDateUtil.computeDuration(voicemail.duration);
-    var date = AjxDateUtil.computeDateStr(new Date(), voicemail.date);
+    var date = AjxDateUtil.computeDateTimeString(voicemail.date);
     var callingParty = voicemail.getCallingParty(ZmVoiceItem.FROM);
     var phoneNumber = callingParty.getDisplay();
     var format = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
