@@ -39,7 +39,7 @@
 	</table>
 </template>
 <template id='admin.Widgets#ZaTreeHeaderButton' class='ZWidget'>
-	<table class='DwtLinkButtonTable ImgArrowShapeDisable' style='table-layout:fixed;width:100%'>
+	<table id='${id}_table' class='DwtLinkButtonTable ${bgImg}' style='table-layout:fixed;width:100%'>
 		<tr>
 			<td id='${id}_doubleArrow' style='width:20px'>
 				<div>
