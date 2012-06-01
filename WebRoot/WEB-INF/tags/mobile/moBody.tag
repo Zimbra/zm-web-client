@@ -25,7 +25,7 @@
 
 <zm:getUserAgent var="ua" session="true"/>
 <c:choose>
-    <c:when test="${ua.isiPhone or ua.isiPod or ua.isiPad}">
+    <c:when test="${ua.isiPhone or ua.isiPod or ua.isiPad or ua.isOsAndroid}">
         <c:choose>
             <c:when test="${body.isTextHtml}">
         <script type="text/javascript">
@@ -35,8 +35,6 @@
                 var iframe = document.createElement("iframe");
                 iframe.style.width = "100%";
                 iframe.style.height = "100px";
-                /*iframe.style.overflowX = "auto";*/
-                /*iframe.scrolling = "no";*/
                 iframe.marginWidth = 0;
                 iframe.marginHeight = 0;
                 iframe.border = 0;
@@ -49,11 +47,16 @@
                         iframe.style.width = iframe.contentWindow.document.body.scrollWidth + "px";
                     }
                 };
-                document.getElementById("iframeBody${counter}").appendChild(iframe);
+                var iframeBody = document.getElementById("iframeBody${counter}");
+                iframeBody.appendChild(iframe);
                 var doc = iframe.contentWindow ? iframe.contentWindow.document : iframe.contentDocument;
                 doc.open();
                 doc.write("${zm:jsEncode(theBody)}");
                 doc.close();
+                iframeBody.style.overflow = "scroll";
+                iframeBody.style.webkitOverflowScrolling = "touch";
+                iframe.contentWindow.document.body.style.wordWrap = "break-word";
+
                 //if (keydownH) doc.onkeydown = keydownH;
                 //if (keypressH) doc.onkeypress = keypressH;
                 setTimeout(resizeIframe, 500);
