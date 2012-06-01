@@ -153,7 +153,7 @@ function(insertFontStyle, onlyInnerContent) {
         var params = {};
         params.format ='raw';
 		var content1 = editor ? editor.getContent(params) : (field.value || "");
-		if (/\S+/.test(AjxStringUtil.convertHtml2Text(content1))) {
+		if (content1 && (/\S+/.test(AjxStringUtil.convertHtml2Text(content1)) || content1.match(/<img/i)) ) {
 			content = this._embedHtmlContent(content1, insertFontStyle, onlyInnerContent);
 		}
 	}
