@@ -647,7 +647,7 @@ function(msg) {
  */
 ZmNewWindow._confirmExitMethod =
 function(ev) {
-	if (window.parentController &&
+	if (appCtxt.get(ZmSetting.WARN_ON_EXIT) && window.parentController &&
 		(window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach"))
 	{
 		var cc = AjxDispatcher.run("GetComposeController", appCtxt.composeCtlrSessionId);
