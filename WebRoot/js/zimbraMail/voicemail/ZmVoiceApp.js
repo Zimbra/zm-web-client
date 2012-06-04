@@ -144,7 +144,7 @@ function() {
 ZmVoiceApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
-	newItemOps[ZmOperation.NEW_CALL] = "newCall";
+	newItemOps[ZmOperation.NEW_CALL] = "call";
 	ZmApp.registerApp(ZmApp.VOICE,
 							 {mainPkg:				"Voicemail",
 							  nameKey:				"voice",
