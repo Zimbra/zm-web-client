@@ -74,7 +74,7 @@ function(conv, force) {
 		if (conv.msgs) {
 			conv.msgs.addChangeListener(this._listChangeListener);
 			var clv = this._controller.getListView();
-			if (clv && clv.isExpanded(conv)) {
+			if (clv && clv.isZmConvListView  && clv.isExpanded(conv)) {
 				conv.msgs.addChangeListener(clv._listChangeListener);
 			}
 		}
