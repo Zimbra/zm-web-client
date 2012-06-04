@@ -747,7 +747,11 @@ function(ev) {
 		}
 	}
 	else {
-		this._setContactText(false, true);
+		var actionMenu = this.getActionMenu();
+		actionMenu.getOp(ZmOperation.CONTACT).setVisible(false);
+		actionMenu.getOp(ZmOperation.EXPAND).setVisible(false);
+
+		this._setContactText(false);
 		menu.popup(0, ev.docX, ev.docY);
 	}
 
@@ -812,8 +816,13 @@ function() {
 		menu.enable(ZmOperation.EDIT, Boolean(bubble));
 		var email = bubble && bubble.email;
 		var ac = window.parentAppCtxt || window.appCtxt;
-		menu.enable(ZmOperation.EXPAND, ac.isExpandableDL(email));
-		menu.enable(ZmOperation.CONTACT, Boolean(bubble));
+		var isExpandableDl = ac.isExpandableDL(email);
+		menu.enable(ZmOperation.EXPAND, isExpandableDl);
+		//not sure this is %100 good, since isExpandableDL returns false also if EXPAND_DL_ENABLED setting is false.
+		//but I tried to do this in _setContactText by passing in the contact we get (using getContactByEmail) - but that contact somehow doesn't
+		//have isGal set or type "group" (the type is "contact"), thus isDistributionList returns null. Not sure what this inconsistency comes from.
+		menu.enable(ZmOperation.CONTACT, !isExpandableDl);
+
 	}
 
 	if (this._bubbleResetOperationsCallback) {
@@ -839,11 +848,8 @@ function(ev, contact) {
 };
 
 ZmAddressInputField.prototype._setContactText =
-function(isContact, hideContactAction) {
+function(isContact) {
 	var actionMenu = this.getActionMenu();
-	actionMenu.getOp(ZmOperation.CONTACT).setVisible(!hideContactAction);
-	actionMenu.getOp(ZmOperation.EXPAND).setVisible(!hideContactAction);
-	
 	var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
 	var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
 	ZmOperation.setOperation(actionMenu, ZmOperation.CONTACT, newOp, newText);
