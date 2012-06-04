@@ -307,7 +307,7 @@
 </c:if>                            
 <div id="apt_dtls_div">
 <c:if test="${param.st ne 'newtask'}">
-<div class="View"><div class="tbl"><div class="tr">
+<div class="View" style="overflow:visible"><div class="tbl"><div class="tr">
     <span class="label td"><fmt:message key="repeatLabel"/></span>
     <span class="value td" style="padding:0px; text-align:left;">
         <input type=radio name='repeatType' <c:if test="${compose.repeatType eq 'NONE'}">checked="checked"</c:if> value="NONE"><fmt:message key="recurNone"/>
