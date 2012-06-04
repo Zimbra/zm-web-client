@@ -29,6 +29,12 @@ ZmAdvancedHtmlEditor = function(parent, posStyle, content, mode, withAce, repare
     this._bodyTextAreaId = textAreaId;
 	this.initTinyMCEEditor(parent, posStyle, content, mode, withAce, reparentContainer);
     this._ignoreWords = {};
+    var settings = appCtxt.getSettings();
+    var listener = new AjxListener(this, this._settingChangeListener);
+    settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_COLOR).addChangeListener(listener);
+    settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_FAMILY).addChangeListener(listener);
+    settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).addChangeListener(listener);
+    settings.getSetting(ZmSetting.COMPOSE_INIT_DIRECTION).addChangeListener(listener);
 };
 
 ZmAdvancedHtmlEditor.prototype.isZmAdvancedHtmlEditor = true;
@@ -465,49 +471,6 @@ ZmAdvancedHtmlEditor.prototype.initEditorManager =
 function(id, content) {
 
 	var obj = this;
-
-	function handleContentLoad(ed) {
-		obj.onLoadContent(ed);
-		obj.initDefaultFontSize(ed);
-        obj.initDefaultDirection();
-	};
-
-	function onTinyMCEEditorInit(ed) {
-        obj.initDefaultFontSize(ed);
-        obj.initDefaultDirection();
-		tinymce.dom.Event.add(ed.getWin(), 'focus', function(e) {
-			obj.setFocusStatus(true);
-		});
-		tinymce.dom.Event.add(ed.getWin(), 'blur', function(e) {
-			obj.setFocusStatus(false);
-		});
-	    // Set's up the a range for the current ins point or selection. This is IE only because the iFrame can
-	    // easily lose focus (e.g. by clicking on a button in the toolbar) and we need to be able to get back
-	    // to the correct insertion point/selection.
-        // DwtHtmlEditor is using _currInsPtBm property to store the cursor position in editor event handler function which is heavy.
-	    // Here we are registering this dedicated event to store the bookmark which will fire when focus moves outside the editor
-        if(AjxEnv.isIE){
-            tinymce.dom.Event.add(ed.getDoc(), 'beforedeactivate', function(e) {
-                if(ed.windowManager){
-                    ed.windowManager.bookmark = ed.selection.getBookmark(1);
-                }
-            });
-        }
-
-		var ec = obj.getEditorContainer();
-		ec.setFocusMember(ed.getWin());
-
-		obj._editorInitialized = true;
-
-        if (obj._onTinyMCEEditorInitcallback) {
-		    obj._onTinyMCEEditorInitcallback.run();
-        }
-        if (tinymce.settings && tinymce.settings.language_load === false){
-            tinymce.settings.language_load = true;
-        }
-        (ed.windowManager) && ed.windowManager.onOpen.add(ZmAdvancedHtmlEditor.onPopupOpen);
-	};
-
 	var urlParts = AjxStringUtil.parseURL(location.href);
 
 	//important: tinymce doesn't handle url parsing well when loaded from REST URL - override baseURL/baseURI to fix this
@@ -568,10 +531,11 @@ function(id, content) {
         language : ZmAdvancedHtmlEditor.LOCALE,
         language_load : (ZmAdvancedHtmlEditor.LOCALE === "en") ? false : true,
         theme_advanced_show_current_color : true,
+        directionality : (appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL) ? ZmSetting.RTL : false,
 		setup : function(ed) {
-			ed.onLoadContent.add(handleContentLoad);
+            ed.onLoadContent.add(obj.onLoadContent.bind(obj));
             ed.onPostRender.add(obj.onPostRender.bind(obj));
-			ed.onInit.add(onTinyMCEEditorInit);
+            ed.onInit.add(obj.onInit.bind(obj));
             ed.onKeyDown.add(obj._handleEditorKeyEvent.bind(obj));
             ed.onPaste.add(obj.onPaste.bind(obj));
             ed.onBeforeExecCommand.add(obj.onBeforeExecCommand.bind(obj));
@@ -694,7 +658,48 @@ ZmAdvancedHtmlEditor.prototype.onPostRender = function(ed, ev) {
     }
     this.setSize("", parseInt(this.getContentField().style.height) + ZmAdvancedHtmlEditor.DELTA_HEIGHT);
     this.onToolbarToggle();
+    ed.dom.setStyles(ed.getBody(), {"font-family" : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY),
+                                    "font-size"   : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE),
+                                    "color"       : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR)
+                                   });
     Dwt.setVisible(this.getHtmlElement(), true);
+};
+
+ZmAdvancedHtmlEditor.prototype.onInit = function(ed, ev) {
+    var obj = this;
+    var tinymceEvent = tinymce.dom.Event;
+    tinymceEvent.add(ed.getWin(), 'focus', function(e) {
+        obj.setFocusStatus(true);
+    });
+    tinymceEvent.add(ed.getWin(), 'blur', function(e) {
+        obj.setFocusStatus(false);
+    });
+    // Set's up the a range for the current ins point or selection. This is IE only because the iFrame can
+    // easily lose focus (e.g. by clicking on a button in the toolbar) and we need to be able to get back
+    // to the correct insertion point/selection.
+    // DwtHtmlEditor is using _currInsPtBm property to store the cursor position in editor event handler function which is heavy.
+    // Here we are registering this dedicated event to store the bookmark which will fire when focus moves outside the editor
+    if(AjxEnv.isIE){
+        tinymceEvent.add(ed.getDoc(), 'beforedeactivate', function(e) {
+            if(ed.windowManager){
+                ed.windowManager.bookmark = ed.selection.getBookmark(1);
+            }
+        });
+    }
+
+    var ec = obj.getEditorContainer();
+    ec.setFocusMember(ed.getWin());
+
+    obj._editorInitialized = true;
+
+    if (obj._onTinyMCEEditorInitcallback) {
+        obj._onTinyMCEEditorInitcallback.run();
+    }
+    if (tinymce.settings && tinymce.settings.language_load === false){
+        tinymce.settings.language_load = true;
+    }
+    (ed.windowManager) && ed.windowManager.onOpen.add(ZmAdvancedHtmlEditor.onPopupOpen);
+    //appCtxt.notifyZimlets("onEditorInit", [ed, obj.getParent(), tinymceEvent]);
 };
 
 /*
@@ -745,7 +750,6 @@ ZmAdvancedHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
             var content = this._convertHtml2Text(convertor);
         }
     }
-    this.initDefaultDirection();
     if (mode === DwtHtmlEditor.TEXT && !this._editorInitialized) {
     }
     else {
@@ -810,45 +814,6 @@ function(id, src){
             img.removeAttribute("id");
             img.removeAttribute("data-mce-src");
             img.removeAttribute("data-zim-uri");
-        }
-    }
-};
-
-ZmAdvancedHtmlEditor.prototype.initDefaultFontSize =
-function(editor) {
-	var doc = editor && editor.getDoc();
-	if (doc) {
-		doc.body.style.fontFamily = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
-		doc.body.style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
-		doc.body.style.color = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
-	}
-};
-
-ZmAdvancedHtmlEditor.prototype.initDefaultDirection =
-function() {
-    if( this._mode === DwtHtmlEditor.HTML ){
-        var doc = this._getIframeDoc();
-        if (doc){
-            //Dont use css for direction Refer : http://www.w3.org/International/questions/qa-bidi-css-markup
-            if( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){
-                if(doc.body.dir !== ZmSetting.RTL){
-                    doc.body.dir = ZmSetting.RTL;
-                }
-            }
-            else{
-                doc.body.removeAttribute("dir");
-            }
-        }
-    }
-    else{
-        var textArea = this.getContentField();
-        if( appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL ){
-            if(textArea.getAttribute("dir") !== ZmSetting.RTL){
-                textArea.setAttribute("dir", ZmSetting.RTL);
-            }
-        }
-        else{
-            textArea.removeAttribute("dir");
         }
     }
 };
@@ -1858,6 +1823,54 @@ ZmAdvancedHtmlEditor.prototype.isDirty = function(){
             return editor.isDirty();
         }
     }
+};
+
+/**
+ * Listen for change in fontfamily, fontsize, fontcolor and direction preference and update the corresponding one.
+ */
+ZmAdvancedHtmlEditor.prototype._settingChangeListener = function(ev) {
+    if (ev.type != ZmEvent.S_SETTING) { return; }
+
+    var id = ev.source.id,
+        editor,
+        body,
+        textArea,
+        direction;
+
+    if (id === ZmSetting.COMPOSE_INIT_DIRECTION) {
+        textArea = this.getContentField();
+        direction = appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION);
+        if (direction === ZmSetting.RTL) {
+            textArea.setAttribute("dir", ZmSetting.RTL);
+        }
+        else{
+            textArea.removeAttribute("dir");
+        }
+    }
+
+    editor = this.getEditor();
+    body = editor ? editor.getBody() : null;
+    if(!body)
+        return;
+
+    if (id === ZmSetting.COMPOSE_INIT_FONT_FAMILY) {
+        body.style.fontFamily = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+    }
+    else if (id === ZmSetting.COMPOSE_INIT_FONT_SIZE) {
+        body.style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+    }
+    else if (id === ZmSetting.COMPOSE_INIT_FONT_COLOR) {
+        body.style.color = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
+    }
+    else if (id === ZmSetting.COMPOSE_INIT_DIRECTION) {
+        if (direction === ZmSetting.RTL) {
+            body.dir = ZmSetting.RTL;
+        }
+        else{
+            body.removeAttribute("dir");
+        }
+    }
+    editor.nodeChanged && editor.nodeChanged();//update the toolbar state
 };
 
 ZmEditorContainer = function(params) {
