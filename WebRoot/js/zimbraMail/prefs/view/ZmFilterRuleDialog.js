@@ -1441,6 +1441,7 @@ function(rowId) {
 	}
 	else if (testType == ZmFilterRule.TEST_ADDRESS && subject) {
 		subjectMod = ZmFilterRule.C_ADDRESS_VALUE[subject];
+		value += ";" + valueMod;   //addressTest has value=email part=all|domain|localpart
 	}
 	else if (testType == ZmFilterRule.TEST_SIZE && valueMod && valueMod != "B") {
 		value += valueMod;
