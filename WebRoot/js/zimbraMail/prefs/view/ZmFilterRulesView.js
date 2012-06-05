@@ -77,10 +77,13 @@ function() {
 	var listViewEl = Dwt.byId(data.id + "_list");
 	// add chooser
 	this._chooser = new ZmFilterRulesChooser(this._controller, {parent:this});
-	this._chooser.reparentHtmlElement(listViewEl + "_chooser");	
+	this._chooser.reparentHtmlElement(listViewEl + "_chooser");
 	var width = this._chooser.getWidth(this.parent);
 	var height = this._chooser.getHeight(this.parent);
-	this._chooser.resize(width, height);
+	this._chooser.resize(width, height); //still call this so the height is set correctly, but let's set the width to non specific values, to work better on resize:
+	//remove the width explicit setting and keep the current height setting.
+	this._chooser.sourceListView.setSize(Dwt.CLEAR, Dwt.DEFAULT);
+	this._chooser.targetListView.setSize(Dwt.CLEAR, Dwt.DEFAULT);
 	this._controller.initialize(this._toolbar, this._chooser.activeListView, this._chooser.notActiveListView);
 	this.hasRendered = true;
 };

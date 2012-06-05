@@ -2522,14 +2522,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 <template id='prefs.Pages#MailFilterListView'>
 	<table width='100%' align='center'>
 		<tr>
-			<td id='${targetDivId}'></td>
+			<td id='${targetDivId}' width="45%"></td>
 			<td valign='top' id='${buttonsDivId}'>
 				<div id='${transferButtonId}'	style='padding:30px 0 5px'></div>
 				<div id='${removeButtonId}'		style='padding-bottom:20px'></div>
 				<div id='${moveUpButtonId}'		style='padding-bottom:5px'></div>
 				<div id='${moveDownButtonId}'	style='padding-bottom:20px'></div>
 			</td>
-			<td id='${sourceDivId}'></td>
+			<td id='${sourceDivId}' width="45%"></td>
 		</tr>
 	</table>
 </template>
