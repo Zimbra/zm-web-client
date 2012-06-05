@@ -524,7 +524,7 @@ function() {
 
 ZmGroupView.prototype.getTitle =
 function() {
-	return [ZmMsg.zimbraTitle, ZmMsg.group].join(": ");
+	return [ZmMsg.zimbraTitle, this.isDistributionList() ? ZmMsg.distributionList : ZmMsg.group].join(": ");
 };
 
 ZmGroupView.prototype.setSize =
