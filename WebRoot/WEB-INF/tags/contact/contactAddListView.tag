@@ -94,7 +94,7 @@
                 and !fn:contains(uploader.compose.resources,hit.contactHit.displayEmail)
     }">   <%-- This condition is for not to list the contact/resource which has been already added --%>
     
-    <c:if test="${not empty hit.contactHit.displayEmail or hit.contactHit.isGroup}">
+    <c:if test="${not empty hit.contactHit.displayEmail}">
         <tr>
             <td width=1%>&nbsp;</td>
             <c:choose>
