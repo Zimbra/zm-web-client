@@ -446,11 +446,11 @@ function() {
 		return [];
 	}
 	var items = [];
-	if (this.isEmpty(true)) {
-		items.push("members");
-	}
 	if (!this.isValidDlName()) {
 		items.push("dlName");
+	}
+	if (this.isEmpty(true)) {
+		items.push("members");
 	}
 	if (!this.isValidDlDomainName()) {
 		items.push("dlDomainName");
@@ -469,7 +469,7 @@ ZmGroupView.prototype.getErrorMessage = function(id) {
 		return null;
 	}
 	if (id == "members") {
-		return ZmMsg.errorMissingGroup;
+		return this.isDistributionList() ? ZmMsg.errorMissingDlMembers : ZmMsg.errorMissingGroup;
 	}
 	if (id == "dlName") { 
 		return ZmMsg.dlInvalidName; 
