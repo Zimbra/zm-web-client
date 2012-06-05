@@ -74,7 +74,7 @@ function(conv, force) {
 		if (conv.msgs) {
 			conv.msgs.addChangeListener(this._listChangeListener);
 			var clv = this._controller.getListView();
-			if (clv && clv.isZmConvListView  && clv.isExpanded(conv)) {
+			if (clv && clv.isZmConvListView) {
 				conv.msgs.addChangeListener(clv._listChangeListener);
 			}
 		}
@@ -240,10 +240,6 @@ function(noClear) {
 		this._item.removeChangeListener(this._convChangeHandler);
 		if (this._item.msgs) {
 			this._item.msgs.removeChangeListener(this._listChangeListener);
-			var clv = this._controller.getListView();
-			if (clv) {
-				this._item.msgs.removeChangeListener(clv._listChangeListener);
-			}
 		}
 		this._item = null;
 	}

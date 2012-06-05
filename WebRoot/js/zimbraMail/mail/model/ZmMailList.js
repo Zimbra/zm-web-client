@@ -685,7 +685,7 @@ function(offset, limit) {
  * date, returns 0 (the item will be inserted at the top of the list).
  *
  * @param item		[ZmMailItem]	a mail item
- * @param sortBy		[constant]		sort order
+ * @param sortBy	[constant]		sort order
  */
 ZmMailList.prototype._getSortIndex =
 function(item, sortBy) {
@@ -695,6 +695,10 @@ function(item, sortBy) {
 	
 	var itemDate = parseInt(item.date);
 	var a = this.getArray();
+	// server always orders conv's msg list as DATE_DESC
+	if (this.convId && sortBy == ZmSearch.DATE_ASC) {
+		a = a.reverse();
+	}
 	for (var i = 0; i < a.length; i++) {
 		var date = parseInt(a[i].date);
 		if ((sortBy == ZmSearch.DATE_DESC && (itemDate >= date)) ||
