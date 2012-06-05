@@ -474,6 +474,7 @@ function(params) {
 	var msg = params.msg = params.msg || (this._replyView && this._replyView.getMsg());
 	if (!msg) { return; }
 	
+	params.hideView = params.sendNow;
 	var composeCtlr = AjxDispatcher.run("GetComposeController", params.hideView ? ZmApp.HIDDEN_SESSION : null);
 	params.composeMode = composeCtlr._getComposeMode(msg, composeCtlr._getIdentity(msg));
 	var htmlMode = (params.composeMode == DwtHtmlEditor.HTML);
@@ -483,7 +484,6 @@ function(params) {
 	if (value) {
 		params.extraBodyText = htmlMode ? AjxStringUtil.htmlEncode(value) : value;
 	}
-	params.hideView = params.sendNow;
 
 	var what = appCtxt.get(ZmSetting.REPLY_INCLUDE_WHAT);
 	if (msg && (what == ZmSetting.INC_BODY || what == ZmSetting.INC_SMART)) {
