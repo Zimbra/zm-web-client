@@ -453,7 +453,6 @@ function() {
 		};
 		this._compose(params);
 	}
-	this._replyView.reset();
 };
 
 ZmConvView2.prototype._cancelListener =
@@ -506,7 +505,7 @@ function(params, composeCtlr) {
 
 ZmConvView2.prototype._handleResponseSendMsg =
 function() {
-	this._replyView.setValue("");
+	this._replyView.reset();
 };
 
 ZmConvView2.prototype.addInviteReplyListener =
