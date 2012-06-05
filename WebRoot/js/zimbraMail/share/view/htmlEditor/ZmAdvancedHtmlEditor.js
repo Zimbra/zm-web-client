@@ -35,6 +35,7 @@ ZmAdvancedHtmlEditor = function(parent, posStyle, content, mode, withAce, repare
     settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_FAMILY).addChangeListener(listener);
     settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).addChangeListener(listener);
     settings.getSetting(ZmSetting.COMPOSE_INIT_DIRECTION).addChangeListener(listener);
+    settings.getSetting(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS).addChangeListener(listener);
 };
 
 ZmAdvancedHtmlEditor.prototype.isZmAdvancedHtmlEditor = true;
@@ -509,7 +510,7 @@ function(id, content) {
 		elements:  id,
         plugins : "advlist,inlinepopups,table,paste,directionality,media" + (AjxEnv.isIE ? "" : ",autolink"),
 		theme : "advanced",
-        theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,image,link,unlink",
+        theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,image,link,unlink,|,ltr,rtl,|,toggle",
         theme_advanced_buttons2 : "formatselect,undo,redo,|,removeformat,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,charmap,media",
 		theme_advanced_buttons3 : "",
 		theme_advanced_buttons4 : "",
@@ -546,12 +547,8 @@ function(id, content) {
                 "class" : "mce_toggle"
             });
 		}
-    }
+    };
 
-    if(appCtxt.get(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS)){
-        tinyMCEInitObj.theme_advanced_buttons1 = tinyMCEInitObj.theme_advanced_buttons1 + ",|,ltr,rtl";
-    }
-    tinyMCEInitObj.theme_advanced_buttons1 = tinyMCEInitObj.theme_advanced_buttons1 + ",|,toggle";
 	if( this._mode === DwtHtmlEditor.HTML ){
         Dwt.setVisible(obj.getHtmlElement(), false);
     }
@@ -655,6 +652,14 @@ ZmAdvancedHtmlEditor.prototype.onPostRender = function(ed, ev) {
         while ( anchorButton = anchorButtonsArray.shift() ) {
             anchorButton.title = anchorButton.title.replace("Ctrl", "Cmd");
         }
+    }
+    if (!appCtxt.get(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS)) {
+        var ltrButton = this.getToolbarButton("ltr").parentNode;
+        if (ltrButton) {
+            Dwt.setVisible(ltrButton, false);
+            Dwt.setVisible(ltrButton.previousSibling, false);
+        }
+        Dwt.setVisible(this.getToolbarButton("rtl").parentNode, false);
     }
     this.setSize("", parseInt(this.getContentField().style.height) + ZmAdvancedHtmlEditor.DELTA_HEIGHT);
     this.onToolbarToggle();
@@ -1826,7 +1831,7 @@ ZmAdvancedHtmlEditor.prototype.isDirty = function(){
 };
 
 /**
- * Listen for change in fontfamily, fontsize, fontcolor and direction preference and update the corresponding one.
+ * Listen for change in fontfamily, fontsize, fontcolor, direction and showing compose direction buttons preference and update the corresponding one.
  */
 ZmAdvancedHtmlEditor.prototype._settingChangeListener = function(ev) {
     if (ev.type != ZmEvent.S_SETTING) { return; }
@@ -1835,7 +1840,9 @@ ZmAdvancedHtmlEditor.prototype._settingChangeListener = function(ev) {
         editor,
         body,
         textArea,
-        direction;
+        direction,
+        showDirectionButtons,
+        ltrButton;
 
     if (id === ZmSetting.COMPOSE_INIT_DIRECTION) {
         textArea = this.getContentField();
@@ -1861,6 +1868,15 @@ ZmAdvancedHtmlEditor.prototype._settingChangeListener = function(ev) {
     }
     else if (id === ZmSetting.COMPOSE_INIT_FONT_COLOR) {
         body.style.color = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
+    }
+    else if (id === ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS) {
+        showDirectionButtons = appCtxt.get(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS);
+        ltrButton = this.getToolbarButton("ltr").parentNode;
+        if (ltrButton) {
+            Dwt.setVisible(ltrButton, showDirectionButtons);
+            Dwt.setVisible(ltrButton.previousSibling, showDirectionButtons);
+        }
+        Dwt.setVisible(this.getToolbarButton("rtl").parentNode, showDirectionButtons);
     }
     else if (id === ZmSetting.COMPOSE_INIT_DIRECTION) {
         if (direction === ZmSetting.RTL) {
