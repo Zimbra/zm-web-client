@@ -76,6 +76,11 @@ function(conv, force) {
 			var clv = this._controller.getListView();
 			if (clv && clv.isZmConvListView) {
 				conv.msgs.addChangeListener(clv._listChangeListener);
+				if (clv.isExpanded(conv)) {
+					// bug 74730 - rerender expanded conv's msg rows
+					clv._removeMsgRows(conv.id);
+					clv._expand(conv, null, true);
+				}
 			}
 		}
 	}

@@ -578,18 +578,19 @@ function(params) {
 };
 
 /**
- * @param conv		[ZmConv]		conv that owns the messages we will display
- * @param msg		[ZmMailMsg]*	msg that is the anchor for paging in more msgs
+ * @param {ZmConv}		conv	conv that owns the messages we will display
+ * @param {ZmMailMsg}	msg		msg that is the anchor for paging in more msgs (optional)
+ * @param {boolean}		force	if true, render msg rows		
  * 
  * @private
  */
 ZmConvListView.prototype._expand =
-function(conv, msg) {
+function(conv, msg, force) {
 	var item = msg || conv;
 	var isConv = (item.type == ZmItem.CONV);
 	var rowIds = this._msgRowIdList[item.id];
 	var lastRow;
-	if (rowIds && rowIds.length && this._rowsArePresent(item)) {
+	if (rowIds && rowIds.length && this._rowsArePresent(item) && !force) {
 		this._showMsgs(rowIds, true);
 		lastRow = document.getElementById(rowIds[rowIds.length - 1]);
 	} else {
