@@ -3782,6 +3782,7 @@ HTML>BODY .appt-selected .appt_allday_body
 #IFDEF GECKO
 	border:1px dotted #555;
 #ENDIF
+    padding: 0;
 }
 
 .infoBox {
