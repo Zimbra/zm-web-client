@@ -249,6 +249,7 @@ function(node) {
 	this.contentType		= this.ct			= node.ct;
 	this.name									= node.name;
 	this.part									= node.part;
+	this.cachekey								= node.cachekey;
 	this.size				= this.s			= node.s;
 	this.contentDisposition	= this.cd			= node.cd;
 	this.contentId			= this.ci			= node.ci;

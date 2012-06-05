@@ -1936,7 +1936,9 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 
 			// set other meta info
 			props.isHit = findHits && this._isAttInHitList(attach);
-			props.part = attach.part;
+			// S/MIME: stash the cache key for the applet in the part,
+			// as it's the only data which we retain later on
+			props.part = attach.part || attach.cachekey;
 			if (!useCL) {
 				props.url = [
 					appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI),
