@@ -79,7 +79,7 @@ function(msg) {
     // non-trash shared folder with admin/workflow access permissions
     var folder   =  appCtxt.getById(msg.folderId);
     var enabled  = !appCtxt.isExternalAccount();
-    if (enabled && folder.isRemote()) {
+    if (enabled && folder && folder.isRemote()) {
         var workflow = folder.isPermAllowed(ZmOrganizer.PERM_WORKFLOW);
         var admin    = folder.isPermAllowed(ZmOrganizer.PERM_ADMIN);
         var enabled  = (admin || workflow) &&
