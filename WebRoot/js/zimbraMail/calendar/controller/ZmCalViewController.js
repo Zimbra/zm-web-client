@@ -2379,7 +2379,10 @@ function(appt, all, result) {
 	var self = appCtxt.getActiveAccount().name;
 	msg.getHeaderStr = AjxCallback.returnFalse; // Real ugly hack to prevent headers from showing in the message
 
-	if (!appt.isOrganizer()) {
+    var isOrganizer = appt.isOrganizer();
+    var folder = appt.getFolder();
+    var isRemote = folder ? folder.isRemote() : false;
+	if (!isOrganizer || isRemote) {
 		organizerAddress.setType(AjxEmailAddress.FROM);
 		msg.addAddress(organizerAddress);
 	}
