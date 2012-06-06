@@ -485,23 +485,30 @@ function(subs, sentBy, sentByAddr, obo) {
 		var attendee = this._invite.getAttendees()[0];
 		var ptst = attendee && attendee.ptst;
 		if (ptst) {
+            var names = [];
 			var dispName = attendee.d || attendee.a;
+            var sentBy = attendee.sentBy;
+            var ptstStr = null;
+            if (sentBy) names.push(attendee.sentBy);
+            names.push(dispName);
 			subs.ptstIcon = ZmCalItem.getParticipationStatusIcon(ptst);
-
 			switch (ptst) {
 				case ZmCalBaseItem.PSTATUS_ACCEPT:
-					subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteMsgAccepted, [dispName]);
+					ptstStr = (!sentBy) ? ZmMsg.inviteMsgAccepted: ZmMsg.inviteMsgOnBehalfOfAccepted;
 					subs.ptstClassName = "InviteStatusAccept";
 					break;
 				case ZmCalBaseItem.PSTATUS_DECLINED:
-					subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteMsgDeclined, [dispName]);
+					ptstStr = (!sentBy) ? ZmMsg.inviteMsgDeclined: ZmMsg.inviteMsgOnBehalfOfDeclined;
 					subs.ptstClassName = "InviteStatusDecline";
 					break;
 				case ZmCalBaseItem.PSTATUS_TENTATIVE:
-					subs.ptstMsg = AjxMessageFormat.format(ZmMsg.inviteMsgTentative, [dispName]);
+					ptstStr = (!sentBy) ?ZmMsg.inviteMsgTentative:ZmMsg.inviteMsgOnBehalfOfTentative;
 					subs.ptstClassName = "InviteStatusTentative";
 					break;
 			}
+            if (ptstStr){
+                subs.ptstMsg = AjxMessageFormat.format(ptstStr, names);
+            }
 		}
 	}
 
