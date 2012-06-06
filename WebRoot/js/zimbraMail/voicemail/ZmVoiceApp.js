@@ -56,6 +56,8 @@ ZmVoiceApp.prototype.toString = function() { return "ZmVoiceApp"; };
 ZmVoiceApp.AUDIO_MP3_FORMAT = "audio/mpeg";
 ZmVoiceApp.AUDIO_WAV_FORMAT = "audio/wav";
 
+ZmVoiceApp.ERROR_CODE_AUTH = "voice.UNABLE_TO_AUTH"
+
 //default
 ZmVoiceApp.audioType =  ZmVoiceApp.AUDIO_MP3_FORMAT;
 
@@ -745,6 +747,11 @@ ZmVoiceApp.prototype.processErrors =
         if (!ex.code){
             return;
         }
+
+        if (ex.code == ZmVoiceApp.ERROR_CODE_AUTH) {
+            errorMessage = ZmMsg.voicemailErrorAuthFailure;
+        }
+
         if (this._UCProvider) {
             errorMessage = this._UCProvider.getErrorDescription(ex) || errorMessage;
         }
