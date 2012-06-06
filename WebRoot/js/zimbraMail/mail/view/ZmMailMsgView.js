@@ -1835,6 +1835,12 @@ function(tag, html, i) {
 
 	var tagClick = ['ZmMailMsgView._tagClick("', this._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.name), '");'].join("");
 	var removeClick = ['ZmMailMsgView._removeTagClick("', this._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.name), '");'].join("");
+    return this._getTagHtmlElements(tag, html, i, tagClick, removeClick);
+
+};
+
+ZmMailMsgView.prototype._getTagHtmlElements =
+function(tag, html, i, tagClick, removeClick ) {
 
 	html[i++] = "<span class='addrBubble TagBubble' ";
 	html[i++] = this._getTagAttrHtml(tag);

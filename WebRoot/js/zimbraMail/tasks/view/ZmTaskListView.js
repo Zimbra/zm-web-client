@@ -482,6 +482,8 @@ function(htmlArr, idx, task, field, colIdx, params) {
 			: "&nbsp;";
 	} else if (field == ZmItem.F_SORTED_BY) {
         htmlArr[idx++] = this._getAbridgedContent(task, colIdx);
+    } else if (field == ZmItem.F_TAG) {
+        idx = this._getImageHtml(htmlArr, idx, task.getTagImageInfo(), this._getFieldId(task, field));
     } else {
 		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
 	}

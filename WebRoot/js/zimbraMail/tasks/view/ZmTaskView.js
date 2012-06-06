@@ -116,6 +116,7 @@ function(calItem) {
 
     var el = this.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("tasks.Tasks#ReadOnlyView", subs);
+    this._setTags(calItem);
 
 	// content/body
 	var hasHtmlPart = (calItem.notesTopPart && calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
@@ -139,4 +140,28 @@ function(calItem) {
      ZmCalItemView.prototype._renderCalItem.call(this, calItem);
    }
    Dwt.setLoadedTime("ZmTaskItem");
+   calItem.addChangeListener(this._taskChangeListener.bind(this));
+
+};
+
+ZmTaskView.prototype._taskChangeListener =
+function(ev){
+    if(ev.event == ZmEvent.E_TAGS || ev.type == ZmEvent.S_TAG) {
+        this._setTags(this._calItem);
+    }
+};
+
+
+ZmTaskView.prototype._getTagHtml =
+function(tag, html, i) {
+    var tagClick = ['ZmMailMsgView._tagClick("', this._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.name), '");'].join("");
+    var removeClick = ['ZmTaskView._removeTagClick("', this._htmlElId, '","', AjxStringUtil.encodeQuotes(tag.name), '");'].join("");
+    return this._getTagHtmlElements(tag, html, i, tagClick, removeClick);
+};
+
+ZmTaskView._removeTagClick =
+function(myId, tagName) {
+        var tag = ZmMailMsgView._getTagClicked(tagName);
+        var dwtObj = DwtControl.fromElementId(myId);
+        ZmListController.prototype._doTag.call(dwtObj._controller, dwtObj._calItem, tag, false);
 };

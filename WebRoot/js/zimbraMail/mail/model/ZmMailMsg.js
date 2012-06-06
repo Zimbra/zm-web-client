@@ -2660,22 +2660,4 @@ function() {
 	return null;
 };
 
-ZmMailMsg.prototype.getSortedTags = 
-function() {
-	var numTags = this.tags && this.tags.length;
-	if (numTags) {
-		var tagList = appCtxt.getAccountTagList(this);
-		var ta = [];
-		for (var i = 0; i < numTags; i++) {
-			var tag = tagList.getByNameOrRemote(this.tags[i]);
-			//tag could be missing if this was called when deleting a whole tag (not just untagging one message). So this makes sure we don't have a null item.
-			if (!tag) {
-				continue;
-			}
-			ta.push(tag);
-		}
-		ta.sort(ZmTag.sortCompare);
-		return ta;
-	}
-	return null;
-};
+
