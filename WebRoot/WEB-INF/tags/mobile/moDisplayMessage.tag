@@ -62,7 +62,7 @@
 <div class="View address">
     <span class='label'><fmt:message key="fromLabel"/></span>
     <span id="d_from">${fn:escapeXml(from)}</span>
-    <span style="float:right;" id="d_btn_td" <c:if test="${empty param.ajax}">style="display:none;"</c:if>>
+    <span id="d_btn_td" <c:if test="${empty param.ajax}">style="display:none;"</c:if>>
         <a id='d_btn' onclick="return toggleElem('d_div',this,'<fmt:message key="MO_hideDetails"/>','<fmt:message key="MO_showDetails"/>')"><fmt:message key="MO_showDetails"/></a>
     </span>    
 </div>

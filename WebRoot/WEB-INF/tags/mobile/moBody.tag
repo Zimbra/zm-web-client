@@ -47,16 +47,11 @@
                         iframe.style.width = iframe.contentWindow.document.body.scrollWidth + "px";
                     }
                 };
-                var iframeBody = document.getElementById("iframeBody${counter}");
-                iframeBody.appendChild(iframe);
+                document.getElementById("iframeBody${counter}").appendChild(iframe);
                 var doc = iframe.contentWindow ? iframe.contentWindow.document : iframe.contentDocument;
                 doc.open();
                 doc.write("${zm:jsEncode(theBody)}");
                 doc.close();
-                iframeBody.style.overflow = "scroll";
-                iframeBody.style.webkitOverflowScrolling = "touch";
-                iframe.contentWindow.document.body.style.wordWrap = "break-word";
-
                 //if (keydownH) doc.onkeydown = keydownH;
                 //if (keypressH) doc.onkeypress = keypressH;
                 setTimeout(resizeIframe, 500);

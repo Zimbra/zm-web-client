@@ -223,7 +223,7 @@ form {
     margin: 2px;
     border: 1px solid #a7b2bc;
     padding: 4px; /* font-size:medium;*/
-	overflow: hidden;
+	overflow: visible;
 }
 .Toolbar, .SubToolbar {
     background: #eeeeee;
