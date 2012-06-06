@@ -235,7 +235,6 @@ function(data) {
     if (data.name) {
 		if (data.name == ZmIdentity.DEFAULT_NAME) {
 			this.isDefault = true;
-            this.name = ZmMsg.defaultIdentityName;
         }
 	}
 };
