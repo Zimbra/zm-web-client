@@ -2660,4 +2660,16 @@ function() {
 	return null;
 };
 
+/**
+ * Return mime header id if it exists, otherwise returns null
+ * @return {String} mime header value
+ */
+ZmMailMsg.prototype.getMimeHeader =
+function(name) {
+	var value = null;
+	if (this.attrs && this.attrs[name]) {
+		value = this.attrs[name];
+	}
+	return value;
+};
 
