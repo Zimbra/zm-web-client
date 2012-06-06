@@ -70,6 +70,8 @@ BODY						{	margin:0px; 	}
 #skin_container_quota					{	@SkinBorderQuota@	}
 /** Drop Menu section **/
 #skin_dropMenu							{	font-size:14px; padding:0 10px 0 3px; text-align:center; vertical-align:middle; @Text-contrast@ @ActiveCursor@ 	}
+#skin_dropMenu .DwtLinkButtonDropDownArrowTd			{	border-left:0; opacity:.75; padding-left:0;	}
+#skin_dropMenu .ZHover .DwtLinkButtonDropDownArrowTd	{	opacity:1; 	}
 #skin_container_global_buttons>DIV		{	display:table-cell; padding-top:2px; 	}
 /** Tree Toolbar a.k.a.  "current app" **/
 #skin_spacing_current_app				{}
