@@ -645,6 +645,7 @@ ZmConvView2.prototype.isActiveQuickReply = function() {
 ZmConvReplyView = function(params) {
 
 	params.className = params.className || "Conv2Reply";
+	params.id = params.parent._htmlElId + "_reply";
 	DwtComposite.call(this, params);
 	
 	this._convView = params.parent;
@@ -843,7 +844,7 @@ function(msg, msgView, op) {
 		if (addrs && addrs.length > 0) {
 			addressTypes.push(type);
 			var prefix = AjxStringUtil.htmlEncode(ZmMsg[AjxEmailAddress.TYPE_STRING[type]]);
-			var addressInfo = msgView.getAddressesFieldInfo(addrs, options, type);
+			var addressInfo = msgView.getAddressesFieldInfo(addrs, options, type, this._htmlElId);
 			participants[type] = {
 				addresses:	addrs,
 				prefix:		prefix,

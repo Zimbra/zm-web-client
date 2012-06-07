@@ -1274,8 +1274,8 @@ function(addrs, options, type, om, htmlElId) {
  * returns object with the html and ShowMore link id
  */
 ZmMailMsgView.prototype.getAddressesFieldInfo =
-function(addrs, options, type) {
-	return ZmMailMsgView.getAddressesFieldHtmlHelper(addrs, options, type, this._objectManager, this._htmlElId);
+function(addrs, options, type, htmlElId) {
+	return ZmMailMsgView.getAddressesFieldHtmlHelper(addrs, options, type, this._objectManager, htmlElId || this._htmlElId);
 };
 
 ZmMailMsgView.prototype._renderMessage =
