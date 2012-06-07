@@ -765,9 +765,12 @@ function() {
 	
 	if (!this._replyToolbar) {
 		var buttons = [ZmOperation.SEND, ZmOperation.CANCEL];
+		var overrides = {};
+		overrides[ZmOperation.CANCEL] = {tooltipKey: "cancel", shortcut: null};
 		var tbParams = {
 			parent:				this,
 			buttons:			buttons,
+			overrides:			overrides,
 			posStyle:			DwtControl.STATIC_STYLE,
 			buttonClassName:	"DwtToolbarButton",
 			context:			ZmId.VIEW_CONV2,
