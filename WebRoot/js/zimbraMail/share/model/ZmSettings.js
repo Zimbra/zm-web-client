@@ -279,6 +279,9 @@ ZmSettings.prototype.setUserSettings = function(params) {
 		}
 	}
 
+    // Voice feature
+    this._settings["VOICE_ENABLED"].setValue(this._hasVoiceFeature(), null, false, true);
+
     var accountName = params.accountName;
     var setDefault = params.preInit ? false : params.setDefault;
     var skipNotify = params.preInit ? true : params.skipNotify;
@@ -1133,4 +1136,40 @@ function() {
 					  "font-size:" + appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE) + ";" +
 					  "color:" + appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR) + ";";
 	this._userFontPrefsRuleIndex = DwtCssStyle.addRule(document.styleSheets[0], selector, declaration);
+};
+
+// Check license to see if voice feature is allowed
+// License block format:
+//
+//  <license status="OK">
+//    <attr name="SMIME">FALSE</attr>
+//    <attr name="VOICE">TRUE</attr>
+//  </license>
+
+ZmSettings.prototype._hasVoiceFeature = function() {
+
+    var info = this.getInfoResponse;
+    var license = info && info.license;
+    var status = license && license.status;
+
+    if (!license || !license.attr) {
+        return false;
+    }
+
+    // License not installed or not activated or expired
+    if (ZmSetting.LICENSE_MSG[status]) {
+        return false;
+    }
+
+    // check for VOICE license attribute
+
+    for (var i = 0; license && i < license.attr.length; i++) {
+        var attr = license.attr[i];
+
+        if (attr.name == "VOICE") {
+            return attr._content == "TRUE";
+        }
+    }
+
+    return false;
 };
