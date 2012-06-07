@@ -99,11 +99,14 @@
 
     boolean isScriptErrorOn = getParameter(request, "scripterrors", "0").equals("1");
 	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
-	String debugLogTarget = getParameter(request, "log", getAttribute(request, "log", null));
-	String extraPackages = getParameter(request, "packages", getAttribute(request, "packages", null));
+    debug = BeanUtils.cook(debug);
+    String debugLogTarget = getParameter(request, "log", getAttribute(request, "log", null));
+    debugLogTarget = BeanUtils.cook(debugLogTarget);
+    String extraPackages = getParameter(request, "packages", getAttribute(request, "packages", null));
 	String startApp = getParameter(request, "app", "");
 	String noSplashScreen = getParameter(request, "nss", null);
-	String virtualAcctDomain = getParameter(request, "virtualacctdomain", null);
+    noSplashScreen = BeanUtils.cook(noSplashScreen);
+    String virtualAcctDomain = getParameter(request, "virtualacctdomain", null);
 	boolean isLeakDetectorOn = getParameter(request, "leak", "0").equals("1");
 
 	String mode = getAttribute(request, "mode", null);
