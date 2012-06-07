@@ -2171,7 +2171,10 @@ function(params) {
 		params1.rfc822Part  = params.rfc822Part;
 	}
 	else {
-		params1.blankTarget = true;
+		// open non-JavaScript URLs in a blank target
+		if (params.att.url && params.att.url.indexOf('javascript:') !== 0) {
+			params1.blankTarget = true;
+		}
 		params1.href = params.att.url;
 	}
 	return ZmMailMsgView.getAttachmentLinkHtml(params1);
