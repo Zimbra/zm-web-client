@@ -1218,8 +1218,16 @@ function(msg, container) {
 	linkInfo[ZmOperation.ACTIONS_MENU]	= {key: "moreActions",	handler: this._handleMoreActionsLink};
 
 	var links;
+	var folder = appCtxt.getById(msg.folderId);
 
-	if (msg.isDraft) {
+	if (folder && folder.isFeed()) {
+		links = [
+			ZmOperation.SHOW_ORIG,
+			ZmOperation.FORWARD,
+			ZmOperation.ACTIONS_MENU
+		];
+	}
+	else if (msg.isDraft) {
 		links = [
 			ZmOperation.DRAFT,
 			ZmOperation.SHOW_ORIG,
