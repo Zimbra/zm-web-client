@@ -181,7 +181,7 @@ function(results, folderId) {
 	}
 
 	this._setTabGroup(this._tabGroups[viewId]);
-	this._resetNavToolBarButtons();
+	this._resetNavToolBarButtons(viewId);
 
     // do this last
 	if (!this._taskTreeController) {
