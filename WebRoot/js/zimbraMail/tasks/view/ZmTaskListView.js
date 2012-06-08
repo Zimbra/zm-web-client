@@ -308,7 +308,7 @@ function(list, noResultsOk, doAdd) {
 		this._setNoResultsHtml();
 	}
 
-    if (doAdd) { return; }
+    if (doAdd || (this._controller && this._controller.isReadOnly())) { return; }
 
 	// add custom row to allow user to quickly enter tasks from w/in listview
 	div = document.createElement("DIV");

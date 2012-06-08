@@ -98,6 +98,7 @@ function(calItem) {
         alarm: alarm,
 		folder: appCtxt.getTree(ZmOrganizer.TASKS).getById(calItem.folderId),
 		folderLabel: ZmMsg.folder,
+        isTask:true,
         _infoBarId:this._infoBarId
 	};
 };
@@ -107,7 +108,7 @@ function(calItem) {
 ZmTaskView.prototype._renderCalItem =
 function(calItem) {
 
-   if(this._controller.isReadingPaneOn()) {
+   if(this._controller.isReadingPaneOn() && this._newTab) {
 	this._lazyCreateObjectManager();
 
 	var subs = this._getSubs(calItem);

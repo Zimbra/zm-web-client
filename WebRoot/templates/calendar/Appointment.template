@@ -978,6 +978,7 @@
 
 <template id='calendar.Appointment#ReadOnlyView'>
 	<div class='ApptHeaderDiv'>
+        <$ if (!data.isTask){ $>
         <div>
             <table width=100% class='MsgHeaderTable ZPropertySheet'>
                 <tr>
@@ -986,6 +987,7 @@
                 </tr>
             </table>
         </div>
+        <$ } $>
         <div>
             <table id='${id}_hdrTable' width=100% class='MsgHeaderTable ZPropertySheet'>
                 <tr>

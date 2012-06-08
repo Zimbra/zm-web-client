@@ -420,7 +420,9 @@ function() {
 			ZmOperation.SEP,
 			ZmOperation.PRINT,
 			ZmOperation.SEP,
-            ZmOperation.MARK_AS_COMPLETED
+            ZmOperation.MARK_AS_COMPLETED,
+            ZmOperation.SEP,
+            ZmOperation.CLOSE
             );
 	
 	return toolbarOps;
@@ -618,7 +620,8 @@ function(parent, num) {
 		parent.enable(ZmOperation.EDIT, canEdit);
         parent.enable(ZmOperation.MARK_AS_COMPLETED, canEdit && !task.isComplete())
     }
-	var printButton = (parent instanceof ZmButtonToolBar) ? parent.getButton(ZmOperation.PRINT) : null;
+    parent.setItemVisible(ZmOperation.CLOSE, false);
+    var printButton = (parent instanceof ZmButtonToolBar) ? parent.getButton(ZmOperation.PRINT) : null;
 	var printMenu = printMenu && printButton.getMenu();
 	var printMenuItem = printMenu && printMenu.getItem(1);
 	if (printMenuItem) {
@@ -797,6 +800,11 @@ function(tasks) {
 		appCtxt.setStatusMsg(summary);
 	}
 };
+ZmTaskListController.prototype.isReadOnly =
+function() {
+    var folder = appCtxt.getById(this._folderId)
+    return (folder.id == ZmOrganizer.ID_TRASH || folder.isReadOnly() || folder.isFeed());
+};
 
 ZmTaskListController.prototype._editTask =
 function(task) {
@@ -812,7 +820,7 @@ function(task) {
     if (!canEdit) {
 		if (task.isException) mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
         var clone = ZmTask.quickClone(task);
-		clone.getDetails(mode, new AjxCallback(this, this._showTaskReadOnlyView, clone));
+		clone.getDetails(mode, new AjxCallback(this, this._showTaskReadOnlyView, [clone, true]));
 	} else {
 		if (task.isRecurring()) {
 			/*recurring tasks not yet supported bug 23454
@@ -846,17 +854,19 @@ function() {
 };
 
 ZmTaskListController.prototype._showTaskReadOnlyView =
-function(task) {
+function(task, newTab) {
 	var viewId = ZmId.VIEW_TASK;
-    if(!this.isReadingPaneOn()) {
+    newTab = newTab || !this.isReadingPaneOn();
+    if(newTab) {
         var calItemView = this._listView[viewId];
 
         if (!calItemView) {
             this._setup(viewId);
             calItemView = this._listView[viewId];
         }
-
+        calItemView._newTab = true;
         calItemView.set(task, ZmId.VIEW_TASKLIST);
+
         this._resetOperations(this._toolbar[viewId], 1); // enable all buttons
 
 		var elements = this.getViewElements(viewId, this._listView[viewId]);
@@ -866,10 +876,13 @@ function(task) {
 						pushOnly:	true});
     } else {
         var calItemView = this._taskMultiView._taskView;
+        calItemView._newTab = false;
         if(calItemView) {
             calItemView.set(task, ZmId.VIEW_TASK);
         }
     }
+    if (this._toolbar[viewId])
+        this._toolbar[viewId].setItemVisible(ZmOperation.CLOSE, newTab );
 };
 
 ZmTaskListController.prototype._showTaskEditView =
@@ -923,7 +936,7 @@ function(ev) {
         var task = ev.item;
         var mode = ZmCalItem.MODE_EDIT;
         var clone = ZmTask.quickClone(task);
-        clone.getDetails(mode, new AjxCallback(this, this._showTaskReadOnlyView, clone));
+        clone.getDetails(mode, new AjxCallback(this, this._showTaskReadOnlyView, [clone, false]));
     }
 };
 
