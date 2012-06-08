@@ -1936,9 +1936,15 @@ function(findHits, includeInlineImages, includeInlineAtts) {
 
 			// set other meta info
 			props.isHit = findHits && this._isAttInHitList(attach);
-			// S/MIME: stash the cache key for the applet in the part,
-			// as it's the only data which we retain later on
-			props.part = attach.part || attach.cachekey;
+			// S/MIME: recognize client-side generated attachments,
+			// and stash the cache key for the applet in the part, as
+			// it's the only data which we retain later on
+			if (attach.part) {
+				props.part = attach.part;
+			} else {
+				props.generated = true;
+				props.part = attach.cachekey;
+			}
 			if (!useCL) {
 				props.url = [
 					appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI),

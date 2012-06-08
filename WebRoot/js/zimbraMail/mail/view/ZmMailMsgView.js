@@ -2066,7 +2066,7 @@ function() {
 	var hasGeneratedAttachments = false;
 
 	for (var i = 0; i < attInfo.length; i++) {
-		hasGeneratedAttachments = hasGeneratedAttachments || !att.part;
+		hasGeneratedAttachments = hasGeneratedAttachments || att.generated;
 	}
 
 	if (!hasGeneratedAttachments && attInfo.length > 1) {
