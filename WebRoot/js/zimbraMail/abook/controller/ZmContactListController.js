@@ -1430,7 +1430,7 @@ function(items, group) {
 	var id, contact;
 	
 	for (var i=0; i<items.length; i++) {
-		if (!items[i].isGroup()) {
+		if (items[i].isDistributionList() || !items[i].isGroup()) {
 			obj = this._createContactRefObj(items[i], group);
 			if (obj.value) {
 				newMembers[obj.value] = obj;
@@ -1498,7 +1498,7 @@ ZmContactListController.prototype._createContactRefObj =
 function(contactToAdd, group) {
 	var obj = {};
 	var memberType = contactToAdd.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
-	var id = memberType == ZmContact.GROUP_CONTACT_REF ? contactToAdd.getId(true) : contactToAdd.ref;
+	var id = memberType == ZmContact.GROUP_CONTACT_REF ? contactToAdd.getId(true) : (contactToAdd.ref || contactToAdd.id);
 	if (id) {
 		var obj = {value: id, type: memberType};
 		if (group) {
