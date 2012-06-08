@@ -983,13 +983,12 @@ function(ev) {
  */
 ZmContactSplitView._tagClicked =
 function(tagId) {
-	var sc = appCtxt.getSearchController();
-	if (sc) {
-		var tag = appCtxt.getById(tagId);
-		if (tag) {
-			sc.search({query: tag.createQuery()});
-		}
+	var tagList = appCtxt.getAccountTagList(this._contact);
+	var tag = tagList.getByNameOrRemote(tagId);
+	if (!tag) {
+		return;
 	}
+	appCtxt.getSearchController().search({query: tag.createQuery()});
 };
 
 ZmContactSplitView.prototype._sashCallback = function(delta) {
