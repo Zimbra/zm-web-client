@@ -2146,6 +2146,7 @@ function(msgNode) {
 			{
 				this.flagLocal(ZmItem.FLAG_ATTACH, true);
 			}
+            this._loaded = true;
 		} catch (ex) {
 			// do nothing - this means we're trying to load an ZmInvite in new
 			// window, which we dont currently load (re: support).
