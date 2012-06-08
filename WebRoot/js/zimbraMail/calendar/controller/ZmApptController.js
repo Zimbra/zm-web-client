@@ -145,11 +145,15 @@ function(mode) {
     var calItem = this.getCalItem();
     var calendar = calItem && calItem.getFolder();
     var isTrash = calendar && calendar.nId==ZmOrganizer.ID_TRASH;
+    var isReadOnly = calendar && calendar.isReadOnly();
 
     if(isTrash){
         this._disableEditForTrashedItems();
     }
 
+    if (isReadOnly) {
+        this._disableActionsForReadOnlyAppt();
+    }
     if (appCtxt.isExternalAccount()) {
         this._disableActionsForExternalAccount();
     }
@@ -166,6 +170,23 @@ function() {
                             ZmOperation.PROPOSE_NEW_TIME,
                             ZmOperation.FORWARD_APPT
                             ], false);
+    }
+};
+
+ZmApptController.prototype._disableActionsForReadOnlyAppt =
+function() {
+    var actionMenu = this._toolbar.getActionsMenu();
+    if(actionMenu){
+        actionMenu.enable([
+                        ZmOperation.TAG,
+                        ZmOperation.TAG_MENU,
+                        ZmOperation.FORWARD_APPT,
+                        ZmOperation.DELETE
+                        ], false);
+    }
+    var tagButton = this._toolbar.getButton(ZmOperation.TAG_MENU);
+	if (tagButton) {
+        tagButton.setEnabled(false);
     }
 };
 
