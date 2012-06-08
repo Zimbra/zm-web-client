@@ -978,53 +978,52 @@
 
 <template id='calendar.Appointment#ReadOnlyView'>
 	<div class='ApptHeaderDiv'>
-	<table class='MsgHeaderTable' id='${id}_hdrTable' width=100%>
-		<tr>
-			<td class='LabelColName' colspan='101' width=100%>
-				<table width=100% style="border-bottom:1px solid #909090;">
-					<tr>
-						<td style="width: 70px;" class='LabelColName' id='${id}_responseActionSelectCell'></td>
-						<td class='LabelColValue' id='${id}_responseActionMsgCell' colspan=100></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
+        <div>
+            <table width=100% class='MsgHeaderTable ZPropertySheet'>
+                <tr>
+                    <td style="width: 70px;" class='LabelColName' id='${id}_responseActionSelectCell'></td>
+                    <td class='LabelColValue' id='${id}_responseActionMsgCell' colspan=100></td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <table id='${id}_hdrTable' width=100% class='MsgHeaderTable ZPropertySheet'>
+                <tr>
+                    <td class='LabelColName'>&nbsp;</td>
+                    <td class='SubjectCol LabelColValue' colspan='100' width=100%><$= data.subject $></td>
+                </tr>
 
-		<tr>
-			<td class='LabelColName'>&nbsp;</td>
-			<td class='SubjectCol LabelColValue' colspan='100' width=100%><$= data.subject $></td>
-		</tr>
+                <$ if (data.location) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.location, val:data.location}) $><$ } $>
+                <$ if (data.equipment) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.resources, val:data.equipment}) $><$ } $>
+                <$ if (data.dateStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.date, val:data.dateStr}) $><$ } $>
+                <$ if (data.startDate) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.startDate, val:data.startDate}) $><$ } $>
+                <$ if (data.dueDate) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.dueDate, val:data.dueDate}) $><$ } $>
+                <$ if (data.priority) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.priority, val:data.priority}) $><$ } $>
+                <$ if (data.status) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.status, val:data.status}) $><$ } $>
+                <$ if (data.pComplete) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.percentComplete, val:data.pComplete}) $><$ } $>
 
-		<$ if (data.location) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.location, val:data.location}) $><$ } $>
-		<$ if (data.equipment) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.resources, val:data.equipment}) $><$ } $>
-		<$ if (data.dateStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.date, val:data.dateStr}) $><$ } $>
-		<$ if (data.startDate) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.startDate, val:data.startDate}) $><$ } $>
-		<$ if (data.dueDate) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.dueDate, val:data.dueDate}) $><$ } $>
-		<$ if (data.priority) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.priority, val:data.priority}) $><$ } $>
-		<$ if (data.status) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.status, val:data.status}) $><$ } $>
-		<$ if (data.pComplete) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.percentComplete, val:data.pComplete}) $><$ } $>
+                <!-- exception warning -->
+                <$ if (data.isException) { $>
+                <tr valign='center'>
+                    <td colspan=101>
+                        <table>
+                            <tr>
+                                <td><$= AjxImg.getImageHtml("ApptException") $></td>
+                                <td><b><$= ZmMsg.apptExceptionNote$></b></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <$ } $>
 
-		<!-- exception warning -->
-		<$ if (data.isException) { $>
-		<tr valign='center'>
-			<td colspan=101>
-				<table>
-					<tr>
-						<td><$= AjxImg.getImageHtml("ApptException") $></td>
-						<td><b><$= ZmMsg.apptExceptionNote$></b></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-		<$ } $>
-
-		<$ if (data.isAttendees && data.org) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.organizer, val:data.org}) $><$ } $>
-		<$ if (data.isAttendees && data.obo) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.onBehalfOf, val:data.obo}) $><$ } $>
-		<$ if (data.reqAttendees) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.attendees, val:data.reqAttendees}) $><$ } $>
-		<$ if (data.optAttendees) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.optionalAttendees, val:data.optAttendees}) $><$ } $>
-		<$ if (data.recurStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.repeats, val:data.recurStr}) $><$ } $>
-		<$ if (data.attachStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr}) $><$ } $>
-	</table>
+                <$ if (data.isAttendees && data.org) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.organizer, val:data.org}) $><$ } $>
+                <$ if (data.isAttendees && data.obo) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.onBehalfOf, val:data.obo}) $><$ } $>
+                <$ if (data.reqAttendees) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.attendees, val:data.reqAttendees}) $><$ } $>
+                <$ if (data.optAttendees) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.optionalAttendees, val:data.optAttendees}) $><$ } $>
+                <$ if (data.recurStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.repeats, val:data.recurStr}) $><$ } $>
+                <$ if (data.attachStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr}) $><$ } $>
+            </table>
+        </div>
 	</div>
     <div id='${_infoBarId}'></div>
 </template>
