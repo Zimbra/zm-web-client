@@ -300,12 +300,32 @@ function(tryOnTimer, offset) {
 	} else {
 		var selection = editor.selection ? editor.selection.getSel() : "";
 		if (selection) {
-			// if we get an offset, use it as character count into text node
-			var target = offset ? body.firstChild : body;
-			offset = offset || 0;
-			selection.collapse(target, offset);
-			success = true;
-		}
+            if (offset) { // if we get an offset, use it as character count into text node
+                var target = body.firstChild;
+                while (target) {
+                    if (offset === 0) {
+                        selection.collapse(target, offset);
+                        break;
+                    }
+                    if (target.nodeName === "#text") {
+                        var textLength = target.length;
+                        if (offset > textLength) {
+                            offset = offset - textLength;
+                        } else {
+                            selection.collapse(target, offset);
+                            break;
+                        }
+                    } else if (target.nodeName === "BR") {//text.length is also including \n count. so if there is br reduce offset by 1
+                        offset = offset - 1;
+                    }
+                    target = target.nextSibling;
+                }
+            }
+            else {
+                selection.collapse(body, 0);
+            }
+          success = true;
+        }
 	}
 	if (!success && tryOnTimer) {
 		var action = new AjxTimedAction(this, this._moveCaretToTopHtml);
