@@ -2404,7 +2404,7 @@ function(appt, all, result) {
 			if (optAddressArray[i]) {
 				var address = AjxEmailAddress.parse(optAddressArray[i]);
 				if (address.getAddress() != self && address.getAddress() != organizerAddress.getAddress()) {
-					address.setType(AjxEmailAddress.TO);
+					address.setType(AjxEmailAddress.CC);
 					msg.addAddress(address);
 				}
 			}

@@ -2089,7 +2089,7 @@ function(action, type, override) {
 		// reply to all senders if reply all (includes To: and Cc:)
 		if (action == ZmOperation.REPLY) {
 			this._recipients.setAddress(AjxEmailAddress.CC, "");
-		} else if (action == ZmOperation.REPLY_ALL) {
+		} else if (action == ZmOperation.REPLY_ALL || action == ZmOperation.CAL_REPLY_ALL) {
 			var addrs = new AjxVector();
 			addrs.addList(this._addressesMsg.getAddresses(AjxEmailAddress.CC));
 			var toAddrs = this._addressesMsg.getAddresses(AjxEmailAddress.TO);
