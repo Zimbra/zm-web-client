@@ -74,6 +74,10 @@
 
 .ZaStatusView {background-color:#EEE; }
 
+.DwtMsgDialog {
+	padding:10px;
+}
+
 .ZaNewAccountDialog {
 	width:500px;
 }
