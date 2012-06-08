@@ -546,6 +546,12 @@ function(ev) {
     this._prefDialog.popup(this.getCalendarAccount());
 };
 
+ZmApptComposeController.prototype.setRequestResponsesEnabled =
+function(enabled) {
+   if (this._requestResponses)
+   this._requestResponses.setEnabled(enabled);
+};
+
 ZmApptComposeController.prototype.setRequestResponses =
 function(requestResponses) {
    if (this._requestResponses)

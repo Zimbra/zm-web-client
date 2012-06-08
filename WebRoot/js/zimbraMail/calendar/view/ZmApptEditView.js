@@ -1055,9 +1055,14 @@ function(calItem, mode) {
     this.setApptMessage(this._getMeetingStatusMsg(calItem));
 
     this.updateToolbarOps();
-    if(this._isForward || this._isProposeTime) {
+    if(this._isProposeTime) {
         this._controller.setRequestResponses(false);
-    } else {
+    }
+    else if (this._isForward) {
+        this._controller.setRequestResponses(calItem.rsvp);
+        this._controller.setRequestResponsesEnabled(false);
+    }
+    else {
         this._controller.setRequestResponses(calItem && calItem.hasAttendees() ? calItem.shouldRsvp() : true);
     }
 
