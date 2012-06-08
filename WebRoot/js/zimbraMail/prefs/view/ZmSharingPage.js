@@ -875,7 +875,8 @@ function(share, html, idx) {
 		var action = actions[i];
         var linkId = [share.domId, action].join("_");
 		// public shares have no editable fields, and sent no mail
-		if ((share.isPublic() || share.invalid || share.isGuest()) && (action == "edit" || action == "resend")) { continue; }
+		if (share.isGuest() && action == "edit") { continue; }
+		if ((share.isPublic() || share.invalid) && (action == "edit" || action == "resend")) { continue; }
 
 		html[idx++] = "<a href='javascript:;' id='" + linkId + "' onclick='ZmSharingView._handleShareAction(" + '"' + share.domId + '", "' + handlers[i] + '"' + ");'>" + ZmMsg[action] + "</a> ";
 	}
