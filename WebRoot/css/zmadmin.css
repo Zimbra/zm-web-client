@@ -159,13 +159,14 @@
 .LinkButton:visited {
 	@Text@
 	background-color:#DFE2E2;
-	@grad(#FFF,#DFE2E2)@
+	text-decoration:none;
+	@grad(white,#DFE2E2)@
 	
 }
 .LinkButton:hover {
 	background-color:#B8DEF3;
 	color:black;
-	@grad(#FFF,#B8DEF3)@
+	@grad(white,#B8DEF3)@
 }
 .LinkButton:active {
 	background-color:#74B6DD;
