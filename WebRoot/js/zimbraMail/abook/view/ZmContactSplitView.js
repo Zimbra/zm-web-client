@@ -322,7 +322,8 @@ function(controller, dropTgt) {
 	// define well-known Id's
 	this._iconCellId	= this._htmlElId + "_icon";
 	this._titleCellId	= this._htmlElId + "_title";
-	this._tagCellId		= this._htmlElId + "_tags";
+	this._tagCellId		= this._htmlElId + "_tags_contact";
+	this._tagGroupCellId	= this._htmlElId + "_tags_group";
 	this._headerRowId	= this._htmlElId + "_headerRow";
 	this._contactBodyId = this._htmlElId + "_body";
 	this._contentId		= this._htmlElId + "_content";
@@ -905,6 +906,12 @@ function(isGroup) {
 	this._contactGroupView.setVisible(isGroup);
 };
 
+
+ZmContactSplitView.prototype._getTagsElementId =
+function() {
+	return this._contact.isGroup() ? this._tagGroupCellId : this._tagCellId;
+};
+
 /**
  * @private
  */
@@ -927,7 +934,7 @@ function() {
 		var tag = ta[j];
 		if (!tag) { continue; }
 		var icon = tag.getIconWithColor();
-		var attr = ["id='", this._tagCellId, tag.id, "'"].join("");
+		var attr = ["id='", this._getTagsElementId(), tag.id, "'"].join("");
 		// XXX: set proper class name for link once defined!
 		html[idx++] = "<a href='javascript:;' class='' onclick='ZmContactSplitView._tagClicked(";
 		html[idx++] = '"';
@@ -946,7 +953,7 @@ function() {
 ZmContactSplitView.prototype._setHeaderInfo =
 function(clear) {
 	// set tags
-	var tagCell = document.getElementById(this._tagCellId);
+	var tagCell = document.getElementById(this._getTagsElementId());
 	if (tagCell) {
 		tagCell.innerHTML = clear ? "" : this._getTagHtml();
 	}
@@ -964,7 +971,7 @@ function(ev) {
 	if ((ev.event == ZmEvent.E_MODIFY && changed) ||
 			ev.event == ZmEvent.E_DELETE ||
 			ev.event == ZmEvent.E_CREATE) { //could be tag that was not local (from share) becomes local now.
-		var tagCell = document.getElementById(this._tagCellId);
+		var tagCell = document.getElementById(this._getTagsElementId());
         if (tagCell) {
 		    tagCell.innerHTML = this._getTagHtml();
         }

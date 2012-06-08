@@ -337,6 +337,7 @@
 		var contact		= data.contact;
 		var imageUrl	= contact.getImageUrl();
 		var accountName = appCtxt.multiAccounts && contact.account && contact.account.getDisplayName();
+		var tagsId = data.id + (contact.isGroup() ? "_tags_group" : "_tags_contact"); 
 		var imgClassName = contact.isGroup() ? "GroupPerson_48" : "Person_48";
 		var isEdit = data.isEdit;
 	$>
@@ -354,7 +355,7 @@
 				<td valign=bottom width=48 rowspan=2><$= AjxImg.getImageHtml(imgClassName) $></td>
 			<$ } $>
 			<$ if (!isEdit) {$>
-			    <td id='${id}_tags' align='right' colspan=2></td>
+			    <td id='<$= tagsId $>' align='right' colspan=2></td>
 			<$ } $>
 		</tr>
 		<tr>
