@@ -1804,8 +1804,8 @@ function(html, idx, item, field, colIdx, params) {
 			}
 			data.imageUrl = contact.getImageUrl();
 			data.email = AjxStringUtil.htmlEncode(contact.getEmail());
-			data.title = contact.getAttr(ZmContact.F_jobTitle);
-			data.phone = contact.getPhone();
+			data.title = AjxStringUtil.htmlEncode(contact.getAttr(ZmContact.F_jobTitle));
+			data.phone = AjxStringUtil.htmlEncode(contact.getPhone());
 			data.imgClassName = "Person_48";
 			var isPhonetic  = appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS);
 			var fullnameHtml= contact.getFullNameForDisplay(isPhonetic);
