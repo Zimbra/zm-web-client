@@ -513,7 +513,7 @@ function() {
 
     var addDelegateButtonDiv = document.getElementById(this._htmlElId+"_ADD_DELEGATE");
 	if (addDelegateButtonDiv) {
-		var button = new DwtButton({parent:this});
+		var button = new DwtButton({parent:this, id:"addDelegateBtn"});
 		button.setText(ZmMsg.addDelegate);
 		button.setEnabled(true);
 		button.addSelectionListener(new AjxListener(this, this._handleAddDelegateButton));
@@ -523,7 +523,7 @@ function() {
 
     var editDelegateButtonDiv = document.getElementById(this._htmlElId+"_EDIT_DELEGATE");
     if (editDelegateButtonDiv) {
-        var button = new DwtButton({parent:this});
+        var button = new DwtButton({parent:this, id:"editDelegateBtn"});
         button.setText(ZmMsg.editPermissions);
         button.setEnabled(false);
         button.addSelectionListener(new AjxListener(this, this._editDelegateButton));
@@ -533,7 +533,7 @@ function() {
 
     var removeDelegateButtonDiv = document.getElementById(this._htmlElId+"_REMOVE_DELEGATE");
     if (removeDelegateButtonDiv) {
-       var button = new DwtButton({parent:this});
+       var button = new DwtButton({parent:this, id:"removeDelegateBtn"});
        button.setText(ZmMsg.remove);
        button.setEnabled(false);
        button.addSelectionListener(new AjxListener(this, this._removeDelegateButton));
