@@ -644,6 +644,7 @@ function(ev) {
 
     //TODO: Optimize ChangeListener logic
 	var items = ev.getDetail("items") || ev.items;
+    var filter = this._controller.getAllowableTaskStatus();
     items = AjxUtil.toArray(items);
     if (ev.event == ZmEvent.E_CREATE) {
 		for (var i = 0; i < items.length; i++) {
@@ -672,24 +673,36 @@ function(ev) {
 			if (this._list.size() == 0) {
 				this._resetList();
 			}
-
-			// add new item at the beg. of list view's internal list
-			this._list.add(item, 0);
-            this._renderList(this.getList(),true,false);
-            if(this._list && this._list.size() == 1) { this.setSelection(this._list.get(0)); }
+			// Check if the item is part of current view
+            if (!filter || filter.indexOf(item.status) != -1){
+                // add new item at the beg. of list view's internal list
+                this._list.add(item, 0);
+                this._renderList(this.getList(),true,false);
+                if(this._list && this._list.size() == 1) { this.setSelection(this._list.get(0)); }
+            }
 		}
 	} else if (ev.event == ZmEvent.E_MODIFY) {
 		var task = items[0];
         var div = this._getElFromItem(task);
 		if (div) {
-			var bContained = this._selectedItems.contains(div);
-			this._createItemHtml(task, {div:div, bContained:bContained});
-			this.associateItemWithElement(task, div);
-            if(this._controller.isReadingPaneOn()) {
-                task.message = null;
-			    task.getDetails(ZmCalItem.MODE_EDIT, new AjxCallback(this._controller, this._controller._showTaskReadOnlyView, task));
-		    }
-            this.checkTaskReplenishListView();
+            if (filter && filter.indexOf(task.status) == -1){
+                // If task status is modified and item is not part of current view
+                var parentNode = div.parentNode;
+                parentNode && parentNode.removeChild(div);
+                this._controller._resetToolbarOperations();
+                if(this._controller.isReadingPaneOn()) {
+                    this._controller.getTaskMultiView().getTaskView().reset();
+                }
+            } else{
+                var bContained = this._selectedItems.contains(div);
+                this._createItemHtml(task, {div:div, bContained:bContained});
+                this.associateItemWithElement(task, div);
+                if(this._controller.isReadingPaneOn()) {
+                    task.message = null;
+			        task.getDetails(ZmCalItem.MODE_EDIT, new AjxCallback(this._controller, this._controller._showTaskReadOnlyView, task))
+                }
+                this.checkTaskReplenishListView();
+            }
 		}
 	} else if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
         var needsSort = false;
