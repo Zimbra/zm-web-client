@@ -699,7 +699,7 @@ function(ev) {
                 this.associateItemWithElement(task, div);
                 if(this._controller.isReadingPaneOn()) {
                     task.message = null;
-			        task.getDetails(ZmCalItem.MODE_EDIT, new AjxCallback(this._controller, this._controller._showTaskReadOnlyView, task))
+			        task.getDetails(ZmCalItem.MODE_EDIT, new AjxCallback(this._controller, this._controller._showTaskReadOnlyView, [task, false]))
                 }
                 this.checkTaskReplenishListView();
             }
