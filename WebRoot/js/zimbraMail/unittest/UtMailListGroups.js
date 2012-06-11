@@ -139,6 +139,31 @@ UT.test("Date: isMsgInSection", {
 	}
 );
 
+UT.test("Date: isLastMonth", {
+	teardown: function() {
+		
+	},
+			
+	setup: function() {
+		var today = new Date();
+		var now = today.getTime();
+		var oneDay = 86400000; //one day
+		var lastMonth = oneDay * 32; //one month ago
+		var yearAgo = oneDay * 365; //one year ago
+		this._lastMonthMsg = {"sentDate" : new Date(today.setTime(now - lastMonth))};
+		this._oneYearAndOneMonthAgoMsg = {"sentDate" : new Date(today.setTime(now - lastMonth - yearAgo))};
+	}},
+		
+	function() {
+		UT.expect(2);
+		var dateGroup = new ZmMailListDateGroup();
+		var isLastMonth = dateGroup.isMsgInSection(ZmMailListDateGroup.LAST_MONTH, this._lastMonthMsg);
+		UT.equal(isLastMonth, true, this._lastMonthMsg.sentDate + " = " + isLastMonth + " for last month");
+		isLastMonth = dateGroup.isMsgInSection(ZmMailListDateGroup.LAST_MONTH, this._oneYearAndOneMonthAgoMsg);
+		UT.equal(isLastMonth, false, this._oneYearAndOneMonthAgoMsg.sentDate + " = " + isLastMonth + " for last month");		
+	}
+);
+
 UT.test("Message Size: isMsgInSection", {
 	teardown: function() {
 

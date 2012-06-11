@@ -320,9 +320,13 @@ function(msg) {
         var d = this._getDateFromMsg(msg, true);
         if (d) {
             if(d.getMonth() != thisMonth) {
-                if (d.getYear() == thisYear || d.getYear() == thisYear -1) {
+                if (d.getYear() == thisYear) {
                     return d.getMonth() == lastMonth && d.getTime() < threeWeeksAgo;
                 }
+				else if (d.getYear() == (thisYear -1) && thisMonth == 0 && lastMonth == 11) {
+					//handle the january, december case
+					return d.getTime() < threeWeeksAgo;	
+				}
             }
         }
 
