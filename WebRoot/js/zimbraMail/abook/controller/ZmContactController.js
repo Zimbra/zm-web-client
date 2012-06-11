@@ -229,7 +229,7 @@ function(view) {
 
 	// change the cancel button to "close" if editing existing contact
 	var cancelButton = tb.getButton(ZmOperation.CANCEL);
-	if (this._contact.id == undefined || this._contact.isGal) {
+	if (this._contact.id == undefined || (this._contact.isGal && !this._contact.isDistributionList())) {
 		cancelButton.setText(ZmMsg.cancel);
 	} else {
 		cancelButton.setText(ZmMsg.close);
