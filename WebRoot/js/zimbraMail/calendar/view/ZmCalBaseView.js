@@ -513,15 +513,14 @@ function(clickedEl, ev) {
 	var item = this._selEv.item = this.getItemFromElement(clickedElSet[0]);
 	var type = this._getItemData(clickedElSet[0], "type");
 
-	if (bContained && ev.button != DwtMouseEvent.RIGHT) {
+	if (ev.shiftKey && bContained) {
         for (var i = 0; i < clickedElSet.length; i++) {
 		    this._selectedItems.remove(clickedElSet[i]);
             clickedElSet[i].className = this._getStyle(type);
         }
 		this._selEv.detail = DwtListView.ITEM_DESELECTED;
 		this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
-	}
-    else {
+	} else if (!bContained) {
 		// clear out old left click selection(s)
 		for (i = 0; i < numSelectedItems; i++) {
 			a[i].className = this._getStyle(type);
