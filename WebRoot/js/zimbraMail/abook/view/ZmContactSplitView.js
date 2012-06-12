@@ -909,7 +909,7 @@ function(isGroup) {
 
 ZmContactSplitView.prototype._getTagsElementId =
 function() {
-	return this._contact.isGroup() ? this._tagGroupCellId : this._tagCellId;
+	return (this._contact && this._contact.isGroup()) ? this._tagGroupCellId : this._tagCellId;
 };
 
 /**
