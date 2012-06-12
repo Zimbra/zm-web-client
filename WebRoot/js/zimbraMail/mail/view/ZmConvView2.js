@@ -387,7 +387,7 @@ function(check) {
 	var canScroll = (cont.scrollHeight > contHeight && (cont.scrollTop + contHeight < cont.scrollHeight));
 
 	// first, see if the current msg view could be scrolled
-	if (canScroll) {
+	if (el && canScroll) {
 		// if bottom of current msg view is not visible, scroll down a page
 		var elHeight = Dwt.getSize(el).y;
 		// is bottom of msg view below bottom of container?
@@ -400,7 +400,7 @@ function(check) {
 	}
 	
 	// next, see if there's an expanded msg view we could bring to the top
-	el = el.nextSibling;
+	el = el && el.nextSibling;
 	var msgView, done;
 	while (el && !done) {
 		msgView = DwtControl.findControl(el);
