@@ -802,8 +802,8 @@ function(tasks) {
 };
 ZmTaskListController.prototype.isReadOnly =
 function() {
-    var folder = appCtxt.getById(this._folderId)
-    return (folder.id == ZmOrganizer.ID_TRASH || folder.isReadOnly() || folder.isFeed());
+    var folder = appCtxt.getById(this._folderId);
+    return (folder && (folder.id == ZmOrganizer.ID_TRASH || folder.isReadOnly() || folder.isFeed()));
 };
 
 ZmTaskListController.prototype._editTask =

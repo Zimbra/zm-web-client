@@ -108,7 +108,7 @@ function(calItem) {
 ZmTaskView.prototype._renderCalItem =
 function(calItem) {
 
-   if(this._controller.isReadingPaneOn() && this._newTab) {
+   if(this._controller.isReadingPaneOn() && !this._newTab) {
 	this._lazyCreateObjectManager();
 
 	var subs = this._getSubs(calItem);
@@ -146,6 +146,13 @@ function(calItem) {
 };
 
 ZmTaskView.prototype._taskChangeListener =
+function(ev){
+    if(ev.event == ZmEvent.E_TAGS || ev.type == ZmEvent.S_TAG) {
+        this._setTags(this._calItem);
+    }
+};
+
+ZmTaskView.prototype._tagChangeListener =
 function(ev){
     if(ev.event == ZmEvent.E_TAGS || ev.type == ZmEvent.S_TAG) {
         this._setTags(this._calItem);
