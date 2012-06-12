@@ -138,6 +138,11 @@ function(div) {
 	// do nothing
 };
 
+ZmCalColView.prototype.setIsRight =
+function(isRight) {
+	this._isRight = isRight;
+};
+
 ZmCalColView.prototype._dateUpdate =
 function(rangeChanged) {
 	this._selectDay(this._date);
@@ -1540,8 +1545,8 @@ function(refreshApptLayout) {
 
 	var numCols = this._columns.length;
 
-	var sz = this.getSize();
-	var width = sz.x;
+	var sz = this.getSize(true); //get the size from the style - it's more accurate as it's exactly what it was set for
+	var width = sz.x + (this._isRight ? -2 : 0); // -2 is an adjustment due to some problem I can't figure out exactly. bug 75115
 	var height = sz.y;
 
 	if (width == 0 || height == 0) { return; }

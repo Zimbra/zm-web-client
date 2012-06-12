@@ -723,6 +723,11 @@ function(dayViewCallback, invitedHour, list, skipMiniCalUpdate, query) {
     }
 };
 
+ZmInviteMsgView.prototype.getDayView =
+function() {
+    return this._dayView;
+};
+
 ZmInviteMsgView.prototype._apptSelectionListener =
 function(ev) {
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {

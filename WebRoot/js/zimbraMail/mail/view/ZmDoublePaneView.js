@@ -94,8 +94,8 @@ function(noSet) {
 				mv.reset();
 			}
 		}
-		mv.setVisible(true);
 		var readingPaneOnRight = this._controller.isReadingPaneOnRight();
+		mv.setVisible(true, readingPaneOnRight);
 		var newSash = readingPaneOnRight ? this._vertSash : this._horizSash;
 		var oldSash = readingPaneOnRight ? this._horizSash : this._vertSash;
 		oldSash.setVisible(false);

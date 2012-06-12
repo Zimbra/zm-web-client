@@ -335,16 +335,24 @@ function(listener) {
 };
 
 ZmMailMsgView.prototype.setVisible =
-function(visible) {
+function(visible, readingPaneOnRight) {
 	DwtComposite.prototype.setVisible.apply(this, arguments);
+	var inviteMsgView = this._inviteMsgView;
+	if (!inviteMsgView) {
+		return;
+	}
 
-	if (this._inviteMsgView) {
-		if (visible && this._msg) {
-			this._inviteMsgView.set(this._msg);
-			this._inviteMsgView.showMoreInfo();
-		} else {
-			this._inviteMsgView.reset();
+	if (visible && this._msg) {
+		var dayView = inviteMsgView.getDayView();
+		if (dayView) {
+			dayView.setIsRight(readingPaneOnRight);
 		}
+
+		inviteMsgView.set(this._msg);
+		inviteMsgView.showMoreInfo(null, null, readingPaneOnRight);
+	}
+	else {
+		inviteMsgView.reset();
 	}
 };
 
