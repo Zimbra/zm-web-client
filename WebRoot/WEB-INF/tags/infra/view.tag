@@ -128,7 +128,7 @@
 				</table>
 			</td>
 		</c:if>
-		<td colspan="3" valign="top">
+		<td colspan="3" valign="top" style="width:100%">
 			
 			<jsp:doBody/>
 		</td>
