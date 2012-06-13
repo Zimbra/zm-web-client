@@ -646,7 +646,7 @@ function(ev) {
 	var items = ev.getDetail("items") || ev.items;
     var filter = this._controller.getAllowableTaskStatus();
     items = AjxUtil.toArray(items);
-    if (ev.event == ZmEvent.E_CREATE) {
+    if (ev.event == ZmEvent.E_CREATE || (ev.event == ZmEvent.E_MODIFY && !this._getElFromItem(items[0]))) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 
