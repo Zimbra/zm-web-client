@@ -516,7 +516,7 @@ function(account) {
 ZmContactPicker.prototype._searchButtonListener =
 function(ev) {
 	this._resetResults();
-	this.search();
+	this.search(null, null, true);
 };
 
 /**
@@ -525,15 +525,16 @@ function(ev) {
 ZmContactPicker.prototype._handleResponseSearch =
 function(firstTime, result) {
 	var resp = result.getResponse();
-	var more = resp.getAttribute("more");
+	this._serverHasMore = resp.getAttribute("more");
 	var offset = resp.getAttribute("offset");
 	this._serverContactOffset = offset || 0;
-	var isPagingSupported = AjxUtil.isSpecified(offset);
+	// if offset is returned, then this account support gal paging
+	var isPagingSupported = AjxUtil.isSpecified(offset); 
 	var info = resp.getAttribute("info");
 	var expanded = info && info[0].wildcard[0].expanded == "0";
 
 	if (!firstTime && !isPagingSupported &&
-		(expanded || (this._contactSource == ZmId.SEARCH_GAL && more)))
+		(expanded || (this._contactSource == ZmId.SEARCH_GAL && this._serverHasMore)))
 	{
 		var d = appCtxt.getMsgDialog();
 		d.setMessage(ZmMsg.errorSearchNotExpanded);
@@ -548,56 +549,52 @@ function(firstTime, result) {
 
 	if (isPagingSupported) {
 		this._emailList.addList(emailArray); //this internally calls concat. we do not need "merge" here because we use the _serverContactOffset as a marker of where to search next, never searching a block we already did.
-		this._emailList.hasMore = more;
 	} else {
 		this._emailList = emailList;
 	}
 
-	if (emailList.size() == 0 && firstTime) {
-		this._chooser.sourceListView._setNoResultsHtml();
-	}
-
-	// if we don't get a full number of addresses in the results, search forward another block
-	// Could search several times.
-	if (((this._emailList.size() - this._emailListOffset) < ZmContactsApp.SEARCHFOR_MAX) && more) {
-		this.search(null, null, null, null, null, offset + ZmContactsApp.SEARCHFOR_MAX); //search another page size
-	}
-	else {
-		emailList = this.getSubList();
-		// If the AB ends with a long list of contacts w/o addresses,
-		// we may never get a list back.  If that's the case, roll back the offset
-		// and refetch, should disable the "next page" button.
-		if (!emailList) {
-			this._emailListOffset -= ZmContactsApp.SEARCHFOR_MAX;
-			if (this._emailListOffset < 0) {
-				this._emailListOffset = 0;
-			}
-			emailList = this.getSubList();
-		}
-		if (!more) {
-			more = (this._emailListOffset + ZmContactsApp.SEARCHFOR_MAX) < this._emailList.size();
-		}
-		this._showResults(isPagingSupported, more, emailList);
-	}
+	this._showResults();
 
 };
 
 ZmContactPicker.prototype._showResults =
-function(isPagingSupported, more, list) {
-	// if offset is returned, then this account support gal paging
-	if (this._contactSource == ZmId.SEARCH_GAL && !isPagingSupported) {
-		this._prevButton.setEnabled(false);
-		this._nextButton.setEnabled(false);
-	} else {
-		this._prevButton.setEnabled(this._emailListOffset > 0);
-		this._nextButton.setEnabled(more);
+function() {
+
+	var list = this.getSubList();
+
+	// special case 1 - search forward another server block, to fill up a page. Could search several times.
+	if (list.size() < ZmContactsApp.SEARCHFOR_MAX && this._serverHasMore) {
+		this.search(null, null, null, null, null, this._serverContactOffset + ZmContactsApp.SEARCHFOR_MAX); //search another page
+		return;
 	}
+
+	this._searchIcon.className = "ImgSearch";
+	this._searchButton.setEnabled(true);
+
+	// special case 2 - no results, and no more to search (that was covered in special case 1) - so display the "no results" text.
+	if (list.size() == 0 && this._emailListOffset == 0) {
+		this._chooser.setItems(list); //empty the list
+		this._nextButton.setEnabled(false);
+		this._prevButton.setEnabled(false);
+		this._chooser.sourceListView._setNoResultsHtml();
+		return;
+	}
+
+	// special case 3 - If the AB ends with a long list of contacts w/o addresses,
+	// we may get an empty list.  If that's the case, roll back the offset
+	// not 100% sure this case could still happen after all my changes but it was there in the code, so I keep it just in case.
+	if (list.size() == 0) {
+		this._emailListOffset -= ZmContactsApp.SEARCHFOR_MAX;
+		this._emailListOffset  = Math.max(0, this._emailListOffset);
+	}
+
+	var more = this._serverHasMore || (this._emailListOffset + ZmContactsApp.SEARCHFOR_MAX) < this._emailList.size();
+	this._prevButton.setEnabled(this._emailListOffset > 0);
+	this._nextButton.setEnabled(more);
 
 	this._resetColHeaders(); // bug #2269 - enable/disable sort column per type of search
 	this._chooser.setItems(list);
 
-	this._searchIcon.className = "ImgSearch";
-	this._searchButton.setEnabled(true);
 };
 
 ZmContactPicker.prototype._updateSearchRows =
@@ -632,25 +629,12 @@ ZmContactPicker.prototype._pageListener =
 function(ev) {
 	if (ev.item == this._prevButton) {
 		this._emailListOffset -= ZmContactsApp.SEARCHFOR_MAX;
-		if (this._emailListOffset < 0) {
-			this._emailListOffset = 0;
-		}
-		this._showResults(true, true, this.getSubList()); // show cached results
+		this._emailListOffset  = Math.max(0, this._emailListOffset);
 	}
 	else {
 		this._emailListOffset += ZmContactsApp.SEARCHFOR_MAX;
-		var list = this.getSubList();
-		if (!list || ((list.size() < ZmContactsApp.SEARCHFOR_MAX) && this._emailList.hasMore)) {
-			this.search(null, null, null, null, null, this._serverContactOffset + ZmContactsApp.SEARCHFOR_MAX); //search another page
-		}
-		else {
-			var more = this._emailList.hasMore;
-			if (!more) {
-				more = (this._emailListOffset+ZmContactsApp.SEARCHFOR_MAX) < this._emailList.size();
-			}
-			this._showResults(true, more, list); // show cached results
-		}
 	}
+	this._showResults();
 };
 
 /**
@@ -668,8 +652,8 @@ function() {
 		end = size;
 	}
 
-	return (this._emailListOffset < end)
-		? (AjxVector.fromArray(this._emailList.getArray().slice(this._emailListOffset, end))) : null;
+	var a = (this._emailListOffset < end) ? this._emailList.getArray().slice(this._emailListOffset, end) : [];
+	return AjxVector.fromArray(a);
 };
 
 /**
