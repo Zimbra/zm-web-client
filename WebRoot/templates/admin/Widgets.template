@@ -67,7 +67,7 @@
                         </div>
 					</td>
 				<$ } $>
-				<td nowrap class='imageCell' id='${id}_imageCell'></td>
+				<td width=16 nowrap class='imageCell' id='${id}_imageCell'></td>
 				<td width=100% nowrap class='${textClassName}' id='${id}_textCell'></td>
                 <td width=16 class='imageCell' id='${id}_extraCell'></td>
 				<td align=center nowrap id='${id}_countCell'></td>
