@@ -351,7 +351,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 
 ZmConvListView.prototype._getCellId =
 function(item, field) {
-	return (field == ZmItem.F_FROM)
+	return (field == ZmItem.F_FROM && item.type == ZmItem.CONV)
 		? this._getFieldId(item, field)
 		: ZmMailListView.prototype._getCellId.apply(this, arguments);
 };
