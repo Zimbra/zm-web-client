@@ -935,7 +935,7 @@ and the container element is replaced with that control.
 					</tr>
 					<tr>
                     <td colspan="10">
-                        <table class="ZPropertySheet" width=100%>
+                        <table class="ZPropertySheet" cellspacing='6' width=100%>
                             <tr>
                                 <$ if (!appCtxt.isOffline && (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED) || data.isEnabled(ZmSetting.IMAP_ACCOUNTS_ENABLED))) { $>
                                     <td><button id='${id}_ADD_EXTERNAL' tabindex='40'><$=ZmMsg.addExternalAccount$></button> </td>
