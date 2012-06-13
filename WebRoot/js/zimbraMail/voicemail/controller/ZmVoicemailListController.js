@@ -356,7 +356,7 @@ function(voicemail, inNewWindow, subject, to, response) {
 ZmVoicemailListController.prototype._handleComposeLoaded = 
 function(uploadId, composeController) {
 	// Save the message as a draft to associate it with the upload id.
-	composeController.sendMsg(uploadId, ZmComposeController.DRAFT_TYPE_MANUAL);
+	composeController.sendMsg(uploadId, ZmComposeController.DRAFT_TYPE_AUTO);
 };
 
 ZmVoicemailListController.prototype._checkEmail =
