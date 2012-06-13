@@ -656,12 +656,13 @@ function(isContact) {
 /**
  * This method gets overloaded if folder id is retrieved another way
  * 
+ * @param {boolean}		allowComplex	if true, search can have other terms aside from the folder term
  * @private
  */
 ZmListController.prototype._getSearchFolderId =
-function() {
+function(allowComplex) {
 	var s = this._activeSearch && this._activeSearch.search;
-	return s && s.isSimple() && s.folderId;
+	return s && (allowComplex || s.isSimple()) && s.folderId;
 };
 
 /**

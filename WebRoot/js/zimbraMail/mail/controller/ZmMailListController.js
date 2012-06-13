@@ -2019,9 +2019,6 @@ function(parent, num) {
 
 	ZmListController.prototype._resetOperations.call(this, parent, num);
 
-	var folderId = this._getSearchFolderId();
-	var folder = folderId && appCtxt.getById(folderId);
-
 	parent.enable(ZmOperation.PRINT, num > 0);
 
 	if (this.isSyncFailuresFolder()) {
@@ -2038,11 +2035,20 @@ function(parent, num) {
 			item = sel[0];
 		}
 	}
-	var itemFolder = item && item.folderId && appCtxt.getById(item.folderId); // We may be looking at a search result, so the items in the list may not all be in the same folder
-	var isDrafts = (item && item.isDraft && item.type != ZmId.ITEM_CONV) || this.isDraftsFolder();
-	var isFeed = (itemFolder && itemFolder.isFeed());
+	
+	// If one item is selected, use its folder; otherwise check if search was constrained to a folder
+	var itemFolder = item && item.folderId && appCtxt.getById(item.folderId);
+	var folder = itemFolder;
+	if (!folder) {
+		var folderId = this._getSearchFolderId(true);
+		folder = folderId && appCtxt.getById(folderId);
+	}
 
-	parent.setItemVisible(ZmOperation.EDIT, isDrafts && (!itemFolder || !itemFolder.isReadOnly()));
+	var isDrafts = (item && item.isDraft && item.type != ZmId.ITEM_CONV) || this.isDraftsFolder();
+	var isFeed = (folder && folder.isFeed());
+	var isReadOnly = (folder && folder.isReadOnly());
+
+	parent.setItemVisible(ZmOperation.EDIT, isDrafts && (!folder || !folder.isReadOnly()));
 	parent.setItemVisible(ZmOperation.EDIT_AS_NEW, !isDrafts);
 
 	parent.setItemVisible(ZmOperation.REDIRECT, !isDrafts);
@@ -2069,7 +2075,7 @@ function(parent, num) {
 		// bug fix #37154 - disable non-applicable buttons if rfc/822 message
 		var isRfc822 = appCtxt.isChildWindow && window.newWindowParams && window.newWindowParams.isRfc822;
 
-		if (isRfc822 || (folder && folder.isReadOnly() && num > 0)) {
+		if (isRfc822 || (isReadOnly && num > 0)) {
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.SPAM, ZmOperation.TAG_MENU], false);
 		} else {
             parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (!isDrafts && !isFeed && num == 1));
@@ -2077,7 +2083,7 @@ function(parent, num) {
             parent.enable([ZmOperation.FORWARD, ZmOperation.SPAM], (!isDrafts && num > 0));
 		}
 	} else {
-		if (folder && folder.isReadOnly() && num > 0) {
+		if (isReadOnly && num > 0) {
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.SPAM, ZmOperation.TAG_MENU], false);
 		} else {
 			parent.enable([ZmOperation.SPAM], (!isDrafts && num > 0));
@@ -2088,7 +2094,7 @@ function(parent, num) {
 		var editMenu = this._draftsActionMenu.getOp(ZmOperation.EDIT);
 		if (editMenu) {
 			// Enable|disable 'edit' context menu item based on selection count
-			editMenu.setEnabled(num == 1 && (this.isDraftsFolder() || (itemFolder && !itemFolder.isReadOnly())));
+			editMenu.setEnabled(num == 1 && (this.isDraftsFolder() || !isReadOnly));
 		}
 	}
 
