@@ -1670,7 +1670,8 @@ function(msg, container, callback, index) {
 			var invite = msg.invite;
 
 			if (bodyPart.contentType == ZmMimeTable.TEXT_HTML && htmlMode) {
-				if (invite && !invite.isEmpty()) {
+				var hasInviteContent = (invite && !invite.isEmpty());
+				if (hasInviteContent) {
 					content = ZmInviteMsgView.truncateBodyContent(content, true);
 					// if the notes are empty, don't bother rendering them
 					var tmp = AjxStringUtil.stripTags(content);
@@ -1697,7 +1698,7 @@ function(msg, container, callback, index) {
 					});
 				}
 
-				if (!msg.fragment && !msg.hasInlineImagesInMsgBody() && !msg.hasInlineImage()) {
+				if (!msg.fragment && !hasInviteContent && !msg.hasInlineImagesInMsgBody() && !msg.hasInlineImage()) {
 					var empty = AjxTemplate.expand("mail.Message#EmptyMessage");
 					content = content ? [empty, content].join("<br><br>") : empty;
 				}
@@ -1724,12 +1725,13 @@ function(msg, container, callback, index) {
 			} else {
 				
 				if (bodyPart.contentType == ZmMimeTable.TEXT_PLAIN) {
-					if (invite && !invite.isEmpty()) {
+					var hasInviteContent = (invite && !invite.isEmpty());
+					if (hasInviteContent) {
 						content = ZmInviteMsgView.truncateBodyContent(content);
 					}
 
 					var isTextMsg = true;
-					if (!msg.fragment) {
+					if (!msg.fragment && !hasInviteContent) {
 						var empty = AjxTemplate.expand("mail.Message#EmptyMessage");
 						content = content ? [empty, content].join(ZmMsg.CRLF2) : empty;
 						isTextMsg = false; //To make sure we display html content properly

@@ -727,9 +727,15 @@ function(params) {
 		tooltip = {callback:ttCallback};
 	}
 	else if (field == ZmItem.F_SUBJECT || field ==  ZmItem.F_FRAGMENT) {
-		if ((item.type == ZmItem.MSG) && item.isInvite() && item.needsRsvp()) {
-			tooltip = item.invite.getToolTip();
-		} else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
+		var invite = (item.type == ZmItem.MSG) && item.isInvite() && item.invite;
+		if (invite && item.needsRsvp()) {
+			tooltip = invite.getToolTip();
+		}
+		else if (invite && !invite.isEmpty()) {
+			var bp = item.getBodyPart();
+			tooltip = bp && ZmInviteMsgView.truncateBodyContent(bp.getContent(), true);
+		}
+		else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
 		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
         }
 	}

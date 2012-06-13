@@ -255,9 +255,11 @@ function(params) {
 	if (!item) { return; }
 
 	if (!this._isMultiColumn && (field == ZmItem.F_SUBJECT || field ==  ZmItem.F_FRAGMENT)) {
-		if ((item.type == ZmItem.MSG) && item.isInvite() && item.needsRsvp()) {
-			tooltip = item.invite.getToolTip();
-		} else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
+		var invite = (item.type == ZmItem.MSG) && item.isInvite() && item.invite;
+		if (invite && (item.needsRsvp() || !invite.isEmpty())) {
+			tooltip = ZmMailListView.prototype._getToolTip.apply(this, arguments);
+		}
+		else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
 		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
 			var folderTip = null;
 			var folder = appCtxt.getById(item.folderId);
@@ -268,7 +270,7 @@ function(params) {
         }
 	}
 	else {
-		return ZmMailListView.prototype._getToolTip.apply(this, arguments);
+		tooltip = ZmMailListView.prototype._getToolTip.apply(this, arguments);
 	}
 	
 	return tooltip;
