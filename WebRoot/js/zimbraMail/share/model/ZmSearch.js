@@ -1102,8 +1102,8 @@ ZmParsedQuery.FLAG["unreplied"]		= "!item.isReplied";
 ZmParsedQuery.prototype._parse =
 function(query) {
 
-	function getQuotedStr(str, pos) {
-		var q = str.charAt(pos);
+	function getQuotedStr(str, pos, q) {
+		var q = q || str.charAt(pos);
 		pos++;
 		var done = false, ch, quoted = "";
 		while (pos < str.length && !done) {
@@ -1153,7 +1153,7 @@ function(query) {
 
 		if (isEow) {
 			var lcWord = word.toLowerCase();
-			var isCondOp = ZmParsedQuery.COND_OP[lcWord];
+			var isCondOp = !!ZmParsedQuery.COND_OP[lcWord];
 			if (op && word && !(isCondOp && compound > 0)) {
 				tokens.push(new ZmSearchToken(op, lcWord));
 				if (compound == 0) {
@@ -1184,14 +1184,32 @@ function(query) {
 				return fail("improper use of quotes", query);
 			}
 		} else if (ch == ZmParsedQuery.GROUP_OPEN) {
+			var done = false;
 			if (compound > 0) {
-				compound++
+				compound++;
 			}
 			else if (lastCh == ":") {
 				compound = 1;
+				// see if parens are being used as secondary quoting mechanism by looking for and/or
+				var inside = query.substr(pos, query.indexOf(ZmParsedQuery.GROUP_CLOSE, pos + 1));
+				inside = inside && inside.toLowerCase();
+				if (inside && (inside.indexOf(" " + ZmParsedQuery.COND_OR + " ") == -1) &&
+							  (inside.indexOf(" " + ZmParsedQuery.COND_AND + " ") == -1)) {
+					var results = getQuotedStr(query, pos, ZmParsedQuery.GROUP_CLOSE);
+					if (results) {
+						word = results.str;
+						pos = results.pos;
+						compound = 0;
+					} else {
+						return fail("improper use of paren-based quoting", query);
+					}
+					done = true;
+				}
 			}
-			tokens.push(new ZmSearchToken(ch));
-			numParens++;
+			if (!done) {
+				tokens.push(new ZmSearchToken(ch));
+				numParens++;
+			}
 			pos = skipSpace(query, pos + 1);
 		} else if (ch == ZmParsedQuery.GROUP_CLOSE) {
 			if (compound > 0) {
@@ -1215,7 +1233,7 @@ function(query) {
 	}
 
 	// check for term at end
-	if ((pos == query.length) && op && word) {
+	if ((pos >= query.length) && op && word) {
 		tokens.push(new ZmSearchToken(op, word));
 		endOk = true;
 	} else if (!op && word) {
@@ -1500,8 +1518,8 @@ function(force) {
 			return '"' + arg.replace(/"/g, '\\"') + '"';
 		}
 		else {
-			// quote arg if any non-word chars and not already quoted
-			arg = (arg && (arg.indexOf('"') !== 0) && /\W/.test(arg)) ? '"' + arg + '"' : arg;
+			// quote arg if it has any spaces and is not already quoted
+			arg = (arg && (arg.indexOf('"') !== 0) && arg.indexOf(" ") != -1) ? '"' + arg + '"' : arg;
 			return [this.op, arg].join(":");
 		}
 	}

@@ -956,7 +956,14 @@ function(context, match, noFocus) {
 		}
 		else {
 			var addedClass = this._dataAPI && this._dataAPI.getAddedBubbleClass && this._dataAPI.getAddedBubbleClass(context.str);
-			addrInput.addBubble({address:context.address, match:match, noFocus:noFocus, addClass:addedClass});
+			var bubbleParams = {
+				address:	context.address,
+				match:		match,
+				noFocus:	noFocus,
+				addClass:	addedClass,
+				noParse:	this._options.noBubbleParse
+			}
+			addrInput.addBubble(bubbleParams);
 		}
 		el = addrInput._input;
 		// Input field loses focus along the way. Restore it when the stack is finished

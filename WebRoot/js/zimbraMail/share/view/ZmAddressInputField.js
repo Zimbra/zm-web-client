@@ -145,6 +145,7 @@ function(child, index) {
  * @param {boolean}				skipNotify	if true, don't call bubbleAddedCallback
  * @param {boolean}				noFocus		if true, don't focus input after bubble is added
  * @param {string}				addClass	additional class name for bubble
+ * @param {boolean}				noParse		if true, do not parse content to see if it is an address
  */
 ZmAddressInputField.prototype.addBubble =
 function(params) {
@@ -1389,7 +1390,8 @@ ZmAddressBubble = function(params) {
 
 	var addrInput = this.addrInput = params.addrInput;
 	var match = this.match = params.match;
-	var addrObj = this.addrObj = params.addrObj || AjxEmailAddress.parse(params.address || (match && match.email));
+	var addrContent = !params.noParse && (params.address || (match && match.email));
+	var addrObj = this.addrObj = params.addrObj || (addrContent && AjxEmailAddress.parse(addrContent));
 	this.address = params.address || (addrObj && addrObj.toString());
 	this.email = params.email = params.email || (addrObj && addrObj.getAddress()) || "";
 	var ac = window.parentAppCtxt || window.appCtxt;
@@ -1448,12 +1450,13 @@ function(params) {
  * @param {boolean}				canExpand	if true, a + will be provided to expand the DL address
  * @param {boolean}				returnSpan	if true, return SPAN element rather than HTML
  * @param {string}				separator	address separator
+ * @param {boolean}				noParse		if true, do not parse content to see if it is an address
  */
 ZmAddressBubble.getContent =
 function(params) {
 
 	var id = params.id;
-	var addrObj = params.addrObj || AjxEmailAddress.parse(params.address) || params.address || ZmMsg.unknown;
+	var addrObj = params.addrObj || (!params.noParse && AjxEmailAddress.parse(params.address)) || params.address || ZmMsg.unknown;
 	var fullAddress = AjxStringUtil.htmlEncode(addrObj ? addrObj.toString() : params.address);
 	var text = AjxStringUtil.htmlEncode(addrObj ? addrObj.toString(appCtxt.get(ZmSetting.SHORT_ADDRESS)) : params.address);
 	var selectId = id + "_select";

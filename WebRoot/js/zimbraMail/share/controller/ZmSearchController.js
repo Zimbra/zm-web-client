@@ -89,15 +89,15 @@ function(d, searchFor) {
  */
 ZmSearchController.prototype.fromSearch =
 function(address) {
+
 	// always search for mail when doing a "from: <address>" search
 	var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
-	var query = address instanceof Array ? address.concat() : [ address ];
-	for (var i = 0; i < query.length; i++) {
-		query[i] = ["from:(", query[i], ")"].join("");
-	}
-
-    this.search({
-		query:			query.join(" OR "),
+	var terms = AjxUtil.map(AjxUtil.toArray(address), function(addr) {
+		return "from:" + ((addr && addr.isAjxEmailAddress) ? addr.getAddress() : addr);
+	});
+	
+	this.search({
+		query:			terms.join(" OR "),
 		types:			[groupBy],
 		origin:			ZmId.SEARCH,
 		userInitiated:	true
@@ -112,25 +112,26 @@ function(address) {
  */
 ZmSearchController.prototype.toSearch =
 function(address) {
+
 	// always search for mail when doing a "tocc: <address>" search
 	var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
-	var query = address instanceof Array ? address.concat() : [ address ];
-	for (var i = 0; i < query.length; i++) {
-		query[i] = ["tocc:(", query[i], ")"].join("");
-	}
+	var terms = AjxUtil.map(AjxUtil.toArray(address), function(addr) {
+		return "tocc:" + ((addr && addr.isAjxEmailAddress) ? addr.getAddress() : addr);
+	});
+
 	var params = {
 		types:			[groupBy],
 		origin:			ZmId.SEARCH,
-		userInitiated:	true
+		userInitiated:	true,
+		query:			terms.join(" OR ")
 	}
     if (this.currentSearch && this.currentSearch.folderId == ZmFolder.ID_SENT) {
-		params.query = "in:sent AND (" + query.join(" OR ") + ")";
-        this.search(params);
+		if (terms.length > 1) {
+			params.query = "(" + params.query + ")";
+		}
+		params.query = "in:sent AND " + params.query;
 	}
-    else {
-		params.query = query.join(" OR ");
-	    this.search(params);
-	}
+    this.search(params);
 };
 
 /**
