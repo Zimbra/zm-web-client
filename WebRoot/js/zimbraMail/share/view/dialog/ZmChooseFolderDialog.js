@@ -319,8 +319,8 @@ function() {
 
 ZmChooseFolderDialog.prototype._showNewDialog =
 function() {
-	var item = this._getOverview().getSelected(true);
-	var newType = (item && item.type) || this._treeIds[0];
+	var itemType = this._getOverview().getSelected(true);
+	var newType = itemType || this._treeIds[0];
 	var ftc = this._opc.getTreeController(newType);
 	var dialog = ftc._getNewDialog();
 	dialog.reset();
