@@ -1749,7 +1749,7 @@ function(msg, container, callback, index) {
 						content = (bodyPart.contentType != ZmMimeTable.TEXT_HTML) ? AjxStringUtil.convertToHtml(content) : content;
 						this._displayContent({	container:		el,
 												html:			content,
-												isTextMsg:		true,
+												isTextMsg:		false,
 												isTruncated:	false,
 												index:			index
 											});
