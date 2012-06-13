@@ -819,8 +819,11 @@ ZmCalItemEditView.prototype._initAttachContainer =
 function() {
 	// create new table row which will contain parent fieldset
 	var table = document.getElementById(this._htmlElId + "_table");
-	this._attachmentRow = table.insertRow(-1);
-    this._attachmentRow.id = this._htmlElId + "_attachment_container"
+    this._attachmentRow = document.getElementById(this._htmlElId + "_attachment_container");
+    if (!this._attachmentRow){
+       this._attachmentRow = table.insertRow(-1);
+       this._attachmentRow.id = this._htmlElId + "_attachment_container";
+    }
 	var cell = this._attachmentRow.insertCell(-1);
 	cell.colSpan = 2;
 
@@ -894,12 +897,9 @@ function(removeId) {
 ZmCalItemEditView.prototype._removeAllAttachments =
 function() {
 	if (this._attachCount == 0) { return; }
-    var table = document.getElementById(this._htmlElId + "_table");
     var attachRow = document.getElementById(this._htmlElId + "_attachment_container");
-    if(table && attachRow) {
-	    //clear the attachment container
-        attachRow.innerHTML = "";
-    }
+    if (attachRow)  attachRow.innerHTML = "";
+
 	// let's be paranoid and really cleanup
 	delete this._uploadFormId;
 	delete this._attachDivId;
@@ -907,7 +907,7 @@ function() {
 	delete this._attachDiv;
 	this._attachDiv = this._attachRemoveId = this._attachDivId = this._uploadFormId = null;
 
-	delete this._attachmentRow;
+	if (this._attachmentRow) delete this._attachmentRow;
 	this._attachmentRow = null;
 	// reset any attachment related vars
 	this._attachCount = 0;
