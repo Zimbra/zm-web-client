@@ -184,6 +184,7 @@ function() {
 	var rootTg = appCtxt.getRootTabGroup();
 
 	var apps = {};
+	apps[ZmApp.SEARCH] = true;
 	apps[ZmApp.MAIL] = true;
 	apps[ZmApp.CONTACTS] = true;
 	// only load calendar app if we're dealing with an invite
@@ -549,7 +550,7 @@ ZmNewWindow.prototype._createApp =
 function(appName) {
 	if (this._apps[appName]) return;
 	var appClass = eval(ZmApp.CLASS[appName]);
-	this._apps[appName] = new appClass(this._shell, window.parentController);
+	this._apps[appName] = appClass && new appClass(this._shell, window.parentController);
 };
 
 /**
