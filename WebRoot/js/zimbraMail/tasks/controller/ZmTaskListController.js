@@ -304,6 +304,11 @@ function(actionCode) {
             }
             break;
 
+        case ZmKeyMap.CANCEL:
+            if (lv && lv.isZmTaskView) {
+                lv.close();
+                break;
+            }
         default:
             return ZmListController.prototype.handleKeyAction.call(this, actionCode);
     }

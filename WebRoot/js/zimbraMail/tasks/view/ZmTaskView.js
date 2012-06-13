@@ -34,6 +34,7 @@ ZmTaskView = function(parent, posStyle, controller) {
 
 ZmTaskView.prototype = new ZmCalItemView;
 ZmTaskView.prototype.constructor = ZmTaskView;
+ZmTaskView.prototype.isZmTaskView = true;
 
 // Public methods
 
