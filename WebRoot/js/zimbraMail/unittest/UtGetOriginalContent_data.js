@@ -792,5 +792,33 @@ more text\n\
 "
 ,
 		output: UtZWCUtils.SAME
+    },
+
+	// 30
+    // UNKNOWN followed by HEADER
+	// Text: U W Q U Q U
+    {
+        input: "\
+Hello\n\
+\n\
+________________________________\n\
+From: \"Demo User One\" <user1@example.com>\n\
+To: list@example.com\nSent: Tuesday, December 13, 2011 4:51:48 PM\n\
+Subject: Re: Grrrrrr\n\
+\n\
+Conrad,\n\
+\n\
+Since you returned the other trophies, do you want a trophy for the Flag Football League?\n\
+\n\
+-Joanne\n\
+\n\
+----- 'Joanne Haggerty' <joanneh@example.com> wrote:\n\
+\n\
+some text\n\
+"
+,
+		output: "\
+Hello\n\
+"
     }
 ];
