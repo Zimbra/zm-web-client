@@ -691,12 +691,16 @@ ZmAdvancedHtmlEditor.prototype.onPostRender = function(ed, ev) {
 };
 
 ZmAdvancedHtmlEditor.prototype.onInit = function(ed, ev) {
-    var obj = this;
-    var tinymceEvent = tinymce.dom.Event;
-    tinymceEvent.add(ed.getWin(), 'focus', function(e) {
+    var obj = this,
+        tinymceEvent = tinymce.dom.Event,
+        doc = ed.getDoc(),
+        win = ed.getWin(),
+        view = obj.getParent();
+
+    tinymceEvent.add(win, 'focus', function(e) {
         obj.setFocusStatus(true);
     });
-    tinymceEvent.add(ed.getWin(), 'blur', function(e) {
+    tinymceEvent.add(win, 'blur', function(e) {
         obj.setFocusStatus(false);
     });
     // Set's up the a range for the current ins point or selection. This is IE only because the iFrame can
@@ -705,7 +709,7 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ed, ev) {
     // DwtHtmlEditor is using _currInsPtBm property to store the cursor position in editor event handler function which is heavy.
     // Here we are registering this dedicated event to store the bookmark which will fire when focus moves outside the editor
     if(AjxEnv.isIE){
-        tinymceEvent.add(ed.getDoc(), 'beforedeactivate', function(e) {
+        tinymceEvent.add(doc, 'beforedeactivate', function(e) {
             if(ed.windowManager){
                 ed.windowManager.bookmark = ed.selection.getBookmark(1);
             }
@@ -713,7 +717,7 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ed, ev) {
     }
 
     var ec = obj.getEditorContainer();
-    ec.setFocusMember(ed.getWin());
+    ec.setFocusMember(win);
 
     obj._editorInitialized = true;
 
@@ -724,7 +728,13 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ed, ev) {
         tinymce.settings.language_load = true;
     }
     (ed.windowManager) && ed.windowManager.onOpen.add(ZmAdvancedHtmlEditor.onPopupOpen);
-    //appCtxt.notifyZimlets("onEditorInit", [ed, obj.getParent(), tinymceEvent]);
+    if (view && view.toString() === "ZmComposeView" && ZmDragAndDrop.isSupported()) {
+        var dnd = view._dnd;
+        tinymceEvent.add(doc, 'dragenter', this._onDragEnter.bind(this, ed, dnd));
+        tinymceEvent.add(doc, 'dragleave', this._onDragLeave.bind(this, ed, dnd));
+        tinymceEvent.add(doc, 'dragover', this._onDragOver.bind(this, ed, dnd));
+        tinymceEvent.add(doc, 'drop', this._onDrop.bind(this, ed, dnd));
+    }
 };
 
 /*
@@ -751,6 +761,22 @@ ZmAdvancedHtmlEditor.prototype.onBeforeInsertImage = function(ed, cmd, ui, val, 
             }
         }
     }
+};
+
+ZmAdvancedHtmlEditor.prototype._onDragEnter = function(ed, dnd, ev) {
+    dnd._onDragEnter(ev);
+};
+
+ZmAdvancedHtmlEditor.prototype._onDragLeave = function(ed, dnd, ev) {
+    dnd._onDragLeave(ev);
+};
+
+ZmAdvancedHtmlEditor.prototype._onDragOver = function(ed, dnd, ev) {
+    dnd._onDragOver(ev);
+};
+
+ZmAdvancedHtmlEditor.prototype._onDrop = function(ed, dnd, ev) {
+    dnd._onDrop(ev, true);
 };
 
 ZmAdvancedHtmlEditor.prototype.setMode = function (mode, convert, convertor) {

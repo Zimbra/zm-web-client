@@ -2653,6 +2653,9 @@ function(composeMode) {
 	// init html
 	this._createHtml();
 
+    // init drag and drop
+    this._initDragAndDrop();
+
 	// init compose view w/ based on user prefs
 	var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
@@ -2829,6 +2832,11 @@ function(templateId, data) {
     this._attButton.setMenu(new AjxCallback(this, this._attachButtonMenuCallback));
 	this._attButton.reparentHtmlElement(data.attBtnId);
 	this._attButton.setToolTipContent(ZmMsg.attach, true);
+};
+
+ZmComposeView.prototype._initDragAndDrop =
+function() {
+    this._dnd = new ZmDragAndDrop(this);
 };
 
 ZmComposeView.prototype.collapseAttMenu =
