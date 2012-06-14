@@ -338,7 +338,7 @@
 		var imageUrl	= contact.getImageUrl();
 		var accountName = appCtxt.multiAccounts && contact.account && contact.account.getDisplayName();
 		var tagsId = data.id + (contact.isGroup() ? "_tags_group" : "_tags_contact"); 
-		var imgClassName = contact.isGroup() ? "GroupPerson_48" : "Person_48";
+		var imgClassName = contact.isDistributionList() ? "Group_48" : contact.isGroup() ? "GroupPerson_48" : "Person_48";
 		var isEdit = data.isEdit;
 	$>
 	<table width=100% class='contactHeaderTable <$= data.contactHdrClass $> ZPropertySheet' cellspacing='6'>
