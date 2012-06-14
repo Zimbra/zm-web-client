@@ -165,7 +165,7 @@ function(insertFontStyle, onlyInnerContent) {
 		}
 	}
 	else {
-		if (/\S+/.test(AjxStringUtil.convertHtml2Text(field.value))) {
+		if (/\S+/.test(field.value)) {
 			content = field.value;
 		}
 	}
