@@ -183,7 +183,8 @@ function(requestType, respFunction, callback, errorCallback, batchCmd) {
 					}
 					var isSignature = (i == ZmIdentity.SIGNATURE || i == ZmIdentity.REPLY_SIGNATURE);
 					var isDisplayName = (i == ZmIdentity.SEND_FROM_DISPLAY || i == ZmIdentity.SET_REPLY_TO_DISPLAY);
-					if (value || isSignature || isDisplayName) {
+					var isEmailAddress = (i == ZmIdentity.SET_REPLY_TO_ADDRESS);
+					if (value || isSignature || isDisplayName || isEmailAddress) {
 						var propertyNode = soapDoc.set("a", value, identityNode);
 						propertyNode.setAttribute("name", field.soap);
 					}
