@@ -1515,7 +1515,7 @@ function(force) {
 	if (this.type == ZmParsedQuery.TERM) {
 		var arg = this.arg;
 		if (this.op == ZmParsedQuery.OP_CONTENT) {
-			return '"' + arg.replace(/"/g, '\\"') + '"';
+			return /\W/.test(arg) ? '"' + arg.replace(/"/g, '\\"') + '"' : arg;
 		}
 		else {
 			// quote arg if it has any spaces and is not already quoted
