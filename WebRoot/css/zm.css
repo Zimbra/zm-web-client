@@ -4747,6 +4747,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	height:25px;
 }
 
+.ZmVoicemailListView .Row {
+    height: 20px;
+}
+
 .ZmCallListPrintView TD {
 	padding-left:20;
 	padding-right:20;
@@ -4809,6 +4813,24 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:10px;
 	padding:4px 0 0 2px;
 	height:12px;
+}
+
+.ZmHorizontalSlider {
+    @Slider@
+    @HSliderBorder@
+    width: 200px;
+    height: 14px;
+}
+
+.ZmHorizontalSlider .DwtSliderThumb {
+    width:16px;
+    margin-top:-3px;
+}
+.ZmHorizontalSlider .DwtSliderThumbBorder {
+    width:10px;
+    padding:4px 0 0 2px;
+    height:12px;
+    background-color:@WidgetBgColor@;	@NormalOutsetBorder@	@SmallRoundCorners@
 }
 
 .DwtVerticalSlider .DwtSliderThumb {
