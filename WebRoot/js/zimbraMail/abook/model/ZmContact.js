@@ -935,6 +935,7 @@ function(includeUserZid) {
  */
 ZmContact.prototype.getIcon =
 function() {
+	if (this.isDistributionList()) { return "DistributionList"; }
 	if (this.isGal)			{ return "GALContact"; }
 	if (this.isShared())	{ return "SharedContact"; }
 	if (this.isGroup())		{ return "Group"; }
