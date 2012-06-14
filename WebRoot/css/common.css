@@ -538,7 +538,6 @@ TD.vSpace {
 .ZmOverviewContainer .ZmOverview,
 .dialogOverviewContainer .OverviewTree {
 	height:auto;
-	padding-left:@SmallIconWidth@;
 }
 
 .OverviewTree 				{	@FullWidth@ 		}
