@@ -1724,21 +1724,6 @@ function(draftType, attId, docIds, callback, contactId) {
 	if (!this._canSaveDraft()) { return; }
 
 	draftType = draftType || ZmComposeController.DRAFT_TYPE_MANUAL;
-	
-	var addrs = this._composeView.collectAddrs();
-	if (addrs && addrs._bad_addrs_ && addrs._bad_addrs_.size()) {
-		if (draftType == ZmComposeController.DRAFT_TYPE_MANUAL) {
-			var dlg = appCtxt.getMsgDialog();
-			dlg.reset();
-			var badAddrs = [];	
-			for (var i=0; i<addrs._bad_addrs_.size(); i++) {
-				badAddrs.push(AjxStringUtil.htmlEncode(addrs._bad_addrs_.get(i)));		
-			}
-			dlg.setMessage(AjxMessageFormat.format(ZmMsg.errorSavingDraftInvalidEmails, [badAddrs.join("<br/>")]));
-			dlg.popup();
-		}
-		return;
-	}
 
 	var respCallback = this._handleResponseSaveDraftListener.bind(this, draftType, callback);
 	this._resetDelayTime();
