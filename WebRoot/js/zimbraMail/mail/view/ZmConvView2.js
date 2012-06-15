@@ -1785,8 +1785,9 @@ function() {
 	var readCell = document.getElementById(this._readCellId);
 	if (readCell) {
 		var isExpanded = (this._state == ZmMailMsgCapsuleViewHeader.EXPANDED);
-		var attrs = "id='" + this._readIconId + "' noToggle=1";
-		var iePos = AjxEnv.isIE ? "position: static" : null;
+		var tooltip = this._msg.isUnread ? ZmMsg.markAsRead : ZmMsg.markAsUnread;
+		var attrs = "id='" + this._readIconId + "' noToggle=1 title='" + tooltip + "'";
+		var iePos = AjxEnv.isIE ? "position:static" : null;
 		readCell.innerHTML = AjxImg.getImageHtml(this._msg.getReadIcon(), isExpanded ? iePos : "display:inline-block", attrs);
 	}
 };
