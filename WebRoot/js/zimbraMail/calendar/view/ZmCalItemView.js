@@ -304,6 +304,7 @@ function(calItem) {
     var data = null;
     for (var stat in ptst) {
         //stat = ptst[index];
+        if (stat === ZmCalBaseItem.PSTATUS_NEEDS_ACTION && calItemPtst !== ZmCalBaseItem.PSTATUS_NEEDS_ACTION) { continue; }
         data = new DwtSelectOptionData(stat, ZmCalItem.getLabelForParticipationStatus(stat), false, null, ZmCalItem.getParticipationStatusIcon(stat));
         statusSelect.addOption(data);
         if (stat == calItemPtst){

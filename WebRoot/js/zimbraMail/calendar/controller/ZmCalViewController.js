@@ -3015,14 +3015,14 @@ function(appt, type, op, callback) {
 
     if(type == ZmOperation.REPLY_DECLINE) {
         var promptCallback = new AjxCallback(this, this._sendInviteReply, [type, instanceDate]);
-        this._promptDeclineNotify(appt, promptCallback);
+        this._promptDeclineNotify(appt, promptCallback, callback);
     }else {
         msgController._sendInviteReply(type, appt.compNum || 0, instanceDate, appt.getRemoteFolderOwner(), false, null, null, callback);
     }
 };
 
 ZmCalViewController.prototype._promptDeclineNotify =
-function(appt, callback) {
+function(appt, promptCallback, callback) {
 	if (!this._declineNotifyDialog) {
 		var msg = ZmMsg.confirmDeclineAppt;
 		this._declineNotifyDialog = new ZmApptDeleteNotifyDialog({
@@ -3033,20 +3033,20 @@ function(appt, callback) {
 			choiceLabel2 : ZmMsg.notifyOrganizer
 		});
 	}
-	this._declineNotifyDialog.popup(new AjxCallback(this, this._declineNotifyYesCallback, [appt, callback]));
+	this._declineNotifyDialog.popup(new AjxCallback(this, this._declineNotifyYesCallback, [appt, promptCallback, callback]));
 };
 
 ZmCalViewController.prototype._declineNotifyYesCallback =
-function(appt, callback) {
+function(appt, promptCallback, callback) {
 	var notifyOrg = !this._declineNotifyDialog.isDefaultOptionChecked();
-    if(callback) callback.run(appt, notifyOrg);
+    if(promptCallback) promptCallback.run(appt, notifyOrg, callback);
 };
 
 
 ZmCalViewController.prototype._sendInviteReply =
-function(type, instanceDate, appt, notifyOrg) {
+function(type, instanceDate, appt, notifyOrg, callback) {
     var msgController = this._getMsgController();
-    msgController._sendInviteReply(type, appt.compNum || 0, instanceDate, appt.getRemoteFolderOwner(), !notifyOrg);
+    msgController._sendInviteReply(type, appt.compNum || 0, instanceDate, appt.getRemoteFolderOwner(), !notifyOrg, null, null, callback);
 };
 
 ZmCalViewController.prototype._handleApptEditRespondAction =
@@ -3298,7 +3298,7 @@ function(appt, actionMenu) {
     }
 
     actionMenu.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
-	actionMenu.enable(ZmOperation.REPLY, isReplyable && !isOrganizer);
+	actionMenu.enable(ZmOperation.REPLY, isReplyable);
 	actionMenu.enable(ZmOperation.REPLY_ALL, isReplyable);
 
     var disabledOps;

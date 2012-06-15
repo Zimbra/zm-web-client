@@ -178,9 +178,11 @@ function() {
     var actionMenu = this._toolbar.getActionsMenu();
     if(actionMenu){
         actionMenu.enable([
+                        ZmOperation.EDIT,
                         ZmOperation.TAG,
                         ZmOperation.TAG_MENU,
                         ZmOperation.FORWARD_APPT,
+                        ZmOperation.PROPOSE_NEW_TIME,
                         ZmOperation.DELETE
                         ], false);
     }
@@ -318,7 +320,7 @@ function(result, value) {
 
 ZmApptController.prototype.isCloseAction =
 function() {
-    return this._action == ZmCalItemComposeController.SAVE_CLOSE;
+    return this._action == ZmCalItemComposeController.SAVE_CLOSE || this._action == ZmCalItemComposeController.SAVE;
 };
 
 ZmApptController.prototype._forwardListener =
