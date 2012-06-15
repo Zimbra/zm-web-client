@@ -123,6 +123,7 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_SPAM]			= "junk";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SENT]			= "sent";
 ZmFolder.QUERY_NAME[ZmFolder.ID_OUTBOX]			= "outbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]			= "drafts";
+ZmFolder.QUERY_NAME[ZmOrganizer.ID_CALENDAR]	= "calendar";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]		= "contacts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_TASKS]			= "tasks";
 ZmFolder.QUERY_NAME[ZmFolder.ID_AUTO_ADDED]		= "Emailed Contacts";
@@ -469,7 +470,7 @@ function(obj) {
 ZmFolder.prototype.createQuery =
 function(pathOnly) {
 	if (!this.isRemote() && this.isSystem()) {
-		var qName = ZmFolder.QUERY_NAME[this.nId];
+		var qName = ZmFolder.QUERY_NAME[this.nId] || this.getName(false, null, true, true);
 		return pathOnly
 			? qName
 			: ("in:\"" + (qName || this.name)+'"');
