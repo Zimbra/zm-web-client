@@ -40,41 +40,32 @@
 								<td>
 									<table align=right>
 										<tr>
-											<td class='LabelColName' style='padding-left: 7px;'><$= ZmMsg.fromLabel $></td>
+											<td class='LabelColName' style='padding-left:7px;'><$= ZmMsg.fromLabel $></td>
 										</tr>
 									</table>
 								</td>
 								<td class='LabelColValue' valign=top colspan=10>
 									<table>
 										<tr id="OBJ_PREFIX_<$=Dwt.getNextId()$>_from">
-											<$ if (data.sentByIcon) { $>
-												<td valign=top>
-													<a href="javascript:;" onclick="ZmMailMsgView.contactIconCallback('<$=AjxStringUtil.xmlAttrEncode(data.sentByNormal)$>', '${sentByIcon}'); return false;">
-														<$= AjxImg.getImageHtml(data.sentByIcon, "cursor:pointer") $>
-													</a>
-												</td>
-												<td>&nbsp;</td>
-											<$ } $>
-											<td id="OBJ_PREFIX_<$=Dwt.getNextId()$>_from">${sentBy}&nbsp;&nbsp;</td>
+											<td id="OBJ_PREFIX_<$=Dwt.getNextId()$>_from">${sentBy}</td>
 											<$ var useObo = data.obo && (data.oboAddr != data.sentByAddr); $>
 											<$ var useBwo = data.bwo && (data.bwoAddr != data.sentByAddr); $>
 											<$ if (useObo && useBwo) { $>
 												<td colspan=10>
 													<table>
 														<tr>
-															<td id='OBJ_PREFIX_obo_label' class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></td>
+															<td id='OBJ_PREFIX_obo_label' class='LabelColName' style='padding:0 .5em;'><$= ZmMsg.onBehalfOfMidLabel $></td>
 															<td id='OBJ_PREFIX_obo' class='LabelColValue'><$= data.obo $></td>
-															<td class='ZSmallHorizonalSpacer'>&nbsp;</td>
-															<td id='OBJ_PREFIX_bwo_label' class='LabelColName'><$= ZmMsg.byWayOfLabel $></td>
+															<td id='OBJ_PREFIX_bwo_label' class='LabelColName' style='padding:0 .5em;'><$= ZmMsg.byWayOfMidLabel $></td>
 															<td id='OBJ_PREFIX_bwo' class='LabelColValue'><$= data.bwo $></td>
 														</tr>
 													</table>
 												</td>
 											<$ } else if (useObo) { $>
-												<td id='OBJ_PREFIX_obo_label' class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></td>
+												<td id='OBJ_PREFIX_obo_label' class='LabelColName' style='padding:0 .5em;'><$= ZmMsg.onBehalfOfMidLabel $></td>
 												<td id='OBJ_PREFIX_obo' colspan=10><$= data.obo $></td>
 											<$ } else if (useBwo) { $>
-												<td id='OBJ_PREFIX_bwo_label' class='LabelColName'><$= ZmMsg.byWayOfLabel $></td>
+												<td id='OBJ_PREFIX_bwo_label' class='LabelColName' style='padding:0 .5em;'><$= ZmMsg.byWayOfMidLabel $></td>
 												<td id='OBJ_PREFIX_bwo' colspan=10><$= data.bwo $></td>
 											<$ } $>
 										</tr>
@@ -765,15 +756,15 @@
 				<$ var useObo = data.obo && (data.oboAddr != data.sentByAddr); $>
 				<$ var useBwo = data.bwo && (data.bwoAddr != data.sentByAddr); $>
 				<$ if (useObo && useBwo) { $>
-					<span class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></span>
+					<span class='LabelColName' style='margin:0 .5em;'><$= ZmMsg.onBehalfOfMidLabel $></span>
 					<span class='LabelColValue'><$= data.obo $></span>
-					<span class='LabelColName'><$= ZmMsg.byWayOfLabel $></span>
+					<span class='LabelColName' style='margin:0 .5em;'><$= ZmMsg.byWayOfMidLabel $></span>
 					<span class='LabelColValue'><$= data.bwo $></span>
 				<$ } else if (useObo) { $>
-					<span class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></span>
+					<span class='LabelColName' style='margin:0 .5em;'><$= ZmMsg.onBehalfOfMidLabel $></span>
 					<span class='LabelColValue' colspan=10><$= data.obo $></span>
 				<$ } else if (useBwo) { $>
-					<span class='LabelColName'><$= ZmMsg.byWayOfLabel $></span>
+					<span class='LabelColName' style='margin:0 .5em;'><$= ZmMsg.byWayOfMidLabel $></span>
 					<span class='LabelColValue' colspan=10><$= data.bwo $></span>
 				<$ } $>
 			</td>
