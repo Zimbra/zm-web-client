@@ -166,7 +166,7 @@ ZmMailListController.viewToTab = {};
 ZmMailListController.prototype.switchView =
 function(view, force) {
 
-	if (view == ZmId.VIEW_TRAD || view == ZmId.VIEW_CONVLIST) {
+	if ((view == ZmId.VIEW_TRAD || view == ZmId.VIEW_CONVLIST) && view != this.getCurrentViewType()) {
 		if (appCtxt.multiAccounts) {
 			delete this._showingAccountColumn;
 		}
