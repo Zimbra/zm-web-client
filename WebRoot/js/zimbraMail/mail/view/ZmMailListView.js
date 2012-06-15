@@ -283,6 +283,12 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_ACCOUNT) {
 		idx = this._getImageHtml(htmlArr, idx, item.getAccount().getIcon(), this._getFieldId(item, field));
 	} 
+	else if (field == ZmItem.F_DATE) {
+		var date = AjxDateUtil.computeDateStr(params.now || new Date(), item.date);
+		htmlArr[idx++] = "<span style='white-space: nowrap' id='";
+		htmlArr[idx++] = this._getFieldId(item, field);
+		htmlArr[idx++] = "'>" + date + "</span>";
+	}
 	else {
 		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
 	}
@@ -670,9 +676,15 @@ function(item) {
 
 ZmMailListView.prototype._getCellId =
 function(item, field) {
-	return (field == ZmItem.F_SIZE || field == ZmItem.F_SUBJECT || field == ZmItem.F_SORTED_BY)
-		? this._getFieldId(item, field)
-		: ZmListView.prototype._getCellId.apply(this, arguments);
+	if (field == ZmItem.F_DATE) {
+		return null;
+	}
+	else if (field == ZmItem.F_SORTED_BY) {
+		return this._getFieldId(item, field);
+	}
+	else {
+		return ZmListView.prototype._getCellId.apply(this, arguments);
+	}
 };
 
 ZmMailListView.prototype._getHeaderToolTip =

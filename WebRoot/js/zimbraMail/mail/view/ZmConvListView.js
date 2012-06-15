@@ -396,21 +396,23 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		}
 		else if (field == ZmItem.F_SUBJECT) {
 			var subj = ZmMailMsg.stripSubjectPrefixes(item.subject || ZmMsg.noSubject);
-			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj, true);
+			htmlArr[idx++] = "<span style='white-space: nowrap' id='";
+			htmlArr[idx++] = this._getFieldId(item, field);
+			htmlArr[idx++] = "'>" + AjxStringUtil.htmlEncode(subj, true) + "</span>";
 			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(item);
 			}
 		}
 		else if (field == ZmItem.F_FOLDER) {
 			if (item.folderId) {
-				htmlArr[idx++] = "<nobr id='";
+				htmlArr[idx++] = "<span style='white-space:nowrap' id='";
 				htmlArr[idx++] = this._getFieldId(item, field);
 				htmlArr[idx++] = "'>"; // required for IE bug
 				var folder = appCtxt.getById(item.folderId);
 				if (folder) {
 					htmlArr[idx++] = folder.getName();
 				}
-				htmlArr[idx++] = "</nobr>";
+				htmlArr[idx++] = "</span>";
 			}
 		}
 		else if (field == ZmItem.F_SIZE) {
@@ -419,9 +421,9 @@ function(htmlArr, idx, item, field, colIdx, params) {
 				htmlArr[idx++] = item.numMsgs;
 				htmlArr[idx++] = ")";
 			} else if (item.size) {
-				htmlArr[idx++] = "<nobr>";
+				htmlArr[idx++] = "<span style='white-space:nowrap'>";
 				htmlArr[idx++] = AjxUtil.formatSize(item.size);
-				htmlArr[idx++] = "</nobr>";
+				htmlArr[idx++] = "</span>";
 			}
 		}
 		else if (field == ZmItem.F_SORTED_BY) {

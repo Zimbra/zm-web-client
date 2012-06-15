@@ -169,26 +169,28 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		} else {
 			// msg on its own (TV) shows subject and fragment
 			var subj = msg.subject || ZmMsg.noSubject;
-			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj);
+			htmlArr[idx++] = "<span style='white-space: nowrap' id='";
+			htmlArr[idx++] = this._getFieldId(msg, field);
+			htmlArr[idx++] = "'>" + AjxStringUtil.htmlEncode(subj) + "</span>";
 			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && msg.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(msg);
 			}
 		}
 
 	} else if (field == ZmItem.F_FOLDER) {
-		htmlArr[idx++] = "<nobr id='";
+		htmlArr[idx++] = "<span style='white-space:nowrap' id='";
 		htmlArr[idx++] = this._getFieldId(msg, field);
 		htmlArr[idx++] = "'>"; // required for IE bug
 		var folder = appCtxt.getById(msg.folderId);
 		if (folder) {
 			htmlArr[idx++] = folder.getName();
 		}
-		htmlArr[idx++] = "</nobr>";
+		htmlArr[idx++] = "</span>";
 
 	} else if (field == ZmItem.F_SIZE) {
-		htmlArr[idx++] = "<nobr>";
+		htmlArr[idx++] = "<span style='white-space:nowrap'>";
 		htmlArr[idx++] = AjxUtil.formatSize(msg.size);
-		htmlArr[idx++] = "</nobr>";
+		htmlArr[idx++] = "</span>";
 	} else if (field == ZmItem.F_SORTED_BY) {
 		htmlArr[idx++] = this._getAbridgedContent(msg, colIdx);
 	} else {
