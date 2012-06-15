@@ -724,7 +724,8 @@ function(force) {
 	}
     if (!this._tooltip || force) {
 		var itemText = this._getItemsText();
-		var subs = {name:this.name, itemText:itemText, numTotal:this.numTotal, sizeTotal:this.sizeTotal, numUnread:this.numUnread};
+		var unreadLabel = this._getUnreadLabel();
+		var subs = {name:this.name, itemText:itemText, numTotal:this.numTotal, sizeTotal:this.sizeTotal, numUnread:this.numUnread, unreadLabel:unreadLabel};
 		this._tooltip = AjxTemplate.expand("share.App#FolderTooltip", subs);
 	}
 	return this._tooltip;
@@ -2167,4 +2168,9 @@ function() {
 		result = ZmMsg.items;
 	}
 	return result;
+};
+
+ZmOrganizer.prototype._getUnreadLabel = 
+function() {
+	return ZmMsg.unread;	
 };

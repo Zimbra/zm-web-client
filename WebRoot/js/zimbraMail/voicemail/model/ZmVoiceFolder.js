@@ -195,6 +195,11 @@ function() {
     }
 };
 
+ZmVoiceFolder.prototype._getUnreadLabel = 
+function() {
+	return ZmMsg.unheard;	
+};
+
 ZmVoiceFolder.prototype.empty =
 function(){
 	DBG.println(AjxDebug.DBG1, "emptying: " + this.name + ", ID: " + this.id);

@@ -96,7 +96,7 @@
 <$ if (data.numUnread) { $>
 		<tr>
 			<td valign='top'>
-				<$= AjxMessageFormat.format(ZmMsg.makeLabel, ZmMsg.unread) $>
+				<$= AjxMessageFormat.format(ZmMsg.makeLabel, data.unreadLabel) $>
 			</td>
 			<td valign='top' style='font-weight:bold'>
 				<$= data.numUnread $>
