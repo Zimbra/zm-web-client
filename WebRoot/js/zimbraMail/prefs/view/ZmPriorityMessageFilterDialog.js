@@ -46,14 +46,15 @@ function() {
 	params.form = {
 		items: [
 			{ id: "MOVE_MSG_STREAM", type: "DwtCheckbox", label: ZmMsg.enableActivityStream, checked: false, onclick: streamListener},
-			{ id: "NOT_TO_ME", type: "DwtCheckbox", label: ZmMsg.moveNotToMe, checked: true},
+			{ id: "NOT_TO_ME", type: "DwtCheckbox", label: ZmMsg.moveNotToMe, checked: false},
 			{ id: "SELECT_FIELD", type: "DwtSelect", items:[ZmMsg.to, ZmMsg.toOrCc]},
-			{ id: "NOT_IN_ADDR", type: "DwtCheckbox", label: ZmMsg.moveNotInAddrBook, checked: true},
+			{ id: "NOT_IN_ADDR", type: "DwtCheckbox", label: ZmMsg.moveNotInAddrBook, checked: false},
 			{ id: "DL_SUBSCRIBED", type: "DwtCheckbox", label: ZmMsg.moveMessagesFromDL, checked: true},
 			{ id: "MASS_MARKETING", type: "DwtCheckbox", label: ZmMsg.massMarketingMessages, checked: true}
 		]
 	};
 	this._priorityMessageForm = new DwtForm(params);
+	this._priorityMessageForm.setScrollStyle(DwtControl.CLIP);
 	var div = document.getElementById("PRIORITYMESSAGE_PROMPT_FORM");
 	this._priorityMessageForm.appendElement(div);
 	

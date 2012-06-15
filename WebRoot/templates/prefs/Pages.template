@@ -2492,14 +2492,14 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<div class='horizSep'></div>
 	<div id='${id}_MOVE_MSG_STREAM'></div>
 	<div class="ZmActivityStreamFilterList">
-		<table><tr>
-			<td><div id='${id}_NOT_TO_ME'></div></td>
-			<td><div id='${id}_SELECT_FIELD' style='margin:0 .5em;'></div></td>
-			<td><div id='${id}_NOT_TO_ME_CONT'><$=ZmMsg.field$></div></td>
-		</tr></table>
-		<div id='${id}_NOT_IN_ADDR'></div>
 		<div id='${id}_DL_SUBSCRIBED'></div>
 		<div id='${id}_MASS_MARKETING'></div>
+		<table><tr>
+	                <td><div id='${id}_NOT_TO_ME'></div></td>
+	                <td><div id='${id}_SELECT_FIELD' style='margin:0 .5em;'></div></td>
+	                <td><div id='${id}_NOT_TO_ME_CONT'><$=ZmMsg.field$></div></td>
+                </tr></table>
+                <div id='${id}_NOT_IN_ADDR'></div>
 	</ul>
 </template>
 
