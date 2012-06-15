@@ -951,7 +951,7 @@ function() {
 		else if (index == 2) {
 			html[i++] = "<td id='";
 			html[i++] = this._yearlyMonthSelectExId;
-			html[i++] = "' style='padding:0 .5em'>";
+			html[i++] = "' style='padding:0.5em;height:24px;overflow:hidden;'>";
 		}
 		else {
 			html[i++] = "<td>";
