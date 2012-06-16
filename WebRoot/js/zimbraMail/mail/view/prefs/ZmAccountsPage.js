@@ -2509,7 +2509,7 @@ function(buffer, i, item, field, col, params) {
 		var cellId = this._getCellId(item, field);
 		buffer[i++] = "<div id='";
 		buffer[i++] = cellId;
-		buffer[i++] = "_name'>";
+		buffer[i++] = "_name' style='margin:0 5px; overflow:hidden;'>";
 		buffer[i++] = AjxStringUtil.htmlEncode(item.user);
 		buffer[i++] = "</div>";
 		return i;
@@ -2518,10 +2518,8 @@ function(buffer, i, item, field, col, params) {
         var cellId = this._getCellId(item, field);
 		buffer[i++] = "<div id='";
 		buffer[i++] = cellId;
-		buffer[i++] = "_type'>";
-        buffer[i++] = (item.sendAs && item.sendOnBehalfOf)  ? ZmMsg.sendAsAndSendOnBehalfOf : (item.sendAs ? ZmMsg.sendAs : ZmMsg.sendOnBehalfOflbl);
-
-		//buffer[i++] = (item.sendAs ? "SendAs " : ""  ) + ( item.sendOnBehalfOf ? " sendOnBehalfOf " : "" );
+		buffer[i++] = "_type' style='margin:0 5px;'>";
+		buffer[i++] = (item.sendAs && item.sendOnBehalfOf)  ? ZmMsg.sendAsAndSendOnBehalfOf : (item.sendAs ? ZmMsg.sendAs : ZmMsg.sendOnBehalfOflbl);
 		buffer[i++] = "</div>";
 		return i;
 	}
@@ -2536,8 +2534,8 @@ function(item, field, params) {
 ZmAccountDelegatesListView.prototype._getHeaderList =
 function() {
 	return [
-		new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg.name, width:ZmAccountsListView.WIDTH_NAME}),
-		new DwtListHeaderItem({field:ZmItem.F_TYPE, text:ZmMsg.type, width:ZmAccountsListView.WIDTH_TYPE})
+		new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg.name, width:ZmMsg.COLUMN_WIDTH_NAME_DELEGATE, margin:"5px"}),
+		new DwtListHeaderItem({field:ZmItem.F_TYPE, text:ZmMsg.type})
 	];
 };
 

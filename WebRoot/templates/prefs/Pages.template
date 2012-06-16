@@ -1050,15 +1050,25 @@ and the container element is replaced with that control.
 								<tr>
 									<td colspan='4'><div id='${id}_DELEGATE_RIGHTS'></div></td>
 								</tr>
-								<tr>
-									<td><button id='${id}_ADD_DELEGATE' tabindex='70'><$=ZmMsg.addDelegate$></button></td>
-									<td><button id='${id}_EDIT_DELEGATE' tabindex='80'><$=ZmMsg.editPermissions$></button></td>
-									<td><button id='${id}_REMOVE_DELEGATE' tabindex='100'><$=ZmMsg.remove$></button></td>
-									<td width='100%'></td>
-								</tr>
+
+
 							</table>
 						</td>
-					<tr>
+					</tr>
+                    <tr>
+                        <td colspan=2>
+                            <table class="ZPropertySheet" width="100%" cellspacing="6">
+                                <tbody>
+                                    <tr>
+                                        <td><button id='${id}_ADD_DELEGATE' tabindex='70'><$=ZmMsg.addDelegate$></button></td>
+                                        <td><button id='${id}_EDIT_DELEGATE' tabindex='80'><$=ZmMsg.editPermissions$></button></td>
+                                        <td><button id='${id}_REMOVE_DELEGATE' tabindex='100'><$=ZmMsg.remove$></button></td>
+                                        <td width='100%'></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
 				</table>
 			</td>
 		</tr>
