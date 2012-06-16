@@ -127,6 +127,9 @@ function(what) {
 	}
 
 	if (what instanceof ZmAddrBook) {
+		if (this.link) {
+			return false; //can't move a folder to a shared folder, regardless of read-only status 
+		}
 		if (!appCtxt.multiAccounts) {
 			return true;
 		}
