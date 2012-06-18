@@ -555,9 +555,9 @@
 
 <!-- rename folder/tag dialog template -->
 <template id="share.Dialogs#ZmRenameDialog">
-	<table>
+	<table class='ZPropertySheet' cellspacing='6'>
 		<tr>
-			<td class='Label' colspan=2 style='padding:0px 0px 5px 0px;'>${newLabel}: </td>
+			<td class='ZmFieldLabel'>${newLabel}:</td>
 		</tr>
 		<tr>
 			<td><input type='text' autocomplete='off' class='Field' id='${id}_name' /></td>
@@ -587,25 +587,22 @@
 
 <!-- time selection dialog template -->
 <template id='share.Dialogs#ZmTimeDialog'>
-	<table border=0 width=330>
+	<div id='${id}_description' style='padding:3px 3px 10px;'>${description}</div>
+	<table class='ZPropertySheet' cellspacing='6' width='330'>
 		<tr>
-			<td colspan=2 id='${id}_description'>${description}</td>
-		</tr>
-		<tr>
-			<td class='Label'>${label}:</td>
+			<td class='ZmFieldLabelRight'>${label}:</td>
 			<td>
 				<table>
 					<tr>
 						<td><$=AjxTemplate.expand("#DateField",{id:data.id+"_date"})$></td>
-						<td class="miniCalendarButton" id='${id}_miniCal'></td>
-						<td>&nbsp;</td>
+						<td id='${id}_miniCal' class="miniCalendarButton" style='padding-right:1em;'></td>
 						<td id='${id}_time'></td>
 					</tr>
 				</table>
 			</td>
 		</tr>
 		<tr>
-			<td width=50><nobr><$= ZmMsg.selectTimezoneLabel $></nobr></td>
+			<td class='ZmFieldLabelRight'><$= ZmMsg.selectTimezoneLabel $></td>
 			<td id='${id}_tzSelect'></td>
 		</tr>
 	</table>
@@ -641,8 +638,7 @@
 </template>
 
 <template id="share.Dialogs#ZmFolderRetentionView">
-     <table>
-        <tr><td colspan=3>&nbsp;</td></tr>
+     <table style='margin:10px;'>
         <tr>
             <td><input id="${id}_keepCheckbox" type='checkbox'></td>
             <td class='ZmFolderRetentionLabel' colspan=2>
@@ -652,13 +648,13 @@
             </td>
         </tr>
         <tr>
-            <td>&nbsp;</td>
-            <td style="text-align:left;" colspan=2><$=ZmMsg.messageRetentionExplanation$></td>
+            <td></td>
+            <td colspan=2 style='padding-bottom:.5em;'><$=ZmMsg.messageRetentionExplanation$></td>
         </tr>
         <tr>
-            <td>&nbsp;</td>
-            <td class='ZmFolderRetentionLabel'><$=ZmMsg.messageRetentionRange$></td>
-            <td  class='ZmFolderPolicySelection'>
+            <td></td>
+            <td class='ZmFieldLabelRight'><$=ZmMsg.messageRetentionRange$></td>
+            <td class='ZmFolderPolicySelection'>
                 <select id='${id}_keep'			class='ZmFolderPolicySelect'/>
                 <input id='${id}_keepValue'		class='ZmFolderPolicyAmountInput' type='text' />
                 <select id='${id}_keepUnit'		class='ZmFolderPolicyUnitSelect' />
@@ -674,18 +670,17 @@
             </td>
         </tr>
         <tr>
-            <td>&nbsp;</td>
-            <td style="text-align:left;" colspan=2><$=ZmMsg.messageDisposalExplanation$></td>
+            <td></td>
+            <td colspan=2 style='padding-bottom:.5em;'><$=ZmMsg.messageDisposalExplanation$></td>
         </tr>
         <tr>
-            <td>&nbsp;</td>
-            <td class='ZmFolderRetentionLabel'><$=ZmMsg.messageDisposalThreshold$></td>
+            <td></td>
+            <td class='ZmFieldLabelRight'><$=ZmMsg.messageDisposalThreshold$></td>
             <td class='ZmFolderPolicySelection'>
                 <select id='${id}_purge'		class='ZmFolderPolicySelect'/>
                 <input id='${id}_purgeValue'	class='ZmFolderPolicyAmountInput' type='text' />
                 <select id='${id}_purgeUnit'	class='ZmFolderPolicyUnitSelect' />
             </td>
         </tr>
-        <tr><td colspan=3>&nbsp;</td></tr>
     </table>
 </template>
