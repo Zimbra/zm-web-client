@@ -782,10 +782,12 @@ ZmAdvancedHtmlEditor.prototype.onBeforeInsertImage = function(ed, cmd, ui, val, 
 
 ZmAdvancedHtmlEditor.prototype._onDragEnter = function(ed, dnd, ev) {
     dnd._onDragEnter(ev);
+    Dwt.addClass(Dwt.getElement(this._iFrameId), "DropTarget");
 };
 
 ZmAdvancedHtmlEditor.prototype._onDragLeave = function(ed, dnd, ev) {
     dnd._onDragLeave(ev);
+    Dwt.delClass(Dwt.getElement(this._iFrameId), "DropTarget");
 };
 
 ZmAdvancedHtmlEditor.prototype._onDragOver = function(ed, dnd, ev) {
@@ -794,6 +796,7 @@ ZmAdvancedHtmlEditor.prototype._onDragOver = function(ed, dnd, ev) {
 
 ZmAdvancedHtmlEditor.prototype._onDrop = function(ed, dnd, ev) {
     dnd._onDrop(ev, true);
+    Dwt.delClass(Dwt.getElement(this._iFrameId), "DropTarget");
 };
 
 ZmAdvancedHtmlEditor.prototype.setMode = function (mode, convert, convertor) {

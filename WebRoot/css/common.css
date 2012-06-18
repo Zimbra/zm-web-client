@@ -343,6 +343,9 @@ TD.vSpace {
 	@DndAllowedContainer@
 }
 
+.DropTarget {
+    border: 1px solid @DropAllowedColor@ !important;
+}
 
 /* Used by the text laid over the multi-select icon to show number of items selected */
 .DragProxyTextLabel {
