@@ -44,7 +44,7 @@
         <c:set var="theBody" value="${appt.descriptionHtml}"/>
     </c:if>
     <c:if test="${empty appt.descriptionHtml}">
-        <c:set var="theBody" value="${appt.description}"/>
+        <c:set var="theBody" value="${zm:cook(appt.description)}"/>
     </c:if>
 </c:if>
 <fmt:message var="noSubject" key="noSubject"/>
