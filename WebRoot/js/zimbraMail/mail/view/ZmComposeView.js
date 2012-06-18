@@ -2805,7 +2805,7 @@ function(templateId, data) {
     var attButtonId = ZmId.getButtonId(this._view, ZmId.CMP_ATT_BTN);
 	this._attButton = new DwtButton({parent:this, id:attButtonId});
 	this._attButton.setText(ZmMsg.attach);
-
+    this._attButton.addSelectionListener(function(){});
     if (AjxEnv.supportsHTML5File){
         var styleStr = "";
         var node = this._attButton.getHtmlElement().getElementsByClassName("ZWidgetTitle")[0];
@@ -2815,7 +2815,7 @@ function(templateId, data) {
         };
         node.innerHTML = AjxTemplate.expand("mail.Message#MailAttachmentAttachBtn", newData);
         var fileInputNode = node.getElementsByClassName("BrowseAttachBtn")[0];
-        var attachTextWidth = node.getElementsByClassName("ComposeAttachBtn")[0].clientWidth;
+        var attachTextWidth = node.getElementsByClassName("attach_text")[0].clientWidth;
         if (fileInputNode && attachTextWidth){
             if (AjxEnv.isFirefox)
                 fileInputNode.style.right = (fileInputNode.clientWidth - attachTextWidth) + "px";
@@ -2823,11 +2823,11 @@ function(templateId, data) {
         }
         this._attcBtnFileInpId = newData.fileInputId;
     } else {
-             this._attButton._textEl.onclick = function(event){
+            this._attButton.addSelectionListener(function(event){
                 var curView = appCtxt.getAppViewMgr().getCurrentView();
                 curView.collapseAttMenu();
                 curView.showAttachmentDialog(ZmMsg.myComputer);
-             }
+             });
     }
     this._attButton.setMenu(new AjxCallback(this, this._attachButtonMenuCallback));
 	this._attButton.reparentHtmlElement(data.attBtnId);
