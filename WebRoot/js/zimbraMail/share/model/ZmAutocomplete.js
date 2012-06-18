@@ -685,16 +685,22 @@ function(str, callback, aclv, options) {
 
 // TODO - some validation of search ops and args
 ZmSearchAutocomplete.prototype.isComplete =
-function(str) {
+function(str, returnStr) {
 	var pq = new ZmParsedQuery(str);
-	return (!pq.parseFailed && (pq.getNumTokens() == 1));
+	var tokens = pq.getTokens();
+	if (!pq.parseFailed && tokens && (tokens.length == 1)) {
+		return returnStr ? tokens[0].toString() : true;
+	}
+	else {
+		return false;
+	}
 };
 
 ZmSearchAutocomplete.prototype.getAddedBubbleClass =
 function(str) {
 	var pq = new ZmParsedQuery(str);
 	var tokens = pq.getTokens();
-	return (!pq.parseFailed && (pq.getNumTokens() == 1) && tokens && tokens.length && tokens[0].type);
+	return (!pq.parseFailed && tokens && (tokens.length == 1) && tokens[0].type);
 };
 
 /**

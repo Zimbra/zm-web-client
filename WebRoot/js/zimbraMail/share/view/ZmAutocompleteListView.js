@@ -528,9 +528,11 @@ function(element) {
 		var isDelim = this._isDelim[c];
 		if (isDelim || (this._options.addrBubbles && c == ' ')) {
 			// space counts as delim if bubbles are on and the space follows an address
-			if (this._dataAPI.isComplete && this._dataAPI.isComplete(str)) {
+			var str1 = (this._dataAPI.isComplete && this._dataAPI.isComplete(str, true));
+			if (str1) {
 				DBG.println("ac", "parse input found address: " + str);
-				results.push({element:element, str:str, isComplete:true, isAddress:true});
+				str1 = (str1 === true) ? str : str1;
+				results.push({element:element, str:str1, isComplete:true, isAddress:true});
 				str = "";
 			}
 			else if (c == ";") {
