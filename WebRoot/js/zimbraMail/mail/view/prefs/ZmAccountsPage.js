@@ -457,12 +457,22 @@ function(granter, grantee, sendAs,sendObo,isGrant) {
     var msg = new ZmMailMsg();
     var addrs = new AjxVector();
     var permissions = (sendAs && sendObo)?ZmMsg.sendAsAndSendOnBehalfOf:(sendAs?ZmMsg.sendAs:ZmMsg.sendOnBehalfOflbl);
-    var subject = (isGrant) ? ZmMsg.delegateRightsSubject : ZmMsg.revokeRightsSubject;
+    var subject = "";
+    var status = "";
+    if (isGrant){
+        status = (sendAs && sendObo) ? ZmMsg.delegateRightsStatus : ZmMsg.delegateRightStatus;
+        subject = (sendAs && sendObo) ? ZmMsg.delegateRightsSubject : ZmMsg.delegateRightSubject;
+    } else{
+        status = (sendAs && sendObo) ? ZmMsg.revokeRightsStatus : ZmMsg.revokeRightStatus;
+        subject = (sendAs && sendObo) ? ZmMsg.revokeRightsSubject : ZmMsg.revokeRightSubject;
+    }
     subject = AjxMessageFormat.format(subject, [granter]);
+    status = AjxMessageFormat.format(status, grantee);
     var text = (isGrant)?ZmMsg.delegateCreatedText : ZmMsg.delegateRevokedText;
     text = AjxMessageFormat.format(text, [permissions, grantee, granter]);
     var html = (isGrant)?ZmMsg.delegateCreatedHtml : ZmMsg.delegateRevokedHtml;
     html = AjxMessageFormat.format(html, [permissions, grantee, granter]);
+    appCtxt.setStatusMsg(status);
 
     addrs.add(new AjxEmailAddress(grantee, AjxEmailAddress.TO));
     msg.setAddresses(AjxEmailAddress.TO, addrs);
