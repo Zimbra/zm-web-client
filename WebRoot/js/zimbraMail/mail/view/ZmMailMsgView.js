@@ -1387,7 +1387,7 @@ function(msg, container) {
 		subs.isSyncFailureMsg = isSyncFailureMsg;
 		subs.autoSendTime = autoSendTime;
 		subs.additionalHdrs = additionalHdrs;
-		subs.isOutDated = invite && invite.isEmpty()
+		subs.isOutDated = invite && invite.isEmpty();
 	}
 
 	var template = (invite && !invite.isEmpty() && this._inviteMsgView)

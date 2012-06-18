@@ -309,7 +309,7 @@ function(scrollMsgView) {
 				if (width && width > Dwt.getSize(this._messagesDiv).x) {
 					msgView.setSize(width, Dwt.DEFAULT);
 				}
-				if (msgView._isCalendarInvite) {
+				if (msgView._isCalendarInvite && msgView._inviteMsgView) {
 				    msgView._inviteMsgView.convResize();
 				    msgView._inviteMsgView.scrollToInvite();
 				}
@@ -1140,7 +1140,7 @@ function(msg, container, callback, index) {
 	if (isCalendarInvite) {
 		// rearrange invite components to be part of the body
 		var imv = this._inviteMsgView;
-		if (imv._dayView) {
+		if (imv && imv._dayView) {
 			imv._dayView.setVisible(false);
 		}
 		if (AjxEnv.isIE) {
@@ -1709,7 +1709,8 @@ function(state, force) {
 			participants:	ai.participants,
 			date:			dateString,
 			dateCellId:		this._dateCellId,
-			dateTooltip:	dateTooltip
+			dateTooltip:	dateTooltip,
+			isOutDated:		msg.invite && msg.invite.isEmpty()
 		};
 		html = AjxTemplate.expand("mail.Message#Conv2MsgHeader-expanded", subs);
 	}

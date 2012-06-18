@@ -4,15 +4,7 @@
 			<tr>
 				<td>
 					<$ if (data.isOutDated) { $>
-						<div class="InviteOutDated">
-							<table>
-								<tr>
-									<td><$= AjxImg.getImageHtml("Warning") $></td>
-									<td>&nbsp;</td>
-									<td><$= ZmMsg.inviteNotCurrent $></td>
-								</tr>
-							</table>
-						</div>
+						<$= AjxTemplate.expand("#InviteNotCurrent", data) $>
 					<$ } $>
 					<div>
 						<table width=100%>
@@ -105,6 +97,19 @@
 	</div>
 </template>
 
+<template id='mail.Message#InviteNotCurrent'>
+	<div class="InviteOutDated">
+		<table>
+			<tr>
+				<td><$= AjxImg.getImageHtml("Warning") $></td>
+				<td>&nbsp;</td>
+				<td><$= ZmMsg.inviteNotCurrent $></td>
+			</tr>
+		</table>
+	</div>
+</template>
+
+		
 <template id='mail.Message#MailAttachmentBubble'>
 		<span class="AttachmentLoading attachmentBubble AttachmentSpan" name="mailAttUploadingSpan" style="max-width:235px; position:static; overflow:visible;padding:0 2px 4px">
 			<span class="AttProgressSpan1">${fileName}</span>
@@ -747,6 +752,10 @@
 </template>
 
 <template id='mail.Message#Conv2MsgHeader-expanded'>
+	<$ if (data.isOutDated) { $>
+		<$= AjxTemplate.expand("#InviteNotCurrent", data) $>
+		<div style='position:relative'>
+	<$ } $>
 	<div class='info'>
 		<table id='${hdrTableId}' class='ZPropertySheet' cellspacing='3'>
 			<tr>
@@ -778,6 +787,9 @@
 	</div>
 	<div id='${readCellId}' class='readUnreadDot'></div>
 	<div class='date' id='${dateCellId}' title='${dateTooltip}'>${date}</div>
+	<$ if (data.isOutDated) { $>
+		</div>
+	<$ } $>
 </template>
 		
 <template id='mail.Message#Conv2MsgAddressRow'>
