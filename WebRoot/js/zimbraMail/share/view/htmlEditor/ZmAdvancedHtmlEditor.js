@@ -68,8 +68,15 @@ function() {
 
 ZmAdvancedHtmlEditor.prototype.setSize =
 function(x, y) {
-    var div = this._spellCheckDivId && document.getElementById(this._spellCheckDivId),
-        bodyField = this.getBodyField();  //textarea or editor iframe
+    var div,
+        bodyField;
+
+    if (!y) {
+        return;
+    }
+
+    div = this._spellCheckDivId && document.getElementById(this._spellCheckDivId);
+    bodyField = this.getBodyField();  //textarea or editor iframe
 
     if (y === Dwt.CLEAR) {
         bodyField.style.height = null;
@@ -77,7 +84,7 @@ function(x, y) {
     } else if (y === Dwt.DEFAULT) {
         bodyField.style.height = "auto";
         if (div) div.style.height = "auto";
-    } else if (typeof(y) === "number") {
+    } else if (typeof(y) === "number" && !isNaN(y)) {
         //Subtracting editor toolbar height
         if (bodyField.nodeName.toLowerCase() === "iframe") {
             y = y - 28;
@@ -1786,21 +1793,27 @@ function( buttonName ) {
 
 ZmAdvancedHtmlEditor.prototype.onToolbarToggle =
 function() {
-    var iframeStyle = this.getBodyField().style;
-    var toolbar = this.getToolbar("2");
-    var toggleButton = this.getToolbarButton("toggle");
-    if(toolbar && toggleButton ){
-        if( toolbar.style.display === Dwt.DISPLAY_NONE ){
+    var iframeStyle = this.getBodyField().style,
+        toolbar = this.getToolbar("2"),
+        toggleButton = this.getToolbarButton("toggle"),
+        iframeHeight = parseInt(iframeStyle.height);
+
+    if (toolbar && toggleButton) {
+        if (toolbar.style.display === Dwt.DISPLAY_NONE) {
             toggleButton.title = ZmMsg.hideExtendedToolbar;
             Dwt.setInnerHtml(toggleButton.firstChild, ZmMsg.lessToolbar);
             Dwt.show(toolbar);
-            iframeStyle.height = parseInt( iframeStyle.height ) - 26 + "px";
+            if (!isNaN(iframeHeight)) {
+                iframeStyle.height =  (iframeHeight > 26) ? iframeHeight - 26 : iframeHeight + "px";
+            }
         }
         else{
             toggleButton.title = ZmMsg.showExtendedToolbar;
             Dwt.setInnerHtml(toggleButton.firstChild, ZmMsg.moreToolbar);
             Dwt.hide(toolbar);
-            iframeStyle.height = parseInt( iframeStyle.height ) + 26 + "px";
+            if (!isNaN(iframeHeight)) {
+                iframeStyle.height = iframeHeight + 26 + "px";
+            }
         }
     }
 };
