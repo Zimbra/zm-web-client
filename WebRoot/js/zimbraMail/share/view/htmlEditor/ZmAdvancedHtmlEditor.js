@@ -266,7 +266,12 @@ function(offset) {
 			range.select();
 		} else if (control.setSelectionRange) { // FF
 			offset = offset || 0;
-			control.setSelectionRange(offset, offset);
+            //If display is none firefox will throw the following error
+            //Error: Component returned failure code: 0x80004005 (NS_ERROR_FAILURE) [nsIDOMHTMLTextAreaElement.setSelectionRange]
+            //checking offsetHeight to check whether it is rendered or not
+            if (control.offsetHeight) {
+                control.setSelectionRange(offset, offset);
+            }
 		}
 	} else {
 		this._moveCaretToTopHtml(true, offset);
@@ -492,6 +497,11 @@ ZmAdvancedHtmlEditor.prototype.initEditorManager =
 function(id, content) {
 
 	var obj = this;
+
+    if (!window.tinyMCE) {//some problem in loading TinyMCE files
+        return;
+    }
+
 	var urlParts = AjxStringUtil.parseURL(location.href);
 
 	//important: tinymce doesn't handle url parsing well when loaded from REST URL - override baseURL/baseURI to fix this
@@ -719,8 +729,6 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ed, ev) {
     var ec = obj.getEditorContainer();
     ec.setFocusMember(win);
 
-    obj._editorInitialized = true;
-
     if (obj._onTinyMCEEditorInitcallback) {
         obj._onTinyMCEEditorInitcallback.run();
     }
@@ -735,6 +743,8 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ed, ev) {
         tinymceEvent.add(doc, 'dragover', this._onDragOver.bind(this, ed, dnd));
         tinymceEvent.add(doc, 'drop', this._onDrop.bind(this, ed, dnd));
     }
+
+    obj._editorInitialized = true;
 };
 
 /*
@@ -785,9 +795,6 @@ ZmAdvancedHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
         return;
     }
     this._mode = mode;
-    if (!window.tinyMCE) {//Tinymce script is getting loaded
-        return;
-    }
     if (mode === DwtHtmlEditor.HTML) {
         if (convert) {
             var textarea = this.getContentField();
@@ -798,16 +805,23 @@ ZmAdvancedHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
         }
     } else {
         if (convert) {
-            var content = this._convertHtml2Text(convertor);
+            var content;
+            if (this._editorInitialized) {
+                content = this._convertHtml2Text(convertor);
+            }
+            else {
+                content = AjxStringUtil.convertHtml2Text(this.getContentField().value);
+            }
         }
     }
     if (mode === DwtHtmlEditor.TEXT && !this._editorInitialized) {
     }
     else {
-        tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);//tinymce will automatically toggles the editor and sets the corresponding content.
+        window.tinyMCE && tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);//tinymce will automatically toggles the editor and sets the corresponding content.
     }
     if (convert && mode === DwtHtmlEditor.TEXT) {//tinymce will set html content directly in textarea. Resetting the content after removing the html tags.
         this.setContent(content);
+        !window.tinyMCE && Dwt.setVisible(this.getHtmlElement(), true);
     }
 };
 
