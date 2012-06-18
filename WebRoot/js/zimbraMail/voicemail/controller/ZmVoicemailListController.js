@@ -100,6 +100,7 @@ function() {
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.DOWNLOAD_VOICEMAIL);
 	list.push(ZmOperation.DELETE);
+	list.push(ZmOperation.DELETE_WITHOUT_SHORTCUT);
 	return list;
 };
 
@@ -118,8 +119,10 @@ function(parent, num) {
 	if (isTrash) {
 		parent.enableAll(false);
 		if (parent instanceof DwtMenu) {
-			ZmOperation.setOperation(parent, ZmOperation.DELETE, ZmOperation.DELETE, ZmMsg.moveToVoiceMail, "UnDelete");
-			parent.enable(ZmOperation.DELETE, true);
+			ZmOperation.setOperation(parent, ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmMsg.moveToVoiceMail, "MoveToFolder");
+			parent.enable(ZmOperation.DELETE_WITHOUT_SHORTCUT, true);
+			parent.setItemVisible(ZmOperation.DELETE_WITHOUT_SHORTCUT, true);
+			parent.setItemVisible(ZmOperation.DELETE, false);
 		} else {
 			if(ZmVoiceApp.hasTrashFolder) {
 				parent.enable(ZmOperation.DELETE, false);
@@ -154,6 +157,8 @@ function(parent, num) {
 
 		if (parent instanceof DwtMenu) {
 			ZmOperation.setOperation(parent, ZmOperation.DELETE, ZmOperation.DELETE, ZmMsg.del, "Delete");
+			parent.setItemVisible(ZmOperation.DELETE, true);
+			parent.setItemVisible(ZmOperation.DELETE_WITHOUT_SHORTCUT, false);
 		}
 	}
 };
@@ -184,7 +189,7 @@ function(actionCode) {
 			}
 			break;
 		case ZmKeyMap.DEL:
-			if (num > 0 ) {
+			if (num > 0 && !(this._folder && (this._folder.callType == ZmVoiceFolder.TRASH))) {
 				this._deleteListener();
 			}
 			break;
