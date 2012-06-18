@@ -46,7 +46,7 @@
             <c:set var="logoutRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLogoutURL}" />
             <c:set var="isAllowedUA" value="${zm:isAllowedUA(ua, domainInfo.webClientLogoutURLAllowedUA)}"/>
             <zm:logout/>
-            <c:if test="${not empty logoutRedirectUrl and (isAllowedUA eq true)}" >
+            <c:if test="${not empty logoutRedirectUrl and (isAllowedUA eq true) and (empty param.virtualacctdomain) and (empty virtualacctdomain)}" >
             	<c:redirect url="${logoutRedirectUrl}"/>
             </c:if>
         </c:when>
@@ -218,7 +218,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 </c:if>
 
 <zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
-<c:if test="${(empty pageContext.request.queryString) or (fn:indexOf(pageContext.request.queryString,'customerDomain') == -1)}">
+<c:if test="${((empty pageContext.request.queryString) or (fn:indexOf(pageContext.request.queryString,'customerDomain') == -1)) and (empty param.virtualacctdomain) and (empty virtualacctdomain) }">
 	<c:set var="domainLoginRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLoginURL}" />
     <c:set var="isAllowedUA" value="${zm:isAllowedUA(ua, domainInfo.webClientLoginURLAllowedUA)}"/>
 </c:if>
