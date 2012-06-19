@@ -1022,7 +1022,7 @@ ZmTaskListController.prototype._setViewContents =
 function(view) {
 	// load tasks into the given view and perform layout.
 	var lv = this._taskListView;
-	lv.set(this._list, ZmItem.F_DATE);
+	lv.set(this._list, lv._getPrefSortField());
 
 	if (lv.offset == 0) {
 		var list = this._list.getVector();
