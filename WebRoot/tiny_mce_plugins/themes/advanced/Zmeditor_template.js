@@ -436,9 +436,15 @@ Zmeditor_template.getFontSize = function(value){
             scriptLoader.load('../js/ajax/3rdparty/tinymce/themes/advanced/langs/' + locale +'.js');
         }
     }
-    /*
+
     tinymce.create('tinymce.plugins.onEditorEvent', {
-        init : function(ed, url) {
+        init : function(ed) {
+
+            ed.onPaste.add(function(ed) {
+                ed.undoManager.add();
+            });
+
+            /*
             if (tinymce.isIE) {
                 ed.onPostRender.add(function(ed) {
                     var doc = ed.getDoc(),
@@ -480,9 +486,10 @@ Zmeditor_template.getFontSize = function(value){
                     }
                 });
             }
+            */
 
         }
     });
     // Register plugin
-    tinymce.PluginManager.add('zimbraplugin', tinymce.plugins.onEditorEvent);*/
+    tinymce.PluginManager.add('zimbraplugin', tinymce.plugins.onEditorEvent);
 }(tinymce));
