@@ -51,7 +51,6 @@
  * @param	{String}	params.accountName				the account name to run this search against
  * @param	{Boolean}	params.idsOnly					if <code>true</code>, response returns item IDs only
  * @param   {Boolean}   params.inDumpster               if <code>true</code>, search in the dumpster
- * @param	{boolean}	params.expandDL					if <code>true</code>, set flag to have server indicate expandability for DLs
  * @param	{string}	params.origin					indicates what initiated the search
  * @param	{boolean}	params.isEmpty					if true, return empty response without sending a request
  */
@@ -196,9 +195,6 @@ function(params) {
 			if (this.galType) {
 				method.setAttribute("type", this.galType);
 			}
-			if (this.expandDL) {
-				method.setAttribute("needExp", 1);
-			}
 			soapDoc.set("name", this.query);
 			var searchFilterEl = soapDoc.set("searchFilter");
 			if (this.conds && this.conds.length) {
@@ -211,9 +207,6 @@ function(params) {
 			if (this.limit) {
 				method.setAttribute("limit", this.limit);
 			}
-			if (this.expandDL) {
-				method.setAttribute("needExp", 1);
-			}
 			soapDoc.set("name", this.query);
 		} else if (this.isGalAutocompleteSearch) {
 			soapDoc = AjxSoapDoc.create("AutoCompleteGalRequest", "urn:zimbraAccount");
@@ -221,9 +214,6 @@ function(params) {
 			method.setAttribute("limit", this._getLimit());
 			if (this.galType) {
 				method.setAttribute("type", this.galType);
-			}
-			if (this.expandDL) {
-				method.setAttribute("needExp", 1);
 			}
 			soapDoc.set("name", this.query);
 		} else if (this.isCalResSearch) {
@@ -287,6 +277,9 @@ function(params) {
 		}
 	}
 
+	var soapMethod = this._getStandardMethod(soapDoc);
+	soapMethod.setAttribute("needExp", 1);
+
 	var respCallback = this._handleResponseExecute.bind(this, params.callback);
 
 	if (params.batchCmd) {
@@ -336,9 +329,6 @@ function(params) {
 			if (this.galType) {
 				request.type = this.galType;
 			}
-			if (this.expandDL) {
-				request.needExp = 1;
-			}
 			request.name = this.query;
 
 			// bug #36188 - add offset/limit for paging support
@@ -364,9 +354,6 @@ function(params) {
 			if (this.limit) {
 				request.limit = this.limit;
 			}
-			if (this.expandDL) {
-				request.needExp = 1;
-			}
 			request.name = {_content:this.query};
 		} else if (this.isGalAutocompleteSearch) {
 			jsonObj = {AutoCompleteGalRequest:{_jsns:"urn:zimbraAccount"}};
@@ -375,9 +362,6 @@ function(params) {
 			request.name = this.query;
 			if (this.galType) {
 				request.type = this.galType;
-			}
-			if (this.expandDL) {
-				request.needExp = 1;
 			}
 		} else if (this.isCalResSearch) {
 			jsonObj = {SearchCalendarResourcesRequest:{_jsns:"urn:zimbraAccount"}};
@@ -453,6 +437,11 @@ function(params) {
 			}
         }
     }
+
+	if (request) {
+		request.needExp = 1;
+	}
+
 
 	var respCallback = this._handleResponseExecute.bind(this, params.callback);
 
