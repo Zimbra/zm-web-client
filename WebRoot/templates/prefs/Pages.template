@@ -305,31 +305,39 @@ and the container element is replaced with that control.
 	<table class='ZOptionsSectionTable' width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
+				<$
+					var messageArrivalLabelDisplayed = false;
+					var showMessageArrivalLabel = function() {
+						var ret = messageArrivalLabelDisplayed ? "&nbsp;" : ZmMsg.messageArrivalLabel;
+						messageArrivalLabelDisplayed = true;
+						return ret;
+					};
+				$>
 				<table width=100% cellspacing='6'>
 					<$ if (data.isEnabled(ZmSetting.MAIL_NOTIFY_SOUNDS)) { $>
 						<tr>
-							<td class='ZOptionsLabel'><$=ZmMsg.messageArrivalLabel$></td>
+							<td class='ZOptionsLabel'><$=showMessageArrivalLabel() $></td>
 							<td class='ZOptionsField'><div id='${id}_MAIL_NOTIFY_SOUNDS' tabindex='105' type=checkbox /></td>
 						</tr>
 					<$ } $>
 
 					<$ if (data.isEnabled(ZmSetting.MAIL_NOTIFY_APP)) { $>
 						<tr>
-							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsLabel'><$=showMessageArrivalLabel() $></td>
 							<td class='ZOptionsField'><div id='${id}_MAIL_NOTIFY_APP' tabindex='106' type=checkbox /></td>
 						</tr>
 					<$ } $>
 
 					<$ if (data.isEnabled(ZmSetting.MAIL_NOTIFY_BROWSER)) { $>
 						<tr>
-							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsLabel'><$=showMessageArrivalLabel() $></td>
 							<td class='ZOptionsField'><div id='${id}_MAIL_NOTIFY_BROWSER' tabindex='107' type=checkbox /></td>
 						</tr>
 					<$ } $>
 
 					<$ if (data.isEnabled(ZmSetting.MAIL_NOTIFY_TOASTER)) { $>
 						<tr>
-							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsLabel'><$=showMessageArrivalLabel() $></td>
 							<td class='ZOptionsField'>
 								<table>
 									<tr>
@@ -343,7 +351,7 @@ and the container element is replaced with that control.
 
 					<$ if (appCtxt.isOffline) { $>
 						<tr>
-							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsLabel'><$=showMessageArrivalLabel() $></td>
 							<td class='ZOptionsField'><div id='${id}_OFFLINE_NOTIFY_NEWMAIL_ON_INBOX' tabindex='109' /></td>
 						</tr>
 					<$ } $>
@@ -351,13 +359,7 @@ and the container element is replaced with that control.
 					<$ if (!appCtxt.multiAccounts || appCtxt.isFamilyMbox || (!data.activeAccount.isMain && data.activeAccount.isZimbraAccount)) { $>
 						<$ if (data.isEnabled(ZmSetting.MAIL_FORWARDING_ENABLED)) { $>
 							<tr>
-								<td class='ZOptionsLabel'>
-									<$ if (!data.isEnabled(ZmSetting.MAIL_NOTIFY_SOUNDS)) { $>
-										<$=ZmMsg.messageArrivalLabel$>
-									<$ } else { $>
-										&nbsp;
-									<$ } $>
-								</td>
+								<td class='ZOptionsLabel'><$=showMessageArrivalLabel() $></td>
 								<td class='ZOptionsField'><$=ZmMsg.forwardCopyTo$></td>
 							</tr>
 							<tr>
@@ -375,13 +377,7 @@ and the container element is replaced with that control.
 								<tr><td>&nbsp;</td><td><hr></td></tr>
 							<$ } $>
 							<tr>
-								<td class='ZOptionsLabel'>
-							<$ if (!data.isEnabled(ZmSetting.MAIL_FORWARDING_ENABLED)) { $>
-								<$=ZmMsg.messageArrivalLabel$>
-							<$ } else { $>
-								&nbsp;
-							<$ } $>
-								</td>
+								<td class='ZOptionsLabel'><$=showMessageArrivalLabel() $></td>
 							<td class='ZOptionsField'><input id='${id}_NOTIF_ENABLED' tabindex='130' type=checkbox></td>
 						</tr>
 						<tr>
