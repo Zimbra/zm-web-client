@@ -441,31 +441,25 @@ function(params) {
         emails = emails.concat([this._organizerEmail]);
     }
 
-    if(this._workingHoursKey == this.getWorkingHoursKey()) {
-        this.suggestTimeSlots(params);
-    }else {
-        this._workingHoursKey = this.getWorkingHoursKey();
+    var acct = (appCtxt.multiAccounts) ? this._apptView.getCalendarAccount() : null;
 
-        var acct = (appCtxt.multiAccounts) ? this._apptView.getCalendarAccount() : null;
+    //optimization: fetch working hrs for a week - wrking hrs pattern repeat everyweek
+    var weekStartDate = new Date(params.timeFrame.start.getTime());
+    var dow = weekStartDate.getDay();
+    weekStartDate.setDate(weekStartDate.getDate()-((dow+7))%7);
 
-        //optimization: fetch working hrs for a week - wrking hrs pattern repeat everyweek
-        var weekStartDate = new Date(params.timeFrame.start.getTime());
-        var dow = weekStartDate.getDay();
-        weekStartDate.setDate(weekStartDate.getDate()-((dow+7))%7);
-        
 
-        var whrsParams = {
-            startTime: weekStartDate.getTime(),
-            endTime: weekStartDate.getTime() + 7*AjxDateUtil.MSEC_PER_DAY,
-            emails: emails,
-            callback: new AjxCallback(this, this._handleWorkingHoursResponse, [params]),
-            errorCallback: new AjxCallback(this, this._handleWorkingHoursError, [params]),
-            noBusyOverlay: true,
-            account: acct
-        };
+    var whrsParams = {
+        startTime: weekStartDate.getTime(),
+        endTime: weekStartDate.getTime() + 7*AjxDateUtil.MSEC_PER_DAY,
+        emails: emails,
+        callback: new AjxCallback(this, this._handleWorkingHoursResponse, [params]),
+        errorCallback: new AjxCallback(this, this._handleWorkingHoursError, [params]),
+        noBusyOverlay: true,
+        account: acct
+    };
 
-        this._workingHoursRequest = this._fbCache.getWorkingHours(whrsParams);
-    }
+    this._workingHoursRequest = this._fbCache.getWorkingHours(whrsParams);
 };
 
 ZmScheduleAssistantView.prototype.isOnlyMyWorkingHoursIncluded =
