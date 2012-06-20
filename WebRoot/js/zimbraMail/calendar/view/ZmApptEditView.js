@@ -2598,7 +2598,6 @@ function(type, useException) {
         var value = this._attInputField[type].getValue();        
         attendees = this.getAttendeesFromString(type, value);
     }
-    if (!attendees.size()) { return; }
     return this._updateAttendeeFieldValues(type, attendees);
 };
 
