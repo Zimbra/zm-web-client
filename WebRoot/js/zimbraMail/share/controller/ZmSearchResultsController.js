@@ -167,7 +167,9 @@ function(search, resultsCtlr) {
 	var label = size ? AjxMessageFormat.format(ZmMsg.searchResultsLabel, [size, plus]) :
 					   ZmMsg.searchResultsLabelNone;
 	this._toolbar.setLabel(label, false);
-
+    if (resultsCtlr && resultsCtlr.updateTimeIndicator) {
+        resultsCtlr.updateTimeIndicator();
+    }
 	setTimeout(this._toolbar.focus.bind(this._toolbar), 100);
 };
 

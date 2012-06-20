@@ -964,19 +964,19 @@ function(abook) {
 	this._scrollToTime(8);
 };
 
-ZmCalColView.prototype.updateTimeIndicator=function(){
+ZmCalColView.prototype.updateTimeIndicator=function(force){
     var curDate = new Date();
     var  hr = curDate.getHours();
     var min = curDate.getMinutes();
     var curHourDiv = document.getElementById(this._hourColDivId+"_"+hr);
-    curTimeHourIndicator = document.getElementById(this._curTimeIndicatorHourDivId);
+    var curTimeHourIndicator = document.getElementById(this._curTimeIndicatorHourDivId);
     curTimeHourIndicator.style.left=curHourDiv.offsetParent.offsetLeft;
     var currentTopPosition = Math.round((ZmCalColView._HOUR_HEIGHT/60)*min)+parseInt(curHourDiv.offsetParent.offsetTop);
     curTimeHourIndicator.style.top=(currentTopPosition+3)+"px";
     var calendarStrip = document.getElementById(this._curTimeIndicatorGridDivId);
     Dwt.setVisibility(calendarStrip,true);
     var todayColDiv = document.getElementById(this._calendarTodayHeaderDivId);
-    if(todayColDiv && this._isValidIndicatorDuration){
+    if (todayColDiv && (force || this._isValidIndicatorDuration)){
      calendarStrip.style.left=todayColDiv.offsetLeft;
      calendarStrip.style.top=currentTopPosition+"px";
      calendarStrip.style.width=todayColDiv.offsetWidth;
@@ -985,9 +985,9 @@ ZmCalColView.prototype.updateTimeIndicator=function(){
     return this.setTimer(1);
 };
 
-ZmCalColView.prototype.startIndicatorTimer=function(){
-   if(!this._indicatorTimer){
-    this._indicatorTimer = this.updateTimeIndicator();
+ZmCalColView.prototype.startIndicatorTimer=function(force){
+   if(force || !this._indicatorTimer){
+    this._indicatorTimer = this.updateTimeIndicator(force);
    }
 };
 

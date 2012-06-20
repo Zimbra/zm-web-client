@@ -219,21 +219,21 @@ function(viewId, startDate, skipMaintenance) {
 
     switch(viewId) {
         case ZmId.VIEW_CAL_DAY:
-            this._viewMgr.getView(viewId).startIndicatorTimer();
+            this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
+            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousDay);
+            this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextDay);
+            break;
         case ZmId.VIEW_CAL_WORK_WEEK:
-            this._viewMgr.getView(viewId).startIndicatorTimer();
             this._miniCalendar.setSelectionMode(DwtCalendar.WORK_WEEK);
             this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWorkWeek);
             this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWorkWeek);
             break;
         case ZmId.VIEW_CAL_WEEK:
-            this._viewMgr.getView(viewId).startIndicatorTimer();
             this._miniCalendar.setSelectionMode(DwtCalendar.WEEK);
             this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWeek);
             this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWeek);
             break;
         case ZmId.VIEW_CAL_MONTH:
-            this._viewMgr.getView(viewId).startIndicatorTimer();
             // use day until month does something
             this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
             this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousMonth);
@@ -262,6 +262,9 @@ function(viewId, startDate, skipMaintenance) {
 			}
 			this._scheduleMaintenance(work);
 		}
+        if (!this.isSearchResults) {
+            this.updateTimeIndicator(viewId);
+        }
 		DBG.timePt("scheduling maintenance");
 	}
 
@@ -287,8 +290,18 @@ function(viewId, startDate, skipMaintenance) {
 };
 
 /**
+ * Updates the time indicator strip.
+ *
+ */
+ZmCalViewController.prototype.updateTimeIndicator =
+function(viewId) {
+    viewId = viewId || this.getCurrentViewType();
+    this._viewMgr.getView(viewId).startIndicatorTimer(this.isSearchResults);
+};
+
+/**
  * Gets the calendar tree controller.
- * 
+ *
  * @return	{ZmCalendarTreeController}		the controller
  */
 ZmCalViewController.prototype.getCalTreeController =
