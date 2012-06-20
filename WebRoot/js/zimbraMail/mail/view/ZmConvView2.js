@@ -312,6 +312,14 @@ function(scrollMsgView) {
 				if (msgView._isCalendarInvite && msgView._inviteMsgView) {
 				    msgView._inviteMsgView.convResize();
 				    msgView._inviteMsgView.scrollToInvite();
+
+				    // bug 73963: ensure that the day view starts out
+				    // hidden on IE
+				    if (msgView._inviteMsgView._dayView) {
+				        var shouldshow =
+				            appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR);
+				        msgView._inviteMsgView._dayView.setVisible(shouldshow);
+				    }
 				}
 			}
 		}
