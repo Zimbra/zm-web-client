@@ -2192,6 +2192,16 @@ function(doc) {
 	return sub;
 };
 
+ZmMailMsg.prototype.hasNoViewableContent =
+function() {
+	if (this.isRfc822) {
+		//this means this message is not the top level one - but rather an attached message.
+		return false; //till I can find a working heuristic that is not the fragment - size does not work as it includes probably stuff like subject and email addresses, and it's always bigger than 0.
+	}
+	var hasInviteContent = this.invite && !this.invite.isEmpty();
+	//the general case - use the fragment, so that cases where the text is all white space are taken care of as "no content".
+	return !this.fragment && !hasInviteContent && !this.hasInlineImagesInMsgBody() && !this.hasInlineImage()
+};
 
 ZmMailMsg.prototype._cleanupCIds =
 function(atts) {

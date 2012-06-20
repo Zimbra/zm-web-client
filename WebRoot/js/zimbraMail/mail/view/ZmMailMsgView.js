@@ -1698,7 +1698,7 @@ function(msg, container, callback, index) {
 					});
 				}
 
-				if (!msg.fragment && !hasInviteContent && !msg.hasInlineImagesInMsgBody() && !msg.hasInlineImage()) {
+				if (msg.hasNoViewableContent()) {
 					var empty = AjxTemplate.expand("mail.Message#EmptyMessage");
 					content = content ? [empty, content].join("<br><br>") : empty;
 				}
@@ -1731,7 +1731,7 @@ function(msg, container, callback, index) {
 					}
 
 					var isTextMsg = true;
-					if (!msg.fragment && !hasInviteContent) {
+					if (msg.hasNoViewableContent()) {
 						var empty = AjxTemplate.expand("mail.Message#EmptyMessage");
 						content = content ? [empty, content].join(ZmMsg.CRLF2) : empty;
 						isTextMsg = false; //To make sure we display html content properly
