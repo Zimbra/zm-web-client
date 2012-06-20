@@ -5,7 +5,7 @@ ZmApptListView = function(parent, posStyle, controller, dropTgt) {
     if (arguments.length == 0) return;
     var params = Dwt.getParams(arguments, ZmApptListView.PARAMS);
     params.headerList = this._getHeaderList();
-    params.view = ZmId.VIEW_CAL_LIST;
+    params.view = params.view || ZmId.VIEW_CAL_TRASH;
     ZmListView.call(this, params);
     this._bSortAsc = true;
     this._defaultSortField = ZmItem.F_DATE;
