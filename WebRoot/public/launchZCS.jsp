@@ -102,7 +102,6 @@
     debug = BeanUtils.cook(debug);
     String debugLogTarget = getParameter(request, "log", getAttribute(request, "log", null));
     debugLogTarget = BeanUtils.cook(debugLogTarget);
-    String extraPackages = getParameter(request, "packages", getAttribute(request, "packages", null));
 	String startApp = getParameter(request, "app", "");
 	String noSplashScreen = getParameter(request, "nss", null);
     noSplashScreen = BeanUtils.cook(noSplashScreen);
@@ -312,13 +311,6 @@
 </script>
 <%
 	String allPackages = "Startup1_1,Startup1_2";
-    if (extraPackages != null) {
-    	if (extraPackages.equals("dev")) {
-            extraPackages = "Startup2,CalendarCore,Calendar,CalendarAppt,ContactsCore,Contacts,MailCore,Mail,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Extras,Share,Zimlet,ZimletApp,Alert,ImportExport,BrowserPlus,Voicemail";
-    	}
-    	allPackages += "," + BeanUtils.cook(extraPackages);;
-    }
-
     String pprefix = isDevMode  && !isCoverage ? "public/jsp" : "js";
     String psuffix = isDevMode && !isCoverage ? ".jsp" : "_all.js";
 

@@ -55,7 +55,6 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     String vers = getAttribute(request, "version", "");
     String ext = getAttribute(request, "fileExtension", null);
     if (ext == null || isDevMode) ext = "";
-    String extraPackages = getParameter(request, "packages", getAttribute(request, "packages", null));
     String offlineMode = getParameter(request, "offline", application.getInitParameter("offlineMode"));
 
     String prodMode = getAttribute(request, "prodMode", "");
@@ -134,13 +133,6 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     </script>
     <%
         String packages = "Ajax,Startup1_1,Startup1_2,Startup2,Spreadsheet";
-        if (extraPackages != null) {
-            if (extraPackages.equals("dev")) {
-                extraPackages = "Leaks,Debug";
-            }
-            packages += "," + BeanUtils.cook(extraPackages);
-        }        
-
         String pprefix = isDevMode ? "public/jsp" : "js";
         String psuffix = isDevMode ? ".jsp" : "_all.js";
 
@@ -149,7 +141,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
             String pageurl = "/"+pprefix+"/"+pname+psuffix;
             request.setAttribute("pageurl", pageurl);
             if (isDevMode) { %>
-                <jsp:include page='${pageurl}' />                
+                <jsp:include page='${pageurl}' />
             <% } else { %>
                 <script type="text/javascript" src="${contextPath}${pageurl}${ext}?v=${vers}"></script>
             <% } %>

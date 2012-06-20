@@ -136,10 +136,6 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     <%
         String packages = "Ajax,Startup1_1,Startup1_2,Startup2,Slides";
         //String packages = "DocsStartup,Slides";
-
-        String extraPackages = request.getParameter("packages");
-        if (extraPackages != null) packages += ","+ BeanUtils.cook(extraPackages);
-
         String pprefix = isDevMode ? "public/jsp" : "js";
         String psuffix = isDevMode ? ".jsp" : "_all.js";
 
