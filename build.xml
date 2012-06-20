@@ -1077,6 +1077,7 @@
                     <prefix output='html'><![CDATA[<%
 String contextPath = request.getParameter("contextPath") == null ? request.getContextPath() : (String) request.getParameter("contextPath");
 if(contextPath.equals("/")) contextPath = "";
+contextPath = contextPath.replace("<", "&lt;").replace(">","&gt;").replace("&", "&amp;").replace("\"","&quot;").replace("\'", "&#039;");
 String vers = (String) request.getAttribute("version");
 if (vers == null) vers = "";
 String ext = (String) request.getAttribute("fileExtension");
