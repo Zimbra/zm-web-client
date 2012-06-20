@@ -185,15 +185,20 @@ function(appt) {
 	newAppt.rsvp = appt.rsvp;
 
 	newAppt.freeBusy = appt.freeBusy;
+    if (appt.isRecurring()) {
+        newAppt._recurrence = appt.getRecurrence();
+    }
 
-	return newAppt;
+    return newAppt;
 };
 
 ZmAppt.createFromDom =
 function(apptNode, args, instNode) {
 	var appt = new ZmAppt(args.list);
 	appt._loadFromDom(apptNode, (instNode || {}));
-
+    if (appt.id) {
+        appCtxt.cacheSet(appt.id, appt);
+    }
 	return appt;
 };
 
@@ -789,6 +794,13 @@ function(message) {
         this.inviteNeverSent = true;
     }
 
+    if (!this.status) {
+        this.status = message.invite.getStatus();
+    }
+
+    if (!this.transparency) {
+        this.transparency = message.invite.getTransparency();
+    }
 };
 
 ZmAppt.prototype.isLocationResource =
