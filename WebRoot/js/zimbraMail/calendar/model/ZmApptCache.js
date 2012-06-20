@@ -384,6 +384,10 @@ function(searchParams, miniCalParams, reminderSearchParams) {
 	}
 
 	if ((searchParams && searchParams.callback) || miniCalParams.callback) {
+        //re-init the account search list to avoid the duplication
+        if (searchParams && request.SearchRequest) {
+            this._accountsSearchList = new AjxVector();
+        }
 		var accountName = (appCtxt.multiAccounts && searchParams.folderIds && (searchParams.folderIds.length > 0))
 			? appCtxt.getById(searchParams.folderIds[0]).getAccount().name : null;
 
