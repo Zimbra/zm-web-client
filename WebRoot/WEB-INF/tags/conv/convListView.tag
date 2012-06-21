@@ -106,7 +106,7 @@
 			</tr>
 			<c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
 					<c:set var="convHit" value="${hit.conversationHit}"/>
-                    <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action="${(mailbox.prefs.readingPaneLocation eq 'off' and param.action != 'offView') ? 'offView' : 'view'}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+                    <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action="${(mailbox.prefs.readingPaneLocation eq 'off') ? 'view' : 'offView'}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
                     <zm:currentResultUrl var="collapseUrl" value="search" cid="${hit.id}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
                 <%--<zm:currentResultUrl var="expandUrl" value="search" cid="${hit.id}" action="${mailbox.prefs.readingPaneLocation eq 'right' ? 'paneView' : (mailbox.prefs.readingPaneLocation eq 'bottom' ? 'rowView' : (mailbox.prefs.readingPaneLocation eq 'off' and param.action != 'offView') ? 'offView' : 'view')}" index="${status.index}" context="${context}" usecache="true" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>--%>
 					<c:if test="${empty selectedRow and convHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
