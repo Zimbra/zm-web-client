@@ -265,8 +265,9 @@ function(contact, callback, result) {
 
 ZmContactListController.prototype.loadDlMembers =
 function(contact, callback) {
-	if (contact.dlInfo.hideInGal && !contact.dlInfo.isOwner) {
+	if ((!appCtxt.get("EXPAND_DL_ENABLED") || contact.dlInfo.hideInGal) && !contact.dlInfo.isOwner) {
 		// can't get members if dl has zimbraHideInGal true, and not owner
+		//also, if zimbraFeatureDistributionListExpandMembersEnabled is false - also do not show the members (again unless it's the owner)
 		contact.dlMembers = [];
 		if (callback) {
 			callback();
