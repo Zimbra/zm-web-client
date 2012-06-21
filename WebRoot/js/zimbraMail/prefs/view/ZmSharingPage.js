@@ -423,6 +423,9 @@ function() {
 	var grantFormDiv = document.getElementById(this._pageId + "_grantForm");
 	grantFormDiv.appendChild(this._grantForm.getHtmlElement());
 
+	var folderTypeSelect = this._grantForm._items.folderType.control;
+	folderTypeSelect.fixedButtonWidth();
+
 	// list views of shares and grants
 	this._pendingShareListView = new ZmSharingListView({parent:this, type:ZmShare.SHARE,
 		status:ZmSharingView.PENDING, sharingView:this, view:ZmId.VIEW_SHARE_PENDING});
