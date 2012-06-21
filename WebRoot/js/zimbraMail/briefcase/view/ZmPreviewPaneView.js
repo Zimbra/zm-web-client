@@ -35,7 +35,7 @@ ZmPreviewPaneView = function(parent, controller, dropTgt) {
 	this._horizMsgSash.registerCallback(this._sashCallback, this);
 
 	this._previewView = new ZmPreviewView({parent:this, posStyle:DwtControl.ABSOLUTE_STYLE, controller: this._controller});
-
+	
     this._detailListView = new ZmDetailListView(this, this._controller, this._controller._dropTgt );
     this._detailListView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
     this._listSelectionShortcutDelayAction = new AjxTimedAction(this, this._listSelectionTimedAction);
@@ -185,7 +185,7 @@ function(newWidth, newHeight, force) {
 		var sashSize = sash.getSize();
 		var sashThickness = readingPaneOnRight ? sashSize.x : sashSize.y;
 		if (readingPaneOnRight) {
-			var listViewWidth = this._vertSashX || (Number(ZmMsg.LISTVIEW_WIDTH)) || Math.floor(newWidth / 3);
+			var listViewWidth = this._vertSashX || (Number(ZmMsg.LISTVIEW_WIDTH)) || Math.floor(newWidth / 2.5);
 			this._detailListView.resetSize(listViewWidth, newHeight);
 			sash.setLocation(listViewWidth, 0);
 			this._previewView.setBounds(listViewWidth + sashThickness, 0,
@@ -210,30 +210,32 @@ ZmPreviewPaneView.prototype._sashCallback =
 function(delta) {
 
 	var readingPaneOnRight = this._controller.isReadingPaneOnRight();
-
 	if (delta > 0) {
 		if (readingPaneOnRight) {
 			// moving sash right
 			var minMsgViewWidth = 300;
-			var currentMsgWidth = this._previewView.getSize().x;
+			var currentMsgWidth = this._previewView.getSize(true).x;
 			delta = Math.max(0, Math.min(delta, currentMsgWidth - minMsgViewWidth));
-			var newListWidth = ((AjxEnv.isIE) ? this._vertMsgSash.getLocation().x : this._detailListView.getSize().x) + delta;
-
+			var newListWidth = ((AjxEnv.isIE) ? this._vertMsgSash.getLocation().x : this._detailListView.getSize(true).x) + delta;
 			if (delta > 0) {
 				this._detailListView.resetSize(newListWidth, Dwt.DEFAULT);
 				this._previewView.setBounds(this._previewView.getLocation().x + delta, Dwt.DEFAULT,
 										currentMsgWidth - delta, Dwt.DEFAULT);
+				
 			} else {
 				delta = 0;
 			}
+			
+			
+			
 		} else {
 			// moving sash down
 			var newMsgViewHeight = this._previewView.getSize().y - delta;
 			var minMsgViewHeight = 150;
 			if (newMsgViewHeight > minMsgViewHeight) {
-				this._detailListView.resetSize(Dwt.DEFAULT, this._detailListView.getSize().y + delta);
+				this._detailListView.resetSize(Dwt.DEFAULT, this._detailListView.getSize(true).y + delta);
 				this._previewView.setBounds(Dwt.DEFAULT, this._previewView.getLocation().y + delta,
-										Dwt.DEFAULT, newMsgViewHeight);
+							Dwt.DEFAULT, newMsgViewHeight);
 			} else {
 				delta = 0;
 			}
@@ -243,24 +245,14 @@ function(delta) {
 
 		if (readingPaneOnRight) {
 			// moving sash left
-			if (!this._minMLVWidth) {
-				var firstHdr = this._detailListView._headerList[0];
-				var hdrWidth = firstHdr._width;
-				if (hdrWidth == "auto") {
-					var header = Dwt.byId(firstHdr._id);
-					hdrWidth = header && Dwt.getSize(header).x;
-				}
-				this._minMLVWidth = hdrWidth;
-			}
-
-			var currentWidth = ((AjxEnv.isIE) ? this._vertMsgSash.getLocation().x : this._detailListView.getSize().x);
-			absDelta = Math.max(0, Math.min(absDelta, currentWidth - this._minMLVWidth));
+			var currentWidth = this._vertMsgSash.getLocation().x;
+			absDelta = Math.max(0, Math.min(absDelta, currentWidth - 300));
 
 			if (absDelta > 0) {
 				delta = -absDelta;
 				this._detailListView.resetSize(currentWidth - absDelta, Dwt.DEFAULT);
 				this._previewView.setBounds(this._previewView.getLocation().x - absDelta, Dwt.DEFAULT,
-										this._previewView.getSize().x + absDelta, Dwt.DEFAULT);
+						this._previewView.getSize(true).x + absDelta, Dwt.DEFAULT);
 			} else {
 				delta = 0;
 			}
@@ -279,9 +271,9 @@ function(delta) {
 
 			if (this.getSash().getLocation().y - absDelta > this._minMLVHeight) {
 				// moving sash up
-				this._detailListView.resetSize(Dwt.DEFAULT, this._detailListView.getSize().y - absDelta);
+				this._detailListView.resetSize(Dwt.DEFAULT, this._detailListView.getSize(true).y - absDelta);
 				this._previewView.setBounds(Dwt.DEFAULT, this._previewView.getLocation().y - absDelta,
-										Dwt.DEFAULT, this._previewView.getSize().y + absDelta);
+						Dwt.DEFAULT, this._previewView.getSize(true).y + absDelta);
 			} else {
 				delta = 0;
 			}
@@ -532,6 +524,8 @@ function(){
 		noscroll: false,
 		posStyle: DwtControl.STATIC_STYLE
 	};
+	
+	
 	this._iframePreview = new DwtIframe(params);
 	this._iframePreviewId = this._iframePreview.getIframe().id;
 
