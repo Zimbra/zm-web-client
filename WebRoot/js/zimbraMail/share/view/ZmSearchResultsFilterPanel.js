@@ -532,7 +532,6 @@ function() {
 			dataClass:			appCtxt.getAutocompleter(),
 			matchValue:			ZmAutocomplete.AC_VALUE_EMAIL,
 			compCallback:		this._acCompHandler.bind(this),
-			keyDownCallback:	this._acKeyDownHandler.bind(this),
 			separator:			"",
 			contextId:			[this._viewId, this.id].join("-")
 		};
@@ -545,18 +544,9 @@ function() {
 ZmAddressSearchFilter.prototype._acCompHandler =
 function() {
 	this._doUpdate(this._addressBox.getValue());
+	this._addressBox.clear();
 };
 
-// Process the filter if Enter is pressed.
-ZmAddressSearchFilter.prototype._acKeyDownHandler =
-function(ev) {
-	var key = DwtKeyEvent.getCharCode(ev);
-	if (key == 3 || key == 13) {
-		this._doUpdate(this._addressBox.getValue());
-		return false;
-	}
-	return true;
-};
 
 // Handles click on domain in the menu. Key events from the input will also
 // come here. They are ignored.
