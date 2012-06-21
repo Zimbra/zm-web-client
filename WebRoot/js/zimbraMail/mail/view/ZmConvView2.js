@@ -1406,11 +1406,13 @@ function(msg, container) {
 		];
 	}
 	else if (msg.isDraft) {
-		links = [
-			ZmOperation.DRAFT,
+        links = [
 			ZmOperation.SHOW_ORIG,
 			ZmOperation.ACTIONS_MENU
 		];
+        if (!folder.isReadOnly()){
+            links = [].concat(ZmOperation.DRAFT,links);
+        }
 	}
 	else {
 		links = [
