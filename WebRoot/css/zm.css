@@ -855,6 +855,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	/*@cssShadow@:0 3px 3px @darken(AppC,15)@;*/
 }
 
+.Conv2Header .expandIcon {
+	margin-right:5px;
+}
+
 .Conv2Header .subject {
 	@FontSize-bigger@
 	overflow:hidden;

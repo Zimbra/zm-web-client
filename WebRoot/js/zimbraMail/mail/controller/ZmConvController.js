@@ -51,14 +51,13 @@ ZmConvController.DEFAULT_TAB_TEXT = ZmMsg.conversation;
 /**
  * Displays the given conversation in a two-pane view.
  *
- * @param {ZmSearch}			activeSearch		the current search results
  * @param {ZmConv}				conv				a conversation
  * @param {ZmListController}	parentController	the controller that called this method
  * @param {AjxCallback}			callback			the client callback
  * @param {Boolean}				markRead		if <code>true</code>, mark msg read
  */
 ZmConvController.prototype.show =
-function(activeSearch, conv, parentController, callback, markRead) {
+function(conv, parentController, callback, markRead) {
 
 	this._conv = conv;
 

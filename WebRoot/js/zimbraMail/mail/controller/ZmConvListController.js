@@ -434,7 +434,7 @@ function(ev) {
 				if (item.type == ZmItem.MSG) {
 					AjxDispatcher.run("GetMsgController", item && item.nId).show(item, this, null, true);
 				} else {
-					AjxDispatcher.run("GetConvController").show(this._activeSearch, item, this, null, true);
+					AjxDispatcher.run("GetConvController").show(item, this, null, true);
 				}
 				return true;
 			}

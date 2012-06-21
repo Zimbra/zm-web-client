@@ -715,9 +715,15 @@
 
 <template id='mail.Message#Conv2View'>
 	<div class='Conv2View' id="${mainDivId}">
-		<$= AjxTemplate.expand("#Conv2Header", data) $>
+		<div id="${headerDivId}"></div>
 		<div id="${messagesDivId}" class='Conv2Messages'></div>
 	</div>
+</template>
+
+<template id='mail.Message#Conv2Header'>
+	<span class="expandIcon" id='${convExpandId}'></span>
+	<span class="subject" id='${convSubjectId}'></span>
+	<span class="info" id='${convInfoId}'></span>
 </template>
 
 <template id='mail.Message#Conv2Reply'>
@@ -735,19 +741,12 @@
 	</table>
 </template>
 	
-<template id='mail.Message#Conv2Header'>
-	<div class="Conv2Header" id='${convHeaderId}'>
-		<span class="subject" id='${convSubjectId}'></span>
-		<span class="info" id='${convInfoId}'></span>
-	</div>
-</template>
-
 <template id='mail.Message#Conv2MsgHeader-collapsed'>
+	<div id='${readCellId}' class='readUnreadDot'></div>
 	<div class='info'>
 		<div id='${fromId}' class='ZmConvListFrom'>${from}</div>
 		<div class='ZmConvListFragment'><$= data.fragment $></div>
 	</div>
-	<div id='${readCellId}' class='readUnreadDot'></div>
 	<div class='date' id='${dateCellId}' title='${dateTooltip}'>${date}</div>
 </template>
 
@@ -756,6 +755,7 @@
 		<$= AjxTemplate.expand("#InviteNotCurrent", data) $>
 		<div style='position:relative'>
 	<$ } $>
+	<div id='${readCellId}' class='readUnreadDot'></div>
 	<div class='info'>
 		<table id='${hdrTableId}' class='ZPropertySheet' cellspacing='3'>
 			<tr>
@@ -785,7 +785,6 @@
 		
 		</table>
 	</div>
-	<div id='${readCellId}' class='readUnreadDot'></div>
 	<div class='date' id='${dateCellId}' title='${dateTooltip}'>${date}</div>
 	<$ if (data.isOutDated) { $>
 		</div>

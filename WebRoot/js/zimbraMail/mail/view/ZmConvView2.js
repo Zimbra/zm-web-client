@@ -100,16 +100,12 @@ function() {
 	
 	// Create HTML structure
 	this._mainDivId			= this._htmlElId + "_main";
-	this._convHeaderId		= this._htmlElId + "_header";
-	this._convSubjectId		= this._htmlElId + "_subject";
-	this._convInfoId		= this._htmlElId + "_info";
+	var headerDivId			= this._htmlElId + "_header";
 	this._messagesDivId		= this._htmlElId + "_messages";
 	
 	var subs = {
 		mainDivId:			this._mainDivId,
-		convHeaderId:		this._convHeaderId,
-		convSubjectId:		this._convSubjectId,
-		convInfoId:			this._convInfoId,
+		headerDivId:		headerDivId,
 		messagesDivId:		this._messagesDivId
 	}
 
@@ -117,11 +113,14 @@ function() {
 	this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
 	
 	this._mainDiv			= document.getElementById(this._mainDivId);
-	this._headerDiv			= document.getElementById(this._convHeaderId);
-	this._subjectSpan		= document.getElementById(this._convSubjectId);
-	this._infoDiv			= document.getElementById(this._convInfoId);
 	this._messagesDiv		= document.getElementById(this._messagesDivId);
-		
+	
+	this._header = new ZmConvView2Header({
+		parent: this,
+		id:		[this._htmlElId, ZmId.MV_MSG_HEADER].join("_")
+	});
+	this._header.replaceElement(headerDivId);
+	
 	this._initialized = true;
 };
 
@@ -143,11 +142,12 @@ function(conv) {
 
 	this._now = new Date();
 	appCtxt.notifyZimlets("onConvStart", [this]);
-	this._setConvHeader();
+	this._header.set(this._item);
 	var firstExpanded = this._renderMessages(conv, this._messagesDiv);
 	appCtxt.notifyZimlets("onConvEnd", [this]);
 	DBG.println("cv2", "Conv render time: " + ((new Date()).getTime() - this._now.getTime()));
 
+	this._header._setExpandIcon();
 	this._scheduleResize(firstExpanded || true);
 	Dwt.setLoadedTime("ZmConv");
 };
@@ -208,35 +208,6 @@ function(msg, params) {
 	msgView.set(msg);
 };
 
-ZmConvView2.prototype._setConvHeader =
-function() {
-	this._setConvSubject()
-	this._setConvInfo();
-
-	// Clean up minor WebKit-only issue where bottom edge of overflowed subject text is visible in info div
-	if (AjxEnv.isWebKitBased && !this._headerSet) {
-		Dwt.setSize(this._infoDiv, Dwt.DEFAULT, Dwt.getSize(this._subjectSpan).y);
-		this._headerSet = true;
-	}
-};
-
-ZmConvView2.prototype._setConvSubject =
-function() {
-	this._subjectSpan.innerHTML = AjxStringUtil.htmlEncode(ZmMailMsg.stripSubjectPrefixes(this._item.subject || ZmMsg.noSubject));
-};
-
-ZmConvView2.prototype._setConvInfo =
-function() {
-	var conv = this._item;
-	if (!conv) { return; }
-	var info = AjxMessageFormat.format(ZmMsg.messageCount, conv.numMsgs);
-	var numUnread = conv.getNumUnreadMsgs();
-	if (numUnread) {
-		info = info + ", " + AjxMessageFormat.format(ZmMsg.unreadCount, numUnread).toLowerCase();
-	}
-	this._infoDiv.innerHTML = info;
-};
-
 ZmConvView2.prototype.reset =
 function(noClear) {
 	
@@ -260,9 +231,7 @@ function(noClear) {
 	this._currentMsgView = null;
 
 	if (this._initialized) {
-		if (this._subjectSpan && this._infoDiv) {
-			this._subjectSpan.innerHTML = this._infoDiv.innerHTML = "";
-		}
+		this._header.reset();
 		Dwt.setVisible(this._headerDiv, noClear);
 	}
 	
@@ -288,12 +257,12 @@ function(scrollMsgView) {
 		var rpRight = ctlr.isReadingPaneOnRight();
 		container = rpRight ? ctlr.getListView() : ctlr.getItemView();
 	}
-	var header = document.getElementById(this._convHeaderId);
+	var header = this._header;
 	if (!container || !header || !this._messagesDiv) { return; }
 	
 	var myHeight = container.getSize(AjxEnv.isIE).y;
 	DBG.println("cv2", "cv2 height = " + myHeight);
-	var headerSize = Dwt.getSize(header);
+	var headerSize = header.getSize();
 	DBG.println("cv2", "header height = " + headerSize.y);
 	var messagesHeight = myHeight - headerSize.y - 1;
 	DBG.println("cv2", "set message area height to " + messagesHeight);
@@ -363,6 +332,91 @@ function() {
 	if (this._rpLoc != ZmSetting.RP_OFF && rpLoc != ZmSetting.RP_OFF && this._rpLoc != rpLoc) {
 		this.set(this._item, true);
 	}
+};
+
+/**
+ * Returns a list of IDs for msg views whose expanded state matches the given one.
+ * 
+ * @param {boolean}		expanded		if true, look for expanded msg views
+ */
+ZmConvView2.prototype.getExpanded =
+function(expanded) {
+
+	var list = [];
+	if (this._msgViewList && this._msgViewList.length) {
+		for (var i = 0; i < this._msgViewList.length; i++) {
+			var id = this._msgViewList[i];
+			var msgView = this._msgViews[id];
+			if (msgView.isExpanded() == expanded) {
+				list.push(id);
+			}
+		}
+	}
+	return list;
+};
+
+/**
+ * Returns a list of IDs for msg views whose msg's loaded state matches the given one.
+ * 
+ * @param {boolean}		loaded		if true, look for msg views whose msg has been loaded
+ */
+ZmConvView2.prototype.getLoaded =
+function(loaded) {
+
+	var list = [];
+	if (this._msgViewList && this._msgViewList.length) {
+		for (var i = 0; i < this._msgViewList.length; i++) {
+			var id = this._msgViewList[i];
+			var msg = this._msgViews[id] && this._msgViews[id]._msg;
+			if (msg && (msg.isLoaded() == loaded)) {
+				list.push(id);
+			}
+		}
+	}
+	return list;
+};
+
+ZmConvView2.prototype.setExpanded =
+function(expanded) {
+	
+	var list = this.getExpanded(!expanded);
+	if (list.length && !expanded) {
+		for (var i = 0; i < this._msgViewList.length; i++) {
+			var msgView = this._msgViews[this._msgViewList[i]];
+			msgView._setExpansion(false);
+		}
+		this._header._setExpandIcon();
+	}
+	else if (list.length && expanded) {
+		var unloaded = this.getLoaded(false);
+		if (unloaded.length) {
+			var respCallback = this._handleResponseSetExpanded.bind(this, list);
+			this._item.loadMsgs({fetchAll:true}, respCallback);
+		}
+		else {
+			// no need to load the msgs if we already have them all
+			this._handleResponseSetExpanded(list);
+		}
+	}
+};
+
+ZmConvView2.prototype._handleResponseSetExpanded =
+function(ids) {
+	for (var i = 0; i < ids.length; i++) {
+		var id = ids[i];
+		var msgView = this._msgViews[id];
+		// the msgs that were fetched by GetConvRequest have more info than the ones we got
+		// from SearchConvRequest, so update our cached versions
+		var newMsg = appCtxt.getById(id);
+		if (newMsg) {
+			msgView._msg = newMsg;
+			if (msgView._header) {
+				msgView._header._msg = newMsg;
+			}
+		}
+		msgView._setExpansion(true);
+	}
+	this._header._setExpandIcon();
 };
 
 ZmConvView2.prototype.isDirty =
@@ -537,7 +591,7 @@ function(ev) {
 	if (ev.type != ZmEvent.S_CONV) { return; }
 	var fields = ev.getDetail("fields");
 	if ((ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_SIZE])) {
-		this._setConvInfo();
+		this._header._setInfo();
 	}
 };
 
@@ -649,6 +703,120 @@ ZmConvView2.prototype.getController = function() {
 ZmConvView2.prototype.isActiveQuickReply = function() {
 	return this._replyView && this._replyView._input == document.activeElement;
 };
+
+
+
+ZmConvView2Header = function(params) {
+
+	params.className = params.className || "Conv2Header";
+	DwtControl.call(this, params);
+
+	this._setEventHdlrs([DwtEvent.ONMOUSEDOWN, DwtEvent.ONMOUSEUP, DwtEvent.ONDBLCLICK]);
+	
+	this._convView = this.parent;
+	this._conv = this.parent._item;
+	this._controller = this.parent._controller;
+	this._dblClickIsolation = true;	// ignore single click that is part of dbl click
+	
+	this.addListener(DwtEvent.ONDBLCLICK, this._dblClickListener);
+	this.addListener(DwtEvent.ONMOUSEUP, this._mouseUpListener.bind(this));
+	
+	this._createHtml();
+};
+
+ZmConvView2Header.prototype = new DwtControl;
+ZmConvView2Header.prototype.constructor = ZmConvView2Header;
+
+ZmConvView2Header.prototype.isZmConvView2Header = true;
+ZmConvView2Header.prototype.toString = function() { return "ZmConvView2Header"; };
+
+
+ZmConvView2Header.prototype.set =
+function(conv) {
+
+	this._item = conv;
+	this._setExpandIcon()
+	this._setSubject();
+	this._setInfo();
+
+	// Clean up minor WebKit-only issue where bottom edge of overflowed subject text is visible in info div
+	if (AjxEnv.isWebKitBased && !this._headerSet) {
+		Dwt.setSize(this._infoDiv, Dwt.DEFAULT, Dwt.getSize(this._subjectSpan).y);
+		this._headerSet = true;
+	}
+};
+
+ZmConvView2Header.prototype.reset =
+function(conv) {
+	if (this._subjectSpan && this._infoDiv) {
+		this._subjectSpan.innerHTML = this._infoDiv.innerHTML = "";
+	}
+};
+
+ZmConvView2Header.prototype._createHtml =
+function() {
+
+	this._convExpandId		= this._htmlElId + "_expand";
+	this._convSubjectId		= this._htmlElId + "_subject";
+	this._convInfoId		= this._htmlElId + "_info";
+
+	var subs = {
+		convExpandId:		this._convExpandId,
+		convSubjectId:		this._convSubjectId,
+		convInfoId:			this._convInfoId
+	}
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("mail.Message#Conv2Header", subs);
+
+	this._expandDiv			= document.getElementById(this._convExpandId);
+	this._subjectSpan		= document.getElementById(this._convSubjectId);
+	this._infoDiv			= document.getElementById(this._convInfoId);
+};
+
+ZmConvView2Header.prototype._setExpandIcon =
+function() {
+	var collapsed = this._convView.getExpanded(false);
+	var doExpand = this._doExpand = (collapsed.length > 0);
+	var attrs = "title='" + (doExpand ? ZmMsg.expandAllMessages : ZmMsg.collapseAllMessages) + "'";
+	this._expandDiv.innerHTML = AjxImg.getImageHtml(doExpand ? "ConvExpand" : "ConvCollapse", "display:inline-block", attrs);
+};
+
+ZmConvView2Header.prototype._setSubject =
+function() {
+	this._subjectSpan.innerHTML = AjxStringUtil.htmlEncode(ZmMailMsg.stripSubjectPrefixes(this._item.subject || ZmMsg.noSubject));
+};
+
+ZmConvView2Header.prototype._setInfo =
+function() {
+	var conv = this._item;
+	if (!conv) { return; }
+	var info = AjxMessageFormat.format(ZmMsg.messageCount, conv.numMsgs);
+	var numUnread = conv.getNumUnreadMsgs();
+	if (numUnread) {
+		info = info + ", " + AjxMessageFormat.format(ZmMsg.unreadCount, numUnread).toLowerCase();
+	}
+	this._infoDiv.innerHTML = info;
+};
+
+ZmConvView2Header.prototype._mouseUpListener =
+function(ev) {
+	
+	if (ev.button == DwtMouseEvent.LEFT) {
+		this._convView.setExpanded(this._doExpand);
+		this._setExpandIcon();
+	}
+};
+
+// Open a msg into a tabbed view
+ZmConvView2Header.prototype._dblClickListener =
+function(ev) {
+	var conv = ev.dwtObj && ev.dwtObj.parent && ev.dwtObj.parent._item;
+	if (conv) {
+		AjxDispatcher.run("GetConvController", conv.id).show(conv, this._controller);
+	}
+};
+
+
+
 
 ZmConvReplyView = function(params) {
 
@@ -995,7 +1163,8 @@ function() {
 ZmMailMsgCapsuleView.prototype._renderMessage =
 function(msg, container, callback) {
 	
-	this._createMessageHeader(msg, container);
+	msg = this._msg;
+	this._createMessageHeader();
 	if (this._expanded) {
 		this._renderMessageBodyAndFooter(msg, container, callback);
 	}
@@ -1011,7 +1180,7 @@ function(msg, container, callback) {
  * @param container
  */
 ZmMailMsgCapsuleView.prototype._createMessageHeader =
-function(msg, container) {
+function() {
 	
 	if (this._header) { return; }
 
@@ -1048,12 +1217,12 @@ function(msg, container, callback) {
 	// still in progress
 	if (this._disposed) { return; }
 
-    appCtxt.notifyZimlets("onConvStart", [this]);
+	appCtxt.notifyZimlets("onConvStart", [this]);
 	this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
-    this._renderMessageBody(msg, container, callback);
+	this._renderMessageBody(msg, container, callback);
 	this._renderMessageFooter(msg, container);
 	this._controller._handleMarkRead(msg);	// in case we need to mark read after a delay
-    appCtxt.notifyZimlets("onConvEnd", [this]);
+	appCtxt.notifyZimlets("onConvEnd", [this]);
 };
 
 // Display all text messages and some HTML messages in a DIV rather than in an IFRAME.
@@ -1419,6 +1588,11 @@ function(id, op, ev) {
 	this._controller._doAction({action:op, msg:this._msg});
 };
 
+ZmMailMsgCapsuleView.prototype.isExpanded =
+function() {
+	return this._expanded;
+};
+
 /**
  * Expand the msg view by hiding/showing the body and footer. If the msg hasn't
  * been rendered, we need to render it to expand it.
@@ -1443,7 +1617,7 @@ function(expanded) {
 		if (this._isCalendarInvite && appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR)) {
 			dayViewCallback = this._handleShowCalendarLink.bind(this, ZmOperation.SHOW_ORIG, true);
 		}
-		var respCallback = this._handleResponseSet.bind(this, this._msg, null, dayViewCallback);
+		var respCallback = this._handleReponseSetExpansion.bind(this, this._msg, dayViewCallback);
 		this._renderMessage(this._msg, null, respCallback);
 	}
 	else {
@@ -1469,6 +1643,7 @@ function(expanded) {
 				replyView.reset();
 			}
 		}
+		this._convView._header._setExpandIcon();
 	}
 
 	if (this._expanded) {
@@ -1480,6 +1655,12 @@ function(expanded) {
 	}
 
 	this._resetIframeHeightOnTimer();
+};
+
+ZmMailMsgCapsuleView.prototype._handleReponseSetExpansion =
+function(msg, callback) {
+	this._handleResponseSet(msg, null, callback);
+	this._convView._header._setExpandIcon();
 };
 
 ZmMailMsgCapsuleView.prototype._insertTagRow =
@@ -1562,13 +1743,13 @@ function(ev) {
 			if (flag == ZmItem.FLAG_UNREAD) {
 				this._header._setReadIcon();
 				this._header._setHeaderClass();
-				this._convView._setConvInfo();
+				this._convView._header._setInfo();
 			}
 		}
 	}
 	else if (ev.event == ZmEvent.E_DELETE) {
 		this.dispose();
-		this._convView._setConvInfo();
+		this._convView._header._setInfo();
 	}
 	else if (ev.event == ZmEvent.E_MOVE) {
 		this._changeFolderName(ev.getDetail("oldFolderId"));
@@ -1877,6 +2058,6 @@ ZmMailMsgCapsuleViewHeader.prototype._dblClickListener =
 function(ev) {
 	var msg = ev.dwtObj && ev.dwtObj.parent && ev.dwtObj.parent._msg;
 	if (msg) {
-		AjxDispatcher.run("GetMsgController", msg && msg.nId).show(msg, this._controller, null, true);
+		AjxDispatcher.run("GetMsgController", msg.nId).show(msg, this._controller, null, true);
 	}
 };
