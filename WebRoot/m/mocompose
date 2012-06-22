@@ -217,7 +217,7 @@
             </div></c:forEach>
 </div></div></c:if>
 <c:if test="${!empty param.documentAttachments}"><div class="View"><div class="tbl">
-    <c:forEach var="doc" items="${param.documentAttachments}" varStatus="status"><c:set var="doc" value="${fn:split(doc,':')}"/>
+    <c:forEach var="doc" items="${zm:cook(param.documentAttachments)}" varStatus="status"><c:set var="doc" value="${fn:split(doc,':')}"/>
     <div class="tr ${status.index gt 0 ? 'nr':''} cmp_msg_att_row">
         <span class="td"><span class="SmlIcnHldr Attachment">&nbsp;</span>
             <c:choose>
