@@ -454,7 +454,7 @@ function(contact, isGal, oldContact, expandDL) {
 		subs.encode.IM = AjxCallback.simpleClosure(this._encodeIM, this);
 		subs.expandDL = expandDL;
 
-		if (contact.isDL && contact.canExpand) {
+		if (appCtxt.get("EXPAND_DL_ENABLED") && contact.isDL && contact.canExpand) {
 			this._dlContact = contact;
 			this._dlScrollDiv = this._dlScrollDiv || document.getElementById(this._contentId);
 			var respCallback = new AjxCallback(this, this._showDL, [subs]);
