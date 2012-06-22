@@ -161,7 +161,7 @@ function(search, resultsCtlr) {
 	}
 	// Tell the user how many results were found
 	var searchResult = resultsCtlr.getCurrentSearchResults && resultsCtlr.getCurrentSearchResults();
-	var results = searchResult && searchResult.getResults();
+	var results = (searchResult && searchResult.getResults()) || resultsCtlr.getList();
 	var size = results && results.size && results.size();
 	var plus = (results && results.hasMore && results.hasMore()) ? "+" : "";
 	var label = size ? AjxMessageFormat.format(ZmMsg.searchResultsLabel, [size, plus]) :
