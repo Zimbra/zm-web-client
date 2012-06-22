@@ -894,7 +894,7 @@ function (sortFields, defaultSortField) {
 
 	for (var i = 0; i < sortFields.length; i++) {
 		var column = sortFields[i];
-		var label = AjxMessageFormat.format(ZmMsg.arrangedBy, ZmMsg[column.msg]);
+		var label = AjxMessageFormat.format(ZmMsg.arrangeBy, ZmMsg[column.msg]);
 		var mi = menu.createMenuItem(column.field, {text:label, style:DwtMenuItem.RADIO_STYLE});
 		if (column.field == defaultSortField) {
 			mi.setChecked(true, true);
@@ -914,7 +914,8 @@ function(ev) {
 	var column = this._headerHash[ZmItem.F_SORTED_BY];
 	var cell = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, column._field));
 	if (cell) {
-		cell.innerHTML = ev.item.getText();
+        var text = ev.item.getText();
+        cell.innerHTML = text && text.replace(ZmMsg.sortBy, ZmMsg.sortedBy);
 	}
 	column._sortable = ev.item.getData(ZmListView.KEY_ID);
 	this._sortColumn(column, this._bSortAsc);
