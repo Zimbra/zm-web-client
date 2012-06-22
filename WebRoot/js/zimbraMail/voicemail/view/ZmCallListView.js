@@ -35,7 +35,7 @@ function(defaultColumnSort) {
 	ZmVoiceListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
 	var isPlaced = this._getCallType() == ZmVoiceFolder.PLACED_CALL;
 	this._setColumnHeader(ZmVoiceListView.F_CALLER, isPlaced ? ZmMsg.to : ZmMsg.from);
-	this._setColumnHeader(ZmVoiceListView.F_DATE, isPlaced ? ZmMsg.placed : ZmMsg.received);
+	this._setColumnHeader(ZmVoiceListView.F_DATE, isPlaced ? ZmMsg.timePlaced : ZmMsg.received);
 };
 
 ZmCallListView.prototype._setColumnHeader = 
@@ -79,7 +79,7 @@ function(prefix) {
 	} else if (prefix == ZmVoiceListView.F_DURATION) {
 		return ZmMsg.sortByDuration;
 	} else if (prefix == ZmVoiceListView.F_DATE) {
-		return ZmMsg.sortByReceived;
+		return this._getCallType() == ZmVoiceFolder.PLACED_CALL ? ZmMsg.sortByTimePlaced : ZmMsg.sortByReceived;
 	}
 	return null;
 };
