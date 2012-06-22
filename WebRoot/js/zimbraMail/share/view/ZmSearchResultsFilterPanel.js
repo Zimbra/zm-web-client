@@ -345,11 +345,13 @@ function(id, newTerms, noPopdown) {
 	
 	var curTerms = this._controller.getSearchTerms();
 	if (curTerms && curTerms.length) {
+		var ops = AjxUtil.arrayAsHash(AjxUtil.map(curTerms, function(a) { return a.op; }));
+		var hasOr = ops[ZmParsedQuery.COND_OR];
 		for (var i = 0; i < curTerms.length; i++) {
 			var curTerm = curTerms[i];
 			for (var j = 0; j < newTerms.length; j++) {
 				var newTerm = newTerms[j];
-				if (this._areExclusiveTerms(curTerm, newTerm)) {
+				if (this._areExclusiveTerms(curTerm, newTerm, hasOr)) {
 					this._controller.removeSearchTerm(curTerm, true);
 				}
 			}
@@ -366,10 +368,10 @@ function(id, newTerms, noPopdown) {
 };
 
 ZmSearchResultsFilterPanel.prototype._areExclusiveTerms =
-function(termA, termB) {
+function(termA, termB, hasOr) {
 	termA = this._translateTerm(termA);
 	termB = this._translateTerm(termB);
-	return (ZmParsedQuery.areExclusive(termA, termB) || ((termA.op == termB.op) && !ZmParsedQuery.isMultiple(termA)));
+	return (ZmParsedQuery.areExclusive(termA, termB) || (!hasOr && (termA.op == termB.op) && !ZmParsedQuery.isMultiple(termA)));
 };
 
 // Treat "appt-start" like "before", "after", or "date" depending on its argument.
