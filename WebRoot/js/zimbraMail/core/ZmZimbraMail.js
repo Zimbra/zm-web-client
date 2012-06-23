@@ -2173,7 +2173,7 @@ function() {
 
 
 ZmZimbraMail.ONLINE_HELP_URL = "http://help.zimbra.com/?";
-ZmZimbraMail.NEW_FEATURES_URL = "http://www.zimbra.com/docs/whats-new/?";
+ZmZimbraMail.NEW_FEATURES_URL = "http://www.zimbra.com/products/whats_new.html?";
 
 /**
 * Adds a "help" submenu.
