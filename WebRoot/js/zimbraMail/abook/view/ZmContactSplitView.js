@@ -844,9 +844,9 @@ function(data) {
 			if (contact) {
 				itemListData.imageUrl = contact.getImageUrl();
 				itemListData.imgClassName = "Person_48";
-				itemListData.email = AjxStringUtil.htmlEncode(data.findObjects(contact.getEmail(), ZmObjectManager.EMAIL));
-				itemListData.title = AjxStringUtil.htmlEncode(data.findObjects(contact.getAttr(ZmContact.F_jobTitle), ZmObjectManager.TITLE));
-				itemListData.phone = AjxStringUtil.htmlEncode(data.findObjects(contact.getPhone(), ZmObjectManager.PHONE));
+				itemListData.email = data.findObjects(contact.getEmail(), ZmObjectManager.EMAIL, true);
+				itemListData.title = data.findObjects(contact.getAttr(ZmContact.F_jobTitle), ZmObjectManager.TITLE, true);
+				itemListData.phone = data.findObjects(contact.getPhone(), ZmObjectManager.PHONE, true);
 				var isPhonetic  = appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS);
                 var fullnameHtml= contact.getFullNameForDisplay(isPhonetic);
 				if (!isPhonetic) {
@@ -859,7 +859,7 @@ function(data) {
 		}
 		else {
 			itemListData.imgClassName = "PersonInline_48";
-			itemListData.email = data.findObjects(data.groupMembers[i].value, ZmObjectManager.EMAIL);
+			itemListData.email = data.findObjects(data.groupMembers[i].value, ZmObjectManager.EMAIL, true);
 			html.push(AjxTemplate.expand("abook.Contacts#SplitView_group", itemListData));
 		}
 	}
