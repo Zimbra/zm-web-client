@@ -58,7 +58,8 @@ function(params) {
 			parent: this,
 			text: headerLabel,
 			selectable: false,
-			className: "overviewHeader"
+			className: "overviewHeader",
+			imageInfo: "VoiceMailApp"
 		};
 
 		var header = this._headerItems[phone.id] = new DwtTreeItem(headerParams);
