@@ -965,6 +965,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .Conv2MsgHeader .readUnreadDot {
 	position:absolute;
 	top:0;
+    padding:3px 0;
 #IFNDEF MSIE
 	left:2px;
 	top:5px;

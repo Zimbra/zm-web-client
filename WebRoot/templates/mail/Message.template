@@ -742,11 +742,11 @@
 </template>
 	
 <template id='mail.Message#Conv2MsgHeader-collapsed'>
-	<div id='${readCellId}' class='readUnreadDot'></div>
 	<div class='info'>
 		<div id='${fromId}' class='ZmConvListFrom'>${from}</div>
 		<div class='ZmConvListFragment'><$= data.fragment $></div>
 	</div>
+    <div id='${readCellId}' class='readUnreadDot'></div>
 	<div class='date' id='${dateCellId}' title='${dateTooltip}'>${date}</div>
 </template>
 
@@ -755,7 +755,6 @@
 		<$= AjxTemplate.expand("#InviteNotCurrent", data) $>
 		<div style='position:relative'>
 	<$ } $>
-	<div id='${readCellId}' class='readUnreadDot'></div>
 	<div class='info'>
 		<table id='${hdrTableId}' class='ZPropertySheet' cellspacing='3'>
 			<tr>
@@ -765,16 +764,16 @@
 				<$ var useObo = data.obo && (data.oboAddr != data.sentByAddr); $>
 				<$ var useBwo = data.bwo && (data.bwoAddr != data.sentByAddr); $>
 				<$ if (useObo && useBwo) { $>
-					<span class='LabelColName' style='margin:0 .5em;'><$= ZmMsg.onBehalfOfMidLabel $></span>
-					<span class='LabelColValue'><$= data.obo $></span>
-					<span class='LabelColName' style='margin:0 .5em;'><$= ZmMsg.byWayOfMidLabel $></span>
-					<span class='LabelColValue'><$= data.bwo $></span>
+					<span  style='margin:0 .5em;'><$= ZmMsg.onBehalfOfMidLabel $></span>
+					<span><$= data.obo $></span>
+					<span style='margin:0 .5em;'><$= ZmMsg.byWayOfMidLabel $></span>
+					<span><$= data.bwo $></span>
 				<$ } else if (useObo) { $>
-					<span class='LabelColName' style='margin:0 .5em;'><$= ZmMsg.onBehalfOfMidLabel $></span>
-					<span class='LabelColValue' colspan=10><$= data.obo $></span>
+					<span style='margin:0 .5em;'><$= ZmMsg.onBehalfOfMidLabel $></span>
+					<span colspan=10><$= data.obo $></span>
 				<$ } else if (useBwo) { $>
-					<span class='LabelColName' style='margin:0 .5em;'><$= ZmMsg.byWayOfMidLabel $></span>
-					<span class='LabelColValue' colspan=10><$= data.bwo $></span>
+					<span style='margin:0 .5em;'><$= ZmMsg.byWayOfMidLabel $></span>
+					<span colspan=10><$= data.bwo $></span>
 				<$ } $>
 			</td>
 			</tr>
@@ -782,9 +781,10 @@
 		<$ for (var i = 0; i < data.addressTypes.length; i++) { $>
 			<$= AjxTemplate.expand("#Conv2MsgAddressRow", data.participants[data.addressTypes[i]]); $>
 		<$ } $>
-		
+
 		</table>
 	</div>
+    <div id='${readCellId}' class='readUnreadDot'></div>
 	<div class='date' id='${dateCellId}' title='${dateTooltip}'>${date}</div>
 	<$ if (data.isOutDated) { $>
 		</div>
