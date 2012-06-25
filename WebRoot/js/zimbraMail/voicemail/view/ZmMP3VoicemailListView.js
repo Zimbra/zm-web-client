@@ -114,3 +114,8 @@ function() {
 	this._displayAllDurationCells();
 };
 
+ZmMP3VoicemailListView.prototype.removeItem =
+function(item, skipNotify) {
+	this.player.hide();
+	ZmVoicemailListView.prototype.removeItem.call(this, item, skipNotify);
+};
