@@ -12,9 +12,8 @@ and the container element is replaced with that control.
 -->
 
 <template id='prefs.Pages#General'>
-	<div align=right style='margin-right:20px; margin-bottom:10px;'>
-			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right:25px;'></div>
-	</div>
+
+    <div id='${id}_REVERT_PAGE' tabindex='10' style='margin-bottom:10px;float:right'></div>
 
 	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>

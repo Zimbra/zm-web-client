@@ -286,7 +286,7 @@ function() {
 
 		var revertPage = document.getElementById([this._htmlElId,"REVERT_PAGE"].join("_"));
 		if (revertPage) {
-			this._addButton(revertPage, ZmMsg.restorePage, 110, new AjxListener(this, this._resetPageListener));
+			this._addButton(revertPage, ZmMsg.restorePage, null, new AjxListener(this, this._resetPageListener));
 		}
 
 		// create tab-group for all controls on the page
