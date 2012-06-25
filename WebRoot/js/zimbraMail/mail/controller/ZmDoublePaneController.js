@@ -438,19 +438,17 @@ function(msg) {
 ZmDoublePaneController.prototype._resetOperations = 
 function(parent, num) {
 	ZmMailListController.prototype._resetOperations.call(this, parent, num);
-	var isMsg = false;
 	var isDraft = this.isDraftsFolder();
 	if (num == 1) {
 		var item = this._mailListView.getSelection()[0];
 		if (item) {
-			isMsg = (item.type == ZmItem.MSG || (item.numMsgs == 1));
 			isDraft = item.isDraft;
 		}
 	}
-	parent.enable(ZmOperation.SHOW_ORIG, isMsg);
+    parent.enable(ZmOperation.SHOW_ORIG, true);
 	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
 		var isSyncFailuresFolder = this.isSyncFailuresFolder();
-		parent.enable(ZmOperation.ADD_FILTER_RULE, isMsg && !isSyncFailuresFolder);
+		parent.enable(ZmOperation.ADD_FILTER_RULE, !isSyncFailuresFolder);
 	}
 	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && num == 1 && !isDraft));
 	parent.enable(ZmOperation.TEXT, true);
