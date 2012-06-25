@@ -200,6 +200,7 @@ ZmConvView2.prototype._renderMessage =
 function(msg, params) {
 	
 	params = params || {};
+	params.mode = this._mode;
 	params.msgId = msg.id;
 	params.sessionId = this._controller.getSessionId();
 	params.isDraft = msg.isDraft;
