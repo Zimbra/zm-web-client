@@ -236,12 +236,18 @@ ZmFolderRetentionView.prototype._populatePolicySelect =
 function(policyElement, systemPolicies) {
     var components = this._components[policyElement];
     components.policies = systemPolicies ? systemPolicies : [];
-    components.policies[components.policies.length] = {name:"Custom", id:"custom"};
-
+	
+	var sorted = {};
+	for (var i=0; i< components.policies.length; i++) {
+		sorted[components.policies[i].name] =  components.policies[i].id;
+	}
+	
+	var sortedKeys = AjxUtil.getHashKeys(sorted);
+	sortedKeys.push(ZmMsg.custom);  //append custom to the end
+	sorted[ZmMsg.custom] = "custom";
     components.policySelect.options.length = 0;
-    for (var i = 0; i < components.policies.length; i++) {
-        var policy = components.policies[i];
-        components.policySelect.options[i] = new Option(policy.name, policy.id);
+    for (var i = 0; i < sortedKeys.length; i++) {
+        components.policySelect.options[i] = new Option(sortedKeys[i], sorted[sortedKeys[i]]);
     }
 }
 
