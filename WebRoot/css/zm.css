@@ -1028,6 +1028,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmMailMsgCapsuleView .footer {
+	clear:both;
 	padding:15px 5px 5px;
 /* IE doesn't seem to support the show/hide.  TODO:investigate why */
 #IFNDEF MSIE
