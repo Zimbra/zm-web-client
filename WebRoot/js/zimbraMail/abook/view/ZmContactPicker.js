@@ -516,7 +516,7 @@ function(account) {
 ZmContactPicker.prototype._searchButtonListener =
 function(ev) {
 	this._resetResults();
-	this.search(null, null, true);
+	this.search();
 };
 
 /**
@@ -525,17 +525,16 @@ function(ev) {
 ZmContactPicker.prototype._handleResponseSearch =
 function(firstTime, result) {
 	var resp = result.getResponse();
-	this._serverHasMore = resp.getAttribute("more");
+	var serverHasMore = resp.getAttribute("more");
+	var serverPaginationSupported = resp.getAttribute("paginationSupported") !== false; //if it's not specified (such as the case of SearchResponse, i.e. not Gal) it IS supported.
+	this._serverHasMoreAndPaginationSupported = serverHasMore && serverPaginationSupported;
 	var offset = resp.getAttribute("offset");
 	this._serverContactOffset = offset || 0;
-	// if offset is returned, then this account support gal paging
-	var isPagingSupported = AjxUtil.isSpecified(offset); 
 	var info = resp.getAttribute("info");
 	var expanded = info && info[0].wildcard[0].expanded == "0";
 
-	if (!firstTime && !isPagingSupported &&
-		(expanded || (this._contactSource == ZmId.SEARCH_GAL && this._serverHasMore)))
-	{
+	//the check for firstTime is so when the picker is popped up we probably don't want to overwhelm them with a warning message. So only show it if the user plays with the picker, using the drop-down or the search box.
+	if (!firstTime && !serverPaginationSupported && (serverHasMore || expanded)) { //no idea what the expanded case is
 		var d = appCtxt.getMsgDialog();
 		d.setMessage(ZmMsg.errorSearchNotExpanded);
 		d.popup();
@@ -547,9 +546,10 @@ function(firstTime, result) {
 	var emailArray = ZmContactsHelper._processSearchResponse(resp);
 	var emailList = AjxVector.fromArray(emailArray);
 
-	if (isPagingSupported) {
+	if (this._serverHasMoreAndPaginationSupported) {
 		this._emailList.addList(emailArray); //this internally calls concat. we do not need "merge" here because we use the _serverContactOffset as a marker of where to search next, never searching a block we already did.
-	} else {
+	}
+	else {
 		this._emailList = emailList;
 	}
 
@@ -563,7 +563,7 @@ function() {
 	var list = this.getSubList();
 
 	// special case 1 - search forward another server block, to fill up a page. Could search several times.
-	if (list.size() < ZmContactsApp.SEARCHFOR_MAX && this._serverHasMore) {
+	if (list.size() < ZmContactsApp.SEARCHFOR_MAX && this._serverHasMoreAndPaginationSupported) {
 		this.search(null, null, null, null, null, this._serverContactOffset + ZmContactsApp.SEARCHFOR_MAX); //search another page
 		return;
 	}
@@ -588,7 +588,8 @@ function() {
 		this._emailListOffset  = Math.max(0, this._emailListOffset);
 	}
 
-	var more = this._serverHasMore || (this._emailListOffset + ZmContactsApp.SEARCHFOR_MAX) < this._emailList.size();
+	var more = this._serverHasMoreAndPaginationSupported  //we can get more from the server
+				|| (this._emailListOffset + ZmContactsApp.SEARCHFOR_MAX) < this._emailList.size(); //or we have more on the client we didn't yet show
 	this._prevButton.setEnabled(this._emailListOffset > 0);
 	this._nextButton.setEnabled(more);
 
