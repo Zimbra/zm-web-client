@@ -46,14 +46,21 @@ ZmVoiceOverviewContainer.prototype.initialize =
 function(params) {
 	if (this.initialized) { return; }
 
+	var deskPhone = false;
 	var phones = params.phones;
+	
+	for (var i=0; i<phones.length; i++) {
+		if (phones[i].label == "DeskPhone") {
+			deskPhone = phones[i];
+		}
+	}
 	for (var i = 0; i < phones.length; i++) {
 		var phone = phones[i];
 		if(!phone.hasVoiceMail) {
 			continue;
 		}
 		// create a top-level section header
-		var headerLabel = phone.getDisplay();
+		var headerLabel = deskPhone && deskPhone.name != phone.name ? deskPhone.getDisplay() : phone.getDisplay();
 		var headerParams = {
 			parent: this,
 			text: headerLabel,
