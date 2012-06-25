@@ -24,7 +24,7 @@
  * @param {string}						id				ID for HTML element
  * @param {ZmConvListController}		controller		containing controller
  * 
- * @extends		ZmMailListController
+ * @extends		ZmMailItemView
  */
 ZmConvView2 = function(params) {
 
@@ -209,18 +209,26 @@ function(msg, params) {
 	msgView.set(msg);
 };
 
+
+ZmConvView2.prototype.clearChangeListeners =
+function() {
+
+	if (!this._item) {
+		return;
+	}
+	this._item.removeChangeListener(this._convChangeHandler);
+	if (this._item.msgs) {
+		this._item.msgs.removeChangeListener(this._listChangeListener);
+	}
+	this._item = null;
+};
+
 ZmConvView2.prototype.reset =
 function(noClear) {
 	
 	this._setSelectedMsg(null);
-	if (this._item) {
-		this._item.removeChangeListener(this._convChangeHandler);
-		if (this._item.msgs) {
-			this._item.msgs.removeChangeListener(this._listChangeListener);
-		}
-		this._item = null;
-	}
-	
+	this.clearChangeListeners();
+
 	for (var id in this._msgViews) {
 		var msgView = this._msgViews[id];
 		msgView.reset();
@@ -240,6 +248,13 @@ function(noClear) {
 		this._replyView.reset();
 	}
 };
+
+ZmConvView2.prototype.dispose =
+function() {
+	this.clearChangeListeners();
+	ZmMailItemView.prototype.dispose.apply(this, arguments);
+};
+
 
 ZmConvView2.prototype._resize =
 function(scrollMsgView) {

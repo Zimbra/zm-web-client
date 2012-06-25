@@ -212,11 +212,17 @@ ZmConv.prototype._handleResponseLoadMsgs =
 function(callback, result) {
 	var resp = result.getResponse().GetConvResponse.c[0];
 	this.msgIds = [];
-	
-	// create new msg list
-	this.msgs = new ZmMailList(ZmItem.MSG, this.search);
-	this.msgs.convId = this.id;
-	this.msgs.addChangeListener(this._listChangeListener);
+
+	if (!this.msgs) {
+		// create new msg list
+		this.msgs = new ZmMailList(ZmItem.MSG, this.search);
+		this.msgs.convId = this.id;
+		this.msgs.addChangeListener(this._listChangeListener);
+	}
+	else {
+		//don't recreate if it already exists, so we don't lose listeners.. (see ZmConvView2.prototype.set)
+		this.msgs.removeAllItems();
+	}
 	this.msgs.setHasMore(false);
 	this._loaded = true;
 

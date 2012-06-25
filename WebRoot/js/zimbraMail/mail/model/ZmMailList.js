@@ -618,6 +618,14 @@ function(msgs) {
 	ZmModel.notifyEach(addedMsgs, ZmEvent.E_CREATE);
 };
 
+
+ZmMailList.prototype.removeAllItems = 
+function() {
+	this._vector = new AjxVector();
+	this._idHash = {};
+};
+
+
 ZmMailList.prototype.remove = 
 function(item, force) {
 	// Don't really remove an item if this is a list of msgs of a conv b/c a

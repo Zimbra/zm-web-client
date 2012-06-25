@@ -111,7 +111,7 @@ function(callback, hidePagination, result) {
  */
 ZmMsgController.prototype.dispose = 
 function() {
-	this._tagList.removeChangeListener(this._tagChangeLstnr);
+	this._tagList.removeChangeListener(this._tagChangeListener);
 };
 
 ZmMsgController.prototype._showMsg = 

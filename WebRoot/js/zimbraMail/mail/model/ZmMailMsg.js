@@ -691,8 +691,22 @@ function(node, args, noCache) {
  */
 ZmMailMsg.prototype.load =
 function(params) {
+	if (this._loading && !params.forceLoad) {
+		//the only way to not get partial results is to try in some timeout.
+		//this method will be called again, eventually, the message will be finished loading, and the callback would be called safely.
+		this._loadingWaitCount = (this._loadingWaitCount || 0) + 1;
+		if (this._loadingWaitCount > 20) {
+			//give up after 20 timeouts (about 10 seconds) - maybe request got lost. send another request below.
+			this._loadingWaitCount = 0;
+			this._loading = false;
+		}
+		else {
+			setTimeout(this.load.bind(this, params), 500);
+			return;
+		}
+	}
 	// If we are already loaded, then don't bother loading
-	if ((!this._loaded && !this._loading) || params.forceLoad) {
+	if (!this._loaded || params.forceLoad) {
 		this._loading = true;
 		var respCallback = this._handleResponseLoad.bind(this, params, params.callback);
 		params.getHtml = params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML);
@@ -712,7 +726,6 @@ function(params) {
 
 ZmMailMsg.prototype._handleResponseLoad =
 function(params, callback, result) {
-	this._loading = false;
 	var response = result.getResponse().GetMsgResponse;
 
 	this.clearAddresses();
@@ -728,6 +741,8 @@ function(params, callback, result) {
 	}
 	this.findAttsFoundInMsgBody();
 
+	this._loading = false;
+	
 	// return result so callers can check for exceptions if they want
 	if (this._loadCallback) {
 		// overriding callback (see ZmMsgController::show)
