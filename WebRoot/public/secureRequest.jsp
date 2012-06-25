@@ -63,6 +63,9 @@
 	String port = httpPort != null && !httpPort.equals("80") ? ":"+httpPort : "";
 	String url = "http://"+server+port+request.getContextPath()+"/public/insecureResponse.jsp";
 
+    String HEADER_X_FRAME_OPTIONS = "X-Frame-Options";
+    String X_FRAME_OPTIONS_VALUE = "ALLOWFORTHISFRAME";  // Any random value to override the inherited x-frame-options from the parent.
+
 	pageContext.setAttribute("data", data);
 	pageContext.setAttribute("encodedData", encodedData);
 	pageContext.setAttribute("server", server);
@@ -71,6 +74,7 @@
 	pageContext.setAttribute("millis", System.currentTimeMillis());
 
 	// no cache
+    response.setHeader(HEADER_X_FRAME_OPTIONS, X_FRAME_OPTIONS_VALUE);
 	response.addHeader("Vary", "User-Agent");
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
 	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
