@@ -376,7 +376,7 @@ function() {
 
 	html[i++] = "<fieldset";
 	if (AjxEnv.isMozilla) {
-		html[i++] = " style='border: 1px dotted #555555'";
+		html[i++] = " style='border:1px dotted #555'";
 	}
 	html[i++] = "><legend style='color:#555555' id='" + this._searchTableId + "_legend'>";
 	html[i++] = ZmAttendeePicker.TOP_LEGEND[this.type];
@@ -386,7 +386,7 @@ function() {
 	html[i++] = this._searchTableId;
 	html[i++] = "'>";
 
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=3><tr>";
+	html[i++] = "<table class='ZPropertySheet' cellspacing='6'><tr>";
 
 	for (var j = 0; j < fields.length; j++) {
 		var isEven = ((j % 2) == 0);
@@ -400,7 +400,7 @@ function() {
 		if (!isEven || j == fields.length - 1) {
             this._prevButtonId = Dwt.getNextId();
             this._nextButtonId = Dwt.getNextId();
-            html[i++] = "<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>";
+            html[i++] = "<td>&nbsp;</td>";
             html[i++] = "<td id='";
             html[i++] = this._prevButtonId;
             html[i++] = "'></td><td id='";
@@ -452,24 +452,24 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
 
 		if (this.showSelect || appCtxt.isOffline) {
             this._listSelectId = this._searchFieldIds[id];
-			html[i++] = "<td align='right' id='";
+			html[i++] = "<td class='ZmFieldLabelRight' id='";
             html[i++] = this._listSelectId+"_label";
             html[i++] = "'>";
 			html[i++] = ZmMsg[ZmAttendeePicker.SF_LABEL[id]];
-			html[i++] = ":&nbsp;</td><td id='";
+			html[i++] = ":</td><td id='";
 			html[i++] = this._listSelectId;
 			html[i++] = "' width='130'></td>";
 		} else {
 			html[i++] = "<td>&nbsp;</td>";
 		}
 	} else {
-		html[i++] = "<td align='right'>";
+		html[i++] = "<td class='ZmFieldLabelRight'>";
 		html[i++] = ZmMsg[ZmAttendeePicker.SF_LABEL[id]];
-		html[i++] = ":&nbsp;</td><td>";
+		html[i++] = ":</td><td>";
 		html[i++] = "<input type='text' autocomplete='off' size=30 nowrap id='";
 		html[i++] = this._searchFieldIds[id];
 		html[i++] = "' />";
-		html[i++] = "</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>";
+		html[i++] = "</td>";
 	}
 
 	if (addButton) {
@@ -498,10 +498,10 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
             html[i++] = "<td></td>";
             html[i++] = "<td></td>";
         }
-		html[i++] = "<td><table border=0 cellpadding=0 cellspacing=0><tr><td>";
+		html[i++] = "<td><table><tr><td>";
 		html[i++] = "<input type='checkbox' id='";
 		html[i++] = this._multLocsCheckboxId;
-		html[i++] = "' /></td><td class='ZmFieldLabelLeft'>&nbsp;<label for='";
+		html[i++] = "' /></td><td class='ZmFieldLabelLeft'><label for='";
 		html[i++] = this._multLocsCheckboxId;
 		html[i++] = "'>";
 		html[i++] = ZmMsg.allowMultipleLocations;
