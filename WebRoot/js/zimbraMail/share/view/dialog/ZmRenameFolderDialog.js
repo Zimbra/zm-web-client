@@ -83,7 +83,7 @@ function() {
 		var folder = this._folder.parent.getByName(name);
         var folderType = appCtxt.getFolderTree(appCtxt.getActiveAccount()).getFolderTypeByName(name);
         if (folder && (folder.id != this._folder.id)) {
-			msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name,folderType.toLowerCase()]);
+			msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name,ZmMsg[folderType.toLowerCase()]]);
 		}
 	}
 

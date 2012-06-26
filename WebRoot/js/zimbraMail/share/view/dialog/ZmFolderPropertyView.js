@@ -210,7 +210,7 @@ function(response) {
 	var msg;
 	var noDetails = false;
 	if (response.code == ZmCsfeException.MAIL_ALREADY_EXISTS) {
-		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [value,type.toLowerCase()]);
+		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [value,ZmMsg[type.toLowerCase()]]);
 	} else if (response.code == ZmCsfeException.MAIL_IMMUTABLE) {
 		msg = AjxMessageFormat.format(ZmMsg.errorCannotRename, [value]);
 	} else if (response.code == ZmCsfeException.SVC_INVALID_REQUEST) {

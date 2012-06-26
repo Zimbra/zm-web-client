@@ -350,7 +350,7 @@ function() {
 	// make sure parent doesn't already have a child by this name
 	if (!msg && parentFolder.hasChild(name)) {
         var folderType = appCtxt.getFolderTree(appCtxt.getActiveAccount()).getFolderTypeByName(name);
-		msg = AjxMessageFormat.format(this._folderNameAlreadyExistsMsg, [name,folderType.toLowerCase()]);
+		msg = AjxMessageFormat.format(this._folderNameAlreadyExistsMsg, [name,ZmMsg[folderType.toLowerCase()]]);
 	}
 
 	var color = null;
