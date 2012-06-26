@@ -1545,7 +1545,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmContactInfoView .contactGroupTable {
-	border-bottom:1px solid black;
 	background-color:white;
 }
 
