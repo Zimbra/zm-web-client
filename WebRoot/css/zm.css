@@ -5202,6 +5202,13 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZmEditContactView .rowValue, .ZmContactSplitView .rowValue[colspan] {
 	width:auto;
 }
+.ZmContactSplitView .Object {
+    @Anchor@ 
+}
+
+.ZmContactSplitView .Object-hover {
+    @Anchor-hover@
+}
 
 .itemSortIcon {
 	padding-left:7px;
