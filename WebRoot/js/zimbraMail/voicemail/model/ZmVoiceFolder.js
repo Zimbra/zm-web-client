@@ -155,6 +155,16 @@ function(delta) {
 	this.notifyModify( { u: newValue } );
 };
 
+/**
+ * This updates the num total in the folder 
+ * @param delta {int} value to change num total by
+ */
+ZmVoiceFolder.prototype.changeNumTotal = 
+function(delta) {
+	var newValue = (this.numTotal || 0 ) + delta;
+	this.notifyModify( {n: newValue});
+};
+
 ZmVoiceFolder.get =
 function(phone, folderType) {
 	var folderId = [folderType, "-", phone.name].join("");

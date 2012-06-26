@@ -283,6 +283,12 @@ function(params) {
 	for (var i = 0, count = params.items.length; i < count; i++) {
 		view.removeItem(params.items[i]);
 	}
+	var delta = -params.items.length;
+	this._folder.changeNumTotal(delta);
+	
+	if(ZmVoiceApp.hasTrashFolder && params.folder && params.folder.numTotal) {
+		params.folder.changeNumTotal(params.items.length);
+	}
 	this._checkReplenish();
 	this._resetToolbarOperations();
 };
