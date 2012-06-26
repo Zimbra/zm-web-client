@@ -849,30 +849,35 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .Conv2Header {
 	@BottomSeparator@
 	background-color:@lighten(AppC,25)@;
-	padding:3px 5px 4px;
+	height:2.4em;
+	overflow:hidden;
 	position:relative;
-	white-space:nowrap;
-	/*@cssShadow@:0 3px 3px @darken(AppC,15)@;*/
 }
 
 .Conv2Header .expandIcon {
-	margin-right:5px;
+	left:0;
+	padding:.5em 0 0 5px;
+	position:absolute;
+	top:0;
 }
 
 .Conv2Header .subject {
 	@FontSize-bigger@
-	overflow:hidden;
+	left:22px;
+	position:absolute;
+	top:.18em;
+#IFDEF WINDOWS
+	top:.08em;
+#ENDIF
 	white-space:nowrap;
 }
 
 .Conv2Header .info {
 	/* background-color MUST be the same as Conv2Header */
-	background:none repeat scroll 0 0 @lighten(AppC,25)@;
-	font-weight:normal;
-	padding:5px 8px 2px;
+	background-color: @lighten(AppC,25)@;
+	padding:.5em 5px 0;
 	position:absolute;
 	right:0;
-	text-align:right;
 	top:0;
 	white-space:nowrap;
 }
