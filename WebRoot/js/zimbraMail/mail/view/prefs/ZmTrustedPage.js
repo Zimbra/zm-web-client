@@ -62,6 +62,12 @@ function(id, setup, value) {
 		this._trustedListControl = new ZmWhiteBlackList(this, id, "TrustedList");
         var trustedList = appCtxt.get(ZmSetting.TRUSTED_ADDR_LIST);
 
+        	if (trustedList) {
+                for (var i = 0; i < trustedList.length; i++) {
+                    trustedList[i] = AjxStringUtil.htmlEncode(trustedList[i]);
+        		}
+        	}
+
         this._trustedListControl.loadFromJson(trustedList);
 		this._replaceControlElement(el, this._trustedListControl);
 	}
