@@ -407,6 +407,11 @@ function(params) {
 				if (this.isCheckedStyle) {
 					ti.showCheckBox(false);
 				}
+                var prevChildName = children[i-1] && children[i-1].name;
+                for (key in appCtxt._itemCacheDeferred){
+                    // Add deferred folders if its name is less than prevChildName
+                    if (appCtxt._itemCacheDeferred[key] < prevChildName) i++;
+                }
 				params.startPos = i;
 				params.showRemainingFoldersNode = ti;
 				child._showFoldersCallback = new AjxCallback(this, this._showRemainingFolders, [params]);
