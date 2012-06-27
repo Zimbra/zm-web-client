@@ -1314,7 +1314,7 @@ function(msg, container, callback, index) {
         }
     }
 
-	if (isCalendarInvite || isShareInvite || isSubscribeReq) {
+	if (isCalendarInvite || isSubscribeReq) {
 		ZmMailMsgView.prototype._renderMessageHeader.apply(this, arguments);
 	}
 	
@@ -1344,12 +1344,13 @@ function(msg, container, callback, index) {
 	
 	if (isShareInvite || isSubscribeReq) {
 		var bodyEl = this.getMsgBodyElement();
-		var toolbar = isShareInvite ? this._shareToolbar : this._subscribeToolbar;
+		var toolbar = isShareInvite ? this._getShareToolbar() : this._getSubscribeToolbar(msg.subscribeReq);
 		if (toolbar) {
 			toolbar.reparentHtmlElement(bodyEl, 0);
 		}
 		// invite header
-		bodyEl.insertBefore(this._headerElement.parentNode, bodyEl.firstChild);
+		if (this._headerElement)
+			bodyEl.insertBefore(this._headerElement.parentNode, bodyEl.firstChild);
 	}
 	
 	this._beenHere = true;
