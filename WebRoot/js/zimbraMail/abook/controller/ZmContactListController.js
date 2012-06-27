@@ -229,7 +229,7 @@ function() {
 
 ZmContactListController.prototype.gatherContactExtraDlStuff =
 function(contact, callback) {
-	if (contact.dlInfo) {
+	if (contact.dlInfo && !contact.dlInfo.isMinimal) {
 		//already there, skip to next step, loading DL Members
 		this.loadDlMembers(contact, callback);
 		return;

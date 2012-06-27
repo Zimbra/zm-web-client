@@ -885,15 +885,6 @@ function() {
 
 ZmContact.prototype.loadDlInfo =
 function(callback) {
-	if (this.dlInfo) {
-		if (callback) {
-			callback();
-		}
-	}
-	if (!callback) {
-		return null;
-	}
-
 	var soapDoc = AjxSoapDoc.create("GetDistributionListRequest", "urn:zimbraAccount", null);
 	soapDoc.setMethodAttribute("needOwners", "1");
 	soapDoc.setMethodAttribute("needRights", "sendToDistList");
@@ -2341,11 +2332,12 @@ function(node) {
 	this.isDL = this.isDistributionList();
 	if (this.isDL) {
 		this.dlInfo = { //this is minimal DL info, available mainly to allow to know whether to show the lock or not.
+			isMinimal: true,
 			isMember: node.isMember,
 			isOwner: node.isOwner,
 			subscriptionPolicy: this.attr.zimbraDistributionListSubscriptionPolicy,
 			unsubscriptionPolicy: this.attr.zimbraDistributionListUnsubscriptionPolicy,
-			description: node.d || "",
+			displayName: node.d || "",
 			hideInGal: this.attr.zimbraHideInGal == "TRUE"
 		};
 

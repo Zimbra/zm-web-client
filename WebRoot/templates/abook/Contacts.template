@@ -344,7 +344,7 @@
 	<table width=100% class='contactHeaderTable <$= data.contactHdrClass $> ZPropertySheet' cellspacing='6'>
 		<tr>
 			<$ if (imageUrl) { $>
-				<td valign=bottom width=48 rowspan=2><img src="<$= imageUrl $>" 
+				<td width=48 rowspan=2><img src="<$= imageUrl $>"
 				<$ if (AjxEnv.isIE) { $>
 					height=48
 				<$ } else { $>
@@ -352,16 +352,21 @@
 				<$ } $>
 				 border=0></td>
 			<$ } else { $>
-				<td valign=bottom width=48 rowspan=2><$= AjxImg.getImageHtml(imgClassName) $></td>
+				<td width=48 rowspan=2><$= AjxImg.getImageHtml(imgClassName) $></td>
 			<$ } $>
 			<$ if (!isEdit) {$>
 			    <td id='<$= tagsId $>' align='right' colspan=2></td>
 			<$ } $>
 		</tr>
 		<tr>
-			<td valign=bottom>
+			<td>
                 <$= AjxTemplate.expand("#SplitView_headerName", data) $>
                 <$= AjxTemplate.expand("#SplitView_headerJobInfo", data) $>
+				<$ if (data.dlInfo && data.dlInfo.description) { $>
+					<div>
+						<pre><$= AjxStringUtil.htmlEncode(data.dlInfo.description) $></pre>
+					<div>
+				<$ } $>
 			</td>
 			<td valign=bottom align='right'>
 				<$ if (accountName) { $>
@@ -544,13 +549,6 @@
 			<td id='${id}_subscriptionButton'></td>
 		</tr>
 		</table>
-		<$ if (data.dlInfo.description) { $>
-			<table class="contactGroupTable" width="100%">
-			<tr>
-				<td width="100%"><$= AjxStringUtil.htmlEncode(data.dlInfo.description) $></td>
-			</tr>
-			</table>
-		<$ } $>
 	<$ } $>
 	<$= ZmContactSplitView.showContactGroup(data) $>
 </template>
