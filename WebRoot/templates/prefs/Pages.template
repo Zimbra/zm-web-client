@@ -1381,7 +1381,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
 	<div style='color:#555555'><div id='${id}_condition' tabindex='30'></div></div>
 	<fieldset class='FilterRuleSection'>
-		<div style='overflow-x:hidden;overflow-y:scroll;height:145px;'>
+		<div style='overflow-x:hidden;overflow-y:auto;height:145px;'>
 			<table id='${id}_conditions' width='100%' tabindex='40' class='ZPropertySheet'>
 				<tbody></tbody>
 			</table>
@@ -1392,7 +1392,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
 	<div style='color:#555555'><$=ZmMsg.filterActions$></div>
 	<fieldset class='FilterRuleSection'>
-		<div style='overflow-x:hidden;overflow-y:scroll;height:82px'>
+		<div style='overflow-x:hidden;overflow-y:auto;height:82px'>
 			<table id='${id}_actions' width='100%' tabindex='50' class='ZPropertySheet'>
 				<tbody></tbody>
 			</table>

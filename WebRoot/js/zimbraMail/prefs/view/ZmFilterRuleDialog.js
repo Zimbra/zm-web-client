@@ -536,6 +536,7 @@ function(conf, field, options, rowData, testType, rowId) {
 		var selectId = "FilterRuleDialog_SELECT_" + ZmFilterRuleDialog.CONDITIONS_INDEX++;
 		var select = new DwtSelect({parent:this, id: selectId});
 		select.setData(ZmFilterRuleDialog.ROW_ID, rowId);
+        select.fixedButtonWidth();
 		this._inputs[rowId][field] = {id: id, dwtObj: select};
 		if (isMainSelect) {
 			select.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);
