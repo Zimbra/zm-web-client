@@ -37,6 +37,6 @@ var reqId = "${zm:jsEncode(param.reqId)}";
 </script>
 <script>
 var params = {reqId: reqId};
-params.response = "${ (not empty data and data ne "") ? zm:jsEncode(data) : emptyJsonObject }";
+params.response = eval("(" + "${ (not empty data and data ne "") ? zm:jsEncode(data) : emptyJsonObject }" + ")");
 parent.parent.parent.appCtxt.getRequestMgr().sendRequest(params);
 </script>
