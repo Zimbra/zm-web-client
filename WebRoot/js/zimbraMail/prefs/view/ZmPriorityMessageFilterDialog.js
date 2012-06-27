@@ -61,6 +61,7 @@ function() {
 	this._moveMsgIntoStream = this._priorityMessageForm.getControl("MOVE_MSG_STREAM");
 	this._notToMe = this._priorityMessageForm.getControl("NOT_TO_ME");
 	this._selectField = this._priorityMessageForm.getControl("SELECT_FIELD");
+	this._selectField.fixedButtonWidth();
 	this._notInMyAddrBk = this._priorityMessageForm.getControl("NOT_IN_ADDR");
 	this._dlSubscribedTo = this._priorityMessageForm.getControl("DL_SUBSCRIBED");
 	this._massMarketing = this._priorityMessageForm.getControl("MASS_MARKETING");
