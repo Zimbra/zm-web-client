@@ -726,7 +726,7 @@ function(item, details) {
 	}
 
 	var contact = details.contact;
-	if (this.isCanonical) {
+	if (this.isCanonical || contact.attr[ZmContact.F_email] != details.oldAttr[ZmContact.F_email]) {
 		// Remove traces of old contact - NOTE: we pass in null for the ID on
 		// PURPOSE to avoid overwriting the existing cached contact
 		var oldContact = new ZmContact(null, this);
