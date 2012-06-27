@@ -382,9 +382,10 @@ if (application.getInitParameter("offlineMode") != null)  {
                                         <tr>
                                             <td>&nbsp;</td>
                                             <td class="submitTD">
-                                                <input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
                                                 <input id="remember" value="1" type="checkbox" name="zrememberme" />
-                                                <label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label></td>
+                                                <label for="remember"><fmt:message key="${smallScreen?'rememberMeMobile':'rememberMe'}"/></label>
+                                                <input type="submit" class="ZLoginButton DwtButton" value="<fmt:message key="login"/>" />
+                                            </td>
                                         </tr>
                         </c:otherwise>
                     </c:choose>
