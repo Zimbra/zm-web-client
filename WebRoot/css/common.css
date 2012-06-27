@@ -31,7 +31,7 @@
 */
 
 P, TH, TD, DIV, SELECT, INPUT[type=text], INPUT[type=password], INPUT[type=file], TEXTAREA, BUTTON {
-	@FontSize-normal@
+	@FontSize-normal@ @FontFamily-default@
 }
 #IFDEF MSIE  /* not sure why INPUT is IE only, but leaving that alone */
 INPUT {
