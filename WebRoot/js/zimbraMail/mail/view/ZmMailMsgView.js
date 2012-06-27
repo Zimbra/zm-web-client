@@ -1419,6 +1419,13 @@ function(msg, container) {
 		reportBtn.setText(ZmMsg.reportSyncFailure);
 		reportBtn.addSelectionListener(this._reportButtonListener.bind(this, msg));
 	}
+
+	if (this._hasShareToolbar) {
+		var topToolbar = this._getShareToolbar();
+		topToolbar.reparentHtmlElement(container);
+		topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
+	}
+
 };
 
 // Returns a hash with what we need to show the message's address headers
@@ -1543,6 +1550,7 @@ ZmMailMsgView.prototype._renderInviteToolbar =
 function(msg, container) {
 
 	this._dateObjectHandlerDate = new Date(msg.sentDate || msg.date);
+	this._hasShareToolbar = this._hasSubToolbar = false;
 
 	var invite = msg.invite;
 	var ac = window.parentAppCtxt || window.appCtxt;
@@ -1570,9 +1578,6 @@ function(msg, container) {
 			(isNew || (isEdit && !this.__hasMountpoint(msg.share))) &&
 			msg.share.link.perm)
 		{
-			var topToolbar = this._getShareToolbar();
-			topToolbar.reparentHtmlElement(container);
-			topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 			this._hasShareToolbar = true;
 		}
 	}
