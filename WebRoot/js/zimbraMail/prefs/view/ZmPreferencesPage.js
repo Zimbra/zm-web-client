@@ -610,6 +610,7 @@ function(id, setup, value) {
 
 	selObj.setName(id);
 	selObj.setSelectedValue(value);
+    selObj.dynamicButtonWidth();
 
 	return selObj;
 };
