@@ -33,6 +33,10 @@
  */
 ZmConvDoublePaneView = function(params) {
 
+	this._invitereplylisteners = [];
+	this._sharelisteners = [];
+	this._subscribelisteners = [];
+
 	params.className = params.className || "ZmConvDoublePaneView";
 	params.mode = ZmId.VIEW_CONVLIST;
 	ZmDoublePaneView.call(this, params);
@@ -59,20 +63,37 @@ function(params) {
 // get the item view based on the given type
 ZmConvDoublePaneView.prototype._getItemView =
 function(type) {
+	var newview;
 	
 	this._itemViewParams.className = null;
 	if (type == ZmItem.CONV) {
 		if (!this._convView) {
 			this._itemViewParams.id = ZmId.getViewId(ZmId.VIEW_CONV, null, this._itemViewParams.view);
-			this._convView = new ZmConvView2(this._itemViewParams);
+			newview = this._convView = new ZmConvView2(this._itemViewParams);
 		}
 	}
 	else if (type == ZmItem.MSG) {
 		if (!this._mailMsgView) {
 			this._itemViewParams.id = ZmId.getViewId(ZmId.VIEW_MSG, null, this._itemViewParams.view);
-			this._mailMsgView = new ZmMailMsgView(this._itemViewParams);
+			newview = this._mailMsgView = new ZmMailMsgView(this._itemViewParams);
 		}
 	}
+
+	if (newview) {
+		AjxUtil.foreach(this._invitereplylisteners,
+		                function(listener) {
+		                	newview.addInviteReplyListener(listener);
+		                });
+		AjxUtil.foreach(this._sharelisteners,
+		                function(listener) {
+		                	newview.addShareListener(listener);
+		                });
+		AjxUtil.foreach(this._subscribelisteners,
+		                function(listener) {
+		                	newview.addSubscribeListener(listener);
+		                });
+	}
+
 	return (type == ZmItem.CONV) ? this._convView : this._mailMsgView;
 };
 
@@ -90,6 +111,24 @@ function(item, force, dontFocus) {
 		this.setReadingPane(true);	// so that second view gets positioned
 	}
 	return ZmDoublePaneView.prototype.setItem.apply(this, arguments);
+};
+
+ZmConvDoublePaneView.prototype.addInviteReplyListener =
+function(listener) {
+	this._invitereplylisteners.push(listener);
+	ZmDoublePaneView.prototype.addInviteReplyListener.call(this, listener);
+};
+
+ZmConvDoublePaneView.prototype.addShareListener =
+function(listener) {
+	this._sharelisteners.push(listener);
+	ZmDoublePaneView.prototype.addShareListener.call(this, listener);
+};
+
+ZmConvDoublePaneView.prototype.addSubscribeListener =
+function(listener) {
+	this._subscribelisteners.push(listener);
+	ZmDoublePaneView.prototype.addSubscribeListener.call(this, listener);
 };
 
 /**
