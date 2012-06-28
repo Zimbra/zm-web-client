@@ -220,13 +220,14 @@ function(date, list, controller, noheader, emptyMsg, isMinical) {
 	var dateTime = date.getTime();
 	for (var i = 0; i < size; i++) {
 		var ao = list.get(i);
-		// Multi-day all day appts will be broken up into one sub-appt per day, so only show
-		// the one that matches the selected date
-		var apptDate = new Date(ao.startDate.getTime());
-		apptDate.setHours(0,0,0,0);
-		if (apptDate.getTime() != dateTime) continue;
 
 		if (ao.isAllDayEvent()) {
+            // Multi-day all day appts will be broken up into one sub-appt per day, so only show
+       		// the one that matches the selected date
+            var apptDate = new Date(ao.startDate.getTime());
+            apptDate.setHours(0,0,0,0);
+            if (apptDate.getTime() != dateTime) continue;
+
             if(!isMinical && ao.toString() == "ZmAppt") {
                 html.append("<tr><td><div class=appt>");
                 html.append(ZmApptViewHelper.getApptToolTipText(ao, controller));
@@ -476,7 +477,8 @@ function(email, isIdentity) {
         orgName = appCtxt.get(ZmSetting.DISPLAY_NAME);
     }else{
         //Identity
-        var identity = appCtxt.getIdentityCollection().getIdentityBySendAddress(orgAddress);
+        var iCol = appCtxt.getIdentityCollection(),
+            identity = iCol ? iCol.getIdentityBySendAddress(orgAddress) : "";
         if(identity){
             orgName = identity.sendFromDisplay;
         }
