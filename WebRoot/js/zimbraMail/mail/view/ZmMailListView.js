@@ -845,7 +845,7 @@ function(participants, item, availWidth) {
 
 	// first see if we can fit everyone with their full names
 	var list = [];
-	var pLen = participants.length;
+	var pLen = Math.min(20, participants.length);
 	var width = 0;
 	for (var i = 0; i < pLen; i++) {
 		var p = participants[i];
