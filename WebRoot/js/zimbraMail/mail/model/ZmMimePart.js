@@ -259,6 +259,18 @@ function(node) {
 	this.isBody				= this.body			= !!(node.body);
 };
 
+/*
+ * @param {object}		parentNode
+ * @return {true/false}	true if one of the parent in the hierarchy is multipart/alternative otherwise false.
+*/
+
+ZmMimePart.prototype._isPartOfMultipartAlternative =
+function(part){
+    if (!part) return false;
+    if (part.contentType == ZmMimeTable.MULTI_ALT) return true;
+    return this._isPartOfMultipartAlternative(part.parent);
+}
+
 /**
  * Checks within the given node tree for content within a multipart/alternative part that
  * we don't have, and then creates and adds a MIME part for it. Assumes that there will be
@@ -274,7 +286,7 @@ ZmMimePart.prototype.addAlternativePart =
 function(node, contentType, index) {
 
 	// replace this part if we got new content
-	if (node.ct == contentType && (this.parent && this.parent.contentType == ZmMimeTable.MULTI_ALT) && node.body && !this.getContent()) {
+	if (node.ct == contentType && this._isPartOfMultipartAlternative(this.parent) && node.body &&  !this.getContent()) {
 		var mimePart = new ZmMimePart(this);
 		mimePart._loadProps(node);
 		this.parent.children.replace(index, mimePart);
