@@ -574,6 +574,15 @@
 <!----------------------------------------------------------------------------->
 <template id="abook.Contacts#GroupView">
 	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
+	<$= AjxTemplate.expand("abook.Contacts#GroupViewMembers", data) $>
+</template>
+
+<template id="abook.Contacts#DlView">
+	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
+	<div id='${id}_tabViewContainer"'></div>
+</template>
+
+<template id="abook.Contacts#DlPropertiesView">
 	<$ if (data.contact.isDistributionList()) { $>
 		<table valign="top" width="100%" class="ZmEditContactView">
 			<tr valign="top">
@@ -648,7 +657,8 @@
 			</tr>
 		</table>
 	<$ } $>
-
+</template>
+<template id="abook.Contacts#GroupViewMembers">
 	<table width=98% height=100% class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<!-- content: left pane -->

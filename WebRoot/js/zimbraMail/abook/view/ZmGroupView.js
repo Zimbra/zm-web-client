@@ -145,9 +145,6 @@ function(contact, isDirty) {
 	}
 	contact.addChangeListener(this._changeListener);
 	this._contact = contact;
-	if (this.isDistributionList()) {
-		this.setScrollStyle(Dwt.SCROLL);
-	}
 
 	if (!this._htmlInitialized) {
 		this._createHtml();
@@ -173,6 +170,16 @@ function(contact, isDirty) {
 	}
 
 	this.search();
+};
+
+/**
+ * this is called from ZmContactController.prototype._postShowCallback
+ */
+ZmGroupView.prototype.postShow =
+function() {
+	if (this._contact.isDistributionList()) {
+		this._dlMembersTabView.showMe(); //have to call it now so it's sized correctly.
+	}
 };
 
 ZmGroupView.prototype.getModifiedAttrs =
@@ -749,7 +756,7 @@ function() {
 		if (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED))
 			showSearchIn = true;
 	}
-	var params = {
+	var params = this._templateParams = {
 		id: this._htmlElId,
 		showSearchIn: showSearchIn,
 		detailed: this._detailedSearch,
@@ -761,7 +768,22 @@ function() {
 		domain: this._emailDomain,
 		addrbook: this._contact.getAddressBook()
 	};
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#GroupView", params);
+
+	if (this.isDistributionList()) {
+		this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#DlView", params);
+		this._tabViewContainerId = this._htmlElId + "_tabViewContainer";
+		var tabViewContainer = document.getElementById(this._tabViewContainerId);
+		this._tabView = new DwtTabView({parent: this, posStyle: Dwt.STATIC_STYLE});
+		this._tabView.reparentHtmlElement(tabViewContainer);
+		this._dlMembersTabView = new ZmDlMembersTabView(this);
+		this._tabView.addTab(ZmMsg.dlMembers, this._dlMembersTabView);
+		this._dlPropertiesTabView = new ZmDlPropertiesTabView(this);
+		this._tabView.addTab(ZmMsg.dlProperties, this._dlPropertiesTabView);
+	}
+	else {
+		this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#GroupView", params);
+	}
+
 	this._htmlInitialized = true;
 };
 
@@ -1836,3 +1858,60 @@ ZmGroupMembersListView.prototype._getItemId =
 function(item) {
 	return (item && item.id) ? item.id : Dwt.getNextId();
 };
+
+/**
+ * @class
+ *
+ * @param	{DwtControl}	parent		    the parent (dialog)
+ * @param	{String}	    className		the class name
+ *
+ * @extends		DwtTabViewPage
+ */
+ZmDlPropertiesTabView = function(parent, className) {
+    if (arguments.length == 0) return;
+
+    DwtTabViewPage.call(this, parent, className, Dwt.RELATIVE_STYLE);
+
+	this.setScrollStyle(Dwt.SCROLL);
+
+};
+
+ZmDlPropertiesTabView.prototype = new DwtTabViewPage;
+
+ZmDlPropertiesTabView.prototype.toString = function() {
+	return "ZmDlPropertiesTabView";
+};
+
+ZmDlPropertiesTabView.prototype._createHtml =
+function () {
+	DwtTabViewPage.prototype._createHtml.call(this);
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#DlPropertiesView", this.parent._templateParams);
+};
+
+/**
+ * @class
+ *
+ * @param	{DwtControl}	parent		    the parent (dialog)
+ * @param	{String}	    className		the class name
+ *
+ * @extends		DwtTabViewPage
+ */
+ZmDlMembersTabView = function(parent, className) {
+    if (arguments.length == 0) return;
+
+    DwtTabViewPage.call(this, parent, className, Dwt.RELATIVE_STYLE);
+
+};
+
+ZmDlMembersTabView.prototype = new DwtTabViewPage;
+
+ZmDlMembersTabView.prototype.toString = function() {
+	return "ZmDlMembersTabView";
+};
+
+ZmDlMembersTabView.prototype._createHtml =
+function () {
+	DwtTabViewPage.prototype._createHtml.call(this);
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#GroupViewMembers", this.parent._templateParams);
+};
+
