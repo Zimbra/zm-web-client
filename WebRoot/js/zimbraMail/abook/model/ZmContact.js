@@ -1526,6 +1526,15 @@ function(result) {
 		return;
 	}
 	appCtxt.setStatusMsg(ZmMsg.distributionListCreated);
+
+	if (!ZmAddrBookTreeController) {
+		return;
+	}
+	var clc = AjxDispatcher.run("GetContactListController");
+	if (clc.getFolderId() != ZmFolder.ID_DLS) {
+		return;
+	}
+	ZmAddrBookTreeController.dlFolderClicked();
 };
 
 ZmContact.prototype._handleErrorCreateDl =

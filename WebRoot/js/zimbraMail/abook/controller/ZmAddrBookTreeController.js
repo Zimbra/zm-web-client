@@ -237,6 +237,19 @@ function(ev) {
 	appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
 };
 
+ZmAddrBookTreeController.dlFolderClicked =
+function() {
+	var request = {
+		_jsns: "urn:zimbraAccount",
+		"ownerOf": 1,
+		attrs: "zimbraDistributionListUnsubscriptionPolicy,zimbraDistributionListSubscriptionPolicy,zimbraHideInGal"
+	};
+
+	var jsonObj = {GetAccountDistributionListsRequest: request};
+	var respCallback = ZmAddrBookTreeController._handleAccountDistributionListResponse;
+	appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
+};
+
 /**
  * Called when a left click occurs (by the tree view listener). The folder that
  * was clicked may be a search, since those can appear in the folder tree. The
@@ -249,15 +262,7 @@ function(ev) {
 ZmAddrBookTreeController.prototype._itemClicked =
 function(folder) {
 	if (folder.id == ZmFolder.ID_DLS) {
-		var request = {
-			_jsns: "urn:zimbraAccount",
-			"ownerOf": 1,
-			attrs: "zimbraDistributionListUnsubscriptionPolicy,zimbraDistributionListSubscriptionPolicy,zimbraHideInGal"
-		};
-
-		var jsonObj = {GetAccountDistributionListsRequest: request};
-		var respCallback = new AjxCallback(this, this._handleAccountDistributionListResponse, [folder]);
-		appCtxt.getAppController().sendRequest({jsonObj: jsonObj, asyncMode: true, callback: respCallback});
+		ZmAddrBookTreeController.dlFolderClicked();
 	}
 	else if (folder.type == ZmOrganizer.SEARCH) {
 		// if the clicked item is a search (within the folder tree), hand
@@ -307,8 +312,8 @@ function(folder, result) {
 /**
  * @private
  */
-ZmAddrBookTreeController.prototype._handleAccountDistributionListResponse =
-function(folder, result) {
+ZmAddrBookTreeController._handleAccountDistributionListResponse =
+function(result) {
 
 	var contactList = new ZmContactList(null, true, ZmItem.CONTACT);
 	var dls = result._data.GetAccountDistributionListsResponse.dl;
