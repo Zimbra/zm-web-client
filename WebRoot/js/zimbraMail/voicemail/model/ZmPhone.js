@@ -95,7 +95,8 @@ function(node) {
 	this.label = node.label;
 	this.hasVoiceMail = node.vm;
 	this.allProps = node;
-
+	this.phoneType = node.type;
+	
 	if (node.used && node.used.length) this.used =  node.used[0]._content;
 	if (this.limit && this.limit.length) this.limit = node.limit[0]._content;
 	this._initializeFeatures();

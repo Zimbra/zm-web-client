@@ -50,7 +50,7 @@ function(params) {
 	var phones = params.phones;
 	
 	for (var i=0; i<phones.length; i++) {
-		if (phones[i].label == "DeskPhone") {
+		if (phones[i].phoneType == "DeskPhone") {
 			deskPhone = phones[i];
 		}
 	}
