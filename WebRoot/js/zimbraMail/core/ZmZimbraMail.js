@@ -603,6 +603,13 @@ function(params, ex) {
 	return false;
 };
 
+ZmZimbraMail.prototype._isProtocolHandlerAccessed =
+function() {
+    if (!AjxEnv.isFirefox || !localStorage || localStorage['zimbra_mailto_init']) return true;
+    localStorage['zimbra_mailto_init'] = true;
+    return false;
+};
+
 /**
  * @private
  */
@@ -728,10 +735,12 @@ function(params, result) {
 		});
 	this.addPostRenderCallback(callback, 5, 100);
 
-    if (appCtxt.get(ZmSetting.MAIL_ENABLED) && !appCtxt.isExternalAccount() && navigator.registerProtocolHandler){
+    if (appCtxt.get(ZmSetting.MAIL_ENABLED) && !appCtxt.isExternalAccount() && navigator.registerProtocolHandler && !this._isProtocolHandlerAccessed()){
         callback = new AjxCallback(this,
             function() {
-                navigator.registerProtocolHandler("mailto",AjxUtil.formatUrl({qsArgs:{view:'compose',to:'%s'}, qsReset:true}) ,ZmMsg.zimbraTitle);
+                try {
+                    navigator.registerProtocolHandler("mailto",AjxUtil.formatUrl({qsArgs:{view:'compose',to:'%s'}, qsReset:true}) ,ZmMsg.zimbraTitle);
+                } catch (err){};
         });
         this.addPostRenderCallback(callback, 6, 100);
     }
