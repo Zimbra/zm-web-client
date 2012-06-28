@@ -149,6 +149,7 @@ function(parent, obj, tree, elementType, path, account) {
 				AjxDispatcher.require(pkg);
 			}
 			folder = ZmFolderTree.createFolder(type, parent, obj, tree, path, elementType, account);
+            if (appCtxt.isExternalAccount() && folder.isSystem() && folder.id != ZmOrganizer.ID_ROOT) { return; }
 			ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType, account);
 		}
 	}

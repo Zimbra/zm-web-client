@@ -822,7 +822,7 @@ ZmApp.prototype._handleExternalAccountSettings =
 function(type) {
     //Handle the external account settings
     var dataTree = appCtxt.getTree(type, appCtxt.getActiveAccount()),
-        folders = dataTree.getByType(type),
+        folders = dataTree ? dataTree.getByType(type) : [],
         len = folders.length,
         folder,
         i;
@@ -910,6 +910,9 @@ function(type) {
 	for (var i = 0; i < this._deferredFolders.length; i++) {
 		var params = this._deferredFolders[i];
 		var folder = ZmFolderTree.createFolder(params.type, params.parent, params.obj, params.tree, params.path, params.elementType);
+        if (appCtxt.isExternalAccount() && folder.isSystem()) {
+            continue;
+        }
 		params.parent.children.add(folder); // necessary?
 		folder.parent = params.parent;
 		ZmFolderTree._traverse(folder, params.obj, params.tree, params.path || []);
