@@ -198,11 +198,11 @@
 .ZmOverviewLocalHeader-actioned,
 .ZmOverviewLocalHeader-selected,
 .ZmOverviewLocalHeader-selected-focused {
+	@ActiveCursor@
 	background-color:@AltC@;
-	padding:1px 0px;
+	padding:1px 0;
 	border-top:1px solid @darken(AltC, 30)@;
 	border-bottom:1px solid @darken(AltC, 30)@;
-	cursor:pointer;
 }
 
 .ZmOverviewLocalHeader .imageCell,
@@ -220,11 +220,11 @@
 .ZmOverviewZimletHeader-actioned,
 .ZmOverviewZimletHeader-selected,
 .ZmOverviewZimletHeader-selected-focused {
+	@ActiveCursor@
 	@OverviewZimletSection@
 	border-top:1px solid @AltC@;
 	border-bottom:1px solid @AltC@;
 	padding-bottom:2px;
-	cursor:pointer;
 }
 
 /*
@@ -580,10 +580,13 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 
 .AddrBubble.TagBubble {
-	cursor:pointer; /*otherwise .AddrBubble cursor is set to default. see .addrBubble, .attachmentBubble { elsewhere in this file*/ 
+	@ActiveCursor@ /*otherwise .AddrBubble cursor is set to default. see .addrBubble, .attachmentBubble { elsewhere in this file*/ 
 }
 .TagBubble {
-	@NoWrap@ display:inline-block; vertical-align:middle; cursor:pointer;
+	@ActiveCursor@
+	@NoWrap@ 
+	display:inline-block; 
+	vertical-align:middle;
 }
 
 .TagBubble .TagName,
@@ -683,7 +686,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .AttachmentClose {
-	cursor:pointer;
+	@ActiveCursor@
 	position:absolute;
 	right:2px;
 	top:2px;
@@ -694,43 +697,44 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .BrowseMyComputerMenuItem {
-	bottom: 0;
+	@ActiveCursor@
+	bottom:0;
 	height:25px;
-	display: block;
-	left: 0;
-	margin: 0;
-	opacity: 0;
-	padding: 0;
-	position: absolute;
-	right: 0;
-	top: 0;
-	z-index: 300;
-	cursor: pointer;
+	display:block;
+	left:0;
+	margin:0;
+	opacity:0;
+	padding:0;
+	position:absolute;
+	right:0;
+	top:0;
+	z-index:300;
 }
 
 ::-webkit-file-upload-button {
-	cursor:pointer;
+	@ActiveCursor@
 }
 
 
 .BrowseAttachBtn {
-	position: relative;
-	height: 15px;
+	position:relative;
+	height:15px;
 	opacity:0;
-	text-align: right;
-	z-index: 300;
-    overflow: hidden;
+	text-align:right;
+	z-index:300;
+	overflow:hidden;
 }
 
 .ComposeAttachBtn {
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	padding-right: 4px;
-	z-index: 1;
+	position:absolute;
+	top:0;
+	left:0;
+	padding-right:4px;
+	z-index:1;
 }
 
 .ComposeAttachmentMail {
+	@ActiveCursor@
 	bottom:0;
 	display:none;
 	z-index:-1;
@@ -744,7 +748,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	position:absolute;
 	right:0;
 	top:0;
-	cursor:pointer;
 }
 
 
@@ -859,6 +862,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	padding:.5em 0 0 5px;
 	position:absolute;
 	top:0;
+	@ActiveCursor@
 }
 
 .Conv2Header .subject {
@@ -961,8 +965,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .Conv2MsgHeader {
+	@ActiveCursor@
 	white-space:nowrap;
-	cursor:pointer;
 	-moz-user-select:text;
 }
 
@@ -1010,9 +1014,9 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmMailMsgCapsuleView .Link, .Conv2Reply .Link {
+	@ActiveCursor@
 	@FontSize-normal@
 	@Text-link@
-	cursor:pointer;
 	white-space:nowrap;
 	margin:0 3px;
 }
@@ -1110,19 +1114,19 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	display:none;
 	color:#666666;
 	padding-left:2px;
-    margin-left:20px;
+	margin-left:20px;
 }
 
 .attach_text {
-    display: inline-block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 80px;
+	display: inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 80px;
 }
 
 .reply_attachments {
-    color:#666666;
-	cursor:pointer;
+	@ActiveCursor@
+	color:#666666;
 }
 
 /*
@@ -1189,8 +1193,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* Styles to support the autocomplete option to show addresses in bubbles */
 
 .addrBubbleContainer, .attBubbleContainer {
+	@TextCursor@
 	background-color:white;
-	cursor:text;
 	border:1px inset #F0F0F0;
 }
 
@@ -1250,27 +1254,27 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .addrBubble, 
 .attachmentBubble {
+	@InactiveCursor@
 	background-color:#EEE;
-	cursor:default;
 }
 
 .addrBubble-selected {
+	@TextCursor@
 	background-color:@SelC@;
-	cursor:text;
 }
 
 .addrBubble-actioned {
+	@TextCursor@
 	background-color:@RightClickColor@;
-	cursor:text;
 }
 
 .addrBubbleHolder SPAN:hover {
-	cursor:pointer;
+	@ActiveCursor@
 }
 
 .addrBubble .link {
-	color:#666666;
-	cursor:pointer;
+	@ActiveCursor@
+	color:#666;
 }
 
 .addrBubbleInsertionBar {
@@ -1282,14 +1286,14 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .addrBubble.COND {
+	@ActiveCursor@
 	text-transform:uppercase;
 	font-style:italic;
-	cursor:pointer;
 }
 
 .addrBubble.GROUP {
+	@ActiveCursor@
 	font-weight:bold;
-	cursor:pointer;
 }
 
 
@@ -1371,10 +1375,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .ZmHEDialog label { @DisableSelection@ }
 .ZmHEDialog .ShowPickedColor {
 	@DisableSelection@
+	@InactiveCursor@
 	border:1px dashed #888;
 	width:1.2em;
 	line-height:1.2em;
-	cursor:default;
 }
 .ZmHEDialog TD.VSep-L { padding-left:3px; font-size:1px; border-right:1px solid #aaa; }
 .ZmHEDialog TD.VSep-R { padding-right:3px; font-size:1px; }
@@ -1534,9 +1538,9 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .newTaskBanner {
+	@InactiveCursor@
 	color:rgb(120, 111, 91);
-	cursor:default;
-	padding:5 0 5 0;
+	padding:5px 0;
 }
 
 .newTaskBannerSep {
@@ -1714,7 +1718,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* "Finish Loading" banner in cards view to initiate GetContactRequest for
  *  unloaded contacts */
 .FinishLoading {
-	cursor:pointer;
+	@ActiveCursor@
 	background-color:#FFC;
 	padding:4px;
 	border-width:1px 0 0;
@@ -1731,12 +1735,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* Header for the contact cards view */
 .ZmContactCardsView .contactHeader,
 .ZmContactCard-dnd .contactHeader {
+	@ActiveCursor@
 	@FontSize-bigger@
-	@Text@
 	@NoWrap@
 	@OverflowEllipsis@
+	@Text@
 	padding:3px 0 3px 2px;
-	cursor:pointer;
 }
 
 .ZmContactCard-selected .contactHeader,
@@ -3201,11 +3205,11 @@ HTML>BODY .appt-selected .appt_allday_body
 .DwtResizableWindow-unfocused .ZmChatTabs-TabBar .ZmChatTabs-Tab-Active { padding:2px 4px 3px; }
 
 .ZmChatGwIcon {
+	@ActiveCursor@
 	width:44px;
 	height:44px;
 	background-position:50% 50%;
 	background-repeat:no-repeat;
-	cursor:pointer;
 	padding:1px;
 }
 
@@ -3331,8 +3335,8 @@ HTML>BODY .appt-selected .appt_allday_body
  */
 
 .ZmMoreTabs {
+	@ActiveCursor@
 	padding-left:5px;
-	cursor:pointer;
 }
 
 
@@ -3826,17 +3830,17 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .infoTitleClose {
+	@ActiveCursor@
 	margin-right:5px;
 	float:right;
 	font-weight:normal;
-	cursor:pointer;
 }
 
 .SubHead,
 .PanelHead {
 	font-size:12px; 
 	font-weight:bold;
-	padding:3 10 5 7;
+	padding:3px 10px 5px 7px;
 }
 
 .DarkBg,
@@ -4111,9 +4115,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .removeLink {
-	cursor:pointer;
-	color:blue;
-	text-decoration:underline;
+	@Anchor-hover@
 }
 
 /*
@@ -4329,7 +4331,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ShortcutsPanelLink {
-	cursor:pointer;
+	@ActiveCursor@
 }
 
 /*
@@ -4505,7 +4507,7 @@ HTML>BODY .appt-selected .appt_allday_body
 /* checkbox element */
 .ZCheckbox,
 .ZRadioButton {
-	cursor:pointer;
+	@ActiveCursor@
 }
 
 .ZCheckboxTable>TBODY>TR>TD,
@@ -4552,13 +4554,13 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZCheckboxLabel {
-	cursor:pointer;
+	@ActiveCursor@
 }
 
 .ZCheckboxLabelCell {}
 
 .ZCheckboxLabelInline {
-	cursor:pointer;
+	@ActiveCursor@
 }
 
 .ZSmallHorizonalSpacer {
@@ -4667,8 +4669,8 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZInfoBoxImg {
+	@ActiveCursor@
 	float:right;
-	cursor:pointer;
 }
 
 .ZInfoTitle {
@@ -4679,29 +4681,27 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZInfoTitleClose {
+	@ActiveCursor@
 	margin-right:5px;
 	float:right;
 	font-weight:normal;
-	cursor:pointer;
 }
 
 /* info button which appears to the right and shows context-sensitive help */
 .ZInfoContextButton {
+	@ActiveCursor@
 	position:absolute;
-	right:0px;
-	cursor:pointer;
+	right:0;
 }
 
 .ZSeparatorBorder {
 	@SeparatorBorder@
 }
 
-
-
 .ZTabList {
 	list-style-type:none;
 	padding-bottom:28px;
-	margin:0px;
+	margin:0;
 }
 
 
@@ -4785,10 +4785,10 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .DwtMissingSoundPlayer {
+	@ActiveCursor@
 	background-color:#FFC;
 	color:darkred;
 	text-decoration:underline;
-	cursor:pointer;
 }
 .ZmSoundPlayer .DwtButton,
 .ZmSoundPlayer .ZButton {
@@ -4812,7 +4812,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 .DwtSliderThumb {
-	cursor:move;
+	@MoveCursor@
 }
 
 .DwtHorizontalSlider .DwtSliderThumb {
@@ -4952,9 +4952,9 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .ZmBriefcaseItem,.ZmBriefcaseItemSelected {
+	@ActiveCursor@
 	background-color:transparent;
 	background-repeat:no-repeat;
-	cursor:pointer;
 	float:left;
 	height:120px;
 	margin:8px;
@@ -5001,9 +5001,9 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .ZmBreifcaseNewWinButton .ZButtonTable {
+	@ActiveCursor@
 	background:none;
 	border:none;
-	cursor:pointer;
 }
 
 .ZmBriefcaseItemSelected .ZmThumbnailName SPAN A {
@@ -5145,10 +5145,11 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .ZmEditContactViewDetailsButton {
+	@ActiveCursor@
 	border:1px solid @darken(AppC,40)@;
 	background-color:@WidgetBgColor@;
-	cursor:pointer;
 }
+
 .ZmEditContactViewDetailsButton .ZButtonBorder {
 	border:none;
 }
@@ -5220,9 +5221,9 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .itemCountText {
+	@InactiveCursor@
 	padding-right:5px;
 	white-space:nowrap;
-	cursor:default;
 }
 
 .ZmApptComposeView .addresses {
@@ -5558,7 +5559,7 @@ DIV .SuggestBtn {
 }
 
 .ZmSuggestOptionsButton DIV,
-.ZmSuggestCloseButton DIV { cursor:pointer; }
+.ZmSuggestCloseButton DIV { @ActiveCursor@ }
 
 .ZmSuggestBody {}
 
@@ -5590,12 +5591,13 @@ DIV .SuggestBtn {
 }
 
 .ZmLocationSuggestion {
+	@ActiveCursor@
 	background-color:@AppC@;
 	border:1px solid @darken(AppC,10)@;
-	cursor:pointer;
 	margin:4px;
 	padding:2px 4px;
 }
+
 .ZmLocationSuggestion.Row-selected {
 	border-color:@SelC@ @darken(SelC,25)@ @darken(SelC,25)@ @SelC@;
 }
