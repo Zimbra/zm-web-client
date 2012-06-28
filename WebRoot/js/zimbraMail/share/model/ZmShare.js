@@ -989,17 +989,23 @@ function(notes, ex) {
 
 ZmShare.prototype._popupAlreadySharedWarningDialog =
 function(notes) {
+    var isPublic = this.isPublic(),
+        fmtMsg,
+        message,
+        dialog;
 	if (!this._shareExistsFormatter) {
-		this._shareExistsFormatter = new AjxMessageFormat(ZmMsg.shareExists);
+        fmtMsg = isPublic ? ZmMsg.shareExistsPublic : ZmMsg.shareExists;
+		this._shareExistsFormatter = new AjxMessageFormat(fmtMsg);
 	}
-	var message = this._shareExistsFormatter.format(AjxStringUtil.htmlEncode(this.grantee.name));
+	message = this._shareExistsFormatter.format(AjxStringUtil.htmlEncode(this.grantee.name));
 
 	//creating a dialog for each one of those instead of re-using the singleton dialog from appCtxt for the case you are re-sharing with multiple users already shared. It's not ideal but it would have a warning for each. Since it's rare I think it's good enough for simplicity.
-	var dialog = new DwtMessageDialog({parent:appCtxt._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON], id:"ResendCancel"});
+	dialog = new DwtMessageDialog({parent:appCtxt._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON], id:"ResendCancel"});
 	dialog.getButton(DwtDialog.OK_BUTTON).setText(ZmMsg.resend);
 	dialog.reset();
 	dialog.setMessage(message, DwtMessageDialog.WARNING_STYLE);
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._sendAnyway.bind(this, notes, dialog));
+    dialog.setButtonEnabled(DwtDialog.OK_BUTTON, !isPublic);
 	dialog.associateEnterWithButton(DwtDialog.OK_BUTTON);
 	dialog.popup(null, DwtDialog.OK_BUTTON);
 };
