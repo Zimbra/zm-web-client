@@ -52,7 +52,7 @@ function(appt, attId, addedAttendees, removedAttendees) {
 
     var aCount = addedAttendees.length;
     var rCount = removedAttendees.length;    
-    Dwt.setSize(Dwt.byId(this._containerId), 275, (aCount + rCount > 10) ? 300 : Dwt.CLEAR );
+    Dwt.setSize(Dwt.byId(this._containerId), 275, Dwt.CLEAR);
 
 	this._addedList.innerHTML = this._getAttedeeHtml(addedAttendees, ZmMsg.added);
 	this._removedList.innerHTML = this._getAttedeeHtml(removedAttendees, ZmMsg.removed);
