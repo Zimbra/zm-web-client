@@ -351,8 +351,9 @@ function(ex) {
 ZmApptEditView.prototype.processLocationConflicts =
 function(inst) {
     this._inst = inst;
-    var locationStatus = ZmApptEditView.LOCATION_STATUS_NONE;
-    for (var i = 0; i < this._inst.length; i++) {
+    var len = inst ? inst.length : 0,
+    locationStatus = ZmApptEditView.LOCATION_STATUS_NONE;
+    for (var i = 0; i < len; i++) {
         if (this._inst[i].usr) {
             // Conflict exists for this instance
             if (this._locationExceptions && this._locationExceptions[this._inst[i].s]) {
@@ -1558,7 +1559,7 @@ function() {
 	var div = document.getElementById(this._htmlElId + "_identityContainer");
 	if (!div) return;
 
-	var visible = appCtxt.getIdentityCollection().getSize() > 1;
+	var visible = this.identitySelect ? this.identitySelect.getOptionCount() > 1 : false;
     Dwt.setVisible(div, visible);
 };
 
