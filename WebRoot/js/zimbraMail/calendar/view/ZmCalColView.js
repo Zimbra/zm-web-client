@@ -400,6 +400,7 @@ function(hour) {
 
 	if (!this._autoScrollDisabled) {
 		var bodyElement = document.getElementById(this._bodyDivId);
+        if (!bodyElement) { return; }
 		bodyElement.scrollTop = ZmCalColView._HOUR_HEIGHT*hour - 10;
 		this._syncScroll();
 	} else {
@@ -504,9 +505,11 @@ function() {
                 var id = this._columns[j].titleId;
                 this._calendarTodayHeaderDivId=day.isToday?id:this._calendarTodayHeaderDivId;
                 var te = document.getElementById(id);
-                te.innerHTML = this._dayTitle(d);
-                this.associateItemWithElement(null, te, ZmCalBaseView.TYPE_DAY_HEADER, id, {dayIndex:j});
-                te.className = day.isToday ? 'calendar_heading_day_today' : 'calendar_heading_day';
+                if (te) {
+                    te.innerHTML = this._dayTitle(d);
+                    this.associateItemWithElement(null, te, ZmCalBaseView.TYPE_DAY_HEADER, id, {dayIndex:j});
+                    te.className = day.isToday ? 'calendar_heading_day_today' : 'calendar_heading_day';
+                }
             }
             j++;
         }
@@ -665,6 +668,10 @@ function(appt) {
 
     var tagNames  = appt.getVisibleTags();
     var tagIcon = appt.getTagImageFromNames(tagNames);
+    //If the tag icon is returned blank image reset the tag icon
+    if (tagIcon == "Blank_16") {
+        tagIcon = "";
+    }
 
     var colors = ZmApptViewHelper.getApptColor(isNew, calendar, tagNames, "body");
 	var bodyStyle = ZmCalBaseView._toColorsCss(colors.appt);
@@ -1021,6 +1028,7 @@ ZmCalColView.prototype._checkForOffscreenAppt=function(bodyElement){
     var topExceeds = false;
     var bottomExceeds = false;
     if(!bodyElement){bodyElement = document.getElementById(this._bodyDivId);}
+    if(!bodyElement) { return; }
     var height = bodyElement.offsetHeight;
     var top = bodyElement.scrollTop;
 
@@ -1318,12 +1326,14 @@ function(numCols) {
 
 ZmCalColView.prototype._positionAppt =
 function(apptDiv, x, y) {
+    if(!apptDiv) { return; }
 	// position overall div
 	Dwt.setLocation(apptDiv, x + ZmCalColView._APPT_X_FUDGE, y + ZmCalColView._APPT_Y_FUDGE);
 };
 
 ZmCalColView.prototype._sizeAppt =
 function(apptDiv, w, h) {
+    if(!apptDiv) { return; }
 	// set outer as well as inner
 	var fw = w + ZmCalColView._APPT_WIDTH_FUDGE; // no fudge for you
 	var fh = h;
@@ -1546,6 +1556,10 @@ function(refreshApptLayout) {
 	var numCols = this._columns.length;
 
 	var sz = this.getSize(true); //get the size from the style - it's more accurate as it's exactly what it was set for
+    if (!sz) {
+        return;
+    }
+
 	var width = sz.x + (this._isRight ? -2 : 0); // -2 is an adjustment due to some problem I can't figure out exactly. bug 75115
 	var height = sz.y;
 
