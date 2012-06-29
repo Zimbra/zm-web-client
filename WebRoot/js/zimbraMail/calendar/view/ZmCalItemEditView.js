@@ -596,9 +596,8 @@ function(calItem, mode) {
         notesPart;
 
     if (calItem.notesTopPart) { //Already existing appointment
-        var pattern = /<\/body>[\S\s]*?<\/html>/gi;
-        var pMatch = notesHtmlPart.match(pattern);
-        if (pMatch != null && pMatch[0] != null) {
+        var pattern = /<([A-Z][A-Z0-9]*)\b[^>]*>(.*?)<\/\1>/ig; // improved regex to parse html tags
+        if (notesHtmlPart && notesHtmlPart.match(pattern)) {
             isSavedinHTML = true;
         }
     }
