@@ -2708,8 +2708,8 @@ function(item){
         Dwt.setHandler(this._userName, DwtEvent.ONCHANGE, this._onChange.bind(this));
     }
     this.getButton(DwtDialog.OK_BUTTON).setEnabled(false);
-    Dwt.setHandler(this._sendAs, DwtEvent.ONCHANGE, this._onChange.bind(this));
-    Dwt.setHandler(this._sendObo, DwtEvent.ONCHANGE, this._onChange.bind(this));
+    Dwt.setHandler(this._sendAs, DwtEvent.ONCLICK, this._onChange.bind(this));
+    Dwt.setHandler(this._sendObo, DwtEvent.ONCLICK, this._onChange.bind(this));
 };
 ZmGrantRightsDialog.prototype._initAutoComplete =
 function(){
