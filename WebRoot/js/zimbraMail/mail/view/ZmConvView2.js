@@ -259,7 +259,8 @@ function() {
 ZmConvView2.prototype._resize =
 function(scrollMsgView) {
 
-	DBG.println("cv2", "ZmConvView2::_resize");
+	if (this.isDisposed()) { return; }
+
 	this._needResize = false;
 	if (this._cleared) { return; }
 	if (!this._messagesDiv) { return; }
@@ -276,12 +277,11 @@ function(scrollMsgView) {
 	var header = this._header;
 	if (!container || !header || !this._messagesDiv) { return; }
 	
-	var myHeight = container.getSize(AjxEnv.isIE).y;
-	DBG.println("cv2", "cv2 height = " + myHeight);
+	var mySize = container.getSize(AjxEnv.isIE);
+	var myHeight = mySize ? mySize.y : 0;
 	var headerSize = header.getSize();
-	DBG.println("cv2", "header height = " + headerSize.y);
-	var messagesHeight = myHeight - headerSize.y - 1;
-	DBG.println("cv2", "set message area height to " + messagesHeight);
+	var headerHeight = headerSize ? headerSize.y : 0;
+	var messagesHeight = myHeight - headerHeight - 1;
 	Dwt.setSize(this._messagesDiv, Dwt.DEFAULT, messagesHeight);
 
 	// widen msg views if needed
@@ -1231,7 +1231,7 @@ function(msg, container, callback) {
 	// Take care of a race condition, where this view may be deleted while
 	// a ZmMailMsg.fetch (that references this function via a callback) is
 	// still in progress
-	if (this._disposed) { return; }
+	if (this.isDisposed()) { return; }
 
 	appCtxt.notifyZimlets("onConvStart", [this]);
 	this._header.set(this._expanded ? ZmMailMsgCapsuleViewHeader.EXPANDED : ZmMailMsgCapsuleViewHeader.COLLAPSED);
@@ -1753,7 +1753,7 @@ ZmMailMsgCapsuleView.prototype._handleChange =
 function(ev) {
 
 	if (ev.type != ZmEvent.S_MSG) { return; }
-	if (this._disposed) { return; }
+	if (this.isDisposed()) { return; }
 
 	if (ev.event == ZmEvent.E_FLAGS) {
 		var flags = ev.getDetail("flags");
