@@ -489,6 +489,10 @@ function(compNum) {
 	var desc = comp.descHtml;
 	var content = desc && desc[0]._content || null;
 	if (!content) {
+		var comment = this.getComponentComment();
+		content = comment && StringUtil.convertToHtml(comment);
+	}
+	if (!content) {
 		var txtContent = comp.desc;
 		txtContent = (txtContent && txtContent[0]._content) || null;
 		if (!txtContent) {
@@ -513,6 +517,9 @@ function(compNum) {
 	var desc = comp.desc;
 	var content = desc && desc[0]._content || null;
 	if (!content) {
+		content = this.getComponentComment();
+	}
+	if (!content) {
 		var htmlContent = comp.descHtml;
 		htmlContent = (htmlContent && htmlContent[0]._content) || null;
 		if (!htmlContent) {
@@ -520,6 +527,24 @@ function(compNum) {
 		}
 	}
 	return content;
+};
+
+/**
+ * Gets the comment.
+ * 
+ * @param	{int}	compNum		the component number
+ * @return	{String}	the comment or <code>null</code> for none
+ */
+ZmInvite.prototype.getComponentComment =
+function(compNum) {
+	console.trace();
+
+	var cn = compNum || 0;
+	var comp = this.components[cn];
+	if (comp == null) { return; }
+
+	var comment = comp.comment;
+	return comment && comment[0]._content || null;
 };
 
 /**
