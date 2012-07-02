@@ -1839,7 +1839,6 @@ ZmMailMsgCapsuleViewHeader = function(params) {
 	this.addListener(DwtEvent.ONMOUSEUP, this._mouseUpListener.bind(this));
 	
 	this.setScrollStyle(DwtControl.CLIP);
-	this._setHeaderClass();
 };
 
 ZmMailMsgCapsuleViewHeader.prototype = new DwtControl;
@@ -1848,8 +1847,8 @@ ZmMailMsgCapsuleViewHeader.prototype.constructor = ZmMailMsgCapsuleViewHeader;
 ZmMailMsgCapsuleViewHeader.prototype.isZmMailMsgCapsuleViewHeader = true;
 ZmMailMsgCapsuleViewHeader.prototype.toString = function() { return "ZmMailMsgCapsuleViewHeader"; };
 
-ZmMailMsgCapsuleViewHeader.COLLAPSED	= "collapsed";
-ZmMailMsgCapsuleViewHeader.EXPANDED		= "expanded";
+ZmMailMsgCapsuleViewHeader.COLLAPSED	= "Collapsed";
+ZmMailMsgCapsuleViewHeader.EXPANDED		= "Expanded";
 
 /**
  * Renders a header in one of two ways:
@@ -1926,6 +1925,7 @@ function(state, force) {
 	}
 
 	this.setContent(html);
+	this._setHeaderClass();
 	
 	this._setReadIcon();
 	
@@ -1977,9 +1977,7 @@ function() {
 
 	var msg = this._msg;
 	var classes = [this._normalClass];
-	if (this._state == ZmMailMsgCapsuleViewHeader.EXPANDED) {
-		classes.push("Expanded");
-	}
+	classes.push(this._state);
 	var folder = appCtxt.getById(msg.folderId);
 	if (folder && folder.isInTrash()) {
 		classes.push("Trash");
