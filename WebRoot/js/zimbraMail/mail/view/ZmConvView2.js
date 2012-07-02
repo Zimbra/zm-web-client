@@ -754,6 +754,7 @@ function(conv) {
 	this._setExpandIcon()
 	this._setSubject();
 	this._setInfo();
+	this.setVisible(true);
 
 	// Clean up minor WebKit-only issue where bottom edge of overflowed subject text is visible in info div
 	if (AjxEnv.isWebKitBased && !this._headerSet) {
@@ -763,7 +764,8 @@ function(conv) {
 };
 
 ZmConvView2Header.prototype.reset =
-function(conv) {
+function() {
+	this.setVisible(false);
 	if (this._subjectSpan && this._infoDiv) {
 		this._subjectSpan.innerHTML = this._infoDiv.innerHTML = "";
 	}
