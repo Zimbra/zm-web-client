@@ -3986,6 +3986,14 @@ function(bEnableInputs) {
 	this._extraParts = null;
 };
 
+ZmHiddenComposeView.prototype.getIdentity =
+function() {
+	var ac = window.parentAppCtxt || window.appCtxt;
+	var collection = ac.getIdentityCollection();
+	var val = ac.getActiveAccount().id;
+	return collection.getById(val);
+};
+
 ZmHiddenComposeView.prototype.__initCtrl = function() {};
 
 /**
