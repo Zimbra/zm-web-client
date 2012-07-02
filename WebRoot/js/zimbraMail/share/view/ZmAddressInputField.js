@@ -83,7 +83,8 @@ ZmAddressInputField = function(params) {
 	var dragBox = new DwtDragBox();
 	dragBox.addDragListener(this._dragBoxListener.bind(this));
 	this.setDragBox(dragBox);
-	
+
+    this.addListener(DwtEvent.ONMOUSEDOWN, this._mouseDownListener);
 	this._reset();
 };
 
@@ -499,7 +500,6 @@ function(ev) {
 	DBG.println("aif", "ZmAddressInputField.onHolderClick");
 	var addrInput = ZmAddressInputField._getAddrInputFromEvent(ev);
 	if (addrInput) {
-		addrInput.blur();	// focus in Chrome won't work without this if any bubbles are selected, no idea why
 		addrInput.focus();
 	}
 };
@@ -1277,6 +1277,13 @@ function(ev) {
 			this.focus();
 		}
 	}
+};
+
+ZmAddressInputField.prototype._mouseDownListener =
+function(ev) {
+    // reset mouse event to propagate event to browser (allows focus on input when clicking on holder click)
+    ev._stopPropagation = false;
+    ev._returnValue = true;
 };
 
 // Returns insertion index (among all elements) based on event coordinates
