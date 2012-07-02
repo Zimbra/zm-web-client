@@ -133,6 +133,8 @@ function(list) {
 	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
 	for (var i = 0; i < size; i++) {
 		var appt = list.get(i);
+        if (appt.isReadOnly()) { continue; }
+        this._list.add(appt);
 		var uid = appt.getUniqueId(true);
 		var data = this._apptData[uid] = {appt:appt};
 		idx = this._addAppt(html, idx, appt, data, (i > 0));
@@ -163,6 +165,8 @@ function(list) {
 		var uid = appt.getUniqueId(true);
         var id = appt.id;
 		var data = this._apptData[uid];
+
+        if (!data) { continue; }
 
         var alarmData = appt.getAlarmData();
         alarmData = (alarmData && alarmData.length > 0) ? alarmData[0] : {};
@@ -348,7 +352,6 @@ function(snoozeSelectButton, menuSelectionListener, apptList) {
 
 };
 
-
 ZmReminderDialog.prototype._snoozeSelectButtonListener =
 function(ev) {
 	ev.item.popup();
@@ -417,9 +420,10 @@ function(html, idx, appt, data, needSep) {
 
 ZmReminderDialog.prototype._openButtonListener =
 function(ev) {
-	appCtxt.getAppController().setStatusMsg(ZmMsg.allRemindersAreSnoozed, ZmStatusView.LEVEL_INFO);
 
-	this._handleSnoozeButton();
+    appCtxt.getAppController().setStatusMsg(ZmMsg.allRemindersAreSnoozed, ZmStatusView.LEVEL_INFO);
+
+    this._handleSnoozeButton();
 
 	var obj = DwtControl.getTargetControl(ev);
 	var data = this._apptData[obj.apptUid];
@@ -437,8 +441,9 @@ function(ev) {
 				newAppt[i] = appt[i];
 			}
 		}
+        var mode = newAppt.isRecurring() ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : null;
 		var callback = new AjxCallback(cc, cc._showAppointmentDetails, newAppt);
-		newAppt.getDetails(null, callback, null, null, true);
+		newAppt.getDetails(mode, callback, null, null, true);
 	} else if(appt && type == ZmItem.TASK) {
         AjxDispatcher.require(["TasksCore", "Tasks"]);
 

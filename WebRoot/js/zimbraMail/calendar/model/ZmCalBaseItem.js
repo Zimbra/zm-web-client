@@ -386,6 +386,7 @@ function(calItemNode, instNode) {
 	this.priority 		= parseInt(this._getAttr(calItemNode, instNode, "priority"));
 
 	this.recurring 		= instNode.recur != null ? instNode.recur : calItemNode.recur; // TEST for null since recur can be FALSE
+    this.ridZ 			= this.recurring && instNode && instNode.ridZ;
 
 	this.fba = this._getAttr(calItemNode, instNode, "fba");
 

@@ -197,7 +197,7 @@ function(list) {
 		var appt = list.get(i);
 		var id = appt.id;
 
-		if (appt.hasAlarmData()) {
+		if (appt.isAlarmInstance()) {
 			if (!this._cacheMap[id]) {
 				this._cacheMap[id] = true;
 				newList.add(appt);
