@@ -1965,6 +1965,43 @@ ZmAdvancedHtmlEditor.prototype._settingChangeListener = function(ev) {
     editor.nodeChanged && editor.nodeChanged();//update the toolbar state
 };
 
+/*
+ * This will be fired after every tinymce menu open. Listen for outside events happening in ZCS
+ *
+ * @param {menu} tinymce menu object
+ */
+ZmAdvancedHtmlEditor.onShowMenu =
+function(menu) {
+    if (menu && menu.isMenuVisible) {
+        var omemParams = {
+            id:					"ZmAdvancedHtmlEditor",
+            elementId:			(menu.classPrefix === "mceMenu") ? ("menu_" + menu.id) : (menu.id + "_menu"),
+            outsideListener:	function(){
+                                    this.hideMenu();
+                                }.bind(menu)
+        };
+        appCtxt.getOutsideMouseEventMgr().startListening(omemParams);
+        ZmAdvancedHtmlEditor.isListening = 1;
+    }
+};
+
+/*
+ * This will be fired after every tinymce menu hide. Removing the outside event listener registered in onShowMenu
+ *
+ * @param {menu} tinymce menu object
+ */
+ZmAdvancedHtmlEditor.onHideMenu =
+function(menu) {
+    if (menu && menu.isMenuVisible === 0 && ZmAdvancedHtmlEditor.isListening) {
+        var omemParams = {
+            id:					"ZmAdvancedHtmlEditor",
+            elementId:			(menu.classPrefix === "mceMenu") ? ("menu_" + menu.id) : (menu.id + "_menu")
+        };
+        appCtxt.getOutsideMouseEventMgr().stopListening(omemParams);
+        delete ZmAdvancedHtmlEditor.isListening;
+    }
+};
+
 ZmEditorContainer = function(params) {
 	if (arguments.length == 0) { return; }
 	params = Dwt.getParams(arguments, ZmEditorContainer.PARAMS);

@@ -492,4 +492,44 @@ Zmeditor_template.getFontSize = function(value){
     });
     // Register plugin
     tinymce.PluginManager.add('zimbraplugin', tinymce.plugins.onEditorEvent);
+
+    /*
+     *    Modifying tinymce's default showMenu and HideMenu methods of dropmenu and colorsplitbutton as defaultShowMenu and defaultHideMenu
+     *
+     *    Notifying ZmAdvancedHtmlEditor about the showMenu and hideMenu events (useful for hiding the menu when mousdedown event happens outside the editor)
+     */
+
+    if (typeof ZmAdvancedHtmlEditor !== "undefined") {
+
+        var tinymceUI = tinymce.ui,
+            dropMenuPrototype = tinymceUI.DropMenu.prototype,
+            colorSplitButtonPrototype = tinymceUI.ColorSplitButton.prototype,
+            showMenu,
+            hideMenu;
+
+        showMenu = function() {
+            this.defaultShowMenu.apply(this, arguments);
+            ZmAdvancedHtmlEditor.onShowMenu(this);
+        };
+
+        hideMenu = function() {
+            this.defaultHideMenu.apply(this, arguments);
+            ZmAdvancedHtmlEditor.onHideMenu(this);
+        };
+
+        tinymce.extend(dropMenuPrototype, {
+            defaultShowMenu : dropMenuPrototype.showMenu,
+            defaultHideMenu : dropMenuPrototype.hideMenu,
+            showMenu : showMenu,
+            hideMenu : hideMenu
+        });
+
+        tinymce.extend(colorSplitButtonPrototype, {
+            defaultShowMenu : colorSplitButtonPrototype.showMenu,
+            defaultHideMenu : colorSplitButtonPrototype.hideMenu,
+            showMenu : showMenu,
+            hideMenu : hideMenu
+        });
+    }
+
 }(tinymce));
