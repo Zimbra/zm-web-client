@@ -962,7 +962,6 @@ function(organizer, attendees) {
             this._schedTable[idx] = null;
         }
     }
-    this._editView.showConflicts();
 
     this._setAttendee(this._organizerIndex, organizer, ZmCalBaseItem.PERSON, true);
 
@@ -1594,12 +1593,12 @@ function(startTime, emailList, callback) {
         noBusyOverlay: true,
         account: acct
     };
+
     var appt = this._editView.parent.getAppt ? this._editView.parent.getAppt(true) : null;
     if (appt) {
         params.excludedId = appt.uid;
 
     }
-
     this._freeBusyRequest = this._fbCache.getFreeBusyInfo(params);
 };
 
@@ -1612,18 +1611,30 @@ function(params, result) {
 
     this._processDateInfo(this._dateInfo);
     // Adjust start and end time by 1 msec, to avoid fencepost problems when detecting conflicts
-    var apptStartTime = this._startDate.getTime()+1;
-    var apptEndTime   = this._endDate.getTime()-1;
+    var apptStartTime = this._startDate.getTime(),
+        apptEndTime = this._endDate.getTime(),
+        apptConflictStartTime = apptStartTime+ 1,
+        apptConflictEndTime   = apptEndTime-1,
+        appt = this._appt,
+        orgEmail = appt && !appt.inviteNeverSent ? appt.organizer : null;
 
     for (var i = 0; i < params.emails.length; i++) {
 		var email = params.emails[i];
 
-		this._detectConflict(email, apptStartTime, apptEndTime);
+		this._detectConflict(email, apptConflictStartTime, apptConflictEndTime);
 
 		// first clear out the whole row for this email id
-		var sched = this._schedTable[this._emailToIdx[email]];
-		var table = sched ? document.getElementById(sched.dwtTableId) : null;
-        var usr = this._fbCache.getFreeBusySlot(params.startTime, params.endTime, email);
+		var sched = this._schedTable[this._emailToIdx[email]],
+            attendee = sched ? sched.attendee : null,
+            ptst = attendee ? attendee.getParticipantStatus() : null,
+            usr = this._fbCache.getFreeBusySlot(params.startTime, params.endTime, email),
+            table = sched ? document.getElementById(sched.dwtTableId) : null;
+
+        if (usr && (ptst == ZmCalBaseItem.PSTATUS_ACCEPT || email == orgEmail)) {
+            if (!usr.b) { usr.b = []; }
+            usr.b.push({s:apptStartTime, e: apptEndTime});
+        }
+
 		if (table) {
 			table.rows[0].className = "ZmSchedulerNormalRow";
 			this._clearColoredCells(sched);
@@ -1919,9 +1930,11 @@ function(params) {
 ZmFreeBusySchedulerView.prototype.getUserSharedCalIds =
 function(email) {
     var organizer = this._schedTable[this._organizerIndex] ? this._schedTable[this._organizerIndex].attendee : null,
-        organizerEmail = organizer ? this.getEmail(organizer) : "";
+        organizerEmail = organizer ? this.getEmail(organizer) : "",
+        activeAcct = appCtxt.getActiveAccount(),
+        acctEmail = activeAcct ? activeAcct.getEmail() : "";
 
-    if(!email || email == organizerEmail) {
+    if(!email || email == organizerEmail || email == acctEmail) {
         return [];
     }
     if(this._sharedCalIds && this._sharedCalIds[email]) {
