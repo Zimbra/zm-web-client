@@ -373,7 +373,7 @@ function(reset) {
                     if (bodyDiv) Dwt.setScrollStyle(bodyDiv, Dwt.CLIP);
                     if (el) {
                         Dwt.setScrollStyle(el, Dwt.SCROLL);
-                        var yOffset = this.parent.getBounds().y;
+                        var yOffset = this.parent.getBounds().y || 0;
                         el.style.height = (mvHeight - yOffset) + "px";
                     }
                 }
