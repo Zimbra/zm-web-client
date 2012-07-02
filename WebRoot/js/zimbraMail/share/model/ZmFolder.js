@@ -156,6 +156,7 @@ ZmFolder.TCON_CODE[ZmFolder.ID_TRASH]			= "t";
 ZmFolder.TCON_CODE[ZmFolder.ID_SYNC_FAILURES]	= "o";
 ZmFolder.TCON_CODE[ZmFolder.ID_SPAM]			= "j";
 ZmFolder.TCON_CODE[ZmFolder.ID_SENT]			= "s";
+ZmFolder.TCON_CODE[ZmFolder.ID_DRAFTS]			= "d";
 ZmFolder.TCON_CODE[ZmFolder.ID_OTHER]			= "o";
 
 // folders that look like mail folders that we don't want to show

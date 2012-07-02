@@ -765,7 +765,7 @@ function(items, sortBy, event, details) {
 ZmMailList.prototype._getTcon =
 function(items, nId) {
 	var chars = [];
-	var folders = [ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
+	var folders = [ZmFolder.ID_DRAFTS, ZmFolder.ID_TRASH, ZmFolder.ID_SPAM, ZmFolder.ID_SENT];
     var id;
     if(!nId){
         var searchFolder = this.search && appCtxt.getById(this.search.folderId);
