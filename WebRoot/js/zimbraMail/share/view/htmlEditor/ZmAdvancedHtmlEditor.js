@@ -580,7 +580,7 @@ function(id, content) {
             //Adding toggle button for showing/hiding the extended toolbar
             ed.addButton('toggle', {
                 title : ZmMsg.showExtendedToolbar,
-                onclick : obj.onToolbarToggle.bind(obj),
+                onclick : obj.onToolbarToggle.bind(obj, ed),
                 "class" : "mce_toggle"
             });
 		}
@@ -657,11 +657,11 @@ ZmAdvancedHtmlEditor.prototype.onPostRender = function(ed, ev) {
         justifyCenter = AjxKeys["editor."+DwtKeyMap.JUSTIFY_CENTER+".display"],
         justifyRight = AjxKeys["editor."+DwtKeyMap.JUSTIFY_RIGHT+".display"],
         link = AjxKeys["editor."+DwtKeyMap.INSERT_LINK+".display"],
-        strikethroughBtn = this.getToolbarButton("strikethrough"),
-        justifyLeftBtn = this.getToolbarButton("justifyleft"),
-        justifyCenterBtn = this.getToolbarButton("justifycenter"),
-        justifyRightBtn = this.getToolbarButton("justifyright"),
-        linkBtn = this.getToolbarButton("link");
+        strikethroughBtn = this.getToolbarButton("strikethrough", ed),
+        justifyLeftBtn = this.getToolbarButton("justifyleft", ed),
+        justifyCenterBtn = this.getToolbarButton("justifycenter", ed),
+        justifyRightBtn = this.getToolbarButton("justifyright", ed),
+        linkBtn = this.getToolbarButton("link", ed);
 
     //Adding shortcuts
     strikethrough && ed.addShortcut(strikethrough.toLowerCase(), '', 'strikethrough');//shortcut for strikethrough
@@ -684,22 +684,22 @@ ZmAdvancedHtmlEditor.prototype.onPostRender = function(ed, ev) {
     linkBtn.title += " (" + link + ")";
 
     if (AjxEnv.isMac) {
-        var anchorButtonsArray = tinyMCE.DOM.select("a[title*='Ctrl']", this.getToolbar(1).parentNode),//selects all anchor buttons having title ctrl
+        var anchorButtonsArray = tinyMCE.DOM.select("a[title*='Ctrl']", this.getToolbar(1, ed).parentNode),//selects all anchor buttons having title ctrl
             anchorButton;
         while ( anchorButton = anchorButtonsArray.shift() ) {
             anchorButton.title = anchorButton.title.replace("Ctrl", "Cmd");
         }
     }
     if (!appCtxt.get(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS)) {
-        var ltrButton = this.getToolbarButton("ltr").parentNode;
+        var ltrButton = this.getToolbarButton("ltr", ed).parentNode;
         if (ltrButton) {
             Dwt.setVisible(ltrButton, false);
             Dwt.setVisible(ltrButton.previousSibling, false);
         }
-        Dwt.setVisible(this.getToolbarButton("rtl").parentNode, false);
+        Dwt.setVisible(this.getToolbarButton("rtl", ed).parentNode, false);
     }
     this.setSize("", parseInt(this.getContentField().style.height) + ZmAdvancedHtmlEditor.DELTA_HEIGHT);
-    this.onToolbarToggle();
+    this.onToolbarToggle(ed);
     ed.dom.setStyles(ed.getBody(), {"font-family" : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY),
                                     "font-size"   : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE),
                                     "color"       : appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR)
@@ -810,8 +810,12 @@ ZmAdvancedHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
             var textarea = this.getContentField();
             textarea.value = AjxStringUtil.convertToHtml(textarea.value, true);
         }
-        if (!this._editorInitialized) {//To avoid the initial jerk of html editor make the initial display as none
-            Dwt.setVisible(this.getHtmlElement(), false);
+        if (this._editorInitialized) {
+            tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);//tinymce will automatically toggles the editor and sets the corresponding content.
+        }
+        else {
+            //switching from plain text to html using tinymces mceToggleEditor method is always using the last editor creation setting. Due to this current ZmAdvancedHtmlEditor object always point to last ZmAdvancedHtmlEditor object. Hence initializing the tinymce editor again for the first time when mode is switched from plain text to html.
+            this.initEditorManager(this._bodyTextAreaId);
         }
     } else {
         if (convert) {
@@ -823,15 +827,16 @@ ZmAdvancedHtmlEditor.prototype.setMode = function (mode, convert, convertor) {
                 content = AjxStringUtil.convertHtml2Text(this.getContentField().value);
             }
         }
-    }
-    if (mode === DwtHtmlEditor.TEXT && !this._editorInitialized) {
-    }
-    else {
-        window.tinyMCE && tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);//tinymce will automatically toggles the editor and sets the corresponding content.
-    }
-    if (convert && mode === DwtHtmlEditor.TEXT) {//tinymce will set html content directly in textarea. Resetting the content after removing the html tags.
-        this.setContent(content);
-        !window.tinyMCE && Dwt.setVisible(this.getHtmlElement(), true);
+        if (this._editorInitialized) {
+            tinyMCE.execCommand('mceToggleEditor', false, this._bodyTextAreaId);//tinymce will automatically toggles the editor and sets the corresponding content.
+        }
+        if (convert) {//tinymce will set html content directly in textarea. Resetting the content after removing the html tags.
+            this.setContent(content);
+        }
+        if (!window.tinyMCE) {
+            //if tinymce is not loading in certain edge cases, user can switch to plain text mode
+            Dwt.setVisible(this.getHtmlElement(), true);
+        }
     }
 };
 
@@ -1764,15 +1769,22 @@ function() {
  * Returns toolbar row of tinymce
  *
  *  @param {Number}	Toolbar Row Number 1,2
+ *  @param {object}	tinymce editor
  *  @return	{Toolbar HTML Element}
  */
 ZmAdvancedHtmlEditor.prototype.getToolbar =
-function( number ) {
-    var editor = this.getEditor();
-    if( editor && editor.controlManager ){
-        var toolbar = editor.controlManager.get("toolbar"+number);
-        if( toolbar && toolbar.id ){
-            return document.getElementById( toolbar.id );
+function(number, editor) {
+    var controlManager,
+        toolbar;
+
+    editor = editor || this.getEditor();
+    if (editor && number) {
+        controlManager = editor.controlManager;
+        if (controlManager) {
+            toolbar = controlManager.get("toolbar"+number);
+            if (toolbar && toolbar.id) {
+                return document.getElementById(toolbar.id);
+            }
         }
     }
 };
@@ -1781,24 +1793,30 @@ function( number ) {
  *  Returns toolbar button of tinymce
  *
  *  @param {String}	button name
+ *  @param {object}	tinymce editor
  *  @return	{Toolbar Button HTML Element}
  */
 ZmAdvancedHtmlEditor.prototype.getToolbarButton =
-function( buttonName ) {
-    var editor = this.getEditor();
-    if( editor && editor.controlManager ){
-        var toolbarButton = editor.controlManager.get(buttonName);
-        if( toolbarButton && toolbarButton.id ){
-            return document.getElementById( toolbarButton.id );
+function(buttonName, editor) {
+    var controlManager,
+        toolbarButton;
+
+    if (editor && buttonName) {
+        controlManager = editor.controlManager;
+        if (controlManager) {
+            toolbarButton = controlManager.get(buttonName);
+            if (toolbarButton && toolbarButton.id) {
+                return document.getElementById(toolbarButton.id);
+            }
         }
     }
 };
 
 ZmAdvancedHtmlEditor.prototype.onToolbarToggle =
-function() {
+function(editor) {
     var iframeStyle = this.getBodyField().style,
-        toolbar = this.getToolbar("2"),
-        toggleButton = this.getToolbarButton("toggle"),
+        toolbar = this.getToolbar("2", editor),
+        toggleButton = this.getToolbarButton("toggle", editor),
         iframeHeight = parseInt(iframeStyle.height);
 
     if (toolbar && toggleButton) {
@@ -1947,12 +1965,12 @@ ZmAdvancedHtmlEditor.prototype._settingChangeListener = function(ev) {
     }
     else if (id === ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS) {
         showDirectionButtons = appCtxt.get(ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS);
-        ltrButton = this.getToolbarButton("ltr").parentNode;
+        ltrButton = this.getToolbarButton("ltr", editor).parentNode;
         if (ltrButton) {
             Dwt.setVisible(ltrButton, showDirectionButtons);
             Dwt.setVisible(ltrButton.previousSibling, showDirectionButtons);
         }
-        Dwt.setVisible(this.getToolbarButton("rtl").parentNode, showDirectionButtons);
+        Dwt.setVisible(this.getToolbarButton("rtl", editor).parentNode, showDirectionButtons);
     }
     else if (id === ZmSetting.COMPOSE_INIT_DIRECTION) {
         if (direction === ZmSetting.RTL) {
