@@ -27,7 +27,7 @@
 								<td>&nbsp;</td>
 							</tr>
 						</table>
-						<table id='${hdrTableId}' class='ZPropertySheet' cellspacing="6">
+						<table id='${hdrTableId}' class='ZPropertySheet' cellspacing='6' style='margin:0 7px;'>
 							<tr id='${expandRowId}'>
 								<td>
 									<table align=right>
@@ -46,7 +46,6 @@
 									</table>
 								</td>
 							</tr>
-
 
 							<$ for (var i = 0; i < data.addressTypes.length; i++) { 
 									var participants = data.participants[data.addressTypes[i]]; $>
@@ -98,10 +97,9 @@
 
 <template id='mail.Message#InviteNotCurrent'>
 	<div class="InviteOutDated">
-		<table>
+		<table class='ZPropertySheet' cellspacing='6'>
 			<tr>
 				<td><$= AjxImg.getImageHtml("Warning") $></td>
-				<td>&nbsp;</td>
 				<td><$= ZmMsg.inviteNotCurrent $></td>
 			</tr>
 		</table>
@@ -165,40 +163,17 @@
 		<table class='InvHeaderTable' id='${id}_headerElement'>
 			<tr>
 				<td>
-					<div id="${ptstMsgBannerId}" class="${ptstClassName}" <$ if (!data.ptstMsg) { $> style="display:none;" <$ } $> >
-						<table>
-							<tr>
-								<td id="${ptstMsgIconId}"><$= AjxImg.getImageHtml(data.ptstIcon) $></td>
-								<td>&nbsp;</td>
-								<td id="${ptstMsgId}">${ptstMsg}</td>
-							</tr>
-						</table>
-					</div>
-					<$ if (data.intendedForMsg) { $>
-						<div class="${intendedForClassName}">
-							<table>
-								<tr>
-								    <td><$= AjxImg.getImageHtml("Information") $></td>
-									<td>&nbsp;</td>
-									<td>${intendedForMsg}</td>
-								</tr>
-							</table>
-						</div>
-					<$ } $>
 					<div class='InvHeaderDiv'>
 						<$ if (!data.noTopHeader) { $>
-						<table width=100%>
+						<table width=100% class='ZPropertySheet' cellspacing='6'>
 							<tr id='${hdrTableTopRowId}'>
-								<$ if (data.closeBtnCellId) { $>
-									<td>&nbsp;</td>
-									<td id='${closeBtnCellId}'></td>
-									<td>&nbsp;</td>
-								<$ } $>
+							<$ if (data.closeBtnCellId) { $>
+								<td id='${closeBtnCellId}'></td>
+							<$ } $>
 								<td class='LabelColValue SubjectCol ${subjChangeClass}' valign=top width=100%>
 									<$= data.subject $>
 								</td>
 								<td class='LabelColValue DateCol' align=right>${dateString}</td>
-								<td>&nbsp;</td>
 							</tr>
 						</table>
 						<$ } $>
@@ -206,9 +181,9 @@
 						<table id='${hdrTableId}' width=100% class='ZPropertySheet' cellspacing='6'>
 							<$ if (data.counterInvMsg) { $>
 								<tr>
-									<td class='LabelColValue' colspan=11>
+									<td class='LabelColValue' colspan=2>
 										<div class='InvCounter'>
-											<table width="100%">
+											<table width='100%' class='ZPropertySheet' cellspacing='6'>
 												<tr>
 													<td width=20><$= AjxImg.getImageHtml("Information") $></td>
 													<td class='LabelColValue'><$= data.counterInvMsg $></td>
@@ -295,6 +270,24 @@
 							</div>
 						<$ } $>
 					</div>
+					<div id='${ptstMsgBannerId}' class='${ptstClassName}' <$ if (!data.ptstMsg) { $> style='display:none;' <$ } $> >
+						<table class='ZPropertySheet' cellspacing='6'>
+							<tr>
+								<td id="${ptstMsgIconId}"><$= AjxImg.getImageHtml(data.ptstIcon) $></td>
+								<td id="${ptstMsgId}">${ptstMsg}</td>
+							</tr>
+						</table>
+					</div>
+				<$ if (data.intendedForMsg) { $>
+					<div class="${intendedForClassName}">
+						<table class='ZPropertySheet' cellspacing='6'>
+							<tr>
+								<td><$= AjxImg.getImageHtml("Information") $></td>
+								<td>${intendedForMsg}</td>
+							</tr>
+						</table>
+					</div>
+				<$ } $>
 				</td>
 				<td id='${id}_contactArea' class='ContactArea'>
 					<!-- Area reserved zimlets to add to message views. -->
@@ -303,6 +296,7 @@
 		</table>
 		<div id='${infoBarId}'></div>
 	</div>
+	<div class='separator'></div>
 </template>
 
 <template id='mail.Message#InviteHeaderPtst'>
