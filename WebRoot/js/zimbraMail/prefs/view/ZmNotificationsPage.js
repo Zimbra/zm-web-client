@@ -209,6 +209,9 @@ ZmNotificationsPageForm = function(params) {
 	params.form = this._getFormParams(params.sectionTemplate);
 	DwtForm.apply(this, arguments);
 
+    // hide DwtSelect options which overflow the container
+    this._items.DEVICE_EMAIL_CARRIER.control.dynamicButtonWidth();
+
 	this._regionSelectionListener = new AjxListener(this, this._handleRegionSelection);
 
 	// listen to CAL_DEVICE_EMAIL_REMINDERS_ADDRESS changes
