@@ -241,7 +241,7 @@ ZmEditContactView.prototype.getPhoneOptions = function() {
  */
 ZmEditContactView.prototype.getIMOptions = function() {
 	return [
-		{ value: "local", label: ZmMsg.imGateway_xmpp },
+		{ value: "xmpp", label: ZmMsg.imGateway_xmpp },
 		{ value: "yahoo", label: ZmMsg.imGateway_yahoo },
 		{ value: "aol", label: ZmMsg.imGateway_aol },
 		{ value: "msn", label: ZmMsg.imGateway_msn },
