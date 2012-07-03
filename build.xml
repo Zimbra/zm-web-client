@@ -103,7 +103,7 @@
     <property name="ffext.src.dir" value="ffext/src/zimbradnd"/>
 
     <!-- TINY_MCE INTEGRATION -->
-    <property name="tinymce.version" value="3.5"/>
+    <property name="tinymce.version" value="3.5.4.1"/>
     <property name='tinymce.dir' value='${js.dir}/ajax/3rdparty/tinymce'/>
     <property name="tinymce.zplugins.dir" value="${web.dir}/tiny_mce_plugins"/>
         

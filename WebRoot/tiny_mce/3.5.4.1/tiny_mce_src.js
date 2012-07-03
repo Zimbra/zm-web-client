@@ -18583,8 +18583,8 @@ tinymce.onAddEditor.add(function(tinymce, ed) {
 			} else {
 				// If no root block is configured then insert a BR by default or if the shiftKey is pressed
 				if ((!newBlockName && !evt.shiftKey && parentBlockName != 'LI') || (newBlockName && evt.shiftKey)) {
-					//insertBr();
-					//return;
+					insertBr();
+					return;
 				}
 			}
 
