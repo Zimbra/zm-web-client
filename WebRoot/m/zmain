@@ -138,14 +138,9 @@
 </mo:handleError>
 <c:set value="${ua.isiPhone || ua.isiPod || ua.isOsAndroid ? 'iphone' : ( ua.isIE ? 'wm6' : 'iphone')}" var="zms" scope="session"/>
 <c:if test="${not empty param.zms}">
-    <c:choose>
-        <c:when test="${fn:contains(param.zms, '/')}">
-            <c:set value="" var="zms" scope="session"/>
-        </c:when>
-        <c:otherwise>
-            <c:set value="${fn:escapeXml(param.zms)}" var="zms" scope="session"/>
-        </c:otherwise>
-    </c:choose>
+<c:if test="${not fn:contains(param.zms, '/')}">
+    <c:set value="${fn:escapeXml(param.zms)}" var="zms" scope="session"/>
+</c:if>
 </c:if>
 <c:if test="${sessionScope.limit == null}">
     <c:set var="limit" value="${sessionScope.zms eq 'xlite' ? '5' : mailbox.prefs.mailItemsPerPage}" scope="session"/>
