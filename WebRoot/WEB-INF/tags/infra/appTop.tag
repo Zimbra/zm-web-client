@@ -59,7 +59,7 @@
             <td nowrap="nowrap" style="padding-left: 2px;">&nbsp;<fmt:message key="in"/>&nbsp;</td>
             <td style="padding-left: 2px;">
             <c:choose>
-                <c:when test="${param.st eq 'contact'}"><c:set var="isContact" value="${true}"/></c:when>
+                <c:when test="${param.st eq 'contact' || fn:endsWith(pageContext.request.requestURI,'maddrbooks') }"><c:set var="isContact" value="${true}"/></c:when>
                 <c:otherwise><c:set var="isMail" value="${true}"/></c:otherwise>
             </c:choose>
             <select name="st">
