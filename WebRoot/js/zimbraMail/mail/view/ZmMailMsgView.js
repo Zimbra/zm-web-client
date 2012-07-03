@@ -2091,7 +2091,9 @@ function() {
 
 	// Push all that HTML to the DOM
 	var attLinksDiv = document.getElementById(this._attLinksId);
-	attLinksDiv.innerHTML = htmlArr.join("");
+	if (attLinksDiv) {
+		attLinksDiv.innerHTML = htmlArr.join("");
+	}
 
 
 	// add handlers for individual attachment links

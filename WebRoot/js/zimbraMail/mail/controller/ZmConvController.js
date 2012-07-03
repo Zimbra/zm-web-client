@@ -135,7 +135,9 @@ function() {
 
 ZmConvController.prototype._setViewContents =
 function(view) {
-	this._view[view].set(this._conv);
+	var convView = this._view[view];
+	convView.reset();
+	convView.set(this._conv);
 };
 
 ZmConvController.prototype.getConv =

@@ -734,7 +734,7 @@ ZmConvView2Header = function(params) {
 	this._controller = this.parent._controller;
 	this._dblClickIsolation = true;	// ignore single click that is part of dbl click
 	
-	this.addListener(DwtEvent.ONDBLCLICK, this._dblClickListener);
+	this.addListener(DwtEvent.ONDBLCLICK, this._dblClickListener.bind(this));
 	this.addListener(DwtEvent.ONMOUSEUP, this._mouseUpListener.bind(this));
 	
 	this._createHtml();
