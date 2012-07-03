@@ -164,10 +164,7 @@ function(params) {
 		m.ridZ = params.ridZ;
 	}
 
-	for (var hdr in ZmMailMsg.requestHeaders) {
-		if (!m.header) { m.header = []; }
-		m.header.push({n:ZmMailMsg.requestHeaders[hdr]});
-	}
+	ZmMailMsg.addRequestHeaders(m);
 
 	if (!params.noTruncate) {
 		m.max = appCtxt.get(ZmSetting.MAX_MESSAGE_SIZE) || ZmMailApp.DEFAULT_MAX_MESSAGE_SIZE;
@@ -2703,5 +2700,31 @@ function(name) {
 		value = this.attrs[name];
 	}
 	return value;
+};
+
+/**
+ * Adds optional headers to the given request.
+ * 
+ * @param {object|AjxSoapDoc}	req		SOAP document or JSON parent object (probably a <m> msg object)
+ */
+ZmMailMsg.addRequestHeaders =
+function(req) {
+	
+	if (!req) { return; }
+	if (req.isAjxSoapDoc) {
+		for (var hdr in ZmMailMsg.requestHeaders) {
+			var headerNode = req.set('header', null, null);
+			headerNode.setAttribute('n', ZmMailMsg.requestHeaders[hdr]);
+		}
+	}
+	else {
+		var hdrs = ZmMailMsg.requestHeaders;
+		if (hdrs && hdrs.length) {
+			req.header = req.header || [];
+			for (var hdr in hdrs) {
+				req.header.push({n:hdrs[hdr]});
+			}
+		}
+	}
 };
 

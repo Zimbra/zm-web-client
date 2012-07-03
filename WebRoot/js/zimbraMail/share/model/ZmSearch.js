@@ -569,13 +569,7 @@ function(params) {
 		if (params.needExp !== false) {
 			request.needExp = 1;
 		}
-		// added headers to the request
-		if (ZmMailMsg.requestHeaders) {
-			for (var hdr in ZmMailMsg.requestHeaders) {
-				if (!request.header) request.header = [];
-				request.header.push({n:ZmMailMsg.requestHeaders[hdr]});
-			}
-		}
+		ZmMailMsg.addRequestHeaders(request);
 	}
 
 	if (!params.noTruncate) {
@@ -668,11 +662,7 @@ function(soapDoc) {
 	}
 
 	if (ZmSearch._mailEnabled) {
-		var headerNode;
-		for (var hdr in ZmMailMsg.requestHeaders) {
-			headerNode = soapDoc.set('header', null, null);
-			headerNode.setAttribute('n', ZmMailMsg.requestHeaders[hdr]);
-		}
+		ZmMailMsg.addRequestHeaders(soapDoc);
 	}
 
 	// bug 5771: add timezone and locale info
@@ -721,13 +711,7 @@ function(req) {
 	}
 
 	if (ZmSearch._mailEnabled) {
-		var hdrs = ZmMailMsg.requestHeaders;
-		if (hdrs && hdrs.length) {
-			req.header = [];
-			for (var hdr in hdrs) {
-				req.header.push({n:hdrs[hdr]});
-			}
-		}
+		ZmMailMsg.addRequestHeaders(req);
 	}
 
 	// bug 5771: add timezone and locale info

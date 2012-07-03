@@ -178,33 +178,31 @@ function(params, callback, result) {
  * messages, including their content. Note that it is not search-based, and uses
  * GetConvRequest rather than SearchConvRequest.
  * 
- * @param {Hash}	params		a hash of parameters
- * @param {Boolean}      params.fetchAll		if <code>true</code>, fetch content of all msgs
- * @param {AjxCallback}	callback		the callback
- * @param {ZmBatchCommand}	batchCmd		the batch cmd that contains this request
+ * @param {Hash}			params				a hash of parameters
+ * @param {Boolean}			params.fetchAll		if <code>true</code>, fetch content of all msgs
+ * @param {AjxCallback}		callback			the callback
+ * @param {ZmBatchCommand}	batchCmd			the batch cmd that contains this request
  */
 ZmConv.prototype.loadMsgs =
 function(params, callback, batchCmd) {
-	var soapDoc = AjxSoapDoc.create("GetConvRequest", "urn:zimbraMail");
-	var convNode = soapDoc.set("c");
-	convNode.setAttribute("id", this.id);
-	params = params || {};
-	if (params.fetchAll) {
-		convNode.setAttribute("fetch", "all");
-	}
 
-	// Request additional headers
-	for (var hdr in ZmMailMsg.requestHeaders) {
-		var headerNode = soapDoc.set('header', null, convNode);
-		headerNode.setAttribute('n', ZmMailMsg.requestHeaders[hdr]);
+	var jsonObj = {GetConvRequest:{_jsns:"urn:zimbraMail"}};
+	var request = jsonObj.GetConvRequest;
+	var c = request.c = {
+		id:		this.id,
+		html:	(params.getHtml || this.isDraft || appCtxt.get(ZmSetting.VIEW_AS_HTML))
 	}
+	if (params.fetchAll) {
+		c.fetch = "all";
+	}
+	ZmMailMsg.addRequestHeaders(c);
 
 	// never pass "undefined" as arg to a callback!
-	var respCallback = new AjxCallback(this, this._handleResponseLoadMsgs, callback || null);
+	var respCallback = this._handleResponseLoadMsgs.bind(this, callback || null);
 	if (batchCmd) {
-		batchCmd.addRequestParams(soapDoc, respCallback);
+		batchCmd.addRequestParams(jsonObj, respCallback);
 	} else {
-		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 	}
 };
 
