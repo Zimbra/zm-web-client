@@ -450,7 +450,7 @@ function(parentNode, organizer, index, noTooltips, omit) {
 
 	if (ds && ds.type == ZmAccount.TYPE_IMAP) {
 		var cname = appCtxt.isFamilyMbox ? null : this._headerClass;
-		var icon = appCtxt.isFamilyMbox ? "AccountIMAP" : null;
+		var icon =  "Folder";
 		ti = new DwtTreeItem({parent:this, text:organizer.getName(), className:cname, imageInfo:icon});
 		ti.enableSelection(false);
 	} else {
