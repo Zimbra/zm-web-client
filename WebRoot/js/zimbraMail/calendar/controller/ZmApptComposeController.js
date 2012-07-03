@@ -275,17 +275,11 @@ function(attId) {
 			// check whether moving appt from local to remote folder with attendees
 			var cc = AjxDispatcher.run("GetCalController");
 			if (cc.isMovingBetwAccounts(appt, appt.__newFolderId)) {
-				var dlg = appCtxt.getYesNoMsgDialog();
-				dlg.registerCallback(DwtDialog.YES_BUTTON, this._changeOrgCallback, this, [appt, attId, dlg]);
-				var newFolder = appCtxt.getById(appt.__newFolderId);
-				var newOrg = newFolder ? newFolder.getOwner() : null;
-				if (newOrg) {
-					var msg = AjxMessageFormat.format(ZmMsg.orgChange, newOrg);
-					dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-					dlg.popup();
-                    this.enableToolbar(true);
-					return false;
-				}
+				var dlg = appCtxt.getMsgDialog();
+                dlg.setMessage(ZmMsg.orgChange, DwtMessageDialog.WARNING_STYLE);
+                dlg.popup();
+                this.enableToolbar(true);
+                return false;
 			}
 		}
 

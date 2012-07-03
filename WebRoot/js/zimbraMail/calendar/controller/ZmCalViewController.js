@@ -777,11 +777,10 @@ function(item, isShiftKey, folder) {
 ZmCalViewController.prototype._moveCallback =
 function(folder) {
 	if (this.isMovingBetwAccounts(this._pendingActionData, folder.id)) {
-		var dlg = appCtxt.getYesNoMsgDialog();
-		dlg.registerCallback(DwtDialog.YES_BUTTON, this._changeOrgCallback, this, [dlg, folder]);
-		var msg = AjxMessageFormat.format(ZmMsg.orgChange, folder.getOwner());
-		dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-		dlg.popup();
+        var dlg = appCtxt.getMsgDialog();
+        dlg.setMessage(ZmMsg.orgChange, DwtMessageDialog.WARNING_STYLE);
+        dlg.popup();
+        return false;
     }else if (this.isMovingBetwAcctsAsAttendee(this._pendingActionData, folder.id)) {
 		var dlg = appCtxt.getMsgDialog();
 		dlg.setMessage(ZmMsg.apptInviteOnly, DwtMessageDialog.WARNING_STYLE);

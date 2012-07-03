@@ -408,13 +408,9 @@ function(ev) {
 		var ctlr = ev.srcData.controller;
 		var cc = AjxDispatcher.run("GetCalController");
         if (!isShiftKey && cc.isMovingBetwAccounts(appts, dropFolder.id)) {
-            var controller = appCtxt.getApp(ZmApp.CALENDAR).getCalController();
-            controller.apptCache.batchRequest({accountFolderIds:[dropFolder.id],callback:new AjxCallback(this, this._dropToRemoteFolder, [dropFolder.name])});
-			var dlg = appCtxt.getYesNoMsgDialog();
-			dlg.registerCallback(DwtDialog.YES_BUTTON, this._changeOrgCallback, this, [ctlr, dlg, appts, dropFolder]);
-			var msg = AjxMessageFormat.format(ZmMsg.orgChange, dropFolder.getOwner());
-			dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-			dlg.popup();
+            var dlg = appCtxt.getMsgDialog();
+            dlg.setMessage(ZmMsg.orgChange, DwtMessageDialog.WARNING_STYLE);
+            dlg.popup();
 		} else {
             if(data instanceof ZmCalendar){
                 // Root node's type is folder, but it's labelled 'Calendars'.  Pass the proper
