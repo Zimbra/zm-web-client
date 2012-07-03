@@ -755,13 +755,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .ZmMailMsgCapsuleView .LabelColName {
 	@MailMsgHeaderLabel@
 	line-height:1.6em;
-	padding:3px 0;
 	text-align:right;
 	vertical-align:top;
 	white-space:nowrap;
-#IFDEF MSIE
-	line-height:1.2em;
-#ENDIF
+	width:1%;
 }
 
 .ZmMailMsgView .LabelColValue, 
@@ -770,7 +767,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	line-height:1.6em;
 	vertical-align:top;
 	white-space:normal;
-	width:100%
 }
 
 .ZmMailMsgView .SubjectCol {
