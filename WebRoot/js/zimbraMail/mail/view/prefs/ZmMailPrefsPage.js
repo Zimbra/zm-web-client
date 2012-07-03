@@ -601,7 +601,7 @@ function(changed) {
 
 	//if old end date was greater than today then fetch appt id from metadata and delete the old appointment
 	var now = new Date();
-	if (appCtxt.get(ZmSetting.VACATION_CALENDAR_APPT_ID) != "-1" &&
+	if (appCtxt.get(ZmSetting.VACATION_CALENDAR_APPT_ID) != "-1" && this._formatter && this._oldEndDate && 
 		this._formatter.parse(ZmPref.dateGMT2Local(this._oldEndDate)) > now)
 	{
 		ZmAppt.loadById(appCtxt.get(ZmSetting.VACATION_CALENDAR_APPT_ID),new AjxCallback(this, this._oooDeleteApptCallback));

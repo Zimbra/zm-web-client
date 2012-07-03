@@ -411,6 +411,18 @@ function(compNum) {
 };
 
 /**
+ * Gets the transparency.
+ *
+ * @param	{int}	compNum		the component number
+ * @return {String}	the transparent value
+ */
+ZmInvite.prototype.getTransparency = 
+function(compNum) {
+	var cn = compNum || 0;
+	return this.components[cn].transp;
+};
+
+/**
  * Checks if the invite is empty.
  * 
  * @return	{Boolean}	<code>true</code> if the invite is empty
