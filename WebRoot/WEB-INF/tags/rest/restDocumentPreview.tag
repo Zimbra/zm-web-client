@@ -74,7 +74,7 @@
 
         <!-- CSS -->
         <c:set value="/img" var="iconPath" scope="request"/>
-        <c:url var='cssurl' value='/css/images,common,login,skin,docs.css'>
+        <c:url var='cssurl' value='/css/images,common,skin,docs.css'>
             <c:param name="client"	value="standard" />
             <c:param name="skin"	value="${skin}" />
             <c:param name="v"		value="${initParam.zimbraCacheBusterVersion}" />
