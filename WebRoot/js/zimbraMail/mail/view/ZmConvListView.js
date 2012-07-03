@@ -99,7 +99,12 @@ function(type) {
 
 // set up to display either a conv or a msg in the item view
 ZmConvDoublePaneView.prototype.setItem =
-function(item, force, dontFocus) {
+function(item, force) {
+
+	if (!force && !this._controller.popShield(null, this.setItem.bind(this, item, true))) {
+		return;
+	}
+
 	var changed = ((item.type == ZmItem.CONV) != (this._itemView && this._itemView == this._convView));
 	this._itemView = this._getItemView(item.type);
 	var otherView = (item.type == ZmItem.CONV) ? this._mailMsgView : this._convView;

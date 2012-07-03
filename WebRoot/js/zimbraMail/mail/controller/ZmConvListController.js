@@ -69,7 +69,12 @@ ZmConvListController.prototype.getDefaultViewType = ZmConvListController.getDefa
  * @param {ZmSearchResult}	searchResults		the current search results
  */
 ZmConvListController.prototype.show =
-function(searchResults) {
+function(searchResults, force) {
+	
+	if (!force && !this.popShield(null, this.show.bind(this, searchResults, true))) {
+		return;
+	}
+	
 	ZmDoublePaneController.prototype.show.call(this, searchResults, searchResults.getResults(ZmItem.CONV));
 	if (!appCtxt.isExternalAccount() && !this.isSearchResults && !(searchResults && searchResults.search && searchResults.search.isOutboundFolder)) {
 		appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_CONV);
