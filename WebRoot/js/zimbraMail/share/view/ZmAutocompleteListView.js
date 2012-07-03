@@ -386,6 +386,9 @@ function(ev) {
 	ev1.element = element;
 	DBG.println("ac", "scheduling autocomplete for: " + elId);
 
+	var aif = DwtControl.ALL_BY_ID[element._aifId];
+	if (aif && aif._editMode) { return false; }
+	
 	var acAction = new AjxTimedAction(aclv, aclv._autocompleteAction, [ev1]);
 	aclv._acActionId[elId] = AjxTimedAction.scheduleAction(acAction, aclv._acInterval);
 	
