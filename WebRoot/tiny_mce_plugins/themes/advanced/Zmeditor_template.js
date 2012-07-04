@@ -223,8 +223,13 @@ Zmeditor_template.getFontSize = function(value){
                 //console.log("sytle font family ::"+fn);
                 //console.log("queryCommandValue :: "+ed.getDoc().queryCommandValue("fontname"));
                 //console.log("Body "+ed.getBody().style.fontFamily);
-                if (!fn && doc.queryCommandEnabled("fontname")) {
-                    fn = doc.queryCommandValue("fontname");
+                if (!fn) {
+                    try {
+                        fn = doc.queryCommandValue("fontname");
+                    }
+                    catch (e) {
+                        //console.log("fontname");console.log(e);
+                    }
                 }
                 fn = fn || body.style.fontFamily;
                 if(fn){
@@ -240,8 +245,13 @@ Zmeditor_template.getFontSize = function(value){
                 //console.log("sytle font size font size ::"+fz);
                 //console.log("queryCommandValue :: "+ed.getDoc().queryCommandValue("fontSize"));
                 //console.log("Body "+ed.getBody().style.fontSize);
-                if (!fz && doc.queryCommandEnabled("fontsize")) {
-                    fz = doc.queryCommandValue("fontsize");
+                if (!fz) {
+                    try {
+                        fz = doc.queryCommandValue("fontsize");
+                    }
+                    catch (e) {
+                        //console.log("fontsize");console.log(e);
+                    }
                 }
                 fz = fz || body.style.fontSize;
                 if (fz) {
@@ -283,12 +293,22 @@ Zmeditor_template.getFontSize = function(value){
                     }
                 }
                 else {
-                    if (!fc && doc.queryCommandEnabled("forecolor")) {
-                        fc = doc.queryCommandValue("forecolor");
+                    if (!fc) {
+                        try {
+                            fc = doc.queryCommandValue("forecolor");
+                        }
+                        catch (e) {
+                            //console.log("forecolor");console.log(e);
+                        }
                     }
                     fc = fc || body.style.color;
-                    if (!bc && doc.queryCommandEnabled("backcolor")) {
-                        bc = doc.queryCommandValue("backcolor");
+                    if (!bc) {
+                        try {
+                            bc = doc.queryCommandValue("backcolor");
+                        }
+                        catch (e) {
+                            //console.log("backcolor");console.log(e);
+                        }
                     }
                     bc = bc || "white";
                 }
