@@ -36,7 +36,7 @@
     <%-- switch based on context search types --%>
 
         <c:choose>
-            <c:when test="${not empty param.actionSearch && empty param.sq}">
+            <c:when test="${not empty param.actionSearch && empty sq}">
                  <c:set var="context" value="${pcontext}"/>
                  <%--<div class="StatusWarning"><fmt:message key="actionNoSearchQuerySpecified"/></div>--%>
                 <mo:status style="Warning">
