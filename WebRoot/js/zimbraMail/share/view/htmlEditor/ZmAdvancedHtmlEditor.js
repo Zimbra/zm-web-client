@@ -570,7 +570,7 @@ function(id, content) {
         language : ZmAdvancedHtmlEditor.LOCALE,
         language_load : (ZmAdvancedHtmlEditor.LOCALE === "en") ? false : true,
         theme_advanced_show_current_color : true,
-        directionality : (appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION) === ZmSetting.RTL) ? ZmSetting.RTL : false,
+        directionality : appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION),
 		setup : function(ed) {
             ed.onLoadContent.add(obj.onLoadContent.bind(obj));
             ed.onPostRender.add(obj.onPostRender.bind(obj));
