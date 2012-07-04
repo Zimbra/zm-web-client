@@ -830,6 +830,7 @@ function() {
 			else if(type == ZmContact.GROUP_CONTACT_REF || type == ZmContact.GROUP_GAL_REF) {
 				var contact = ZmContact.getContactFromCache(value);	 //TODO: handle contacts not cached?
 				if (!contact) {
+					DBG.println(AjxDebug.DBG1, "Disregarding uncached contact: " + value);
 					continue;
 				}
 				var email = contact.getEmail();
@@ -872,6 +873,7 @@ function() {
 		else if(type == ZmContact.GROUP_CONTACT_REF || type == ZmContact.GROUP_GAL_REF) {
 			var contact = ZmContact.getContactFromCache(value);  //TODO: handle contacts not cached?
 			if (!contact) {
+				DBG.println(AjxDebug.DBG1, "Disregarding uncached contact: " + value);
 				continue;
 			}
 			var email = contact.getEmail();
