@@ -144,6 +144,7 @@ var myEditor;
             theme_advanced_toolbar_align : "left",
             theme_advanced_resizing : true,
             theme_advanced_fonts : fonts.join(";"),
+            theme_advanced_statusbar_location : "none",
             convert_urls : false,
             verify_html : false,
             gecko_spellcheck : true,
