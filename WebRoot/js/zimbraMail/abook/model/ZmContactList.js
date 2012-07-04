@@ -74,7 +74,8 @@ ZmContactList.prototype.toString = function() { return "ZmContactList"; };
 
 // Support for loading user's local contacts from a large string
 
-ZmContactList.URL = "/Contacts?fmt=cf&t=2&all";	// REST URL for loading user's local contacts
+ZmContactList.URL = "/Contacts";	// REST URL for loading user's local contacts
+ZmContactList.URL_ARGS = { fmt: 'cf', t: 2, all: 'all' }; // arguments for the URL above
 ZmContactList.CONTACT_SPLIT_CHAR	= '\u001E';	// char for splitting string into contacts
 ZmContactList.FIELD_SPLIT_CHAR		= '\u001D';	// char for splitting contact into fields
 // fields that belong to a contact rather than its attrs
@@ -135,8 +136,20 @@ function(callback, errorCallback, accountName) {
 	    }
         return;
     }
+	var args = ZmContactList.URL_ARGS;
+
+	// bug 74609: suppress overzealous caching by IE
+	if (AjxEnv.isIE) {
+		args = AjxUtil.hashCopy(args);
+		args.sid = ZmCsfeCommand.getSessionId();
+	}
+
 	var params = {asyncMode:true, noBusyOverlay:true, callback:respCallback, errorCallback:errorCallback};
-	params.restUri = AjxUtil.formatUrl({path:["/home/", (accountName || appCtxt.getUsername()), ZmContactList.URL].join(""), qsReset:true});
+	params.restUri = AjxUtil.formatUrl({
+		path:["/home/", (accountName || appCtxt.getUsername()),
+	          ZmContactList.URL].join(""),
+	    qsArgs: args, qsReset:true
+	});
 	DBG.println(AjxDebug.DBG1, "loading contacts from " + params.restUri);
 	appCtxt.getAppController().sendRequest(params);
 
