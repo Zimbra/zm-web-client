@@ -177,6 +177,7 @@ function(callback, errorCallback, batchCommand) {
 	if (batchCommand) {
 		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback);
 		batchCommand.setSensitive(Boolean(this.password));
+		batchCommand.setNoAuthToken(Boolean(this.password));
 		return;
 	}
 
@@ -220,6 +221,7 @@ function(callback, errorCallback, batchCommand) {
 	if (batchCommand) {
 		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback);
 		batchCommand.setSensitive(Boolean(this.password));
+        batchCommand.setNoAuthToken(Boolean(this.password));
 		return;
 	}
 
@@ -279,6 +281,7 @@ function(callback, errorCallback, batchCommand, noBusyOverlay) {
 	if (batchCommand) {
 		batchCommand.addNewRequestParams(soapDoc, callback, errorCallback);
 		batchCommand.setSensitive(true);
+        batchCommand.setNoAuthToken(true);
 		return;
 	}
 
