@@ -1,0 +1,201 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2009, 2010, 2011 VMware, Inc.
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.3 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * ***** END LICENSE BLOCK *****
+ */
+#skin_container_splash_screen	{
+	background: #939494 url("@SkinImgDir@/bg.gif") repeat-x top left;
+}
+
+#skin_container_links a {
+	color: #ffffff;
+}
+
+/** set the height for the top row -- must be set to a fixed number! **/
+#skin_spacing_top_row					{	height:36px; 
+											background-color: @AltC@;
+											background-image: -moz-linear-gradient(top, @AltC@, @AppC@); /* FF3.6 */
+ 											background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @AltC@),color-stop(1, @AppC@)); /* Saf4+, Chrome */
+    										filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@AppC@'); /* IE6,IE7 */
+    										-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@AltC@', EndColorStr='@AppC@')"; /* IE8 */
+}
+
+#skin_container_links a:hover {
+	background-color: transparent;
+	text-decoration: underline;
+}
+
+#skin_container_tree_top {
+	background: #6f1616 url("@SkinImgDir@/sidebar_header_bg.png") top left repeat-x;
+	color: #ffffff;
+}
+
+#skin_container_search {
+	background: #cdcdcb url("@SkinImgDir@/search_bg.png") top left repeat-x;
+}
+
+#skin_border_app_chooser {
+	@SkinBorderAppChooser@
+}
+
+#skin_container_app_top_toolbar {
+	background: #d5d5d3 url("@SkinImgDir@/app_panel_bg.png") top left repeat-x;
+	border:0px;
+	border-bottom: 1px solid #999999;
+}
+
+#ZLoginAppName {
+	color: #ffffff;
+}
+
+.Row {
+	border-color: #e5e5e5;
+	border-width: 1px 0;
+	height: 20px;
+	
+}
+
+.RowOdd {
+	background-color: #F0EFEC;
+	border-color: #e5e5e5;
+	border-top-width: 1px;
+}
+
+.Row-selected, 
+.Row-selected-dragProxy, 
+.Row-selected-disabled {
+	background-color: #fff;
+	border-color: #e5e5e5;
+	border-top-color: #ffffff;
+}
+
+.ZmTaskbar {
+	height:30px; 
+	background: #6f1616 url("@SkinImgDir@/app_header_bg.png") repeat-x top left;
+	border: 0;
+	color: #ffffff;
+}
+
+.ZmTaskbarButtonParent .ZToolbarButtonTable .ZWidgetTitle {
+	color: #ffffff;
+}
+
+.ZButtonBorder,
+.ZHover .ZButtonBorder,
+.ZActive .ZButtonBorder,
+.ZSelected .ZButtonBorder {
+	border: 1px solid #999999;
+}
+
+.LightWindowOuterContainer .DwtDialogTitle {
+	@WindowTitleText@
+	@WindowTitleText-normal@
+}
+
+.ZOptionsSectionMain {
+	background: #e5e5e5;
+	padding: 1em;
+}
+
+.ZmCalViewMgr,
+.calendar_view,
+.ZmContactInfoView,
+.ZmNotebookPageView,
+.ZmEditContactView .contactHeaderTable,
+.DwtListView {
+	background-color: #ffffff;
+}
+
+.ZmContactInfoView .contactHeaderTable {
+	background-color: #e5e5e5;
+}
+
+.ZmConvExpanded {
+	background-color: #F0D8D8;
+	/*background-color: #D8F0D8;*/
+}
+
+.ZmComposeView,
+.ZmApptComposeView,
+.ZmPageEditView {
+	background-color: #e5e5e5;
+}
+
+.ZHover .ZTabBorder {
+	@AppTabBorder-hover@
+}
+
+.ZmOverviewLocalHeader,
+.ZmOverviewLocalHeader-actioned,
+.ZmOverviewLocalHeader-selected,
+.ZmOverviewLocalHeader-selected-focused {
+	background: @lighten(AltC,50)@ url("@SkinImgDir@/sidebar_inbox_header_bg.png") top left repeat-x;
+	border-bottom: 1px solid #CCCCCC;
+	border-top: 0px;
+}
+
+.ZmContactInfoView .contactHeaderTable, .ZmEditContactView .contactHeaderTable{
+	background: #ececec url("@SkinImgDir@/message_header_bg.png") repeat-x top left;
+	border-bottom: 2px groove #999; 
+}
+
+.ZmEditContactView .ZButtonBorder{
+	background: none;
+}
+
+.AlphabetBarTable .DwtButton{
+	background-color: #e5e5e5;
+	border: none;
+	-moz-border-radius: none;
+}
+
+.AlphabetBarTable .DwtButton-hover{
+	background-color: #949494;
+	color: white;
+	border: none;
+	-moz-border-radius: 4px;
+}
+
+.AlphabetBarTable .DwtButton-active{
+	background-color: #404040;
+	color: white;
+	border: none;
+	-moz-border-radius: 4px;
+}
+
+.ZmEditContactViewDetailsButton {
+	border: 1px solid #ECECEC;
+	background-color: @WidgetBgColor@;
+	cursor: pointer;
+}
+
+.ZDToolBar .ZWidgetTitle {
+	color: ffffff;
+}
+
+.ZmPickerOverview .DwtCalendarTitle {
+	 color: #ffffff;
+}
+
+.ZOptionsSectionTabView .ZTab.ZSelected .ZTabBorder {
+	background-color: #e5e5e5;
+	border-bottom-color: #e5e5e5;
+}
+
+#skin_spacing_filler				{	
+	height:12px; 
+	background-color: @AltC@;
+	background-image: -moz-linear-gradient(top, @lighten(AltC,90)@, @AppC@); /* FF3.6 */
+ 	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, @lighten(AltC,90)@),color-stop(1, @AppC@));                /* Saf4+, Chrome */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(AltC,90)@', EndColorStr='@AppC@');                          /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='@lighten(AltC,90)@', EndColorStr='@AppC@')";                     /* IE8 */
+ }

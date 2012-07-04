@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -65,7 +65,6 @@ ZmKeyMap.MAP_NAME["call"]				= "ZmCallListController";
 ZmKeyMap.MAP_NAME["compose"]			= "ZmComposeController";
 ZmKeyMap.MAP_NAME["contacts"]			= "ZmContactListController";
 ZmKeyMap.MAP_NAME["conversation"]		= "ZmConvController";
-ZmKeyMap.MAP_NAME["conversation2"]		= "ZmConvView2";
 ZmKeyMap.MAP_NAME["conversationList"]	= "ZmConvListController";
 ZmKeyMap.MAP_NAME["editAppointment"]	= "ZmApptComposeController";
 ZmKeyMap.MAP_NAME["editContact"]		= "ZmContactController";
@@ -74,6 +73,8 @@ ZmKeyMap.MAP_NAME["editTask"]			= "ZmTaskController";
 ZmKeyMap.MAP_NAME["global"]				= "Global";
 ZmKeyMap.MAP_NAME["mail"]				= "ZmMailListController";
 ZmKeyMap.MAP_NAME["message"]			= "ZmMsgController";
+ZmKeyMap.MAP_NAME["mixed"]				= "ZmMixedController";
+ZmKeyMap.MAP_NAME["notebook"]			= "ZmNotebookPageController";
 ZmKeyMap.MAP_NAME["options"]			= "ZmPrefController";
 ZmKeyMap.MAP_NAME["tasks"]				= "ZmTaskListController";
 ZmKeyMap.MAP_NAME["voicemail"]			= "ZmVoicemailListController";
@@ -88,12 +89,13 @@ ZmKeyMap.MAP_NAME_R = {};
 
 // Action codes
 ZmKeyMap.ADDRESS_PICKER			= "AddressPicker";
-ZmKeyMap.ADD_EXTERNAL_CALENDAR	= "AddExternalCalendar";
+ZmKeyMap.ASSISTANT				= "Assistant";
 ZmKeyMap.ATTACHMENT				= "Attachment";
 ZmKeyMap.CAL_DAY_VIEW			= "DayView";
 ZmKeyMap.CAL_FB_VIEW			= "FBView";
 ZmKeyMap.CAL_LIST_VIEW			= "CalListView";
 ZmKeyMap.CAL_MONTH_VIEW			= "MonthView";
+ZmKeyMap.CAL_SCHEDULE_VIEW		= "ScheduleView";
 ZmKeyMap.CAL_WEEK_VIEW			= "WeekView";
 ZmKeyMap.CAL_WORK_WEEK_VIEW		= "WorkWeekView";
 ZmKeyMap.CALL_MANAGER       	= "CallManager";
@@ -107,7 +109,6 @@ ZmKeyMap.DBG_2					= "DebugLevel2";
 ZmKeyMap.DBG_3					= "DebugLevel3";
 ZmKeyMap.DBG_TIMING				= "ToggleDebugTiming";
 ZmKeyMap.DEL					= "Delete";
-ZmKeyMap.SHIFT_DEL				= "ShiftDelete";
 ZmKeyMap.DOWNLOAD           	= "Download";
 ZmKeyMap.EDIT					= "Edit";
 ZmKeyMap.EXPAND					= "Expand";
@@ -127,13 +128,13 @@ ZmKeyMap.GOTO_DRAFTS			= "GoToDrafts";
 ZmKeyMap.GOTO_JUNK				= "GoToJunk";
 ZmKeyMap.GOTO_INBOX				= "GoToInbox";
 ZmKeyMap.GOTO_MAIL				= "GoToMail";
+ZmKeyMap.GOTO_NOTEBOOK			= "GoToNotebook";
 ZmKeyMap.GOTO_OPTIONS			= "GoToOptions";
 ZmKeyMap.GOTO_SENT				= "GoToSent";
 ZmKeyMap.GOTO_TASKS				= "GoToTasks";
 ZmKeyMap.GOTO_TRASH				= "GoToTrash";
 ZmKeyMap.GOTO_VOICE				= "GoToVoice";
 ZmKeyMap.HTML_FORMAT			= "HtmlFormat";
-ZmKeyMap.KEEP_READING			= "KeepReading";
 ZmKeyMap.LAST_UNREAD			= "LastUnread";
 ZmKeyMap.LAST_UNREAD_MSG		= "LastUnreadMsg";
 ZmKeyMap.LOGOFF					= "LogOff";
@@ -147,7 +148,6 @@ ZmKeyMap.MOVE					= "Move";
 ZmKeyMap.MOVE_TO_INBOX			= "MoveToInbox";
 ZmKeyMap.MOVE_TO_JUNK			= "MoveToJunk";
 ZmKeyMap.MOVE_TO_TRASH			= "MoveToTrash";
-ZmKeyMap.MUTE_UNMUTE_CONV	    = "MuteUnmuteConv";
 ZmKeyMap.NEW					= "New";
 ZmKeyMap.NEW_APPT				= "NewAppointment";
 ZmKeyMap.NEW_BRIEFCASE			= "NewBriefcase";
@@ -159,6 +159,8 @@ ZmKeyMap.NEW_FILE				= "NewFile";
 ZmKeyMap.NEW_FOLDER				= "NewFolder";
 ZmKeyMap.NEW_MESSAGE			= "NewMessage";
 ZmKeyMap.NEW_MESSAGE_WIN		= "NewMessageWindow";
+ZmKeyMap.NEW_NOTEBOOK			= "NewNotebook";
+ZmKeyMap.NEW_PAGE				= "NewPage";
 ZmKeyMap.NEW_PRESENTATION		= "NewPresentation";
 ZmKeyMap.NEW_ROSTER_ITEM		= "NewRosterItem";
 ZmKeyMap.NEW_SPREADSHEET        = "NewSpreadsheet";
@@ -166,7 +168,6 @@ ZmKeyMap.NEW_TAG				= "NewTag";
 ZmKeyMap.NEW_TASK				= "NewTask";
 ZmKeyMap.NEW_WINDOW				= "NewWindow";
 ZmKeyMap.NEXT_CONV				= "NextConversation";
-ZmKeyMap.NEXT_MSG				= "NextMessage";
 ZmKeyMap.NEXT_PAGE				= "NextPage";
 ZmKeyMap.NEXT_UNREAD			= "NextUnread";
 ZmKeyMap.NEXT_UNREAD_MSG		= "NextUnreadMsg";
@@ -174,7 +175,6 @@ ZmKeyMap.PASTE       			= "Paste";
 ZmKeyMap.PLAY					= "Play";
 ZmKeyMap.PRESENCE_MENU			= "PresenceMenu";
 ZmKeyMap.PREV_CONV				= "PreviousConversation";
-ZmKeyMap.PREV_MSG				= "PreviousMessage";
 ZmKeyMap.PREV_PAGE				= "PreviousPage";
 ZmKeyMap.PREV_UNREAD			= "PreviousUnread";
 ZmKeyMap.PREV_UNREAD_MSG		= "PreviousUnreadMsg";
@@ -237,7 +237,9 @@ function() {
 	ZmKeyMap.MAP_PRECONDITION["ZmContactController"]		= ZmSetting.CONTACTS_ENABLED;
 	ZmKeyMap.MAP_PRECONDITION["ZmCalViewController"]		= ZmSetting.CALENDAR_ENABLED;
 	ZmKeyMap.MAP_PRECONDITION["ZmApptComposeController"]	= ZmSetting.CALENDAR_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION["ZmMixedController"]			= ZmSetting.MIXED_VIEW_ENABLED;
 	ZmKeyMap.MAP_PRECONDITION["ZmPrefController"]			= ZmSetting.OPTIONS_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION["ZmNotebookPageController"]	= ZmSetting.NOTEBOOK_ENABLED;
 	ZmKeyMap.MAP_PRECONDITION["ZmBriefcaseController"]		= ZmSetting.BRIEFCASE_ENABLED;
 	ZmKeyMap.MAP_PRECONDITION["ZmTaskListController"]		= ZmSetting.TASKS_ENABLED;
 	ZmKeyMap.MAP_PRECONDITION["ZmTaskController"]			= ZmSetting.TASKS_ENABLED;
@@ -250,6 +252,7 @@ function() {
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_CALENDAR]		= ZmSetting.CALENDAR_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_CONTACTS]		= ZmSetting.CONTACTS_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_MAIL]			= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_NOTEBOOK]		= ZmSetting.NOTEBOOK_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_OPTIONS]		= ZmSetting.OPTIONS_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_TASKS]			= ZmSetting.TASKS_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_VOICE]			= ZmSetting.VOICE_ENABLED;
@@ -263,6 +266,8 @@ function() {
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_FOLDER]			= ZmSetting.MAIL_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_MESSAGE]		= ZmSetting.MAIL_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_MESSAGE_WIN]	= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_NOTEBOOK]		= ZmSetting.NOTEBOOK_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_PAGE]			= ZmSetting.NOTEBOOK_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_ROSTER_ITEM]	= ZmSetting.IM_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_TAG]			= ZmSetting.TAGGING_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_TASK]			= ZmSetting.TASKS_ENABLED;
@@ -277,8 +282,6 @@ function() {
 	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.SAVE]				= ZmSetting.SAVE_DRAFT_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["ZmApptComposeController"] = {};
 	ZmKeyMap.ACTION_PRECONDITION["ZmApptComposeController"][ZmKeyMap.HTML_FORMAT]	= ZmSetting.HTML_COMPOSE_ENABLED;
-    ZmKeyMap.ACTION_PRECONDITION["ZmCalViewController"] = {};
-	ZmKeyMap.ACTION_PRECONDITION["ZmCalViewController"][ZmKeyMap.CAL_FB_VIEW]	= ZmSetting.FREE_BUSY_VIEW_ENABLED;
 };
 
 /**

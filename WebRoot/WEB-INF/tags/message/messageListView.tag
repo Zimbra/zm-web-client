@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -114,7 +114,7 @@
 						<zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" context="${context}" action="compose" id="${hit.messageHit.id}"/>
 					</c:when>
 					<c:otherwise>
-						<zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" action="${(mailbox.prefs.readingPaneLocation eq 'off') ? 'view' : 'offView'}" context="${context}" id="${hit.messageHit.id}" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+						<zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" action="${(mailbox.prefs.readingPaneLocation eq 'off' and param.action != 'offView') ? 'offView' : 'view'}" context="${context}" id="${hit.messageHit.id}" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
 					</c:otherwise>
 				</c:choose>
 				<c:if test="${empty selectedRow and hit.messageHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
@@ -157,7 +157,7 @@
 						</c:if>
 					</td>
 					<c:if test="${!context.isFolderSearch}">
-						<td nowrap='nowrap' width='5%'>${zm:getFolderName(pageContext, hit.messageHit.folderId)}</td>
+						<td nowrap='nowrap' width='5%'>${fn:escapeXml(zm:getFolderName(pageContext, hit.messageHit.folderId))}</td>
 					</c:if>
 					<td nowrap='nowrap' width='5%'>${fn:escapeXml(zm:displaySize(pageContext, hit.messageHit.size))}</td>
 					<td nowrap='nowrap' width='5%'>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}</td>

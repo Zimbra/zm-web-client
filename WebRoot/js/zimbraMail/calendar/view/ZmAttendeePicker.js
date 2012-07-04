@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -111,7 +111,7 @@ ZmAttendeePicker.SF_LABEL[ZmAttendeePicker.SF_FLOOR]	= "floor";
 ZmAttendeePicker.SF_ATTR = {};
 ZmAttendeePicker.SF_ATTR[ZmAttendeePicker.SF_NAME]		  = "fullName";
 ZmAttendeePicker.SF_ATTR[ZmAttendeePicker.SF_CAPACITY]	  = "zimbraCalResCapacity";
-ZmAttendeePicker.SF_ATTR[ZmAttendeePicker.SF_DESCRIPTION] = "description";
+ZmAttendeePicker.SF_ATTR[ZmAttendeePicker.SF_DESCRIPTION] = "notes";
 ZmAttendeePicker.SF_ATTR[ZmAttendeePicker.SF_CONTACT]	  = "zimbraCalResContactName";
 ZmAttendeePicker.SF_ATTR[ZmAttendeePicker.SF_SITE]		  = "zimbraCalResSite";
 ZmAttendeePicker.SF_ATTR[ZmAttendeePicker.SF_BUILDING]	  = "zimbraCalResBuilding";
@@ -125,10 +125,10 @@ ZmAttendeePicker.SF_OP[ZmAttendeePicker.SF_FLOOR]		= "eq";
 ZmAttendeePicker.ATTRS = {};
 ZmAttendeePicker.ATTRS[ZmCalBaseItem.LOCATION] =
 	["fullName", "email", "zimbraCalResLocationDisplayName",
-	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description", "zimbraCalResType"];
+	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "notes", "zimbraCalResType"];
 ZmAttendeePicker.ATTRS[ZmCalBaseItem.EQUIPMENT] =
 	["fullName", "email", "zimbraCalResLocationDisplayName",
-	 "zimbraCalResContactEmail", "description", "zimbraCalResType"];
+	 "zimbraCalResContactEmail", "notes", "zimbraCalResType"];
 
 ZmAttendeePicker.SEARCH_FIELDS = {};
 ZmAttendeePicker.SEARCH_FIELDS[ZmCalBaseItem.PERSON] =
@@ -142,8 +142,6 @@ ZmAttendeePicker.SEARCH_FIELDS[ZmCalBaseItem.EQUIPMENT] =
 	 ZmAttendeePicker.SF_DESCRIPTION, ZmAttendeePicker.SF_BUILDING,
 	 ZmAttendeePicker.SF_CONTACT, ZmAttendeePicker.SF_FLOOR];
 
-ZmAttendeePicker.SETTINGS_SEARCH_FIELDS = {};
-
 ZmAttendeePicker.SORT_BY = {};
 ZmAttendeePicker.SORT_BY[ZmCalBaseItem.PERSON]				= ZmSearch.NAME_ASC;
 ZmAttendeePicker.SORT_BY[ZmCalBaseItem.LOCATION]			= ZmSearch.NAME_ASC;
@@ -152,7 +150,7 @@ ZmAttendeePicker.SORT_BY[ZmCalBaseItem.EQUIPMENT]			= ZmSearch.NAME_ASC;
 ZmAttendeePicker.TOP_LEGEND = {};
 ZmAttendeePicker.TOP_LEGEND[ZmCalBaseItem.PERSON]			= ZmMsg.findAttendees;
 ZmAttendeePicker.TOP_LEGEND[ZmCalBaseItem.LOCATION]			= ZmMsg.findLocations;
-ZmAttendeePicker.TOP_LEGEND[ZmCalBaseItem.EQUIPMENT]		= ZmMsg.findEquipment;
+ZmAttendeePicker.TOP_LEGEND[ZmCalBaseItem.EQUIPMENT]		= ZmMsg.findResources;
 
 ZmAttendeePicker.SUGGEST_LEGEND = {};
 ZmAttendeePicker.SUGGEST_LEGEND[ZmCalBaseItem.PERSON]			= ZmMsg.suggestedAttendees;
@@ -162,7 +160,7 @@ ZmAttendeePicker.SUGGEST_LEGEND[ZmCalBaseItem.EQUIPMENT]		= ZmMsg.suggestedResou
 ZmAttendeePicker.BOTTOM_LEGEND = {};
 ZmAttendeePicker.BOTTOM_LEGEND[ZmCalBaseItem.PERSON]		= ZmMsg.apptAttendees;
 ZmAttendeePicker.BOTTOM_LEGEND[ZmCalBaseItem.LOCATION]		= ZmMsg.apptLocations;
-ZmAttendeePicker.BOTTOM_LEGEND[ZmCalBaseItem.EQUIPMENT]		= ZmMsg.apptEquipment;
+ZmAttendeePicker.BOTTOM_LEGEND[ZmCalBaseItem.EQUIPMENT]		= ZmMsg.apptResources;
 
 // images for the bottom fieldset legend
 ZmAttendeePicker.ICON = {};
@@ -259,7 +257,6 @@ function(appt, mode, isDirty, apptComposeMode) {
 	if (this._rendered) {
 		this._chooser.reset();
 	} else {
-        this._loadSettings();
 		this._createPageHtml();
 		this._addDwtObjects();
 		this._rendered = true;
@@ -322,51 +319,21 @@ function(enable) {
 	}
 };
 
-ZmAttendeePicker.prototype._loadSettings = function(){
+ZmAttendeePicker.prototype._createPageHtml =
+function() {
 
-    if (!appCtxt.get(ZmSetting.CAL_SHOW_RESOURCE_TABS)) {
+	if (!appCtxt.get(ZmSetting.CAL_SHOW_RESOURCE_TABS)) {
 		ZmAttendeePicker.TOP_LEGEND[ZmCalBaseItem.PERSON]			= ZmMsg.findAttendeesRooms;
 		ZmAttendeePicker.BOTTOM_LEGEND[ZmCalBaseItem.PERSON]		= ZmMsg.apptAttendeesRooms;
 	}
 
-    if (this.type === ZmCalBaseItem.LOCATION) {
-        var fields_disabled = appCtxt.get(ZmSetting.CAL_LOCATION_FIELDS_DISABLED);
-        if (fields_disabled) {
-            fields_disabled = fields_disabled.split(",");
-            var fields_disabled_mapping = {
-                CAPACITY : ZmAttendeePicker["SF_CAPACITY"],
-                DESCRIPTION : ZmAttendeePicker["SF_DESCRIPTION"],
-                SITE : ZmAttendeePicker["SF_SITE"],
-                BUILDING : ZmAttendeePicker["SF_BUILDING"],
-                FLOOR : ZmAttendeePicker["SF_FLOOR"]
-            };
-            ZmAttendeePicker.SETTINGS_SEARCH_FIELDS[this.type] = [];
-            //hash map of disabled fields
-            var isFieldDisabled = {};
-            for ( var i = 0; i < fields_disabled.length; i++ ) {
-                if ( fields_disabled_mapping.hasOwnProperty(fields_disabled[i]) ) {
-                    isFieldDisabled[ fields_disabled_mapping[fields_disabled[i]] ] = true;
-                }
-            }
-            var fields = ZmAttendeePicker.SEARCH_FIELDS[this.type];
-            for ( var i = 0; i < fields.length; i++ ) {
-                if(!isFieldDisabled[fields[i]]) {
-		            ZmAttendeePicker.SETTINGS_SEARCH_FIELDS[this.type].push(fields[i]);
-    	        }
-            }
-        }
-    }
-};
-
-ZmAttendeePicker.prototype._createPageHtml =
-function() {
 	this._searchTableId	= Dwt.getNextId();
 
 	this._chooserSourceListViewDivId	= Dwt.getNextId();
 	this._chooserButtonsDivId	= Dwt.getNextId();
 	this._chooserTargetListViewDivId	= Dwt.getNextId();
 
-	var fields = ZmAttendeePicker.SETTINGS_SEARCH_FIELDS[this.type] || ZmAttendeePicker.SEARCH_FIELDS[this.type];
+	var fields = ZmAttendeePicker.SEARCH_FIELDS[this.type];
 	for (var i = 0; i < fields.length; i++) {
 		this._searchFieldIds[fields[i]] = Dwt.getNextId();
 	}
@@ -376,7 +343,7 @@ function() {
 
 	html[i++] = "<fieldset";
 	if (AjxEnv.isMozilla) {
-		html[i++] = " style='border:1px dotted #555'";
+		html[i++] = " style='border: 1px dotted #555555'";
 	}
 	html[i++] = "><legend style='color:#555555' id='" + this._searchTableId + "_legend'>";
 	html[i++] = ZmAttendeePicker.TOP_LEGEND[this.type];
@@ -386,7 +353,7 @@ function() {
 	html[i++] = this._searchTableId;
 	html[i++] = "'>";
 
-	html[i++] = "<table class='ZPropertySheet' cellspacing='6'><tr>";
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=3><tr>";
 
 	for (var j = 0; j < fields.length; j++) {
 		var isEven = ((j % 2) == 0);
@@ -394,13 +361,13 @@ function() {
 			html[i++] = "<tr>";
 		}
 		var sf = fields[j];
-        var addButton = (j == 1 || (this.type == ZmCalBaseItem.LOCATION && j === 0 && j === fields.length-1 ) );
+		var addButton = (j == 1);
 		var addMultLocsCheckbox = (this.type == ZmCalBaseItem.LOCATION && j == fields.length - 1);
 		i = this._getSearchFieldHtml(sf, html, i, addButton, addMultLocsCheckbox);
 		if (!isEven || j == fields.length - 1) {
             this._prevButtonId = Dwt.getNextId();
             this._nextButtonId = Dwt.getNextId();
-            html[i++] = "<td>&nbsp;</td>";
+            html[i++] = "<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>";
             html[i++] = "<td id='";
             html[i++] = this._prevButtonId;
             html[i++] = "'></td><td id='";
@@ -452,24 +419,24 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
 
 		if (this.showSelect || appCtxt.isOffline) {
             this._listSelectId = this._searchFieldIds[id];
-			html[i++] = "<td class='ZmFieldLabelRight' id='";
+			html[i++] = "<td align='right' id='";
             html[i++] = this._listSelectId+"_label";
             html[i++] = "'>";
 			html[i++] = ZmMsg[ZmAttendeePicker.SF_LABEL[id]];
-			html[i++] = ":</td><td id='";
+			html[i++] = ":&nbsp;</td><td id='";
 			html[i++] = this._listSelectId;
 			html[i++] = "' width='130'></td>";
 		} else {
 			html[i++] = "<td>&nbsp;</td>";
 		}
 	} else {
-		html[i++] = "<td class='ZmFieldLabelRight'>";
+		html[i++] = "<td align='right'>";
 		html[i++] = ZmMsg[ZmAttendeePicker.SF_LABEL[id]];
-		html[i++] = ":</td><td>";
+		html[i++] = ":&nbsp;</td><td>";
 		html[i++] = "<input type='text' autocomplete='off' size=30 nowrap id='";
 		html[i++] = this._searchFieldIds[id];
 		html[i++] = "' />";
-		html[i++] = "</td>";
+		html[i++] = "</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>";
 	}
 
 	if (addButton) {
@@ -478,30 +445,12 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
 		html[i++] = this._searchBtnTdId;
 		html[i++] = "'></td>";
 	}
-	if (addMultLocsCheckbox) {
+	else if (addMultLocsCheckbox) {
 		this._multLocsCheckboxId = Dwt.getNextId();
-        var fields = ZmAttendeePicker.SETTINGS_SEARCH_FIELDS[this.type] || ZmAttendeePicker.SEARCH_FIELDS[this.type];
-        if (fields.length === 1) {
-            html[i++] = "<tr>";
-        }
-        else if (fields.length === 2) {
-            html[i++] = "<tr>";
-            html[i++] = "<td></td>";
-            html[i++] = "<td></td>";
-            html[i++] = "<td></td>";
-            html[i++] = "<td></td>";
-            html[i++] = "<td></td>";
-            html[i++] = "<td></td>";
-        }
-        if (fields.length % 2 === 1) {
-            html[i++] = "<td></td>";
-            html[i++] = "<td></td>";
-            html[i++] = "<td></td>";
-        }
-		html[i++] = "<td><table><tr><td>";
+		html[i++] = "<td><table border=0 cellpadding=0 cellspacing=0><tr><td>";
 		html[i++] = "<input type='checkbox' id='";
 		html[i++] = this._multLocsCheckboxId;
-		html[i++] = "' /></td><td class='ZmFieldLabelLeft'><label for='";
+		html[i++] = "' /></td><td class='ZmFieldLabelLeft'>&nbsp;<label for='";
 		html[i++] = this._multLocsCheckboxId;
 		html[i++] = "'>";
 		html[i++] = ZmMsg.allowMultipleLocations;
@@ -572,7 +521,7 @@ function() {
 	chooserTargetListViewDiv.appendChild(targetListView);
 
 	// save search fields, and add handler for Return key to them
-	var fields = ZmAttendeePicker.SETTINGS_SEARCH_FIELDS[this.type] || ZmAttendeePicker.SEARCH_FIELDS[this.type];
+	var fields = ZmAttendeePicker.SEARCH_FIELDS[this.type];
 	for (var i = 0; i < fields.length; i++) {
 		var sf = fields[i];
 		var searchField = this._searchFields[sf] = document.getElementById(this._searchFieldIds[sf]);
@@ -590,7 +539,7 @@ function() {
 
 ZmAttendeePicker.prototype._addTabGroupMembers =
 function(tabGroup) {
-	var fields = ZmAttendeePicker.SETTINGS_SEARCH_FIELDS[this.type] || ZmAttendeePicker.SEARCH_FIELDS[this.type];
+	var fields = ZmAttendeePicker.SEARCH_FIELDS[this.type];
 	for (var i = 0; i < fields.length; i++) {
 		if (fields[i] != ZmAttendeePicker.SF_SOURCE) {
 			tabGroup.addMember(this._searchFields[fields[i]]);
@@ -851,7 +800,7 @@ function(isPagingSupported, more, list) {
 ZmAttendeePicker.prototype.searchCalendarResources =
 function(defaultSearch, sortBy, lastId, lastSortVal) {
 	var currAcct = this._editView.getCalendarAccount();
-	var fields = ZmAttendeePicker.SETTINGS_SEARCH_FIELDS[this.type] || ZmAttendeePicker.SEARCH_FIELDS[this.type];
+	var fields = ZmAttendeePicker.SEARCH_FIELDS[this.type];
 	var conds = [];
 	var value = (this.type == ZmCalBaseItem.LOCATION) ? "Location" : "Equipment";
 	conds.push({attr: "zimbraCalResType", op: "eq", value: value});
@@ -1005,7 +954,7 @@ function(defaultSearch, result) {
 
 ZmAttendeePicker.prototype._getDefaultFocusItem =
 function() {
-	var fields = ZmAttendeePicker.SETTINGS_SEARCH_FIELDS[this.type] || ZmAttendeePicker.SEARCH_FIELDS[this.type];
+	var fields = ZmAttendeePicker.SEARCH_FIELDS[this.type];
 	return this._searchFields[fields[0]];
 };
 
@@ -1188,14 +1137,11 @@ ZmApptChooserListView.prototype._getHeaderList =
 function() {
 	var headerList = [];
 	var cols = ZmAttendeePicker.COLS[this._chooserType];
-    if ( ZmAttendeePicker.SETTINGS_SEARCH_FIELDS[this._chooserType] && ZmAttendeePicker.SETTINGS_SEARCH_FIELDS[this._chooserType].length === 1 ){
-        var auto_width = true;
-    }
 	for (var i = 0; i < cols.length; i++) {
 		var id = cols[i];
 		var text = ZmMsg[ZmAttendeePicker.COL_LABEL[id]];
 		var image = ZmAttendeePicker.COL_IMAGE[id];
-        var width = ( auto_width ) ? null : ZmAttendeePicker.COL_WIDTH[id];
+		var width = ZmAttendeePicker.COL_WIDTH[id];
 		headerList.push(new DwtListHeaderItem({field:id, text:text, icon:image, width:width,
 											   resizeable:(id == ZmItem.F_NAME)}));
 	}

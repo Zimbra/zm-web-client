@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -58,7 +58,7 @@
 												<zm:forEachFolder var="folder">
 													<c:if test="${folder.isContactCreateTarget}">
 														<option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.id)}">selected </c:if> value="${folder.id}" />
-														${zm:getFolderName(pageContext, folder.id)}
+														${zm:cook(zm:getFolderName(pageContext, folder.id))}
 													</c:if>
 												</zm:forEachFolder>
 											</select>
@@ -83,45 +83,17 @@
                         </th>
                     </tr>
                     <c:forEach var="gMember" items="${requestScope.groupSearchContacts}">
-                        <tr>
-                            <c:set var="contactInfo" value='${fn:split(gMember,";")}'/>
-                            <td><input checked name="dlist" value='${fn:escapeXml(gMember)}' type="checkbox"></td>
-                            <td>${fn:escapeXml(contactInfo[0])}</td>
-                            <input type=hidden name="dlistId" value="${contactInfo[1]}"/>
-                            <input type=hidden name="dlistType" value="${contactInfo[2]}"/>
-                        </tr>
+                    <tr>
+                        <td><input checked name="dlist" value="${fn:escapeXml(gMember)}" type="checkbox"></td>
+                        <td>${fn:escapeXml(gMember)}</td>
+                    </tr>
                     </c:forEach>
-                    <c:forEach var="gMember" items="${paramValues.dlist}">
-                        <c:set var="contactInfo" value='${fn:split(gMember,";")}'/>
-                        <tr>
-                            <td><input checked name="dlist" value='${fn:escapeXml(gMember)}' type="checkbox"></td>
-                            <td>${fn:escapeXml(contactInfo[0])}</td>
-                            <input type=hidden name="dlistId" value="${contactInfo[1]}"/>
-                            <input type=hidden name="dlistType" value="${contactInfo[2]}"/>
-                        </tr>
+                    <c:forEach var="gMember" items="${contactValues}">
+                    <tr>
+                        <td><input checked name="dlist" value="${fn:escapeXml(gMember)}" type="checkbox"></td>
+                        <td>${fn:escapeXml(gMember)}</td>
+                    </tr>
                     </c:forEach>
-                    <c:if test="${not empty contact}">
-                        <%--
-                        Display the existing memebers of the contact group
-                        --%>
-                        <c:forEach var="gMember" items="${contact.groupMembers}">
-                            <c:set var="memberContact" value="${zm:groupMemberById(contact, gMember)}"/>
-                            <tr>
-                                <td><input checked name="dlist1" value='${fn:escapeXml(gMember)}' type="checkbox"></td>
-                                <c:choose>
-                                    <c:when test="${memberContact.isTypeI}">
-                                        <td>${fn:escapeXml(memberContact.id)}</td>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <td>${fn:escapeXml(memberContact.fullAddress)}</td>
-                                    </c:otherwise>
-                                </c:choose>
-                                <input type=hidden name="dlistId1" value="${gMember}"/>
-                                <input type=hidden name="dlistType1" value="${memberContact.isGalContact ? "G" : memberContact.isTypeI ? "I" : "C"}"/>
-                            </tr>
-                        </c:forEach>
-                    </c:if>
-                    <input type=hidden name="fileAs" value="8"/>
                 </table>
                 <c:if test="${empty contactValues and empty requestScope.groupSearchContacts}">
                     <div class="NoResults"><fmt:message key="addMembers"/></div>
@@ -148,7 +120,7 @@
                         <c:if test="${folder.isContactCreateTarget}">
                             <option <c:if test="${(empty contact and ((context.selectedId eq (folder.isMountPoint ? folder.canonicalId : folder.id)) or (empty context.selectedId and folder.isContacts)))
                             or (!empty contact and (contact.folderId eq (folder.isMountPoint ? folder.canonicalId : folder.id)))}">selected </c:if> value="${folder.id}">
-                            ${zm:getFolderName(pageContext, folder.id) }</option>
+                            ${zm:cook(zm:getFolderName(pageContext, folder.id))}</option>
                         </c:if>
                     </zm:forEachFolder>
                 </select>
@@ -260,7 +232,7 @@
         <tr><td colspan="4" class="sectionLabel" valign="top"><label for="notes"><fmt:message key="notes"/></label></td></tr>
 
         <tr><td colspan="4">
-                <textarea id="notes" rows="8" cols="60" style="width:90%" name="notes" tabindex="600">${contact != null ? contact.notes : ''}</textarea>
+                <textarea id="notes" rows="8" cols="60" style="width:90%" name="notes" tabindex="600">${contact != null ? fn:escapeXml(contact.notes) : ''}</textarea>
             </td>
         </tr>
         </table>
