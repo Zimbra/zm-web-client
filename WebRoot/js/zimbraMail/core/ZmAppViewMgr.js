@@ -1395,7 +1395,7 @@ function(delta) {
 
 	// ask skin for width of tree, rather than hard-coding name of tree div here
 	var currentWidth = skin.getTreeWidth();
-	if (!currentWidth) { return 0; }
+	if (currentWidth === null) { return 0; }
 
 	DBG.println(AjxDebug.DBG3, "************ sash callback **************");
 	DBG.println(AjxDebug.DBG3, "delta = " + delta);
