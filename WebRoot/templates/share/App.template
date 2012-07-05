@@ -87,9 +87,15 @@
 </template>
 
 <template id="share.App#FolderTooltip">
-	<table>
+
+<$ /* IE hack. max-width does not work as expected */ $>
+<$ if (AjxEnv.isIE && (data.name.length > 65)) { $>
+	<table style="width:350px;">
+<$ } else { $>
+    <table>
+<$ } $>
 	    <tr>
-	        <th colspan=2 style='padding-bottom:5px; text-align:left'>
+	        <th colspan=2 style='padding-bottom:5px; text-align:left; max-width:350px;'>
                 <$= AjxStringUtil.htmlEncode(data.name) $>
             </th>
 	    </tr>
