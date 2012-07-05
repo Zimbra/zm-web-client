@@ -732,9 +732,11 @@ ZmConvView2Header = function(params) {
 	this._convView = this.parent;
 	this._conv = this.parent._item;
 	this._controller = this.parent._controller;
-	this._dblClickIsolation = true;	// ignore single click that is part of dbl click
 	
-	this.addListener(DwtEvent.ONDBLCLICK, this._dblClickListener.bind(this));
+	if (!this._convView._isStandalone()) {
+		this._dblClickIsolation = true;	// ignore single click that is part of dbl click
+		this.addListener(DwtEvent.ONDBLCLICK, this._dblClickListener.bind(this));
+	}
 	this.addListener(DwtEvent.ONMOUSEUP, this._mouseUpListener.bind(this));
 	
 	this._createHtml();
@@ -827,6 +829,7 @@ function(ev) {
 // Open a msg into a tabbed view
 ZmConvView2Header.prototype._dblClickListener =
 function(ev) {
+	if (this._convView._isStandalone()) { return; }
 	var conv = ev.dwtObj && ev.dwtObj.parent && ev.dwtObj.parent._item;
 	if (conv) {
 		AjxDispatcher.run("GetConvController", conv.id).show(conv, this._controller);
