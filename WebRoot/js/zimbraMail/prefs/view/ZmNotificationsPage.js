@@ -210,7 +210,10 @@ ZmNotificationsPageForm = function(params) {
 	DwtForm.apply(this, arguments);
 
     // hide DwtSelect options which overflow the container
-    this._items.DEVICE_EMAIL_CARRIER.control.dynamicButtonWidth();
+	var select = this.getControl("DEVICE_EMAIL_CARRIER");
+	if (select) {
+		select.dynamicButtonWidth();
+	}
 
 	this._regionSelectionListener = new AjxListener(this, this._handleRegionSelection);
 
