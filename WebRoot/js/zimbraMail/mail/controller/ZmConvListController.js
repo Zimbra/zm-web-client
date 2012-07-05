@@ -378,8 +378,7 @@ function(viewId, callback, newViewId) {
 	if (this._convView && this._convView.isDirty() && (!newViewType || switchingView)) {
 		var ps = this._popShield = this._popShield || appCtxt.getYesNoMsgDialog();
 		ps.reset();
-		var msg = switchingView ? ZmMsg.convViewSwitch : ZmMsg.convViewCancel;
-		ps.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+		ps.setMessage(ZmMsg.convViewCancel, DwtMessageDialog.WARNING_STYLE);
 		ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this, [switchingView, callback]);
 		ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this, [switchingView, callback]);
 		ps.popup();

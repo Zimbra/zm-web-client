@@ -392,11 +392,21 @@ function(loaded) {
 	return list;
 };
 
+/**
+ * Expands or collapses the conv view as a whole by expanding or collapsing each of its message views. If
+ * at least one message view is collapsed, then expansion is done.
+ * 
+ * @param {boolean}		expanded		if true, expand message views; otherwise, collapse them
+ * @param {boolean}		force			if true, do not check for unsent quick reply content
+ */
 ZmConvView2.prototype.setExpanded =
-function(expanded) {
+function(expanded, force) {
 	
 	var list = this.getExpanded(!expanded);
 	if (list.length && !expanded) {
+		if (!force && !this._controller.popShield(null, this.setExpanded.bind(this, expanded, true))) {
+			return;
+		}
 		for (var i = 0; i < this._msgViewList.length; i++) {
 			var msgView = this._msgViews[this._msgViewList[i]];
 			msgView._setExpansion(false);
@@ -1598,7 +1608,10 @@ function(id, op, ev) {
 };
 
 ZmMailMsgCapsuleView.prototype._handleReplyLink =
-function(id, op, ev) {
+function(id, op, ev, force) {
+	if (!force && !this._controller.popShield(null, this._handleReplyLink.bind(this, id, op, ev, true))) {
+		return;
+	}
 	this._convView.setReply(this._msg, this, op);
 	var linkInfo = this._linkInfo && this._linkInfo[id];
 	var link = linkInfo && linkInfo.linkId && document.getElementById(linkInfo.linkId);
