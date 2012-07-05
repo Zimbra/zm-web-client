@@ -213,9 +213,7 @@ function(ev) {
 
 ZmConvController.prototype._close =
 function(ev) {
-	var itemClosed = this.getItemView();
 	this._app.popView();
-	itemClosed.dispose();
 };
 
 ZmConvController.prototype._navBarListener =
