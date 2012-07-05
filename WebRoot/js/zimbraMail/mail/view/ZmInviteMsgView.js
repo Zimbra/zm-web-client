@@ -478,7 +478,11 @@ function(subs, sentBy, sentByAddr, obo) {
 	if (this._invite.hasCounterMethod() &&
 		this._msg.folderId != ZmFolder.ID_SENT)
 	{
-		subs.counterInvMsg = AjxMessageFormat.format(ZmMsg.counterInviteMsg, [(sentBy && sentBy.name ) ? sentBy.name : sentByAddr]);
+        var attendeeAddr = this._invite.getAttendees();
+        attendeeAddr = attendeeAddr && attendeeAddr[0] && attendeeAddr[0].a;
+        var from = (sentBy && sentBy.name ) ? sentBy.name : sentByAddr;
+		subs.counterInvMsg =  (attendeeAddr && (attendeeAddr == from)) ?
+            AjxMessageFormat.format(ZmMsg.counterInviteMsg, [from]):AjxMessageFormat.format(ZmMsg.counterInviteMsgOnBehalfOf, [from, attendeeAddr]);
 	}
 	// if this an action'ed invite, show the status banner
 	else if (isOrganizer && this._invite.hasAttendeeResponse()) {

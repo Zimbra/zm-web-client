@@ -1256,6 +1256,7 @@ function(callback, errorCallback, viewMode) {
 	var acct = calendar.getAccount();
 	var accountName = this.getRemoteFolderOwner();
 	var localAcctName = this.getFolder().getAccount().name;
+    var cif = this._currentlyLoaded && this._currentlyLoaded.cif;
 	var isOnBehalfOf = accountName && localAcctName && localAcctName != accountName;
 
 	var mailFromAddress = this.getMailFromAddress();
@@ -1263,7 +1264,14 @@ function(callback, errorCallback, viewMode) {
 		var e = soapDoc.set("e", null, m);
 		e.setAttribute("a", mailFromAddress);
 		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
-	}
+	} else if (isOnBehalfOf || cif) {
+        var e = soapDoc.set("e", null, m);
+        e.setAttribute("a", isOnBehalfOf ? accountName: cif);
+        e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
+        e = soapDoc.set("e", null, m);
+        e.setAttribute("a", localAcctName);
+        e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.SENDER]);
+    }
 
 	if(this.organizer) {
 		var orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer);
