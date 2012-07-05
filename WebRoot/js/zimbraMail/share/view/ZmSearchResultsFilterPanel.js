@@ -960,7 +960,7 @@ function(menu) {
 					}); 
 			menuItem.setText(tag.getName());
 			menuItem.setImage(tag.getIconWithColor());
-			menuItem.setData(ZmSearchFilter.DATA_KEY, tag.getName());
+			menuItem.setData(ZmSearchFilter.DATA_KEY, tag.getName(false, null, true));
 		}
 	}
 	menu.addSelectionListener(this._selectionListener.bind(this));
