@@ -406,10 +406,7 @@ function(params) {
 	params.attrs = {tn: tagName};
 	params.action = doTag ? "tag" : "!tag";
     params.actionText = doTag ? ZmMsg.actionTag : ZmMsg.actionUntag;
-	if (params.tag && params.tag.name) {
-		params.actionArg = AjxStringUtil.htmlEncode(params.tag.name);
-	}
-    
+	params.actionArg = params.tag && params.tag.name;
 
 	this._itemAction(params);
 };
@@ -1061,7 +1058,7 @@ ZmList.getActionSummary =
 function(text, num, type, arg) {
 	var typeTextAuto = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num);
 	var typeTextSingular = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], 1);
-	return AjxMessageFormat.format(text, [num, typeTextAuto, arg, typeTextSingular]);
+	return AjxMessageFormat.format(text, [num, typeTextAuto, AjxStringUtil.htmlEncode(arg), typeTextSingular]);
 };
 
 /**

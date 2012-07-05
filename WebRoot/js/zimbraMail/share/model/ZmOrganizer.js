@@ -1252,7 +1252,7 @@ function(newParent, noUndo, actionText, batchCmd, organizerName) {
  */
 ZmOrganizer.prototype._delete =
 function(batchCmd) {
-	DBG.println(AjxDebug.DBG1, "deleting: " + this.name + ", ID: " + this.id);
+	DBG.println(AjxDebug.DBG1, "deleting: " + AjxStringUtil.htmlEncode(this.name) + ", ID: " + this.id);
 	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK || this.type == ZmOrganizer.BRIEFCASE) &&
 					 (this.nId == ZmFolder.ID_SPAM || this.nId == ZmFolder.ID_TRASH));
 	// make sure we're not deleting a system object (unless we're emptying SPAM or TRASH)
@@ -1957,31 +1957,38 @@ function(child, sortFunction) {
  */
 ZmOrganizer.prototype._organizerAction =
 function(params) {
-	var cmd = ZmOrganizer.SOAP_CMD[this.type];
-	var soapDoc = AjxSoapDoc.create(cmd + "Request", "urn:zimbraMail");
-	var actionNode = soapDoc.set("action");
-	actionNode.setAttribute("op", params.action);
-	actionNode.setAttribute("id", params.id || this.id);
+	var cmd = ZmOrganizer.SOAP_CMD[this.type] + "Request";
+	var request = {
+		_jsns: "urn:zimbraMail",
+		action : {
+			op: params.action,
+			id: params.id || this.id
+		}
+	};
+	var jsonObj = {};
+	jsonObj[cmd] = request;
+
 	for (var attr in params.attrs) {
 		if (AjxEnv.isIE) {
 			params.attrs[attr] += ""; //To string
 		}
-		actionNode.setAttribute(attr, params.attrs[attr]);
+		request.action[attr] = params.attrs[attr];
 	}
 	var actionController = appCtxt.getActionController();
 	actionController.dismiss();
 	var actionLogItem = (!params.noUndo && actionController && actionController.actionPerformed({op: params.action, id: params.id || this.id, attrs: params.attrs})) || null;
 	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, [params, actionLogItem]);
 	if (params.batchCmd) {
-        params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
- 	} else {
+        params.batchCmd.addRequestParams(jsonObj, respCallback, params.errorCallback);
+ 	}
+	else {
 		var accountName;
 		if (appCtxt.multiAccounts) {
 			accountName = (this.account) 
 				? this.account.name : appCtxt.accountList.mainAccount.name;
 		}
 		appCtxt.getAppController().sendRequest({
-			soapDoc: soapDoc,
+			jsonObj: jsonObj,
 			asyncMode: true,
 			accountName: accountName,
 			callback: respCallback,
@@ -2004,7 +2011,6 @@ function(params, actionLogItem, result) {
 	if (params.actionText) {
 		var actionController = appCtxt.getActionController();
 		var summary = ZmOrganizer.getActionSummary(params.actionText, params.numItems || 1, this.type, params.actionArg);
-		summary = AjxStringUtil.htmlEncode(summary); //encode html special chars such as < and > so won't be interpreted as html (both for security and for not losing visibility of characters)
 		var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
 		if (undoLink && actionController) {
 			actionController.onPopup();
@@ -2019,7 +2025,7 @@ ZmOrganizer.getActionSummary =
 function(text, num, type, arg) {
 	var typeTextAuto = ZmMsg[ZmOrganizer.MSG_KEY[type]];
 	var typeTextSingular = ZmMsg[ZmOrganizer.MSG_KEY[type]];
-	return AjxMessageFormat.format(text, [num, typeTextAuto, arg, typeTextSingular]);
+	return AjxMessageFormat.format(text, [num, typeTextAuto, AjxStringUtil.htmlEncode(arg), typeTextSingular]);
 };
 
 /**

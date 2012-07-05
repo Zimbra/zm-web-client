@@ -177,18 +177,23 @@ ZmTag.getIcon = function(color) {
  */
 ZmTag.create =
 function(params) {
-	var soapDoc = AjxSoapDoc.create("CreateTagRequest", "urn:zimbraMail");
-	var tagNode = soapDoc.set("tag");
-	tagNode.setAttribute("name", params.name);
+	var request = {_jsns: "urn:zimbraMail"};
+	var jsonObj = {CreateTagRequest: request};
+	request.tag = {name: params.name}
+
     if (params.rgb) {
-        tagNode.setAttribute("rgb", params.rgb);
+        request.tag.rgb = params.rgb;
     }
     else {
-        var color = ZmOrganizer.checkColor(params.color) || ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
-        tagNode.setAttribute("color", color);
+        request.tag.color = ZmOrganizer.checkColor(params.color) || ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
     }
 	var errorCallback = new AjxCallback(null, ZmTag._handleErrorCreate, params);
-	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback, accountName:params.accountName});
+	appCtxt.getAppController().sendRequest({
+			jsonObj: jsonObj,
+			asyncMode: true,
+			errorCallback: errorCallback,
+			accountName: params.accountName
+	});
 };
 
 /**

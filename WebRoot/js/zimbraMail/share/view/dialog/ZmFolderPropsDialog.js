@@ -190,7 +190,7 @@ ZmFolderPropsDialog.prototype._handleOkButton =
 function(event) {
 
 	// New batch command, stop on error
-	var batchCommand = new ZmBatchCommand();
+	var batchCommand = new ZmBatchCommand(null, null, true);
     var saveState = {
         commandCount: 0,
         errorMessage: []
