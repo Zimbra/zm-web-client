@@ -1096,7 +1096,7 @@ function(params, msg, finalChoice) {
 		if (forwardAsAttachments) {
 			action = params.action = ZmOperation.FORWARD_ATT;
 			// get msg Id's for each conversation selected
-			var batchCmd = new ZmBatchCommand();
+			var batchCmd = new ZmBatchCommand(false, null, true);
 			var callback = new AjxCallback(this, this._handleLoadMsgs, [params, selection]);
 			for (var i = 0; i < selCount; i++) {
 				var item = selection[i];

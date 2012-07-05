@@ -186,6 +186,7 @@ function(params, callback, result) {
 ZmConv.prototype.loadMsgs =
 function(params, callback, batchCmd) {
 
+	params = params || {};
 	var jsonObj = {GetConvRequest:{_jsns:"urn:zimbraMail"}};
 	var request = jsonObj.GetConvRequest;
 	var c = request.c = {
