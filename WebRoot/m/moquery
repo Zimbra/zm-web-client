@@ -54,7 +54,7 @@
         <span class="td label" style="width:20%;">
             <fmt:message key="find"/>
         </span>
-        <span class="td value">
+        <span class="td">
               <input type="text" name="sq" class="Textarea"/>
         </span>
     </div>
@@ -141,16 +141,21 @@
     <span class='td label'>
         <fmt:message key="MO_size"/>
     </span>
-    <span class='td value'>
-            <select name="sq_size_comp" class="sq_size_comp">
-                <option value="larger"><fmt:message key="MO_larger"/></option>
-                <option value="smaller"><fmt:message key="MO_smaller"/></option>
-            </select>
-            <input type="text" name="sq_size" class="sq_size" size="5"/>
-            <select name="sq_size_units" class="sq_size_units">
-                <option value="kb">KB</option>
-                <option value="mb">MB</option>
-            </select>
+
+    <span class="td value sq_size_comp" style="float:left; display:block">
+        <select name="sq_size_comp">
+            <option value="larger"><fmt:message key="MO_larger"/></option>
+            <option value="smaller"><fmt:message key="MO_smaller"/></option>
+        </select>
+    </span>
+
+    <input type="text" name="sq_size" class="td sq_size" size="5" style="float:left"/>
+
+    <span class="td value sq_size_units" style="float:left; display:block">
+        <select name="sq_size_units">
+            <option value="kb">KB</option>
+            <option value="mb">MB</option>
+        </select>
     </span>
     </div>
     <div class="tr">
@@ -180,7 +185,7 @@
         <span class='td label'>
             <fmt:message key="MO_tocc"/>
         </span>
-        <span class='td value'>
+        <span class='td'>
             <input type="text" name="sq_tocc" class="Textarea"/>
         </span>
     </div>
@@ -189,7 +194,7 @@
         <span class='td label' style="border:0px;">
             <fmt:message key="subject"/>
         </span>
-        <span class='td value' style="border:0px;">
+        <span class='td' style="border:0px;">
             <input type="text" name="sq_subject" class="Textarea"/>
         </span>
     </div>
