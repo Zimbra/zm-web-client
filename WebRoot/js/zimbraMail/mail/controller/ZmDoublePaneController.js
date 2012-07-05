@@ -207,7 +207,9 @@ ZmDoublePaneController.prototype._initializeNavToolBar =
 function(view) {
 	var toolbar = this._toolbar[view];
 	this._itemCountText[ZmSetting.RP_BOTTOM] = toolbar.getButton(ZmOperation.TEXT);
-	this._itemCountText[ZmSetting.RP_BOTTOM].setScrollStyle(Dwt.CLIP);
+	if (AjxEnv.isFirefox) {
+		this._itemCountText[ZmSetting.RP_BOTTOM].setScrollStyle(Dwt.CLIP);
+	}
 };
 
 ZmDoublePaneController.prototype._getRightSideToolBarOps =
