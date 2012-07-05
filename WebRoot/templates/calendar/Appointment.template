@@ -57,8 +57,8 @@
                 <tr>
                     <td></td>
                     <td colspan='4'>
-                        <div id='${id}_attendee_status' class='ZmLocationStatusConflict' x-display='inline-block'>
-                            <$= AjxImg.getImageHtml("Warning_12", "display:inline-block;padding-right:4px;") + ZmMsg.attendeeConflict $></div>
+                        <div id='${id}_attendee_status' class='ZmLocationStatusConflict' style="float:left;" x-display='inline-block'>
+                            <$= AjxImg.getImageHtml("Warning_12", "display:inline-block;padding-right:4px;float:left;") + ZmMsg.attendeeConflict $></div>
                         <div id='${id}_suggest_time' class='fakeAnchor ZmSuggestLink' x-display='inline-block'> <$= ZmMsg.suggestATime $></div>
                     </td>
                 </tr>
