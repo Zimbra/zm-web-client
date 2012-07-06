@@ -2237,7 +2237,7 @@ ZmCalItem.prototype._addAttendeesToSoap =
 function(soapDoc, inv, m, notifyList, accountName) {
 	// if this appt is on-behalf-of, set the from address to that person
     if (this.isOrganizer() && accountName) {
-        e = soapDoc.set("e", null, m);
+        var e = soapDoc.set("e", null, m);
         e.setAttribute("a", accountName);
         e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
     }
@@ -2272,17 +2272,20 @@ function(soapDoc, m, cancel) {
 			soapDoc.set("content", content, partNode);
 		}
 	} else {
-		var tcontent = this.notesTopPart ? this.notesTopPart.getContent() : "";
-		var textPart = soapDoc.set("mp", null, mp);
-		textPart.setAttribute("ct", ZmMimeTable.TEXT_PLAIN);
-		soapDoc.set("content", (this._includeEditReply ? tcontent : AjxBuffer.concat(tprefix, tcontent)), textPart);
-
-		//bug fix #9592 - html encode the text before setting it as the "HTML" part
-		var hcontent = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(tcontent));
-		var htmlPart = soapDoc.set("mp", null, mp);
-	    htmlPart.setAttribute("ct", ZmMimeTable.TEXT_HTML);
-		var html = "<html><body>" + (this._includeEditReply ? hcontent : AjxBuffer.concat(hprefix, hcontent)) + "</body></html>";
-		soapDoc.set("content", html, htmlPart);
+        var ntp = this.notesTopPart;
+		var tcontent = ntp ? ntp.getContent() : "";
+        var pct = ntp ? ntp.getContentType() : ZmMimeTable.TEXT_PLAIN;
+		var contentPart = soapDoc.set("mp", null, mp);
+        contentPart.setAttribute("ct", pct);
+        if (pct == ZmMimeTable.TEXT_HTML) {
+            //bug fix #9592 - html encode the text before setting it as the "HTML" part
+            var hcontent = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(tcontent));
+            var html = "<html><body>" + (this._includeEditReply ? hcontent : AjxBuffer.concat(hprefix, hcontent)) + "</body></html>";
+            soapDoc.set("content", html, contentPart);
+        }
+        else {
+		    soapDoc.set("content", (this._includeEditReply ? tcontent : AjxBuffer.concat(tprefix, tcontent)), contentPart);
+        }
 	}
 };
 
