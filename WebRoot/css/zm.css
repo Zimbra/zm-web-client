@@ -911,6 +911,22 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	border-bottom-width:0;
 }
 
+.Conv2Messages .Last {
+	background-color:@lighten(SelC,33)@;
+	border-color:@darken(SelC,10)@;
+	@transition@:all 1000ms ease-out;
+}
+
+.Conv2Messages .Last .date {
+	background-color:@lighten(SelC,33)@;
+	@transition@:all 1000ms ease-out;
+}
+
+.Conv2Messages .Last .ZmConvListFragment {
+	color:@lighten(TxtC,40)@;
+	@transition@:all 1000ms ease-out;
+}
+
 /* The quick reply view opens up under a msg when a reply link is clicked */
 
 .Conv2Reply {
