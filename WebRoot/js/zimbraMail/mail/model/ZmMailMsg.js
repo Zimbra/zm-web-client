@@ -2158,12 +2158,12 @@ function(msgNode) {
 				this.setInviteDescriptionContent(ZmMimeTable.TEXT_PLAIN, desc);
 			}
 
-			if (!appCtxt.get(ZmSetting.CALENDAR_ENABLED) &&
-				this.invite.type == "appt")
-			{
+			if (!appCtxt.get(ZmSetting.CALENDAR_ENABLED) && this.invite.type == "appt") {
 				this.flagLocal(ZmItem.FLAG_ATTACH, true);
 			}
-            this._loaded = true;
+			if (!this.invite.isEmpty()) {
+            	this._loaded = true;
+			}
 		} catch (ex) {
 			// do nothing - this means we're trying to load an ZmInvite in new
 			// window, which we dont currently load (re: support).
