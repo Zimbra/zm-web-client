@@ -1134,6 +1134,9 @@ function() {
 	if (this._isDraft) {
 		classes.push("draft");
 	}
+	if (this._lastCollapsed) {
+		classes.push("Last");
+	}
 	this.setClassName(classes.join(" "));
 };
 
@@ -1665,7 +1668,6 @@ function(expanded) {
 		}
 		this._convView._header._setExpandIcon();
 	}
-	this._setHeaderClass();
 
 	if (this._expanded) {
 		// create bubbles
@@ -1673,8 +1675,10 @@ function(expanded) {
 		if (this._controller._checkKeepReading) {
 			this._controller._checkKeepReading();
 		}
+		this._lastCollapsed = false;
 	}
 
+	this._setHeaderClass();
 	this._resetIframeHeightOnTimer();
 };
 
@@ -2023,7 +2027,21 @@ function(ev) {
 	}
 	
 	if (ev.button == DwtMouseEvent.LEFT) {
-		return msgView._selectionListener(ev);
+		var returnValue = msgView._selectionListener(ev);
+		msgView._lastCollapsed = false;
+		if (!msgView.isExpanded()) {
+			msgView._lastCollapsed = true;
+			if (convView._lastCollapsedId) {
+				var lastMsgView = convView._msgViews[convView._lastCollapsedId];
+				if (lastMsgView) {
+					lastMsgView._lastCollapsed = false;
+					lastMsgView._setHeaderClass();
+				}
+			}
+			convView._lastCollapsedId = msgView._msgId;
+		}
+		msgView._setHeaderClass();
+		return returnValue;
 	}
 	else if (ev.button == DwtMouseEvent.RIGHT) {
 		return msgView._actionListener(ev);
