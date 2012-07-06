@@ -37,7 +37,6 @@ ZmGroupView = function(parent, controller) {
 
 	this._controller = controller;
 
-	this._offset = 0;
 	this._defaultQuery = ".";
 	this._view = ZmId.VIEW_GROUP;
 
@@ -46,6 +45,12 @@ ZmGroupView = function(parent, controller) {
 
 	this._changeListener = new AjxListener(this, this._groupChangeListener);
 	this._detailedSearch = appCtxt.get(ZmSetting.DETAILED_CONTACT_SEARCH_ENABLED);
+
+	/* following few are used in ZmContactPicker methods we delegate to from here */
+	this._ascending = true; 
+	this._emailList = new AjxVector();
+	this._includeContactsWithNoEmail = true;
+
 	this._groupMemberMods = {};
 	this._tabGroup = new DwtTabGroup(this._htmlElId);
 	
@@ -66,15 +71,6 @@ function() {
 
 ZmGroupView.DIALOG_X = 50;
 ZmGroupView.DIALOG_Y = 100;
-
-ZmGroupView.SEARCH_BASIC = "search";
-ZmGroupView.SEARCH_NAME = "name";
-ZmGroupView.SEARCH_EMAIL = "email";
-ZmGroupView.SEARCH_DEPT = "dept";
-ZmGroupView.SEARCH_PHONETIC = "phonetic";
-
-ZmGroupView.SHOW_ON_GAL = [ZmGroupView.SEARCH_BASIC, ZmGroupView.SEARCH_NAME, ZmGroupView.SEARCH_EMAIL, ZmGroupView.SEARCH_DEPT];
-ZmGroupView.SHOW_ON_NONGAL = [ZmGroupView.SEARCH_BASIC, ZmGroupView.SEARCH_NAME, ZmGroupView.SEARCH_PHONETIC, ZmGroupView.SEARCH_EMAIL];
 
 ZmGroupView.MAIL_POLICY_ANYONE = "ANYONE";
 ZmGroupView.MAIL_POLICY_MEMBERS = "MEMBERS";
@@ -154,7 +150,7 @@ function(contact, isDirty) {
 	}
 	
 	this._setFields();
-	this._offset = 0;
+	this._emailListOffset = 0;
 	this._isDirty = isDirty;
 
 	if (contact.isDistributionList()) {
@@ -169,7 +165,7 @@ function(contact, isDirty) {
 		this._groupNameInput.addListener(DwtEvent.ONBLUR, this._controller.updateTabTitle.bind(this._controller));
 	}
 
-	this.search();
+	this.search(null, null, true);
 };
 
 /**
@@ -568,85 +564,6 @@ function() {
 	}
 };
 
-ZmGroupView.prototype.search =
-function() {
-	var query;
-	var queryHint = [];
-	var conds = [];
-	if (this._detailedSearch) {
-		var nameQuery = this.getSearchFieldValue(ZmGroupView.SEARCH_NAME);
-		var emailQuery = this.getSearchFieldValue(ZmGroupView.SEARCH_EMAIL);
-		var deptQuery = this.getSearchFieldValue(ZmGroupView.SEARCH_DEPT);
-		var phoneticQuery = this.getSearchFieldValue(ZmGroupView.SEARCH_PHONETIC);
-		var isGal = this._searchInSelect && (this._searchInSelect.getValue() == ZmContactsApp.SEARCHFOR_GAL);
-		query = nameQuery || "";
-		if (emailQuery) {
-			if (isGal) {
-				conds.push([{attr:ZmContact.F_email, op:"has", value: emailQuery},
-				{attr:ZmContact.F_email2, op:"has", value: emailQuery},
-				{attr:ZmContact.F_email3, op:"has", value: emailQuery}]);
-			} else {
-				queryHint.push("to:"+emailQuery+"*");
-			}
-		}
-		if (deptQuery && isGal) {
-			conds.push({attr:ZmContact.F_department, op:"has", value: deptQuery});
-		}
-		if (phoneticQuery && !isGal) {
-			var condArr = [];
-			var phoneticQueryPieces = phoneticQuery.split(/\s+/);
-			for (var i=0; i<phoneticQueryPieces.length; i++) {
-				condArr.push("#"+ZmContact.F_phoneticFirstName + ":" + phoneticQueryPieces[i]);
-				condArr.push("#"+ZmContact.F_phoneticLastName + ":" + phoneticQueryPieces[i]);
-			}
-			queryHint.push(condArr.join(" || "));
-		}
-	} else {
-		query = this.getSearchFieldValue(ZmGroupView.SEARCH_BASIC);
-	}
-
-	if (this._searchInSelect) {
-		var searchFor = this._searchInSelect.getValue();
-		this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
-			? ZmItem.CONTACT
-			: ZmId.SEARCH_GAL;
-		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-			queryHint.push(ZmSearchController.generateQueryForShares([ZmId.ITEM_CONTACT]) || "is:local");
-		} else if (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) {
-			queryHint.push("is:local");
-		}
-	} else {
-		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)
-			? ZmItem.CONTACT
-			: ZmId.SEARCH_GAL;
-
-		if (this._contactSource == ZmItem.CONTACT) {
-			queryHint.push("is:local");
-		}
-	}
-
-
-    if (!query.length && this._contactSource == ZmId.SEARCH_GAL) {
-		query = this._defaultQuery;
-	}
-
-    if (this._contactSource == ZmItem.CONTACT) {
-        query = query.replace(/\"/g, '\\"');
-        query = query ? "\"" + query + "\"":"";
-    }
-
-	var params = {
-		obj: this,
-		ascending: true,
-		query: query,
-		queryHint: queryHint.join(" "),
-		conds: conds,
-		offset: this._offset,
-		respCallback: this._searchRespCallback
-	};
-	ZmContactsHelper.search(params);
-};
-
 
 // Private methods
 
@@ -680,8 +597,9 @@ function() {
 
 ZmGroupView.prototype.getSearchFieldValue =
 function(fieldId) {
-	if (!fieldId && !this._detailedSearch)
-		fieldId = ZmGroupView.SEARCH_BASIC;
+	if (!fieldId && !this._detailedSearch) {
+		fieldId = ZmContactPicker.SEARCH_BASIC;
+	}
 	var field = this._searchField[fieldId];
 	return field && AjxStringUtil.trim(field.value) || "";
 };
@@ -882,26 +800,17 @@ function() {
 		this._addNewButton.setImage("LeftArrow");
 	}
 
+	var fieldMap = {};
+	var rowMap = {};
+	ZmContactPicker.prototype.mapFields.call(this, fieldMap, rowMap);
+
 	this._searchField = {};
-	this._searchRow = {};
-	var fieldMap = {}, field, rowMap = {};
-	if (this._detailedSearch) {
-		fieldMap[ZmGroupView.SEARCH_NAME] = this._htmlElId + "_searchNameField";
-		fieldMap[ZmGroupView.SEARCH_EMAIL] = this._htmlElId + "_searchEmailField";
-		fieldMap[ZmGroupView.SEARCH_DEPT] = this._htmlElId + "_searchDepartmentField";
-		fieldMap[ZmGroupView.SEARCH_PHONETIC] = this._htmlElId + "_searchPhoneticField";
-		rowMap[ZmGroupView.SEARCH_NAME] = this._htmlElId + "_searchNameRow";
-		rowMap[ZmGroupView.SEARCH_EMAIL] = this._htmlElId + "_searchEmailRow";
-		rowMap[ZmGroupView.SEARCH_DEPT] = this._htmlElId + "_searchDepartmentRow";
-		rowMap[ZmGroupView.SEARCH_PHONETIC] = this._htmlElId + "_searchPhoneticRow";
-	} else {
-		fieldMap[ZmGroupView.SEARCH_BASIC] = this._htmlElId + "_searchField";
-		rowMap[ZmGroupView.SEARCH_BASIC] = this._htmlElId + "_searchRow";
-	}
 	for (var fieldId in fieldMap) {
-		field = Dwt.byId(fieldMap[fieldId]);
+		var field = Dwt.byId(fieldMap[fieldId]);
 		if (field) this._searchField[fieldId] = field;
 	}
+	
+	this._searchRow = {};
 	for (var rowId in rowMap) {
 		row = Dwt.byId(rowMap[rowId]);
 		if (row) this._searchRow[rowId] = row;
@@ -1265,13 +1174,6 @@ function() {
 
 // Listeners
 
-ZmGroupView.prototype._searchButtonListener =
-function(ev) {
-	this._offset = 0;
-	this.search();
-};
-
-
 ZmGroupView.prototype._groupMembersSelectionListener =
 function(ev){
 	var selection = this._groupListView.getSelection();
@@ -1313,17 +1215,6 @@ function(ev) {
 		this._updateSearchRows(newValue);
 		this._searchButtonListener();
 	}
-};
-
-ZmGroupView.prototype._pageListener =
-function(ev) {
-	if (ev.item == this._prevButton) {
-		this._offset -= ZmContactsApp.SEARCHFOR_MAX;
-	} else {
-		this._offset += ZmContactsApp.SEARCHFOR_MAX;
-	}
-
-	this.search();
 };
 
 ZmGroupView.prototype._delListener =
@@ -1554,23 +1445,38 @@ function(value, append) {
 	}
 };
 
-ZmGroupView.prototype._handleResponseSearch =
-function(result) {
-	var resp = result.getResponse();
 
-	var more = resp.getAttribute("more");
-	this._prevButton.setEnabled(this._offset > 0);
-	this._nextButton.setEnabled(more);
-
-	var list = ZmContactsHelper._processSearchResponse(resp, true);
-	this._listview.setItems(list);
-	this._resetSearchColHeaders();
-
-	this._addButton.setEnabled(list.length > 0);
-	this._addAllButton.setEnabled(list.length > 0);
-
-	this._searchButton.setEnabled(true);
+/**
+ * called from ZmContactPicker.prototype._showResults
+ * @param list
+ */
+ZmGroupView.prototype._setResultsInView =
+function(list) {
+	var arr = list.getArray();
+	this._listview.setItems(arr);
+	this._addButton.setEnabled(arr.length > 0);
+	this._addAllButton.setEnabled(arr.length > 0);
 };
+
+/**
+ * called from ZmContactPicker.prototype._showResults
+ */
+ZmGroupView.prototype._setNoResultsHtml =
+function(list) {
+	//no need to do anything here. the setItems called from _setResultsInView sets the "no results found" if list is empty. (via call to addItems)
+};
+
+/**
+ * reuse functions from ZmContactPicker, some called from ZmContactPicker code we re-use here.
+ */
+ZmGroupView.prototype.search = ZmContactPicker.prototype.search;
+ZmGroupView.prototype._handleResponseSearch = ZmContactPicker.prototype._handleResponseSearch;
+ZmGroupView.prototype._resetResults = ZmContactPicker.prototype._resetResults;
+ZmGroupView.prototype._searchButtonListener = ZmContactPicker.prototype._searchButtonListener;
+ZmGroupView.prototype._pageListener = ZmContactPicker.prototype._pageListener;
+ZmGroupView.prototype._showResults = ZmContactPicker.prototype._showResults;
+ZmGroupView.prototype.getSubList = ZmContactPicker.prototype.getSubList;
+
 
 ZmGroupView.prototype._tagChangeListener = function(ev) {
 	if (ev.type != ZmEvent.S_TAG) { return; }
@@ -1591,7 +1497,7 @@ ZmGroupView.prototype._groupChangeListener = function(ev) {
 
 ZmGroupView.prototype._updateSearchRows =
 function(searchFor) {
-	var fieldIds = (searchFor == ZmContactsApp.SEARCHFOR_GAL) ? ZmGroupView.SHOW_ON_GAL : ZmGroupView.SHOW_ON_NONGAL;
+	var fieldIds = (searchFor == ZmContactsApp.SEARCHFOR_GAL) ? ZmContactPicker.SHOW_ON_GAL : ZmContactPicker.SHOW_ON_NONGAL;
 	for (var fieldId in this._searchRow) {
 		Dwt.setVisible(this._searchRow[fieldId], AjxUtil.indexOf(fieldIds, fieldId)!=-1);
 	}

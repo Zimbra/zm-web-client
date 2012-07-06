@@ -233,10 +233,6 @@ function(showSuggestions) {
 		this._dateInfo.isTimeModified = false;
 	}
 
-	if (this._isClean && this.type == ZmCalBaseItem.PERSON) {
-		this._isClean = false;
-		this.searchContacts(true);
-	}
 
 };
 
@@ -602,11 +598,7 @@ ZmAttendeePicker.prototype._searchButtonListener =
 function(ev) {
     this._list.removeAll();
     this._offset = 0;    
-	if (this.type == ZmCalBaseItem.PERSON) {
-		this.searchContacts();
-	} else {
-		this.searchCalendarResources();
-	}
+	this.searchCalendarResources();
 };
 
 ZmAttendeePicker.prototype._searchTypeListener =
@@ -637,11 +629,7 @@ function(ev) {
 				lastId = contact.id;
 				lastSortVal = contact.sf;
 			}
-            if (this.type == ZmCalBaseItem.PERSON) {
-			    this.searchContacts(false, null, lastId, lastSortVal);
-            }else {
-                this.searchCalendarResources(false, null, lastId, lastSortVal);
-            }
+            this.searchCalendarResources(false, null, lastId, lastSortVal);
 		} else {
 			var more = this._list.hasMore;
 			if (!more) {
@@ -716,93 +704,6 @@ function(showSelect) {
     }
 };
 
-/**
- * Performs a contact search (in either personal contacts or in the GAL) and populates
- * the source list view with the results.
- *
- * @param {Boolean}	defaultSearch set to true when contacts are searched by default without user initiation
- * @param {constant}	sortBy			the ID of column to sort by
- * @param {int}	lastId		   the ID of last item displayed (for pagination)
- * @param {String}	lastSortVal	the value of sort field for above item
- */
-ZmAttendeePicker.prototype.searchContacts =
-function(defaultSearch, sortBy, lastId, lastSortVal) {
-	var id = this._searchFieldIds[ZmAttendeePicker.SF_ATT_NAME];
-	var query = AjxStringUtil.trim(document.getElementById(id).value.replace(/[-]/g, ""));// trim "-" and what else ?
-	if (!query.length) {
-		query = this._defaultQuery;
-	}
-
-	var currAcct = this._editView.getCalendarAccount();
-	var queryHint;
-	if (this._selectDiv) {
-		var searchFor = this._selectDiv.getValue();
-		this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
-			? ZmItem.CONTACT
-			: ZmId.SEARCH_GAL;
-		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-			queryHint = ZmSearchController.generateQueryForShares([ZmId.ITEM_CONTACT]) || "is:local";
-		} else if (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) {
-			queryHint = "is:local";
-		}
-	} else {
-		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED, null, currAcct)
-			? ZmItem.CONTACT
-			: ZmId.SEARCH_GAL;
-
-		if (this._contactSource == ZmItem.CONTACT) {
-			queryHint = "is:local";
-		}
-	}
-	// XXX: line below doesn't have intended effect (turn off column sorting for GAL search)
-	this._chooser.sourceListView.sortingEnabled = (this._contactSource == ZmItem.CONTACT);
-
-	var params = {
-		query: query,
-		queryHint: queryHint,
-		types: (AjxVector.fromArray([ZmItem.CONTACT])),
-		sortBy: (sortBy || ZmAttendeePicker.SORT_BY[this.type]),
-		offset: this._offset,
-		limit: (this._contactSource != ZmId.SEARCH_GAL) ? ZmContactsApp.SEARCHFOR_MAX : "",
-		contactSource: this._contactSource,
-		lastId: lastId,
-		lastSortVal: lastSortVal,
-		accountName: appCtxt.isOffline ? currAcct.name : null
-	};
-	var search = new ZmSearch(params);
-	search.execute({callback: new AjxCallback(this, this._handleResponseSearchContacts, [defaultSearch])});
-};
-
-// If a contact has multiple emails, create a clone for each one.
-ZmAttendeePicker.prototype._handleResponseSearchContacts =
-function(defaultSearch, result) {
-	var resp = result.getResponse();
-	var offset = resp.getAttribute("offset");
-	var isPagingSupported = AjxUtil.isSpecified(offset);
-	var more = resp.getAttribute("more");
-	var info = resp.getAttribute("info");
-	var expanded = info && info[0].wildcard[0].expanded == "0";
-
-	//bug: 47649 avoid showing warning message for default contacts search
-	if (!defaultSearch && !isPagingSupported &&
-		(expanded || (this._contactSource == ZmId.SEARCH_GAL && more)))
-	{
-		var d = appCtxt.getMsgDialog();
-		d.reset();
-		d.setMessage(ZmMsg.errorSearchNotExpanded);
-		d.popup();
-		if (expanded) { return; }
-	}
-
-	var list = AjxVector.fromArray(ZmContactsHelper._processSearchResponse(resp));
-
-	if (isPagingSupported) {
-		this._list.merge(offset, list);
-		this._list.hasMore = more;
-	}
-
-	this._showResults(isPagingSupported, more, list.getArray());
-};
 
 ZmAttendeePicker.prototype._showResults =
 function(isPagingSupported, more, list) {
@@ -1022,9 +923,6 @@ function(ev) {
 ZmAttendeePicker.prototype._handleKeyUp =
 function(ev) {
 	var field = DwtUiEvent.getTarget(ev);
-	if (this.type == ZmCalBaseItem.PERSON) {
-		this._searchButton.setEnabled(field && field.value);
-	}
 
 	return true;
 };
