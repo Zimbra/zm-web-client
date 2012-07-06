@@ -1760,6 +1760,9 @@ function(results, callback, searchResultsController) {
 		callback.run(controller);
 	}
 	this._notifyRendered();
+
+	// update the title to reflect the new search results
+	appCtxt.getAppViewMgr().updateTitle();
 };
 
 ZmMailApp.prototype._parseComposeUrl =
