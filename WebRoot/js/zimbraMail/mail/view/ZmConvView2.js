@@ -2030,7 +2030,6 @@ function(ev) {
 		var returnValue = msgView._selectionListener(ev);
 		msgView._lastCollapsed = false;
 		if (!msgView.isExpanded()) {
-			msgView._lastCollapsed = true;
 			if (convView._lastCollapsedId) {
 				var lastMsgView = convView._msgViews[convView._lastCollapsedId];
 				if (lastMsgView) {
@@ -2038,6 +2037,7 @@ function(ev) {
 					lastMsgView._setHeaderClass();
 				}
 			}
+			msgView._lastCollapsed = true;
 			convView._lastCollapsedId = msgView._msgId;
 		}
 		msgView._setHeaderClass();
