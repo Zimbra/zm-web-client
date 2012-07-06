@@ -549,8 +549,6 @@ function(compNum) {
  */
 ZmInvite.prototype.getComponentComment =
 function(compNum) {
-	console.trace();
-
 	var cn = compNum || 0;
 	var comp = this.components[cn];
 	if (comp == null) { return; }
