@@ -254,7 +254,7 @@ function(type, addrVec, used) {
 	var addrAdded = false;
 	used = used || {};
 	var addrList = [];
-	var addrs = addrVec && addrVec.getArray();
+	var addrs = AjxUtil.toArray(addrVec);
 	if (addrs && addrs.length) {
 		for (var i = 0, len = addrs.length; i < len; i++) {
 			var addr = addrs[i];

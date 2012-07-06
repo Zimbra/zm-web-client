@@ -216,7 +216,7 @@ function(params) {
 		this._setFormValue();
 	}
 	// Force focus on the TO field
-	if (!this._isReply()) {
+	if (!ZmComposeController.IS_REPLY[action]) {
 		appCtxt.getKeyboardMgr().grabFocus(this._recipients.getField(AjxEmailAddress.TO));
 	}
 };
@@ -297,9 +297,9 @@ function() {
 ZmComposeView.prototype.getTitle =
 function() {
 	var text;
-	if (this._isReply()) {
+	if (ZmComposeController.IS_REPLY[this._action]) {
 		text = ZmMsg.reply;
-	} else if (this._isForward()) {
+	} else if (ZmComposeController.IS_FORWARD[this._action]) {
 		text = ZmMsg.forward;
 	} else {
 		text = ZmMsg.compose;
@@ -846,7 +846,7 @@ ZmComposeView.prototype._setMessageFlags =
 function(msg) {
 	
 	if (this._action != ZmOperation.NEW_MESSAGE && this._msg) {
-		var isInviteReply = this._isInviteReply(this._action);
+		var isInviteReply = ZmComposeController.IS_INVITE_REPLY[this._action];
 		if (this._action == ZmOperation.DRAFT) {
 			msg.isReplied = (this._msg.rt == "r");
 			msg.isForwarded = (this._msg.rt == "w");
@@ -859,8 +859,8 @@ function(msg) {
 				msg.nId = this._msg.nId;
 			}
 		} else {
-			msg.isReplied = this._isReply();
-			msg.isForwarded = this._isForward();
+			msg.isReplied = ZmComposeController.IS_REPLY[this._action];
+			msg.isForwarded = ZmComposeController.IS_FORWARD[this._action];
 			msg.origId = this._msg.id;
 		}
 		msg.isInviteReply = isInviteReply;
@@ -1814,7 +1814,7 @@ function(identity, action) {
 
 	identity = identity || this.getIdentity();
 	action = action || this._action;
-	var field = (this._isReply(action) || this._isForward(action)) ? ZmIdentity.REPLY_SIGNATURE : ZmIdentity.SIGNATURE;
+	var field = (ZmComposeController.IS_REPLY[action] || ZmComposeController.IS_FORWARD[action]) ? ZmIdentity.REPLY_SIGNATURE : ZmIdentity.SIGNATURE;
 	return identity && identity.getField(field);
 };
 
@@ -1947,41 +1947,6 @@ function() {
 
 // Private / protected methods
 
-ZmComposeView.prototype._isInviteReply =
-function(action) {
-	action = action || this._action;
-	return (action == ZmOperation.REPLY_ACCEPT ||
-			action == ZmOperation.REPLY_CANCEL ||
-			action == ZmOperation.REPLY_DECLINE ||
-			action == ZmOperation.REPLY_TENTATIVE ||
-			action == ZmOperation.REPLY_MODIFY ||
-			action == ZmOperation.REPLY_NEW_TIME);
-};
-
-ZmComposeView.prototype._isReply =
-function(action) {
-	action = action || this._action;
-	return (action == ZmOperation.REPLY ||
-			action == ZmOperation.REPLY_ALL ||
-			this._isCalReply(action) ||
-			this._isInviteReply(action));
-};
-
-ZmComposeView.prototype._isCalReply =
-function(action) {
-	action = action || this._action;
-	return (action == ZmOperation.CAL_REPLY ||
-			action == ZmOperation.CAL_REPLY_ALL ||
-			this._isInviteReply(action));
-};
-
-ZmComposeView.prototype._isForward =
-function(action) {
-	action = action || this._action;
-	return (action == ZmOperation.FORWARD_INLINE ||
-			action == ZmOperation.FORWARD_ATT);
-};
-
 // Consistent spot to locate various dialogs
 ZmComposeView.prototype._getDialogXY =
 function() {
@@ -2026,92 +1991,114 @@ function(name, removeOriginalAttachments) {
 };
 
 /*
-* Set various address headers based on the original message and the mode we're in.
-* Make sure not to duplicate any addresses, even across fields.
-*/
+ * Set various address headers based on the original message and the mode we're in.
+ * Make sure not to duplicate any addresses, even across fields. Figures out what
+ * addresses to put in To: and Cc: unless the caller passes addresses to use (along
+ * with their type).
+ * 
+ * @param {string}				action		compose action
+ * @param {string}				type		address type
+ * @param {AjxVector|array}		override	addresses to use
+ */
 ZmComposeView.prototype._setAddresses =
 function(action, type, override) {
+
 	this._action = action;
 
 	if (override) {
-		override = AjxUtil.toArray(override);
-		for (var i = 0; i < override.length; i++) {
-			this._recipients.setAddress(type, override[i]);
+		this._recipients.addAddresses(type, override);
+	}
+	else {
+		var identityId = this.identitySelect && this.identitySelect.getValue();
+		var addresses = ZmComposeView.getReplyAddresses(action, this._msg, this._addressesMsg, identityId);
+		if (addresses) {
+			var toAddrs = addresses[AjxEmailAddress.TO];
+			if (!(toAddrs && toAddrs.length)) {
+				// make sure we have at least one TO address if possible
+				var addrVec = this._addressesMsg.getAddresses(AjxEmailAddress.TO);
+				addresses[AjxEmailAddress.TO] = addrVec.getArray().slice(0, 1);
+			}
+			for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
+				var type = ZmMailMsg.COMPOSE_ADDRS[i];
+				this._recipients.addAddresses(type, addresses[type]);
+			}
 		}
-	} else if (this._isReply(action)) {
+	}
+};
+
+ZmComposeView.getReplyAddresses =
+function(action, msg, addrsMsg, identityId) {
+	
+	addrsMsg = addrsMsg || msg;
+	var addresses = {};
+	if ((action == ZmOperation.NEW_MESSAGE) || !msg || !addrsMsg) {
+		return null;
+	}
+	
+	ZmComposeController._setStatics();
+	if (ZmComposeController.IS_REPLY[action]) {
 		var ac = window.parentAppCtxt || window.appCtxt;
 
-		// Prevent user's login name and aliases from going into To: or Cc:
-		var used = {};
-		var account = appCtxt.multiAccounts && this._msg.getAccount();
+		// Prevent user's login name and aliases from becoming recipient addresses
+		var userAddrs = {};
+		var account = appCtxt.multiAccounts && msg.getAccount();
 		var uname = ac.get(ZmSetting.USERNAME, null, account);
 		if (uname) {
-			used[uname.toLowerCase()] = true;
+			userAddrs[uname.toLowerCase()] = true;
 		}
 		var aliases = ac.get(ZmSetting.MAIL_ALIASES, null, account);
 		for (var i = 0, count = aliases.length; i < count; i++) {
-			used[aliases[i].toLowerCase()] = true;
+			userAddrs[aliases[i].toLowerCase()] = true;
 		}
 
-		// Check for Canonical Address's
+		// Check for canonical addresses
 		var defaultIdentity = ac.getIdentityCollection(account).defaultIdentity;
 		if (defaultIdentity && defaultIdentity.sendFromAddress) {
 			// Note: sendFromAddress is same as appCtxt.get(ZmSetting.USERNAME)
-			// if the account does not have any Canonical Address assigned.
-			used[defaultIdentity.sendFromAddress.toLowerCase()] = true;
+			// if the account does not have any canonical address assigned.
+			userAddrs[defaultIdentity.sendFromAddress.toLowerCase()] = true;
 		}
 
-		// When updating address lists, use this._addressesMsg instead of this._msg, because
-		// this._msg changes after a draft is saved.
-		var addrAdded, addrVec;
-		if (!this._addressesMsg.isSent) {
-			var isDefaultIdentity = true;
-			if (this.identitySelect) {
-				var isDefaultIdentity = (defaultIdentity.id == this.identitySelect.getValue()); 
-			}
-			addrVec = this._addressesMsg.getReplyAddresses(action, used, isDefaultIdentity);
-			addrAdded = this._recipients.addAddresses(AjxEmailAddress.TO, addrVec, used);
-			if (action == ZmOperation.REPLY_ALL) {
-				for (var i = 0, len = addrVec.size(); i < len; i++) {
-					var a = addrVec.get(i).address;
-					used[a] = true;
-				}
-			}
-		} else if (action == ZmOperation.REPLY) {
-			addrVec = this._addressesMsg.getAddresses(AjxEmailAddress.TO);
-			addrAdded = this._recipients.addAddresses(AjxEmailAddress.TO, addrVec);
-		}
-		if (!addrAdded && addrVec && addrVec.size()) {
-			// make sure we have at least one TO address if possible
-			this._recipients.addAddresses(AjxEmailAddress.TO, addrVec.slice(0, 1));
-		}
-
-		// reply to all senders if reply all (includes To: and Cc:)
-		if (action == ZmOperation.REPLY) {
-			this._recipients.setAddress(AjxEmailAddress.CC, "");
-		} else if (action == ZmOperation.REPLY_ALL || action == ZmOperation.CAL_REPLY_ALL) {
-			var addrs = new AjxVector();
-			addrs.addList(this._addressesMsg.getAddresses(AjxEmailAddress.CC));
-			var toAddrs = this._addressesMsg.getAddresses(AjxEmailAddress.TO);
-			if (this._addressesMsg.isSent) {
-				// sent msg replicates To: and Cc: (minus duplicates)
-				this._recipients.addAddresses(AjxEmailAddress.TO, toAddrs, used);
-			} else {
-				addrs.addList(toAddrs);
-			}
-			this._recipients.addAddresses(AjxEmailAddress.CC, addrs, used);
+		// When updating address lists, use addresses msg instead of msg, because
+		// msg changes after a draft is saved.
+		var isDefaultIdentity = !identityId || (identityId && (defaultIdentity.id == identityId)); 
+		var addrVec = addrsMsg.getReplyAddresses(action, userAddrs, isDefaultIdentity, true);
+		addresses[AjxEmailAddress.TO] = addrVec ? addrVec.getArray() : [];
+		if (action == ZmOperation.REPLY_ALL || action == ZmOperation.CAL_REPLY_ALL) {
+			var toAddrs = addrsMsg.getAddresses(AjxEmailAddress.TO, userAddrs, false, true);
+			var ccAddrs = addrsMsg.getAddresses(AjxEmailAddress.CC, userAddrs, false, true);
+			toAddrs.addList(ccAddrs);
+			addresses[AjxEmailAddress.CC] = toAddrs.getArray();
 		}
 	} else if (action == ZmOperation.DRAFT || action == ZmOperation.SHARE) {
 		for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-			var addrs = this._msg.getAddresses(ZmMailMsg.COMPOSE_ADDRS[i]);
-			this._recipients.addAddresses(ZmMailMsg.COMPOSE_ADDRS[i], addrs);
+			var type = ZmMailMsg.COMPOSE_ADDRS[i];
+			var addrs = msg.getAddresses(type);
+			addresses[type] = addrs ? addrs.getArray() : [];
 		}
-	} else if(action == ZmOperation.DECLINE_PROPOSAL) {
-        var toAddrs = this._addressesMsg.getAddresses(AjxEmailAddress.FROM);
-		this._recipients.addAddresses(AjxEmailAddress.TO, toAddrs);
+	} else if (action == ZmOperation.DECLINE_PROPOSAL) {
+        var toAddrs = addrsMsg.getAddresses(AjxEmailAddress.FROM);
+		addresses[AjxEmailAddress.TO] = toAddrs ? toAddrs.getArray() : [];
     }
+	
+	// Make a pass to remove duplicate addresses
+	var addresses1 = {}, used = {};
+	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
+		var type = ZmMailMsg.COMPOSE_ADDRS[i];
+		var addrs1 = addresses1[type] = [];
+		var addrs = addresses[type];
+		if (addrs && addrs.length) {
+			for (var j = 0, len = addrs.length; j < len; j++) {
+				var addr = addrs[j];
+				if (!used[addr.address]) {
+					addrs1.push(addr);
+				}
+				used[addr.address] = true;
+			}
+		}
+	}
+	return addresses1;
 };
-
 
 ZmComposeView.prototype._setSubject =
 function(action, msg, subjOverride) {
@@ -2160,7 +2147,7 @@ function(action, msg, extraBodyText) {
 	var htmlMode = (this._composeMode == DwtHtmlEditor.HTML);
 
 	var isDraft = (action == ZmOperation.DRAFT);
-	if (msg && msg.isInvite() && this._isForward(action)) {
+	if (msg && msg.isInvite() && ZmComposeController.IS_FORWARD[action]) {
 		action = this._action = ZmOperation.FORWARD_INLINE;
 	}
 
@@ -2168,7 +2155,7 @@ function(action, msg, extraBodyText) {
 	var incOptions = this._controller._curIncOptions;
     var ac = window.parentAppCtxt || window.appCtxt;
 	if (!incOptions) {
-		if (this._isReply(action)) {
+		if (ZmComposeController.IS_REPLY[action]) {
 			incOptions = {what:		ac.get(ZmSetting.REPLY_INCLUDE_WHAT),
 						  prefix:	ac.get(ZmSetting.REPLY_USE_PREFIX),
 						  headers:	ac.get(ZmSetting.REPLY_INCLUDE_HEADERS)};
@@ -2224,7 +2211,7 @@ function(action, msg, extraBodyText) {
 		body = bodyInfo.body;
 		AjxDebug.println(AjxDebug.REPLY, "Body length: " + body.length);
 		// Bug 7160: Strip off the ~*~*~*~ from invite replies.
-		if (this._isInviteReply(action)) {
+		if (ZmComposeController.IS_INVITE_REPLY[action]) {
 			body = body.replace(ZmItem.NOTES_SEPARATOR, "");
 		}
 	}

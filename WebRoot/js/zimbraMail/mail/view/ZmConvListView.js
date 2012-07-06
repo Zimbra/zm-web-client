@@ -106,10 +106,14 @@ function(item, force) {
 	}
 
 	var changed = ((item.type == ZmItem.CONV) != (this._itemView && this._itemView == this._convView));
-	this._itemView = this._getItemView(item.type);
+	var itemView = this._itemView = this._getItemView(item.type);
 	var otherView = (item.type == ZmItem.CONV) ? this._mailMsgView : this._convView;
 	if (otherView) {
 		otherView.setVisible(false);
+	}
+	// Clear quick reply if going from msg view to conv view in reading pane
+	if (changed && itemView && itemView._replyView) {
+		itemView._replyView.reset();
 	}
 	this._itemView.setVisible(true);
 	if (changed) {

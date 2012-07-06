@@ -206,16 +206,17 @@ function(subj) {
 /**
  * Gets a vector of addresses of the given type.
  *
- * @param {constant}	type		an email address type
- * @param {Hash}		used		an array of addresses that have been used. If not <code>null</code>,
- *									then this method will omit those addresses from the
- * 									returned vector and will populate used with the additional new addresses
- * @param {Boolean}	addAsContact	if <code>true</code>, emails should be converted to {@link ZmContact} objects
+ * @param {constant}	type			an email address type
+ * @param {Hash}		used			an array of addresses that have been used. If not <code>null</code>,
+ *										then this method will omit those addresses from the
+ * 										returned vector and will populate used with the additional new addresses
+ * @param {Boolean}		addAsContact	if <code>true</code>, emails should be converted to {@link ZmContact} objects
+ * @param {boolean}		dontUpdateUsed	if true, do not update the hash of used addresses
  * 
  * @return	{AjxVector}	a vector of email addresses
  */
 ZmMailMsg.prototype.getAddresses =
-function(type, used, addAsContact) {
+function(type, used, addAsContact, dontUpdateUsed) {
 	if (!used) {
 		return this._addrs[type];
 	} else {
@@ -236,7 +237,9 @@ function(type, used, addAsContact) {
 				}
 				addrs.push(contact);
 			}
-			used[email] = true;
+			if (!dontUpdateUsed) {
+				used[email] = true;
+			}
 		}
 		return AjxVector.fromArray(addrs);
 	}
@@ -264,15 +267,11 @@ function(mode, aliases, isDefaultIdentity) {
 
 	if (!(addrVec && addrVec.size())) {
 		if (mode == ZmOperation.REPLY_CANCEL || (this.isSent && mode == ZmOperation.REPLY_ALL)) {
-			addrVec = this.isInvite() ? this._getAttendees() : this._addrs[AjxEmailAddress.TO];
+			addrVec = this.isInvite() ? this._getAttendees() : this.getAddresses(AjxEmailAddress.TO, aliases, false, true);
 		} else {
-			addrVec = this._addrs[AjxEmailAddress.FROM];
-			if (aliases && isDefaultIdentity) {
-				var from = addrVec.get(0);
-				// make sure we're not replying to ourself
-				if (from && aliases[from.address]) {
-					addrVec = this._addrs[AjxEmailAddress.TO];
-				}
+			addrVec = this.getAddresses(AjxEmailAddress.FROM, aliases, false, true);
+			if (addrVec.size() == 0) {
+				addrVec = this.getAddresses(AjxEmailAddress.TO, aliases, false, true);
 			}
 		}
 	}

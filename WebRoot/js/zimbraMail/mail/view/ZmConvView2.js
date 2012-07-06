@@ -931,7 +931,7 @@ function(type) {
  */
 ZmConvReplyView.prototype.getValue =
 function() {
-	return this._input.value;
+	return this._input ? this._input.value : "";
 };
 
 /**
@@ -950,7 +950,9 @@ function() {
  */
 ZmConvReplyView.prototype.setValue =
 function(value) {
-	this._input.value = value;
+	if (this._input) {
+		this._input.value = value;
+	}
 };
 
 /**
@@ -1002,42 +1004,10 @@ function() {
 };
 
 // Returns lists of To: and Cc: addresses to reply to, based on the msg
-// TODO: look at refactoring out of ZmComposeView?
 ZmConvReplyView.prototype._getReplyAddressInfo =
 function(msg, msgView, op) {
 	
-	// Prevent user's login name and aliases from going into To: or Cc:
-	var used = {};
-	var ac = window.parentAppCtxt || window.appCtxt;
-	var account = ac.multiAccounts && msg.getAccount();
-	var uname = ac.get(ZmSetting.USERNAME, null, account);
-	if (uname) {
-		used[uname.toLowerCase()] = true;
-	}
-	var aliases = ac.get(ZmSetting.MAIL_ALIASES, null, account);
-	for (var i = 0, count = aliases.length; i < count; i++) {
-		used[aliases[i].toLowerCase()] = true;
-	}
-
-	var addresses = {};
-	addresses[AjxEmailAddress.TO] = [];
-	var addrVec = msg.isSent ? msg.getAddresses(AjxEmailAddress.TO) : msg.getReplyAddresses(op);
-	this._addAddresses(addresses, AjxEmailAddress.TO, addrVec, used);
-	if (addresses[AjxEmailAddress.TO].length == 0) {
-		// try again without dropping user's address(es)
-		this._addAddresses(addresses, AjxEmailAddress.TO, addrVec);
-	}
-
-	if (op == ZmOperation.REPLY_ALL) {
-		addresses[AjxEmailAddress.CC] = [];
-		var ccAddrs = new AjxVector();
-		ccAddrs.addList(msg.getAddresses(AjxEmailAddress.CC));
-		var toAddrs = msg.getAddresses(AjxEmailAddress.TO);
-		if (!msg.isSent) {
-			ccAddrs.addList(toAddrs);
-		}
-		this._addAddresses(addresses, AjxEmailAddress.CC, ccAddrs, used);
-	}
+	var addresses = ZmComposeView.getReplyAddresses(op, msg, msg);
 	
 	var options = {};
 	options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);

@@ -140,6 +140,27 @@ function() {
 	ZmComposeController.OP_CHECK[ZmOperation.REQUEST_READ_RECEIPT] 	= true;
 	ZmComposeController.OP_CHECK[ZmOperation.USE_PREFIX] 			= true;
 	ZmComposeController.OP_CHECK[ZmOperation.INCLUDE_HEADERS] 		= true;
+
+	// Classification hashes for a compose action
+	ZmComposeController.IS_INVITE_REPLY = {};
+	ZmComposeController.IS_INVITE_REPLY[ZmOperation.REPLY_ACCEPT]		= true;
+	ZmComposeController.IS_INVITE_REPLY[ZmOperation.REPLY_CANCEL]		= true;
+	ZmComposeController.IS_INVITE_REPLY[ZmOperation.REPLY_DECLINE]		= true;
+	ZmComposeController.IS_INVITE_REPLY[ZmOperation.REPLY_TENTATIVE]	= true;
+	ZmComposeController.IS_INVITE_REPLY[ZmOperation.REPLY_MODIFY]		= true;
+	ZmComposeController.IS_INVITE_REPLY[ZmOperation.REPLY_NEW_TIME]		= true;
+
+	ZmComposeController.IS_CAL_REPLY = AjxUtil.hashCopy(ZmComposeController.IS_INVITE_REPLY);
+	ZmComposeController.IS_CAL_REPLY[ZmOperation.CAL_REPLY]		= true;
+	ZmComposeController.IS_CAL_REPLY[ZmOperation.CAL_REPLY_ALL]	= true;
+	
+	ZmComposeController.IS_REPLY = AjxUtil.hashCopy(ZmComposeController.IS_CAL_REPLY);
+	ZmComposeController.IS_REPLY[ZmOperation.REPLY]		 = true;
+	ZmComposeController.IS_REPLY[ZmOperation.REPLY_ALL]	 = true;
+	
+	ZmComposeController.IS_FORWARD = {};
+	ZmComposeController.IS_FORWARD[ZmOperation.FORWARD_INLINE]	= true;
+	ZmComposeController.IS_FORWARD[ZmOperation.FORWARD_ATT]	 	= true;
 };
 
 //
@@ -1160,10 +1181,10 @@ function(account) {
 ZmComposeController.prototype._createOptionsMenu =
 function(action) {
 
-	var isReply = this._composeView._isReply(action);
-	var isCalReply = this._composeView._isCalReply(action);
-	var isInviteReply = this._composeView._isInviteReply(action);
-	var isForward = this._composeView._isForward(action);
+	var isReply = ZmComposeController.IS_REPLY[action];
+	var isCalReply = ZmComposeController.IS_CAL_REPLY[action];
+	var isInviteReply = ZmComposeController.IS_INVITE_REPLY[action];
+	var isForward = ZmComposeController.IS_FORWARD[action];
 	var list = [];
     var ac = window.parentAppCtxt || window.appCtxt;
 	if (isReply || isCalReply) {
@@ -2058,7 +2079,7 @@ ZmComposeController.prototype.resetToolbarOperations =
 function() {
 	if (this.isHidden) { return; }
 	this._toolbar.enableAll(true);
-	if (this._composeView._isInviteReply(this._action)) {
+	if (ZmComposeController.IS_INVITE_REPLY[this._action]) {
 		var ops = [ ZmOperation.SAVE_DRAFT, ZmOperation.ATTACHMENT ];
 		this._toolbar.enable(ops, false);
 	}
@@ -2071,7 +2092,7 @@ function() {
 
 ZmComposeController.prototype._canSaveDraft =
 function() {
-	return !this.isHidden && appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED) && !this._composeView._isInviteReply(this._action);
+	return !this.isHidden && appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED) && !ZmComposeController.IS_INVITE_REPLY[this._action];
 };
 
 /*
