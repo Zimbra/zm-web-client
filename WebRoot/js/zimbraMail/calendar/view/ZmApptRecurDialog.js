@@ -834,7 +834,7 @@ function() {
 	html[i++] = this._monthlyFieldRadioId;
 	html[i++] = "'></td>";
 	html[i++] = "<td>";
-	html[i++] = "<table><tr>";
+	html[i++] = "<table class='ZPropertySheet' cellspacing='6'><tr>";
 	var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsNumDay);
 	var segments = formatter.getSegments();
 	for (var s = 0; s < segments.length; s++) {
@@ -844,12 +844,12 @@ function() {
 		if (index == 0) {
 			html[i++] = "<td id='";
 			html[i++] = this._monthlyDaySelectId;
-			html[i++] = "' style='padding:0 .5em'>";
+			html[i++] = "' style='overflow:hidden;'>";
 		}
 		else if (index == 1) {
 			html[i++] = "<td id='";
 			html[i++] = this._monthlyWeekdaySelectId;
-			html[i++] = "' style='padding:0 .5em'>";
+			html[i++] = "' style='overflow:hidden;'>";
 		}
 		else if (index == 2) {
 			html[i++] = "<td><span id='";
@@ -896,7 +896,7 @@ function() {
 	html[i++] = "' id='";
 	html[i++] = this._yearlyDefaultId;
 	html[i++] = "'></td><td>";
-	html[i++] = "<table><tr>";
+	html[i++] = "<table class='ZPropertySheet' cellspacing='6'><tr>";
 	var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryDate);
 	var segments = formatter.getSegments();
 	for (var s = 0; s < segments.length; s++) {
@@ -906,7 +906,7 @@ function() {
 		if (index == 0) {
 			html[i++] = "<td id='";
 			html[i++] = this._yearlyMonthSelectId;
-			html[i++] = "' style='padding:0 .5em'>";
+			html[i++] = "' style='overflow:hidden;'>";
 		}
 		else if (index == 1) {
 			html[i++] = "<td><span id='";
@@ -931,7 +931,7 @@ function() {
 	html[i++] = "' id='";
 	html[i++] = this._yearlyFieldRadioId;
 	html[i++] = "'></td><td>";
-	html[i++] = "<table><tr>";
+	html[i++] = "<table class='ZPropertySheet' cellspacing='6'><tr>";
 	var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryMonthNumDay);
 	var segments = formatter.getSegments();
 	for (var s = 0; s < segments.length; s++) {
@@ -941,17 +941,17 @@ function() {
 		if (index == 0) {
 			html[i++] = "<td id='";
 			html[i++] = this._yearlyDaySelectId;
-			html[i++] = "' style='padding:0 .5em'>";
+			html[i++] = "' style='overflow:hidden;'>";
 		}
 		else if (index == 1) {
 			html[i++] = "<td id='";
 			html[i++] = this._yearlyWeekdaySelectId;
-			html[i++] = "' style='padding:0 .5em'>";
+			html[i++] = "' style='overflow:hidden;'>";
 		}
 		else if (index == 2) {
 			html[i++] = "<td id='";
 			html[i++] = this._yearlyMonthSelectExId;
-			html[i++] = "' style='padding:0.5em;height:24px;overflow:hidden;'>";
+			html[i++] = "' style='overflow:hidden;'>";
 		}
 		else {
 			html[i++] = "<td>";
