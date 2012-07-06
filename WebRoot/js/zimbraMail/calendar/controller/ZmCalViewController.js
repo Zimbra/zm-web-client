@@ -3311,7 +3311,7 @@ function(appt, actionMenu) {
     }
 
     actionMenu.enable([ZmOperation.FORWARD_APPT, ZmOperation.FORWARD_APPT_INSTANCE, ZmOperation.FORWARD_APPT_SERIES], isForwardable);
-	actionMenu.enable(ZmOperation.REPLY, isReplyable);
+	actionMenu.enable(ZmOperation.REPLY, (isOrganizer ? false : isReplyable));
 	actionMenu.enable(ZmOperation.REPLY_ALL, isReplyable);
 
     var disabledOps;
