@@ -119,23 +119,50 @@ function() {
 };
 
 ZmAdvancedHtmlEditor.prototype.focus =
-function() {
-	var editor = this.getEditor();
-	if (this._editorInitialized && editor) {
-		editor.focus();
-		this.setFocusStatus(true);
-	} else {
-        if ( this._mode === DwtHtmlEditor.HTML ) {
-            this._onTinyMCEEditorInitcallback = new AjxCallback(this, this.focus);
+function(editor) {
+    var currentObj = this,
+        bodyField;
+
+    if (currentObj._mode === DwtHtmlEditor.HTML) {
+        editor = editor || currentObj.getEditor();
+        if (currentObj._editorInitialized && editor) {
+            editor.focus();
+            currentObj.setFocusStatus(true);
         }
-        else{
-            var bodyField = this.getContentField();
-            if (bodyField){
-                bodyField.focus();
-                this.setFocusStatus(true, true);
+        else {
+            currentObj._onTinyMCEEditorInitcallback = new AjxCallback(currentObj, currentObj.focus);
+        }
+    }
+    else {
+        bodyField = currentObj.getContentField();
+        if (bodyField) {
+            bodyField.focus();
+            currentObj.setFocusStatus(true, true);
+        }
+    }
+};
+
+/**
+ * Restores the focus. For IE selecting bookmark and for other browsers calling focus will place the cursor in the last edited position
+ * @param editor object
+ */
+ZmAdvancedHtmlEditor.prototype.restoreFocus =
+function(editor) {
+    var currentObj = this,
+        windowManager;
+
+    if (AjxEnv.isIE && currentObj._mode === DwtHtmlEditor.HTML) {
+        editor = editor || currentObj.getEditor();
+        if (editor) {
+            windowManager = editor.windowManager;
+            if (windowManager && windowManager.bookmark) {
+                editor.selection.moveToBookmark(windowManager.bookmark);
+                delete windowManager.bookmark;
+                return;
             }
         }
-	}
+    }
+    currentObj.focus(editor);
 };
 
 /**
@@ -377,7 +404,11 @@ function() {
 	}
     var field = this.getContentField();
     if(field){
-        field.parentNode.replaceChild(field.cloneNode(false), field);//To clear undo/redo queue of textarea
+        var textEl = field.cloneNode(false);
+        field.parentNode.replaceChild(textEl, field);//To clear undo/redo queue of textarea
+        //cloning and replacing node will remove event handlers and hence adding it once again
+        Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this.setFocusStatus.bind(this, true, true));
+        Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
     }
 };
 
@@ -431,8 +462,8 @@ function(parent, posStyle, content, mode, withAce, reparentContainer) {
 	htmlEl.appendChild(textEl);
 	this._textAreaId = id;
 
-	Dwt.setHandler(textEl, DwtEvent.ONFOCUS, AjxCallback.simpleClosure(this.setFocusStatus, this, true, true));
-	Dwt.setHandler(textEl, DwtEvent.ONBLUR, AjxCallback.simpleClosure(this.setFocusStatus, this, false, true));
+    Dwt.setHandler(textEl, DwtEvent.ONFOCUS, this.setFocusStatus.bind(this, true, true));
+    Dwt.setHandler(textEl, DwtEvent.ONBLUR, this.setFocusStatus.bind(this, false, true));
 	this._editorContainer.setFocusMember(textEl);
 
 	if (!window.tinyMCE) {
@@ -729,7 +760,7 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ed, ev) {
     if(AjxEnv.isIE){
         tinymceEvent.add(doc, 'beforedeactivate', function(e) {
             if(ed.windowManager){
-                ed.windowManager.bookmark = ed.selection.getBookmark(1);
+                ed.windowManager.bookmark = ed.selection.getBookmark();
             }
         });
     }
@@ -872,13 +903,7 @@ function(src, dontExecCommand, width, height, dfsrc) {
 
 	var ed = this.getEditor();
 
-    if(ed.windowManager && ed.windowManager.bookmark){
-        ed.selection.moveToBookmark(ed.windowManager.bookmark);
-    }
-	// Fixes crash in Safari
-	if (tinymce.isWebKit) {
-		ed.getWin().focus();
-	}
+    this.restoreFocus(ed);
 
 	//tinymce modifies the source when using mceInsertContent
     //ed.execCommand('mceInsertContent', false, html.join(""), {skip_undo : 1});
@@ -1432,6 +1457,7 @@ ZmAdvancedHtmlEditor._spellCheckResumeEditing =
 function() {
 	var editor = Dwt.getObjectFromElement(this);
 	editor.discardMisspelledWords();
+    editor.restoreFocus();
 };
 
 ZmAdvancedHtmlEditor._spellCheckAgain =
