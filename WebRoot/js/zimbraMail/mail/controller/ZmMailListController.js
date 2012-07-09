@@ -1220,7 +1220,7 @@ function() {
 ZmMailListController.prototype._handleMarkRead =
 function(item, check) {
 
-	if (item && item.isUnread) {
+	if (item && item.isUnread && !item.waitOnMarkRead) {
 		if (!item.isReadOnly() && !appCtxt.isExternalAccount()) {
 			var markRead = appCtxt.get(ZmSetting.MARK_MSG_READ);
 			if (markRead == ZmSetting.MARK_READ_NOW) {

@@ -596,8 +596,11 @@ function(callback) {
 
 ZmConvListController.prototype._displayItem =
 function(item) {
-	this._doublePaneView.setItem(item);
+
 	var curItem = this._doublePaneView.getItem();
+	item.waitOnMarkRead = true;
+	this._doublePaneView.setItem(item);
+	item.waitOnMarkRead = false;
 	if (!(curItem && item.id == curItem.id)) {
 		this._handleMarkRead(item);
 	}

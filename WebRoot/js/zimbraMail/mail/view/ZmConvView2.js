@@ -1225,6 +1225,7 @@ function(msg, container, callback) {
 		this._showEntireMsg = false;
 	}
 	else {
+		msg.waitOnMarkRead = this._convView._item.waitOnMarkRead;
 		this._handleResponseLoadMessage(msg, container, callback);
 	}
 };
