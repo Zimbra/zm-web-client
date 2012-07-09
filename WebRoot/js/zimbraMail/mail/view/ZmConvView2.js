@@ -884,6 +884,8 @@ function(msg, msgView, op) {
 
 	appCtxt.notifyZimlet("com_zimbra_email", "onFindMsgObjects");
 	this.action = op;
+	AjxDispatcher.require("Mail");
+	
 	var ai = this._addressInfo = this._getReplyAddressInfo(msg, msgView, op);
 
 	if (!this._initialized) {
