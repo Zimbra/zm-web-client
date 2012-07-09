@@ -585,20 +585,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 
-.AddrBubble.TagBubble {
-	@ActiveCursor@ /*otherwise .AddrBubble cursor is set to default. see .addrBubble, .attachmentBubble { elsewhere in this file*/ 
-}
-.TagBubble {
-	@ActiveCursor@
-	@NoWrap@ 
-	display:inline-block; 
-	vertical-align:middle;
-}
 
-.TagBubble .TagName,
-.TagBubble .ImgBubbleDelete {
-	display:inline-block; vertical-align:middle;
-}
 
 .TagImage {
 	display:inline-block; vertical-align:middle; padding-right:2px;
@@ -1271,6 +1258,19 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .attachmentBubble {
 	@InactiveCursor@
 	background-color:#EEE;
+}
+
+/* NOTE: this has to be AFTER the .addrBubble definition above so it overrides it (the element is of multi class "addrBubble tagBubble")  - doing it this way since multi-selection doesn't work in IE*/
+.TagBubble {
+	@NoWrap@
+	display:inline-block;
+	vertical-align:middle;
+	@ActiveCursor@ /*otherwise .AddrBubble cursor is set to default (inactive). see above*/
+}
+
+.TagBubble .TagName,
+.TagBubble .ImgBubbleDelete {
+	display:inline-block; vertical-align:middle;
 }
 
 .addrBubble-selected {
