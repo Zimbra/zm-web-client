@@ -55,6 +55,11 @@ function(useZid) {
 	return this.id;
 };
 
+ZmMockContact.prototype.isDistributionList =
+function() {
+	return this.isGal && this.isGroup();
+};
+
 
 UT.module("ContactGroup");
 
