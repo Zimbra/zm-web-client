@@ -851,7 +851,12 @@ function(msg, parent, id) {
 			var dfsrc = images[i].getAttribute("dfsrc");
 			if (dfsrc && dfsrc.match(/https?:\/\/([-\w\.]+)+(:\d+)?(\/([\w\_\.]*(\?\S+)?)?)?/)) {
                 images[i].onload = onload;
-				images[i].src = images[i].getAttribute("dfsrc");
+				// Fix for IE: Over HTTPS, http src urls for images might cause an issue.
+				try {
+					images[i].src = images[i].getAttribute("dfsrc");
+				} catch (ex) {
+					// do nothing
+				}
 			}
 		}
 
