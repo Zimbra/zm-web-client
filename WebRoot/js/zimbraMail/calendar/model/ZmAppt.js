@@ -1061,6 +1061,7 @@ function(callback){
 
 ZmAppt.prototype._addAttendeesToSoap =
 function(soapDoc, inv, m, notifyList, onBehalfOf) {
+    var dispNamesNotifyList = this._dispNamesNotifyList = {};
 	for (var type in this._attendees) {
 		if (this._attendees[type] && this._attendees[type].length) {
 			for (var i = 0; i < this._attendees[type].length; i++) {
@@ -1072,9 +1073,15 @@ function(soapDoc, inv, m, notifyList, onBehalfOf) {
 	// if we have a separate list of email addresses to notify, do it here
 	if (this._sendNotificationMail && this.isOrganizer() && m && notifyList && this.isSend) {
 		for (var i = 0; i < notifyList.length; i++) {
-			e = soapDoc.set("e", null, m);
-			e.setAttribute("a", notifyList[i]);
+			var e = soapDoc.set("e", null, m),
+                address = notifyList[i],
+                dispName = dispNamesNotifyList[address];
+
+			e.setAttribute("a", address);
 			e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.TO]);
+            if (dispName) {
+                e.setAttribute("p", dispName);
+            }
 		}
 	}
 
@@ -1082,6 +1089,7 @@ function(soapDoc, inv, m, notifyList, onBehalfOf) {
 		// call base class LAST
 		ZmCalItem.prototype._addAttendeesToSoap.call(this, soapDoc, inv, m, notifyList, onBehalfOf);
 	}
+    delete this._dispNamesNotifyList;
 };
 
 ZmAppt.prototype._addAttendeeToSoap =
@@ -1117,6 +1125,11 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 			ptst = attendeeFound
 				? ZmCalBaseItem.PSTATUS_NEEDS_ACTION
 				: (attendee.getParticipantStatus() || ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
+            if(attendeeFound && dispName) {
+                // If attendees is found in notify list and has display name,
+                // add it to object for future reference
+                this._dispNamesNotifyList[address] = dispName;
+            }
 		}
 		at.setAttribute("ptst", ptst);
 
@@ -1144,7 +1157,7 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 
 	// set email to notify if notifyList not provided
 	if (this._sendNotificationMail && this.isOrganizer() && m && !notifyList && !this.__newFolderId && this.isSend) {
-		e = soapDoc.set("e", null, m);
+		var e = soapDoc.set("e", null, m);
 		e.setAttribute("a", address);
 		if (dispName) {
 			e.setAttribute("p", dispName);
