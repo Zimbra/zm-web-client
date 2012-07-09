@@ -1388,13 +1388,19 @@ function(list, append){
 };
 
 /**
- * Removes members from items if the are found to be duplicate of addrs.  Dedupes inline, local and gal contacts
+ * Removes members from items if the are found to be duplicate of
+ * either items or addrs.  Dedupes inline, local and gal contacts.
+ *
  * @param items {Array} array of items to be added to the target list 
  * @param addrs {Array} the target list as an array of items
  * @private
  */
 ZmGroupView._dedupe =
 function(items, addrs) {
+	AjxUtil.dedup(items, function(item) {
+		return item.__contact && item.__contact.id;
+	});
+
 	if (addrs) {
 		var i = 0;
 		while (true) {

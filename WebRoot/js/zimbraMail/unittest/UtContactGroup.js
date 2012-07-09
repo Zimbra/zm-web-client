@@ -426,7 +426,7 @@ UT.test("dedupe contact group", {
 	function() {
 		ZmUnitTestUtil.goToContacts();
 		var contact = new ZmContact(null, null, "GROUP");
-		UT.expect(3);				
+		UT.expect(5);
 		//Test Inline dedupe
 		var items = [ "test@zimbra.com", "test2@zimbra.com"];
 		var inlineAddr = {type: ZmContact.GROUP_INLINE_REF, value: "test@zimbra.com"};
@@ -443,6 +443,11 @@ UT.test("dedupe contact group", {
 		contactB.id = "201";
 		contactB.isGal = false;
 		items.push({__contact: contactB});
+		// duplicate contacts in the list itself
+		items.push({__contact: contactA});
+		UT.equal(4, items.length, "4 contacts in list, including duplicate");
+		ZmGroupView._dedupe(items, []);
+		UT.equal(3, items.length, "1 duplicate found in contacts");
 		//contact already belongs to group
 		var listItemA = { address: "contacta@zimbra.com", type: ZmContact.GROUP_CONTACT_REF, value: "1:200"};
 		addrs.push(listItemA);
