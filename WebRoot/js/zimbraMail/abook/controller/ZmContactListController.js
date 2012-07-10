@@ -417,7 +417,7 @@ function(params) {
 
 ZmContactListController.prototype.getKeyMapName =
 function() {
-	return "ZmContactListController";
+	return ZmKeyMap.MAP_CONTACTS;
 };
 
 ZmContactListController.prototype.handleKeyAction =

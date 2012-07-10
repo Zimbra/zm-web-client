@@ -259,7 +259,7 @@ function(ex) {
  */
 ZmController.prototype.getKeyMapName =
 function() {
-	return "Global";
+	return ZmKeyMap.MAP_GLOBAL;
 };
 
 /**

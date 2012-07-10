@@ -45,7 +45,7 @@ ZmToolBar = function(params) {
 	var controller = params.controller || appCtxt.getCurrentController();
 	if (controller) {
 		this._controller = controller;
-		this._keyMap = ZmKeyMap.MAP_NAME_R[this._controller.getKeyMapName()];
+		this._keyMap = this._controller.getKeyMapName();
 	}
 
 	this._refElementId = params.refElementId;

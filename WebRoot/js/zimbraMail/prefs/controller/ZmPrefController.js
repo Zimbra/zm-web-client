@@ -162,7 +162,7 @@ function(obj, precondition) {
 
 ZmPrefController.prototype.getKeyMapName =
 function() {
-	return "ZmPrefController";
+	return ZmKeyMap.MAP_OPTIONS;
 };
 
 ZmPrefController.prototype.handleKeyAction =

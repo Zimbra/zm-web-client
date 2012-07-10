@@ -488,7 +488,7 @@ function() {
 	if (ctlr && ctlr.getKeyMapName) {
 		return ctlr.getKeyMapName();
 	}
-	return "Global";
+	return ZmKeyMap.MAP_GLOBAL;
 };
 
 /**

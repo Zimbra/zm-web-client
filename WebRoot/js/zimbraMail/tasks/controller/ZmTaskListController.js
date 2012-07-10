@@ -261,7 +261,7 @@ function(id) {
 
 ZmTaskListController.prototype.getKeyMapName =
 function() {
-	return "ZmTaskListController";
+	return ZmKeyMap.MAP_TASKS;
 };
 
 ZmTaskListController.prototype.handleKeyAction =

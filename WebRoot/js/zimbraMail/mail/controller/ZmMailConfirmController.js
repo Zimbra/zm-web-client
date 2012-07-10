@@ -82,7 +82,7 @@ function() {
 
 ZmMailConfirmController.prototype.getKeyMapName =
 function() {
-	return "Global";
+	return ZmKeyMap.MAP_GLOBAL;
 };
 
 ZmMailConfirmController.prototype.handleKeyAction =

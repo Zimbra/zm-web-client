@@ -79,7 +79,7 @@ function(parent, num) {
 
 ZmCallListController.prototype.getKeyMapName =
 function() {
-	return "ZmCallListController";
+	return ZmKeyMap.MAP_CALL;
 };
 
 ZmCallListController.prototype.handleKeyAction =

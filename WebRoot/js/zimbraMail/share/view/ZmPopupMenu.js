@@ -44,7 +44,7 @@ ZmPopupMenu = function(parent, className, id, controller) {
 	controller = controller || appCtxt.getCurrentController();
 	if (controller) {
 		this._controller = controller;
-		this._keyMap = ZmKeyMap.MAP_NAME_R[this._controller.getKeyMapName()];
+		this._keyMap = this._controller.getKeyMapName();
 	}
 
 	this._menuItems = {};

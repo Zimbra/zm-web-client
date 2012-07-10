@@ -315,7 +315,7 @@ function() {
 
 ZmConvController.prototype.getKeyMapName =
 function() {
-	return "ZmConvController";
+	return ZmKeyMap.MAP_CONVERSATION;
 };
 
 ZmConvController.prototype.handleKeyAction =

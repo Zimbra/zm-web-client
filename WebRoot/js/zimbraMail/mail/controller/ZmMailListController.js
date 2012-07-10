@@ -238,7 +238,7 @@ function(value) {
 
 ZmMailListController.prototype.getKeyMapName =
 function() {
-	return "ZmMailListController";
+	return ZmKeyMap.MAP_MAIL;
 };
 
 // We need to stay in sync with what's allowed by _resetOperations
@@ -1475,10 +1475,10 @@ function(parent) {
 	var deleteMenuButton = parent.getButton(ZmOperation.DELETE_MENU);
 	var tooltip = (inTrashFolder || inJunkFolder) ? ZmMsg.deletePermanentTooltip : ZmMsg.deleteTooltip;
 	if (deleteButton) {
-		deleteButton.setToolTipContent(ZmOperation.getToolTip(ZmOperation.DELETE, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip), true);
+		deleteButton.setToolTipContent(ZmOperation.getToolTip(ZmOperation.DELETE, this.getKeyMapName(), tooltip), true);
 	}
 	if (deleteMenuButton) {
-		deleteMenuButton.setToolTipContent(ZmOperation.getToolTip(ZmOperation.DELETE_MENU, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip), true);
+		deleteMenuButton.setToolTipContent(ZmOperation.getToolTip(ZmOperation.DELETE_MENU, this.getKeyMapName(), tooltip), true);
 	}
 };
 
@@ -1508,7 +1508,7 @@ function(parent) {
 		item.setImage(inSpamFolder ? 'NotJunk' : 'JunkMail');
 		if (item.setToolTipContent) {
 			var tooltip = inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip;
-			item.setToolTipContent(ZmOperation.getToolTip(ZmOperation.SPAM, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip), true);
+			item.setToolTipContent(ZmOperation.getToolTip(ZmOperation.SPAM, this.getKeyMapName(), tooltip), true);
 		}
 		item.isMarkAsSpam = !inSpamFolder;
 	}

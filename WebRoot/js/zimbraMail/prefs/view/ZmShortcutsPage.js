@@ -206,8 +206,7 @@ function(params, html, i) {
 
 		if (action && (map != ZmKeyMap.MAP_CUSTOM)) {
 			// make sure shortcut is defined && available
-			var mapInt = ZmKeyMap.MAP_NAME[map] || DwtKeyMap.MAP_NAME[map];
-			var ks = kmm.getKeySequences(mapInt, action);
+			var ks = kmm.getKeySequences(map, action);
 			if (!(ks && ks.length)) { continue; }
 		}
 		if (field == "description") {

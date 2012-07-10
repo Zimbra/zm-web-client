@@ -605,9 +605,9 @@ ZmTreeController.prototype._createActionMenu =
 function(parent, menuItems) {
 	if (!menuItems) return;
 
-	var app = appCtxt.getCurrentController() && appCtxt.getCurrentController().getKeyMapName();
-	var id = app ? ("ZmActionMenu_" + ZmKeyMap.MAP_NAME_R[app]):Dwt.getNextId("ZmActionMenu_")
-	id = (app && this.type) ? id + "_" + this.type : id;
+	var map = appCtxt.getCurrentController() && appCtxt.getCurrentController().getKeyMapName();
+	var id = map ? ("ZmActionMenu_" + map):Dwt.getNextId("ZmActionMenu_")
+	id = (map && this.type) ? id + "_" + this.type : id;
 	var actionMenu = new ZmActionMenu({parent:parent, menuItems:menuItems, id: id});
 
 	menuItems = actionMenu.opList;

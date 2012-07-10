@@ -263,7 +263,7 @@ function(ev) {
 
 ZmSlideEditController.prototype.getKeyMapName =
 function() {
-	return "Global";
+	return ZmKeyMap.MAP_GLOBAL;
 };
 
 ZmSlideEditController.prototype.setStatusMsg =

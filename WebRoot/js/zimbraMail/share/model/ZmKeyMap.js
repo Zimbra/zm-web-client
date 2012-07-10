@@ -40,52 +40,43 @@ ZmKeyMap = function() {
 	
 	ZmKeyMap._setPreconditions();
 	DwtKeyMap.call(this);
-	this._load(this._map, ZmKeys, ZmKeyMap.MAP_NAME);
+	this._load(this._map, ZmKeys);
 
-	if (appCtxt.get(ZmSetting.DEV)) {
-		this._map["Global"]["Alt+Shift+D,0"] = ZmKeyMap.DBG_NONE;
-		this._map["Global"]["Alt+Shift+D,1"] = ZmKeyMap.DBG_1;
-		this._map["Global"]["Alt+Shift+D,2"] = ZmKeyMap.DBG_2;
-		this._map["Global"]["Alt+Shift+D,3"] = ZmKeyMap.DBG_3;
-		this._map["Global"]["Alt+Shift+D,T"] = ZmKeyMap.DBG_TIMING;
+	if (appCtxt.get(ZmSetting.DEV) && this._map[ZmKeyMap.MAP_GLOBAL]) {
+		this._map[ZmKeyMap.MAP_GLOBAL]["Alt+Shift+D,0"] = ZmKeyMap.DBG_NONE;
+		this._map[ZmKeyMap.MAP_GLOBAL]["Alt+Shift+D,1"] = ZmKeyMap.DBG_1;
+		this._map[ZmKeyMap.MAP_GLOBAL]["Alt+Shift+D,2"] = ZmKeyMap.DBG_2;
+		this._map[ZmKeyMap.MAP_GLOBAL]["Alt+Shift+D,3"] = ZmKeyMap.DBG_3;
+		this._map[ZmKeyMap.MAP_GLOBAL]["Alt+Shift+D,T"] = ZmKeyMap.DBG_TIMING;
 	}
 };
 
 ZmKeyMap.prototype = new DwtKeyMap(true);
 ZmKeyMap.prototype.constructor = ZmKeyMap;
 
+ZmKeyMap.prototype.isZmKeyMap = true;
+ZmKeyMap.prototype.toString = function() { return "ZmKeyMap"; };
 
-// translations for map names used in properties file
-ZmKeyMap.MAP_NAME = {};
 
-ZmKeyMap.MAP_NAME["address"]			= "ZmAddressBubble";
-ZmKeyMap.MAP_NAME["briefcase"]			= "ZmBriefcaseController";
-ZmKeyMap.MAP_NAME["calendar"]			= "ZmCalViewController";
-ZmKeyMap.MAP_NAME["call"]				= "ZmCallListController";
-ZmKeyMap.MAP_NAME["compose"]			= "ZmComposeController";
-ZmKeyMap.MAP_NAME["contacts"]			= "ZmContactListController";
-ZmKeyMap.MAP_NAME["conversation"]		= "ZmConvController";
-ZmKeyMap.MAP_NAME["conversation2"]		= "ZmConvView2";
-ZmKeyMap.MAP_NAME["conversationList"]	= "ZmConvListController";
-ZmKeyMap.MAP_NAME["editAppointment"]	= "ZmApptComposeController";
-ZmKeyMap.MAP_NAME["editContact"]		= "ZmContactController";
-ZmKeyMap.MAP_NAME["editPage"]			= "ZmPageEditController";
-ZmKeyMap.MAP_NAME["editTask"]			= "ZmTaskController";
-ZmKeyMap.MAP_NAME["global"]				= "Global";
-ZmKeyMap.MAP_NAME["mail"]				= "ZmMailListController";
-ZmKeyMap.MAP_NAME["message"]			= "ZmMsgController";
-ZmKeyMap.MAP_NAME["quickReply"]			= "QuickReply";
-ZmKeyMap.MAP_NAME["options"]			= "ZmPrefController";
-ZmKeyMap.MAP_NAME["tasks"]				= "ZmTaskListController";
-ZmKeyMap.MAP_NAME["voicemail"]			= "ZmVoicemailListController";
-
-// reverse map of above
-ZmKeyMap.MAP_NAME_R = {};
-(function() {
-    for (var i in ZmKeyMap.MAP_NAME) {
-        ZmKeyMap.MAP_NAME_R[ZmKeyMap.MAP_NAME[i]] = i;
-    }
-})();
+// Map names (must match those in the key properties file ZmKeys.properties)
+ZmKeyMap.MAP_ADDRESS			= "address";
+ZmKeyMap.MAP_BRIEFCASE			= "briefcase";
+ZmKeyMap.MAP_CALENDAR			= "calendar";
+ZmKeyMap.MAP_CALL				= "call";
+ZmKeyMap.MAP_COMPOSE			= "compose";
+ZmKeyMap.MAP_CONTACTS			= "contacts";
+ZmKeyMap.MAP_CONVERSATION		= "conversation";
+ZmKeyMap.MAP_CONVERSATION_LIST	= "conversationList";
+ZmKeyMap.MAP_EDIT_APPOINTMENT	= "editAppointment";
+ZmKeyMap.MAP_EDIT_CONTACT		= "editContact";
+ZmKeyMap.MAP_EDIT_TASK			= "editTask";
+ZmKeyMap.MAP_GLOBAL				= "global";
+ZmKeyMap.MAP_MAIL				= "mail";
+ZmKeyMap.MAP_MESSAGE			= "message";
+ZmKeyMap.MAP_QUICK_REPLY		= "quickReply";
+ZmKeyMap.MAP_OPTIONS			= "options";
+ZmKeyMap.MAP_TASKS				= "tasks";
+ZmKeyMap.MAP_VOICEMAIL			= "voicemail";
 
 // Action codes
 ZmKeyMap.ADDRESS_PICKER			= "AddressPicker";
@@ -229,57 +220,60 @@ ZmKeyMap.ACTION_PRECONDITION = {};
 
 ZmKeyMap._setPreconditions =
 function() {
-	ZmKeyMap.MAP_PRECONDITION["ZmComposeController"]		= ZmSetting.MAIL_ENABLED;
-	ZmKeyMap.MAP_PRECONDITION["ZmMailListController"]		= ZmSetting.MAIL_ENABLED;
-	ZmKeyMap.MAP_PRECONDITION["ZmConvListController"]		= ZmSetting.MAIL_ENABLED;
-	ZmKeyMap.MAP_PRECONDITION["ZmConvController"]			= ZmSetting.MAIL_ENABLED;
-	ZmKeyMap.MAP_PRECONDITION["ZmMsgController"]			= ZmSetting.MAIL_ENABLED;
-	ZmKeyMap.MAP_PRECONDITION["ZmContactListController"]	= ZmSetting.CONTACTS_ENABLED;
-	ZmKeyMap.MAP_PRECONDITION["ZmContactController"]		= ZmSetting.CONTACTS_ENABLED;
-	ZmKeyMap.MAP_PRECONDITION["ZmCalViewController"]		= ZmSetting.CALENDAR_ENABLED;
-	ZmKeyMap.MAP_PRECONDITION["ZmApptComposeController"]	= ZmSetting.CALENDAR_ENABLED;
-	ZmKeyMap.MAP_PRECONDITION["ZmPrefController"]			= ZmSetting.OPTIONS_ENABLED;
-	ZmKeyMap.MAP_PRECONDITION["ZmBriefcaseController"]		= ZmSetting.BRIEFCASE_ENABLED;
-	ZmKeyMap.MAP_PRECONDITION["ZmTaskListController"]		= ZmSetting.TASKS_ENABLED;
-	ZmKeyMap.MAP_PRECONDITION["ZmTaskController"]			= ZmSetting.TASKS_ENABLED;
-	ZmKeyMap.MAP_PRECONDITION["ZmVoicemailListController"]	= ZmSetting.VOICE_ENABLED;
-	ZmKeyMap.MAP_PRECONDITION["ZmCallListController"]		= ZmSetting.VOICE_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION[ZmKeyMap.MAP_COMPOSE]				= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION[ZmKeyMap.MAP_MAIL]				= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION[ZmKeyMap.MAP_CONVERSATION_LIST]	= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION[ZmKeyMap.MAP_CONVERSATION]		= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION[ZmKeyMap.MAP_MESSAGE]				= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION[ZmKeyMap.MAP_CONTACTS]			= ZmSetting.CONTACTS_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION[ZmKeyMap.MAP_EDIT_CONTACT]		= ZmSetting.CONTACTS_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION[ZmKeyMap.MAP_CALENDAR]			= ZmSetting.CALENDAR_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION[ZmKeyMap.MAP_EDIT_APPOINTMENT]	= ZmSetting.CALENDAR_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION[ZmKeyMap.MAP_OPTIONS]				= ZmSetting.OPTIONS_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION[ZmKeyMap.MAP_BRIEFCASE]			= ZmSetting.BRIEFCASE_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION[ZmKeyMap.MAP_TASKS]				= ZmSetting.TASKS_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION[ZmKeyMap.MAP_EDIT_TASK]			= ZmSetting.TASKS_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION[ZmKeyMap.MAP_VOICEMAIL]			= ZmSetting.VOICE_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION[ZmKeyMap.MAP_CALL]				= ZmSetting.VOICE_ENABLED;
 	
-	ZmKeyMap.ACTION_PRECONDITION["Global"] = {};
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.FOCUS_SEARCH_BOX]	= ZmSetting.SEARCH_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_BRIEFCASE]		= ZmSetting.BRIEFCASE_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_CALENDAR]		= ZmSetting.CALENDAR_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_CONTACTS]		= ZmSetting.CONTACTS_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_MAIL]			= ZmSetting.MAIL_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_OPTIONS]		= ZmSetting.OPTIONS_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_TASKS]			= ZmSetting.TASKS_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_VOICE]			= ZmSetting.VOICE_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_APPT]			= ZmSetting.CALENDAR_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_BRIEFCASEITEM]	= ZmSetting.BRIEFCASE_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_CALENDAR]		= ZmSetting.CALENDAR_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_CHAT]			= ZmSetting.IM_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_CONTACT]		= ZmSetting.CONTACTS_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_FILE]			= ZmSetting.BRIEFCASE_ENABLED;
-    ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_DOC]			= ZmSetting.DOCS_ENABLED;    
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_FOLDER]			= ZmSetting.MAIL_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_MESSAGE]		= ZmSetting.MAIL_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_MESSAGE_WIN]	= ZmSetting.MAIL_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_ROSTER_ITEM]	= ZmSetting.IM_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_TAG]			= ZmSetting.TAGGING_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_TASK]			= ZmSetting.TASKS_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.PRESENCE_MENU]		= ZmSetting.IM_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.SAVED_SEARCH]		= ZmSetting.SAVED_SEARCHES_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.TAG]				= ZmSetting.TAGGING_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.UNTAG]				= ZmSetting.TAGGING_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"] = {};
-	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.ADDRESS_PICKER]	= ZmSetting.CONTACTS_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.HTML_FORMAT]		= ZmSetting.HTML_COMPOSE_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.NEW_WINDOW]		= ZmSetting.NEW_WINDOW_COMPOSE;
-	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.SAVE]				= ZmSetting.SAVE_DRAFT_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["ZmApptComposeController"] = {};
-	ZmKeyMap.ACTION_PRECONDITION["ZmApptComposeController"][ZmKeyMap.HTML_FORMAT]	= ZmSetting.HTML_COMPOSE_ENABLED;
-    ZmKeyMap.ACTION_PRECONDITION["ZmCalViewController"] = {};
-	ZmKeyMap.ACTION_PRECONDITION["ZmCalViewController"][ZmKeyMap.CAL_FB_VIEW]	= ZmSetting.FREE_BUSY_VIEW_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL] = {};
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.FOCUS_SEARCH_BOX]	= ZmSetting.SEARCH_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.GOTO_BRIEFCASE]		= ZmSetting.BRIEFCASE_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.GOTO_CALENDAR]		= ZmSetting.CALENDAR_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.GOTO_CONTACTS]		= ZmSetting.CONTACTS_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.GOTO_MAIL]			= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.GOTO_OPTIONS]		= ZmSetting.OPTIONS_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.GOTO_TASKS]			= ZmSetting.TASKS_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.GOTO_VOICE]			= ZmSetting.VOICE_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_APPT]			= ZmSetting.CALENDAR_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_BRIEFCASEITEM]	= ZmSetting.BRIEFCASE_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_CALENDAR]		= ZmSetting.CALENDAR_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_CHAT]			= ZmSetting.IM_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_CONTACT]			= ZmSetting.CONTACTS_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_FILE]			= ZmSetting.BRIEFCASE_ENABLED;
+    ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_DOC]				= ZmSetting.DOCS_ENABLED;    
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_FOLDER]			= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_MESSAGE]			= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_MESSAGE_WIN]		= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_ROSTER_ITEM]		= ZmSetting.IM_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_TAG]				= ZmSetting.TAGGING_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.NEW_TASK]			= ZmSetting.TASKS_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.PRESENCE_MENU]		= ZmSetting.IM_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.SAVED_SEARCH]		= ZmSetting.SAVED_SEARCHES_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.TAG]					= ZmSetting.TAGGING_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_GLOBAL][ZmKeyMap.UNTAG]				= ZmSetting.TAGGING_ENABLED;
+
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_COMPOSE] = {};
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_COMPOSE][ZmKeyMap.ADDRESS_PICKER]		= ZmSetting.CONTACTS_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_COMPOSE][ZmKeyMap.HTML_FORMAT]		= ZmSetting.HTML_COMPOSE_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_COMPOSE][ZmKeyMap.NEW_WINDOW]			= ZmSetting.NEW_WINDOW_COMPOSE;
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_COMPOSE][ZmKeyMap.SAVE]				= ZmSetting.SAVE_DRAFT_ENABLED;
+
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_EDIT_APPOINTMENT] = {};
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_EDIT_APPOINTMENT][ZmKeyMap.HTML_FORMAT]	= ZmSetting.HTML_COMPOSE_ENABLED;
+
+    ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_CALENDAR] = {};
+	ZmKeyMap.ACTION_PRECONDITION[ZmKeyMap.MAP_CALENDAR][ZmKeyMap.CAL_FB_VIEW]		= ZmSetting.FREE_BUSY_VIEW_ENABLED;
 };
 
 /**

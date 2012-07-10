@@ -1031,7 +1031,7 @@ function(ev) {
 
 ZmAddressInputField.prototype.getKeyMapName =
 function() {
-	return "ZmAddressBubble";
+	return ZmKeyMap.MAP_ADDRESS;
 };
 
 // invoked when at least one bubble is selected

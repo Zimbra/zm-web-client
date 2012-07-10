@@ -3064,7 +3064,7 @@ function() {
 	if (ctlr && ctlr.getKeyMapName) {
 		return ctlr.getKeyMapName();
 	}
-	return "Global";
+	return ZmKeyMap.MAP_GLOBAL;
 };
 
 /**
@@ -3175,20 +3175,17 @@ function(actionCode, ev) {
 			var maps = km.getAncestors(curMap);
 			var inherits = (maps && maps.length > 0);
 			maps.unshift(curMap);
-			var maps1 = [], maps2 = [];
+			var maps2 = [];
 			if (inherits) {
-				if (maps.length > 1 && maps[maps.length - 1] == "Global") {
+				if (maps.length > 1 && maps[maps.length - 1] == ZmKeyMap.MAP_GLOBAL) {
 					maps.pop();
-					maps2.push("global");
+					maps2.push(ZmKeyMap.MAP_GLOBAL);
 				}
-			}
-			for (var i = 0; i < maps.length; i++) {
-				maps1.push(ZmKeyMap.MAP_NAME_R[maps[i]] || DwtKeyMap.MAP_NAME_R[maps[i]]);
 			}
 
 			var col1 = {}, col2 = {};
 			col1.type = ZmShortcutList.TYPE_APP;
-			col1.maps = maps1;
+			col1.maps = maps;
 			var colList = [col1];
 			if (maps2.length) {
 				col2.type = ZmShortcutList.TYPE_APP;

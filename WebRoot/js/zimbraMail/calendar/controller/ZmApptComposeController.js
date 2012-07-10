@@ -1014,7 +1014,7 @@ function() {
 
 ZmApptComposeController.prototype.getKeyMapName =
 function() {
-	return "ZmApptComposeController";
+	return ZmKeyMap.MAP_EDIT_APPOINTMENT;
 };
 
 

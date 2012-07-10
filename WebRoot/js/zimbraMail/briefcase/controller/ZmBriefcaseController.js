@@ -217,7 +217,7 @@ function(parent) {
     var tooltip = inTrashFolder ? ZmMsg.deletePermanentTooltip : ZmMsg.deleteTooltip;
     var deleteButton = parent.getButton(ZmOperation.DELETE);
     if(deleteButton){
-        deleteButton.setToolTipContent(ZmOperation.getToolTip(ZmOperation.DELETE, ZmKeyMap.MAP_NAME_R[this.getKeyMapName()], tooltip));
+        deleteButton.setToolTipContent(ZmOperation.getToolTip(ZmOperation.DELETE, this.getKeyMapName(), tooltip));
     }
 };
 
@@ -1608,7 +1608,7 @@ function(){
 
 ZmBriefcaseController.prototype.getKeyMapName =
 function() {
-	return "ZmBriefcaseController";
+	return ZmKeyMap.MAP_BRIEFCASE;
 };
 
 ZmBriefcaseController.prototype.handleKeyAction =

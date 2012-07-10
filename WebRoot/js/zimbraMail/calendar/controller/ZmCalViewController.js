@@ -116,6 +116,9 @@ ZmCalViewController = function(container, calApp, sessionId, searchResultsContro
 ZmCalViewController.prototype = new ZmListController;
 ZmCalViewController.prototype.constructor = ZmCalViewController;
 
+ZmCalViewController.prototype.isZmCalViewController = true;
+ZmCalViewController.prototype.toString = function() { return "ZmCalViewController"; };
+
 ZmCalViewController.DEFAULT_APPOINTMENT_DURATION = 30*60*1000;
 
 // maintenance needed on views and/or minical
@@ -133,10 +136,6 @@ ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_MONTH_VIEW]		= ZmId.VIEW_CA
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_LIST_VIEW]			= ZmId.VIEW_CAL_LIST;
 ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_FB_VIEW]		    = ZmId.VIEW_CAL_FB;
 
-ZmCalViewController.prototype.toString =
-function() {
-	return "ZmCalViewController";
-};
 
 // Zimlet hack
 ZmCalViewController.prototype.postInitListeners =
@@ -3921,7 +3920,7 @@ function() {
 
 ZmCalViewController.prototype.getKeyMapName =
 function() {
-	return "ZmCalViewController";
+	return ZmKeyMap.MAP_CALENDAR;
 };
 
 ZmCalViewController.prototype.handleKeyAction =

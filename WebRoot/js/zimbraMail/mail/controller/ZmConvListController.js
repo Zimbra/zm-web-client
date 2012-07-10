@@ -111,9 +111,9 @@ function(view, force) {
 ZmConvListController.prototype.getKeyMapName =
 function() {
 	if (this._convView.isActiveQuickReply()) { //if user is quick replying, don't use the mapping of conv/mail list - so Ctrl+Z works
-		return "QuickReply";
+		return ZmKeyMap.MAP_QUICK_REPLY;
 	}
-	return "ZmConvListController";
+	return ZmKeyMap.MAP_CONVERSATION_LIST;
 };
 
 ZmConvListController.prototype.handleKeyAction =

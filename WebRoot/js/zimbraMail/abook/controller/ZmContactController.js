@@ -150,7 +150,7 @@ function() {
 
 ZmContactController.prototype.getKeyMapName =
 function() {
-	return "ZmContactController";
+	return ZmKeyMap.MAP_EDIT_CONTACT;
 };
 
 ZmContactController.prototype.handleKeyAction =

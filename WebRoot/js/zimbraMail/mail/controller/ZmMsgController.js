@@ -134,7 +134,7 @@ function(tabId, tabCallback) {
 
 ZmMsgController.prototype.getKeyMapName =
 function() {
-	return "ZmMsgController";
+	return ZmKeyMap.MAP_MESSAGE;
 };
 
 ZmMsgController.prototype.handleKeyAction =

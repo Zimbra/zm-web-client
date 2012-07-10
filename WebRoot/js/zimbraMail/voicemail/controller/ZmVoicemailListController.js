@@ -165,7 +165,7 @@ function(parent, num) {
 
 ZmVoicemailListController.prototype.getKeyMapName =
 function() {
-	return "ZmVoicemailListController";
+	return ZmKeyMap.MAP_VOICEMAIL;
 };
 
 ZmVoicemailListController.prototype.handleKeyAction =

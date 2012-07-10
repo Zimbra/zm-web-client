@@ -117,7 +117,7 @@ function(setFocus) {
 
 ZmTaskController.prototype.getKeyMapName =
 function() {
-	return "ZmTaskController";
+	return ZmKeyMap.MAP_EDIT_TASK;
 };
 
 /**

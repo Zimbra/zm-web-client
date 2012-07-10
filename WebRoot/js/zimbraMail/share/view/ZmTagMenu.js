@@ -183,9 +183,9 @@ function(tagList, addRemove) {
 	}
 
 	// add static "New Tag" menu item
-	var app = appCtxt.getCurrentController() && appCtxt.getCurrentController().getKeyMapName();
-	var addid = app ? (ZmKeyMap.MAP_NAME_R[app] + "_newtag"):this._htmlElId + "|NEWTAG";
-	var removeid = app ? (ZmKeyMap.MAP_NAME_R[app] + "_removetag"):this._htmlElId + "|REMOVETAG";
+	var map = appCtxt.getCurrentController() && appCtxt.getCurrentController().getKeyMapName();
+	var addid = map ? (map + "_newtag"):this._htmlElId + "|NEWTAG";
+	var removeid = map ? (map + "_removetag"):this._htmlElId + "|REMOVETAG";
 
 	var miNew = this._menuItems[ZmTagMenu.MENU_ITEM_ADD_ID] = new DwtMenuItem({parent:this, id: addid});
 	miNew.setText(AjxStringUtil.htmlEncode(ZmMsg.newTag));
