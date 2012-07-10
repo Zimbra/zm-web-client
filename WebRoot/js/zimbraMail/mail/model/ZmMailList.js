@@ -705,7 +705,12 @@ function(item, sortBy) {
 	var a = this.getArray();
 	// server always orders conv's msg list as DATE_DESC
 	if (this.convId && sortBy == ZmSearch.DATE_ASC) {
-		a = a.reverse();
+		//create a temp array with reverse index and date
+		var temp = [];
+		for(var j = a.length - 1;j >=0;j--) {
+			temp.push({date:a[j].date});
+		}
+		a = temp;
 	}
 	for (var i = 0; i < a.length; i++) {
 		var date = parseInt(a[i].date);
