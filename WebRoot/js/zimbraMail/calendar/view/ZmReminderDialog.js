@@ -133,7 +133,7 @@ function(list) {
 	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
 	for (var i = 0; i < size; i++) {
 		var appt = list.get(i);
-        if (appt.isReadOnly()) { continue; }
+        if (appt.isShared() && appt.isReadOnly()) { continue; }
         this._list.add(appt);
 		var uid = appt.getUniqueId(true);
 		var data = this._apptData[uid] = {appt:appt};
