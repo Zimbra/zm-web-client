@@ -808,6 +808,8 @@ function(parent, num) {
 		}
 	}
 
+	this._setContactGroupMenu(parent);
+
 	var printOp = (parent instanceof ZmActionMenu) ? ZmOperation.PRINT_CONTACT : ZmOperation.PRINT;
 
 
@@ -830,7 +832,8 @@ function(parent, num) {
 			var isInTrash = folder && folder.isInTrash();
 			var canEdit = (folder == null || !folder.isReadOnly());
 
-			parent.enable([ZmOperation.CONTACTGROUP_MENU, ZmOperation.NEW_MESSAGE], (num > 0));
+			parent.enable([ZmOperation.NEW_MESSAGE], (num > 0));
+			parent.enable([ZmOperation.CONTACTGROUP_MENU], canEdit && num > 0);
 			parent.enable([ZmOperation.TAG_MENU], canEdit && num > 0);
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU], canEdit && num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1 && !isInTrash);
@@ -902,7 +905,6 @@ function(parent, num) {
 			tagMenu.setText(contact && contact.isGroup() ? ZmMsg.AB_TAG_GROUP : ZmMsg.AB_TAG_CONTACT);
 		}
 	}
-	this._setContactGroupMenu(parent);
 
     if (appCtxt.isExternalAccount()) {
         parent.enable(
