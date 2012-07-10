@@ -4658,3 +4658,5 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .Icon{
 	width: 25px;
 }
+
+ruby > rb, rt, rp {font-size: 80%;}
