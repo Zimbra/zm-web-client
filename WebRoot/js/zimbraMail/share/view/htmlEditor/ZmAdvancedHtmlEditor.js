@@ -145,19 +145,23 @@ function(editor) {
 /**
  * Restores the focus. For IE selecting bookmark and for other browsers calling focus will place the cursor in the last edited position
  * @param editor object
+ * @param {Boolean} collapse whether to collapse selection or not for IE html mode
  */
 ZmAdvancedHtmlEditor.prototype.restoreFocus =
-function(editor) {
+function(editor, collapse) {
     var currentObj = this,
-        windowManager;
+        windowManager,
+        selection;
 
     if (AjxEnv.isIE && currentObj._mode === DwtHtmlEditor.HTML) {
         editor = editor || currentObj.getEditor();
         if (editor) {
             windowManager = editor.windowManager;
-            if (windowManager && windowManager.bookmark) {
-                editor.selection.moveToBookmark(windowManager.bookmark);
+            selection = editor.selection;
+            if (selection && windowManager && windowManager.bookmark) {
+                selection.moveToBookmark(windowManager.bookmark);
                 delete windowManager.bookmark;
+                (collapse) && selection.collapse(false);
                 return;
             }
         }
@@ -760,7 +764,7 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ed, ev) {
     if(AjxEnv.isIE){
         tinymceEvent.add(doc, 'beforedeactivate', function(e) {
             if(ed.windowManager){
-                ed.windowManager.bookmark = ed.selection.getBookmark();
+                ed.windowManager.bookmark = ed.selection.getBookmark(1);
             }
         });
     }
@@ -1457,7 +1461,7 @@ ZmAdvancedHtmlEditor._spellCheckResumeEditing =
 function() {
 	var editor = Dwt.getObjectFromElement(this);
 	editor.discardMisspelledWords();
-    editor.restoreFocus();
+    editor.restoreFocus(0, true);
 };
 
 ZmAdvancedHtmlEditor._spellCheckAgain =
