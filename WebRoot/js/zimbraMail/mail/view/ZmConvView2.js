@@ -36,6 +36,7 @@ ZmConvView2 = function(params) {
 	this._convChangeHandler = this._convChangeListener.bind(this);
 	this._listChangeListener = this._msgListChangeListener.bind(this);
 	this._standalone = params.standalone;
+	this._hasBeenExpanded = {};	// track which msgs have been expanded at least once
 
 	this.addControlListener(this._scheduleResize.bind(this));
 	this._setAllowSelection();
@@ -173,6 +174,20 @@ function(conv, container) {
 	if (oldToNew) {
 		msgs = msgs.reverse();
 	}
+	
+	// figure out which msg views should be expanded; if the msg is loaded and we're viewing it
+	// for the first time, it was unread so we expand it; expand the first if there are none to expand
+	var toExpand = {}, gotOne = false;
+	for (var i = 0, len = msgs.length; i < len; i++) {
+		var msg = msgs[i];
+		if (msg.isLoaded() && !this._hasBeenExpanded[msg.id]) {
+			toExpand[msg.id] = gotOne = true;
+		}
+	}
+	if (!gotOne) {
+		toExpand[msgs[0].id] = true;
+	}
+	
 	var idx;
 	var oldestIndex = oldToNew ? 0 : msgs.length - 1;
 	for (var i = 0, len = msgs.length; i < len; i++) {
@@ -183,7 +198,7 @@ function(conv, container) {
 			actionsMenu:	this._actionsMenu
 		}
 		var msg = msgs[i];
-		params.forceExpand = msg.isLoaded();
+		params.forceExpand = toExpand[msg.id];
 		// don't look for quoted text in oldest msg - it is considered wholly original
 		params.forceOriginal = (i == oldestIndex);
 		this._renderMessage(msg, params);
@@ -1160,6 +1175,9 @@ function(msg, force) {
 	}
 	else {
 		this._expanded = this._forceExpand || (!this._forceCollapse && msg.isUnread);
+	}
+	if (this._expanded) {
+		this._convView._hasBeenExpanded[msg.id] = true;
 	}
 	this._setHeaderClass();
 
