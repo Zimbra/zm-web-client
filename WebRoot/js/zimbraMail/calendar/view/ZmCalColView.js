@@ -1031,10 +1031,13 @@ ZmCalColView.prototype._checkForOffscreenAppt=function(bodyElement){
     if(!bodyElement) { return; }
     var height = bodyElement.offsetHeight;
     var top = bodyElement.scrollTop;
+    var appt;
 
     if(this._list && this._list.size()>0){
         var apptArray = this._list.getArray();
         for(var i=0;i<apptArray.length;i++){
+            appt = apptArray[i];
+            if (!appt) { continue; }
             var layoutParams = apptArray[i].getLayoutInfo();
             if(!topExceeds){topExceeds=(layoutParams && layoutParams.y<(top));}
             if(!bottomExceeds){bottomExceeds=(layoutParams && layoutParams.y>(height+top));}
@@ -1097,7 +1100,7 @@ function() {
 	for (var i=0; i < size; i++) {
 		var ao = list.get(i);
 
-		if (ao.isAllDayEvent()) {
+		if (!ao || ao.isAllDayEvent()) {
 			continue;
 		}
 
