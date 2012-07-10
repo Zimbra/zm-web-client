@@ -152,9 +152,11 @@ function(ev, result) {
 ZmDLAutocompleteListView.prototype._doUpdate =
 function(match) {
 
+	var context = null;
 	// so that address will be taken from match
 	if (this._parentAclv && this._parentAclv._currentContext) {
-		this._parentAclv._currentContext.address = null;
+		context = this._parentAclv._currentContext;
+		context.address = null;
 	}
 	match = match || this._matchHash[this._selected];
 	if (!match) {
@@ -163,6 +165,22 @@ function(match) {
 
 	if (this._selectionCallback) {
 		this._selectionCallback(match.fullAddress);
+		return;
+	}
+
+	var dlBubble = document.getElementById(this._dlBubbleId);
+	if (dlBubble && (!context || context.element._aifId != dlBubble._aifId)) {
+		//this is the special case the DL was pre-created with the view. In this case we might have no context.
+		// Another possible bug this fixes is if the current context is not in the same input field as the DL we are selecting from.
+		var addrInputFld = DwtControl.ALL_BY_ID[dlBubble._aifId];
+		var bubbleParams = {
+			address:	match.fullAddress,
+			match:		match,
+			noFocus:	false,
+			addClass:	null,
+			noParse:	false
+		};
+		addrInputFld.addBubble(bubbleParams);
 		return;
 	}
 
