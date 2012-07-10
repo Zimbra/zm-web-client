@@ -5711,3 +5711,5 @@ DIV.ZmSuggestLink {
 
 /* for displaying a msg without using an iframe (bug 66466) */
 @import url("msgview.css");
+
+ruby > rb, rt, rp {font-size: 80%;}
