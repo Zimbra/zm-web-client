@@ -111,7 +111,7 @@ function(view, force) {
 ZmConvListController.prototype.getKeyMapName =
 function() {
 	if (this._convView.isActiveQuickReply()) { //if user is quick replying, don't use the mapping of conv/mail list - so Ctrl+Z works
-		return "Global";
+		return "QuickReply";
 	}
 	return "ZmConvListController";
 };
@@ -191,6 +191,21 @@ function(actionCode, ev) {
 		case DwtKeyMap.DBLCLICK:
 			return DwtListView.prototype.handleKeyAction.apply(mlv, arguments);
 
+		// these are for quick reply
+		case ZmKeyMap.CANCEL:
+			var itemView = this.getItemView();
+			if (itemView) {
+				itemView._cancelListener();
+			}
+			break;
+		
+		case ZmKeyMap.SEND:
+			var itemView = this.getItemView();
+			if (itemView) {
+				itemView._sendListener();
+			}
+			break;
+			
 		default:
 			return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
 	}

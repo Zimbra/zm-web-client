@@ -74,6 +74,7 @@ ZmKeyMap.MAP_NAME["editTask"]			= "ZmTaskController";
 ZmKeyMap.MAP_NAME["global"]				= "Global";
 ZmKeyMap.MAP_NAME["mail"]				= "ZmMailListController";
 ZmKeyMap.MAP_NAME["message"]			= "ZmMsgController";
+ZmKeyMap.MAP_NAME["quickReply"]			= "QuickReply";
 ZmKeyMap.MAP_NAME["options"]			= "ZmPrefController";
 ZmKeyMap.MAP_NAME["tasks"]				= "ZmTaskListController";
 ZmKeyMap.MAP_NAME["voicemail"]			= "ZmVoicemailListController";
