@@ -607,7 +607,7 @@ function() {
 	if (!this._calItemStatus) { return; }
 
 	var accountName = appCtxt.isOffline && appCtxt.accountList.mainAccount.name;
-	var batchCmd = new ZmBatchCommand(null, accountName);
+	var batchCmd = new ZmBatchCommand(null, accountName, true);
 	var itemCount = 0;
 	for (var i in this._calItemStatus) {
 		var info = this._calItemStatus[i];
