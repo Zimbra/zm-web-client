@@ -4004,7 +4004,7 @@ function(type, addrVec, used) {
 
 	var addrAdded = false;
 	used = used || {};
-	var addrs = addrVec && addrVec.getArray();
+	var addrs = AjxUtil.toArray(addrVec);
 	if (addrs && addrs.length) {
 		if (!this._addresses[type]) {
 			this._addresses[type] = [];
