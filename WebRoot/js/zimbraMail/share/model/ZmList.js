@@ -920,7 +920,8 @@ function(params, batchCmd) {
 	}
     var ac =  window.parentAppCtxt || appCtxt;
 	var actionController = ac.getActionController();
-	var actionLogItem = (!params.noUndo && actionController && actionController.actionPerformed({op: params.action, ids: idList, attrs: params.attrs})) || null;
+	var undoPossible = !params.noUndo && (this.type != ZmItem.CONV || this.search && this.search.folderId); //bug 74169 - since the convs might not be fully loaded we might not know where the messages are moved from at all. so no undo.
+	var actionLogItem = (undoPossible && actionController && actionController.actionPerformed({op: params.action, ids: idList, attrs: params.attrs})) || null;
 	var respCallback = new AjxCallback(this, this._handleResponseItemAction, [params.callback, actionLogItem]);
 
 	var params1 = {
