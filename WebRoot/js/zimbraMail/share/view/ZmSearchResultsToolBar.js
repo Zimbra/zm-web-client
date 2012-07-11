@@ -156,6 +156,12 @@ function(bubble, added) {
 	}
 };
 
+ZmSearchResultsToolBar.prototype._handleEnterKeyPress =
+function(ev) {
+	this.setLabel(ZmMsg.searching);
+	ZmSearchToolBar.prototype._handleEnterKeyPress.apply(this, arguments);
+};
+
 /**
  * Adds a bubble for the given search term.
  * 

@@ -212,6 +212,7 @@ function(ev, zimletEvent) {
 		searchFor:					this._curSearch && this._curSearch.searchFor,
 		errorCallback:				this._errorCallback.bind(this)
 	}
+	toolbar.setLabel(ZmMsg.searching);
 	appCtxt.getSearchController()._toolbarSearch(params);
 };
 
