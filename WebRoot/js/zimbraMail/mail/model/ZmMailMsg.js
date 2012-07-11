@@ -2718,7 +2718,7 @@ function(req) {
 	}
 	else {
 		var hdrs = ZmMailMsg.requestHeaders;
-		if (hdrs && hdrs.length) {
+		if (hdrs) {
 			req.header = req.header || [];
 			for (var hdr in hdrs) {
 				req.header.push({n:hdrs[hdr]});
