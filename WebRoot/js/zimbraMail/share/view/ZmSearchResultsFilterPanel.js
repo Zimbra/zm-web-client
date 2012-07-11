@@ -868,6 +868,7 @@ function(menu) {
 		comboBox.addChangeListener(this._unitChangeListener.bind(this, type, comboBox));
 		comboBox.add(ZmMsg.kb,"KB",true); //select kb as default value
 		comboBox.add(ZmMsg.mb,"MB");
+		comboBox.input.setReadOnly(true);
 	}
 };
 
