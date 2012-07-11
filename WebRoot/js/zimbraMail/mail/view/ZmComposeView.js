@@ -2008,7 +2008,7 @@ function(action, type, override) {
 	if (override) {
 		this._recipients.addAddresses(type, override);
 	}
-	else {
+	else if (ZmComposeController.IS_REPLY[action]) {
 		var identityId = this.identitySelect && this.identitySelect.getValue();
 		var addresses = ZmComposeView.getReplyAddresses(action, this._msg, this._addressesMsg, identityId);
 		if (addresses) {
