@@ -746,6 +746,7 @@ function(params) {
 		else if (invite && !invite.isEmpty()) {
 			var bp = item.getBodyPart();
 			tooltip = bp && ZmInviteMsgView.truncateBodyContent(bp.getContent(), true);
+			tooltip = AjxStringUtil.stripTags(tooltip);
 		}
 		else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
 		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
