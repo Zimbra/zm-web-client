@@ -47,7 +47,7 @@
         </td>
         </c:if>
         <td class='TabSpacerR'/>
-        <c:if test="${mailbox.features.voice}">
+        <c:if test="${mailbox.licenses.voice}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='voice' ? 'AppTabSelected' :'AppTabNormal'}'>
                 <a id='TAB_VOICE' href="<c:url value="/h/search?st=voicemail"/>" <c:if test="${keys}">accesskey="v"</c:if>><span id='tab_ikon_voice'><app:img src="voicemail/ImgVoicemailApp.png" altkey='ALT_APP_CONTACTS'/></span><span><fmt:message
