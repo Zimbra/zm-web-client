@@ -80,10 +80,10 @@
     onload="var e=document.getElementById('findField'); if (e) e.focus();">
 
 <c:set var="toolbar">
-    <table width=100% cellspacing=0>
+    <table width=100%>
         <tr valign='middle'>
             <td class='TbBt'>
-                <table cellspacing=0 cellpadding=0 class='Tb'>
+                <table class='Tb'>
                     <tr>
                         <app:button name="actionContactDone" src="common/ImgCheck.png" tooltip="done" text="done"/>
                         <td><div class='vertSep'></div></td>
@@ -103,7 +103,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
 //-->
 </SCRIPT>
 <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
-<table width=100% cellpadding="0" cellspacing="0">
+<table width=100%>
     <tr>
         <td class='TbTop'>
                 ${toolbar}
@@ -113,15 +113,15 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
         <td class='ZhAppContent' align="">
             <table width="100%">
                 <tr>
-                    <td style="padding:0px 15px;">
-                        <table cellpadding="0" cellspacing="0">
+                    <td style="padding:0 15px;">
+                        <table>
                         <tr>
                             <td>
-                                <table cellpadding="0" cellspacing="3">
+                                <table class="ZPropertySheet" cellspacing="6">
                                                         <tr>
                                                             <td>&nbsp;</td>
                                                             <td>
-                                                                <table cellpadding="0" cellspacing="0">
+                                                                <table>
                                                                     <tr>
                                                                         <td>
                                                                             <input id="allday" type=checkbox name="allDay" <c:if test="${compose.allDay}">checked</c:if> value="1">
@@ -136,7 +136,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                                                         <tr>
                                                             <td width="1%" align="right"><label for="start"><fmt:message key="start"/>:</label></td>
                                                             <td>
-                                                                <table cellpadding="0" cellspacing="0">
+                                                                <table>
                                                                     <tr>
                                                                         <td>
                                                                             <input id="start" type=text size="12" maxlength="20" name="startDate" value="${fn:escapeXml(compose.startDate)}">
@@ -182,7 +182,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                                                         <tr>
                                                             <td width="1%" align="right"><label for="end"><fmt:message key="end"/>:</label></td>
                                                             <td>
-                                                                <table cellpadding="0" cellspacing="0">
+                                                                <table>
                                                                     <tr>
                                                                         <td>
                                                                             <input id="end" type=text size="12" maxlength="20" name="endDate" value="${fn:escapeXml(compose.endDate)}">
@@ -226,7 +226,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                                                             <c:set var="addedTimeZone" value="true"/>
                                                             <tr>
                                                                 <td nowrap align=right>
-                                                                    <label for="timeZone"><fmt:message key="timeZonePref"/> :</label>
+                                                                    <label for="timeZone"><fmt:message key="timeZonePref"/>:</label>
                                                                 </td>
                                                                 <td>
                                                                     <select name="timeZone" id="timeZone">
@@ -297,7 +297,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                 </tr>
             </table>
             
-            <table cellpadding="0" cellspacing="0" class="ZhSchedularTbl">
+            <table class="ZhSchedularTbl">
                 <tr><fmt:message key="CAL_APPT_SCHEDULE_HEADER_FORMAT" var="hdrFormat"/>
                     <th width="30%">
                         <table align="center">
@@ -319,7 +319,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                 <tr>
                     <th width="30%" class="attName MsgHdr"> <fmt:message key="attendees"/> </th>
                     <td>
-                        <table cellpadding="0" cellspacing="0">
+                        <table>
                             <tr>
                                 <c:forEach begin="0" end="24" step="1" var="indx">
                                     <td colspan="2" align="center"><div class="hourLblDiv"/>${indx % 12 eq 0 ? 12 : (indx > 12 ? indx - 12 : indx) }</td>
@@ -342,7 +342,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                 <tr>
                     <td class="attName">${fn:escapeXml(mailbox.defaultIdentity.fromEmailAddress.fullAddress)}</td>
                     <td>
-                        <table cellpadding="0" cellspacing="0">
+                        <table>
                             <tr>
                                 <td><div class="gridDiv"/></td>
                                 <c:set var="aday" value="${today}"/>
@@ -360,9 +360,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                                 </c:forEach>
                                 <c:set var="rows" value="1"/>
                                 <td><div class="gridDiv ${compose.allDay ? 'end ':''}"/></td>
-                                <td>
-                                   &nbsp;
-                                </td>
+                                <td>&nbsp;</td>
                             </tr>
                         </table>
                     </td>
@@ -372,7 +370,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                     <tr>
                         <td class="attName">${fn:escapeXml(anAttendee.fullAddressQuoted)}</td>
                         <td>
-                            <table cellpadding="0" cellspacing="0">
+                            <table>
                                 <tr>
                                     <td><div class="gridDiv"/></td>
                                     <c:set var="aday" value="${today}"/>

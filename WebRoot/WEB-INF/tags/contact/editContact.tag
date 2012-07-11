@@ -39,16 +39,16 @@
 </table>
 <c:choose>
     <c:when test="${contact.isGroup or isgroup}">
-        <table border="0" cellpadding="0" cellspacing="3" width="100%">
+        <table width="100%">
         <tr><td>
-                <table border="0" cellpadding="0" cellspacing="3" width="100%">
+                <table class="ZPropertySheet" cellspacing="6" width="100%">
                     <tr>
                         <td class="editContactGroupLabel"><label for="nickname"><fmt:message key="AB_GROUP_NAME"/>:</label>
                             <input name='isgroup' type='hidden' value="true"/>
                             <input name='nickname' id="nickname" type='text' autocomplete='off' size='35' value="${fn:escapeXml(not empty param.nickname ? param.nickname : contact.nickname)}">
                         </td>
 						<td align=right>
-							<table  border="0" cellspacing='5'>
+							<table>
 								<tbody>
 									<tr>
 										<td valign='center' class="editContactLabel"><label for="folderSelect"><fmt:message key="addressBook"/> :</label></td>
@@ -73,7 +73,7 @@
         </tr>
         <tr><td class="List">
                 <c:set var="contactValues" value="${empty paramValues.dlist ? contact.groupMembers : paramValues.dlist}"/>
-                <table class="topborder" cellpadding="2" cellspacing="0" width="100%">
+                <table class="topborder" width="100%">
                     <tr valign="top">
                         <th width="4%">
                               &nbsp;&nbsp;
@@ -140,8 +140,8 @@
     <c:otherwise>
         <input type="hidden" name="fullName" value="${fn:escapeXml(not empty contact ? contact.fullName : '')}" />
         <input type="hidden" name="nickname" value="${fn:escapeXml(not empty contact ? contact.nickname : '')}" />
-        <table border="0" cellpadding="0" cellspacing="3" width="100%">
-        <tr><td valign='center' class="editContactLabel"><label for="folderIdSelect"><fmt:message key="addressBook"/> :</label></td>
+        <table class="ZPropertySheet" cellspacing="6" width="100%">
+        <tr><td valign='center' class="editContactLabel"><label for="folderIdSelect"><fmt:message key="addressBook"/>:</label></td>
             <td><input type="hidden" name="origFolderId" value="${empty contact ? '': contact.folderId}"/>
                 <select name="folderid" id="folderIdSelect" tabindex=100>
                     <zm:forEachFolder var="folder">
@@ -153,7 +153,7 @@
                     </zm:forEachFolder>
                 </select>
             </td>
-            <td valign='center' class="editContactLabel"><label for="fileAs"><fmt:message key="fileAs"/> :</label></td>
+            <td valign='center' class="editContactLabel"><label for="fileAs"><fmt:message key="fileAs"/>:</label></td>
             <td><c:set var="selected" value="${empty contact? '1' : contact.fileAs}"/>
                 <select name="fileAs" id="fileAs" tabindex=150>
                     <option <c:if test="${selected eq '1'}">selected</c:if> value="1"><fmt:message key="AB_FILE_AS_lastFirst"/></option>

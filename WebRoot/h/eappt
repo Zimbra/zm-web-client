@@ -89,10 +89,10 @@
 <app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='calendar' calendars="true" minical="true" context="${null}" keys="false" date="${requestScope.dateContext}" tags="true"
      onload="var e=document.getElementById('subject'); if (e) e.focus();">
     <c:set var="toolbar">
-        <table width="100%" cellspacing="0" cellpadding="0" class='Tb'>
+        <table width="100%" class='Tb'>
             <tr valign='middle'>
                 <td align="left" class=TbBt>
-                    <table cellspacing="0" cellpadding="0" class='Tb'>
+                    <table class='Tb'>
                         <tr>
                             <app:button id="OPSAVE" name="actionSave" src="common/ImgSave.png" tooltip="save" text="save"/>
                             <td><div class='vertSep'></div></td>
@@ -160,7 +160,7 @@
 
     <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8" name="apptForm">
         <input type="hidden" name="contactLocation" value="personal">
-        <table width="100%" style="height:100%;" cellpadding="0" cellspacing="0">
+        <table width="100%" style="height:100%;">
             <tr>
                 <td class='TbTop'>
                     ${toolbar}
@@ -168,13 +168,13 @@
             </tr>
             <tr>
                 <td class='ZhAppContent'>
-                    <table cellpadding="2" cellspacing="0" width="100%" class='Compose'>
+                    <table width="100%" class='Compose'>
                     <c:if test="${isInstance}">
                         <tr>
                             <td colspan=2 >
-                                <table width="100%" cellpadding="0" cellspacing="0">
+                                <table width="100%">
                                     <tr>
-                                        <td class='ZhApptRecurrInfo' style='padding-left:5px' width=24><app:img src="dwt/ImgInformation.png"/></td>
+                                        <td class='ZhApptRecurrInfo' style='padding-left:5px;' width=24><app:img src="dwt/ImgInformation.png"/></td>
                                         <td class='ZhApptRecurrInfo'>
                                             <app:calendarUrl toggleInstance="true" var="apptUrl"/>
                                             <fmt:message key="apptInstNote"/>
@@ -187,13 +187,13 @@
                     </c:if>
                         <tr style='background-color:${zm:lightenColor(not empty folder.rgb ? folder.rgb : folder.rgbColor)}'>
                             <td colspan=2 class='ZhBottomSep'>
-                                <table width="100%" cellpadding="0" cellspacing="0">
+                                <table width="100%">
                                     <tr class='apptHeaderRow'>
                                         <td width="24"><center><app:img src="${apptImage}" altkey="${apptImageAlt}"/></center></td>
                                         <td class='apptHeader'>
                                             ${fn:escapeXml(apptSubject)}
                                         </td>
-                                        <td width="1%" nowrap align='right' class='Tags' style='padding-right:5px'>
+                                        <td width="1%" nowrap align='right' class='Tags' style='padding-right:5px;'>
                                             <c:if test="${(message.hasTags and mailbox.features.tagging) or (message.isFlagged)}">
                                                 <c:set var="tags" value="${zm:getTags(pageContext, message.tagIds)}"/>
                                                 <c:forEach items="${tags}" var="tag">
@@ -213,12 +213,12 @@
                         </tr>
                         <tr>
                         <td colspan=2>
-                            <table cellpadding="2" cellspacing="0" width="100%">
+                            <table width="100%">
                                 <tr>
                                     <td valign='top' width="50%">
                                         <fieldset>
                                             <legend><fmt:message key="details"/></legend>
-                                            <table cellpadding="5" cellspacing="0">
+                                            <table class="ZPropertySheet" cellspacing="6">
                                                 <tr>
                                                     <td width="1%" align="right"><label for="subject"><fmt:message key="subject"/>:</label></td>
                                                     <td><input style="width:99%" type="text" size="100" id="subject" name="subject" value="${fn:escapeXml(compose.subject)}"></td>
@@ -230,7 +230,7 @@
                                                 <tr>
                                                     <td width="1%" align="right"><label for="showAs"><fmt:message key="showAs"/>:</label></td>
                                                     <td>
-                                                        <table cellpadding="0" cellspacing="0">
+                                                        <table>
                                                             <tr>
                                                                 <td>
                                                                     <select name="freeBusyStatus" id="showAs">
@@ -287,11 +287,11 @@
                                     <td valign='top' width="50%">
                                         <fieldset>
                                             <legend><fmt:message key="time"/></legend>
-                                            <table cellpadding="5" cellspacing="0">
+                                            <table class="ZPropertySheet" cellspacing="6">
                                             <tr>
                                                 <td>&nbsp;</td>
                                                 <td>
-                                                    <table cellpadding="0" cellspacing="0">
+                                                    <table>
                                                         <tr>
                                                             <td>
                                                                 <input id="allday" type=checkbox name="allDay" <c:if test="${compose.allDay}">checked</c:if> value="1">
@@ -306,7 +306,7 @@
                                             <tr>
                                                 <td width="1%" align="right"><label for="start"><fmt:message key="start"/>:</label></td>
                                                 <td>
-                                                    <table cellpadding="0" cellspacing="0">
+                                                    <table>
                                                         <tr>
                                                             <td>
                                                                 <input id="start" type=text size="12" maxlength="20" name="startDate" value="${fn:escapeXml(compose.startDate)}">
@@ -352,7 +352,7 @@
                                             <tr>
                                                 <td width="1%" align="right"><label for="end"><fmt:message key="end"/>:</label></td>
                                                 <td>
-                                                    <table cellpadding="0" cellspacing="0">
+                                                    <table>
                                                         <tr>
                                                             <td>
                                                                 <input id="end" type=text size="12" maxlength="20" name="endDate" value="${fn:escapeXml(compose.endDate)}">
@@ -436,9 +436,9 @@
                         <c:if test="${mailbox.features.groupcalendarEnabled}">
                             <tr>
                                 <td colspan="2">
-                                    <table>
+                                    <table class='ZPropertySheet' cellspacing='6'>
                                         <tr>
-                                            <td valign='top' width="1%" align="right" nowrap> <label for="attField"><fmt:message key="attendees"/>: </label></td>
+                                            <td valign='top' width="1%" align="right" nowrap> <label for="attField"><fmt:message key="attendees"/>:</label></td>
                                             <td colspan="2" nowrap>
                                                 <div class="ZhAC ZhACTo">
                                                     <textarea id="attField" rows="3" style='width:99%' cols="80" name="attendees"><c:forEach items="${compose.attendeesAddrs}" var="anAttendee">${fn:escapeXml(anAttendee.fullAddress)},</c:forEach></textarea>
@@ -506,7 +506,7 @@
                                             </fmt:message>
                                         </c:if>
                                         <td>
-                                            <table cellpadding="0" cellspacing="0" border="0">
+                                            <table>
                                                 <tr valign="middle">
                                                     <td>
                                                         <input <c:if test="${compose.checkedAttachmentNames[part.partName]}">checked </c:if>type=checkbox name="originalAttachment" value="${part.partName}">
@@ -522,7 +522,7 @@
                                 </c:forEach>
                         </c:if>
                         <tr>
-                            <td colspan="3" style='padding:10px'>
+                            <td colspan="3" style='padding:10px;'>
                                 <textarea class='MsgCompose' rows="30" cols="80" style='width:100%'
                                               name="body">${fn:escapeXml(empty compose.content ? (empty compose.decodedDescHtml ? compose.description : compose.decodedDescHtml) : compose.content)}</textarea>
                             </td>

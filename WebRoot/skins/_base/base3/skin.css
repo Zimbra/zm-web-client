@@ -161,7 +161,7 @@ BODY						{	margin:0px; 	}
 #skin_spacing_app_row .ZToolbarButton	{	height:auto;		}
 /** App  **/
 #skin_spacing_app_main					{	height:100%;		}
-#skin_container_app_main				{	@SkinBorderApp@		}
+#skin_container_app_main				{}
 
 /** Top ad **/
 #skin_spacing_top_ad					{}

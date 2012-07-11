@@ -45,7 +45,7 @@
     </app:keyboard>
     <form action="" method="post">
 
-        <table width="100%" cellpadding="0" cellspacing="0">
+        <table width="100%">
             <tr>
                 <td class='TbTop'>
                     <app:apptViewToolbar isReadOnly="${readOnly}" isInstance="${isInstance}" keys="true"/>
@@ -53,11 +53,11 @@
             </tr>
             <tr>
                 <td class='ZhAppContent'>
-                    <table cellpadding="0" cellspacing="0" width="100%">
+                    <table width="100%">
                         <c:if test="${isInstance}">
                             <tr>
                                 <td>
-                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                    <table width="100%">
                                         <tr>
                                             <td class='ZhApptRecurrInfo' style='padding-left:5px' width="24"><app:img src="dwt/ImgInformation.png" alt="info"/></td>
                                             <td class='ZhApptRecurrInfo'>

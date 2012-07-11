@@ -57,216 +57,188 @@
 <c:choose>
 <c:when test="${skin eq 'serenity'}">
 <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
-<table width="100%" cellpadding="6" cellspacing='0' border="0"><tr><td>
-<table width="100%" cellpadding="0" cellspacing="0" border="0">
-	<tr><td colspan="${empty editmode ? 4 : 3}" style="padding-bottom:6px;">
-		<table width=100% border=0 cellspacing="0" cellpadding="0" id="skin_spacing_top_row"><tr>
-		<td valign="middle" align="center" width="1%" style="padding: 4px 8px;">
+
+<table width="100%"><tr><td>
+
+	<table width="100%">
+		<tr><td colspan="${empty editmode ? 4 : 3}" style="padding-bottom:6px;">
+			<table width=100% id="skin_spacing_top_row"><tr>
+				<td valign="middle" align="center" width="1%">
 			<c:choose>
 				<c:when test="${not empty logoUrl}">
-					<a href="${logoUrl}" target="_new"> <span style='cursor:pointer; display: block;' class='ImgAppBanner'></span> </a>
+					<a href="${logoUrl}" target="_new"> <span style='cursor:pointer; display:block;' class='ImgAppBanner'></span> </a>
 				</c:when>
 				<c:otherwise>
-					<span style='display: block;' class='ImgAppBanner'></span>
+					<span style='display:block;' class='ImgAppBanner'></span>
 				</c:otherwise>
 			</c:choose>
-		</td>
-		<td style="padding: 4px 8px 4px 0px; white-space:nowrap;">
-			<%--<b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b>--%>
-			<%--<br>--%>
+				</td>
+				<td style="white-space:nowrap;">
+				<%--<b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b>--%>
+				<%--<br>--%>
 			
-			<!--a class='skin_yahoo_link' href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a-->
-			<!--<a class='skin_yahoo_link' target="_new" href="http://www.zimbra.com/products/desktop.html">Offline version</a>-->
-		</td>
+				<!--a class='skin_yahoo_link' href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a-->
+				<!--<a class='skin_yahoo_link' target="_new" href="http://www.zimbra.com/products/desktop.html">Offline version</a>-->
+				</td>
 
-		<td valign="top" class="TopContent" align="center">
-			<app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
-		</td>
-		</tr>
-		<tr>
-		<td colspan="4"><!-- Tabs -->
-			<table cellpadding="0" cellspacing="0" border="0" width="100%" id="skin_spacing_app_row">
-			<tr>
-			<td valign="bottom" nowrap="nowrap"><app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}' nofiller="${true}"/></td>
-			<td align="right" nowrap="nowrap" style="padding-right:0.5em;">
-				<c:if test="${mailbox.attrs.zimbraIsDomainAdminAccount[0] eq 'TRUE' and not empty adminReference }">
-					<a class='skin_yahoo_link' target="_new" href="${adminReference}"><fmt:message key="adminLinkLabel"/></a>&nbsp;<font color="gray">|</font>&nbsp;
-				</c:if>
-				<!--<a class='skin_yahoo_link' target="_new" href="<fmt:message key='yahooYahooMailURL'/>"><fmt:message key='yahooYahooMail'/></a>&nbsp;<font color="gray">|</font>&nbsp;-->
-				<a class='skin_link' target="_new" href="<c:url value="${helpUrl}"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><fmt:message key="help"/></a> &nbsp; 
-				<a class='skin_link' href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>
-			</td>
+				<td valign="top" class="TopContent" align="center">
+					<app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
+				</td>
 			</tr>
-			</table>
-		</td>
-		</tr>
-		</table>
-	
-		
-		<app:appStatus/>
-		</td>
-	</tr>
+			<tr>
+				<td colspan="4"><!-- App Tabs -->
+					<table width="100%" id="skin_spacing_app_row"><tr>
+						<td valign="bottom" nowrap="nowrap"><app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}' nofiller="${true}"/></td>
+						<td class="GlobalActions">
+						<c:if test="${mailbox.attrs.zimbraIsDomainAdminAccount[0] eq 'TRUE' and not empty adminReference }">
+							<a class='skin_link' target="_new" href="${adminReference}"><fmt:message key="adminLinkLabel"/></a>&nbsp;<font color="gray">|</font>&nbsp;
+						</c:if>
+							<!--<a class='skin_yahoo_link' target="_new" href="<fmt:message key='yahooYahooMailURL'/>"><fmt:message key='yahooYahooMail'/></a>&nbsp;<font color="gray">|</font>&nbsp;-->
+							<a class='skin_link' target="_new" href="<c:url value="${helpUrl}"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><fmt:message key="help"/></a> &nbsp; 
+							<a class='skin_link' href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>
+						</td>
+					</tr></table>
+				</td>
+			</tr></table>
 
-	<tr>
+		<app:appStatus/>
+		</td></tr>
+
+		<tr>
 		<c:if test="${empty editmode}">
 			<td valign="top" class="Overview" rowspan="2">
-				<table cellspacing="0" cellpadding="0" border="0" width="100%" class="IEFix">
+				<table width="100%" class="IEFix">
 				<!--<tr><td class="TbTop"></td></tr>-->
-				<tr><td valign="top">
-					<table cellspacing="0" cellpadding="0" border="0" align="center" width="100%">
-					<tr><td>
-						<app:appTopUser mailbox="${mailbox}" keys="${keys}" />
-						</td>
-					</tr>
-					<tr><td style="background-color: white;" valign="top">
-						<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" notebook="${notebook}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
-						</td>
-					</tr>
-					</table>
-				</td>
-				</tr>
+					<tr><td valign="top">
+						<table align="center" width="100%">
+							<tr><td>
+								<app:appTopUser mailbox="${mailbox}" keys="${keys}" />
+							</td></tr>
+							<tr><td style="background-color:white;" valign="top">
+								<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" notebook="${notebook}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
+							</td></tr>
+						</table>
+					</td></tr>
 				</table>
 			</td>
 		</c:if>
 		<td colspan="3" valign="top" style="width:100%">
-			
 			<jsp:doBody/>
-		</td>
-	</tr>
-	<tr>
-			<c:set var="adsOn" value="${!empty ads}"/>
-<c:if test="${adsOn}" >
-		<td valign="top" colspan="3">
-			<table width="100%" cellpadding="0" cellspacing="0">
-				<tr>
-</c:if>
-		<td valign="top" colspan="3">
-		
-	</td>
-	<c:if test="${adsOn}" >
-						<td valign="top" style="border-top: 1px solid #98adbe; width: 180px;">
+		</td></tr>
+		<tr>
+		<c:set var="adsOn" value="${!empty ads}"/>
+		<c:if test="${adsOn}" >
+			<td valign="top" colspan="3">
+				<table width="100%">
+					<tr>
+					</c:if>
+						<td valign="top" colspan="3"></td>
+					<c:if test="${adsOn}" >
+						<td valign="top" style="border-top:1px solid #98ADBE; width:180px;">
 							<app:ads content="${ads}"/>
 						</td>
-
 					</tr>
 				</table>
 			</td>
-	</c:if>
-</tr>
-</table>
+		</c:if>
+		</tr>
+	</table>
+
 </td></tr></table>
 </c:when>
 
 <c:when test="${skin eq 'carbon'}">
 <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 
-<table width="100%" cellpadding="0" cellspacing="0" border="0">
-<tr id='skin_tr_top'>
-			<td id='skin_spacing_top_row'>
-				<table class='skin_table' cellpadding=0 cellspacing=0 border=0>
-					<tr>
-						<td width="250" style="padding: 4px">
-							<c:choose>
-								<c:when test="${not empty logoUrl}">
-									<a href="${logoUrl}" target="_new"> <span style='cursor:pointer; display: block;' class='ImgAppBanner'></span> </a>
-								</c:when>
-								<c:otherwise>
-									<span style='display: block;' class='ImgAppBanner'></span>
-								</c:otherwise>
-							</c:choose>
-						</td>
-						<td width="90%"><app:appStatus/></td>
-						<td nowrap="nowrap" class="link">
-							<a href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a>
-						</td>
-					
-						<td nowrap="nowrap"><div class="divider" ></div></td>
-						<td nowrap="nowrap" class="link"><a class='skin_yahoo_link' target="_new" href="<c:url value="${helpUrl}"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><fmt:message key="help"/></a></td>
-						
-						<td nowrap="nowrap"><div class="divider" ></div></td>
-						<td nowrap="nowrap" class="link"><a class='skin_yahoo_link' href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a> &nbsp;</td>
-						
-					</tr>
-					
-				</table>
-			</td>
-		</tr>
-</table>		
-
-<table width="100%" cellpadding="6" cellspacing='0' border="0"><tr><td>
-<table width="100%" cellpadding="0" cellspacing="0" border="0">
-	<tr><td colspan="${empty editmode ? 4 : 3}" style="padding-bottom:6px;">
-		<table width=100% border=0 cellspacing="0" cellpadding="0"><tr>
-		<td valign="middle" align="center" width="150" style="padding: 4px 8px;">
-		</td>
-		<td style="padding: 4px 8px 4px 0px; white-space:nowrap;">
-		</td>
-		<td valign="top" class="TopContent" align="center">
-			<app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
-		</td>
-		</tr></table>
-	
+<table width="100%">
+	<tr id='skin_tr_top'>
+		<td id='skin_spacing_top_row'>
+			<table class='skin_table'>
+				<tr>
+					<td width="250" style="padding:4px">
+				<c:choose>
+					<c:when test="${not empty logoUrl}">
+						<a href="${logoUrl}" target="_new"> <span style='cursor:pointer; display:block;' class='ImgAppBanner'></span> </a>
+					</c:when>
+					<c:otherwise>
+						<span style='display:block;' class='ImgAppBanner'></span>
+					</c:otherwise>
+				</c:choose>
+					</td>
+					<td width="90%"><app:appStatus/></td>
+					<td nowrap="nowrap" class="link">
+						<a href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a>
+					</td>
+					<td nowrap="nowrap"><div class="divider" ></div></td>
+					<td nowrap="nowrap" class="link"><a class='skin_yahoo_link' target="_new" href="<c:url value="${helpUrl}"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><fmt:message key="help"/></a></td>
+					<td nowrap="nowrap"><div class="divider" ></div></td>
+					<td nowrap="nowrap" class="link"><a class='skin_yahoo_link' href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a> &nbsp;</td>
+				</tr>
+			</table>
 		</td>
 	</tr>
+</table>		
 
-	<tr>
+<table width="100%"><tr><td>
+	<table width="100%">
+		<tr><td colspan="${empty editmode ? 4 : 3}" style="padding-bottom:6px;">
+			<table width="100%"><tr>
+				<td valign="middle" align="center" width="150"></td>
+				<td style="white-space:nowrap;"></td>
+				<td valign="top" class="TopContent" align="center">
+					<app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
+				</td>
+			</tr></table>
+		</td></tr>
+		<tr>
 		<c:if test="${empty editmode}">
 			<td valign="top" class="Overview" rowspan="2">
-				<table cellspacing="0" cellpadding="0" border="0" width="100%" class="IEFix">
-				<!--<tr><td class="TbTop"></td></tr>-->
-				<tr><td valign="top">
-					<table cellspacing="0" cellpadding="0" border="0" align="center" width="100%">
-					<tr><td>
-						<app:appTopUser mailbox="${mailbox}" keys="${keys}" />
-						</td>
-					</tr>
-					<tr><td style="background-color: white;" valign="top">
-						<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" notebook="${notebook}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
-						</td>
-					</tr>
-					</table>
-				</td>
-				</tr>
+				<table width="100%" class="IEFix">
+					<!--<tr><td class="TbTop"></td></tr>-->
+					<tr><td valign="top">
+						<table align="center" width="100%">
+							<tr><td>
+								<app:appTopUser mailbox="${mailbox}" keys="${keys}" />
+							</td></tr>
+							<tr><td style="background-color:white;" valign="top">
+								<app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" notebook="${notebook}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
+							</td></tr>
+						</table>
+					</td></tr>
 				</table>
 			</td>
 		</c:if>
-		<td colspan="3" valign="top">
-			<table cellpadding="0" cellspacing="0" border="0" width="100%">
-			<tr>
-			<td valign="bottom" nowrap="nowrap"><app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}' nofiller="${true}"/></td>
-			<td align="right" nowrap="nowrap" style="padding-right:0.5em;">
-				<c:if test="${mailbox.attrs.zimbraIsDomainAdminAccount[0] eq 'TRUE' and not empty adminReference }">
-					<a class='skin_yahoo_link' target="_new" href="${adminReference}"><fmt:message key="adminLinkLabel"/></a>&nbsp;<font color="gray">|</font>&nbsp;
-				</c:if>
-				<!--<a class='skin_yahoo_link' target="_new" href="<fmt:message key='yahooYahooMailURL'/>"><fmt:message key='yahooYahooMail'/></a>&nbsp;<font color="gray">|</font>&nbsp;-->
-				
-			</td>
-			</tr>
-			</table>
+			<td colspan="3" valign="top">
+				<table width="100%"><tr>
+					<td valign="bottom" nowrap="nowrap"><app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}' nofiller="${true}"/></td>
+					<td align="right" nowrap="nowrap" style="padding-right:0.5em;">
+					<c:if test="${mailbox.attrs.zimbraIsDomainAdminAccount[0] eq 'TRUE' and not empty adminReference }">
+						<a class='skin_yahoo_link' target="_new" href="${adminReference}"><fmt:message key="adminLinkLabel"/></a>&nbsp;<font color="gray">|</font>&nbsp;
+					</c:if>
+						<!--<a class='skin_yahoo_link' target="_new" href="<fmt:message key='yahooYahooMailURL'/>"><fmt:message key='yahooYahooMail'/></a>&nbsp;<font color="gray">|</font>&nbsp;-->
+					</td>
+				</tr></table>
 			<jsp:doBody/>
-		</td>
-	</tr>
-	<tr>
-			<c:set var="adsOn" value="${!empty ads}"/>
-<c:if test="${adsOn}" >
-		<td valign="top" colspan="3">
-			<table width="100%" cellpadding="0" cellspacing="0">
-				<tr>
-</c:if>
-		<td valign="top" colspan="3">
-		
-	</td>
-	<c:if test="${adsOn}" >
-						<td valign="top" style="border-top: 1px solid #98adbe; width: 180px;">
+			</td>
+		</tr>
+		<tr>
+		<c:set var="adsOn" value="${!empty ads}"/>
+		<c:if test="${adsOn}" >
+			<td valign="top" colspan="3">
+				<table width="100%">
+					<tr>
+		</c:if>
+						<td valign="top" colspan="3"></td>
+					<c:if test="${adsOn}" >
+						<td valign="top" style="border-top:1px solid #98adbe; width:180px;">
 							<app:ads content="${ads}"/>
 						</td>
-
 					</tr>
 				</table>
 			</td>
-	</c:if>
-</tr>
-</table>
+		</c:if>
+		</tr>
+	</table>
 </td></tr></table>
 </c:when>
 
@@ -275,39 +247,39 @@
 	<div id="app_st_block_div" class="VeilOverlay" style="z-index:99;"></div>
 </c:if>
 <div id="app_status_container" class='${requestScope.statusClass}' style="z-index:100;position:relative;"><app:appStatus/></div>
-	<table width="100%" cellspacing="0" cellpadding="0" border="0" height="100%">
+	<table width="100%" height="100%">
 	<tr>
 		<td class='ImgSkin_Chrome_R1' colspan="2">
-			<table width=99% cellspacing=0 cellpadding=0 align="center">
+			<table width=99% align="center">
 				<tr>
 					<td class='R1Text'>hi,</td>
-					<td><div id='skin_container_username' class='R1Text'><nobr><b>${fn:escapeXml(mailbox.name)}</b></nobr></div></td>
-					<td id='#skin_container_logoff_lite' class='R1Link'><nobr><a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut" /></a></nobr></td>
+					<td><div id='skin_container_username' class='R1Text'><span style='white-space:nowrap'><b>${fn:escapeXml(mailbox.name)}</b></span></div></td>
+					<td id='#skin_container_logoff_lite' class='R1Link'><span style='white-space:nowrap'><a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut" /></a></span></td>
 					<td class='R1Sep'>|</td>
-					<td class='R1Link'><nobr><a href="https://acctmgt.bbt1.cistest.att.net:9003/Comcast/AcctMgt/acctmgt.cmd?CM.src=top" target=_new >My Account</a></nobr></td>
+					<td class='R1Link'><span style='white-space:nowrap'><a href="https://acctmgt.bbt1.cistest.att.net:9003/Comcast/AcctMgt/acctmgt.cmd?CM.src=top" target=_new >My Account</a></span></td>
 					<td width=100%>&nbsp;</td>
-					<td class='R1Link'><nobr><a href="http://www.comcast.net">comcast.net</a></nobr></td>
+					<td class='R1Link'><span style='white-space:nowrap'><a href="http://www.comcast.net">comcast.net</a></span></td>
 					<td class='R1Sep'>|</td>
 					<td><div class=ImgHelp></div></td>
 					<td>&nbsp;</td>
 					<td class='R1Link' id='skin_container_help_lite'> <a target=_new href="<c:url value="http://www.comcast.net/help/faq/index.jsp?cat=Email#SmartZone"/>"><fmt:message key="help"/></a></td>
 					<td>&nbsp;&nbsp;</td>
 					<td><div class=ImgPadlock></div></td>
-					<td class='R1Link'><nobr>&nbsp;<a href="http://www.comcast.net/security/" target=_new>Security</a></nobr></td>
+					<td class='R1Link'><span style='white-space:nowrap'>&nbsp;<a href="http://www.comcast.net/security/" target=_new>Security</a></span></td>
 					<td>&nbsp;&nbsp;</td>
 					<td><div class=ImgSkin_Info></div></td>
-					<td class='R1Link'><nobr>&nbsp;<a href="http://www.comcast.net/providers/askcomcast/popup.html" target=_new >Ask comcast</a></nobr></td>
+					<td class='R1Link'><span style='white-space:nowrap'>&nbsp;<a href="http://www.comcast.net/providers/askcomcast/popup.html" target=_new >Ask comcast</a></span></td>
 				</tr>
 			</table>
 		</td>
 	</tr>
 	<tr>
 	<td width="100%" valign="top">
-	<table id='skin_table_outer' width='100%' border=0 class='skin_table' cellspacing=0 cellpadding=0>
+	<table id='skin_table_outer' width='100%' class='skin_table'>
 			<tr id='skin_R2'>
 				<td style="width:8px;"><div class='ImgSkin_Chrome_R2_L'></div></td>
 				<td class='ImgSkin_Chrome_R2 Row2width' colspan=3>
-					<table width=100%  cellspacing=0 cellpadding=0 border='0'>
+					<table width="100%">
 					<tr>
 						<td align="left">
 							<c:choose>
@@ -338,7 +310,7 @@
 				</td>
 				<td class='ImgSkin_Chrome_R3'>&nbsp;</td>
 				<td class='ImgSkin_Chrome_R3' style='padding:0px;'>
-					<table width='100%' cellspacing=0 cellpadding=0>
+					<table width='100%'>
 					<tr>
 						<td id='skin_td_app_chooser'>
 							<div id='skin_container_app_chooser_lite' class='skin_container'>
@@ -346,7 +318,7 @@
 							</div>
 						</td>
 						<td id='skin_td_quota' style="vertical-align:middle;">
-							<table class="BannerBar" cellspacing="0" cellpadding="0" border="0">
+							<table class="BannerBar">
 								<tbody>
 									<tr>
 										<c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
@@ -376,7 +348,7 @@
 												<c:set var="usage" value="${zm:displaySizeFractions(pageContext, mailbox.size,1)}" />
 											</c:otherwise>
 										</c:choose>
-										<td class="BannerTextQuota" style="white-space: nowrap;">
+										<td class="BannerTextQuota" style="white-space:nowrap;">
 											<fmt:message var="unlimited" key="unlimited"/>
 											<fmt:message  key="quotaUsage">
 												<fmt:param value="${usage}"/>
@@ -398,12 +370,12 @@
 			<c:if test="${empty editmode}">
 
 
-				<td id='skin_td_tree_outer' colspan=2 style="background-color: white;">
-					<table id='skin_tree_table' class='skin_table fullSize' cellspacing=0 cellpadding=0 border="0">
+				<td id='skin_td_tree_outer' colspan=2 style="background-color:white;">
+					<table id='skin_tree_table' class='skin_table fullSize'>
 						<c:if test="${selected ne 'voice'}">
 							<tr><td id='skin_td_tree_header' valign=bottom>
 								<div id='skin_tree_header_container' class='skin_container'>
-									<table class='skin_table fullSize' cellspacing=0 cellpadding=0 border="0">
+									<table class='skin_table fullSize'>
 										<tr>
 											<td class='TbTop'>
 												<c:if test="${selected != 'contacts'}">
@@ -416,10 +388,10 @@
 													<c:set var="actionURL" value="/h/mcalendars"/>
 												</c:if>
 												<form method="post" action="${actionURL}" <c:if test="${selected eq 'contacts' or selected eq 'calendar'}">enctype="multipart/form-data" accept-charset="utf-8"</c:if> >
-													<table width=100% cellspacing=0 >
+													<table width=100%>
 															<tr>
 																<td class='ImgSkin_Toolbar'>
-																	<table cellspacing=0 cellpadding=0 class='Tb'>
+																	<table class='Tb'>
 																	<tr>
 																	<c:if test="${selected != 'contacts' and selected != 'calendar' and mailbox.features.mail}">
 																		<app:button name="actionNewFolder" src="startup/ImgNewFolder.png" tooltip="folderNew" text="folderNew"/>
@@ -454,7 +426,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td id='skin_td_tree_bottom_ad' style="padding-left:0px; overflow: hidden;" height=120>
+							<td id='skin_td_tree_bottom_ad' style="padding-left:0px; overflow:hidden;" height=120>
 								<iframe src="<c:url value='/h/overviewAds'/>" align="left" frameborder="0" marginheight="0" style="overflow:hidden;" scrolling="no" allowTransparency="true" marginwidth="0" height="130" width="100%" >
 								</iframe>
 							</td>
@@ -464,10 +436,10 @@
 
 				<td id='skin_td_tree_app_sash'><div class='ZVerticalSash'></div></td>
 				</c:if>
-				<td id='skin_td_app_outer'  colspan='${empty editmode ? 2 : 5}' style='padding-left:${editmode ? 5 : 0}px;width:100%; background-color: white;'>
-					<table id='skin_app_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
+				<td id='skin_td_app_outer'  colspan='${empty editmode ? 2 : 5}' style='padding-left:${editmode ? 5 : 0}px;width:100%; background-color:white;'>
+					<table id='skin_app_table' class='skin_table fullSize'>
 						<tr>
-							<td id='skin_td_app' valign="top"><div id='skin_container_app_main' class='skin_container' style='border-color:#C6C6C6;border-style:solid;border-width:0px 0px 0px 1px;'>
+							<td id='skin_td_app' valign="top"><div id='skin_container_app_main' class='skin_container' style='border-color:#C6C6C6; border-style:solid; border-width:0 0 0 1px;'>
 									<jsp:doBody/>
 							</div></td>
 						</tr>
@@ -476,8 +448,8 @@
 			</tr>
 
 			<tr id='skin_tr_main_full' style='display:none'>
-				<td id='skin_td_app_full_outer'  class='full_height' colspan='4' height='100%' style="background-color: white;">
-					<table id='skin_app_full_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
+				<td id='skin_td_app_full_outer'  class='full_height' colspan='4' height='100%' style="background-color:white;">
+					<table id='skin_app_full_table' class='skin_table fullSize'>
 						<tr>
 							<td id='skin_full_toolbar_container'>
 							<!--div id='skin_container_app_top_toolbar' class='skin_container'></div-->
@@ -530,7 +502,7 @@
 
 			<tr id='skin_R4'>
 				<td id='skin_td_R4' class='ImgSkin_Chrome_R4' colspan="2">
-					<table width=100% id='skin_table_R4' class='skin_table fullSize' cellspacing=0 cellpadding=0>
+					<table width=100% id='skin_table_R4' class='skin_table fullSize'>
 						<tr>
 							<td style='text-align:left;padding-left:20px;'><fmt:message key="splashScreenCopyright" /></td>
 							<td><a href="http://www.comcast.net/privacy/" target="_new">UPDATED: Privacy Statement</a></td>
@@ -561,7 +533,7 @@
 	<c:if test="${statusBlocking}">
 		<div id="app_st_block_div" class="VeilOverlay" style="z-index:99;"></div>
 	</c:if>
-	<table cellpadding="0" cellspacing="0" border="0" style="border-bottom: 1px solid #C9D7F1;">
+	<table style="border-bottom:1px solid #C9D7F1;">
 		<tr>
 		<td id='skin_container_app_chooser_lite'>
 				<app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
@@ -586,21 +558,21 @@
 						</td>
 			</tr>
 			</table>
-	<table cellpadding="0" cellspacing="0" border="0">
+	<table>
 
 		<tr>
 		<td valign="top" align="center" class="Overview">
 			<c:choose>
 				<c:when test="${not empty logoUrl}">
-					<a href="${logoUrl}" target="_new"> <span style='cursor:pointer; display: block;' class='ImgAppBanner'></span> </a>
+					<a href="${logoUrl}" target="_new"> <span style='cursor:pointer; display:block;' class='ImgAppBanner'></span> </a>
 				</c:when>
 				<c:otherwise>
-					<span style='display: block;' class='ImgAppBanner'></span>
+					<span style='display:block;' class='ImgAppBanner'></span>
 				</c:otherwise>
 			</c:choose>
 			</td>
 			<td valign="middle" class="TopContent" width="90%">
-				<table cellpadding="0" cellspacing="0" width="50%">
+				<table width="50%">
 					<tr>
 						<td>
 							<app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
@@ -614,7 +586,7 @@
 		</tr>
 		</table>
 
-		<table width="100%" cellpadding="0" cellspacing="0" height="27" style="z-index:100;position:relative;">
+		<table width="100%" height="27" style="z-index:100;position:relative;">
 		<tr>
 			<td class="Overview">
 
@@ -625,7 +597,7 @@
 		</tr>
 		</table>
 
-		<table cellpadding="0" cellspacing="0" border="0" width="100%">
+		<table width="100%">
 
 		<tr>
 			<c:if test="${empty editmode}">
@@ -636,14 +608,14 @@
 			<c:set var="adsOn" value="${!empty ads}"/>
 			<c:if test="${adsOn}" >
 				<td valign="top" colspan="3">
-					<table width="100%" cellpadding="0" cellspacing="0">
+					<table width="100%">
 						<tr>
 			</c:if>
-				<td valign="top" colspan="${empty editmode ? 3 : 4}" style="padding-left:${editmode ? 10 : 0}px;border: 7px solid #C3D9FF;-moz-border-radius: 4px;">
+				<td valign="top" colspan="${empty editmode ? 3 : 4}" style="padding-left:${editmode ? 10 : 0}px; border:7px solid #C3D9FF; -moz-border-radius:4px;">
 					<jsp:doBody/>
 				</td>
 			<c:if test="${adsOn}" >
-							<td valign="top" style="border-top: 1px solid #98adbe; width: 180px;">
+							<td valign="top" style="border-top:1px solid #98adbe; width:180px;">
 								<app:ads content="${ads}"/>
 							</td>
 
@@ -665,7 +637,7 @@
 	<c:if test="${statusBlocking}">
 		<div id="app_st_block_div" class="VeilOverlay" style="z-index:99;"></div>
 	</c:if>
-	<table width="100%" cellpadding="0" cellspacing="0">
+	<table width="100%">
 		<tr>
 			<td class='TopContent' colspan="3"  align="right" valign="top"><div style='height:6px'></div></td>
 		</tr>
@@ -674,15 +646,15 @@
 			<td valign="top" align="center" class="Overview">
 			<c:choose>
 				<c:when test="${not empty logoUrl}">
-					<a href="${logoUrl}" target="_new"> <span style='cursor:pointer; display: block;' class='ImgAppBanner'></span> </a>
+					<a href="${logoUrl}" target="_new"> <span style='cursor:pointer; display:block;' class='ImgAppBanner'></span> </a>
 				</c:when>
 				<c:otherwise>
-					<span style='display: block;' class='ImgAppBanner'></span>
+					<span style='display:block;' class='ImgAppBanner'></span>
 				</c:otherwise>
 			</c:choose>
 			</td>
 			<td valign="top" class="TopContent" style='width:70%'>
-				<table cellpadding="0" cellspacing="0" width="100%">
+				<table width="100%">
 					<tr>
 						<td width="66%">
 							<app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}" briefcases="${briefcases}"/>
@@ -696,14 +668,12 @@
 				</table>
 			</td>
 			<td align="center" style="padding-right:5px;">
-				<table cellpadding="2" cellspacing="0" >
+				<table>
 					<tr>
 						<!--td align='center' class='ZhAppSwitchLink'>
 							<a href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a>
 						</td-->
-						<td>
-							&nbsp;
-						</td>
+						<td>&nbsp;</td>
 						<c:if test="${mailbox.features.webClientShowOfflineLink}">
 							<td  align='center' class='ZhAppSwitchLink'>
 								<span id="switch_to_offline"><a href="<fmt:message key="switchToOfflineURL"/>" target="_new" ><fmt:message key="switchToOfflineClient" /></a></span>
@@ -711,7 +681,7 @@
 						</c:if>
 					</tr>
 				</table>
-				<table cellpadding="2" cellspacing="0" >
+				<table>
 					<tr>
 						<c:if test="${mailbox.attrs.zimbraIsDomainAdminAccount[0] eq 'TRUE' and not empty adminReference }">
 							<td align="left" class="ZhAppLinks">
@@ -721,9 +691,7 @@
 						<td align="left" class="ZhAppLinks">
 							<a target="_new" href="<c:url value="${helpUrl}"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><app:img altkey="ALT_APP_LINK_HELP" src="startup/ImgHelp.png"  border="0"/>&nbsp;<fmt:message key="help"/></a>
 						</td>
-						<td>
-							&nbsp;
-						</td>
+						<td>&nbsp;</td>
 						<td align="right" class="ZhAppLinks">
 							<a href="<c:url value="/?loginOp=logout"/>"><app:img altkey="ALT_APP_LINK_LOGOFF" src="startup/ImgLogoff.png" border="0"/>&nbsp;<fmt:message key="logOut"/></a>
 						</td>
@@ -770,14 +738,14 @@
 			<c:set var="adsOn" value="${!empty ads}"/>
 	<c:if test="${adsOn}" >
 			<td valign="top" colspan="3">
-				<table width="100%" cellpadding="0" cellspacing="0">
+				<table width="100%">
 					<tr>
 	</c:if>
 			<td valign="top" colspan="${empty editmode ? 3 : 4}" style="padding-left:${editmode ? 6 : 0}px">
 			<jsp:doBody/>
 		</td>
 		<c:if test="${adsOn}" >
-							<td valign="top" style="border-top: 1px solid #98adbe; width: 180px;">
+							<td valign="top" style="border-top:1px solid #98ADBE; width:180px;">
 								<app:ads content="${ads}"/>
 							</td>
 

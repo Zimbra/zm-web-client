@@ -105,16 +105,15 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
         <tr>
             <td class='ZhAppContent'>
 
-            <table width=100% cellpadding="0" cellspacing="10">
+            <table width=100%>
                 <c:if test="${not (empty compose.to and empty compose.cc and empty compose.bcc and empty uploader.pendingBcc and empty uploader.pendingCc and empty uploader.pendingTo)}">
                     <tr>
                         <td class=MsgHdr>
-                                <table width=100% cellpadding=2 cellspacing=0 border=0>
+                                <table width=100% class='ZPropertySheet' cellspacing='6'>
                                     <c:if test="${not (empty compose.to and empty uploader.pendingTo)}">
                                         <tr>
                                             <td class='MsgHdrName'>
-                                                <fmt:message key="to"/>
-                                                :
+                                                <fmt:message key="to"/>:
                                             </td>
                                             <td class='MsgHdrValue'>
                                                 <c:out value="${compose.to}"/>
@@ -132,8 +131,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                                     <c:if test="${not (empty compose.cc and empty uploader.pendingCc)}">
                                         <tr>
                                             <td class='MsgHdrName'>
-                                                <fmt:message key="cc"/>
-                                                :
+                                                <fmt:message key="cc"/>:
                                             </td>
                                             <td class='MsgHdrValue'>
                                                 <c:out value="${compose.cc}"/>
@@ -151,8 +149,7 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
                                     <c:if test="${not (empty compose.bcc and empty uploader.pendingBcc)}">
                                         <tr>
                                             <td class='MsgHdrName'>
-                                                <fmt:message key="bcc"/>
-                                                :
+                                                <fmt:message key="bcc"/>:
                                             </td>
                                             <td class='MsgHdrValue'>
                                                 <c:out value="${compose.bcc}"/>

@@ -22,30 +22,30 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<table cellpadding="0" cellspacing="0">
+<table>
     <tr class='Tabs'>
         <td class='TabSpacer'/>
         <td class='TabSpacer'/>
-        <td class='Tab ${selected=='general' ? 'TabSelected' :'TabNormal'}'>
+        <td class='Tab ${selected=='general' ? 'TabSelected' : 'TabNormal'}'>
             <a href="<c:url value="/h/options?selected=general&prev=${prev}"/>">
                 <span><fmt:message key="general"/></span>
             </a>
         </td>
         <c:if test="${zm:isMailEnabled(mailbox)}">
             <td class='TabSpacer'/>
-            <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
+            <td class='Tab ${selected=='mail' ? 'TabSelected' : 'TabNormal'}'>
                 <a href="<c:url value="/h/options?selected=mail&prev=${prev}"/>">
                     <span><fmt:message key="mail"/></span></a>
             </td>
             <td class='TabSpacer'/>
-            <td class='Tab ${selected=='composing' ? 'TabSelected' :'TabNormal'}'>
+            <td class='Tab ${selected=='composing' ? 'TabSelected' : 'TabNormal'}'>
                 <a href="<c:url value="/h/options?selected=composing&prev=${prev}"/>">
                     <span><fmt:message key="optionsComposing"/></span></a>
             </td>
         <c:set var="maxSigs" value="${mailbox.accountInfo.attrs.zimbraSignatureMaxNumEntries[0]}"/>
         <c:if test="${maxSigs ne 0}">
             <td class='TabSpacer'/>
-            <td class='Tab ${selected=='signatures' ? 'TabSelected' :'TabNormal'}'>
+            <td class='Tab ${selected=='signatures' ? 'TabSelected' : 'TabNormal'}'>
                 <a href="<c:url value="/h/options?selected=signatures&prev=${prev}"/>">
                     <span><fmt:message key="optionsSignatures"/></span></a>
             </td>
@@ -53,42 +53,42 @@
         </c:if>
         <c:if test="${mailbox.features.voice}">
             <td class='TabSpacer'/>
-            <td class='Tab ${selected=='voice' ? 'TabSelected' :'TabNormal'}'>
+            <td class='Tab ${selected=='voice' ? 'TabSelected' : 'TabNormal'}'>
                 <a href="<c:url value="/h/options?selected=voice&prev=${prev}"/>">
                     <span><fmt:message key="callManager"/></span></a>
             </td>
         </c:if>
         <c:if test="${mailbox.features.contacts}">
             <td class='TabSpacer'/>
-            <td class='Tab ${selected=='addressbook' ? 'TabSelected' :'TabNormal'}'>
+            <td class='Tab ${selected=='addressbook' ? 'TabSelected' : 'TabNormal'}'>
                 <a href="<c:url value="/h/options?selected=addressbook&prev=${prev}"/>">
                     <span><fmt:message key="addressBook"/></span></a>
             </td>
         </c:if>
         <c:if test="${mailbox.features.calendar}">
             <td class='TabSpacer'/>
-            <td class='Tab ${selected=='calendar' ? 'TabSelected' :'TabNormal'}'>
+            <td class='Tab ${selected=='calendar' ? 'TabSelected' : 'TabNormal'}'>
                 <a href="<c:url value="/h/options?selected=calendar&prev=${prev}"/>">
                     <span><fmt:message key="calendar"/></span></a>
             </td>
         </c:if>
         <c:if test="${zm:isMailEnabled(mailbox)}">
         <td class='TabSpacer'/>
-        <td class='Tab ${selected=='accounts' ? 'TabSelected' :'TabNormal'}'>
+        <td class='Tab ${selected=='accounts' ? 'TabSelected' : 'TabNormal'}'>
             <a href="<c:url value="/h/options?selected=accounts&prev=${prev}"/>">
                 <span><fmt:message key="optionsAccounts"/></span></a>
         </td>
         </c:if>
         <c:if test="${mailbox.features.filters and zm:isMailEnabled(mailbox)}">                                                                                       
             <td class='TabSpacer'/>
-            <td class='Tab ${selected=='filter' ? 'TabSelected' :'TabNormal'}'>
+            <td class='Tab ${selected=='filter' ? 'TabSelected' : 'TabNormal'}'>
                 <a href="<c:url value="/h/options?selected=filter&prev=${prev}"/>">
                     <span><fmt:message key="mailFilters"/></span></a>
             </td>
         </c:if>
         <c:if test="${mailbox.prefs.useKeyboardShortcuts}">
             <td class='TabSpacer'/>
-            <td class='Tab ${selected=='shortcuts' ? 'TabSelected' :'TabNormal'}'>
+            <td class='Tab ${selected=='shortcuts' ? 'TabSelected' : 'TabNormal'}'>
                 <a href="<c:url value="/h/options?selected=shortcuts&prev=${prev}"/>">
                     <span><fmt:message key="shortcuts"/></span></a>
             </td>
@@ -98,14 +98,12 @@
             <c:forEach var="customTab" items="${customTabs}" varStatus="status">
                 <c:set var="tab" value="${fn:split(customTab,',')}"/>
                 <td class='TabSpacer'/>
-                <td class='Tab ${selected==fn:toLowerCase(tab[0]) ? 'TabSelected' :'TabNormal'}'>
+                <td class='Tab ${selected==fn:toLowerCase(tab[0]) ? 'TabSelected' : 'TabNormal'}'>
                     <a href="<c:url value="/h/options?selected=${tab[0]}&prev=${prev}&status=${status.index}"/>">
                         <span>${tab[0]}</span></a>
                 </td>    
             </c:forEach> 
         </c:if>
-        <td class='TabFiller'>
-            &nbsp;
-        </td>
+        <td class='TabFiller'>&nbsp;</td>
     </tr>
 </table>

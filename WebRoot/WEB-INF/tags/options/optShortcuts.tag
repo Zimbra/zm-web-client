@@ -24,7 +24,7 @@
 <c:set var="suffix" value="${ua.isOsWindows ? '.win' : ua.isOsMac ? '.mac' : ua.isOsLinux ? '.linux' :  ''}"/>
 <fmt:bundle basename="/keys/ZhKeys">
     <fmt:message var="sections" key="sections"/>
-    <table border="0" cellpadding="0" cellspacing="4" width="100%">
+    <table width="100%" class="ZPropertySheet" cellspacing="6">
         <tbody>
             <app:optShortcutSection section="global" suffix="${suffix}" mailbox="${mailbox}"/>
             <c:if test="${zm:isMailEnabled(mailbox)}">

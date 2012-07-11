@@ -1,41 +1,53 @@
 /* styles for the HTML client */
 
-HTML,Body					{	 }
+HTML, BODY					{	 }
+
 INPUT[type="text"],
 INPUT[type="password"]		{	@FieldBorder@	}
 SELECT						{	@FieldBorder@	}
-.TabSpacer 					{	display:none;		}
-.Tab						{	white-space:nowrap;	height:30px; padding-right:5px !important;	}
-.TbTop						{	border-width:0 1 1 0 !important; padding-right:5px !important;	}
-.TbBottom					{	border-width:0 1 1 0 !important; padding-right:5px !important;	}
-.TabFiller					{	@AppTabSpacer@ width:100%;	}
+INPUT[type="search"]		{	border:none !important;	} /* Overriding UA style sheet to remove the 2px inset border*/
+.SearchBar INPUT,
+.SearchBar SELECT			{	border-width:0;	}
+.searchfield				{	@roundCorners(3px)@	}
+.TopContent					{	width:600px;	}
+
+#skin_spacing_app_row		{	margin-top:0;	}
+#skin_spacing_app_row TABLE	{	border-collapse:collapse; 	}
+
+.TabSpacer 					{	display:block;	}
+.Tab						{	height:30px; padding-right:5px !important; white-space:nowrap;		}
+.TbTop						{	border-width:0 1px 1px 0 !important; padding-right:5px !important;	}
+.TbBottom					{	border-width:0 1px 1px 0 !important; padding-right:5px !important;	}
+.TabFiller					{	@AppTabSpacer@ width:100%; background-color:transparent;	}
+.GlobalActions				{	padding-right:0.5em; text-align:right; white-space:nowrap; 	}
 .List .Header TH			{	@RightSeparator@	}
-.ZhSubTabs					{	@TabBar@	}
-.ZhSubTabs					{	padding:5px !important;	}
-.ZhSubTabs .TabSelected		{	@TabBorder-selected@	}
+.ZhSubTabs					{	@TabBar@ background-color:@darken(AppC,30)@; border-top:1px solid @darken(AppC,40)@; padding:2px 5px 0 !important;	}
+.ZhSubTabs .TabSelected		{	@TabBorder-selected@ background-color:@AppC@;	}
+.ZhSubTabs .TabSelected A	{	@InactiveCursor@	}
 
 .ZhRow TD,
-.ZhRowOdd TD				{	border-width:0 0 1 0 !important; padding-left:3px !important;	}
-
-.link a, .link a:visited, .Tabs A:link, .Tabs A:visited, .skin_link, .SearchBar	td{ color: white !important; text-decoration: none; }
-
-.TabSelected A:link, .TabSelected A:visited{ color: #333 !important;}
-
-.TabNormal {
-	@TabBorder@
-	@TabBorder-normal@
-	color: white !important;
-}
-
-.TabSelected {
-	@TabBorder@
-	@TabBorder-selected@
-}
-
-.topcontent{
-	width: 600px;
-}
-
-input[type="search"]{ border: none !importnat;} /* Overriding UA style sheet to remove the 2px inset border*/
+.ZhRowOdd TD				{	border-width:0 0 1px 0 !important; padding-left:3px !important;	}
  
-.searchfield{ @borderRadius@:@SkinSearchRadius@; }
+/* pseudo classes included to make IE happy */
+.AppTabs A:link,
+.AppTabs A:visited,
+.AppTabs A:hover,
+.AppTabs A:active,
+.GlobalActions A:link,
+.GlobalActions A:visited,
+.TopContent TD				{	color:white; text-decoration:none; }
+
+.GlobalActions A:hover,
+.GlobalActions A:active		{	color:white; text-decoration:underline; }
+
+.AppTabs .AppTabSelected	{	background-color:@AppC@;	}
+.AppTabs .AppTabSelected A:link,
+.AppTabs .AppTabSelected A:visited,
+.AppTabs .AppTabSelected A:hover,
+.AppTabs .AppTabSelected A:active	{	@Text@ @InactiveCursor@		}
+
+.AppTabNormal				{	@AppTabBorder@ @AppTabBorder-normal@ color:white;	}
+.AppTabSelected				{	@AppTabBorder@ @AppTabBorder-selected@	}
+
+.ZOptionsSectionMain>TBODY>TR>TD,
+.ZPropertySheet>TBODY>TR>TD {	padding:3px;	}

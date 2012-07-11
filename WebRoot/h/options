@@ -209,19 +209,19 @@
 <app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='options' folders="true" searches="true" tags="true" keys="true" editmode="true">
 
     <form action="" method="post" name="optionsForm" onsubmit="cancelOnbeforeUnload();" accept-charset="utf-8">
-        <table width="100%" cellpadding="0" cellspacing="0">
-            <tr>
+        <table width="100%">
+            <!--tr>
                 <td class='TbTop'>
-                    <table cellspacing="0" class='Tb'>
+                    <table class='Tb'>
                         <tr>
                             <td></td>
                         </tr>
                     </table>
                 </td>
-            </tr>
+            </tr-->
             <tr>
                 <td class='ZhAppContent'>
-                    <table width="100%" cellpadding="0" cellspacing="0">
+                    <table width="100%">
                         <tr>
                             <td class='ZhSubTabs'>
                                 <app:optTabs mailbox="${mailbox}" selected="${selected}" prev="${prevApp}"/>
@@ -289,13 +289,13 @@
                                         <c:set var="tab" value="${fn:split(customTabs[param.status],',')}"/>
                                         
                                         <%--Load the external site associated with the custom tab in an iframe--%>
-                                        <table class="ZOptionsSectionMain" width="100%" cellspacing="0" cellpadding="3">
+                                        <table class="ZOptionsSectionMain" width="100%">
                                             <tbody>
                                                 <tr>
                                                     <td colspan="3"> &nbsp; </td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="TbBt" style="font-size:14px" align="center"><iframe width="100%" height="500px" src="${tab[1]}"></iframe></td>
+                                                    <td class="TbBt" style="font-size:14px;" align="center"><iframe width="100%" height="500px" src="${tab[1]}"></iframe></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="3"> &nbsp; </td>

@@ -23,10 +23,10 @@
 
 <script type="text/javascript" src="../js/ajax/3rdparty/tinymce/tiny_mce.js"></script>
 <body class="yui-skin-sam">
-<table width="100%" cellpadding="10" cellspacing="10">
+<table width="100%">
 <tr>
 <td>
-<table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+<table class="ZOptionsSectionTable" width="100%">
 <tr class="ZOptionsHeaderRow">
     <td class="ImgPrefsHeader_L">
         &nbsp;
@@ -39,7 +39,7 @@
     </td>
 </tr>
 </table>
-<table cellpadding="3" width="100%"  class="ZOptionsSectionMain">
+<table width="100%"  class="ZOptionsSectionMain" cellspacing="6">
     <c:set var="numSigs" value="${0}"/>
     <zm:forEachSignature var="signature">
         <c:if test="${numSigs gt 0}">
@@ -72,7 +72,7 @@
                 <fmt:message key="optionsSignature"/>
                 :
             </td>
-            <td colspan=2 <c:if test="${isHtml}">style="background-color: #FFFFFF;"</c:if>>
+            <td colspan=2 <c:if test="${isHtml}">style="background-color:white;"</c:if>>
                 <input type="hidden" id="signatureType${numSigs}" name="signatureType${numSigs}" value="${fn:escapeXml(signature.type)}"/>
                 <input type="hidden" name="origSignatureValue${numSigs}" value="${fn:escapeXml(signature.value)}"/>
                 <textarea style='width:100%' id="signatureValue${numSigs}" name='signatureValue${numSigs}' cols='80' rows='5' style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${fn:escapeXml(signature.value)}</textarea>
@@ -98,7 +98,7 @@
             </tr>
             <tr>
                 <td class='ZOptionsTableLabel'>
-                    <fmt:message key="optionsSignatureName"/>:
+                    <label><fmt:message key="optionsSignatureName"/>:</label>
                 </td>
                 <td>
                     <input type="hidden" name="newSignature" value="TRUE"/>
@@ -117,7 +117,8 @@
                 </td>
                 <td colspan=2 style="background-color: #FFFFFF;">
                     <input type="hidden" id="newSignatureType" name="newSignatureType" value="text/html"/>
-                    <textarea style='width:100%' id="newSignatureValue" name='newSignatureValue' cols='80'rows='5' style='visibility:hidden;width:100%'>${fn:escapeXml(param.newSignatureValue)}</textarea>
+                    <textarea style='width:100%' id="newSignatureValue" name='newSignatureValue' cols='80'rows='5' 
+						style='visibility:hidden;width:100%'>${fn:escapeXml(param.newSignatureValue)}</textarea>
                 </td>
                 <td width="20%">&nbsp;</td>
             </tr>
@@ -142,13 +143,11 @@
         <td colspan="3"><fmt:message key="optionsSignatureMaxNumber"><fmt:param value="${maxSigs}"></fmt:param></fmt:message></td>
     </tr>
     <tr>
-        <td colspan="4">
-            &nbsp;
-        </td>
+        <td colspan="4">&nbsp;</td>
     </tr>
 </table>
 <br/>
-<table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+<table class="ZOptionsSectionTable" width="100%">
     <tr class="ZOptionsHeaderRow">
         <td class="ImgPrefsHeader_L">
             &nbsp;
@@ -161,28 +160,23 @@
         </td>
     </tr>
 </table>
-<table cellpadding="3" width="100%" class="ZOptionsSectionMain">
+<table width="100%" class="ZOptionsSectionMain" cellspacing="6">
     <tr>
         <td class='ZOptionsTableLabel'>
-            <fmt:message key="optionsSignaturePlacement"/>
-            :
+            <label><fmt:message key="optionsSignaturePlacement"/>:</label>
         </td>
         <td>
-            <fmt:message key="optionsSignaturePlaceTheSignature"/>
-            :
+            <label><fmt:message key="optionsSignaturePlaceTheSignature"/>:</label>
         </td>
     </tr>
     <tr>
-        <td class='ZOptionsTableLabel'>
-            &nbsp;
-        </td>
+        <td class='ZOptionsTableLabel'>&nbsp;</td>
         <td>
-            <table border="0" cellpadding="0" cellspacing="3">
+            <table>
                 <tr>
                     <td>
                         <input id="placeAbove" type="radio" name="zimbraPrefMailSignatureStyle" value="outlook"
-                                <c:if test="${mailbox.prefs.signatureStyleTop}">checked</c:if>
-                                />
+							<c:if test="${mailbox.prefs.signatureStyleTop}">checked</c:if> />
                     </td>
                     <td>
                         <label for="placeAbove">
@@ -191,8 +185,7 @@
                     </td>
                     <td>
                         <input id="placeBelow" type="radio" name="zimbraPrefMailSignatureStyle" value="internet"
-                                <c:if test="${mailbox.prefs.signatureStyleBottom}">checked</c:if>
-                                />
+							<c:if test="${mailbox.prefs.signatureStyleBottom}">checked</c:if> />
                     </td>
                     <td>
                         <label for="placeBelow">
@@ -209,7 +202,7 @@
         </td>
     </tr>
     <tr>
-        <td colspan=2 style='text-align:left;font-weight:bold;'>
+		<td colspan='4' class='ZOptionsTableField' style='text-align:center;font-weight:bold;width:auto;'>
             <fmt:message key="optionsManageAccounts">
                 <fmt:param><fmt:message key="optionsSigManageAccountsPre"/></fmt:param>
                 <fmt:param><a href="options?selected=accounts"><fmt:message key="optionsManageAccountsLink"/></a></fmt:param>
@@ -218,9 +211,7 @@
         </td>
     </tr>
     <tr>
-        <td colspan="4">
-            &nbsp;
-        </td>
+        <td colspan="4">&nbsp;</td>
     </tr>
 </table>
 </td>

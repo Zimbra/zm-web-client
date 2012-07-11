@@ -144,28 +144,28 @@ SUBMIT,
 
 /* ------- list --------------- */
 
-.List {
+.List, TD.List {
 	@SkinBorderApp@
-	border-top:1px;
+	border-width:1px;
 }
 
 .ZhRow TD {
 	@ListItemContainer@
 	@ListItemContainer-normal@
-    padding-right: 6px;
+	padding-right: 6px;
 }
 
 .ZhRowOdd TD {
-   	@ListItemContainer@
+	@ListItemContainer@
 	@ListItemContainer-alt@
-    padding-right: 6px;
+	padding-right: 6px;
 }
 
 .List TH {
 	text-align: left;
 	@ListColHeaderContainer@
 	@ListColHeaderContainer-normal@
-/*    padding: 5px 5px 5px 0; */
+/*	padding: 5px 5px 5px 0; */
 }
 
 .List A:link, .List A:visited  {
@@ -179,22 +179,22 @@ SUBMIT,
 
 .List .Img {
 	width: 20px;
-	padding-right: 0px;
+	padding-right:0;
 }
 
 .List .ImgNarrow {
 	width: 12px;
-	padding-right: 0px;
+	padding-right:0;
 }
 
 .List .CB {
 	width: 20px;
-	padding-right: 0px;
+	padding-right:0;
 }
 
 .List .Radio {
 	width: 20px;
-	padding-right: 0px;
+	padding-right:0;
 	text-align: center;
 }
 
@@ -253,7 +253,9 @@ A:visited { color: blue; }
 }
 
 
-.Tree .ZhTreeEdit a:link, .Tree .ZhTreeEdit a:visited { @Text@ text-decoration: underline; }
+.Tree .ZhTreeEdit a:link, 
+.Tree .ZhTreeEdit a:visited { @Text@ text-decoration: underline; }
+
 .ZhTreeEdit {
 	@Text-light@
 	@FontSize-normal@
@@ -273,7 +275,7 @@ A:visited { color: blue; }
 
 .ZhAppContent {
 	@SkinBorderApp@
-    border-width: 1px 1px 1px;
+    border-width:1px;
 }
 
 .ZhAppColContent {
@@ -284,7 +286,6 @@ A:visited { color: blue; }
 .ZhAppViewContent {
 	@AppBg@
 	@NormalOutsetBorder@
-	border-top-width:0px;
 }
 
 .SearchBar {

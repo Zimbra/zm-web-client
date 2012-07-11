@@ -21,29 +21,25 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
 
-<table border="0" cellpadding="10" cellspacing="10" width="100%">
+<table width="100%">
 <tr>
 <td>
-<table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+<table class="ZOptionsSectionTable" width="100%">
 <tr class="ZOptionsHeaderRow">
-	<td class="ImgPrefsHeader_L">
-		&nbsp;
-	</td>
+	<td class="ImgPrefsHeader_L">&nbsp;</td>
 	<td class='ZOptionsHeader ImgPrefsHeader' >
 		<fmt:message key="optionsDisplayingMessages"/>
 	</td>
-	<td class="ImgPrefsHeader_R">
-		&nbsp;
-	</td>
+	<td class="ImgPrefsHeader_R">&nbsp;</td>
 </tr>
 </table>
-<table width="100%" cellpadding="3" class="ZOptionsSectionMain">
+<table width="100%" class="ZOptionsSectionMain" cellspacing="6">
 <tr>
 	<td class='ZOptionsTableLabel'>
-		<fmt:message key="optionsDisplay"/> :
+		<fmt:message key="optionsDisplay"/>:
 	</td>
 	<td>
-		<table border="0" cellpadding="0" cellspacing="0">
+		<table>
 			<tr>
 				<td>
 					<select name="zimbraPrefMailItemsPerPage" id="itemsPP">
@@ -76,8 +72,7 @@
 <c:if test="${mailbox.features.conversations}">
 	<tr>
 		<td class='ZOptionsTableLabel'>
-			<label for="groupMailBy"><fmt:message key="groupMailBy"/>
-				:</label>
+			<label for="groupMailBy"><fmt:message key="groupMailBy"/>:</label>
 		</td>
 		<td>
 			<select name="zimbraPrefGroupMailBy" id="groupMailBy">
@@ -99,16 +94,18 @@
 		<fmt:message key="optionsDisplayHtml"/>:
 	</td>
 	<td>
-		<table border="0" cellpadding="0" cellspacing="3">
+		<table>
 			<tr>
 				<td>
-					<input id="viewHtml" type="radio" name="zimbraPrefMessageViewHtmlPreferred" value="TRUE" <c:if test="${mailbox.prefs.messageViewHtmlPreferred}">checked</c:if>/>
+					<input id="viewHtml" type="radio" name="zimbraPrefMessageViewHtmlPreferred" value="TRUE" 
+						<c:if test="${mailbox.prefs.messageViewHtmlPreferred}">checked</c:if>/>
 				</td>
 				<td>
 					<label for="viewHtml"><fmt:message key="optionsDisplayHtmlAsHtml"/></label>
 				</td>
 				<td>
-					<input id="viewText" type="radio" name="zimbraPrefMessageViewHtmlPreferred" value="FALSE" <c:if test="${not mailbox.prefs.messageViewHtmlPreferred}">checked</c:if>/>
+					<input id="viewText" type="radio" name="zimbraPrefMessageViewHtmlPreferred" value="FALSE" 
+						<c:if test="${not mailbox.prefs.messageViewHtmlPreferred}">checked</c:if>/>
 				</td>
 				<td>
 					<label for="viewText"><fmt:message key="optionsDisplayHtmlAsText"/></label>
@@ -122,22 +119,25 @@
         <fmt:message key="optionsReadingPane"/>:
     </td>
     <td>
-		<table border="0" cellpadding="0" cellspacing="3">
+		<table>
 			<tr>
 				<td>
-					<input id="viewRight" type="radio" name="zimbraPrefReadingPaneLocation" value="right" <c:if test="${mailbox.prefs.readingPaneLocation eq 'right'}">checked</c:if>/>
+					<input id="viewRight" type="radio" name="zimbraPrefReadingPaneLocation" value="right" 
+						<c:if test="${mailbox.prefs.readingPaneLocation eq 'right'}">checked</c:if>/>
 				</td>
 				<td>
 					<label for="viewRight"><fmt:message key="readingPaneOnRight"/></label>
 				</td>
 				<td>
-					<input id="viewBottom" type="radio" name="zimbraPrefReadingPaneLocation" value="bottom" <c:if test="${mailbox.prefs.readingPaneLocation eq 'bottom'}">checked</c:if>/>
+					<input id="viewBottom" type="radio" name="zimbraPrefReadingPaneLocation" value="bottom" 
+						<c:if test="${mailbox.prefs.readingPaneLocation eq 'bottom'}">checked</c:if>/>
 				</td>
 				<td>
 					<label for="viewBottom"><fmt:message key="readingPaneAtBottom"/></label>
 				</td>
                 <td>
-                    <input id="noReadingPane" type="radio" name="zimbraPrefReadingPaneLocation" value="off" <c:if test="${mailbox.prefs.readingPaneLocation eq 'off'}">checked</c:if>/>
+                    <input id="noReadingPane" type="radio" name="zimbraPrefReadingPaneLocation" value="off" 
+						<c:if test="${mailbox.prefs.readingPaneLocation eq 'off'}">checked</c:if>/>
                 </td>
                 <td>
                     <label for="noReadingPane"><fmt:message key="readingPaneOff"/></label>
@@ -152,17 +152,19 @@
 		<fmt:message key="optionsMessagePreview"/>:
 	</td>
 	<td>
-		<app:optCheckbox boxfirst="true" label="optionsShowFragments" pref="zimbraPrefShowFragments" checked="${mailbox.prefs.showFragments}"/>
+		<app:optCheckbox boxfirst="true" label="optionsShowFragments" pref="zimbraPrefShowFragments" 
+			checked="${mailbox.prefs.showFragments}"/>
 	</td>
 </tr>
 <c:if test="${mailbox.features.initialSearchPreference}">
 	<app:optSeparator/>
 	<tr>
 		<td class='ZOptionsTableLabel'>
-			<label for="zimbraPrefMailInitialSearch"><fmt:message key="optionsDefaultMailSearch"/> :</label>
+			<label for="zimbraPrefMailInitialSearch"><fmt:message key="optionsDefaultMailSearch"/>:</label>
 		</td>
 		<td>
-			<input id="zimbraPrefMailInitialSearch" size="40" type="text" name='zimbraPrefMailInitialSearch' value="${fn:escapeXml(mailbox.prefs.mailInitialSearch)}">
+			<input id="zimbraPrefMailInitialSearch" size="40" type="text" name='zimbraPrefMailInitialSearch' 
+				value="${fn:escapeXml(mailbox.prefs.mailInitialSearch)}">
 		</td>
 	</tr>
 </c:if>
@@ -173,7 +175,7 @@
 </tr>
 </table>
 <br/>
-<table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+<table class="ZOptionsSectionTable" width="100%">
 <tr class="ZOptionsHeaderRow">
 	<td class="ImgPrefsHeader_L">
 		&nbsp;
@@ -186,7 +188,7 @@
 	</td>
 </tr>
 </table>
-<table cellpadding="3"  width="100%" class="ZOptionsSectionMain">
+<table width="100%" class="ZOptionsSectionMain" cellspacing="6">
 <c:set var="messageArrives"><fmt:message key="optionsWhenAMessageArrives"/> : </c:set>
 <c:if test="${mailbox.features.mailForwarding}">
 	<tr>
@@ -195,36 +197,36 @@
 			<c:set var="messageArrives" value="&nbsp;"/>
 		</td>
 		<td>
-			<table cellspacing="0" cellpadding="0">
+			<table>
 				<tr>
-					<td><input type="checkbox" id="FORWARDCHECKED" name='FORWARDCHECKED' value="TRUE" <c:if test="${not empty mailbox.prefs.mailForwardingAddress}">checked</c:if>></td>
-					<td style='padding-left:5px' nowrap align=right><label for="FORWARDCHECKED"><fmt:message key="optionsForwardAcopyTo"/>:</label></td>
+					<td>
+						<input type="checkbox" id="FORWARDCHECKED" name='FORWARDCHECKED' value="TRUE" 
+							<c:if test="${not empty mailbox.prefs.mailForwardingAddress}">checked</c:if>>
+					</td>
+					<td style='padding-left:5px' nowrap align=right>
+						<label for="FORWARDCHECKED"><fmt:message key="optionsForwardAcopyTo"/>:</label>
+					</td>
 				</tr>
 			</table>
 		</td>
 	</tr>
 	<tr>
-		<td class='ZOptionsTableLabel'>
-			&nbsp;
-		</td>
+		<td class='ZOptionsTableLabel'>&nbsp;</td>
 		<td style='padding-left:20px'>
-			<input id="zimbraPrefMailForwardingAddress" size="40" type="text" name='zimbraPrefMailForwardingAddress' value="${fn:escapeXml(mailbox.prefs.mailForwardingAddress)}">
+			<input id="zimbraPrefMailForwardingAddress" size="40" type="text" name='zimbraPrefMailForwardingAddress' 
+				value="${fn:escapeXml(mailbox.prefs.mailForwardingAddress)}">
 			<span style='padding-left:5px' class='ZOptionsHint'><fmt:message key="optionsEmailAddressHint"/></span>
 		</td>
 	</tr>
 	<tr>
-		<td class='ZOptionsTableLabel'>
-			&nbsp;
-		</td>
+		<td class='ZOptionsTableLabel'>&nbsp;</td>
 		<td style='padding-left:20px'>
 			<app:optCheckbox boxfirst="true" label="mailDeliveryDisabled" pref="zimbraPrefMailLocalDeliveryDisabled"
 							 checked="${mailbox.prefs.mailLocalDeliveryDisabled}"/>
 		</td>
 	</tr>
 	<tr>
-		<td class='ZOptionsTableLabel'>
-			&nbsp;
-		</td>
+		<td class='ZOptionsTableLabel'>&nbsp;</td>
 		<td>
 			<hr>
 		</td>
@@ -238,22 +240,19 @@
 		</td>
 		<td>
 			<app:optCheckbox boxfirst="true" trailingcolon="true" label="mailNotifEnabled" pref="zimbraPrefNewMailNotificationEnabled"
-							 checked="${mailbox.prefs.newMailNotificationsEnabled}"/>
+				checked="${mailbox.prefs.newMailNotificationsEnabled}"/>
 		</td>
 	</tr>
 	<tr>
-		<td class='ZOptionsTableLabel'>
-			&nbsp;
-		</td>
+		<td class='ZOptionsTableLabel'>&nbsp;</td>
 		<td style='padding-left:20px'>
-			<input id="zimbraPrefNewMailNotificationAddress" size="40" type="text" name='zimbraPrefNewMailNotificationAddress' value="${fn:escapeXml(mailbox.prefs.newMailNotificationAddress)}">
+			<input id="zimbraPrefNewMailNotificationAddress" size="40" type="text" name='zimbraPrefNewMailNotificationAddress' 
+				value="${fn:escapeXml(mailbox.prefs.newMailNotificationAddress)}">
 			<span style='padding-left:5px' class='ZOptionsHint'><fmt:message key="optionsEmailAddressHint"/></span>
 		</td>
 	</tr>
 	<tr>
-		<td class='ZOptionsTableLabel'>
-			&nbsp;
-		</td>
+		<td class='ZOptionsTableLabel'>&nbsp;</td>
 		<td>
 			<hr>
 		</td>
@@ -271,16 +270,15 @@
 		</td>
 	</tr>
 	<tr>
-		<td class='ZOptionsTableLabel'>
-			&nbsp;
-		</td>
+		<td class='ZOptionsTableLabel'>&nbsp;</td>
 		<td style='padding-left:20px'>
-			<textarea id="zimbraPrefOutOfOfficeReply" name='zimbraPrefOutOfOfficeReply' cols='60' rows='4'>${fn:escapeXml(mailbox.prefs.outOfOfficeReply)}</textarea>
+			<textarea id="zimbraPrefOutOfOfficeReply" name='zimbraPrefOutOfOfficeReply' 
+				cols='60' rows='4'>${fn:escapeXml(mailbox.prefs.outOfOfficeReply)}</textarea>
 		</td>
 	</tr>
 	<tr>
 		 <td class='ZOptionsTableLabel'>
-			<fmt:message key="startDate"/> :
+			<label><fmt:message key="startDate"/>:</label>
 		</td>
         <fmt:message key="CAL_APPT_EDIT_DATE_FORMAT" var="editDateFmt"/>
         <td style='padding-left:20px'>
@@ -300,7 +298,7 @@
 	</tr>
 	<tr>
 		<td class='ZOptionsTableLabel'>
-			<fmt:message key="untilDate"/> :
+			<label><fmt:message key="untilDate"/>:</label>
 		</td>
 		<td style='padding-left:20px'>
 			<c:set var="untilDate" value="${fn:escapeXml(mailbox.prefs.outOfOfficeUntilDate)}" />
@@ -321,35 +319,35 @@
 <app:optSeparator/>
 <tr>
 	<td class='ZOptionsTableLabel'>
-		<fmt:message key="optionsMessagesFromMe"/> :
+		<label><fmt:message key="optionsMessagesFromMe"/>:</label>
 	</td>
 	<td>
-		<fmt:message key="removeDupesToSelf"/>
-		:
+		<label><fmt:message key="removeDupesToSelf"/>:</label>
 	</td>
 </tr>
 <tr>
-	<td class='ZOptionsTableLabel'>
-		&nbsp;
-	</td>
+	<td class='ZOptionsTableLabel'>&nbsp;</td>
 	<td>
-		<table border="0" cellpadding="0" cellspacing="3">
+		<table>
 			<tr>
 				<c:set var="dedupe" value="${mailbox.prefs.dedupeMessagesSentToSelf}"/>
 				<td>
-					<input id="dedupeNone" type="radio" name="zimbraPrefDedupeMessagesSentToSelf" value="dedupeNone" <c:if test="${dedupe eq 'dedupeNone'}">checked</c:if>/>
+					<input id="dedupeNone" type="radio" name="zimbraPrefDedupeMessagesSentToSelf" value="dedupeNone" 
+						<c:if test="${dedupe eq 'dedupeNone'}">checked</c:if>/>
 				</td>
 				<td>
 					<label for="dedupeNone"><fmt:message key="optionsDedupeNone"/></label>
 				</td>
 				<td>
-					<input id="secondCopy" type="radio" name="zimbraPrefDedupeMessagesSentToSelf" value="secondCopyifOnToOrCC" <c:if test="${dedupe eq 'secondCopyifOnToOrCC'}">checked</c:if>/>
+					<input id="secondCopy" type="radio" name="zimbraPrefDedupeMessagesSentToSelf" value="secondCopyifOnToOrCC" 
+						<c:if test="${dedupe eq 'secondCopyifOnToOrCC'}">checked</c:if>/>
 				</td>
 				<td>
 					<label for="secondCopy"><fmt:message key="optionsDedupeSecondCopy"/></label>
 				</td>
 				<td>
-					<input id="dedupeall" type="radio" name="zimbraPrefDedupeMessagesSentToSelf" value="dedupeAll" <c:if test="${dedupe eq 'dedupeAll'}">checked</c:if>/>
+					<input id="dedupeall" type="radio" name="zimbraPrefDedupeMessagesSentToSelf" value="dedupeAll" 
+						<c:if test="${dedupe eq 'dedupeAll'}">checked</c:if>/>
 				</td>
 				<td>
 					<label for="dedupeall"><fmt:message key="optionsDedupeAll"/></label>
@@ -359,9 +357,7 @@
 	</td>
 </tr>
 <tr>
-	<td colspan="2">
-		&nbsp;
-	</td>
+	<td colspan="2">&nbsp;</td>
 </tr>
 </table>
 <c:if test="${mailbox.features.pop3Enabled}">
@@ -383,18 +379,18 @@
 		pageContext.setAttribute("current", current, PageContext.PAGE_SCOPE);
 	%>
 	<br/>
-	<table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+	<table class="ZOptionsSectionTable" width="100%">
 	<tr class="ZOptionsHeaderRow">
 		<td class="ImgPrefsHeader_L">&nbsp;</td>
-		<td class='ZOptionsHeader ImgPrefsHeader' ><fmt:message key="optionsAccess" /></td>
+		<td class='ZOptionsHeader ImgPrefsHeader'><fmt:message key="optionsAccess" /></td>
 		<td class="ImgPrefsHeader_R">&nbsp;</td>
 	</tr>
 	</table>
-	<table width="100%" cellpadding="3" class="ZOptionsSectionMain">
+	<table width="100%" class="ZOptionsSectionMain" cellspacing="6">
 	<tr>
 		<td class='ZOptionsTableLabel' style="vertical-align:top"><fmt:message key="optionsAccessPop" /></td>
 		<td>
-			<table cellspacing="0" cellpadding="0">
+			<table>
 				<tr>
 					<td><input id="pop3DownloadAll" name='zimbraPrefPop3DownloadSince' type="radio"
 							   value="" ${empty pop3DownloadSince ? "checked" : ""}>
@@ -414,7 +410,8 @@
 			</table>
 		</td>
 	</tr>
-	<tr><td></td>
+	<tr>
+		<td></td>
 		<td class="ZOptionsHint">
 			<c:choose>
 				<c:when test="${empty current}">

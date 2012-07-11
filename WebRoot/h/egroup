@@ -90,10 +90,10 @@
 
 <c:set var="focusField" value="${isGroup ? 'nickname' : 'lastName'}"/>
 <c:set var="toolbar">
-    <table width=100% cellspacing=0>
+    <table width=100%>
         <tr valign='middle'>
             <td class='TbBt'>
-                <table cellspacing=0 cellpadding=0 class='Tb'>
+                <table class='Tb'>
                     <tr>
                         <app:button name="actionContactAdd" src="/img/contacts/ImgContactsPicker.png" tooltip="addSelected" text="addSelected"/>
                     </tr>
@@ -109,7 +109,7 @@
 
 <zm:currentResultUrl var="currentUrl" disp="${isCreate ? 0 : 1}" value="" action="actionNewGroup" context="${context}"/>
 <form action="${currentUrl}" method="post" accept-charset="utf-8">
-    <table width=100% cellpadding="0" cellspacing="0" border="0">
+    <table width=100%>
     <tr>
         <td class='TbTop' colspan="2">
             <app:editContactToolbar create="${isCreate}"context="${context}" keys="true"/>
@@ -117,13 +117,13 @@
     </tr>
     <tr>
     <td class='ZhAppContent' valign="top">
-    <table cellpadding="0" cellspacing="0" width="100%" >
+    <table width="100%" >
         <tr>
         <td valign="top" width="50%">
             <app:editContact title="${title}" contact="${contact}" context="${context}" isgroup="true"/>
         </td>
         <td valign="top" width="50%">
-        <table width=100% cellpadding="0" cellspacing="5">
+        <table width=100% class="ZPropertySheet" cellspacing="6">
         <tr>
             <td class='TbTop'>
                 ${toolbar}
@@ -199,7 +199,7 @@
         <!-- tr>
             <td>
                 <span><fmt:message key="enterAddrBelow"/></span>
-                <table width=100% cellpadding=2 cellspacing=0>
+                <table width=100%>
                     <tr>
                         <td>
                             <textarea id="ngroupmembers" rows="4" cols="40" style="width:100%" name="nGroupMembers"></textarea>

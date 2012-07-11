@@ -88,13 +88,13 @@
      onload="var e=document.getElementById('subject'); if (e) e.focus();">
 
     <form action="" name="taskForm" method="post" enctype="multipart/form-data" accept-charset="utf-8">
-        <table width="100%" style='height:100%;' cellpadding="0" cellspacing="0">
+        <table width="100%" style='height:100%;'>
             <tr>
                 <td class='TbTop'>
-                    <table width="100%" cellspacing="0" cellpadding="0" class='Tb'>
+                    <table width="100%" class='Tb'>
                         <tr valign='middle'>
                             <td align="left" class="TbBt">
-                                <table cellspacing="0" cellpadding="0" class='Tb'>
+                                <table class='Tb'>
                                     <tr>
                                         <app:button id="OPSAVE" name="actionSave" src="common/ImgSave.png" tooltip="save" text="save"/>
                                         <td><div class='vertSep'></div></td>
@@ -141,10 +141,10 @@
             </tr>
             <tr>
                 <td class='ZhAppContent'>
-                    <table cellpadding="2" cellspacing="0" width="100%" class='Compose'>
+                    <table width="100%" class='Compose'>
                         <tr  class='${zm:getFolder(pageContext, empty compose ? 10 : compose.apptFolderId).styleColor}Bg'>
                             <td colspan="2" class='ZhBottomSep'>
-                                <table width="100%" cellpadding="0" cellspacing="0">
+                                <table width="100%">
                                     <tr class='apptHeaderRow'>
                                         <td width="24"><center><app:img src="${apptImage}" altkey="${apptImageAlt}"/></center></td>
                                         <td class='apptHeader'>
@@ -170,12 +170,12 @@
                         </tr>
                         <tr>
                         <td colspan="2">
-                            <table cellpadding="2" cellspacing="0" width="100%">
+                            <table width="100%">
                                 <tr>
                                     <td valign='top' width="50%">
                                         <fieldset>
                                             <legend><fmt:message key="details"/></legend>
-                                            <table cellpadding="5" cellspacing="0">
+                                            <table class="ZPropertySheet" cellspacing="6">
                                                 <tr>
                                                     <td width="1%" align="right"><label for="subject"><fmt:message key="subject"/>:</label></td>
                                                     <td><input style="width:99%" type="text" size="100" id="subject" name="subject" value="${fn:escapeXml(compose.subject)}"></td>
@@ -187,7 +187,7 @@
                                                 <tr>
                                                     <td width="1%" align="right"><label for="priority"><fmt:message key="priority"/>:</label></td>
                                                     <td>
-                                                        <table cellpadding="0" cellspacing="0">
+                                                        <table>
                                                             <tr>
                                                                 <td>
                                                                     <select name="taskPriority" id="priority">
@@ -235,13 +235,13 @@
                                     <td valign='top' width="50%">
                                         <fieldset>
                                             <legend><fmt:message key="date"/></legend>
-                                            <table cellpadding="5" cellspacing="0">
+                                            <table class="ZPropertySheet" cellspacing="6">
                                             <tr>
                                                 <td align="right">
                                                     <input id="completed" type=checkbox onclick="completedCheckbox(this)" name="completed" <c:if test="${compose.taskStatus eq 'COMP'}">checked</c:if> value="1">
                                                 </td>
                                                 <td>
-                                                    <table cellpadding="0" cellspacing="0">
+                                                    <table>
                                                         <tr>
                                                             <td>
                                                                 <select name="taskStatus" id="status" onchange="statusChanged(this.options[this.selectedIndex].value)">
@@ -275,7 +275,7 @@
                                             <tr>
                                                 <td width="1%" align="right" nowrap><label for="start"><fmt:message key="startDate"/>:</label></td>
                                                 <td>
-                                                    <table cellpadding="0" cellspacing="0">
+                                                    <table>
                                                         <tr>
                                                             <td>
                                                                 <input id="start" type=text size="12" maxlength="20" name="startDate" value="${fn:escapeXml(compose.startDate)}">
@@ -287,7 +287,7 @@
                                             <tr>
                                                 <td width="1%" align="right" nowrap><label for="end"><fmt:message key="taskDueDate"/>:</label></td>
                                                 <td>
-                                                    <table cellpadding="0" cellspacing="0">
+                                                    <table>
                                                         <tr>
                                                             <td>
                                                                 <input id="end" type=text size="12" maxlength="20" name="endDate" value="${fn:escapeXml(compose.endDate)}">
@@ -342,7 +342,7 @@
                                             </fmt:message>
                                         </c:if>
                                         <td>
-                                            <table cellpadding=0 cellspacing=0 border="0">
+                                            <table>
                                                 <tr valign="middle">
                                                     <td>
                                                         <input <c:if test="${compose.checkedAttachmentNames[part.partName]}">checked </c:if>type=checkbox name="originalAttachment" value="${part.partName}">

@@ -80,13 +80,13 @@
           onload="var e=document.getElementById('${focusField}'); if (e) {e.focus(); if (e.setSelectionRange) e.setSelectionRange(0,0);}" >
 <body class="yui-skin-sam">
 <form action="" method="post" name="composeForm" enctype="multipart/form-data" accept-charset="utf-8">
-<table width="100%" cellpadding="0" cellspacing="0">
+<table width="100%">
 <tr>
     <td class='TbTop'>
-        <table width="100%" cellspacing="0" cellpadding="0">
+        <table width="100%">
             <tr valign='middle'>
                 <td align=left class="TbBt">
-                    <table cellspacing="0" cellpadding="0" class='Tb'>
+                    <table class='Tb'>
                         <tr>
                             <app:button id="OPSEND" name="actionSend" src="mail/ImgSend.png" tooltip="send" text="send"/>
                             <td><div class='vertSep'></div></td>
@@ -109,12 +109,12 @@
 <tr>
 <td class='ZhAppContent'>
 <div>
-<table cellpadding="2" cellspacing="5" style="height:80%;" width="100%" class='Compose' border="0">
+<table style="height:80%;" width="100%" class='ZPropertySheet' cellspacing="6">
 <tr>
     <app:button id="tobutton" name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="to"/>
     <td colspan="2" nowrap>
         <div class="ZhAC ZhACTo">
-            <textarea  id="toField" rows="2" style='width:99%;height:40px;position:relative;' cols="80" onkeydown="return handleEnter(event, this);"
+            <textarea id="toField" rows="2" style='width:99%;height:40px;position:relative;' cols="80" onkeydown="return handleEnter(event, this);"
                        onkeypress="return handleEnter(event, this);" name="to" >${fn:escapeXml(compose.to)}</textarea>
             <br><div class='ZhACCont' id="toContainer" style='width:99%;top:3em;'></div></div>
     </td>
@@ -122,7 +122,7 @@
 
 <tr>
     <app:button id="ccbutton"  name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="cc"/>
-    <td  nowrap>
+    <td nowrap>
         <div class="ZhAC ZhACCc">
             <textarea id="ccField" rows="2" style='width:99%;height:40px;position:relative;' cols='80' name="cc">${fn:escapeXml(compose.cc)}</textarea>
             <br><div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
@@ -242,10 +242,10 @@
 </tr>
 <tr>
     <td class='TbBottom'>
-        <table width="100%" cellspacing="0" cellpadding="0">
+        <table width="100%">
             <tr valign='middle'>
                 <td align=left class="TbBt">
-                    <table cellspacing="0" cellpadding="0" class='Tb'>
+                    <table class='Tb'>
                         <tr>
                             <app:button id="DOPSEND" name="actionSend" src="mail/ImgSend.png" tooltip="send" text="send"/>
                             <td><div class='vertSep'></div></td>

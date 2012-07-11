@@ -26,27 +26,22 @@
 <c:set var="workWeek" value="${mailbox.prefs.calendarWorkingHours}"/>
 <c:set var="workDays" value="${fn:split(workWeek, ',')}"/>
                                                    
-<table border="0" cellpadding="0" cellspacing="10" width="100%">
+<table width="100%">
      <tr>
          <td>
-         <table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+         <table class="ZOptionsSectionTable" width="100%">
              <tr class="ZOptionsHeaderRow">
-                 <td class="ImgPrefsHeader_L">
-                     &nbsp;
-                 </td>
+                 <td class="ImgPrefsHeader_L">&nbsp;</td>
                  <td class='ZOptionsHeader ImgPrefsHeader' >
                      <fmt:message key="optionsGeneral"/>
                  </td>
-                 <td class="ImgPrefsHeader_R">
-                     &nbsp;
-                 </td>
+                 <td class="ImgPrefsHeader_R">&nbsp;</td>
              </tr>
           </table>
-         <table width="100%" cellpadding="3" class="ZOptionsSectionMain">
+         <table width="100%" class="ZOptionsSectionMain" cellspacing="6">
              <tr>
                  <td class='ZOptionsTableLabel'>
-                     <label for="initView"><fmt:message key="calendarInitialView"/>
-                         :</label>
+                     <label for="initView"><fmt:message key="calendarInitialView"/>:</label>
                  </td>
                  <td>
                      <select name="zimbraPrefCalendarInitialView" id="initView">
@@ -62,8 +57,7 @@
              <app:optSeparator/>
              <tr>
                  <td class='ZOptionsTableLabel'>
-                     <label for="fdow"><fmt:message key="calendarFirstDayOfWeek"/>
-                         :</label>
+                     <label for="fdow"><fmt:message key="calendarFirstDayOfWeek"/>:</label>
                  </td>
                  <td>
                      <c:set var="dow" value="${mailbox.prefs.calendarFirstDayOfWeek}"/>
@@ -90,30 +84,23 @@
                  </td>
              </tr>
              <tr>
-                 <td colspan="2">
-                     &nbsp;
-                 </td>
+                 <td colspan="2">&nbsp;</td>
              </tr>
          </table>
          <br/>
-         <table  class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+         <table  class="ZOptionsSectionTable" width="100%">
              <tr class="ZOptionsHeaderRow">
-                 <td class="ImgPrefsHeader_L">
-                     &nbsp;
-                 </td>
+                 <td class="ImgPrefsHeader_L">&nbsp;</td>
                  <td class='ZOptionsHeader ImgPrefsHeader' >
                      <fmt:message key="optionsDayWeekView"/>
                  </td>
-                 <td class="ImgPrefsHeader_R">
-                     &nbsp;
-                 </td>
+                 <td class="ImgPrefsHeader_R">&nbsp;</td>
              </tr>
          </table>
-         <table width="100%" cellpadding="3" class="ZOptionsSectionMain">
+         <table width="100%" class="ZOptionsSectionMain" cellspacing="6">
              <tr>
                  <td class='ZOptionsTableLabel'>
-                     <label for="dayStart"><fmt:message key="calendarDayStartsAt"/>
-                         :</label>
+                     <label for="dayStart"><fmt:message key="calendarDayStartsAt"/>:</label>
                  </td>
                  <td>
                      <c:set var="hour" value="${mailbox.prefs.calendarDayHourStart}"/>
@@ -128,8 +115,7 @@
              </tr>
              <tr>
                  <td class='ZOptionsTableLabel'>
-                     <label for="dayEnd"><fmt:message key="calendarDayEndsAt"/>
-                         :</label>
+                     <label for="dayEnd"><fmt:message key="calendarDayEndsAt"/>:</label>
                  </td>
                  <td>
                      <c:set var="hour" value="${mailbox.prefs.calendarDayHourEnd}"/>
@@ -143,30 +129,23 @@
                  </td>
              </tr>
              <tr>
-                 <td colspan="2">
-                     &nbsp;
-                 </td>
+                 <td colspan="2">&nbsp;</td>
              </tr>
          </table>
          <br/>
-         <table  class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+         <table  class="ZOptionsSectionTable" width="100%">
              <tr class="ZOptionsHeaderRow">
-                 <td class="ImgPrefsHeader_L">
-                     &nbsp;
-                 </td>
+                 <td class="ImgPrefsHeader_L">&nbsp;</td>
                  <td class='ZOptionsHeader ImgPrefsHeader' >
                      <fmt:message key="calendarWorkHoursHeader"/>
                  </td>
-                 <td class="ImgPrefsHeader_R">
-                     &nbsp;
-                 </td>
+                 <td class="ImgPrefsHeader_R">&nbsp;</td>
              </tr>
          </table>
-         <table width="100%" cellpadding="3" class="ZOptionsSectionMain">
+         <table width="100%" class="ZOptionsSectionMain" cellspacing="6">
              <tr>
                  <td class='ZOptionsTableLabel'>
-                     <label for="dayStart"><fmt:message key="calendarWorkWeek"/>
-                         :</label>
+                     <label for="dayStart"><fmt:message key="calendarWorkWeek"/></label>
                  </td>
                  <td class='ZOptionsTableField' name="zimbraPrefCalendarWorkingDays">
                  <table>
@@ -200,39 +179,34 @@
                                       checked="${fn:split(workDays[6], ':')[1] eq 'Y' ? 'true' : 'false'}"/>
                         </td>
                      </tr>
-                     </table>
-                     </td>
+					</table>
+				</td>
              </tr>
              <tr>
-                 <td colspan="2">
-                     &nbsp;
-                 </td>
+                 <td colspan="2">&nbsp;</td>
              </tr>
          </table>
          <br/>
-         <table  class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+         <table class="ZOptionsSectionTable" width="100%">
              <tr class="ZOptionsHeaderRow">
-                 <td class="ImgPrefsHeader_L">
-                     &nbsp;
-                 </td>
+                 <td class="ImgPrefsHeader_L">&nbsp;</td>
                  <td class='ZOptionsHeader ImgPrefsHeader' >
                      <fmt:message key="optionsCreatingAppointments"/>
                  </td>
-                 <td class="ImgPrefsHeader_R">
-                     &nbsp;
-                 </td>
+                 <td class="ImgPrefsHeader_R">&nbsp;</td>
              </tr>
          </table>
-         <table width="100%" cellpadding="3" class="ZOptionsSectionMain">
+         <table width="100%" class="ZOptionsSectionMain" cellspacing="6">
              <tr>
-                 <td class='ZOptionsTableLabel'>
+                 <td class='ZOptionsTableLabel'>&nbsp;</td>
+                 <td class='ZOptionsTableField'>
                   <app:optCheckbox boxfirst="true" trailingcolon="false" label="shouldShowTimezone" pref="zimbraPrefUseTimeZoneListInCalendar"
                                       checked="${mailbox.prefs.useTimeZoneListInCalendar}"/>
                  </td>
              </tr>
              <app:optSeparator/>
              <tr>
-                 <td class='ZOptionsTableLabel'  style='width:100%;text-align:left;font-weight:bold;'>
+                 <td colspan='2' class='ZOptionsTableField' style='text-align:center;font-weight:bold;width:auto;'>
                      <fmt:message key="optionsManageCalendars">
                          <fmt:param><fmt:message key="optionsManageCalendarsPre"/></fmt:param>
                          <fmt:param><a href="mcalendars"><fmt:message key="optionsManageCalendarsLink"/></a></fmt:param>
@@ -241,11 +215,9 @@
                  </td>
              </tr>
              <tr>
-                 <td>
-                     &nbsp;
-                 </td>
+                 <td colspan='2'>&nbsp;</td>
              </tr>
-         </table>
-    </td>
-    </tr>
+		  </table>
+		</td>
+	</tr>
 </table>

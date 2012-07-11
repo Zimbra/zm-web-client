@@ -20,10 +20,10 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<table border="0" cellpadding="0" cellspacing="10" width="100%">
+<table width="100%">
     <tr>
         <td>
-            <table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+            <table class="ZOptionsSectionTable" width="100%">
                 <tr class="ZOptionsHeaderRow">
                     <td class="ImgPrefsHeader_L">
                         &nbsp;
@@ -36,16 +36,16 @@
                     </td>
                 </tr>
             </table>
-            <table class="ZOptionsSectionMain" width="100%">
+            <table width="100%" class="ZOptionsSectionMain" cellspacing="6">
                 <tr>
                     <td>
-                        <table  cellpadding="3" width=100%>
+                        <table width=100% class="ZPropertySheet" cellspacing="6">
                             <tr>
                                 <td class='ZOptionsTableLabel'>
-                                    <fmt:message key="optionsDisplay"/> :
+                                    <label><fmt:message key="optionsDisplay"/>:</label> 
                                 </td>
                                 <td>
-                                    <table border="0" cellpadding="0" cellspacing="0">
+                                    <table>
                                         <tr>
                                             <td>
                                                 <select name="zimbraPrefContactsPerPage" id="itemsPP">
@@ -82,26 +82,26 @@
 
                 <tr>
                     <td>
-                        <table>
+                        <table class="ZPropertySheet" cellspacing="6">
                             <tr>
                                 <td class='ZOptionsTableLabel'>
-                                    <fmt:message key="optionsAutoAdd"/> :
+                                    <label><fmt:message key="optionsAutoAdd"/>:</label>
                                 </td>
                                 <td>
-                                    <app:optCheckbox boxfirst="true" trailingcolon="false"  label="autoAddContacts" pref="zimbraPrefAutoAddAddressEnabled"
-                                                     checked="${mailbox.prefs.autoAddAddressEnabled}"/>
+                                    <app:optCheckbox boxfirst="true" trailingcolon="false" label="autoAddContacts" 
+										pref="zimbraPrefAutoAddAddressEnabled" checked="${mailbox.prefs.autoAddAddressEnabled}"/>
                                 </td>
                             </tr>
-                            </table>
-                        </td>
+						</table>
+					</td>
                 </tr>
                 <app:optSeparator/>
                 
                 <tr>
-                    <td >
+                    <td>
                         <table width="100%">
                             <tr>
-                                <td class='ZOptionsTableLabel' style='width:100%;text-align:left;font-weight:bold;'>
+								<td class='ZOptionsTableField' style='text-align:center;font-weight:bold;width:auto;'>
                                     <fmt:message key="optionsManageAddressBooks">
                                         <fmt:param><fmt:message key="optionsManageAddressBooksPre"/></fmt:param>
                                         <fmt:param><a href="maddrbooks"><fmt:message key="optionsManageAddressBooksLink"/></a></fmt:param>
@@ -110,9 +110,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>
-                                    &nbsp;
-                                </td>
+                                <td>&nbsp;</td>
                             </tr>
                         </table>
                     </td>
