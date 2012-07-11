@@ -936,7 +936,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .ZmMailMsgCapsuleView {
 	background-color:@MailMsgBkgdColor@;
 	border:1px solid @darken(AppC,10)@;
-	margin:0 0 3px;
+	margin:0 0 1px;
 }
 
 .ZmMailMsgCapsuleView.draft {
@@ -995,16 +995,21 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 #ENDIF
 }
 
-.Conv2MsgHeader .info .ZmConvListFrom,
+.Conv2MsgHeader .info .ZmConvListFrom {
+	@Text@
+	font-weight:bold;
+	margin:1px 0 3px;
+	overflow:hidden;
+}
+
 .Conv2MsgHeader .info .ZmConvListFragment {
-	display:inline;
-	margin:5px 1em 5px 0;
+	margin:2px 0 1px 20px;
 	overflow:hidden;
 }
 
 .Conv2MsgHeader .date {
 	background:none repeat scroll 0 0 white;
-	padding:0 7px 0 5px;
+	padding:1px 7px 0 5px;
 	position:absolute;
 	right:0;
 	top:5px;
