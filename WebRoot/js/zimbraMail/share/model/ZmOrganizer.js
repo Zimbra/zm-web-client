@@ -1100,34 +1100,41 @@ ZmOrganizer.prototype.setRetentionPolicy = function(newRetentionPolicy, callback
         return;
     }
 
-	var cmd = ZmOrganizer.SOAP_CMD[this.type];
-	var soapDoc = AjxSoapDoc.create(cmd + "Request", "urn:zimbraMail");
-	var actionNode = soapDoc.set("action");
+	var cmd = ZmOrganizer.SOAP_CMD[this.type] + "Request";
+	var request = {
+		_jsns: "urn:zimbraMail",
+		action : {
+			op: "retentionpolicy",
+			id: this.id,
+			retentionPolicy: {
+				keep: {},
+				purge: {}
+			}
+		}
+	};
+	var jsonObj = {};
+	jsonObj[cmd] = request;
 
-	actionNode.setAttribute("op", "retentionpolicy");
-	actionNode.setAttribute("id", this.id);
+	var retentionNode = request.action.retentionPolicy;
 
-    var retentionNode = soapDoc.set("retentionPolicy", null, actionNode);
-
-    var keep  = soapDoc.set("keep", null, retentionNode);
     if (newRetentionPolicy.keep) {
-        this._addPolicy(soapDoc, keep, newRetentionPolicy.keep);
+        this._addPolicy(retentionNode.keep, newRetentionPolicy.keep);
     }
-    var purge = soapDoc.set("purge", null, retentionNode);
     if (newRetentionPolicy.purge) {
-        this._addPolicy(soapDoc, purge, newRetentionPolicy.purge);
+        this._addPolicy(retentionNode.purge, newRetentionPolicy.purge);
     }
 
 	if (batchCmd) {
-        batchCmd.addRequestParams(soapDoc, callback, errorCallback);
- 	} else {
+        batchCmd.addRequestParams(jsonObj, callback, errorCallback);
+ 	}
+	else {
 		var accountName;
 		if (appCtxt.multiAccounts) {
 			accountName = (this.account)
 				? this.account.name : appCtxt.accountList.mainAccount.name;
 		}
 		appCtxt.getAppController().sendRequest({
-			soapDoc:       soapDoc,
+			jsonObj:       jsonObj,
 			asyncMode:     true,
 			accountName:   accountName,
 			callback:      callback,
@@ -1159,15 +1166,16 @@ function(policyA, policyB) {
 }
 
 ZmOrganizer.prototype._addPolicy =
-function(soapDoc, parentNode, policy) {
-    var policyNode = soapDoc.set("policy", null, parentNode);
+function(node, policy) {
+	var policyNode = node.policy = {};
 	for (var attr in policy) {
 		if (AjxEnv.isIE) {
 			policy[attr] += ""; //To string
 		}
-		policyNode.setAttribute(attr, policy[attr]);
+
+		policyNode[attr] = policy[attr];
 	}
-}
+};
 
 /**
  * Returns color number b/w 0-9 for a given color code
