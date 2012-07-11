@@ -226,7 +226,8 @@ function(callback, result) {
 	this._loaded = true;
 
 	var len = resp.m.length;
-	for (var i = 0; i < len; i++) {
+	//going from last to first since GetConvRequest returns the msgs in order of creation (older first) but we keep things newer first.
+	for (var i = len - 1; i >= 0; i--) {
 		var msgNode = resp.m[i];
 		this.msgIds.push(msgNode.id);
 		msgNode.su = resp.su;
