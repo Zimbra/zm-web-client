@@ -1428,10 +1428,10 @@ function(msg, container) {
 	var linkInfo = this._linkInfo = {};
     var isExternalAccount = appCtxt.isExternalAccount();
 	linkInfo[ZmOperation.SHOW_ORIG] 	= {key: showTextKey,	handler: showTextHandler,  disabled: isExternalAccount};
-	linkInfo[ZmOperation.DRAFT]			= {key: "editDraft",	handler: this._handleEditDraftLink, op: ZmOperation.DRAFT,  disabled: isExternalAccount};
-	linkInfo[ZmOperation.REPLY]			= {key: "reply",		handler: this._handleReplyLink, 	op: ZmOperation.REPLY,  disabled: isExternalAccount};
-	linkInfo[ZmOperation.REPLY_ALL]		= {key: "replyAll",		handler: this._handleReplyLink, 	op: ZmOperation.REPLY_ALL,  disabled: isExternalAccount};
-	linkInfo[ZmOperation.FORWARD]		= {key: "forward",		handler: this._handleForwardLink,  disabled: isExternalAccount};
+	linkInfo[ZmOperation.DRAFT]			= {key: "editDraft",	handler: this._handleEditDraftLink, op: ZmOperation.DRAFT,		disabled: isExternalAccount};
+	linkInfo[ZmOperation.REPLY]			= {key: "reply",		handler: this._handleReplyLink, 	op: ZmOperation.REPLY,		disabled: isExternalAccount};
+	linkInfo[ZmOperation.REPLY_ALL]		= {key: "replyAll",		handler: this._handleReplyLink, 	op: ZmOperation.REPLY_ALL,	disabled: isExternalAccount};
+	linkInfo[ZmOperation.FORWARD]		= {key: "forward",		handler: this._handleForwardLink,	op: ZmOperation.FORWARD,	disabled: isExternalAccount};
 	linkInfo[ZmOperation.ACTIONS_MENU]	= {key: "moreActions",	handler: this._handleMoreActionsLink};
 
 	var links;
