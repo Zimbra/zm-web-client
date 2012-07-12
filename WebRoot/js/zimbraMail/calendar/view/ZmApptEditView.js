@@ -1049,7 +1049,10 @@ function(calItem, mode) {
         var sentBy = calItem.sentBy;
         sentBy = sentBy || (calItem.organizer != calItem.getFolder().getOwner() ? calItem.organizer : null);
         if(sentBy){
-            this.setIdentity(appCtxt.getIdentityCollection().getIdentityBySendAddress(sentBy));
+            var ic = appCtxt.getIdentityCollection();
+            if (ic) {
+                this.setIdentity(ic.getIdentityBySendAddress(sentBy));
+            }
         }
     }
 
