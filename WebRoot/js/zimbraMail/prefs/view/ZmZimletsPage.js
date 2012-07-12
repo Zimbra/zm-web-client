@@ -460,6 +460,21 @@ function() {
 	return zimlets;
 };
 
+ZmZimletsPage.prototype.validate  =
+function() {
+	var emailZimlet = document.getElementById("com_zimbra_email_zimletCheckbox");
+	if (emailZimlet && !emailZimlet.checked) {
+		if (appCtxt.get(ZmSetting.USE_ADDR_BUBBLES)) {
+			return false;
+		}
+	}
+	return true;
+};
+
+ZmZimletsPage.prototype.getErrorMessage = 
+function() {
+	return AjxMessageFormat.format(ZmMsg.invalidBubblePrefs, ZmMsg.emailZimletLabel);	
+};
 
 /**
  * ZmPrefZimletListView

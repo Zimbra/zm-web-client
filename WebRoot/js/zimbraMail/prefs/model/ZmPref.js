@@ -716,3 +716,29 @@ function( control ) {
         signaturePage._populateSignatures();
     }
 };
+
+/**
+ * Bubbles are currently only available if the com_zimbra_email zimlet is enabled.  Show a warning 
+ * to the user if the zimlet is not enabled and they try to enable bubbles.
+ * @param useBubbles
+ */
+ZmPref.validateBubbles =
+function(useBubbles) {
+	
+	if (useBubbles) {
+		var emailZimlet = appCtxt.getZimletMgr().getZimletByName("com_zimbra_email");
+		var canUseBubbles = emailZimlet && emailZimlet.handlerObject;
+		if (canUseBubbles && canUseBubbles.getEnabled()) {
+			return true;
+		}
+		else if (!canUseBubbles) {
+			//did user just check on email zimlet?  Check the DOM
+			emailZimlet = document.getElementById("com_zimbra_email_zimletCheckbox");
+			canUseBubbles = emailZimlet && emailZimlet.checked;
+			if (canUseBubbles) { return true;}
+		}
+		ZmPref.SETUP[ZmSetting.USE_ADDR_BUBBLES].errorMessage = AjxMessageFormat.format(ZmMsg.invalidBubblePrefs, ZmMsg.emailZimletLabel);
+		return false;
+	}
+	return true;
+};
