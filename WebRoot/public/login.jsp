@@ -64,7 +64,7 @@
 		            <zm:login username="${fullUserName}" password="${param.password}" varRedirectUrl="postLoginUrl"
                               varAuthResult="authResult"
 		                      newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
-							  requestedSkin="${param.skin}"/>
+							  requestedSkin="${param.skin}" importData="true"/>
 		            <%-- continue on at not empty authResult test --%>
 		    	</c:when>
 		        <c:otherwise>
@@ -80,7 +80,7 @@
 	            <zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
 	                      varRedirectUrl="postLoginUrl" varAuthResult="authResult"
 	                      rememberme="${param.zrememberme == '1'}"
-						  requestedSkin="${param.skin}" adminPreAuth="${param.adminPreAuth == '1'}"/>
+						  requestedSkin="${param.skin}" adminPreAuth="${param.adminPreAuth == '1'}" importData="true"/>
 	            <%-- continue on at not empty authResult test --%>
 	        </c:if>
 	    </c:otherwise>
