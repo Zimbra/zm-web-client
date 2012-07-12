@@ -1006,8 +1006,8 @@
                 <!-- exception warning -->
                 <$ if (data.isException) { $>
                 <tr valign='center'>
-                    <td>
-                        <table>
+                    <td colspan='2'>
+                        <table class='ZPropertySheet' cellspacing='6'>
                             <tr>
                                 <td><$= AjxImg.getImageHtml("ApptException") $></td>
                                 <td><strong><$= ZmMsg.apptExceptionNote$></strong></td>
