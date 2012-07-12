@@ -1682,7 +1682,11 @@ function(msg, container, callback, index) {
 			if (bodyPart.contentType == ZmMimeTable.TEXT_HTML && htmlMode) {
 				var hasInviteContent = (invite && !invite.isEmpty());
 				if (hasInviteContent) {
-					content = ZmInviteMsgView.truncateBodyContent(content, true);
+					if (!msg.getMimeHeader(ZmMailMsg.HDR_INREPLYTO)) {
+						//Hack - bug 70603 -  Do not truncate the message for forwarded invites
+						//The InReplyTo rfc822 header would be present in most of the forwarded invites
+						content = ZmInviteMsgView.truncateBodyContent(content);
+					}
 					// if the notes are empty, don't bother rendering them
 					var tmp = AjxStringUtil.stripTags(content);
 					if (!AjxStringUtil._NON_WHITESPACE.test(tmp)) {
@@ -1737,7 +1741,11 @@ function(msg, container, callback, index) {
 				if (bodyPart.contentType == ZmMimeTable.TEXT_PLAIN) {
 					var hasInviteContent = (invite && !invite.isEmpty());
 					if (hasInviteContent) {
-						content = ZmInviteMsgView.truncateBodyContent(content);
+						if (!msg.getMimeHeader(ZmMailMsg.HDR_INREPLYTO)) {
+							//Hack - bug 70603 -  Do not truncate the message for forwarded invites
+							//The InReplyTo rfc822 header would be present in most of the forwarded invites
+							content = ZmInviteMsgView.truncateBodyContent(content);
+						}
 					}
 
 					var isTextMsg = true;

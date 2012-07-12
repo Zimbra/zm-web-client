@@ -75,6 +75,7 @@ ZmMailMsg.HDR_DATE		= "DATE";
 ZmMailMsg.HDR_SUBJECT	= "SUBJECT";
 ZmMailMsg.HDR_LISTID    = "List-ID";
 ZmMailMsg.HDR_XZIMBRADL = "X-Zimbra-DL";
+ZmMailMsg.HDR_INREPLYTO = "IN-REPLY-TO";
 
 ZmMailMsg.HDR_KEY = {};
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_FROM]		= ZmMsg.from;
@@ -121,7 +122,7 @@ ZmMailMsg.CONTENT_PART_ID = "ci";
 ZmMailMsg.CONTENT_PART_LOCATION = "cl";
 
 // Additional headers to request.  Also used by ZmConv and ZmSearch
-ZmMailMsg.requestHeaders = {listId: ZmMailMsg.HDR_LISTID, xZimbraDL: ZmMailMsg.HDR_XZIMBRADL};
+ZmMailMsg.requestHeaders = {listId: ZmMailMsg.HDR_LISTID, xZimbraDL: ZmMailMsg.HDR_XZIMBRADL,replyTo:ZmMailMsg.HDR_INREPLYTO};
 
 /**
  * Fetches a message from the server.
