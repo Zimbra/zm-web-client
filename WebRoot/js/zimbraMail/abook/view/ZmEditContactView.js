@@ -66,6 +66,7 @@ ZmEditContactView = function(parent, controller) {
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
 
 	this.setScrollStyle(Dwt.SCROLL);
+	this.clean = false;
 };
 
 ZmEditContactView.prototype = new DwtForm;
@@ -645,6 +646,7 @@ ZmEditContactView.prototype.enableInputs = function(bEnable) {
  */
 ZmEditContactView.prototype.cleanup = function() {
 	this._contact = null;
+	this.clean = true;
 };
 
 ZmEditContactView.prototype._setTags =

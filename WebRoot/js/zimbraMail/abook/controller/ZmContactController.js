@@ -501,7 +501,7 @@ function(view, force) {
  */
 ZmContactController.prototype._preUnloadCallback =
 function(view) {
-	return !this._contactView.isDirty();
+	return this._contactView.clean || !this._contactView.isDirty();
 };
 
 /**
