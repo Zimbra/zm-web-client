@@ -1293,8 +1293,6 @@ function(msg, container, callback, index) {
 		this._addLine();
 	}
 	
-	this._hasOrigContent = false;
-	
 	this._msgBodyDivId = [this._htmlElId, ZmId.MV_MSG_BODY].join("_");
 	var autoSendTime = AjxUtil.isDate(msg.autoSendTime) ? AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM).format(msg.autoSendTime) : null;
 	if (autoSendTime) {
@@ -1525,22 +1523,10 @@ function(op) {
 // TODO: something more efficient than a re-render
 ZmMailMsgCapsuleView.prototype._handleShowTextLink =
 function(id, op, ev) {
-
+	var msg = this._msg;
+	this.reset();
 	this._showingQuotedText = !this._showingQuotedText;
-	if (this._ifw) {
-		this._ifw.dispose();
-	}
-	else if (this._containerEl) {
-		this._containerEl.parentNode.removeChild(this._containerEl);
-	}
-	
-	this._renderMessageBody(this._msg, null, null, 2);	// index of 2 to put rerendered body below header and HR
-	var showTextLink = this._linkInfo && document.getElementById(this._linkInfo[ZmOperation.SHOW_ORIG].linkId);
-	if (showTextLink) {
-		showTextLink.innerHTML = this._showingQuotedText ? ZmMsg.hideQuotedText : ZmMsg.showQuotedText;
-	}
-	
-	this._resetIframeHeightOnTimer();
+	this.set(msg, true);
 };
 
 ZmMailMsgCapsuleView.prototype._handleShowCalendarLink =
