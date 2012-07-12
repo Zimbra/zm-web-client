@@ -108,11 +108,7 @@ function() {
 
 		share.notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
 	
-		if (replyType == ZmShareReply.COMPOSE) {
-			share.composeMessage(ZmShare.DELETE);
-		} else {
-			share.sendMessage(ZmShare.DELETE);
-		}
+		share.sendMessage(ZmShare.DELETE);
 	}
 
 	this.popdown();

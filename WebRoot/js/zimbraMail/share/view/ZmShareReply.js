@@ -52,13 +52,9 @@ ZmShareReply.STANDARD	= 1;
  * Defines the "quick" reply type.
  */
 ZmShareReply.QUICK		= 2;
-/**
- * Defines the "compose" reply type.
- */
-ZmShareReply.COMPOSE	= 3;
 
 ZmShareReply.DEFAULT_OPTIONS = [
-	ZmShareReply.NONE, ZmShareReply.STANDARD, ZmShareReply.QUICK, ZmShareReply.COMPOSE
+	ZmShareReply.NONE, ZmShareReply.STANDARD, ZmShareReply.QUICK
 ];
 
 ZmShareReply.EXTERNAL_USER_OPTIONS = [
@@ -69,7 +65,6 @@ ZmShareReply._LABELS = {};
 ZmShareReply._LABELS[ZmShareReply.NONE]		= ZmMsg.sendNoMailAboutShare;
 ZmShareReply._LABELS[ZmShareReply.STANDARD] = ZmMsg.sendStandardMailAboutShare;
 ZmShareReply._LABELS[ZmShareReply.QUICK]	= ZmMsg.sendStandardMailAboutSharePlusNote;
-ZmShareReply._LABELS[ZmShareReply.COMPOSE]	= ZmMsg.sendComposedMailAboutShare;
 
 // Public methods
 

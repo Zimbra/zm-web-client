@@ -386,7 +386,7 @@ function(shares, result) {
             var guestnotes;
             var batchCmd;
 
-            if (replyType != ZmShareReply.COMPOSE && shares.length > 1) {
+            if (shares.length > 1) {
                 var accountName = appCtxt.multiAccounts ? this._object.getAccount().name : null;
                 batchCmd = new ZmBatchCommand(false, accountName, true);
             }
@@ -461,11 +461,9 @@ function(shares, result) {
                 }
                 tmpShare.notes = guestnotes || notes;
 
-                /*if (replyType == ZmShareReply.COMPOSE) {
-                    tmpShare.composeMessage(this._shareMode, addrs);
-                } else {
+                /*
                     tmpShare.sendMessage(this._shareMode, addrs, null, batchCmd);
-                }*/
+                */
             }
             if (batchCmd)
                 batchCmd.run();

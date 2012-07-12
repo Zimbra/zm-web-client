@@ -724,13 +724,9 @@ function(replyType, notes, callback, owner) {
 		callback.run();
 	}
 
-	// check if we need to send message or bring up compose window
+	// check if we need to send message
 	if (replyType != ZmShareReply.NONE) {
-		if (replyType == ZmShareReply.COMPOSE) {
-			this.composeMessage(ZmShare.ACCEPT, null, owner);
-		} else {
-			this.sendMessage(ZmShare.ACCEPT, null, owner);
-		}
+		this.sendMessage(ZmShare.ACCEPT, null, owner);
 	}
 };
 
@@ -750,38 +746,11 @@ function(mode, addrs, owner, batchCmd) {
 		addrs = new AjxVector();
 		addrs.add(new AjxEmailAddress(email, AjxEmailAddress.TO));
 	}
-	var msg = this._createMsg(mode, false, addrs, owner);
+	var msg = this._createMsg(mode, addrs, owner);
 	var accountName = appCtxt.multiAccounts ? (this.object ? (this.object.getAccount().name) : null ) : null;
 
 	// send message
 	msg.send(false, null, null, accountName, false, false, batchCmd);
-};
-
-/**
- * Composes a message.
- * 
- * @param	{constant}	mode	the request mode
- * @param	{AjxVector}	addrs	a vector of {@link AjxEmailAddress} objects or <code>null</code> to send to the grantee
- * @param	{String}	owner	the message owner
- */
-ZmShare.prototype.composeMessage =
-function(mode, addrs, owner) {
-	// generate message
-	if (!addrs) {
-		var email = this.grantee.email;
-		addrs = new AjxVector();
-		addrs.add(new AjxEmailAddress(email, AjxEmailAddress.TO));
-	}
-
-	var msg = this._createMsg(mode, true, addrs, owner);
-
-	// NOTE: Assumes text, html, and xml parts are in the top part
-	var parts = msg._topPart.children;
-	var textPart = parts.get(0);
-	var htmlPart = parts.get(1);
-	var xmlPart = parts.get(2);
-	msg.setBodyParts([ textPart, htmlPart, xmlPart ]);
-	AjxDispatcher.run("Compose", {action: ZmOperation.SHARE, inNewWindow: true, msg: msg});
 };
 
 
@@ -1027,10 +996,10 @@ function() {
  * @private
  */
 ZmShare.prototype._createMsg =
-function(mode, isCompose, addrs, owner) {
+function(mode, addrs, owner) {
 	// generate message
-	var textPart = this._createTextPart(mode, isCompose);
-	var htmlPart = this._createHtmlPart(mode, isCompose);
+	var textPart = this._createTextPart(mode);
+	var htmlPart = this._createHtmlPart(mode);
 
 	var topPart = new ZmMimePart();
 	topPart.setContentType(ZmMimeTable.MULTI_ALT);
@@ -1067,10 +1036,10 @@ function(mode, isCompose, addrs, owner) {
  * @private
  */
 ZmShare.prototype._createTextPart =
-function(mode, isCompose) {
+function(mode) {
 	var formatter = ZmShare._getText(mode);
 	var content = this._createContent(formatter);
-	if (this.notes || isCompose) {
+	if (this.notes) {
 		var notes = this.notes;
 		content = [content, ZmItem.NOTES_SEPARATOR, notes].join("\n");
 	}
@@ -1086,10 +1055,10 @@ function(mode, isCompose) {
  * @private
  */
 ZmShare.prototype._createHtmlPart =
-function(mode, isCompose) {
+function(mode) {
 	var formatter = ZmShare._getHtml(mode);
 	var content = this._createContent(formatter);
-	if (this.notes || isCompose) {
+	if (this.notes) {
 		formatter = ZmShare._getHtmlNote();
 		var notes = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(this.notes));
 		content = [content, formatter.format(notes)].join("");

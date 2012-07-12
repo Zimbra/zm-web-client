@@ -104,11 +104,7 @@ function(event) {
 	if (replyType != ZmShareReply.NONE) {
 		this._share.notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote(): "";
 
-		if (replyType == ZmShareReply.COMPOSE) {
-			this._share.composeMessage(ZmShare.DECLINE, null, this._fromAddr);
-		} else {
-			this._share.sendMessage(ZmShare.DECLINE, null, this._fromAddr);
-		}
+		this._share.sendMessage(ZmShare.DECLINE, null, this._fromAddr);
 	}
 	
 	// notify decline listener and clear
