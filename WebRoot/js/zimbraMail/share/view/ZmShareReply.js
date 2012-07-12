@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -59,10 +59,6 @@ ZmShareReply.COMPOSE	= 3;
 
 ZmShareReply.DEFAULT_OPTIONS = [
 	ZmShareReply.NONE, ZmShareReply.STANDARD, ZmShareReply.QUICK, ZmShareReply.COMPOSE
-];
-
-ZmShareReply.EXTERNAL_USER_OPTIONS = [
-	ZmShareReply.STANDARD, ZmShareReply.QUICK
 ];
 
 ZmShareReply._LABELS = {};
@@ -160,7 +156,7 @@ function(options) {
 	
 	var doc = document;
 	this._replyTypeEl = doc.createElement("DIV");
-	this._replyTypeEl.style.paddingBottom = "0.5em";
+	this._replyTypeEl.style.paddingBottom = "0.125em";
 	this._replyTypeEl.appendChild(this._replyType.getHtmlElement());
 	
 	this._replyStandardMailNoteEl = doc.createElement("DIV");

@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -82,21 +82,10 @@ function(callback){
 
 ZmDocsEditView.prototype.save = function(force){
 
+    ZmDocsEditApp.fileInfo.descEnabled = this._getVersionNotesChk().checked;
+
     var fileName = this._buttons.fileName.getValue();
     var message = this._docMgr.checkInvalidDocName(fileName);
-
-    // Ignore save if document is not dirty
-    var _docModified = ZmDocsEditApp._controller._isDirty();
-    var _docNameModified = fileName && (fileName != ZmDocsEditApp.fileInfo.name);
-    if(!_docModified && !_docNameModified) {
-        if(this._saveClose){
-            window.close();
-        } else {
-            return;
-        }
-    }
-
-    ZmDocsEditApp.fileInfo.descEnabled = this._getVersionNotesChk().checked;
     if (message) {
 		var style = DwtMessageDialog.WARNING_STYLE;
 		var dialog = this.warngDlg = appCtxt.getMsgDialog();
@@ -105,12 +94,13 @@ ZmDocsEditView.prototype.save = function(force){
 	    dialog.registerCallback(DwtDialog.OK_BUTTON, this._focusPageInput, this);
 		return false;
 	}
+    ZmDocsEditApp.fileInfo.name    = fileName;
+
     if(!force && this._getVersionNotesChk().checked){
         this._showVersionDescDialog(new AjxCallback(this, this.save, true));
         return false;
     }
 
-    ZmDocsEditApp.fileInfo.name    = fileName;
     ZmDocsEditApp.fileInfo.content = this._editor.getContent();
     ZmDocsEditController.savedDoc = ZmDocsEditApp.fileInfo.content; 
     ZmDocsEditApp.fileInfo.contentType = ZmDocsEditApp.APP_ZIMBRA_DOC;
@@ -658,9 +648,7 @@ ZmDocsEditView.prototype._createToolbar = function(toolbar) {
     b.setContent([
         "<div style='white-space: nowrap; padding-right:10px;'>",
             "<input type='checkbox' name='enableDesc' id='enableDesc' value='enableVersions'>",
-            "&nbsp; <label for='enableDesc'>",  
-                ZmMsg.enableVersionNotes,
-            "</label>",
+            "&nbsp; Enable Version Notes",
         "</div>"
     ].join(''));
 

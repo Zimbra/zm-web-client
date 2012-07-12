@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -408,8 +408,10 @@ function(content, htmlEncode, type, isTextMsg, options) {
 ZmObjectManager.prototype.processObjectsInNode = function(doc, node){
 
     var objectManager = this;
-	doc = doc || node.ownerDocument;
     var tmpdiv = doc.createElement("div");
+
+    doc || ( doc = node.ownerDocument );
+
 
     var recurse = function(node, handlers) {
 		var tmp, i, val, next;
@@ -508,12 +510,11 @@ ZmObjectManager.prototype.processObjectsInNode = function(doc, node){
 		return node.nextSibling;
 	};
 
-    // Parse through the DOM directly and find objects.
-	if (node && node.childNodes && node.childNodes.length) {
-		for (var i = 0; i < node.childNodes.length; i++){
-			recurse(node.childNodes[i], true);
-		}
-	}
+    //Parse thorough the DOM directly and find objects.
+    for(var i=0; i<node.childNodes.length; i++){
+        recurse(node.childNodes[i], true);
+    }
+
 };
 
 /**
@@ -965,12 +966,9 @@ function(ev) {
 ZmObjectManager.prototype._mouseDownListener =
 function(ev) {
 
-	// "authoritative" means a previous listener doesn't want propagation to get reset
-	if (!ev._authoritative) {
-		ev._dontCallPreventDefault = true;
-		ev._returnValue = true;
-		ev._stopPropagation = false;
-	}
+	ev._dontCallPreventDefault = true;
+	ev._returnValue = true;
+	ev._stopPropagation = false;
 
 	var span = this._findObjectSpan(ev.target);
 	if (!span) {

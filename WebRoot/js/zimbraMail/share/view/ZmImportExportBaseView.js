@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -22,7 +22,6 @@
 ZmImportExportBaseView = function(params) {
 	if (arguments.length == 0) return;
 	DwtForm.call(this, params);
-	this.setScrollStyle(DwtControl.VISIBLE);
 	this._initSubType(ZmImportExportController.TYPE_CSV);
 	this._setFolderButton(appCtxt.getById(ZmOrganizer.ID_ROOT));
 };
@@ -164,9 +163,6 @@ ZmImportExportBaseView.prototype._folderButton_onclick = function() {
 		this._TREES = {};
 		this._TREES[ZmImportExportController.TYPE_TGZ] = [];
         for (var org in ZmOrganizer.VIEWS) {
-            if (org == ZmId.APP_VOICE){
-                continue;  //Skip voice folders for import/export (Bug: 72269)
-            }
             var settingId = ZmApp.SETTING[ZmOrganizer.APP2ORGANIZER_R[org]];
             if (settingId == null || appCtxt.get(settingId)) {
                 this._TREES[ZmImportExportController.TYPE_TGZ].push(org);
@@ -344,7 +340,7 @@ function(templateId, data) {
 
 		var checkbox = new ZmImportExportDataTypeCheckbox({parent:this,checked:true});
 		checkbox.setImage(ZmApp.ICON[appName]);
-		checkbox.setText(ZmMsg[ZmApp.NAME[appName]] || ZmApp.NAME[appName] || appName);
+		checkbox.setText(ZmMsg[ZmApp.NAME[appName]] || appName);
 		// NOTE: I know it's the default join string but I prefer
 		//       explicit behavior.
 		checkbox.setValue(views.join(","));
