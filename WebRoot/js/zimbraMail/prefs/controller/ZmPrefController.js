@@ -280,7 +280,6 @@ function() {
 		this._app.createView({	viewId:		this._currentViewId,
 								elements:	elements,
 								controller:	this,
-								hide:		[ ZmAppViewMgr.C_NEW_BUTTON, ZmAppViewMgr.C_TREE_FOOTER ],
 								callbacks:	callbacks,
 								isAppView:	true});
 		this._initializeTabGroup();

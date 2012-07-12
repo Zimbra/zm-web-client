@@ -2240,7 +2240,7 @@ function(parent, parentElement, adminUrl) {
 
 ZmZimbraMail.prototype.getNewButton =
 function() {
-	
+
 	var newButton = this._newButton;
 	if (!newButton) {
 		var buttonId = ZmId.getButtonId(null, ZmOperation.NEW_MENU);
@@ -2249,12 +2249,12 @@ function() {
 			id:			buttonId,
 			posStyle:	DwtControl.ABSOLUTE_STYLE,
 			className:	"ZToolbarButton ZNewButton"
-		}
-		var newButton = this._newButton = new DwtToolBarButton(buttonParams);
+		};
+		newButton = this._newButton = new DwtToolBarButton(buttonParams);
 		newButton.setText(ZmMsg._new);
-	
+
 		ZmOperation.addNewMenu(newButton);
-	
+
 		var selectionListener = this._newButtonListener.bind(this);
 		var listener = this._newDropDownListener.bind(this, selectionListener);
 		this._newDropDownListener = listener;
@@ -2334,6 +2334,7 @@ function(params) {
 		newButton.setImage(params.icon);
 		newButton.setEnabled(!params.disabled);
 		ZmController._defaultNewId = params.defaultId;
+		params.hidden ? newButton.setVisibility(false) : newButton.setVisibility(true);
 	}
 };
 

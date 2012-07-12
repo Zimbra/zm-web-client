@@ -996,5 +996,5 @@ function(outgoing) {
 
 ZmPreferencesApp.prototype.getNewButtonProps =
 function (){
-    return {disabled:true};
+    return {hidden:true};
 }

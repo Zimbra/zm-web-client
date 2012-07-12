@@ -315,7 +315,6 @@ function(viewId, components, show, app) {
 	if (show) {
 		this._fitToContainer(list);
 	}
-	this._checkTree(viewId);
 };
 ZmAppViewMgr.prototype.addComponents = ZmAppViewMgr.prototype.setViewComponents;
 
@@ -571,7 +570,7 @@ function(params) {
 	var viewId = params.viewId;
 	if (!viewId) { return null; }
 	DBG.println(AjxDebug.DBG1, "createView: " + viewId);
-	
+
 	var view = this._view[viewId] = {
 		id:				viewId,
 		type:			params.viewType || viewId,
@@ -583,25 +582,18 @@ function(params) {
 		isTransient:	params.isTransient,
 		isFullScreen:	params.isFullScreen,
 		hide:			AjxUtil.arrayAsHash(params.hide || [])
-	}
+	};
 
 	if (params.appName && !this._app[params.appName]) {
 		this._app[params.appName] = {};
 	}
 
-	if (params.hide && this.isHidden(ZmAppViewMgr.C_NEW_BUTTON, viewId) && this.isHidden(ZmAppViewMgr.C_TREE_FOOTER, viewId) &&
-		!this.isHidden(ZmAppViewMgr.C_TREE, viewId)) {
-		
-		view.needTreeHack = true;
-		this.setHiddenComponents(viewId, ZmAppViewMgr.C_NEW_BUTTON, false);
-	}
-	
 	if (!this._isNewWindow && params.tabParams) {
 		view.tabParams	= params.tabParams;
 		view.isTabView = true;
 		this._viewByTabId[params.tabParams.id] = viewId;
 	}
-	
+
 	return view;
 };
 
@@ -1057,9 +1049,6 @@ function(cidList, isIeTimerHack) {
 		}
 	}
 
-    //bug 71111: On resizing window, the nav tree position does not get updated
-    this._checkTree(this.getCurrentViewId());
-
 	if (window.DBG && DBG.getDebugLevel() >= AjxDebug.DBG2) {
 		this._debugShowMetrics(cidList);
 	}
@@ -1230,8 +1219,6 @@ function(viewId, show) {
 		if (view.app) {
 			this._controller.setActiveApp(view.app, viewId, view.isTabView);
 		}
-		
-		this._checkTree(viewId);
 	}
 	else {
 		// hiding a view is lightweight - just hide the component widgets
@@ -1425,31 +1412,4 @@ function(delta) {
 	var me = this;
 	setTimeout(function(){me.fitAll()},0);
 	return delta;
-};
-
-// If we're trying to show just the tree (and not the new button above or the tree footer below), we
-// need to deal with the fact that the browser won't hide the new button TD. Take the tree component
-// and fit it to a space that includes the new button TD.
-ZmAppViewMgr.prototype._checkTree =
-function(viewId) {
-	
-	var comp = this.getViewComponent(ZmAppViewMgr.C_TREE);
-	if (!comp) { return; }
-	
-	var view = this._view[viewId] || this._emptyView;
-	if (view.needTreeHack) {
-		var cont = this.getContainer(ZmAppViewMgr.C_NEW_BUTTON);
-		var newButtonBds = cont && Dwt.getBounds(cont);
-		cont = this.getContainer(ZmAppViewMgr.C_TREE);
-		var treeSize = cont && Dwt.getSize(cont);
-		if (newButtonBds && treeSize && comp) {
-			comp.setBounds(newButtonBds.x, newButtonBds.y, newButtonBds.width - 1, newButtonBds.height + treeSize.y - 2);
-			comp.addClassName("panelTopBorder");	// need a top border with new button gone
-			this._treeHackActive = true;
-		}
-	}
-	else if (this._treeHackActive) {
-		comp.delClassName("panelTopBorder");
-		this._treeHackActive = false;
-	}
 };
