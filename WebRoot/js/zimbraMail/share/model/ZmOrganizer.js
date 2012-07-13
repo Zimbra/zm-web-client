@@ -1030,7 +1030,7 @@ function(name, callback, errorCallback, batchCmd) {
 ZmOrganizer.prototype.setColor =
 function(color, callback, errorCallback, batchCmd) {
 	var color = ZmOrganizer.checkColor(color);
-	if (this.color == color) { return; }
+	if (!this.isColorChanged(color)) { return; }
 
 	this._organizerAction({action: "color", attrs: {color: color}, callback: callback,
                            errorCallback: errorCallback, batchCmd: batchCmd});
@@ -1045,7 +1045,7 @@ function(color, callback, errorCallback, batchCmd) {
  * @param   {ZmBatchCommand}    batchCmd        optional batch command
  */
 ZmOrganizer.prototype.setRGB = function(rgb, callback, errorCallback, batchCmd) {
-	if (this.rgb == rgb) { return; }
+	if (!this.isColorChanged(rgb)) { return; }
 	this._organizerAction({action: "color", attrs: {rgb: rgb}, callback: callback,
                            errorCallback: errorCallback, batchCmd: batchCmd});
 };
@@ -1179,7 +1179,7 @@ function(node, policy) {
 
 /**
  * Returns color number b/w 0-9 for a given color code
- * 
+ *
  * @param	{String}	color	The color (usually in #43eded format
  * @return {int} Returns 0-9 for a standard color and returns -1 for custom color
  */
@@ -1199,6 +1199,32 @@ function(color) {
 	return -1;
 };
 
+/**
+ * Returns true if the color is changed
+ *
+ * @param	{String/int}	color	The color (usually in #rgb format or numeric color code
+ * @return {Boolean} Returns true if the color is changed
+ */
+ZmOrganizer.prototype.isColorChanged =
+function(color) {
+    var isNewColorCustom = ZmOrganizer.getStandardColorNumber(color) === -1,
+        isPrevColorCustom = this.isColorCustom;
+    if ((isNewColorCustom && !isPrevColorCustom) ||
+        (!isNewColorCustom && isPrevColorCustom) ) {
+        //Custom changed to standard or standard changed to custom
+        return true;
+    }
+    else if (isNewColorCustom && isPrevColorCustom) {
+        //If both are custom colors check the rgb codes
+        return color != this.rgb;
+    }
+    else if (!isNewColorCustom && !isPrevColorCustom){
+        //If both are standard check the numeric color codes
+        return color != this.color;
+    }
+    //default fallback
+    return false;
+};
 
 /**
  * Updates the folder. Although it is possible to use this method to change just about any folder
@@ -1256,7 +1282,7 @@ function(newParent, noUndo, actionText, batchCmd, organizerName) {
  * subfolders. If the organizer is "Trash" or "Spam", the server deletes and re-creates the
  * folder. In that case, we do not bother to remove it from the UI (and we ignore
  * creates on system folders).
- * 
+ *
  */
 ZmOrganizer.prototype._delete =
 function(batchCmd) {
@@ -1272,11 +1298,11 @@ function(batchCmd) {
 
 /**
  * Empties the organizer.
- * 
+ *
  * @param	{Boolean}	doRecursive		<code>true</code> to recursively empty the organizer
  * @param	{ZmBatchCommand}	batchCmd	the batch command
  */
-ZmOrganizer.prototype.empty = 
+ZmOrganizer.prototype.empty =
 function(doRecursive, batchCmd) {
 	doRecursive = doRecursive || false;
 
@@ -1303,7 +1329,7 @@ function(doRecursive, batchCmd) {
 
 /**
  * Marks all items as "read".
- * 
+ *
  * @param	{ZmBatchCommand}	batchCmd	the batch command
  */
 ZmOrganizer.prototype.markAllRead =
@@ -1314,7 +1340,7 @@ function(batchCmd) {
 
 /**
  * Synchronizes the organizer.
- * 
+ *
  */
 ZmOrganizer.prototype.sync =
 function() {
@@ -1325,7 +1351,7 @@ function() {
 
 /**
  * Handles delete notification.
- * 
+ *
  */
 ZmOrganizer.prototype.notifyDelete =
 function() {
@@ -1403,16 +1429,11 @@ function(obj, details) {
 	}
 	if ((obj.rgb != null || obj.color != null) && !obj._isRemote) {
 		this.isColorCustom = obj.rgb != null;
-		var color = ZmOrganizer.checkColor(obj.color) || ZmOrganizer.DEFAULT_COLOR[this.type] || ZmOrganizer.ORG_DEFAULT_COLOR;
-		if (color != this.color) {
-			this.color = color;
+        var color = obj.color || obj.rgb;
+		if (this.isColorChanged(color)) {
+			this.color = obj.color;
+            this.rgb = obj.rgb || ZmOrganizer.COLOR_VALUES[color];
 			fields[ZmOrganizer.F_COLOR] = true;
-            fields[ZmOrganizer.F_RGB] = true;
-		}
-        var rgb = obj.rgb || ZmOrganizer.COLOR_VALUES[color];
-		if (rgb != this.rgb) {
-			this.rgb = rgb;
-            fields[ZmOrganizer.F_COLOR] = true;
             fields[ZmOrganizer.F_RGB] = true;
 		}
 		doNotify = true;
@@ -1482,14 +1503,14 @@ function(obj, details) {
 
 /**
  * Deletes the organizer (local). Cleans up a deleted organizer:
- * 
+ *
  * <ul>
  * <li>remove from parent's list of children</li>
  * <li>remove from item cache</li>
  * <li>perform above two steps for each child</li>
  * <li>clear list of children</li>
  * </ul>
- * 
+ *
  */
 ZmOrganizer.prototype.deleteLocal =
 function() {
@@ -1571,7 +1592,7 @@ function(path) {
 /**
  * Changes the parent of this organizer. Note that the new parent passed
  * in may be <code>null</code>, which makes this organizer an orphan.
- * 
+ *
  * @param {ZmOrganizer}	newParent		the new parent
  */
 ZmOrganizer.prototype.reparent =
@@ -1661,7 +1682,7 @@ function(type, list) {
  *
  * @param {String}	path			the path to search for
  * @param {Boolean}	useSystemName	if <code>true</code>, use untranslated version of system folder names
- * @return	{ZmOrganizer}	the organizer	
+ * @return	{ZmOrganizer}	the organizer
  */
 ZmOrganizer.prototype.getByPath =
 function(path, useSystemName) {
@@ -1670,7 +1691,7 @@ function(path, useSystemName) {
 
 /**
  * Test the path of this folder and then descendants against the given path, case insensitively.
- * 
+ *
  * @private
  */
 ZmOrganizer.prototype._getByPath =
@@ -1680,7 +1701,7 @@ function(path, useSystemName) {
 	if (path == this.getPath(false, false, null, true, useSystemName).toLowerCase()) {
 		return this;
 	}
-		
+
 	var a = this.children.getArray();
 	for (var i = 0; i < a.length; i++) {
 		var organizer = a[i]._getByPath(path, useSystemName);
@@ -1693,7 +1714,7 @@ function(path, useSystemName) {
 
 /**
  * Gets the number of children of this organizer.
- * 
+ *
  * @return	{int}	the size
  */
 ZmOrganizer.prototype.size =
@@ -1724,7 +1745,7 @@ function (organizer) {
  *
  * @param {int}	parentId	the ID of the organizer to find
  * @return	{ZmOrganizer}	the organizer
- * 
+ *
  * @private
  */
 ZmOrganizer.prototype._getNewParent =
@@ -1734,7 +1755,7 @@ function(parentId) {
 
 /**
  * Checks if the organizer with the given ID is under this organizer.
- * 
+ *
  * @param	{String}	id		the ID
  * @return	{Boolean}	<code>true</code> if the organizer is under this organizer
  */
@@ -1755,7 +1776,7 @@ function(id) {
 
 /**
  * Checks if this organizer is in "Trash".
- * 
+ *
  * @return	{Boolean}	<code>true</code> if in "Trash"
  */
 ZmOrganizer.prototype.isInTrash =
@@ -1765,7 +1786,7 @@ function() {
 
 /**
  * Checks if permissions are allowed.
- * 
+ *
  * @return	{Boolean}	<code>true</code> if permissions are allowed
  */
 ZmOrganizer.prototype.isPermAllowed =
@@ -1779,7 +1800,7 @@ function(perm) {
 
 /**
  * Checks if the organizer is read-only.
- * 
+ *
  * @return	{Boolean}	<code>true</code> if read-only
  */
 ZmOrganizer.prototype.isReadOnly =
@@ -1795,7 +1816,7 @@ function() {
 
 /**
  * Checks if admin.
- * 
+ *
  * @return	{Boolean}	<code>true</code> if this organizer is admin
  */
 ZmOrganizer.prototype.isAdmin =
@@ -1811,7 +1832,7 @@ function() {
 
 /**
  * Checks if the organizer has private access.
- * 
+ *
  * @return	{Boolean}	<code>true</code> if has private access
  */
 ZmOrganizer.prototype.hasPrivateAccess =
@@ -1828,7 +1849,7 @@ function() {
 /**
  * Checks if the organizer is "remote". That applies to mountpoints (links),
  * the folders they represent, and any subfolders we know about.
- * 
+ *
  * @return	{Boolean}	<code>true</code> if the organizer is "remote"
  */
 ZmOrganizer.prototype.isRemote =
@@ -1861,7 +1882,7 @@ function() {
 
 /**
  * Checks if the organizer is a system tag or folder.
- * 
+ *
  * @return	{Boolean}	<code>true</code> if system tag or folder
  */
 ZmOrganizer.prototype.isSystem =
@@ -1871,7 +1892,7 @@ function () {
 
 /**
  * Checks if the organizer gets its contents from an external feed.
- * 
+ *
  * @return	{Boolean}	<code>true</code>  if from external feed
  */
 ZmOrganizer.prototype.isFeed =
@@ -1923,7 +1944,7 @@ function(type, checkParent) {
 
 /**
  * Gets the owner.
- * 
+ *
  * @return	{String}	the owner
  */
 ZmOrganizer.prototype.getOwner =
@@ -1935,7 +1956,7 @@ function() {
 
 /**
  * Gets the sort index.
- * 
+ *
  * @return	{int}	the sort index
  */
 ZmOrganizer.getSortIndex =
@@ -1960,7 +1981,7 @@ function(child, sortFunction) {
  * @param {String}	action		the operation to perform
  * @param {Hash}	attrs		a hash of additional attributes to set in the request
  * @param {ZmBatchCommand}	batchCmd	the batch command that contains this request
- * 
+ *
  * @private
  */
 ZmOrganizer.prototype._organizerAction =
@@ -1992,7 +2013,7 @@ function(params) {
 	else {
 		var accountName;
 		if (appCtxt.multiAccounts) {
-			accountName = (this.account) 
+			accountName = (this.account)
 				? this.account.name : appCtxt.accountList.mainAccount.name;
 		}
 		appCtxt.getAppController().sendRequest({

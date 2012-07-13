@@ -647,6 +647,9 @@ function(ev) {
 	if (ev.event == ZmEvent.E_DELETE) {
 		this._updateCheckedCalendars();
 	}
+    if (ev.event == ZmEvent.E_MODIFY) {
+        this._refreshAction(true);
+	}
 };
 
 /**

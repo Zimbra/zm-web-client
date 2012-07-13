@@ -93,8 +93,8 @@ function(batchCommand, saveState) {
 	}
 
 	var color = this._color.getValue() || ZmOrganizer.DEFAULT_COLOR[organizer.type];
-	if (this._isColorChanged(color, organizer.color, organizer.rgb)) {
-		if (String(color).match(/^#/)) {
+	if (organizer.isColorChanged(color, organizer.color, organizer.rgb)) {
+		if (ZmOrganizer.getStandardColorNumber(color) === -1) {
             batchCommand.add(new AjxCallback(organizer, organizer.setRGB, [color, null, this._handleErrorCallback]));
 		}
 		else {
@@ -120,11 +120,6 @@ function(batchCommand, saveState) {
         }
     }
 
-};
-
-ZmFolderPropertyView.prototype._isColorChanged =
-function(color, oColor, rgb) {
-    return !((String(color).match(/^#/) && color == rgb) || oColor == color);
 };
 
 ZmFolderPropertyView.prototype._handleFolderChange =
