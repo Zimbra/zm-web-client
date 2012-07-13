@@ -84,6 +84,12 @@ function(actionCode, ev) {
 			return this._keepReading(false, ev);
 			break;
 
+		case ZmKeyMap.VIEW_BY_CONV:
+			if (this._currentSearch && this._currentSearch.isOutboundFolder) {
+				return true;
+			}
+			break;
+
 		default:
 			return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
 	}
@@ -96,6 +102,16 @@ ZmTradController.prototype._createDoublePaneView =
 function() {
 	return (new ZmTradView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE,
 							controller:this, dropTgt:this._dropTgt}));
+};
+
+ZmTradController.prototype._resetOperations = 
+function(parent, num) {
+	ZmDoublePaneController.prototype._resetOperations.apply(this, arguments);
+	var viewBtn = this.getCurrentToolbar().getButton(ZmOperation.VIEW_MENU);
+	var menu = viewBtn && viewBtn.getMenu();
+	if (menu && this._currentSearch) {
+		menu.enable(ZmId.VIEW_CONVLIST, !this._currentSearch.isOutboundFolder);
+	}
 };
 
 ZmTradController.prototype._paginate = 
