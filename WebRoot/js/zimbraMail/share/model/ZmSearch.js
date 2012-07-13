@@ -1245,11 +1245,14 @@ function() {
 	for (var i = 0, len = this._tokens.length; i < len; i++) {
 		var t = this._tokens[i];
 		if (t.type == ZmParsedQuery.TERM) {
-			if (t.op == "in" || t.op == "inid") {
-				this.folderId = props.folderId = (t.op == "in") ? this._getFolderId(t.arg) : t.arg;
-			} else if (t.op == "tag") {
-				// TODO: make sure there's only one tag term?
-				this.tagId = props.tagId = this._getTagId(t.arg, true);
+			var prev = i > 0 ? this._tokens[i-1] : null;
+			if (!((prev && prev.op == ZmParsedQuery.COND_NOT) || this.hasOrTerm)) {
+				if ((t.op == "in" || t.op == "inid") ) {
+					this.folderId = props.folderId = (t.op == "in") ? this._getFolderId(t.arg) : t.arg;
+				} else if (t.op == "tag") {
+					// TODO: make sure there's only one tag term?
+					this.tagId = props.tagId = this._getTagId(t.arg, true);
+				}
 			}
 		}
 	}
