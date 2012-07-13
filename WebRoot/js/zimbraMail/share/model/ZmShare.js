@@ -615,9 +615,9 @@ function() {
  * @param	{ZmBatchCommand}	batchCmd	the batch command
  */
 ZmShare.prototype.grant =
-function(perm, pw, notes, batchCmd) {
+function(perm, pw, notes, replyType, batchCmd) {
 	this.link.perm = perm;
-	var respCallback = new AjxCallback(this, this._handleResponseGrant, [notes]);
+	var respCallback = new AjxCallback(this, this._handleResponseGrant, [notes, replyType]);
 	this._shareAction("grant", null, {perm: perm, pw: pw}, respCallback, batchCmd, notes);
 };
 
@@ -625,11 +625,11 @@ function(perm, pw, notes, batchCmd) {
  * @private
  */
 ZmShare.prototype._handleResponseGrant =
-function(notes, result) {
+function(notes, replyType, result) {
 	var action = result.getResponse().FolderActionResponse.action;
 	this.grantee.id = action.zid;
 	this.grantee.email = action.d;
-    if(action.d && action.zid) {
+    if(replyType != ZmShareReply.NONE && action.d && action.zid) {
         this._sendShareNotification(this.grantee.email, action.id, notes);
     }
 };
