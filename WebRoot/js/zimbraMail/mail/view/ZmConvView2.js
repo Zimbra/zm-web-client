@@ -313,13 +313,6 @@ function(scrollMsgView) {
 				    msgView._inviteMsgView.convResize();
 				    msgView._inviteMsgView.scrollToInvite();
 
-				    // bug 73963: ensure that the day view starts out
-				    // hidden on IE
-				    if (msgView._inviteMsgView._dayView) {
-				        var shouldshow =
-				            appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR);
-				        msgView._inviteMsgView._dayView.setVisible(shouldshow);
-				    }
 				}
 			}
 		}
@@ -1182,10 +1175,22 @@ function(msg, force) {
 	this._setHeaderClass();
 
 	var dayViewCallback = null;
-    if (this._expanded && appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR)) {
+	var showCalInConv = appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR);
+    if (this._expanded && showCalInConv) {
 		dayViewCallback = this._handleShowCalendarLink.bind(this, ZmOperation.SHOW_ORIG, true);
 	}
+	else if (!showCalInConv) {
+		dayViewCallback = this._hideCal.bind(this);
+	}
 	ZmMailMsgView.prototype.set.apply(this, [msg, force, dayViewCallback]);
+};
+
+ZmMailMsgCapsuleView.prototype._hideCal =
+function() {
+	if (!(this._isCalendarInvite && this._inviteMsgView && this._inviteMsgView._dayView)) {
+		return;
+	}
+	this._inviteMsgView._dayView.setVisible(false);
 };
 
 ZmMailMsgCapsuleView.prototype.reset =
