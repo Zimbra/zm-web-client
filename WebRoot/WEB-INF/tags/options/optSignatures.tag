@@ -287,7 +287,7 @@
             mode : "none",
             height : "200px",
             width : "100%",
-            plugins : "advlist,inlinepopups,table,paste,directionality,media,-zimbraplugin" + (tinymce.isIE ? "" : ",autolink"),
+            plugins : "advlist,inlinepopups,table,paste,directionality,media" + (tinymce.isIE ? "" : ",autolink"),
             theme : "advanced",
             theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,image,link,unlink",
             theme_advanced_buttons2 : "formatselect,undo,redo,|,removeformat,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,charmap,media",
@@ -302,7 +302,7 @@
             verify_html : false,
             gecko_spellcheck : true,
             dialog_type : "modal",
-            forced_root_block : false,
+            forced_root_block : "div",
             table_default_cellpadding : 3,
             table_default_border: 1,
             content_css : false,
@@ -313,6 +313,10 @@
                 ed.onLoadContent.add(handleContentLoad);
                 ed.onBeforeRenderUI.add(function() {
                     tinymce.ScriptLoader.loadScripts(['../js/ajax/3rdparty/tinymce/themes/advanced/Zmeditor_template.js']);
+                });
+                ed.onBeforeSetContent.add(function(ed, o) {
+                    // Replaces all double br elements for avoiding enter issue
+                    o.content = o.content.replace(/<br><br>/ig, '<br><div><br></div>');
                 });
             }
         };
