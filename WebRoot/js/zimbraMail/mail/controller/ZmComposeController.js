@@ -967,6 +967,7 @@ function(params) {
 	var msg = this._msg = params.msg;
 	
 	this._toOverride = params.toOverride;
+	this._ccOverride = params.ccOverride;
 	this._subjOverride = params.subjOverride;
 	this._extraBodyText = params.extraBodyText;
 	this._msgIds = params.msgIds;
@@ -1639,6 +1640,9 @@ function(ev) {
 		cv.setAddress(AjxEmailAddress.TO, "");
 		cv.setAddress(AjxEmailAddress.CC, "");
 		cv._setAddresses(op, AjxEmailAddress.TO, this._toOverride);
+		if (this._ccOverride && (op == ZmOperation.REPLY_ALL || op == ZmOperation.CAL_REPLY_ALL)) {
+			cv._setAddresses(op, AjxEmailAddress.CC, this._ccOverride);
+		}
 	} else if (op == ZmOperation.FORMAT_HTML || op == ZmOperation.FORMAT_TEXT) {
         if (op == ZmOperation.FORMAT_TEXT && this._msg) {
             this._msg._resetAllInlineAttachments();
