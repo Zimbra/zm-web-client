@@ -756,11 +756,11 @@ ZmConvView2Header = function(params) {
 		this.addListener(DwtEvent.ONDBLCLICK, this._dblClickListener.bind(this));
 	}
 	this.addListener(DwtEvent.ONMOUSEUP, this._mouseUpListener.bind(this));
-	
 	this._createHtml();
+	this._setAllowSelection();
 };
 
-ZmConvView2Header.prototype = new DwtControl;
+ZmConvView2Header.prototype = new DwtComposite;
 ZmConvView2Header.prototype.constructor = ZmConvView2Header;
 
 ZmConvView2Header.prototype.isZmConvView2Header = true;
@@ -839,7 +839,20 @@ function() {
 
 ZmConvView2Header.prototype._mouseUpListener =
 function(ev) {
-	
+	var selectedText = false, selectionObj = false, selectedId = false;
+	if (typeof window.getSelection != "undefined") {
+		selectionObj = window.getSelection();
+		selectedText = selectionObj.toString();
+		selectedId =  selectionObj.focusNode && selectionObj.focusNode.parentNode && selectionObj.focusNode.parentNode.id
+	} else if (typeof document.selection != "undefined" && document.selection.type == "Text") {
+		selectionObj = document.selection.createRange();
+		selectedText = selectionObj.text;
+		selectedId = selectionObj.parentElement().id;
+	}
+
+	if (selectedText && selectedId == this._convSubjectId) {
+		return;  //prevent expand/collapse when subject is selected
+	}
 	if (ev.button == DwtMouseEvent.LEFT) {
 		this._convView.setExpanded(this._doExpand);
 		this._setExpandIcon();
