@@ -580,7 +580,7 @@ function(id, content) {
         // General options
 		mode :  (this._mode == DwtHtmlEditor.HTML)? "exact" : "none",
 		elements:  id,
-        plugins : "advlist,inlinepopups,table,paste,directionality,media,-zimbraplugin" + (AjxEnv.isIE ? "" : ",autolink"),
+        plugins : "advlist,inlinepopups,table,paste,directionality,media,-zimbraplugin,-zbreakquote" + (AjxEnv.isIE ? "" : ",autolink"),
 		theme : "advanced",
         theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,image,link,unlink,|,ltr,rtl,|,toggle",
         theme_advanced_buttons2 : "formatselect,undo,redo,|,removeformat,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,charmap,media",
@@ -597,7 +597,7 @@ function(id, content) {
         content_css : false,
 		editor_css: editorCSS,
         dialog_type : "modal",
-        forced_root_block : false,
+        forced_root_block : "div",
         width: "100%",
         height: "auto",
         table_default_cellpadding : 3,

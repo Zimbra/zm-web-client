@@ -464,6 +464,11 @@ Zmeditor_template.getFontSize = function(value){
                 ed.undoManager.add();
             });
 
+            ed.onBeforeSetContent.add(function(ed, o) {
+                // Replaces all double br elements for avoiding enter issue
+                o.content = o.content.replace(/<br><br>/ig, '<br><div><br></div>');
+            });
+
             /*
             if (tinymce.isIE) {
                 ed.onPostRender.add(function(ed) {
