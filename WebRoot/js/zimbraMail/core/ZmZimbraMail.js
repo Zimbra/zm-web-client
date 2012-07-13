@@ -760,6 +760,30 @@ function(params, result) {
 	{
 		this.handleTaskComponents();
 	}
+
+	if (appCtxt.get(ZmSetting.IMPORT_ON_LOGIN_ENABLED)) {
+		var ds = new ZmDataSourceCollection();
+		var dsCollection = appCtxt.getDataSourceCollection();
+		var pop3Accounts = dsCollection && dsCollection.getPopAccounts();
+		var imapAccounts = dsCollection && dsCollection.getImapAccounts();
+		var sourceMap = {};
+		if (pop3Accounts) {
+			for (var i=0; i<pop3Accounts.length; i++) {
+				sourceMap[pop3Accounts[i].id] = pop3Accounts[i];
+			}
+		}
+		if (imapAccounts) {
+			for (var i=0; i<imapAccounts.length; i++) {
+				sourceMap[imapAccounts[i].id] = imapAccounts[i];	
+			}
+		}
+		
+		if (pop3Accounts || imapAccounts) {
+			var action = new AjxTimedAction(ds, ds.checkStatus, [sourceMap, 2000]);
+			AjxTimedAction.scheduleAction(action, 10000);  //kick off check in 10 seconds
+		}
+	}
+
 };
 
 /**

@@ -143,7 +143,7 @@ ZmDataSourceCollection.prototype.importMail = function(accounts) {
 	    // kick off check status request because import request
 	    // doesn't return for (potentially) a looong time
 	    var delayMs = 2000;
-	    var action = new AjxTimedAction(this, this._checkStatus, [sourceMap, delayMs]);
+	    var action = new AjxTimedAction(this, this.checkStatus, [sourceMap, delayMs]);
 	    AjxTimedAction.scheduleAction(action, delayMs);
     }
 };
@@ -274,11 +274,12 @@ ZmDataSourceCollection.prototype.__gotoPrefSection = function(prefSectionId) {
 	controller.getPrefsView().selectSection(prefSectionId);
 };
 
-//
-// Protected methods
-//
-
-ZmDataSourceCollection.prototype._checkStatus =
+/**
+ * Periocially check status of the import
+ * @param {Object} sourceMap map of accounts
+ * @param {int} delayMs delay time between checks
+ */
+ZmDataSourceCollection.prototype.checkStatus =
 function(sourceMap, delayMs) {
 	// Slowly back off import status checks but no more than 15 secs.
 	if (delayMs && delayMs < 15000) {
@@ -298,6 +299,10 @@ function(sourceMap, delayMs) {
     var action = new AjxTimedAction(appController, appController.sendRequest, [params]);
     AjxTimedAction.scheduleAction(action, delayMs || 2000);
 };
+
+//
+// Protected methods
+//
 
 ZmDataSourceCollection.prototype._checkStatusResponse =
 function(sourceMap, delayMs, result) {
@@ -351,6 +356,6 @@ function(sourceMap, delayMs, result) {
 
 	// continue checking status
 	if (AjxUtil.keys(sourceMap).length > 0) {
-		this._checkStatus(sourceMap, delayMs);
+		this.checkStatus(sourceMap, delayMs);
 	}
 };
