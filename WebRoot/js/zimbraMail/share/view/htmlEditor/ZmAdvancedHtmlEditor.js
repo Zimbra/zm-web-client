@@ -194,11 +194,22 @@ function(insertFontStyle, onlyInnerContent) {
 
 	var content = "";
 	if (this._mode == DwtHtmlEditor.HTML) {
-		var editor = this.getEditor();
-        var params = {};
+		var editor = this.getEditor(),
+            params = {},
+            content1 = "";
         params.format ='raw';
-		var content1 = editor ? editor.getContent(params) : (field.value || "");
-		if (content1 && (/\S+/.test(AjxStringUtil.convertHtml2Text(content1)) || content1.match(/<img/i)) ) {
+        if (editor) {
+            try {
+                content1 = editor.getContent();
+            }
+            catch (e) {
+                content1 = editor.getContent(params);
+            }
+        }
+        else {
+            content1 = field.value || "";
+        }
+        if (content1 && (/\S+/.test(AjxStringUtil.convertHtml2Text(content1)) || content1.match(/<img/i)) ) {
 			content = this._embedHtmlContent(content1, insertFontStyle, onlyInnerContent);
 		}
 	}
