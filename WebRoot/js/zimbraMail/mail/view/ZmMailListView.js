@@ -1328,6 +1328,11 @@ function(ev) {
        ev.item.setChecked(true, ev, true);
    }
    this._sortColumn(hdr, this._bSortAsc);
+   //Hack: we don't re-fetch search results when list is size of 1; but if user changes their group let's re-render
+   var list = this.getList();
+   if (list && list.size() == 1 && this._sortByString) {
+	   this._renderList(list);
+   }
 };
 
 ZmMailListView.prototype._sortByActionListener =
