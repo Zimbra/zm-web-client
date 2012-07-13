@@ -88,6 +88,9 @@ function(actionCode, ev) {
 			if (this._currentSearch && this._currentSearch.isOutboundFolder) {
 				return true;
 			}
+			else {
+				return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
+			}
 			break;
 
 		default:
