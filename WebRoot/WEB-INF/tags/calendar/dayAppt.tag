@@ -47,6 +47,13 @@
     <c:when test="${appt.freeBusyActual eq 'O'}"><c:set var="fbashowAsColor" value="${'ZmScheduler-O'}"/></c:when>
     <c:otherwise><c:set var="fbashowAsColor" value="${'ZmScheduler-U'}"/></c:otherwise>
 </c:choose>
+
+<!-- bug:72836  Tackling Firefox on Windows; printing with opacity < 1.0 issue. [Mozilla Firefox bug] TODO: remove this code when https://bugzilla.mozilla.org/show_bug.cgi?id=768350 is fixed -->
+<zm:getUserAgent var="ua" session="false"/>
+<c:if test="${ua.isFirefox and ua.isOsWindows}">
+    <c:set var="fbaOpacity" value="1.0"/>
+</c:if>
+
 <c:choose>
 <c:when test="${appt.allDay}">
     <c:if test="${appt.startTime lt start}"><c:set var="bleft" value='border-left:none;'/></c:if>
