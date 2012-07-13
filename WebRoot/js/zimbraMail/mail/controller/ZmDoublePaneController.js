@@ -236,6 +236,9 @@ function() {
 		list.push(ZmOperation.SEP, ZmOperation.DETACH);
 	}
 	list.push(ZmOperation.SHOW_ORIG);
+	if (this.getCurrentViewType() == ZmId.VIEW_TRAD) {
+		list.push(ZmOperation.SHOW_CONV);
+	}
 	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
 		list.push(ZmOperation.ADD_FILTER_RULE);
 	}

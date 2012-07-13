@@ -35,6 +35,8 @@
  */
 ZmTradController = function(container, mailApp, type, sessionId, searchResultsController) {
 	ZmDoublePaneController.apply(this, arguments);
+
+	this._listeners[ZmOperation.SHOW_CONV] = this._showConvListener.bind(this);
 };
 
 ZmTradController.prototype = new ZmDoublePaneController;
@@ -110,6 +112,7 @@ function() {
 ZmTradController.prototype._resetOperations = 
 function(parent, num) {
 	ZmDoublePaneController.prototype._resetOperations.apply(this, arguments);
+	parent.enable(ZmOperation.SHOW_CONV, (num == 1));
 	var viewBtn = this.getCurrentToolbar().getButton(ZmOperation.VIEW_MENU);
 	var menu = viewBtn && viewBtn.getMenu();
 	if (menu && this._currentSearch) {
@@ -172,6 +175,17 @@ function(check, ev) {
 		}
 	}
 	return result;
+};
+
+ZmTradController.prototype._showConvListener =
+function() {
+	var msg = this.getMsg();
+	if (!msg) { return; }
+
+	var list = new ZmMailList(ZmItem.CONV);
+	list.search = msg.list.search;
+	var conv = ZmConv.createFromMsg(msg, {list: list});
+	AjxDispatcher.run("GetConvController").show(conv);
 };
 
 // Callbacks

@@ -575,6 +575,9 @@ function() {
 	var list = [ZmOperation.PRINT];
 	list.push(ZmOperation.SEP, ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD);
 	list.push(ZmOperation.SEP, ZmOperation.SHOW_ORIG);
+	if (this.getCurrentViewType() == ZmId.VIEW_TRAD) {
+		list.push(ZmOperation.SHOW_CONV);
+	}
 	if (!appCtxt.isChildWindow && this._showDetachInSecondary() && appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !appCtxt.isExternalAccount()) {
 		list.push(ZmOperation.DETACH);
 	}

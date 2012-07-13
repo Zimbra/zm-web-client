@@ -827,7 +827,9 @@ ZmConvView2Header.prototype._setInfo =
 function() {
 	var conv = this._item;
 	if (!conv) { return; }
-	var info = AjxMessageFormat.format(ZmMsg.messageCount, conv.numMsgs);
+	var numMsgs = conv.numMsgs || (conv.msgs && conv.msgs.size());
+	if (!numMsgs) { return; }
+	var info = AjxMessageFormat.format(ZmMsg.messageCount, numMsgs);
 	var numUnread = conv.getNumUnreadMsgs();
 	if (numUnread) {
 		info = info + ", " + AjxMessageFormat.format(ZmMsg.unreadCount, numUnread).toLowerCase();

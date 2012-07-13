@@ -389,7 +389,7 @@ function(next) {
 
 ZmConvController.prototype._getSearchFolderId =
 function() {
-	return this._conv.list.search.folderId;
+	return this._conv.list && this._conv.list.search && this._conv.list.search.folderId;
 };
 
 // top level view means this view is allowed to get shown when user clicks on
