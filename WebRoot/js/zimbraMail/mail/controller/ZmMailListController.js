@@ -1083,14 +1083,6 @@ function(params, msg, finalChoice) {
 		}
 
 		var forwardAsAttachments = selCount > 1;
-		if (selCount == 1) {
-			//do as attachments for one conv too, in the case it has more than one message
-			var item = selection[0];
-			forwardAsAttachments = item.type == ZmItem.CONV && item.numMsgs > 1;
-			if (forwardAsAttachments) {
-				params.subjOverride = item.subject; //set the subject to the subject of the conv, since all the messages are from the conv
-			}
-		}
 
 		// reset the action if user is forwarding multiple mail items inline
 		if (forwardAsAttachments) {
