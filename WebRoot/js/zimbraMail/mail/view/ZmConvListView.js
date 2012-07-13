@@ -587,7 +587,8 @@ function(conv, fieldId) {
 			html[idx++] = "</span>";
 		}
 	} else {
-		html[idx++] = ZmMsg.noRecipients;
+		var isOutbound = (this._controller._currentSearch && this._controller._currentSearch.isOutboundFolder);
+		html[idx++] = isOutbound ? "&nbsp;" : ZmMsg.noRecipients;
 	}
 
 	return html.join("");

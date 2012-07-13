@@ -133,7 +133,8 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 					htmlArr[idx++] = "</span>";
 				}
 			} else {
-				htmlArr[idx++] = ZmMsg.noRecipients;
+				var isOutbound = (this._controller._currentSearch && this._controller._currentSearch.isOutboundFolder);
+				htmlArr[idx++] = isOutbound ? "&nbsp;" : ZmMsg.noRecipients;
 			}
 		} else {
 			if ((this._mode == ZmId.VIEW_CONVLIST) && this._isMultiColumn) {
