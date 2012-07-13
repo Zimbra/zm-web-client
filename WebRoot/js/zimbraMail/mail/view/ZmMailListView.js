@@ -721,7 +721,7 @@ function(params) {
 		var addr;
 		if (!item.getAddress) { return; }
 		if (field == ZmItem.F_FROM) { 
-			addr = item.getAddress(AjxEmailAddress.FROM);
+			addr = item.getAddress(this._isOutboundFolder() ? AjxEmailAddress.TO : AjxEmailAddress.FROM);
 		} else if (field == ZmItem.F_PARTICIPANT) {
 			var matchIndex = (matchIndex != null) ? parseInt(matchIndex) : 0;
 			addr = item.participants && item.participants.get(matchIndex);
@@ -731,7 +731,7 @@ function(params) {
 		}
 		
 		var ttParams = {
-			address:	item.getAddress(AjxEmailAddress.FROM),
+			address:	addr,
 			ev:			params.ev
 		}
 		var ttCallback = new AjxCallback(this,

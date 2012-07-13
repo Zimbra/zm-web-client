@@ -115,7 +115,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 			var addrs = msg.getAddresses(AjxEmailAddress.TO).getArray();
 
 			if (addrs && addrs.length) {
-				var fieldId = this._getFieldId(msg, ZmItem.F_PARTICIPANT);
+				var fieldId = this._getFieldId(msg, ZmItem.F_FROM);
 				var origLen = addrs.length;
 				var headerCol = this._headerHash[field];
 				var partColWidth = headerCol ? headerCol._width : ZmMsg.COLUMN_WIDTH_FROM_CLV;
@@ -133,8 +133,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 					htmlArr[idx++] = "</span>";
 				}
 			} else {
-				var isOutbound = (this._controller._currentSearch && this._controller._currentSearch.isOutboundFolder);
-				htmlArr[idx++] = isOutbound ? "&nbsp;" : ZmMsg.noRecipients;
+				htmlArr[idx++] = "&nbsp;";
 			}
 		} else {
 			if ((this._mode == ZmId.VIEW_CONVLIST) && this._isMultiColumn) {
