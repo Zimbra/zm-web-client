@@ -816,7 +816,7 @@ function() {
 
 ZmComposeController.prototype.getKeyMapName =
 function() {
-	return "ZmComposeController";
+	return ZmKeyMap.MAP_COMPOSE;
 };
 
 ZmComposeController.prototype.handleKeyAction =
