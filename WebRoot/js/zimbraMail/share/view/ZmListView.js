@@ -1482,8 +1482,10 @@ function(list, noResultsOk, doAdd) {
 				}
 			}
 		}
-        if (group && !doAdd)
-            htmlArr.push(group.getAllSections(this._bSortAsc));
+		if (group && !doAdd) {
+			group.resetSectionHeaders();
+			htmlArr.push(group.getAllSections(this._bSortAsc));
+		}
 
 		if (htmlArr.length && !doAdd) {
 			this._parentEl.innerHTML = htmlArr.join("");

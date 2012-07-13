@@ -81,6 +81,11 @@ function(headerTitle) {
 
 ZmMailListGroup.prototype.resetSectionHeaders =
 function() {
+    for (var i = 0; i < this._sectionHeaders.length; i++) {
+        var el = this._sectionHeaders[i].getHtmlElement();
+        el.parentNode.removeChild(el);
+    }
+
     this._sectionHeaders = [];
 };
 
