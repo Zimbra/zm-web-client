@@ -917,7 +917,7 @@ function(menu) {
 					parent:	menu,
 					id:		ZmId.getMenuItemId(this._viewId, this.id, value)
 				}); 
-		menuItem.setText(value);
+		menuItem.setText(ZmMsg["QUERY_IS_" + value]);
 		menuItem.setData(ZmSearchFilter.DATA_KEY, value);
 	}
 	menu.addSelectionListener(this._selectionListener.bind(this));
