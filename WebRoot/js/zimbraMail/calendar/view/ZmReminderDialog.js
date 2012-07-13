@@ -175,14 +175,12 @@ function(list) {
 
 		// dismiss button
 		var dismissBtn = this._dismissButtons[data.dismissBtnId] = new DwtButton({id:"dismissBtn_" + id, parent:this, className:"DwtToolbarButton", parentElement:data.dismissBtnId});
-		dismissBtn.setImage("Cancel");
 		dismissBtn.setText(ZmMsg.dismiss);
 		dismissBtn.addSelectionListener(dismissListener);
 		dismissBtn.apptUid = uid;
 
 		// open button
 		var openBtn = this._openButtons[data.openBtnId] = new DwtButton({id:"openBtn_" + id, parent:this, className:"DwtToolbarButton", parentElement:data.openBtnId});
-		openBtn.setImage(appt.otherAttendees ? "ApptMeeting" : (appt.type == ZmItem.TASK) ? "TasksApp" : "Appointment");
 		openBtn.setText(ZmMsg.viewAppointment);
 		openBtn.addSelectionListener(openListener);
 		openBtn.apptUid = uid;
