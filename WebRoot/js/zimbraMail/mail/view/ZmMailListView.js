@@ -572,7 +572,9 @@ function(htmlArr, idx, headerCol, i, numCols, id, defaultColumnSort) {
 		// item count text
 		htmlArr[idx++] = "<td align=right class='itemCountText' id='";
 		htmlArr[idx++] = textTdId;
-		htmlArr[idx++] = "'></td></tr></table></div></td>";
+		htmlArr[idx++] = "'></td></tr></table></td>";
+
+		return idx;
 	} else {
 		return DwtListView.prototype._createHeader.apply(this, arguments);
 	}
