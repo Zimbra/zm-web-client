@@ -504,6 +504,8 @@ function() {
 				}
 				convParams.query = terms.join(" AND NOT ");
 			}
+			// if the conv's unread state changed, load it again so we get the correct expanded msg bodies
+			convParams.forceLoad = item.unreadHasChanged;
 			item.load(convParams, this._handleResponseSetSelectedItem.bind(this, item));
 		} else {
 			ZmDoublePaneController.prototype._setSelectedItem.apply(this, arguments);
@@ -520,6 +522,7 @@ function(item) {
 		if (lv.hasItem(item.id)) {
 			this._displayItem(item);
 		}
+		item.unreadHasChanged = false;
 	}
 	else {
 		ZmDoublePaneController.prototype._handleResponseSetSelectedItem.call(this, item);

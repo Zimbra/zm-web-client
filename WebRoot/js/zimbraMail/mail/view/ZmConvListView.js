@@ -1033,6 +1033,18 @@ function(ev) {
 		this._updateField(item, ZmItem.F_FROM);
 	}
 
+	// remember if a conv's unread state changed since it affects how the conv is loaded when displayed
+	if (ev.event == ZmEvent.E_FLAGS) {
+		var flags = ev.getDetail("flags");
+		if (flags && flags.indexOf(ZmItem.FLAG_UNREAD) != -1) {
+			item = item || (items && items[i]);
+			var conv = isConv ? item : item && appCtxt.getById(item.cid);
+			if (conv) {
+				conv.unreadHasChanged = true;
+			}
+		}
+	}
+
 	// msg count in a conv changed - see if we need to add or remove an expand icon
 	if (isConv && (ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_SIZE])) {
 		if (item.numMsgs == 1 || item.numMsgs == 2) {
