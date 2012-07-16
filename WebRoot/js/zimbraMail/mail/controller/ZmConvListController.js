@@ -91,6 +91,9 @@ ZmConvListController.prototype.switchView =
 function(view, force) {
 
 	if (view == ZmSearch.DATE_DESC || view == ZmSearch.DATE_ASC) {
+		if (!force && !this.popShield(null, this.switchView.bind(this, view, true))) {
+			return;
+		}
 		if ((appCtxt.get(ZmSetting.CONVERSATION_ORDER) != view) || force) {
 			appCtxt.set(ZmSetting.CONVERSATION_ORDER, view);
 			if (this._currentViewType == ZmId.VIEW_CONVLIST) {
