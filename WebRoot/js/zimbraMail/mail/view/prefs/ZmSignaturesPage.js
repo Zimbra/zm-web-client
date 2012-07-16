@@ -690,7 +690,7 @@ function(select) {
 	var isText = this._sigFormat ? this._sigFormat.getValue() : true;
 	sig.setContentType(isText ? ZmMimeTable.TEXT_PLAIN : ZmMimeTable.TEXT_HTML);
 
-	if (!isText) {
+	if (!isText && !appCtxt.isTinyMCEEnabled()) {
 		this._restoreSignatureInlineImages();
 	}
 	sig.value = this._sigEditor.getContent(false, true);
