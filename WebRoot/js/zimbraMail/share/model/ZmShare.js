@@ -612,12 +612,14 @@ function() {
  * 
  * @param	{constant}	perm	the permission (see <code>ZmShare.PERM_</code> constants)
  * @param	{String}	pw		
+ * @param	{constant}	replyType		ZmShareReply.NONE, ZmShareReply.STANDARD or ZmShareReply.QUICK
+ * @param	{constant}	shareAction		the share action, e.g. ZmShare.NEW or ZmShare.EDIT
  * @param	{ZmBatchCommand}	batchCmd	the batch command
  */
 ZmShare.prototype.grant =
-function(perm, pw, notes, replyType, batchCmd) {
+function(perm, pw, notes, replyType, shareAction, batchCmd) {
 	this.link.perm = perm;
-	var respCallback = new AjxCallback(this, this._handleResponseGrant, [notes, replyType]);
+	var respCallback = new AjxCallback(this, this._handleResponseGrant, [notes, replyType, shareAction]);
 	this._shareAction("grant", null, {perm: perm, pw: pw}, respCallback, batchCmd, notes);
 };
 
@@ -625,12 +627,13 @@ function(perm, pw, notes, replyType, batchCmd) {
  * @private
  */
 ZmShare.prototype._handleResponseGrant =
-function(notes, replyType, result) {
+function(notes, replyType, shareAction, result) {
 	var action = result.getResponse().FolderActionResponse.action;
 	this.grantee.id = action.zid;
 	this.grantee.email = action.d;
     if(replyType != ZmShareReply.NONE && action.d && action.zid) {
-        this._sendShareNotification(this.grantee.email, action.id, notes);
+        this._sendShareNotification(this.grantee.email, action.id,
+		                            notes, shareAction);
     }
 };
 
@@ -638,8 +641,10 @@ function(notes, replyType, result) {
  * @private
  */
 ZmShare.prototype._sendShareNotification =
-function(userEmail, folderId, notes, callback) {
+function(userEmail, folderId, notes, action, callback) {
     var soapDoc = AjxSoapDoc.create("SendShareNotificationRequest", "urn:zimbraMail");
+    if (action != ZmShare.NEW)
+        soapDoc.setMethodAttribute("action", action);
     var itemNode = soapDoc.set("item");
     itemNode.setAttribute("id", folderId);
     var emailNode = soapDoc.set("e");
@@ -973,17 +978,20 @@ function(notes) {
 	dialog.getButton(DwtDialog.OK_BUTTON).setText(ZmMsg.resend);
 	dialog.reset();
 	dialog.setMessage(message, DwtMessageDialog.WARNING_STYLE);
-	dialog.registerCallback(DwtDialog.OK_BUTTON, this._sendAnyway.bind(this, notes, dialog));
+	var dialogcallback = this._sendAnyway.bind(this, notes, ZmShare.NEW,
+	                                           dialog);
+	dialog.registerCallback(DwtDialog.OK_BUTTON, dialogcallback);
     dialog.setButtonEnabled(DwtDialog.OK_BUTTON, !isPublic);
 	dialog.associateEnterWithButton(DwtDialog.OK_BUTTON);
 	dialog.popup(null, DwtDialog.OK_BUTTON);
 };
 
 ZmShare.prototype._sendAnyway =
-function(notes, dialog) {
+function(notes, action, dialog) {
 	dialog.popdown();
 	var callback = this._sendAnywayCallback.bind(this);
-	this._sendShareNotification(this.grantee.name, this.object.id,  notes, callback);
+	this._sendShareNotification(this.grantee.name, this.object.id,
+	                            notes, action, callback);
 };
 
 ZmShare.prototype._sendAnywayCallback =

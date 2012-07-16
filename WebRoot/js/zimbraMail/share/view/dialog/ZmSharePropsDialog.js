@@ -352,7 +352,9 @@ function(event) {
 	for (var i = 0; i < shares.length; i++) {
 		var share = shares[i];
 		if (perm != share.link.perm) {
-			var cmd = new AjxCallback(share, share.grant, [perm, null, notes, replyType]);
+			var cmd = new AjxCallback(share, share.grant,
+			                          [perm, null, notes,
+			                           replyType, this._shareMode]);
 			batchCmd.add(cmd);
 		}
 	}
