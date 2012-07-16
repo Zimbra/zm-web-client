@@ -2008,20 +2008,18 @@ function(action, type, override) {
 	if (override) {
 		this._recipients.addAddresses(type, override);
 	}
-	else if (ZmComposeController.IS_REPLY[action]) {
-		var identityId = this.identitySelect && this.identitySelect.getValue();
-		var addresses = ZmComposeView.getReplyAddresses(action, this._msg, this._addressesMsg, identityId);
-		if (addresses) {
-			var toAddrs = addresses[AjxEmailAddress.TO];
-			if (!(toAddrs && toAddrs.length)) {
-				// make sure we have at least one TO address if possible
-				var addrVec = this._addressesMsg.getAddresses(AjxEmailAddress.TO);
-				addresses[AjxEmailAddress.TO] = addrVec.getArray().slice(0, 1);
-			}
-			for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-				var type = ZmMailMsg.COMPOSE_ADDRS[i];
-				this._recipients.addAddresses(type, addresses[type]);
-			}
+	var identityId = this.identitySelect && this.identitySelect.getValue();
+	var addresses = ZmComposeView.getReplyAddresses(action, this._msg, this._addressesMsg, identityId);
+	if (addresses) {
+		var toAddrs = addresses[AjxEmailAddress.TO];
+		if (!(toAddrs && toAddrs.length)) {
+			// make sure we have at least one TO address if possible
+			var addrVec = this._addressesMsg.getAddresses(AjxEmailAddress.TO);
+			addresses[AjxEmailAddress.TO] = addrVec.getArray().slice(0, 1);
+		}
+		for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
+			var type = ZmMailMsg.COMPOSE_ADDRS[i];
+			this._recipients.addAddresses(type, addresses[type]);
 		}
 	}
 };
