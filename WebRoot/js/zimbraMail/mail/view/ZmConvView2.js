@@ -741,9 +741,9 @@ ZmConvView2.prototype.isActiveQuickReply = function() {
 };
 
 /**
- * Creates and object manager and returns findObjects content
- * @param view    {Object} the view for the ZmObjectManager sets
- * @param content {String} content to find
+ * Creates an object manager and returns findObjects content
+ * @param view    {Object} the view used by ZmObjectManager to set mouse events
+ * @param content {String} content to scan
  * @param htmlEncode {boolean} 
  */
 ZmConvView2.prototype.renderObjects = 
