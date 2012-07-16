@@ -997,9 +997,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .Conv2MsgHeader .info .ZmConvListFrom {
 	@Text@
-	font-weight:bold;
 	margin:1px 0 3px;
 	overflow:hidden;
+}
+
+.Conv2MsgHeader .Unread .ZmConvListFrom {
+	font-weight:bold;
 }
 
 .Conv2MsgHeader .info .ZmConvListFragment {
