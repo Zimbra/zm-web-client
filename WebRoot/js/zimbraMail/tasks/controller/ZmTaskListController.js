@@ -232,7 +232,8 @@ function(view) {
 	}
 	var sc = appCtxt.getSearchController();
 	var soapStatus = ZmTaskListController.SOAP_STATUS[view];
-	sc.redoSearch(appCtxt.getCurrentSearch(), false, {allowableTaskStatus:soapStatus});
+    var currentSearch =  appCtxt.getCurrentSearch();
+    if (currentSearch) sc.redoSearch(currentSearch, false, {allowableTaskStatus:soapStatus});
 };
 
 /**
