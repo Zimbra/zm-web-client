@@ -77,3 +77,19 @@ ZmMailItemView.prototype.getInviteMsgView =
 function() {
 	return this._inviteMsgView;
 };
+
+// Create the ObjectManager at the last minute just before we scan the message
+ZmMailItemView.prototype._lazyCreateObjectManager =
+function(view) {
+	// objectManager will be 'true' at create time, after that it will be the
+	// real object. NOTE: Replaced if (this._objectManager === true) as "==="
+	// does deep comparision of objects which might take a while.
+	var createObjectMgr = (AjxUtil.isBoolean(this._objectManager) && this._objectManager);
+	var firstCallAfterZimletLoading = (!this.zimletLoadFlag && appCtxt.getZimletMgr().isLoaded());
+
+	if (createObjectMgr || firstCallAfterZimletLoading) {
+		this.zimletLoadFlag = appCtxt.getZimletMgr().isLoaded();
+		// this manages all the detected objects within the view
+		this._objectManager = new ZmObjectManager(view || this);
+	}
+};

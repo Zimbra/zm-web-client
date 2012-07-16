@@ -494,22 +494,6 @@ function(msg, oldMsg, dayViewCallback) {
 	}
 };
 
-// Create the ObjectManager at the last minute just before we scan the message
-ZmMailMsgView.prototype._lazyCreateObjectManager =
-function() {
-	// objectManager will be 'true' at create time, after that it will be the
-	// real object. NOTE: Replaced if (this._objectManager === true) as "==="
-	// does deep comparision of objects which might take a while.
-	var createObjectMgr = (AjxUtil.isBoolean(this._objectManager) && this._objectManager);
-	var firstCallAfterZimletLoading = (!this.zimletLoadFlag && appCtxt.getZimletMgr().isLoaded());
-	
-	if (createObjectMgr || firstCallAfterZimletLoading) {
-		this.zimletLoadFlag = appCtxt.getZimletMgr().isLoaded();
-		// this manages all the detected objects within the view
-		this._objectManager = new ZmObjectManager(this);
-	}
-};
-
 // This is needed for Gecko only: for some reason, clicking on a local link will
 // open the full Zimbra chrome in the iframe :-( so we fake a scroll to the link
 // target here. (bug 7927)
