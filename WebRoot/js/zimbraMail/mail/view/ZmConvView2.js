@@ -1563,6 +1563,7 @@ function(id, op, ev) {
 	var msg = this._msg;
 	this.reset();
 	this._showingQuotedText = !this._showingQuotedText;
+	this._forceExpand = true;
 	this.set(msg, true);
 };
 
