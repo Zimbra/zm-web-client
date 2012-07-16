@@ -1036,7 +1036,7 @@ function(ev) {
 	// remember if a conv's unread state changed since it affects how the conv is loaded when displayed
 	if (ev.event == ZmEvent.E_FLAGS) {
 		var flags = ev.getDetail("flags");
-		if (flags && flags.indexOf(ZmItem.FLAG_UNREAD) != -1) {
+		if (AjxUtil.isArray(flags) && AjxUtil.indexOf(flags, ZmItem.FLAG_UNREAD) != -1) {
 			item = item || (items && items[i]);
 			var conv = isConv ? item : item && appCtxt.getById(item.cid);
 			if (conv) {
