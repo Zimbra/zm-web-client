@@ -39,6 +39,7 @@ ZmInvite.CHANGES_LOCATION	= "location";
 ZmInvite.CHANGES_SUBJECT	= "subject";
 ZmInvite.CHANGES_RECURRENCE	= "recurrence";
 ZmInvite.CHANGES_TIME		= "time";
+ZmInvite.TASK		= "task";
 
 
 /**
@@ -534,7 +535,7 @@ function(compNum) {
 	if (!content) {
 		var htmlContent = comp.descHtml;
 		htmlContent = (htmlContent && htmlContent[0]._content) || null;
-		if (!htmlContent) {
+		if (!htmlContent && this.type != ZmInvite.TASK) {
 			content = this.getApptSummary();
 		}
 	}
