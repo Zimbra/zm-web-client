@@ -46,6 +46,22 @@
             <c:set var="statusMessage" scope="request" value="${errorMsg}"/>
             <jsp:forward page="/h/compose"/>
         </c:when>
+        <%-- TODO: handle voice errors in a separate tag like handleVoiceError --%>
+        <c:when test="${error.code eq 'voice.UNABLE_TO_AUTH'}">
+            <app:status style="Critical">
+                <fmt:message key="voiceErrorUnableToAuth"/>
+            </app:status>
+        </c:when>
+        <c:when test="${error.code eq 'voice.UNSUPPPORTED'}">
+            <app:status style="Critical">
+                <fmt:message key="voiceErrorUnsupported"/>
+            </app:status>
+        </c:when>
+        <c:when test="${(error.code eq 'cisco.CISCO_ERROR') or (error.code eq 'mitel.MITEL_ERROR')}">
+            <app:status style="Critical">
+                <fmt:message key="voiceErrorGeneric"/>
+            </app:status>
+        </c:when>
         <c:otherwise>
             <app:status style="Critical">
                 <fmt:message key="${error.code}"/>
