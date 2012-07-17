@@ -806,6 +806,13 @@ function(msg) {
 	lv.redrawItem(msg);
 };
 
+// override to do nothing if we are deleting/moving a msg within conv view in the reading pane
+ZmConvListController.prototype._getNextItemToSelect =
+function(omit) {
+	var lv = this._listView[this._currentViewId];
+	return (lv && lv._selectedMsg) ? null : ZmDoublePaneController.prototype._getNextItemToSelect.apply(this, arguments);
+};
+
 /**
  * Splits the given items into two lists, one of convs and one of msgs, and
  * applies the given method and args to each.

@@ -196,8 +196,7 @@ function(conv, container) {
 		var params = {
 			parent:			this,
 			parentElement:	container,
-			controller:		this._controller,
-			actionsMenu:	this._actionsMenu
+			controller:		this._controller
 		}
 		var msg = msgs[i];
 		params.forceExpand = toExpand[msg.id];
@@ -648,7 +647,6 @@ function(ev) {
 			parent:			this,
 			parentElement:	document.getElementById(this._messagesDivId),
 			controller:		this._controller,
-			actionsMenu:	this._actionsMenu,
 			forceCollapse:	true,
 			forceExpand:	msg.isSent,	// trumps forceCollapse
 			index:			index
@@ -1128,7 +1126,6 @@ ZmMailMsgCapsuleView = function(params) {
 	this._controller = params.controller;
 	this._forceExpand = params.forceExpand;
 	this._forceCollapse = params.forceCollapse;
-	this._actionsMenu = params.actionsMenu;
 	this._forceOriginal = params.forceOriginal && !(DBG && DBG.getDebugLevel() == "orig");
 	this._isDraft = params.isDraft;
 	this._showingCalendar = false;
