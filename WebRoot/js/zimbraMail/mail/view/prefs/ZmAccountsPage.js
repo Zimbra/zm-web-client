@@ -1212,7 +1212,7 @@ function(id, section) {
 		var folderPaths = control.getValue().replace(/\s*(;|,)\s*/g,"$1").split(/;|,/);
 		var array = [];
 		for (var i = 0; i < folderPaths.length; i++) {
-			var folder = root.getByPath(folderPaths[i]);
+			var folder = root.getByPath(folderPaths[i],true);
 			if (!folder) continue;
 			array.push(folder.id);
 		}
