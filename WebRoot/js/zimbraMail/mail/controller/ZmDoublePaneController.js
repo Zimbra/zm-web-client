@@ -634,14 +634,33 @@ function(ev) {
 };
 
 ZmDoublePaneController.prototype._doDelete =
-function() {
+function(items, hardDelete, attrs, confirmDelete) {
 	this._listView[this._currentViewId]._itemToSelect = this._getNextItemToSelect();
 	ZmMailListController.prototype._doDelete.apply(this, arguments);
 };
 
 ZmDoublePaneController.prototype._doMove =
-function() {
-	this._listView[this._currentViewId]._itemToSelect = this._getNextItemToSelect();
+function(items, destinationFolder, attrs, isShiftKey) {
+
+	// if user moves a non-selected item via DnD, don't change selection
+	var dndUnselectedItem = false;
+	if (items && items.length == 1) {
+		var lv = this.getListView();
+		var selection = lv && lv.getSelection();
+		if (selection && selection.length) {
+			dndUnselectedItem = true;
+			var id = items[0].id;
+			// AjxUtil.intersection doesn't work with objects, so check IDs
+			for (var i = 0; i < selection.length; i++) {
+				if (selection[i].id == id) {
+					dndUnselectedItem = false;
+				}
+			}
+		}
+	}		
+	if (!dndUnselectedItem) {
+		this._listView[this._currentViewId]._itemToSelect = this._getNextItemToSelect();
+	}
 	ZmMailListController.prototype._doMove.apply(this, arguments);
 };
 
