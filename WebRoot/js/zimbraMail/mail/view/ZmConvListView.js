@@ -1047,7 +1047,8 @@ function(ev) {
 
 	// msg count in a conv changed - see if we need to add or remove an expand icon
 	if (isConv && (ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_SIZE])) {
-		if (item.numMsgs == 1 || item.numMsgs == 2) {
+		//redraw the item when redraw is requested or when the new msg count is set to 1(msg deleted) or 2(msg added)
+		if (item.redrawConvRow || item.numMsgs == 1 || item.numMsgs == 2) {
 			this.redrawItem(item);
 		}
 		if (this.isMultiColumn()) {

@@ -727,6 +727,8 @@ function(msg) {
 	this.fragment = msg.fragment;
 	this.sf = msg.sf;
 	this.msgIds = [msg.id];
+	//add a flag to redraw this conversation when additional information is available
+	this.redrawConvRow = true;
 };
 
 ZmConv.prototype._msgListChangeListener =
