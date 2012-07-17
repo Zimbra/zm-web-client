@@ -371,6 +371,9 @@ function(value) {
 	if (value == ZmSetting.MARK_READ_TIME) {
 		var input = Dwt.byId(DwtId.makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
 		if (input) {
+			if(input.value === ''){
+				return ZmSetting.MARK_READ_NOW;
+			}
 			return input.value;
 		}
 	}
