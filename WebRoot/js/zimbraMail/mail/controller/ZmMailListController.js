@@ -1250,7 +1250,7 @@ function(msg) {
 ZmMailListController.prototype._doMarkRead =
 function(items, on, callback, forceCallback) {
 
-	var params = {items:items, value:on, callback:callback};
+	var params = {items:items, value:on, callback:callback, noBusyOverlay: true};
 	var list = params.list = this._getList(params.items);
     params.forceCallback = forceCallback;
 	this._setupContinuation(this._doMarkRead, [on, callback], params);
