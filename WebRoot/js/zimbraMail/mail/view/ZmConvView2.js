@@ -1345,6 +1345,7 @@ function(msg, container, callback, index) {
 	var isShareInvite = this._isShareInvite = (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
 												msg.share && msg.folderId != ZmFolder.ID_TRASH &&
 												appCtxt.getActiveAccount().id != msg.share.grantor.id);
+    var isSharePermNone = isShareInvite && msg.share && msg.share.link && !msg.share.link.perm;
 	var isSubscribeReq = msg.subscribeReq && msg.folderId != ZmFolder.ID_TRASH;
 
     if (!isCalendarInvite) {
@@ -1385,7 +1386,7 @@ function(msg, container, callback, index) {
 		}
 	}
 	
-	if (isShareInvite || isSubscribeReq) {
+	if ((isShareInvite && !isSharePermNone) || isSubscribeReq) {
 		var bodyEl = this.getMsgBodyElement();
 		var toolbar = isShareInvite ? this._getShareToolbar() : this._getSubscribeToolbar(msg.subscribeReq);
 		if (toolbar) {
