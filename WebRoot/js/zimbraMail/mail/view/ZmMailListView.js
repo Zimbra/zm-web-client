@@ -1064,6 +1064,13 @@ function(ev) {
 
 	if (!ev.handled) {
 		ZmListView.prototype._changeListener.call(this, ev);
+        if (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE){
+            var cv = this._controller.getItemView();
+            var currentItem =  cv && cv.getItem();
+            if (currentItem == item){
+                cv.set(null, true)
+            }
+        }
 	}
 };
 
