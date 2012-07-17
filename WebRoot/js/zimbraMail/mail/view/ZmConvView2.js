@@ -1141,8 +1141,6 @@ ZmMailMsgCapsuleView = function(params) {
 	// cache text and HTML versions of original content
 	this._origContent = {};
 
-    this._autoCalendarDisplayComplete = false;
-
 	this.addListener(ZmMailMsgView._TAG_CLICK, this._msgTagClicked.bind(this));
 	this.addListener(ZmInviteMsgView.REPLY_INVITE_EVENT, this._convView._inviteReplyListener);
 	this.addListener(ZmMailMsgView.SHARE_EVENT, this._convView._shareListener);
@@ -1203,23 +1201,14 @@ function(msg, force) {
 	}
 	this._setHeaderClass();
 
+	this._isCalendarInvite = appCtxt.get(ZmSetting.CALENDAR_ENABLED) && msg.invite && !msg.invite.isEmpty();
+
 	var dayViewCallback = null;
 	var showCalInConv = appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR);
-    if (this._expanded && showCalInConv) {
-		dayViewCallback = this._handleShowCalendarLink.bind(this, ZmOperation.SHOW_ORIG, true);
-	}
-	else if (!showCalInConv) {
-		dayViewCallback = this._hideCal.bind(this);
+    if (this._expanded) {
+		dayViewCallback = this._handleShowCalendarLink.bind(this, ZmOperation.SHOW_ORIG, showCalInConv);
 	}
 	ZmMailMsgView.prototype.set.apply(this, [msg, force, dayViewCallback]);
-};
-
-ZmMailMsgCapsuleView.prototype._hideCal =
-function() {
-	if (!(this._isCalendarInvite && this._inviteMsgView && this._inviteMsgView._dayView)) {
-		return;
-	}
-	this._inviteMsgView._dayView.setVisible(false);
 };
 
 ZmMailMsgCapsuleView.prototype.reset =
@@ -1352,7 +1341,7 @@ function(msg, container, callback, index) {
 	}
 
 
-	var isCalendarInvite = this._isCalendarInvite = appCtxt.get(ZmSetting.CALENDAR_ENABLED) && msg.invite && !msg.invite.isEmpty();
+	var isCalendarInvite = this._isCalendarInvite;
 	var isShareInvite = this._isShareInvite = (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
 												msg.share && msg.folderId != ZmFolder.ID_TRASH &&
 												appCtxt.getActiveAccount().id != msg.share.grantor.id);
@@ -1512,9 +1501,7 @@ function(msg, container) {
 		}
 	}
     // Attempt to display the calendar if the preference is to auto-open it
-    if (appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR)) {
-        this._handleShowCalendarLink(ZmOperation.SHOW_ORIG, true);
-    }
+    this._handleShowCalendarLink(ZmOperation.SHOW_ORIG, appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR)); //this is called from here since the _linkInfo is now ready and needed in _handleShowCalendarLink. Might be other reason too.
 };
 
 ZmMailMsgCapsuleView.prototype._makeLink =
@@ -1565,24 +1552,29 @@ function(id, op, ev) {
 };
 
 ZmMailMsgCapsuleView.prototype._handleShowCalendarLink =
-function(id, autoDisplay) {
+function(id, show) {
     // Allow one of two possible paths to auto display the calendar view
-    if (!this._isCalendarInvite || (autoDisplay && this._autoCalendarDisplayComplete)) return;
+    if (!this._isCalendarInvite) {
+		return;
+	}
 
-    var imv = this._inviteMsgView;
     var showCalendarLink = this._linkInfo && document.getElementById(this._linkInfo[ZmOperation.SHOW_ORIG].linkId);
-    var changed = false;
 
-    if (this._inviteCalendarContainer) {
-        this._showingCalendar = !this._showingCalendar;
-        Dwt.setVisible(this._inviteCalendarContainer, this._showingCalendar);
-        changed = true;
-    } else if (imv) {
+	if (show !== undefined) {
+		this._showingCalendar = show; //force a value
+	}
+	else {
+		this._showingCalendar = !this._showingCalendar; //toggle
+		// Track the last show/hide and apply to other invites that are opened.
+		appCtxt.set(ZmSetting.CONV_SHOW_CALENDAR, this._showingCalendar);
+	}
+
+	var imv = this._inviteMsgView;
+	if (!this._inviteCalendarContainer && imv) {
         var dayView = imv && imv._dayView;
         if (dayView && showCalendarLink) {
             // Both components (dayView and footer) have been rendered - can go ahead and
             // attach the dayView.  This is only an issue for the initial auto display
-            this._showingCalendar = true;
 
             // Shove it in a relative-positioned container DIV so it can use absolute positioning
             var div = this._inviteCalendarContainer = document.createElement("div");
@@ -1595,26 +1587,20 @@ function(id, autoDisplay) {
                 dayView.setVisible(true);
                 imv.convResize();
             }
-            // Auto calendar display complete whether done via auto or a manual click
-            this._autoCalendarDisplayComplete = true;
-            changed = true;
         }
     }
+	if (this._inviteCalendarContainer) {
+		Dwt.setVisible(this._inviteCalendarContainer, this._showingCalendar);
+	}
 
 
-    if (changed) {
-        if (imv && this._showingCalendar) {
-            imv.scrollToInvite();
-        }
-        if (showCalendarLink) {
-            showCalendarLink.innerHTML = this._showingCalendar ? ZmMsg.hideCalendar : ZmMsg.showCalendar;
-        }
-        if (!autoDisplay) {
-            // Track the last show/hide and apply to other invites that are opened.
-            appCtxt.set(ZmSetting.CONV_SHOW_CALENDAR, this._showingCalendar);
-        }
-        this._resetIframeHeightOnTimer();
+    if (imv && this._showingCalendar) {
+        imv.scrollToInvite();
     }
+    if (showCalendarLink) {
+        showCalendarLink.innerHTML = this._showingCalendar ? ZmMsg.hideCalendar : ZmMsg.showCalendar;
+    }
+	this._resetIframeHeightOnTimer();
 };
 
 ZmMailMsgCapsuleView.prototype._handleForwardLink =
@@ -1675,21 +1661,19 @@ function() {
 ZmMailMsgCapsuleView.prototype._setExpansion =
 function(expanded) {
 
+	var showCalInConv = appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR);
 	this._expanded = expanded;
 	if (this._expanded && !this._msgBodyCreated) {
 		// Provide a callback to ensure address bubbles are properly set up
 		var dayViewCallback = null;
-		if (this._isCalendarInvite && appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR)) {
-			dayViewCallback = this._handleShowCalendarLink.bind(this, ZmOperation.SHOW_ORIG, true);
+		if (this._isCalendarInvite) {
+			dayViewCallback = this._handleShowCalendarLink.bind(this, ZmOperation.SHOW_ORIG, showCalInConv);
 		}
 		var respCallback = this._handleReponseSetExpansion.bind(this, this._msg, dayViewCallback);
 		this._renderMessage(this._msg, null, respCallback);
 	}
 	else {
 		// hide or show everything below the header
-        if (this._expanded && this._isCalendarInvite && appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR) && !this._showingCalendar) {
-            this._handleShowCalendarLink(ZmOperation.SHOW_ORIG, true);
-        }
 		var children = this.getHtmlElement().childNodes;
 		for (var i = 1; i < children.length; i++) {
 			var child = children[i];
@@ -1709,6 +1693,9 @@ function(expanded) {
 			}
 		}
 		this._convView._header._setExpandIcon();
+		if (this._expanded && this._isCalendarInvite) {
+			this._handleShowCalendarLink(ZmOperation.SHOW_ORIG, showCalInConv);
+		}
 	}
 
 	if (this._expanded) {
