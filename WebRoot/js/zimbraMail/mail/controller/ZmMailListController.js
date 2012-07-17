@@ -1066,8 +1066,7 @@ function(params, msg, finalChoice) {
 	// check to see if we're forwarding multiple msgs, in which case we do them as attachments;
 	// also check to see if we're forwarding an invite; if so, go to appt compose
 	var action = params.action;
-	ZmComposeController._setStatics();
-	if (ZmComposeController.IS_FORWARD[action]) {
+	if (action == ZmOperation.FORWARD_ATT || action == ZmOperation.FORWARD_INLINE) {
 		var selection, selCount;
 		if (params.msg) {
 			selCount = 1
