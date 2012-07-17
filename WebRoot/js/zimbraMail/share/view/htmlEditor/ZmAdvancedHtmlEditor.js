@@ -525,6 +525,10 @@ function(ed, ev) {
         // pass to keyboard mgr for kb nav
         retVal = DwtKeyboardMgr.__keyDownHdlr(ev);
     }
+    else if (ev.keyCode === 9) { //Tab key handling
+        ed.execCommand("mceInsertContent", false, "&nbsp;&nbsp;&nbsp;&nbsp;");
+        ev.preventDefault();
+    }
 
 	if (window.DwtIdleTimer) {
 		DwtIdleTimer.resetIdle();
@@ -780,8 +784,7 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ed, ev) {
         });
     }
 
-    var ec = obj.getEditorContainer();
-    ec.setFocusMember(win);
+    obj.getEditorContainer().setFocusMember(ed.focus.bind(ed));
 
     if (obj._onTinyMCEEditorInitcallback) {
         obj._onTinyMCEEditorInitcallback.run();
@@ -2081,5 +2084,13 @@ function(member) {
 
 ZmEditorContainer.prototype._focus =
 function() {
-	if(this._focusMember) this._focusMember.focus();
+    var focusMember = this._focusMember;
+    if (focusMember) {
+        if (focusMember.nodeName === "TEXTAREA") {
+            focusMember.focus();
+        }
+        else {
+            focusMember();
+        }
+    }
 };
