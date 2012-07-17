@@ -54,13 +54,15 @@ ZmConvController.DEFAULT_TAB_TEXT = ZmMsg.conversation;
  * @param {ZmConv}				conv				a conversation
  * @param {ZmListController}	parentController	the controller that called this method
  * @param {AjxCallback}			callback			the client callback
- * @param {Boolean}				markRead		if <code>true</code>, mark msg read
+ * @param {Boolean}				markRead			if <code>true</code>, mark msg read
+ * @param {ZmMailMsg}			msg					msg that launched this conv view (via "Show Conversation")
  */
 ZmConvController.prototype.show =
-function(conv, parentController, callback, markRead) {
+function(conv, parentController, callback, markRead, msg) {
 
 	this._conv = conv;
 
+	this._relatedMsg = msg;
 	this._parentController = parentController;
 
 	this._setup(this._currentViewId);
@@ -68,7 +70,7 @@ function(conv, parentController, callback, markRead) {
 
 	if (!conv._loaded) {
 		var respCallback = this._handleResponseLoadConv.bind(this, conv, callback);
-		markRead = markRead || (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
+		markRead = !msg && (markRead || (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW));
 		conv.load({getUnreadOrFirstMsg:true, markRead:markRead}, respCallback);
 	} else {
 		this._handleResponseLoadConv(conv, callback, conv._createResult());
@@ -253,6 +255,11 @@ function() {
 	return this._view[this._currentViewId];
 };
 
+// if going from msg to conv view, don't have server mark stuff read (we'll just expand the one msg view)
+ZmConvController.prototype._handleMarkRead =
+function(item, check) {
+	return this._relatedMsg ? false : ZmMailListController.prototype._handleMarkRead.apply(this, arguments);
+};
 
 // Operation listeners
 

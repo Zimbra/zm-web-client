@@ -179,14 +179,21 @@ function(conv, container) {
 	
 	// figure out which msg views should be expanded; if the msg is loaded and we're viewing it
 	// for the first time, it was unread so we expand it; expand the first if there are none to expand
-	var toExpand = {}, gotOne = false;
+	var toExpand = {}, toCollapse = {};
+	// check if conv was opened by selecting "Show Conversation" for a msg
+	var launchMsgId = this._controller._relatedMsg && this._controller._relatedMsg.id;
+	var gotOne = false;
 	for (var i = 0, len = msgs.length; i < len; i++) {
 		var msg = msgs[i];
-		if (msg.isLoaded() && !this._hasBeenExpanded[msg.id]) {
+		if (launchMsgId) {
+			toExpand[msg.id] = (msg.id == launchMsgId);
+			toCollapse[msg.id] = (msg.id != launchMsgId);
+		}
+		else if (msg.isLoaded() && !this._hasBeenExpanded[msg.id]) {
 			toExpand[msg.id] = gotOne = true;
 		}
 	}
-	if (!gotOne) {
+	if (!gotOne && !launchMsgId) {
 		toExpand[msgs[0].id] = true;
 	}
 	
@@ -200,6 +207,7 @@ function(conv, container) {
 		}
 		var msg = msgs[i];
 		params.forceExpand = toExpand[msg.id];
+		params.forceCollapse = toCollapse[msg.id];
 		// don't look for quoted text in oldest msg - it is considered wholly original
 		params.forceOriginal = (i == oldestIndex);
 		this._renderMessage(msg, params);
