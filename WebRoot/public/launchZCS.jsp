@@ -55,6 +55,7 @@
 
 <zm:getUserAgent var="ua" session="false"/>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9" />
 <html>
 <head>
 <!--
