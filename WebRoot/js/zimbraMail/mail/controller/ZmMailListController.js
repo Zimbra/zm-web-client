@@ -69,8 +69,8 @@ ZmMailListController = function(container, mailApp, type, sessionId, searchResul
 		this._listeners[ZmOperation.FORWARD] = this._forwardListener.bind(this);
 	}
 	this._listeners[ZmOperation.REDIRECT] = new AjxListener(this, this._redirectListener);
-	this._listeners[ZmOperation.EDIT] = this._editListener.bind(this);
-	this._listeners[ZmOperation.EDIT_AS_NEW] = this._editListener.bind(this);
+	this._listeners[ZmOperation.EDIT] = this._editListener.bind(this, false);
+	this._listeners[ZmOperation.EDIT_AS_NEW] = this._editListener.bind(this, true);
 	this._listeners[ZmOperation.MUTE_CONV] = this._muteConvListener.bind(this);
 	this._listeners[ZmOperation.UNMUTE_CONV] = this._unmuteConvListener.bind(this);
 
@@ -1871,8 +1871,8 @@ function(ev) {
 };
 
 ZmMailListController.prototype._editListener =
-function(ev) {
-	this._doAction({ev:ev, action:ZmOperation.DRAFT});
+function(isEditAsNew, ev) {
+    this._doAction({ev:ev, action:ZmOperation.DRAFT, isEditAsNew:isEditAsNew});
 };
 
 ZmMailListController.prototype._muteUnmuteConvListener =

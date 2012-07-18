@@ -974,7 +974,7 @@ function(params) {
 	this._accountName = params.accountName;
 	var identity = params.identity = this._getIdentity(msg);
 
-	this._composeMode = params.composeMode || this._getComposeMode(msg, identity);
+	this._composeMode = params.composeMode || this._getComposeMode(msg, identity, params);
 	AjxDebug.println(AjxDebug.REPLY, "ZmComposeController::_setView - Compose mode: " + this._composeMode);
 	
 	if (this._needComposeViewRefresh) {
@@ -1343,7 +1343,7 @@ function(newAccount) {
 };
 
 ZmComposeController.prototype._getComposeMode =
-function(msg, identity) {
+function(msg, identity, params) {
 
 	// depending on COS/user preference set compose format
 	var composeMode = DwtHtmlEditor.TEXT;
@@ -1355,9 +1355,14 @@ function(msg, identity) {
             }
         } 
 		else if (this._action == ZmOperation.DRAFT) {
-			if (msg && msg.isHtmlMail()) {
-				composeMode = DwtHtmlEditor.HTML;
-			}
+            if (params && params.isEditAsNew) { //For Edit As New option Bug:73479
+                if (ac.get(ZmSetting.COMPOSE_AS_FORMAT) === ZmSetting.COMPOSE_HTML) {
+                    composeMode = DwtHtmlEditor.HTML;
+                }
+            }
+            else if (msg && msg.isHtmlMail()) {
+                composeMode = DwtHtmlEditor.HTML;
+            }
 		}
 		else if (identity) {
 			var sameFormat = ac.get(ZmSetting.COMPOSE_SAME_FORMAT);
