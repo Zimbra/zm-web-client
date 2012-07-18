@@ -970,13 +970,19 @@ function(composeMode, switchPreface, dontReplaceContent) {
 		// get these before we change mode so we can find them in current body
 		var sig = this.getSignatureContent(sigId);
 		var sigSep = this._getSignatureSeparator();
+		var sigId = this._controller._currentSignatureId;
+		var content = this._htmlEditor.getContent();
+		var account = appCtxt.multiAccounts && this.getFromAccount();
+		
+		if (!htmlMode) {
+			this.applySignature(content, sigId, account, null, true); // Remove the signature before switching
+		}
+		
 		this._composeMode = composeMode;
 		if (!htmlMode && switchPreface) {
 			this._switchPreface();
 		}
 
-		var content = this._htmlEditor.getContent();
-		var sigId = this._controller._currentSignatureId;
 
 		if (htmlMode) {
 
@@ -1032,8 +1038,6 @@ function(composeMode, switchPreface, dontReplaceContent) {
 				"_after": AjxCallback.simpleClosure(this._applyHtmlPrefix, this, "<blockquote>", "</blockquote>")
 			};
 
-			var account = appCtxt.multiAccounts && this.getFromAccount();
-			this.applySignature(content, sigId, account, null, true); // Remove the signature before switching
 			this._htmlEditor.setMode(composeMode, true, convertor); // Do the mode switch
 			content = this._htmlEditor.getContent(); // Get the content in the new mode
 			this.applySignature(content, null, account, sigId, false); // Reapply the signature after switching
