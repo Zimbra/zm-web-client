@@ -1352,7 +1352,10 @@ function(msg, container, callback, index) {
 	var isCalendarInvite = this._isCalendarInvite;
 	var isShareInvite = this._isShareInvite = (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
 												msg.share && msg.folderId != ZmFolder.ID_TRASH &&
-												appCtxt.getActiveAccount().id != msg.share.grantor.id);
+												appCtxt.getActiveAccount().id != msg.share.grantor.id &&
+												(msg.share.action == ZmShare.NEW ||
+													(msg.share.action == ZmShare.EDIT &&
+														!this.__hasMountpoint(msg.share))));
     var isSharePermNone = isShareInvite && msg.share && msg.share.link && !msg.share.link.perm;
 	var isSubscribeReq = msg.subscribeReq && msg.folderId != ZmFolder.ID_TRASH;
 
