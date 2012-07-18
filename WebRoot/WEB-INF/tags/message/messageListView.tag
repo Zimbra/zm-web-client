@@ -114,7 +114,7 @@
 						<zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" context="${context}" action="compose" id="${hit.messageHit.id}"/>
 					</c:when>
 					<c:otherwise>
-						<zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" action="${(mailbox.prefs.readingPaneLocation eq 'off' and param.action != 'offView') ? 'offView' : 'view'}" context="${context}" id="${hit.messageHit.id}" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
+						<zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" action="${(mailbox.prefs.readingPaneLocation eq 'off') ? 'view' : 'offView'}" context="${context}" id="${hit.messageHit.id}" xim="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
 					</c:otherwise>
 				</c:choose>
 				<c:if test="${empty selectedRow and hit.messageHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
