@@ -1942,7 +1942,7 @@ function(state, force) {
 			readCellId:		this._readCellId,
 			from:			ai.from,
 			fromId:			fromId,
-			fragment:		this._getFragment(),
+			fragment:		AjxStringUtil.htmlEncode(msg.fragment),
 			date:			dateString,
 			dateCellId:		this._dateCellId,
 			dateTooltip:	dateTooltip
@@ -2043,12 +2043,6 @@ function() {
 		var iePos = AjxEnv.isIE ? "position:static" : null;
 		readCell.innerHTML = AjxImg.getImageHtml(this._msg.getReadIcon(), isExpanded ? iePos : "display:inline-block", attrs);
 	}
-};
-
-ZmMailMsgCapsuleViewHeader.prototype._getFragment =
-function() {
-	var fragment = appCtxt.get(ZmSetting.SHOW_FRAGMENTS) ? this._msg.fragment : "";
-	return AjxStringUtil.htmlEncode(fragment);
 };
 
 ZmMailMsgCapsuleViewHeader.prototype._mouseUpListener =
