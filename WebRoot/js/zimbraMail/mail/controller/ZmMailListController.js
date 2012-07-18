@@ -175,10 +175,21 @@ function(view, force) {
 			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[view]);
 		}
 
-		var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, view);
+		var folderId = this._currentSearch && this._currentSearch.folderId;
+		
+		var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, folderId || view);
+		if (view == ZmId.VIEW_CONVLIST && (sortBy == ZmSearch.NAME_DESC || sortBy == ZmSearch.NAME_ASC)) {
+			sortBy =  appCtxt.get(ZmSetting.SORTING_PREF, view); //go back to sortBy for view
+			appCtxt.set(ZmSetting.SORTING_PREF, sortBy, folderId); //force folderId sorting
+		}
 		if (this._mailListView && !appCtxt.isExternalAccount()) {
 			//clear the groups to address "from" grouping for conversation
-			this._mailListView.setGroup(ZmId.GROUPBY_NONE);
+			if (folderId) {
+				var currentGroup = this._mailListView.getGroup(folderId);
+				if (currentGroup && currentGroup.id == ZmId.GROUPBY_FROM) {
+					this._mailListView.setGroup(ZmId.GROUPBY_NONE);
+				}
+			}		
 		}
 		
 		this._currentSearch.clearCursor();
