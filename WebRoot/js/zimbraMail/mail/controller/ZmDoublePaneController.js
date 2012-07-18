@@ -441,7 +441,7 @@ function(msg) {
 	this._doublePaneView.setItem(msg);
 };
 
-ZmDoublePaneController.prototype._resetOperations = 
+ZmDoublePaneController.prototype._resetOperations =
 function(parent, num) {
 	ZmMailListController.prototype._resetOperations.call(this, parent, num);
 	var isDraft = this.isDraftsFolder();
@@ -450,12 +450,13 @@ function(parent, num) {
 		if (item) {
 			isDraft = item.isDraft;
 		}
+		parent.enable(ZmOperation.SHOW_ORIG, true);
+		if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
+			var isSyncFailuresFolder = this.isSyncFailuresFolder();
+			parent.enable(ZmOperation.ADD_FILTER_RULE, !isSyncFailuresFolder);
+		}
 	}
-    parent.enable(ZmOperation.SHOW_ORIG, true);
-	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
-		var isSyncFailuresFolder = this.isSyncFailuresFolder();
-		parent.enable(ZmOperation.ADD_FILTER_RULE, !isSyncFailuresFolder);
-	}
+
 	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && num == 1 && !isDraft));
 	parent.enable(ZmOperation.TEXT, true);
 	parent.enable(ZmOperation.KEEP_READING, this._keepReading(true));
