@@ -1192,10 +1192,11 @@ function(xsltUrl, doc) {
  * @param	{string}	image	the image (style class) to use on the application tab
  * @param	{string}	tooltip	the tool tip to display when hover-over the application tab
  * @param	{number}		[index]	the index to insert the tab (must be > 0). 0 is first location. Default is last location.
+ * @param	{constant}	style	the button positioning style (see {@link DwtControl})
  * @return	{string}	the name of the newly created application
  */
 ZmZimletBase.prototype.createApp =
-function(label, image, tooltip, index) {
+function(label, image, tooltip, index, style) {
 
 	AjxDispatcher.require("ZimletApp");
 
@@ -1205,7 +1206,8 @@ function(label, image, tooltip, index) {
 	var params = {
 			text:label,
 			image:image,
-			tooltip:tooltip
+			tooltip:tooltip,
+			style: style
 		};
 	
 	if (index != null && index >= 0)
