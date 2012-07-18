@@ -101,11 +101,6 @@
      </tag-file>
 
     <tag-file>
-        <name>apptAction</name>
-        <path>/WEB-INF/tags/mobile/moApptAction.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>contactView</name>
          <path>/WEB-INF/tags/mobile/moContactView.tag</path>
      </tag-file>

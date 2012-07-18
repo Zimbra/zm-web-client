@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -13,27 +13,20 @@
  * ***** END LICENSE BLOCK *****
  */
 
-/**
- * 
- * @param {DwtControl}					container					the containing shell
- * @param {ZmApp}						app							the containing application
- * @param {constant}					type						type of controller
- * @param {string}						sessionId					the session id
- * @param {ZmSearchResultsController}	searchResultsController		containing controller
- * 
- * @extends		ZmListController
- */
-ZmVoiceListController = function(container, app, type, sessionId, searchResultsController) {
+ZmVoiceListController = function(container, app) {
 	if (arguments.length == 0) { return; }
-	ZmListController.apply(this, arguments);
+	ZmListController.call(this, container, app);
+    this._listeners[ZmOperation.CALL_MANAGER] = new AjxListener(this, this._callManagerListener);
 
 	this._folder = null;
 }
 ZmVoiceListController.prototype = new ZmListController;
 ZmVoiceListController.prototype.constructor = ZmVoiceListController;
 
-ZmVoiceListController.prototype.isZmVoiceListController = true;
-ZmVoiceListController.prototype.toString = function() { return "ZmVoiceListController"; };
+ZmVoiceListController.prototype.toString =
+function() {
+	return "ZmVoiceListController";
+};
 
 /**
 * Displays the given search results.
@@ -45,26 +38,20 @@ ZmVoiceListController.prototype.show =
 function(searchResult, folder) {
 	this._folder = folder;
 	ZmListController.prototype.show.call(this, searchResult);
-	if (searchResult) {
-		this.setList(searchResult.getResults(folder.getSearchType()));
-		this._list.setHasMore(searchResult.getAttribute("more"));
-	}
-	else {
-		this._list = null;
-	}
-	this._setup(this._currentViewId);
+	this._list = searchResult ? searchResult.getResults(folder.getSearchType()) : null;
+	if (this._list)
+		this._list.setHasMore(searchResult.getAttribute("more"));	
+	this._setup(this._currentView);
 
-	var lv = this._listView[this._currentViewId];
+	var lv = this._listView[this._currentView];
 	if (lv && this._activeSearch) {
 		lv.offset = parseInt(this._activeSearch.getAttribute("offset"));
     }
-	var elements = this.getViewElements(this._currentViewId, lv);
-	
-    this._setView({	view:		this._currentViewId,
-					viewType:	this._currentViewType,
-					elements:	elements,
-					isAppView:	true});
-    this._resetNavToolBarButtons();
+    var elements = {};
+    elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
+    elements[ZmAppViewMgr.C_APP_CONTENT] = lv;
+    this._setView({view:this._currentView, elements:elements, isAppView:true});
+    this._resetNavToolBarButtons(this._currentView);
 };
 
 ZmVoiceListController.prototype.getFolder =
@@ -104,17 +91,19 @@ function(view) {
 
 ZmVoiceListController.prototype._initializeNavToolBar =
 function(view) {
-	this._itemCountText[view] = this._toolbar[view].getButton(ZmOperation.TEXT);
+	this._toolbar[view].addOp(ZmOperation.TEXT);
+	var text = this._itemCountText[view] = this._toolbar[view].getButton(ZmOperation.TEXT);
+	text.addClassName("itemCountText");
 };
 
 ZmVoiceListController.prototype._getView = 
 function() {
-	return this._listView[this._currentViewId];
+	return this._listView[this._currentView];
 };
 
 ZmVoiceListController.prototype._getToolbar = 
 function() {
-	return this._toolbar[this._currentViewId]
+	return this._toolbar[this._currentView]
 };
 
 ZmVoiceListController.prototype._getMoreSearchParams =
@@ -130,13 +119,11 @@ function(ev) {
 	return contact;
 };
 
-ZmVoiceListController.prototype._callbackListener =
-function() {
-	var view = this._getView();
-	var sel = view.getSelection();
-	if((sel instanceof Array) && sel.length >= 1) {
-		var partyType = view._getCallType() == ZmVoiceFolder.PLACED_CALL ? ZmVoiceItem.TO : ZmVoiceItem.FROM;
-		this._app.displayClickToCallDlg(sel[0].getCallingParty(partyType).name);
+ZmVoiceListController.prototype._refreshListener =
+function(ev) {
+	if (this._folder) {
+		var app = appCtxt.getApp(ZmApp.VOICE);
+		app.search(this._folder);
 	}
 };
 
@@ -167,6 +154,12 @@ function(ev) {
 	if (url) {
 		window.open(appContextPath+AjxStringUtil.urlEncode(url), "_blank");
 	}
+};
+
+ZmVoiceListController.prototype._callManagerListener =
+function() {
+	this._onPrefsActivedObj = this._onPrefsActivedObj || new AjxListener(this, this._handleResponseLaunchPrefs);
+	appCtxt.getAppController().activateApp(ZmApp.PREFERENCES, false, this._onPrefsActivedObj);
 };
 
 ZmVoiceListController.prototype._handleResponseLaunchPrefs =

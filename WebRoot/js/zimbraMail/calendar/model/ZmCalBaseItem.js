@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -181,13 +181,6 @@ ZmCalBaseItem.prototype.getEndTime 		= function() { return this.endDate.getTime(
  * @return	{Date}	the start time
  */
 ZmCalBaseItem.prototype.getStartTime 	= function() { return this.startDate.getTime(); }; 	// start time in ms
-
-/**
- * Gets the alarm instance start time
- *
- * @return	{Date}	the alarmInst time
- */
-ZmCalBaseItem.prototype.getAlarmInstStart = function() { return this._alarmInstStart; }; 	// alarm inst time in ms
 
 /**
  * Gets the duration.
@@ -386,7 +379,6 @@ function(calItemNode, instNode) {
 	this.priority 		= parseInt(this._getAttr(calItemNode, instNode, "priority"));
 
 	this.recurring 		= instNode.recur != null ? instNode.recur : calItemNode.recur; // TEST for null since recur can be FALSE
-    this.ridZ 			= this.recurring && instNode && instNode.ridZ;
 
 	this.fba = this._getAttr(calItemNode, instNode, "fba");
 
@@ -460,7 +452,7 @@ function() {
 
 /**
  * Gets alarm info
- *
+ * 
  * @return	{Object}    the alarm information
  */
 ZmCalBaseItem.prototype.getAlarmData =
@@ -470,7 +462,7 @@ function() {
 
 /**
  * Checks if the alarm is old (based on current time).
- * 
+ *
  * @return	{Boolean}	<code>true</code> if the alarm is old
  */
 ZmCalBaseItem.prototype.isAlarmOld =

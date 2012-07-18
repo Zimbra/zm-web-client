@@ -1,0 +1,23 @@
+/** Pebble **/
+
+.ZOptionsSectionMain{
+	background: #fff;
+	padding:1em;
+}
+
+.TabNormal a:link, .TabNormal a:visited{
+	color: white !important;
+}
+
+.TabFiller{
+ @AppTabBorder-normal@
+}
+
+.ZhAppSwitchLink a:link, .ZhAppLinks a:link, #skin_container_tree_top td{
+	color: white;
+}
+
+.TabSelected{
+	@tlRadius@: 3px;
+	@trRadius@: 3px; 
+}
