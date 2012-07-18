@@ -266,7 +266,7 @@ function(signature, strict) {
 	}
 	var sigValue = signature.value;
 	var maxLength = appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH);
-	if (sigValue.length > maxLength) {
+	if (maxLength > 0 && sigValue.length > maxLength) {
 		return AjxMessageFormat.format((signature.contentType == ZmMimeTable.TEXT_HTML)
 			? ZmMsg.errorHtmlSignatureTooLong
 			: ZmMsg.errorSignatureTooLong, maxLength);
