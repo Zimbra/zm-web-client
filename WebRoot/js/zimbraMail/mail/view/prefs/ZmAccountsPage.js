@@ -143,6 +143,10 @@ function() {
 			displayContainer:	ZmPref.TYPE_SELECT,
 			hint:				ZmMsg.emailAddr
 		},
+		FROM_EMAIL_TYPE: {
+			displayContainer:	ZmPref.TYPE_SELECT,
+			hint:				ZmMsg.emailAddr
+		},
 		WHEN_SENT_TO: {
 			displayName:		ZmMsg.personaWhenSentTo,
 			displayContainer:	ZmPref.TYPE_CHECKBOX
@@ -179,6 +183,7 @@ function() {
 				"VISIBLE",				//
 				"FROM_NAME",			// I
 				"FROM_EMAIL",			// I
+				"FROM_EMAIL_TYPE",			// I
 				"REPLY_TO",				// I
 				"REPLY_TO_NAME",		// I
 				"REPLY_TO_EMAIL"		// I
@@ -217,6 +222,7 @@ function() {
 				"HEADER",
 				"FROM_NAME",				// I
 				"FROM_EMAIL",				// I
+				"FROM_EMAIL_TYPE",				// I
 				"REPLY_TO",					// I
 				"REPLY_TO_NAME",			// I
 				"REPLY_TO_EMAIL",			// I
@@ -255,6 +261,7 @@ function() {
 ZmAccountsPage.ACCOUNT_PROPS = {
 	"NAME":						{ setter: "setName",	getter: "getName" },
 	"EMAIL":					{ setter: "setEmail",	getter: "getEmail" },
+	"EMAIL_TYPE":					"emailType",
 	"VISIBLE":					"visible",
 	"ACCOUNT_TYPE":				"type",
 	"USERNAME":					"userName",
@@ -269,6 +276,7 @@ ZmAccountsPage.ACCOUNT_PROPS = {
 ZmAccountsPage.IDENTITY_PROPS = {
 	"FROM_NAME":			"sendFromDisplay",
 	"FROM_EMAIL":			"sendFromAddress",
+	"FROM_EMAIL_TYPE":		"sendFromAddressType",
 	"REPLY_TO":				"setReplyTo",
 	"REPLY_TO_NAME":		"setReplyToDisplay",
 	"REPLY_TO_EMAIL":		"setReplyToAddress",
@@ -1036,8 +1044,9 @@ function(account, section) {
 	var identity = account.getIdentity();
 
 	this._setControlValue("FROM_NAME", section, identity.sendFromDisplay);
-	this._setControlValue("FROM_EMAIL", section, identity.sendFromAddress);
-	this._setControlValue("REPLY_TO", section, identity.setReplyTo);
+    this._setControlValue("FROM_EMAIL", section, (identity.sendFromAddressType == ZmSetting.SEND_ON_BEHALF_OF) ? ZmMsg.onBehalfOfMidLabel + " " + identity.sendFromAddress : identity.sendFromAddress);
+    this._setControlValue("FROM_EMAIL_TYPE", section, identity.sendFromAddressType);
+    this._setControlValue("REPLY_TO", section, identity.setReplyTo);
 	this._setControlValue("REPLY_TO_NAME", section, identity.setReplyToDisplay);
 	this._setControlValue("REPLY_TO_EMAIL", section, identity.setReplyToAddress);
 	this._setControlValue("READ_RECEIPT_TO_ADDR", section, identity.readReceiptAddr);
@@ -1322,9 +1331,18 @@ function(account, section, dontClearFolder) {
 		var prop = ZmAccountsPage.IDENTITY_PROPS[id];
 		var isField = AjxUtil.isString(prop);
 
-		var ovalue = isField ? identity[prop] : identity[prop.getter]();
-		var nvalue = this._getControlValue(id, section);
-		if (this._valuesEqual(ovalue, nvalue)) { continue; }
+		var ovalue = (isField ? identity[prop] : identity[prop.getter]())|| "";
+		var nvalue = (this._getControlValue(id, section))||"";
+        if (id == "FROM_EMAIL" && identity.sendFromAddressType == ZmSetting.SEND_ON_BEHALF_OF) ovalue = ZmMsg.sendOnBehalfOf + " " + ovalue;
+
+        if (this._valuesEqual(ovalue, nvalue)) { continue; }
+
+        if (id == "FROM_EMAIL" && nvalue.indexOf(ZmMsg.sendOnBehalfOf + " ") == 0) {
+            nvalue = nvalue.replace(ZmMsg.sendOnBehalfOf + " ", "");
+            identity.sendFromAddressType = ZmSetting.SEND_ON_BEHALF_OF;
+        } else {
+            identity.sendFromAddressType = ZmSetting.SEND_AS;
+        }
 
 		account._dirty = true;
 		if (isField) {
@@ -1457,7 +1475,7 @@ function( displayOptions, fromAddress){
           fromAddress.splice(index, 1);
       if (index = AjxUtil.indexOf(displayOptions,email) != -1)
            displayOptions.splice(index, 1);
-      tmpArray2.push({label:(ZmMsg.sendOnBehalfOf + " " + email), value:email});
+      tmpArray2.push({label:(ZmMsg.sendOnBehalfOf + " " + email), value:(ZmMsg.sendOnBehalfOf + " " + email)});
     }
 
     // Add sendAs emails
@@ -1858,8 +1876,14 @@ function(evt) {
 ZmAccountsPage.prototype._updateList =
 function(account) {
 	var lv = this._accountListView;
+    var email = AjxStringUtil.htmlEncode(account.getEmail());
+    var identity = account.getIdentity();
+    if (!account.isMain && identity && identity.sendFromAddressType == ZmSetting.SEND_ON_BEHALF_OF){
+        email = appCtxt.getUsername() + " " + ZmMsg.sendOnBehalfOf + " " + email;
+    }
+
 	lv.setCellContents(account, ZmItem.F_NAME, AjxStringUtil.htmlEncode(account.getName()));
-	lv.setCellContents(account, ZmItem.F_EMAIL,AjxStringUtil.htmlEncode(account.getEmail()));
+	lv.setCellContents(account, ZmItem.F_EMAIL,email);
 	lv.setCellContents(account, ZmItem.F_TYPE, AjxStringUtil.htmlEncode(lv._getAccountType(account)));
 };
 
@@ -2436,7 +2460,10 @@ function(buffer, i, item, field, col, params) {
 		return i;
 	}
 	if (field == ZmItem.F_EMAIL) {
-		buffer[i++] = "<div style='margin-left: 10px;'>"+ AjxStringUtil.htmlEncode(item.getEmail()) +"</div>";
+        var email = item.getEmail();
+        var identity = item.getIdentity();
+        if (!item.isMain && identity.sendFromAddressType == ZmSetting.SEND_ON_BEHALF_OF) email = appCtxt.getActiveAccount().name + " " + ZmMsg.sendOnBehalfOf + " " + email;
+		buffer[i++] = "<div style='margin-left: 10px;'>"+ AjxStringUtil.htmlEncode(email) +"</div>";
 		return i;
 	}
 	if (field == ZmItem.F_TYPE) {

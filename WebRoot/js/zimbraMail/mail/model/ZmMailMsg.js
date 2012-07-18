@@ -2417,8 +2417,14 @@ function(addrNodes, parentNode, isDraft, accountName) {
 		if (onBehalfOf) {
 			addr = accountName;
 		} else if (identity) {
-			addr = identity.sendFromAddress || mainAcct;
-			displayName = identity.sendFromDisplay;
+            if (identity.sendFromAddressType == ZmSetting.SEND_ON_BEHALF_OF){
+                addr = identity.sendFromAddress.replace(ZmMsg.onBehalfOfMidLabel + " ", "");
+                onBehalfOf = true;
+            } else {
+			    addr = identity.sendFromAddress || mainAcct;
+            }
+            displayName = identity.sendFromDisplay;
+
 		} else {
            addr = this.delegatedSenderAddr || mainAcct;
            onBehalfOf = this.isOnBehalfOf;

@@ -29,6 +29,7 @@ ZmPersona = function(identity, list) {
 
 	identity.sendFromDisplay = identity.sendFromDisplay || appCtxt.get(ZmSetting.DISPLAY_NAME);
 	identity.sendFromAddress = identity.sendFromAddress || appCtxt.get(ZmSetting.USERNAME);
+    identity.sendFromAddressType = identity.sendFromAddressType || ZmSetting.SEND_AS;
 	this.identity = identity;
 };
 ZmPersona.prototype = new ZmAccount;

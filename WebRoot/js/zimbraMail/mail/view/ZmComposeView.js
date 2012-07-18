@@ -3167,10 +3167,11 @@ function(identity, account) {
 
 	// default replacement parameters
 	var defaultIdentity = appCtxt.getIdentityCollection().defaultIdentity;
+	var addr = (identity.sendFromAddressType == ZmSetting.SEND_ON_BEHALF_OF) ? (appCtxt.getUsername() + " " + ZmMsg.sendOnBehalfOf + " " + identity.sendFromAddress) : identity.sendFromAddress;
 	var params = [
 		name,
 		(identity.sendFromDisplay || ""),
-		identity.sendFromAddress,
+		addr,
 		ZmMsg.accountDefault,
 		appCtxt.get(ZmSetting.DISPLAY_NAME),
 		defaultIdentity.sendFromAddress
