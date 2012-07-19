@@ -2161,7 +2161,7 @@ function() {
 		clear:		appCtxt.isChildWindow,
 		tabParams:	this._getTabParams(tabId, this._tabCallback.bind(this))
 	};
-	var buttonText = (this._conv && this._conv.subject) ? this._conv.subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT) : ZmMsgController.DEFAULT_TAB_TEXT;
+	var buttonText = (this._conv && this._conv.subject) ? this._conv.subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT) : (this._msg && this._msg.subject && this._msg.subject.substr(0, ZmAppViewMgr.TAB_BUTTON_MAX_TEXT)) ||   ZmMsgController.DEFAULT_TAB_TEXT;
 
 	this._setView(viewParams);
 	avm.setTabTitle(this._currentViewId, buttonText);
