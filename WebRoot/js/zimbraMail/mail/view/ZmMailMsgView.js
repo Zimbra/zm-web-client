@@ -171,7 +171,8 @@ function() {
 
 ZmMailMsgView.prototype.set =
 function(msg, force, dayViewCallback) {
-	if (!force && this._msg && msg && (this._msg.id == msg.id)) { return; }
+	
+	if (!force && this._msg && msg && (this._msg == msg)) { return; }
 
 	var oldMsg = this._msg;
 	this.reset();

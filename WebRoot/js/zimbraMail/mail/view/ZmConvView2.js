@@ -62,7 +62,7 @@ ZmConvView2.prototype.toString = function() { return "ZmConvView2"; };
 ZmConvView2.prototype.set =
 function(conv, force) {
 
-	if (!force && this._item && conv && (this._item.id == conv.id)) { return; }
+	if (!force && this._item && conv && (this._item == conv)) { return false; }
 	
 	var gotConv = (conv != null);
 	this.reset(gotConv);
