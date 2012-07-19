@@ -79,6 +79,11 @@ function() {
 	}
 };
 
+ZmSharingPage.prototype.hasResetButton =
+function() {
+	return false;
+};
+
 
 /**
  * Creates a sharing view.

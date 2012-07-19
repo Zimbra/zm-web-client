@@ -78,6 +78,11 @@ function() {
 
 };
 
+ZmFilterController.prototype._getToolBarOps =
+function () {
+	return [];
+};
+
 ZmFilterController.prototype.hasOutgoingFiltersActive =
 function(callback) {
 	var rules = this._outgoingFilterRulesController.getRules();
@@ -119,4 +124,5 @@ function (ev) {
        this._outgoingFilterRulesController.resetListView(index);
    }
 
+	ZmPrefController.prototype._stateChangeListener.apply(this, arguments);
 };

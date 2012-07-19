@@ -51,6 +51,11 @@ function(useDefaults) {
 	}
 };
 
+ZmImportExportPage.prototype.hasResetButton =
+function() {
+	return false;
+};
+
 //
 // Protected methods
 //

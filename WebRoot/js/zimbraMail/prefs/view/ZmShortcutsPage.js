@@ -50,6 +50,11 @@ function () {
     return "ZmShortcutsPage";
 };
 
+ZmShortcutsPage.prototype.hasResetButton =
+function() {
+	return false;
+};
+
 ZmShortcutsPage.prototype._createControls =
 function(deferred) {
 

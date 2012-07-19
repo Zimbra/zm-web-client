@@ -61,6 +61,11 @@ function () {
 	return this._tabView;
 };
 
+ZmFilterPage.prototype.hasResetButton =
+function() {
+	return false;
+};
+
 
 //
 // Protected methods

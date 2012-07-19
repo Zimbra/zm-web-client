@@ -284,11 +284,6 @@ function() {
 			this._addButton(defaultsRestore, ZmMsg.restoreDefaults, 110, new AjxListener(this, this._resetListener));
 		}
 
-		var revertPage = document.getElementById([this._htmlElId,"REVERT_PAGE"].join("_"));
-		if (revertPage) {
-			this._addButton(revertPage, ZmMsg.restorePage, null, new AjxListener(this, this._resetPageListener));
-		}
-
 		// create tab-group for all controls on the page
 		this._addControlsToTabGroup(this._tabGroup);
 	} catch (e) {
@@ -479,6 +474,12 @@ function() {
 	return this._title;
 };
 
+ZmPreferencesPage.prototype.hasResetButton =
+function() {
+	return true;
+};
+
+
 ZmPreferencesPage.prototype.getTabGroupMember =
 function() {
 	return this._tabGroup;
@@ -498,6 +499,10 @@ function(useDefaults) {
 		var pref = settings.getSetting(id);
 		var newValue = this._getPrefValue(id, useDefaults);
 		this.setFormValue(id, newValue);
+	}
+
+	if (!useDefaults) {
+		this._controller.setDirty(this._section.id, false);
 	}
 };
 
@@ -1182,14 +1187,6 @@ ZmPreferencesPage.prototype._resetListener =
 function(ev) {
 	this.reset(true);
 	appCtxt.setStatusMsg(ZmMsg.defaultsRestored);
-};
-
-/** Reset the form values to the last save. */
-ZmPreferencesPage.prototype._resetPageListener =
-function(ev) {
-	this.reset(false);
-	this._controller.setDirty(this._section.id, false);
-	appCtxt.setStatusMsg(ZmMsg.defaultsPageRestore);
 };
 
 /**

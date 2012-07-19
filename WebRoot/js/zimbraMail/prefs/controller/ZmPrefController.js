@@ -36,6 +36,8 @@ ZmPrefController = function(container, prefsApp) {
 	this._listeners = {};
 	this._listeners[ZmOperation.SAVE] = this._saveListener.bind(this);
 	this._listeners[ZmOperation.CANCEL] = this._backListener.bind(this);
+	this._listeners[ZmOperation.REVERT_PAGE] =
+		this._resetPageListener.bind(this);
 
 	this._filtersEnabled = appCtxt.get(ZmSetting.FILTERS_ENABLED);
 	this._dirty = {};
@@ -72,6 +74,17 @@ function() {
 ZmPrefController.prototype.getPrefsView =
 function() {
 	return this._prefsView;
+};
+
+/**
+ * Gets the current preferences page
+ *
+ * @return	{ZmPreferencesPage}		the current page
+ */
+ZmPrefController.prototype.getCurrentPage =
+function() {
+	var tabKey = this._prefsView.getCurrentTab();
+	return this._prefsView.getTabView(tabKey);
 };
 
 /**
@@ -266,6 +279,7 @@ ZmPrefController.prototype._setView =
 function() {
 	if (!this._prefsView) {
 		this._initializeToolBar();
+		this._initializeLeftToolBar();
 		var callbacks = new Object();
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE]		= this._preHideCallback.bind(this);
 		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD]	= this._preUnloadCallback.bind(this);
@@ -274,6 +288,7 @@ function() {
 
 		this._prefsView = new ZmPrefView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE, controller:this});
 		var elements = {};
+		elements[ZmAppViewMgr.C_NEW_BUTTON] = this._lefttoolbar;
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
 
@@ -287,6 +302,27 @@ function() {
 };
 
 /**
+ * Initializes the left toolbar and sets up the listeners.
+ *
+ * @private
+ */
+ZmPrefController.prototype._initializeLeftToolBar =
+function () {
+	if (this._lefttoolbar) return;
+
+	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL];
+	this._lefttoolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._currentViewId});
+	buttons = this._lefttoolbar.opList;
+	for (var i = 0; i < buttons.length; i++) {
+		var button = buttons[i];
+		if (this._listeners[button]) {
+			this._lefttoolbar.addSelectionListener(button, this._listeners[button]);
+		}
+	}
+	this._lefttoolbar.getButton(ZmOperation.SAVE).setToolTipContent(ZmMsg.savePrefs);
+};
+
+/**
  * Initializes the toolbar and sets up the listeners.
  * 
  * @private
@@ -295,7 +331,7 @@ ZmPrefController.prototype._initializeToolBar =
 function () {
 	if (this._toolbar) return;
 	
-	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL];
+	var buttons = this._getToolBarOps();
 	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._currentViewId});
 	buttons = this._toolbar.opList;
 	for (var i = 0; i < buttons.length; i++) {
@@ -304,10 +340,14 @@ function () {
 			this._toolbar.addSelectionListener(button, this._listeners[button]);
 		}
 	}
-	this._toolbar.getButton(ZmOperation.SAVE).setToolTipContent(ZmMsg.savePrefs);
 
 	appCtxt.notifyZimlets("initializeToolbar", [this._app, this._toolbar, this, this._currentViewId], {waitUntilLoaded:true});
 
+};
+
+ZmPrefController.prototype._getToolBarOps =
+function () {
+	return [ZmOperation.FILLER, ZmOperation.REVERT_PAGE];
 };
 
 ZmPrefController.prototype._initializeTabGroup = 
@@ -315,6 +355,7 @@ function () {
 	var tg = this._createTabGroup();
 	var rootTg = appCtxt.getRootTabGroup();
 	tg.newParent(rootTg);
+	tg.addMember(this._lefttoolbar.getTabGroupMember());
 	tg.addMember(this._toolbar.getTabGroupMember());
 	tg.addMember(this._prefsView.getTabGroupMember());
 };
@@ -450,6 +491,20 @@ function() {
 	appCtxt.getAppViewMgr().popView();
 };
 
+ZmPrefController.prototype._resetPageListener =
+function() {
+	var viewPage = this.getCurrentPage();
+
+	viewPage.reset(false);
+	appCtxt.setStatusMsg(ZmMsg.defaultsPageRestore);
+};
+
+ZmPrefController.prototype._stateChangeListener =
+function (ev) {
+	var resetbutton = this._toolbar.getButton(ZmOperation.REVERT_PAGE);
+	resetbutton.setEnabled(this.getCurrentPage().hasResetButton());
+}
+
 ZmPrefController.prototype._preHideCallback =
 function(view, force) {
 	ZmController.prototype._preHideCallback.call(this);
@@ -464,8 +519,7 @@ function(view) {
 ZmPrefController.prototype._preShowCallback =
 function() {
 	if (appCtxt.multiAccounts) {
-		var tabKey = this._prefsView.getCurrentTab();
-		var viewPage = this._prefsView.getTabView(tabKey);
+		var viewPage = this.getCurrentPage();
 		if (viewPage) {
 			// bug: 42399 - the active account may not be "owned" by what is
 			// initially shown in prefs
@@ -534,5 +588,5 @@ function() {
 
 ZmPrefController.prototype._getDefaultFocusItem = 
 function() {
-	return this._prefsView.getTabGroupMember() || this._toolbar || null;
+	return this._prefsView.getTabGroupMember() || this._lefttoolbar || this._toolbar || null;
 };

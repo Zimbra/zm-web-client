@@ -83,6 +83,10 @@ function(useDefaults) {
 	}
 };
 
+ZmMobileDevicesPage.prototype.hasResetButton =
+function() {
+	return false;
+};
 
 /**
  * Creates a mobile device list.

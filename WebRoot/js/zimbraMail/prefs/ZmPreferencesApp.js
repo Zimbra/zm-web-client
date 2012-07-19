@@ -233,6 +233,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_MOBILE_SUSPEND_SYNC, {textKey:"mobileSuspendSync", image:"Offline"});
 	ZmOperation.registerOp(ZmId.OP_MOBILE_WIPE, {textKey:"mobileWipe", image:"MobileWipe"}, ZmSetting.MOBILE_POLICY_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOBILE_CANCEL_WIPE, {textKey:"mobileWipeCancel", image:"MobileWipeCancel"}, ZmSetting.MOBILE_POLICY_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_REVERT_PAGE, {textKey:"restorePage"});
 
     /* ZmOperation.registerOp(ZmId.OP_ADD_QUICK_COMMAND, {textKey:"quickCommandAdd", image:"Plus"}, ZmSetting.FILTERS_ENABLED);
     ZmOperation.registerOp(ZmId.OP_EDIT_QUICK_COMMAND, {textKey:"quickCommandEdit", image:"Edit"}, ZmSetting.FILTERS_ENABLED);

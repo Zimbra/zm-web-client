@@ -1,9 +1,4 @@
 <template id='data.ImportExport#ImportExportPrefPage'>
-	<!-- revert not used -- just to keep spacing consistent -->
-	<div align=right style='margin-right: 20px; margin-bottom: 10px;'>
-			<!-- div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right: 25px;'></div -->
-	</div>
-
 	<$ if (appCtxt.get(ZmSetting.IMPORT_ENABLED)) { $>
 		<table width=100%>
 			<tr class='ZOptionsHeaderRow'>

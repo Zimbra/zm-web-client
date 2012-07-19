@@ -508,9 +508,7 @@ ZmPrefView.prototype._stateChangeListener =
 function(ev) {
   if (ev && ev.item && ev.item instanceof ZmPrefView) {
       var view = ev.item.getActiveView();
-      if (view instanceof ZmFilterPage) {
-          view._controller._stateChangeListener(ev);
-      }
+      view._controller._stateChangeListener(ev);
   }
 
 };

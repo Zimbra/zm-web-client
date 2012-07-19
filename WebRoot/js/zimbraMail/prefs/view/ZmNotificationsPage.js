@@ -148,7 +148,7 @@ ZmNotificationsPage.prototype._createPageTemplate = function() {
 
 ZmNotificationsPage.prototype._cleanup =
 		function() {
-			this.setContent("<div>&nbsp;</div>");
+			this.setContent("");
 		}
 
 ZmNotificationsPage.prototype._createControls = function() {

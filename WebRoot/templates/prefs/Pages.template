@@ -13,8 +13,6 @@ and the container element is replaced with that control.
 
 <template id='prefs.Pages#General'>
 
-    <div id='${id}_REVERT_PAGE' tabindex='10' style='margin-bottom:10px;float:right'></div>
-
 	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -198,9 +196,6 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#Mail'>
-	<div align=right style='margin-right:20px; margin-bottom:10px;'>
-		<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right:25px;'></div>
-	</div>
 
 	<$ if (!appCtxt.multiAccounts || data.activeAccount.isMain) { $>
 		<table width=100%>
@@ -693,9 +688,6 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#Trusted'>
-	<div align=right style='margin-right:20px; margin-bottom:10px;'>
-		<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right:25px;'></div>
-	</div>
 	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -715,9 +707,6 @@ and the container element is replaced with that control.
 
 
 <template id='prefs.Pages#Signatures'>
-	<div align=right style='margin-right:20px; margin-bottom:10px;'>
-			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right:25px;'></div>
-	</div>
 
 	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
@@ -815,10 +804,6 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#Contacts'>
-	<!-- REVERT_PAGE (button) -->
-	<div align=right style='margin-right:20px; margin-bottom:10px;'>
-		<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right:25px;'></div>
-	</div>
 
 	<$ if (data.activeAccount.isMain) { $>
 		<table width=100%>
@@ -908,9 +893,6 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#Accounts'>
-	<div align=right style='margin-right:20px; margin-bottom:10px;'>
-		<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right:25px;'></div>
-	</div>
 
 	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
@@ -1403,9 +1385,6 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#Calendar'>
-	<div align=right style='margin-right:20px; margin-bottom:10px;'>
-		<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right:25px;'></div>
-	</div>
 
 	<$ if (data.activeAccount.isMain) { $>
 		<table width=100%>
@@ -1719,9 +1698,6 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#IM'>
-	<div align=right style='margin-right:20px; margin-bottom:10px;'>
-		<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right:25px;'></div>
-	</div>
 	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'>
@@ -1971,10 +1947,6 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#Zimlets'>
-	<div align=right style='margin-right:20px; margin-bottom:10px;'>
-			<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right:25px;'></div>
-	</div>
-
 	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -2122,6 +2094,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 
 
 <template id='prefs.Pages#SharingPrefPage'>
+	<div class="rightAlign"><$=ZmMsg.sharingChangesSavedImmediately$></div>
 	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -2207,6 +2180,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#MobileDevices'>
+	<div class="rightAlign"><$=ZmMsg.mobileDeviceChangesSavedImmediately$></div>
 	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -2228,7 +2202,6 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			</td>
 		</tr>
 	</table>
-	<$=ZmMsg.mobileDeviceChangesSavedImmediately$><br>
 </template>
 
 <template id='prefs.Pages#MobileDeviceInfo'>
@@ -2286,10 +2259,6 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#Notifications'>
-	<!-- REVERT_PAGE (button) -->
-	<div align=right style='margin-right:20px; margin-bottom:10px; float:right;'>
-		<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right:25px; float:right;'></div>
-	</div>
 	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -2531,9 +2500,6 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#OutOfOffice'>
-	<div align=right style='margin-right:20px; margin-bottom:10px;'>
-		<div id='${id}_REVERT_PAGE' tabindex='10' style='margin-right:25px;'></div>
-	</div>
 	<table width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
