@@ -195,16 +195,9 @@ function(insertFontStyle, onlyInnerContent) {
 	var content = "";
 	if (this._mode == DwtHtmlEditor.HTML) {
 		var editor = this.getEditor(),
-            params = {},
             content1 = "";
-        params.format ='raw';
         if (editor) {
-            try {
-                content1 = editor.getContent();
-            }
-            catch (e) {
-                content1 = editor.getContent(params);
-            }
+            content1 = editor.getContent({format:"raw"});
         }
         else {
             content1 = field.value || "";
