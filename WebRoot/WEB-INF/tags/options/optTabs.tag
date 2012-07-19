@@ -97,10 +97,12 @@
             <c:set var="customTabs" value="${mailbox.attrs.zimbraStandardClientCustomPrefTab}"/>
             <c:forEach var="customTab" items="${customTabs}" varStatus="status">
                 <c:set var="tab" value="${fn:split(customTab,',')}"/>
+                <c:set var="tabNameKey" value="customTab_${fn:toLowerCase(fn:replace(tab[0],' ',''))}"/>
                 <td class='TabSpacer'/>
                 <td class='Tab ${selected==fn:toLowerCase(tab[0]) ? 'TabSelected' : 'TabNormal'}'>
                     <a href="<c:url value="/h/options?selected=${tab[0]}&prev=${prev}&status=${status.index}"/>">
-                        <span>${tab[0]}</span></a>
+                        <span> <fmt:message key="${tabNameKey}"/> </span>
+                    </a>
                 </td>    
             </c:forEach> 
         </c:if>
