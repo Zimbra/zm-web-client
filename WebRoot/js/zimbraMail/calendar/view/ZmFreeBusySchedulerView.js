@@ -769,7 +769,7 @@ function() {
 	this._resetAttendeeCount();
 
     // Set in updateAttendees
-	if (this._allAttendeeEmails.length) {
+	if (this._allAttendeeEmails && this._allAttendeeEmails.length) {
         //all attendees status need to be update even for unshown attendees
 		var emails = this._allAttendeeEmails.join(",");
 		this._getFreeBusyInfo(this._getStartTime(), emails);
