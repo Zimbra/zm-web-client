@@ -121,7 +121,7 @@ function() {
 
 ZmReminderDialog.prototype.initialize =
 function(list) {
-	this._list = list.clone();
+	this._list = new AjxVector();
 	this._apptData = {};
 
 	var html = [];
