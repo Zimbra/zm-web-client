@@ -374,7 +374,12 @@ function(hdr, htmlMode) {
  */
 ZmMailMsg.prototype.isHtmlMail =
 function() {
-	return this.getBodyPart(ZmMimeTable.TEXT_HTML) != null;
+    if (this.isInvite()) {
+        return this.invite.getComponentDescriptionHtml() != null;
+    }
+    else {
+        return this.getBodyPart(ZmMimeTable.TEXT_HTML) != null;
+    }
 };
 
 // Setters
