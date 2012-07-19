@@ -260,7 +260,7 @@
         <tr><td colspan="4" class="sectionLabel" valign="top"><label for="notes"><fmt:message key="notes"/></label></td></tr>
 
         <tr><td colspan="4">
-                <textarea id="notes" rows="8" cols="60" style="width:90%" name="notes" tabindex="600">${contact != null ? contact.notes : ''}</textarea>
+                <textarea id="notes" rows="8" cols="60" style="width:90%" name="notes" tabindex="600">${contact != null ? fn:escapeXml(contact.notes) : ''}</textarea>
             </td>
         </tr>
         </table>
