@@ -1773,25 +1773,28 @@ function(urlQueryStr){
 	urlQueryStr = urlQueryStr || '';
 
 	var match = urlQueryStr.match(/\bto=([^&]+)/i);
-	var to = match ? AjxStringUtil.urlComponentDecode(match[1]) : null;
-
+	var to = match ? AjxStringUtil.urlComponentDecode(match[1].replace(/\+/g, " ")) : null;
+	to = to && AjxEmailAddress.isValid(to) ? to : AjxStringUtil.htmlEncode(to);
+	
 	match = urlQueryStr.match(/\bsubject=([^&]+)/i);
 	var subject = match ? (AjxStringUtil.urlComponentDecode(match[1]).replace(/\+/g, " ")) : null;
 
 	match = urlQueryStr.match(/\bcc=([^&]+)/i);
-	var cc = match ? AjxStringUtil.urlComponentDecode(match[1]) : null;
-
+	var cc = match ? AjxStringUtil.urlComponentDecode(match[1].replace(/\+/g, " ")) : null;
+	cc = cc && AjxEmailAddress.isValid(cc) ? cc : AjxStringUtil.htmlEncode(cc);
+	
 	match = urlQueryStr.match(/\bbcc=([^&]+)/i);
-	var bcc = match ? AjxStringUtil.urlComponentDecode(match[1]) : null;
-
+	var bcc = match ? AjxStringUtil.urlComponentDecode(match[1].replace(/\+/g, " ")) : null;
+	bcc = bcc &  AjxEmailAddress.isValid(bcc) ? bcc : AjxStringUtil.htmlEncode(bcc);
+	
 	match = urlQueryStr.match(/\bbody=([^&]+)/i);
 	var body = match ? (AjxStringUtil.urlComponentDecode(match[1]).replace(/\+/g, " ")) : null;
 
 	return {
-		to: AjxStringUtil.htmlEncode(to),
+		to: to,
 		subject: AjxStringUtil.htmlEncode(subject),
-		cc: AjxStringUtil.htmlEncode(cc),
-		bcc: AjxStringUtil.htmlEncode(bcc),
+		cc: cc,
+		bcc: bcc,
 		body: AjxStringUtil.htmlEncode(body)
 	};
 };

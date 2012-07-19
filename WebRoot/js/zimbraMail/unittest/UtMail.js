@@ -77,6 +77,25 @@ UT.test("Send email",
 	}
 );
 
+UT.test("parseComposeUrl",
+	function() {
+		UT.expect(3);
+		var mailApp = appCtxt.getApp(ZmApp.MAIL);
+		var queryStr = "&to=mailto%3AFoo+Bar+<foo.bar%40host.com>";
+		var result = mailApp._parseComposeUrl(queryStr);
+		UT.equal(result.to, "mailto:Foo Bar <foo.bar@host.com>");
+		
+		queryStr = "&to=mailto%3AC%2B%2B+Team+<cplusteam%40host.com>";
+		result = mailApp._parseComposeUrl(queryStr);
+		UT.equal(result.to, "mailto:C++ Team <cplusteam@host.com>");
+		
+		queryStr='&cc="\"><iframe src=a onload=alert(\"VL\") <\"><iframe src=a onload=alert(\"VL\") <" <qa-test1@zim"';
+		result = mailApp._parseComposeUrl(queryStr);
+		UT.notEqual(result.cc, '"\"><iframe src=a onload=alert(\"VL\") <\"><iframe src=a onload=alert(\"VL\") <" <qa-test1@zimbra.com>'); //should be HTML encoded
+	}
+		
+);
+
 UT._postSendMessage =
 function(composeView, composeViewController, originalHandleResponse, draftType, msg, callback, result) {
 	var success = !result.isException();
@@ -87,4 +106,6 @@ function(composeView, composeViewController, originalHandleResponse, draftType, 
 	console.log("returned, call start");
 	UT.start();
 	UtZWCUtils.closeAllComposeViews();
-}
+};
+
+
