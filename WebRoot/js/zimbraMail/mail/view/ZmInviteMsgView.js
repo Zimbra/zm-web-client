@@ -604,9 +604,13 @@ function(content, isHtml) {
 	if (sepIdx == -1) {
 		return content;
 	}
-	return isHtml
-		? (content.substring(content.indexOf(">", sepIdx)+1))
-		: (content.substring(sepIdx+ZmItem.NOTES_SEPARATOR.length));
+	if (isHtml) {
+		//if it is a html content then just remove the content and preserve the html tags
+		//surrounding the content
+		var end = content.substring(0,sepIdx).lastIndexOf(">"); //end of the innermost html tag
+		return content.substring(0,end + 1) + content.substring(sepIdx+ZmItem.NOTES_SEPARATOR.length);
+	}
+	return content.substring(sepIdx+ZmItem.NOTES_SEPARATOR.length);
 };
 
 ZmInviteMsgView.prototype._getCounterToolbar =

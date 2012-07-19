@@ -1669,7 +1669,7 @@ function(msg, container, callback, index) {
 					if (!msg.getMimeHeader(ZmMailMsg.HDR_INREPLYTO)) {
 						//Hack - bug 70603 -  Do not truncate the message for forwarded invites
 						//The InReplyTo rfc822 header would be present in most of the forwarded invites
-						content = ZmInviteMsgView.truncateBodyContent(content);
+						content = ZmInviteMsgView.truncateBodyContent(content,true);
 					}
 					// if the notes are empty, don't bother rendering them
 					var tmp = AjxStringUtil.stripTags(content);
@@ -1728,7 +1728,7 @@ function(msg, container, callback, index) {
 						if (!msg.getMimeHeader(ZmMailMsg.HDR_INREPLYTO)) {
 							//Hack - bug 70603 -  Do not truncate the message for forwarded invites
 							//The InReplyTo rfc822 header would be present in most of the forwarded invites
-							content = ZmInviteMsgView.truncateBodyContent(content);
+							content = ZmInviteMsgView.truncateBodyContent(content, false);
 						}
 					}
 
