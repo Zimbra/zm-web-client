@@ -55,7 +55,7 @@
             var id = aResultItem[i++];
             var l  = aResultItem[i++];
 
-            if (e) {
+            if (e || d) {
 				var imgsrc = 
 				   t == 'gal' ? "<app:imgurl value='startup/ImgGALContact.png' />"
 	             : t == 'group' ? "<app:imgurl value='contacts/ImgGroup.png' />"
