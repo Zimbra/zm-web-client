@@ -399,7 +399,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 
 ZmConvListView.prototype._getCellId =
 function(item, field) {
-	return (field == ZmItem.F_FROM && item.type == ZmItem.CONV)
+	return ((field == ZmItem.F_FROM || field == ZmItem.F_SUBJECT) && item.type == ZmItem.CONV)
 		? this._getFieldId(item, field)
 		: ZmMailListView.prototype._getCellId.apply(this, arguments);
 };
@@ -444,9 +444,8 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		}
 		else if (field == ZmItem.F_SUBJECT) {
 			var subj = ZmMailMsg.stripSubjectPrefixes(item.subject || ZmMsg.noSubject);
-			htmlArr[idx++] = "<span style='white-space: nowrap' id='";
-			htmlArr[idx++] = this._getFieldId(item, field);
-			htmlArr[idx++] = "'>" + AjxStringUtil.htmlEncode(subj, true) + "</span>";
+			htmlArr[idx++] = "<span style='white-space: nowrap' >";
+			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj, true) + "</span>";
 			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(item);
 			}
