@@ -3160,6 +3160,7 @@ function(actionCode, ev) {
 		}
 
 		case ZmKeyMap.LOGOFF: {
+            DBG.println(AjxDebug.DBG1, "ZmZimbraMail.prototype.handleKeyAction:matched ZmKeyMap.LOGOFF, invoking logout");
 			ZmZimbraMail.logOff();
 			break;
 		}
