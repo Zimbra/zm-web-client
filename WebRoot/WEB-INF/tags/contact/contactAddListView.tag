@@ -86,8 +86,11 @@
         </c:if>
     </tr>
     <c:forEach items="${searchResult.hits}" var="hit" varStatus="status">
+    <c:if test="${empty groupMode}">
+        <c:set var="isGroupModeEmpty" value="true"/>
+    </c:if>
     <c:if test="${
-                groupMode or !fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.displayEmail)
+                isGroupModeEmpty or groupMode or fn:contains(mailbox.defaultIdentity.fromEmailAddress.fullAddress,hit.contactHit.displayEmail)
                 and !fn:contains(uploader.pendingAttendees,hit.contactHit.displayEmail)
                 and !fn:contains(uploader.compose.attendees,hit.contactHit.displayEmail)
                 and !fn:contains(uploader.pendingResources,hit.contactHit.displayEmail)
