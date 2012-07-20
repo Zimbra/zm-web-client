@@ -1369,6 +1369,7 @@ function() {
 		var apptDiv = document.getElementById(this._getItemId(layout.appt));
 		if (apptDiv) {
 			layout.bounds = this._getBoundsForAppt(layout.appt);
+            if (!layout.bounds) { continue; }
 			var w = Math.floor(layout.bounds.width*ZmCalColView._getApptWidthPercent(layout.maxcol+1));
 			var xinc = layout.maxcol ? ((layout.bounds.width - w) / layout.maxcol) : 0; // n-1
 			var x = xinc * layout.col + (layout.bounds.x);
