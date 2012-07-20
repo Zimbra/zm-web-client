@@ -1697,7 +1697,8 @@ function(content, sigStyle, sig, newLine) {
 	var re_newlines = "(" + AjxStringUtil.regExEscape(newLine) + ")*";
 	// get rid of all trailing newlines
 	var re = re_newlines;
-	if (this.getComposeMode() == DwtHtmlEditor.HTML) {
+	var isHtml = (this.getComposeMode() == DwtHtmlEditor.HTML);
+	if (isHtml) {
 		re += "</body></html>";
 	}
 	re += "$";
@@ -1709,7 +1710,11 @@ function(content, sigStyle, sig, newLine) {
 
 	if (sigStyle == ZmSetting.SIG_OUTLOOK && hasQuotedContent) {
 		var preface = this._getPreface();
-		var re_preface = AjxStringUtil.regExEscape(preface).replace(/\\\"/g,"\\\"?"); // IE has a funny idea of forgetting to put quotes around html attributes, so we make the quotes optional in the regex
+		var re_preface = AjxStringUtil.regExEscape(preface);
+		if (isHtml) {
+			re_preface = re_preface.replace(/\\\"/g, "\\\"?"); // IE sometimes omits quotes around attrs
+			re_preface = re_preface.replace("\\>", "\\s*\\\/?\\>"); // some browsers may put space and / before closing >
+		}
 		var regexp = new RegExp(re_newlines + re_preface, "i");
 		if (content.match(regexp)) {
 			content = content.replace(regexp, [sig, newLine, preface].join(""));
