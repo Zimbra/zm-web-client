@@ -113,7 +113,7 @@ ZmMailMsgView.UNTRUSTED_ATTRS = ["id", "class", "name", "profile"];
 
 // styles that we don't want to appear in HTML displayed in a div
 // for example, some clown may try to mess with us using absolute positioning
-ZmMailMsgView.BAD_STYLES = ["position:absolute"];
+ZmMailMsgView.BAD_STYLES = ["position:absolute", "font-"];
 
 
 // Public methods
