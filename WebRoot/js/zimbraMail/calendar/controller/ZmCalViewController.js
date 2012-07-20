@@ -648,7 +648,12 @@ function(ev) {
 		this._updateCheckedCalendars();
 	}
     if (ev.event == ZmEvent.E_MODIFY) {
-        this._refreshAction(true);
+        var details = ev.getDetails(),
+            fields = details ? details.fields : null;
+
+        if (fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_RGB])) {
+            this._refreshAction(true);
+        }
 	}
 };
 
