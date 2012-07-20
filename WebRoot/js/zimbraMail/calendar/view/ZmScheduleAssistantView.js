@@ -207,6 +207,11 @@ function(clearSelection, forceRefresh) {
     appCtxt.notifyZimlets("onEditAppt_updateTime", [this._apptView, tf]);//notify Zimlets
 };
 
+ZmScheduleAssistantView.prototype.getOrganizer =
+function() {
+    return this._apptView._isProposeTime ? this._apptView.getCalItemOrganizer() : this._apptView.getOrganizer();
+};
+
 ZmScheduleAssistantView.prototype.addOrganizer =
 function() {
     //include organizer in the scheduler suggestions
@@ -342,8 +347,8 @@ function(params) {
     }
     params._nonOrganizerAttendeeEmails = attendeeEmails.slice();
     //include organizer in the scheduler suggestions
-    var organizer = this._apptView.getOrganizerEmail();
-    this._addAttendee(organizer, params, emails, attendeeEmails);
+    var organizer = this.getOrganizer();
+    this._addAttendee(organizer.getEmail(), params, emails, attendeeEmails);
 
     params.emails = emails;
     params.attendeeEmails = attendeeEmails;
@@ -430,7 +435,7 @@ function(params) {
          return;   
     }
 
-    var organizer = this._apptView.getOrganizer();
+    var organizer = this.getOrganizer();
     this._organizerEmail = organizer.getEmail();
 
     var emails =  [];
@@ -812,11 +817,12 @@ function() {
     params._nonOrganizerAttendeeEmails = attendeeEmails.slice();
 
     //include organizer in the scheduler suggestions
-    var organizer = this._apptView.getOrganizerEmail();
-    params.items.push(organizer);
-    params.itemIndex[organizer] = params.items.length-1;
-    emails.push(organizer);
-    attendeeEmails.push(organizer);
+    var organizer = this.getOrganizer();
+    var organizerEmail = organizer.getEmail();
+    params.items.push(organizerEmail);
+    params.itemIndex[organizerEmail] = params.items.length-1;
+    emails.push(organizerEmail);
+    attendeeEmails.push(organizerEmail);
 
     params.emails = emails;
     params.attendeeEmails = attendeeEmails;
@@ -857,7 +863,7 @@ function(params) {
         return;
     }
 
-    var organizer = this._apptView.getOrganizer();
+    var organizer = this.getOrganizer();
     this._organizerEmail = organizer.getEmail();
 
     this._workingHoursKey = this.getWorkingHoursKey();
