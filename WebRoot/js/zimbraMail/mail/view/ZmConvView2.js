@@ -171,10 +171,12 @@ function(conv, container) {
 	this._msgViews = {};
 	this._msgViewList = [];
 	var msgs = conv.getMsgList();
-
-	var oldToNew = (appCtxt.get(ZmSetting.CONVERSATION_ORDER) == ZmSearch.DATE_ASC);
-	if (oldToNew) {
-		msgs = msgs.reverse();
+	
+	// base the ordering off a list of msg IDs
+	var idList = [], idHash = {};
+	for (var i = 0, len = msgs.length; i < len; i++) {
+		idList.push(msgs[i].id);
+		idHash[msgs[i].id] = msgs[i];
 	}
 	
 	// figure out which msg views should be expanded; if the msg is loaded and we're viewing it
@@ -183,35 +185,43 @@ function(conv, container) {
 	// check if conv was opened by selecting "Show Conversation" for a msg
 	var launchMsgId = this._controller._relatedMsg && this._controller._relatedMsg.id;
 	var gotOne = false;
-	for (var i = 0, len = msgs.length; i < len; i++) {
-		var msg = msgs[i];
+	for (var i = 0, len = idList.length; i < len; i++) {
+		var id = idList[i];
+		var msg = idHash[id];
 		if (launchMsgId) {
-			toExpand[msg.id] = (msg.id == launchMsgId);
-			toCollapse[msg.id] = (msg.id != launchMsgId);
+			toExpand[id] = (id == launchMsgId);
+			toCollapse[id] = (id != launchMsgId);
 		}
-		else if (msg.isLoaded() && !this._hasBeenExpanded[msg.id]) {
-			toExpand[msg.id] = gotOne = true;
+		else if (msg && msg.isLoaded() && !this._hasBeenExpanded[id]) {
+			toExpand[id] = gotOne = true;
 		}
 	}
 	if (!gotOne && !launchMsgId) {
-		toExpand[msgs[0].id] = true;
+		toExpand[idList[0]] = true;
 	}
 	
+	// flip the list for display based on user pref
+	var oldToNew = (appCtxt.get(ZmSetting.CONVERSATION_ORDER) == ZmSearch.DATE_ASC);
+	if (oldToNew) {
+		idList.reverse();
+	}
+
 	var idx;
 	var oldestIndex = oldToNew ? 0 : msgs.length - 1;
-	for (var i = 0, len = msgs.length; i < len; i++) {
+	for (var i = 0, len = idList.length; i < len; i++) {
+		var id = idList[i];
+		var msg = idHash[id];
 		var params = {
 			parent:			this,
 			parentElement:	container,
 			controller:		this._controller
 		}
-		var msg = msgs[i];
-		params.forceExpand = toExpand[msg.id];
-		params.forceCollapse = toCollapse[msg.id];
+		params.forceExpand = toExpand[id];
+		params.forceCollapse = toCollapse[id];
 		// don't look for quoted text in oldest msg - it is considered wholly original
 		params.forceOriginal = (i == oldestIndex);
 		this._renderMessage(msg, params);
-		var msgView = this._msgViews[msg.id];
+		var msgView = this._msgViews[id];
 		if (idx == null) {
 			idx = msgView._expanded ? i : null;
 		}
