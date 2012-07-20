@@ -2269,7 +2269,7 @@ function(soapDoc, m, cancel) {
 			} else {
 				content = this._includeEditReply ? part.getContent() : AjxBuffer.concat(tprefix, part.getContent());
 			}
-			soapDoc.set("content", content, partNode);
+			soapDoc.set("content", content, partNode, pct == ZmMimeTable.TEXT_HTML);
 		}
 	} else {
         var ntp = this.notesTopPart;
@@ -2281,7 +2281,7 @@ function(soapDoc, m, cancel) {
             //bug fix #9592 - html encode the text before setting it as the "HTML" part
             var hcontent = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(tcontent));
             var html = "<html><body>" + (this._includeEditReply ? hcontent : AjxBuffer.concat(hprefix, hcontent)) + "</body></html>";
-            soapDoc.set("content", html, contentPart);
+            soapDoc.set("content", html, contentPart, true);
         }
         else {
 		    soapDoc.set("content", (this._includeEditReply ? tcontent : AjxBuffer.concat(tprefix, tcontent)), contentPart);

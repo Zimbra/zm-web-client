@@ -468,7 +468,19 @@ Zmeditor_template.getFontSize = function(value){
                 // Replaces all double br elements for avoiding enter issue
                 o.content = o.content.replace(/<br><br>/ig, '<br><div><br></div>');
             });
+            ed.onGetContent.add(function(ed, o) {
+                //o.content contains html content
 
+                //console.log("Stripping the content");
+                //Strip the data-mce attributes
+                o.content = o.content.replace(/\s+(data-mce-.*?)(?:"(>)|;"\s+)/igm, '$2');
+
+                //Strip the <style><!-- --> tags added
+                //o.content = o.content.replace(/<style>(.*?(\n))+.*?<\/style>/igm, '');
+
+                //Convert double quotes to single quotes in attributes
+                //o.content = o.content.replace(/&quot;(.*?)&quot;/igm, "'$1'");
+            });
             /*
             if (tinymce.isIE) {
                 ed.onPostRender.add(function(ed) {
