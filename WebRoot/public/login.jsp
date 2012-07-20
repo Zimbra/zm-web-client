@@ -475,11 +475,16 @@ function showWhatsThis() {
 }
 
 function onLoad() {
-  var loginForm = document.loginForm;
-  if(loginForm.username){
-      loginForm.username.focus();
-  }
-  clientChange("${zm:cook(client)}");
+	var loginForm = document.loginForm;
+	if (loginForm.username) {
+		if (loginForm.username.value != "") {
+			loginForm.password.focus(); //if username set, focus on password
+		}
+		else {
+			loginForm.username.focus();
+		}
+	}
+	clientChange("${zm:cook(client)}");
 }
 
 </script>

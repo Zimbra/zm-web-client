@@ -51,7 +51,11 @@ ZmAppCtxt = function() {
 	this._itemCacheDeferred	= {};
 	this._acCache			= {};	// autocomplete
 	this._isExpandableDL	= {};	// distribution lists
+
+	this._setAuthTokenWarning();
 };
+
+ZmAppCtxt.ONE_MINUTE = 60 * 1000;
 
 ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
 
@@ -63,6 +67,40 @@ ZmAppCtxt._ZIMLETS_EVENT = 'ZIMLETS';
 ZmAppCtxt.prototype.toString =
 function() {
 	return "ZmAppCtxt";
+};
+
+ZmAppCtxt.prototype._setAuthTokenWarning =
+function() {
+	var millisToLive = window.authTokenTimeLeftInMillis;
+	var wholeMinutesToLive = Math.floor(millisToLive / ZmAppCtxt.ONE_MINUTE);
+	var minutesToWarnBeforeLogout = Math.min(5, wholeMinutesToLive - 1); 
+
+	if (minutesToWarnBeforeLogout == 0) {
+		return; //before they know it, they will be logged out anyway. Rare case.
+	}
+
+	var millisToWarning = millisToLive - ZmAppCtxt.ONE_MINUTE * minutesToWarnBeforeLogout;
+	if (millisToWarning > 0) {
+		window.setTimeout(this._authTokenWarningTimeout.bind(this, minutesToWarnBeforeLogout), millisToWarning);
+	}
+};
+
+
+ZmAppCtxt.prototype._authTokenWarningTimeout =
+function (minutesLeft) {
+
+	var msg = AjxMessageFormat.format(ZmMsg.authTokenExpirationWarning, [minutesLeft, minutesLeft  > 1 ? ZmMsg.minutes : ZmMsg.minute]);
+	var params = {
+		msg: msg,
+		level: ZmStatusView.LEVEL_WARNING,
+		transitions: [{type: "fade-in", duration: 500}, {type: "pause", duration: ZmAppCtxt.ONE_MINUTE / 4}, {type: "fade-out", duration: 500} ]
+	};
+	this.setStatusMsg(params);
+	//call again in a minute
+	if (minutesLeft > 1) {
+		window.setTimeout(this._authTokenWarningTimeout.bind(this, minutesLeft - 1), ZmAppCtxt.ONE_MINUTE);
+	}
+
 };
 
 /**
@@ -250,6 +288,13 @@ ZmAppCtxt.prototype.getCurrentAppName =
 function() {
 	var context = this.isChildWindow ? parentAppCtxt : this;
 	return context._appController.getActiveApp();
+};
+/**
+ *
+ */
+ZmAppCtxt.prototype.getLoggedInUsername =
+function() {
+	return appCtxt.get(ZmSetting.USERNAME);
 };
 
 /**

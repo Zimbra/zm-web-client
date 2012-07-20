@@ -206,6 +206,15 @@
     window.appCoverageMode = ${isCoverage};
     window.isScriptErrorOn   = ${isScriptErrorOn};
     window.isPerfMetric = ${isPerfMetric};
+
+<%
+	long expires = authResult.getExpires();
+	long timeLeftInMillis = expires - System.currentTimeMillis();
+	%>
+		authTokenTimeLeftInMillis = <%= timeLeftInMillis%>;
+	<%
+%>
+
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >

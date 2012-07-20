@@ -2501,7 +2501,7 @@ function() {
 	if (appCtxt.isOffline) { return; }
 
 	// username
-	var login = appCtxt.get(ZmSetting.USERNAME);
+	var login = appCtxt.getLoggedInUsername();
 	var username = (appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
 	if (username) {
         this._userNameField.getHtmlElement().innerHTML =  AjxStringUtil.htmlEncode(AjxStringUtil.clipByLength(username, 24));
@@ -2579,7 +2579,7 @@ function(startTimer) {
  * 
  */
 ZmZimbraMail.logOff =
-function() {
+function(ev, relogin) {
 	if (appCtxt.isChildWindow) {
 		window.close();
 		return;
@@ -2597,9 +2597,12 @@ function() {
     var urlParams = {
                 path:appContextPath,
                 qsArgs: {
-                        loginOp:'logout'
+                        loginOp: relogin ? 'relogin' : 'logout'
                     }
                 };
+	if (relogin) {
+		urlParams.qsArgs.username = appCtxt.getLoggedInUsername();
+	}
     if(appCtxt.isExternalAccount()) {
         var vAcctDomain = appCtxt.getUserDomain();
         urlParams.qsArgs.virtualacctdomain = vAcctDomain ? vAcctDomain : "";
