@@ -1591,8 +1591,11 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 			if (inputs && inputs.length) {
 				for (var i = 0; i < inputs.length; i++) {
 					if (inputs[i].value == vcardPart) {
-						inputs[i].checked = false;
-						hadVcard = true;
+                        var span = inputs[i].parentNode && inputs[i].parentNode.parentNode;
+                        if (span && span.id) {
+                            this._removeAttachedMessage(span.id, vcardPart);
+                            hadVcard = true;
+                        }
 					}
 				}
 			}
