@@ -933,15 +933,14 @@ function(ev) {
 	var content = this._sigEditor.getContent();
 	var contentIsEmpty = content == "<html><body><br></body></html>" || content == "";
 
-	if (!contentIsEmpty) {
+	if (!contentIsEmpty && isText) {
 		if (!this._formatWarningDialog) {
 			this._formatWarningDialog = new DwtMessageDialog({parent : appCtxt.getShell(), buttons : [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
 		}
 		var dialog = this._formatWarningDialog;
 		dialog.registerCallback(DwtDialog.OK_BUTTON, this._formatOkCallback, this, [isText]);
 		dialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._formatCancelCallback, this, [isText]);
-		var msg  = isText ? ZmMsg.switchToText : ZmMsg.switchToHtml;
-		dialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+		dialog.setMessage(ZmMsg.switchToText, DwtMessageDialog.WARNING_STYLE);
 		dialog.popup();
 		return;
 	}

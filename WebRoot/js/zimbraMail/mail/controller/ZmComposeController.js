@@ -760,18 +760,17 @@ ZmComposeController.prototype._identityChangeListener =
 function(setSignature, event) {
 
 	var signatureId = this._composeView._getSignatureIdForAction(null, this._action);
-	var resetBody = this._composeView.isDirty();
 
 	// don't do anything if signature is same
 	if (signatureId == this._currentSignatureId) { return; }
 
 	// apply settings
-	this._applyIdentityToBody(setSignature, resetBody);
+	this._applyIdentityToBody(setSignature);
 	this._currentSignatureId = signatureId;
 };
 
 ZmComposeController.prototype._applyIdentityToBody =
-function(setSignature, resetBody) {
+function(setSignature) {
 	var identity = this._composeView.getIdentity();
 	if (setSignature) {
 		var sigId = this._composeView._getSignatureIdForAction(identity);
@@ -1389,15 +1388,14 @@ function(mode) {
 
 	var cv = this._composeView;
 	var dirty = cv.isDirty();
-	if (!AjxUtil.isEmpty(this._getBodyContent())) {
+	if (!AjxUtil.isEmpty(this._getBodyContent()) && mode == DwtHtmlEditor.TEXT) {
 		if (!this._formatWarningDialog) {
 			this._formatWarningDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
 		}
 		var fwDlg = this._formatWarningDialog;
 		fwDlg.registerCallback(DwtDialog.OK_BUTTON, this._formatOkCallback, this, [mode]);
 		fwDlg.registerCallback(DwtDialog.CANCEL_BUTTON, this._formatCancelCallback, this, [curMode]);
-		var msg  = (mode == DwtHtmlEditor.TEXT) ? ZmMsg.switchToText : ZmMsg.switchToHtml;
-		fwDlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+		fwDlg.setMessage(ZmMsg.switchToText, DwtMessageDialog.WARNING_STYLE);
 		fwDlg.popup(cv._getDialogXY());
 	} else {
 		// bug 26658: remove the signature before changing mode, and
