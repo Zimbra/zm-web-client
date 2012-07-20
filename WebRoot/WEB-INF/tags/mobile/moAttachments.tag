@@ -55,7 +55,8 @@
                                 <b>${fn:escapeXml(pname)}</b>(${zm:displaySize(pageContext,part.size)})
                             </c:when>
                             <c:otherwise>
-                                <a href="${fn:escapeXml(url)}&amp;disp=a"><b>${fn:escapeXml(pname)}</b></a> (${zm:displaySize(pageContext,part.size)})
+                                <%-- bug: 72600 -- target="_blank" needed for iOS 5.1 to preserve session. Keeping this behavior consistent for all platforms --%>
+                                <a target="_blank" href="${fn:escapeXml(url)}&amp;disp=a"><b>${fn:escapeXml(pname)}</b></a> (${zm:displaySize(pageContext,part.size)})
                             </c:otherwise>
                             </c:choose>
                         </span>
