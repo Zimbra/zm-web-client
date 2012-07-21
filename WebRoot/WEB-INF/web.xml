@@ -500,6 +500,7 @@
       <url-pattern>/h/econtact</url-pattern>
       <url-pattern>/h/egroup</url-pattern>
       <url-pattern>/h/etask</url-pattern>
+      <url-pattern>/h/grpcontacts</url-pattern>
       <url-pattern>/h/task</url-pattern>
       <url-pattern>/h/home</url-pattern>
       <url-pattern>/h/homevoice</url-pattern>

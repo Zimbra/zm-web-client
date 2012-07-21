@@ -24,6 +24,7 @@
 <script type="text/javascript" src="<c:url value='/yui/2.7.0/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/yui/2.7.0/connection/connection-min.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/yui/2.7.0/datasource/datasource-min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.7.0/json/json-min.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/yui/2.7.0/autocomplete/autocomplete-debug.js'/>"></script>
 
 <script type="text/javascript">
@@ -74,7 +75,13 @@
         myDataSource.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;
         myDataSource.responseSchema = {
             resultsList : "Result", // String pointer to result data
-            fields : ["email","ranking","display","type","id","l"]
+            fields : ["email","ranking","display","type","id","l","isGroup"]
+        };
+
+        var expandGroup = {
+        	sendRequest : function(params) {
+        	   YAHOO.util.Connect.asyncRequest('GET', "<c:url value='/h/grpcontacts' />"+"?id="+params.query, params.callback);
+        	}
         };
 
         var initAuto = function(field,container) {
@@ -85,6 +92,7 @@
             ac.queryMatchContains = true;
             ac.maxResultsDisplayed = 20;
             ac.allowBrowserAutocomplete = false;
+            ac.expandGroup = expandGroup;
         };
     <jsp:doBody/>
     }();
