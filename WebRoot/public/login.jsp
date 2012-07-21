@@ -394,11 +394,17 @@ if (application.getInitParameter("offlineMode") != null)  {
 
     function onLoad() {
         var loginForm = document.loginForm;
-        if(loginForm.username){
-            loginForm.username.focus();
-        }
+		if (loginForm.username) {
+			if (loginForm.username.value != "") {
+				loginForm.password.focus(); //if username set, focus on password
+			}
+			else {
+				loginForm.username.focus();
+			}
+		}
         clientChange("${zm:cook(client)}");
     }
+
 	document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");
 </script>
 							<div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;"><fmt:message key="clientWhatsThisMessage"/></div>

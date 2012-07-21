@@ -194,6 +194,15 @@
     window.isScriptErrorOn   = ${isScriptErrorOn};
     window.isNotifyDebugOn   = ${isNotifyDebugOn};
     window.isPerfMetric = ${isPerfMetric};
+
+<%
+	long expires = authResult.getExpires();
+	long timeLeftInMillis = expires - System.currentTimeMillis();
+	%>
+		authTokenTimeLeftInMillis = <%= timeLeftInMillis%>;
+	<%
+%>
+
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >

@@ -2229,7 +2229,7 @@ function() {
 	if (appCtxt.isOffline) { return; }
 
 	// username
-	var login = appCtxt.get(ZmSetting.USERNAME);
+	var login = appCtxt.getLoggedInUsername();
 	var username = (appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
 	if (username) {
 		this._userNameField.getHtmlElement().innerHTML =  AjxStringUtil.htmlEncode(AjxStringUtil.clipByLength(username, 24));
@@ -2307,7 +2307,7 @@ function(startTimer) {
  * 
  */
 ZmZimbraMail.logOff =
-function() {
+function(ev, relogin) {
 	ZmZimbraMail._isLogOff = true;
 
 	// bug fix #36791 - reset the systray icon when returning to Account Setup
@@ -2318,7 +2318,17 @@ function() {
 		window.platform.icon().title = null;
 	}
 
-	var url = AjxUtil.formatUrl({path:appContextPath, qsArgs:{loginOp:'logout'}});
+	var urlParams = {
+		path: appContextPath,
+		qsArgs: {
+			loginOp: relogin ? 'relogin' : 'logout'
+		}
+	};
+	if (relogin) {
+		urlParams.qsArgs.username = appCtxt.getLoggedInUsername();
+	}
+
+	var url = AjxUtil.formatUrl(urlParams);
 	ZmZimbraMail.sendRedirect(url);	// will trigger onbeforeunload
 	if (AjxEnv.isFirefox) {
 		DBG.println(AjxDebug.DBG1, "calling setExitTimer from logoff "  + new Date().toLocaleString());
