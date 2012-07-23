@@ -347,7 +347,7 @@ function () {
 
 ZmPrefController.prototype._getToolBarOps =
 function () {
-	return [ZmOperation.FILLER, ZmOperation.REVERT_PAGE];
+	return [ZmOperation.REVERT_PAGE];
 };
 
 ZmPrefController.prototype._initializeTabGroup = 
