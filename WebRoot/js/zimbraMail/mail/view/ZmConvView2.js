@@ -572,7 +572,7 @@ function() {
 
 ZmConvView2.prototype._cancelListener =
 function() {
-	if (this._controller.popShield()) {
+	if (this._replyView && this._controller.popShield()) {
 		this._replyView.reset();
 	}
 };
