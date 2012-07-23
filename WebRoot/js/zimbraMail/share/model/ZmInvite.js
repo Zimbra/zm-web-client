@@ -503,7 +503,7 @@ function(compNum) {
 	var content = desc && desc[0]._content || null;
 	if (!content) {
 		var comment = this.getComponentComment();
-		content = comment && StringUtil.convertToHtml(comment);
+		content = comment && AjxStringUtil.convertToHtml(comment);
 	}
 	if (!content) {
 		var txtContent = comp.desc;
