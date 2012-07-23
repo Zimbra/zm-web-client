@@ -139,6 +139,7 @@ ZmComposeView.OP[AjxEmailAddress.BCC]	= ZmId.CMP_BCC;
  */
 ZmComposeView.prototype.set =
 function(params) {
+
 	var action = this._action = params.action;
 	if (this._msg) {
 		this._msg.onChange = null;
@@ -176,14 +177,17 @@ function(params) {
 
     this._recipients.setup();
 
-	// populate fields based on the action and user prefs
-	this._setAddresses(action, AjxEmailAddress.TO, params.toOverride);
-	if (params.ccOverride) {
-		this._setAddresses(action, AjxEmailAddress.CC, params.ccOverride);
+	if (action != ZmOperation.NEW_MESSAGE && !ZmComposeController.IS_FORWARD[action]) {
+		// populate fields based on the action and user prefs
+		this._setAddresses(action, AjxEmailAddress.TO, params.toOverride);
+		if (params.ccOverride) {
+			this._setAddresses(action, AjxEmailAddress.CC, params.ccOverride);
+		}
+		if (params.bccOverride) {
+			this._setAddresses(action, AjxEmailAddress.BCC, params.bccOverride);
+		}
 	}
-	if (params.bccOverride) {
-		this._setAddresses(action, AjxEmailAddress.BCC, params.bccOverride);
-	}
+
 	if (obo) {
         this.identitySelect.setSelectedValue(obo);
 	}
@@ -3905,12 +3909,14 @@ function(params) {
 	var action = this._action = params.action;
 	var msg = this._msg = this._addressesMsg = params.msg;
 
-	this._setAddresses(action, AjxEmailAddress.TO, params.toOverride);
-	if (params.ccOverride) {
-		this._setAddresses(action, AjxEmailAddress.CC, params.ccOverride);
-	}
-	if (params.bccOverride) {
-		this._setAddresses(action, AjxEmailAddress.BCC, params.bccOverride);
+	if (action != ZmOperation.NEW_MESSAGE && !ZmComposeController.IS_FORWARD[action]) {
+		this._setAddresses(action, AjxEmailAddress.TO, params.toOverride);
+		if (params.ccOverride) {
+			this._setAddresses(action, AjxEmailAddress.CC, params.ccOverride);
+		}
+		if (params.bccOverride) {
+			this._setAddresses(action, AjxEmailAddress.BCC, params.bccOverride);
+		}
 	}
 	this._setSubject(action, msg, params.subjectOverride);
 	this._setBody(action, msg, params.extraBodyText);
