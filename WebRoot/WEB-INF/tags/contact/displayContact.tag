@@ -31,7 +31,7 @@
         <td rowspan="2" width="20" align="center" valign="bottom" style="padding-right:3px;">
             <c:set var="contactImage" value="${contact.imagePart != null ? contact.imagePart : ''}"/>
             <c:set var="imageUrl" value="/service/home/~/?id=${contact.id}&amp;part=${contactImage}&amp;auth=co"/>
-            <app:img clazz="contactImage" src="${not empty contactImage ? imageUrl : (contact.isGroup ? 'large/ImgGroupPerson_48.png' : 'large/ImgPerson_48.png')}" altkey="${contact.imageAltKey}" />
+            <app:img clazz="${not ua.isIE ? 'contactImage':'contactImage IEcontactImage' }" src="${not empty contactImage ? imageUrl : (contact.isGroup ? 'large/ImgGroupPerson_48.png' : 'large/ImgPerson_48.png')}" altkey="${contact.imageAltKey}" />
         </td>
         <td>
             <c:if test="${not contact.isGroup}">

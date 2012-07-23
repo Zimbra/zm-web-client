@@ -507,6 +507,10 @@ A:visited { color: blue; }
     max-height: 48px;
 }
 
+.IEcontactImage {
+    height: 48px;
+}
+
 .editContactLabel {
 	@Text@  white-space:nowrap; overflow:hidden;
 	width: 18em;
