@@ -15,6 +15,7 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar" %>
 <%@ attribute name="numdays" rtexprvalue="true" required="true" %>
+<%@ attribute name="wdays" rtexprvalue="true" required="false" type="java.lang.String"%>
 <%@ attribute name="view" rtexprvalue="true" required="true" %>
 <%@ attribute name="query" rtexprvalue="true" required="false" %>
 <%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
@@ -59,10 +60,13 @@
         </c:if>
         <!-- ${fn:escapeXml(error.stackStrace)} -->
     </c:if>
+    <c:if test="${empty wdays}">
+        <c:set var="wdays" value="0,1,2,3,4,5,6"/>
+    </c:if>
     <zm:apptMultiDayLayout timezone="${timezone}"
             schedule="${scheduleView ? checkedCalendars : ''}"
             var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
-            hourstart="${mailbox.prefs.calendarDayHourStart}" hourend="${mailbox.prefs.calendarDayHourEnd}"/>
+            hourstart="${mailbox.prefs.calendarDayHourStart}" hourend="${mailbox.prefs.calendarDayHourEnd}" wdays="${wdays}"/>
 </mo:handleError>
 
 
