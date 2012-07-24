@@ -589,7 +589,7 @@ function(ex, continuation) {
 	{
 		ZmCsfeCommand.noAuth = true;
         DBG.println(AjxDebug.DBG1, "ZmController.prototype._handleException ex.code : " + ex.code + ". Invoking logout.");
-		ZmZimbraMail.logOff();
+		ZmZimbraMail.logOff(null, true);
 		return;
 	}
 
