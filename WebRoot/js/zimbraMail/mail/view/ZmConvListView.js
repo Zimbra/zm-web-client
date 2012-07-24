@@ -151,6 +151,7 @@ ZmConvListView = function(params) {
 
 	params.type = ZmItem.CONV;
 	this._controller = params.controller;
+	this._mode = this.view = ZmId.VIEW_CONVLIST;
 	params.headerList = this._getHeaderList();
 	ZmMailListView.call(this, params);
 
@@ -158,7 +159,6 @@ ZmConvListView = function(params) {
 	this._handleEventType[ZmItem.CONV] = true;
 	this._handleEventType[ZmItem.MSG] = true;
 
-	this._mode = ZmId.VIEW_CONVLIST;
 	this._hasHiddenRows = true;	// so that up and down arrow keys work
 	this._resetExpansion();
 };
