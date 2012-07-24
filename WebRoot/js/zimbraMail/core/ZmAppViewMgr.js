@@ -1199,9 +1199,6 @@ function(viewId, show) {
 					toFit.push(cid);
 				}
 			}
-			else {
-				this.showSkinElement(cid, false);
-			}
 		}
 
 		// fit the components now that we're done messing with the skin
