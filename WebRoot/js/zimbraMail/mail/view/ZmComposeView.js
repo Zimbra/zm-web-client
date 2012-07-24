@@ -975,18 +975,16 @@ function(composeMode, switchPreface, dontReplaceContent) {
 		var sig = this.getSignatureContent(sigId);
 		var sigSep = this._getSignatureSeparator();
 		var sigId = this._controller._currentSignatureId;
-		var content = this._htmlEditor.getContent();
 		var account = appCtxt.multiAccounts && this.getFromAccount();
 		
-		if (!htmlMode) {
-			this.applySignature(content, sigId, account, null, true); // Remove the signature before switching
-		}
+		this.applySignature(this._htmlEditor.getContent(), sigId, account, null, true); // Remove the signature before switching
 		
 		this._composeMode = composeMode;
 		if (!htmlMode && switchPreface) {
 			this._switchPreface();
 		}
 
+		var content = this._htmlEditor.getContent();
 
 		if (htmlMode) {
 
@@ -999,16 +997,6 @@ function(composeMode, switchPreface, dontReplaceContent) {
 				if (preface) {
 					var incMsgRe = new RegExp(AjxStringUtil.regExEscape(preface)+anyChar+"*$");
 					baseContent = content.replace(incMsgRe, "");
-				}
-			}
-
-			// Strip away signature
-			if (sig) {
-				if (sig) {
-					var sigSepRE = AjxStringUtil.regExEscape(sigSep);
-					var sigRE = AjxStringUtil.regExEscape(sig.replace(/[\n\r]*$/,""));
-					var sigRe = new RegExp(sigSepRE + sigRE.replace(/\\n/g,"\\s?\\n") + anyChar + "*$");
-					baseContent = baseContent.replace(sigRe, "");
 				}
 			}
 
@@ -1523,6 +1511,10 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 			replaceSignature = (oldSignature && (oldSignature.getContentType() == ZmMimeTable.TEXT_HTML)) ?
 				AjxStringUtil.convertHtml2Text(oldSignature.value) : sigContent;
 			var sigIndex = content.indexOf(replaceSignature);
+			if (sigIndex == -1 && AjxEnv.isWindows) {
+				replaceSignature = replaceSignature.replace(/\n/g, "\r\n");
+				sigIndex = content.indexOf(replaceSignature);
+			}
 			var sigLength = replaceSignature && replaceSignature.length || 0;
 
 			if (replaceSignature && (sigIndex != -1)) {
