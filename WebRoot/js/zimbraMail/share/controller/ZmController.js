@@ -497,7 +497,7 @@ function(ex, continuation) {
 	{
 		ZmCsfeCommand.noAuth = true;
 		DBG.println(AjxDebug.DBG1, "Got auth exception " + ex.code + ", logging out");
-		ZmZimbraMail.logOff();
+		ZmZimbraMail.logOff(null, true);
 		return;
 		
 //		var reloginMode = false;

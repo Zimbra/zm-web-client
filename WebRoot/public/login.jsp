@@ -24,13 +24,22 @@
 <c:set var="useMobile" value="${ua.isiPhone or ua.isiPod or ua.isOsAndroid}"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
+<c:if test="${param.loginOp eq 'relogin' and not empty loginException}">
+    <zm:getException var="error" exception="${loginException}"/>
+    <c:if test="${error.code eq 'service.AUTH_EXPIRED'}">
+        <c:set var="errorCode" value="${error.code}"/>
+        <fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
+        <zm:logout/>
+    </c:if>
+</c:if>
+
 <c:catch var="loginException">
     <c:choose>
         <c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
             <c:set var="errorCode" value="errorPassChange"/>
             <fmt:message var="errorMessage" key="bothNewPasswordsMustMatch"/>
         </c:when>
-        <c:when test="${param.loginOp eq 'relogin'}">
+        <c:when test="${param.loginOp eq 'relogin' and not empty param.loginErrorCode}">
             <zm:logout/>
             <c:set var="errorCode" value="${param.loginErrorCode}"/>
             <fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
