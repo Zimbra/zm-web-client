@@ -126,7 +126,12 @@ function(editor) {
     if (currentObj._mode === DwtHtmlEditor.HTML) {
         editor = editor || currentObj.getEditor();
         if (currentObj._editorInitialized && editor) {
-            editor.focus();
+            if (AjxEnv.isWebKitBased) {
+                Dwt.getElement(this._iFrameId).focus();
+            }
+            else {
+                editor.focus();
+            }
             currentObj.setFocusStatus(true);
         }
         else {
