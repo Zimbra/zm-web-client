@@ -1398,18 +1398,7 @@ function(mode) {
 		fwDlg.setMessage(ZmMsg.switchToText, DwtMessageDialog.WARNING_STYLE);
 		fwDlg.popup(cv._getDialogXY());
 	} else {
-		// bug 26658: remove the signature before changing mode, and
-		//            add it back after
-		var tmp = this._currentSignatureId;
-		if (tmp) {
-			this.setSelectedSignature("");
-			this._composeView.applySignature(this._getBodyContent(), tmp);
-		}
 		cv.setComposeMode(mode, true);
-		if (tmp) {
-			this.setSelectedSignature(tmp);
-			cv.applySignature(this._getBodyContent(), tmp);
-		}
 		return true;
 	}
 

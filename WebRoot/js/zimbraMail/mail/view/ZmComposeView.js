@@ -1521,7 +1521,7 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 			var sigContent = this.getSignatureContent(oldSignatureId);
 			var oldSignature = this.getSignatureById(oldSignatureId);
 			replaceSignature = (oldSignature && (oldSignature.getContentType() == ZmMimeTable.TEXT_HTML)) ?
-				AjxStringUtil.convertHtml2Text(oldSignature.value, {"#text": ZmComposeView._convertTextNode}) : sigContent;
+				AjxStringUtil.convertHtml2Text(oldSignature.value) : sigContent;
 			var sigIndex = content.indexOf(replaceSignature);
 			var sigLength = replaceSignature && replaceSignature.length || 0;
 
@@ -1637,23 +1637,6 @@ function(oldSigContent, newSigContent) {
 						oldSigContent.substring(lastIdx + ZmComposeView.SIG_KEY.length);
 	}
 	return newSigContent;
-};
-
-/*
- * Convertor for text nodes that, unlike the one in AjxStringUtil._traverse, doesn't append spaces to the results
-*/
-ZmComposeView._convertTextNode =
-function(el, ctxt) {
-	if (el.nodeValue.search(AjxStringUtil._NON_WHITESPACE) != -1) {
-		if (ctxt.lastNode == "ol" || ctxt.lastNode == "ul") {
-			return "\n";
-		}
-		if (ctxt.isPreformatted) {
-			return AjxStringUtil.trim(el.nodeValue);
-		} else {
-			return AjxStringUtil.trim(el.nodeValue.replace(AjxStringUtil._LF, ""));
-		}
-	}
 };
 
 ZmComposeView.prototype.getSignatureContent =
