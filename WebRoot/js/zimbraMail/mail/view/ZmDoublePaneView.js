@@ -360,6 +360,27 @@ function(offset) {
 	return this._mailListView.getLimit(offset);
 };
 
+ZmDoublePaneView.prototype._staleHandler =
+function() {
+
+	var search = this._controller._currentSearch;
+	if (search) {
+		search.lastId = search.lastSortVal = null;
+		search.offset = search.limit = 0;
+		var params = {isRefresh: true};
+		var mlv = this._mailListView
+		if (mlv.getSelectionCount() == 1) {
+			var sel = mlv.getSelection();
+			var selItem = sel && sel[0];
+			var curItem = this.getItem();
+			if (selItem && curItem && selItem.id == curItem.id) {
+				params.selectedItem = selItem;
+			}
+		}
+		appCtxt.getSearchController().redoSearch(search, false, params);
+	}
+};
+
 ZmDoublePaneView.prototype.handleRemoveAttachment =
 function(oldMsgId, newMsg) {
 	this._itemView.handleRemoveAttachment(oldMsgId, newMsg);

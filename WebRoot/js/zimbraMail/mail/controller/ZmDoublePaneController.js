@@ -62,35 +62,47 @@ ZmDoublePaneController.DEFAULT_TAB_TEXT = ZmMsg.conversation;
  * and the other shows the currently selected mail item (msg or conv). This method takes
  * care of displaying the list. Displaying an item is typically handled via selection.
  *
- * @param {ZmSearch}	search		the current search results
- * @param {ZmMailList}	mailList	list of mail items
- * @param {AjxCallback}	callback	the client callback
- * @param {Boolean}		markRead	if <code>true</code>, mark msg read
+ * @param {ZmSearchResults}	results		the current search results
+ * @param {ZmMailList}		mailList	list of mail items
+ * @param {AjxCallback}		callback	the client callback
+ * @param {Boolean}			markRead	if <code>true</code>, mark msg read
  * 
  */
 ZmDoublePaneController.prototype.show =
-function(search, mailList, callback, markRead) {
+function(results, mailList, callback, markRead) {
 
-	ZmMailListController.prototype.show.call(this, search);
+	ZmMailListController.prototype.show.call(this, results);
+	
+	var mlv = this._listView[this._currentViewId];
 
+	// if search was run as a result of a <refresh> block rather than by the user, preserve
+	// what's in the reading pane as long as it's still in the list of results
+	var s = results && results.search;
+	var refreshSelItem = (s && s.isRefresh && mlv && mlv.hasItem(s.selectedItem) && s.selectedItem);
 	if (this._doublePaneView) {
-		this._doublePaneView._mailListView.reset();
-		this._doublePaneView._itemView.reset();
+		mlv.reset();
+		if (!refreshSelItem) {
+			this._doublePaneView._itemView.reset();
+		}
 	}
 	this.setList(mailList);
 	this._setup(this._currentViewId);
 
-	this._displayResults(this._currentViewId);
+	this._displayResults(this._currentViewId, null, refreshSelItem);
 
-	var dpv = this._doublePaneView;
-	var readingPaneOn = this.isReadingPaneOn();
-	if (dpv.isReadingPaneVisible() != readingPaneOn) {
-		dpv.setReadingPane();
+	if (refreshSelItem) {
+		mlv.setSelection(refreshSelItem, true);
 	}
-
-	// clear the item view, unless it's showing something selected
-	if (!this._itemViewCurrent()) {
-		dpv.clearItem();
+	else {
+		var dpv = this._doublePaneView;
+		var readingPaneOn = this.isReadingPaneOn();
+		if (dpv.isReadingPaneVisible() != readingPaneOn) {
+			dpv.setReadingPane();
+		}
+		// clear the item view, unless it's showing something selected
+		if (!this._itemViewCurrent()) {
+			dpv.clearItem();
+		}
 	}
 
 	if (callback) {
@@ -368,10 +380,13 @@ function(view, menu, checked) {
 };
 
 ZmDoublePaneController.prototype._displayResults =
-function(view, newTab) {
+function(view, newTab, refreshSelItem) {
+
 	var elements = this.getViewElements(view, this._doublePaneView);
 	
-	this._doublePaneView.setReadingPane();
+	if (!refreshSelItem) {
+		this._doublePaneView.setReadingPane();
+	}
 
 	var tabId = newTab && Dwt.getNextId();
 	this._setView({ view:		view,
@@ -777,5 +792,15 @@ function(text) {
 	}
 	if (this._itemCountText[ZmSetting.RP_BOTTOM]) {
 		this._itemCountText[ZmSetting.RP_BOTTOM].setText(rpr ? "" : text);
+	}
+};
+
+ZmDoublePaneController.prototype._postShowCallback =
+function() {
+
+	ZmMailListController.prototype._postShowCallback.apply(this, arguments);
+	var dpv = this._doublePaneView;
+	if (dpv && dpv.isStale && dpv._staleHandler) {
+		dpv._staleHandler();
 	}
 };

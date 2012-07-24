@@ -1506,6 +1506,37 @@ function(refresh) {
 
 	if (!appCtxt.inStartup) {
 		this.resetOverview(this.getOverviewId());
+ 
+		// mark all existing mail list views as stale
+		var viewIds = [ZmId.VIEW_TRAD, ZmId.VIEW_CONVLIST, ZmId.VIEW_CONV];
+		var avm = appCtxt.getAppViewMgr();
+		for (var i = 0; i < viewIds.length; i++) {
+			var views = avm.getViewsByType(viewIds[i]);
+			for (var j = 0; j < views.length; j++) {
+				var dpv = avm.getViewComponent(ZmAppViewMgr.C_APP_CONTENT, views[j].id);
+				if (dpv && dpv.isZmDoublePaneView) {
+					dpv.isStale = true;
+				}
+			}
+		}
+		// view is normally updated when user returns to it (from whatever view
+		// results from the current request); if the request doesn't result in a
+		// view change, use a timer to check if it still needs to be updated
+		var curViewId = appCtxt.getCurrentViewId();
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._checkRefresh, [curViewId]), 1000);
+	}
+};
+
+ZmMailApp.prototype._checkRefresh =
+function(lastViewId) {
+
+	// if the request that prompted the refresh didn't result in a view change
+	// (eg NoOpRequest), rerun its underlying search
+	if (appCtxt.getCurrentViewId() == lastViewId) {
+		var curView = appCtxt.getCurrentView();
+		if (curView && curView.isStale && curView._staleHandler) {
+			curView._staleHandler();
+		}
 	}
 };
 
