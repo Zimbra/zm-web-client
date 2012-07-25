@@ -141,7 +141,7 @@
 			var zheard = function() { zclick("SOPHEARD"); }
 			var zunheard = function() { zclick("SOPUNHEARD"); }
 			var zprint = function() { var e = document.getElementById("OPPRINT"); window.open(e.href, e.target); }
-			var zcallManager = function() { var e = document.getElementById("OPCALLMANAGER"); window.location = e.href; }
+			/*var zcallManager = function() { var e = document.getElementById("OPCALLMANAGER"); window.location = e.href; }*/
 			function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){ var a = document.getElementById(id); if (a) window.location = a.href; } }
 			var zlisten = function() {if (zrc == 0) return; var e = document.getElementById("A"+zsr); if (e && e.href) window.location = e.href;}
 			//-->
@@ -154,7 +154,7 @@
 			<zm:bindKey message="voicemail.MarkHeard" func="zheard"/>
 			<zm:bindKey message="voicemail.MarkUnheard" func="zunheard"/>
 			<zm:bindKey message="voicemail.Print" func="zprint"/>
-			<zm:bindKey message="voicemail.CallManager" func="zcallManager"/>
+			<%--zm:bindKey message="voicemail.CallManager" func="zcallManager"/--%>
 			<zm:bindKey message="voicemail.Listen" func="zlisten"/>
 			<zm:bindKey message="global.PreviousItem" func="zsp"/>
 			<zm:bindKey message="global.NextItem" func="zsn"/>

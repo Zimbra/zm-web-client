@@ -50,14 +50,14 @@
         <td><div class='vertSep'></div></td>
         <app:button id="OPHEARD" name="actionMarkHeard" text="actionMarkHeard" src="voicemail/ImgMarkAsHeard.png" tooltip="actionMarkHeardTT" disabled="${isTrash}"/>
         <app:button id="OPUNHEARD" name="actionMarkUnheard" text="actionMarkUnheard" src="voicemail/ImgMarkAsUnheard.png" tooltip="actionMarkUnheardTT" disabled="${isTrash}"/>
-        <td><div class='vertSep'></div></td>
+        <%--<td><div class='vertSep'></div></td>
         <td nowrap>
             <c:url var="optionsUrl" value="/h/options">
                 <c:param name="selected" value="voice"/>
                 <c:param name="phone" value="${zm:getPhoneFromVoiceQuery(context.query)}"/>
             </c:url>
             <a id="OPCALLMANAGER" href="${optionsUrl}"><app:img src="voicemail/ImgCallManager.png" altkey="callManager"/><span><fmt:message key="actionCallManager"/></span></a>
-        </td>
+        </td> --%>
 		<c:if test="${context.isFolderSearch and context.folder.isVoiceMailTrash}">
 			<td><div class='vertSep'></div><input type="hidden" name="folderId" value="${context.folder.id}"></td>
 			<app:button name="actionHardDelete" src="startup/ImgDelete.png" tooltip="emptyTrash" text="emptyTrash"/>

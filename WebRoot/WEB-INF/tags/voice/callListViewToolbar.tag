@@ -42,14 +42,14 @@
 						</c:otherwise>
 					</c:choose>
                 </td>
-                <td><div class='vertSep'></div></td>
+                <%--<td><div class='vertSep'></div></td>
                 <td nowrap>
                     <c:url var="optionsUrl" value="/h/options">
                         <c:param name="selected" value="voice"/>
                         <c:param name="phone" value="${zm:getPhoneFromVoiceQuery(context.query)}"/>
                     </c:url>
                     <a id="OPCALLMANAGER" href="${optionsUrl}"><app:img src="voicemail/ImgCallManager.png" altkey="callManager"/><span><fmt:message key="actionCallManager"/></span></a>
-                </td>
+                </td>--%>
             </table>
         </td>
         <td nowrap align=right>
