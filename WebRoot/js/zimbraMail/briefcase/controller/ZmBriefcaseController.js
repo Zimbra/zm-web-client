@@ -608,6 +608,11 @@ function(ev) {
 		return;
 	}
 
+	if (item && appCtxt.isOffline && appCtxt.getCurrentSearch()) { // no idea why check for the getCurrentSearch to exist, but I copied this logic from bug 60919
+		appCtxt.accountList.setActiveAccount(item.getAccount());
+	}
+
+
 	ZmListController.prototype._listActionListener.call(this, ev);
 
 	var actionMenu = this.getActionMenu();
