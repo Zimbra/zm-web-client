@@ -40,7 +40,8 @@ ZmConvView2 = function(params) {
 
 	this.addControlListener(this._scheduleResize.bind(this));
 	this._setAllowSelection();
-	this._setMouseEventHdlrs(); // needed by object manager
+	this._setAllowSelection();
+	this._setEventHdlrs([DwtEvent.ONMOUSEOUT, DwtEvent.ONMOUSEOVER, DwtEvent.ONMOUSEENTER, DwtEvent.ONMOUSELEAVE]); // needed by object manager
 	this._objectManager = true;
 };
 
