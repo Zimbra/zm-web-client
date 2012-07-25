@@ -338,11 +338,14 @@ function(s, tzo) {
  */
 ZmCalBaseItem.prototype.isAlarmInstance =
 function() {
-    if (!this.alarmData) { return false; }
+    var alarmData = this.alarmData ? this.alarmData[0] : null;
 
-    var alarmData = this.alarmData[0];
+    if (!alarmData ||
+        !alarmData.alarmInstStart ||
+        !this.startDate) {
+        return false;
+    }
     this._alarmInstStart = this.adjustMS(alarmData.alarmInstStart, this.tzo);
-
     return (this._alarmInstStart == this.startDate.getTime());
 };
 

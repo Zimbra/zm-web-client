@@ -196,8 +196,8 @@ function(list) {
 	for (var i = 0; i < size; i++) {
 		var appt = list.get(i);
 		var id = appt.id;
-
-		if (appt.isAlarmInstance()) {
+        var hasAlarm = appt.recurring ? appt.isAlarmInstance() : appt.hasAlarmData();
+		if (hasAlarm) {
 			if (!this._cacheMap[id]) {
 				this._cacheMap[id] = true;
 				newList.add(appt);
