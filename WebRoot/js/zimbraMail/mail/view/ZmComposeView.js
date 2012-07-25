@@ -177,7 +177,7 @@ function(params) {
 
     this._recipients.setup();
 
-	if (action != ZmOperation.NEW_MESSAGE && !ZmComposeController.IS_FORWARD[action]) {
+	if (!ZmComposeController.IS_FORWARD[action]) {
 		// populate fields based on the action and user prefs
 		this._setAddresses(action, AjxEmailAddress.TO, params.toOverride);
 		if (params.ccOverride) {
@@ -3884,7 +3884,7 @@ function(params) {
 	var action = this._action = params.action;
 	var msg = this._msg = this._addressesMsg = params.msg;
 
-	if (action != ZmOperation.NEW_MESSAGE && !ZmComposeController.IS_FORWARD[action]) {
+	if (!ZmComposeController.IS_FORWARD[action]) {
 		this._setAddresses(action, AjxEmailAddress.TO, params.toOverride);
 		if (params.ccOverride) {
 			this._setAddresses(action, AjxEmailAddress.CC, params.ccOverride);
