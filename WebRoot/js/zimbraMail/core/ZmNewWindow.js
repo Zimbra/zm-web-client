@@ -189,7 +189,8 @@ function() {
 	apps[ZmApp.CONTACTS] = true;
 	// only load calendar app if we're dealing with an invite
 	var msg = (cmd == "msgViewDetach") ? params.msg : null;
-	if (msg && msg.isInvite()) {
+	if (msg &&
+        (msg.isInvite() || this._isCalendarShare(msg.share))) {
 		apps[ZmApp.CALENDAR] = true;
 	}
 	apps[ZmApp.PREFERENCES] = true;
@@ -233,6 +234,10 @@ function() {
 /**
  * @private
  */
+ZmNewWindow.prototype._isCalendarShare =
+function(share) {
+    return (share && share.link && share.link.view) ? "appointment" === share.link.view : false;
+};
 ZmNewWindow.prototype._createView =
 function() {
 
