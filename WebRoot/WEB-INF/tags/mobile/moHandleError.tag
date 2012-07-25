@@ -45,7 +45,7 @@
             <mo:status style="Critical">
                 <fmt:message key="${error.code}"/>
             </mo:status>
-            <!-- ${fn:escapeXml(error.stackStrace)} -->
+            <!-- ${fn:escapeXml(error.id)} -->
         </c:otherwise>
     </c:choose>
 </c:if>
