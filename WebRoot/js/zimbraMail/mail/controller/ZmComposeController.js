@@ -1640,9 +1640,7 @@ function(ev) {
             this._msg._resetAllInlineAttachments();
         }
 
-		if (this._setFormat(ev.item.getData(ZmHtmlEditor._VALUE))) {
-			this._switchInclude(op);
-		}
+		this._setFormat(ev.item.getData(ZmHtmlEditor._VALUE));
 	} else if (op != ZmOperation.ADD_SIGNATURE) {
 		// at this point we assume the op is related to include options
 		if (this._setInclude(op)) {

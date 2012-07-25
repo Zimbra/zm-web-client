@@ -995,13 +995,15 @@ function(composeMode, switchPreface, dontReplaceContent) {
 			if (this._msg) {
 				var preface = this._getPreface(DwtHtmlEditor.TEXT);
 				if (preface) {
-					var incMsgRe = new RegExp(AjxStringUtil.regExEscape(preface)+anyChar+"*$");
+					var incMsgRe = new RegExp(AjxStringUtil.regExEscape(preface) + anyChar + "*$");
 					baseContent = content.replace(incMsgRe, "");
 				}
 			}
 
+			baseContent = AjxStringUtil.trim(baseContent);
+			
 			if (this._action == ZmOperation.DRAFT) { //see below why this is only in case of draft
-				baseContent = baseContent.replace(/\n/g,"<br/>");
+				baseContent = baseContent.replace(/\n/g, "<br/>");
 			}
 
 			// Do the mode switch
@@ -1012,7 +1014,7 @@ function(composeMode, switchPreface, dontReplaceContent) {
 				baseContent = baseContent.replace(/\n/g,"<br/>");
 				// Re-set the whole body, with optional replied/forwarded msg and signature automatically added.
 				// baseContent is the text that the user may have written before switching
-				this._setBody(this._action, this._msg || null, baseContent || "\n", null, true);
+				this._setBody(this._action, this._msg || null, baseContent, null, true);
 			}
 		} else {
 
@@ -1540,7 +1542,7 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 	}
 	if (!done) {
 		sigContent = this.getSignatureContentSpan(signature);
-		content = this._insertSignature(content, ac.get(ZmSetting.SIGNATURE_STYLE, null, acct), sigContent, newLine);
+		content = this._insertSignature(content, ac.get(ZmSetting.SIGNATURE_STYLE, null, acct), sigContent, newLine, signature.getContentType());
 	}
 
 	if (!isHtml) {
@@ -1671,7 +1673,7 @@ function(content) {
 };
 
 ZmComposeView.prototype._insertSignature =
-function(content, sigStyle, sig, newLine) {
+function(content, sigStyle, sig, newLine, sigFormat) {
 
 	var re_newlines = "(" + AjxStringUtil.regExEscape(newLine) + ")*";
 	// get rid of all trailing newlines
@@ -1694,9 +1696,12 @@ function(content, sigStyle, sig, newLine) {
 			re_preface = re_preface.replace(/\\\"/g, "\\\"?"); // IE sometimes omits quotes around attrs
 			re_preface = re_preface.replace("\\>", "\\s*\\\/?\\>"); // some browsers may put space and / before closing >
 		}
+		if (isHtml || sigFormat != ZmMimeTable.TEXT_HTML) {
+			sig = sig + newLine;
+		}
 		var regexp = new RegExp(re_newlines + re_preface, "i");
 		if (content.match(regexp)) {
-			content = content.replace(regexp, [sig, newLine, preface].join(""));
+			content = content.replace(regexp, [sig, preface].join(""));
 		} else {
 			// new message
 			content = [content, sig].join("");
@@ -2218,7 +2223,7 @@ function(action, msg, extraBodyText) {
 		sigFormat = signature && signature.getContentType();
 	}
 	if (sigStyle == ZmSetting.SIG_OUTLOOK) {
-		sigPre = (this._composeMode == DwtHtmlEditor.TEXT || sigFormat == ZmMimeTable.TEXT_PLAIN) ? sig + crlf : sig;
+		sigPre = (sigFormat == ZmMimeTable.TEXT_PLAIN) ? sig + crlf : sig;
 	}
 
 	extraBodyText = extraBodyText || "";
