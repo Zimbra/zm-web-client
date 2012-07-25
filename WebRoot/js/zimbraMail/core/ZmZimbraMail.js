@@ -1680,8 +1680,11 @@ function() {
 	try {
         if (this._pollInstantNotifications) {
             var method = soapDoc.getMethod();
-            method.setAttribute("wait", 1);
-            method.setAttribute("limitToOneBlocked", 1);
+			var sessionId = ZmCsfeCommand.getSessionId();
+			if (sessionId) {
+            	method.setAttribute("wait", 1);
+            	method.setAttribute("limitToOneBlocked", 1);
+			}
         }
 		var params = {
 			soapDoc: soapDoc,
