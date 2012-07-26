@@ -46,6 +46,7 @@
             <c:set var="statusMessage" scope="request" value="${errorMsg}"/>
             <jsp:forward page="/h/compose"/>
         </c:when>
+
         <%-- TODO: handle voice errors in a separate tag like handleVoiceError --%>
         <c:when test="${error.code eq 'voice.UNABLE_TO_AUTH'}">
             <app:status style="Critical">
@@ -62,6 +63,12 @@
                 <fmt:message key="voiceErrorGeneric"/>
             </app:status>
         </c:when>
+        <c:when test="${(error.code eq 'mitel.INVALID_PIN')">
+            <app:status style="Critical">
+                <fmt:message key="voiceErrorPIN"/>
+            </app:status>
+        </c:when>
+
         <c:otherwise>
             <app:status style="Critical">
                 <fmt:message key="${error.code}"/>
