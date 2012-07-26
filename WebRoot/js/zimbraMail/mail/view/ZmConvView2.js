@@ -296,7 +296,7 @@ function(scrollMsgView) {
 
 	if (this.isDisposed()) { return; }
 
-	this._needResize = false;
+	this._resizePending = false;
 	if (this._cleared) { return; }
 	if (!this._messagesDiv) { return; }
 	
@@ -337,6 +337,15 @@ function(scrollMsgView) {
 			}
 		}
 	}
+	window.setTimeout(this._resizeMessages.bind(this, scrollMsgView), 0);
+};
+
+ZmConvView2.prototype._resizeMessages =
+function(scrollMsgView) {
+	
+	for (var i = 0; i < this._msgViewList.length; i++) {
+		this._msgViews[this._msgViewList[i]]._scheduleResize();
+	}
 
 	// see if we need to scroll to top or a particular msg view
 	if (scrollMsgView) {
@@ -347,8 +356,6 @@ function(scrollMsgView) {
 			this._scrollToTop(scrollMsgView);
 		}
 	}
-
-
 };
 
 ZmConvView2.prototype._scrollToTop =
@@ -363,19 +370,22 @@ function(msgView) {
 // since we may get multiple calls to _resize
 ZmConvView2.prototype._scheduleResize =
 function(scrollMsgView) {
-	if (!this._needResize) {
-		window.setTimeout(this._resize.bind(this, scrollMsgView), 300);
+	if (!this._resizePending) {
+		window.setTimeout(this._resize.bind(this, scrollMsgView), 100);
 	}
-	this._needResize = true;
+	this._resizePending = true;
 };
 
 // re-render if reading pane moved between right and bottom
 ZmConvView2.prototype.setReadingPane =
 function() {
 	var rpLoc = this._controller._getReadingPanePref();
-	if (this._rpLoc != ZmSetting.RP_OFF && rpLoc != ZmSetting.RP_OFF && this._rpLoc != rpLoc) {
-		this.set(this._item, true);
+	if (this._rpLoc && this._item) {
+		if (this._rpLoc != ZmSetting.RP_OFF && rpLoc != ZmSetting.RP_OFF && this._rpLoc != rpLoc) {
+			this.set(this._item, true);
+		}
 	}
+	this._rpLoc = rpLoc;
 };
 
 /**
@@ -1239,6 +1249,37 @@ function() {
 	}
 };
 
+// Resize IFRAME to match its content. IFRAMEs have a default height of 150, so we need to
+// explicitly set the correct height if the content is smaller. The easiest way would be
+// to measure the height of the HTML or BODY element, but some browsers (mainly IE) report
+// that to be 150. So we add up the heights of the BODY's children instead.
+ZmMailMsgCapsuleView.prototype._resize =
+function() {
+
+	if (!this._expanded || !this._usingIframe) { return; }
+	
+	var body = this.getContentContainer();
+	if (body && body.childNodes) {
+		var height = 0;
+		for (var i = 0, len = body.childNodes.length; i < len; i++) {
+			height += Dwt.getSize(body.childNodes[i]).y;
+		}
+		if (height && height < 150) {
+			height += 8;	// fudge to make sure nothing is cut off
+			DBG.println(AjxDebug.DBG1, "resizing capsule msg view IFRAME height to " + height);
+			Dwt.setSize(this.getIframeElement(), Dwt.DEFAULT, height);
+		}
+	}
+};
+
+ZmMailMsgCapsuleView.prototype._scheduleResize =
+function() {
+	if (!this._resizePending) {
+		window.setTimeout(this._resize.bind(this), 100);
+	}
+	this._resizePending = true;
+};
+
 ZmMailMsgCapsuleView.prototype._renderMessage =
 function(msg, container, callback) {
 	
@@ -1679,6 +1720,7 @@ function() {
 		return;
 	}
 	this._setExpansion(expanded);
+	this._scheduleResize();
 };
 
 ZmMailMsgCapsuleView.prototype._setExpansion =
