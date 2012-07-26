@@ -217,7 +217,7 @@ function(parent, type, id) {
 
 	button = parent.getOp(ZmOperation.SYNC_OFFLINE_FOLDER);
 	if (button) {
-		if (!folder.isOfflineSyncable || isTrash) {
+		if (!folder.isOfflineSyncable) {
 			button.setVisible(false);
 		} else {
 			button.setVisible(true);
