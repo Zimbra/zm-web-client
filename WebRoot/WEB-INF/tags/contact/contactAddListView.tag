@@ -42,7 +42,7 @@
 <c:if test="${empty mailbox}">
     <zm:getMailbox var="mailbox"/>
 </c:if>
-
+<c:set var="detailedSearchEnabled" value="${mailbox.features.contactsDetailedSearch}"/>
 <table width=100% cellpadding=2 cellspacing=0 class="topborder">
     <tr valign='top'>
         <th width=1%>&nbsp;
@@ -71,7 +71,10 @@
             <c:when test="${not empty searchGalResult}">
                 <th nowrap><fmt:message key="email"/>
                 <c:if test="${attendeeMode and uploader.contactLocation eq 'resources'}">
-                <th width=20% nowrap><fmt:message key="type"/>
+                    <th width=20% nowrap><fmt:message key="type"/>
+                </c:if>
+                <c:if test="${detailedSearchEnabled}">
+                    <th nowrap><fmt:message key="department"/>
                 </c:if>
             </c:when>
             <c:otherwise>
@@ -481,9 +484,15 @@
             <td width=1%><app:miniTagImage ids="${contact.tagIds}"/></td>
             <td width=1%><app:img src="${contact.image}" altkey="${contact.imageAltKey}"/></td>
             <td width=1%>&nbsp;</td>
-            <td >
+            <td>
                     ${fn:escapeXml(contact.galFullAddress)}
             </td>
+            <c:if test="${detailedSearchEnabled}">
+                <td >
+                 ${fn:escapeXml(contact.department)}
+                </td>
+            </c:if>
+
             <c:if test="${attendeeMode and uploader.contactLocation eq 'resources'}">
             <td>
                     ${fn:escapeXml(contact.attrs.zimbraCalResType)}
