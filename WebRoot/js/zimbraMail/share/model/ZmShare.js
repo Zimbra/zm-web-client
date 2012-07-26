@@ -83,6 +83,7 @@ ZmShare = function(params) {
 
 ZmShare.URI = "urn:zimbraShare";
 ZmShare.VERSION = "0.1";
+ZmShare.NEXT_VERSION = "0.2";
 
 // actions
 /**
@@ -383,7 +384,7 @@ function(doc) {
 
 	var shareNode = doc.documentElement;
 	share.version = shareNode.getAttribute("version");
-	if (share.version != ZmShare.VERSION) {
+	if (share.version != ZmShare.VERSION && share.version != ZmShare.NEXT_VERSION) { //support next version version here accepting shared sent from 8.0 (specifically for ZD that is 7)
 		throw "Zimbra share version must be " + ZmShare.VERSION;
 	}
 	share.action = shareNode.getAttribute("action");
