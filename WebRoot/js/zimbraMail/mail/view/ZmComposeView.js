@@ -1540,7 +1540,7 @@ function(content, oldSignatureId, account, newSignatureId, skipSave) {
 			}
 		}
 	}
-	if (!done) {
+	if (!done && signature) {
 		sigContent = this.getSignatureContentSpan(signature);
 		content = this._insertSignature(content, ac.get(ZmSetting.SIGNATURE_STYLE, null, acct), sigContent, newLine, signature.getContentType());
 	}
