@@ -813,27 +813,26 @@ function(parent, num) {
 	var printOp = (parent instanceof ZmActionMenu) ? ZmOperation.PRINT_CONTACT : ZmOperation.PRINT;
 
 
-	var printEnabled = true;
-	if (this._folderId  == ZmFolder.ID_DLS ||
-			num == 1 && this._listView[this._currentViewId].getSelection()[0].isDistributionList()) {
-		printEnabled = false;
-	}
-	
-	parent.enable(printOp, printEnabled);
+	var isDl = this._folderId  == ZmFolder.ID_DLS ||
+			num == 1 && this._listView[this._currentViewId].getSelection()[0].isDistributionList();
+
+	parent.enable(printOp, !isDl);
+
+	var folder = this._folderId && appCtxt.getById(this._folderId);
+
+	parent.enable([ZmOperation.CONTACTGROUP_MENU], num > 0 && !isDl && !appCtxt.isExternalAccount() && (!folder || !folder.isReadOnly()));
 
 	if (!this.isGalSearch()) {
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
         appCtxt.notifyZimlets("resetToolbarOperations",[parent, num]);
 
 		// a valid folderId means user clicked on an addrbook
-		if (this._folderId) {
-			var folder = appCtxt.getById(this._folderId);
-			var isShare = folder && folder.link;
-			var isInTrash = folder && folder.isInTrash();
-			var canEdit = (folder == null || !folder.isReadOnly());
+		if (folder) {
+			var isShare = folder.link;
+			var isInTrash = folder.isInTrash();
+			var canEdit = !folder.isReadOnly();
 
 			parent.enable([ZmOperation.NEW_MESSAGE], (num > 0));
-			parent.enable([ZmOperation.CONTACTGROUP_MENU], canEdit && num > 0);
 			parent.enable([ZmOperation.TAG_MENU], canEdit && num > 0);
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU], canEdit && num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1 && !isInTrash);
@@ -849,12 +848,11 @@ function(parent, num) {
 			var canEdit = (num == 1 && !contact.isReadOnly() && !ZmContact.isInTrash(contact));
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.TAG_MENU], num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit);
-			parent.enable([ZmOperation.CONTACTGROUP_MENU], (num > 0));
 		}
 	} else {
 		// gal contacts cannot be tagged/moved/deleted
-		parent.enableAll(false);
-		parent.enable([ZmOperation.CONTACTGROUP_MENU, ZmOperation.NEW_MESSAGE], (num > 0 && !appCtxt.isExternalAccount()));
+		parent.enable([ZmOperation.PRINT, ZmOperation.PRINT_CONTACT, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.TAG_MENU], false);
+		parent.enable(ZmOperation.NEW_MESSAGE, (num > 0 && !appCtxt.isExternalAccount()));
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
 		parent.enable(ZmOperation.NEW_MESSAGE, num > 0);
 		parent.enable(ZmOperation.CONTACT, num == 1);
