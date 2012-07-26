@@ -794,10 +794,11 @@ ZmMailListController.prototype._listSelectionListener =
 function(ev) {
 	// offline: when opening a message in Outbox, move it to the appropriate
 	// account's Drafts folder first
+	var search = appCtxt.getCurrentSearch();
 	if (appCtxt.isOffline &&
 		ev.detail == DwtListView.ITEM_DBL_CLICKED &&
 		ev.item && ev.item.isDraft &&
-		appCtxt.getCurrentSearch().folderId == ZmFolder.ID_OUTBOX)
+		search && search.folderId == ZmFolder.ID_OUTBOX)
 	{
 		var account = ev.item.account || ZmOrganizer.parseId(ev.item.id).account;
 		var folder = appCtxt.getById(ZmOrganizer.getSystemId(ZmFolder.ID_DRAFTS, account));
@@ -2108,9 +2109,8 @@ function(parent, num) {
 		}
 	}
 
-	if (appCtxt.multiAccounts && num > 1 &&
-		appCtxt.getCurrentSearch().isMultiAccount())
-	{
+	var search = appCtxt.getCurrentSearch();
+	if (appCtxt.multiAccounts && num > 1 && search && search.isMultiAccount()) {
 		parent.enable(ZmOperation.TAG_MENU, false);
 	}
 

@@ -1299,8 +1299,9 @@ function() {
  * @return	{ZmSearch}		the current search
  */
 ZmAppCtxt.prototype.getCurrentSearch =
-function() { 
-	return this.getCurrentApp().currentSearch;
+function() {
+	var app = this.getCurrentApp();
+	return app && app.currentSearch;
 };
 
 /**
