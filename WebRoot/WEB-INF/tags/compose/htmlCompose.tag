@@ -134,10 +134,10 @@ var myEditor;
             <c:if test="${param.op eq 'reply' or param.op eq 'replyAll'}" >
                 auto_focus : "body",
             </c:if>
-            plugins : "advlist,inlinepopups,table,paste,directionality,media" + (tinymce.isIE ? "" : ",autolink"),
+            plugins : "advlist,inlinepopups,table,paste,directionality" + (tinymce.isIE ? "" : ",autolink"),
             theme : "advanced",
             theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,image,link,unlink,|,spellchecker",
-            theme_advanced_buttons2 : "formatselect,undo,redo,|,removeformat,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,charmap,media",
+            theme_advanced_buttons2 : "formatselect,undo,redo,|,removeformat,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,charmap",
             theme_advanced_buttons3 : "",
             theme_advanced_buttons4 : "",
             theme_advanced_toolbar_location : "top",
