@@ -246,7 +246,7 @@ ZmEditContactView.prototype.getIMOptions = function() {
 		{ value: "yahoo", label: ZmMsg.imGateway_yahoo },
 		{ value: "aol", label: ZmMsg.imGateway_aol },
 		{ value: "msn", label: ZmMsg.imGateway_msn },
-		{ value: "other", label: ZmMsg.other }
+		{ value: "im", label: ZmMsg.other }
 	];
 };
 
