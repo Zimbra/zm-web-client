@@ -541,11 +541,13 @@ function(ed, ev) {
     DwtOutsideMouseEventMgr.forwardEvent(ev);
 };
 
+/* commenting this code as focus is shifting during table edit operation 76446
 ZmAdvancedHtmlEditor.prototype._handleEditorMouseUpEvent =
 function(ed, ev) {
     var kbMgr = DwtShell.getShell(window).getKeyboardMgr();
     kbMgr.grabFocus(this._editorContainer);//This will finally call ZmEditorContainer.prototype._focus method which will call ZmAdvancedHtmlEditor.prototype.restoreFocus method
 };
+*/
 
 ZmAdvancedHtmlEditor.prototype.onLoadContent =
 function(ed) {
@@ -636,9 +638,8 @@ function(id, content) {
             ed.onPostRender.add(obj.onPostRender.bind(obj));
             ed.onInit.add(obj.onInit.bind(obj));
             ed.onKeyDown.add(obj._handleEditorKeyEvent.bind(obj));
-            ed.onMouseDown.add(obj._handleEditorMouseDownEvent.bind(obj));
-            if (AjxEnv.isIE) {
-                ed.onMouseUp.add(obj._handleEditorMouseUpEvent.bind(obj));
+            if (!AjxEnv.isIE) {
+                ed.onMouseDown.add(obj._handleEditorMouseDownEvent.bind(obj));
             }
             ed.onPaste.add(obj.onPaste.bind(obj));
             ed.onBeforeExecCommand.add(obj.onBeforeExecCommand.bind(obj));
