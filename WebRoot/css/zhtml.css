@@ -1371,3 +1371,5 @@ input[disabled] {
 .ImgPrefsHeader{
     width: auto !important;
 }
+
+ruby > rb, rt, rp {font-size: 80%;}
