@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -36,8 +36,15 @@ ZmModel = function(type) {
 	this._evtMgr = new AjxEventMgr();
 }
 
-ZmModel.prototype.isZmModel = true;
-ZmModel.prototype.toString = function() { return "ZmModel"; }
+/**
+ * Returns a string representation of the zimlet.
+ * 
+ * @return		{String}		a string representation of the zimlet
+ */
+ZmModel.prototype.toString = 
+function() {
+	return "ZmModel";
+}
 
 /**
 * Adds a change listener.

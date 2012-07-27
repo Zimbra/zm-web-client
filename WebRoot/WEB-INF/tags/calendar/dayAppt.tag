@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -13,7 +13,7 @@
  * ***** END LICENSE BLOCK *****
 --%>
 <%@ tag body-content="empty" %>
-<%@ attribute name="appt" rtexprvalue="true" required="true" type="com.zimbra.client.ZAppointmentHit" %>
+<%@ attribute name="appt" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZAppointmentHit" %>
 <%@ attribute name="start" rtexprvalue="true" required="true"%>
 <%@ attribute name="end" rtexprvalue="true" required="true"%>
 <%@ attribute name="selected" rtexprvalue="true" required="false"%>
@@ -47,13 +47,6 @@
     <c:when test="${appt.freeBusyActual eq 'O'}"><c:set var="fbashowAsColor" value="${'ZmScheduler-O'}"/></c:when>
     <c:otherwise><c:set var="fbashowAsColor" value="${'ZmScheduler-U'}"/></c:otherwise>
 </c:choose>
-
-<!-- bug:72836  Tackling Firefox on Windows; printing with opacity < 1.0 issue. [Mozilla Firefox bug] TODO: remove this code when https://bugzilla.mozilla.org/show_bug.cgi?id=768350 is fixed -->
-<zm:getUserAgent var="ua" session="false"/>
-<c:if test="${ua.isFirefox and ua.isOsWindows}">
-    <c:set var="fbaOpacity" value="1.0"/>
-</c:if>
-
 <c:choose>
 <c:when test="${appt.allDay}">
     <c:if test="${appt.startTime lt start}"><c:set var="bleft" value='border-left:none;'/></c:if>
@@ -95,9 +88,9 @@
     </table>
 </c:when>
 <c:when test="${appt.duration gt 1000*60*15}">
-    <table onclick='zSelectRow(event,"${apptId}")' class='ZhCalDayAppt${needsAction ? 'New' : ''}' width="100%" style="height:100%; opacity:${fbaOpacity};" border="0" cellspacing="0" cellpadding="1">
+    <table onclick='zSelectRow(event,"${apptId}")' class='ZhCalDayAppt${needsAction ? 'New' : ''}' width="100%" style="height:100%; opacity:${fbaOpacity};" border="0" cellspacing="0" cellpadding="2">
         <tr>
-            <td rowspan="3" class="${fbashowAsColor}" width="1px"></td>
+            <td rowspan="2" class="${fbashowAsColor}" width="1px"></td>
             <td colspan="${needImages ? 1 : 2}" nowrap style="background-color:${color}" valign=top>
                 <c:choose>
                     <c:when test="${appt.startTime lt start}">
@@ -114,7 +107,7 @@
                         <tr>
                             <c:if test="${appt.exception}">
                                 <td valign='top'>
-                                <div width='24' class='ImgApptExceptionIndicator'></div>
+                                    <app:img src="calendar/ImgApptException.png" alt="exception"/>
                                 </td>
                             </c:if>
                             <c:if test="${not empty appt.tagIds}">

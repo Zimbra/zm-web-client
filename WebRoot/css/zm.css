@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -24,9 +24,9 @@
 * - Use shorthand styles when possible (font, margin, padding, etc).
 * - When grouping selectors that correspond to our Javascript objects, show inheritance by using a different line for
 *   each level of inheritance. CSS doesn't care about our object hierarchy, but doing that enhances readability.
-* - Use hex RGB values for colors that don't have names (eg: #EEEEEE)
+* - Use hex RGB values for colors that don't have names (eg:  #EEEEEE)
 * - Try to stick to hex values of   00, 33, 66, 99, AA, FF so they map cleanly to the web palette,
-*    eg:#666666 rather than #616161
+*    eg: #666666 rather than #616161
 * - Modifiers are lower case, whether they're a class (eg .hover) or tacked on (eg -selected).
 *
 * Classes are laid out in the following general order:
@@ -49,29 +49,15 @@
 * Top-level (shell) stuff
 */
 
-.user_font_modern {
-	@FontFamily-modern@
-}
-.user_font_classic {
-	@FontFamily-classic@
-}
-.user_font_wide {
-	@FontFamily-wide@
-}
-.user_font_system {
-	@FontFamily-system@
-}
-
 .DwtShell, .MainShell {
 	position:absolute;
-	left:0;
-	top:0;
+	left:0px;
+	top:0px;
 	@FullSize@
 }
 
-.MainShell {
-	background-color:white;
-}
+.MainShell {}
+
 
 
 
@@ -80,8 +66,8 @@
 
 /* MOVE TO SKIN ??? */
 #ZmTagColorMenu {
-	width:100px;	/* ??? SIZE */
-	height:22px;
+	width: 100px;	/* ??? SIZE */
+	height: 22px;
 }
 
 
@@ -96,25 +82,25 @@
 .BannerBar .quotabar {
 	@ProgressBarContainer@
 	@ProgressBarContainer-unused@
-	text-align:left;
+	text-align: left;
 }
 
 .BannerBar .quotaUsed {
-	height:100%;
+	height: 100%;
 	@ProgressBarContainer-info@
 	@FixIESizeQuirk@
 }
 
 /* 65% - 85% of quota used */
 .BannerBar .quotaWarning {
-	height:100%;
+	height: 100%;
 	@ProgressBarContainer-warning@
 	@FixIESizeQuirk@
 }
 
 /* 85%+ of quota used */
 .BannerBar .quotaCritical {
-	height:100%;
+	height: 100%;
 	@ProgressBarContainer-critical@
 	@FixIESizeQuirk@
 }
@@ -127,15 +113,15 @@
 	@NoWrap@
 }
 
-.BannerBar TD {
-	padding-right:@BoxPaddingSize@;
+.BannerBar td {
+	padding-right: @BoxPaddingSize@;
 }
 
 /* Quota label */
 .BannerTextQuota {
 	@SkinTextQuota@
 	white-space:nowrap;
-	text-align:center;
+	text-align: center;
 	@FontSize-small@
 }
 
@@ -143,13 +129,11 @@
 .BannerTextUser {
 	@SkinTextUsername@
 	white-space:nowrap;
-	text-align:center;
+	text-align: center;
+	font-weight: bold;
 }
 
-.ZNewButton {
-	width:100%;
-	@NewButton@
-}
+
 
 
 /*
@@ -166,43 +150,38 @@
 /* Override so first level of the tree does not indent */
 /* ??? DO WE WANT THIS FOR ALL TREES, OR JUST IN THE OVERVIEW TREES */
 .DwtTreeItemLevel1ChildDiv {
-	padding-left:0;
+	padding-left:0px;
 	margin-bottom:5px;
-	@PanelBg@
-}
-
-.panelTopBorder {
-	border-top:solid 1px @darken(AppC,50)@;
 }
 
 .ZmOverviewContainer .DwtTreeItemLevel1ChildDiv {
-	padding-top:0;
-	margin-bottom:0;
+	padding-top: 0px;
+	margin-bottom: 0px;
 }
 
 .ZmOverviewSection {
-	margin-bottom:5px;
+	margin-bottom: 5px;
 }
 
 .ZmOverviewSectionHilite {
 	@OverviewSection@
-	margin-bottom:5px;
+	margin-bottom: 5px;
 }
 
 .ZmOverviewGlobalInbox {
-	margin:1px 0 2px;
-	padding:1px 0 2px;
+	margin: 1px 0px 2px 0px;
+	padding: 1px 0px 2px 0px;
 }
 
 .ZmOverviewLocalHeader,
 .ZmOverviewLocalHeader-actioned,
 .ZmOverviewLocalHeader-selected,
 .ZmOverviewLocalHeader-selected-focused {
-	@ActiveCursor@
-	background-color:@AltC@;
-	padding:1px 0;
-	border-top:1px solid @darken(AltC, 30)@;
-	border-bottom:1px solid @darken(AltC, 30)@;
+	background-color: @AltC@;
+	padding: 1px 0px;
+	border-top: 1px solid @darken(AltC, 30)@;
+	border-bottom: 1px solid @darken(AltC, 30)@;
+	cursor: pointer;
 }
 
 .ZmOverviewLocalHeader .imageCell,
@@ -220,11 +199,11 @@
 .ZmOverviewZimletHeader-actioned,
 .ZmOverviewZimletHeader-selected,
 .ZmOverviewZimletHeader-selected-focused {
-	@ActiveCursor@
 	@OverviewZimletSection@
-	border-top:1px solid @AltC@;
-	border-bottom:1px solid @AltC@;
-	padding-bottom:2px;
+	border-top: 1px solid @AltC@;
+	border-bottom: 1px solid @AltC@;
+	padding-bottom: 2px;
+	cursor: pointer;
 }
 
 /*
@@ -254,10 +233,6 @@
 	@FullWidth@
 }
 
-.itemToolbar {
-	padding-left:6px;
-}
-
 /* toolbar in child window for message view */
 .ZmMsgViewToolBar_cw {
 	@ToolbarContainer@
@@ -265,31 +240,21 @@
 }
 
 /* toolbars in read message view that let you accept an appointment, share, etc (with no border) */
-.ZmCounterToolBar, .ZmShareToolBar {
+.ZmInviteToolBar, .ZmShareToolBar {
 	@InlineToolbarContainer@
 	padding-left:@BoxPaddingSize@;
 	background-color:@lighten(AppC,90)@; 
 }
 
-.ZmInviteToolBar {
-	@InlineToolbarContainer@
-	background-color:@lighten(AppC,90)@;
-}
-
-.LabelColValue .ZmInviteToolBar {
-	background-color:transparent;
-	padding:0;
-}
-
 .ZmInviteToolBar .ZToolbarTable, .ZmShareToolBar .ZToolbarTable {
-	height:34px;
+	height: 34px;
 }
 
-.ZmNavToolBar .DwtText {white-space:nowrap;}
+.ZmNavToolBar .DwtText {white-space: nowrap;}
 
 
-/* make calendar nav toolbars at least a certain size, bug:19325
-	NOTE:this is a hard-coded size, which is generally bad,
+/* make calendar nav toolbars at least a certain size, bug: 19325
+	NOTE: this is a hard-coded size, which is generally bad,
 	not sure what to do.  min-width doesn't seem to work (in FF).
 */
 .ZmCalendarNavToolbar .ZmNavToolbarTitle {
@@ -299,12 +264,12 @@
 
 
 /* ??? USE ? */
-TD.DDSepVisible DIV {
+td.DDSepVisible div {
 	background-color:black;
 	width:1px;
 	overflow:hidden;
 }
-TD.DDSepInvisible DIV {
+td.DDSepInvisible div {
 	background-color:transparent;
 	width:1px;
 	overflow:hidden;
@@ -321,124 +286,65 @@ TD.DDSepInvisible DIV {
 
 
 /* Search input field */
-.search_input {
-	width:200px;
+.people_search_input {
+	width:100%;
 }
-.search_input-expanded {
+
+.search_input {
 	width:400px;
 }
 
 
-INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
-	border:0 !important;
-	height:100% !important;
+INPUT[type="text"].people_search_input {
+	border: 0px !important;
+	height: 100% !important;
 }
 
 /* the entire search toolbar */
 .ZmSearchToolbar {
 	@FullSize@
 }
-.ZmSearchToolbarTable {
-	height:100%;
-	width:100%;
-}
+
 /* cell surrounding a cell with contents in the search toolbar */
 .ZmSearchToolbarCell {
-	padding:0;
-}
-.ZmSearchToolbarDiv {
-	position:relative;
-}
-.ZmSearchToolbarDiv INPUT {
-	border:none;
-	border-color:transparent;
-	outline:none;
-	@transition@:width .25s ease;
+	padding:0px 2px;
 }
 
-.ZmSearchResultsToolBar {
-	background-color:@AppC@;
+.ZmPeopleSearchToolbarDiv {
+	height: 16px;
+	margin:0px 1px 3px 2px;
+	@FieldBorder@
 }
 
-.ZmSearchResultsToolBar .label {
-	text-align:right;
-	width:200px;
-	margin-right:5px;
-}
-
-.ZmSearchResultsToolBar INPUT {
-	border:1px solid black;
-	margin-right:3px;
-	width:400px;
-}
-
-.ZmSearchResultsFilterPanel {
-	width:100%;
-	height:100%;
-	background-color:@AppC@;
-}
-
-.ZmSearchResultsFilterPanel .header {
-	font-weight:bold;
-	margin:15px 0 5px 5px;
-}
-
-.ZmSearchResultsFilterPanel .filter {
-	margin-left:5px;
-}
-
-.ZmSearchResultsFilterPanel .ZButton {
-	margin:5px;
-	width:90%;
-	height:20px;
-}
-
-.ZmSizeSearchFilterSubMenu {
-	width:125px;
-#IFDEF MSIE
-	width:149px;
-	height:37px !important;
-#ENDIF
-}
-
-.ZmSizeSearchFilterCombobox {
-	display:inline;
-	margin-left:4px;
-}
-
-.ZmSearchResultText {
-	width:175px;
-	text-align:right;
-	vertical-align:middle;
-}
-.ZmSearchResultInputField {
-	width:100%;
-}
-.ZmSearchResultText,
-.ZmSearchResultInputField,
-.ZmSearchResultButton {
-	padding:0 3px 0 0;
+.ZmPeopleSearchToolbarTable {
+	width: 100%;
+	height: 100%;
+	background-color: #ffffff;
 }
 
 /* cell surrounding a separator in the search toolbar */
 .ZmSearchToolbarSeparatorCell {}
 
+.ZmPeopleSearchToolbar {
+	width: 250px;
+}
+
 .ZmPeopleSearch-fullname {
-	font-weight:bold;
+	font-weight: bold;
 }
 
 .ZmPeopleSearch-busy {
-	padding-left:3px;
+	padding-left: 3px;
 }
 
 .ZmPeopleSearch-noresults {
-	font-style:italic;
-	padding:3px;
-	border:2px solid @AltC@ !important;
+	font-style: italic;
+	padding: 3px;
+	border: 2px solid @AltC@ !important;
 }
 
 .ZmPeopleSearchText-hover {
-	@Text-anchor-hover@
+    @Text-anchor-hover@
 	@ActiveCursor@
 }
 
@@ -448,9 +354,9 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 /* Search builder outer container */
 .ZmBrowseView {
-	height:225px;		/* ??? SIZE */
-	width:100%;
-	overflow:hidden;
+	height: 225px;		/* ??? SIZE */
+	width: 100%;
+	overflow: hidden;
 }
 
 
@@ -481,7 +387,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 /* ??? SHOTGUN */
-.ZmPickerOverview TD {
+.ZmPickerOverview td {
 	 @Label@
 }
 
@@ -490,11 +396,11 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmPickerOverview .DwtTree{
-	border:none !important;
+	border: none !important;
 }
 
 .ZmSearchResult {   
-	background-color:@SearchResultColor@;
+    background-color:@SearchResultColor@;
 }
 
 /*
@@ -503,59 +409,48 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 /* message fragment text */
 .Row .ZmConvListFragment,
-.Conv2MsgHeader .ZmConvListFragment,
+.DwtListView-Rows .Row .ZmConvListFragment,
 .Row .Row-Selected .ZmConvListFragment {
 	@Text-disabled@
-	font-weight:normal;
+	font-weight: normal;
 }
 
 /* bug #48863 - fix for IE/Webkit */
 .Trash TD {
-	text-decoration:line-through;
-}
-
-.ZmConvListNumMsgs {
-	@FontSize-normal@
-	background-color:@darken(AppC,30)@; 
-	color:white; 
-	padding:0 4px; 
-	@roundCorners(6px)@
-}
-
-.Unread .ZmConvListNumMsgs {
-	background-color:@darken(AppC,40)@;
+	text-decoration: line-through;
 }
 
 .SubjectDoubleRow .ZmConvListFragment {
 	@Text-disabled@
-	font-weight:normal;
+}
+
+.Unread .SubjectDoubleRow .ZmConvListFragment {
+	@Text@
 }
 
 .ZmConvExpanded {
-	@MailConvExpanded@
+	background-color:#eeeeff;
 }
 
 /* Conversation view outer container (header, list and reading pane) */
-.ZmConvView, 
-.ZmConvView2 { @ConvView@	}
+.ZmConvView {}
+
+/* Remove the border around the email conversation/message panes */
+#ZmConvListView,
+.ZmConvView .DwtListView,
+.ZmTradView .DwtListView {
+	border:0px;
+}
 
 .Expand {
-	padding-left:5px;
-	width:16px;
 #IFDEF MSIE
-	width:23px;
+	width: 23px;
 #ENDIF
-}
-.MsgFolder {
-	padding-left:10px;
-}
-.MsgActions {
-	padding-right:5px;
 }
 
 
 /* ??? SHOTGUN */
-.ZmConvView TD {
+.ZmConvView td {
 	@NoWrap@
 }
 
@@ -579,64 +474,45 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 /* put space between display of tag icons and their names */
-.Tags A {
+.Tags a {
 	@NoWrap@
-	padding-right:@BoxPaddingSize@; 	/* ??? SIZE */
+	padding-right: @BoxPaddingSize@; 	/* ??? SIZE */
 }
 
 
-
-
-.TagImage {
-	display:inline-block; vertical-align:middle; padding-right:2px;
-}
 
 /* Container for the view of one particular message
 	-- there can be two instances, one for "conversation" view and one for "messages" view */
 .ZmMailMsgView {
 	@FullWidth@
-	@PanelBg@
-	@PanelBorder@
-	overflow:auto;
+	@MailMsgBody@
+    overflow:auto;
 }
 
 /* Container for the body of the message.
-	Note:actual bg/text of the message is set in file msgview.css */
+	Note: actual bg/text of the message is set in file msgview.css */
 .MsgBody {}
 
-/* Toolbar for a mail message, eg:to accept an appointment */
+/* Toolbar for a mail message, eg: to accept an appointment */
 .ZmMailMsgView .ZmToolBar {
 	@InlineToolbarContainer@
-	margin-left:12px;
-	height:auto;
-	width:auto;
+	margin-left: 12px;
+	height: auto;
+	width: auto;
 }
 
 /* Container for the header of the message */
-.ZmMailMsgView .MsgHeader,
 .ZmMailMsgView .MsgHeaderTable {
 	@MailMsgHeaderLight@
-	padding:0 5px;
 }
-
-.MsgHeaderTable {}
 
 /* Container for the header of the message */
-.InvHeaderDiv {
-	background-color:@lighten(AppC,50)@;
-	padding:0 7px;
-}
-.Conv2Messages .InvHeaderDiv {
-	background-color:transparent;
-}
-.InvHeaderTable {
+.ZmMailMsgView .InvHeaderTable {
 	@MailInvHeaderLight@
-	border-bottom:1px solid #999;
-	width:100%;
+	border-bottom: 1px solid #999999;
 }
 
-.ZmConvDoublePaneView .calendar_view, 
-.ZmConvView .calendar_view {
+.ZmConvDoublePaneView .calendar_view, .ZmConvView .calendar_view {
 	@TopSeparator@
 	@LeftSeparator@
 }
@@ -644,169 +520,61 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .MessageHeaderAttachments {
 	@MailMsgAttachments@
 }
-.AttachmentLoading .AttachmentLoaded {
-	color:black;
-	border:2px solid #999;
-	padding:1px 3px;
-	margin-bottom:2px;
-	margin-left:3px;
-	display:inline-block;
-	background-color:@darken(AppC,20)@;
-	height:16px;
-#IFDEF MSIE
-	display:inline;
-#ENDIF
-	@roundCorners(4px)@
-}
 
-.AttachmentSpan{
-	position:relative;
-	overflow:visible;
-	padding-right:17px !important;
-}
-
-
-.AttProgressSpan1, .AttProgressSpan2 {
-	height:14px;
-	overflow:hidden;
-
-}
-
-.AttProgressSpan1 {
-	width:1px;
-	position:absolute;
-	background:#999;
-	margin-top:2px;
-}
-
-.AttProgressSpan2 {
-	left:0;
-}
-
-.AttachmentClose {
-	@ActiveCursor@
-	position:absolute;
-	right:2px;
-	top:2px;
-}
-
-.AttachmentLoadingSpan {
-	background-color:@darken(AppC,30)@;
-}
-
-.BrowseMyComputerMenuItem {
-	@ActiveCursor@
-	bottom:0;
-	height:25px;
-	display:block;
-	left:0;
-	margin:0;
-	opacity:0;
-	padding:0;
-	position:absolute;
-	right:0;
-	top:0;
-	z-index:300;
-}
-
-::-webkit-file-upload-button {
-	@ActiveCursor@
-}
-
-
-.BrowseAttachBtn {
-	position:relative;
-	height:15px;
-	opacity:0;
-	text-align:right;
-	z-index:300;
-	overflow:hidden;
-}
-
-.ComposeAttachBtn {
-	position:absolute;
-	top:0;
-	left:0;
-	padding-right:4px;
-	z-index:1;
-}
-
-.ComposeAttachmentMail {
-	@ActiveCursor@
-	bottom:0;
-	display:none;
-	z-index:-1;
-	height:10;
-	width:30px;
-	display:block;
-	left:0;
-	margin:0;
-	opacity:0;
-	padding:0;
-	position:absolute;
-	right:0;
-	top:0;
-}
-
-
-.ZmMailMsgView .LabelColName, 
-.ZmMailMsgCapsuleView .LabelColName {
+.ZmMailMsgView .LabelColName {
 	@MailMsgHeaderLabel@
-	line-height:1.6em;
-	text-align:right;
-	vertical-align:top;
-	white-space:nowrap;
-	width:1%;
+	vertical-align: top;
+	text-align: right;
+	padding: 3px 0px 3px 0px;
+	white-space: nowrap;
 }
 
-.ZmMailMsgView .LabelColValue, 
-.ZmMailMsgCapsuleView .LabelColValue {
+.ZmMailMsgView .LabelColValue {
 	@MailMsgHeaderText@
-	line-height:1.6em;
-	vertical-align:top;
-	white-space:normal;
+	white-space: normal;
+	vertical-align: top;
+	padding: 3px;
 }
 
 .ZmMailMsgView .SubjectCol {
-	@FontSize-bigger@
+	@FontSize-big@
+	font-weight: bold;
 	@MailMsgHeaderText@
 }
 
 .ZmMailMsgView .DateCol {
-	white-space:nowrap;
-	padding-right:10px;
+	white-space: nowrap;
+    padding-right: 10px;
 }
 
 /* ??? USE? */
 .ZmMailMsgView .AttName,
 .ZmMailMsgView .AttName-matched {
-	padding-right:8px;
+	padding-right: 8px;
 }
 
 /* ??? USE? */
 .ZmMailMsgView .AttName-matched {
 	@Anchor-matched@
-	white-space:nowrap;
-}
-
-.InvResponseBar {
-	background-color:@darken(AppC,25)@;
-	border-bottom:1px solid white;
-	border-top:1px solid @darken(AppC,50)@;
-	padding:0 5px 2px;
+	white-space: nowrap;
 }
 
 .InvHeaderTable .LabelColName {
 	@MailMsgHeaderLabel@
-	vertical-align:top;
-	white-space:nowrap;
-	text-align:right;
+	font-weight: bold;
+	font-size: 12px;
+	vertical-align: top;
+	padding: 3px 0px 3px 0px;
+	white-space: nowrap;
+	text-align: left;
 }
 
 .InvHeaderTable .LabelColValue {
 	@MailMsgHeaderText@
-	white-space:normal;
-	vertical-align:top;
+	font-size: 12px;
+	white-space: normal;
+	vertical-align: top;
+	padding: 3px;
 }
 
 .InvHeaderTable .SubjectCol {
@@ -814,273 +582,26 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .InvHeaderTable .DateCol {
-	white-space:nowrap;
-	padding-right:10px;
+	white-space: nowrap;
+    padding-right: 10px;
 }
 
-
-.InvHeaderTable .InvChanged, 
-.InvHeaderTable .InvChanged .Object {
-	color:#EB7400;
-	font-style:italic;
-}
-
-/* Styles for Conv2.0 */
-
-/* Conv2View is for reading pane on right. Conv2View-bottom is for reading pane at bottom.
-   The view has a conv header, a messages area, and a reply area that opens up on demand under
-   the msg that invoked it. */
-
-.Conv2View, .Conv2View-bottom {
-	@Conv2Bg@
-	height:100%;
-}
-
-/* The conv header contains the subject and a summary of the number of messages */
-
-.Conv2Header {
-	@BottomSeparator@
-	background-color:@lighten(AppC,25)@;
-	height:2.4em;
-	overflow:hidden;
-	position:relative;
-}
-
-.Conv2Header .expandIcon {
-	left:0;
-	padding:.5em 0 0 5px;
-	position:absolute;
-	top:0;
+.InvHeaderTable .InvCounter {
+	@WarningContainer@
+	@WarningText@
 	@ActiveCursor@
+	padding-left: 5px;
 }
 
-.Conv2Header .subject {
-	@FontSize-bigger@
-	left:22px;
-	position:absolute;
-	top:.18em;
-	white-space:nowrap;
-}
-
-.Conv2Header .info {
-	/* background-color MUST be the same as Conv2Header */
-	background-color:@lighten(AppC,25)@;
-	padding:.5em 5px 0;
-	position:absolute;
-	right:0;
-	top:0;
-	white-space:nowrap;
-}
-
-/* The messages area contains collapsed and expanded messages */
-
-.Conv2Messages, .Conv2Messages-bottom {
-	overflow:auto;
-#IFDEF MSIE
-	overflow-y:scroll;
-#ENDIF
-}
-
-.Conv2View-bottom .Conv2ViewTable {
-	width:100%;
-	height:100%;
-}
-
-.Conv2Messages {
-	width:100%;
-}
-
-.Conv2Messages-bottom {
-	height:100%;
-}
-
-.Conv2Messages .InvHeaderTable {
-	border-bottom-width:0;
-}
-
-.Conv2Messages .Last {
-	background-color:@lighten(SelC,33)@;
-	border-color:@darken(SelC,10)@;
-	@transition@:all 1000ms ease-out;
-}
-
-.Conv2Messages .Last .date {
-	background-color:@lighten(SelC,33)@;
-	@transition@:all 1000ms ease-out;
-}
-
-.Conv2Messages .Last .ZmConvListFragment {
-	color:@lighten(TxtC,40)@;
-	@transition@:all 1000ms ease-out;
-}
-
-/* The quick reply view opens up under a msg when a reply link is clicked */
-
-.Conv2Reply {
-	@Conv2Reply@
-	padding:5px;
-}
-
-.Conv2Reply .ReplyTextarea {
-	width:100%;
-	height:100px;
-	overflow:auto;
-}
-
-.Conv2Reply .ZToolbarTable>TBODY>TR>TD {
-	padding:4px 2px 1px;
-}
-
-/* Each msg capsule view has a header, a body, and a footer. */
-
-.ZmMailMsgCapsuleView {
-	background-color:@MailMsgBkgdColor@;
-	border:1px solid @darken(AppC,10)@;
-	margin:0 0 1px;
-}
-
-.ZmMailMsgCapsuleView.draft {
-	border:1px dashed @darken(AppC,45)@;
-}
-
-.ZmMailMsgCapsuleView.Reply {
-	margin-bottom:0;
-}
-
-.ZmMailMsgCapsuleView .SubjectCol {
-	@MailMsgHeaderText@
-	@FontSize-normal@
-	font-weight:bold;
-}
-
-.ZmMailMsgCapsuleView .separator {
-	border-color:black;
-	border-style:solid;
-	border-width:0 0 1px;
-	clear:both;
-	color:black;
-	margin:3px 7px;
-	opacity:.25;
-#IFDEF MSIE
-	border-color:#CCC;
-#ENDIF
-}
-
-.Conv2MsgHeader {
-	@ActiveCursor@
-	white-space:nowrap;
-	-moz-user-select:text;
-}
-
-/* Msg read/unread bubble */
-.Conv2MsgHeader .readUnreadDot {
-	position:absolute;
-	top:0;
-	padding:0;
-#IFNDEF MSIE
-	left:2px;
-	top:5px;
-#ENDIF
-}
-
-.Conv2MsgHeader .Unread {
-	font-weight:bold;
-}
-
-.Conv2MsgHeader .info {
-	margin:5px 7px 5px 20px;
-	overflow:hidden;
-#IFDEF MSIE
-	width:100%;
-#ENDIF
-}
-
-.Conv2MsgHeader .info .ZmConvListFrom {
-	@Text@
-	margin:1px 0 3px;
-	overflow:hidden;
-}
-
-.Conv2MsgHeader .Unread .ZmConvListFrom {
-	font-weight:bold;
-}
-
-.Conv2MsgHeader .info .ZmConvListFragment {
-	margin:2px 0 1px 20px;
-	overflow:hidden;
-}
-
-.Conv2MsgHeader .date {
-	background:none repeat scroll 0 0 white;
-	padding:1px 7px 0 5px;
-	position:absolute;
-	right:0;
-	top:5px;
-	white-space:nowrap;
-#IFDEF MSIE
-	right:1px;
-	top:1px;
-#ENDIF
-}
-
-.ZmMailMsgCapsuleView .Link, .Conv2Reply .Link {
-	@ActiveCursor@
-	@FontSize-normal@
-	@Text-link@
-	white-space:nowrap;
-	margin:0 3px;
-}
-
-.ZmMailMsgCapsuleView .Link.followed {
-	@Text-active@
-}
-
-.Conv2Reply .Link {
-	line-height:3em;
-}
-
-.ZmMailMsgCapsuleView .attachments {
-	background-color:@darken(MailMsgBkgdColor,2)@;
-	border:1px solid @darken(MailMsgBkgdColor,12)@;
-	margin:5px;
-	padding:2px;
-}
-
-.ZmMailMsgCapsuleView .footer {
-	clear:both;
-	padding:15px 5px 5px;
-/* IE doesn't seem to support the show/hide.  TODO:investigate why */
-#IFNDEF MSIE
-	@transition@:visibility 0s linear .5s, opacity .5s linear 0s;
-	visibility:hidden;
-	opacity:0;
-}
-.ZmMailMsgCapsuleView:hover .footer {
-	@transition@-delay:0s;
-	visibility:visible;
-	opacity:1;
-}
-/* always show footer while reply box is open */
-.ZmMailMsgCapsuleView.Reply .footer {
-	visibility:visible;
-	opacity:1;
-#ENDIF
+.InvHeaderTable .InvChanged, .InvHeaderTable .InvChanged .Object {
+	color: #eb7400;
+	font-style: italic;
 }
 
 /* the sash next to overview does not need borders or a background color */
 .console_inset_app_l .DwtHorizontalSash {
-	border-width:0;
-	background-color:transparent;
-	margin-left:1px;
-}
-
-/* Adding the margin values to the app sash so that it will be applicable to all apps */
-.AppSash-vert .DwtVerticalSash {
-	margin-top:1px;
-}
-
-.AppSash-horiz .DwtHorizontalSash {
-	margin-left:2px;
+	border: 0px;
+	background-color: transparent;
 }
 
 /* ??? MOVE ME */
@@ -1097,46 +618,33 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 /* for images that are rendered inline of a message body */
 .InlineImage {
-	padding-left:10px;
+	padding-left: 10px;
 }
 
 
 
 /* ??? USE? */
 .colButtons {
-	width:62px;
+	width: 62px;
 }
 
 /* ??? USE? */
 .hSpace {
-	width:@BoxPaddingSize@;
+	width: @BoxPaddingSize@;
 }
 
 
 
 /* Styles below apply to attachments table in iframe */
 .iframeTable {
-	table-layout:fixed;
+	table-layout: fixed;
 }
 
 
 .zdnd_tooltip {
 	display:none;
 	color:#666666;
-	padding-left:2px;
-	margin-left:20px;
-}
-
-.attach_text {
-	display:inline-block;
-	overflow:hidden;
-	text-overflow:ellipsis;
-	max-width:80px;
-}
-
-.reply_attachments {
-	@ActiveCursor@
-	color:#666666;
+	padding-left:70px;
 }
 
 /*
@@ -1149,34 +657,34 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 /* ??? SHOTGUN */
-.ZmComposeView TD {
+.ZmComposeView td {
 	@Text@
 }
 
-.ZmComposeView INPUT,
-.ZmComposeView TEXTAREA {
-}
+.ZmComposeView input,
+.ZmComposeView textarea
+{}
 
 /* ??? USE? */
 .ZmComposeView .composerTable {
-	table-layout:fixed;
-	width:100%;
+	table-layout: fixed;
+	width: 100%;
 }
 
 .ZmComposeView .subjectField {
 	@FullWidth@
-/* MOW:why is this here ?  Use normal field defaults instead:
-	border:1px solid rgb(206,209,201);
-	padding:3 6 0 6;
+/* MOW: why is this here ?  Use normal field defaults instead:
+	border: 1px solid rgb(206,209,201);
+	padding: 3 6 0 6;
 */
 }
 
 /* to/cc/bcc textareas */
 .ZmComposeView .addresses {
 	@FullWidth@
-/* MOW:why is this here ?  Use normal field defaults instead:
-	border:1px solid rgb(206,209,201);
-	padding:3 6 3 6;
+/* MOW: why is this here ?  Use normal field defaults instead:
+	border: 1px solid rgb(206,209,201);
+	padding: 3 6 3 6;
 */
 }
 
@@ -1185,7 +693,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .ZmComposeView .msgArea {
 	@FontFamily-fixed@
 	@FullWidth@
-	overflow:auto;
+	overflow: auto;
 }
 
 /* ??? USE? */
@@ -1197,129 +705,100 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 /* ??? USE? */
 .ZmComposeView .addLink {
-	margin:0 0 0 65px;
+	margin: 0 0 0 65px;
 }
 
 /* Styles to support the autocomplete option to show addresses in bubbles */
 
-.addrBubbleContainer, .attBubbleContainer {
-	@TextCursor@
-	background-color:white;
-	border:1px inset #F0F0F0;
+.addrBubbleContainer {
+	background-color: white;
+	cursor: text;
+	border: 1px inset #F0F0F0;
 }
 
 .addrBubbleHolder-empty {
-	padding:0;
-	margin-top:0;
+	padding: 0;
+	margin-top: 0;
 }
 
-.addrBubbleHolder, .attBubbleHolder {
-	padding:2px 0;
-	margin-top:2px;
-#IFDEF MSIE
-	height:expression(this.scrollHeight > 105 ? "106px" :"auto");
-#ENDIF
-	max-height:98px;
-	overflow:auto;
+.addrBubbleHolder {
+	padding: 2px 0;
+	margin-top: 2px;
+	#IFDEF MSIE
+	height: expression(this.scrollHeight > 105 ? "106px" : "auto");
+	#ENDIF
+	max-height: 98px;
+	overflow: auto;
 }
 
-.addrBubbleContainer INPUT, 
-.attBubbleContainer INPUT {
-	border-width:0 !important;
-	outline:none !important;
-	margin-left:3px;
-	margin-bottom:3px;
-	background-color:transparent;
+.addrBubbleContainer input {
+	border: 0px !important;
+	outline: none !important;
+	margin-left: 3px;
+    margin-bottom: 3px;
+    background-color: transparent;
 }
 
-.addrBubbleContainer INPUT:first-child, 
-.attBubbleContainer INPUT:first-child {
-	margin-left:0;
+.addrBubbleContainer input:first-child {
+	margin-left: 0;
 }
 
-.addrBubble, 
-.addrBubble-selected, 
-.addrBubble-actioned, 
-.attachmentBubble {
-	color:black;
-	border:1px solid #999;
-	font-size:11px;
-	line-height:14px;
-	padding:1px 5px 2px;
-	position:relative !important;
-	margin:0 2px 2px 1px;
-	display:inline-block;
-	white-space:nowrap;
-	@roundCorners(8px)@
+.addrBubble, .addrBubble-selected, .addrBubble-actioned {
+	color: black;
+	border: 1px solid #999999;
+	padding: 1px 3px;
+	margin-bottom: 2px;
+	margin-left: 3px;
+	display: inline-block;
+
+	#IFDEF SAFARI
+		-webkit-border-radius: 4px;
+	#ENDIF
+	#IFDEF GECKO
+		-moz-border-radius:4px;
+	#ENDIF
 }
 
-#IFDEF MSIE
-.Conv2Reply .addrBubble,
-.Conv2Reply .addrBubble-selected,
-.Conv2Reply .addrBubble-actioned {
-	white-space:normal;
-}
-#ENDIF
-
-
-.addrBubble, 
-.attachmentBubble {
-	@InactiveCursor@
-	background-color:#EEE;
-}
-
-/* NOTE: this has to be AFTER the .addrBubble definition above so it overrides it (the element is of multi class "addrBubble tagBubble")  - doing it this way since multi-selection doesn't work in IE*/
-.TagBubble {
-	@NoWrap@
-	display:inline-block;
-	vertical-align:middle;
-	@ActiveCursor@ /*otherwise .AddrBubble cursor is set to default (inactive). see above*/
-}
-
-.TagBubble .TagName,
-.TagBubble .ImgBubbleDelete {
-	display:inline-block; vertical-align:middle;
+.addrBubble {
+	background-color: #EEEEEE;
 }
 
 .addrBubble-selected {
-	@TextCursor@
-	background-color:@SelC@;
+	background-color: @SelC@;
 }
 
 .addrBubble-actioned {
-	@TextCursor@
-	background-color:@RightClickColor@;
+	background-color: @RightClickColor@;
 }
 
-.addrBubbleHolder SPAN:hover {
-	@ActiveCursor@
+.addrBubbleHolder span:hover {
+	cursor: pointer;
 }
 
 .addrBubble .link {
-	@ActiveCursor@
-	color:#666;
+	color: #666666;
+	cursor: pointer;
 }
 
 .addrBubbleInsertionBar {
-	background-color:black;
-	width:2px;
-	height:auto;
-	margin-bottom:2px;
-	margin-left:3px;
+	background-color: black;
+	width: 2px;
+	height: auto;
+	margin-bottom: 2px;
+	margin-left: 3px;
 }
 
-.addrBubble.COND {
-	@ActiveCursor@
-	text-transform:uppercase;
-	font-style:italic;
+.addrBubbleHide {
+	display:inline-block;
+	overflow:hidden;
+	width:1px;
+	height:1px;
+	visibility:hidden;
+	#IFDEF MSIE
+	border: 0px !important;
+	outline: none !important;
+	#ENDIF
 }
-
-.addrBubble.GROUP {
-	@ActiveCursor@
-	font-weight:bold;
-}
-
-
 
 /*
  *	ZmHtmlEditor -- HTML editor stuff
@@ -1327,7 +806,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 /* Outer container */
 .ZmHtmlEditor {
-	padding:@TextPaddingSize@;
+	padding: @TextPaddingSize@;
 }
 
 /* textarea where you type plain-text */
@@ -1335,77 +814,77 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@FontSize-big@
 	@FontFamily-fixed@
 	@FullWidth@
-	overflow:auto;
-	padding:1px;
+	overflow: auto;
+	padding: 1px;
 }
 
 /* iframe where you edit HTML WYSIWYG-stylee */
-/* NOTE:this is deliberately always black text on white */
+/* NOTE: this is deliberately always black text on white */
 .ZmHtmlEditor .DwtHtmlEditorIFrame {
 	@AppBorder@
 	@FullWidth@
-	background-color:white;
+	background-color: white;
 	color:black;
 }
 
-/* NOTE:used in different places like documents, briefcase */
+/* NOTE: used in different places like documents, briefcase */
 .ZmHtmlEditorFooter {
-	width:100%;
-	padding-right:5px;
-	padding-top:2px;
+width: 100%;
+padding-right:5px;
+padding-top:2px;
 }
 
-.ZmHtmlEditorFooter TD{
-	border:1px inset #EEE;
-	color:#666666;
-	padding:4px;
-	@FontFamily-html@
-	@FontSize-smaller@
-	font-size-adjust:none;
-	font-stretch:normal;
-	font-style:normal;
-	font-variant:normal;
-	font-weight:normal;
-	line-height:normal;
+.ZmHtmlEditorFooter td{
+border:1px inset #EEEEEE;
+color:#666666;
+padding: 4px;
+@FontFamily-html@
+@FontSize-smaller@
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
 }
 
 /* Lite HTML Editor */
 .ZmLiteHtmlEditor {
-	width:100%;
-	height:57px;
+	width: 100%;
+	height: 57px;
 }
 
 .ZmLiteHtmlEditor .TextArea {
-	overflow:auto;
-	padding:1px;
-	width:100%;
+	overflow: auto;
+	padding: 1px;
+	width: 100%;
 }
 
 
 /* ??? USE? */
-.ZmHEDialog TD.Label {
+.ZmHEDialog td.Label {
 	@DisableSelection@
-	text-align:right;
-	width:12em;
-	padding-right:3px;
+	text-align: right;
+	width: 12em;
+	padding-right: 3px;
 }
-.ZmHEDialog TD.SmallLabel {
+.ZmHEDialog td.SmallLabel {
 	@DisableSelection@
-	text-align:right;
-	padding-right:3px;
+	text-align: right;
+	padding-right: 3px;
 }
-.ZmHEDialog TD.col2 { width:7em; }
+.ZmHEDialog td.col2 { width: 7em; }
 .ZmHEDialog label { @DisableSelection@ }
 .ZmHEDialog .ShowPickedColor {
 	@DisableSelection@
-	@InactiveCursor@
-	border:1px dashed #888;
-	width:1.2em;
-	line-height:1.2em;
+	border: 1px dashed #888;
+	width: 1.2em;
+	line-height: 1.2em;
+	cursor: default;
 }
-.ZmHEDialog TD.VSep-L { padding-left:3px; font-size:1px; border-right:1px solid #aaa; }
-.ZmHEDialog TD.VSep-R { padding-right:3px; font-size:1px; }
-.ZmHEDialog .Cursor-Pointer, .ZmHEDialog .Cursor-Pointer * { cursor:pointer !important; }
+.ZmHEDialog td.VSep-L { padding-left: 3px; font-size: 1px; border-right: 1px solid #aaa; }
+.ZmHEDialog td.VSep-R { padding-right: 3px; font-size: 1px; }
+.ZmHEDialog .Cursor-Pointer, .ZmHEDialog .Cursor-Pointer * { cursor: pointer !important; }
 
 
 /* ??? USED? */
@@ -1414,22 +893,22 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 #ENDIF
 /* ??? USED? */
 #IFDEF MSIE
-/* NOTE:this type of selector will NOT work in MSIE ??? */
+/* NOTE: this type of selector will NOT work in MSIE ??? */
 .ZmComposeTBButton.selected {
 	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFFFFFFF,endColorStr=#20808080);
-	background-color:white;
+	background-color: white;
 }
 #ENDIF
 
 #IFNDEF MSIE
-/* NOTE:this type of selector will NOT work in MSIE ??? */
+/* NOTE: this type of selector will NOT work in MSIE ??? */
 .ZmComposeTBButton.selected {
-	background-color:white;
+	background-color: white;
 }
 #ENDIF
 
 .ZmSpellMenuItem .ZWidgetTitle {
-	font-weight:bold;
+	font-weight: bold;
 }
 
 
@@ -1462,7 +941,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* Outer container of message compose view */
 .ZmMailConfirmView {
 	@FullWidth@
- 	padding:15px;
+ 	padding: 15px;
 }
 
 .ZmMailConfirmView .Summary {
@@ -1470,8 +949,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmMailConfirmView .Box {
-	margin:2px 0 5px;
-	padding:5px;
+	margin: 2px 0px 5px 0px;
+	padding: 5px;
 }
 
 /*
@@ -1482,31 +961,20 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /*
  * ZmContactSplitView -- list of contacts w/display of one contact to the right
  */
-.ZmContactSplitView, 
-.ZmContactView,
-.ZmEditContactView {
-	@PanelBg@
-	@PanelBorder@
-}
 
 .AlphabetBarTable {
-	@ButtonShadowDefault@
-	border-collapse:separate;
-	margin:5px;
+	background-color:@WidgetBgColor@;
 	table-layout:fixed;
 }
 
 .AlphabetBarCell {
-	@ActiveCursor@
 	text-align:center;
-}
-
-.AlphabetBarCell SPAN {
-	width:100%	
+	@ActiveCursor@
+	border-right-width: 1px;
 }
 
 .AlphabetBarDisabled {
-	/* TODO: this was hard-coded to 50% opaque -- why not same as icon? */
+	/* TODO:  this was hard-coded to 50% opaque -- why not same as icon? */
 	@HalfOpacity@
 	@InactiveCursor@
 }
@@ -1516,8 +984,8 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* ??? RENAME */
 .ZmContactSimpleView {
 	@ListBg@
-	border:1px solid @darken(AppC,50)@;
-	width:100%;
+	border:solid @darken(AppC,50)@; border-width:1px 0px 1px 1px;
+	width: 100%;
 }
 
 .ZmContactSimpleView .SimpleContact-right,
@@ -1535,12 +1003,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .ZmContactEditTabViewPage {
-	display:none;
-	width:100%;
+	display: none;
+	width: 100%;
 }
 
 .ZmContactTabViewPage, .ZmContactEditTabViewPage {
-	padding:5px;
+	padding: 5px;
 }
 
 /* Container for big display of one contact  */
@@ -1548,53 +1016,45 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@AppBg@
 	@AppBorder@
 #IFDEF MSIE
-	height:100%;
+	height: 100%;
 #ENDIF
-	overflow:auto;
+	overflow: auto;
 }
 
 .ZmContactInfoView .contactHeaderRow,
 .ZmContactView .contactHeaderRow,
 .ZmTaskEditView .contactHeaderRow {
-	height:40px;
+	height: 40px;
 	@WidgetHeaderSize-big@
 }
 
 .newTaskBanner {
-	@InactiveCursor@
-	color:rgb(120, 111, 91);
-	padding:5px 0;
+	color: rgb(120, 111, 91);
+	cursor: default;
+	padding: 5 0 5 0;
 }
 
 .newTaskBannerSep {
-	border-bottom:2px solid #AAA;
+	border-bottom: 2px solid #AAAAAA;
 }
 
-.ZmContactView .contactHeaderTable,
 .ZmContactInfoView .contactHeaderTable {
-	border-bottom:1px solid #777;
-	background-color:@darken(AppC,20)@;
+	border-bottom: 1px solid #777777;
+	background-color: @lighten(AltC,40)@;
 }
 
-.ZmContactInfoView .contactGroupTable {
-	background-color:white;
-}
 
 .ZmContactInfoView .contactHeaderSection {
 	@WidgetHeaderContainer@
 	@WidgetHeaderContainer-normal@
 	@FontSize-big@
-	padding:4px 10px;
-	font-weight:bold;
-	margin-top:10px;
+	padding: 4px 10px;
+	font-weight: bold;
+	margin-top: 10px;
 }
 
 .ZmContactInfoView .workName {
-	font-weight:bold;
-}
-
-.ZmEditGroupContact .Row {
-	height:auto;
+	font-weight: bold;
 }
 
 .ZmContactInfoView .contactHeader,
@@ -1607,57 +1067,49 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@OverflowEllipsis@
 }
 
-.ZmContactView .companyName,
 .ZmContactInfoView .companyName {
 	@FontSize-bigger@
 }
 
-.ZmContactView .companyName .Text {
-	height:25px;
-	@FontSize-bigger@
-}
-
-.ZmContactView .companyFolder,
 .ZmContactInfoView .companyFolder {
 	@FontSize-big@
 	@NoWrap@
-	width:1%;
+	width: 1%;
 }
 
 
 .ZmContactInfoView .contactOutput {
 	@Text@
-	vertical-align:top;
+	vertical-align: top;
 }
 
 .ZmContactEditTabViewPage .contactLabel {
 	@Label@
-	width:1%;
-	text-align:right;
+	width: 1%;
+	text-align: right;
 }
 
 .ZmContactInfoView .contactFirstCell {
-	padding-left:50px;
-	vertical-align:top;
+	padding-left: 50px;
+	vertical-align: top;
 }
 
 .ZmContactInfoView .contactLabel {
 	@Label-light@
-	width:125px;
-	text-align:right;
-	vertical-align:top;
+	width: 125px;
+	text-align: right;
+	vertical-align: top;
 }
 
-.ZmContactView .contactLocation,
 .ZmContactInfoView .contactLocation {
 	@Label-light@
-	text-align:right;
-	vertical-align:top;
+	text-align: right;
+	vertical-align: top;
 	@FontSize-big@
 }
 
 .ZmContactInfoView .groupBody {
-	padding:3px;
+	padding: 3px;
 }
 
 
@@ -1668,8 +1120,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 /* Container for the edit screen */
 /* ??? RENAME -> ZmContactEditView */
+.ZmContactView {
+	@PageBg@
+}
+
 .ZmContactView .groupMembers {
-	width:100%;
+	width: 100%;
 }
 
 /* ??? -> ZmFieldLabelRight */
@@ -1681,11 +1137,11 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .ZmContactView .hintLabel {
 	@Label@
 	text-align:right;
-	color:#5A5A5A;
+	color: #5A5A5A;
 }
 
 .ZmContactView .groupFieldset {
-	font-weight:bold;
+	font-weight: bold;
 }
 
 
@@ -1697,18 +1153,18 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .contactEditHeader {
 	@FontSize-bigger@
 	@BottomSeparator@
-	padding-top:15;
-	padding-left:@BoxPaddingSize@;
-	margin-bottom:@BoxMarginSize@;
-	overflow:hidden;
+	padding-top: 15;
+	padding-left: @BoxPaddingSize@;
+	margin-bottom: @BoxMarginSize@;
+	overflow: hidden;
 }
 
 /* ??? USED? */
 .contactEditLabel {
 	text-align:right;
-	padding-left:@BoxPaddingSize@;
-	padding-right:@BoxPaddingSize@;
-	overflow:hidden;
+	padding-left: @BoxPaddingSize@;
+	padding-right: @BoxPaddingSize@;
+	overflow: hidden;
 }
 
 
@@ -1729,7 +1185,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .ZmContactCard-dragProxy {
 	@AppBg@
 	@ContactsCardSize@
-	overflow:hidden;
+	overflow: hidden;
 	@OverflowEllipsis@
 	@DisableSelection@
 }
@@ -1741,12 +1197,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* "Finish Loading" banner in cards view to initiate GetContactRequest for
  *  unloaded contacts */
 .FinishLoading {
-	@ActiveCursor@
-	background-color:#FFC;
-	padding:4px;
-	border-width:1px 0 0;
-	border-style:solid;
-	border-color:#777;
+	cursor: pointer;
+	background-color: #FFFFCC;
+	padding: 4px;
+	border-width: 1 0 0 0;
+	border-style: solid;
+	border-color: #777777;
 }
 
 
@@ -1758,12 +1214,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* Header for the contact cards view */
 .ZmContactCardsView .contactHeader,
 .ZmContactCard-dnd .contactHeader {
-	@ActiveCursor@
 	@FontSize-bigger@
+	@Text@
 	@NoWrap@
 	@OverflowEllipsis@
-	@Text@
-	padding:3px 0 3px 2px;
+	padding: 3 0 3 2;
+	cursor: pointer;
 }
 
 .ZmContactCard-selected .contactHeader,
@@ -1795,9 +1251,9 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 /* ??? USE? */
 .AddressContent {
-	width:350px;
-	height:250px;
-	border:1px solid gray;
+	width: 350px;
+	height: 250px;
+	border: solid gray 1px;
 }
 
 
@@ -1805,24 +1261,23 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
  * Task application
  */
 .InlineWidget {
-	z-index:300;
-	overflow:hidden;
+	z-index: 300;
+	overflow: hidden;
 }
 
-.ZmCompletedtask TD {
-	text-decoration:line-through;
-	color:#999;
+.ZmCompletedtask td{
+    text-decoration: line-through;
+    color: #999999;
 }
 
-.ZmOverduetask TD {
-	color:red;
+.ZmOverduetask td{
+    color: red;
 }
 
-.ZmOverdueCompletedtask TD {
-	text-decoration:line-through;
-	color:red;
+.ZmOverdueCompletedtask td{
+    text-decoration: line-through;
+    color: red;
 }
-
 
 /*
  *	Calendar application
@@ -1837,13 +1292,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* Outer container for all calendar display views */
 .calendar_view {
 	@FullSize@
-	@PanelBg@
-	@PanelBorder@
+	@AppBg@
 }
 
 /* ??? SHOTGUN   NECESSARY?  calendar_body? */
 .calendar_view BODY {
-	margin:0;
+	margin: 0px;
 }
 
 /* ??? SHOTGUN   NECESSARY?  */
@@ -1859,10 +1313,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* ??? USE? */
 .calendar_sched_union_div {
 	text-align:center;
-	/*background-color:red;*/
+	/*background-color: red;*/
 	background-color:#D90000;
 	color:black;
-	overflow:hidden;
+	overflow: hidden;
 }
 
 /* ??? USED? */
@@ -1874,57 +1328,9 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@FullSize@
 }
 
-.calendar_grid_day_table TD {
-	padding:0;
+.calendar_grid_day_table td {
+	padding:0px;
 }
-/*strip to indicate the current time*/
-.calendar_hour_arrow_indicator{
-	position:absolute;
-	top:-12px;
-	height:25px;
-	font-size:25px;
-	right:0;
-}
-.calendar_cur_time_indicator_arr,.calendar_cur_time_indicator_strip,.calendar_start_limit_indicator,.calendar_end_limit_indicator{
-	margin:0;
-	padding:0;
-	z-index:1000000;
-	position:absolute;
-}
-.calendar_cur_time_indicator_arr{
-	height:10px;
-	color:@darken(CalendarNowColor,25)@;
-	overflow:hidden;
-	right:1px;
-}
-.calendar_cur_time_indicator_strip{
-	font-size:0;
-	line-height:0;
-	background-color:@CalendarNowColor@;
-	height:4px;
-	position:static;
-	margin:-3px;
-}
-.calendar_cur_time_indicator_container{
-	font-size:0;
-	line-height:0;
-	height:1px;
-	position:absolute;
-	overflow:hidden;
-	z-index:1000000;
-}
-.calendar_start_limit_indicator,.calendar_end_limit_indicator{
-	padding:0;
-	height:20px;
-	z-index:10000000;
-	color:black;
-	margin:0 49%;
-}
-
-.calendar_start_limit_indicator{
-	margin-top:-5px;
-}
-
 
 /* cell in the calendar grid that is selected */
 .calendar_time_selection {
@@ -1935,17 +1341,17 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .calendar_heading {
 	@WidgetHeaderContainer@
 	@WidgetHeaderContainer-normal@
-	height:20px;			/* ??? SIZE */
-	overflow:hidden;
+	height: 20px;			/* ??? SIZE */
+	overflow: hidden;
 }
 
 /* Year label */
 .calendar_heading_year_text {
 	@Label@
 	padding-top:@TextPaddingSize@;
-	position:absolute;
-	left:0;
-	overflow:hidden;
+	position: absolute;
+	left: 0;
+	overflow: hidden;
 	vertical-align:middle;
 	text-align:center;
 }
@@ -1978,45 +1384,16 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	font-weight:bold;
 }
 
-.calendar_heading_day_tab {
-	border:1px solid @DarkSeparatorColor@;
-	border-left:none;
-	@WidgetHeaderContainer-normal@
-	overflow:hidden;
-}
-
 /* Separator between all-day and hourly sections */
 .calendar_header_allday_separator {
 	@HSashSize@
 	@SashBg@
 	@ActiveCursor@
-	@BottomSeparator@
-}
-
-/* Separator between all-day and hourly sections */
-.calendar_header_allday_separator_sash {
-	@HSashSize@
-	@SashBg@
-	@ActiveCursor@
-	width:18px !important;
-	height:3px !important;
-	margin-left:50%;
-	margin-right:auto;
-	margin-top:1px;
-}
-
-.calendar_header_allday_separator .open {
-	background:url("/img/arrows/ImgSashArrowsUp.png") no-repeat scroll 0 0 transparent;
-}
-
-.calendar_header_allday_separator .closed {
-	background:url("/img/arrows/ImgSashArrowsDown.png") no-repeat scroll 0 0 transparent;
 }
 
 /* Separator between individual days of the calendar */
 .calendar_day_separator {
 	@SeparatorBg@
-	font-size:0;
 }
 
 /* Separator between details and notes section of the calendar compose view*/
@@ -2029,19 +1406,19 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .calendar_edit_field {
-	font-weight:bold;
+    font-weight: bold;
 }
 
 /* container for the hour labels of the day grid */
 .calendar_hour_scroll {
 	position:absolute;
-	overflow:hidden;
+	overflow: hidden;
 }
 
 .calendar_union_scroll,
 .calendar_allday_appt {
 	position:absolute;
-	overflow:hidden;
+	overflow: hidden;
 }
 
 /* this is used when we don't want horizontal scroll in the appt grid */
@@ -2054,7 +1431,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 /* this is used when we want h/v scroll in the appt grid */
 .calendar_body_hscroll {
 	position:absolute;
-	overflow:auto;
+	overflow: auto;
 }
 
 /* outer scrolling container for the month view */
@@ -2062,12 +1439,12 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	position:relative;
 	overflow:hidden;
 /* ??? -> VerticalScrollOverflow? */
-/*	overflow auto seems to work in firefox 1.5b2
+/*  	overflow auto seems to work in firefox 1.5b2
 	overflow:-moz-scrollbars-vertical;
-	overflow:auto;
+  	overflow:auto;
 */
-	overflow-x:hidden;
-	overflow-y:auto;
+  	overflow-x:hidden;
+  	overflow-y:auto;
 }
 
 /* container for a particular time label */
@@ -2086,7 +1463,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .calendar_listview_folder {
 	width:16px;
 	height:16px;
-	@roundCorners(4px)@
+	@borderRadius@:4px;
 }
 
 
@@ -2098,16 +1475,13 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .month_calendar_c3,
 .month_calendar_c4,
 .month_calendar_c5 {
-	width:14%;
+	width: 14%;
 }
 
 .month_calendar_c6{
-	width:16%;
+	width: 16%;
 }
 
-.miniCalendarButton{
-
-}
 
 /* outer table for the month view */
 .calendar_month_table {
@@ -2157,9 +1531,9 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@TopSeparator@
 	@BottomSeparator@
 	@NoWrap@
-	@Text-anchor@
+    @Text-anchor@    
 	vertical-align:top;
-	text-align:center;
+    text-align: center;
 }
 
 /* ??? -Selected -> -selected */
@@ -2171,10 +1545,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 .calendar_month_day_item_continues {
 	@AppBg@
-	text-align:right;
-	position:absolute;
-	right:0;
-	width:10px;
+	text-align: right;
+	position: absolute;
+	right: 0px;
+	width: 10px;
 }
 .calendar_month_cells_td-Selected .calendar_month_day_item_continues {
 	@SelectedBg@
@@ -2184,18 +1558,11 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .calendar_month_day_table {
 	@FullWidth@
 }
-/* Dnd based off of calendar_mont_day */
-.dnd_calendar_month_day_table {
-	@FullWidth@
-	border:0 none black;
-	margin:0;
-	padding:0;
-}
 
 /* label of a particular day in various states */
 .calendar_month_day_label,
 .calendar_month_day_label_today,
-.calendar_month_day_label_bold,
+.calendar_month_day_label_bold,    
 .calendar_month_day_label_off_month,
 .calendar_month_day_label_off_month_today
 {
@@ -2210,7 +1577,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .calendar_month_day_label_bold {
-	font-weight:bold;
+	font-weight: bold;
 }
 
 .calendar_month_day_label_off_month {
@@ -2234,13 +1601,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .calendar_month_day_item_row-Selected {
 	@SelectedBg@
 }
-.calendar_month_day_item_row-Selected TD {
-	font-weight:bold;
-}
 
 /* ??? USE?  text color comes from OrangeC, RedC, etc... */
 .calendar_month_day_item_row-Selected .calendar_month_day_item {
-	color:white;
+	color: white;
 }
 
 
@@ -2254,14 +1618,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .calendar_month_day_item {
 	@NoWrap@
 	/*color:#2869FF;*/		/* ??? USE?  text color comes from OrangeC, RedC, etc? */
-}
-
-.calendar_month_day_item .subject {
-	padding-left:4px;
-}
-
-.calendar_month_day_item .start_time {
-	padding-left:2px;
 }
 
 .calendar_month_day_item-dnd {
@@ -2279,52 +1635,52 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 }
 
 .calendar_tooltip_attendees {
-	border-bottom:1px solid black;
-	padding:1px;
-	white-space:nowrap;
+	border-bottom: 1px solid black;
+	padding: 1px;
+	white-space: nowrap;
 	font-weight:bold;
 }
 
 .suggestion_tooltip_attendee {
-	padding:3px;
+    padding: 3px;
 }
 
 .calendar_date_search {
-	height:32px;
-	margin-right:5px;
+	height: 32px;
+	margin-right: 5px;
 	@DateSearchBackground@;
-	border-bottom:1px solid @darken(AppC,30)@;
+	border-bottom: 1px solid @darken(AppC,30)@;
 }
 
 .calendar_date_search_td {
-	padding:5px 0 5px 5px;
-	white-space:nowrap;
+	padding: 5px 0px 5px 5px;
+	white-space: nowrap;
 }
 
 .calendar_date_search-dateRange {
-	color:#4c4c4c;
-	font-size:16px;
-	font-weight:bold;
-	padding-right:10px;
-	text-align:right;
-	width:100%;
+	color: #4c4c4c;
+	font-size: 16px;
+	font-weight: bold;
+	padding-right: 10px;
+	text-align: right;
+	width: 100%;
 }
 
 /* ??? USED? */
 .allday {
-	left:0;
-	top:0;
-	width:100%;
+        left:0;
+        top:0;
+        width:100%;
 }
 
 /* ??? USED? */
-.allday TD {
-	padding:0;
+.allday td {
+	padding:0px;
 }
 
 
 /*
- * appearance of appointments in day views -- NOTE:colors of these items are not skinned
+ * appearance of appointments in day views -- NOTE: colors of these items are not skinned
  */
 .appt							{ 	z-index:10;	}
 .appt-selected					{ 	z-index:20;	}
@@ -2332,7 +1688,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 .appt-selected TD		 		{	font-weight:bold;   }
 
 /* ??? USE? */
-.appt_new_tag					{	font-weight:bold;	color:#FC0;	}
+.appt_new_tag					{	font-weight:bold;	color:#FFCC00;    }
 
 .appt_name						{	@SmallBoxPadding@; font-weight:bold;  }
 .appt_new_name					{	@SmallBoxPadding@;	}
@@ -2345,107 +1701,105 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .appt_time						{	@SmallBoxPadding@;  }
 .appt_new_time					{	@SmallBoxPadding@;	}
-.appt_end_time					{	@SmallBoxPadding@; color:#666; @NoWrap@	}
-.appt_location						{	@SmallBoxPadding@; color:#666; font-weight:normal;	}
-.appt_icon						{ 	position:relative; float:right;		}
+.appt_end_time					{	@SmallBoxPadding@; color:#666666; @NoWrap@	}
+.appt_location					{	@SmallBoxPadding@; color:#666666; font-weight:normal;  }
+.appt_icon						{ 	position: relative; float: right;		}
 
 .appt_top_sash,
 .appt_bottom_sash{
 	height:5px;
 	width:100%;
 	position:absolute;
-	font-size:2pt;
+	font-size: 2pt;
 }
 
 .appt_top_sash {
-	top:0;
-	cursor:n-resize;
+	top: 0;
+	cursor: n-resize;
 }
 .appt_bottom_sash {
-	bottom:0;
-	cursor:s-resize;
+	bottom: 0;
+	cursor: s-resize;
 }
 
 .appt_body,
 .appt_30_body,
 .appt_allday_body {
-	position:relative;
-	overflow:hidden;
-	border-style:solid;
-	border-color:#A3A3A3;
+    position:relative;
+    overflow:hidden;
+    border-style:solid;
+    border-color:#A3A3A3;
 #IFDEF SAFARI
-	border-width:0;
-	-webkit-box-shadow:0 1px 3px #666;
-	box-shadow:0 1px 3px #666;
+    border-width:0;
+    -webkit-box-shadow:1px 1px 3px #666666;
+    box-shadow:1px 1px 3px #666666;
 #ENDIF
 #IFDEF GECKO
-	border-width:0;
-	-moz-user-select:none;
-	-moz-box-shadow:0 1px 3px #666;
-	box-shadow:0 1px 3px #666;
+    border-width:0;
+    -moz-user-select:none;
+    -moz-box-shadow:1px 1px 3px #666666;
+    box-shadow:1px 1px 3px #666666;
 #ENDIF
 #IFDEF MSIE
-	border-width:0 1px 1px 0;
+    border-width:0px 1px 1px 0px;
 #ENDIF
-	margin:0 0 0 -1px;
+    margin:0 0 0 -1px;
 }
 
-.appt_body TABLE {
-	border:1px solid #999;
-	background-color:#E5E5E5;
+.appt_body table {
+    border:1px solid #999999;
+    background-color: #e5e5e5;
 #IFDEF SAFARI
-	background-image:-webkit-gradient(linear,left top,left bottom,color-stop(0, #E5E5E5),color-stop(1, white));
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #e5e5e5),color-stop(1, #ffffff));
 #ENDIF
 #IFDEF GECKO
-	border-collapse:separate;
-	background-image:-moz-linear-gradient(top, #E5E5E5, white);
+    border-collapse: separate;
+    background-image: -moz-linear-gradient(top, #e5e5e5, #ffffff);
 #ENDIF
 #IFDEF MSIE
-	/* commented out because IE's filter causes strange behaviour on the overlaid text */
-	/*filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='#E5E5E5', EndColorStr='white');  IE6,IE7
-	-ms-filter:"progid:DXImageTransform.Microsoft.gradient(startColorStr='#E5E5E5', EndColorStr='white')"; IE8 */
+    /* commented out because IE's filter causes strange behaviour on the overlaid text */
+    /*filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#e5e5e5', EndColorStr='#ffffff');  IE6,IE7
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#e5e5e5', EndColorStr='#ffffff')"; IE8 */
 #ENDIF
 }
 
-.appt_30_body TABLE,
-.appt_allday_body TABLE {
-	border:1px solid #999;
+.appt_30_body table,
+.appt_allday_body table {
+    border:1px solid #999999;
 }
 
 .appt-selected .appt_body,
 .appt-selected .appt_30_body,
 .appt-selected .appt_allday_body {
-	/*position:relative;
-	overflow:hidden;*/
-	border-width:0 2px 2px 0;
+    /*position:relative;
+    overflow:hidden;*/
+    border-width:0 2px 2px 0;
 #IFDEF SAFARI
-	border-width:0;
-	-webkit-box-shadow:2px 2px 4px #666;
-	box-shadow:2px 2px 4px #666;
+    border-width:0;
+    -webkit-box-shadow:2px 2px 4px #666666;
+    box-shadow:2px 2px 4px #666666;
 #ENDIF
 #IFDEF GECKO
-	border-width:0;
-	-moz-user-select:none;
-	-moz-box-shadow:2px 2px 4px #666;
-	box-shadow:2px 2px 4px #666;
+    border-width:0;
+    -moz-user-select: none;
+    -moz-box-shadow:2px 2px 4px #666666;
+    box-shadow:2px 2px 4px #666666;
 #ENDIF
-	margin:0 -2px -2px 0;
+    margin:0 -2px -2px 0;
 }
 
-.appt-selected .appt_body TABLE,
-.appt-selected .appt_30_body TABLE,
-.appt-selected .appt_allday_body TABLE {
-	border:1px solid #666;
-}
+.appt-selected .appt_body table,
+.appt-selected .appt_30_body table,
+.appt-selected .appt_allday_body table {    border:1px solid #666666;   }
 
 .appt-selected .appt_body TD,
 .appt-selected .appt_allday_body TD,
 .appt-selected .appt_30_body TD {
-	padding-top:0;
-	padding-left:0;
-	padding-right:0;
+	padding-top:0px;
+	padding-left:0px;
+	padding-right:0px;
 #IFDEF GECKO
-	-moz-user-select:none;
+	-moz-user-select: none;
 #ENDIF
 }
 
@@ -2457,7 +1811,7 @@ HTML>BODY .appt-selected .appt_30_body TD {
 	padding-top:2px;
 	padding-right:2px;
 #IFDEF GECKO
-	-moz-user-select:none;
+	-moz-user-select: none;
 #ENDIF
 }
 HTML>BODY .appt-selected .appt_body,
@@ -2466,7 +1820,7 @@ HTML>BODY .appt-selected .appt_allday_body
 {
 	margin-left:-1px;
 #IFDEF GECKO
-	-moz-user-select:none;
+	-moz-user-select: none;
 #ENDIF
 }
 
@@ -2483,7 +1837,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	@BoxPadding@
 	@FullWidth@
 	@FontSize-biggest@
-	border-bottom:2px solid #DDD;
+	border-bottom: 2px solid #DDDDDD;
 }
 .calendar_print_date_header_weekday {
 	@FontSize-normal@
@@ -2495,86 +1849,47 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .calendar_print_appointment_time {
-	position:absolute;
-	top:0;
-	left:0;
-	width:140px;			/* ??? SIZE */
-	font-weight:bold;
+  position:absolute;
+  top:0px;
+  left:0px;
+  width:140px;			/* ??? SIZE */
+  font-weight:bold;
 }
 
 .calendar_print_appointment_name {
-	position:absolute;
-	top:0;
-	left:140px;
-	width:240px;
-	height:12px;
-	overflow:hidden;
-	font-weight:bold;
+  position:absolute;
+  top:0px;
+  left:140px;
+  width:240px;
+  height:12px;
+  overflow:hidden;
+  font-weight:bold;
 }
 
 .calendar_print_appointment_notes {
-	position:absolute;
-	top:12px;
-	left:140px;
-	width:240px;
-	height:40px;
-	overflow:hidden;
-	font-weight:normal;
+  position:absolute;
+  top:12px;
+  left:140px;
+  width:240px;
+  height:40px;
+  overflow:hidden;
+  font-weight:normal;
 }
 
 .calendar_print_appointment_location {
-	position:absolute;
-	top:0;
-	left:400px;
-	width:240px;
-	font-weight:bold;
+  position:absolute;
+  top:0px;
+  left:400px;
+  width:240px;
+  font-weight:bold;
 }
 
-.ZmCalDayTab{
-	height:1.909em;
-	@roundCorners(0 0 4px 4px)@
-	max-width:9.091em;
-	min-width:9.091em;
-	overflow:hidden;
-	white-space:nowrap;
-	width:9.091em;
-	@Text@
-	@SeparatorBg@
-	padding-left:6px;
-	top:4px;
-}
 
-.ZmDayTabSeparator{
-	width:1px;
-	height:1px;
-	/*border-width:0; */
-	/*border:1px solid #B9B9B9;*/ /* color should slightly darker than the cal icon color*/
-	@SeparatorBg@
-	padding:0;
-	line-height:0;
-	font-size:0;
-}
 
-.ZmDayTabMarginDiv {
-	width:2px;
-	border-width:0; /* color should slightly darker than the cal icon color*/
-	background-color:white;
-}
-
-.ZmCalendarNavToolbar {
-	position:absolute;
-	top:0;
-	left:42%;
-}
-
-.ZCalToggleBtn TABLE {
-	border-collapse:separate;
-}
-
+/* ??? USED? */
 /* filler for a blank all day item row in month view */
 .allday_item_filler {
-	/* Size based on ZmCalMonthView._layoutAllDay */
-	height:21;
+	height:20;		/* ??? SIZE */
 }
 
 
@@ -2588,12 +1903,12 @@ HTML>BODY .appt-selected .appt_allday_body
 /* Blank page (view) with some text in it */
 /* ??? USE? */
 .TextPage {
-	color:black;
-	background-color:#EEE;
-	text-align:center;
-	width:100%;
+	color: black;
+	background-color:#EEEEEE;
+	text-align: center;
+	width: 100%;
 }
-.TextPage SPAN { margin:10ex 0 0 0 }
+.TextPage span {margin: 10ex 0 0 0}
 
 
 
@@ -2602,10 +1917,10 @@ HTML>BODY .appt-selected .appt_allday_body
  */
 
 .ZmReminderDialog {
-	overflow:auto;
-	width:475px; 			/*??? SIZE */
+	overflow: auto;
+	width: 475px; 			/*??? SIZE */
 	@BoxMargin@
-	margin-bottom:0;
+	margin-bottom: 0px;
 }
 
 /* Overdue appt text */
@@ -2617,7 +1932,7 @@ HTML>BODY .appt-selected .appt_allday_body
 /* Appt coming soon text */
 .ZmReminderSoon {
 	@Text-important@
-	font-weight:bold;
+	font-weight: bold;
 }
 
 /* Appt somewhere in the future */
@@ -2629,7 +1944,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmReminderField {
 	@NoWrap@
 	@Label@
-	text-align:right;
+	text-align: right;
 }
 
 
@@ -2643,10 +1958,10 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmApptEditView .DwtCheckbox LABEL, .ZmTaskEditView .DwtCheckbox LABEL {
-	white-space:nowrap;
+    white-space: nowrap;
 }
 .ZmApptEditView .ZmFieldLabelRight .ZWidgetTitle, .ZmTaskEditView .ZmFieldLabelRight .ZWidgetTitle {
-	text-align:right;
+    text-align: right;
 }
 
 /* Label for appt edit form */
@@ -2654,13 +1969,13 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmApptTabViewPageField {
 	@Label@
 	@NoWrap@
-	text-align:right;
-	width:1%;
+	text-align: right;
+	width: 1%;
 }
 
 .ZmApptComposeField {
-	float:left;
-	padding-right:5px;
+    float: left;
+    padding-right: 5px;
 }
 
 
@@ -2668,24 +1983,24 @@ HTML>BODY .appt-selected .appt_allday_body
  *	Free/busy view
  */
 /* Colors for the free/busy blocks */		/*??? SKIN THIS ? */
-.ZmScheduler-free 			{ background-color:#E3E3DC;	}
-.ZmScheduler-busy 			{ background-color:#4AA6F1;	}
-.ZmScheduler-tentative 		{ background-color:#BAE0E3;	}
-.ZmScheduler-outOfOffice 	{ background-color:#7B5BAC;	}
-.ZmScheduler-unknown 		{ background-color:#FFF5CC;	}
-.ZmScheduler-working 		{ background-color:white;	}
+.ZmScheduler-free 		{	background-color: #E3E3DC;	}
+.ZmScheduler-busy 		{	background-color: #4AA6F1;	}
+.ZmScheduler-tentative 	{	background-color: #BAE0E3;	}
+.ZmScheduler-outOfOffice {	background-color: #7B5BAC;	}
+.ZmScheduler-unknown 	{	background-color: #FFF5CC;	}
+.ZmScheduler-working 	{	background-color: #FFFFFF;	}
 
-.ZmSchedulerPTST-needsaction 	{ color:#06C !important;	}
-.ZmSchedulerPTST-declined 		{ color:#F00 !important;	}
-.ZmSchedulerPTST-tentative 		{ color:#F60 !important;	}
-.ZmSchedulerPTST-deferred 		{ color:#090 !important;	}
-.ZmSchedulerPTST-delegated 		{ color:#963 !important;	}
-.ZmSchedulerPTST-waiting 		{  color:#666 !important;	}
+.ZmSchedulerPTST-needsaction {	color: #0066CC !important;}
+.ZmSchedulerPTST-declined 	 {	color: #FF0000 !important;}
+.ZmSchedulerPTST-tentative 	 {	color: #FF6600 !important;}
+.ZmSchedulerPTST-deferred    {	color: #009900 !important;}
+.ZmSchedulerPTST-delegated 	 {	color: #996633 !important;}
+.ZmSchedulerPTST-waiting     {  color: #666666 !important;}
 
-.ZmSchedulerApptBorder-free			{ border-style:dotted;	}
-.ZmSchedulerApptBorder-busy			{ border-style:solid;	}
-.ZmSchedulerApptBorder-tentative	{ border-style:dashed;	}
-.ZmSchedulerApptBorder-outOfOffice	{ border-style:solid;	}
+.ZmSchedulerApptBorder-free         { border-style:dotted; }
+.ZmSchedulerApptBorder-busy         { border-style:solid; }
+.ZmSchedulerApptBorder-tentative    { border-style:dashed; }
+.ZmSchedulerApptBorder-outOfOffice  { border-style:solid; }
 
 .ZmSchedulerNormalRow {
 	@AppBg@
@@ -2706,8 +2021,8 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* Container for the 'key' explaining the colors */
 .ZmSchedulerKey {
-	vertical-align:top;
-	text-align:right;
+	vertical-align: top;
+	text-align: right;
 }
 
 
@@ -2715,13 +2030,13 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmSchedulerDate {
 	@FontSize-bigger@
 	@NoWrap@
-	text-align:center;
+	text-align: center;
 }
 
 /* Table that contains the hour labels -- scootch it to the right a little bit */
 .ZmSchedulerGridHeaderTable {
 	position:relative;
-	width:103%;
+    width:103%;
 }
 
 .ZmSchedulerGridHeaderCell {
@@ -2735,9 +2050,9 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmSchedulerViewAttendeeTd {
-	@RightSeparator@
+    @RightSeparator@
 	@LeftSeparator@
-	@BottomSeparator@
+    @BottomSeparator@
 }
 
 .ZmSchedulerNameTd {
@@ -2745,12 +2060,12 @@ HTML>BODY .appt-selected .appt_allday_body
 	@NoWrap@
 	@RightSeparator@
 	@BottomSeparator@
-	border-top:1px solid black;
-	border-left:1px solid black;
-	background-color:white;
-	vertical-align:middle;
+    border-top: 1px solid #000000;
+    border-left: 1px solid #000000;
+    background-color: #FFFFFF;
+	vertical-align: middle;
 	@TextCursor@
-/*	color:#AAAAAA;	*/
+/*	color: #AAAAAA;	*/
 }
 
 .ZmSchedulerPTSTTd {
@@ -2758,7 +2073,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	@NoWrap@
 	@RightSeparator@
 	@BottomSeparator@
-	vertical-align:middle;
+	vertical-align: middle;
 	@TextCursor@
 }
 
@@ -2767,8 +2082,8 @@ HTML>BODY .appt-selected .appt_allday_body
 	@SeparatorBorder@
 	@NoWrap@
 	@Text-disabled@
-	font-weight:bold;
-	text-align:center;
+	font-weight: bold;
+	text-align: center;
 	@InactiveCursor@
 }
 
@@ -2776,33 +2091,27 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmSchedulerAllLabel {
 	@NoWrap@
 	@Text-disabled@
-	font-weight:bold;
-	text-align:center;
+	font-weight: bold;
+	text-align: center;
 	@InactiveCursor@
 }
 
 /* input field for f/b attendees */
 .ZmSchedulerInput {
 	@FullSize@
-	border-width:0;
-	padding-top:3px;
-	height:22px;
-}
-
-/* Make disabled inputs still readable in scheduler view */
-/* included 2 classes and a tag to make it more specific */
-.DwtInputField-disabled INPUT[type='text'].ZmSchedulerInput {
-	color:@TxtC@;
+	border: 0px;
+	padding-top: 3px;
+    height: 22px;    
 }
 
 .ZmSchedulerInputDisabledTd {
 	@RightSeparator@
-	@FreeBusyViewGridHeight@
+    @FreeBusyViewGridHeight@
 }
 
 .ZmSchedulerInputDisabled {
 	@TextPadding@
-	@FreeBusyViewGridHeight@
+    @FreeBusyViewGridHeight@
 	@NoWrap@
 }
 
@@ -2811,8 +2120,8 @@ HTML>BODY .appt-selected .appt_allday_body
 	@FreeBusyViewGridHeight@
 	@NoWrap@
 	@TextCursor@
-	color:#AAAAAA;
-	width:160px;
+	color: #AAAAAA;
+	width: 160px;
 }
 */
 
@@ -2822,11 +2131,11 @@ HTML>BODY .appt-selected .appt_allday_body
 	@FreeBusyViewGridWidth@;
 	@RightSeparator@
 	@BottomSeparator@
-	border-right-color:black;
+	border-right-color: #000000;
 	@NoWrap@
 	@Label@
 	@TextCursor@
-	vertical-align:middle;
+	vertical-align: middle;
 }
 
 
@@ -2862,47 +2171,45 @@ HTML>BODY .appt-selected .appt_allday_body
 	@FreeBusyViewGridHeight@
 	@RightSeparator@
 	@BottomSeparator@
-	border-right-color:black;
+	border-right-color: #000000;
 }
 
 .ZmSchedulerGridTopCellBorder {
 	@FreeBusyViewGridWidth@;
 	@FreeBusyViewGridHeight@
+
 	@TopSeparator@
 	@RightSeparator@
 	@BottomSeparator@
-	border-right-color:black;
+	border-right-color: #000000;
 }
 
 
 /* grid marker for hours */
 .ZmSchedulerGrid-hour {
 	@RightSeparator@
-	width:10px;			/* ??? SIZE */
-	height:21px;
+	width: 10px;			/* ??? SIZE */
+	height: 21px;
 }
 
 .ZmSchedulerGrid-halfHour {
 	@RightSeparator-light@
-	width:10px;			/* ??? SIZE */
-	height:21px;
+	width: 10px;			/* ??? SIZE */
+	height: 21px;
 }
 
 /* marker cell in the grid (showing currently selected time) */
 .ZmSchedulerGrid-start {
 	border-right:3px solid green;
-	width:8px;			/* ??? SIZE */
-	height:21px;
-}
-.ZmSchedulerGridDiv-leftStart {
-	border-left:3px solid green;
+	width: 8px;			/* ??? SIZE */
+	height: 21px;
 }
 
 /* marker cell in the grid (showing currently selected time) */
 .ZmSchedulerGrid-end {
 	border-right:3px solid darkred;
-	width:8px;			/* ??? SIZE */
-	height:21px;
+	width: 8px;			/* ??? SIZE */
+	height: 21px;
 }
 
 .ZmSchedulerBottomBorder {
@@ -2931,8 +2238,8 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmTaskbar .ZToolbarButton,
 .ZmTaskbar .ZmStatusImageButton {
-	height:23px;
-	margin-top:-2px
+	height: 23px;
+	margin-top: -2px
 }
 
 .ZAlert .ZmTaskbarButtonParent .ZToolbarButton {
@@ -2952,27 +2259,28 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmTaskbarItemBorder {
 	border:none;
 	background-color:@TaskbarItem-selected@;
-	z-index:10;
+	z-index: 10;
 }
 
 .ZmTaskbarContentParent {
+	@tlRadius@:3px;
+	@trRadius@:3px;
 	background-color:@TaskbarItem-selected@;
 	position:absolute;
-	bottom:23px;
-	padding:4px;
-	@roundCorners(3px 3px 0 0)@
+	bottom: 23px;
+	padding: 4px;
 }
 
 .ZmTaskbarPopupTitle {
 	background-color:@TaskbarItem-selected@;
-	padding:0 3px 3px 6px;
-	font-weight:bold;
-	width:100%;
+	padding: 0 3px 3px 6px;
+	font-weight: bold;
+	width: 100%;
 }
 
 .ZmTaskbarPopupContent {
 	@PopupWindowBorder@
-	background-color:white;
+	background-color: white;
 }
 
 .ZmTaskbarContentParent .ZmImOverview .DwtTree {
@@ -2986,7 +2294,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmTaskbarContentParent .ZmImOverview .DwtTree{
-	height:300px;
+	height: 300px;
 }
 #ENDIF
 
@@ -2996,78 +2304,78 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmTaskbarContentParent .DwtTree {
-	border-style:none;
+	border-style: none;
 }
 
 .ZmTaskbarContentParent .ZmChatWidget {
 	height:250px;
 	max-height:400px;
 	max-width:300px;
-	margin-bottom:4px;
+	margin-bottom: 4px;
 }
 
 .ZmTaskbarContentParent .ActionMenu {
 	border:none;
-	padding:0;
-	padding-bottom:3px;
-	background-color:white;
-	@roundCorners(0)@
+	padding: 0;
+	padding-bottom: 3px;
+	@borderRadius@: 0;
+	background-color: white;
 }
 
 .ZmTaskbarContentParent .ImYahooLoginLabel {
-	width:90px;
+	width: 90px;
 }
 
 /* temporary lite widgets */
 
-.DwtLtIconButton { padding:2px; }
-.DwtLtIconButton-hover { background-color:white; }
-.DwtLtIconButton-pressed { padding:1px; border:1px solid #777; }
+.DwtLtIconButton { padding: 2px; }
+.DwtLtIconButton-hover { background-color: white; }
+.DwtLtIconButton-pressed { padding: 1px; border: 1px solid #777; }
 
 .ZmChatMultiWindowView, .ZmChatTabbedView {
 	@PageBg@
 	@FullSize@
 }
 
-.ZmChatWidget .ZToolbarTable TD { vertical-align:middle; }
+.ZmChatWidget .ZToolbarTable td { vertical-align: middle; }
 
-.ZmChatWidget .ZToolbarTable .ZButton { min-width:0; }
-.ZmChatWidget .ZToolbarTable .ZButton .ZLeftIcon DIV, .ZmChatWidget .ZToolbarTable .ZButton .ZLeftIcon IMG { margin-left:2px; margin-right:2px; }
-.ZmChatWidget .ZToolbarTable .ZButton .ZWidgetTitle { padding:0; }
+.ZmChatWidget .ZToolbarTable .ZButton { min-width: 0; }
+.ZmChatWidget .ZToolbarTable .ZButton .ZLeftIcon DIV, .ZmChatWidget .ZToolbarTable .ZButton .ZLeftIcon IMG { margin-left: 2px; margin-right: 2px; }
+.ZmChatWidget .ZToolbarTable .ZButton .ZWidgetTitle { padding: 0; }
 
 .ZmSendButton {
-	width:60px;
-	padding-left:2px;
+	width: 60px;
+	padding-left: 2px;
 }
 
 .ZmSendButton .ZHasText .ZButtonTable {
-	width:60px;
+	width: 60px;
 }
 
 .ZmChatDialogField {
 	@Label@
 	@NoWrap@
-	text-align:right;
-	width:1%;
-	font-weight:bold;
+	text-align: right;
+	width: 1%;
+	font-weight: bold;
 }
 
 .ZmChatDialogInputCell {
-	padding-left:10px;
+	padding-left: 10px;
 }
 
 .ZmImNotification {
-	@WindowContainer@
-	padding:10px;
-	width:250px;
-	/* must be initially hidden or it will flash when the animation starts */
-	left:-10000px;
-	top:-10000px;
+  @WindowContainer@
+  padding: 10px;
+  width: 250px;
+  /* must be initially hidden or it will flash when the animation starts */
+  left: -10000px;
+  top: -10000px;
 }
 
-/* label for the chat window itself -- eg:who chat is with or "group chat" */
+/* label for the chat window itself -- eg: who chat is with or "group chat" */
 .ZmChatWindowLabel TD {
-	font-weight:bold;
+	font-weight: bold;
 }
 
 /* label for "online" or "offline" etc status */
@@ -3079,268 +2387,269 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmChatWindowChat {
 	@AppBg@
 	@AppBorder@
-	overflow:auto;
+	overflow: auto;
 }
 
 #IFDEF MSIE
 .ZmChatWindowChat {
 	@AppBg@
 	@AppBorder@
-	overflow:auto;
-	height:200px !important;
+	overflow: auto;
+	height: 200px !important;
 }
 #ENDIF
 
 /* list of chat members for multi-person chat */
 .ZmChatMemberList {
-	/*overflow:hidden;*/
+	/*overflow: hidden;*/
 	@AppBg@
 	@AppBorder@
 }
 
 .ZmChatWindowChatEntry {
-	padding:3px 5px;
+  padding: 3px 5px;
 }
 
-.ZmChatWindowChatEntry-sep {
-	border-top:1px solid #EDD; 
-	margin-top:4px; 
-	margin-bottom:2px; 
-	font-size:1px; 
-	line-height:1px; 
-	overflow:hidden; 
-	height:1px; 
-}
+.ZmChatWindowChatEntry-sep { border-top: 1px solid #edd; margin-top: 4px; margin-bottom: 2px; font-size: 1px; line-height: 1px; overflow: hidden; height: 1px; }
 
-.ZmChatWindowChatEntry .from { font-weight:bold; margin-bottom:5px; }
-.ZmChatWindowChatEntry .time { vertical-align:top; width:10px; padding-left:3px; color:#888; }
-.ZmChatWindowChatEntry .body { vertical-align:top; padding-left:15px; margin-right:4.2em; color:black;}
+.ZmChatWindowChatEntry .from { font-weight: bold; margin-bottom: 5px; }
+.ZmChatWindowChatEntry .time { vertical-align:top; width:10px; padding-left:3px; color: #888; }
+.ZmChatWindowChatEntry .body { vertical-align:top; padding-left: 15px; margin-right: 4.2em; color: black;}
 
-.ZmChatWindowChatEntryMe .from 	{ color:#00C; }
-.ZmChatWindowChatEntryThem .from 	{ color:#C00; }
+.ZmChatWindowChatEntryMe .from { color: #00c; }
+.ZmChatWindowChatEntryThem .from { color: #c00; }
 
 .ZmChatWindowChatEntryError {
 	@CriticalContainer@
 	@CriticalText@
-	margin-bottom:5px;
+	margin-bottom: 5px;
 }
 
-.ZmChatWindowChatEntryError .from { color:#C11; }
+.ZmChatWindowChatEntryError .from { color: #cc1111; }
 
-.ZmImPresence-OFFLINE .DwtTreeItem-Text { color:#888; }
-.ZmImPresence-UNKNOWN .DwtTreeItem-Text { color:#888; }
+.ZmImPresence-OFFLINE .DwtTreeItem-Text { color: #888; }
+.ZmImPresence-UNKNOWN .DwtTreeItem-Text { color: #888; }
 
-.ZmRosterItem-typing .DwtTreeItem .DwtTreeItem-Text 	{ color:#1A1; }
-.ZmRosterItem-typing .ZWidgetTitle { color:#070; }
+.ZmRosterItem-typing .DwtTreeItem .DwtTreeItem-Text { color: #1a1; }
+.ZmRosterItem-typing .ZWidgetTitle { color: #070; }
 
-/* label in the chat record for system notes (eg:roland goes offline, etc) */
+/* chat with Zimbra Assistant */
+
+.ZmAssistantChat .ZmAssistantButtons { float: right; }
+.ZmAssistantChat .ZmAssistantButtons span { @Anchor@ padding: 0 10px; font-weight: bold; margin-left: 5px; }
+.ZmAssistantChat .ZmAssistantButtons span:hover { @Anchor-hover@ }
+.ZmAssistantChat .ZmChatWindowChatEntry .time { display: none; }
+.ZmAssistantChat .ZmChatWindowChatEntry .body { margin-right: 0; padding-right: 15px; }
+.ZmAssistantChat .ZmAsstContactHelp { height: auto; overflow: auto; }
+
+/* label in the chat record for system notes (eg: roland goes offline, etc) */
 .ZmChatWindowChatEntrySystem {
-	color:#888;
-	font-style:italic;
+  color: #888;
+  font-style: italic;
 }
 
 .ZmChatWidget .ZmLiteHtmlEditor .DwtHtmlEditorTextArea {
-	@AppBg@
-	@AppBorder@
-	border-width:2px !important;
-	padding:1px 2px;
+  @AppBg@
+  @AppBorder@
+  border-width: 2px !important;
+  padding: 1px 2px;
 }
 
 .ZmChatTabs-Container {
-	position:absolute; 
-	left:0; 
-	top:0; 
-	display:none;
+  position: absolute; left: 0; top: 0; display: none;
 }
 
-.ZmChatTabs-Container-Active { display:block; }
+.ZmChatTabs-Container-Active { display: block; }
 
 .ZmChatTabs-TabBar {
-	position:absolute;
-	top:100%;
-	margin-top:4px;
-	left:5px;
+  position: absolute;
+  top: 100%;
+  margin-top: 4px;
+  left: 5px;
 }
 
 .ZmChatTabs-MemberBar {
-	position:absolute;
-	left:100%;
-	margin-left:4px;
-	top:7px; 
-	bottom:7px;
-	overflow:hidden;
-	display:none;
+  position: absolute;
+  left: 100%;
+  margin-left: 4px;
+  top: 7px; bottom: 7px;
+  overflow: hidden;
+  display: none;
 }
 
 .DwtResizableWindow-unfocused .ZmChatTabs-MemberBar {
-	@WindowContainer@
-	padding:3px;
-	border-width:2px;
-	border-left:none;
-	@roundCorners(0 2px 2px 0)@
+  @WindowContainer@
+  padding: 3px;
+  border-width: 2px;
+  border-left: none;
+  -moz-border-radius: 0 2px 2px 0;
 }
 
 .DwtResizableWindow-focused .ZmChatTabs-MemberBar {
-	@ToolbarContainer@
-	height:auto;
-	padding:3px;
-	border-width:2px;
-	border-left:none;
-	@roundCorners(0 2px 2px 0)@
+  @ToolbarContainer@
+  height: auto;
+  padding: 3px;
+  border-width: 2px;
+  border-left: none;
+  -moz-border-radius: 0 2px 2px 0;
 }
 
 .ZAlert .DwtResizableWindow-topcont { @AlertColor@ }
 
 /* hide the tab bar unless we have 2 or more tabs */
-.ZmChatTabs-TabBarCount-0 /*, .ZmChatTabs-TabBarCount-1 */ { display:none; }
+.ZmChatTabs-TabBarCount-0 /*, .ZmChatTabs-TabBarCount-1 */ { display: none; }
 
-.ZmChatTabs-TabBar .ZmChatTabs-Tab, 
-.DwtResizableWindow-unfocused .ZmChatTabs-TabBar .ZmChatTabs-Tab {
-	@WindowContainer@
-	float:left;
-	padding:2px 4px;
-	border-width:2px;
-	border-top:none;
-	@roundCorners(0 0 2px 2px)@
+.ZmChatTabs-TabBar .ZmChatTabs-Tab, .DwtResizableWindow-unfocused .ZmChatTabs-TabBar .ZmChatTabs-Tab {
+  @WindowContainer@
+  float: left;
+  padding: 2px 4px;
+  border-width: 2px;
+  border-top: none;
+  -moz-border-radius-topleft: 0;
+  -moz-border-radius-topright: 0;
+  -moz-border-radius-bottomleft: 2px;
+  -moz-border-radius-bottomright: 2px;
 }
 
 .ZmChatTabs-TabBar .ZmChatTab-Unread { @AlertColor@ }
-.ZmChatTab-Unread .ZWidgetTitle { color:#C00; }
-.ZmChatTab-Flash .ZWidgetTitle { visibility:hidden; }
+.ZmChatTab-Unread .ZWidgetTitle { color: #c00; }
+.ZmChatTab-Flash .ZWidgetTitle { visibility: hidden; }
 
-.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable { width:auto; }
-/* .ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTitle { width:auto; padding-top:0; padding-bottom:0; } */
-.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTitle { width:auto; padding:0; }
-.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable .ZLeftIcon DIV, 
-.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable .ZLeftIcon IMG { margin-left:0; }
-.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable DIV { margin:0; }
-.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZButton { min-width:0; height:auto; }
+.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable { width: auto; }
+/* .ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTitle { width: auto; padding-top: 0; padding-bottom: 0; } */
+.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTitle { width: auto; padding: 0; }
+.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable .ZLeftIcon DIV, .ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable .ZLeftIcon IMG { margin-left: 0; }
+.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable div { margin: 0; }
+.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZButton { min-width: 0; height: auto; }
 
 .ZmChatTabs-TabBar .ZmChatTabs-Tab-Active {
-	@ToolbarContainer@
-	height:auto;
-	float:left;
-	padding:2px 4px 3px;
-	border-width:2px;
-	border-top:none;
-	margin-top:-1px;
-	@roundCorners(0 0 2px 2px)@
+  @ToolbarContainer@
+  height: auto;
+  float: left;
+  padding: 2px 4px 3px 4px;
+  border-width: 2px;
+  border-top: none;
+  margin-top: -1px;
+  -moz-border-radius-topleft: 0;
+  -moz-border-radius-topright: 0;
+  -moz-border-radius-bottomleft: 2px;
+  -moz-border-radius-bottomright: 2px;
 }
 
-.DwtResizableWindow-unfocused .ZmChatTabs-TabBar .ZmChatTabs-Tab-Active { padding:2px 4px 3px; }
+.DwtResizableWindow-unfocused .ZmChatTabs-TabBar .ZmChatTabs-Tab-Active { padding: 2px 4px 3px 4px; }
 
 .ZmChatGwIcon {
-	@ActiveCursor@
-	width:44px;
-	height:44px;
-	background-position:50% 50%;
-	background-repeat:no-repeat;
-	padding:1px;
+  width: 44px;
+  height: 44px;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  padding: 1px;
 }
 
 .ZmChatJiveIcon {
-	width:87px;
-	height:44px;
-	background-position:50% 50%;
-	background-repeat:no-repeat;
-	padding:1px;
-	margin-left:20;
-	margin-top:36; /* to align with the smaller interop buttons */
+  width: 87px;
+  height: 44px;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  padding: 1px;
+  margin-left:20;
+  margin-top:36; /* to align with the smaller interop buttons */
 }
 
-/* FIXME:these are temporary until Owen adds them as proper icons */
-.ImgYahooBig { background-image:url("/zimbra/public/tmp/yahoo.png?v=@jsVersion@"); }
-.ImgMsnBig { background-image:url("/zimbra/public/tmp/msn.png?v=@jsVersion@"); }
-.ImgAolBig { background-image:url("/zimbra/public/tmp/aol.png?v=@jsVersion@"); }
-.ImgJiveBig { background-image:url("/zimbra/public/tmp/jive.png?v=@jsVersion@"); }
+/* FIXME: these are temporary until Owen adds them as proper icons */
+.ImgYahooBig { background-image: url("/zimbra/public/tmp/yahoo.png"); }
+.ImgMsnBig { background-image: url("/zimbra/public/tmp/msn.png"); }
+.ImgAolBig { background-image: url("/zimbra/public/tmp/aol.png"); }
+.ImgJiveBig { background-image: url("/zimbra/public/tmp/jive.png"); }
 
 .ImAccountLabel {
-	width:150px;
-	font-weight:bold;
-	white-space:nowrap;
-	text-align:right;
+	width: 150px;
+	font-weight: bold;
+	white-space: nowrap;
+	text-align: right;
 	line-height:20px;
 }
 
 .ImAccountGatewayLabel {
-	width:100px;
-	text-align:right;
+	width: 100px;
+	text-align: right;
 }
 
 .ImAccountGatewayValue {
-	width:90%;
+	width: 90%;
 }
 
 .ImAccountLogin .FakeAnchor {
-	font-weight:bold;
+	font-weight: bold;
 }
 
 .ZmChatGwIcon-offline {
-	opacity:0.3;
+ opacity: 0.3;
+
 #IFDEF MSIE
-	filter:alpha(opacity=30);
+
+	filter: alpha(opacity=30);
 #ENDIF
 }
-
 .ZmChatGwIcon-hover {
-	opacity:0.8;
-	border:1px solid #AAA; padding:0;
-	background-color:white;
+   opacity: 0.8;
+  border: 1px solid #aaa; padding: 0;
+  background-color: #fff;
 #IFDEF MSIE
-	filter:alpha(opacity=80);
+   filter: alpha(opacity=80);
 #ENDIF
 }
 
 .ZmImToastText {
 	@Text-anchor@
 }
-
 .ZmImToastText-hover {
 	@Text-anchor-hover@
 	@ActiveCursor@
 }
 
 .ZmBuddyFilterItem {
-	width:96%;
-	padding-left:4px;
-	padding-right:4px;
-	padding-bottom:1px;
+	width: 96%;
+	padding-left: 4px;
+	padding-right: 4px;
+	padding-bottom: 1px;
 }
 
 .ZmBuddyFilterItem .DwtSimpleInput {
-	width:100%;
+	width: 100%;
 }
 
 .ZmInfoTreeItem {
-	margin:4px;
-	margin-top:1px;
+	margin: 4px;
+	margin-top: 1px;
 }
 .ZmInfoTreeItem .FakeAnchor {
-	font-weight:bold;
+	font-weight: bold;
 }
 
 .ZmImYahooLogin {
-	width:320px;
+	width: 320px;
 }
 
 .ZmImYahooMessage {
-	width:300px;
-	margin:10px;
-	padding:5px;
+	width: 300px;
+	margin: 10px;
+	padding: 5px;
 	@NormalOutsetBorder@
-	background-color:@HilightColor@;
+	background-color: @HilightColor@;
 }
 
 .ImYahooLoginLabel {
-	width:110px;
-	font-weight:bold;
-	white-space:nowrap;
-	text-align:right;
+	width: 110px;
+	font-weight: bold;
+	white-space: nowrap;
+	text-align: right;
 	line-height:20px;
 }
 
 .ImYahooLoginValue {
-	text-align:left;
+	text-align: left;
 	padding-left:10px;
 }
 
@@ -3350,18 +2659,8 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmAppChooser {
 	margin-left:@SmallBoxPaddingSize@;
-	margin-top:1px;
-	height:100%;
-	overflow:hidden;
-}
-
-/*
- *	Tab overflow buttons
- */
-
-.ZmMoreTabs {
-	@ActiveCursor@
-	padding-left:5px;
+	margin-top:@BoxMarginSize@;
+	height: 100%;
 }
 
 
@@ -3375,8 +2674,8 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .viewLabel .Text {
-	white-space:nowrap;
-	width:1%;
+	white-space: nowrap;
+	width: 1%;
 }
 
 
@@ -3396,16 +2695,16 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmContactSearch {
-	width:500px;
+	width: 500px;
 }
 .ZmContactSearch .contactSearchResultsDiv {
-	margin-top:15px;
+	margin-top: 15px;
 }
 
 .ZmContactSearch .ZmContactSearchListView {
-	width:100%;
-	height:300px;
-	background-color:white;
+	width: 100%;
+	height: 300px;
+	background-color: white;
 }
 
 .ZmContactSearch .searchFieldHint {
@@ -3418,9 +2717,9 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmAutocompleteListView {
 	@MenuContainer@
 	background-color:@ListItemBgColor-normal@;
-	width:auto;
-	padding:0 !important;
-	border-width:1px;
+	width: auto;
+	padding: 0px !important;
+	border-width: 1px;
 }
 
 .acRow, .acRow-selected {
@@ -3437,9 +2736,9 @@ HTML>BODY .appt-selected .appt_allday_body
 	@ListItemContainer-selected@
 }
 
-.ZmAutocompleteListView TD {
+.ZmAutocompleteListView td {
 	border-style:solid;
-	border-width:1px 0;
+	border-width:1px 0px;
 	border-color:@lighten(AppC,60)@;
 	border-top-color:@ListItemBgColor-normal@;
 }
@@ -3447,44 +2746,45 @@ HTML>BODY .appt-selected .appt_allday_body
 .acWaiting {
 	@ListItemHeight@
 	background-color:@ListItemBgColor-normal@;
-	width:auto;
-	border:1px solid @darken(AltC,40)@;
-	padding:0 3px;
+	width: auto;
+	border: 1px solid @darken(AltC,40)@;
+	padding: 0px 3px;
 }
 
-.ZmPeopleAutocompleteListView TD {
-	border-width:0;
+.ZmPeopleAutocompleteListView td {
+    border-width:0px 0px;
 }
 
 .ZmPeopleSearch-toolbar {
-	display:none;
+	display: none;
 	@ListItemContainer-selected@
-	border:1px solid @darken(SelC,15)@;
-	border-top:0;
-	z-index:1000;
-	@roundCorners(0 0 5px 5px)@
+	@blRadius@:5px;
+	@brRadius@:5px;
+	border: 1px solid @darken(SelC,15)@;
+	border-top: 0px;
+	z-index: 1000;
 }
-.ZmPeopleSearch-toolbar TABLE {
-	padding:1px 5px;
+.ZmPeopleSearch-toolbar table {
+	padding: 1px 5px;
 }
 
-.acRow TD {
+.acRow td {
 	@ListItemText@
 }
 
-.acRow-selected TD {
+.acRow-selected td {
 	@ListItemText-selected@
 }
 
-.ZmAutocompleteListView TD.Icon {
+.ZmAutocompleteListView td.Icon {
 	width:20px;
 }
 
 /* not sure that these pseudoclasses will work in IE6 */
-.ZmAutocompleteListView TD:first-child {
+.ZmAutocompleteListView td:first-child {
 	padding-left:3px;
 }
-.ZmAutocompleteListView TD:last-child {
+.ZmAutocompleteListView td:last-child {
 	padding-right:3px;
 }
 
@@ -3492,7 +2792,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	text-align:right;
 }
 
-.ZmAutocompleteListView .Link A:hover {
+.ZmAutocompleteListView .Link a:hover {
 	text-decoration:none;
 }
 
@@ -3521,22 +2821,22 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmFilterListView {
 	@AppBg@
 	@AppBorder@
-	width:100%;
+	width: 100%;
 }
 
 /* ??? USE? */
 .ZmFilterRuleDialog .paddedTableCell {
-	vertical-align:middle;
-	@TextPadding@
+  vertical-align:middle;
+  @TextPadding@
 }
 
 /* ??? USE? */
 .ZmFilterRuleDialog .chooserButton {
-	width:120px;
+	width: 120px;
 }
 
 .ZmFilterRuleDialog .plusMinusButton {
-	width:20px;
+	width: 20px;
 }
 
 /*
@@ -3558,18 +2858,18 @@ HTML>BODY .appt-selected .appt_allday_body
  */
 
 .ZmPreferencesPage {
-	padding:0.5em 2em;
+	padding: 0.5em 2em;
 	width:99%;
 }
 
 .ZmPreferencesPage .Label {
-	padding-right:5px;
+	padding-right: 5px;
 	@NoWrap@
 }
 
 /* table that holds the 'restore defaults' button */
 .ZOptionsDefaultsTable {
-	margin-bottom:0.5em;
+	margin-bottom: 0.5em;
 }
 
 /* Table for a section of prefs (head + body) */
@@ -3583,8 +2883,8 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZOptionsHeaderL,
 .ZOptionsHeaderR { }
 .ZOptionsHeader {
-	@FontSize-bigger@
-	color:white;
+ 	@FontSize-bigger@
+ 	color:white;
 }
 .ZOptionsHeader {
 	width:100%;
@@ -3596,49 +2896,44 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding:1em;
 }
 
-.ZOptionsSectionMain>TABLE>TBODY>TR>TD {
-	@PropertySheetSpacing@
-}
-
 .ZOptionsSectionTabView .ZmPreferencesPage,
 .ZOptionsSectionTabView .ZSelectedPrev .ZTabBorder {
-	border-style:solid;
-	border-color:@Darken(TabColor,20)@;
-	border-width:1px;
-	width:100%;
-	padding:0;
+	border-style: solid;
+	border-color: @Darken(TabColor,20)@;
+	border-width: 1px;
+	width: 100%;
+	padding: 0;
 }
 
 .ZOptionsSectionTabView .ZOptionsSectionTable {
-	padding:0;
-	margin:0;
+	padding: 0;
+	margin: 0;
 }
 
 .ZOptionsSectionTabView .ZTabBar {
-	background-color:transparent;
+	background-color: transparent;
 }
 
 .ZOptionsSectionTabView .ZTab {
-	margin-bottom:-1px;
-	margin-right:3px;
-	position:relative !important;
+	margin-bottom: -1px;
+	margin-right: 3px;
+	position: relative !important;
 }
 
 .ZOptionsSectionTabView .ZTabBarPrefix,
 .ZOptionsSectionTabView .ZTabBarSuffix {
-	border-width:0;
+	border-width: 0;
 }
 
 .ZOptionsSectionTabView .ZTabBorder {
-	background-color:@TabColor@;
-	border-collapse:separate;
-	border-width:1px;
+	background-color: @TabColor@;
+	border-width: 1px;
 	@TabRoundCorners@
 }
 
 .ZOptionsSectionTabView .ZSelected .ZTabBorder {
-	background-color:@AppC@;
-	border-bottom-color:@AppC@;
+	background-color: @AppC@;
+	border-bottom-color: @AppC@;
 }
 
 
@@ -3647,11 +2942,11 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZOptionsLabelNarrow,
 .ZOptionsTableLabel {
 	@Text@
-	width:150px;
-	font-weight:bold;
-	white-space:nowrap;
-	text-align:right;
-	vertical-align:middle;
+	width: 150px;
+	font-weight: bold;
+	white-space: nowrap;
+	text-align: right;
+	vertical-align: middle;
 	line-height:20px;
 }
 
@@ -3673,93 +2968,92 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZOptionsInfo {
-	@Text-disabled@		/* TODO:Text-hint ? */
+	@Text-disabled@		/* TODO: Text-hint ? */
 }
 
 .ZOptionsInfo .ZOptionsLabel {
-	width:100px;
+	width: 100px;
 }
 
-/* REVISIT:Why do disabled inputs have a fixed height of 20px? */
+/* REVISIT: Why do disabled inputs have a fixed height of 20px? */
 .ZOptionsField INPUT[disabled],
 .ZOptionsTableRow INPUT[disabled] {
-	height:auto;
+	height: auto;
 }
 
-.ZOptionsField INPUT[type="checkbox"] {
-	@ActiveCursor@
+.ZOptionsField input[type="checkbox"] {
+		@ActiveCursor@
 }
 
 #IFDEF MSIE
-.ZOptionsField INPUT {
-	cursor:expression(this.type=="checkbox"?'pointer':'');
+.ZOptionsField input {
+	cursor: expression(this.type=="checkbox"?'pointer':'');
 }
 #ENDIF
 
 .ZOptionsItemsListView .DwtListView-Rows {
-	height:auto;
+	height: auto;
 }
 
 .ZmPrefZimletListView .DwtListView-Rows {
-	overflow:visible;
+    overflow: visible;
 }
 
 .ZmPrefZimletListView .Row {
-	height:20px;
+	height: 20px;
 }
 
 .ZOptionsOfflineAccts {
-	font-size:14px;
-	text-align:center;
+	font-size: 14px;
+	text-align: center;
 }
-.ZmPrefZimletListView .Row TABLE, .ZmPrefZimletListView .RowDouble TABLE {
-	table-layout:auto;
+.ZmPrefZimletListView .Row table, .ZmPrefZimletListView .RowDouble table {
+    table-layout:auto;    
 }
 .ZOptionsAcctName {
-	margin-right:10px;
-	white-space:nowrap;
+	margin-right: 10px;
+	white-space: nowrap;
 }
 
 .ZmSignatureListView {
-/*	width:180px !important;*/
-	height:100%;
+/*	width: 180px !important;*/
+	height: 100%;
 	background-color:white;
 }
 
-.ZmSignatureListView TD {
+.ZmSignatureListView td {
 	padding-left:5px;
 }
 
 .ZmFilterRulesView .DwtListView-Rows {
-	/*overflow:visible;*/
-	height:auto;
-	min-height:185px;
+	/*overflow: visible;*/
+	height: auto;
+	min-height: 185px;
 }
 
 .ZmFilterRulesView .FilterActiveCell {
-	text-align:center;
+	text-align: center;
 }
 
-.ZmFilterRulesView .DwtListView-Rows INPUT {
-	margin:1px;
+.ZmFilterRulesView .DwtListView-Rows input {
+	margin: 1px;
 }
 
 #IFDEF MSIE
 * html .ZmFilterRulesView .DwtListView-Rows {
-	height:185px;
+	height: 185px;
 }
 #ENDIF
 
 /* Container for the set of preference pages (including tabs) */
 .ZmPrefView {
-	@PanelBg@
-	@PanelBorder@
+	@AppBg@
 	@FullSize@
 }
 
 /* ??? USE?  Seems to be the entire preferences form body.  RENAME? */
 .ZmPrefView .TitleBar {
-	padding-top:@BoxPaddingSize@;
+	padding-top: @BoxPaddingSize@;
 }
 
 /* Background for the pref tabs */
@@ -3778,115 +3072,115 @@ HTML>BODY .appt-selected .appt_allday_body
 /* Divider between groups of related preferences */
 .ZmPrefView .horizSep {
 	@BottomSeparator@
-	margin-top:@BoxMarginSize@;
+	margin-top: @BoxMarginSize@;
 }
 
 /* Prefs are laid out in a table */
 .prefTable {
-	table-layout:fixed;
-	width:auto;
+	table-layout: fixed;
+	width: auto;
 }
 
 /* label for pereferences */
 .prefLabel {
 	@Label@
-	width:300px;		/* ??? SIZE */
-	text-align:right;
-	vertical-align:top;
-	padding-top:2px;
+	width: 300px;		/* ??? SIZE */
+	text-align: right;
+	vertical-align: top;
+	padding-top: 2px;
 }
 .prefContent {
-	width:420px;		/* ??? SIZE */
-	vertical-align:top;
-	white-space:nowrap;
+	width: 420px;		/* ??? SIZE */
+	vertical-align: top;
+	white-space: nowrap;
 }
 
 /* button sizing */
 .ZmPreferencesPage .changePasswordButton { }
 .ZmPreferencesPage .exportButton { }
-.ZmPreferencesPage .resetButton {	width:100px;	}
+.ZmPreferencesPage .resetButton {	width: 100px;	}
 
 .ZmWhiteBlackList {
 	@InputBorder@
-	width:210px;
-	height:150px;
+	width: 210px;
+	height: 150px;
 }
 
 .ZmWhiteBlackList .Row {
-	padding-left:3px;
+	padding-left: 3px;
 }
 
 /* ??? USE? */
 .ZmShortcutsPage .paddedTableCell {
-	vertical-align:middle;
-	@TextPadding@
+  vertical-align:middle;
+  @TextPadding@
 }
 
-.Row .ZmFilterDetailsView TD {
+.Row .ZmFilterDetailsView td {
 	@NoWrap@
-	vertical-align:middle;
+	vertical-align: middle;
 }
 
 .ZmFilterRuleDialog .FilterRuleSection {
-	margin-left:2em;
+	margin-left: 2em;
 #IFDEF GECKO
-	border:1px dotted #555;
+	border: 1px dotted #555555;
 #ENDIF
-	padding:0;
 }
 
 .infoBox {
 	margin:10px;
 	background-color:#FFF6BF;
-	border:1px solid #FD0;
+	border:1px solid #FFDD00;
+#IFDEF GECKO
+    -moz-border-radius:10px;
+#ENDIF
 	padding:10px;
-	@roundCorners(10px)@
 }
 
 .infoBoxImg {
-	padding-right:10px;
+    padding-right: 10px;
 }
 
 .infoTitle {
 	padding-left:5px;
 	font-weight:bold;
-	border-bottom:1px solid #FD0;
+	border-bottom:1px solid #FFDD00;
 	margin-bottom:10px;
 }
 
 .infoTitleClose {
-	@ActiveCursor@
 	margin-right:5px;
 	float:right;
 	font-weight:normal;
+	cursor:pointer;
 }
 
 .SubHead,
 .PanelHead {
-	font-size:12px; 
-	font-weight:bold;
-	padding:3px 10px 5px 7px;
+	font-size:12px; font-weight:bold;
+	padding:3 10 5 7;
 }
 
 .DarkBg,
 .PanelHead {
-	background-color:#BAB09A;
+	background-color:#bab09a;
 }
 
 .OutsetPanel {
-	padding:0;
+	padding:0px;
 	border:1px solid;
-	border-color:#A29A87 #746E61 #746E61 #A29A87;
+	border-color:#a29a87 #746e61 #746e61 #a29a87;
 #IFDEF GECKO
-	-moz-border-left-colors:#A29A87 #EAE0c7;
-	-moz-border-top-colors:#A29A87 #EAE0c7;
-	-moz-border-bottom-colors:#746E61 #BAB09A;
-	-moz-border-right-colors:#746E61 #BAB09A;
+    -moz-border-left-colors:#a29a87 #eae0c7;
+	-moz-border-top-colors: #a29a87 #eae0c7;
+	-moz-border-bottom-colors: #746e61 #bab09a;
+	-moz-border-right-colors: #746e61 #bab09a;
 #ENDIF
 }
 
 .ZmRadioButtonGroupHoriz .ZmRadioButtonGroupCell {
-  padding-right:1em;
+  padding-right: 1em;
 }
 
 /*
@@ -3896,31 +3190,27 @@ HTML>BODY .appt-selected .appt_allday_body
 	@ChromeBg@
 	overflow:hidden;
 }
-.ZmLoginDialog-Transparent {background-color:transparent;}
+.ZmLoginDialog-Transparent {background-color: transparent;}
 
 
 /*
  * Dumpster dialog
  */
 .ZmDumpsterDialog {
-	height:300px;
+	height: 300px;
 }
 
 .ZmDumpsterDialog .DwtDialogBody {
-	width:450px;
+	width: 450px;
 }
 
 .ZmDumpsterDialog-toolbar {
-	@ToolbarBg@
-	border-bottom:1px solid @Darken(AltC, 25)@;
+    @ToolbarBg@
+	border-bottom: 1px solid @Darken(AltC, 25)@;
 }
 
 .ZmDumpsterDialog .DwtListView-Rows {
-	height:278px;
-}
-
-.ZmDumpsterDialog .DumpsterSearchInput INPUT {
-	width:200px;
+	height: 278px;
 }
 
 
@@ -3930,23 +3220,19 @@ HTML>BODY .appt-selected .appt_allday_body
 /* ??? USE? */
 .ZmSharePropsDialog {
 #IFDEF MSIE
-	width:388px;
+	width: 388px;
 #ENDIF
 }
 
 .ZmSharePropsDialog .GrouperLabel {
-	font-weight:normal;
-	font-size:10pt;
-	color:#666;
-}
-
-.DwtMenu .ZmFolderChooser .OverviewTree {
-	width:auto; /*no limit and not too much*/
+	font-weight: normal;
+	font-size: 10pt;
+	color: #666;
 }
 
 /* ZmChooseFolderDialog and ZmPickTagDialog */
 .ChooserDialog {
-	width:320px;
+	width: 320px;
 }
 
 .ChooserDialog .DwtInputField {
@@ -3954,8 +3240,8 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding-top:3px;
 }
 
-.ChooserDialog INPUT {
-	width:100%;
+.ChooserDialog input {
+	width: 100%;
 }
 
 .ChooserDialog .overview {
@@ -3965,23 +3251,23 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmAttachDialog-container {
-	overflow:hidden;
-	width:500px;
-	height:310px;
+	overflow: hidden;
+	width: 500px;
+	height: 310px;
 }
 
 .ZmAttachDialog-footer {
-	height:10px;
-	text-align:center;
+	height: 10px;
+	text-align: center;
 }
 
 .ZmAttachDialog-inline {
-	height:20px;
+	height: 20px;
 }
 
 .ZmAttachDialog-removeLink {
-	color:blue;
-	text-decoration:underline;
+	color: blue;
+	text-decoration: underline;
 }
 
 /*
@@ -3997,12 +3283,12 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmPageEditView .RenameWarning {
-	background-color:#ffffcc;
+	background-color: #ffffcc;
 	@Text-important@
 }
 
 .ZmNotebookPageView {
-	overflow:auto;
+	overflow: auto;
 }
 
 
@@ -4014,12 +3300,12 @@ HTML>BODY .appt-selected .appt_allday_body
 	font-size:inherit;
 }
 .ZmNotebookPageView H1 {
-	margin-top:0;
-	margin-bottom:@BoxMarginSize@;
+	margin-top: 0;
+	margin-bottom: @BoxMarginSize@;
 }
 .ZmNotebookPageView H2 {
-	margin-top:@BoxMarginSize@;
-	margin-bottom:@BoxMarginSize@;
+	margin-top: @BoxMarginSize@;
+	margin-bottom: @BoxMarginSize@;
 }
 
 .ZmNotebookPageView SPAN.Object, .ZmNotebookPageView SPAN.Object-hover {}
@@ -4029,15 +3315,15 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmPageEditView .Label {
 	@FontFamily-html@
 	@FontSize-normal@
-	font-weight:bold;
-	text-align:right;
-	width:1%;
+	font-weight: bold;
+	text-align: right;
+	width: 1%;
 }
 .ZmEditNoteView .DwtInputField {
-	width:100%;
+	width: 100%;
 }
 .ZmEditNoteView .DwtHtmlEditorIFrame {
-	height:100%;
+	height: 100%;
 }
 
 
@@ -4046,27 +3332,27 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmAsstFieldLabel {
 	@Label@
 	@NoWrap@
-	text-align:right;
-	width:1%;
+	text-align: right;
+	width: 1%;
 }
 
 .ZmAsstField, .ZmAsstField TD {
-	color:black;
-	font-style:normal;
+	color: black;
+	font-style: normal;
 }
 
 .ZmAsstFieldDefValue, .ZmAsstFieldDefValue TD {
-	color:gray;
-	font-style:italic;
+	color: gray;
+	font-style: italic;
 }
 
 .ZmAsstContactHelp {
-	height:200px;
-	overflow:auto;
+	height: 200px;
+	overflow: auto;
 }
 
 .ZmAsstContactHelpHeader TD {
-	font-weight:bold;
+	font-weight: bold;
 	@BottomSeparator@
 }
 
@@ -4074,50 +3360,48 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmDataSourceTestDialog {
 }
 .ZmDataSourceTestDialog .DwtDialogBody {
-	width:400px;
-	overflow-x:auto;
+	width: 400px;
+    overflow-x: auto;
 }
 .ZmDataSourceTestTable {
-	width:100%;
+    margin: 0.5em;
 }
-.ZmDataSourceTestTable TH,
-.ZmDataSourceTestTable TD {
-	padding:3px;
-	text-align:left;
+.ZmDataSourceTestTable TH {
+    text-align: left;
 }
 .ZmTestItem, .ZmTestStatus {
-	border-top:solid black 1px;
+    border-top: solid black 1px;
 }
 .ZmTestDetails {
-	padding-left:1em;
+    padding-left: 1em;
 }
 .ZmTestSucceeded {
-	font-weight:bold;
-	@Text-success@
+    font-weight: bold;
+    @Text-success@
 }
 .ZmTestFailed {
-	font-weight:bold;
-	@Text-error@
+    font-weight:bold;
+    @Text-error@
 }
 .ZmTestError {
-	@Text-error@
+    @Text-error@
 }
 .ZmTestNote {
-	@Text-disabled@
+    @Text-disabled@
 }
 
 .DebugLogDialog-desc {
-	width:500px;
-	font-size:14px;
-	padding:10px;
+	width: 500px;
+	font-size: 14px;
+	padding: 10px;
 }
 
 .DebugLogDialog-log {
-	width:600px;
-	height:400px;
-	border:2px solid black;
-	overflow:auto;
-	padding:5px;
+	width: 600px;
+	height: 400px;
+	border: 2px solid black;
+	overflow: auto;
+	padding: 5px;
 }
 
 /*
@@ -4126,13 +3410,12 @@ HTML>BODY .appt-selected .appt_allday_body
  */
 
 .ZmShortcutsPage {
-	width:100%;
+  width:100%;
 }
 
 .BigHead {
-	font-size:18px; 
-	font-weight:bold;
-	padding:3px 10px 5px 7px;
+	font-size:18px; font-weight:bold;
+	padding:3 10 5 7;
 }
 
 .bottomSeparator {
@@ -4140,7 +3423,9 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .removeLink {
-	@Anchor-hover@
+	cursor: pointer;
+	color: blue;
+	text-decoration: underline;
 }
 
 /*
@@ -4149,220 +3434,226 @@ HTML>BODY .appt-selected .appt_allday_body
  */
 
 .ShortcutsPrintHeader {
-	font-size:12px;
-	font-weight:bold;
-	text-align:center;
-	color:black;
+	font-size: 12px;
+	font-weight: bold;
+	text-align: center;
+	color: black;
 }
 
 .ZmShortcutList {
-	padding:10px 10px 10px 20px;
+	padding: 10 10 10 20;
 }
 
 .shortcutListType {
-	text-align:center;
-	font-size:14px;
-	font-weight:bold;
+	text-align: center;
+	font-size: 14px;
+	font-weight: bold;
 }
 
 .shortcutListType-panel {
-	color:white;
+	color: white;
 }
 
 .shortcutListType-print {
-	color:black;
+	color: black;
 }
 
 .shortcutListTable {
-	width:100%;
-	margin-bottom:10px;
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 10px;
 }
 
 .shortcutListTable-panel, .shortcutListTable-print {
-	table-layout:fixed;
+	table-layout: fixed;
 }
 
 .shortcutListHeaderTd-prefs {
-	border:1px solid @darken(AppC,20)@;
+	border: 1px solid #999999;
 }
 
 .shortcutListHeader {
-	font-weight:bold;
-	text-align:center;
+	font-weight: bold;
+	text-align: center;
 }
 
 .shortcutListHeader-prefs {
-	font-size:12px;
-	padding:3px 10px 5px 7px;
-	background-color:@darken(AppC,20)@;
+	font-size: 12px;
+	padding: 3 10 5 7;
+	background-color: #bab09a;
 }
 
 .shortcutListHeader-panel, .shortcutListHeader-print {
-	text-decoration:underline;
+	text-decoration: underline;
 }
 
 .shortcutListHeader-panel {
-	font-size:12px;
-	color:yellow;
+	font-size: 12px;
+	color: #DDDD00;
 }
 
 .shortcutListHeader-print {
-	font-size:12px;
-	color:black;
-	padding-bottom:2px;
+	font-size: 12px;
+	color: black;
+	padding-bottom: 2px;
 }
 
 .shortcutKeys {
-	text-align:right;
-	vertical-align:top;
-	font-weight:bold;
+	text-align: right;
+	vertical-align: top;
+	font-weight: bold;
 }
 
 .shortcutKeys-prefs {
 	@SeparatorBorder@
 	@Text-disabled@;
-	padding:6px;
-	width:250px;
-	background-color:white;
+	padding: 6px;
+	width: 250px;
+    background-color: #FFFFFF;
 }
 
 .shortcutKeys-panel {
 	@Text-disabled@;
-	color:white;
-	white-space:nowrap;
+	color: white;
+	white-space: nowrap;
 }
 
 .shortcutKeys-print {
-	font-size:12px;
-	color:black;
+	font-size: 12px;
+	color: black;
 }
 
 .shortcutDescription {
-	width:auto;
+	width: auto;
 }
 
 .shortcutDescription-prefs {
-	padding:5px;
+	padding: 5px;
 	@SeparatorBorder@
-	color:black;
-	background-color:white;
+	color: black;
+    background-color: #FFFFFF;
 }
 
 .shortcutDescription-panel, .shortcutDescription-print {
-	padding-left:5px;
+	padding-left: 5px;
 }
 
 .shortcutDescription-panel {
-	color:white;
-	white-space:nowrap;
+	color: white;
+	white-space: nowrap;
 }
 
 .shortcutDescription-print {
-	font-size:12px;
-	color:black;
+	font-size: 12px;
+	color: black;
 }
 
 .shortcutKeyCombo {
-	white-space:nowrap;
+	white-space: nowrap;
 }
 
 .shortcutKeyCombo-prefs {
-	margin-right:5px;
-	margin-left:5px;
+	margin-right: 5px;
+	margin-left: 5px;
 }
 
 .shortcutKey {
-	font-weight:bold;
-	padding:2px 4px;
+	font-weight: bold;
+	padding: 2px 4px;
 }
 
 .shortcutKey-prefs {
-	background-color:lightGray;
-	border:solid darkGray;
-	border-width:1px 2px 3px 1px;
-	line-height:22px;
-	margin:1px;
+	margin: 1px;
+	@SeparatorBorder@
 	@Text@
+	line-height: 22px;
+    background-color: @AppC@;
 }
 
 .shortcutKey-panel, .shortcutKey-print {
-	padding:1px 2px;
+	padding: 1px 2px;
 }
 
 .shortcutKey-panel {
-	color:yellow;
-	line-height:22px;
+	color: #DDDD00;
+	line-height: 22px;
 }
 
 .shortcutKey-print {
-	color:black;
+	color: black;
 }
 
 /*
  * Styles for showing current aliases on custom shortcuts tab
  */
 .shortcutTable {
-	table-layout:fixed;
-	margin-bottom:10px;
-	border:1px solid @darken(AppC,50)@;
+	table-layout: fixed;
+	border-collapse: collapse;
+	margin-bottom: 10px;
+	border: 1px solid #999999;
 }
 
 .shortcutTable TH {
-	font-size:11px;
-	text-align:left;
-	font-weight:bold;
-	padding-left:5px;
-	color:@darken(AppC,75)@;
-	border-bottom:1px solid @darken(AppC,50)@;
+	font-size: 11px;
+	text-align: left;
+	font-weight: bold;
+	padding-left: 5px;
+	color: #666666;
+	border-bottom: 1px solid #999999;
 }
 
 /*
  * Styles for popup shortcut info panel
  */
 .ZmShortcutsPanel {
-	background-color:black;
-	width:800px;
-	height:600px;
-	color:white;
-	opacity:0.90;
-	@roundCorners(10px)@
+	background-color: #000000;
+	width: 800px;
+	height: 600px;
+	color: white;
+#IFDEF GECKO
+	-moz-border-radius-bottomleft: 10px;
+	-moz-border-radius-bottomright: 10px;
+	-moz-border-radius-topleft: 10px;
+	-moz-border-radius-topright: 10px;
+#ENDIF
+	opacity: 0.90;
 }
 
 .ZmShortcutsWindow {
-	width:100%;
-	height:100%;
-	background-color:black;
-	color:white;
+	width: 100%;
+	height: 100%;
+	background-color: #000000;
+	color: white;
 }
 
 .ShortcutsPanelHeader {
-	font-size:18px;
-	font-weight:bold;
-	text-align:center;
-	color:white;
+	font-size: 18px;
+	font-weight: bold;
+	text-align: center;
+	color: white;
 }
 
 .ShortcutsPanelText {
-	color:white;
+	color: white;
 }
 
 .ShortcutsPanelDescription {
-	padding-left:10px;
+	padding-left: 10px;
 }
 
 .ShortcutsPanelLinks {
-	padding-right:10px;
-	text-align:right;
+	padding-right: 10px;
+	text-align: right;
 }
 
 .ShortcutsPanelLink {
-	@ActiveCursor@
+	cursor: pointer;
 }
 
 /*
  * Colors, for use in calendar and elsewhere.
  *
- * Use the base color (eg:"Red") to show a list of colors.
+ * Use the base color (eg: "Red") to show a list of colors.
  * Use the "Bg" version ("RedBg" as background in a list, etc)
  * Dark and Light are primarily for use in borders
  *
@@ -4494,10 +3785,10 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 .ZmOptionsFormListTable {
 	height:100%;
-#IFNDEF MSIE
-	table-layout:fixed;
-#ENDIF
-	@SeparatorBorder@
+    #IFNDEF MSIE
+    table-layout:fixed;
+    #ENDIF
+    @SeparatorBorder@
 }
 
 .ZmOptionsFormList {
@@ -4516,7 +3807,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	height:100%;
 	width:100%;
 	@PanelPadding@
-	padding-left:0;
+	padding-left:0px;
 }
 
 
@@ -4530,28 +3821,12 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 /* checkbox element */
-.ZCheckbox,
+.ZCheckbox {
+	cursor:pointer;
+}
+
 .ZRadioButton {
-	@ActiveCursor@
-}
-
-.ZCheckboxTable>TBODY>TR>TD,
-.ZRadioButtonTable>TBODY>TR>TD {
-	padding:3px 0;  
-}
-
-.ZCheckboxTable INPUT[type="checkbox"] {
-	padding:0;
-	margin:0 3px;
-}
-
-.ZRadioButtonTable INPUT[type="radio"] {
-	padding:0;
-	margin:1px 3px;
-}
-
-.ZInlineInput {
-	margin:0 .5em;
+	cursor:pointer;
 }
 
 .ZLabelCell {
@@ -4579,18 +3854,15 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZCheckboxLabel {
-	@ActiveCursor@
+	cursor:pointer;
 }
 
 .ZCheckboxLabelCell {}
 
 .ZCheckboxLabelInline {
-	@ActiveCursor@
+	cursor:pointer;
 }
 
-.ZSmallHorizonalSpacer {
-	width:10px;
-}
 
 .ZSpacer {
 	height:7px;
@@ -4601,7 +3873,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin-bottom:3px;
 }
 .ZSectionSeparator {
-	border-bottom:3px double #666;
+	border-bottom:3px double #666666;
 	height:10px;
 	margin-bottom:10px;
 }
@@ -4619,7 +3891,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZSubPanelHead	 {
 	@FontSize-big@
 	@SeparatorBorder@
-	border-bottom-width:0;
+	border-bottom-width:0px;
 	@ToolbarBg@
 	@BoxPadding@
 	font-weight:bold;
@@ -4633,7 +3905,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZNestedFieldset {
 	width:auto;
-	padding:0 0 5px;
+	padding:0px 0px 5px 0px;
 }
 
 .ZLegend {
@@ -4683,50 +3955,54 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 .ZInfoBox {
-	margin:0 0 10px;
+	margin:0px 0px 10px 0px;
 	background-color:#FFF6BF;
-	border:1px solid #FD0;
-	padding:10px;
-#IFDEF MSIE
-	width:100%;
+	border:1px solid #FFDD00;
+#IFDEF GECKO
+    -moz-border-radius:10px;
 #ENDIF
-	@roundCorners(10px)@
+    padding:10px;
+    #IFDEF MSIE
+    width: 100%;
+    #ENDIF
 }
 
 .ZInfoBoxImg {
-	@ActiveCursor@
-	float:right;
+    float:right;
+	cursor:pointer;
 }
 
 .ZInfoTitle {
 	padding-left:5px;
 	font-weight:bold;
-	border-bottom:1px solid #FD0;
+	border-bottom:1px solid #FFDD00;
 	margin-bottom:10px;
 }
 
 .ZInfoTitleClose {
-	@ActiveCursor@
 	margin-right:5px;
 	float:right;
 	font-weight:normal;
+	cursor:pointer;
 }
 
 /* info button which appears to the right and shows context-sensitive help */
 .ZInfoContextButton {
-	@ActiveCursor@
 	position:absolute;
-	right:0;
+	right:0px;
+	cursor:pointer;
 }
 
 .ZSeparatorBorder {
 	@SeparatorBorder@
 }
 
+
+
 .ZTabList {
 	list-style-type:none;
 	padding-bottom:28px;
-	margin:0;
+	margin:0px;
 }
 
 
@@ -4740,8 +4016,8 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmTooltipLabel {
 	text-align:right;
 	padding-right:5px;
-	white-space:nowrap;
-	font-weight:bold;
+	white-space: nowrap;
+	font-weight: bold;
 }
 
 .ZmVoiceTreeHeader {
@@ -4749,7 +4025,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 /* tabs for buddy list/folders in the overview bar */
-/* FIXME:look broken */
+/* FIXME: look broken */
 
 /* <REMOVE -- IS THIS NEEDED?>
 
@@ -4778,11 +4054,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmVoiceListView .Row-selected-drag,
 .ZmVoiceListView .Row-selected-right,
 .ZmVoiceListView .Row-selected-disabled {
-	height:25px;
-}
-
-.ZmVoicemailListView .Row {
-	height:20px;
+	height: 25px;
 }
 
 .ZmCallListPrintView TD {
@@ -4805,15 +4077,15 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* turn off padding for sound player buttons that live inside list rows */
 .DwtListView-Rows .ZmSoundPlayer TD {
-	padding-left:0;
-	padding-right:0;
+	padding-left:0px;
+	padding-right:0px;
 }
 
 .DwtMissingSoundPlayer {
-	@ActiveCursor@
-	background-color:#FFC;
+	background-color: #ffffcc;
 	color:darkred;
-	text-decoration:underline;
+	text-decoration: underline;
+	cursor: pointer;
 }
 .ZmSoundPlayer .DwtButton,
 .ZmSoundPlayer .ZButton {
@@ -4821,23 +4093,23 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmSoundPlayer .ZButton .ZLeftIcon DIV, .ZmSoundPlayer .ZButton .ZLeftIcon IMG {
-	margin-left:0;
+	margin-left:5px;
 	margin-right:5px;
 }
 .ZmSoundPlayer .ZButton .ZWidgetTitle {
-	padding:0;
+	padding:0px;
 }
 
-.ZmSoundPlayer .DwtPositionSlider	{	margin:0 2px;		}
+.ZmSoundPlayer .DwtPositionSlider	{	margin:0 2 0 2;		}
 .DwtMenu .DwtVolumeSlider			{	height:80px;	}
 
 .ZmSoundPlayer .ZmPlayButton,
 .ZmSoundPlayer .ZmPauseButton,
-.ZmSoundPlayer .ZmVolumeButton 		{	margin:0;		}
+.ZmSoundPlayer .ZmVolumeButton 		{	margin:0 2 0 2;		}
 
 
 .DwtSliderThumb {
-	@MoveCursor@
+	cursor:move;
 }
 
 .DwtHorizontalSlider .DwtSliderThumb {
@@ -4845,26 +4117,8 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 .DwtHorizontalSlider .DwtSliderThumbBorder {
 	width:10px;
-	padding:4px 0 0 2px;
+	padding:4px 0px 0px 2px;
 	height:12px;
-}
-
-.ZmHorizontalSlider {
-	@Slider@
-	@HSliderBorder@
-	width:200px;
-	height:14px;
-}
-
-.ZmHorizontalSlider .DwtSliderThumb {
-	width:16px;
-	margin-top:-3px;
-}
-.ZmHorizontalSlider .DwtSliderThumbBorder {
-	width:10px;
-	padding:4px 0 0 2px;
-	height:12px;
-	background-color:@WidgetBgColor@;	@NormalOutsetBorder@	@SmallRoundCorners@
 }
 
 .DwtVerticalSlider .DwtSliderThumb {
@@ -4873,13 +4127,13 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .DwtVerticalSlider .DwtSliderThumbBorder {
-	padding:2px 0 0 4px;
+	padding:2px 0px 0px 4px;
 }
 
 
 .ZmPortlet {
-  width:100%;
-  height:100%;
+  width: 100%;
+  height: 100%;
 }
 
 
@@ -4893,7 +4147,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZAppTab 									{	@AppTab@	@AppTabSpacing@				}
 
-.ZAppTabBorder								{	@AppTabBorder@	@AppTabBorder-normal@   }
+.ZAppTabBorder								{	@AppTabBorder@	@AppTabBorder-normal@	@AppTabRoundCorners@  }
 .ZHover		.ZAppTabBorder					{					@AppTabBorder-hover@	}
 .ZDisabled	.ZAppTabBorder					{					@AppTabBorder-disabled@	}
 .ZFocused	.ZAppTabBorder					{					@AppTabBorder-focused@	}
@@ -4908,8 +4162,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZActive	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-active@		}
 .ZSelected	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-selected@	}
 
-.ZSelected.ZAppTab							{	@AppTabSelected@						}
-.ZSelected .ZAppTabBorder					{	@grad(AppTabColor,AppC,linear-vertical)@ 	}
 
 
 
@@ -4920,31 +4172,30 @@ HTML>BODY .appt-selected .appt_allday_body
  ***************/
 
 .ZToast {
-	position:absolute;
-	top:-10000;
-	left:-10000;
-	overflow:visible;
+	position: absolute;
+	top: -10000; left: -10000;
+	overflow: visible;
 
 	/* change the following to set the top of the toaster
-	margin-top:10px;  */
+	margin-top: 10px;  */
 }
 .ZToastContent {
 	@ToastContent@
 }
 
 .ZToastIcon {
-  float:left;
-  position:relative;
+  float: left;
+  position : relative;
 }
 
 .ZToastText {
-	max-width:500px;
+	max-width: 500px;
 	@ToastText@
 }
 
 .ZToastText a.undo {
-	font-size:0.75em;
-	margin-left:20px;
+	font-size: 0.75em;
+	margin-left: 20px;
 }
 
 .ZToastBG 				{	@ToastContainer@		}
@@ -4956,30 +4207,16 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZToastCrit .ZToastBG 	{	@ToastContainer-critical@	}
 */
 
-
-/* Properties Sheet Table */
-/* To be used on tables that include individual rows for labels and values */
-
-.ZPropertySheet				{	@PropertySheet@				}
-.ZPropertySheet>TBODY>TR>TD {	@PropertySheetSpacing@		}
-
-
 /*briefcase app*/
 
 .ZmBriefcaseView {
-	background-color:white;
-}
-
-.ZmBriefcaseDetailListView,
-.ZmPreviewView {
-	@PanelBg@
-	@PanelBorder@
+	background-color: #ffffff;
 }
 
 .ZmBriefcaseItem,.ZmBriefcaseItemSelected {
-	@ActiveCursor@
 	background-color:transparent;
 	background-repeat:no-repeat;
+	cursor:pointer;
 	float:left;
 	height:120px;
 	margin:8px;
@@ -4989,7 +4226,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 .ZmBriefcaseItem .ZmThumbnailItem,.ZmBriefcaseItemSelected .ZmThumbnailItem {
 	background-color:transparent;
-	border:2px solid #CCC;
+	border:2px solid #CCCCCC;
 	font-size:1px;
 	height:100px;
 	line-height:100px;
@@ -5001,38 +4238,36 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	display:block;
 	@FontSize-smaller@
 	@FontFamily-html@
-	margin:3px 0 0;
-	height:14px;
-	overflow:hidden;
+	margin:3px 0pt 0pt 0px;
+	height: 14px;
+	overflow: hidden;
 }
 
 .ZmBriefcaseItemSelected {
-	color:white;
+	color:#FFFFFF;
 }
 
 .ZmAttachDialog-container .ZmBriefcaseItemSmall {
-	border-style:solid; 
-	border-width:1px 0; 
-	border-color:@lighten(AppC,60)@
+	border-style:solid; border-width:1px 0px; border-color:@lighten(AppC,60)@
 }
 
 .ZmBriefcaseItemSelected .ZmThumbnailItem {
-	border-color:#316AC5;
+	border-color: #316AC5;
 }
 
-.ZmBriefcaseItemSelected .ZmThumbnailName SPAN {
+.ZmBriefcaseItemSelected .ZmThumbnailName span {
 	background:#316AC5 none repeat scroll 0%;
-	color:white;
+	color:#FFFFFF;
 }
 
 .ZmBreifcaseNewWinButton .ZButtonTable {
-	@ActiveCursor@
-	background:none;
-	border:none;
+	background: none;
+    border: none;
+    cursor:pointer;
 }
 
-.ZmBriefcaseItemSelected .ZmThumbnailName SPAN A {
-	color:white;
+.ZmBriefcaseItemSelected .ZmThumbnailName span a {
+	color:#FFFFFF;
 }
 
 .ZmThumbnailIcon {
@@ -5041,171 +4276,149 @@ If you feel compelled to have a background color, please do so on a per skin lev
 
 /*Attachments View*/
 .ZmFilterTree {
-	border-width:0;
+   border-width: 0px;
 }
 
-/* Remove styling applied to other button types */
-.arrowbtn .ZToolbarButtonBorder {
-	background-image:none;
-	border-width:0;
-	@cssShadow@:none;
-}
+/*IE hack - To stop the button shake in the MSg Header*/
 
-/*IE hack - To stop the button shake in the Msg Header*/
 #IFDEF MSIE
-.arrowbtn DIV .ZToolbarButtonBorder {
-	margin-top:0;
-	margin-bottom:0;
+.arrowbtn div .ZToolbarButtonBorder {
+	margin-top:0px;
+	margin-bottom: 0px;
 }
 #ENDIF
 
 
 .ZmColListDiv {
-	width:250px;
-	background:transparent;
-	overflow-x:hidden;
-	overflow-y:scroll;
+	width: 250px;
+	background: transparent;
+	overflow-x: hidden;
+	overflow-y: scroll;
 }
 
 .ZmColListCell {
-	vertical-align:top;
+	vertical-align: top;
 }
 
 .ZmMultiColView {
-	background-color:white;
-	overflow-x:auto;
-	overflow-y:hidden;
+	background-color: white;
+	overflow-x: auto;
+	overflow-y: hidden;
 }
 
 .ZmFilePropertiesLabel {
 	@TreeHeaderText@
-	white-space:nowrap;
+	white-space: nowrap;
 }
 
-.ZmSpreadSheetDoc { background-color:#EEE; }
+.ZmSpreadSheetDoc { background-color: #eee; }
 
 .ZmSpreadSheetDoc .Label {
 	@FontFamily-html@
 	@FontSize-normal@
-	font-weight:bold;
-	text-align:right;
-	width:1%;
+	font-weight: bold;
+	text-align: right;
+	width: 1%;
 }
 
 .HF_Header{
-	border-right:1px solid #8A8A8A;
-	border-left:1px solid white;
-	font-weight:normal;
+	border-right: 1px solid #8A8A8A;
+	border-left: 1px solid #FFFFFF;
+	font-weight: normal;
 }
 
 .HF_Header_Left{
-	border-right:1px solid #8A8A8A;
-	font-weight:normal;
+	border-right: 1px solid #8A8A8A;
+	font-weight: normal;
 }
 
 .HF_Header_Right{
-	border-left:1px solid white;
-	font-weight:normal;
+	border-left: 1px solid #FFFFFF;
+	font-weight: normal;
 }
 
 .docsToolbar {
-	background-color:#EEE;
-	padding-left:5px;
+    background-color: #EEEEEE;
+    padding-left: 5px;
 }
 
 .ZmBriefcaseTabView_Table {
-	padding-top:10px;
+    padding-top: 10px;
 }
 
 .BriefcaseTabBox {
-	@TreeContainer@
-	@NormalInsetBorder@
+    @TreeContainer@
+    @NormalInsetBorder@
 }
 .BriefcaseList {
-	margin-left:5px;
+    margin-left: 5px;
 }
 
-.cal_day_expand TABLE {
-	border-width:0;
+.cal_day_expand table {
+	border: 0px;
 }
 
 .sharingPageListTitle {
-	font-size:14px;
-	font-weight:bold;
+	font-size: 14px;
+	font-weight: bold;
 }
 
 
 .InviteSelectLabel {
-	text-align:right; 
-	white-space:nowrap;
+    text-align: right; white-space: nowrap;
 }
 
-.InviteStatusAccept, .InviteStatusDecline, .InviteStatusTentative, 
-.InviteOutDated, .InviteIntendedFor, .InvCounter {
-	padding:3px;
-	border-bottom:1px solid #CCC;
+.InviteStatusAccept, .InviteStatusDecline, .InviteStatusTentative, .InviteOutDated, .InviteIntendedFor {
+	padding: 7px;
+	border-bottom: 1px solid #cccccc;
 }
 
-.Conv2Messages .InviteStatusAccept, .Conv2Messages .InviteStatusDecline, 
-.Conv2Messages .InviteStatusTentative, .Conv2Messages .InviteOutDated, 
-.Conv2Messages .InviteIntendedFor, .Conv2Messages .InvCounter {
-	margin:0 7px;
-	border-bottom-width:0;
-	@roundCorners(5px)@
-}
-
-.InviteStatusAccept TD, .InviteStatusDecline TD, .InviteStatusTentative TD, 
-.InviteOutDated TD, .InvCounter TD {
-	@FontSize-big@
+.InviteStatusAccept td, InviteStatusDecline td, InviteStatusTentative td, .InviteOutDated td {
+	font-size: 13px;
 }
 
 .InviteStatusAccept {
-	background-color:#CAE7B2;
+	background-color: #CAE7B2;
 }
 
 .InviteStatusDecline {
-	background-color:#E7B2B2;
+	background-color: #E7B2B2;
 }
 
 .InviteStatusTentative {
-	background-color:#FFC;
+	background-color: #FFFFCC;
 }
 
 .InviteIntendedFor {
-	background-color:#FFB;
+	background-color: #FFFFBB;
 }
 
 .InviteOutDated {
 	background-color:@lighten(AppC,90)@;
 }
 
-.InvHeaderTable .InvCounter {
-	background-color:#FFC;
-}
-
 .ZmEditContactViewDetailsButton {
-	@ActiveCursor@
-	border:1px solid @darken(AppC,40)@;
-	background-color:@WidgetBgColor@;
+	border: solid @darken(AppC,40)@ 1px;
+	background-color: @WidgetBgColor@;
+	cursor: pointer;
 }
-
 .ZmEditContactViewDetailsButton .ZButtonBorder {
-	border:none;
+	border: none;
 }
 
 .ZmEditContactViewImage {
-	border:1px solid @darken(AppC,40)@;
-	width:48px;
-	@PanelBg@;
+	border: solid @darken(AppC,40)@ 1px;
+    width : 48px;
+    @PanelBg@;
 }
 
 .ZmEditContactViewAddress {
-	/* TODO:mimic input border on other browsers/platforms */
-	border-left:solid 1px #3B3935;
-	border-top:solid 1px #3B3935;
-	border-right:solid 1px #D7CFBE;
-	border-bottom:solid 1px #D7CFBE;
-	@ZFieldBg-normal@
+	/* TODO: mimic input border on other browsers/platforms */
+	border-left: solid 1px #3b3935;
+	border-top: solid 1px #3b3935;
+	border-right: solid 1px #d7cfbe;
+	border-bottom: solid 1px #d7cfbe;
+    @ZFieldBg-normal@	
 }
 .ZmEditContactViewAddress .DwtInputField TEXTAREA,
 .ZmEditContactViewAddress .DwtInputField INPUT,
@@ -5215,11 +4428,11 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 .ZmEditContactViewAddress .DwtInputField-hint TEXTAREA,
 .ZmEditContactViewAddress .DwtInputField TEXTAREA {
-	overflow-y:auto;
+    overflow-y:auto;
 }
 
 .ZmEditContactView .contactHeaderTable {
-	background-color:@darken(AppC,20)@;
+	background-color: @lighten(AltC,40)@;
 }
 .ZmEditContactView .contactHeaderCell {
 	padding:.25em .5em;
@@ -5229,29 +4442,20 @@ If you feel compelled to have a background color, please do so on a per skin lev
 .ZmEditContactView .rowLabel, .ZmEditContactView .rowType, 
 .ZmContactSplitView .rowLabel, .ZmContactSplitView .rowType,
 .ZmContactSplitView .rowValue, .ZmContactSplitView .rowValue[colspan] {
-	padding:.7em .5em .25em;
+    padding:.7em .5em .25em;
 }
 .ZmEditContactView .rowValue {
-	padding:.25em .5em;
+    padding:.25em .5em;
 }
 .ZmEditContactView .rowLabel, .ZmContactSplitView .rowLabel {
-	text-align:right;
-	font-weight:bold;
+    text-align:right;
+    font-weight:bold;
 }
 .ZmEditContactView .rowValue, .ZmContactSplitView .rowValue {
-	width:150px;
-	max-width:800px;
-	word-wrap:break-word;
+    width:150px;
 }
 .ZmEditContactView .rowValue, .ZmContactSplitView .rowValue[colspan] {
-	width:auto;
-}
-.ZmContactSplitView .Object {
-	@Anchor@ 
-}
-
-.ZmContactSplitView .Object-hover {
-	@Anchor-hover@
+    width:auto;
 }
 
 .itemSortIcon {
@@ -5260,465 +4464,201 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 .itemCountText {
-	@InactiveCursor@
-	padding-right:5px;
+	padding-right:2px;
 	white-space:nowrap;
+	cursor:default;
 }
 
 .ZmApptComposeView .addresses {
-	width:100%;
+    width:100%;
 }
 
 /*calendar resource conflict dialog app*/
 
 .ResourceConflictMsg {
-	padding:10px 20px 10px 2px;
+    padding:10px 20px 10px 2px;
 }
 
 .ResourceConflictResolver {
-	padding-left:27px;
+    padding-left:27px;
 }
 
 /*Preview View */
 .PreviewBody {
-	height:100%;
-	width:100%;
+    height:100%;
+    width:100%;
 }
 
 .PreviewFrame iframe {
-	height:100%;
-	width:100%;
+    height:100%;
+    width: 100%;
 }
 
 .PreviewViewHeader .itemName{
-	font-size:16px;
-	font-weight:bold;
-	overflow:hidden;
-	white-space:nowrap;
+    font-size:16px;
+    font-weight:bold;
+    overflow:hidden;
+    white-space:nowrap;
 }
 
 .PreviewViewHeader .itemMeta{
-	font-size:12px;
+    font-size:12px;
 }
 
 .PreviewViewHeader .itemTime{
-	font-size:12px;
-	color:#999;
+    font-size:12px;
+    color: #999;
 }
 
 .PreviewViewHeader .itemAction{
-	font-size:13px;
-	padding:5px 10px 5px 5px;
+    font-size:13px;
+    padding: 5px 10px 5px 5px;
 }
 
 .ZmSelectAddrDialog {
-	width:375px;
+	width: 375px;
 }
 
 /*Briefcase Split View */
 
 .PreviewFrame{
-	height:100%;
+    height:100%;
 }
 
-.RenameInput INPUT {
-	width:100%;
-	height:19px;
+.RenameInput input {
+    width:100%;
+    height:19px;
 }
 
 /*Calendar Styles*/
 .ZmAppt-busy {
-	background-color:#4AA6F1;
+	background-color: #4AA6F1;
 }
 
 .ZmAppt-ooo {
-	background-color:#7B5BAC;
+	background-color: #7B5BAC;
 }
 
 .ZmAppt-tentative {
-	background-color:#BAE0E3;
+	background-color: #BAE0E3;
 }
 
 .ZmAppt-free {
-	background-color:white;
+	background-color: #FFFFFF;
 }
 
 .ZmAppt-no-response {
-	background-color:#F30;
+	background-color: #F30;
 }
 
 .ZmFBBar-tentative {
-	background-color:#BAE0E3;
+    background-color: #BAE0E3;
 }
 
 .ZmFBBar-ooo {
-	background-color:#7B5BAC;
+   background-color: #7B5BAC;
 }
 
 .ZmFBBar-busy {
-	background-color:#4AA6F1;
+	background-color: #4AA6F1;
 }
 
 .ZmFBBar-free {
-	background-color:white;
+	background-color: #FFFFFF;
 }
 
 /* Version History */
 .VersionHistoryToolbar {
-	@ToolbarBg@
+    @ToolbarBg@   
 }
 
 .SuggestBtn .ZButtonTable {
-	width:100%;
+    width: 100%;    
 }
 
-DIV .SuggestBtn {
-	width:100%;
-	margin-top:8px;
-	margin-left:0;
-	margin-right:0;
-	height:20px;
-	border-bottom:1px solid @AppC@
+.SuggestBtn {
+    height: 24px;
+    @SelectedBg@
+    border-bottom: 1px solid @AppC@
 }
 
 .SuggestBtn .ZButtonTable .ZWidgetTitle {
-	color:black;
+    color:#000000;
+    text-align:left;
+    font-weight: bold;
 }
 
 .ZmCalListViewSearchBar .DwtCompositeCell {
-	white-space:nowrap;
+    white-space: nowrap;
 }
 
 
 .BriefcaseItemExpanded {
-	@MailConvExpanded@
+    background-color:#EEEEFF;
 }
 
 /*Calendar Appt Send button*/
 .InviteButton .ZWidgetTitle{
-	padding-bottom:20px;
-	padding-top:20px;
+    padding-bottom:20px;
+    padding-top:20px;
 }
 
-.SuggestionMessage,
-.NoResults,
 .NoSuggestions {
-	@FontSize-big@
-	padding:15px 10px;
-	text-align:center;
+	font-size: 10pt;
+	text-align: center;
 }
 
 .ZmShareSearchView {
-	margin:4px;
+    margin: 4px;
 }
 .ZmShareSearchDialog .FilterTree {
-	@TreeContainer@
-	@NormalInsetBorder@
-	@BoxPadding@
+    @TreeContainer@
+    @NormalInsetBorder@
+    @BoxPadding@
 }
 .ZmShareSearchDialog .FilterTree INPUT {
-	width:100%;
-	margin-bottom:4px;
+    width: 100%;
+    margin-bottom: 4px;
 }
 .ZmShareSearchDialog .ZmShareTreeView {
-	height:140px;
+    height: 140px;
 }
 
 .DeviceCodeConfirmed {
-	color:green;
+    color: green;
 }
 .DeviceCodePending {
-	color:purple;
+    color: purple;
 }
 .DeviceCodeUnconfirmed {
-	color:red;
+    color: red;
 }
 
 .ZPicker .ZButtonTable {
-	width:100%;
+    width: 100%;    
 }
 
 .ZmTimeSuggestionView-Column {
-	@ListColHeaderContainer@
-	@WidgetHeaderContainer@
-	border-top:0;
+    @ListColHeaderContainer@
+    @WidgetHeaderContainer@
+}
+
+.ZmScheduleAssistantView .DwtCalendar {
+    border-bottom: 1px solid @AppC@    
 }
 
 .ReminderInput INPUT{
-	width:100%;
+    width: 100%;
 }
 
 .SuggestionPrefTitle {
-	@Text@
-	border-bottom:1px solid @TxtC@;
-	font-weight:bold;
+    font-weight: bold;
 }
 
 .Icon{
-	width:25px;
+	width: 25px;
 }
 
-.ZmUnitTestPanel {
-	width:100%;
-	height:300;
-	border-top:2px solid black;
-	background-color:white;
-}
-
-.ZmSnoozeButton {
-	padding-left:5px;
-}
-
-.ZmPriorityFilterCriteria {
-	padding-left:10px;
-	padding-right:10px;
-}
-
-.ZmActivityStreamFilterList {
-	margin:1em 2em;
-	padding:0;
-}
-
-.ZmActivityStreamFilterList DIV {
-	margin-bottom:.5em;
-}
-
-#IFDEF WEBKIT
-.ZmActivityStreamFilterList INPUT[type='checkbox'] {
-	margin-top:.25em;
-}
-#ENDIF
-
-.ZmActivityStreamFilterList LABEL {
-	white-space:nowrap;
-}
-
-.ZmPriorityFilterDivider {
-	border-left:1px solid #38546D;
-	height:250px;
-}
-
-.ZmPriorityFilterAction {
-	
-}
-
-.ZmFolderRetentionLabel {
-	font-weight:bold;
-	text-align:left;
-	white-space:nowrap;
-}
-
-.ZmFolderPolicyAmountInput {
-	margin-left:20px;
-	width:60px;
-}
-.ZmFolderPolicyUnitSelect {
-	margin-left:4px;
-}
-
-.ZmFolderPolicySelect {
-	margin-left:4px;
-}
-.ZmFolderPolicySelection {
-	width:100%;
-}
-
-.ZmDialogTabViewBusy {
-	opacity:0.5;
-	background-color:#E0E0E0;
-#IFDEF MSIE
-	filter:alpha(opacity=50);
-#ENDIF
-}
-
-.ZmFolderPropertiesDialog-container {
-	margin:-8px -8px 0;
-	overflow:hidden;
-	width:500px;
-}
-
-.ZmFolderPropertyView {
-	margin:10px;
-}
-
-.ZmFolderPropSharing {
-	position:relative;
-	bottom:10px;
-}
-
-.ZmSuggestView {
-	background-color:@darken(AppC,20)@;
-	border-color:@darken(AppC,30)@;
-	border-style:solid;
-	border-width:1px 0 0 1px;
-	height:100%;
-	vertical-align:top;
-	width:180px;
-}
-
-.DwtDialog .ZmSuggestView {
-	border-width:1px;
-	padding:0;
-}
-
-.ZmSuggestContainer {
-	position:relative;
-}
-
-.ZmSuggestHeader {
-	background-color:@lighten(AppC,33)@;
-	border:1px solid white;
-	color:@TxtC@;
-	font-weight:bold;
-	height:1.8em;
-	margin-bottom:1px;
-	position:relative;
-}
-
-.ZmSuggestLabel,
-.ZmSuggestOptionsButton,
-.ZmSuggestCloseButton {
-	position:absolute;
-	top:2px;
-}
-
-.ZmSuggestLabel {
-	left:5px;
-	overflow:hidden;
-	right:40px;
-	text-align:left;
-}
-
-.ZmSuggestOptionsButton {
-	right:22px;
-}
-
-.ZmSuggestCloseButton {
-	right:3px;
-}
-
-.ZmSuggestOptionsButton DIV,
-.ZmSuggestCloseButton DIV { @ActiveCursor@ }
-
-.ZmSuggestBody {}
-
-.ZmSuggestMiniCal {
-	border-bottom:1px solid @darken(AppC,30)@;
-	margin-bottom:3px;
-}
-
-.ZmSuggestResults {
-	position:relative;
-	overflow:auto;
-	overflow-y:auto;
-	overflow-x:auto;
-}
-
-.ZmSuggestResults .DwtListView {
-	border-width:0;
-}
-
-.ZmSuggestResults .Row:hover .FakeAnchor,  /* accounts for lack of .Row-hover state class */
-.ZmSuggestResults .Row-selected .FakeAnchor {
-	text-decoration:underline;
-}
-
-.ZmSuggestLocationList {
-	height:100%;
-	width:100%;
-	border-width:0;
-}
-
-.ZmLocationSuggestion {
-	@ActiveCursor@
-	background-color:@AppC@;
-	border:1px solid @darken(AppC,10)@;
-	margin:4px;
-	padding:2px 4px;
-}
-
-.ZmLocationSuggestion.Row-selected {
-	border-color:@SelC@ @darken(SelC,25)@ @darken(SelC,25)@ @SelC@;
-}
-
-
-DIV.ZmSuggestLink {
-	display:inline-block;
-	padding-right:8px;
-}
-
-
-.ZmLocationStatusValidating,
-.ZmLocationStatusConflict,
-.ZmLocationStatusResolved {
-	display:inline-block;
-	padding-right:8px;
-}
-.ZmLocationStatusValidating {
-	color:black;
-}
-.ZmLocationStatusConflict {
-	color:red;
-}
-.ZmLocationStatusResolved {
-	color:green;
-}
-
-.ZmResolveLocationConflict,
-.ZmResolveLocationConflictOdd,
-.ZmResolveLocationConflictEven {
-	width:100%;
-}
-.ZmResolveLocationConflictOdd {
-	background-color:@darken(AppC,10)@;
-}
-.ZmResolveLocationConflictEven {
-	background-color:@lighten(AppC,10)@;
-}
-
-.ZmResolveLocationConflictName {
-	display:inline-block;
-	text-align:left;
-	overflow:hidden;
-	padding:4px 0 4px 4px;
-	width:146px;
-}
-.ZmResolveLocationConflictAlternate {
-	padding:4px 4px 4px 0;
-	display:inline-block;
-	width:246px;
- }
-.ZmResolveLocationConflictHeader {
-	@FontSize-big@
-	border-bottom:2px solid @darken(AppC,50)@;
-	background-color:@darken(AppC,20)@;
-	width:100%;
-}
-
-.ZmResolveConflictList {
-	width:400px;
-}
-.ZmResolveNoLocationSelect {
-	border-top:1px solid @darken(AppC,50)@;
-}
-.ZmLocationSuggestionTooltip {
-	white-space:nowrap;
-}
-.ZmLocationTooltipTitle {
-	font-weight:bold;
-}
-
-.ZmOOODuration,
-.ZmOOOCalendar {
-	padding:4px 2px 2px 4px;
-}
-
-.FakeAnchor, a:link, a:visited {
-	@Anchor@
-}
-
-/* for displaying a msg without using an iframe (bug 66466) */
-@import url("msgview.css");
 #IFNDEF GECKO
 ruby > rt, rp {font-size: 80%;}
 #ENDIF
@@ -5732,7 +4672,7 @@ ruby > rt, rtc {
 ruby > rb, rbc, ruby > rt + rt, rtc + rtc {
     display:table-row;
 }
-rb, rbc, rt, rtc { 
+rb, rbc, rt, rtc {
     white-space:nowrap;
 }
 ruby > rt, rtc {

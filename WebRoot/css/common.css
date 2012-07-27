@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- *
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -30,11 +30,14 @@
 * HTML elements - use for global declarations
 */
 
+/* TODO: Unify these two -- for font/size/style we shouldn't have to segregate password|text|etc */
 P, TH, TD, DIV, SELECT, INPUT[type=text], INPUT[type=password], INPUT[type=file], TEXTAREA, BUTTON {
-	@FontSize-normal@ @FontFamily-default@
+	@FontFamily-default@
+	@FontSize-normal@
 }
-#IFDEF MSIE  /* not sure why INPUT is IE only, but leaving that alone */
-INPUT {
+#IFDEF MSIE
+P, TH, TD, DIV, SELECT, INPUT, TEXTAREA, BUTTON {
+	@FontFamily-default@
 	@FontSize-normal@
 }
 #ENDIF
@@ -45,23 +48,12 @@ HTML {
 
 BODY {
 	@FullSize@
-	margin:0px;
+	margin: 0px;
 }
 
 FORM {
-	margin:0;
-	padding:0;
-}
-
-TABLE {
-	border-collapse:collapse; 
-	border-spacing:0;
-	border-width:0;
-}
-
-TD {
-	border-width:0;
-	padding:0;
+	margin: 0;
+	padding: 0;
 }
 
 FIELDSET {
@@ -72,6 +64,7 @@ LEGEND {
 	@FieldSetLabel@
 }
 
+
 /****
  		Generic field borders/styles
  ****/
@@ -81,26 +74,27 @@ INPUT[readonly] {
 TEXTAREA {
 	@TextArea@ @TextArea-normal@
 	#IFDEF SAFARI
-		resize:none;
+		resize: none;
 	#ENDIF
 }
 TEXTAREA[readonly] {
 	@TextArea-disabled@
 }
 
-INPUT[type="checkbox"] {
+input[type="checkbox"] {
 		@ActiveCursor@
 }
-
 #IFDEF MSIE
-	INPUT {cursor: expression(this.type=="checkbox"?'pointer':''); }
+input{
+cursor: expression(this.type=="checkbox"?'pointer':'');
+}
 #ENDIF
 
-/* TODO: figure out what we need to do for IE/etc to set the same INPUT styles */
+/* TODO: figure out what we need to do for IE/etc to set the same input styles */
 #IFDEF GECKO
 	/* set for 'text' and 'password' fields explicitly so checkboxes and radio buttons don't get borders */
-	INPUT[type="text"],
-	INPUT[type="password"] {
+	input[type="text"],
+	input[type="password"] {
 		@InputField@
 		@InputField-normal@
 	}
@@ -111,6 +105,8 @@ INPUT[type="checkbox"] {
 		@TextArea@
 		@TextArea-normal@
 	}
+
+
 #ENDIF
 
 
@@ -213,10 +209,10 @@ ZmSectionLabel {
 	padding:2px;
 }
 
-/* Commenting out - if no use found soon, just delete */
-/*.ZmSelectedHeaderBg {
+/* ??? */
+.ZmSelectedHeaderBg {
 	@SelectedBg@
-}*/
+}
 
 
 
@@ -266,7 +262,7 @@ ZmSectionLabel {
 .horizSep {
 	@PrettyBottomSeparator@
 	@AddVerticalSpace@
-	width:100%;
+	width: 100%;
 }
 
 /* Vertical separator */
@@ -276,17 +272,12 @@ ZmSectionLabel {
 	@LeftSeparator@
 	margin-left:3px;
 	padding-right:3px;
-	height:20px;
+	height: 20px;
 }
 
 /* Vertical space */
 DIV.vSpace {
 	@AddVerticalSpace@
-}
-
-/* Vertical space for td*/
-TD.vSpace {
-    width:2px;
 }
 
 /*
@@ -343,43 +334,40 @@ TD.vSpace {
 	@DndAllowedContainer@
 }
 
-.DropTarget {
-    border: 1px solid @DropAllowedColor@ !important;
-}
 
 /* Used by the text laid over the multi-select icon to show number of items selected */
 .DragProxyTextLabel {
-	font-weight:bold;
-	color:white;
+	font-weight: bold;
+	color: white;
 }
 
 
 
 
 /* ??? WHY ARE SOME VEILS WHITE AND SOME TRANSPARENT? */
-.BusyOverlay TABLE, .VeilOverlay TABLE {
+.BusyOverlay table, .VeilOverlay table {
 	@VeilOpacity@
 	@BusyCursor@
-	background-color:transparent;	/* ??? */
+	background-color: transparent;	/* ??? */
 }
 /* As of 07/22/05 Linux (or rather X) has a nasty issue that causes a huge perf problem with opacity.*/
 
-.BusyOverlay-linux TABLE, .VeilOverlay-linux TABLE {
+.BusyOverlay-linux table, .VeilOverlay-linux table {
 	@BusyCursor@
-	background-color:transparent;
+	background-color: transparent;
 }
 
 
-.VeilOverlay TABLE {
+.VeilOverlay table {
 	@DisabledCursor@
 	@VeilColor@
 }
 
-.VeilOverlay-linux TABLE {
+.VeilOverlay-linux table {
 	@DisabledCursor@
 }
 
-.CurtainOverlay TABLE {
+.CurtainOverlay table {
 	@VeilColor@
 }
 
@@ -391,8 +379,8 @@ TD.vSpace {
  *  New tag dialog
 ---UNUSED---
 .TagColorMenu {
-	background-color:white;
-	border:1px solid #CCC;
+	background-color: white;
+	border: solid #CCCCCC 1px;
 }
 */
 
@@ -401,13 +389,13 @@ TD.vSpace {
  * New folder dialog
 ---UNUSED---
 .FolderTree {
-	background-color:white;
-	width:400px;
-	height:200px;
-	border:1px solid #999999;
-	padding:@BoxPaddingSize@ 0 0 @BoxPaddingSize@;
+	background-color: white;
+	width: 400px;
+	height: 200px;
+	border: 1px solid #999999;
+	padding: @BoxPaddingSize@ 0 0 @BoxPaddingSize@;
 }
-.FolderTree TD {padding:0;}
+.FolderTree td {padding: 0;}
  */
 
 
@@ -432,12 +420,12 @@ TD.vSpace {
 	@ListItemContainer@
 	@DisableSelection@
 	@ListItemHeightDouble@
-	border-bottom-color:#CCC;  /* TODO: Color should be a property reference */
-	padding-top:3px;
+	border-bottom-color: #CCCCCC;
+	padding-top: 3px;
 }
 
 .Row TABLE, .RowDouble TABLE {
-	table-layout:fixed;
+	table-layout: fixed;
 }
 
 .Row TD, .RowDouble TD {
@@ -454,8 +442,12 @@ TD.vSpace {
 
 #IFDEF MACINTOSH
 #IFDEF WEBKIT
-	.RowDouble TD.SubjectDoubleRow 			{	padding-top:1px; 		} 
-	.RowDouble .Unread TD.SubjectDoubleRow 	{	padding-top:0px; 		}
+.RowDouble TD.SubjectDoubleRow {
+    padding-top:1px;
+} 
+.RowDouble .Unread TD.SubjectDoubleRow {
+    padding-top:0px;
+}
 #ENDIF
 #ENDIF
 
@@ -463,7 +455,7 @@ TD.vSpace {
 
 .Row						{	@ListItemContainer-normal@			}
 
-.RowOdd						{	@ListItemContainer-alt@			}
+.RowOdd						{	@ListItemContainer-alt@				}
 
 .selected, 	/* TODO: used? */
 .Row-selected,
@@ -471,93 +463,115 @@ TD.vSpace {
 .Row-selected-disabled 		{	@ListItemContainer-selected@		}
 
 /* .Row-matched, */
-.Row-matched-dragProxy 		{ 	@ListItemContainer-matched@		}
+.Row-matched-dragProxy 		{ 	@ListItemContainer-matched@			}
 
-.Row-matched TABLE, 
-.Row-matched-drag TABLE 		{	table-layout:fixed;					}
+.Row-matched table, .Row-matched-drag table {
+	table-layout: fixed;
+}
 
-.Row-focused 				{	@ListItemContainer-focused@		}
+.Row-focused 				{	@ListItemContainer-focused@			}
 
-.Row-selected-actioned 		{	@ListItemContainer-actioned@		}
+.Row-selected-actioned 		{	@ListItemContainer-actioned@	}
 
 .Row-dragProxy,
-.Row-matched-dragProxy 		{	@ListItemContainer-dragProxy@		}
+.Row-matched-dragProxy 		{	@ListItemContainer-dragProxy@	}
 
 
-/* list row TD's (eg: text) */
+/* list row td's (eg: text) */
 
-.Row TD, .RowDouble TD		{	@ListItemText-normal@				}
+.Row td						{	@ListItemText-normal@				}
 
-.RowOdd TD					{	@ListItemText-alt@					}
+.RowOdd td					{	@ListItemText-alt@					}
 
-.selected TD,	/* TODO: used? */
+.selected td,	/* TODO: used? */
 
-.Row-selected TD,
-.Row-selected-dragProxy TD,
-.Row-selected-disabled TD 	{	@ListItemText-selected@				}
+.Row-selected td,
+.Row-selected-dragProxy td,
+.Row-selected-disabled td	{	@ListItemText-selected@				}
 
-/* .Row-matched TD			 	{ 	@ListItemText-matched@				} */
+/* .Row-matched td			 	{ 	@ListItemText-matched@				} */
 
-.Row-focused TD 				{	@ListItemText-focused@			}
+.Row-focused td 			{	@ListItemText-focused@				}
 
-.Row-selected-right TD	 		{	@ListItemText-actioned@			}
+.Row-selected-right td	 	{	@ListItemText-actioned@				}
 
-.Row-dragProxy TD,
-.Row-matched-dragProxy TD	{	@ListItemText-dragProxy@			}
+.Row-dragProxy td,
+.Row-matched-dragProxy td	{	@ListItemText-dragProxy@			}
+
 
 
 /*** TODO:  clean this the hell up ***/
 
-.Row TD.Flag, .Row TD.Attach, .Row TD.Tag, .Row TD.Icon, .Row TD.Count,
-.Row-selected TD.Flag, .Row-selected TD.Attach, .Row-selected TD.Tag, .Row-selected TD.Icon, .Row-selected TD.Count,
-.Row-dragProxy TD.Flag, .Row-dragProxy TD.Attach, .Row-dragProxy TD.Tag, .Row-dragProxy TD.Icon, .Row-dragProxy TD.Count,
-.Row-selected-dragProxy TD.Flag, .Row-selected-dragProxy TD.Attach, .Row-selected-dragProxy TD.Tag, .Row-selected-dragProxy TD.Icon, .Row-selected-dragProxy TD.Count,
-.Row-matched-dragProxy TD.Flag, .Row-matched-dragProxy TD.Attach, .Row-matched-dragProxy TD.Tag, .Row-matched-dragProxy TD.Icon, .Row-matched-dragProxy TD.Count,
-.Row-dragProxy TD.Flag, .Row-dragProxy TD.Attach,.Row-dragProxy TD.Tag, .Row-dragProxy TD.Icon, .Row-dragProxy TD.Count {
-	text-align:center;
+.Row td.Flag, .Row td.Attach, .Row td.Tag, .Row td.Icon, .Row td.Count,
+.Row-selected td.Flag, .Row-selected td.Attach, .Row-selected td.Tag, .Row-selected td.Icon, .Row-selected td.Count,
+.Row-dragProxy td.Flag, .Row-dragProxy td.Attach, .Row-dragProxy td.Tag, .Row-dragProxy td.Icon, .Row-dragProxy td.Count,
+.Row-selected-dragProxy td.Flag, .Row-selected-dragProxy td.Attach, .Row-selected-dragProxy td.Tag, .Row-selected-dragProxy td.Icon, .Row-selected-dragProxy td.Count,
+.Row-matched-dragProxy td.Flag, .Row-matched-dragProxy td.Attach, .Row-matched-dragProxy td.Tag, .Row-matched-dragProxy td.Icon, .Row-matched-dragProxy td.Count,
+.Row-dragProxy td.Flag, .Row-dragProxy td.Attach,.Row-dragProxy td.Tag, .Row-dragProxy td.Icon, .Row-dragProxy td.Count {
+	text-align: center;
 }
 
-.RowDouble TD.Count, .RowDouble-selected TD.Count {
-	text-align:right;
+.RowDouble td.Count, .RowDouble-selected td.Count {
+	text-align: right;
 }
+
 
 
 /*
  * Flags
  */
-.Unread 					{	@Text-unread@ 		}
-.Trash 					{	@Text-deleted@ 		}
-.Unread .SubjectDoubleRow	{	@Text-unread@ 		} /* overrides quirksmode, since quirks sets table font-weight to normal and takes precedence, so this is more specific, and since SubjectDoubleRow is on a TD it works */
+.Unread {
+	@Text-unread@
+}
+.Trash {
+	@Text-deleted@
+}
+
+
 
 
 /* Overview */
 
-.ZmOverview 				{	@FullSize@ 			}
+.ZmOverview {
+	@FullSize@
+}
 
 
-.ZmOverviewContainer 		{	@TreeContainer@ 	}
+.ZmOverviewContainer {
+	@TreeContainer@
+}
 
 .ZmVoiceOverviewContainer .ZmOverview,
 .ZmOverviewContainer .ZmOverview,
 .dialogOverviewContainer .OverviewTree {
-	height:auto;
+	height: auto;
+	padding-left: @SmallIconWidth@;
 }
 
-.OverviewTree 				{	@FullWidth@ 		}
+.OverviewTree {
+	@FullWidth@
+}
 
 
-.dialogOverview				{
+.dialogOverview {
 	@TreeContainer@
 	@NormalInsetBorder@
 	@BoxPadding@
-	height:200px;		/* ??? SIZE */
+	height: 200px;		/* ??? SIZE */
 }
 
-.dialogOverviewContainer 		{	@PanelBg@ 			}
+.dialogOverviewContainer {
+	@PanelBg@
+}
 
-.dialogOverview TD 			{	@Text@ 				}
+.dialogOverview td {
+	@Text@
+}
 
-.pickerOverview 				{	@TreeContainer@ @FullHeight@ 	}
+.pickerOverview {
+	@TreeContainer@
+	@FullHeight@
+}
 
 /* ??? MARGINS */
 .overviewHeader,.overviewHeader-actioned {
@@ -565,8 +579,8 @@ TD.vSpace {
 	@TreeHeaderContainer@
 	@TreeHeaderText@
 	@TreeItemSpacing@
-	padding-top:1px;
-	padding-bottom:1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
 }
 
 .overviewHeader-Text,
@@ -577,8 +591,8 @@ TD.vSpace {
 .overviewHeader-selected {
 	@TreeHeaderText@
     @SelectedBg-blurred@
-	padding-top:1px;
-	padding-bottom:1px;
+	padding-top: 1px;
+	padding-bottom: 1px;
 }
 
 .overviewHeader-selected-focused {
@@ -588,44 +602,22 @@ TD.vSpace {
 
 .overviewHeader .imageCell,.overviewHeader-actioned .imageCell {
 	@ImagePadding@
-	white-space:nowrap;	/* ??? */
+	white-space: nowrap;	/* ??? */
 }
 
 .inlineIcon {
 	font-family:Verdana;
 	font-size:13px;
 }
-.inlineContactTagIcon {
-    font-size:11px;
-    vertical-align:middle;
-}
 
 .TooltipHint {
-	font-style:italic;
-	text-align:center;
-	white-space:nowrap;
+	font-style: italic;
+	text-align: center;
+	white-space: nowrap;
 }
 
 .TooltipNotInAddrBook {
 	white-space:nowrap;
 	text-align:center;
-	padding:8px 0px 5px 0px;
-}
-
-.ImgTagShared {
-	display: inline-block;
-}
-
-/* Anchor and Link styles */
-
-.FakeAnchor, a:link, a:visited {
-	@Anchor@
-}
-
-.FakeAnchor:hover, a:hover {
-	@Anchor-hover@
-}
-
-.FakeAnchor:active, a:active {
-	@Anchor-active@
+	padding: 8px 0px 5px 0px;
 }
