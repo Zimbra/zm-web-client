@@ -1386,4 +1386,26 @@ input[disabled] {
     width: auto !important;
 }
 
-ruby > rb, rt, rp {font-size: 80%;}
+#IFNDEF GECKO
+ruby >  rt, rp {font-size: 80%;}
+#ENDIF
+
+#IFDEF GECKO
+ruby {display:inline-table;}
+ruby > rt, rtc {
+    display:table-caption;
+    text-align:center;
+}
+ruby > rb, rbc, ruby > rt + rt, rtc + rtc {
+    display:table-row;
+}
+rb, rbc, rt, rtc {
+    white-space:nowrap;
+}
+ruby > rt, rtc {
+    font-size:80%;
+    line-height:1.2em;
+}
+rp
+{display:none;}
+#ENDIF
