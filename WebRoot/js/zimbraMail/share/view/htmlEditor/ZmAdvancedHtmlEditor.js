@@ -956,6 +956,27 @@ function(id, src){
     }
 };
 
+/*
+This function will replace all the img elements matching src
+ */
+ZmAdvancedHtmlEditor.prototype.replaceImageSrc =
+function(src, newsrc){
+	var doc = this.getEditor().getDoc();
+	if(doc){
+		var images = doc.getElementsByTagName('img');
+		if (images && images.length > 0) {
+			AjxUtil.foreach(images,function(img) {
+				if (img && img.src == src) {
+					img.src = newsrc;
+					img.removeAttribute("id");
+					img.removeAttribute("data-mce-src");
+					img.removeAttribute("data-zim-uri");
+				}
+			});
+		}
+	}
+};
+
 ZmAdvancedHtmlEditor.prototype.addCSSForDefaultFontSize =
 function(editor) {
 	var selectorText = "body,td,pre";
