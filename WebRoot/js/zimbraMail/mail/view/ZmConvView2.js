@@ -681,10 +681,6 @@ function(ev) {
 			index:			index
 		}
 		this._renderMessage(msg, params);
-		var msgView = this._msgViews[msg.id];
-		if (msgView) {
-			Dwt.scrollIntoView(msgView.getHtmlElement(), this._messagesDiv);
-		}
 	}
 	else {
 		var msgView = this._msgViews[msg.id];
