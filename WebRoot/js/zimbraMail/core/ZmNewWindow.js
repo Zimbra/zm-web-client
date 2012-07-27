@@ -190,8 +190,10 @@ function() {
 	// only load calendar app if we're dealing with an invite
 	var msg = (cmd == "msgViewDetach") ? params.msg : null;
 	if (msg &&
-        (msg.isInvite() || this._isCalendarShare(msg.share))) {
+        (msg.isInvite() || this._checkShareType(msg.share, "appointment"))) {
 		apps[ZmApp.CALENDAR] = true;
+	} else if (msg && this._checkShareType(msg.share, "task")) {
+		apps[ZmApp.TASKS] = true;
 	}
 	apps[ZmApp.PREFERENCES] = true;
     apps[ZmApp.BRIEFCASE] = true;  //Need this for both Compose & Msg View detach window.
@@ -234,9 +236,9 @@ function() {
 /**
  * @private
  */
-ZmNewWindow.prototype._isCalendarShare =
-function(share) {
-    return (share && share.link && share.link.view) ? "appointment" === share.link.view : false;
+ZmNewWindow.prototype._checkShareType =
+function(share, type) {
+    return share && share.link && (type === share.link.view);
 };
 ZmNewWindow.prototype._createView =
 function() {
