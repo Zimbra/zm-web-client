@@ -63,7 +63,7 @@
                 <fmt:message key="voiceErrorGeneric"/>
             </app:status>
         </c:when>
-        <c:when test="${(error.code eq 'mitel.INVALID_PIN')}">
+        <c:when test="${(error.code eq 'mitel.INVALID_PIN')">
             <app:status style="Critical">
                 <fmt:message key="voiceErrorPIN"/>
             </app:status>
