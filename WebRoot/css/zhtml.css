@@ -1373,7 +1373,7 @@ input[disabled] {
 }
 
 #IFNDEF GECKO
-ruby >  rt, rp {font-size: 80%;}
+rt, rp {font-size: 80%;}
 #ENDIF
 
 #IFDEF GECKO

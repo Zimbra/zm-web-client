@@ -4660,7 +4660,7 @@ If you feel compelled to have a background color, please do so on a per skin lev
 }
 
 #IFNDEF GECKO
-ruby > rt, rp {font-size: 80%;}
+rt, rp {font-size: 80%;}
 #ENDIF
 
 #IFDEF GECKO
