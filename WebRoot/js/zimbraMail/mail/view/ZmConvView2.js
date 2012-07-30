@@ -2109,7 +2109,10 @@ function(ev) {
 
 	var target = DwtUiEvent.getTarget(ev);
 	if (target && target.id == this._readIconId) {
-		this._controller._doMarkRead([this._msg], this._msg.isUnread);
+		var folder = appCtxt.getById(this._msg.folderId);
+		if (!(folder && folder.isReadOnly())) {
+			this._controller._doMarkRead([this._msg], this._msg.isUnread);
+		}
 		return true;
 	}
 	else if (DwtUiEvent.getTargetWithProp(ev, "notoggle")) {
