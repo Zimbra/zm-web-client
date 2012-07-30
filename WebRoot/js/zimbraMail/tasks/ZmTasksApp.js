@@ -203,6 +203,11 @@ function(op, params) {
 	}
 };
 
+ZmTasksApp.prototype.getDefaultFolderId =
+function(op) {
+	return ZmOrganizer.ID_TASKS;
+};
+
 ZmTasksApp.prototype._handleLoadNewTask =
 function(params) {
 	AjxDispatcher.run("GetTaskController").show((new ZmTask(null, null, params && params.folderId)));

@@ -422,29 +422,44 @@ function(notify) {
  * @private
  */
 ZmContactsApp.prototype.handleOp =
-function(op) {
+function(op, params) {
 	switch (op) {
 		case ZmOperation.NEW_CONTACT:
 		case ZmOperation.NEW_GROUP: {
-			var type = (op == ZmOperation.NEW_GROUP) ? ZmItem.GROUP : null;
-			var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [type]);
+			params.type = (op == ZmOperation.NEW_GROUP) ? ZmItem.GROUP : null;
+			var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [params]);
 			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
 			break;
 		}
 		case ZmOperation.NEW_ADDRBOOK: {
-			var loadCallback = new AjxCallback(this, this._handleLoadNewAddrBook);
+			var loadCallback = new AjxCallback(this, this._handleLoadNewAddrBook, [params]);
 			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
 			break;
 		}
 	}
 };
 
+ZmContactsApp.prototype.getDefaultFolderId =
+function(op) {
+	switch (op) {
+		case ZmOperation.NEW_CONTACT:
+		case ZmOperation.NEW_GROUP: {
+			return ZmOrganizer.ID_ADDRBOOK;
+		}
+		case ZmOperation.NEW_ADDRBOOK: {
+			return ZmOrganizer.ID_ROOT;
+		}
+	}
+
+};
+
+
 /**
  * @private
  */
 ZmContactsApp.prototype._handleLoadNewItem =
-function(type) {
-	var contact = new ZmContact(null, null, type);
+function(params) {
+	var contact = new ZmContact(null, null, params.type, params.folderId);
 	AjxDispatcher.run("GetContactController").show(contact);
 };
 
@@ -452,13 +467,13 @@ function(type) {
  * @private
  */
 ZmContactsApp.prototype._handleLoadNewAddrBook =
-function() {
+function(params) {
 	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
 	var dialog = appCtxt.getNewAddrBookDialog();
 	if (!this._newAddrBookCb) {
 		this._newAddrBookCb = new AjxCallback(this, this._newAddrBookCallback);
 	}
-	ZmController.showDialog(dialog, this._newAddrBookCb);
+	ZmController.showDialog(dialog, this._newAddrBookCb, params);
 };
 
 // Public methods

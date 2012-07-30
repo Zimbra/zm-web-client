@@ -39,11 +39,13 @@ if (!window.ZmContact) {
  * 
  * @extends		ZmItem
  */
-ZmContact = function(id, list, type) {
+ZmContact = function(id, list, type, folderId) {
 	if (arguments.length == 0) { return; }
 
 	type = type || ZmItem.CONTACT;
 	ZmItem.call(this, type, id, list);
+
+	this.folderId = folderId;
 
 	this.attr = {};
 	this.isGal = (this.list && this.list.isGal);

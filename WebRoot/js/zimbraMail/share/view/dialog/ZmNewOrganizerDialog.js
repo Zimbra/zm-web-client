@@ -56,6 +56,9 @@ function() {
 ZmNewOrganizerDialog.prototype.popup =
 function(params, account) {
     var folder = params instanceof ZmOrganizer ? params : (params && params.organizer);
+	if (!folder && params && params.folderId) {
+		folder = appCtxt.getById(params.folderId);
+	}
 	if (this._folderTreeCellId) {
 		var overviewParams = {
 			overviewId:		this.toString(),

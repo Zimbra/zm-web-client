@@ -624,11 +624,19 @@ function(ev, op, params) {
 		op = this._defaultNewId;
 	}
 
-	var app = ZmApp.OPS_R[op];
+	var appName = ZmApp.OPS_R[op];
+	var app = appName && appCtxt.getApp(appName);
 	if (app) {
 		params = params || {};
 		params.ev = ev;
-		appCtxt.getApp(app).handleOp(op, params);
+		if (!params.folderId && appCtxt.multiAccounts) {
+			var tree = appCtxt.getFolderTree(appCtxt.getActiveAccount() || appCtxt.accountList.defaultAccount);
+			var folderId = app.getDefaultFolderId && app.getDefaultFolderId(op);
+			if (folderId) {
+				params.folderId = tree.getById(folderId).id;
+			}
+		}
+		app.handleOp(op, params);
 	} else {
 		ZmController.prototype._newListener.call(this, ev, op);
 	}
