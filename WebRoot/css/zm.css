@@ -818,6 +818,17 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	padding-right:10px;
 }
 
+.InvHeaderTable .Object {
+    @ActiveCursor@
+    @Anchor@
+    white-space: nowrap;
+}
+
+.InvHeaderTable .Object-hover {
+    @ActiveCursor@
+    @Anchor-hover@
+    white-space: nowrap;
+}
 
 .InvHeaderTable .InvChanged, 
 .InvHeaderTable .InvChanged .Object {

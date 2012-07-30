@@ -18,10 +18,16 @@
  *				in the 'Message Preview Pane'.  It should be minimal in size.
  ****/
 
-.MsgHeaderTable .Object,
-.MsgHeaderTable .Object-hover {
-	white-space: nowrap;
+.MsgHeaderTable .Object {
 	@ActiveCursor@
+    @Anchor@
+    white-space: nowrap;
+}
+
+.MsgHeaderTable .Object-hover {
+    @ActiveCursor@
+    @Anchor-hover@
+    white-space: nowrap;
 }
 
 /* entire message body */
