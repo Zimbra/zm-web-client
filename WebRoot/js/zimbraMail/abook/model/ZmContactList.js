@@ -223,6 +223,7 @@ function() {
 	var dlsFolder = appCtxt.getById(ZmOrganizer.ID_DLS);
 
 	var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
+	if (!root) { return; }
 
 	if (dlsFolder && root.getById(ZmOrganizer.ID_DLS)) {
 		//somehow (after a refresh block, can be reprod using $set:refresh. ZmClientCmdHandler.prototype.execute_refresh) the DLs folder object is removed from under the root (but still cached in appCtxt). So making sure it's there.

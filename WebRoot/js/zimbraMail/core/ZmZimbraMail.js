@@ -2122,7 +2122,8 @@ function(appName, view, isTabView) {
  */
 ZmZimbraMail.prototype.getAppChooserButton =
 function(id) {
-	return this._components[ZmAppViewMgr.C_APP_CHOOSER].getButton(id);
+	var chooser = this._components[ZmAppViewMgr.C_APP_CHOOSER];
+	return chooser && chooser.getButton(id);
 };
 
 /**

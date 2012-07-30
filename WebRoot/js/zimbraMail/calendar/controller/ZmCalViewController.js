@@ -486,13 +486,16 @@ function() {
 			var acct = list[i];
 			if (!ac.get(ZmSetting.CALENDAR_ENABLED, null, acct)) { continue; }
 
-			var calendars = ac.getFolderTree(acct).getByType(ZmOrganizer.CALENDAR);
-			for (var j = 0; j < calendars.length; j++) {
-				// bug: 43067: skip the default calendar for caldav based accounts
-				if (acct.isCalDavBased() && calendars[j].nId == ZmOrganizer.ID_CALENDAR) {
-					continue;
+			var folderTree = ac.getFolderTree(acct);
+			var calendars = folderTree && folderTree.getByType(ZmOrganizer.CALENDAR);
+			if (calendars) {
+				for (var j = 0; j < calendars.length; j++) {
+					// bug: 43067: skip the default calendar for caldav based accounts
+					if (acct.isCalDavBased() && calendars[j].nId == ZmOrganizer.ID_CALENDAR) {
+						continue;
+					}
+					allCalendars.push(calendars[j]);
 				}
-				allCalendars.push(calendars[j]);
 			}
 		}
 	}

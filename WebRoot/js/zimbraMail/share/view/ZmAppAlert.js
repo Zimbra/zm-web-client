@@ -25,27 +25,23 @@ ZmAppAlert = function(app) {
 	this.app = app;
 };
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmAppAlert.prototype.toString =
-function() {
-	return "ZmAppAlert";
-};
+ZmAppAlert.prototype.isZmAppAlert = true;
+ZmAppAlert.prototype.toString = function() { return "ZmAppAlert"; };
 
 /**
  * Starts the alert.
  */
 ZmAppAlert.prototype.start =
 function() {
-    if (!this._getAppButton().isSelected) {
-		this._getAppButton().showAlert(true);
+	var appButton = this._getAppButton();
+	if (!appButton) { return; }
+	
+    if (!appButton.isSelected) {
+		appButton.showAlert(true);
         //add a stop alert listener
         if (!this._stopAlertListenerObj) {
            this._stopAlertListenerObj = new AjxListener(this, this.stop);
-           this._getAppButton().addSelectionListener(this._stopAlertListenerObj);
+           appButton.addSelectionListener(this._stopAlertListenerObj);
         }
     }
 };
@@ -55,8 +51,10 @@ function() {
  */
 ZmAppAlert.prototype.stop =
 function() {
-    if (this._getAppButton().isSelected) {
-        this._getAppButton().showAlert(false);
+	var appButton = this._getAppButton();
+	if (!appButton) { return; }
+    if (appButton.isSelected) {
+        appButton.showAlert(false);
     }
 };
 
