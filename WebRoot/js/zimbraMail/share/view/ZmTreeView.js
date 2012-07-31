@@ -349,6 +349,15 @@ function(params) {
 	var addSep = true;
 	var numItems = 0;
 	var len = children.length;
+    if (params.startPos === undefined && params.lastRenderedFolder ){
+        for (var i = 0, len = children.length; i < len; i++) {
+            if (params.lastRenderedFolder == children[i] ){
+               params.startPos = i + 1; // Next to lastRenderedFolder
+               break;
+            }
+        }
+        DBG.println(AjxDebug.DBG1, "load remaining folders: " + params.startPos);
+    }
 	for (var i = params.startPos || 0; i < len; i++) {
 		var child = children[i];
 		if (!child || (params.omit && params.omit[child.nId])) { continue; }
@@ -407,12 +416,7 @@ function(params) {
 				if (this.isCheckedStyle) {
 					ti.showCheckBox(false);
 				}
-                var prevChildName = children[i-1] && children[i-1].name;
-                for (key in appCtxt._itemCacheDeferred){
-                    // Add deferred folders if its name is less than prevChildName
-                    if (appCtxt._itemCacheDeferred[key] < prevChildName) i++;
-                }
-				params.startPos = i;
+                params.lastRenderedFolder  = children[i-1];
 				params.showRemainingFoldersNode = ti;
 				child._showFoldersCallback = new AjxCallback(this, this._showRemainingFolders, [params]);
 				return;
@@ -614,7 +618,6 @@ function(params) {
 		params.showRemainingFoldersNode.dispose();
 	}
 
-	DBG.println(AjxDebug.DBG1, "load remaining folders: " + params.startPos);
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
 		function() {
 			this._render(params);
