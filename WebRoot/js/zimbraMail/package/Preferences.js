@@ -44,7 +44,6 @@ AjxPackage.require("zimbraMail.prefs.view.ZmFilterRuleDialog");
 AjxPackage.require("zimbraMail.prefs.view.ZmZimletsPage");
 AjxPackage.require("zimbraMail.prefs.view.ZmMobileDevicesPage");
 AjxPackage.require("zimbraMail.prefs.view.ZmPriorityMessageFilterDialog");
-AjxPackage.require("zimbraMail.prefs.view.ZmPriorityMessagePromptDialog");
 AjxPackage.require("zimbraMail.prefs.view.ZmSharingPage");
 AjxPackage.require("zimbraMail.prefs.view.ZmFilterPage");
 AjxPackage.require("zimbraMail.prefs.view.ZmNotificationsPage");

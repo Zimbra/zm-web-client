@@ -195,7 +195,6 @@ function() {
 	//build filter
 	var foundCondition = false;
 	var needSave = false; 
-	var runNowPrompt = false;
 	var condition = {};
 	var activityRule = this._rules.getRuleByName(ZmMsg.activityStreamsRule);
 	
@@ -249,7 +248,6 @@ function() {
 		else if(foundCondition) {
 			this._rules.insertRule(streamRule); //insert last
 			needSave = true;
-			runNowPrompt = true;
 		}
 		else if (activityRule) {
 			return this._handleConditionsError(ZmMsg.ruleNoConditonActivityFilter);	
@@ -267,13 +265,7 @@ function() {
 	}
 	
 	this.popdown();
-	
-	if (runNowPrompt) {
-		var promptDialog = appCtxt.getPriorityMessagePromptDialog();
-		promptDialog.setFilterRules(this._rules);
-		promptDialog.popup();
-	}
-		
+			
 };
 
 ZmPriorityMessageFilterDialog.prototype._getButtonsContainerStartTemplate =

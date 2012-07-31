@@ -803,19 +803,6 @@ function() {
 	return this._priorityMessageFilterDialog;
 };
 
-/**
- * Gets the prompt dialog for running priority message filters
- * 
- * @return {ZmPriorityMesagePromptDialog} the priority message prompt dialog
- */
-ZmAppCtxt.prototype.getPriorityMessagePromptDialog = 
-function() {
-	if (!this._priorityMessagePromptDialog) {
-		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
-		this._priorityMessagePromptDialog = new ZmPriorityMessagePromptDialog();		
-	}
-	return this._priorityMessagePromptDialog;
-};
 
 /**
  * Gets the activity stream prompt dialog for running activity stream filters
