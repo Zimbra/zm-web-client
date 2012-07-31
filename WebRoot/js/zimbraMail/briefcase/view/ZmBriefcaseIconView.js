@@ -80,9 +80,13 @@ function(item, params) {
 		}
 	}
 	
-	htmlArr[idx++] = "<table><tr><td>";
-    idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(item, ZmItem.F_SELECTION));
-    htmlArr[idx++] = "</td><td><div class='Img";
+	htmlArr[idx++] = "<table><tr>";
+    if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+        htmlArr[idx++] = "<td>";
+        idx = this._getImageHtml(htmlArr, idx, "CheckboxUnchecked", this._getFieldId(item, ZmItem.F_SELECTION));
+        htmlArr[idx++] = "</td>";
+    }
+    htmlArr[idx++] = "<td><div class='Img";
 	htmlArr[idx++] = icon;
 	htmlArr[idx++] = "'></div></td><td nowrap>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
