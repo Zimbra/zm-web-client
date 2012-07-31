@@ -310,13 +310,13 @@ ZmCalendarTreeController.prototype._getActionMenu =
 function(ev) {
 	var organizer = ev.item.getData(Dwt.KEY_OBJECT);
 	if (organizer.type != this.type &&
-        organizer.id != ZmOrganizer.ID_TRASH) {
+        organizer.nId != ZmOrganizer.ID_TRASH) {
         return null;
     }
 	var menu = ZmTreeController.prototype._getActionMenu.apply(this, arguments);
-    var isTrash = organizer.id == ZmOrganizer.ID_TRASH;
+    var isTrash = organizer.nId == ZmOrganizer.ID_TRASH;
     //bug 67531: "Move" Option should be disabled for the default calendar
-    var isCalendar = organizer.id == ZmOrganizer.ID_CALENDAR;
+    var isCalendar = organizer.nId == ZmOrganizer.ID_CALENDAR;
     menu.enableAll(!isTrash);
     menu.enable(ZmOperation.MOVE, !isCalendar && !isTrash);
     menu.enable(ZmOperation.EMPTY_FOLDER, isTrash);
