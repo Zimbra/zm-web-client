@@ -826,11 +826,18 @@ ZmAdvancedHtmlEditor.prototype.onBeforeExecCommand = function(ed, cmd, ui, val, 
     if (cmd === "mceImage") {
         this.onBeforeInsertImage(ed, cmd, ui, val, o);
     }
+    else if (cmd === "mceRepaint") { //img src modified
+        this.onBeforeRepaint(ed, cmd, ui, val, o);
+    }
 };
 
 ZmAdvancedHtmlEditor.prototype.onBeforeInsertImage = function(ed, cmd, ui, val, o) {
     var element = ed.selection.getNode();
-    if (!element || element.nodeName !== 'IMG') {
+    if (element && element.nodeName === "IMG") {
+        element.setAttribute("data-mce-src", element.src);
+        element.setAttribute("data-mce-zsrc", element.src);//To find out whether src is modified or not set a dummy attribute
+    }
+    else {
         if (this.isSignatureEditor) {
             ZmSignatureEditor.prototype._insertImagesListener.call(this);
             o.terminate = true; //This will terminate tinymce from executing this command
@@ -842,6 +849,16 @@ ZmAdvancedHtmlEditor.prototype.onBeforeInsertImage = function(ed, cmd, ui, val, 
                 o.terminate = true;
             }
         }
+    }
+};
+
+ZmAdvancedHtmlEditor.prototype.onBeforeRepaint = function(ed, cmd, ui, val, o) {
+    var element = ed.selection.getNode();
+    if (element && element.nodeName === "IMG") {
+        if (element.src !== element.getAttribute("data-mce-zsrc")) {
+            element.removeAttribute("dfsrc");
+        }
+        element.removeAttribute("data-mce-zsrc");
     }
 };
 
