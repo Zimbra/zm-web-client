@@ -906,7 +906,7 @@ function(contentType, callback, result) {
 
 	// look for first multi/alt with child of type we want, add it; assumes at most one multi/alt per msg
 	var response = result.getResponse().GetMsgResponse;
-	var altPart = this._topPart.addAlternativePart(response.m[0].mp[0], contentType, 0);
+	var altPart = this._topPart && this._topPart.addAlternativePart(response.m[0].mp[0], contentType, 0);
 	if (altPart) {
 		for (var i = 0; i < this._bodyParts.length; i++) {
 			var bp = this._bodyParts[i];

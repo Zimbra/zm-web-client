@@ -295,7 +295,7 @@ function(node, contentType, index) {
 	if (node.mp && node.mp.length) {
 		for (var i = 0; i < node.mp.length; i++) {
 			var mimePart = this.children.get(i);
-			var altPart = mimePart.addAlternativePart(node.mp[i], contentType, i);
+			var altPart = mimePart && mimePart.addAlternativePart(node.mp[i], contentType, i);
 			if (altPart) {
 				return altPart;
 			}
