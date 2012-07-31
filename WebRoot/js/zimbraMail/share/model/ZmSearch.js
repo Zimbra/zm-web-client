@@ -569,7 +569,6 @@ function(params) {
 		if (params.needExp !== false) {
 			request.needExp = 1;
 		}
-		ZmMailMsg.addRequestHeaders(request);
 	}
 
 	if (!params.noTruncate) {

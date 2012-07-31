@@ -1427,7 +1427,18 @@ function(msg, notifyZimlets) {
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.getApp(ZmApp.CONTACTS).contactsLoaded[acctId]) {
 		cl = AjxDispatcher.run("GetContacts");
 	}
-	var fromAddr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
+	var fromAddr = msg.getAddress(AjxEmailAddress.FROM);
+	// if we have no FROM address and msg is in an outbound folder, assume current user is the sender
+	if (!fromAddr) {
+		var folder = msg.folderId && appCtxt.getById(msg.folderId);
+		if (folder && folder.isOutbound()) {
+			var identity = appCtxt.getIdentityCollection().defaultIdentity;
+			if (identity) {
+				fromAddr = new AjxEmailAddress(identity.sendFromAddress, AjxEmailAddress.FROM, identity.sendFromDisplay);
+			}
+		}
+	}
+	fromAddr = fromAddr || ZmMsg.unknown;
 	var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - Sender: header means on-behalf-of
 	var sentBy = (sender && sender.address) ? sender : fromAddr;
 	var from = AjxStringUtil.htmlEncode(fromAddr.toString(true));
