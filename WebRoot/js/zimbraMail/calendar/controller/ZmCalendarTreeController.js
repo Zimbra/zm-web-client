@@ -288,11 +288,11 @@ ZmCalendarTreeController.prototype._getActionMenu =
 function(ev) {
 	var organizer = ev.item.getData(Dwt.KEY_OBJECT);
 	if (organizer.type != this.type &&
-        organizer.id != ZmOrganizer.ID_TRASH) {
+        organizer.nId != ZmOrganizer.ID_TRASH) {
         return null;
     }
 	var menu = ZmTreeController.prototype._getActionMenu.apply(this, arguments);
-    var isTrash = organizer.id == ZmOrganizer.ID_TRASH;
+    var isTrash = organizer.nId == ZmOrganizer.ID_TRASH;
     menu.enableAll(!isTrash);
     menu.enable(ZmOperation.EMPTY_FOLDER, isTrash);
     var menuItem = menu.getMenuItem(ZmOperation.EMPTY_FOLDER);
