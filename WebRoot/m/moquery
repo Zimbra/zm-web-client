@@ -113,7 +113,7 @@
                 </option>
                 <zm:forEachFolder var="folder">
                     <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
-                    <c:if test="${not (folder.isSearchFolder or folder.isChats)}">
+                    <c:if test="${(not (folder.isSearchFolder or folder.isChats or folder.isSpam)) or (mailbox.features.spam and folder.isSpam)}">
                         <option value=' in:"${folder.rootRelativePath}"'>
                             ${label}
                         </option>
