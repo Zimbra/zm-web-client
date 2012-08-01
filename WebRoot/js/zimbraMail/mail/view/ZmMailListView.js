@@ -1085,7 +1085,7 @@ function(clickedEl, ev) {
     if(window.webkitNotifications && appCtxt.get(ZmSetting.MAIL_NOTIFY_TOASTER)){
         var perm = webkitNotifications.checkPermission();
         if(perm == 1){
-           webkitNotifications.requestPermission();
+           webkitNotifications.requestPermission(function(){});
         }
         //else if(perm == 2) ){ /*ignore when browser has disabled notifications*/ }
     }
