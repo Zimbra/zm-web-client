@@ -253,6 +253,7 @@ function() {
 };
 
 // We need to stay in sync with what's allowed by _resetOperations
+// TODO: we should just find out if an operation was enabled via _resetOperations
 ZmMailListController.prototype.handleKeyAction =
 function(actionCode, ev) {
 	DBG.println(AjxDebug.DBG3, "ZmMailListController.handleKeyAction");
@@ -260,6 +261,7 @@ function(actionCode, ev) {
 	var folder = this._getSearchFolder();
 	var isSyncFailures = this.isSyncFailuresFolder();
 	var isDrafts = this.isDraftsFolder();
+	var isFeed = (folder && folder.isFeed());
 	var lv = this._listView[this._currentViewId];
 	var num = lv.getSelectionCount();
     var isExternalAccount = appCtxt.isExternalAccount();
@@ -301,7 +303,7 @@ function(actionCode, ev) {
 
 		case ZmKeyMap.REPLY:
 		case ZmKeyMap.REPLY_ALL:
-			if (!isDrafts && !isExternalAccount && (num == 1) && !isSyncFailures) {
+			if (!isDrafts && !isExternalAccount && (num == 1) && !isSyncFailures && !isFeed) {
 				this._doAction({action:ZmMailListController.ACTION_CODE_TO_OP[actionCode]});
 			}
 			break;
@@ -830,7 +832,7 @@ function(ev) {
 	// bug fix #3602
 	var address = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && ev.field == ZmItem.F_PARTICIPANT)
 		? ev.detail
-		: ((ev.item instanceof ZmMailMsg) ? ev.item.getAddress(AjxEmailAddress.FROM) : null);
+		: ((ev.item && ev.item.isZmMailMsg) ? ev.item.getAddress(AjxEmailAddress.FROM) : null);
 
 	var item = (items && items.length == 1) ? items[0] : null;
 	if (this.isDraftsFolder() || (item && item.isDraft && item.type != ZmId.ITEM_CONV)) { //note that we never treat a conversation as a draft for actions. See also bug 64494
@@ -1509,8 +1511,8 @@ function(parent) {
 		var inSpamFolder = ((folder && folder.nId == ZmFolder.ID_SPAM) ||
 							(!folder && folderId == ZmFolder.ID_SPAM)  ||
                             (this._currentSearch && this._currentSearch.folderId == ZmFolder.ID_SPAM)); // fall back
-		var inPopupMenu = (parent instanceof ZmActionMenu);
-		if (parent instanceof ZmButtonToolBar) {
+		var inPopupMenu = (parent.isZmActionMenu);
+		if (parent.isZmButtonToolBar) {
 			//might still be in a popup if it's in the Actions menu. That's the case now but I do this generically so it works if one day we move it as a main button (might want to do that in the spam folder at least)
 			inPopupMenu = parent.getActionsMenu() && parent.getActionsMenu().getOp(ZmOperation.SPAM);
 		}
@@ -1861,7 +1863,7 @@ function(ev) {
 			} else {
 				ids.push("C:"+item.id);
 			}
-			if (item instanceof ZmConv) {
+			if (item.isZmConv) {
 				var msgList = item.getMsgList();
 				for(var j=0; j<msgList.length; j++) {
 					if(msgList[j].showImages) {
@@ -2078,7 +2080,7 @@ function(parent, num) {
 
 	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !isDrafts && num == 1));
 
-	/*if (parent instanceof ZmActionMenu) {
+	/*if (parent.isZmActionMenu) {
 		parent.setItemVisible(ZmOperation.QUICK_COMMANDS, !isDrafts && parent._hasQuickCommands);
 	} else {
 		parent.setItemVisible(ZmOperation.QUICK_COMMANDS, !isDrafts);
@@ -2088,23 +2090,14 @@ function(parent, num) {
 	parent.setItemVisible(ZmOperation.CREATE_APPT, !isDrafts);
 	parent.setItemVisible(ZmOperation.CREATE_TASK, !isDrafts);
 
-	if (parent && parent instanceof ZmToolBar) {
-		// bug fix #37154 - disable non-applicable buttons if rfc/822 message
-		var isRfc822 = appCtxt.isChildWindow && window.newWindowParams && window.newWindowParams.isRfc822;
-
-		if (isRfc822 || (isReadOnly && num > 0)) {
-			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.SPAM, ZmOperation.TAG_MENU], false);
-		} else {
-            parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (!isDrafts && !isFeed && num == 1));
-			parent.enable([ZmOperation.VIEW_MENU], true);
-            parent.enable([ZmOperation.FORWARD, ZmOperation.SPAM], (!isDrafts && num > 0));
-		}
+	// bug fix #37154 - disable non-applicable buttons if rfc/822 message
+	var isRfc822 = appCtxt.isChildWindow && window.newWindowParams && window.newWindowParams.isRfc822;
+	if (isRfc822 || (isReadOnly && num > 0)) {
+		parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.SPAM, ZmOperation.TAG_MENU], false);
 	} else {
-		if (isReadOnly && num > 0) {
-			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.MOVE_MENU, ZmOperation.SPAM, ZmOperation.TAG_MENU], false);
-		} else {
-			parent.enable([ZmOperation.SPAM], (!isDrafts && num > 0));
-		}
+		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (!isDrafts && !isFeed && num == 1));
+		parent.enable([ZmOperation.VIEW_MENU], true);
+		parent.enable([ZmOperation.FORWARD, ZmOperation.SPAM], (!isDrafts && num > 0));
 	}
 
 	if (this._draftsActionMenu) {

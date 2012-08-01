@@ -55,15 +55,8 @@ ZmToolBar = function(params) {
 ZmToolBar.prototype = new DwtToolBar;
 ZmToolBar.prototype.constructor = ZmToolBar;
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmToolBar.prototype.toString = 
-function() {
-	return "ZmToolBar";
-};
+ZmToolBar.prototype.isZmToolBar = true;
+ZmToolBar.prototype.toString = function() { return "ZmToolBar"; };
 
 /**
  * Adds a selection listener.
