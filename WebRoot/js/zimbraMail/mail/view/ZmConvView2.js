@@ -1262,11 +1262,19 @@ function() {
 		var height = 0;
 		for (var i = 0, len = body.childNodes.length; i < len; i++) {
 			var el = body.childNodes[i];
+			if (!el || el.nodeType != AjxUtil.ELEMENT_NODE) {
+				height = -1;
+				break;
+			}
 			height += Dwt.getSize(el).y;
 			var styleObj = DwtCssStyle.getComputedStyleObject(el);
-			height += styleObj ? parseInt(styleObj.marginTop) + parseInt(styleObj.marginBottom) : 0;
+			if (!styleObj) {
+				height = -1;
+				break;
+			}
+			height += parseInt(styleObj.marginTop) + parseInt(styleObj.marginBottom);
 		}
-		if (height && height < 150) {
+		if (height > 0 && height < 150) {
 			height += 12;	// fudge to make sure nothing is cut off
 			DBG.println(AjxDebug.DBG1, "resizing capsule msg view IFRAME height to " + height);
 			Dwt.setSize(this.getIframeElement(), Dwt.DEFAULT, height);
