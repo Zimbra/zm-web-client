@@ -257,7 +257,7 @@ action="compose" paction="view" id="${msg.id}"/>
                 <app:body message="${message}" body="${message.body}" theBody="${theBody}" mailbox="${mailbox}" isPrintView="${true}" counter="${status.index}"/>
             </c:when>
             <c:when test="${appt.isNoBlob}">
-                <app:body message="${message}" body="${message.body}" theBody="${not empty appt.descriptionHtml ? appt.descriptionHtml : zm:cook(appt.description)}" mailbox="${mailbox}" isPrintView="${true}" counter="${status.index}"/>
+                <app:body message="${message}" body="${message.body}" theBody="${not empty appt.descriptionHtml ? appt.descriptionHtml : zm:textToHtml(appt.description)}" mailbox="${mailbox}" isPrintView="${true}" counter="${status.index}"/>
             </c:when>
             <c:otherwise>
                 ${theBody}
