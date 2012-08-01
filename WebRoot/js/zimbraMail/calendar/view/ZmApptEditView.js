@@ -2996,7 +2996,10 @@ function(ev) {
 
 ZmApptEditView.prototype.handleAttendeeChange =
 function(ev) {
-    AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._handleAttendeeField, ZmCalBaseItem.PERSON), 300);
+    if (this._schedActionId) {
+        AjxTimedAction.cancelAction(this._schedActionId);
+    }
+    this._schedActionId = AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._handleAttendeeField, ZmCalBaseItem.PERSON), 300);
 };
 
 ZmApptEditView.prototype._adjustAddrHeight =
