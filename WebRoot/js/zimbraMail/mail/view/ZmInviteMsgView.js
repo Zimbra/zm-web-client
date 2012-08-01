@@ -598,15 +598,28 @@ function(subs, sentBy, sentByAddr, obo) {
 
 ZmInviteMsgView.truncateBodyContent =
 function(content, isHtml) {
+    if (!content) return content;
 	var sepIdx = content.indexOf(ZmItem.NOTES_SEPARATOR);
 	if (sepIdx == -1) {
 		return content;
 	}
 	if (isHtml) {
 		//if it is a html content then just remove the content and preserve the html tags
-		//surrounding the content
-		var end = content.substring(0,sepIdx).lastIndexOf(">"); //end of the innermost html tag
-		return content.substring(0,end + 1) + content.substring(sepIdx+ZmItem.NOTES_SEPARATOR.length);
+		//surrounding the content.
+        content = content.replace("<div>"+ ZmItem.NOTES_SEPARATOR +"</div>", ZmItem.NOTES_SEPARATOR); // Striping div if ZmItem.NOTES_SEPARATOR is part of div.
+        content = content.replace(ZmItem.NOTES_SEPARATOR, "<div id='separatorId'>" + ZmItem.NOTES_SEPARATOR + "</div>");
+        var divEle = document.createElement("div");
+        divEle.innerHTML = content;
+        var node = Dwt.byId("separatorId",divEle) ;
+        if (node){
+            var parent = node.parentNode
+            // Removing all previousSiblings of node that contains ZmItem.NOTES_SEPARATOR
+            while(node.previousSibling){
+                parent.removeChild(node.previousSibling);
+            }
+            parent.removeChild(node);
+        }
+        return divEle.innerHTML;
 	}
 	return content.substring(sepIdx+ZmItem.NOTES_SEPARATOR.length);
 };
