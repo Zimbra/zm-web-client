@@ -984,7 +984,13 @@ function(src, newsrc){
 		var images = doc.getElementsByTagName('img');
 		if (images && images.length > 0) {
 			AjxUtil.foreach(images,function(img) {
-				if (img && img.src == src) {
+				try {
+					var imgsrc = img && img.src;
+				} catch(e) {
+					//IE8 throws invalid pointer exception for src attribute when src is a data uri
+					return;
+				}
+				if (imgsrc && imgsrc == src) {
 					img.src = newsrc;
 					img.removeAttribute("id");
 					img.removeAttribute("data-mce-src");
