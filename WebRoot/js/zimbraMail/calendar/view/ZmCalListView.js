@@ -222,7 +222,9 @@ function(ev, div) {
 	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
 		var itemIdx = data.index;
 		var field = this._headerList[itemIdx]._field;
-		this.setToolTipContent(this._getHeaderToolTip(field, itemIdx));
+        // Bug: 76489 - Added <span> as workaround to show tooltip as HTML
+        // The ideal fix should add a method in DwtControl to remove the tooltip
+		this.setToolTipContent('<span>'+this._getHeaderToolTip(field, itemIdx)+'</span>');
 	} else {
 		var item = this.getItemFromElement(div);
 		if (item) {
