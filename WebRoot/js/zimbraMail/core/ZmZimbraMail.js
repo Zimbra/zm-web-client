@@ -349,8 +349,6 @@ function(params) {
 				if (appCtxt.get(ZmSetting.TASKS_ENABLED, null, account)) {
 					this.handleTaskComponents();
 				}
-				var sc = appCtxt.getSearchController();
-				sc.getSearchToolbar().initAutocomplete();
 				this._appViewMgr.loadingView.setVisible(false);
 			});
 		this.addPostRenderCallback(callback, 0, 0, true);
@@ -723,9 +721,12 @@ function(params, result) {
 			appCtxt.inStartup = false;
 			this.notify(ZmAppEvent.POST_STARTUP);
 
+			var sc = appCtxt.getSearchController();
+			sc.getSearchToolbar().initAutocomplete();
+
 			// bug fix #31996
 			if (appCtxt.isOffline) {
-				appCtxt.getSearchController().resetSearchToolbar();
+				sc.resetSearchToolbar();
 			}
 
 			var contactListPkg = appCtxt.multiAccounts ? "GetContactsForAllAccounts" : "GetContacts";
