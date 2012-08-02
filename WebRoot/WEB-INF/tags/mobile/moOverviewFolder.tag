@@ -49,15 +49,7 @@
     <span class='td left' onclick='return zClickLink("FLDR${folder.id}")' width="94%">
         <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}">
             <c:if test="${ua.isiPad eq false}"><span class="Img Img${folder.type}">&nbsp;</span></c:if>
-            <c:choose>
-                <c:when test="${folder.hasUnread}">
-                    <c:set var="folderName" value="${label} (${folder.unreadCount})"/>
-                </c:when>
-                <c:otherwise>
-                    <c:set var="folderName" value="${label}"/>
-                </c:otherwise>
-            </c:choose>
-            ${truncatedLabel}
+            ${truncatedLabel} <c:if test="${folder.hasUnread}">&nbsp;(${folder.unreadCount})</c:if>
         </a>
     </span>
     <c:if test="${!folder.isSystemFolder}">
