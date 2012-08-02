@@ -523,14 +523,13 @@ A:visited { color: blue; }
 	@Text@  white-space:nowrap; overflow:hidden; border-bottom: 1px solid #8597a7; font-size:15px; font-weight:bold;
 }
 
-.companyName {
+.companyName,
+.companyName DIV {
 	font-size:15px; font-weight:bold;
 }
 
 .companyFolder {
-	font-size:13px;
-	white-space:nowrap; overflow:hidden;
-	width: 1%;
+	font-size:13px; overflow:hidden; white-space:nowrap; width: 1%;
 }
 
 .contactHeaderRow {
@@ -1372,26 +1371,45 @@ input[disabled] {
     width: auto !important;
 }
 
+RUBY, RUBY RT {
+	text-indent:0;
+}
+
 #IFNDEF GECKO
-rt, rp {font-size: 80%;}
+RUBY RT, 
+RUBY RP {
+	font-size:70%; 
+	font-weight:normal;
+}
+RUBY RT,
+RUBY RB {
+	margin-right:.7em;
+}
 #ENDIF
 
 #IFDEF GECKO
-ruby {display:inline-table;}
-ruby > rt, rtc {
-    display:table-caption;
-    text-align:center;
+RUBY {
+	display:inline-block;
 }
-ruby > rb, rbc, ruby > rt + rt, rtc + rtc {
-    display:table-row;
+RUBY RP {
+	display:none;
 }
-rb, rbc, rt, rtc {
-    white-space:nowrap;
+RUBY RT {
+	display:table-caption;
+	line-height:normal;
+	font-size:70%;
+	font-weight:normal;
+	text-align:center;
 }
-ruby > rt, rtc {
-    font-size:80%;
-    line-height:1.2em;
+RUBY RB {
+	display:table-cell;
+	line-height:1em;
 }
-rp
-{display:none;}
+RUBY RBC {
+	display:table-row;
+}
+RB, RT, 
+RBC, RTC { 
+	white-space:nowrap;
+}
 #ENDIF
