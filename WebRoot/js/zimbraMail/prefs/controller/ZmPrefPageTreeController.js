@@ -103,7 +103,8 @@ function(params) {
 			hi.setExpanded(true, true);
 		}
 	}
-	treeView.addSelectionListener(new AjxListener(this, this._handleTreeItemSelection, view));
+	treeView.addSelectionListener(this._handleTreeItemSelection.bind(this, view));
+	treeView.addPreSelectionListener(this._handleTreeItemPreSelection.bind(this, view));
 
 	return treeView;
 };
@@ -178,6 +179,29 @@ function(tabView, ev) {
 	var organizer = ev.item.getData(Dwt.KEY_OBJECT);
 	tabView.switchToTab(organizer && organizer.pageId);
 };
+
+ZmPrefPageTreeController.prototype._handleTreeItemPreSelection =
+function(tabView, ev) {
+
+	var organizer = ev.item.getData(Dwt.KEY_OBJECT);
+
+	if (organizer.nId != "PREF_PAGE_FILTERS") {
+		return true;
+	}
+
+	var serverVersion = appCtxt.get(ZmSetting.OFFLINE_REMOTE_SERVER_VERSION, null, organizer.account);
+	if (serverVersion && serverVersion.substr(0, 1) > 7) {
+		var dlg = appCtxt.getMsgDialog();
+		dlg.reset();
+		dlg.setMessage(ZmMsg.filtersDisabled, DwtMessageDialog.INFO_STYLE);
+		dlg.popup();
+		return false;
+	}
+
+	return true;
+
+};
+
 
 ZmPrefPageTreeController.prototype._handleMultiAccountItemSelection =
 function(ev, overview, treeItem, item) {
