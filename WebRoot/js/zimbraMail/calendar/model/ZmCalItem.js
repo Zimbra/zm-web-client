@@ -1829,10 +1829,15 @@ function(notes, isHtml) {
 		var idx = notes.indexOf(ZmItem.NOTES_SEPARATOR);
 		if (idx != -1) {
 			notes = notes.substr(idx + ZmItem.NOTES_SEPARATOR.length);
-			var junk = isHtml ? "</div><br>" : "\n\n";
-			if (notes.indexOf(junk) == 0) {
-				notes = notes.replace(junk, "");
-			}
+            if (isHtml) {
+                // If HTML content is generated from text content \n are replaced with br
+                // Remove the leading <br> added
+                notes = notes.replace(/^<br><br>/i, "");
+                notes = notes.replace(/^<\/div><br>/i, "");
+            }
+            else {
+                notes = notes.replace(/^\n\n/i, "");
+            }
 		}
 	}
 	return AjxStringUtil.trim(notes);
