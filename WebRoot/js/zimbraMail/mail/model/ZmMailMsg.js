@@ -2151,6 +2151,7 @@ function(msgNode) {
 	if (msgNode.inv) {
 		try {
 			this.invite = ZmInvite.createFromDom(msgNode.inv);
+            if (this.invite.isEmpty()) return;
 			this.invite.setMessageId(this.id);
 			// bug fix #18613
 			var desc = this.invite.getComponentDescription();
