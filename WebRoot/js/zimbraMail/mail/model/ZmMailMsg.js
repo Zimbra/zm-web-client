@@ -908,15 +908,21 @@ function(contentType, callback, result) {
 	var response = result.getResponse().GetMsgResponse;
 	var altPart = this._topPart && this._topPart.addAlternativePart(response.m[0].mp[0], contentType, 0);
 	if (altPart) {
+		var found = false;
 		for (var i = 0; i < this._bodyParts.length; i++) {
 			var bp = this._bodyParts[i];
-			if (!bp.isZmMimePart) {
-				bp[altPart.contentType] = altPart;
+			// if we have a JSON version of this part, replace it
+			if (bp.ct == contentType && !bp.isZmMimePart) {
+				this._bodyParts[i] = altPart;
+				found = true;
 				break;
 			}
 		}
+		if (!found) {
+			this._bodyParts.push(altPart);
+		}
 	}
-	
+		
 	if (callback) {
 		callback.run();
 	}
