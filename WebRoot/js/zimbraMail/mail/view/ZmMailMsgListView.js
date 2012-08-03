@@ -394,12 +394,11 @@ function(columnItem, bSortAsc, callback) {
 
 	var query;
 	var list = this.getList();
-	var controller = AjxDispatcher.run((this._mode == ZmId.VIEW_CONV) ? "GetConvController" : "GetTradController");
 	if (this._columnHasCustomQuery(columnItem)) {
-		query = this._getSearchForSort(columnItem._sortable, controller);
+		query = this._getSearchForSort(columnItem._sortable, this._controller);
 	}
 	else if (list && list.size() > 1 && this._sortByString) {
-		query = controller.getSearchString();
+		query = this._controller.getSearchString();
 	}
 
 	var queryHint = this._controller.getSearchStringHint();
@@ -413,10 +412,10 @@ function(columnItem, bSortAsc, callback) {
 			sessionId:		this._controller._currentSearch.sessionId
 		}
 		if (this._mode == ZmId.VIEW_CONV) {
-			var conv = controller.getConv();
+			var conv = this._controller.getConv();
 			if (conv) {
-				var respCallback = new AjxCallback(this, this._handleResponseSortColumn, [conv, columnItem, controller, callback]);
-				params.getFirstMsg = controller.isReadingPaneOn();
+				var respCallback = new AjxCallback(this, this._handleResponseSortColumn, [conv, columnItem, this._controller, callback]);
+				params.getFirstMsg = this._controller.isReadingPaneOn();
 				conv.load(params, respCallback);
 			}
 		} else {
