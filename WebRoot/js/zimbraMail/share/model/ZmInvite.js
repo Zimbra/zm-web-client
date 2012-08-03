@@ -502,16 +502,17 @@ function(compNum) {
 	var desc = comp.descHtml;
 	var content = desc && desc[0]._content || null;
 	if (!content) {
-		var comment = this.getComponentComment();
-		content = comment && AjxStringUtil.convertToHtml(comment);
-	}
-	if (!content) {
 		var txtContent = comp.desc;
-		txtContent = (txtContent && txtContent[0]._content) || null;
-		if (!txtContent) {
+        txtContent = (txtContent && txtContent[0]._content) || null;
+        content = txtContent ? AjxStringUtil.convertToHtml(txtContent) : null;
+		if (!content) {
 			content = this.getApptSummary(true);
 		}
 	}
+    if (!content) {
+        var comment = this.getComponentComment();
+        content = comment && AjxStringUtil.convertToHtml(comment);
+    }
 	return content;
 };
 
