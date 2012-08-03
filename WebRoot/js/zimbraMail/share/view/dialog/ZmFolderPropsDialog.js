@@ -170,7 +170,8 @@ function(event, share) {
 	tmpShare.link.perm = share.link.perm;
 
 	if (share.grantee.type == "guest") {
-        tmpShare._sendShareNotification(tmpShare.grantee.email, tmpShare.link.id);
+        // Pass action as ZmShare.NEW even for resend for external user
+        tmpShare._sendShareNotification(tmpShare.grantee.email, tmpShare.link.id, "", ZmShare.NEW);
 	}
     else {
 	    tmpShare.sendMessage(ZmShare.NEW);
