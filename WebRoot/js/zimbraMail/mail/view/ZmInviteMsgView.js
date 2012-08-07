@@ -282,6 +282,7 @@ function(dayViewCallback) {
 
 ZmInviteMsgView.prototype._getInviteDate =
 function() {
+	if (!this._invite) { return null; }
     var inviteDate = this._invite.getServerStartDate(null, true);
     // Not sure when null inviteDate happens (probably a bug) but this is defensive
     // check for bug 51754
