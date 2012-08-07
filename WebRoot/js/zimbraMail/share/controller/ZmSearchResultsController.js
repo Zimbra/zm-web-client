@@ -115,6 +115,7 @@ function(search, resultsCtlr) {
 					resultsApp:	resultsCtlr.getApp().getName()
 				});
 	}
+	this._filterPanel.reset();
 	
 	this._resultsController = resultsCtlr;
 	if (appCtxt.getCurrentViewId() == this._currentViewId) {

@@ -367,6 +367,19 @@ function(id, newTerms, noPopdown) {
 	}
 };
 
+/**
+ * Resets the filter panel by unchecking the basic filter checkboxes.
+ */
+ZmSearchResultsFilterPanel.prototype.reset =
+function() {
+	for (var id in this._checkbox) {
+		var cb = this._checkbox[id];
+		if (cb) {
+			cb.setSelected(false);
+		}
+	}
+};
+
 ZmSearchResultsFilterPanel.prototype._areExclusiveTerms =
 function(termA, termB, hasOr) {
 	termA = this._translateTerm(termA);
