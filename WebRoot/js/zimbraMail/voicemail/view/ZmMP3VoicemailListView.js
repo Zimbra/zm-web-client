@@ -54,7 +54,7 @@ function(list, noResultsOk, doAdd) {
 ZmMP3VoicemailListView.prototype.displayPlayer =
 function(ev) {
 	if(!this.player.hasFlash) {
-		return;
+		return false;
 	}
 	var selection = this.getSelection();
 	if (selection.length == 1) {
@@ -62,11 +62,13 @@ function(ev) {
 		var row = this._getElement(voicemail, ZmItem.F_ITEM_ROW);
 		var cellId = row.id.replace(ZmItem.F_ITEM_ROW, ZmVoiceListView.F_DURATION);
 		var cell = document.getElementById(cellId);
-		if(cell) {
-			this.player.playAt(Dwt.toWindow(cell), voicemail, this.clickedOnPlayBtn(ev));
+		if(cell && (this.clickedOnPlayBtn(ev) || ev.detail == DwtListView.ITEM_DBL_CLICKED)) {
+			this.player.playAt(Dwt.toWindow(cell), voicemail, true);
 			this._hideDurationCell(voicemail.id);
+			return true;
 		}
 	}
+	return false;
 };
 
 ZmMP3VoicemailListView.prototype.clickedOnPlayBtn =

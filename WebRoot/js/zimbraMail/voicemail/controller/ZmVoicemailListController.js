@@ -146,7 +146,7 @@ function(parent, num) {
 			}
 		}
 		parent.enable(ZmOperation.MARK_HEARD, hasUnheard);
-		parent.enable(ZmOperation.MARK_UNHEARD, hasHeard);
+		parent.enable(ZmOperation.MARK_UNHEARD, hasHeard && !this._isUnReadOpDisabled());
 
 		parent.enable(ZmOperation.DOWNLOAD_VOICEMAIL, (num == 1));
 
@@ -161,6 +161,12 @@ function(parent, num) {
 			parent.setItemVisible(ZmOperation.DELETE_WITHOUT_SHORTCUT, false);
 		}
 	}
+};
+ZmVoicemailListController.prototype._isUnReadOpDisabled =
+function(){
+    var voiceApp = appCtxt.getApp(ZmApp.VOICE);
+    var UCProvider = voiceApp._UCProvider;
+    return UCProvider.disableUnreadOp && UCProvider.disableUnreadOp();
 };
 
 ZmVoicemailListController.prototype.getKeyMapName =
@@ -202,7 +208,7 @@ function(actionCode) {
 			this._markHeardListener();
 			break;
 		case ZmKeyMap.MARK_UNHEARD:
-			this._markUnheardListener();
+            if (!this._isUnReadOpDisabled()) this._markUnheardListener();
 			break;
 		default:
 			return ZmVoiceListController.prototype.handleKeyAction.call(this, actionCode);
@@ -408,7 +414,8 @@ function(voicemail) {
 ZmVoicemailListController.prototype._selectListener = 
 function(ev) {
 	if(ZmVoiceApp.audioType == ZmVoiceApp.AUDIO_MP3_FORMAT) {
-		this._getView().displayPlayer(ev);
+		var playing = this._getView().displayPlayer(ev);
+		if (playing) this._markHeardListener(ev);
 		return;
 	}
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
