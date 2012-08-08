@@ -193,11 +193,10 @@ function(all) {
 ZmAppCtxt.prototype.getSettings =
 function(account) {
 	var al = this.accountList;
-	var id = account
-		? account.id
-		: al.activeAccount ? al.activeAccount.id : ZmAccountList.DEFAULT_ID;
 
-	var acct = al.getAccount(id);
+	var acct = account || al.activeAccount || al.mainAccount
+			|| al.getAccount(ZmAccountList.DEFAULT_ID); //Probably doesn't ever happen, and if it does, returns null. Might be some historical artifact - did we ever have account with id "main"? I'm still afraid to remove it without being sure it won't cause regression.
+
 	return acct && acct.settings;
 };
 
@@ -241,7 +240,7 @@ function(id, key, account) {
 
 	// for offline, global settings always come from the "local" parent account
 	var acct = (context.multiAccounts && ZmSetting.IS_GLOBAL[id])
-		? context.accountList.mainAccount : (account || context.accountList.mainAccount);
+		? context.accountList.mainAccount : account;
 	return context.getSettings(acct).get(id, key);
 };
 
