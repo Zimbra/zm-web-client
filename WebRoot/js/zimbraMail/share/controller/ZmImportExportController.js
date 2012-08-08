@@ -443,10 +443,10 @@ function(params) {
 
 	var formParams = { "fmt" : type };
 	if (isCSV) { formParams[type+"fmt"] = subType; }
+	var startDate = params.start ? AjxDateUtil.simpleParseDateStr(params.start) : null;
+	var endDate = params.end ? AjxDateUtil.simpleParseDateStr(params.end) : null;
 	if (isTGZ && params.views) { formParams["types"] = params.views; }
         if (params.views == "appointment"){
-            var startDate = params.start ? AjxDateUtil.simpleParseDateStr(params.start) : null;
-            var endDate = params.end ? AjxDateUtil.simpleParseDateStr(params.end) : null;
             if(startDate) {
                 formParams["start"] = startDate.getTime();
             }
@@ -455,8 +455,10 @@ function(params) {
                 formParams["end"] = endDate.getTime();
             }
         } else {
-                if (isTGZ && params.start){ params.searchFilter = (params.searchFilter) ? params.searchFilter + " AND " : "" + "after:" + params.start; }
-                if (isTGZ && params.end){ params.searchFilter = ((params.searchFilter) ? params.searchFilter + " AND " : "") + "before:" + params.end; }
+            var startDateFormatted = (startDate) ? AjxDateUtil._getMonth(startDate) + "/" +  AjxDateUtil._getDate(startDate) + "/" + AjxDateUtil._getFullYear(startDate) : null;
+            var endDateFormatted = (endDate) ? AjxDateUtil._getMonth(endDate) + "/" +  AjxDateUtil._getDate(endDate) + "/" + AjxDateUtil._getFullYear(endDate) : null;
+            if (isTGZ && startDateFormatted){ params.searchFilter = (params.searchFilter) ? params.searchFilter + " AND " : "" + "after:" + startDateFormatted; }
+            if (isTGZ && endDateFormatted){ params.searchFilter = ((params.searchFilter) ? params.searchFilter + " AND " : "") + "before:" + endDateFormatted; }
         }
 	if (isTGZ && params.searchFilter) { formParams["query"] = params.searchFilter; }
 	if (params.skipMeta) { formParams["meta"] = "0"; }
