@@ -290,6 +290,12 @@ function() {
 	ZmMailItemView.prototype.dispose.apply(this, arguments);
 };
 
+ZmConvView2.prototype._removeMessageView =
+function(msgId) {
+	AjxUtil.arrayRemove(this._msgViewList, msgId);
+	this._msgViews[msgId] = null;
+	delete this._msgViews[msgId];
+};
 
 ZmConvView2.prototype._resize =
 function(scrollMsgView) {
@@ -1741,6 +1747,8 @@ function() {
 ZmMailMsgCapsuleView.prototype._setExpansion =
 function(expanded) {
 
+	if (this.isDisposed()) { return; }
+
 	var showCalInConv = appCtxt.get(ZmSetting.CONV_SHOW_CALENDAR);
 	this._expanded = expanded;
 	if (this._expanded && !this._msgBodyCreated) {
@@ -1883,6 +1891,7 @@ function(ev) {
 	}
 	else if (ev.event == ZmEvent.E_DELETE) {
 		this.dispose();
+		this._convView._removeMessageView(this._msg.id);
 		this._convView._header._setInfo();
 	}
 	else if (ev.event == ZmEvent.E_MOVE) {
