@@ -70,13 +70,13 @@ ZmMsgController.prototype.getDefaultViewType = ZmMsgController.getDefaultViewTyp
  * @param {Boolean}				hidePagination		if <code>true</code>, hide the pagination buttons
  */
 ZmMsgController.prototype.show = 
-function(msg, parentController, callback, markRead, hidePagination) {
+function(msg, parentController, callback, markRead, hidePagination, forceLoad, noTruncate) {
 	this.setMsg(msg);
 	this._parentController = parentController;
 	//if(msg.list) {
         this.setList(msg.list);
     //}
-	if (!msg._loaded) {
+	if (!msg._loaded || forceLoad) {
 		var respCallback = new AjxCallback(this, this._handleResponseShow, [callback, hidePagination]);
 		if (msg._loadPending) {
 			// override any local callback if we're being launched by double-pane view,
@@ -84,7 +84,7 @@ function(msg, parentController, callback, markRead, hidePagination) {
 			msg._loadCallback = respCallback;
 		} else {
 			markRead = markRead || (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
-			msg.load({callback:respCallback, markRead:markRead});
+			msg.load({callback:respCallback, markRead:markRead, forceLoad:forceLoad, noTruncate:noTruncate});
 		}
 	} else {
 		this._handleResponseShow(callback, hidePagination);

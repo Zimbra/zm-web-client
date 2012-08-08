@@ -172,7 +172,7 @@ function() {
 ZmMailMsgView.prototype.set =
 function(msg, force, dayViewCallback) {
 	
-	if (!force && this._msg && msg && (this._msg == msg)) { return; }
+	if (!force && this._msg && msg && !msg.force && (this._msg == msg)) { return; }
 
 	var oldMsg = this._msg;
 	this.reset();
@@ -188,6 +188,7 @@ function(msg, force, dayViewCallback) {
 		return;
 	}
 
+	msg.force = false;
 	var respCallback = this._handleResponseSet.bind(this, msg, oldMsg, dayViewCallback);
 	this._renderMessage(msg, contentDiv, respCallback);
 	this.noTab = AjxEnv.isIE;
@@ -2396,10 +2397,18 @@ function(tag) {
 
 ZmMailMsgView.prototype._handleMsgTruncated =
 function() {
-	this._msg.viewEntireMessage = true;	// remember so we reply to entire msg
-	this._msg = null;					// so that this view refreshes
+
 	// redo selection to trigger loading and display of entire msg
-	this._controller._setSelectedItem({noTruncate: true, forceLoad: true, markRead: false});
+	this._msg.viewEntireMessage = true;	// remember so we reply to entire msg
+	this._msg.force = true;				// make sure view re-renders msg
+	if (this._controller._setSelectedItem) {
+		// list controller
+		this._controller._setSelectedItem({noTruncate: true, forceLoad: true, markRead: false});
+	}
+	else if (this._controller.show) {
+		// msg controller
+		this._controller.show(this._msg, this._controller, null, false, false, true, true);
+	}
 	
 	Dwt.setVisible(this._msgTruncatedId, false);
 };
