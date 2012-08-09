@@ -473,9 +473,13 @@ function(flag, value) {
 	return false;
 };
 
+/**
+ * Checks to see if a change in the value of a msg flag changes the value of the conv's flag. That will happen
+ * for the first msg to get an off flag turned on, or when the last msg to have an on flag turns it off.
+ */
 ZmConv.prototype._checkFlags = 
 function(flags) {
-	var msgs = this.msgs.getArray();
+
 	var convOn = {};
 	var msgsOn = {};
 	for (var i = 0; i < flags.length; i++) {
