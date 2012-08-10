@@ -241,6 +241,20 @@ ZmCalItem.prototype.getOrigStartDate 	= function() { return this._origStartDate 
 ZmCalItem.prototype.getOrigStartTime 	= function() { return this.getOrigStartDate().getTime(); };
 
 /**
+ * Gets the original end date.
+ *
+ * @return	{Date}	the original end date
+ */
+ZmCalItem.prototype.getOrigEndDate 	= function() { return this._origEndDate || this.endDate; };
+
+/**
+ * Gets the original end time.
+ *
+ * @return	{Date}	the original end time
+ */
+ZmCalItem.prototype.getOrigEndTime 	= function() { return this.getOrigEndDate().getTime(); };
+
+/**
  * Gets the original calendar item.
  *
  * @return	{ZmCalItem}	the original calendar item
@@ -414,6 +428,9 @@ function() {
  */
 ZmCalItem.prototype.setEndDate =
 function(endDate, keepCache) {
+    if (this._origEndDate == null && this.endDate != null && this.endDate != "") {
+        this._origEndDate = new Date(this.endDate.getTime());
+    }
 	this.endDate = new Date(endDate instanceof Date ? endDate.getTime(): endDate);
 	if (!keepCache)
 		this._resetCached();

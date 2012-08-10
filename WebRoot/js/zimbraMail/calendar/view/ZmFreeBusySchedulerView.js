@@ -1608,15 +1608,18 @@ ZmFreeBusySchedulerView.prototype._handleResponseFreeBusy =
 function(params, result) {
 
     this._freeBusyRequest = null;
-
-    this._processDateInfo(this._dateInfo);
+    var dateInfo = this._dateInfo;
+    this._processDateInfo(dateInfo);
     // Adjust start and end time by 1 msec, to avoid fencepost problems when detecting conflicts
     var apptStartTime = this._startDate.getTime(),
         apptEndTime = this._endDate.getTime(),
         apptConflictStartTime = apptStartTime+ 1,
         apptConflictEndTime   = apptEndTime-1,
         appt = this._appt,
-        orgEmail = appt && !appt.inviteNeverSent ? appt.organizer : null;
+        orgEmail = appt && !appt.inviteNeverSent ? appt.organizer : null,
+        apptOrigStartTime = appt ? appt.getOrigStartTime() : null,
+        apptOrigEndTime = appt ? (dateInfo.isAllDay ? appt.getOrigEndTime() - 1 : appt.getOrigEndTime()) : null,
+        apptTimeChanged = appt ? !(apptOrigStartTime == apptStartTime && apptOrigEndTime == apptEndTime) : false;
 
     for (var i = 0; i < params.emails.length; i++) {
 		var email = params.emails[i];
@@ -1631,8 +1634,15 @@ function(params, result) {
             table = sched ? document.getElementById(sched.dwtTableId) : null;
 
         if (usr && (ptst == ZmCalBaseItem.PSTATUS_ACCEPT || email == orgEmail)) {
-            if (!usr.b) { usr.b = []; }
-            usr.b.push({s:apptStartTime, e: apptEndTime});
+            if (!usr.b) {
+                usr.b = [];
+            }
+            if (apptTimeChanged) {
+                usr.b.push({s:apptOrigStartTime, e: apptOrigEndTime});
+            }
+            else {
+                usr.b.push({s:apptStartTime, e: apptEndTime});
+            }
         }
 
 		if (table) {
