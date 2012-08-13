@@ -100,10 +100,31 @@ function(resp, includeContactsWithNoEmail) {
  */
 ZmContactsHelper._addContactToList = 
 function(list, contact, addr, isGroup) {
-	
+
+	var email = ZmContactsHelper._wrapContact(contact, addr, isGroup);  
+	list.push(email);
+};
+
+/**
+ * wrapps the contact inside a AjxEmailAddress object, and adds a couple extra fields to the AjxEmailAddress instance (value, contact, icon [which I'm not sure is used])
+ *
+ * @param contact
+ * @param addr {String} optional.
+ * @param isGroup
+ */
+ZmContactsHelper._wrapContact =
+function(contact, addr, isGroup) {
+
+	addr = addr || contact.getEmail();
 	var fileAs = contact.getFileAs();
-	var name = (fileAs != addr) ? fileAs : "";
-	var email = new AjxEmailAddress(addr, null, name, null, isGroup);
+	var name = (fileAs != addr) ? fileAs : "";  //todo ??? this is weird.
+	var	type = contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
+	var	value = contact.isGal ? (contact.ref || contact.id) : contact.id;  //defaulting to contact.id in the gal case since from GetContactsResponse the ref is not returned and we can end up with it cached without the ref. Probably need to fix that.
+	var displayName = contact.getFullNameForDisplay();
+
+	var email = new AjxEmailAddress(addr, type, name, displayName, isGroup);
+
+	email.value = value;
 	email.id = Dwt.getNextId();
 	email.__contact = contact;
 	email.icon = contact.getIcon();
@@ -113,8 +134,23 @@ function(list, contact, addr, isGroup) {
 		var ac = window.parentAppCtxt || window.appCtxt;
 		ac.setIsExpandableDL(addr, email.canExpand);
 	}
-	list.push(email);
+	return email;
 };
+
+/**
+ * wrapps the inline address (there's no real ZmContact object) inside AjxEmailAddress and adds the value attribute to it.
+ * this is so we treat real contacts and inline contacts consistently throughout the rest of the code.
+ *
+ * @param addr  {String} - the inline email address.
+ */
+ZmContactsHelper._wrapInlineContact =
+function(addr) {
+	var email = new AjxEmailAddress(addr, ZmContact.GROUP_INLINE_REF, addr, null, false);
+	email.value = addr;
+	email.id = Dwt.getNextId();
+	return email;
+};
+
 
 /**
  * The items are AjxEmailAddress objects

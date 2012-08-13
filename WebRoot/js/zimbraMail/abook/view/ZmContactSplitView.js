@@ -458,7 +458,7 @@ function(contact, isGal, oldContact, expandDL, isBack) {
 		if (contact.isDistributionList()) {
 			var dlInfo = subs.dlInfo = contact.dlInfo;
 		}
-		subs.groupMembers = contact.getGroupMembersObj();
+		subs.groupMembers = contact.getAllGroupMembers();
 		subs.findObjects = AjxCallback.simpleClosure(this.__findObjects, this, this._groupObjectManager);
 
 		this._resetVisibility(true);
@@ -837,31 +837,27 @@ function(data) {
 		return "";
 	}
 	for (var i = 0; i < data.groupMembers.length; i++) {
+		var member = data.groupMembers[i];
 		var itemListData = {};
-		var type = data.groupMembers[i].type;
-		if (type == ZmContact.GROUP_GAL_REF || type == ZmContact.GROUP_CONTACT_REF) {
-			var contact = ZmContact.getContactFromCache(data.groupMembers[i].value);
-			if (contact) {
-				itemListData.imageUrl = contact.getImageUrl();
-				itemListData.imgClassName = "Person_48";
-				itemListData.email = data.findObjects(contact.getEmail(), ZmObjectManager.EMAIL, true);
-				itemListData.title = data.findObjects(contact.getAttr(ZmContact.F_jobTitle), ZmObjectManager.TITLE, true);
-				itemListData.phone = data.findObjects(contact.getPhone(), ZmObjectManager.PHONE, true);
-				var isPhonetic  = appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS);
-                var fullnameHtml= contact.getFullNameForDisplay(isPhonetic);
-				if (!isPhonetic) {
-					fullnameHtml = AjxStringUtil.htmlEncode(fullnameHtml);
-				}
-				itemListData.fullName = fullnameHtml;
+		var contact = member.__contact;
+		if (contact) {
+			itemListData.imageUrl = contact.getImageUrl();
+			itemListData.imgClassName = contact.getIconLarge();
+			itemListData.email = data.findObjects(contact.getEmail(), ZmObjectManager.EMAIL, true);
+			itemListData.title = data.findObjects(contact.getAttr(ZmContact.F_jobTitle), ZmObjectManager.TITLE, true);
+			itemListData.phone = data.findObjects(contact.getPhone(), ZmObjectManager.PHONE, true);
+			var isPhonetic = appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS);
+			var fullnameHtml = contact.getFullNameForDisplay(isPhonetic);
+			if (!isPhonetic) {
+				fullnameHtml = AjxStringUtil.htmlEncode(fullnameHtml);
 			}
-			
-			html.push(AjxTemplate.expand("abook.Contacts#SplitView_group", itemListData));
+			itemListData.fullName = fullnameHtml;
 		}
 		else {
 			itemListData.imgClassName = "PersonInline_48";
-			itemListData.email = data.findObjects(data.groupMembers[i].value, ZmObjectManager.EMAIL, true);
-			html.push(AjxTemplate.expand("abook.Contacts#SplitView_group", itemListData));
+			itemListData.email = data.findObjects(member.value, ZmObjectManager.EMAIL, true);
 		}
+		html.push(AjxTemplate.expand("abook.Contacts#SplitView_group", itemListData));
 	}
 	return html.join("");
 	

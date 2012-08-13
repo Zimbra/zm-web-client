@@ -369,7 +369,7 @@ function(fldId, opts) {
 ZmGroupView.prototype.isEmpty =
 function(checkEither) {
 	var groupName = this._getGroupName();
-	var members = ( this._groupListView.getList() && this._groupListView.getList().size() > 0 );
+	var members = ( this._groupMembersListView.getList() && this._groupMembersListView.getList().size() > 0 );
 
 	return checkEither
 		? (groupName == "" || !members )
@@ -542,7 +542,7 @@ function(x, y, width, height) {
 	if(this._addNewField){
 		Dwt.setSize(this._addNewField, Dwt.DEFAULT, 50);
 	}
-	this._groupListView.setSize(Dwt.DEFAULT, height-150);
+	this._groupMembersListView.setSize(Dwt.DEFAULT, height-150);
 	var fudge = (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED))
 		? 185 : 160;
 	this._listview.setSize(Dwt.DEFAULT, height-fudge-(this._addNewField? 100 : 0));
@@ -554,7 +554,7 @@ function() {
 		this._searchField[fieldId].value = "";
 	}
 	this._listview.removeAll(true);
-	this._groupListView.removeAll(true);
+	this._groupMembersListView.removeAll(true);
 	this._addButton.setEnabled(false);
 	this._addAllButton.setEnabled(false);
 	this._prevButton.setEnabled(false);
@@ -739,11 +739,11 @@ function() {
 	this._listview._initialized = true;
 
 	// add list view for group memebers
-	this._groupListView = new ZmGroupMembersListView(this);
-	this._groupListView.reparentHtmlElement(this._htmlElId + "_groupMembers");
-	this._groupListView.addSelectionListener(new AjxListener(this, this._groupMembersSelectionListener));
-	this._groupListView.setUI(null, true);
-	this._groupListView._initialized = true;
+	this._groupMembersListView = new ZmGroupMembersListView(this);
+	this._groupMembersListView.reparentHtmlElement(this._htmlElId + "_groupMembers");
+	this._groupMembersListView.addSelectionListener(new AjxListener(this, this._groupMembersSelectionListener));
+	this._groupMembersListView.setUI(null, true);
+	this._groupMembersListView._initialized = true;
 			
 	var addListener = new AjxListener(this, this._addListener);
 	// add "Add" button
@@ -969,27 +969,7 @@ function() {
 
 ZmGroupView.prototype._getGroupMembers =
 function() {
-	var addrs = [];
-	var data = this._groupListView._data;
-	if (data) {
-		for (var key in data) {
-			var contact = data[key];
-			if (contact && contact.type == DwtListView.TYPE_LIST_ITEM) {
-			  if (contact.item.__contact && contact.item .__contact.isGal) {
-			    addrs.push({type : ZmContact.GROUP_GAL_REF, value : contact.item.__contact.ref});		  
-			  }
-			  else if (contact.item.__contact && contact.item.__contact.id) {
-				  addrs.push({type : ZmContact.GROUP_CONTACT_REF, value : contact.item.__contact.id});
-			  }
-			  else if (contact.item) {
-				  addrs.push({type : ZmContact.GROUP_INLINE_REF, value : contact.item});
-			  }
-			}
-			
-		}
-	}
-	
-	return addrs.length > 0 ? addrs : null;
+	return this._groupMembersListView.getList().getArray();
 };
 
 ZmGroupView.prototype._getFolderId =
@@ -999,18 +979,11 @@ function() {
 
 ZmGroupView.prototype._setGroupMembers =
 function() {
-	var members = this._contact.getGroupMembersObj();
-	if (members) {
-		var membersList = [];
-		for (var i=0; i<members.length; i++) {
-			var arr = AjxEmailAddress.parseEmailString(members[i].emailAddr);
-			if (arr && arr.good.getArray()) {
-				membersList.push(members[i]);
-			}
-		}
-
-		this._setGroupMembersListView(membersList, false);
+	var members = this._contact.getAllGroupMembers();
+	if (!members) {
+		return;
 	}
+	this._groupMembersListView.set(AjxVector.fromArray(members)); //todo?
 };
 
 ZmGroupView.prototype._setGroupName =
@@ -1176,11 +1149,11 @@ function() {
 
 ZmGroupView.prototype._groupMembersSelectionListener =
 function(ev){
-	var selection = this._groupListView.getSelection();
-	if (ev && ev.target && this._groupListView.delButtons[ev.target.id]) {
+	var selection = this._groupMembersListView.getSelection();
+	if (ev && ev.target && this._groupMembersListView.delButtons[ev.target.id]) {
 		this._delListener(ev);	
 	}
-	else if (ev && ev.target && this._groupListView.quickAddButtons[ev.target.id]) {
+	else if (ev && ev.target && this._groupMembersListView.quickAddButtons[ev.target.id]) {
 		if (AjxUtil.isArray(selection)) {
 			var value = selection[0].value || selection[0];
 			this.quickAddContact(value);
@@ -1220,60 +1193,28 @@ function(ev) {
 ZmGroupView.prototype._delListener =
 function(ev){
 
-	if (ev.dwtObj) {
-		var items = this._groupListView.getSelection();
-		var list = this._groupListView.getSelectedItems();
+	var items = this._groupMembersListView.getSelection();
+	var selectedDomItems = this._groupMembersListView.getSelectedItems();
 
-		while (list.get(0)) {
-			this._groupListView.removeItem(list.get(0));
-			list = this._groupListView.getSelectedItems();
-		}
+	while (selectedDomItems.get(0)) {
+		this._groupMembersListView.removeItem(selectedDomItems.get(0));
+	}
 
-		for (var i = 0;  i < items.length; i++) {
-			this._groupListView.getList().remove(items[i]);
-			var type = items[i].type;
-			var value = items[i].value;
-			if (type != ZmContact.GROUP_INLINE_REF && type != ZmContact.GROUP_CONTACT_REF && type != ZmContact.GROUP_GAL_REF) {
-				if (items[i].__contact) {
-					type = items[i].__contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
-				}
-				else {
-					type = ZmContact.GROUP_INLINE_REF;
-				}	
-			} 
-			
-			if (items[i].value && !this._groupMemberMods[items[i].value]) {
-				this._groupMemberMods[items[i].value] = {op : "-", value : items[i].value, email: items[i].address, type : type};
-			}
-			else {
-				//contact added but not yet saved
-				if (items[i].__contact) {
-					value = items[i].__contact.getId(!items[i].__contact.isGal);		
-				}
-				else {
-					value = items[i]; //inline added but then deleted
-				}
-				this._groupMemberMods[value] = {};
-			}
-			
+	for (var i = 0;  i < items.length; i++) {
+		var item = items[i];
+		this._groupMembersListView.getList().remove(item);
+		var contact = item.__contact;
+		var type = item.type;
+		var value = item.value;
+
+		//var value = item.value || (contact ? contact.getId(!contact.isGal) : item);
+
+		if (!this._groupMemberMods[value]) {
+			this._groupMemberMods[value] = {op : "-", value : value, email: item.address, type : type};
 		}
-	} else {
-		this._groupMemberMods = {}; //clear the mods since we are removing all and reload it
-		var list = this._groupListView.getList().getArray();
-		for (var i=0; i< list.length; i++) {
-			var type = list[i].type;
-			if (type != ZmContact.GROUP_INLINE_REF && type != ZmContact.GROUP_CONTACT_REF && type != ZmContact.GROUP_GAL_REF) {
-				if (list[i].__contact) {
-					type = list[i].__contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;	
-				}
-				else {
-					type = ZmContact.GROUP_INLINE_REF;
-				}
-			}
-			this._groupMemberMods[list[i].value] = {op : "-", value : list[i].value, type : type};		
+		else {
+			this._groupMemberMods[value] = {};
 		}
-		this._groupListView.removeAll(true);
-		this._groupListView.getList().removeAll();
 	}
 
 	this._groupMembersSelectionListener();
@@ -1285,16 +1226,14 @@ function(ev){
 	var emailStr = this._addNewField.value;
 	if (!emailStr || emailStr == '') { return; }
 
-	var addrs = AjxEmailAddress.parseEmailString(emailStr);
-	if (addrs && addrs.all) {
-		var goodArry = addrs.all.getArray();
-		var goodAddr = [];
-		for (var i = 0; i < goodArry.length; i++) {
-			goodAddr[i] = goodArry[i].toString();
-		}
-		ZmGroupView._dedupe(goodAddr, this._groupListView.getList().getArray());
-		this._setGroupMembersListView(goodAddr, true);
+	var allArray = AjxEmailAddress.parseEmailString(emailStr).all.getArray(); //in bug 38907 it was changed to "all" instead of "good". No idea why. So we can now add bad email addresses. Is that on purpose?
+	var addrs = [];
+	for (var i = 0; i < allArray.length; i++) {
+		addrs.push(ZmContactsHelper._wrapInlineContact(allArray[i].address)); //might be better way to do this, we recreate the AjxEmailAddress just to add the "value" and "type" and maybe "id" attributes.
 	}
+
+	addrs = ZmGroupView._dedupe(addrs, this._groupMembersListView.getList().getArray());
+	this._addToMembers(addrs);
 
 	this._addNewField.value = '';
 };
@@ -1315,123 +1254,93 @@ function(list) {
 	// we have to walk the results in case we hit a group which needs to be split
 	var items = [];
 	for (var i = 0; i < list.length; i++) {
-		if (list[i].isGroup) {
-			if (list[i].__contact) {
-				var groupMembers = list[i].__contact.attr[ZmContact.F_groups];
-				if (groupMembers) {
-					for (var j = 0; j < groupMembers.length; j++) {
-						var id = groupMembers[j].value;
-						var contact = ZmContact.getContactFromCache(id);
-						if (contact) {
-							var obj = {__contact : contact, address: contact.getEmail()};							
-						}
-						else {
-							var obj = id;
-						}
-						items.push(obj);
-					}	
+		var item = list[i];
+		var contact = item.__contact;
+		if (item.isGroup && !contact.isDistributionList()) {
+			var groupMembers = contact.attr[ZmContact.F_groups];
+			for (var j = 0; j < groupMembers.length; j++) {
+				var value = groupMembers[j].value;
+				var memberContact = ZmContact.getContactFromCache(value);
+				var obj;
+				if (memberContact) {
+					obj = ZmContactsHelper._wrapContact(memberContact);
 				}
 				else {
-					var contact = list[i].__contact;
-                    if (contact && contact.isGal) {
-                        appCtxt.cacheSet(contact.ref, contact);
-                    }
-					var obj = {};
-					obj.__contact = contact;
-					obj.address = list[i].address;
-					items.push(obj);
+					obj = ZmContactsHelper._wrapInlineContact(value);
 				}
-			}	
-		} else {
+				items.push(obj);
+			}
+		}
+		else {
 			items.push(list[i]);
-            if (list[i].__contact && list[i].__contact.isGal) {
-                appCtxt.cacheSet(list[i].__contact.ref, list[i].__contact); 
+            if (contact.isGal) {
+                appCtxt.cacheSet(contact.ref, contact); //not sure why we do this. just seems like maybe we should do this elsewhere in more consistent way. 
             }
 		}
 	}
 
-	ZmGroupView._dedupe(items, this._groupListView.getList().getArray());
+	items = ZmGroupView._dedupe(items, this._groupMembersListView.getList().getArray());
 	if (items.length > 0) {
-		this._setGroupMembersListView(items, true);
+		this._addToMembers(items);
 	}
 };
 
-ZmGroupView.prototype._setGroupMembersListView =
-function(list, append){
-	if (append) {
-		for (var i=0; i<list.length; i++) {
-			if (list[i] && list[i].__contact) {
-				var type = list[i].__contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
-				var id = type == ZmContact.GROUP_CONTACT_REF ? list[i].__contact.getId(true) : list[i].__contact.ref;
-				var email = list[i].address;
-				if (!this._groupMemberMods[id]) {
-					this._groupMemberMods[id] = {op : "+", value : id, type : type, email: email};
-				}
-				else {
-					var obj = this._groupMemberMods[id];
-					if (obj.op == "-") {
-						//contact is already in the group, clear the value
-						this._groupMemberMods[id] = {};
-					}
-				}
-			}
-			else {
-				//inline member
-				this._groupMemberMods[list[i]] = {op : "+", value : list[i], email: list[i], type : ZmContact.GROUP_INLINE_REF};
-			}
+ZmGroupView.prototype._addToMembers =
+function(items){
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		var type = item.type;
+		var value = item.value;
+		var email = item.address;
+		var obj = this._groupMemberMods[value];
+		if (!obj) {
+			this._groupMemberMods[value] = {op : "+", value : value, type : type, email: email};
 		}
-		var membersList = this._groupListView.getList();
-		list = list.concat( membersList ? membersList.getArray() : [] );
+		else if (obj.op == "-") {
+			//contact is already in the group, clear the value
+			this._groupMemberMods[value] = {};
+		}
 	}
-	this._groupListView.set(AjxVector.fromArray(list));
+	var membersList = this._groupMembersListView.getList();
+	items = items.concat(membersList ? membersList.getArray() : []);
 	this._isDirty = true;
+
+	this._groupMembersListView.set(AjxVector.fromArray(items));
 };
 
 /**
  * Removes members from items if the are found to be duplicate of
  * either items or addrs.  Dedupes inline, local and gal contacts.
  *
- * @param items {Array} array of items to be added to the target list 
- * @param addrs {Array} the target list as an array of items
+ * @param newItems {Array} array of items to be added to the target list
+ * @param existing {Array} the target list as an array of items
  * @private
  */
 ZmGroupView._dedupe =
-function(items, addrs) {
-	AjxUtil.dedup(items, function(item) {
+function(newItems, list) {
+
+	AjxUtil.dedup(newItems, function(item) {
 		return item.__contact && item.__contact.id;
 	});
 
-	if (addrs) {
-		var i = 0;
-		while (true) {
-			var found = false;
-			for (var j = 0; j < addrs.length; j++) {
-				var value = addrs[j].value || addrs[j];
-				var type = addrs[j].type || ZmContact.GROUP_INLINE_REF;
-				if (addrs[j].__contact) {
-					type = addrs[j].__contact.isGal ? ZmContact.GROUP_GAL_REF : ZmContact.GROUP_CONTACT_REF;
-					value = type == ZmContact.GROUP_GAL_REF ? addrs[j].__contact.ref : addrs[j].__contact.getId(type == ZmContact.GROUP_CONTACT_REF);
-				}
-                if (type == ZmContact.GROUP_GAL_REF && value == (items[i].__contact && items[i].__contact.ref)) {
-                    items.splice(i, 1);
-                    found = true;
-                    break;
-                }
-				else if (type == ZmContact.GROUP_CONTACT_REF && value == (items[i].__contact && items[i].__contact.getId(type == ZmContact.GROUP_CONTACT_REF))) {
-					items.splice(i, 1);
-					found = true;
-					break;
-				}
-				else if (type == ZmContact.GROUP_INLINE_REF && value == items[i]) {
-					items.splice(i, 1);
-					found = true;
-					break;
-				}
+	var uniqueNewItems = [];
+
+	for (var i = 0; i < newItems.length; i++) {
+		var newItem = newItems[i];
+		var found = false;
+		for (var j = 0; j < list.length; j++) {
+			var item = list[j];
+			if (newItem.value == item.value) {
+				found = true;
+				break;
 			}
-			if (!found) i++;
-			if (i == items.length) break;
+		}
+		if (!found) {
+			uniqueNewItems.push(newItem);
 		}
 	}
+
+	return uniqueNewItems;
 };
 
 ZmGroupView.prototype._setGroupMemberValue =
@@ -1596,26 +1505,24 @@ ZmGroupView.prototype._handleQuickAddContact =
 function(result) {
 	var resp = AjxUtil.get(result, "_data", "BatchResponse", "CreateContactResponse");
 	var contact = resp ? ZmContact.createFromDom(resp[0].cn[0], {}) : null;
-	if (contact) {
-		var selection = this._groupListView.getSelection();
-		if (AjxUtil.isArray(selection)) {
-			var value = selection[0].value || selection[0];
-			if (!this._groupMemberMods[value]) {
-				this._groupMemberMods[value] = {op : "-", value : value, type : ZmContact.GROUP_INLINE_REF};
-			}
-			else {
-				this._groupMemberMods[value] = {};
-			}
-			var list = this._groupListView.getSelectedItems();
-			this._groupListView.removeItem(list.get(0));
-			this._groupListView.getList().remove(selection[0]);
-		}
-		var obj = {};
-		obj.__contact = contact;
-		obj.address = contact.getEmail();
-		obj.type = ZmContact.GROUP_CONTACT_REF;
-		this._addItems([obj]);		
+	if (!contact) {
+		return;
 	}
+	var selection = this._groupMembersListView.getSelection();
+	var selectedItem = selection[0];
+	var value = selectedItem.value;
+	if (!this._groupMemberMods[value]) {
+		this._groupMemberMods[value] = {op : "-", value : value, type : selectedItem.type};
+	}
+	else {
+		this._groupMemberMods[value] = {};
+	}
+	var domList = this._groupMembersListView.getSelectedItems();
+	this._groupMembersListView.removeItem(domList.get(0));
+	this._groupMembersListView.getList().remove(selectedItem);
+
+	var obj = ZmContactsHelper._wrapContact(contact);
+	this._addItems([obj]);
 };
 
 /**
@@ -1728,24 +1635,15 @@ function(html, idx, item, field, colIdx, params) {
 		data.isEdit = true;
 		data.delButtonId = Dwt.getNextId("DelContact_");
 		this.delButtons[data.delButtonId] = true;
-		var contact;
+		var contact = item.__contact;
 		var addr = item.address;
-		if (item.__contact) {
-			contact = item.__contact;
-		}
-		else if (item.value) { //this happens when loading existing CG or DL 
-			contact = ZmContact.getContactFromCache(item.value);
-		}
-		else {
-			addr = addr || item;  //in the inline case, the item itself is an address
-		}
 
 		if (contact && !this.parent.isDistributionList()) {
 			data.imageUrl = contact.getImageUrl();
 			data.email = AjxStringUtil.htmlEncode(contact.getEmail());
 			data.title = AjxStringUtil.htmlEncode(contact.getAttr(ZmContact.F_jobTitle));
 			data.phone = AjxStringUtil.htmlEncode(contact.getPhone());
-			data.imgClassName = "Person_48";
+			data.imgClassName = contact.getIconLarge(); 
 			var isPhonetic  = appCtxt.get(ZmSetting.PHONETIC_CONTACT_FIELDS);
 			var fullnameHtml= contact.getFullNameForDisplay(isPhonetic);
 			if (!isPhonetic) {
