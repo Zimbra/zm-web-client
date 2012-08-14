@@ -124,6 +124,9 @@ function(parent, type, id) {
 	else {
 		parent.enableAll(true);        
 		if (addrBook) {
+
+			parent.enable([ZmOperation.NEW_ADDRBOOK], !addrBook.isReadOnly());
+
 			if (addrBook.isSystem() || appCtxt.isExternalAccount()) {
 				parent.enable([ZmOperation.DELETE_WITHOUT_SHORTCUT, ZmOperation.RENAME_FOLDER], false);
 			} else if (addrBook.link) {
