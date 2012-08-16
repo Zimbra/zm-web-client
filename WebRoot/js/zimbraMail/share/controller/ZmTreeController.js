@@ -569,6 +569,17 @@ function(ev, item) {
 	return controller._actionMenu;
 };
 
+ZmTreeController.prototype._sharingPossible =
+function(ev) {
+	if (appCtxt.isZDOnline()) {
+		return true;
+	}
+	var dialog = appCtxt.getMsgDialog();
+	dialog.setMessage(ZMsg["offline.ONLINE_ONLY_OP"]);
+	dialog.popup();
+	return false;
+};
+
 /**
  * Creates and returns an action menu, and sets its listeners.
  *

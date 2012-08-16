@@ -489,6 +489,10 @@ function(ev) {
 
 ZmCalendarTreeController.prototype._shareCalListener =
 function(ev) {
+	if (!this._sharingPossible()) {
+		return;
+	}
+	
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
 };

@@ -196,6 +196,10 @@ function(folder) {
 
 ZmBriefcaseTreeController.prototype._shareBriefcaseListener =
 function(ev) {
+	if (!this._sharingPossible()) {
+		return;
+	}
+
 	this._pendingActionData = this._getActionedOrganizer(ev);
 
 	var briefcase = this._pendingActionData;
