@@ -33,8 +33,6 @@ ZmGroupView = function(parent, controller) {
 	DwtComposite.call(this, {parent:parent, className:"ZmContactView", posStyle:DwtControl.ABSOLUTE_STYLE});
 	this.setScrollStyle(Dwt.CLIP); //default is clip, for regular group it's fine. (otherwise there's always a scroll for no reason, not sure why). For DL we change in "set"
 
-	this._searchRespCallback = new AjxCallback(this, this._handleResponseSearch);
-
 	this._controller = controller;
 
 	this._defaultQuery = ".";
@@ -1309,18 +1307,18 @@ function(items){
 };
 
 /**
- * Removes members from items if the are found to be duplicate of
- * either items or addrs.  Dedupes inline, local and gal contacts.
+ * Returns the items from newItems that are not in list, and also not duplicates within newItems (i.e. returns one of each)
  *
  * @param newItems {Array} array of items to be added to the target list
- * @param existing {Array} the target list as an array of items
+ * @param list {Array} the target list as an array of items
+ * @return {Array} uniqueNewItems the unique new items (items that are not in the list or duplicates in the newItems)
  * @private
  */
 ZmGroupView._dedupe =
 function(newItems, list) {
 
 	AjxUtil.dedup(newItems, function(item) {
-		return item.__contact && item.__contact.id;
+		return item.type + "$" + item.value;
 	});
 
 	var uniqueNewItems = [];
@@ -1330,7 +1328,7 @@ function(newItems, list) {
 		var found = false;
 		for (var j = 0; j < list.length; j++) {
 			var item = list[j];
-			if (newItem.value == item.value) {
+			if (newItem.type == item.type && newItem.value == item.value) {
 				found = true;
 				break;
 			}

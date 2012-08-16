@@ -29,6 +29,11 @@ function() {
 	return this.fileAs;
 };
 
+ZmMockContact.prototype.getIcon =
+function() {
+	return "foo";
+};
+
 ZmMockContact.prototype.getFullNameForDisplay =
 function() {
 	return this.fullName;
@@ -285,7 +290,7 @@ UT.test("Group View: Verify contacts query uses is:local", {},
 		ZmUnitTestUtil.goToContacts();
 		var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 		var controller = contactsApp.getContactController();
-		var contact = new ZmContact(null, null, "GROUP");
+		var contact = new ZmContact(null, null, ZmItem.GROUP);
 		setTimeout(function() {
 			controller.show(contact, false);
 			var ev = [];
@@ -293,21 +298,20 @@ UT.test("Group View: Verify contacts query uses is:local", {},
 			var query = null;
 			var queryHint = null;
 
-			var _handleResponseSearch = function(result) {
+			var _handleResponseSearch = function(firstTime, result) {
 				query = result._data.search.query;
 				queryHint = result._data.search.queryHint;
 				UT.equal(query, '', "query = " + query);
 				UT.equal(queryHint, "is:local", "queryHint = " + queryHint);
 				UT.start();
-
-			}
-			groupView._searchRespCallback = new AjxCallback(this, _handleResponseSearch);
+			};
+			groupView._handleResponseSearch = _handleResponseSearch.bind(this); //note - this makes the view forever tied to this method. So hopefully it's not re-used.
 			var selectedOption = groupView._searchInSelect.getOptionWithValue(ZmContactsApp.SEARCHFOR_CONTACTS);
 			ev.item = selectedOption._menuItem;
 			groupView._searchInSelect._handleOptionSelection(ev);
 			}, 200);
-			UT.stop(10000);
-			UT.expect(2);
+		UT.stop(10000);
+		UT.expect(2);
 
 	}
 
@@ -416,11 +420,12 @@ UT.test("Create Group: Verify group is in alphabet bar", {
 
 UT.test("dedupe contact group", {
 	teardown: function() {
-		
+
 	},
 
 	setup: function() {
-
+		this._inlineUser1 = {type: ZmContact.GROUP_INLINE_REF, value: "test1@zimbra.com"};
+		this._inlineUser2 = {type: ZmContact.GROUP_INLINE_REF, value: "test2@zimbra.com"};
 	}},
 
 	function() {
@@ -428,48 +433,59 @@ UT.test("dedupe contact group", {
 		var contact = new ZmContact(null, null, "GROUP");
 		UT.expect(5);
 		//Test Inline dedupe
-		var items = [ "test@zimbra.com", "test2@zimbra.com"];
-		var inlineAddr = {type: ZmContact.GROUP_INLINE_REF, value: "test@zimbra.com"};
-		var addrs = [ inlineAddr ];
-		ZmGroupView._dedupe(items, addrs);
-		UT.equal(1, items.length, "1 duplicate found in inline");
+		var newItems = [ this._inlineUser1, this._inlineUser2];
+		var existingItems = [ this._inlineUser1 ];
+		newItems = ZmGroupView._dedupe(newItems, existingItems);
+		UT.equal(1, newItems.length, "1 unique new item found after dedupe");
 		
 		//Test local contact dedupe
 		var contactA = new ZmMockContact();
 		contactA.id = "200";
 		contactA.isGal = false;
-		items.push({__contact: contactA});
+		newItems.push(ZmContactsHelper._wrapContact(contactA));
+
 		var contactB = new ZmMockContact();
 		contactB.id = "201";
 		contactB.isGal = false;
-		items.push({__contact: contactB});
+		newItems.push(ZmContactsHelper._wrapContact(contactB));
+
 		// duplicate contacts in the list itself
-		items.push({__contact: contactA});
-		UT.equal(4, items.length, "4 contacts in list, including duplicate");
-		ZmGroupView._dedupe(items, []);
-		UT.equal(3, items.length, "1 duplicate found in contacts");
+		newItems.push(ZmContactsHelper._wrapContact(contactA));
+
+		UT.equal(4, newItems.length, "4 contacts in new items list, including duplicate");
+
+		newItems = ZmGroupView._dedupe(newItems, []);
+
+		UT.equal(3, newItems.length, "1 duplicate found in contacts");
+
 		//contact already belongs to group
-		var listItemA = { address: "contacta@zimbra.com", type: ZmContact.GROUP_CONTACT_REF, value: "1:200"};
-		addrs.push(listItemA);
+		var listItemA = ZmContactsHelper._wrapContact(contactA); //no longer difference.
+		existingItems.push(listItemA);
+
 		//contact moved to group but not yet saved
-		var listItemB = {__contact: contactB};
-		addrs.push(listItemB);
-		ZmGroupView._dedupe(items, addrs);
-		UT.equal(1, items.length, "2 duplicate found in contacts");
+		var listItemB = ZmContactsHelper._wrapContact(contactB);
+		existingItems.push(listItemB);
+
+		newItems = ZmGroupView._dedupe(newItems, existingItems);
+		UT.equal(1, newItems.length, "2 duplicate found in contacts");
 		
 		//Test GAL contact dedupe
 		var galContact = new ZmMockContact();
 		galContact.ref = "uid=user1,ou=people,dc=eng,dc=vmware,dc=com";
 		galContact.isGal = true;
+
 		var galContactB = new ZmMockContact();
 		galContactB.ref = "uid=user2,ou=people,dc=eng,dc=vmware,dc=com";
 		galContactB.isGal = true;
-		items.push({__contact: galContact});
-		items.push({__contact: galContactB});
+
+		newItems.push(ZmContactsHelper._wrapContact(galContact));
+		newItems.push(ZmContactsHelper._wrapContact(galContactB));
+
 		var listItemGal = { address: "user1@eng.vmware.com", type: ZmContact.GROUP_GAL_REF, value: "uid=user1,ou=people,dc=eng,dc=vmware,dc=com"};
-		addrs.push(listItemGal);
-		ZmGroupView._dedupe(items, addrs);
-		UT.equal(2, items.length, "1 duplicate found in gal");
+		existingItems.push(listItemGal);
+
+		newItems = ZmGroupView._dedupe(newItems, existingItems);
+		UT.equal(2, newItems.length, "1 duplicate found in gal");
 	}
 );
 
