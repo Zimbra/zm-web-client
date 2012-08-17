@@ -522,7 +522,7 @@ function(params, noRender, callback, errorCallback) {
 		types = AjxVector.fromArray(types);
 	}
 	if (searchFor == ZmId.SEARCH_MAIL) {
-        this._prevTypes = params.types || this._prevTypes; // Saves previous user action, if user selects view
+        this._prevTypes = types || this._prevTypes; // Saves previous user action, if user selects view
 		params = appCtxt.getApp(ZmApp.MAIL).getSearchParams(params);
 	}
 
