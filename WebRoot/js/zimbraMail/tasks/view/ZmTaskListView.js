@@ -719,6 +719,10 @@ function(ev) {
 	} else if (ev.event == ZmEvent.E_MODIFY) {
 		var task = items[0];
         var div = this._getElFromItem(task);
+        if (this._list) {
+            var origTaskIndex = this._list.indexOfLike(task, task.getId);
+            if (origTaskIndex != -1) this._list.replace(origTaskIndex, task);
+        }
 		if (div) {
             if (filter && filter.indexOf(task.status) == -1){
                 // If task status is modified and item is not part of current view

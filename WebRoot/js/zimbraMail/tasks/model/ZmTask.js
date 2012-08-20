@@ -130,6 +130,15 @@ function() {
 };
 
 /**
+ *
+ *
+ * @return	{id}	task id
+ */
+ZmTask.prototype.getId =
+function() {
+	return this.id;
+};
+/**
  * Gets the summary.
  * 
  * @private
