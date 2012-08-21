@@ -30,6 +30,9 @@
     <c:set var="trimmedUserName" value="${fn:replace(param.username,'@' ,'.')}@${param.virtualacctdomain}"/>
 </c:if>
 
+<c:if test="${param.loginOp eq 'relogin' and empty loginException}">
+    <zm:logout/>
+</c:if>
 <c:if test="${param.loginOp eq 'relogin' and not empty loginException}">
     <zm:getException var="error" exception="${loginException}"/>
     <c:if test="${error.code eq 'service.AUTH_EXPIRED'}">
