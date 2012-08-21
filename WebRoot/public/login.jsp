@@ -24,6 +24,9 @@
 <c:set var="useMobile" value="${ua.isiPhone or ua.isiPod or ua.isOsAndroid}"/>
 <c:set var="trimmedUserName" value="${fn:trim(param.username)}"/>
 
+<c:if test="${param.loginOp eq 'relogin' and empty loginException}">
+    <zm:logout/>
+</c:if>
 <c:if test="${param.loginOp eq 'relogin' and not empty loginException}">
     <zm:getException var="error" exception="${loginException}"/>
     <c:if test="${error.code eq 'service.AUTH_EXPIRED'}">
