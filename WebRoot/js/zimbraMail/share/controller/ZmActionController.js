@@ -48,9 +48,9 @@ function() {
  * @param {String}	[id] 		id of item to perform the action for, if there is only one. Accomplishes the same as putting the id in an array and giving it as [ids].
  */
 ZmActionController.prototype.actionPerformed = function(params) {
-	this.dismiss();
 	var logElement = this._actionStack.logAction(params);
 	if (logElement) {
+		this.dismiss();
 		this._active = true;
 	}
 	return logElement;
