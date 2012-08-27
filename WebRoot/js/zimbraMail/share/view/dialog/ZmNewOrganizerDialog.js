@@ -75,12 +75,8 @@ function(params, account) {
 			// bug #18533 - always make sure header item is visible in "New" dialog
 			this._folderTreeView.getHeaderItem().setVisible(true, true);
 
-			if (folder) {
-				if (folder.nId == ZmOrganizer.ID_ROOT) {
-					folder = appCtxt.getFolderTree().root;
-				}
-			} else {
-				folder = appCtxt.getFolderTree().root;
+			if (!folder || this._omit[folder.nId] || folder.nId == ZmOrganizer.ID_ROOT) {
+				folder = appCtxt.getFolderTree().root; //default to root if no folder passed, the folder is omitted from the overview. (I don't get the last option, but it was there so I keep it - it's already root)
 			}
 			var ti = this._folderTreeView.getTreeItemById(folder.id);
 			if (ti) {
@@ -336,7 +332,7 @@ function() {
 	// make sure a parent was selected
 	var ov = this._getOverviewOrOverviewContainer();
 
-	var parentFolder = ov ? ov.getSelected() : appCtxt.getFolderTree(this._account).root;
+	var parentFolder = ov && ov.getSelected() || appCtxt.getFolderTree(this._account).root;
 
 	if (this._isGlobalSearch) {
 		//special case for global search (only possible if this is ZmNewSearchDialog
