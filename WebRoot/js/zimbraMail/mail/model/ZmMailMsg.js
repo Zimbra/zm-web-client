@@ -821,7 +821,8 @@ function(contentType) {
  */
 ZmMailMsg.prototype.hasMultipleBodyParts =
 function() {
-	return (this._bodyParts.length > 1);
+	var parts = this.getBodyParts();
+	return (parts && parts.length > 1);
 };
 
 /**
@@ -911,15 +912,10 @@ function(contentType, callback, result) {
 		var found = false;
 		for (var i = 0; i < this._bodyParts.length; i++) {
 			var bp = this._bodyParts[i];
-			// if we have a JSON version of this part, replace it
-			if (bp.ct == contentType && !bp.isZmMimePart) {
-				this._bodyParts[i] = altPart;
-				found = true;
-				break;
+			// a hash rather than a ZmMimePart indicates multi/alt
+			if (!bp.isZmMimePart) {
+				bp[altPart.contentType] = altPart;
 			}
-		}
-		if (!found) {
-			this._bodyParts.push(altPart);
 		}
 	}
 		

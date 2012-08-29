@@ -211,7 +211,7 @@ function(node, ctxt) {
 				if (this.contentType == ZmMimeTable.MULTI_ALT) {
 					ctxt.bodyParts.push({});
 				}
-				else if (this.parent && this.parent.contentType == ZmMimeTable.MULTI_ALT) {
+				else if (ZmMimePart._isPartOfMultipartAlternative(this)) {
 					var altPart = {};
 					altPart[this.contentType] = this;
 					ctxt.bodyParts.push(altPart);
