@@ -552,15 +552,6 @@ function(params, noRender, callback, errorCallback) {
 	params.types = types;
 	var search = new ZmSearch(params);
 	
-	// force outbound folder into msg view
-	if (searchFor == ZmId.SEARCH_MAIL && !params.isViewSwitch && search.folderId) {
-		var folder = appCtxt.getById(search.folderId);
-		if (folder && folder.isOutbound()) {
-			search.types = new AjxVector([ZmItem.MSG]);
-			search.isOutboundFolder = true;
-		}
-	}
-
 	var respCallback = this._handleResponseDoSearch.bind(this, search, noRender, callback, params.noUpdateOverview);
 	if (!errorCallback) {
 		errorCallback = this._handleErrorDoSearch.bind(this, search);
