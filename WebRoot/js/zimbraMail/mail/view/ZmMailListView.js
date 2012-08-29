@@ -634,8 +634,7 @@ function() {
 	if (headerCol) { //this means viewing pane on bottom
 		var colLabel = this._isOutboundFolder() ? ZmMsg.to : ZmMsg.from;
         //bug:1108 & 43789#c19 since sort-by-rcpt affects server performance avoid using in convList instead used in outbound folder
-        headerCol._sortable = this._isOutboundFolder() ? ZmItem.F_TO :
-				((this._mode == ZmId.VIEW_CONVLIST) ? null : ZmItem.F_FROM);
+        headerCol._sortable = this._isOutboundFolder() ? ZmItem.F_TO : ZmItem.F_FROM;
 
         var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
 		if (fromColSpan) {
@@ -694,7 +693,7 @@ function(field, itemIdx) {
 
 	var isOutboundFolder = this._isOutboundFolder();
 	if (field == ZmItem.F_FROM && isOutboundFolder) {
-	   return this._headerList[itemIdx]._sortable ? ZmMsg.to : ZmMsg.to;
+	   return ZmMsg.to;
 	}
 	if (field == ZmItem.F_STATUS) {
 		return ZmMsg.messageStatus;

@@ -70,7 +70,7 @@ ZmTradController.prototype.getDefaultViewType = ZmTradController.getDefaultViewT
 ZmTradController.prototype.show =
 function(searchResults) {
 	ZmDoublePaneController.prototype.show.call(this, searchResults, searchResults.getResults(ZmItem.MSG));
-	if (!appCtxt.isExternalAccount() && !this.isSearchResults && !(searchResults && searchResults.search && searchResults.search.isOutboundFolder)) {
+	if (!appCtxt.isExternalAccount() && !this.isSearchResults) {
 		appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_MESSAGE);
 	}
 	this._resetNavToolBarButtons(ZmId.VIEW_TRAD);
@@ -87,12 +87,7 @@ function(actionCode, ev) {
 			break;
 
 		case ZmKeyMap.VIEW_BY_CONV:
-			if (this._currentSearch && this._currentSearch.isOutboundFolder) {
-				return true;
-			}
-			else {
-				return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
-			}
+			return ZmDoublePaneController.prototype.handleKeyAction.apply(this, arguments);
 			break;
 
 		default:
@@ -113,11 +108,6 @@ ZmTradController.prototype._resetOperations =
 function(parent, num) {
 	ZmDoublePaneController.prototype._resetOperations.apply(this, arguments);
 	parent.enable(ZmOperation.SHOW_CONV, (num == 1));
-	var viewBtn = this.getCurrentToolbar().getButton(ZmOperation.VIEW_MENU);
-	var menu = viewBtn && viewBtn.getMenu();
-	if (menu && this._currentSearch) {
-		menu.enable(ZmId.VIEW_CONVLIST, !this._currentSearch.isOutboundFolder);
-	}
 };
 
 ZmTradController.prototype._paginate = 

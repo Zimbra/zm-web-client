@@ -325,15 +325,8 @@ function() {
 	return this._getHeaders(ZmId.VIEW_CONVLIST, headers);
 };
 
-ZmConvListView.prototype._resetFromColumnLabel =
-function() {
-	// set from column sortability based on query string
-	var headerCol = this._headerHash[ZmItem.F_FROM];
-	if (headerCol) {
-		headerCol._sortable = this._isOutboundFolder() ? ZmItem.F_FROM : null;
-	}
-	ZmMailListView.prototype._resetFromColumnLabel.apply(this, arguments);
-};
+// No-op so that conv list view retains From column (doesn't change it to To) for outbound folders
+ZmConvListView.prototype._resetFromColumnLabel = function() {};
 
 ZmConvListView.prototype._getDivClass =
 function(base, item, params) {
@@ -595,9 +588,13 @@ function(conv, fieldId) {
 ZmConvListView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
 	
-    return (field == ZmItem.F_EXPAND)
-		? "" //ZmMsg.expandCollapse
-		: ZmMailListView.prototype._getHeaderToolTip.call(this, field, itemIdx, this._isOutboundFolder());
+	if (field == ZmItem.F_EXPAND) {
+		return "";
+	}
+	if (field == ZmItem.F_FROM) {
+		return ZmMsg.from;
+	}
+	return ZmMailListView.prototype._getHeaderToolTip.call(this, field, itemIdx);
 };
 
 ZmConvListView.prototype._getToolTip =
@@ -874,8 +871,7 @@ function(columnItem, bSortAsc, callback) {
 			limit:			this.getLimit(),
 			callback:		callback,
 			userInitiated:	this._controller._currentSearch.userInitiated,
-			sessionId:		this._controller._currentSearch.sessionId,
-			isViewSwitch:	true
+			sessionId:		this._controller._currentSearch.sessionId
 		};
 		appCtxt.getSearchController().search(params);
 	}

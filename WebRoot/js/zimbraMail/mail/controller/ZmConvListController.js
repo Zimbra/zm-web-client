@@ -76,7 +76,7 @@ function(searchResults, force) {
 	}
 	
 	ZmDoublePaneController.prototype.show.call(this, searchResults, searchResults.getResults(ZmItem.CONV));
-	if (!appCtxt.isExternalAccount() && !this.isSearchResults && !(searchResults && searchResults.search && searchResults.search.isOutboundFolder)) {
+	if (!appCtxt.isExternalAccount() && !this.isSearchResults) {
 		appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_CONV);
 	}
 };
@@ -428,7 +428,7 @@ function(switchingView, callback) {
 	if (switchingView) {
 		// attempt to switch to TV was canceled - need to undo changes
 		this._updateViewMenu(ZmId.VIEW_TRAD);
-		if (!appCtxt.isExternalAccount() && !this.isSearchResults && !this._currentSearch.isOutboundFolder) {
+		if (!appCtxt.isExternalAccount() && !this.isSearchResults) {
 			this._app.setGroupMailBy(ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_TRAD]);
 		}
 	}
