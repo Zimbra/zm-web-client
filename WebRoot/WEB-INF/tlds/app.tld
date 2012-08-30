@@ -768,11 +768,6 @@
     </tag-file>
 
     <tag-file>
-        <name>listView</name>
-        <path>/WEB-INF/tags/calendar/listView.tag</path>
-    </tag-file>
-
-    <tag-file>
             <name>zoomView</name>
             <path>/WEB-INF/tags/calendar/zoomView.tag</path>
     </tag-file>

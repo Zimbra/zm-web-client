@@ -212,6 +212,9 @@
                                                             <td>
                                                                 ${fn:escapeXml(compose.startDate)}
                                                             </td>
+                                                            <td class='ZhDateHint'>
+                                                                <fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/>
+                                                            </td>
                                                         </tr>
                                                     </table>
                                                 </td>
@@ -223,6 +226,9 @@
                                                         <tr>
                                                             <td>
                                                                 ${fn:escapeXml(compose.endDate)}
+                                                            </td>
+                                                            <td class='ZhDateHint'>
+                                                                <fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/>
                                                             </td>
                                                         </tr>
                                                     </table>

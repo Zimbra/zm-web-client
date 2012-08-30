@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -143,7 +143,7 @@ ZmDataSourceCollection.prototype.importMail = function(accounts) {
 	    // kick off check status request because import request
 	    // doesn't return for (potentially) a looong time
 	    var delayMs = 2000;
-	    var action = new AjxTimedAction(this, this.checkStatus, [sourceMap, delayMs]);
+	    var action = new AjxTimedAction(this, this._checkStatus, [sourceMap, delayMs]);
 	    AjxTimedAction.scheduleAction(action, delayMs);
     }
 };
@@ -274,12 +274,11 @@ ZmDataSourceCollection.prototype.__gotoPrefSection = function(prefSectionId) {
 	controller.getPrefsView().selectSection(prefSectionId);
 };
 
-/**
- * Periocially check status of the import
- * @param {Object} sourceMap map of accounts
- * @param {int} delayMs delay time between checks
- */
-ZmDataSourceCollection.prototype.checkStatus =
+//
+// Protected methods
+//
+
+ZmDataSourceCollection.prototype._checkStatus =
 function(sourceMap, delayMs) {
 	// Slowly back off import status checks but no more than 15 secs.
 	if (delayMs && delayMs < 15000) {
@@ -299,10 +298,6 @@ function(sourceMap, delayMs) {
     var action = new AjxTimedAction(appController, appController.sendRequest, [params]);
     AjxTimedAction.scheduleAction(action, delayMs || 2000);
 };
-
-//
-// Protected methods
-//
 
 ZmDataSourceCollection.prototype._checkStatusResponse =
 function(sourceMap, delayMs, result) {
@@ -356,6 +351,6 @@ function(sourceMap, delayMs, result) {
 
 	// continue checking status
 	if (AjxUtil.keys(sourceMap).length > 0) {
-		this.checkStatus(sourceMap, delayMs);
+		this._checkStatus(sourceMap, delayMs);
 	}
 };

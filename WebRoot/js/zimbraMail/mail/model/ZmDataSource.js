@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -73,6 +73,7 @@ ZmDataSource.DATASOURCE_ATTRS = {
 ZmDataSource.IDENTITY_ATTRS = {
 	// SOAP attr:					JS property
 	"fromDisplay":					"sendFromDisplay",
+	"fromAddress":					"sendFromAddress",
 	"useAddressForForwardReply":	"setReplyTo",
 	"replyToAddress":				"setReplyToAddress",
 	"replyToDisplay":				"setReplyToDisplay",
@@ -177,14 +178,12 @@ function(callback, errorCallback, batchCommand) {
 	if (batchCommand) {
 		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback);
 		batchCommand.setSensitive(Boolean(this.password));
-		batchCommand.setNoAuthToken(Boolean(this.password));
 		return;
 	}
 
 	var params = {
 		soapDoc: soapDoc,
 		sensitive: Boolean(this.password),
-        noAuthToken: Boolean(this.password),
 		asyncMode: Boolean(callback),
 		callback: respCallback,
 		errorCallback: errorCallback
@@ -221,14 +220,12 @@ function(callback, errorCallback, batchCommand) {
 	if (batchCommand) {
 		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback);
 		batchCommand.setSensitive(Boolean(this.password));
-        batchCommand.setNoAuthToken(Boolean(this.password));
 		return;
 	}
 
 	var params = {
 		soapDoc: soapDoc,
 		sensitive: Boolean(this.password),
-        noAuthToken: Boolean(this.password),
 		asyncMode: Boolean(callback),
 		callback: respCallback,
 		errorCallback: errorCallback
@@ -281,14 +278,12 @@ function(callback, errorCallback, batchCommand, noBusyOverlay) {
 	if (batchCommand) {
 		batchCommand.addNewRequestParams(soapDoc, callback, errorCallback);
 		batchCommand.setSensitive(true);
-        batchCommand.setNoAuthToken(true);
 		return;
 	}
 
 	var params = {
 		soapDoc: soapDoc,
 		sensitive: true,
-        noAuthToken: true,
 		asyncMode: Boolean(callback),
 		noBusyOverlay: noBusyOverlay,
 		callback: callback,

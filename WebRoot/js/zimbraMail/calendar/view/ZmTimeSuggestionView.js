@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- *
+ * Copyright (C) 2010, 2011 VMware, Inc.
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -25,16 +25,22 @@
  * @param apptEditView		[ZmApptEditView]	        the appt edit view
  */
 ZmTimeSuggestionView = function(parent, controller, apptEditView) {
-    ZmSuggestionsView.call(this, parent, controller, apptEditView, ZmId.VIEW_SUGGEST_TIME_PANE, true);
-    this._sectionHeaderHtml = {};
-}
-ZmTimeSuggestionView.prototype = new ZmSuggestionsView;
-ZmTimeSuggestionView.prototype.constructor = ZmTimeSuggestionView;
 
-ZmTimeSuggestionView.prototype.toString =
-function() {
-	return "ZmTimeSuggestionView";
-}
+	ZmListView.call(this, {parent: parent, posStyle: DwtControl.RELATIVE_STYLE, view: ZmId.VIEW_SCHEDULE_PANE});
+
+	this._controller = controller;
+	this._editView = apptEditView;
+
+	this._rendered = false;
+	this._kbMgr = appCtxt.getKeyboardMgr();
+    this._normalClass = DwtListView.ROW_CLASS;
+    this._selectedClass = [DwtListView.ROW_CLASS, DwtCssStyle.SELECTED].join("-");
+    this._sectionHeaderHtml = {};
+    this.setMultiSelect(false);
+};
+
+ZmTimeSuggestionView.prototype = new ZmListView;
+ZmTimeSuggestionView.prototype.constructor = ZmTimeSuggestionView;
 
 ZmTimeSuggestionView._VALUE = 'value';
 ZmTimeSuggestionView._ITEM_INFO = 'iteminfo';
@@ -44,12 +50,16 @@ ZmTimeSuggestionView.COL_NAME	= "t";
 
 ZmTimeSuggestionView.prototype.set =
 function(params) {
+
+    this._items = params.items;
+    this._itemIndex = params.itemIndex;
+
     this._totalUsers = params.totalUsers;
     this._totalLocations = params.totalLocations;
     this._duration = params.duration;
     this._startDate = params.timeFrame.start;
 
-    ZmSuggestionsView.prototype.set.call(this, params);
+    ZmListView.prototype.set.call(this, params.list);
 };
 
 ZmTimeSuggestionView.prototype._createItemHtml =
@@ -93,7 +103,7 @@ function(itemDiv, ev) {
     if(item) {
         this._editView.setDate(new Date(item.startTime), new Date(item.endTime));
         //user clicked the link directly
-        if (ev.target && (ev.target.className == "fakeAnchor" || ev.target.className == "ImgLocationGreen" || ev.target.className == "ImgLocationRed")) {
+        if (ev.target && (ev.target.className == "removeLink" || ev.target.className == "ImgLocationGreen" || ev.target.className == "ImgLocationRed")) {
             var menu = this._createLocationsMenu(item);
             menu.popup(0, ev.docX, ev.docY);
         }
@@ -301,6 +311,11 @@ function() {
     this.handleLocationOverflow();
 };
 
+ZmTimeSuggestionView.prototype.setSuggestionsPref =
+function(showOnlyGreenSuggestions) {
+    this._showOnlyGreenSuggestions = showOnlyGreenSuggestions;
+};
+
 ZmTimeSuggestionView.prototype.setNoAttendeesHtml =
 function() {
     this.removeAll();
@@ -315,6 +330,7 @@ function() {
 	var subs = {
 		message: this._getNoResultsMessage(),
 		type: this.type,
+        showOnlyGreenSuggestions: this._showOnlyGreenSuggestions,
         id: this.getHTMLElId()
 	};
 	div.innerHTML = AjxTemplate.expand("calendar.Appointment#TimeSuggestion-NoSuggestions", subs);
@@ -364,6 +380,14 @@ function() {
     return AjxMessageFormat.format(this._showOnlyGreenSuggestions ? ZmMsg.noGreenSuggestionsFound : ZmMsg.noSuggestionsFound, [this._startDate, durationStr]);
 };
 
+ZmTimeSuggestionView.prototype.setLoadingHtml =
+function() {
+    this.removeAll();
+    var	div = document.createElement("div");
+    div.innerHTML = AjxTemplate.expand("calendar.Appointment#TimeSuggestion-Loading");
+    this._addRow(div);
+};
+
 ZmTimeSuggestionView.prototype.showMore =
 function(locationInfo) {
 
@@ -390,10 +414,11 @@ function(hdrKey, item) {
     if(!this._sectionHeaderHtml[hdrKey]) {
         var htmlArr = [];
         var idx = 0;
-        htmlArr[idx++] = "<table width=100% class='ZmTimeSuggestionView-Column ";
+        htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100% class='ZmTimeSuggestionView-Column ";
         htmlArr[idx++] =  this._getHeaderColor(item);        
         htmlArr[idx++] = "'><tr>";
-        htmlArr[idx++] = "<td><div class='DwtListHeaderItem-label'>";
+        htmlArr[idx++] = "<td><div class='DwtListHeaderItem-label ";
+        htmlArr[idx++] = "' style='padding:0px 0px 2px 2px;'>";
         htmlArr[idx++] = AjxMessageFormat.format(ZmMsg.availableCount, [item.availableUsers, this._totalUsers]);
         htmlArr[idx++] = "</div></td>";
         htmlArr[idx++] = "</tr></table>";
@@ -403,10 +428,44 @@ function(hdrKey, item) {
    return this._sectionHeaderHtml[hdrKey];
 };
 
-ZmTimeSuggestionView.prototype._getHeaderKey =
-function(item) {
-    return item.availableUsers + '-' + this._totalUsers;
-}
+ZmTimeSuggestionView.prototype._renderList =
+function(list, noResultsOk, doAdd) {
+	if (list instanceof AjxVector && list.size()) {
+		var now = new Date();
+		var size = list.size();
+		var htmlArr = [], hdrKey, hdrListed = {};
+		for (var i = 0; i < size; i++) {
+			var item = list.get(i);
+
+            hdrKey = item.availableUsers + '-' + this._totalUsers;
+
+            if(!hdrListed[hdrKey]) {
+                var sectionHeaderHtml = this._renderListSectionHdr(hdrKey, item);
+                if(sectionHeaderHtml) htmlArr.push(sectionHeaderHtml);
+                hdrListed[hdrKey] = true;
+            }
+
+			var div = this._createItemHtml(item, {now:now}, !doAdd, i);
+			if (div) {
+				if (div instanceof Array) {
+					for (var j = 0; j < div.length; j++){
+						this._addRow(div[j]);
+					}
+				} else if (div.tagName || doAdd) {
+					this._addRow(div);
+				} else {
+					htmlArr.push(div);
+				}
+			}
+		}
+		if (htmlArr.length) {
+			this._parentEl.innerHTML = htmlArr.join("");
+		}
+	} else if (!noResultsOk) {
+		this._setNoResultsHtml();
+	}
+};
+
 
 ZmTimeSuggestionView._onClick =
 function(el, ev) {

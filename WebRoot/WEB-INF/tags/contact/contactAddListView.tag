@@ -1,7 +1,7 @@
 <%--
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -96,7 +96,7 @@
                 and !fn:contains(uploader.compose.resources,hit.contactHit.displayEmail)
     }">   <%-- This condition is for not to list the contact/resource which has been already added --%>
     
-    <c:if test="${not empty hit.contactHit.displayEmail}">
+    <c:if test="${not empty hit.contactHit.displayEmail or hit.contactHit.isGroup}">
         <tr>
             <td width=1%>&nbsp;</td>
             <c:choose>
@@ -104,8 +104,7 @@
                     <td width=2% nowrap><input type=checkbox  name="addAttendees" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
                 </c:when>
                 <c:when test="${groupMode}">
-                    <td width=2% nowrap><input type=checkbox  name="addToGroup" value="${fn:escapeXml(hit.contactHit.fullAddress)};${fn:escapeXml(hit.contactHit.id)};C">
-                    </td>
+                    <td width=2% nowrap><input type=checkbox  name="addToGroup" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
                 </c:when>
                 <c:otherwise>
                     <td width=2% nowrap><input type=checkbox  name="addTo" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
@@ -467,8 +466,7 @@
 
                 </c:when>
                 <c:when test="${groupMode}">
-                    <td width=2% nowrap><input type=checkbox  name="addToGroup" value="${fn:escapeXml(contact.galFullAddress)};${fn:escapeXml(contact.id)};G">
-                    </td>
+                    <td width=2% nowrap><input type=checkbox  name="addToGroup" value="${fn:escapeXml(contact.galFullAddress)}"></td>
                 </c:when>
                 <c:otherwise>
                     <td width=2% nowrap><input type=checkbox  name="addTo" value="${fn:escapeXml(contact.galFullAddress)}"></td>

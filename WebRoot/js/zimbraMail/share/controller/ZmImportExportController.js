@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -148,14 +148,6 @@ function(params) {
 	}
 
 	params.ext = params.filename.replace(/^.*\./,"").toLowerCase();
-    if (!ZmImportExportController.EXTS_TYPE[params.ext]) {
-        var params = {
-            msg:	AjxMessageFormat.format(ZmMsg.importErrorTypeNotSupported, params.ext),
-            level:	ZmStatusView.LEVEL_CRITICAL
-        };
-        appCtxt.setStatusMsg(params);
-        return false;
-    }
 	params.defaultType = params.type || ZmImportExportController.EXTS_TYPE[params.ext] || ZmImportExportController.TYPE_DEFAULT;
 	var isZimbra = ZmImportExportController.EXTS_TYPE[params.defaultType] == ZmImportExportController.TYPE_TGZ;
 	var folder = appCtxt.getById(folderId);
@@ -443,10 +435,10 @@ function(params) {
 
 	var formParams = { "fmt" : type };
 	if (isCSV) { formParams[type+"fmt"] = subType; }
-	var startDate = params.start ? AjxDateUtil.simpleParseDateStr(params.start) : null;
-	var endDate = params.end ? AjxDateUtil.simpleParseDateStr(params.end) : null;
 	if (isTGZ && params.views) { formParams["types"] = params.views; }
         if (params.views == "appointment"){
+            var startDate = params.start ? AjxDateUtil.simpleParseDateStr(params.start) : null;
+            var endDate = params.end ? AjxDateUtil.simpleParseDateStr(params.end) : null;
             if(startDate) {
                 formParams["start"] = startDate.getTime();
             }
@@ -455,10 +447,8 @@ function(params) {
                 formParams["end"] = endDate.getTime();
             }
         } else {
-            var startDateFormatted = (startDate) ? AjxDateUtil._getMonth(startDate) + "/" +  AjxDateUtil._getDate(startDate) + "/" + AjxDateUtil._getFullYear(startDate) : null;
-            var endDateFormatted = (endDate) ? AjxDateUtil._getMonth(endDate) + "/" +  AjxDateUtil._getDate(endDate) + "/" + AjxDateUtil._getFullYear(endDate) : null;
-            if (isTGZ && startDateFormatted){ params.searchFilter = (params.searchFilter) ? params.searchFilter + " AND " : "" + "after:" + startDateFormatted; }
-            if (isTGZ && endDateFormatted){ params.searchFilter = ((params.searchFilter) ? params.searchFilter + " AND " : "") + "before:" + endDateFormatted; }
+                if (isTGZ && params.start){ params.searchFilter = (params.searchFilter) ? params.searchFilter + " AND " : "" + "after:" + params.start; }
+                if (isTGZ && params.end){ params.searchFilter = ((params.searchFilter) ? params.searchFilter + " AND " : "") + "before:" + params.end; }
         }
 	if (isTGZ && params.searchFilter) { formParams["query"] = params.searchFilter; }
 	if (params.skipMeta) { formParams["meta"] = "0"; }
@@ -599,18 +589,12 @@ function(form, onload, onerror) {
 	var id = Dwt.getNextId() + "_iframe";
 	var iframe;
 	if (AjxEnv.isIE) {
-        try {
-            // NOTE: This has to be done because IE doesn't recognize the name
-            //       attribute if set programmatically. And without that, the
-            //       form target will cause it to return in a new window which
-            //       breaks the callback.
-            var html = [ "<IFRAME id='",id,"' name='",id,"'>" ].join("");
-            iframe = document.createElement(html);
-        } catch (e) {
-            // Unless its IE9+ in non-quirks mode, then the above throws an exception
-            iframe = document.createElement("IFRAME");
-            iframe.name = iframe.id = id;
-        }
+		// NOTE: This has to be done because IE doesn't recognize the name
+		//       attribute if set programmatically. And without that, the
+		//       form target will cause it to return in a new window which
+		//       breaks the callback.
+		var html = [ "<IFRAME id='",id,"' name='",id,"'>" ].join("");
+		iframe = document.createElement(html);
 	}
 	else {
 		iframe = document.createElement("IFRAME");
