@@ -807,7 +807,7 @@ function(ev) {
 		return false;
 	}
 	if (ev.field == ZmItem.F_READ) {
-		var folderId = ev.item.folderId || search.folderId;
+		var folderId = ev.item.folderId || (search && search.folderId);
 		var folder = folderId && appCtxt.getById(folderId);
 		if (!(folder && folder.isReadOnly())) {
 			this._doMarkRead([ev.item], ev.item.isUnread);
