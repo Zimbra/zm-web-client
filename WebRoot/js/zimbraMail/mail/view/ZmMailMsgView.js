@@ -337,7 +337,7 @@ function(listener) {
 };
 
 ZmMailMsgView.prototype.setVisible =
-function(visible, readingPaneOnRight) {
+function(visible, readingPaneOnRight,msg) {
 	DwtComposite.prototype.setVisible.apply(this, arguments);
 	var inviteMsgView = this._inviteMsgView;
 	if (!inviteMsgView) {
@@ -345,13 +345,15 @@ function(visible, readingPaneOnRight) {
 	}
 
 	if (visible && this._msg) {
-		var dayView = inviteMsgView.getDayView();
-		if (dayView) {
-			dayView.setIsRight(readingPaneOnRight);
-		}
+		if (this._msg != msg) {
+			var dayView = inviteMsgView.getDayView();
+			if (dayView) {
+				dayView.setIsRight(readingPaneOnRight);
+			}
 
-		inviteMsgView.set(this._msg);
-		inviteMsgView.showMoreInfo(null, null, readingPaneOnRight);
+			inviteMsgView.set(this._msg);
+			inviteMsgView.showMoreInfo(null, null, readingPaneOnRight);
+		}
 	}
 	else {
 		inviteMsgView.reset();
