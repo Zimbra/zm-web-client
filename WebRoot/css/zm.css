@@ -1104,7 +1104,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@WarningText@
 	@BottomSeparator@
 	@ActiveCursor@
-	@PanelPadding@
+	padding:1em 0;
 }
 
 /* for images that are rendered inline of a message body */
