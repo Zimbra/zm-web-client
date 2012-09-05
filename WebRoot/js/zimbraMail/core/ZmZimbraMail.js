@@ -2669,13 +2669,13 @@ function(url) {
  * @private
  */
 ZmZimbraMail.helpLinkCallback =
-function() {
+function(helpurl) {
 	ZmZimbraMail.unloadHackCallback();
 
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var url;
 	if (!ac.isOffline) {
-		try { url = skin.hints.helpButton.url; } catch (e) { /* ignore */ }
+		try { url = helpurl || skin.hints.helpButton.url; } catch (e) { /* ignore */ }
 		url = url || ac.get(ZmSetting.HELP_URI);
 		var sep = url.match(/\?/) ? "&" : "?";
 		url = [url, sep, "locid=", AjxEnv.DEFAULT_LOCALE].join("");

@@ -389,6 +389,19 @@ function() {
 };
 
 /**
+ * Gets the message dialog with a help button.
+ *
+ * @return	{DwtMessageDialog}	the message dialog
+ */
+ZmAppCtxt.prototype.getHelpMsgDialog =
+	function() {
+		if (!this._helpMsgDialog) {
+			this._helpMsgDialog = new DwtMessageDialog({parent:this._shell, helpText:ZmMsg.help, id: "ZmHelpMsgDialog"});
+		}
+		return this._helpMsgDialog;
+	};
+
+/**
  * Gets the yes/no message dialog.
  * 
  * @return	{DwtMessageDialog}	the message dialog
