@@ -1300,7 +1300,11 @@ function() {
 ZmAppCtxt.prototype.getCurrentSearch =
 function() {
 	var app = this.getCurrentApp();
-	return app && app.currentSearch;
+	if (app && app.currentSearch) {
+		return app.currentSearch;
+	}
+	var ctlr = this.getCurrentController();
+	return ctlr && ctlr._currentSearch;
 };
 
 /**
