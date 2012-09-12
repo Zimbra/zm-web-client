@@ -886,7 +886,7 @@ ZmContactSplitView.prototype._encodeIM =
 function(data) {
 	var result = ZmContactSplitView.IM_RE_VALUE.exec(data);
 	if (result) {
-		var params = [result[1], result[2], ZmMsg["AB_FIELD_", result[1]]];
+		var params = [result[1], result[2]]; //, ZmMsg["AB_FIELD_", result[1]]];  <-- this 3rd param looks like syntax error and ZmMsg.AB_DISPLAY_IM only accepts 2 params anyway.
 		return AjxMessageFormat.format(ZmMsg.AB_DISPLAY_IM, params);
 	} else {
 		return data;

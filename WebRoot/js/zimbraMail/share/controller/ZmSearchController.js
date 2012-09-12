@@ -807,8 +807,6 @@ function(ev, id, noFocus) {
 	var selItem = menu.getSelectedItem();
 	var sharedMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_SHARED);
 
-	this._searchToolBar.setPeopleAutocomplete(id);
-
 	// enable shared menu item if not a gal search
 	if (id == ZmId.SEARCH_GAL) {
 		this._contactSource = ZmId.SEARCH_GAL;

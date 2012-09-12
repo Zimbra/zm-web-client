@@ -82,7 +82,6 @@ function(view) {
 
 ZmCalItemComposeController.prototype._preShowCallback =
 function() {
-	this._setSearchToolbarVisibilityPerSkin(false);
 	return true;
 };
 
@@ -95,7 +94,6 @@ function(view, force) {
 ZmCalItemComposeController.prototype._postHideCallback =
 function() {
 	// overload me
-	this._setSearchToolbarVisibilityPerSkin(true);
 };
 
 ZmCalItemComposeController.prototype.popShield =

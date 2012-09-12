@@ -20,7 +20,7 @@
  * This class manages message composition.
  *
  * @author Conrad Damon
- * 
+ *
  * @param {DwtShell}	container	the containing shell
  * @param {ZmApp}		mailApp		the containing app
  * @param {constant}	type		controller type
@@ -391,7 +391,6 @@ function(view) {
 
 ZmComposeController.prototype._preShowCallback =
 function() {
-	this._setSearchToolbarVisibilityPerSkin(false);
 	return true;
 };
 
@@ -437,7 +436,6 @@ function() {
 		return;
 	}
 
-	this._setSearchToolbarVisibilityPerSkin(true);
 };
 
 /**
@@ -2127,7 +2125,7 @@ function(){
     return false;
 };
 
-/*
+/**
  * Return ZmMailMsg object
  * @return {ZmMailMsg} message object
  */

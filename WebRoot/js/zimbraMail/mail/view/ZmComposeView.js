@@ -1990,7 +1990,7 @@ function(name, removeOriginalAttachments) {
 	return forAttIds;
 };
 
-/*
+/**
  * Set various address headers based on the original message and the mode we're in.
  * Make sure not to duplicate any addresses, even across fields. Figures out what
  * addresses to put in To: and Cc: unless the caller passes addresses to use (along

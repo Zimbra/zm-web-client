@@ -917,9 +917,9 @@ function() {
 	if (this.isDistributionList()) {
 		return "Group_48";
 	}
-	if (this.isGal) {
-		//todo - get a big version of ImgGalContact.png 
-	}
+	//todo - get a big version of ImgGalContact.png
+//	if (this.isGal) {
+//	}
 	return "Person_48";
 };
 
