@@ -80,13 +80,14 @@ function(results, mailList, callback, markRead) {
 	var s = results && results.search;
 	var refreshSelItem = (s && s.isRefresh && mlv && mlv.hasItem(s.selectedItem) && s.selectedItem);
 	if (this._doublePaneView) {
-		mlv.reset();
 		if (!refreshSelItem) {
 			this._doublePaneView._itemView.reset();
 		}
 	}
 	this.setList(mailList);
 	this._setup(this._currentViewId);
+	mlv = this._listView[this._currentViewId]; //might have been created in the _setup call
+	mlv.reset(); //called to reset the groups (in case "group by" is used, to clear possible previous items in it - bug 77154
 
 	this._displayResults(this._currentViewId, null, refreshSelItem);
 
