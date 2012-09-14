@@ -928,7 +928,7 @@ function(request, comp) {
 	ZmCalItem.prototype._addExtrasToRequest.call(this, request, comp);
 
     comp.fb = this.freeBusy;
-    comp.class = this.privacy;
+    comp['class'] = this.privacy; //using ['class'] to avoid build error as class is reserved word
     comp.transp = this.transparency;
     //Add Draft flag
     var draftFlag = false;
