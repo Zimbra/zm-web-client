@@ -83,128 +83,148 @@ ZmRecurrence.RECURRENCE_WEEKEND = -2;
  */
 ZmRecurrence.RECURRENCE_WEEKDAY = -3
 
-ZmRecurrence.prototype.setSoap =
-function(soapDoc, inv) {
-	if (this.repeatType == ZmRecurrence.NONE) return;
+ZmRecurrence.prototype.setJson =
+function(inv) {
+	if (this.repeatType == ZmRecurrence.NONE) {
+        return;
+    }
 
-	var recur = soapDoc.set("recur", null, inv);
-	var add = soapDoc.set("add", null, recur);
-	var rule = soapDoc.set("rule", null, add);
-	rule.setAttribute("freq", this.repeatType);
+	var recur = inv.recur = {},
+        add = recur.add = {},
+        rule = add.rule = {},
+        interval = rule.interval = {},
+        until,
+        bwd,
+        bmd,
+        c,
+        i,
+        day,
+        wkDay,
+        bysetpos,
+        bm;
 
-	var interval = soapDoc.set("interval", null, rule);
-	interval.setAttribute("ival", this.repeatCustomCount);
+	rule.freq = this.repeatType;
+	interval.ival = this.repeatCustomCount;
 
 	if (this.repeatEndDate != null && this.repeatEndType == "D") {
-		var until = soapDoc.set("until", null, rule);
-		until.setAttribute("d", AjxDateUtil.getServerDate(this.repeatEndDate));
-	} else if (this.repeatEndType == "A"){
-		var c = soapDoc.set("count",null, rule);
-		c.setAttribute("num", this.repeatEndCount);
+		until = rule.until = {};
+		until.d = AjxDateUtil.getServerDate(this.repeatEndDate);
+	}
+    else if (this.repeatEndType == "A"){
+		c = rule.count = {};
+		c.num = this.repeatEndCount;
 	}
 
 	if (this.repeatCustom != "1") {
-        this.setExcludes(soapDoc, recur);
+        this.setExcludes(recur);
 		return;
     }
 
 	if (this.repeatType == ZmRecurrence.DAILY) {
-		if (this.repeatWeekday) {
+        if (this.repeatWeekday) {
 			// TODO: for now, handle "every weekday" as M-F
 			//       eventually, needs to be localized work week days
-			var bwd = soapDoc.set("byday", null, rule);
-			for (var i = 0; i < ZmCalItem.SERVER_WEEK_DAYS.length; i++) {
-				var day = ZmCalItem.SERVER_WEEK_DAYS[i];
+			bwd = rule.byday = {};
+			for (i = 0; i < ZmCalItem.SERVER_WEEK_DAYS.length; i++) {
+				day = ZmCalItem.SERVER_WEEK_DAYS[i];
 				if (day == "SA" || day == "SU")
 					continue;
-				var wkDay = soapDoc.set("wkday", null, bwd);
-				wkDay.setAttribute("day", day);
+				wkDay = bwd.wkday = bwd;
+				wkDay.day = day;
 			}
 		}
-	} else if (this.repeatType == ZmRecurrence.WEEKLY) {
-		var bwd = soapDoc.set("byday", null, rule);
-		for (var i = 0; i < this.repeatWeeklyDays.length; ++i) {
-			var wkDay = soapDoc.set("wkday", null, bwd);
-			wkDay.setAttribute("day", this.repeatWeeklyDays[i]);
+	}
+    else if (this.repeatType == ZmRecurrence.WEEKLY) {
+        bwd = rule.byday = {};
+		for (i = 0; i < this.repeatWeeklyDays.length; ++i) {
+            wkDay = bwd.wkday = bwd;
+            wkDay.day = this.repeatWeeklyDays[i];
 		}
 	}
-	else if (this.repeatType == ZmRecurrence.MONTHLY)
-	{
+	else if (this.repeatType == ZmRecurrence.MONTHLY) {
 		if (this.repeatCustomType == "S") {
-			var bmd = soapDoc.set("bymonthday", null, rule);
-			bmd.setAttribute("modaylist", this.repeatMonthlyDayList);
-		} else {
-			var bwd = soapDoc.set("byday", null, rule);
-
-            if(this.repeatCustomDays) {
-                for(var i=0; i < this.repeatCustomDays.length; i++) {
-                    wkDay = soapDoc.set("wkday", null, bwd);
-                    wkDay.setAttribute("day", this.repeatCustomDays[i]);
-                    if(this.repeatCustomOrdinal) {
-                        wkDay.setAttribute("ordwk", this.repeatCustomOrdinal);
+			bmd = rule.bymonthday = {};
+			bmd.modaylist = this.repeatMonthlyDayList;
+		}
+        else {
+			bwd = rule.byday = {};
+            if (this.repeatCustomDays) {
+                for (i=0; i < this.repeatCustomDays.length; i++) {
+                    wkDay = bwd.wkday = {};
+                    wkDay.day = this.repeatCustomDays[i];
+                    if (this.repeatCustomOrdinal) {
+                        wkDay.ordwk = this.repeatCustomOrdinal;
                     }
                 }
             }
 
-            if(this.repeatCustomOrdinal == null) {
-                var bysetpos = soapDoc.set("bysetpos", null, rule);
-                bysetpos.setAttribute("poslist", this.repeatBySetPos);
+            if (this.repeatCustomOrdinal == null) {
+                bysetpos = rule.bysetpos = {};
+                bysetpos.poslist = this.repeatBySetPos;
             }
         }
     }
-	else if (this.repeatType == ZmRecurrence.YEARLY)
-	{
-		var bm = soapDoc.set("bymonth", null, rule);
-		bm.setAttribute("molist", this.repeatYearlyMonthsList);
+	else if (this.repeatType == ZmRecurrence.YEARLY) {
+		bm = rule.bymonth = {};
+		bm.molist = this.repeatYearlyMonthsList;
 		if (this.repeatCustomType == "O") {
-			var bwd = soapDoc.set("byday", null, rule);
-			
+			bwd = rule.byday = {};
+
             if(this.repeatCustomDays) {
-                for(var i=0; i < this.repeatCustomDays.length; i++) {
-                    wkDay = soapDoc.set("wkday", null, bwd);
+                for(i=0; i < this.repeatCustomDays.length; i++) {
+                    wkDay = bwd.wkday = {};
 			        //wkDay.setAttribute("ordwk", this.repeatCustomOrdinal);
-                    wkDay.setAttribute("day", this.repeatCustomDays[i]);
-                    if(this.repeatCustomOrdinal) {
-                        wkDay.setAttribute("ordwk", this.repeatCustomOrdinal);
+                    wkDay.day = this.repeatCustomDays[i];
+                    if (this.repeatCustomOrdinal) {
+                        wkDay.ordwk = this.repeatCustomOrdinal;
                     }
                 }
             }
 
             if(this.repeatCustomOrdinal == null) {
-                var bysetpos = soapDoc.set("bysetpos", null, rule);
-                bysetpos.setAttribute("poslist", this.repeatBySetPos);
+                bysetpos = rule.bysetpos = {};
+                bysetpos.poslist = this.repeatBySetPos;
             }
 
         } else {
-			var bmd = soapDoc.set("bymonthday", null, rule);
-			bmd.setAttribute("modaylist", this.repeatCustomMonthDay);
+			bmd = rule.bymonthday = {};
+			bmd.modaylist = this.repeatCustomMonthDay;
 		}
 
 	}
 
-    this.setExcludes(soapDoc, recur);
+    this.setExcludes(recur);
 };
 
 ZmRecurrence.prototype.setExcludes =
-function(soapDoc, recur) {
-    if(!this._cancelRecurIds) return;
+function(recur) {
+    if (!this._cancelRecurIds) {
+        return;
+    }
 
-    var exclude;
-    var dates;
+    var exclude,
+        dates,
+        i,
+        ridZ,
+        dtval,
+        s;
 
-    for(var i in this._cancelRecurIds) {
+    for (i in this._cancelRecurIds) {
 
-        if(!this._cancelRecurIds[i]) continue;
-
-        if(!exclude && !dates) {
-            exclude = soapDoc.set("exclude", null, recur);
-            dates = soapDoc.set("dates", null, exclude);
+        if (!this._cancelRecurIds[i]) {
+            continue;
         }
 
-        var ridZ = i;
-        var dtval = soapDoc.set("dtval", null, dates);
-        var s = soapDoc.set("s", null, dtval);
-        s.setAttribute("d", ridZ);
+        if (!exclude && !dates) {
+            exclude = recur.exclude = {};
+            dates = exclude.dates = [];
+        }
+
+        ridZ = i;
+        dtval = {};
+        s = dtval.s = {};
+        s.d = ridZ;
+        dates.push(dtval);
     }
 };
 

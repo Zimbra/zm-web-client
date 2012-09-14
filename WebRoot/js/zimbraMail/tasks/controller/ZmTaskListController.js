@@ -785,7 +785,7 @@ function(task,ftask) {
 	
 ZmTaskListController.prototype._handleCancel =
 function(tasks) {
-	var batchCmd = new ZmBatchCommand();
+	var batchCmd = new ZmBatchCommand(true, null, true);
 	var actionController = appCtxt.getActionController();
 	var idList = [];
 	for (var i = 0; i < tasks.length; i++) {

@@ -431,9 +431,9 @@ function(calItem, inst, name) {
 /**
  * @private
  */
-ZmCalBaseItem.prototype._addLocationToSoap =
+ZmCalBaseItem.prototype._addLocationToRequest =
 function(inv) {
-	inv.setAttribute("loc", this.getLocation());
+    inv.loc = this.getLocation();
 };
 
 /**

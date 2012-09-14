@@ -268,11 +268,15 @@ function() {
 ZmTask.prototype.cancel =
 function(mode, batchCmd) {
 	this.setViewMode(mode);
-	var soapDoc = AjxSoapDoc.create(this._getSoapForMode(mode), "urn:zimbraMail");
-	this._addInviteAndCompNum(soapDoc);
+    var jsonObj = {},
+        requestName = this._getRequestNameForMode(mode),
+        request = jsonObj[requestName] = {
+            _jsns : "urn:zimbraMail"
+        };
+	this._addInviteAndCompNum(request);
 
 	// NOTE: we dont bother w/ handling the response - since UI gets updated via notifications
-	batchCmd.addRequestParams(soapDoc);
+	batchCmd.addRequestParams(jsonObj);
 };
 
 /**
@@ -517,7 +521,7 @@ function(tmp) {
 /**
  * @private
  */
-ZmTask.prototype._getSoapForMode =
+ZmTask.prototype._getRequestNameForMode =
 function(mode, isException) {
 	switch (mode) {
 		case ZmCalItem.MODE_NEW:
@@ -547,11 +551,11 @@ function(mode, isException) {
 /**
  * @private
  */
-ZmTask.prototype._addExtrasToSoap =
-function(soapDoc, inv, comp) {
-	ZmCalItem.prototype._addExtrasToSoap.call(this, soapDoc, inv, comp);
+ZmTask.prototype._addExtrasToRequest =
+function(request, comp) {
+	ZmCalItem.prototype._addExtrasToRequest.call(this, request, comp);
 
-	comp.setAttribute("percentComplete", this.pComplete);
+	comp.percentComplete = this.pComplete;
 
 	// TODO - set "completed" if applicable
 };
