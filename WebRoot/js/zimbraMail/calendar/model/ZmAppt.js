@@ -880,7 +880,7 @@ function(calItemNode, instNode) {
     this.hasEx = this._getAttr(calItemNode, instNode, "hasEx") || false;
 };
 
-ZmAppt.prototype._getSoapForMode =
+ZmAppt.prototype._getRequestNameForMode =
 function(mode, isException) {
 	switch (mode) {
 		case ZmCalItem.MODE_NEW:
@@ -923,24 +923,23 @@ function(mode, isException) {
 	return null;
 };
 
-ZmAppt.prototype._addExtrasToSoap =
-function(soapDoc, inv, comp) {
-	ZmCalItem.prototype._addExtrasToSoap.call(this, soapDoc, inv, comp);
+ZmAppt.prototype._addExtrasToRequest =
+function(request, comp) {
+	ZmCalItem.prototype._addExtrasToRequest.call(this, request, comp);
 
-	comp.setAttribute("fb", this.freeBusy);
-	comp.setAttribute("class", this.privacy);
-	comp.setAttribute("transp", this.transparency);
-
-    //Add Draft flag    
+    comp.fb = this.freeBusy;
+    comp['class'] = this.privacy; //using ['class'] to avoid build error as class is reserved word
+    comp.transp = this.transparency;
+    //Add Draft flag
     var draftFlag = false;
     if(!this.isSend && this.hasAttendees()){
         draftFlag = this.isDraft || this.makeDraft;
     }
     draftFlag = draftFlag ? 1 : 0;
-	comp.setAttribute("draft", draftFlag);
+    comp.draft = this.draftFlag;
 
     if(!this.isSend && this.hasAttendees()){
-        soapDoc.setMethodAttribute("echo", "1");
+        request.echo = "1";
     }
 };
 
@@ -974,47 +973,25 @@ function() {
 };
 
 ZmAppt.prototype.addAttendeesToChckConflictsRequest =
-function(soapDoc, inv) {
-	for (var type in this._attendees) {
-
+function(request) {
+    var type,
+        usr,
+        i,
+        attendee,
+        address;
+	for (type in this._attendees) {
         //consider only location & equipments for conflict check
-        if(type == ZmCalBaseItem.PERSON) continue;
+        if (type == ZmCalBaseItem.PERSON) {
+            continue;
+        }
 
 		if (this._attendees[type] && this._attendees[type].length) {
-			for (var i = 0; i < this._attendees[type].length; i++) {
+            usr = request.usr = [];
+
+            for (i = 0; i < this._attendees[type].length; i++) {
 				//this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this._attendees[type][i], type);
-				var attendee = this._attendees[type][i];
-				var address;
-				if (attendee._inviteAddress) {
-					address = attendee._inviteAddress;
-					delete attendee._inviteAddress;
-				} else {
-					address = attendee.getEmail();
-				}
-				if (!address) continue;
-
-				var usr = soapDoc.set("usr", null, inv);
-				if (address instanceof Array) {
-					address = address[0];
-				}
-				usr.setAttribute("name", address);
-			}
-		}
-	}
-};
-
-ZmAppt.prototype.addAttendeesToChckConflictsJSONRequest =
-function(inv) {
-	for (var type in this._attendees) {
-
-        //consider only location & equipments for conflict check
-        if(type == ZmCalBaseItem.PERSON) continue;
-
-        if (this._attendees[type] && this._attendees[type].length) {
-			var usr = inv.usr = [];
-			for (var i = 0; i < this._attendees[type].length; i++) {
-				var attendee = this._attendees[type][i];
-				var address;
+				attendee = this._attendees[type][i];
+				address = null;
 				if (attendee._inviteAddress) {
 					address = attendee._inviteAddress;
 					delete attendee._inviteAddress;
@@ -1026,7 +1003,9 @@ function(inv) {
 				if (address instanceof Array) {
 					address = address[0];
 				}
-				usr.push({name:address});
+				usr.push({
+                    name : address
+                });
 			}
 		}
 	}
@@ -1059,13 +1038,13 @@ function(callback){
     this.send(null, callback);  
 };
 
-ZmAppt.prototype._addAttendeesToSoap =
-function(soapDoc, inv, m, notifyList, onBehalfOf) {
+ZmAppt.prototype._addAttendeesToRequest =
+function(inv, m, notifyList, onBehalfOf, request) {
     var dispNamesNotifyList = this._dispNamesNotifyList = {};
 	for (var type in this._attendees) {
 		if (this._attendees[type] && this._attendees[type].length) {
 			for (var i = 0; i < this._attendees[type].length; i++) {
-				this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this._attendees[type][i], type);
+				this._addAttendeeToRequest(inv, m, notifyList, this._attendees[type][i], type, request);
 			}
 		}
 	}
@@ -1073,27 +1052,30 @@ function(soapDoc, inv, m, notifyList, onBehalfOf) {
 	// if we have a separate list of email addresses to notify, do it here
 	if (this._sendNotificationMail && this.isOrganizer() && m && notifyList && this.isSend) {
 		for (var i = 0; i < notifyList.length; i++) {
-			var e = soapDoc.set("e", null, m),
+			var e,
                 address = notifyList[i],
                 dispName = dispNamesNotifyList[address];
 
-			e.setAttribute("a", address);
-			e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.TO]);
+            e = {
+                a : address,
+                t : AjxEmailAddress.toSoapType[AjxEmailAddress.TO]
+            };
             if (dispName) {
-                e.setAttribute("p", dispName);
+                e.p = dispName;
             }
+            m.e.push(e);
 		}
 	}
 
 	if (this.isOrganizer()) {
 		// call base class LAST
-		ZmCalItem.prototype._addAttendeesToSoap.call(this, soapDoc, inv, m, notifyList, onBehalfOf);
+		ZmCalItem.prototype._addAttendeesToRequest.call(this, inv, m, notifyList, onBehalfOf);
 	}
     delete this._dispNamesNotifyList;
 };
 
-ZmAppt.prototype._addAttendeeToSoap =
-function(soapDoc, inv, m, notifyList, attendee, type) {
+ZmAppt.prototype._addAttendeeToRequest =
+function(inv, m, notifyList, attendee, type, request) {
 	var address;
 	if (attendee._inviteAddress) {
 		address = attendee._inviteAddress;
@@ -1105,14 +1087,13 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 
 	var dispName = attendee.getFullName();
 	if (inv) {
-		var at = soapDoc.set("at", null, inv);
+		var at = {};
 		// for now make attendees optional, until UI has a way of setting this
 		var role = ZmCalItem.ROLE_NON_PARTICIPANT;
 		if (type == ZmCalBaseItem.PERSON) {
 			role = attendee.getParticipantRole() ? attendee.getParticipantRole() : ZmCalItem.ROLE_REQUIRED;
 		}
-		at.setAttribute("role", role);
-		
+		at.role = role;
 		var ptst = attendee.getParticipantStatus() || ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 		if (notifyList) {
 			var attendeeFound = false;
@@ -1131,11 +1112,11 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
                 this._dispNamesNotifyList[address] = dispName;
             }
 		}
-		at.setAttribute("ptst", ptst);
+		at.ptst = ptst;
 
 		var rsvpVal = this.rsvp ? "1" : "0";
 		if (type != ZmCalBaseItem.PERSON) {
-			at.setAttribute("cutype", ZmCalendarApp.CUTYPE_RESOURCE);
+			at.cutype = ZmCalendarApp.CUTYPE_RESOURCE;
 			if(this.isOrganizer()) {
 				rsvpVal = "1";
 			}
@@ -1143,26 +1124,28 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 		if (this._cancelFutureInstances) {
 			rsvpVal = "0";
 		}
-		at.setAttribute("rsvp", rsvpVal);
+		at.rsvp = rsvpVal;
 
 		if (address instanceof Array) {
 			address = address[0];
 		}
-		at.setAttribute("a", address);
+		at.a = address;
 
 		if (dispName) {
-			at.setAttribute("d", dispName);
+			at.d = dispName;
 		}
+        inv.at.push(at);
 	}
 
 	// set email to notify if notifyList not provided
 	if (this._sendNotificationMail && this.isOrganizer() && m && !notifyList && !this.__newFolderId && this.isSend) {
-		var e = soapDoc.set("e", null, m);
-		e.setAttribute("a", address);
+        var e = {};
+        e.a = address;
 		if (dispName) {
-			e.setAttribute("p", dispName);
+            e.p = dispName;
 		}
-		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.TO]);
+        e.t = AjxEmailAddress.toSoapType[AjxEmailAddress.TO];
+        m.e.push(e);
 	}
 };
 
@@ -1195,53 +1178,63 @@ function(result) {
 
 ZmAppt.prototype.forwardInvite =
 function(callback, errorCallback, mode) {
-	var soapDoc = AjxSoapDoc.create(this._getSoapForMode(ZmCalItem.MODE_FORWARD_INVITE, this.isException), "urn:zimbraMail");
+    var jsonObj = {},
+        requestName = this._getRequestNameForMode(ZmCalItem.MODE_FORWARD_INVITE, this.isException),
+        request = jsonObj[requestName] = {
+            _jsns : "urn:zimbraMail"
+        },
+        m = request.m = {},
+        accountName = this.getRemoteFolderOwner(),
+        mailFromAddress = this.getMailFromAddress(),
+        e = m.e = [],
+        addrs = this._fwdAddrs,
+        attendee,
+        address,
+        name,
+        i;
 
 	if (this.forwardInviteMsgId) {
-		soapDoc.setMethodAttribute("id", this.forwardInviteMsgId);
+        request.id = this.forwardInviteMsgId;
 	}
 
-	var m = soapDoc.set("m");
-	soapDoc.set("su", this.name, m);
+	m.su = this.name;
 	this.isForwardMode = true;
-	this._addNotesToSoap(soapDoc, m, false);
+	this._addNotesToRequest(m);
 
-	var accountName = this.getRemoteFolderOwner();
-	var localAcctName = this.getFolder().getAccount().name;
-	var isOnBehalfOf = accountName && localAcctName && localAcctName != accountName;
-
-	var mailFromAddress = this.getMailFromAddress();
 	if (this.isOrganizer() && !accountName && mailFromAddress) {
-		var e = soapDoc.set("e", null, m);
-		e.setAttribute("a", mailFromAddress);
-		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
+        e.push({
+            a : mailFromAddress,
+		    t : AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]
+        });
 	}
 
-	var addrs = this._fwdAddrs;
-	for (var i = 0; i < addrs.length; i++) {
-		var attendee = addrs[i];
-		var address;
-		var name = "";
+	for (i = 0; i < addrs.length; i++) {
+		attendee = addrs[i];
+        name = "";
 
 		if (attendee._inviteAddress) {
 			address = attendee._inviteAddress;
 			delete attendee._inviteAddress;
-		} else if(attendee.isAjxEmailAddress){
+		}
+        else if (attendee.isAjxEmailAddress) {
 			address = attendee.address;
 			name = attendee.dispName || attendee.name
-		} else if(attendee instanceof ZmContact){
+		}
+        else if (attendee instanceof ZmContact) {
 			address = attendee.getEmail();
 			name = attendee.getFullName();
 		}
-		if (!address) { continue; }
+		if (!address) {
+            continue;
+        }
 		if (address instanceof Array) {
 			address = address[0];
 		}
 
-		this._addAddressToSoap(soapDoc, m, address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], name);
+		this._addAddressToRequest(m, address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], name);
 	}
 
-	this._sendRequest(soapDoc, accountName, callback, errorCallback);
+	this._sendRequest(null, accountName, callback, errorCallback, jsonObj, requestName);
 };
 
 ZmAppt.prototype.setForwardMode =
@@ -1256,88 +1249,102 @@ function(isProposeTimeMode) {
 
 ZmAppt.prototype.sendCounterAppointmentRequest =
 function(callback, errorCallback, viewMode) {
-	var mode = ZmCalItem.MODE_PROPOSE_TIME;
+	var mode = ZmCalItem.MODE_PROPOSE_TIME,
+        jsonObj = {},
+        requestName = this._getRequestNameForMode(mode, this.isException),
+        request = jsonObj[requestName] = {
+            _jsns : "urn:zimbraMail"
+        },
+        m = request.m = {},
+        e = m.e = [],
+        inv = m.inv = {},
+        comps = inv.comp = [],
+        comp = inv.comp[0] = {},
+        calendar = this.getFolder(),
+    	acct = calendar.getAccount(),
+    	accountName = this.getRemoteFolderOwner(),
+    	localAcctName = this.getFolder().getAccount().name,
+        cif = this._currentlyLoaded && this._currentlyLoaded.cif,
+    	isOnBehalfOf = accountName && localAcctName && localAcctName != accountName,
+    	mailFromAddress = this.getMailFromAddress(),
+        orgEmail,
+        orgAddress,
+        exceptId,
+        me,
+        organizer,
+        user,
+        org,
+        orgName;
 
-	var soapDoc = AjxSoapDoc.create(this._getSoapForMode(mode, this.isException), "urn:zimbraMail");
-
-    this._addInviteAndCompNum(soapDoc);
-
-	var m = soapDoc.set("m");
-	soapDoc.set("su", ZmMsg.subjectNewTime + ": " + this.name, m);
-
-	var calendar = this.getFolder();
-	var acct = calendar.getAccount();
-	var accountName = this.getRemoteFolderOwner();
-	var localAcctName = this.getFolder().getAccount().name;
-    var cif = this._currentlyLoaded && this._currentlyLoaded.cif;
-	var isOnBehalfOf = accountName && localAcctName && localAcctName != accountName;
-
-	var mailFromAddress = this.getMailFromAddress();
-	if (this.isOrganizer() && !accountName && mailFromAddress) {
-		var e = soapDoc.set("e", null, m);
-		e.setAttribute("a", mailFromAddress);
-		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
+    this._addInviteAndCompNum(request);
+    m.su = ZmMsg.subjectNewTime + ": " + this.name;
+    if (this.isOrganizer() && !accountName && mailFromAddress) {
+		e.push({
+            a : mailFromAddress,
+		    t : AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]
+        });
 	} else if (isOnBehalfOf || cif) {
-        var e = soapDoc.set("e", null, m);
-        e.setAttribute("a", isOnBehalfOf ? accountName: cif);
-        e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
-        e = soapDoc.set("e", null, m);
-        e.setAttribute("a", localAcctName);
-        e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.SENDER]);
+        e.push({
+            a : isOnBehalfOf ? accountName: cif,
+            t : AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]
+        });
+        e.push({
+            a : localAcctName,
+            t : AjxEmailAddress.toSoapType[AjxEmailAddress.SENDER]
+        });
     }
 
 	if(this.organizer) {
-		var orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer);
-		var orgName = orgEmail.getName();
-		var e = soapDoc.set("e", null, m);
-		e.setAttribute("a", orgEmail);
-		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.TO]);
+		orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer);
+		orgAddress = orgEmail.getAddress();
+		e.push({
+            a : orgAddress,
+		    t : AjxEmailAddress.toSoapType[AjxEmailAddress.TO]
+        });
 	}
-
-	var inv = soapDoc.set("inv", null, m);
-	var comp = soapDoc.set("comp", null, inv);
-
     //Do not add exceptId if propose new time for series
 	if (this.ridZ && viewMode != ZmCalItem.MODE_EDIT_SERIES) {
-		var exceptId = soapDoc.set("exceptId", null, comp);
-		exceptId.setAttribute("d", this.ridZ);
+		exceptId = comp.exceptId = {};
+		exceptId.d = this.ridZ;
 	}
 
 	// subject/location
-	comp.setAttribute("name", this.name);
+	comp.name = this.name;
 	if (this.uid != null && this.uid != -1) {
-		comp.setAttribute("uid", this.uid);
+		comp.uid = this.uid;
 	}
 
 	if (this.seq) {
-		comp.setAttribute("seq", this.seq);
+		comp.seq = this.seq;
 	}
 
-	this._addDateTimeToSoap(soapDoc, inv, comp);
-	this._addNotesToSoap(soapDoc, m, false);
+	this._addDateTimeToRequest(request, comp);
+	this._addNotesToRequest(m);
 
 	// set organizer - but not for local account
 	if (!(appCtxt.isOffline && acct.isMain)) {
-		var me = (appCtxt.multiAccounts) ? acct.getEmail() : appCtxt.get(ZmSetting.USERNAME);
-		var user = mailFromAddress || me;
-		var organizer = this.organizer || user;
-		var org = soapDoc.set("or", null, comp);
-		org.setAttribute("a", organizer);
+		me = (appCtxt.multiAccounts) ? acct.getEmail() : appCtxt.get(ZmSetting.USERNAME);
+		user = mailFromAddress || me;
+		organizer = this.organizer || user;
+		org = comp.or = {};
+		org.a = organizer;
 		if (calendar.isRemote()) {
-			org.setAttribute("sentBy", user); // if on-behalf of, set sentBy
+			org.sentBy = user; // if on-behalf of, set sentBy
 		}
-		var orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer);
-		var orgName = orgEmail.getName();
-		if (orgName) org.setAttribute("d", orgName);
+		orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer);
+		orgName = orgEmail.getName();
+		if (orgName) {
+            org.d = orgName;
+        }
 	}
 
-	this._sendRequest(soapDoc, accountName, callback, errorCallback);
+	this._sendRequest(null, accountName, callback, errorCallback, jsonObj, requestName);
 };
 
 ZmAppt.prototype.forward =
 function(callback, errorCallback) {
-	var mode = ZmCalItem.MODE_FORWARD;
-	var needsExceptionId = this.isException;
+	var mode = ZmCalItem.MODE_FORWARD,
+	    needsExceptionId = this.isException;
 
 	if (this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
 		mode = ZmCalItem.MODE_FORWARD_SINGLE_INSTANCE;
@@ -1353,69 +1360,82 @@ function(callback, errorCallback) {
 		return;
 	}
 
-	var soapDoc = AjxSoapDoc.create(this._getSoapForMode(mode, this.isException), "urn:zimbraMail");
+    var jsonObj = {},
+        requestName = this._getRequestNameForMode(mode, this.isException),
+        request = jsonObj[requestName] = {
+            _jsns : "urn:zimbraMail"
+        },
+        exceptId,
+        message,
+        invite,
+        exceptIdInfo,
+        allDay,
+        sd,
+        tz,
+        timezone,
+        m = request.m = {},
+        accountName = this.getRemoteFolderOwner(),
+    	mailFromAddress = this.getMailFromAddress(),
+        e = m.e = [],
+        addrs = this._fwdAddrs,
+        attendee,
+        address,
+        name,
+        i;
 
 	if (this.uid != null && this.uid != -1) {
-		soapDoc.setMethodAttribute("id", this.id);
+        request.id = this.id;
 	}
 
 	if (needsExceptionId) {
-		var exceptId = soapDoc.set("exceptId");
+		exceptId = request.exceptId = {};
 		if (this.isException) {
-			var message = this.message ? this.message : null;
-			var invite = (message && message.invite) ? message.invite : null;
-			var exceptIdInfo = invite.getExceptId();
-			exceptId.setAttribute("d", exceptIdInfo.d);
+			message = this.message ? this.message : null;
+			invite = (message && message.invite) ? message.invite : null;
+			exceptIdInfo = invite.getExceptId();
+			exceptId.d = exceptIdInfo.d;
 			if (exceptIdInfo.tz) {
-				exceptId.setAttribute("tz", exceptIdInfo.tz);
+				exceptId.tz = exceptIdInfo.tz;
 			}
 		} else {
-			var allDay = this._orig ? this._orig.allDayEvent : this.allDayEvent;
+			allDay = this._orig ? this._orig.allDayEvent : this.allDayEvent;
 			if (allDay != "1") {
-				var sd = AjxDateUtil.getServerDateTime(this.getOrigStartDate(), this.startsInUTC);
+				sd = AjxDateUtil.getServerDateTime(this.getOrigStartDate(), this.startsInUTC);
 				// bug fix #4697 (part 2)
-				var timezone = this.getOrigTimezone();
+				timezone = this.getOrigTimezone();
 				if (!this.startsInUTC && timezone) {
-					exceptId.setAttribute("tz", timezone);
+					exceptId.tz = timezone;
 				}
-				exceptId.setAttribute("d", sd);
+				exceptId.d = sd;
 			} else {
-				var sd = AjxDateUtil.getServerDate(this.getOrigStartDate());
-				exceptId.setAttribute("d", sd);
+				sd = AjxDateUtil.getServerDate(this.getOrigStartDate());
+				exceptId.d = sd;
 			}
 		}
 	}
 
-	var tz;
 	if (this.timezone) {
 		var clientId = AjxTimezone.getClientId(this.timezone);
-		ZmTimezone.set(soapDoc, clientId, null, true);
+		ZmTimezone.set(request, clientId, null, true);
 		tz = this.timezone;
 	}
 
-	var m = soapDoc.set("m");
-	soapDoc.set("su", this.name, m);
+    m.su = this.name;
     this.isForwardMode = true;
-	this._addNotesToSoap(soapDoc, m, false);
+	this._addNotesToRequest(m);
 
-	var accountName = this.getRemoteFolderOwner();
-	var localAcctName = this.getFolder().getAccount().name;
-	var isOnBehalfOf = accountName && localAcctName && localAcctName != accountName;
-
-	var mailFromAddress = this.getMailFromAddress();
 	if (this.isOrganizer() && !accountName && mailFromAddress) {
-		var e = soapDoc.set("e", null, m);
-		e.setAttribute("a", mailFromAddress);
-		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
+		e.push({
+            a : mailFromAddress,
+		    t : AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]
+        });
 	}
 
-	var addrs = this._fwdAddrs;
-	for (var i = 0; i < addrs.length; i++) {
-		var attendee = addrs[i];
+	for (i = 0; i < addrs.length; i++) {
+		attendee = addrs[i];
 		if (!attendee) { continue; }
 
-		var address;
-		var name = "";
+        name = "";
 		if (attendee._inviteAddress) {
 			address = attendee._inviteAddress;
 			delete attendee._inviteAddress;
@@ -1430,20 +1450,21 @@ function(callback, errorCallback) {
 		if (address instanceof Array) {
 			address = address[0];
 		}
-		this._addAddressToSoap(soapDoc, m, address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], name);
+		this._addAddressToRequest(m, address, AjxEmailAddress.toSoapType[AjxEmailAddress.TO], name);
 	}
 
-	this._sendRequest(soapDoc, accountName, callback, errorCallback);
+	this._sendRequest(null, accountName, callback, errorCallback, jsonObj, requestName);
 };
 
-ZmAppt.prototype._addAddressToSoap =
-function(soapDoc, m, addr, type, name) {
-	var e = soapDoc.set("e", null, m);
-	e.setAttribute("a", addr);
-	e.setAttribute("t", type);
+ZmAppt.prototype._addAddressToRequest =
+function(m, addr, type, name) {
+	var e = {};
+	e.a = addr;
+	e.t = type;
 	if (name) {
-		e.setAttribute("p", name);
+        e.p = name;
 	}
+    m.e.push(e);
 };
 
 ZmAppt.prototype.setProposedInvite =

@@ -1857,7 +1857,7 @@ function() {
 
 ZmCalViewController.prototype._handleGetDetails =
 function() {
-	var batchCmd = new ZmBatchCommand(true);
+	var batchCmd = new ZmBatchCommand(true, null, true);
 	for (var j in this._deleteList) {
 		var list = this._deleteList[j];
 		for (var i = 0; i < list.length; i++) {

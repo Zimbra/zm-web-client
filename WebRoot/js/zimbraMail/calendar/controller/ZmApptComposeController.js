@@ -652,15 +652,17 @@ function(appt, numRecurrence, callback, showAll, displayConflictDialog, conflict
 		if(appt.isRecurring() && mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
 			// for recurring appt - user GetRecurRequest to get full recurrence
 			// information and use the component in CheckRecurConflictRequest
-			var recurInfoCallback = new AjxCallback(this, this._checkResourceConflictsSoap,
-                [appt, numRecurrence, callback, showAll, displayConflictDialog, conflictCallbackOverride]);
+			var recurInfoCallback = this._checkResourceConflicts.bind(this,
+                appt, numRecurrence, callback, showAll, displayConflictDialog, conflictCallbackOverride);
 			reqId = this.getRecurInfo(appt, recurInfoCallback);
-		} else {
-			reqId = this._checkResourceConflictsSoap(appt, numRecurrence, callback,
+		}
+        else {
+			reqId = this._checkResourceConflicts(appt, numRecurrence, callback,
                 showAll, displayConflictDialog, conflictCallbackOverride);
 		}
-	} else {
-		reqId = this._checkResourceConflictsSoap(appt, numRecurrence, callback,
+	}
+    else {
+		reqId = this._checkResourceConflicts(appt, numRecurrence, callback,
             showAll, displayConflictDialog, conflictCallbackOverride);
 	}
 	return reqId;
@@ -671,67 +673,103 @@ function(appt, numRecurrence, callback, showAll, displayConflictDialog, conflict
  * 
  * @private
  */
-ZmApptComposeController.prototype._checkResourceConflictsJSON =
-function(appt, callback, recurInfo) {
-	var mode = appt.viewMode;
-	var jsonObj = {CheckRecurConflictsRequest:{_jsns:"urn:zimbraMail"}};
-	var request = jsonObj.CheckRecurConflictsRequest;
-	var today = new Date();
-	today.setHours(0,0,0,0);
-	request.s = today.getTime();
-	request.e = today.getTime() + (AjxDateUtil.MSEC_PER_DAY*365);
+ZmApptComposeController.prototype._checkResourceConflicts =
+function(appt, numRecurrence, callback, showAll, displayConflictDialog,
+         conflictCallbackOverride, recurInfo) {
+	var mode = appt.viewMode,
+	    jsonObj = {
+            CheckRecurConflictsRequest: {
+                _jsns:"urn:zimbraMail"
+            }
+        },
+	    request = jsonObj.CheckRecurConflictsRequest,
+        startDate = new Date(appt.startDate),
+        comps = request.comp = [],
+        comp = request.comp[0] = {},
+        recurrence,
+        recur;
+
+    startDate.setHours(0,0,0,0);
+	request.s = startDate.getTime();
+	request.e = ZmApptComposeController.getCheckResourceConflictEndTime(
+	        appt, startDate, numRecurrence);
+
+    if (showAll) {
+        request.all = "1";
+    }
 
 	if (mode!=ZmCalItem.MODE_NEW_FROM_QUICKADD && mode!= ZmCalItem.MODE_NEW) {
 		request.excludeUid = appt.uid;
 	}
 
-	request.comp = recurInfo.comp || [];
-	request.except = recurInfo.except;
-	request.tz = recurInfo.tz;
 
-	appt.addAttendeesToChckConflictsJSONRequest(request);
+    appt._addDateTimeToRequest(request, comp);
 
-	return appCtxt.getAppController().sendRequest({
-		jsonObj: jsonObj,
-		asyncMode: true,
-		callback: (new AjxCallback(this, this._handleResourceConflict, [appt, callback])),
-		errorCallback: (new AjxCallback(this, this._handleResourceConflictError, [appt, callback])),
-		noBusyOverlay: true
-	});
+    //preserve the EXDATE (exclude recur) information
+    if(recurInfo) {
+        recurrence = appt.getRecurrence();
+        recur = (recurInfo && recurInfo.comp) ? recurInfo.comp[0].recur : null;
+        recurrence.parseExcludeInfo(recur);
+    }
+
+    if(mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
+        appt._recurrence.setJson(comp);
+    }
+
+    this.setExceptFromRecurInfo(request, recurInfo);
+
+    appt.addAttendeesToChckConflictsRequest(request);
+
+    return appCtxt.getAppController().sendRequest({
+        jsonObj: jsonObj,
+        asyncMode: true,
+        callback: (new AjxCallback(this, this._handleResourceConflict, [appt, callback,
+            displayConflictDialog, conflictCallbackOverride])),
+        errorCallback: (new AjxCallback(this, this._handleResourceConflictError, [appt, callback])),
+        noBusyOverlay: true
+    });
 };
 
 ZmApptComposeController.prototype.setExceptFromRecurInfo =
-function(soapDoc, recurInfo) {
-	var exceptInfo = recurInfo && recurInfo.except;
+function(request, recurInfo) {
+	var exceptInfo = recurInfo && recurInfo.except,
+        i,
+        s,
+        e,
+        exceptId,
+        except,
+        sNode,
+        eNode,
+        exceptIdNode;
 	if (!exceptInfo) { return; }
 
-	for (var i in exceptInfo) {
-		var s = exceptInfo[i].s ? exceptInfo[i].s[0] : null;
-		var e = exceptInfo[i].e ? exceptInfo[i].e[0] : null;
-		var exceptId = exceptInfo[i].exceptId ? exceptInfo[i].exceptId[0] : null;
+	for (i in exceptInfo) {
+		s = exceptInfo[i].s ? exceptInfo[i].s[0] : null;
+		e = exceptInfo[i].e ? exceptInfo[i].e[0] : null;
+		exceptId = exceptInfo[i].exceptId ? exceptInfo[i].exceptId[0] : null;
 
-		var except = soapDoc.set("except", null, soapDoc.getMethod());
+		except = request.except = {};
 		if (s) {
-			var sNode = soapDoc.set("s", null, except);
-			sNode.setAttribute("d", s.d);
+			sNode = except.s = {};
+			sNode.d = s.d;
 			if (s.tz) {
-				sNode.setAttribute("tz", s.tz);
+				sNode.tz = s.tz;
 			}
 		}
 
 		if (e) {
-			var eNode = soapDoc.set("e", null, except);
-			eNode.setAttribute("d", e.d);
+			eNode = except.e = {};
+			eNode.d = e.d;
 			if (e.tz) {
-				eNode.setAttribute("tz", e.tz);
+				eNode.tz = e.tz;
 			}
 		}
 
 		if (exceptId) {
-			var exceptIdNode = soapDoc.set("exceptId", null, except);
-			exceptIdNode.setAttribute("d", exceptId.d);
+			exceptIdNode = except.exceptId = {};
+			exceptIdNode.d = exceptId.d;
 			if (exceptId.tz) {
-				exceptIdNode.setAttribute("tz", exceptId.tz);
+				exceptIdNode.tz = exceptId.tz;
 			}
 		}
 	}
@@ -765,59 +803,6 @@ function(appt, originalStartDate, numRecurrence) {
     }
     return endTime;
 }
-
-/**
- * Soap Request is used when "comp" has to be generated from appt.
- * 
- * @private
- */
-ZmApptComposeController.prototype._checkResourceConflictsSoap =
-function(appt, numRecurrence, callback, showAll, displayConflictDialog,
-         conflictCallbackOverride, recurInfo) {
-	var mode = appt.viewMode;
-    var startDate = new Date(appt.startDate);
-    startDate.setHours(0,0,0,0);
-    var startTime = startDate.getTime();
-    var endTime = ZmApptComposeController.getCheckResourceConflictEndTime(
-        appt, startDate, numRecurrence);
-
-	var soapDoc = AjxSoapDoc.create("CheckRecurConflictsRequest", "urn:zimbraMail");
-	soapDoc.setMethodAttribute("s", startTime);
-	soapDoc.setMethodAttribute("e", endTime);
-    if (showAll) {
-        soapDoc.setMethodAttribute("all", "1");
-    }
-
-	if (mode!=ZmCalItem.MODE_NEW_FROM_QUICKADD && mode!= ZmCalItem.MODE_NEW) {
-		soapDoc.setMethodAttribute("excludeUid", appt.uid);
-	}
-
-	var comp = soapDoc.set("comp", null, soapDoc.getMethod());
-
-	appt._addDateTimeToSoap(soapDoc, soapDoc.getMethod(), comp);
-
-    //preserve the EXDATE (exclude recur) information
-    if(recurInfo) {
-        var recurrence = appt.getRecurrence();
-        var recur = (recurInfo && recurInfo.comp) ? recurInfo.comp[0].recur : null;
-        recurrence.parseExcludeInfo(recur);
-    }
-
-	if(mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) appt._recurrence.setSoap(soapDoc, comp);
-
-	this.setExceptFromRecurInfo(soapDoc, recurInfo);
-
-	appt.addAttendeesToChckConflictsRequest(soapDoc, soapDoc.getMethod());
-
-	return appCtxt.getAppController().sendRequest({
-		soapDoc: soapDoc,
-		asyncMode: true,
-		callback: (new AjxCallback(this, this._handleResourceConflict, [appt, callback,
-            displayConflictDialog, conflictCallbackOverride])),
-		errorCallback: (new AjxCallback(this, this._handleResourceConflictError, [appt, callback])),
-		noBusyOverlay: true
-	});
-};
 
 /**
  * Gets the recurrence definition of an appointment.
