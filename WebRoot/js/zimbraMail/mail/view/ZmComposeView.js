@@ -1328,6 +1328,7 @@ function(idoc){
 
 ZmComposeView.prototype.showAttachmentDialog =
 function(val) {
+    if (this._disableAttachments) return;
 	var attachDialog = this._attachDialog = appCtxt.getAttachDialog();
 	if (val == ZmMsg.myComputer){
 		attachDialog.getMyComputerView();
@@ -2963,7 +2964,7 @@ function(option){
     if (this._attButton){
        this._attButton.setEnabled(option);
         var attachElement = this._attButton.getHtmlElement();
-        var node = attachElement && attachElement.getElementsByClassName("BrowseAttachBtn");
+        var node = attachElement && attachElement.getElementsByTagName("input");
         if (node && node.length){
             node[0].disabled = !(option);
         }
