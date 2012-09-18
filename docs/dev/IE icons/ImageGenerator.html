@@ -1,0 +1,121 @@
+<html>
+<head>
+<script src="http://code.jquery.com/jquery.min.js"></script>	
+</head>
+<body>
+<pre>
+<script>
+
+var standardColors = ["5b9bf2","43eded","bebebe","6acb9e","fdbc55","fe98d3","ba86e5","f66666","f8fa33"];
+
+var customColors = [
+	"5b9bf2","43eded","bebebe","6acb9e","fdbc55","fe98d3","ba86e5","f66666","f8fa33",
+	"ff8686","ff9966","ffff99","ccffcc","ccffff","99ccff","ccccff","ffccff","ededed","808080",
+	"ff0000","ff6600","ffcc33","66cc66","00cccc","3366ff","6666ff","cc33cc","d5d5d5","666666","cc0000","cc6600","cc9933",
+	"009900","339999","3333ff","6633ff","993399","cccccc","4d4d4d","990000","993300","996633","006600","336666",
+	"000099","330099","663366","b3b3b3","333333","330000","663300","333300","003300","003333","000066","330066",
+	"330033","aaaaaa","1a1a1a"];
+
+
+var imageNames = ["CalendarFolder", "ContactsFolder", "EmailedContacts", "Folder", "Inbox", "MailFolder", "RSS",
+		 "SearchFolder", "SentFolder", "SharedCalendarFolder", "SharedContactsFolder", "SharedMailFolder",
+		 "SharedTaskList", "Tag", "TaskList"];
+AjxImgData = {};
+AjxImgData["ImgCalendarFolderMask"]={t:-31,l:0,w:16,h:16,f:"zimbra/img/zimbra.gif",ief:"zimbra/img/zimbra/ImgCalendarFolderMask.gif"};
+AjxImgData["ImgContactsFolderMask"]={t:-48,l:0,w:16,h:16,f:"zimbra/img/zimbra.gif",ief:"zimbra/img/zimbra/ImgContactsFolderMask.gif"};
+AjxImgData["ImgEmailedContactsMask"]={t:-65,l:0,w:16,h:16,f:"zimbra/img/zimbra.gif",ief:"zimbra/img/zimbra/ImgEmailedContactsMask.gif"};
+AjxImgData["ImgFolderMask"]={t:-82,l:0,w:16,h:16,f:"zimbra/img/zimbra.gif",ief:"zimbra/img/zimbra/ImgFolderMask.gif"};
+AjxImgData["ImgInboxMask"]={t:-133,l:0,w:16,h:16,f:"zimbra/img/zimbra.gif",ief:"zimbra/img/zimbra/ImgInboxMask.gif"};
+AjxImgData["ImgMailFolderMask"]={t:-150,l:0,w:16,h:16,f:"zimbra/img/zimbra.gif",ief:"zimbra/img/zimbra/ImgMailFolderMask.gif"};
+AjxImgData["ImgRSSMask"]={t:-184,l:0,w:16,h:16,f:"zimbra/img/zimbra.gif",ief:"zimbra/img/zimbra/ImgRSSMask.gif"};
+AjxImgData["ImgSearchFolderMask"]={t:-201,l:0,w:16,h:16,f:"zimbra/img/zimbra.gif",ief:"zimbra/img/zimbra/ImgSearchFolderMask.gif"};
+AjxImgData["ImgSentFolderMask"]={t:-218,l:0,w:16,h:16,f:"zimbra/img/zimbra.gif",ief:"zimbra/img/zimbra/ImgSentFolderMask.gif"};
+AjxImgData["ImgSharedCalendarFolderMask"]={t:-235,l:0,w:16,h:16,f:"zimbra/img/zimbra.gif",ief:"zimbra/img/zimbra/ImgSharedCalendarFolderMask.gif"};
+AjxImgData["ImgSharedContactsFolderMask"]={t:-252,l:0,w:16,h:16,f:"zimbra/img/zimbra.gif",ief:"zimbra/img/zimbra/ImgSharedContactsFolderMask.gif"};
+AjxImgData["ImgSharedMailFolderMask"]={t:-269,l:0,w:16,h:16,f:"zimbra/img/zimbra.gif",ief:"zimbra/img/zimbra/ImgSharedMailFolderMask.gif"};
+AjxImgData["ImgSharedTaskListMask"]={t:-286,l:0,w:16,h:16,f:"zimbra/img/zimbra.gif",ief:"zimbra/img/zimbra/ImgSharedTaskListMask.gif"};
+AjxImgData["ImgTagMask"]={t:-303,l:0,w:16,h:16,f:"zimbra/img/zimbra.gif",ief:"zimbra/img/zimbra/ImgTagMask.gif"};
+AjxImgData["ImgTaskListMask"]={t:-320,l:0,w:16,h:16,f:"zimbra/img/zimbra.gif",ief:"zimbra/img/zimbra/ImgTaskListMask.gif"};
+AjxImgData["ImgCalendarFolderOverlay"]={t:-980,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgCalendarFolderOverlay.png"};
+AjxImgData["ImgContactsFolderOverlay"]={t:-1362,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgContactsFolderOverlay.png"};
+//AjxImgData["ImgDraftFolderOverlay"]={t:-1741,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgDraftFolderOverlay.png"};
+AjxImgData["ImgEmailedContactsOverlay"]={t:-1843,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgEmailedContactsOverlay.png"};
+AjxImgData["ImgFolderOverlay"]={t:-2118,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgFolderOverlay.png"};
+AjxImgData["ImgInboxOverlay"]={t:-2495,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgInboxOverlay.png"};
+AjxImgData["ImgMailFolderOverlay"]={t:-2767,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgMailFolderOverlay.png"};
+//AjxImgData["ImgNotebookOverlay"]={t:-3586,l:0,w:16,h:15,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgNotebookOverlay.png"};
+//AjxImgData["ImgPeelMask"]={t:-3789,l:0,w:12,h:12,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgPeelMask.png"};
+//AjxImgData["ImgPeelOverlay"]={t:-3802,l:0,w:12,h:12,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgPeelOverlay.png"};
+AjxImgData["ImgRSSOverlay"]={t:-4450,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgRSSOverlay.png"};
+AjxImgData["ImgSearchFolderOverlay"]={t:-4552,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgSearchFolderOverlay.png"};
+//AjxImgData["ImgSectionOverlay"]={t:-4569,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgSectionOverlay.png"};
+AjxImgData["ImgSentFolderOverlay"]={t:-4688,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgSentFolderOverlay.png"};
+AjxImgData["ImgSharedCalendarFolderOverlay"]={t:-4722,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgSharedCalendarFolderOverlay.png"};
+AjxImgData["ImgSharedContactsFolderOverlay"]={t:-4773,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgSharedContactsFolderOverlay.png"};
+AjxImgData["ImgSharedMailFolderOverlay"]={t:-4807,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgSharedMailFolderOverlay.png"};
+//AjxImgData["ImgSharedNotebookOverlay"]={t:-4824,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgSharedNotebookOverlay.png"};
+//AjxImgData["ImgSharedSectionOverlay"]={t:-4841,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgSharedSectionOverlay.png"};
+AjxImgData["ImgSharedTaskListOverlay"]={t:-4875,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgSharedTaskListOverlay.png"};
+AjxImgData["ImgTagOverlay"]={t:-5249,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgTagOverlay.png"};
+AjxImgData["ImgTaskListOverlay"]={t:-5436,l:0,w:16,h:16,f:"zimbra/img/zimbra.png",ief:"zimbra/img/zimbra/ImgTaskListOverlay.png"};
+
+document.write("<DIV style='display:none'>");
+document.write("<IMG id='zimbraOverlay' src='/zimbra/img/zimbra.png'>");
+document.write("<IMG id='zimbraMask' src='/zimbra/img/zimbra.gif'>");
+document.write("</DIV>");
+
+function drawCanvasImage(ctx, maskImg, overlayImg, mask, overlay, color, width, height) {
+	ctx.drawImage(maskImg, mask.l, mask.t);
+	ctx.globalCompositeOperation = "source-out";
+	ctx.fillStyle = color;
+	ctx.fillRect(0, 0, width, height);
+	ctx.restore();
+	ctx.drawImage(overlayImg, overlay.l, overlay.t);
+	ctx.restore();
+};
+
+var maskElement = document.getElementById("zimbraMask");
+var overlayElement = document.getElementById("zimbraOverlay");
+var maskImg = new Image();
+maskImg.onload = function() {
+	document.writeln("<pre>");
+	for (var x=0; x<imageNames.length; x++) {
+		for (var n=0; n<customColors.length; n++) {
+			var colorName = customColors[n];
+			var imageName = imageNames[x];
+			var overlay = AjxImgData["Img" + imageNames[x] + "Overlay"];
+			var mask = AjxImgData["Img" + imageNames[x] + "Mask"];
+
+			var width = overlay.w;
+			var height = overlay.h
+			var canvas = document.createElement("CANVAS");
+			canvas.width = width;
+			canvas.height = height;
+			var ctx = canvas.getContext("2d");
+			ctx.save();
+			ctx.clearRect(0,0,width,height);
+			ctx.save();
+
+			drawCanvasImage(ctx, maskElement, overlayElement, mask, overlay, "#" + customColors[n], width, height);
+			document.write("<img src='" + canvas.toDataURL() + "' id='" + imageName + "_"+ colorName + "' border=0><br>");
+			var data = canvas.toDataURL();
+			//call AJAX to save file
+			
+			$.ajax( {type: "POST", 
+				url : "/service/proxy?target=http://localhost/processing.php", 
+				data: {
+				imageData : data,
+				imageName: 'Img' + imageName + "_" + colorName
+				}, 
+				async: false});
+			//document.writeln(".Img" + imageName + "_" + colorName + " {background: url(" + data + ") no-repeat; width:" + width + "px !important;height:" + height + "px !important;overflow:hidden;}");
+		}
+	}
+	document.writeln("</pre>");
+}
+maskImg.src = document.getElementById("zimbraMask").src;
+		
+</script>
+<
+</body>
+</html>
