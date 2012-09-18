@@ -1,0 +1,55 @@
+This documentation is in reference to bug 75630 (http://bugzilla.zimbra.com/show_bug.cgi?id=75630).
+
+With IE 10, Microsoft dropped support for DX filters. Zimbra used the DX filters to allow users to customize the color
+of icons (e.g. tags, folders, calendars, etc).  For browsers other than IE, Zimbra uses the Canvas tag for this 
+customization. However, as of Zimbra 8, the AJAx application is rendered using quirks mode which prevents the AJAX
+client for using Canvas or SVG to manipulate the color of the icons.  
+
+The approach to support IE 10 in Zimbra 8 is to generate all combinations of the icons which can be customized.  There
+are 15 icons with 59 possible color variations.  To generate these icons, we have a HTML web page which uses the same
+canvas methods in the non-IE browsers to generate the icons.  The data-uri that is generated is then POSTed to a PHP page
+and saved to a file.
+
+Once you have these 886 files, you can place them ZimbraWebClient/WebRoot/img/ie-custom-icons.
+
+Next, run ant clean deploy.
+
+This will generate a ie-custom-icons.png sprite image and also add the required CSS classes to images.css.
+
+Copy the ie-custom-icons.png into the /img/ie-custom-icons directory and remove the previously generated icons.
+Copy the CSS classes from images.css that reference ie-custom-icons.png into a CSS file ie-custom-icons.css.
+
+We conditionally load the ie-custom-icons.css stylesheet for IE9 user agents (in Zimbra 8 we force IE10 into IE9 browser
+mode so detection is done as IE9).
+
+####PHP Script#####
+Mac OS ships with an Apache webserver and PHP installed.  You just need to enable it.
+* Edit /etc/apache2/httpd.conf so the PHP module is loaded:
+LoadModule php5_module libexec/apache2/libphp5.so
+
+* Restart the web server
+sudo /usr/sbin/apachectl restart
+
+* Save the following as /Librar/WebServer/Documents/processing.php
+<?
+$data = substr($_POST['imageData'], strpos($_POST['imageData'], ",") + 1);
+$imageName = $_POST['imageName'];
+$decodedData = base64_decode($data);
+file_put_contents("/tmp/custom/".$imageName.".png", $decodedData);
+?>
+ 
+* Give /tmp/custom/ directory the required permissions
+chown _www /tmp/custom
+chmod 755 /tmp/custom
+
+#####JavaScript######
+* Copy ImageGenerator.html to the public directory of Zimbra so it can be accessed via
+http://localhost:7070/public/ImageGenerator.html
+
+This script has only been tested with Chrome on Mac.  
+
+Once you access that URL the /tmp/custom directory populate with the images.
+
+
+
+

@@ -179,6 +179,17 @@
 		<c:param name="customerDomain"	value="${param.customerDomain}" />
 	</c:if>		
 </c:url>" rel="stylesheet" type="text/css" />
+<c:if test="${ua.isIE9up}">
+        <link href="<c:url value="/css/ie-custom-icons.css">
+    <c:param name="v" value="${vers}" />
+    <c:param name="debug" value='${isDebug?"1":""}' />
+    <c:param name="skin" value="${skin}" />
+    <c:param name="locale" value="${locale}" />
+    <c:if test="${not empty param.customerDomain}">
+        <c:param name="customerDomain"	value="${param.customerDomain}" />
+    </c:if>		
+</c:url>" rel="stylesheet" type="text/css" />
+</c:if>    
 <zm:getFavIcon request="${pageContext.request}" var="favIconUrl" />
 <c:if test="${empty favIconUrl}">
 	<fmt:message key="favIconUrl" var="favIconUrl"/>
