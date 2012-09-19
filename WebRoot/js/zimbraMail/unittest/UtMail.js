@@ -79,7 +79,7 @@ UT.test("Send email",
 
 UT.test("parseComposeUrl",
 	function() {
-		UT.expect(3);
+		UT.expect(7);
 		var mailApp = appCtxt.getApp(ZmApp.MAIL);
 		var queryStr = "&to=mailto%3AFoo+Bar+<foo.bar%40host.com>";
 		var result = mailApp._parseComposeUrl(queryStr);
@@ -88,6 +88,22 @@ UT.test("parseComposeUrl",
 		queryStr = "&to=mailto%3AC%2B%2B+Team+<cplusteam%40host.com>";
 		result = mailApp._parseComposeUrl(queryStr);
 		UT.equal(result.to, "mailto:C++ Team <cplusteam@host.com>");
+		
+		queryStr = "to=mailto%3AJoe%20Smith%20%3Cjoe.smith@somewhere.com%3E?subject=My%20Subject";
+		result = mailApp._parseComposeUrl(queryStr);
+		UT.equal(result.to, "mailto:Joe Smith <joe.smith@somewhere.com>?subject=My Subject");
+
+		queryStr =  "to=Joe%20Smith%20%3Cjoe.smith@somewhere.com%3E";
+		result = mailApp._parseComposeUrl(queryStr);
+		UT.equal(result.to, "Joe Smith <joe.smith@somewhere.com>");
+
+		queryStr =  "cc=Joe%20Smith%20%3Cjoe.smith@somewhere.com%3E";
+		result = mailApp._parseComposeUrl(queryStr);
+		UT.equal(result.cc, "Joe Smith <joe.smith@somewhere.com>");
+
+		queryStr =  "bcc=Joe%20Smith%20%3Cjoe.smith@somewhere.com%3E";
+		result = mailApp._parseComposeUrl(queryStr);
+		UT.equal(result.bcc, "Joe Smith <joe.smith@somewhere.com>");
 		
 		queryStr='&cc="\"><iframe src=a onload=alert(\"VL\") <\"><iframe src=a onload=alert(\"VL\") <" <qa-test1@zim"';
 		result = mailApp._parseComposeUrl(queryStr);
