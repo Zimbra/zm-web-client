@@ -212,16 +212,7 @@ function() {
 ZmComposeController.prototype.doAction =
 function(params) {
 
-	AjxDebug.println(AjxDebug.REPLY, "-------------- " + params.action + " ----------------------------------");
 	var ac = window.parentAppCtxt || window.appCtxt;
-	if (params.action == ZmOperation.REPLY || params.action == ZmOperation.REPLY_ALL) {
-		var str = ["Browser: " + AjxEnv.browser,
-				   "Offline: " + Boolean(ac.isOffline),
-				   "Multi accts: " + ac.multiAccounts,
-				   "New Window: " + params.inNewWindow,
-				   "Reading pane location: " + ac.get(ZmSetting.READING_PANE_LOCATION)].join(" / ");
-		AjxDebug.println(AjxDebug.REPLY, str);
-	}
 	
 	// in zdesktop, it's possible there are no accounts that support smtp
 	if (ac.isOffline && !ac.get(ZmSetting.OFFLINE_COMPOSE_ENABLED)) {
@@ -632,7 +623,6 @@ function(draftType, msg, callback, result) {
 
 ZmComposeController.prototype._handleResponseCancelOrModifyAppt =
 function() {
-	AjxDebug.println(AjxDebug.REPLY, "Reset compose view: _handleResponseCancelOrModifyAppt");
 	this._composeView.reset(false);
 	this._app.popView(true);
     appCtxt.setStatusMsg(ZmMsg.messageSent);
@@ -774,11 +764,7 @@ function(setSignature) {
 		var sigId = this._composeView._getSignatureIdForAction(identity);
 		this.setSelectedSignature(sigId);
 	}
-	var newMode = this._getComposeMode(this._msg, identity);
-	if (newMode != this._composeView.getComposeMode()) {
-		this._composeView.setComposeMode(newMode);
-	}
-	this._composeView.applySignature(this._getBodyContent(), this._currentSignatureId);
+	this._composeView.resetBody(this._action, this._msg, this._composeView.getUserText());
 	this._setAddSignatureVisibility();
 };
 
@@ -786,6 +772,7 @@ ZmComposeController.prototype._handleSelectSignature =
 function(ev) {
 	var sigId = ev.item.getData(ZmComposeController.SIGNATURE_KEY);
 	this.setSelectedSignature(sigId);
+	this._composeView.resetBody(this._action, this._msg, this._composeView.getUserText());
 	this.resetSignature(sigId);
 };
 
@@ -820,8 +807,6 @@ ZmComposeController.prototype.handleKeyAction =
 function(actionCode) {
 	switch (actionCode) {
 		case ZmKeyMap.CANCEL:
-			DBG.println("aif1", "Compose ctlr: CANCEL");
-			AjxDebug.println(AjxDebug.REPLY, "Reset compose view: handleKeyAction");
 			this._cancelCompose();
 			break;
 
@@ -915,7 +900,6 @@ function(value) {
 
 ZmComposeController.prototype.resetSignature =
 function(sigId, account) {
-	this._composeView.applySignature(this._getBodyContent(), this._currentSignatureId, account);
 	this._currentSignatureId = sigId;
 };
 
@@ -972,7 +956,6 @@ function(params) {
 	var identity = params.identity = this._getIdentity(msg);
 
 	this._composeMode = params.composeMode || this._getComposeMode(msg, identity, params);
-	AjxDebug.println(AjxDebug.REPLY, "ZmComposeController::_setView - Compose mode: " + this._composeMode);
 	
 	if (this._needComposeViewRefresh) {
 		this._composeView.dispose();
@@ -1440,7 +1423,6 @@ function(draftType, msg, resp) {
 		}
 
 		if (resp || !appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
-			AjxDebug.println(AjxDebug.REPLY, "Reset compose view: _processSendMsg");
 			this._composeView.reset(false);
 
 			// bug 36341
@@ -1550,7 +1532,6 @@ function(ev) {
 // Cancel button was pressed
 ZmComposeController.prototype._cancelListener =
 function(ev) {
-	AjxDebug.println(AjxDebug.REPLY, "ZmComposeController: _cancelListener");
 	this._cancelCompose();
 };
 
@@ -1559,7 +1540,6 @@ function() {
 	var dirty = this._composeView.isDirty();
 	var needPrompt = dirty || (this._draftType == ZmComposeController.DRAFT_TYPE_AUTO);
 	if (!needPrompt) {
-		AjxDebug.println(AjxDebug.REPLY, "Reset compose view: _cancelCompose");
 		this._composeView.reset(true);
 	} else {
 		this._composeView.enableInputs(false);
@@ -1653,6 +1633,7 @@ function(op) {
 
 	var what = this._curIncOptions.what;
 	var canInclude = (what == ZmSetting.INC_BODY || what == ZmSetting.INC_SMART);
+	// TODO: only give warning if user has typed text that can't be preserved
 	if (this._composeView.isDirty() && canInclude) {
 		// warn user of possible lost content
 		if (!this._switchIncludeDialog) {
@@ -1703,9 +1684,7 @@ function(op) {
 		this._action = ZmOperation.FORWARD_INLINE;
 	}
 
-	var unquotedContent = cv.getUnQuotedContent();
-
-	cv.resetBody(this._action, this._msg, unquotedContent);
+	cv.resetBody(this._action, this._msg, cv.getUserText());
 };
 
 ZmComposeController.prototype._detachListener =
@@ -1755,7 +1734,7 @@ function(draftType, callback) {
 	} else if (draftType == ZmComposeController.DRAFT_TYPE_MANUAL) {
 		this._draftType = ZmComposeController.DRAFT_TYPE_MANUAL;
 	}
-	this._action = ZmOperation.DRAFT;
+//	this._action = ZmOperation.DRAFT;
 
 	this._composeView._isDirty = false;
 
@@ -1912,7 +1891,6 @@ function(mailtoParams) {
 		if (appCtxt.isChildWindow && window.parentController) {
 			window.onbeforeunload = null;
 		} else {
-			AjxDebug.println(AjxDebug.REPLY, "Reset compose view: _popShieldYesCallback");
 			this._composeView.reset(false);
 		}
 		if (mailtoParams) {
@@ -1940,7 +1918,6 @@ function(mailtoParams) {
 			window.onbeforeunload = null;
 		}
 
-		AjxDebug.println(AjxDebug.REPLY, "Reset compose view: _popShieldNoCallback");
         this._composeView.reset(false);
 
 		if (!mailtoParams) {
