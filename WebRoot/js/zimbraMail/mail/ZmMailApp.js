@@ -1802,10 +1802,11 @@ ZmMailApp.prototype._parseComposeUrl =
 function(urlQueryStr){
 
 	urlQueryStr = urlQueryStr || '';
-
+	urlQueryStr.replace(/^mailto:/i, "");
+	
 	var match = urlQueryStr.match(/\bto=([^&]+)/i);
 	var to = match ? AjxStringUtil.urlComponentDecode(match[1].replace(/\+/g, " ")) : null;
-	to = to && AjxEmailAddress.isValid(to) ? to : AjxStringUtil.htmlEncode(to);
+	to = to && AjxEmailAddress.isValid(to) ? AjxStringUtil.urlComponentDecode(to) : AjxStringUtil.htmlEncode(to);
 	
 	match = urlQueryStr.match(/\bsubject=([^&]+)/i);
 	var subject = match ? (AjxStringUtil.urlComponentDecode(match[1]).replace(/\+/g, " ")) : null;
@@ -1816,7 +1817,7 @@ function(urlQueryStr){
 	
 	match = urlQueryStr.match(/\bbcc=([^&]+)/i);
 	var bcc = match ? AjxStringUtil.urlComponentDecode(match[1].replace(/\+/g, " ")) : null;
-	bcc = bcc &  AjxEmailAddress.isValid(bcc) ? bcc : AjxStringUtil.htmlEncode(bcc);
+	bcc = bcc && AjxEmailAddress.isValid(bcc) ? bcc : AjxStringUtil.htmlEncode(bcc);
 	
 	match = urlQueryStr.match(/\bbody=([^&]+)/i);
 	var body = match ? (AjxStringUtil.urlComponentDecode(match[1]).replace(/\+/g, " ")) : null;
