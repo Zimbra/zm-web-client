@@ -172,7 +172,7 @@ ZmContact.GAL_CAL_RES_TYPE			= "zimbraCalResType";
 ZmContact.GAL_CAL_RES_LOC_NAME		= "zimbraCalResLocationDisplayName";
 
 // file as
-var i = 1;
+i = 1;
 ZmContact.FA_LAST_C_FIRST			= i++;
 ZmContact.FA_FIRST_LAST 			= i++;
 ZmContact.FA_COMPANY 				= i++;
@@ -181,7 +181,8 @@ ZmContact.FA_FIRST_LAST_COMPANY		= i++;
 ZmContact.FA_COMPANY_LAST_C_FIRST	= i++;
 ZmContact.FA_COMPANY_FIRST_LAST		= i++;
 ZmContact.FA_CUSTOM					= i++;
-
+delete i;
+	
 // Field information
 
 ZmContact.ADDRESS_FIELDS = [
@@ -313,9 +314,10 @@ ZmContact.IS_DATE[ZmContact.F_birthday] = true;
 ZmContact.IS_DATE[ZmContact.F_anniversary] = true;
 
 ZmContact.IS_IGNORE = {};
-for (var i = 0; i < ZmContact.IGNORE_FIELDS.length; i++) {
+for (i = 0; i < ZmContact.IGNORE_FIELDS.length; i++) {
 	ZmContact.IS_IGNORE[ZmContact.IGNORE_FIELDS[i]] = true;
 }
+delete i;
 
 // number of distribution list members to fetch at a time
 ZmContact.DL_PAGE_SIZE = 100;

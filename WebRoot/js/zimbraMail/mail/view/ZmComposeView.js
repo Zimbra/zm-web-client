@@ -1383,9 +1383,9 @@ function(signatureId) {
         if (!this._msg){
             this._msg = new ZmMailMsg();
         }
-        if (this._msg._contactAttIds)
+        if (this._msg._contactAttIds) {
             this._msg._contactAttIds.push(signature.contactId);
-        else {
+		} else {
             this._msg.setContactAttIds(signature.contactId);
 		}
         
@@ -2097,7 +2097,7 @@ function(components, params) {
 
 // Chart for determining number of blank lines between non-empty components.
 ZmComposeView.BC_SPACING = {};
-for (var i = 0; i < ZmComposeView.BC_ALL_COMPONENTS.length; i++) {
+for (i = 0; i < ZmComposeView.BC_ALL_COMPONENTS.length; i++) {
 	ZmComposeView.BC_SPACING[ZmComposeView.BC_ALL_COMPONENTS[i]] = {};
 }
 delete i;

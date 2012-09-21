@@ -209,20 +209,20 @@
 </c:if>
 <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 <script>
-	appContextPath = "${zm:jsEncode(contextPath)}";
-	appCurrentSkin = "${zm:jsEncode(skin)}";
-	appExtension   = "${zm:jsEncode(ext)}";
-	appRequestLocaleId = "${locale}";
-	window.appDevMode     = ${isDevMode};
-    window.appCoverageMode = ${isCoverage};
-    window.isScriptErrorOn   = ${isScriptErrorOn};
-    window.isPerfMetric = ${isPerfMetric};
+	window.appContextPath		= "${zm:jsEncode(contextPath)}";
+	window.appCurrentSkin		= "${zm:jsEncode(skin)}";
+	window.appExtension			= "${zm:jsEncode(ext)}";
+	window.appRequestLocaleId	= "${locale}";
+	window.appDevMode			= ${isDevMode};
+    window.appCoverageMode		= ${isCoverage};
+    window.isScriptErrorOn		= ${isScriptErrorOn};
+    window.isPerfMetric			= ${isPerfMetric};
 
 <%
 	long expires = authResult.getExpires();
 	long timeLeftInMillis = expires - System.currentTimeMillis();
 	%>
-		authTokenTimeLeftInMillis = <%= timeLeftInMillis%>;
+		window.authTokenTimeLeftInMillis = <%= timeLeftInMillis%>;
 	<%
 %>
 
@@ -303,7 +303,7 @@
 <jsp:include page="Boot.jsp"/>
 <script>
 	AjxEnv.DEFAULT_LOCALE = "${zm:javaLocaleId(locale)}";
-    var virtualAcctDomain = "<%= (virtualAcctDomain != null) ? virtualAcctDomain : "" %>";
+    virtualAcctDomain = "<%= (virtualAcctDomain != null) ? virtualAcctDomain : "" %>";
     function killSplashScreenSwitch() {
         if (!virtualAcctDomain) {
             return false;
@@ -314,16 +314,18 @@
         }
     }
 	function switchToStandardClient() {
-		document.location = appContextPath + "/?client=standard";
+		document.location = window.appContextPath + "/?client=standard";
 	}
     killSplashScreenSwitch();
 	<c:set var="enforceMinDisplay" value="${requestScope.authResult.prefs.zimbraPrefAdvancedClientEnforceMinDisplay[0]}"/>
 	<c:if test="${param.client ne 'advanced'}">
-		var enforceMinDisplay = ${enforceMinDisplay ne 'FALSE'};
-		var unsupported = (screen && (screen.width <= 800 && screen.height <= 600) && !${isOfflineMode}) || (AjxEnv.isSafari && !AjxEnv.isSafari4up);
+		enforceMinDisplay = ${enforceMinDisplay ne 'FALSE'};
+		unsupported = (screen && (screen.width <= 800 && screen.height <= 600) && !${isOfflineMode}) || (AjxEnv.isSafari && !AjxEnv.isSafari4up);
 		if (enforceMinDisplay && unsupported) {
 			switchToStandardClient();
 		}
+		delete enforceMinDisplay;
+		delete unsupported;
 	</c:if>
 </script>
 <%@ include file="loadImgData.jsp" %>
@@ -385,14 +387,16 @@
 </c:if>
 <script>
 // compile locale specific templates
-for (var pkg in window.AjxTemplateMsg) {
-	var text = AjxTemplateMsg[pkg];
+for (pkg in window.AjxTemplateMsg) {
+	text = AjxTemplateMsg[pkg];
 	AjxTemplate.compile(pkg, true, false, text);
 }
+delete pkg;
+delete text;
 </script>
 
 <script>
-	var cacheKillerVersion = "${zm:jsEncode(vers)}";
+	window.cacheKillerVersion = "${zm:jsEncode(vers)}";
 	function launch() {
 		// quit if this function has already been called
 		if (arguments.callee.done) {return;}
@@ -401,9 +405,9 @@ for (var pkg in window.AjxTemplateMsg) {
 		arguments.callee.done = true;
 
 		// kill the timer
-		if (_timer) {
-			clearInterval(_timer);
-			_timer = null;
+		if (window._timer) {
+			clearInterval(window._timer);
+			delete window._timer;
 		}
 
 		var prodMode = ${isProdMode};
@@ -477,6 +481,8 @@ for (var pkg in window.AjxTemplateMsg) {
 			noSplashScreen:noSplashScreen, unitTest:"${unitTest}", preset:"${preset}", virtualAcctDomain : virtualAcctDomain
 		};
 		ZmZimbraMail.run(params);
+		
+		delete window.virtualAcctDomain;
 	}
 
     //	START DOMContentLoaded
@@ -498,7 +504,7 @@ for (var pkg in window.AjxTemplateMsg) {
     }
 
     if (/(WebKit|khtml)/i.test(navigator.userAgent)) { // sniff
-        var _timer = setInterval(function() {
+        window._timer = setInterval(function() {
             if (/loaded|complete/.test(document.readyState)) {
                 launch();
                 // call the onload handler
