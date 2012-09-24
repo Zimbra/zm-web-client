@@ -25,13 +25,26 @@
 
  ****/
 
+ /* bug 56316 originally */
+.user_font_modern {
+	@FontFamily-modern@
+}
+.user_font_classic {
+	@FontFamily-classic@
+}
+.user_font_wide {
+	@FontFamily-wide@
+}
+.user_font_system {
+	@FontFamily-system@
+}
 
 /*
 * HTML elements - use for global declarations
 */
 
 P, TH, TD, DIV, SELECT, INPUT[type=text], INPUT[type=password], INPUT[type=file], TEXTAREA, BUTTON {
-	@FontSize-normal@ @FontFamily-default@
+	@FontSize-normal@
 }
 #IFDEF MSIE  /* not sure why INPUT is IE only, but leaving that alone */
 INPUT {
