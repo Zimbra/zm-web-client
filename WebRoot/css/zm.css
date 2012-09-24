@@ -49,18 +49,6 @@
 * Top-level (shell) stuff
 */
 
-.user_font_modern {
-	@FontFamily-modern@
-}
-.user_font_classic {
-	@FontFamily-classic@
-}
-.user_font_wide {
-	@FontFamily-wide@
-}
-.user_font_system {
-	@FontFamily-system@
-}
 
 .DwtShell, .MainShell {
 	position:absolute;
