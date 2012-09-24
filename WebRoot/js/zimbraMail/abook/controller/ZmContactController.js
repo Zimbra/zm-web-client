@@ -131,7 +131,7 @@ function() {
             hoverImage:"Close",
 			text: null, //we update it using _updateTabTitle since before calling _setViewContents _getFullName does not return the name
 			textPrecedence:77,
-			tooltip: text,
+			tooltip: null,
             style: DwtLabel.IMAGE_RIGHT};
 };
 
