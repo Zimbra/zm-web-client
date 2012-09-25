@@ -902,15 +902,15 @@ function(includeUserZid) {
 };
 /**
  * Gets the icon.
- * 
+ * @param 	{ZmAddrBook} addrBook	address book of contact 
  * @return	{String}	the icon
  */
 ZmContact.prototype.getIcon =
-function() {
-	if (this.isDistributionList()) { return "DistributionList"; }
-	if (this.isGal)			{ return "GALContact"; }
-	if (this.isShared())	{ return "SharedContact"; }
-	if (this.isGroup())		{ return "Group"; }
+function(addrBook) {
+	if (this.isDistributionList()) 						{ return "DistributionList"; }
+	if (this.isGal)										{ return "GALContact"; }
+	if (this.isShared() || (addrBook && addrBook.link))	{ return "SharedContact"; }
+	if (this.isGroup())									{ return "Group"; }
 	return "Contact";
 };
 

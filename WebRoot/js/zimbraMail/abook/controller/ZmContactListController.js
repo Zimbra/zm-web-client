@@ -820,8 +820,11 @@ function(parent, num) {
 
 	var folder = this._folderId && appCtxt.getById(this._folderId);
 
-	parent.enable([ZmOperation.CONTACTGROUP_MENU], num > 0 && !isDl && !appCtxt.isExternalAccount() && (!folder || !folder.isReadOnly()));
-
+	parent.enable([ZmOperation.CONTACTGROUP_MENU], num > 0 && !isDl && !appCtxt.isExternalAccount());
+	var contactGroupMenu = this._getContactGroupMenu(parent);
+	if (contactGroupMenu) {
+		contactGroupMenu.setNewDisabled(!folder || (folder && folder.isReadOnly()));	
+	}
 	if (!this.isGalSearch()) {
 		parent.enable([ZmOperation.SEARCH_MENU, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
         appCtxt.notifyZimlets("resetToolbarOperations",[parent, num]);
