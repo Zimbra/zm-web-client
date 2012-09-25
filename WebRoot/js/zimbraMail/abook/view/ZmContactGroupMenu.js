@@ -174,3 +174,12 @@ function(ev) {
 		this._evtMgr.notifyListeners(DwtEvent.SELECTION, ev.item);
 	}
 };
+
+/**
+ * Sets "New Contact Group" to be enabled/disabled
+ * @param {Boolean} disabled true to set disabled
+ */
+ZmContactGroupMenu.prototype.setNewDisabled = 
+function(disabled) {
+	this._newDisabled = disabled;	
+};

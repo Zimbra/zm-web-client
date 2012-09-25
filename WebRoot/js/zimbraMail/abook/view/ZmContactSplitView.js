@@ -1214,7 +1214,7 @@ function(contact, params) {
 	params = params || {};
 
 	var div = this._getDiv(contact, params);
-
+	var folder = this._folderId && appCtxt.getById(this._folderId);
 	if (params.isDragProxy) {
 		div.style.width = "175px";
 		div.style.padding = "4px";
@@ -1238,7 +1238,7 @@ function(contact, params) {
 
 	// icon
 	htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
-	htmlArr[idx++] = AjxImg.getImageHtml(contact.getIcon(), null, "id=" + this._getFieldId(contact, "type"));
+	htmlArr[idx++] = AjxImg.getImageHtml(contact.getIcon(folder), null, "id=" + this._getFieldId(contact, "type"));
 	htmlArr[idx++] = "</center></td>";
 
 	// file as
@@ -1249,7 +1249,8 @@ function(contact, params) {
 	if (!params.isDragProxy) {
 		// if read only, show lock icon in place of the tag column since we dont
 		// currently support tags for "read-only" contacts (i.e. shares)
-		if (contact.isLocked()) {
+		var isLocked = folder ? folder.link && folder.isReadOnly() : contact.isLocked();
+		if (isLocked) {
 			htmlArr[idx++] = "<td width=16>";
 			htmlArr[idx++] = AjxImg.getImageHtml("ReadOnly");
 			htmlArr[idx++] = "</td>";
