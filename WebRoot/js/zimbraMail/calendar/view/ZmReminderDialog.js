@@ -553,10 +553,15 @@ function(snoozeString) {
     snoozeUnitStrings[1] = AjxMsg.hour;
     snoozeUnitStrings[2] = AjxMsg.day;
     snoozeUnitStrings[3] = AjxMsg.week;
+    // Plural
+    snoozeUnitStrings[4] = AjxMsg.minutes;
+    snoozeUnitStrings[5] = AjxMsg.hours;
+    snoozeUnitStrings[6] = AjxMsg.days;
+    snoozeUnitStrings[7] = AjxMsg.weeks;
 
     snoozeString = snoozeString.toLowerCase();
     var found = false;
-    for (i = 0; i < snoozeUnitStrings.length; i++) {
+    for (var i = 0; i < snoozeUnitStrings.length; i++) {
         if (snoozeString.indexOf(snoozeUnitStrings[i]) >= 0) {
             found = true;
             break;
