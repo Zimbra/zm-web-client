@@ -1221,6 +1221,7 @@ function(reminderString) {
 
 	var reminderHours = parseInt(reminderValue);
 
+    // parse the reminder string for singular units like minute, hour, day etc
 	var remUnitStrings = {};
 	remUnitStrings[ZmCalItem.REMINDER_UNIT_MINUTES] = AjxMsg.minute;
 	remUnitStrings[ZmCalItem.REMINDER_UNIT_HOURS] = AjxMsg.hour;
@@ -1228,13 +1229,30 @@ function(reminderString) {
 	remUnitStrings[ZmCalItem.REMINDER_UNIT_WEEKS] = AjxMsg.week;
 
 	//look for matching units
+    // default unit is hours
 	var reminderUnits = ZmCalItem.REMINDER_UNIT_HOURS;
+
 	for(var i in remUnitStrings) {
 		if(formattedString.indexOf(remUnitStrings[i]) >= 0) {
 			reminderUnits = i;
-			break;
+            return {reminderValue: reminderHours ? reminderHours : 0,  reminderUnits: reminderUnits};
 		}
 	}
+
+    // parse the reminder string for plural units like minutes, hours, days etc
+    var remUnitPluralStrings = {};
+    remUnitPluralStrings[ZmCalItem.REMINDER_UNIT_MINUTES] = AjxMsg.minutes;
+    remUnitPluralStrings[ZmCalItem.REMINDER_UNIT_HOURS] = AjxMsg.hours;
+    remUnitPluralStrings[ZmCalItem.REMINDER_UNIT_DAYS] = AjxMsg.days;
+    remUnitPluralStrings[ZmCalItem.REMINDER_UNIT_WEEKS] = AjxMsg.weeks;
+
+    for(var i in remUnitPluralStrings) {
+        if(formattedString.indexOf(remUnitPluralStrings[i]) >= 0) {
+            reminderUnits = i;
+            return {reminderValue: reminderHours ? reminderHours : 0,  reminderUnits: reminderUnits};
+        }
+    }
+    // fall back to hours if no matching string found
 	return {reminderValue: reminderHours ? reminderHours : 0,  reminderUnits: reminderUnits};
 };
 
