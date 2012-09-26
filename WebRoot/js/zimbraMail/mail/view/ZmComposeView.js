@@ -504,7 +504,7 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 		this.enableInputs(false);
 		var msgDialog = appCtxt.getMsgDialog();
 		msgDialog.setMessage(ZmMsg.noAddresses, DwtMessageDialog.CRITICAL_STYLE);
-		msgDialog.popup(this._getDialogXY());
+		msgDialog.popup();
 		msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._okCallback, this);
 		this.enableInputs(true);
 		return;
@@ -520,7 +520,7 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 		cd.setMessage(ZmMsg.compSubjectMissing, DwtMessageDialog.WARNING_STYLE);
 		cd.registerCallback(DwtDialog.OK_BUTTON, this._noSubjectOkCallback, this, cd);
 		cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._noSubjectCancelCallback, this, cd);
-		cd.popup(this._getDialogXY());
+		cd.popup();
 		return;
 	}
 
@@ -533,7 +533,7 @@ function(attId, isDraft, dummyMsg, forceBail, contactId) {
 		cd.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this, cd);
 		cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._badAddrsCancelCallback, this, [addrs.badType, cd]);
 		cd.setVisible(true); // per fix for bug 3209
-		cd.popup(this._getDialogXY());
+		cd.popup();
 		return;
 	} else {
 		this._badAddrsOkay = false;
@@ -907,7 +907,7 @@ function(msg, isDraft, forceBail) {
 			var params = {errDialog:cd, zimletName:zimletName};
 			cd.registerCallback(DwtDialog.OK_BUTTON, this._errViaZimletOkCallback, this, params);
 			cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._errViaZimletCancelCallback, this, params);
-			cd.popup(this._getDialogXY());
+			cd.popup();
 			return false;
 		}
 	}
@@ -1637,13 +1637,6 @@ function() {
 
 // Private / protected methods
 
-// Consistent spot to locate various dialogs
-ZmComposeView.prototype._getDialogXY =
-function() {
-	var loc = Dwt.toWindow(this.getHtmlElement(), 0, 0);
-	return new DwtPoint(loc.x + ZmComposeView.DIALOG_X, loc.y + ZmComposeView.DIALOG_Y);
-};
-
 ZmComposeView.prototype._getForwardAttObjs =
 function(parts) {
     var forAttObjs = [];
@@ -1977,6 +1970,9 @@ function(action, msg, extraBodyText) {
 		value = ZmAdvancedHtmlEditor._embedHtmlContent(value, true);
 	}
 	
+	// save system text so we can check if user messed with it
+	this._systemText = this._getSystemText();
+	
 	this._bodyContent = value;
 };
 
@@ -2170,7 +2166,12 @@ function(mode, params) {
 		var fromAddr = msg.getAddress(AjxEmailAddress.FROM);
 		var fromName = fromAddr && fromAddr.getName();
 		var fromEmail = fromAddr && fromAddr.getAddress();
-		preface = AjxMessageFormat.format(ZmMsg.replyPrefix, [date, time, fromName, fromEmail]);
+		var address = fromName;
+		if (fromEmail) {
+			fromEmail = htmlMode ? AjxStringUtil.htmlEncode("<" + fromEmail + ">") : fromEmail;
+			address = [address, fromEmail].join(" "); 
+		}
+		preface = AjxMessageFormat.format(ZmMsg.replyPrefix, [date, time, address]);
 		preface += this._crlf;
 		if (htmlMode) {
 			preface = '<span id="' + AjxStringUtil.HTML_SEP_ID + '">' + preface + '</span>';
@@ -2319,6 +2320,43 @@ function() {
 	}
 
 	return userText;
+};
+
+// Returns text that was pre-populated into the form.
+ZmComposeView.prototype._getSystemText =
+function() {
+	var content = this._getEditorContent(true);
+	var systemText = "";
+	if (this._marker) {
+		var idx = content.indexOf(this._marker);
+		if (this._composeMode == DwtHtmlEditor.HTML) {
+			if (idx !== -1) {
+				var chunk = content.substring(0, idx);
+				// found the marker (an element ID), now back up to opening of tag
+				idx = chunk.lastIndexOf("<");
+				if (idx !== -1) {
+					systemText = content.substring(idx);
+				}
+			}
+		}
+		else {
+			if (idx != -1) {
+				systemText = content.substring(idx);
+			}
+		}
+	}
+	return systemText;
+};
+
+/**
+ * Returns true if system text has been changed. System text includes the components that
+ * were automatically written into the compose form, such as signatures and quoted text.
+ * User text should be inserted above system text. This function is used to see if the user
+ * messed with anything below the user text area.
+ */
+ZmComposeView.prototype.systemTextChanged =
+function() {
+	return AjxStringUtil.stripTags(this._getSystemText()) != AjxStringUtil.stripTags(this._systemText);
 };
 
 ZmComposeView.prototype._getBodyContent =
@@ -2708,8 +2746,9 @@ function(templateId, data) {
         var fileInputNode = node.getElementsByClassName("BrowseAttachBtn")[0];
         var attachTextWidth = node.getElementsByClassName("attach_text")[0].clientWidth;
         if (fileInputNode && attachTextWidth){
-            if (AjxEnv.isFirefox)
+            if (AjxEnv.isFirefox) {
                 fileInputNode.style.right = (fileInputNode.clientWidth - attachTextWidth) + "px";
+			}
             fileInputNode.style.maxWidth = attachTextWidth;
         }
         this._attcBtnFileInpId = newData.fileInputId;
@@ -2825,7 +2864,6 @@ function() {
     this.enableToolbarButtons(this._controller, false);
 	this._controller._uploadingProgress = true;
     Dwt.setVisible(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP), false);
-
 };
 
 ZmComposeView.prototype.checkAttachments =
