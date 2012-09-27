@@ -167,6 +167,7 @@ function(params) {
 	if (params.identity) {
 		if (this.identitySelect) {
 			this.identitySelect.setSelectedValue(params.identity.id);
+			this._controller.resetIdentity(params.identity.id);
 		}
 		if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED) || appCtxt.multiAccounts) {
 			var selected = this._getSignatureIdForAction(params.identity) || "";
@@ -190,6 +191,7 @@ function(params) {
 
 	if (obo) {
         this.identitySelect.setSelectedValue(obo);
+		this._controller.resetIdentity(obo);
 	}
 	this._setSubject(action, msg, params.subjOverride);
 	this._setBody(action, msg, params.extraBodyText);
@@ -1034,6 +1036,7 @@ function(params) {
 	if (params.identityId && this.identitySelect) {
         var opt = this.identitySelect.getOptionAtIndex(params.identityId);
 		this.identitySelect.setSelectedOption(opt);
+		this._controller.resetIdentity(params.identity.id);
 	}
 
 	this.backupForm = params.backupForm;
@@ -2917,7 +2920,7 @@ function(option){
 };
 
 
-ZmComposeView.prototype._resetUpload =
+ZmComposeView._resetUpload =
 function(err) {
 	var curView = appCtxt.getAppViewMgr().getCurrentView();
 	curView._attButton.setEnabled(true);

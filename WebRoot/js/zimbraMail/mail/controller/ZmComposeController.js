@@ -468,7 +468,7 @@ function(attId, draftType, callback, contactId, processDataURIImages) {
 	
     if (processDataURIImages !== false && this._composeView) {
         //Dont use bind as its arguments cannot be modified before its execution.
-        var processDataURIImagesCallback = new AjxCallback(this, this._sendMsg, [attId, null, draftType, callback, contactId]);
+        var processDataURIImagesCallback = this._sendMsg.bind(this, attId, null, draftType, callback, contactId);
         var result = this._processDataURIImages(this._composeView._getIframeDoc(), processDataURIImagesCallback);
         if (result) {
             return;
@@ -681,7 +681,7 @@ function(draftType, msg, ex) {
 	    }
 
         if (this._uploadingProgress){
-		    this._composeView._resetUpload(true);
+		    ZmComposeView._resetUpload(true);
 		    msg = ZmMsg.attachingFilesError + (ex.msg || "");
             showMsg = true;
         }
@@ -725,7 +725,7 @@ function() {
 								tabParams:	this._getTabParams()});
 
 		if (this._composeView.identitySelect) {
-			this._composeView.identitySelect.addChangeListener(this._identityChangeListener.bind(this, true));
+			this._composeView.identitySelect.addChangeListener(this._identityChangeListener.bind(this));
 		}
 	}
 	else {
@@ -745,27 +745,47 @@ function(oldView, newView) {
 };
 
 ZmComposeController.prototype._identityChangeListener =
-function(setSignature, event) {
+function(event) {
 
 	var signatureId = this._composeView._getSignatureIdForAction(null, this._action);
 
 	// don't do anything if signature is same
 	if (signatureId == this._currentSignatureId) { return; }
 
-	// apply settings
-	this._applyIdentityToBody(setSignature);
-	this._setAddSignatureVisibility();
-	this._currentSignatureId = signatureId;
+	if (this._composeView.systemTextChanged()) {
+		var callbacks = {};
+		callbacks[DwtDialog.OK_BUTTON] = this._switchIdentityOkCallback.bind(this);
+		callbacks[DwtDialog.CANCEL_BUTTON] = this._switchIdentityCancelCallback.bind(this, this._composeView.identitySelect.getValue());
+		this._showMsgDialog(ZmComposeController.MSG_DIALOG_2, ZmMsg.switchIncludeWarning, null, callbacks);
+	}
+	else {
+		this._switchIdentityOkCallback();
+	}
 };
 
-ZmComposeController.prototype._applyIdentityToBody =
-function(setSignature) {
+ZmComposeController.prototype._switchIdentityOkCallback =
+function() {
+	this._currentDlg.popdown();
+	this._switchIdentity();
+};
+
+ZmComposeController.prototype._switchIdentityCancelCallback =
+function(identityId) {
+	this._currentDlg.popdown();
+	this._composeView.identitySelect.setSelectedValue(this._currentIdentityId);
+};
+
+ZmComposeController.prototype._switchIdentity =
+function() {
 	var identity = this._composeView.getIdentity();
-	if (setSignature) {
-		var sigId = this._composeView._getSignatureIdForAction(identity);
-		this.setSelectedSignature(sigId);
-		this._composeView.resetBody(this._action, this._msg, this._composeView.getUserText());
+	var sigId = this._composeView._getSignatureIdForAction(identity);
+	this.setSelectedSignature(sigId);
+	this._composeView.resetBody(this._action, this._msg, this._composeView.getUserText());
+	this._setAddSignatureVisibility();
+	if (identity) {
+		this.resetIdentity(identity.id);
 	}
+	this.resetSignature(sigId);
 };
 
 ZmComposeController.prototype._handleSelectSignature =
@@ -791,7 +811,7 @@ function(sigId) {
 ZmComposeController.prototype._switchSignatureCancelCallback =
 function() {
 	this._currentDlg.popdown();
-	this.resetSignature(this._currentSignatureId);
+	this.setSelectedSignature(this._currentSignatureId);
 };
 
 ZmComposeController.prototype._switchSignature =
@@ -924,8 +944,13 @@ function(value) {
 };
 
 ZmComposeController.prototype.resetSignature =
-function(sigId, account) {
+function(sigId) {
 	this._currentSignatureId = sigId;
+};
+
+ZmComposeController.prototype.resetIdentity =
+function(identityId) {
+	this._currentIdentityId = identityId;
 };
 
 //
@@ -997,7 +1022,7 @@ function(params) {
 	}
 
 	if (identity) {
-		this._currentSignatureId = cv._getSignatureIdForAction(identity, action);
+		this.resetSignature(cv._getSignatureIdForAction(identity, action));
 	}
 
 	if (!this.isHidden) {
@@ -1014,7 +1039,7 @@ function(params) {
 		this._setAddSignatureVisibility();
 		if (params.sigId) {
 			this.setSelectedSignature(params.sigId);
-			this._currentSignatureId = params.sigId;
+			this.resetSignature(params.sigId);
 		}
 
 		if (params.readReceipt) {
@@ -1037,7 +1062,7 @@ function(params) {
 		if (msg && (action == ZmOperation.DRAFT)) {
 			this._draftType = ZmComposeController.DRAFT_TYPE_MANUAL;
 			if (msg.autoSendTime) {
-				this.saveDraft(ZmComposeController.DRAFT_TYPE_MANUAL, null, null, new AjxCallback(msg, msg.setAutoSendTime, null));
+				this.saveDraft(ZmComposeController.DRAFT_TYPE_MANUAL, null, null, msg.setAutoSendTime.bind(msg));
 				this._showMsgDialog(ZmComposeController.MSG_DIALOG_1, ZmMsg.messageAutoSaveAborted);
 			}
 		} else {
@@ -1165,6 +1190,7 @@ function() {
 	return menu && menu.getItemById(ZmPopupMenu.MENU_ITEM_ID_KEY, ZmOperation.ADD_SIGNATURE);
 };
 
+// only show signature submenu if the account has at least one signature
 ZmComposeController.prototype._setAddSignatureVisibility =
 function(account) {
 	var ac = window.parentAppCtxt || window.appCtxt;
@@ -2247,12 +2273,12 @@ function(files, prevData, start) {
                         curView.updateAttachFileNode(files, start);
                         controller._uploadMyComputerFile(files, prevData, start )
                     }else {
-				        var callback = new AjxCallback(this, curView._resetUpload);
+				        var callback = ZmComposeView._resetUpload.bind();
 				        controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, prevData, null, callback);
                     }
 			    }else {
                     DBG.println("Error while uploading file: "  + fileName + " response is null.");
-                    var callback = new AjxCallback(this, curView._resetUpload);
+					var callback = ZmComposeView._resetUpload.bind();
 				    controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, prevData, null, callback);
 					this._showMsgDialog(ZmComposeController.MSG_DIALOG_1, ZmMsg.importErrorUpload, DwtMessageDialog.CRITICAL_STYLE);
 				    this.upLoadC = this.upLoadC - 1;
@@ -2265,8 +2291,7 @@ function(files, prevData, start) {
     } catch(exp) {
         DBG.println("Error while uploading file: "  + fileName);
         DBG.println("Exception: "  + exp);
-	    var curView = appCtxt.getAppViewMgr().getCurrentView();
-	    curView._resetUpload(true);
+	    ZmComposeView._resetUpload(true);
 		this._showMsgDialog(ZmComposeController.MSG_DIALOG_1, ZmMsg.importErrorUpload, DwtMessageDialog.CRITICAL_STYLE);
         this.upLoadC = this.upLoadC - 1;
         return false;
