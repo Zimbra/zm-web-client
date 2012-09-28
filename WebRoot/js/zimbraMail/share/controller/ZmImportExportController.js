@@ -273,7 +273,7 @@ function(params) {
 		});
 	}
 	else if (type == ZmImportExportController.TYPE_ICS) {
-		AjxDispatcher.require(["CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 		dialog.popup({
 			treeIds: [ZmOrganizer.CALENDAR],
 			title: ZmMsg.chooseCalendar,

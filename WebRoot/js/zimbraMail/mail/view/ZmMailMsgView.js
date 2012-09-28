@@ -2729,7 +2729,7 @@ function(msgId, partId, name) {
 	ZmZimbraMail.unloadHackCallback();
 
 	// force create deferred folders if not created
-	AjxDispatcher.require("CalendarCore");
+	AjxDispatcher.require(["MailCore", "CalendarCore"]);
 	var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
 	var calApp = aCtxt.getApp(ZmApp.CALENDAR);
 	calApp._createDeferredFolders();

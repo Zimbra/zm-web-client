@@ -617,7 +617,7 @@ function(appt, id, controller, first, last) {
 	var isNew = appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 	var isAccepted = appt.ptst == ZmCalBaseItem.PSTATUS_ACCEPT;
 	var calendar = appt.getFolder();
-    AjxDispatcher.require(["CalendarCore", "Calendar"]);
+    AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 
     var tagNames  = appt.getVisibleTags();
     var tagIcon = last ? appt.getTagImageFromNames(tagNames) : null;
