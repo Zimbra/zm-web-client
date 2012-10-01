@@ -562,7 +562,7 @@ function(snoozeString) {
     snoozeString = snoozeString.toLowerCase();
     var found = false;
     for (var i = 0; i < snoozeUnitStrings.length; i++) {
-        if (snoozeString.indexOf(snoozeUnitStrings[i]) >= 0) {
+        if (snoozeString.indexOf(snoozeUnitStrings[i].toLowerCase()) >= 0) {
             found = true;
             break;
         }
