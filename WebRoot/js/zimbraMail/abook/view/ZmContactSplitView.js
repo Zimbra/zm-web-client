@@ -561,6 +561,9 @@ function(contact) {
 			: dlInfo.isOwner ? ZmMsg.youAreOwner
 			: dlInfo.isMember ? ZmMsg.youAreMember
 			: "";
+	if (statusMsg != '') {
+		statusMsg = "<li>" + statusMsg + "</li>";
+	}
 	var actionMsg;
 	if (!dlInfo.isMember) {
 		actionMsg =	policy == ZmContactSplitView.SUBSCRIPTION_POLICY_APPROVAL ? ZmMsg.dlSubscriptionRequiresApproval
@@ -573,7 +576,10 @@ function(contact) {
 			: "";
 
 	}
-	this._subscriptionMsg.innerHTML = statusMsg + (actionMsg != "" && statusMsg != "" ? "<br>" : "") + actionMsg;
+	if (actionMsg != '') {
+		actionMsg = "<li>" + actionMsg + "</li>";
+	}
+	this._subscriptionMsg.innerHTML = statusMsg + actionMsg;
 
 };
 

@@ -1571,14 +1571,22 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .ZmContactView .contactHeaderTable,
 .ZmContactInfoView .contactHeaderTable {
-	border-bottom:1px solid #777;
-	background-color:@darken(AppC,20)@;
+	background-color:@darken(AppC,5)@;
+	border-bottom:1px solid @darken(AppC,50)@;
 }
 
+.ZmContactView .contactHeaderSubTable,
+.ZmContactInfoView .contactHeaderSubTable {
+	background-color:@darken(AppC,15)@;
+	border-bottom:1px solid @darken(AppC,50)@;
+}
 .ZmContactInfoView .contactGroupTable {
 	background-color:white;
+	border:1px solid @darken(AppC,50)@;
+	float:left;
+	margin:.5em;
+	width:30%;
 }
-
 .ZmContactInfoView .contactHeaderSection {
 	@WidgetHeaderContainer@
 	@WidgetHeaderContainer-normal@
@@ -1594,6 +1602,10 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .ZmEditGroupContact .Row {
 	height:auto;
+}
+.ZmEditGroupContact .contactGroupTable {
+	float:none;
+	width:100%;
 }
 
 .ZmContactInfoView .contactHeader,
