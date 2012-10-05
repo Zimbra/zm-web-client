@@ -337,7 +337,7 @@ function(listener) {
 };
 
 ZmMailMsgView.prototype.setVisible =
-function(visible, readingPaneOnRight,msg) {
+function(visible, readingPaneOnRight) {
 	DwtComposite.prototype.setVisible.apply(this, arguments);
 	var inviteMsgView = this._inviteMsgView;
 	if (!inviteMsgView) {
@@ -345,15 +345,13 @@ function(visible, readingPaneOnRight,msg) {
 	}
 
 	if (visible && this._msg) {
-		if (this._msg != msg) {
-			var dayView = inviteMsgView.getDayView();
-			if (dayView) {
-				dayView.setIsRight(readingPaneOnRight);
-			}
-
-			inviteMsgView.set(this._msg);
-			inviteMsgView.showMoreInfo(null, null, readingPaneOnRight);
+		var dayView = inviteMsgView.getDayView();
+		if (dayView) {
+			dayView.setIsRight(readingPaneOnRight);
 		}
+
+		inviteMsgView.set(this._msg);
+		inviteMsgView.showMoreInfo(null, null, readingPaneOnRight);
 	}
 	else {
 		inviteMsgView.reset();
@@ -2729,7 +2727,7 @@ function(msgId, partId, name) {
 	ZmZimbraMail.unloadHackCallback();
 
 	// force create deferred folders if not created
-	AjxDispatcher.require(["MailCore", "CalendarCore"]);
+	AjxDispatcher.require("CalendarCore");
 	var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
 	var calApp = aCtxt.getApp(ZmApp.CALENDAR);
 	calApp._createDeferredFolders();

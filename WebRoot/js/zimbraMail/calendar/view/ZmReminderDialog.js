@@ -428,7 +428,7 @@ function(ev) {
 	var appt = data ? data.appt : null;
     var type = appt.type ? appt.type : ZmItem.APPT;
 	if (appt && type == ZmItem.APPT) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
 
 		var cc = AjxDispatcher.run("GetCalController");
 
