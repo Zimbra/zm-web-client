@@ -587,7 +587,7 @@ function(item, errorCode, error){
             this._iframePreview.setIframeContent(html);
         }else{
             //Show Download Link
-            var downloadLink = restUrl+ "?disp=a";
+            var downloadLink = restUrl + (restUrl.match(/\?/) ? '&' : '?') + "disp=a";
             var html = [
                 "<div style='height:100%;width:100%;text-align:center;vertical-align:middle;padding-top:30px;font-family: \'Helvetica Neue\',Helvetica,Arial,\'Liberation Sans\',sans-serif;'>",
                     AjxMessageFormat.format(ZmMsg.previewDownloadLink, downloadLink),
