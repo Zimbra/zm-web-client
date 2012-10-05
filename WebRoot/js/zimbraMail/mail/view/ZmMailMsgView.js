@@ -991,6 +991,7 @@ function(params) {
 				var msgTruncatedHtml = AjxTemplate.expand("mail.Message#InformationBar", subs);
 				msgTruncated = Dwt.parseHtmlFragment(msgTruncatedHtml);
 				infoBarDiv.appendChild(msgTruncated);
+				Dwt.setHandler(msgTruncated, DwtEvent.ONCLICK, this._handleMsgTruncated.bind(this));
 			}
 		}
 	}
@@ -1103,10 +1104,6 @@ function(params) {
 		} else {
 			this._setupInfoBarClicks(displayImages);
 		}
-	}
-
-	if (msgTruncated) {
-		Dwt.setHandler(msgTruncated, DwtEvent.ONCLICK, this._handleMsgTruncated.bind(this));
 	}
 
 	this._resetIframeHeightOnTimer();
