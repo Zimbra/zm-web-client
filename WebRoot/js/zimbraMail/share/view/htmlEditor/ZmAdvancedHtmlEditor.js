@@ -1141,9 +1141,9 @@ function(ev) {
 		case "ignore":
 			val = orig;
 			this._ignoreWords[val] = true;
-			if (fixall) {
+//			if (fixall) {
 				// TODO: visually "correct" all of them
-			}
+//			}
 			break;
 		case "add":
 			val = orig;
@@ -1630,7 +1630,7 @@ function(words, keepModeDiv) {
 	rec = function(node) {
 		switch (node.nodeType) {
 			case 1: /* ELEMENT */
-				for (var i = node.firstChild; i; i = rec(i));
+				for (var i = node.firstChild; i; i = rec(i)) {}
 				node = node.nextSibling;
 				break;
 			case 3: /* TEXT */
@@ -1967,7 +1967,7 @@ function() {
     ZmSignatureEditor.prototype._imageUploaded.apply(this, arguments);
 };
 
-/*
+/**
  * This will be fired before every popup open
  *
  * @param {windowManager} tinymce window manager for popups
@@ -2087,7 +2087,7 @@ ZmAdvancedHtmlEditor.prototype._settingChangeListener = function(ev) {
     editor.nodeChanged && editor.nodeChanged();//update the toolbar state
 };
 
-/*
+/**
  * This will be fired after every tinymce menu open. Listen for outside events happening in ZCS
  *
  * @param {menu} tinymce menu object
@@ -2107,7 +2107,7 @@ function(menu) {
     }
 };
 
-/*
+/**
  * This will be fired after every tinymce menu hide. Removing the outside event listener registered in onShowMenu
  *
  * @param {menu} tinymce menu object

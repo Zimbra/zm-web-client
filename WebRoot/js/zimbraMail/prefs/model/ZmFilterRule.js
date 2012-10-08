@@ -129,7 +129,7 @@ ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_SUBJECT]	= "subject";
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_HEADER]	= "header";
 
 ZmFilterRule.C_HEADER_MAP = {};
-for (var i in ZmFilterRule.C_HEADER_VALUE) {
+for (i in ZmFilterRule.C_HEADER_VALUE) {
 	ZmFilterRule.C_HEADER_MAP[ZmFilterRule.C_HEADER_VALUE[i]] = i;
 };
 
@@ -141,7 +141,7 @@ ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_TO_CC]	= "to,cc";
 ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_BCC]     = "bcc";
 
 ZmFilterRule.C_ADDRESS_MAP = {};
-for (var i in ZmFilterRule.C_ADDRESS_VALUE) {
+for (i in ZmFilterRule.C_ADDRESS_VALUE) {
     ZmFilterRule.C_ADDRESS_MAP[ZmFilterRule.C_ADDRESS_VALUE[i]] = i;
 }
 
@@ -295,7 +295,7 @@ ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_ME]        = "isMe";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_NOT_CONV]     = "convNot";
 
 ZmFilterRule.OP_VALUE_MAP = {};
-for (var i in ZmFilterRule.OP_VALUE) {
+for (i in ZmFilterRule.OP_VALUE) {
 	ZmFilterRule.OP_VALUE_MAP[ZmFilterRule.OP_VALUE[i]] = i;
 };
 
@@ -615,7 +615,7 @@ ZmFilterRule.A_VALUE[ZmFilterRule.A_REPLY]      = ZmFilterRule.A_REPLY;
 ZmFilterRule.A_VALUE[ZmFilterRule.A_NOTIFY]     = ZmFilterRule.A_NOTIFY;
 
 ZmFilterRule.A_VALUE_MAP = {};
-for (var i in ZmFilterRule.A_VALUE) {
+for (i in ZmFilterRule.A_VALUE) {
 	ZmFilterRule.A_VALUE_MAP[ZmFilterRule.A_VALUE[i]] = i;
 }
 delete i;
