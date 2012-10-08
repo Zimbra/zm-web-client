@@ -2511,7 +2511,7 @@ function(attach) {
 
 ZmMailMsg.prototype._onChange =
 function(what, a, b, c) {
-	if (this.onChange && this.onChange instanceof AjxCallback) {
+	if (this.onChange) {
 		this.onChange.run(what, a, b, c);
 	}
 };

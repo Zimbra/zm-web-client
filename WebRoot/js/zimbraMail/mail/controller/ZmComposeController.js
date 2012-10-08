@@ -405,7 +405,7 @@ function() {
 		this._action != ZmOperation.FORWARD_ATT)
 	{
 		if (composeMode == DwtHtmlEditor.HTML) {
-            if(view.isTinyMCEEnabled()) {
+            if (appCtxt.isTinyMCEEnabled()) {
                 view._focusHtmlEditor();
             }
             else{
@@ -605,7 +605,7 @@ function(draftType, msg, callback, result) {
 	this._initAutoSave();
 	var needToPop = this._processSendMsg(draftType, msg, resp);
 
-	this._msg = msg;
+//	this._msg = msg;
 
 	if (callback) {
 		callback.run(result);
@@ -780,7 +780,13 @@ function() {
 	var identity = this._composeView.getIdentity();
 	var sigId = this._composeView._getSignatureIdForAction(identity);
 	this.setSelectedSignature(sigId);
-	this._composeView.resetBody(this._action, this._msg, this._composeView.getUserText());
+	var params = {
+		action:			this._action,
+		msg:			this._msg,
+		extraBodyText:	this._composeView.getUserText(),
+		op:				ZmId.OP_ADD_SIGNATURE
+	};
+	this._composeView.resetBody(params);
 	this._setAddSignatureVisibility();
 	if (identity) {
 		this.resetIdentity(identity.id);
@@ -817,7 +823,13 @@ function() {
 ZmComposeController.prototype._switchSignature =
 function(sigId) {
 	this.setSelectedSignature(sigId);
-	this._composeView.resetBody(this._action, this._msg, this._composeView.getUserText());
+	var params = {
+		action:			this._action,
+		msg:			this._msg,
+		extraBodyText:	this._composeView.getUserText(),
+		op:				ZmId.OP_ADD_SIGNATURE
+	};
+	this._composeView.resetBody(params);
 	this.resetSignature(sigId);
 };
 
@@ -993,9 +1005,12 @@ function(params) {
 		this._autoSaveTimer.kill();
 	}
 
-	// save args in case we need to re-display (eg go from Reply to Reply All)
-	var action = this._action = params.action;
+	// msg is the original msg for a reply or when editing a draft (not a newly saved draft or sent msg)
 	var msg = this._msg = params.msg;
+	if (msg && msg.isInvite() && ZmComposeController.IS_FORWARD[params.action]) {
+		params.action = ZmOperation.FORWARD_INLINE;
+	}
+	var action = this._action = params.action;
 	
 	this._toOverride = params.toOverride;
 	this._ccOverride = params.ccOverride;
@@ -1018,7 +1033,7 @@ function(params) {
 		this.initComposeView();
 		cv = this._composeView;
 	} else {
-		cv.setComposeMode(this._composeMode, false, true);
+		cv.setComposeMode(this._composeMode, true);
 	}
 
 	if (identity) {
@@ -1423,7 +1438,7 @@ function(mode) {
 		callbacks[DwtDialog.CANCEL_BUTTON] = this._formatCancelCallback.bind(this, curMode);
 		this._showMsgDialog(ZmComposeController.MSG_DIALOG_2, msg, null, callbacks, true);
 	} else {
-		this._composeView.setComposeMode(mode, true);
+		this._composeView.setComposeMode(mode);
 		return true;
 	}
 
@@ -1514,6 +1529,7 @@ function(draftType, msg, resp) {
 			var transitions = [ ZmToast.FADE_IN, ZmToast.IDLE, ZmToast.PAUSE, ZmToast.FADE_OUT ];
 			appCtxt.setStatusMsg(ZmMsg.draftSaved, ZmStatusView.LEVEL_INFO, null, transitions);
 		}
+		this._draftMsg = msg;
 		this._composeView.processMsgDraft(msg);
 		// TODO - disable save draft button indicating a draft was saved
 
@@ -1536,7 +1552,7 @@ function(draftType, msg, resp) {
 	if (isScheduled) {
 		if (appCtxt.isChildWindow) {
 			var pAppCtxt = window.parentAppCtxt;
-			if(pAppCtxt.getAppViewMgr().getAppView(ZmApp.MAIL)) {
+			if (pAppCtxt.getAppViewMgr().getAppView(ZmApp.MAIL)) {
 				var listController = pAppCtxt.getApp(ZmApp.MAIL).getMailListController();
 				if (listController && listController._draftSaved) {
 					//Pass the mail response to the parent window such that the ZmMailMsg obj is created in the parent window.
@@ -1716,7 +1732,13 @@ function(op) {
 		this._action = ZmOperation.FORWARD_INLINE;
 	}
 
-	cv.resetBody(this._action, this._msg, cv.getUserText());
+	var params = {
+		action:			this._action,
+		msg:			this._msg,
+		extraBodyText:	this._composeView.getUserText(),
+		op:				op
+	};
+	this._composeView.resetBody(params);
 };
 
 ZmComposeController.prototype._detachListener =
@@ -1876,7 +1898,7 @@ function() {
 ZmComposeController.prototype._formatOkCallback =
 function(mode) {
 	this._currentDlg.popdown();
-	this._composeView.setComposeMode(mode, true);
+	this._composeView.setComposeMode(mode);
 	this._composeView._isDirty = true;
 };
 
@@ -1959,7 +1981,7 @@ function(mailtoParams) {
 
 ZmComposeController.prototype._popShieldDiscardCallback =
 function() {
-	this._deleteDraft(this._composeView._msg);
+	this._deleteDraft(this._draftMsg);
 	this._dontSavePreHide = true; //do not save dirty state to a draft in pre hide
 	this._popShieldNoCallback();
 };
