@@ -463,7 +463,7 @@ function(params) {
 	        }
             var startDateFormatted = (startDate) ? AjxDateUtil._getMonth(startDate) + "/" +  AjxDateUtil._getDate(startDate) + "/" + AjxDateUtil._getFullYear(startDate) : null;
             var endDateFormatted = (endDate) ? AjxDateUtil._getMonth(endDate) + "/" +  AjxDateUtil._getDate(endDate) + "/" + AjxDateUtil._getFullYear(endDate) : null;
-            if (isTGZ && startDateFormatted){ params.searchFilter = (params.searchFilter) ? params.searchFilter + " AND " : "" + "after:" + startDateFormatted; }
+            if (isTGZ && startDateFormatted){ params.searchFilter = ((params.searchFilter) ? params.searchFilter + " AND " : "") + "after:" + startDateFormatted; }
             if (isTGZ && endDateFormatted){ params.searchFilter = ((params.searchFilter) ? params.searchFilter + " AND " : "") + "before:" + endDateFormatted; }
         }
 	if (isTGZ && params.searchFilter) { formParams["query"] = params.searchFilter; }
