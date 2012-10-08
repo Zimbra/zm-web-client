@@ -1523,7 +1523,7 @@ function(bodyPart) {
 	var content = (this._showingQuotedText || this._forceOriginal || this._isMatchingMsg || !origContent) ? bodyPart.getContent() : origContent;
 	content = content || "";
 	// remove trailing blank lines
-	content = isHtml ? AjxStringUtil.removeTrailingBR(content) : AjxStringUtil.trim(content);
+	content = isHtml ? AjxStringUtil.trimHtml(content) : AjxStringUtil.trim(content);
 	return content;
 };
 

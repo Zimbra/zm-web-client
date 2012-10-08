@@ -431,7 +431,7 @@ ZmAutocomplete.prototype._settingChangeListener =
  */
 ZmAutocompleteMatch = function(match, options, isContact, str) {
 	// TODO: figure out how to minimize loading of calendar code
-	AjxDispatcher.require("CalendarCore");
+	AjxDispatcher.require(["MailCore", "CalendarCore"]);
 	if (!match) {
 		return;
 	}
