@@ -455,6 +455,12 @@ function(params) {
                 formParams["end"] = endDate.getTime();
             }
         } else {
+	        if(startDate) {
+		        startDate = AjxDateUtil.roll(startDate, AjxDateUtil.DAY, -1);
+	        }
+	        if(endDate) {
+		        endDate = AjxDateUtil.roll(endDate, AjxDateUtil.DAY, 1);
+	        }
             var startDateFormatted = (startDate) ? AjxDateUtil._getMonth(startDate) + "/" +  AjxDateUtil._getDate(startDate) + "/" + AjxDateUtil._getFullYear(startDate) : null;
             var endDateFormatted = (endDate) ? AjxDateUtil._getMonth(endDate) + "/" +  AjxDateUtil._getDate(endDate) + "/" + AjxDateUtil._getFullYear(endDate) : null;
             if (isTGZ && startDateFormatted){ params.searchFilter = (params.searchFilter) ? params.searchFilter + " AND " : "" + "after:" + startDateFormatted; }
