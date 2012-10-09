@@ -826,7 +826,9 @@ function(allResults) {
 		var curResult = this._controller._activeSearch;
 		if (curResult && curResult.getAttribute("more")) {
 			var list = this.getList();
-			var toastMsg = AjxMessageFormat.format(ZmMsg.allPageSelected, list ? list.size() : ZmMsg.all);
+			var typeText = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[this.type]], list ? list.size() : 2);
+			var args = [list ? list.size() : ZmMsg.all, typeText, "ZmListView.selectAllResults()"];
+			var toastMsg = AjxMessageFormat.format(ZmMsg.allPageSelected, args);
 			if (allResults) {
 				this.allSelected = true;
 				toastMsg = ZmMsg.allSearchSelected;
@@ -835,8 +837,19 @@ function(allResults) {
 		}
 
 		var sel = this._selectedItems.getArray();
-		for (var i=0; i<sel.length; i++)
+		for (var i = 0; i < sel.length; i++) {
 			this.setSelectionCbox(sel[i], false);
+		}
+	}
+};
+
+// Handle click of link in toast
+ZmListView.selectAllResults =
+function() {
+	var ctlr = appCtxt.getCurrentController();
+	var view = ctlr && ctlr.getListView();
+	if (view && view.selectAll) {
+		view.selectAll(true);
 	}
 };
 
