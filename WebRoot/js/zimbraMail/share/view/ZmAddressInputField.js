@@ -1046,11 +1046,6 @@ function(actionCode, ev) {
 	
 	switch (actionCode) {
 
-		case ZmKeyMap.COPY:
-			this._bubbleList.selectAddressText();
-			ev.forcePropagate = true;
-			break;
-
 		case DwtKeyMap.DELETE:
 			this.handleDelete();
 			break;
@@ -1889,6 +1884,7 @@ function() {
 	// hidden textarea used for copying address text
 	if (!ZmAddressBubbleList._textarea) {
 		var el = ZmAddressBubbleList._textarea = document.createElement("textarea");
+		el.id = "abcb";	// address bubble clipboard
 		appCtxt.getShell().getHtmlElement().appendChild(el);
 		Dwt.setPosition(el, Dwt.ABSOLUTE_STYLE);
 		Dwt.setLocation(el, Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
@@ -1924,6 +1920,7 @@ function() {
 		omem.stopListening(omemParams);
 		this._listening = false;
 	}
+	this.selectAddressText();
 };
 
 ZmAddressBubbleList.prototype._outsideMouseListener =
