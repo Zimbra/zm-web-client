@@ -337,7 +337,7 @@ function(listener) {
 };
 
 ZmMailMsgView.prototype.setVisible =
-function(visible, readingPaneOnRight) {
+function(visible, readingPaneOnRight,msg) {
 	DwtComposite.prototype.setVisible.apply(this, arguments);
 	var inviteMsgView = this._inviteMsgView;
 	if (!inviteMsgView) {
@@ -345,13 +345,15 @@ function(visible, readingPaneOnRight) {
 	}
 
 	if (visible && this._msg) {
-		var dayView = inviteMsgView.getDayView();
-		if (dayView) {
-			dayView.setIsRight(readingPaneOnRight);
-		}
+		if (this._msg != msg) {
+			var dayView = inviteMsgView.getDayView();
+			if (dayView) {
+				dayView.setIsRight(readingPaneOnRight);
+			}
 
-		inviteMsgView.set(this._msg);
-		inviteMsgView.showMoreInfo(null, null, readingPaneOnRight);
+			inviteMsgView.set(this._msg);
+			inviteMsgView.showMoreInfo(null, null, readingPaneOnRight);
+		}
 	}
 	else {
 		inviteMsgView.reset();
@@ -989,6 +991,7 @@ function(params) {
 				var msgTruncatedHtml = AjxTemplate.expand("mail.Message#InformationBar", subs);
 				msgTruncated = Dwt.parseHtmlFragment(msgTruncatedHtml);
 				infoBarDiv.appendChild(msgTruncated);
+				Dwt.setHandler(msgTruncated, DwtEvent.ONCLICK, this._handleMsgTruncated.bind(this));
 			}
 		}
 	}
@@ -1101,10 +1104,6 @@ function(params) {
 		} else {
 			this._setupInfoBarClicks(displayImages);
 		}
-	}
-
-	if (msgTruncated) {
-		Dwt.setHandler(msgTruncated, DwtEvent.ONCLICK, this._handleMsgTruncated.bind(this));
 	}
 
 	this._resetIframeHeightOnTimer();
@@ -2727,7 +2726,7 @@ function(msgId, partId, name) {
 	ZmZimbraMail.unloadHackCallback();
 
 	// force create deferred folders if not created
-	AjxDispatcher.require("CalendarCore");
+	AjxDispatcher.require(["MailCore", "CalendarCore"]);
 	var aCtxt = appCtxt.isChildWindow ? parentAppCtxt : appCtxt;
 	var calApp = aCtxt.getApp(ZmApp.CALENDAR);
 	calApp._createDeferredFolders();
