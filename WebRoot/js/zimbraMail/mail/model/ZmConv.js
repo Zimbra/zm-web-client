@@ -232,7 +232,7 @@ function(callback, result) {
 		this.msgIds.push(msgNode.id);
 		msgNode.su = resp.su;
 		// construct ZmMailMsg's so they get cached
-		var msg = ZmMailMsg.createFromDom(msgNode, {list: this.list});
+		var msg = ZmMailMsg.createFromDom(msgNode, {list: this.msgs});
 		this.msgs.add(msg);
 	}
 
