@@ -915,7 +915,7 @@ function(ev) {
 					this._controller._app._checkReplenishListView = this;
 					this._setNextSelection();
 				} else {
-					if (!(conv.hasMatchingMsg(this._controller._app.currentSearch, true))) {
+					if (!(conv.hasMatchingMsg(this._controller._currentSearch, true))) {
 						this._list.remove(conv);				// view has sublist of controller list
 						this._controller._list.remove(conv);	// complete list
 						ev.item = item = conv;
