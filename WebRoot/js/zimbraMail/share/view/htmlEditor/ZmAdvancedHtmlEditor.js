@@ -1100,6 +1100,8 @@ function(callback, keepModeDiv) {
 
 ZmAdvancedHtmlEditor.prototype._spellCheckCallback =
 function(words) {
+    // Remove the below comment for hard coded spell check response for development
+    //words = {"misspelled":[{"word":"onee","suggestions":"one,nee,knee,once,ones,one's"},{"word":"twoo","suggestions":"two,too,woo,twos,two's"},{"word":"fourrr","suggestions":"Fourier,furor,furry,firer,fuhrer,fore,furrier,four,furrow,fora,fury,fours,ferry,foray,flurry,four's"}],"available":true};
 	var wordsFound = false;
 
 	if (words && words.available) {
@@ -1308,11 +1310,6 @@ function(ev) {
 			   && (!word || modified) )
 			)))
 	{
-		//sc.menu._doPopdown();
-		// FIXME: menu.dispose() should remove any submenus that may be
-		//        present in its children; fix should go directly in DwtMenu.js
-		if (sc.menu._menuItems.fixall)
-			sc.menu._menuItems.fixall.getMenu().dispose();
 		sc.menu.dispose();
 		sc.menu = null;
 		window.status = "";
@@ -1324,13 +1321,6 @@ function(ev) {
 		(word == AjxUtil.getInnerText(p) && !this._ignoreWords[word]))
 	{
 		sc.menu = this._spellCheckCreateMenu(this.getParent(), 0, suggestions, word, p.id, modified);
-		if (sc.wordIds[word].length > 1) {
-			sc.menu.createSeparator();
-			this._replaceAllFormatter = this._replaceAllFormatter || new AjxMessageFormat(ZmMsg.replaceAllMenu);
-			var text = this._replaceAllFormatter.format(sc.wordIds[word].length);
-			var item = sc.menu.createMenuItem("fixall", {text:text});
-			item.setMenu(makeMenu(1, item));
-		}
 		var pos, ms = sc.menu.getSize(), ws = this._editorContainer.shell.getSize();
 		if (!plainText) {
 			// bug fix #5857 - use Dwt.toWindow instead of Dwt.getLocation so we can turn off dontIncScrollTop
@@ -1390,9 +1380,11 @@ ZmAdvancedHtmlEditor.prototype._spellCheckCreateMenu = function(parent, fixall, 
 		this._spellCheckCreateMenuItem(menu, "clear", {text:"<i>"+ZmMsg.clearText+"</i>" }, fixall, "", word, spanId);
 	}
 
-	menu.createSeparator();
+    var plainText = this._mode == DwtHtmlEditor.TEXT;
+    if (!fixall || plainText) {
+        menu.createSeparator();
+    }
 
-	var plainText = this._mode == DwtHtmlEditor.TEXT;
 	if (plainText) {
 		// in plain text mode we want to be able to edit misspelled words
 		var txt = fixall ? ZmMsg.editAll : ZmMsg.edit;
