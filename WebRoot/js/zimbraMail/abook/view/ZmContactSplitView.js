@@ -44,10 +44,9 @@ ZmContactSplitView = function(params) {
 	if (folderTree) {
 		folderTree.addChangeListener(new AjxListener(this, this._addrbookTreeListener));
 	}
-	var tagTree = appCtxt.getTagTree();
-	if (tagTree) {
-		tagTree.addChangeListener(new AjxListener(this, this._tagChangeListener));
-	}
+
+	ZmTagsHelper.setupListeners(this);
+
 };
 
 ZmContactSplitView.prototype = new DwtComposite;
@@ -55,6 +54,7 @@ ZmContactSplitView.prototype.constructor = ZmContactSplitView;
 
 // Consts
 ZmContactSplitView.ALPHABET_HEIGHT = 35;
+
 ZmContactSplitView.NUM_DL_MEMBERS = 10;	// number of distribution list members to show initially
 
 ZmContactSplitView.LIST_MIN_WIDTH = 100;
@@ -156,7 +156,7 @@ function(contact, isGal) {
 	}
 
 	var oldContact = this._contact;
-	this._contact = contact;
+	this._contact = this._item = contact;
 
 	if (this._contact.isLoaded) {
 		this._setContact(contact, isGal, oldContact);
@@ -273,7 +273,7 @@ function() {
 		this._contactGroupView.getHtmlElement().innerHTML = "";
 	}
 
-	this._setHeaderInfo(true);
+	this._clearTags();
 };
 
 /**
@@ -406,7 +406,7 @@ function(ev, treeView) {
 				: this._contact.folderId;
 
 			if (organizer.id == folderId) {
-				this._setHeaderInfo();
+				this._setTags();
 			}
 		}
 	}
@@ -498,9 +498,16 @@ function(contact, isGal, oldContact, expandDL, isBack) {
 		this._showContact(subs);
 	}
 
-	this._setHeaderInfo();
+	this._setTags();
 	Dwt.setLoadedTime("ZmContactItem");
 };
+
+ZmContactSplitView.prototype.dispose =
+function() {
+	ZmTagsHelper.disposeListeners(this);
+	DwtComposite.prototype.dispose.apply(this, arguments);
+};
+
 
 ZmContactSplitView.prototype._showContact =
 function(subs) {
@@ -874,7 +881,7 @@ function(subs, result) {
 
 	subs.dl = this._distributionList = result;
 	this._showContact(subs);
-	this._setHeaderInfo();
+	this._setTags();
 	if (!this._rowHeight) {
 		var table = document.getElementById(this._detailsId);
 		if (table) {
@@ -917,81 +924,32 @@ function() {
 /**
  * @private
  */
-ZmContactSplitView.prototype._getTagHtml =
+ZmContactSplitView.prototype._setTags =
 function() {
-	var html = [];
-	var idx = 0;
-
-	var tagList = appCtxt.getAccountTagList(this._contact);
-
-	// get sorted list of tags for this msg
-	var tags = this._contact.tags;
-	var ta = [];
-	for (var i = 0; i < tags.length; i++) {
-		ta.push(tagList.getByNameOrRemote(tags[i]));
-	}
-	ta.sort(ZmTag.sortCompare);
-
-	for (var j = 0; j < ta.length; j++) {
-		var tag = ta[j];
-		if (!tag) { continue; }
-		var icon = tag.getIconWithColor();
-		var attr = ["id='", this._getTagsElementId(), tag.id, "'"].join("");
-		// XXX: set proper class name for link once defined!
-		html[idx++] = "<a href='javascript:;' class='' onclick='ZmContactSplitView._tagClicked(";
-		html[idx++] = '"';
-		html[idx++] = AjxStringUtil.encodeQuotes(tag.name);
-		html[idx++] = '"';
-		html[idx++] = "); return false;'>";
-		html[idx++] = AjxImg.getImageSpanHtml(icon, null, attr, AjxStringUtil.htmlEncode(tag.name));
-		html[idx++] = "</a>&nbsp;";
-	}
-	return html.join("");
+	//use the helper to get the tags.
+	var tagsHtml = ZmTagsHelper.getTagsHtml(this._item, this);
+	this._setTagsHtml(tagsHtml);
 };
 
 /**
  * @private
  */
-ZmContactSplitView.prototype._setHeaderInfo =
-function(clear) {
-	// set tags
+ZmContactSplitView.prototype._clearTags =
+function() {
+	this._setTagsHtml("");
+};
+
+/**
+ * note this is called from ZmTagsHelper
+ * @param html
+ */
+ZmContactSplitView.prototype._setTagsHtml =
+function(html) {
 	var tagCell = document.getElementById(this._getTagsElementId());
-	if (tagCell) {
-		tagCell.innerHTML = clear ? "" : this._getTagHtml();
-	}
+	if (!tagCell) { return; }
+	tagCell.innerHTML = html;
 };
 
-/**
- * @private
- */
-ZmContactSplitView.prototype._tagChangeListener =
-function(ev) {
-	if (ev.type != ZmEvent.S_TAG) { return; }
-
-	var fields = ev.getDetail("fields");
-	var changed = fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]);
-	if ((ev.event == ZmEvent.E_MODIFY && changed) ||
-			ev.event == ZmEvent.E_DELETE ||
-			ev.event == ZmEvent.E_CREATE) { //could be tag that was not local (from share) becomes local now.
-		var tagCell = document.getElementById(this._getTagsElementId());
-        if (tagCell) {
-		    tagCell.innerHTML = this._getTagHtml();
-        }
-	}
-};
-
-/**
- * @private
- */
-ZmContactSplitView._tagClicked =
-function(tagId) {
-	var tagList = appCtxt.getAccountTagList(this._contact);
-	var tag = tagList.getByNameOrRemote(tagId);
-	if (!tag) {
-		return;
-	}
-	appCtxt.getSearchController().search({query: tag.createQuery()});
-};
 
 ZmContactSplitView.prototype._sashCallback = function(delta) {
 	var sashWidth = this._sash.getSize().x;

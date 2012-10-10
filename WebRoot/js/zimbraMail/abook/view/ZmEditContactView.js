@@ -61,8 +61,8 @@ ZmEditContactView = function(parent, controller) {
 	// save other state
 	this._controller = controller;
 
-	this._tagList = appCtxt.getTagTree();
-	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
+	ZmTagsHelper.setupListeners(this);
+
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
 
 	this.setScrollStyle(Dwt.SCROLL);
@@ -395,7 +395,7 @@ ZmEditContactView.prototype.set = function(contact, isDirty) {
 	}
 
 	// save contact
-	this._contact = contact;
+	this._contact = this._item = contact;
 
 	// fill in base fields
 	for (var id in ZmEditContactView.ATTRS) {
@@ -645,68 +645,38 @@ ZmEditContactView.prototype.enableInputs = function(bEnable) {
  * 
  */
 ZmEditContactView.prototype.cleanup = function() {
-	this._contact = null;
+	this._contact = this._item = null;
 	this.clean = true;
 };
 
-ZmEditContactView.prototype._setTags =
-function(contactOrTagIds) {
-	var tagControl = this.getControl("TAG");
-	if (tagControl) {
-		if (contactOrTagIds === undefined) // contactOrTagIds can also be an empty array, so just checking for a falsy value should not happen here
-			contactOrTagIds = this._contact;
-		var tagIds = (contactOrTagIds instanceof ZmContact) ? contactOrTagIds.tags : contactOrTagIds;
-
-		tagControl.clearContent();
-		if (tagIds && tagIds.length) {
-			tagControl.setContent(this._getTagHtml(tagIds));
-			tagControl.setVisible(true);
-		} else {
-			tagControl.setVisible(false);
-		}
-	}
+ZmEditContactView.prototype.dispose =
+function() {
+	ZmTagsHelper.disposeListeners(this);
+	DwtComposite.prototype.dispose.apply(this, arguments);
 };
 
-ZmEditContactView.prototype._getTagHtml =
-function(tagIds) {
-	var html = [];
-	var idx = 0;
-	var tagCellId = this.getControl("TAG").getHTMLElId();
+ZmEditContactView.prototype._setTags =
+function(contact) {
+	//use the helper to get the tags.
+	var tagsHtml = ZmTagsHelper.getTagsHtml(contact || this._item, this);
 
-	// get sorted list of tags for this msg
-	var tagList = appCtxt.getAccountTagList(this._contact);
-
-	var tags = [];
-	for (var i = 0; i < tagIds.length; i++) {
-		tags.push(tagList.getByNameOrRemote(tagIds[i]));
+	var tagControl = this.getControl("TAG");
+	if (!tagControl) {
+		return;
 	}
-	tags.sort(ZmTag.sortCompare);
-
-	for (var j = 0; j < tags.length; j++) {
-		var tag = tags[j];
-		if (!tag) { continue; }
-		var icon = tag.getIconWithColor();
-		var attr = ["id='", tagCellId, tag.id, "'"].join("");
-		// XXX: set proper class name for link once defined!
-		html[idx++] = "<a href='javascript:;' class='' onclick='ZmEditContactView._tagClicked(";
-		html[idx++] = '"';
-		html[idx++] = AjxStringUtil.encodeQuotes(tag.name);
-		html[idx++] = '"';
-		html[idx++] = "); return false;'>";
-		html[idx++] = AjxImg.getImageSpanHtml(icon, "vertical-align:middle; margin-right:4px", attr, AjxStringUtil.htmlEncode(tag.name), "inlineContactTagIcon");
-		html[idx++] = "</a>&nbsp;";
+	tagControl.clearContent();
+	if (tagsHtml.length > 0) {
+		tagControl.setContent(tagsHtml);
+		tagControl.setVisible(true);
 	}
-	return html.join("");
+	else {
+		tagControl.setVisible(false);
+	}
 };
 
 ZmEditContactView._onBlur =
 function() {
 	this._controller._updateTabTitle();
-};
-
-ZmEditContactView._tagClicked =
-function() {
-	ZmContactSplitView._tagClicked.apply(this, arguments);
 };
 
 //
@@ -894,20 +864,7 @@ ZmEditContactView.prototype._handleChooseFolder = function(organizer) {
 ZmEditContactView.prototype._contactChangeListener = function(ev) {
 	if (ev.type != ZmEvent.S_CONTACT) return;
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
-		this._setTags(this._contact);
-	}
-};
-
-/**
- * @private
- */
-ZmEditContactView.prototype._tagChangeListener = function(ev) {
-	if (ev.type != ZmEvent.S_TAG) { return; }
-
-	var fields = ev.getDetail("fields");
-	var changed = fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]);
-	if ((ev.event == ZmEvent.E_MODIFY && changed) || ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_CREATE) {
-		this._setTags(this._contact);
+		this._setTags();
 	}
 };
 
