@@ -881,7 +881,7 @@ function(id, setup, value) {
 
 ZmPreferencesPage.prototype._showLocale =
 function(localeId, button) {
-	var locale = ZmLocale.localeMap[localeId];
+	var locale = ZmLocale.localeMap[localeId] || ZmLocale.localeMap[localeId.substr(0, 2)];
 	button.setImage(locale ? locale.getImage() : null);
 	button.setText(locale ? locale.getNativeAndLocalName() : "");
 	button._localeId = localeId;

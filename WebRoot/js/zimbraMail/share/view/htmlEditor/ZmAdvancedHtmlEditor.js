@@ -489,14 +489,16 @@ function(parent, posStyle, content, mode, withAce, reparentContainer) {
 
         //Refer http://www.tinymce.com/i18n/index.php?ctrl=lang&act=download&pr_id=1
         var tinyMCELocaleArray = ['sq', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'nb', 'bs', 'br', 'bg', 'my', 'ca', 'km', 'ch', 'zh', 'hr', 'cs', 'da', 'dv', 'nl', 'en', 'eo', 'et', 'fi', 'fr', 'gl', 'ka', 'de', 'el', 'gu', 'he', 'hi', 'hu', 'is', 'id', 'ia', 'it', 'ja', 'kl', 'ko', 'lv', 'lt', 'lb', 'mk', 'ms', 'ml', 'mn', 'se', 'no', 'nn', 'fa', 'pl', 'pt', 'ps', 'ro', 'ru', 'sc', 'sr', 'si', 'sk', 'sl', 'es', 'sv', 'ta', 'tt', 'te', 'th', 'tn', 'tr', 'tw', 'uk', 'ur', 'vi', 'cy', 'zu', 'zh-tw', 'cn', 'zh-cn'],
-            locale = appCtxt.get(ZmSetting.LOCALE_NAME),
-            tinyMCELocale = locale.toLowerCase().replace("_", "-");
+            locale = appCtxt.get(ZmSetting.LOCALE_NAME).toLowerCase().replace("_", "-");
 
-        if (tinyMCELocale === "zh-hk") {//setting chinese language for Hong kong chinese
-            ZmAdvancedHtmlEditor.LOCALE = "zh";
+        if (AjxUtil.arrayContains(tinyMCELocaleArray, locale, true)) {
+            ZmAdvancedHtmlEditor.LOCALE = locale;
         }
-        else if (AjxUtil.arrayContains(tinyMCELocaleArray, tinyMCELocale, true)) {
-            ZmAdvancedHtmlEditor.LOCALE = tinyMCELocale;
+        else {
+            locale = locale.substr(0, 2);
+            if (AjxUtil.arrayContains(tinyMCELocaleArray, locale, true)) {
+                ZmAdvancedHtmlEditor.LOCALE = locale;
+            }
         }
 		var callback = new AjxCallback(this, this.initEditorManager, [id, content]);
         AjxDispatcher.require(["TinyMCE"], true, callback);
