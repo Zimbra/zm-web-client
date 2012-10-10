@@ -230,12 +230,13 @@ function() {
 	ZmZimbraMail.setExitTimer(false);
 	ZmZimbraMail.sessionTimerInvoked = false;
 	window._zimbraMail = window.onload = window.onunload = window.onresize = window.document.onkeypress = null;
+	delete window._zimbraMail;
 };
 
 ZmZimbraMail.closeChildWindows =
 function() {
 	
-	var childWinList = window._zimbraMail ? window._zimbraMail._childWinList : null;
+	var childWinList = window._zimbraMail && window._zimbraMail._childWinList;
 	if (childWinList) {
 		// close all child windows
 		for (var i = 0; i < childWinList.size(); i++) {
@@ -819,7 +820,7 @@ function() {
 
 	// reminder controlled by calendar preferences setting
 	if (appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME) != 0) {
-        AjxDispatcher.require(["CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["ContactsCore", "MailCore", "CalendarCore", "Calendar"]);
 		var reminderAction = new AjxTimedAction(this, this.showReminder);
 		var delay = appCtxt.isOffline ? 0 : ZmCalendarApp.REMINDER_START_DELAY;
 		AjxTimedAction.scheduleAction(reminderAction, delay);
@@ -2669,13 +2670,13 @@ function(url) {
  * @private
  */
 ZmZimbraMail.helpLinkCallback =
-function() {
+function(helpurl) {
 	ZmZimbraMail.unloadHackCallback();
 
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var url;
 	if (!ac.isOffline) {
-		try { url = skin.hints.helpButton.url; } catch (e) { /* ignore */ }
+		try { url = helpurl || skin.hints.helpButton.url; } catch (e) { /* ignore */ }
 		url = url || ac.get(ZmSetting.HELP_URI);
 		var sep = url.match(/\?/) ? "&" : "?";
 		url = [url, sep, "locid=", AjxEnv.DEFAULT_LOCALE].join("");

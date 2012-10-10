@@ -135,7 +135,7 @@ ZmDragAndDrop.prototype._onDrop = function(ev, isEditorDND) {
         j,
         filesLength;
 
-    if (!ev) {
+    if (!ev || (this._view && this._view._disableAttachments === true) ) {
         return;
     }
 
