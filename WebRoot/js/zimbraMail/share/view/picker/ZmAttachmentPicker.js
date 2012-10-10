@@ -179,7 +179,7 @@ function() {
 	if (this._radio[ZmAttachmentPicker.ANY].checked) {
 		this.setQuery("attachment:any");
 	} else if (this._radio[ZmAttachmentPicker.NONE].checked) {
-		this.setQuery("attachment:none");
+		this.setQuery("-has:attachment");
 	} else if (this._radio[ZmAttachmentPicker.FILE].checked) {
 		if (this._fileNameInput.value.trim() == "") {
 			this.setQuery("");
