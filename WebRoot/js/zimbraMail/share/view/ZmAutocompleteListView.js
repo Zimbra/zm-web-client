@@ -174,10 +174,15 @@ function(ev) {
 	var element = DwtUiEvent.getTargetWithProp(ev, "_aclvId");
 	var aclv = element && DwtControl.ALL_BY_ID[element._aclvId];
 	if (aclv) {
-		aclv._inputLength = element.value.length;
+		aclv._inputValue = element.value;
 		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYDOWN, element && element.id, [ev, aclv, result, element]);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
+    if (AjxEnv.isFirefox){
+       ZmAutocompleteListView.clearTimer();
+       ZmAutocompleteListView.timer =  new AjxTimedAction(this, ZmAutocompleteListView.onKeyUp, [ev]);
+       AjxTimedAction.scheduleAction(ZmAutocompleteListView.timer, 300)
+    }
 	return result;
 };
 
@@ -292,7 +297,7 @@ function(ev) {
 
 	var value = element.value;
 	DBG.println(AjxDebug.DBG3, ev.type + " event, key = " + key + ", value = " + value);
-	ev.inputLengthChanged = (value.length != aclv._inputLength);
+	ev.inputChanged = (value != aclv._inputValue);
 
 	// reset timer on any address field key activity
 	if (aclv._acActionId != -1 && !DwtKeyMap.IS_MODIFIER[key]) {
@@ -345,10 +350,10 @@ function(ev) {
 	}
 
 	// skip if it's some weird character
-	if (!ev.inputLengthChanged && (key != 3 && key != 13 && key != 9 && key != 8 && key != 46)) {
+	if (!ev.inputChanged && (key != 3 && key != 13 && key != 9 && key != 8 && key != 46)) {
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
-
+    ZmAutocompleteListView.clearTimer();
 	if (key == 13 || key == 3) {
 		if (aclv._options.addrBubbles && aclv._dataAPI.isComplete && aclv._dataAPI.isComplete(value)) {
 				DBG.println(AjxDebug.DBG3, "got a Return, found an addr: " + value);
@@ -378,6 +383,14 @@ function(ev) {
 	aclv._acActionId = AjxTimedAction.scheduleAction(aclv._acAction, aclv._acInterval);
 	
 	return ZmAutocompleteListView._echoKey(true, ev);
+};
+
+
+ZmAutocompleteListView.clearTimer =
+function(ev){
+    if (ZmAutocompleteListView.timer){
+        AjxTimedAction.cancelAction(ZmAutocompleteListView.timer)
+    }
 };
 
 /**
@@ -449,6 +462,9 @@ function(element, addrInputId) {
 	Dwt.setHandler(element, DwtEvent.ONKEYDOWN, ZmAutocompleteListView.onKeyDown);
 	Dwt.setHandler(element, DwtEvent.ONKEYPRESS, ZmAutocompleteListView.onKeyPress);
 	Dwt.setHandler(element, DwtEvent.ONKEYUP, ZmAutocompleteListView.onKeyUp);
+    if (AjxEnv.isFirefox){
+        Dwt.setHandler(element, DwtEvent.ONBLUR, ZmAutocompleteListView.clearTimer);
+    }
 };
 
 /**
