@@ -483,7 +483,10 @@ function(ev) {
 	if (this._getItemData(div, "type") == ZmCalBaseView.TYPE_APPT) {
 		if (this._evtMgr.isListenerRegistered(DwtEvent.SELECTION)) {
 			DwtUiEvent.copy(this._selEv, ev);
-			this._selEv.item = this.getItemFromElement(div);
+			var item = this.getItemFromElement(div);
+            var orig = item.getOrig();
+            item = orig && orig.isMultiDay() ? orig : item;
+			this._selEv.item = item;
 			this._selEv.detail = DwtListView.ITEM_DBL_CLICKED;
 			this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
 		}
