@@ -1057,12 +1057,11 @@ function(ev) {
 
 ZmTaskListController.prototype._showTaskSource =
 function(task) {
-	var restUrl = task.getRestUrl();
-	if (restUrl) {
-		var url = [restUrl, (restUrl.indexOf("?")==-1) ? "?" : "&", "mime=text/plain", "&", "noAttach=1"].join("");
-		var win = window.open(url, "TaskSource", "menubar=yes,resizable=yes,scrollbars=yes");
-		appCtxt.handlePopupBlocker(win);
-	}
+    var apptFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI)
+                        + "&id=" + AjxStringUtil.urlComponentEncode(task.id || task.invId)
+                        +"&mime=text/plain&noAttach=1";
+    // create a new window w/ generated msg based on msg id
+    window.open(apptFetchUrl, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
 };
 
 /**

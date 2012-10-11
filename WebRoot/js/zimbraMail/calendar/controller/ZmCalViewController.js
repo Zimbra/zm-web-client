@@ -4115,11 +4115,11 @@ function(ev) {
 
 ZmCalViewController.prototype._showApptSource =
 function(appt) {
-	var restUrl = appt.getRestUrl();
-	if (restUrl) {
-		var url = [restUrl, (restUrl.indexOf("?")==-1) ? "?" : "&", "mime=text/plain", "&", "noAttach=1"].join("");
-		window.open(url, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
-	}
+    var apptFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI)
+                    + "&id=" + AjxStringUtil.urlComponentEncode(appt.id || appt.invId)
+                    +"&mime=text/plain&noAttach=1";
+    // create a new window w/ generated msg based on msg id
+    window.open(apptFetchUrl, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
 };
 
 ZmCalViewController.prototype.getAppointmentByInvite =
