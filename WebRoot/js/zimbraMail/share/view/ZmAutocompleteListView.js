@@ -274,6 +274,11 @@ function(ev) {
 		// DBG.println("ac", ev.type.toUpperCase() + " cbResult: " + cbResult);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
 	}
+	if (AjxEnv.isFirefox){
+		ZmAutocompleteListView.clearTimer();
+		ZmAutocompleteListView.timer =  new AjxTimedAction(this, ZmAutocompleteListView.onKeyUp, [ev]);
+		AjxTimedAction.scheduleAction(ZmAutocompleteListView.timer, 300)
+	}
 	return ZmAutocompleteListView._echoKey(result, ev);
 };
 
@@ -379,6 +384,8 @@ function(ev) {
 		return true;
 	}
 
+	ZmAutocompleteListView.clearTimer();
+
 	// regular input, schedule autocomplete
 	var ev1 = new DwtKeyEvent();
 	DwtKeyEvent.copy(ev1, ev);
@@ -393,6 +400,13 @@ function(ev) {
 	aclv._acActionId[elId] = AjxTimedAction.scheduleAction(acAction, aclv._acInterval);
 	
 	return true;
+};
+
+ZmAutocompleteListView.clearTimer =
+function(ev){
+    if (ZmAutocompleteListView.timer){
+        AjxTimedAction.cancelAction(ZmAutocompleteListView.timer)
+    }
 };
 
 /**
@@ -458,6 +472,9 @@ function(element, addrInputId) {
 	Dwt.setHandler(element, DwtEvent.ONKEYDOWN, ZmAutocompleteListView.onKeyDown);
 	Dwt.setHandler(element, DwtEvent.ONKEYPRESS, ZmAutocompleteListView.onKeyPress);
 	Dwt.setHandler(element, DwtEvent.ONKEYUP, ZmAutocompleteListView.onKeyUp);
+	if (AjxEnv.isFirefox){
+		Dwt.setHandler(element, DwtEvent.ONBLUR, ZmAutocompleteListView.clearTimer);
+	}
 	this.isActive = true;
 };
 
