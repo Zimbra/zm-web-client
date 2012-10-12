@@ -193,7 +193,7 @@ ZmAutocompleteListView = function(params) {
 	this._hideSelLinkTextClass = "LinkText-hide-selected";
 
 	this._contexts 			= {};	// key is element ID
-	this._inputLength		= {};	// key is element ID
+	this._inputValue		= {};	// key is element ID
 	
 	this.setVisible(false);
 	this.setScrollStyle(Dwt.SCROLL);
@@ -269,7 +269,7 @@ function(ev) {
 			result = true;
 		}
 		
-		aclv._inputLength[element.id] = element.value.length;
+		aclv._inputValue[element.id] = element.value;
 		var cbResult = aclv._runCallbacks(ZmAutocompleteListView.CB_KEYDOWN, element && element.id, [ev, aclv, result, element]);
 		// DBG.println("ac", ev.type.toUpperCase() + " cbResult: " + cbResult);
 		result = (cbResult === true || cbResult === false) ? cbResult : result;
@@ -349,7 +349,7 @@ function(ev) {
 	var value = element.value;
 	var elId = element.id;
 	DBG.println("ac", ev.type + " event, key = " + key + ", value = " + value);
-	ev.inputLengthChanged = (value.length != aclv._inputLength[elId]);
+	ev.inputChanged = (value != aclv._inputValue[elId]);
 
 	// reset timer on any address field key activity
 	if (aclv._acActionId[elId] != -1 && !DwtKeyMap.IS_MODIFIER[key] && key != 9) {
@@ -374,8 +374,8 @@ function(ev) {
 		return false;
 	}
 
-	// skip if it's some weird character that didn't change the input
-	if (!ev.inputLengthChanged) {
+	// skip if input value is not changed
+	if (!ev.inputChanged) {
 		return true;
 	}
 
