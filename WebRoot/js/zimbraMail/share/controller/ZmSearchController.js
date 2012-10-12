@@ -172,11 +172,12 @@ function(enabled) {
  */
 ZmSearchController.prototype.setDefaultSearchType =
 function(type) {
-	if (this._searchToolBar && !appCtxt.inStartup) {
-		var menu = this._searchToolBar.getButton(ZmSearchToolBar.TYPES_BUTTON).getMenu();
-		menu.checkItem(ZmSearchToolBar.MENUITEM_ID, type);
-		this._searchMenuListener(null, type, true);
+	if (!this._searchToolBar) {
+		return;
 	}
+	var menu = this._searchToolBar.getButton(ZmSearchToolBar.TYPES_BUTTON).getMenu();
+	menu.checkItem(ZmSearchToolBar.MENUITEM_ID, type);
+	this._searchMenuListener(null, type, true);
 };
 
 /**
