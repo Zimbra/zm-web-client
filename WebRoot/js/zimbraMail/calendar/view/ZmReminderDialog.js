@@ -100,7 +100,7 @@ function() {
             var delta = startDelta ? this._formatDeltaString(startDelta) : "";
             var text = [appt.getName(), ", ", this._getDurationText(appt), "\n(", delta, ")"].join("");
             if (AjxEnv.isMac) {
-                ZmDesktopAlert.getInstance().start(ZmMsg.reminders, text);
+                ZmDesktopAlert.getInstance().start(ZmMsg.reminders, text, true);
             } else if (AjxEnv.isWindows) {
                 winText.push(text);
             }
@@ -110,7 +110,7 @@ function() {
             if (appts.length > 5) {
                 winText.push(ZmMsg.andMore);
             }
-            ZmDesktopAlert.getInstance().start(ZmMsg.reminders, winText.join("\n"), 5);
+            ZmDesktopAlert.getInstance().start(ZmMsg.reminders, winText.join("\n"), true);
         }
     }
 
