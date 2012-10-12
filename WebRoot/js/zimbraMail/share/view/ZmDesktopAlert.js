@@ -64,9 +64,9 @@ function() {
 };
 
 ZmDesktopAlert.prototype.start =
-function(title, message) {
+function(title, message, sticky) {
     if (this.useWebkit) {
-        var allowedCallback = this._showWebkitNotification.bind(this, title, message);
+        var allowedCallback = this._showWebkitNotification.bind(this, title, message, sticky);
         this._checkWebkitPermission(allowedCallback);
     } else if (this.usePrism) {
 		if (AjxEnv.isMac) {
@@ -103,7 +103,8 @@ function(allowedCallback) {
 };
 
 ZmDesktopAlert.prototype._showWebkitNotification =
-function(title, message) {
+function(title, message, sticky) {
+	sticky = sticky || false;
     // Icon: I chose to use the favIcon because it's already overridable by skins.
     // It's a little ugly though.
     // change for bug#67359: Broken notification image in chrome browser
@@ -111,9 +112,11 @@ function(title, message) {
     var icon = [appContextPath, "/img/logo/ImgZimbraLogo_48.gif"].join("");
     var popup = window.webkitNotifications.createNotification(icon, title, message);
     popup.show();
-
-    // Close the popup after 5 seconds.
-    setTimeout(popup.cancel.bind(popup), 5000);
+	popup.onclick = function() {popup.cancel();};
+	if (!sticky) {
+        // Close the popup after 5 seconds.
+        setTimeout(popup.cancel.bind(popup), 5000);
+	}
 };
 
 ZmDesktopAlert.prototype._notityServiceCallback =
