@@ -231,7 +231,6 @@ function(params, result) {
 	
 		if (!params.noBusyOverlay) {
 			this._shell.setBusy(false, params.reqId); // remove busy overlay
-		} else if (params.timeout) {
 		}
 	}
 

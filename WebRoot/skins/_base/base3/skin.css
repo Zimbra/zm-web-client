@@ -197,41 +197,41 @@ BODY						{	margin:0px; 	}
 
 .LoginScreen,
 .SplashScreen {
-    position:absolute;
-    left:0px;
-    top:0px;
-    width:100%;
-    height:100%;
+	position:absolute;
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
 	overflow:hidden;
-    @FontFamily-default@
-    @FontSize-normal@
+	@FontFamily-default@
+	@FontSize-normal@
 	@LoginScreen@
 }
 .LoginScreen .center,
-.SplashScreen .center { 
-    margin-top:-160px;
-    margin-left:-250px;
-}   
+.SplashScreen .center {
+	margin-top:-160px;
+	margin-left:-250px;
+}
 
 .LoginScreen .center-small,
 .SplashScreen .center-small {
-    height:270px;
-    margin-top:-135px;
-    margin-left:-126px;
-    width:250px;
+	height:270px;
+	margin-top:-135px;
+	margin-left:-126px;
+	width:250px;
 }
 .LoginScreen .center, .LoginScreen .center-small,
 .SplashScreen .center, .SplashScreen .center-small {
-    left:50%;
-    overflow:visible;
-    position:absolute;
-    top:40%;
-    z-index:11;
+	left:50%;
+	overflow:visible;
+	position:absolute;
+	top:40%;
+	z-index:11;
 }
 .LoginScreen .contentBox,
 .SplashScreen .contentBox {	
-    min-height:265px;
-    width:500px;
+	min-height:265px;
+	width:500px;
 #IFDEF MSIE_LOWER_THAN_7
 	height:265px;
 #ENDIF
@@ -249,12 +249,12 @@ BODY						{	margin:0px; 	}
 .LoginScreen .ImgLoginBanner, 
 .LoginScreen .ImgAppBanner, 
 .SplashScreen .ImgLoginBanner {
-    cursor:pointer;
+	cursor:pointer;
 	display:block;
 }
 .LoginScreen .ImgAltBanner,
 .SplashScreen .ImgAltBanner {
-    @AltBanner@
+	@AltBanner@
 }
 .LoginScreen .ZLoginField {
 	@roundCorners(5px)@
@@ -262,69 +262,69 @@ BODY						{	margin:0px; 	}
 .LoginScreen INPUT[disabled] {
 	background-color:white;
 }
-.LoginScreen .decor1 { 
-    @Decor1L@ 
+.LoginScreen .decor1 {
+	@Decor1L@ 
 }
-.LoginScreen .decor2 { 
-    @Decor2L@ 
+.LoginScreen .decor2 {
+	@Decor2L@ 
 }
-.SplashScreen .decor1 { 
-    @Decor1S@ 
+.SplashScreen .decor1 {
+	@Decor1S@
 }
-.SplashScreen .decor2 { 
-    @Decor2S@ 
+.SplashScreen .decor2 {
+	@Decor2S@
 }
 .LoginScreen .Footer,
 .SplashScreen .Footer,
 .LoginScreen .Footer-small,
 .SplashScreen .Footer-small {
-    bottom:0;
-    position:absolute;
-    text-align:center;
-    width:100%;
-    z-index:10;
+	bottom:0;
+	position:absolute;
+	text-align:center;
+	width:100%;
+	z-index:10;
 }
 
 .LoginScreen .copyright,
 .LoginScreen #ZLoginNotice,
 .SplashScreen .copyright {
-    cursor:default;
-    margin-bottom:5px;
-    @FontSize-normal@
-    @LoginFooterColor@
+	cursor:default;
+	margin-bottom:5px;
+	@FontSize-normal@
+	@LoginFooterColor@
 }
 .LoginScreen #ZLoginNotice A {
-    @LoginFooterColor@
+	@LoginFooterColor@
 }
 /*Splash Screen Only Items*/
 .SplashScreen .content {
-    color:@LoginLabelColor@;
-    text-align:center;
+	color:@LoginLabelColor@;
+	text-align:center;
 }
 .SplashScreen .message {
-    color:@LoginLabelColor@;
-    cursor:default;
-    padding-top:40px;
-    @FontSize-bigger@    
+	color:@LoginLabelColor@;
+	cursor:default;
+	padding-top:40px;
+	@FontSize-bigger@
 }
-.SplashScreen .switch{
-    margin:100px 100px 30px;
+.SplashScreen .switch {
+	margin:70px 100px 30px;
 #IFDEF WEBKIT
 	margin-bottom:0;
 #ENDIF
 }
 .SplashScreen .switch A {
-    color:@LoginLabelColor@;
-    text-decoration:underline;
-    @FontSize-normal@
+	color:@LoginLabelColor@;
+	text-decoration:underline;
+	@FontSize-normal@
 }
 /** Logo Images **/
 .center-small .ImgLoginBanner,
 .ImgAppBanner			{	background-repeat:no-repeat; @AppBanner@   }
-.ImgLoginBanner			{	background-repeat:no-repeat; @LoginBanner@   }
+.ImgLoginBanner			{	background-repeat:no-repeat; @LoginBannerPosition@ @LoginBanner@   }
 #IFDEF MSIE
 #skin_container_logo A, #skin_container_logo A:hover, #skin_container_logo A:link {
-    background-color:transparent;}
+	background-color:transparent;}
 #ENDIF
 /* TO INTEGRATE */
 .DwtVerticalSash div {
@@ -352,8 +352,8 @@ BODY						{	margin:0px; 	}
 }
 
 /* App Chooser and App Tab Overrides -- TODO: Merge into main */
-.ZmAppChooser					{	margin:0px !important; 		}
-.ZAppTabBorder                  {   @AppTabRoundCorners@         }
+.ZmAppChooser					{	margin:0px !important;		}
+.ZAppTabBorder					{	@AppTabRoundCorners@		}
 .ZAppTabBorder .ZLeftIcon 		{	@AppTabLeftIcon@			}
 .ZAppTabBorder .ZWidgetTitle 	{	@AppTabWidgetTitle@ 		}
 .ZAppTabBorder .ZDropDown 		{	@AppTabDropDown@ 			}
@@ -363,7 +363,7 @@ BODY						{	margin:0px; 	}
 .ZFirstItem .ZAppTabBorder 		{	@AppTabBorder-first@		}
 .ZAppTabSpacer 					{	@AppTab@ @AppTabSpacer@		}
 
-/* Normal Tab Overrides  -- TODO: Merge into main */
+/* Normal Tab Overrides -- TODO: Merge into main */
 .ZSelectedPrev .ZTabBorder 		{	@TabBorder-selectedPrev@	}
 .ZSelectedNext .ZTabBorder		{	@TabBorder-selectedNext@	}
 .ZFirstItem .ZTabBorder 		{	@TabBorder-first@			}
@@ -372,7 +372,7 @@ BODY						{	margin:0px; 	}
 .ZTabBarSuffix 					{	@TabBarSuffix@				}
 
 /* Quota */
-.quotaBar 						{	height:8px;			}
+.quotaBar 						{	height:8px;					}
 /* USED? */
 .quotaLabel						{	text-align:right; @FontSize-smaller@	}
 
@@ -459,7 +459,7 @@ TEXTAREA
 }
 .BannerBar {
 	padding-top:1px;
-    height:1px;
+	height:1px;
 }
 .BannerBar TD {
 	padding-right:0px;
@@ -497,14 +497,14 @@ SELECT						{	@FieldBorder@	}
 /* Quick fix for selected Adv. Search button */
 .ZmSearchToolbarCell .ZSelected .ZToolbarButtonBorder{
 #IFDEF GECKO
- 	-moz-border-top-colors:#77736A #BFB8A9;
- 	-moz-border-right-colors:#A7A194 #F0E9D8;
- 	-moz-border-left-colors:#77736A #BFB8A9;
- 	-moz-border-bottom-colors:#A7A194 #F0E9D8;
-#ENDIF 	
- 	background-color:#FBF9F4 !important;
- 	border:2px inset; 
-    color:white;
+	-moz-border-top-colors:#77736A #BFB8A9;
+	-moz-border-right-colors:#A7A194 #F0E9D8;
+	-moz-border-left-colors:#77736A #BFB8A9;
+	-moz-border-bottom-colors:#A7A194 #F0E9D8;
+#ENDIF
+	background-color:#FBF9F4 !important;
+	border:2px inset; 
+	color:white;
 }
 
 
@@ -540,7 +540,7 @@ SELECT						{	@FieldBorder@	}
 .RowDouble .BottomRow				{ margin:4px 0 6px; 	}
 .Row-matched, .RowDouble-matched	{ background-color:@SearchResultColor@;		}
 
-.ZToolbarTable .vertSep				{ border-color:@ToolbarSeparatorColor@;     }
+.ZToolbarTable .vertSep				{ border-color:@ToolbarSeparatorColor@;		}
 #IFDEF MSIE
 .ZmSearchToolbar .DwtInputField-hint INPUT { border-width:0; padding:0; margin:3px 0 -3px; 	}
 #ENDIF
