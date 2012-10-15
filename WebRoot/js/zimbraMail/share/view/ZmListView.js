@@ -827,7 +827,8 @@ function(allResults) {
 		if (curResult && curResult.getAttribute("more")) {
 			var list = this.getList();
 			var typeText = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[this.type]], list ? list.size() : 2);
-			var args = [list ? list.size() : ZmMsg.all, typeText, "ZmListView.selectAllResults()"];
+			var shortcut = appCtxt.getShortcutHint(null, ZmKeyMap.SELECT_ALL);
+			var args = [list ? list.size() : ZmMsg.all, typeText, shortcut, "ZmListView.selectAllResults()"];
 			var toastMsg = AjxMessageFormat.format(ZmMsg.allPageSelected, args);
 			if (allResults) {
 				this.allSelected = true;
