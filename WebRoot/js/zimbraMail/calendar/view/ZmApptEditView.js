@@ -747,6 +747,9 @@ function() {
 
 ZmApptEditView.prototype._getClone =
 function() {
+    if (!this._calItem) {
+        return null;
+    }
 	return ZmAppt.quickClone(this._calItem);
 };
 
@@ -780,6 +783,10 @@ function() {
 
 ZmApptEditView.prototype._populateForSave =
 function(calItem) {
+
+    if (!calItem) {
+        return null;
+    }
 
     ZmCalItemEditView.prototype._populateForSave.call(this, calItem);
 
@@ -1172,10 +1179,16 @@ function(width) {
         var params = {
             bubbleRemovedCallback: new AjxCallback(this, this._handleRemovedAttendees)
         };
-		this._attendeesInputField = this._createInputField("_person", ZmCalBaseItem.PERSON, params);
-		this._optAttendeesInputField = this._createInputField("_optional", ZmCalBaseItem.OPTIONAL_PERSON);
+		this._attendeesInputField = this._createInputField("_person", ZmCalBaseItem.PERSON, {
+		            bubbleRemovedCallback: new AjxCallback(this, this._handleRemovedAttendees, [ZmCalBaseItem.PERSON])
+		        });
+		this._optAttendeesInputField = this._createInputField("_optional", ZmCalBaseItem.OPTIONAL_PERSON, {
+				            bubbleRemovedCallback: new AjxCallback(this, this._handleRemovedAttendees, [ZmCalBaseItem.OPTIONAL_PERSON])
+				        });
         //add Resources Field
-        if(appCtxt.get(ZmSetting.GAL_ENABLED)) this._resourceInputField = this._createInputField("_resourcesData", ZmCalBaseItem.EQUIPMENT, {strictMode:false});
+        if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+            this._resourceInputField = this._createInputField("_resourcesData", ZmCalBaseItem.EQUIPMENT, {strictMode:false});
+        }
 	}
 
     // add location input field
@@ -1931,11 +1944,6 @@ function() {
         this._scheduleView.update(this._dateInfo, organizer, this._attendees);
         this._scheduleView.updateFreeBusy();
     }
-
-    if(this._calItem && this._calItem.organizer != this._calendarOrgs[calId]) {
-        this._calItem.setOrganizer(this._calendarOrgs[calId]);
-    }
-
 	if (appCtxt.isOffline) {
         this._calItem.setFolderId(calId);
 		this.enableInputs(true); //enableInputs enables or disables the attendees/location/etc inputs based on the selected folder (calendar) - if it's local it will be disabled, and if remote - enabled.
@@ -2132,7 +2140,8 @@ function(text, el, match) {
 };
 
 ZmApptEditView.prototype._handleRemovedAttendees =
-function() {
+function(addrType) {
+    this._activeInputField = addrType;
     this.handleAttendeeChange();
 };
 
