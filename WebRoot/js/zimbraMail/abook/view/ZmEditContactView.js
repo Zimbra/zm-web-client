@@ -581,13 +581,6 @@ ZmEditContactView.prototype.getModifiedAttrs = function() {
 		}
 	}
 
-	// trim everything
-	for (var a in attributes) {
-		if (AjxUtil.isString(attributes[a])) {
-			attributes[a] = AjxStringUtil.trim(attributes[a]);
-		}
-	}
-
 	return attributes;
 };
 
