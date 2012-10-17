@@ -480,6 +480,7 @@ function(types) {
  * @param {String}	params.query	the search query
  * @param {String}	params.userText	the user text
  * @param {Array}	params.type		an array of types
+ * @param {boolean}	params.inclSharedItems		overrides this._inclSharedItems - see ZmTagsHelper._tagClick
  * @param {boolean} params.forceSearch     Ignores special processing and just executes the search.
  * @param {Boolean}	noRender		if <code>true</code>, the search results will not be rendered
  * @param {AjxCallback}	callback		the callback
@@ -536,7 +537,7 @@ function(params, noRender, callback, errorCallback) {
 		params.queryHint = appCtxt.accountList.generateQuery(null, types);
 		params.accountName = appCtxt.accountList.mainAccount.name;
 	}
-	else if (this._inclSharedItems) {
+	else if (params.inclSharedItems || this._inclSharedItems) {
 		// a query hint is part of the query that the user does not see
 		params.queryHint = ZmSearchController.generateQueryForShares(types.getArray());
 	}

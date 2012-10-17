@@ -97,7 +97,7 @@ ZmTagsHelper._tagClick =
 function(parentId, tagName) {
 	var tag = ZmTagsHelper._getTagClicked(tagName);
 	var view = DwtControl.fromElementId(parentId);
-	appCtxt.getSearchController().search({query: tag.createQuery()});
+	appCtxt.getSearchController().search({query: tag.createQuery(), inclSharedItems: true});
 };
 
 ZmTagsHelper._removeTagClick =
