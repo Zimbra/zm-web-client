@@ -984,7 +984,7 @@ function(tagId) {
 	if (!tag) {
 		return;
 	}
-	appCtxt.getSearchController().search({query: tag.createQuery()});
+	appCtxt.getSearchController().search({query: tag.createQuery(), inclSharedItems: true});
 };
 
 ZmContactSplitView.prototype._sashCallback = function(delta) {

@@ -2392,7 +2392,7 @@ function() {
 
 ZmMailMsgView.prototype._msgTagClicked =
 function(tag) {
-	appCtxt.getSearchController().search({query: tag.createQuery()});
+	appCtxt.getSearchController().search({query: tag.createQuery(), inclSharedItems: true});
 };
 
 ZmMailMsgView.prototype._handleMsgTruncated =
