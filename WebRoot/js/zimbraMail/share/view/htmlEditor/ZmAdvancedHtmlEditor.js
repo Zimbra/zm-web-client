@@ -127,7 +127,7 @@ function(editor) {
         editor = editor || currentObj.getEditor();
         if (currentObj._editorInitialized && editor) {
             if (AjxEnv.isWebKitBased) {
-                Dwt.getElement(this._iFrameId).focus();
+                Dwt.getElement(currentObj._iFrameId).focus();
             }
             else {
                 editor.focus();
@@ -135,7 +135,7 @@ function(editor) {
             currentObj.setFocusStatus(true);
         }
         else {
-            currentObj._onTinyMCEEditorInitcallback = new AjxCallback(currentObj, currentObj.focus);
+            currentObj._onTinyMCEEditorInitcallback = currentObj.focus.bind(currentObj, editor);
         }
     }
     else {
@@ -661,9 +661,9 @@ function(id, content) {
         Dwt.setVisible(obj.getHtmlElement(), true);
     }
 
+    this._iFrameId = this._bodyTextAreaId + "_ifr";
 	tinyMCE.init(tinyMCEInitObj);
 	this._editor = this.getEditor();
-	this._iFrameId = this._bodyTextAreaId + "_ifr";
 };
 
 ZmAdvancedHtmlEditor.prototype.onPaste = function(ed, ev) {
@@ -803,9 +803,6 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ed, ev) {
 
     obj.getEditorContainer().setFocusMember(obj.restoreFocus.bind(obj, ed));
 
-    if (obj._onTinyMCEEditorInitcallback) {
-        obj._onTinyMCEEditorInitcallback.run();
-    }
     if (tinymce.settings && tinymce.settings.language_load === false){
         tinymce.settings.language_load = true;
     }
@@ -819,6 +816,10 @@ ZmAdvancedHtmlEditor.prototype.onInit = function(ed, ev) {
     }
 
     obj._editorInitialized = true;
+
+    if (obj._onTinyMCEEditorInitcallback) {
+        obj._onTinyMCEEditorInitcallback();
+    }
 };
 
 /*

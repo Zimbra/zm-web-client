@@ -312,7 +312,7 @@ function(type, addr) {
 		else {
 			if (addr.isAjxEmailAddress) {
 				var match = {isDL: addr.isGroup && addr.canExpand, email: addrStr};
-				addrInput.addBubble({address:addrStr, match:match, skipNotify:true});
+				addrInput.addBubble({address:addrStr, match:match, skipNotify:true, noFocus:true});
 			}
 			else {
 				this._setAddrFieldValue(type, addrStr);
