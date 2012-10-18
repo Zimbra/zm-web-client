@@ -112,7 +112,7 @@
                     <tr class="zmwiki-dotLine">
                         <td width="16" class="zmwiki-pageIcon"><div class="ImgSection"></div></td>
                         <td class="zmwiki-pageLink">
-                            <c:set var="subFolderUrl" value="/home/${requestScope.zimbra_target_account_name}${folder.path}/${subFolder.name}"/>
+                            <c:set var="subFolderUrl" value="/home/${requestScope.zimbra_target_account_name}${folder.pathURLEncoded}/${subFolder.nameURLEncoded}"/>
                             <a href="${fn:escapeXml(subFolderUrl)}">
                                 <c:set var='subFolderName' value="${empty subFolder.name  ? noName : zm:truncate(subFolder.name,100,true)}"/>
                                 <c:out value="${subFolderName}"/>
@@ -126,14 +126,10 @@
                     <tr class="zmwiki-dotLine">
                         <td width="16" class="zmwiki-pageIcon"><div class="ImgSection"></div></td>
                         <td class="zmwiki-pageLink"><%-- allow this column to wrap --%>
-                            <c:choose>
-                                <c:when test="${fn:contains(briefHit.document.contentType, 'application/x-zimbra-doc')}">
-                                    <c:set var="briefUrl" value="/home/${requestScope.zimbra_target_account_name}${folder.path}/${briefHit.document.name}?fmt=html&preview=1"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <c:set var="briefUrl" value="/home/${requestScope.zimbra_target_account_name}${folder.path}/${briefHit.document.name}"/>
-                                </c:otherwise>
-                            </c:choose>
+                            <c:set var="briefUrl" value="/home/${requestScope.zimbra_target_account_name}${folder.pathURLEncoded}/${briefHit.document.nameURLEncoded}"/>
+                            <c:if test="${fn:contains(briefHit.document.contentType, 'application/x-zimbra-doc')}">
+                                <c:set var="briefUrl" value="${briefUrl}?fmt=html&preview=1"/>
+                            </c:if>
                             <a href="${fn:escapeXml(briefUrl)}">
                                 <c:set var='docName' value="${empty briefHit.document.name ? noName : zm:truncate(briefHit.document.name,100,true)}"/>
                                 <c:out value="${docName}"/>
