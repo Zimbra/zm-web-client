@@ -2865,6 +2865,9 @@ function(templateId, data) {
 		if (fileInputNode && attachTextWidth) {
 			if (AjxEnv.isFirefox) {
 				fileInputNode.style.right = (fileInputNode.clientWidth - attachTextWidth) + "px";
+				if (fileInputNode.parentNode){
+					fileInputNode.parentNode.style.maxWidth = attachTextWidth + "px";
+				}
 			}
 			fileInputNode.style.maxWidth = attachTextWidth;
 		}
