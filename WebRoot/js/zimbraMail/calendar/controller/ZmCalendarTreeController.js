@@ -457,7 +457,7 @@ function() {
 ZmCalendarTreeController.prototype.getExternalCalendarDialog =
 function() {
     if(!this._externalCalendarDialog) {
-        AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+        AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
 	    this._externalCalendarDialog = new ZmExternalCalendarDialog({parent: this._shell, controller: this});
     }
     return this._externalCalendarDialog;

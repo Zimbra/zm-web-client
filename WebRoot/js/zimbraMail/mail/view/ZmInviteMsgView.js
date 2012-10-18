@@ -206,7 +206,7 @@ function(callback, dayViewCallback, result) {
 		var html = [];
 		var idx = 0;
 		var attendees = appt.inv[0].comp[0].at || [];
-        AjxDispatcher.require(["CalendarCore"]);
+        AjxDispatcher.require(["MailCore", "CalendarCore"]);
 
         var options = {};
 	    options.addrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
@@ -246,7 +246,7 @@ function(dayViewCallback) {
             return;
         }
 
-		AjxDispatcher.require(["CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 		var cc = AjxDispatcher.run("GetCalController");
 
 		if (!this._dayView) {
@@ -456,7 +456,7 @@ ZmInviteMsgView.PTST_MSG[ZmCalBaseItem.PSTATUS_TENTATIVE] = {msg: AjxMessageForm
 
 ZmInviteMsgView.prototype.addSubs =
 function(subs, sentBy, sentByAddr, obo) {
-    AjxDispatcher.require(["CalendarCore", "Calendar"]);
+    AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 	subs.invite = this._invite;
 
 	if (!this._msg.isInviteCanceled() && !subs.invite.isOrganizer() && subs.invite.hasInviteReplyMethod()) {
