@@ -448,7 +448,7 @@ function(words, keepModeDiv) {
 	rec = function(node) {
 		switch (node.nodeType) {
 			case 1: /* ELEMENT */
-				for (var i = node.firstChild; i; i = rec(i));
+				for (var i = node.firstChild; i; i = rec(i)) {}
 				node = node.nextSibling;
 				break;
 			case 3: /* TEXT */
@@ -1910,9 +1910,9 @@ function(ev) {
 		case "ignore":
 			val = orig;
 			this._ignoreWords[val] = true;
-			if (fixall) {
+//			if (fixall) {
 				// TODO: visually "correct" all of them
-			}
+//			}
 			break;
 		case "add":
 			val = orig;
