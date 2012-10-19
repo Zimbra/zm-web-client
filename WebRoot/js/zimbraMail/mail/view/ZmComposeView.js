@@ -2958,6 +2958,23 @@ function(controller, value){ // value : true or false
         controller._toolbar.getButton("SAVE_DRAFT").setEnabled(value);
 };
 
+ZmComposeView.prototype.enableAttachButton =
+function(option){
+    if (this._attButton){
+       this._attButton.setEnabled(option);
+        var attachElement = this._attButton.getHtmlElement();
+        var node = attachElement && attachElement.getElementsByClassName("BrowseAttachBtn");
+        if (node && node.length){
+            node[0].disabled = !(option);
+        }
+    }
+
+    this._disableAttachments = !(option);
+
+    Dwt.setVisible(ZmId.getViewId(this._view, ZmId.CMP_DND_TOOLTIP),option);
+};
+
+
 ZmComposeView.prototype._resetUpload =
 function(err) {
 	var curView = appCtxt.getAppViewMgr().getCurrentView();

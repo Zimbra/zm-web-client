@@ -2076,7 +2076,10 @@ function() {
 	if (ZmComposeController.IS_INVITE_REPLY[this._action]) {
 		var ops = [ ZmOperation.SAVE_DRAFT, ZmOperation.ATTACHMENT ];
 		this._toolbar.enable(ops, false);
-	}
+        this._composeView.enableAttachButton(false);
+	} else {
+        this._composeView.enableAttachButton(true);
+    }
 	var op = this._toolbar.getOp(ZmOperation.COMPOSE_OPTIONS);
 	if (op) {
 		op.setVisible(appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED));
