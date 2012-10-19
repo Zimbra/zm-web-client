@@ -2804,8 +2804,12 @@ function(templateId, data) {
         var fileInputNode = node.getElementsByClassName("BrowseAttachBtn")[0];
         var attachTextWidth = node.getElementsByClassName("attach_text")[0].clientWidth;
         if (fileInputNode && attachTextWidth){
-            if (AjxEnv.isFirefox)
+            if (AjxEnv.isFirefox){
                 fileInputNode.style.right = (fileInputNode.clientWidth - attachTextWidth) + "px";
+                if (fileInputNode.parentNode){
+                	fileInputNode.parentNode.style.maxWidth = attachTextWidth + "px";
+                }
+            }
             fileInputNode.style.maxWidth = attachTextWidth;
         }
         this._attcBtnFileInpId = newData.fileInputId;
