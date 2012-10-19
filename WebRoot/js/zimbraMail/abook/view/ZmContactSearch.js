@@ -316,9 +316,9 @@ function() {
 		this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
 	}
 
-	if (sfh[ZmContactsApp.SEARCHFOR_FOLDERS]) {
-		// TODO
-	}
+	// TODO
+//	if (sfh[ZmContactsApp.SEARCHFOR_FOLDERS]) {
+//	}
 };
 
 /**

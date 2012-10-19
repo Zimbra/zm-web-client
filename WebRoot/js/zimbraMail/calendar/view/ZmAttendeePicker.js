@@ -84,7 +84,7 @@ ZmAttendeePicker.COLS[ZmCalBaseItem.LOCATION]	= [ZmItem.F_NAME, ZmItem.F_LOCATIO
 ZmAttendeePicker.COLS[ZmCalBaseItem.EQUIPMENT]	= [ZmItem.F_NAME, ZmItem.F_LOCATION, ZmItem.F_CONTACT, "FBSTATUS", ZmItem.F_NOTES];
 
 // search fields
-var i = 1;
+i = 1;
 ZmAttendeePicker.SF_ATT_NAME	= i++;
 ZmAttendeePicker.SF_NAME		= i++;
 ZmAttendeePicker.SF_SOURCE		= i++;
