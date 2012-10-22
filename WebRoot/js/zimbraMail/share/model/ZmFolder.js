@@ -480,7 +480,7 @@ function(pathOnly) {
 	var path = this.isSystem() ? ZmFolder.QUERY_NAME[this.nId] : this.name;
 	var f = this.parent;
 	while (f && (f.nId != ZmFolder.ID_ROOT) && f.name.length) {
-		var name = f.isSystem() ? ZmFolder.QUERY_NAME[f.nId] : f.name;
+		var name = (f.isSystem() && ZmFolder.QUERY_NAME[f.nId]) || f.name;
 		path = name + "/" + path;
 		f = f.parent;
 	}
