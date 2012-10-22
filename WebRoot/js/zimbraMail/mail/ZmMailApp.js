@@ -44,7 +44,7 @@ ZmMailApp = function(container, parentController) {
 
 	this._throttleStats = [];
 	this._addSettingsChangeListeners();
-    AjxCore.addOnloadListener(this._checkVacationReplyEnabled);
+    AjxCore.addOnloadListener(this._checkVacationReplyEnabled.bind(this));
 };
 
 ZmMailApp.prototype = new ZmApp;
@@ -641,16 +641,16 @@ function() {
 		displayName:		ZmMsg.startDate,
 		displayContainer:	ZmPref.TYPE_INPUT,
 		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
-		displayFunction:	ZmPref.dateGMT2Local,
-		valueFunction:		ZmPref.dateLocal2GMT
+		displayFunction:	AjxDateUtil.dateGMT2Local,
+		valueFunction:		AjxDateUtil.dateLocal2GMT
 	});
 
     ZmPref.registerPref("VACATION_UNTIL", {
 		displayName:		ZmMsg.endDate,
 		displayContainer:	ZmPref.TYPE_INPUT,
 		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
-		displayFunction:	ZmPref.dateGMT2Local,
-		valueFunction:		ZmPref.dateLocal2GMT
+		displayFunction:	AjxDateUtil.dateGMT2Local,
+		valueFunction:		AjxDateUtil.dateLocal2GMT
 	});
 
     ZmPref.registerPref("VACATION_MSG", {
@@ -2328,22 +2328,41 @@ ZmMailApp._oooReplyCallback = function(){
     appCtxt.set(ZmSetting.VACATION_MSG_ENABLED,false);
 }
 
+ZmMailApp.prototype._isOnVacation = function() {
+	if (!appCtxt.get(ZmSetting.VACATION_MSG_ENABLED)) {
+		return false;  //no vacation
+	}
+	var from = appCtxt.get(ZmSetting.VACATION_FROM);
+	var to = appCtxt.get(ZmSetting.VACATION_UNTIL);
+
+	if (!from) {
+		return true; //unlimited vacation (if from is empty, so is to)
+	}
+
+	var today = new Date();
+	var formatter = new AjxDateFormat("yyyyMMddHHmmss'Z'");
+	var fromDate = formatter.parse(AjxDateUtil.dateGMT2Local(from));
+	var toDate = formatter.parse(AjxDateUtil.dateGMT2Local(to));
+	return fromDate < today && today < toDate;
+};
+
+
 ZmMailApp.prototype._checkVacationReplyEnabled = function(){
-    var isOOOEnabled = appCtxt.get(ZmSetting.VACATION_MSG_ENABLED);
-    var isRemindEnabled = appCtxt.get(ZmSetting.VACATION_MSG_REMIND_ON_LOGIN);
-    var today = new Date();
-    var vacationFrom = appCtxt.get(ZmSetting.VACATION_FROM);
-    var fromDate = vacationFrom.length>0 ? AjxDateUtil.parseServerDateTime(vacationFrom, true) : null;
-    var isInvalidDuration = !(appCtxt.get(ZmSetting.VACATION_UNTIL).length>0) && (fromDate==null || fromDate.getTime()<today.getTime());
-    if(isOOOEnabled && isRemindEnabled && isInvalidDuration){
-       var ynDialog = appCtxt.getYesNoMsgDialog();
-       var content = AjxTemplate.expand("mail.Message#VacationRemindDialog", {id:ynDialog._htmlElId});
-       ynDialog.setTitle(ZmMsg.OOORemindDialogTitle);
-	   ynDialog.setContent(content);
-       var dontRemind = document.getElementById(ynDialog._htmlElId + "_dontRemind");
-       dontRemind.checked = false;
-       ynDialog.registerCallback(DwtDialog.YES_BUTTON, ZmMailApp._handleOOORemindResponse, this,[ynDialog,true]);
-       ynDialog.registerCallback(DwtDialog.NO_BUTTON, ZmMailApp._handleOOORemindResponse,this,[ynDialog,false]);
-       ynDialog.popup();
-    }
+    if (!appCtxt.get(ZmSetting.VACATION_MSG_REMIND_ON_LOGIN)) {
+		return; //reminder not enabled
+	}
+
+	if (!this._isOnVacation()) {
+		return;
+	}
+
+	var ynDialog = appCtxt.getYesNoMsgDialog();
+	var content = AjxTemplate.expand("mail.Message#VacationRemindDialog", {id:ynDialog._htmlElId});
+	ynDialog.setTitle(ZmMsg.OOORemindDialogTitle);
+	ynDialog.setContent(content);
+	var dontRemind = document.getElementById(ynDialog._htmlElId + "_dontRemind");
+	dontRemind.checked = false;
+	ynDialog.registerCallback(DwtDialog.YES_BUTTON, ZmMailApp._handleOOORemindResponse, null, [ynDialog, true]);
+	ynDialog.registerCallback(DwtDialog.NO_BUTTON, ZmMailApp._handleOOORemindResponse, null, [ynDialog, false]);
+	ynDialog.popup();
 };

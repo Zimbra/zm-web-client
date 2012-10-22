@@ -261,7 +261,7 @@ function(settingName) {
     var prefDate = null;
     var prefDateText = appCtxt.get(settingName);
     if (prefDateText && (prefDateText != "")) {
-        prefDate = this._formatter.parse(ZmPref.dateGMT2Local(prefDateText));
+        prefDate = this._formatter.parse(AjxDateUtil.dateGMT2Local(prefDateText));
     }
     return prefDate;
 }
@@ -592,7 +592,20 @@ function(changed) {
 		}
     }
 
-    if (appCtxt.get(ZmSetting.VACATION_MSG_ENABLED)) {
+	var vacationChangePrefs = [
+		ZmSetting.VACATION_MSG_ENABLED,
+		ZmSetting.VACATION_FROM,
+		ZmSetting.VACATION_UNTIL
+	];
+
+	var modified = false;
+	for (var i = 0; i < vacationChangePrefs.length; i++) {
+		if (changed[vacationChangePrefs[i]]) {
+			modified = true;
+			break;
+		}
+	}
+	if (modified) {
         var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
         var node = soapDoc.set("pref", "TRUE");
         node.setAttribute("name", "zimbraPrefOutOfOfficeStatusAlertOnLogin");
@@ -602,7 +615,7 @@ function(changed) {
 	//if old end date was greater than today then fetch appt id from metadata and delete the old appointment
 	var now = new Date();
 	if (appCtxt.get(ZmSetting.VACATION_CALENDAR_APPT_ID) != "-1" && this._formatter && this._oldEndDate && 
-		this._formatter.parse(ZmPref.dateGMT2Local(this._oldEndDate)) > now)
+		this._formatter.parse(AjxDateUtil.dateGMT2Local(this._oldEndDate)) > now)
 	{
 		ZmAppt.loadById(appCtxt.get(ZmSetting.VACATION_CALENDAR_APPT_ID),new AjxCallback(this, this._oooDeleteApptCallback));
 	}
