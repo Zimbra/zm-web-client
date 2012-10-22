@@ -259,11 +259,10 @@ function(node) {
 	this.isBody				= this.body			= !!(node.body);
 };
 
-/*
+/**
  * @param {object}		parentNode
  * @return {true/false}	true if one of the parent in the hierarchy is multipart/alternative otherwise false.
 */
-
 ZmMimePart._isPartOfMultipartAlternative =
 function(part){
     if (!part) { return false; }
