@@ -1768,7 +1768,7 @@ function(origMsg) {
 ZmMailListController.prototype._sendInviteReply =
 function(type, componentId, instanceDate, accountName, ignoreNotify, origMsg, acceptFolderId, callback) {
 	var msg = new ZmMailMsg();
-	AjxDispatcher.require("CalendarCore");
+	AjxDispatcher.require(["MailCore", "CalendarCore"]);
 
 	msg._origMsg = origMsg || this.getMsg();
 	msg.inviteMode = type;

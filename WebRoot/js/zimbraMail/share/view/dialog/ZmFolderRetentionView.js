@@ -151,7 +151,7 @@ function(organizer, policyElement) {
 }
 
 
-/*  doSave will be invoked for each tab view.
+/**  doSave will be invoked for each tab view.
  *
  * @param	{BatchCommand}	batchCommand	Accumulates updates from all tabs
  * @param	{Object}	    saveState		Accumulates error messages and indication of any update

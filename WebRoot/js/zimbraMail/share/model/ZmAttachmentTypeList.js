@@ -119,9 +119,9 @@ function(callback, result) {
  */
 ZmAttachmentTypeList.prototype._isSupportedType  =
 function(type){
-var supportedTypes =  [ZmMimeTable.APP_ADOBE_PDF, ZmMimeTable.APP_MS_WORD,ZmMimeTable.APP_MS_EXCEL,
-                       ZmMimeTable.APP_MS_PPT, ZmMimeTable.APP_ZIP,ZmMimeTable.APP_ZIP2, ZmMimeTable.MSG_RFC822,
-                       ZmMimeTable.TEXT_HTML, ZmMimeTable.TEXT_CAL];
+	var supportedTypes =  [ZmMimeTable.APP_ADOBE_PDF, ZmMimeTable.APP_MS_WORD,ZmMimeTable.APP_MS_EXCEL,
+    	                   ZmMimeTable.APP_MS_PPT, ZmMimeTable.APP_ZIP,ZmMimeTable.APP_ZIP2, ZmMimeTable.MSG_RFC822,
+        	               ZmMimeTable.TEXT_HTML, ZmMimeTable.TEXT_CAL];
 
     return AjxUtil.arrayContains(supportedTypes, type);
 };
