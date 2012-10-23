@@ -161,7 +161,9 @@
                             <c:set var="emailIds" value="" />
                             <c:forEach var="member" items="${contact.groupMembers}">
                                 <c:if test="${not empty emailIds}"><c:set var="grpsep" value=", " /></c:if>
-                                <c:set var="emailIds" value="${emailIds}${grpsep}${member}" /> 
+                                <c:set var="memberContact" value="${zm:groupMemberById(contact, member)}"/>
+                                <c:set var="memberContactFullAddress" value="${memberContact.fullAddress}"/>
+                                <c:set var="emailIds" value="${emailIds}${grpsep}${memberContactFullAddress}" />
                                 </tr>
                             </c:forEach>
                         </c:when>
