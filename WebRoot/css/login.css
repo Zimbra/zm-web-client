@@ -196,6 +196,13 @@ FORM {
 	width:250px;
 	@grad(LoginCenterTop,LoginCenterBottom,linear-vertical)@
 }
+
+/* limiting the error message on mobile screen to 40px (approx 3 lines)*/
+.LoginScreen .center-small #ZLoginErrorPanel {
+    max-height: 40px;
+    overflow: auto;
+}
+
 .center-small H1 {
 	margin:10px 20px 20px;
 }

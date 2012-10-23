@@ -302,6 +302,9 @@ if (application.getInitParameter("offlineMode") != null)  {
     <link  rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml.css'>
 		<c:param name="skin"	value="${skin}" />
 		<c:param name="v"		value="${version}" />
+		<c:if test="${not empty param.debug}">
+		    <c:param name="debug" value="${param.debug}" />
+		</c:if>
 		<c:if test="${not empty param.customerDomain}">
 			<c:param name="customerDomain"	value="${param.customerDomain}" />
 		</c:if>	
