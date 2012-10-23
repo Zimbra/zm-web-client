@@ -3718,7 +3718,7 @@ function(appts, newFolderId) {
 	var isMovingBetw = false;
 	for (var i = 0; i < appts.length; i++) {
 		var appt = appts[i];
-		if (!appt.isReadOnly() && appt._orig && appt.hasAttendees()) {
+		if (!appt.isReadOnly() && appt._orig && appt.otherAttendees) {
 			var origFolder = appt._orig.getFolder();
 			var newFolder = appCtxt.getById(newFolderId);
 			if (origFolder && newFolder) {
