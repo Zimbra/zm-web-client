@@ -724,8 +724,7 @@ function(reset) {
 	}
 	this._calcAutoSignatureNames(signatures);
 	for (var i = count; i < this._minEntries; i++) {
-        this._autoAddedSig = true;
-		this._addNewSignature(true);
+		this._addNewSignature(true, true); //autoAdded
 	}
 
 	var selectSig = this._sigList.getList().get(0);
@@ -772,9 +771,10 @@ function() {
 };
 
 ZmSignaturesPage.prototype._addNewSignature =
-function(skipControls) {
+function(skipControls, autoAdded) {
 	// add new signature
 	var signature = this._getNewSignature();
+	signature._autoAdded = autoAdded;
 	signature = this._addSignature(signature, skipControls);
 
 	return signature;
@@ -984,7 +984,7 @@ function(evt) {
 	}
 	else {
 		for (var i = 0; i < this._minEntries; i++) {
-			this._addNewSignature();
+			this._addNewSignature(false, true); //autoAdded
 		}
 	}
 	this._resetOperations();
@@ -1387,9 +1387,5 @@ function(ev) {
  */
 ZmSignaturesPage.prototype._isAutoAddedAndBlank =
 function(signature) {
-  if (this._autoAddedSig) {
-    var hasValue = AjxStringUtil._NON_WHITESPACE.test(signature.getValue());
-    return !hasValue;
-  }
-  return false;
+	return signature._autoAdded && !AjxStringUtil._NON_WHITESPACE.test(signature.getValue());
 };
