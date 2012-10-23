@@ -18,8 +18,9 @@
 		</html>
 	</advanced>	
 	<standard>
-        <css>
-            <file>../../css/zhtml.css</file>
-        </css>
+		<css>
+			<file>../../css/zhtml.css</file>
+			<file>../_base/base3/zhtml.css</file>
+		</css>
 	</standard>
 </skin>
