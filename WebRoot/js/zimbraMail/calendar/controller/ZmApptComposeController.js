@@ -519,8 +519,14 @@ function() {
         optionsButton.setVisible(true); //might be invisible if not ZmSetting.HTML_COMPOSE_ENABLED (see ZmCalItemComposeController._createToolBar)
 
         var m = optionsButton.getMenu();
+        if (m) {
+            var sepMi = new DwtMenuItem({parent:m, style:DwtMenuItem.SEPARATOR_STYLE});
+        }
+        else {
+            m = new DwtMenu({parent:optionsButton});
+            optionsButton.setMenu(m);
+        }
 
-        var sepMi = new DwtMenuItem({parent:m, style:DwtMenuItem.SEPARATOR_STYLE});
         var mi = this._requestResponses = new DwtMenuItem({parent:m, style:DwtMenuItem.CHECK_STYLE});
         mi.setText(ZmMsg.requestResponses);
         mi.setChecked(true, true);
