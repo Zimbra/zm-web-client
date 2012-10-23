@@ -16,10 +16,11 @@
 			<file>../_base/base3/skin.html</file>
 			<file>../_base/base3/splash.html</file>
 		</html>
-  </advanced>
-  <standard>
+	</advanced>
+	<standard>
 		<css>
 			<file>../../css/zhtml.css</file>
+			<file>../_base/base3/zhtml.css</file>
 		</css>
-  </standard>	
+	</standard>	
 </skin>

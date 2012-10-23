@@ -19,7 +19,7 @@ INPUT[type="search"]		{	border:none !important;	} /* Overriding UA style sheet t
 .TbTop						{	border-width:0 1px 1px 0 !important; padding-right:5px !important;	}
 .TbBottom					{	border-width:0 1px 1px 0 !important; padding-right:5px !important;	}
 .TabFiller					{	@AppTabSpacer@ width:100%; background-color:transparent;	}
-.GlobalActions				{	padding-right:0.5em; text-align:right; white-space:nowrap; 	}
+.GlobalActions				{	padding-right:2em; text-align:right; white-space:nowrap; 	}
 .List .Header TH			{	@RightSeparator@	}
 .ZhSubTabs					{	@TabBar@ background-color:@darken(AppC,30)@; border-top:1px solid @darken(AppC,40)@; padding:2px 5px 0 !important;	}
 .ZhSubTabs .TabSelected		{	@TabBorder-selected@ background-color:@AppC@;	}
@@ -40,7 +40,7 @@ INPUT[type="search"]		{	border:none !important;	} /* Overriding UA style sheet t
 .GlobalActions A:hover,
 .GlobalActions A:active		{	color:white; text-decoration:underline; }
 
-.AppTabs .AppTabSelected	{	background-color:@AppC@;	}
+.AppTabs .AppTabSelected	{	background-color:@AppC@; border-bottom:1px solid @AppC@;	}
 .AppTabs .AppTabSelected A:link,
 .AppTabs .AppTabSelected A:visited,
 .AppTabs .AppTabSelected A:hover,
