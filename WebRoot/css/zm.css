@@ -5178,18 +5178,9 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	background-color:#E7B2B2;
 }
 
-.InviteStatusTentative {
-	background-color:#FFC;
-}
-
-.InviteIntendedFor {
-	background-color:#FFB;
-}
-
-.InviteOutDated {
-	background-color:@lighten(AppC,90)@;
-}
-
+.InviteStatusTentative,
+.InviteIntendedFor,
+.InviteOutDated,
 .InvHeaderTable .InvCounter {
 	background-color:#FFC;
 }

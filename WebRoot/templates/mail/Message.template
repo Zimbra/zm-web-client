@@ -3,9 +3,6 @@
 		<table class='MsgHeaderTable' id='${id}_headerElement' width=100%>
 			<tr>
 				<td>
-					<$ if (data.isOutDated) { $>
-						<$= AjxTemplate.expand("#InviteNotCurrent", data) $>
-					<$ } $>
 					<div>
 						<table width=100%>
 							<tr id='${hdrTableTopRowId}'>
@@ -68,6 +65,9 @@
 							</div>
 						<$ } $>
 					</div>
+					<$ if (data.isOutDated) { $>
+						<$= AjxTemplate.expand("#InviteNotCurrent", data) $>
+					<$ } $>
 				</td>
 				<td id='${id}_contactArea' class='ContactArea'>
 					<!-- Area reserved zimlets to add to message views. -->
@@ -748,10 +748,6 @@
 </template>
 
 <template id='mail.Message#Conv2MsgHeader-expanded'>
-	<$ if (data.isOutDated) { $>
-		<$= AjxTemplate.expand("#InviteNotCurrent", data) $>
-		<div style='position:relative'>
-	<$ } $>
 	<div class='info'>
 		<table id='${hdrTableId}' class='ZPropertySheet' cellspacing='3'>
 			<tr>
@@ -770,7 +766,7 @@
 	<div id='${readCellId}' class='readUnreadDot'></div>
 	<div class='date' id='${dateCellId}' title='${dateTooltip}'>${date}</div>
 	<$ if (data.isOutDated) { $>
-		</div>
+		<$= AjxTemplate.expand("#InviteNotCurrent", data) $>
 	<$ } $>
 </template>
 		
