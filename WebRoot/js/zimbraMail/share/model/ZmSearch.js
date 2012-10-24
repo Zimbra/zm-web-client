@@ -252,10 +252,10 @@ function(params) {
 						typeStr.push(ZmSearch.TYPE[a[i]]);
 					}
 					method.setAttribute("types", typeStr.join(","));
-					// special handling for showing participants ("To" instead of "From")
-					var folder = appCtxt.getById(this.folderId);
-					if (folder && folder.isOutbound()) {
-						method.setAttribute("recip", "1");
+					if (this.types.contains(ZmItem.MSG)) {
+						// special handling for showing participants ("To" instead of "From")
+						var folder = this.folderId && appCtxt.getById(this.folderId);
+						method.setAttribute("recip", (folder && folder.isOutbound()) ? "1" : "0");
 					}
 					// if we're prefetching the first hit message, also mark it as read
 					if (this.fetch) {
@@ -401,10 +401,10 @@ function(params) {
 					}
 					request.types = typeStr.join(",");
 
-					// special handling for showing participants ("To" instead of "From")
-					var folder = appCtxt.getById(this.folderId);
-					if (folder && folder.isOutbound()) {
-						request.recip = 1;
+					if (this.types.contains(ZmItem.MSG)) {
+						// special handling for showing participants ("To" instead of "From")
+						var folder = this.folderId && appCtxt.getById(this.folderId);
+						request.recip = (folder && folder.isOutbound()) ? "1" : "0";
 					}
 
 					// if we're prefetching the first hit message, also mark it as read
@@ -575,12 +575,6 @@ function(params) {
 		request.max = appCtxt.get(ZmSetting.MAX_MESSAGE_SIZE);
 	}
 
-	// special handling for showing participants ("To" instead of "From")
-	var folder = appCtxt.getById(this.folderId);
-	if (folder && folder.isOutbound()) {
-		request.recip = 1;
-	}
-	
 	var searchParams = {
 		jsonObj:		jsonObj,
 		asyncMode:		true,
