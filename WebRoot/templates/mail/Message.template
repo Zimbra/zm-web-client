@@ -111,7 +111,7 @@
 		<span class="AttachmentLoading attachmentBubble AttachmentSpan" name="mailAttUploadingSpan" style="max-width:235px; position:static; overflow:visible;padding:0 2px 4px">
 			<span class="AttProgressSpan1">${fileName}</span>
 			<span class="AttProgressSpan2">${fileName}</span>
-			<span onclick="window.appCtxt.getCurrentView()._abortUploadFile()"  class="ImgBubbleDelete AttachmentClose"></span>
+			<span onclick="window.appCtxt.getCurrentView()._abortUploadFile()" class="ImgBubbleDelete AttachmentClose"></span>
 		</span>
 </template>
 
@@ -146,13 +146,13 @@
 </template>
 
 <template id='mail.Message#AddedHeaders'>
-	<$ for (var i = 0; i < data.additionalHdrs.length; i++) {  $>
+	<$ for (var i = 0; i < data.additionalHdrs.length; i++) { $>
 		<tr>
 			<td valign='top' class='LabelColName'>
 				<$= data.additionalHdrs[i].hdrName $>
 			</td>
 			<td class='LabelColValue' colspan='10'>
-				<$=  data.additionalHdrs[i].hdrVal $>
+				<$= data.additionalHdrs[i].hdrVal $>
 			</td>
 		</tr>
 	<$ } $>
@@ -300,14 +300,13 @@
 </template>
 
 <template id='mail.Message#InviteHeaderPtst'>
-	<table>
+	<table class='ZPropertySheet' cellspacing='6'>
 		<tr>
 			<td><$= AjxImg.getImageHtml(data.icon) $></td>
 			<td class='LabelColValue'>${attendee}</td>
 		</tr>
 	</table>
 </template>
-
 
 <template id='mail.Message#AttachmentsView'>
 	<table width='100%' height='100%'>
@@ -321,10 +320,9 @@
 <template id='mail.Message#MessageListHeader'>
 	<table class='SubjectBar' width=100%>
 		<tr>
-			<td id='${id}_closeBtnCell'></td>
-			<td></td>
-			<td width=15><$= AjxImg.getImageHtml("ConversationView") $></td>
-			<td width=99%><div class='Subject' id='${id}_subjDiv'></div></td>
+			<td id='${id}_closeBtnCell' width='1%' style='padding-right:10px;'></td>
+			<td width='1%'><$= AjxImg.getImageHtml("ConversationView") $></td>
+			<td><div class='Subject' id='${id}_subjDiv'></div></td>
 		</tr>
 		<$ if (data.tagDivId) { $>
 			<tr>
@@ -335,25 +333,31 @@
 </template>
 
 <template id='mail.Message#InformationBar'>
-	<div class='DisplayImages' id='${id}'>
+	<div id='${id}' class='DisplayImages'>
 		<table width='100%'>
 			<tr>
-				<td style='width:20px'><$= AjxImg.getImageHtml("Warning") $></td>
-				<td>${text} <span id='${id}_link' style='font:inherit; color:blue; text-decoration:underline'>${link}</span></td>
+				<td width='1%' style='padding:0 1em;'><$= AjxImg.getImageHtml("Warning") $></td>
+				<td>${text} <span id='${id}_link' class='FakeAnchor'>${link}</span></td>
 			</tr>
 		</table>
 	</div>
 </template>
 
 <template id='mail.Message#ExtImageInformationBar'>
-	<div class='DisplayImages' id='${id}' style="height:18px;">
-		<div style="float:left;padding-right:5px;"><div class="ImgWarning"></div></div>
-		<div style="float:left; width:90%;">${text} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline' id='${id}_dispImgs'>${link}</a>
-            <$ if (data.domain || data.email){ $>
-            - ${alwaysText} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline' id='${id}_domain'>${domain}</a> ${or} <a href="javascript:void(0);" style='font:inherit; color:blue; text-decoration:underline' id='${id}_email'>${email}<a>
-            <$}$>
-         </div>
-		<div class="ImgClose" id='${id}_close' style="float:right"></div>
+	<div id='${id}' class='DisplayImages'>
+		<table width='100%'><tr>
+			<td width='1%' style='padding:0 1em;'><$= AjxImg.getImageHtml("Warning") $></td>
+			<td>
+				<div><span>${text}</span>&nbsp; 
+				<a href="javascript:void(0);" id='${id}_dispImgs'>${link}</a></div>
+			<$ if (data.domain || data.email){ $>
+				<div><span>${alwaysText}</span>&nbsp; 
+				<a href="javascript:void(0);" id='${id}_domain'>${domain}</a> 
+				${or} 
+				<a href="javascript:void(0);" id='${id}_email'>${email}</a></div>
+			<$}$></td>
+			<td width='1%' style='padding:0 1em;'><div class="ImgClose" id='${id}_close'></div></td>
+		</tr></table>
 	</div>
 </template>
 
@@ -361,30 +365,30 @@
 	<table style='margin:5px 0 1px'>
 		<$ if (data.viewAllUrl && !appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) { $>
 			<tr>
-				<td style='width:18px'>
+				<td width='1%' style='padding-right:3px;'>
 					<$= AjxImg.getImageHtml("ViewAll", "position:relative;") $>
 				</td>
-				<td style='white-space:nowrap'>
+				<td style='white-space:nowrap;'>
 					<a style='text-decoration:underline' class='AttLink' href='${viewAllUrl}' target="_blank"><$= ZmMsg.viewAllImages $></a>
 				</td>
 			</tr>
 		<$}$>
 		<$ if (!appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) { $>
 		<tr>
-			<td style='width:18px'>
+			<td width='1%' style='padding-right:3px;'>
 				<$= AjxImg.getImageHtml(ZmMimeTable.getInfo(ZmMimeTable.APP_ZIP).image, "position:relative;") $>
 			</td>
-			<td style='white-space:nowrap'>
+			<td style='white-space:nowrap;'>
 				<a style='text-decoration:underline' class='AttLink' id='${downloadAllLinkId}' href='${url}&disp=a&fmt=zip'><$= ZmMsg.downloadAll $></a>
 			</td>
 		</tr>
 		<$ } $>
 		<$ if (!appCtxt.isExternalAccount()) { $>
 		<tr>
-			<td style='width:18px'>
+			<td width='1%' style='padding-right:3px;'>
 				<$= AjxImg.getImageHtml("AttachmentRemove", "position:relative;") $>
 			</td>
-			<td style='white-space:nowrap'>
+			<td style='white-space:nowrap;'>
 				<a style='text-decoration:underline' class='AttLink' id='${removeAllLinkId}' href="javascript:;"><$= ZmMsg.removeAllAttachments $></a>
 			</td>
 		</tr>
@@ -393,45 +397,45 @@
 </template>
 
 <template id="mail.Message#To_Recipient">
-    <tr id='${toRowId}'>
-        <td align=right valign=top style='${labelStyle}'>
-            <div id='${toPickerId}'><$=ZmMsg.toLabel$></div>
-        </td>
-        <td width='96%' colspan=2 id='${toCellId}'>
-            <$ if (!data.acAddrBubbles) { $>
-                <textarea id='${toInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
-            <$ } $>
-        </td>
-    </tr>
+	<tr id='${toRowId}'>
+		<td align=right valign=top style='${labelStyle}'>
+			<div id='${toPickerId}'><$=ZmMsg.toLabel$></div>
+		</td>
+		<td width='96%' colspan=2 id='${toCellId}'>
+			<$ if (!data.acAddrBubbles) { $>
+				<textarea id='${toInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
+			<$ } $>
+		</td>
+	</tr>
 </template>
 
 <template id="mail.Message#CC_Recipient">
-    <tr id='${ccRowId}' style='display:none;'>
-        <td align=right valign=top style='${labelStyle}'>
-            <div id='${ccPickerId}'><$=ZmMsg.ccLabel$></div>
-        </td>
-        <td id='${ccCellId}'>
-            <$ if (!data.acAddrBubbles) { $>
-                <textarea id='${ccInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
-            <$ } $>
-        </td>
-        <td width='5%'>
-            <nobr><a href='#' id='${bccToggleId}'><$=ZmMsg.showBCC$></a></nobr>
-        </td>
-    </tr>
+	<tr id='${ccRowId}' style='display:none;'>
+		<td align=right valign=top style='${labelStyle}'>
+			<div id='${ccPickerId}'><$=ZmMsg.ccLabel$></div>
+		</td>
+		<td id='${ccCellId}'>
+			<$ if (!data.acAddrBubbles) { $>
+				<textarea id='${ccInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
+			<$ } $>
+		</td>
+		<td width='5%' style='white-space:nowrap;'>
+			<a href='#' id='${bccToggleId}'><$=ZmMsg.showBCC$></a>
+		</td>
+	</tr>
 </template>
 
 <template id="mail.Message#BCC_Recipient">
-    <tr id='${bccRowId}' style='display:none;'>
-        <td align=right valign=top style='${labelStyle}'>
-            <div id='${bccPickerId}'><$=ZmMsg.bccLabel$></div>
-        </td>
-        <td colspan='2' id='${bccCellId}'>
-            <$ if (!data.acAddrBubbles) { $>
-                <textarea id='${bccInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
-            <$ } $>
-        </td>
-    </tr>
+	<tr id='${bccRowId}' style='display:none;'>
+		<td align=right valign=top style='${labelStyle}'>
+			<div id='${bccPickerId}'><$=ZmMsg.bccLabel$></div>
+		</td>
+		<td colspan='2' id='${bccCellId}'>
+			<$ if (!data.acAddrBubbles) { $>
+				<textarea id='${bccInputId}' class='addresses' style='${inputStyle}' rows=1></textarea>
+			<$ } $>
+		</td>
+	</tr>
 </template>
 
 <!-- NOTE: The header container MUST have an id of ${id}_header -->
@@ -459,8 +463,8 @@
 				</td>
 			</tr>
 		<$ } $>
-		<$= AjxTemplate.expand("#To_Recipient",  data) $>
-		<$= AjxTemplate.expand("#CC_Recipient",  data) $>
+		<$= AjxTemplate.expand("#To_Recipient", data) $>
+		<$= AjxTemplate.expand("#CC_Recipient", data) $>
 		<$= AjxTemplate.expand("#BCC_Recipient", data) $>
 		<tr id='${subjectRowId}'>
 			<td align=right style='<$=labelStyle$>'><$=ZmMsg.subjectLabel$></td>
@@ -518,10 +522,10 @@
 </template>
 
 <template id='mail.Message#RedirectDialog'>
-	<$ var labelStyle = data.labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap"; $>
-	<$ var inputStyle = data.inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $>
+	<$ var labelStyle = data.labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap;" $>
+	<$ var inputStyle = data.inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden;" $>
 	<table width=500 class="ZPropertySheet" cellspacing="6">
-		<$= AjxTemplate.expand("#To_Recipient",  data) $>
+		<$= AjxTemplate.expand("#To_Recipient", data) $>
 		<tr>
 			<td align=right valign=top colspan=3><$= ZmMsg.redirectExplanation $></td>
 		</tr>
@@ -529,118 +533,118 @@
 </template>
 
 <template id='mail.Message#ForwardMessages'>
-<table width=100%>
-        <$ var id = Dwt.getNextId(data.rowId) $>
-        <tr '<$= id $>' style="display:table-row;">
-        <td width="96%" colspan="2">
-            <div class="attBubbleContainer" style="position:static; overflow:visible;">
-            <div class="attBubbleHolder" style="display:inline-block; border-radius:4px;">
+	<table width=100%>
+		<$ var id = Dwt.getNextId(data.rowId) $>
+		<tr '<$= id $>' style="display:table-row;">
+			<td width="96%" colspan="2">
+				<div class="attBubbleContainer" style="position:static; overflow:visible;">
+					<div class="attBubbleHolder" style="display:inline-block; border-radius:4px;">
 
-            <$ for (var i = 0; i < data.messages.length; i++) { $>
-               <$ var message = data.messages[i]; $>
-               <$ var spanId = Dwt.getNextId(data.rowId)$>
+					<$ for (var i = 0; i < data.messages.length; i++) { $>
+					<$ var message = data.messages[i]; $>
+					<$ var spanId = Dwt.getNextId(data.rowId)$>
 
-               <span  id='<$= spanId $>' class="AttachmentLoading attachmentBubble AttachmentSpan">
-                    <span>
-                          <input type="hidden" value='<$=message.id$>' name='<$= data.fwdFieldName $>' >
-                    </span>
-                   <a style="color:#336699; cursor:pointer; text-decoration:none;" > <$= (message ? AjxStringUtil.htmlEncode(message.subject) : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></a>
-                   (<$= AjxUtil.formatSize(message.size, false, 1) $>)
-                   <span onclick="window.appCtxt.getCurrentView()._removeAttachedMessage('<$= spanId $>' ,'<$= message.id $>')" class="ImgBubbleDelete AttachmentClose"></span>
-              </span>
-            <$ } $>
-
-        </td>
-        </tr>
-</table>
+						<span id='<$= spanId $>' class="AttachmentLoading attachmentBubble AttachmentSpan">
+							<span><input type="hidden" value='<$=message.id$>' name='<$= data.fwdFieldName $>' ></span>
+							<a style="color:#336699; cursor:pointer; text-decoration:none;" > <$= (message ? AjxStringUtil.htmlEncode(message.subject) : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></a>
+							(<$= AjxUtil.formatSize(message.size, false, 1) $>)
+							<span onclick="window.appCtxt.getCurrentView()._removeAttachedMessage('<$= spanId $>' ,'<$= message.id $>')" class="ImgBubbleDelete AttachmentClose"></span>
+						</span>
+					<$ } $>
+					</div>
+				</div>
+			</td>
+		</tr>
+	</table>
 </template>
 
 <template id='mail.Message#ForwardOneMessage'>
-    <table width=100%>
-        <$ var id = Dwt.getNextId(data.rowId) $>
-        <$ var message = data.message; $>
-        <tr id='<$= id $>' style="display:table-row;">
-            <td width="96%" colspan="2">
-                <div class="attBubbleContainer" style="position:static; overflow:visible;">
-                <div class="attBubbleHolder" style="display:inline-block; border-radius:4px;">
-                    <$ var spanId = Dwt.getNextId(data.rowId)$>
-                    <span  id='<$= spanId $>' value='<$= message.id $>' class="AttachmentLoading attachmentBubble AttachmentSpan">
-                        <a style="color:#336699; cursor:pointer; text-decoration:none;" > <$= (message ? AjxStringUtil.htmlEncode(message.subject) : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></a>
-                        (<$= AjxUtil.formatSize(message.size, false, 1) $>)
-                        <span onclick="window.appCtxt.getCurrentView()._removeAttachedMessage('<$= spanId $>')" class="ImgBubbleDelete AttachmentClose"></span>
-                    </span>
-            </td>
-        </tr>
+	<table width=100%>
+		<$ var id = Dwt.getNextId(data.rowId) $>
+		<$ var message = data.message; $>
+		<tr id='<$= id $>' style="display:table-row;">
+			<td width="96%" colspan="2">
+				<div class="attBubbleContainer" style="position:static; overflow:visible;">
+					<div class="attBubbleHolder" style="display:inline-block; border-radius:4px;">
+						<$ var spanId = Dwt.getNextId(data.rowId)$>
+						<span id='<$= spanId $>' value='<$= message.id $>' class="AttachmentLoading attachmentBubble AttachmentSpan">
+							<a style="color:#336699; cursor:pointer; text-decoration:none;" > <$= (message ? AjxStringUtil.htmlEncode(message.subject) : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></a>
+							(<$= AjxUtil.formatSize(message.size, false, 1) $>)
+							<span onclick="window.appCtxt.getCurrentView()._removeAttachedMessage('<$= spanId $>')" class="ImgBubbleDelete AttachmentClose"></span>
+						</span>
+					</div>
+				</div>
+			</td>
+		</tr>
 	</table>
 </template>
 
 <template id='mail.Message#UploadProgress'>
-        <table width=100%>
-        <$ var id = Dwt.getNextId(data.rowId) $>
-        <tr '<$= id $>' style="display:table-row;">
-            <td width="96%" colspan="2">
-                <div class="attBubbleContainer" style="position:static; overflow:visible;">
-                <div class="attBubbleHolder" style="display:inline-block; border-radius:4px;">
-                    <span class="AttachmentLoading attachmentBubble AttachmentSpan" name="mailAttUploadingSpan">
-                        <span class="AttProgressSpan1">${fileName}</span>
-                        <span class="AttProgressSpan2">${fileName}</span>
-                        <span onclick="window.appCtxt.getCurrentView()._abortUploadFile()"  class="ImgBubbleDelete AttachmentClose"></span>
-                    </span>
-                </div>
-                </div>
-            </td>
-        </tr>
-        </table>
+	<table width=100%>
+		<$ var id = Dwt.getNextId(data.rowId) $>
+		<tr '<$= id $>' style="display:table-row;">
+			<td width="96%" colspan="2">
+				<div class="attBubbleContainer" style="position:static; overflow:visible;">
+				<div class="attBubbleHolder" style="display:inline-block; border-radius:4px;">
+					<span class="AttachmentLoading attachmentBubble AttachmentSpan" name="mailAttUploadingSpan">
+						<span class="AttProgressSpan1">${fileName}</span>
+						<span class="AttProgressSpan2">${fileName}</span>
+						<span onclick="window.appCtxt.getCurrentView()._abortUploadFile()" class="ImgBubbleDelete AttachmentClose"></span>
+					</span>
+				</div>
+				</div>
+			</td>
+		</tr>
+	</table>
 </template>
 
 <template id='mail.Message#ForwardAttachments'>
-        <table width=100%>
-        <$ var id = Dwt.getNextId(data.rowId) $>
-        <tr '<$= id $>' style="display:table-row;">
-        <td width="96%" colspan="2">
-            <div class="attBubbleContainer" style="position:static; overflow:visible;">
-            <div class="attBubbleHolder" style="display:inline-block; border-radius:4px;">
+	<table width=100%>
+		<$ var id = Dwt.getNextId(data.rowId) $>
+		<tr '<$= id $>' style="display:table-row;">
+			<td width="96%" colspan="2">
+				<div class="attBubbleContainer" style="position:static; overflow:visible;">
+				<div class="attBubbleHolder" style="display:inline-block; border-radius:4px;">
 
-            <$ for (var i = 0; i < data.attachments.length; i++) { $>
-               <$ var attachment = data.attachments[i]; $>
-               <$ var spanId = Dwt.getNextId(data.rowId)$>
+				<$ for (var i = 0; i < data.attachments.length; i++) { $>
+					<$ var attachment = data.attachments[i]; $>
+					<$ var spanId = Dwt.getNextId(data.rowId)$>
 
-               <span  id='<$= spanId $>' class="AttachmentLoading attachmentBubble AttachmentSpan">
-                    <span>
-                       <input type="hidden" mid='<$=attachment.mid$>' value='<$=attachment.part$>' name='<$= data.fwdFieldName $>' >
-                   </span>
+					<span id='<$= spanId $>' class="AttachmentLoading attachmentBubble AttachmentSpan">
+						<span>
+							<input type="hidden" mid='<$=attachment.mid$>' value='<$=attachment.part$>' name='<$= data.fwdFieldName $>' >
+						</span>
 
-                   <$ if(appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) { $>
-                         <$= AjxStringUtil.htmlEncode(AjxStringUtil.clipFile(attachment.label,100)) $>
-                    <$ } else { $>
-                    <!-- The open A element is within the attachment.link string -->
-                    <$= attachment.link $>
-                    <$ } $>
-                    <$ if (attachment.size) { $>
-                        (<$= attachment.size $>)
-                    <$ } $>
-                    <span onclick="window.appCtxt.getCurrentView()._removeAttachedFile('<$= spanId $>', '<$= attachment.part$>' )" class="ImgBubbleDelete AttachmentClose"></span>
-              </span>
-            <$ } $>
+						<$ if(appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)) { $>
+							<$= AjxStringUtil.htmlEncode(AjxStringUtil.clipFile(attachment.label,100)) $>
+						<$ } else { $>
+						<!-- The open A element is within the attachment.link string -->
+						<$= attachment.link $>
+						<$ } $>
+						<$ if (attachment.size) { $>
+							(<$= attachment.size $>)
+						<$ } $>
+						<span onclick="window.appCtxt.getCurrentView()._removeAttachedFile('<$= spanId $>', '<$= attachment.part$>' )" class="ImgBubbleDelete AttachmentClose"></span>
+					</span>
+				<$ } $>
 
-               <$ for (var i = 0; i < data.messages.length; i++) { $>
-               <$ var message = data.messages[i]; $>
-               <$ var msgSpanId = Dwt.getNextId(data.rowId)$>
+				<$ for (var i = 0; i < data.messages.length; i++) { $>
+				<$ var message = data.messages[i]; $>
+				<$ var msgSpanId = Dwt.getNextId(data.rowId)$>
 
-               <span  id='<$= msgSpanId $>' class="AttachmentLoading attachmentBubble AttachmentSpan">
-                    <span>
-                          <input type="hidden" value='<$=message.id$>' name='<$= data.messagesFwdFieldName $>' >
-                    </span>
-                   <a style="color:#336699; cursor:pointer; text-decoration:none;" > <$= (message ? AjxStringUtil.htmlEncode(message.subject) : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></a>
-                   (<$= AjxUtil.formatSize(message.size, false, 1) $>)
-                   <span onclick="window.appCtxt.getCurrentView()._removeAttachedMessage('<$= msgSpanId $>' ,'<$= message.id $>')" class="ImgBubbleDelete AttachmentClose"></span>
-              </span>
-            <$ } $>
-        </td>
-        </tr>
-        </table>
+				<span id='<$= msgSpanId $>' class="AttachmentLoading attachmentBubble AttachmentSpan">
+					<span>
+						<input type="hidden" value='<$=message.id$>' name='<$= data.messagesFwdFieldName $>' >
+					</span>
+					<a style="color:#336699; cursor:pointer; text-decoration:none;" > <$= (message ? AjxStringUtil.htmlEncode(message.subject) : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></a>
+					(<$= AjxUtil.formatSize(message.size, false, 1) $>)
+					<span onclick="window.appCtxt.getCurrentView()._removeAttachedMessage('<$= msgSpanId $>' ,'<$= message.id $>')" class="ImgBubbleDelete AttachmentClose"></span>
+				</span>
+				<$ } $>
+			</td>
+		</tr>
+	</table>
 </template>
-
 
 <template id='mail.Message#ZmMailConfirmView'>
 	<table width=100%>
@@ -739,7 +743,7 @@
 		<div id='${fromId}' class='ZmConvListFrom'>${from}</div>
 		<div class='ZmConvListFragment'><$= data.fragment $></div>
 	</div>
-    <div id='${readCellId}' class='readUnreadDot'></div>
+	<div id='${readCellId}' class='readUnreadDot'></div>
 	<div class='date' id='${dateCellId}' title='${dateTooltip}'>${date}</div>
 </template>
 
@@ -763,7 +767,7 @@
 
 		</table>
 	</div>
-    <div id='${readCellId}' class='readUnreadDot'></div>
+	<div id='${readCellId}' class='readUnreadDot'></div>
 	<div class='date' id='${dateCellId}' title='${dateTooltip}'>${date}</div>
 	<$ if (data.isOutDated) { $>
 		</div>
@@ -780,17 +784,17 @@
 </template>
 
 <template id='mail.Message#VacationRemindDialog'>
-	<div style='width:350px' id='${id}_question'>
-		<table align=center width=1%>
+	<div style='width:350px;' id='${id}_question'>
+		<table align='center'>
 			<tr>
 				<td><$= AjxImg.getImageHtml(DwtMessageDialog.ICON[DwtMessageDialog.INFO_STYLE]) $></td>
-				<td style='white-space:nowrap' id='${id}_dontRemindMsg'><$=ZmMsg.outOfOfficeRemindQuestion$></td>
+				<td style='white-space:nowrap;' id='${id}_dontRemindMsg'><$=ZmMsg.outOfOfficeRemindQuestion$></td>
 			</tr>
 		</table>
 	</div>
-	<table align=center width=1%>
+	<table align='center'>
 		<tr>
-			<td width=1%><input checked value='0' type='checkbox' id='${id}_dontRemind' name='${id}_dontRemind'></td>
+			<td><input checked value='0' type='checkbox' id='${id}_dontRemind' name='${id}_dontRemind'></td>
 			<td style='white-space:nowrap'><label id='${id}_dontRemindMsg' for='${id}_dontRemind'><$=ZmMsg.dontRemind$></label></td>
 		</tr>
 	</table>
