@@ -720,7 +720,6 @@ function(params) {
 		params.errorCallback = errorCallback;
 		ZmMailMsg.fetchMsg(params);
 	} else {
-		this._markReadLocal(true);
 		if (params.callback) {
 			params.callback.run(new ZmCsfeResult()); // return exceptionless result
 		}
