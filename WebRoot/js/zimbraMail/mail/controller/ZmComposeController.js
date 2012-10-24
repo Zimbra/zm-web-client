@@ -747,18 +747,15 @@ function(oldView, newView) {
 ZmComposeController.prototype._identityChangeListener =
 function(event) {
 
-	var signatureId = this._composeView._getSignatureIdForAction(null, this._action);
+	var cv = this._composeView;
+	var signatureId = cv._getSignatureIdForAction(null, this._action);
 
 	// don't do anything if signature is same
 	if (signatureId == this._currentSignatureId) { return; }
 
-	if (this._composeView.systemTextChanged()) {
-		var callbacks = {};
-		callbacks[DwtDialog.OK_BUTTON] = this._switchIdentityOkCallback.bind(this);
-		callbacks[DwtDialog.CANCEL_BUTTON] = this._switchIdentityCancelCallback.bind(this, this._composeView.identitySelect.getValue());
-		this._showMsgDialog(ZmComposeController.MSG_DIALOG_2, ZmMsg.switchIncludeWarning, null, callbacks);
-	}
-	else {
+	var okCallback = this._switchIdentityOkCallback.bind(this);
+	var cancelCallback = this._switchIdentityCancelCallback.bind(this, cv.identitySelect.getValue());
+	if (!this._warnUserAboutChanges(ZmId.OP_ADD_SIGNATURE, okCallback, cancelCallback)) {
 		this._switchIdentityOkCallback();
 	}
 };
@@ -796,14 +793,11 @@ function() {
 
 ZmComposeController.prototype._handleSelectSignature =
 function(ev) {
+
 	var sigId = ev.item.getData(ZmComposeController.SIGNATURE_KEY);
-	if (this._composeView.systemTextChanged()) {
-		var callbacks = {};
-		callbacks[DwtDialog.OK_BUTTON] = this._switchSignatureOkCallback.bind(this, sigId);
-		callbacks[DwtDialog.CANCEL_BUTTON] = this._switchSignatureCancelCallback.bind(this);
-		this._showMsgDialog(ZmComposeController.MSG_DIALOG_2, ZmMsg.switchIncludeWarning, null, callbacks);
-	}
-	else {
+	var okCallback = this._switchSignatureOkCallback.bind(this, sigId);
+	var cancelCallback = this._switchSignatureCancelCallback.bind(this);
+	if (!this._warnUserAboutChanges(ZmId.OP_ADD_SIGNATURE, okCallback, cancelCallback)) {
 		this._switchSignature(sigId);
 	}
 };
@@ -1427,17 +1421,13 @@ ZmComposeController.prototype._setFormat =
 function(mode) {
 
 	var curMode = this._composeView.getComposeMode();
-	if (mode == curMode) { return; }
+	if (mode === curMode) { return false; }
 
+	var op = (mode === DwtHtmlEditor.HTML) ? ZmOperation.FORMAT_HTML : ZmOperation.FORMAT_TEXT;
+	var okCallback = this._formatOkCallback.bind(this, mode);
+	var cancelCallback = this._formatCancelCallback.bind(this, curMode);
 	var needFormatWarning = (!AjxUtil.isEmpty(this._getBodyContent()) && mode == DwtHtmlEditor.TEXT);
-	var systemTextChanged = this._composeView.systemTextChanged();
-	if (needFormatWarning || systemTextChanged) {
-		var msg = systemTextChanged ? ZmMsg.switchIncludeWarning : ZmMsg.switchToText;
-		var callbacks = {};
-		callbacks[DwtDialog.OK_BUTTON] = this._formatOkCallback.bind(this, mode);
-		callbacks[DwtDialog.CANCEL_BUTTON] = this._formatCancelCallback.bind(this, curMode);
-		this._showMsgDialog(ZmComposeController.MSG_DIALOG_2, msg, null, callbacks, true);
-	} else {
+	if (!this._warnUserAboutChanges(op, okCallback, cancelCallback, needFormatWarning)) {
 		this._composeView.setComposeMode(mode);
 		return true;
 	}
@@ -1686,16 +1676,9 @@ ZmComposeController.prototype._setInclude =
 function(op) {
 
 	// Only give warning if user has typed text that can't be preserved
-	if (this._composeView.systemTextChanged()) {
-		var origIncOptions = AjxUtil.hashCopy(this._curIncOptions);
-		var callbacks = {};
-		callbacks[DwtDialog.OK_BUTTON] = this._switchIncludeOkCallback.bind(this, op);
-		callbacks[DwtDialog.CANCEL_BUTTON] = this._switchIncludeCancelCallback.bind(this, origIncOptions);
-		this._showMsgDialog(ZmComposeController.MSG_DIALOG_2, ZmMsg.switchIncludeWarning, null, callbacks);
-		return false;
-	} else {
-		return true;
-	}
+	var okCallback = this._switchIncludeOkCallback.bind(this, op);
+	var cancelCallback = this._switchIncludeCancelCallback.bind(this, AjxUtil.hashCopy(this._curIncOptions));
+	return (!this._warnUserAboutChanges(op, okCallback, cancelCallback));
 };
 
 ZmComposeController.prototype._switchInclude =
@@ -2358,6 +2341,29 @@ ZmComposeController.prototype._handleUploadImage = function(callback, id, respon
         delete this._uploadedImageArray;
         delete this._dataURIImagesLength;
     }
+};
+
+ZmComposeController.prototype._warnUserAboutChanges =
+function(op, okCallback, cancelCallback, switchToText) {
+
+	var cv = this._composeView;
+	var willLoseChanges = cv.componentContentChanged(ZmComposeView.BC_SIG_PRE) ||
+						  cv.componentContentChanged(ZmComposeView.BC_DIVIDER) ||
+						  cv.componentContentChanged(ZmComposeView.BC_HEADERS) ||
+						  cv.componentContentChanged(ZmComposeView.BC_SIG_POST) ||
+						  !cv.canPreserveQuotedText(op);
+	var switchToText = (op === ZmOperation.FORMAT_TEXT);
+	if (willLoseChanges || switchToText) {
+		var callbacks = {};
+		callbacks[DwtDialog.OK_BUTTON] = okCallback;
+		callbacks[DwtDialog.CANCEL_BUTTON] = cancelCallback;
+		var msg = (willLoseChanges && switchToText) ? ZmMsg.switchIncludeAndFormat : 
+				willLoseChanges ? ZmMsg.switchIncludeWarning : ZmMsg.switchToText;
+		this._showMsgDialog(ZmComposeController.MSG_DIALOG_2, msg, null, callbacks);
+		return true;
+	}
+
+	return false;
 };
 
 ZmComposeController.prototype._showMsgDialog =

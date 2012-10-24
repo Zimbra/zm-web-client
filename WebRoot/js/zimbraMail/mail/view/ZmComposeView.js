@@ -711,10 +711,9 @@ function(msg, isDraft, bodyContent) {
 		top.setContentType(ZmMimeTable.MULTI_ALT);
 		
 		// experimental code for generating text part
-		if (this._htmlEditor) {
+		if (false && this._htmlEditor) {
 			var userText = AjxStringUtil.convertHtml2Text(this.getUserText());
 			this.setComponent(ZmComposeView.BC_TEXT_PRE, userText)
-//			this._composeMode = DwtHtmlEditor.TEXT;
 			this._setReturns(DwtHtmlEditor.TEXT);
 			var xxx = this._layoutBodyComponents(this._compList, DwtHtmlEditor.TEXT);
 //			this.resetBody({ extraBodyText:userText }, true);
@@ -810,7 +809,7 @@ function(leaveMarkers) {
 	if (this._htmlEditor) {
 		content = this._htmlEditor.getContent();
 		if (!leaveMarkers && (this._composeMode === DwtHtmlEditor.TEXT)) {
-			content = content.replace(ZmComposeView.BC_MARKER, "");
+			content = content.replace(/\u0001|\u0002|\u0003|\u0004|\u0005|\u0006/g, "");	// remove markers
 		}
 	}
 	return content;
@@ -1095,12 +1094,13 @@ function(msgObj) {
 
 ZmComposeView.prototype._fixMultipartRelatedImages_onTimer =
 function(msg, account) {
-	// first time the editor is initialized, idoc.getElementsByTagName("img") is empty
-	// Instead of waiting for 500ms, trying to add this callback. Risky but works.
+	// The first time the editor is initialized, idoc.getElementsByTagName("img") is empty.
+	// Use a callback to fix images after editor is initialized.
+	var idoc = this._htmlEditor._getIframeDoc();
 	if (!this._firstTimeFixImages) {
-		this._htmlEditor.addOnContentInitializedListener(new AjxCallback(this, this._fixMultipartRelatedImages, [msg, this._htmlEditor._getIframeDoc(), account]));
+		this._htmlEditor.addOnContentInitializedListener(this._fixMultipartRelatedImages.bind(this, msg, idoc, account));
 	} else {
-		this._fixMultipartRelatedImages(msg, this._htmlEditor._getIframeDoc(), account);
+		this._fixMultipartRelatedImages(msg, idoc, account);
 	}
 };
 
@@ -1320,9 +1320,6 @@ function(bEnableInputs) {
 	this._msgAttId = null;
 	this._clearFormValue();
 	this._components = {};
-	this._userTextMarker = {};
-	this._userTextMarker[DwtHtmlEditor.TEXT] = ZmComposeView.BC_MARKER;
-	this._quotedText = null;
 		
 	// reset dirty shields
 	this._noSubjectOkay = this._badAddrsOkay = this._spellCheckOkay = false;
@@ -1370,27 +1367,25 @@ function(mimePart) {
 	this._extraParts.push(mimePart);
 };
 
-/**
- * Returns the full content for the signature, including surrounding tags if in HTML mode.
- * 
- * @param {ZmSignature}		signature		signature to use; if absent, currently selected signature is used
- * @param {string}			sigContent 		signature to wrap
- * @param {ZmAccount}		account			account to get signature from
- */
-ZmComposeView.prototype.getSignatureContentSpan =
-function(signature, sigContent, account, mode) {
+// Returns the full content for the signature, including surrounding tags if in HTML mode.
+ZmComposeView.prototype._getSignatureContentSpan =
+function(params) {
 
-	signature = signature || this.getSignatureById(this._controller.getSelectedSignature(), account);
+	var signature = params.signature || this.getSignatureById(this._controller.getSelectedSignature(), params.account);
 	if (!signature) { return ""; }
 
 	var signatureId = signature.id;
-	sigContent = sigContent || this.getSignatureContent(signatureId, mode);
+	var mode = params.mode || this._composeMode;
+	var sigContent = params.sigContent || this.getSignatureContent(signatureId, mode);
 	if (mode === DwtHtmlEditor.HTML) {
-		sigContent = ["<div id=\"", signatureId, "\">", sigContent, "</div>"].join('');
-		this._userTextMarker[DwtHtmlEditor.HTML] = signatureId;
+		var markerHtml = "";
+		if (params.style === ZmSetting.SIG_OUTLOOK) {
+			markerHtml = " " + ZmComposeView.BC_HTML_MARKER_ATTR + "='" + params.marker + "'";
+		}
+		sigContent = ["<div id=\"", signatureId, "\"", markerHtml, ">", sigContent, "</div>"].join('');
 	}
 
-	return this._getSignatureSeparator() + sigContent;
+	return this._getSignatureSeparator(params) + sigContent;
 };
 
 ZmComposeView.prototype._attachSignatureVcard =
@@ -1508,12 +1503,18 @@ function() {
 };
 
 ZmComposeView.prototype._getSignatureSeparator =
-function() {
-	var ac = window.parentAppCtxt || window.appCtxt;
+function(params) {
+
 	var sep = "";
-	var account = appCtxt.multiAccounts && this.getFromAccount();
-	if (ac.get(ZmSetting.SIGNATURE_STYLE, null, account) === ZmSetting.SIG_INTERNET) {
-		sep += "-- " + this._crlf;
+	params = params || {};
+	if (params.style === ZmSetting.SIG_INTERNET) {
+		var mode = params.mode || this._composeMode;
+		if (mode === DwtHtmlEditor.HTML) {
+			sep = "<div " + ZmComposeView.BC_HTML_MARKER_ATTR + "='" + params.marker + "'>-- " + this._crlf + "</div>";
+		}
+		else {
+			sep += "-- " + this._crlf;
+		}
 	}
 	return sep;
 };
@@ -1908,13 +1909,13 @@ function(mode) {
 };
 
 // body components
-ZmComposeView.BC_NOTHING	= "NOTHING";	// marks beginning and ending
-ZmComposeView.BC_TEXT_PRE	= "TEXT_PRE";	// canned text (might be user-entered or some form of extraBodyText) 
-ZmComposeView.BC_SIG_PRE	= "SIG_PRE";	// a sig that goes above quoted text
-ZmComposeView.BC_DIVIDER	= "DIVIDER";	// tells reader that quoted text is coming
-ZmComposeView.BC_HEADERS	= "HEADERS";	// from original msg
-ZmComposeView.BC_TEXT		= "TEXT";		// quoted text
-ZmComposeView.BC_SIG_POST	= "SIG_POST";	// a sig that goes below quoted text
+ZmComposeView.BC_NOTHING		= "NOTHING";		// marks beginning and ending
+ZmComposeView.BC_TEXT_PRE		= "TEXT_PRE";		// canned text (might be user-entered or some form of extraBodyText) 
+ZmComposeView.BC_SIG_PRE		= "SIG_PRE";		// a sig that goes above quoted text
+ZmComposeView.BC_DIVIDER		= "DIVIDER";		// tells reader that quoted text is coming
+ZmComposeView.BC_HEADERS		= "HEADERS";		// from original msg
+ZmComposeView.BC_QUOTED_TEXT	= "QUOTED_TEXT";	// quoted text
+ZmComposeView.BC_SIG_POST		= "SIG_POST";		// a sig that goes below quoted text
 
 ZmComposeView.BC_ALL_COMPONENTS = [
 		ZmComposeView.BC_NOTHING,
@@ -1922,15 +1923,22 @@ ZmComposeView.BC_ALL_COMPONENTS = [
 		ZmComposeView.BC_SIG_PRE,
 		ZmComposeView.BC_DIVIDER,
 		ZmComposeView.BC_HEADERS,
-		ZmComposeView.BC_TEXT,
+		ZmComposeView.BC_QUOTED_TEXT,
 		ZmComposeView.BC_SIG_POST,
 		ZmComposeView.BC_NOTHING
 ];
 
 // nonprinting markers that help us identify components within editor content
-ZmComposeView.BC_MARKER			= '\u0001';
-ZmComposeView.BC_MARKER_TEXT1	= '\u0002';
-ZmComposeView.BC_MARKER_TEXT2	= '\u0003';
+ZmComposeView.BC_TEXT_MARKER = {};
+ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_TEXT_PRE]		= '\u0001';
+ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_SIG_PRE]		= '\u0002';
+ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_DIVIDER]		= '\u0003';
+ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_HEADERS]		= '\u0004';
+ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_QUOTED_TEXT]	= '\u0005';
+ZmComposeView.BC_TEXT_MARKER[ZmComposeView.BC_SIG_POST]		= '\u0006';
+
+// HTML marker is an expando attr whose value is the name of the component
+ZmComposeView.BC_HTML_MARKER_ATTR = "data-marker";
 
 ZmComposeView.prototype._setBody1 =
 function(action, msg, extraBodyText, noEditorUpdate) {
@@ -1949,7 +1957,7 @@ function(action, msg, extraBodyText, noEditorUpdate) {
 	var compList = ZmComposeView.BC_ALL_COMPONENTS;
 		
 	if (action === ZmOperation.DRAFT) {
-		compList = [ZmComposeView.BC_TEXT];
+		compList = [ZmComposeView.BC_QUOTED_TEXT];
 	}
 	else if (action === ZmOperation.REPLY_CANCEL) {
 		compList = [ZmComposeView.BC_SIG_PRE, ZmComposeView.BC_SIG_POST];
@@ -1961,11 +1969,10 @@ function(action, msg, extraBodyText, noEditorUpdate) {
 		}
 	}
 
-	if (this._htmlEditor && !noEditorUpdate) {
-		var isHtmlEditorInitd = this._htmlEditor.isHtmlModeInited();
-		if (!isHtmlEditorInitd) {
-			this._fixMultipartRelatedImages_onTimer(msg);
-		}
+	var isHtmlEditorInitd = this._htmlEditor && this._htmlEditor.isHtmlModeInited();
+	if (this._htmlEditor && !noEditorUpdate && !isHtmlEditorInitd) {
+		this._fixMultipartRelatedImages_onTimer(msg);
+		this._htmlEditor.addOnContentInitializedListener(this._saveComponentContent.bind(this));
 	}
 
 	var bodyInfo = {};
@@ -1978,15 +1985,11 @@ function(action, msg, extraBodyText, noEditorUpdate) {
 		
 	if (this._htmlEditor && !noEditorUpdate) {
 		this._htmlEditor.setContent(value);
-		// save system text so we can check if user messed with it
-		this._systemText = this._getSystemText();
-		if (AjxUtil.arrayContains(this._compList, ZmComposeView.BC_TEXT)) {
-			this._quotedText = this._getQuotedText();
-		}
 	}
 		
 	if (isHtmlEditorInitd && !noEditorUpdate) {
 		this._fixMultipartRelatedImages_onTimer(msg);
+		this._saveComponentContent();
 	}
 
 	var ac = window.parentAppCtxt || window.appCtxt;
@@ -2049,12 +2052,22 @@ function(comp, mode, params) {
 		case ZmComposeView.BC_HEADERS: {
 			return this._getHeaders(mode, params);
 		}
-		case ZmComposeView.BC_TEXT: {
+		case ZmComposeView.BC_QUOTED_TEXT: {
 			return this._getBodyComponent(mode, params || {});
 		}
 		case ZmComposeView.BC_SIG_POST:
 			return this._getSignatureComponent(ZmSetting.SIG_INTERNET, mode);
 	}
+};
+
+/**
+ * Returns true if the given component is part of the compose body.
+ * 
+ * @param {string}		comp		component identifier (ZmComposeView.BC_*)
+ */
+ZmComposeView.prototype.hasComponent =
+function(comp) {
+	return AjxUtil.arrayContains(this._compList, comp);
 };
 
 /**
@@ -2081,22 +2094,16 @@ function(components, mode, params) {
 	for (var i = 0; i < components.length; i++) {
 		var comp = components[i];
 		var compValue = this.getComponent(comp, mode, params) || "";
-		if (!htmlMode && compValue && (comp !== ZmComposeView.BC_TEXT_PRE)) {
-			compValue = this._userTextMarker[DwtHtmlEditor.TEXT] + compValue;
-		}
-		if (!htmlMode && compValue && comp === ZmComposeView.BC_TEXT) {
-			compValue = ZmComposeView.BC_MARKER_TEXT1 + compValue;
-		}
-		if (!htmlMode && compValue && prevComp === ZmComposeView.BC_TEXT) {
-			compValue = ZmComposeView.BC_MARKER_TEXT2 + compValue;
-		}
-		var spacing = prevComp ? this._getComponentSpacing(prevComp, comp, prevValue, compValue) : "";
-		value += spacing + compValue;
+		var spacing = (prevComp && compValue) ? this._getComponentSpacing(prevComp, comp, prevValue, compValue) : "";
 		if (compValue || (comp === ZmComposeView.BC_NOTHING)) {
 			prevComp = comp;
 			prevValue = compValue;
 		}
 		if (compValue) {
+			if (!htmlMode) {
+				compValue = this._marker[DwtHtmlEditor.TEXT][comp] + compValue;
+			}
+			value += spacing + compValue;
 			this._compList.push(comp);
 		}
 	}
@@ -2110,16 +2117,16 @@ for (i = 0; i < ZmComposeView.BC_ALL_COMPONENTS.length; i++) {
 	ZmComposeView.BC_SPACING[ZmComposeView.BC_ALL_COMPONENTS[i]] = {};
 }
 delete i;
-ZmComposeView.BC_SPACING[ZmComposeView.BC_NOTHING][ZmComposeView.BC_SIG_PRE]	= 2;
-ZmComposeView.BC_SPACING[ZmComposeView.BC_NOTHING][ZmComposeView.BC_DIVIDER]	= 2;
-ZmComposeView.BC_SPACING[ZmComposeView.BC_NOTHING][ZmComposeView.BC_SIG_POST]	= 2;
-ZmComposeView.BC_SPACING[ZmComposeView.BC_TEXT_PRE][ZmComposeView.BC_SIG_PRE]	= 1;
-ZmComposeView.BC_SPACING[ZmComposeView.BC_TEXT_PRE][ZmComposeView.BC_DIVIDER]	= 1;
-ZmComposeView.BC_SPACING[ZmComposeView.BC_TEXT_PRE][ZmComposeView.BC_SIG_POST]	= 1;
-ZmComposeView.BC_SPACING[ZmComposeView.BC_SIG_PRE][ZmComposeView.BC_DIVIDER]	= 1;
-ZmComposeView.BC_SPACING[ZmComposeView.BC_DIVIDER][ZmComposeView.BC_TEXT]		= 1;
-ZmComposeView.BC_SPACING[ZmComposeView.BC_HEADERS][ZmComposeView.BC_TEXT]		= 1;
-ZmComposeView.BC_SPACING[ZmComposeView.BC_TEXT][ZmComposeView.BC_SIG_POST]		= 1;
+ZmComposeView.BC_SPACING[ZmComposeView.BC_NOTHING][ZmComposeView.BC_SIG_PRE]		= 2;
+ZmComposeView.BC_SPACING[ZmComposeView.BC_NOTHING][ZmComposeView.BC_DIVIDER]		= 2;
+ZmComposeView.BC_SPACING[ZmComposeView.BC_NOTHING][ZmComposeView.BC_SIG_POST]		= 2;
+ZmComposeView.BC_SPACING[ZmComposeView.BC_TEXT_PRE][ZmComposeView.BC_SIG_PRE]		= 1;
+ZmComposeView.BC_SPACING[ZmComposeView.BC_TEXT_PRE][ZmComposeView.BC_DIVIDER]		= 1;
+ZmComposeView.BC_SPACING[ZmComposeView.BC_TEXT_PRE][ZmComposeView.BC_SIG_POST]		= 1;
+ZmComposeView.BC_SPACING[ZmComposeView.BC_SIG_PRE][ZmComposeView.BC_DIVIDER]		= 1;
+ZmComposeView.BC_SPACING[ZmComposeView.BC_DIVIDER][ZmComposeView.BC_QUOTED_TEXT]	= 1;
+ZmComposeView.BC_SPACING[ZmComposeView.BC_HEADERS][ZmComposeView.BC_QUOTED_TEXT]	= 1;
+ZmComposeView.BC_SPACING[ZmComposeView.BC_QUOTED_TEXT][ZmComposeView.BC_SIG_POST]	= 1;
 
 // Returns the proper amount of space (blank lines) between two components.
 ZmComposeView.prototype._getComponentSpacing =
@@ -2136,12 +2143,12 @@ function(comp1, comp2, val1, val2) {
 	// special case - HTML with headers or prefixes will create space after divider, so we don't need to add spacing
 	var incOptions = this._controller._curIncOptions;
 	var htmlMode = (this._composeMode === DwtHtmlEditor.HTML);
-	if (htmlMode && comp1 === ZmComposeView.BC_DIVIDER && comp2 === ZmComposeView.BC_TEXT &&
+	if (htmlMode && comp1 === ZmComposeView.BC_DIVIDER && comp2 === ZmComposeView.BC_QUOTED_TEXT &&
 			(incOptions.prefix || incOptions.headers)) {
 		num = 0;
 	}
 	// minimize the gap between two BLOCKQUOTE sections (which have the blue line on the left)
-	if (htmlMode && comp1 === ZmComposeView.BC_HEADERS && comp2 === ZmComposeView.BC_TEXT && incOptions.prefix) {
+	if (htmlMode && comp1 === ZmComposeView.BC_HEADERS && comp2 === ZmComposeView.BC_QUOTED_TEXT && incOptions.prefix) {
 		num = 0;
 	}
 
@@ -2155,7 +2162,14 @@ function(style, mode) {
 	var ac = window.parentAppCtxt || window.appCtxt;
 	var account = ac.multiAccounts && this.getFromAccount();
 	if (ac.get(ZmSetting.SIGNATURES_ENABLED, null, account) && ac.get(ZmSetting.SIGNATURE_STYLE, null, account) === style) {
-		value = this.getSignatureContentSpan(null, null, account, mode);
+		var comp = (style === ZmSetting.SIG_OUTLOOK) ? ZmComposeView.BC_SIG_PRE : ZmComposeView.BC_SIG_POST;
+		var params = {
+			style:		style,
+			account:	account,
+			mode:		mode,
+			marker:		this._marker[mode][comp]
+		}
+		value = this._getSignatureContentSpan(params);
 	}
 	return value;
 };
@@ -2169,10 +2183,11 @@ function(mode, params) {
 	var msg = (params && params.msg) || this._msg;
 	var incOptions = (params && params.incOptions) || this._controller._curIncOptions;
 	var preface = "";
+	var marker = htmlMode && this._marker[mode][ZmComposeView.BC_DIVIDER];
 	if (incOptions && incOptions.headers) {
 		// divider is just a visual separator if there are headers below it
 		if (htmlMode) {
-			preface = '<hr id="' + AjxStringUtil.HTML_SEP_ID + '">';
+			preface = '<hr id="' + AjxStringUtil.HTML_SEP_ID + '" ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">';
 		} else {
 			var msgText = (action === ZmOperation.FORWARD_INLINE) ? AjxMsg.forwardedMessage : AjxMsg.origMsg;
 			preface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES, this._crlf].join("");
@@ -2195,12 +2210,8 @@ function(mode, params) {
 		preface = AjxMessageFormat.format(ZmMsg.replyPrefix, [date, time, address]);
 		preface += this._crlf;
 		if (htmlMode) {
-			preface = '<span id="' + AjxStringUtil.HTML_SEP_ID + '">' + preface + '</span>';
+			preface = '<span id="' + AjxStringUtil.HTML_SEP_ID + ' ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + preface + '</span>';
 		}
-	}
-		
-	if (htmlMode && !this._userTextMarker[DwtHtmlEditor.HTML]) {
-		this._userTextMarker[DwtHtmlEditor.HTML] = AjxStringUtil.HTML_SEP_ID;
 	}
 		
 	return preface;
@@ -2228,11 +2239,22 @@ function(mode, params) {
 	}
 		
 	if (headers.length) {
-		var wrapParams = AjxStringUtil.getWrapParams(htmlMode, incOptions);
-		wrapParams.preserveReturns = true;
-		var text = wrapParams.text = headers.join(this._crlf) + this._crlf;
-		wrapParams.len = 120; // headers tend to be longer
-		value = incOptions.prefix ? AjxStringUtil.wordWrap(wrapParams) : text;
+		var text = headers.join(this._crlf) + this._crlf;
+		if (incOptions.prefix) {
+			var wrapParams = AjxStringUtil.getWrapParams(htmlMode, incOptions);
+			wrapParams.text = text;
+			wrapParams.preserveReturns = true;
+			wrapParams.len = 120; // headers tend to be longer
+			if (htmlMode) {
+				var marker = this._marker[DwtHtmlEditor.HTML][ZmComposeView.BC_HEADERS];
+				wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
+				wrapParams.after = AjxStringUtil.HTML_QUOTE_PREFIX_POST + '</div>';
+			}
+			value = AjxStringUtil.wordWrap(wrapParams);
+		}
+		else {
+			value = text;
+		}
 	}
 		
 	return value;
@@ -2270,7 +2292,9 @@ function(mode, params) {
 		wrapParams.text = body;
 		wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
 		if (htmlMode && incOptions.prefix) {
-			wrapParams.before = AjxStringUtil.HTML_QUOTE_PREFIX_PRE_ID;
+			var marker = this._marker[DwtHtmlEditor.HTML][ZmComposeView.BC_QUOTED_TEXT];
+			wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
+			wrapParams.after = AjxStringUtil.HTML_QUOTE_PREFIX_POST + '</div>';
 		}
 		value = incOptions.prefix ? AjxStringUtil.wordWrap(wrapParams) : body;
 	}
@@ -2286,11 +2310,92 @@ function(text, isHtml) {
 		text = AjxStringUtil.trimHtml(text);
 	}
 	else {
-		text = text.replace(/\u0001|\u0002|\u0003/g, "");			// remove markers
-		text = text.replace(/\n+$/g, "\n");							// compress trailing line returns
+		text = text.replace(/\u0001|\u0002|\u0003|\u0004|\u0005|\u0006/g, "");	// remove markers
+		text = text.replace(/\n+$/g, "\n");										// compress trailing line returns
 	}
 
 	return AjxStringUtil._NON_WHITESPACE.test(text) ? text + this._crlf : "";
+};
+
+/**
+ * Returns the value of the given component as extracted from the content of the editor.
+ * 
+ * @param {string}		comp		component identifier (ZmComposeView.BC_*)
+ */
+ZmComposeView.prototype.getComponentContent =
+function(comp) {
+	
+	var htmlMode = (this._composeMode === DwtHtmlEditor.HTML);
+	var content = this._getEditorContent(true);
+	var marker = this._marker[this._composeMode][comp];
+	var compContent = "";
+
+	var firstComp = this._compList[0];
+	for (var i = 0; i < this._compList.length; i++) {
+		if (this._compList[i] === comp) { break; }
+	}
+	var nextComp = this._compList[i + 1];
+	var lastComp = this._compList[this._compList.length - 1];
+	
+	if (htmlMode) {
+		var idx1 = content.indexOf(marker);
+		if (idx1 !== -1) {
+			var chunk = content.substring(0, idx1);
+			// found the marker (an element ID), now back up to opening of tag
+			idx1 = chunk.lastIndexOf("<");
+			if (idx1 !== -1) {
+				if (comp === lastComp) {
+					compContent = content.substring(idx1);
+				}
+				else {
+					marker = this._marker[DwtHtmlEditor.HTML][nextComp];
+					var idx2 = marker && content.indexOf(marker);
+					if (idx2 !== -1) {
+						chunk = content.substring(0, idx2);
+						idx2 = chunk.lastIndexOf("<");
+						if (idx2 !== -1) {
+							compContent = content.substring(idx1, idx2);
+						}
+					}
+				}
+			}
+		}
+	}
+	else {
+		var idx1 = content.indexOf(marker);
+		if (idx1 !== -1 && comp === lastComp) {
+			// last component, include everything up to end of content
+			compContent = content.substring(idx1 + 1);
+		}
+		else {
+			marker = this._marker[this._composeMode][nextComp];
+			var idx2 = content.indexOf(marker);
+			if (idx2 !== -1 && comp === firstComp) {
+				// first component, include everything from beginning of content
+				compContent = content.substring(0, idx2);
+			}
+			else if (idx1 !== -1 && idx2 !== -1) {
+				// middle component, include everything between the two markers
+				compContent = content.substring(idx1 + 1, idx2);
+			}
+		}
+	}
+
+	return this._normalizeText(compContent, htmlMode);
+};
+
+ZmComposeView.prototype._saveComponentContent =
+function() {
+	this._compContent = {};
+	for (var i = 0; i < this._compList.length; i++) {
+		var comp = this._compList[i];
+		this._compContent[comp] = this.getComponentContent(comp);
+	}
+};
+
+ZmComposeView.prototype.componentContentChanged =
+function(comp) {
+	return this._compContent && this.hasComponent(comp) && (this._compContent[comp] !== this.getComponentContent(comp));
 };
 
 /**
@@ -2301,154 +2406,155 @@ function() {
 		
 	var htmlMode = (this._composeMode === DwtHtmlEditor.HTML);
 	var content = this._getEditorContent(true);
-	var userText = "";
-	var marker = this._userTextMarker[this._composeMode];
-	if (marker) {
+	var userText = content;
+	if (htmlMode) {
+		var firstComp;
+		for (var i = 0; i < this._compList.length; i++) {
+			if (this._compList[i] !== ZmComposeView.BC_TEXT_PRE) {
+				firstComp = this._compList[i];
+				break;
+			}
+		}
+		var marker = this._marker[this._composeMode][firstComp];
 		var idx = content.indexOf(marker);
-		if (htmlMode) {
-			if (idx !== -1) {
-				var chunk = content.substring(0, idx);
-				// found the marker (an element ID), now back up to opening of tag
-				idx = chunk.lastIndexOf("<");
-				if (idx !== -1) {
-					userText = chunk.substring(0, idx);
-				}
-			}
-		}
-		else {
-			if (idx !== -1) {
-				userText = content.substring(0, idx);
-			}
-		}
-	}
-	else {
-		userText = content;
-	}
-				
-	return this._normalizeText(userText, htmlMode);
-};
-
-// Returns text that was pre-populated into the form.
-ZmComposeView.prototype._getSystemText =
-function() {
-	var content = this._getEditorContent(true);
-	var systemText = "";
-	var marker = this._userTextMarker[this._composeMode];
-	if (marker) {
-		var idx = content.indexOf(marker);
-		if (this._composeMode === DwtHtmlEditor.HTML) {
-			if (idx !== -1) {
-				var chunk = content.substring(0, idx);
-				// found the marker (an element ID), now back up to opening of tag
-				idx = chunk.lastIndexOf("<");
-				if (idx !== -1) {
-					systemText = content.substring(idx);
-				}
-			}
-		}
-		else {
-			if (idx !== -1) {
-				systemText = content.substring(idx);
-			}
-		}
-	}
-	return systemText;
-};
-
-// Returns the block of quoted text from the editor, so that we can later check to see
-// if the user has changed it.
-ZmComposeView.prototype._getQuotedText =
-function() {
-		
-	var content = this._getEditorContent(true);
-	var quotedText = "";
-	if (this._composeMode === DwtHtmlEditor.HTML) {
-		var idx = content.indexOf(AjxStringUtil.HTML_QUOTE_ID);
 		if (idx !== -1) {
 			var chunk = content.substring(0, idx);
 			// found the marker (an element ID), now back up to opening of tag
 			idx = chunk.lastIndexOf("<");
 			if (idx !== -1) {
-				if (this._compList[this._compList.length - 1] === ZmComposeView.BC_TEXT) {
-					quotedText = content.substring(idx);
-				}
-				else {
-					var idx1 = content.indexOf(AjxStringUtil.HTML_QUOTE_PREFIX_POST.toLowerCase());
-					if (idx1 === -1) {
-						idx1 = content.indexOf(AjxStringUtil.HTML_QUOTE_PREFIX_POST.toUpperCase());
-					}
-					if (idx1 !== -1) {
-						quotedText = content.substring(idx, idx1 + AjxStringUtil.HTML_QUOTE_PREFIX_POST.length);
-					}
-				}
+				// grab everything before the marked element
+				userText = chunk.substring(0, idx);
 			}
 		}
 	}
 	else {
-		var idx1 = content.indexOf(ZmComposeView.BC_MARKER_TEXT1);
-		if (idx1 !== -1) {
-			var idx2 = content.indexOf(ZmComposeView.BC_MARKER_TEXT2);
-			quotedText = (idx2 === -1) ? content.substring(idx1) : content.substring(idx1, idx2);
+		if (this.hasComponent(ZmComposeView.BC_TEXT_PRE)) {
+			userText = this.getComponentContent(ZmComposeView.BC_TEXT_PRE);
+		}
+		else {
+			var idx = content.indexOf(this._marker[this._composeMode][this._compList[0]]);
+			if (idx !== -1) {
+				userText = content.substring(0, idx);
+			}
 		}
 	}
-	quotedText = this._normalizeText(quotedText, this._composeMode === DwtHtmlEditor.HTML);
-	return quotedText ? AjxStringUtil.trim(quotedText) + this._crlf : "";
+				
+	return this._normalizeText(userText, htmlMode);
+};
+
+// Returns the block of quoted text from the editor, so that we can see if the user has changed it.
+ZmComposeView.prototype._getQuotedText =
+function() {
+	return this.getComponentContent(ZmComposeView.BC_QUOTED_TEXT);
 };
 
 // If the user has changed the section of quoted text (eg by inline replying), preserve the changes
 // across whatever operation the user is performing. If we're just checking whether changes can be
-// preserved, return true if they cannot and we need to warn the user.
+// preserved, return true if they can be preserved (otherwise we need to warn the user).
 ZmComposeView.prototype._preserveQuotedText =
-function(params, check) {
+function(op, quotedText, check) {
 
-	if (!this._quotedText) {
-		return false;
+	var savedQuotedText = this._compContent && this._compContent[ZmComposeView.BC_QUOTED_TEXT];
+	if (!savedQuotedText) {
+		return true;
 	}
-	var quotedText = (params.quotedText || this._getQuotedText());
-	if (!quotedText || (quotedText === this._quotedText)) {
-		return false;
+	quotedText = quotedText || this._getQuotedText();
+	var changed = (quotedText !== savedQuotedText);
+	if (check && (!quotedText || !changed)) {
+		return true;
 	}
 
-	var op = params.op;
-	if (op === ZmId.OP_ADD_SIGNATURE || op === ZmOperation.INCLUDE_HEADERS) {
-		// just use quoted text as is, no conversion needed
+	// track whether user has changed quoted text during this compose session
+	this._quotedTextChanged = this._quotedTextChanged || changed;
+
+	if (op === ZmId.OP_ADD_SIGNATURE || op === ZmOperation.INCLUDE_HEADERS || (this._quotedTextChanged && !changed)) {
+		// just retain quoted text as is, no conversion needed
 	}
 	if (op === ZmOperation.USE_PREFIX) {
-		// strip or add prefixes
-		if (!this._controller._curIncOptions.prefix && !check) {
-			quotedText = quotedText.replace(/^> /, "");
-			quotedText = quotedText.replace(/\n> /g, "\n");
+		if (check) {
+			return true;
+		}
+		var htmlMode = (this._composeMode === DwtHtmlEditor.HTML);
+		var incOptions = this._controller._curIncOptions;
+		if (incOptions.prefix) {
+			var wrapParams = AjxStringUtil.getWrapParams(htmlMode, incOptions);
+			wrapParams.preserveReturns = true;
+			wrapParams.text = quotedText;
+			wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
+			if (htmlMode) {
+				var marker = this._marker[DwtHtmlEditor.HTML][ZmComposeView.BC_QUOTED_TEXT];
+				wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
+				wrapParams.after = AjxStringUtil.HTML_QUOTE_PREFIX_POST + '</div>';
+			}
+			quotedText = AjxStringUtil.wordWrap(wrapParams);
 		}
 		else {
-			return true;
+			if (htmlMode) {
+				quotedText = this._removeHtmlPrefix(quotedText);
+			}
+			else {
+				quotedText = quotedText.replace(/^> /, "");
+				quotedText = quotedText.replace(/\n> /g, "\n");
+			}
 		}
 	}
 	else if (ZmComposeController.INC_MAP[op]) {
-		return true;
+		return false;
 	}
 	else if (op === ZmOperation.FORMAT_HTML || op === ZmOperation.FORMAT_TEXT) {
 		if (check) {
-			return false;
+			return true;
 		}
-		quotedText = (op === ZmOperation.FORMAT_HTML) ? AjxStringUtil.convertToHtml(quotedText, true, AjxStringUtil.HTML_QUOTE_PREFIX_PRE) : this._htmlToText(quotedText);
+		if (op === ZmOperation.FORMAT_HTML) {
+			var marker = this._marker[DwtHtmlEditor.HTML][ZmComposeView.BC_QUOTED_TEXT];
+			var openTag = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
+			var closeTag = AjxStringUtil.HTML_QUOTE_PREFIX_POST + '</div>';
+			quotedText = AjxStringUtil.convertToHtml(quotedText, true, openTag, closeTag);
+		}
+		else {
+			quotedText = this._htmlToText(quotedText);
+		}
 	}
 
 	if (!check) {
-		this.setComponent(ZmComposeView.BC_TEXT, quotedText);
+		this.setComponent(ZmComposeView.BC_QUOTED_TEXT, quotedText);
 	}
 		
-	return false;
+	return true;
+};
+
+// Removes the first level of <blockquote> styling
+ZmComposeView.prototype._removeHtmlPrefix =
+function(html, prefixEl) {
+	prefixEl = prefixEl || "blockquote";
+	var oldDiv = Dwt.parseHtmlFragment(html);
+	var newDiv = document.createElement("div");
+	newDiv[ZmComposeView.BC_HTML_MARKER_ATTR] = this._marker[DwtHtmlEditor.HTML][ZmComposeView.BC_QUOTED_TEXT];
+	while (oldDiv.childNodes.length) {
+		var el = oldDiv.childNodes[0];
+		if (el.nodeName.toLowerCase() === prefixEl) {
+			while (el.childNodes.length) {
+				newDiv.appendChild(el.removeChild(el.childNodes[0]));
+			}
+			oldDiv.removeChild(el);
+		}
+		else {
+			newDiv.appendChild(oldDiv.removeChild(el));
+		}
+	}
+	
+	return newDiv.outerHTML;
 };
 
 /**
- * Returns true if system text has been changed. System text includes the components that
- * were automatically written into the compose form, such as signatures and quoted text.
- * User text should be inserted above system text. This function is used to see if the user
- * messed with anything below the user text area.
+ * Returns true unless changes have been made to quoted text and they cannot be preserved.
+ * 
+ * @param 	{string}	op			action user is performing
+ * @param	{string}	quotedText	quoted text (optional)
  */
-ZmComposeView.prototype.systemTextChanged =
-function() {
-	return AjxStringUtil.stripTags(this._getSystemText()) !== AjxStringUtil.stripTags(this._systemText);
+ZmComposeView.prototype.canPreserveQuotedText =
+function(op, quotedText) {
+	return this._preserveQuotedText(op, quotedText, true);
 };
 
 ZmComposeView.prototype._getBodyContent =
@@ -2531,55 +2637,23 @@ function(msg, htmlMode, incWhat) {
 	return {body:body, bodyPart:bodyPart, hasInlineImages:hasInlineImages, hasInlineAtts:hasInlineAtts};
 };
 
+ZmComposeView.BQ_BEGIN	= "BQ_BEGIN";
+ZmComposeView.BQ_END	= "BQ_END";
+
 ZmComposeView.prototype._htmlToText =
 function(html) {
-		
-	var self = this;
+
 	var convertor = {
-//		"hr": function(el) {
-//			return ZmComposeView._convertHtmlPreface(self, el);
-//		},
 		"blockquote": function(el) {
-			return "\n<blockquote>\n";
+			return "\n" + ZmComposeView.BQ_BEGIN + "\n";
 		},
 		"/blockquote": function(el) {
-			return "\n</blockquote>\n";
+			return "\n" + ZmComposeView.BQ_END + "\n";
 		},
-		"_after": AjxCallback.simpleClosure(this._applyHtmlPrefix, this, "<blockquote>", "</blockquote>")
+		"_after": AjxCallback.simpleClosure(this._applyHtmlPrefix, this, ZmComposeView.BQ_BEGIN, ZmComposeView.BQ_END)
 	}
 	return AjxStringUtil.convertHtml2Text(html, convertor);
-
-/*
-
-	var text = "";
-		
-	// create a temp iframe to create a proper DOM tree
-	var params = {parent: appCtxt.getShell(), hidden: true, html: html};
-	var dwtIframe = new DwtIframe(params);
-	if (html && dwtIframe) {
-		var self = this;
-		var convertor = {"hr":
-			function(el) {
-				return ZmComposeView._convertHtmlPreface(self, el);
-			}
-		}
-		text = AjxStringUtil.convertHtml2Text(dwtIframe.getDocument().body, convertor);
-		var dwtEl = appCtxt.getShell().getHtmlElement().removeChild(dwtIframe.getHtmlElement());
-		delete dwtEl;
-		delete dwtIframe;
-	}
-		
-	return text;
-*/
 };
-
-// for getting text version of HTML part when sending, used by AjxStringUtil._traverse
-/*
-ZmComposeView._convertHtmlPreface =
-function(self, el) {
-	return (el && el.id === AjxStringUtil.HTML_SEP_ID) ? self._getDivider(DwtHtmlEditor.TEXT) + self._crlf : null;
-};
-*/
 
 ZmComposeView.prototype._applyHtmlPrefix =
 function(tagStart, tagEnd, text) {
@@ -2634,7 +2708,7 @@ function(tagStart, tagEnd, text) {
  */
 ZmComposeView.prototype.resetBody =
 function(params, noEditorUpdate) {
-		
+
 	params = params || {};
 	var action = params.action || this._origAction || this._action;
 	if (this._action === ZmOperation.DRAFT) {
@@ -2644,8 +2718,8 @@ function(params, noEditorUpdate) {
 	var incOptions = params.incOptions || this._controller._curIncOptions;
 		
 	this._components = {};
-		
-	this._preserveQuotedText(params);
+	
+	this._preserveQuotedText(params.op, params.quotedText);
 	this.cleanupAttachments(true);
 	this._isDirty = this._isDirty || this.isDirty();
 	this._setBody(action, msg, params.extraBodyText, noEditorUpdate);
@@ -2721,7 +2795,15 @@ function(composeMode) {
 		this._bodyField = document.getElementById(this._bodyFieldId);
 	}
 	this._includedPreface = "";
-
+	
+	this._marker = {};
+	this._marker[DwtHtmlEditor.TEXT] = ZmComposeView.BC_TEXT_MARKER;
+	this._marker[DwtHtmlEditor.HTML] = {};
+	for (var i = 0; i < ZmComposeView.BC_ALL_COMPONENTS.length; i++) {
+		var comp = ZmComposeView.BC_ALL_COMPONENTS[i];
+		this._marker[DwtHtmlEditor.HTML][comp] = '__' + comp + '__';
+	}
+	
 	// misc. inits
 	this.setScrollStyle(DwtControl.SCROLL);
 	this._attachCount = 0;
