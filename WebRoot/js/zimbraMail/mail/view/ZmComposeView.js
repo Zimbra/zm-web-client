@@ -2982,34 +2982,33 @@ function(option){
 
 ZmComposeView.prototype._resetUpload =
 function(err) {
-	var curView = appCtxt.getAppViewMgr().getCurrentView();
-	curView._attButton.setEnabled(true);
-    curView.enableToolbarButtons(curView._controller, true);
-    curView._setAttInline(false);
-    curView._controller._uploadingProgress = false;
-    if (curView._controller._uploadAttReq){
-		curView._controller._uploadAttReq = null;
+	this._attButton.setEnabled(true);
+    this.enableToolbarButtons(this._controller, true);
+    this._setAttInline(false);
+    this._controller._uploadingProgress = false;
+    if (this._controller._uploadAttReq){
+		this._controller._uploadAttReq = null;
 	}
 
-    if (curView._msgIds){
-      curView._msgIds = [];
+    if (this._msgIds){
+      this._msgIds = [];
     }
 
-	if(curView.si){
-		clearTimeout(curView.si);
+	if(this.si){
+		clearTimeout(this.si);
 	}
-    if (err === true && curView._loadingSpan){
-		curView._loadingSpan.parentNode.removeChild(curView._loadingSpan);
-        curView._controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO);// Save the previous state
-	}
-
-    if(curView._loadingSpan){
-		curView._loadingSpan = null;
+    if (err === true && this._loadingSpan){
+		this._loadingSpan.parentNode.removeChild(this._loadingSpan);
+        this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO);// Save the previous state
 	}
 
-    if (curView._uploadElementForm){
-        curView._uploadElementForm.reset();
-        curView._uploadElementForm = null;
+    if(this._loadingSpan){
+		this._loadingSpan = null;
+	}
+
+    if (this._uploadElementForm){
+        this._uploadElementForm.reset();
+        this._uploadElementForm = null;
     }
 };
 
@@ -3670,7 +3669,7 @@ function(isDraft, status, attId, docIds, msgIds) {
         if (msgIds){
           this._setAttachedMsgIds(msgIds);
         }
-		var callback = new AjxCallback(this, this._resetUpload);
+		var callback = this._resetUpload.bind(this);
 		this._startUploadAttachment(); 
 		this._controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, attId, docIds, callback);
 	} else if (status == AjxPost.SC_UNAUTHORIZED) {

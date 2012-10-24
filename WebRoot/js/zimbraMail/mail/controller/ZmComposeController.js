@@ -2227,7 +2227,10 @@ ZmComposeController.prototype._uploadMyComputerFile =
     function(files, prevData, start){
     try {
         var req = new XMLHttpRequest(); // we do not call this function in IE
-        var curView = appCtxt.getAppViewMgr().getCurrentView();
+        var curView = this._composeView;
+        if (!curView){
+            return;
+        }
         this.upLoadC = this.upLoadC + 1;
         var controller = this;
 
@@ -2264,40 +2267,13 @@ ZmComposeController.prototype._uploadMyComputerFile =
 	        };
             progress(curView);
         }
-
-	    req.onreadystatechange = function(){
-		    if(req.readyState === 4 && req.status === 200) {
-			    var resp = eval("["+req.responseText+"]");
-			    var response = resp.length && resp[2];
-			    if (response){
-                    DBG.println(AjxDebug.DBG1,"Uploaded file: "  + fileName + "Successfully.");
-                    prevData.push(response[0]);
-                    if (start < files.length){
-                        curView.updateAttachFileNode(files, start);
-                        controller._uploadMyComputerFile(files, prevData, start )
-                    }else {
-				        var callback = new AjxCallback(this, curView._resetUpload);
-				        controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, prevData, null, callback);
-                    }
-			    }else {
-                    DBG.println("Error while uploading file: "  + fileName + " response is null.");
-                    var callback = new AjxCallback(this, curView._resetUpload);
-				    controller.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, prevData, null, callback);
-				    var msgDlg = appCtxt.getMsgDialog();
-				    this.upLoadC = this.upLoadC - 1;
-				    msgDlg.setMessage(ZmMsg.importErrorUpload, DwtMessageDialog.CRITICAL_STYLE);
-				    msgDlg.popup();
-				    return false;
-			    }
-		    }
-	    }
+	    req.onreadystatechange = this._handleUploadResponse.bind(this, req, prevData, start, files, fileName);
         req.send(file);
         delete req;
     } catch(exp) {
         DBG.println("Error while uploading file: "  + fileName);
         DBG.println("Exception: "  + exp);
-	    var curView = appCtxt.getAppViewMgr().getCurrentView();
-	    curView._resetUpload(true);
+	    this._composeView._resetUpload(true);
         var msgDlg = appCtxt.getMsgDialog();
         this.upLoadC = this.upLoadC - 1;
         msgDlg.setMessage(ZmMsg.importErrorUpload, DwtMessageDialog.CRITICAL_STYLE);
@@ -2306,6 +2282,36 @@ ZmComposeController.prototype._uploadMyComputerFile =
     }
 };
 
+ZmComposeController.prototype._handleUploadResponse =
+function(req, prevData, start, files, fileName){
+    var curView = this._composeView;
+    this._initAutoSave()
+		    if(req.readyState === 4 && req.status === 200) {
+			    var resp = eval("["+req.responseText+"]");
+			    var response = resp.length && resp[2];
+			    if (response){
+                    DBG.println(AjxDebug.DBG1,"Uploaded file: "  + fileName + "Successfully.");
+                    prevData.push(response[0]);
+                    if (start < files.length){
+                        curView.updateAttachFileNode(files, start);
+                        this._uploadMyComputerFile(files, prevData, start )
+                    }else {
+				        var callback = curView._resetUpload.bind(curView);
+				        this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, prevData, null, callback);
+                    }
+			    }else {
+                    DBG.println("Error while uploading file: "  + fileName + " response is null.");
+				    var callback = curView._resetUpload.bind(curView);
+				    this.saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, prevData, null, callback);
+				    var msgDlg = appCtxt.getMsgDialog();
+				    this.upLoadC = this.upLoadC - 1;
+				    msgDlg.setMessage(ZmMsg.importErrorUpload, DwtMessageDialog.CRITICAL_STYLE);
+				    msgDlg.popup();
+				    return false;
+			    }
+		    }
+
+};
 
 ZmComposeController.prototype._uploadImage = function(blob, callback){
     var req = new XMLHttpRequest();
