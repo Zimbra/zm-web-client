@@ -284,7 +284,7 @@
             plugins : "advlist,inlinepopups,table,paste,directionality,emotions" + (tinymce.isIE ? "" : ",autolink"),
             theme : "advanced",
             theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,image,link,unlink,emotions",
-            theme_advanced_buttons2 : "formatselect,undo,redo,|,removeformat,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,charmap",
+            theme_advanced_buttons2 : "formatselect,undo,redo,|,removeformat,|,pastetext,|,tablecontrols,|,blockquote,hr,charmap",
             theme_advanced_buttons3 : "",
             theme_advanced_buttons4 : "",
             theme_advanced_toolbar_location : "top",
@@ -302,6 +302,8 @@
             content_css : false,
             language : locale,
             theme_advanced_show_current_color : true,
+            paste_retain_style_properties : "all",
+            paste_remove_styles_if_webkit : false,
             setup : function(ed) {
                 ed.onInit.add(onTinyMCEEditorInit);
                 ed.onLoadContent.add(handleContentLoad);

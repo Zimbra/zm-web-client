@@ -612,7 +612,7 @@ function(id, content) {
         plugins : "advlist,inlinepopups,table,paste,directionality,emotions,-zimbraplugin,-zbreakquote" + (AjxEnv.isIE ? "" : ",autolink"),
 		theme : "advanced",
         theme_advanced_buttons1 : "fontselect,fontsizeselect,forecolor,backcolor,|,bold,italic,underline,strikethrough,|,bullist,numlist,|,outdent,indent,|,justifyleft,justifycenter,justifyright,|,image,link,unlink,emotions,|,ltr,rtl,|,toggle",
-        theme_advanced_buttons2 : "formatselect,undo,redo,|,removeformat,|,pastetext,pasteword,|,tablecontrols,|,blockquote,hr,charmap",
+        theme_advanced_buttons2 : "formatselect,undo,redo,|,removeformat,|,pastetext,|,tablecontrols,|,blockquote,hr,charmap",
 		theme_advanced_buttons3 : "",
 		theme_advanced_buttons4 : "",
 		theme_advanced_toolbar_location : "top",
@@ -635,6 +635,8 @@ function(id, content) {
         language_load : (ZmAdvancedHtmlEditor.LOCALE === "en") ? false : true,
         theme_advanced_show_current_color : true,
         directionality : appCtxt.get(ZmSetting.COMPOSE_INIT_DIRECTION),
+        paste_retain_style_properties : "all",
+        paste_remove_styles_if_webkit : false,
 		setup : function(ed) {
             ed.onLoadContent.add(obj.onLoadContent.bind(obj));
             ed.onPostRender.add(obj.onPostRender.bind(obj));
