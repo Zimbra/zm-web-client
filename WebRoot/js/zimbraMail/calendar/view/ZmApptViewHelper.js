@@ -349,7 +349,7 @@ function(folderSelect, folderRow, calendarOrgs, calItem) {
     //todo: new ui hide folder select if there is only one folder
 };
 
-/**
+/*
  * Takes a string, AjxEmailAddress, or contact/resource and returns
  * a ZmContact or a ZmResource. If the attendee cannot be found in
  * contacts, locations, or equipment, a new contact or
@@ -617,7 +617,7 @@ function(appt, id, controller, first, last) {
 	var isNew = appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 	var isAccepted = appt.ptst == ZmCalBaseItem.PSTATUS_ACCEPT;
 	var calendar = appt.getFolder();
-    AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+    AjxDispatcher.require(["CalendarCore", "Calendar"]);
 
     var tagNames  = appt.getVisibleTags();
     var tagIcon = last ? appt.getTagImageFromNames(tagNames) : null;
