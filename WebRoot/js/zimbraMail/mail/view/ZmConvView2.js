@@ -1474,11 +1474,6 @@ function(msg, container, callback, index) {
 	msg.load(params);
 
 	if (isCalendarInvite) {
-		// rearrange invite components to be part of the body
-		var imv = this._inviteMsgView;
-		if (imv && imv._dayView) {
-			imv._dayView.setVisible(false);
-		}
 		if (AjxEnv.isIE) {
 			// for some reason width=100% on inv header table makes it too wide (bug 65696)
 			Dwt.setSize(this._headerElement, this._header.getSize().x, Dwt.DEFAULT);
