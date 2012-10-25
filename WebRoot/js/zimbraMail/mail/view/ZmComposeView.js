@@ -2307,7 +2307,7 @@ function(text, isHtml) {
 		
 	text = AjxStringUtil.trim(text);
 	if (isHtml) {
-		text = AjxStringUtil.trimHtml(text);
+		text = AjxStringUtil.trimHtml(text.replace(/\n/g, ""));
 	}
 	else {
 		text = text.replace(/\u0001|\u0002|\u0003|\u0004|\u0005|\u0006/g, "");	// remove markers
