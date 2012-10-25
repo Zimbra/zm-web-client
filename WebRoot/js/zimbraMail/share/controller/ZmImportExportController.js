@@ -438,26 +438,13 @@ function(params) {
 	var startDate = params.start ? AjxDateUtil.simpleParseDateStr(params.start) : null;
 	var endDate = params.end ? AjxDateUtil.simpleParseDateStr(params.end) : null;
 	if (isTGZ && params.views) { formParams["types"] = params.views; }
-        if (params.views == "appointment"){
-            if(startDate) {
-                formParams["start"] = startDate.getTime();
-            }
-            if(endDate) {
-                endDate = AjxDateUtil.roll(endDate, AjxDateUtil.DAY, 1);
-                formParams["end"] = endDate.getTime();
-            }
-        } else {
-	        if (startDate) {
-		        startDate = AjxDateUtil.roll(startDate, AjxDateUtil.DAY, -1);
-	        }
-	        if (endDate) {
-		        endDate = AjxDateUtil.roll(endDate, AjxDateUtil.DAY, 1);
-	        }
-	        var startDateFormatted = (startDate) ? AjxDateUtil._getMonth(startDate) + "/" +  AjxDateUtil._getDate(startDate) + "/" + AjxDateUtil._getFullYear(startDate) : null;
-	        var endDateFormatted = (endDate) ? AjxDateUtil._getMonth(endDate) + "/" +  AjxDateUtil._getDate(endDate) + "/" + AjxDateUtil._getFullYear(endDate) : null;
-	        if (isTGZ && startDateFormatted){ params.searchFilter = ((params.searchFilter) ? params.searchFilter + " AND " : "") + "after:" + startDateFormatted; }
-	        if (isTGZ && endDateFormatted){ params.searchFilter = ((params.searchFilter) ? params.searchFilter + " AND " : "") + "before:" + endDateFormatted; }
-        }
+    if(startDate) {
+        formParams["start"] = startDate.getTime();
+    }
+    if(endDate) {
+        endDate = AjxDateUtil.roll(endDate, AjxDateUtil.DAY, 1);
+        formParams["end"] = endDate.getTime();
+    }
 	if (isTGZ && params.searchFilter) { formParams["query"] = params.searchFilter; }
 	if (params.skipMeta) { formParams["meta"] = "0"; }
 	if (params.filename) { formParams["filename"] = params.filename; }
