@@ -254,7 +254,7 @@ ZmPeopleAutocompleteListView.prototype._peopleItemListener =
             break;
 
         case "NewAppt":
-            AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+            AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
 			var cc = AjxDispatcher.run("GetCalController");
 			var appt = cc.newApptObject((new Date()));
 			appt.setAttendees([this._activeContact.getEmail()], ZmCalBaseItem.PERSON);
