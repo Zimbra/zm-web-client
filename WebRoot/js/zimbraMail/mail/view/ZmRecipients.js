@@ -715,7 +715,7 @@ function(addrs) {
 		for (var i = 0; i < addrsArray.length; i++) {
 			var addr = addrsArray[i];
 			if (addr) {
-				if (addr.isGroup) {
+				if (addr.isGroup && !(addr.__contact && addr.__contact.isDL)) {
 					var members = addr.__contact ? addr.__contact.getGroupMembers().good.getArray() :
 												   AjxEmailAddress.split(addr.address);
 					addrsNew = addrsNew.concat(members);
