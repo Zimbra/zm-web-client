@@ -23,13 +23,7 @@
  * 	- If search for resources returns data
  */
 
-// base classes for ZmResource and ZmResourceList
-AjxPackage.require("zimbraMail.abook.model.ZmContact");
-AjxPackage.require("zimbraMail.abook.model.ZmContactList");
-
 AjxPackage.require("zimbraMail.calendar.model.ZmCalendar");
-AjxPackage.require("zimbraMail.calendar.model.ZmRecurrence");
-AjxPackage.require("zimbraMail.calendar.model.ZmCalItem");
 AjxPackage.require("zimbraMail.calendar.model.ZmAppt");
 AjxPackage.require("zimbraMail.calendar.model.ZmApptList");
 AjxPackage.require("zimbraMail.calendar.model.ZmApptCache");
