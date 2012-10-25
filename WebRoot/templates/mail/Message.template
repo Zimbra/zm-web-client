@@ -781,10 +781,10 @@
 
 <template id='mail.Message#VacationRemindDialog'>
 	<div style='width:350px;' id='${id}_question'>
-		<table align='center'>
+		<table align='center' class="ZPropertySheet">
 			<tr>
 				<td><$= AjxImg.getImageHtml(DwtMessageDialog.ICON[DwtMessageDialog.INFO_STYLE]) $></td>
-				<td style='white-space:nowrap;' id='${id}_dontRemindMsg'><$=ZmMsg.outOfOfficeRemindQuestion$></td>
+				<td id='${id}_dontRemindMsg'><$=ZmMsg.outOfOfficeRemindQuestion$></td>
 			</tr>
 		</table>
 	</div>
