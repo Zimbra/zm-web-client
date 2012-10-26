@@ -30,7 +30,7 @@
     <c:set var="action" value="${zm:cook(empty param.paction ? param.action : param.paction)}" scope="request"/>
 </mo:handleError>
 <c:set var="action_url" value="${context_url}"/>
-<form action="<c:url value="${action_url}"/>" method="post" accept-charset="UTF-8" onsubmit="return submitForm(this);">
+<form action="<c:url value="${action_url}"/>" method="post" accept-charset="UTF-8" onsubmit="if(!this.sq.value){showLoadingMsg('<fmt:message key="actionNoSearchQuerySpecified"/>',true,'Warning',1000);return false;}else{return submitForm(this);}">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="bt" value="${zm:cook(bt)}"/>
 <div class="tbl tb">
@@ -54,7 +54,7 @@
         <span class="td label" style="width:20%;">
             <fmt:message key="find"/>
         </span>
-        <span class="td">
+        <span class="td value">
               <input type="text" name="sq" class="Textarea"/>
         </span>
     </div>
@@ -115,7 +115,7 @@
                     <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
                     <c:if test="${(not (folder.isSearchFolder or folder.isChats or folder.isSpam)) or (mailbox.features.spam and folder.isSpam)}">
                         <option value=' in:"${folder.rootRelativePath}"'>
-                            ${label}
+                            ${fn:escapeXml(label)}
                         </option>
                     </c:if>
                 </zm:forEachFolder>
@@ -141,21 +141,16 @@
     <span class='td label'>
         <fmt:message key="MO_size"/>
     </span>
-
-    <span class="td value sq_size_comp" style="float:left; display:block">
-        <select name="sq_size_comp">
-            <option value="larger"><fmt:message key="MO_larger"/></option>
-            <option value="smaller"><fmt:message key="MO_smaller"/></option>
-        </select>
-    </span>
-
-    <input type="text" name="sq_size" class="td sq_size" size="5" style="float:left"/>
-
-    <span class="td value sq_size_units" style="float:left; display:block">
-        <select name="sq_size_units">
-            <option value="kb">KB</option>
-            <option value="mb">MB</option>
-        </select>
+    <span class='td value'>
+            <select name="sq_size_comp" class="sq_size_comp">
+                <option value="larger"><fmt:message key="MO_larger"/></option>
+                <option value="smaller"><fmt:message key="MO_smaller"/></option>
+            </select>
+            <input type="text" name="sq_size" class="sq_size" size="5"/>
+            <select name="sq_size_units" class="sq_size_units">
+                <option value="kb">KB</option>
+                <option value="mb">MB</option>
+            </select>
     </span>
     </div>
     <div class="tr">
@@ -185,7 +180,7 @@
         <span class='td label'>
             <fmt:message key="MO_tocc"/>
         </span>
-        <span class='td'>
+        <span class='td value'>
             <input type="text" name="sq_tocc" class="Textarea"/>
         </span>
     </div>
@@ -194,7 +189,7 @@
         <span class='td label' style="border:0px;">
             <fmt:message key="subject"/>
         </span>
-        <span class='td' style="border:0px;">
+        <span class='td value' style="border:0px;">
             <input type="text" name="sq_subject" class="Textarea"/>
         </span>
     </div>

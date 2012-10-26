@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -86,22 +86,11 @@ ZmFilterRule.TYPE_FOLDER_PICKER	= "FOLDER_PICKER";
  */
 ZmFilterRule.TYPE_TAG_PICKER	= "TAG_PICKER";
 
-ZmFilterRule.IMPORTANCE         = "importance";
-ZmFilterRule.IMPORTANCE_HIGH    = "high";
-ZmFilterRule.IMPORTANCE_LOW     = "low";
-ZmFilterRule.IMPORTANCE_NORMAL  = "normal";
-ZmFilterRule.FLAGGED            = "flagged";
-ZmFilterRule.READ               = "read";
-ZmFilterRule.PRIORITY           = "priority";
-ZmFilterRule.RANKING            = "ranking";
-
-
 // Conditions (subjects)
 ZmFilterRule.C_FROM			= "FROM";
 ZmFilterRule.C_TO			= "TO";
 ZmFilterRule.C_CC			= "CC";
 ZmFilterRule.C_TO_CC		= "TO_CC";
-ZmFilterRule.C_BCC          = "BCC";
 ZmFilterRule.C_SUBJECT		= "SUBJECT";
 ZmFilterRule.C_HEADER		= "HEADER";
 ZmFilterRule.C_SIZE			= "SIZE";
@@ -111,46 +100,25 @@ ZmFilterRule.C_ATT			= "ATT";
 ZmFilterRule.C_MIME_HEADER	= "MIME_HEADER";
 ZmFilterRule.C_ADDRBOOK		= "ADDRBOOK";
 ZmFilterRule.C_INVITE		= "INVITE";
-ZmFilterRule.C_FACEBOOK     = "FACEBOOK";
-ZmFilterRule.C_LINKEDIN     = "LINKEDIN";
-ZmFilterRule.C_SOCIALCAST   = "SOCIALCAST";
-ZmFilterRule.C_TWITTER      = "TWITTER"
-ZmFilterRule.C_CONV         = "CONVERSATIONS";
-ZmFilterRule.C_BULK         = "BULK";
-ZmFilterRule.C_LIST         = "LIST";
-ZmFilterRule.C_SOCIAL       = "SOCIAL";
-ZmFilterRule.C_ADDRESS      = "ADDRESS";
-ZmFilterRule.C_RANKING      = "RANKING";
-ZmFilterRule.C_ME           = "ME";
-ZmFilterRule.C_IMPORTANCE   = "IMPORTANCE";
 
 ZmFilterRule.C_HEADER_VALUE = {};
+ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_FROM]	= "from";
+ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_TO]		= "to";
+ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_CC]		= "cc";
+ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_TO_CC]	= "to,cc";
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_SUBJECT]	= "subject";
 ZmFilterRule.C_HEADER_VALUE[ZmFilterRule.C_HEADER]	= "header";
 
 ZmFilterRule.C_HEADER_MAP = {};
-for (i in ZmFilterRule.C_HEADER_VALUE) {
+for (var i in ZmFilterRule.C_HEADER_VALUE) {
 	ZmFilterRule.C_HEADER_MAP[ZmFilterRule.C_HEADER_VALUE[i]] = i;
 };
-
-ZmFilterRule.C_ADDRESS_VALUE = {};
-ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_FROM]	= "from";
-ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_TO]		= "to";
-ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_CC]		= "cc";
-ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_TO_CC]	= "to,cc";
-ZmFilterRule.C_ADDRESS_VALUE[ZmFilterRule.C_BCC]     = "bcc";
-
-ZmFilterRule.C_ADDRESS_MAP = {};
-for (i in ZmFilterRule.C_ADDRESS_VALUE) {
-    ZmFilterRule.C_ADDRESS_MAP[ZmFilterRule.C_ADDRESS_VALUE[i]] = i;
-}
 
 ZmFilterRule.C_LABEL = {};
 ZmFilterRule.C_LABEL[ZmFilterRule.C_FROM]		= ZmMsg.from;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_TO]			= ZmMsg.to;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_CC]			= ZmMsg.cc;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_TO_CC]		= ZmMsg.toCc;
-ZmFilterRule.C_LABEL[ZmFilterRule.C_BCC]        = ZmMsg.bcc;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_SUBJECT]	= ZmMsg.subject;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_HEADER]		= ZmMsg.headerNamed;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_SIZE]		= ZmMsg.size;
@@ -161,12 +129,9 @@ ZmFilterRule.C_LABEL[ZmFilterRule.C_ATT]		= ZmMsg.attachment;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_MIME_HEADER]= ZmMsg.readReceiptFilter;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_ADDRBOOK]	= ZmMsg.addressIn;
 ZmFilterRule.C_LABEL[ZmFilterRule.C_INVITE]		= ZmMsg.calendarInvite;
-ZmFilterRule.C_LABEL[ZmFilterRule.C_CONV]       = ZmMsg.message;
-ZmFilterRule.C_LABEL[ZmFilterRule.C_SOCIAL]     = ZmMsg.socialLabel;
-ZmFilterRule.C_LABEL[ZmFilterRule.C_ADDRESS]    = ZmMsg.address;
 
 // Tests
-ZmFilterRule.TEST_ADDRESS						= "addressTest"; 
+ZmFilterRule.TEST_ADDRESS						= "addressTest"; // not currently support
 ZmFilterRule.TEST_HEADER						= "headerTest";
 ZmFilterRule.TEST_HEADER_EXISTS					= "headerExistsTest";
 ZmFilterRule.TEST_SIZE							= "sizeTest";
@@ -176,27 +141,13 @@ ZmFilterRule.TEST_ATTACHMENT					= "attachmentTest";
 ZmFilterRule.TEST_MIME_HEADER					= "mimeHeaderTest";
 ZmFilterRule.TEST_ADDRBOOK						= "addressBookTest";
 ZmFilterRule.TEST_INVITE						= "inviteTest";
-ZmFilterRule.TEST_FACEBOOK                      = "facebookTest";
-ZmFilterRule.TEST_LINKEDIN                      = "linkedinTest";
-ZmFilterRule.TEST_TWITTER                       = "twitterTest";
-ZmFilterRule.TEST_SOCIALCAST                    = "socialcastTest";
-ZmFilterRule.TEST_CONVERSATIONS                 = "conversationTest";
-ZmFilterRule.TEST_BULK                          = "bulkTest";
-ZmFilterRule.TEST_LIST                          = "listTest";
-ZmFilterRule.TEST_SOCIAL                        = "socialTest"; //not a real test
-ZmFilterRule.TEST_ME                            = "meTest";
-ZmFilterRule.TEST_RANKING                       = "contactRankingTest";
-ZmFilterRule.TEST_IMPORTANCE                    = "importanceTest";
-ZmFilterRule.TEST_FLAGGED                       = "flaggedTest";
-
 
 // Conditions map to Tests
 ZmFilterRule.C_TEST_MAP = {};
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_FROM]		= ZmFilterRule.TEST_ADDRESS;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_TO]			= ZmFilterRule.TEST_ADDRESS;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_CC]			= ZmFilterRule.TEST_ADDRESS;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_TO_CC]		= ZmFilterRule.TEST_ADDRESS;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_BCC]         = ZmFilterRule.TEST_ADDRESS;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_FROM]		= ZmFilterRule.TEST_HEADER;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_TO]			= ZmFilterRule.TEST_HEADER;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_CC]			= ZmFilterRule.TEST_HEADER;
+ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_TO_CC]		= ZmFilterRule.TEST_HEADER;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SUBJECT]		= ZmFilterRule.TEST_HEADER;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_HEADER]		= ZmFilterRule.TEST_HEADER;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SIZE]		= ZmFilterRule.TEST_SIZE;
@@ -206,17 +157,6 @@ ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_ATT]			= ZmFilterRule.TEST_ATTACHMENT;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_MIME_HEADER]	= ZmFilterRule.TEST_MIME_HEADER;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_ADDRBOOK]	= ZmFilterRule.TEST_ADDRBOOK;
 ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_INVITE]		= ZmFilterRule.TEST_INVITE;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_FACEBOOK]    = ZmFilterRule.TEST_FACEBOOK;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_LINKEDIN]    = ZmFilterRule.TEST_LINKEDIN;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_TWITTER]     = ZmFilterRule.TEST_TWITTER;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SOCIALCAST]  = ZmFilterRule.TEST_SOCIALCAST;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_CONV]        = ZmFilterRule.TEST_CONVERSATIONS;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_BULK]        = ZmFilterRule.TEST_BULK;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_SOCIAL]      = ZmFilterRule.TEST_SOCIAL;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_ADDRESS]     = ZmFilterRule.TEST_ADDRESS;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_ME]          = ZmFilterRule.TEST_ME;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_RANKING]     = ZmFilterRule.TEST_RANKING;
-ZmFilterRule.C_TEST_MAP[ZmFilterRule.C_IMPORTANCE]  = ZmFilterRule.TEST_IMPORTANCE;
 
 // Operations (verbs)
 ZmFilterRule.OP_IS				= "IS";
@@ -243,24 +183,12 @@ ZmFilterRule.OP_NOT_REPLIED     = "NOT_REPLIED"; //invites
 ZmFilterRule.OP_IS_REPLIED		= "IS_REPLIED"; // invites
 ZmFilterRule.OP_IS_READRECEIPT  = "IS_READRECEIPT";
 ZmFilterRule.OP_NOT_READRECEIPT = "NOT_READRECEIPT";
-ZmFilterRule.OP_WHERE_STARTED   = "STARTED"; //conversations
-ZmFilterRule.OP_WHERE_PARTICIPATED = "PARTICIPATED"; //conversations
-ZmFilterRule.OP_CONV_IS         = "CONV_IS";//not an operator
-ZmFilterRule.OP_NOT_CONV        = "CONV_NOT";
-ZmFilterRule.OP_SOCIAL_FROM     = "SOCIAL_FROM"; //not an operator
-ZmFilterRule.OP_SOCIAL_FACEBOOK = "SOCIAL_FACEBOOK";
-ZmFilterRule.OP_SOCIAL_TWITTER  = "SOCIAL_TWITTER";
-ZmFilterRule.OP_SOCIAL_LINKEDIN = "SOCIAL_LINKEDIN";
-ZmFilterRule.OP_SOCIAL_SOCIALCAST = "SOCIAL_SOCIALCAST";
-ZmFilterRule.OP_IS_ME           = "IS_ME";
-ZmFilterRule.OP_NOT_ME          = "IS_NOT_ME";
 
 
 // comparator types
 ZmFilterRule.COMP_STRING							= "stringComparison";
 ZmFilterRule.COMP_NUMBER							= "numberComparison";
 ZmFilterRule.COMP_DATE								= "dateComparison";
-
 // comparator map to test
 ZmFilterRule.COMP_TEST_MAP = {};
 ZmFilterRule.COMP_TEST_MAP[ZmFilterRule.TEST_ADDRESS]		= ZmFilterRule.COMP_STRING;
@@ -283,27 +211,11 @@ ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IN]			= "in";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_REQUESTED]	= "anyrequest";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_REPLIED]	= "anyreply";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_READRECEIPT] = "contains";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_WHERE_STARTED] = "started";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_WHERE_PARTICIPATED] = "participated";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_CONV_IS]      = "convIs";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_SOCIAL_FROM]  = "socialFrom";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_SOCIAL_FACEBOOK] = "socialFacebook";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_SOCIAL_TWITTER] = "socialTwitter";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_SOCIAL_LINKEDIN] = "socialLinkedIn";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_SOCIAL_SOCIALCAST] = "socialSocialCast";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IS_ME]        = "isMe";
-ZmFilterRule.OP_VALUE[ZmFilterRule.OP_NOT_CONV]     = "convNot";
 
 ZmFilterRule.OP_VALUE_MAP = {};
-for (i in ZmFilterRule.OP_VALUE) {
+for (var i in ZmFilterRule.OP_VALUE) {
 	ZmFilterRule.OP_VALUE_MAP[ZmFilterRule.OP_VALUE[i]] = i;
 };
-
-ZmFilterRule.OP_SOCIAL_MAP = {};
-ZmFilterRule.OP_SOCIAL_MAP[ZmFilterRule.OP_SOCIAL_FACEBOOK] = ZmFilterRule.TEST_FACEBOOK;
-ZmFilterRule.OP_SOCIAL_MAP[ZmFilterRule.OP_SOCIAL_LINKEDIN] = ZmFilterRule.TEST_LINKEDIN;
-ZmFilterRule.OP_SOCIAL_MAP[ZmFilterRule.OP_SOCIAL_TWITTER] = ZmFilterRule.TEST_TWITTER;
-ZmFilterRule.OP_SOCIAL_MAP[ZmFilterRule.OP_SOCIAL_SOCIALCAST] = ZmFilterRule.TEST_SOCIALCAST;
 
 // operation labels
 ZmFilterRule.OP_LABEL = {};
@@ -331,17 +243,6 @@ ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IS_REPLIED]	= ZmMsg.isReplied;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_REPLIED]  = ZmMsg.notReplied;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IS_READRECEIPT] = ZmMsg.exists;
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_READRECEIPT] = ZmMsg.notExist;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_WHERE_PARTICIPATED] = ZmMsg.participatedLabel;  
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_WHERE_STARTED] = ZmMsg.startedLabel;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_CONV_IS]      = ZmMsg.isLabel;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_CONV]     = ZmMsg.notIs;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_FROM]  = ZmMsg.from;;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_FACEBOOK] = ZmMsg.facebook;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_TWITTER] = ZmMsg.twitter;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_LINKEDIN] = ZmMsg.linkedin;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_SOCIAL_SOCIALCAST] = ZmMsg.socialcast;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IS_ME]        = ZmMsg.isMeLabel;
-ZmFilterRule.OP_LABEL[ZmFilterRule.OP_NOT_ME]       = ZmMsg.isNotMeLabel;
 
 
 // commonly used lists
@@ -373,39 +274,24 @@ ZmFilterRule.MATCHING_OPS = [
  */
 ZmFilterRule.CONDITIONS = {};
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_FROM] = {
-	ops:		ZmFilterRule.TYPE_SELECT,
-	opsOptions:	ZmFilterRule.MATCHING_OPS,
-	value:		ZmFilterRule.TYPE_INPUT,
-	valueMod:   ZmFilterRule.TYPE_SELECT,
-	vmOptions:	[{label: "all", value: "all"}, {label: "localpart", value: "localpart"}, {label:"domain", value: "domain"}]
+		ops:		ZmFilterRule.TYPE_SELECT,
+		opsOptions:	ZmFilterRule.MATCHING_OPS,
+		value:		ZmFilterRule.TYPE_INPUT
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_TO] = {
-	ops:		ZmFilterRule.TYPE_SELECT,
-	opsOptions:	ZmFilterRule.MATCHING_OPS,
-	value:		ZmFilterRule.TYPE_INPUT,
-	valueMod:   ZmFilterRule.TYPE_SELECT,
-	vmOptions:	[{label: "all", value: "all"}, {label: "localpart", value: "localpart"}, {label:"domain", value: "domain"}]
+		ops:		ZmFilterRule.TYPE_SELECT,
+		opsOptions:	ZmFilterRule.MATCHING_OPS,
+		value:		ZmFilterRule.TYPE_INPUT
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_CC] = {
-	ops:		ZmFilterRule.TYPE_SELECT,
-	opsOptions:	ZmFilterRule.MATCHING_OPS,
-	value:		ZmFilterRule.TYPE_INPUT,
-	valueMod:   ZmFilterRule.TYPE_SELECT,
-	vmOptions:	[{label: "all", value: "all"}, {label: "localpart", value: "localpart"}, {label:"domain", value: "domain"}]
+		ops:		ZmFilterRule.TYPE_SELECT,
+		opsOptions:	ZmFilterRule.MATCHING_OPS,
+		value:		ZmFilterRule.TYPE_INPUT
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_TO_CC] = {
-	ops:		ZmFilterRule.TYPE_SELECT,
-	opsOptions:	ZmFilterRule.MATCHING_OPS,
-	value:		ZmFilterRule.TYPE_INPUT,
-	valueMod:   ZmFilterRule.TYPE_SELECT,
-	vmOptions:	[{label: "all", value: "all"}, {label: "localpart", value: "localpart"}, {label:"domain", value: "domain"}]
-};
-ZmFilterRule.CONDITIONS[ZmFilterRule.C_BCC] = {
-	ops:		ZmFilterRule.TYPE_SELECT,
-	opsOptions:	ZmFilterRule.MATCHING_OPS,
-	value:		ZmFilterRule.TYPE_INPUT,
-	valueMod:   ZmFilterRule.TYPE_SELECT,
-	vmOptions:	[{label: "all", value: "all"}, {label: "localpart", value: "localpart"}, {label:"domain", value: "domain"}]
+		ops:		ZmFilterRule.TYPE_SELECT,
+		opsOptions:	ZmFilterRule.MATCHING_OPS,
+		value:		ZmFilterRule.TYPE_INPUT
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_SUBJECT] = {
 		ops:		ZmFilterRule.TYPE_SELECT,
@@ -446,51 +332,17 @@ ZmFilterRule.CONDITIONS[ZmFilterRule.C_MIME_HEADER] = {
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_ADDRBOOK] = {
 		subjectMod:	ZmFilterRule.TYPE_SELECT,
-		smOptions:	[{label: ZmMsg.from, value: "FROM"}, {label: ZmMsg.to, value: "TO"},
-					 {label: ZmMsg.cc, value: "CC"}, {label: ZmMsg.toOrCc, value: "TO,CC"},
-					 {label: ZmMsg.bcc, value: "BCC"}],
+		smOptions:	[{label: ZmMsg.from, value: "from"}, {label: ZmMsg.to, value: "to"},
+					 {label: ZmMsg.cc, value: "cc"}, {label: ZmMsg.toOrCc, value: "to,cc"},
+					 {label: ZmMsg.bcc, value: "bcc"}],
 		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	[ZmFilterRule.OP_IN, ZmFilterRule.OP_NOT_IN, ZmFilterRule.OP_IS_ME, ZmFilterRule.OP_NOT_ME],
+		opsOptions:	[ZmFilterRule.OP_IN, ZmFilterRule.OP_NOT_IN],
 		value:		ZmFilterRule.TYPE_SELECT,
-		vOptions:	[{label: ZmMsg.myContactsLabel, value: "contacts"}, {label: ZmMsg.frequentEmailLabel, value: "ranking"}]
+		vOptions:	[{label: ZmMsg.myContacts, value: "contacts"}]
 };
 ZmFilterRule.CONDITIONS[ZmFilterRule.C_INVITE] = {
 		ops:		ZmFilterRule.TYPE_SELECT,
 		opsOptions:	[ZmFilterRule.OP_IS_REQUESTED, ZmFilterRule.OP_NOT_REQUESTED, ZmFilterRule.OP_IS_REPLIED, ZmFilterRule.OP_NOT_REPLIED]
-};
-ZmFilterRule.CONDITIONS[ZmFilterRule.C_CONV] = {
-		ops:        ZmFilterRule.TYPE_SELECT,
-	    opsOptions: [ZmFilterRule.OP_CONV_IS, ZmFilterRule.OP_NOT_CONV],
-		value:      ZmFilterRule.TYPE_SELECT,
-		vOptions:  [{label: ZmMsg.convIStartLabel, value: "started"}, {label: ZmMsg.convIParticipateLabel, value: "participated"},
-			        {label: ZmMsg.massMarketingLabel, value: ZmFilterRule.C_BULK}, {label: ZmMsg.distributionListLabel, value: ZmFilterRule.C_LIST},
-					{label: ZmMsg.markedAsLabel, value: ZmFilterRule.IMPORTANCE}, {label: ZmMsg.flagged.toLowerCase(), value: ZmFilterRule.FLAGGED}],
-	    valueMod:  ZmFilterRule.TYPE_SELECT,
-	    vmOptions: [{label: ZmMsg.read.toLowerCase(), value: ZmFilterRule.READ}, {label: ZmMsg.priority.toLowerCase(), value: ZmFilterRule.PRIORITY},
-		            {label: ZmMsg.importanceHigh, value: ZmFilterRule.IMPORTANCE_HIGH}, {label: ZmMsg.importanceNormal, value: ZmFilterRule.IMPORTANCE_NORMAL},
-		            {label: ZmMsg.importanceLow, value: ZmFilterRule.IMPORTANCE_LOW}]
-};
-ZmFilterRule.CONDITIONS[ZmFilterRule.C_SOCIAL] = {
-		ops:        ZmFilterRule.TYPE_SELECT,
-		opsOptions: [ZmFilterRule.OP_SOCIAL_FACEBOOK, ZmFilterRule.OP_SOCIAL_TWITTER, ZmFilterRule.OP_SOCIAL_LINKEDIN, ZmFilterRule.OP_SOCIAL_SOCIALCAST],
-	    value:      ZmFilterRule.TYPE_SELECT,
-		vOptions:   [{label: ZmMsg.socialFilterOp, value: "social"}, 
-			         {label: ZmMsg.socialFilterOpNegative, value: "not_social"}]
-};
-ZmFilterRule.CONDITIONS[ZmFilterRule.C_ADDRESS] = {
-		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	ZmFilterRule.MATCHING_OPS,
-		value:		ZmFilterRule.TYPE_INPUT,
-		valueMod:   ZmFilterRule.TYPE_SELECT,    
-		vmOptions:	[{label: "all", value: "all"}, {label: "localpart", value: "localpart"}, {label:"domain", value: "domain"}]
-};
-ZmFilterRule.CONDITIONS[ZmFilterRule.C_LIST] = {
-		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	[ZmFilterRule.OP_EXISTS, ZmFilterRule.OP_NOT_EXISTS]
-};
-ZmFilterRule.CONDITIONS[ZmFilterRule.C_BULK] = {
-		ops:		ZmFilterRule.TYPE_SELECT,
-		opsOptions:	[ZmFilterRule.OP_EXISTS, ZmFilterRule.OP_NOT_EXISTS]
 };
 
 // listed in order we want to display them in the SELECT
@@ -499,33 +351,26 @@ ZmFilterRule.CONDITIONS_LIST = [
 	ZmFilterRule.C_TO,
 	ZmFilterRule.C_CC,
 	ZmFilterRule.C_TO_CC,
-    ZmFilterRule.C_BCC,
 	ZmFilterRule.C_SUBJECT,
-	ZmFilterRule.C_CONV,	
+	ZmFilterRule.C_HEADER,
 	ZmFilterRule.C_SIZE,
 	ZmFilterRule.C_DATE,
 	ZmFilterRule.C_BODY,
 	ZmFilterRule.C_ATT,
 	ZmFilterRule.C_MIME_HEADER,
 	ZmFilterRule.C_ADDRBOOK,
-	ZmFilterRule.C_INVITE,
-	ZmFilterRule.C_SOCIAL,
-	ZmFilterRule.C_HEADER
+	ZmFilterRule.C_INVITE
 ];
 
 // mark certain conditions as headers
 ZmFilterRule.IS_HEADER = {};
+ZmFilterRule.IS_HEADER[ZmFilterRule.C_FROM]		= true;
+ZmFilterRule.IS_HEADER[ZmFilterRule.C_TO]		= true;
+ZmFilterRule.IS_HEADER[ZmFilterRule.C_CC]		= true;
+ZmFilterRule.IS_HEADER[ZmFilterRule.C_TO_CC]	= true;
 ZmFilterRule.IS_HEADER[ZmFilterRule.C_SUBJECT]	= true;
 ZmFilterRule.IS_HEADER[ZmFilterRule.C_HEADER]	= true;
 
-ZmFilterRule.IS_ADDRESS = {};
-ZmFilterRule.IS_ADDRESS[ZmFilterRule.C_FROM]    = true;
-ZmFilterRule.IS_ADDRESS[ZmFilterRule.C_TO]      = true;
-ZmFilterRule.IS_ADDRESS[ZmFilterRule.C_CC]      = true;
-ZmFilterRule.IS_ADDRESS[ZmFilterRule.C_TO_CC]   = true;
-ZmFilterRule.IS_ADDRESS[ZmFilterRule.C_BCC]     = true;
-ZmFilterRule.IS_SOCIAL = "social";
-ZmFilterRule.IS_NOT_SOCIAL = "not_social";
 // Actions
 
 /**
@@ -615,7 +460,7 @@ ZmFilterRule.A_VALUE[ZmFilterRule.A_REPLY]      = ZmFilterRule.A_REPLY;
 ZmFilterRule.A_VALUE[ZmFilterRule.A_NOTIFY]     = ZmFilterRule.A_NOTIFY;
 
 ZmFilterRule.A_VALUE_MAP = {};
-for (i in ZmFilterRule.A_VALUE) {
+for (var i in ZmFilterRule.A_VALUE) {
 	ZmFilterRule.A_VALUE_MAP[ZmFilterRule.A_VALUE[i]] = i;
 }
 delete i;
@@ -623,12 +468,12 @@ delete i;
 ZmFilterRule.A_LABEL = {};
 ZmFilterRule.A_LABEL[ZmFilterRule.A_KEEP]		= ZmMsg.keepInInbox;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_KEEP_SENT]	= ZmMsg.keepInSent;
-ZmFilterRule.A_LABEL[ZmFilterRule.A_FOLDER]		= ZmMsg.moveIntoFolder;
-ZmFilterRule.A_LABEL[ZmFilterRule.A_DISCARD]	= ZmMsg.del;
+ZmFilterRule.A_LABEL[ZmFilterRule.A_FOLDER]		= ZmMsg.fileIntoFolder;
+ZmFilterRule.A_LABEL[ZmFilterRule.A_DISCARD]	= ZmMsg.discard;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_STOP]		= ZmMsg.stopEvaluation;
-ZmFilterRule.A_LABEL[ZmFilterRule.A_FLAG]		= ZmMsg.filterMarkAs;
+ZmFilterRule.A_LABEL[ZmFilterRule.A_FLAG]		= ZmMsg.mark;
 ZmFilterRule.A_LABEL[ZmFilterRule.A_TAG]		= ZmMsg.tagWith;
-ZmFilterRule.A_LABEL[ZmFilterRule.A_FORWARD]	= ZmMsg.redirectToAddress;
+ZmFilterRule.A_LABEL[ZmFilterRule.A_FORWARD]	= ZmMsg.forwardToAddress;
 
 /**
  * This defines a hash of actions. The hash key is known as the action "name".
@@ -656,7 +501,7 @@ ZmFilterRule.ACTIONS[ZmFilterRule.A_FOLDER]	= {
 ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG] = {
 	param:				ZmFilterRule.TYPE_SELECT,
 	// NOTE: If you change the order of these options, also change _setPreconditions!!!
-	pOptions:			[{label: ZmMsg.read, value: ZmFilterRule.READ}, {label: ZmMsg.flagged, value: ZmFilterRule.FLAGGED}]
+	pOptions:			[{label: ZmMsg.asRead, value: "read"}, {label: ZmMsg.asFlagged, value: "flagged"}]
 };
 
 ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG] = {
@@ -696,34 +541,6 @@ function() {
 	ZmFilterRule.ACTIONS[ZmFilterRule.A_DISCARD].precondition = ZmSetting.DISCARD_IN_FILTER_ENABLED;
 };
 
-/**
- * Returns array of social filter options based on COS settings
- * @return {array} social filter options
- */
-ZmFilterRule.getSocialFilters = 
-function() {
-	var ops = [];
-	var socialFilters = appCtxt.get(ZmSetting.SOCIAL_FILTERS_ENABLED);
-	if (socialFilters && socialFilters.length) {
-		for (var i=0; i<socialFilters.length; i++) {
-			if (socialFilters[i].toLowerCase() == ZmFilterRule.C_FACEBOOK.toLowerCase()) {
-				ops.push(ZmFilterRule.OP_SOCIAL_FACEBOOK)
-			}
-			else if (socialFilters[i].toLowerCase() == ZmFilterRule.C_TWITTER.toLowerCase() ) {
-				ops.push(ZmFilterRule.OP_SOCIAL_TWITTER);	
-			}
-			else if (socialFilters[i].toLowerCase() == ZmFilterRule.C_LINKEDIN.toLowerCase()) {
-				ops.push(ZmFilterRule.OP_SOCIAL_LINKEDIN);
-			}
-			else if (socialFilters[i].toLowerCase() == ZmFilterRule.C_SOCIALCAST.toLowerCase()) {
-				ops.push(ZmFilterRule.OP_SOCIAL_SOCIALCAST);
-			}
-		}
-	}
-	return ops;
-};
-
-
 ZmFilterRule.prototype.toString =
 function() {
 	return "ZmFilterRule";
@@ -751,41 +568,12 @@ function(groupOp) {
 
 ZmFilterRule.prototype.addCondition =
 function(testType, comparator, value, subjectMod, caseSensitive) {
-	//In dialog some tests are options under other tests
-	if (testType == ZmFilterRule.TEST_SOCIAL && comparator) {
-		testType = ZmFilterRule.OP_SOCIAL_MAP[comparator];
-	}
-	else if (testType == ZmFilterRule.TEST_ADDRBOOK && (comparator == ZmFilterRule.OP_IS_ME || comparator == ZmFilterRule.OP_NOT_ME)) {
-		testType = ZmFilterRule.TEST_ME;
-		value = null;
-		comparator = comparator == ZmFilterRule.OP_IS_ME ? ZmFilterRule.OP_IS : ZmFilterRule.OP_NOT_IS;
-	}
-	else if (testType == ZmFilterRule.TEST_ADDRBOOK && value == "ranking") {
-		testType = ZmFilterRule.TEST_RANKING;
-		value = null;
-	}
-	else if (testType == ZmFilterRule.TEST_CONVERSATIONS && value == ZmFilterRule.C_BULK) {
-		testType = ZmFilterRule.TEST_BULK;
-		value = null;
-	}
-	else if (testType == ZmFilterRule.TEST_CONVERSATIONS && value == ZmFilterRule.C_LIST) {
-		testType = ZmFilterRule.TEST_LIST;
-		value = null;
-	}
-	else if (testType == ZmFilterRule.TEST_CONVERSATIONS && (value == ZmFilterRule.IMPORTANCE_HIGH || value == ZmFilterRule.IMPORTANCE_NORMAL || value == ZmFilterRule.IMPORTANCE_LOW))  {
-		testType = ZmFilterRule.TEST_IMPORTANCE;
-	}
-	else if (testType == ZmFilterRule.TEST_CONVERSATIONS && (value == ZmFilterRule.READ || value == ZmFilterRule.PRIORITY || value == ZmFilterRule.FLAGGED)) {
-		testType = ZmFilterRule.TEST_FLAGGED;
-	}
-	
 	if (!this.conditions[testType]) {
 		this.conditions[testType] = [];
 	}
-	
+
 	var cdata = ZmFilterRule.getConditionData(testType, comparator, value, subjectMod, caseSensitive);
 	this.conditions[testType].push(cdata);
-	return cdata;
 };
 
 /**
@@ -853,23 +641,11 @@ function(testType, comparator, value, subjectMod, caseSensitive) {
 		(testType == ZmFilterRule.TEST_HEADER ||
 		 testType == ZmFilterRule.TEST_HEADER_EXISTS ||
 		 testType == ZmFilterRule.TEST_ADDRBOOK ||
-		 testType == ZmFilterRule.TEST_MIME_HEADER ||
-		 testType == ZmFilterRule.TEST_ADDRESS ||
-		 testType == ZmFilterRule.TEST_ME ||
-		 testType == ZmFilterRule.TEST_RANKING))
+		 testType == ZmFilterRule.TEST_MIME_HEADER))
 	{
 		conditionData.header = subjectMod;
 	}
-	
-	var part = "all"; //default
-	if (testType == ZmFilterRule.TEST_ADDRESS && value && typeof value == "string") {
-		var valueArr = value.split(";"); 
-		if (valueArr && valueArr.length > 1) {
-			value = valueArr[0];
-			part = valueArr[1];
-		}
-	}
-	
+
 	// normalize negative operator and add comparator
 	var negativeOp;
 	switch (comparator) {
@@ -885,19 +661,9 @@ function(testType, comparator, value, subjectMod, caseSensitive) {
         case ZmFilterRule.OP_NOT_REPLIED:   negativeOp = ZmFilterRule.OP_IS_REPLIED; break;
         case ZmFilterRule.OP_NOT_REQUESTED: negativeOp = ZmFilterRule.OP_IS_REQUESTED; break;
         case ZmFilterRule.OP_NOT_READRECEIPT: negativeOp = ZmFilterRule.OP_CONTAINS; break;
-		case ZmFilterRule.OP_NOT_CONV:      negativeOp = true; break;
 	}
 	if (negativeOp) {
 		conditionData.negative = "1";
-	}
-	
-	if (value == ZmFilterRule.IS_NOT_SOCIAL && 
-		(testType == ZmFilterRule.TEST_FACEBOOK  ||
-		 testType == ZmFilterRule.TEST_SOCIALCAST || 
-		 testType == ZmFilterRule.TEST_TWITTER ||
-		 testType == ZmFilterRule.TEST_LINKEDIN)) {
-		conditionData.negative = "1";
-		value = null;
 	}
 
 	var compType = ZmFilterRule.COMP_TEST_MAP[testType];
@@ -908,15 +674,9 @@ function(testType, comparator, value, subjectMod, caseSensitive) {
 	// add data value
 	if (value) {
 		switch (testType) {
-			case ZmFilterRule.TEST_ADDRBOOK:	conditionData.type = value; break;
+			case ZmFilterRule.TEST_ADDRBOOK:	conditionData.folderPath = value; break;
 			case ZmFilterRule.TEST_SIZE:		conditionData.s = value; break;
 			case ZmFilterRule.TEST_DATE:		conditionData.d = value; break;
-			case ZmFilterRule.TEST_CONVERSATIONS: conditionData.where = value; break;
-			case ZmFilterRule.TEST_IMPORTANCE:  conditionData.imp = value; break;
-			case ZmFilterRule.TEST_ADDRESS:     conditionData.part = part;
-												conditionData.value= value;
-												break;
-			case ZmFilterRule.TEST_FLAGGED:     conditionData.flagName = value; break;
 			default:							conditionData.value = value; break;
 		}
 	}
@@ -996,8 +756,6 @@ function(comparator) {
         case ZmFilterRule.OP_IS_REPLIED:   negativeOp = ZmFilterRule.OP_NOT_REPLIED; break;
         case ZmFilterRule.OP_IS_REQUESTED: negativeOp = ZmFilterRule.OP_NOT_REQUESTED; break;
         case ZmFilterRule.OP_IS_READRECEIPT: negativeOp = ZmFilterRule.OP_NOT_CONTAINS; break;
-	    case ZmFilterRule.OP_CONV_IS:  negativeOp = ZmFilterRule.OP_NOT_CONV; break;
-	    case ZmFilterRule.OP_IS_ME:     negativeOp = ZmFilterRule.OP_NOT_ME; break;
 	}
     return negativeOp;
 

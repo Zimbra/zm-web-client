@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -36,13 +36,6 @@ ZmPreferencesApp = function(container, parentController) {
 	this._outgoingFilterRules = {};
 };
 
-ZmPreferencesApp.prototype = new ZmApp;
-ZmPreferencesApp.prototype.constructor = ZmPreferencesApp;
-
-ZmPreferencesApp.prototype.isZmPreferencesApp = true;
-ZmPreferencesApp.prototype.toString = function() { return "ZmPreferencesApp"; };
-
-
 // Organizer and item-related constants
 ZmEvent.S_FILTER					= "FILTER";
 ZmEvent.S_PREF_ZIMLET				= "PREF_ZIMLET";
@@ -53,13 +46,20 @@ ZmEvent.S_PREF_BACKUP				= "PREF_BACKUP";
 /**
  * Defines the "preferences" application.
  */
-ZmApp.PREFERENCES					= ZmId.APP_PREFERENCES; 
+ZmApp.PREFERENCES					= ZmId.APP_PREFERENCES;
 ZmApp.CLASS[ZmApp.PREFERENCES]		= "ZmPreferencesApp";
 ZmApp.SETTING[ZmApp.PREFERENCES]	= ZmSetting.OPTIONS_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.PREFERENCES]	= 10;
 ZmApp.QS_ARG[ZmApp.PREFERENCES]		= "options";
 ZmOrganizer.PREF_PAGE				= "PREF_PAGE";
-ZmPreferencesApp.QS_ARG_SECTION		= "section";
+
+ZmPreferencesApp.prototype = new ZmApp;
+ZmPreferencesApp.prototype.constructor = ZmPreferencesApp;
+
+ZmPreferencesApp.prototype.toString =
+function() {
+	return "ZmPreferencesApp";
+};
 
 // NOTE: This is registered staticly to guarantee that all of the
 //       enabled app's preferences will be registered by the time
@@ -84,10 +84,6 @@ function(params, callback) {
 	if (appCtxt.multiAccounts) {
 		appCtxt.accountList.setActiveAccount(appCtxt.accountList.mainAccount);
 	}
-
-	var gotoSection = (params.qsParams && params.qsParams[ZmPreferencesApp.QS_ARG_SECTION]) || "GENERAL";
-	callback = new AjxCallback(this, this.gotoSection, [gotoSection, callback]);
-
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require(["PreferencesCore", "Preferences"], true, loadCallback, null, true);
 };
@@ -178,26 +174,6 @@ function(refresh, addr) {
 	}
 };
 
-ZmPreferencesApp.prototype.gotoSection =
-function(section, callback) {
-	if (section) {
-		var prefCtlr = this.getPrefController();
-		var prefsView = prefCtlr && prefCtlr.getPrefsView();
-		if (prefsView) {
-			section = section.toUpperCase();
-			var overview = this.getOverview();
-			if (overview) {
-				overview.setSelected([ZmOrganizer.PREF_PAGE, section].join("_"));
-			}
-			prefsView.selectSection(section);
-		}
-	}
-	if (callback && callback.run) {
-		callback.run();
-	}
-};
-
-
 
 //
 // Protected methods
@@ -233,11 +209,6 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_MOBILE_SUSPEND_SYNC, {textKey:"mobileSuspendSync", image:"Offline"});
 	ZmOperation.registerOp(ZmId.OP_MOBILE_WIPE, {textKey:"mobileWipe", image:"MobileWipe"}, ZmSetting.MOBILE_POLICY_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_MOBILE_CANCEL_WIPE, {textKey:"mobileWipeCancel", image:"MobileWipeCancel"}, ZmSetting.MOBILE_POLICY_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_REVERT_PAGE, {textKey:"restorePage"});
-
-    /* ZmOperation.registerOp(ZmId.OP_ADD_QUICK_COMMAND, {textKey:"quickCommandAdd", image:"Plus"}, ZmSetting.FILTERS_ENABLED);
-    ZmOperation.registerOp(ZmId.OP_EDIT_QUICK_COMMAND, {textKey:"quickCommandEdit", image:"Edit"}, ZmSetting.FILTERS_ENABLED);
-    ZmOperation.registerOp(ZmId.OP_REMOVE_QUICK_COMMAND, {textKey:"quickCommandRemove", image:"Delete"}, ZmSetting.FILTERS_ENABLED); */
 };
 
 ZmPreferencesApp.prototype._registerSettings =
@@ -250,7 +221,6 @@ function(settings) {
 	settings.registerSetting("PREF_SECTIONS",				{type:ZmSetting.T_PSEUDO, dataType:ZmSetting.D_HASH, isGlobal:true});
 	settings.registerSetting("SIGNATURE_MAX_LENGTH",		{name:"zimbraMailSignatureMaxLength", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1024});
 	settings.registerSetting("DISCARD_IN_FILTER_ENABLED",	{name:"zimbraFeatureDiscardInFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-    //settings.registerSetting("QUICK_COMMAND_LIST",			{name:"zimbraPrefQuickCommand", type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
 };
 
 ZmPreferencesApp.prototype._registerApp =
@@ -278,11 +248,7 @@ function() {
 			priority: 0,
 			prefs: [
 				ZmSetting.LOCALE_NAME,
-                ZmSetting.COMPOSE_INIT_DIRECTION,
-                ZmSetting.SHOW_COMPOSE_DIRECTION_BUTTONS,
-				ZmSetting.FONT_NAME,
 				ZmSetting.PASSWORD,
-				ZmSetting.SEARCH_INCLUDES_SHARED,
 				ZmSetting.SEARCH_INCLUDES_SPAM,
 				ZmSetting.SEARCH_INCLUDES_TRASH,
 				ZmSetting.OFFLINE_SHOW_ALL_MAILBOXES,
@@ -294,97 +260,37 @@ function() {
 				ZmSetting.DEFAULT_TIMEZONE,
                 ZmSetting.DEFAULT_PRINTFONTSIZE,
 				ZmSetting.OFFLINE_IS_MAILTO_HANDLER,
+				ZmSetting.OFFLINE_NOTEBOOK_SYNC_ENABLED, // offline
 				ZmSetting.SHORT_ADDRESS,
 				ZmSetting.USE_ADDR_BUBBLES,
                 ZmSetting.OFFLINE_UPDATE_NOTIFY //offline
 			]
 		},
-        ACCOUNTS: {
-			icon: "Accounts",
-			title: (appCtxt.isOffline ? ZmMsg.personas : ZmMsg.accounts),
-			templateId: "prefs.Pages#Accounts",
-			priority: 10,
-			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
+		COMPOSING: {
+			parentId: "MAIL",
+			title: ZmMsg.composing,
+			icon: "Compose",
+			templateId: "prefs.Pages#Composing",
+			priority: 20,
+			precondition: [ ZmSetting.MAIL_ENABLED ],
 			prefs: [
-				ZmSetting.ACCOUNTS
-			],
-			manageDirty: true,
-			createView: function(parent, section, controller) {
-				return new ZmAccountsPage(parent, section, controller);
-			}
-		},
-        FILTERS: {
-			icon: "MailRule",
-			title: ZmMsg.filterRules,
-			templateId: "prefs.Pages#MailFilters",
-			priority: 50,
-			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.FILTERS_ENABLED)),
-			prefs: [
-				ZmSetting.FILTERS
-			],
-			manageChanges: true,
-			createView: function(parent, section, controller) {
-				return controller.getFilterController(section).getFilterView();
-			}
-		},
-        SIGNATURES: {
-			icon: "AddSignature",
-			title: ZmMsg.signatures,
-			templateId: "prefs.Pages#Signatures",
-			priority: 51,
-			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.SIGNATURES_ENABLED)),
-			prefs:[
-				ZmSetting.SIGNATURES,
-				ZmSetting.SIGNATURE_STYLE,
-				ZmSetting.SIGNATURE_ENABLED
-			],
-			manageDirty: true,
-			createView: function(parent, section, controller) {
-				return new ZmSignaturesPage(parent, section, controller);
-			}
-		},
-        OUTOFOFFICE: {
-            icon: "OutOfOffice",
-			title: ZmMsg.outOfOffice,
-            priority: 55,
-            templateId: "prefs.Pages#OutOfOffice",
-            precondition: appCtxt.get(ZmSetting.VACATION_MSG_FEATURE_ENABLED),
-            prefs: [
-                ZmSetting.START_DATE_ENABLED,
-                ZmSetting.END_DATE_ENABLED,
-                ZmSetting.VACATION_DURATION_ENABLED,
-                ZmSetting.VACATION_DURATION_ALL_DAY,
-                ZmSetting.VACATION_CALENDAR_ENABLED,
-                ZmSetting.VACATION_FROM,
-                ZmSetting.VACATION_FROM_TIME,
-				ZmSetting.VACATION_MSG_ENABLED,
-				ZmSetting.VACATION_MSG,
-                ZmSetting.VACATION_EXTERNAL_MSG_ENABLED,
-				ZmSetting.VACATION_EXTERNAL_MSG,
-                ZmSetting.VACATION_EXTERNAL_TYPE,
-                ZmSetting.VACATION_CALENDAR_TYPE,
-				ZmSetting.VACATION_UNTIL,
-                ZmSetting.VACATION_UNTIL_TIME
-            ],
-            manageDirty: true,
-			createView: function(parent, section, controller) {
-				AjxDispatcher.require("Alert");
-				return new ZmMailPrefsPage(parent, section, controller);
-			}
-        },
-        TRUSTED_ADDR: {
-			title: ZmMsg.trustedAddrs,
-			icon: "TrustedAddresses",
-			templateId: "prefs.Pages#Trusted",
-			priority: 60,
-			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
-			createView: function(parent, section, controller) {
-				return new ZmTrustedPage(parent, section, controller, "Prefs_Pages_TrustedAddresses");
-			},
-            manageDirty: true,
-            prefs: [
-				    ZmSetting.TRUSTED_ADDR_LIST
-                ]
+				ZmSetting.COMPOSE_AS_FORMAT,
+				ZmSetting.COMPOSE_INIT_FONT_COLOR,
+				ZmSetting.COMPOSE_INIT_FONT_FAMILY,
+				ZmSetting.COMPOSE_INIT_FONT_SIZE,
+				ZmSetting.FORWARD_INCLUDE_WHAT,
+				ZmSetting.FORWARD_USE_PREFIX,
+				ZmSetting.FORWARD_INCLUDE_HEADERS,
+				ZmSetting.NEW_WINDOW_COMPOSE,
+				ZmSetting.AUTO_SAVE_DRAFT_INTERVAL,
+				ZmSetting.REPLY_INCLUDE_WHAT,
+				ZmSetting.REPLY_USE_PREFIX,
+				ZmSetting.REPLY_INCLUDE_HEADERS,
+				ZmSetting.REPLY_PREFIX,
+				ZmSetting.SAVE_TO_SENT,
+                ZmSetting.COMPOSE_SAME_FORMAT,
+                ZmSetting.MAIL_MANDATORY_SPELLCHECK
+            ]
 		},
 		SHARING: {
 			title: ZmMsg.sharing,
@@ -395,7 +301,7 @@ function() {
 			manageChanges: true,
 			createView: function(parent, section, controller) {
 				AjxDispatcher.require("Share");
-				return new ZmSharingPage(parent, section, controller, "Prefs_Pages_Sharing");
+				return new ZmSharingPage(parent, section, controller);
 			}
 		},
 		NOTIFICATIONS: {
@@ -466,20 +372,6 @@ function() {
 				return new ZmZimletsPage(parent, section, controller);
 			}
 		}
-		/* QUICKCOMMANDS: {
-			icon: "QuickCommand",
-			title: ZmMsg.quickCommands,
-			templateId: "prefs.Pages#QuickCommandList",
-			priority: 130,
-			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.FILTERS_ENABLED)),
-			prefs: [
-				ZmSetting.QUICK_COMMAND_LIST
-			],
-			manageChanges: true,
-			createView: function(parent, section, controller) {
-				return new ZmQuickCommandPage(parent, section, controller, new ZmQuickCommandListViewController());
-			}
-		}*/
 	};
     if (appCtxt.isOffline) {
         sections["BACKUP"] = {
@@ -527,7 +419,7 @@ function() {
 	ZmPref.registerPref("COMPOSE_INIT_FONT_COLOR", {
 		displayOptions: 	["rgb(0, 0, 0)"],
 		displayContainer:	ZmPref.TYPE_COLOR,
-		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED]
+		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
 
 	var styles=[],names=[];
@@ -551,10 +443,6 @@ function() {
 			return DwtHtmlEditor._normalizeFontId(id);
 		}
 	});
-
-    /*ZmPref.registerPref("QUICK_COMMAND_LIST", {
-		displayContainer:	ZmPref.TYPE_CUSTOM
-	});*/
 
 	// Yuck: Should add functionality in Pref. to add prefix/postfix to all options. Meanwhile...
 	var fontSizeOptions = [AjxMessageFormat.format(ZmMsg.pt,"8"), AjxMessageFormat.format(ZmMsg.pt,"10"),
@@ -590,7 +478,7 @@ function() {
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions: 	fontSizeOptions,
         options:            fontSizeValueOptions,
-		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED]
+		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
 
 	ZmPref.registerPref("COMPOSE_SAME_FORMAT", {
@@ -671,24 +559,7 @@ function() {
 		precondition:		ZmSetting.LOCALE_CHANGE_ENABLED
 	});
 
-    ZmPref.registerPref("COMPOSE_INIT_DIRECTION", {
-        displayName:		ZmMsg.composeDirectionLabel,
-        displayContainer:	ZmPref.TYPE_SELECT,
-        displayOptions:		[ZmMsg.directionLTR, ZmMsg.directionRTL],
-        options:			[ZmSetting.LTR, ZmSetting.RTL]
-    });
-
-    ZmPref.registerPref("SHOW_COMPOSE_DIRECTION_BUTTONS", {
-        displayName:		ZmMsg.showDirectionButtons,
-        displayContainer:	ZmPref.TYPE_CHECKBOX
-    });
-
-	ZmPref.registerPref("FONT_NAME", {
-		displayName:		ZmMsg.selectFong,
-		displayContainer:	ZmPref.TYPE_FONT
-	});
-
-	var markReadTime = AjxMessageFormat.format(ZmMsg.messageReadTime, DwtId.makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
+	var markReadTime = AjxMessageFormat.format(ZmMsg.messageReadTime, DwtId._makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
 	ZmPref.registerPref("MARK_MSG_READ", {
 		displayName:		ZmMsg.messageReadLabel,
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
@@ -732,8 +603,7 @@ function() {
 	
 	ZmPref.registerPref("USE_ADDR_BUBBLES", {
 		displayName:		ZmMsg.useAddressBubbles,
-		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		validationFunction: ZmPref.validateBubbles
+		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
 	if (appCtxt.isOffline) {
@@ -741,6 +611,15 @@ function() {
 			displayName:		ZmMsg.offlineAllowMailTo,
 			displayContainer:	ZmPref.TYPE_CHECKBOX
 		});
+
+		// Do not show enable document preference.
+        //		if (appCtxt.accountList.accountTypeExists(ZmAccount.TYPE_ZIMBRA)) {
+        //			ZmPref.registerPref("OFFLINE_NOTEBOOK_SYNC_ENABLED", {
+        //				displayName:		ZmMsg.enableDocuments,
+        //				displayContainer:	ZmPref.TYPE_CHECKBOX,
+        //                preCondition:       ZmSetting.NOTEBOOK_ENABLED
+        //			});
+        //		}
 
         ZmPref.registerPref("OFFLINE_BACKUP_ACCOUNT_ID", {
             displayName:		ZmMsg.offlineBackUpAccounts,
@@ -885,12 +764,6 @@ function() {
 		changeFunction:		AjxCallback.simpleClosure(ZmPref.onChangeConfirm, null, ZmMsg.saveToSentWarning, ZmPref.getSendToFiltersActive, true, new AjxCallback(null, ZmPref.setFormValue, ["SAVE_TO_SENT", true]))
 	});
 
-	ZmPref.registerPref("SEARCH_INCLUDES_SHARED", {
-		displayName:		ZmMsg.includeSharedItems,
-		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:		ZmSetting.SHARING_ENABLED
-	});
-	
 	ZmPref.registerPref("SEARCH_INCLUDES_SPAM", {
 		displayName:		ZmMsg.includeJunkFolder,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
@@ -995,8 +868,3 @@ function(outgoing) {
 
     return null;
 };
-
-ZmPreferencesApp.prototype.getNewButtonProps =
-function (){
-    return {hidden:true};
-}

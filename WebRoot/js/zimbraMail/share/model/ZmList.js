@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -51,26 +51,17 @@ ZmList = function(type, search) {
 	
 	this._vector = new AjxVector();
 	this._hasMore = false;
-	this._idHash = {};
+	this._idHash = new Object();
 
 	var tagList = appCtxt.getTagTree();
 	if (tagList) {
 		this._tagChangeListener = new AjxListener(this, this._tagTreeChangeListener);
 		tagList.addChangeListener(this._tagChangeListener);
 	}
-	
-	this.id = "LIST" + ZmList.NEXT++;
-	appCtxt.cacheSet(this.id, this);
 };
 
 ZmList.prototype = new ZmModel;
 ZmList.prototype.constructor = ZmList;
-
-ZmList.prototype.isZmList = true;
-ZmList.prototype.toString = function() { return "ZmList"; };
-
-
-ZmList.NEXT = 1;
 
 // for item creation
 ZmList.ITEM_CLASS = {};
@@ -84,6 +75,15 @@ ZmList.ITEM_TYPE = {};
 ZmList.CHUNK_SIZE	= 100;	// how many items to act on at a time via a server request
 ZmList.CHUNK_PAUSE	= 500;	// how long to pause to allow UI to catch up
 
+/**
+ * Returns a string representation of the object.
+ * 
+ * @return		{String}		a string representation of the object
+ */
+ZmList.prototype.toString = 
+function() {
+	return "ZmList";
+};
 
 /**
  * Gets the item.
@@ -239,7 +239,7 @@ function() {
 	for (var id in this._idHash) {
 		this._idHash[id] = null;
 	}
-	this._idHash = {};
+	this._idHash = new Object();
 };
 
 /**
@@ -275,7 +275,9 @@ function(respNode) {
  */
 ZmList.prototype.addFromDom = 
 function(node, args) {
-	args = args || {};
+	if (!args) {
+		args = {};
+	}
 	args.list = this;
 	var obj = eval(ZmList.ITEM_CLASS[this.type]);
 	if (obj) {
@@ -331,7 +333,7 @@ function(offset, newList) {
  * @param	{String}			params.op				the name of the flag operation ("flag" or "read")
  * @param	{Boolean|String}	params.value			whether to set the flag, or for "update" the flags string
  * @param	{AjxCallback}		params.callback			the callback to run after each sub-request
- * @param	{closure}			params.finalCallback	the callback to run after all items have been processed
+ * @param	{AjxCallback}		params.finalCallback	the callback to run after all items have been processed
  * @param	{int}				params.count			the starting count for number of items processed
  * @param   {String}    		params.actionText   	pattern for generating action summary
  */
@@ -372,7 +374,7 @@ function(params) {
  * @param {String}		params.tag  			the tag to add/remove from each item (optional)
  * @param {Boolean}		params.doTag			<code>true</code> if adding the tag, <code>false</code> if removing it
  * @param {AjxCallback}	params.callback			the callback to run after each sub-request
- * @param {closure}		params.finalCallback	the callback to run after all items have been processed
+ * @param {AjxCallback}	params.finalCallback	the callback to run after all items have been processed
  * @param {int}			params.count			the starting count for number of items processed
  */
 ZmList.prototype.tagItems =
@@ -380,13 +382,12 @@ function(params) {
 
 	params = Dwt.getParams(arguments, ["items", "tagId", "doTag"]);
 
-    var tagName = params.tagName || (params.tag && params.tag.name);
+    var tagId = params.tagId || (params.tag && params.tag.id);
 
-	//todo - i hope this is no longer needed. I think the item we apply the tag to should determine the tag id on the server side.
-//	// for multi-account mbox, normalize tagId
-//	if (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain) {
-//		tagId = ZmOrganizer.normalizeId(tagId);
-//	}
+	// for multi-account mbox, normalize tagId
+	if (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain) {
+		tagId = ZmOrganizer.normalizeId(tagId);
+	}
 
 	// only tag items that don't have the tag, and untag ones that do
 	// always tag a conv, because we don't know if all items in the conv have the tag yet
@@ -395,7 +396,7 @@ function(params) {
 	if (items[0] && items[0] instanceof ZmItem) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
-			if ((doTag && (!item.hasTag(tagName) || item.type == ZmItem.CONV)) ||	(!doTag && item.hasTag(tagName))) {
+			if ((doTag && (!item.hasTag(tagId) || item.type == ZmItem.CONV)) ||	(!doTag && item.hasTag(tagId))) {
 				items1.push(item);
 			}
 		}
@@ -403,10 +404,12 @@ function(params) {
 		items1 = items;
 	}
 	params.items = items1;
-	params.attrs = {tn: tagName};
+	params.attrs = {tag:tagId};
 	params.action = doTag ? "tag" : "!tag";
     params.actionText = doTag ? ZmMsg.actionTag : ZmMsg.actionUntag;
-	params.actionArg = params.tag && params.tag.name;
+	if (params.tag && params.tag.name) {
+        params.actionArg = AjxStringUtil.htmlEncode(params.tag.name);
+	}
 
 	this._itemAction(params);
 };
@@ -417,7 +420,7 @@ function(params) {
  * @param	{Hash}			params					a hash of parameters
  * @param	{Array}			params.items			a list of items to tag/untag
  * @param	{AjxCallback}	params.callback			the callback to run after each sub-request
- * @param	{closure}		params.finalCallback	the callback to run after all items have been processed
+ * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
  * @param	{int}			params.count			the starting count for number of items processed
  */
 ZmList.prototype.removeAllTags = 
@@ -460,14 +463,13 @@ function(params) {
  * @param	{ZmFolder}		params.folder			the destination folder
  * @param	{Hash}			params.attrs			the additional attrs for SOAP command
  * @param	{AjxCallback}	params.callback			the callback to run after each sub-request
- * @param	{closure}		params.finalCallback	the callback to run after all items have been processed
+ * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
  * @param	{int}			params.count			the starting count for number of items processed
  * @param	{boolean}		params.noUndo			true if the action is not undoable (e.g. performed as an undo)
  * @param	{String}		params.actionText		optional text to display in the confirmation toast instead of the default summary. May be set explicitly to null to disable the confirmation toast entirely
  */
 ZmList.prototype.moveItems =
 function(params) {
-	
 	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "callback", "errorCallback" ,"finalCallback", "noUndo", "actionText"]);
 
 	var params1 = AjxUtil.hashCopy(params);
@@ -508,43 +510,11 @@ function(params) {
 			params1.accountName = params.items[0].getAccount().name;
 		}
 	}
-	//Error Callback
-	params1.errorCallback = params.errorCallback;
 
-	if (this._handleDeleteFromSharedFolder(params, params1)) {
-		return;
-	}
-    
+    //Error Callback
+    params1.errorCallback = params.errorCallback;
+
 	this._itemAction(params1);
-};
-
-ZmList.prototype._handleDeleteFromSharedFolder =
-function(params, params1) {
-
-	// Bug 26103: when deleting an item in a folder shared to us, save a copy in our own trash
-	if (params.folder && params.folder.id == ZmFolder.ID_TRASH) {
-		var toCopy = [];
-		for (var i = 0; i < params.items.length; i++) {
-			var item = params.items[i];
-			var index = item.id.indexOf(":");
-			if (index != -1) { //might be shared
-				var acctId = item.id.substring(0, index);
-				if (!appCtxt.accountList.getAccount(acctId)) {
-					toCopy.push(item);
-				}
-			}
-		}
-		if (toCopy.length) {
-			var params2 = {
-				items:			toCopy,
-				folder:			params.folder, // Should refer to our own trash folder
-				finalCallback:	this._itemAction.bind(this, params1, null),
-				actionText:		null
-			};
-			this.copyItems(params2);
-			return true;
-		}
-	}
 };
 
 /**
@@ -581,25 +551,24 @@ function(params, result) {
 /**
  * Copies a list of items to the given folder.
  *
- * @param {Hash}		params					the hash of parameters
- * @param {Array}		params.items			a list of items to move
- * @param {ZmFolder}	params.folder			the destination folder
- * @param {Hash}		params.attrs			the additional attrs for SOAP command
- * @param {closure}		params.finalCallback	the callback to run after all items have been processed
- * @param {int}			params.count			the starting count for number of items processed
- * @param {String}		params.actionText		optional text to display in the confirmation toast instead of the default summary. May be set explicitly to null to disable the confirmation toast
+ * @param {Hash}	params		the hash of parameters
+ * @param	{Array}       params.items		a list of items to move
+ * @param	{ZmFolder}	params.folder		the destination folder
+ * @param	{Hash}	params.attrs			the additional attrs for SOAP command
+ * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
+ * @param	{int}	params.count		the starting count for number of items processed
  */
 ZmList.prototype.copyItems =
 function(params) {
 
-	params = Dwt.getParams(arguments, ["items", "folder", "attrs", "actionText"]);
+	params = Dwt.getParams(arguments, ["items", "folder", "attrs"]);
 
 	params.items = AjxUtil.toArray(params.items);
 	params.attrs = params.attrs || {};
 	params.attrs.l = params.folder.id;
 	params.action = "copy";
-	params.actionText = (params.actionText !== null) ? (params.actionText || ZmMsg.itemCopied) : null;
-	params.actionArg = params.folder.getName(false, false, true);
+    params.actionText = ZmMsg.actionCopied;
+    params.actionArg = params.folder.getName(false, false, true);
 	params.callback = new AjxCallback(this, this._handleResponseCopyItems, params);
 
 	if (appCtxt.multiAccounts && params.folder.isRemote()) {
@@ -616,10 +585,8 @@ ZmList.prototype._handleResponseCopyItems =
 function(params, result) {
 	var resp = result.getResponse();
 	if (resp.length > 0) {
-		if (params.actionText) {
-			var msg = AjxMessageFormat.format(params.actionText, resp.length);
-			appCtxt.getAppController().setStatusMsg(msg);
-		}
+		var msg = AjxMessageFormat.format(ZmMsg.itemCopied, resp.length);
+		appCtxt.getAppController().setStatusMsg(msg);
 	}
 };
 
@@ -629,13 +596,12 @@ function(params, result) {
  * it will be removed from the data store (hard delete).
  *
  * @param {Hash}	params		a hash of parameters
- * @param	{Array}		params.items			list of items to delete
- * @param	{Boolean}	params.hardDelete		<code>true</code> to force physical removal of items
+ * @param	{Array}	params.items			list of items to delete
+ * @param	{Boolean}	params.hardDelete	<code>true</code> to force physical removal of items
  * @param	{Object}	params.attrs			additional attrs for SOAP command
- * @param	{window}	params.childWin			the child window this action is happening in
- * @param	{closure}	params.finalCallback	the callback to run after all items have been processed
- * @param	{int}		params.count			the starting count for number of items processed
- * @param	{Boolean}	params.confirmDelete		the user confirmed hard delete
+ * @param	{window}	params.childWin		the child window this action is happening in
+ * @param	{AjxCallback}	params.finalCallback	the callback to run after all items have been processed
+ * @param	{int}	params.count			the starting count for number of items processed
  */
 ZmList.prototype.deleteItems =
 function(params) {
@@ -660,13 +626,6 @@ function(params) {
 		}
 	} else {
 		toMove = items;
-	}
-
-	if (toDelete.length && !params.confirmDelete) {
-		params.confirmDelete = true;
-		var callback = ZmList.prototype.deleteItems.bind(this, params);
-		this._popupDeleteWarningDialog(callback, toMove.length, toDelete.length);
-		return;
 	}
 
 	params.callback = params.childWin && new AjxCallback(this._handleDeleteNewWindowResponse, params.childWin);
@@ -695,24 +654,6 @@ function(params) {
 		this._itemAction(params);
 	}
 };
-
-
-ZmList.prototype._popupDeleteWarningDialog =
-function(callback, onlySome, count) {
-	var dialog = appCtxt.getOkCancelMsgDialog();
-	dialog.reset();
-	dialog.setMessage(AjxMessageFormat.format(ZmMsg[onlySome ? "confirmDeleteSomeForever" : "confirmDeleteForever"], [count]), DwtMessageDialog.WARNING_STYLE); 
-	dialog.registerCallback(DwtDialog.OK_BUTTON, this._deleteWarningDialogListener.bind(this, callback, dialog));
-	dialog.associateEnterWithButton(DwtDialog.OK_BUTTON);
-	dialog.popup(null, DwtDialog.OK_BUTTON);
-};
-
-ZmList.prototype._deleteWarningDialogListener =
-function(callback, dialog) {
-	dialog.popdown();
-	callback();
-};
-
 
 /**
  * @private
@@ -855,17 +796,17 @@ function(items, folderId) {
 /**
  * Performs an action on items via a SOAP request.
  *
- * @param {Hash}				params				a hash of parameters
- * @param	{Array}				params.items			a list of items to act upon
- * @param	{String}			params.action			the SOAP operation
- * @param	{Object}			params.attrs			a hash of additional attrs for SOAP request
- * @param	{AjxCallback}		params.callback			the async callback
- * @param	{closure}			params.finalCallback	the callback to run after all items have been processed
- * @param	{AjxCallback}		params.errorCallback	the async error callback
- * @param	{String}			params.accountName		the account to send request on behalf of
- * @param	{int}				params.count			the starting count for number of items processed
- * @param	{ZmBatchCommand}	batchCmd				if set, request data is added to batch request
- * @param	{boolean}			params.noUndo			true if the action is performed as an undo (not undoable)
+ * @param {Hash}		params				a hash of parameters
+ * @param	{Array}		params.items			a list of items to act upon
+ * @param	{String}	params.action			the SOAP operation
+ * @param	{Object}	params.attrs			a hash of additional attrs for SOAP request
+ * @param	{AjxCallback}	params.callback			the async callback
+ * @param	{AjxCallback}	params.finalCallback		the callback to run after all items have been processed
+ * @param	{AjxCallback}	params.errorCallback		the async error callback
+ * @param	{String}	params.accountName		the account to send request on behalf of
+ * @param	{int}		params.count			the starting count for number of items processed
+ * @param	{ZmBatchCommand}batchCmd			if set, request data is added to batch request
+ * @param	{boolean}	params.noUndo			true if the action is performed as an undo (not undoable)
  */
 ZmList.prototype._itemAction =
 function(params, batchCmd) {
@@ -878,7 +819,7 @@ function(params, batchCmd) {
 			params.callback.run(new ZmCsfeResult([]));
 		}
 		if (params.finalCallback) {
-			params.finalCallback(params);
+			params.finalCallback.run(params);
 		}
 		return;
 	}
@@ -918,37 +859,37 @@ function(params, batchCmd) {
 			action.setAttribute(attr, params.attrs[attr]);
 		}
 	}
-    var ac =  window.parentAppCtxt || appCtxt;
-	var actionController = ac.getActionController();
-	var undoPossible = !params.noUndo && (this.type != ZmItem.CONV || this.search && this.search.folderId); //bug 74169 - since the convs might not be fully loaded we might not know where the messages are moved from at all. so no undo.
-	var actionLogItem = (undoPossible && actionController && actionController.actionPerformed({op: params.action, ids: idList, attrs: params.attrs})) || null;
+
+	var actionController = appCtxt.getActionController();
+	var actionLogItem = (!params.noUndo && actionController && actionController.actionPerformed({op: params.action, ids: idList, attrs: params.attrs})) || null;
 	var respCallback = new AjxCallback(this, this._handleResponseItemAction, [params.callback, actionLogItem]);
 
 	var params1 = {
 		ids:			idList,
 		idHash:			idHash,
-		accountName:	params.accountName,
+		accountName:		params.accountName,
 		request:		request,
 		action:			action,
 		type:			type,
 		callback:		respCallback,
-		finalCallback:	params.finalCallback,
-		errorCallback:	params.errorCallback,
+		finalCallback:		params.finalCallback,
+		errorCallback:		params.errorCallback,
 		batchCmd:		batchCmd,
 		numItems:		params.count || 0,
 		actionText:		params.actionText,
 		actionArg:		params.actionArg,
-		actionLogItem:	actionLogItem,
+		actionLogItem:		actionLogItem,
 		childWin:		params.childWin,
 		closeChildWin: 	params.closeChildWin
 	};
 
+	var dialog = ZmList.progressDialog;
 	if (idList.length >= ZmList.CHUNK_SIZE) {
-		var pdParams = {
-			state:		ZmListController.PROGRESS_DIALOG_INIT,
-			callback:	new AjxCallback(this, this._cancelAction, [params1])
+		if (!dialog) {
+			dialog = ZmList.progressDialog = appCtxt.getCancelMsgDialog();
+			dialog.reset();
+			dialog.registerCallback(DwtDialog.CANCEL_BUTTON, new AjxCallback(this, this._cancelAction, [params1]));
 		}
-		ZmListController.handleProgress(pdParams);
 	}
 	
 	this._doAction(params1);
@@ -1026,14 +967,16 @@ function(params, result) {
 				params.callback.run(items, result);
 			}
 
+			var dialog = ZmList.progressDialog;
 			if (params.actionText) {
 				summary = ZmList.getActionSummary(params.actionText, params.numItems, params.type, params.actionArg);
-				var pdParams = {
-					state:		ZmListController.PROGRESS_DIALOG_UPDATE,
-					summary:	summary
-				}
-				ZmListController.handleProgress(pdParams);
 			}
+			if (dialog && summary) {
+				dialog.setMessage(summary, DwtMessageDialog.INFO_STYLE, AjxMessageFormat.format(ZmMsg.inProgress));
+				if (!dialog.isPoppedUp()) {
+					dialog.popup();
+				}
+            }
 		}
 	}
 
@@ -1046,11 +989,40 @@ function(params, result) {
 		if (params.finalCallback) {
 			// finalCallback is responsible for showing status or clearing dialog
 			DBG.println("sa", "item action running finalCallback");
-			params.finalCallback(params);
+			params.finalCallback.run(params);
 		} else {
 			DBG.println("sa", "no final callback");
-			ZmListController.handleProgress({state:ZmListController.PROGRESS_DIALOG_CLOSE});
-			ZmBaseController.showSummary(params.actionSummary, params.actionLogItem, params.closeChildWin);
+			ZmList.killProgressDialog(params.actionSummary, params.actionLogItem, params.closeChildWin);
+		}
+	}
+};
+
+/**
+ * Kills the progress dialog (if shown). Show the given summary as status.
+ *
+ * @param {String}      summary          the text that summarizes the recent action
+ * @param {ZmAction}    actionLogItem    the logged action for possible undoing
+ * @param {boolean}    showToastOnParentWindow    the toast message should be on the parent window (since the child window is being closed)
+ */
+ZmList.killProgressDialog =
+function(summary, actionLogItem, showToastOnParentWindow) {
+	DBG.println("sa", "kill progress dialog");
+	var dialog = ZmList.progressDialog;
+	if (dialog) {
+		dialog.unregisterCallback(DwtDialog.CANCEL_BUTTON);
+		dialog.popdown();
+		ZmList.progressDialog = null;
+	}
+	if (summary) {
+		summary = AjxStringUtil.htmlEncode(summary); //encode html special chars such as < and > so won't be interpreted as html (both for security and for not losing visibility of characters)
+		var ctxt = showToastOnParentWindow ? parentAppCtxt : appCtxt;
+		var actionController = ctxt.getActionController();
+		var undoLink = actionLogItem && actionController && actionController.getUndoLink(actionLogItem);
+		if (undoLink && actionController) {
+			actionController.onPopup();
+			ctxt.setStatusMsg({msg: summary+undoLink, transitions: actionController.getStatusTransitions()});
+		} else {
+			ctxt.setStatusMsg(summary);
 		}
 	}
 };
@@ -1059,7 +1031,7 @@ ZmList.getActionSummary =
 function(text, num, type, arg) {
 	var typeTextAuto = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], num);
 	var typeTextSingular = AjxMessageFormat.format(ZmMsg[ZmItem.COUNT_KEY[type]], 1);
-	return AjxMessageFormat.format(text, [num, typeTextAuto, AjxStringUtil.htmlEncode(arg), typeTextSingular]);
+	return AjxMessageFormat.format(text, [num, typeTextAuto, arg, typeTextSingular]);
 };
 
 /**
@@ -1077,9 +1049,12 @@ function(params) {
 		appCtxt.getRequestMgr().cancelRequest(params.reqId);
 	}
 	if (params.finalCallback) {
-		params.finalCallback(params);
+		params.finalCallback.run(params);
 	}
-	ZmListController.handleProgress({state:ZmListController.PROGRESS_DIALOG_CLOSE});
+	var dialog = ZmList.progressDialog;
+	if (dialog && dialog.isPoppedUp()) {
+		dialog.popdown();
+	}
 };
 
 /**
@@ -1171,25 +1146,23 @@ function(ev) {
 		ev.source.id == ZmFolder.ID_TRASH)
 	{
 		// user emptied trash - reset a bunch of stuff w/o having to redo the search
-		var curView = ctlr.getListView && ctlr.getListView();
-		if (curView) {
-			curView.offset = 0;
-		}
+		var curView = ctlr.getCurrentView();
+		if (curView) { curView.offset = 0; }
 		ctlr._resetNavToolBarButtons(view);
 	}
 	else if (isCurrentList && ctlr && ctlr._currentSearch &&
 			 (ev.event == ZmEvent.E_MOVE || (ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME]))
 	{
 		// on folder rename or move, update current query if folder is part of query
-		if (ctlr._currentSearch.replaceFolderTerm(ev.getDetail("oldPath"), folder.getPath())) {
+		var oldPath = ev.getDetail("oldPath");
+		if (ctlr._currentSearch.hasFolderTerm(oldPath)) {
+			ctlr._currentSearch.replaceFolderTerm(oldPath, folder.getPath());
 			appCtxt.getSearchController().setSearchField(ctlr._currentSearch.query);
 		}
 	}
 };
 
 /**
- * this method is for handling changes in the tag tree itself (tag rename, delete). In some places it is named _tagChangeListener.
- * the ZmListView equivalent is actually called ZmListView.prototype._tagChangeListener 
  * @private
  */
 ZmList.prototype._tagTreeChangeListener =
@@ -1199,9 +1172,7 @@ function(ev) {
 	var tag = ev.getDetail("organizers")[0];
 	var fields = ev.getDetail("fields");
 	var ctlr = appCtxt.getCurrentController();
-	if (!ctlr) { return; }
-
-	var a = this.getArray();
+	if (!ctlr || (appCtxt.getCurrentList() != this)) { return; }
 
 	if ((ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME]) {
 		// on tag rename, update current query if tag is part of query
@@ -1210,40 +1181,14 @@ function(ev) {
 			ctlr._currentSearch.replaceTagTerm(oldName, tag.getName());
 			appCtxt.getSearchController().setSearchField(ctlr._currentSearch.query);
 		}
-
-		//since we tag (and map the tags) by name, replace the tag name in the list and hash of tags.
-		var newName = tag.name;
-		for (var i = 0; i < a.length; i++) {
-			var item = a[i]; //not using the following here as it didn't seem to work for contacts, the list is !isCanonical and null is returned, even though a[i] is fine ==> this.getById(a[i].id); // make sure item is realized (contact may not be)
-			if (!item || !item.isZmItem || !item.hasTag(oldName)) {
-				continue; //nothing to do if item does not have tag
-			}
-			if (item.isShared()) {
-				continue; //overview tag rename does not affect remote items tags
-			}
-			var tagHash = item.tagHash;
-			var tags = item.tags;
-			delete tagHash[oldName];
-			tagHash[newName] = true;
-			for (var j = 0 ; j < tags.length; j++) {
-				if (tags[j] == oldName) {
-					tags[j] = newName;
-					break;
-				}
-			}
-		}
-
-
 	} else if (ev.event == ZmEvent.E_DELETE) {
 		// Remove tag from any items that have it
+		var a = this.getArray();
 		var hasTagListener = this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY);
 		for (var i = 0; i < a.length; i++) {
 			var item = this.getById(a[i].id);	// make sure item is realized (contact may not be)
-			if (item.isShared()) {
-				continue; //overview tag delete does not affect remote items tags
-			}
-			if (item && item.hasTag(tag.name)) {
-				item.tagLocal(tag.name, false);
+			if (item && item.hasTag(tag.id)) {
+				item.tagLocal(tag.id, false);
 				if (hasTagListener) {
 					this._notify(ZmEvent.E_TAGS, {items:[item]});
 				}
@@ -1255,13 +1200,12 @@ function(ev) {
 		// on the current query.
 		if (ctlr._currentSearch && ctlr._currentSearch.hasTagTerm(tag.getName())) {
 			var viewId = appCtxt.getCurrentViewId();
-			var viewType = appCtxt.getCurrentViewType();
 			ctlr.enablePagination(false, viewId);
-			var view = ctlr.getListView && ctlr.getListView();
+			var view = ctlr.getCurrentView();
 			if (view && view.sortingEnabled) {
 				view.sortingEnabled = false;
 			}
-			if (viewType == ZmId.VIEW_CONVLIST) {
+			if (viewId == ZmId.VIEW_CONVLIST) {
 				ctlr._currentSearch.query = "is:read is:unread";
 			}
 			ctlr._currentSearch.tagId = null;

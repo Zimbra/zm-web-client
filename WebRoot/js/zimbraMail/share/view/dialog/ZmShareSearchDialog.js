@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2010 Zimbra, Inc.
- *
+ * Copyright (C) 2010, 2011 VMware, Inc.
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -25,10 +25,10 @@ ZmShareSearchDialog = function(params) {
     // NOTE: that it is available when we initialize the email
     // NOTE: input field.
     var acparams = {
-        dataClass:		appCtxt.getAutocompleter(),
-        matchValue:		ZmAutocomplete.AC_VALUE_EMAIL,
-        keyUpCallback:	this._acKeyUpListener.bind(this),
-		contextId:		this.toString()
+        dataClass: appCtxt.getAutocompleter(),
+        matchValue: ZmAutocomplete.AC_VALUE_EMAIL,
+        compCallback: (new AjxCallback(this, this._handleCompletionData)),
+        keyUpCallback: (new AjxCallback(this, this._acKeyUpListener))
     };
     this._acAddrSelectList = new ZmAutocompleteListView(acparams);
     
@@ -45,8 +45,9 @@ ZmShareSearchDialog = function(params) {
 ZmShareSearchDialog.prototype = new DwtDialog;
 ZmShareSearchDialog.prototype.constructor = ZmShareSearchDialog;
 
-ZmShareSearchDialog.prototype.isZmShareSearchDialog = true;
-ZmShareSearchDialog.prototype.toString = function() { return "ZmShareSearchDialog"; };
+ZmShareSearchDialog.prototype.toString = function() {
+    return "ZmShareSearchDialog";
+};
 
 //
 // Constants
@@ -445,6 +446,24 @@ ZmShareSearchDialog.prototype._acKeyUpListener = function(event, aclv, result) {
 	// TODO: Does anything need to be done here?
 };
 
+ZmShareSearchDialog.prototype._handleCompletionData = function(text, element) {
+    element.value = text;
+//    this._form.update();
+    try {
+        if (element.fireEvent) {
+            element.fireEvent("onchange");
+        }
+        else if (document.createEvent) {
+            var ev = document.createEvent("UIEvents");
+            ev.initUIEvent("change", false, window, 1);
+            element.dispatchEvent(ev);
+        }
+    }
+    catch (ex) {
+        // ignore -- TODO: what to do with this error?
+    }
+};
+
 //
 // DwtDialog methods
 //
@@ -510,7 +529,6 @@ ZmShareSearchDialog.prototype._createHtmlFromTemplate = function(templateId, dat
 	    id: "ZmShareSearchView"
     };
     this._form = new DwtForm(params);
-	this._form.setScrollStyle(DwtControl.CLIP);
     this.setView(this._form);
 
     var inputEl = this._form.getControl("EMAIL").getInputElement();

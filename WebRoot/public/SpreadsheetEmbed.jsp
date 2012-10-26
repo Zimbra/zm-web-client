@@ -5,7 +5,7 @@
 <!--
 ***** BEGIN LICENSE BLOCK *****
 Zimbra Collaboration Suite Web Client
-Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
+Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
 
 The contents of this file are subject to the Zimbra Public License
 Version 1.3 ("License"); you may not use this file except in
@@ -53,7 +53,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 <html>
   <head>
     <title>Zimbra ALE - Prototype</title>
-      <link rel="stylesheet" href="<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,spreadsheet,images,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=${zm:cook(skin)}" />
+      <link rel="stylesheet" href="<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,images,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=${zm:cook(skin)}" />
       <style type="text/css">
         @import url( style.css );
         -->

@@ -1,13 +1,13 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007, 2008, 2009, 2010 Zimbra, Inc.
- *
+ * Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 VMware, Inc.
+ * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
@@ -18,36 +18,28 @@
 * @param parent			the element that created this view
  * @private
 */
-ZmReminderDialog = function(parent, reminderController, calController, apptType) {
+ZmReminderDialog = function(parent, reminderController, calController) {
 
 	// init custom buttons
-    this._apptType = apptType;
-    var selectInputId  = "ZmReminderDialog_reminderSelectInput_" + apptType;
-    var selectButtonId = "ZmReminderDialog_reminderSelectBtn_"   + apptType;
-    var html = [];
-    var i = 0;
-    html[i++] = "<td valign='middle' class='ZmReminderField'>";
-    html[i++] = ZmMsg.snoozeAll;
-    html[i++] = "</td><td valign='middle'>";
-    // Use a table within a dialog button td to cause the selector input field and drop
-    // down button to align properly and butt up against one another.
-    html[i++] = "<table cellspacing=0 cellpadding=0><tr></tr><td valign='middle' id='";
-    html[i++] = selectInputId;
-    html[i++] = "'></td><td valign='middle' id='";
-    html[i++] = selectButtonId;
-    html[i++] = "'></td></tr></table>";
-    html[i++] = "</td><td valign='middle' class='ZmSnoozeButton' id=\"{0}\"></td>";
-
+	var selectId = Dwt.getNextId();
+	var html = [];
+	var i = 0;
+	html[i++] = "<td valign='middle' class='ZmReminderField'>";
+	html[i++] = ZmMsg.snoozeAll;
+	html[i++] = "</td><td valign='middle' id='";
+	html[i++] = selectId;
+	html[i++] = "'></td><td valign='middle' id=\"{0}\"></td>";
+	
 	var snoozeButton = new DwtDialog_ButtonDescriptor(ZmReminderDialog.SNOOZE_BUTTON, ZmMsg.snooze, DwtDialog.ALIGN_LEFT, null, html.join(""));
 	var dismissAllButton = new DwtDialog_ButtonDescriptor(ZmReminderDialog.DISMISS_ALL_BUTTON, ZmMsg.dismissAll, DwtDialog.ALIGN_RIGHT);
 
 	// call base class
-	DwtDialog.call(this, {id:"ZmReminderDialog_" + apptType, parent:parent, standardButtons:DwtDialog.NO_BUTTONS, extraButtons:[snoozeButton, dismissAllButton]});
+	DwtDialog.call(this, {id:"ZmReminderDialog", parent:parent, standardButtons:DwtDialog.NO_BUTTONS, extraButtons:[snoozeButton, dismissAllButton]});
 
 	this._reminderController = reminderController;
 	this._calController = calController;
 
-    this.setContent(this._contentHtml(selectInputId, selectButtonId));
+    this.setContent(this._contentHtml(selectId));
     if(this._calController instanceof ZmTaskMgr) {
         this.setTitle(ZmMsg.taskReminders);
     } else {
@@ -67,9 +59,10 @@ ZmReminderDialog.SNOOZE_BUTTON		= "Snooze";//++DwtDialog.LAST_BUTTON;
 ZmReminderDialog.DISMISS_ALL_BUTTON	= "DismissAll";//++DwtDialog.LAST_BUTTON;
 ZmReminderDialog.SOON				= -AjxDateUtil.MSEC_PER_FIFTEEN_MINUTES;
 
+
 // Public methods
 
-ZmReminderDialog.prototype.toString =
+ZmReminderDialog.prototype.toString = 
 function() {
 	return "ZmReminderDialog";
 };
@@ -100,7 +93,7 @@ function() {
             var delta = startDelta ? this._formatDeltaString(startDelta) : "";
             var text = [appt.getName(), ", ", this._getDurationText(appt), "\n(", delta, ")"].join("");
             if (AjxEnv.isMac) {
-                ZmDesktopAlert.getInstance().start(ZmMsg.reminders, text, true);
+                ZmDesktopAlert.getInstance().start(ZmMsg.reminders, text);
             } else if (AjxEnv.isWindows) {
                 winText.push(text);
             }
@@ -110,18 +103,14 @@ function() {
             if (appts.length > 5) {
                 winText.push(ZmMsg.andMore);
             }
-            ZmDesktopAlert.getInstance().start(ZmMsg.reminders, winText.join("\n"), true);
+            ZmDesktopAlert.getInstance().start(ZmMsg.reminders, winText.join("\n"), 5);
         }
-    }
-
-    var snoozeSelectMenuListener = this._snoozeSelectMenuListener.bind(this);
-    this._createSnoozeMenu(this._snoozeSelectButton, snoozeSelectMenuListener, this._list);
-
+    }    
 };
 
 ZmReminderDialog.prototype.initialize =
 function(list) {
-	this._list = new AjxVector();
+	this._list = list.clone();
 	this._apptData = {};
 
 	var html = [];
@@ -133,8 +122,6 @@ function(list) {
 	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
 	for (var i = 0; i < size; i++) {
 		var appt = list.get(i);
-        if (appt.isShared() && appt.isReadOnly()) { continue; }
-        this._list.add(appt);
 		var uid = appt.getUniqueId(true);
 		var data = this._apptData[uid] = {appt:appt};
 		idx = this._addAppt(html, idx, appt, data, (i > 0));
@@ -163,10 +150,8 @@ function(list) {
 	for (var i = 0; i < size; i++) {
 		var appt = list.get(i);
 		var uid = appt.getUniqueId(true);
-        var id = appt.id;
+		var id = appt.id;
 		var data = this._apptData[uid];
-
-        if (!data) { continue; }
 
         var alarmData = appt.getAlarmData();
         alarmData = (alarmData && alarmData.length > 0) ? alarmData[0] : {};
@@ -175,196 +160,43 @@ function(list) {
 
 		// dismiss button
 		var dismissBtn = this._dismissButtons[data.dismissBtnId] = new DwtButton({id:"dismissBtn_" + id, parent:this, className:"DwtToolbarButton", parentElement:data.dismissBtnId});
+		dismissBtn.setImage("Cancel");
 		dismissBtn.setText(ZmMsg.dismiss);
 		dismissBtn.addSelectionListener(dismissListener);
 		dismissBtn.apptUid = uid;
 
 		// open button
 		var openBtn = this._openButtons[data.openBtnId] = new DwtButton({id:"openBtn_" + id, parent:this, className:"DwtToolbarButton", parentElement:data.openBtnId});
+		openBtn.setImage(appt.otherAttendees ? "ApptMeeting" : (appt.type == ZmItem.TASK) ? "TasksApp" : "Appointment");
 		openBtn.setText(ZmMsg.viewAppointment);
 		openBtn.addSelectionListener(openListener);
 		openBtn.apptUid = uid;
 
 		this._updateDelta(data);
 	}
-
-    var snoozeSelectMenuListener = this._snoozeSelectMenuListener.bind(this);
-    this._createSnoozeMenu(this._snoozeSelectButton, snoozeSelectMenuListener, this._list);
 };
 
 ZmReminderDialog.prototype._contentHtml =
-function(selectInputId, selectButtonId) {
-	this._listId = Dwt.getNextId("ZmReminderDialogContent");//Dwt.getNextId();
-    var params = {
-        parent: this,
-        parentElement: selectInputId,
-        type: DwtInputField.STRING,
-        errorIconStyle: DwtInputField.ERROR_ICON_NONE,
-        validationStyle: DwtInputField.CONTINUAL_VALIDATION,
-        className: "DwtInputField ReminderInput"
-    };
-    this._snoozeSelectInput = new DwtInputField(params);
-    var snoozeInputEl = this._snoozeSelectInput.getInputElement();
-    Dwt.setSize(snoozeInputEl, Dwt.DEFAULT, "22px");
+function(selectId) {
 
-    var snoozeSelectButtonListener = this._snoozeSelectButtonListener.bind(this);
-    this._snoozeSelectButton = this._createSnoozeSelectButton(this, selectButtonId,
-            snoozeSelectButtonListener);
+    this._listId = Dwt.getNextId("ZmReminderDialogContent");//Dwt.getNextId();
 
-    return ["<div class='ZmReminderDialog' id='", this._listId, "'>"].join("");
+	var snooze = [1, 5, 10, 15, 30, 45, 60];
+    if(this._select) {
+        this._select.dispose();
+    }
+	this._select = new DwtSelect({id:"ZmReminderDialog_reminderSelect", parent:this});
+	var snoozeFormatter = new AjxMessageFormat(ZmMsg.reminderSnoozeMinutes);
+	for (var i = 0; i < snooze.length; i++) {
+		var label = snoozeFormatter.format(snooze[i]);
+		this._select.addOption(label, i==0, snooze[i]);
+	}
+	this._select.reparentHtmlElement(selectId);
+
+	return ["<div class='ZmReminderDialog' id='", this._listId, "'>"].join("");
 };
 
-
-ZmReminderDialog.prototype._createSnoozeSelectButton =
-function(parent, buttonId, buttonListener) {
-    var snoozeSelectButton = new DwtButton({parent:parent});
-    snoozeSelectButton.addDropDownSelectionListener(buttonListener);
-    snoozeSelectButton.setData(Dwt.KEY_ID, buttonId);
-
-    snoozeSelectButton.reparentHtmlElement(buttonId);
-
-    //this._createSnoozeMenu(snoozeSelectButton, menuSelectionListener);
-
-    return snoozeSelectButton;
-}
-
-
-
-ZmReminderDialog.DEFAULT_SNOOZE = -5;
-ZmReminderDialog.SNOOZE_MINUTES =
-// Snooze period in minutes (negative is 'minutes before appt', zero is separator:
-    [-30, -15, -5, -1, 0,
-       1, 5, 10, 15, 30, 45, 60, 120, 240, 480,  1440, 2880,  4320,   5760, 10080, 20160];
-//                          1hr  2hr  4hr  8hr  1day  2days  3days  4days  1week  2weeks
-
-// Snooze period in msec (Entries must match SNOOZE_MINUTES)
-ZmReminderDialog.SNOOZE_MSEC =
-    [  -30*60*1000,   -15*60*1000,  -5*60*1000,    -1*60*1000,            0,
-         1*60*1000,     5*60*1000,  10*60*1000,    15*60*1000,   30*60*1000,    45*60*1000,   60*60*1000,
-       120*60*1000,   240*60*1000, 480*60*1000,  1440*60*1000, 2880*60*1000,  4320*60*1000, 5760*60*1000,
-     10080*60*1000, 20160*60*1000];
-
-// Minutes per:                   minute hour  day   week   endMarker
-ZmReminderDialog.SCALE_MINUTES = [   1,   60, 1440, 10080,   1000000];
-
-ZmReminderDialog.prototype._createSnoozeMenu =
-function(snoozeSelectButton, menuSelectionListener, apptList) {
-    // create menu for button
-    var snoozeMenu = new DwtMenu({parent:snoozeSelectButton, style:DwtMenu.DROPDOWN_STYLE});
-    snoozeMenu.setSize("150");
-    snoozeSelectButton.setMenu(snoozeMenu, true);
-
-    var appts = apptList.getArray();
-    var minStartDelta =  1;
-
-    if (this._apptType == "task") {
-        // Tasks are simpler: No 'before' times allowed, and all fixed times are allowed
-        minStartDelta = 1;
-    } else {
-        for (var i = 0; i < appts.length; i++) {
-            var appt = appts[i];
-            var startDelta = this._computeDelta(appt);
-            // Only limit the snooze menu with appts that have not already started/completed
-            if (startDelta < 0) {
-                // Limit the list of 'before' times by the appt that will appear the soonest in the future
-                if ((startDelta > minStartDelta) || (minStartDelta >= 0)) {
-                    minStartDelta = startDelta;
-                }
-                // Get the largest snooze period that can be used by any appt (without snoozing past its start)
-                startDelta = -startDelta;
-            }
-        }
-    }
-
-    var snoozeFormatter = [];
-    var snoozeFormatterBefore = new AjxMessageFormat(ZmMsg.apptRemindNMinutesBefore); // Before Appt Formatter
-    snoozeFormatter[0] = new AjxMessageFormat(ZmMsg.reminderSnoozeMinutes);       // Minute Formatter
-    snoozeFormatter[1] = new AjxMessageFormat(ZmMsg.reminderSnoozeHours);         // Hour   Formatter
-    snoozeFormatter[2] = new AjxMessageFormat(ZmMsg.reminderSnoozeDays);          // Day    Formatter
-    snoozeFormatter[3] = new AjxMessageFormat(ZmMsg.reminderSnoozeWeeks);         // Week   Formatter
-    var iFormatter = 0;
-    var formatter = null;
-    var snoozeDisplayValue = 0;
-    var scale = 1;
-    var defaultSet = false;
-    var firstMenuItem = null;
-    var addSeparator = false;
-    var anyAdded = false;
-    for (var i = 0; i < ZmReminderDialog.SNOOZE_MINUTES.length; i++) {
-        if (ZmReminderDialog.SNOOZE_MSEC[i] >= minStartDelta) {
-            // Found a snooze period to display
-            snoozeDisplayValue = ZmReminderDialog.SNOOZE_MINUTES[i];
-            if (snoozeDisplayValue == 0) {
-                // Set up to add a separator if any 'before' time were added; do the
-                // actual add if any fixed times are added
-                addSeparator = anyAdded;
-            }
-            else {
-                if (addSeparator) {
-                    new DwtMenuItem({parent:snoozeMenu, style:DwtMenuItem.SEPARATOR_STYLE});
-                    addSeparator = false;
-                }
-                anyAdded = true;
-                if (snoozeDisplayValue <= 0) {
-                    snoozeDisplayValue = -snoozeDisplayValue;
-                    formatter = snoozeFormatterBefore;
-                    scale = 1;
-                }else {
-                    if (snoozeDisplayValue >= ZmReminderDialog.SCALE_MINUTES[iFormatter+1]) {
-                        iFormatter++;
-                    }
-                    scale = ZmReminderDialog.SCALE_MINUTES[iFormatter];
-                    formatter = snoozeFormatter[iFormatter];
-                }
-                var label = formatter.format(snoozeDisplayValue/scale);
-                var mi = new DwtMenuItem({parent: snoozeMenu, style: DwtMenuItem.NO_STYLE});
-                mi.setText(label);
-                mi.setData("value", snoozeDisplayValue);
-                if(menuSelectionListener) mi.addSelectionListener(menuSelectionListener);
-
-                if (!firstMenuItem) {
-                    // Set the first item as the default
-                    firstMenuItem = mi;
-                    mi.setChecked(true);
-                    this._snoozeSelectInput.setValue(label);
-                    defaultSet = true;
-                }
-            }
-        }
-    }
-    if (firstMenuItem == null) {
-        // No valid selections
-        this._snoozeSelectInput.setValue("");
-        this._snoozeSelectInput.setEnabled(false, true);
-        snoozeMenu.setEnabled(false, true);
-        snoozeSelectButton.setEnabled(false);
-        this.setButtonEnabled(ZmReminderDialog.SNOOZE_BUTTON, false);
-        this.unregisterCallback(ZmReminderDialog.SNOOZE_BUTTON);
-    } else {
-        this._snoozeSelectInput.setEnabled(true, true);
-        snoozeMenu.setEnabled(true, true);
-        snoozeSelectButton.setEnabled(true, true);
-        this.setButtonEnabled(ZmReminderDialog.SNOOZE_BUTTON, true);
-        this.registerCallback(ZmReminderDialog.SNOOZE_BUTTON, this._handleSnoozeButton, this);
-    }
-
-};
-
-ZmReminderDialog.prototype._snoozeSelectButtonListener =
-function(ev) {
-	ev.item.popup();
-};
-
-ZmReminderDialog.prototype._snoozeSelectMenuListener =
-function(ev) {
-    if (ev.item && ev.item instanceof DwtMenuItem) {
-        this._snoozeSelectInput.setValue(ev.item.getText());
-        this._snoozeValue = ev.item.getData("value");
-        return;
-    }
-};
-
-ZmReminderDialog.prototype._updateDelta =
+ZmReminderDialog.prototype._updateDelta = 
 function(data) {
 	var td = document.getElementById(data.deltaId);
 	if (td) {
@@ -381,7 +213,7 @@ function(data) {
 ZmReminderDialog.prototype._addAppt =
 function(html, idx, appt, data, needSep) {
 
-	var uid = appt.id;
+    var uid = appt.id;
 	data.dismissBtnId = "dismissBtnContainer_" + uid;
 	data.openBtnId = "openBtnContainer_" + uid;
 	data.deltaId = "delta_" + uid;
@@ -418,17 +250,16 @@ function(html, idx, appt, data, needSep) {
 
 ZmReminderDialog.prototype._openButtonListener =
 function(ev) {
+	appCtxt.getAppController().setStatusMsg(ZmMsg.allRemindersAreSnoozed, ZmStatusView.LEVEL_INFO);
 
-    appCtxt.getAppController().setStatusMsg(ZmMsg.allRemindersAreSnoozed, ZmStatusView.LEVEL_INFO);
-
-    this._handleSnoozeButton();
+	this._handleSnoozeButton();
 
 	var obj = DwtControl.getTargetControl(ev);
 	var data = this._apptData[obj.apptUid];
 	var appt = data ? data.appt : null;
     var type = appt.type ? appt.type : ZmItem.APPT;
 	if (appt && type == ZmItem.APPT) {
-		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
 
 		var cc = AjxDispatcher.run("GetCalController");
 
@@ -439,9 +270,8 @@ function(ev) {
 				newAppt[i] = appt[i];
 			}
 		}
-        var mode = newAppt.isRecurring() ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : null;
 		var callback = new AjxCallback(cc, cc._showAppointmentDetails, newAppt);
-		newAppt.getDetails(mode, callback, null, null, true);
+		newAppt.getDetails(null, callback, null, null, true);
 	} else if(appt && type == ZmItem.TASK) {
         AjxDispatcher.require(["TasksCore", "Tasks"]);
 
@@ -495,82 +325,14 @@ function(ev) {
 	}
 };
 
-
 ZmReminderDialog.prototype._handleSnoozeButton =
-function() {
-    // check if all fields are populated w/ valid values
-    var errorMsg = [];
-    var snoozeInfo = null;
-    var beforeAppt = false;
-    var snoozeString = this._snoozeSelectInput.getValue();
-    if (!snoozeString) {
-         errorMsg.push(ZmMsg.reminderSnoozeClickNoDuration);
-    } else {
-        snoozeInfo = ZmCalendarApp.parseReminderString(snoozeString);
-        if (snoozeInfo.reminderValue === "" ) {
-            // Returned when no number was specified in the snooze input field
-            errorMsg.push(ZmMsg.reminderSnoozeClickNoNumber);
-        }  else {
-            // Test if the unit is a known one (default behaviour for parseReminderString
-            // returns unknowns as hours)
-            var valid = this._testSnoozeString(snoozeString);
-            if (!valid) {
-                 errorMsg.push(ZmMsg.reminderSnoozeClickUnknownUnit);
-            } else {
-                // Detect 'before'
-                beforeAppt = (snoozeString.indexOf('before') >= 0);
-            }
-        }
-    }
-    if (errorMsg.length > 0) {
-        var msg = errorMsg.join("<br>");
-        var dialog = appCtxt.getMsgDialog();
-        dialog.reset();
-        dialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-        dialog.popup();
-    }  else {
-        this.popdown();
-        var snoozeMinutes = ZmCalendarApp.convertReminderUnits(snoozeInfo.reminderValue,
-                                                               snoozeInfo.reminderUnits);
-	    this._reminderController.snoozeAppt(this._list);
-        this._reminderController._snoozeApptAction(this._list, snoozeMinutes, beforeAppt)
-    }
-
+function() {	
+	this.popdown();
+	var snoozedIds = this._reminderController.snoozeAppt(this._list);
+	var list = this._list.clone();
+	var snoozeTimedAction = new AjxTimedAction(this, this._snoozeAction, [list]);
+	AjxTimedAction.scheduleAction(snoozeTimedAction, this._select.getValue()*60*1000);		
 };
-
-
-
-/**
- * Parses the given string to insure the units are recognized
- * @param snoozeString snooze string eg. "10 minutes"
- *
- * @private
- */
-ZmReminderDialog.prototype._testSnoozeString =
-function(snoozeString) {
-    var snoozeUnitStrings = [];
-    snoozeUnitStrings[0] = AjxMsg.minute;
-    snoozeUnitStrings[1] = AjxMsg.hour;
-    snoozeUnitStrings[2] = AjxMsg.day;
-    snoozeUnitStrings[3] = AjxMsg.week;
-    // Plural
-    snoozeUnitStrings[4] = AjxMsg.minutes;
-    snoozeUnitStrings[5] = AjxMsg.hours;
-    snoozeUnitStrings[6] = AjxMsg.days;
-    snoozeUnitStrings[7] = AjxMsg.weeks;
-
-    snoozeString = snoozeString.toLowerCase();
-    var found = false;
-    for (var i = 0; i < snoozeUnitStrings.length; i++) {
-        if (snoozeString.indexOf(snoozeUnitStrings[i].toLowerCase()) >= 0) {
-            found = true;
-            break;
-        }
-    }
-	return found;
-};
-
-
 
 ZmReminderDialog.prototype._snoozeAction =
 function(list) {
@@ -621,7 +383,7 @@ function(appt) {
 		? (appt.alarmData[0].alarmInstStart ? (new Date()).getTime() - appt.adjustMS(appt.alarmData[0].alarmInstStart, appt.tzo) : appt.getEndTime()  ? (new Date()).getTime() - appt.getEndTime() : null)
 		: ((new Date()).getTime() - appt.getStartTime());
 };
-
+	
 ZmReminderDialog.prototype._formatDeltaString =
 function(deltaMSec) {
 	var prefix = deltaMSec < 0 ? "In" : "OverdueBy";
@@ -678,37 +440,4 @@ function(deltaMSec) {
 	var key = ["reminder",prefix,amount].join("");
 	var args = [deltaMSec, years, months, days, hours, mins, secs];
 	return AjxMessageFormat.format(ZmMsg[key], args);
-};
-
-
-//Bug 65466: Method overridden to remove the ESC button behavior
-
-ZmReminderDialog.prototype.handleKeyAction =
-function(actionCode, ev) {
-	switch (actionCode) {
-
-		case DwtKeyMap.ENTER:
-			this.notifyListeners(DwtEvent.ENTER, ev);
-			break;
-
-		case DwtKeyMap.CANCEL:
-			// Dont do anything
-			break;
-
-		case DwtKeyMap.YES:
-			if (this._buttonDesc[DwtDialog.YES_BUTTON]) {
-				this._runCallbackForButtonId(DwtDialog.YES_BUTTON);
-			}
-			break;
-
-		case DwtKeyMap.NO:
-			if (this._buttonDesc[DwtDialog.NO_BUTTON]) {
-				this._runCallbackForButtonId(DwtDialog.NO_BUTTON);
-			}
-			break;
-
-		default:
-			return false;
-	}
-	return true;
 };

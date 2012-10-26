@@ -1,7 +1,7 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2008, 2009, 2010 Zimbra, Inc.
+ * Copyright (C) 2008, 2009, 2010, 2011 VMware, Inc.
  * 
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.3 ("License"); you may not use this file except in
@@ -19,13 +19,8 @@
  * @private
  */
 ZmDesktopAlert = function() {
-    if (window.webkitNotifications) {
-        this.useWebkit = true;
-    } else if (appCtxt.isOffline && window.platform && (AjxEnv.isWindows || AjxEnv.isMac)) {
-        this.usePrism = true;
-    } else {
-        this.useBrowserPlus = true;
-    }
+	this.usePrism = appCtxt.isOffline && window.platform && (AjxEnv.isWindows || AjxEnv.isMac);
+	this.useBrowserPlus = !this.usePrism;
 };
 
 ZmDesktopAlert.prototype = new ZmAlert;
@@ -46,9 +41,7 @@ function() {
  */
 ZmDesktopAlert.prototype.getDisplayText =
 function() {
-    if (this.useWebkit) {
-       return ZmMsg.showPopup;
-    } else if (this.usePrism) {
+	if (this.usePrism) {
 		return AjxEnv.isMac ? ZmMsg.showPopupMac : ZmMsg.showPopup;
 	} else {
 		return ZmMsg.showPopupBrowserPlus;
@@ -64,11 +57,8 @@ function() {
 };
 
 ZmDesktopAlert.prototype.start =
-function(title, message, sticky) {
-    if (this.useWebkit) {
-        var allowedCallback = this._showWebkitNotification.bind(this, title, message, sticky);
-        this._checkWebkitPermission(allowedCallback);
-    } else if (this.usePrism) {
+function(title, message) {
+	if (this.usePrism) {
 		if (AjxEnv.isMac) {
 			try {
 				window.platform.showNotification(title, message, "resource://webapp/icons/default/launcher.icns");
@@ -85,37 +75,6 @@ function(title, message, sticky) {
 		var callback = new AjxCallback(this, this._notityServiceCallback, [title, message]);
 		var errorCallback = new AjxCallback(this, this._notityServiceErrorCallback);
 		ZmBrowserPlus.getInstance().require(serviceObj, callback, errorCallback);
-	}
-};
-
-/* Checks if we have permission to use webkit notifications. If so, or when the user
- * grants permission, allowedCallback is called.
- */
-ZmDesktopAlert.prototype._checkWebkitPermission =
-function(allowedCallback) {
-    var allowed = window.webkitNotifications.checkPermission() == 0;
-    if (allowed) {
-        allowedCallback();
-    } else if (!ZmDesktopAlert.requestedPermission) {
-        ZmDesktopAlert.requestedPermission = true; // Prevents multiple permission requests in one session.
-        window.webkitNotifications.requestPermission(this._checkWebkitPermission.bind(this, allowedCallback));
-    }
-};
-
-ZmDesktopAlert.prototype._showWebkitNotification =
-function(title, message, sticky) {
-	sticky = sticky || false;
-    // Icon: I chose to use the favIcon because it's already overridable by skins.
-    // It's a little ugly though.
-    // change for bug#67359: Broken notification image in chrome browser
-    // //var icon = window.favIconUrl;
-    var icon = [appContextPath, "/img/logo/ImgZimbraLogo_48.gif"].join("");
-    var popup = window.webkitNotifications.createNotification(icon, title, message);
-    popup.show();
-	popup.onclick = function() {popup.cancel();};
-	if (!sticky) {
-        // Close the popup after 5 seconds.
-        setTimeout(popup.cancel.bind(popup), 5000);
 	}
 };
 
