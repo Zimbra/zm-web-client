@@ -1199,7 +1199,7 @@ function(ev) {
 	var tag = ev.getDetail("organizers")[0];
 	var fields = ev.getDetail("fields");
 	var ctlr = appCtxt.getCurrentController();
-	if (!ctlr || (appCtxt.getCurrentList() != this)) { return; }
+	if (!ctlr) { return; }
 
 	var a = this.getArray();
 
@@ -1215,7 +1215,7 @@ function(ev) {
 		var newName = tag.name;
 		for (var i = 0; i < a.length; i++) {
 			var item = a[i]; //not using the following here as it didn't seem to work for contacts, the list is !isCanonical and null is returned, even though a[i] is fine ==> this.getById(a[i].id); // make sure item is realized (contact may not be)
-			if (!item || !item.hasTag(oldName)) {
+			if (!item || !item.isZmItem || !item.hasTag(oldName)) {
 				continue; //nothing to do if item does not have tag
 			}
 			if (item.isShared()) {
