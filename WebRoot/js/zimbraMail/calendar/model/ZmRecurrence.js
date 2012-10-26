@@ -136,25 +136,29 @@ function(inv) {
 	}
     else if (this.repeatType == ZmRecurrence.WEEKLY) {
         bwd = rule.byday = {};
+        wkDay = bwd.wkday = [];
 		for (i = 0; i < this.repeatWeeklyDays.length; ++i) {
-            wkDay = bwd.wkday = bwd;
-            wkDay.day = this.repeatWeeklyDays[i];
+            wkDay.push({
+                day : this.repeatWeeklyDays[i]
+            });
 		}
 	}
 	else if (this.repeatType == ZmRecurrence.MONTHLY) {
 		if (this.repeatCustomType == "S") {
 			bmd = rule.bymonthday = {};
-			bmd.modaylist = this.repeatMonthlyDayList;
+			bmd.modaylist = this.repeatMonthlyDayList.join(",");
 		}
         else {
 			bwd = rule.byday = {};
+            bwd.wkday = [];
             if (this.repeatCustomDays) {
                 for (i=0; i < this.repeatCustomDays.length; i++) {
-                    wkDay = bwd.wkday = {};
+                    wkDay = {};
                     wkDay.day = this.repeatCustomDays[i];
                     if (this.repeatCustomOrdinal) {
                         wkDay.ordwk = this.repeatCustomOrdinal;
                     }
+                    bwd.wkday.push(wkDay);
                 }
             }
 
@@ -169,15 +173,15 @@ function(inv) {
 		bm.molist = this.repeatYearlyMonthsList;
 		if (this.repeatCustomType == "O") {
 			bwd = rule.byday = {};
-
+            bwd.wkday = [];
             if(this.repeatCustomDays) {
                 for(i=0; i < this.repeatCustomDays.length; i++) {
-                    wkDay = bwd.wkday = {};
-			        //wkDay.setAttribute("ordwk", this.repeatCustomOrdinal);
+                    wkDay = {};
                     wkDay.day = this.repeatCustomDays[i];
                     if (this.repeatCustomOrdinal) {
                         wkDay.ordwk = this.repeatCustomOrdinal;
                     }
+                    bwd.wkday.push(wkDay);
                 }
             }
 
