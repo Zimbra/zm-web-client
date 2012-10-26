@@ -197,14 +197,14 @@ function(actionCode, ev) {
 		// these are for quick reply
 		case ZmKeyMap.CANCEL:
 			var itemView = this.getItemView();
-			if (itemView) {
+			if (itemView && itemView._cancelListener) {
 				itemView._cancelListener();
 			}
 			break;
 		
 		case ZmKeyMap.SEND:
 			var itemView = this.getItemView();
-			if (itemView) {
+			if (itemView && itemView._sendListener) {
 				itemView._sendListener();
 			}
 			break;
