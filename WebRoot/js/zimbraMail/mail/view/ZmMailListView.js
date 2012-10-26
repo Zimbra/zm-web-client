@@ -1181,6 +1181,13 @@ function() {
 	ZmListView.prototype.reset.call(this);
 };
 
+ZmMailListView.prototype.removeAll =
+function() {
+	//similar to reset, but can't call reset since it sets _rendered to false and that prevents pagination from working.
+	this.clearGroupSections(this.getActiveSearchFolderId());
+	ZmListView.prototype.removeAll.call(this);
+};
+
 
 /**
  * Clear groups
