@@ -157,6 +157,7 @@
 .DwtTreeItemLevel1ChildDiv {
 	padding-left:0;
 	margin-bottom:5px;
+	@PanelBg@
 }
 
 .panelTopBorder {
@@ -1091,7 +1092,7 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 	@WarningText@
 	@BottomSeparator@
 	@ActiveCursor@
-	padding:1em 0;
+	@PanelPadding@
 }
 
 /* for images that are rendered inline of a message body */
@@ -1571,22 +1572,14 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .ZmContactView .contactHeaderTable,
 .ZmContactInfoView .contactHeaderTable {
-	background-color:@darken(AppC,5)@;
-	border-bottom:1px solid @darken(AppC,50)@;
+	border-bottom:1px solid #777;
+	background-color:@darken(AppC,20)@;
 }
 
-.ZmContactView .contactHeaderSubTable,
-.ZmContactInfoView .contactHeaderSubTable {
-	background-color:@darken(AppC,15)@;
-	border-bottom:1px solid @darken(AppC,50)@;
-}
 .ZmContactInfoView .contactGroupTable {
 	background-color:white;
-	border:1px solid @darken(AppC,50)@;
-	float:left;
-	margin:.5em;
-	width:30%;
 }
+
 .ZmContactInfoView .contactHeaderSection {
 	@WidgetHeaderContainer@
 	@WidgetHeaderContainer-normal@
@@ -1602,10 +1595,6 @@ INPUT[type="text"].search_input, INPUT[type="text"].search_input-expanded {
 
 .ZmEditGroupContact .Row {
 	height:auto;
-}
-.ZmEditGroupContact .contactGroupTable {
-	float:none;
-	width:100%;
 }
 
 .ZmContactInfoView .contactHeader,
@@ -5178,9 +5167,18 @@ If you feel compelled to have a background color, please do so on a per skin lev
 	background-color:#E7B2B2;
 }
 
-.InviteStatusTentative,
-.InviteIntendedFor,
-.InviteOutDated,
+.InviteStatusTentative {
+	background-color:#FFC;
+}
+
+.InviteIntendedFor {
+	background-color:#FFB;
+}
+
+.InviteOutDated {
+	background-color:@lighten(AppC,90)@;
+}
+
 .InvHeaderTable .InvCounter {
 	background-color:#FFC;
 }

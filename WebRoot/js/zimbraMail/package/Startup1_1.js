@@ -126,5 +126,4 @@ AjxPackage.require("zimbraMail.core.ZmAppCtxt");
 AjxPackage.require("zimbraMail.core.ZmOperation");
 AjxPackage.require("zimbraMail.core.ZmMimeTable");
 
-AjxPackage.require("zimbraMail.share.view.ZmTagsHelper");
 

@@ -109,13 +109,11 @@ ZmMailApp.INC_MAP[ZmSetting.INC_SMART_HDR]		= [ZmSetting.INC_SMART, false, true]
 ZmMailApp.INC_MAP[ZmSetting.INC_SMART_PRE_HDR]	= [ZmSetting.INC_SMART, true, true];
 
 ZmMailApp.INC_MAP_REV = {};
-for (i in ZmMailApp.INC_MAP) {
-	key = (i == ZmSetting.INC_NONE || i == ZmSetting.INC_ATTACH) ? ZmMailApp.INC_MAP[i][0] :
+for (var i in ZmMailApp.INC_MAP) {
+	var key = (i == ZmSetting.INC_NONE || i == ZmSetting.INC_ATTACH) ? ZmMailApp.INC_MAP[i][0] :
 			  														   ZmMailApp.INC_MAP[i].join("|");
 	ZmMailApp.INC_MAP_REV[key] = i;
 }
-delete i;
-delete key;
 
 ZmMailApp._setGroupByMaps =
 function() {
@@ -201,7 +199,6 @@ function(settings) {
 	settings.registerSetting("MAIL_NOTIFY_TOASTER",				{name:"zimbraPrefMailToasterEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	settings.registerSetting("MAIL_PRIORITY_ENABLED",			{name:"zimbraFeatureMailPriorityEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_READ_RECEIPT_ENABLED",		{name:"zimbraFeatureReadReceiptsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	settings.registerSetting("MAIL_SEND_LATER_ENABLED",			{name:"zimbraFeatureMailSendLaterEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_SEND_READ_RECEIPTS",			{name:"zimbraPrefMailSendReadReceipts", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:"never"});
 	settings.registerSetting("MAIL_WHITELIST",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_LIST});
 	settings.registerSetting("MAIL_WHITELIST_MAX_NUM_ENTRIES",	{name:"zimbraMailWhitelistMaxNumEntries", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue:100});
