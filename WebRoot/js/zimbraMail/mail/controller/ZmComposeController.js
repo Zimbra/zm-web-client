@@ -466,19 +466,19 @@ function(params) {
 
 /**
  * Sends the message represented by the content of the compose view.
- * 
+ *
  * @param	{String}		attId					the id
  * @param	{constant}		draftType				the draft type (see <code>ZmComposeController.DRAFT_TYPE_</code> constants)
  * @param	{AjxCallback}	callback				the callback
- * @param	{Boolean}		processDataURIImages
+ * @param	{Boolean}		processImages           remove webkit-fake-url images and upload data uri images
  */
 ZmComposeController.prototype.sendMsg =
-function(attId, draftType, callback, contactId, processDataURIImages) {
-	
-    if (processDataURIImages !== false && this._composeView) {
+function(attId, draftType, callback, contactId, processImages) {
+
+    if (processImages !== false && this._composeView) {
         //Dont use bind as its arguments cannot be modified before its execution.
-        var processDataURIImagesCallback = new AjxCallback(this, this._sendMsg, [attId, null, draftType, callback, contactId]);
-        var result = this._processDataURIImages(this._composeView._getIframeDoc(), processDataURIImagesCallback);
+        var processImagesCallback = new AjxCallback(this, this._sendMsg, [attId, null, draftType, callback, contactId]);
+        var result = this._processImages(processImagesCallback);
         if (result) {
             return;
         }
@@ -2136,16 +2136,50 @@ function(){
     return this._msg;
 };
 
-ZmComposeController.prototype._processDataURIImages = function(idoc, callback){
+ZmComposeController.prototype._processImages =
+function(callback){
+
+    var idoc = this._composeView._getIframeDoc();//editor iframe document
+    if (!idoc) {
+        return;
+    }
+
+    var imgArray = idoc.getElementsByTagName("img"),
+        length = imgArray.length;
+    if (length === 0) {//No image elements in the editor document
+        return;
+    }
+
+    var isWebkitFakeURLImage = false;
+    for (var i = 0; i < length; i++) {
+        var img = imgArray[i],
+            imgSrc = img.src;
+
+        if (imgSrc && imgSrc.indexOf("webkit-fake-url://") === 0) {
+            img.parentNode.removeChild(img);
+            length--;
+            i--;
+            isWebkitFakeURLImage = true;
+        }
+    }
+
+    if (isWebkitFakeURLImage) {
+        appCtxt.setStatusMsg(ZmMsg.invalidPastedImages);
+        if (length === 0) {//No image elements in the editor document
+            return;
+        }
+    }
+
+    return this._processDataURIImages(imgArray, length, callback);
+};
+
+ZmComposeController.prototype._processDataURIImages = function(imgArray, length, callback){
+
     var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder || window.BlobBuilder;
-    if(!BlobBuilder || !idoc || !window.atob){
+    if(!BlobBuilder || !window.atob){
         return;
     }
-    var imgArray = idoc.getElementsByTagName("img");
-    var length = imgArray.length;
-    if(length === 0){//No image elements in the editor document
-        return;
-    }
+
     //converts datauri string to blob object used for uploading the image
     //dataURI format  data:image/png;base64,iVBORw0
     var dataURItoBlob = function( dataURI ){
