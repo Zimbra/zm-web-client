@@ -200,7 +200,8 @@
                     </c:choose>
                     <c:set var="contactIds" value="${contactIds}${sep}${emailIds}" />
                 </c:forEach>
-                <c:redirect url="/h/search?action=compose&to=${contactIds}" />
+                <c:set var="toAddresses" value="${contactIds}" scope="session"/>
+                <c:redirect url="/h/search?action=compose&to=toAddresses" />
             </c:when>
             <c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
                 <c:set var="untagall" value="${fn:startsWith(actionOp, 'u:all')}"/>
