@@ -1251,7 +1251,6 @@ function() {
 
 ZmListView.prototype._relayout =
 function() {
-	this.reset(); //called mainly for the ZmMailListView reset that calls clearGroupSections so group sections get cleared (if set).
 	DwtListView.prototype._relayout.call(this);
 	this._checkColumns();
 };
