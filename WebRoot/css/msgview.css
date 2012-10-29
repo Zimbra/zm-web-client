@@ -39,7 +39,6 @@
 .MsgBody-text {
 	@MailMsgBodyText@
 	@MailMsgBodyText-fixed@
-	@FontSize-html@
     word-wrap: break-word;
 
 }
@@ -52,11 +51,21 @@
    A better way would be to simply ignore the more global rule so that the
    browser default is used. But there's no way to do that. The CSS3 ":not"
    pseudo-class almost helps, but it only takes a simple selector - you can't
-   say "any TD that's not a child of a DIV with class 'MsgBody'". */
+   say "any TD that's not a child of a DIV with class 'MsgBody'".
 .MsgBody P, .MsgBody TH, .MsgBody TD, .MsgBody DIV, .MsgBody SELECT,
 .MsgBody INPUT[type=text], .MsgBody INPUT[type=password], .MsgBody INPUT[type=file],
 .MsgBody TEXTAREA, .MsgBody BUTTON {
 	@FontSize-html@
+}*/
+
+/* For conversation view applying fontsize for all child and grandchildren of MsgBody div */
+div.MsgBody, div.MsgBody * {
+    @FontSize-html@
+}
+
+/* For message view having iframe body class as MsgBody */
+body.MsgBody {
+    @FontSize-html@
 }
 
 .MsgBody .SignatureText { color: gray; }
