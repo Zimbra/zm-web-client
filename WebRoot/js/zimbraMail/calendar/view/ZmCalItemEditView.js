@@ -637,9 +637,11 @@ function(body, composingHtml) {
     var includePref = appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
     if (includePref == ZmSetting.INCLUDE_PREFIX || includePref == ZmSetting.INCLUDE_PREFIX_FULL) {
         var preface = (composingHtml ? '<br>' : '\n');
-		var wrapParams = AjxStringUtil.getWrapParams(composingHtml);
-		wrapParams.text = body;
-		wrapParams.preserveReturns = true;
+		var wrapParams = {
+			text:				body,
+			htmlMode:			composingHtml,
+			preserveReturns:	true
+		}
         body = preface + AjxStringUtil.wordWrap(wrapParams);
     }
     return body;

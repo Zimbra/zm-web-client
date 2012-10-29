@@ -949,7 +949,7 @@ function(msg, docIds) {
 	}
 };
 
-// Sets the mode ZmHtmlEditor should be in.
+// Sets the mode the editor should be in.
 ZmComposeView.prototype.setComposeMode =
 function(composeMode, initOnly) {
 
@@ -2241,10 +2241,13 @@ function(mode, params) {
 	if (headers.length) {
 		var text = headers.join(this._crlf) + this._crlf;
 		if (incOptions.prefix) {
-			var wrapParams = AjxStringUtil.getWrapParams(htmlMode, incOptions);
-			wrapParams.text = text;
-			wrapParams.preserveReturns = true;
-			wrapParams.len = 120; // headers tend to be longer
+			incOptions.pre = !htmlMode && appCtxt.get(ZmSetting.REPLY_PREFIX);
+			var wrapParams = {
+				text:				text,
+				preserveReturns:	true,
+				htmlMode:			htmlMode,
+				isHeaders:			true			
+			}
 			if (htmlMode) {
 				var marker = this._marker[DwtHtmlEditor.HTML][ZmComposeView.BC_HEADERS];
 				wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
@@ -2287,10 +2290,11 @@ function(mode, params) {
 
 	body = AjxStringUtil.trim(body);
 	if (body) {
-		var wrapParams = AjxStringUtil.getWrapParams(htmlMode, incOptions);
-		wrapParams.preserveReturns = true;
-		wrapParams.text = body;
-		wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
+		var wrapParams = {
+			text:				body,
+			preserveReturns:	true,
+			prefix:				appCtxt.get(ZmSetting.REPLY_PREFIX)
+		}
 		if (htmlMode && incOptions.prefix) {
 			var marker = this._marker[DwtHtmlEditor.HTML][ZmComposeView.BC_QUOTED_TEXT];
 			wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
@@ -2477,10 +2481,11 @@ function(op, quotedText, check) {
 		var htmlMode = (this._composeMode === DwtHtmlEditor.HTML);
 		var incOptions = this._controller._curIncOptions;
 		if (incOptions.prefix) {
-			var wrapParams = AjxStringUtil.getWrapParams(htmlMode, incOptions);
-			wrapParams.preserveReturns = true;
-			wrapParams.text = quotedText;
-			wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
+			var wrapParams = {
+				text:				quotedText,
+				preserveReturns:	true,
+				prefix:				appCtxt.get(ZmSetting.REPLY_PREFIX)
+			}
 			if (htmlMode) {
 				var marker = this._marker[DwtHtmlEditor.HTML][ZmComposeView.BC_QUOTED_TEXT];
 				wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
@@ -2660,8 +2665,10 @@ function(tagStart, tagEnd, text) {
 
 	var incOptions = this._controller._curIncOptions;
 	if (incOptions && incOptions.prefix) {
-		var wrapParams = AjxStringUtil.getWrapParams(false, incOptions);
-		wrapParams.preserveReturns = true;
+		var wrapParams = {
+			preserveReturns:	true,
+			prefix:				appCtxt.get(ZmSetting.REPLY_PREFIX)
+		}
 
 		var lines = text.split("\n");
 		var level = 0;
@@ -2680,7 +2687,6 @@ function(tagStart, tagEnd, text) {
 						out[k++] = line;
 					}
 				} else {
-					wrapParams.len = ZmHtmlEditor.WRAP_LENGTH;
 					for (var j = 0; j < level; j++) {
 						wrapParams.text = line;
 						line = AjxStringUtil.wordWrap(wrapParams);
