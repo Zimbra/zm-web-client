@@ -2314,7 +2314,7 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 		}, this);
 };
 
-ZmHtmlEditor.WRAP_LENGTH		= 72;
+ZmHtmlEditor.WRAP_LENGTH		= 80;
 ZmHtmlEditor.HTML_QUOTE_PREFIX_PRE		= '<blockquote style="border-left:2px solid ' +
 									 AjxStringUtil.HTML_QUOTE_COLOR +
 									 ';margin-left:5px;padding-left:5px;'+
