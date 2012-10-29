@@ -125,12 +125,15 @@ function(inv) {
 			// TODO: for now, handle "every weekday" as M-F
 			//       eventually, needs to be localized work week days
 			bwd = rule.byday = {};
+            wkDay = bwd.wkday = [];
 			for (i = 0; i < ZmCalItem.SERVER_WEEK_DAYS.length; i++) {
 				day = ZmCalItem.SERVER_WEEK_DAYS[i];
-				if (day == "SA" || day == "SU")
+				if (day == "SA" || day == "SU") {
 					continue;
-				wkDay = bwd.wkday = bwd;
-				wkDay.day = day;
+                }
+				wkDay.push({
+                    day : day
+                });
 			}
 		}
 	}
