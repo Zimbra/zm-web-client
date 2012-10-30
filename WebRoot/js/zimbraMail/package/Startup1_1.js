@@ -112,6 +112,8 @@ AjxPackage.require("ajax.dwt.widgets.DwtIframe");
 AjxPackage.require("ajax.dwt.widgets.DwtForm");
 AjxPackage.require("ajax.dwt.widgets.DwtMessageDialog");
 
+AjxPackage.require("ajax.3rdparty.jquery.jquery");
+
 AjxPackage.require("zimbra.csfe.ZmBatchCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeException");
