@@ -83,7 +83,10 @@ ZmMimeTable.VIDEO					= "video";
 ZmMimeTable.VIDEO_WMV				= "video/x-ms-wmv";
 ZmMimeTable.XML_ZIMBRA_SHARE		= "xml/x-zimbra-share";
 
-ZmMimeTable._table = new Object();
+// Formats for text/plain
+ZmMimeTable.FORMAT_FLOWED			= "flowed";
+
+ZmMimeTable._table = {};
 
 // only add types which are NOT ignored by the client	
 ZmMimeTable._table[ZmMimeTable.APP]					= {desc: ZmMsg.application, image: "ExeDoc", imageLarge: "ExeDoc_48", query: "application/*"};

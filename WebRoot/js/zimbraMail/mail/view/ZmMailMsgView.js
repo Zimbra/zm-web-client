@@ -1282,7 +1282,7 @@ function(msg, container) {
 	var subject = msg.subject || ZmMsg.noSubject;
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
 	// bug fix #31512 - if no sent date then display received date
-	var dateString = msg.sentDate ? dateFormatter.format(new Date(msg.sentDate)) : dateFormatter.format(new Date(msg.date));
+	var dateString = dateFormatter.format(new Date(msg.sentDate || msg.date));
 
 	var additionalHdrs = [];
 	var invite = msg.invite;
@@ -1737,6 +1737,13 @@ function(msg, container, callback, index) {
 						var empty = AjxTemplate.expand("mail.Message#EmptyMessage");
 						content = content ? [empty, content].join(ZmMsg.CRLF2) : empty;
 						isTextMsg = false; //To make sure we display html content properly
+					}
+					if (bodyPart.format === ZmMimeTable.FORMAT_FLOWED) {
+						var wrapParams = {
+							text:		content,
+							isFlowed:	true
+						}
+						content = AjxStringUtil.wordWrap(wrapParams);
 					}
 					content = isTextMsg ? AjxStringUtil.convertToHtml(content) : content;
 					this._displayContent({	container:		el,

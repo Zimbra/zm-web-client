@@ -247,6 +247,7 @@ function(node) {
 	
 	// the middle column is for backward compatibility
 	this.contentType		= this.ct			= node.ct;
+	this.format									= node.format;	// optional arg for text/plain
 	this.name									= node.name;
 	this.part									= node.part;
 	this.cachekey								= node.cachekey;
