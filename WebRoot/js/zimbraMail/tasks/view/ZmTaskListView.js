@@ -684,6 +684,10 @@ function(ev) {
 	} else if (ev.event == ZmEvent.E_MODIFY) {
 		var task = items[0];
         var div = this._getElFromItem(task);
+        if (this._list) {
+            var origTaskIndex = this._list.indexOfLike(task, task.getId);
+            if (origTaskIndex != -1) this._list.replace(origTaskIndex, task);
+        }
 		if (div) {
 			var bContained = this._selectedItems.contains(div);
 			this._createItemHtml(task, {div:div, bContained:bContained});
