@@ -219,15 +219,18 @@
                             </c:when>
                             <c:otherwise>
                                 <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" timezone="${timezone}" rawdate="${zm:getCalendar(day.startTime, timezone)}" action=""/>
+                                <fmt:message var="titleFormat" key="CAL_${param.view ne 'day' ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
+                                <fmt:formatDate var="currDay" value="${zm:getCalendar(day.startTime, timezone).time}" pattern="${titleFormat}"/>
+                                 <%-- Bug:49466 - fix for day light saving --%>
+                                <c:if test="${currDay eq preDay}">
+                                    <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" timezone="${timezone}" rawdate="${zm:addDay(zm:getCalendar(day.startTime, timezone),1)}" action=""/>
+                                    <fmt:formatDate var="currDay" value="${zm:addDay(zm:getCalendar(day.startTime, timezone),1).time}" pattern="${titleFormat}"/>
+                                </c:if>
+
                                 <c:if test="${not print}">
                                     <a href="${fn:escapeXml(dayUrl)}">
                                 </c:if>
-                                <fmt:message var="titleFormat" key="CAL_${param.view ne 'day' ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
-                                <fmt:formatDate var="currDay" value="${zm:getCalendar(day.startTime, timezone).time}" pattern="${titleFormat}"/>
-                                <%-- Bug:49466 - fix for day light saving --%>
-                                <c:if test="${currDay eq preDay}">
-                                    <fmt:formatDate var="currDay" value="${zm:addDay(zm:getCalendar(day.startTime, timezone),1).time}" pattern="${titleFormat}"/>
-                                </c:if>
+                                <%--Display Day--%>
                                 ${currDay}
                                 <c:set var="preDay" value="${currDay}" />
                                 <c:if test="${not print}">
@@ -353,15 +356,17 @@
                         </c:when>
                         <c:otherwise>
                             <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" timezone="${timezone}" rawdate="${zm:getCalendar(day.startTime, timezone)}" action=""/>
-                            <c:if test="${not print}">
-                                <a href="${fn:escapeXml(dayUrl)}">
-                            </c:if>
                             <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
                             <fmt:formatDate var="currDay" value="${zm:getCalendar(day.startTime, timezone).time}" pattern="${titleFormat}"/>
                             <%-- Bug:49466 - fix for day light saving --%>
                             <c:if test="${currDay eq preDay}">
+                                <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" timezone="${timezone}" rawdate="${zm:addDay(zm:getCalendar(day.startTime, timezone),1)}" action=""/>
                                 <fmt:formatDate var="currDay" value="${zm:addDay(zm:getCalendar(day.startTime, timezone),1).time}" pattern="${titleFormat}"/>
                             </c:if>
+                            <c:if test="${not print}">
+                                <a href="${fn:escapeXml(dayUrl)}">
+                            </c:if>
+                            <%--Display day--%>
                             ${currDay}
                             <c:set var="preDay" value="${currDay}" />
                             <c:if test="${not print}">

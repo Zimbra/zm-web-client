@@ -94,24 +94,18 @@
                     ${fname}
                 </c:when>
                 <c:otherwise>
-                    <fmt:formatDate var="currDay" value="${zm:getCalendar(day.startTime, timezone).time}" pattern="${titleFormat}" timeZone="${timezone}"/>
-                    <c:choose>
-                        <c:when test="${(currDay eq preDay) and (not empty currDay)}">
-                            <rest:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" timezone="${timezone}" rawdate="${zm:addDay(zm:getCalendar(day.startTime, timezone),1)}" action=""/>
-                        </c:when>
-                        <c:otherwise>
-                            <rest:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" timezone="${timezone}" rawdate="${zm:getCalendar(day.startTime, timezone)}" action=""/>
-                        </c:otherwise>
-                    </c:choose>
                     <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
+                    <fmt:formatDate value="${zm:getCalendar(day.startTime, timezone).time}" pattern="${titleFormat}" timeZone="${timezone}" var="currDay"/>
+                    <rest:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" timezone="${timezone}" rawdate="${zm:getCalendar(day.startTime, timezone)}" action=""/>
+                    <c:if test="${currDay eq preDay}">
+                        <fmt:formatDate value="${zm:addDay(zm:getCalendar(day.startTime, timezone),1).time}" pattern="${titleFormat}" timeZone="${timezone}" var="currDay"/>
+                        <rest:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" timezone="${timezone}" rawdate="${zm:addDay(zm:getCalendar(day.startTime, timezone),1)}" action=""/>
+                    </c:if>
 
                     <a href="${fn:escapeXml(dayUrl)}">
-                        <c:if test="${(currDay eq preDay)}">
-                            <fmt:formatDate var="currDay" value="${zm:addDay(zm:getCalendar(day.startTime, timezone),0).time}" pattern="${titleFormat}"/>
-                        </c:if>
                         ${currDay}
                     </a>
-                    <c:set var="preDay" value="${currDay}" />
+                <c:set var="preDay" value="${currDay}"/>
                 </c:otherwise>
             </c:choose>
         </td>
