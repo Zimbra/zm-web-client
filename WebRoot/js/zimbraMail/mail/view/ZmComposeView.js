@@ -50,7 +50,7 @@ ZmComposeView = function(parent, controller, composeMode) {
 	ZmComposeView.MOVE_TO_FIELD[ZmOperation.MOVE_TO_BCC]	= AjxEmailAddress.BCC;
 		
 	this._onMsgDataChange = this._onMsgDataChange.bind(this);
-	this._useAcAddrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES);
+	this._useAcAddrBubbles = appCtxt.get(ZmSetting.USE_ADDR_BUBBLES) && appCtxt.get(ZmSetting.CONTACTS_ENABLED);
 
 	this._controller = controller;
 
