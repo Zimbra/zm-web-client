@@ -730,8 +730,9 @@ function(params, result) {
 				sc.resetSearchToolbar();
 			}
 
-			var contactListPkg = appCtxt.multiAccounts ? "GetContactsForAllAccounts" : "GetContacts";
-			AjxDispatcher.run(contactListPkg);
+			if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+				AjxDispatcher.run(appCtxt.multiAccounts ? "GetContactsForAllAccounts" : "GetContacts");
+			}
 	
 			if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && appCtxt.isOffline) {
 				this.handleOfflineMailTo(location.search);
