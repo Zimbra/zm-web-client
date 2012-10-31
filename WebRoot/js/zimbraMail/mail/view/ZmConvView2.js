@@ -1921,6 +1921,10 @@ ZmMailMsgCapsuleView.prototype._handleMsgTruncated =
 function() {
 	this._msg.viewEntireMessage = true;	// remember so we reply to entire msg
 	this._showEntireMsg = true;			// set flag to load non-truncated msg
+	if (this._inviteMsgView) {
+		this._inviteMsgView._dayView = null; // for some reason the DOM of it gets lost so we have to null it so we don't try to access it later - instead of would be re-created.
+		this._inviteCalendarContainer = null;
+	}
 	// redo loading and display of entire msg
 	this.set(this._msg, true);
 	
