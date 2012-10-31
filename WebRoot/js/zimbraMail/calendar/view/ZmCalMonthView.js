@@ -920,24 +920,6 @@ function(ev, div) {
 	}
 };
 
-
-ZmCalMonthView.prototype._getItemClickedSet =
-function(clickedEl) {
-    var clickedElSet = [];
-    var appt = this.getItemFromElement(clickedEl);
-    if (appt.isAllDayEvent()) {
-        var uniqueId = this._getApptUniqueId(appt);
-        var apptSet = this._apptSets[uniqueId];
-        for (var iAppt = 0; iAppt < apptSet.appts.length; iAppt++) {
-            clickedElSet.push(this._getAllDayDiv(appt, iAppt));
-        }
-    } else {
-        clickedElSet.push(clickedEl);
-    }
-    return clickedElSet;
-}
-
-
 ZmCalMonthView.prototype._timeSelectionAction =
 function(ev, div, dblclick) {
 
@@ -1483,7 +1465,7 @@ function(data) {
         // Alter the display html of onscreen divs from 2nd to last-1 to be blank (!head and !tail)
         for (var i = 0; i < data.numDays; i++) {
             var iDay = data.startDayIndex + i;
-            allDayDiv = this._getAllDayDiv(data.appt, i);
+            allDayDiv = data.apptEl || this._getAllDayDiv(data.appt, i);
             if ((iDay >= 0) && (iDay < this.numDays)) {
                 // Initially onscreen div
                 day = this._days[iDay];
@@ -1710,7 +1692,7 @@ function(data, newDayIndex) {
     var firstDow = this.firstDayOfWeek();
     for (var i = 0; i < data.numDays; i++) {
         var iDay = newDayIndex + i;
-        var allDayDiv = this._getAllDayDiv(data.appt, i);
+        var allDayDiv = data.apptEl || this._getAllDayDiv(data.appt, i);
         if ((iDay < 0) || (iDay >= this.numDays)) {
             Dwt.setVisible(allDayDiv, false);
         } else {
@@ -1867,7 +1849,7 @@ ZmCalMonthView.prototype._deselectDnDHighlight =
 function(data) {
     if (data.appt.isAllDayEvent()) {
         for (var i = 0; i < data.numDays; i++) {
-            var allDayDiv = this._getAllDayDiv(data.appt, i);
+            var allDayDiv = data.apptEl || this._getAllDayDiv(data.appt, i);
             if (allDayDiv) {
                 this._highlightAllDayDiv(allDayDiv, data.appt, false);
             }
@@ -1892,7 +1874,7 @@ ZmCalMonthView.prototype._restoreAppt =
 function(data) {
    if (data.appt.isAllDayEvent()) {
         for (var i = 0; i < data.numDays; i++) {
-            var allDayDiv = this._getAllDayDiv(data.appt, i);
+            var allDayDiv = data.apptEl || this._getAllDayDiv(data.appt, i);
             if (allDayDiv.saveHtml !== undefined) {
                 allDayDiv.innerHTML = allDayDiv.saveHtml;
                 allDayDiv.saveHtml = undefined;
