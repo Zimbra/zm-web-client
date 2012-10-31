@@ -331,6 +331,10 @@
       <param-name>trimSpaces</param-name>
       <param-value>true</param-value>
     </init-param>
+    <init-param>
+      <param-name>saveBytecode</param-name>
+      <param-value>true</param-value>
+    </init-param>
     <!--
     <init-param>
       <param-name>classpath</param-name>
