@@ -2194,7 +2194,7 @@ function(mode, params) {
 			preface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES, this._crlf].join("");
 		}
 	}
-	else {
+	else if (msg) {
 		// no headers, so summarize them by showing date, time, name, email
 		var msgDate = msg.sentDate || msg.date;
 		var now = new Date(msgDate);

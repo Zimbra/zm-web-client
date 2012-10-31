@@ -224,6 +224,7 @@ function(params) {
 		return;
 	}
 
+	params.action = params.action || ZmOperation.NEW_MESSAGE;
 	this._msgSent = false;
 	if (params.inNewWindow) {
         var msgId = params.msg ? params.msg.nId : (this._msg ? this._msg.nId : Dwt.getNextId());
