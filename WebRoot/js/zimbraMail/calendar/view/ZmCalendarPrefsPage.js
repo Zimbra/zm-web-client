@@ -114,7 +114,7 @@ function() {
 	ZmPreferencesPage.prototype._createControls.apply(this, arguments);
 	for (var i = 0; i < settings.length; i++) {
 		var textarea = this.getFormObject(ZmCalendarPrefsPage.TEXTAREA[settings[i]]);
-		if (textarea) {
+		if (textarea && this._acList) {
 			this._acList.handle(textarea.getInputElement());
 			this._checkPermTextarea(settings[i]);
 		}
