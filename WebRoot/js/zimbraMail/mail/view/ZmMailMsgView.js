@@ -831,6 +831,7 @@ function(msg, parent, id) {
 			onload = function() {            
 				ZmMailMsgView._resetIframeHeight(self);
 				this.onload = null; // *this* is reference to <img> el.
+				DBG.println(AjxDebug.DBG3, "external image onload called for  " + this.src);
 			};
 		}
 		for (var i = 0; i < images.length; i++) {
@@ -839,7 +840,10 @@ function(msg, parent, id) {
                 images[i].onload = onload;
 				// Fix for IE: Over HTTPS, http src urls for images might cause an issue.
 				try {
+					DBG.println(AjxDebug.DBG3, "displaying external images. src = " + images[i].src);
+					images[i].src = ''; //unload it first
 					images[i].src = images[i].getAttribute("dfsrc");
+					DBG.println(AjxDebug.DBG3, "displaying external images. src is now = " + images[i].src);
 				} catch (ex) {
 					// do nothing
 				}
