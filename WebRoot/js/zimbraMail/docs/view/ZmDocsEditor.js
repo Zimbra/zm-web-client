@@ -122,7 +122,7 @@ function(tb) {
     }
 
     this._fontFamilyButton.setMenu(menu);
-    var aCtxt = window.opener && window.opener.appCtxt || appCtxt;
+    var aCtxt = ZmAppCtxt.handleWindowOpener();
     this._fontFamilyButton.setText(DwtHtmlEditor._normalizeFontName(aCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY)));
 };
 
@@ -494,7 +494,7 @@ ZmDocsEditor.prototype._setFontStyles =
 function() {
 	var doc = this._getIframeDoc();
 	var style = doc.body && doc.body.style;
-	var aCtxt = window.opener && window.opener.appCtxt || appCtxt;
+	var aCtxt = ZmAppCtxt.handleWindowOpener();
 
 	if (style) {
 		style.fontFamily = DwtHtmlEditor._normalizeFontValue(aCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));

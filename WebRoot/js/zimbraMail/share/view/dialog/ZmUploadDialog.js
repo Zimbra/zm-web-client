@@ -100,7 +100,7 @@ ZmUploadDialog.prototype.popup =
 function(folder, callback, title, loc, oneFileOnly, noResolveAction, showNotes, isImage) {
 	this._uploadFolder = folder;
 	this._uploadCallback = callback;
-	var aCtxt = window.opener && window.opener.appCtxt || appCtxt;
+	var aCtxt = ZmAppCtxt.handleWindowOpener();
 
     this._supportsHTML5 = AjxEnv.supportsHTML5File && !this._showLinkTitleText && (aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT) != null);
 
@@ -229,7 +229,7 @@ ZmUploadDialog.prototype._upload = function(){
                     files.push({name:f[j].name, fullname: f[j].name, notes: notes});
                 }
             }else{
-	            var aCtxt = window.opener && window.opener.appCtxt || appCtxt;
+	            var aCtxt = ZmAppCtxt.handleWindowOpener();
                 this._msgInfo.innerHTML = AjxMessageFormat.format(ZmMsg.attachmentSizeError, AjxUtil.formatSize(aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT)));;
                 return;
             }
@@ -294,7 +294,7 @@ function(){
         for(var j=0; j<file.length;j++){
             var f = file[j];
             size = f.size || f.fileSize /*Safari*/;
-	        var aCtxt = window.opener && window.opener.appCtxt || appCtxt;
+	        var aCtxt = ZmAppCtxt.handleWindowOpener();
             if(size > aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT)){
                 return false;
             }
@@ -600,7 +600,7 @@ function(inputEl, sizeEl){
     for(var i=0; i<files.length;i++){
         var file = files[i];
         var size = file.size || file.fileSize /*Safari*/;
-	    var aCtxt = window.opener && window.opener.appCtxt || appCtxt;
+	    var aCtxt = ZmAppCtxt.handleWindowOpener();
         if(size > aCtxt.get(ZmSetting.DOCUMENT_SIZE_LIMIT))
             className = "RedC";
         totalSize += size;
@@ -654,7 +654,7 @@ ZmUploadDialog._addHandler = function(event) {
 
 ZmUploadDialog.prototype._createUploadHtml = function() {
 	var id = this._htmlElId;
-	var aCtxt = window.opener && window.opener.appCtxt || appCtxt;
+	var aCtxt = ZmAppCtxt.handleWindowOpener();
     var uri = aCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 
     var subs = {

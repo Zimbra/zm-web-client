@@ -2012,3 +2012,22 @@ ZmAppCtxt.prototype.isTinyMCEEnabled =
 function() {
     return true;
 };
+
+/**
+ * When using pre-auth window.opener.appCtxt may not be accessible.  This function
+ * handles appCtxt assignment to avoid a permission denied error
+ * @return {Object} ZmAppCtxt
+ */
+ZmAppCtxt.handleWindowOpener = 
+function() {
+	var aCtxt = appCtxt;
+	if (window.opener) {
+		try {
+			aCtxt = window.opener.appCtxt;
+		}
+		catch (ex) {
+			aCtxt = appCtxt;
+		}
+	}
+	return aCtxt;
+};
