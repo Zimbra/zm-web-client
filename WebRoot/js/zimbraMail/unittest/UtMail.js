@@ -124,4 +124,11 @@ function(composeView, composeViewController, originalHandleResponse, draftType, 
 	UtZWCUtils.closeAllComposeViews();
 };
 
-
+UT.test("trim HTML",
+	function() {
+		UT.expect(1);
+		var str = '<html><body><div style="font-family: Verdana; font-size: 10pt; color: #000099"><div>content213451111738</div><div><br><br></div></div></body></html>';
+		str = AjxStringUtil.trimHtml(str);
+		UT.equals(str, '<div style="font-family: Verdana; font-size: 10pt; color: #000099"><div>content213451111738</div></div>');
+	}
+);
