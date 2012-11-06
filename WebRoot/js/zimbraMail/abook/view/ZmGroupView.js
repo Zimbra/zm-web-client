@@ -25,8 +25,6 @@
  * 
  * @param	{DwtComposite}	parent		the parent
  * @param	{ZmContactController}		controller		the controller
- *
- * @constructor
  * 
  * @extends		DwtComposite
  */
