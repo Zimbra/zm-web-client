@@ -439,7 +439,7 @@ function(userHeaders, headerList) {
 			if (hdr == ZmId.FLD_ACCOUNT) {
 				starred[ZmItem.F_ACCOUNT] = true;
 			}
-			if (hdr = ZmId.FLD_SELECTION) {
+			if (hdr == ZmId.FLD_SELECTION) {
 				//re-add selection checkbox at the beginning (no idea why the rest is added one before last item, but not gonna change it for now
 				headers.unshift(hdr); //unshift adds item at the beginning
 			}
