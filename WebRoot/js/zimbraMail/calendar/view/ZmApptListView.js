@@ -66,6 +66,18 @@ ZmApptListView.prototype.getAtttendees = function() {
     return null;
 };
 
+ZmApptListView.prototype.updateTimeIndicator=function(force){
+    //override
+};
+
+ZmApptListView.prototype.startIndicatorTimer=function(force){
+    //override
+};
+
+ZmApptListView.prototype.checkIndicatorNeed=function(viewId,startDate){
+    //override
+};
+
 //
 // Protected methods
 //
