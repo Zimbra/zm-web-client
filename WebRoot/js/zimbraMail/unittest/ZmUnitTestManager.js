@@ -189,7 +189,7 @@ function(element, event, ev) {
 
 ZmUnitTestUtil.goToCompose =
 function() {
-	AjxDispatcher.run("Compose");
+	AjxDispatcher.run("Compose", { action:ZmOperation.NEW_MESSAGE });
 };
 
 ZmUnitTestUtil.goToMail =

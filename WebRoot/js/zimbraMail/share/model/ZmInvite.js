@@ -881,7 +881,7 @@ function() {
 	idx = this._addEntryRow(ZmMsg.when, when, html, idx, false, null, true);
 	if (this.isRecurring(compNum)) {
 		if (!this._recurBlurb) {
-			AjxDispatcher.require("CalendarCore");
+			AjxDispatcher.require(["MailCore", "CalendarCore"]);
 			var recur = new ZmRecurrence();
 			recur.parse(this.getRecurrenceRules(compNum));
 			this._recurBlurb = recur.getBlurb();
@@ -908,7 +908,7 @@ function(isHtml) {
 	var appt;
 
 	if (msg) {
-		AjxDispatcher.require("CalendarCore");
+		AjxDispatcher.require(["MailCore", "CalendarCore"]);
 		appt = new ZmAppt();
 		appt.setFromMessage(msg);
 	}
@@ -926,7 +926,7 @@ ZmInvite.prototype.getSummary =
 function(isHtml) {
 	if (this.isRecurring()) {
 		if (!this._recurBlurb) {
-			AjxDispatcher.require("CalendarCore");
+			AjxDispatcher.require(["MailCore", "CalendarCore"]);
 			var recur = new ZmRecurrence();
 			recur.setRecurrenceRules(this.getRecurrenceRules(), this.getServerStartDate());
 			this._recurBlurb = recur.getBlurb();
