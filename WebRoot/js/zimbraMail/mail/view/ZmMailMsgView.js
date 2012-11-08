@@ -1185,7 +1185,7 @@ function(addr) {
 ZmMailMsgView.prototype._isTrustedSender =
 function(msg) {
     var trustedList = this.getTrustedSendersList();
-    if (trustedList.contains(msg.sentByAddr) || trustedList.contains(msg.sentByDomain)){
+    if (trustedList.contains(msg.sentByAddr.toLowerCase()) || trustedList.contains(msg.sentByDomain.toLowerCase())){
         return true;
     }
     return false;
