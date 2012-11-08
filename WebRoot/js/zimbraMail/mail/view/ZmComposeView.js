@@ -2102,7 +2102,7 @@ function(components, mode, params) {
 		}
 		if (compValue) {
 			if (!htmlMode) {
-				compValue = this._marker[DwtHtmlEditor.TEXT][comp] + compValue;
+				compValue = this._getMarker(DwtHtmlEditor.TEXT, comp) + compValue;
 			}
 			value += spacing + compValue;
 			this._compList.push(comp);
@@ -2110,6 +2110,11 @@ function(components, mode, params) {
 	}
 
 	return value;
+};
+
+ZmComposeView.prototype._getMarker =
+function(mode, comp) {
+	return (this._marker && this._marker[mode] &&  this._marker[mode][comp]) || "";
 };
 
 // Chart for determining number of blank lines between non-empty components.
@@ -2168,7 +2173,7 @@ function(style, mode) {
 			style:		style,
 			account:	account,
 			mode:		mode,
-			marker:		this._marker[mode][comp]
+			marker:		this._getMarker(mode, comp)
 		}
 		value = this._getSignatureContentSpan(params);
 	}
@@ -2184,7 +2189,7 @@ function(mode, params) {
 	var msg = (params && params.msg) || this._msg;
 	var incOptions = (params && params.incOptions) || this._controller._curIncOptions;
 	var preface = "";
-	var marker = htmlMode && this._marker[mode][ZmComposeView.BC_DIVIDER];
+	var marker = htmlMode && this._getMarker(mode, ZmComposeView.BC_DIVIDER);
 	if (incOptions && incOptions.headers) {
 		// divider is just a visual separator if there are headers below it
 		if (htmlMode) {
@@ -2250,7 +2255,7 @@ function(mode, params) {
 				isHeaders:			true			
 			}
 			if (htmlMode) {
-				var marker = this._marker[DwtHtmlEditor.HTML][ZmComposeView.BC_HEADERS];
+				var marker = this._getMarker(DwtHtmlEditor.HTML, ZmComposeView.BC_HEADERS);
 				wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
 				wrapParams.after = AjxStringUtil.HTML_QUOTE_PREFIX_POST + '</div>';
 			}
@@ -2297,7 +2302,7 @@ function(mode, params) {
 			prefix:				appCtxt.get(ZmSetting.REPLY_PREFIX)
 		}
 		if (htmlMode && incOptions.prefix) {
-			var marker = this._marker[DwtHtmlEditor.HTML][ZmComposeView.BC_QUOTED_TEXT];
+			var marker = this._getMarker(DwtHtmlEditor.HTML, ZmComposeView.BC_QUOTED_TEXT);
 			wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
 			wrapParams.after = AjxStringUtil.HTML_QUOTE_PREFIX_POST + '</div>';
 		}
@@ -2332,7 +2337,7 @@ function(comp) {
 	
 	var htmlMode = (this._composeMode === DwtHtmlEditor.HTML);
 	var content = this._getEditorContent(true);
-	var marker = this._marker[this._composeMode][comp];
+	var marker = this._getMarker(this._composeMode, comp);
 	var compContent = "";
 
 	var firstComp = this._compList[0];
@@ -2353,7 +2358,7 @@ function(comp) {
 					compContent = content.substring(idx1);
 				}
 				else {
-					marker = this._marker[DwtHtmlEditor.HTML][nextComp];
+					marker = this._getMarker(DwtHtmlEditor.HTML, nextComp);
 					var idx2 = marker && content.indexOf(marker);
 					if (idx2 !== -1) {
 						chunk = content.substring(0, idx2);
@@ -2373,7 +2378,7 @@ function(comp) {
 			compContent = content.substring(idx1 + 1);
 		}
 		else {
-			marker = this._marker[this._composeMode][nextComp];
+			marker = this._getMarker(this._composeMode, nextComp);
 			var idx2 = content.indexOf(marker);
 			if (idx2 !== -1 && comp === firstComp) {
 				// first component, include everything from beginning of content
@@ -2420,7 +2425,7 @@ function() {
 				break;
 			}
 		}
-		var marker = this._marker[this._composeMode][firstComp];
+		var marker = this._getMarker(this._composeMode, firstComp);
 		var idx = content.indexOf(marker);
 		if (idx !== -1) {
 			var chunk = content.substring(0, idx);
@@ -2437,7 +2442,7 @@ function() {
 			userText = this.getComponentContent(ZmComposeView.BC_TEXT_PRE);
 		}
 		else {
-			var idx = content.indexOf(this._marker[this._composeMode][this._compList[0]]);
+			var idx = content.indexOf(this._getMarker(this._composeMode, this._compList[0]));
 			if (idx !== -1) {
 				userText = content.substring(0, idx);
 			}
@@ -2488,7 +2493,7 @@ function(op, quotedText, check) {
 				prefix:				appCtxt.get(ZmSetting.REPLY_PREFIX)
 			}
 			if (htmlMode) {
-				var marker = this._marker[DwtHtmlEditor.HTML][ZmComposeView.BC_QUOTED_TEXT];
+				var marker = this._getMarker(DwtHtmlEditor.HTML, ZmComposeView.BC_QUOTED_TEXT);
 				wrapParams.before = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
 				wrapParams.after = AjxStringUtil.HTML_QUOTE_PREFIX_POST + '</div>';
 			}
@@ -2512,7 +2517,7 @@ function(op, quotedText, check) {
 			return true;
 		}
 		if (op === ZmOperation.FORMAT_HTML) {
-			var marker = this._marker[DwtHtmlEditor.HTML][ZmComposeView.BC_QUOTED_TEXT];
+			var marker = this._getMarker(DwtHtmlEditor.HTML, ZmComposeView.BC_QUOTED_TEXT);
 			var openTag = '<div ' + ZmComposeView.BC_HTML_MARKER_ATTR + '="' + marker + '">' + AjxStringUtil.HTML_QUOTE_PREFIX_PRE;
 			var closeTag = AjxStringUtil.HTML_QUOTE_PREFIX_POST + '</div>';
 			quotedText = AjxStringUtil.convertToHtml(quotedText, true, openTag, closeTag);
@@ -2535,7 +2540,7 @@ function(html, prefixEl) {
 	prefixEl = prefixEl || "blockquote";
 	var oldDiv = Dwt.parseHtmlFragment(html);
 	var newDiv = document.createElement("div");
-	newDiv[ZmComposeView.BC_HTML_MARKER_ATTR] = this._marker[DwtHtmlEditor.HTML][ZmComposeView.BC_QUOTED_TEXT];
+	newDiv[ZmComposeView.BC_HTML_MARKER_ATTR] = this._getMarker(DwtHtmlEditor.HTML, ZmComposeView.BC_QUOTED_TEXT);
 	while (oldDiv.childNodes.length) {
 		var el = oldDiv.childNodes[0];
 		if (el.nodeName.toLowerCase() === prefixEl) {
@@ -4101,7 +4106,7 @@ function() {
 	this.sendUID = (new Date()).getTime();
 
 	// build MIME
-	var top = this._getTopPart(msg, false, this._bodyContent);
+	var top = this._getTopPart(msg, false, this._bodyContent[this._composeMode]);
 
 	msg.setTopPart(top);
 	msg.setSubject(subject);
