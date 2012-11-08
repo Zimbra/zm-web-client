@@ -890,7 +890,7 @@ function(origText) {
 	(function() {
 		var infoBarDiv = document.getElementById(self._infoBarId);
 		if (infoBarDiv) {
-			self._highlightObjectsId = ZmId.getViewId(this._viewId, ZmId.MV_HIGHLIGHT_OBJ, self._mode);
+			self._highlightObjectsId = ZmId.getViewId(self._viewId, ZmId.MV_HIGHLIGHT_OBJ, self._mode);
 			var subs = {
 				id: self._highlightObjectsId,
 				text: ZmMsg.objectsNotDisplayed,
