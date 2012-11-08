@@ -87,6 +87,13 @@ ZmDragAndDrop.isAttachmentSizeExceeded = function(files, showDialog) {
 };
 
 ZmDragAndDrop.prototype._initialize = function () {
+	if (!ZmDragAndDrop.isSupported() && this._element && this._element.id) {
+		var tooltip = document.getElementById(this._element.id + '_zdnd_tooltip');
+		if (tooltip) {
+			tooltip.style.display = "none";
+			tooltip.innerHTML = "";
+		}
+	}
     if (!this._view || !this._controller || !this._element || !ZmDragAndDrop.isSupported()) {
         return;
     }
