@@ -561,7 +561,6 @@ function(ev) {
 		}
 	}
 	return handled;
-	DBG.timePt("***** CONV: msg selection");
 };
 
 ZmDoublePaneController.prototype._handleResponseListSelectionListener =

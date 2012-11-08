@@ -22,7 +22,6 @@
  * 	- If the <refresh> block has address books
  * 	- If a search for contacts returns results
  */
-AjxPackage.require("ajax.dwt.widgets.DwtChooser");
 
 AjxPackage.require("zimbraMail.abook.model.ZmAddrBook");
 AjxPackage.require("zimbraMail.abook.model.ZmContact");

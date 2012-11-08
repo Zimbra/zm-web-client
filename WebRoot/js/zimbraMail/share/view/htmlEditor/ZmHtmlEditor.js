@@ -448,7 +448,7 @@ function(words, keepModeDiv) {
 	rec = function(node) {
 		switch (node.nodeType) {
 			case 1: /* ELEMENT */
-				for (var i = node.firstChild; i; i = rec(i));
+				for (var i = node.firstChild; i; i = rec(i)) {}
 				node = node.nextSibling;
 				break;
 			case 3: /* TEXT */
@@ -1910,9 +1910,9 @@ function(ev) {
 		case "ignore":
 			val = orig;
 			this._ignoreWords[val] = true;
-			if (fixall) {
+//			if (fixall) {
 				// TODO: visually "correct" all of them
-			}
+//			}
 			break;
 		case "add":
 			val = orig;
@@ -2314,7 +2314,7 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 		}, this);
 };
 
-ZmHtmlEditor.WRAP_LENGTH		= 80;
+ZmHtmlEditor.WRAP_LENGTH		= 72;
 ZmHtmlEditor.HTML_QUOTE_PREFIX_PRE		= '<blockquote style="border-left:2px solid ' +
 									 AjxStringUtil.HTML_QUOTE_COLOR +
 									 ';margin-left:5px;padding-left:5px;'+
