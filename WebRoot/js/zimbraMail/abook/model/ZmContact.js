@@ -2296,15 +2296,13 @@ function(node) {
 	this.folderId = node.l;
 	this.created = node.cd;
 	this.modified = node.md;
-	this.ref = node.ref;
 
 	this.attr = node._attrs || {};
 	if (node.m) {
 		this.attr[ZmContact.F_groups] = node.m;
 	}
-	if (!this.ref && this.attr.dn) {
-		this.ref = this.attr.dn; //bug 78425
-	}
+	
+	this.ref = node.ref || this.attr.dn; //bug 78425
 	
 	// for shared contacts, we get these fields outside of the attr part
 	if (node.email)		{ this.attr[ZmContact.F_email] = node.email; }
