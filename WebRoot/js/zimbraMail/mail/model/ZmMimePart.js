@@ -247,6 +247,7 @@ function(node) {
 	
 	// the middle column is for backward compatibility
 	this.contentType		= this.ct			= node.ct;
+	this.format									= node.format;	// optional arg for text/plain
 	this.name									= node.name;
 	this.part									= node.part;
 	this.cachekey								= node.cachekey;
@@ -259,11 +260,10 @@ function(node) {
 	this.isBody				= this.body			= !!(node.body);
 };
 
-/*
+/**
  * @param {object}		parentNode
  * @return {true/false}	true if one of the parent in the hierarchy is multipart/alternative otherwise false.
 */
-
 ZmMimePart._isPartOfMultipartAlternative =
 function(part){
     if (!part) { return false; }
