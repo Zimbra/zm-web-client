@@ -33,6 +33,7 @@
 -->
 <html>
 <head>
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <meta http-equiv="cache-control" content="no-cache"/>
 <meta http-equiv="Pragma" content="no-cache"/>
