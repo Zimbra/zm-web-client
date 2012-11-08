@@ -1180,7 +1180,7 @@ function(msg, idoc, account) {
 ZmComposeView.prototype._isTrustedSender =
 function(msg) {
 	var trustedList = this.getTrustedSendersList();
-	return trustedList.contains(msg.sentByAddr) || trustedList.contains(msg.sentByDomain);
+	return trustedList.contains(msg.sentByAddr.toLowerCase()) || trustedList.contains(msg.sentByDomain.toLowerCase());
 };
 
 ZmComposeView.prototype.getTrustedSendersList =
