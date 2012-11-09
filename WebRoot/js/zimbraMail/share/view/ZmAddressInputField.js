@@ -1019,9 +1019,9 @@ function() {
 	}
 	Dwt.setSize(this._input, inputWidth, Dwt.DEFAULT);
 
-	if (AjxEnv.isIE) {
+//	if (AjxEnv.isIE) {
 		// TODO: make the INPUT line up with the SPANs vertically
-	}
+//	}
 };
 
 ZmAddressInputField.prototype.hasFocus =

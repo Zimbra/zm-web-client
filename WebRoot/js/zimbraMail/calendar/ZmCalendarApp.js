@@ -455,7 +455,7 @@ function() {
 						 searchType:	"appointment",
 						 resultsList:
 	   AjxCallback.simpleClosure(function(search) {
-		   AjxDispatcher.require("CalendarCore");
+		   AjxDispatcher.require(["MailCore", "CalendarCore"]);
 		   return new ZmApptList(ZmItem.APPT, search);
 	   }, this)
 						});
@@ -466,7 +466,7 @@ function() {
 						 node:			"calResource",
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
-			AjxDispatcher.require("CalendarCore");
+			AjxDispatcher.require(["MailCore", "CalendarCore"]);
 			return new ZmResourceList(null, search);
 		}, this)
 						});
@@ -641,17 +641,17 @@ function(op) {
 	switch (op) {
 		case ZmOperation.NEW_APPT: {
 			var loadCallback = new AjxCallback(this, this._handleLoadNewAppt);
-			AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
+			AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
 			break;
 		}
 		case ZmOperation.NEW_CALENDAR: {
 			var loadCallback = new AjxCallback(this, this._handleLoadNewCalendar);
-			AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
+			AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
 			break;
 		}
         case ZmOperation.ADD_EXTERNAL_CALENDAR: {
 			var loadCallback = new AjxCallback(this, this._handleLoadExternalCalendar);
-			AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
+			AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
 			break;
 		}
 	}
@@ -688,7 +688,7 @@ ZmCalendarApp.prototype.launch =
 function(params, callback) {
 	this._setLaunchTime(this.toString(), new Date());
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [params, callback]);
-	AjxDispatcher.require(["CalendarCore", "Calendar"], true, loadCallback, null, true);
+	AjxDispatcher.require(["MailCore", "ContactsCore", "CalendarCore", "Calendar"], true, loadCallback, null, true);
 };
 
 ZmCalendarApp.prototype._handleLoadLaunch =
@@ -794,7 +794,7 @@ function() {
  */
 ZmCalendarApp.prototype.getCalController =
 function(sessionId, searchResultsController) {
-	AjxDispatcher.require(["Startup2", "CalendarCore"]);
+	AjxDispatcher.require(["Startup2", "MailCore", "CalendarCore"]);
 	return this.getSessionController({controllerClass:			"ZmCalViewController",
 									  sessionId:				sessionId || ZmApp.MAIN_SESSION,
 									  searchResultsController:	searchResultsController});
@@ -808,7 +808,7 @@ function(sessionId, searchResultsController) {
 ZmCalendarApp.prototype.getFreeBusyCache =
 function() {
 	if (!this._freeBusyCache) {
-		AjxDispatcher.require("CalendarCore");
+		AjxDispatcher.require(["MailCore", "CalendarCore"]);
 		this._freeBusyCache = new ZmFreeBusyCache(this);
 	}
 	return this._freeBusyCache;
@@ -822,7 +822,7 @@ function() {
 ZmCalendarApp.prototype.getReminderController =
 function() {
 	if (!this._reminderController) {
-		AjxDispatcher.require("CalendarCore");
+		AjxDispatcher.require(["MailCore", "CalendarCore"]);
 		var calMgr = appCtxt.getCalManager();
 		this._reminderController = calMgr.getReminderController();
 		this._reminderController._calController = AjxDispatcher.run("GetCalController");
@@ -837,20 +837,20 @@ function() {
  */
 ZmCalendarApp.prototype.getApptComposeController =
 function(sessionId) {
-	AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
 	return this.getSessionController({controllerClass:	"ZmApptComposeController",
 									  sessionId:		sessionId});
 };
 
 ZmCalendarApp.prototype.getSimpleApptComposeController =
 function() {
-	AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
 	return this.getSessionController({controllerClass:	"ZmSimpleApptComposeController"});
 };
 
 ZmCalendarApp.prototype.getApptViewController =
 function(sessionId) {
-	AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
 	return this.getSessionController({controllerClass:	"ZmApptController",
 									  sessionId:		sessionId});
 };
@@ -1385,7 +1385,7 @@ function(date) {
 ZmCalendarApp.prototype.importAppointment =
 function(msgId, partId,name) {
 	var loadCallback = new AjxCallback(this, this._handleImportAppointment, [msgId, partId, name]);
-	AjxDispatcher.require(["CalendarCore","Calendar"], false, loadCallback);
+	AjxDispatcher.require(["MailCore", "CalendarCore","Calendar"], false, loadCallback);
 };
 
 ZmCalendarApp.prototype._handleImportAppointment =

@@ -134,7 +134,7 @@ function() {
 
 ZmMailPrefsPage.prototype._createControls =
 function() {
-    AjxDispatcher.require(["CalendarCore"]);
+    AjxDispatcher.require(["MailCore", "CalendarCore"]);
 	ZmPreferencesPage.prototype._createControls.apply(this, arguments);
 
 	this._sId = this._htmlElId + "_startMiniCal";

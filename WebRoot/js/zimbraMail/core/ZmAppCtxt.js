@@ -389,6 +389,19 @@ function() {
 };
 
 /**
+ * Gets the message dialog with a help button.
+ *
+ * @return	{DwtMessageDialog}	the message dialog
+ */
+ZmAppCtxt.prototype.getHelpMsgDialog =
+	function() {
+		if (!this._helpMsgDialog) {
+			this._helpMsgDialog = new DwtMessageDialog({parent:this._shell, helpText:ZmMsg.help, id: "ZmHelpMsgDialog"});
+		}
+		return this._helpMsgDialog;
+	};
+
+/**
  * Gets the yes/no message dialog.
  * 
  * @return	{DwtMessageDialog}	the message dialog
@@ -545,7 +558,7 @@ function() {
 ZmAppCtxt.prototype.getNewCalendarDialog =
 function() {
 	if (!this._newCalendarDialog) {
-		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
 		this._newCalendarDialog = new ZmNewCalendarDialog(this._shell);
 	}
 	return this._newCalendarDialog;
@@ -573,7 +586,7 @@ function() {
 ZmAppCtxt.prototype.getSuggestionPreferenceDialog =
 function() {
 	if (!this._suggestionPrefDialog) {
-		AjxDispatcher.require(["CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
         this._suggestionPrefDialog = new ZmTimeSuggestionPrefDialog(this._shell);
     }
     return this._suggestionPrefDialog;

@@ -25,17 +25,6 @@
  * 
  * Any user of this package will need to load CalendarCore first.
  */
-AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
-
-// for creating and handling invites
-AjxPackage.require("zimbraMail.mail.model.ZmMimePart");
-AjxPackage.require("zimbraMail.mail.model.ZmMailItem");
-AjxPackage.require("zimbraMail.mail.model.ZmMailMsg");
-AjxPackage.require("zimbraMail.mail.controller.ZmMailListController");
-AjxPackage.require("zimbraMail.mail.controller.ZmMsgController");
-// base class for ZmApptView
-AjxPackage.require("zimbraMail.mail.view.ZmMailItemView");
-AjxPackage.require("zimbraMail.mail.view.ZmMailMsgView");
 
 AjxPackage.require("zimbraMail.calendar.view.ZmApptListView");
 AjxPackage.require("zimbraMail.calendar.view.ZmCalViewMgr");

@@ -184,7 +184,7 @@ function(viewId) {
 
 ZmCalViewController.prototype.show =
 function(viewId, startDate, skipMaintenance) {
-	AjxDispatcher.require(["CalendarCore", "Calendar"]);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 	if (!viewId || viewId == ZmId.VIEW_CAL) {
 		viewId = this.getCurrentViewType() || this.getDefaultViewType();
 	}
@@ -1244,7 +1244,7 @@ function(ev) {
 	}
 
 	var loadCallback = new AjxCallback(this, this._handleLoadNewApptAction, [d, calendarId]);
-	AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
 };
 
 ZmCalViewController.prototype._handleLoadNewApptAction =
@@ -1277,7 +1277,7 @@ function(ev) {
 	}
 
 	var loadCallback = new AjxCallback(this, this._handleLoadNewAllDayApptAction, [d, calendarId]);
-	AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
 };
 
 ZmCalViewController.prototype._handleLoadNewAllDayApptAction =
@@ -1338,7 +1338,7 @@ function(viewId, forward) {
  */
 ZmCalViewController.prototype.setDate =
 function(date, duration, roll) {
-	AjxDispatcher.require(["CalendarCore", "Calendar"]);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 	// set mini-cal first so it will cache appts we might need
 	if (this._miniCalendar.getDate() == null ||
 		this._miniCalendar.getDate().getTime() != date.getTime())
@@ -1377,7 +1377,7 @@ ZmCalViewController.prototype._miniCalSelectionListener =
 function(ev) {
 	if (ev.item instanceof DwtCalendar) {
 		var loadCallback = new AjxCallback(this, this._handleLoadMiniCalSelection, [ev]);
-		AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
+		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"], false, loadCallback, null, true);
 	}
 };
 
@@ -2207,7 +2207,7 @@ function(num) {
 ZmCalViewController.prototype._showTypeDialog =
 function(appt, mode) {
 	if (this._typeDialog == null) {
-		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);		
+		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
 		this._typeDialog = new ZmCalItemTypeDialog(this._shell);
 		this._typeDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._typeOkListener));
 		this._typeDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._typeCancelListener));
@@ -2251,7 +2251,7 @@ function(appt, shiftKey) {
 ZmCalViewController.prototype._showQuickAddDialogContinue =
 function(appt, shiftKey) {
 	if (this._quickAddDialog == null) {
-		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
+		AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar", "CalendarAppt"]);
 		this._quickAddDialog = new ZmApptQuickAddDialog(this._shell);
 		this._quickAddDialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._quickAddOkListener));
 		this._quickAddDialog.addSelectionListener(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, new AjxListener(this, this._quickAddMoreListener));
@@ -2279,7 +2279,7 @@ function(startDate, endDate, folderId, shiftKey) {
 
 ZmCalViewController.prototype.newAppointment =
 function(newAppt, mode, isDirty, startDate) {
-	AjxDispatcher.require(["CalendarCore", "Calendar"]);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 	var sd = startDate || (this._viewVisible ? this._viewMgr.getDate() : new Date());
 	var appt = newAppt || this._newApptObject(sd, (appCtxt.get(ZmSetting.CAL_DEFAULT_APPT_DURATION) * 1000));  //bug:50121 added appt duration as configurable from preference
 
@@ -2354,7 +2354,7 @@ function() {
  */
 ZmCalViewController.prototype.editAppointment =
 function(appt, mode) {
-	AjxDispatcher.require(["CalendarCore", "Calendar"]);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 	if (mode != ZmCalItem.MODE_NEW) {
 		var clone = ZmAppt.quickClone(appt);
 		clone.getDetails(mode, new AjxCallback(this, this._showApptComposeView, [clone, mode]));
@@ -2440,7 +2440,7 @@ function(appt, all, result) {
 
 ZmCalViewController.prototype._forwardAppointment =
 function(appt, mode) {
-	AjxDispatcher.require(["CalendarCore", "Calendar"]);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 	if (mode != ZmCalItem.MODE_NEW) {
 		var clone = ZmAppt.quickClone(appt);
 		clone.getDetails(mode, new AjxCallback(this, this._showApptForwardComposeView, [clone, mode]));
@@ -3500,7 +3500,7 @@ function(params) {
 
 ZmCalViewController.prototype.handleUserSearch =
 function(params, callback) {
-	AjxDispatcher.require(["CalendarCore", "Calendar"]);
+	AjxDispatcher.require(["MailCore", "CalendarCore", "Calendar"]);
 	this.show(null, null, true);
 
 	this.apptCache.clearCache();

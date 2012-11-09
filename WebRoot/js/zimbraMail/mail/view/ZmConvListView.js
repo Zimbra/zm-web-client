@@ -115,7 +115,7 @@ function(item, force) {
 	if (changed && itemView && itemView._replyView) {
 		itemView._replyView.reset();
 	}
-	this._itemView.setVisible(true);
+	this._itemView.setVisible(true,null,item);
 	if (changed) {
 		this.setReadingPane(true);	// so that second view gets positioned
 	}

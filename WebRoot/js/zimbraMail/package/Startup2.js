@@ -13,14 +13,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-AjxPackage.require("ajax.net.AjxInclude");
-AjxPackage.require("ajax.util.AjxDateUtil");
 AjxPackage.require("ajax.util.AjxSelectionManager");
 AjxPackage.require("ajax.net.AjxPost");
 AjxPackage.require("ajax.util.AjxBuffer");
 AjxPackage.require("ajax.xslt.AjxXslt");
 AjxPackage.require("ajax.util.AjxSHA1");
 AjxPackage.require("ajax.dwt.events.DwtDateRangeEvent");
+AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
 AjxPackage.require("ajax.dwt.widgets.DwtColorPicker");
 AjxPackage.require("ajax.dwt.widgets.DwtCheckbox");
 AjxPackage.require("ajax.dwt.widgets.DwtRadioButton");
@@ -81,6 +80,7 @@ AjxPackage.require("zimbraMail.core.ZmNewWindow");
 AjxPackage.require("zimbraMail.core.ZmToolTipMgr");
 
 AjxPackage.require("zimbraMail.calendar.model.ZmCalMgr");
+AjxPackage.require("zimbraMail.calendar.model.ZmRecurrence");
 AjxPackage.require("zimbraMail.tasks.model.ZmTaskMgr");
 AjxPackage.require("zimbraMail.calendar.model.ZmMiniCalCache");
 AjxPackage.require("zimbraMail.calendar.controller.ZmSnoozeBeforeProcessor");

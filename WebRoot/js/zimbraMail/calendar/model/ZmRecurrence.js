@@ -299,6 +299,13 @@ function() {
                 var workWeekDays = ZmCalItem.SERVER_WEEK_DAYS.slice(1,6).join(","); 
                 var weekEndDays = [ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.SUNDAY], ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.SATURDAY]].join(",");
 
+                //if both values are present and unequal give preference to repeatBySetPos
+                if (this.repeatCustomOrdinal != null &&
+                    this.repeatBySetPos != null &&
+                    this.repeatCustomOrdinal != this.repeatBySetPos) {
+                    this.repeatCustomOrdinal = this.repeatBySetPos;
+                }
+
                 if((ZmCalItem.SERVER_WEEK_DAYS.join(",") == days) || (workWeekDays == days) || (weekEndDays == days)) {
                     var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsWeekDays);
                     var dayType = -1;
