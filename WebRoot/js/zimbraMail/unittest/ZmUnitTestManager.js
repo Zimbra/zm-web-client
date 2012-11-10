@@ -31,8 +31,8 @@ ZmUnitTestManager = function() {
 	// clean up hack for getting QUnit to export into UT namespace
 	window.exports = window.require = null;
 	try {
-		delete window.exports;
-		delete window.require;
+		delete exports;
+		delete require;
 	} catch(e) {}	// IE bug: exception thrown on delete on window object
 };
 

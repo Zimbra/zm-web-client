@@ -129,6 +129,9 @@ ZmZimbraMail = function(params) {
 ZmZimbraMail.prototype = new ZmController;
 ZmZimbraMail.prototype.constructor = ZmZimbraMail;
 
+ZmZimbraMail.prototype.isZmZimbraMail = true;
+ZmZimbraMail.prototype.toString = function() { return "ZmZimbraMail"; };
+
 // REVISIT: This is done so that we when we switch from being "beta"
 //          to production, we don't have to ensure that all of the
 //          translations are changed at the same time. We can simply
@@ -151,15 +154,6 @@ ZmZimbraMail.UI_NETWORK_DOWN	= "network_down";
 
 // Public methods
 
-/**
- * Returns a string representation of the object.
- * 
- * @return		{String}		a string representation of the object
- */
-ZmZimbraMail.prototype.toString =
-function() {
-	return "ZmZimbraMail";
-};
 
 /**
  * Sets up ZimbraMail, and then starts it by calling its constructor. It is assumed that the
@@ -230,7 +224,7 @@ function() {
 	ZmZimbraMail.setExitTimer(false);
 	ZmZimbraMail.sessionTimerInvoked = false;
 	window._zimbraMail = window.onload = window.onunload = window.onresize = window.document.onkeypress = null;
-	delete window._zimbraMail;
+	delete _zimbraMail;
 };
 
 ZmZimbraMail.closeChildWindows =

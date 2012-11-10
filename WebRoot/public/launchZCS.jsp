@@ -407,7 +407,7 @@ delete text;
 		// kill the timer
 		if (window._timer) {
 			clearInterval(window._timer);
-			delete window._timer;
+			delete _timer;
 		}
 
 		var prodMode = ${isProdMode};
@@ -482,7 +482,7 @@ delete text;
 		};
 		ZmZimbraMail.run(params);
 		
-		delete window.virtualAcctDomain;
+		delete virtualAcctDomain;
 	}
 
     //	START DOMContentLoaded
