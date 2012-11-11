@@ -23,6 +23,8 @@
  *  - When viewing a single msg or conv
  */
 
+AjxPackage.require("ajax.util.AjxPluginDetector");
+
 AjxPackage.require("zimbraMail.mail.view.ZmComposeView");
 AjxPackage.require("zimbraMail.mail.view.ZmMailConfirmView");
 AjxPackage.require("zimbraMail.mail.view.ZmSelectAddrDialog");
